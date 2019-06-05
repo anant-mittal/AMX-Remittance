@@ -24,14 +24,13 @@ public class TimezoneDao {
 		return null;
 	}
 
-	public TimezoneMasterModel findByCountryId(BigDecimal countryId) {
+	public TimezoneMasterModel findById(BigDecimal id) {
 
-		if (null != countryId) {
-			return timezoneRepository.findByCountryId(countryId);
+		if (null == id) {
+			return null;
 		}
 
-		return null;
-
+		return timezoneRepository.findOne(id);
 	}
 
 }

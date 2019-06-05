@@ -24,8 +24,10 @@ import com.amx.jax.cache.ExchRateAndRoutingTransientDataCache;
 import com.amx.jax.cache.TransientRoutingComputeDetails;
 import com.amx.jax.cache.WorkingHoursData;
 import com.amx.jax.dict.UserClient.Channel;
+import com.amx.jax.pricer.dao.CountryMasterDao;
 import com.amx.jax.pricer.dao.TimezoneDao;
 import com.amx.jax.pricer.dao.ViewExRoutingMatrixDao;
+import com.amx.jax.pricer.dbmodel.CountryMaster;
 import com.amx.jax.pricer.dbmodel.HolidayListMasterModel;
 import com.amx.jax.pricer.dbmodel.TimezoneMasterModel;
 import com.amx.jax.pricer.dbmodel.ViewExRoutingMatrix;
@@ -46,8 +48,8 @@ public class RemitRoutingManager {
 
 	private static final int MAX_DELIVERY_ATTEMPT_DAYS = 60;
 
-	private static final int DEF_START_TIME = 8;
-	private static final int DEF_STOP_TIME = 18;
+	// private static final int DEF_START_TIME = 8;
+	// private static final int DEF_STOP_TIME = 18;
 
 	// TODO : Treasury Funding Time.
 	// private static final int KWT_TREASURY_FUNDING_TIME = 12;
@@ -63,6 +65,9 @@ public class RemitRoutingManager {
 
 	@Autowired
 	TimezoneDao tzDao;
+
+	@Autowired
+	CountryMasterDao countryMasterDao;
 
 	@Resource
 	ExchRateAndRoutingTransientDataCache transientDataCache;
@@ -267,11 +272,11 @@ public class RemitRoutingManager {
 
 			BigDecimal processingCountryId = oneMatrix.getProcessingCountryId();
 			EstimatedDeliveryDetails estmdProcessingDeliveryDetails = null;
-			boolean isProcessingLag = false;
+			boolean isProcessLagIntermediary = false;
 
 			if (processingCountryId != null && processingCountryId.longValue() != routingCountryId.longValue()) {
 
-				isProcessingLag = true;
+				isProcessLagIntermediary = true;
 
 				/**
 				 * Only Holiday's Lag to be considered here. The work time and non-operational
@@ -293,10 +298,21 @@ public class RemitRoutingManager {
 									+ exchangeRateAndRoutingRequest.toJSON());
 				}
 
+				CountryMaster countryMaster = getCountryMaster(oneMatrix.getProcessingCountryId());
+
+				// Default is Zero -- if Null
+				BigDecimal processingStartTime = null != countryMaster.getWorkTimeFrom()
+						? countryMaster.getWorkTimeFrom()
+						: BigDecimal.ZERO;
+
+				// Default is 24 -- if Null
+				BigDecimal processingStopTime = null != countryMaster.getWorkTimeTo() ? countryMaster.getWorkTimeTo()
+						: BigDecimal.valueOf(24);
+
 				estmdProcessingDeliveryDetails = this.getEstimatedBlockDelivery(processingStartTT, pTimezone,
-						BigDecimal.ONE, new BigDecimal(7), new BigDecimal(DEF_START_TIME),
-						new BigDecimal(DEF_STOP_TIME), BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
-						BigDecimal.ZERO, BigDecimal.ZERO, Boolean.FALSE, processingCountryId, 0);
+						BigDecimal.ONE, new BigDecimal(7), processingStartTime, processingStopTime, BigDecimal.ZERO,
+						BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, Boolean.FALSE,
+						processingCountryId, 0);
 
 				routingDetails.setProcessingDeliveryDetails(estmdProcessingDeliveryDetails);
 
@@ -319,22 +335,22 @@ public class RemitRoutingManager {
 			EstimatedDeliveryDetails estmdBeneDeliveryDetails = null;
 			long beneStartTT;
 
-			boolean processLagForBene = false;
+			boolean isProcessLagForBene = false;
 
 			if (null != estmdProcessingDeliveryDetails) {
 
-				processLagForBene = processingCountryId.longValue() != beneCountryId.longValue() ? true : false;
+				isProcessLagForBene = processingCountryId.longValue() != beneCountryId.longValue() ? true : false;
 				beneStartTT = estmdProcessingDeliveryDetails.getCompletionTT();
 
 			} else {
 
-				processLagForBene = routingCountryId.longValue() != beneCountryId.longValue() ? true : false;
+				isProcessLagForBene = routingCountryId.longValue() != beneCountryId.longValue() ? true : false;
 				beneStartTT = estmdCBDeliveryDetails.getCompletionTT();
 			}
 
 			// Process For Bene
 
-			if (processLagForBene) {
+			if (isProcessLagForBene) {
 
 				String beneTimezone = getTimezoneForCountry(beneCountryId);
 
@@ -344,10 +360,19 @@ public class RemitRoutingManager {
 									+ exchangeRateAndRoutingRequest.toJSON());
 				}
 
+				CountryMaster countryMaster = getCountryMaster(oneMatrix.getBeneCountryId());
+
+				// Default is Zero -- if Null
+				BigDecimal beneStartTime = null != countryMaster.getWorkTimeFrom() ? countryMaster.getWorkTimeFrom()
+						: BigDecimal.ZERO;
+
+				// Default is 24 -- if Null
+				BigDecimal beneStopTime = null != countryMaster.getWorkTimeTo() ? countryMaster.getWorkTimeTo()
+						: BigDecimal.valueOf(24);
+
 				estmdBeneDeliveryDetails = this.getEstimatedBlockDelivery(beneStartTT, beneTimezone, BigDecimal.ONE,
-						new BigDecimal(7), new BigDecimal(DEF_START_TIME), new BigDecimal(DEF_STOP_TIME),
-						BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
-						Boolean.FALSE, beneCountryId, 0);
+						new BigDecimal(7), beneStartTime, beneStopTime, BigDecimal.ZERO, BigDecimal.ZERO,
+						BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, Boolean.FALSE, beneCountryId, 0);
 
 				routingDetails.setBeneBankDeliveryDetails(estmdBeneDeliveryDetails);
 
@@ -373,7 +398,7 @@ public class RemitRoutingManager {
 
 			boolean crossedMaxDeliveryDays = estmdCBDeliveryDetails.isCrossedMaxDeliveryDays();
 
-			if (isProcessingLag && null != estmdProcessingDeliveryDetails) {
+			if (isProcessLagIntermediary && null != estmdProcessingDeliveryDetails) {
 				processTimeAbs += estmdProcessingDeliveryDetails.getProcessTimeAbsoluteInSeconds();
 				processTimeOps += estmdProcessingDeliveryDetails.getProcessTimeOperationalInSeconds();
 				processTimeTotal += estmdProcessingDeliveryDetails.getProcessTimeTotalInSeconds();
@@ -388,7 +413,7 @@ public class RemitRoutingManager {
 				completionDateForeign = estmdProcessingDeliveryDetails.getCompletionDateForeign();
 			}
 
-			if (processLagForBene && null != estmdBeneDeliveryDetails) {
+			if (isProcessLagForBene && null != estmdBeneDeliveryDetails) {
 				processTimeAbs += estmdBeneDeliveryDetails.getProcessTimeAbsoluteInSeconds();
 				processTimeOps += estmdBeneDeliveryDetails.getProcessTimeOperationalInSeconds();
 				processTimeTotal += estmdBeneDeliveryDetails.getProcessTimeTotalInSeconds();
@@ -521,18 +546,38 @@ public class RemitRoutingManager {
 		return goodBusinessDeliveryDT;
 	}
 
+	private CountryMaster getCountryMaster(BigDecimal countryId) {
+		CountryMaster countryMaster = transientDataCache.getCountryById(countryId);
+
+		if (null == countryMaster) {
+			countryMaster = countryMasterDao.getByCountryId(countryId);
+			if (null != countryMaster) {
+				transientDataCache.setCountry(countryMaster);
+			}
+		}
+
+		return countryMaster;
+	}
+
 	private String getTimezoneForCountry(BigDecimal countryId) {
 
 		TimezoneMasterModel tzMasterModel = transientDataCache.getTimezoneForCountry(countryId);
 
 		if (null == tzMasterModel) {
-			tzMasterModel = tzDao.findByCountryId(countryId);
+
+			CountryMaster countryMaster = this.getCountryMaster(countryId);
+
+			if (null == countryMaster || null == countryMaster.getTimezoneId()) {
+				return null;
+			}
+
+			tzMasterModel = tzDao.findById(countryMaster.getTimezoneId());
 
 			if (null == tzMasterModel) {
 				return null;
 			}
 
-			transientDataCache.setTimezoneForCountry(tzMasterModel.getCountryId(), tzMasterModel);
+			transientDataCache.setTimezoneForCountry(countryId, tzMasterModel);
 		}
 
 		return tzMasterModel.getTimezone();

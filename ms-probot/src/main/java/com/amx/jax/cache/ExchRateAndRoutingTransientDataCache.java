@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.amx.jax.pricer.dbmodel.CountryMaster;
 import com.amx.jax.pricer.dbmodel.HolidayListMasterModel;
 import com.amx.jax.pricer.dbmodel.OnlineMarginMarkup;
 import com.amx.jax.pricer.dbmodel.TimezoneMasterModel;
@@ -51,6 +52,8 @@ public class ExchRateAndRoutingTransientDataCache {
 	private OnlineMarginMarkup margin = null;
 
 	private final Map<BigDecimal, TimezoneMasterModel> countryTimezones = new HashMap<BigDecimal, TimezoneMasterModel>();
+
+	private final Map<BigDecimal, CountryMaster> countryMasters = new HashMap<BigDecimal, CountryMaster>();
 
 	private Map<String, Object> info = new HashMap<String, Object>();
 
@@ -292,6 +295,18 @@ public class ExchRateAndRoutingTransientDataCache {
 
 	public TimezoneMasterModel getTimezoneForCountry(BigDecimal countryId) {
 		return this.countryTimezones.get(countryId);
+	}
+
+	public CountryMaster getCountryById(BigDecimal countryId) {
+		return this.countryMasters.get(countryId);
+	}
+
+	public void setCountry(CountryMaster countryMaster) {
+
+		if (null == countryMaster || countryMaster.getCountryId() == null)
+			return;
+
+		this.countryMasters.put(countryMaster.getCountryId(), countryMaster);
 	}
 
 }
