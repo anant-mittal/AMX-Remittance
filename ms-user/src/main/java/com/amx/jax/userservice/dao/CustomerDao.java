@@ -339,8 +339,8 @@ public class CustomerDao {
 		return output;
 	}
 
-	public List<Customer> findDuplicateCustomerRecords(BigDecimal nationality, Date dateOfBirth, String firstName,
-			String lastName) {
-		return repo.getCustomerForDuplicateCheck(nationality, dateOfBirth, firstName, lastName);
+	public List<Customer> findDuplicateCustomerRecords(BigDecimal nationality, String mobile, String email,
+			String firstName) {
+		return repo.getCustomerForDuplicateCheck(nationality, mobile, email, firstName);
 	}
 }

@@ -86,7 +86,6 @@ public class CustomerManagementClient implements ICustomerManagementController {
 	@Override
 	public AmxApiResponse<UploadCustomerKycResponse, Object> uploadCustomerKyc(UploadCustomerKycRequest uploadCustomerKycRequest) {
 		try {
-
 			return restService.ajax(appConfig.getJaxURL()).path(ApiPath.UPLOAD_CUSTOMER_KYC).meta(new JaxMetaInfo()).post(uploadCustomerKycRequest)
 					.as(new ParameterizedTypeReference<AmxApiResponse<UploadCustomerKycResponse, Object>>() {
 					});
@@ -99,8 +98,15 @@ public class CustomerManagementClient implements ICustomerManagementController {
 
 	@Override
 	public AmxApiResponse<DuplicateCustomerDto, Object> checkForDuplicateCustomer(CustomerPersonalDetail customerPersonalDetail) {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			return restService.ajax(appConfig.getJaxURL()).path(ApiPath.DUPLICATE_CUSTOMER_CHECK).meta(new JaxMetaInfo()).post(customerPersonalDetail)
+					.as(new ParameterizedTypeReference<AmxApiResponse<DuplicateCustomerDto, Object>>() {
+					});
+		} catch (Exception ae) {
+
+			LOGGER.error("exception in checkForDuplicateCustomer : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}
 	}
 
 }

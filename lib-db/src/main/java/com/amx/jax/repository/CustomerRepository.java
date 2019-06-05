@@ -1,10 +1,7 @@
 package com.amx.jax.repository;
 
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.List;
-
-import javax.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -95,8 +92,8 @@ public interface CustomerRepository extends CrudRepository<Customer, BigDecimal>
 	@Query("select c from Customer c where customerId =?1")
 	public Customer getNationalityValue(BigDecimal customerId);
 
-	@Query(value = "select * from fs_customer where nationality=?1 and trunc(date_of_birth) = trunc(?2) and first_name = ?3 and last_name =?4 order by last_updated", nativeQuery = true)
-	public List<Customer> getCustomerForDuplicateCheck(BigDecimal nationality, Date dateOfBirth, String firstName,
-			String lastName);
+	@Query(value = "select * from fs_customer where nationality=?1 and mobile=?2 and email = ?3 and first_name = ?4  and isactive='Y' order by last_updated", nativeQuery = true)
+	public List<Customer> getCustomerForDuplicateCheck(BigDecimal nationality, String mobile, String email,
+			String firstName);
 
 }

@@ -2,8 +2,10 @@ package com.amx.jax.customer.service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Set;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
@@ -53,7 +55,7 @@ public class CustomerService extends AbstractService {
 	@Autowired
 	UserService userService;
 	@Autowired
-	ArticleDao articleDao ;
+	ArticleDao articleDao;
 	@Autowired
 	CountryService countryService;
 	@Autowired
@@ -62,7 +64,7 @@ public class CustomerService extends AbstractService {
 	OnlineCustomerManager onlineCustomerManager;
 	@Autowired
 	CustomerDao customerDao;
-	
+
 	static final Logger LOGGER = LoggerFactory.getLogger(CustomerService.class);
 
 	public ApiResponse getCustomer(BigDecimal countryId, String userId) {
@@ -109,27 +111,24 @@ public class CustomerService extends AbstractService {
 		return userService.getCustomerDetails(loginId);
 	}
 
-	public Customer getCustomerDetailsByCustomerId(BigDecimal customerId){
-		
+	public Customer getCustomerDetailsByCustomerId(BigDecimal customerId) {
+
 		Customer customerDetails = customerRepository.getCustomerDetailsByCustomerId(customerId);
 
 		return customerDetails;
 	}
+
 	public CustomerContactDto getCustomerContactDto(BigDecimal customerId) {
 		CustomerContactDto customerContactDto = new CustomerContactDto();
-		List<ContactDetail> customerContacts = contactDetailRepository
-				.getContactDetailForLocal(new Customer(customerId));
+		List<ContactDetail> customerContacts = contactDetailRepository.getContactDetailForLocal(new Customer(customerId));
 		ContactDetail customerContact = customerContacts.get(0);
 		customerContactDto.setBlock(customerContact.getBlock());
 		customerContactDto.setBuildingNo(customerContact.getBuildingNo());
 		customerContactDto.setCityName(customerContact.getFsCityMaster().getFsCityMasterDescs().get(0).getCityName());
-		customerContactDto
-				.setCountryName(customerContact.getFsCountryMaster().getFsCountryMasterDescs().get(0).getCountryName());
-		customerContactDto
-				.setDistrict(customerContact.getFsDistrictMaster().getFsDistrictMasterDescs().get(0).getDistrict());
+		customerContactDto.setCountryName(customerContact.getFsCountryMaster().getFsCountryMasterDescs().get(0).getCountryName());
+		customerContactDto.setDistrict(customerContact.getFsDistrictMaster().getFsDistrictMasterDescs().get(0).getDistrict());
 		customerContactDto.setFlat(customerContact.getFlat());
-		customerContactDto
-				.setStateName(customerContact.getFsStateMaster().getFsStateMasterDescs().get(0).getStateName());
+		customerContactDto.setStateName(customerContact.getFsStateMaster().getFsStateMasterDescs().get(0).getStateName());
 		customerContactDto.setStreet(customerContact.getStreet());
 		return customerContactDto;
 	}
@@ -138,8 +137,7 @@ public class CustomerService extends AbstractService {
 		Customer customer = customerRepository.findOne(customerId);
 		CustomerDto customerDto = new CustomerDto();
 		if (customer.getNationalityId() != null) {
-			customerDto.setNationality(countryService
-					.getCountryMasterDesc(customer.getNationalityId(), metaData.getLanguageId()).getNationality());
+			customerDto.setNationality(countryService.getCountryMasterDesc(customer.getNationalityId(), metaData.getLanguageId()).getNationality());
 		}
 		try {
 			BeanUtils.copyProperties(customerDto, customer);
@@ -157,8 +155,7 @@ public class CustomerService extends AbstractService {
 		} catch (Exception e) {
 
 		}
-		customerIdProofDto
-				.setIdentityType(bizcomponentDao.getBizComponentDataDescByComponmentId(identityTypeId).getDataDesc());
+		customerIdProofDto.setIdentityType(bizcomponentDao.getBizComponentDataDescByComponmentId(identityTypeId).getDataDesc());
 		return customerIdProofDto;
 	}
 
@@ -170,21 +167,19 @@ public class CustomerService extends AbstractService {
 		dto.setMonthlyIncome(articleDao.getMonthlyIncomeRange(customer));
 		return dto;
 	}
-	
 
 	private String getTitleDescription(String titleBizComponentId) {
 		String titleDescription = null;
 		if (titleBizComponentId != null) {
 			try {
-				titleDescription = bizcomponentDao.getBizComponentDataDescByComponmentId(titleBizComponentId)
-						.getDataDesc();
+				titleDescription = bizcomponentDao.getBizComponentDataDescByComponmentId(titleBizComponentId).getDataDesc();
 			} catch (NumberFormatException e) {
 				LOGGER.error("Invalid title in fs_customer table value: {}", titleBizComponentId);
 			}
 		}
 		return titleDescription;
 	}
-	
+
 	public AmxApiResponse<BoolRespModel, Object> saveCustomerSecQuestions(List<SecurityQuestionModel> securityQuestions) {
 		onlineCustomerManager.saveCustomerSecQuestions(securityQuestions);
 		BoolRespModel boolRespModel = new BoolRespModel();
@@ -193,19 +188,20 @@ public class CustomerService extends AbstractService {
 	}
 
 	public List<DuplicateCustomerDto> checkForDuplicateCustomer(CustomerPersonalDetail customerPersonalDetail) {
-		List<DuplicateCustomerDto> duplicateCustomerDtoList = new ArrayList<>();
-		List<Customer> duplicateRecords = customerDao.findDuplicateCustomerRecords(customerPersonalDetail.getNationalityId(), customerPersonalDetail.getDateOfBirth(), customerPersonalDetail.getFirstName(), 
-				customerPersonalDetail.getLastName());
-		if(CollectionUtils.isNotEmpty(duplicateRecords)) {
+		Set<DuplicateCustomerDto> duplicateCustomerDtoSet = new HashSet<>();
+		List<Customer> duplicateRecords = customerDao.findDuplicateCustomerRecords(customerPersonalDetail.getNationalityId(),
+				customerPersonalDetail.getMobile(), customerPersonalDetail.getEmail(), customerPersonalDetail.getFirstName());
+
+		if (CollectionUtils.isNotEmpty(duplicateRecords)) {
 			ListIterator<Customer> itr = duplicateRecords.listIterator();
-			while(itr.hasNext()) {
+			while (itr.hasNext()) {
 				Customer customer = itr.next();
-				duplicateCustomerDtoList.add(convert(customer));
+				duplicateCustomerDtoSet.add(convert(customer));
 			}
 		}
-		return duplicateCustomerDtoList;
+		return new ArrayList<>(duplicateCustomerDtoSet);
 	}
-	
+
 	DuplicateCustomerDto convert(Customer customer) {
 		DuplicateCustomerDto dto = new DuplicateCustomerDto();
 		dto.setDateOfBirth(customer.getDateOfBirth());
@@ -214,6 +210,7 @@ public class CustomerService extends AbstractService {
 		dto.setIdentityTypeId(customer.getIdentityTypeId());
 		dto.setLastName(customer.getLastName());
 		dto.setNationalityId(customer.getNationalityId());
+		dto.setCustomerId(customer.getCustomerId());
 		return dto;
 	}
 
