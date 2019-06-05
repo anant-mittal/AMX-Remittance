@@ -10,14 +10,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.amx.jax.customer.manager.CustomerContactVerificationManager;
-import com.amx.jax.db.utils.EntityDtoUtil;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerContactVerification;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.dict.Language;
 import com.amx.jax.event.AmxTunnelEvents;
-import com.amx.jax.model.response.customer.CustomerDto;
-import com.amx.jax.postman.client.PostManClient;
+import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.PushMessage;
@@ -36,7 +34,7 @@ import com.amx.utils.JsonUtil;
 public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 
 	@Autowired
-	PostManClient postManClient;
+	PostManService postManService;
 
 	@Autowired
 	private PushNotifyClient pushNotifyClient;
@@ -101,6 +99,7 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 		if (!ArgUtil.isEmpty(emailId)) {
 			
 			if (c.getEmailVerified() != AmxDBConstants.Status.Y) {
+				
 				CustomerContactVerification x = customerContactVerificationManager.create(c, ContactType.EMAIL);
 				modeldata.put("customer", c);
 				modeldata.put("verifylink", x);
@@ -135,7 +134,7 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 			default:
 				break;
 			}
-			postManClient.sendEmailAsync(email);
+			postManService.sendEmailAsync(email);
 		}
 
 		if (!ArgUtil.isEmpty(smsNo)) {
@@ -167,6 +166,7 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 				default:
 					break;
 				}
+				
 
 			}
 		}
