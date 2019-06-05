@@ -1032,10 +1032,14 @@ public class RemittanceTransactionManager {
 		}
 		JaxTransactionStatus status = getJaxTransactionStatus(application);
 		model.setStatus(status);
-		PromotionDto obj = dailyPromotionManager.getWanitBuyitMsg(remittanceTransaction);
-		if(obj != null) {
-			model.setPromotionDto(obj);
+		
+		if (remittanceTransaction != null) {
+			PromotionDto obj = dailyPromotionManager.getWanitBuyitMsg(remittanceTransaction);
+			if(obj != null) {
+				model.setPromotionDto(obj);
+			}
 		}
+		
 		model.setErrorCategory(application.getErrorCategory());
 		model.setErrorMessage(application.getErrorMessage());
 		return model;
