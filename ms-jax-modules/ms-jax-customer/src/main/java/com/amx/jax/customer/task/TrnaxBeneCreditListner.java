@@ -64,7 +64,7 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 
 	@Override
 	public void onMessage(String channel, DBEvent event) {
-		LOGGER.debug("======onMessage1==={} ====  {}", channel, JsonUtil.toJson(event));
+		LOGGER.info("======onMessage1==={} ====  {}", channel, JsonUtil.toJson(event));
 		String emailId = ArgUtil.parseAsString(event.getData().get(EMAIL));
 		String smsNo = ArgUtil.parseAsString(event.getData().get(MOBILE));
 		String custNname = ArgUtil.parseAsString(event.getData().get(CUST_NAME));
@@ -92,6 +92,11 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 		modeldata.put("refno", trnxRef);
 		modeldata.put("date", trnxDate);
 		modeldata.put("currency", curName);
+		
+		for (Map.Entry<String, Object> entry : modeldata.entrySet()) {
+			LOGGER.info("KeyModel = " + entry.getKey() + ", ValueModel = " + entry.getValue());
+		}
+           
 		
 		wrapper.put("data", modeldata);
 		
