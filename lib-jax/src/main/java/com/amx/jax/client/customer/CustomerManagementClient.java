@@ -19,6 +19,7 @@ import com.amx.jax.customer.ICustomerManagementController;
 import com.amx.jax.exception.JaxSystemError;
 import com.amx.jax.model.customer.CreateCustomerInfoRequest;
 import com.amx.jax.model.customer.DuplicateCustomerDto;
+import com.amx.jax.model.customer.IdentityTypeDto;
 import com.amx.jax.model.customer.UploadCustomerKycRequest;
 import com.amx.jax.model.customer.UploadCustomerKycResponse;
 import com.amx.jax.model.request.CustomerPersonalDetail;
@@ -103,8 +104,19 @@ public class CustomerManagementClient implements ICustomerManagementController {
 					.as(new ParameterizedTypeReference<AmxApiResponse<DuplicateCustomerDto, Object>>() {
 					});
 		} catch (Exception ae) {
-
 			LOGGER.error("exception in checkForDuplicateCustomer : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}
+	}
+
+	@Override
+	public AmxApiResponse<IdentityTypeDto, Object> getIdentityTypes() {
+		try {
+			return restService.ajax(appConfig.getJaxURL()).path(ApiPath.GET_IDENTITY_TPYES).meta(new JaxMetaInfo()).get()
+					.as(new ParameterizedTypeReference<AmxApiResponse<IdentityTypeDto, Object>>() {
+					});
+		} catch (Exception ae) {
+			LOGGER.error("exception in getIdentityTypes : ", ae);
 			return JaxSystemError.evaluate(ae);
 		}
 	}

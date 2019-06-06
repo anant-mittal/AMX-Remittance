@@ -23,6 +23,7 @@ import com.amx.jax.customer.manager.CustomerManagementManager;
 import com.amx.jax.customer.service.CustomerService;
 import com.amx.jax.model.customer.CreateCustomerInfoRequest;
 import com.amx.jax.model.customer.DuplicateCustomerDto;
+import com.amx.jax.model.customer.IdentityTypeDto;
 import com.amx.jax.model.customer.UploadCustomerKycRequest;
 import com.amx.jax.model.customer.UploadCustomerKycResponse;
 import com.amx.jax.model.request.CustomerPersonalDetail;
@@ -74,6 +75,13 @@ public class CustomerManagementController implements ICustomerManagementControll
 		log.debug("request checkForDuplicateCustomer {}", customerPersonalDetail);
 		List<DuplicateCustomerDto> duplicateCustomerDtoList = customerService.checkForDuplicateCustomer(customerPersonalDetail);
 		return AmxApiResponse.buildList(duplicateCustomerDtoList);
+	}
+
+	@Override
+	@RequestMapping(path = GET_IDENTITY_TPYES, method = { RequestMethod.GET })
+	public AmxApiResponse<IdentityTypeDto, Object> getIdentityTypes() {
+		List<IdentityTypeDto> identityTypesDto = customerService.getIdentityTypes();
+		return AmxApiResponse.buildList(identityTypesDto);
 	}
 
 }

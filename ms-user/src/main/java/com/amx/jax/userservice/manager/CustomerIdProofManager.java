@@ -172,6 +172,9 @@ public class CustomerIdProofManager {
 			customer.setIsActive(ConstantDocument.Yes);
 			customerDao.saveCustomer(customer);
 		}
-
+	}
+	
+	public List<IdentityTypeMaster> getActiveIdentityTypes() {
+		return identityTypeMasterRepository.findByIsActive(ConstantDocument.Yes);
 	}
 }

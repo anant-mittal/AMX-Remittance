@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
@@ -24,8 +25,10 @@ import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dbmodel.ContactDetail;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerIdProof;
+import com.amx.jax.dbmodel.IdentityTypeMaster;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.customer.DuplicateCustomerDto;
+import com.amx.jax.model.customer.IdentityTypeDto;
 import com.amx.jax.model.customer.SecurityQuestionModel;
 import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.model.response.customer.CustomerContactDto;
@@ -38,6 +41,7 @@ import com.amx.jax.service.CountryService;
 import com.amx.jax.services.AbstractService;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.dao.CustomerIdProofDao;
+import com.amx.jax.userservice.manager.CustomerIdProofManager;
 import com.amx.jax.userservice.manager.OnlineCustomerManager;
 import com.amx.jax.userservice.service.UserService;
 
@@ -64,6 +68,8 @@ public class CustomerService extends AbstractService {
 	OnlineCustomerManager onlineCustomerManager;
 	@Autowired
 	CustomerDao customerDao;
+	@Autowired
+	CustomerIdProofManager customerIdProofManager;
 
 	static final Logger LOGGER = LoggerFactory.getLogger(CustomerService.class);
 
@@ -212,6 +218,11 @@ public class CustomerService extends AbstractService {
 		dto.setNationalityId(customer.getNationalityId());
 		dto.setCustomerId(customer.getCustomerId());
 		return dto;
+	}
+
+	public List<IdentityTypeDto> getIdentityTypes() {
+		List<IdentityTypeMaster> identityTypes = customerIdProofManager.getActiveIdentityTypes();
+		return identityTypes.stream().map(i -> new IdentityTypeDto(i.getBusinessComponentId(), i.getIdentityType())).collect(Collectors.toList());
 	}
 
 }
