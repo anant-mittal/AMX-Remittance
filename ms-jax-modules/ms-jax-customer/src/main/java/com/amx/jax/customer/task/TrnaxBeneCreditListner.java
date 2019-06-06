@@ -102,15 +102,18 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 		
 
 		if (!ArgUtil.isEmpty(emailId)) {
-			
+
 			if (c.getEmailVerified() != AmxDBConstants.Status.Y) {
-				
+
 				CustomerContactVerification x = customerContactVerificationManager.create(c, ContactType.EMAIL);
 				modeldata.put("customer", c);
 				modeldata.put("verifylink", x);
 				LOGGER.info("Model data is ", modeldata.get("verifylink"));
 				LOGGER.info("Customer value is ", modeldata.get("customer"));
 
+			} else {
+				modeldata.put("customer", null);
+				modeldata.put("verifylink", null);
 			}
 
 			Email email = new Email();
@@ -147,33 +150,36 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 				CustomerContactVerification x = customerContactVerificationManager.create(c, ContactType.SMS);
 				modeldata.put("customer", c);
 				modeldata.put("verifylink", x);
-				SMS sms = new SMS();
-				if ("2".equals(langId)) {
-					sms.setLang(Language.AR);
-					modeldata.put("languageid", Language.AR);
-				} else {
-					sms.setLang(Language.EN);
-					modeldata.put("languageid", Language.EN);
-				}
-				sms.addTo(c.getMobile());
-				sms.setModel(wrapper);
-				sms.setSubject("Transaction Credit Notification");
-				switch (type) {
-				case "CASH":
-					sms.setITemplate(TemplatesMX.CASH);
-					break;
-				case "TT":
-					sms.setITemplate(TemplatesMX.TT);
-					break;
-				case "EFT":
-					sms.setITemplate(TemplatesMX.EFT);
-					break;
-				default:
-					break;
-				}
-				
-
+			} else {
+				modeldata.put("customer", null);
+				modeldata.put("verifylink", null);
 			}
+			SMS sms = new SMS();
+			if ("2".equals(langId)) {
+				sms.setLang(Language.AR);
+				modeldata.put("languageid", Language.AR);
+			} else {
+				sms.setLang(Language.EN);
+				modeldata.put("languageid", Language.EN);
+			}
+			sms.addTo(c.getMobile());
+			sms.setModel(wrapper);
+			sms.setSubject("Transaction Credit Notification");
+			switch (type) {
+			case "CASH":
+				sms.setITemplate(TemplatesMX.CASH);
+				break;
+			case "TT":
+				sms.setITemplate(TemplatesMX.TT);
+				break;
+			case "EFT":
+				sms.setITemplate(TemplatesMX.EFT);
+				break;
+			default:
+				break;
+			}
+			postManService.sendSMSAsync(sms);
+
 		}
 
 		if (!ArgUtil.isEmpty(custId)) {
