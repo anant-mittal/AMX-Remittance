@@ -871,33 +871,33 @@
                             </staticText>
                             
                             <ellipse>
-                                <reportElement x="350" y="0" width="140" height="80" forecolor="#333333" backcolor="#333333"/>
+                                <reportElement x="345" y="0" width="150" height="80" forecolor="#333333" backcolor="#333333"/>
                                 <graphicElement>
                                 <pen lineWidth="2"/>
                                 </graphicElement>
                             </ellipse>
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="360" y="18" width="120" height="30"
+                                <reportElement x="356" y="16" width="128" height="30"
                                                 forecolor="#ffffff"
                                                 isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Center">
-                                    <font fontName="Arial" size="10" isItalic="true"
+                                    <font fontName="Arial" size="9" isItalic="true"
                                             pdfFontName="fonts/all/arial.ttf"/>
                                     <paragraph lineSpacing="AtLeast" lineSpacingSize="11" leftIndent="5"/>
 
                                 </textElement>  
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA["You Saved "+ $F{tranx}.get("amountSaved")]]>
+                                    <![CDATA[$F{tranx}.getValue("amountSaved","You Saved ") + $F{tranx}.get("amountSaved")]]>
                                 </textFieldExpression>
                             </textField>
 
 
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="360" y="40" width="120" height="30"
+                                <reportElement x="356" y="40" width="128" height="30"
                                                 forecolor="#ffffff"
                                                 isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Center">
-                                    <font fontName="Arial" size="10" isItalic="true"
+                                    <font fontName="Arial" size="9" isItalic="true"
                                             pdfFontName="fonts/all/arial.ttf"/>
                                     <paragraph lineSpacing="AtLeast" lineSpacingSize="11" leftIndent="5"/>
 
