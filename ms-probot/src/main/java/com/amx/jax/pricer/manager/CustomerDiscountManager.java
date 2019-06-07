@@ -181,7 +181,7 @@ public class CustomerDiscountManager {
 		}
 
 		List<PipsMaster> pipsList = pipsMasterDao.getPipsForFcCurAndBank(pricingRequestDTO.getForeignCurrencyId(),
-				OnlineCountryBranchId, pricingRequestDTO.getForeignCountryId(), validBankIds);
+				OnlineCountryBranchId, validBankIds);
 
 		Map<Long, TreeMap<BigDecimal, PipsMaster>> bankAmountSlabDiscounts = new HashMap<Long, TreeMap<BigDecimal, PipsMaster>>();
 
