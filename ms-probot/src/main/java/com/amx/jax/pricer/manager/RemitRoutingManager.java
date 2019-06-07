@@ -678,14 +678,14 @@ public class RemitRoutingManager {
 					return estimatedDeliveryDetails;
 
 				} else if (workHrsData.isBeforeWorkingHours(dayOfWeek, hrMinIntVal)) {
-					int hrMinOffset = workHrsData.getWorkWindowTimeOffset(dayOfWeek, hrMinIntVal);
-					if (hrMinOffset >= 0) {
+					long offsetSecs = workHrsData.getWorkWindowTimeOffset(dayOfWeek, hrMinIntVal);
+					if (offsetSecs >= 0) {
 
-						int offsetHr = workHrsData.extractHour(hrMinOffset);
-						int offsetMin = workHrsData.extractMinute(hrMinOffset);
-						long offsetSecs = 60 * 60 * offsetHr + 60 * offsetMin;
+						// int offsetHr = workHrsData.extractHour(hrMinOffset);
+						// int offsetMin = workHrsData.extractMinute(hrMinOffset);
+						// long offsetSecs = 60 * 60 * offsetHr + 60 * offsetMin;
 
-						estimatedGoodBusinessDay = estimatedGoodBusinessDay.plusHours(offsetHr).plusMinutes(offsetMin);
+						estimatedGoodBusinessDay = estimatedGoodBusinessDay.plusSeconds(offsetSecs);
 
 						estimatedDeliveryDetails.addToProcessTimeOperational(offsetSecs);
 						estimatedDeliveryDetails.setStartDateForeign(estimatedGoodBusinessDay);

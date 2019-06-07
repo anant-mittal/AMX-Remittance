@@ -22,6 +22,10 @@ public class WorkingHoursData {
 	// Processing Time in Hours or Fraction of it.
 	private long totalProcessingTimeInMins;
 
+	private boolean isHoldaySnooze = false;
+
+	private int snoozeWakeUpInHrMin = 0;
+
 	public WorkingHoursData() {
 		Arrays.fill(workWeek, false);
 		Arrays.fill(workTimeFromInHrsMins, 0);
@@ -176,7 +180,39 @@ public class WorkingHoursData {
 		return true;
 	}
 
-	public int getWorkWindowTimeOffset(int dayOfWeekIndex, int hourMinNow) {
+	/*public int getSnoozeTimeOffset(int dayOfWeekIndex, int hourMinNow) {
+
+		int workWindowTimeOffset = this.getWorkWindowTimeOffset(dayOfWeekIndex, hourMinNow);
+
+		if (workWindowTimeOffset < 0) {
+			return workWindowTimeOffset;
+		} else {
+			// Case where current Hr Min time is either equals or before the work Start
+			// Time.
+
+			int curHr = extractHour(hourMinNow);
+			int curMin = extractMinute(hourMinNow);
+
+			int snoozeWakeUpHr = extractHour(snoozeWakeUpInHrMin);
+			int snoozeWakeUpMin = extractMinute(snoozeWakeUpInHrMin);
+
+			Date nowDate = DateUtil.getCurrentDateAtTime(curHr, curMin, 0, 0);
+
+			Date snoozeWakeUpDate = DateUtil.getCurrentDateAtTime(snoozeWakeUpHr, snoozeWakeUpMin, 0, 0);
+
+			long diffInMilliSec = workStartDate.getTime() - nowDate.getTime();
+
+			long diffHr = TimeUnit.HOURS.convert(diffInMilliSec, TimeUnit.MILLISECONDS);
+			long diffMin = TimeUnit.MINUTES.convert(diffInMilliSec, TimeUnit.MILLISECONDS) - (diffHr * 60);
+
+			return (int) (diffHr * 100 + diffMin);
+
+		}
+
+	}*/
+
+	public long getWorkWindowTimeOffset(int dayOfWeekIndex, int hourMinNow) {
+		
 		if (isWorkingDay(dayOfWeekIndex) && (hourMinNow >= 0 && hourMinNow <= 2400)
 				&& !isAfterWorkingHours(dayOfWeekIndex, hourMinNow)) {
 
@@ -199,10 +235,12 @@ public class WorkingHoursData {
 
 			long diffInMilliSec = workStartDate.getTime() - nowDate.getTime();
 
-			long diffHr = TimeUnit.HOURS.convert(diffInMilliSec, TimeUnit.MILLISECONDS);
-			long diffMin = TimeUnit.MINUTES.convert(diffInMilliSec, TimeUnit.MILLISECONDS) - (diffHr * 60);
+			// long diffHr = TimeUnit.HOURS.convert(diffInMilliSec, TimeUnit.MILLISECONDS);
+			// long diffMin = TimeUnit.MINUTES.convert(diffInMilliSec,
+			// TimeUnit.MILLISECONDS) - (diffHr * 60);
 
-			return (int) (diffHr * 100 + diffMin);
+			// return (int) (diffHr * 100 + diffMin);
+			return TimeUnit.SECONDS.convert(diffInMilliSec, TimeUnit.MILLISECONDS);
 
 		}
 
