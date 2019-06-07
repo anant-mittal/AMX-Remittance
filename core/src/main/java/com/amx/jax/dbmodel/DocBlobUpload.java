@@ -130,6 +130,12 @@ public class DocBlobUpload implements java.io.Serializable {
 	public void setDocContent(Blob docContent) {
 		this.docContent = docContent;
 	}
+	@Override
+	public String toString() {
+		return "CustomerModel [docBlobId=" + docBlobID + ", cntryCd=" + cntryCd + ", seqno=" + seqNo + ", docFinYr="
+				+ docFinYear + ", docContent=" + docContent + ", createdBy=" + createdBy + ", createdOn="
+				+ createdOn + ", updatedDate=" + updatedDate + ", updatedBy=" + updateBy + "]";
+	}
 	
 
 }

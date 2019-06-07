@@ -107,6 +107,14 @@ public class RemittanceReportBean {
 	private String kwdAmount;
 	private String specialExchangeRate;
 	private String specialKwdAmount;
+	private String vatNumber;
+	private String vatDate;
+	private String vatType;
+	private BigDecimal vatPercentage;
+	private String vatAmount;
+	
+	private String customerVatNumber;
+	
 	private String amountSaved;
 	private String promotionMessage;
 	private Boolean isArabic;
@@ -796,6 +804,54 @@ public class RemittanceReportBean {
 		this.specialKwdAmount = specialKwdAmount;
 	}
 
+	public String getVatNumber() {
+		return vatNumber;
+	}
+
+	public void setVatNumber(String vatNumber) {
+		this.vatNumber = vatNumber;
+	}
+
+	public String getVatDate() {
+		return vatDate;
+	}
+
+	public String getVatType() {
+		return vatType;
+	}
+
+	public void setVatType(String vatType) {
+		this.vatType = vatType;
+	}
+
+	public BigDecimal getVatPercentage() {
+		return vatPercentage;
+	}
+
+	public void setVatPercentage(BigDecimal vatPercentage) {
+		this.vatPercentage = vatPercentage;
+	}
+
+	public String getVatAmount() {
+		return vatAmount;
+	}
+
+	public void setVatAmount(String vatAmount) {
+		this.vatAmount = vatAmount;
+	}
+
+	public String getCustomerVatNumber() {
+		return customerVatNumber;
+	}
+
+	public void setCustomerVatNumber(String customerVatNumber) {
+		this.customerVatNumber = customerVatNumber;
+	}
+
+	public void setVatDate(String vatDate) {
+		this.vatDate = vatDate;
+	}	
+	
 	public String getAmountSaved() {
 		return amountSaved;
 	}
