@@ -263,7 +263,7 @@ public class RemitRoutingManager {
 					transientDataCache.getTrnxBeginTime(), timezone, oneMatrix.getWeekFrom(), oneMatrix.getWeekTo(),
 					oneMatrix.getWeekHoursFrom(), oneMatrix.getWeekHoursTo(), oneMatrix.getWeekendFrom(),
 					oneMatrix.getWeekendTo(), oneMatrix.getWeekendHoursFrom(), oneMatrix.getWeekendHoursTo(),
-					oneMatrix.getDelievryMinutes(), noHolidayLag, routingCountryId, preDelay);
+					oneMatrix.getDelievryMinutes(), noHolidayLag, routingCountryId, preDelay, false, BigDecimal.ZERO);
 
 			routingDetails.setRoutingBankDeliveryDetails(estmdCBDeliveryDetails);
 
@@ -306,13 +306,14 @@ public class RemitRoutingManager {
 						: BigDecimal.ZERO;
 
 				// Default is 24 -- if Null
-				BigDecimal processingStopTime = null != countryMaster.getWorkTimeTo() ? countryMaster.getWorkTimeTo()
-						: BigDecimal.valueOf(24);
+				// BigDecimal processingStopTime = null != countryMaster.getWorkTimeTo() ?
+				// countryMaster.getWorkTimeTo()
+				// : BigDecimal.valueOf(24);
 
 				estmdProcessingDeliveryDetails = this.getEstimatedBlockDelivery(processingStartTT, pTimezone,
-						BigDecimal.ONE, new BigDecimal(7), processingStartTime, processingStopTime, BigDecimal.ZERO,
+						BigDecimal.ONE, new BigDecimal(7), BigDecimal.ZERO, BigDecimal.valueOf(24), BigDecimal.ZERO,
 						BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, Boolean.FALSE,
-						processingCountryId, 0);
+						processingCountryId, 0, true, processingStartTime);
 
 				routingDetails.setProcessingDeliveryDetails(estmdProcessingDeliveryDetails);
 
@@ -363,16 +364,19 @@ public class RemitRoutingManager {
 				CountryMaster countryMaster = getCountryMaster(oneMatrix.getBeneCountryId());
 
 				// Default is Zero -- if Null
-				BigDecimal beneStartTime = null != countryMaster.getWorkTimeFrom() ? countryMaster.getWorkTimeFrom()
+				BigDecimal beneProcessStartTime = null != countryMaster.getWorkTimeFrom()
+						? countryMaster.getWorkTimeFrom()
 						: BigDecimal.ZERO;
 
 				// Default is 24 -- if Null
-				BigDecimal beneStopTime = null != countryMaster.getWorkTimeTo() ? countryMaster.getWorkTimeTo()
-						: BigDecimal.valueOf(24);
+				// BigDecimal beneProcessStopTime = null != countryMaster.getWorkTimeTo() ?
+				// countryMaster.getWorkTimeTo()
+				// : BigDecimal.valueOf(24);
 
 				estmdBeneDeliveryDetails = this.getEstimatedBlockDelivery(beneStartTT, beneTimezone, BigDecimal.ONE,
-						new BigDecimal(7), beneStartTime, beneStopTime, BigDecimal.ZERO, BigDecimal.ZERO,
-						BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, Boolean.FALSE, beneCountryId, 0);
+						new BigDecimal(7), BigDecimal.ZERO, BigDecimal.valueOf(24), BigDecimal.ZERO, BigDecimal.ZERO,
+						BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, Boolean.FALSE, beneCountryId, 0, true,
+						beneProcessStartTime);
 
 				routingDetails.setBeneBankDeliveryDetails(estmdBeneDeliveryDetails);
 
@@ -500,7 +504,8 @@ public class RemitRoutingManager {
 	private EstimatedDeliveryDetails getEstimatedBlockDelivery(long startTT, String timezone, BigDecimal weekFrom,
 			BigDecimal weekTo, BigDecimal weekHrsFrom, BigDecimal weekHrsTo, BigDecimal weekEndFrom,
 			BigDecimal weekEndTo, BigDecimal weekEndHrsFrom, BigDecimal weekEndHrsTo, BigDecimal processTimeInHrs,
-			boolean noHolidayLag, BigDecimal countryId, long preDelay) {
+			boolean noHolidayLag, BigDecimal countryId, long preDelay, boolean isHolidaySnooze,
+			BigDecimal snoozeWakeUpTime) {
 
 		// Get An instantaneous point on the time-line for EPOCH TT
 		Instant epochInstant = Instant.ofEpochMilli(startTT);
@@ -521,7 +526,8 @@ public class RemitRoutingManager {
 		}
 
 		WorkingHoursData workingHoursData = this.computeWorkMatrix(weekFrom, weekTo, weekHrsFrom, weekHrsTo,
-				weekEndFrom, weekEndTo, weekEndHrsFrom, weekEndHrsTo, processTimeInHrs);
+				weekEndFrom, weekEndTo, weekEndHrsFrom, weekEndHrsTo, processTimeInHrs, isHolidaySnooze,
+				snoozeWakeUpTime);
 
 		EstimatedDeliveryDetails goodBusinessDeliveryDT = this.getGoodBusinessDateTime(beginZonedDT, workingHoursData,
 				countryId, noHolidayLag, preDelay);
@@ -585,7 +591,8 @@ public class RemitRoutingManager {
 
 	private WorkingHoursData computeWorkMatrix(BigDecimal weekFrom, BigDecimal weekTo, BigDecimal weekHrsFrom,
 			BigDecimal weekHrsTo, BigDecimal weekEndFrom, BigDecimal weekEndTo, BigDecimal weekEndHrsFrom,
-			BigDecimal weekEndHrsTo, BigDecimal processTimeInHrs) {
+			BigDecimal weekEndHrsTo, BigDecimal processTimeInHrs, boolean isHolidaySnooze,
+			BigDecimal snoozeWakeUpTime) {
 
 		// Sanitize the data
 		weekFrom = ArgUtil.assignDefaultIfNull(weekFrom, BigDecimal.ZERO);
@@ -620,6 +627,14 @@ public class RemitRoutingManager {
 
 		workingHoursData.setTotalProcessingTimeInMins(procTimeInMin);
 
+		// Set Snooze
+		if (isHolidaySnooze) {
+			snoozeWakeUpTime = ArgUtil.assignDefaultIfNull(snoozeWakeUpTime, BigDecimal.ZERO);
+			workingHoursData.setHoldaySnooze(isHolidaySnooze);
+
+			workingHoursData.setSnoozeWakeUpInHrMin(snoozeWakeUpTime.doubleValue());
+		}
+
 		System.out.println(" Work Week matrix ==> " + JsonUtil.toJson(workingHoursData));
 
 		return workingHoursData;
@@ -644,6 +659,8 @@ public class RemitRoutingManager {
 		EstimatedDeliveryDetails estimatedDeliveryDetails = new EstimatedDeliveryDetails();
 
 		ZonedDateTime estimatedGoodBusinessDay = beginZonedDT;
+
+		boolean isSnoozed = false;
 
 		for (int i = 0; i < MAX_DELIVERY_ATTEMPT_DAYS; i++) {
 			/**
@@ -672,27 +689,44 @@ public class RemitRoutingManager {
 				// Current Date Time is Working
 				if (workHrsData.isWorkingDayTime(dayOfWeek, hrMinIntVal)) {
 
-					// No Holiday Lag or No Holiday on the Date
+					if (workHrsData.isHoldaySnooze() && isSnoozed) {
 
-					estimatedDeliveryDetails.setStartDateForeign(estimatedGoodBusinessDay);
+						long offsetSecs = workHrsData.getSnoozeTimeOffsetInSeconds(dayOfWeek, hrMinIntVal);
+						if (offsetSecs >= 0) {
+
+							estimatedGoodBusinessDay = estimatedGoodBusinessDay.plusSeconds(offsetSecs);
+
+							estimatedDeliveryDetails.addToProcessTimeOperational(offsetSecs);
+							estimatedDeliveryDetails.setStartDateForeign(estimatedGoodBusinessDay);
+
+						}
+
+					} else {
+						// No Holiday Lag or No Holiday on the Date
+						estimatedDeliveryDetails.setStartDateForeign(estimatedGoodBusinessDay);
+					}
+
 					return estimatedDeliveryDetails;
 
 				} else if (workHrsData.isBeforeWorkingHours(dayOfWeek, hrMinIntVal)) {
-					long offsetSecs = workHrsData.getWorkWindowTimeOffset(dayOfWeek, hrMinIntVal);
-					if (offsetSecs >= 0) {
 
-						// int offsetHr = workHrsData.extractHour(hrMinOffset);
-						// int offsetMin = workHrsData.extractMinute(hrMinOffset);
-						// long offsetSecs = 60 * 60 * offsetHr + 60 * offsetMin;
+					long offsetSecs;
 
-						estimatedGoodBusinessDay = estimatedGoodBusinessDay.plusSeconds(offsetSecs);
-
-						estimatedDeliveryDetails.addToProcessTimeOperational(offsetSecs);
-						estimatedDeliveryDetails.setStartDateForeign(estimatedGoodBusinessDay);
-
-						return estimatedDeliveryDetails;
-
+					if (workHrsData.isHoldaySnooze() && isSnoozed) {
+						offsetSecs = workHrsData.getSnoozeTimeOffsetInSeconds(dayOfWeek, hrMinIntVal);
+					} else {
+						offsetSecs = workHrsData.getWorkWindowOffsetInSeconds(dayOfWeek, hrMinIntVal);
 					}
+
+					if (offsetSecs >= 0) {
+						estimatedGoodBusinessDay = estimatedGoodBusinessDay.plusSeconds(offsetSecs);
+						estimatedDeliveryDetails.addToProcessTimeOperational(offsetSecs);
+					}
+
+					estimatedDeliveryDetails.setStartDateForeign(estimatedGoodBusinessDay);
+
+					return estimatedDeliveryDetails;
+
 				}
 
 				// Either Its not working Day or its After working Hours
@@ -730,6 +764,11 @@ public class RemitRoutingManager {
 
 				estimatedDeliveryDetails.addToProcessTimeTotal(timeDiffInSec);
 				estimatedDeliveryDetails.addToHolidayDelay(1);
+
+				// Set Holiday Snooze On if in Snooze Mode
+				if (workHrsData.isHoldaySnooze()) {
+					isSnoozed = true;
+				}
 
 			}
 

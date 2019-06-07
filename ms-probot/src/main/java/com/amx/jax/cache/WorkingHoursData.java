@@ -57,6 +57,25 @@ public class WorkingHoursData {
 		this.totalProcessingTimeInMins = totalProcessingTimeInMins;
 	}
 
+	public boolean isHoldaySnooze() {
+		return isHoldaySnooze;
+	}
+
+	public void setHoldaySnooze(boolean isHoldaySnooze) {
+		this.isHoldaySnooze = isHoldaySnooze;
+	}
+
+	public int getSnoozeWakeUpInHrMin() {
+		return snoozeWakeUpInHrMin;
+	}
+
+	public void setSnoozeWakeUpInHrMin(double snoozeWakeUpInHrMin) {
+
+		int parsedSnoozeWakeUpInHrMin = DateUtil.getHrMinIntVal(String.valueOf(snoozeWakeUpInHrMin));
+
+		this.snoozeWakeUpInHrMin = parsedSnoozeWakeUpInHrMin;
+	}
+
 	public boolean setWorkDayOnArabicDoW(int arabicDayOfWeek) {
 
 		int ISODayOfWeek = DateUtil.arabicToISODayOfWeek(arabicDayOfWeek);
@@ -180,12 +199,12 @@ public class WorkingHoursData {
 		return true;
 	}
 
-	/*public int getSnoozeTimeOffset(int dayOfWeekIndex, int hourMinNow) {
+	public long getSnoozeTimeOffsetInSeconds(int dayOfWeekIndex, int hourMinNow) {
 
-		int workWindowTimeOffset = this.getWorkWindowTimeOffset(dayOfWeekIndex, hourMinNow);
+		long workWindowOffsetSecs = this.getWorkWindowOffsetInSeconds(dayOfWeekIndex, hourMinNow);
 
-		if (workWindowTimeOffset < 0) {
-			return workWindowTimeOffset;
+		if (workWindowOffsetSecs < 0) {
+			return workWindowOffsetSecs;
 		} else {
 			// Case where current Hr Min time is either equals or before the work Start
 			// Time.
@@ -200,19 +219,17 @@ public class WorkingHoursData {
 
 			Date snoozeWakeUpDate = DateUtil.getCurrentDateAtTime(snoozeWakeUpHr, snoozeWakeUpMin, 0, 0);
 
-			long diffInMilliSec = workStartDate.getTime() - nowDate.getTime();
+			long snoozeWindowOffsetSecs = TimeUnit.SECONDS.convert(snoozeWakeUpDate.getTime() - nowDate.getTime(),
+					TimeUnit.SECONDS);
 
-			long diffHr = TimeUnit.HOURS.convert(diffInMilliSec, TimeUnit.MILLISECONDS);
-			long diffMin = TimeUnit.MINUTES.convert(diffInMilliSec, TimeUnit.MILLISECONDS) - (diffHr * 60);
-
-			return (int) (diffHr * 100 + diffMin);
+			return snoozeWindowOffsetSecs >= workWindowOffsetSecs ? snoozeWindowOffsetSecs : workWindowOffsetSecs;
 
 		}
 
-	}*/
+	}
 
-	public long getWorkWindowTimeOffset(int dayOfWeekIndex, int hourMinNow) {
-		
+	public long getWorkWindowOffsetInSeconds(int dayOfWeekIndex, int hourMinNow) {
+
 		if (isWorkingDay(dayOfWeekIndex) && (hourMinNow >= 0 && hourMinNow <= 2400)
 				&& !isAfterWorkingHours(dayOfWeekIndex, hourMinNow)) {
 
