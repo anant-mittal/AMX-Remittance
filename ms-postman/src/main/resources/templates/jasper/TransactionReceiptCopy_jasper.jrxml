@@ -225,7 +225,7 @@
                         </frame>
                         <!--##################Loyalty Point Expiring END####################-->
 
-                        <!--##################Insurance START####################-->
+                         <!--##################Insurance START####################-->
                         <frame>
                             <reportElement x="5" y="150" width="585" height="45"/>
                             <staticText>
@@ -234,14 +234,17 @@
                                 <textElement />
                                 <text><![CDATA[]]></text>
                             </staticText>
-                            <staticText>
-                                <reportElement x="0" y="3" width="185" height="45" isPrintWhenDetailOverflows="true"/>
-                                <textElement>
+                         
+                            <textField isStretchWithOverflow="true">
+                                <reportElement x="0" y="3" width="185" height="15" isPrintWhenDetailOverflows="true"/>
+                                <textElement textAlignment="Left">
                                     <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
-                                <text><![CDATA[Insurance]]></text>
-                            </staticText>
+                                <textFieldExpression class="java.lang.String">
+                                    <![CDATA[$F{tranx}.getValue("insurence1","Insurance")]]>
+                                </textFieldExpression>
+                            </textField>
 
                             <textField isStretchWithOverflow="true">
                                 <reportElement x="100" y="4" width="400" height="45"
@@ -252,7 +255,7 @@
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$F{tranx}.get("insurence1")]]>
+                                    <![CDATA[$F{tranx}.get("insurence1","")]]>
                                 </textFieldExpression>
                             </textField>
 
@@ -265,12 +268,13 @@
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$R{label.insurence1}]]>
-                                </textFieldExpression>
+                                   <![CDATA[$F{tranx}.getValue("insurence1", $R{label.insurence1})]]>
+                                 </textFieldExpression>
                             </textField>
 
                         </frame>
                         <!--##################ID Expiry Date END####################-->
+                       
 
                         <!--##################Location / Phone No START####################-->
                         <frame>
