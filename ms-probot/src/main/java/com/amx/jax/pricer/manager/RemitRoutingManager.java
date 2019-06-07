@@ -243,13 +243,16 @@ public class RemitRoutingManager {
 								+ exchangeRateAndRoutingRequest.toJSON());
 			}
 
-			boolean noHolidayLag = Boolean.FALSE;
+			/**
+			 * // Old Logic long remitModeId = oneMatrix.getRemittanceModeId().longValue();
+			 * 
+			 * if (remitModeId == 3 || remitModeId == 33) { noHolidayLag = true; }
+			 * 
+			 **/
 
-			long remitModeId = oneMatrix.getRemittanceModeId().longValue();
+			String holidayImpactStr = ArgUtil.assignDefaultIfNull(oneMatrix.getIsHolidayImpact(), "Y");
 
-			if (remitModeId == 3 || remitModeId == 33) {
-				noHolidayLag = true;
-			}
+			boolean noHolidayLag = com.amx.utils.StringUtils.anyMatch(holidayImpactStr, "N", "NO") ? false : true;
 
 			long preDelay = 0;
 

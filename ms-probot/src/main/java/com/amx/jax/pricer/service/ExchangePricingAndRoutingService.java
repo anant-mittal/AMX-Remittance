@@ -221,6 +221,9 @@ public class ExchangePricingAndRoutingService {
 		resp.setTrnxBeginTimeEpoch(exchRateAndRoutingTransientDataCache.getTrnxBeginTime());
 		resp.setBankDetails(exchRateAndRoutingTransientDataCache.getBankDetails());
 
+		// Customer Category:
+		resp.setCustomerCategory(exchRateAndRoutingTransientDataCache.getCustomerCategory());
+
 		TimezoneMasterModel localTz = exchRateAndRoutingTransientDataCache
 				.getTimezoneForCountry(exchangeRateAndRoutingRequest.getLocalCountryId());
 
