@@ -430,7 +430,7 @@
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$F{tranx}.get("pinNo","NA")]]>
+                                    <![CDATA[$F{tranx}.get("pinNo")]]>
                                 </textFieldExpression>
                             </textField>
 
