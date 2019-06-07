@@ -381,7 +381,7 @@
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$F{tranx}.get("receiptNo") + "                  done on " + $F{tranx}.get("date")]]>
+                                    <![CDATA[$F{tranx}.get("transactionNo") + "                  done on " + $F{tranx}.get("date")]]>
                                 </textFieldExpression>
                             </textField>
 
