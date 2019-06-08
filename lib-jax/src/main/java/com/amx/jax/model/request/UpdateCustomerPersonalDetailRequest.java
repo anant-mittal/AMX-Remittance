@@ -4,13 +4,13 @@ import java.util.Date;
 
 import com.amx.jax.swagger.ApiMockModelProperty;
 
-public class EditCustomerInfoRequest {
+public class UpdateCustomerPersonalDetailRequest {
 
-	@ApiMockModelProperty(example = "2018-09-12")
+	@ApiMockModelProperty(example = "2000-09-12")
 	Date dateOfBirth;
 
-	@ApiMockModelProperty(example = "Y")
-	String insurance;
+	@ApiMockModelProperty(example = "true")
+	Boolean insurance;
 
 	String customerSignature;
 
@@ -22,20 +22,20 @@ public class EditCustomerInfoRequest {
 		this.dateOfBirth = dateOfBirth;
 	}
 
-	public String getInsurance() {
-		return insurance;
-	}
-
-	public void setInsurance(String insurance) {
-		this.insurance = insurance;
-	}
-
 	public String getCustomerSignature() {
 		return customerSignature;
 	}
 
 	public void setCustomerSignature(String customerSignature) {
 		this.customerSignature = customerSignature;
+	}
+
+	public Boolean getInsurance() {
+		return insurance;
+	}
+
+	public void setInsurance(Boolean insurance) {
+		this.insurance = insurance;
 	}
 
 }

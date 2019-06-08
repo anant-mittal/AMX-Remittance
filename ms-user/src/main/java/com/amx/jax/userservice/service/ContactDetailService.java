@@ -106,4 +106,8 @@ public class ContactDetailService {
 		}
 		return localAddress;
 	}
+
+	public void saveContactDetails(ContactDetail contactDetail) {
+		contactDetailRepository.save(contactDetail);
+	}
 }
