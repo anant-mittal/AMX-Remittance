@@ -2,6 +2,7 @@
 package com.amx.jax.ui.api;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -33,6 +34,7 @@ import com.amx.jax.exception.ApiHttpExceptions.ApiStatusCodes;
 import com.amx.jax.http.ApiRequest;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.http.RequestType;
+import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.rest.RestService;
 import com.amx.jax.swagger.ApiStatusBuilder.ApiStatus;
@@ -254,5 +256,37 @@ public class HomeController {
 		model.addAttribute("verId", verId);
 		model.addAttribute("verCode", verCode);
 		return "verify";
+	}
+
+	@ApiJaxStatus({ JaxError.CUSTOMER_NOT_FOUND, JaxError.INVALID_OTP, JaxError.ENTITY_INVALID,
+			JaxError.ENTITY_EXPIRED })
+	@ApiStatus({ ApiStatusCodes.PARAM_MISSING })
+	@RequestMapping(value = { "/pub/rating/{prodType}/{trnxId}/{verCode}" },
+			method = { RequestMethod.GET }, produces = {
+					CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE })
+	@ResponseBody
+	public Map<String, Object> rating(
+			@PathVariable Products prodType, @PathVariable BigDecimal trnxId, @PathVariable String verCode) {
+		String errorCode = null;
+		String errorMessage = null;
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("trnxId", trnxId);
+		map.put("errorCode", errorCode);
+		map.put("errorMessage", errorMessage);
+		map.put("prodType", prodType);
+		map.put("verCode", verCode);
+		return map;
+	}
+
+	@ApiJaxStatus({ JaxError.CUSTOMER_NOT_FOUND, JaxError.INVALID_OTP, JaxError.ENTITY_INVALID,
+			JaxError.ENTITY_EXPIRED })
+	@ApiStatus({ ApiStatusCodes.PARAM_MISSING })
+	@RequestMapping(value = { "/pub/rating/{prodType}/{trnxId}/{verCode}/*" },
+			method = { RequestMethod.GET })
+	public String rating(Model model,
+			@PathVariable Products prodType, @PathVariable BigDecimal trnxId, @PathVariable String verCode) {
+		Map<String, Object> map = rating(prodType, trnxId, verCode);
+		model.addAttribute("ratingData", (map));
+		return "rating";
 	}
 }

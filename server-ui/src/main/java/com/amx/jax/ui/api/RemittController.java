@@ -424,7 +424,7 @@ public class RemittController {
 		return wrapper;
 	}
 
-	@RequestMapping(value = "/api/remitt/tranx/rating", method = { RequestMethod.POST })
+	@RequestMapping(value = { "/api/remitt/tranx/rating", "/pub/remitt/tranx/rating" }, method = { RequestMethod.POST })
 	public ResponseWrapper<CustomerRatingDTO> appStatus(@RequestBody CustomerRatingDTO customerRatingDTO) {
 		return ResponseWrapper.build(jaxService.setDefaults().getRemitClient().saveCustomerRating(customerRatingDTO));
 	}

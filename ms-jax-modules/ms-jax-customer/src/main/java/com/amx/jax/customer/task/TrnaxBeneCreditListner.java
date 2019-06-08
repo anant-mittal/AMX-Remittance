@@ -28,6 +28,7 @@ import com.amx.jax.tunnel.TunnelEventMapping;
 import com.amx.jax.tunnel.TunnelEventXchange;
 import com.amx.jax.util.AmxDBConstants;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.CryptoUtil.HashBuilder;
 import com.amx.utils.JsonUtil;
 
 @TunnelEventMapping(topic = AmxTunnelEvents.Names.TRNX_BENE_CREDIT, scheme = TunnelEventXchange.TASK_WORKER)
@@ -38,13 +39,12 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 
 	@Autowired
 	private PushNotifyClient pushNotifyClient;
-	
+
 	@Autowired
 	private CustomerContactVerificationManager customerContactVerificationManager;
-	
+
 	@Autowired
 	CustomerRepository customerRepository;
-
 
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
@@ -53,6 +53,7 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 	private static final String MOBILE = "MOBILE";
 	private static final String CUST_NAME = "CUST_NAME";
 	private static final String CUST_ID = "CUST_ID";
+	private static final String TRANX_ID = "TRANX_ID";
 	private static final String TRNXAMT = "TRNXAMT";
 	private static final String LOYALTY = "LOYALTY";
 	private static final String TRNREF = "TRNREF";
@@ -76,12 +77,13 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 		String langId = ArgUtil.parseAsString(event.getData().get(LANG_ID));
 		String curName = ArgUtil.parseAsString(event.getData().get(CURNAME));
 		String type = ArgUtil.parseAsString(event.getData().get(TYPE));
-		
+		BigDecimal tranxId = ArgUtil.parseAsBigDecimal(event.getData().get(TRANX_ID));
+
 		NumberFormat myFormat = NumberFormat.getInstance();
 		myFormat.setGroupingUsed(true);
 		String trnxAmountval = myFormat.format(trnxAmount);
-		
-		Customer c = customerRepository.getCustomerByCustomerIdAndIsActive(custId,"Y");
+
+		Customer c = customerRepository.getCustomerByCustomerIdAndIsActive(custId, "Y");
 
 		Map<String, Object> wrapper = new HashMap<String, Object>();
 		Map<String, Object> modeldata = new HashMap<String, Object>();
@@ -92,14 +94,15 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 		modeldata.put("refno", trnxRef);
 		modeldata.put("date", trnxDate);
 		modeldata.put("currency", curName);
-		
+		modeldata.put("tranxId", tranxId);
+		modeldata.put("verCode",
+				new HashBuilder().message(ArgUtil.parseAsString(tranxId)).toSHA2().toNumeric(6).output());
+
 		for (Map.Entry<String, Object> entry : modeldata.entrySet()) {
 			LOGGER.info("KeyModel = " + entry.getKey() + ", ValueModel = " + entry.getValue());
 		}
-           
-		
+
 		wrapper.put("data", modeldata);
-		
 
 		if (!ArgUtil.isEmpty(emailId)) {
 
@@ -108,8 +111,8 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 				CustomerContactVerification x = customerContactVerificationManager.create(c, ContactType.EMAIL);
 				modeldata.put("customer", c);
 				modeldata.put("verifylink", x);
-				LOGGER.info("Model data is ", modeldata.get("verifylink"));
-				LOGGER.info("Customer value is ", modeldata.get("customer"));
+				LOGGER.debug("Model data is ", modeldata.get("verifylink"));
+				LOGGER.debug("Customer value is ", modeldata.get("customer"));
 
 			} else {
 				modeldata.put("customer", null);
@@ -198,7 +201,7 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 			default:
 				break;
 			}
-
+			pushMessage.setModel(wrapper);
 			pushMessage.addToUser(custId);
 			pushMessage.setModel(wrapper);
 			pushNotifyClient.send(pushMessage);
