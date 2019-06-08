@@ -325,14 +325,15 @@ public class RemittanceTransactionManager {
 		logger.debug("newCommissioncompare :" +newCommission);
 		logger.info("commissioncompare: " +commission);
 		
+		// code commented by Prashant on 8 June 19, as it is deducting corporate discount twice which is already done at line 306
 		//radhika
-		BigDecimal corpDiscount = corporateDiscountManager.corporateDiscount();
+/*		BigDecimal corpDiscount = corporateDiscountManager.corporateDiscount();
 		
 				if(JaxUtil.isNullZeroBigDecimalCheck(commission) && commission.compareTo(corpDiscount)>=0) {
 					commission =commission.subtract(corpDiscount);
 					logger.info("commission: " +commission);
 				}
-				
+*/				
 				VatDetailsDto vatDetails = getVatAmount(commission);
 				if(vatDetails!=null && !StringUtils.isBlank(vatDetails.getVatApplicable()) && vatDetails.getVatApplicable().equalsIgnoreCase(ConstantDocument.Yes)) {
 					responseModel.setVatAmount(vatDetails.getVatAmount()==null?BigDecimal.ZERO:vatDetails.getVatAmount());
