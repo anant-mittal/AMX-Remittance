@@ -27,6 +27,7 @@ import com.amx.amxlib.service.ICustomerService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.customer.service.CustomerService;
+import com.amx.jax.dbmodel.IncomeModel;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.auth.QuestModelDTO;
@@ -279,5 +280,17 @@ public class CustomerController implements ICustomerService {
 		CustomerModelSignupResponse response = customerModelService.getCustomerModelSignupResponse(identityInt);
 		return AmxApiResponse.build(response);
 
+	}
+	
+	@RequestMapping(value = Path.ANNUAL_TRANSACTION_LIMIT_RANGE, method = RequestMethod.POST)
+	public AmxApiResponse<AnnualIncomeRangeDTO, Object> getAnnualTransactionLimitRange() {
+		List<AnnualIncomeRangeDTO> annualTransactionLimitRange = annualIncomeService.getAnnualTransactionLimitRange();
+		return AmxApiResponse.buildList(annualTransactionLimitRange);
+	}
+	
+	@RequestMapping(value = Path.SAVE_ANNUAL_TRANSACTION_LIMIT, method = RequestMethod.POST)
+	public AmxApiResponse<BoolRespModel, Object> saveAnnualTransactionLimit(@RequestBody IncomeDto incomeDto){
+		BoolRespModel boolRespModel = annualIncomeService.saveAnnualTransactionLimit(incomeDto);
+		return AmxApiResponse.build(boolRespModel);
 	}
 }

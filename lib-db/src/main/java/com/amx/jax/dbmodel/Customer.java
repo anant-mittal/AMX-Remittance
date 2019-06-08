@@ -145,6 +145,38 @@ public class Customer implements java.io.Serializable {
 	private Date annualIncomeUpdatedDate;
 	private String isBusinessCardVerified;
 	
+	
+	// annual transaction limit fields added
+	
+	private BigDecimal annualTransactionLimitFrom;
+	private BigDecimal annualTransactionLimitTo;
+	private Date annualTransactionUpdatedDate;
+	
+	@Column(name="ANNUAL_TRNXLIMIT_FROM")
+	public BigDecimal getAnnualTransactionLimitFrom() {
+		return annualTransactionLimitFrom;
+	}
+
+	public void setAnnualTransactionLimitFrom(BigDecimal annualTransactionLimitFrom) {
+		this.annualTransactionLimitFrom = annualTransactionLimitFrom;
+	}
+	@Column(name="ANNUAL_TRNXLIMIT_TO")
+	public BigDecimal getAnnualTransactionLimitTo() {
+		return annualTransactionLimitTo;
+	}
+
+	public void setAnnualTransactionLimitTo(BigDecimal annualTransactionLimitTo) {
+		this.annualTransactionLimitTo = annualTransactionLimitTo;
+	}
+	@Column(name="ANNUAL_TRNXLIMIT_UPDATED_DATE")
+	public Date getAnnualTransactionUpdatedDate() {
+		return annualTransactionUpdatedDate;
+	}
+
+	public void setAnnualTransactionUpdatedDate(Date annualTransactionUpdatedDate) {
+		this.annualTransactionUpdatedDate = annualTransactionUpdatedDate;
+	}
+
 	public String getIsBusinessCardVerified() {
 		return isBusinessCardVerified;
 	}

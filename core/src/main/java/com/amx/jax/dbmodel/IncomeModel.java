@@ -41,9 +41,18 @@ public class IncomeModel implements IResourceEntity, Serializable {
 	private String activeStatus;
 	
 	
-	
+	@Column(name = "RANGE_TYPE")
+	private String rangeType;
 
 	
+
+	public String getRangeType() {
+		return rangeType;
+	}
+
+	public void setRangeType(String rangeType) {
+		this.rangeType = rangeType;
+	}
 
 	public String getActiveStatus() {
 		return activeStatus;

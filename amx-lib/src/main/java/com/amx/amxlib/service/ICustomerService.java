@@ -2,6 +2,7 @@ package com.amx.amxlib.service;
 
 import java.util.List;
 
+import com.amx.amxlib.meta.model.AnnualIncomeRangeDTO;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.model.customer.SecurityQuestionModel;
@@ -18,6 +19,11 @@ public interface ICustomerService {
 		public static final String CUSTOMER_MODEL_RESPONSE_BY_IDENTITYINT = "/get-customer-model-response-identityint";
 		
 		public static final String CUSTOMER_MODEL_SIGNUP_RESPONSE_GET = "/get-customer-model-signup-response";
+		
+		public static final String ANNUAL_TRANSACTION_LIMIT_RANGE  ="/get-annual-transaction-limit-range";
+		
+		public static final String SAVE_ANNUAL_TRANSACTION_LIMIT ="/save-annual-transaction-limit";
+		
 	}
 
 	public static class Params {
@@ -33,5 +39,7 @@ public interface ICustomerService {
 	AmxApiResponse<CustomerModelResponse, Object> getCustomerModelResponse();
 
 	AmxApiResponse<CustomerModelSignupResponse, Object> getCustomerModelSignupResponse(String identityInt);
+
+	AmxApiResponse<AnnualIncomeRangeDTO, Object> getAnnualTransactionLimitRange();
 
 }
