@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.api.AmxApiResponse;
@@ -25,10 +26,12 @@ import com.amx.jax.model.response.customer.CustomerContactDto;
 import com.amx.jax.model.response.customer.CustomerDto;
 import com.amx.jax.model.response.customer.CustomerIdProofDto;
 import com.amx.jax.model.response.customer.CustomerIncomeRangeDto;
+import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.repository.IContactDetailDao;
 import com.amx.jax.repository.ICustomerRepository;
 import com.amx.jax.service.CountryService;
 import com.amx.jax.services.AbstractService;
+import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.userservice.dao.CustomerIdProofDao;
 import com.amx.jax.userservice.manager.OnlineCustomerManager;
 import com.amx.jax.userservice.service.UserService;
@@ -54,6 +57,8 @@ public class CustomerService extends AbstractService {
 	MetaData metaData;
 	@Autowired
 	OnlineCustomerManager onlineCustomerManager;
+	@Autowired
+	JaxNotificationService jaxNotificationService ; 
 	
 	static final Logger LOGGER = LoggerFactory.getLogger(CustomerService.class);
 
@@ -179,6 +184,10 @@ public class CustomerService extends AbstractService {
 	
 	public AmxApiResponse<BoolRespModel, Object> saveCustomerSecQuestions(List<SecurityQuestionModel> securityQuestions) {
 		onlineCustomerManager.saveCustomerSecQuestions(securityQuestions);
+		PersonInfo personInfo = userService.getPersonInfo(metaData.getCustomerId());
+		CustomerModel model = new CustomerModel();
+		model.setSecurityquestions(securityQuestions);
+		jaxNotificationService.sendProfileChangeNotificationEmail(model, personInfo);
 		BoolRespModel boolRespModel = new BoolRespModel();
 		boolRespModel.setSuccess(Boolean.TRUE);
 		return AmxApiResponse.build(boolRespModel);
