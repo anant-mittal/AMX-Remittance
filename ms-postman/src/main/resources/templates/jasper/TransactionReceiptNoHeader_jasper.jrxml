@@ -47,6 +47,7 @@
 
                        
                         
+                       
                         <!--##################Sender Details START####################-->
                         <frame>
                             <reportElement x="5" y="80" width="585" height="15"/>
@@ -957,12 +958,7 @@
                                 <d:listContents height="15">
                                     <frame>
                                         <reportElement x="5" y="0" width="585" height="12"/>
-                                        <staticText>
-                                            <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "11" backcolor = "#FFFFFF" />
-                                            <box><bottomPen lineWidth = "0.25" lineColor = "#CCCCCC" /></box>
-                                            <textElement />
-                                            <text><![CDATA[]]></text>
-                                        </staticText>
+                                    
 
 
                                         <textField isStretchWithOverflow="true">
@@ -974,7 +970,7 @@
                                                       pdfFontName="fonts/all/arial.ttf"/>
                                             </textElement>
                                             <textFieldExpression class="java.lang.String">
-                                                <![CDATA[$F{tranxtype}.get("collectionMode") + "     "+ $F{tranxtype}.get("collectAmount")]]>
+                                                <![CDATA[$F{tranxtype}.get("collectionMode") + "     "+ $F{tranxtype}.getNumber("collectAmount", "%.3f")]]>
                                             </textFieldExpression>
                                         </textField>
 
@@ -1042,7 +1038,12 @@
                             <textElement />
                             <text><![CDATA[]]></text>
                         </staticText>
-
+                        <staticText>
+                            <reportElement mode = "Opaque" x = "0" y = "0" width = "585" height = "14" backcolor = "#FFFFFF" />
+                            <box><topPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
+                            <textElement />
+                            <text><![CDATA[]]></text>
+                        </staticText>
                         <staticText>
                             <reportElement x="0" y="3" width="585" height="15" isPrintWhenDetailOverflows="true"/>
                             <textElement>
