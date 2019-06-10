@@ -16,6 +16,8 @@ import com.amx.jax.dbmodel.CustomerContactVerification;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.dict.Language;
 import com.amx.jax.event.AmxTunnelEvents;
+import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.response.customer.CustomerFlags;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.model.Email;
@@ -27,6 +29,7 @@ import com.amx.jax.tunnel.DBEvent;
 import com.amx.jax.tunnel.ITunnelSubscriber;
 import com.amx.jax.tunnel.TunnelEventMapping;
 import com.amx.jax.tunnel.TunnelEventXchange;
+import com.amx.jax.userservice.manager.CustomerFlagManager;
 import com.amx.jax.util.AmxDBConstants;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.CryptoUtil.HashBuilder;
@@ -46,6 +49,12 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 
 	@Autowired
 	CustomerRepository customerRepository;
+	
+	@Autowired
+	CustomerFlagManager customerFlagManager;
+	
+	@Autowired
+	MetaData metaData;
 
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
@@ -85,6 +94,8 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 		String trnxAmountval = myFormat.format(trnxAmount);
 
 		Customer c = customerRepository.getCustomerByCustomerIdAndIsActive(custId, "Y");
+		CustomerFlags customerFlags=null;
+		customerFlags = customerFlagManager.getCustomerFlags(metaData.getCustomerId());
 
 		Map<String, Object> wrapper = new HashMap<String, Object>();
 		Map<String, Object> modeldata = new HashMap<String, Object>();
@@ -149,7 +160,7 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 			postManService.sendEmailAsync(email);
 		}
 
-		if (!ArgUtil.isEmpty(smsNo)) {
+		if (!ArgUtil.isEmpty(smsNo)&&customerFlags.getIsOnlineCustomer()) {
 			if (c.getMobileVerified() != AmxDBConstants.Status.Y) {
 				CustomerContactVerification x = customerContactVerificationManager.create(c, ContactType.SMS);
 				modeldata.put("customer", c);
