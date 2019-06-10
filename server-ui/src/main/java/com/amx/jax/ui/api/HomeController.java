@@ -24,6 +24,7 @@ import org.thymeleaf.spring4.SpringTemplateEngine;
 
 import com.amx.jax.AppConstants;
 import com.amx.jax.client.CustomerProfileClient;
+import com.amx.jax.client.JaxClientUtil;
 import com.amx.jax.dict.AmxEnums.Products;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.dict.Language;
@@ -49,6 +50,7 @@ import com.amx.jax.ui.service.SessionService;
 import com.amx.jax.ui.session.UserDeviceBean;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
+import com.amx.utils.CryptoUtil.HashBuilder;
 
 import io.swagger.annotations.Api;
 
@@ -261,12 +263,15 @@ public class HomeController {
 	@ApiJaxStatus({ JaxError.CUSTOMER_NOT_FOUND, JaxError.INVALID_OTP, JaxError.ENTITY_INVALID,
 			JaxError.ENTITY_EXPIRED })
 	@ApiStatus({ ApiStatusCodes.PARAM_MISSING })
-	@RequestMapping(value = { "/pub/rating/{prodType}/{trnxId}/{verCode}" },
+	@RequestMapping(value = { "/pub/rating/{prodType}/{trnxId}/{veryCode}" },
 			method = { RequestMethod.GET }, produces = {
 					CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE })
 	@ResponseBody
 	public Map<String, Object> rating(
-			@PathVariable Products prodType, @PathVariable BigDecimal trnxId, @PathVariable String verCode) {
+			@PathVariable Products prodType, @PathVariable BigDecimal trnxId, @PathVariable String veryCode) {
+
+		boolean valid = JaxClientUtil.getTransactionVeryCode(trnxId).equals(veryCode);
+
 		String errorCode = null;
 		String errorMessage = null;
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -274,18 +279,19 @@ public class HomeController {
 		map.put("errorCode", errorCode);
 		map.put("errorMessage", errorMessage);
 		map.put("prodType", prodType);
-		map.put("verCode", verCode);
+		map.put("verCode", veryCode);
+		map.put("valid", valid);
 		return map;
 	}
 
 	@ApiJaxStatus({ JaxError.CUSTOMER_NOT_FOUND, JaxError.INVALID_OTP, JaxError.ENTITY_INVALID,
 			JaxError.ENTITY_EXPIRED })
 	@ApiStatus({ ApiStatusCodes.PARAM_MISSING })
-	@RequestMapping(value = { "/pub/rating/{prodType}/{trnxId}/{verCode}/*" },
+	@RequestMapping(value = { "/pub/rating/{prodType}/{trnxId}/{veryCode}/*" },
 			method = { RequestMethod.GET })
 	public String rating(Model model,
-			@PathVariable Products prodType, @PathVariable BigDecimal trnxId, @PathVariable String verCode) {
-		Map<String, Object> map = rating(prodType, trnxId, verCode);
+			@PathVariable Products prodType, @PathVariable BigDecimal trnxId, @PathVariable String veryCode) {
+		Map<String, Object> map = rating(prodType, trnxId, veryCode);
 		model.addAttribute("ratingData", (map));
 		return "rating";
 	}

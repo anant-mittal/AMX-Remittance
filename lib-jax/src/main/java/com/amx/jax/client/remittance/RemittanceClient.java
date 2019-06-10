@@ -33,37 +33,33 @@ import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeR
 import com.amx.jax.rest.RestService;
 
 @Component
-public class RemittanceClient  implements IRemittanceService{
+public class RemittanceClient implements IRemittanceService {
 	private static final Logger LOGGER = Logger.getLogger(FcSaleOrderClient.class);
 
 	@Autowired
 	RestService restService;
-	
+
 	@Autowired
 	AppConfig appConfig;
-	
-	
+
 	/**
 	 * Save the application
 	 */
-	
+
 	@Override
-	public AmxApiResponse<BranchRemittanceApplResponseDto, Object> saveBranchRemittanceApplication(BranchRemittanceApplRequestModel requestModel) {
+	public AmxApiResponse<BranchRemittanceApplResponseDto, Object> saveBranchRemittanceApplication(
+			BranchRemittanceApplRequestModel requestModel) {
 		try {
-			LOGGER.debug("in saveBranchRemittanceApplication :"+requestModel);
+			LOGGER.debug("in saveBranchRemittanceApplication :" + requestModel);
 			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_SAVE_APPL).meta(new JaxMetaInfo())
 					.post(requestModel)
-					.as(new ParameterizedTypeReference<AmxApiResponse<BranchRemittanceApplResponseDto,Object>>() {
+					.as(new ParameterizedTypeReference<AmxApiResponse<BranchRemittanceApplResponseDto, Object>>() {
 					});
 		} catch (Exception e) {
 			LOGGER.error("exception in saveCustomerBankDetails : ", e);
 			return JaxSystemError.evaluate(e);
 		} // end of try-catch
 	}
-		
-
-	
-	
 
 	/**
 	 * fetch customer shopping cart application
@@ -73,7 +69,8 @@ public class RemittanceClient  implements IRemittanceService{
 	public AmxApiResponse<BranchRemittanceApplResponseDto, Object> fetchCustomerShoppingCart() {
 		try {
 			LOGGER.debug("in fetchCustomerShoppingCart :");
-			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_SHOPPING_CART).meta(new JaxMetaInfo()).get()
+			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_SHOPPING_CART).meta(new JaxMetaInfo())
+					.get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<BranchRemittanceApplResponseDto, Object>>() {
 					});
 		} catch (Exception e) {
@@ -90,7 +87,8 @@ public class RemittanceClient  implements IRemittanceService{
 	public AmxApiResponse<PaymentModeDto, Object> fetchModeOfPayment() {
 		try {
 			LOGGER.debug("in fetchModeOfPayment :");
-			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_MODE_OF_PAYMENT).meta(new JaxMetaInfo()).get()
+			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_MODE_OF_PAYMENT).meta(new JaxMetaInfo())
+					.get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<PaymentModeDto, Object>>() {
 					});
 		} catch (Exception e) {
@@ -107,7 +105,8 @@ public class RemittanceClient  implements IRemittanceService{
 	public AmxApiResponse<LocalBankDetailsDto, Object> fetchLocalBanks() {
 		try {
 			LOGGER.debug("in fetchLocalBanks :");
-			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_LOCAL_BANKS).meta(new JaxMetaInfo()).get()
+			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_LOCAL_BANKS).meta(new JaxMetaInfo())
+					.get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<LocalBankDetailsDto, Object>>() {
 					});
 		} catch (Exception e) {
@@ -124,7 +123,8 @@ public class RemittanceClient  implements IRemittanceService{
 	public AmxApiResponse<CustomerBankDetailsDto, Object> fetchCustomerLocalBanks() {
 		try {
 			LOGGER.debug("in fetchCustomerLocalBanks :");
-			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_CUSTOMER_BANKS).meta(new JaxMetaInfo()).get()
+			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_CUSTOMER_BANKS).meta(new JaxMetaInfo())
+					.get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerBankDetailsDto, Object>>() {
 					});
 		} catch (Exception e) {
@@ -140,8 +140,9 @@ public class RemittanceClient  implements IRemittanceService{
 	@Override
 	public AmxApiResponse<CustomerBankDetailsDto, Object> fetchCustomerBankNames(BigDecimal bankId) {
 		try {
-			LOGGER.debug("in fetchCustomerBankNames :"+bankId);
-			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_BANK_CUSTOMER_NAMES).meta(new JaxMetaInfo())
+			LOGGER.debug("in fetchCustomerBankNames :" + bankId);
+			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_BANK_CUSTOMER_NAMES)
+					.meta(new JaxMetaInfo())
 					.queryParam(Params.BANK_ID, bankId)
 					.get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerBankDetailsDto, Object>>() {
@@ -177,7 +178,8 @@ public class RemittanceClient  implements IRemittanceService{
 	public AmxApiResponse<UserStockDto, Object> fetchLocalCurrencyDenomination() {
 		try {
 			LOGGER.debug("in fetchLocalCurrencyDenomination :");
-			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_LOCAL_CURRENCY_DENOMINATION).meta(new JaxMetaInfo()).get()
+			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_LOCAL_CURRENCY_DENOMINATION)
+					.meta(new JaxMetaInfo()).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<UserStockDto, Object>>() {
 					});
 		} catch (Exception e) {
@@ -194,7 +196,8 @@ public class RemittanceClient  implements IRemittanceService{
 	public AmxApiResponse<UserStockDto, Object> fetchLocalCurrencyRefundDenomination() {
 		try {
 			LOGGER.debug("in fetchLocalCurrencyRefundDenomination :");
-			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_LOCAL_CURRENCY_REFUND_DENOMINATION).meta(new JaxMetaInfo()).get()
+			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_LOCAL_CURRENCY_REFUND_DENOMINATION)
+					.meta(new JaxMetaInfo()).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<UserStockDto, Object>>() {
 					});
 		} catch (Exception e) {
@@ -210,10 +213,11 @@ public class RemittanceClient  implements IRemittanceService{
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> saveCustomerBankDetails(List<CustomerBankRequest> customerBank) {
 		try {
-			LOGGER.debug("in saveCustomerBankDetails :"+customerBank);
-			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_SAVE_CUSTOMER_BANKS).meta(new JaxMetaInfo())
+			LOGGER.debug("in saveCustomerBankDetails :" + customerBank);
+			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_SAVE_CUSTOMER_BANKS)
+					.meta(new JaxMetaInfo())
 					.post(customerBank)
-					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel,Object>>() {
+					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});
 		} catch (Exception e) {
 			LOGGER.error("exception in saveCustomerBankDetails : ", e);
@@ -222,10 +226,12 @@ public class RemittanceClient  implements IRemittanceService{
 	}
 
 	@Override
-	public AmxApiResponse<BoolRespModel, Object> validationStaffCredentials(String staffUserName,String staffPassword) {
+	public AmxApiResponse<BoolRespModel, Object> validationStaffCredentials(String staffUserName,
+			String staffPassword) {
 		try {
-			LOGGER.debug("in validationStaffCredentials :"+staffUserName + " " + staffPassword);
-			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_VALIDATE_STAFF_CREDENTIALS).meta(new JaxMetaInfo())
+			LOGGER.debug("in validationStaffCredentials :" + staffUserName + " " + staffPassword);
+			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_VALIDATE_STAFF_CREDENTIALS)
+					.meta(new JaxMetaInfo())
 					.queryParam(Params.STAFF_USERNAME, staffUserName).meta(new JaxMetaInfo())
 					.queryParam(Params.STAFF_PASSWORD, staffPassword)
 					.post()
@@ -237,14 +243,10 @@ public class RemittanceClient  implements IRemittanceService{
 		} // end of try-catch
 	}
 
-
-
-
-
 	@Override
 	public AmxApiResponse<RoutingResponseDto, Object> getRoutingSetupDeatils(BigDecimal beneRelaId) {
 		try {
-			LOGGER.debug("in getRoutingSetupDeatils :"+beneRelaId );
+			LOGGER.debug("in getRoutingSetupDeatils :" + beneRelaId);
 			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_ROUTING).meta(new JaxMetaInfo())
 					.queryParam(Params.BENE_RELATION_SHIP_ID, beneRelaId).meta(new JaxMetaInfo())
 					.get()
@@ -256,34 +258,28 @@ public class RemittanceClient  implements IRemittanceService{
 		} // end of try-cat
 	}
 
-
-
-
-
 	@Override
-	public AmxApiResponse<RoutingResponseDto, Object> getRoutingDetailsByServiceId(BigDecimal beneRelaId,BigDecimal serviceMasterId) {
+	public AmxApiResponse<RoutingResponseDto, Object> getRoutingDetailsByServiceId(BigDecimal beneRelaId,
+			BigDecimal serviceMasterId) {
 		try {
-		LOGGER.debug("in getRoutingSetupDeatils :"+beneRelaId );
-		return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_ROUTING_BY_SERVICE).meta(new JaxMetaInfo())
-				.queryParam(Params.BENE_RELATION_SHIP_ID, beneRelaId).meta(new JaxMetaInfo())
-				.queryParam(Params.SERVICE_MASTER_ID, serviceMasterId)
-				.post()
-				.as(new ParameterizedTypeReference<AmxApiResponse<RoutingResponseDto, Object>>() {
-				});
-	} catch (Exception e) {
-		LOGGER.error("exception in validationStaffCredentials : ", e);
-		return JaxSystemError.evaluate(e);
-	} // end of try-cat
+			LOGGER.debug("in getRoutingSetupDeatils :" + beneRelaId);
+			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_ROUTING_BY_SERVICE)
+					.meta(new JaxMetaInfo())
+					.queryParam(Params.BENE_RELATION_SHIP_ID, beneRelaId).meta(new JaxMetaInfo())
+					.queryParam(Params.SERVICE_MASTER_ID, serviceMasterId)
+					.post()
+					.as(new ParameterizedTypeReference<AmxApiResponse<RoutingResponseDto, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in validationStaffCredentials : ", e);
+			return JaxSystemError.evaluate(e);
+		} // end of try-cat
 	}
-
-
-
-
 
 	@Override
 	public AmxApiResponse<AdditionalExchAmiecDto, Object> getPurposeOfTrnx(BigDecimal beneRelaId) {
 		try {
-			LOGGER.debug("in getRoutingSetupDeatils :"+beneRelaId );
+			LOGGER.debug("in getRoutingSetupDeatils :" + beneRelaId);
 			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_PURPOSE_OF_TRNX).meta(new JaxMetaInfo())
 					.queryParam(Params.BENE_RELATION_SHIP_ID, beneRelaId).meta(new JaxMetaInfo())
 					.get()
@@ -294,8 +290,6 @@ public class RemittanceClient  implements IRemittanceService{
 			return JaxSystemError.evaluate(e);
 		} // end of try-cat
 	}
-
-
 
 	@Override
 	public AmxApiResponse<BranchRemittanceGetExchangeRateResponse, Object> getExchaneRate(
@@ -312,12 +306,9 @@ public class RemittanceClient  implements IRemittanceService{
 		}
 	}
 
-
-
-
-
 	@Override
-	public AmxApiResponse<RemittanceResponseDto, Object> saveRemittanceTransaction(BranchRemittanceRequestModel remittanceRequestModel) {
+	public AmxApiResponse<RemittanceResponseDto, Object> saveRemittanceTransaction(
+			BranchRemittanceRequestModel remittanceRequestModel) {
 		try {
 			LOGGER.debug("in saveRemittanceTransaction :" + remittanceRequestModel);
 			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_SAVE_TRANSACTION)
@@ -328,18 +319,16 @@ public class RemittanceClient  implements IRemittanceService{
 			LOGGER.error("exception in getExchaneRate : ", e);
 			return JaxSystemError.evaluate(e);
 		}
-		
+
 	}
 
-
-
-
-
 	@Override
-	public AmxApiResponse<BranchRemittanceApplResponseDto, Object> deleteFromShoppingCart(BigDecimal remittanceApplicationId) {
+	public AmxApiResponse<BranchRemittanceApplResponseDto, Object> deleteFromShoppingCart(
+			BigDecimal remittanceApplicationId) {
 		try {
-			LOGGER.debug("in deleteFromShoppingCart :"+remittanceApplicationId );
-			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_DELETE_APPLICATION).meta(new JaxMetaInfo())
+			LOGGER.debug("in deleteFromShoppingCart :" + remittanceApplicationId);
+			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_DELETE_APPLICATION)
+					.meta(new JaxMetaInfo())
 					.queryParam(Params.APPLICATION_ID, remittanceApplicationId).meta(new JaxMetaInfo())
 					.post()
 					.as(new ParameterizedTypeReference<AmxApiResponse<BranchRemittanceApplResponseDto, Object>>() {
@@ -348,18 +337,15 @@ public class RemittanceClient  implements IRemittanceService{
 			LOGGER.error("exception in deleteFromShoppingCart : ", e);
 			return JaxSystemError.evaluate(e);
 		} // end of try-cat
-		
+
 	}
 
-
-
-
-
 	@Override
-	public AmxApiResponse<RemittanceDeclarationReportDto, Object> fetchCustomerDeclarationReport(BigDecimal collectionDocNo, BigDecimal collectionDocYear,
+	public AmxApiResponse<RemittanceDeclarationReportDto, Object> fetchCustomerDeclarationReport(
+			BigDecimal collectionDocNo, BigDecimal collectionDocYear,
 			BigDecimal collectionDocCode) {
 		try {
-			LOGGER.debug("in fetchCustomerDeclarationReport :"+collectionDocNo );
+			LOGGER.debug("in fetchCustomerDeclarationReport :" + collectionDocNo);
 			return restService.ajax(appConfig.getJaxURL() + Path.BR_DECLARATION_REPORT).meta(new JaxMetaInfo())
 					.queryParam(Params.COLLECTION_DOC_NO, collectionDocNo).meta(new JaxMetaInfo())
 					.queryParam(Params.COLLECTION_DOC_FY, collectionDocYear)
@@ -373,14 +359,11 @@ public class RemittanceClient  implements IRemittanceService{
 		} // end of try-cat
 	}
 
-
-
-
-
 	@Override
-	public AmxApiResponse<BoolRespModel, Object> sendReceiptOnEmail(BigDecimal collectionDocNo, BigDecimal collectionDocYear, BigDecimal collectionDocCode) {
+	public AmxApiResponse<BoolRespModel, Object> sendReceiptOnEmail(BigDecimal collectionDocNo,
+			BigDecimal collectionDocYear, BigDecimal collectionDocCode) {
 		try {
-			LOGGER.debug("in fetchCustomerDeclarationReport :"+collectionDocNo );
+			LOGGER.debug("in fetchCustomerDeclarationReport :" + collectionDocNo);
 			return restService.ajax(appConfig.getJaxURL() + Path.BR_RECEIPT_ON_EMAIL).meta(new JaxMetaInfo())
 					.queryParam(Params.COLLECTION_DOC_NO, collectionDocNo).meta(new JaxMetaInfo())
 					.queryParam(Params.COLLECTION_DOC_FY, collectionDocYear)
@@ -394,9 +377,4 @@ public class RemittanceClient  implements IRemittanceService{
 		} // end of try-cat
 	}
 
-
-
-
-
 }
-

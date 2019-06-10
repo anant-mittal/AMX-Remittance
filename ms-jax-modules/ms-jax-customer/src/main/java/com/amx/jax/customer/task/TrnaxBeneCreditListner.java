@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.amx.jax.client.JaxClientUtil;
 import com.amx.jax.customer.manager.CustomerContactVerificationManager;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerContactVerification;
@@ -96,7 +97,7 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 		modeldata.put("currency", curName);
 		modeldata.put("tranxId", tranxId);
 		modeldata.put("verCode",
-				new HashBuilder().message(ArgUtil.parseAsString(tranxId)).toSHA2().toNumeric(6).output());
+				JaxClientUtil.getTransactionVeryCode(tranxId).output());
 
 		for (Map.Entry<String, Object> entry : modeldata.entrySet()) {
 			LOGGER.info("KeyModel = " + entry.getKey() + ", ValueModel = " + entry.getValue());
