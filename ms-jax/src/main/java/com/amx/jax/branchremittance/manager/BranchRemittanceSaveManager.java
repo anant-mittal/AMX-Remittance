@@ -1,6 +1,5 @@
 package com.amx.jax.branchremittance.manager;
 
-
 import java.math.BigDecimal;
 import java.sql.Clob;
 import java.text.SimpleDateFormat;
@@ -265,6 +264,7 @@ public class BranchRemittanceSaveManager {
 			mapAllDetailRemitSave.put("EX_REMIT_ADDL", addInstList);
 			mapAllDetailRemitSave.put("EX_REMIT_AML", amlList);
 			mapAllDetailRemitSave.put("LOYALTY_POINTS", loyaltyPoints);
+			validateSaveTrnxDetails(mapAllDetailRemitSave);
 			responseDto = brRemittanceDao.saveRemittanceTransaction(mapAllDetailRemitSave);
 			auditService.log(new CActivityEvent(Type.TRANSACTION_CREATED,String.format("%s/%s", responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo())).field("STATUS").to(JaxTransactionStatus.PAYMENT_SUCCESS_APPLICATION_SUCCESS).result(Result.DONE));
 	}catch (GlobalException e) {
@@ -335,7 +335,7 @@ public class BranchRemittanceSaveManager {
 				collection.setCreatedBy(employee.getUserName());
 				collection.setLocCode(employee.getBranchId());
 				BigDecimal declarationTotalamount = getDeclarationReportAmount(ConstantDocument.DECL_REPORT_FOR_TOT_AMOUNT);
-				if(collection.getNetAmount().compareTo(declarationTotalamount)>=1) {
+				if(JaxUtil.isNullZeroBigDecimalCheck(declarationTotalamount) && collection.getNetAmount().compareTo(declarationTotalamount)>=1) {
 					collection.setCashDeclarationIndicator(ConstantDocument.Yes);
 				}
 				collection.setIsActive(ConstantDocument.Yes);
@@ -647,8 +647,6 @@ public class BranchRemittanceSaveManager {
 	
 	public Map<BigDecimal,RemittanceTransaction> saveRemittanceTrnx(BranchRemittanceRequestModel remittanceRequestModel,CollectionModel  collect)
 	{
-		//List<RemittanceTransaction> remitTrnxList      =new ArrayList<>();
-		
 		Map<BigDecimal,RemittanceTransaction> remitTrnxList      =new HashMap<>();
 		
 		List<BranchApplicationDto> shoppingCartList = remittanceRequestModel.getRemittanceApplicationId();
@@ -1048,8 +1046,11 @@ public String checkBlackListIndicator(BigDecimal customerId,BigDecimal  applId) 
 
 	
 	public BigDecimal getDeclarationReportAmount(String authType) {
+		BigDecimal declarationTotalamount =BigDecimal.ZERO;
 		AuthenticationLimitCheckView authParam = authenticationLimitCheck.findByAuthorizationType(authType);
-		BigDecimal declarationTotalamount = authParam.getAuthLimit()==null?BigDecimal.ZERO:authParam.getAuthLimit();
+		if(authParam!=null) {
+		 declarationTotalamount = authParam.getAuthLimit()==null?BigDecimal.ZERO:authParam.getAuthLimit();
+		}
 		return declarationTotalamount;
 	}
 	
