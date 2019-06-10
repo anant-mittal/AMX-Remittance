@@ -1014,7 +1014,7 @@
                                                       pdfFontName="fonts/all/arial.ttf"/>
                                             </textElement>
                                             <textFieldExpression class="java.lang.String">
-                                                <![CDATA[$F{tranxtype}.get("collectionMode") + "     "+ $F{tranxtype}.getNumber("collectAmount", "%.3f")]]>
+                                                <![CDATA[$F{tranxtype}.get("collectionMode") + "     "+  $F{tranxtype}.get("collectAmount")]]>
                                             </textFieldExpression>
                                         </textField>
 
