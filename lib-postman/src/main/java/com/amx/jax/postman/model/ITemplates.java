@@ -26,6 +26,8 @@ public class ITemplates {
 			return null;
 		}
 
+		String getSMSFile();
+
 	}
 
 	public static ITemplate getTemplate(String templateStr) {

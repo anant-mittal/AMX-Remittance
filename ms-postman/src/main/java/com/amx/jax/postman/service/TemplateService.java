@@ -99,6 +99,25 @@ public class TemplateService {
 		return rawStr;
 	}
 
+	public String processSMS(ITemplate template, Context context, Locale locale) {
+		String rawStr = templateEngine.process(
+				templateUtils.getTemplateFile(template.getSMSFile(), AppContextUtil.getTenant(), locale),
+				context);
+
+		Pattern p = Pattern.compile("src=\"inline:(.*?)\"");
+		Matcher m = p.matcher(rawStr);
+		while (m.find()) {
+			String contentId = m.group(1);
+			try {
+				rawStr = rawStr.replace("src=\"inline:" + contentId + "\"",
+						"src=\"" + templateUtils.readAsBase64String(contentId) + "\"");
+			} catch (IOException e) {
+				log.error("Template parsing Error : " + template.getFileName(), e);
+			}
+		}
+		return rawStr;
+	}
+
 	public String processJson(ITemplate template, Context context, Locale locale) {
 		return templateEngine.process(
 				templateUtils.getTemplateFile(template.getJsonFile(), AppContextUtil.getTenant(), locale), context);
@@ -147,7 +166,9 @@ public class TemplateService {
 		context.setVariables(file.getModel());
 		if (file.getITemplate().isThymleaf()) {
 			String content;
-			if (file.getType() == File.Type.JSON) {
+			if (ContactType.SMS.equals(contactType)) {
+				content = this.processSMS(file.getITemplate(), context, locale);
+			} else if (file.getType() == File.Type.JSON) {
 				content = this.processJson(file.getITemplate(), context, locale);
 			} else {
 				content = this.processHtml(file.getITemplate(), context, locale);
