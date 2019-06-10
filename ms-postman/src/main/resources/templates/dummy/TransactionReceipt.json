@@ -238,7 +238,7 @@
 						"netAmount": null,
 						"paidAmount": null,
 						"refundedAmount": null,
-						"collectAmount": 501.0,
+						"collectAmount": "501.000002",
 						"purposeOfRemitTrList": null,
 						"lessLoyaltyEncasement": null,
 						"amountPayable": null
