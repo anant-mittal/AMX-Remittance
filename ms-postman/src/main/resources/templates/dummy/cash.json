@@ -5,6 +5,7 @@
 		"loyaltypoints" : "1000",
 		"refno" : "100/112",
 		"date" : "11/02/2018",
-		"currency" : "INR"
+		"currency" : "INR",
+		"verifylink" : "https://www.almullaexchange.com"
 	}
 }
