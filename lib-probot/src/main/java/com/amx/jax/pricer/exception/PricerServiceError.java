@@ -46,6 +46,8 @@ public enum PricerServiceError implements IExceptionEnum {
 	NULL_ROUTING_MATRIX,
 
 	INVALID_AMT_SLAB_DISC_PIPS,
+	
+	MISSING_DISCOUNT_OR_GROUP_ID,
 	/** The unknown exception. */
 	// MISC
 	UNKNOWN_EXCEPTION;

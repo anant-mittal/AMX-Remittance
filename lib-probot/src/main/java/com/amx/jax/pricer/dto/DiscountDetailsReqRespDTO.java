@@ -15,7 +15,7 @@ public class DiscountDetailsReqRespDTO implements Serializable {
 	Map<BigDecimal, List<CustomerCategoryDetails>> curGrpCustCatDetails;
 
 	// Structure for Group Details
-	// List<GroupDetails> curGroupDetails;
+	List<GroupDetails> curGroupDetails;
 
 	private List<ChannelDetails> channelDetails;
 
@@ -45,6 +45,30 @@ public class DiscountDetailsReqRespDTO implements Serializable {
 
 	public void setAmountSlabDetails(List<AmountSlabDetails> amountSlabDetails) {
 		this.amountSlabDetails = amountSlabDetails;
+	}
+
+	public Map<BigDecimal, List<ChannelDetails>> getCurGrpChannelDetails() {
+		return curGrpChannelDetails;
+	}
+
+	public void setCurGrpChannelDetails(Map<BigDecimal, List<ChannelDetails>> curGrpChannelDetails) {
+		this.curGrpChannelDetails = curGrpChannelDetails;
+	}
+
+	public Map<BigDecimal, List<CustomerCategoryDetails>> getCurGrpCustCatDetails() {
+		return curGrpCustCatDetails;
+	}
+
+	public void setCurGrpCustCatDetails(Map<BigDecimal, List<CustomerCategoryDetails>> curGrpCustCatDetails) {
+		this.curGrpCustCatDetails = curGrpCustCatDetails;
+	}
+
+	public List<GroupDetails> getCurGroupDetails() {
+		return curGroupDetails;
+	}
+
+	public void setCurGroupDetails(List<GroupDetails> curGroupDetails) {
+		this.curGroupDetails = curGroupDetails;
 	}
 
 }

@@ -2,6 +2,13 @@ package com.amx.jax.branch.controller;
 
 import java.math.BigDecimal;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.amx.amxlib.meta.model.CountryMasterDTO;
 import com.amx.amxlib.model.CountryBranchDTO;
 import com.amx.jax.IDiscManagementService;
@@ -12,17 +19,11 @@ import com.amx.jax.client.MetaClient;
 import com.amx.jax.model.response.CurrencyMasterDTO;
 import com.amx.jax.pricer.dto.DiscountDetailsReqRespDTO;
 import com.amx.jax.pricer.dto.DiscountMgmtReqDTO;
+import com.amx.jax.pricer.dto.GroupDetails;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.Api;
 
@@ -91,6 +92,8 @@ public class BDiscountMgmtController {
 		return metaClient.getAllExchangeRateCurrencyList();
 	}
 
+
+
 	@RequestMapping(value = "/api/discount/customer/rates", method = { RequestMethod.POST })
 	public AmxApiResponse<PricingResponseDTO, Object> fetchCustomerRates(
 			@RequestBody PricingRequestDTO pricingRequestDTO, 
@@ -101,5 +104,15 @@ public class BDiscountMgmtController {
 		return discountMgmtClient.fetchCustomerRates(pricingRequestDTO);
 	}
 
-
+	
+	@RequestMapping(value = "/api/discount/groups/list", method = { RequestMethod.GET })
+	public AmxApiResponse<GroupDetails, Object> getCurrencyGroupingData() {
+			return discountMgmtClient.getCurrencyGroupingData();
+	}
+	
+	@RequestMapping(value = "/api/discount/currencyGroup/list", method = { RequestMethod.POST })
+	public AmxApiResponse<com.amx.jax.pricer.dto.CurrencyMasterDTO, Object> getCurrencyByGroupId(@RequestParam(value = "groupId", required = true)BigDecimal groupId) {
+			return discountMgmtClient.getCurrencyByGroupId(groupId);
+	}
+	
 }

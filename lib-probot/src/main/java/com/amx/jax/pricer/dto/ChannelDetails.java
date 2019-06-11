@@ -9,30 +9,30 @@ public class ChannelDetails implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	private Channel channel;
+	
 	private BigDecimal channelId;
 
-	private BigDecimal disountId;
+	private BigDecimal discountId;
 
 	private BigDecimal groupId;
 
 	private BigDecimal discountTypeId;
 
-	private Channel channel;
-
-	private BigDecimal discountPips;
-
 	private String isActive;
+	
+	private BigDecimal discountPips;
 
 	private BigDecimal minDiscountPips;
 
 	private BigDecimal maxDiscountPips;
 
-	public BigDecimal getId() {
+	public BigDecimal getChannelId() {
 		return channelId;
 	}
 
-	public void setId(BigDecimal id) {
-		this.channelId = id;
+	public void setChannelId(BigDecimal channelId) {
+		this.channelId = channelId;
 	}
 
 	public Channel getChannel() {
@@ -87,4 +87,29 @@ public class ChannelDetails implements Serializable {
 		this.maxDiscountPips = maxDiscountPips;
 	}
 
+	public BigDecimal getDiscountId() {
+		return discountId;
+	}
+
+	public void setDiscountId(BigDecimal discountId) {
+		this.discountId = discountId;
+	}
+
+	public BigDecimal getGroupId() {
+		return groupId;
+	}
+
+	public void setGroupId(BigDecimal groupId) {
+		this.groupId = groupId;
+	}
+
+	public BigDecimal getDiscountTypeId() {
+		return discountTypeId;
+	}
+
+	public void setDiscountTypeId(BigDecimal discountTypeId) {
+		this.discountTypeId = discountTypeId;
+	}
+
+	
 }

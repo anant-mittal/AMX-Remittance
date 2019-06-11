@@ -12,6 +12,8 @@ public class GroupDetails implements Serializable {
 	private String groupName;
 
 	private String groupType;
+	
+	private String isActive;
 
 	public BigDecimal getGroupId() {
 		return groupId;
@@ -37,4 +39,13 @@ public class GroupDetails implements Serializable {
 		this.groupType = groupType;
 	}
 
+	public String getIsActive() {
+		return isActive;
+	}
+
+	public void setIsActive(String isActive) {
+		this.isActive = isActive;
+	}
+
+	
 }

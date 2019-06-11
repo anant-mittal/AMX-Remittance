@@ -35,11 +35,13 @@ import com.amx.jax.pricer.PricerServiceClient;
 import com.amx.jax.pricer.ProbotDataService;
 import com.amx.jax.pricer.ProbotExchangeRateService;
 import com.amx.jax.pricer.dto.BankDetailsDTO;
+import com.amx.jax.pricer.dto.CurrencyMasterDTO;
 import com.amx.jax.pricer.dto.DiscountDetailsReqRespDTO;
 import com.amx.jax.pricer.dto.DiscountMgmtReqDTO;
 import com.amx.jax.pricer.dto.ExchangeRateAndRoutingRequest;
 import com.amx.jax.pricer.dto.ExchangeRateAndRoutingResponse;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
+import com.amx.jax.pricer.dto.GroupDetails;
 import com.amx.jax.pricer.dto.HolidayResponseDTO;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
@@ -446,14 +448,14 @@ public class PricerServiceApiTest implements ProbotExchangeRateService, ProbotDa
 	@Override
 	public AmxApiResponse<DiscountDetailsReqRespDTO, Object> saveDiscountDetails(
 			DiscountDetailsReqRespDTO discountMgmtReqDTO) {
-		// TODO Auto-generated method stub
+		// TODO Subodh To Fix This
 		return null;
 	}
 
 	@Override
 	public AmxApiResponse<DiscountDetailsReqRespDTO, Object> getDiscountManagemet(
 			DiscountMgmtReqDTO discountMgmtReqDTO) {
-		// TODO Auto-generated method stub
+		// TODO Subodh To Fix This
 		return null;
 	}
 
@@ -467,6 +469,24 @@ public class PricerServiceApiTest implements ProbotExchangeRateService, ProbotDa
 		AmxApiResponse<Map<String, String>, Object> amxApiResponse = AmxApiResponse.build(testResp);
 
 		return amxApiResponse;
+	}
+
+	@Override
+	public AmxApiResponse<GroupDetails, Object> getCurrencyGroupingData() {
+		// TODO Subodh To Fix This
+		return null;
+	}
+
+	@Override
+	public AmxApiResponse<CurrencyMasterDTO, Object> updateCurrencyGroupId(BigDecimal groupId, BigDecimal currencyId) {
+		// TODO Subodh To Fix This
+		return null;
+	}
+
+	@Override
+	public AmxApiResponse<CurrencyMasterDTO, Object> getCurrencyByGroupId(BigDecimal groupId) {
+		// TODO Subodh To Fix This
+		return null;
 	}
 
 }

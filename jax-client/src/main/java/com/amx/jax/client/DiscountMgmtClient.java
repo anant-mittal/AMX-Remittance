@@ -14,6 +14,8 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.pricer.PricerServiceClient;
 import com.amx.jax.pricer.dto.DiscountMgmtReqDTO;
+import com.amx.jax.pricer.dto.GroupDetails;
+import com.amx.jax.pricer.dto.CurrencyMasterDTO;
 import com.amx.jax.pricer.dto.DiscountDetailsReqRespDTO;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
@@ -71,4 +73,15 @@ public class DiscountMgmtClient extends AbstractJaxServiceClient implements IDis
 		return pricerServiceClient.saveDiscountDetails(discountMgmtReqDTO);
 	}
 	
+	public AmxApiResponse<CurrencyMasterDTO, Object> updateCurrencyGroupId(BigDecimal groupId, BigDecimal currencyId) {
+		return pricerServiceClient.updateCurrencyGroupId(groupId, currencyId);
+	}
+	
+	public AmxApiResponse<GroupDetails, Object> getCurrencyGroupingData() {
+		return pricerServiceClient.getCurrencyGroupingData();
+	}
+	
+	public AmxApiResponse<CurrencyMasterDTO, Object> getCurrencyByGroupId(BigDecimal groupId) {
+		return pricerServiceClient.getCurrencyByGroupId(groupId);
+	}
 }
