@@ -1027,7 +1027,7 @@
                                                       pdfFontName="fonts/all/arial.ttf"/>
                                             </textElement>
                                             <textFieldExpression class="java.lang.String">
-                                                <![CDATA[ "Approved No :  "+ $F{tranxtype}.get("approvalNo")]]>
+                                                <![CDATA[ $F{tranxtype}.getValue("approvalNo", "Approved No : ") + $F{tranxtype}.get("approvalNo")]]>
                                             </textFieldExpression>
                                         </textField>
 
