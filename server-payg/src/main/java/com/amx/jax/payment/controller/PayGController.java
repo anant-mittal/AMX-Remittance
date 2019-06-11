@@ -182,7 +182,7 @@ public class PayGController {
 			String returnTime = df.format(cal.getTime());
 			model.addAttribute("REDIRECTURL", appRedirectUrl);
 			model.addAttribute("RETURN_TIME", returnTime);
-			model.addAttribute("TNT", tnt);
+			model.addAttribute("TNT", tnt.toString());
 			return "thymeleaf/pg_error";
 		}
 
