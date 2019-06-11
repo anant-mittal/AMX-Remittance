@@ -76,7 +76,7 @@ public class ConverterJasper implements FileConverter {
 
 		String jasperFileName = templateUtils.getTemplateFile(
 				"jasper/" + file.getITemplate().getFileName(), AppContextUtil.getTenant(),
-				postManConfig.getLocal(file));
+				postManConfig.getLocal(file), null);
 
 		simpleReportFiller.setReportFileName("templates/" + jasperFileName + ".jrxml");
 		simpleReportFiller.compileReport();

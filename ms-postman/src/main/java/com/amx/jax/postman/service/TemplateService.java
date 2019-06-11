@@ -75,13 +75,14 @@ public class TemplateService {
 	/**
 	 * Process html.
 	 *
-	 * @param template the template
-	 * @param context  the context
+	 * @param template    the template
+	 * @param context     the context
+	 * @param contactType
 	 * @return the string
 	 */
-	public String processHtml(ITemplate template, Context context, Locale locale) {
+	public String processHtml(ITemplate template, Context context, Locale locale, ContactType contactType) {
 		String rawStr = templateEngine.process(
-				templateUtils.getTemplateFile(template.getHtmlFile(), AppContextUtil.getTenant(), locale),
+				templateUtils.getTemplateFile(template.getHtmlFile(), AppContextUtil.getTenant(), locale, contactType),
 				context);
 
 		Pattern p = Pattern.compile("src=\"inline:(.*?)\"");
@@ -99,9 +100,10 @@ public class TemplateService {
 		return rawStr;
 	}
 
-	public String processJson(ITemplate template, Context context, Locale locale) {
+	public String processJson(ITemplate template, Context context, Locale locale, ContactType contactType) {
 		return templateEngine.process(
-				templateUtils.getTemplateFile(template.getJsonFile(), AppContextUtil.getTenant(), locale), context);
+				templateUtils.getTemplateFile(template.getJsonFile(), AppContextUtil.getTenant(), locale, contactType),
+				context);
 	}
 
 	/**
@@ -148,9 +150,9 @@ public class TemplateService {
 		if (file.getITemplate().isThymleaf()) {
 			String content;
 			if (file.getType() == File.Type.JSON) {
-				content = this.processJson(file.getITemplate(), context, locale);
+				content = this.processJson(file.getITemplate(), context, locale, contactType);
 			} else {
-				content = this.processHtml(file.getITemplate(), context, locale);
+				content = this.processHtml(file.getITemplate(), context, locale, contactType);
 			}
 			file.setContent(content);
 		}
