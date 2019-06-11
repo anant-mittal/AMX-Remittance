@@ -41,6 +41,11 @@
         <span th:case="OMN">Modern  Exchange</span>
     </div>
 </div>
-<p>Due to technical difficulties the KNet banking services are temporarily unavailable.</p>
+<div th:switch="${TNT}">
+    <p th:case="KWT">Due to technical difficulties the KNet banking services are temporarily unavailable.</p>
+    <p th:case="BHR">Due to technical difficulties the Benefit payment services are temporarily unavailable.</p>
+    <p th:case="OMN">Due to technical difficulties the Bank of Dhofar services are temporarily unavailable.</p>
+</div>
+
 </body>
 </html>
