@@ -70,19 +70,20 @@ public class PipsMasterDao {
 
 	public List<PipsMaster> getPipsForFcCurAndBank(BigDecimal toCurrency, BigDecimal countryBranchId,
 			BigDecimal countryId, List<BigDecimal> validBankIds) {
-		return repo.getPipsForFcCurAndBank(toCurrency, countryBranchId, countryId, validBankIds);
+		return repo.getPipsForFcCurAndBank(toCurrency, countryBranchId, validBankIds);
 	}
 
-	public List<PipsMaster> getAmountSlab(BigDecimal countryId, BigDecimal currencyId, BigDecimal onlineCountryBranchId) {
+	public List<PipsMaster> getAmountSlab(BigDecimal countryId, BigDecimal currencyId,
+			BigDecimal onlineCountryBranchId) {
 		return repo.getPipsMasterForAmountSlab(countryId, currencyId, onlineCountryBranchId);
 	}
 
 	public PipsMaster getPipsById(BigDecimal id) {
 		return repo.findByPipsMasterId(id);
 	}
-	
+
 	public void savePipsForDiscount(List<PipsMaster> pipslDiscounts) {
-		 repo.save(pipslDiscounts);
+		repo.save(pipslDiscounts);
 	}
 
 }

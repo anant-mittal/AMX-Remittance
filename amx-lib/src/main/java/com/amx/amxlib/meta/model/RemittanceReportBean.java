@@ -95,7 +95,8 @@ public class RemittanceReportBean {
 	private String netAmount;
 	private String paidAmount;
 	private String refundedAmount;
-	private BigDecimal collectAmount;
+	//private BigDecimal collectAmount;
+	private String collectAmount;
 	private List<PurposeOfRemittanceReportBean> purposeOfRemitTrList;
 	
 	private String lessLoyaltyEncasement;
@@ -193,11 +194,11 @@ public class RemittanceReportBean {
 		this.userName = userName;
 	}
 
-	public BigDecimal getCollectAmount() {
+	public String getCollectAmount() {
 		return collectAmount;
 	}
 
-	public void setCollectAmount(BigDecimal collectAmount) {
+	public void setCollectAmount(String collectAmount) {
 		this.collectAmount = collectAmount;
 	}
 

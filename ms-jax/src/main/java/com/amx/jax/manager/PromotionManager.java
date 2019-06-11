@@ -214,7 +214,7 @@ public class PromotionManager {
 			if (models != null && !models.isEmpty() && locationcode.compareTo(ConstantDocument.ONLINE_BRANCH_LOC_CODE)!=0) {
 				dto.setPrize(models.get(0).getPrize()==null?"":models.get(0).getPrize());
 				if(!StringUtils.isBlank(dto.getPrize())) {
-					dto.setPrizeMessage("Congratulations , you are now eligiable for Half "+currencyCode+" cash prize");
+					dto.setPrizeMessage("Congratulations , you are now eligible for Half "+currencyCode+" cash prize");
 				}
 			}
 	return dto;

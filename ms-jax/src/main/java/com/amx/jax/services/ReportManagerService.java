@@ -664,14 +664,18 @@ public List<RemittanceReportBean> calculateCollectionMode(RemittanceTransactionV
 					obj.setKnetBooleanCheck(true);
 					if(viewObj.getCollectAmount()!=null && viewCollectionObj.getLocalTransactionCurrencyId()!=null){
 						BigDecimal collectAmount=RoundUtil.roundBigDecimal((viewObj.getCollectAmount()),currencyDao.getCurrencyList(viewCollectionObj.getLocalTransactionCurrencyId()).get(0).getDecinalNumber().intValue());
-						obj.setCollectAmount(collectAmount);
+						if(JaxUtil.isNullZeroBigDecimalCheck(collectAmount)) {
+						obj.setCollectAmount(collectAmount.toString());
+						}
 					}
 				}else{
 					obj.setCollectionMode(viewObj.getCollectionModeDesc());
 					obj.setKnetBooleanCheck(false);
 					if(viewObj.getCollectAmount()!=null && viewCollectionObj.getLocalTransactionCurrencyId()!=null){
 						BigDecimal collectAmount=RoundUtil.roundBigDecimal((viewObj.getCollectAmount()),currencyDao.getCurrencyList(viewCollectionObj.getLocalTransactionCurrencyId()).get(0).getDecinalNumber().intValue());
-						obj.setCollectAmount(collectAmount);
+						if(JaxUtil.isNullZeroBigDecimalCheck(collectAmount)) {
+						obj.setCollectAmount(collectAmount.toString());
+						}
 					}
 				}
 				if(size>1){
