@@ -1120,7 +1120,7 @@
                     <!--#################promotionMessage END####################-->
                     
                     <!--##################FOOTER START####################-->
-                    <frame>
+                    <!-- <frame>
                         <reportElement x="0" y="700" width="595" height="90"
                                        forecolor="blue"/>
 
@@ -1137,7 +1137,7 @@
                        		<![CDATA[$F{tranx}.get("isArabic")!= "true" ? $P{TU}.prop("company.promotion.img") : $P{TU}.prop("company.arPromotion.img")]]>
                            </imageExpression>
                         </image>
-                    </frame>
+                    </frame> -->
                     <!--##################FOOTER END####################-->
                     <!--##################FOOTER END####################-->
                     </c:listContents>
