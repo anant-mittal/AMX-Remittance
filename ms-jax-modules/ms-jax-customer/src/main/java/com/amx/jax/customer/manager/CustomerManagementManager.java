@@ -29,6 +29,7 @@ import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.customer.CreateCustomerInfoRequest;
 import com.amx.jax.model.customer.CustomerStatusModel;
 import com.amx.jax.model.request.CustomerPersonalDetail;
+import com.amx.jax.model.request.customer.UpdateCustomerInfoRequest;
 import com.amx.jax.model.response.CustomerInfo;
 import com.amx.jax.model.response.customer.OffsiteCustomerDataDTO;
 import com.amx.jax.repository.ICustomerCategoryDiscountRepo;
@@ -72,6 +73,8 @@ public class CustomerManagementManager {
 	OnlineCustomerManager onlineCustomerManager;
 	@Autowired
 	CustomerDao custDao;
+	@Autowired
+	CustomerUpdateManager customerUpdateManager;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CustomerManagementManager.class);
 
@@ -161,11 +164,12 @@ public class CustomerManagementManager {
 		ResourceDTO dto = new ResourceDTO();
 		CustomerExtendedModel customerExtendedModel = customerExtendedRepo.findByCustomerId(customerId);
 		if (customerExtendedModel != null) {
-			CustomerCategoryDiscountModel categorydiscountModel = customerCategoryRepository
+			// TO BE UNCOMMENTED when discount model issue is resolved
+			/*CustomerCategoryDiscountModel categorydiscountModel = customerCategoryRepository
 					.findByIdAndIsActive(customerExtendedModel.getCustCatMasterId(), ConstantDocument.Yes);
 
 			dto.setResourceId(categorydiscountModel.getId());
-			dto.setResourceName(categorydiscountModel.getCustomerCatagory());
+			dto.setResourceName(categorydiscountModel.getCustomerCatagory());*/
 		}
 		return dto;
 	}
@@ -189,21 +193,30 @@ public class CustomerManagementManager {
 	public AmxApiResponse<CustomerInfo, Object> createCustomer(CreateCustomerInfoRequest createCustomerInfoRequest) throws ParseException {
 		AmxApiResponse<CustomerInfo, Object> response = offsitCustRegService.saveCustomerInfo(createCustomerInfoRequest);
 		BigDecimal customerId = response.getResult().getCustomerId();
-		setAdditionalDataForCreateCustomer(customerId);
+		setAdditionalDataForCreateCustomer(createCustomerInfoRequest, customerId);
 		customerDocumentManager.addCustomerDocument(customerId);
 		return response;
 	}
 
-	private void setAdditionalDataForCreateCustomer(BigDecimal customerId) {
+	private void setAdditionalDataForCreateCustomer(CreateCustomerInfoRequest createCustomerInfoRequest, BigDecimal customerId) {
 		Customer customer = custDao.getCustById(customerId);
 		customer.setCustomerRegistrationType(CustomerRegistrationType.NEW_BRANCH);
+		customer.setPepsIndicator(createCustomerInfoRequest.getPepsIndicator() ? ConstantDocument.Yes : ConstantDocument.No);
 		custDao.saveCustomer(customer);
 
 	}
 
-	public void moveCustomerDataUsingProcedures(AmxApiResponse<CustomerInfo, Object> createCustomerResponse) {
-		customerDocumentManager.moveCustomerDBDocuments(createCustomerResponse);
-		custDao.callProcedurePopulateCusmas(createCustomerResponse.getResult().getCustomerId());
+	public void moveCustomerDataUsingProcedures(BigDecimal customerId) {
+		customerDocumentManager.moveCustomerDBDocuments(customerId);
+		custDao.callProcedurePopulateCusmas(customerId);
+	}
+
+	public void moveCustomerDataUsingProcedures() {
+		moveCustomerDataUsingProcedures(metaData.getCustomerId());
+	}
+
+	public void updateCustomer(UpdateCustomerInfoRequest updateCustomerInfoRequest) {
+		customerUpdateManager.updateCustomer(updateCustomerInfoRequest);
 	}
 
 }

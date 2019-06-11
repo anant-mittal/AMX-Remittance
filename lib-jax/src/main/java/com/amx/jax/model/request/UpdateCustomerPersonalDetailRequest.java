@@ -2,17 +2,15 @@ package com.amx.jax.model.request;
 
 import java.util.Date;
 
-import com.amx.jax.swagger.ApiMockModelProperty;
-
 public class UpdateCustomerPersonalDetailRequest {
 
-	@ApiMockModelProperty(example = "2000-09-12")
 	Date dateOfBirth;
 
-	@ApiMockModelProperty(example = "true")
 	Boolean insurance;
 
 	String customerSignature;
+
+	Boolean pepsIndicator;
 
 	public Date getDateOfBirth() {
 		return dateOfBirth;

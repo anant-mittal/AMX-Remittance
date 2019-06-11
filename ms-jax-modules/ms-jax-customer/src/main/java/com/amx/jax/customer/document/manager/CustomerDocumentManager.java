@@ -9,7 +9,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.customer.document.validate.KycScanValidator;
 import com.amx.jax.dbmodel.Customer;
@@ -18,11 +17,8 @@ import com.amx.jax.dbmodel.DmsApplMapping;
 import com.amx.jax.dbmodel.IdentityTypeMaster;
 import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReferenceTemp;
 import com.amx.jax.model.customer.CustomerDocumentInfo;
-import com.amx.jax.model.customer.DuplicateCustomerDto;
 import com.amx.jax.model.customer.UploadCustomerKycRequest;
 import com.amx.jax.model.customer.UploadCustomerKycResponse;
-import com.amx.jax.model.request.CustomerPersonalDetail;
-import com.amx.jax.model.response.CustomerInfo;
 import com.amx.jax.userservice.manager.CustomerIdProofManager;
 import com.amx.jax.userservice.service.UserService;
 import com.jax.amxlib.exception.jax.GlobaLException;
@@ -65,7 +61,7 @@ public class CustomerDocumentManager {
 	private CustomerDocumentInfo fetchKycCustomerImage(BigDecimal customerId) {
 		CustomerIdProof customerIdProof = customerIdProofManager.getCustomerIdProofByCustomerId(customerId);
 		CustomerDocumentInfo customerDocumentImage = null;
-		if (customerIdProof != null) {
+		if (customerIdProof != null && customerIdProof.getScanSystem() != null) {
 			switch (customerIdProof.getScanSystem()) {
 			case "D":
 				customerDocumentImage = databaseImageScanManager.fetchKycImageInfo(customerIdProof);
@@ -109,8 +105,8 @@ public class CustomerDocumentManager {
 		}
 	}
 
-	public void moveCustomerDBDocuments(AmxApiResponse<CustomerInfo, Object> createCustomerResponse) {
-		Customer customer = userService.getCustById(createCustomerResponse.getResult().getCustomerId());
+	public void moveCustomerDBDocuments(BigDecimal customerId) {
+		Customer customer = userService.getCustById(customerId);
 		moveCustomerDBKycDocuments(customer);
 	}
 

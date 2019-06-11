@@ -49,7 +49,7 @@ public class CustomerManagementController implements ICustomerManagementControll
 			throws ParseException {
 		log.debug("request createCustomer  {}", JsonUtil.toJson(createCustomerRequest));
 		AmxApiResponse<CustomerInfo, Object> createCustomerResponse = customerManagementManager.createCustomer(createCustomerRequest);
-		customerManagementManager.moveCustomerDataUsingProcedures(createCustomerResponse);
+		customerManagementManager.moveCustomerDataUsingProcedures(createCustomerResponse.getResult().getCustomerId());
 		return createCustomerResponse;
 	}
 
@@ -57,6 +57,8 @@ public class CustomerManagementController implements ICustomerManagementControll
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> updateCustomer(@RequestBody @Valid UpdateCustomerInfoRequest updateCustomerInfoRequest) {
 		log.debug("request updateCustomer {}", updateCustomerInfoRequest);
+		customerManagementManager.updateCustomer(updateCustomerInfoRequest);
+		customerManagementManager.moveCustomerDataUsingProcedures();
 		return AmxApiResponse.build();
 	}
 
