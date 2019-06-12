@@ -3,17 +3,14 @@ package com.amx.jax.radar.jobs.customer;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.client.snap.SnapConstants;
 import com.amx.jax.radar.AMXSharedValues;
 import com.amx.jax.radar.EsConfig;
 import com.amx.utils.ArgUtil;
-import com.amx.utils.Constants;
 
 /**
  * The Class LoggedInUsers.

@@ -33,8 +33,8 @@ import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties
 @EnableEncryptableProperties
 public class AppConfig {
 
-	private static final String PROP_SUFFIX = "}";
 	private static final String PROP_PREFIX = "${";
+	private static final String PROP_SUFFIX = "}";
 	public static final Pattern pattern = Pattern.compile("^\\$\\{(.*)\\}$");
 	public static final String APP_ENV = "${app.env}";
 	public static final String APP_GROUP = "${app.group}";
@@ -59,7 +59,9 @@ public class AppConfig {
 	public static final String APP_AUTH_TOKEN = "${app.auth.token}";
 	public static final String APP_AUTH_ENABLED = "${app.auth.enabled}";
 
-	public static final String DEFAULT_TENANT = "${default.tenant}";
+	public static final String DEFAULT_TENANT_KEY = "default.tenant";
+
+	public static final String DEFAULT_TENANT_EXP = PROP_PREFIX + DEFAULT_TENANT_KEY + PROP_SUFFIX;
 
 	public static final String JAX_CDN_URL = "${jax.cdn.url}";
 	public static final String JAX_APP_URL = "${jax.app.url}";
@@ -138,7 +140,7 @@ public class AppConfig {
 	@AppParamKey(AppParam.APP_CACHE)
 	private Boolean cache;
 
-	@Value(DEFAULT_TENANT)
+	@Value(DEFAULT_TENANT_EXP)
 	@AppParamKey(AppParam.DEFAULT_TENANT)
 	private Tenant defaultTenant;
 
