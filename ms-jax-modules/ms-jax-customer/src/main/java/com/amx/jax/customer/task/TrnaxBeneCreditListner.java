@@ -16,7 +16,6 @@ import com.amx.jax.dbmodel.CustomerContactVerification;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.dict.Language;
 import com.amx.jax.event.AmxTunnelEvents;
-import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.response.customer.CustomerFlags;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.client.PushNotifyClient;
@@ -32,7 +31,6 @@ import com.amx.jax.tunnel.TunnelEventXchange;
 import com.amx.jax.userservice.manager.CustomerFlagManager;
 import com.amx.jax.util.AmxDBConstants;
 import com.amx.utils.ArgUtil;
-import com.amx.utils.CryptoUtil.HashBuilder;
 import com.amx.utils.JsonUtil;
 
 @TunnelEventMapping(topic = AmxTunnelEvents.Names.TRNX_BENE_CREDIT, scheme = TunnelEventXchange.TASK_WORKER)
