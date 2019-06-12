@@ -548,7 +548,7 @@ public class RemittanceTransactionManager {
 		return comission;
 	}
 
-	private Map<String, Object> getCommissionRange(ExchangeRateBreakup breakup) {
+	public Map<String, Object> getCommissionRange(ExchangeRateBreakup breakup) {
 
 		remitApplParametersMap.put("P_CALCULATED_FC_AMOUNT", breakup.getConvertedFCAmount());
 		BigDecimal custtype = bizcomponentDao.findCustomerTypeId("I");

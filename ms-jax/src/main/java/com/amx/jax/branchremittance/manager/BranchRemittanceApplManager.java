@@ -251,6 +251,9 @@ public class BranchRemittanceApplManager {
 		/** bene additional check **/
 		 Map<String, Object> addBeneDetails =branchRemitManager.validateAdditionalBeneDetails(branchRoutingDto,exchangeRateResposne,beneficaryDetails,requestApplModel);
 		 
+		 
+		 /** validate trnx limit check **/
+		 branchRemitManager.validateTrnxLimitCheck(exchangeRateResposne.getExRateBreakup(),exchangeRateResposne.getTxnFee(),beneficaryDetails);
 		
 		 
 		hashMap.put("ROUTING_DETAILS_DTO", branchRoutingDto);
