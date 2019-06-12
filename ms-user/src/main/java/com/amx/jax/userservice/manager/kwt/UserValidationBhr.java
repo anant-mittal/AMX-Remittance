@@ -39,7 +39,7 @@ public class UserValidationBhr implements CustomerValidation {
 
 		for (CustomerIdProof idProof : idProofs) {
 			boolean isCivilId = ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID.equals(idProof.getIdentityTypeId());
-			if (!idProof.getIdentityExpiryDate().after(new Date())) {
+			if (idProof.getIdentityExpiryDate() != null&&!idProof.getIdentityExpiryDate().after(new Date())) {
 				if (isCivilId) {
 					throw new GlobalException(JaxError.ID_PROOF_EXPIRED, "Id Proof is expired");
 				} else {

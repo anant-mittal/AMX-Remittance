@@ -939,7 +939,7 @@
                         </frame>
                         <!--##################Payment Mode START####################-->
                         <componentElement>
-                            <reportElement x="0" y="458" width="595" height="12"/>
+                            <reportElement x="0" y="458" width="595" height="48"/>
                             <d:list xmlns:d="http://jasperreports.sourceforge.net/jasperreports/components"
                                     xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd"
                                     printOrder="Vertical">
