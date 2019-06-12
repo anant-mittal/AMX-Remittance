@@ -31,6 +31,7 @@ import com.amx.jax.dbmodel.BankMasterModel;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.BizComponentData;
 import com.amx.jax.dbmodel.CountryMaster;
+import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.dbmodel.ServiceApplicabilityRule;
@@ -48,6 +49,7 @@ import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
+import com.amx.jax.model.response.ExchangeRateBreakup;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.AmlCheckResponseDto;
 import com.amx.jax.model.response.remittance.BeneAdditionalDto;
@@ -76,6 +78,7 @@ import com.amx.jax.services.RoutingService;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.repository.CustomerIdProofRepository;
 import com.amx.jax.util.JaxUtil;
+import com.amx.jax.util.RoundUtil;
 import com.amx.jax.validation.FxOrderValidation;
 
 
@@ -1039,6 +1042,35 @@ public class BranchRemittanceManager extends AbstractModel {
 	  
 		return dto;
 	}
+  
+  
+  public void validateTrnxLimitCheck(ExchangeRateBreakup breakup,BigDecimal commission,BenificiaryListView beneficaryDetails) {
+	    CurrencyMasterModel beneCurrencyMaster = currencyDao.findOne(beneficaryDetails.getCurrencyId()); 
+		BigDecimal decimalCurrencyValue = beneCurrencyMaster.getDecinalNumber();
+		String currencyQuoteName = beneficaryDetails.getCurrencyQuoteName();
+	  if (commission == null) {
+			Map<String, Object> commissionRangeMap = remitTrnxManager.getCommissionRange(breakup);
+			String msg = "";
+			BigDecimal fromAmount = BigDecimal.ZERO;
+			BigDecimal toAmount = BigDecimal.ZERO;
+			BigDecimal fcAmount = RoundUtil.roundBigDecimal(breakup.getConvertedFCAmount(),decimalCurrencyValue.intValue());
+			if (commissionRangeMap.get("FROM_AMOUNT") != null || commissionRangeMap.get("TO_AMOUNT") != null) {
+				fromAmount = (BigDecimal) commissionRangeMap.get("FROM_AMOUNT");
+				toAmount = (BigDecimal) commissionRangeMap.get("TO_AMOUNT");
+				if (fcAmount.compareTo(fromAmount) < 0) {
+					msg = "Amount to be remitted, cannot be lesser than " + currencyQuoteName + " " + fromAmount
+							+ ".Please increase the amount to be remitted.";
+				} else if (fcAmount.compareTo(toAmount) > 0) {
+					msg = "Amount to be remitted, exceeds the permissible limit .Please decrease the amount to be remitted to less than "
+							+ currencyQuoteName + " " + toAmount + ".";
+				}
+			}
+			if (!StringUtils.isBlank(msg)) {
+				throw new GlobalException(JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL, msg);
+			}
+
+		}
+}	
   
 }	
 

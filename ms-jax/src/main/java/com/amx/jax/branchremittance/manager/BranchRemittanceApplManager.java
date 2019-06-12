@@ -252,6 +252,8 @@ public class BranchRemittanceApplManager {
 		 
 		 BeneAdditionalDto beneAddlDto  =branchRemitManager.getAdditionalBeneDetailJax(beneficaryDetails,requestApplModel);
 		 
+		 /** validate trnx limit check **/
+		 branchRemitManager.validateTrnxLimitCheck(exchangeRateResposne.getExRateBreakup(),exchangeRateResposne.getTxnFee(),beneficaryDetails);
 
 		hashMap.put("EXCH_RATE_MAP", exchangeRateResposne);
 		hashMap.put("APPL_REQ_MODEL", requestApplModel);
