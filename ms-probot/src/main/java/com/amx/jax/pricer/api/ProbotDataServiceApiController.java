@@ -44,7 +44,7 @@ public class ProbotDataServiceApiController implements ProbotDataService{
 	@RequestMapping(value = ApiEndPoints.GET_DISCOUNT_DETAILS, method = RequestMethod.POST)
 	public AmxApiResponse<DiscountDetailsReqRespDTO, Object> getDiscountManagemet(
 			@RequestBody @Valid DiscountMgmtReqDTO discountMgmtReqDTO) {
-		LOGGER.info("In Get API of Discount Management");
+		LOGGER.info("Received Request for Discount Management " + " with TraceId: " + AppContextUtil.getTraceId());
 		DiscountDetailsReqRespDTO discountMgmtRespDTO = dataService.getDiscountManagementData(discountMgmtReqDTO);
 		
 		return AmxApiResponse.build(discountMgmtRespDTO);
@@ -54,8 +54,7 @@ public class ProbotDataServiceApiController implements ProbotDataService{
 	@RequestMapping(value = ApiEndPoints.GET_ROUTBANKS_AND_SEVICES, method = RequestMethod.POST)
 	public AmxApiResponse<RoutBanksAndServiceRespDTO, Object> getRbanksAndServices(
 			@RequestParam(required = true) BigDecimal countryId, @RequestParam(required = true) BigDecimal currencyId) {
-		LOGGER.info("In Get API of Routing Bank and Services");
-
+		LOGGER.info("Get Country Id And Currency Id For Routing Bank and Service " + " with TraceId: " + AppContextUtil.getTraceId());
 		List<RoutBanksAndServiceRespDTO> routBanksAndServiceRespDTO = dataService.getRoutBanksAndServices(countryId,
 				currencyId);
 
@@ -82,8 +81,7 @@ public class ProbotDataServiceApiController implements ProbotDataService{
 			@RequestBody DiscountDetailsReqRespDTO discountdetailsRequestDTO) {
 		
 		//TODO : Log proper Info : Subodh
-		LOGGER.info("In Save API of Discount Details");
-				
+		LOGGER.info("Recieved Save Request for Discount Details " + " with TraceId: " + AppContextUtil.getTraceId());
 		return dataService.saveDiscountDetails(discountdetailsRequestDTO);
 	}
 
@@ -92,6 +90,7 @@ public class ProbotDataServiceApiController implements ProbotDataService{
 	public AmxApiResponse<GroupDetails, Object> getCurrencyGroupingData() {
 		
 		//TODO : Log proper Info : Subodh
+		LOGGER.info("Get Currency Grouping Data " + " with TraceId: " + AppContextUtil.getTraceId());
 		List<GroupDetails> groupInfoForCurrency = dataService.getGroupInfoForCurrency();
 		
 		return AmxApiResponse.buildList(groupInfoForCurrency);
@@ -102,6 +101,7 @@ public class ProbotDataServiceApiController implements ProbotDataService{
 	public AmxApiResponse<CurrencyMasterDTO, Object> updateCurrencyGroupId(
 			@RequestParam(required = true) BigDecimal groupId, @RequestParam(required = true) BigDecimal currencyId) {
 		//TODO : Log proper Info : Subodh
+		LOGGER.info("Get Group Id And Currency Id For Update " + " with TraceId: " + AppContextUtil.getTraceId());
 		return dataService.updateCurrencyGroupId(groupId, currencyId);
 	}
 
@@ -110,7 +110,7 @@ public class ProbotDataServiceApiController implements ProbotDataService{
 	public AmxApiResponse<CurrencyMasterDTO, Object> getCurrencyByGroupId(@RequestParam(required = true) BigDecimal groupId) {
 		
 		//TODO : Log proper Info : Subodh
-		
+		LOGGER.info("Get Group Id For Currency " + " with TraceId: " + AppContextUtil.getTraceId());
 		List<CurrencyMasterDTO> groupInfoForCurrency = dataService.getCurrencyByGroupId(groupId);
 		
 		return AmxApiResponse.buildList(groupInfoForCurrency);

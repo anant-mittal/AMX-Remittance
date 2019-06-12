@@ -34,6 +34,7 @@ import com.amx.jax.dict.UserClient.Channel;
 import com.amx.jax.pricer.PricerServiceClient;
 import com.amx.jax.pricer.ProbotDataService;
 import com.amx.jax.pricer.ProbotExchangeRateService;
+import com.amx.jax.pricer.AbstractProbotInterface.ApiEndPoints;
 import com.amx.jax.pricer.dto.BankDetailsDTO;
 import com.amx.jax.pricer.dto.CurrencyMasterDTO;
 import com.amx.jax.pricer.dto.DiscountDetailsReqRespDTO;
@@ -439,24 +440,27 @@ public class PricerServiceApiTest implements ProbotExchangeRateService, ProbotDa
 	}
 
 	@Override
-	public AmxApiResponse<RoutBanksAndServiceRespDTO, Object> getRbanksAndServices(BigDecimal countryId,
-			BigDecimal currencyId) {
+	@RequestMapping(value = ApiEndPoints.GET_ROUTBANKS_AND_SEVICES, method = RequestMethod.POST)
+	public AmxApiResponse<RoutBanksAndServiceRespDTO, Object> getRbanksAndServices(@RequestParam(required = true) BigDecimal countryId,
+			@RequestParam(required = true) BigDecimal currencyId) {
 		// TODO Subodh To Fix This
-		return null;
+		return pricerServiceClient.getRbanksAndServices(countryId, currencyId);
 	}
 
 	@Override
+	@RequestMapping(value = ApiEndPoints.SAVE_DISCOUNT_DETAILS, method = RequestMethod.POST)
 	public AmxApiResponse<DiscountDetailsReqRespDTO, Object> saveDiscountDetails(
 			DiscountDetailsReqRespDTO discountMgmtReqDTO) {
 		// TODO Subodh To Fix This
-		return null;
+		return pricerServiceClient.saveDiscountDetails(discountMgmtReqDTO);
 	}
 
 	@Override
+	@RequestMapping(value = ApiEndPoints.GET_DISCOUNT_DETAILS, method = RequestMethod.POST)
 	public AmxApiResponse<DiscountDetailsReqRespDTO, Object> getDiscountManagemet(
 			DiscountMgmtReqDTO discountMgmtReqDTO) {
 		// TODO Subodh To Fix This
-		return null;
+		return pricerServiceClient.getDiscountManagemet(discountMgmtReqDTO);
 	}
 
 	@RequestMapping(value = ApiEndPoints.SERVICE_TEST, method = RequestMethod.GET)
@@ -472,21 +476,25 @@ public class PricerServiceApiTest implements ProbotExchangeRateService, ProbotDa
 	}
 
 	@Override
+	@RequestMapping(value = ApiEndPoints.GET_CUR_GROUPING_DATA, method = RequestMethod.POST)
 	public AmxApiResponse<GroupDetails, Object> getCurrencyGroupingData() {
 		// TODO Subodh To Fix This
-		return null;
+		return pricerServiceClient.getCurrencyGroupingData();
 	}
 
 	@Override
-	public AmxApiResponse<CurrencyMasterDTO, Object> updateCurrencyGroupId(BigDecimal groupId, BigDecimal currencyId) {
+	@RequestMapping(value = ApiEndPoints.UPDATE_CUR_GROUP_ID, method = RequestMethod.POST)
+	public AmxApiResponse<CurrencyMasterDTO, Object> updateCurrencyGroupId(@RequestParam(required = true) BigDecimal groupId, 
+			@RequestParam(required = true) BigDecimal currencyId) {
 		// TODO Subodh To Fix This
-		return null;
+		return pricerServiceClient.updateCurrencyGroupId(groupId, currencyId);
 	}
 
 	@Override
-	public AmxApiResponse<CurrencyMasterDTO, Object> getCurrencyByGroupId(BigDecimal groupId) {
+	@RequestMapping(value = ApiEndPoints.GET_CUR_BY_GROUP_ID, method = RequestMethod.POST)
+	public AmxApiResponse<CurrencyMasterDTO, Object> getCurrencyByGroupId(@RequestParam(required = true) BigDecimal groupId) {
 		// TODO Subodh To Fix This
-		return null;
+		return pricerServiceClient.getCurrencyByGroupId(groupId);
 	}
 
 }
