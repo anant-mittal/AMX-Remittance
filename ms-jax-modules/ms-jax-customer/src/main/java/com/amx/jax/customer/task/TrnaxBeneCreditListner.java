@@ -90,9 +90,9 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 		String trnxAmountval = myFormat.format(trnxAmount);
 
 		Customer c = customerRepository.getCustomerByCustomerIdAndIsActive(custId, "Y");
-		CustomerFlags customerFlags=null;
-		customerFlags = customerFlagManager.getCustomerFlags(custId);
-
+		//CustomerFlags customerFlags=null;
+		//customerFlags = customerFlagManager.getCustomerFlags(custId);
+		Boolean isOnlineCustomer=false;
 		Map<String, Object> wrapper = new HashMap<String, Object>();
 		Map<String, Object> modeldata = new HashMap<String, Object>();
 		modeldata.put("to", emailId);
@@ -156,7 +156,7 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 			postManService.sendEmailAsync(email);
 		}
 
-		if (!ArgUtil.isEmpty(smsNo)&&customerFlags.getIsOnlineCustomer()) {
+		if (!ArgUtil.isEmpty(smsNo)&&isOnlineCustomer) {
 			if (c.getMobileVerified() != AmxDBConstants.Status.Y) {
 				CustomerContactVerification x = customerContactVerificationManager.create(c, ContactType.SMS);
 				modeldata.put("customer", c);
