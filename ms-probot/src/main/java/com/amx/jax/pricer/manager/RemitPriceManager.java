@@ -441,7 +441,7 @@ public class RemitPriceManager {
 
 		if (glcbalRatesForBanks == null || glcbalRatesForBanks.isEmpty()) {
 			throw new PricerServiceException(PricerServiceError.MISSING_GLCBAL_ENTRIES,
-					"Critical: GLCBAL Inventory is Missing for Given Input ");
+					"Critical: GLCBAL RATE is Missing for Given Input, SETUP ISSUE");
 		}
 
 		Set<BigDecimal> availableGLBankIds = glcbalRatesForBanks.stream().map(glrate -> glrate.getBankId()).distinct()
@@ -450,7 +450,8 @@ public class RemitPriceManager {
 		for (BigDecimal queriedBankId : routingBankIds) {
 			if (!availableGLBankIds.contains(queriedBankId)) {
 				throw new PricerServiceException(PricerServiceError.MISSING_GLCBAL_ENTRIES,
-						"Critical: GLCBAL Entry is Missing for the Routing Bank Id: " + queriedBankId);
+						"Critical SETUP ISSUE: GLCBAL Entry is Missing for the Routing Bank Id: " + queriedBankId
+								+ " Disable the Routing Bank From Routing Setup");
 			}
 		}
 
