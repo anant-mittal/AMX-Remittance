@@ -44,6 +44,7 @@ import com.amx.jax.pricer.manager.RemitRoutingManager;
 import com.amx.jax.pricer.var.PricerServiceConstants.CUSTOMER_CATEGORY;
 import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_BY;
 import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_TYPE;
+import com.amx.jax.pricer.var.PricerServiceConstants.SERVICE_INDICATOR;
 
 /**
  * @author abhijeet
@@ -108,6 +109,8 @@ public class ExchangePricingAndRoutingService {
 
 		pricingResponseDTO.setInfo(exchRateAndRoutingTransientDataCache.getInfo());
 
+		pricingResponseDTO.setServiceIdDescription(getServiceIdDescriptions());
+
 		return pricingResponseDTO;
 	}
 
@@ -122,6 +125,8 @@ public class ExchangePricingAndRoutingService {
 		pricingResponseDTO.setBankDetails(exchRateAndRoutingTransientDataCache.getBankDetails());
 
 		pricingResponseDTO.setSellRateDetails(exchRateAndRoutingTransientDataCache.getSellRateDetails());
+
+		pricingResponseDTO.setServiceIdDescription(getServiceIdDescriptions());
 
 		// 2
 		// Collections.sort(pricingResponseDTO.getSellRateDetails(),
@@ -164,6 +169,8 @@ public class ExchangePricingAndRoutingService {
 			Collections.sort(pricingResponseDTO.getSellRateDetails());
 
 			pricingResponseDTO.setInfo(exchRateAndRoutingTransientDataCache.getInfo());
+
+			pricingResponseDTO.setServiceIdDescription(getServiceIdDescriptions());
 
 			allDiscountedRates.add(pricingResponseDTO);
 		}
@@ -411,6 +418,8 @@ public class ExchangePricingAndRoutingService {
 
 		resp.setBankServiceModeSellRates(bankServiceModeSellRates);
 
+		resp.setServiceIdDescription(getServiceIdDescriptions());
+
 		// resp.setInfo(exchRateAndRoutingTransientDataCache.getInfo());
 
 		return resp;
@@ -479,6 +488,20 @@ public class ExchangePricingAndRoutingService {
 		 */
 
 		return Boolean.TRUE;
+	}
+
+	private Map<BigDecimal, String> getServiceIdDescriptions() {
+
+		Map<BigDecimal, String> serviceIdDescription = new HashMap<BigDecimal, String>();
+
+		List<ExchangeRateDetails> exchRates = exchRateAndRoutingTransientDataCache.getSellRateDetails();
+
+		for (ExchangeRateDetails exchRate : exchRates) {
+			SERVICE_INDICATOR ind = SERVICE_INDICATOR.getByServiceId(exchRate.getServiceIndicatorId().intValue());
+			serviceIdDescription.put(BigDecimal.valueOf(ind.getServiceId()), ind.getDescription());
+		}
+
+		return serviceIdDescription;
 	}
 
 }

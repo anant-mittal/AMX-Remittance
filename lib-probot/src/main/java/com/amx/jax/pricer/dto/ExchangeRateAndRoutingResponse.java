@@ -24,8 +24,10 @@ public class ExchangeRateAndRoutingResponse implements Serializable, JSONable {
 
 	private Map<BigDecimal, BankDetailsDTO> bankDetails;
 
+	private Map<BigDecimal, String> serviceIdDescription;
+
 	private Map<String, TrnxRoutingDetails> trnxRoutingPaths;
-	
+
 	private Map<PRICE_TYPE, List<String>> bestExchangeRatePaths;
 
 	private String localTimezone;
@@ -55,7 +57,7 @@ public class ExchangeRateAndRoutingResponse implements Serializable, JSONable {
 	public void setBankDetails(Map<BigDecimal, BankDetailsDTO> bankDetails) {
 		this.bankDetails = bankDetails;
 	}
-	
+
 	public Map<PRICE_TYPE, List<String>> getBestExchangeRatePaths() {
 		return bestExchangeRatePaths;
 	}
@@ -95,6 +97,14 @@ public class ExchangeRateAndRoutingResponse implements Serializable, JSONable {
 
 	public void setForeignTimezone(String foreignTimezone) {
 		this.foreignTimezone = foreignTimezone;
+	}
+
+	public Map<BigDecimal, String> getServiceIdDescription() {
+		return serviceIdDescription;
+	}
+
+	public void setServiceIdDescription(Map<BigDecimal, String> serviceIdDescription) {
+		this.serviceIdDescription = serviceIdDescription;
 	}
 
 }

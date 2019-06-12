@@ -4,6 +4,8 @@
 package com.amx.jax.pricer.var;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author abhijeet
@@ -13,7 +15,7 @@ public final class PricerServiceConstants {
 
 	public static final String TTE = "TTE";
 
-	//public static final BigDecimal DEFAULT_ONLINE_SERVICE_ID = BigDecimal.ZERO;
+	// public static final BigDecimal DEFAULT_ONLINE_SERVICE_ID = BigDecimal.ZERO;
 
 	public static final BigDecimal MAX_BIGD_12 = new BigDecimal(999999999999l);
 
@@ -72,6 +74,48 @@ public final class PricerServiceConstants {
 
 	public static enum PRICE_TYPE {
 		BENE_DEDUCT, NO_BENE_DEDUCT;
+	}
+
+	public static enum SERVICE_INDICATOR {
+
+		EFT(101, "EFT"), TT(102, "TT"), CASH(103, "CASH"), DD(104, "DD"), TT_OTHER(105, "TT OTHER");
+
+		private int serviceId;
+		private String description;
+
+		private static final Map<Integer, SERVICE_INDICATOR> BY_ID = new HashMap<Integer, SERVICE_INDICATOR>();
+
+		static {
+			for (SERVICE_INDICATOR ind : values()) {
+				BY_ID.put(ind.serviceId, ind);
+			}
+		}
+
+		private SERVICE_INDICATOR(int serviceId, String description) {
+			this.serviceId = serviceId;
+			this.description = description;
+		}
+
+		public static SERVICE_INDICATOR getByServiceId(int serviceId) {
+			return BY_ID.get(serviceId);
+		}
+
+		public int getServiceId() {
+			return serviceId;
+		}
+
+		public void setServiceId(int serviceId) {
+			this.serviceId = serviceId;
+		}
+
+		public String getDescription() {
+			return description;
+		}
+
+		public void setDescription(String description) {
+			this.description = description;
+		}
+
 	}
 
 }
