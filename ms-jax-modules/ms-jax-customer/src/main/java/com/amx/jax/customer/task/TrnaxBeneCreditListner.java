@@ -53,8 +53,6 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 	@Autowired
 	CustomerFlagManager customerFlagManager;
 	
-	@Autowired
-	MetaData metaData;
 
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
