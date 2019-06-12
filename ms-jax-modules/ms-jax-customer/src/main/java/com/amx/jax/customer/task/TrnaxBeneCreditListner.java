@@ -95,7 +95,7 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 
 		Customer c = customerRepository.getCustomerByCustomerIdAndIsActive(custId, "Y");
 		CustomerFlags customerFlags=null;
-		customerFlags = customerFlagManager.getCustomerFlags(metaData.getCustomerId());
+		customerFlags = customerFlagManager.getCustomerFlags(custId);
 
 		Map<String, Object> wrapper = new HashMap<String, Object>();
 		Map<String, Object> modeldata = new HashMap<String, Object>();
