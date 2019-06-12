@@ -194,7 +194,7 @@ body, html {
 		<div th:case="'ENTITY_EXPIRED'">
 			<form action="" method="post">
 				<div class="login-container">
-					<h4>Sorry, the link you have entered is expired. Please enter the Civil ID to request verification link.</h4>
+					<h4>Sorry, the link you have entered is expired. Please enter the <span th:text="${idType}">Civil ID</span> to request verification link.</h4>
 					<div class="bottom-button-wrapper"><a href="?resend=1" class="button ripple" type="submit">Verify</a></div>
 				</div>
 			</form>
@@ -236,7 +236,7 @@ body, html {
 					<div class="sing-up-inputs">
 						<div class="floating-label-input  ">
 							<input type="text" error="false" required="" active="true" value="" name="identity" autofocus="autofocus">
-							<label for="civil-id" class="ff-label">Civil ID</label>
+							<label for="civil-id" class="ff-label" th:text="${idType}">Civil ID</label>
 							<span class="error-msg" th:text="${errorMessage}"></span>
 							<span class="line"></span>
 						</div>
