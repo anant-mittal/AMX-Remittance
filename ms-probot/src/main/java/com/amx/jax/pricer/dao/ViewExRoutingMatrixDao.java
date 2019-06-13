@@ -15,9 +15,18 @@ public class ViewExRoutingMatrixDao {
 	@Autowired
 	private ViewExRoutingMatrixRepository viewExRoutingMatrixRepository;
 
-	public List<ViewExRoutingMatrix> getRoutingMatrix(BigDecimal applicationCountryId, BigDecimal beneCountryId,
-			BigDecimal beneBankId, BigDecimal beneBankBranchId, BigDecimal currencyId, String serviceGroupCode) {
+	public List<ViewExRoutingMatrix> getRoutingMatrixForBankService(BigDecimal applicationCountryId,
+			BigDecimal beneCountryId, BigDecimal beneBankId, BigDecimal beneBankBranchId, BigDecimal currencyId,
+			String serviceGroupCode) {
 		return viewExRoutingMatrixRepository.findRoutingMatrix(applicationCountryId, beneCountryId, beneBankId,
 				beneBankBranchId, currencyId, serviceGroupCode);
 	}
+
+	public List<ViewExRoutingMatrix> getRoutingMatrixForCashService(BigDecimal applicationCountryId,
+			BigDecimal beneCountryId, BigDecimal beneBankId, BigDecimal beneBankBranchId, BigDecimal currencyId,
+			String serviceGroupCode, BigDecimal routingBankId, BigDecimal bankBranchId) {
+		return viewExRoutingMatrixRepository.findRoutingMatrix(applicationCountryId, beneCountryId, beneBankId,
+				beneBankBranchId, currencyId, serviceGroupCode, routingBankId, bankBranchId);
+	}
+
 }

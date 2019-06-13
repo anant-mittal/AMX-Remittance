@@ -81,9 +81,6 @@ public class ViewExRoutingMatrix implements Serializable {
 	@Column(name = "DELIVERY_DESCRIPTION")
 	private String deliveryDescription;
 
-	@Column(name = "PROCESSING_COUNTRY_ID")
-	private BigDecimal ProcessingCountryId;
-
 	@Column(name = "WEEK_FROM")
 	private BigDecimal weekFrom;
 
@@ -122,6 +119,15 @@ public class ViewExRoutingMatrix implements Serializable {
 
 	@Column(name = "TO_AMOUNT")
 	private BigDecimal toAmount;
+
+	@Column(name = "PROCESSING_COUNTRY_ID")
+	private BigDecimal ProcessingCountryId;
+
+	@Column(name = "DISCOUNT_ALLOWED")
+	private String discountAllowed;
+
+	@Column(name = "IS_HOLIDAY_IMPACT")
+	private String isHolidayImpact;
 
 	@Column(name = "CHARGES_TYPE")
 	private String chargesType;
@@ -309,14 +315,6 @@ public class ViewExRoutingMatrix implements Serializable {
 		this.deliveryDescription = deliveryDescription;
 	}
 
-	public BigDecimal getProcessingCountryId() {
-		return ProcessingCountryId;
-	}
-
-	public void setProcessingCountryId(BigDecimal processingCountryId) {
-		ProcessingCountryId = processingCountryId;
-	}
-
 	public BigDecimal getWeekFrom() {
 		return weekFrom;
 	}
@@ -419,6 +417,30 @@ public class ViewExRoutingMatrix implements Serializable {
 
 	public void setToAmount(BigDecimal toAmount) {
 		this.toAmount = toAmount;
+	}
+
+	public BigDecimal getProcessingCountryId() {
+		return ProcessingCountryId;
+	}
+
+	public void setProcessingCountryId(BigDecimal processingCountryId) {
+		ProcessingCountryId = processingCountryId;
+	}
+
+	public String getDiscountAllowed() {
+		return discountAllowed;
+	}
+
+	public void setDiscountAllowed(String discountAllowed) {
+		this.discountAllowed = discountAllowed;
+	}
+
+	public String getIsHolidayImpact() {
+		return isHolidayImpact;
+	}
+
+	public void setIsHolidayImpact(String isHolidayImpact) {
+		this.isHolidayImpact = isHolidayImpact;
 	}
 
 	public String getChargesType() {

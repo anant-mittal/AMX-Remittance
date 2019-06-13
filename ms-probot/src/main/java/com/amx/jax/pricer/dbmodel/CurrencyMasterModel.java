@@ -299,5 +299,4 @@ public class CurrencyMasterModel implements java.io.Serializable {
 	public void setFundMaxRate(BigDecimal fundMaxRate) {
 		this.fundMaxRate = fundMaxRate;
 	}
-
 }

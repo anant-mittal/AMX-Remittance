@@ -39,8 +39,8 @@ public class TimezoneMasterModel implements Serializable {
 	@Column(name = "ISACTIVE")
 	private char isActive;
 
-	@Column(name = "COUNTRY_ID", unique = true)
-	private BigDecimal countryId;
+	//@Column(name = "COUNTRY_ID", unique = true)
+	//private BigDecimal countryId;
 
 	@Column(name = "INFO")
 	private String info;
@@ -100,13 +100,15 @@ public class TimezoneMasterModel implements Serializable {
 		this.isActive = isActive;
 	}
 
-	public BigDecimal getCountryId() {
+	/*TODO: Remove
+	 * Columns Removed. Keeping to avoid side effects.
+	  public BigDecimal getCountryId() {
 		return countryId;
 	}
 
 	public void setCountryId(BigDecimal countryId) {
 		this.countryId = countryId;
-	}
+	}*/
 
 	public String getInfo() {
 		return info;

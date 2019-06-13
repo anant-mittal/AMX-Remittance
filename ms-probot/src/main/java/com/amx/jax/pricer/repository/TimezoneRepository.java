@@ -10,5 +10,5 @@ public interface TimezoneRepository extends CrudRepository<TimezoneMasterModel, 
 
 	public TimezoneMasterModel findByTimezone(String tz);
 
-	public TimezoneMasterModel findByCountryId(BigDecimal countryId);
+	//public TimezoneMasterModel findByCountryId(BigDecimal countryId);
 }

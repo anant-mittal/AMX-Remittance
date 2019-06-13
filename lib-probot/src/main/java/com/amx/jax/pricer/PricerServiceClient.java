@@ -14,12 +14,14 @@ import com.amx.jax.AppConfig;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.pricer.dto.CurrencyMasterDTO;
 import com.amx.jax.partner.dto.SrvPrvFeeInqReqDTO;
 import com.amx.jax.partner.dto.SrvPrvFeeInqResDTO;
 import com.amx.jax.pricer.dto.DiscountDetailsReqRespDTO;
 import com.amx.jax.pricer.dto.DiscountMgmtReqDTO;
 import com.amx.jax.pricer.dto.ExchangeRateAndRoutingRequest;
 import com.amx.jax.pricer.dto.ExchangeRateAndRoutingResponse;
+import com.amx.jax.pricer.dto.GroupDetails;
 import com.amx.jax.pricer.dto.HolidayResponseDTO;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
@@ -139,6 +141,37 @@ public class PricerServiceClient implements ProbotExchangeRateService, ProbotDat
 		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.SAVE_DISCOUNT_DETAILS)
 				.post(discountMgmtReqDTO)
 				.as(new ParameterizedTypeReference<AmxApiResponse<DiscountDetailsReqRespDTO, Object>>() {
+				});
+	}
+
+	@Override
+	public AmxApiResponse<GroupDetails, Object> getCurrencyGroupingData() {
+		LOGGER.info("Get Currency Group Data : transaction Id: {}, with TraceId: {}", AppContextUtil.getTranxId(),
+				AppContextUtil.getTraceId());
+
+		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.GET_CUR_GROUPING_DATA).post()
+				.as(new ParameterizedTypeReference<AmxApiResponse<GroupDetails, Object>>() {
+				});
+	}
+
+	@Override
+	public AmxApiResponse<CurrencyMasterDTO, Object> updateCurrencyGroupId(BigDecimal groupId, BigDecimal currencyId) {
+		LOGGER.info("Update Currency Group Id : transaction Id: {}, with TraceId: {}", AppContextUtil.getTranxId(),
+				AppContextUtil.getTraceId());
+
+		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.UPDATE_CUR_GROUP_ID)
+				.queryParam("groupId", groupId).queryParam("currencyId", currencyId).post()
+				.as(new ParameterizedTypeReference<AmxApiResponse<CurrencyMasterDTO, Object>>() {
+				});
+	}
+
+	@Override
+	public AmxApiResponse<CurrencyMasterDTO, Object> getCurrencyByGroupId(BigDecimal groupId) {
+		LOGGER.info("Get Currency By Group Id : transaction Id: {}, with TraceId: {}", AppContextUtil.getTranxId(),
+				AppContextUtil.getTraceId());
+		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.GET_CUR_BY_GROUP_ID)
+				.queryParam("groupId", groupId).post()
+				.as(new ParameterizedTypeReference<AmxApiResponse<CurrencyMasterDTO, Object>>() {
 				});
 	}
 	

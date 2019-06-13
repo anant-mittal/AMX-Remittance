@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
@@ -440,7 +441,18 @@ public class RemitPriceManager {
 
 		if (glcbalRatesForBanks == null || glcbalRatesForBanks.isEmpty()) {
 			throw new PricerServiceException(PricerServiceError.MISSING_GLCBAL_ENTRIES,
-					"GLCBAL Inventory is Missing for Given Input : ");
+					"Critical: GLCBAL RATE is Missing for Given Input, SETUP ISSUE");
+		}
+
+		Set<BigDecimal> availableGLBankIds = glcbalRatesForBanks.stream().map(glrate -> glrate.getBankId()).distinct()
+				.sorted().collect(Collectors.toSet());
+
+		for (BigDecimal queriedBankId : routingBankIds) {
+			if (!availableGLBankIds.contains(queriedBankId)) {
+				throw new PricerServiceException(PricerServiceError.MISSING_GLCBAL_ENTRIES,
+						"Critical SETUP ISSUE: GLCBAL Entry is Missing for the Routing Bank Id: " + queriedBankId
+								+ " Disable the Routing Bank From Routing Setup");
+			}
 		}
 
 		Map<BigDecimal, BankGLCData> bankGlcBalDataMap = new HashMap<BigDecimal, BankGLCData>();

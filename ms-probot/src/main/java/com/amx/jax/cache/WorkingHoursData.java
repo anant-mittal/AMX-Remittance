@@ -22,6 +22,10 @@ public class WorkingHoursData {
 	// Processing Time in Hours or Fraction of it.
 	private long totalProcessingTimeInMins;
 
+	private boolean isHoldaySnooze = false;
+
+	private int snoozeWakeUpInHrMin = 0;
+
 	public WorkingHoursData() {
 		Arrays.fill(workWeek, false);
 		Arrays.fill(workTimeFromInHrsMins, 0);
@@ -51,6 +55,25 @@ public class WorkingHoursData {
 
 	public void setTotalProcessingTimeInMins(long totalProcessingTimeInMins) {
 		this.totalProcessingTimeInMins = totalProcessingTimeInMins;
+	}
+
+	public boolean isHoldaySnooze() {
+		return isHoldaySnooze;
+	}
+
+	public void setHoldaySnooze(boolean isHoldaySnooze) {
+		this.isHoldaySnooze = isHoldaySnooze;
+	}
+
+	public int getSnoozeWakeUpInHrMin() {
+		return snoozeWakeUpInHrMin;
+	}
+
+	public void setSnoozeWakeUpInHrMin(double snoozeWakeUpInHrMin) {
+
+		int parsedSnoozeWakeUpInHrMin = DateUtil.getHrMinIntVal(String.valueOf(snoozeWakeUpInHrMin));
+
+		this.snoozeWakeUpInHrMin = parsedSnoozeWakeUpInHrMin;
 	}
 
 	public boolean setWorkDayOnArabicDoW(int arabicDayOfWeek) {
@@ -176,7 +199,37 @@ public class WorkingHoursData {
 		return true;
 	}
 
-	public int getWorkWindowTimeOffset(int dayOfWeekIndex, int hourMinNow) {
+	public long getSnoozeTimeOffsetInSeconds(int dayOfWeekIndex, int hourMinNow) {
+
+		long workWindowOffsetSecs = this.getWorkWindowOffsetInSeconds(dayOfWeekIndex, hourMinNow);
+
+		if (workWindowOffsetSecs < 0) {
+			return workWindowOffsetSecs;
+		} else {
+			// Case where current Hr Min time is either equals or before the work Start
+			// Time.
+
+			int curHr = extractHour(hourMinNow);
+			int curMin = extractMinute(hourMinNow);
+
+			int snoozeWakeUpHr = extractHour(snoozeWakeUpInHrMin);
+			int snoozeWakeUpMin = extractMinute(snoozeWakeUpInHrMin);
+
+			Date nowDate = DateUtil.getCurrentDateAtTime(curHr, curMin, 0, 0);
+
+			Date snoozeWakeUpDate = DateUtil.getCurrentDateAtTime(snoozeWakeUpHr, snoozeWakeUpMin, 0, 0);
+
+			long snoozeWindowOffsetSecs = TimeUnit.SECONDS.convert(snoozeWakeUpDate.getTime() - nowDate.getTime(),
+					TimeUnit.SECONDS);
+
+			return snoozeWindowOffsetSecs >= workWindowOffsetSecs ? snoozeWindowOffsetSecs : workWindowOffsetSecs;
+
+		}
+
+	}
+
+	public long getWorkWindowOffsetInSeconds(int dayOfWeekIndex, int hourMinNow) {
+
 		if (isWorkingDay(dayOfWeekIndex) && (hourMinNow >= 0 && hourMinNow <= 2400)
 				&& !isAfterWorkingHours(dayOfWeekIndex, hourMinNow)) {
 
@@ -199,10 +252,12 @@ public class WorkingHoursData {
 
 			long diffInMilliSec = workStartDate.getTime() - nowDate.getTime();
 
-			long diffHr = TimeUnit.HOURS.convert(diffInMilliSec, TimeUnit.MILLISECONDS);
-			long diffMin = TimeUnit.MINUTES.convert(diffInMilliSec, TimeUnit.MILLISECONDS) - (diffHr * 60);
+			// long diffHr = TimeUnit.HOURS.convert(diffInMilliSec, TimeUnit.MILLISECONDS);
+			// long diffMin = TimeUnit.MINUTES.convert(diffInMilliSec,
+			// TimeUnit.MILLISECONDS) - (diffHr * 60);
 
-			return (int) (diffHr * 100 + diffMin);
+			// return (int) (diffHr * 100 + diffMin);
+			return TimeUnit.SECONDS.convert(diffInMilliSec, TimeUnit.MILLISECONDS);
 
 		}
 

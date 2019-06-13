@@ -44,6 +44,7 @@ import com.amx.jax.pricer.manager.RemitRoutingManager;
 import com.amx.jax.pricer.var.PricerServiceConstants.CUSTOMER_CATEGORY;
 import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_BY;
 import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_TYPE;
+import com.amx.jax.pricer.var.PricerServiceConstants.SERVICE_INDICATOR;
 
 /**
  * @author abhijeet
@@ -99,9 +100,16 @@ public class ExchangePricingAndRoutingService {
 
 		pricingResponseDTO.setCustomerCategory(exchRateAndRoutingTransientDataCache.getCustomerCategory());
 
-		Collections.sort(pricingResponseDTO.getSellRateDetails(), Collections.reverseOrder());
+		// 1 : Old
+		// Collections.sort(pricingResponseDTO.getSellRateDetails(),
+		// Collections.reverseOrder());
+
+		// Sort Order Modified : Sorting on the basis of InverseRate Now.
+		Collections.sort(pricingResponseDTO.getSellRateDetails());
 
 		pricingResponseDTO.setInfo(exchRateAndRoutingTransientDataCache.getInfo());
+
+		pricingResponseDTO.setServiceIdDescription(getServiceIdDescriptions());
 
 		return pricingResponseDTO;
 	}
@@ -118,7 +126,14 @@ public class ExchangePricingAndRoutingService {
 
 		pricingResponseDTO.setSellRateDetails(exchRateAndRoutingTransientDataCache.getSellRateDetails());
 
-		Collections.sort(pricingResponseDTO.getSellRateDetails(), Collections.reverseOrder());
+		pricingResponseDTO.setServiceIdDescription(getServiceIdDescriptions());
+
+		// 2
+		// Collections.sort(pricingResponseDTO.getSellRateDetails(),
+		// Collections.reverseOrder());
+
+		// Sort Order Modified : Sorting on the basis of InverseRate Now.
+		Collections.sort(pricingResponseDTO.getSellRateDetails());
 
 		return pricingResponseDTO;
 	}
@@ -146,9 +161,16 @@ public class ExchangePricingAndRoutingService {
 
 			pricingResponseDTO.setCustomerCategory(cc);
 
-			Collections.sort(pricingResponseDTO.getSellRateDetails(), Collections.reverseOrder());
+			// 3
+			// Collections.sort(pricingResponseDTO.getSellRateDetails(),
+			// Collections.reverseOrder());
+
+			// Sort Order Modified : Sorting on the basis of InverseRate Now.
+			Collections.sort(pricingResponseDTO.getSellRateDetails());
 
 			pricingResponseDTO.setInfo(exchRateAndRoutingTransientDataCache.getInfo());
+
+			pricingResponseDTO.setServiceIdDescription(getServiceIdDescriptions());
 
 			allDiscountedRates.add(pricingResponseDTO);
 		}
@@ -206,6 +228,9 @@ public class ExchangePricingAndRoutingService {
 		resp.setTrnxBeginTimeEpoch(exchRateAndRoutingTransientDataCache.getTrnxBeginTime());
 		resp.setBankDetails(exchRateAndRoutingTransientDataCache.getBankDetails());
 
+		// Customer Category:
+		resp.setCustomerCategory(exchRateAndRoutingTransientDataCache.getCustomerCategory());
+
 		TimezoneMasterModel localTz = exchRateAndRoutingTransientDataCache
 				.getTimezoneForCountry(exchangeRateAndRoutingRequest.getLocalCountryId());
 
@@ -230,7 +255,11 @@ public class ExchangePricingAndRoutingService {
 		List<TransientRoutingComputeDetails> routingMatrixData = exchRateAndRoutingTransientDataCache
 				.getRoutingMatrixData();
 
-		Collections.sort(routingMatrixData, Collections.reverseOrder());
+		// 4
+		// Collections.sort(routingMatrixData, Collections.reverseOrder());
+
+		// Sort Order Modified : Sorting on the basis of InverseRate Now.
+		Collections.sort(routingMatrixData);
 
 		Map<String, TrnxRoutingDetails> trnxRoutingPaths = new HashMap<String, TrnxRoutingDetails>();
 
@@ -249,6 +278,9 @@ public class ExchangePricingAndRoutingService {
 		 * Fill In the Rate Details
 		 */
 		Map<BigDecimal, Map<BigDecimal, ExchangeRateDetails>> bankServiceModeSellRates = new HashMap<BigDecimal, Map<BigDecimal, ExchangeRateDetails>>();
+
+		TransientRoutingComputeDetails lastNoBeneRoute = null;
+		TransientRoutingComputeDetails lastBeneDedRoute = null;
 
 		for (TransientRoutingComputeDetails routeDetails : routingMatrixData) {
 
@@ -280,11 +312,77 @@ public class ExchangePricingAndRoutingService {
 			trnxRoutingPaths.put(pathKey, trnxRoutingPath);
 
 			// Each Path - By-Default is a ** Non-Bene Deduct ** Path
-			bestExchangeRatePaths.get(PRICE_TYPE.NO_BENE_DEDUCT).add(pathKey);
+			// Paths are sorted -
+			// 1. Ascending order of rate
+			// 2. Ascending order of delivery time
 
+			if (lastNoBeneRoute == null) {
+				bestExchangeRatePaths.get(PRICE_TYPE.NO_BENE_DEDUCT).add(pathKey);
+				lastNoBeneRoute = routeDetails;
+			} else {
+
+				if (lastNoBeneRoute.compareTo(routeDetails) == 0) {
+
+					// Ignore if the rate is from the same Bank
+					if (lastNoBeneRoute.getExchangeRateDetails().getBankId().longValue() != routeDetails
+							.getExchangeRateDetails().getBankId().longValue()) {
+
+						// GLC Comparison goes here.
+						BigDecimal lastGlcBalFc = exchRateAndRoutingTransientDataCache
+								.getMaxGLLcBalForBank(lastNoBeneRoute.getExchangeRateDetails().getBankId(), true);
+
+						BigDecimal curGLCBalFc = exchRateAndRoutingTransientDataCache
+								.getMaxGLLcBalForBank(routeDetails.getExchangeRateDetails().getBankId(), true);
+
+						if (curGLCBalFc.compareTo(lastGlcBalFc) > 0) {
+							// Replace only if the Current GLC BAL is More than the prev GLC BAL
+							int replaceIndex = bestExchangeRatePaths.get(PRICE_TYPE.NO_BENE_DEDUCT).size() - 1;
+							bestExchangeRatePaths.get(PRICE_TYPE.NO_BENE_DEDUCT).set(replaceIndex, pathKey);
+
+						}
+					}
+
+				} else if (lastNoBeneRoute.getFinalDeliveryDetails().getCompletionTT() > routeDetails
+						.getFinalDeliveryDetails().getCompletionTT()) {
+					// Add the new path only if its making faster delivery with Lower Exchange Rate.
+					bestExchangeRatePaths.get(PRICE_TYPE.NO_BENE_DEDUCT).add(pathKey);
+					lastNoBeneRoute = routeDetails;
+				}
+			}
+
+			// Best Rates of Bene Deduct
 			if (null != trnxRoutingPath.getBeneDeductChargeAmount()
 					&& trnxRoutingPath.getBeneDeductChargeAmount().compareTo(BigDecimal.ZERO) != 0) {
-				bestExchangeRatePaths.get(PRICE_TYPE.BENE_DEDUCT).add(pathKey);
+
+				if (lastBeneDedRoute == null) {
+					bestExchangeRatePaths.get(PRICE_TYPE.BENE_DEDUCT).add(pathKey);
+					lastBeneDedRoute = routeDetails;
+				} else {
+
+					if (lastBeneDedRoute.compareTo(routeDetails) == 0) {
+
+						// GLC Comparison goes here.
+						BigDecimal lastGlcBalFc = exchRateAndRoutingTransientDataCache
+								.getMaxGLLcBalForBank(lastNoBeneRoute.getExchangeRateDetails().getBankId(), true);
+
+						BigDecimal curGLCBalFc = exchRateAndRoutingTransientDataCache
+								.getMaxGLLcBalForBank(routeDetails.getExchangeRateDetails().getBankId(), true);
+
+						if (curGLCBalFc.compareTo(lastGlcBalFc) > 0) {
+							// Replace only if the Current GLC BAL is More than the prev GLC BAL
+							int replaceIndex = bestExchangeRatePaths.get(PRICE_TYPE.BENE_DEDUCT).size() - 1;
+							bestExchangeRatePaths.get(PRICE_TYPE.BENE_DEDUCT).set(replaceIndex, pathKey);
+
+						}
+
+					} else if (lastBeneDedRoute.getFinalDeliveryDetails().getCompletionTT() > routeDetails
+							.getFinalDeliveryDetails().getCompletionTT()) {
+						// Add the new path only if its making faster delivery with Lower Exchange Rate.
+						bestExchangeRatePaths.get(PRICE_TYPE.BENE_DEDUCT).add(pathKey);
+						lastBeneDedRoute = routeDetails;
+					}
+				}
+
 			}
 
 			ExchangeRateDetails exchangeRate = routeDetails.getExchangeRateDetails();
@@ -320,11 +418,9 @@ public class ExchangePricingAndRoutingService {
 
 		resp.setBankServiceModeSellRates(bankServiceModeSellRates);
 
+		resp.setServiceIdDescription(getServiceIdDescriptions());
+
 		// resp.setInfo(exchRateAndRoutingTransientDataCache.getInfo());
-
-		// resp.setSellRateDetails(exchRateAndRoutingTransientDataCache.getSellRateDetails());
-
-		// Collections.sort(resp.getSellRateDetails(), Collections.reverseOrder());
 
 		return resp;
 
@@ -392,6 +488,20 @@ public class ExchangePricingAndRoutingService {
 		 */
 
 		return Boolean.TRUE;
+	}
+
+	private Map<BigDecimal, String> getServiceIdDescriptions() {
+
+		Map<BigDecimal, String> serviceIdDescription = new HashMap<BigDecimal, String>();
+
+		List<ExchangeRateDetails> exchRates = exchRateAndRoutingTransientDataCache.getSellRateDetails();
+
+		for (ExchangeRateDetails exchRate : exchRates) {
+			SERVICE_INDICATOR ind = SERVICE_INDICATOR.getByServiceId(exchRate.getServiceIndicatorId().intValue());
+			serviceIdDescription.put(BigDecimal.valueOf(ind.getServiceId()), ind.getDescription());
+		}
+
+		return serviceIdDescription;
 	}
 
 }

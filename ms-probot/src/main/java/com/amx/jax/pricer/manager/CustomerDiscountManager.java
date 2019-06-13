@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.cache.ExchRateAndRoutingTransientDataCache;
 import com.amx.jax.pricer.dao.ChannelDiscountDao;
+import com.amx.jax.pricer.dao.CountryBranchDao;
 import com.amx.jax.pricer.dao.CurrencyMasterDao;
 import com.amx.jax.pricer.dao.CustCatDiscountDao;
 import com.amx.jax.pricer.dao.CustomerExtendedDao;
@@ -24,6 +25,7 @@ import com.amx.jax.pricer.dao.DiscountMasterDao;
 import com.amx.jax.pricer.dao.GroupingMasterDao;
 import com.amx.jax.pricer.dao.PipsMasterDao;
 import com.amx.jax.pricer.dbmodel.ChannelDiscount;
+import com.amx.jax.pricer.dbmodel.CountryBranch;
 import com.amx.jax.pricer.dbmodel.CurrencyMasterModel;
 import com.amx.jax.pricer.dbmodel.Customer;
 import com.amx.jax.pricer.dbmodel.CustomerCategoryDiscount;
@@ -37,7 +39,6 @@ import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.util.DbValueUtil;
 import com.amx.jax.pricer.var.PricerServiceConstants.CUSTOMER_CATEGORY;
 import com.amx.jax.pricer.var.PricerServiceConstants.DISCOUNT_TYPE;
-import com.amx.utils.JsonUtil;
 
 @Component
 public class CustomerDiscountManager {
@@ -57,6 +58,9 @@ public class CustomerDiscountManager {
 	CustomerExtendedDao customerExtendedDao;
 
 	@Autowired
+	CountryBranchDao countryBranchDao;
+
+	@Autowired
 	CurrencyMasterDao currencyMasterDao;
 
 	@Autowired
@@ -68,7 +72,8 @@ public class CustomerDiscountManager {
 	@Resource
 	ExchRateAndRoutingTransientDataCache exchRateAndRoutingTransientDataCache;
 
-	private static BigDecimal PIPS_BANK_ID = new BigDecimal(78);
+	// private static BigDecimal PIPS_BANK_ID = new BigDecimal(78);
+	private static BigDecimal OnlineCountryBranchId;
 
 	private static BigDecimal BIGD_ZERO = new BigDecimal(0);
 
@@ -102,8 +107,6 @@ public class CustomerDiscountManager {
 		if (channelDiscount != null && curGroup != null && DbValueUtil.isActive(channelDiscount.getIsActive())) {
 			DiscountMaster channelDiscountMaster = discountMasterDao.getByDiscountTypeAndDiscountTypeIdAndGroupId(
 					DISCOUNT_TYPE.CHANNEL.getTypeKey(), channelDiscount.getId(), curGroup.getId());
-
-			System.out.println(" Channel Discount Master ==> " + JsonUtil.toJson(channelDiscountMaster));
 
 			channelDiscountPips = ((null != channelDiscountMaster
 					&& DbValueUtil.isActive(channelDiscountMaster.getIsActive()))
@@ -172,8 +175,13 @@ public class CustomerDiscountManager {
 		List<BigDecimal> validBankIds = new ArrayList<BigDecimal>(
 				exchRateAndRoutingTransientDataCache.getBankDetails().keySet());
 
+		if (OnlineCountryBranchId == null) {
+			CountryBranch cb = countryBranchDao.getOnlineCountryBranch();
+			OnlineCountryBranchId = cb.getCountryBranchId();
+		}
+
 		List<PipsMaster> pipsList = pipsMasterDao.getPipsForFcCurAndBank(pricingRequestDTO.getForeignCurrencyId(),
-				PIPS_BANK_ID, pricingRequestDTO.getForeignCountryId(), validBankIds);
+				OnlineCountryBranchId, validBankIds);
 
 		Map<Long, TreeMap<BigDecimal, PipsMaster>> bankAmountSlabDiscounts = new HashMap<Long, TreeMap<BigDecimal, PipsMaster>>();
 

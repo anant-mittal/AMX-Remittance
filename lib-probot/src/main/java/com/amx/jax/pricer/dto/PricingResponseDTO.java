@@ -18,6 +18,8 @@ public class PricingResponseDTO implements Serializable {
 
 	private Map<BigDecimal, BankDetailsDTO> bankDetails;
 
+	private Map<BigDecimal, String> serviceIdDescription;
+
 	private Map<String, Object> info;
 
 	private CUSTOMER_CATEGORY customerCategory;
@@ -52,6 +54,14 @@ public class PricingResponseDTO implements Serializable {
 
 	public void setCustomerCategory(CUSTOMER_CATEGORY customerCategory) {
 		this.customerCategory = customerCategory;
+	}
+
+	public Map<BigDecimal, String> getServiceIdDescription() {
+		return serviceIdDescription;
+	}
+
+	public void setServiceIdDescription(Map<BigDecimal, String> serviceIdDescription) {
+		this.serviceIdDescription = serviceIdDescription;
 	}
 
 }

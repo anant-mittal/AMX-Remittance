@@ -36,12 +36,15 @@ public interface AbstractProbotInterface {
 		public static final String GET_ROUTBANKS_AND_SEVICES = SERVICE_PREFIX + API_VERSION_V1 + "/get-routbanks-and-services";
 		
 		public static final String SAVE_DISCOUNT_DETAILS = SERVICE_PREFIX + API_VERSION_V1 + "/save-discount-details";
-		
 		public static final String SERVICE_TEST = SERVICE_PREFIX + API_VERSION_V1 + "/service-test";
+		
+		public static final String GET_CUR_GROUPING_DATA = SERVICE_PREFIX + API_VERSION_V1 + "/get-currency-group-details";
+		
+		public static final String UPDATE_CUR_GROUP_ID = SERVICE_PREFIX + API_VERSION_V1 + "/update-currency-group-id";
+		
+		public static final String GET_CUR_BY_GROUP_ID = SERVICE_PREFIX + API_VERSION_V1 + "/get-currency-by-group-id";
 		
 		// Service Provider for transaction
 		public static final String Partner_Fee_Inquiry = SERVICE_PREFIX + API_VERSION_V1 + "/partner-fee-inquiry";
-		
-
 	}
 }

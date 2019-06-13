@@ -26,15 +26,20 @@ import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dal.RoutingProcedureDao;
 import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dbmodel.AccountTypeFromViewModel;
+import com.amx.jax.dbmodel.BankBranchView;
 import com.amx.jax.dbmodel.BankMasterModel;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.BizComponentData;
 import com.amx.jax.dbmodel.CountryMaster;
+import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerIdProof;
+import com.amx.jax.dbmodel.ServiceApplicabilityRule;
+import com.amx.jax.dbmodel.ViewCity;
 import com.amx.jax.dbmodel.fx.EmployeeDetailsView;
 import com.amx.jax.dbmodel.remittance.AdditionalBankRuleAmiec;
 import com.amx.jax.dbmodel.remittance.BeneficiaryAccountException;
+import com.amx.jax.dbmodel.remittance.ViewBnkFlexVal;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.manager.RemittanceApplicationAdditionalDataManager;
 import com.amx.jax.manager.RemittanceApplicationManager;
@@ -44,22 +49,28 @@ import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
+import com.amx.jax.model.response.ExchangeRateBreakup;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.AmlCheckResponseDto;
+import com.amx.jax.model.response.remittance.BeneAdditionalDto;
 import com.amx.jax.model.response.remittance.BranchExchangeRateBreakup;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
 import com.amx.jax.repository.BankMasterRepository;
 import com.amx.jax.repository.IAccountTypeFromViewDao;
 import com.amx.jax.repository.IAdditionalBankRuleAmiecRepository;
+import com.amx.jax.repository.IBankBranchView;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.ICollectionDetailRepository;
 import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.ICustomerRepository;
+import com.amx.jax.repository.IServiceApplicabilityRuleDao;
 import com.amx.jax.repository.ITransactionHistroyDAO;
+import com.amx.jax.repository.IViewCityDao;
 import com.amx.jax.repository.fx.EmployeeDetailsRepository;
 import com.amx.jax.repository.remittance.BeneficiaryAccountExceptRepository;
 import com.amx.jax.repository.remittance.BranchDayTransactionRepository;
+import com.amx.jax.repository.remittance.IvBankFlxValRepository;
 import com.amx.jax.services.BankService;
 import com.amx.jax.services.BeneficiaryCheckService;
 import com.amx.jax.services.BeneficiaryService;
@@ -67,6 +78,7 @@ import com.amx.jax.services.RoutingService;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.repository.CustomerIdProofRepository;
 import com.amx.jax.util.JaxUtil;
+import com.amx.jax.util.RoundUtil;
 import com.amx.jax.validation.FxOrderValidation;
 
 
@@ -126,8 +138,6 @@ public class BranchRemittanceManager extends AbstractModel {
 	@Autowired
 	ApplicationProcedureDao applProcedureDao;
 	
-	/*@Autowired 
-	RoutingProcedureDao routing*/
 	
 	@Autowired
 	RoutingService  routingService;
@@ -173,6 +183,18 @@ public class BranchRemittanceManager extends AbstractModel {
 	@Autowired
 	BankMasterRepository bankMasterDao;
 	
+	
+	@Autowired
+	IServiceApplicabilityRuleDao serviceApplRule;
+	
+	@Autowired
+	IBankBranchView bankBranchRepo;
+	
+	@Autowired
+	IViewCityDao cityRespository;
+	
+	@Autowired
+	IvBankFlxValRepository viewBankFlxValRepository;
 	
 	
 	public void checkingStaffIdNumberWithCustomer() {
@@ -294,14 +316,6 @@ public class BranchRemittanceManager extends AbstractModel {
 	}
 	
 
-	
-	
-	
-	
-	
-
-	
-	//public List<AmlCheckResponseDto> amlTranxAmountCheckForRemittance(BranchRemittanceApplRequestModel requestModel,BranchRemittanceGetExchangeRateResponse exchangeRateResposne){
 	
 	public List<AmlCheckResponseDto> amlTranxAmountCheckForRemittance(BigDecimal beneRelId,BigDecimal foreignamount){
 		Map<String, Object> outPut = new HashMap<>();
@@ -545,6 +559,337 @@ public class BranchRemittanceManager extends AbstractModel {
 			return outPut;
 	 }
 	 
+	 
+	 
+	 /** EX_GET_ADDL_BENE_DETAILS **/
+	 public BeneAdditionalDto getAdditionalBeneDetailJax(BenificiaryListView beneficaryDetails,BranchRemittanceApplRequestModel requestApplModel){
+		 BeneAdditionalDto beneAddDto = new BeneAdditionalDto();
+		 
+		 String langInd=null;
+		 String beneName=null;
+		 String engBeneName =null;
+		 String arabicBeneName =null;
+		 String beneFirstName =null;
+		 String beneSecondName=null;
+		 String beneFirstNameLocal =null;
+		 String beneSecondNameLocal=null;
+		 
+		 String beneThirdName=null;
+		 String beneFourthName=null;
+		 String beneFifthName=null;
+		
+		 String beneBranchName =null;
+		 String beneBankName=null; 
+		 String beneBankNameArabic=null; 
+		 String beneBankCode=null; 
+		 String beneCityName = null;
+		 String beneCityNameArabic = null;
+		 String routingCityName = null;
+		 String routingCityNameArabic = null;
+		 String beneBranchFullName=null;
+		 String beneBranchFullNameArabic=null;
+		 String branchShortName=null;
+		 String branchCode=null;
+		 BigDecimal routingStateId = null;
+		 BigDecimal beneStateId = null;
+		 BigDecimal routingDistrictId = null;
+		 BigDecimal beneDistrictId = null;
+		 BigDecimal routingCityId = null;
+		 BigDecimal benecityId = null;
+		 String swiftBic = null;
+		 BigDecimal bnfBankLangInd= BigDecimal.ONE;
+		 BigDecimal bnfBankBranchLangInd= BigDecimal.ONE;
+		 String bankName = null;
+		 String bankBranchName = null;
+		
+		 
+	
+		
+		 BigDecimal routingCountryId = requestApplModel.getRoutingCountryId();
+		 BigDecimal routingBankId = requestApplModel.getRoutingBankId();
+		 BigDecimal routingBranchId = requestApplModel.getRoutingBankBranchId();
+		 
+		 BigDecimal beneBankId = beneficaryDetails.getBankId();
+		 BigDecimal beneBranchId = beneficaryDetails.getBranchId();
+		 BigDecimal serviceMasterId = requestApplModel.getServiceMasterId();
+		 
+		 
+		 BankMasterModel routingBankMasterModel = bankService.getBankById(routingBankId);
+		 BankMasterModel beneBankMasterModel = bankService.getBankById(beneBankId);
+		 BigDecimal applicationCountry = beneficaryDetails.getApplicationCountryId();
+		 BigDecimal beneCountry = beneficaryDetails.getBenificaryCountry();
+		 BigDecimal currencyId = beneficaryDetails.getCurrencyId();
+		
+		 BigDecimal remittanceModeId = requestApplModel.getRemittanceModeId();
+		 BigDecimal deliveryModeId = requestApplModel.getDeliveryModeId();
+		 
+		 /** GET THE SERVICE APPL RULE  FOR BANK **/
+		 ServiceApplicabilityRule serviceApplRuleforBank =serviceApplRule.getServiceApplicabilityRulesForBank(applicationCountry, beneCountry, currencyId, ConstantDocument.BNFBANK, remittanceModeId, deliveryModeId);
+		 
+		 /** GET THE SERVICE APPL RULE  FOR BRANCH **/
+		 ServiceApplicabilityRule serviceApplRuleforBranch =serviceApplRule.getServiceApplicabilityRulesForBranchAndSwift(applicationCountry, beneCountry, currencyId, ConstantDocument.BNFBRCH, remittanceModeId, deliveryModeId);
+		 
+		 /** GET THE SERVICE APPL RULE  FOR SWIFT BANK **/
+		 ServiceApplicabilityRule serviceApplRuleforBeneSwiftBank =serviceApplRule.getServiceApplicabilityRulesForBranchAndSwift(applicationCountry, routingCountryId, currencyId, ConstantDocument.BNFBANK_SWIFT, remittanceModeId, deliveryModeId);
+			
+		
+		 
+		/** GET THE ROUTING BANK AND BRANCH NAME **/
+		 List<BankBranchView> routingBankBranchView = bankBranchRepo.getBankBranch(routingBankId,routingBranchId);
+		
+		 /**  GET THE BENEFICARY BANK AND BRANCH NAME **/
+		 List<BankBranchView> beneBankBranchView = bankBranchRepo.getBankBranch(beneBankId,beneBranchId);
+		 
+		 
+		 
+		if(routingBankMasterModel==null) {
+			throw new GlobalException(JaxError.INVALID_ROUTING_BANK, "Invalid  bank");
+		}else {
+			langInd = routingBankMasterModel.getLanguageInd();
+		}
+		
+		
+		if(beneBankMasterModel==null) {
+			throw new GlobalException(JaxError.INVALID_ROUTING_BANK, "Invalid  bank");
+		}else {
+			beneBankName = beneBankMasterModel.getBankFullName();
+			beneBankNameArabic = beneBankMasterModel.getBankFullNameAr();
+			beneBankCode = beneBankMasterModel.getBankCode();
+		}
+		
+		if(!StringUtils.isBlank(langInd) && langInd.equalsIgnoreCase(ConstantDocument.L_ARAB)) {
+			langInd=ConstantDocument.L_ARAB;
+			arabicBeneName = beneficaryDetails.getArbenificaryName();
+		}else {
+			langInd=ConstantDocument.L_ENG;
+			engBeneName = beneficaryDetails.getBenificaryName();
+		}
+		 
+		
+		
+		
+		
+		if(langInd.equalsIgnoreCase(ConstantDocument.L_ENG)){
+			if(StringUtils.isBlank(engBeneName)) {
+					throw new GlobalException(JaxError.BENE_ENGLISH_NAME_REQUIRED, "English name not available for beneficiary");
+				}else {
+					beneAddDto.setBeneName(engBeneName);
+					beneFirstName =beneficaryDetails.getFirstName();
+					beneSecondName =beneficaryDetails.getSecondName();
+					beneThirdName  =beneficaryDetails.getThirdName();
+					beneFourthName =beneficaryDetails.getFourthName();
+					beneFifthName  =beneficaryDetails.getFiftheName();
+					
+					if(beneficaryDetails!=null && StringUtils.isBlank(beneFirstName)) {
+						throw new GlobalException(JaxError.BENE_ENGLISH_NAME_REQUIRED, "English first name not available for beneficiary");
+					}else {
+						beneFirstName = beneficaryDetails.getFirstName();
+					}
+					
+					if(beneficaryDetails!=null && StringUtils.isBlank(beneSecondName)) {
+						throw new GlobalException(JaxError.BENE_ENGLISH_NAME_REQUIRED, "English second name or last  not available for beneficiary");
+					}else {
+						beneSecondName = beneficaryDetails.getSecondName();
+					}
+					beneAddDto.setBeneFirstName(beneFirstName);
+					beneAddDto.setBeneSecondName(beneSecondName);
+					beneAddDto.setBeneThirdName(beneThirdName);
+					beneAddDto.setBeneFourthName(beneFourthName);
+					beneAddDto.setBeneFifthName(beneFifthName);
+				}
+		
+		}	
+		if(langInd.equalsIgnoreCase(ConstantDocument.L_ARAB)) {
+			if(StringUtils.isBlank(arabicBeneName)) {
+				throw new GlobalException(JaxError.BENE_ARABIC_NAME_REQUIRED, "Arabic name not available for beneficiary");
+				}else {
+				beneAddDto.setBeneName(arabicBeneName);
+				beneFirstNameLocal =beneficaryDetails.getFirstNameLocal();
+				beneSecondNameLocal =beneficaryDetails.getSecondNameLocal();
+				beneThirdName  =beneficaryDetails.getThirdNameLocal();
+				beneFourthName =beneficaryDetails.getFourthNameLocal();
+				beneFifthName  =beneficaryDetails.getFifthNameLocal();
+				
+				if(beneficaryDetails!=null && StringUtils.isBlank(beneFirstNameLocal)) {
+					throw new GlobalException(JaxError.BENE_ARABIC_NAME_REQUIRED, "Arabic first name not available for beneficiary");
+				}
+				
+				if(beneficaryDetails!=null && StringUtils.isBlank(beneSecondNameLocal)) {
+					throw new GlobalException(JaxError.BENE_ARABIC_NAME_REQUIRED, "Arabic second name or last  not available for beneficiary");
+				}
+				beneAddDto.setBeneFirstName(beneFirstNameLocal);
+				beneAddDto.setBeneSecondName(beneSecondNameLocal);
+				beneAddDto.setBeneThirdName(beneThirdName);
+				beneAddDto.setBeneFourthName(beneFourthName);
+				beneAddDto.setBeneFifthName(beneFifthName);
+			}
+		}	
+		
+		
+		if(routingBankBranchView==null || routingBankBranchView.isEmpty()) {
+			throw new GlobalException(JaxError.INVALID_ROUTING_BANK, "Invalid bank branch for routing bank "+routingBankId +"\t routing branch "+routingBranchId);
+		}
+		
+		if(beneBankBranchView==null || beneBankBranchView.isEmpty()) {
+			throw new GlobalException(JaxError.INVALID_BENE_BANK, "Invalid bank branch for bene bank "+routingBankId +"\t bene branch "+routingBranchId);
+		}
+		
+		
+		
+		/** to get bene City eng and arabic name **/
+		if(beneBankBranchView!=null && !beneBankBranchView.isEmpty() && beneBankBranchView.size()==1) {
+			if(beneBankBranchView.get(0)!=null) {
+			BigDecimal beneCityId = beneBankBranchView.get(0).getCityId();
+			if(JaxUtil.isNullZeroBigDecimalCheck(beneCityId)) {
+				List<ViewCity> viewCityList= cityRespository.findByCityMasterId(beneCityId);
+				if(viewCityList!=null && !viewCityList.isEmpty()) {
+					for(ViewCity vc: viewCityList) {
+						if(JaxUtil.isNullZeroBigDecimalCheck(vc.getLanguageId()) && vc.getLanguageId().compareTo(BigDecimal.ONE)==0) {
+							beneCityName = vc.getCityName()==null?"":vc.getCityName();
+						}
+						if(JaxUtil.isNullZeroBigDecimalCheck(vc.getLanguageId()) && vc.getLanguageId().compareTo(new BigDecimal(2))==0) {
+							beneCityNameArabic = vc.getCityName()==null?"":vc.getCityName();
+						}
+					}
+					
+				}
+			}
+		}
+		}
+		
+		
+		/** to get routing  City eng and arabic name **/
+		if(routingBankBranchView!=null && !routingBankBranchView.isEmpty() && routingBankBranchView.size()==1) {
+			if(routingBankBranchView.get(0)!=null) {
+			BigDecimal routingCityid = routingBankBranchView.get(0).getCityId();
+			if(JaxUtil.isNullZeroBigDecimalCheck(routingCityid)) {
+				List<ViewCity> viewCityList= cityRespository.findByCityMasterId(routingCityid);
+				if(viewCityList!=null && !viewCityList.isEmpty()) {
+					for(ViewCity vc: viewCityList) {
+						if(JaxUtil.isNullZeroBigDecimalCheck(vc.getLanguageId()) && vc.getLanguageId().compareTo(BigDecimal.ONE)==0) {
+							routingCityName = vc.getCityName();
+						}
+						if(JaxUtil.isNullZeroBigDecimalCheck(vc.getLanguageId()) && vc.getLanguageId().compareTo(new BigDecimal(2))==0) {
+							routingCityNameArabic = vc.getCityName();
+						}
+					}
+					
+				}
+			}
+			}
+		}
+		
+		if(serviceApplRuleforBeneSwiftBank!=null && serviceApplRuleforBeneSwiftBank.getMandatory() !=null && serviceApplRuleforBeneSwiftBank.getMandatory().equalsIgnoreCase(ConstantDocument.Yes)) {
+			swiftBic= beneficaryDetails.getSwiftBic();
+			if(StringUtils.isBlank(swiftBic)) {
+				if(beneBankBranchView!=null && !beneBankBranchView.isEmpty() && beneBankBranchView.get(0)!=null) {
+					swiftBic = beneBankBranchView.get(0).getSwift();
+				}
+			}
+			if(StringUtils.isBlank(swiftBic)) {
+				throw new GlobalException(JaxError.BANK_SWIFT_EMPTY, " Beneficiary swift is mandatory  "+beneBankName +"\t bene branch "+beneBranchFullName);
+			}
+			
+		}
+		
+		
+		if(serviceApplRuleforBank!=null) {
+			bnfBankLangInd = serviceApplRuleforBank.getLanguageId();
+		}
+		if(serviceApplRuleforBranch!=null) {
+			bnfBankBranchLangInd = serviceApplRuleforBranch.getLanguageId();
+		}
+		/** IF SERVICE ID IS CASH OR DD THEN THEN BANK AND BRANCH NAME SHOULD BE SAME AS THE ROUTING BANK AND BRANCH NAME **/
+		
+		if(serviceMasterId.compareTo(ConstantDocument.SERVICE_MASTER_ID_CASH)==0 || serviceMasterId.compareTo(ConstantDocument.SERVICE_MASTER_ID_DD)==0) {
+			
+			if(!StringUtils.isBlank(langInd) && langInd.equalsIgnoreCase(ConstantDocument.L_ARAB) && bnfBankLangInd.compareTo(new BigDecimal(2))==0) {
+				bankName = routingBankMasterModel.getBankFullNameAr();
+				if(!StringUtils.isBlank(routingCityNameArabic)) {
+					bankBranchName =routingBankBranchView.get(0)==null?"":routingBankBranchView.get(0).getBranchFullNameArabic()+","+ routingCityNameArabic;
+				}else {
+					bankBranchName =routingBankBranchView.get(0)==null?"":routingBankBranchView.get(0).getBranchFullNameArabic();
+				}
+			}else { //If eng
+				bankName = routingBankMasterModel.getBankFullName();
+				if(!StringUtils.isBlank(routingCityName)) {
+					bankBranchName =routingBankBranchView.get(0)==null?"":routingBankBranchView.get(0).getBranchFullName()+","+ routingCityName;
+				}else {
+					bankBranchName =routingBankBranchView.get(0)==null?"":routingBankBranchView.get(0).getBranchFullName();
+				}
+			}
+		}else { /** other than cash or DD routingBankMasterModel **/
+			/** for Bank  **/
+			if(serviceApplRuleforBank!=null && serviceApplRuleforBank.getValidate()!=null && serviceApplRuleforBank.getValidate().equalsIgnoreCase(ConstantDocument.Yes)) {
+				List<ViewBnkFlexVal>  bankFlexField = viewBankFlxValRepository.findByBnkcodeAndFileNameAndBeneBankCode(routingBankMasterModel.getBankCode(), ConstantDocument.BNFBANK, beneBankMasterModel.getBankCode());
+				
+				if(bankFlexField!=null && !bankFlexField.isEmpty()) {
+					if(bankFlexField.size()>1) {
+						throw new GlobalException(JaxError.INVALID_ROUTING_BANK, "Too many rows for this combination in bnfbank for flex rules "+beneBankMasterModel.getBankCode());
+					}else {
+						bankName = bankFlexField.get(0).getBankExchId()==null?"":bankFlexField.get(0).getBankExchId() +","+beneBankName;
+					}
+				}else {
+					throw new GlobalException(JaxError.INVALID_ROUTING_BANK, "No data found in Flex fields For this Bene bank "+beneBankMasterModel.getBankCode());
+				}
+				}else {
+					 if(!StringUtils.isBlank(langInd) && langInd.equalsIgnoreCase(ConstantDocument.L_ARAB) && bnfBankLangInd.compareTo(new BigDecimal(2))==0) {
+						 bankName = beneBankMasterModel.getBankFullNameAr(); 
+					 }else {
+						 bankName = beneBankMasterModel.getBankFullName();
+					 }
+					
+			  }
+			
+			/** for Branch **/
+			if(serviceApplRuleforBranch!=null && serviceApplRuleforBranch.getValidate()!=null && serviceApplRuleforBranch.getValidate().equalsIgnoreCase(ConstantDocument.Yes)) {
+				
+				List<ViewBnkFlexVal>  bankFlexField = viewBankFlxValRepository.findByBnkcodeAndFileNameAndBeneBankCode(routingBankMasterModel.getBankCode(), ConstantDocument.BNFBRCH, beneBankMasterModel.getBankCode());
+				if(bankFlexField!=null && !bankFlexField.isEmpty()) {
+					if(bankFlexField.size()>1) {
+						throw new GlobalException(JaxError.INVALID_ROUTING_BANK, "Too many rows for this combination in  Bene bank and branch for flex rules "+beneBankMasterModel.getBankCode());
+					}else {
+						bankBranchName =bankFlexField.get(0).getBankExchId()==null?"": bankFlexField.get(0).getBankExchId()+" ,"+beneBranchName;
+					}
+				}else {
+					throw new GlobalException(JaxError.INVALID_ROUTING_BANK, "No data found in Flex fields For this  Bene bank and branch "+beneBankMasterModel.getBankCode());
+				}
+				}else {
+					 if(!StringUtils.isBlank(langInd) && langInd.equalsIgnoreCase(ConstantDocument.L_ARAB) && bnfBankBranchLangInd !=null && bnfBankBranchLangInd.compareTo(new BigDecimal(2))==0) {
+						 bankBranchName = beneBankBranchView.get(0).getBranchFullNameArabic()+","+beneCityNameArabic; 
+					 }else {
+						 if(beneBankBranchView.get(0)!=null) {
+							 bankBranchName = beneBankBranchView.get(0).getBranchFullName()==null?"":beneBankBranchView.get(0).getBranchFullName()+" ,"+beneCityName;
+						 }
+					 }
+				}
+		}
+		
+		
+		beneAddDto.setBeneBankName(bankName);
+		beneAddDto.setBeneBranchName(bankBranchName);
+		beneAddDto.setBeneFirstName(beneFirstName);
+		beneAddDto.setBeneSecondName(beneSecondName);
+		beneAddDto.setBeneThirdName(beneThirdName);
+		beneAddDto.setBeneFourthName(beneFourthName);
+		beneAddDto.setBeneFifthName(beneFifthName);
+		
+		if(beneBankBranchView!=null && !beneBankBranchView.isEmpty()) {
+			if(beneBankBranchView.get(0)!=null && beneBankBranchView.get(0).getStateId()!=null) {
+			beneAddDto.setStateId(beneBankBranchView.get(0).getStateId());
+			}if(beneBankBranchView.get(0)!=null && beneBankBranchView.get(0).getDistrictId()!=null) {
+				beneAddDto.setDistrictId(beneBankBranchView.get(0).getDistrictId());
+			}
+			if(beneBankBranchView.get(0)!=null && beneBankBranchView.get(0).getCityId()!=null) {
+			beneAddDto.setCityId(beneBankBranchView.get(0).getCityId());
+			}
+		}
+		
+		 return beneAddDto;
+	 }
+	
+	 
+	 
 	
 	 @SuppressWarnings("unchecked")
 	 public void validateAdditionalErrorMessages(Map<String ,Object> hashMap) {
@@ -697,6 +1042,35 @@ public class BranchRemittanceManager extends AbstractModel {
 	  
 		return dto;
 	}
+  
+  
+  public void validateTrnxLimitCheck(ExchangeRateBreakup breakup,BigDecimal commission,BenificiaryListView beneficaryDetails) {
+	    CurrencyMasterModel beneCurrencyMaster = currencyDao.findOne(beneficaryDetails.getCurrencyId()); 
+		BigDecimal decimalCurrencyValue = beneCurrencyMaster.getDecinalNumber();
+		String currencyQuoteName = beneficaryDetails.getCurrencyQuoteName();
+	  if (commission == null) {
+			Map<String, Object> commissionRangeMap = remitTrnxManager.getCommissionRange(breakup);
+			String msg = "";
+			BigDecimal fromAmount = BigDecimal.ZERO;
+			BigDecimal toAmount = BigDecimal.ZERO;
+			BigDecimal fcAmount = RoundUtil.roundBigDecimal(breakup.getConvertedFCAmount(),decimalCurrencyValue.intValue());
+			if (commissionRangeMap.get("FROM_AMOUNT") != null || commissionRangeMap.get("TO_AMOUNT") != null) {
+				fromAmount = (BigDecimal) commissionRangeMap.get("FROM_AMOUNT");
+				toAmount = (BigDecimal) commissionRangeMap.get("TO_AMOUNT");
+				if (fcAmount.compareTo(fromAmount) < 0) {
+					msg = "Amount to be remitted, cannot be lesser than " + currencyQuoteName + " " + fromAmount
+							+ ".Please increase the amount to be remitted.";
+				} else if (fcAmount.compareTo(toAmount) > 0) {
+					msg = "Amount to be remitted, exceeds the permissible limit .Please decrease the amount to be remitted to less than "
+							+ currencyQuoteName + " " + toAmount + ".";
+				}
+			}
+			if (!StringUtils.isBlank(msg)) {
+				throw new GlobalException(JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL, msg);
+			}
+
+		}
+}	
   
 }	
 

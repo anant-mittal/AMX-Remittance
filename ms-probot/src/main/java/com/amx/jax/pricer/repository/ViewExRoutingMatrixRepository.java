@@ -19,4 +19,11 @@ public interface ViewExRoutingMatrixRepository extends CrudRepository<ViewExRout
 	public List<ViewExRoutingMatrix> findRoutingMatrix(BigDecimal applicationCountryId, BigDecimal beneCountryId,
 			BigDecimal beneBankId, BigDecimal beneBankBranchId, BigDecimal currencyId, String serviceGroupCode);
 
+	@Query("select matrix from ViewExRoutingMatrix matrix where matrix.applicationCountryId=?1 and matrix.beneCountryId=?2"
+			+ " and matrix.beneBankId=?3 and matrix.beneBankBranchId=?4 and matrix.currencyId=?5"
+			+ " and matrix.serviceGroupCode=?6 and matrix.routingBankId=?7 and matrix.bankBranchId=?8")
+	public List<ViewExRoutingMatrix> findRoutingMatrix(BigDecimal applicationCountryId, BigDecimal beneCountryId,
+			BigDecimal beneBankId, BigDecimal beneBankBranchId, BigDecimal currencyId, String serviceGroupCode,
+			BigDecimal routingBankId, BigDecimal bankBranchId);
+
 }

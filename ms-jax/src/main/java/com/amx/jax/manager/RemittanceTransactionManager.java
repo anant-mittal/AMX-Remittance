@@ -426,7 +426,7 @@ public class RemittanceTransactionManager {
 		return comission;
 	}
 
-	private Map<String, Object> getCommissionRange(ExchangeRateBreakup breakup) {
+	public Map<String, Object> getCommissionRange(ExchangeRateBreakup breakup) {
 
 		remitApplParametersMap.put("P_CALCULATED_FC_AMOUNT", breakup.getConvertedFCAmount());
 		BigDecimal custtype = bizcomponentDao.findCustomerTypeId("I");
@@ -808,11 +808,11 @@ public class RemittanceTransactionManager {
 	public RemittanceApplicationResponseModel saveApplication(RemittanceTransactionRequestModel model) {
 		this.isSaveRemittanceFlow = true;
 		RemittanceTransactionResponsetModel validationResults = this.validateTransactionData(model);
-		remittanceAdditionalFieldManager.validateAdditionalFields(model, remitApplParametersMap);
 		if (jaxTenantProperties.getFlexFieldEnabled()) {
 			remittanceTransactionRequestValidator.validateExchangeRate(model, validationResults);
 			remittanceTransactionRequestValidator.validateFlexFields(model, remitApplParametersMap);
 		}
+		remittanceAdditionalFieldManager.validateAdditionalFields(model, remitApplParametersMap);
 		// validate routing bank requirements
 		ExchangeRateBreakup breakup = validationResults.getExRateBreakup();
 		BigDecimal netAmountPayable = breakup.getNetAmount();

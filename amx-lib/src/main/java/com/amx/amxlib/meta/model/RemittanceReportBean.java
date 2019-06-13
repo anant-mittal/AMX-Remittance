@@ -113,7 +113,7 @@ public class RemittanceReportBean {
 
 	private String vatType;
 	private BigDecimal vatPercentage;
-	private BigDecimal vatAmount;
+	private String vatAmount;
 	
 	private String customerVatNumber;
 
@@ -827,11 +827,11 @@ public class RemittanceReportBean {
 		this.vatPercentage = vatPercentage;
 	}
 
-	public BigDecimal getVatAmount() {
+	public String getVatAmount() {
 		return vatAmount;
 	}
 
-	public void setVatAmount(BigDecimal vatAmount) {
+	public void setVatAmount(String vatAmount) {
 		this.vatAmount = vatAmount;
 	}
 
