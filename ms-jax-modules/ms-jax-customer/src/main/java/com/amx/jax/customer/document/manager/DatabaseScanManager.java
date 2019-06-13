@@ -24,7 +24,7 @@ import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.dbmodel.DmsApplMapping;
 import com.amx.jax.dbmodel.DocBlobUpload;
 import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReferenceTemp;
-import com.amx.jax.model.customer.CustomerDocUploadType;
+import com.amx.jax.model.customer.CustomerDocUploadCategory;
 import com.amx.jax.model.customer.CustomerDocumentInfo;
 import com.amx.jax.model.customer.DocumentImageRenderType;
 import com.amx.jax.model.customer.UploadCustomerKycRequest;
@@ -87,10 +87,10 @@ public class DatabaseScanManager implements DocumentScanManager {
 	@Transactional
 	public BigDecimal uploadKycDocument(UploadCustomerKycRequest uploadCustomerKycRequest) {
 		customerDocumentUploadManager.findAndDeleteExistingRecord(uploadCustomerKycRequest.getIdentityInt(),
-				uploadCustomerKycRequest.getIdentityTypeId(), CustomerDocUploadType.KYC_PROOF);
+				uploadCustomerKycRequest.getIdentityTypeId(), CustomerDocUploadCategory.KYC_PROOF);
 		CustomerDocumentUploadReferenceTemp docUploadRef = new CustomerDocumentUploadReferenceTemp();
 		docUploadRef.setScanIndic(DocumentScanIndic.DB_SCAN);
-		docUploadRef.setCustomerDocUploadType(CustomerDocUploadType.KYC_PROOF);
+		docUploadRef.setCustomerDocUploadType(CustomerDocUploadCategory.KYC_PROOF);
 		byte[] documentByteArray = Base64.decodeBase64(uploadCustomerKycRequest.getDocument());
 		try {
 			docUploadRef.setDbScanDocumentBlob(new SerialBlob(documentByteArray));

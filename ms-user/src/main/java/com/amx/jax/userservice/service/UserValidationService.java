@@ -436,6 +436,9 @@ public class UserValidationService {
 				}
 			}
 		}
+		if (onlineCustomer.getLockDt() != null) {
+			throw new GlobalException(JaxError.ONLINE_ACCOUNT_LOCKED, "Customer is locked. Contact branch");
+		}
 	}
 
 	/**

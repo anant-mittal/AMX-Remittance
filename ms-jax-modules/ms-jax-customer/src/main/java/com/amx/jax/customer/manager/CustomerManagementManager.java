@@ -164,14 +164,17 @@ public class CustomerManagementManager {
 		ResourceDTO dto = new ResourceDTO();
 		CustomerExtendedModel customerExtendedModel = customerExtendedRepo.findByCustomerId(customerId);
 		if (customerExtendedModel != null) {
-			// TO BE UNCOMMENTED when discount model issue is resolved
-			/*CustomerCategoryDiscountModel categorydiscountModel = customerCategoryRepository
+			CustomerCategoryDiscountModel categorydiscountModel = customerCategoryRepository
 					.findByIdAndIsActive(customerExtendedModel.getCustCatMasterId(), ConstantDocument.Yes);
 
 			dto.setResourceId(categorydiscountModel.getId());
-			dto.setResourceName(categorydiscountModel.getCustomerCatagory());*/
+			dto.setResourceName(categorydiscountModel.getCustomerCatagory());
 		}
 		return dto;
+	}
+
+	public CustomerStatusModel getCustomerStatusModel(BigDecimal customerId) {
+		return getCustomerStatusModel(userService.getCustById(customerId));
 	}
 
 	public CustomerStatusModel getCustomerStatusModel(Customer customer) {

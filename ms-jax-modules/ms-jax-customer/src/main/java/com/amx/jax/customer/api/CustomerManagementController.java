@@ -21,6 +21,7 @@ import com.amx.jax.customer.ICustomerManagementController;
 import com.amx.jax.customer.document.manager.CustomerDocumentManager;
 import com.amx.jax.customer.manager.CustomerManagementManager;
 import com.amx.jax.customer.service.CustomerService;
+import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.customer.CreateCustomerInfoRequest;
 import com.amx.jax.model.customer.DuplicateCustomerDto;
 import com.amx.jax.model.customer.IdentityTypeDto;
@@ -29,6 +30,7 @@ import com.amx.jax.model.customer.UploadCustomerKycResponse;
 import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.model.request.customer.UpdateCustomerInfoRequest;
 import com.amx.jax.model.response.CustomerInfo;
+import com.amx.jax.userservice.manager.OnlineCustomerManager;
 import com.amx.utils.JsonUtil;
 
 @RestController
@@ -40,6 +42,10 @@ public class CustomerManagementController implements ICustomerManagementControll
 	CustomerManagementManager customerManagementManager;
 	@Autowired
 	CustomerService customerService;
+	@Autowired
+	OnlineCustomerManager onlineCustomerManager;
+	@Autowired
+	MetaData metaData;
 
 	private static final Logger log = LoggerFactory.getLogger(CustomerManagementController.class);
 
@@ -84,6 +90,20 @@ public class CustomerManagementController implements ICustomerManagementControll
 	public AmxApiResponse<IdentityTypeDto, Object> getIdentityTypes() {
 		List<IdentityTypeDto> identityTypesDto = customerService.getIdentityTypes();
 		return AmxApiResponse.buildList(identityTypesDto);
+	}
+
+	@Override
+	@RequestMapping(path = LOCK_ONLINE_CUSTOMER, method = { RequestMethod.GET })
+	public AmxApiResponse<BoolRespModel, Object> lockOnlineCustomer() {
+		onlineCustomerManager.lockCustomer(metaData.getCustomerId());
+		return AmxApiResponse.build();
+	}
+
+	@Override
+	@RequestMapping(path = UNLOCK_ONLINE_CUSTOMER, method = { RequestMethod.GET })
+	public AmxApiResponse<BoolRespModel, Object> unlockOnlineCustomer() {
+		onlineCustomerManager.unlockCustomer(metaData.getCustomerId());
+		return AmxApiResponse.build();
 	}
 
 }

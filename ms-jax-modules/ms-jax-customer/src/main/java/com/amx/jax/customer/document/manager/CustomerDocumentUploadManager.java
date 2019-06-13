@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReferenceTemp;
-import com.amx.jax.model.customer.CustomerDocUploadType;
+import com.amx.jax.model.customer.CustomerDocUploadCategory;
 import com.amx.jax.repository.customer.CustomerDocumentUploadReferenceTempRepo;
 
 @Component
@@ -22,7 +22,7 @@ public class CustomerDocumentUploadManager {
 	CustomerDocumentUploadReferenceTempRepo customerDocumentUploadReferenceTempRepo;
 
 	public void findAndDeleteExistingRecord(String identityInt, BigDecimal identityType,
-			CustomerDocUploadType uploadType) {
+			CustomerDocUploadCategory uploadType) {
 
 		CustomerDocumentUploadReferenceTemp existing = customerDocumentUploadReferenceTempRepo
 				.findByidentityIntAndIdentityTypeIdAndCustomerDocUploadType(identityInt, identityType, uploadType);

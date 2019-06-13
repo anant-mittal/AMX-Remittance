@@ -22,6 +22,8 @@ public interface ICustomerManagementController {
 		public static final String UPLOAD_CUSTOMER_DOCUMENT = PREFIX + "/upload-customer-document";
 		public static final String DUPLICATE_CUSTOMER_CHECK = PREFIX + "/duplicate-cusotmer-check";
 		public static final String GET_IDENTITY_TPYES = PREFIX + "/get-identity-types";
+		public static final String LOCK_ONLINE_CUSTOMER = PREFIX + "/lock-online-customer";
+		public static final String UNLOCK_ONLINE_CUSTOMER = PREFIX + "/unlock-online-customer";
 	}
 
 	public static class ApiParams {
@@ -42,5 +44,9 @@ public interface ICustomerManagementController {
 	AmxApiResponse<DuplicateCustomerDto, Object> checkForDuplicateCustomer(CustomerPersonalDetail customerPersonalDetail);
 
 	AmxApiResponse<IdentityTypeDto, Object> getIdentityTypes();
+	
+	AmxApiResponse<BoolRespModel, Object> lockOnlineCustomer();
+	
+	AmxApiResponse<BoolRespModel, Object> unlockOnlineCustomer();
 
 }

@@ -121,4 +121,28 @@ public class CustomerManagementClient implements ICustomerManagementController {
 		}
 	}
 
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> lockOnlineCustomer() {
+		try {
+			return restService.ajax(appConfig.getJaxURL()).path(ApiPath.LOCK_ONLINE_CUSTOMER).meta(new JaxMetaInfo()).get()
+					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
+					});
+		} catch (Exception ae) {
+			LOGGER.error("exception in lockOnlineCustomer : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}
+	}
+
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> unlockOnlineCustomer() {
+		try {
+			return restService.ajax(appConfig.getJaxURL()).path(ApiPath.UNLOCK_ONLINE_CUSTOMER).meta(new JaxMetaInfo()).get()
+					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
+					});
+		} catch (Exception ae) {
+			LOGGER.error("exception in unlockOnlineCustomer : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}
+	}
+
 }

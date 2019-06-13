@@ -14,7 +14,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import com.amx.jax.constants.DocumentScanIndic;
-import com.amx.jax.model.customer.CustomerDocUploadType;
+import com.amx.jax.model.customer.CustomerDocUploadCategory;
 
 @Entity
 @Table(name = "JAX_CUST_DOC_UPLOAD_REF_TMP")
@@ -44,7 +44,7 @@ public class CustomerDocumentUploadReferenceTemp {
 
 	@Column(name = "UPLOAD_DOC_TYPE")
 	@Enumerated(EnumType.STRING)
-	CustomerDocUploadType customerDocUploadType;
+	CustomerDocUploadCategory customerDocUploadType;
 
 	@Column(name = "UPLOAD_DATA")
 	String uploadData;
@@ -97,11 +97,11 @@ public class CustomerDocumentUploadReferenceTemp {
 		this.identityTypeId = identityTypeId;
 	}
 
-	public CustomerDocUploadType getCustomerDocUploadType() {
+	public CustomerDocUploadCategory getCustomerDocUploadType() {
 		return customerDocUploadType;
 	}
 
-	public void setCustomerDocUploadType(CustomerDocUploadType customerDocUploadType) {
+	public void setCustomerDocUploadType(CustomerDocUploadCategory customerDocUploadType) {
 		this.customerDocUploadType = customerDocUploadType;
 	}
 

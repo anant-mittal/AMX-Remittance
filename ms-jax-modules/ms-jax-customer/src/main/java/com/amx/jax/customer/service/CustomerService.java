@@ -224,5 +224,4 @@ public class CustomerService extends AbstractService {
 		List<IdentityTypeMaster> identityTypes = customerIdProofManager.getActiveIdentityTypes();
 		return identityTypes.stream().map(i -> new IdentityTypeDto(i.getBusinessComponentId(), i.getIdentityType())).collect(Collectors.toList());
 	}
-
 }

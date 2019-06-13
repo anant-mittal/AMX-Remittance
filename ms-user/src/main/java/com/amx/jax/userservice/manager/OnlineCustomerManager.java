@@ -2,8 +2,11 @@ package com.amx.jax.userservice.manager;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +20,7 @@ import com.amx.jax.dict.ContactType;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.customer.SecurityQuestionModel;
+import com.amx.jax.services.JaxDBService;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.userservice.service.UserValidationService;
@@ -36,6 +40,12 @@ public class OnlineCustomerManager {
 	UserValidationService userValidationService;
 	@Autowired
 	CustomerAuthManager customerAuthManager;
+	@Autowired
+	JaxDBService jaxDBService;
+	
+	
+	private static final Logger log = LoggerFactory.getLogger(OnlineCustomerManager.class);
+
 
 	public void saveCustomerSecQuestions(List<SecurityQuestionModel> securityQuestions) {
 		CustomerOnlineRegistration customerOnlineRegistration = custDao
@@ -89,5 +99,34 @@ public class OnlineCustomerManager {
 
 	public CustomerOnlineRegistration getOnlineCustomerByCustomerId(BigDecimal customerId) {
 		return custDao.getOnlineCustByCustomerId(customerId);
+	}
+	
+	public void lockCustomer(BigDecimal customerId) {
+		log.info("locking customer");
+		CustomerOnlineRegistration onlineCustomer = validateActiveOnlineCustomer(customerId);
+		onlineCustomer.setLockDt(new Date());
+		onlineCustomer.setUpdatedBy(jaxDBService.getCreatedOrUpdatedBy());
+		custDao.saveOnlineCustomer(onlineCustomer);
+	}
+
+	public void unlockCustomer(BigDecimal customerId) {
+		log.info("unlocking customer");
+		CustomerOnlineRegistration onlineCustomer = validateActiveOnlineCustomer(customerId);
+		onlineCustomer.setLockDt(null);
+		onlineCustomer.setUnlockBy(jaxDBService.getCreatedOrUpdatedBy());
+		onlineCustomer.setUnlockDt(new Date());
+		onlineCustomer.setUnLockIp(metaData.getDeviceIp());
+		custDao.saveOnlineCustomer(onlineCustomer);
+	}
+	
+	public CustomerOnlineRegistration validateActiveOnlineCustomer(BigDecimal customerId) {
+		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customerId);
+		if (onlineCustomer == null) {
+			throw new GlobalException("Online customer not registered");
+		}
+		if (!ConstantDocument.Yes.equals(onlineCustomer.getStatus())) {
+			throw new GlobalException("Online customer not active");
+		}
+		return onlineCustomer;
 	}
 }

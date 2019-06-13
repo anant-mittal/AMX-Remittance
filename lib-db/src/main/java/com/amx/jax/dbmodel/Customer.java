@@ -2,7 +2,10 @@ package com.amx.jax.dbmodel;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -12,6 +15,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.SequenceGenerator;
@@ -22,6 +27,7 @@ import javax.persistence.TemporalType;
 import org.hibernate.annotations.Proxy;
 
 import com.amx.jax.constants.CustomerRegistrationType;
+import com.amx.jax.dbmodel.customer.CustomerDocumentTypeMaster;
 import com.amx.jax.util.AmxDBConstants.Status;
 
 @Entity
@@ -144,7 +150,8 @@ public class Customer implements java.io.Serializable {
 	private String annualIncomeUpdatedBy;
 	private Date annualIncomeUpdatedDate;
 	private String isBusinessCardVerified;
-	
+	private List<CustomerDocumentTypeMaster> complianceBlockedDocuments;
+
 	public String getIsBusinessCardVerified() {
 		return isBusinessCardVerified;
 	}
@@ -1067,5 +1074,16 @@ public class Customer implements java.io.Serializable {
 
 	public void setMobileVerified(Status mobileVerified) {
 		this.mobileVerified = mobileVerified;
+	}
+
+	@ManyToMany(cascade = CascadeType.ALL, fetch=FetchType.LAZY)
+	@JoinTable(  name = "JAX_COMPLIANCE_BLOCKED_DOC_MAP", joinColumns = @JoinColumn(name = "CUSTOMER_ID", referencedColumnName="CUSTOMER_ID"), inverseJoinColumns = @JoinColumn(name = "CUSTOMER_DOC_TYPE_MASTER_ID",
+			referencedColumnName="ID"))
+	public List<CustomerDocumentTypeMaster> getComplianceBlockedDocuments() {
+		return complianceBlockedDocuments;
+	}
+
+	public void setComplianceBlockedDocuments(List<CustomerDocumentTypeMaster> complianceBlockedDocuments) {
+		this.complianceBlockedDocuments = complianceBlockedDocuments;
 	}
 }

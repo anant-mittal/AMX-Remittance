@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.error.JaxError;
@@ -26,10 +27,9 @@ public class CustomerFlagManager {
 	private static final Logger logger = Logger.getLogger(CustomerFlags.class);
 	@Autowired
 	UserValidationService userValidationService;
-	
+
 	@Autowired
 	private CustomerDao custDao;
-
 
 	public CustomerFlags getCustomerFlags(BigDecimal customerId) {
 		CustomerFlags customerFlags = new CustomerFlags();
@@ -46,6 +46,7 @@ public class CustomerFlagManager {
 		customerFlags.setSecurityQuestionDone(!isSecurityQuestionRequired(customerOnlineRegistration));
 
 		customerFlags.setAnnualIncomeExpired(isAnnualIncomeExpired(customer));
+		customerFlags.setIsDeactivated(ConstantDocument.Deleted.equals(customer.getIsActive()));
 		setCustomerCommunicationChannelFlags(customer, customerFlags);
 
 		return customerFlags;
@@ -124,5 +125,5 @@ public class CustomerFlagManager {
 			}
 		}
 	}
-	
+
 }

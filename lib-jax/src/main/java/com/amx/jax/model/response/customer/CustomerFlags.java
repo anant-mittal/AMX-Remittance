@@ -21,7 +21,8 @@ public class CustomerFlags {
 	Boolean securityQuestionDone;
 	/* new login */
 
-	public Boolean annualIncomeExpired;
+	Boolean annualIncomeExpired;
+	Boolean isDeactivated;
 	
 
 	public Boolean getFingerprintlinked() {
@@ -94,5 +95,13 @@ public class CustomerFlags {
 
 	public void setAnnualIncomeExpired(Boolean annualIncomeExpired) {
 		this.annualIncomeExpired = annualIncomeExpired;
+	}
+
+	public Boolean getIsDeactivated() {
+		return isDeactivated;
+	}
+
+	public void setIsDeactivated(Boolean isDeactivated) {
+		this.isDeactivated = isDeactivated;
 	}
 }
