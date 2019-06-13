@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.pricer.dbmodel.BankMasterModel;
 import com.amx.jax.pricer.dbmodel.CountryBranch;
-import com.amx.jax.pricer.dbmodel.CountryMasterDT;
+import com.amx.jax.pricer.dbmodel.CountryMaster;
 import com.amx.jax.pricer.dbmodel.CurrencyMasterModel;
 import com.amx.jax.pricer.dbmodel.ExchangeRateApprovalDetModel;
 import com.amx.jax.pricer.dbmodel.PipsMaster;
@@ -37,7 +37,7 @@ public class PipsMasterDao {
 		onlineBranch.setCountryBranchId(exchangeRate.getCountryBranchId());
 		CountryBranch countryBranch = new CountryBranch();
 		countryBranch.setCountryBranchId(exchangeRate.getCountryBranchId());
-		CountryMasterDT countryMaster = new CountryMasterDT();
+		CountryMaster countryMaster = new CountryMaster();
 		countryMaster.setCountryId(exchangeRate.getCountryId());
 
 		CurrencyMasterModel currencyMaster = new CurrencyMasterModel();

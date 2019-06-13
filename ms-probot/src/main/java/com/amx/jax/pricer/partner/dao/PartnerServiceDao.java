@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.amx.jax.pricer.dbmodel.CountryMasterDT;
+import com.amx.jax.pricer.dbmodel.CountryMaster;
 import com.amx.jax.pricer.dbmodel.CurrencyMasterModel;
 import com.amx.jax.pricer.partner.dbmodel.BankCharges;
 import com.amx.jax.pricer.partner.dbmodel.BankServiceRule;
@@ -86,7 +86,7 @@ public class PartnerServiceDao {
 		return parameterDetailsRespository.fetchServPrvBankCode(recordId, beneCountryCode);
 	}
 	
-	public CountryMasterDT fetchCountryMasterDetails(BigDecimal countryId) {
+	public CountryMaster fetchCountryMasterDetails(BigDecimal countryId) {
 		return countryMasterRepository.findByCountryId(countryId);
 	}
 	

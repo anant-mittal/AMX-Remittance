@@ -73,7 +73,7 @@ import com.amg.exchange.treasury.model.TreasuryStandardInstruction;
 // @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Entity
 @Table(name = "FS_COUNTRY_MASTER")
-public class CountryMasterDT implements Serializable {
+public class CountryMaster implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private BigDecimal countryId;
@@ -93,11 +93,11 @@ public class CountryMasterDT implements Serializable {
 	private String approvedBy;
 	private String countryMobileLength;
 
-	public CountryMasterDT(BigDecimal countryId) {
+	public CountryMaster(BigDecimal countryId) {
 		this.countryId = countryId;
 	}
 
-	public CountryMasterDT() {
+	public CountryMaster() {
 
 	}
 

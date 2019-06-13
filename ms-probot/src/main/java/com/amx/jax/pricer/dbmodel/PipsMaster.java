@@ -24,7 +24,7 @@ public class PipsMaster implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private BigDecimal pipsMasterId;
 	private CountryBranch countryBranch;
-	private CountryMasterDT countryMaster;
+	private CountryMaster countryMaster;
 	private BankMasterModel bankMaster;
 	private CurrencyMasterModel currencyMaster;
 	/* private ServiceIndicator serviceIndicator; */
@@ -75,11 +75,11 @@ public class PipsMaster implements Serializable {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "COUNTRY_ID")
-	public CountryMasterDT getCountryMaster() {
+	public CountryMaster getCountryMaster() {
 		return countryMaster;
 	}
 
-	public void setCountryMaster(CountryMasterDT countryMaster) {
+	public void setCountryMaster(CountryMaster countryMaster) {
 		this.countryMaster = countryMaster;
 	}
 

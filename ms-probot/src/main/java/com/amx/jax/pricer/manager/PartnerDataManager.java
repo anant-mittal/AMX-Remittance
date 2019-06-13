@@ -27,7 +27,7 @@ import com.amx.jax.partner.dto.HomeSendInfoDTO;
 import com.amx.jax.partner.dto.ProductDetailsDTO;
 import com.amx.jax.partner.dto.SrvPrvFeeInqReqDTO;
 import com.amx.jax.partner.dto.SrvPrvFeeInqResDTO;
-import com.amx.jax.pricer.dbmodel.CountryMasterDT;
+import com.amx.jax.pricer.dbmodel.CountryMaster;
 import com.amx.jax.pricer.dbmodel.CurrencyMasterModel;
 import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
@@ -514,7 +514,7 @@ public class PartnerDataManager {
 	// fetch alpha codes
 	public HashMap<String, Object> fetchCountryAlphaCode(BigDecimal countryId){
 		HashMap<String, Object> countryObj = new HashMap<String, Object>();
-		CountryMasterDT countryAplhaCode = partnerServiceDao.fetchCountryMasterDetails(countryId);
+		CountryMaster countryAplhaCode = partnerServiceDao.fetchCountryMasterDetails(countryId);
 		if(countryAplhaCode != null){
 			countryObj.put("countryAlpha2Code", countryAplhaCode.getCountryAlpha2Code());
 			countryObj.put("countryAlpha3Code", countryAplhaCode.getCountryAlpha3Code());
