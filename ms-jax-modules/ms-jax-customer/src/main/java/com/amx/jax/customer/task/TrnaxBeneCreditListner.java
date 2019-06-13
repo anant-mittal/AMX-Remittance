@@ -18,7 +18,7 @@ import com.amx.jax.dbmodel.CustomerContactVerification;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.dict.Language;
 import com.amx.jax.event.AmxTunnelEvents;
-import com.amx.jax.model.response.customer.CustomerFlags;
+
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.client.PushNotifyClient;
@@ -58,9 +58,9 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
 	// EMAIL:MOBILE:CUST_NAME:TRNXAMT:LOYALTY:TRNREF:TRNDATE:LANG_ID:TNT
-	private static final String EMAIL = "EMAIL";
-	private static final String MOBILE = "MOBILE";
-	private static final String CUST_NAME = "CUST_NAME";
+	//private static final String EMAIL = "EMAIL";
+	//private static final String MOBILE = "MOBILE";
+	//private static final String CUST_NAME = "CUST_NAME";
 	private static final String CUST_ID = "CUST_ID";
 	private static final String TRANX_ID = "TRANX_ID";
 	private static final String TRNXAMT = "TRNXAMT";
@@ -99,9 +99,9 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 		String trnxAmountval = myFormat.format(trnxAmount);
 
 		
-		Boolean isOnlineCustomer=customerFlagManager.getCustomerFlags(custId).getIsOnlineCustomer();
 		
-		//Boolean isOnlineCustomer=false;
+		
+		Boolean isOnlineCustomer=false;
 		Map<String, Object> wrapper = new HashMap<String, Object>();
 		Map<String, Object> modeldata = new HashMap<String, Object>();
 		modeldata.put("to", emailId);
