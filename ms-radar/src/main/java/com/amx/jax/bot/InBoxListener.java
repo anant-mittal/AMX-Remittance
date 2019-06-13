@@ -12,6 +12,7 @@ import com.amx.jax.dict.ContactType;
 import com.amx.jax.postman.client.WhatsAppClient;
 import com.amx.jax.postman.events.UserInboxEvent;
 import com.amx.jax.postman.model.WAMessage;
+import com.amx.jax.radar.EsConfig;
 import com.amx.jax.radar.RadarConfig;
 import com.amx.jax.radar.jobs.customer.OracleViewDocument;
 import com.amx.jax.radar.service.SnapDocumentRepository;
@@ -49,6 +50,9 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 
 	@Autowired
 	RadarConfig radarConfig;
+
+	@Autowired
+	EsConfig esConfig;
 
 	public static final String FOUND_MATCHED = "Thank you for verification. Your account is now linked to this whatsApp number.";
 	public static final String FOUND_MATCH_NOT = "This WhatsApp number is not linked to the {companyIDType} entered. "
@@ -120,7 +124,7 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 
 				}
 
-			} else {
+			} else if (esConfig.isEnabled()) {
 				OracleViewDocument doc = snapApiService.getCustomerByWhatsApp(swissISDProtoString,
 						swissNumberProtoString);
 				if (!ArgUtil.isEmpty(doc)) {
@@ -132,7 +136,10 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 				} else {
 					replyMessage = ANY_TEXT;
 				}
+			} else {
+				replyMessage = ANY_TEXT;
 			}
+
 			return event.replyWAMessage(replyMessage.replace("{companyName}", radarConfig.getCompanyName())
 					.replace("{companyWebSiteUrl}", radarConfig.getCompanyWebSiteUrl())
 					.replace("{companyIDType}", radarConfig.getCompanyIDType())
