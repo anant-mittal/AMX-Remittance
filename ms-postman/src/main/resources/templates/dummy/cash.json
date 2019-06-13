@@ -1,11 +1,24 @@
 {
 	"data": {
-		"customer": "Riddhi",
-		"amount": "KD100",
-		"loyaltypoints" : "1000",
-		"refno" : "100/112",
-		"date" : "11/02/2018",
-		"currency" : "INR",
-		"verifylink" : "https://www.almullaexchange.com"
+	  "date": "12-JUN-2019",
+	  "refno": "2019/27000220",
+	  "amount": "28,189",
+	  "loyaltypoints": 27183,
+	  "languageid": "EN",
+	  "currency": "INR",
+	  "to": "madhuriddhi.almullagroup@gmail.com",
+	  "verifylink": {
+		"id": 450,
+		"appCountryId": 91,
+		"contactType": "EMAIL",
+		"contactValue": "madhuriddhi.almullagroup@gmail.com",
+		"verificationCode": "WKMHU5LW",
+		"customerId": 309945,
+		"isActive": "Y",
+		"createdDate": 1560410817292
+	  },
+	  "tranxId": 1234,
+	  "customer": "Rahamathali",
+	  "verCode": "84649293"
 	}
-}
+  } 
