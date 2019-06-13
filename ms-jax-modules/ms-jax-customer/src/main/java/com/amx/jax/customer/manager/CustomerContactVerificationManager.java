@@ -72,7 +72,7 @@ public class CustomerContactVerificationManager {
 		link.setCreatedDate(new Date());
 		link.setAppCountryId(c.getCountryId());
 		link.setIsActive(Status.Y);
-		LOGGER.info("Link value without contact value is  "+link);
+		LOGGER.info("Link value without contact value is  "+link.toString());
 		if (ContactType.EMAIL.equals(contactType)) {
 			if (ArgUtil.isEmpty(c.getEmail())) {
 				throw new GlobalException(JaxError.MISSING_CONTACT, "Email is missing for customer");
@@ -89,7 +89,7 @@ public class CustomerContactVerificationManager {
 			}
 			link.setContactValue(c.getWhatsappPrefix() + c.getWhatsapp());
 		}
-		LOGGER.info("Link value is "+link);
+		LOGGER.info("Link value is "+link.toString());
 		return customerContactVerificationRepository.save(link);
 	}
 
