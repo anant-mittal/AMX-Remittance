@@ -18,6 +18,7 @@ import com.amx.jax.dbmodel.CustomerContactVerification;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.dict.Language;
 import com.amx.jax.event.AmxTunnelEvents;
+import com.amx.jax.model.response.customer.CustomerFlags;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.client.PushNotifyClient;
@@ -98,9 +99,9 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 		String trnxAmountval = myFormat.format(trnxAmount);
 
 		
-		//CustomerFlags customerFlags=null;
-		//customerFlags = customerFlagManager.getCustomerFlags(custId);
-		Boolean isOnlineCustomer=false;
+		Boolean isOnlineCustomer=customerFlagManager.getCustomerFlags(custId).getIsOnlineCustomer();
+		
+		//Boolean isOnlineCustomer=false;
 		Map<String, Object> wrapper = new HashMap<String, Object>();
 		Map<String, Object> modeldata = new HashMap<String, Object>();
 		modeldata.put("to", emailId);
