@@ -52,6 +52,9 @@ public class WebAppConfig {
 	@TenantValue("${company.idtype}")
 	private String companyIdtype;
 
+	@TenantValue("${company.tnt}")
+	private String companyTnt;
+
 	/**
 	 * Gets the features.
 	 *
@@ -116,6 +119,10 @@ public class WebAppConfig {
 
 	public String getCompanyIdtype() {
 		return this.companyIdtype;
+	}
+
+	public String getCompanyTnt() {
+		return this.companyTnt;
 	}
 
 }
