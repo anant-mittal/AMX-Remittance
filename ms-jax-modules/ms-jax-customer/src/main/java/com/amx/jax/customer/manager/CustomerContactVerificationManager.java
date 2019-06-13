@@ -15,7 +15,6 @@ import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerContactVerification;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.error.JaxError;
-import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.customer.CustomerContactVerificationDto;
 import com.amx.jax.repository.CustomerContactVerificationRepository;
 import com.amx.jax.repository.CustomerRepository;
@@ -40,8 +39,7 @@ public class CustomerContactVerificationManager {
 	@Autowired
 	CustomerRepository customerRepository;
 
-	@Autowired
-	MetaData metaData;
+	
 
 	public CustomerContactVerification getCustomerContactVerification(BigDecimal id) {
 		return customerContactVerificationRepository.findById(id);
@@ -70,7 +68,7 @@ public class CustomerContactVerificationManager {
 		link.setContactType(contactType);
 		link.setVerificationCode(Random.randomAlphaNumeric(8));
 		link.setCreatedDate(new Date());
-		link.setAppCountryId(metaData.getCountryId());
+		link.setAppCountryId(c.getCountryId());
 		link.setIsActive(Status.Y);
 
 		if (ContactType.EMAIL.equals(contactType)) {
