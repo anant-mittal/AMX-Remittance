@@ -283,7 +283,7 @@
                                   		<p class="lead">Your transaction with us dated <strong th:text="${data.date}"></strong> having Trans Ref No: <strong th:text="${data.refno}"></strong> for <strong th:text="${data.currency}"></strong> <strong th:text="${data.amount}"></strong>   has been successfully processed and made available to the bank of the beneficiary.Thank you for your continued patronage.</p>
                                         <p class="lead">We are now available <a th:href="${_tu.prop('company.app.url')}"><span >online</span></a> and on App's for <a th:href="${_tu.prop('company.ios.url')}"><span>IOS</span></a> and <a th:href="${_tu.prop('company.android.url')}"><span>Android</span>.</a></p>
                                         <p class="lead">Please click the Verify your email button below to confirm that you want to use this email ID for all communication from Al Mulla Exchange.</p>
-										<p align="center"><a th:href="${data.verifylink}" style="width:200px" class="btn-primary" target="_blank">Verify Email</a></p>
+										<p align="center"><a th:href="${_tu.prop('company.app.url')+ '/pub/verify/email/' + verifylink.id +'/'+verifylink.verificationCode}" style="width:200px" class="btn-primary" target="_blank">Verify Email</a></p>
                                    		
                                    		<!-- A Real Hero (and a real human being) -->
                                         <p style="padding:40px 0" align="center"><img src="cid:images/product-1.png"/></p><!-- /hero -->
