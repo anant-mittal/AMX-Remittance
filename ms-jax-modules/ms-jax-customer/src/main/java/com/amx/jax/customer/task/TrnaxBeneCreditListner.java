@@ -85,7 +85,7 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 		String langId = ArgUtil.parseAsString(event.getData().get(LANG_ID));
 		String curName = ArgUtil.parseAsString(event.getData().get(CURNAME));
 		String type = ArgUtil.parseAsString(event.getData().get(TYPE));
-		//BigDecimal tranxId = ArgUtil.parseAsBigDecimal(event.getData().get(TRANX_ID));
+		BigDecimal tranxId = ArgUtil.parseAsBigDecimal(event.getData().get(TRANX_ID), new BigDecimal(0));
 		//LOGGER.info("transaction id is  "+tranxId);
 		NumberFormat myFormat = NumberFormat.getInstance();
 		myFormat.setGroupingUsed(true);
@@ -104,9 +104,9 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 		modeldata.put("refno", trnxRef);
 		modeldata.put("date", trnxDate);
 		modeldata.put("currency", curName);
-		//modeldata.put("tranxId", tranxId);
-		//modeldata.put("verCode",
-		//		JaxClientUtil.getTransactionVeryCode(tranxId).output());
+		modeldata.put("tranxId", tranxId);
+		modeldata.put("verCode",
+				JaxClientUtil.getTransactionVeryCode(tranxId).output());
 
 		for (Map.Entry<String, Object> entry : modeldata.entrySet()) {
 			LOGGER.info("KeyModel = " + entry.getKey() + ", ValueModel = " + entry.getValue());
@@ -119,12 +119,8 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 			if (c.getEmailVerified() != AmxDBConstants.Status.Y) {
 
 				CustomerContactVerification x = customerContactVerificationManager.create(c, ContactType.EMAIL);
-				LOGGER.info("value of x is "+x.toString());
 				//modeldata.put("customer", c);
 				modeldata.put("verifylink", x);
-				for (Map.Entry<String, Object> entry : modeldata.entrySet()) {
-					LOGGER.info("KeyModel2 = " + entry.getKey() + ", ValueModel2 = " + entry.getValue());
-				}
 				LOGGER.debug("Model data is ", modeldata.get("verifylink"));
 				//LOGGER.debug("Customer value is ", modeldata.get("customer"));
 
@@ -140,9 +136,6 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 			} else {
 				email.setLang(Language.EN);
 				modeldata.put("languageid", Language.EN);
-			}
-			for (Map.Entry<String, Object> entry : wrapper.entrySet()) {
-				LOGGER.info("KeyModelWrap = " + entry.getKey() + ", ValueModelWrap = " + entry.getValue());
 			}
 			LOGGER.info("Wrapper data is  ", wrapper.get("data"));
 			email.setModel(wrapper);
@@ -225,6 +218,7 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 		}
 
 	}
+
 	@Async(ExecutorConfig.DEFAULT)
 	public void sendEmail(Email email) {
 		try {
