@@ -6,6 +6,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -39,7 +41,7 @@ public class CustomerContactVerificationManager {
 	@Autowired
 	CustomerRepository customerRepository;
 
-	
+	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
 	public CustomerContactVerification getCustomerContactVerification(BigDecimal id) {
 		return customerContactVerificationRepository.findById(id);
@@ -70,7 +72,7 @@ public class CustomerContactVerificationManager {
 		link.setCreatedDate(new Date());
 		link.setAppCountryId(c.getCountryId());
 		link.setIsActive(Status.Y);
-
+		LOGGER.info("Link value without contact value is  "+link);
 		if (ContactType.EMAIL.equals(contactType)) {
 			if (ArgUtil.isEmpty(c.getEmail())) {
 				throw new GlobalException(JaxError.MISSING_CONTACT, "Email is missing for customer");
@@ -87,7 +89,7 @@ public class CustomerContactVerificationManager {
 			}
 			link.setContactValue(c.getWhatsappPrefix() + c.getWhatsapp());
 		}
-
+		LOGGER.info("Link value is "+link);
 		return customerContactVerificationRepository.save(link);
 	}
 
