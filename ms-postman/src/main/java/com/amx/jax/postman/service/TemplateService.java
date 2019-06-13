@@ -75,8 +75,8 @@ public class TemplateService {
 	/**
 	 * Process html.
 	 *
-	 * @param template the template
-	 * @param context  the context
+	 * @param template    the template
+	 * @param context     the context
 	 * @param contactType
 	 * @return the string
 	 */
@@ -100,9 +100,9 @@ public class TemplateService {
 		return rawStr;
 	}
 
-	public String processSMS(ITemplate template, Context context, Locale locale) {
+	public String processSMS(ITemplate template, Context context, Locale locale, ContactType contactType) {
 		String rawStr = templateEngine.process(
-				templateUtils.getTemplateFile(template.getSMSFile(), AppContextUtil.getTenant(), locale),
+				templateUtils.getTemplateFile(template.getSMSFile(), AppContextUtil.getTenant(), locale, contactType),
 				context);
 
 		Pattern p = Pattern.compile("src=\"inline:(.*?)\"");
@@ -119,9 +119,10 @@ public class TemplateService {
 		return rawStr;
 	}
 
-	public String processJson(ITemplate template, Context context, Locale locale) {
+	public String processJson(ITemplate template, Context context, Locale locale, ContactType contactType) {
 		return templateEngine.process(
-				templateUtils.getTemplateFile(template.getJsonFile(), AppContextUtil.getTenant(), locale), context);
+				templateUtils.getTemplateFile(template.getJsonFile(), AppContextUtil.getTenant(), locale, contactType),
+				context);
 	}
 
 	/**
