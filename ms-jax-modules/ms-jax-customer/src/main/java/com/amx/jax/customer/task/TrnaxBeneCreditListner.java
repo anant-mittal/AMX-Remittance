@@ -119,10 +119,10 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 			if (c.getEmailVerified() != AmxDBConstants.Status.Y) {
 
 				CustomerContactVerification x = customerContactVerificationManager.create(c, ContactType.EMAIL);
-				modeldata.put("customer", c);
+				//modeldata.put("customer", c);
 				modeldata.put("verifylink", x);
 				LOGGER.debug("Model data is ", modeldata.get("verifylink"));
-				LOGGER.debug("Customer value is ", modeldata.get("customer"));
+				//LOGGER.debug("Customer value is ", modeldata.get("customer"));
 
 			} else {
 				modeldata.put("customer", null);
