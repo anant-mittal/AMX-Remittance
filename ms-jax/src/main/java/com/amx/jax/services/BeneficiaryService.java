@@ -1036,9 +1036,10 @@ public class BeneficiaryService extends AbstractService {
 	private CurrencyMasterDTO getCurrencyDTO(BigDecimal currencyId) {
 		CurrencyMasterDTO dto = new CurrencyMasterDTO();
 		List<CurrencyMasterModel> currencyList = currencyDao.getCurrencyList(currencyId);
-		if (currencyList.isEmpty()) {
-			throw new GlobalException("Currency details not avaliable");
-		} else {
+		/*
+		 * if (currencyList.isEmpty()) { throw new
+		 * GlobalException("Currency details not avaliable"); }
+		 */if(currencyList!=null && !currencyList.isEmpty()) {
 			CurrencyMasterModel curModel = currencyList.get(0);
 			dto.setCountryId(curModel.getCountryId());
 			dto.setCurrencyCode(curModel.getCurrencyCode());

@@ -431,6 +431,7 @@ public class BeneficiaryCheckService extends AbstractService {
 				}
 			}
 		}
+		
 		beneDto.setBeneficiaryErrorStatus(errorListDto);
 		return beneDto;
 	}
