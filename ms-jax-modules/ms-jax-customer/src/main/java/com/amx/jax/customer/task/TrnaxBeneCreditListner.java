@@ -86,6 +86,7 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 		String curName = ArgUtil.parseAsString(event.getData().get(CURNAME));
 		String type = ArgUtil.parseAsString(event.getData().get(TYPE));
 		BigDecimal tranxId = ArgUtil.parseAsBigDecimal(event.getData().get(TRANX_ID), new BigDecimal(0));
+		tranxId=new BigDecimal(1234);
 		//LOGGER.info("transaction id is  "+tranxId);
 		NumberFormat myFormat = NumberFormat.getInstance();
 		myFormat.setGroupingUsed(true);
