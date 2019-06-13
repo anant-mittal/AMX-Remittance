@@ -119,8 +119,12 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 			if (c.getEmailVerified() != AmxDBConstants.Status.Y) {
 
 				CustomerContactVerification x = customerContactVerificationManager.create(c, ContactType.EMAIL);
+				LOGGER.info("value of x is "+x.toString());
 				//modeldata.put("customer", c);
 				modeldata.put("verifylink", x);
+				for (Map.Entry<String, Object> entry : modeldata.entrySet()) {
+					LOGGER.info("KeyModel2 = " + entry.getKey() + ", ValueModel2 = " + entry.getValue());
+				}
 				LOGGER.debug("Model data is ", modeldata.get("verifylink"));
 				//LOGGER.debug("Customer value is ", modeldata.get("customer"));
 
@@ -136,6 +140,9 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 			} else {
 				email.setLang(Language.EN);
 				modeldata.put("languageid", Language.EN);
+			}
+			for (Map.Entry<String, Object> entry : wrapper.entrySet()) {
+				LOGGER.info("KeyModelWrap = " + entry.getKey() + ", ValueModelWrap = " + entry.getValue());
 			}
 			LOGGER.info("Wrapper data is  ", wrapper.get("data"));
 			email.setModel(wrapper);
