@@ -8,7 +8,9 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 
+import com.amx.jax.async.ExecutorConfig;
 import com.amx.jax.client.JaxClientUtil;
 import com.amx.jax.customer.manager.CustomerContactVerificationManager;
 import com.amx.jax.dbmodel.Customer;
@@ -16,6 +18,7 @@ import com.amx.jax.dbmodel.CustomerContactVerification;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.dict.Language;
 import com.amx.jax.event.AmxTunnelEvents;
+import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.model.Email;
@@ -152,7 +155,7 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 			default:
 				break;
 			}
-			postManService.sendEmailAsync(email);
+			sendEmail(email);
 		}
 
 		if (!ArgUtil.isEmpty(smsNo)&&isOnlineCustomer) {
@@ -215,4 +218,15 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 		}
 
 	}
+	@Async(ExecutorConfig.DEFAULT)
+	public void sendEmail(Email email) {
+		try {
+			LOGGER.info("email sent");
+			postManService.sendEmailAsync(email);
+		} catch (PostManException e) {
+			LOGGER.info("email exception");
+			LOGGER.error("error in link fingerprint", e);
+		}
+	}
+
 }
