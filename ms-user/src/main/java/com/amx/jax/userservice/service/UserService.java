@@ -225,7 +225,6 @@ public class UserService extends AbstractUserService {
 
 	public CustomerModel convert(CustomerOnlineRegistration cust) {
 		CustomerModel model = new CustomerModel();
-		model.setIdentityId(cust.getUserName());
 		if (cust.getCaption() != null) {
 			model.setCaption(cryptoUtil.decrypt(cust.getUserName(), cust.getCaption()));
 		}
@@ -254,6 +253,7 @@ public class UserService extends AbstractUserService {
 			personinfo.setEmail(customer.getEmail());
 			personinfo.setMobile(customer.getMobile());
 			model.setPersoninfo(personinfo);
+			model.setIdentityId(customer.getIdentityInt());
 		} catch (Exception e) {
 			logger.error("Exception while populating PersonInfo : ", e);
 		}
