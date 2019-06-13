@@ -48,6 +48,13 @@ public class WebAppConfig {
 	@TenantValue("${notification.geo.enabled}")
 	private boolean notifyGeoEnabled;
 
+
+	@TenantValue("${company.idtype}")
+	private String companyIdtype;
+
+	@TenantValue("${company.tnt}")
+	private String companyTnt;
+
 	/**
 	 * Gets the features.
 	 *
@@ -107,6 +114,15 @@ public class WebAppConfig {
 
 	public String getIosAppId() {
 		return iosAppId;
+	}
+
+
+	public String getCompanyIdtype() {
+		return this.companyIdtype;
+	}
+
+	public String getCompanyTnt() {
+		return this.companyTnt;
 	}
 
 }

@@ -47,9 +47,9 @@ public class WhatsAppService {
 
 	private RBlockingQueue<WAMessage> getQueue(BigDecimal queueId) {
 		if (ArgUtil.isEmpty(queueId) || queueId.equals(BigDecimal.ZERO)) {
-			return redisson.getBlockingQueue(WHATS_MESSAGES);
+			return redisson.getBlockingQueue(WHATS_MESSAGES + "_" + AppContextUtil.getTenant());
 		}
-		return redisson.getBlockingQueue(WHATS_MESSAGES + "_" + queueId);
+		return redisson.getBlockingQueue(WHATS_MESSAGES + "_" + queueId + "_" + AppContextUtil.getTenant());
 	}
 
 	public WAMessage resolveTemplate(WAMessage waMessage) {
@@ -62,7 +62,7 @@ public class WhatsAppService {
 			file.setModel(waMessage.getModel());
 			file.setLang(waMessage.getLang());
 
-			waMessage.setMessage(fileService.create(file,ContactType.WHATSAPP).getContent());
+			waMessage.setMessage(fileService.create(file, ContactType.WHATSAPP).getContent());
 		}
 		return waMessage;
 	}

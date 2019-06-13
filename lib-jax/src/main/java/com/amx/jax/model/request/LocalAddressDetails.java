@@ -2,6 +2,8 @@ package com.amx.jax.model.request;
 
 import java.math.BigDecimal;
 
+import javax.validation.constraints.NotNull;
+
 import com.amx.jax.swagger.ApiMockModelProperty;
 
 public class LocalAddressDetails {
@@ -10,18 +12,23 @@ public class LocalAddressDetails {
 	private BigDecimal contactTypeId;
 	
 	@ApiMockModelProperty(example="1011")
+	
 	private String block;
 	
 	@ApiMockModelProperty(example="Gandhi Road")
+	
 	private String street;
 	
 	@ApiMockModelProperty(example="Runwall")
+	
 	private String house;
 	
 	@ApiMockModelProperty(example="5")
+	
 	private String flat;
 	
 	@ApiMockModelProperty(example="91")
+	
 	private BigDecimal countryId;
 	
 	@ApiMockModelProperty(example="584")

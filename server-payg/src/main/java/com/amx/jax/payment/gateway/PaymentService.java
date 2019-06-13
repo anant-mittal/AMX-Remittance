@@ -84,7 +84,7 @@ public class PaymentService {
 			metaInfo.setCountryId(paymentResponseDto.getApplicationCountryId());
 			metaInfo.setCustomerId(paymentResponseDto.getCustomerId());
 			headers.add(AppConstants.META_XKEY, new ObjectMapper().writeValueAsString(metaInfo));
-			LOGGER.info("Payment amount is "+params.getAmount());
+			LOGGER.info("amount in params :"+params.getAmount());
 			paymentResponseDto.setAmount(params.getAmount());
 
 			if (ArgUtil.isEmpty(params.getProduct())) {

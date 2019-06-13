@@ -251,6 +251,9 @@ public class BranchRemittanceApplManager {
 		/** bene additional check **/
 		 Map<String, Object> addBeneDetails =branchRemitManager.validateAdditionalBeneDetails(branchRoutingDto,exchangeRateResposne,beneficaryDetails,requestApplModel);
 		 
+		 
+		 /** validate trnx limit check **/
+		 branchRemitManager.validateTrnxLimitCheck(exchangeRateResposne.getExRateBreakup(),exchangeRateResposne.getTxnFee(),beneficaryDetails);
 		
 		 
 		hashMap.put("ROUTING_DETAILS_DTO", branchRoutingDto);
@@ -788,11 +791,14 @@ public class BranchRemittanceApplManager {
 	
 		 if(JaxUtil.isNullZeroBigDecimalCheck(terminalId)) {
 			 Device deviceClient = deviceRepository.findByDeviceTypeAndBranchSystemInventoryIdAndStatus(ClientType.SIGNATURE_PAD, terminalId,ConstantDocument.Yes);
+			
+			 if(deviceClient!=null && JaxUtil.isNullZeroBigDecimalCheck(deviceClient.getRegistrationId())) {
 			 DeviceStateInfo deviceStateInfo =  deviceStateRepository.findOne(deviceClient.getRegistrationId());
 			 if(deviceStateInfo!=null && deviceStateInfo.getSignature()!=null) {
 				 signature = deviceStateInfo.getSignature();
 			 }
-	 }
+			 }
+		 } 
 	 
 	 return signature;
  }

@@ -126,6 +126,10 @@ public class ReceiptPayment implements Serializable {
 	private BigDecimal onlineCountryBranchId;
 	private BigDecimal onlineLocationCode;
 	private BigDecimal onlineDocumentNumber;
+	//vat details
+	private String vatType;
+	private BigDecimal vatPercentage;
+	private BigDecimal vatAmount;
 
 	private CurrencyWiseDenomination exCurrencyWiseDenomination;
 	private List<PurposeOfTransaction> exPurposeOfTransaction= new ArrayList<PurposeOfTransaction>();
@@ -868,4 +872,26 @@ public class ReceiptPayment implements Serializable {
 	public void setOnlineDocumentNumber(BigDecimal onlineDocumentNumber) {
 		this.onlineDocumentNumber = onlineDocumentNumber;
 	}
+	@Column(name="VAT_TYPE")
+	public String getVatType() {
+		return vatType;
+	}
+	public void setVatType(String vatType) {
+		this.vatType = vatType;
+	}
+	@Column(name="VAT_PERCENTAGE")
+	public BigDecimal getVatPercentage() {
+		return vatPercentage;
+	}
+	public void setVatPercentage(BigDecimal vatPercentage) {
+		this.vatPercentage = vatPercentage;
+	}
+	@Column(name="VAT_AMOUNT")
+	public BigDecimal getVatAmount() {
+		return vatAmount;
+	}
+	public void setVatAmount(BigDecimal vatAmount) {
+		this.vatAmount = vatAmount;
+	}
+	
 }

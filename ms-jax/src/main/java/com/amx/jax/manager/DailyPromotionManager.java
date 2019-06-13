@@ -3,6 +3,7 @@ package com.amx.jax.manager;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,9 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.NotificationConstants;
 import com.amx.amxlib.model.DailyPromotionDTO;
+import com.amx.amxlib.model.PromotionDto;
 import com.amx.jax.config.JaxTenantProperties;
+import com.amx.jax.dao.DailyPromotionDao;
 import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.promotion.DailyPromotion;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
@@ -40,6 +43,9 @@ public class DailyPromotionManager {
 
 	@Autowired
 	JaxTenantProperties jaxTenantProperties;
+	
+	@Autowired
+	DailyPromotionDao dailyPromotionDao;
 
 	Logger logger = LoggerFactory.getLogger(DailyPromotionManager.class);
 
@@ -54,7 +60,6 @@ public class DailyPromotionManager {
 				if (date.after(startDate) && date.before(endDate)) {
 					DailyPromotionDTO dailyPromotionDTO = getDailyPromotions(remittanceTransactionId, personInfo);
 					sendVoucherEmail(dailyPromotionDTO, personInfo);
-					sendVoucherEmailMarketing(dailyPromotionDTO, personInfo);
 				}
 			}
 			else {
@@ -107,7 +112,7 @@ public class DailyPromotionManager {
 				logger.info("Sending WantIT BuyIT voucher Email to customer : ");
 				Email wantITbuyITEmail = new Email();
 				wantITbuyITEmail.setSubject("Congratulations! You have got a coupon from Al Mulla Exchange.");
-				if (personInfo.getEmail() != null) {
+				if (personInfo.getEmail() != null && !StringUtils.isBlank(personInfo.getEmail())) {
 					wantITbuyITEmail.addTo(personInfo.getEmail());
 				} else {
 					wantITbuyITEmail.addTo("huzefa.abbasi@almullaexchange.com");
@@ -122,22 +127,20 @@ public class DailyPromotionManager {
 			logger.error("Error while sending mail WantIT BuyIT : " + e.getMessage());
 		}
 	}
-	
-	private void sendVoucherEmailMarketing(DailyPromotionDTO dailyPromotionDTO, PersonInfo personInfo) {
-		try {
-			if (dailyPromotionDTO.getPromotionCode() != null) {
-				logger.info("Sending WantIT BuyIT voucher Email to Marketing New : ");
-				Email wantITbuyITEmailM = new Email();
-				wantITbuyITEmailM.setSubject("Congratulations! You have got a coupon from Al Mulla Exchange.");
-				wantITbuyITEmailM.addTo("huzefa.abbasi@almullaexchange.com");
-				wantITbuyITEmailM.setITemplate(TemplatesMX.WANTIT_BUYIT_PROMOTION);
-				wantITbuyITEmailM.setHtml(true);
-				wantITbuyITEmailM.getModel().put(NotificationConstants.RESP_DATA_KEY, dailyPromotionDTO);
-				postManService.sendEmailAsync(wantITbuyITEmailM);
-			}
-		} catch (Exception e) {
-			logger.error("Error while sending mail WantIT BuyIT to Marketing : " + e.getMessage());
+
+	public PromotionDto getWanitBuyitMsg(RemittanceTransaction remittanceTransaction) {
+		DailyPromotion wantItPromoCode = dailyPromotionDao.getWantitByTrnxId(remittanceTransaction.getRemittanceTransactionId());
+		PromotionDto dto = null;
+		if(wantItPromoCode != null) {
+			dto = new PromotionDto();
+			String wantItBuyItCoupon = "wantitbuyit";
+			dto.setPrize(wantItBuyItCoupon);
+			return dto;
 		}
+		
+		return dto;
 	}
+
+
 
 }

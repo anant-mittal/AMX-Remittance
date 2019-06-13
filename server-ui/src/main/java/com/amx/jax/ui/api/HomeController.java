@@ -257,6 +257,8 @@ public class HomeController {
 		model.addAttribute("contactType", contactType);
 		model.addAttribute("verId", verId);
 		model.addAttribute("verCode", verCode);
+		model.addAttribute("idType", webAppConfig.getCompanyIdtype());
+		model.addAttribute("companyTnt", webAppConfig.getCompanyTnt());
 		return "verify";
 	}
 

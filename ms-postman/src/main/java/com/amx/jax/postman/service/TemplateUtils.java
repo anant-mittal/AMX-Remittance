@@ -17,12 +17,14 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.scope.TenantProperties;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 import com.amx.utils.ContextUtil;
 import com.amx.utils.IoUtils;
+import com.amx.utils.JsonUtil;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.SimpleJasperReportsContext;
@@ -53,57 +55,123 @@ public class TemplateUtils {
 	@Autowired
 	private ApplicationContext applicationContext;
 
-	@Value("classpath*:*/templates/html/*.html")
+	@Value("classpath*:*templates/html/**/*.html")
 	private Resource[] htmlFiles;
 
-	@Value("classpath*:*/templates/json/*.json")
+	@Value("classpath*:*/templates/html/**/*.html")
+	private Resource[] htmlFiles2;
+
+	@Value("classpath*:*templates/json/*.json")
 	private Resource[] jsonFiles;
 
-	@Value("classpath*:*/templates/jasper/*.jrxml")
+	@Value("classpath*:*/templates/json/*.json")
+	private Resource[] jsonFiles2;
+
+	@Value("classpath*:*templates/jasper/*.jrxml")
 	private Resource[] jasperFiles;
 
-	public String getTemplateFile(String file, Tenant tnt, Locale locale) {
-		if (!IS_TEMPLATE_SCANNED) {
-			for (Resource resource : htmlFiles) {
-				String[] fileName = resource.getFilename().split("\\.(?=[^\\.]+$)");
-				String filePath = "html/" + fileName[0];
-				templateFiles.put(filePath, filePath);
+	@Value("classpath*:*/templates/jasper/*.jrxml")
+	private Resource[] jasperFiles2;
+
+	public String getTemplateFile(String file, Tenant tnt, Locale locale, ContactType contactType) {
+		if (!IS_TEMPLATE_SCANNED || true) {
+			try {
+				for (Resource resource : htmlFiles) {
+					String absPath = resource.getURI().toString().split("\\/templates\\/html\\/")[1];
+					String[] fileName = absPath.split("\\.(?=[^\\.]+$)");
+					String filePath = "html/" + fileName[0];
+					templateFiles.put(filePath, filePath);
+				}
+				for (Resource resource : htmlFiles2) {
+					String absPath = resource.getURI().toString().split("\\/templates\\/html\\/")[1];
+					String[] fileName = absPath.split("\\.(?=[^\\.]+$)");
+					String filePath = "html/" + fileName[0];
+					templateFiles.put(filePath, filePath);
+				}
+				for (Resource resource : jsonFiles) {
+					String absPath = resource.getURI().toString().split("\\/templates\\/json\\/")[1];
+					String[] fileName = absPath.split("\\.(?=[^\\.]+$)");
+					String filePath = "json/" + fileName[0];
+					templateFiles.put(filePath, filePath);
+				}
+				for (Resource resource : jsonFiles2) {
+					String absPath = resource.getURI().toString().split("\\/templates\\/json\\/")[1];
+					String[] fileName = absPath.split("\\.(?=[^\\.]+$)");
+					String filePath = "json/" + fileName[0];
+					templateFiles.put(filePath, filePath);
+				}
+				for (Resource resource : jasperFiles) {
+					String[] fileName = resource.getFilename().split("\\.(?=[^\\.]+$)");
+					String filePath = "jasper/" + fileName[0];
+					templateFiles.put(filePath, filePath);
+				}
+				for (Resource resource : jasperFiles2) {
+					String[] fileName = resource.getFilename().split("\\.(?=[^\\.]+$)");
+					String filePath = "jasper/" + fileName[0];
+					templateFiles.put(filePath, filePath);
+				}
+				IS_TEMPLATE_SCANNED = true;
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-			for (Resource resource : jsonFiles) {
-				String[] fileName = resource.getFilename().split("\\.(?=[^\\.]+$)");
-				String filePath = "json/" + fileName[0];
-				templateFiles.put(filePath, filePath);
-			}
-			for (Resource resource : jasperFiles) {
-				String[] fileName = resource.getFilename().split("\\.(?=[^\\.]+$)");
-				String filePath = "jasper/" + fileName[0];
-				templateFiles.put(filePath, filePath);
-			}
-			IS_TEMPLATE_SCANNED = true;
 		}
-		String specficFile = String.format("%s_%s.%s", file, locale.getLanguage(),
+
+		String relativeFile = file;
+		String folder = Constants.BLANK;
+
+		String specficFile = null;
+		if (!ArgUtil.isEmpty(contactType)) {
+			if (file.startsWith("html/")) {
+				relativeFile = file.replace("html/", Constants.BLANK);
+				folder = "html/" + contactType.getShortCode() + "/";
+			} else if (file.startsWith("json/")) {
+				relativeFile = file.replace("json/", Constants.BLANK);
+				folder = "json/" + contactType.getShortCode() + "/";
+			} else if (file.startsWith("jasper/")) {
+				relativeFile = file.replace("jasper/", Constants.BLANK);
+				folder = "jasper/" + contactType.getShortCode() + "/";
+			}
+			specficFile = getTemplateFile(folder, relativeFile, tnt, locale);
+			if (!ArgUtil.isEmpty(specficFile)) {
+				return specficFile;
+			}
+		}
+		specficFile = getTemplateFile(Constants.BLANK, file, tnt, locale);
+		if (!ArgUtil.isEmpty(specficFile)) {
+			return specficFile;
+		}
+		templateFiles.put(specficFile, file);
+		return file;
+	}
+
+	private String getTemplateFile(String folder, String file, Tenant tnt, Locale locale) {
+		String specficFile = String.format(folder + "%s_%s.%s", file, locale.getLanguage(),
 				ArgUtil.parseAsString(tnt, Constants.BLANK).toLowerCase());
 		if (templateFiles.containsKey(specficFile)) {
 			return templateFiles.get(specficFile);
 		}
 
-		String tenantFile = String.format("%s.%s", file,
+		String tenantFile = String.format(folder + "%s.%s", file,
 				ArgUtil.parseAsString(tnt, Constants.BLANK).toLowerCase());
 		if (templateFiles.containsKey(tenantFile)) {
 			templateFiles.put(specficFile, tenantFile);
 			return tenantFile;
 		}
 
-		String localeFile = String.format("%s_%s", file,
+		String localeFile = String.format(folder + "%s_%s", file,
 				locale.getLanguage());
 		if (templateFiles.containsKey(localeFile)) {
 			templateFiles.put(specficFile, localeFile);
 			return tenantFile;
 		}
 
-		templateFiles.put(specficFile, file);
+		String exactFile = folder + file;
+		if (templateFiles.containsKey(exactFile)) {
+			templateFiles.put(specficFile, exactFile);
+			return exactFile;
+		}
 
-		return file;
+		return null;
 	}
 
 	/**

@@ -24,6 +24,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxEvent;
 import com.amx.jax.dao.RemittanceApplicationDao;
+import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerRating;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.manager.RemittancePaymentManager;
@@ -36,6 +37,7 @@ import com.amx.jax.services.PurposeOfTransactionService;
 import com.amx.jax.services.RemittanceTransactionService;
 import com.amx.jax.services.ReportManagerService;
 import com.amx.jax.services.TransactionHistroyService;
+import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.ConverterUtil;
 import com.amx.jax.util.JaxContextUtil;
 
@@ -75,6 +77,9 @@ public class RemittanceController {
 
    	@Autowired
 	CustomerRatingService customerRatingService;
+   	
+   	@Autowired
+   	UserService userService;
 
 	@RequestMapping(value = "/trnxHist/", method = RequestMethod.GET)
 	public ApiResponse getTrnxHistroyDetailResponse(@RequestParam(required = false, value = "docfyr") BigDecimal docfyr,
@@ -221,13 +226,16 @@ public class RemittanceController {
 	@RequestMapping(value = "/trnx/receipt", method = RequestMethod.POST)
 	public ApiResponse getReceiptJson(@RequestParam BigDecimal appDocNo, @RequestParam BigDecimal appDocFinYear) {
 		RemittanceTransaction remittanceTransaction = remitAppDao.getRemittanceTransaction(appDocNo, appDocFinYear);
-
-		BigDecimal cutomerReference = remittanceTransaction.getCustomerId().getCustomerId();
+		Customer customer = userService.getCustById(metaData.getCustomerId());
+		if (remittanceTransaction.getCustomerId() != null) {
+			customer = remittanceTransaction.getCustomerId();
+		}
+		BigDecimal cutomerReference = customer.getCustomerId();
 		BigDecimal remittancedocfyr = remittanceTransaction.getDocumentFinanceYear();
 		BigDecimal remittancedocNumber = remittanceTransaction.getDocumentNo();
 
-		TransactionHistroyDTO transactionHistoryDto = transactionHistroyService
-				.getTransactionHistoryDto(cutomerReference, remittancedocfyr, remittancedocNumber);
+		TransactionHistroyDTO transactionHistoryDto = transactionHistroyService.getTransactionHistoryDto(cutomerReference, remittancedocfyr,
+				remittancedocNumber);
 		transactionHistoryDto.setApplicationCountryId(metaData.getCountryId());
 		return reportManagerService.generatePersonalRemittanceReceiptReportDetails(transactionHistoryDto, true);
 	}

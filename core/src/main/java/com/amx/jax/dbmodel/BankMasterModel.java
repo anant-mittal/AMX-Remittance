@@ -391,6 +391,7 @@ public class BankMasterModel implements java.io.Serializable {
 		result = prime * result + ((teleponeNo == null) ? 0 : teleponeNo.hashCode());
 		result = prime * result + ((updateDate == null) ? 0 : updateDate.hashCode());
 		result = prime * result + ((zipCode == null) ? 0 : zipCode.hashCode());
+		result = prime * result + ((ibanFlag ==null) ? 0 : ibanFlag.hashCode());
 		return result;
 	}
 
@@ -562,7 +563,12 @@ public class BankMasterModel implements java.io.Serializable {
 			if (other.zipCode != null)
 				return false;
 		} else if (!zipCode.equals(other.zipCode))
+		return false;
+	if(ibanFlag ==null) {
+		if(other.ibanFlag !=null)
 			return false;
+	}
+		
 		return true;
 	}
 
