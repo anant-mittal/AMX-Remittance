@@ -170,7 +170,7 @@ public class RemitRoutingManager {
 
 			if (isOnlyBankRate) {
 				combinedId = "" + exchRate.getBankId().longValue();
-				exchRate.setServiceIndicatorId(null);
+				//exchRate.setServiceIndicatorId(null);
 			} else {
 				combinedId = exchRate.getBankId().longValue() + idSeparator
 						+ exchRate.getServiceIndicatorId().longValue();
