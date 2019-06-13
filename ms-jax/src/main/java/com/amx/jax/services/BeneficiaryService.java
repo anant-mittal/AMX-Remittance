@@ -403,12 +403,8 @@ public class BeneficiaryService extends AbstractService {
 						beneRealtionId);
 			} else {
 				beneList = beneficiaryOnlineDao.getDefaultBeneficiary(customerId, applicationCountryId);
-
 			}
-
-			if (beneList == null) {
-				throw new GlobalException("Not found");
-			} else {
+			if(beneList!=null){
 				beneDto = beneCheck.beneCheck(convertBeneModelToDto((beneList)));
 				if (beneDto != null && !JaxUtil.isNullZeroBigDecimalCheck(transactionId)
 						&& (JaxUtil.isNullZeroBigDecimalCheck(beneRealtionId)
