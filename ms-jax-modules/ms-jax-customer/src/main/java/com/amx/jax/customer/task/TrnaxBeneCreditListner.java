@@ -74,9 +74,10 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 	@Override
 	public void onMessage(String channel, DBEvent event) {
 		LOGGER.info("======onMessage1==={} ====  {}", channel, JsonUtil.toJson(event));
-		String emailId = ArgUtil.parseAsString(event.getData().get(EMAIL));
-		String smsNo = ArgUtil.parseAsString(event.getData().get(MOBILE));
-		String custNname = ArgUtil.parseAsString(event.getData().get(CUST_NAME));
+		//String emailId = ArgUtil.parseAsString(event.getData().get(EMAIL));
+		//String smsNo = ArgUtil.parseAsString(event.getData().get(MOBILE));
+		//String custNname = ArgUtil.parseAsString(event.getData().get(CUST_NAME));
+		
 		BigDecimal custId = ArgUtil.parseAsBigDecimal(event.getData().get(CUST_ID));
 		BigDecimal trnxAmount = ArgUtil.parseAsBigDecimal(event.getData().get(TRNXAMT));
 		BigDecimal loyality = ArgUtil.parseAsBigDecimal(event.getData().get(LOYALTY));
@@ -86,20 +87,24 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 		String curName = ArgUtil.parseAsString(event.getData().get(CURNAME));
 		String type = ArgUtil.parseAsString(event.getData().get(TYPE));
 		BigDecimal tranxId = ArgUtil.parseAsBigDecimal(event.getData().get(TRANX_ID), new BigDecimal(0));
-		tranxId=new BigDecimal(1234);
-		//LOGGER.info("transaction id is  "+tranxId);
+		Customer c = customerRepository.getCustomerByCustomerIdAndIsActive(custId, "Y");
+		String emailId = c.getEmail();
+		String smsNo = c.getMobile();
+		String custName = c.getFirstName()+c.getLastName();
+		
+		LOGGER.info("transaction id is  "+tranxId);
 		NumberFormat myFormat = NumberFormat.getInstance();
 		myFormat.setGroupingUsed(true);
 		String trnxAmountval = myFormat.format(trnxAmount);
 
-		Customer c = customerRepository.getCustomerByCustomerIdAndIsActive(custId, "Y");
+		
 		//CustomerFlags customerFlags=null;
 		//customerFlags = customerFlagManager.getCustomerFlags(custId);
 		Boolean isOnlineCustomer=false;
 		Map<String, Object> wrapper = new HashMap<String, Object>();
 		Map<String, Object> modeldata = new HashMap<String, Object>();
 		modeldata.put("to", emailId);
-		modeldata.put("customer", custNname);
+		modeldata.put("customer", custName);
 		modeldata.put("amount", trnxAmountval);
 		modeldata.put("loyaltypoints", loyality);
 		modeldata.put("refno", trnxRef);
