@@ -32,8 +32,6 @@ public class RemittanceTransactionResponsetModel extends AbstractModel {
 	private String vatType;
 	private BigDecimal vatPercentage;
 	private BigDecimal vatAmount;
-	
-	
 
 	/*
 	 * (non-Javadoc)
@@ -156,5 +154,7 @@ public class RemittanceTransactionResponsetModel extends AbstractModel {
 	public void setVatAmount(BigDecimal vatAmount) {
 		this.vatAmount = vatAmount;
 	}
+	
+	
 
 }

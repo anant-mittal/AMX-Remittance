@@ -69,6 +69,7 @@ public final class ObjectConverter {
 
 		// Country Branch Details
 		empDetail.setCountryBranchId(employee.getCountryBranch().getCountryBranchId());
+		empDetail.setBranchId(employee.getCountryBranch().getBranchId());
 		empDetail.setBranchName(employee.getCountryBranch().getBranchName());
 		empDetail.setAreaCode(employee.getCountryBranch().getAreaCode());
 		empDetail.setArea(employee.getCountryBranch().getArea());

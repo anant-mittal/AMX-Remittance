@@ -33,11 +33,11 @@ import com.amx.jax.repository.IBeneficaryContactDao;
 import com.amx.jax.repository.IBeneficiaryAccountDao;
 import com.amx.jax.repository.IBeneficiaryMasterDao;
 import com.amx.jax.repository.IBeneficiaryRelationshipDao;
-import com.amx.jax.service.JaxEmailNotificationService;
 import com.amx.jax.service.MetaService;
 import com.amx.jax.service.ParameterService;
 import com.amx.jax.services.BankService;
 import com.amx.jax.services.BeneficiaryValidationService;
+import com.amx.jax.services.JaxEmailNotificationService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.validation.BenePersonalDetailValidator;
 

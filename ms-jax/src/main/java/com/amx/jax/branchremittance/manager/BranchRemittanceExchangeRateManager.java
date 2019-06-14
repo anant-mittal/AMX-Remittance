@@ -90,7 +90,7 @@ import com.amx.jax.validation.RemittanceTransactionRequestValidator;
 @Component
 public class BranchRemittanceExchangeRateManager {
 
-	static final Logger LOGGER = LoggerFactory.getLogger(BranchRemittanceExchangeRateManager.class);
+	static final Logger logger = LoggerFactory.getLogger(BranchRemittanceExchangeRateManager.class);
 
 	@Autowired
 	JaxDynamicPriceService jaxDynamicPriceService;
@@ -181,6 +181,17 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 		result.setCostRateLimitReached(exchangeRateResponseModel.getCostRateLimitReached());
 		// trnx fee
 		BigDecimal commission = getComission();
+		
+		VatDetailsDto vatDetails = getVatAmount(commission);
+		if(vatDetails!=null && !StringUtils.isBlank(vatDetails.getVatApplicable()) && vatDetails.getVatApplicable().equalsIgnoreCase(ConstantDocument.Yes)) {
+			result.setVatAmount(vatDetails.getVatAmount()==null?BigDecimal.ZERO:vatDetails.getVatAmount());
+			result.setVatPercentage(vatDetails.getVatPercentage()==null?BigDecimal.ZERO:vatDetails.getVatPercentage());
+			result.setVatType(vatDetails.getVatType()==null?"":vatDetails.getVatType());
+			if(JaxUtil.isNullZeroBigDecimalCheck(vatDetails.getCommission())) {
+				commission =vatDetails.getCommission();
+			}
+		}
+		
 		result.setTxnFee(commission);
 		// loyality points
 		remittanceTransactionManager.setLoyalityPointFlags(customer, result);
@@ -212,6 +223,7 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 		BigDecimal deliveryMode = P_DELIVERY_MODE_ID.getValue(remitApplParametersMap);
 		BigDecimal commission = remittanceTransactionManager.getCommissionAmount(routingBankId, rountingCountryId, currencyId,remittanceMode, deliveryMode);
 		BigDecimal newCommission = remittanceTransactionManager.reCalculateComission();
+		
 		if (newCommission != null) {
 			commission = newCommission;
 		}else {
@@ -340,7 +352,7 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 		return result;
 	}
 	
-	private VatDetailsDto getVatAmount(BigDecimal commission) {
+	/*private VatDetailsDto getVatAmount(BigDecimal commission) {
 		VatDetailsDto vatDetails = new VatDetailsDto();
 		List<ViewVatDetails> vatList = vatDetailsRepository.getVatDetails(metaData.getCountryId(),ConstantDocument.VAT_CATEGORY,ConstantDocument.VAT_ACCOUNT_TYPE_COMM);
 		String vatAppliable = null;
@@ -379,7 +391,7 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 
 		return  vatDetails;
 	}
-	
+	*/
 	
 	public Object fetchFlexFields(IRemittanceApplicationParams request) {
 		
@@ -418,7 +430,47 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 	}
 	
 	
-	
+	private VatDetailsDto getVatAmount(BigDecimal commission) {
+		VatDetailsDto vatDetails = new VatDetailsDto();
+		List<ViewVatDetails> vatList = vatDetailsRepository.getVatDetails(metaData.getCountryId(),ConstantDocument.VAT_CATEGORY,ConstantDocument.VAT_ACCOUNT_TYPE_COMM);
+		String vatAppliable = null;
+		if(vatList.isEmpty()) {
+			vatAppliable ="N";
+		}else if(vatList!=null && !vatList.isEmpty() && vatList.size()>1) {
+			vatAppliable ="N";
+			throw new GlobalException(JaxError.MUTIPLE_RECORD_FOUND, "More than one record available for VAT on Commission");
+		}else if(vatList!=null && !vatList.isEmpty() && vatList.size()==1) {
+			vatAppliable ="Y";
+			vatDetails.setVatPercentage(vatList.get(0).getVatPercentage());
+			vatDetails.setVatType(vatList.get(0).getVatType());
+			vatDetails.setCalculatuonType(vatList.get(0).getCalculationType());
+			vatDetails.setRoudingOff(vatList.get(0).getRoundOff()==null?BigDecimal.ZERO:vatList.get(0).getRoundOff());
+		}
+		if(JaxUtil.isNullZeroBigDecimalCheck(commission) && commission.compareTo(BigDecimal.ZERO)>0) {
+		if(!StringUtils.isBlank(vatAppliable) && vatAppliable.equalsIgnoreCase(ConstantDocument.Yes) ) {
+			vatDetails.setVatApplicable(vatAppliable);
+			
+			if(JaxUtil.isNullZeroBigDecimalCheck(vatDetails.getVatPercentage()) && vatDetails.getVatPercentage().compareTo(BigDecimal.ZERO)>0) {
+				BigDecimal BIG_HUNDRED = new BigDecimal(100);
+				BigDecimal vatAmount =BigDecimal.ZERO;
+				if(!StringUtils.isBlank(vatDetails.getCalculatuonType()) && vatDetails.getCalculatuonType().equalsIgnoreCase(ConstantDocument.VAT_CALCULATION_TYPE_INCLUDE)) {
+					vatAmount = RoundUtil.roundBigDecimal(((new BigDecimal(commission.doubleValue()/((vatDetails.getVatPercentage().add(BIG_HUNDRED)).doubleValue())).multiply(BIG_HUNDRED))), vatDetails.getRoudingOff().intValue());
+					vatDetails.setVatAmount(commission.subtract(vatAmount));
+					
+					vatDetails.setCommission(commission);
+				}else {
+					vatAmount = commission.multiply(RoundUtil.roundBigDecimal(vatDetails.getVatPercentage().divide(BIG_HUNDRED),vatDetails.getRoudingOff().intValue()));
+					vatDetails.setVatAmount(vatAmount);
+					vatDetails.setCommission(commission.add(vatAmount));
+				}
+			}
+		}
+	}else {
+		vatDetails.setVatApplicable(vatAppliable);
+	}
+
+		return  vatDetails;
+	}
 	
 	public BranchRemittanceGetExchangeRateResponse getDynamicRoutingAndPricingExchangeRateResponseCompare(IRemittanceApplicationParams request) {
 		BenificiaryListView beneficiaryView = beneValidationService.validateBeneficiary(request.getBeneficiaryRelationshipSeqIdBD());

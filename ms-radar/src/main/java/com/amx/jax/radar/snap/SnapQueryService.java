@@ -1,6 +1,7 @@
 package com.amx.jax.radar.snap;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -61,11 +62,19 @@ public class SnapQueryService {
 	}
 
 	public SnapModelWrapper executeQuery(Map<String, Object> query, String index) {
-		Map<String, Object> x = restService.ajax(ssConfig.getClusterUrl())
-				.header(ssConfig.getBasicAuthHeader()).path(
-						EsConfig.indexName(index) + "/_search")
-				.post(query)
-				.asMap();
+		Map<String, Object> x = null;
+		try {
+			x = restService.ajax(ssConfig.getClusterUrl())
+					.header(ssConfig.getBasicAuthHeader()).path(
+							EsConfig.indexName(index) + "/_search")
+					.post(query)
+					.asMap();
+		} catch (Exception e) {
+			log.error(e);
+		}
+		if (x == null) {
+			x = new HashMap<String, Object>();
+		}
 		x.put("_query", query);
 		// System.out.println(JsonUtil.toJson(query));
 		return new SnapModelWrapper(x);

@@ -27,6 +27,7 @@ public class EmployeeDetailsDTO implements Serializable {
 	private String branchName;
 	private BigDecimal areaCode;
 	private String area;
+	private BigDecimal branchId;
 
 	private RoleResponseDTO userRole;
 
@@ -180,6 +181,14 @@ public class EmployeeDetailsDTO implements Serializable {
 
 	public void setArea(String area) {
 		this.area = area;
+	}
+
+	public BigDecimal getBranchId() {
+		return branchId;
+	}
+
+	public void setBranchId(BigDecimal branchId) {
+		this.branchId = branchId;
 	}
 
 }

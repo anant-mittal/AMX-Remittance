@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.CountryBranchDTO;
+import com.amx.jax.AmxConfig;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.dbmodel.CountryBranch;
 import com.amx.jax.pricer.PricerServiceClient;
@@ -18,6 +19,7 @@ import com.amx.jax.pricer.dto.ExchangeRateBreakup;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
+import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.repository.DiscountManagementRepository;
 import com.amx.jax.util.RoundUtil;
 
@@ -29,8 +31,12 @@ public class DiscountManagementService {
 	
 	@Autowired
 	DiscountManagementRepository discountManagementRepository;
+	
 	@Autowired
 	PricerServiceClient pricerServiceClient;
+	
+	@Autowired
+	AmxConfig amxConfig;
 
 	public AmxApiResponse<CountryBranchDTO, Object> getCountryBranch(BigDecimal countryId) {
 
@@ -62,7 +68,26 @@ public class DiscountManagementService {
 	}
 	
 	public AmxApiResponse<PricingResponseDTO, Object> fetchDiscountedRates(PricingRequestDTO pricingRequestDTO) {
-		AmxApiResponse<PricingResponseDTO, Object> response = pricerServiceClient.fetchDiscountedRates(pricingRequestDTO);
+		if((pricingRequestDTO.getChannel().name() == "BRANCH" || pricingRequestDTO.getChannel().name() == "KIOSK") && 
+				pricingRequestDTO.getCountryBranchId() == null) {
+			throw new GlobalException("Country Branch Id can not be null or empty for BRANCH or KIOSK");
+		}
+		if(pricingRequestDTO.getChannel().name() == "ONLINE" || pricingRequestDTO.getChannel().name() == "MOBILE")
+		{
+			pricingRequestDTO.setCountryBranchId(amxConfig.getOnlineBranchId());
+		}
+		
+		pricingRequestDTO.setLocalCountryId(amxConfig.getDefaultCountryId());
+		pricingRequestDTO.setLocalCurrencyId(amxConfig.getDefaultCurrencyId());
+		
+		AmxApiResponse<PricingResponseDTO, Object> response = null;
+		try {
+			response = pricerServiceClient.fetchDiscountedRates(pricingRequestDTO);
+		} catch (PricerServiceException e) {
+			LOGGER.info("ErrorKey : - " +e.getErrorKey()+ " ErrorMessage : - " +e.getErrorMessage());
+			throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
+		}
+		
 		response.getResult().getSellRateDetails().forEach(i -> applyRoundingLogic(i));
 		return response;
 	}

@@ -1,4 +1,7 @@
 package com.amx.jax.manager;
+/**
+ * @author rabil
+ */
 
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
@@ -168,6 +171,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel {
 			FcSaleOrderApplicationResponseModel responeModel = new FcSaleOrderApplicationResponseModel();
 			HashMap<String, Object> mapAllDetailApplSave = new HashMap<String, Object>();
 			deactivateApplications(fcSalerequestModel);
+			trnxManager.checkMinDenomination(fcSalerequestModel.getForeignCurrencyId(),fcSalerequestModel.getForeignAmount());
 			ReceiptPaymentApp receiptPayment = this.createFcSaleReceiptApplication(fcSalerequestModel);
 			mapAllDetailApplSave.put("EX_APPL_RECEIPT", receiptPayment);
 			fsSaleapplicationDao.saveAllApplicationData(mapAllDetailApplSave);

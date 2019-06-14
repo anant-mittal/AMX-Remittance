@@ -68,6 +68,7 @@ import com.amx.jax.dbmodel.remittance.RemittanceAppBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.dbmodel.remittance.ViewTransfer;
+import com.amx.jax.dbmodel.remittance.ViewVatDetails;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.dict.UserClient;
 import com.amx.jax.dict.UserClient.Channel;
@@ -78,8 +79,8 @@ import com.amx.jax.exrateservice.service.NewExchangeRateService;
 import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.events.CActivityEvent;
-import com.amx.jax.logger.events.RemitInfo;
 import com.amx.jax.logger.events.CActivityEvent.Type;
+import com.amx.jax.logger.events.RemitInfo;
 import com.amx.jax.manager.remittance.CorporateDiscountManager;
 import com.amx.jax.manager.remittance.RemittanceAdditionalFieldManager;
 import com.amx.jax.meta.MetaData;
@@ -89,11 +90,14 @@ import com.amx.jax.model.response.ExchangeRateBreakup;
 import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;
 import com.amx.jax.model.response.remittance.LoyalityPointState;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
+import com.amx.jax.model.response.remittance.VatDetailsDto;
 import com.amx.jax.pricer.dto.TrnxRoutingDetails;
 import com.amx.jax.remittance.manager.RemittanceParameterMapManager;
 import com.amx.jax.repository.AuthenticationViewRepository;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
+import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.VTransferRepository;
+import com.amx.jax.repository.remittance.IViewVatDetailsRespository;
 import com.amx.jax.service.CountryService;
 import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.service.ParameterService;
@@ -193,6 +197,9 @@ public class RemittanceTransactionManager {
 
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	DailyPromotionManager dailyPromotionManager;
 
 	protected Map<String, Object> validatedObjects = new HashMap<>();
 
@@ -216,6 +223,15 @@ public class RemittanceTransactionManager {
 	RemittanceParameterMapManager remittanceParameterMapManager;
 	@Autowired
 	CorporateDiscountManager corporateDiscountManager;
+	
+	@Autowired
+	IViewVatDetailsRespository vatDetailsRepository;
+	
+	@Autowired
+	MetaData metaData;
+	
+	@Autowired
+	ICurrencyDao currencyDao;
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -300,6 +316,56 @@ public class RemittanceTransactionManager {
 		BigDecimal commission = bankCharge.getChargeAmount();
 		return commission;
 	}
+	
+	private VatDetailsDto getVatAmount(BigDecimal commission) {
+		VatDetailsDto vatDetails = new VatDetailsDto();
+		
+		List<ViewVatDetails> vatList = vatDetailsRepository.getVatDetails(metaData.getCountryId(),ConstantDocument.VAT_CATEGORY,ConstantDocument.VAT_ACCOUNT_TYPE_COMM);
+		
+		logger.debug("vatList :" +vatList);
+
+		String vatAppliable = null;
+		if(vatList.isEmpty()) {
+			vatAppliable ="N";
+		}else if(vatList!=null && !vatList.isEmpty() && vatList.size()>1) {
+			vatAppliable ="N";
+			throw new GlobalException(JaxError.MUTIPLE_RECORD_FOUND, "More than one record available for VAT on Commission");
+		}else if(vatList!=null && !vatList.isEmpty() && vatList.size()==1) {
+			vatAppliable ="Y";
+			vatDetails.setVatPercentage(vatList.get(0).getVatPercentage());
+			vatDetails.setVatType(vatList.get(0).getVatType());
+			vatDetails.setCalculatuonType(vatList.get(0).getCalculationType());
+			vatDetails.setRoudingOff(vatList.get(0).getRoundOff()==null?BigDecimal.ZERO:vatList.get(0).getRoundOff()); 
+			
+		}
+		if(JaxUtil.isNullZeroBigDecimalCheck(commission) && commission.compareTo(BigDecimal.ZERO)>0) {
+		if(!StringUtils.isBlank(vatAppliable) && vatAppliable.equalsIgnoreCase(ConstantDocument.Yes) ) {
+			vatDetails.setVatApplicable(vatAppliable);
+					
+			logger.debug("vatAppliable :" +vatAppliable);
+			if(JaxUtil.isNullZeroBigDecimalCheck(vatDetails.getVatPercentage()) && vatDetails.getVatPercentage().compareTo(BigDecimal.ZERO)>0) {
+				BigDecimal BIG_HUNDRED = new BigDecimal(100);
+				BigDecimal vatAmount =BigDecimal.ZERO;
+				if(!StringUtils.isBlank(vatDetails.getCalculatuonType()) && vatDetails.getCalculatuonType().equalsIgnoreCase(ConstantDocument.VAT_CALCULATION_TYPE_INCLUDE)) {
+					vatAmount = RoundUtil.roundBigDecimal(((new BigDecimal(commission.doubleValue()/((vatDetails.getVatPercentage().add(BIG_HUNDRED)).doubleValue())).multiply(BIG_HUNDRED))), vatDetails.getRoudingOff().intValue());
+					vatDetails.setVatAmount(commission.subtract(vatAmount));
+					vatDetails.setCommission(commission);
+					
+				}else {
+					vatAmount = commission.multiply(RoundUtil.roundBigDecimal(vatDetails.getVatPercentage().divide(BIG_HUNDRED),vatDetails.getRoudingOff().intValue()));
+					vatDetails.setVatAmount(vatAmount);
+					vatDetails.setCommission(commission.add(vatAmount));
+					
+					logger.debug("vatAmount :" +vatAmount);
+				}
+			}
+		}
+	}else {
+		vatDetails.setVatApplicable(vatAppliable);
+		
+	}
+		return  vatDetails;
+	}
 
 	private void validateRiskyBene(BenificiaryListView beneficiary, Customer customer) {
 		if (jaxConfigService.getBooleanConfigValue(JaxDbConfig.BLOCK_BENE_RISK_TRANSACTION, true)) {
@@ -344,6 +410,8 @@ public class RemittanceTransactionManager {
 
 		exRatebreakUp.setNetAmount(
 				RoundUtil.roundBigDecimal(exRatebreakUp.getNetAmount(), exRatebreakUp.getLcDecimalNumber().intValue()));
+		
+		logger.info("amount in ex:" +exRatebreakUp.getNetAmount());
 		exRatebreakUp.setNetAmountWithoutLoyality(RoundUtil.roundBigDecimal(exRatebreakUp.getNetAmountWithoutLoyality(),
 				exRatebreakUp.getLcDecimalNumber().intValue()));
 		exRatebreakUp.setInverseRate((RoundUtil.roundBigDecimal(exRatebreakUp.getInverseRate(), 6)));
@@ -702,14 +770,17 @@ public class RemittanceTransactionManager {
 			if (JaxUtil.isNullZeroBigDecimalCheck(comission) && comission.compareTo(loyaltyAmount) > 0) {
 				exchangeRateBreakup.setNetAmount(
 						netAmount.subtract(loyalityPointService.getVwLoyalityEncash().getEquivalentAmount()));
+				
+				logger.info("net maount in ex1:"+exchangeRateBreakup.getNetAmount());
 			} else {
 				exchangeRateBreakup.setNetAmount(netAmount.subtract(comission));
+				logger.info("net maount in ex2:"+exchangeRateBreakup.getNetAmount());
 			}
 		} else {
 			exchangeRateBreakup.setNetAmount(netAmount);
+			logger.info("net maount in ex3:"+exchangeRateBreakup.getNetAmount());
 		}
 	}
-
 
 	public BankCharges getApplicableCharge(List<BankCharges> charges) {
 
@@ -815,6 +886,8 @@ public class RemittanceTransactionManager {
 		remittanceAdditionalFieldManager.validateAdditionalFields(model, remitApplParametersMap);
 		// validate routing bank requirements
 		ExchangeRateBreakup breakup = validationResults.getExRateBreakup();
+		
+		logger.info("amount in exchnagerate break up"+breakup.getNetAmount());
 		BigDecimal netAmountPayable = breakup.getNetAmount();
 		RemittanceApplicationResponseModel remiteAppModel = new RemittanceApplicationResponseModel();
 		deactivatePreviousApplications();
@@ -921,6 +994,14 @@ public class RemittanceTransactionManager {
 		}
 		JaxTransactionStatus status = getJaxTransactionStatus(application);
 		model.setStatus(status);
+		
+		if (remittanceTransaction != null) {
+			PromotionDto obj = dailyPromotionManager.getWanitBuyitMsg(remittanceTransaction);
+			if(obj != null) {
+				model.setPromotionDto(obj);
+			}
+		}
+		
 		model.setErrorCategory(application.getErrorCategory());
 		model.setErrorMessage(application.getErrorMessage());
 		return model;

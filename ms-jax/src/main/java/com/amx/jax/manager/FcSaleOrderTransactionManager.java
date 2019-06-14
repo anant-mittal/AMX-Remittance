@@ -87,7 +87,7 @@ public class FcSaleOrderTransactionManager extends AbstractModel{
 			throw new GlobalException(JaxError.INVALID_CURRENCY_ID, "Currency is not  available/invalid currency id");
 		}
 		
-		checkMinDenomination(fcCurrencyId,curr.get(0).getMinDenominationId(),fcAmount);
+		checkMinDenomination(fcCurrencyId,fcAmount);
 		FxExchangeRateBreakup breakup = new FxExchangeRateBreakup();
 		List<FxExchangeRateView> fxSaleRateList = fcSaleExchangeRateDao.getFcSaleExchangeRate(countryId, countryBracnhId, fcCurrencyId);
 		
@@ -189,7 +189,12 @@ public class FcSaleOrderTransactionManager extends AbstractModel{
 	
 	
 
-	public void checkMinDenomination(BigDecimal fcCurrencyId,BigDecimal denominationId,BigDecimal fcAmount) {
+	public void checkMinDenomination(BigDecimal fcCurrencyId,BigDecimal fcAmount) {
+		BigDecimal denominationId = null;
+		List<CurrencyMasterModel> curr =currencyDao.getCurrencyList(fcCurrencyId);
+		if(curr!=null && !curr.isEmpty()) {
+			denominationId = curr.get(0).getMinDenominationId();
+		}
 		if(JaxUtil.isNullZeroBigDecimalCheck(denominationId)) {
 			CurrencyWiseDenomination currDenomination = currenDenominationRepository.getMinimumCurrencyDenominationValue(meta.getCountryId(),fcCurrencyId,denominationId, ConstantDocument.Yes);
 		  if(currDenomination!=null && JaxUtil.isNullZeroBigDecimalCheck(currDenomination.getDenominationAmount())) {
@@ -200,9 +205,9 @@ public class FcSaleOrderTransactionManager extends AbstractModel{
 				throw new GlobalException(JaxError.MIN_DENOMINATION_ERROR,"The foreign amount ("+fcAmountDouble+") should be mutiple of "+minDenoAmount);
 			}
 		  }
-		}else {
-			  throw new GlobalException(JaxError.MIN_DENOMINATION_ERROR,"Minimum denomination is not defined");
-		  }
-		
+		} /*
+			 * else { throw new GlobalException(JaxError.
+			 * MIN_DENOMINATION_ERROR,"Minimum denomination is not defined"); }
+			 */
 	}
 }

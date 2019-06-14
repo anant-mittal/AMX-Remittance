@@ -403,12 +403,8 @@ public class BeneficiaryService extends AbstractService {
 						beneRealtionId);
 			} else {
 				beneList = beneficiaryOnlineDao.getDefaultBeneficiary(customerId, applicationCountryId);
-
 			}
-
-			if (beneList == null) {
-				throw new GlobalException("Not found");
-			} else {
+			if(beneList!=null){
 				beneDto = beneCheck.beneCheck(convertBeneModelToDto((beneList)));
 				if (beneDto != null && !JaxUtil.isNullZeroBigDecimalCheck(transactionId)
 						&& (JaxUtil.isNullZeroBigDecimalCheck(beneRealtionId)
@@ -523,7 +519,7 @@ public class BeneficiaryService extends AbstractService {
 		if (beneContact != null) {
 			if (beneContact.getTelephoneNumber() != null) {
 				contactNumber = beneContact.getTelephoneNumber();
-			} else {
+			} else if (beneContact.getMobileNumber() != null) {
 				contactNumber = beneContact.getMobileNumber().toString();
 			}
 		}
@@ -1040,9 +1036,10 @@ public class BeneficiaryService extends AbstractService {
 	private CurrencyMasterDTO getCurrencyDTO(BigDecimal currencyId) {
 		CurrencyMasterDTO dto = new CurrencyMasterDTO();
 		List<CurrencyMasterModel> currencyList = currencyDao.getCurrencyList(currencyId);
-		if (currencyList.isEmpty()) {
-			throw new GlobalException("Currency details not avaliable");
-		} else {
+		/*
+		 * if (currencyList.isEmpty()) { throw new
+		 * GlobalException("Currency details not avaliable"); }
+		 */if(currencyList!=null && !currencyList.isEmpty()) {
 			CurrencyMasterModel curModel = currencyList.get(0);
 			dto.setCountryId(curModel.getCountryId());
 			dto.setCurrencyCode(curModel.getCurrencyCode());

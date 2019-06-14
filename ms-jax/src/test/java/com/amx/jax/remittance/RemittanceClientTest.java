@@ -37,14 +37,14 @@ public class RemittanceClientTest extends AbstractTest {
 		ApiResponse<PaymentResponseDto> response = null;
 		PaymentResponseDto request = new PaymentResponseDto();
 		request.setAuth_appNo("471599");
-		request.setPaymentId("27000583");
+		request.setPaymentId("27000586");
 		// app docno
-		request.setUdf3("27000583");
+		request.setUdf3("27000586");
 		request.setResultCode("CAPTURED");
 		// cusref
 		request.setTrackId("90277");
-		request.setReferenceId("8018136587969");
-		request.setTransactionId("92725681213801819");
+		request.setReferenceId("80181365879169");
+		request.setTransactionId("927256812138018119");
 		request.setPostDate("0199");
 		request.setCustomerId(new BigDecimal(5218));
 		request.setApplicationCountryId(new BigDecimal(91));

@@ -95,7 +95,8 @@ public class RemittanceReportBean {
 	private String netAmount;
 	private String paidAmount;
 	private String refundedAmount;
-	private BigDecimal collectAmount;
+	//private BigDecimal collectAmount;
+	private String collectAmount;
 	private List<PurposeOfRemittanceReportBean> purposeOfRemitTrList;
 	
 	private String lessLoyaltyEncasement;
@@ -109,18 +110,25 @@ public class RemittanceReportBean {
 	private String specialKwdAmount;
 	private String vatNumber;
 	private String vatDate;
-	
-
 	private String vatType;
 	private BigDecimal vatPercentage;
 	private String vatAmount;
 	
 	private String customerVatNumber;
-
+	
 	private String amountSaved;
 	private String promotionMessage;
 	private Boolean isArabic;
+	private String totalAmountSavedStr;
 	
+	public String getTotalAmountSavedStr() {
+		return totalAmountSavedStr;
+	}
+
+	public void setTotalAmountSavedStr(String totalAmountSavedStr) {
+		this.totalAmountSavedStr = totalAmountSavedStr;
+	}
+
 	public Boolean getDrawLine() {
 		return drawLine;
 	}
@@ -186,11 +194,11 @@ public class RemittanceReportBean {
 		this.userName = userName;
 	}
 
-	public BigDecimal getCollectAmount() {
+	public String getCollectAmount() {
 		return collectAmount;
 	}
 
-	public void setCollectAmount(BigDecimal collectAmount) {
+	public void setCollectAmount(String collectAmount) {
 		this.collectAmount = collectAmount;
 	}
 
@@ -845,6 +853,54 @@ public class RemittanceReportBean {
 		this.customerVatNumber = customerVatNumber;
 	}
 
+	public String getVatNumber() {
+		return vatNumber;
+	}
+
+	public void setVatNumber(String vatNumber) {
+		this.vatNumber = vatNumber;
+	}
+
+	public String getVatDate() {
+		return vatDate;
+	}
+
+	public String getVatType() {
+		return vatType;
+	}
+
+	public void setVatType(String vatType) {
+		this.vatType = vatType;
+	}
+
+	public BigDecimal getVatPercentage() {
+		return vatPercentage;
+	}
+
+	public void setVatPercentage(BigDecimal vatPercentage) {
+		this.vatPercentage = vatPercentage;
+	}
+
+	public String getVatAmount() {
+		return vatAmount;
+	}
+
+	public void setVatAmount(String vatAmount) {
+		this.vatAmount = vatAmount;
+	}
+
+	public String getCustomerVatNumber() {
+		return customerVatNumber;
+	}
+
+	public void setCustomerVatNumber(String customerVatNumber) {
+		this.customerVatNumber = customerVatNumber;
+	}
+
+	public void setVatDate(String vatDate) {
+		this.vatDate = vatDate;
+	}	
+	
 	public String getAmountSaved() {
 		return amountSaved;
 	}

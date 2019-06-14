@@ -239,14 +239,14 @@ a {
 	border-radius: 5px;
 	text-transform: capitalize;
 	border-width: 2px;
-	background:#013a6b;
+	background:#bd071c;
 	
 }
 hr {
     display: block;
     height: 1px;
     border: 0;
-    border-top: 1px solid #a2c25a;
+    border-top: 2px solid #a2c25a;
     padding: 0;
     margin-left: 23px;
     margin-right: 31px;
@@ -310,21 +310,21 @@ hr {
 										<td class="content-block">Thank you for transacting Online.</td>
 									</tr>
 									<tr>
-										<td class="content-block"><h4>Congratulations! Below is a coupon which you can redeem at <a style="color: #a2c25a;" th:href="${_tu.prop('company.app.url')+'/pub/redirect?identity='+ data.identityInt+'&ref=WIBI&linkd=d3d3LndhbnRJVGJ1eUlULmNvbQ=='}"><span>www.wantITbuyIT.com</span></a></h4></td>
+										<td class="content-block"><h4>Congratulations! Below is a coupon which you can redeem at <a style="color: #a2c25a;" th:href="${_tu.prop('company.app.url')+'/pub/redirect?identity='+ data.identityInt+'&ref=WIBI&linkd=aHR0cHM6Ly93d3cud2FudElUYnV5SVQuY29t'}"><span>www.wantITbuyIT.com</span></a></h4></td>
 									</tr>
-									<tr>
-										<td  align="center"><h4>USE PROMO CODE</h4></td>
+									<tr style="background-color:#164ea7">
+										<td  align="center"><h4 style="color:#FFFFFF;">USE PROMO CODE</h4></td>
 									</tr>
-									<tr>
+									<tr style="background-color:#164ea7">
 										<td class="content-block" align="center" >
-											<span style="width:200px" class="promo" target="_blank"><span style="color:#f4e824 ; font-size:23px; font-weight:bold"  th:text="${data.promotionCode}"></span></span>
+											<span style="width:200px" class="promo" target="_blank"><span style="color:#f4e824 ; font-size:31px; font-weight:bold"  th:text="${data.promotionCode}"></span></span>
 										</td> 
 									</tr>
 									<tr>
 										<td class="alert" align="center" bgcolor="#013a6b"><img th:attr="src=${'cid:' + _tu.prop('company.coupon.img')}" width="100%" /></td>
 									</tr>
 									<tr>
-										<td class="content-block" style="background-color:#013a6b">
+										<td class="content-block" style="background-color:#013a6b;padding-bottom:7px">
 											<br/><h4 style="color:#a2c25a; padding-left:21px">WantitBuyit.com Address</h4>
 											<p style="color:#FFFFFF; margin-left:21px">2nd Floor, Al Hussa Commercial Complex, Ibn Khaldoun Street,Behind McDonalds. Hawally, Kuwait. Contact : 1800053 , 94175810 , 98947670</p>
 											<hr/>
@@ -332,11 +332,11 @@ hr {
 										</td>
 									</tr>
 										<tr>
-										<td class="content-block" style="background-color:#013a6b">
+										<td class="content-block" style="background-color:#013a6b;padding-bottom:7px">
 											<h4 style="color:#a2c25a; padding-left:21px">Store Timings for Item Collection</h4>
-											<p style="color:#FFFFFF; margin-left:21px">Sunday to Thursday 8.00am to 8.00pm</p>
-											<p style="color:#FFFFFF; margin-left:21px">Saturday 9.00am to 1.00pm & 5.00pm to 8.00pm</p>
-											<p style="color:#FFFFFF; margin-left:21px">Friday Closed</p>
+											<p style="color:#FFFFFF; margin-left:21px">Sunday to Thursday 8.00am to 8.00pm<br/>
+											Saturday 9.00am to 1.00pm & 5.00pm to 8.00pm<br/>
+											Closed on Fridays and Public Holidays</p>
 											<hr/>
 											
 										</td>
@@ -344,19 +344,20 @@ hr {
 									<tr>
 										<td class="content-block" style="background-color:#013a6b">
 											<h4 style="color:#a2c25a;padding-left:21px">Terms and Conditions</h4>
-											<p style="color:#FFFFFF; font-size:11px;margin-left:21px">1. Visit <a style="color: #a2c25a;" th:href="${_tu.prop('company.app.url')+'/pub/redirect?identity='+ data.identityInt+'&ref=WIBI&linkd=d3d3LndhbnRJVGJ1eUlULmNvbQ=='}">www.wantITbuyIT.com</a> to choose the desired product.</p>
-											<p style="color:#FFFFFF; font-size:11px;margin-left:21px">2. Use Coupon Code at checkout page to get instant KD 5 purchase or KD 5 discount from purchase.</p>
-											<p style="color:#FFFFFF; font-size:11px;margin-left:21px">3. There can be only one code valid per order or per purchase.</p>
-											<p style="color:#FFFFFF; font-size:11px;margin-left:21px">4. Vouchers are non-refundable and cannot be exchanged for cash.</p>
-											<p style="color:#FFFFFF; font-size:11px;margin-left:21px">5. Items can be picked up from the above address.</p>
-											<p style="color:#FFFFFF; font-size:11px;margin-left:21px">6. Delivery & Handling charges will be extra.</p>
-											<p style="color:#FFFFFF; font-size:11px;margin-left:21px">7. Coupon is valid for 15 days from the date of issuance.</p>
-											<p style="color:#FFFFFF; font-size:11px;margin-left:21px">8. Items to be picked up within 1 week from placing the order.</p>
-											<p style="color:#FFFFFF; font-size:11px;margin-left:21px">9. wantITbuyIT, Al Mulla Exchange reserves the right to withdraw, modify or amend this offer at its own discretion.</p>
-											<p style="color:#FFFFFF; font-size:11px;margin-left:21px">10. For any concerns related to voucher, customers can write to the customer support department at <a style="color: #a2c25a" th:href="${_tu.prop('company.app.url')+'/pub/redirect?identity='+ data.identityInt+'&ref=WIBI&linkd=d3d3LndhbnRJVGJ1eUlULmNvbQ=='}">support@wantitbuyit.com</a> or Call Hotline @ 1800053.</p>
-											<p style="color:#FFFFFF; font-size:11px;margin-left:21px">11. Procedure on how to redeem voucher will be mentioned on <a style="color: #a2c25a;" th:href="${_tu.prop('company.app.url')+'/pub/redirect?identity='+ data.identityInt+'&ref=WIBI&linkd=d3d3LndhbnRJVGJ1eUlULmNvbQ=='}">wantITbuyIT.com</a>.</p>
-											<p style="color:#FFFFFF; font-size:11px;margin-left:21px">12. Items once ordered cannot be replaced or refunded.</p>
-											<p style="color:#FFFFFF; font-size:11px;margin-left:21px">13. This promotion is not valid for HP Consumables including Ink Cartridges & Toners.</p>
+											<p style="color:#FFFFFF; font-size:11px;margin-left:21px">1. Visit <a style="color: #a2c25a;" th:href="${_tu.prop('company.app.url')+'/pub/redirect?identity='+ data.identityInt+'&ref=WIBI&linkd=aHR0cHM6Ly93d3cud2FudElUYnV5SVQuY29t'}">www.wantITbuyIT.com</a> to choose the desired product.
+											<br/>2. Use Coupon Code at checkout page to get instant KD 5 purchase or KD 5 discount from purchase.
+											<br/>3. There can be only one code valid per order or per purchase.
+											<br/>4. Vouchers are non-refundable and cannot be exchanged for cash.
+											<br/>5. Items can be picked up from the above address.
+											<br/>6. Delivery & Handling charges will be extra.
+											<br/>7. Coupon is valid for 15 days from the date of issuance
+											<br/>8. Items to be picked up within 1 week from placing the order.
+											<br/>9. wantITbuyIT, Al Mulla Exchange reserves the right to withdraw, modify or amend this offer at its own discretion.
+											<br/>10. For any concerns related to voucher, customers can write to the customer support department at <a style="color: #a2c25a" th:href="${_tu.prop('company.app.url')+'/pub/redirect?identity='+ data.identityInt+'&ref=WIBI&linkd=aHR0cHM6Ly93d3cud2FudElUYnV5SVQuY29t'}">support@wantitbuyit.com</a> or Call Hotline @ 1800053.
+											<br/>11. Procedure on how to redeem voucher will be mentioned on <a style="color: #a2c25a;" th:href="${_tu.prop('company.app.url')+'/pub/redirect?identity='+ data.identityInt+'&ref=WIBI&linkd=aHR0cHM6Ly93d3cud2FudElUYnV5SVQuY29t'}">wantITbuyIT.com</a>.
+											<br/>12. Items once ordered cannot be replaced or refunded.
+											<br/>13. This promotion is not valid for HP Consumables including Ink Cartridges & Toners.
+											</p>
 											
 										</td>
 									</tr>

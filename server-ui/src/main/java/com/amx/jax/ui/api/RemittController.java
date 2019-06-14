@@ -416,6 +416,7 @@ public class RemittController {
 				payment.setDocFy(respTxMdl.getDocumentFinancialYear());
 				payment.setDocNo(respTxMdl.getDocumentIdForPayment());
 				payment.setTrackId(respTxMdl.getMerchantTrackId());
+				logger.info("amount in remittancapplication: in remittcontroller:"+respTxMdl.getNetPayableAmount());
 				payment.setAmount(respTxMdl.getNetPayableAmount());
 				payment.setServiceCode(respTxMdl.getPgCode());
 
