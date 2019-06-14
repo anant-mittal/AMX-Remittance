@@ -120,7 +120,13 @@ $("body").on("click", "[on-click]:not([disabled])", function(e, b, c) {
 	} else {
 		sendData(step);
 	}
+})
 
+
+$("body").on("keyup", function(e) {
+	if(e.which === 13){
+		$("[on-click='OTP']:not([disabled])").trigger("click");
+	}
 })
 
 $("body").on(

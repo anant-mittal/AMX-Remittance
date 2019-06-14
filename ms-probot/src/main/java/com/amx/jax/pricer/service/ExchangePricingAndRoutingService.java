@@ -494,10 +494,23 @@ public class ExchangePricingAndRoutingService {
 
 		Map<BigDecimal, String> serviceIdDescription = new HashMap<BigDecimal, String>();
 
-		List<ExchangeRateDetails> exchRates = exchRateAndRoutingTransientDataCache.getSellRateDetails();
+		//// @formatter:off
 
-		for (ExchangeRateDetails exchRate : exchRates) {
-			SERVICE_INDICATOR ind = SERVICE_INDICATOR.getByServiceId(exchRate.getServiceIndicatorId().intValue());
+		/*
+		 * List<ExchangeRateDetails> exchRates =
+		 * exchRateAndRoutingTransientDataCache.getSellRateDetails();
+		 * 
+		 * for (ExchangeRateDetails exchRate : exchRates) { SERVICE_INDICATOR ind =
+		 * SERVICE_INDICATOR.getByServiceId(exchRate.getServiceIndicatorId().intValue())
+		 * ; serviceIdDescription.put(BigDecimal.valueOf(ind.getServiceId()),
+		 * ind.getDescription()); }
+		 */
+
+		// Return All
+		
+		// @formatter:on
+
+		for (SERVICE_INDICATOR ind : SERVICE_INDICATOR.values()) {
 			serviceIdDescription.put(BigDecimal.valueOf(ind.getServiceId()), ind.getDescription());
 		}
 
