@@ -147,13 +147,13 @@
 		<module>../lib-mcq</module>
 		<module>../lib-monitor</module>
 		<module>../lib-postman</module>
-		<module>../lib-db</module>
 
 		<!-- Common Servers -->
 		<module>../ms-postman</module>
 		<module>../ms-broker</module>
 		<module>../server-payg</module>
 		<module>../server-monitor</module>
+		<module>../ms-service-provider</module>
 
 	</modules>
 </project>
