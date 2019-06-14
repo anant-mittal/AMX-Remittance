@@ -836,12 +836,12 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 
 	}
 
-	public AmxApiResponse<IncomeDto, Object> getAnnualTransactionLimit() {
+	public AmxApiResponse<AnnualIncomeRangeDTO, Object> getAnnualTransactionLimit() {
 		try {
 			return restService.ajax(appConfig.getJaxURL())
-					.path(CustomerApi.PREFIX + CustomerApi.GET_ANNUAL_INCOME_DETAILS)
+					.path(CustomerApi.PREFIX + Path.GET_ANNUAL_TRANSACTION_LIMIT)
 					.meta(new JaxMetaInfo()).post()
-					.as(new ParameterizedTypeReference<AmxApiResponse<IncomeDto, Object>>() {
+					.as(new ParameterizedTypeReference<AmxApiResponse<AnnualIncomeRangeDTO, Object>>() {
 					});
 		} catch (Exception ae) {
 			LOGGER.error("exception in Annual Income details : ", ae);

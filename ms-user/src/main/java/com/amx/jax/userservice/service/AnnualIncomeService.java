@@ -485,4 +485,12 @@ public class AnnualIncomeService {
 		return boolRespModel;
 	}
 	
+	public AnnualIncomeRangeDTO getAnnualTransactionLimit() {
+		Customer customer = custDao.getCustById(metaData.getCustomerId());
+		AnnualIncomeRangeDTO annualIncomeRangeDTO = new AnnualIncomeRangeDTO();
+		annualIncomeRangeDTO.setIncomeRangeFrom(customer.getAnnualTransactionLimitFrom());
+		annualIncomeRangeDTO.setIncomeRangeTo(customer.getAnnualTransactionLimitTo());
+		return annualIncomeRangeDTO;
+	}
+	
 }

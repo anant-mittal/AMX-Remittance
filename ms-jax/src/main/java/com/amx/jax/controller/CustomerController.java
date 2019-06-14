@@ -293,4 +293,10 @@ public class CustomerController implements ICustomerService {
 		BoolRespModel boolRespModel = annualIncomeService.saveAnnualTransactionLimit(incomeDto);
 		return AmxApiResponse.build(boolRespModel);
 	}
+	
+	@RequestMapping(value = Path.GET_ANNUAL_TRANSACTION_LIMIT, method = RequestMethod.POST)
+	public AmxApiResponse<AnnualIncomeRangeDTO, Object> getAnnualTransactionLimit() {
+		AnnualIncomeRangeDTO annualTransactionLimit = annualIncomeService.getAnnualTransactionLimit();
+		return AmxApiResponse.build(annualTransactionLimit);
+	}
 }

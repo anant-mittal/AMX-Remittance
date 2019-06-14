@@ -24,6 +24,8 @@ public interface ICustomerService {
 		
 		public static final String SAVE_ANNUAL_TRANSACTION_LIMIT ="/save-annual-transaction-limit";
 		
+		public static final String GET_ANNUAL_TRANSACTION_LIMIT = "/get-annual-transaction-limit";
+		
 	}
 
 	public static class Params {
