@@ -85,7 +85,7 @@ public class PayGController {
 
 	private PayGParams getVerifyHash(String amount) throws NoSuchAlgorithmException {
 		PayGParams payGParams = new PayGParams();
-		payGParams.setVerification(CryptoUtil.getMD5Hash((JsonUtil.toJson(payGParams))));
+		payGParams.setVerification(CryptoUtil.getMD5Hash(textEncryptor.encrypt(JsonUtil.toJson(payGParams))));
 		return payGParams;
 	}
 
@@ -106,6 +106,7 @@ public class PayGController {
 	}
 
 	@RequestMapping(value = { "/payment/*", "/payment" }, method = RequestMethod.GET)
+
 	public String handleUrlPaymentRemit(
 			@RequestParam String trckid,
 			@RequestParam(required = false) String docId, @RequestParam(required = false) String docNo,
@@ -182,7 +183,6 @@ public class PayGController {
 			String returnTime = df.format(cal.getTime());
 			model.addAttribute("REDIRECTURL", appRedirectUrl);
 			model.addAttribute("RETURN_TIME", returnTime);
-			model.addAttribute("TNT", tnt.toString());
 			return "thymeleaf/pg_error";
 		}
 
