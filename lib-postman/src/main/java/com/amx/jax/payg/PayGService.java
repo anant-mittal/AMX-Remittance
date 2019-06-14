@@ -1,6 +1,5 @@
 package com.amx.jax.payg;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.security.NoSuchAlgorithmException;
@@ -19,7 +18,6 @@ import com.amx.jax.rest.RestService;
 import com.amx.utils.CryptoUtil;
 import com.amx.utils.JsonUtil;
 import com.amx.utils.URLBuilder;
-import com.fasterxml.jackson.core.type.TypeReference;
 
 @Component
 public class PayGService {
