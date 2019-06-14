@@ -1,4 +1,4 @@
-package com.amx.amxlib.model;
+package com.amx.libjax.model.jaxfield;
 
 public class ValidationRegexDto {
 

@@ -27,7 +27,7 @@ import com.amx.jax.dbmodel.customer.CustomerDocumentTypeMaster;
 import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReferenceTemp;
 import com.amx.jax.model.customer.CustomerDocumentInfo;
 import com.amx.jax.model.customer.DocumentImageRenderType;
-import com.amx.jax.model.customer.UploadCustomerKycRequest;
+import com.amx.jax.model.customer.document.UploadCustomerKycRequest;
 import com.amx.jax.repository.DOCBLOBRepository;
 import com.amx.jax.userservice.manager.CustomerIdProofManager;
 import com.amx.utils.IoUtils;

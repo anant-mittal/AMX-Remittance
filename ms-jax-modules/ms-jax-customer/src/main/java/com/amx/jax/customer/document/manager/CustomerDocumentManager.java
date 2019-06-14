@@ -20,8 +20,12 @@ import com.amx.jax.dbmodel.DmsApplMapping;
 import com.amx.jax.dbmodel.IdentityTypeMaster;
 import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReferenceTemp;
 import com.amx.jax.model.customer.CustomerDocumentInfo;
-import com.amx.jax.model.customer.UploadCustomerKycRequest;
-import com.amx.jax.model.customer.UploadCustomerKycResponse;
+import com.amx.jax.model.customer.document.CustomerDocumentCategoryDto;
+import com.amx.jax.model.customer.document.CustomerDocumentTypeDto;
+import com.amx.jax.model.customer.document.UploadCustomerDocumentRequest;
+import com.amx.jax.model.customer.document.UploadCustomerDocumentResponse;
+import com.amx.jax.model.customer.document.UploadCustomerKycRequest;
+import com.amx.jax.model.customer.document.UploadCustomerKycResponse;
 import com.amx.jax.userservice.manager.CustomerIdProofManager;
 import com.amx.jax.userservice.service.UserService;
 import com.jax.amxlib.exception.jax.GlobaLException;
@@ -42,6 +46,7 @@ public class CustomerDocumentManager {
 	CustomerDocumentUploadManager customerDocumentUploadManager;
 	@Autowired
 	CustomerKycManager customerKycManager;
+	
 
 	public List<CustomerDocumentInfo> getCustomerUploadDocuments(BigDecimal customerId) {
 
@@ -120,4 +125,10 @@ public class CustomerDocumentManager {
 			databaseImageScanManager.copyBlobDataFromJava(dmsMapping.getDocBlobId(), dmsMapping.getFinancialYear());
 		}
 	}
+
+	public UploadCustomerDocumentResponse uploadDocument(UploadCustomerDocumentRequest uploadCustomerDocumentRequest) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

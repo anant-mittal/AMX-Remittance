@@ -1,8 +1,8 @@
-package com.amx.amxlib.model;
+package com.amx.libjax.model.jaxfield;
 
 import java.math.BigDecimal;
 
-import com.amx.amxlib.constant.JaxFieldEntity;
+import com.amx.jax.constants.JaxFieldEntity;
 
 public class JaxConditionalFieldDto {
 

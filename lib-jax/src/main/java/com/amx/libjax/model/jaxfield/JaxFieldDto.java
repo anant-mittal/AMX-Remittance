@@ -1,4 +1,4 @@
-package com.amx.amxlib.model;
+package com.amx.libjax.model.jaxfield;
 
 import java.math.BigDecimal;
 import java.util.HashMap;

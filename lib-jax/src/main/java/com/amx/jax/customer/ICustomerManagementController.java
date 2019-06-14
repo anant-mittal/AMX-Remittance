@@ -7,11 +7,16 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.model.customer.CreateCustomerInfoRequest;
 import com.amx.jax.model.customer.DuplicateCustomerDto;
 import com.amx.jax.model.customer.IdentityTypeDto;
-import com.amx.jax.model.customer.UploadCustomerKycRequest;
-import com.amx.jax.model.customer.UploadCustomerKycResponse;
+import com.amx.jax.model.customer.document.CustomerDocumentCategoryDto;
+import com.amx.jax.model.customer.document.CustomerDocumentTypeDto;
+import com.amx.jax.model.customer.document.UploadCustomerDocumentRequest;
+import com.amx.jax.model.customer.document.UploadCustomerDocumentResponse;
+import com.amx.jax.model.customer.document.UploadCustomerKycRequest;
+import com.amx.jax.model.customer.document.UploadCustomerKycResponse;
 import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.model.request.customer.UpdateCustomerInfoRequest;
 import com.amx.jax.model.response.CustomerInfo;
+import com.amx.libjax.model.jaxfield.JaxFieldDto;
 
 public interface ICustomerManagementController {
 	public static class ApiPath {
@@ -24,6 +29,10 @@ public interface ICustomerManagementController {
 		public static final String GET_IDENTITY_TPYES = PREFIX + "/get-identity-types";
 		public static final String LOCK_ONLINE_CUSTOMER = PREFIX + "/lock-online-customer";
 		public static final String UNLOCK_ONLINE_CUSTOMER = PREFIX + "/unlock-online-customer";
+		public static final String DOCUMENT_CATEGORY_GET = PREFIX + "/list-document-category";
+		public static final String DOCUMENT_TYPE_GET = PREFIX + "/list-document-type";
+		public static final String DOCUMENT_FIELD_GET = PREFIX + "/list-document-fields";
+		public static final String DOCUMENT_DYNAMIC_FIELD_LIST = PREFIX + "/get-document-dynamic-field-list";
 	}
 
 	public static class ApiParams {
@@ -33,6 +42,8 @@ public interface ICustomerManagementController {
 		public static final String VERIFICATION_CODE = "code";
 		public static final String LINK_ID = "linkId";
 		public static final String CONTACT = "contact";
+		public static final String DOCUMENT_CATEGORY = "document-category";
+		public static final String DOCUMENT_TYPE = "document-type";
 	}
 
 	AmxApiResponse<CustomerInfo, Object> createCustomer(CreateCustomerInfoRequest createCustomerRequest) throws ParseException;
@@ -44,9 +55,17 @@ public interface ICustomerManagementController {
 	AmxApiResponse<DuplicateCustomerDto, Object> checkForDuplicateCustomer(CustomerPersonalDetail customerPersonalDetail);
 
 	AmxApiResponse<IdentityTypeDto, Object> getIdentityTypes();
-	
+
 	AmxApiResponse<BoolRespModel, Object> lockOnlineCustomer();
-	
+
 	AmxApiResponse<BoolRespModel, Object> unlockOnlineCustomer();
+
+	AmxApiResponse<UploadCustomerDocumentResponse, Object> uploadCustomerDocument(UploadCustomerDocumentRequest uploadCustomerDocumentRequest);
+
+	AmxApiResponse<CustomerDocumentCategoryDto, Object> getDocumentCategory();
+
+	AmxApiResponse<CustomerDocumentTypeDto, Object> getDocumentType(String documentCategory);
+
+	AmxApiResponse<JaxFieldDto, Object> getDocumentFields(String documentCategory, String documentType);
 
 }

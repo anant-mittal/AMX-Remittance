@@ -20,12 +20,17 @@ import com.amx.jax.exception.JaxSystemError;
 import com.amx.jax.model.customer.CreateCustomerInfoRequest;
 import com.amx.jax.model.customer.DuplicateCustomerDto;
 import com.amx.jax.model.customer.IdentityTypeDto;
-import com.amx.jax.model.customer.UploadCustomerKycRequest;
-import com.amx.jax.model.customer.UploadCustomerKycResponse;
+import com.amx.jax.model.customer.document.CustomerDocumentCategoryDto;
+import com.amx.jax.model.customer.document.CustomerDocumentTypeDto;
+import com.amx.jax.model.customer.document.UploadCustomerDocumentRequest;
+import com.amx.jax.model.customer.document.UploadCustomerDocumentResponse;
+import com.amx.jax.model.customer.document.UploadCustomerKycRequest;
+import com.amx.jax.model.customer.document.UploadCustomerKycResponse;
 import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.model.request.customer.UpdateCustomerInfoRequest;
 import com.amx.jax.model.response.CustomerInfo;
 import com.amx.jax.rest.RestService;
+import com.amx.libjax.model.jaxfield.JaxFieldDto;
 
 /**
  * @author prashant
@@ -143,6 +148,50 @@ public class CustomerManagementClient implements ICustomerManagementController {
 			LOGGER.error("exception in unlockOnlineCustomer : ", ae);
 			return JaxSystemError.evaluate(ae);
 		}
+	}
+
+	@Override
+	public AmxApiResponse<UploadCustomerDocumentResponse, Object> uploadCustomerDocument(
+			UploadCustomerDocumentRequest uploadCustomerDocumentRequest) {
+		try {
+			return restService.ajax(appConfig.getJaxURL()).path(ApiPath.UPLOAD_CUSTOMER_DOCUMENT).meta(new JaxMetaInfo())
+					.post(uploadCustomerDocumentRequest).as(new ParameterizedTypeReference<AmxApiResponse<UploadCustomerDocumentResponse, Object>>() {
+					});
+		} catch (Exception ae) {
+			LOGGER.error("exception in unlockOnlineCustomer : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}
+	}
+
+	@Override
+	public AmxApiResponse<CustomerDocumentCategoryDto, Object> getDocumentCategory() {
+		try {
+			return restService.ajax(appConfig.getJaxURL()).path(ApiPath.DOCUMENT_CATEGORY_GET).meta(new JaxMetaInfo()).post()
+					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerDocumentCategoryDto, Object>>() {
+					});
+		} catch (Exception ae) {
+			LOGGER.error("exception in getDocumentCategory : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}
+	}
+
+	@Override
+	public AmxApiResponse<CustomerDocumentTypeDto, Object> getDocumentType(String documentCategory) {
+		try {
+			return restService.ajax(appConfig.getJaxURL()).path(ApiPath.DOCUMENT_TYPE_GET).meta(new JaxMetaInfo())
+					.queryParam(ApiParams.DOCUMENT_CATEGORY, documentCategory).post()
+					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerDocumentTypeDto, Object>>() {
+					});
+		} catch (Exception ae) {
+			LOGGER.error("exception in getDocumentType : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}
+	}
+
+	@Override
+	public AmxApiResponse<JaxFieldDto, Object> getDocumentFields(String documentCategory, String documentType) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

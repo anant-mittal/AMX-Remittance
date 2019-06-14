@@ -15,16 +15,13 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxlib.constant.JaxFieldEntity;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.GetJaxFieldRequest;
-import com.amx.amxlib.model.JaxConditionalFieldDto;
-import com.amx.amxlib.model.JaxFieldDto;
-import com.amx.amxlib.model.JaxFieldValueDto;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.branchremittance.manager.BranchRemittanceManager;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxDynamicField;
+import com.amx.jax.constants.JaxFieldEntity;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.CountryBranch;
 import com.amx.jax.dbmodel.bene.BeneficaryAccount;
@@ -41,6 +38,9 @@ import com.amx.jax.service.BankMetaService;
 import com.amx.jax.services.BankService;
 import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.services.JaxFieldService;
+import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
+import com.amx.libjax.model.jaxfield.JaxFieldDto;
+import com.amx.libjax.model.jaxfield.JaxFieldValueDto;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)

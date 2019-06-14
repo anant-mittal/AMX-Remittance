@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.meta.MetaData;
-import com.amx.jax.model.customer.UploadCustomerKycRequest;
+import com.amx.jax.model.customer.document.UploadCustomerKycRequest;
 import com.amx.jax.userservice.service.UserService;
 
 @Component

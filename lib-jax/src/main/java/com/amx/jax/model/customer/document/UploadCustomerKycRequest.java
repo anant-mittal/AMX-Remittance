@@ -1,4 +1,4 @@
-package com.amx.jax.model.customer;
+package com.amx.jax.model.customer.document;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -6,6 +6,7 @@ import java.util.Date;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import com.amx.jax.model.customer.CustomerKycData;
 import com.amx.jax.swagger.ApiMockModelProperty;
 
 public class UploadCustomerKycRequest {

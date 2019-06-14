@@ -1,8 +1,8 @@
-package com.amx.jax.model.customer;
+package com.amx.jax.model.customer.document;
 
 import java.math.BigDecimal;
 
-public class UploadCustomerKycResponse {
+public class UploadCustomerDocumentResponse {
 
 	BigDecimal uploadReference;
 
