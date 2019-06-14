@@ -94,11 +94,13 @@ public class PayGService {
 		payGParams.setDocId(docId);
 		payGParams.setDocNo(docNo);
 		payGParams.setDocFy(docFy);
-		return textEncryptor.encrypt(JsonUtil.toJson(payGParams));
+		return textEncryptor
+				.encrypt(JsonUtil.toJson(Base64.getEncoder().encodeToString(JsonUtil.toJson(payGParams).getBytes())));
 	}
 
 	public PayGParams getDeCryptedDetails(String enCryptedDetails) {
-		String jsonDetails = textEncryptor.decrypt(enCryptedDetails);
+		String jsonDetailsd = textEncryptor.decrypt(enCryptedDetails);
+		String jsonDetails = new String(Base64.getDecoder().decode(jsonDetailsd));
 		return JsonUtil.fromJson(jsonDetails, PayGParams.class);
 	}
 
