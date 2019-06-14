@@ -75,7 +75,7 @@ public class FxOrderController {
 
 	@Autowired
 	private PostManService postManService;
-	
+
 	/** The response. */
 	@Autowired
 	private HttpServletResponse response;
@@ -127,7 +127,7 @@ public class FxOrderController {
 	public ResponseWrapper<List<ShippingAddressDto>> getFcSaleAddress() {
 		return ResponseWrapper.buildList(fcSaleOrderClient.getFcSaleAddress());
 	}
-	
+
 	@RequestMapping(value = "/api/fxo/address-new/list", method = { RequestMethod.GET })
 	public ResponseWrapper<List<ShippingAddressDto>> getFcSaleAddressNew() {
 		return ResponseWrapper.buildList(fcSaleOrderClient.getFcSaleAddressNew());
@@ -170,11 +170,11 @@ public class FxOrderController {
 				.build(fcSaleOrderClient.getSavePayNowApplication(requestModel));
 
 		PayGParams payment = new PayGParams();
-		payment.setDocFy(wrapper.getData().getDocumentFinancialYear());
+		payment.setDocFyObject(wrapper.getData().getDocumentFinancialYear());
 		payment.setDocNo(wrapper.getData().getDocumentIdForPayment());
 		payment.setDocId(wrapper.getData().getDocumentIdForPayment());
-		payment.setTrackId(wrapper.getData().getMerchantTrackId());
-		payment.setAmount(wrapper.getData().getNetPayableAmount());
+		payment.setTrackIdObject(wrapper.getData().getMerchantTrackId());
+		payment.setAmountObject(wrapper.getData().getNetPayableAmount());
 		payment.setServiceCode(wrapper.getData().getPgCode());
 		payment.setProduct(AmxEnums.Products.FXORDER);
 
@@ -237,7 +237,6 @@ public class FxOrderController {
 		return ResponseWrapper
 				.build(fcSaleOrderClient.getFxOrderTransactionStatus(docNo));
 	}
-	
 
 	/**
 	 * Prints the fx order history.

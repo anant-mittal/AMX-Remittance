@@ -1,5 +1,6 @@
 package com.amx.jax.payg;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.security.NoSuchAlgorithmException;
@@ -18,6 +19,7 @@ import com.amx.jax.rest.RestService;
 import com.amx.utils.CryptoUtil;
 import com.amx.utils.JsonUtil;
 import com.amx.utils.URLBuilder;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 @Component
 public class PayGService {
@@ -94,8 +96,12 @@ public class PayGService {
 		payGParams.setDocId(docId);
 		payGParams.setDocNo(docNo);
 		payGParams.setDocFy(docFy);
+		return getEnCryptedDetails(payGParams);
+	}
+
+	public String getEnCryptedDetails(PayGParams payGParams) {
 		return Base64.getEncoder().encodeToString(textEncryptor
-				.encrypt(JsonUtil.toJson(JsonUtil.toJson(payGParams))).getBytes());
+				.encrypt(JsonUtil.toJson(payGParams)).getBytes());
 	}
 
 	public PayGParams getDeCryptedDetails(String enCryptedDetails) {
