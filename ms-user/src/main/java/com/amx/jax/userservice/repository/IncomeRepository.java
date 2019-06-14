@@ -23,7 +23,7 @@ public interface IncomeRepository extends JpaRepository<IncomeModel, Serializabl
 	public List<IncomeModel> getAnnualTransactionLimitRange(String rangeType);
 	
 	@Query("select c from IncomeModel c where c.incomeRangeFrom = ?1 and c.incomeRangeTo = ?2 and c.activeStatus ='Y'")
-	public IncomeModel getAnnualIncomeRangeId(BigDecimal incomeRangeFrom, BigDecimal incomeRangeTo);
+	public List<IncomeModel> getAnnualIncomeRangeId(BigDecimal incomeRangeFrom, BigDecimal incomeRangeTo);
 	
 	
 

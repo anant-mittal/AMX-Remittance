@@ -169,17 +169,7 @@ public class AnnualIncomeService {
 		logger.info("Income Dto value is "+incomeDto.getArticleDetailId());
 		Customer customer = custDao.getCustById(metaData.getCustomerId());
 		logger.info("fetch customer by customer id "+customer);
-		if (incomeDto.getIncomeRangeFrom() == null || incomeDto.getIncomeRangeTo() == null) {
-			throw new GlobalException("Income range cannot be null");
-		}
-
-		IncomeModel incomeModel = incomeDao.getAnnualIncomeRangeId(incomeDto.getIncomeRangeFrom(),
-				incomeDto.getIncomeRangeTo());
-		logger.info("fetch incomeModel by id "+incomeModel);
 		
-		if (incomeModel.getRangeType().equalsIgnoreCase(ConstantDocument.ANNUAL_INCOME_RANGE)) {
-			throw new GlobalException("Invalid income range entered.Please enter a valid income range");
-		}
 
 		customer.setAnnualIncomeFrom(incomeDto.getIncomeRangeFrom());
 		logger.info("set annual income from by id "+customer);
@@ -461,14 +451,20 @@ public class AnnualIncomeService {
 			throw new GlobalException("Income range should not be null");
 		}
 		
-		/*IncomeModel incomeModel = incomeDao.getAnnualIncomeRangeId(incomeDto.getIncomeRangeFrom(),
+		List<IncomeModel> incomeModel = incomeDao.getAnnualIncomeRangeId(incomeDto.getIncomeRangeFrom(),
 				incomeDto.getIncomeRangeTo());
 		
-		
-		
-		if (incomeModel.getRangeType().equalsIgnoreCase(ConstantDocument.ANNUAL_TRANSACTION_LIMIT)) {
+		int c = 0;
+		for (int i = 0; i < incomeModel.size(); i++) {
+			if (!incomeModel.get(i).getRangeType().equalsIgnoreCase(ConstantDocument.ANNUAL_TRANSACTION_LIMIT)) {
+				c++;
+
+			}
+		}
+		if (c == incomeModel.size()) {
 			throw new GlobalException("Invalid income range entered.Please enter a valid income range");
-		}*/
+		}
+		
 		
 		
 		Iterable<AnnualTransactionFactorModel> annualTransactionFactorModelList=annualTransactionFactorRepository.findAll();

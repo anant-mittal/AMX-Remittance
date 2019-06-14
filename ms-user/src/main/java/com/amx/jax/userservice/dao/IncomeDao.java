@@ -42,8 +42,8 @@ public class IncomeDao {
 	public void saveCustomerEmploymentInfo(CustomerEmploymentInfo c) {
 		customerEmploymentInfoRepository.save(c);
 	}
-	public IncomeModel getAnnualIncomeRangeId(BigDecimal incomeRangeFrom, BigDecimal incomeRangeTo) {
-		IncomeModel incomeModel  = incomeRepository.getAnnualIncomeRangeId(incomeRangeFrom, incomeRangeTo);
+	public List<IncomeModel> getAnnualIncomeRangeId(BigDecimal incomeRangeFrom, BigDecimal incomeRangeTo) {
+		List<IncomeModel> incomeModel  = incomeRepository.getAnnualIncomeRangeId(incomeRangeFrom, incomeRangeTo);
 		return incomeModel;
 	}
 	
