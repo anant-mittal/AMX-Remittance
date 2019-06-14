@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 
 import com.amx.jax.swagger.ApiMockModelProperty;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class JaxAuthMeta implements Serializable {
@@ -19,7 +20,7 @@ public class JaxAuthMeta implements Serializable {
 		this.wOtpHash = "";
 		this.secAnsHash = "";
 	}
-	
+
 	public JaxAuthMeta(String id) {
 		this.id = id;
 		this.otpHash = "";
@@ -39,17 +40,27 @@ public class JaxAuthMeta implements Serializable {
 	@ApiMockModelProperty(example = "anx-sdff-dfdfdfd")
 	String id;
 
+	@JsonProperty(value = "otp")
 	@ApiMockModelProperty(example = "123456")
 	String otpHash;
 
+	@JsonProperty(value = "mOtp")
 	@ApiMockModelProperty(example = "123456")
 	String mOtpHash;
+
+	@JsonProperty(value = "eOtp")
 	@ApiMockModelProperty(example = "234567")
 	String eOtpHash;
+
+	@JsonProperty(value = "wOtp")
 	@ApiMockModelProperty(example = "123456")
 	String wOtpHash;
+
+	@JsonProperty(value = "questId")
 	@ApiMockModelProperty(example = "Q1")
 	BigDecimal questId;
+
+	@JsonProperty(value = "secAns")
 	@ApiMockModelProperty(example = "black")
 	String secAnsHash;
 
@@ -67,7 +78,6 @@ public class JaxAuthMeta implements Serializable {
 		this.questId = questId;
 	}
 
-	
 	public String getId() {
 		return id;
 	}

@@ -77,10 +77,13 @@ public class CacheRedisConfiguration
 			if (redisProperties.getPassword() != null) {
 				singleServerConfig.setPassword(redisProperties.getPassword());
 			}
-			singleServerConfig.setIdleConnectionTimeout(2 * 60 * 1000);
+			singleServerConfig.setIdleConnectionTimeout(10 * 1000);
+			singleServerConfig.setReconnectionTimeout(3000);
+
 		}
 		// Commenting this as we dont want to use session sharing across applications
-		//org.redisson.codec.JsonJacksonCodec codec = new org.redisson.codec.JsonJacksonCodec(JsonUtil.getMapper());
+		// org.redisson.codec.JsonJacksonCodec codec = new
+		// org.redisson.codec.JsonJacksonCodec(JsonUtil.getMapper());
 		org.redisson.codec.FstCodec codec = new org.redisson.codec.FstCodec();
 		config.setCodec(codec);
 		return Redisson.create(config);

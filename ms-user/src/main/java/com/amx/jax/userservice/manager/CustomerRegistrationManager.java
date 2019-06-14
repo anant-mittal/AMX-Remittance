@@ -57,6 +57,7 @@ import com.amx.jax.userservice.repository.CustomerIdProofRepository;
 import com.amx.jax.userservice.service.ContactDetailService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.userservice.service.UserValidationService;
+import com.amx.jax.util.AmxDBConstants.Status;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.validation.CustomerValidationService;
@@ -242,6 +243,8 @@ public class CustomerRegistrationManager extends TransactionModel<CustomerRegist
 		customer.setIdentityFor(ConstantDocument.IDENTITY_FOR_ID_PROOF);
 		customer.setIdentityTypeId(ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID);
 		customer.setCustomerRegistrationType(CustomerRegistrationType.PARTIAL_REG);
+		customer.setMobileVerified(Status.Y);
+		customer.setEmailVerified(Status.Y);
 
 		LOGGER.info("generated customer ref: {}", customerReference);
 		LOGGER.info("Createing new customer record, civil id- {}", customerPersonalDetail.getIdentityInt());
@@ -362,8 +365,23 @@ public class CustomerRegistrationManager extends TransactionModel<CustomerRegist
 			throw new GlobalException(JaxError.ID_TYPE_LENGTH_NOT_DEFINED,"Id length setup is missing  in paramter :"+identityInt +" identityTypeId :"+identityTypeId);
 		}
 		
-		Customer customer = customerRepository.getCustomerDetails(identityInt,jaxMetaInfo.getCountryId());
-		if(customer!=null) {
+		List<Customer> customerList = customerRepository.getCustomerDetails(identityInt,jaxMetaInfo.getCountryId());
+		if(!customerList.isEmpty()) {
+			Customer customer  = null;
+			int custSize=0;
+			for(Customer cust :customerList) {
+				if(cust!=null && cust.getIsActive().equalsIgnoreCase(ConstantDocument.Yes)) {
+					custSize++;
+					customer =cust;
+				}
+			}
+			if(custSize>1) {
+				throw new GlobalException(JaxError.CUSTOMER_INACTIVE,"Duplicate record found"); 
+			}else if(customer==null){
+				throw new GlobalException(JaxError.NO_RECORD_FOUND,"The customer does not exist in the system or inactive : "+identityInt);
+			}
+			
+		
 			
 			if(StringUtils.isBlank(customer.getIsActive()) && customer.getIsActive().equalsIgnoreCase(ConstantDocument.No)) {
 				throw new GlobalException(JaxError.CUSTOMER_INACTIVE,"Customer is partialy registed :"+identityInt +"\t identityTypeId :"+identityTypeId);

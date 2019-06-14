@@ -91,6 +91,10 @@ public class AuthData extends AbstractModel implements AuthResponse, AuthRequest
 	@Pattern(regexp = AppConstants.Validator.OTP)
 	private String eOtp = null;
 
+	/** The w otp. */
+	@Pattern(regexp = AppConstants.Validator.OTP)
+	private String wOtp = null;
+
 	/** The m otp prefix. */
 	private String mOtpPrefix = null;
 
@@ -439,6 +443,16 @@ public class AuthData extends AbstractModel implements AuthResponse, AuthRequest
 		meta.setOtpPrefix(otpPrefix);
 		meta.setQues(ques);
 		return meta;
+	}
+
+	@Override
+	public String getwOtp() {
+		return wOtp;
+	}
+
+	@Override
+	public void setwOtp(String wOtp) {
+		this.wOtp = wOtp;
 	}
 
 }

@@ -1,5 +1,6 @@
 package com.amx.jax.branchremittance.manager;
 
+
 import java.math.BigDecimal;
 import java.sql.Clob;
 import java.text.SimpleDateFormat;
@@ -236,6 +237,8 @@ public class BranchRemittanceSaveManager {
 			paymentResponse.setApplicationCountryId(metaData.getCountryId());
 			paymentResponse.setCustomerId(metaData.getCustomerId());
 			remittanceApplicationService.saveRemittancetoOldEmos(paymentResponse);
+			String promotionMsg = promotionManager.getPromotionPrizeForBranch(responseDto);
+			responseDto.setPromotionMessage(promotionMsg);
 		}else {
 			logger.error("NOT moved to old emos ", responseDto.getCollectionDocumentNo() + "" +responseDto.getCollectionDocumentCode()+" "+responseDto.getCollectionDocumentFYear());
 		}
@@ -1223,7 +1226,6 @@ public void validateSaveTrnxDetails(HashMap<String, Object> mapAllDetailRemitSav
 	Map<BigDecimal,RemittanceTransaction> remitTrnxList = (Map<BigDecimal,RemittanceTransaction>) mapAllDetailRemitSave.get("EX_REMIT_TRNX");
 	Map<BigDecimal,RemittanceBenificiary> remitBeneList = (Map<BigDecimal,RemittanceBenificiary>) mapAllDetailRemitSave.get("EX_REMIT_BENE");
 	Map<BigDecimal,List<RemittanceAdditionalInstructionData>> addlTrnxList = (Map<BigDecimal,List<RemittanceAdditionalInstructionData>>) mapAllDetailRemitSave.get("EX_REMIT_ADDL");
-		
 	if(collectModel==null) {
 		throw new GlobalException(JaxError.NO_RECORD_FOUND, "Collection data not found");
 	}	

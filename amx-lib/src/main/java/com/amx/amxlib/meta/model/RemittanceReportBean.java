@@ -118,6 +118,8 @@ public class RemittanceReportBean {
 	private String customerVatNumber;
 
 	private String amountSaved;
+	private String promotionMessage;
+	private Boolean isArabic;
 	
 	public Boolean getDrawLine() {
 		return drawLine;
@@ -846,9 +848,23 @@ public class RemittanceReportBean {
 	public String getAmountSaved() {
 		return amountSaved;
 	}
+	public Boolean getIsArabic() {
+		return isArabic;
+	}
 
 	public void setAmountSaved(String amountSaved) {
 		this.amountSaved = amountSaved;
+	}
+
+	public String getPromotionMessage() {
+		return promotionMessage;
+	}
+
+	public void setPromotionMessage(String promotionMessage) {
+		this.promotionMessage = promotionMessage;
+	}
+	public void setIsArabic(Boolean isArabic) {
+		this.isArabic = isArabic;
 	}	
 
 }

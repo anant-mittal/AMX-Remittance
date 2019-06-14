@@ -655,6 +655,7 @@ public class BeneficiaryService extends AbstractService {
 			onlineCustReg.setTokenSentCount(BigDecimal.ZERO);
 		}
 		userValidationService.validateTokenSentCount(onlineCustReg);
+		userValidationService.validateCustomerContactForSendOtp(channels, customer);
 		userService.generateToken(civilId, model, channels);
 		onlineCustReg.setEmailToken(model.getHashedeOtp());
 		onlineCustReg.setSmsToken(model.getHashedmOtp());

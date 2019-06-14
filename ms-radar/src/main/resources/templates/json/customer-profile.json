@@ -10,9 +10,6 @@
           "match_all": {}
         },
         {
-          "match_all": {}
-        },
-        {
           "match_phrase": {
             "[[${searchKey}]].keyword": {
               "query": "[[${searchValue}]]"

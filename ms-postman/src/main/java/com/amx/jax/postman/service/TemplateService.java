@@ -18,11 +18,14 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 
 import com.amx.jax.AppContextUtil;
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.postman.PostManConfig;
 import com.amx.jax.postman.custom.HelloDialect;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.ITemplates.ITemplate;
+import com.amx.utils.ArgUtil;
+import com.amx.utils.Constants;
 import com.amx.utils.IoUtils;
 
 /**
@@ -121,6 +124,10 @@ public class TemplateService {
 	 * @return the file
 	 */
 	public File process(File file) {
+		return this.process(file, null);
+	}
+
+	public File process(File file, ContactType contactType) {
 		Locale locale = getLocal(file);
 		String reverse = messageSource.getMessage("flag.reverse.char", null, locale);
 
@@ -135,6 +142,7 @@ public class TemplateService {
 		Context context = new Context(locale);
 
 		context.setVariable("_tu", templateUtils);
+		context.setVariable("_type", ArgUtil.parseAsString(contactType, Constants.BLANK));
 
 		context.setVariables(file.getModel());
 		if (file.getITemplate().isThymleaf()) {

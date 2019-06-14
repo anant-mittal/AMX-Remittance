@@ -25,10 +25,6 @@ public interface FxOrderTransactionRespository extends DaoRepository<FxOrderTran
 	@Query(value = "select sd from FxOrderTransactionModel sd where sd.transactionReferenceNo= ?1 ")
 	public List<FxOrderTransactionModel> searchTransactionRefNo(String transactionReferenceNo);
 	
-	@Query(value = "select sd from FxOrderTransactionModel sd where createdDate between sysdate-7 and sysdate")
-	public List<FxOrderTransactionModel> searchOrderWithoutParams();
-	
-	
 	
 }
 

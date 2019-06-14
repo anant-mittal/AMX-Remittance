@@ -467,9 +467,4 @@ public class FcSaleBranchDao {
 		return Lists.newArrayList(fxOrdersItr);
 	}
 	
-	public List<FxOrderTransactionModel>searchOrderWithoutParams(){
-		return fxOrderTransactionRespository.searchOrderWithoutParams();
-	}
-
-	
 }

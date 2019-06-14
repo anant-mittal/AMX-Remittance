@@ -46,7 +46,7 @@ public class AppConfig {
 	public static final String APP_SWAGGER = "${app.swagger}";
 	public static final String APP_DEBUG = "${app.debug}";
 	public static final String APP_CACHE = "${app.cache}";
-	public static final String APP_LOGGER = "${app.logger}";
+	public static final String APP_LOGGER = "${app.audit}";
 	public static final String APP_MONITOR = "${app.monitor}";
 
 	public static final String APP_CONTEXT_PREFIX = "${server.contextPath}";
@@ -373,7 +373,7 @@ public class AppConfig {
 		return skipAuditMarkers;
 	}
 
-	public boolean isLogger() {
+	public boolean isAudit() {
 		return logger;
 	}
 

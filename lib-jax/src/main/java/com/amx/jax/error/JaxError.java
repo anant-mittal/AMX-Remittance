@@ -283,7 +283,7 @@ public enum JaxError implements IExceptionEnum {
 	ENTITY_INVALID,
 	USER_ALREADY_ACTIVE,
 	MISSING_CONTACT,
-	
+	MISSING_OTP_CONTACT,
 	
 	// Default for code symettry
 	JAX_SYSTEM_ERROR,
@@ -301,7 +301,11 @@ public enum JaxError implements IExceptionEnum {
 	MUTIPLE_RECORD_FOUND,
 	INVALID_ROUTING_BANK,
 	BENE_ENGLISH_NAME_REQUIRED,
-	BENE_ARABIC_NAME_REQUIRED;
+	BENE_ARABIC_NAME_REQUIRED,
+	CUSTOMER_MOBILE_EMPTY, CUSTOMER_EMAIL_EMPTY,
+	MIN_DENOMINATION_ERROR;
+	
+	
 	@Deprecated
 	public String getCode() {
 		return this.toString();

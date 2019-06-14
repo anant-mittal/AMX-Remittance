@@ -2,7 +2,7 @@
   "aggs": {
     "2": {
       "terms": {
-        "field": "trnx.channel.keyword",
+        "field": "client.cn.keyword",
         "size": 10,
         "order": {
           "_count": "desc"
@@ -62,7 +62,7 @@
         {
           "match_phrase": {
             "customer.identity.keyword": {
-              "query": "284052306594"
+              "query": "[[${customer.identity}]]"
             }
           }
         },
@@ -78,7 +78,7 @@
         {
           "match_phrase": {
             "_type": {
-              "query": "appxn"
+              "query": "trnx"
             }
           }
         },

@@ -15,6 +15,7 @@ import com.amx.jax.CustomerCredential;
 import com.amx.jax.JaxAuthContext;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.exception.AmxApiError;
+import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 import com.amx.jax.ui.config.UIServerError;
@@ -65,10 +66,12 @@ public class RegisterController {
 	}
 
 	@ApiOperation(value = "Verify KYC and sneds OTP to registered Mobile")
-	@RequestMapping(value = "/pub/register/verifyid/v2", method = { RequestMethod.POST })
+	@RequestMapping(value = "/pub/register/verifyid/v2", method = { RequestMethod.POST },
+			consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 	public ResponseWrapper<AuthData> verifyID(@RequestParam String identity,
-			@RequestParam(required = false) ContactType contactType) {
-		String otp = JaxAuthContext.getOtp();
+			@RequestParam(required = false) ContactType contactType,
+			@RequestParam(required = false) String otp) {
+		otp = ArgUtil.ifNotEmpty(otp, JaxAuthContext.getAnyOtp());
 
 		if (ArgUtil.isEmpty(contactType)) {
 			AmxApiError amxApiError = new AmxApiError(OWAStatusStatusCodes.CONTACT_TYPE_REQUIRED);
@@ -84,6 +87,13 @@ public class RegisterController {
 		} else {
 			return registrationService.validateCustomer(identity, otp, contactType);
 		}
+	}
+
+	@ApiOperation(value = "Verify KYC and sneds OTP to registered Mobile")
+	@RequestMapping(value = "/pub/register/verifyid/v2/**", method = { RequestMethod.POST })
+	public ResponseWrapper<AuthData> verifyIDJson(@RequestBody AuthData authData) {
+		return this.verifyID(authData.getIdentity(), authData.getContactType(),
+				ArgUtil.ifNotEmpty(authData.getOtp(), authData.getmOtp(), authData.geteOtp(), authData.getwOtp()));
 	}
 
 	/**
