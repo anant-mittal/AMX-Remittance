@@ -12,7 +12,6 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.log4j.Logger;
-import org.jasypt.util.text.BasicTextEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -80,11 +79,6 @@ public class PayGController {
 	@Autowired
 	PayGService payGService;
 
-	private static BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
-	{
-		textEncryptor.setPasswordCharArray("payg".toCharArray());
-	}
-
 	@ResponseBody
 	@RequestMapping(value = { "/register/*" }, method = RequestMethod.GET)
 	public PayGParams initTransaction(
@@ -113,7 +107,15 @@ public class PayGController {
 			@RequestParam(required = false) String prod,
 			@RequestParam(required = false) String callbackd,
 			@RequestParam(required = false) String verify,
+			@RequestParam(required = false) String detail,
 			Model model) throws NoSuchAlgorithmException {
+
+		PayGParams detailParam = payGService.getDeCryptedDetails(detail);
+		trckid = detailParam.getTrackId();
+		amount = detailParam.getAmount();
+		docId = detailParam.getDocId();
+		docNo = detailParam.getDocNo();
+		docFy = detailParam.getDocFy();
 
 		if (!ArgUtil.isEmpty(verify)
 				&& !verify.equals(payGService.getVerifyHash(trckid, amount, docId, docNo, docFy).getVerification())) {

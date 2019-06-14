@@ -2,8 +2,10 @@ package com.amx.jax.payg;
 
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
+import org.jasypt.util.text.BasicTextEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -25,6 +27,11 @@ public class PayGService {
 
 	@Autowired
 	private RestService restService;
+
+	private static BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
+	{
+		textEncryptor.setPasswordCharArray("ZNEAYuVTsC".toCharArray());
+	}
 
 	public String getPaymentUrl(Payment payment, String callback) throws MalformedURLException, URISyntaxException {
 		AppContext context = AppContextUtil.getContext();
@@ -72,10 +79,27 @@ public class PayGService {
 				.queryParam("tnt", context.getTenant()).queryParam("callbackd", callbackd)
 				.queryParam("prod", payment.getProduct())
 				.queryParam(AppConstants.TRACE_ID_XKEY, context.getTraceId())
+				.queryParam("detail", getEnCryptedDetails(payment.getTrackId(), payment.getAmount(),
+						payment.getDocId(), payment.getDocNo(), payment.getDocFy()))
 				.queryParam("verify", getVerifyHash(payment.getTrackId(), payment.getAmount(),
 						payment.getDocId(), payment.getDocNo(), payment.getDocFy()).getVerification());
 
 		return builder.getURL();
+	}
+
+	public String getEnCryptedDetails(String trckid, String amount, String docId, String docNo,
+			String docFy) {
+		PayGParams payGParams = new PayGParams();
+		payGParams.setAmount(amount);
+		payGParams.setDocId(docId);
+		payGParams.setDocNo(docNo);
+		payGParams.setDocFy(docFy);
+		return textEncryptor.encrypt(JsonUtil.toJson(payGParams));
+	}
+
+	public PayGParams getDeCryptedDetails(String enCryptedDetails) {
+		String jsonDetails = textEncryptor.decrypt(enCryptedDetails);
+		return JsonUtil.fromJson(jsonDetails, PayGParams.class);
 	}
 
 	public PayGParams getVerifyHash(String trckid, String amount, String docId, String docNo,
