@@ -7,7 +7,10 @@ import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.customer.document.validate.KycScanValidator;
@@ -24,6 +27,7 @@ import com.amx.jax.userservice.service.UserService;
 import com.jax.amxlib.exception.jax.GlobaLException;
 
 @Component
+@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class CustomerDocumentManager {
 
 	@Autowired
@@ -94,8 +98,8 @@ public class CustomerDocumentManager {
 			throw new GlobaLException("Customer documents not uploaded");
 		}
 		for (CustomerDocumentUploadReferenceTemp upload : uploads) {
-			switch (upload.getCustomerDocUploadType()) {
-			case KYC_PROOF:
+			switch (upload.getCustomerDocumentTypeMaster().getDocumentCategory()) {
+			case "KYC_PROOF":
 				customerKycManager.uploadAndCreateKyc(customer, upload);
 				break;
 

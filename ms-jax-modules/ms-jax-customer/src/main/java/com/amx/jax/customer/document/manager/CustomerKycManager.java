@@ -8,7 +8,10 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.jax.dal.CustomerDocumentDao;
 import com.amx.jax.dal.ImageCheckDao;
@@ -28,6 +31,7 @@ import com.amx.jax.userservice.manager.CustomerIdProofManager;
 import com.amx.utils.JsonUtil;
 
 @Component
+@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class CustomerKycManager {
 
 	@Autowired

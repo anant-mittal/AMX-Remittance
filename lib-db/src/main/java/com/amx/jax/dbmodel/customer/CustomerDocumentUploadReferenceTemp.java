@@ -7,14 +7,16 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import com.amx.jax.constants.DocumentScanIndic;
-import com.amx.jax.model.customer.CustomerDocUploadCategory;
 
 @Entity
 @Table(name = "JAX_CUST_DOC_UPLOAD_REF_TMP")
@@ -42,9 +44,9 @@ public class CustomerDocumentUploadReferenceTemp {
 	@Column(name = "IDENTITY_TYPE_ID")
 	BigDecimal identityTypeId;
 
-	@Column(name = "UPLOAD_DOC_TYPE")
-	@Enumerated(EnumType.STRING)
-	CustomerDocUploadCategory customerDocUploadType;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "DOC_TYPE_MASTER_ID", referencedColumnName = "ID")
+	CustomerDocumentTypeMaster customerDocumentTypeMaster;
 
 	@Column(name = "UPLOAD_DATA")
 	String uploadData;
@@ -97,27 +99,20 @@ public class CustomerDocumentUploadReferenceTemp {
 		this.identityTypeId = identityTypeId;
 	}
 
-	public CustomerDocUploadCategory getCustomerDocUploadType() {
-		return customerDocUploadType;
-	}
-
-	public void setCustomerDocUploadType(CustomerDocUploadCategory customerDocUploadType) {
-		this.customerDocUploadType = customerDocUploadType;
-	}
-
-	@Override
-	public String toString() {
-		return "CustomerDocumentUploadReferenceTemp [id=" + id + ", scanIndic=" + scanIndic + ", identityInt="
-				+ identityInt + ", identityTypeId=" + identityTypeId + ", customerDocUploadType="
-				+ customerDocUploadType + "]";
-	}
-
 	public String getUploadData() {
 		return uploadData;
 	}
 
 	public void setUploadData(String uploadData) {
 		this.uploadData = uploadData;
+	}
+
+	public CustomerDocumentTypeMaster getCustomerDocumentTypeMaster() {
+		return customerDocumentTypeMaster;
+	}
+
+	public void setCustomerDocumentTypeMaster(CustomerDocumentTypeMaster customerDocumentTypeMaster) {
+		this.customerDocumentTypeMaster = customerDocumentTypeMaster;
 	}
 
 }

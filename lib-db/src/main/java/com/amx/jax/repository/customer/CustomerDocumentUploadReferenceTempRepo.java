@@ -6,15 +6,13 @@ import java.util.List;
 
 import org.springframework.data.repository.CrudRepository;
 
+import com.amx.jax.dbmodel.customer.CustomerDocumentTypeMaster;
 import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReferenceTemp;
-import com.amx.jax.model.customer.CustomerDocUploadCategory;
 
-public interface CustomerDocumentUploadReferenceTempRepo
-		extends CrudRepository<CustomerDocumentUploadReferenceTemp, Serializable> {
+public interface CustomerDocumentUploadReferenceTempRepo extends CrudRepository<CustomerDocumentUploadReferenceTemp, Serializable> {
 
-	CustomerDocumentUploadReferenceTemp findByidentityIntAndIdentityTypeIdAndCustomerDocUploadType(String identityInt,
-			BigDecimal identityType, CustomerDocUploadCategory uploadType);
+	CustomerDocumentUploadReferenceTemp findByidentityIntAndIdentityTypeIdAndCustomerDocumentTypeMaster(String identityInt, BigDecimal identityType,
+			CustomerDocumentTypeMaster customerDocumentTypeMaster);
 
-	List<CustomerDocumentUploadReferenceTemp> findByidentityIntAndIdentityTypeId(String identityInt,
-			BigDecimal identityType);
+	List<CustomerDocumentUploadReferenceTemp> findByidentityIntAndIdentityTypeId(String identityInt, BigDecimal identityType);
 }
