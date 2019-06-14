@@ -29,6 +29,7 @@ import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.payg.PayGParams;
+import com.amx.jax.payg.PayGService;
 import com.amx.jax.payment.PaymentConstant;
 import com.amx.jax.payment.gateway.PayGClient;
 import com.amx.jax.payment.gateway.PayGClients;
@@ -39,8 +40,6 @@ import com.amx.jax.payment.gateway.PaymentGateWayResponse;
 import com.amx.jax.payment.gateway.PaymentGateWayResponse.PayGStatus;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.ArgUtil;
-import com.amx.utils.CryptoUtil;
-import com.amx.utils.JsonUtil;
 
 import io.swagger.annotations.Api;
 
@@ -78,19 +77,16 @@ public class PayGController {
 	@Autowired
 	PayGConfig payGConfig;
 
+	@Autowired
+	PayGService payGService;
+
 	private static BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
 	{
 		textEncryptor.setPasswordCharArray("payg".toCharArray());
 	}
 
-	private PayGParams getVerifyHash(String amount) throws NoSuchAlgorithmException {
-		PayGParams payGParams = new PayGParams();
-		payGParams.setVerification(CryptoUtil.getMD5Hash((JsonUtil.toJson(payGParams))));
-		return payGParams;
-	}
-
 	@ResponseBody
-	@RequestMapping(value = { "/init_tranx/*" }, method = RequestMethod.GET)
+	@RequestMapping(value = { "/register/*" }, method = RequestMethod.GET)
 	public PayGParams initTransaction(
 			@RequestParam String trckid,
 			@RequestParam(required = false) String docId, @RequestParam(required = false) String docNo,
@@ -102,7 +98,7 @@ public class PayGController {
 
 			@RequestParam(required = false) String callbackd,
 			Model model) throws NoSuchAlgorithmException {
-		return getVerifyHash(amount);
+		return payGService.getVerifyHash(trckid, amount, docId, docNo, docFy);
 	}
 
 	@RequestMapping(value = { "/payment/*", "/payment" }, method = RequestMethod.GET)
@@ -119,7 +115,8 @@ public class PayGController {
 			@RequestParam(required = false) String verify,
 			Model model) throws NoSuchAlgorithmException {
 
-		if (!ArgUtil.isEmpty(verify) && !verify.equals(getVerifyHash(amount).getVerification())) {
+		if (!ArgUtil.isEmpty(verify)
+				&& !verify.equals(payGService.getVerifyHash(trckid, amount, docId, docNo, docFy).getVerification())) {
 			return "thymeleaf/pg_security";
 		}
 

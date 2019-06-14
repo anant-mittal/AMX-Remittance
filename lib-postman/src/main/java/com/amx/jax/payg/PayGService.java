@@ -11,6 +11,10 @@ import com.amx.jax.AppConfig;
 import com.amx.jax.AppConstants;
 import com.amx.jax.AppContext;
 import com.amx.jax.AppContextUtil;
+import com.amx.jax.dict.PayGServiceCode;
+import com.amx.jax.rest.RestService;
+import com.amx.utils.CryptoUtil;
+import com.amx.utils.JsonUtil;
 import com.amx.utils.URLBuilder;
 
 @Component
@@ -18,6 +22,9 @@ public class PayGService {
 
 	@Autowired
 	private AppConfig appConfig;
+
+	@Autowired
+	private RestService restService;
 
 	public String getPaymentUrl(Payment payment, String callback) throws MalformedURLException, URISyntaxException {
 		AppContext context = AppContextUtil.getContext();
@@ -51,6 +58,11 @@ public class PayGService {
 				+ "&docFy=" + payment.getDocFy()
 				+ "&docId=" + payment.getDocId()
 				+ "&trckid=" + payment.getTrackId();
+
+		if (PayGServiceCode.WT.equals(payment.getServiceCode())) {
+			return callbackUrl;
+		}
+
 		String callbackd = Base64.getEncoder().encodeToString(callbackUrl.getBytes());
 
 		builder.path("app/payment").queryParam("amount", payment.getAmount())
@@ -59,8 +71,26 @@ public class PayGService {
 				.queryParam("docId", payment.getDocId())
 				.queryParam("tnt", context.getTenant()).queryParam("callbackd", callbackd)
 				.queryParam("prod", payment.getProduct())
-				.queryParam(AppConstants.TRACE_ID_XKEY, context.getTraceId());
+				.queryParam(AppConstants.TRACE_ID_XKEY, context.getTraceId())
+				.queryParam("verify", getVerifyHash(payment.getTrackId(), payment.getAmount(),
+						payment.getDocId(), payment.getDocNo(), payment.getDocFy()).getVerification());
+
 		return builder.getURL();
+	}
+
+	public PayGParams getVerifyHash(String trckid, String amount, String docId, String docNo,
+			String docFy) {
+		PayGParams payGParams = new PayGParams();
+		payGParams.setAmount(amount);
+		payGParams.setDocId(docId);
+		payGParams.setDocNo(docNo);
+		payGParams.setDocFy(docFy);
+		try {
+			payGParams.setVerification(CryptoUtil.getMD5Hash((JsonUtil.toJson(payGParams))));
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+		return payGParams;
 	}
 
 }
