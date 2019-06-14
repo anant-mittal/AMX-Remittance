@@ -57,6 +57,7 @@ import com.amx.jax.userservice.repository.CustomerIdProofRepository;
 import com.amx.jax.userservice.service.ContactDetailService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.userservice.service.UserValidationService;
+import com.amx.jax.util.AmxDBConstants.Status;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.validation.CustomerValidationService;
@@ -242,6 +243,8 @@ public class CustomerRegistrationManager extends TransactionModel<CustomerRegist
 		customer.setIdentityFor(ConstantDocument.IDENTITY_FOR_ID_PROOF);
 		customer.setIdentityTypeId(ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID);
 		customer.setCustomerRegistrationType(CustomerRegistrationType.PARTIAL_REG);
+		customer.setMobileVerified(Status.Y);
+		customer.setEmailVerified(Status.Y);
 
 		LOGGER.info("generated customer ref: {}", customerReference);
 		LOGGER.info("Createing new customer record, civil id- {}", customerPersonalDetail.getIdentityInt());

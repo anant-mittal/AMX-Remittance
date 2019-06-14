@@ -965,6 +965,5 @@ public class RemittanceApplication implements Serializable {
 	}
 
 	
-	
 
 }

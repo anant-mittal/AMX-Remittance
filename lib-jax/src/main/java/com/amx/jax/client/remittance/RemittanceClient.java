@@ -19,10 +19,12 @@ import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.BranchRemittanceGetExchangeRateRequest;
 import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
 import com.amx.jax.model.request.remittance.CustomerBankRequest;
+import com.amx.jax.model.request.remittance.RoutingPricingRequest;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
+import com.amx.jax.model.response.remittance.FlexFieldReponseDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
 import com.amx.jax.model.response.remittance.PaymentModeDto;
 import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
@@ -30,6 +32,7 @@ import com.amx.jax.model.response.remittance.RemittanceDeclarationReportDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
+import com.amx.jax.model.response.remittance.branch.DynamicRoutingPricingResponse;
 import com.amx.jax.rest.RestService;
 
 @Component
@@ -281,11 +284,12 @@ public class RemittanceClient  implements IRemittanceService{
 
 
 	@Override
-	public AmxApiResponse<AdditionalExchAmiecDto, Object> getPurposeOfTrnx(BigDecimal beneRelaId) {
+	public AmxApiResponse<AdditionalExchAmiecDto, Object> getPurposeOfTrnx(BigDecimal beneRelaId,BigDecimal routingCountryId) {
 		try {
 			LOGGER.debug("in getRoutingSetupDeatils :"+beneRelaId );
 			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_PURPOSE_OF_TRNX).meta(new JaxMetaInfo())
 					.queryParam(Params.BENE_RELATION_SHIP_ID, beneRelaId).meta(new JaxMetaInfo())
+					.queryParam(Params.ROUTING_COUNTRY_ID, routingCountryId)
 					.get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<AdditionalExchAmiecDto, Object>>() {
 					});
@@ -392,6 +396,39 @@ public class RemittanceClient  implements IRemittanceService{
 			LOGGER.error("exception in deleteFromShoppingCart : ", e);
 			return JaxSystemError.evaluate(e);
 		} // end of try-cat
+	}
+
+
+
+//getDynamicRoutingPricing
+
+	@Override
+	public AmxApiResponse<DynamicRoutingPricingResponse, Object> getDynamicRoutingPricing(RoutingPricingRequest routingPricingRequest) {
+		try {
+			LOGGER.debug("in fetchCustomerDeclarationReport :"+routingPricingRequest);
+			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_GET_ROUTING_PRICING_RATE).meta(new JaxMetaInfo())
+					.post(routingPricingRequest)
+					.as(new ParameterizedTypeReference<AmxApiResponse<DynamicRoutingPricingResponse, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in deleteFromShoppingCart : ", e);
+			return JaxSystemError.evaluate(e);
+		} // end of try-cat
+	}
+
+
+	@Override
+	public AmxApiResponse<FlexFieldReponseDto, Object> getFlexField(BranchRemittanceGetExchangeRateRequest request) {
+			try {
+				LOGGER.debug("in getExchaneRate :" + request);
+				return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_GET_FLEX_FIELDS)
+						.meta(new JaxMetaInfo()).post(request)
+						.as(new ParameterizedTypeReference<AmxApiResponse<FlexFieldReponseDto, Object>>() {
+						});
+			} catch (Exception e) {
+				LOGGER.error("exception in getExchaneRate : ", e);
+				return JaxSystemError.evaluate(e);
+			}
 	}
 
 

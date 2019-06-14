@@ -35,11 +35,16 @@ import com.amx.amxlib.model.response.PurposeOfTransactionModel;
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.jax.JaxAuthContext;
+import com.amx.jax.client.remittance.RemittanceClient;
 import com.amx.jax.dict.Language;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.model.request.remittance.BranchRemittanceGetExchangeRateRequest;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
+import com.amx.jax.model.request.remittance.RoutingPricingRequest;
 import com.amx.jax.model.response.CurrencyMasterDTO;
+import com.amx.jax.model.response.remittance.FlexFieldReponseDto;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
+import com.amx.jax.model.response.remittance.branch.DynamicRoutingPricingResponse;
 import com.amx.jax.payg.PayGParams;
 import com.amx.jax.payg.PayGService;
 import com.amx.jax.postman.PostManException;
@@ -79,6 +84,9 @@ public class RemittController {
 	/** The jax service. */
 	@Autowired
 	private JaxService jaxService;
+
+	@Autowired
+	RemittanceClient remittanceClient;
 
 	/** The tenant context. */
 	@Autowired
@@ -293,6 +301,18 @@ public class RemittController {
 			}
 		}
 		return wrapper;
+	}
+
+	@RequestMapping(value = "/api/remitt/xrate/v2", method = { RequestMethod.POST })
+	public ResponseWrapper<DynamicRoutingPricingResponse> xrate(
+			@RequestBody RoutingPricingRequest routingPricingRequest) {
+		return ResponseWrapper.build(remittanceClient.getDynamicRoutingPricing(routingPricingRequest));
+	}
+
+	@RequestMapping(value = "/api/remitt/flex/v2", method = { RequestMethod.POST })
+	public ResponseWrapper<List<FlexFieldReponseDto>> flex(
+			@RequestBody BranchRemittanceGetExchangeRateRequest routingPricingRequest) {
+		return ResponseWrapper.buildList(remittanceClient.getFlexField(routingPricingRequest));
 	}
 
 	/**

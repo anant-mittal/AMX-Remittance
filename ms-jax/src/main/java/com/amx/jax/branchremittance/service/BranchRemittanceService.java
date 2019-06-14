@@ -176,8 +176,8 @@ public class BranchRemittanceService extends AbstractService{
 		return AmxApiResponse.build(respondeDto);
 	}
 
-	public AmxApiResponse<AdditionalExchAmiecDto, Object> getPurposeOfTrnx(BigDecimal beneRelaId){
-		List<AdditionalExchAmiecDto> dto =  branchRemitManager.getPurposeOfTrnx(beneRelaId);
+	public AmxApiResponse<AdditionalExchAmiecDto, Object> getPurposeOfTrnx(BigDecimal beneRelaId,BigDecimal routingCountryId){
+		List<AdditionalExchAmiecDto> dto =  branchRemitManager.getPurposeOfTrnx(beneRelaId,routingCountryId);
 		return AmxApiResponse.buildList(dto);
 	}
 	

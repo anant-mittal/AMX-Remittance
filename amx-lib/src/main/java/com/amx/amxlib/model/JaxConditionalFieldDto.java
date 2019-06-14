@@ -1,8 +1,10 @@
 package com.amx.amxlib.model;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import com.amx.amxlib.constant.JaxFieldEntity;
+import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 
 public class JaxConditionalFieldDto {
 
@@ -40,5 +42,4 @@ public class JaxConditionalFieldDto {
 	public String toString() {
 		return "JaxConditionalFieldDto [id=" + id + ", entityName=" + entityName + ", field=" + field + "]";
 	}
-
 }

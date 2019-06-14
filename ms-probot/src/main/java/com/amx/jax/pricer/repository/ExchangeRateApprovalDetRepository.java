@@ -87,4 +87,28 @@ public interface ExchangeRateApprovalDetRepository extends CrudRepository<Exchan
 	List<ExchangeRateAPRDET> getSellRatesForRoutingBanks(BigDecimal currencyId, BigDecimal applicationCountryId,
 			List<BigDecimal> routingBankIds, List<BigDecimal> serviceIds);
 
+	//// @formatter:off
+ 
+
+
+	
+	/**
+	 * Unique Rates Test Query 
+	 * 
+        select rate.ISACTIVE, rate.SELL_RATE_MIN, rate.SELL_RATE_MAX, rate.SERVICE_INDICATOR_ID, rate.BANK_ID 
+        from EX_EXCHANGE_RATE_MASTER_APRDET rate
+        where rate.CURRENCY_ID=4 
+        and rate.APPLICATION_COUNTRY_ID=91 
+        and rate.BANK_ID in (1406, 2227, 1509) 
+        and rate.SERVICE_INDICATOR_ID in (101, 102) 
+        and rate.ISACTIVE='Y' 
+        and rate.COUNTRY_BRANCH_ID in 
+        (select COUNTRY_BRANCH_ID from EX_COUNTRY_BRANCH cb where cb.ISACTIVE='Y') 
+        group by rate.ISACTIVE, rate.SELL_RATE_MIN, rate.SELL_RATE_MAX, rate.SERVICE_INDICATOR_ID, rate.BANK_ID 
+        order by rate.BANK_ID, rate.SERVICE_INDICATOR_ID;
+	 * 
+	 */
+	
+	// @formatter:on	
+
 }

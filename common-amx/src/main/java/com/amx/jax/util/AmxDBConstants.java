@@ -68,6 +68,7 @@ public class AmxDBConstants {
 	public static final BigDecimal SERVICE_MASTER_ID_EFT = new BigDecimal(101);
 	public static final BigDecimal SERVICE_MASTER_ID_TT = new BigDecimal(102);
 	public static final BigDecimal SERVICE_MASTER_ID_DD = new BigDecimal(104);
+	public static final BigDecimal SERVICE_MASTER_ID_CASH = new BigDecimal(103);
 
 
 	public static final String VOUCHER_ONLINE_PROMOTION_STR = "CHICKEN KING SAGAR VOUCHER";
@@ -152,6 +153,12 @@ public class AmxDBConstants {
 	public static final String VOUCHER = "V";
 	public static final String IMPS_CODE = "13";
 	public static final String IND_COUNTRY_CODE = "004";
+	/** E-Eng,A-Arabic **/
+	public static final String L_ENG = "E";
+	public static final String L_ARAB = "A";
+	public static final String BNFBANK = "BNFBANK";
+	public static final String BNFBRCH = "BNFBRCH";
+	public static final String BNFBANK_SWIFT = "BNFBANK_SWIFT";
 	
 	// Constant for Article detail id "Others"
 	
