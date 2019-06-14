@@ -807,6 +807,7 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 			return JaxSystemError.evaluate(ae);
 		}
 	}
+
 	@Override
 	public AmxApiResponse<AnnualIncomeRangeDTO, Object> getAnnualTransactionLimitRange() {
 		try {
@@ -821,6 +822,7 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 			return JaxSystemError.evaluate(ae);
 		}
 	}
+
 	public AmxApiResponse<BoolRespModel, Object> saveAnnualTransactionLimit(IncomeDto incomeDto) {
 		try {
 			String url = this.getBaseUrl() + CustomerApi.PREFIX + Path.SAVE_ANNUAL_TRANSACTION_LIMIT;
@@ -833,6 +835,18 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 		} // end of try-catch
 
 	}
-	
-	
+
+	public AmxApiResponse<IncomeDto, Object> getAnnualTransactionLimit() {
+		try {
+			return restService.ajax(appConfig.getJaxURL())
+					.path(CustomerApi.PREFIX + CustomerApi.GET_ANNUAL_INCOME_DETAILS)
+					.meta(new JaxMetaInfo()).post()
+					.as(new ParameterizedTypeReference<AmxApiResponse<IncomeDto, Object>>() {
+					});
+		} catch (Exception ae) {
+			LOGGER.error("exception in Annual Income details : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}
+	}
+
 }

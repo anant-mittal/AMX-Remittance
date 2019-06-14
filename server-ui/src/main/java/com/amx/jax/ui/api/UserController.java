@@ -539,6 +539,22 @@ public class UserController {
 		return ResponseWrapper.build(jaxService.setDefaults().getUserclient().getAnnualIncomeDetais());
 	}
 
+	@RequestMapping(value = "/api/user/trnx_limit", method = { RequestMethod.POST })
+	public ResponseWrapper<BoolRespModel> saveAnnualTransactionLimit(
+			@RequestBody IncomeDto incomeDto) {
+		try {
+			return ResponseWrapper
+					.build(jaxService.setDefaults().getUserclient().saveAnnualTransactionLimit(incomeDto));
+		} finally {
+			userService.updateCustoemrModel();
+		}
+	}
+
+	@RequestMapping(value = "/api/user/trnx_limit", method = { RequestMethod.GET })
+	public ResponseWrapper<IncomeDto> getAnnualTransactionLimit() {
+		return ResponseWrapper.build(jaxService.setDefaults().getUserclient().getAnnualTransactionLimit());
+	}
+
 	@RequestMapping(value = "/api/user/device/link", method = { RequestMethod.POST })
 	public ResponseWrapper<UserFingerprintResponseModel> linkDevice() {
 		return ResponseWrapper.build(jaxService.getUserclient().linkDeviceIdLoggedinUser());

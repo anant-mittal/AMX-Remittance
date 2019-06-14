@@ -344,6 +344,11 @@ public class MetaController {
 		return ResponseWrapper.buildList(jaxService.setDefaults().getUserclient().getIncome());
 	}
 
+	@RequestMapping(value = "/pub/meta/trnx_limit/list", method = { RequestMethod.GET })
+	public ResponseWrapper<List<AnnualIncomeRangeDTO>> getAnnualTransactionLimitRange() {
+		return ResponseWrapper.buildList(jaxService.setDefaults().getUserclient().getAnnualTransactionLimitRange());
+	}
+
 	/**
 	 * Contact Us Timings.
 	 *
