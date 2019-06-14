@@ -96,6 +96,7 @@ public class PayGService {
 		payGParams.setDocId(docId);
 		payGParams.setDocNo(docNo);
 		payGParams.setDocFy(docFy);
+		payGParams.setTrackId(trckid);
 		return getEnCryptedDetails(payGParams);
 	}
 
@@ -117,6 +118,7 @@ public class PayGService {
 		payGParams.setDocId(docId);
 		payGParams.setDocNo(docNo);
 		payGParams.setDocFy(docFy);
+		payGParams.setTrackId(trckid);
 		try {
 			payGParams.setVerification(CryptoUtil.getMD5Hash((JsonUtil.toJson(payGParams))));
 		} catch (NoSuchAlgorithmException e) {
