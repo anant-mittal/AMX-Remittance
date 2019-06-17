@@ -9,6 +9,7 @@ import static com.amx.jax.error.JaxError.TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED;
 import static com.amx.jax.error.JaxError.TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED_NEW_BENE;
 import static com.amx.jax.error.JaxError.TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED_PER_BENE;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
@@ -55,6 +56,7 @@ import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
 import com.amx.jax.dbmodel.AuthenticationView;
 import com.amx.jax.dbmodel.BankCharges;
+import com.amx.jax.dbmodel.BankMasterModel;
 import com.amx.jax.dbmodel.BankServiceRule;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.BizComponentData;
@@ -64,9 +66,11 @@ import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ExchangeRateApprovalDetModel;
 import com.amx.jax.dbmodel.TransactionLimitCheckView;
 import com.amx.jax.dbmodel.remittance.AdditionalInstructionData;
+import com.amx.jax.dbmodel.remittance.OWSScheduleModel;
 import com.amx.jax.dbmodel.remittance.RemittanceAppBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
+import com.amx.jax.dbmodel.remittance.ServiceProviderCredentialsModel;
 import com.amx.jax.dbmodel.remittance.ViewTransfer;
 import com.amx.jax.dbmodel.remittance.ViewVatDetails;
 import com.amx.jax.dict.ContactType;
@@ -87,6 +91,7 @@ import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.remittance.AbstractRemittanceApplicationRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.response.ExchangeRateBreakup;
+import com.amx.jax.model.response.remittance.BsbApiResponse;
 import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;
 import com.amx.jax.model.response.remittance.LoyalityPointState;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
@@ -97,10 +102,14 @@ import com.amx.jax.repository.AuthenticationViewRepository;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.VTransferRepository;
+import com.amx.jax.repository.remittance.IOWSScheduleModelRepository;
+import com.amx.jax.repository.remittance.IServiceProviderCredentailsRepository;
 import com.amx.jax.repository.remittance.IViewVatDetailsRespository;
+import com.amx.jax.rest.RestService;
 import com.amx.jax.service.CountryService;
 import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.service.ParameterService;
+import com.amx.jax.services.BankService;
 import com.amx.jax.services.BeneficiaryCheckService;
 import com.amx.jax.services.JaxConfigService;
 import com.amx.jax.services.LoyalityPointService;
@@ -113,10 +122,15 @@ import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.RoundUtil;
 import com.amx.jax.validation.RemittanceTransactionRequestValidator;
+import com.amx.utils.JsonUtil;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class RemittanceTransactionManager {
+	
+	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Autowired
 	IBeneficiaryOnlineDao beneficiaryOnlineDao;
@@ -232,8 +246,18 @@ public class RemittanceTransactionManager {
 	
 	@Autowired
 	ICurrencyDao currencyDao;
+	
+	@Autowired
+	IOWSScheduleModelRepository iOWSScheduleModelRepository ;
+	
+	@Autowired
+	IServiceProviderCredentailsRepository serviceProviderCredentailsRepository;
+	
+	@Autowired
+	private RestService restService;
+	@Autowired
+	BankService bankService;
 
-	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	private static final String IOS = "IOS";
 	private static final String ANDROID = "ANDROID";
@@ -279,8 +303,11 @@ public class RemittanceTransactionManager {
 		BigDecimal deliveryMode = new BigDecimal(remitApplParametersMap.get("P_DELIVERY_MODE_ID").toString());
 		BigDecimal currencyId = beneficiary.getCurrencyId();
 		BigDecimal applicationCountryId = meta.getCountryId();
-		
 		logger.info("currencyId :" + currencyId + "\t rountingCountryId :" + rountingCountryId + "\t routingBankId :"+ routingBankId + "\t serviceMasterId :" + serviceMasterId);
+		
+		 /** to vlidate BSB  account though api by rabil**/
+			beneAccountValidationThroughApi(serviceMasterId,routingBankId,beneficiary);
+		/** end here**/
 		
 		validateNumberOfTransactionLimits();
 		validateBeneficiaryTransactionLimit(beneficiary);
@@ -296,6 +323,9 @@ public class RemittanceTransactionManager {
 
 		applyCurrencyRoudingLogic(breakup);
 		validateTransactionAmount(breakup, commission, currencyId);
+		
+		
+		
 		// commission
 		responseModel.setTxnFee(commission);
 		// exrate
@@ -752,9 +782,9 @@ public class RemittanceTransactionManager {
 	public void setNetAmountAndLoyalityState(ExchangeRateBreakup exchangeRateBreakup,
 			AbstractRemittanceApplicationRequestModel model, RemittanceTransactionResponsetModel responseModel,
 			BigDecimal comission) {
-		BigDecimal netAmount = exchangeRateBreakup.getConvertedLCAmount().add(comission);
+		BigDecimal netAmount = exchangeRateBreakup.getConvertedLCAmount().add(comission==null?BigDecimal.ZERO:comission);
 		exchangeRateBreakup.setNetAmountWithoutLoyality(netAmount);
-		responseModel.setLoyalityAmountAvailableForTxn(loyalityPointService.getloyaltyAmountEncashed(comission));
+		responseModel.setLoyalityAmountAvailableForTxn(loyalityPointService.getloyaltyAmountEncashed(comission==null?BigDecimal.ZERO:comission));
 		if (!JaxUtil.isNullZeroBigDecimalCheck(comission)) {
 			responseModel.setCanRedeemLoyalityPoints(false);
 			responseModel.setLoyalityPointState(LoyalityPointState.CAN_NOT_AVAIL);
@@ -1075,4 +1105,97 @@ public class RemittanceTransactionManager {
 		}
 		return otpMmodel;
 	}
+	
+	/** added by Rabil on 27 May 2019 **/
+	public void beneAccountValidationThroughApi(BigDecimal serviceId,BigDecimal routingBankId ,BenificiaryListView beneficiary) {
+		 String accountNo = null;
+		if(JaxUtil.isNullZeroBigDecimalCheck(serviceId) && serviceId.compareTo(ConstantDocument.SERVICE_MASTER_ID_EFT)==0) {
+			BankMasterModel bankMaster = bankService.getBankById(beneficiary.getBankId());
+			OWSScheduleModel oWSScheduleModel = iOWSScheduleModelRepository.findByCorBank(bankMaster.getBankCode());
+			if(oWSScheduleModel!=null && oWSScheduleModel.getBeneAccountCheckInd()!=null && oWSScheduleModel.getBeneAccountCheckInd().equalsIgnoreCase("1")) {
+				Boolean ibankCheck = checkIbanNumber(bankMaster);
+				if(ibankCheck) {
+					accountNo = beneficiary.getIbanNumber();
+				}else {
+					accountNo = beneficiary.getBankAccountNumber();
+				}
+				if(!StringUtils.isBlank(accountNo)) {
+					accountValidationApi(bankMaster.getBankCode(),accountNo);
+				}
+			}
+		}else if(JaxUtil.isNullZeroBigDecimalCheck(serviceId) && serviceId.compareTo(ConstantDocument.SERVICE_MASTER_ID_TT)==0) { /** for TT Check **/
+			BankMasterModel bankMaster = bankService.getBankById(routingBankId);
+			OWSScheduleModel oWSScheduleModel = iOWSScheduleModelRepository.findByCorBank(bankMaster.getBankCode());
+			if(oWSScheduleModel!=null && !StringUtils.isBlank(oWSScheduleModel.getBeneAccountCheckInd()) && oWSScheduleModel.getBeneAccountCheckInd().equalsIgnoreCase("1") && !StringUtils.isBlank(oWSScheduleModel.getTtbeneAccountCheckInd()) && oWSScheduleModel.getTtbeneAccountCheckInd().equals("1")) {
+				Boolean ibankCheck = checkIbanNumber(bankMaster);
+				if(ibankCheck) {
+					accountNo = beneficiary.getIbanNumber();
+				}else {
+					accountNo = beneficiary.getBankAccountNumber();
+				}
+				if(!StringUtils.isBlank(accountNo)) {
+					accountValidationApi(bankMaster.getBankCode(),accountNo);
+				}
+			}
+		}
+	}
+	
+	/** added by Rabil on 28 May 2019 **/
+	private Boolean checkIbanNumber(BankMasterModel bankMaster) {
+		Boolean isIban =false;
+		if(bankMaster!=null && !StringUtils.isBlank(bankMaster.getIbanFlag()) && bankMaster.getIbanFlag().equals(ConstantDocument.Yes)) {
+			isIban =true;
+		}
+		return isIban;
+	}
+	
+	/** added by Rabil on 28 May 2019 **/
+	private void accountValidationApi(String bankCode,String beneBankaccount) {
+		try {
+	
+		String accountValidation=null;
+		String errorMessage =null;
+		ServiceProviderCredentialsModel crdeModel = serviceProviderCredentailsRepository.findByLoginCredential1(ConstantDocument.BENE_ACCT_VALID);
+		String bankUrl =null;
+		if(crdeModel!=null && !StringUtils.isBlank(crdeModel.getLoginCredential2())) {
+			bankUrl = crdeModel.getLoginCredential2();
+		}
+		if(!StringUtils.isBlank(bankUrl)) {
+			String url = bankUrl+"?bank_code="+bankCode+"&bene_bank_account="+beneBankaccount;
+			String response = restService.ajax(url).post().asString();
+			logger.info("response :"+response);
+			if(!StringUtils.isBlank(response)) {
+				BsbApiResponse bsbApi=null;
+				try {
+					bsbApi = JsonUtil.getMapper().readValue(response, BsbApiResponse.class);
+				} catch (JsonParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (JsonMappingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				if(bsbApi!=null && bsbApi.getIs_valid_account()) {
+					accountValidation ="Y";
+					//errorMessage = bsbApi.getResponseCode()+"-"+bsbApi.getResponseDesc();
+				}else {
+					accountValidation ="N";
+					errorMessage = bsbApi.getResponseCode()+"-"+bsbApi.getResponseDesc();
+				}
+			}
+			
+			if(!StringUtils.isBlank(accountValidation) && accountValidation.equalsIgnoreCase(ConstantDocument.No)) {
+				logger.error("response :"+bankCode +"-"+errorMessage);
+				throw new GlobalException(JaxError.BSB_ACCOUNT_VALIATION,"Bank account validation failed  : "+errorMessage==null?"":errorMessage);
+			}
+		}		
+	}catch(GlobalException e) {
+		e.printStackTrace();
+		throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
+	}
+	}
+	
 }

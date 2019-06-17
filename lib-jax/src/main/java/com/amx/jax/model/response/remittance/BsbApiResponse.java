@@ -1,4 +1,7 @@
 package com.amx.jax.model.response.remittance;
+/** 
+ * @author rabil
+ */
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

@@ -213,6 +213,11 @@ public class BranchRemittanceApplManager {
 		 Customer customer = custDao.getCustById(metaData.getCustomerId());
 		/** To fetch bene details **/
 		 BenificiaryListView beneficaryDetails =getBeneDetails(requestApplModel);
+		 
+		 /* to vlidate BSB  account though api **/
+		remitTrnxManager.beneAccountValidationThroughApi(requestApplModel.getServiceMasterId(),requestApplModel.getRoutingBankId(),beneficaryDetails);
+		 
+		 
 		/*checkingStaffIdNumberWithCustomer **/
 		 branchRemitManager.checkingStaffIdNumberWithCustomer();
 		 /*checking bene account exception  **/
