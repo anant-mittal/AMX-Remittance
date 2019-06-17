@@ -47,6 +47,30 @@ public class CustomerContactVerificationManager {
 		return customerContactVerificationRepository.findById(id);
 	}
 
+	public List<CustomerContactVerification> getValidCustomerContactVerificationsByCustomerId(BigDecimal customerId,
+			ContactType contactType, String contact) {
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DATE, -1);
+		java.util.Date oneDay = new java.util.Date(cal.getTimeInMillis());
+		List<CustomerContactVerification> links = customerContactVerificationRepository.getByContact(customerId,
+				contactType,
+				contact, oneDay);
+		return links;
+	}
+
+	public CustomerContactVerification getValidCustomerContactVerificationByCustomerId(BigDecimal customerId,
+			ContactType contactType, String contact) {
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DATE, -1);
+		java.util.Date oneDay = new java.util.Date(cal.getTimeInMillis());
+		List<CustomerContactVerification> links = getValidCustomerContactVerificationsByCustomerId(customerId,
+				contactType, contact);
+		if (ArgUtil.isEmpty(links) || links.size() == 0) {
+			return null;
+		}
+		return links.get(0);
+	}
+
 	public CustomerContactVerification create(Customer c, ContactType contactType) {
 
 		contactType = contactType.contactType();
@@ -74,6 +98,15 @@ public class CustomerContactVerificationManager {
 				throw new GlobalException(JaxError.MISSING_CONTACT, "WhatsApp is missing for customer");
 			}
 			link.setContactValue(c.getWhatsappPrefix() + c.getWhatsapp());
+		}
+
+		List<CustomerContactVerification> oldlinks = getValidCustomerContactVerificationsByCustomerId(c.getCustomerId(),
+				contactType,
+				link.getContactValue());
+
+		if (!ArgUtil.isEmpty(oldlinks) && oldlinks.size() > 3) {
+			throw new GlobalException(JaxError.SEND_OTP_LIMIT_EXCEEDED,
+					"Sending Verification Limit(3) has exceeded try again after 24 hrs" + contactType);
 		}
 
 		return customerContactVerificationRepository.save(link);
@@ -197,20 +230,13 @@ public class CustomerContactVerificationManager {
 
 		Customer c = customerRepository.getCustomerOneByIdentityInt(identity);
 
-		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.DATE, -1);
+		CustomerContactVerification link = getValidCustomerContactVerificationByCustomerId(c.getCustomerId(), type,
+				contact);
 
-		java.util.Date oneDay = new java.util.Date(cal.getTimeInMillis());
-
-		List<CustomerContactVerification> links = customerContactVerificationRepository.getByContact(c.getCustomerId(),
-				type,
-				contact, oneDay);
-
-		if (ArgUtil.isEmpty(links) || links.size() == 0) {
+		if (ArgUtil.isEmpty(link)) {
 			throw new GlobalException(JaxError.ENTITY_INVALID, "Verification link is Invalid : Type" + type);
 		}
 
-		CustomerContactVerification link = links.get(0);
 		verify(c, link, identity);
 		return link;
 	}
