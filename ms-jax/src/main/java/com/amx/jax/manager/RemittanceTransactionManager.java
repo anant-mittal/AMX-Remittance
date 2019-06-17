@@ -782,9 +782,9 @@ public class RemittanceTransactionManager {
 	public void setNetAmountAndLoyalityState(ExchangeRateBreakup exchangeRateBreakup,
 			AbstractRemittanceApplicationRequestModel model, RemittanceTransactionResponsetModel responseModel,
 			BigDecimal comission) {
-		BigDecimal netAmount = exchangeRateBreakup.getConvertedLCAmount().add(comission);
+		BigDecimal netAmount = exchangeRateBreakup.getConvertedLCAmount().add(comission==null?BigDecimal.ZERO:comission);
 		exchangeRateBreakup.setNetAmountWithoutLoyality(netAmount);
-		responseModel.setLoyalityAmountAvailableForTxn(loyalityPointService.getloyaltyAmountEncashed(comission));
+		responseModel.setLoyalityAmountAvailableForTxn(loyalityPointService.getloyaltyAmountEncashed(comission==null?BigDecimal.ZERO:comission));
 		if (!JaxUtil.isNullZeroBigDecimalCheck(comission)) {
 			responseModel.setCanRedeemLoyalityPoints(false);
 			responseModel.setLoyalityPointState(LoyalityPointState.CAN_NOT_AVAIL);
