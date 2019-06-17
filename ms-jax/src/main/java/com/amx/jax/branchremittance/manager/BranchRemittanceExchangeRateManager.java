@@ -318,7 +318,8 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 			result.setCustomerDiscountDetails(sellRateDetail.getCustomerDiscountDetails());
 			result.setDiscountAvailed(sellRateDetail.isDiscountAvailed());
 			result.setCostRateLimitReached(sellRateDetail.isCostRateLimitReached());
-			BigDecimal commission =trnxRoutingDetails.getChargeAmount();
+			/** Commission = chargeAmount +beneDeductChargeAmount **/
+			BigDecimal commission =trnxRoutingDetails.getChargeAmount().add(trnxRoutingDetails.getBeneDeductChargeAmount()==null?BigDecimal.ZERO:trnxRoutingDetails.getBeneDeductChargeAmount());
 			BigDecimal corpDiscount = corporateDiscountManager.corporateDiscount();
 			
 			if(JaxUtil.isNullZeroBigDecimalCheck(commission) && commission.compareTo(corpDiscount)>=0) {
@@ -430,7 +431,7 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 	}
 	
 	
-	private VatDetailsDto getVatAmount(BigDecimal commission) {
+	public VatDetailsDto getVatAmount(BigDecimal commission) {
 		VatDetailsDto vatDetails = new VatDetailsDto();
 		List<ViewVatDetails> vatList = vatDetailsRepository.getVatDetails(metaData.getCountryId(),ConstantDocument.VAT_CATEGORY,ConstantDocument.VAT_ACCOUNT_TYPE_COMM);
 		String vatAppliable = null;
