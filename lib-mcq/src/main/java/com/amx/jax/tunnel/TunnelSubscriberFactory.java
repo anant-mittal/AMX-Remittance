@@ -13,17 +13,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppContext;
 import com.amx.jax.AppContextUtil;
+import com.amx.jax.AppParam;
 import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.logger.events.RequestTrackEvent;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.TimeUtils;
 
-@Service
+@Component
 public class TunnelSubscriberFactory {
 
 	private Logger LOGGER = LoggerFactory.getLogger(TunnelSubscriberFactory.class);
@@ -34,8 +35,7 @@ public class TunnelSubscriberFactory {
 	public static final String STATUS_DONE = "D";
 	public static long TIME_TO_EXPIRE_MILLIS = TIME_TO_EXPIRE * 60 * 1000;
 
-	@Autowired
-	AppConfig appConfig;
+	private AppConfig appConfig;
 
 	public static <A extends Annotation> A getAnnotationProxyReady(Class<?> clazz, Class<A> annotationClass) {
 		final A annotation = clazz.getAnnotation(annotationClass);
@@ -48,8 +48,10 @@ public class TunnelSubscriberFactory {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public TunnelSubscriberFactory(List<ITunnelSubscriber> listeners,
-			@Autowired(required = false) RedissonClient redisson) {
-
+			@Autowired(required = false) RedissonClient redisson,
+			@Autowired(required = true) AppConfig appConfigLocal, @Autowired AppParam loadAppParams) {
+		appConfig = appConfigLocal;
+		LOGGER.info("Subscribing {} tunnel events in {}", listeners.size(), appConfigLocal.getAppEnv());
 		if (redisson == null) {
 			LOGGER.warn("Redisson Not avaiable for {} Listeners", listeners.size());
 		} else {

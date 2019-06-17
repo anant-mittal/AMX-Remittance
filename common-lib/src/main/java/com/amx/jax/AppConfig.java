@@ -7,6 +7,8 @@ import java.util.regex.Pattern;
 
 import javax.annotation.PostConstruct;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -32,6 +34,8 @@ import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties
 @PropertySource("classpath:application-lib.properties")
 @EnableEncryptableProperties
 public class AppConfig {
+
+	private Logger LOGGER = LoggerFactory.getLogger(AppConfig.class);
 
 	private static final String PROP_PREFIX = "${";
 	private static final String PROP_SUFFIX = "}";
@@ -271,6 +275,8 @@ public class AppConfig {
 
 	@Bean
 	public AppParam loadAppParams() {
+
+		LOGGER.info("Loading loadAppParams");
 
 		for (Field field : AppConfig.class.getDeclaredFields()) {
 			AppParamKey s = field.getAnnotation(AppParamKey.class);
