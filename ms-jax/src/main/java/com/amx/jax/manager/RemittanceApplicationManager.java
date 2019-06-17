@@ -228,15 +228,7 @@ public class RemittanceApplicationManager {
 		return remittanceApplication;
 	}
 	
-	/*public void setVatDetails(RemittanceApplication remittanceApplication,RemittanceTransactionResponsetModel remittanceTransactionResponsetModel) {
-		
-					remittanceApplication.setVatType(remittanceTransactionResponsetModel.getVatType());
-					remittanceApplication.setVatPercentage(remittanceTransactionResponsetModel.getVatPercentage());
-					remittanceApplication.setVatAmount(remittanceTransactionResponsetModel.getVatAmount());
-					logger.info("vatamount:" +remittanceTransactionResponsetModel.getVatAmount());
-					logger.info("vatPercentage:" +remittanceTransactionResponsetModel.getVatPercentage());
-					
-			}*/
+
 
 	public void setCustomerDiscountColumns(RemittanceApplication remittanceApplication,
 			RemittanceTransactionResponsetModel remittanceTransactionResponsetModel) {
