@@ -398,7 +398,7 @@ public class HomesendUtils
 			String service_type, String destination_currency, String beneficiary_bank_branch_swift_code,
 			String beneficiary_bank_code, String beneficiary_branch_code)
 	{
-		final String props_PATH = "com.amx.service_provider.config.Homesend_fileds_code_mapping";
+		final String props_PATH = "Homesend_fileds_code_mapping";
 		UnsignedInt VENDOR_ID;
 		ResourceBundle props = ResourceBundle.getBundle(props_PATH);
 		ArrayList<VendorSpecificField> vsf_list = new ArrayList<VendorSpecificField>();
@@ -424,7 +424,7 @@ public class HomesendUtils
 	public static ArrayList<VendorSpecificField> form_remittance_vsf_list(TransactionData txn_data,
 			Customer customer_data, Benificiary bene_data, String api_login)
 	{
-		final String props_PATH = "com.amx.service_provider.config.Homesend_fileds_code_mapping";
+		final String props_PATH = "Homesend_fileds_code_mapping";
 		UnsignedInt VENDOR_ID;
 		ResourceBundle props = ResourceBundle.getBundle(props_PATH);
 		ArrayList<VendorSpecificField> vsf_list = new ArrayList<VendorSpecificField>();

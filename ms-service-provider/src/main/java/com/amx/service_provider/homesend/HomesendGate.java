@@ -71,14 +71,26 @@ public class HomesendGate
 	// SEND_CANCEL_REQUEST_IND = new String("7");
 	// CANCEL_STATUS_INQ_IND = new String("8");
 	private String API_LOGIN = null, API_PASSWORD = null;
-	private final String PROPERTY_FILE_PATH = "com.amx.service_provider.config.Homesend_fileds_code_mapping";
+	private final String PROPERTY_FILE_PATH = "Homesend_fileds_code_mapping";
 	private final String CUSTOMER_ID_PREFIX = "ewallet:";
 
-	private final String KEY_STORE_LOCATION = "D:\\Exchange\\OWS\\Projects\\HomeSend\\Docs\\UAT\\SSL_Config\\KeyStore\\home_send_uat_keystore.jks";
+	/*private final String KEY_STORE_LOCATION = "D:\\Exchange\\OWS\\Projects\\HomeSend\\Docs\\UAT\\SSL_Config\\KeyStore\\home_send_uat_keystore.jks";
 	private final String KEY_STORE_PASSWORD = "changeit";
 
 	private final String TRUST_STORE_LOCATION = "D:\\Exchange\\OWS\\Projects\\HomeSend\\Docs\\UAT\\SSL_Config\\TrustStore\\truststore.jks";
+	private final String TRUST_STORE_PASSWORD = "changeit";*/
+	
+	private final String KEY_STORE_LOCATION = "D:\\Salman\\SSL_Config\\KeyStore\\home_send_uat_keystore.jks";
+	private final String KEY_STORE_PASSWORD = "changeit";
+
+	private final String TRUST_STORE_LOCATION = "D:\\Salman\\SSL_Config\\TrustStore\\truststore.jks";
 	private final String TRUST_STORE_PASSWORD = "changeit";
+	
+	/*private final String KEY_STORE_LOCATION = "/var/opt/homesend/home_send_uat_keystore.jks";
+	private final String KEY_STORE_PASSWORD = "changeit";
+
+	private final String TRUST_STORE_LOCATION = "/var/opt/homesend/truststore.jks";
+	private final String TRUST_STORE_PASSWORD = "changeit";*/
 
 	// private final String KEY_STORE_LOCATION =
 	// "D:\\Salman\\SSL_Config\\KeyStore\\home_send_uat_keystore.jks";
