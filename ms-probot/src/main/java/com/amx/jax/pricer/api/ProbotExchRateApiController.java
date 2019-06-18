@@ -20,8 +20,6 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.cache.ExchRateAndRoutingTransientDataCache;
-import com.amx.jax.partner.dto.SrvPrvFeeInqReqDTO;
-import com.amx.jax.partner.dto.SrvPrvFeeInqResDTO;
 import com.amx.jax.pricer.ProbotExchangeRateService;
 import com.amx.jax.pricer.dto.ExchangeRateAndRoutingRequest;
 import com.amx.jax.pricer.dto.ExchangeRateAndRoutingResponse;
@@ -110,11 +108,6 @@ public class ProbotExchRateApiController implements ProbotExchangeRateService {
 		return AmxApiResponse.build(exchangeRateAndRoutingResponse);
 
 	}
-
-	@Override
-	public AmxApiResponse<SrvPrvFeeInqResDTO, Object> serviceProviderQuotation(SrvPrvFeeInqReqDTO srvPrvFeeInqReqDTO) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	
 
 }

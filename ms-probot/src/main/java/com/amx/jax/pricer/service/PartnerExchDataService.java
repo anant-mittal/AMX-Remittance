@@ -9,10 +9,10 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.jax.partner.dto.SrvPrvFeeInqReqDTO;
 import com.amx.jax.partner.dto.SrvPrvFeeInqResDTO;
 import com.amx.jax.pricer.manager.PartnerDataManager;
+import com.amx.utils.JsonUtil;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
-@SuppressWarnings("rawtypes")
 public class PartnerExchDataService {
 
 	@Autowired
@@ -21,12 +21,14 @@ public class PartnerExchDataService {
 	public SrvPrvFeeInqResDTO getPartnerFeeinquiry(SrvPrvFeeInqReqDTO srvPrvFeeInqReqDTO) {
 		SrvPrvFeeInqResDTO serviceProviderRespDTO = new SrvPrvFeeInqResDTO();
 
+		System.out.println("Service : Partner Quote request Dto ==>  " + JsonUtil.toJson(srvPrvFeeInqReqDTO));
+
 		partnerDataManager.validateGetQuotation(srvPrvFeeInqReqDTO);
-		
-		if(srvPrvFeeInqReqDTO.getSelectedCurrency().compareTo(srvPrvFeeInqReqDTO.getLocalCurrencyId()) == 0 ) {
+
+		if (srvPrvFeeInqReqDTO.getSelectedCurrency().compareTo(srvPrvFeeInqReqDTO.getLocalCurrencyId()) == 0) {
 			// local currency flow
 			serviceProviderRespDTO = partnerDataManager.fetchQuotationForLocalCurrency(srvPrvFeeInqReqDTO);
-		}else {
+		} else {
 			// foreign currency flow
 			serviceProviderRespDTO = partnerDataManager.fetchQuotationForForeignCurrency(srvPrvFeeInqReqDTO);
 		}

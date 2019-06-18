@@ -6,6 +6,8 @@ public interface AbstractProbotInterface {
 		/** The Constant SERVICE_PREFIX. */
 		// private static final String SERVICE_PREFIX = "/probot";
 
+		//// @formatter:off
+ 
 		private static final String SERVICE_PREFIX = "";
 
 		/** The Constant API_VERSION_V1. */
@@ -45,6 +47,8 @@ public interface AbstractProbotInterface {
 		public static final String GET_CUR_BY_GROUP_ID = SERVICE_PREFIX + API_VERSION_V1 + "/get-currency-by-group-id";
 		
 		// Service Provider for transaction
-		public static final String Partner_Fee_Inquiry = SERVICE_PREFIX + API_VERSION_V1 + "/partner-fee-inquiry";
+		public static final String GET_SERVICE_PROVIDER_QUOTE = SERVICE_PREFIX + API_VERSION_V1 + "/get-service-provider-quote";
+		
+		// @formatter:on
 	}
 }

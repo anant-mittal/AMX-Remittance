@@ -5,10 +5,10 @@ import java.math.BigDecimal;
 
 import org.springframework.data.repository.CrudRepository;
 
-import com.amx.jax.pricer.dbmodel.CountryMaster;
+import com.amx.jax.pricer.dbmodel.CountryMasterModel;
 
-public interface ICountryMasterRepository extends CrudRepository<CountryMaster, Serializable> {
+public interface ICountryMasterRepository extends CrudRepository<CountryMasterModel, Serializable> {
 	
-	public CountryMaster findByCountryId(BigDecimal countryId);
+	public CountryMasterModel findByCountryId(BigDecimal countryId);
 
 }

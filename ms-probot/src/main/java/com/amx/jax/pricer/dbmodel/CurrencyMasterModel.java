@@ -28,7 +28,7 @@ public class CurrencyMasterModel implements java.io.Serializable {
 	 */
 	private static final long serialVersionUID = 3842382778044486312L;
 	private BigDecimal currencyId;
-	// private CountryMaster fsCountryMaster;
+	// private CountryMasterModel fsCountryMaster;
 	private String currencyCode;
 	private String currencyName;
 	private String quoteName;
@@ -78,10 +78,10 @@ public class CurrencyMasterModel implements java.io.Serializable {
 	/*
 	 * @ManyToOne(fetch = FetchType.LAZY)
 	 * 
-	 * @JoinColumn(name = "COUNTRY_ID") public CountryMaster getFsCountryMaster() {
+	 * @JoinColumn(name = "COUNTRY_ID") public CountryMasterModel getFsCountryMaster() {
 	 * return this.fsCountryMaster; }
 	 * 
-	 * public void setFsCountryMaster(CountryMaster fsCountryMaster) {
+	 * public void setFsCountryMaster(CountryMasterModel fsCountryMaster) {
 	 * this.fsCountryMaster = fsCountryMaster; }
 	 */
 

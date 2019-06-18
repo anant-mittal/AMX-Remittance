@@ -27,7 +27,7 @@ import com.amx.jax.dict.UserClient.Channel;
 import com.amx.jax.pricer.dao.CountryMasterDao;
 import com.amx.jax.pricer.dao.TimezoneDao;
 import com.amx.jax.pricer.dao.ViewExRoutingMatrixDao;
-import com.amx.jax.pricer.dbmodel.CountryMaster;
+import com.amx.jax.pricer.dbmodel.CountryMasterModel;
 import com.amx.jax.pricer.dbmodel.HolidayListMasterModel;
 import com.amx.jax.pricer.dbmodel.TimezoneMasterModel;
 import com.amx.jax.pricer.dbmodel.ViewExRoutingMatrix;
@@ -301,11 +301,11 @@ public class RemitRoutingManager {
 									+ exchangeRateAndRoutingRequest.toJSON());
 				}
 
-				CountryMaster countryMaster = getCountryMaster(oneMatrix.getProcessingCountryId());
+				CountryMasterModel countryMasterModel = getCountryMaster(oneMatrix.getProcessingCountryId());
 
 				// Default is Zero -- if Null
-				BigDecimal processingStartTime = null != countryMaster.getWorkTimeFrom()
-						? countryMaster.getWorkTimeFrom()
+				BigDecimal processingStartTime = null != countryMasterModel.getWorkTimeFrom()
+						? countryMasterModel.getWorkTimeFrom()
 						: BigDecimal.ZERO;
 
 				// Default is 24 -- if Null
@@ -364,11 +364,11 @@ public class RemitRoutingManager {
 									+ exchangeRateAndRoutingRequest.toJSON());
 				}
 
-				CountryMaster countryMaster = getCountryMaster(oneMatrix.getBeneCountryId());
+				CountryMasterModel countryMasterModel = getCountryMaster(oneMatrix.getBeneCountryId());
 
 				// Default is Zero -- if Null
-				BigDecimal beneProcessStartTime = null != countryMaster.getWorkTimeFrom()
-						? countryMaster.getWorkTimeFrom()
+				BigDecimal beneProcessStartTime = null != countryMasterModel.getWorkTimeFrom()
+						? countryMasterModel.getWorkTimeFrom()
 						: BigDecimal.ZERO;
 
 				// Default is 24 -- if Null
@@ -555,17 +555,17 @@ public class RemitRoutingManager {
 		return goodBusinessDeliveryDT;
 	}
 
-	private CountryMaster getCountryMaster(BigDecimal countryId) {
-		CountryMaster countryMaster = transientDataCache.getCountryById(countryId);
+	private CountryMasterModel getCountryMaster(BigDecimal countryId) {
+		CountryMasterModel countryMasterModel = transientDataCache.getCountryById(countryId);
 
-		if (null == countryMaster) {
-			countryMaster = countryMasterDao.getByCountryId(countryId);
-			if (null != countryMaster) {
-				transientDataCache.setCountry(countryMaster);
+		if (null == countryMasterModel) {
+			countryMasterModel = countryMasterDao.getByCountryId(countryId);
+			if (null != countryMasterModel) {
+				transientDataCache.setCountry(countryMasterModel);
 			}
 		}
 
-		return countryMaster;
+		return countryMasterModel;
 	}
 
 	private String getTimezoneForCountry(BigDecimal countryId) {
@@ -574,13 +574,13 @@ public class RemitRoutingManager {
 
 		if (null == tzMasterModel) {
 
-			CountryMaster countryMaster = this.getCountryMaster(countryId);
+			CountryMasterModel countryMasterModel = this.getCountryMaster(countryId);
 
-			if (null == countryMaster || null == countryMaster.getTimezoneId()) {
+			if (null == countryMasterModel || null == countryMasterModel.getTimezoneId()) {
 				return null;
 			}
 
-			tzMasterModel = tzDao.findById(countryMaster.getTimezoneId());
+			tzMasterModel = tzDao.findById(countryMasterModel.getTimezoneId());
 
 			if (null == tzMasterModel) {
 				return null;

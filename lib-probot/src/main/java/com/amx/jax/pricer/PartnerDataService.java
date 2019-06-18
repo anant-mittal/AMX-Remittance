@@ -6,6 +6,8 @@ import com.amx.jax.partner.dto.SrvPrvFeeInqResDTO;
 
 public interface PartnerDataService extends AbstractProbotInterface{
 	
-	public AmxApiResponse<SrvPrvFeeInqResDTO, Object> getPartnerFeeinquiry(SrvPrvFeeInqReqDTO srvPrvFeeInqReqDTO);
+	//public AmxApiResponse<SrvPrvFeeInqResDTO, Object> getPartnerFeeinquiry(SrvPrvFeeInqReqDTO srvPrvFeeInqReqDTO);
+	
+	public AmxApiResponse<SrvPrvFeeInqResDTO, Object> getServiceProviderQuotation(SrvPrvFeeInqReqDTO srvPrvFeeInqReqDTO);
 
 }

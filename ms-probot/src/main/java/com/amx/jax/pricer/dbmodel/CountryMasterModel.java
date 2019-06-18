@@ -57,7 +57,7 @@ import com.amg.exchange.treasury.model.TreasuryDealHeader;
 import com.amg.exchange.treasury.model.TreasuryStandardInstruction;
 */
 /*******************************************************************************************************************
- * File : CountryMaster.java
+ * File : CountryMasterModel.java
  * 
  * Project : AlmullaExchange
  * 
@@ -73,7 +73,7 @@ import com.amg.exchange.treasury.model.TreasuryStandardInstruction;
 // @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Entity
 @Table(name = "FS_COUNTRY_MASTER")
-public class CountryMaster implements Serializable {
+public class CountryMasterModel implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private BigDecimal countryId;
@@ -97,11 +97,11 @@ public class CountryMaster implements Serializable {
 	private BigDecimal workTimeFrom;
 	private BigDecimal workTimeTo;
 
-	public CountryMaster(BigDecimal countryId) {
+	public CountryMasterModel(BigDecimal countryId) {
 		this.countryId = countryId;
 	}
 
-	public CountryMaster() {
+	public CountryMasterModel() {
 
 	}
 

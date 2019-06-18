@@ -1,8 +1,6 @@
 package com.amx.jax.pricer;
 
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.partner.dto.SrvPrvFeeInqReqDTO;
-import com.amx.jax.partner.dto.SrvPrvFeeInqResDTO;
 import com.amx.jax.pricer.dto.ExchangeRateAndRoutingRequest;
 import com.amx.jax.pricer.dto.ExchangeRateAndRoutingResponse;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
@@ -25,6 +23,5 @@ public interface ProbotExchangeRateService extends AbstractProbotInterface {
 	@PricerApiStatus({ PricerServiceError.MISSING_AMOUNT, PricerServiceError.MISSING_ROUTING_BANK_IDS })
 	public AmxApiResponse<ExchangeRateAndRoutingResponse, Object> fetchRemitRoutesAndPrices(ExchangeRateAndRoutingRequest dprRequestDTO);
 	
-	public AmxApiResponse<SrvPrvFeeInqResDTO, Object> serviceProviderQuotation(SrvPrvFeeInqReqDTO srvPrvFeeInqReqDTO);
 
 }
