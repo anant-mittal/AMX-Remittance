@@ -131,7 +131,7 @@ public class CustomerDocumentManager {
 		kycScanValidator.validateUploadDocumentRequest(uploadCustomerDocumentRequest);
 		CustomerDocumentTypeMaster customerDocumentTypeMaster = customerDocMasterManager
 				.getDocTypeMaster(uploadCustomerDocumentRequest.getDocumentCategory(), uploadCustomerDocumentRequest.getDocumentType());
-		customerDocumentUploadManager.findAndDeleteExistingRecord(uploadCustomerDocumentRequest.getIdentityInt(),
+		customerDocumentUploadManager.findAndDeleteExistingUploadData(uploadCustomerDocumentRequest.getIdentityInt(),
 				uploadCustomerDocumentRequest.getIdentityTypeId(), customerDocumentTypeMaster);
 		BigDecimal blobId = databaseImageScanManager.uploadCustomerDocument(uploadCustomerDocumentRequest);
 		return new UploadCustomerDocumentResponse(blobId);

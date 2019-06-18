@@ -9,7 +9,10 @@ import javax.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.api.AmxApiResponse;
@@ -43,6 +46,7 @@ import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.userservice.service.UserValidationService;
 
 @Component
+@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class CustomerManagementManager {
 
 	@Autowired
@@ -194,6 +198,7 @@ public class CustomerManagementManager {
 
 	@Transactional
 	public AmxApiResponse<CustomerInfo, Object> createCustomer(CreateCustomerInfoRequest createCustomerInfoRequest) throws ParseException {
+		customerManagementValidation.validateDocumentsData(createCustomerInfoRequest);
 		AmxApiResponse<CustomerInfo, Object> response = offsitCustRegService.saveCustomerInfo(createCustomerInfoRequest);
 		BigDecimal customerId = response.getResult().getCustomerId();
 		setAdditionalDataForCreateCustomer(createCustomerInfoRequest, customerId);
@@ -205,6 +210,7 @@ public class CustomerManagementManager {
 		Customer customer = custDao.getCustById(customerId);
 		customer.setCustomerRegistrationType(CustomerRegistrationType.NEW_BRANCH);
 		customer.setPepsIndicator(createCustomerInfoRequest.getPepsIndicator() ? ConstantDocument.Yes : ConstantDocument.No);
+		customer.setIsOnlineUser(ConstantDocument.No);
 		custDao.saveCustomer(customer);
 
 	}
@@ -219,6 +225,7 @@ public class CustomerManagementManager {
 	}
 
 	public void updateCustomer(UpdateCustomerInfoRequest updateCustomerInfoRequest) throws ParseException {
+		customerManagementValidation.validateDocumentsData(updateCustomerInfoRequest);
 		customerUpdateManager.updateCustomer(updateCustomerInfoRequest);
 	}
 

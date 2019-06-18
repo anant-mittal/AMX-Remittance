@@ -8,7 +8,6 @@ public class UploadCustomerDocumentResponse {
 	
 	public UploadCustomerDocumentResponse() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public UploadCustomerDocumentResponse(BigDecimal uploadReference) {

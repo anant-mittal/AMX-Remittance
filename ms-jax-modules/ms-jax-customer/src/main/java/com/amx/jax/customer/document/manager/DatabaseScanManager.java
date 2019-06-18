@@ -90,7 +90,7 @@ public class DatabaseScanManager implements DocumentScanManager {
 	@Transactional
 	public BigDecimal uploadKycDocument(UploadCustomerKycRequest uploadCustomerKycRequest) {
 		CustomerDocumentTypeMaster docTypeMaster = customerDocMasterManager.getKycDocTypeMaster(uploadCustomerKycRequest.getIdentityTypeId());
-		customerDocumentUploadManager.findAndDeleteExistingRecord(uploadCustomerKycRequest.getIdentityInt(),
+		customerDocumentUploadManager.findAndDeleteExistingUploadData(uploadCustomerKycRequest.getIdentityInt(),
 				uploadCustomerKycRequest.getIdentityTypeId(), docTypeMaster);
 		CustomerDocumentUploadReferenceTemp docUploadRef = new CustomerDocumentUploadReferenceTemp();
 		docUploadRef.setScanIndic(DocumentScanIndic.DB_SCAN);
@@ -120,7 +120,7 @@ public class DatabaseScanManager implements DocumentScanManager {
 	public BigDecimal uploadCustomerDocument(UploadCustomerDocumentRequest uploadCustomerDocumentRequest) {
 
 		CustomerDocumentTypeMaster docTypeMaster = customerDocMasterManager.getKycDocTypeMaster(uploadCustomerDocumentRequest.getIdentityTypeId());
-		customerDocumentUploadManager.findAndDeleteExistingRecord(uploadCustomerDocumentRequest.getIdentityInt(),
+		customerDocumentUploadManager.findAndDeleteExistingUploadData(uploadCustomerDocumentRequest.getIdentityInt(),
 				uploadCustomerDocumentRequest.getIdentityTypeId(), docTypeMaster);
 		CustomerDocumentUploadReferenceTemp docUploadRef = new CustomerDocumentUploadReferenceTemp();
 		docUploadRef.setScanIndic(DocumentScanIndic.DB_SCAN);

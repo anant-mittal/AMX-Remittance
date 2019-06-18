@@ -55,7 +55,7 @@ public class CustomerDocumentUploadManager {
 	@Autowired
 	DbScanRefRepo dbScanRefRepo;
 
-	public void findAndDeleteExistingRecord(String identityInt, BigDecimal identityType, CustomerDocumentTypeMaster customerDocumentTypeMaster) {
+	public void findAndDeleteExistingUploadData(String identityInt, BigDecimal identityType, CustomerDocumentTypeMaster customerDocumentTypeMaster) {
 
 		CustomerDocumentUploadReferenceTemp existing = customerDocumentUploadReferenceTempRepo
 				.findByidentityIntAndIdentityTypeIdAndCustomerDocumentTypeMaster(identityInt, identityType, customerDocumentTypeMaster);
@@ -63,6 +63,14 @@ public class CustomerDocumentUploadManager {
 			log.debug("found exising uploaded record {}", log);
 			customerDocumentUploadReferenceTempRepo.delete(existing);
 		}
+	}
+
+	public CustomerDocumentUploadReferenceTemp getUploadData(String identityInt, BigDecimal identityType,
+			CustomerDocumentTypeMaster customerDocumentTypeMaster) {
+
+		CustomerDocumentUploadReferenceTemp existing = customerDocumentUploadReferenceTempRepo
+				.findByidentityIntAndIdentityTypeIdAndCustomerDocumentTypeMaster(identityInt, identityType, customerDocumentTypeMaster);
+		return existing;
 	}
 
 	public List<CustomerDocumentUploadReferenceTemp> getCustomerUploads(String identityInt, BigDecimal identityType) {
