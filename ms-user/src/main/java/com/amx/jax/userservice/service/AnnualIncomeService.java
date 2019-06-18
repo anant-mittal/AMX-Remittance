@@ -171,11 +171,7 @@ public class AnnualIncomeService {
 		logger.info("fetch customer by customer id "+customer);
 		
 
-		customer.setAnnualIncomeFrom(incomeDto.getIncomeRangeFrom());
-		logger.info("set annual income from by id "+customer);
-
-		customer.setAnnualIncomeTo(incomeDto.getIncomeRangeTo());
-		logger.info("set annual income to by id "+customer);
+		
 
 		customer.setAnnualIncomeUpdatedBy(metaData.getCustomerId().toString());
 		logger.info("set annual income updated by "+customer);
@@ -197,13 +193,13 @@ public class AnnualIncomeService {
 
 		customer.setFsArticleDetails(articleDao.getArticleDetailsByArticleDetailId(incomeDto.getArticleDetailId()));
 		logger.info("set designation id : ");
-		logger.info("Annual income from is "+incomeDto.getIncomeRangeFrom().longValue());
+		
 		logger.info("Constant is "+Constants.ANNUALINCOME_VERIFIED_LIMIT);
-		if(incomeDto.getIncomeRangeFrom().longValue()>=Constants.ANNUALINCOME_VERIFIED_LIMIT) {
+		if(customer.getAnnualIncomeFrom().longValue()>=Constants.ANNUALINCOME_VERIFIED_LIMIT) {
 			
 			customer.setIsBusinessCardVerified("N");
 		}
-		if(customer.getAnnualIncomeUpdatedDate()!=null && "N".equals(customer.getIsBusinessCardVerified()) && incomeDto.getIncomeRangeFrom().longValue()<Constants.ANNUALINCOME_VERIFIED_LIMIT) {
+		if(customer.getAnnualIncomeUpdatedDate()!=null && "N".equals(customer.getIsBusinessCardVerified()) && customer.getAnnualIncomeFrom().longValue()<Constants.ANNUALINCOME_VERIFIED_LIMIT) {
 			customer.setIsBusinessCardVerified(null);
 		}
 		
