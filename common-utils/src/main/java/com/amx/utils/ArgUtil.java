@@ -287,7 +287,7 @@ public final class ArgUtil {
 		} else if (value instanceof Number) {
 			return Boolean.valueOf(((Number) value).intValue() != 0);
 		} else if (value instanceof String) {
-			return Boolean.valueOf(((String) value).equalsIgnoreCase("true"));
+			return Boolean.valueOf(((String) value).trim().equalsIgnoreCase("true"));
 		}
 		return null;
 	}

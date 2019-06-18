@@ -25,6 +25,7 @@ import com.amx.jax.filter.AppClientErrorHanlder;
 import com.amx.jax.filter.AppClientInterceptor;
 import com.amx.jax.scope.TenantProperties;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.Constants;
 import com.amx.utils.JsonUtil.JsonUtilConfigurable;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -298,7 +299,7 @@ public class AppConfig {
 				}
 
 				if ("java.lang.String".equals(typeName)) {
-					s.value().setValue(ArgUtil.parseAsString(value));
+					s.value().setValue(ArgUtil.parseAsString(value, Constants.BLANK).trim());
 				} else if ("boolean".equals(typeName) || "java.lang.Boolean".equals(typeName)) {
 					s.value().setEnabled(ArgUtil.parseAsBoolean(value));
 				}
