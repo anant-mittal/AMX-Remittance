@@ -139,14 +139,14 @@ public class RemittanceApplication implements Serializable {
 	private String vatType;
 	private BigDecimal vatPercentage;
 	private BigDecimal vatAmount;
-	
-	
-	
+	/** added by rabil **/
+	private String beneDeductFlag;
 	
 
 
 
 	
+
 
 	private List<RemittanceAppBenificiary> exRemittanceAppBenificiary = new ArrayList<RemittanceAppBenificiary>(0);
 	
@@ -965,5 +965,12 @@ public class RemittanceApplication implements Serializable {
 	}
 
 	
+	@Column(name="BENE_DEDUCT_FLAG")
+	public String getBeneDeductFlag() {
+		return beneDeductFlag;
+	}
 
+	public void setBeneDeductFlag(String beneDeductFlag) {
+		this.beneDeductFlag = beneDeductFlag;
+	}
 }
