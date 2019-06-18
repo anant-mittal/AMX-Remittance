@@ -27,6 +27,7 @@ import com.amx.jax.dbmodel.customer.CustomerDocumentTypeMaster;
 import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReferenceTemp;
 import com.amx.jax.model.customer.CustomerDocumentInfo;
 import com.amx.jax.model.customer.DocumentImageRenderType;
+import com.amx.jax.model.customer.document.UploadCustomerDocumentRequest;
 import com.amx.jax.model.customer.document.UploadCustomerKycRequest;
 import com.amx.jax.repository.DOCBLOBRepository;
 import com.amx.jax.userservice.manager.CustomerIdProofManager;
@@ -114,5 +115,27 @@ public class DatabaseScanManager implements DocumentScanManager {
 
 	public void copyBlobDataIntoJava(BigDecimal blobId, BigDecimal docFinYear) {
 		customerDocumentDao.copyBlobDataIntoJava(blobId, docFinYear);
+	}
+
+	public BigDecimal uploadCustomerDocument(UploadCustomerDocumentRequest uploadCustomerDocumentRequest) {
+
+		CustomerDocumentTypeMaster docTypeMaster = customerDocMasterManager.getKycDocTypeMaster(uploadCustomerDocumentRequest.getIdentityTypeId());
+		customerDocumentUploadManager.findAndDeleteExistingRecord(uploadCustomerDocumentRequest.getIdentityInt(),
+				uploadCustomerDocumentRequest.getIdentityTypeId(), docTypeMaster);
+		CustomerDocumentUploadReferenceTemp docUploadRef = new CustomerDocumentUploadReferenceTemp();
+		docUploadRef.setScanIndic(DocumentScanIndic.DB_SCAN);
+		docUploadRef.setCustomerDocumentTypeMaster(docTypeMaster);
+		byte[] documentByteArray = Base64.decodeBase64(uploadCustomerDocumentRequest.getDocument());
+		try {
+			docUploadRef.setDbScanDocumentBlob(new SerialBlob(documentByteArray));
+			docUploadRef.setIdentityInt(uploadCustomerDocumentRequest.getIdentityInt());
+			docUploadRef.setIdentityTypeId(uploadCustomerDocumentRequest.getIdentityTypeId());
+			docUploadRef.setUploadData(JsonUtil.toJson(uploadCustomerDocumentRequest.getData()));
+		} catch (SQLException e) {
+			log.error("error in uploadCustomerDocument ", e);
+		}
+		customerDocumentUploadManager.save(docUploadRef);
+		return docUploadRef.getId();
+
 	}
 }

@@ -69,7 +69,8 @@ public class CustomerManagementController implements ICustomerManagementControll
 
 	@RequestMapping(path = UPDATE_CUSTOMER, method = { RequestMethod.POST })
 	@Override
-	public AmxApiResponse<BoolRespModel, Object> updateCustomer(@RequestBody @Valid UpdateCustomerInfoRequest updateCustomerInfoRequest) {
+	public AmxApiResponse<BoolRespModel, Object> updateCustomer(@RequestBody @Valid UpdateCustomerInfoRequest updateCustomerInfoRequest)
+			throws ParseException {
 		log.debug("request updateCustomer {}", updateCustomerInfoRequest);
 		customerManagementManager.updateCustomer(updateCustomerInfoRequest);
 		customerManagementManager.moveCustomerDataUsingProcedures();

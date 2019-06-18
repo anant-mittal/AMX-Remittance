@@ -5,6 +5,16 @@ import java.math.BigDecimal;
 public class UploadCustomerDocumentResponse {
 
 	BigDecimal uploadReference;
+	
+	public UploadCustomerDocumentResponse() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public UploadCustomerDocumentResponse(BigDecimal uploadReference) {
+		super();
+		this.uploadReference = uploadReference;
+	}
 
 	public BigDecimal getUploadReference() {
 		return uploadReference;

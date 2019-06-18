@@ -218,7 +218,7 @@ public class CustomerManagementManager {
 		moveCustomerDataUsingProcedures(metaData.getCustomerId());
 	}
 
-	public void updateCustomer(UpdateCustomerInfoRequest updateCustomerInfoRequest) {
+	public void updateCustomer(UpdateCustomerInfoRequest updateCustomerInfoRequest) throws ParseException {
 		customerUpdateManager.updateCustomer(updateCustomerInfoRequest);
 	}
 

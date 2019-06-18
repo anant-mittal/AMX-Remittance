@@ -13,15 +13,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.jax.constant.ConstantDocument;
-import com.amx.jax.customer.document.validate.KycScanValidator;
+import com.amx.jax.customer.document.validate.DocumentScanValidator;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.dbmodel.DmsApplMapping;
 import com.amx.jax.dbmodel.IdentityTypeMaster;
+import com.amx.jax.dbmodel.customer.CustomerDocumentTypeMaster;
 import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReferenceTemp;
 import com.amx.jax.model.customer.CustomerDocumentInfo;
-import com.amx.jax.model.customer.document.CustomerDocumentCategoryDto;
-import com.amx.jax.model.customer.document.CustomerDocumentTypeDto;
 import com.amx.jax.model.customer.document.UploadCustomerDocumentRequest;
 import com.amx.jax.model.customer.document.UploadCustomerDocumentResponse;
 import com.amx.jax.model.customer.document.UploadCustomerKycRequest;
@@ -39,14 +38,15 @@ public class CustomerDocumentManager {
 	@Autowired
 	CustomerIdProofManager customerIdProofManager;
 	@Autowired
-	KycScanValidator kycScanValidator;
+	DocumentScanValidator kycScanValidator;
 	@Autowired
 	UserService userService;
 	@Autowired
 	CustomerDocumentUploadManager customerDocumentUploadManager;
 	@Autowired
 	CustomerKycManager customerKycManager;
-	
+	@Autowired
+	CustomerDocMasterManager customerDocMasterManager;
 
 	public List<CustomerDocumentInfo> getCustomerUploadDocuments(BigDecimal customerId) {
 
@@ -109,6 +109,7 @@ public class CustomerDocumentManager {
 				break;
 
 			default:
+				customerDocumentUploadManager.uploadDocument(customer, upload);
 				break;
 			}
 		}
@@ -127,8 +128,13 @@ public class CustomerDocumentManager {
 	}
 
 	public UploadCustomerDocumentResponse uploadDocument(UploadCustomerDocumentRequest uploadCustomerDocumentRequest) {
-		// TODO Auto-generated method stub
-		return null;
+		kycScanValidator.validateUploadDocumentRequest(uploadCustomerDocumentRequest);
+		CustomerDocumentTypeMaster customerDocumentTypeMaster = customerDocMasterManager
+				.getDocTypeMaster(uploadCustomerDocumentRequest.getDocumentCategory(), uploadCustomerDocumentRequest.getDocumentType());
+		customerDocumentUploadManager.findAndDeleteExistingRecord(uploadCustomerDocumentRequest.getIdentityInt(),
+				uploadCustomerDocumentRequest.getIdentityTypeId(), customerDocumentTypeMaster);
+		BigDecimal blobId = databaseImageScanManager.uploadCustomerDocument(uploadCustomerDocumentRequest);
+		return new UploadCustomerDocumentResponse(blobId);
 	}
 
 }

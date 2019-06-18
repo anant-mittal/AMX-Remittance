@@ -39,8 +39,8 @@ public class CustomerDocumentUploadReference {
 	@JoinColumn(name = "DOC_TYPE_MASTER_ID", referencedColumnName = "ID")
 	CustomerDocumentTypeMaster customerDocumentTypeMaster;
 
-	@Column(name = "ISACTIVE")
-	String isActive;
+	@Column(name = "STATUS")
+	String status;
 
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "ID", referencedColumnName = "CUST_DOC_UPLOAD_REF_ID")
@@ -78,12 +78,21 @@ public class CustomerDocumentUploadReference {
 		this.customerDocumentTypeMaster = customerDocumentTypeMaster;
 	}
 
-	public String getIsActive() {
-		return isActive;
+	public String getStatus() {
+		return status;
 	}
 
-	public void setIsActive(String isActive) {
-		this.isActive = isActive;
+	public void setStatus(String status) {
+		this.status = status;
 	}
+
+	public DbScanRef getDbScanRef() {
+		return dbScanRef;
+	}
+
+	public void setDbScanRef(DbScanRef dbScanRef) {
+		this.dbScanRef = dbScanRef;
+	}
+
 
 }

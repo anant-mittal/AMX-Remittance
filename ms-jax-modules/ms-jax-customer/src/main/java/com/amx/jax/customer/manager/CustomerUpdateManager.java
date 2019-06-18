@@ -1,6 +1,7 @@
 package com.amx.jax.customer.manager;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
 
 import javax.transaction.Transactional;
 
@@ -9,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.customer.document.manager.CustomerDocumentManager;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.customer.UpdateCustomerInfoRequest;
@@ -28,11 +30,13 @@ public class CustomerUpdateManager {
 	MetaData metaData;
 	@Autowired
 	UserService userService;
+	@Autowired
+	CustomerDocumentManager customerDocumentManager;
 
 	private static final Logger log = LoggerFactory.getLogger(CustomerUpdateManager.class);
 
 	@Transactional
-	public void updateCustomer(UpdateCustomerInfoRequest req) {
+	public void updateCustomer(UpdateCustomerInfoRequest req) throws ParseException {
 		log.info("updating customer info req: {}", JsonUtil.toJson(req));
 		BigDecimal customerId = metaData.getCustomerId();
 		Customer customer = userService.getCustById(customerId);
@@ -48,6 +52,7 @@ public class CustomerUpdateManager {
 		if (req.getPersonalDetailInfo() != null) {
 			customerPersonalDetailManager.updateCustomerPersonalDetail(customer, req.getPersonalDetailInfo());
 		}
+		customerDocumentManager.addCustomerDocument(metaData.getCustomerId());
 	}
 
 }

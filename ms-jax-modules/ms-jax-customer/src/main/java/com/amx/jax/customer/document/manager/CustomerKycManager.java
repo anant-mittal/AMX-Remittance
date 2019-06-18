@@ -108,7 +108,7 @@ public class CustomerKycManager {
 		return mappingData;
 	}
 
-	BigDecimal getDealYearbyDate() throws ParseException {
+	public BigDecimal getDealYearbyDate() throws ParseException {
 		DateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
 		Date today = Calendar.getInstance().getTime();
 		String date = formatter.format(today);

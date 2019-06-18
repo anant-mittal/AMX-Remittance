@@ -190,8 +190,15 @@ public class CustomerManagementClient implements ICustomerManagementController {
 
 	@Override
 	public AmxApiResponse<JaxFieldDto, Object> getDocumentFields(String documentCategory, String documentType) {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			return restService.ajax(appConfig.getJaxURL()).path(ApiPath.DOCUMENT_FIELD_GET).meta(new JaxMetaInfo())
+					.queryParam(ApiParams.DOCUMENT_CATEGORY, documentCategory).queryParam(ApiParams.DOCUMENT_TYPE, documentType).post()
+					.as(new ParameterizedTypeReference<AmxApiResponse<JaxFieldDto, Object>>() {
+					});
+		} catch (Exception ae) {
+			LOGGER.error("exception in getDocumentFields : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}
 	}
 
 }

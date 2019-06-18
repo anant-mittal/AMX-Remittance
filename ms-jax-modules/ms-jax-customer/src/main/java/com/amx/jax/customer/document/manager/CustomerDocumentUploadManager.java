@@ -1,6 +1,8 @@
 package com.amx.jax.customer.document.manager;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -12,9 +14,21 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.constants.DocumentScanIndic;
+import com.amx.jax.dal.ImageCheckDao;
+import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.customer.CustomerDocumentTypeMaster;
+import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReference;
 import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReferenceTemp;
+import com.amx.jax.dbmodel.customer.DbScanRef;
+import com.amx.jax.dbmodel.customer.DmsDocumentBlobTemparory;
+import com.amx.jax.meta.MetaData;
+import com.amx.jax.repository.customer.CustomerDocumentUploadReferenceRepo;
 import com.amx.jax.repository.customer.CustomerDocumentUploadReferenceTempRepo;
+import com.amx.jax.repository.customer.DbScanRefRepo;
+import com.amx.jax.repository.customer.DmsDocumentBlobTemparoryRepository;
+import com.amx.jax.services.JaxDBService;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -24,6 +38,22 @@ public class CustomerDocumentUploadManager {
 
 	@Autowired
 	CustomerDocumentUploadReferenceTempRepo customerDocumentUploadReferenceTempRepo;
+	@Autowired
+	CustomerDocumentUploadReferenceRepo customerDocumentUploadReferenceRepo;
+	@Autowired
+	JaxDBService jaxDBService;
+	@Autowired
+	DmsDocumentBlobTemparoryRepository dmsDocumentBlobTemparoryRepository;
+	@Autowired
+	ImageCheckDao imageCheckDao;
+	@Autowired
+	CustomerKycManager customerKycManager;
+	@Autowired
+	MetaData metaData;
+	@Autowired
+	CustomerDocMasterManager customerDocMasterManager;
+	@Autowired
+	DbScanRefRepo dbScanRefRepo;
 
 	public void findAndDeleteExistingRecord(String identityInt, BigDecimal identityType, CustomerDocumentTypeMaster customerDocumentTypeMaster) {
 
@@ -51,6 +81,48 @@ public class CustomerDocumentUploadManager {
 
 	public void save(CustomerDocumentUploadReferenceTemp docUploadRef) {
 		customerDocumentUploadReferenceTempRepo.save(docUploadRef);
+	}
+
+	public void uploadDocument(Customer customer, CustomerDocumentUploadReferenceTemp upload) throws ParseException {
+		switch (upload.getScanIndic()) {
+		case DB_SCAN:
+			uploadDbDocument(customer, upload);
+		default:
+			break;
+		}
+
+	}
+
+	private void uploadDbDocument(Customer customer, CustomerDocumentUploadReferenceTemp upload) throws ParseException {
+		DmsDocumentBlobTemparory dmsDocumentBlobTemparory = new DmsDocumentBlobTemparory();
+		dmsDocumentBlobTemparory.setCreatedBy(jaxDBService.getCreatedOrUpdatedBy());
+		dmsDocumentBlobTemparory.setCreatedDate(new Date());
+		BigDecimal docFinYear = customerKycManager.getDealYearbyDate();
+		BigDecimal docBlobId = imageCheckDao.callTogenerateBlobID(docFinYear);
+		log.info("blob id generated in uploadDbDocument {}", docBlobId);
+		dmsDocumentBlobTemparory.setDocBlobId(docBlobId);
+		dmsDocumentBlobTemparory.setDocFinYear(docFinYear);
+		dmsDocumentBlobTemparory.setDocumentContent(upload.getDbScanDocumentBlob());
+		dmsDocumentBlobTemparory.setCountryCode(metaData.getCountryId());
+		dmsDocumentBlobTemparory.setSeqNo(BigDecimal.ONE);
+		dmsDocumentBlobTemparoryRepository.save(dmsDocumentBlobTemparory);
+		dmsDocumentBlobTemparoryRepository.copyBlobDataFromJava(docBlobId, docFinYear);
+		createDocumentUploadReference(upload, docBlobId);
+	}
+
+	private void createDocumentUploadReference(CustomerDocumentUploadReferenceTemp upload, BigDecimal docBlobId) {
+		CustomerDocumentUploadReference docUploadReference = new CustomerDocumentUploadReference();
+		docUploadReference.setCustomerDocumentTypeMaster(upload.getCustomerDocumentTypeMaster());
+		docUploadReference.setCustomerId(metaData.getCustomerId());
+		docUploadReference.setScanIndic(upload.getScanIndic());
+		docUploadReference.setStatus(ConstantDocument.Yes);
+		docUploadReference = customerDocumentUploadReferenceRepo.save(docUploadReference);
+		if (DocumentScanIndic.DB_SCAN.equals(upload.getScanIndic())) {
+			DbScanRef dbScanref = new DbScanRef();
+			dbScanref.setBlobId(docBlobId);
+			dbScanref.setCustomerDocUploadRefId(docUploadReference.getId());
+			dbScanRefRepo.save(dbScanref);
+		}
 	}
 
 }
