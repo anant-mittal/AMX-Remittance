@@ -168,6 +168,7 @@ public class CustomerDocumentManager {
 
 		CustomerIdProof idProof = idProofs.get(0);
 		idProof.setIdentityStatus(ConstantDocument.Compliance);
+		idProof.setScanSystem(kycUpload.get().getScanIndic().getIndicValue());
 		customerIdProofManager.saveIdProof(idProof);
 		customerIdProofManager.activateCustomerPendingCompliance(customer, customerKycData.getExpiryDate());
 	}

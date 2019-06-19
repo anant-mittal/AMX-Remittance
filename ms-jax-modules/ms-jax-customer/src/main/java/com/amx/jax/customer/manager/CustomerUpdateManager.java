@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.customer.document.manager.CustomerDocumentManager;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.meta.MetaData;
@@ -44,9 +45,11 @@ public class CustomerUpdateManager {
 			customerEmployementManager.updateCustomerEmploymentInfo(customer, req.getEmploymentDetail());
 		}
 		if (req.getHomeAddressDetail() != null) {
+			 req.getHomeAddressDetail().setContactType(ConstantDocument.CONTACT_TYPE_FOR_HOME);
 			customerAddressDetailsManager.updateCustomerAddressDetail(customer, req.getHomeAddressDetail());
 		}
 		if (req.getLocalAddressDetail() != null) {
+			req.getLocalAddressDetail().setContactType(ConstantDocument.CONTACT_TYPE_FOR_LOCAL);
 			customerAddressDetailsManager.updateCustomerAddressDetail(customer, req.getLocalAddressDetail());
 		}
 		if (req.getPersonalDetailInfo() != null) {

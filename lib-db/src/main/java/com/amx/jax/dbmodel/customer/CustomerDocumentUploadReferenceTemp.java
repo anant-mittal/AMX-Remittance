@@ -33,7 +33,7 @@ public class CustomerDocumentUploadReferenceTemp {
 	DocumentScanIndic scanIndic;
 
 	@Column(name = "DOCUMENTERA_SCAN_REF")
-	String documentEraScanInd;
+	String documentEraScanRef;
 
 	@Column(name = "DB_SCAN_DOCUMENT_BLOB")
 	Blob dbScanDocumentBlob;
@@ -65,14 +65,6 @@ public class CustomerDocumentUploadReferenceTemp {
 
 	public void setScanIndic(DocumentScanIndic scanIndic) {
 		this.scanIndic = scanIndic;
-	}
-
-	public String getDocumentEraScanInd() {
-		return documentEraScanInd;
-	}
-
-	public void setDocumentEraScanInd(String documentEraScanInd) {
-		this.documentEraScanInd = documentEraScanInd;
 	}
 
 	public Blob getDbScanDocumentBlob() {
@@ -113,6 +105,14 @@ public class CustomerDocumentUploadReferenceTemp {
 
 	public void setCustomerDocumentTypeMaster(CustomerDocumentTypeMaster customerDocumentTypeMaster) {
 		this.customerDocumentTypeMaster = customerDocumentTypeMaster;
+	}
+
+	public String getDocumentEraScanRef() {
+		return documentEraScanRef;
+	}
+
+	public void setDocumentEraScanRef(String documentEraScanRef) {
+		this.documentEraScanRef = documentEraScanRef;
 	}
 
 }
