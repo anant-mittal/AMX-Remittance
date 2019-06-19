@@ -24,7 +24,7 @@ public class CustomerRatingService {
 
 	@Autowired
 	ICustomerRatingDao customerRatingdao;
-	
+
 	@Autowired
 	MetaData metaData;
 
@@ -36,7 +36,7 @@ public class CustomerRatingService {
 	 */
 	public AmxApiResponse<CustomerRating, ?> saveCustomerRating(CustomerRatingDTO dto) {
 		try {
-			CustomerRating customerRating = new  CustomerRating();
+			CustomerRating customerRating = new CustomerRating();
 			BigDecimal customerId = metaData.getCustomerId();
 			BigDecimal applicationCountryId = metaData.getCountryId();
 			customerRating.setRating(dto.getRating());
