@@ -90,6 +90,12 @@ public class CustomerController implements ICustomerService {
 	@RequestMapping(method = RequestMethod.POST)
 	public ApiResponse saveCust(@RequestBody CustomerModel customerModel) {
 		logger.info("saveCust Request:" + customerModel);
+		BigDecimal customerId = (customerModel.getCustomerId() == null) ? metaData.getCustomerId() : customerModel.getCustomerId();
+		Customer cust = custDao.getCustById(customerId);
+		logger.debug("customer model is "+cust.toString());
+		if(StringUtils.isEmpty(cust.getEmail())) {
+			jaxCustomerContactVerificationService.sendEmailVerifyLinkOnReg(metaData.getCustomerId(),customerModel);
+		}
 		ApiResponse response = userService.saveCustomer(customerModel);
 		return response;
 	}
@@ -97,13 +103,9 @@ public class CustomerController implements ICustomerService {
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	public ApiResponse save(@RequestBody CustomerModel customerModel) {
 		logger.info("saveCust Request:" + customerModel.toString());
+		
 		ApiResponse response = userService.saveCustomer(customerModel);
-		BigDecimal customerId = (customerModel.getCustomerId() == null) ? metaData.getCustomerId() : customerModel.getCustomerId();
-		Customer cust = custDao.getCustById(customerId);
-		logger.debug("customer model is "+cust.toString());
-		if(StringUtils.isEmpty(cust.getEmail())) {
-			jaxCustomerContactVerificationService.sendEmailVerifyLinkOnReg(metaData.getCustomerId());
-		}
+		
 		return response;
 	}
 

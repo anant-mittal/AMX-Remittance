@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import com.amx.amxlib.model.CustomerModel;
 import com.amx.jax.async.ExecutorConfig;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.CustomerVerificationType;
@@ -47,8 +48,9 @@ public class JaxCustomerContactVerificationService extends AbstractService {
 	@Autowired
 	private CustomerVerificationService customerVerificationService;
 	
-	public void sendEmailVerifyLinkOnReg(BigDecimal customerId) {
+	public void sendEmailVerifyLinkOnReg(BigDecimal customerId,CustomerModel customerModel) {
 		Customer customer = customerRepository.getCustomerByCustomerIdAndIsActive(customerId, "Y");
+		customer.setEmail(customerModel.getEmail());
 		CustomerContactVerification customerContactVerification = customerContactVerificationManager.create(customer, ContactType.EMAIL);
 		
 		

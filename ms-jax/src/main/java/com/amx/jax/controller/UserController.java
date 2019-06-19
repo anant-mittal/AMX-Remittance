@@ -46,14 +46,14 @@ public class UserController {
 	UserValidationService userValidationService;
 	
 	@Autowired
-	JaxCustomerContactVerificationService jaxCustomerContactVerifivcationService;
+	JaxCustomerContactVerificationService jaxCustomerContactVerificationService;
 
 	private Logger logger = LoggerService.getLogger(UserController.class);
 
 	@RequestMapping(value = "/login/", method = RequestMethod.POST)
 	public ApiResponse loginUser(@RequestBody CustomerModel customerModel) {
 		logger.info("loginUser Request: usreid: " + customerModel.getLoginId());
-		jaxCustomerContactVerifivcationService.validateEmailVerification(metaData.getCustomerId());
+		jaxCustomerContactVerificationService.validateEmailVerification(metaData.getCustomerId());
 		ApiResponse response = userService.loginUser(customerModel.getLoginId(), customerModel.getPassword());
 		return response;
 	}
