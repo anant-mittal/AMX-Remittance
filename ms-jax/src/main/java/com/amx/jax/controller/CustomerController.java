@@ -3,6 +3,7 @@ package com.amx.jax.controller;
 import static com.amx.amxlib.constant.ApiEndpoint.CUSTOMER_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.UPDATE_CUSTOMER_PASSWORD_ENDPOINT;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +29,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.customer.service.CustomerService;
 import com.amx.jax.customer.service.JaxCustomerContactVerificationService;
+import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.auth.QuestModelDTO;
@@ -35,6 +37,7 @@ import com.amx.jax.model.customer.SecurityQuestionModel;
 import com.amx.jax.model.response.customer.CustomerModelResponse;
 import com.amx.jax.model.response.customer.CustomerModelSignupResponse;
 import com.amx.jax.services.CustomerDataVerificationService;
+import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.service.AnnualIncomeService;
 import com.amx.jax.userservice.service.CustomerModelService;
 import com.amx.jax.userservice.service.UserService;
@@ -71,6 +74,9 @@ public class CustomerController implements ICustomerService {
 	
 	@Autowired
 	JaxCustomerContactVerificationService jaxCustomerContactVerificationService;
+	
+	@Autowired
+	CustomerDao custDao;
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -92,7 +98,10 @@ public class CustomerController implements ICustomerService {
 	public ApiResponse save(@RequestBody CustomerModel customerModel) {
 		logger.info("saveCust Request:" + customerModel.toString());
 		ApiResponse response = userService.saveCustomer(customerModel);
-		if(StringUtils.isEmpty(customerModel.getEmail())) {
+		BigDecimal customerId = (customerModel.getCustomerId() == null) ? metaData.getCustomerId() : customerModel.getCustomerId();
+		Customer cust = custDao.getCustById(customerId);
+		
+		if(StringUtils.isEmpty(cust.getEmail())) {
 			jaxCustomerContactVerificationService.sendEmailVerifyLinkOnReg(metaData.getCustomerId());
 		}
 		return response;
