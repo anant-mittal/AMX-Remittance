@@ -1,4 +1,4 @@
-package com.amx.jax.pricer.partner.dao;
+package com.amx.jax.pricer.dao;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -6,23 +6,23 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.pricer.dbmodel.BankCharges;
+import com.amx.jax.pricer.dbmodel.BankServiceRule;
+import com.amx.jax.pricer.dbmodel.BenificiaryListView;
 import com.amx.jax.pricer.dbmodel.CountryMasterModel;
 import com.amx.jax.pricer.dbmodel.CurrencyMasterModel;
-import com.amx.jax.pricer.partner.dbmodel.BankCharges;
-import com.amx.jax.pricer.partner.dbmodel.BankServiceRule;
-import com.amx.jax.pricer.partner.dbmodel.BenificiaryListView;
-import com.amx.jax.pricer.partner.dbmodel.CustomerDetailsView;
-import com.amx.jax.pricer.partner.dbmodel.ParameterDetailsModel;
-import com.amx.jax.pricer.partner.dbmodel.ServiceProviderRateView;
-import com.amx.jax.pricer.partner.repository.IBankChargesRepository;
-import com.amx.jax.pricer.partner.repository.IBankServiceRuleRepository;
-import com.amx.jax.pricer.partner.repository.IBeneficiaryViewRepository;
-import com.amx.jax.pricer.partner.repository.ICountryMasterRepository;
-import com.amx.jax.pricer.partner.repository.ICustomerViewRepository;
-import com.amx.jax.pricer.partner.repository.IParameterDetailsRespository;
-import com.amx.jax.pricer.partner.repository.IServiceProviderMarginRepository;
-import com.amx.jax.pricer.partner.repository.IUsdExchangeRateRepository;
+import com.amx.jax.pricer.dbmodel.CustomerDetailsView;
+import com.amx.jax.pricer.dbmodel.ParameterDetailsModel;
+import com.amx.jax.pricer.dbmodel.ServiceProviderRateView;
+import com.amx.jax.pricer.repository.CountryMasterRepository;
 import com.amx.jax.pricer.repository.CurrencyMasterRepository;
+import com.amx.jax.pricer.repository.IBankChargesRepository;
+import com.amx.jax.pricer.repository.IBankServiceRuleRepository;
+import com.amx.jax.pricer.repository.IBeneficiaryViewRepository;
+import com.amx.jax.pricer.repository.ICustomerViewRepository;
+import com.amx.jax.pricer.repository.IParameterDetailsRespository;
+import com.amx.jax.pricer.repository.IServiceProviderMarginRepository;
+import com.amx.jax.pricer.repository.IUsdExchangeRateRepository;
 
 @Component	
 public class PartnerServiceDao {
@@ -52,7 +52,7 @@ public class PartnerServiceDao {
 	IParameterDetailsRespository parameterDetailsRespository;
 	
 	@Autowired
-	ICountryMasterRepository countryMasterRepository;
+	CountryMasterRepository countryMasterRepository;
 	
 	public BenificiaryListView getBeneficiaryDetails(BigDecimal customerId,BigDecimal beneficiaryRelationShipSeqId) {
 		return beneficiaryViewRepository.findByCustomerIdAndBeneficiaryRelationShipSeqId(customerId, beneficiaryRelationShipSeqId);
@@ -93,4 +93,5 @@ public class PartnerServiceDao {
 	public BigDecimal fetchServiceProviderRefernceNum() {
 		return usdExchangeRateRepository.fetchServiceProviderRefernceNum();
 	}
+	
 }

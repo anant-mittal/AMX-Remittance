@@ -25,19 +25,20 @@ import com.amx.jax.partner.dto.BeneficiaryDetailsDTO;
 import com.amx.jax.partner.dto.CustomerDetailsDTO;
 import com.amx.jax.partner.dto.HomeSendInfoDTO;
 import com.amx.jax.partner.dto.ProductDetailsDTO;
+import com.amx.jax.partner.dto.RoutingBankDetails;
 import com.amx.jax.partner.dto.SrvPrvFeeInqReqDTO;
 import com.amx.jax.partner.dto.SrvPrvFeeInqResDTO;
+import com.amx.jax.pricer.dao.PartnerServiceDao;
+import com.amx.jax.pricer.dbmodel.BankCharges;
+import com.amx.jax.pricer.dbmodel.BankServiceRule;
+import com.amx.jax.pricer.dbmodel.BenificiaryListView;
 import com.amx.jax.pricer.dbmodel.CountryMasterModel;
 import com.amx.jax.pricer.dbmodel.CurrencyMasterModel;
+import com.amx.jax.pricer.dbmodel.CustomerDetailsView;
+import com.amx.jax.pricer.dbmodel.ParameterDetailsModel;
+import com.amx.jax.pricer.dbmodel.ServiceProviderRateView;
 import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
-import com.amx.jax.pricer.partner.dao.PartnerServiceDao;
-import com.amx.jax.pricer.partner.dbmodel.BankCharges;
-import com.amx.jax.pricer.partner.dbmodel.BankServiceRule;
-import com.amx.jax.pricer.partner.dbmodel.BenificiaryListView;
-import com.amx.jax.pricer.partner.dbmodel.CustomerDetailsView;
-import com.amx.jax.pricer.partner.dbmodel.ParameterDetailsModel;
-import com.amx.jax.pricer.partner.dbmodel.ServiceProviderRateView;
 import com.amx.jax.pricer.var.PricerServiceConstants;
 import com.amx.utils.JsonUtil;
 
@@ -83,154 +84,122 @@ public class PartnerDataManager {
 		BigDecimal exchangeLocalAmt = null;
 		BigDecimal commissionAmt = null;
 
-		if (settlementExchangeRate != null) {
-			LOGGER.info("Settlement Exchange Rate : " + settlementExchangeRate);
+		if(settlementExchangeRate != null) {
+			LOGGER.info("Settlement Exchange Rate : "+settlementExchangeRate);
 
-			CurrencyMasterModel currencyMasterModel = fetchCurrencyMasterDetails(
-					PricerServiceConstants.SETTLEMENT_CURRENCY_CODE, PricerServiceConstants.Yes);
-			if (currencyMasterModel != null) {
-				validateExchangeRate(settlementExchangeRate, currencyMasterModel.getFundMinRate(),
-						currencyMasterModel.getFundMaxRate());
-
-				ProductDetailsDTO productDetailsDTO = new ProductDetailsDTO();
-				productDetailsDTO.setCountryId(srvPrvFeeInqReqDTO.getDestinationCountryId());
-				productDetailsDTO.setBankId(srvPrvFeeInqReqDTO.getRoutingBankId());
-				productDetailsDTO.setCurrencyId(srvPrvFeeInqReqDTO.getForeignCurrencyId());
-				productDetailsDTO.setRemittanceId(srvPrvFeeInqReqDTO.getRemittanceId());
-				productDetailsDTO.setDeliveryId(srvPrvFeeInqReqDTO.getDeliveryId());
+			CurrencyMasterModel currencyMasterModel = fetchCurrencyMasterDetails(PricerServiceConstants.SETTLEMENT_CURRENCY_CODE, PricerServiceConstants.Yes);
+			if(currencyMasterModel != null) {
+				validateExchangeRate(settlementExchangeRate,currencyMasterModel.getFundMinRate(),currencyMasterModel.getFundMaxRate());
+				
+				ProductDetailsDTO productDetailsDTO = fetchProductDetails(srvPrvFeeInqReqDTO);
 
 				ServiceProviderRateView serviceProviderRateView = fetchMarginByProduct(productDetailsDTO);
-				if (serviceProviderRateView != null) {
-					marginAmount = serviceProviderRateView.getMargin() == null ? BigDecimal.ZERO
-							: serviceProviderRateView.getMargin();
+				if(serviceProviderRateView != null) {
+					marginAmount = serviceProviderRateView.getMargin() == null ? BigDecimal.ZERO : serviceProviderRateView.getMargin();
 
 					amxRateWithMargin = settlementExchangeRate.add(marginAmount);
-					settlementAmtwithDecimal = new BigDecimal(
-							srvPrvFeeInqReqDTO.getAmount().doubleValue() / amxRateWithMargin.doubleValue());
-					DEF_DECIMAL_SCALE = (currencyMasterModel.getDecinalNumber() == null ? new BigDecimal(2)
-							: currencyMasterModel.getDecinalNumber()).intValue();
+					settlementAmtwithDecimal = new BigDecimal(srvPrvFeeInqReqDTO.getAmount().doubleValue()/amxRateWithMargin.doubleValue());
+					DEF_DECIMAL_SCALE = (currencyMasterModel.getDecinalNumber() == null ? new BigDecimal(2) : currencyMasterModel.getDecinalNumber()).intValue();
 					settlementAmount = settlementAmtwithDecimal.round(DEF_CONTEXT);
-					LOGGER.info("Amx Exchange Rate with Margin : " + amxRateWithMargin);
-					LOGGER.info("settlement Amount : " + settlementAmtwithDecimal);
-					LOGGER.info("settlement Amount with round : " + settlementAmount);
+					LOGGER.info("Amx Exchange Rate with Margin : "+amxRateWithMargin);
+					LOGGER.info("settlement Amount : "+settlementAmtwithDecimal);
+					LOGGER.info("settlement Amount with round : "+settlementAmount);
 
-					quotationResponse = fetchQuotationDetails(srvPrvFeeInqReqDTO, serviceProviderRateView,
-							settlementAmount);
+					quotationResponse = fetchQuotationDetails(srvPrvFeeInqReqDTO, serviceProviderRateView, settlementAmount);
 
-					if (quotationResponse != null) {
-						if (quotationResponse.getResult() != null) {
+					if(quotationResponse != null) {
+						if(quotationResponse.getResult() != null) {
 							Quotation_Call_Response quotationCall = quotationResponse.getResult();
 							ServiceProviderResponse serviceProviderResponse = (ServiceProviderResponse) quotationCall;
 							// success return I
-							if (quotationCall != null && quotationCall.getAction_ind() != null && quotationCall
-									.getAction_ind().equalsIgnoreCase(PricerServiceConstants.ACTION_IND_I)) {
+							if(quotationCall != null && quotationCall.getAction_ind() != null && quotationCall.getAction_ind().equalsIgnoreCase(PricerServiceConstants.ACTION_IND_I)) {
 
 								hsForeignSettleCurrencyRate = quotationCall.getWhole_sale_fx_rate();
 								destinationAmt = quotationCall.getCredited_amount_in_destination_currency();
-								hsCommissionAmt = quotationCall.getFix_charged_amount_in_settlement_currency()
-										.add(quotationCall.getVariable_charged_amount_in_settlement_currency());
+								hsCommissionAmt = quotationCall.getFix_charged_amount_in_settlement_currency().add(quotationCall.getVariable_charged_amount_in_settlement_currency());
 								hsfeeInquiryRateNew = quotationCall.getWhole_sale_fx_rate();
 
 								BankServiceRule bankServiceRule = fetchBankserviceRule(productDetailsDTO);
-								if (bankServiceRule != null) {
-									BankCharges bankCharges = fetchBankChargesServiceProvider(
-											bankServiceRule.getBankServiceRuleId(), destinationAmt,
-											PricerServiceConstants.BOTH_BANK_SERVICE_COMPONENT,
-											PricerServiceConstants.CHARGES_TYPE);
-									if (bankCharges != null) {
-										amiecCommissionAmt = bankCharges.getChargeAmount();
-										exchangeRate = new BigDecimal(settlementExchangeRate.doubleValue()
-												/ hsForeignSettleCurrencyRate.doubleValue());
+								if(bankServiceRule != null) {
+									BankCharges bankCharges = fetchBankChargesServiceProvider(bankServiceRule.getBankServiceRuleId(), destinationAmt, PricerServiceConstants.BOTH_BANK_SERVICE_COMPONENT, PricerServiceConstants.CHARGES_TYPE);
+									if(bankCharges != null) {
+										amiecCommissionAmt =  bankCharges.getChargeAmount();
+										exchangeRate = new BigDecimal(settlementExchangeRate.doubleValue()/hsForeignSettleCurrencyRate.doubleValue());
 										DEF_DECIMAL_SCALE = (new BigDecimal(6)).intValue();
 										exchangeRate = exchangeRate.round(DEF_CONTEXT);
 
 										// formula
-										exchangeRatewithpips = new BigDecimal(amxRateWithMargin.doubleValue()
-												/ hsForeignSettleCurrencyRate.doubleValue());
+										exchangeRatewithpips = new BigDecimal(amxRateWithMargin.doubleValue()/hsForeignSettleCurrencyRate.doubleValue());
 										DEF_DECIMAL_SCALE = (new BigDecimal(6)).intValue();
 										exchangeRatewithpips = exchangeRatewithpips.round(DEF_CONTEXT);
 										exchangeLocalAmt = destinationAmt.multiply(exchangeRatewithpips);
 
-										commissionAmt = amiecCommissionAmt
-												.add(hsCommissionAmt.multiply(settlementExchangeRate));
+										commissionAmt = amiecCommissionAmt.add(hsCommissionAmt.multiply(settlementExchangeRate));
 
 										srvPrvFeeInqResDTO = new SrvPrvFeeInqResDTO();
 										srvPrvFeeInqResDTO.setCommissionAmount(commissionAmt);
-										srvPrvFeeInqResDTO
-												.setExchangeRateByServiceProvider(hsForeignSettleCurrencyRate);
-										srvPrvFeeInqResDTO
-												.setExchangeRateWithLocalAndSettlementCurrency(settlementExchangeRate);
+										srvPrvFeeInqResDTO.setExchangeRateByServiceProvider(hsForeignSettleCurrencyRate);
+										srvPrvFeeInqResDTO.setExchangeRateWithLocalAndSettlementCurrency(settlementExchangeRate);
 										srvPrvFeeInqResDTO.setExchangeRateWithPips(exchangeRatewithpips);
 										srvPrvFeeInqResDTO.setForeignAmount(destinationAmt);
-										srvPrvFeeInqResDTO.setGrossAmount(exchangeLocalAmt);
-										srvPrvFeeInqResDTO.setLocalAmount(exchangeLocalAmt.add(commissionAmt));
+										//srvPrvFeeInqResDTO.setGrossAmount(exchangeLocalAmt);
+										srvPrvFeeInqResDTO.setGrossAmount(srvPrvFeeInqReqDTO.getAmount());
+										srvPrvFeeInqResDTO.setLocalAmount(srvPrvFeeInqResDTO.getGrossAmount().add(commissionAmt));
+										srvPrvFeeInqResDTO.setExchangeRateWithoutPips(exchangeRate);
+										srvPrvFeeInqResDTO.setMargin(marginAmount);
 
-										HomeSendInfoDTO homeSendInfoDTO = new HomeSendInfoDTO();
-										homeSendInfoDTO.setAction_ind(serviceProviderResponse.getAction_ind());
-										homeSendInfoDTO.setCredited_amount_in_destination_currency(
-												quotationCall.getCredited_amount_in_destination_currency());
-										homeSendInfoDTO
-												.setDestination_currency(quotationCall.getDestination_currency());
-										homeSendInfoDTO.setFix_charged_amount_in_settlement_currency(
-												quotationCall.getFix_charged_amount_in_settlement_currency());
-										homeSendInfoDTO.setInitial_amount_in_settlement_currency(
-												quotationCall.getInitial_amount_in_settlement_currency());
-										homeSendInfoDTO
-												.setOffer_expiration_date(quotationCall.getOffer_expiration_date());
-										homeSendInfoDTO.setPartner_transaction_reference(
-												quotationCall.getPartner_transaction_reference());
-										homeSendInfoDTO.setRequest_XML(serviceProviderResponse.getRequest_XML());
-										homeSendInfoDTO.setResponse_code(serviceProviderResponse.getResponse_code());
-										homeSendInfoDTO.setResponse_description(
-												serviceProviderResponse.getResponse_description());
-										homeSendInfoDTO.setResponse_XML(serviceProviderResponse.getResponse_XML());
-										homeSendInfoDTO.setSettlement_currency(quotationCall.getSettlement_currency());
-										homeSendInfoDTO
-												.setTechnical_details(serviceProviderResponse.getTechnical_details());
-										homeSendInfoDTO.setTotal_charged_amount_in_settlement_currency(
-												quotationCall.getTotal_charged_amount_in_settlement_currency());
-										homeSendInfoDTO.setVariable_charged_amount_in_settlement_currency(
-												quotationCall.getVariable_charged_amount_in_settlement_currency());
-										homeSendInfoDTO.setWhole_sale_fx_rate(quotationCall.getWhole_sale_fx_rate());
-										homeSendInfoDTO.setBeneficiaryDeduct(Boolean.FALSE);
+										HomeSendInfoDTO homeSendInfoDTO = fetchHomeSendData(serviceProviderResponse,quotationCall);
 
 										srvPrvFeeInqResDTO.setHomeSendInfoDTO(homeSendInfoDTO);
 									}
 								}
-							} else {
-								LOGGER.warn(
-										"Service Provider Data Issue : None Found " + JsonUtil.toJson(quotationCall));
-								throw new PricerServiceException(PricerServiceError.MISSING_VALID_EXCHANGE_RATES,
-										"Service Provider Data Issue : None Found " + JsonUtil.toJson(quotationCall));
+							}else if(quotationCall != null && quotationCall.getAction_ind() != null && quotationCall.getAction_ind().equalsIgnoreCase(PricerServiceConstants.ACTION_IND_C)) {
+								LOGGER.warn("Service Provider Data Issue : None Found " + JsonUtil.toJson(quotationCall));
+								throw new PricerServiceException(PricerServiceError.INVALID_SRV_PROV_ACTION_IND_C,
+										"Service Provider Connection Issue : " + quotationCall.getResponse_code() + " : " + quotationCall.getResponse_description());
+							}else if(quotationCall != null && quotationCall.getAction_ind() != null && quotationCall.getAction_ind().equalsIgnoreCase(PricerServiceConstants.ACTION_IND_T)) {
+								LOGGER.warn("Service Provider Data Issue : None Found " + JsonUtil.toJson(quotationCall));
+								throw new PricerServiceException(PricerServiceError.INVALID_SRV_PROV_ACTION_IND_T,
+										"Service Provider Technical Issue : " + quotationCall.getResponse_code() + " : " + quotationCall.getResponse_description());
+							}else if(quotationCall != null && quotationCall.getAction_ind() != null && quotationCall.getAction_ind().equalsIgnoreCase(PricerServiceConstants.ACTION_IND_R)) {
+								LOGGER.warn("Service Provider Data Issue : None Found " + JsonUtil.toJson(quotationCall));
+								throw new PricerServiceException(PricerServiceError.INVALID_SRV_PROV_ACTION_IND_R,
+										"Service Provider Rejected Issue : " + quotationCall.getResponse_code() + " : " + quotationCall.getResponse_description());
+							}else if(quotationCall != null && quotationCall.getAction_ind() != null && quotationCall.getAction_ind().equalsIgnoreCase(PricerServiceConstants.ACTION_IND_U)) {
+								LOGGER.warn("Service Provider Data Issue : None Found " + JsonUtil.toJson(quotationCall));
+								throw new PricerServiceException(PricerServiceError.INVALID_SRV_PROV_ACTION_IND_U,
+										"Service Provider Undefined Code Issue : " + quotationCall.getResponse_code() + " : " + quotationCall.getResponse_description());
+							}else {
+								LOGGER.warn("Service Provider Data Issue : None Found " + JsonUtil.toJson(quotationCall));
+								throw new PricerServiceException(PricerServiceError.INVALID_SRV_PROV_ACTION_IND,
+										"Service Provider Data Issue : " + quotationCall.getResponse_code() + " : " + quotationCall.getResponse_description());
 							}
-						} else {
-							LOGGER.warn("Service Provider Data Issue : None Found "
-									+ JsonUtil.toJson(quotationResponse.getResult()));
+						}else {
+							LOGGER.warn("Service Provider Data Result Issue : None Found " + JsonUtil.toJson(quotationResponse.getResult()));
 							throw new PricerServiceException(PricerServiceError.MISSING_VALID_EXCHANGE_RATES,
-									"Service Provider Data Issue : None Found "
-											+ JsonUtil.toJson(quotationResponse.getResult()));
+									"Service Provider Data Result Issue : None Found " + JsonUtil.toJson(quotationResponse.getResult()));
 						}
-					} else {
-						LOGGER.warn("Service Provider Data Issue" + JsonUtil.toJson(quotationResponse));
+					}else {
+						LOGGER.warn("Service Provider Data Object Issue" + JsonUtil.toJson(quotationResponse));
 						throw new PricerServiceException(PricerServiceError.MISSING_VALID_EXCHANGE_RATES,
-								"Service Provider Data Issue : None Found " + JsonUtil.toJson(quotationResponse));
+								"Service Provider Data Object Issue : None Found " + JsonUtil.toJson(quotationResponse));
 					}
-				} else {
+				}else {
 					// fail
 					LOGGER.warn("Selling Rate : None Found " + JsonUtil.toJson(productDetailsDTO));
 					throw new PricerServiceException(PricerServiceError.MISSING_VALID_EXCHANGE_RATES,
 							"Selling Rate : None Found " + JsonUtil.toJson(productDetailsDTO));
 				}
-			} else {
+			}else {
 				// fail
 				LOGGER.warn("No ISO Currency Code Details : None Found ");
 				throw new PricerServiceException(PricerServiceError.INVALID_CURRENCY,
 						"No ISO Currency Code Details : None Found ");
 			}
-		} else {
-			LOGGER.warn("Missing Settlement Currency Exchange Rate : " + settlementExchangeRate);
+		}else {
+			LOGGER.warn("Missing Settlement Currency Exchange Rate : " + settlementExchangeRate );
 			throw new PricerServiceException(PricerServiceError.MISSING_VALID_EXCHANGE_RATES,
-					"Missing Settlement Currency Exchange Rate : " + settlementExchangeRate);
+					"Missing Settlement Currency Exchange Rate : " + settlementExchangeRate );
 		}
 
 		return srvPrvFeeInqResDTO;
@@ -255,148 +224,118 @@ public class PartnerDataManager {
 		BigDecimal amiecCommissionAmt = null;
 		BigDecimal exchangeRate = null;
 		BigDecimal exchangeRatewithpips = null;
+		BigDecimal exchangeRatewithoutpips = null;
 		BigDecimal exchangeLocalAmt = null;
 		BigDecimal commissionAmt = null;
 
-		ProductDetailsDTO productDetailsDTO = new ProductDetailsDTO();
-		productDetailsDTO.setCountryId(srvPrvFeeInqReqDTO.getDestinationCountryId());
-		productDetailsDTO.setBankId(srvPrvFeeInqReqDTO.getRoutingBankId());
-		productDetailsDTO.setCurrencyId(srvPrvFeeInqReqDTO.getForeignCurrencyId());
-		productDetailsDTO.setRemittanceId(srvPrvFeeInqReqDTO.getRemittanceId());
-		productDetailsDTO.setDeliveryId(srvPrvFeeInqReqDTO.getDeliveryId());
+		ProductDetailsDTO productDetailsDTO = fetchProductDetails(srvPrvFeeInqReqDTO);
 
 		ServiceProviderRateView serviceProviderRateView = fetchMarginByProduct(productDetailsDTO);
-		if (serviceProviderRateView != null) {
-			quotationResponse = fetchQuotationDetails(srvPrvFeeInqReqDTO, serviceProviderRateView,
-					srvPrvFeeInqReqDTO.getAmount());
+		if(serviceProviderRateView != null) {
+			quotationResponse = fetchQuotationDetails(srvPrvFeeInqReqDTO, serviceProviderRateView, srvPrvFeeInqReqDTO.getAmount());
 
-			if (quotationResponse != null) {
-				if (quotationResponse.getResult() != null) {
+			if(quotationResponse != null) {
+				if(quotationResponse.getResult() != null) {
 					Quotation_Call_Response quotationCall = quotationResponse.getResult();
 					ServiceProviderResponse serviceProviderResponse = (Quotation_Call_Response) quotationCall;
 					// success return I
-					if (quotationCall != null && quotationCall.getAction_ind() != null
-							&& quotationCall.getAction_ind().equalsIgnoreCase(PricerServiceConstants.ACTION_IND_I)) {
+					if(quotationCall != null && quotationCall.getAction_ind() != null && quotationCall.getAction_ind().equalsIgnoreCase(PricerServiceConstants.ACTION_IND_I)) {
 						BigDecimal settlementExchangeRate = fetchUsdExchangeRate();
-						if (settlementExchangeRate != null) {
-							LOGGER.info("Settlement Exchange Rate : " + settlementExchangeRate);
-							CurrencyMasterModel currencyMasterModel = fetchCurrencyMasterDetails(
-									PricerServiceConstants.SETTLEMENT_CURRENCY_CODE, PricerServiceConstants.Yes);
-							if (currencyMasterModel != null) {
-								validateExchangeRate(settlementExchangeRate, currencyMasterModel.getFundMinRate(),
-										currencyMasterModel.getFundMaxRate());
+						if(settlementExchangeRate != null) {
+							LOGGER.info("Settlement Exchange Rate : "+settlementExchangeRate);
+							CurrencyMasterModel currencyMasterModel = fetchCurrencyMasterDetails(PricerServiceConstants.SETTLEMENT_CURRENCY_CODE, PricerServiceConstants.Yes);
+							if(currencyMasterModel != null) {
+								validateExchangeRate(settlementExchangeRate,currencyMasterModel.getFundMinRate(),currencyMasterModel.getFundMaxRate());
 
 								hsForeignSettleCurrencyRate = quotationCall.getWhole_sale_fx_rate();
 								destinationAmt = quotationCall.getCredited_amount_in_destination_currency();
-								hsCommissionAmt = quotationCall.getFix_charged_amount_in_settlement_currency()
-										.add(quotationCall.getVariable_charged_amount_in_settlement_currency());
+								hsCommissionAmt = quotationCall.getFix_charged_amount_in_settlement_currency().add(quotationCall.getVariable_charged_amount_in_settlement_currency());
 								hsfeeInquiryRateNew = quotationCall.getWhole_sale_fx_rate();
 								settlementAmt = quotationCall.getTotal_charged_amount_in_settlement_currency();
 
-								marginAmount = serviceProviderRateView.getMargin() == null ? BigDecimal.ZERO
-										: serviceProviderRateView.getMargin();
+								marginAmount = serviceProviderRateView.getMargin() == null ? BigDecimal.ZERO : serviceProviderRateView.getMargin();
 
 								amxRateWithMargin = settlementExchangeRate.add(marginAmount);
 								localAmt = settlementAmt.multiply(amxRateWithMargin);
-								DEF_DECIMAL_SCALE = (currencyMasterModel.getDecinalNumber() == null ? new BigDecimal(3)
-										: currencyMasterModel.getDecinalNumber()).intValue();
+								DEF_DECIMAL_SCALE = (currencyMasterModel.getDecinalNumber() == null ? new BigDecimal(3) : currencyMasterModel.getDecinalNumber()).intValue();
 								localAmt = localAmt.round(DEF_CONTEXT);
 
 								BankServiceRule bankServiceRule = fetchBankserviceRule(productDetailsDTO);
-								if (bankServiceRule != null) {
-									BankCharges bankCharges = fetchBankChargesServiceProvider(
-											bankServiceRule.getBankServiceRuleId(), destinationAmt,
-											PricerServiceConstants.BOTH_BANK_SERVICE_COMPONENT,
-											PricerServiceConstants.CHARGES_TYPE);
-									if (bankCharges != null) {
-										amiecCommissionAmt = bankCharges.getChargeAmount();
-										exchangeRate = new BigDecimal(settlementExchangeRate.doubleValue()
-												/ hsForeignSettleCurrencyRate.doubleValue());
+								if(bankServiceRule != null) {
+									BankCharges bankCharges = fetchBankChargesServiceProvider(bankServiceRule.getBankServiceRuleId(), destinationAmt, PricerServiceConstants.BOTH_BANK_SERVICE_COMPONENT, PricerServiceConstants.CHARGES_TYPE);
+									if(bankCharges != null) {
+										amiecCommissionAmt =  bankCharges.getChargeAmount();
+										exchangeRate = new BigDecimal(settlementExchangeRate.doubleValue()/hsForeignSettleCurrencyRate.doubleValue());
 										DEF_DECIMAL_SCALE = (new BigDecimal(6)).intValue();
 										exchangeRate = exchangeRate.round(DEF_CONTEXT);
 
 										// formula
-										exchangeRatewithpips = new BigDecimal(amxRateWithMargin.doubleValue()
-												/ hsForeignSettleCurrencyRate.doubleValue());
+										exchangeRatewithpips = new BigDecimal(amxRateWithMargin.doubleValue()/hsForeignSettleCurrencyRate.doubleValue());
 										DEF_DECIMAL_SCALE = (new BigDecimal(6)).intValue();
 										exchangeRatewithpips = exchangeRatewithpips.round(DEF_CONTEXT);
 										exchangeLocalAmt = destinationAmt.multiply(exchangeRatewithpips);
 
-										commissionAmt = amiecCommissionAmt
-												.add(hsCommissionAmt.multiply(settlementExchangeRate));
+										commissionAmt = amiecCommissionAmt.add(hsCommissionAmt.multiply(settlementExchangeRate));
 
 										srvPrvFeeInqResDTO = new SrvPrvFeeInqResDTO();
 										srvPrvFeeInqResDTO.setCommissionAmount(commissionAmt);
-										srvPrvFeeInqResDTO
-												.setExchangeRateByServiceProvider(hsForeignSettleCurrencyRate);
-										srvPrvFeeInqResDTO
-												.setExchangeRateWithLocalAndSettlementCurrency(settlementExchangeRate);
+										srvPrvFeeInqResDTO.setExchangeRateByServiceProvider(hsForeignSettleCurrencyRate);
+										srvPrvFeeInqResDTO.setExchangeRateWithLocalAndSettlementCurrency(settlementExchangeRate);
 										srvPrvFeeInqResDTO.setExchangeRateWithPips(exchangeRatewithpips);
 										srvPrvFeeInqResDTO.setForeignAmount(destinationAmt);
 										srvPrvFeeInqResDTO.setGrossAmount(exchangeLocalAmt);
-										srvPrvFeeInqResDTO.setLocalAmount(exchangeLocalAmt.add(commissionAmt));
-
-										HomeSendInfoDTO homeSendInfoDTO = new HomeSendInfoDTO();
-										homeSendInfoDTO.setAction_ind(serviceProviderResponse.getAction_ind());
-										homeSendInfoDTO.setCredited_amount_in_destination_currency(
-												quotationCall.getCredited_amount_in_destination_currency());
-										homeSendInfoDTO
-												.setDestination_currency(quotationCall.getDestination_currency());
-										homeSendInfoDTO.setFix_charged_amount_in_settlement_currency(
-												quotationCall.getFix_charged_amount_in_settlement_currency());
-										homeSendInfoDTO.setInitial_amount_in_settlement_currency(
-												quotationCall.getInitial_amount_in_settlement_currency());
-										homeSendInfoDTO
-												.setOffer_expiration_date(quotationCall.getOffer_expiration_date());
-										homeSendInfoDTO.setPartner_transaction_reference(
-												quotationCall.getPartner_transaction_reference());
-										homeSendInfoDTO.setRequest_XML(serviceProviderResponse.getRequest_XML());
-										homeSendInfoDTO.setResponse_code(serviceProviderResponse.getResponse_code());
-										homeSendInfoDTO.setResponse_description(
-												serviceProviderResponse.getResponse_description());
-										homeSendInfoDTO.setResponse_XML(serviceProviderResponse.getResponse_XML());
-										homeSendInfoDTO.setSettlement_currency(quotationCall.getSettlement_currency());
-										homeSendInfoDTO
-												.setTechnical_details(serviceProviderResponse.getTechnical_details());
-										homeSendInfoDTO.setTotal_charged_amount_in_settlement_currency(
-												quotationCall.getTotal_charged_amount_in_settlement_currency());
-										homeSendInfoDTO.setVariable_charged_amount_in_settlement_currency(
-												quotationCall.getVariable_charged_amount_in_settlement_currency());
-										homeSendInfoDTO.setWhole_sale_fx_rate(quotationCall.getWhole_sale_fx_rate());
-										homeSendInfoDTO.setBeneficiaryDeduct(Boolean.FALSE);
+										srvPrvFeeInqResDTO.setLocalAmount(srvPrvFeeInqResDTO.getGrossAmount().add(commissionAmt));
+										srvPrvFeeInqResDTO.setExchangeRateWithoutPips(exchangeRate);
+										srvPrvFeeInqResDTO.setMargin(marginAmount);
+										
+										HomeSendInfoDTO homeSendInfoDTO = fetchHomeSendData(serviceProviderResponse,quotationCall);
 
 										srvPrvFeeInqResDTO.setHomeSendInfoDTO(homeSendInfoDTO);
 									}
 								}
-							} else {
+							}else {
 								// fail
 								LOGGER.warn("No ISO Currency Code Details : None Found ");
 								throw new PricerServiceException(PricerServiceError.INVALID_CURRENCY,
 										"No ISO Currency Code Details : None Found ");
 							}
-						} else {
-							LOGGER.warn("Missing Settlement Currency Exchange Rate : " + settlementExchangeRate);
+						}else {
+							LOGGER.warn("Missing Settlement Currency Exchange Rate : " + settlementExchangeRate );
 							throw new PricerServiceException(PricerServiceError.MISSING_VALID_EXCHANGE_RATES,
-									"Missing Settlement Currency Exchange Rate : " + settlementExchangeRate);
+									"Missing Settlement Currency Exchange Rate : " + settlementExchangeRate );
 						}
-					} else {
+					}else if(quotationCall != null && quotationCall.getAction_ind() != null && quotationCall.getAction_ind().equalsIgnoreCase(PricerServiceConstants.ACTION_IND_C)) {
 						LOGGER.warn("Service Provider Data Issue : None Found " + JsonUtil.toJson(quotationCall));
-						throw new PricerServiceException(PricerServiceError.MISSING_VALID_EXCHANGE_RATES,
-								"Service Provider Data Issue : None Found " + JsonUtil.toJson(quotationCall));
+						throw new PricerServiceException(PricerServiceError.INVALID_SRV_PROV_ACTION_IND_C,
+								"Service Provider Connection Issue : " + quotationCall.getResponse_code() + " : " + quotationCall.getResponse_description());
+					}else if(quotationCall != null && quotationCall.getAction_ind() != null && quotationCall.getAction_ind().equalsIgnoreCase(PricerServiceConstants.ACTION_IND_T)) {
+						LOGGER.warn("Service Provider Data Issue : None Found " + JsonUtil.toJson(quotationCall));
+						throw new PricerServiceException(PricerServiceError.INVALID_SRV_PROV_ACTION_IND_T,
+								"Service Provider Technical Issue : " + quotationCall.getResponse_code() + " : " + quotationCall.getResponse_description());
+					}else if(quotationCall != null && quotationCall.getAction_ind() != null && quotationCall.getAction_ind().equalsIgnoreCase(PricerServiceConstants.ACTION_IND_R)) {
+						LOGGER.warn("Service Provider Data Issue : None Found " + JsonUtil.toJson(quotationCall));
+						throw new PricerServiceException(PricerServiceError.INVALID_SRV_PROV_ACTION_IND_R,
+								"Service Provider Rejected Issue : " + quotationCall.getResponse_code() + " : " + quotationCall.getResponse_description());
+					}else if(quotationCall != null && quotationCall.getAction_ind() != null && quotationCall.getAction_ind().equalsIgnoreCase(PricerServiceConstants.ACTION_IND_U)) {
+						LOGGER.warn("Service Provider Data Issue : None Found " + JsonUtil.toJson(quotationCall));
+						throw new PricerServiceException(PricerServiceError.INVALID_SRV_PROV_ACTION_IND_U,
+								"Service Provider Undefined Code Issue : " + quotationCall.getResponse_code() + " : " + quotationCall.getResponse_description());
+					}else {
+						LOGGER.warn("Service Provider Data Issue : None Found " + JsonUtil.toJson(quotationCall));
+						throw new PricerServiceException(PricerServiceError.INVALID_SRV_PROV_ACTION_IND,
+								"Service Provider Data Issue : " + quotationCall.getResponse_code() + " : " + quotationCall.getResponse_description());
 					}
-				} else {
-					LOGGER.warn("Service Provider Data Issue : None Found "
-							+ JsonUtil.toJson(quotationResponse.getResult()));
+				}else {
+					LOGGER.warn("Service Provider Data Issue : None Found " + JsonUtil.toJson(quotationResponse.getResult()));
 					throw new PricerServiceException(PricerServiceError.MISSING_VALID_EXCHANGE_RATES,
-							"Service Provider Data Issue : None Found "
-									+ JsonUtil.toJson(quotationResponse.getResult()));
+							"Service Provider Data Issue : None Found " + JsonUtil.toJson(quotationResponse.getResult()));
 				}
-			} else {
+			}else {
 				LOGGER.warn("Service Provider Data Issue" + JsonUtil.toJson(quotationResponse));
 				throw new PricerServiceException(PricerServiceError.MISSING_VALID_EXCHANGE_RATES,
 						"Service Provider Data Issue : None Found " + JsonUtil.toJson(quotationResponse));
 			}
-		} else {
+		}else {
 			// fail
 			LOGGER.warn("Selling Rate : None Found " + JsonUtil.toJson(productDetailsDTO));
 			throw new PricerServiceException(PricerServiceError.MISSING_VALID_EXCHANGE_RATES,
@@ -406,8 +345,7 @@ public class PartnerDataManager {
 	}
 
 	// home send quotation call
-	public AmxApiResponse<Quotation_Call_Response, Object> fetchQuotationDetails(SrvPrvFeeInqReqDTO srvPrvFeeInqReqDTO,
-			ServiceProviderRateView serviceProviderRateView, BigDecimal amount) {
+	public AmxApiResponse<Quotation_Call_Response, Object> fetchQuotationDetails(SrvPrvFeeInqReqDTO srvPrvFeeInqReqDTO,ServiceProviderRateView serviceProviderRateView,BigDecimal amount) {
 
 		ServiceProviderCallRequestDto quatationRequestDto = new ServiceProviderCallRequestDto();
 		AmxApiResponse<Quotation_Call_Response, Object> srvPrvResp = null;
@@ -421,82 +359,79 @@ public class PartnerDataManager {
 
 		try {
 			CustomerDetailsDTO customerDetailsDTO = fetchCustomerDetails(srvPrvFeeInqReqDTO.getCustomerId());
-			BeneficiaryDetailsDTO beneficiaryDetailsDTO = fetchBeneficiaryDetails(srvPrvFeeInqReqDTO.getCustomerId(),
-					srvPrvFeeInqReqDTO.getBeneficiaryRelationShipId());
+			BeneficiaryDetailsDTO beneficiaryDetailsDTO = fetchBeneficiaryDetails(srvPrvFeeInqReqDTO.getCustomerId(), srvPrvFeeInqReqDTO.getBeneficiaryRelationShipId(), srvPrvFeeInqReqDTO.getForeignCurrencyId());
 
-			if (srvPrvFeeInqReqDTO.getSelectedCurrency().compareTo(srvPrvFeeInqReqDTO.getLocalCurrencyId()) == 0) {
+			if(srvPrvFeeInqReqDTO.getSelectedCurrency().compareTo(srvPrvFeeInqReqDTO.getLocalCurrencyId()) == 0){
 				transactionDto.setSettlement_amount(amount);
-			} else {
+			}else{
 				transactionDto.setDestination_amount(amount);
 			}
 			transactionDto.setSettlement_currency(PricerServiceConstants.SETTLEMENT_CURRENCY_CODE);
 			transactionDto.setDestination_currency(serviceProviderRateView.getCurrencyCode());
 
-			HashMap<String, Object> designationAlphaCodes = fetchCountryAlphaCode(
-					beneficiaryDetailsDTO.getBenificaryCountry());
-			if (designationAlphaCodes != null && !designationAlphaCodes.isEmpty()) {
-				if (designationAlphaCodes.get("countryAlpha2Code") != null) {
-					String designationCountryAlpha2Code = (String) designationAlphaCodes.get("countryAlpha2Code");
+			HashMap<String, Object> designationAlphaCodes = fetchCountryAlphaCode(beneficiaryDetailsDTO.getBenificaryCountry());
+			if(designationAlphaCodes != null && !designationAlphaCodes.isEmpty()) {
+				if(designationAlphaCodes.get("countryAlpha2Code") != null) {
+					String designationCountryAlpha2Code = (String)designationAlphaCodes.get("countryAlpha2Code");
 					transactionDto.setDestination_country_2_digit_ISO(designationCountryAlpha2Code);
 				}
-				if (designationAlphaCodes.get("countryAlpha3Code") != null) {
-					String designationCountryAlpha3Code = (String) designationAlphaCodes.get("countryAlpha3Code");
+				if(designationAlphaCodes.get("countryAlpha3Code") != null) {
+					String designationCountryAlpha3Code = (String)designationAlphaCodes.get("countryAlpha3Code");
 					transactionDto.setDestination_country_3_digit_ISO(designationCountryAlpha3Code);
 				}
 			}
 
-			HashMap<String, Object> originAlphaCodes = fetchCountryAlphaCode(
-					srvPrvFeeInqReqDTO.getApplicationCountryId());
-			if (originAlphaCodes != null && !originAlphaCodes.isEmpty()) {
-				if (originAlphaCodes.get("countryAlpha3Code") != null) {
-					String originCountryAlpha3Code = (String) originAlphaCodes.get("countryAlpha3Code");
+			HashMap<String, Object> originAlphaCodes = fetchCountryAlphaCode(srvPrvFeeInqReqDTO.getApplicationCountryId());
+			if(originAlphaCodes != null && !originAlphaCodes.isEmpty()) {
+				if(originAlphaCodes.get("countryAlpha3Code") != null) {
+					String originCountryAlpha3Code = (String)originAlphaCodes.get("countryAlpha3Code");
 					transactionDto.setApplication_country_3_digit_ISO(originCountryAlpha3Code);
 					transactionDto.setOrigin_country_3_digit_ISO(originCountryAlpha3Code);
 				}
 			}
 
 			BigDecimal tokenno = partnerServiceDao.fetchServiceProviderRefernceNum();
-			if (tokenno != null) {
+			if(tokenno != null){
 				transactionDto.setRequest_sequence_id(tokenno.toString());
 			}
 			transactionDto.setRemittance_mode(serviceProviderRateView.getRemittanceCode());
 			transactionDto.setDelivery_mode(serviceProviderRateView.getDeliveryCode());
 			transactionDto.setRoutting_bank_code(serviceProviderRateView.getBankCode());
 
-			if (customerDetailsDTO.getCustomerReference() != null) {
+			if(customerDetailsDTO.getCustomerReference() != null) {
 				customerDto.setCustomer_reference(customerDetailsDTO.getCustomerReference().toString());
 			}
 			customerDto.setCustomer_type(customerDetailsDTO.getCustomerTypeCode());
 
-			if (beneficiaryDetailsDTO.getMapSequenceId() != null) {
+			if(beneficiaryDetailsDTO.getMapSequenceId() != null) {
 				beneficiaryDto.setBeneficiary_reference(beneficiaryDetailsDTO.getMapSequenceId().toString());
 			}
 			beneficiaryDto.setBeneficiary_type(beneficiaryDetailsDTO.getBenificaryStatusName());
 
-			if (beneficiaryDetailsDTO.getFirstName() != null) {
+			if(beneficiaryDetailsDTO.getFirstName() != null){
 				beneFirstName = beneficiaryDetailsDTO.getFirstName();
 			}
-			if (beneficiaryDetailsDTO.getThirdName() != null) {
-				if (beneficiaryDetailsDTO.getSecondName() != null) {
+			if(beneficiaryDetailsDTO.getThirdName() != null){
+				if(beneficiaryDetailsDTO.getSecondName() != null){
 					beneMiddleName = beneficiaryDetailsDTO.getSecondName();
 				}
 				beneLastName = beneficiaryDetailsDTO.getThirdName();
-			} else {
-				if (beneficiaryDetailsDTO.getSecondName() != null) {
+			}else{
+				if(beneficiaryDetailsDTO.getSecondName() != null){
 					beneLastName = beneficiaryDetailsDTO.getSecondName();
 				}
-				if (beneficiaryDetailsDTO.getThirdName() != null) {
-					beneLastName = beneLastName + " " + beneficiaryDetailsDTO.getThirdName();
+				if(beneficiaryDetailsDTO.getThirdName() != null){
+					beneLastName = beneLastName +  " " + beneficiaryDetailsDTO.getThirdName();
 				}
 			}
-			if (beneficiaryDetailsDTO.getFourthName() != null) {
-				beneLastName = beneLastName + " " + beneficiaryDetailsDTO.getFourthName();
+			if(beneficiaryDetailsDTO.getFourthName() != null){
+				beneLastName = beneLastName +  " " +beneficiaryDetailsDTO.getFourthName();
 			}
-			if (beneficiaryDetailsDTO.getFiftheName() != null) {
-				beneLastName = beneLastName + " " + beneficiaryDetailsDTO.getFiftheName();
+			if(beneficiaryDetailsDTO.getFiftheName() != null){
+				beneLastName = beneLastName +  " " +beneficiaryDetailsDTO.getFiftheName();
 			}
-			if (beneLastName != null && beneLastName.length() > 80) {
-				beneLastName = beneLastName.substring(0, 79);
+			if(beneLastName != null && beneLastName.length() > 80){
+				beneLastName = beneLastName.substring(0,79);
 			}
 
 			beneficiaryDto.setFirst_name(beneFirstName);
@@ -511,22 +446,23 @@ public class PartnerDataManager {
 			if (mapBicAndBankCode != null && mapBICandBankDt != null) {
 				String bicCode = mapBicAndBankCode.get("BIC_CODE");
 				String bankCode = mapBicAndBankCode.get("BANK_BRANCH");
-				if (bicCode != null) {
+				if(bicCode != null) {
 					bicValue = mapBICandBankDt.get(bicCode.trim());
 				}
-				if (bankCode != null) {
+				if(bankCode != null) {
 					bankBranch = mapBICandBankDt.get(bankCode.trim());
 				}
 			}
 
 			beneficiaryDto.setBic_indicator(bicValue);
+			beneficiaryDto.setBeneficiary_bank_branch_indicator(bankBranch);
 
 			beneficiaryDto.setBeneficiary_bank_code(beneficiaryDetailsDTO.getBankCode());
-			if (beneficiaryDetailsDTO.getBranchCode() != null) {
+			if(beneficiaryDetailsDTO.getBranchCode() != null) {
 				beneficiaryDto.setBeneficiary_branch_code(beneficiaryDetailsDTO.getBranchCode().toString());
 			}
 			beneficiaryDto.setBeneficiary_bank_branch_swift_code(beneficiaryDetailsDTO.getSwiftBic());
-			if (beneficiaryDetailsDTO.getServiceProvider() != null) {
+			if(beneficiaryDetailsDTO.getServiceProvider() != null) {
 				beneficiaryDto.setWallet_service_provider(beneficiaryDetailsDTO.getServiceProvider().toString());
 			}
 
@@ -538,12 +474,11 @@ public class PartnerDataManager {
 			srvPrvResp = serviceProviderClient.getQuatation(quatationRequestDto);
 			LOGGER.info("Output from Service Provider Home Send : " + JsonUtil.toJson(srvPrvResp));
 
-		} catch (Exception e) {
-			LOGGER.error("Unable to get response from Service Provider Home Send : Exception " + e);
+		}catch (Exception e) {
+			LOGGER.error("Unable to get response from Service Provider Home Send : Exception " +e);
+			LOGGER.error("Unable to get response from Service Provider Home Send : Exception " + JsonUtil.toJson(srvPrvFeeInqReqDTO) + " : serviceProviderRateView : " + JsonUtil.toJson(serviceProviderRateView) + " : amount : " + amount);
 			throw new PricerServiceException(PricerServiceError.INVALID_FETCH_SERVICE_PROVIDE_DATA,
-					"Unable to get response from Service Provider Home Send : srvPrvFeeInqReqDTO : "
-							+ JsonUtil.toJson(srvPrvFeeInqReqDTO) + " : serviceProviderRateView : "
-							+ JsonUtil.toJson(serviceProviderRateView) + " : amount : " + amount);
+					"Unable to get response from Service Provider Home Send : srvPrvFeeInqReqDTO : " + JsonUtil.toJson(srvPrvFeeInqReqDTO) + " : serviceProviderRateView : " + JsonUtil.toJson(serviceProviderRateView) + " : amount : " + amount);
 		}
 		return srvPrvResp;
 	}
@@ -565,7 +500,7 @@ public class PartnerDataManager {
 		HashMap<String, String> mapParam = new HashMap<String, String>();
 		mapParam.put("BIC_CODE", null);
 		mapParam.put("BANK_BRANCH", null);
-		ParameterDetailsModel parameterDetails = partnerServiceDao.fetchServPrvBankCode("HSBS", beneCountryCode);
+		ParameterDetailsModel parameterDetails = partnerServiceDao.fetchServPrvBankCode(PricerServiceConstants.PARAM_BIC_BRANCH, beneCountryCode);
 		if (parameterDetails != null) {
 			mapParam.put("BIC_CODE", parameterDetails.getCharField3());
 			mapParam.put("BANK_BRANCH", parameterDetails.getCharField4());
@@ -574,7 +509,7 @@ public class PartnerDataManager {
 	}
 
 	// fetch alpha codes
-	public HashMap<String, Object> fetchCountryAlphaCode(BigDecimal countryId) {
+	public HashMap<String, Object> fetchCountryAlphaCode(BigDecimal countryId){
 		HashMap<String, Object> countryObj = new HashMap<String, Object>();
 		CountryMasterModel countryAplhaCode = partnerServiceDao.fetchCountryMasterDetails(countryId);
 		if (countryAplhaCode != null) {
@@ -585,27 +520,28 @@ public class PartnerDataManager {
 	}
 
 	// fetch beneficiary details
-	public BeneficiaryDetailsDTO fetchBeneficiaryDetails(BigDecimal customerId, BigDecimal beneficiaryRelationShipId) {
+	public BeneficiaryDetailsDTO fetchBeneficiaryDetails(BigDecimal customerId,BigDecimal beneficiaryRelationShipId,BigDecimal foreignCurrencyId) {
 		BeneficiaryDetailsDTO beneficiaryDto = new BeneficiaryDetailsDTO();
-		BenificiaryListView beneficaryDetails = partnerServiceDao.getBeneficiaryDetails(customerId,
-				beneficiaryRelationShipId);
-		if (beneficaryDetails != null) {
+		BenificiaryListView beneficaryDetails = partnerServiceDao.getBeneficiaryDetails(customerId,beneficiaryRelationShipId);
+		if(beneficaryDetails != null) {
 			try {
-				BeanUtils.copyProperties(beneficiaryDto, beneficaryDetails);
+				if(foreignCurrencyId != null && foreignCurrencyId.compareTo(beneficaryDetails.getCurrencyId()) == 0) {
+					BeanUtils.copyProperties(beneficiaryDto, beneficaryDetails);
+				}else {
+					LOGGER.error("Unable to convert Beneficiary Details : None Found : Customer Id " + customerId + " Beneficiary Relation Ship Id " + beneficiaryRelationShipId + " Req Foreign CurrencyId " + foreignCurrencyId + " Bene Foreign CurrencyId " +beneficaryDetails.getCurrencyId());
+					throw new PricerServiceException(PricerServiceError.INVALID_BENEFICIARY,
+							"Unable to convert Beneficiary Details : None Found : Customer Id " + customerId + " Beneficiary Relation Ship Id " + beneficiaryRelationShipId + " Req Foreign CurrencyId " + foreignCurrencyId + " Bene Foreign CurrencyId " +beneficaryDetails.getCurrencyId());
+				}
 			} catch (IllegalAccessException | InvocationTargetException e) {
-				LOGGER.error("Unable to convert Beneficiary Details : None Found : Customer Id " + customerId
-						+ " Beneficiary Relation Ship Id " + beneficiaryRelationShipId + " Exception " + e);
+				LOGGER.error("Unable to convert Beneficiary Details : None Found : Customer Id " + customerId + " Beneficiary Relation Ship Id " + beneficiaryRelationShipId + " Foreign CurrencyId " + foreignCurrencyId + " Exception " +e);
 				throw new PricerServiceException(PricerServiceError.INVALID_BENEFICIARY,
-						"Unable to convert Beneficiary Details : None Found : Customer Id " + customerId
-								+ " Beneficiary Relation Ship Id " + beneficiaryRelationShipId);
+						"Unable to convert Beneficiary Details : None Found : Customer Id " + customerId + " Beneficiary Relation Ship Id " + beneficiaryRelationShipId + " Foreign CurrencyId " + foreignCurrencyId);
 			}
-		} else {
+		}else {
 			// fail
-			LOGGER.warn("Invalid Beneficiary Details : None Found : Customer Id " + customerId
-					+ " Beneficiary Relation Ship Id " + beneficiaryRelationShipId);
+			LOGGER.error("Invalid Beneficiary Details : None Found : Customer Id " + customerId + " Beneficiary Relation Ship Id " + beneficiaryRelationShipId + " Foreign CurrencyId " + foreignCurrencyId);
 			throw new PricerServiceException(PricerServiceError.INVALID_BENEFICIARY,
-					"Invalid Beneficiary Details : None Found : Customer Id " + customerId
-							+ " Beneficiary Relation Ship Id " + beneficiaryRelationShipId);
+					"Invalid Beneficiary Details : None Found : Customer Id " + customerId + " Beneficiary Relation Ship Id " + beneficiaryRelationShipId + " Foreign CurrencyId " + foreignCurrencyId);
 		}
 
 		return beneficiaryDto;
@@ -615,15 +551,15 @@ public class PartnerDataManager {
 	public CustomerDetailsDTO fetchCustomerDetails(BigDecimal customerId) {
 		CustomerDetailsDTO customerdto = new CustomerDetailsDTO();
 		CustomerDetailsView customerDetails = partnerServiceDao.getCustomerDetails(customerId);
-		if (customerDetails != null) {
+		if(customerDetails != null) {
 			try {
 				BeanUtils.copyProperties(customerdto, customerDetails);
 			} catch (IllegalAccessException | InvocationTargetException e) {
-				LOGGER.error("Unable to convert Customer Details : None Found : " + customerId + " Exception " + e);
+				LOGGER.error("Unable to convert Customer Details : None Found : " + customerId + " Exception " +e);
 				throw new PricerServiceException(PricerServiceError.INVALID_CUSTOMER,
 						"Unable to convert Customer Details : None Found : " + customerId);
 			}
-		} else {
+		}else {
 			// fail
 			LOGGER.warn("Invalid Customer : None Found : " + customerId);
 			throw new PricerServiceException(PricerServiceError.INVALID_CUSTOMER,
@@ -640,47 +576,41 @@ public class PartnerDataManager {
 	}
 
 	// fetch currency Master for Settlement currency "USD" for Home Send
-	public CurrencyMasterModel fetchCurrencyMasterDetails(String currencyCode, String isActive) {
+	public CurrencyMasterModel fetchCurrencyMasterDetails(String currencyCode,String isActive) {
 		CurrencyMasterModel currencyMasterModel = null;
-		List<CurrencyMasterModel> currencyMasterDetails = partnerServiceDao.fetchCurrencyMasterDetails(currencyCode,
-				isActive);
-		if (currencyMasterDetails != null && currencyMasterDetails.size() != 0) {
-			if (currencyMasterDetails.size() == 1) {
+		List<CurrencyMasterModel> currencyMasterDetails = partnerServiceDao.fetchCurrencyMasterDetails(currencyCode,isActive);
+		if(currencyMasterDetails != null && currencyMasterDetails.size() != 0) {
+			if(currencyMasterDetails.size() == 1) {
 				currencyMasterModel = currencyMasterDetails.get(0);
-			} else {
+			}else {
 				// fail multiple records
-				LOGGER.warn("Multiple ISO Currency Code Details : " + currencyCode);
+				LOGGER.warn("Multiple ISO Currency Code Details : " + currencyCode );
 				throw new PricerServiceException(PricerServiceError.INVALID_CURRENCY,
-						"Multiple ISO Currency Code Details : " + currencyCode);
+						"Multiple ISO Currency Code Details : " + currencyCode );
 			}
 		}
 		return currencyMasterModel;
 	}
 
-	// fetch margin from foreign country , currency , remittance and delivery code
-	// data
+	// fetch margin from foreign country , currency , remittance and delivery code data
 	public ServiceProviderRateView fetchMarginByProduct(ProductDetailsDTO productDetailsDTO) {
-		ServiceProviderRateView serviceProviderRateView = partnerServiceDao.fetchMarginByProduct(
-				productDetailsDTO.getCountryId(), productDetailsDTO.getBankId(), productDetailsDTO.getCurrencyId(),
-				productDetailsDTO.getRemittanceId(), productDetailsDTO.getDeliveryId());
+		ServiceProviderRateView serviceProviderRateView = partnerServiceDao.fetchMarginByProduct(productDetailsDTO.getCountryId(), productDetailsDTO.getBankId(), productDetailsDTO.getCurrencyId(), productDetailsDTO.getRemittanceId(), productDetailsDTO.getDeliveryId());
 		return serviceProviderRateView;
 	}
 
 	// check bank service rule defined
 	public BankServiceRule fetchBankserviceRule(ProductDetailsDTO productDetailsDTO) {
 		BankServiceRule bankServiceRuleDt = new BankServiceRule();
-		List<BankServiceRule> bankServiceRule = partnerServiceDao.fetchBankServiceRuleDetails(
-				productDetailsDTO.getCountryId(), productDetailsDTO.getBankId(), productDetailsDTO.getCurrencyId(),
-				productDetailsDTO.getRemittanceId(), productDetailsDTO.getDeliveryId());
-		if (bankServiceRule != null && bankServiceRule.size() != 0) {
-			if (bankServiceRule.size() == 1) {
+		List<BankServiceRule> bankServiceRule = partnerServiceDao.fetchBankServiceRuleDetails(productDetailsDTO.getCountryId(), productDetailsDTO.getBankId(), productDetailsDTO.getCurrencyId(), productDetailsDTO.getRemittanceId(), productDetailsDTO.getDeliveryId());
+		if(bankServiceRule != null && bankServiceRule.size() != 0) {
+			if(bankServiceRule.size() == 1) {
 				bankServiceRuleDt = bankServiceRule.get(0);
-			} else {
+			}else {
 				LOGGER.warn("Multiple Bank Service Rule" + JsonUtil.toJson(productDetailsDTO));
 				throw new PricerServiceException(PricerServiceError.MULTIPLE_BANK_SERVICE_RULE,
 						"Multiple Bank Service Rule : None Found : " + JsonUtil.toJson(productDetailsDTO));
 			}
-		} else {
+		}else {
 			// fail
 			LOGGER.warn("Invalid Bank Service Rule" + JsonUtil.toJson(productDetailsDTO));
 			throw new PricerServiceException(PricerServiceError.INVALID_BANK_SERVICE_RULE,
@@ -690,31 +620,22 @@ public class PartnerDataManager {
 	}
 
 	// fetch bank Service Rule for charges
-	public BankCharges fetchBankChargesServiceProvider(BigDecimal bankServiceRuleId, BigDecimal fcAmount,
-			BigDecimal chargesFor, String chargesType) {
+	public BankCharges fetchBankChargesServiceProvider(BigDecimal bankServiceRuleId,BigDecimal fcAmount,BigDecimal chargesFor,String chargesType) {
 		BankCharges bankChargesDt = new BankCharges();
-		List<BankCharges> bankCharges = partnerServiceDao.fetchBankChargesDetails(bankServiceRuleId, fcAmount,
-				chargesFor, chargesType);
-		if (bankCharges != null && bankCharges.size() != 0) {
-			if (bankCharges.size() == 1) {
+		List<BankCharges> bankCharges = partnerServiceDao.fetchBankChargesDetails(bankServiceRuleId, fcAmount, chargesFor, chargesType);
+		if(bankCharges != null && bankCharges.size() != 0) {
+			if(bankCharges.size() == 1) {
 				bankChargesDt = bankCharges.get(0);
-			} else {
-				LOGGER.warn("Multiple Bank Charges : None Found : bankServiceRuleId : " + bankServiceRuleId
-						+ " : fcAmount : " + fcAmount + " : chargesFor : " + chargesFor + " : chargesType : "
-						+ chargesType);
+			}else {
+				LOGGER.warn("Multiple Bank Charges : None Found : bankServiceRuleId : " + bankServiceRuleId + " : fcAmount : " + fcAmount + " : chargesFor : " + chargesFor + " : chargesType : " + chargesType);
 				throw new PricerServiceException(PricerServiceError.MULTIPLE_BANK_CHARGES,
-						"Multiple Bank Charges : None Found : bankServiceRuleId : " + bankServiceRuleId
-								+ " : fcAmount : " + fcAmount + " : chargesFor : " + chargesFor + " : chargesType : "
-								+ chargesType);
+						"Multiple Bank Charges : None Found : bankServiceRuleId : " + bankServiceRuleId + " : fcAmount : " + fcAmount + " : chargesFor : " + chargesFor + " : chargesType : " + chargesType);
 			}
-		} else {
+		}else {
 			// fail
-			LOGGER.warn(
-					"Invalid Bank Charges : None Found : bankServiceRuleId : " + bankServiceRuleId + " : fcAmount : "
-							+ fcAmount + " : chargesFor : " + chargesFor + " : chargesType : " + chargesType);
+			LOGGER.warn("Invalid Bank Charges : None Found : bankServiceRuleId : " + bankServiceRuleId + " : fcAmount : " + fcAmount + " : chargesFor : " + chargesFor + " : chargesType : " + chargesType);
 			throw new PricerServiceException(PricerServiceError.INVALID_BANK_CHARGES,
-					"Invalid Bank Charges : None Found : bankServiceRuleId : " + bankServiceRuleId + " : fcAmount : "
-							+ fcAmount + " : chargesFor : " + chargesFor + " : chargesType : " + chargesType);
+					"Invalid Bank Charges : None Found : bankServiceRuleId : " + bankServiceRuleId + " : fcAmount : " + fcAmount + " : chargesFor : " + chargesFor + " : chargesType : " + chargesType);
 		}
 		return bankChargesDt;
 	}
@@ -722,108 +643,155 @@ public class PartnerDataManager {
 	// null checking for inputs
 	public void nullCheckValidation(SrvPrvFeeInqReqDTO srvPrvFeeInqReqDTO) {
 
-		if (null == srvPrvFeeInqReqDTO.getCustomerId()) {
+		if(null == srvPrvFeeInqReqDTO.getCustomerId() || (srvPrvFeeInqReqDTO.getCustomerId() != null && srvPrvFeeInqReqDTO.getCustomerId().compareTo(BigDecimal.ZERO) == 0)) {
 			LOGGER.warn("Invalid Customer : None Found : " + srvPrvFeeInqReqDTO.getCustomerId());
 			throw new PricerServiceException(PricerServiceError.INVALID_CUSTOMER,
 					"Invalid Customer : None Found : " + srvPrvFeeInqReqDTO.getCustomerId());
 		}
 
-		if (null == srvPrvFeeInqReqDTO.getBeneficiaryRelationShipId()) {
-			LOGGER.warn("Invalid Beneficiary Relation Id : None Found : "
-					+ srvPrvFeeInqReqDTO.getBeneficiaryRelationShipId());
+		if(null == srvPrvFeeInqReqDTO.getBeneficiaryRelationShipId() || (srvPrvFeeInqReqDTO.getBeneficiaryRelationShipId() != null && srvPrvFeeInqReqDTO.getBeneficiaryRelationShipId().compareTo(BigDecimal.ZERO) == 0)) {
+			LOGGER.warn("Invalid Beneficiary Relation Id : None Found : " + srvPrvFeeInqReqDTO.getBeneficiaryRelationShipId());
 			throw new PricerServiceException(PricerServiceError.INVALID_BENEFICIARY_RELATIONSHIP_ID,
-					"Invalid Beneficiary Relation Id : None Found : "
-							+ srvPrvFeeInqReqDTO.getBeneficiaryRelationShipId());
+					"Invalid Beneficiary Relation Id : None Found : " + srvPrvFeeInqReqDTO.getBeneficiaryRelationShipId());
 		}
 
-		if (null == srvPrvFeeInqReqDTO.getForeignCurrencyId()) {
+		if(null == srvPrvFeeInqReqDTO.getForeignCurrencyId() || (srvPrvFeeInqReqDTO.getForeignCurrencyId() != null && srvPrvFeeInqReqDTO.getForeignCurrencyId().compareTo(BigDecimal.ZERO) == 0)) {
 			LOGGER.warn("Invalid Foreign Currency Id : None Found : " + srvPrvFeeInqReqDTO.getForeignCurrencyId());
 			throw new PricerServiceException(PricerServiceError.INVALID_CURRENCY,
 					"Invalid Foreign Currency Id : None Found : " + srvPrvFeeInqReqDTO.getForeignCurrencyId());
 		}
 
-		if (null == srvPrvFeeInqReqDTO.getLocalCurrencyId()) {
+		if(null == srvPrvFeeInqReqDTO.getLocalCurrencyId() || (srvPrvFeeInqReqDTO.getLocalCurrencyId() != null && srvPrvFeeInqReqDTO.getLocalCurrencyId().compareTo(BigDecimal.ZERO) == 0)) {
 			LOGGER.warn("Invalid local Currency Id : None Found : " + srvPrvFeeInqReqDTO.getLocalCurrencyId());
 			throw new PricerServiceException(PricerServiceError.INVALID_CURRENCY,
 					"Invalid local Currency Id : None Found : " + srvPrvFeeInqReqDTO.getLocalCurrencyId());
 		}
 
-		if (null == srvPrvFeeInqReqDTO.getSelectedCurrency()) {
+		if(null == srvPrvFeeInqReqDTO.getSelectedCurrency() || (srvPrvFeeInqReqDTO.getSelectedCurrency() != null && srvPrvFeeInqReqDTO.getSelectedCurrency().compareTo(BigDecimal.ZERO) == 0)) {
 			LOGGER.warn("Invalid selected Currency Id : None Found : " + srvPrvFeeInqReqDTO.getSelectedCurrency());
 			throw new PricerServiceException(PricerServiceError.INVALID_CURRENCY,
 					"Invalid selected Currency Id : None Found : " + srvPrvFeeInqReqDTO.getSelectedCurrency());
 		}
 
-		if (null == srvPrvFeeInqReqDTO.getRemittanceId()) {
-			LOGGER.warn("Invalid Remittance Id : None Found : " + srvPrvFeeInqReqDTO.getRemittanceId());
-			throw new PricerServiceException(PricerServiceError.INVALID_REMITTANCE_ID,
-					"Invalid Remittance Id : None Found : " + srvPrvFeeInqReqDTO.getRemittanceId());
-		}
-
-		if (null == srvPrvFeeInqReqDTO.getDeliveryId()) {
-			LOGGER.warn("Invalid Delivery Id : None Found : " + srvPrvFeeInqReqDTO.getDeliveryId());
-			throw new PricerServiceException(PricerServiceError.INVALID_DELIVERY_ID,
-					"Invalid Delivery Id : None Found : " + srvPrvFeeInqReqDTO.getDeliveryId());
-		}
-
-		if (null == srvPrvFeeInqReqDTO.getAmount()) {
+		if(null == srvPrvFeeInqReqDTO.getAmount() || (srvPrvFeeInqReqDTO.getAmount() != null && srvPrvFeeInqReqDTO.getAmount().compareTo(BigDecimal.ZERO) == 0)) {
 			LOGGER.warn("Invalid Amount : None Found : " + srvPrvFeeInqReqDTO.getAmount());
 			throw new PricerServiceException(PricerServiceError.MISSING_AMOUNT,
 					"Invalid Amount : None Found : " + srvPrvFeeInqReqDTO.getAmount());
 		}
 
-		if (null == srvPrvFeeInqReqDTO.getApplicationCountryId()) {
-			LOGGER.warn(
-					"Invalid Application Country Id : None Found : " + srvPrvFeeInqReqDTO.getApplicationCountryId());
+		if(null == srvPrvFeeInqReqDTO.getApplicationCountryId() || (srvPrvFeeInqReqDTO.getApplicationCountryId() != null && srvPrvFeeInqReqDTO.getApplicationCountryId().compareTo(BigDecimal.ZERO) == 0)) {
+			LOGGER.warn("Invalid Application Country Id : None Found : " + srvPrvFeeInqReqDTO.getApplicationCountryId());
 			throw new PricerServiceException(PricerServiceError.MISSING_COUNTRY_ID,
 					"Invalid Application Country Id : None Found : " + srvPrvFeeInqReqDTO.getApplicationCountryId());
 		}
 
-		if (null == srvPrvFeeInqReqDTO.getDestinationCountryId()) {
-			LOGGER.warn(
-					"Invalid Destination Country Id : None Found : " + srvPrvFeeInqReqDTO.getDestinationCountryId());
+		if(null == srvPrvFeeInqReqDTO.getDestinationCountryId() || (srvPrvFeeInqReqDTO.getDestinationCountryId() != null && srvPrvFeeInqReqDTO.getDestinationCountryId().compareTo(BigDecimal.ZERO) == 0)) {
+			LOGGER.warn("Invalid Destination Country Id : None Found : " + srvPrvFeeInqReqDTO.getDestinationCountryId());
 			throw new PricerServiceException(PricerServiceError.MISSING_COUNTRY_ID,
 					"Invalid Destination Country Id : None Found : " + srvPrvFeeInqReqDTO.getDestinationCountryId());
 		}
-
-		if (null == srvPrvFeeInqReqDTO.getRoutingBankId()) {
-			LOGGER.warn("Invalid Routing Bank Id : None Found : " + srvPrvFeeInqReqDTO.getRoutingBankId());
-			throw new PricerServiceException(PricerServiceError.MISSING_ROUTING_BANK_IDS,
-					"Invalid Routing Bank Id : None Found : " + srvPrvFeeInqReqDTO.getRoutingBankId());
+		
+		if(null == srvPrvFeeInqReqDTO.getRoutingBankDetails()) {
+			LOGGER.warn("Invalid Routing Bank Details : None Found : " + srvPrvFeeInqReqDTO.getRoutingBankDetails());
+			throw new PricerServiceException(PricerServiceError.MISSING_ROUTING_BANK_DETAILS,
+					"Invalid Routing Bank Details : None Found : " + srvPrvFeeInqReqDTO.getRoutingBankDetails());
 		}
 
 	}
 
 	// validate the exchange Rate min and max
-	public void validateExchangeRate(BigDecimal exchangeRate, BigDecimal fundMinRate, BigDecimal fundMaxRate) {
+	public void validateExchangeRate(BigDecimal exchangeRate,BigDecimal fundMinRate,BigDecimal fundMaxRate) {
 
-		if (null == exchangeRate) {
+		if(null == exchangeRate || (exchangeRate != null && exchangeRate.compareTo(BigDecimal.ZERO) == 0)) {
 			LOGGER.warn("Missing Settlement Currency Exchange Rate : " + exchangeRate);
 			throw new PricerServiceException(PricerServiceError.MISSING_VALID_EXCHANGE_RATES,
-					"Missing Settlement Currency Exchange Rate : " + exchangeRate);
+					"Missing Settlement Currency Exchange Rate : " + exchangeRate );
 		}
 
-		if (null == fundMinRate) {
+		if(null == fundMinRate || (fundMinRate != null && fundMinRate.compareTo(BigDecimal.ZERO) == 0)) {
 			LOGGER.warn("Missing Fund Min Exchange Rate : " + fundMinRate);
 			throw new PricerServiceException(PricerServiceError.MISSING_VALID_EXCHANGE_RATES,
 					"Missing Fund Min Exchange Rate : " + fundMinRate);
 		}
 
-		if (null == fundMaxRate) {
+		if(null == fundMaxRate || (fundMaxRate != null && fundMaxRate.compareTo(BigDecimal.ZERO) == 0)) {
 			LOGGER.warn("Missing Fund Max Exchange Rate : " + fundMaxRate);
 			throw new PricerServiceException(PricerServiceError.MISSING_VALID_EXCHANGE_RATES,
 					"Missing Fund Max Exchange Rate : " + fundMaxRate);
 		}
 
-		if (exchangeRate.compareTo(fundMinRate) >= 0 && exchangeRate.compareTo(fundMaxRate) <= 0) {
+		if(exchangeRate.compareTo(fundMinRate) >= 0 && exchangeRate.compareTo(fundMaxRate) <= 0) {
 			// valid
-		} else {
-			LOGGER.warn("Settlement Exchange Rate not in min and max : exchangeRate : " + exchangeRate
-					+ " : fundMinRate :" + fundMinRate + " : fundMaxRate : " + fundMaxRate);
+		}else {
+			LOGGER.warn("Settlement Exchange Rate not in min and max : exchangeRate : " + exchangeRate + " : fundMinRate :" + fundMinRate + " : fundMaxRate : " + fundMaxRate);
 			throw new PricerServiceException(PricerServiceError.MISSING_VALID_EXCHANGE_RATES,
-					"Settlement Exchange Rate not in min and max : exchangeRate : " + exchangeRate + " : fundMinRate :"
-							+ fundMinRate + " : fundMaxRate : " + fundMaxRate);
+					"Settlement Exchange Rate not in min and max : exchangeRate : " + exchangeRate + " : fundMinRate :" + fundMinRate + " : fundMaxRate : " + fundMaxRate);
 		}
 	}
+	
+	// setting the Home Send Data
+	public HomeSendInfoDTO fetchHomeSendData(ServiceProviderResponse serviceProviderResponse,Quotation_Call_Response quotationCall) {
+		
+		HomeSendInfoDTO homeSendInfoDTO = new HomeSendInfoDTO();
+		homeSendInfoDTO.setAction_ind(serviceProviderResponse.getAction_ind());
+		homeSendInfoDTO.setCredited_amount_in_destination_currency(quotationCall.getCredited_amount_in_destination_currency());
+		homeSendInfoDTO.setDestination_currency(quotationCall.getDestination_currency());
+		homeSendInfoDTO.setFix_charged_amount_in_settlement_currency(quotationCall.getFix_charged_amount_in_settlement_currency());
+		homeSendInfoDTO.setInitial_amount_in_settlement_currency(quotationCall.getInitial_amount_in_settlement_currency());
+		homeSendInfoDTO.setOffer_expiration_date(quotationCall.getOffer_expiration_date());
+		homeSendInfoDTO.setPartner_transaction_reference(quotationCall.getPartner_transaction_reference());
+		homeSendInfoDTO.setRequest_XML(serviceProviderResponse.getRequest_XML());
+		homeSendInfoDTO.setResponse_code(serviceProviderResponse.getResponse_code());
+		homeSendInfoDTO.setResponse_description(serviceProviderResponse.getResponse_description());
+		homeSendInfoDTO.setResponse_XML(serviceProviderResponse.getResponse_XML());
+		homeSendInfoDTO.setSettlement_currency(quotationCall.getSettlement_currency());
+		homeSendInfoDTO.setTechnical_details(serviceProviderResponse.getTechnical_details());
+		homeSendInfoDTO.setTotal_charged_amount_in_settlement_currency(quotationCall.getTotal_charged_amount_in_settlement_currency());
+		homeSendInfoDTO.setVariable_charged_amount_in_settlement_currency(quotationCall.getVariable_charged_amount_in_settlement_currency());
+		homeSendInfoDTO.setWhole_sale_fx_rate(quotationCall.getWhole_sale_fx_rate());
+		homeSendInfoDTO.setBeneficiaryDeduct(Boolean.FALSE);
+		
+		return homeSendInfoDTO;
+	}
+	
+	public ProductDetailsDTO fetchProductDetails(SrvPrvFeeInqReqDTO srvPrvFeeInqReqDTO) {
+		
+		ProductDetailsDTO productDetailsDTO = new ProductDetailsDTO();
+		
+		productDetailsDTO.setCountryId(srvPrvFeeInqReqDTO.getDestinationCountryId());
+		productDetailsDTO.setCurrencyId(srvPrvFeeInqReqDTO.getForeignCurrencyId());
+		
+		if(srvPrvFeeInqReqDTO.getRoutingBankDetails() != null) {
+			for (RoutingBankDetails routing : srvPrvFeeInqReqDTO.getRoutingBankDetails()) {
+				validateProduct(routing);
+				productDetailsDTO.setBankId(routing.getRoutingBankId());
+				productDetailsDTO.setRemittanceId(routing.getRemittanceId());
+				productDetailsDTO.setDeliveryId(routing.getDeliveryId());
+			}
+		}
+		
+		return productDetailsDTO;
+	}
+	
+	public void validateProduct(RoutingBankDetails routingBankDetails) {
+		if(null == routingBankDetails.getRoutingBankId() || (routingBankDetails.getRoutingBankId() != null && routingBankDetails.getRoutingBankId().compareTo(BigDecimal.ZERO) == 0)) {
+			LOGGER.warn("Invalid Routing Bank Id : None Found : " + routingBankDetails.getRoutingBankId());
+			throw new PricerServiceException(PricerServiceError.MISSING_ROUTING_BANK_IDS,
+					"Invalid Routing Bank Id : None Found : " + routingBankDetails.getRoutingBankId());
+		}
+
+		if(null == routingBankDetails.getRemittanceId() || (routingBankDetails.getRemittanceId() != null && routingBankDetails.getRemittanceId().compareTo(BigDecimal.ZERO) == 0)) {
+			LOGGER.warn("Invalid Remittance Id : None Found : " + routingBankDetails.getRemittanceId());
+			throw new PricerServiceException(PricerServiceError.INVALID_REMITTANCE_ID,
+					"Invalid Remittance Id : None Found : " + routingBankDetails.getRemittanceId());
+		}
+
+		if(null == routingBankDetails.getDeliveryId() || (routingBankDetails.getDeliveryId() != null && routingBankDetails.getDeliveryId().compareTo(BigDecimal.ZERO) == 0)) {
+			LOGGER.warn("Invalid Delivery Id : None Found : " + routingBankDetails.getDeliveryId());
+			throw new PricerServiceException(PricerServiceError.INVALID_DELIVERY_ID,
+					"Invalid Delivery Id : None Found : " + routingBankDetails.getDeliveryId());
+		}
+	}
+	
 
 }

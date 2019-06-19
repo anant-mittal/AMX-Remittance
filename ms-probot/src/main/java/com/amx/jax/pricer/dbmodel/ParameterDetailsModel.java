@@ -1,4 +1,4 @@
-package com.amx.jax.pricer.partner.dbmodel;
+package com.amx.jax.pricer.dbmodel;
 /**
  * Author	: Rabil
  * Date 	: 01/11/2018

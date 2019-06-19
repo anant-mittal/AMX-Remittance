@@ -1,4 +1,4 @@
-package com.amx.jax.pricer.partner.repository;
+package com.amx.jax.pricer.repository;
 
 import java.io.Serializable;
 import java.util.List;
@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
-import com.amx.jax.pricer.partner.dbmodel.ParameterDetailsModel;
+import com.amx.jax.pricer.dbmodel.ParameterDetailsModel;
 
 
 public interface IParameterDetailsRespository extends CrudRepository<ParameterDetailsModel, Serializable>{

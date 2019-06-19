@@ -22,6 +22,14 @@ public final class PricerServiceConstants {
 	public static final String Yes = "Y";
 	
 	public static final String ACTION_IND_I = "I";
+	public static final String ACTION_IND_C = "C";
+	public static final String ACTION_IND_T = "T";
+	public static final String ACTION_IND_U = "U";
+	public static final String ACTION_IND_R = "R";
+	
+	public static final String PARAM_BIC_BRANCH = "HSBS";
+	
+	public static final String PARAM_BENE_ADDRESS = "HSEC"; 
 	
 	public static final BigDecimal BOTH_BANK_SERVICE_COMPONENT = new BigDecimal(777);
 

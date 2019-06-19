@@ -9,5 +9,7 @@ import com.amx.jax.pricer.dbmodel.CountryMasterModel;
 
 @Transactional
 public interface CountryMasterRepository extends CrudRepository<CountryMasterModel, BigDecimal> {
+	
+	public CountryMasterModel findByCountryId(BigDecimal countryId);
 
 }

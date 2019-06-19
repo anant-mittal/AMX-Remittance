@@ -9,12 +9,14 @@ public class SrvPrvFeeInqResDTO implements Serializable {
 	private static final long serialVersionUID = -2594412775985894857L;
 	
 	private BigDecimal exchangeRateWithPips;
+	private BigDecimal exchangeRateWithoutPips;
 	private BigDecimal exchangeRateWithLocalAndSettlementCurrency;
 	private BigDecimal exchangeRateByServiceProvider;
 	private BigDecimal commissionAmount;
 	private BigDecimal localAmount;
 	private BigDecimal foreignAmount;
 	private BigDecimal grossAmount;
+	private BigDecimal margin;
 	private HomeSendInfoDTO homeSendInfoDTO;
 	
 	
@@ -74,4 +76,18 @@ public class SrvPrvFeeInqResDTO implements Serializable {
 		this.homeSendInfoDTO = homeSendInfoDTO;
 	}
 	
+	public BigDecimal getExchangeRateWithoutPips() {
+		return exchangeRateWithoutPips;
+	}
+	public void setExchangeRateWithoutPips(BigDecimal exchangeRateWithoutPips) {
+		this.exchangeRateWithoutPips = exchangeRateWithoutPips;
+	}
+	
+	public BigDecimal getMargin() {
+		return margin;
+	}
+	public void setMargin(BigDecimal margin) {
+		this.margin = margin;
+	}
+		
 }

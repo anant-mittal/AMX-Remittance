@@ -2,6 +2,7 @@ package com.amx.jax.partner.dto;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
@@ -22,9 +23,6 @@ public class SrvPrvFeeInqReqDTO implements Serializable {
 	@NotNull(message = "Destination Country Id can not be Null or Empty")
 	private BigDecimal destinationCountryId;
 	
-	@NotNull(message = "Rountry Bank Id can not be Null or Empty")
-	private BigDecimal routingBankId;
-	
 	@NotNull(message = "Local Currency Id can not be Null or Empty")
 	private BigDecimal localCurrencyId;
 
@@ -34,14 +32,19 @@ public class SrvPrvFeeInqReqDTO implements Serializable {
 	@NotNull(message="Selected Currency Id can not be Null or Empty")
 	private BigDecimal selectedCurrency;
 	
-	@NotNull(message="Remittance Id can not be Null or Empty")
-	private BigDecimal remittanceId;
-	
-	@NotNull(message="Delivery Id can not be Null or Empty")
-	private BigDecimal deliveryId;
-	
 	@NotNull(message="amount can not be Null or Empty")
 	private BigDecimal amount;
+	
+	//@NotNull(message = "Rountry Bank Id can not be Null or Empty")
+	//private BigDecimal routingBankId;
+	
+	//@NotNull(message="Remittance Id can not be Null or Empty")
+	//private BigDecimal remittanceId;
+	
+	//@NotNull(message="Delivery Id can not be Null or Empty")
+	//private BigDecimal deliveryId;
+	
+	private List<RoutingBankDetails> routingBankDetails;
 	
 	public BigDecimal getCustomerId() {
 		return customerId;
@@ -85,6 +88,27 @@ public class SrvPrvFeeInqReqDTO implements Serializable {
 		this.foreignCurrencyId = foreignCurrencyId;
 	}
 	
+	public BigDecimal getDestinationCountryId() {
+		return destinationCountryId;
+	}
+	public void setDestinationCountryId(BigDecimal destinationCountryId) {
+		this.destinationCountryId = destinationCountryId;
+	}
+	
+	public BigDecimal getApplicationCountryId() {
+		return applicationCountryId;
+	}
+	public void setApplicationCountryId(BigDecimal applicationCountryId) {
+		this.applicationCountryId = applicationCountryId;
+	}
+	
+	/*public BigDecimal getRoutingBankId() {
+		return routingBankId;
+	}
+	public void setRoutingBankId(BigDecimal routingBankId) {
+		this.routingBankId = routingBankId;
+	}
+	
 	public BigDecimal getRemittanceId() {
 		return remittanceId;
 	}
@@ -97,27 +121,13 @@ public class SrvPrvFeeInqReqDTO implements Serializable {
 	}
 	public void setDeliveryId(BigDecimal deliveryId) {
 		this.deliveryId = deliveryId;
-	}
+	}*/
 	
-	public BigDecimal getDestinationCountryId() {
-		return destinationCountryId;
+	public List<RoutingBankDetails> getRoutingBankDetails() {
+		return routingBankDetails;
 	}
-	public void setDestinationCountryId(BigDecimal destinationCountryId) {
-		this.destinationCountryId = destinationCountryId;
+	public void setRoutingBankDetails(List<RoutingBankDetails> routingBankDetails) {
+		this.routingBankDetails = routingBankDetails;
 	}
-	
-	public BigDecimal getRoutingBankId() {
-		return routingBankId;
-	}
-	public void setRoutingBankId(BigDecimal routingBankId) {
-		this.routingBankId = routingBankId;
-	}
-	
-	public BigDecimal getApplicationCountryId() {
-		return applicationCountryId;
-	}
-	public void setApplicationCountryId(BigDecimal applicationCountryId) {
-		this.applicationCountryId = applicationCountryId;
-	}
-			
+				
 }

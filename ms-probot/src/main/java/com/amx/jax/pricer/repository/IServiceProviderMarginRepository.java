@@ -1,4 +1,4 @@
-package com.amx.jax.pricer.partner.repository;
+package com.amx.jax.pricer.repository;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
-import com.amx.jax.pricer.partner.dbmodel.ServiceProviderRateView;
+import com.amx.jax.pricer.dbmodel.ServiceProviderRateView;
 
 public interface IServiceProviderMarginRepository extends CrudRepository<ServiceProviderRateView, Serializable> {
 
