@@ -49,6 +49,9 @@ public class DocumentScanValidator {
 		}
 		CustomerDocumentTypeMaster docTypeMaster = customerDocMasterManager.getDocTypeMaster(uploadCustomerDocumentRequest.getDocumentCategory(),
 				uploadCustomerDocumentRequest.getDocumentType());
+		if(docTypeMaster == null) {
+			throw new GlobalException("No doc type master found in db");
+		}
 		CustomerDocumentUploadReference existing = customerDocumentUploadReferenceRepo.findByCustomerDocumentTypeMasterAndCustomerId(docTypeMaster,
 				metaData.getCustomerId());
 		if (existing != null && ConstantDocument.Yes.equals(existing.getStatus())) {

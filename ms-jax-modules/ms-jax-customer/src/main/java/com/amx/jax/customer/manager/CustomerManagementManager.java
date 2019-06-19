@@ -198,11 +198,11 @@ public class CustomerManagementManager {
 
 	@Transactional
 	public AmxApiResponse<CustomerInfo, Object> createCustomer(CreateCustomerInfoRequest createCustomerInfoRequest) throws ParseException {
+		customerManagementValidation.validateCustomerDataForCreate(createCustomerInfoRequest);
 		customerManagementValidation.validateDocumentsData(createCustomerInfoRequest);
 		AmxApiResponse<CustomerInfo, Object> response = offsitCustRegService.saveCustomerInfo(createCustomerInfoRequest);
 		BigDecimal customerId = response.getResult().getCustomerId();
 		setAdditionalDataForCreateCustomer(createCustomerInfoRequest, customerId);
-		customerDocumentManager.addCustomerDocument(customerId);
 		return response;
 	}
 

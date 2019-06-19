@@ -58,17 +58,17 @@ public class UpdateCustomerInfoRequest implements CustomerDocValidationData {
 
 	@Override
 	public BigDecimal getIncomeRangeId() {
-		return employmentDetail.getIncomeRangeId();
+		return employmentDetail != null ? employmentDetail.getIncomeRangeId() : null;
 	}
 
 	@Override
 	public String getEmployer() {
-		return employmentDetail.getEmployer();
+		return employmentDetail != null ? employmentDetail.getEmployer() : null;
 	}
 
 	@Override
 	public BigDecimal getArticleDetailsId() {
-		return employmentDetail.getArticleDetailsId();
+		return employmentDetail != null ? employmentDetail.getArticleDetailsId() : null;
 	}
 
 	@Override
@@ -78,11 +78,11 @@ public class UpdateCustomerInfoRequest implements CustomerDocValidationData {
 
 	@Override
 	public String getIdentityInt() {
-		return getIdentityInt();
+		return null;
 	}
 
 	@Override
 	public BigDecimal getIdentityTypeId() {
-		return getIdentityTypeId();
+		return null;
 	}
 }

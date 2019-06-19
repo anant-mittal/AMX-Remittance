@@ -93,6 +93,4 @@ public class CustomerDocumentUploadReference {
 	public void setDbScanRef(DbScanRef dbScanRef) {
 		this.dbScanRef = dbScanRef;
 	}
-
-
 }

@@ -63,7 +63,6 @@ public class CustomerManagementController implements ICustomerManagementControll
 			throws ParseException {
 		log.debug("request createCustomer  {}", JsonUtil.toJson(createCustomerRequest));
 		AmxApiResponse<CustomerInfo, Object> createCustomerResponse = customerManagementManager.createCustomer(createCustomerRequest);
-		customerManagementManager.moveCustomerDataUsingProcedures(createCustomerResponse.getResult().getCustomerId());
 		return createCustomerResponse;
 	}
 

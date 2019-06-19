@@ -119,7 +119,8 @@ public class DatabaseScanManager implements DocumentScanManager {
 
 	public BigDecimal uploadCustomerDocument(UploadCustomerDocumentRequest uploadCustomerDocumentRequest) {
 
-		CustomerDocumentTypeMaster docTypeMaster = customerDocMasterManager.getKycDocTypeMaster(uploadCustomerDocumentRequest.getIdentityTypeId());
+		CustomerDocumentTypeMaster docTypeMaster = customerDocMasterManager.getDocTypeMaster(uploadCustomerDocumentRequest.getDocumentCategory(),
+				uploadCustomerDocumentRequest.getDocumentType());
 		customerDocumentUploadManager.findAndDeleteExistingUploadData(uploadCustomerDocumentRequest.getIdentityInt(),
 				uploadCustomerDocumentRequest.getIdentityTypeId(), docTypeMaster);
 		CustomerDocumentUploadReferenceTemp docUploadRef = new CustomerDocumentUploadReferenceTemp();

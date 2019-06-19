@@ -4,8 +4,11 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -21,12 +24,14 @@ import com.amx.jax.dbmodel.IdentityTypeMaster;
 import com.amx.jax.dbmodel.customer.CustomerDocumentTypeMaster;
 import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReferenceTemp;
 import com.amx.jax.model.customer.CustomerDocumentInfo;
+import com.amx.jax.model.customer.CustomerKycData;
 import com.amx.jax.model.customer.document.UploadCustomerDocumentRequest;
 import com.amx.jax.model.customer.document.UploadCustomerDocumentResponse;
 import com.amx.jax.model.customer.document.UploadCustomerKycRequest;
 import com.amx.jax.model.customer.document.UploadCustomerKycResponse;
 import com.amx.jax.userservice.manager.CustomerIdProofManager;
 import com.amx.jax.userservice.service.UserService;
+import com.amx.utils.JsonUtil;
 import com.jax.amxlib.exception.jax.GlobaLException;
 
 @Component
@@ -47,6 +52,8 @@ public class CustomerDocumentManager {
 	CustomerKycManager customerKycManager;
 	@Autowired
 	CustomerDocMasterManager customerDocMasterManager;
+
+	private static final Logger log = LoggerFactory.getLogger(CustomerDocumentManager.class);
 
 	public List<CustomerDocumentInfo> getCustomerUploadDocuments(BigDecimal customerId) {
 
@@ -113,6 +120,7 @@ public class CustomerDocumentManager {
 				break;
 			}
 		}
+		checkAndActivateCustomer(uploads, customerId);
 	}
 
 	public void moveCustomerDBDocuments(BigDecimal customerId) {
@@ -137,4 +145,30 @@ public class CustomerDocumentManager {
 		return new UploadCustomerDocumentResponse(blobId);
 	}
 
+	public void checkAndActivateCustomer(List<CustomerDocumentUploadReferenceTemp> uploads, BigDecimal customerId) {
+		Customer customer = userService.getCustById(customerId);
+		CustomerDocumentTypeMaster kycDocTypeMaster = customerDocMasterManager.getKycDocTypeMaster(customer.getIdentityTypeId());
+		Optional<CustomerDocumentUploadReferenceTemp> kycUpload = uploads.stream()
+				.filter(i -> kycDocTypeMaster.getDocumentCategory().equals(i.getCustomerDocumentTypeMaster().getDocumentCategory())).findFirst();
+		if (!kycUpload.isPresent()) {
+			return;
+		}
+		log.info("activating customer");
+		// TODO look for comlinace blocked customer and dont acitvate
+		List<CustomerIdProof> idProofs = customerIdProofManager.fetchCustomerIdProofsForCustomerActivation(customerId);
+		if (idProofs.size() > 1) {
+			throw new GlobaLException("duplicate customer id proof records. Deactivate one of id proof with status 'C' or 'Y' ");
+		}
+		if (idProofs.size() == 0) {
+			throw new GlobaLException("kyc not added");
+		}
+
+		String data = kycUpload.get().getUploadData();
+		CustomerKycData customerKycData = JsonUtil.fromJson(data, CustomerKycData.class);
+
+		CustomerIdProof idProof = idProofs.get(0);
+		idProof.setIdentityStatus(ConstantDocument.Compliance);
+		customerIdProofManager.saveIdProof(idProof);
+		customerIdProofManager.activateCustomerPendingCompliance(customer, customerKycData.getExpiryDate());
+	}
 }

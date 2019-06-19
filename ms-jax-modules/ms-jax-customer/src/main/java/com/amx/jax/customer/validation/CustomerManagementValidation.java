@@ -14,15 +14,22 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.customer.document.manager.CustomerDocMasterManager;
 import com.amx.jax.customer.document.manager.CustomerDocumentUploadManager;
+import com.amx.jax.customer.manager.OffsiteCustomerRegManager;
 import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.CustomerIdProof;
+import com.amx.jax.dbmodel.DmsApplMapping;
 import com.amx.jax.dbmodel.customer.CustomerDocumentCategory;
 import com.amx.jax.dbmodel.customer.CustomerDocumentTypeMaster;
 import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReferenceTemp;
 import com.amx.jax.dbmodel.remittance.IDNumberLengthCheckView;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.customer.CreateCustomerInfoRequest;
 import com.amx.jax.model.customer.document.CustomerDocValidationResponseData;
 import com.amx.jax.model.request.customer.CustomerDocValidationData;
 import com.amx.jax.repository.remittance.IIdNumberLengthCheckRepository;
+import com.amx.jax.userservice.manager.CustomerIdProofManager;
+import com.amx.jax.userservice.service.UserService;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -34,6 +41,14 @@ public class CustomerManagementValidation {
 	CustomerDocumentUploadManager customerDocumentUploadManager;
 	@Autowired
 	CustomerDocMasterManager customerDocMasterManager;
+	@Autowired
+	UserService userService;
+	@Autowired
+	MetaData metaData;
+	@Autowired
+	OffsiteCustomerRegManager offsiteCustomerRegManager;
+	@Autowired
+	CustomerIdProofManager customerIdProofManager;
 
 	public void validateIdentityIntLength(String identityInt, BigDecimal identityTypeId) {
 
@@ -68,12 +83,27 @@ public class CustomerManagementValidation {
 	 * Used to validate doc upload data by customer
 	 */
 	public void validateDocumentsData(CustomerDocValidationData data) {
-		List<CustomerDocumentUploadReferenceTemp> customerUploads = customerDocumentUploadManager.getCustomerUploads(data.getIdentityInt(),
-				data.getIdentityTypeId());
+		String identityInt = data.getIdentityInt();
+		BigDecimal identityTypeId = data.getIdentityTypeId();
+		Customer customer = null;
+		if (metaData.getCustomerId() != null) {
+			customer = userService.getCustById(metaData.getCustomerId());
+			identityInt = customer.getIdentityInt();
+			identityTypeId = customer.getIdentityTypeId();
+		}
+		List<CustomerDocumentUploadReferenceTemp> customerUploads = customerDocumentUploadManager.getCustomerUploads(identityInt,
+				identityTypeId);
 		List<CustomerDocValidationResponseData> missingDocData = new ArrayList<>();
-		CustomerDocumentTypeMaster customerDocumentTypeMaster = customerDocMasterManager.getKycDocTypeMaster(data.getIdentityTypeId());
+		CustomerDocumentTypeMaster customerDocumentTypeMaster = customerDocMasterManager.getKycDocTypeMaster(identityTypeId);
 		String kycDocCategory = customerDocumentTypeMaster.getDocumentCategory();
-		// article detail
+		boolean isKycDone = true;
+		if (customer != null) {
+			DmsApplMapping mappingData = customerIdProofManager.getDmsMappingByCustomer(customer);
+			if (mappingData == null) {
+				isKycDone = false;
+			}
+		}
+		/*// article detail
 		if (data.getArticleDetailsId() != null) {
 			Optional<CustomerDocumentUploadReferenceTemp> uploadedProof = customerUploads.stream()
 					.filter(i -> kycDocCategory.equals(i.getCustomerDocumentTypeMaster().getDocumentCategory())).findFirst();
@@ -90,7 +120,7 @@ public class CustomerManagementValidation {
 			if (!uploadedProof.isPresent()) {
 				missingDocData.add(new CustomerDocValidationResponseData(CustomerDocumentCategory.EMPLOYMENT_PROOF.name()));
 			}
-		}
+		}*/
 
 		// income range
 		if (data.getIncomeRangeId() != null) {
@@ -102,7 +132,7 @@ public class CustomerManagementValidation {
 			}
 		}
 		// create customer request
-		if (data.isCreateCustomerRequest()) {
+		if (data.isCreateCustomerRequest() || !isKycDone) {
 			Optional<CustomerDocumentUploadReferenceTemp> uploadedProof = customerUploads.stream()
 					.filter(i -> kycDocCategory.equals(i.getCustomerDocumentTypeMaster().getDocumentCategory())).findFirst();
 			if (!uploadedProof.isPresent()) {
@@ -113,6 +143,21 @@ public class CustomerManagementValidation {
 			GlobalException ex = new GlobalException("some documents are missing to upload");
 			ex.setMeta(missingDocData);
 			throw ex;
+		}
+	}
+
+	public void validateCustomerDataForUpdate(BigDecimal customerId) {
+		Customer customer = userService.getCustById(customerId);
+		if (customer.getSignatureSpecimenClob() == null) {
+			throw new GlobalException(JaxError.SIGNATURE_NOT_AVAILABLE, "signature missing");
+		}
+	}
+
+	public void validateCustomerDataForCreate(CreateCustomerInfoRequest createCustomerInfoRequest) {
+		Customer customer = offsiteCustomerRegManager.getCustomerForRegistration(createCustomerInfoRequest.getIdentityInt(),
+				createCustomerInfoRequest.getIdentityTypeId());
+		if (customer != null) {
+			throw new GlobalException("Customer already created, use update api to update customer info");
 		}
 	}
 }

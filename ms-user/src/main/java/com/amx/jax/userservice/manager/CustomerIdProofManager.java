@@ -159,6 +159,15 @@ public class CustomerIdProofManager {
 		}
 		return mapping;
 	}
+	
+	public DmsApplMapping getDmsMappingByCustomer(Customer customer) {
+		DmsApplMapping mapping = null;
+		List<DmsApplMapping> dmsApplMapping = dmsApplMappingRepository.getDmsApplMapping(customer.getCustomerId());
+		if (CollectionUtils.isNotEmpty(dmsApplMapping)) {
+			mapping = dmsApplMapping.get(0);
+		}
+		return mapping;
+	}
 
 	public void activateCustomerPendingCompliance(Customer customer, Date identityExpiryDate) {
 		List<CustomerIdProof> compliancePendingRecords = customerIdProofDao
@@ -176,5 +185,15 @@ public class CustomerIdProofManager {
 	
 	public List<IdentityTypeMaster> getActiveIdentityTypes() {
 		return identityTypeMasterRepository.findByIsActive(ConstantDocument.Yes);
+	}
+	
+	public List<CustomerIdProof> fetchCustomerIdProofsForCustomerActivation(BigDecimal customerId) {
+		String[] statusIn = { AmxDBConstants.Yes, AmxDBConstants.Compliance };
+		List<CustomerIdProof> customerIdProofs = customerIdProofRepository.getCustomerIdProofs(customerId, statusIn);
+		return customerIdProofs;
+	}
+	
+	public void saveIdProof(CustomerIdProof idProof) {
+		customerIdProofRepository.save(idProof);
 	}
 }

@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.Email;
@@ -53,7 +54,7 @@ public class CustomerPersonalDetail extends AbstractModel {
 	 * Prefix/title
 	 */
 	@NotNull(message = "Title may not be null")
-	@ApiMockModelProperty(example = "180")
+	@ApiMockModelProperty(example = "181")
 	private String title;
 
 	@NotNull(message = "FirstName may not be null")
@@ -77,12 +78,14 @@ public class CustomerPersonalDetail extends AbstractModel {
 	@Size(min = 1)
 	@NumberFormat
 	@ApiMockModelProperty(example = "98714345")
+	@Pattern(regexp = "^[1-9]\\d*$", message = "Invalid mobile")
 	private String mobile;
 
 	/** country telephone prefix */
 	@NotNull(message = "TelPrefix may not be null")
 	@NumberFormat
 	@ApiMockModelProperty(example = "965")
+	@Pattern(regexp = "^[1-9]\\d*$", message = "Invalid telPrefix")
 	private String telPrefix;
 
 	@ApiMockModelProperty(example = "يبلءيا")

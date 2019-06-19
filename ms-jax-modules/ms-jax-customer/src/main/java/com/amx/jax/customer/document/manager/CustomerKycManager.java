@@ -80,10 +80,11 @@ public class CustomerKycManager {
 		dmsDocumentBlobTemparory.setCountryCode(dmsApplMapping.getApplicationCountryId());
 		dmsDocumentBlobTemparory.setSeqNo(BigDecimal.ONE);
 		dmsDocumentBlobTemparoryRepository.save(dmsDocumentBlobTemparory);
-		dmsDocumentBlobTemparoryRepository.copyBlobDataFromJava(docBlobId, docFinYear);
+		// commenting as data will be copied only after blob records are commited in db
+		// so do it at final step
+		// dmsDocumentBlobTemparoryRepository.copyBlobDataFromJava(docBlobId,
+		// docFinYear);
 		idmsAppMappingRepository.save(dmsApplMapping);
-		idProofManager.activateCustomerPendingCompliance(customer, data.getExpiryDate());
-		
 	}
 
 	public DmsApplMapping getDmsApplMappingData(Customer model, ImageSubmissionRequest imageSubmissionRequest) throws ParseException {
