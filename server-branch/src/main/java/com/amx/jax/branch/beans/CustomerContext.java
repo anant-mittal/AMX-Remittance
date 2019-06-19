@@ -38,7 +38,7 @@ public class CustomerContext {
 		return customer;
 	}
 
-	public OffsiteCustomerDataDTO refresh(boolean session) {
+	public OffsiteCustomerDataDTO refresh() {
 		String identity = commonHttpRequest.get("identity");
 		if (!ArgUtil.isEmpty(identity)) {
 			BigDecimal identityType = ArgUtil.parseAsBigDecimal(commonHttpRequest.get("identityType"));
@@ -48,9 +48,7 @@ public class CustomerContext {
 							identity,
 							identityType);
 			setCustomer(customerResponse.getResult());
-			if (session) {
-				branchSession.setCustomer(customerResponse.getResult());
-			}
+			branchSession.setCustomer(customerResponse.getResult());
 		}
 		return customer;
 	}
