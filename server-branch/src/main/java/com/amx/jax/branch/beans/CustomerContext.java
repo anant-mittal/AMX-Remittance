@@ -18,6 +18,9 @@ public class CustomerContext {
 	@Autowired
 	OffsiteCustRegClient offsiteCustRegClient;
 
+	@Autowired
+	BranchSession branchSession;
+
 	private OffsiteCustomerDataDTO customer;
 
 	public BigDecimal getCustomerId() {
@@ -35,7 +38,7 @@ public class CustomerContext {
 		return customer;
 	}
 
-	public OffsiteCustomerDataDTO refresh() {
+	public OffsiteCustomerDataDTO refresh(boolean session) {
 		String identity = commonHttpRequest.get("identity");
 		if (!ArgUtil.isEmpty(identity)) {
 			BigDecimal identityType = ArgUtil.parseAsBigDecimal(commonHttpRequest.get("identityType"));
@@ -45,6 +48,9 @@ public class CustomerContext {
 							identity,
 							identityType);
 			setCustomer(customerResponse.getResult());
+			if (session) {
+				branchSession.setCustomer(customerResponse.getResult());
+			}
 		}
 		return customer;
 	}
