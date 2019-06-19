@@ -36,6 +36,7 @@ import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.jax.JaxAuthContext;
 import com.amx.jax.client.JaxClientUtil;
+import com.amx.jax.client.remittance.RemittanceClient;
 import com.amx.jax.dict.Language;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.request.remittance.BranchRemittanceGetExchangeRateRequest;
