@@ -27,6 +27,7 @@ import com.amx.amxlib.service.ICustomerService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.customer.service.CustomerService;
+import com.amx.jax.customer.service.JaxCustomerContactVerificationService;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.auth.QuestModelDTO;
@@ -67,6 +68,9 @@ public class CustomerController implements ICustomerService {
 
 	@Autowired
 	CustomerService customerService;
+	
+	@Autowired
+	JaxCustomerContactVerificationService jaxCustomerContactVerificationService;
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -88,6 +92,9 @@ public class CustomerController implements ICustomerService {
 	public ApiResponse save(@RequestBody CustomerModel customerModel) {
 		logger.info("saveCust Request:" + customerModel.toString());
 		ApiResponse response = userService.saveCustomer(customerModel);
+		if(StringUtils.isEmpty(customerModel.getEmail())) {
+			jaxCustomerContactVerificationService.sendEmailVerifyLinkOnReg(metaData.getCustomerId());
+		}
 		return response;
 	}
 

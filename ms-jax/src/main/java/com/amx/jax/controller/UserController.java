@@ -22,6 +22,7 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.userservice.service.FingerprintService;
+import com.amx.jax.customer.service.JaxCustomerContactVerificationService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.userservice.service.UserValidationService;
 import com.amx.utils.Constants;
@@ -44,13 +45,15 @@ public class UserController {
 	@Autowired
 	UserValidationService userValidationService;
 	
-	
+	@Autowired
+	JaxCustomerContactVerificationService jaxCustomerContactVerifivcationService;
 
 	private Logger logger = LoggerService.getLogger(UserController.class);
 
 	@RequestMapping(value = "/login/", method = RequestMethod.POST)
 	public ApiResponse loginUser(@RequestBody CustomerModel customerModel) {
 		logger.info("loginUser Request: usreid: " + customerModel.getLoginId());
+		jaxCustomerContactVerifivcationService.validateEmailVerification(metaData.getCustomerId());
 		ApiResponse response = userService.loginUser(customerModel.getLoginId(), customerModel.getPassword());
 		return response;
 	}
