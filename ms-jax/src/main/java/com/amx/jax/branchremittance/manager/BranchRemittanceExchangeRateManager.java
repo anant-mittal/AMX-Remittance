@@ -321,8 +321,10 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 			BigDecimal commission =null;
 			if(prType.equals(PRICE_TYPE.NO_BENE_DEDUCT)) {
 			 commission =trnxRoutingDetails.getChargeAmount();
+			 result.setBeneDeductFlag(ConstantDocument.No);
 			}else if(prType.equals(PRICE_TYPE.BENE_DEDUCT)) {
 				commission =trnxRoutingDetails.getBeneDeductChargeAmount();
+				 result.setBeneDeductFlag(ConstantDocument.Yes);
 			}
 			BigDecimal corpDiscount = corporateDiscountManager.corporateDiscount();
 			
