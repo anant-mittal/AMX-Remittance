@@ -120,7 +120,9 @@ public class CustomerDocumentManager {
 				break;
 			}
 		}
-		checkAndActivateCustomer(uploads, customerId);
+		if (!ConstantDocument.Yes.equals(customer.getIsActive())) {
+			checkAndActivateCustomer(uploads, customerId);
+		}
 	}
 
 	public void moveCustomerDBDocuments(BigDecimal customerId) {

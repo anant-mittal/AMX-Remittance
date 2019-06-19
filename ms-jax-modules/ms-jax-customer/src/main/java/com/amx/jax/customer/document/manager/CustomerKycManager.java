@@ -1,21 +1,28 @@
 package com.amx.jax.customer.document.manager;
 
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
+import org.apache.commons.beanutils.BeanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.CustomerDocumentDao;
 import com.amx.jax.dal.ImageCheckDao;
 import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.dbmodel.DmsApplMapping;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReferenceTemp;
@@ -29,10 +36,13 @@ import com.amx.jax.repository.customer.DmsDocumentBlobTemparoryRepository;
 import com.amx.jax.services.JaxDBService;
 import com.amx.jax.userservice.manager.CustomerIdProofManager;
 import com.amx.utils.JsonUtil;
+import com.jax.amxlib.exception.jax.GlobaLException;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class CustomerKycManager {
+
+	private static final Logger log = LoggerFactory.getLogger(CustomerKycManager.class);
 
 	@Autowired
 	DmsDocumentBlobTemparoryRepository dmsDocumentBlobTemparoryRepository;
@@ -50,14 +60,42 @@ public class CustomerKycManager {
 	CustomerIdProofManager idProofManager;
 	@Autowired
 	IDMSAppMappingRepository idmsAppMappingRepository;
+	@Autowired
+	CustomerIdProofManager customerIdProofManager;
 
 	public void uploadAndCreateKyc(Customer customer, CustomerDocumentUploadReferenceTemp upload) throws ParseException {
 
+		createIdProofForDuplicateKyc(customer, upload);
 		switch (upload.getScanIndic()) {
 		case DB_SCAN:
 			uploadDbScan(customer, upload);
 		default:
 			break;
+		}
+
+	}
+
+	private void createIdProofForDuplicateKyc(Customer customer, CustomerDocumentUploadReferenceTemp upload) {
+
+		if (!customer.getIdentityTypeId().equals(upload.getIdentityTypeId())) {
+			log.info("creating id proof for duplication customer id type, current id type {}, uploaded id type {}", customer.getIdentityTypeId(),
+					upload.getIdentityTypeId());
+			List<CustomerIdProof> existingIdProof = customerIdProofManager.getCustomeridProofForIdType(customer.getCustomerId(),
+					customer.getIdentityTypeId());
+			if (existingIdProof == null || existingIdProof.isEmpty()) {
+				throw new GlobaLException("id proofs records not found for duplicate customer");
+			}
+			existingIdProof.forEach(i -> i.setIdentityStatus(ConstantDocument.Deleted));
+			customerIdProofManager.saveIdProof(existingIdProof);
+			CustomerIdProof newIdProof = new CustomerIdProof();
+			try {
+				BeanUtils.copyProperties(newIdProof, existingIdProof.get(0));
+			} catch (IllegalAccessException | InvocationTargetException e) {
+				log.error("error in createIdProofForDuplicateKyc", e);
+			}
+			newIdProof.setCustProofId(null);
+			newIdProof.setIdentityTypeId(upload.getIdentityTypeId());
+			customerIdProofManager.saveIdProof(newIdProof);
 		}
 
 	}

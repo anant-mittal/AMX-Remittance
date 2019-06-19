@@ -33,6 +33,10 @@ public class DocumentScanValidator {
 		}
 		if (metaData.getCustomerId() != null) {
 			Customer customer = userService.getCustById(metaData.getCustomerId());
+			if (ConstantDocument.Yes.equals(customer.getIsActive())
+					&& customer.getIdentityTypeId().equals(uploadCustomerKycRequest.getIdentityTypeId())) {
+				throw new GlobalException("customer already active and uploaded kyc document");
+			}
 			uploadCustomerKycRequest.setIdentityInt(customer.getIdentityInt());
 			uploadCustomerKycRequest.setIdentityTypeId(customer.getIdentityTypeId());
 		}
@@ -49,7 +53,7 @@ public class DocumentScanValidator {
 		}
 		CustomerDocumentTypeMaster docTypeMaster = customerDocMasterManager.getDocTypeMaster(uploadCustomerDocumentRequest.getDocumentCategory(),
 				uploadCustomerDocumentRequest.getDocumentType());
-		if(docTypeMaster == null) {
+		if (docTypeMaster == null) {
 			throw new GlobalException("No doc type master found in db");
 		}
 		CustomerDocumentUploadReference existing = customerDocumentUploadReferenceRepo.findByCustomerDocumentTypeMasterAndCustomerId(docTypeMaster,

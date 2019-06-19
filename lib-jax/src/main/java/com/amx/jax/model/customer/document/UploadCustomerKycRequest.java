@@ -1,7 +1,6 @@
 package com.amx.jax.model.customer.document;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;

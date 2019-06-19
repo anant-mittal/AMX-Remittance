@@ -134,6 +134,12 @@ public class CustomerIdProofManager {
 		}).findFirst();
 		return lastestRecordByExpiry.get();
 	}
+	
+	public List<CustomerIdProof> getCustomeridProofForIdType(BigDecimal customerId, BigDecimal identityTypeId) {
+		List<CustomerIdProof> idProofList = customerIdProofDao.getCustomeridProofForIdType(customerId,
+				identityTypeId);
+		return idProofList;
+	}
 
 	public IdentityTypeMaster getIdentityTypeMaster(BigDecimal identityTypeId, String isActive) {
 		return identityTypeMasterRepository.findBybusinessComponentIdAndIsActive(identityTypeId, isActive);
@@ -195,5 +201,10 @@ public class CustomerIdProofManager {
 	
 	public void saveIdProof(CustomerIdProof idProof) {
 		customerIdProofRepository.save(idProof);
+	}
+
+	public void saveIdProof(List<CustomerIdProof> existingIdProof) {
+		customerIdProofRepository.save(existingIdProof);
+		
 	}
 }

@@ -20,7 +20,7 @@ public class OffsiteCustomerDataDTO {
 	
 	LocalAddressDetails localAddressDetails;
 	
-	HomeAddressDetails homeAddressDestails;
+	HomeAddressDetails homeAddressDetails;
 
 	CustomerEmploymentDetails customerEmploymentDetails;
 	CustomerFlags customerFlags;
@@ -61,11 +61,11 @@ public class OffsiteCustomerDataDTO {
 	}
 
 	public HomeAddressDetails getHomeAddressDestails() {
-		return homeAddressDestails;
+		return homeAddressDetails;
 	}
 
 	public void setHomeAddressDestails(HomeAddressDetails homeAddressDestails) {
-		this.homeAddressDestails = homeAddressDestails;
+		this.homeAddressDetails = homeAddressDestails;
 	}
 
 	public CustomerEmploymentDetails getCustomerEmploymentDetails() {
