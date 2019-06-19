@@ -100,7 +100,7 @@ public class CustomerController implements ICustomerService {
 		ApiResponse response = userService.saveCustomer(customerModel);
 		BigDecimal customerId = (customerModel.getCustomerId() == null) ? metaData.getCustomerId() : customerModel.getCustomerId();
 		Customer cust = custDao.getCustById(customerId);
-		
+		logger.debug("customer model is "+cust.toString());
 		if(StringUtils.isEmpty(cust.getEmail())) {
 			jaxCustomerContactVerificationService.sendEmailVerifyLinkOnReg(metaData.getCustomerId());
 		}

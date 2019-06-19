@@ -50,22 +50,16 @@ public class JaxCustomerContactVerificationService extends AbstractService {
 	public void sendEmailVerifyLinkOnReg(BigDecimal customerId) {
 		Customer customer = customerRepository.getCustomerByCustomerIdAndIsActive(customerId, "Y");
 		CustomerContactVerification customerContactVerification = customerContactVerificationManager.create(customer, ContactType.EMAIL);
-		Map<String, Object> wrapper = new HashMap<String, Object>();
-		Map<String, Object> modeldata = new HashMap<String, Object>();
+		
 		
 		Email email = new Email();
-		if ("2".equals(metaData.getLanguageId())) {
-			email.setLang(Language.AR);
-			modeldata.put("languageid", Language.AR);
-		} else {
-			email.setLang(Language.EN);
-			modeldata.put("languageid", Language.EN);
-		}
-		modeldata.put("verifyLink", customerContactVerification);
-		modeldata.put("customer", EntityDtoUtil.entityToDto(customer, new CustomerDto()));
-		wrapper.put("data", modeldata);
-		email.setModel(wrapper);
+		
+		
+		logger.debug("contact verification link object is "+customerContactVerification.toString());
+		
 		email.setITemplate(TemplatesMX.CONTACT_VERIFICATION_EMAIL);
+		email.getModel().put("customer", EntityDtoUtil.entityToDto(customer, new CustomerDto()));
+		email.getModel().put("link", customerContactVerification);
 		email.addTo(customer.getEmail());
 		email.setHtml(true);
 		sendEmail(email);
