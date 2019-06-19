@@ -12,6 +12,7 @@ public class PayGParams implements Serializable {
 	private static final long serialVersionUID = 3434309644048921758L;
 
 	String uuid = null;
+	String verification = null;
 
 	// Identifiers
 	String docId = null;
@@ -138,6 +139,14 @@ public class PayGParams implements Serializable {
 
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
+	}
+
+	public String getVerification() {
+		return verification;
+	}
+
+	public void setVerification(String verification) {
+		this.verification = verification;
 	}
 
 }

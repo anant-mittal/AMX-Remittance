@@ -23,13 +23,13 @@ import com.amx.jax.scope.ThreadScoped;
 		JmxAutoConfiguration.class, WebSocketAutoConfiguration.class, SitePreferenceAutoConfiguration.class,
 		SpringApplicationAdminJmxAutoConfiguration.class, ValidationAutoConfiguration.class
 })
-public class TestSizeApp {
+public class RadarApplication {
 
 	public static final String ENABLE_JOBS = "true";
 	public static final String ENABLE_JOBS_DEBUG = "false";
 
 	public static void main(String[] args) throws Exception {
-		ConfigurableApplicationContext ctx = new SpringApplicationBuilder(TestSizeApp.class)
+		ConfigurableApplicationContext ctx = new SpringApplicationBuilder(RadarApplication.class)
 				.run(args);
 	}
 

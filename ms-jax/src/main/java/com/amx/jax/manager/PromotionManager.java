@@ -7,6 +7,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import com.amx.amxlib.model.PromotionDto;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.PromotionDao;
 import com.amx.jax.dao.RemittanceApplicationDao;
+import com.amx.jax.dbmodel.CountryBranch;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.promotion.PromotionDetailModel;
 import com.amx.jax.dbmodel.promotion.PromotionHeader;
@@ -26,14 +28,19 @@ import com.amx.jax.dbmodel.promotion.PromotionLocationModel;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.response.customer.PersonInfo;
+import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.TemplatesMX;
+import com.amx.jax.repository.CountryBranchRepository;
+import com.amx.jax.repository.IRemittanceTransactionRepository;
 import com.amx.jax.repository.employee.AmgEmployeeRepository;
 import com.amx.jax.service.CountryBranchService;
 import com.amx.jax.service.FinancialService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.DateUtil;
+
+import javassist.bytecode.stackmap.BasicBlock.Catch;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -57,6 +64,14 @@ public class PromotionManager {
 	UserService userService;
 	@Autowired
 	AmgEmployeeRepository amgEmployeeRepository;
+	
+	@Autowired
+	IRemittanceTransactionRepository remitTrnxRepository;
+	
+	@Autowired
+	CountryBranchRepository countryBranchRepository;
+	
+
 
 	/**
 	 * @return gives the latest promotion header applicable for current branch
@@ -169,4 +184,43 @@ public class PromotionManager {
 		} catch (Exception e) {
 		}
 	}
-}
+	
+	/** added by Rabil on 19 May 2019 **/
+	
+	public String getPromotionPrizeForBranch(RemittanceResponseDto responseDto) {
+		try {
+		String promotionMessage = null;	
+		List<RemittanceTransaction> remitTrnxList = remitTrnxRepository.findByCollectionDocIdAndCollectionDocFinanceYearAndCollectionDocumentNo(
+				responseDto.getCollectionDocumentCode(), responseDto.getCollectionDocumentFYear(), responseDto.getCollectionDocumentNo());
+		if(!remitTrnxList.isEmpty() && remitTrnxList.get(0)!=null) {
+		 promotionMessage = promotionDao.callGetPromotionPrize(remitTrnxList.get(0).getDocumentNo(), remitTrnxList.get(0).getDocumentFinanceYear(), remitTrnxList.get(0).getLoccod());
+		}
+		return promotionMessage;
+	}catch(Exception e) {
+		e.printStackTrace();
+		return null;
+	}
+	}
+	/** added by rabil **/
+	public PromotionDto getPromotionMessage(BigDecimal documentNoRemit,BigDecimal documentFinYearRemit,BigDecimal branchId,String currencyCode) {
+		try {
+			String promotionMessage = null;	
+			//promotionMessage = promotionDao.callGetPromotionMessage(documentNoRemit, documentFinYearRemit, branchId);
+			PromotionDto dto = new PromotionDto();
+			CountryBranch countryBranch = countryBranchRepository.findByCountryBranchId(branchId);
+			BigDecimal locationcode = countryBranch.getBranchId();
+			//RemittanceTransaction remittanceTransaction = remittanceApplicationDao.getRemittanceTransactionByRemitDocNo(documentNoRemit, documentFinYearRemit);
+			List<PromotionDetailModel> models = promotionDao.getPromotionDetailModel(documentFinYearRemit, documentNoRemit);
+			if (models != null && !models.isEmpty() && locationcode.compareTo(ConstantDocument.ONLINE_BRANCH_LOC_CODE)!=0) {
+				dto.setPrize(models.get(0).getPrize()==null?"":models.get(0).getPrize());
+				if(!StringUtils.isBlank(dto.getPrize())) {
+					dto.setPrizeMessage("Congratulations , you are now eligible for Half "+currencyCode+" cash prize");
+				}
+			}
+	return dto;
+	}catch(Exception e) {
+		e.printStackTrace();
+		return null;
+	}
+}	
+}	

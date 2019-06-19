@@ -144,7 +144,8 @@ public class RemittanceTransaction implements Serializable {
 	private BigDecimal pipsToAmt;
 	private BigDecimal pipsDiscount;	
 	private String  reachedCostRateLimit;
-
+	
+	
 	private String vatType;
 	private BigDecimal vatPercentage;
 	private BigDecimal vatAmount;
@@ -1107,6 +1108,7 @@ public class RemittanceTransaction implements Serializable {
 	public void setReachedCostRateLimit(String reachedCostRateLimit) {
 		this.reachedCostRateLimit = reachedCostRateLimit;
 	}
+
 	@Column(name="VAT_TYPE")
 	public String getVatType() {
 		return vatType;
@@ -1133,6 +1135,8 @@ public class RemittanceTransaction implements Serializable {
 	public void setVatAmount(BigDecimal vatAmount) {
 		this.vatAmount = vatAmount;
 	}
+
+
 
 
 }

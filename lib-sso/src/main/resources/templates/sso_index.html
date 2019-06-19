@@ -20,7 +20,7 @@
 
 <body>
 	<header>
-		<img th:src="${SSO_LOGIN_PREFIX} + '/images/logo.png'" />
+		<img th:src="${SSO_LOGIN_PREFIX} + '/images/logo-' + ${sso_tenant} + '.png'" class="logo-img" />
 	</header>
 
 	<div class="login-form">

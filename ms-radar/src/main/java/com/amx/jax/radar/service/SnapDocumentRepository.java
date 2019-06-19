@@ -18,6 +18,7 @@ import com.amx.jax.grid.views.ContactVerificationRecord;
 import com.amx.jax.model.MapModel;
 import com.amx.jax.radar.jobs.customer.OracleViewDocument;
 import com.amx.jax.radar.snap.SnapQueryService;
+import com.amx.utils.ArgUtil;
 
 @Component
 public class SnapDocumentRepository {
@@ -57,7 +58,7 @@ public class SnapDocumentRepository {
 		query.put("searchKey", "customer.mobile");
 		query.put("searchValue", whatsAppNo);
 		SnapModelWrapper x = snapQueryService.execute(SnapQueryTemplate.CUSTOMERS_PROFILE, query);
-		if (x.getHits().getTotal() > 0) {
+		if (!ArgUtil.isEmpty(x.getHits()) && x.getHits().getTotal() > 0) {
 			return x.getHits().getHits().get(0).getSource(OracleViewDocument.class);
 		}
 		return null;

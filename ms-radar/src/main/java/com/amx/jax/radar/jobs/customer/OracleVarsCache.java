@@ -1,9 +1,14 @@
 package com.amx.jax.radar.jobs.customer;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.amx.jax.cache.CacheBox;
 import com.amx.jax.client.snap.SnapConstants;
+import com.amx.jax.radar.AMXSharedValues;
 import com.amx.jax.radar.EsConfig;
 import com.amx.utils.ArgUtil;
 
@@ -11,7 +16,9 @@ import com.amx.utils.ArgUtil;
  * The Class LoggedInUsers.
  */
 @Component
-public class OracleVarsCache extends CacheBox<String> {
+public class OracleVarsCache {
+
+	private Map<String, String> fallback = Collections.synchronizedMap(new HashMap<String, String>());
 
 	public static final Long START_TIME = 978287400000L;
 	private static final String ASC_SEPERATOR = "-";
@@ -49,11 +56,14 @@ public class OracleVarsCache extends CacheBox<String> {
 		}
 	}
 
+	@Autowired
+	AMXSharedValues amxSharedValues;
+
 	/**
 	 * Instantiates a new logged in users.
 	 */
 	public OracleVarsCache() {
-		super("OracleVarsCache");
+		// super("OracleVarsCache");
 	}
 
 	public String getTranxIndex() {
@@ -62,6 +72,14 @@ public class OracleVarsCache extends CacheBox<String> {
 
 	public String getCustomerIndex() {
 		return EsConfig.indexName(DBSyncJobs.CUSTOMER_JOB.getIndexName());
+	}
+
+	public String get(String key) {
+		return amxSharedValues.getValue(key);
+	}
+
+	private void put(String key, String value) {
+		amxSharedValues.putValue(key, value);
 	}
 
 	/**
@@ -101,11 +119,11 @@ public class OracleVarsCache extends CacheBox<String> {
 	}
 
 	public void clearStampStart(DBSyncJobs job) {
-		this.fastRemove(getIndex(job) + ASC_SEPERATOR + job.getResetCounter());
+		amxSharedValues.removeValue(getIndex(job) + ASC_SEPERATOR + job.getResetCounter());
 	}
 
 	public void clearStampEnd(DBSyncJobs job) {
-		this.fastRemove(getIndex(job) + DESC_SEPERATOR + job.getResetCounter());
+		amxSharedValues.removeValue(getIndex(job) + DESC_SEPERATOR + job.getResetCounter());
 	}
 
 }

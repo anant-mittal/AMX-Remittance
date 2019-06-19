@@ -1,6 +1,7 @@
 package com.amx.jax.radar.snap;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -61,12 +62,20 @@ public class SnapQueryService {
 	}
 
 	public SnapModelWrapper executeQuery(Map<String, Object> query, String index) {
-		Map<String, Object> x = restService.ajax(ssConfig.getClusterUrl())
-				.header(ssConfig.getBasicAuthHeader()).path(
-						EsConfig.indexName(index) + "/_search")
-				.post(query)
-				.asMap();
-		// x.put("aggs", query.get("aggs"));
+		Map<String, Object> x = null;
+		try {
+			x = restService.ajax(ssConfig.getClusterUrl())
+					.header(ssConfig.getBasicAuthHeader()).path(
+							EsConfig.indexName(index) + "/_search")
+					.post(query)
+					.asMap();
+		} catch (Exception e) {
+			log.error(e);
+		}
+		if (x == null) {
+			x = new HashMap<String, Object>();
+		}
+		x.put("_query", query);
 		// System.out.println(JsonUtil.toJson(query));
 		return new SnapModelWrapper(x);
 	}
@@ -87,6 +96,10 @@ public class SnapQueryService {
 
 	public SnapModelWrapper execute(SnapQueryTemplate template, Map<String, Object> params) {
 		return this.execute(template, template.getIndex(), params);
+	}
+
+	public SnapModelWrapper executeQuery(SnapQueryTemplate template, Map<String, Object> query) {
+		return this.executeQuery(query, template.getIndex());
 	}
 
 	public static class BulkRequestSnapBuilder extends BulkRequestBuilder {

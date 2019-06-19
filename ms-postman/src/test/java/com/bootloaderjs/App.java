@@ -17,7 +17,14 @@ public class App { // Noncompliant
 
 	public static void main(String[] args) {
 		String from = "Al Mulla International Exchange<amxjax@gmail.com>";
-		//String from = "amxjax@gmail.com";
+		String[] path = "html/sms/omsoe".split("^html\\/");
+
+		System.out.println(path[0] + " " + path[1]);
+	}
+
+	public static void main3(String[] args) {
+		String from = "Al Mulla International Exchange<amxjax@gmail.com>";
+		// String from = "amxjax@gmail.com";
 		Matcher matcher = pattern.matcher(from);
 		if (matcher.find()) {
 			System.out.println(matcher.group(1) + "   =   " + matcher.group(2));

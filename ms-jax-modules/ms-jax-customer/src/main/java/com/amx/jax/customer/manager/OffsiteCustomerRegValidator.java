@@ -8,24 +8,30 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxApiFlow;
+import com.amx.jax.customer.service.OffsitCustRegService;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.model.request.HomeAddressDetails;
+import com.amx.jax.model.request.LocalAddressDetails;
 import com.amx.jax.model.request.customer.GetOffsiteCustomerDetailRequest;
 import com.amx.jax.userservice.service.UserValidationService;
-
+import com.amx.jax.logger.AuditService;
+import com.amx.jax.logger.LoggerService;
 /**
  * @author Prashant
  *
  */
 @Component
 public class OffsiteCustomerRegValidator {
-
+	private static final Logger LOGGER = LoggerService.getLogger(OffsiteCustomerRegValidator.class);
 	@Autowired
 	UserValidationService userValidationService;
 
@@ -52,10 +58,44 @@ public class OffsiteCustomerRegValidator {
 			if (CollectionUtils.isNotEmpty(activeCustomers)) {
 				customer = activeCustomers.get(0);
 				Date now = new Date();
+				LOGGER.info("Id expiry date is "+customer.getIdentityExpiredDate());
+				LOGGER.info("Today date is "+now);
+				
 				if (customer.getIdentityExpiredDate().compareTo(now) > 0) {
 					throw new GlobalException(JaxError.CUSTOMER_ACTIVE_BRANCH, "Customer already active in branch");
 				}
 			}
+		}
+	}
+
+	public void validateLocalContact(LocalAddressDetails localAddressDetails) {
+		if (StringUtils.isEmpty(localAddressDetails.getHouse())) {
+			throw new GlobalException("House cannot be empty");
+		}
+		if (StringUtils.isEmpty(localAddressDetails.getFlat())) {
+			throw new GlobalException("Flat cannot be empty");
+		}
+		if (StringUtils.isEmpty(localAddressDetails.getBlock())) {
+			throw new GlobalException("Block cannot be empty");
+		}
+		if (StringUtils.isEmpty(localAddressDetails.getStreet())) {
+			throw new GlobalException("Street cannot be empty");
+		}
+		if (localAddressDetails.getCountryId() == null) {
+			throw new GlobalException("Country cannot be empty");
+		}
+		if (localAddressDetails.getStateId() == null) {
+			throw new GlobalException("State cannot be empty");
+		}
+	}
+
+	public void validateHomeContact(HomeAddressDetails homeAddressDetails) {
+		if (homeAddressDetails.getCountryId() == null) {
+			throw new GlobalException("Country cannot be empty");
+		}
+		if (homeAddressDetails.getStateId() == null) {
+			throw new GlobalException("State cannot be empty");
+			
 		}
 	}
 }

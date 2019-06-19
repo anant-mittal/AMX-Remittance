@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.exceptions.TemplateInputException;
 
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.postman.audit.PMGaugeEvent;
@@ -55,17 +56,21 @@ public class FileService {
 	/**
 	 * Creates the.
 	 *
-	 * @param file
-	 *            the file
+	 * @param file the file
 	 * @return the file
 	 */
+
 	public File create(File file) {
+		return create(file, null);
+	}
+
+	public File create(File file, ContactType contactType) {
 		if (file.getTemplate() != null) {
 			/**
 			 * from template to content
 			 */
 			try {
-				templateService.process(file);
+				templateService.process(file, contactType);
 			} catch (TemplateInputException e) {
 				LOGGER.error("Template Process Exception", e);
 			}
@@ -104,8 +109,7 @@ public class FileService {
 	/**
 	 * To input stream.
 	 *
-	 * @param file
-	 *            the file
+	 * @param file the file
 	 * @return the input stream
 	 */
 	public InputStream toInputStream(File file) {
@@ -126,11 +130,9 @@ public class FileService {
 	/**
 	 * To data source.
 	 *
-	 * @param file
-	 *            the file
+	 * @param file the file
 	 * @return the data source
-	 * @throws MessagingException
-	 *             the messaging exception
+	 * @throws MessagingException the messaging exception
 	 */
 	public DataSource toDataSource(File file) throws MessagingException {
 		DataSource dataSource = new ByteArrayDataSource(file.getBody(), "application/pdf");

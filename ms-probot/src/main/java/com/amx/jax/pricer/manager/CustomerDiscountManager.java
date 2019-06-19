@@ -180,6 +180,11 @@ public class CustomerDiscountManager {
 			OnlineCountryBranchId = cb.getCountryBranchId();
 		}
 
+		if (OnlineCountryBranchId == null) {
+			CountryBranch cb = countryBranchDao.getOnlineCountryBranch();
+			OnlineCountryBranchId = cb.getCountryBranchId();
+		}
+
 		List<PipsMaster> pipsList = pipsMasterDao.getPipsForFcCurAndBank(pricingRequestDTO.getForeignCurrencyId(),
 				OnlineCountryBranchId, validBankIds);
 

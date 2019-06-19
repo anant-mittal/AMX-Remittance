@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.LocaleResolver;
 
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManUrls;
@@ -38,6 +39,7 @@ import com.amx.jax.postman.model.Message;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.postman.service.PostManServiceImpl;
+import com.amx.jax.postman.service.TemplateService;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.IoUtils;
 import com.amx.utils.JsonUtil;
@@ -245,12 +247,10 @@ public class PostManControllerTest {
 					Map<String, Object> map2 = readJsonWithObjectMapper(
 							"templates/dummy/" + attachment.getSampleJSON());
 					file2.setModel(map2);
+					file2.setType(File.Type.PDF);
+					file2.setConverter(lib);
+					eml.addFile(file2);
 				}
-
-				file2.setType(File.Type.PDF);
-				file2.setConverter(lib);
-
-				eml.addFile(file2);
 
 				postManClient.sendEmailAsync(eml);
 			}
@@ -259,6 +259,25 @@ public class PostManControllerTest {
 			return JsonUtil.toJson(map);
 		}
 
+	}
+
+	@Autowired
+	TemplateService templateService;
+
+	@RequestMapping(value = PostManUrls.PROCESS_TEMPLATE + "/file/{template}.{contactType}",
+			method = RequestMethod.GET)
+	public String processTemplate(@PathVariable("contactType") ContactType contactType,
+			@PathVariable("template") TemplatesMX template) throws IOException {
+		Map<String, Object> map = readJsonWithObjectMapper("templates/dummy/" + template.getSampleJSON());
+
+		postManClient.setLang(localeResolver.resolveLocale(request).toString());
+
+		File file = new File();
+		file.setModel(map);
+		file.setITemplate(template);
+		// file.setConverter(lib);
+
+		return templateService.process(file, contactType).getContent();
 	}
 
 	/**

@@ -1,9 +1,11 @@
 package com.amx.jax.ui.api;
 
 import java.math.BigDecimal;
+import java.util.Base64;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
@@ -28,6 +30,8 @@ import com.amx.jax.client.snap.SnapModels.SnapModelWrapper;
 import com.amx.jax.client.snap.SnapServiceClient;
 import com.amx.jax.dict.Currency;
 import com.amx.jax.http.CommonHttpRequest;
+import com.amx.jax.logger.AuditService;
+import com.amx.jax.logger.events.CActivityEvent;
 import com.amx.jax.model.response.fx.CurrencyPairDTO;
 import com.amx.jax.model.response.fx.ForexOutLookResponseDTO;
 import com.amx.jax.postman.GeoLocationService;
@@ -104,6 +108,9 @@ public class PubController {
 	/** The session service. */
 	@Autowired
 	private SessionService sessionService;
+
+	@Autowired
+	private AuditService auditService;
 
 	/**
 	 * Tranxhistory.
@@ -254,6 +261,20 @@ public class PubController {
 			log.error("/pub/contact", e);
 		}
 		return wrapper;
+	}
+
+	@RequestMapping(value = "/pub/redirect", method = { RequestMethod.GET })
+	public String redirect(
+			@RequestParam String ref,
+			@RequestParam String linkd,
+			@RequestParam(required = false) String identity,
+			HttpServletResponse resp) {
+		byte[] decodedBytes = Base64.getDecoder().decode(linkd);
+		String redirectUrl = new String(decodedBytes);
+		resp.setHeader("Location", redirectUrl);
+		resp.setStatus(302);
+		auditService.log(new CActivityEvent(CActivityEvent.Type.TP_REDIRECT).customer(identity));
+		return redirectUrl;
 	}
 
 	@Autowired

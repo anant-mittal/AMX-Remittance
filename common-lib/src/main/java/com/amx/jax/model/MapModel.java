@@ -34,12 +34,24 @@ public class MapModel implements JsonSerializerType<Object> {
 		return ArgUtil.parseAsString(this.get(key));
 	}
 
+	public String getString(String key, String defaultvalue) {
+		return ArgUtil.parseAsString(this.get(key), defaultvalue);
+	}
+
 	public Long getLong(String key) {
 		return ArgUtil.parseAsLong(this.get(key));
 	}
 
+	public Long getLong(String key, Long defaultvalue) {
+		return ArgUtil.parseAsLong(this.get(key), defaultvalue);
+	}
+
 	public BigDecimal getBigDecimal(String key) {
 		return ArgUtil.parseAsBigDecimal(this.get(key));
+	}
+
+	public BigDecimal getBigDecimal(String key, BigDecimal defaultvalue) {
+		return ArgUtil.parseAsBigDecimal(this.get(key), defaultvalue);
 	}
 
 	@SuppressWarnings("unchecked")

@@ -16,6 +16,7 @@ import com.amx.jax.json.JsonSerializerType;
 import com.amx.jax.json.JsonSerializerTypeSerializer;
 import com.amx.utils.ArgUtil.EnumById;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -160,6 +161,7 @@ public final class JsonUtil {
 		
 		mapper.setSerializationInclusion(Include.NON_NULL);
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		mapper.configure(Feature.AUTO_CLOSE_SOURCE, true);
 		mapper.registerModule(module);
 		mapper.registerModule(new JavaTimeModule());
 		return mapper;
@@ -191,8 +193,7 @@ public final class JsonUtil {
 		return instance.fromJson(json, type);
 	}
 
-	@SuppressWarnings("rawtypes")
-	public static <E> E fromJson(String json, TypeReference valueTypeRef) {
+	public static <E> E fromJson(String json, TypeReference<E> valueTypeRef) {
 		return instance.fromJson(json, valueTypeRef);
 	}
 
@@ -218,6 +219,10 @@ public final class JsonUtil {
 
 	public static <T> T toObject(Map<String, Object> map, Class<T> toValueType) {
 		return instance.toType(map, toValueType);
+	}
+
+	public static <T> T toObject(String json, TypeReference<T> toValueTypeRef) {
+		return instance.toType(json, toValueTypeRef);
 	}
 
 	public static Map<String, String> toStringMap(Object object) {

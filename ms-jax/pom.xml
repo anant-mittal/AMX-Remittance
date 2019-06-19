@@ -98,9 +98,8 @@
 			<artifactId>lib-rbaac</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.amx</groupId>
-			<artifactId>ms-service-provider</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>jax-client</artifactId>
 		</dependency>
 	</dependencies>
 

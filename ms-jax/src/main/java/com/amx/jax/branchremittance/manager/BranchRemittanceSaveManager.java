@@ -1,4 +1,7 @@
 package com.amx.jax.branchremittance.manager;
+/**
+ * @author rabil
+ */
 
 import java.math.BigDecimal;
 import java.sql.Clob;
@@ -88,7 +91,7 @@ import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.repository.remittance.LocalBankDetailsRepository;
 import com.amx.jax.service.CompanyService;
 import com.amx.jax.service.FinancialService;
-import com.amx.jax.service.JaxEmailNotificationService;
+import com.amx.jax.services.JaxEmailNotificationService;
 import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.services.RemittanceApplicationService;
 import com.amx.jax.services.ReportManagerService;
@@ -236,6 +239,8 @@ public class BranchRemittanceSaveManager {
 			paymentResponse.setApplicationCountryId(metaData.getCountryId());
 			paymentResponse.setCustomerId(metaData.getCustomerId());
 			remittanceApplicationService.saveRemittancetoOldEmos(paymentResponse);
+			String promotionMsg = promotionManager.getPromotionPrizeForBranch(responseDto);
+			responseDto.setPromotionMessage(promotionMsg);
 		}else {
 			logger.error("NOT moved to old emos ", responseDto.getCollectionDocumentNo() + "" +responseDto.getCollectionDocumentCode()+" "+responseDto.getCollectionDocumentFYear());
 		}
@@ -781,6 +786,7 @@ public class BranchRemittanceSaveManager {
 
 	public  Map<BigDecimal,RemittanceBenificiary>  saveBeneTrnx(RemittanceApplication applicationNo,RemittanceTransaction remitTrnx){
 	if(applicationNo!=null) {
+		logger.debug("saveBeneTrnx :"+applicationNo.getRemittanceApplicationId() +"\t Customer Id :"+metaData.getCustomerId());
 		RemittanceAppBenificiary applBene = applBeneRepository.findByExRemittanceAppfromBenfi(applicationNo);
 		if(applBene!=null) {
 			RemittanceBenificiary remitBene = new RemittanceBenificiary();
@@ -822,6 +828,7 @@ public class BranchRemittanceSaveManager {
 			remitBene.setExRemittancefromBenfi(remitTrnx);
 			remitBene.setExUserFinancialYear(getFinancialYearObj(remitTrnx.getDocumentFinanceYear()));
 			remitBene.setIsactive(ConstantDocument.Yes);
+			logger.debug("saveBeneTrnx remitBeneList.put :"+applBene.getExRemittanceAppfromBenfi().getRemittanceApplicationId() +"\t Customer Id :"+metaData.getCustomerId());
 			remitBeneList.put(applBene.getExRemittanceAppfromBenfi().getRemittanceApplicationId(), remitBene);
 		}else {
 			throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record not found in appl bene for remittance : "+remitTrnx.getApplicationDocumentNo());
@@ -1223,7 +1230,6 @@ public void validateSaveTrnxDetails(HashMap<String, Object> mapAllDetailRemitSav
 	Map<BigDecimal,RemittanceTransaction> remitTrnxList = (Map<BigDecimal,RemittanceTransaction>) mapAllDetailRemitSave.get("EX_REMIT_TRNX");
 	Map<BigDecimal,RemittanceBenificiary> remitBeneList = (Map<BigDecimal,RemittanceBenificiary>) mapAllDetailRemitSave.get("EX_REMIT_BENE");
 	Map<BigDecimal,List<RemittanceAdditionalInstructionData>> addlTrnxList = (Map<BigDecimal,List<RemittanceAdditionalInstructionData>>) mapAllDetailRemitSave.get("EX_REMIT_ADDL");
-		
 	if(collectModel==null) {
 		throw new GlobalException(JaxError.NO_RECORD_FOUND, "Collection data not found");
 	}	

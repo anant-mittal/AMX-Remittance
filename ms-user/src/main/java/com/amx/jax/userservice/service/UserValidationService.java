@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -30,6 +31,7 @@ import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.CustomerVerificationType;
 import com.amx.jax.constant.JaxApiFlow;
+import com.amx.jax.constants.JaxChannel;
 import com.amx.jax.dal.ImageCheckDao;
 import com.amx.jax.dao.BlackListDao;
 import com.amx.jax.dbmodel.BlackListModel;
@@ -42,6 +44,7 @@ import com.amx.jax.dbmodel.CustomerVerification;
 import com.amx.jax.dbmodel.DmsDocumentModel;
 import com.amx.jax.dbmodel.ViewOnlineCustomerCheck;
 import com.amx.jax.dbmodel.remittance.BlackListDetailModel;
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.exception.ExceptionMessageKey;
 import com.amx.jax.meta.MetaData;
@@ -54,9 +57,11 @@ import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.dao.CustomerIdProofDao;
 import com.amx.jax.userservice.dao.DmsDocumentDao;
 import com.amx.jax.userservice.manager.SecurityQuestionsManager;
+import com.amx.jax.userservice.manager.UserContactVerificationManager;
 import com.amx.jax.userservice.service.CustomerValidationContext.CustomerValidation;
 import com.amx.jax.userservice.validation.ValidationClient;
 import com.amx.jax.userservice.validation.ValidationClients;
+import com.amx.jax.util.AmxDBConstants.Status;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.validation.CustomerValidationService;
@@ -130,6 +135,9 @@ public class UserValidationService {
 	
 	@Autowired
 	IBlackListDetailRepository blackListDtRepo;
+	
+	@Autowired
+	UserContactVerificationManager userContactVerificationManager;
 
 	private DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -151,9 +159,6 @@ public class UserValidationService {
 		Customer cust = custDao.getCustomerByCivilId(civilId);
 		if (cust == null) {
 			throw new UserNotFoundException("Civil id is not registered at branch, civil id no,: " + civilId);
-		}
-		if (cust.getMobile() == null) {
-			throw new GlobalException("Mobile number is empty. Contact branch to update the same.");
 		}
 
 		if (cust.getEmail() == null) {
@@ -544,6 +549,7 @@ public class UserValidationService {
 			this.incrementLockCount(onlineCustomer);
 			throw new InvalidOtpException("Mobile Otp is incorrect for identity int: " + customer.getIdentityInt());
 		}
+		
 		// email otp validation
 		if (isEOtpFlowRequired && onlineCustomer.getEmailToken() != null) {
 			String hashedEotp = cryptoUtil.getHash(customer.getIdentityInt(), model.getEotp());
@@ -554,6 +560,9 @@ public class UserValidationService {
 			}
 		}
 		this.unlockCustomer(onlineCustomer);
+		
+		// ------ Contact Verified ------
+		userContactVerificationManager.setContactVerified(customer, model.getMotp(), model.getEotp(), null);
 	}
 
 	private boolean isMOtpFlowRequired(CustomerModel model) {
@@ -839,4 +848,25 @@ public class UserValidationService {
 		return customers.get(0);
 	}
 
+	public void validateCustomerContactForSendOtp(List<ContactType> contactTypes, Customer customer) {
+		if (contactTypes == null) {
+			contactTypes = Arrays.asList(ContactType.MOBILE);
+		}
+		String mobileErrorMessage = "Your mobile number is not registered at branch. To proceed further, please register the mobile number at branch.";
+		String emailErrorMessage = "Your email ID is not registered at branch. To proceed further, please register the email address at branch.";
+		if (JaxChannel.BRANCH == meta.getChannel()) {
+			mobileErrorMessage = "Customer's mobile number is not registered. To proceed further, please register the mobile number.";
+			emailErrorMessage = "Customer's email is not registered. To proceed further, please register the email.";
+		}
+		for (ContactType i : contactTypes) {
+			boolean ismOtp = (i == ContactType.SMS || i == ContactType.MOBILE || i == ContactType.SMS_EMAIL);
+			if (ismOtp && StringUtils.isEmpty(customer.getMobile())) {
+				throw new GlobalException(JaxError.CUSTOMER_MOBILE_EMPTY, mobileErrorMessage);
+			}
+			boolean iseOtp = (i == ContactType.EMAIL || i == ContactType.SMS_EMAIL);
+			if (iseOtp && StringUtils.isEmpty(customer.getEmail())) {
+				throw new GlobalException(JaxError.CUSTOMER_EMAIL_EMPTY, emailErrorMessage);
+			}
+		}
+	}
 }

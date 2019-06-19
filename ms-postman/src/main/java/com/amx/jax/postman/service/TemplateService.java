@@ -18,11 +18,14 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 
 import com.amx.jax.AppContextUtil;
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.postman.PostManConfig;
 import com.amx.jax.postman.custom.HelloDialect;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.ITemplates.ITemplate;
+import com.amx.utils.ArgUtil;
+import com.amx.utils.Constants;
 import com.amx.utils.IoUtils;
 
 /**
@@ -72,13 +75,14 @@ public class TemplateService {
 	/**
 	 * Process html.
 	 *
-	 * @param template the template
-	 * @param context  the context
+	 * @param template    the template
+	 * @param context     the context
+	 * @param contactType
 	 * @return the string
 	 */
-	public String processHtml(ITemplate template, Context context, Locale locale) {
+	public String processHtml(ITemplate template, Context context, Locale locale, ContactType contactType) {
 		String rawStr = templateEngine.process(
-				templateUtils.getTemplateFile(template.getHtmlFile(), AppContextUtil.getTenant(), locale),
+				templateUtils.getTemplateFile(template.getHtmlFile(), AppContextUtil.getTenant(), locale, contactType),
 				context);
 
 		Pattern p = Pattern.compile("src=\"inline:(.*?)\"");
@@ -96,9 +100,10 @@ public class TemplateService {
 		return rawStr;
 	}
 
-	public String processJson(ITemplate template, Context context, Locale locale) {
+	public String processJson(ITemplate template, Context context, Locale locale, ContactType contactType) {
 		return templateEngine.process(
-				templateUtils.getTemplateFile(template.getJsonFile(), AppContextUtil.getTenant(), locale), context);
+				templateUtils.getTemplateFile(template.getJsonFile(), AppContextUtil.getTenant(), locale, contactType),
+				context);
 	}
 
 	/**
@@ -121,6 +126,10 @@ public class TemplateService {
 	 * @return the file
 	 */
 	public File process(File file) {
+		return this.process(file, null);
+	}
+
+	public File process(File file, ContactType contactType) {
 		Locale locale = getLocal(file);
 		String reverse = messageSource.getMessage("flag.reverse.char", null, locale);
 
@@ -135,14 +144,15 @@ public class TemplateService {
 		Context context = new Context(locale);
 
 		context.setVariable("_tu", templateUtils);
+		context.setVariable("_type", ArgUtil.parseAsString(contactType, Constants.BLANK));
 
 		context.setVariables(file.getModel());
 		if (file.getITemplate().isThymleaf()) {
 			String content;
 			if (file.getType() == File.Type.JSON) {
-				content = this.processJson(file.getITemplate(), context, locale);
+				content = this.processJson(file.getITemplate(), context, locale, contactType);
 			} else {
-				content = this.processHtml(file.getITemplate(), context, locale);
+				content = this.processHtml(file.getITemplate(), context, locale, contactType);
 			}
 			file.setContent(content);
 		}

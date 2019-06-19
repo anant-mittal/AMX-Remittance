@@ -325,12 +325,22 @@ public class RemittanceTransactionView implements Serializable{
 	private BigDecimal vatPercentage;
 	@Column(name = "VAT_AMOUNT")
 	private BigDecimal vatAmount;
-	
 	@Column(name = "CUSTOMER_VAT_NUMBER")
 	private String customerVatNumber;
-	
 	@Column(name = "KD_SAVED")
 	private BigDecimal amountSaved;
+	
+	@Column(name="TOTAL_AMOUNT_SAVED")
+	private BigDecimal totalAmountSaved;
+	
+	
+	public BigDecimal getTotalAmountSaved() {
+		return totalAmountSaved;
+	}
+
+	public void setTotalAmountSaved(BigDecimal totalAmountSaved) {
+		this.totalAmountSaved = totalAmountSaved;
+	}
 
 	public BigDecimal getPhoneNumber() {
 		return phoneNumber;
@@ -1094,14 +1104,6 @@ public class RemittanceTransactionView implements Serializable{
 		this.originalExchangeRate = originalExchangeRate;
 	}
 
-	public String getIsDiscAvail() {
-		return isDiscAvail;
-	}
-
-	public void setIsDiscAvail(String isDiscAvail) {
-		this.isDiscAvail = isDiscAvail;
-	}
-
 	public String getVatType() {
 		return vatType;
 	}
@@ -1134,12 +1136,22 @@ public class RemittanceTransactionView implements Serializable{
 		this.customerVatNumber = customerVatNumber;
 	}
 
+	
+
 	public BigDecimal getAmountSaved() {
 		return amountSaved;
-	}
-
+		}
+		
 	public void setAmountSaved(BigDecimal amountSaved) {
 		this.amountSaved = amountSaved;
+		}
+		
+	public String getIsDiscAvail() {
+		return isDiscAvail;
+	}
+
+	public void setIsDiscAvail(String isDiscAvail) {
+		this.isDiscAvail = isDiscAvail;
 	}
 
 }

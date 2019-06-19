@@ -6,6 +6,7 @@ import static com.amx.amxlib.constant.NotificationConstants.RESP_DATA_KEY;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +20,7 @@ import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.model.BranchSearchNotificationModel;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
-import com.amx.amxlib.model.EmployeeInfo;
 import com.amx.amxlib.model.notification.RemittanceTransactionFailureAlertModel;
-import com.amx.jax.async.ExecutorConfig;
 import com.amx.jax.dbmodel.ApplicationSetup;
 import com.amx.jax.dbmodel.ExEmailNotification;
 import com.amx.jax.dict.Tenant;
@@ -29,6 +28,7 @@ import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.model.response.fx.FxDeliveryDetailNotificationDto;
 import com.amx.jax.model.response.fx.FxOrderDetailNotificationDto;
 import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
+import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.client.WhatsAppClient;
@@ -54,6 +54,8 @@ public class JaxNotificationService {
 
 	@Autowired
 	JaxNotificationService jaxNotificationService;
+	@Autowired
+	JaxEmailNotificationService jaxEmailNotificationService;
 
 	Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -200,16 +202,16 @@ public class JaxNotificationService {
 	}
 
 	public void sendOtpWhatsApp(PersonInfo pinfo, CivilIdOtpModel model) {
-		// sendOtpSms(pinfo, model, TemplatesMX.RESET_OTP_SMS);
+		sendOtpWhatsApp(pinfo, model, TemplatesMX.RESET_OTP_SMS);
 	}
 
 	public void sendOtpWhatsApp(PersonInfo pinfo, CivilIdOtpModel model, TemplatesMX templateMX) {
 
-		logger.info(String.format("Sending OTP SMS to customer :%s on mobile_no :%s  ", pinfo.getFirstName(),
-				pinfo.getMobile()));
+		logger.debug(String.format("Sending wOTP to customer :%s on whatsapp_no :%s  ", pinfo.getFirstName(),
+				pinfo.getWhatsappPrefixCode() + pinfo.getWhatsAppNumber()));
 
 		WAMessage sms = new WAMessage();
-		sms.addTo(pinfo.getMobile());
+		sms.addTo(pinfo.getWhatsappPrefixCode() + pinfo.getWhatsAppNumber());
 		sms.getModel().put(RESP_DATA_KEY, model);
 		sms.setITemplate(templateMX);
 
@@ -222,7 +224,7 @@ public class JaxNotificationService {
 
 	public void sendOtpSms(PersonInfo pinfo, CivilIdOtpModel model, TemplatesMX templateMX) {
 
-		logger.info(String.format("Sending OTP SMS to customer :%s on mobile_no :%s  ", pinfo.getFirstName(),
+		logger.info(String.format("Sending mOTP SMS to customer :%s on mobile_no :%s  ", pinfo.getFirstName(),
 				pinfo.getMobile()));
 
 		SMS sms = new SMS();
@@ -334,24 +336,6 @@ public class JaxNotificationService {
 
 	}
 
-	// employee otp to login
-	public void sendOtpSms(EmployeeInfo einfo, CivilIdOtpModel model) {
-
-		logger.info(String.format("Sending OTP SMS to customer :%s on mobile_no :%s  ", einfo.getEmployeeName(),
-				einfo.getTelephoneNumber()));
-
-		SMS sms = new SMS();
-		sms.addTo(einfo.getTelephoneNumber());
-		sms.getModel().put(RESP_DATA_KEY, model);
-		sms.setITemplate(TemplatesMX.RESET_OTP_SMS);
-
-		try {
-			postManService.sendSMSAsync(sms);
-		} catch (PostManException e) {
-			logger.error("error in sendOtpSms", e);
-		}
-	} // end of sendOtpSms
-
 	public String sendEmailChangeSubject() {
 
 		if (TenantContextHolder.currentSite().equals(Tenant.KWT)) {
@@ -376,4 +360,17 @@ public class JaxNotificationService {
 		return "Almulla Exchange Account - Phone number Change";
 	}
 
+	public void sendTransactionErrorAlertEmail(String errorMsg, String subject, PaymentResponseDto paymentResponse) {
+		String[] receiverList = jaxEmailNotificationService.getBeneCreationErrorEmailList();
+		if (StringUtils.isNotBlank(errorMsg) && receiverList != null && receiverList.length > 0) {
+			StringBuffer message = new StringBuffer();
+			message.append("errorMsg: ").append(errorMsg);
+			message.append("paymentResponse: ").append(paymentResponse);
+			Email email = new Email();
+			email.setSubject(subject);
+			email.addTo(receiverList);
+			email.setMessage(message.toString());
+			sendEmail(email);
+		}
+	}
 }

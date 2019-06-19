@@ -9,9 +9,7 @@ package com.amx.jax.repository;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
-
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -25,19 +23,19 @@ public interface ITransactionHistroyDAO extends JpaRepository<CustomerRemittance
 			+ "and trunc(th.documentDate) between  trunc(sysdate-6*30) and  trunc(sysdate) and th.beneficaryCorespondingBankName NOT IN('WU',' ') order by th.documentDate desc")
 	public List<CustomerRemittanceTransactionView> getTransactionHistroy(@Param("customerId") BigDecimal customerId);
 
-	@Query("select th from CustomerRemittanceTransactionView th where th.customerId=:customerId  and th.documentFinanceYear=:docfyr and th.documentNumber=:docNumber  ")
+	@Query("select th from CustomerRemittanceTransactionView th where th.customerId=:customerId  and th.documentFinanceYear=:docfyr and th.documentNumber=:docNumber")
 	public List<CustomerRemittanceTransactionView> getTransactionHistroyByDocumnet(
 			@Param("customerId") BigDecimal customerId, @Param("docfyr") BigDecimal remittancedocfyr,
 			@Param("docNumber") BigDecimal remittancedocNumber);
 
-	@Query(value = " select th from CustomerRemittanceTransactionView th where th.customerId=?1 and th.documentFinanceYear=?2 "
-			+ "and th.documentDate between to_date(?3,'dd/mm/yyyy') and to_date(?4,'dd/mm/yyyy')")
-	public List<CustomerRemittanceTransactionView> getTransactionHistroyDateWise(BigDecimal customerId,
-			BigDecimal docfyr, String fromDate, String toDate, Sort sort);
+	@Query(value = "select * from JAX_VW_EX_TRANSACTION_INQUIRY where CUSTOMER_ID=?1 and DOCUMENT_FINANCE_YEAR=?2  " 
+			+  "and trunc(DOCUMENT_DATE) between to_date(?3,'dd/mm/yyyy') and to_date(?4,'dd/mm/yyyy')  ORDER BY DOCUMENT_DATE DESC", nativeQuery = true)
+	public List<CustomerRemittanceTransactionView> getTransactionHistroyDocfyrDateWise(BigDecimal customerId,
+			BigDecimal docfyr, String fromDate, String toDate);
 	
-	@Query(value = " select th from CustomerRemittanceTransactionView th where th.customerId=?1 "
-			+ "and th.documentDate between to_date(?2,'dd/mm/yyyy') and to_date(?3,'dd/mm/yyyy')")
-	public List<CustomerRemittanceTransactionView> getTransactionHistroyDateWise(BigDecimal customerId, String fromDate, String toDate, Sort sort);
+	@Query(value = "  select * from JAX_VW_EX_TRANSACTION_INQUIRY where CUSTOMER_ID=?1 "
+			+ "and trunc(DOCUMENT_DATE) between to_date(?2,'dd/mm/yyyy') and to_date(?3,'dd/mm/yyyy') ORDER BY DOCUMENT_DATE DESC", nativeQuery = true)
+	public List<CustomerRemittanceTransactionView> getTransactionHistroyDateWise(BigDecimal customerId, String fromDate, String toDate);
 
 	@Query("select th from CustomerRemittanceTransactionView th where th.customerId=:customerid and th.beneficiaryRelationSeqId=:beneRelationId "
 			+ " and TRUNC(th.documentDate)=(select MAX(TRUNC(thi.documentDate)) from CustomerRemittanceTransactionView thi "
