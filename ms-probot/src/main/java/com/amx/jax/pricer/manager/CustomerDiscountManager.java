@@ -82,7 +82,7 @@ public class CustomerDiscountManager {
 
 		// Find the Currency Group to which the currency belongs
 		// TODO: Optimize this to Save it in the Cache and retrieve it from thr
- 		CurrencyMasterModel currencyMasterModel = currencyMasterDao
+		CurrencyMasterModel currencyMasterModel = currencyMasterDao
 				.getByCurrencyId(pricingRequestDTO.getForeignCurrencyId());
 
 		GroupingMaster curGroup = null;
@@ -133,16 +133,18 @@ public class CustomerDiscountManager {
 					? customerExtended.getCustomerCategoryDiscount()
 					: null;
 
-			//System.out.println(" Id: " + ccDiscount.getId() + " Flags: " + ccDiscount.getFlags() + " cat:" + ccDiscount.getCustomerCategory())  ;
+			// System.out.println(" Id: " + ccDiscount.getId() + " Flags: " +
+			// ccDiscount.getFlags() + " cat:" + ccDiscount.getCustomerCategory()) ;
 
-			//System.out.println(" CC Discount ==> " + JsonUtil.toJson(ccDiscount));
+			// System.out.println(" CC Discount ==> " + JsonUtil.toJson(ccDiscount));
 
-			if (ccDiscount != null && curGroup != null && DbValueUtil.isActive(ccDiscount.getIsActive())) {
+			if (ccDiscount != null && ccDiscount.getId() != null && curGroup != null
+					&& DbValueUtil.isActive(ccDiscount.getIsActive())) {
 
 				DiscountMaster ccDiscountMaster = discountMasterDao.getByDiscountTypeAndDiscountTypeIdAndGroupId(
 						DISCOUNT_TYPE.CUSTOMER_CATEGORY.getTypeKey(), ccDiscount.getId(), curGroup.getId());
 
-				ccDiscountPips = ((null != ccDiscount && DbValueUtil.isActive(ccDiscountMaster.getIsActive()))
+				ccDiscountPips = ((null != ccDiscountMaster && DbValueUtil.isActive(ccDiscountMaster.getIsActive()))
 						? ccDiscountMaster.getDiscountPips()
 						: BigDecimal.ZERO);
 
