@@ -82,7 +82,7 @@ public class CustomerDiscountManager {
 
 		// Find the Currency Group to which the currency belongs
 		// TODO: Optimize this to Save it in the Cache and retrieve it from thr
-		CurrencyMasterModel currencyMasterModel = currencyMasterDao
+ 		CurrencyMasterModel currencyMasterModel = currencyMasterDao
 				.getByCurrencyId(pricingRequestDTO.getForeignCurrencyId());
 
 		GroupingMaster curGroup = null;
@@ -132,6 +132,10 @@ public class CustomerDiscountManager {
 			CustomerCategoryDiscount ccDiscount = customerExtended != null
 					? customerExtended.getCustomerCategoryDiscount()
 					: null;
+
+			//System.out.println(" Id: " + ccDiscount.getId() + " Flags: " + ccDiscount.getFlags() + " cat:" + ccDiscount.getCustomerCategory())  ;
+
+			//System.out.println(" CC Discount ==> " + JsonUtil.toJson(ccDiscount));
 
 			if (ccDiscount != null && curGroup != null && DbValueUtil.isActive(ccDiscount.getIsActive())) {
 
