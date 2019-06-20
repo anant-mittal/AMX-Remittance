@@ -49,9 +49,6 @@ public class RemitRoutingManager {
 	private static final int MAX_DELIVERY_ATTEMPT_DAYS = 60;
 	private static final BigDecimal FROM_AMT_FRACTION = new BigDecimal(0.00000001);
 
-	// private static final int DEF_START_TIME = 8;
-	// private static final int DEF_STOP_TIME = 18;
-
 	// TODO : Treasury Funding Time.
 	// private static final int KWT_TREASURY_FUNDING_TIME = 12;
 
@@ -253,7 +250,10 @@ public class RemitRoutingManager {
 
 			String holidayImpactStr = ArgUtil.assignDefaultIfNull(oneMatrix.getIsHolidayImpact(), "Y");
 
-			boolean noHolidayLag = com.amx.utils.StringUtils.anyMatch(holidayImpactStr, "N", "NO") ? false : true;
+			// Impact : N, No : NoHolidayLag = true
+			// Impact : Y, Yes: NoHolidayLag = false
+			
+			boolean noHolidayLag = com.amx.utils.StringUtils.anyMatch(holidayImpactStr, "N", "NO") ? true : false;
 
 			long preDelay = 0;
 
