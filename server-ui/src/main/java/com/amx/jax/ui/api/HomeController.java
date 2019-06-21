@@ -262,6 +262,30 @@ public class HomeController {
 		return "verify";
 	}
 
+
+	@ApiJaxStatus({ JaxError.CUSTOMER_NOT_FOUND, JaxError.INVALID_OTP, JaxError.ENTITY_INVALID,
+		JaxError.ENTITY_EXPIRED })
+	@ApiStatus({ ApiStatusCodes.PARAM_MISSING })
+	@RequestMapping(value = { "/pub/verify/{contactType}/resend" },
+			method = {RequestMethod.POST })
+	@ResponseBody
+	public Map<String, Object> verification(
+			@PathVariable ContactType contactType,
+			@RequestParam(required = true) String identity) {
+		String errorCode = null;
+		String errorMessage = null;
+		contactType = contactType.contactType();
+		Map<String, Object> map = new HashMap<String, Object>();
+		try {
+			customerProfileClient.createVerificationLink(null, contactType, identity);
+		} catch (AmxApiException e) {
+			map.put("errorCode", e.getErrorKey());
+			map.put("errorMessage", e.getMessage());
+		}
+		return map;
+	}
+
+
 	@ApiJaxStatus({ JaxError.CUSTOMER_NOT_FOUND, JaxError.INVALID_OTP, JaxError.ENTITY_INVALID,
 			JaxError.ENTITY_EXPIRED })
 	@ApiStatus({ ApiStatusCodes.PARAM_MISSING })
