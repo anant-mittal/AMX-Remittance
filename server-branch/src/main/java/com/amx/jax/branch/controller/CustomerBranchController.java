@@ -6,10 +6,14 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.branch.beans.BranchSession;
 import com.amx.jax.client.OffsiteCustRegClient;
 import com.amx.jax.client.branch.BranchUserClient;
+import com.amx.jax.model.request.EmploymentDetailsRequest;
+import com.amx.jax.model.response.ArticleDetailsDescDto;
+import com.amx.jax.model.response.ArticleMasterDescDto;
 import com.amx.jax.model.response.customer.OffsiteCustomerDataDTO;
 import com.amx.jax.model.response.remittance.UserwiseTransactionDto;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -32,12 +36,9 @@ public class CustomerBranchController {
 
 	@RequestMapping(value = "/api/customer/details", method = { RequestMethod.POST })
 	public AmxApiResponse<OffsiteCustomerDataDTO, Object> setCustomerDetails(@RequestParam String identity,
-			@RequestParam BigDecimal identityType,
-			@RequestParam boolean session) {
+			@RequestParam BigDecimal identityType, @RequestParam boolean session) {
 		AmxApiResponse<OffsiteCustomerDataDTO, Object> customerResponse = offsiteCustRegClient
-				.getOffsiteCustomerDetails(
-						identity,
-						identityType);
+				.getOffsiteCustomerDetails(identity, identityType);
 		if (session) {
 			branchSession.setCustomer(customerResponse.getResult());
 		}
@@ -59,6 +60,17 @@ public class CustomerBranchController {
 	public AmxApiResponse<UserwiseTransactionDto, Object> fetchCustomerTrnxInfo(
 			@RequestParam(required = false) String transactiondate) {
 		return branchUserClient.getTotalCount(transactiondate);
+	}
+
+	@RequestMapping(value = "/api/customer/article/list", method = { RequestMethod.GET })
+	public AmxApiResponse<ArticleMasterDescDto, Object> fetchArticleList() {
+		return offsiteCustRegClient.getArticleListResponse();
+	}
+
+	@RequestMapping(value = "/api/customer/designation/list", method = { RequestMethod.POST })
+	public AmxApiResponse<ArticleDetailsDescDto, Object> fetchDesignationList(
+			@RequestBody EmploymentDetailsRequest model) {
+		return offsiteCustRegClient.getDesignationListResponse(model);
 	}
 
 }
