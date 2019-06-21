@@ -471,7 +471,7 @@ public class UserClientTest extends AbstractTestClient {
 	}
 	
 
-	@Test
+	//@Test
 	public void validateOtpTest() {
 		jaxMetaInfo.setDeviceId("301019967");
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
@@ -485,6 +485,28 @@ public class UserClientTest extends AbstractTestClient {
 		ApiResponse<CustomerModel> response = null;
 		
 		response = client.validateOtp("284052306594", "415752", null, null);
+		LOGGER.debug("response result is "+response.getResults());
+		assertNotNull("Response is null", response);
+		assertNotNull(response);
+	}
+	
+	@Test
+	public void sendEmailVeificationLink() {
+		jaxMetaInfo.setDeviceId("301019967");
+		jaxMetaInfo.setCountryId(new BigDecimal(91));
+		jaxMetaInfo.setCompanyId(new BigDecimal(1));
+		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
+		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
+		jaxMetaInfo.setChannel(JaxChannel.ONLINE);
+		jaxMetaInfo.setTenant(Tenant.KWT);
+		jaxMetaInfo.setLanguageId(new BigDecimal(1));
+		jaxMetaInfo.setEmployeeId(new BigDecimal(265));
+		AmxApiResponse<BoolRespModel,Object> response = null;
+		CustomerModel customerModel = new CustomerModel();
+		customerModel.setEmail("anantmittal1996@gmail.com");
+		customerModel.setLoginId("272112700895");
+		customerModel.setPassword("Amx@1234");;
+		response = client.sendEmailOnLogin(customerModel);
 		LOGGER.debug("response result is "+response.getResults());
 		assertNotNull("Response is null", response);
 		assertNotNull(response);

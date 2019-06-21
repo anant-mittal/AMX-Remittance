@@ -17,6 +17,8 @@ import com.amx.amxlib.constant.ApiEndpoint.UserApi;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.UserFingerprintResponseModel;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.amxlib.service.ICustomerService.Params;
+import com.amx.amxlib.service.ICustomerService.Path;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.logger.LoggerService;
@@ -47,13 +49,15 @@ public class UserController {
 	
 	@Autowired
 	JaxCustomerContactVerificationService jaxCustomerContactVerificationService;
+	
+	
 
 	private Logger logger = LoggerService.getLogger(UserController.class);
 
 	@RequestMapping(value = "/login/", method = RequestMethod.POST)
 	public ApiResponse loginUser(@RequestBody CustomerModel customerModel) {
 		logger.info("loginUser Request: usreid: " + customerModel.getLoginId());
-		jaxCustomerContactVerificationService.validateEmailVerification(metaData.getCustomerId());
+		jaxCustomerContactVerificationService.validateEmailVerification(customerModel.getLoginId());
 		ApiResponse response = userService.loginUser(customerModel.getLoginId(), customerModel.getPassword());
 		return response;
 	}
@@ -83,7 +87,7 @@ public class UserController {
 			@RequestParam(value = UserApi.PASSWORD) String password) {
 		logger.debug(MessageFormat.format("IdentityInt value is {0} :", identityInt));
 		logger.debug(MessageFormat.format("IdentityType value is {0} :", identityType));
-		
+		jaxCustomerContactVerificationService.validateEmailVerification(identityInt);
 		CustomerModel customerModel = fingerprintService.loginCustomerByFingerprint(identityInt, identityType, password,
 				metaData.getDeviceId());
 
@@ -100,5 +104,11 @@ public class UserController {
 			@RequestParam(defaultValue = Constants.IDENTITY_TYPE_CIVIL_ID_STR) String identityType) {
 		return fingerprintService.resetFingerprint(identity, identityType);
 	}
-
+	@RequestMapping(value = Path.RESEND_EMAIL_LOGIN, method = RequestMethod.POST)
+	public AmxApiResponse<BoolRespModel, Object> sendEmailOnLogin(@RequestBody CustomerModel customerModel){
+		jaxCustomerContactVerificationService.sendEmailVerifyLinkOnReg(customerModel);
+		BoolRespModel boolRespModel = new BoolRespModel();
+		boolRespModel.setSuccess(Boolean.TRUE);
+		return AmxApiResponse.build(boolRespModel);
+	}
 }

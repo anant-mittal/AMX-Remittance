@@ -94,7 +94,7 @@ public class CustomerController implements ICustomerService {
 		Customer cust = custDao.getCustById(customerId);
 		logger.debug("customer model is "+cust.toString());
 		if(StringUtils.isEmpty(cust.getEmail())) {
-			jaxCustomerContactVerificationService.sendEmailVerifyLinkOnReg(metaData.getCustomerId(),customerModel);
+			jaxCustomerContactVerificationService.sendEmailVerifyLinkOnReg(customerModel);
 		}
 		ApiResponse response = userService.saveCustomer(customerModel);
 		return response;
@@ -298,4 +298,6 @@ public class CustomerController implements ICustomerService {
 		return AmxApiResponse.build(response);
 
 	}
+	
+	
 }
