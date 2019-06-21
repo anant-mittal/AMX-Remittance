@@ -117,7 +117,6 @@ public class UserService {
 			ex.setMeta(authData.toJaxAuthMetaResp());
 			throw ex;
 		}
-
 	}
 
 	/**

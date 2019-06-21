@@ -3,6 +3,7 @@ package com.amx.jax.ui.config;
 import java.util.Collection;
 import java.util.Collections;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -20,6 +21,9 @@ import com.amx.jax.AppMVConfig;
 @Configuration
 public class WebMvcConfig extends WebMvcConfigurerAdapter {
 
+	@Autowired
+	OWARequestInterceptor owaRequestInterceptor;
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -31,6 +35,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
 		// registry.addInterceptor(new CacheControlHandlerInterceptor());
+		registry.addInterceptor(owaRequestInterceptor);
 	}
 
 	/*
@@ -68,16 +73,16 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 	/**
 	 * Creates the template engine for all message templates.
 	 *
-	 * @param inTemplateResolvers
-	 *            Template resolver for different types of messages etc. Note that
-	 *            any template resolvers defined elsewhere will also be included in
-	 *            this collection.
+	 * @param inTemplateResolvers Template resolver for different types of messages
+	 *                            etc. Note that any template resolvers defined
+	 *                            elsewhere will also be included in this
+	 *                            collection.
 	 * @return Template engine.
 	 */
 	@Bean
 	public SpringTemplateEngine messageTemplateEngine(
 			final Collection<SpringResourceTemplateResolver> inTemplateResolvers) {
-			final SpringTemplateEngine theTemplateEngine = new SpringTemplateEngine();
+		final SpringTemplateEngine theTemplateEngine = new SpringTemplateEngine();
 		for (SpringResourceTemplateResolver theTemplateResolver : inTemplateResolvers) {
 			theTemplateEngine.addTemplateResolver(theTemplateResolver);
 		}

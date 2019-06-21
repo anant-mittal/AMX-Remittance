@@ -4,6 +4,8 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.model.AuthState;
 import com.amx.jax.model.response.customer.CustomerFlags;
+import com.amx.jax.ui.config.UIServerError;
+import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 import com.amx.utils.ArgUtil;
 
 public class AuthPermUtil {
@@ -41,6 +43,18 @@ public class AuthPermUtil {
 	public static void checkSQASetup(AuthState authState, CustomerFlags customerFlags) {
 		if (!ArgUtil.nullAsFalse(customerFlags.getSecurityQuestionDone())) {
 			throw new GlobalException(JaxError.SQA_SETUP_REQUIRED, "Sec QA setup is required");
+		}
+	}
+
+	public static void checkEmailUpdate(AuthState authState, CustomerFlags customerFlags) {
+		if (!ArgUtil.nullAsFalse(customerFlags.getIsEmailMissing())) {
+			throw new UIServerError(OWAStatusStatusCodes.REDIRECT_MODULE);
+		}
+	}
+
+	public static void checkMobileUpdate(AuthState authState, CustomerFlags customerFlags) {
+		if (!ArgUtil.nullAsFalse(customerFlags.getIsEmailMissing())) {
+			throw new UIServerError(OWAStatusStatusCodes.REDIRECT_MODULE);
 		}
 	}
 

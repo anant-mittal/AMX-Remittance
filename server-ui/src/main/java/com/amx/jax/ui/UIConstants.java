@@ -31,6 +31,7 @@ public final class UIConstants extends Constants {
 	public static final int CACHE_TIME = 31556926;
 
 	public enum Features {
+		DASHBOARD,
 		BENE_VIEW, BENE_UPDATE,
 		PLACEORDER, REMIT, FXORDER, EXCHANGE_RATE, TRANX_HISTORY,
 		MY_INFO_VIEW,
