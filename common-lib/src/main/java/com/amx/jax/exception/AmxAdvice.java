@@ -60,8 +60,10 @@ public abstract class AmxAdvice implements ResponseBodyAdvice<AmxApiResponse<?, 
 		apiError.setMeta(ex.getMeta());
 		apiError.setMessage(ArgUtil.ifNotEmpty(apiError.getMessage(), ex.getMessage(), ex.getErrorMessage()));
 		apiError.setPath(request.getRequestURI());
+		apiError.setRedirectUrl(ex.getRedirectUrl());
 		ExceptionMessageKey.resolveLocalMessage(apiError);
 		response.setHeader(AppConstants.EXCEPTION_HEADER_KEY, apiError.getException());
+
 		alert(ex);
 		return new ResponseEntity<AmxApiError>(apiError, getHttpStatus(ex));
 	}

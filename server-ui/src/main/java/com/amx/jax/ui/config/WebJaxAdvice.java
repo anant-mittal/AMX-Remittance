@@ -95,8 +95,8 @@ public class WebJaxAdvice {
 			sessionService.unIndexUser();
 		}
 
+		wrapper.setRedirectUrl(exc.getRedirectUrl());
 		wrapper.setException(exc.getClass().getName());
-
 		return new ResponseEntity<ResponseWrapper<Object>>(wrapper, HttpStatus.OK);
 	}
 
