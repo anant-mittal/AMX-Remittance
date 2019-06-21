@@ -42,8 +42,6 @@ public class CustomerManagementClient implements ICustomerManagementController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CustomerManagementClient.class);
 
 	@Autowired
-	JaxMetaInfo jaxMetaInfo;
-	@Autowired
 	RestService restService;
 	@Autowired
 	AppConfig appConfig;
