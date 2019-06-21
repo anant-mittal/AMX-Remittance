@@ -190,7 +190,25 @@ public class RemitRoutingManager {
 				combinedId = view.getRoutingBankId().longValue() + idSeparator + view.getServiceMasterId().longValue();
 			}
 
-			routeComputeDetails.setExchangeRateDetails(bankRateMap.get(combinedId));
+			ExchangeRateDetails exchangeRateDetails = bankRateMap.get(combinedId);
+
+			// For cash and Service Providers - check if discounts to be applied - EXPLICIT
+			// check for - IF ALLOWED, Null : Not Allowed
+			// For Bank Default is - Discount Applicable
+			if (PricerServiceConstants.SERVICE_GROUP.CASH.getGroupCode().equalsIgnoreCase(view.getServiceGroupCode())
+					&& !com.amx.utils.StringUtils.anyMatch(view.getDiscountAllowed(), "Y", "YES")) {
+
+				// ExchangeRateBreakup baseRateClonned =
+				// exchangeRateDetails.getSellRateBase().clone();
+				// exchangeRateDetails.setSellRateNet(baseRateClonned);
+				if (exchangeRateDetails.isDiscountAvailed()) {
+					exchangeRateDetails.setSellRateNet(exchangeRateDetails.getSellRateBase());
+					exchangeRateDetails.setDiscountAvailed(false);
+				}
+
+			}
+
+			routeComputeDetails.setExchangeRateDetails(exchangeRateDetails);
 
 		}
 
@@ -252,7 +270,7 @@ public class RemitRoutingManager {
 
 			// Impact : N, No : NoHolidayLag = true
 			// Impact : Y, Yes: NoHolidayLag = false
-			
+
 			boolean noHolidayLag = com.amx.utils.StringUtils.anyMatch(holidayImpactStr, "N", "NO") ? true : false;
 
 			long preDelay = 0;
