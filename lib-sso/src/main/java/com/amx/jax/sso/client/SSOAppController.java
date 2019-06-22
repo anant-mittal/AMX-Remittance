@@ -39,6 +39,7 @@ import com.amx.jax.sso.SSOTranx;
 import com.amx.jax.sso.SSOTranx.SSOModel;
 import com.amx.jax.sso.SSOUser;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.CryptoUtil;
 import com.amx.utils.HttpUtils;
 import com.amx.utils.JsonUtil;
 import com.amx.utils.Random;
@@ -111,11 +112,28 @@ public class SSOAppController {
 			HttpServletResponse response) throws MalformedURLException, URISyntaxException {
 		AmxApiResponse<Object, Map<String, Object>> result = AmxApiResponse.buildMeta(new HashMap<String, Object>());
 		String tranxId = ssoUser.ssoTranxId();
-		URLBuilder builder = new URLBuilder(targetUrl).queryParam(AppConstants.TRANX_ID_XKEY, tranxId)
-				.queryParam(SSOConstants.PARAM_SOTP, sSOTranx.get().getAppToken())
-				.queryParam(SSOConstants.PARAM_STEP, SSOAuthStep.DONE)
-				.queryParam(SSOConstants.PARAM_SESSION_TOKEN, AppContextUtil.getTraceId());
+		URLBuilder builder = new URLBuilder(appConfig.getAppPrefix() + '/' + SSOConstants.APP_LOGIN_URL_SESSION)
+				.queryParam("_", CryptoUtil.getEncoder().message(targetUrl).encrypt().encodeBase64().toString());
 		result.setTargetUrl(builder.getURL(), Target._BLANK);
+		return JsonUtil.toJson(result);
+	}
+
+	@ApiSSOStatus({ SSOServerCodes.AUTH_REQUIRED, SSOServerCodes.AUTH_DONE })
+	@ResponseBody
+	@RequestMapping(value = SSOConstants.APP_LOGIN_URL_SESSION, method = { RequestMethod.GET })
+	public String loginJSONPreAuthPage(@RequestParam(value = "_") String targetUrl, HttpServletRequest request,
+			HttpServletResponse response) throws MalformedURLException, URISyntaxException {
+		AmxApiResponse<Object, Map<String, Object>> result = AmxApiResponse.buildMeta(new HashMap<String, Object>());
+		String tranxId = ssoUser.ssoTranxId();
+		URLBuilder builder = new URLBuilder(
+				CryptoUtil.getEncoder().message(targetUrl).decodeBase64().decrypt().toString())
+						.queryParam(AppConstants.TRANX_ID_XKEY, tranxId)
+						.queryParam(SSOConstants.PARAM_SOTP, sSOTranx.get().getAppToken())
+						.queryParam(SSOConstants.PARAM_STEP, SSOAuthStep.DONE)
+						.queryParam(SSOConstants.PARAM_SESSION_TOKEN, AppContextUtil.getTraceId());
+		result.setTargetUrl(builder.getURL(), Target._BLANK);
+		response.setHeader("Location", builder.getURL());
+		response.setStatus(302);
 		return JsonUtil.toJson(result);
 	}
 
