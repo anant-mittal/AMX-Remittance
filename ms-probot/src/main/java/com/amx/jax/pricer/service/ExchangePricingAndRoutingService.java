@@ -14,7 +14,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
@@ -214,18 +213,27 @@ public class ExchangePricingAndRoutingService {
 		List<ViewExRoutingMatrix> routingMatrix = remitRoutingManager
 				.getRoutingMatrixForRemittance(exchangeRateAndRoutingRequest);
 
-		BigDecimal homeSendId = new BigDecimal(5759);
+		//BigDecimal homeSendId = new BigDecimal(5759);
 		boolean isHomeSend = false;
 		ViewExRoutingMatrix homeSendRouting = null;
 
 		List<ViewExRoutingMatrix> removeMatrix = new ArrayList<>();
 
-		for (ViewExRoutingMatrix matrix : routingMatrix) {
+		/*for (ViewExRoutingMatrix matrix : routingMatrix) {
 			if (matrix.getRoutingBankId().compareTo(homeSendId) == 0) {
 				removeMatrix.add(matrix);
 				homeSendRouting = matrix;
 			}
+		}*/
+		
+		
+		for (ViewExRoutingMatrix matrix : routingMatrix) {
+			if (matrix.getRoutingBankCode().equalsIgnoreCase("HOME")) {
+				removeMatrix.add(matrix);
+				homeSendRouting = matrix;
+			}
 		}
+		
 
 		if (!removeMatrix.isEmpty()) {
 			isHomeSend = true;
