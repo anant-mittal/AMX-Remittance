@@ -584,6 +584,8 @@ public class ExchangePricingAndRoutingService {
 			e.printStackTrace();
 		}
 
+		trnxRoutingDetails.setChargeAmount(partnerResp.getCommissionAmount());
+		
 		//// @formatter:off
 		
 		String pathKey = homeSendMatrix.getRoutingCountryId()
