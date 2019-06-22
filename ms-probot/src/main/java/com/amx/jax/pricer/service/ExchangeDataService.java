@@ -2,6 +2,7 @@ package com.amx.jax.pricer.service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -193,6 +194,7 @@ public class ExchangeDataService {
 
 		List<GroupingMaster> groupingMaster = groupingMasterDao.getGroupForCurrency();
 		List<GroupDetails> groupInfo = discountManager.convertGroupInfo(groupingMaster);
+		Collections.sort(groupInfo, new GroupDetails.GroupDetailsComparator());
 
 		return groupInfo;
 	}
