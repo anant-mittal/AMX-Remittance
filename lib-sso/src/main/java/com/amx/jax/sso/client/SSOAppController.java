@@ -120,15 +120,15 @@ public class SSOAppController {
 //						.queryParam(SSOConstants.PARAM_SESSION_TOKEN, AppContextUtil.getTraceId());
 //		result.setTargetUrl(builder.getURL(), Target._BLANK);
 
-		URLBuilder builder = new URLBuilder(appConfig.getAppPrefix() + '/' + SSOConstants.APP_LOGIN_URL_SESSION)
-				.queryParam("_", CryptoUtil.getEncoder().message(targetUrl).encrypt().encodeBase64().toString());
+		URLBuilder builder = new URLBuilder(appConfig.getAppPrefix() + '/' + SSOConstants.APP_LOGIN_URL_SESSION
+				+ "/" +CryptoUtil.getEncoder().message(targetUrl).encrypt().encodeBase64().toString() + "/");
 		result.setTargetUrl(builder.getURL(), Target._BLANK);
 		return JsonUtil.toJson(result);
 	}
 
 	@ApiSSOStatus({ SSOServerCodes.AUTH_REQUIRED, SSOServerCodes.AUTH_DONE })
-	@RequestMapping(value = SSOConstants.APP_LOGIN_URL_SESSION + "/{targeturlD}", method = { RequestMethod.GET })
-	public String loginJSONPreAuthPage(@PathVariable(value = "_") String targeturlD, HttpServletRequest request,
+	@RequestMapping(value = SSOConstants.APP_LOGIN_URL_SESSION + "/{targeturlD}/*", method = { RequestMethod.GET })
+	public String loginJSONPreAuthPage(@PathVariable(value = "targeturlD") String targeturlD, HttpServletRequest request,
 			HttpServletResponse response,
 			Model model) throws MalformedURLException, URISyntaxException {
 		String tranxId = ssoUser.ssoTranxId();
