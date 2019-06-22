@@ -11,7 +11,7 @@ public class UserContactVerificationManager {
 
 	public void setContactVerified(Customer customer, String mOtp, String eOtp, String wOtp) {
 		if(mOtp != null && eOtp != null && !mOtp.equals(eOtp)) {
-			if (mOtp != null) {
+			if (mOtp != null && !StringUtils.isBlank(mOtp)) {
 				customer.setMobileVerified(Status.Y);
 			}
 
