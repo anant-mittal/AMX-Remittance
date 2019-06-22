@@ -108,7 +108,7 @@ public class WebJaxAdvice {
 	 */
 	@ExceptionHandler(ConstraintViolationException.class)
 	@ResponseBody
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)	
 	public ResponseEntity<ResponseWrapper<Object>> handle(ConstraintViolationException exception) {
 		ResponseWrapper<Object> wrapper = new ResponseWrapper<Object>();
 		List<AmxFieldError> errors = new ArrayList<AmxFieldError>();

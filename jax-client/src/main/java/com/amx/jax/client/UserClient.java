@@ -50,7 +50,7 @@ import com.amx.jax.rest.RestService;
 @Component
 public class UserClient extends AbstractJaxServiceClient implements ICustomerService {
 
-	private static final Logger LOGGER = Logger.getLogger(UserClient.class);
+	private static final Logger LOGGER = Logger.getLogger(UserClient.class); 
 
 	@Autowired
 	private JaxMetaInfo jaxMetaInfo;
@@ -301,11 +301,9 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 					.as(new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
 					});
 
-		} catch (AbstractJaxException ae) {
-			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in login : ", e);
-			throw new JaxSystemError();
+			return JaxSystemError.evaluate(e);
 		} // end of try-catch
 
 	}

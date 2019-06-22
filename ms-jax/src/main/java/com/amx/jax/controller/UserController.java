@@ -57,7 +57,8 @@ public class UserController {
 	@RequestMapping(value = "/login/", method = RequestMethod.POST)
 	public ApiResponse loginUser(@RequestBody CustomerModel customerModel) {
 		logger.info("loginUser Request: usreid: " + customerModel.getLoginId());
-		jaxCustomerContactVerificationService.validateEmailVerification(customerModel.getLoginId());
+		// Validate TODO:- @Anant
+		//jaxCustomerContactVerificationService.validateEmailVerification(customerModel.getLoginId());
 		ApiResponse response = userService.loginUser(customerModel.getLoginId(), customerModel.getPassword());
 		return response;
 	}
@@ -87,7 +88,8 @@ public class UserController {
 			@RequestParam(value = UserApi.PASSWORD) String password) {
 		logger.debug(MessageFormat.format("IdentityInt value is {0} :", identityInt));
 		logger.debug(MessageFormat.format("IdentityType value is {0} :", identityType));
-		jaxCustomerContactVerificationService.validateEmailVerification(identityInt);
+		// Validate TODO:- @Anant
+		//jaxCustomerContactVerificationService.validateEmailVerification(identityInt);
 		CustomerModel customerModel = fingerprintService.loginCustomerByFingerprint(identityInt, identityType, password,
 				metaData.getDeviceId());
 
