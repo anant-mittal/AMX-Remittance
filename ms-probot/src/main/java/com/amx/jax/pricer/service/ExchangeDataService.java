@@ -1,6 +1,7 @@
 package com.amx.jax.pricer.service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -144,12 +145,28 @@ public class ExchangeDataService {
 	}
 
 	public List<RoutBanksAndServiceRespDTO> getRoutBanksAndServices(BigDecimal countryId, BigDecimal currencyId) {
-		List<RoutingHeader> rountingHeaderData = routingDao.getRoutHeadersByCountryIdAndCurrenyId(countryId,
+		List<RoutingHeader> allRountingHeaderData = routingDao.getRoutHeadersByCountryIdAndCurrenyId(countryId,
 				currencyId);
+
+		List<RoutingHeader> rountingHeaderData = new ArrayList<RoutingHeader>();
+
+		BigDecimal oneOOne = new BigDecimal(101);
+		BigDecimal oneOTwo = new BigDecimal(102);
+
+		for (RoutingHeader routingHeader : allRountingHeaderData) {
+
+			BigDecimal serviceId = routingHeader.getServiceMasterId();
+
+			if (null != serviceId && (oneOOne.compareTo(serviceId) == 0 || oneOTwo.compareTo(serviceId) == 0)) {
+				rountingHeaderData.add(routingHeader);
+			}
+		}
+
 		if (rountingHeaderData.isEmpty()) {
 			throw new PricerServiceException(PricerServiceError.MISSING_ROUTING_BANK_IDS,
 					"Invalid or Missing Routing Banks");
 		}
+
 		List<RoutBanksAndServiceRespDTO> routBanksAndServiceRespDTO = discountManager
 				.convertRoutBankAndService(rountingHeaderData);
 		return routBanksAndServiceRespDTO;
