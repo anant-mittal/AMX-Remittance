@@ -3,18 +3,68 @@
 <head>
 <!-- Static content -->
 <title>SSO Login</title>
+<style>
+.lds-facebook {
+  display: inline-block;
+  position: relative;
+  width: 64px;
+  height: 64px;
+}
+.lds-facebook div {
+  display: inline-block;
+  position: absolute;
+  left: 6px;
+  width: 13px;
+  background: #439e99;
+  animation: lds-facebook 1.2s cubic-bezier(0, 0.5, 0.5, 1) infinite;
+}
+.lds-facebook div:nth-child(1) {
+  left: 6px;
+  animation-delay: -0.24s;
+}
+.lds-facebook div:nth-child(2) {
+  left: 26px;
+  animation-delay: -0.12s;
+}
+.lds-facebook div:nth-child(3) {
+  left: 45px;
+  animation-delay: 0;
+}
+@keyframes lds-facebook {
+  0% {
+    top: 6px;
+    height: 51px;
+  }
+  50%, 100% {
+    top: 19px;
+    height: 26px;
+  }
+}
+.centerWrapper {
+ position: fixed;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  top: calc(50% - 32px);
+  left: calc(50% - 32px);
+}
+</style>
 </head>
 <body>
-	<form id=sso th:action="${actionUrl}" method="post" style="display:none;">
+	<div class="centerWrapper">
+		<form id=sso th:action="${actionUrl}" method="post" style="display:none;">
 		<input type="hidden" th:value="${x_tranx_id}" name="x-tranx-id">
 		<input type="hidden" th:value="${x_session_token}" name="x-session-token">
 		<input type="hidden" th:value="${step}" name="step">
 		<input type="hidden" th:value="${sotp}" name="sotp">
 		<button type="submit"></button>
-	</form>
+		</form>
+		<div class="lds-facebook"><div></div><div></div><div></div></div>
+	</div>
+
 <script type="text/javascript">
 	window.onload=function(){
-          document.forms["sso"].submit();
+         document.forms["sso"].submit();
     }
 </script>
 
