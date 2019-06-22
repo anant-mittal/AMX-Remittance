@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+<!-- Static content -->
+<title>SSO Login</title>
+</head>
+<body>
+	<form id=sso th:action="${actionUrl}" method="post" style="display:none;">
+		<input type="hidden" th:value="${x_tranx_id}" name="x-tranx-id">
+		<input type="hidden" th:value="${x_session_token}" name="x-session-token">
+		<input type="hidden" th:value="${step}" name="step">
+		<input type="hidden" th:value="${sotp}" name="sotp">
+		<button type="submit"></button>
+	</form>
+<script type="text/javascript">
+	window.onload=function(){
+		
+        var auto = setTimeout(function(){ autoRefresh(); }, 100);
+
+        function submitform(){
+          document.forms["sso"].submit();
+        }
+        function autoRefresh(){
+           clearTimeout(auto);
+           auto = setTimeout(function(){ submitform(); autoRefresh(); }, 100);
+        }
+    }
+</script>
+
+</body>
+</html>

@@ -119,10 +119,10 @@ public class SSOAppController {
 	}
 
 	@ApiSSOStatus({ SSOServerCodes.AUTH_REQUIRED, SSOServerCodes.AUTH_DONE })
-	@ResponseBody
 	@RequestMapping(value = SSOConstants.APP_LOGIN_URL_SESSION, method = { RequestMethod.GET })
 	public String loginJSONPreAuthPage(@RequestParam(value = "_") String targetUrl, HttpServletRequest request,
-			HttpServletResponse response) throws MalformedURLException, URISyntaxException {
+			HttpServletResponse response,
+			Model model) throws MalformedURLException, URISyntaxException {
 		AmxApiResponse<Object, Map<String, Object>> result = AmxApiResponse.buildMeta(new HashMap<String, Object>());
 		String tranxId = ssoUser.ssoTranxId();
 		URLBuilder builder = new URLBuilder(
@@ -132,9 +132,16 @@ public class SSOAppController {
 						.queryParam(SSOConstants.PARAM_STEP, SSOAuthStep.DONE)
 						.queryParam(SSOConstants.PARAM_SESSION_TOKEN, AppContextUtil.getTraceId());
 		result.setTargetUrl(builder.getURL(), Target._BLANK);
-		response.setHeader("Location", builder.getURL());
-		response.setStatus(302);
-		return JsonUtil.toJson(result);
+
+		model.addAttribute("actionUrl", CryptoUtil.getEncoder().message(targetUrl).decodeBase64().decrypt().toString())
+				.addAttribute(AppConstants.TRANX_ID_XKEY_CLEAN, tranxId)
+				.addAttribute(SSOConstants.PARAM_SOTP, sSOTranx.get().getAppToken())
+				.addAttribute(SSOConstants.PARAM_SESSION_TOKEN_CLEAN, AppContextUtil.getTraceId())
+				.addAttribute(SSOConstants.PARAM_STEP, SSOAuthStep.DONE);
+
+		// response.setHeader("Location", builder.getURL());
+		// response.setStatus(302);
+		return "sso_old_java";
 	}
 
 	/**
