@@ -105,14 +105,14 @@ public class ViewExRoutingMatrix implements Serializable {
 	@Column(name = "WEEKEND_HOURS_TO")
 	private BigDecimal weekendHoursTo;
 
-	@Column(name = "DELIVERY_MINUTES")
-	private BigDecimal delievryMinutes;
+	@Column(name = "DELIVERY_HOURS")
+	private BigDecimal delievryHours;
 
-	@Column(name = "TXN_AMT_FROM")
-	private BigDecimal txnAmtFrom;
+	//@Column(name = "TXN_AMT_FROM")
+	//private BigDecimal txnAmtFrom;
 
-	@Column(name = "TXN_AMT_TO")
-	private BigDecimal txnAmtTo;
+	//@Column(name = "TXN_AMT_TO")
+	//private BigDecimal txnAmtTo;
 
 	@Column(name = "FROM_AMOUNT")
 	private BigDecimal fromAmount;
@@ -379,29 +379,24 @@ public class ViewExRoutingMatrix implements Serializable {
 		this.weekendHoursTo = weekendHoursTo;
 	}
 
-	public BigDecimal getDelievryMinutes() {
-		return delievryMinutes;
+	public BigDecimal getDelievryHours() {
+		return delievryHours;
 	}
 
-	public void setDelievryMinutes(BigDecimal delievryMinutes) {
-		this.delievryMinutes = delievryMinutes;
+	public void setDelievryHours(BigDecimal delievryHours) {
+		this.delievryHours = delievryHours;
 	}
 
-	public BigDecimal getTxnAmtFrom() {
-		return txnAmtFrom;
-	}
-
-	public void setTxnAmtFrom(BigDecimal txnAmtFrom) {
-		this.txnAmtFrom = txnAmtFrom;
-	}
-
-	public BigDecimal getTxnAmtTo() {
-		return txnAmtTo;
-	}
-
-	public void setTxnAmtTo(BigDecimal txnAmtTo) {
-		this.txnAmtTo = txnAmtTo;
-	}
+	/*
+	 * public BigDecimal getTxnAmtFrom() { return txnAmtFrom; }
+	 * 
+	 * public void setTxnAmtFrom(BigDecimal txnAmtFrom) { this.txnAmtFrom =
+	 * txnAmtFrom; }
+	 * 
+	 * public BigDecimal getTxnAmtTo() { return txnAmtTo; }
+	 * 
+	 * public void setTxnAmtTo(BigDecimal txnAmtTo) { this.txnAmtTo = txnAmtTo; }
+	 */
 
 	public BigDecimal getFromAmount() {
 		return fromAmount;

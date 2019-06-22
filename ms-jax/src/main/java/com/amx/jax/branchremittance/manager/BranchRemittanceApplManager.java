@@ -1,4 +1,8 @@
 package com.amx.jax.branchremittance.manager;
+/**
+ * @author rabil 
+ * @date 21/01/2019
+ */
 
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -14,10 +18,7 @@ import javax.annotation.Resource;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-/**
- * @author rabil 
- * @date 21/01/2019
- */
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -213,6 +214,11 @@ public class BranchRemittanceApplManager {
 		 Customer customer = custDao.getCustById(metaData.getCustomerId());
 		/** To fetch bene details **/
 		 BenificiaryListView beneficaryDetails =getBeneDetails(requestApplModel);
+		 
+		 /* to vlidate BSB  account though api **/
+		remitTrnxManager.beneAccountValidationThroughApi(requestApplModel.getServiceMasterId(),requestApplModel.getRoutingBankId(),beneficaryDetails);
+		 
+		 
 		/*checkingStaffIdNumberWithCustomer **/
 		 branchRemitManager.checkingStaffIdNumberWithCustomer();
 		 /*checking bene account exception  **/
@@ -485,6 +491,7 @@ public class BranchRemittanceApplManager {
 			if(dynamicRoutingPricingResponse.getCostRateLimitReached()!=null) {
 				remittanceApplication.setReachedCostRateLimit(dynamicRoutingPricingResponse.getCostRateLimitReached()==false?"N":"Y");
 			}
+			remittanceApplication.setBeneDeductFlag(dynamicRoutingPricingResponse.getBeneDeductFlag());
 			
 			remitApplManager.setCustomerDiscountColumns(remittanceApplication, dynamicRoutingPricingResponse);
 			remitApplManager.setVatDetails(remittanceApplication, dynamicRoutingPricingResponse);

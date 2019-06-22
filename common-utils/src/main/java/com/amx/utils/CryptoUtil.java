@@ -438,10 +438,13 @@ public final class CryptoUtil {
 			return ArgUtil.isEmpty(this.output) ? this.hash : this.output;
 		}
 
+		public boolean equals(String hash) {
+			return hash.equals(this.output());
+		}
+
 		public boolean validate(String hash) {
 			// return CryptoUtil.validateHMAC(this.interval, this.secret, this.message,
 			// this.currentTime, hash);
-
 			return CryptoUtil.validateHMAC(this.currentTime, this.interval, this.tolerance, this.secret, this.message,
 					hash);
 

@@ -133,12 +133,18 @@ public class CustomerDiscountManager {
 					? customerExtended.getCustomerCategoryDiscount()
 					: null;
 
-			if (ccDiscount != null && curGroup != null && DbValueUtil.isActive(ccDiscount.getIsActive())) {
+			// System.out.println(" Id: " + ccDiscount.getId() + " Flags: " +
+			// ccDiscount.getFlags() + " cat:" + ccDiscount.getCustomerCategory()) ;
+
+			// System.out.println(" CC Discount ==> " + JsonUtil.toJson(ccDiscount));
+
+			if (ccDiscount != null && ccDiscount.getId() != null && curGroup != null
+					&& DbValueUtil.isActive(ccDiscount.getIsActive())) {
 
 				DiscountMaster ccDiscountMaster = discountMasterDao.getByDiscountTypeAndDiscountTypeIdAndGroupId(
 						DISCOUNT_TYPE.CUSTOMER_CATEGORY.getTypeKey(), ccDiscount.getId(), curGroup.getId());
 
-				ccDiscountPips = ((null != ccDiscount && DbValueUtil.isActive(ccDiscountMaster.getIsActive()))
+				ccDiscountPips = ((null != ccDiscountMaster && DbValueUtil.isActive(ccDiscountMaster.getIsActive()))
 						? ccDiscountMaster.getDiscountPips()
 						: BigDecimal.ZERO);
 

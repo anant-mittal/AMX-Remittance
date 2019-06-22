@@ -23,6 +23,8 @@ public enum PricerServiceError implements IExceptionEnum {
 
 	MISSING_ROUTING_BANK_IDS,
 
+	NO_VALID_TNX_ROUTES_AVAILABLE,
+
 	INVALID_ROUTING_BANK_IDS,
 
 	INVALID_OR_MISSING_ROUTE,
@@ -48,7 +50,7 @@ public enum PricerServiceError implements IExceptionEnum {
 	NULL_ROUTING_MATRIX,
 
 	INVALID_AMT_SLAB_DISC_PIPS,
-	
+
 	MISSING_DISCOUNT_OR_GROUP_ID,
 	// Service Provider error
 	INVALID_BENEFICIARY_RELATIONSHIP_ID,

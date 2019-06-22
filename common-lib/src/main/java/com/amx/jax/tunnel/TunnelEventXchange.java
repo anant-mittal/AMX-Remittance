@@ -1,5 +1,7 @@
 package com.amx.jax.tunnel;
 
+import com.amx.jax.AppParam;
+
 public enum TunnelEventXchange {
 	/**
 	 * Event will be delivered to ALL Components
@@ -38,19 +40,19 @@ public enum TunnelEventXchange {
 	}
 
 	public String getTopic(String topic) {
-		return queuePrefix + "_T_" + topic;
+		return AppParam.APP_ENV.getValue() + "_" + queuePrefix + "_T_" + topic;
 	}
 
 	public String getQueue(String topic) {
-		return queuePrefix + "_Q_" + topic;
+		return AppParam.APP_ENV.getValue() + "_" + queuePrefix + "_Q_" + topic;
 	}
 
 	public String getStatusMap(String topic) {
-		return queuePrefix + "_M_" + topic;
+		return AppParam.APP_ENV.getValue() + "_" + queuePrefix + "_M_" + topic;
 	}
 
 	public String getEventMap(String topic) {
-		return queuePrefix + "_E_" + topic;
+		return AppParam.APP_ENV.getValue() + "_" + queuePrefix + "_E_" + topic;
 	}
 
 }

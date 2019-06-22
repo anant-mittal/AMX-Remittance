@@ -41,7 +41,8 @@ public enum TemplatesMX implements ITemplate {
 
 	PARTIAL_REGISTRATION_EMAIL("PartialRegistrationCompletionEMail"), TRANSACTION_FAILURE("TransactionFailure"),
 
-	PROMOTION_WINNER("PromotionWinner"), PROMOTION_COUPON("PromotionCoupon"),WANTIT_BUYIT_PROMOTION("WantITBuyItPromotionCoupon"),
+	PROMOTION_WINNER("PromotionWinner"), PROMOTION_COUPON("PromotionCoupon"),
+	WANTIT_BUYIT_PROMOTION("WantITBuyItPromotionCoupon"),
 
 	SERVER_PING("server-ping"),
 
@@ -77,6 +78,11 @@ public enum TemplatesMX implements ITemplate {
 	@Override
 	public String getHtmlFile() {
 		return "html/" + getFileName();
+	}
+
+	@Override
+	public String getSMSFile() {
+		return "html/sms/" + getFileName();
 	}
 
 	@Override

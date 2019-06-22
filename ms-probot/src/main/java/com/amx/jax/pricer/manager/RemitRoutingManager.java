@@ -1,6 +1,7 @@
 package com.amx.jax.pricer.manager;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -41,15 +42,12 @@ import com.amx.jax.pricer.var.PricerServiceConstants;
 import com.amx.jax.pricer.var.PricerServiceConstants.SERVICE_GROUP;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.DateUtil;
-import com.amx.utils.JsonUtil;
 
 @Component
 public class RemitRoutingManager {
 
 	private static final int MAX_DELIVERY_ATTEMPT_DAYS = 60;
-
-	// private static final int DEF_START_TIME = 8;
-	// private static final int DEF_STOP_TIME = 18;
+	private static final BigDecimal FROM_AMT_FRACTION = new BigDecimal(0.00000001);
 
 	// TODO : Treasury Funding Time.
 	// private static final int KWT_TREASURY_FUNDING_TIME = 12;
@@ -170,7 +168,7 @@ public class RemitRoutingManager {
 
 			if (isOnlyBankRate) {
 				combinedId = "" + exchRate.getBankId().longValue();
-				//exchRate.setServiceIndicatorId(null);
+				// exchRate.setServiceIndicatorId(null);
 			} else {
 				combinedId = exchRate.getBankId().longValue() + idSeparator
 						+ exchRate.getServiceIndicatorId().longValue();
@@ -192,7 +190,25 @@ public class RemitRoutingManager {
 				combinedId = view.getRoutingBankId().longValue() + idSeparator + view.getServiceMasterId().longValue();
 			}
 
-			routeComputeDetails.setExchangeRateDetails(bankRateMap.get(combinedId));
+			ExchangeRateDetails exchangeRateDetails = bankRateMap.get(combinedId);
+
+			// For cash and Service Providers - check if discounts to be applied - EXPLICIT
+			// check for - IF ALLOWED, Null : Not Allowed
+			// For Bank Default is - Discount Applicable
+			if (PricerServiceConstants.SERVICE_GROUP.CASH.getGroupCode().equalsIgnoreCase(view.getServiceGroupCode())
+					&& !com.amx.utils.StringUtils.anyMatch(view.getDiscountAllowed(), "Y", "YES")) {
+
+				// ExchangeRateBreakup baseRateClonned =
+				// exchangeRateDetails.getSellRateBase().clone();
+				// exchangeRateDetails.setSellRateNet(baseRateClonned);
+				if (exchangeRateDetails.isDiscountAvailed()) {
+					exchangeRateDetails.setSellRateNet(exchangeRateDetails.getSellRateBase());
+					exchangeRateDetails.setDiscountAvailed(false);
+				}
+
+			}
+
+			routeComputeDetails.setExchangeRateDetails(exchangeRateDetails);
 
 		}
 
@@ -252,7 +268,10 @@ public class RemitRoutingManager {
 
 			String holidayImpactStr = ArgUtil.assignDefaultIfNull(oneMatrix.getIsHolidayImpact(), "Y");
 
-			boolean noHolidayLag = com.amx.utils.StringUtils.anyMatch(holidayImpactStr, "N", "NO") ? false : true;
+			// Impact : N, No : NoHolidayLag = true
+			// Impact : Y, Yes: NoHolidayLag = false
+
+			boolean noHolidayLag = com.amx.utils.StringUtils.anyMatch(holidayImpactStr, "N", "NO") ? true : false;
 
 			long preDelay = 0;
 
@@ -266,7 +285,7 @@ public class RemitRoutingManager {
 					transientDataCache.getTrnxBeginTime(), timezone, oneMatrix.getWeekFrom(), oneMatrix.getWeekTo(),
 					oneMatrix.getWeekHoursFrom(), oneMatrix.getWeekHoursTo(), oneMatrix.getWeekendFrom(),
 					oneMatrix.getWeekendTo(), oneMatrix.getWeekendHoursFrom(), oneMatrix.getWeekendHoursTo(),
-					oneMatrix.getDelievryMinutes(), noHolidayLag, routingCountryId, preDelay, false, BigDecimal.ZERO);
+					oneMatrix.getDelievryHours(), noHolidayLag, routingCountryId, preDelay, false, BigDecimal.ZERO);
 
 			routingDetails.setRoutingBankDeliveryDetails(estmdCBDeliveryDetails);
 
@@ -452,7 +471,8 @@ public class RemitRoutingManager {
 
 			routingDetails.setFinalDeliveryDetails(finalDeliveryDetails);
 
-			System.out.println(" Final Delivery Details ===>  " + JsonUtil.toJson(finalDeliveryDetails));
+			// System.out.println(" Final Delivery Details ===> " +
+			// JsonUtil.toJson(finalDeliveryDetails));
 
 		} // OneMatrix Block
 
@@ -490,6 +510,11 @@ public class RemitRoutingManager {
 			BigDecimal fromAmt = matrix.getFromAmount() == null ? BigDecimal.ZERO : matrix.getFromAmount();
 			BigDecimal toAmt = matrix.getToAmount() == null ? PricerServiceConstants.MAX_BIGD_12 : matrix.getToAmount();
 
+			// Adjust the from amount for Range Correction - only for perfect Integer
+			if (fromAmt.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0) {
+				fromAmt = fromAmt.subtract(BigDecimal.ONE).add(FROM_AMT_FRACTION).setScale(8, RoundingMode.UP);
+			}
+
 			if (fromAmt.compareTo(breakup.getConvertedFCAmount()) > 0
 					|| toAmt.compareTo(breakup.getConvertedFCAmount()) < 0) {
 				removeList.add(routeData);
@@ -500,6 +525,14 @@ public class RemitRoutingManager {
 
 		for (TransientRoutingComputeDetails routeData : removeList) {
 			routeDataList.remove(routeData);
+		}
+
+		if (routeDataList.isEmpty()) {
+
+			LOGGER.info("No Valid Transaction Routes are Available for Transaction Routing");
+
+			throw new PricerServiceException(PricerServiceError.NO_VALID_TNX_ROUTES_AVAILABLE,
+					"No Valid Transaction Routes are Eligible for Transaction Routing");
 		}
 
 	}
@@ -550,7 +583,8 @@ public class RemitRoutingManager {
 		goodBusinessDeliveryDT.setCompletionDateForeign(blockDeliveryCompletionDT);
 		goodBusinessDeliveryDT.setCompletionTT(blockDeliveryCompletionDT.toInstant().toEpochMilli());
 
-		System.out.println(" Estimated Delivery Details ===> " + JsonUtil.toJson(goodBusinessDeliveryDT));
+		// System.out.println(" Estimated Delivery Details ===> " +
+		// JsonUtil.toJson(goodBusinessDeliveryDT));
 
 		return goodBusinessDeliveryDT;
 	}
@@ -638,7 +672,8 @@ public class RemitRoutingManager {
 			workingHoursData.setSnoozeWakeUpInHrMin(snoozeWakeUpTime.doubleValue());
 		}
 
-		System.out.println(" Work Week matrix ==> " + JsonUtil.toJson(workingHoursData));
+		// System.out.println(" Work Week matrix ==> " +
+		// JsonUtil.toJson(workingHoursData));
 
 		return workingHoursData;
 	}

@@ -31,6 +31,14 @@ public class CustomerContactVerification implements java.io.Serializable {
 		this.id = id;
 	}
 
+	@Override
+	public String toString() {
+		return "CustomerContactVerification [id=" + id + ", appCountryId=" + appCountryId + ", contactType="
+				+ contactType + ", contactValue=" + contactValue + ", verificationCode=" + verificationCode
+				+ ", customerId=" + customerId + ", isActive=" + isActive + ", createdDate=" + createdDate
+				+ ", verifiedDate=" + verifiedDate + "]";
+	}
+
 	private BigDecimal id;
 
 	@Id

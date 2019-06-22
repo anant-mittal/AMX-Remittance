@@ -268,7 +268,7 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 							Map<String,List<DynamicRoutingPricingDto>> dynamicRoutingPricingMap= new HashMap<>();
 							List<DynamicRoutingPricingDto> dynamicRoutingPricingDtoList= new ArrayList<>();
 							for(String beneDed : beneDeductList) {
-								DynamicRoutingPricingDto dto =  dynamicxchangeRateResponseModel(apiResponse,beneDed,routingPricingRequest,beneficiaryView);
+								DynamicRoutingPricingDto dto =  dynamicxchangeRateResponseModel(apiResponse,beneDed,routingPricingRequest,beneficiaryView,mapEntry.getKey());
 								dynamicRoutingPricingDtoList.add(dto);
 								
 							}
@@ -280,7 +280,7 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 							Map<String,List<DynamicRoutingPricingDto>> dynamicRoutingPricingMap= new HashMap<>();
 							List<DynamicRoutingPricingDto> dynamicRoutingPricingDtoList= new ArrayList<>();
 							for(String noBeneDed : nonBeneDeduct) {
-								DynamicRoutingPricingDto dto =  dynamicxchangeRateResponseModel(apiResponse,noBeneDed,routingPricingRequest,beneficiaryView);
+								DynamicRoutingPricingDto dto =  dynamicxchangeRateResponseModel(apiResponse,noBeneDed,routingPricingRequest,beneficiaryView,mapEntry.getKey());
 								dynamicRoutingPricingDtoList.add(dto);
 							}
 							dynamicRoutingPricingMap.put(PRICE_TYPE.NO_BENE_DEDUCT.toString(), dynamicRoutingPricingDtoList);
@@ -297,7 +297,7 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 	}
 	
 	
-	private DynamicRoutingPricingDto dynamicxchangeRateResponseModel(AmxApiResponse<ExchangeRateAndRoutingResponse,Object> apiResponse,String key,RoutingPricingRequest routingPricingRequest,BenificiaryListView beneficiaryView) {
+	private DynamicRoutingPricingDto dynamicxchangeRateResponseModel(AmxApiResponse<ExchangeRateAndRoutingResponse,Object> apiResponse,String key,RoutingPricingRequest routingPricingRequest,BenificiaryListView beneficiaryView,PRICE_TYPE prType) {
 		
 		
 		DynamicRoutingPricingDto result = new DynamicRoutingPricingDto();
@@ -318,7 +318,14 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 			result.setCustomerDiscountDetails(sellRateDetail.getCustomerDiscountDetails());
 			result.setDiscountAvailed(sellRateDetail.isDiscountAvailed());
 			result.setCostRateLimitReached(sellRateDetail.isCostRateLimitReached());
-			BigDecimal commission =trnxRoutingDetails.getChargeAmount();
+			BigDecimal commission =null;
+			if(prType.equals(PRICE_TYPE.NO_BENE_DEDUCT)) {
+			 commission =trnxRoutingDetails.getChargeAmount();
+			 result.setBeneDeductFlag(ConstantDocument.No);
+			}else if(prType.equals(PRICE_TYPE.BENE_DEDUCT)) {
+				commission =trnxRoutingDetails.getBeneDeductChargeAmount();
+				 result.setBeneDeductFlag(ConstantDocument.Yes);
+			}
 			BigDecimal corpDiscount = corporateDiscountManager.corporateDiscount();
 			
 			if(JaxUtil.isNullZeroBigDecimalCheck(commission) && commission.compareTo(corpDiscount)>=0) {
@@ -430,7 +437,7 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 	}
 	
 	
-	private VatDetailsDto getVatAmount(BigDecimal commission) {
+	public VatDetailsDto getVatAmount(BigDecimal commission) {
 		VatDetailsDto vatDetails = new VatDetailsDto();
 		List<ViewVatDetails> vatList = vatDetailsRepository.getVatDetails(metaData.getCountryId(),ConstantDocument.VAT_CATEGORY,ConstantDocument.VAT_ACCOUNT_TYPE_COMM);
 		String vatAppliable = null;
