@@ -145,7 +145,7 @@ public class PartnerDataManager {
 										//srvPrvFeeInqResDTO.setGrossAmount(exchangeLocalAmt);
 										srvPrvFeeInqResDTO.setGrossAmount(srvPrvFeeInqReqDTO.getAmount());
 										srvPrvFeeInqResDTO.setLocalAmount(srvPrvFeeInqResDTO.getGrossAmount().add(commissionAmt));
-										srvPrvFeeInqResDTO.setExchangeRateWithoutPips(exchangeRate);
+										srvPrvFeeInqResDTO.setExchangeRateBase(exchangeRate);
 										srvPrvFeeInqResDTO.setMargin(marginAmount);
 
 										HomeSendInfoDTO homeSendInfoDTO = fetchHomeSendData(serviceProviderResponse,quotationCall);
@@ -285,7 +285,7 @@ public class PartnerDataManager {
 										srvPrvFeeInqResDTO.setForeignAmount(destinationAmt);
 										srvPrvFeeInqResDTO.setGrossAmount(exchangeLocalAmt);
 										srvPrvFeeInqResDTO.setLocalAmount(srvPrvFeeInqResDTO.getGrossAmount().add(commissionAmt));
-										srvPrvFeeInqResDTO.setExchangeRateWithoutPips(exchangeRate);
+										srvPrvFeeInqResDTO.setExchangeRateBase(exchangeRate);
 										srvPrvFeeInqResDTO.setMargin(marginAmount);
 										
 										HomeSendInfoDTO homeSendInfoDTO = fetchHomeSendData(serviceProviderResponse,quotationCall);

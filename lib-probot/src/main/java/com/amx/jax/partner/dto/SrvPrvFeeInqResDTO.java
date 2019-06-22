@@ -9,7 +9,7 @@ public class SrvPrvFeeInqResDTO implements Serializable {
 	private static final long serialVersionUID = -2594412775985894857L;
 	
 	private BigDecimal exchangeRateWithPips;
-	private BigDecimal exchangeRateWithoutPips;
+	private BigDecimal exchangeRateBase;
 	private BigDecimal exchangeRateWithLocalAndSettlementCurrency;
 	private BigDecimal exchangeRateByServiceProvider;
 	private BigDecimal commissionAmount;
@@ -76,11 +76,11 @@ public class SrvPrvFeeInqResDTO implements Serializable {
 		this.homeSendInfoDTO = homeSendInfoDTO;
 	}
 	
-	public BigDecimal getExchangeRateWithoutPips() {
-		return exchangeRateWithoutPips;
+	public BigDecimal getExchangeRateBase() {
+		return exchangeRateBase;
 	}
-	public void setExchangeRateWithoutPips(BigDecimal exchangeRateWithoutPips) {
-		this.exchangeRateWithoutPips = exchangeRateWithoutPips;
+	public void setExchangeRateBase(BigDecimal exchangeRateWithoutPips) {
+		this.exchangeRateBase = exchangeRateWithoutPips;
 	}
 	
 	public BigDecimal getMargin() {
