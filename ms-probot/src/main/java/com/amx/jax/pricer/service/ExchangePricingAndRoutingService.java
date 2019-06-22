@@ -541,7 +541,7 @@ public class ExchangePricingAndRoutingService {
 		}
 
 		sellRateBase.setConvertedLCAmount(partnerResp.getGrossAmount());
-		sellRateBase.setConvertedLCAmount(partnerResp.getForeignAmount());
+		sellRateBase.setConvertedFCAmount(partnerResp.getForeignAmount());
 
 		ExchangeRateDetails exchRateDetails = new ExchangeRateDetails();
 		exchRateDetails.setBankId(homeSendMatrix.getRoutingBankId());
