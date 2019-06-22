@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Calendar;
 
-public class HomeSendInfoDTO implements Serializable {
+public class HomeSendSrvcProviderInfo implements Serializable {
 
 	/**
 	 * 

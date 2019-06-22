@@ -7,11 +7,14 @@ package com.amx.jax.pricer.service;
 
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
@@ -25,13 +28,19 @@ import org.springframework.stereotype.Service;
 import com.amx.jax.cache.ExchRateAndRoutingTransientDataCache;
 import com.amx.jax.cache.TransientRoutingComputeDetails;
 import com.amx.jax.dict.UserClient.Channel;
+import com.amx.jax.partner.dto.RoutingBankDetails;
+import com.amx.jax.partner.dto.SrvPrvFeeInqReqDTO;
+import com.amx.jax.partner.dto.SrvPrvFeeInqResDTO;
 import com.amx.jax.pricer.dao.CustomerDao;
 import com.amx.jax.pricer.dbmodel.Customer;
 import com.amx.jax.pricer.dbmodel.TimezoneMasterModel;
 import com.amx.jax.pricer.dbmodel.ViewExRoutingMatrix;
+import com.amx.jax.pricer.dto.BankDetailsDTO;
 import com.amx.jax.pricer.dto.EstimatedDeliveryDetails;
+import com.amx.jax.pricer.dto.ExchangeDiscountInfo;
 import com.amx.jax.pricer.dto.ExchangeRateAndRoutingRequest;
 import com.amx.jax.pricer.dto.ExchangeRateAndRoutingResponse;
+import com.amx.jax.pricer.dto.ExchangeRateBreakup;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
@@ -42,9 +51,11 @@ import com.amx.jax.pricer.manager.CustomerDiscountManager;
 import com.amx.jax.pricer.manager.RemitPriceManager;
 import com.amx.jax.pricer.manager.RemitRoutingManager;
 import com.amx.jax.pricer.var.PricerServiceConstants.CUSTOMER_CATEGORY;
+import com.amx.jax.pricer.var.PricerServiceConstants.DISCOUNT_TYPE;
 import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_BY;
 import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_TYPE;
 import com.amx.jax.pricer.var.PricerServiceConstants.SERVICE_INDICATOR;
+import com.amx.utils.JsonUtil;
 
 /**
  * @author abhijeet
@@ -55,6 +66,9 @@ public class ExchangePricingAndRoutingService {
 
 	/** The Constant LOGGER. */
 	private static final Logger LOGGER = LoggerFactory.getLogger(ExchangePricingAndRoutingService.class);
+
+	@Autowired
+	PartnerExchDataService partnerDataService;
 
 	@Autowired
 	CustomerDao customerDao;
@@ -199,6 +213,26 @@ public class ExchangePricingAndRoutingService {
 
 		List<ViewExRoutingMatrix> routingMatrix = remitRoutingManager
 				.getRoutingMatrixForRemittance(exchangeRateAndRoutingRequest);
+
+		BigDecimal homeSendId = new BigDecimal(5759);
+		boolean isHomeSend = false;
+		ViewExRoutingMatrix homeSendRouting = null;
+
+		List<ViewExRoutingMatrix> removeMatrix = new ArrayList<>();
+
+		for (ViewExRoutingMatrix matrix : routingMatrix) {
+			if (matrix.getRoutingBankId().compareTo(homeSendId) == 0) {
+				removeMatrix.add(matrix);
+				homeSendRouting = matrix;
+			}
+		}
+
+		if (!removeMatrix.isEmpty()) {
+			isHomeSend = true;
+			for (ViewExRoutingMatrix matrix : removeMatrix) {
+				routingMatrix.remove(matrix);
+			}
+		}
 
 		List<BigDecimal> routingBankIds = routingMatrix.stream().map(rm -> rm.getRoutingBankId()).distinct()
 				.collect(Collectors.toList());
@@ -422,8 +456,181 @@ public class ExchangePricingAndRoutingService {
 
 		// resp.setInfo(exchRateAndRoutingTransientDataCache.getInfo());
 
+		if (isHomeSend) {
+
+			addHomeSendInfo(resp, homeSendRouting, exchangeRateAndRoutingRequest);
+
+		}
 		return resp;
 
+	}
+
+	private ExchangeRateAndRoutingResponse addHomeSendInfo(ExchangeRateAndRoutingResponse resp,
+			ViewExRoutingMatrix homeSendMatrix, ExchangeRateAndRoutingRequest request) {
+
+		SrvPrvFeeInqReqDTO partnerReq = new SrvPrvFeeInqReqDTO();
+
+		RoutingBankDetails routBankDetails = new RoutingBankDetails();
+		routBankDetails.setRoutingBankId(homeSendMatrix.getRoutingBankId());
+		routBankDetails.setRemittanceId(homeSendMatrix.getRemittanceModeId());
+		routBankDetails.setDeliveryId(homeSendMatrix.getDeliveryModeId());
+
+		List<RoutingBankDetails> routeList = new ArrayList<>();
+		routeList.add(routBankDetails);
+
+		partnerReq.setCustomerId(request.getCustomerId());
+
+		partnerReq.setBeneficiaryRelationShipId(request.getBeneficiaryId());
+		partnerReq.setApplicationCountryId(request.getLocalCountryId());
+		partnerReq.setDestinationCountryId(request.getForeignCountryId());
+		partnerReq.setLocalCurrencyId(request.getLocalCurrencyId());
+		partnerReq.setForeignCurrencyId(request.getForeignCurrencyId());
+
+		if (null != request.getLocalAmount()) {
+			partnerReq.setSelectedCurrency(request.getLocalCurrencyId());
+			partnerReq.setAmount(request.getLocalAmount());
+		} else {
+			partnerReq.setSelectedCurrency(request.getForeignCurrencyId());
+			partnerReq.setAmount(request.getForeignAmount());
+		}
+
+		partnerReq.setRoutingBankDetails(routeList);
+
+		SrvPrvFeeInqResDTO partnerResp = partnerDataService.getPartnerFeeinquiry(partnerReq);
+
+		System.out.println(" Partner data ==> " + JsonUtil.toJson(partnerResp));
+
+		ExchangeDiscountInfo ccDiscount = new ExchangeDiscountInfo();
+		ccDiscount.setDiscountType(DISCOUNT_TYPE.CUSTOMER_CATEGORY);
+		ccDiscount.setDiscountPipsValue(BigDecimal.ZERO);
+		ccDiscount.setDiscountTypeValue("BRONZE");
+		ccDiscount.setId(BigDecimal.ONE);
+
+		ExchangeDiscountInfo channelDiscount = new ExchangeDiscountInfo();
+		channelDiscount.setDiscountType(DISCOUNT_TYPE.CHANNEL);
+		channelDiscount.setDiscountPipsValue(BigDecimal.ZERO);
+		channelDiscount.setDiscountTypeValue("ONLINE");
+		channelDiscount.setId(BigDecimal.ONE);
+
+		ExchangeDiscountInfo pipsDiscount = new ExchangeDiscountInfo();
+		pipsDiscount.setDiscountType(DISCOUNT_TYPE.AMOUNT_SLAB);
+		pipsDiscount.setDiscountPipsValue(BigDecimal.ZERO);
+		pipsDiscount.setDiscountTypeValue("0-50000");
+		pipsDiscount.setId(BigDecimal.ONE);
+
+		Map<DISCOUNT_TYPE, ExchangeDiscountInfo> customerDiscountDetails = new HashMap<>();
+
+		customerDiscountDetails.put(DISCOUNT_TYPE.CUSTOMER_CATEGORY, ccDiscount);
+		customerDiscountDetails.put(DISCOUNT_TYPE.CHANNEL, channelDiscount);
+		customerDiscountDetails.put(DISCOUNT_TYPE.AMOUNT_SLAB, pipsDiscount);
+
+		ExchangeRateBreakup sellRateBase = new ExchangeRateBreakup();
+
+		sellRateBase.setInverseRate(partnerResp.getExchangeRateWithPips());
+
+		if (partnerResp.getExchangeRateWithPips() != null
+				&& partnerResp.getExchangeRateWithPips().compareTo(BigDecimal.ZERO) != 0) {
+
+			int DEF_DECIMAL_SCALE = 8;
+
+			MathContext DEF_CONTEXT = new MathContext(DEF_DECIMAL_SCALE, RoundingMode.HALF_EVEN);
+
+			sellRateBase.setRate(BigDecimal.ONE.divide(partnerResp.getExchangeRateWithPips(), DEF_CONTEXT));
+		} else {
+			sellRateBase.setRate(BigDecimal.ZERO);
+		}
+
+		sellRateBase.setConvertedLCAmount(partnerResp.getGrossAmount());
+		sellRateBase.setConvertedLCAmount(partnerResp.getForeignAmount());
+
+		ExchangeRateDetails exchRateDetails = new ExchangeRateDetails();
+		exchRateDetails.setBankId(homeSendMatrix.getRoutingBankId());
+		exchRateDetails.setCostRateLimitReached(false);
+		exchRateDetails.setCustomerDiscountDetails(customerDiscountDetails);
+		exchRateDetails.setDiscountAvailed(false);
+		exchRateDetails.setLowGLBalance(false);
+		exchRateDetails.setSellRateBase(sellRateBase);
+		exchRateDetails.setSellRateNet(sellRateBase);
+		exchRateDetails.setServiceIndicatorId(homeSendMatrix.getServiceMasterId());
+
+		// Fill Bank Details
+
+		BankDetailsDTO bankDetailsDTO = new BankDetailsDTO();
+		bankDetailsDTO.setBankCode(homeSendMatrix.getRoutingBankCode());
+		bankDetailsDTO.setBankCountryId(homeSendMatrix.getRoutingCountryId());
+		bankDetailsDTO.setBankFullName(homeSendMatrix.getRoutingBankCode());
+		bankDetailsDTO.setBankId(homeSendMatrix.getRoutingBankId());
+		bankDetailsDTO.setBankShortName(homeSendMatrix.getRoutingBankCode());
+
+		// Routing Details
+
+		EstimatedDeliveryDetails estimatedDeliveryDetails = new EstimatedDeliveryDetails();
+		estimatedDeliveryDetails.setStartTT(System.currentTimeMillis());
+		estimatedDeliveryDetails.setCompletionTT(estimatedDeliveryDetails.getStartTT() + (3 * 60 * 60 * 1000));
+		estimatedDeliveryDetails.setCrossedMaxDeliveryDays(false);
+		estimatedDeliveryDetails.setDeliveryDuration("3 hr");
+		estimatedDeliveryDetails.setHolidayDelayInDays(0);
+		estimatedDeliveryDetails.setNonWorkingDelayInDays(0);
+		estimatedDeliveryDetails.setProcessTimeAbsoluteInSeconds(3 * 60 * 60);
+		estimatedDeliveryDetails.setProcessTimeOperationalInSeconds(3 * 60 * 60);
+		estimatedDeliveryDetails.setProcessTimeTotalInSeconds(3 * 60 * 60);
+
+		TrnxRoutingDetails trnxRoutingDetails = new TrnxRoutingDetails();
+		trnxRoutingDetails.setEstimatedDeliveryDetails(estimatedDeliveryDetails);
+
+		try {
+			BeanUtils.copyProperties(trnxRoutingDetails, homeSendMatrix);
+		} catch (IllegalAccessException | InvocationTargetException e) {
+			e.printStackTrace();
+		}
+
+		//// @formatter:off
+		
+		String pathKey = homeSendMatrix.getRoutingCountryId()
+						+ "-" + homeSendMatrix.getRoutingBankId() 
+						+ "-" + homeSendMatrix.getServiceMasterId()
+						+ "-" + homeSendMatrix.getDeliveryModeId()
+						+ "-" + homeSendMatrix.getRemittanceModeId()
+						+ "-" + homeSendMatrix.getBankBranchId();						
+
+	    //// @formatter:on
+
+		Map<BigDecimal, ExchangeRateDetails> serviceModeSellRate = new HashMap<>();
+		serviceModeSellRate.put(exchRateDetails.getServiceIndicatorId(), exchRateDetails);
+
+		if (null == resp.getBankServiceModeSellRates() || resp.getBankServiceModeSellRates().isEmpty()) {
+			Map<BigDecimal, Map<BigDecimal, ExchangeRateDetails>> bankServiceModeSellRates = new HashMap<>();
+			resp.setBankServiceModeSellRates(bankServiceModeSellRates);
+		}
+
+		resp.getBankServiceModeSellRates().put(exchRateDetails.getBankId(), serviceModeSellRate);
+
+		if (resp.getBankDetails() == null || resp.getBankDetails().isEmpty()) {
+			Map<BigDecimal, BankDetailsDTO> bankDetails = new HashMap<>();
+			resp.setBankDetails(bankDetails);
+		}
+
+		resp.getBankDetails().put(bankDetailsDTO.getBankId(), bankDetailsDTO);
+
+		if (resp.getTrnxRoutingPaths() == null || resp.getTrnxRoutingPaths().isEmpty()) {
+			Map<String, TrnxRoutingDetails> paths = new HashMap<>();
+			resp.setTrnxRoutingPaths(paths);
+		}
+
+		resp.getTrnxRoutingPaths().put(pathKey, trnxRoutingDetails);
+
+		if (resp.getBestExchangeRatePaths() == null || resp.getBestExchangeRatePaths().isEmpty()) {
+			Map<PRICE_TYPE, List<String>> bestExchangeRatePaths = new HashMap<>();
+			bestExchangeRatePaths.put(PRICE_TYPE.NO_BENE_DEDUCT, new ArrayList<String>());
+
+			resp.setBestExchangeRatePaths(bestExchangeRatePaths);
+		}
+
+		resp.getBestExchangeRatePaths().get(PRICE_TYPE.NO_BENE_DEDUCT).add(0, pathKey);
+
+		resp.setHomeSendSrvcProviderInfo(partnerResp.getHomeSendInfoDTO());
+
+		return resp;
 	}
 
 	private List<ExchangeRateDetails> getClonedExchangeRates(List<ExchangeRateDetails> exRateDetailsOrig) {

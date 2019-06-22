@@ -17,7 +17,7 @@ public class SrvPrvFeeInqResDTO implements Serializable {
 	private BigDecimal foreignAmount;
 	private BigDecimal grossAmount;
 	private BigDecimal margin;
-	private HomeSendInfoDTO homeSendInfoDTO;
+	private HomeSendSrvcProviderInfo homeSendSrvcProviderInfo;
 	
 	
 	public BigDecimal getExchangeRateWithPips() {
@@ -69,11 +69,11 @@ public class SrvPrvFeeInqResDTO implements Serializable {
 		this.grossAmount = grossAmount;
 	}
 	
-	public HomeSendInfoDTO getHomeSendInfoDTO() {
-		return homeSendInfoDTO;
+	public HomeSendSrvcProviderInfo getHomeSendInfoDTO() {
+		return homeSendSrvcProviderInfo;
 	}
-	public void setHomeSendInfoDTO(HomeSendInfoDTO homeSendInfoDTO) {
-		this.homeSendInfoDTO = homeSendInfoDTO;
+	public void setHomeSendInfoDTO(HomeSendSrvcProviderInfo homeSendSrvcProviderInfo) {
+		this.homeSendSrvcProviderInfo = homeSendSrvcProviderInfo;
 	}
 	
 	public BigDecimal getExchangeRateBase() {

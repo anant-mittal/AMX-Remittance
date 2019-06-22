@@ -23,7 +23,7 @@ import com.amx.jax.model.response.serviceprovider.Quotation_Call_Response;
 import com.amx.jax.model.response.serviceprovider.ServiceProviderResponse;
 import com.amx.jax.partner.dto.BeneficiaryDetailsDTO;
 import com.amx.jax.partner.dto.CustomerDetailsDTO;
-import com.amx.jax.partner.dto.HomeSendInfoDTO;
+import com.amx.jax.partner.dto.HomeSendSrvcProviderInfo;
 import com.amx.jax.partner.dto.ProductDetailsDTO;
 import com.amx.jax.partner.dto.RoutingBankDetails;
 import com.amx.jax.partner.dto.SrvPrvFeeInqReqDTO;
@@ -148,9 +148,9 @@ public class PartnerDataManager {
 										srvPrvFeeInqResDTO.setExchangeRateBase(exchangeRate);
 										srvPrvFeeInqResDTO.setMargin(marginAmount);
 
-										HomeSendInfoDTO homeSendInfoDTO = fetchHomeSendData(serviceProviderResponse,quotationCall);
+										HomeSendSrvcProviderInfo homeSendSrvcProviderInfo = fetchHomeSendData(serviceProviderResponse,quotationCall);
 
-										srvPrvFeeInqResDTO.setHomeSendInfoDTO(homeSendInfoDTO);
+										srvPrvFeeInqResDTO.setHomeSendInfoDTO(homeSendSrvcProviderInfo);
 									}
 								}
 							}else if(quotationCall != null && quotationCall.getAction_ind() != null && quotationCall.getAction_ind().equalsIgnoreCase(PricerServiceConstants.ACTION_IND_C)) {
@@ -288,9 +288,9 @@ public class PartnerDataManager {
 										srvPrvFeeInqResDTO.setExchangeRateBase(exchangeRate);
 										srvPrvFeeInqResDTO.setMargin(marginAmount);
 										
-										HomeSendInfoDTO homeSendInfoDTO = fetchHomeSendData(serviceProviderResponse,quotationCall);
+										HomeSendSrvcProviderInfo homeSendSrvcProviderInfo = fetchHomeSendData(serviceProviderResponse,quotationCall);
 
-										srvPrvFeeInqResDTO.setHomeSendInfoDTO(homeSendInfoDTO);
+										srvPrvFeeInqResDTO.setHomeSendInfoDTO(homeSendSrvcProviderInfo);
 									}
 								}
 							}else {
@@ -730,28 +730,28 @@ public class PartnerDataManager {
 	}
 	
 	// setting the Home Send Data
-	public HomeSendInfoDTO fetchHomeSendData(ServiceProviderResponse serviceProviderResponse,Quotation_Call_Response quotationCall) {
+	public HomeSendSrvcProviderInfo fetchHomeSendData(ServiceProviderResponse serviceProviderResponse,Quotation_Call_Response quotationCall) {
 		
-		HomeSendInfoDTO homeSendInfoDTO = new HomeSendInfoDTO();
-		homeSendInfoDTO.setAction_ind(serviceProviderResponse.getAction_ind());
-		homeSendInfoDTO.setCredited_amount_in_destination_currency(quotationCall.getCredited_amount_in_destination_currency());
-		homeSendInfoDTO.setDestination_currency(quotationCall.getDestination_currency());
-		homeSendInfoDTO.setFix_charged_amount_in_settlement_currency(quotationCall.getFix_charged_amount_in_settlement_currency());
-		homeSendInfoDTO.setInitial_amount_in_settlement_currency(quotationCall.getInitial_amount_in_settlement_currency());
-		homeSendInfoDTO.setOffer_expiration_date(quotationCall.getOffer_expiration_date());
-		homeSendInfoDTO.setPartner_transaction_reference(quotationCall.getPartner_transaction_reference());
-		homeSendInfoDTO.setRequest_XML(serviceProviderResponse.getRequest_XML());
-		homeSendInfoDTO.setResponse_code(serviceProviderResponse.getResponse_code());
-		homeSendInfoDTO.setResponse_description(serviceProviderResponse.getResponse_description());
-		homeSendInfoDTO.setResponse_XML(serviceProviderResponse.getResponse_XML());
-		homeSendInfoDTO.setSettlement_currency(quotationCall.getSettlement_currency());
-		homeSendInfoDTO.setTechnical_details(serviceProviderResponse.getTechnical_details());
-		homeSendInfoDTO.setTotal_charged_amount_in_settlement_currency(quotationCall.getTotal_charged_amount_in_settlement_currency());
-		homeSendInfoDTO.setVariable_charged_amount_in_settlement_currency(quotationCall.getVariable_charged_amount_in_settlement_currency());
-		homeSendInfoDTO.setWhole_sale_fx_rate(quotationCall.getWhole_sale_fx_rate());
-		homeSendInfoDTO.setBeneficiaryDeduct(Boolean.FALSE);
+		HomeSendSrvcProviderInfo homeSendSrvcProviderInfo = new HomeSendSrvcProviderInfo();
+		homeSendSrvcProviderInfo.setAction_ind(serviceProviderResponse.getAction_ind());
+		homeSendSrvcProviderInfo.setCredited_amount_in_destination_currency(quotationCall.getCredited_amount_in_destination_currency());
+		homeSendSrvcProviderInfo.setDestination_currency(quotationCall.getDestination_currency());
+		homeSendSrvcProviderInfo.setFix_charged_amount_in_settlement_currency(quotationCall.getFix_charged_amount_in_settlement_currency());
+		homeSendSrvcProviderInfo.setInitial_amount_in_settlement_currency(quotationCall.getInitial_amount_in_settlement_currency());
+		homeSendSrvcProviderInfo.setOffer_expiration_date(quotationCall.getOffer_expiration_date());
+		homeSendSrvcProviderInfo.setPartner_transaction_reference(quotationCall.getPartner_transaction_reference());
+		homeSendSrvcProviderInfo.setRequest_XML(serviceProviderResponse.getRequest_XML());
+		homeSendSrvcProviderInfo.setResponse_code(serviceProviderResponse.getResponse_code());
+		homeSendSrvcProviderInfo.setResponse_description(serviceProviderResponse.getResponse_description());
+		homeSendSrvcProviderInfo.setResponse_XML(serviceProviderResponse.getResponse_XML());
+		homeSendSrvcProviderInfo.setSettlement_currency(quotationCall.getSettlement_currency());
+		homeSendSrvcProviderInfo.setTechnical_details(serviceProviderResponse.getTechnical_details());
+		homeSendSrvcProviderInfo.setTotal_charged_amount_in_settlement_currency(quotationCall.getTotal_charged_amount_in_settlement_currency());
+		homeSendSrvcProviderInfo.setVariable_charged_amount_in_settlement_currency(quotationCall.getVariable_charged_amount_in_settlement_currency());
+		homeSendSrvcProviderInfo.setWhole_sale_fx_rate(quotationCall.getWhole_sale_fx_rate());
+		homeSendSrvcProviderInfo.setBeneficiaryDeduct(Boolean.FALSE);
 		
-		return homeSendInfoDTO;
+		return homeSendSrvcProviderInfo;
 	}
 	
 	public ProductDetailsDTO fetchProductDetails(SrvPrvFeeInqReqDTO srvPrvFeeInqReqDTO) {
