@@ -33,7 +33,6 @@ import com.amx.jax.logger.events.RequestTrackEvent;
 import com.amx.jax.rest.AppRequestContextInFilter;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.ArgUtil;
-import com.amx.utils.ContextUtil;
 import com.amx.utils.CryptoUtil;
 import com.amx.utils.JsonUtil;
 import com.amx.utils.Urly;
@@ -96,7 +95,7 @@ public class AppRequestFilter implements Filter {
 
 	public void setFlow(HttpServletRequest req) {
 		String url = req.getRequestURI();
-		ContextUtil.setFlowfix(url.toLowerCase().replace("pub", "b").replace("api", "p").replace("user", "")
+		AppContextUtil.setFlowfix(url.toLowerCase().replace("pub", "b").replace("api", "p").replace("user", "")
 				.replace("get", "").replace("post", "").replace("save", "")
 				.replace("/", "").replaceAll("[AaEeIiOoUuYyWwHh]", ""));
 	}
