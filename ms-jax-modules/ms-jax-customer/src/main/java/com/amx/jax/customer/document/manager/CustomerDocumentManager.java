@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,12 +25,14 @@ import com.amx.jax.dbmodel.DmsApplMapping;
 import com.amx.jax.dbmodel.IdentityTypeMaster;
 import com.amx.jax.dbmodel.customer.CustomerDocumentTypeMaster;
 import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReferenceTemp;
+import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.customer.CustomerDocumentInfo;
 import com.amx.jax.model.customer.CustomerKycData;
 import com.amx.jax.model.customer.document.UploadCustomerDocumentRequest;
 import com.amx.jax.model.customer.document.UploadCustomerDocumentResponse;
 import com.amx.jax.model.customer.document.UploadCustomerKycRequest;
 import com.amx.jax.model.customer.document.UploadCustomerKycResponse;
+import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.manager.CustomerIdProofManager;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.utils.JsonUtil;
@@ -52,6 +56,10 @@ public class CustomerDocumentManager {
 	CustomerKycManager customerKycManager;
 	@Autowired
 	CustomerDocMasterManager customerDocMasterManager;
+	@Autowired
+	CustomerDao customerDao;
+	@Autowired
+	MetaData metaData;
 
 	private static final Logger log = LoggerFactory.getLogger(CustomerDocumentManager.class);
 
@@ -144,6 +152,9 @@ public class CustomerDocumentManager {
 		customerDocumentUploadManager.findAndDeleteExistingUploadData(uploadCustomerDocumentRequest.getIdentityInt(),
 				uploadCustomerDocumentRequest.getIdentityTypeId(), customerDocumentTypeMaster);
 		BigDecimal blobId = databaseImageScanManager.uploadCustomerDocument(uploadCustomerDocumentRequest);
+		if(metaData.getCustomerId() != null) {
+			checkAndRemoveBlockedDocuments(metaData.getCustomerId(), customerDocumentTypeMaster);
+		}
 		return new UploadCustomerDocumentResponse(blobId);
 	}
 
@@ -173,5 +184,15 @@ public class CustomerDocumentManager {
 		idProof.setScanSystem(kycUpload.get().getScanIndic().getIndicValue());
 		customerIdProofManager.saveIdProof(idProof);
 		customerIdProofManager.activateCustomerPendingCompliance(customer, customerKycData.getExpiryDate());
+	}
+	
+	@Transactional
+	public void checkAndRemoveBlockedDocuments(BigDecimal customerId, CustomerDocumentTypeMaster docTypeMaster) {
+		Customer customer = userService.getCustById(customerId);
+		List<CustomerDocumentTypeMaster> complianceBlocked = customer.getComplianceBlockedDocuments();
+		if (complianceBlocked.contains(docTypeMaster)) {
+			complianceBlocked.remove(docTypeMaster);
+		}
+		customerDao.saveCustomer(customer);
 	}
 }

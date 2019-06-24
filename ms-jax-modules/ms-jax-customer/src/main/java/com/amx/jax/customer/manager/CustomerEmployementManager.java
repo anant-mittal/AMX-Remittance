@@ -28,7 +28,9 @@ public class CustomerEmployementManager {
 		EmployeeDetails employmentData = customerEmployeeDetailsRepository.getCustomerEmploymentData(customer);
 		if (employmentData != null) {
 			employmentDetails.setEmployer(employmentData.getEmployerName());
-			employmentDetails.setEmploymentTypeId(employmentData.getFsBizComponentDataByEmploymentTypeId().getComponentDataId());
+			if(employmentData.getFsBizComponentDataByEmploymentTypeId() != null) {
+				employmentDetails.setEmploymentTypeId(employmentData.getFsBizComponentDataByEmploymentTypeId().getComponentDataId());
+			}
 			if (employmentData.getFsBizComponentDataByOccupationId() != null) {
 				employmentDetails.setProfessionId(employmentData.getFsBizComponentDataByOccupationId().getComponentDataId());
 			}
