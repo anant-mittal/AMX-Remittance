@@ -266,6 +266,7 @@ public class FingerprintService {
 		userValidationService.validateBlackListedCustomerForLogin(customer);
 		userValidationService.validateFingerprintDeviceId(customerOnlineRegistration, fingerprintDeviceId);
 		userValidationService.validateDevicePassword(customerOnlineRegistration, password);
+		userService.afterLoginSteps(customerOnlineRegistration);
 		CustomerModel customerModel = convert(customerOnlineRegistration);
 		return customerModel;
 	}
