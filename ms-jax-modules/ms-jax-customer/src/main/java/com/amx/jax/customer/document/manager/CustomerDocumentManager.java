@@ -91,7 +91,9 @@ public class CustomerDocumentManager {
 				customerDocumentImage = databaseImageScanManager.fetchKycImageInfo(customerIdProof);
 			default:
 			}
-			addDataFromCustomerIdProof(customerDocumentImage, customerIdProof);
+			if (customerDocumentImage != null) {
+				addDataFromCustomerIdProof(customerDocumentImage, customerIdProof);
+			}
 		}
 		return customerDocumentImage;
 	}

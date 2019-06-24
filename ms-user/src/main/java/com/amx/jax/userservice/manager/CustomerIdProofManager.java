@@ -132,12 +132,11 @@ public class CustomerIdProofManager {
 		Optional<CustomerIdProof> lastestRecordByExpiry = activeIdProofs.stream().sorted((o1, o2) -> {
 			return o1.getIdentityExpiryDate().compareTo(o2.getIdentityExpiryDate());
 		}).findFirst();
-		return lastestRecordByExpiry.get();
+		return lastestRecordByExpiry.isPresent() ? lastestRecordByExpiry.get() : null;
 	}
-	
+
 	public List<CustomerIdProof> getCustomeridProofForIdType(BigDecimal customerId, BigDecimal identityTypeId) {
-		List<CustomerIdProof> idProofList = customerIdProofDao.getCustomeridProofForIdType(customerId,
-				identityTypeId);
+		List<CustomerIdProof> idProofList = customerIdProofDao.getCustomeridProofForIdType(customerId, identityTypeId);
 		return idProofList;
 	}
 
@@ -165,7 +164,7 @@ public class CustomerIdProofManager {
 		}
 		return mapping;
 	}
-	
+
 	public DmsApplMapping getDmsMappingByCustomer(Customer customer) {
 		DmsApplMapping mapping = null;
 		List<DmsApplMapping> dmsApplMapping = dmsApplMappingRepository.getDmsApplMapping(customer.getCustomerId());
@@ -188,23 +187,23 @@ public class CustomerIdProofManager {
 			customerDao.saveCustomer(customer);
 		}
 	}
-	
+
 	public List<IdentityTypeMaster> getActiveIdentityTypes() {
 		return identityTypeMasterRepository.findByIsActive(ConstantDocument.Yes);
 	}
-	
+
 	public List<CustomerIdProof> fetchCustomerIdProofsForCustomerActivation(BigDecimal customerId) {
 		String[] statusIn = { AmxDBConstants.Yes, AmxDBConstants.Compliance };
 		List<CustomerIdProof> customerIdProofs = customerIdProofRepository.getCustomerIdProofs(customerId, statusIn);
 		return customerIdProofs;
 	}
-	
+
 	public void saveIdProof(CustomerIdProof idProof) {
 		customerIdProofRepository.save(idProof);
 	}
 
 	public void saveIdProof(List<CustomerIdProof> existingIdProof) {
 		customerIdProofRepository.save(existingIdProof);
-		
+
 	}
 }

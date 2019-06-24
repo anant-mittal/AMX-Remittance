@@ -2,7 +2,7 @@ package com.amx.jax.dbmodel.customer;
 
 public enum CustomerDocumentType {
 
-	CIVIL_ID("CIVIL ID"), PASSPORT("PASSPORT"), GCC_ID("GCC NATIONAL ID"), BEDOON_ID("BEDOUIN");
+	CIVIL_ID("CIVIL ID"), PASSPORT("PASSPORT"), GCC_ID("GCC NATIONAL ID"), BEDOON_ID("BEDOUIN"),CIVIL_ID_NEW("CIVIL ID NEW");
 
 	String identityType;
 
