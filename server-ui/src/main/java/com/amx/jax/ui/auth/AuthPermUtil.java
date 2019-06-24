@@ -47,14 +47,14 @@ public class AuthPermUtil {
 	}
 
 	public static void checkEmailUpdate(AuthState authState, CustomerFlags customerFlags) {
-		if (!ArgUtil.nullAsFalse(customerFlags.getIsEmailMissing())) {
+		if (ArgUtil.nullAsFalse(customerFlags.getIsEmailMissing())) {
 			throw new UIServerError(OWAStatusStatusCodes.REDIRECT_MODULE)
 					.redirectUrl("/app/myaccount/contact?tab=email");
 		}
 	}
 
 	public static void checkMobileUpdate(AuthState authState, CustomerFlags customerFlags) {
-		if (!ArgUtil.nullAsFalse(customerFlags.getIsEmailMissing())) {
+		if (ArgUtil.nullAsFalse(customerFlags.getIsEmailMissing())) {
 			throw new UIServerError(OWAStatusStatusCodes.REDIRECT_MODULE)
 					.redirectUrl("/app/myaccount/contact?tab=mobile");
 		}
