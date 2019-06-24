@@ -6,6 +6,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -41,9 +43,9 @@ public class CustomerContactVerificationManager {
 	CustomerRepository customerRepository;
 
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
-	
+
 	@Autowired
-	MetaData metaData;
+	private MetaData metaData;
 
 	public CustomerContactVerification getCustomerContactVerification(BigDecimal id) {
 		return customerContactVerificationRepository.findById(id);
