@@ -22,6 +22,10 @@ public class UploadCustomerKycRequest {
 
 	@Valid
 	CustomerKycData customerKycData;
+	
+	@NotNull
+	@ApiMockModelProperty(example = "JPG")
+	String  docFormat;
 
 	public String getIdentityInt() {
 		return identityInt;
@@ -58,6 +62,14 @@ public class UploadCustomerKycRequest {
 
 	public void setCustomerKycData(CustomerKycData customerKycData) {
 		this.customerKycData = customerKycData;
+	}
+
+	public String getDocFormat() {
+		return docFormat;
+	}
+
+	public void setDocFormat(String docFormat) {
+		this.docFormat = docFormat;
 	}
 
 }

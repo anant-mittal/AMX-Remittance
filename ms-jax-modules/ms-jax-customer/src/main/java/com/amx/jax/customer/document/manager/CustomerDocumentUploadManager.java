@@ -114,7 +114,8 @@ public class CustomerDocumentUploadManager {
 		dmsDocumentBlobTemparory.setCountryCode(metaData.getCountryId());
 		dmsDocumentBlobTemparory.setSeqNo(BigDecimal.ONE);
 		dmsDocumentBlobTemparoryRepository.save(dmsDocumentBlobTemparory);
-		//dmsDocumentBlobTemparoryRepository.copyBlobDataFromJava(docBlobId, docFinYear);
+		// dmsDocumentBlobTemparoryRepository.copyBlobDataFromJava(docBlobId,
+		// docFinYear);
 		createDocumentUploadReference(upload, docBlobId);
 	}
 
@@ -129,6 +130,7 @@ public class CustomerDocumentUploadManager {
 			DbScanRef dbScanref = new DbScanRef();
 			dbScanref.setBlobId(docBlobId);
 			dbScanref.setCustomerDocUploadRefId(docUploadReference.getId());
+			dbScanref.setDocFormat(upload.getDocFormat());
 			dbScanRefRepo.save(dbScanref);
 		}
 	}

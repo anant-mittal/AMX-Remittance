@@ -60,14 +60,6 @@ public class OffsiteCustomerDataDTO {
 		this.localAddressDetails = localAddressDetails;
 	}
 
-	public HomeAddressDetails getHomeAddressDestails() {
-		return homeAddressDetails;
-	}
-
-	public void setHomeAddressDestails(HomeAddressDetails homeAddressDestails) {
-		this.homeAddressDetails = homeAddressDestails;
-	}
-
 	public CustomerEmploymentDetails getCustomerEmploymentDetails() {
 		return customerEmploymentDetails;
 	}
@@ -106,6 +98,14 @@ public class OffsiteCustomerDataDTO {
 
 	public void setCustomerStatusModel(CustomerStatusModel customerStatusModel) {
 		this.customerStatusModel = customerStatusModel;
+	}
+
+	public HomeAddressDetails getHomeAddressDetails() {
+		return homeAddressDetails;
+	}
+
+	public void setHomeAddressDetails(HomeAddressDetails homeAddressDetails) {
+		this.homeAddressDetails = homeAddressDetails;
 	}
 	
 }

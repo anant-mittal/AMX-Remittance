@@ -28,6 +28,10 @@ public class UploadCustomerDocumentRequest {
 	String documentType;
 	
 	Map<String, Object> data;
+	
+	@NotNull
+	@ApiMockModelProperty(example = "JPG")
+	String  docFormat;
 
 	public String getIdentityInt() {
 		return identityInt;
@@ -75,6 +79,14 @@ public class UploadCustomerDocumentRequest {
 
 	public void setData(Map<String, Object> data) {
 		this.data = data;
+	}
+
+	public String getDocFormat() {
+		return docFormat;
+	}
+
+	public void setDocFormat(String docFormat) {
+		this.docFormat = docFormat;
 	}
 
 }

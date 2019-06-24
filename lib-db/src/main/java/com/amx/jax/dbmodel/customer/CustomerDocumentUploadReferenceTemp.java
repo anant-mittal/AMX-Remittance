@@ -50,6 +50,9 @@ public class CustomerDocumentUploadReferenceTemp {
 
 	@Column(name = "UPLOAD_DATA")
 	String uploadData;
+	
+	@Column(name="DOC_FORMAT")
+	String docFormat;
 
 	public BigDecimal getId() {
 		return id;
@@ -113,6 +116,14 @@ public class CustomerDocumentUploadReferenceTemp {
 
 	public void setDocumentEraScanRef(String documentEraScanRef) {
 		this.documentEraScanRef = documentEraScanRef;
+	}
+
+	public String getDocFormat() {
+		return docFormat;
+	}
+
+	public void setDocFormat(String docFormat) {
+		this.docFormat = docFormat;
 	}
 
 }

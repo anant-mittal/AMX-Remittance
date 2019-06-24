@@ -101,7 +101,7 @@ public class CustomerManagementManager {
 			offsiteCustomer.setIdentityTypeId(customer.getIdentityTypeId());
 			offsiteCustomer.setCustomerPersonalDetail(createCustomerPersonalDetail(customer));
 			offsiteCustomer.setLocalAddressDetails(contactDetailService.createLocalAddressDetails(customer));
-			offsiteCustomer.setHomeAddressDestails(contactDetailService.createHomeAddressDetails(customer));
+			offsiteCustomer.setHomeAddressDetails(contactDetailService.createHomeAddressDetails(customer));
 			offsiteCustomer.setCustomerFlags(customerFlagManager.getCustomerFlags(customer.getCustomerId()));
 			offsiteCustomer.setCustomerEmploymentDetails(customerEmployementManager.createCustomerEmploymentDetail(customer));
 			offsiteCustomer.setCustomerDocuments(customerDocumentManager.getCustomerUploadDocuments(customer.getCustomerId()));

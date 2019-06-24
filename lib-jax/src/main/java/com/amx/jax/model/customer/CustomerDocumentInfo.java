@@ -9,6 +9,7 @@ public class CustomerDocumentInfo {
 	String documentString;
 	Date uploadedDate;
 	String documentType;
+	String documentFormat;
 
 	public DocumentImageRenderType getDocumentRenderType() {
 		return documentRenderType;
@@ -48,6 +49,14 @@ public class CustomerDocumentInfo {
 
 	public void setDocumentType(String documentType) {
 		this.documentType = documentType;
+	}
+
+	public String getDocumentFormat() {
+		return documentFormat;
+	}
+
+	public void setDocumentFormat(String documentFormat) {
+		this.documentFormat = documentFormat;
 	}
 
 }

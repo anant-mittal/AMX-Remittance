@@ -68,6 +68,7 @@ public class DatabaseScanManager implements DocumentScanManager {
 				String kycImage = IoUtils.inputStreamToString(docBlobUpload.getDocContent().getBinaryStream());
 				kycImage = Base64.encodeBase64String(kycImage.getBytes());
 				customerDocumentImage.setDocumentString(kycImage);
+				customerDocumentImage.setDocumentFormat(dmsMapping.getDocFormat());
 			} catch (IOException | SQLException e) {
 				log.error("error in fetch kyc imagage", e);
 			}
@@ -95,6 +96,7 @@ public class DatabaseScanManager implements DocumentScanManager {
 		CustomerDocumentUploadReferenceTemp docUploadRef = new CustomerDocumentUploadReferenceTemp();
 		docUploadRef.setScanIndic(DocumentScanIndic.DB_SCAN);
 		docUploadRef.setCustomerDocumentTypeMaster(docTypeMaster);
+		docUploadRef.setDocFormat(uploadCustomerKycRequest.getDocFormat());
 		byte[] documentByteArray = Base64.decodeBase64(uploadCustomerKycRequest.getDocument());
 		try {
 			docUploadRef.setDbScanDocumentBlob(new SerialBlob(documentByteArray));

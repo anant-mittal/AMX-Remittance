@@ -17,6 +17,9 @@ public class DbScanRef {
 
 	@Column(name = "BLOB_ID")
 	BigDecimal blobId;
+	
+	@Column(name="DOC_FORMAT")
+	String docFormat;
 
 	public BigDecimal getCustomerDocUploadRefId() {
 		return customerDocUploadRefId;
@@ -32,6 +35,14 @@ public class DbScanRef {
 
 	public void setBlobId(BigDecimal blobId) {
 		this.blobId = blobId;
+	}
+
+	public String getDocFormat() {
+		return docFormat;
+	}
+
+	public void setDocFormat(String docFormat) {
+		this.docFormat = docFormat;
 	}
 
 }
