@@ -692,7 +692,7 @@ public class UserService extends AbstractUserService {
 	/**
 	 * call this method to perform tasks after login
 	 */
-	private void afterLoginSteps(CustomerOnlineRegistration onlineCustomer) {
+	void afterLoginSteps(CustomerOnlineRegistration onlineCustomer) {
 		custDao.updatetLoyaltyPoint(onlineCustomer.getCustomerId());
 		this.unlockCustomer(onlineCustomer);
 		this.saveLoginLogoutHistoryByUserName(onlineCustomer.getUserName());
