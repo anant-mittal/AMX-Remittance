@@ -242,12 +242,14 @@ public class RemittancePaymentManager extends AbstractService{
 			e.printStackTrace();
 			
 			lstPayIdDetails =applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(paymentResponse.getUdf3(),new Customer(paymentResponse.getCustomerId()));
-			if (lstPayIdDetails.get(0).getResultCode() != null) {
-				logger.info("Existing payment id found: {}", lstPayIdDetails.get(0).getPaymentId());
-				return response;
-			}
+			
 			if(!lstPayIdDetails.isEmpty()) {
+				if (lstPayIdDetails.get(0).getResultCode() != null) {
+					logger.info("Existing payment id found: {}", lstPayIdDetails.get(0).getPaymentId());
+					return response;
+				}
 				remittanceApplicationService.updatePayTokenNull(lstPayIdDetails, paymentResponse);
+				
 			}
 			
 			throw new GlobalException(JaxError.PG_ERROR,"Remittance error :"+errorMsg);
