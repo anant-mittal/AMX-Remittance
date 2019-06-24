@@ -12,7 +12,6 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.log4j.Logger;
-import org.jasypt.util.text.BasicTextEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -29,6 +28,7 @@ import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.payg.PayGParams;
+import com.amx.jax.payg.PayGService;
 import com.amx.jax.payment.PaymentConstant;
 import com.amx.jax.payment.gateway.PayGClient;
 import com.amx.jax.payment.gateway.PayGClients;
@@ -39,8 +39,6 @@ import com.amx.jax.payment.gateway.PaymentGateWayResponse;
 import com.amx.jax.payment.gateway.PaymentGateWayResponse.PayGStatus;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.ArgUtil;
-import com.amx.utils.CryptoUtil;
-import com.amx.utils.JsonUtil;
 
 import io.swagger.annotations.Api;
 
@@ -78,19 +76,11 @@ public class PayGController {
 	@Autowired
 	PayGConfig payGConfig;
 
-	private static BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
-	{
-		textEncryptor.setPasswordCharArray("payg".toCharArray());
-	}
-
-	private PayGParams getVerifyHash(String amount) throws NoSuchAlgorithmException {
-		PayGParams payGParams = new PayGParams();
-		payGParams.setVerification(CryptoUtil.getMD5Hash((JsonUtil.toJson(payGParams))));
-		return payGParams;
-	}
+	@Autowired
+	PayGService payGService;
 
 	@ResponseBody
-	@RequestMapping(value = { "/init_tranx/*" }, method = RequestMethod.GET)
+	@RequestMapping(value = { "/register/*" }, method = RequestMethod.GET)
 	public PayGParams initTransaction(
 			@RequestParam String trckid,
 			@RequestParam(required = false) String docId, @RequestParam(required = false) String docNo,
@@ -102,10 +92,11 @@ public class PayGController {
 
 			@RequestParam(required = false) String callbackd,
 			Model model) throws NoSuchAlgorithmException {
-		return getVerifyHash(amount);
+		return payGService.getVerifyHash(trckid, amount, docId, docNo, docFy);
 	}
 
 	@RequestMapping(value = { "/payment/*", "/payment" }, method = RequestMethod.GET)
+
 	public String handleUrlPaymentRemit(
 			@RequestParam String trckid,
 			@RequestParam(required = false) String docId, @RequestParam(required = false) String docNo,
@@ -116,9 +107,18 @@ public class PayGController {
 			@RequestParam(required = false) String prod,
 			@RequestParam(required = false) String callbackd,
 			@RequestParam(required = false) String verify,
+			@RequestParam(required = false) String detail,
 			Model model) throws NoSuchAlgorithmException {
 
-		if (!ArgUtil.isEmpty(verify) && !verify.equals(getVerifyHash(amount).getVerification())) {
+		PayGParams detailParam = payGService.getDeCryptedDetails(detail);
+		trckid = detailParam.getTrackId();
+		amount = detailParam.getAmount();
+		docId = detailParam.getDocId();
+		docNo = detailParam.getDocNo();
+		docFy = detailParam.getDocFy();
+
+		if (!ArgUtil.isEmpty(verify)
+				&& !verify.equals(payGService.getVerifyHash(trckid, amount, docId, docNo, docFy).getVerification())) {
 			return "thymeleaf/pg_security";
 		}
 
@@ -182,7 +182,6 @@ public class PayGController {
 			String returnTime = df.format(cal.getTime());
 			model.addAttribute("REDIRECTURL", appRedirectUrl);
 			model.addAttribute("RETURN_TIME", returnTime);
-			model.addAttribute("TNT", tnt.toString());
 			return "thymeleaf/pg_error";
 		}
 
