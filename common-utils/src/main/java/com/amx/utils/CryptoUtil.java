@@ -6,7 +6,9 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 
+import org.jasypt.util.text.BasicTextEncryptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -460,6 +462,57 @@ public final class CryptoUtil {
 					this.message, complexHash);
 		}
 
+	}
+
+	private static BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
+	static {
+		textEncryptor.setPasswordCharArray("ZNEAYuVTsC".toCharArray());
+	}
+
+	public static class Encoder {
+		private String output;
+
+		public Encoder message(String message) {
+			this.output = message;
+			return this;
+		}
+
+		public <T> Encoder obzect(T obj) {
+			this.output = JsonUtil.toJson(obj);
+			return this;
+		}
+
+		public Encoder decodeBase64() {
+			this.output = new String(Base64.getDecoder().decode(this.output));
+			return this;
+		}
+
+		public Encoder encodeBase64() {
+			this.output = Base64.getEncoder().encodeToString(this.output.getBytes());
+			return this;
+		}
+
+		public Encoder encrypt() {
+			this.output = textEncryptor.encrypt(this.output);
+			return this;
+		}
+
+		public Encoder decrypt() {
+			this.output = textEncryptor.decrypt(this.output);
+			return this;
+		}
+
+		public <T> T toObzect(Class<T> type) {
+			return JsonUtil.fromJson(this.output, type);
+		}
+
+		public String toString() {
+			return this.output;
+		}
+	}
+
+	public static Encoder getEncoder() {
+		return new Encoder();
 	}
 
 }

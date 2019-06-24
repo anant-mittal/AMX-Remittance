@@ -6,8 +6,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +15,7 @@ import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerContactVerification;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.customer.CustomerContactVerificationDto;
 import com.amx.jax.repository.CustomerContactVerificationRepository;
 import com.amx.jax.repository.CustomerRepository;
@@ -42,12 +41,15 @@ public class CustomerContactVerificationManager {
 	CustomerRepository customerRepository;
 
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
+	
+	@Autowired
+	MetaData metaData;
 
 	public CustomerContactVerification getCustomerContactVerification(BigDecimal id) {
 		return customerContactVerificationRepository.findById(id);
 	}
 
-	public CustomerContactVerification getValidCustomerContactVerificationByCustomerId(BigDecimal customerId,
+	public List<CustomerContactVerification> getValidCustomerContactVerificationsByCustomerId(BigDecimal customerId,
 			ContactType contactType, String contact) {
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.DATE, -1);
@@ -55,6 +57,16 @@ public class CustomerContactVerificationManager {
 		List<CustomerContactVerification> links = customerContactVerificationRepository.getByContact(customerId,
 				contactType,
 				contact, oneDay);
+		return links;
+	}
+
+	public CustomerContactVerification getValidCustomerContactVerificationByCustomerId(BigDecimal customerId,
+			ContactType contactType, String contact) {
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DATE, -1);
+		java.util.Date oneDay = new java.util.Date(cal.getTimeInMillis());
+		List<CustomerContactVerification> links = getValidCustomerContactVerificationsByCustomerId(customerId,
+				contactType, contact);
 		if (ArgUtil.isEmpty(links) || links.size() == 0) {
 			return null;
 		}
@@ -70,9 +82,9 @@ public class CustomerContactVerificationManager {
 		link.setContactType(contactType);
 		link.setVerificationCode(Random.randomAlphaNumeric(8));
 		link.setCreatedDate(new Date());
-		link.setAppCountryId(c.getCountryId());
+		link.setAppCountryId(metaData.getCountryId());
 		link.setIsActive(Status.Y);
-		LOGGER.info("Link value without contact value is  "+link.toString());
+
 		if (ContactType.EMAIL.equals(contactType)) {
 			if (ArgUtil.isEmpty(c.getEmail())) {
 				throw new GlobalException(JaxError.MISSING_CONTACT, "Email is missing for customer");
@@ -89,7 +101,16 @@ public class CustomerContactVerificationManager {
 			}
 			link.setContactValue(c.getWhatsappPrefix() + c.getWhatsapp());
 		}
-		LOGGER.info("Link value is "+link.toString());
+
+		List<CustomerContactVerification> oldlinks = getValidCustomerContactVerificationsByCustomerId(c.getCustomerId(),
+				contactType,
+				link.getContactValue());
+
+		if (!ArgUtil.isEmpty(oldlinks) && oldlinks.size() > 3) {
+			throw new GlobalException(JaxError.SEND_OTP_LIMIT_EXCEEDED,
+					"Sending Verification Limit(3) has exceeded try again after 24 hrs" + contactType);
+		}
+
 		return customerContactVerificationRepository.save(link);
 	}
 
