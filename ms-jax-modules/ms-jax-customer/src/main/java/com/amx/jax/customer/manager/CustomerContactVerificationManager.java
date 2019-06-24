@@ -83,7 +83,7 @@ public class CustomerContactVerificationManager {
 		link.setContactType(contactType);
 		link.setVerificationCode(Random.randomAlphaNumeric(8));
 		link.setCreatedDate(new Date());
-		link.setAppCountryId(metaData.getCountryId());
+		link.setAppCountryId(c.getCountryId());
 		link.setIsActive(Status.Y);
 
 		if (ContactType.EMAIL.equals(contactType)) {
