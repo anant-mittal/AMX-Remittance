@@ -307,7 +307,8 @@ public enum JaxError implements IExceptionEnum {
     INVALID_ROUTING_BANK,
 	//Vat
 	MUTIPLE_RECORD_FOUND,
-	BSB_ACCOUNT_VALIATION;
+	BSB_ACCOUNT_VALIATION,
+	ROUTING_DETAILS_NOT_AVAIL;
 	
 	
 	@Deprecated
