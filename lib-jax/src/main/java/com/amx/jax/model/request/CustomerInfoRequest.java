@@ -42,7 +42,7 @@ public class CustomerInfoRequest {
 	@Override
 	public String toString() {
 		return "CustomerInfoRequest [customerPersonalDetail=" + customerPersonalDetail + ", localAddressDetails="
-				+ localAddressDetails + ", homeAddressDestails=" + homeAddressDetails + ", customerEmploymentDetails="
+				+ localAddressDetails + ", homeAddressDetails=" + homeAddressDetails + ", customerEmploymentDetails="
 				+ customerEmploymentDetails + "]";
 	}
 
