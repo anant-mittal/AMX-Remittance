@@ -9,6 +9,7 @@ import com.amx.jax.client.branch.BranchUserClient;
 import com.amx.jax.model.request.EmploymentDetailsRequest;
 import com.amx.jax.model.response.ArticleDetailsDescDto;
 import com.amx.jax.model.response.ArticleMasterDescDto;
+import com.amx.jax.model.response.ComponentDataDto;
 import com.amx.jax.model.response.customer.OffsiteCustomerDataDTO;
 import com.amx.jax.model.response.remittance.UserwiseTransactionDto;
 
@@ -71,6 +72,11 @@ public class CustomerBranchController {
 	public AmxApiResponse<ArticleDetailsDescDto, Object> fetchDesignationList(
 			@RequestBody EmploymentDetailsRequest model) {
 		return offsiteCustRegClient.getDesignationListResponse(model);
+	}
+
+	@RequestMapping(value = "/api/customer/profession/list", method = { RequestMethod.GET })
+	public AmxApiResponse<ComponentDataDto, Object> fetchProfessionList() {
+		return offsiteCustRegClient.sendProfessionList();
 	}
 
 }
