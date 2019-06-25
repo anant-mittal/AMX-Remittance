@@ -199,6 +199,7 @@ public class HomesendGate
 				delivery_mode));
 
 		Quotation_Call_Response local_api_response = new Quotation_Call_Response();
+		local_api_response.setOut_going_transaction_reference(request_sequence_id); // return back local generated reference in the response for informative purpose
 		String cbs_type = null, routting_tag = null, service_type = null;
 
 		AdviceOfChargeRequest request = new AdviceOfChargeRequest();
@@ -487,6 +488,7 @@ public class HomesendGate
 			else
 			{
 				customer_data.setCustomer_reference(CUSTOMER_ID_PREFIX + customer_data.getCustomer_reference());
+				local_api_response.setOut_going_transaction_reference(txn_data.getOut_going_transaction_reference());
 
 				bene_data.setBeneficiary_account_number(
 						HomesendUtils.form_bank_account(bene_data.getBeneficiary_account_number(),

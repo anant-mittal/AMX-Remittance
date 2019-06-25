@@ -11,162 +11,161 @@ public class HomeSendSrvcProviderInfo implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	Calendar offer_expiration_date;
+	Calendar offerExpirationDate;
 
-	String partner_transaction_reference;
-	String settlement_currency;
-	String destination_currency;
-	String action_ind;
-	String response_code;
-	String response_description;
-	String technical_details;
-	String request_XML;
-	String response_XML;
+	String partnerTransactionReference;
+	String outGoingTransactionReference;
+	String settlementCurrency;
+	String destinationCurrency;
+	String actionInd;
+	String responseCode;
+	String responseDescription;
+	String technicalDetails;
+	String requestXML;
+	String responseXML;
 
 	boolean isBeneficiaryDeduct;
 
-	BigDecimal credited_amount_in_destination_currency;
-	BigDecimal initial_amount_in_settlement_currency;
-	BigDecimal fix_charged_amount_in_settlement_currency;
-	BigDecimal variable_charged_amount_in_settlement_currency;
-	BigDecimal total_charged_amount_in_settlement_currency;
-	BigDecimal whole_sale_fx_rate;
-
-	public Calendar getOffer_expiration_date() {
-		return offer_expiration_date;
+	BigDecimal creditedAmountInDestinationCurrency;
+	BigDecimal initialAmountInSettlementCurrency;
+	BigDecimal fixChargedAmountInSettlementCurrency;
+	BigDecimal variableChargedAmountInSettlementCurrency;
+	BigDecimal totalChargedAmountInSettlementCurrency;
+	BigDecimal wholeSaleFxRate;
+	BigDecimal transactionMargin;
+	
+	
+	public Calendar getOfferExpirationDate() {
+		return offerExpirationDate;
 	}
-
-	public void setOffer_expiration_date(Calendar offer_expiration_date) {
-		this.offer_expiration_date = offer_expiration_date;
+	public void setOfferExpirationDate(Calendar offerExpirationDate) {
+		this.offerExpirationDate = offerExpirationDate;
 	}
-
-	public String getPartner_transaction_reference() {
-		return partner_transaction_reference;
+	
+	public String getPartnerTransactionReference() {
+		return partnerTransactionReference;
 	}
-
-	public void setPartner_transaction_reference(String partner_transaction_reference) {
-		this.partner_transaction_reference = partner_transaction_reference;
+	public void setPartnerTransactionReference(String partnerTransactionReference) {
+		this.partnerTransactionReference = partnerTransactionReference;
 	}
-
-	public String getSettlement_currency() {
-		return settlement_currency;
+	
+	public String getOutGoingTransactionReference() {
+		return outGoingTransactionReference;
 	}
-
-	public void setSettlement_currency(String settlement_currency) {
-		this.settlement_currency = settlement_currency;
+	public void setOutGoingTransactionReference(String outGoingTransactionReference) {
+		this.outGoingTransactionReference = outGoingTransactionReference;
 	}
-
-	public String getDestination_currency() {
-		return destination_currency;
+	
+	public String getSettlementCurrency() {
+		return settlementCurrency;
 	}
-
-	public void setDestination_currency(String destination_currency) {
-		this.destination_currency = destination_currency;
+	public void setSettlementCurrency(String settlementCurrency) {
+		this.settlementCurrency = settlementCurrency;
 	}
-
-	public String getAction_ind() {
-		return action_ind;
+	
+	public String getDestinationCurrency() {
+		return destinationCurrency;
 	}
-
-	public void setAction_ind(String action_ind) {
-		this.action_ind = action_ind;
+	public void setDestinationCurrency(String destinationCurrency) {
+		this.destinationCurrency = destinationCurrency;
 	}
-
-	public String getResponse_code() {
-		return response_code;
+	
+	public String getActionInd() {
+		return actionInd;
 	}
-
-	public void setResponse_code(String response_code) {
-		this.response_code = response_code;
+	public void setActionInd(String actionInd) {
+		this.actionInd = actionInd;
 	}
-
-	public String getResponse_description() {
-		return response_description;
+	
+	public String getResponseCode() {
+		return responseCode;
 	}
-
-	public void setResponse_description(String response_description) {
-		this.response_description = response_description;
+	public void setResponseCode(String responseCode) {
+		this.responseCode = responseCode;
 	}
-
-	public String getTechnical_details() {
-		return technical_details;
+	
+	public String getResponseDescription() {
+		return responseDescription;
 	}
-
-	public void setTechnical_details(String technical_details) {
-		this.technical_details = technical_details;
+	public void setResponseDescription(String responseDescription) {
+		this.responseDescription = responseDescription;
 	}
-
-	public String getRequest_XML() {
-		return request_XML;
+	
+	public String getTechnicalDetails() {
+		return technicalDetails;
 	}
-
-	public void setRequest_XML(String request_XML) {
-		this.request_XML = request_XML;
+	public void setTechnicalDetails(String technicalDetails) {
+		this.technicalDetails = technicalDetails;
 	}
-
-	public String getResponse_XML() {
-		return response_XML;
+	
+	public String getRequestXML() {
+		return requestXML;
 	}
-
-	public void setResponse_XML(String response_XML) {
-		this.response_XML = response_XML;
+	public void setRequestXML(String requestXML) {
+		this.requestXML = requestXML;
 	}
-
-	public BigDecimal getCredited_amount_in_destination_currency() {
-		return credited_amount_in_destination_currency;
+	
+	public String getResponseXML() {
+		return responseXML;
 	}
-
-	public void setCredited_amount_in_destination_currency(BigDecimal credited_amount_in_destination_currency) {
-		this.credited_amount_in_destination_currency = credited_amount_in_destination_currency;
+	public void setResponseXML(String responseXML) {
+		this.responseXML = responseXML;
 	}
-
-	public BigDecimal getInitial_amount_in_settlement_currency() {
-		return initial_amount_in_settlement_currency;
-	}
-
-	public void setInitial_amount_in_settlement_currency(BigDecimal initial_amount_in_settlement_currency) {
-		this.initial_amount_in_settlement_currency = initial_amount_in_settlement_currency;
-	}
-
-	public BigDecimal getFix_charged_amount_in_settlement_currency() {
-		return fix_charged_amount_in_settlement_currency;
-	}
-
-	public void setFix_charged_amount_in_settlement_currency(BigDecimal fix_charged_amount_in_settlement_currency) {
-		this.fix_charged_amount_in_settlement_currency = fix_charged_amount_in_settlement_currency;
-	}
-
-	public BigDecimal getVariable_charged_amount_in_settlement_currency() {
-		return variable_charged_amount_in_settlement_currency;
-	}
-
-	public void setVariable_charged_amount_in_settlement_currency(
-			BigDecimal variable_charged_amount_in_settlement_currency) {
-		this.variable_charged_amount_in_settlement_currency = variable_charged_amount_in_settlement_currency;
-	}
-
-	public BigDecimal getTotal_charged_amount_in_settlement_currency() {
-		return total_charged_amount_in_settlement_currency;
-	}
-
-	public void setTotal_charged_amount_in_settlement_currency(BigDecimal total_charged_amount_in_settlement_currency) {
-		this.total_charged_amount_in_settlement_currency = total_charged_amount_in_settlement_currency;
-	}
-
-	public BigDecimal getWhole_sale_fx_rate() {
-		return whole_sale_fx_rate;
-	}
-
-	public void setWhole_sale_fx_rate(BigDecimal whole_sale_fx_rate) {
-		this.whole_sale_fx_rate = whole_sale_fx_rate;
-	}
-
+	
 	public boolean isBeneficiaryDeduct() {
 		return isBeneficiaryDeduct;
 	}
-
 	public void setBeneficiaryDeduct(boolean isBeneficiaryDeduct) {
 		this.isBeneficiaryDeduct = isBeneficiaryDeduct;
+	}
+	
+	public BigDecimal getCreditedAmountInDestinationCurrency() {
+		return creditedAmountInDestinationCurrency;
+	}
+	public void setCreditedAmountInDestinationCurrency(BigDecimal creditedAmountInDestinationCurrency) {
+		this.creditedAmountInDestinationCurrency = creditedAmountInDestinationCurrency;
+	}
+	
+	public BigDecimal getInitialAmountInSettlementCurrency() {
+		return initialAmountInSettlementCurrency;
+	}
+	public void setInitialAmountInSettlementCurrency(BigDecimal initialAmountInSettlementCurrency) {
+		this.initialAmountInSettlementCurrency = initialAmountInSettlementCurrency;
+	}
+	
+	public BigDecimal getFixChargedAmountInSettlementCurrency() {
+		return fixChargedAmountInSettlementCurrency;
+	}
+	public void setFixChargedAmountInSettlementCurrency(BigDecimal fixChargedAmountInSettlementCurrency) {
+		this.fixChargedAmountInSettlementCurrency = fixChargedAmountInSettlementCurrency;
+	}
+	
+	public BigDecimal getVariableChargedAmountInSettlementCurrency() {
+		return variableChargedAmountInSettlementCurrency;
+	}
+	public void setVariableChargedAmountInSettlementCurrency(BigDecimal variableChargedAmountInSettlementCurrency) {
+		this.variableChargedAmountInSettlementCurrency = variableChargedAmountInSettlementCurrency;
+	}
+	
+	public BigDecimal getTotalChargedAmountInSettlementCurrency() {
+		return totalChargedAmountInSettlementCurrency;
+	}
+	public void setTotalChargedAmountInSettlementCurrency(BigDecimal totalChargedAmountInSettlementCurrency) {
+		this.totalChargedAmountInSettlementCurrency = totalChargedAmountInSettlementCurrency;
+	}
+	
+	public BigDecimal getWholeSaleFxRate() {
+		return wholeSaleFxRate;
+	}
+	public void setWholeSaleFxRate(BigDecimal wholeSaleFxRate) {
+		this.wholeSaleFxRate = wholeSaleFxRate;
+	}
+	
+	public BigDecimal getTransactionMargin() {
+		return transactionMargin;
+	}
+	public void setTransactionMargin(BigDecimal transactionMargin) {
+		this.transactionMargin = transactionMargin;
 	}
 
 }

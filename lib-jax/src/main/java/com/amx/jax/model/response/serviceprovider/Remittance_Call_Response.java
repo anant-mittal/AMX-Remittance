@@ -9,6 +9,7 @@ public class Remittance_Call_Response extends ServiceProviderResponse
    {
       Calendar expected_completion_date;
       String bene_bank_remittance_reference;
+      String out_going_transaction_reference; // transaction number generated locally
 
       public Calendar getExpected_completion_date()
 	 {
@@ -30,7 +31,15 @@ public class Remittance_Call_Response extends ServiceProviderResponse
 	    this.bene_bank_remittance_reference = bene_bank_remittance_reference;
 	 }
 
-      @Override
+      public String getOut_going_transaction_reference() {
+		return out_going_transaction_reference;
+	}
+
+	public void setOut_going_transaction_reference(String out_going_transaction_reference) {
+		this.out_going_transaction_reference = out_going_transaction_reference;
+	}
+
+	@Override
       public String toString()
 	 {
 	    SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss zzz");

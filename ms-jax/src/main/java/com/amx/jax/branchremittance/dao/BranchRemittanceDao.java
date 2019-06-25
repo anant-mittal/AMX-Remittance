@@ -25,6 +25,7 @@ import com.amx.jax.dbmodel.CollectionModel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ForeignCurrencyAdjust;
 import com.amx.jax.dbmodel.UserFinancialYear;
+import com.amx.jax.dbmodel.partner.RemitApplSrvProv;
 import com.amx.jax.dbmodel.remittance.AdditionalInstructionData;
 import com.amx.jax.dbmodel.remittance.LoyaltyClaimRequest;
 import com.amx.jax.dbmodel.remittance.LoyaltyPointsModel;
@@ -44,6 +45,7 @@ import com.amx.jax.repository.ICollectionDetailRepository;
 import com.amx.jax.repository.ICollectionRepository;
 import com.amx.jax.repository.ILoyaltyClaimRequestRepository;
 import com.amx.jax.repository.IRemitApplAmlRepository;
+import com.amx.jax.repository.IRemitApplSrvProvRepository;
 import com.amx.jax.repository.IRemittanceAdditionalInstructionRepository;
 import com.amx.jax.repository.IRemittanceAmlRepository;
 import com.amx.jax.repository.IRemittanceBenificiaryRepository;
@@ -107,6 +109,9 @@ public class BranchRemittanceDao {
 
 	@Autowired
 	JdbcTemplate jdbcTemplate;
+	
+	@Autowired
+	IRemitApplSrvProvRepository remitApplSrvProvRepository;
 
 	@Transactional
 	@SuppressWarnings("unchecked")
@@ -115,6 +120,7 @@ public class BranchRemittanceDao {
 		RemittanceAppBenificiary saveApplBene = (RemittanceAppBenificiary) mapAllDetailApplSave.get("EX_APPL_BENE");
 		List<AdditionalInstructionData> saveApplAddlData = (List<AdditionalInstructionData>) mapAllDetailApplSave.get("EX_APPL_ADDL");
 		List<RemitApplAmlModel> saveApplAmlList = (List<RemitApplAmlModel>) mapAllDetailApplSave.get("EX_APPL_AML");
+		RemitApplSrvProv saveApplSrvProv = (RemitApplSrvProv) mapAllDetailApplSave.get("EX_APPL_SRV_PROV");
 
 		if (saveApplTrnx != null) {
 			BigDecimal documentNo = generateDocumentNumber(saveApplTrnx.getFsCountryMasterByApplicationCountryId().getCountryId(), saveApplTrnx.getFsCompanyMaster().getCompanyId(),
@@ -125,6 +131,7 @@ public class BranchRemittanceDao {
 			saveApplTrnx.setDocumentNo(documentNo);
 			appRepo.save(saveApplTrnx);
 		}
+		
 		if (saveApplBene != null) {
 			appBeneRepo.save(saveApplBene);
 		}
@@ -132,8 +139,14 @@ public class BranchRemittanceDao {
 		if (saveApplAddlData != null) {
 			addlInstDataRepo.save(saveApplAddlData);
 		}
+		
 		if (saveApplAmlList != null) {
 			applAmlRepository.save(saveApplAmlList);
+		}
+		
+		if (saveApplSrvProv != null) {
+			saveApplSrvProv.setRemittanceApplicationId(saveApplTrnx.getRemittanceApplicationId());
+			remitApplSrvProvRepository.save(saveApplSrvProv);
 		}
 
 	}

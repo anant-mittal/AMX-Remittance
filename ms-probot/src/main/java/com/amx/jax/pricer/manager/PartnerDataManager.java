@@ -4,8 +4,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
+
+import javax.sql.rowset.serial.SerialException;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
@@ -37,9 +40,11 @@ import com.amx.jax.pricer.dbmodel.CurrencyMasterModel;
 import com.amx.jax.pricer.dbmodel.CustomerDetailsView;
 import com.amx.jax.pricer.dbmodel.ParameterDetailsModel;
 import com.amx.jax.pricer.dbmodel.ServiceProviderRateView;
+import com.amx.jax.pricer.dbmodel.ServiceProviderXmlLog;
 import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.var.PricerServiceConstants;
+import com.amx.utils.IoUtils;
 import com.amx.utils.JsonUtil;
 
 @Component
@@ -155,7 +160,7 @@ public class PartnerDataManager {
 									serviceProviderResponseDTO.setHomeSendInfoDTO(mapHomeSendInfoDTO);
                                     srvPrvFeeInqResDTO.setServiceProviderResponseDTO(serviceProviderResponseDTO);*/
 									
-									HomeSendSrvcProviderInfo homeSendSrvcProviderInfo = fetchHomeSendData(serviceProviderResponse,quotationCall);
+									HomeSendSrvcProviderInfo homeSendSrvcProviderInfo = fetchHomeSendData(serviceProviderResponse,quotationCall,marginAmount);
 									srvPrvFeeInqResDTO.setHomeSendInfoDTO(homeSendSrvcProviderInfo);
 								}
 							}
@@ -296,7 +301,7 @@ public class PartnerDataManager {
 									serviceProviderResponseDTO.setHomeSendInfoDTO(mapHomeSendInfoDTO);
 									srvPrvFeeInqResDTO.setServiceProviderResponseDTO(serviceProviderResponseDTO);*/
 									
-									HomeSendSrvcProviderInfo homeSendSrvcProviderInfo = fetchHomeSendData(serviceProviderResponse,quotationCall);
+									HomeSendSrvcProviderInfo homeSendSrvcProviderInfo = fetchHomeSendData(serviceProviderResponse,quotationCall,marginAmount);
 									srvPrvFeeInqResDTO.setHomeSendInfoDTO(homeSendSrvcProviderInfo);
 								}
 							}
@@ -474,6 +479,7 @@ public class PartnerDataManager {
 
 			LOGGER.info("Inputs passed to Service Provider Home Send : " + JsonUtil.toJson(quatationRequestDto));
 			srvPrvResp = serviceProviderClient.getQuatation(quatationRequestDto);
+			//saveServiceProviderXml(srvPrvResp);
 			LOGGER.info("Output from Service Provider Home Send : " + JsonUtil.toJson(srvPrvResp));
 
 		}catch (Exception e) {
@@ -736,26 +742,28 @@ public class PartnerDataManager {
 	}
 	
 	// setting the Home Send Data
-	public HomeSendSrvcProviderInfo fetchHomeSendData(ServiceProviderResponse serviceProviderResponse,Quotation_Call_Response quotationCall) {
+	public HomeSendSrvcProviderInfo fetchHomeSendData(ServiceProviderResponse serviceProviderResponse,Quotation_Call_Response quotationCall,BigDecimal marginAmount) {
 		
 		HomeSendSrvcProviderInfo homeSendSrvcProviderInfo = new HomeSendSrvcProviderInfo();
-		homeSendSrvcProviderInfo.setAction_ind(serviceProviderResponse.getAction_ind());
-		homeSendSrvcProviderInfo.setCredited_amount_in_destination_currency(quotationCall.getCredited_amount_in_destination_currency());
-		homeSendSrvcProviderInfo.setDestination_currency(quotationCall.getDestination_currency());
-		homeSendSrvcProviderInfo.setFix_charged_amount_in_settlement_currency(quotationCall.getFix_charged_amount_in_settlement_currency());
-		homeSendSrvcProviderInfo.setInitial_amount_in_settlement_currency(quotationCall.getInitial_amount_in_settlement_currency());
-		homeSendSrvcProviderInfo.setOffer_expiration_date(quotationCall.getOffer_expiration_date());
-		homeSendSrvcProviderInfo.setPartner_transaction_reference(quotationCall.getPartner_transaction_reference());
-		homeSendSrvcProviderInfo.setRequest_XML(serviceProviderResponse.getRequest_XML());
-		homeSendSrvcProviderInfo.setResponse_code(serviceProviderResponse.getResponse_code());
-		homeSendSrvcProviderInfo.setResponse_description(serviceProviderResponse.getResponse_description());
-		homeSendSrvcProviderInfo.setResponse_XML(serviceProviderResponse.getResponse_XML());
-		homeSendSrvcProviderInfo.setSettlement_currency(quotationCall.getSettlement_currency());
-		homeSendSrvcProviderInfo.setTechnical_details(serviceProviderResponse.getTechnical_details());
-		homeSendSrvcProviderInfo.setTotal_charged_amount_in_settlement_currency(quotationCall.getTotal_charged_amount_in_settlement_currency());
-		homeSendSrvcProviderInfo.setVariable_charged_amount_in_settlement_currency(quotationCall.getVariable_charged_amount_in_settlement_currency());
-		homeSendSrvcProviderInfo.setWhole_sale_fx_rate(quotationCall.getWhole_sale_fx_rate());
+		homeSendSrvcProviderInfo.setActionInd(serviceProviderResponse.getAction_ind());
+		homeSendSrvcProviderInfo.setCreditedAmountInDestinationCurrency(quotationCall.getCredited_amount_in_destination_currency());
+		homeSendSrvcProviderInfo.setDestinationCurrency(quotationCall.getDestination_currency());
+		homeSendSrvcProviderInfo.setFixChargedAmountInSettlementCurrency(quotationCall.getFix_charged_amount_in_settlement_currency());
+		homeSendSrvcProviderInfo.setInitialAmountInSettlementCurrency(quotationCall.getInitial_amount_in_settlement_currency());
+		homeSendSrvcProviderInfo.setOfferExpirationDate(quotationCall.getOffer_expiration_date());
+		homeSendSrvcProviderInfo.setPartnerTransactionReference(quotationCall.getPartner_transaction_reference());
+		homeSendSrvcProviderInfo.setOutGoingTransactionReference(quotationCall.getOut_going_transaction_reference());
+		homeSendSrvcProviderInfo.setRequestXML(serviceProviderResponse.getRequest_XML());
+		homeSendSrvcProviderInfo.setResponseCode(serviceProviderResponse.getResponse_code());
+		homeSendSrvcProviderInfo.setResponseDescription(serviceProviderResponse.getResponse_description());
+		homeSendSrvcProviderInfo.setResponseXML(serviceProviderResponse.getResponse_XML());
+		homeSendSrvcProviderInfo.setSettlementCurrency(quotationCall.getSettlement_currency());
+		homeSendSrvcProviderInfo.setTechnicalDetails(serviceProviderResponse.getTechnical_details());
+		homeSendSrvcProviderInfo.setTotalChargedAmountInSettlementCurrency(quotationCall.getTotal_charged_amount_in_settlement_currency());
+		homeSendSrvcProviderInfo.setVariableChargedAmountInSettlementCurrency(quotationCall.getVariable_charged_amount_in_settlement_currency());
+		homeSendSrvcProviderInfo.setWholeSaleFxRate(quotationCall.getWhole_sale_fx_rate());
 		homeSendSrvcProviderInfo.setBeneficiaryDeduct(Boolean.FALSE);
+		homeSendSrvcProviderInfo.setTransactionMargin(marginAmount);
 		
 		return homeSendSrvcProviderInfo;
 	}
@@ -803,6 +811,41 @@ public class PartnerDataManager {
 			throw new PricerServiceException(PricerServiceError.INVALID_DELIVERY_ID,
 					"Invalid Delivery Id : None Found : " + routingBankDetails.getDeliveryId());
 		}
+	}
+	
+	public void saveServiceProviderXml(String filename, String content,BigDecimal referenceNo,BigDecimal seq,String xmlType,String trnxType,String bene_Bank_Txn_Ref) {
+
+		//writeToFile("feeEnquiryReq", accountCharges.getRequest_XML(),getReferenceNo(),seq,Constants.Req,null,null);
+		//writeToFile("feeEnquiryRes", accountCharges.getResponse_XML(),getReferenceNo(),seq,Constants.Res,null,null);
+
+		try {
+
+			ServiceProviderXmlLog serviceProviderXmlLog = new ServiceProviderXmlLog();
+
+			//serviceProviderXmlLog.setApplicationCountryId(applicationCountryId);
+			//serviceProviderXmlLog.setCompanyId(companyId);
+			//serviceProviderXmlLog.setCountryBranchId(countryBranchId);
+			//serviceProviderXmlLog.setCreatedBy(createdBy);
+			//serviceProviderXmlLog.setCreatedDate(createdDate);
+			//serviceProviderXmlLog.setCustomerId(customerId);
+			//serviceProviderXmlLog.setCustomerReference(customerReference);
+			//serviceProviderXmlLog.setEmosBranchCode(emosBranchCode);
+			serviceProviderXmlLog.setFileName(filename);
+			//serviceProviderXmlLog.setForeignTerminalId(foreignTerminalId);
+			//serviceProviderXmlLog.setIdentifier(identifier);
+			serviceProviderXmlLog.setMtcNo(bene_Bank_Txn_Ref);
+			serviceProviderXmlLog.setRefernceNo(referenceNo);
+			serviceProviderXmlLog.setSequence(seq);
+			serviceProviderXmlLog.setTransactionType(trnxType);
+			serviceProviderXmlLog.setXmlData(IoUtils.stringToClob(content));
+			serviceProviderXmlLog.setXmlType(xmlType);
+
+		} catch (SerialException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
 	}
 	
 

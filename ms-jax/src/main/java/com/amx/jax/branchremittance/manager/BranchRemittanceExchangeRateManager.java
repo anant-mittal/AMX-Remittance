@@ -7,7 +7,6 @@ import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_BANK_I
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_COUNTRY_ID;
 
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -30,7 +29,6 @@ import com.amx.amxlib.exception.AdditionalFlexRequiredException;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.model.JaxConditionalFieldDto;
-import com.amx.amxlib.model.JaxFieldDto;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.amxlib.util.JaxValidationUtil;
 import com.amx.jax.AppContextUtil;
@@ -40,10 +38,7 @@ import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.Customer;
-import com.amx.jax.dbmodel.CustomerCoreDetailsView;
-import com.amx.jax.dbmodel.CustomerEmploymentInfo;
 import com.amx.jax.dbmodel.remittance.AdditionalBankRuleAmiec;
-import com.amx.jax.dbmodel.remittance.CorporateMasterModel;
 import com.amx.jax.dbmodel.remittance.ViewVatDetails;
 import com.amx.jax.dict.UserClient.Channel;
 import com.amx.jax.error.JaxError;
@@ -62,20 +57,19 @@ import com.amx.jax.model.request.remittance.RoutingPricingRequest;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchExchangeRateBreakup;
 import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;
+import com.amx.jax.model.response.remittance.ServiceProviderDto;
 import com.amx.jax.model.response.remittance.VatDetailsDto;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
 import com.amx.jax.model.response.remittance.branch.DynamicRoutingPricingResponse;
+import com.amx.jax.partner.dto.HomeSendSrvcProviderInfo;
 import com.amx.jax.pricer.dto.ExchangeDiscountInfo;
 import com.amx.jax.pricer.dto.ExchangeRateAndRoutingResponse;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
-import com.amx.jax.pricer.dto.PricingResponseDTO;
 import com.amx.jax.pricer.dto.TrnxRoutingDetails;
 import com.amx.jax.pricer.var.PricerServiceConstants.DISCOUNT_TYPE;
 import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_TYPE;
 import com.amx.jax.remittance.manager.RemittanceParameterMapManager;
-import com.amx.jax.repository.CustomerCoreDetailsRepository;
 import com.amx.jax.repository.IAdditionalBankRuleAmiecRepository;
-import com.amx.jax.repository.ICustomerEmploymentInfoRepository;
 import com.amx.jax.repository.remittance.ICorporateMasterRepository;
 import com.amx.jax.repository.remittance.IViewVatDetailsRespository;
 import com.amx.jax.service.BankMetaService;
@@ -260,6 +254,7 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 				Map<PRICE_TYPE, List<String>> bestExchangeRatePaths =apiResponse.getResult().getBestExchangeRatePaths();
 				List<Map<String,List<DynamicRoutingPricingDto>>> dynamicRoutingPricingList = new ArrayList<>();
 				
+				
 				if(bestExchangeRatePaths!=null && !bestExchangeRatePaths.isEmpty()) {
 					for (Map.Entry<PRICE_TYPE, List<String>> mapEntry : bestExchangeRatePaths.entrySet()) {
 						dynamicRoutingPricingResponse = new DynamicRoutingPricingResponse();
@@ -304,6 +299,7 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 		
 		Map<String, TrnxRoutingDetails> trnxRoutingPathList = apiResponse.getResult().getTrnxRoutingPaths();
 		Map<BigDecimal, Map<BigDecimal, ExchangeRateDetails>> bankServiceModeSellRates = apiResponse.getResult().getBankServiceModeSellRates();
+		HomeSendSrvcProviderInfo homeSendSrvcProviderInfo = apiResponse.getResult().getHomeSendSrvcProviderInfo();
 		Customer customer = userService.getCustById(metaData.getCustomerId());
 		Channel channel = Channel.valueOf(metaData.getChannel().toString());
 		if (AppContextUtil.getUserClient() != null && AppContextUtil.getUserClient().getClientType() != null) {
@@ -313,6 +309,12 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 		if(trnxRoutingDetails!=null) {
 			result.setTrnxRoutingPaths(trnxRoutingDetails);
 		}
+		
+		if(homeSendSrvcProviderInfo!=null) {
+			ServiceProviderDto serviceProviderDto = fetchRemitServiceProviderDt(homeSendSrvcProviderInfo);
+			result.setServiceProviderDto(serviceProviderDto);
+		}
+		
 		ExchangeRateDetails sellRateDetail= bankServiceModeSellRates.get(trnxRoutingDetails.getRoutingBankId()).get(trnxRoutingDetails.getServiceMasterId());
 		if(sellRateDetail!=null) {
 			result.setCustomerDiscountDetails(sellRateDetail.getCustomerDiscountDetails());
@@ -541,4 +543,21 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 		return exchangeRateResponseModel;
 	}
 
+	private ServiceProviderDto fetchRemitServiceProviderDt(HomeSendSrvcProviderInfo homeSendSrvcProviderInfo) {
+		
+		ServiceProviderDto serviceProviderDto  = new ServiceProviderDto();
+		
+		if(homeSendSrvcProviderInfo.getOutGoingTransactionReference() != null) {
+			serviceProviderDto.setAmgSessionId(new BigDecimal(homeSendSrvcProviderInfo.getOutGoingTransactionReference()));
+		}
+		serviceProviderDto.setFixedCommInSettlCurr(homeSendSrvcProviderInfo.getFixChargedAmountInSettlementCurrency());
+		serviceProviderDto.setIntialAmountInSettlCurr(homeSendSrvcProviderInfo.getInitialAmountInSettlementCurrency());
+		serviceProviderDto.setPartnerSessionId(homeSendSrvcProviderInfo.getPartnerTransactionReference());
+		serviceProviderDto.setSettlementCurrency(homeSendSrvcProviderInfo.getSettlementCurrency());
+		serviceProviderDto.setTransactionMargin(homeSendSrvcProviderInfo.getTransactionMargin());
+		serviceProviderDto.setVariableCommInSettlCurr(homeSendSrvcProviderInfo.getVariableChargedAmountInSettlementCurrency());
+		
+		return serviceProviderDto ; 
+	}
+	
 }

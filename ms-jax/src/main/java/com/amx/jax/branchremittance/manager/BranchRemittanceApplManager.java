@@ -47,6 +47,7 @@ import com.amx.jax.dbmodel.DeviceStateInfo;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.ViewCompanyDetails;
 import com.amx.jax.dbmodel.fx.EmployeeDetailsView;
+import com.amx.jax.dbmodel.partner.RemitApplSrvProv;
 import com.amx.jax.dbmodel.remittance.AdditionalBankRuleMap;
 import com.amx.jax.dbmodel.remittance.AdditionalInstructionData;
 import com.amx.jax.dbmodel.remittance.BankBranch;
@@ -77,6 +78,8 @@ import com.amx.jax.model.response.remittance.BeneAdditionalDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
+import com.amx.jax.model.response.remittance.ServiceProviderDetailsDto;
+import com.amx.jax.model.response.remittance.ServiceProviderDto;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
 import com.amx.jax.repository.DeviceStateRepository;
 import com.amx.jax.repository.IApplicationCountryRepository;
@@ -241,7 +244,7 @@ public class BranchRemittanceApplManager {
 		 //Dynamic Routing and Priccing API
 	 	 BranchRemittanceGetExchangeRateResponse exchangeRateResposne =branchRemittanceExchangeRateManager.getDynamicRoutingAndPricingExchangeRateResponseCompare(requestApplModel);
 		 
-		 remittanceTransactionRequestValidator.validateExchangeRate(requestApplModel, exchangeRateResposne);
+		// remittanceTransactionRequestValidator.validateExchangeRate(requestApplModel, exchangeRateResposne);
 		 remittanceTransactionRequestValidator.validateFlexFields(requestApplModel, remitApplParametersMap);
 		 remittanceAdditionalFieldManager.validateAdditionalFields(requestApplModel, remitApplParametersMap);
 		 remittanceAdditionalFieldManager.processAdditionalFields(requestApplModel); 
@@ -270,8 +273,6 @@ public class BranchRemittanceApplManager {
 		hashMap.put("AML_CHECK", amlList);
 		branchRemitManager.validateAdditionalErrorMessages(hashMap);
 		
-		
-		
 		/* create applciation */
 		RemittanceApplication remittanceApplication = this.createRemittanceApplication(hashMap);
 		RemittanceAppBenificiary remittanceAppBeneficairy = this.createRemittanceAppBeneficiary(remittanceApplication,hashMap);
@@ -280,12 +281,16 @@ public class BranchRemittanceApplManager {
 		//RemittanceTransactionRequestModel
 		List<RemitApplAmlModel> amlData = this.saveRemittanceAppAML(remittanceApplication,hashMap);
 		
+		// Remittance srv prov details
+		RemitApplSrvProv remitApplSrvProv = createRemitApplSrvProv(requestApplModel);
+		
 		/* Saving application deatils */
 		HashMap<String, Object> mapAllDetailApplSave = new HashMap<String, Object>();
 		mapAllDetailApplSave.put("EX_APPL_TRNX", remittanceApplication);
 		mapAllDetailApplSave.put("EX_APPL_BENE", remittanceAppBeneficairy);
 		mapAllDetailApplSave.put("EX_APPL_ADDL", additioalInstructionData);
 		mapAllDetailApplSave.put("EX_APPL_AML", amlData);
+		mapAllDetailApplSave.put("EX_APPL_SRV_PROV", remitApplSrvProv);
 		validateApplDetails(mapAllDetailApplSave);
 		brRemittanceDao.saveAllApplications(mapAllDetailApplSave);
 		auditService.log(new CActivityEvent(Type.APPLICATION_CREATED,String.format("%s/%s", remittanceApplication.getDocumentFinancialyear(),remittanceApplication.getDocumentNo()))
@@ -863,6 +868,31 @@ private void validateSaveApplRequest(BranchRemittanceApplRequestModel request) {
 	JaxValidationUtil.validatePositiveNumber(request.getServiceMasterId(), "service indic id bank must be positive number");
 	JaxValidationUtil.validatePositiveNumber(request.getRemittanceModeId(),"Remittance mode id must be positive number");
 	JaxValidationUtil.validatePositiveNumber(request.getDeliveryModeId(),"Delivery mode id must be positive number");
+}
+
+public RemitApplSrvProv createRemitApplSrvProv(BranchRemittanceApplRequestModel requestApplModel) {
+	
+	ServiceProviderDto serviceProviderDto = requestApplModel.getDynamicRroutingPricingBreakup().getServiceProviderDto();
+
+	//Map<String, ServiceProviderDetailsDto> mapSrvProvDetails = serviceProviderDto.getMapSrvProvDetails();
+
+	RemitApplSrvProv remitApplSrvProv = new RemitApplSrvProv();
+
+	if (serviceProviderDto != null) {
+		remitApplSrvProv.setAmgSessionId(serviceProviderDto.getAmgSessionId());
+		remitApplSrvProv.setBankId(requestApplModel.getRoutingBankId());
+		remitApplSrvProv.setFixedCommInSettlCurr(serviceProviderDto.getFixedCommInSettlCurr());
+		remitApplSrvProv.setIntialAmountInSettlCurr(serviceProviderDto.getIntialAmountInSettlCurr());
+		remitApplSrvProv.setPartnerReferenceNo(serviceProviderDto.getPartnerReferenceNo());
+		remitApplSrvProv.setPartnerSessionId(serviceProviderDto.getPartnerSessionId());
+		remitApplSrvProv.setSettlementCurrency(serviceProviderDto.getSettlementCurrency());
+		remitApplSrvProv.setTransactionMargin(serviceProviderDto.getTransactionMargin());
+		remitApplSrvProv.setVariableCommInSettlCurr(serviceProviderDto.getVariableCommInSettlCurr());
+		remitApplSrvProv.setCreatedBy(getEmployeeDetails().getUserName());
+		remitApplSrvProv.setCreatedDate(new Date());
+	}
+
+	return remitApplSrvProv;
 }
 
 	
