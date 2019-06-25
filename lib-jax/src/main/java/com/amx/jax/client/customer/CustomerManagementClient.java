@@ -54,7 +54,7 @@ public class CustomerManagementClient implements ICustomerManagementController {
 	 * .model.customer.CreateCustomerInfoRequest)
 	 */
 	@Override
-	public AmxApiResponse<CustomerInfo, Object> createCustomer(CreateCustomerInfoRequest createCustomerRequest) throws ParseException {
+	public AmxApiResponse<CustomerInfo, Object> createCustomer(CreateCustomerInfoRequest createCustomerRequest) {
 		try {
 
 			return restService.ajax(appConfig.getJaxURL()).path(ApiPath.CREATE_CUSTOMER).meta(new JaxMetaInfo()).post(createCustomerRequest)

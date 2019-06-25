@@ -6,10 +6,14 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.branch.beans.BranchSession;
 import com.amx.jax.client.OffsiteCustRegClient;
 import com.amx.jax.client.branch.BranchUserClient;
+import com.amx.jax.client.customer.CustomerManagementClient;
+import com.amx.jax.model.customer.CreateCustomerInfoRequest;
 import com.amx.jax.model.request.EmploymentDetailsRequest;
 import com.amx.jax.model.response.ArticleDetailsDescDto;
 import com.amx.jax.model.response.ArticleMasterDescDto;
 import com.amx.jax.model.response.ComponentDataDto;
+import com.amx.jax.model.response.CustomerInfo;
+import com.amx.jax.model.response.IncomeRangeDto;
 import com.amx.jax.model.response.customer.OffsiteCustomerDataDTO;
 import com.amx.jax.model.response.remittance.UserwiseTransactionDto;
 
@@ -28,6 +32,9 @@ public class CustomerBranchController {
 
 	@Autowired
 	OffsiteCustRegClient offsiteCustRegClient;
+
+	@Autowired
+	CustomerManagementClient customerManagementClient;
 
 	@Autowired
 	BranchSession branchSession;
@@ -74,9 +81,21 @@ public class CustomerBranchController {
 		return offsiteCustRegClient.getDesignationListResponse(model);
 	}
 
+	@RequestMapping(value = "/api/customer/incomerange/list", method = { RequestMethod.POST })
+	public AmxApiResponse<IncomeRangeDto, Object> fetchIncomeRangeList(@RequestBody EmploymentDetailsRequest model) {
+		return offsiteCustRegClient.getIncomeRangeResponse(model);
+	}
+
 	@RequestMapping(value = "/api/customer/profession/list", method = { RequestMethod.GET })
 	public AmxApiResponse<ComponentDataDto, Object> fetchProfessionList() {
 		return offsiteCustRegClient.sendProfessionList();
 	}
+
+	@RequestMapping(value = "/api/customer/create", method = { RequestMethod.POST })
+	public AmxApiResponse<CustomerInfo, Object> createCustomer(CreateCustomerInfoRequest createCustomerRequest) {
+		return customerManagementClient.createCustomer(createCustomerRequest);
+	}
+
+
 
 }
