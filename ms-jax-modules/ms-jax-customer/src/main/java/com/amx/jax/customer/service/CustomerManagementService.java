@@ -21,10 +21,13 @@ public class CustomerManagementService {
 
 	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getCustomerDetail(String identityInt, BigDecimal identityTypeId) {
 		OffsiteCustomerDataDTO dto = customerManagementManager.getCustomerDeatils(identityInt, identityTypeId);
-		BigDecimal customerId = dto.getCustomerPersonalDetail().getCustomerId();
-		dto.setCustomerStatusModel(customerManagementManager.getCustomerStatusModel(customerId));
 		AmxApiResponse<OffsiteCustomerDataDTO, Object> response = AmxApiResponse.build(dto);
-		response.setMeta(getMetaInfoForCustomerMgmt(dto));
+		if (dto.getCustomerPersonalDetail() != null && dto.getCustomerPersonalDetail().getCustomerId() != null) {
+			BigDecimal customerId = dto.getCustomerPersonalDetail().getCustomerId();
+			dto.setCustomerStatusModel(customerManagementManager.getCustomerStatusModel(customerId));
+			response.setMeta(getMetaInfoForCustomerMgmt(dto));
+		}
+
 		return response;
 	}
 
