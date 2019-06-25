@@ -153,6 +153,9 @@ public class CustomerManagementManager {
 		if (ConstantDocument.Black.equals(isActive)) {
 			jaxError = JaxError.CUSTOMER_BLACK_LISTED;
 		}
+		if (ConstantDocument.Yes.equals(isActive)) {
+			jaxError = JaxError.CUSTOMER_ACTIVE;
+		}
 
 		try {
 			userValidationService.validateCustIdProofs(customer.getCustomerId());
