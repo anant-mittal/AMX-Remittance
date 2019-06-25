@@ -9,7 +9,7 @@ public class CustomerInfoRequest {
 	@Valid
 	LocalAddressDetails localAddressDetails;
 	
-	HomeAddressDetails homeAddressDestails;
+	HomeAddressDetails homeAddressDetails;
 	
 	@Valid
 	CustomerEmploymentDetails customerEmploymentDetails;
@@ -31,14 +31,6 @@ public class CustomerInfoRequest {
 		this.localAddressDetails = localAddressDetails;
 	}
 
-	public HomeAddressDetails getHomeAddressDestails() {
-		return homeAddressDestails;
-	}
-
-	public void setHomeAddressDestails(HomeAddressDetails homeAddressDestails) {
-		this.homeAddressDestails = homeAddressDestails;
-	}
-
 	public CustomerEmploymentDetails getCustomerEmploymentDetails() {
 		return customerEmploymentDetails;
 	}
@@ -50,8 +42,16 @@ public class CustomerInfoRequest {
 	@Override
 	public String toString() {
 		return "CustomerInfoRequest [customerPersonalDetail=" + customerPersonalDetail + ", localAddressDetails="
-				+ localAddressDetails + ", homeAddressDestails=" + homeAddressDestails + ", customerEmploymentDetails="
+				+ localAddressDetails + ", homeAddressDestails=" + homeAddressDetails + ", customerEmploymentDetails="
 				+ customerEmploymentDetails + "]";
+	}
+
+	public HomeAddressDetails getHomeAddressDetails() {
+		return homeAddressDetails;
+	}
+
+	public void setHomeAddressDetails(HomeAddressDetails homeAddressDetails) {
+		this.homeAddressDetails = homeAddressDetails;
 	}
 
 }
