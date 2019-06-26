@@ -323,9 +323,6 @@ public class RemittanceTransactionManager {
 
 		applyCurrencyRoudingLogic(breakup);
 		validateTransactionAmount(breakup, commission, currencyId);
-		
-		
-		
 		// commission
 		responseModel.setTxnFee(commission);
 		// exrate
@@ -346,14 +343,11 @@ public class RemittanceTransactionManager {
 		BigDecimal commission = bankCharge.getChargeAmount();
 		return commission;
 	}
-	
-	private VatDetailsDto getVatAmount(BigDecimal commission) {
-		VatDetailsDto vatDetails = new VatDetailsDto();
-		
-		List<ViewVatDetails> vatList = vatDetailsRepository.getVatDetails(metaData.getCountryId(),ConstantDocument.VAT_CATEGORY,ConstantDocument.VAT_ACCOUNT_TYPE_COMM);
-		
-		logger.debug("vatList :" +vatList);
 
+	/** added by Rabil **/
+	public VatDetailsDto getVatAmount(BigDecimal commission) {
+		VatDetailsDto vatDetails = new VatDetailsDto();
+		List<ViewVatDetails> vatList = vatDetailsRepository.getVatDetails(metaData.getCountryId(),ConstantDocument.VAT_CATEGORY,ConstantDocument.VAT_ACCOUNT_TYPE_COMM);
 		String vatAppliable = null;
 		if(vatList.isEmpty()) {
 			vatAppliable ="N";
@@ -365,35 +359,33 @@ public class RemittanceTransactionManager {
 			vatDetails.setVatPercentage(vatList.get(0).getVatPercentage());
 			vatDetails.setVatType(vatList.get(0).getVatType());
 			vatDetails.setCalculatuonType(vatList.get(0).getCalculationType());
-			vatDetails.setRoudingOff(vatList.get(0).getRoundOff()==null?BigDecimal.ZERO:vatList.get(0).getRoundOff()); 
-			
+			vatDetails.setRoudingOff(vatList.get(0).getRoundOff()==null?BigDecimal.ZERO:vatList.get(0).getRoundOff());
 		}
 		if(JaxUtil.isNullZeroBigDecimalCheck(commission) && commission.compareTo(BigDecimal.ZERO)>0) {
 		if(!StringUtils.isBlank(vatAppliable) && vatAppliable.equalsIgnoreCase(ConstantDocument.Yes) ) {
 			vatDetails.setVatApplicable(vatAppliable);
-					
-			logger.debug("vatAppliable :" +vatAppliable);
+			
 			if(JaxUtil.isNullZeroBigDecimalCheck(vatDetails.getVatPercentage()) && vatDetails.getVatPercentage().compareTo(BigDecimal.ZERO)>0) {
 				BigDecimal BIG_HUNDRED = new BigDecimal(100);
 				BigDecimal vatAmount =BigDecimal.ZERO;
 				if(!StringUtils.isBlank(vatDetails.getCalculatuonType()) && vatDetails.getCalculatuonType().equalsIgnoreCase(ConstantDocument.VAT_CALCULATION_TYPE_INCLUDE)) {
 					vatAmount = RoundUtil.roundBigDecimal(((new BigDecimal(commission.doubleValue()/((vatDetails.getVatPercentage().add(BIG_HUNDRED)).doubleValue())).multiply(BIG_HUNDRED))), vatDetails.getRoudingOff().intValue());
 					vatDetails.setVatAmount(commission.subtract(vatAmount));
-					vatDetails.setCommission(commission);
+					vatDetails.setVatApplicableAmount(vatDetails.getVatAmount());
+					vatDetails.setCommission(commission.subtract(vatDetails.getVatAmount()==null?BigDecimal.ZERO:vatDetails.getVatAmount()));
 					
-				}else {
+				}else if(!StringUtils.isBlank(vatDetails.getCalculatuonType()) && vatDetails.getCalculatuonType().equalsIgnoreCase(ConstantDocument.VAT_CALCULATION_TYPE_EXCLUDE)) {
 					vatAmount = commission.multiply(RoundUtil.roundBigDecimal(vatDetails.getVatPercentage().divide(BIG_HUNDRED),vatDetails.getRoudingOff().intValue()));
 					vatDetails.setVatAmount(vatAmount);
-					vatDetails.setCommission(commission.add(vatAmount));
-					
-					logger.debug("vatAmount :" +vatAmount);
+					vatDetails.setCommission(commission);
+					vatDetails.setVatApplicableAmount(vatAmount);
 				}
 			}
 		}
 	}else {
 		vatDetails.setVatApplicable(vatAppliable);
-		
 	}
+
 		return  vatDetails;
 	}
 
@@ -505,7 +497,6 @@ public class RemittanceTransactionManager {
 			}
 		}
 
-		// Default Case - Unmodified
 		return exchangeRateBreakup;
 
 	}
@@ -748,41 +739,11 @@ public class RemittanceTransactionManager {
 
 	}
 
-	/*private ExchangeRateBreakup getExchangeRateBreakup(List<ExchangeRateApprovalDetModel> exchangeRates,
-			RemittanceTransactionRequestModel model, RemittanceTransactionResponsetModel responseModel,
-			BigDecimal comission) {
-		BigDecimal fcAmount = model.getForeignAmount();
-		BigDecimal lcAmount = model.getLocalAmount();
-		ExchangeRateBreakup exchangeRateBreakup;
-		BigDecimal routingBankId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_BANK_ID");
-		BigDecimal fCurrencyId = (BigDecimal) remitApplParametersMap.get("P_FOREIGN_CURRENCY_ID");
-		BigDecimal beneCountryId = (BigDecimal) remitApplParametersMap.get("P_BENEFICIARY_COUNTRY_ID");
-
-		if (jaxTenantProperties.getIsDynamicPricingEnabled() && !remittanceParameterMapManager.isCashChannel()) {
-			ExchangeRateResponseModel exchangeRateResponseModel = newExchangeRateService
-					.getExchangeRateResponseModelUsingDynamicPricing(fCurrencyId, lcAmount, fcAmount, beneCountryId,
-							routingBankId);
-			responseModel.setDiscountAvailed(exchangeRateResponseModel.getDiscountAvailed());
-			responseModel.setCustomerDiscountDetails(exchangeRateResponseModel.getCustomerDiscountDetails());
-			responseModel.setCostRateLimitReached(exchangeRateResponseModel.getCostRateLimitReached());
-			exchangeRateBreakup = exchangeRateResponseModel.getExRateBreakup();
-		} else if (jaxTenantProperties.getExrateBestRateLogicEnable()) {
-			exchangeRateBreakup = newExchangeRateService.getExchangeRateBreakUpUsingBestRate(fCurrencyId, lcAmount,
-					fcAmount, routingBankId);
-		} else {
-			exchangeRateBreakup = newExchangeRateService.createExchangeRateBreakUp(exchangeRates,
-					model.getLocalAmount(), model.getForeignAmount());
-		}
-
-		setNetAmountAndLoyalityState(exchangeRateBreakup, model, responseModel, comission);
-		return exchangeRateBreakup;
-
-	}
-*/
+	
 	public void setNetAmountAndLoyalityState(ExchangeRateBreakup exchangeRateBreakup,
 			AbstractRemittanceApplicationRequestModel model, RemittanceTransactionResponsetModel responseModel,
-			BigDecimal comission) {
-		BigDecimal netAmount = exchangeRateBreakup.getConvertedLCAmount().add(comission==null?BigDecimal.ZERO:comission);
+			BigDecimal comission,BigDecimal vatamount) {
+		BigDecimal netAmount = exchangeRateBreakup.getConvertedLCAmount().add(comission==null?BigDecimal.ZERO:comission).add(vatamount==null?BigDecimal.ZERO:vatamount);
 		exchangeRateBreakup.setNetAmountWithoutLoyality(netAmount);
 		responseModel.setLoyalityAmountAvailableForTxn(loyalityPointService.getloyaltyAmountEncashed(comission==null?BigDecimal.ZERO:comission));
 		if (!JaxUtil.isNullZeroBigDecimalCheck(comission)) {
@@ -798,8 +759,7 @@ public class RemittanceTransactionManager {
 			/** Modified by Rabil for corporate employee discount on 24 Mar 2018 **/
 			BigDecimal loyaltyAmount = loyalityPointService.getVwLoyalityEncash().getEquivalentAmount();
 			if (JaxUtil.isNullZeroBigDecimalCheck(comission) && comission.compareTo(loyaltyAmount) > 0) {
-				exchangeRateBreakup.setNetAmount(
-						netAmount.subtract(loyalityPointService.getVwLoyalityEncash().getEquivalentAmount()));
+				exchangeRateBreakup.setNetAmount(netAmount.subtract(loyalityPointService.getVwLoyalityEncash().getEquivalentAmount()));
 				
 				logger.info("net maount in ex1:"+exchangeRateBreakup.getNetAmount());
 			} else {
@@ -1183,7 +1143,7 @@ public class RemittanceTransactionManager {
 					//errorMessage = bsbApi.getResponseCode()+"-"+bsbApi.getResponseDesc();
 				}else {
 					accountValidation ="N";
-					errorMessage = bsbApi.getResponseCode()+"-"+bsbApi.getResponseDesc();
+					errorMessage =bsbApi.getResponseDesc();
 				}
 			}
 			

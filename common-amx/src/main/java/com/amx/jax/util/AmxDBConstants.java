@@ -164,7 +164,8 @@ public class AmxDBConstants {
 	
 	public static final BigDecimal ARTICLE_DETAIL_ID_OTHERS = new BigDecimal(16);
 	public static final String  VAT_ACCOUNT_TYPE_COMM = "COMMISSION";
-	public static final String  VAT_CALCULATION_TYPE_INCLUDE= "E";
+	public static final String  VAT_CALCULATION_TYPE_INCLUDE= "I";
+	public static final String  VAT_CALCULATION_TYPE_EXCLUDE="E";
 	public static final String  VAT_CATEGORY= "OUTPUT_TAX";
 	public static final String  BENE_ACCT_VALID="BENE_ACCT_VALID";
 	

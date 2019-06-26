@@ -66,8 +66,8 @@ public class JaxDynamicRoutingPricingService {
 			LOGGER.debug("Dyanamic Routing Pricing request json : {}", JsonUtil.toJson(routingPricingRequestDTO));
 			apiResponse = pricerServiceClient.fetchRemitRoutesAndPrices(routingPricingRequestDTO);
 		} catch (Exception e) {
-			LOGGER.debug("No exchange data found from pricer, error is: ", e);
-			throw new GlobalException(JaxError.EXCHANGE_RATE_NOT_FOUND, "No exchange data found" + e.getMessage());
+			LOGGER.debug("getDynamicRoutingAndPrice No exchange data found from pricer, error is: ", e.getMessage());
+			throw new GlobalException(JaxError.EXCH_ROUTING_DEAILS_NOT_AVAIL, "Routing service is not available at this time. Please contact support");
 		}
 		
 		
