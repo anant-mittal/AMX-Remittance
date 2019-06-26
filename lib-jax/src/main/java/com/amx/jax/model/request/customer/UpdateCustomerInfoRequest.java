@@ -6,6 +6,7 @@ import java.util.List;
 import com.amx.jax.model.request.UpdateCustomerAddressDetailRequest;
 import com.amx.jax.model.request.UpdateCustomerEmploymentDetailsReq;
 import com.amx.jax.model.request.UpdateCustomerPersonalDetailRequest;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class UpdateCustomerInfoRequest implements CustomerDocValidationData {
 
@@ -57,31 +58,37 @@ public class UpdateCustomerInfoRequest implements CustomerDocValidationData {
 	}
 
 	@Override
+	@JsonIgnore
 	public BigDecimal getIncomeRangeId() {
 		return employmentDetail != null ? employmentDetail.getIncomeRangeId() : null;
 	}
 
 	@Override
+	@JsonIgnore
 	public String getEmployer() {
 		return employmentDetail != null ? employmentDetail.getEmployer() : null;
 	}
 
 	@Override
+	@JsonIgnore
 	public BigDecimal getArticleDetailsId() {
 		return employmentDetail != null ? employmentDetail.getArticleDetailsId() : null;
 	}
 
 	@Override
+	@JsonIgnore
 	public Boolean isCreateCustomerRequest() {
 		return false;
 	}
 
 	@Override
+	@JsonIgnore
 	public String getIdentityInt() {
 		return null;
 	}
 
 	@Override
+	@JsonIgnore
 	public BigDecimal getIdentityTypeId() {
 		return null;
 	}
