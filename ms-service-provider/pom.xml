@@ -127,11 +127,13 @@
 		</dependency>
 
 
-		<dependency>
+		<!-- Removing Duplicate -->
+		 
+		<!-- dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-configuration-processor</artifactId>
 			<optional>true</optional>
-		</dependency>
+		</dependency-->
 		<dependency>
 			<groupId>com.amx.jax</groupId>
 			<artifactId>ms-meta</artifactId>
@@ -148,10 +150,12 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
-		<dependency>
+		
+		<!-- Removing Duplicate -->
+		<!-- dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-ehcache</artifactId>
-		</dependency>
+		</dependency-->
 
 		<dependency>
 			<groupId>com.amx.jax</groupId>
