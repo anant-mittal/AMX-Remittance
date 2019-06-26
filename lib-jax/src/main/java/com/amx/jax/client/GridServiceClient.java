@@ -17,7 +17,7 @@ import com.amx.jax.rest.RestService;
 
 @Component
 public class GridServiceClient implements IGridService {
-	private static final Logger LOGGER = LoggerService.getLogger(DeviceStateClient.class);
+	private static final Logger LOGGER = LoggerService.getLogger(GridServiceClient.class);
 
 	@Autowired
 	RestService restService;
