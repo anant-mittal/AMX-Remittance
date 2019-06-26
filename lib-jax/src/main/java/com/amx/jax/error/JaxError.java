@@ -300,7 +300,8 @@ public enum JaxError implements IExceptionEnum {
 	MUTIPLE_RECORD_FOUND,
 	
 	//Customer Rating
-	TRANSACTION_ALREADY_RATED;
+	TRANSACTION_ALREADY_RATED,
+	RATING_NOT_FOUND;
 	
 	
 	@Deprecated

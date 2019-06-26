@@ -92,26 +92,36 @@ public class CustomerRatingService {
 	 * 
 	 */
 	
-	public BoolRespModel inquireCustomerRating(BigDecimal remittanceTrnxId) {
-		Boolean status = Boolean.FALSE;
-
+	public AmxApiResponse<CustomerRating, ?> inquireCustomerRating(BigDecimal remittanceTrnxId) {
+	
+		CustomerRating customerRating = new CustomerRating();
 		try {
-
+			
 			if (remittanceTrnxId != null) {
 				
 				CustomerRating customerRatingvalue = customerRatingdao
 						.getCustomerRatingDataByRemittanceTransactionId(remittanceTrnxId);
 				if (customerRatingvalue != null) {
-					status = Boolean.TRUE;
+					
+					customerRating.setRating(customerRatingvalue.getRating());
+					customerRating.setApplicationCountryId(customerRatingvalue.getApplicationCountryId());
+					customerRating.setCreatedDate(customerRatingvalue.getCreatedDate());
+					customerRating.setCustomerId(customerRatingvalue.getCustomerId());
+					customerRating.setRemittanceTransactionId(customerRatingvalue.getRemittanceTransactionId());
+					customerRating.setRatingId(customerRatingvalue.getRatingId());
+					customerRating.setRatingRemark(customerRatingvalue.getRatingRemark());
+					customerRating.setRemittanceApplicationId(customerRatingvalue.getRemittanceApplicationId());
+					
 				}else {
-					status = Boolean.FALSE;
+					
+					// do nothing
 				}
 			}
 
-		} catch (Exception e) {
-			throw new GlobalException("Invalid Remittance Transaction Id"+ remittanceTrnxId);
+		} catch (GlobalException e) {
+			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}
-		return new BoolRespModel(status);
+		return  AmxApiResponse.build(customerRating);
 	}
 	
 }

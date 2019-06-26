@@ -34,7 +34,6 @@ import com.amx.jax.model.request.remittance.IRemitTransReqPurpose;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.services.CustomerRatingService;
-import com.amx.jax.services.InquireCustomerRatingService;
 import com.amx.jax.services.PurposeOfTransactionService;
 import com.amx.jax.services.RemittanceTransactionService;
 import com.amx.jax.services.ReportManagerService;
@@ -83,8 +82,6 @@ public class RemittanceController {
    	@Autowired
    	UserService userService;
    	
-   	@Autowired
-   	InquireCustomerRatingService inquireCustomerRatingService;
 
 	@RequestMapping(value = "/trnxHist/", method = RequestMethod.GET)
 	public ApiResponse getTrnxHistroyDetailResponse(@RequestParam(required = false, value = "docfyr") BigDecimal docfyr,
@@ -259,9 +256,9 @@ public class RemittanceController {
 	
 	//radhika
 	@RequestMapping(value = "/customer-trnx-rating/", method = RequestMethod.POST)
-	public AmxApiResponse<BoolRespModel,Object> inquireCustomerRating(@RequestParam BigDecimal remittanceTrnxId) {
-		BoolRespModel result  =  customerRatingService.inquireCustomerRating(remittanceTrnxId);
-		return AmxApiResponse.build(result);
+	public AmxApiResponse<CustomerRating, ?> inquireCustomerRating(@RequestParam BigDecimal remittanceTrnxId) {
+		return  customerRatingService.inquireCustomerRating(remittanceTrnxId);
+		
 	}
 	
 }
