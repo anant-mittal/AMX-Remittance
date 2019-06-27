@@ -8,6 +8,10 @@ import com.amx.jax.client.OffsiteCustRegClient;
 import com.amx.jax.client.branch.BranchUserClient;
 import com.amx.jax.client.customer.CustomerManagementClient;
 import com.amx.jax.model.customer.CreateCustomerInfoRequest;
+import com.amx.jax.model.customer.document.UploadCustomerDocumentRequest;
+import com.amx.jax.model.customer.document.UploadCustomerDocumentResponse;
+import com.amx.jax.model.customer.document.UploadCustomerKycRequest;
+import com.amx.jax.model.customer.document.UploadCustomerKycResponse;
 import com.amx.jax.model.request.EmploymentDetailsRequest;
 import com.amx.jax.model.response.ArticleDetailsDescDto;
 import com.amx.jax.model.response.ArticleMasterDescDto;
@@ -96,6 +100,10 @@ public class CustomerBranchController {
 		return customerManagementClient.createCustomer(createCustomerRequest);
 	}
 
-
+	@RequestMapping(value = "/api/customer/kyc/upload", method = { RequestMethod.POST })
+	public AmxApiResponse<UploadCustomerKycResponse, Object> uploadCustomerKyc(
+		@RequestBody UploadCustomerKycRequest uploadCustomerKycRequest) {
+		return customerManagementClient.uploadCustomerKyc(uploadCustomerKycRequest);
+	}
 
 }
