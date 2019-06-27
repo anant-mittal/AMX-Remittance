@@ -36,7 +36,9 @@ public class CustomerEmployementManager {
 			}
 			employmentDetails.setStateId(employmentData.getFsStateMaster());
 			employmentDetails.setDistrictId(employmentData.getFsDistrictMaster());
-			employmentDetails.setCountryId(employmentData.getFsCountryMaster().getCountryId());
+			if(employmentData.getFsCountryMaster() != null) {
+				employmentDetails.setCountryId(employmentData.getFsCountryMaster().getCountryId());
+			}
 			employmentDetails.setArticleDetailsId(customer.getFsArticleDetails().getArticleDetailId());
 			employmentDetails.setArticleId(customer.getFsArticleDetails().getFsArticleMaster().getArticleId());
 			employmentDetails.setIncomeRangeId(customer.getFsIncomeRangeMaster().getIncomeRangeId());
