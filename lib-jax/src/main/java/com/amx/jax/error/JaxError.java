@@ -114,6 +114,7 @@ public enum JaxError implements IExceptionEnum {
 	INVALID_INPUT,
 	ALREADY_EXIST_EMAIL,
 	ALREADY_EXIST_MOBILE,
+	EMAIL_NOT_VERIFIED,
 
 	/* place order */
 	PLACE_ORDER_ID_NOT_FOUND,
