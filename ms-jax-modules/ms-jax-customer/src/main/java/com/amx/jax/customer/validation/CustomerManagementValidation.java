@@ -154,6 +154,9 @@ public class CustomerManagementValidation {
 	}
 
 	public void validateCustomerDataForCreate(CreateCustomerInfoRequest createCustomerInfoRequest) {
+		if (createCustomerInfoRequest.getIdentityTypeId() == null) {
+			throw new GlobalException("identity type id must be present");
+		}
 		Customer customer = offsiteCustomerRegManager.getCustomerForRegistration(createCustomerInfoRequest.getIdentityInt(),
 				createCustomerInfoRequest.getIdentityTypeId());
 		if (customer != null) {
