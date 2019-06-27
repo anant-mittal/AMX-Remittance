@@ -8,6 +8,8 @@ import com.amx.jax.client.OffsiteCustRegClient;
 import com.amx.jax.client.branch.BranchUserClient;
 import com.amx.jax.client.customer.CustomerManagementClient;
 import com.amx.jax.model.customer.CreateCustomerInfoRequest;
+import com.amx.jax.model.customer.document.CustomerDocumentCategoryDto;
+import com.amx.jax.model.customer.document.CustomerDocumentTypeDto;
 import com.amx.jax.model.customer.document.UploadCustomerDocumentRequest;
 import com.amx.jax.model.customer.document.UploadCustomerDocumentResponse;
 import com.amx.jax.model.customer.document.UploadCustomerKycRequest;
@@ -74,6 +76,11 @@ public class CustomerBranchController {
 		return branchUserClient.getTotalCount(transactiondate);
 	}
 
+	@RequestMapping(value = "/api/customer/emptype/list", method = { RequestMethod.GET })
+	public AmxApiResponse<ComponentDataDto, Object> fetchEmpTypeList() {
+		return offsiteCustRegClient.sendEmploymentTypeList();
+	}
+
 	@RequestMapping(value = "/api/customer/article/list", method = { RequestMethod.GET })
 	public AmxApiResponse<ArticleMasterDescDto, Object> fetchArticleList() {
 		return offsiteCustRegClient.getArticleListResponse();
@@ -96,14 +103,31 @@ public class CustomerBranchController {
 	}
 
 	@RequestMapping(value = "/api/customer/create", method = { RequestMethod.POST })
-	public AmxApiResponse<CustomerInfo, Object> createCustomer(CreateCustomerInfoRequest createCustomerRequest) {
+	public AmxApiResponse<CustomerInfo, Object> createCustomer(
+			@RequestBody CreateCustomerInfoRequest createCustomerRequest) {
 		return customerManagementClient.createCustomer(createCustomerRequest);
 	}
 
 	@RequestMapping(value = "/api/customer/kyc/upload", method = { RequestMethod.POST })
 	public AmxApiResponse<UploadCustomerKycResponse, Object> uploadCustomerKyc(
-		@RequestBody UploadCustomerKycRequest uploadCustomerKycRequest) {
+			@RequestBody UploadCustomerKycRequest uploadCustomerKycRequest) {
 		return customerManagementClient.uploadCustomerKyc(uploadCustomerKycRequest);
+	}
+
+	@RequestMapping(value = "/api/customer/doc/categories", method = { RequestMethod.GET })
+	public AmxApiResponse<CustomerDocumentCategoryDto, Object> getDocCategories() {
+		return customerManagementClient.getDocumentCategory();
+	}
+
+	@RequestMapping(value = "/api/customer/doc/types", method = { RequestMethod.POST })
+	public AmxApiResponse<CustomerDocumentTypeDto, Object> getDocTypes(@RequestBody String documentCategory) {
+		return customerManagementClient.getDocumentType(documentCategory);
+	}
+
+	@RequestMapping(value = "/api/customer/doc/upload", method = { RequestMethod.POST })
+	public AmxApiResponse<UploadCustomerDocumentResponse, Object> uploadCustomerDoc(
+			@RequestBody UploadCustomerDocumentRequest uploadCustomerDocumentRequest) {
+		return customerManagementClient.uploadCustomerDocument(uploadCustomerDocumentRequest);
 	}
 
 }
