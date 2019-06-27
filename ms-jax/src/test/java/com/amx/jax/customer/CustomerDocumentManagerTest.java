@@ -14,6 +14,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.amx.jax.customer.document.manager.CustomerDocMasterManager;
 import com.amx.jax.customer.document.manager.CustomerDocumentManager;
 import com.amx.jax.dbmodel.customer.CustomerDocumentTypeMaster;
+import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReference;
 import com.amx.jax.model.customer.CustomerDocumentInfo;
 
 @SpringBootTest
@@ -28,7 +29,10 @@ public class CustomerDocumentManagerTest {
 	@Test
 	public void testGetCustomerDocument() {
 		CustomerDocumentTypeMaster docTypeMaster = docMngr.getDocTypeMaster("ADDRESS_PROOF", "DRIVING_LICENSE");
-		customerDocumentManager.checkAndRemoveBlockedDocuments(new BigDecimal(5218), docTypeMaster);
+		List<CustomerDocumentUploadReference> uploads = customerDocumentManager.getCustomerUploads(new BigDecimal(932353));
+		uploads.forEach(i -> {
+			System.out.println(i.getDbScanRef());
+		});
 		assertNotNull(docTypeMaster);
 	}
 }

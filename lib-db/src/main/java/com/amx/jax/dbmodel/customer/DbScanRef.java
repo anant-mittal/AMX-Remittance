@@ -17,9 +17,12 @@ public class DbScanRef {
 
 	@Column(name = "BLOB_ID")
 	BigDecimal blobId;
-	
-	@Column(name="DOC_FORMAT")
+
+	@Column(name = "DOC_FORMAT")
 	String docFormat;
+
+	@Column(name = "DOC_FINANCIAL_YEAR")
+	BigDecimal docFinYear;
 
 	public BigDecimal getCustomerDocUploadRefId() {
 		return customerDocUploadRefId;
@@ -43,6 +46,14 @@ public class DbScanRef {
 
 	public void setDocFormat(String docFormat) {
 		this.docFormat = docFormat;
+	}
+
+	public BigDecimal getDocFinYear() {
+		return docFinYear;
+	}
+
+	public void setDocFinYear(BigDecimal docFinYear) {
+		this.docFinYear = docFinYear;
 	}
 
 }

@@ -65,6 +65,16 @@ public class CustomerDocumentUploadManager {
 		}
 	}
 
+	public void deleteTemporaryUploadData(String identityInt, BigDecimal identityType) {
+
+		List<CustomerDocumentUploadReferenceTemp> existing = customerDocumentUploadReferenceTempRepo.findByidentityIntAndIdentityTypeId(identityInt,
+				identityType);
+		if (existing != null) {
+			log.debug("found exising uploaded record {}", log);
+			customerDocumentUploadReferenceTempRepo.delete(existing);
+		}
+	}
+
 	public CustomerDocumentUploadReferenceTemp getUploadData(String identityInt, BigDecimal identityType,
 			CustomerDocumentTypeMaster customerDocumentTypeMaster) {
 
@@ -116,21 +126,23 @@ public class CustomerDocumentUploadManager {
 		dmsDocumentBlobTemparoryRepository.save(dmsDocumentBlobTemparory);
 		// dmsDocumentBlobTemparoryRepository.copyBlobDataFromJava(docBlobId,
 		// docFinYear);
-		createDocumentUploadReference(upload, docBlobId);
+		createDocumentUploadReference(upload, docBlobId, docFinYear);
 	}
 
-	private void createDocumentUploadReference(CustomerDocumentUploadReferenceTemp upload, BigDecimal docBlobId) {
+	private void createDocumentUploadReference(CustomerDocumentUploadReferenceTemp upload, BigDecimal docBlobId, BigDecimal docFinYear) {
 		CustomerDocumentUploadReference docUploadReference = new CustomerDocumentUploadReference();
 		docUploadReference.setCustomerDocumentTypeMaster(upload.getCustomerDocumentTypeMaster());
 		docUploadReference.setCustomerId(metaData.getCustomerId());
 		docUploadReference.setScanIndic(upload.getScanIndic());
 		docUploadReference.setStatus(ConstantDocument.Yes);
+		docUploadReference.setCreatedAt(new Date());
 		docUploadReference = customerDocumentUploadReferenceRepo.save(docUploadReference);
 		if (DocumentScanIndic.DB_SCAN.equals(upload.getScanIndic())) {
 			DbScanRef dbScanref = new DbScanRef();
 			dbScanref.setBlobId(docBlobId);
 			dbScanref.setCustomerDocUploadRefId(docUploadReference.getId());
 			dbScanref.setDocFormat(upload.getDocFormat());
+			dbScanref.setDocFinYear(docFinYear);
 			dbScanRefRepo.save(dbScanref);
 		}
 	}

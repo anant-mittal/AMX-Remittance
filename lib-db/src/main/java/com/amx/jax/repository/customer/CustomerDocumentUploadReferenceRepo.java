@@ -2,6 +2,7 @@ package com.amx.jax.repository.customer;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.springframework.data.repository.CrudRepository;
 
@@ -12,4 +13,6 @@ public interface CustomerDocumentUploadReferenceRepo extends CrudRepository<Cust
 
 	public CustomerDocumentUploadReference findByCustomerDocumentTypeMasterAndCustomerId(CustomerDocumentTypeMaster customerDocumentTypeMaster,
 			BigDecimal customerId);
+
+	public List<CustomerDocumentUploadReference> findByCustomerId(BigDecimal customerId);
 }

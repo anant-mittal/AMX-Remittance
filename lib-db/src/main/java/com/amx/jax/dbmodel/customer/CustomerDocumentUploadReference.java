@@ -1,7 +1,9 @@
 package com.amx.jax.dbmodel.customer;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -42,9 +44,12 @@ public class CustomerDocumentUploadReference {
 	@Column(name = "STATUS")
 	String status;
 
-	@OneToOne(fetch = FetchType.LAZY)
+	@OneToOne(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
 	@JoinColumn(name = "ID", referencedColumnName = "CUST_DOC_UPLOAD_REF_ID")
 	DbScanRef dbScanRef;
+	
+	@Column(name = "CREATED_AT")
+	Date createdAt;
 
 	public BigDecimal getId() {
 		return id;
@@ -92,5 +97,13 @@ public class CustomerDocumentUploadReference {
 
 	public void setDbScanRef(DbScanRef dbScanRef) {
 		this.dbScanRef = dbScanRef;
+	}
+
+	public Date getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(Date createdAt) {
+		this.createdAt = createdAt;
 	}
 }

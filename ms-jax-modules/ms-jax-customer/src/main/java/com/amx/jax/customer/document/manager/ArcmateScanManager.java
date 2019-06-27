@@ -1,9 +1,7 @@
 package com.amx.jax.customer.document.manager;
 
-import java.math.BigDecimal;
-import java.util.List;
-
 import com.amx.jax.dbmodel.CustomerIdProof;
+import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReference;
 import com.amx.jax.model.customer.CustomerDocumentInfo;
 
 public class ArcmateScanManager implements DocumentScanManager {
@@ -15,9 +13,10 @@ public class ArcmateScanManager implements DocumentScanManager {
 	}
 
 	@Override
-	public List<CustomerDocumentInfo> fetchOtherDocumentInfo(BigDecimal customerId) {
+	public CustomerDocumentInfo getDocumentInfo(CustomerDocumentUploadReference upload) {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 
 }

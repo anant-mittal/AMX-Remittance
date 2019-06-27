@@ -3,7 +3,6 @@ package com.amx.jax.customer.document.manager;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
-import java.util.List;
 
 import javax.sql.rowset.serial.SerialBlob;
 import javax.transaction.Transactional;
@@ -24,6 +23,7 @@ import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.dbmodel.DmsApplMapping;
 import com.amx.jax.dbmodel.DocBlobUpload;
 import com.amx.jax.dbmodel.customer.CustomerDocumentTypeMaster;
+import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReference;
 import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReferenceTemp;
 import com.amx.jax.model.customer.CustomerDocumentInfo;
 import com.amx.jax.model.customer.DocumentImageRenderType;
@@ -69,17 +69,12 @@ public class DatabaseScanManager implements DocumentScanManager {
 				kycImage = Base64.encodeBase64String(kycImage.getBytes());
 				customerDocumentImage.setDocumentString(kycImage);
 				customerDocumentImage.setDocumentFormat(dmsMapping.getDocFormat());
+				customerDocumentImage.setUploadedDate(dmsMapping.getCreatedOn());
 			} catch (IOException | SQLException e) {
 				log.error("error in fetch kyc imagage", e);
 			}
 		}
 		return customerDocumentImage;
-	}
-
-	@Override
-	public List<CustomerDocumentInfo> fetchOtherDocumentInfo(BigDecimal customerId) {
-		return null;
-
 	}
 
 	/**
@@ -128,6 +123,7 @@ public class DatabaseScanManager implements DocumentScanManager {
 		CustomerDocumentUploadReferenceTemp docUploadRef = new CustomerDocumentUploadReferenceTemp();
 		docUploadRef.setScanIndic(DocumentScanIndic.DB_SCAN);
 		docUploadRef.setCustomerDocumentTypeMaster(docTypeMaster);
+		docUploadRef.setDocFormat(uploadCustomerDocumentRequest.getDocFormat());
 		byte[] documentByteArray = Base64.decodeBase64(uploadCustomerDocumentRequest.getDocument());
 		try {
 			docUploadRef.setDbScanDocumentBlob(new SerialBlob(documentByteArray));
@@ -140,5 +136,33 @@ public class DatabaseScanManager implements DocumentScanManager {
 		customerDocumentUploadManager.save(docUploadRef);
 		return docUploadRef.getId();
 
+	}
+
+	@Override
+	public CustomerDocumentInfo getDocumentInfo(CustomerDocumentUploadReference upload) {
+		CustomerDocumentInfo info = new CustomerDocumentInfo();
+		info.setDocumentFormat(upload.getDbScanRef().getDocFormat());
+		info.setDocumentRenderType(DocumentImageRenderType.TEXT);
+		info.setUploadedDate(upload.getCreatedAt());
+		info.setDocumentType(upload.getCustomerDocumentTypeMaster().getDocumentType());
+		info.setDocumentCategory(upload.getCustomerDocumentTypeMaster().getDocumentCategory());
+		BigDecimal docBlobId = upload.getDbScanRef().getBlobId();
+		BigDecimal docFinYear = upload.getDbScanRef().getDocFinYear();
+		copyBlobDataIntoJava(docBlobId, docFinYear);
+		DocBlobUpload docBlobUpload = dOCBLOBRepository.findByDocBlobIDAndDocFinYear(docBlobId, docFinYear);
+		if (docBlobUpload == null) {
+			log.error("image not found for parameters docblobid {}, docfinyear {}", docBlobId, docFinYear);
+		}
+		if (docBlobUpload != null) {
+			String docImage;
+			try {
+				docImage = IoUtils.inputStreamToString(docBlobUpload.getDocContent().getBinaryStream());
+				docImage = Base64.encodeBase64String(docImage.getBytes());
+				info.setDocumentString(docImage);
+			} catch (IOException | SQLException e) {
+				log.error("error in getDocumentInfo", e);
+			}
+		}
+		return info;
 	}
 }

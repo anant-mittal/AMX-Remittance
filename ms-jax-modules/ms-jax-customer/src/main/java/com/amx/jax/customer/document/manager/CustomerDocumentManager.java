@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
@@ -18,13 +19,16 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.constants.DocumentScanIndic;
 import com.amx.jax.customer.document.validate.DocumentScanValidator;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.dbmodel.DmsApplMapping;
 import com.amx.jax.dbmodel.IdentityTypeMaster;
 import com.amx.jax.dbmodel.customer.CustomerDocumentTypeMaster;
+import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReference;
 import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReferenceTemp;
+import com.amx.jax.dbmodel.customer.DbScanRef;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.customer.CustomerDocumentInfo;
 import com.amx.jax.model.customer.CustomerKycData;
@@ -32,6 +36,8 @@ import com.amx.jax.model.customer.document.UploadCustomerDocumentRequest;
 import com.amx.jax.model.customer.document.UploadCustomerDocumentResponse;
 import com.amx.jax.model.customer.document.UploadCustomerKycRequest;
 import com.amx.jax.model.customer.document.UploadCustomerKycResponse;
+import com.amx.jax.repository.customer.CustomerDocumentUploadReferenceRepo;
+import com.amx.jax.repository.customer.DbScanRefRepo;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.manager.CustomerIdProofManager;
 import com.amx.jax.userservice.service.UserService;
@@ -60,6 +66,10 @@ public class CustomerDocumentManager {
 	CustomerDao customerDao;
 	@Autowired
 	MetaData metaData;
+	@Autowired
+	CustomerDocumentUploadReferenceRepo customerDocumentUploadReferenceRepo;
+	@Autowired
+	DbScanRefRepo dbScanRefRepo;
 
 	private static final Logger log = LoggerFactory.getLogger(CustomerDocumentManager.class);
 
@@ -78,8 +88,14 @@ public class CustomerDocumentManager {
 	}
 
 	private List<CustomerDocumentInfo> fetchCustomerOtherDocuments(BigDecimal customerId) {
-		// TODO Auto-generated method stub
-		return null;
+		List<CustomerDocumentUploadReference> uploads = customerDocumentUploadReferenceRepo.findByCustomerId(customerId);
+		return uploads.stream().map(i -> {
+			CustomerDocumentInfo docInfo = new CustomerDocumentInfo();
+			if (i.getScanIndic().equals(DocumentScanIndic.DB_SCAN)) {
+				docInfo = databaseImageScanManager.getDocumentInfo(i);
+			}
+			return docInfo;
+		}).collect(Collectors.toList());
 	}
 
 	private CustomerDocumentInfo fetchKycCustomerImage(BigDecimal customerId) {
@@ -117,7 +133,8 @@ public class CustomerDocumentManager {
 		List<CustomerDocumentUploadReferenceTemp> uploads = customerDocumentUploadManager.getCustomerUploads(customer.getIdentityInt(),
 				customer.getIdentityTypeId());
 		if (CollectionUtils.isEmpty(uploads)) {
-			throw new GlobaLException("Customer documents not uploaded");
+			log.info("no customer docs to update");
+			return;
 		}
 		for (CustomerDocumentUploadReferenceTemp upload : uploads) {
 			switch (upload.getCustomerDocumentTypeMaster().getDocumentCategory()) {
@@ -133,10 +150,18 @@ public class CustomerDocumentManager {
 		if (!ConstantDocument.Yes.equals(customer.getIsActive())) {
 			checkAndActivateCustomer(uploads, customerId);
 		}
+		customerDocumentUploadManager.deleteTemporaryUploadData(customer.getIdentityInt(), customer.getIdentityTypeId());
 	}
 
 	public void moveCustomerDBDocuments(BigDecimal customerId) {
 		Customer customer = userService.getCustById(customerId);
+		List<CustomerDocumentUploadReference> customerDocuments = getCustomerUploads(customerId);
+		customerDocuments.forEach(i -> {
+			DbScanRef dbScan = dbScanRefRepo.findOne(i.getId());
+			BigDecimal blobId = dbScan.getBlobId();
+			BigDecimal docFinYear = dbScan.getDocFinYear();
+			databaseImageScanManager.copyBlobDataFromJava(blobId, docFinYear);
+		});
 		moveCustomerDBKycDocuments(customer);
 	}
 
@@ -154,7 +179,7 @@ public class CustomerDocumentManager {
 		customerDocumentUploadManager.findAndDeleteExistingUploadData(uploadCustomerDocumentRequest.getIdentityInt(),
 				uploadCustomerDocumentRequest.getIdentityTypeId(), customerDocumentTypeMaster);
 		BigDecimal blobId = databaseImageScanManager.uploadCustomerDocument(uploadCustomerDocumentRequest);
-		if(metaData.getCustomerId() != null) {
+		if (metaData.getCustomerId() != null) {
 			checkAndRemoveBlockedDocuments(metaData.getCustomerId(), customerDocumentTypeMaster);
 		}
 		return new UploadCustomerDocumentResponse(blobId);
@@ -187,7 +212,7 @@ public class CustomerDocumentManager {
 		customerIdProofManager.saveIdProof(idProof);
 		customerIdProofManager.activateCustomerPendingCompliance(customer, customerKycData.getExpiryDate());
 	}
-	
+
 	@Transactional
 	public void checkAndRemoveBlockedDocuments(BigDecimal customerId, CustomerDocumentTypeMaster docTypeMaster) {
 		Customer customer = userService.getCustById(customerId);
@@ -196,5 +221,10 @@ public class CustomerDocumentManager {
 			complianceBlocked.remove(docTypeMaster);
 		}
 		customerDao.saveCustomer(customer);
+	}
+
+	public List<CustomerDocumentUploadReference> getCustomerUploads(BigDecimal customerId) {
+		List<CustomerDocumentUploadReference> uploads = customerDocumentUploadReferenceRepo.findByCustomerId(customerId);
+		return uploads;
 	}
 }

@@ -93,9 +93,9 @@ public class CustomerManagementManager {
 			Customer customer = customerList.get(0);
 			jaxError = getJaxErrorForCustomer(customer);
 			userValidationService.validateBlackListedCustomerForLogin(customer);
-			if (ConstantDocument.Yes.equals(customer.getIsActive())) {
+			/*if (ConstantDocument.Yes.equals(customer.getIsActive())) {
 				userValidationService.validateOldEmosData(customer);
-			}
+			}*/
 
 			offsiteCustomer.setIdentityInt(customer.getIdentityInt());
 			offsiteCustomer.setIdentityTypeId(customer.getIdentityTypeId());
@@ -227,6 +227,7 @@ public class CustomerManagementManager {
 		moveCustomerDataUsingProcedures(metaData.getCustomerId());
 	}
 
+	@Transactional
 	public void updateCustomer(UpdateCustomerInfoRequest updateCustomerInfoRequest) throws ParseException {
 		customerManagementValidation.validateDocumentsData(updateCustomerInfoRequest);
 		customerUpdateManager.updateCustomer(updateCustomerInfoRequest);
