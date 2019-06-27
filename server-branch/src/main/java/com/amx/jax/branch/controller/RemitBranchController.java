@@ -188,8 +188,8 @@ public class RemitBranchController {
 
 	@RequestMapping(value = "/api/remitt/customer_bank/save", method = { RequestMethod.POST })
 	public AmxApiResponse<BoolRespModel, Object> saveCustomerBankDetails(
-			@RequestBody ListRequestModel<CustomerBankRequest> customerbanks) {
-		return branchRemittanceClient.saveCustomerBankDetails(customerbanks.getValues());
+			@RequestBody CustomerBankRequest customerBankRequest) {
+		return branchRemittanceClient.saveCustomerBankDetails(customerBankRequest);
 	}
 
 	@RequestMapping(value = "/api/remitt/customer_bank/relations", method = { RequestMethod.GET })
