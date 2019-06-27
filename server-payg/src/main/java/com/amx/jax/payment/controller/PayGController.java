@@ -81,41 +81,38 @@ public class PayGController {
 
 	@ResponseBody
 	@RequestMapping(value = { "/register/*" }, method = RequestMethod.GET)
-	public PayGParams initTransaction(
-			@RequestParam String trckid,
-			@RequestParam(required = false) String docId, @RequestParam(required = false) String docNo,
-			@RequestParam(required = false) String docFy,
+	public PayGParams initTransaction(@RequestParam String trckid, @RequestParam(required = false) String docId,
+			@RequestParam(required = false) String docNo, @RequestParam(required = false) String docFy,
 			@RequestParam String amount,
 
 			@RequestParam Tenant tnt, @RequestParam String pg, @RequestParam(required = false) Channel channel,
 			@RequestParam(required = false) String prod,
 
-			@RequestParam(required = false) String callbackd,
-			Model model) throws NoSuchAlgorithmException {
+			@RequestParam(required = false) String callbackd, Model model) throws NoSuchAlgorithmException {
 		return payGService.getVerifyHash(trckid, amount, docId, docNo, docFy);
 	}
 
 	@RequestMapping(value = { "/payment/*", "/payment" }, method = RequestMethod.GET)
 
-	public String handleUrlPaymentRemit(
-			@RequestParam String trckid,
-			@RequestParam(required = false) String docId, @RequestParam(required = false) String docNo,
-			@RequestParam(required = false) String docFy,
+	public String handleUrlPaymentRemit(@RequestParam String trckid, @RequestParam(required = false) String docId,
+			@RequestParam(required = false) String docNo, @RequestParam(required = false) String docFy,
 			@RequestParam String amount,
 
 			@RequestParam Tenant tnt, @RequestParam String pg, @RequestParam(required = false) Channel channel,
-			@RequestParam(required = false) String prod,
-			@RequestParam(required = false) String callbackd,
-			@RequestParam(required = false) String verify,
-			@RequestParam(required = false) String detail,
-			Model model) throws NoSuchAlgorithmException {
+			@RequestParam(required = false) String prod, @RequestParam(required = false) String callbackd,
+			@RequestParam(required = false) String verify, @RequestParam(required = false) String detail, Model model)
+			throws NoSuchAlgorithmException {
 
-		PayGParams detailParam = payGService.getDeCryptedDetails(detail);
-		trckid = detailParam.getTrackId();
-		amount = detailParam.getAmount();
-		docId = detailParam.getDocId();
-		docNo = detailParam.getDocNo();
-		docFy = detailParam.getDocFy();
+		
+		
+		if (!payGConfig.isTestEnabled()) {
+			PayGParams detailParam = payGService.getDeCryptedDetails(detail);
+			trckid = detailParam.getTrackId();
+			amount = detailParam.getAmount();
+			docId = detailParam.getDocId();
+			docNo = detailParam.getDocNo();
+			docFy = detailParam.getDocFy();
+		}
 
 		if (!ArgUtil.isEmpty(verify)
 				&& !verify.equals(payGService.getVerifyHash(trckid, amount, docId, docNo, docFy).getVerification())) {
@@ -131,10 +128,19 @@ public class PayGController {
 			pg = "BENEFIT";
 			appRedirectUrl = bhrRedirectURL;
 		} else if (tnt.equals(Tenant.KWT)) {
-			appRedirectUrl = kwtRedirectURL;
+			if ("KNET2".equalsIgnoreCase(pg)) {
+				pg = "KNET2";
+				appRedirectUrl = kwtRedirectURL;
+			} else {
+				pg = "KNET2";
+				appRedirectUrl = kwtRedirectURL;
+			}
 		} else if (tnt.equals(Tenant.OMN)) {
 			pg = "OMANNET";
 			appRedirectUrl = omnRedirectURL;
+		} else if (tnt.equals(Tenant.KWTV2)) {
+			pg = "KNETV2";
+			appRedirectUrl = kwtRedirectURL;
 		}
 
 		if (callbackd != null) {
@@ -195,14 +201,10 @@ public class PayGController {
 	}
 
 	@RequestMapping(value = { PaymentConstant.Path.PAYMENT_CAPTURE_CALLBACK_V1_WILDCARD,
-			PaymentConstant.Path.PAYMENT_CAPTURE_CALLBACK_V1,
-			PaymentConstant.Path.PAYMENT_CAPTURE_CALLBACK_V2,
-			PaymentConstant.Path.PAYMENT_CAPTURE_CALLBACK_V2_WILDCARD
-	})
-	public String paymentCapture(Model model, RedirectAttributes ra,
-			@PathVariable("tenant") Tenant tnt,
-			@PathVariable("paygCode") PayGServiceCode paygCode,
-			@PathVariable("channel") Channel channel,
+			PaymentConstant.Path.PAYMENT_CAPTURE_CALLBACK_V1, PaymentConstant.Path.PAYMENT_CAPTURE_CALLBACK_V2,
+			PaymentConstant.Path.PAYMENT_CAPTURE_CALLBACK_V2_WILDCARD })
+	public String paymentCapture(Model model, RedirectAttributes ra, @PathVariable("tenant") Tenant tnt,
+			@PathVariable("paygCode") PayGServiceCode paygCode, @PathVariable("channel") Channel channel,
 			@PathVariable(value = "product", required = false) String product,
 			@PathVariable(value = "uuid", required = false) String uuid) {
 
@@ -242,6 +244,8 @@ public class PayGController {
 		if (paygCode.toString().equals("OMANNET") && channel.equals(Channel.ONLINE)) {
 			return "redirect:" + redirectUrl;
 			// }else if (paygCode.toString().equals("KOMANNET")) {
+		} else if (paygCode.toString().equals("KNET") && channel.equals(Channel.ONLINE)) {
+			return "redirect:" + redirectUrl;
 		} else if (paygCode.toString().equals("OMANNET") && channel.equals(Channel.KIOSK)) {
 			ra.addAttribute("paymentId", payGResponse.getPaymentId());
 			ra.addAttribute("result", payGResponse.getResult());
@@ -257,6 +261,8 @@ public class PayGController {
 			ra.addAttribute("udf5", payGResponse.getUdf5());
 			LOGGER.info("PAYG Response is ----> " + payGResponse.toString());
 			return "redirect:" + kioskOmnRedirectURL;
+		} else if (paygCode.toString().equals("KNET2") && channel.equals(Channel.ONLINE)) {
+			return "redirect:" + redirectUrl;
 		} else {
 			return "thymeleaf/repback";
 		}

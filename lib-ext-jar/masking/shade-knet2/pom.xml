@@ -2,10 +2,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>shade-benefit</artifactId>
+	<artifactId>shade-knet2</artifactId>
 	<packaging>jar</packaging>
-	<name>shade-benefit</name>
-	<description>benefit shaded</description>
+	<name>shade-knet2</name>
+	<description>knet shaded</description>
 	<url>http://maven.apache.org</url>
 
 	<parent>
@@ -26,9 +26,9 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.benefit</groupId>
-			<artifactId>benefit</artifactId>
-			<version>1.0.original</version>
+			<groupId>com.knet2</groupId>
+			<artifactId>knet2</artifactId>
+			<version>2.0.original</version>
 		</dependency>
 	</dependencies>
 
@@ -45,12 +45,12 @@
 							<goal>shade</goal>
 						</goals>
 						<configuration>
-							<finalName>bhr-benefit</finalName>
+							<finalName>kwt-knet2</finalName>
 							<outputDirectory>${basedir}/../../lib/shaded/</outputDirectory>
 							<relocations>
 								<relocation>
-									<pattern>com.aciworldwide.commerce.gateway.plugins</pattern>
-									<shadedPattern>bhr.com.aciworldwide.commerce.gateway.plugins</shadedPattern>
+									<pattern>com.fss.plugin</pattern>
+									<shadedPattern>kwt.com.fss.plugin</shadedPattern>
 									<excludes>
 									</excludes>
 								</relocation>

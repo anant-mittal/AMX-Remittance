@@ -12,7 +12,6 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-import com.aciworldwide.commerce.gateway.plugins.e24PaymentPipe;
 import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.payg.PayGCodes;
 import com.amx.jax.payg.PayGParams;
@@ -21,35 +20,39 @@ import com.amx.jax.payment.PaymentConstant;
 import com.amx.jax.payment.gateway.PayGClient;
 import com.amx.jax.payment.gateway.PayGConfig;
 import com.amx.jax.payment.gateway.PayGContext.PayGSpecific;
-import com.amx.jax.payment.gateway.PaymentGateWayResponse;
 import com.amx.jax.payment.gateway.PaymentGateWayResponse.PayGStatus;
-import com.amx.jax.payment.gateway.PaymentService;
 import com.amx.utils.JsonUtil;
+import com.amx.jax.payment.gateway.PaymentGateWayResponse;
+import com.amx.jax.payment.gateway.PaymentService;
+import kwt.com.fss.plugin.iPayPipe;
 
-/**
- * 
- * @author lalittanwar
- *
- */
-@PayGSpecific(PayGServiceCode.KNET)
-public class KnetClient implements PayGClient {
+@PayGSpecific(PayGServiceCode.KNET2)
+public class KnetClientV2 implements PayGClient {
 
 	private static Logger LOGGER = Logger.getLogger(KnetClient.class);
 
-	@Value("${knet.certificate.path}")
+	@Value("${knetv2.certificate.path}")
 	String knetCertpath;
 
-	@Value("${knet.alias.name}")
+	@Value("${knetv2.callback.url}")
+	String knetCallbackUrl;
+
+	@Value("${knetv2.alias.name}")
 	String knetAliasName;
 
-	@Value("${knet.action}")
+	@Value("${knetv2.action}")
 	String knetAction;
 
-	@Value("${knet.currency}")
+	@Value("${knetv2.currency}")
 	String knetCurrency;
 
-	@Value("${knet.language.code}")
+	@Value("${knetv2.language.code}")
 	String knetLanguageCode;
+
+	String udf1 = "Udf1";
+	String udf2 = "Udf2";
+	String udf4 = "Udf4";
+	String udf5 = "Udf5";
 
 	@Autowired
 	HttpServletResponse response;
@@ -65,26 +68,26 @@ public class KnetClient implements PayGClient {
 
 	@Override
 	public PayGServiceCode getClientCode() {
-		return PayGServiceCode.KNET;
+		return PayGServiceCode.KNET2;
 	}
 
 	@Override
 	public void initialize(PayGParams params, PaymentGateWayResponse gatewayResponse) {
+		String responseUrl = payGConfig.getServiceCallbackUrl() + PaymentConstant.getCalbackUrl(params);
 
-		/**
-		 * TODO :- TO be removed *********** DEBUG
-		 *****************/
+		LOGGER.info("------ KNET VERSION2 Initialize ------");
 		Map<String, Object> configMap = new HashMap<String, Object>();
+
 		configMap.put("action", knetAction);
 		configMap.put("currency", knetCurrency);
 		configMap.put("languageCode", knetLanguageCode);
-		configMap.put("responseUrl", payGConfig.getServiceCallbackUrl() + PaymentConstant.getCalbackUrl(params));
+		configMap.put("responseUrl", responseUrl);
 		configMap.put("resourcePath", knetCertpath);
+		configMap.put("keystorePath", knetCertpath);
 		configMap.put("aliasName", knetAliasName);
-		LOGGER.info("KNET payment configuration : " + JsonUtil.toJson(configMap));
-		/************ DEBUG *****************/
+		LOGGER.info("KNET version2 payment configuration : " + JsonUtil.toJson(configMap));
 
-		e24PaymentPipe pipe = new e24PaymentPipe();
+		iPayPipe pipe = new iPayPipe();
 		HashMap<String, String> responseMap = new HashMap<String, String>();
 
 		String amount = (String) params.getAmount();
@@ -100,56 +103,48 @@ public class KnetClient implements PayGClient {
 
 			LOGGER.debug("Amount to remit is --> " + amount);
 
-			pipe.setAction((String) knetAction);
-			pipe.setCurrency((String) knetCurrency);
-			pipe.setLanguage((String) knetLanguageCode);
-
-			/**
-			 * KNET expects us to specify response URL where KNET can send its response, and
-			 * we are supposed to capture payment status and process accordingly and
-			 * redirect user to client application (server-ui,kiosk,branch-ui) with
-			 * transaction identifier
-			 */
-			String responseUrl = payGConfig.getServiceCallbackUrl() + PaymentConstant.getCalbackUrl(params);
+			pipe.setResourcePath(knetCertpath);
+			pipe.setKeystorePath(knetCertpath);
+			pipe.setAlias(knetAliasName);
+			pipe.setAction(knetAction);
+			pipe.setCurrency(knetCurrency);
+			pipe.setLanguage(knetLanguageCode);
 			pipe.setResponseURL(responseUrl);
 			pipe.setErrorURL(responseUrl);
-			pipe.setResourcePath(knetCertpath);
-			pipe.setAlias(knetAliasName);
 			pipe.setAmt(amount);
 			pipe.setTrackId(params.getTrackId());
 			pipe.setUdf3(params.getDocNo());
+			pipe.setUdf1(udf1);
+			pipe.setUdf2(udf2);
+			pipe.setUdf4(udf4);
+			pipe.setUdf5(params.getTrackId());
 
-			Short pipeValue = pipe.performPaymentInitialization();
+			int pipeValue = pipe.performPaymentInitializationHTTP();
+			LOGGER.info("pipeValue : " + pipeValue);
 
-			LOGGER.debug("pipeValue : " + pipeValue);
-			if (pipeValue != e24PaymentPipe.SUCCESS) {
-				responseMap.put("errorMsg", pipe.getErrorMsg());
-				responseMap.put("debugMsg", pipe.getDebugMsg());
-				LOGGER.error("KNET-ERROR" + pipe.getErrorMsg());
-				LOGGER.debug("KNET-DEBUg" + pipe.getDebugMsg());
-				throw new RuntimeException("Problem while sending transaction to KNET - Error Code KU-KNETINIT");
-			} else {
-				LOGGER.info(pipe.getDebugMsg());
+			if (pipeValue != 0) {
+				responseMap.put("errorMsg", pipe.getError());
+				LOGGER.error(pipe.getError());
+				LOGGER.debug(pipe.getDebugMsg());
+				throw new RuntimeException("Problem while sending transaction to KNET V2 ");
 			}
+			LOGGER.info("Generated web address is ---> " + pipe.getWebAddress());
 
-			// get results
 			String payID = pipe.getPaymentId();
-			String payURL = pipe.getPaymentPage();
+			String payURL = pipe.getWebAddress();
 			responseMap.put("payid", new String(payID));
 			responseMap.put("payurl", new String(payURL));
-			String url = payURL + "?paymentId=" + payID;
+			// String url = payURL + "?paymentId=" + payID;
+			String url = payURL;
 			LOGGER.debug("Generated url is ---> " + url);
+
+			// params.setRedirectUrl(pipe.getWebAddress());
 			params.setRedirectUrl(url);
 
-		} catch (NumberFormatException e) {
-			LOGGER.error(String.format("Amount entered --> %s ,is not correct number.", amount), e);
-		} catch (RuntimeException e) {
-			LOGGER.error("Problem while sending transaction to KNET", e);
-			throw new RuntimeException(e);
 		} catch (Exception e) {
-			LOGGER.error("Error while sending request to KNET.", e);
+			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
-
 	}
 
 	@Override
@@ -171,6 +166,41 @@ public class KnetClient implements PayGClient {
 		gatewayResponse.setUdf4(request.getParameter("udf4"));
 		gatewayResponse.setUdf5(request.getParameter("udf5"));
 
+		iPayPipe pipe = new iPayPipe();
+
+		// Initialization
+		pipe.setResourcePath(knetCertpath);
+		pipe.setKeystorePath(knetCertpath);
+		pipe.setAlias(knetAliasName);
+
+		String errorText = request.getParameter("ErrorText");
+		int result = pipe.parseEncryptedRequest(request.getParameter("trandata"));
+
+		if (result != 0) {
+			pipe.getError();
+		} else {
+			if (errorText == null) {
+				resultResponse = pipe.getResult();
+				gatewayResponse.setResult(pipe.getResult());
+				gatewayResponse.setPostDate(pipe.getDate());
+				gatewayResponse.setRef(pipe.getRef());
+				gatewayResponse.setTrackId(pipe.getTrackId());
+				gatewayResponse.setTranxId(pipe.getTransId());
+				gatewayResponse.setUdf3(pipe.getUdf3());
+				gatewayResponse.setUdf1(pipe.getUdf1());
+				gatewayResponse.setUdf2(pipe.getUdf2());
+				gatewayResponse.setUdf4(pipe.getUdf4());
+				gatewayResponse.setUdf5(pipe.getUdf5());
+				gatewayResponse.setPaymentId(pipe.getPaymentId());
+			} else {
+				gatewayResponse.setErrorText(request.getParameter("ErrorText"));
+				gatewayResponse.setPaymentId(request.getParameter("paymentid"));
+				gatewayResponse.setError(request.getParameter("Error"));
+				gatewayResponse.setTrackId(request.getParameter("trackid"));
+				gatewayResponse.setTranxId(request.getParameter("tranid"));
+			}
+		}
+
 		LOGGER.info("Params captured from KNET : " + JsonUtil.toJson(gatewayResponse));
 
 		KnetCodes knetCodes = (KnetCodes) PayGCodes.getPayGCode(resultResponse, KnetCodes.UNKNOWN);
@@ -182,6 +212,7 @@ public class KnetClient implements PayGClient {
 		gatewayResponse.setError(resultResponse);
 
 		paymentService.capturePayment(params, gatewayResponse);
+		
 		// Capturing JAX Response
 		if ("CAPTURED".equalsIgnoreCase(gatewayResponse.getResult())) {
 			gatewayResponse.setPayGStatus(PayGStatus.CAPTURED);
@@ -192,4 +223,5 @@ public class KnetClient implements PayGClient {
 		}
 		return gatewayResponse;
 	}
+
 }
