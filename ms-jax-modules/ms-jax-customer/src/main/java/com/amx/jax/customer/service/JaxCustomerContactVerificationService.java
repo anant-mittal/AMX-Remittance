@@ -33,6 +33,7 @@ import com.amx.jax.userservice.repository.CustomerVerificationRepository;
 import com.amx.jax.userservice.repository.OnlineCustomerRepository;
 import com.amx.jax.userservice.service.CustomerVerificationService;
 import com.amx.jax.util.AmxDBConstants.Status;
+import com.jax.amxlib.exception.jax.GlobaLException;
 
 @Service
 public class JaxCustomerContactVerificationService extends AbstractService {
@@ -104,11 +105,8 @@ public class JaxCustomerContactVerificationService extends AbstractService {
 			customerOnlineRegistration.setStatus("Y");
 			onlineCustRepo.save(customerOnlineRegistration);
 		}else {
-				
-				throw new GlobalException(JaxError.EMAIL_NOT_VERIFIED, "Email id is not verified . Please wait for 24 hrs");
-			
-			
-		}
+			throw new GlobaLException("Email id is not verified . Please wait for 24 hrs");
+ 		}
 		
 	}
 }
