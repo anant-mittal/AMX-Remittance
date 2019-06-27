@@ -305,6 +305,19 @@ public class RemittanceTransactionManager {
 		BigDecimal applicationCountryId = meta.getCountryId();
 		logger.info("currencyId :" + currencyId + "\t rountingCountryId :" + rountingCountryId + "\t routingBankId :"+ routingBankId + "\t serviceMasterId :" + serviceMasterId);
 		
+		VatDetailsDto vatDetails = getVatAmount(commission);
+		if(vatDetails!=null && !StringUtils.isBlank(vatDetails.getVatApplicable()) && vatDetails.getVatApplicable().equalsIgnoreCase(ConstantDocument.Yes)) {
+			responseModel.setVatAmount(vatDetails.getVatAmount()==null?BigDecimal.ZERO:vatDetails.getVatAmount());
+			responseModel.setVatPercentage(vatDetails.getVatPercentage()==null?BigDecimal.ZERO:vatDetails.getVatPercentage());
+			responseModel.setVatType(vatDetails.getVatType()==null?"":vatDetails.getVatType());
+			if(JaxUtil.isNullZeroBigDecimalCheck(vatDetails.getCommission())) {
+			commission =vatDetails.getCommission();
+			logger.info("VatAmount: " +vatDetails.getVatAmount());
+			logger.info("VatPercentage: "  +vatDetails.getVatPercentage());
+			}
+		}
+		
+		
 		 /** to vlidate BSB  account though api by rabil**/
 			beneAccountValidationThroughApi(serviceMasterId,routingBankId,beneficiary);
 		/** end here**/
@@ -312,6 +325,7 @@ public class RemittanceTransactionManager {
 		validateNumberOfTransactionLimits();
 		validateBeneficiaryTransactionLimit(beneficiary);
 		setLoyalityPointIndicaters(responseModel);
+		setNetAmountAndLoyalityState(breakup, model, responseModel, commission,vatDetails.getVatApplicableAmount());
 		remitApplParametersMap.put("P_CALCULATED_FC_AMOUNT", dynamicRoutingPricing.getExRateBreakup().getConvertedFCAmount());
 		remitApplParametersMap.put("P_CALCULATED_LC_AMOUNT", dynamicRoutingPricing.getExRateBreakup().getConvertedLCAmount());
 
@@ -327,7 +341,7 @@ public class RemittanceTransactionManager {
 		responseModel.setTxnFee(commission);
 		// exrate
 		responseModel.setExRateBreakup(breakup);
-		addExchangeRateParameters(responseModel);
+		addExchangeRateParameters(responseModel); 
 		applyCurrencyRoudingLogic(responseModel.getExRateBreakup());
 		return responseModel;
 
@@ -385,7 +399,6 @@ public class RemittanceTransactionManager {
 	}else {
 		vatDetails.setVatApplicable(vatAppliable);
 	}
-
 		return  vatDetails;
 	}
 
@@ -740,9 +753,7 @@ public class RemittanceTransactionManager {
 	}
 
 	
-	public void setNetAmountAndLoyalityState(ExchangeRateBreakup exchangeRateBreakup,
-			AbstractRemittanceApplicationRequestModel model, RemittanceTransactionResponsetModel responseModel,
-			BigDecimal comission,BigDecimal vatamount) {
+	public void setNetAmountAndLoyalityState(ExchangeRateBreakup exchangeRateBreakup,AbstractRemittanceApplicationRequestModel model, RemittanceTransactionResponsetModel responseModel,BigDecimal comission,BigDecimal vatamount) {
 		BigDecimal netAmount = exchangeRateBreakup.getConvertedLCAmount().add(comission==null?BigDecimal.ZERO:comission).add(vatamount==null?BigDecimal.ZERO:vatamount);
 		exchangeRateBreakup.setNetAmountWithoutLoyality(netAmount);
 		responseModel.setLoyalityAmountAvailableForTxn(loyalityPointService.getloyaltyAmountEncashed(comission==null?BigDecimal.ZERO:comission));
