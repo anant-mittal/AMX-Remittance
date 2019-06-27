@@ -38,6 +38,7 @@ import com.amx.jax.manager.FcSaleBranchOrderManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.ResourceDTO;
+import com.amx.jax.model.request.remittance.CustomerBankDto;
 import com.amx.jax.model.request.remittance.CustomerBankRequest;
 import com.amx.jax.model.response.fx.FxEmployeeDetailsDto;
 import com.amx.jax.model.response.fx.FxExchangeRateBreakup;
@@ -45,6 +46,7 @@ import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.ConfigDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
+import com.amx.jax.model.response.remittance.CustomerBankRelationNameDto;
 import com.amx.jax.model.response.remittance.CustomerShoppingCartDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
 import com.amx.jax.model.response.remittance.PaymentModeDto;
@@ -359,26 +361,29 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 
 	public CustomerBankDetailsDto fetchCustomerNames(BigDecimal customerId,BigDecimal bankId){
 		CustomerBankDetailsDto customerBankDetailsDto = new CustomerBankDetailsDto();
+		List<String> nameList = new ArrayList<>();
+		List<CustomerBankRelationNameDto> listRelationName = new ArrayList<>();	
 	List<Object[]> custBankName = branchRemittancePaymentDao.fetchCustomerBankNames(customerId,bankId);
 	if (custBankName != null && custBankName.size() != 0) {
 		for (Object object : custBankName) {
 			Object[] custBankNameObject = (Object[]) object;
+			CustomerBankRelationNameDto customerBankrelationName = new CustomerBankRelationNameDto();
 			if(custBankNameObject[0]!=null) {
-				List<String> nameList = new ArrayList<>();
+				customerBankrelationName.setCutomerBankNBame(custBankNameObject[0].toString());
 				nameList.add(custBankNameObject[0].toString());
-				customerBankDetailsDto.setCustomerNames(nameList);
+				//customerBankDetailsDto.setCustomerNames(nameList);
 			}
 			if(custBankNameObject[1]!=null) {
 				List<BigDecimal> relationList = new ArrayList<>();
 				relationList.add(new BigDecimal(custBankNameObject[1].toString()));
-				customerBankDetailsDto.setRelationId(relationList);
+				customerBankrelationName.setRelationId(new BigDecimal(custBankNameObject[1].toString()));
+				//customerBankDetailsDto.setRelationId(relationList);
 			}
-			
+			listRelationName.add(customerBankrelationName);
+			customerBankDetailsDto.setCustomerBankrelationName(listRelationName);
 		}
 	}
-	
 	return customerBankDetailsDto;
-	
 }
 
 	
@@ -428,7 +433,7 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 	 * @param   :save customer bank [KNET] details
 	 * @return True or False
 	 */
-	public Boolean saveCustomerBankDetails(List<CustomerBankRequest> customerBank,BigDecimal appcountryId,BigDecimal employeeId,BigDecimal customerId,BigDecimal companyId) {
+	public Boolean saveCustomerBankDetails(CustomerBankRequest customerBank,BigDecimal appcountryId,BigDecimal employeeId,BigDecimal customerId,BigDecimal companyId) {
 		Boolean status = Boolean.FALSE;
 		Customer customer = null;
 		List<CustomerBank> lstCustomerBank = new ArrayList<>();
@@ -440,8 +445,9 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 			throw new GlobalException(JaxError.NO_RECORD_FOUND, "No customer records found");
 		}
 
-		if(customerBank != null && customerBank.size() != 0) {
-			for (CustomerBankRequest customerBankRequest : customerBank) {
+		if(customerBank != null) {
+			List<CustomerBankDto> custmerBankList = customerBank.getCustomerBankDetails();
+			for (CustomerBankDto customerBankRequest : custmerBankList) {
 				CustomerBank customerBankDt = new CustomerBank();
 				customerBankDt.setBankCode(customerBankRequest.getBankCode());
 				customerBankDt.setBankId(customerBankRequest.getBankId());
