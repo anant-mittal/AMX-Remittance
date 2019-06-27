@@ -4,6 +4,8 @@
 package com.amx.jax.pricer.var;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,6 +38,13 @@ public final class PricerServiceConstants {
 	// public static final BigDecimal DEFAULT_ONLINE_SERVICE_ID = BigDecimal.ZERO;
 
 	public static final BigDecimal MAX_BIGD_12 = new BigDecimal(999999999999l);
+	
+	
+	// Def Pricing Scale
+	public static int DEF_DECIMAL_SCALE = 8;
+
+	public static MathContext DEF_CONTEXT = new MathContext(DEF_DECIMAL_SCALE, RoundingMode.HALF_EVEN);
+	
 
 	private PricerServiceConstants() {
 		// Not Allowed

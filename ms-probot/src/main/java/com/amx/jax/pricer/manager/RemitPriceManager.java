@@ -1,5 +1,8 @@
 package com.amx.jax.pricer.manager;
 
+import static com.amx.jax.pricer.var.PricerServiceConstants.DEF_DECIMAL_SCALE;
+import static com.amx.jax.pricer.var.PricerServiceConstants.DEF_CONTEXT;
+
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -51,10 +54,6 @@ import com.amx.jax.pricer.var.PricerServiceConstants.SERVICE_GROUP;
 
 @Component
 public class RemitPriceManager {
-
-	private static int DEF_DECIMAL_SCALE = 8;
-
-	private static MathContext DEF_CONTEXT = new MathContext(DEF_DECIMAL_SCALE, RoundingMode.HALF_EVEN);
 
 	/** The Constant LOGGER. */
 	private static final Logger LOGGER = LoggerFactory.getLogger(RemitPriceManager.class);
