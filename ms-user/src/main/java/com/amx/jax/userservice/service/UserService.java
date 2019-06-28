@@ -201,6 +201,9 @@ public class UserService extends AbstractUserService {
 	PostManService postManService;
 	@Autowired
 	CustomerFlagManager customerFlagManager;
+	
+	@Autowired
+	CustomerRepository customerrepository;
 
 	@Override
 	public ApiResponse registerUser(AbstractUserModel userModel) {
@@ -651,13 +654,15 @@ public class UserService extends AbstractUserService {
 		if (tenantContext.getKey().equals("OMN")) {
 			tenantContext.get().validateCivilId(userId);
 		}
+		List<Customer> customerData = customerrepository.getCustomerByIdentityInt(userId);
 		
-		List<Customer> validCustomer = userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(userId,
-				JaxApiFlow.LOGIN);
-		if(validCustomer.get(0).getEmailVerified()==Status.N) {
+		if(customerData.get(0).getEmailVerified()==Status.N) {
 			throw new GlobalException(JaxError.EMAIL_NOT_VERIFIED, "Email id is not verified . Please wait for 24 hrs");
 			
 		}else {
+		List<Customer> validCustomer = userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(userId,
+				JaxApiFlow.LOGIN);
+		
 		CustomerOnlineRegistration onlineCustomer = custDao
 				.getOnlineCustByCustomerId(validCustomer.get(0).getCustomerId());
 		if (onlineCustomer == null) {
