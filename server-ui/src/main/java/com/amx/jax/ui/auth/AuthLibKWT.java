@@ -174,6 +174,8 @@ public class AuthLibKWT implements AuthLib {
 	public CustomerFlags checkModule(AuthState authState, CustomerFlags customerFlags, Features feature) {
 		switch (feature) {
 		case DASHBOARD:
+			AuthPermUtil.checkEmailUpdate(authState, customerFlags);
+			break;
 		case REMIT:
 		case BENE_UPDATE:
 		case FXORDER:
