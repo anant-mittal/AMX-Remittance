@@ -97,6 +97,7 @@ import com.amx.jax.userservice.service.CustomerValidationContext.CustomerValidat
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.StringUtil;
+import com.amx.jax.util.AmxDBConstants.Status;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Random;
 
@@ -670,6 +671,11 @@ public class UserService extends AbstractUserService {
 		userValidationService.validateCustIdProofs(onlineCustomer.getCustomerId());
 		userValidationService.validateCustomerData(onlineCustomer, customer);
 		userValidationService.validateBlackListedCustomerForLogin(customer);
+		if(customer.getEmailVerified()==Status.N) {
+			throw new GlobalException(JaxError.EMAIL_NOT_VERIFIED, "Email id is not verified . Please wait for 24 hrs");
+			
+		}else {
+		
 		ApiResponse response = getBlackApiResponse();
 		CustomerModel customerModel = convert(onlineCustomer);
 
@@ -678,6 +684,7 @@ public class UserService extends AbstractUserService {
 		response.getData().setType(customerModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
 		return response;
+	}
 	}
 
 	/**
