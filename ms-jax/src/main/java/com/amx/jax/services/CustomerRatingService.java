@@ -67,7 +67,10 @@ public class CustomerRatingService {
 				}else
 				{
 					RemittanceTransaction remittanceApplicationTxnxId = remittanceTransactionRepository.findByRemittanceTransactionId(dto.getRemittanceTransactionId());
+					if(remittanceApplicationTxnxId!=null) {
 					RemittanceApplication remitAPPLTrnx = remittanceApplicationRepository.getRemittanceApplicationId(remittanceApplicationTxnxId.getApplicationDocumentNo(),remittanceApplicationTxnxId.getDocumentFinanceYear());
+					
+					if(remitAPPLTrnx!=null) {
 					
 					customerRating.setRating(dto.getRating());
 					customerRating.setRatingRemark(dto.getRatingRemark());
@@ -77,6 +80,14 @@ public class CustomerRatingService {
 					customerRating.setApplicationCountryId(applicationCountryId);
 					customerRating.setCreatedDate(new Date());
 					customerRatingdao.save(customerRating);
+				}
+					else {
+						throw new GlobalException(JaxError.INVALID_TRANSACTION_ID.getStatusKey(),"Invalid transaction ID");
+					}
+				}
+					else {
+						throw new GlobalException(JaxError.INVALID_TRANSACTION_ID.getStatusKey(),"Invalid transaction ID");
+					}	
 				}
 				}
 				

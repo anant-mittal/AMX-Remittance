@@ -302,7 +302,8 @@ public enum JaxError implements IExceptionEnum {
 	
 	//Customer Rating
 	TRANSACTION_ALREADY_RATED,
-	RATING_NOT_FOUND;
+	RATING_NOT_FOUND,
+	INVALID_TRANSACTION_ID;
 	
 	
 	@Deprecated
