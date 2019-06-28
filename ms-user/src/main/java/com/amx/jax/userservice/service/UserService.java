@@ -651,8 +651,13 @@ public class UserService extends AbstractUserService {
 		if (tenantContext.getKey().equals("OMN")) {
 			tenantContext.get().validateCivilId(userId);
 		}
+		
 		List<Customer> validCustomer = userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(userId,
 				JaxApiFlow.LOGIN);
+		if(validCustomer.get(0).getEmailVerified()==Status.N) {
+			throw new GlobalException(JaxError.EMAIL_NOT_VERIFIED, "Email id is not verified . Please wait for 24 hrs");
+			
+		}else {
 		CustomerOnlineRegistration onlineCustomer = custDao
 				.getOnlineCustByCustomerId(validCustomer.get(0).getCustomerId());
 		if (onlineCustomer == null) {
@@ -671,10 +676,7 @@ public class UserService extends AbstractUserService {
 		userValidationService.validateCustIdProofs(onlineCustomer.getCustomerId());
 		userValidationService.validateCustomerData(onlineCustomer, customer);
 		userValidationService.validateBlackListedCustomerForLogin(customer);
-		if(customer.getEmailVerified()==Status.N) {
-			throw new GlobalException(JaxError.EMAIL_NOT_VERIFIED, "Email id is not verified . Please wait for 24 hrs");
-			
-		}else {
+		
 		
 		ApiResponse response = getBlackApiResponse();
 		CustomerModel customerModel = convert(onlineCustomer);
