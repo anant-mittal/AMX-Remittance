@@ -319,6 +319,7 @@ public class HomeController {
 			@PathVariable Products prodType, @PathVariable BigDecimal trnxId, @PathVariable String veryCode) {
 		Map<String, Object> map = rating(prodType, trnxId, veryCode);
 		model.addAttribute("ratingData", (map));
+		model.addAttribute("companyTnt", webAppConfig.getCompanyTnt());
 		return "rating";
 	}
 }
