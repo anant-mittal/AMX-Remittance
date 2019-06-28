@@ -23,6 +23,7 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 
 import com.amx.jax.AppConstants;
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.client.CustomerProfileClient;
 import com.amx.jax.client.JaxClientUtil;
 import com.amx.jax.dict.AmxEnums.Products;
@@ -319,7 +320,7 @@ public class HomeController {
 			@PathVariable Products prodType, @PathVariable BigDecimal trnxId, @PathVariable String veryCode) {
 		Map<String, Object> map = rating(prodType, trnxId, veryCode);
 		model.addAttribute("ratingData", (map));
-		model.addAttribute("companyTnt", webAppConfig.getCompanyTnt());
+		model.addAttribute("companyTnt", AppContextUtil.getTenant());
 		return "rating";
 	}
 }
