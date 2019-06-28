@@ -307,16 +307,20 @@ public class RemitClient extends AbstractJaxServiceClient {
 
 	}
 	
-	public AmxApiResponse<CustomerRatingDTO, ?> inquireCustomerRating(CustomerRatingDTO customerRatingDTO)
+	public ApiResponse<CustomerRatingDTO> inquireCustomerRating(BigDecimal remittanceTrnxId)
 			throws RemittanceTransactionValidationException, LimitExeededException {
 
 		try {
-			HttpEntity<CustomerRatingDTO> requestEntity = new HttpEntity<CustomerRatingDTO>(customerRatingDTO,
-					getHeader());
+			CustomerRatingDTO request = new CustomerRatingDTO();
+			request.setRemittanceTransactionId(remittanceTrnxId);
+			HttpEntity<CustomerRatingDTO> requestEntity = new HttpEntity<CustomerRatingDTO>(
+					request, getHeader());
 
 			String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/customer-trnx-rating/";
-			LOGGER.info(" Calling Inquire customer rating :" + customerRatingDTO.toString());
-			return restService.ajax(url).post(requestEntity).asApiResponse(CustomerRatingDTO.class);
+			
+			return restService.ajax(url).post(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<CustomerRatingDTO>>() {
+			});
 		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
@@ -325,7 +329,7 @@ public class RemitClient extends AbstractJaxServiceClient {
 		} // end of try-catch
 
 	}
-
+	
 	public ApiResponse<RemittanceTransactionResponsetModel> calcEquivalentAmount(
 			RemittanceTransactionRequestModel request)
 			throws RemittanceTransactionValidationException, LimitExeededException {
