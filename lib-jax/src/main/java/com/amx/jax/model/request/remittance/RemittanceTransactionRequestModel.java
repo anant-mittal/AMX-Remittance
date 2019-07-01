@@ -1,5 +1,5 @@
 /**
- * 
+ * @author Prashant
  */
 package com.amx.jax.model.request.remittance;
 
@@ -10,10 +10,6 @@ import javax.validation.constraints.NotNull;
 import com.amx.jax.model.response.ExchangeRateBreakup;
 import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;
 
-/**
- * @author Prashant
- *
- */
 public class RemittanceTransactionRequestModel extends RemittanceAdditionalBeneFieldModel implements IRemitTransReqPurpose {
 
 	/**
@@ -24,7 +20,7 @@ public class RemittanceTransactionRequestModel extends RemittanceAdditionalBeneF
 	private String mOtp;
 	private String eOtp;
 	@NotNull
-	DynamicRoutingPricingDto dynamicRroutingPricingBreakup;
+	private ExchangeRateBreakup exRateBreakup;
 	private BigDecimal placeOrderId;
 
 
@@ -64,6 +60,14 @@ public class RemittanceTransactionRequestModel extends RemittanceAdditionalBeneF
 		this.eOtp = eOtp;
 	}
 
+	public ExchangeRateBreakup getExRateBreakup() {
+		return exRateBreakup;
+	}
+
+	public void setExRateBreakup(ExchangeRateBreakup exRateBreakup) {
+		this.exRateBreakup = exRateBreakup;
+	}
+
 	public BigDecimal getPlaceOrderId() {
 		return placeOrderId;
 	}
@@ -74,19 +78,8 @@ public class RemittanceTransactionRequestModel extends RemittanceAdditionalBeneF
 
 	@Override
 	public ExchangeRateBreakup getExchangeRateBreakup() {
-		return dynamicRroutingPricingBreakup.getExRateBreakup();
+		return this.exRateBreakup;
 	}
-
-
-	public DynamicRoutingPricingDto getDynamicRroutingPricingBreakup() {
-		return dynamicRroutingPricingBreakup;
-	}
-
-
-	public void setDynamicRroutingPricingBreakup(DynamicRoutingPricingDto dynamicRroutingPricingBreakup) {
-		this.dynamicRroutingPricingBreakup = dynamicRroutingPricingBreakup;
-	}
-
-
 
 }
+
