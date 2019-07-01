@@ -57,17 +57,13 @@ public class JaxCustomerContactVerificationService extends AbstractService {
 	@Autowired
 	private OnlineCustomerRepository onlineCustRepo;
 	
+	//changes done by Radhika
 	public void sendEmailVerifyLinkOnReg(CustomerModel customerModel) {
 		Customer customer = customerRepository.getActiveCustomerDetails(customerModel.getLoginId());
-		
-		if(customer.getEmailVerified()==Status.N) {
-			throw new GlobalException(JaxError.EMAIL_NOT_VERIFIED, "Email id is not verified . Please wait for 24 hrs");
 			
-		}else {
 		customer.setEmail(customerModel.getEmail());
 		CustomerContactVerification customerContactVerification = customerContactVerificationManager.create(customer, ContactType.EMAIL);
-		
-		
+				
 		Email email = new Email();
 		
 		email.setITemplate(TemplatesMX.CONTACT_VERIFICATION_EMAIL);
@@ -76,7 +72,9 @@ public class JaxCustomerContactVerificationService extends AbstractService {
 		email.addTo(customer.getEmail());
 		email.setHtml(true);
 		sendEmail(email);
-	}
+		if(customer.getEmailVerified()==Status.N) {
+			throw new GlobalException(JaxError.EMAIL_NOT_VERIFIED, "Email id is not verified . Please wait for 24 hrs");
+		}
 	}
 	
 	@Async(ExecutorConfig.DEFAULT)
@@ -105,7 +103,9 @@ public class JaxCustomerContactVerificationService extends AbstractService {
 			customerOnlineRegistration.setStatus("Y");
 			onlineCustRepo.save(customerOnlineRegistration);
 		}else {
-			throw new GlobaLException("Email id is not verified . Please wait for 24 hrs");
+			//throw new GlobaLException("Email id is not verified . Please wait for 24 hrs");
+			//@Radhika
+			throw new GlobalException(JaxError.EMAIL_NOT_VERIFIED, "Email id is not verified . Please wait for 24 hrs");
  		}
 		
 	}

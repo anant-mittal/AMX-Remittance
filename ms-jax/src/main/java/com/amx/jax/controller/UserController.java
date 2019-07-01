@@ -58,7 +58,7 @@ public class UserController {
 	public ApiResponse loginUser(@RequestBody CustomerModel customerModel) {
 		logger.info("loginUser Request: usreid: " + customerModel.getLoginId());
 		// Validate TODO:- @Anant
-		//jaxCustomerContactVerificationService.validateEmailVerification(customerModel.getLoginId());
+		jaxCustomerContactVerificationService.validateEmailVerification(customerModel.getLoginId());
 		ApiResponse response = userService.loginUser(customerModel.getLoginId(), customerModel.getPassword());
 		return response;
 	}
@@ -89,7 +89,7 @@ public class UserController {
 		logger.debug(MessageFormat.format("IdentityInt value is {0} :", identityInt));
 		logger.debug(MessageFormat.format("IdentityType value is {0} :", identityType));
 		// Validate TODO:- @Anant
-		//jaxCustomerContactVerificationService.validateEmailVerification(identityInt);
+		jaxCustomerContactVerificationService.validateEmailVerification(identityInt);
 		CustomerModel customerModel = fingerprintService.loginCustomerByFingerprint(identityInt, identityType, password,
 				metaData.getDeviceId());
 
