@@ -75,9 +75,17 @@ public class CustomerManagementClient implements ICustomerManagementController {
 	 * .model.request.customer.UpdateCustomerInfoRequest)
 	 */
 	@Override
-	public AmxApiResponse<BoolRespModel, Object> updateCustomer(UpdateCustomerInfoRequest createCustomerRequest) {
-		// TODO Auto-generated method stub
-		return null;
+	public AmxApiResponse<BoolRespModel, Object> updateCustomer(UpdateCustomerInfoRequest updateCustomerRequest) {
+		try {
+
+			return restService.ajax(appConfig.getJaxURL()).path(ApiPath.UPDATE_CUSTOMER).meta(new JaxMetaInfo()).post(updateCustomerRequest)
+					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
+					});
+		} catch (Exception ae) {
+
+			LOGGER.error("exception in updateCustomer : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}
 	}
 
 	/*
