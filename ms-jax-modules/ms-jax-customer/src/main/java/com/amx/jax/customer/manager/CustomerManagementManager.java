@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,13 +90,16 @@ public class CustomerManagementManager {
 		List<Customer> customerList = userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(identityInt,
 				JaxApiFlow.OFFSITE_REGISTRATION);
 		JaxError jaxError = null;
+		String additionalStatus = null;
 		if (!customerList.isEmpty()) {
 			Customer customer = customerList.get(0);
 			jaxError = getJaxErrorForCustomer(customer);
+			additionalStatus = getAdditionalCustomerStatus(customer);
 			userValidationService.validateBlackListedCustomerForLogin(customer);
-			/*if (ConstantDocument.Yes.equals(customer.getIsActive())) {
-				userValidationService.validateOldEmosData(customer);
-			}*/
+			/*
+			 * if (ConstantDocument.Yes.equals(customer.getIsActive())) {
+			 * userValidationService.validateOldEmosData(customer); }
+			 */
 
 			offsiteCustomer.setIdentityInt(customer.getIdentityInt());
 			offsiteCustomer.setIdentityTypeId(customer.getIdentityTypeId());
@@ -110,6 +114,9 @@ public class CustomerManagementManager {
 		}
 		if (jaxError != null) {
 			offsiteCustomer.setStatusKey(jaxError.toString());
+		}
+		if (StringUtils.isNotBlank(additionalStatus)) {
+			offsiteCustomer.setStatusKey(additionalStatus);
 		}
 		return offsiteCustomer;
 	}
@@ -165,6 +172,15 @@ public class CustomerManagementManager {
 			jaxError = (JaxError) ex.getError();
 		}
 		return jaxError;
+	}
+
+	public String getAdditionalCustomerStatus(Customer customer) {
+		if (ConstantDocument.No.equals(customer.getIsActive())) {
+			if (CustomerRegistrationType.PARTIAL_REG.equals(customer.getCustomerRegistrationType())) {
+				return "CUSTOMER_PARTIAL_REG_NOT_ACTIVE";
+			}
+		}
+		return null;
 	}
 
 	private ResourceDTO getCustomerCategory(BigDecimal customerId) {
