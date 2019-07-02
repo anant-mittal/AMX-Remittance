@@ -3,6 +3,7 @@ package com.amx.jax.branch.controller;
 import java.math.BigDecimal;
 
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.branch.beans.BranchSession;
 import com.amx.jax.client.OffsiteCustRegClient;
 import com.amx.jax.client.branch.BranchUserClient;
@@ -15,6 +16,7 @@ import com.amx.jax.model.customer.document.UploadCustomerDocumentResponse;
 import com.amx.jax.model.customer.document.UploadCustomerKycRequest;
 import com.amx.jax.model.customer.document.UploadCustomerKycResponse;
 import com.amx.jax.model.request.EmploymentDetailsRequest;
+import com.amx.jax.model.request.customer.UpdateCustomerInfoRequest;
 import com.amx.jax.model.response.ArticleDetailsDescDto;
 import com.amx.jax.model.response.ArticleMasterDescDto;
 import com.amx.jax.model.response.ComponentDataDto;
@@ -106,6 +108,12 @@ public class CustomerBranchController {
 	public AmxApiResponse<CustomerInfo, Object> createCustomer(
 			@RequestBody CreateCustomerInfoRequest createCustomerRequest) {
 		return customerManagementClient.createCustomer(createCustomerRequest);
+	}
+
+	@RequestMapping(value = "/api/customer/update", method = { RequestMethod.POST })
+	public AmxApiResponse<BoolRespModel, Object> updateCustomer(
+			@RequestBody UpdateCustomerInfoRequest updateCustomerRequest) {
+		return customerManagementClient.updateCustomer(updateCustomerRequest);
 	}
 
 	@RequestMapping(value = "/api/customer/kyc/upload", method = { RequestMethod.POST })
