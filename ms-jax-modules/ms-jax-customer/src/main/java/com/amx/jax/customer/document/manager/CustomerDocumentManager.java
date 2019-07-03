@@ -155,13 +155,18 @@ public class CustomerDocumentManager {
 
 	public void moveCustomerDBDocuments(BigDecimal customerId) {
 		Customer customer = userService.getCustById(customerId);
-		List<CustomerDocumentUploadReference> customerDocuments = getCustomerUploads(customerId);
-		customerDocuments.forEach(i -> {
+		List<CustomerDocumentUploadReference> customerUploadDocuments = getInProcessCustomerUploads(customerId);
+		if (CollectionUtils.isEmpty(customerUploadDocuments)) {
+			return;
+		}
+		customerUploadDocuments.forEach(i -> {
 			DbScanRef dbScan = dbScanRefRepo.findOne(i.getId());
 			BigDecimal blobId = dbScan.getBlobId();
 			BigDecimal docFinYear = dbScan.getDocFinYear();
 			databaseImageScanManager.copyBlobDataFromJava(blobId, docFinYear);
+			i.setStatus(ConstantDocument.Yes);
 		});
+		saveCustomerDocumentUploadsRefs(customerUploadDocuments);
 		moveCustomerDBKycDocuments(customer);
 	}
 
@@ -226,5 +231,15 @@ public class CustomerDocumentManager {
 	public List<CustomerDocumentUploadReference> getCustomerUploads(BigDecimal customerId) {
 		List<CustomerDocumentUploadReference> uploads = customerDocumentUploadReferenceRepo.findByCustomerId(customerId);
 		return uploads;
+	}
+
+	public List<CustomerDocumentUploadReference> getInProcessCustomerUploads(BigDecimal customerId) {
+		List<CustomerDocumentUploadReference> uploads = customerDocumentUploadReferenceRepo.findByCustomerIdAndStatus(customerId,
+				ConstantDocument.Processing);
+		return uploads;
+	}
+
+	public void saveCustomerDocumentUploadsRefs(List<CustomerDocumentUploadReference> uploads) {
+		customerDocumentUploadReferenceRepo.save(uploads);
 	}
 }

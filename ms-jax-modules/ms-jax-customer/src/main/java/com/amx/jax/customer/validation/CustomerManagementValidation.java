@@ -15,8 +15,8 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.customer.document.manager.CustomerDocMasterManager;
 import com.amx.jax.customer.document.manager.CustomerDocumentUploadManager;
 import com.amx.jax.customer.manager.OffsiteCustomerRegManager;
+import com.amx.jax.customer.service.OffsitCustRegService;
 import com.amx.jax.dbmodel.Customer;
-import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.dbmodel.DmsApplMapping;
 import com.amx.jax.dbmodel.customer.CustomerDocumentCategory;
 import com.amx.jax.dbmodel.customer.CustomerDocumentTypeMaster;
@@ -49,6 +49,8 @@ public class CustomerManagementValidation {
 	OffsiteCustomerRegManager offsiteCustomerRegManager;
 	@Autowired
 	CustomerIdProofManager customerIdProofManager;
+	@Autowired
+	OffsitCustRegService offsitCustRegService;
 
 	public void validateIdentityIntLength(String identityInt, BigDecimal identityTypeId) {
 
@@ -162,5 +164,6 @@ public class CustomerManagementValidation {
 		if (customer != null) {
 			throw new GlobalException("Customer already created, use update api to update customer info");
 		}
+		offsitCustRegService.validateCustomerBlackList(createCustomerInfoRequest.getCustomerPersonalDetail());
 	}
 }

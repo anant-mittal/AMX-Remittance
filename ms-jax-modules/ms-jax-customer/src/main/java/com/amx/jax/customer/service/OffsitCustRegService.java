@@ -971,7 +971,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		validateOtpSendCount(beneficiaryTrnxModel.getOtpData());
 	}
 
-	private void validateCustomerBlackList(CustomerPersonalDetail customerPersonalDetail) {
+	public void validateCustomerBlackList(CustomerPersonalDetail customerPersonalDetail) {
 		StringBuilder customerName = new StringBuilder();
 		if (StringUtils.isNotBlank(customerPersonalDetail.getFirstName())) {
 			customerName.append(customerPersonalDetail.getFirstName().trim().toUpperCase());

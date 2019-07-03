@@ -134,7 +134,7 @@ public class CustomerDocumentUploadManager {
 		docUploadReference.setCustomerDocumentTypeMaster(upload.getCustomerDocumentTypeMaster());
 		docUploadReference.setCustomerId(metaData.getCustomerId());
 		docUploadReference.setScanIndic(upload.getScanIndic());
-		docUploadReference.setStatus(ConstantDocument.Yes);
+		docUploadReference.setStatus(ConstantDocument.Processing);
 		docUploadReference.setCreatedAt(new Date());
 		docUploadReference = customerDocumentUploadReferenceRepo.save(docUploadReference);
 		if (DocumentScanIndic.DB_SCAN.equals(upload.getScanIndic())) {
