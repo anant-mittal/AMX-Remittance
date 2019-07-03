@@ -468,7 +468,7 @@ public class ReportManagerService extends AbstractService{
 						if (companyMaster.get(0).getRegistrationNumber() != null && companyMaster.get(0).getRegistrationNumber().length() > 0) {
 							engCompanyInfo = engCompanyInfo.append("C.R. " + companyMaster.get(0).getRegistrationNumber() + ",");
 						}
-						if (companyMaster.get(0).getCapitalAmount() != null && companyMaster.get(0).getCapitalAmount().length() > 0) {
+						if (companyMaster.get(0).getCapitalAmount() != null && !companyMaster.get(0).getCapitalAmount().equals("0") && companyMaster.get(0).getCapitalAmount().length() > 0) {
 							engCompanyInfo = engCompanyInfo.append("Share Capital-" + companyMaster.get(0).getCapitalAmount());
 						}
 						obj.setEngCompanyInfo(engCompanyInfo.toString());
@@ -487,7 +487,7 @@ public class ReportManagerService extends AbstractService{
 						if (companyMaster.get(0).getRegistrationNumber() != null && companyMaster.get(0).getRegistrationNumber().length() > 0) {
 							arabicCompanyInfo = arabicCompanyInfo.append(ConstantDocument.CR + " " + companyMaster.get(0).getRegistrationNumber() + ",");
 						}
-						if (companyMaster.get(0).getCapitalAmount() != null && companyMaster.get(0).getCapitalAmount().length() > 0) {
+						if (companyMaster.get(0).getCapitalAmount() != null && !companyMaster.get(0).getCapitalAmount().equals("0") && companyMaster.get(0).getCapitalAmount().length() > 0) {
 							arabicCompanyInfo = arabicCompanyInfo.append(ConstantDocument.Share_Capital + " " + companyMaster.get(0).getCapitalAmount());
 						}
 						obj.setArabicCompanyInfo(arabicCompanyInfo.toString());

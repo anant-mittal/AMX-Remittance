@@ -26,6 +26,7 @@ import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.exrateservice.service.NewExchangeRateService;
 import com.amx.jax.manager.RemittanceTransactionManager;
+import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.response.ExchangeRateBreakup;
 import com.amx.jax.model.response.SourceOfIncomeDto;
@@ -111,13 +112,26 @@ public class RemittanceTransactionService extends AbstractService {
 
 	public ApiResponse validateRemittanceTransaction(RemittanceTransactionRequestModel model) {
 		ApiResponse response = getBlackApiResponse();
-		RemittanceTransactionResponsetModel responseModel = remittanceTxnManger.validateTransactionData(model);
+		RemittanceTransactionResponsetModel responseModel  = remittanceTxnManger.validateTransactionData(model);
 		response.getData().getValues().add(responseModel);
 		response.setResponseStatus(ResponseStatus.OK);
 		response.getData().setType(model.getModelType());
 		return response;
 
 	}
+	
+	
+	
+	public ApiResponse validateRemittanceTransactionV2(RemittanceTransactionDrRequestModel model) {
+		ApiResponse response = getBlackApiResponse();
+		RemittanceTransactionResponsetModel responseModel  = remittanceTxnManger.validateTransactionDataV2(model);
+		response.getData().getValues().add(responseModel);
+		response.setResponseStatus(ResponseStatus.OK);
+		response.getData().setType(model.getModelType());
+		return response;
+
+	}
+	
 
 	public List<SourceOfIncomeDto> convertSourceOfIncome(List<SourceOfIncomeView> sourceOfIncomeList) {
 		List<SourceOfIncomeDto> list = new ArrayList<>();
@@ -159,7 +173,7 @@ public class RemittanceTransactionService extends AbstractService {
 	
 	@SuppressWarnings("unchecked")
 	public ApiResponse<RemittanceTransactionResponsetModel> calcEquivalentAmount(
-			@RequestBody RemittanceTransactionRequestModel model) {
+@RequestBody RemittanceTransactionRequestModel model) {
 		ApiResponse<RemittanceTransactionResponsetModel> response = getBlackApiResponse();
 		RemittanceTransactionResponsetModel respModel = remittanceTxnManger.validateTransactionData(model);
 		BigDecimal fcCurrencyId = beneficiaryService.getBeneByIdNo(model.getBeneId()).getCurrencyId();
@@ -177,8 +191,7 @@ public class RemittanceTransactionService extends AbstractService {
 		return response;
 	}
 
-	public SuspiciousTransactionPaymentDto getSuspiciousTransactionPaymentDto(BigDecimal remittanceApplicationId,
-			Long noOfAttempts) {
+	public SuspiciousTransactionPaymentDto getSuspiciousTransactionPaymentDto(BigDecimal remittanceApplicationId,Long noOfAttempts) {
 		SuspiciousTransactionPaymentDto dto = new SuspiciousTransactionPaymentDto();
 		BenificiaryListView beneView = getBeneBybeneficiaryView(remittanceApplicationId);
 		dto.setBankName(beneView.getBankName());

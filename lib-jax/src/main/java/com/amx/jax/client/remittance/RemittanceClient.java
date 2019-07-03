@@ -385,7 +385,6 @@ public class RemittanceClient implements IRemittanceService {
 
 
 //getDynamicRoutingPricing
-
 	@Override
 	public AmxApiResponse<DynamicRoutingPricingResponse, Object> getDynamicRoutingPricing(RoutingPricingRequest routingPricingRequest) {
 		try {

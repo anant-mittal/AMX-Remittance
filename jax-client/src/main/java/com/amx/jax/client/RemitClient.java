@@ -26,6 +26,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.client.util.ConverterUtility;
 import com.amx.jax.model.request.remittance.IRemitTransReqPurpose;
+import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.response.SourceOfIncomeDto;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
@@ -200,6 +201,26 @@ public class RemitClient extends AbstractJaxServiceClient {
 		} // end of try-catch
 
 	}
+	
+	public ApiResponse<RemittanceApplicationResponseModel> saveTransactionV2(
+			RemittanceTransactionDrRequestModel transactionRequestModel)
+			throws RemittanceTransactionValidationException, LimitExeededException {
+		try {
+			HttpEntity<RemittanceTransactionDrRequestModel> requestEntity = new HttpEntity<RemittanceTransactionDrRequestModel>(
+					transactionRequestModel, getHeader());
+			String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/save-application/v2/";
+			return restService.ajax(url).post(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<RemittanceApplicationResponseModel>>() {
+					});
+		} catch (AbstractJaxException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in saveTransaction : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
+
+	}
+	
 
 	/**
 	 * @deprecated - where are we using this method?

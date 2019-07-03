@@ -53,6 +53,7 @@ import com.amx.jax.services.BankService;
 import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.services.LoyalityPointService;
 import com.amx.jax.util.DateUtil;
+import com.amx.jax.util.JaxUtil;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
@@ -330,9 +331,14 @@ public class RemittanceApplicationManager {
 		BigDecimal documentId = (BigDecimal) remitApplParametersMap.get("P_DOCUMENT_ID");
 		BigDecimal finYear = (BigDecimal) remitApplParametersMap.get("P_USER_FINANCIAL_YEAR");
 		BigDecimal branchId = countryBranch.getBranchId();
-		Map<String, Object> output = applicationProcedureDao.getDocumentSeriality(appCountryId, companyId, documentId,
-				finYear, processInd, branchId);
-		return (BigDecimal) output.get("P_DOC_NO");
+		Map<String, Object> output = applicationProcedureDao.getDocumentSeriality(appCountryId, companyId, documentId,finYear, processInd, branchId);
+		BigDecimal docno = output.get("P_DOC_NO")==null?BigDecimal.ZERO:(BigDecimal)output.get("P_DOC_NO");
+		
+		if(JaxUtil.isNullZeroBigDecimalCheck(docno)) {
+			return docno;
+		}else {
+			throw new GlobalException(JaxError.INVALID_APPLICATION_DOCUMENT_NO,"Document seriality is missing");
+		}
 	}
 
 	private void setApplicableRates(RemittanceApplication remittanceApplication,
