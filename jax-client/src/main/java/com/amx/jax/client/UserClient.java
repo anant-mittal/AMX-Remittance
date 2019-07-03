@@ -807,4 +807,24 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 			return JaxSystemError.evaluate(ae);
 		}
 	}
+	
+	public ApiResponse<CivilIdOtpModel> sendOtpForCivilIdV2(String identityId, ContactType contactType)
+			throws InvalidInputException, CustomerValidationException, LimitExeededException {
+		try {
+			Boolean initRegistration = new Boolean(false);
+			HttpEntity<AbstractUserModel> requestEntity = new HttpEntity<AbstractUserModel>(getHeader());
+			String sendOtpUrl = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/" + identityId + "/" + initRegistration
+					+ "/send-otp/";
+			LOGGER.info("calling sendOtpForCivilIdV2 api: " + sendOtpUrl);
+			return restService.ajax(sendOtpUrl).get(requestEntity)
+					.queryParam("contactType", contactType)
+					.as(new ParameterizedTypeReference<ApiResponse<CivilIdOtpModel>>() {
+					});
+		} catch (AbstractJaxException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in sendOtpForCivilIdV2 : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
+	}
 }
