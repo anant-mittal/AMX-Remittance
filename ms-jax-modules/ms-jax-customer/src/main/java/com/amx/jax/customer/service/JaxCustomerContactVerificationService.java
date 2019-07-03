@@ -72,7 +72,7 @@ public class JaxCustomerContactVerificationService extends AbstractService {
 		email.addTo(customer.getEmail());
 		email.setHtml(true);
 		sendEmail(email);
-		if(customer.getEmailVerified()==Status.N) {
+		if(customer.getEmailVerified()==null) {
 			throw new GlobalException(JaxError.EMAIL_NOT_VERIFIED, "Email id is not verified . Please wait for 24 hrs");
 		}
 	}
