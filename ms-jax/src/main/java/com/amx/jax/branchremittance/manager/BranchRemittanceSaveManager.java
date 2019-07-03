@@ -759,6 +759,7 @@ public class BranchRemittanceSaveManager {
 					remitTrnx.setIsDiscountAvailed(appl.getIsDiscountAvailed());
 					remitTrnx.setReachedCostRateLimit(appl.getReachedCostRateLimit());
 					remitTrnx.setBeneDeductFlag(appl.getBeneDeductFlag());
+					remitTrnx.setInstruction(appl.getInstruction());
 					
 					
 					BigDecimal documentNo =generateDocumentNumber(appl.getFsCountryMasterByApplicationCountryId().getCountryId(),appl.getFsCompanyMaster().getCompanyId(),remitTrnx.getDocumentId().getDocumentCode(),remitTrnx.getDocumentFinanceYear(),remitTrnx.getLoccod(),ConstantDocument.A);
