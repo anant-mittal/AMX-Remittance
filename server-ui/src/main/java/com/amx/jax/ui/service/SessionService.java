@@ -258,7 +258,7 @@ public class SessionService {
 			this.unauthorize();
 			return false;
 		}
-		return true;
+		return this.validatedUser();
 	}
 
 	/**
