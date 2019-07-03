@@ -220,7 +220,7 @@ public class WorkingHoursData {
 			Date snoozeWakeUpDate = DateUtil.getCurrentDateAtTime(snoozeWakeUpHr, snoozeWakeUpMin, 0, 0);
 
 			long snoozeWindowOffsetSecs = TimeUnit.SECONDS.convert(snoozeWakeUpDate.getTime() - nowDate.getTime(),
-					TimeUnit.SECONDS);
+					TimeUnit.MILLISECONDS);
 
 			return snoozeWindowOffsetSecs >= workWindowOffsetSecs ? snoozeWindowOffsetSecs : workWindowOffsetSecs;
 
