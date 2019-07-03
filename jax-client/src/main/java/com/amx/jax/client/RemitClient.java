@@ -318,7 +318,7 @@ public class RemitClient extends AbstractJaxServiceClient {
 
 			String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/customer-trnx-rating/";
 			
-			return restService.ajax(url).post(requestEntity)
+			return restService.ajax(url).post(requestEntity).meta(new JaxMetaInfo())
 					.as(new ParameterizedTypeReference<ApiResponse<CustomerRatingDTO>>() {
 			});
 		} catch (AbstractJaxException ae) {

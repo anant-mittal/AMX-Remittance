@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 
+import com.amx.amxlib.meta.model.CustomerRatingDTO;
+import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.AppConstants;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.client.CustomerProfileClient;
@@ -263,12 +265,11 @@ public class HomeController {
 		return "verify";
 	}
 
-
 	@ApiJaxStatus({ JaxError.CUSTOMER_NOT_FOUND, JaxError.INVALID_OTP, JaxError.ENTITY_INVALID,
-		JaxError.ENTITY_EXPIRED })
+			JaxError.ENTITY_EXPIRED })
 	@ApiStatus({ ApiStatusCodes.PARAM_MISSING })
 	@RequestMapping(value = { "/pub/verify/{contactType}/resend" },
-			method = {RequestMethod.POST })
+			method = { RequestMethod.POST })
 	@ResponseBody
 	public Map<String, Object> verification(
 			@PathVariable ContactType contactType,
@@ -286,7 +287,6 @@ public class HomeController {
 		return map;
 	}
 
-
 	@ApiJaxStatus({ JaxError.CUSTOMER_NOT_FOUND, JaxError.INVALID_OTP, JaxError.ENTITY_INVALID,
 			JaxError.ENTITY_EXPIRED })
 	@ApiStatus({ ApiStatusCodes.PARAM_MISSING })
@@ -298,10 +298,12 @@ public class HomeController {
 			@PathVariable Products prodType, @PathVariable BigDecimal trnxId, @PathVariable String veryCode) {
 
 		boolean valid = JaxClientUtil.getTransactionVeryCode(trnxId).equals(veryCode);
+		ApiResponse<CustomerRatingDTO> rating = jaxService.getRemitClient().inquireCustomerRating(trnxId);
 
 		String errorCode = null;
 		String errorMessage = null;
 		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("rating", rating);
 		map.put("trnxId", trnxId);
 		map.put("errorCode", errorCode);
 		map.put("errorMessage", errorMessage);
