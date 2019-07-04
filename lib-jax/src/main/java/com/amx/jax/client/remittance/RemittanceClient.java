@@ -214,7 +214,8 @@ public class RemittanceClient implements IRemittanceService {
 	 * 
 	 */
 	@Override
-	public AmxApiResponse<BoolRespModel, Object> saveCustomerBankDetails(List<CustomerBankRequest> customerBank) {
+	//public AmxApiResponse<BoolRespModel, Object> saveCustomerBankDetails(List<CustomerBankRequest> customerBank) {
+	public AmxApiResponse<BoolRespModel, Object> saveCustomerBankDetails(CustomerBankRequest customerBank) {
 		try {
 			LOGGER.debug("in saveCustomerBankDetails :" + customerBank);
 			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_SAVE_CUSTOMER_BANKS)
@@ -384,7 +385,6 @@ public class RemittanceClient implements IRemittanceService {
 
 
 //getDynamicRoutingPricing
-
 	@Override
 	public AmxApiResponse<DynamicRoutingPricingResponse, Object> getDynamicRoutingPricing(RoutingPricingRequest routingPricingRequest) {
 		try {

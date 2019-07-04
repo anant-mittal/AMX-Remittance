@@ -1077,14 +1077,14 @@ public BeneAdditionalDto getAdditionalBeneDetailJax(BenificiaryListView benefica
 		if(!StringUtils.isBlank(langInd) && langInd.equalsIgnoreCase(ConstantDocument.L_ARAB) && bnfBankLangInd.compareTo(new BigDecimal(2))==0) {
 			bankName = routingBankMasterModel.getBankFullNameAr();
 			if(!StringUtils.isBlank(routingCityNameArabic)) {
-				bankBranchName =routingBankBranchView.get(0)==null?"":routingBankBranchView.get(0).getBranchFullNameArabic()+","+ routingCityNameArabic;
+				bankBranchName =routingBankBranchView.get(0)==null?"":routingBankBranchView.get(0).getBranchFullNameArabic()+","+ routingCityNameArabic==null?"":routingCityNameArabic;
 			}else {
 				bankBranchName =routingBankBranchView.get(0)==null?"":routingBankBranchView.get(0).getBranchFullNameArabic();
 			}
 		}else { //If eng
 			bankName = routingBankMasterModel.getBankFullName();
 			if(!StringUtils.isBlank(routingCityName)) {
-				bankBranchName =routingBankBranchView.get(0)==null?"":routingBankBranchView.get(0).getBranchFullName()+","+ routingCityName;
+				bankBranchName =routingBankBranchView.get(0)==null?"":routingBankBranchView.get(0).getBranchFullName()+","+ routingCityName==null?"":routingCityName;
 			}else {
 				bankBranchName =routingBankBranchView.get(0)==null?"":routingBankBranchView.get(0).getBranchFullName();
 			}
@@ -1120,17 +1120,17 @@ public BeneAdditionalDto getAdditionalBeneDetailJax(BenificiaryListView benefica
 				if(bankFlexField.size()>1) {
 					throw new GlobalException(JaxError.INVALID_ROUTING_BANK, "Too many rows for this combination in  Bene bank and branch for flex rules "+beneBankMasterModel.getBankCode());
 				}else {
-					bankBranchName =bankFlexField.get(0).getBankExchId()==null?"": bankFlexField.get(0).getBankExchId()+" ,"+beneBranchName;
+					bankBranchName =bankFlexField.get(0).getBankExchId()==null?"": bankFlexField.get(0).getBankExchId()+" ,"+beneBranchName==null?"":beneBranchName;
 				}
 			}else {
 				throw new GlobalException(JaxError.INVALID_ROUTING_BANK, "No data found in Flex fields For this  Bene bank and branch "+beneBankMasterModel.getBankCode());
 			}
 			}else {
 				 if(!StringUtils.isBlank(langInd) && langInd.equalsIgnoreCase(ConstantDocument.L_ARAB) && bnfBankBranchLangInd !=null && bnfBankBranchLangInd.compareTo(new BigDecimal(2))==0) {
-					 bankBranchName = beneBankBranchView.get(0).getBranchFullNameArabic()+","+beneCityNameArabic; 
+					 bankBranchName = beneBankBranchView.get(0).getBranchFullNameArabic()+","+beneCityNameArabic==null?"":beneCityNameArabic; 
 				 }else {
 					 if(beneBankBranchView.get(0)!=null) {
-						 bankBranchName = beneBankBranchView.get(0).getBranchFullName()==null?"":beneBankBranchView.get(0).getBranchFullName()+" ,"+beneCityName;
+						 bankBranchName = beneBankBranchView.get(0).getBranchFullName()==null?"":beneBankBranchView.get(0).getBranchFullName()+" ,"+beneCityName==null?"":beneCityName;
 					 }
 				 }
 			}

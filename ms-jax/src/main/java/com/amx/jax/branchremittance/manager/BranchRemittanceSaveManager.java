@@ -365,10 +365,10 @@ public class BranchRemittanceSaveManager {
 				
 				
 				}else {
-					throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record found to save in collection"+customerid+"\t appl No :"+shoppingCartList.get(0).getApplicationId());
+					throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record not found to save in collection"+customerid+"\t appl No :"+shoppingCartList.get(0).getApplicationId());
 				}
 			}else {
-				throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record found to save in collection");
+				throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record not found to save in collection");
 			}
 			
 		}catch(GlobalException e){
@@ -759,6 +759,7 @@ public class BranchRemittanceSaveManager {
 					remitTrnx.setIsDiscountAvailed(appl.getIsDiscountAvailed());
 					remitTrnx.setReachedCostRateLimit(appl.getReachedCostRateLimit());
 					remitTrnx.setBeneDeductFlag(appl.getBeneDeductFlag());
+					remitTrnx.setInstruction(appl.getInstruction());
 					
 					
 					BigDecimal documentNo =generateDocumentNumber(appl.getFsCountryMasterByApplicationCountryId().getCountryId(),appl.getFsCompanyMaster().getCompanyId(),remitTrnx.getDocumentId().getDocumentCode(),remitTrnx.getDocumentFinanceYear(),remitTrnx.getLoccod(),ConstantDocument.A);

@@ -158,7 +158,7 @@ public class BranchRemittanceController implements IRemittanceService {
 	@RequestMapping(value = Path.BR_REMITTANCE_SAVE_CUSTOMER_BANKS, method = RequestMethod.POST)
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> saveCustomerBankDetails(
-			@RequestBody List<CustomerBankRequest> customerBank) {
+			@RequestBody CustomerBankRequest customerBank) {
 		logger.debug("saveCustomerBankDetails" + customerBank);
 		BoolRespModel result = branchRemitService.saveCustomerBankDetails(customerBank);
 		return AmxApiResponse.build(result);

@@ -110,8 +110,9 @@ public interface IRemittanceService extends  IJaxService {
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND})
 	AmxApiResponse<UserStockDto, Object> fetchLocalCurrencyRefundDenomination();
 
-	AmxApiResponse<BoolRespModel, Object> saveCustomerBankDetails(List<CustomerBankRequest> customerBank);
-
+	//AmxApiResponse<BoolRespModel, Object> saveCustomerBankDetails(List<CustomerBankRequest> customerBank);
+	AmxApiResponse<BoolRespModel, Object> saveCustomerBankDetails(CustomerBankRequest customerBank);
+	
 	AmxApiResponse<BoolRespModel, Object> validationStaffCredentials(String staffUserName, String staffPassword);
 	
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND,JaxError.SERVICE_NOT_FOUND,JaxError.ROUTING_COUNTRY_NOT_FOUND,JaxError.ROUTING_BANK_COUNTRY_NOT_FOUND,JaxError.ROUTING_BANK_BRANCH_NOT_FOUND,JaxError.DELIVERY_MODE_NOT_FOUND,JaxError.REMITTANCE_MODE_NOT_FOUND})

@@ -143,7 +143,7 @@ public class BranchRemittanceService extends AbstractService{
 		return AmxApiResponse.buildList(lstLocalCurrencyDeno);
 	}
 	
-	public BoolRespModel saveCustomerBankDetails(List<CustomerBankRequest> customerBank) {
+	public BoolRespModel saveCustomerBankDetails(CustomerBankRequest customerBank) {
 		validation.validateHeaderInfo();
 		BigDecimal appcountryId = metaData.getCountryId();
 		BigDecimal employeeId = metaData.getEmployeeId();
