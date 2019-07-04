@@ -50,7 +50,7 @@ public class ServiceProviderClient implements IServiceProviderService
 		try
 		{
 			LOGGER.debug("in send remittance :");
-			return restService.ajax(appConfig.getJaxURL() + Path.SEND_REMITTANCE).meta(new JaxMetaInfo()).post(sendRemittanceRequestDto)
+			return restService.ajax(appConfig.getServiceProviderURL() + Path.SEND_REMITTANCE).meta(new JaxMetaInfo()).post(sendRemittanceRequestDto)
 					.as(new ParameterizedTypeReference<AmxApiResponse<ServiceProviderResponse, Object>>()
 					{
 					});

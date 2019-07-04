@@ -212,6 +212,17 @@ public class BranchRemittanceApplManager {
 	public BranchRemittanceApplResponseDto saveBranchRemittanceApplication(BranchRemittanceApplRequestModel requestApplModel) {
 		Map<String,Object> hashMap = new HashMap<>();
 		
+		ServiceProviderDto serviceProviderDto = new ServiceProviderDto();
+		serviceProviderDto.setAmgSessionId(new BigDecimal(4269428));
+		serviceProviderDto.setFixedCommInSettlCurr(new BigDecimal(2));
+		serviceProviderDto.setIntialAmountInSettlCurr(new BigDecimal(327.57886));
+		serviceProviderDto.setPartnerSessionId("31qzeirckwzgy41q4lkeoctnq75-18");
+		serviceProviderDto.setSettlementCurrency("USD");
+		serviceProviderDto.setTransactionMargin(new BigDecimal(0.0015));
+		serviceProviderDto.setVariableCommInSettlCurr(BigDecimal.ZERO);
+		
+		requestApplModel.getDynamicRroutingPricingBreakup().setServiceProviderDto(serviceProviderDto);
+		
 		validateSaveApplRequest(requestApplModel);
 		/*To fetch customer details **/
 		 Customer customer = custDao.getCustById(metaData.getCustomerId());

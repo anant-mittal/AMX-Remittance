@@ -5,6 +5,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
@@ -30,13 +32,17 @@ import com.amx.jax.dbmodel.ParameterDetails;
 import com.amx.jax.dbmodel.partner.TransactionDetailsView;
 import com.amx.jax.dbmodel.remittance.AdditionalBankRuleAmiec;
 import com.amx.jax.dbmodel.remittance.AmiecAndBankMapping;
+import com.amx.jax.dbmodel.remittance.RemittanceBenificiary;
+import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.AbstractModel;
-import com.amx.jax.model.request.partner.TransactionPartnerRequest;
+import com.amx.jax.model.request.partner.RemittanceTransactionPartnerDTO;
+import com.amx.jax.model.request.partner.SrvProvBeneficiaryTransactionDTO;
 import com.amx.jax.model.request.serviceprovider.Benificiary;
 import com.amx.jax.model.request.serviceprovider.Customer;
 import com.amx.jax.model.request.serviceprovider.ServiceProviderCallRequestDto;
 import com.amx.jax.model.request.serviceprovider.TransactionData;
+import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.serviceprovider.ServiceProviderResponse;
 import com.amx.jax.partner.dao.PartnerTransactionDao;
 import com.amx.jax.partner.dto.BeneficiaryDetailsDTO;
@@ -96,21 +102,64 @@ public class PartnerTransactionManager extends AbstractModel {
 	
 	@Autowired
 	ICollectionDetailViewDao collectionDetailViewDao;
-
-	public void partnertransactionApi(BigDecimal customerId,BigDecimal beneficiaryRelationShipId,BigDecimal collectionDocYear,BigDecimal collectionDocNumber) {
-
-		ServiceProviderCallRequestDto transactionRequestDto = new ServiceProviderCallRequestDto();
-		Benificiary beneficiaryDto = new Benificiary();
-		Customer customerDto = new Customer();
-		TransactionData transactionDto = new TransactionData();
-
+	
+	public void callingPartnerApi(Map<BigDecimal,RemittanceTransaction> remitTrnxList,Map<BigDecimal,RemittanceBenificiary> remitBeneList,RemittanceResponseDto responseDto) {
+		BigDecimal customerId = metaData.getCustomerId();
+		BigDecimal collectionDocYear = responseDto.getCollectionDocumentFYear();
+		BigDecimal collectionDocNumber = responseDto.getCollectionDocumentNo();
+		
+		convertingTransactionPartnerDetails(customerId, collectionDocYear, collectionDocNumber);
+	}
+	
+	public void convertingTransactionPartnerDetails(BigDecimal customerId,BigDecimal collectionDocYear,BigDecimal collectionDocNumber) {
+		String destinationCountryAlpha3 = null;
+		String destinationCountryAlpha2 = null;
 		AmxApiResponse<ServiceProviderResponse, Object> srvPrvResp = null;
-
+		
+		List<ServiceProviderCallRequestDto> lstTransactionRequestDto = new ArrayList<>();
+		
 		CustomerDetailsDTO customerDetailsDTO = fetchCustomerDetails(customerId);
-		BeneficiaryDetailsDTO beneficiaryDetailsDTO = fetchBeneficiaryDetails(customerId, beneficiaryRelationShipId);
-
-		// collection document details
-		TransactionPartnerRequest transactionPartnerReq = fetchTransactionDetails(collectionDocYear,collectionDocNumber,customerDetailsDTO,beneficiaryDetailsDTO);
+		Customer customerDto = fetchSPCustomerDto(customerDetailsDTO);
+		
+		Map<BigDecimal,SrvProvBeneficiaryTransactionDTO> trnxPartnerData = fetchTransactionDetails(collectionDocYear, collectionDocNumber, customerId);
+		
+		for (Entry<BigDecimal, SrvProvBeneficiaryTransactionDTO> srvProvBeneTrnx : trnxPartnerData.entrySet()) {
+			
+			ServiceProviderCallRequestDto serviceProviderCallRequestDto = new ServiceProviderCallRequestDto();
+			
+			serviceProviderCallRequestDto.setCustomerDto(customerDto);
+			
+			BeneficiaryDetailsDTO beneficiaryDetailsDTO = srvProvBeneTrnx.getValue().getBeneficiaryDetailsDTO();
+			RemittanceTransactionPartnerDTO remittanceTransactionPartnerDTO = srvProvBeneTrnx.getValue().getRemittanceTransactionPartnerDTO();
+			
+			if(customerDetailsDTO.getNationalityId() != null){
+				CountryMaster countryMaster = fetchCountryMasterDetails(beneficiaryDetailsDTO.getBenificaryCountry());
+				if(countryMaster != null) {
+					destinationCountryAlpha3 = countryMaster.getCountryAlpha3Code();
+					destinationCountryAlpha2 = countryMaster.getCountryAlpha2Code();
+				}
+			}
+			
+			Benificiary beneficiaryDto = fetchSPBeneficiaryDto(customerDetailsDTO, beneficiaryDetailsDTO,remittanceTransactionPartnerDTO,destinationCountryAlpha3);
+			serviceProviderCallRequestDto.setBeneficiaryDto(beneficiaryDto);
+			
+			TransactionData transactionDto = fetchSPTransactionDto(customerDetailsDTO, beneficiaryDetailsDTO,remittanceTransactionPartnerDTO,destinationCountryAlpha3,destinationCountryAlpha2);
+			serviceProviderCallRequestDto.setTransactionDto(transactionDto);
+			
+			lstTransactionRequestDto.add(serviceProviderCallRequestDto);
+		}
+		
+		for (ServiceProviderCallRequestDto serviceProviderCallRequestDto : lstTransactionRequestDto) {
+			// final commit of transaction with service provider
+			logger.info("Inputs passed to Service Provider Home Send : ServiceProviderCallRequestDto : " + JsonUtil.toJson(serviceProviderCallRequestDto));
+			srvPrvResp = serviceProviderClient.sendRemittance(serviceProviderCallRequestDto);
+			logger.info("Output from Service Provider Home Send : " + JsonUtil.toJson(srvPrvResp));
+		}
+	
+	}
+	
+	public Customer fetchSPCustomerDto(CustomerDetailsDTO customerDetailsDTO) {
+		Customer customerDto = new Customer();
 
 		// Customer Details
 		customerDto.setAddress_zip("13077");
@@ -131,7 +180,6 @@ public class PartnerTransactionManager extends AbstractModel {
 			cityName = customerDetailsDTO.getStateName();
 		}
 		customerDto.setCity(removeSpaces(cityName));
-
 		customerDto.setContact_no(removeSpaces(customerDetailsDTO.getContactNumber()));
 
 		if(customerDetailsDTO.getCustomerReference() != null) {
@@ -139,17 +187,11 @@ public class PartnerTransactionManager extends AbstractModel {
 		}
 
 		customerDto.setCustomer_type(removeSpaces(customerDetailsDTO.getCustomerTypeCode()));
-
 		customerDto.setDate_of_birth(customerDetailsDTO.getDateOfBirth());
-
 		customerDto.setDistrict(removeSpaces(customerDetailsDTO.getDistrictName()));
-
 		customerDto.setEmail(removeSpaces(customerDetailsDTO.getEmail()));
-
 		customerDto.setEmployer_name(removeSpaces(customerDetailsDTO.getEmployerName()));
-
 		customerDto.setFirst_name(removeSpaces(customerDetailsDTO.getFirstName()));
-
 		customerDto.setFull_addrerss(removeSpaces(customerDetailsDTO.getAddress1()));
 
 		String gender = null;
@@ -160,16 +202,12 @@ public class PartnerTransactionManager extends AbstractModel {
 		}else{
 			gender = Constants.GENDER_MALE;
 		}
+		
 		customerDto.setGender(gender);
-
 		customerDto.setIdentity_expiry_date(customerDetailsDTO.getIdExpiryDate());
-
 		customerDto.setIdentity_no(removeSpaces(customerDetailsDTO.getIdNumber()));
-
 		customerDto.setIdentity_type_desc(removeSpaces(customerDetailsDTO.getIdTypeFor()));
-
 		customerDto.setLast_name(removeSpaces(customerDetailsDTO.getLastName()));
-
 		customerDto.setMiddle_name(removeSpaces(customerDetailsDTO.getMiddleName()));
 
 		String senderBirthCountryAlpha3 = null;
@@ -180,33 +218,38 @@ public class PartnerTransactionManager extends AbstractModel {
 			}
 		}
 		customerDto.setNationality_3_digit_ISO(removeSpaces(senderBirthCountryAlpha3));
-
 		customerDto.setProfession(removeSpaces(customerDetailsDTO.getDesignation()));
-
 		customerDto.setState(removeSpaces(customerDetailsDTO.getStateName()));
-
 		customerDto.setStreet(removeSpaces(custAddress));
 
+		return customerDto;
+	}
+	
+	public Benificiary fetchSPBeneficiaryDto(CustomerDetailsDTO customerDetailsDTO,BeneficiaryDetailsDTO beneficiaryDetailsDTO,RemittanceTransactionPartnerDTO remitTrnxDto,String destinationCountryAlpha3) {
+		String swiftBicCode = null;
+		String bankCode = null;
+		String bankBranchCode = null;
+		String bankAccountTypeDesc = null;
+		
+		// need to get dynamic
+		String beneBankCode = null;
+		String beneBankBranchCode = null;
+		
+		Benificiary beneficiaryDto = new Benificiary();
 
 		// Beneficiary Details
 		beneficiaryDto.setBeneficiary_account_number(removeSpaces(beneficiaryDetailsDTO.getBankAccountNumber()));
 
-		String bankAccountTypeDesc = null;
+		
 		AccountTypeFromViewModel accountTypeFromViewModel = partnerTransactionDao.getAccountTypeDetails(beneficiaryDetailsDTO.getBankAccountTypeId());
 		if(accountTypeFromViewModel != null) {
 			bankAccountTypeDesc = accountTypeFromViewModel.getAmiecDesc();
 		}
 		beneficiaryDto.setBeneficiary_account_type(removeSpaces(bankAccountTypeDesc));
 
-		String swiftBicCode = null;
-		String bankCode = null;
-		String bankBranchCode = null;
-		// need to get dynamic
-		String beneBankCode = null;
-		String beneBankBranchCode = null;
-		String corBankCode = transactionPartnerReq.getRoutingBankCode();
-		String routingNumber_Indic2 = transactionPartnerReq.getRoutingNumber_Indic2();
-		String bsbNumber_Indic3 = transactionPartnerReq.getBsbNumber_Indic3();
+		String corBankCode = remitTrnxDto.getRoutingBankCode();
+		String routingNumber_Indic2 = remitTrnxDto.getRoutingNumber_Indic2();
+		String bsbNumber_Indic3 = remitTrnxDto.getBsbNumber_Indic3();
 
 		bankCode = beneficiaryDetailsDTO.getBankCode();
 		if(beneficiaryDetailsDTO.getBranchCode() != null) {
@@ -256,15 +299,7 @@ public class PartnerTransactionManager extends AbstractModel {
 		int bankBranch = 0;
 		HashMap<String, Integer> mapBICandBankDt = fetchBICandBankCodeData();
 
-		String destinationCountryAlpha3 = null;
-		String destinationCountryAlpha2 = null;
-		if(customerDetailsDTO.getNationalityId() != null){
-			CountryMaster countryMaster = fetchCountryMasterDetails(beneficiaryDetailsDTO.getBenificaryCountry());
-			if(countryMaster != null) {
-				destinationCountryAlpha3 = countryMaster.getCountryAlpha3Code();
-				destinationCountryAlpha2 = countryMaster.getCountryAlpha2Code();
-			}
-		}
+		
 
 		HashMap<String, String> mapBicAndBankCode = fetchBICandBankCode(destinationCountryAlpha3);
 		if (mapBicAndBankCode != null && mapBICandBankDt != null) {
@@ -300,9 +335,9 @@ public class PartnerTransactionManager extends AbstractModel {
 			}
 			beneficiaryDto.setDistrict(removeSpaces(beneficiaryDetailsDTO.getDistrictName())); 
 			beneficiaryDto.setCity(removeSpaces(beneficiaryDetailsDTO.getCityName())); 
-			beneficiaryDto.setAddress_zip(null); // need to get dynamic 
+			beneficiaryDto.setAddress_zip("534211"); // need to get dynamic 
 		}else {
-			beneficiaryDto.setAddress_zip(null); // need to get dynamic 
+			beneficiaryDto.setAddress_zip("534211"); // need to get dynamic 
 		}
 
 		String telNumber = beneficiaryService.getBeneficiaryContactNumber(beneficiaryDetailsDTO.getBeneficaryMasterSeqId());
@@ -370,10 +405,16 @@ public class PartnerTransactionManager extends AbstractModel {
 		beneficiaryDto.setBeneficiary_id_type(null);
 		beneficiaryDto.setWallet_service_provider(null);
 
+		return beneficiaryDto;
+	}
+	
+	public TransactionData fetchSPTransactionDto(CustomerDetailsDTO customerDetailsDTO,BeneficiaryDetailsDTO beneficiaryDetailsDTO,RemittanceTransactionPartnerDTO remitTrnxDto,String destinationCountryAlpha3,String destinationCountryAlpha2) {
+		TransactionData transactionDto = new TransactionData();
+
 		//Transaction Details
-		BigDecimal applicationCountryId = null;
+		BigDecimal applicationCountryId = metaData.getCountryId();
 		String applicationCountryAlpha3 = null;
-		if(customerDetailsDTO.getNationalityId() != null){
+		if(applicationCountryId != null){
 			CountryMaster countryMaster = fetchCountryMasterDetails(applicationCountryId);
 			if(countryMaster != null) {
 				applicationCountryAlpha3 = countryMaster.getCountryAlpha3Code();
@@ -385,29 +426,20 @@ public class PartnerTransactionManager extends AbstractModel {
 		transactionDto.setDestination_currency(beneficiaryDetailsDTO.getCurrencyQuoteName());
 		transactionDto.setSettlement_currency(PricerServiceConstants.SETTLEMENT_CURRENCY_CODE);
 		transactionDto.setOrigin_country_3_digit_ISO(applicationCountryAlpha3);
+		transactionDto.setRemittance_mode(remitTrnxDto.getRemittanceMode());
+		transactionDto.setDelivery_mode(remitTrnxDto.getDeliveryMode());
+		transactionDto.setDestination_amount(remitTrnxDto.getDestinationAmount());
+		transactionDto.setFurther_instruction(remitTrnxDto.getFurtherInstruction());
+		transactionDto.setOut_going_transaction_reference(remitTrnxDto.getOutGoingTransactionReference());
+		transactionDto.setPartner_transaction_reference(remitTrnxDto.getPartnerTransactionReference());
+		transactionDto.setPurpose_of_remittance(remitTrnxDto.getPurposeOfTransaction_Indic1());
+		transactionDto.setRequest_sequence_id(remitTrnxDto.getRequestSequenceId());
+		transactionDto.setRoutting_bank_code(remitTrnxDto.getRoutingBankCode());
+		transactionDto.setSettlement_amount(remitTrnxDto.getSettlementAmount());
+		transactionDto.setSource_of_fund_desc(remitTrnxDto.getSourceOfFundDesc());
+		transactionDto.setTxn_collocation_type(remitTrnxDto.getTrnxCollectionType());
 
-		transactionDto.setRemittance_mode(transactionPartnerReq.getRemittanceMode());
-		transactionDto.setDelivery_mode(transactionPartnerReq.getDeliveryMode());
-		transactionDto.setDestination_amount(transactionPartnerReq.getDestinationAmount());
-		transactionDto.setFurther_instruction(transactionPartnerReq.getFurtherInstruction());
-		transactionDto.setOut_going_transaction_reference(transactionPartnerReq.getOutGoingTransactionReference());
-		transactionDto.setPartner_transaction_reference(transactionPartnerReq.getPartnerTransactionReference());
-		transactionDto.setPurpose_of_remittance(transactionPartnerReq.getPurposeOfTransaction_Indic1());
-		transactionDto.setRequest_sequence_id(transactionPartnerReq.getRequestSequenceId());
-		transactionDto.setRoutting_bank_code(transactionPartnerReq.getRoutingBankCode());
-		transactionDto.setSettlement_amount(transactionPartnerReq.getSettlementAmount());
-		transactionDto.setSource_of_fund_desc(transactionPartnerReq.getSourceOfFundDesc());
-		transactionDto.setTxn_collocation_type(transactionPartnerReq.getTrnxCollectionType());
-
-		transactionRequestDto.setCustomerDto(customerDto);
-		transactionRequestDto.setBeneficiaryDto(beneficiaryDto);
-		transactionRequestDto.setTransactionDto(transactionDto);
-
-		// final commit of transaction with service provider
-		logger.info("Inputs passed to Service Provider Home Send : TransactionRequestDTO : " + JsonUtil.toJson(transactionRequestDto));
-		srvPrvResp = serviceProviderClient.sendRemittance(transactionRequestDto);
-		logger.info("Output from Service Provider Home Send : " + JsonUtil.toJson(srvPrvResp));
-
+		return transactionDto;
 	}
 
 	// fetch Customer details
@@ -540,21 +572,53 @@ public class PartnerTransactionManager extends AbstractModel {
 		return status;
 	}
 
-	public TransactionPartnerRequest fetchTransactionDetails(BigDecimal collectionDocYear,BigDecimal collectionDocNumber,CustomerDetailsDTO customerDetailsDTO,BeneficiaryDetailsDTO beneficiaryDetailsDTO) {
-		TransactionPartnerRequest transactionPartnerRequest = null;
+	public Map<BigDecimal,SrvProvBeneficiaryTransactionDTO> fetchTransactionDetails(BigDecimal collectionDocYear,BigDecimal collectionDocNumber,BigDecimal customerId) {
 		List<String> dupcheck = new ArrayList<>();
-		List<TransactionDetailsView> lstTrnxDetails = partnerTransactionDao.fetchTrnxSPDetails(collectionDocYear, collectionDocNumber);
 		BigDecimal docFinanceYear = null;
 		BigDecimal docNo = null;
-
+		BigDecimal beneficiaryRelationShipId = null;
+		BigDecimal remitTrnxId = null;
+		
+		Map<BigDecimal,SrvProvBeneficiaryTransactionDTO> mapTrnxPartnerData = new HashMap<BigDecimal,SrvProvBeneficiaryTransactionDTO>();
+		Map<BigDecimal,RemittanceTransactionPartnerDTO> mapTrnxPartnerWiseData = new HashMap<BigDecimal,RemittanceTransactionPartnerDTO>();
+		
+		List<TransactionDetailsView> lstTrnxDetails = partnerTransactionDao.fetchTrnxSPDetails(customerId,collectionDocYear,collectionDocNumber);
+		
 		for (TransactionDetailsView transactionDetailsView : lstTrnxDetails) {
 			String docYearNo = transactionDetailsView.getDocumentFinanceYear().toString()+transactionDetailsView.getDocumentNo();
 			if(!dupcheck.contains(docYearNo)) {
 				dupcheck.add(docYearNo);
 				docFinanceYear = transactionDetailsView.getDocumentFinanceYear();
 				docNo = transactionDetailsView.getDocumentNo();
+				beneficiaryRelationShipId = transactionDetailsView.getBeneficiaryRelationShipId();
+				remitTrnxId = transactionDetailsView.getRemittanceTransactionId();
 				
-				transactionPartnerRequest = new TransactionPartnerRequest();
+				List<TransactionDetailsView> lstTrnxWiseDetails = partnerTransactionDao.fetchTrnxWiseDetails(customerId,docFinanceYear,docNo);
+				RemittanceTransactionPartnerDTO trnxWiseData = fetchTransactionWiseDetails(lstTrnxWiseDetails,collectionDocYear,collectionDocNumber);
+				
+				BeneficiaryDetailsDTO beneficiaryDetailsDTO = fetchBeneficiaryDetails(customerId, beneficiaryRelationShipId);
+				
+				SrvProvBeneficiaryTransactionDTO srvProvBeneficiaryTransactionDTO = new SrvProvBeneficiaryTransactionDTO();
+				srvProvBeneficiaryTransactionDTO.setBeneficiaryDetailsDTO(beneficiaryDetailsDTO);
+				srvProvBeneficiaryTransactionDTO.setRemittanceTransactionPartnerDTO(trnxWiseData);
+				
+				mapTrnxPartnerData.put(remitTrnxId, srvProvBeneficiaryTransactionDTO);
+			}
+		}
+
+		return mapTrnxPartnerData;
+	}
+	
+	public RemittanceTransactionPartnerDTO fetchTransactionWiseDetails(List<TransactionDetailsView> lstTrnxWiseDetails,BigDecimal docYear,BigDecimal docNumber) {
+		RemittanceTransactionPartnerDTO transactionPartnerRequest = null;
+		List<String> dupcheck = new ArrayList<>();
+		
+		for (TransactionDetailsView transactionDetailsView : lstTrnxWiseDetails) {
+			String docYearNo = transactionDetailsView.getDocumentFinanceYear().toString()+transactionDetailsView.getDocumentNo();
+			if(!dupcheck.contains(docYearNo)) {
+				dupcheck.add(docYearNo);
+				
+				transactionPartnerRequest = new RemittanceTransactionPartnerDTO();
 
 				transactionPartnerRequest.setRemittanceMode(transactionDetailsView.getRemittanceCode());
 				transactionPartnerRequest.setDeliveryMode(transactionDetailsView.getDeliveryCode());
@@ -563,31 +627,30 @@ public class PartnerTransactionManager extends AbstractModel {
 
 				transactionPartnerRequest.setSettlementAmount(transactionDetailsView.getSettlementAmount());
 				
-				String paymentType = assigningPaymentMode(collectionDocYear, collectionDocNumber, transactionDetailsView.getCollDocumentCode());
+				String paymentType = assigningPaymentMode(transactionDetailsView.getCollDocumentFinanceYear(),transactionDetailsView.getCollDocumentNo(),transactionDetailsView.getCollDocumentCode());
 				transactionPartnerRequest.setTrnxCollectionType(paymentType);
 
-				transactionPartnerRequest.setOutGoingTransactionReference(transactionDetailsView.getDocumentNo().toString());
+				if(transactionDetailsView.getDocumentFinanceYear() != null && transactionDetailsView.getDocumentNo() != null){
+					String str = String.format("%08d", transactionDetailsView.getDocumentNo().intValue());
+					transactionPartnerRequest.setOutGoingTransactionReference(removeSpaces(transactionDetailsView.getDocumentFinanceYear().toString()+str));
+				}
 				transactionPartnerRequest.setPartnerTransactionReference(transactionDetailsView.getPartnerSessionId());
 				transactionPartnerRequest.setRequestSequenceId(transactionDetailsView.getAmgSessionId().toString());
-
-				transactionPartnerRequest.setSourceOfFundDesc(transactionDetailsView.getSourceOfIncomeDesc());
+				//transactionPartnerRequest.setSourceOfFundDesc(transactionDetailsView.getSourceOfIncomeDesc());
+				transactionPartnerRequest.setSourceOfFundDesc("SAL");
 				transactionPartnerRequest.setFurtherInstruction(transactionDetailsView.getFurtherInstruction());
 				
 			}
 			
-			if(transactionDetailsView.getDocumentFinanceYear() != null && transactionDetailsView.getDocumentFinanceYear().compareTo(docFinanceYear) == 0) {
-				if(transactionDetailsView.getDocumentNo() != null && transactionDetailsView.getDocumentNo().compareTo(docNo) == 0) {
-					if(transactionDetailsView.getFlexField() != null && transactionDetailsView.getFlexField().equalsIgnoreCase(AmxDBConstants.INDIC1)) {
-						transactionPartnerRequest.setPurposeOfTransaction_Indic1(transactionDetailsView.getFlexFieldValue());
-					}else if(transactionDetailsView.getFlexField() != null && transactionDetailsView.getFlexField().equalsIgnoreCase(AmxDBConstants.INDIC2)) {
-						transactionPartnerRequest.setRoutingNumber_Indic2(transactionDetailsView.getFlexFieldValue());
-					}else if(transactionDetailsView.getFlexField() != null && transactionDetailsView.getFlexField().equalsIgnoreCase(AmxDBConstants.INDIC3)) {
-						transactionPartnerRequest.setBsbNumber_Indic3(transactionDetailsView.getFlexFieldValue());
-					}
-				}
+			if(transactionDetailsView.getFlexField() != null && transactionDetailsView.getFlexField().equalsIgnoreCase(AmxDBConstants.INDIC1)) {
+				transactionPartnerRequest.setPurposeOfTransaction_Indic1(transactionDetailsView.getFlexFieldValue());
+			}else if(transactionDetailsView.getFlexField() != null && transactionDetailsView.getFlexField().equalsIgnoreCase(AmxDBConstants.INDIC2)) {
+				transactionPartnerRequest.setRoutingNumber_Indic2(transactionDetailsView.getFlexFieldValue());
+			}else if(transactionDetailsView.getFlexField() != null && transactionDetailsView.getFlexField().equalsIgnoreCase(AmxDBConstants.INDIC3)) {
+				transactionPartnerRequest.setBsbNumber_Indic3(transactionDetailsView.getFlexFieldValue());
 			}
 		}
-
+		
 		return transactionPartnerRequest;
 	}
 

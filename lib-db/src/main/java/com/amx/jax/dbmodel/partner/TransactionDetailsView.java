@@ -18,6 +18,7 @@ public class TransactionDetailsView implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	private BigDecimal idNo;
+	private BigDecimal customerId;
 	private BigDecimal bankId;
 	private String flexField;
 	private String flexFieldValue;
@@ -45,6 +46,8 @@ public class TransactionDetailsView implements Serializable {
 	private BigDecimal collDocumentId;
 	private BigDecimal collDocumentCode;
 	private BigDecimal localNetTrnxAmount;
+	private BigDecimal beneficiaryRelationShipId;
+	
 	
 	public TransactionDetailsView() {
 		super();
@@ -59,6 +62,14 @@ public class TransactionDetailsView implements Serializable {
 		this.idNo = idNo;
 	}
 	
+	@Column(name = "CUSTOMER_ID")
+	public BigDecimal getCustomerId() {
+		return customerId;
+	}
+	public void setCustomerId(BigDecimal customerId) {
+		this.customerId = customerId;
+	}
+
 	@Column(name = "BANK_ID")
 	public BigDecimal getBankId() {
 		return bankId;
@@ -273,6 +284,14 @@ public class TransactionDetailsView implements Serializable {
 	}
 	public void setCollDocumentCode(BigDecimal collDocumentCode) {
 		this.collDocumentCode = collDocumentCode;
+	}
+	
+	@Column(name = "BENEFICIARY_RELATIONSHIP_ID")
+	public BigDecimal getBeneficiaryRelationShipId() {
+		return beneficiaryRelationShipId;
+	}
+	public void setBeneficiaryRelationShipId(BigDecimal beneficiaryRelationShipId) {
+		this.beneficiaryRelationShipId = beneficiaryRelationShipId;
 	}
 	
 }

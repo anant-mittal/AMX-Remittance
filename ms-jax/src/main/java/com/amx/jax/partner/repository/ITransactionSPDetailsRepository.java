@@ -10,7 +10,11 @@ import com.amx.jax.dbmodel.partner.TransactionDetailsView;
 
 public interface ITransactionSPDetailsRepository extends CrudRepository<TransactionDetailsView, BigDecimal> {
 	
-	@Query(value = "SELECT * FROM VW_REMIT_TRNX_SRV_DETAIL WHERE COLLECTION_DOC_FINANCE_YEAR=?1 AND COLLECTION_DOC_NO=?2", nativeQuery = true)
-	public List<TransactionDetailsView> fetchTrnxSPDetails(BigDecimal colDocumentFinanceYear,BigDecimal colDocumentNo);
+	@Query(value = "SELECT * FROM VW_REMIT_TRNX_SRV_DETAIL WHERE CUSTOMER_ID =?1 AND COLLECTION_DOC_FINANCE_YEAR=?2 AND COLLECTION_DOC_NO=?3", nativeQuery = true)
+	public List<TransactionDetailsView> fetchTrnxSPDetails(BigDecimal customerId,BigDecimal colDocumentFinanceYear,BigDecimal colDocumentNo);
+	
+	@Query(value = "SELECT * FROM VW_REMIT_TRNX_SRV_DETAIL WHERE CUSTOMER_ID =?1 AND DOCUMENT_FINANCE_YEAR=?2 AND DOCUMENT_NO=?3", nativeQuery = true)
+	public List<TransactionDetailsView> fetchTrnxWiseDetails(BigDecimal customerId,BigDecimal colDocumentFinanceYear,BigDecimal colDocumentNo);
+
 
 }

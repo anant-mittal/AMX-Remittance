@@ -2,7 +2,7 @@ package com.amx.jax.model.request.partner;
 
 import java.math.BigDecimal;
 
-public class TransactionPartnerRequest {
+public class RemittanceTransactionPartnerDTO {
 	
 	private String routingBankCode;
 	private String routingNumber_Indic2;

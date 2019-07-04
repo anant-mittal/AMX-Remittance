@@ -64,8 +64,12 @@ public class PartnerTransactionDao {
 		return parameterDetailsRespository.fetchBeneCountryBeneAddressNotReq(recordId, beneCountryCode);
 	}
 	
-	public List<TransactionDetailsView> fetchTrnxSPDetails(BigDecimal collectionDocYear,BigDecimal collectionDocNumber){
-		return transactionSPDetailsRepository.fetchTrnxSPDetails(collectionDocYear,collectionDocNumber);
+	public List<TransactionDetailsView> fetchTrnxSPDetails(BigDecimal customerId,BigDecimal collectionDocYear,BigDecimal collectionDocNumber){
+		return transactionSPDetailsRepository.fetchTrnxSPDetails(customerId,collectionDocYear,collectionDocNumber);
+	}
+	
+	public List<TransactionDetailsView> fetchTrnxWiseDetails(BigDecimal customerId,BigDecimal docYear,BigDecimal docNumber){
+		return transactionSPDetailsRepository.fetchTrnxWiseDetails(customerId,docYear,docNumber);
 	}
 
 }

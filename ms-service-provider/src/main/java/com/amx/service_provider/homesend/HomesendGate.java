@@ -37,6 +37,7 @@ import com.amx.jax.model.response.serviceprovider.Status_Call_Response;
 import com.amx.service_provider.dbmodel.webservice.OwsParamRespcode;
 import com.amx.service_provider.dbmodel.webservice.OwsParamRespcodeKey;
 import com.amx.service_provider.repository.webservice.OwsParamRespcodeRepository;
+import com.amx.utils.JsonUtil;
 
 /*
  * This class is created consume the API services exposed by HomeSend Main
@@ -473,6 +474,10 @@ public class HomesendGate
 
 		try
 		{
+			logger.info("Output from Service Provider Home Send Transaction : " + JsonUtil.toJson(txn_data));
+			logger.info("Output from Service Provider Home Send Customer Data: " + JsonUtil.toJson(customer_data));
+			logger.info("Output from Service Provider Home Send Beneficiary Data: " + JsonUtil.toJson(bene_data));
+			logger.info("---------------------------------------------------------------------------------");
 			logger.info(HomesendUtils.log_send_remittance_input_details(txn_data, customer_data, bene_data));
 			String validation_result = HomesendUtils
 					.validate_remittance_request_input(txn_data, customer_data, bene_data);
