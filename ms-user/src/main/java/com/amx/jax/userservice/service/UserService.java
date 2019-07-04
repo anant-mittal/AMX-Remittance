@@ -475,7 +475,7 @@ public class UserService extends AbstractUserService {
 		}
 		// userValidationService.validateCustomerLockCount(onlineCust);
 		userValidationService.validateTokenSentCount(onlineCust);
-		userValidationService.validateCustomerContactForSendOtp(channels, customer);
+		userValidationService.validateCustomerContactForSendOtp(channels, customer ,customerModel);
 		generateToken(civilId, model, channels);
 		onlineCust.setEmailToken(model.getHashedeOtp());
 		onlineCust.setSmsToken(model.getHashedmOtp());
