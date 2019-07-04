@@ -415,11 +415,11 @@ public class RemittController {
 				wrapper.setStatusEnum(OWAStatusStatusCodes.MOTP_REQUIRED);
 			} else {
 				PayGParams payment = new PayGParams();
-				payment.setDocFy(respTxMdl.getDocumentFinancialYear());
+				payment.setDocFyObject(respTxMdl.getDocumentFinancialYear());
 				payment.setDocNo(respTxMdl.getDocumentIdForPayment());
-				payment.setTrackId(respTxMdl.getMerchantTrackId());
+				payment.setTrackIdObject(respTxMdl.getMerchantTrackId());
 				logger.info("amount in remittancapplication: in remittcontroller:" + respTxMdl.getNetPayableAmount());
-				payment.setAmount(respTxMdl.getNetPayableAmount());
+				payment.setAmountObject(respTxMdl.getNetPayableAmount());
 				payment.setServiceCode(respTxMdl.getPgCode());
 
 				wrapper.setRedirectUrl(payGService.getPaymentUrl(payment,
@@ -454,11 +454,11 @@ public class RemittController {
 				wrapper.setStatusEnum(OWAStatusStatusCodes.MOTP_REQUIRED);
 			} else {
 				PayGParams payment = new PayGParams();
-				payment.setDocFy(respTxMdl.getDocumentFinancialYear());
+				payment.setDocFyObject(respTxMdl.getDocumentFinancialYear());
 				payment.setDocNo(respTxMdl.getDocumentIdForPayment());
-				payment.setTrackId(respTxMdl.getMerchantTrackId());
+				payment.setTrackIdObject(respTxMdl.getMerchantTrackId());
 				logger.info("amount in remittancapplication: in remittcontroller:" + respTxMdl.getNetPayableAmount());
-				payment.setAmount(respTxMdl.getNetPayableAmount());
+				payment.setAmountObject(respTxMdl.getNetPayableAmount());
 				payment.setServiceCode(respTxMdl.getPgCode());
 
 				wrapper.setRedirectUrl(payGService.getPaymentUrl(payment,

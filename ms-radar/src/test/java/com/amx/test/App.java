@@ -3,6 +3,7 @@ package com.amx.test;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URISyntaxException;
+import java.util.Base64;
 import java.util.regex.Pattern;
 
 import org.jsoup.Connection;
@@ -14,7 +15,8 @@ import org.jsoup.select.Elements;
 import com.amx.jax.client.snap.ISnapService.RateSource;
 import com.amx.jax.client.snap.ISnapService.RateType;
 import com.amx.jax.dict.Currency;
-import com.amx.jax.radar.jobs.scrapper.AmanKuwaitModels;
+import com.amx.jax.payg.PayGParams;
+import com.amx.jax.payg.PayGService;
 import com.amx.jax.rates.AmxCurRate;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.FileUtil;
@@ -37,9 +39,16 @@ public class App { // Noncompliant
 	public static void main(String[] args) throws URISyntaxException, IOException {
 		String json = FileUtil
 				.readFile("file://" + System.getProperty("user.dir")
-						+ "/src/test/java/com/amx/test/amankuwaitratesample.json");
-		AmanKuwaitModels.Rates rates2 = JsonUtil.getMapper().readValue(json, AmanKuwaitModels.RatesJson.class);
-		rates2.getCurRates();
+						+ "/src/test/java/com/amx/test/appParams.json");
+		PayGParams rates2 = JsonUtil.getMapper().readValue(json, PayGParams.class);
+
+		PayGService service = new PayGService();
+		System.out.println("RATE2 ============" + JsonUtil.toJson(rates2));
+		String details = service.getEnCryptedDetails(rates2);
+		System.out.println("ENCRYPTED ============" + details);
+		PayGParams rates3 = service.getDeCryptedDetails(details);
+		System.out.println("RATE3 ============" + JsonUtil.toJson(rates3));
+
 	}
 
 	public static void main2(String[] args) throws URISyntaxException, IOException {
