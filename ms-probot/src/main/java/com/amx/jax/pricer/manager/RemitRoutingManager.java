@@ -115,6 +115,29 @@ public class RemitRoutingManager {
 					exchangeRateAndRoutingRequest.getServiceGroup().getGroupCode());
 		}
 
+		List<ViewExRoutingMatrix> removeMatrix = new ArrayList<ViewExRoutingMatrix>();
+
+		if (null != routingMatrix && !routingMatrix.isEmpty()
+				&& null != exchangeRateAndRoutingRequest.getExcludeCorBanks()
+				&& !exchangeRateAndRoutingRequest.getExcludeCorBanks().isEmpty()) {
+
+			List<BigDecimal> removeList = exchangeRateAndRoutingRequest.getExcludeCorBanks();
+
+			// Set<BigDecimal> removeSet = removeList.stream().distinct()
+			// .collect(Collectors.toSet());
+
+			for (ViewExRoutingMatrix matrix : routingMatrix) {
+				if (removeList.contains(matrix.getRoutingBankId())) {
+					removeMatrix.add(matrix);
+				}
+			}
+
+			for (ViewExRoutingMatrix matrix : removeMatrix) {
+				routingMatrix.remove(matrix);
+			}
+
+		}
+
 		if (null == routingMatrix || routingMatrix.isEmpty()) {
 
 			LOGGER.error("Routing Matrix is Data is Empty or Null for the Pricing/Routing Request");
