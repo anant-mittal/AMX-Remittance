@@ -14,6 +14,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
@@ -27,6 +30,7 @@ import org.springframework.stereotype.Service;
 import com.amx.jax.cache.ExchRateAndRoutingTransientDataCache;
 import com.amx.jax.cache.TransientRoutingComputeDetails;
 import com.amx.jax.dict.UserClient.Channel;
+import com.amx.jax.multitenant.TenantContext;
 import com.amx.jax.partner.dto.RoutingBankDetails;
 import com.amx.jax.partner.dto.SrvPrvFeeInqReqDTO;
 import com.amx.jax.partner.dto.SrvPrvFeeInqResDTO;
@@ -49,6 +53,7 @@ import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.manager.CustomerDiscountManager;
 import com.amx.jax.pricer.manager.RemitPriceManager;
 import com.amx.jax.pricer.manager.RemitRoutingManager;
+import com.amx.jax.pricer.manager.ServiceProviderManager;
 import com.amx.jax.pricer.var.PricerServiceConstants.CUSTOMER_CATEGORY;
 import com.amx.jax.pricer.var.PricerServiceConstants.DISCOUNT_TYPE;
 import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_BY;
@@ -66,6 +71,9 @@ public class ExchangePricingAndRoutingService {
 	/** The Constant LOGGER. */
 	private static final Logger LOGGER = LoggerFactory.getLogger(ExchangePricingAndRoutingService.class);
 
+	@Autowired
+	ServiceProviderManager serviceProviderManager;
+	
 	@Autowired
 	PartnerExchDataService partnerDataService;
 
@@ -213,27 +221,24 @@ public class ExchangePricingAndRoutingService {
 		List<ViewExRoutingMatrix> routingMatrix = remitRoutingManager
 				.getRoutingMatrixForRemittance(exchangeRateAndRoutingRequest);
 
-		//BigDecimal homeSendId = new BigDecimal(5759);
+		// BigDecimal homeSendId = new BigDecimal(5759);
 		boolean isHomeSend = false;
 		ViewExRoutingMatrix homeSendRouting = null;
 
 		List<ViewExRoutingMatrix> removeMatrix = new ArrayList<>();
 
-		/*for (ViewExRoutingMatrix matrix : routingMatrix) {
-			if (matrix.getRoutingBankId().compareTo(homeSendId) == 0) {
-				removeMatrix.add(matrix);
-				homeSendRouting = matrix;
-			}
-		}*/
-		
-		
+		/*
+		 * for (ViewExRoutingMatrix matrix : routingMatrix) { if
+		 * (matrix.getRoutingBankId().compareTo(homeSendId) == 0) {
+		 * removeMatrix.add(matrix); homeSendRouting = matrix; } }
+		 */
+
 		for (ViewExRoutingMatrix matrix : routingMatrix) {
 			if (matrix.getRoutingBankCode().equalsIgnoreCase("HOME")) {
 				removeMatrix.add(matrix);
 				homeSendRouting = matrix;
 			}
 		}
-		
 
 		if (!removeMatrix.isEmpty()) {
 			isHomeSend = true;
@@ -476,37 +481,70 @@ public class ExchangePricingAndRoutingService {
 	private ExchangeRateAndRoutingResponse addHomeSendInfo(ExchangeRateAndRoutingResponse resp,
 			ViewExRoutingMatrix homeSendMatrix, ExchangeRateAndRoutingRequest request) {
 
+		
 		SrvPrvFeeInqReqDTO partnerReq = new SrvPrvFeeInqReqDTO();
-
+		
 		RoutingBankDetails routBankDetails = new RoutingBankDetails();
 		routBankDetails.setRoutingBankId(homeSendMatrix.getRoutingBankId());
 		routBankDetails.setRemittanceId(homeSendMatrix.getRemittanceModeId());
 		routBankDetails.setDeliveryId(homeSendMatrix.getDeliveryModeId());
-
+		
 		List<RoutingBankDetails> routeList = new ArrayList<>();
 		routeList.add(routBankDetails);
-
+		
 		partnerReq.setCustomerId(request.getCustomerId());
-
+		
 		partnerReq.setBeneficiaryRelationShipId(request.getBeneficiaryId());
 		partnerReq.setApplicationCountryId(request.getLocalCountryId());
 		partnerReq.setDestinationCountryId(request.getForeignCountryId());
 		partnerReq.setLocalCurrencyId(request.getLocalCurrencyId());
 		partnerReq.setForeignCurrencyId(request.getForeignCurrencyId());
-
+		
 		if (null != request.getLocalAmount()) {
-			partnerReq.setSelectedCurrency(request.getLocalCurrencyId());
-			partnerReq.setAmount(request.getLocalAmount());
-		} else {
-			partnerReq.setSelectedCurrency(request.getForeignCurrencyId());
-			partnerReq.setAmount(request.getForeignAmount());
-		}
-
+		partnerReq.setSelectedCurrency(request.getLocalCurrencyId());
+		partnerReq.setAmount(request.getLocalAmount()); } else {
+		partnerReq.setSelectedCurrency(request.getForeignCurrencyId());
+		partnerReq.setAmount(request.getForeignAmount()); }
+		
 		partnerReq.setRoutingBankDetails(routeList);
+		
+		System.out.println("Partner Request data ==> " + JsonUtil.toJson(partnerReq));
+		
+		//SrvPrvFeeInqResDTO partnerResp = partnerDataService.getPartnerFeeinquiry(partnerReq);
+		
+		//System.out.println("Partner Response data ==> " + JsonUtil.toJson(partnerResp));
+		
+		System.out.println(" Tenant Context Parent  ==> " + TenantContext.getCurrentTenant());
+		
+		CompletableFuture<SrvPrvFeeInqResDTO> sProviderFuture = (CompletableFuture<SrvPrvFeeInqResDTO>)serviceProviderManager
+				.getServiceProviderQuote(homeSendMatrix, request);
 
-		SrvPrvFeeInqResDTO partnerResp = partnerDataService.getPartnerFeeinquiry(partnerReq);
+		System.out.println(" ========= Waiting For HomeSend thread to complete ======== ");
 
-		System.out.println(" Partner data ==> " + JsonUtil.toJson(partnerResp));
+		// Wait for thread to complete
+		System.out.println("======= Blocked 1======");
+		CompletableFuture.allOf(sProviderFuture);
+
+		/*while(true) {
+			if(sProviderFuture.isDone())
+				break;
+		}*/
+		
+		System.out.println(" ========= HomeSend thread completed Now ======== ");
+
+		SrvPrvFeeInqResDTO partnerResp;
+		try {
+			
+			System.out.println("======= Blocked 2======");
+			
+			partnerResp = sProviderFuture.get();
+			
+			System.out.println("======= Released ======");
+			
+		} catch (InterruptedException | ExecutionException e1) {
+			e1.printStackTrace();
+			return null;
+		}
 
 		ExchangeDiscountInfo ccDiscount = new ExchangeDiscountInfo();
 		ccDiscount.setDiscountType(DISCOUNT_TYPE.CUSTOMER_CATEGORY);
@@ -593,7 +631,7 @@ public class ExchangePricingAndRoutingService {
 		}
 
 		trnxRoutingDetails.setChargeAmount(partnerResp.getCommissionAmount());
-		
+
 		//// @formatter:off
 		
 		String pathKey = homeSendMatrix.getRoutingCountryId()

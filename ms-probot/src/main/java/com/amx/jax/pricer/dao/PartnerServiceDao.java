@@ -24,74 +24,79 @@ import com.amx.jax.pricer.repository.IParameterDetailsRespository;
 import com.amx.jax.pricer.repository.IServiceProviderMarginRepository;
 import com.amx.jax.pricer.repository.IUsdExchangeRateRepository;
 
-@Component	
+@Component
 public class PartnerServiceDao {
-	
+
 	@Autowired
 	IBeneficiaryViewRepository beneficiaryViewRepository;
-	
+
 	@Autowired
 	ICustomerViewRepository customerViewRepository;
-	
+
 	@Autowired
 	IUsdExchangeRateRepository usdExchangeRateRepository;
-	
+
 	@Autowired
 	CurrencyMasterRepository currencyMasterRepository;
-	
+
 	@Autowired
 	IServiceProviderMarginRepository serviceProviderMarginRepository;
-	
+
 	@Autowired
 	IBankServiceRuleRepository bankServiceRuleRepository;
-	
+
 	@Autowired
 	IBankChargesRepository bankChargesRepository;
-	
+
 	@Autowired
 	IParameterDetailsRespository parameterDetailsRespository;
-	
+
 	@Autowired
 	CountryMasterRepository countryMasterRepository;
-	
-	public BenificiaryListView getBeneficiaryDetails(BigDecimal customerId,BigDecimal beneficiaryRelationShipSeqId) {
-		return beneficiaryViewRepository.findByCustomerIdAndBeneficiaryRelationShipSeqId(customerId, beneficiaryRelationShipSeqId);
+
+	public BenificiaryListView getBeneficiaryDetails(BigDecimal customerId, BigDecimal beneficiaryRelationShipSeqId) {
+		return beneficiaryViewRepository.findByCustomerIdAndBeneficiaryRelationShipSeqId(customerId,
+				beneficiaryRelationShipSeqId);
 	}
-	
+
 	public CustomerDetailsView getCustomerDetails(BigDecimal customerId) {
 		return customerViewRepository.findByCustomerId(customerId);
 	}
-	
+
 	public BigDecimal fetchUsdExchangeRate() {
 		return usdExchangeRateRepository.fetchUsdExchangeRate();
 	}
-	
-	public List<CurrencyMasterModel> fetchCurrencyMasterDetails(String currencyCode,String isActive) {
+
+	public List<CurrencyMasterModel> fetchCurrencyMasterDetails(String currencyCode, String isActive) {
 		return currencyMasterRepository.findByIsoCurrencyCodeAndIsactive(currencyCode, isActive);
 	}
-	
-	public ServiceProviderRateView fetchMarginByProduct(BigDecimal countryId,BigDecimal bankId,BigDecimal currencyId,BigDecimal remittanceId,BigDecimal deliveryId) {
-		return serviceProviderMarginRepository.fetchMerginByProduct(countryId, bankId, currencyId, remittanceId, deliveryId);
+
+	public ServiceProviderRateView fetchMarginByProduct(BigDecimal countryId, BigDecimal bankId, BigDecimal currencyId,
+			BigDecimal remittanceId, BigDecimal deliveryId) {
+		return serviceProviderMarginRepository.fetchMerginByProduct(countryId, bankId, currencyId, remittanceId,
+				deliveryId);
 	}
-	
-	public List<BankServiceRule> fetchBankServiceRuleDetails(BigDecimal countryId,BigDecimal bankId,BigDecimal currencyId,BigDecimal remittanceId,BigDecimal deliveryId){
+
+	public List<BankServiceRule> fetchBankServiceRuleDetails(BigDecimal countryId, BigDecimal bankId,
+			BigDecimal currencyId, BigDecimal remittanceId, BigDecimal deliveryId) {
 		return bankServiceRuleRepository.fetchBankServiceRule(countryId, bankId, currencyId, remittanceId, deliveryId);
 	}
-	
-	public List<BankCharges> fetchBankChargesDetails(BigDecimal bankServiceRuleId,BigDecimal fcAmount,BigDecimal chargesFor,String chargesType){
+
+	public List<BankCharges> fetchBankChargesDetails(BigDecimal bankServiceRuleId, BigDecimal fcAmount,
+			BigDecimal chargesFor, String chargesType) {
 		return bankChargesRepository.fetchBankCharges(bankServiceRuleId, fcAmount, chargesFor, chargesType);
 	}
-	
-	public ParameterDetailsModel fetchServPrvBankCode(String recordId,String beneCountryCode){
+
+	public ParameterDetailsModel fetchServPrvBankCode(String recordId, String beneCountryCode) {
 		return parameterDetailsRespository.fetchServPrvBankCode(recordId, beneCountryCode);
 	}
-	
+
 	public CountryMasterModel fetchCountryMasterDetails(BigDecimal countryId) {
 		return countryMasterRepository.findByCountryId(countryId);
 	}
-	
+
 	public BigDecimal fetchServiceProviderRefernceNum() {
 		return usdExchangeRateRepository.fetchServiceProviderRefernceNum();
 	}
-	
+
 }
