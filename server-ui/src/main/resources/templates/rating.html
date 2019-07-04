@@ -20,7 +20,7 @@
   <body>
     <div class="header">
       <div class="logo">
-       <a href="#close">
+       <a href="/login#close">
        <img th:src="@{'/logo-'+ ${companyTnt}+ '.png'}" alt="logo" />
       </a>
       </div>
@@ -73,7 +73,7 @@
       </div>
     </div>
 
-    <div class="feedback-success dn">
+    <div id="feedback-success" class="feedback-success dn">
       <h4>Rate your Experience</h4>
       <div class="svgicons icon-thumb"></div>
       <h4 class="success-message">
@@ -81,12 +81,15 @@
         We appreciate the review and it will help us build a better customer
         experience.
       </h4>
+      <button class="button ripple" onclick="goToHome()">
+        Home
+      </button>
     </div>
 
     <div id="feedback-invalid" class="feedback-invalid dn">
       <h4>Invalid URL</h4>
     </div>
-    <div id="loading" class="dn"></div>
+    <div id="loading" class="dn"><div class="loader"></div></div>
     <script th:inline="javascript">
 
       function showLoader(b){
@@ -140,37 +143,39 @@
       	console.log("request sent succesfully");
 	  }
 	  
-	  var ratingData = ([[${ratingData}]]);
-	  
+	  console.log(ratingData);
       if(!ratingData.valid){
 		  document.getElementById("feedback-invalid").classList.remove("dn");
 		  document.getElementById("rating-feedback").classList.add("dn");
       }
-      // makeAjaxCall("/pub/rating/"+ratingData.prodType+"/"+ratingData.trnxId+"/"+ratingData.verCode,"GET",null,getRatingdataSucc,null);
-      // function getRatingdataSucc(res){
-      // 	if(res.valid){
+      if(ratingData.rating.results[0].rating != null){
+        var feedbackView = document.getElementById("feedback-success");
+        var ratingView = document.getElementById("rating-feedback");
+        feedbackView.classList.remove("dn");
+        ratingView.classList.add('dn');
+      }
 
-      // 	}
-      // }
       function submitFeedback(){
       	var reqObj = {
       		"rating": userRating,
       		"ratingRemark": document.getElementById('feedbackInput').value,
       		"remittanceTransactionId": ratingData.trnxId
       	}
-      	makeAjaxCall('/pub/remitt/tranx/rating','POST', JSON.stringify(reqObj),resolveFeedbackPost,rejectFeedbackPost)
+      	makeAjaxCall('/pub/remitt/tranx/rating?veryCode=' + ratingData.verCode,'POST', JSON.stringify(reqObj),resolveFeedbackPost,rejectFeedbackPost)
       }
 
       function resolveFeedbackPost(respJson){
-		var feedbackView = document.getElementById("feedback-success");
-		var ratingView = document.getElementById("rating-feedback");
-		feedbackView.classList.remove("dn");
-		ratingView.classList.add('dn');
+        var feedbackView = document.getElementById("feedback-success");
+        var ratingView = document.getElementById("rating-feedback");
+        feedbackView.classList.remove("dn");
+        ratingView.classList.add('dn');
       }
       function rejectFeedbackPost(respJson){
       	console.log("Fail");
-	  }
-	  
+	    }
+      function goToHome(){
+        window.location.href = "/login#close"
+      }
     </script>
   </body>
 </html>
