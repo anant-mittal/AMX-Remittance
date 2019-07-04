@@ -22,6 +22,8 @@ public class ApiEndpoint {
 	public static final String EXCHANGE_RATE_ENDPOINT = "/exchange-rate";
 
 	public static final String ONLINE_CUSTOMER_VALIDATE_URL = "/nationality-id/{nationality-id}/validate";
+	
+	public static final String SERVICE_PROVIDER_ENDPOINT = "/service-provider";
 
 	public final class MetaApi {
 		// Prefix
@@ -192,6 +194,16 @@ public class ApiEndpoint {
 		// Paths
 		public static final String EKYC_SAVE_CUSTOMER = "/ekyc-save-customer/";
 		
+	}
+	
+	public final class ServiceProvider{
+		public static final String PREFIX = SERVICE_PROVIDER_ENDPOINT;
+		
+		//Paths
+		
+		public static final String SERVICE_PROVIDER_PARTNER = "/service-provider-partner";
+		
+		public static final String SERVICE_PROVIDER_UPLOAD_FILE="/service-provider-upload-file";
 	}
 
 }
