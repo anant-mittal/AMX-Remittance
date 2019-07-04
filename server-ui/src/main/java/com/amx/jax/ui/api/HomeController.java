@@ -26,6 +26,7 @@ import com.amx.amxlib.meta.model.CustomerRatingDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.AppConstants;
 import com.amx.jax.AppContextUtil;
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.CustomerProfileClient;
 import com.amx.jax.client.JaxClientUtil;
 import com.amx.jax.dict.AmxEnums.Products;
@@ -298,7 +299,7 @@ public class HomeController {
 			@PathVariable Products prodType, @PathVariable BigDecimal trnxId, @PathVariable String veryCode) {
 
 		boolean valid = JaxClientUtil.getTransactionVeryCode(trnxId).equals(veryCode);
-		ApiResponse<CustomerRatingDTO> rating = jaxService.getRemitClient().inquireCustomerRating(trnxId);
+		AmxApiResponse<CustomerRatingDTO, ?> rating = jaxService.getRemitClient().inquireCustomerRating(trnxId);
 
 		String errorCode = null;
 		String errorMessage = null;

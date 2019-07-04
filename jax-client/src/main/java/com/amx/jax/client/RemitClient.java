@@ -311,7 +311,7 @@ public class RemitClient extends AbstractJaxServiceClient {
 
 	}
 	
-	public ApiResponse<CustomerRatingDTO> inquireCustomerRating(BigDecimal remittanceTrnxId)
+	public AmxApiResponse<CustomerRatingDTO, ?> inquireCustomerRating(BigDecimal remittanceTrnxId)
 			throws RemittanceTransactionValidationException, LimitExeededException {
 
 		try {
@@ -325,8 +325,7 @@ public class RemitClient extends AbstractJaxServiceClient {
 			
 			return restService.ajax(url).post(requestEntity)
 					.queryParam("remittanceTrnxId", remittanceTrnxId)
-					.as(new ParameterizedTypeReference<ApiResponse<CustomerRatingDTO>>() {
-			});
+					.asApiResponse(CustomerRatingDTO.class);
 		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {

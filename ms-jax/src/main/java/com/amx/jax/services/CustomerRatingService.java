@@ -13,6 +13,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.CustomerRatingDTO;
+import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.dbmodel.CustomerRating;
@@ -50,6 +51,7 @@ public class CustomerRatingService {
 	 */
 	public AmxApiResponse<CustomerRating, ?> saveCustomerRating(CustomerRatingDTO dto) {
 		try {
+			
 			CustomerRating customerRating = new CustomerRating();
 			BigDecimal customerId = metaData.getCustomerId();
 			BigDecimal applicationCountryId = metaData.getCountryId();
