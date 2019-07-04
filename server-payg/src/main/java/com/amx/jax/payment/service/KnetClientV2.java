@@ -2,6 +2,7 @@ package com.amx.jax.payment.service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.security.Security;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,6 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -27,7 +30,7 @@ import com.amx.jax.payment.gateway.PaymentService;
 import kwt.com.fss.plugin.iPayPipe;
 
 @PayGSpecific(PayGServiceCode.KNET2)
-public class KnetClientV2 implements PayGClient {
+public class KnetClientV2 implements PayGClient, InitializingBean {
 
 	private static Logger LOGGER = Logger.getLogger(KnetClient.class);
 
@@ -73,6 +76,7 @@ public class KnetClientV2 implements PayGClient {
 
 	@Override
 	public void initialize(PayGParams params, PaymentGateWayResponse gatewayResponse) {
+		
 		String responseUrl = payGConfig.getServiceCallbackUrl() + PaymentConstant.getCalbackUrl(params);
 
 		LOGGER.info("------ KNET VERSION2 Initialize ------");
@@ -117,7 +121,12 @@ public class KnetClientV2 implements PayGClient {
 			pipe.setUdf1(udf1);
 			pipe.setUdf2(udf2);
 			pipe.setUdf4(udf4);
-			pipe.setUdf5(params.getTrackId());
+
+			// Set Payment Secrete
+			String hashedSeceret = PaymentConstant.getHashedSecrete(
+					getPaymentParamStr(params.getDocNo(), params.getTrackId()), PaymentConstant.KWT_SECRETE_SALT);
+
+			pipe.setUdf5(hashedSeceret);
 
 			int pipeValue = pipe.performPaymentInitializationHTTP();
 			LOGGER.info("pipeValue : " + pipeValue);
@@ -136,7 +145,7 @@ public class KnetClientV2 implements PayGClient {
 			responseMap.put("payurl", new String(payURL));
 			// String url = payURL + "?paymentId=" + payID;
 			String url = payURL;
-			LOGGER.debug("Generated url is ---> " + url);
+			LOGGER.info("Generated url is ---> " + url);
 
 			// params.setRedirectUrl(pipe.getWebAddress());
 			params.setRedirectUrl(url);
@@ -200,6 +209,18 @@ public class KnetClientV2 implements PayGClient {
 				gatewayResponse.setTranxId(request.getParameter("tranid"));
 			}
 		}
+		
+		String expectedSecrete = PaymentConstant.getHashedSecrete(
+				getPaymentParamStr(gatewayResponse.getUdf3().trim(), gatewayResponse.getTrackId()),
+				PaymentConstant.KWT_SECRETE_SALT);
+		
+		if(null != gatewayResponse.getUdf5() && null != expectedSecrete) {
+			LOGGER.info("Secrete ====>  " +  expectedSecrete);
+			LOGGER.info("UDF5 ====>  " +  gatewayResponse.getUdf5());
+			if(!expectedSecrete.equals(gatewayResponse.getUdf5())) {
+				throw new RuntimeException("Transation Parmeters are mismatch");
+			}
+		}
 
 		LOGGER.info("Params captured from KNET : " + JsonUtil.toJson(gatewayResponse));
 
@@ -224,4 +245,12 @@ public class KnetClientV2 implements PayGClient {
 		return gatewayResponse;
 	}
 
+	private String getPaymentParamStr(String docId, String trackId) {
+		return docId + "-" + trackId;
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		Security.addProvider(new BouncyCastleProvider());		
+	}
 }

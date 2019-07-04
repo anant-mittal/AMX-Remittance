@@ -121,6 +121,12 @@ public class BenefitClient implements PayGClient {
 				LOGGER.debug(pipe.getDebugMsg());
 				throw new RuntimeException("Problem while sending transaction to Benefit.");
 			}
+			
+			// Set Payment Secrete
+			String hashedSeceret = PaymentConstant.getHashedSecrete(
+				getPaymentParamStr(params.getDocNo(), params.getTrackId()), PaymentConstant.KWT_SECRETE_SALT);
+			
+			pipe.setUdf5(hashedSeceret);
 
 			// get results
 			String payID = pipe.getPaymentId();
@@ -183,6 +189,18 @@ public class BenefitClient implements PayGClient {
 			gatewayResponse.setTrackId(params.getTrackId());
 		}
 
+		String expectedSecrete = PaymentConstant.getHashedSecrete(
+				getPaymentParamStr(gatewayResponse.getUdf3().trim(), gatewayResponse.getTrackId()),
+				PaymentConstant.KWT_SECRETE_SALT);
+		
+		/*if(null != gatewayResponse.getUdf5() && null != expectedSecrete) {
+			LOGGER.info("Secrete ====>  " +  expectedSecrete);
+			LOGGER.info("UDF5 ====>  " +  gatewayResponse.getUdf5());
+			if(!expectedSecrete.equals(gatewayResponse.getUdf5())) {
+				throw new RuntimeException("Transation Parmeters are mismatch");
+			}
+		}*/
+		
 		BenefitCodes statusCode;
 
 		if ("CAPTURED".equalsIgnoreCase(resultCode)) {
@@ -216,5 +234,9 @@ public class BenefitClient implements PayGClient {
 		}
 		return gatewayResponse;
 	}// end of capture
+	
+	private String getPaymentParamStr(String docId, String trackId) {
+		return docId + "-" + trackId;
+	}
 
 }
