@@ -14,7 +14,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
@@ -516,14 +515,14 @@ public class ExchangePricingAndRoutingService {
 		
 		System.out.println(" Tenant Context Parent  ==> " + TenantContext.getCurrentTenant());
 		
-		CompletableFuture<SrvPrvFeeInqResDTO> sProviderFuture = (CompletableFuture<SrvPrvFeeInqResDTO>)serviceProviderManager
+		Future<SrvPrvFeeInqResDTO> sProviderFuture = serviceProviderManager
 				.getServiceProviderQuote(homeSendMatrix, request);
 
 		System.out.println(" ========= Waiting For HomeSend thread to complete ======== ");
 
 		// Wait for thread to complete
 		System.out.println("======= Blocked 1======");
-		CompletableFuture.allOf(sProviderFuture);
+		//CompletableFuture.allOf(sProviderFuture);
 
 		/*while(true) {
 			if(sProviderFuture.isDone())
