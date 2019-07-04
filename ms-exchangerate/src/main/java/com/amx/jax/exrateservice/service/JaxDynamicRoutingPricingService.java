@@ -32,6 +32,7 @@ import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_BY;
 import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_TYPE;
 import com.amx.jax.pricer.var.PricerServiceConstants.SERVICE_GROUP;
 import com.amx.jax.service.BankMetaService;
+import com.amx.jax.util.JaxUtil;
 import com.amx.utils.JsonUtil;
 
 
@@ -55,9 +56,9 @@ public class JaxDynamicRoutingPricingService {
 	
 	
 	public  AmxApiResponse<ExchangeRateAndRoutingResponse,Object> getDynamicRoutingAndPrice(BigDecimal toCurrency , BigDecimal fromCurrency, BigDecimal lcAmount,
-			BigDecimal foreignAmount, BigDecimal beneBankCountryId, BigDecimal routingBankId,BigDecimal serviceIndicatorId,BigDecimal beneficiaryBankId,BigDecimal beneficiaryBankBranchId,String serviceGroup,BigDecimal beneRelationId) {
+			BigDecimal foreignAmount, BigDecimal beneBankCountryId, BigDecimal routingBankId,BigDecimal serviceIndicatorId,BigDecimal beneficiaryBankId,BigDecimal beneficiaryBankBranchId,String serviceGroup,BigDecimal beneRelationId,BigDecimal exclusiveBankId) {
 	
-		ExchangeRateAndRoutingRequest routingPricingRequestDTO = createRoutingPricingRequest(fromCurrency, toCurrency, lcAmount, foreignAmount,beneBankCountryId,routingBankId,serviceIndicatorId,beneficiaryBankId,beneficiaryBankBranchId,serviceGroup,beneRelationId);
+		ExchangeRateAndRoutingRequest routingPricingRequestDTO = createRoutingPricingRequest(fromCurrency, toCurrency, lcAmount, foreignAmount,beneBankCountryId,routingBankId,serviceIndicatorId,beneficiaryBankId,beneficiaryBankBranchId,serviceGroup,beneRelationId,exclusiveBankId);
 	    AmxApiResponse<ExchangeRateAndRoutingResponse,Object> apiResponse = null;
 	    DynamicRoutingPricingResponse dynamicRoutingPricingResponse =new DynamicRoutingPricingResponse();
 
@@ -145,7 +146,7 @@ public class JaxDynamicRoutingPricingService {
 	
 	private ExchangeRateAndRoutingRequest createRoutingPricingRequest(BigDecimal fromCurrency, BigDecimal toCurrency, BigDecimal lcAmount,
 			BigDecimal foreignAmount, BigDecimal beneBankCountryId, BigDecimal routingBankId,BigDecimal serviceIndicatorId,
-			BigDecimal beneficiaryBankId,BigDecimal beneficiaryBankBranchId,String serviceGroup,BigDecimal beneRelationId) {
+			BigDecimal beneficiaryBankId,BigDecimal beneficiaryBankBranchId,String serviceGroup,BigDecimal beneRelationId,BigDecimal exclusiveBankId) {
 		ExchangeRateAndRoutingRequest routingPricingRequestDTO = new ExchangeRateAndRoutingRequest();
 		
 		routingPricingRequestDTO.setCustomerId(metaData.getCustomerId());
@@ -162,6 +163,9 @@ public class JaxDynamicRoutingPricingService {
 			routingPricingRequestDTO.setPricingLevel(PRICE_BY.ROUTING_BANK);
 		} else {
 			routingPricingRequestDTO.setPricingLevel(PRICE_BY.COUNTRY);
+		}
+		if(JaxUtil.isNullZeroBigDecimalCheck(exclusiveBankId)) {
+			routingPricingRequestDTO.setExcludeCorBanks(Arrays.asList(exclusiveBankId));
 		}
 		
 		routingPricingRequestDTO.setLocalCountryId(metaData.getCountryId());

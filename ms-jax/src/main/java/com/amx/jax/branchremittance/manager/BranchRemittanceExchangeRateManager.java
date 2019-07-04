@@ -244,9 +244,14 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 	public DynamicRoutingPricingResponse getDynamicRoutingAndPricingResponse(RoutingPricingRequest routingPricingRequest) {
 		BenificiaryListView beneficiaryView = beneValidationService.validateBeneficiary(routingPricingRequest.getBeneficiaryRelationshipSeqId());
 		Customer customer = userService.getCustById(metaData.getCustomerId());
+		BigDecimal exclusiveBankId= null;
+		String errorMsg = remittanceTransactionManager.beneAccountValidationThroughApi(beneficiaryView.getServiceGroupId(), beneficiaryView.getBankId(), beneficiaryView);
+		if(!StringUtils.isBlank(errorMsg)) {
+			exclusiveBankId = beneficiaryView.getBankId();
+		}
 		AmxApiResponse<ExchangeRateAndRoutingResponse,Object> apiResposne = jaxDynamicRoutingPriceService.getDynamicRoutingAndPrice(metaData.getDefaultCurrencyId(), beneficiaryView.getCurrencyId(), routingPricingRequest.getLocalAmount(),
 				routingPricingRequest.getForeignAmount(), beneficiaryView.getBenificaryCountry(),
-				null, beneficiaryView.getServiceGroupId(),beneficiaryView.getBankId(),beneficiaryView.getBranchId(),beneficiaryView.getServiceGroupCode(),beneficiaryView.getBeneficiaryRelationShipSeqId());
+				null, beneficiaryView.getServiceGroupId(),beneficiaryView.getBankId(),beneficiaryView.getBranchId(),beneficiaryView.getServiceGroupCode(),beneficiaryView.getBeneficiaryRelationShipSeqId(),exclusiveBankId);
 		DynamicRoutingPricingResponse dynamicRoutingPricingResponse=getDynamicRoutingPricing(apiResposne,routingPricingRequest,beneficiaryView);
 		
 	return dynamicRoutingPricingResponse;
@@ -403,10 +408,9 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 		BenificiaryListView beneficiaryView = beneValidationService.validateBeneficiary(request.getBeneficiaryRelationshipSeqIdBD());
 		Customer customer = userService.getCustById(metaData.getCustomerId());
 		ExchangeRateResponseModel exchangeRateResponseModel = null;
-		
 		AmxApiResponse<ExchangeRateAndRoutingResponse,Object> apiResposne = jaxDynamicRoutingPriceService.getDynamicRoutingAndPrice(metaData.getDefaultCurrencyId(), beneficiaryView.getCurrencyId(), request.getLocalAmountBD(),
 				request.getForeignAmountBD(), beneficiaryView.getBenificaryCountry(),
-				request.getCorrespondanceBankIdBD(), beneficiaryView.getServiceGroupId(),beneficiaryView.getBankId(),beneficiaryView.getBranchId(),beneficiaryView.getServiceGroupCode(),beneficiaryView.getBeneficiaryRelationShipSeqId());
+				request.getCorrespondanceBankIdBD(), beneficiaryView.getServiceGroupId(),beneficiaryView.getBankId(),beneficiaryView.getBranchId(),beneficiaryView.getServiceGroupCode(),beneficiaryView.getBeneficiaryRelationShipSeqId(),null);
 		 exchangeRateResponseModel  = createExchangeRateResponseModel(apiResposne,request.getLocalAmountBD(),request.getForeignAmountBD(),request.getCorrespondanceBankIdBD(),request.getServiceIndicatorIdBD());
 		
 		 if (exchangeRateResponseModel.getExRateBreakup() == null) {
