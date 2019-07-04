@@ -137,6 +137,10 @@ public class RemitRoutingManager {
 			}
 
 		}
+		
+		
+		// This is Interim FIX FOR HOME-SEND EXclussion and should be removed on Priority.
+		routingMatrix = excludeSbRoutingBanks(routingMatrix);
 
 		if (null == routingMatrix || routingMatrix.isEmpty()) {
 
@@ -872,6 +876,35 @@ public class RemitRoutingManager {
 
 		// Simple Duration Converter
 		return duration;
+
+	}
+
+	private List<ViewExRoutingMatrix> excludeSbRoutingBanks(List<ViewExRoutingMatrix> routingMatrix) {
+
+		if (routingMatrix == null || routingMatrix.isEmpty())
+			return routingMatrix;
+
+		List<ViewExRoutingMatrix> removeMatrix = new ArrayList<>();
+
+		/*
+		 * for (ViewExRoutingMatrix matrix : routingMatrix) { if
+		 * (matrix.getRoutingBankId().compareTo(homeSendId) == 0) {
+		 * removeMatrix.add(matrix); homeSendRouting = matrix; } }
+		 */
+
+		for (ViewExRoutingMatrix matrix : routingMatrix) {
+			if (matrix.getBankIndicator().trim().equalsIgnoreCase("SB")) {
+				removeMatrix.add(matrix);
+			}
+		}
+
+		if (!removeMatrix.isEmpty()) {
+			for (ViewExRoutingMatrix matrix : removeMatrix) {
+				routingMatrix.remove(matrix);
+			}
+		}
+
+		return routingMatrix;
 
 	}
 
