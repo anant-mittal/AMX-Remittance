@@ -51,6 +51,8 @@ public class CustomerDocumentManager {
 	@Autowired
 	DatabaseScanManager databaseImageScanManager;
 	@Autowired
+	ArcmateScanManager arcmateScanManager;
+	@Autowired
 	CustomerIdProofManager customerIdProofManager;
 	@Autowired
 	DocumentScanValidator kycScanValidator;
@@ -105,6 +107,10 @@ public class CustomerDocumentManager {
 			switch (customerIdProof.getScanSystem()) {
 			case "D":
 				customerDocumentImage = databaseImageScanManager.fetchKycImageInfo(customerIdProof);
+				break;
+			case "A":
+				customerDocumentImage = arcmateScanManager.fetchKycImageInfo(customerIdProof);
+				break;
 			default:
 			}
 			if (customerDocumentImage != null) {

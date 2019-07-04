@@ -124,7 +124,6 @@ public class AmxDBConstants {
 	public static final BigDecimal BIZ_COMPONENT_ID_BEDOUIN_ID = new BigDecimal(197);
 	public static final BigDecimal MURQAB_FOREIGNCURRENCY = new BigDecimal(89);
 	public static final BigDecimal BIZ_COMPONENT_ID_PASSPORT = new BigDecimal(204);
-	
 
 	public static final String ARTICLE_20_CODE = "20";
 	public static final BigDecimal BIZ_COMPONENT_ID_NEW_CIVIL_ID = new BigDecimal(2000);
@@ -151,5 +150,20 @@ public class AmxDBConstants {
 	public static final String VOUCHER = "V";
 	public static final String IMPS_CODE = "13";
 	public static final String IND_COUNTRY_CODE = "004";
-	
+
+	// Arcmate Scanning
+	public static String CHECK;
+	public static String SCAN;
+	public static String VIEW = "VIEW";
+	public static String MODIFY;
+	public static String OCR;
+	public static String NON_OCR;
+	public static String BOTH_VIEW="BOTH";
+	public static String BEDOUIN;
+	public static String PASSPORT;
+	public static String GCC_NATIONAL_ID;
+	public static String LICENSE_NO;
+	public static String CHECK_DOCUMENT;
+	public static String CHECK_FILE;
+	public static String BANKTRANSFER;
 }

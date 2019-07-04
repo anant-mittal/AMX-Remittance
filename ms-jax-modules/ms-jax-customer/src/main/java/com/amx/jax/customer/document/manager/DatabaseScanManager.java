@@ -55,21 +55,27 @@ public class DatabaseScanManager implements DocumentScanManager {
 
 	@Override
 	public CustomerDocumentInfo fetchKycImageInfo(CustomerIdProof customerIdProof) {
-		CustomerDocumentInfo customerDocumentImage = null;
+		CustomerDocumentInfo customerDocumentImage = new CustomerDocumentInfo();
 		DmsApplMapping dmsMapping = customerIdProofManager.getDmsMapping(customerIdProof);
+		CustomerDocumentTypeMaster kycDocTypeMaster = customerDocMasterManager.getKycDocTypeMaster(customerIdProof.getIdentityTypeId());
+		customerDocumentImage.setDocumentCategory(kycDocTypeMaster.getDocumentCategory());
+		customerDocumentImage.setDocumentType(kycDocTypeMaster.getDocumentType());
 		if (dmsMapping != null) {
 			try {
-				customerDocumentImage = new CustomerDocumentInfo();
 				BigDecimal docBlobId = dmsMapping.getDocBlobId();
 				BigDecimal docFinYear = dmsMapping.getFinancialYear();
 				customerDocumentDao.copyBlobDataIntoJava(docBlobId, docFinYear);
 				DocBlobUpload docBlobUpload = dOCBLOBRepository.findByDocBlobIDAndDocFinYear(docBlobId, docFinYear);
+				if (docBlobUpload == null) {
+					return customerDocumentImage;
+				}
 				customerDocumentImage.setDocumentRenderType(DocumentImageRenderType.TEXT);
 				String kycImage = IoUtils.inputStreamToString(docBlobUpload.getDocContent().getBinaryStream());
 				kycImage = Base64.encodeBase64String(kycImage.getBytes());
 				customerDocumentImage.setDocumentString(kycImage);
 				customerDocumentImage.setDocumentFormat(dmsMapping.getDocFormat());
 				customerDocumentImage.setUploadedDate(dmsMapping.getCreatedOn());
+
 			} catch (IOException | SQLException e) {
 				log.error("error in fetch kyc imagage", e);
 			}
