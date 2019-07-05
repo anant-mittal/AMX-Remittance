@@ -128,7 +128,8 @@ public class CustomerBranchController {
 	}
 
 	@RequestMapping(value = "/api/customer/doc/types", method = { RequestMethod.POST })
-	public AmxApiResponse<CustomerDocumentTypeDto, Object> getDocTypes(@RequestBody String documentCategory) {
+	public AmxApiResponse<CustomerDocumentTypeDto, Object> getDocTypes(
+			@RequestParam(required = true) String documentCategory) {
 		return customerManagementClient.getDocumentType(documentCategory);
 	}
 
