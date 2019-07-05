@@ -299,7 +299,8 @@ public enum JaxError implements IExceptionEnum {
 	//Vat
 	MUTIPLE_RECORD_FOUND,
 	//Referral
-	NULL_CONTACT_DETAILS;
+	NULL_CONTACT_DETAILS,
+	NULL_LINK_ID;
 	
 	
 	@Deprecated

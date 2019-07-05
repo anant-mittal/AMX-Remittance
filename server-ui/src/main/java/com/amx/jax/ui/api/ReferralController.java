@@ -7,8 +7,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.LinkDTO;
+import com.amx.amxlib.model.LinkResponseModel;
 import com.amx.amxlib.model.PlaceOrderDTO;
 import com.amx.amxlib.model.ReferralDTO;
+import com.amx.amxlib.model.ReferralResponseModel;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.JaxService;
 
@@ -24,18 +26,18 @@ public class ReferralController {
 	JaxService jaxService;
 	
 	@RequestMapping(value = "/api/referral/get", method = { RequestMethod.GET })
-	public ResponseWrapper<ReferralDTO> getRefferal() {
-		ResponseWrapper<ReferralDTO> wrapper = new ResponseWrapper<ReferralDTO>();
-		ReferralDTO results = jaxService.setDefaults().getReferralClient().getRefferal()
+	public ResponseWrapper<ReferralResponseModel> getRefferal() {
+		ResponseWrapper<ReferralResponseModel> wrapper = new ResponseWrapper<ReferralResponseModel>();
+		ReferralResponseModel results = jaxService.setDefaults().getReferralClient().getRefferal()
 				.getResult();
 		wrapper.setData(results);
 		return wrapper;
 	}
 	
 	@RequestMapping(value = "/api/link/get", method = { RequestMethod.POST })
-	public ResponseWrapper<LinkDTO> getRefferalLink(@RequestBody LinkDTO linkDTO) {
-		ResponseWrapper<LinkDTO> wrapper = new ResponseWrapper<LinkDTO>();
-		LinkDTO results = jaxService.setDefaults().getReferralClient().getReferralLink(linkDTO)
+	public ResponseWrapper<LinkResponseModel> getRefferalLink(@RequestBody LinkDTO linkDTO) {
+		ResponseWrapper<LinkResponseModel> wrapper = new ResponseWrapper<LinkResponseModel>();
+		LinkResponseModel results = jaxService.setDefaults().getReferralClient().getReferralLink(linkDTO)
 				.getResult();
 		wrapper.setData(results);
 		return wrapper;

@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.amxlib.model.LinkDTO;
 import com.amx.amxlib.model.ReferralDTO;
+import com.amx.amxlib.model.ReferralResponseModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.api.AmxApiResponse;
@@ -50,8 +52,10 @@ public class ReferralService extends AbstractService {
 			dto.setIsConsumed(referralDetails.getIsConsumed());
 			dto.setRefferedByCustomerID(referralDetails.getRefferedByCustomerId());
 		}
+		ReferralResponseModel referralResponseModel = new ReferralResponseModel();
+		referralResponseModel.setCustomerRefferalCode(dto.getCustomerReferralCode());
 
-		return AmxApiResponse.build(dto);
+		return AmxApiResponse.build(referralResponseModel);
 	}
 
 	public void validateReferralDto(ReferralDTO dto) {
@@ -65,5 +69,17 @@ public class ReferralService extends AbstractService {
 		 * GlobalException("Either PayAmount or ReceivedAmount should have value ",
 		 * JaxError.PO_BOTH_PAY_RECEIVED_AMT_VALUE); }
 		 */
+	}
+	
+	public void validateContactDetails(LinkDTO linkDTO) {
+		if(linkDTO.getCustomerDetail() == null) {
+			throw new GlobalException(JaxError.NULL_CONTACT_DETAILS,"Contact details can not be null");
+		}
+	}
+	
+	public void validateLinkDetails(LinkDTO linkDTO) {
+		if(linkDTO.getLinkId() == null) {
+			throw new GlobalException(JaxError.NULL_LINK_ID,"Link Id can not be null");
+		}
 	}
 }

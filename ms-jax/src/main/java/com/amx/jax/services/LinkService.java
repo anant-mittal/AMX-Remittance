@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.LinkDTO;
+import com.amx.amxlib.model.LinkResponseModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.api.AmxApiResponse;
@@ -26,7 +27,7 @@ public class LinkService extends AbstractService{
 	private LinkDetailsDao linkDao;
 	
 	
-	public AmxApiResponse<LinkDTO, Object> makeLink(LinkDTO dto) {		
+	public AmxApiResponse<LinkResponseModel, Object> makeLink(LinkDTO dto) {		
 			LinkDetails linkDetails = new LinkDetails();
 			String linkId = "";
 			LinkDTO responseDTO = new LinkDTO();
@@ -53,25 +54,16 @@ public class LinkService extends AbstractService{
 		        linkDao.saveLinkContacs(contactLinkDetailList);
 			}
 			linkDao.saveLink(linkDetails);
-						
-		return AmxApiResponse.build(responseDTO);
+			LinkResponseModel linkResponseModel = new LinkResponseModel();
+			linkResponseModel.setLinkId(responseDTO.getLinkId());
+		return AmxApiResponse.build(linkResponseModel);
 	}
 	
 	public void validateLinkDto(LinkDTO dto) {
-		// both foreign and domestic amounts should not be null
 		if(dto.getCustomerId() == null ) {
 			throw new GlobalException(JaxError.NULL_CUSTOMER_ID,
 					"Customer ID can not be null");
 		}
-//		if(dto.getCustomerDetail() == null) {
-//			throw new GlobalException(JaxError.NULL_CONTACT_DETAILS,
-//					"Contact Details can not be null");
-//		}
-		
-		/*if(dto.getPayAmount() != null && dto.getReceiveAmount() != null) {
-			throw new GlobalException("Either PayAmount or ReceivedAmount should have value ",
-					JaxError.PO_BOTH_PAY_RECEIVED_AMT_VALUE);
-		}*/
 	}
 
 	public BoolRespModel openLink(LinkDTO linkDto) {

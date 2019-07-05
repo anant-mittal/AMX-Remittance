@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.LinkDTO;
+import com.amx.amxlib.model.LinkResponseModel;
 import com.amx.amxlib.model.PlaceOrderDTO;
 import com.amx.amxlib.model.ReferralDTO;
 import com.amx.amxlib.model.response.ApiResponse;
@@ -46,10 +47,11 @@ public class ReferralController {
 	}
 
 	@RequestMapping(value = "/link/make", method = RequestMethod.POST)
-	public AmxApiResponse<LinkDTO, Object> handleMakeLink(@RequestBody @Valid LinkDTO linkDto) {
+	public AmxApiResponse<LinkResponseModel, Object> handleMakeLink(@RequestBody @Valid LinkDTO linkDto) {
 		BigDecimal customerId = metaData.getCustomerId();
 		linkDto.setCustomerId(customerId);
 		linkService.validateLinkDto(linkDto);
+		referralService.validateContactDetails(linkDto);
 		return linkService.makeLink(linkDto);
 	}
 
@@ -58,6 +60,7 @@ public class ReferralController {
 		BigDecimal customerId = metaData.getCustomerId();
 		linkDto.setCustomerId(customerId);
 		linkService.validateLinkDto(linkDto);
+		referralService.validateLinkDetails(linkDto);
 		return linkService.openLink(linkDto);
 	}
 }

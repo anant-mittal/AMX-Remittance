@@ -7,7 +7,9 @@ import org.springframework.stereotype.Component;
 import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.model.LinkDTO;
+import com.amx.amxlib.model.LinkResponseModel;
 import com.amx.amxlib.model.ReferralDTO;
+import com.amx.amxlib.model.ReferralResponseModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.configs.JaxMetaInfo;
@@ -21,22 +23,22 @@ public class ReferralClient extends AbstractJaxServiceClient {
 	@Autowired
 	RestService restService;
 	
-	public AmxApiResponse<ReferralDTO,Object> getRefferal() {
+	public AmxApiResponse<ReferralResponseModel,Object> getRefferal() {
 		try {			
 			return restService.ajax(appConfig.getJaxURL()).path(REFER_API_ENDPOINT + "/get/")					
 					.meta(new JaxMetaInfo()).get()
-					.as(new ParameterizedTypeReference<AmxApiResponse<ReferralDTO,Object>>() {
+					.as(new ParameterizedTypeReference<AmxApiResponse<ReferralResponseModel,Object>>() {
 					});
 		} catch (Exception e) {
 			return JaxSystemError.evaluate(e);
 		}
 	}
 	
-	public AmxApiResponse<LinkDTO,Object> getReferralLink(LinkDTO linkDTO) {
+	public AmxApiResponse<LinkResponseModel,Object> getReferralLink(LinkDTO linkDTO) {
 		try {			
 			return restService.ajax(appConfig.getJaxURL()).path(REFER_API_ENDPOINT + "/link/make")					
 					.meta(new JaxMetaInfo()).post(linkDTO)
-					.as(new ParameterizedTypeReference<AmxApiResponse<LinkDTO,Object>>() {
+					.as(new ParameterizedTypeReference<AmxApiResponse<LinkResponseModel,Object>>() {
 					});
 		} catch (Exception e) {
 			return JaxSystemError.evaluate(e);

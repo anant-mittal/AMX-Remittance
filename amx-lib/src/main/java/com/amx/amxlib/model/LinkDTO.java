@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import com.amx.jax.model.AbstractModel;
 
 public class LinkDTO extends AbstractModel implements Cloneable{
+	private static final long serialVersionUID = 1L;
 	private String linkId;
 	private BigDecimal customerId;
 	private String customerDetail;
