@@ -102,7 +102,7 @@ public class JaxCustomerContactVerificationService extends AbstractService {
 			CustomerOnlineRegistration customerOnlineRegistration = custDao.getCustomerIDByuserId(identityId);
 			customerOnlineRegistration.setStatus("Y");
 			onlineCustRepo.save(customerOnlineRegistration);
-		}else {
+		}else if(customer.get(0).getEmailVerified()==Status.N) {
 			//throw new GlobaLException("Email id is not verified . Please wait for 24 hrs");
 			//@Radhika
 			throw new GlobalException(JaxError.EMAIL_NOT_VERIFIED, "Email id is not verified . Please wait for 24 hrs");
