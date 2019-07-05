@@ -1,5 +1,6 @@
 package com.amx.jax;
 
+import com.amx.jax.dict.ContactType;
 import com.amx.utils.ArgUtil;
 
 public class JaxAuthContext {
@@ -18,6 +19,10 @@ public class JaxAuthContext {
 
 	public static String getWotp() {
 		return ArgUtil.parseAsString(AppContextUtil.getParams().get("wOtp"));
+	}
+	
+	public static ContactType getContactType() {
+		return ArgUtil.parseAsEnumIgnoreCase(AppContextUtil.getParams().get("contactType"), ContactType.class);
 	}
 
 	public static String getAnyOtp() {
@@ -68,6 +73,14 @@ public class JaxAuthContext {
 		}
 		AppContextUtil.getParams().put("eOtp", eOtp);
 		return eOtp;
+	}
+
+	public static ContactType contactType(ContactType contactType) {
+		if (ArgUtil.isEmpty(contactType)) {
+			return getContactType();
+		}
+		AppContextUtil.getParams().put("contactType", contactType);
+		return contactType;
 	}
 
 	public static String secAns(String secAns) {
