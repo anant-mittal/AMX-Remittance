@@ -17,6 +17,7 @@ import com.amx.jax.model.customer.document.UploadCustomerKycRequest;
 import com.amx.jax.model.customer.document.UploadCustomerKycResponse;
 import com.amx.jax.model.request.EmploymentDetailsRequest;
 import com.amx.jax.model.request.customer.UpdateCustomerInfoRequest;
+import com.amx.jax.model.request.device.SignaturePadCustomerRegStateMetaInfo;
 import com.amx.jax.model.response.ArticleDetailsDescDto;
 import com.amx.jax.model.response.ArticleMasterDescDto;
 import com.amx.jax.model.response.ComponentDataDto;
@@ -24,6 +25,8 @@ import com.amx.jax.model.response.CustomerInfo;
 import com.amx.jax.model.response.IncomeRangeDto;
 import com.amx.jax.model.response.customer.OffsiteCustomerDataDTO;
 import com.amx.jax.model.response.remittance.UserwiseTransactionDto;
+import com.amx.jax.sso.SSOUser;
+import com.amx.jax.terminal.TerminalService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -43,6 +46,12 @@ public class CustomerBranchController {
 
 	@Autowired
 	CustomerManagementClient customerManagementClient;
+
+	@Autowired
+	private SSOUser ssoUser;
+
+	@Autowired
+	TerminalService terminalService;
 
 	@Autowired
 	BranchSession branchSession;
@@ -137,6 +146,20 @@ public class CustomerBranchController {
 	public AmxApiResponse<UploadCustomerDocumentResponse, Object> uploadCustomerDoc(
 			@RequestBody UploadCustomerDocumentRequest uploadCustomerDocumentRequest) {
 		return customerManagementClient.uploadCustomerDocument(uploadCustomerDocumentRequest);
+	}
+
+	@RequestMapping(value = "/api/customer/custreg/status", method = { RequestMethod.POST })
+	public AmxApiResponse<BoolRespModel, Object> updateCustRegStatus(
+			@RequestBody SignaturePadCustomerRegStateMetaInfo signaturePadCustRegInfo) {
+		return terminalService.updateCustomerRegStateData(ssoUser.getUserClient().getTerminalId().intValue(),
+				ssoUser.getUserDetails().getEmployeeId(), signaturePadCustRegInfo);
+	}
+
+	@RequestMapping(value = "/api/customer/custupdate/status", method = { RequestMethod.POST })
+	public AmxApiResponse<BoolRespModel, Object> updateCustUpdateStatus(
+			@RequestBody SignaturePadCustomerRegStateMetaInfo signaturePadCustRegInfo) {
+		return terminalService.updateCustomerProfileStateData(ssoUser.getUserClient().getTerminalId().intValue(),
+				ssoUser.getUserDetails().getEmployeeId(), signaturePadCustRegInfo);
 	}
 
 }
