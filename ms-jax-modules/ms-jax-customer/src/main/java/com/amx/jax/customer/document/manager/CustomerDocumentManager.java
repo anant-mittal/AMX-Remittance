@@ -175,7 +175,11 @@ public class CustomerDocumentManager {
 			i.setStatus(ConstantDocument.Yes);
 		});
 		saveCustomerDocumentUploadsRefs(customerUploadDocuments);
-		moveCustomerDBKycDocuments(customer);
+		try {
+			moveCustomerDBKycDocuments(customer);
+		} catch (Exception e) {
+			log.error("error occured in moving kyc docs {} ", e.getMessage());
+		}
 	}
 
 	public void moveCustomerDBKycDocuments(Customer customer) {
