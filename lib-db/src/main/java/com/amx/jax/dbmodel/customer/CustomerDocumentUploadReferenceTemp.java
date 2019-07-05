@@ -24,7 +24,7 @@ public class CustomerDocumentUploadReferenceTemp {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "JAX_CUST_DOC_UPLOAD_REF_TMP_S")
-	@SequenceGenerator(sequenceName = "JAX_CUST_DOC_UPLOAD_REF_TMP_S", name = "JAX_CUST_DOC_UPLOAD_REF_TMP_S")
+	@SequenceGenerator(sequenceName = "JAX_CUST_DOC_UPLOAD_REF_TMP_S", name = "JAX_CUST_DOC_UPLOAD_REF_TMP_S", allocationSize = 1)
 	@Column(name = "ID")
 	BigDecimal id;
 

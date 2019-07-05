@@ -61,9 +61,7 @@ public class DocumentScanValidator {
 		}
 		CustomerDocumentUploadReference existing = customerDocumentUploadReferenceRepo.findByCustomerDocumentTypeMasterAndCustomerId(docTypeMaster,
 				metaData.getCustomerId());
-		if (existing != null && ConstantDocument.Yes.equals(existing.getStatus())) {
-			throw new GlobalException("Document already uploaded!");
-		}
+		
 		return existing;
 	}
 }
