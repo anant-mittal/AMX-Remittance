@@ -140,7 +140,8 @@ public class RemitRoutingManager {
 		
 		
 		// This is Interim FIX FOR HOME-SEND EXclussion and should be removed on Priority.
-		routingMatrix = excludeSbRoutingBanks(routingMatrix);
+		// NOT to Excluded for HOMESEND
+		//routingMatrix = excludeSbRoutingBanks(routingMatrix);
 
 		if (null == routingMatrix || routingMatrix.isEmpty()) {
 
