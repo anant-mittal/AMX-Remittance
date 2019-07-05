@@ -216,7 +216,10 @@ public class BranchRemittanceApplManager {
 		 BenificiaryListView beneficaryDetails =getBeneDetails(requestApplModel);
 		 
 		 /* to vlidate BSB  account though api **/
-		remitTrnxManager.beneAccountValidationThroughApi(requestApplModel.getServiceMasterId(),requestApplModel.getRoutingBankId(),beneficaryDetails);
+		String errMsg = remitTrnxManager.beneAccountValidationThroughApi(requestApplModel.getServiceMasterId(),requestApplModel.getRoutingBankId(),beneficaryDetails);
+		if(!StringUtils.isBlank(errMsg)) {
+			throw new GlobalException(JaxError.BSB_ACCOUNT_VALIATION,"Invalid account number "+errMsg);
+		}
 		 
 		 
 		/*checkingStaffIdNumberWithCustomer **/
@@ -491,6 +494,8 @@ public class BranchRemittanceApplManager {
 			if(dynamicRoutingPricingResponse.getCostRateLimitReached()!=null) {
 				remittanceApplication.setReachedCostRateLimit(dynamicRoutingPricingResponse.getCostRateLimitReached()==false?"N":"Y");
 			}
+			
+			
 			remittanceApplication.setBeneDeductFlag(dynamicRoutingPricingResponse.getBeneDeductFlag());
 			
 			remitApplManager.setCustomerDiscountColumns(remittanceApplication, dynamicRoutingPricingResponse);

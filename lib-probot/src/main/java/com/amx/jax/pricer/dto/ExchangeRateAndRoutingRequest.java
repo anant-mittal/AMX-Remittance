@@ -2,6 +2,7 @@ package com.amx.jax.pricer.dto;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
@@ -14,7 +15,7 @@ public class ExchangeRateAndRoutingRequest extends PricingRequestDTO implements 
 	 * 
 	 */
 	private static final long serialVersionUID = -3112085486390742452L;
-	
+
 	@NotNull(message = "Beneficiary Id Can not be Null or Empty")
 	private BigDecimal beneficiaryId;
 
@@ -27,6 +28,8 @@ public class ExchangeRateAndRoutingRequest extends PricingRequestDTO implements 
 	@NotNull(message = "Service Group Can not be Null or Empty")
 	private SERVICE_GROUP serviceGroup;
 
+	private List<BigDecimal> excludeCorBanks;
+
 	public SERVICE_GROUP getServiceGroup() {
 		return serviceGroup;
 	}
@@ -35,7 +38,7 @@ public class ExchangeRateAndRoutingRequest extends PricingRequestDTO implements 
 		this.serviceGroup = serviceGroup;
 	}
 
-	/*O*/
+	/* O */
 
 	public BigDecimal getBeneficiaryId() {
 		return beneficiaryId;
@@ -59,6 +62,14 @@ public class ExchangeRateAndRoutingRequest extends PricingRequestDTO implements 
 
 	public void setBeneficiaryBranchId(BigDecimal beneficiaryBranchId) {
 		this.beneficiaryBranchId = beneficiaryBranchId;
+	}
+
+	public List<BigDecimal> getExcludeCorBanks() {
+		return excludeCorBanks;
+	}
+
+	public void setExcludeCorBanks(List<BigDecimal> excludeCorBanks) {
+		this.excludeCorBanks = excludeCorBanks;
 	}
 
 }

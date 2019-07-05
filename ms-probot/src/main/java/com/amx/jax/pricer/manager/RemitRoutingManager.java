@@ -115,6 +115,33 @@ public class RemitRoutingManager {
 					exchangeRateAndRoutingRequest.getServiceGroup().getGroupCode());
 		}
 
+		List<ViewExRoutingMatrix> removeMatrix = new ArrayList<ViewExRoutingMatrix>();
+
+		if (null != routingMatrix && !routingMatrix.isEmpty()
+				&& null != exchangeRateAndRoutingRequest.getExcludeCorBanks()
+				&& !exchangeRateAndRoutingRequest.getExcludeCorBanks().isEmpty()) {
+
+			List<BigDecimal> removeList = exchangeRateAndRoutingRequest.getExcludeCorBanks();
+
+			// Set<BigDecimal> removeSet = removeList.stream().distinct()
+			// .collect(Collectors.toSet());
+
+			for (ViewExRoutingMatrix matrix : routingMatrix) {
+				if (removeList.contains(matrix.getRoutingBankId())) {
+					removeMatrix.add(matrix);
+				}
+			}
+
+			for (ViewExRoutingMatrix matrix : removeMatrix) {
+				routingMatrix.remove(matrix);
+			}
+
+		}
+		
+		
+		// This is Interim FIX FOR HOME-SEND EXclussion and should be removed on Priority.
+		routingMatrix = excludeSbRoutingBanks(routingMatrix);
+
 		if (null == routingMatrix || routingMatrix.isEmpty()) {
 
 			LOGGER.error("Routing Matrix is Data is Empty or Null for the Pricing/Routing Request");
@@ -849,6 +876,35 @@ public class RemitRoutingManager {
 
 		// Simple Duration Converter
 		return duration;
+
+	}
+
+	private List<ViewExRoutingMatrix> excludeSbRoutingBanks(List<ViewExRoutingMatrix> routingMatrix) {
+
+		if (routingMatrix == null || routingMatrix.isEmpty())
+			return routingMatrix;
+
+		List<ViewExRoutingMatrix> removeMatrix = new ArrayList<>();
+
+		/*
+		 * for (ViewExRoutingMatrix matrix : routingMatrix) { if
+		 * (matrix.getRoutingBankId().compareTo(homeSendId) == 0) {
+		 * removeMatrix.add(matrix); homeSendRouting = matrix; } }
+		 */
+
+		for (ViewExRoutingMatrix matrix : routingMatrix) {
+			if (matrix.getBankIndicator().trim().equalsIgnoreCase("SB")) {
+				removeMatrix.add(matrix);
+			}
+		}
+
+		if (!removeMatrix.isEmpty()) {
+			for (ViewExRoutingMatrix matrix : removeMatrix) {
+				routingMatrix.remove(matrix);
+			}
+		}
+
+		return routingMatrix;
 
 	}
 
