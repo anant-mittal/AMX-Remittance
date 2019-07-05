@@ -46,8 +46,7 @@ public class CustomerContactVerificationManager {
 	@Autowired
 	MetaData metaData;
 
-	@Autowired
-	private MetaData metaData;
+	
 
 	public CustomerContactVerification getCustomerContactVerification(BigDecimal id) {
 		return customerContactVerificationRepository.findById(id);
