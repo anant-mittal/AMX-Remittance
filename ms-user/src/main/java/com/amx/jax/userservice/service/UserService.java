@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
+import java.util.Base64;
 
 import javax.transaction.Transactional;
 
@@ -58,6 +60,7 @@ import com.amx.jax.dbmodel.CustomerRemittanceTransactionView;
 import com.amx.jax.dbmodel.CustomerVerification;
 import com.amx.jax.dbmodel.DistrictMaster;
 import com.amx.jax.dbmodel.LoginLogoutHistory;
+import com.amx.jax.dbmodel.ReferralDetails;
 import com.amx.jax.dbmodel.ViewCity;
 import com.amx.jax.dbmodel.ViewDistrict;
 import com.amx.jax.dbmodel.ViewState;
@@ -90,6 +93,7 @@ import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.userservice.dao.AbstractUserDao;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.dao.CustomerIdProofDao;
+import com.amx.jax.userservice.dao.ReferralDetailsDao;
 import com.amx.jax.userservice.manager.CustomerFlagManager;
 import com.amx.jax.userservice.manager.SecurityQuestionsManager;
 import com.amx.jax.userservice.repository.LoginLogoutHistoryRepository;
@@ -200,6 +204,11 @@ public class UserService extends AbstractUserService {
 	PostManService postManService;
 	@Autowired
 	CustomerFlagManager customerFlagManager;
+	
+	@Autowired 
+	ReferralDetailsDao refDao;
+	
+	
 
 	@Override
 	public ApiResponse registerUser(AbstractUserModel userModel) {
@@ -341,6 +350,17 @@ public class UserService extends AbstractUserService {
 		} else {
 			jaxNotificationService.sendProfileChangeNotificationEmail(model, outputModel.getPersoninfo());
 			jaxNotificationService.sendProfileChangeNotificationMobile(model, outputModel.getPersoninfo(), oldMobile);
+		}
+		
+		if(model.getReferralCode()!= null) {
+			ReferralDetails refferrerDetail = refDao.getReferralByCustomerReferralCode(model.getReferralCode());
+			ReferralDetails newReferralDetail = new ReferralDetails();
+			UUID uuid = UUID.randomUUID();
+			newReferralDetail.setCustomerReferralCode(String.valueOf(uuid));
+			newReferralDetail.setRefferedByCustomerId(refferrerDetail.getCustomerId());
+			newReferralDetail.setIsConsumed(ConstantDocument.No);
+			newReferralDetail.setCustomerId(onlineCust.getCustomerId());
+			refDao.saveReferralCode(newReferralDetail);
 		}
 		auditService.log(auditEvent.result(Result.DONE));
 		return response;
@@ -673,7 +693,7 @@ public class UserService extends AbstractUserService {
 		ApiResponse response = getBlackApiResponse();
 		CustomerModel customerModel = convert(onlineCustomer);
 
-		// afterLoginSteps(onlineCustomer);
+		afterLoginSteps(onlineCustomer);
 		response.getData().getValues().add(customerModel);
 		response.getData().setType(customerModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
@@ -1029,6 +1049,8 @@ public class UserService extends AbstractUserService {
 		return response;
 
 	}
+		
+	
 
 	private void resetSecurityQuestion(CustomerOnlineRegistration customerOnlineRegistration) {
 		customerOnlineRegistration.setSecurityQuestion1(null);

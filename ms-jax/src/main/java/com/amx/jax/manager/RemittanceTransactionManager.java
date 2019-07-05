@@ -942,7 +942,7 @@ public class RemittanceTransactionManager {
 					.createAdditionalInstnData(remittanceApplication);
 		}
 		remitAppDao.saveAllApplicationData(remittanceApplication, remittanceAppBeneficairy, additionalInstrumentData);
-		remitAppDao.updatePlaceOrder(model, remittanceApplication);
+		remitAppDao.updatePlaceOrder(model, remittanceApplication);		
 		remiteAppModel.setRemittanceAppId(remittanceApplication.getRemittanceApplicationId());
 		remiteAppModel.setNetPayableAmount(netAmountPayable);
 		remiteAppModel.setDocumentIdForPayment(remittanceApplication.getPaymentId());

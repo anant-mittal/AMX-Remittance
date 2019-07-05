@@ -46,6 +46,8 @@ public class CustomerModel extends AbstractModel implements ICustomerModel {
 	private boolean isRegistrationFlow;
 
 	private CustomerFlags flags;
+	
+	private String referralId;
 
 	public boolean isRegistrationFlow() {
 		return isRegistrationFlow;
@@ -197,5 +199,23 @@ public class CustomerModel extends AbstractModel implements ICustomerModel {
 	public void setFlags(CustomerFlags flags) {
 		this.flags = flags;
 	}
+	
+	public String getReferralId() {
+		return referralId;
+	}
 
+	public void setReferralId(String referralId) {
+		this.referralId = referralId;
+	}
+
+	@Override
+	public String getReferralCode() {	
+		return referralId;
+	}
+
+	@Override
+	public void setReferralCode(String referralCode) {
+		this.referralId = referralCode;	
+	}
+	
 }

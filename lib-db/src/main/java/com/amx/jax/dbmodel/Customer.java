@@ -98,6 +98,7 @@ public class Customer implements java.io.Serializable {
 	private String isOnlineUser;
 	private BigDecimal customerTypeId;
 	private Date identityExpiredDate;
+	
 
 	/**
 	 * Added following field for CR. DAILY_LIMIT WEEKLY_LIMIT MONTHLY_LIMIT
@@ -144,6 +145,11 @@ public class Customer implements java.io.Serializable {
 	private String annualIncomeUpdatedBy;
 	private Date annualIncomeUpdatedDate;
 	private String isBusinessCardVerified;
+	
+
+	
+	private String customerVatNumber;
+	
 	
 	public String getIsBusinessCardVerified() {
 		return isBusinessCardVerified;
@@ -1068,4 +1074,14 @@ public class Customer implements java.io.Serializable {
 	public void setMobileVerified(Status mobileVerified) {
 		this.mobileVerified = mobileVerified;
 	}
+
+	@Column(name="VAT_NUMBER")
+	public String getCustomerVatNumber() {
+		return customerVatNumber;
+	}
+
+	public void setCustomerVatNumber(String customerVatNumber) {
+		this.customerVatNumber = customerVatNumber;
+	}
+		
 }

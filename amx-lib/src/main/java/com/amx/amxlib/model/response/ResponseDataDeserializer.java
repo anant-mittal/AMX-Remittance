@@ -40,6 +40,7 @@ import com.amx.amxlib.model.OnlineConfigurationDto;
 import com.amx.amxlib.model.PlaceOrderDTO;
 import com.amx.amxlib.model.PlaceOrderNotificationDTO;
 import com.amx.amxlib.model.RateAlertDTO;
+import com.amx.amxlib.model.ReferralDTO;
 import com.amx.amxlib.model.UserModel;
 import com.amx.amxlib.model.UserVerificationCheckListDTO;
 import com.amx.amxlib.model.trnx.BeneficiaryTrnxModel;
@@ -320,7 +321,10 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 			models = new ObjectMapper().readValue(values, new TypeReference<List<FxExchangeRateDto>>() {
 			});
 			break;
-			
+//		case "referral":
+//			models = new ObjectMapper().readValue(values, new TypeReference<List<ReferralDTO>>() {
+//			});
+//			break;
 			
 			
 			

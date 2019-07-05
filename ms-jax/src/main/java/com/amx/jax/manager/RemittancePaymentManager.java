@@ -30,6 +30,7 @@ import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dao.RemittanceProcedureDao;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.PlaceOrder;
+import com.amx.jax.dbmodel.ReferralDetails;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
@@ -49,6 +50,7 @@ import com.amx.jax.services.RemittanceApplicationService;
 import com.amx.jax.services.ReportManagerService;
 import com.amx.jax.services.TransactionHistroyService;
 import com.amx.jax.userservice.dao.CustomerDao;
+import com.amx.jax.userservice.dao.ReferralDetailsDao;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.RoundUtil;
@@ -107,6 +109,9 @@ public class RemittancePaymentManager extends AbstractService{
 	@Autowired
 	DailyPromotionManager dailyPromotionManager;
 	
+	@Autowired
+   	ReferralDetailsDao refDao;
+	
 	public ApiResponse<PaymentResponseDto> paymentCapture(PaymentResponseDto paymentResponse) {
 		ApiResponse response = null;
 		logger.info("paymment capture :"+paymentResponse.toString());
@@ -144,6 +149,15 @@ public class RemittancePaymentManager extends AbstractService{
 				remittanceApplicationService.updatePaymentDetails(lstPayIdDetails, paymentResponse);
 				/** Calling stored procedure  insertRemittanceOnline **/
 				remitanceMap = remittanceApplicationService.saveRemittance(paymentResponse);
+				
+				/** Referral Code **/
+//				List<RemittanceTransaction> remittanceList = remitAppDao.getOnlineRemittanceList(paymentResponse.getCustomerId());
+//				if(remittanceList.size() == 0) {
+					ReferralDetails referralDetails = refDao.getReferralByCustomerId(paymentResponse.getCustomerId());
+					referralDetails.setIsConsumed("Y");
+					refDao.updateReferralCode(referralDetails);
+//				}			
+				
 				errorMsg = (String)remitanceMap.get("P_ERROR_MESG");
 				errorMsg= null;
 				if(remitanceMap!=null && !remitanceMap.isEmpty() && StringUtils.isBlank(errorMsg)){

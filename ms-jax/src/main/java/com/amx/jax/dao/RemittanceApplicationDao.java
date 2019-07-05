@@ -14,6 +14,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.dbmodel.PlaceOrder;
+import com.amx.jax.dbmodel.ReferralDetails;
 import com.amx.jax.dbmodel.RemittanceTransactionView;
 import com.amx.jax.dbmodel.remittance.AdditionalInstructionData;
 import com.amx.jax.dbmodel.remittance.FlexFiledView;
@@ -30,6 +31,7 @@ import com.amx.jax.repository.RemittanceApplicationBeneRepository;
 import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.repository.RemittanceTransactionRepository;
 import com.amx.jax.service.FinancialService;
+import com.amx.jax.userservice.dao.ReferralDetailsDao;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -58,6 +60,9 @@ public class RemittanceApplicationDao {
 	IFlexFiledView IFlexFiledView;
     @Autowired
     IPlaceOrderDao placeOrderdao;
+    
+    @Autowired
+    ReferralDetailsDao refDao;
     
 	@Transactional
 	public void saveAllApplicationData(RemittanceApplication app, RemittanceAppBenificiary appBene,
@@ -121,10 +126,14 @@ public class RemittanceApplicationDao {
 			logger.info("Place Order updated for place_order_id: " + model.getPlaceOrderId());
 		}
 
-	}
+	}	
 	
 	public RemittanceTransaction getRemittanceTransactionById(BigDecimal remittanceTransactionId) {
 		return remittanceTransactionRepository.findOne(remittanceTransactionId);
+	}
+	
+	public List<RemittanceTransaction> getOnlineRemittanceList(BigDecimal customerId) {
+		return remittanceTransactionRepository.getTransactionMadeByOnline(customerId.toString());
 	}
 
 	public RemittanceApplication getApplication(BigDecimal remittanceApplicationId) {
