@@ -45,7 +45,7 @@ public class DocumentScanValidator {
 		}
 	}
 
-	public CustomerDocumentUploadReference validateUploadDocumentRequest(UploadCustomerDocumentRequest uploadCustomerDocumentRequest) {
+	public void validateUploadDocumentRequest(UploadCustomerDocumentRequest uploadCustomerDocumentRequest) {
 		if (metaData.getCustomerId() == null && uploadCustomerDocumentRequest.getIdentityInt() == null) {
 			throw new GlobalException("identity int or customer id is required");
 		}
@@ -59,9 +59,5 @@ public class DocumentScanValidator {
 		if (docTypeMaster == null) {
 			throw new GlobalException("No doc type master found in db");
 		}
-		CustomerDocumentUploadReference existing = customerDocumentUploadReferenceRepo.findByCustomerDocumentTypeMasterAndCustomerId(docTypeMaster,
-				metaData.getCustomerId());
-		
-		return existing;
 	}
 }

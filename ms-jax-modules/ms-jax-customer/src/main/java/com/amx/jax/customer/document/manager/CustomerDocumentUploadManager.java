@@ -130,6 +130,10 @@ public class CustomerDocumentUploadManager {
 	}
 
 	private void createDocumentUploadReference(CustomerDocumentUploadReferenceTemp upload, BigDecimal docBlobId, BigDecimal docFinYear) {
+		List<CustomerDocumentUploadReference> existingUploads = customerDocumentUploadReferenceRepo
+				.findByCustomerDocumentTypeMasterAndCustomerId(upload.getCustomerDocumentTypeMaster(), metaData.getCustomerId());
+		existingUploads.forEach(i -> i.setStatus(ConstantDocument.No));
+		customerDocumentUploadReferenceRepo.save(existingUploads);
 		CustomerDocumentUploadReference docUploadReference = new CustomerDocumentUploadReference();
 		docUploadReference.setCustomerDocumentTypeMaster(upload.getCustomerDocumentTypeMaster());
 		docUploadReference.setCustomerId(metaData.getCustomerId());

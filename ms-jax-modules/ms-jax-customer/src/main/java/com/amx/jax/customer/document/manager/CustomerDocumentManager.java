@@ -3,6 +3,7 @@ package com.amx.jax.customer.document.manager;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -90,7 +91,8 @@ public class CustomerDocumentManager {
 	}
 
 	private List<CustomerDocumentInfo> fetchCustomerOtherDocuments(BigDecimal customerId) {
-		List<CustomerDocumentUploadReference> uploads = customerDocumentUploadReferenceRepo.findByCustomerId(customerId);
+		List<CustomerDocumentUploadReference> uploads = customerDocumentUploadReferenceRepo.findByCustomerIdAndStatusIn(customerId,
+				Arrays.asList(ConstantDocument.Yes, ConstantDocument.No));
 		return uploads.stream().map(i -> {
 			CustomerDocumentInfo docInfo = new CustomerDocumentInfo();
 			if (i.getScanIndic().equals(DocumentScanIndic.DB_SCAN)) {
@@ -240,8 +242,8 @@ public class CustomerDocumentManager {
 	}
 
 	public List<CustomerDocumentUploadReference> getInProcessCustomerUploads(BigDecimal customerId) {
-		List<CustomerDocumentUploadReference> uploads = customerDocumentUploadReferenceRepo.findByCustomerIdAndStatus(customerId,
-				ConstantDocument.Processing);
+		List<CustomerDocumentUploadReference> uploads = customerDocumentUploadReferenceRepo.findByCustomerIdAndStatusIn(customerId,
+				Arrays.asList(ConstantDocument.Processing));
 		return uploads;
 	}
 

@@ -11,10 +11,10 @@ import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReference;
 
 public interface CustomerDocumentUploadReferenceRepo extends CrudRepository<CustomerDocumentUploadReference, Serializable> {
 
-	public CustomerDocumentUploadReference findByCustomerDocumentTypeMasterAndCustomerId(CustomerDocumentTypeMaster customerDocumentTypeMaster,
+	public List<CustomerDocumentUploadReference> findByCustomerDocumentTypeMasterAndCustomerId(CustomerDocumentTypeMaster customerDocumentTypeMaster,
 			BigDecimal customerId);
 
 	public List<CustomerDocumentUploadReference> findByCustomerId(BigDecimal customerId);
 	
-	public List<CustomerDocumentUploadReference> findByCustomerIdAndStatus(BigDecimal customerId, String status);
+	public List<CustomerDocumentUploadReference> findByCustomerIdAndStatusIn(BigDecimal customerId, List<String> status);
 }
