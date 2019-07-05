@@ -125,6 +125,8 @@ public class CustomerPersonalDetail extends AbstractModel {
 	String customerSignature;
 	
 	private ResourceDTO customerCategory;
+	
+	Boolean pepsIndicator;
 
 	public CustomerRegistrationType getRegistrationType() {
 		return registrationType;
@@ -319,6 +321,14 @@ public class CustomerPersonalDetail extends AbstractModel {
 	
 	public void setCustomerCategory(ResourceDTO customerCategory) {
 		this.customerCategory = customerCategory;
+	}
+
+	public Boolean getPepsIndicator() {
+		return pepsIndicator;
+	}
+
+	public void setPepsIndicator(Boolean pepsIndicator) {
+		this.pepsIndicator = pepsIndicator;
 	}
 
 }

@@ -145,6 +145,7 @@ public class CustomerManagementManager {
 		customerDetails.setRegistrationType(customer.getCustomerRegistrationType());
 		customerDetails.setCustomerSignature(customer.getSignatureSpecimenClob());
 		customerDetails.setCustomerCategory(getCustomerCategory(customer.getCustomerId()));
+		customerDetails.setPepsIndicator(ConstantDocument.Yes.equals(customer.getPepsIndicator()));
 		return customerDetails;
 	}
 
