@@ -60,7 +60,8 @@ public class JaxCustomerContactVerificationService extends AbstractService {
 	//changes done by Radhika
 	public void sendEmailVerifyLinkOnReg(CustomerModel customerModel) {
 		Customer customer = customerRepository.getActiveCustomerDetails(customerModel.getLoginId());
-			
+		customer.setEmailVerified(Status.N);
+		customerRepository.save(customer);
 		customer.setEmail(customerModel.getEmail());
 		CustomerContactVerification customerContactVerification = customerContactVerificationManager.create(customer, ContactType.EMAIL);
 				
