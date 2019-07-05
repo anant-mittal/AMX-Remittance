@@ -76,6 +76,9 @@
 
 		<!-- dependency> <groupId>com.amx.jax</groupId> <artifactId>ms-exchangerate</artifactId> 
 			<version>0.0.1-SNAPSHOT</version> </dependency -->
+		<!--dependency> <groupId>org.ocpsoft.prettytime</groupId> <artifactId>prettytime</artifactId> 
+			<version>4.0.2.Final</version> </dependency -->
+
 	</dependencies>
 
 	<build>

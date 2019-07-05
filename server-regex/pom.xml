@@ -30,6 +30,17 @@
 				</exclusion> <exclusion> <groupId>org.springframework.boot</groupId> <artifactId>spring-boot-starter-test</artifactId> 
 				</exclusion> </exclusions> -->
 		</dependency>
+
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-jax</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>jax-client</artifactId>
+		</dependency>
+
 	</dependencies>
 
 

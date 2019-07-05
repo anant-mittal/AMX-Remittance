@@ -65,12 +65,9 @@ public class ViewCompanyDetails implements Serializable {
 	private String arabicAddress3;
 	private String registrationNumber;
 	
-	
 	private String vatNumber;
 	private String vatRegistrationDate;
 	
-	
-
 	private BigDecimal idNo;
 	
 	@Id

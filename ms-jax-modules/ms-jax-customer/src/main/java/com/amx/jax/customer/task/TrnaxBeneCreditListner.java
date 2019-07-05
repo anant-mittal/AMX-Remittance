@@ -91,7 +91,7 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 		Customer c = customerRepository.getCustomerByCustomerIdAndIsActive(custId, "Y");
 		String emailId = c.getEmail();
 		String smsNo = c.getMobile();
-		String custName = c.getFirstName()+c.getLastName();
+		String custName = c.getFirstName()+' '+c.getMiddleName() + ' '+c.getLastName();
 		
 		LOGGER.info("transaction id is  "+tranxId);
 		NumberFormat myFormat = NumberFormat.getInstance();
@@ -136,7 +136,7 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 				//LOGGER.debug("Customer value is ", modeldata.get("customer"));
 
 			} else {
-				modeldata.put("customer", null);
+				modeldata.put("customer", custName);
 				modeldata.put("verifylink", null);
 			}
 

@@ -34,6 +34,8 @@ public final class RuntimeTest {
 
 		System.out.println(" ======== String Test ======= " + "Y".equalsIgnoreCase(null));
 
+		System.out.println(" Reminder ==> " + BigDecimal.ZERO.remainder(BigDecimal.ONE));
+
 		BigDecimal b = new BigDecimal(1235454.453888888);
 		BigDecimal dec = b.remainder(new BigDecimal(1)).round(new MathContext(3, RoundingMode.HALF_EVEN));
 
@@ -46,7 +48,7 @@ public final class RuntimeTest {
 		BigDecimal diffVal = dec.remainder(rounder).round(new MathContext(3, RoundingMode.HALF_EVEN));
 
 		System.out.println(" Diff Val ==> " + diffVal.negate());
-		
+
 		BigDecimal bumpUpVal = rounder.subtract(diffVal);
 
 		System.out.println(" Bump Up Val ==> " + bumpUpVal);
@@ -54,18 +56,15 @@ public final class RuntimeTest {
 		System.out.println("Round Down ==>" + dec.subtract(diffVal));
 
 		System.out.println(" Int Val ==>  " + b.longValue());
-		
 
 		System.out.println("New Amt Down ==> " + new BigDecimal(b.longValue()).add(dec.add(diffVal.negate())));
-		
+
 		System.out.println(" double ==> " + dec.add(diffVal.negate()).remainder(rounder).doubleValue());
-		
+
 		System.out.println("New Amt Up ==> " + new BigDecimal(b.longValue()).add(dec.add(bumpUpVal)));
 
 		System.out.println(" double 2 ==> " + dec.add(bumpUpVal).remainder(rounder).doubleValue());
-		
-		
-		
+
 		Map<String, Object> innerJsonMap = new HashMap<String, Object>();
 
 		innerJsonMap.put("1", "value1");

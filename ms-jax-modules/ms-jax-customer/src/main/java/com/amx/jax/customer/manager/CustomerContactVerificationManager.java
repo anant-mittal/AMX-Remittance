@@ -46,6 +46,9 @@ public class CustomerContactVerificationManager {
 	@Autowired
 	MetaData metaData;
 
+	@Autowired
+	private MetaData metaData;
+
 	public CustomerContactVerification getCustomerContactVerification(BigDecimal id) {
 		return customerContactVerificationRepository.findById(id);
 	}
@@ -83,7 +86,7 @@ public class CustomerContactVerificationManager {
 		link.setContactType(contactType);
 		link.setVerificationCode(Random.randomAlphaNumeric(8));
 		link.setCreatedDate(new Date());
-		link.setAppCountryId(c.getCountryId());
+		link.setAppCountryId(metaData.getCountryId());
 		link.setIsActive(Status.Y);
 
 		if (ContactType.EMAIL.equals(contactType)) {

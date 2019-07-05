@@ -1,5 +1,5 @@
 /**
- * 
+ * @author Prashant
  */
 package com.amx.jax.model.request.remittance;
 
@@ -8,11 +8,8 @@ import java.math.BigDecimal;
 import javax.validation.constraints.NotNull;
 
 import com.amx.jax.model.response.ExchangeRateBreakup;
+import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;
 
-/**
- * @author Prashant
- *
- */
 public class RemittanceTransactionRequestModel extends RemittanceAdditionalBeneFieldModel implements IRemitTransReqPurpose {
 
 	/**
@@ -85,3 +82,4 @@ public class RemittanceTransactionRequestModel extends RemittanceAdditionalBeneF
 	}
 
 }
+

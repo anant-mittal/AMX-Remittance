@@ -143,7 +143,7 @@ public class BranchRemittanceService extends AbstractService{
 		return AmxApiResponse.buildList(lstLocalCurrencyDeno);
 	}
 	
-	public BoolRespModel saveCustomerBankDetails(List<CustomerBankRequest> customerBank) {
+	public BoolRespModel saveCustomerBankDetails(CustomerBankRequest customerBank) {
 		validation.validateHeaderInfo();
 		BigDecimal appcountryId = metaData.getCountryId();
 		BigDecimal employeeId = metaData.getEmployeeId();
@@ -176,8 +176,8 @@ public class BranchRemittanceService extends AbstractService{
 		return AmxApiResponse.build(respondeDto);
 	}
 
-	public AmxApiResponse<AdditionalExchAmiecDto, Object> getPurposeOfTrnx(BigDecimal beneRelaId){
-		List<AdditionalExchAmiecDto> dto =  branchRemitManager.getPurposeOfTrnx(beneRelaId);
+	public AmxApiResponse<AdditionalExchAmiecDto, Object> getPurposeOfTrnx(BigDecimal beneRelaId,BigDecimal routingCountryId){
+		List<AdditionalExchAmiecDto> dto =  branchRemitManager.getPurposeOfTrnx(beneRelaId,routingCountryId);
 		return AmxApiResponse.buildList(dto);
 	}
 	

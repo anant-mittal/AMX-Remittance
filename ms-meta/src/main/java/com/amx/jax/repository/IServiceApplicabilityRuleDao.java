@@ -41,4 +41,24 @@ public interface IServiceApplicabilityRuleDao extends JpaRepository<ServiceAppli
 			" and b.FIELD_NAME = ?4")
 	public List<ServiceApplicabilityRule> getServiceApplicabilityRulesForBeneficiary(BigDecimal applicationCountry,
 			BigDecimal beneCountry, BigDecimal currencyId, String fieldName);
+	
+	
+
+	@Query("select r from ServiceApplicabilityRule r where r.applicationCountryId =:applicationCountry "
+			+ " and r.countryId =:beneCountry and r.currencyId=:currencyId and r.fieldName=:fieldName "
+			+ " and r.remittanceModeId=:remittanceModeId and r.deliveryModeId=:deliveryModeId")
+	public ServiceApplicabilityRule getServiceApplicabilityRulesForBank(
+			@Param("applicationCountry") BigDecimal applicationCountry, @Param("beneCountry") BigDecimal beneCountry,
+			@Param("currencyId") BigDecimal currencyId, @Param("fieldName") String fieldName,
+			@Param("remittanceModeId") BigDecimal remittanceModeId,@Param("deliveryModeId") BigDecimal deliveryModeId);
+	
+	
+	@Query("select r from ServiceApplicabilityRule r where r.applicationCountryId =:applicationCountry "
+			+ " and r.countryId =:beneCountry and r.currencyId=:currencyId and r.fieldName=:fieldName "
+			+ " and r.remittanceModeId=:remittanceModeId and r.deliveryModeId=:deliveryModeId")
+	public ServiceApplicabilityRule getServiceApplicabilityRulesForBranchAndSwift(
+			@Param("applicationCountry") BigDecimal applicationCountry, @Param("beneCountry") BigDecimal beneCountry,
+			@Param("currencyId") BigDecimal currencyId, @Param("fieldName") String fieldName,
+			@Param("remittanceModeId") BigDecimal remittanceModeId,@Param("deliveryModeId") BigDecimal deliveryModeId);
+	
 }

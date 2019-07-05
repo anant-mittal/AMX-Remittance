@@ -239,8 +239,7 @@ public class RemittancePaymentManager extends AbstractService{
 			}
 			
 		}catch(Exception e) {
-			e.printStackTrace();
-			
+			logger.error("error occured in paymentCapture", e);
 			lstPayIdDetails =applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(paymentResponse.getUdf3(),new Customer(paymentResponse.getCustomerId()));
 			
 			if(!lstPayIdDetails.isEmpty()) {
@@ -328,6 +327,7 @@ public class RemittancePaymentManager extends AbstractService{
 	private void validateAmountMismatch(RemittanceApplication remittanceApplication, PaymentResponseDto paymentResponse) {
 		BigDecimal localNetTraxAmount = remittanceApplication.getLocalNetTranxAmount();
 		BigDecimal loyalityPointEncashed = remittanceApplication.getLoyaltyPointsEncashed();
+		loyalityPointEncashed = (loyalityPointEncashed == null ? BigDecimal.ZERO : loyalityPointEncashed);
 		BigDecimal localCurrencyDecimalNumber = remittanceApplication.getExCurrencyMasterByLocalChargeCurrencyId().getDecinalNumber();
 		BigDecimal payableAmount = localNetTraxAmount.subtract(loyalityPointEncashed);
 		if (paymentResponse.getAmount() == null) {
