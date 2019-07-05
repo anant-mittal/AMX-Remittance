@@ -70,7 +70,7 @@ public class CustomerManagementController implements ICustomerManagementControll
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> updateCustomer(@RequestBody @Valid UpdateCustomerInfoRequest updateCustomerInfoRequest)
 			throws ParseException {
-		log.debug("request updateCustomer {}", updateCustomerInfoRequest);
+		log.debug("request updateCustomer {}", JsonUtil.toJson(updateCustomerInfoRequest));
 		customerManagementManager.updateCustomer(updateCustomerInfoRequest);
 		customerManagementManager.moveCustomerDataUsingProcedures();
 		return AmxApiResponse.build();
@@ -80,7 +80,7 @@ public class CustomerManagementController implements ICustomerManagementControll
 	@Override
 	public AmxApiResponse<UploadCustomerKycResponse, Object> uploadCustomerKyc(
 			@RequestBody @Valid UploadCustomerKycRequest uploadCustomerKycRequest) {
-		log.info("request uploadCustomerKycRequest {}", uploadCustomerKycRequest);
+		log.info("request uploadCustomerKycRequest {}", JsonUtil.toJson(uploadCustomerKycRequest));
 		UploadCustomerKycResponse uploadReference = customerDocumentManager.uploadKycDocument(uploadCustomerKycRequest);
 		return AmxApiResponse.build(uploadReference);
 	}
@@ -89,7 +89,7 @@ public class CustomerManagementController implements ICustomerManagementControll
 	@Override
 	public AmxApiResponse<UploadCustomerDocumentResponse, Object> uploadCustomerDocument(
 			@RequestBody @Valid UploadCustomerDocumentRequest uploadCustomerDocumentRequest) {
-		log.info("request uploadCustomerDocumentRequest {}", uploadCustomerDocumentRequest);
+		log.info("request uploadCustomerDocumentRequest {}", JsonUtil.toJson(uploadCustomerDocumentRequest));
 		UploadCustomerDocumentResponse uploadReference = customerDocumentManager.uploadDocument(uploadCustomerDocumentRequest);
 		return AmxApiResponse.build(uploadReference);
 	}
@@ -97,7 +97,7 @@ public class CustomerManagementController implements ICustomerManagementControll
 	@Override
 	@RequestMapping(path = DUPLICATE_CUSTOMER_CHECK, method = { RequestMethod.POST })
 	public AmxApiResponse<DuplicateCustomerDto, Object> checkForDuplicateCustomer(@RequestBody @Valid CustomerPersonalDetail customerPersonalDetail) {
-		log.debug("request checkForDuplicateCustomer {}", customerPersonalDetail);
+		log.debug("request checkForDuplicateCustomer {}", JsonUtil.toJson(customerPersonalDetail));
 		List<DuplicateCustomerDto> duplicateCustomerDtoList = customerService.checkForDuplicateCustomer(customerPersonalDetail);
 		return AmxApiResponse.buildList(duplicateCustomerDtoList);
 	}
