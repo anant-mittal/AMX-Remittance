@@ -162,6 +162,7 @@ public final class JsonUtil {
 		mapper.setSerializationInclusion(Include.NON_NULL);
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		mapper.configure(Feature.AUTO_CLOSE_SOURCE, true);
+		mapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
 		mapper.registerModule(module);
 		mapper.registerModule(new JavaTimeModule());
 		return mapper;

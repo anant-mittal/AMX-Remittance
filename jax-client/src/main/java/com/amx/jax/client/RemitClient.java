@@ -32,7 +32,6 @@ import com.amx.jax.model.response.SourceOfIncomeDto;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.rest.RestService;
-import com.amx.utils.ArgUtil;
 
 @Component
 public class RemitClient extends AbstractJaxServiceClient {

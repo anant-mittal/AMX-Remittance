@@ -322,7 +322,10 @@ public class RemittanceTransactionManager {
 		
 		
 		 /** to vlidate BSB  account though api by rabil**/
-			beneAccountValidationThroughApi(serviceMasterId,routingBankId,beneficiary);
+		String errMsg = beneAccountValidationThroughApi(serviceMasterId,routingBankId,beneficiary);
+		if(!StringUtils.isBlank(errMsg)) {
+			throw new GlobalException(JaxError.BSB_ACCOUNT_VALIATION,"Invalid account number "+errMsg);
+		}		
 		/** end here**/
 		
 		validateNumberOfTransactionLimits();
@@ -1209,9 +1212,45 @@ public class RemittanceTransactionManager {
 	}
 	
 	/** added by Rabil on 27 May 2019 **/
-	public void beneAccountValidationThroughApi(BigDecimal serviceId,BigDecimal routingBankId ,BenificiaryListView beneficiary) {
-		 String accountNo = null;
-		if(JaxUtil.isNullZeroBigDecimalCheck(serviceId) && serviceId.compareTo(ConstantDocument.SERVICE_MASTER_ID_EFT)==0) {
+	public String beneAccountValidationThroughApi(BigDecimal serviceId,BigDecimal routingBankId ,BenificiaryListView beneficiary) {
+		String accountNo = null;
+		String errorMsg = null;
+
+		if(beneficiary != null && beneficiary.getBankId() != null) {
+			BankMasterModel bankMaster = bankService.getBankById(beneficiary.getBankId());
+			OWSScheduleModel oWSScheduleModel = iOWSScheduleModelRepository.findByCorBank(bankMaster.getBankCode());
+			if(oWSScheduleModel!=null && oWSScheduleModel.getBeneAccountCheckInd()!=null && !StringUtils.isBlank(oWSScheduleModel.getBeneAccountCheckInd()) && oWSScheduleModel.getBeneAccountCheckInd().equalsIgnoreCase("1")) {
+				Boolean ibankCheck = checkIbanNumber(bankMaster);
+				if(ibankCheck) {
+					accountNo = beneficiary.getIbanNumber();
+				}else {
+					accountNo = beneficiary.getBankAccountNumber();
+				}
+				if(!StringUtils.isBlank(accountNo)) {
+					errorMsg = accountValidationApi(bankMaster.getBankCode(),accountNo);
+				}
+			}
+		}
+		
+		if(routingBankId != null) {
+			BankMasterModel routingBankMaster = bankService.getBankById(routingBankId);
+			OWSScheduleModel oWSScheduleModelTT = iOWSScheduleModelRepository.findByCorBank(routingBankMaster.getBankCode());
+			
+			if(oWSScheduleModelTT!=null && oWSScheduleModelTT.getTtbeneAccountCheckInd()!=null && !StringUtils.isBlank(oWSScheduleModelTT.getTtbeneAccountCheckInd()) && oWSScheduleModelTT.getTtbeneAccountCheckInd().equals("1")) {
+				Boolean ibankCheck = checkIbanNumber(routingBankMaster);
+				if(ibankCheck) {
+					accountNo = beneficiary.getIbanNumber();
+				}else {
+					accountNo = beneficiary.getBankAccountNumber();
+				}
+				if(!StringUtils.isBlank(accountNo)) {
+					errorMsg = accountValidationApi(routingBankMaster.getBankCode(),accountNo);
+				}
+			}
+		}
+		
+
+		/*if(JaxUtil.isNullZeroBigDecimalCheck(serviceId) && serviceId.compareTo(ConstantDocument.SERVICE_MASTER_ID_EFT)==0) {
 			BankMasterModel bankMaster = bankService.getBankById(beneficiary.getBankId());
 			OWSScheduleModel oWSScheduleModel = iOWSScheduleModelRepository.findByCorBank(bankMaster.getBankCode());
 			if(oWSScheduleModel!=null && oWSScheduleModel.getBeneAccountCheckInd()!=null && oWSScheduleModel.getBeneAccountCheckInd().equalsIgnoreCase("1")) {
@@ -1222,10 +1261,10 @@ public class RemittanceTransactionManager {
 					accountNo = beneficiary.getBankAccountNumber();
 				}
 				if(!StringUtils.isBlank(accountNo)) {
-					accountValidationApi(bankMaster.getBankCode(),accountNo);
+					errorMsg = accountValidationApi(bankMaster.getBankCode(),accountNo);
 				}
 			}
-		}else if(JaxUtil.isNullZeroBigDecimalCheck(serviceId) && serviceId.compareTo(ConstantDocument.SERVICE_MASTER_ID_TT)==0) { /** for TT Check **/
+		}else if(JaxUtil.isNullZeroBigDecimalCheck(serviceId) && serviceId.compareTo(ConstantDocument.SERVICE_MASTER_ID_TT)==0) { *//** for TT Check **//*
 			BankMasterModel bankMaster = bankService.getBankById(routingBankId);
 			OWSScheduleModel oWSScheduleModel = iOWSScheduleModelRepository.findByCorBank(bankMaster.getBankCode());
 			if(oWSScheduleModel!=null && !StringUtils.isBlank(oWSScheduleModel.getBeneAccountCheckInd()) && oWSScheduleModel.getBeneAccountCheckInd().equalsIgnoreCase("1") && !StringUtils.isBlank(oWSScheduleModel.getTtbeneAccountCheckInd()) && oWSScheduleModel.getTtbeneAccountCheckInd().equals("1")) {
@@ -1236,10 +1275,12 @@ public class RemittanceTransactionManager {
 					accountNo = beneficiary.getBankAccountNumber();
 				}
 				if(!StringUtils.isBlank(accountNo)) {
-					accountValidationApi(bankMaster.getBankCode(),accountNo);
+					errorMsg = accountValidationApi(bankMaster.getBankCode(),accountNo);
 				}
 			}
-		}
+		}*/
+
+		return errorMsg;
 	}
 	
 	/** added by Rabil on 28 May 2019 **/
@@ -1252,11 +1293,11 @@ public class RemittanceTransactionManager {
 	}
 	
 	/** added by Rabil on 28 May 2019 **/
-	private void accountValidationApi(String bankCode,String beneBankaccount) {
+	private String accountValidationApi(String bankCode,String beneBankaccount) {
+		String errorMessage =null;
 		try {
 	
 		String accountValidation=null;
-		String errorMessage =null;
 		ServiceProviderCredentialsModel crdeModel = serviceProviderCredentailsRepository.findByLoginCredential1(ConstantDocument.BENE_ACCT_VALID);
 		String bankUrl =null;
 		if(crdeModel!=null && !StringUtils.isBlank(crdeModel.getLoginCredential2())) {
@@ -1289,13 +1330,17 @@ public class RemittanceTransactionManager {
 				}
 			}
 			
+			
+		/*	
 			if(!StringUtils.isBlank(accountValidation) && accountValidation.equalsIgnoreCase(ConstantDocument.No)) {
 				logger.error("response :"+bankCode +"-"+errorMessage);
 				throw new GlobalException(JaxError.BSB_ACCOUNT_VALIATION,"Bank account validation failed  : "+errorMessage==null?"":errorMessage);
-			}
-		}		
+			}*/
+		}
+		return errorMessage;
 	}catch(GlobalException e) {
 		e.printStackTrace();
+		logger.error("response :"+bankCode +"-"+errorMessage);
 		throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
 	}
 	}

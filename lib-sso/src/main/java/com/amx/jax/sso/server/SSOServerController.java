@@ -155,7 +155,7 @@ public class SSOServerController {
 				resp.setHeader("Location", builder.getURL());
 				resp.setStatus(302);
 			} else {
-				sSOTranx.put(x);
+				sSOTranx.fastPut(x);
 			}
 		}
 		ssoUser.generateSAC();

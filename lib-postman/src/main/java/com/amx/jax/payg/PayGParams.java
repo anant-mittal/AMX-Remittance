@@ -6,32 +6,34 @@ import com.amx.jax.dict.Channel;
 import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.dict.Tenant;
 import com.amx.utils.ArgUtil;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class PayGParams implements Serializable {
 
 	private static final long serialVersionUID = 3434309644048921758L;
 
-	String uuid = null;
-	String verification = null;
+	private String uuid = null;
+	private String verification = null;
 
 	// Identifiers
-	String docId = null;
-	String docNo = null;
-	String docFy = null;
-	String trackId = null;
-	String payId = null;
+	private String docId = null;
+	private String docNo = null;
+	private String docFy = null;
+	private String trackId = null;
+	private String payId = null;
 
 	// Money
-	String amount = null;
+	private String amount = null;
 
 	// Meta
-	Tenant tenant = null;
-	Channel channel = null;
-	PayGServiceCode serviceCode = null;
-	Object product = null;
+	private Tenant tenant = null;
+	private Channel channel = null;
+	private PayGServiceCode serviceCode = null;
+	private Object product = null;
 
 	// Processing
-	String redirectUrl = null;
+	private String redirectUrl = null;
 
 	public String getRedirectUrl() {
 		return redirectUrl;
@@ -45,7 +47,12 @@ public class PayGParams implements Serializable {
 		return amount;
 	}
 
-	public void setAmount(Object amount) {
+	public void setAmount(String amount) {
+		this.amount = amount;
+	}
+
+	@JsonIgnoreProperties
+	public void setAmountObject(Object amount) {
 		this.amount = ArgUtil.parseAsString(amount);
 	}
 
@@ -53,7 +60,12 @@ public class PayGParams implements Serializable {
 		return trackId;
 	}
 
-	public void setTrackId(Object trackId) {
+	public void setTrackId(String trackId) {
+		this.trackId = trackId;
+	}
+
+	@JsonIgnoreProperties
+	public void setTrackIdObject(Object trackId) {
 		this.trackId = ArgUtil.parseAsString(trackId);
 	}
 
@@ -129,7 +141,12 @@ public class PayGParams implements Serializable {
 		return docFy;
 	}
 
-	public void setDocFy(Object docFy) {
+	public void setDocFy(String docFy) {
+		this.docFy = docFy;
+	}
+
+	@JsonIgnoreProperties
+	public void setDocFyObject(Object docFy) {
 		this.docFy = ArgUtil.parseAsString(docFy);
 	}
 
