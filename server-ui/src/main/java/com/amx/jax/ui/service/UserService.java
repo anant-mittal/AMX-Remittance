@@ -136,7 +136,6 @@ public class UserService {
 		sessionService.getUserSession().getCustomerModel().setFlags(x.getResult().getCustomerFlags());
 		sessionService.getUserSession().getCustomerModel().setPersoninfo(x.getResult().getPersonInfo());
 		sessionService.getUserSession().getCustomerModel().setSecurityquestions(x.getResult().getSecurityquestions());
-		updateCustoemrModel();
 	}
 
 	/**
@@ -159,6 +158,7 @@ public class UserService {
 			sessionService.getUserSession().getCustomerModel().setEmail(model.getEmail());
 			sessionService.getUserSession().getCustomerModel().getPersoninfo().setEmail(model.getEmail());
 			wrapper.setMessage(OWAStatusStatusCodes.USER_UPDATE_SUCCESS, "Email Updated");
+			updateCustoemrModel();
 		}
 		return wrapper;
 	}
