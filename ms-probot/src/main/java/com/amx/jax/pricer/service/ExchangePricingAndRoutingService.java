@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
@@ -72,7 +71,7 @@ public class ExchangePricingAndRoutingService {
 
 	@Autowired
 	ServiceProviderManager serviceProviderManager;
-	
+
 	@Autowired
 	PartnerExchDataService partnerDataService;
 
@@ -221,39 +220,65 @@ public class ExchangePricingAndRoutingService {
 				.getRoutingMatrixForRemittance(exchangeRateAndRoutingRequest);
 
 		// BigDecimal homeSendId = new BigDecimal(5759);
-		boolean isHomeSend = false;
-		ViewExRoutingMatrix homeSendRouting = null;
+		boolean isSPRouting = false;
+		ViewExRoutingMatrix homeSendMatrix = null;
 
-		List<ViewExRoutingMatrix> removeMatrix = new ArrayList<>();
+		List<ViewExRoutingMatrix> serviceProviderMatrix = remitRoutingManager.filterServiceProviders(routingMatrix);
 
 		/*
 		 * for (ViewExRoutingMatrix matrix : routingMatrix) { if
-		 * (matrix.getRoutingBankId().compareTo(homeSendId) == 0) {
-		 * removeMatrix.add(matrix); homeSendRouting = matrix; } }
+		 * (matrix.getRoutingBankCode().equalsIgnoreCase("HOME")) {
+		 * serviceProviderMatrix.add(matrix); homeSendRouting = matrix; } }
 		 */
 
-		for (ViewExRoutingMatrix matrix : routingMatrix) {
-			if (matrix.getRoutingBankCode().equalsIgnoreCase("HOME")) {
-				removeMatrix.add(matrix);
-				homeSendRouting = matrix;
-			}
+		Future<SrvPrvFeeInqResDTO> sProviderFuture = null;
+
+		if (!serviceProviderMatrix.isEmpty()) {
+			isSPRouting = true;
+			homeSendMatrix = serviceProviderMatrix.get(0);
+
+			// asynch Call to get the Service Provider Prices
+			sProviderFuture = serviceProviderManager.getServiceProviderQuote(homeSendMatrix,
+					exchangeRateAndRoutingRequest);
+
 		}
 
-		if (!removeMatrix.isEmpty()) {
-			isHomeSend = true;
-			for (ViewExRoutingMatrix matrix : removeMatrix) {
-				routingMatrix.remove(matrix);
-			}
-		}
-
-		List<BigDecimal> routingBankIds = routingMatrix.stream().map(rm -> rm.getRoutingBankId()).distinct()
-				.collect(Collectors.toList());
+		// Get Non-Service-Provider Core Routing Bank Ids.
+		List<BigDecimal> routingBankIds = remitRoutingManager.getRoutingBankIds(routingMatrix);
 
 		exchangeRateAndRoutingRequest.setRoutingBankIds(routingBankIds);
 
 		exchangeRateAndRoutingRequest.setPricingLevel(PRICE_BY.ROUTING_BANK);
 
+		// Get The Rates for Routing Banks.
 		remitPriceManager.computeBaseSellRatesPrices(exchangeRateAndRoutingRequest);
+
+		SrvPrvFeeInqResDTO partnerResp = null;
+
+		if (isSPRouting && sProviderFuture != null) {
+			// Blocking Call
+			try {
+
+				long timeHS = System.currentTimeMillis();
+
+				System.out.println("======= Blocked For Homesend Response ======");
+
+				partnerResp = sProviderFuture.get();
+
+				System.out.println("======= Released : Time taken ==> " + (System.currentTimeMillis() - timeHS) / 1000);
+
+				// process here
+				serviceProviderManager.processServiceProviderData(homeSendMatrix, partnerResp);
+
+			} catch (InterruptedException | ExecutionException e1) {
+				e1.printStackTrace();
+			} catch (PricerServiceException pe) {
+				pe.printStackTrace();
+			}
+		}
+
+		System.out.println(" All Transaction Rates ==> "
+				+ JsonUtil.toJson(exchRateAndRoutingTransientDataCache.getSellRateDetails()));
 
 		customerDiscountManager.getDiscountedRates(exchangeRateAndRoutingRequest, customer, CUSTOMER_CATEGORY.BRONZE);
 
@@ -468,11 +493,13 @@ public class ExchangePricingAndRoutingService {
 
 		// resp.setInfo(exchRateAndRoutingTransientDataCache.getInfo());
 
-		if (isHomeSend) {
-
-			addHomeSendInfo(resp, homeSendRouting, exchangeRateAndRoutingRequest);
-
-		}
+		/*
+		 * if (isSPRouting) {
+		 * 
+		 * addHomeSendInfo(resp, homeSendMatrix, exchangeRateAndRoutingRequest);
+		 * 
+		 * }
+		 */
 		return resp;
 
 	}
@@ -480,66 +507,27 @@ public class ExchangePricingAndRoutingService {
 	private ExchangeRateAndRoutingResponse addHomeSendInfo(ExchangeRateAndRoutingResponse resp,
 			ViewExRoutingMatrix homeSendMatrix, ExchangeRateAndRoutingRequest request) {
 
-		
-		SrvPrvFeeInqReqDTO partnerReq = new SrvPrvFeeInqReqDTO();
-		
-		RoutingBankDetails routBankDetails = new RoutingBankDetails();
-		routBankDetails.setRoutingBankId(homeSendMatrix.getRoutingBankId());
-		routBankDetails.setRemittanceId(homeSendMatrix.getRemittanceModeId());
-		routBankDetails.setDeliveryId(homeSendMatrix.getDeliveryModeId());
-		
-		List<RoutingBankDetails> routeList = new ArrayList<>();
-		routeList.add(routBankDetails);
-		
-		partnerReq.setCustomerId(request.getCustomerId());
-		
-		partnerReq.setBeneficiaryRelationShipId(request.getBeneficiaryId());
-		partnerReq.setApplicationCountryId(request.getLocalCountryId());
-		partnerReq.setDestinationCountryId(request.getForeignCountryId());
-		partnerReq.setLocalCurrencyId(request.getLocalCurrencyId());
-		partnerReq.setForeignCurrencyId(request.getForeignCurrencyId());
-		
-		if (null != request.getLocalAmount()) {
-		partnerReq.setSelectedCurrency(request.getLocalCurrencyId());
-		partnerReq.setAmount(request.getLocalAmount()); } else {
-		partnerReq.setSelectedCurrency(request.getForeignCurrencyId());
-		partnerReq.setAmount(request.getForeignAmount()); }
-		
-		partnerReq.setRoutingBankDetails(routeList);
-		
-		System.out.println("Partner Request data ==> " + JsonUtil.toJson(partnerReq));
-		
-		//SrvPrvFeeInqResDTO partnerResp = partnerDataService.getPartnerFeeinquiry(partnerReq);
-		
-		//System.out.println("Partner Response data ==> " + JsonUtil.toJson(partnerResp));
-		
 		System.out.println(" Tenant Context Parent  ==> " + TenantContext.getCurrentTenant());
-		
-		Future<SrvPrvFeeInqResDTO> sProviderFuture = serviceProviderManager
-				.getServiceProviderQuote(homeSendMatrix, request);
+
+		Future<SrvPrvFeeInqResDTO> sProviderFuture = serviceProviderManager.getServiceProviderQuote(homeSendMatrix,
+				request);
 
 		System.out.println(" ========= Waiting For HomeSend thread to complete ======== ");
 
 		// Wait for thread to complete
 		System.out.println("======= Blocked 1======");
-		//CompletableFuture.allOf(sProviderFuture);
-
-		/*while(true) {
-			if(sProviderFuture.isDone())
-				break;
-		}*/
-		
-		System.out.println(" ========= HomeSend thread completed Now ======== ");
 
 		SrvPrvFeeInqResDTO partnerResp;
 		try {
-			
+
+			long timeHS = System.currentTimeMillis();
+
 			System.out.println("======= Blocked 2======");
-			
+
 			partnerResp = sProviderFuture.get();
-			
-			System.out.println("======= Released ======");
-			
+
+			System.out.println("======= Released : Time taken ==> " + (System.currentTimeMillis() - timeHS) / 1000);
+
 		} catch (InterruptedException | ExecutionException e1) {
 			e1.printStackTrace();
 			return null;
@@ -715,54 +703,12 @@ public class ExchangePricingAndRoutingService {
 					"Customer Id Can not be blank or empty");
 		}
 
-		/*
-		 * if (null == pricingRequestDTO.getLocalCountryId() || null ==
-		 * pricingRequestDTO.getForeignCountryId()) { throw new
-		 * PricerServiceException(PricerServiceError.INVALID_COUNTRY,
-		 * "Missing Local or Foreign Country Id; Both Required"); }
-		 * 
-		 * if (null == pricingRequestDTO.getLocalCurrencyId() || null ==
-		 * pricingRequestDTO.getForeignCurrencyId()) { throw new
-		 * PricerServiceException(PricerServiceError.INVALID_CURRENCY,
-		 * "Missing Local or Foreign Currency Id; Both Required"); }
-		 */
-
-		/*
-		 * if (null == pricingRequestDTO.getCountryBranchId()) { throw new
-		 * PricerServiceException(PricerServiceError.INVALID_BRANCH_ID,
-		 * "Branch Id is  Missing"); }
-		 * 
-		 * if (null == pricingRequestDTO.getChannel()) { throw new
-		 * PricerServiceException(PricerServiceError.INVALID_CHANNEL,
-		 * "Channel is Missing"); }
-		 * 
-		 * if (null == pricingRequestDTO.getPricingLevel()) { throw new
-		 * PricerServiceException(PricerServiceError.INVALID_PRICING_LEVEL,
-		 * "Invalid Pricing Level"); }
-		 */
-
 		return Boolean.TRUE;
 	}
 
 	private Map<BigDecimal, String> getServiceIdDescriptions() {
 
 		Map<BigDecimal, String> serviceIdDescription = new HashMap<BigDecimal, String>();
-
-		//// @formatter:off
-
-		/*
-		 * List<ExchangeRateDetails> exchRates =
-		 * exchRateAndRoutingTransientDataCache.getSellRateDetails();
-		 * 
-		 * for (ExchangeRateDetails exchRate : exchRates) { SERVICE_INDICATOR ind =
-		 * SERVICE_INDICATOR.getByServiceId(exchRate.getServiceIndicatorId().intValue())
-		 * ; serviceIdDescription.put(BigDecimal.valueOf(ind.getServiceId()),
-		 * ind.getDescription()); }
-		 */
-
-		// Return All
-		
-		// @formatter:on
 
 		for (SERVICE_INDICATOR ind : SERVICE_INDICATOR.values()) {
 			serviceIdDescription.put(BigDecimal.valueOf(ind.getServiceId()), ind.getDescription());

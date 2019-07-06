@@ -134,9 +134,9 @@ public class DiscountManager {
 			RoutBanksAndServiceRespDTO routBanksAndServiceRespData = new RoutBanksAndServiceRespDTO();
 			routBanksAndServiceRespData.setRoutingBankId(routingData.getRoutingBankId());
 
-			BankMasterModel bankName = bankMasterDao.getBankById(routingData.getRoutingBankId());
-			if (null != bankName) {
-				routBanksAndServiceRespData.setRoutingBankName(bankName.getBankFullName());
+			BankMasterModel bankModel = bankMasterDao.getBankById(routingData.getRoutingBankId());
+			if (null != bankModel) {
+				routBanksAndServiceRespData.setRoutingBankName(bankModel.getBankFullName());
 			}
 
 			routBanksAndServiceRespData.setServiceId(routingData.getServiceMasterId());

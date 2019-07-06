@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
@@ -137,11 +138,11 @@ public class RemitRoutingManager {
 			}
 
 		}
-		
-		
-		// This is Interim FIX FOR HOME-SEND EXclussion and should be removed on Priority.
+
+		// This is Interim FIX FOR HOME-SEND EXclussion and should be removed on
+		// Priority.
 		// NOT to Excluded for HOMESEND
-		//routingMatrix = excludeSbRoutingBanks(routingMatrix);
+		// routingMatrix = excludeSbRoutingBanks(routingMatrix);
 
 		if (null == routingMatrix || routingMatrix.isEmpty()) {
 
@@ -880,33 +881,38 @@ public class RemitRoutingManager {
 
 	}
 
-	private List<ViewExRoutingMatrix> excludeSbRoutingBanks(List<ViewExRoutingMatrix> routingMatrix) {
+	/**
+	 * 
+	 * @param routingMatrix
+	 * @return ServiceProviders View Matrix List
+	 */
+	public List<ViewExRoutingMatrix> filterServiceProviders(List<ViewExRoutingMatrix> routingMatrix) {
 
 		if (routingMatrix == null || routingMatrix.isEmpty())
-			return routingMatrix;
+			return new ArrayList<ViewExRoutingMatrix>();
 
-		List<ViewExRoutingMatrix> removeMatrix = new ArrayList<>();
-
-		/*
-		 * for (ViewExRoutingMatrix matrix : routingMatrix) { if
-		 * (matrix.getRoutingBankId().compareTo(homeSendId) == 0) {
-		 * removeMatrix.add(matrix); homeSendRouting = matrix; } }
-		 */
+		List<ViewExRoutingMatrix> serviceProvidersMatrix = new ArrayList<>();
 
 		for (ViewExRoutingMatrix matrix : routingMatrix) {
 			if (matrix.getBankIndicator().trim().equalsIgnoreCase("SB")) {
-				removeMatrix.add(matrix);
+				serviceProvidersMatrix.add(matrix);
 			}
 		}
 
-		if (!removeMatrix.isEmpty()) {
-			for (ViewExRoutingMatrix matrix : removeMatrix) {
-				routingMatrix.remove(matrix);
-			}
-		}
+		return serviceProvidersMatrix;
 
-		return routingMatrix;
+	}
 
+	public List<BigDecimal> getRoutingBankIds(List<ViewExRoutingMatrix> routingMatrix) {
+
+		if (routingMatrix == null)
+			return null;
+
+		List<BigDecimal> routingBankIds = routingMatrix.stream()
+				.filter(rm -> !rm.getBankIndicator().trim().equalsIgnoreCase("SB")).map(rm -> rm.getRoutingBankId())
+				.distinct().collect(Collectors.toList());
+
+		return routingBankIds;
 	}
 
 }
