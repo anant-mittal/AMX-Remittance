@@ -1014,9 +1014,11 @@ public class RemittanceTransactionManager {
 		}
 		
 		
-		if (jaxTenantProperties.getFlexFieldEnabled()) {
+		if (validationResults !=null && jaxTenantProperties.getFlexFieldEnabled()) {
 			remittanceTransactionRequestValidator.validateExchangeRate(model, validationResults);
 			remittanceTransactionRequestValidator.validateFlexFields(model, remitApplParametersMap);
+		}else {
+			throw new GlobalException(JaxError.VALIDATION_NOT_NULL, "Validation is missing");
 		}
 		remittanceAdditionalFieldManager.validateAdditionalFields(model, remitApplParametersMap);
 		// validate routing bank requirements
@@ -1328,8 +1330,10 @@ public class RemittanceTransactionManager {
 					accountValidation ="N";
 					errorMessage =bsbApi.getResponseDesc();
 				}
+			}else {
+				logger.info("BSB API Resonse :"+response);
 			}
-			
+			System.out.println("BSB API Resonse :"+response);
 			
 		/*	
 			if(!StringUtils.isBlank(accountValidation) && accountValidation.equalsIgnoreCase(ConstantDocument.No)) {
