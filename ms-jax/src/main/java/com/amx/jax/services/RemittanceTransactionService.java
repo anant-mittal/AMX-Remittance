@@ -85,8 +85,15 @@ public class RemittanceTransactionService extends AbstractService {
 	}
 
 	public ApiResponse getSourceOfIncome(BigDecimal languageId) {
-
-		List<SourceOfIncomeView> sourceOfIncomeList = sourceOfIncomeDao.getSourceofIncome(languageId);
+		List<SourceOfIncomeView> sourceOfIncomeList;
+		if(languageId==new BigDecimal(1))
+		{
+		sourceOfIncomeList = sourceOfIncomeDao.getSourceofIncome(languageId);
+		}
+		else {
+			sourceOfIncomeList = sourceOfIncomeDao.getSourceofIncome(languageId);
+		}
+		
 		ApiResponse response = getBlackApiResponse();
 		if (sourceOfIncomeList.isEmpty()) {
 			throw new GlobalException("No data found");

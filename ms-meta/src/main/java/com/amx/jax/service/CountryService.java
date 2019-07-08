@@ -54,7 +54,7 @@ public class CountryService extends AbstractService {
 
 		countryList = countryRepository.findByLanguageId(meta.getLanguageId());
 
-		if (!(meta.getLanguageId().equals(languageIdValue)) || !(meta.getLanguageId().equals("en"))) {
+		if (!(meta.getLanguageId().equals(languageIdValue)) || !(meta.getLanguageId().toString().equalsIgnoreCase("en"))) {
 
 			countryList = countryRepository.findByLanguageId(meta.getLanguageId());
 			response.getData().getValues().addAll(countryList);
