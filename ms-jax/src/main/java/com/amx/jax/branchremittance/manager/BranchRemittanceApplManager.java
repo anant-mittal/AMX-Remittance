@@ -215,12 +215,12 @@ public class BranchRemittanceApplManager {
 		/** To fetch bene details **/
 		 BenificiaryListView beneficaryDetails =getBeneDetails(requestApplModel);
 		 
-		 /* to vlidate BSB  account though api **/
-		String errMsg = remitTrnxManager.beneAccountValidationThroughApi(requestApplModel.getServiceMasterId(),requestApplModel.getRoutingBankId(),beneficaryDetails);
-		if(!StringUtils.isBlank(errMsg)) {
-			throw new GlobalException(JaxError.BSB_ACCOUNT_VALIATION,"Invalid account number "+errMsg);
-		}
-		 
+		 /** to vlidate BSB  account though api **/
+			 /*	String errMsg = remitTrnxManager.beneAccountValidationThroughApi(requestApplModel.getServiceMasterId(),requestApplModel.getRoutingBankId(),beneficaryDetails);
+			if(!StringUtils.isBlank(errMsg)) {
+				throw new GlobalException(JaxError.BSB_ACCOUNT_VALIATION,"Invalid account number "+errMsg);
+			}*/
+		 /** end here */
 		 
 		/*checkingStaffIdNumberWithCustomer **/
 		 branchRemitManager.checkingStaffIdNumberWithCustomer();
