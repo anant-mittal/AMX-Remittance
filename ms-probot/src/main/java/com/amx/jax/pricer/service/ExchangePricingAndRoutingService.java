@@ -29,8 +29,6 @@ import com.amx.jax.cache.ExchRateAndRoutingTransientDataCache;
 import com.amx.jax.cache.TransientRoutingComputeDetails;
 import com.amx.jax.dict.UserClient.Channel;
 import com.amx.jax.multitenant.TenantContext;
-import com.amx.jax.partner.dto.RoutingBankDetails;
-import com.amx.jax.partner.dto.SrvPrvFeeInqReqDTO;
 import com.amx.jax.partner.dto.SrvPrvFeeInqResDTO;
 import com.amx.jax.pricer.dao.CustomerDao;
 import com.amx.jax.pricer.dbmodel.Customer;
@@ -493,17 +491,17 @@ public class ExchangePricingAndRoutingService {
 
 		// resp.setInfo(exchRateAndRoutingTransientDataCache.getInfo());
 
-		/*
-		 * if (isSPRouting) {
-		 * 
-		 * addHomeSendInfo(resp, homeSendMatrix, exchangeRateAndRoutingRequest);
-		 * 
-		 * }
-		 */
+		if (isSPRouting && partnerResp != null && partnerResp.getHomeSendInfoDTO() != null) {
+
+			resp.setHomeSendSrvcProviderInfo(partnerResp.getHomeSendInfoDTO());
+
+		}
+
 		return resp;
 
 	}
 
+	@SuppressWarnings("unused")
 	private ExchangeRateAndRoutingResponse addHomeSendInfo(ExchangeRateAndRoutingResponse resp,
 			ViewExRoutingMatrix homeSendMatrix, ExchangeRateAndRoutingRequest request) {
 
