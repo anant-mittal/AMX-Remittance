@@ -74,20 +74,22 @@ public class JaxNotificationService {
 			email.setSubject("Your transaction on Modern Exchange - Oman is successful");
 		}
 
-		email.addTo(pinfo.getEmail());
-		email.setITemplate(TemplatesMX.TXN_CRT_SUCC);
-		email.setHtml(true);
-		email.getModel().put(RESP_DATA_KEY, pinfo);
 
-		File file = new File();
-		file.setITemplate(TemplatesMX.REMIT_RECEIPT_JASPER);
-		file.setName("TransactionReceipt");
-		file.setType(File.Type.PDF);
-		file.getModel().put(RESP_DATA_KEY, remittanceReceiptSubreport);
+			email.addTo(pinfo.getEmail());
+			email.setITemplate(TemplatesMX.TXN_CRT_SUCC);
+			email.setHtml(true);
+			email.getModel().put(RESP_DATA_KEY, pinfo);
 
-		email.addFile(file);
-		logger.debug("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getFirstName());
-		sendEmail(email);
+			File file = new File();
+			file.setITemplate(TemplatesMX.REMIT_RECEIPT_JASPER);
+			file.setName("TransactionReceipt");
+			file.setType(File.Type.PDF);
+			file.getModel().put(RESP_DATA_KEY, remittanceReceiptSubreport);
+
+			email.addFile(file);
+			logger.debug("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getFirstName());
+			sendEmail(email);
+		
 	}
 
 	public void sendTransactionNotification(FxOrderReportResponseDto remittanceReceiptSubreport,
