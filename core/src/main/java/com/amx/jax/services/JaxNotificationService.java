@@ -73,21 +73,32 @@ public class JaxNotificationService {
 		} else if (TenantContextHolder.currentSite().equals(Tenant.OMN)) {
 			email.setSubject("Your transaction on Modern Exchange - Oman is successful");
 		}
+		if (!(pinfo.getEmailVerified().equalsIgnoreCase("N")) && !pinfo.getEmailVerified().isEmpty()) {
 
-		email.addTo(pinfo.getEmail());
-		email.setITemplate(TemplatesMX.TXN_CRT_SUCC);
-		email.setHtml(true);
-		email.getModel().put(RESP_DATA_KEY, pinfo);
+			email.addTo(pinfo.getEmail());
+			email.setITemplate(TemplatesMX.TXN_CRT_SUCC);
+			email.setHtml(true);
+			email.getModel().put(RESP_DATA_KEY, pinfo);
 
-		File file = new File();
-		file.setITemplate(TemplatesMX.REMIT_RECEIPT_JASPER);
-		file.setName("TransactionReceipt");
-		file.setType(File.Type.PDF);
-		file.getModel().put(RESP_DATA_KEY, remittanceReceiptSubreport);
+			File file = new File();
+			file.setITemplate(TemplatesMX.REMIT_RECEIPT_JASPER);
+			file.setName("TransactionReceipt");
+			file.setType(File.Type.PDF);
+			file.getModel().put(RESP_DATA_KEY, remittanceReceiptSubreport);
 
-		email.addFile(file);
-		logger.debug("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getFirstName());
-		sendEmail(email);
+			email.addFile(file);
+			logger.debug("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getFirstName());
+			sendEmail(email);
+		} else {
+
+			email.addTo(pinfo.getEmail());
+			email.setITemplate(TemplatesMX.CONTACT_VERIFICATION_EMAIL);
+			email.setHtml(true);
+			email.getModel().put(RESP_DATA_KEY, pinfo);
+			logger.info("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getFirstName());
+			sendEmail(email);
+
+		}
 	}
 
 	public void sendTransactionNotification(FxOrderReportResponseDto remittanceReceiptSubreport,
