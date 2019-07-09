@@ -4,6 +4,7 @@ import javax.validation.constraints.NotNull;
 
 import com.amx.jax.model.response.ExchangeRateBreakup;
 import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;
+import com.amx.utils.ArgUtil;
 
 public class RemittanceTransactionDrRequestModel extends RemittanceTransactionRequestModel{
 
@@ -22,6 +23,9 @@ public class RemittanceTransactionDrRequestModel extends RemittanceTransactionRe
 	
 	@Override
 	public ExchangeRateBreakup getExchangeRateBreakup() {
-		return this.dynamicRroutingPricingBreakup.getExRateBreakup();
+		if(ArgUtil.isEmpty(super.getExchangeRateBreakup())){
+			return this.dynamicRroutingPricingBreakup.getExRateBreakup();	
+		}
+		return super.getExchangeRateBreakup();
 	}
 }
