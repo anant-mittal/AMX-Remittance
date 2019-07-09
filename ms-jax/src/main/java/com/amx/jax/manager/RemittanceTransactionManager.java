@@ -322,10 +322,10 @@ public class RemittanceTransactionManager {
 		
 		
 		 /** to vlidate BSB  account though api by rabil**/
-		String errMsg = beneAccountValidationThroughApi(serviceMasterId,routingBankId,beneficiary);
+		/*String errMsg = beneAccountValidationThroughApi(serviceMasterId,routingBankId,beneficiary);
 		if(!StringUtils.isBlank(errMsg)) {
 			throw new GlobalException(JaxError.BSB_ACCOUNT_VALIATION,"Invalid account number "+errMsg);
-		}		
+		}		*/
 		/** end here**/
 		
 		validateNumberOfTransactionLimits();
