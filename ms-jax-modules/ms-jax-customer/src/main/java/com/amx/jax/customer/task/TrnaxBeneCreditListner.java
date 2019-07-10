@@ -92,7 +92,7 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 		String emailId = c.getEmail();
 		String smsNo = c.getMobile();
 		String custName = c.getFirstName()+' '+c.getMiddleName() + ' '+c.getLastName();
-		
+		 
 		LOGGER.info("transaction id is  "+tranxId);
 		NumberFormat myFormat = NumberFormat.getInstance();
 		myFormat.setGroupingUsed(true);
@@ -120,11 +120,12 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 		}
 
 		wrapper.put("data", modeldata);
-
+		LOGGER.info("email is is "+emailId);
 		if (!ArgUtil.isEmpty(emailId)) {
-
+			
+			LOGGER.info("email verified is "+c.getEmailVerified());
 			if (c.getEmailVerified() != AmxDBConstants.Status.Y) {
-
+				LOGGER.info("email value is "+c.getEmailVerified());
 				CustomerContactVerification x = customerContactVerificationManager.create(c, ContactType.EMAIL);
 				LOGGER.info("value of x is "+x.toString());
 				//modeldata.put("customer", c);
