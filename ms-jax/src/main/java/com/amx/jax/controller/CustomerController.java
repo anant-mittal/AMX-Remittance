@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.constant.ApiEndpoint.CustomerApi;
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.AnnualIncomeRangeDTO;
 import com.amx.amxlib.meta.model.IncomeDto;
 import com.amx.amxlib.model.CustomerModel;
@@ -30,19 +31,24 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.customer.service.CustomerService;
 import com.amx.jax.customer.service.JaxCustomerContactVerificationService;
 import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dict.ContactType;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.model.customer.SecurityQuestionModel;
 import com.amx.jax.model.response.customer.CustomerModelResponse;
 import com.amx.jax.model.response.customer.CustomerModelSignupResponse;
+import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.services.CustomerDataVerificationService;
 import com.amx.jax.userservice.dao.CustomerDao;
+import com.amx.jax.userservice.repository.OnlineCustomerRepository;
 import com.amx.jax.userservice.service.AnnualIncomeService;
 import com.amx.jax.userservice.service.CustomerModelService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.userservice.service.UserValidationService;
 import com.amx.jax.util.ConverterUtil;
+import com.amx.jax.util.AmxDBConstants.Status;
 
 @RestController
 @RequestMapping(CUSTOMER_ENDPOINT)
@@ -77,6 +83,12 @@ public class CustomerController implements ICustomerService {
 	
 	@Autowired
 	CustomerDao custDao;
+	
+	@Autowired
+	CustomerRepository customerRepository;
+	
+	@Autowired
+	OnlineCustomerRepository onlineCustomerRepository;
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -119,6 +131,13 @@ public class CustomerController implements ICustomerService {
 	@RequestMapping(value = "/{civil-id}/send-reset-otp/", method = RequestMethod.GET)
 	public ApiResponse sendResetCredentialsOtp(@PathVariable("civil-id") String civilId) {
 		logger.info("Send OTP Request : civilId - " + civilId);
+		Customer customerdetails = customerRepository.getCustomerEmailDetails(civilId);
+		CustomerOnlineRegistration customerOnlineRegistration = onlineCustomerRepository.getLoginCustomersById(civilId);
+				
+		if(customerOnlineRegistration.getStatus().equalsIgnoreCase("N") && (customerdetails.getEmailVerified().equals(Status.N))) {
+			throw new GlobalException(JaxError.EMAIL_NOT_VERIFIED, "Email id is not verified.Kinldy verify");
+		}
+			
 		List<ContactType> channel = new ArrayList<>();
 		channel.add(ContactType.SMS_EMAIL);
 		ApiResponse response = userService.sendOtpForCivilId(civilId, channel, null, null);
