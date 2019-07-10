@@ -5,6 +5,7 @@ import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,7 +94,15 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 		LOGGER.info("Customer object is "+c.toString());
 		String emailId = c.getEmail();
 		String smsNo = c.getMobile();
-		String custName = c.getFirstName()+' '+c.getMiddleName() + ' '+c.getLastName();
+		
+		String custName;
+		if(StringUtils.isEmpty(c.getMiddleName())) {
+			c.setMiddleName("");
+			custName=c.getFirstName()+c.getMiddleName() + ' '+c.getLastName();
+		}else {
+			custName=c.getFirstName()+' '+c.getMiddleName() + ' '+c.getLastName();
+		}
+		
 		 
 		LOGGER.info("transaction id is  "+tranxId);
 		NumberFormat myFormat = NumberFormat.getInstance();
