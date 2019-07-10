@@ -27,6 +27,7 @@ import com.amx.jax.model.response.customer.OffsiteCustomerDataDTO;
 import com.amx.jax.model.response.remittance.UserwiseTransactionDto;
 import com.amx.jax.sso.SSOUser;
 import com.amx.jax.terminal.TerminalService;
+import com.amx.libjax.model.jaxfield.JaxFieldDto;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -140,6 +141,12 @@ public class CustomerBranchController {
 	public AmxApiResponse<CustomerDocumentTypeDto, Object> getDocTypes(
 			@RequestParam(required = true) String documentCategory) {
 		return customerManagementClient.getDocumentType(documentCategory);
+	}
+
+	@RequestMapping(value = "/api/customer/doc/fields", method = { RequestMethod.GET })
+	public AmxApiResponse<JaxFieldDto, Object> getDocFields(@RequestParam(required = true) String documentCategory,
+			@RequestParam (required = true) String documentType) {
+		return customerManagementClient.getDocumentFields(documentCategory, documentType);
 	}
 
 	@RequestMapping(value = "/api/customer/doc/upload", method = { RequestMethod.POST })
