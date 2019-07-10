@@ -1081,45 +1081,8 @@ public class Customer implements java.io.Serializable {
 
 	@Override
 	public String toString() {
-		return "Customer [customerId=" + customerId + ", companyId=" + companyId + ", countryId=" + countryId
-				+ ", languageId=" + languageId + ", shortName=" + shortName + ", shortNameLocal=" + shortNameLocal
-				+ ", amlStatus=" + amlStatus + ", numberOfHits=" + numberOfHits + ", verificationBy=" + verificationBy
-				+ ", verificationDate=" + verificationDate + ", amlStatusUpdatedBy=" + amlStatusUpdatedBy
-				+ ", amlStatusLastUpdated=" + amlStatusLastUpdated + ", branchCode=" + branchCode + ", activatedInd="
-				+ activatedInd + ", activatedDate=" + activatedDate + ", inactivatedDate=" + inactivatedDate
-				+ ", title=" + title + ", firstName=" + firstName + ", middleName=" + middleName + ", lastName="
-				+ lastName + ", titleLocal=" + titleLocal + ", firstNameLocal=" + firstNameLocal + ", middleNameLocal="
-				+ middleNameLocal + ", lastNameLocal=" + lastNameLocal + ", gender=" + gender + ", dateOfBirth="
-				+ dateOfBirth + ", alterEmailId=" + alterEmailId + ", mobile=" + mobile + ", signatureSpecimen="
-				+ signatureSpecimen + ", fingerPrintImg=" + fingerPrintImg + ", introducedBy=" + introducedBy
-				+ ", medicalInsuranceInd=" + medicalInsuranceInd + ", companyName=" + companyName
-				+ ", companyNameLocal=" + companyNameLocal + ", email=" + email + ", crNo=" + crNo + ", placeOfBirth="
-				+ placeOfBirth + ", countryOfBirth=" + countryOfBirth + ", fatherName=" + fatherName + ", createdBy="
-				+ createdBy + ", updatedBy=" + updatedBy + ", creationDate=" + creationDate + ", lastUpdated="
-				+ lastUpdated + ", tokenKey=" + tokenKey + ", contactPerson=" + contactPerson + ", contactNumber="
-				+ contactNumber + ", isActive=" + isActive + ", amlRemarks=" + amlRemarks + ", bcoRemarks=" + bcoRemarks
-				+ ", emosCustomer=" + emosCustomer + ", auditStatementDate=" + auditStatementDate
-				+ ", auditGrossIncome=" + auditGrossIncome + ", signatureSpecimenClob=" + signatureSpecimenClob
-				+ ", remarks=" + remarks + ", fsArticleDetails=" + fsArticleDetails + ", sundryDebtorReference="
-				+ sundryDebtorReference + ", deactivatedBy=" + deactivatedBy + ", deactivatedDate=" + deactivatedDate
-				+ ", kioskPin=" + kioskPin + ", nationalityId=" + nationalityId + ", isOnlineUser=" + isOnlineUser
-				+ ", customerTypeId=" + customerTypeId + ", identityExpiredDate=" + identityExpiredDate
-				+ ", dailyLimit=" + dailyLimit + ", weeklyLimit=" + weeklyLimit + ", quaterlyLimit=" + quaterlyLimit
-				+ ", montlyLimit=" + montlyLimit + ", halfYearly=" + halfYearly + ", annualLimit=" + annualLimit
-				+ ", verificationTokenId=" + verificationTokenId + ", loyaltyPoints=" + loyaltyPoints
-				+ ", customerReference=" + customerReference + ", smartCardIndicator=" + smartCardIndicator
-				+ ", introducedDate=" + introducedDate + ", lastTransactionDate=" + lastTransactionDate
-				+ ", pepsIndicator=" + pepsIndicator + ", interComcode=" + interComcode + ", interTrnfyr=" + interTrnfyr
-				+ ", interTrnref=" + interTrnref + ", identityInt=" + identityInt + ", identityFor=" + identityFor
-				+ ", identityTypeId=" + identityTypeId + ", prefixCodeMobile=" + prefixCodeMobile + ", mobileOther="
-				+ mobileOther + ", prefixCodeMobileOther=" + prefixCodeMobileOther + ", isMobileWhatsApp="
-				+ isMobileWhatsApp + ", isMobileOtherWhatsApp=" + isMobileOtherWhatsApp + ", annualIncomeFrom="
-				+ annualIncomeFrom + ", annualIncomeTo=" + annualIncomeTo + ", annualIncomeUpdatedBy="
-				+ annualIncomeUpdatedBy + ", annualIncomeUpdatedDate=" + annualIncomeUpdatedDate
-				+ ", isBusinessCardVerified=" + isBusinessCardVerified + ", customerVatNumber=" + customerVatNumber
-				+ ", fsIncomeRangeMaster=" + fsIncomeRangeMaster + ", customerRegistrationType="
-				+ customerRegistrationType + ", whatsapp=" + whatsapp + ", whatsappPrefix=" + whatsappPrefix
-				+ ", whatsAppVerified=" + whatsAppVerified + ", emailVerified=" + emailVerified + ", mobileVerified="
+		return "Customer [customerId=" + customerId +", email=" + email + 
+				 ", emailVerified=" + emailVerified + ", mobileVerified="
 				+ mobileVerified + "]";
 	}
 
