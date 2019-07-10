@@ -227,12 +227,17 @@ public class RemitRoutingManager {
 			if (PricerServiceConstants.SERVICE_GROUP.CASH.getGroupCode().equalsIgnoreCase(view.getServiceGroupCode())
 					&& !com.amx.utils.StringUtils.anyMatch(view.getDiscountAllowed(), "Y", "YES")) {
 
-				// ExchangeRateBreakup baseRateClonned =
-				// exchangeRateDetails.getSellRateBase().clone();
-				// exchangeRateDetails.setSellRateNet(baseRateClonned);
 				if (exchangeRateDetails.isDiscountAvailed()) {
 					exchangeRateDetails.setSellRateNet(exchangeRateDetails.getSellRateBase());
 					exchangeRateDetails.setDiscountAvailed(false);
+				}
+
+			} else if (PricerServiceConstants.SERVICE_PROVIDER_INDICATOR.equalsIgnoreCase(view.getBankIndicator())) {
+
+				// TODO : Base Rates should be without Pips and Net Rate With Pips
+				// For Service Providers Always Set the Net Rate Same as Base Rate
+				if (exchangeRateDetails != null && exchangeRateDetails.getSellRateBase() != null) {
+					exchangeRateDetails.setSellRateNet(exchangeRateDetails.getSellRateBase());
 				}
 
 			}
@@ -894,7 +899,7 @@ public class RemitRoutingManager {
 		List<ViewExRoutingMatrix> serviceProvidersMatrix = new ArrayList<>();
 
 		for (ViewExRoutingMatrix matrix : routingMatrix) {
-			if (matrix.getBankIndicator().trim().equalsIgnoreCase("SB")) {
+			if (matrix.getBankIndicator().trim().equalsIgnoreCase(PricerServiceConstants.SERVICE_PROVIDER_INDICATOR)) {
 				serviceProvidersMatrix.add(matrix);
 			}
 		}

@@ -32,7 +32,6 @@ import com.amx.jax.pricer.dto.ExchangeRateAndRoutingRequest;
 import com.amx.jax.pricer.dto.ExchangeRateBreakup;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
 import com.amx.jax.pricer.service.PartnerExchDataService;
-import com.amx.utils.JsonUtil;
 
 @Service
 public class ServiceProviderManager {
@@ -82,8 +81,6 @@ public class ServiceProviderManager {
 
 		SrvPrvFeeInqResDTO partnerResp = partnerDataService.getPartnerFeeinquiry(partnerReq);
 
-		System.out.println(" Partner data ==> " + JsonUtil.toJson(partnerResp));
-
 		return CompletableFuture.completedFuture(partnerResp);
 
 	}
@@ -108,9 +105,11 @@ public class ServiceProviderManager {
 
 		ExchangeRateDetails exchRateDetails = new ExchangeRateDetails();
 		exchRateDetails.setBankId(homeSendMatrix.getRoutingBankId());
+
 		exchRateDetails.setCostRateLimitReached(false);
-		// exchRateDetails.setCustomerDiscountDetails(customerDiscountDetails);
-		exchRateDetails.setDiscountAvailed(false);
+
+		// TODO : Check
+		exchRateDetails.setDiscountAvailed(true);
 		exchRateDetails.setLowGLBalance(false);
 		exchRateDetails.setSellRateBase(sellRateBase);
 		// exchRateDetails.setSellRateNet(sellRateBase);
@@ -132,12 +131,12 @@ public class ServiceProviderManager {
 		bankDetailsDTO.setBankFullName(bankModel.getBankFullName());
 		bankDetailsDTO.setBankId(bankModel.getBankId());
 		bankDetailsDTO.setBankShortName(bankModel.getBankShortName());
-		
-		if(null == transientDataCache.getBankDetails()) {
+
+		if (null == transientDataCache.getBankDetails()) {
 			Map<BigDecimal, BankDetailsDTO> bankIdDetailsMap = new HashMap<BigDecimal, BankDetailsDTO>();
 			transientDataCache.setBankDetails(bankIdDetailsMap);
 		}
-		
+
 		transientDataCache.getBankDetails().put(bankDetailsDTO.getBankId(), bankDetailsDTO);
 
 	}

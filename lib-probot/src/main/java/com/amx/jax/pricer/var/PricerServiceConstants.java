@@ -19,6 +19,8 @@ public final class PricerServiceConstants {
 	
 	public static final String CHARGES_TYPE = "C";
 	
+	public static final String SERVICE_PROVIDER_INDICATOR = "SB";
+	
 	public static final String SETTLEMENT_CURRENCY_CODE = "USD";
 	
 	public static final String Yes = "Y";

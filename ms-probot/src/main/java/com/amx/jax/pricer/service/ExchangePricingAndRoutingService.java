@@ -55,7 +55,6 @@ import com.amx.jax.pricer.var.PricerServiceConstants.DISCOUNT_TYPE;
 import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_BY;
 import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_TYPE;
 import com.amx.jax.pricer.var.PricerServiceConstants.SERVICE_INDICATOR;
-import com.amx.utils.JsonUtil;
 
 /**
  * @author abhijeet
@@ -254,16 +253,10 @@ public class ExchangePricingAndRoutingService {
 		SrvPrvFeeInqResDTO partnerResp = null;
 
 		if (isSPRouting && sProviderFuture != null) {
-			// Blocking Call
 			try {
 
-				long timeHS = System.currentTimeMillis();
-
-				System.out.println("======= Blocked For Homesend Response ======");
-
+				// Blocking Call
 				partnerResp = sProviderFuture.get();
-
-				System.out.println("======= Released : Time taken ==> " + (System.currentTimeMillis() - timeHS) / 1000);
 
 				// process here
 				serviceProviderManager.processServiceProviderData(homeSendMatrix, partnerResp);
@@ -275,8 +268,9 @@ public class ExchangePricingAndRoutingService {
 			}
 		}
 
-		System.out.println(" All Transaction Rates ==> "
-				+ JsonUtil.toJson(exchRateAndRoutingTransientDataCache.getSellRateDetails()));
+		// System.out.println(" All Transaction Rates ==> "
+		// +
+		// JsonUtil.toJson(exchRateAndRoutingTransientDataCache.getSellRateDetails()));
 
 		customerDiscountManager.getDiscountedRates(exchangeRateAndRoutingRequest, customer, CUSTOMER_CATEGORY.BRONZE);
 
@@ -357,6 +351,12 @@ public class ExchangePricingAndRoutingService {
 
 			try {
 				BeanUtils.copyProperties(trnxRoutingPath, routeDetails.getViewExRoutingMatrix());
+
+				if (isSPRouting && partnerResp != null
+						&& homeSendMatrix.getRoutingBankId().equals(trnxRoutingPath.getRoutingBankId())) {
+					trnxRoutingPath.setChargeAmount(partnerResp.getCommissionAmount());
+				}
+
 			} catch (IllegalAccessException | InvocationTargetException e) {
 				// Ignore
 				e.printStackTrace();
@@ -467,13 +467,6 @@ public class ExchangePricingAndRoutingService {
 
 				bankServiceModeSellRates.get(exchangeRate.getBankId()).put(clonnedRate.getServiceIndicatorId(),
 						clonnedRate);
-
-				/*
-				 * if (!bankServiceModeSellRates.get(exchangeRate.getBankId()).containsKey(
-				 * DEFAULT_ONLINE_SERVICE_ID)) {
-				 * bankServiceModeSellRates.get(exchangeRate.getBankId()).put(
-				 * DEFAULT_ONLINE_SERVICE_ID, exchangeRate); }
-				 */
 
 			} else {
 				bankServiceModeSellRates.get(exchangeRate.getBankId()).put(exchangeRate.getServiceIndicatorId(),
