@@ -1079,6 +1079,13 @@ public class Customer implements java.io.Serializable {
 		return customerVatNumber;
 	}
 
+	@Override
+	public String toString() {
+		return "Customer [customerId=" + customerId +", email=" + email + 
+				 ", emailVerified=" + emailVerified + ", mobileVerified="
+				+ mobileVerified + "]";
+	}
+
 	public void setCustomerVatNumber(String customerVatNumber) {
 		this.customerVatNumber = customerVatNumber;
 	}
