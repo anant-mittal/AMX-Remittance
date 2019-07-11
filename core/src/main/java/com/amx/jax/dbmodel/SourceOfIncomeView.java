@@ -27,6 +27,8 @@ public class SourceOfIncomeView implements Serializable{
 	private String shortDesc;
 	@Column(name="LOCAL_NAME")
 	private String local_name;
+	@Column(name="LOCAL_FULL_DESC")
+	private String localFullDesc;
 	public BigDecimal getSourceofIncomeId() {
 		return sourceofIncomeId;
 	}
@@ -56,6 +58,12 @@ public class SourceOfIncomeView implements Serializable{
 	}
 	public void setLocal_name(String local_name) {
 		this.local_name = local_name;
+	}
+	public String getLocalFullDesc() {
+		return localFullDesc;
+	}
+	public void setLocalFullDesc(String localFullDesc) {
+		this.localFullDesc = localFullDesc;
 	}
 	
 	

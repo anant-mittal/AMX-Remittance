@@ -47,6 +47,7 @@ public class AmiecAndBankMapping implements Serializable {
 	private Date approvedDate;
 	private String approvedBy;
 	private String remarks;
+	private String amicLocalDesc;
 	
 
 	private Set<AdditionalBankRuleAmiec> additionalBankRule = new HashSet<AdditionalBankRuleAmiec>(0);
@@ -69,7 +70,7 @@ public class AmiecAndBankMapping implements Serializable {
 			String modifiedBy, Date modifiedDate, String isActive,
 			Date approvedDate, String approvedBy,
 			Set<AdditionalBankRuleAmiec> additionalBankRule,
-			Set<AdditionalBankRuleAddData> additionalBankRuleData,String remarks) {
+			Set<AdditionalBankRuleAddData> additionalBankRuleData,String remarks,String amicLocalDesc) {
 		super();
 		this.amiecAndBankMappingId = amiecAndBankMappingId;
 		this.flexField = flexField;
@@ -89,6 +90,7 @@ public class AmiecAndBankMapping implements Serializable {
 		this.additionalBankRule = additionalBankRule;
 		this.additionalBankRuleData = additionalBankRuleData;
 		this.remarks=remarks;
+		this.amicLocalDesc = amicLocalDesc;
 	}
 
 
@@ -251,6 +253,16 @@ public class AmiecAndBankMapping implements Serializable {
 
 	public void setRemarks(String remarks) {
 		this.remarks = remarks;
+	}
+
+	@Column(name = "AMIEC_LOCAL_DESCRIPTION")
+	public String getAmicLocalDesc() {
+		return amicLocalDesc;
+	}
+
+	
+	public void setAmicLocalDesc(String amicLocalDesc) {
+		this.amicLocalDesc = amicLocalDesc;
 	}
 
 	

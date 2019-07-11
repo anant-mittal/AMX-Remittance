@@ -10,6 +10,7 @@ public class SourceOfIncomeDto {
 	private BigDecimal languageId;
 	private String description;
 	private String shortDesc;
+	private String localFulldesc;
 	public BigDecimal getSourceofIncomeId() {
 		return sourceofIncomeId;
 	}
@@ -34,5 +35,12 @@ public class SourceOfIncomeDto {
 	public void setShortDesc(String shortDesc) {
 		this.shortDesc = shortDesc;
 	}
+	public String getLocalFulldesc() {
+		return localFulldesc;
+	}
+	public void setLocalFulldesc(String localFulldesc) {
+		this.localFulldesc = localFulldesc;
+	}
+	
 
 }

@@ -148,6 +148,7 @@ public class RemittanceTransactionService extends AbstractService {
 			dto.setShortDesc(model.getShortDesc());
 			dto.setLanguageId(model.getLanguageId());
 			dto.setDescription(model.getDescription());
+			dto.setLocalFulldesc(model.getLocalFullDesc());
 			list.add(dto);
 		}
 		return list;
