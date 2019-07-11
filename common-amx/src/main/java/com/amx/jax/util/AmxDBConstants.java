@@ -154,8 +154,8 @@ public class AmxDBConstants {
 	public static final String IMPS_CODE = "13";
 	public static final String IND_COUNTRY_CODE = "004";
 	/** E-Eng,A-Arabic **/
-	public static final String L_ENG = "E";
-	public static final String L_ARAB = "A";
+	public static final String L_ENG = "1";
+	public static final String L_ARAB = "2";
 	public static final String BNFBANK = "BNFBANK";
 	public static final String BNFBRCH = "BNFBRCH";
 	public static final String BNFBANK_SWIFT = "BNFBANK_SWIFT";
