@@ -141,14 +141,6 @@ public class RemittanceController {
 		return response;
 	}
 	
-	/*
-	 * @RequestMapping(value = "/validate/v2/", method = RequestMethod.POST) public
-	 * ApiResponse validateRemittanceTransactionV2(@RequestBody
-	 * RemittanceTransactionDrRequestModel model) {
-	 * logger.info("In validate with parameters" + model.toString()); ApiResponse
-	 * response = remittanceTransactionService.validateRemittanceTransaction(model);
-	 * return response; }
-	 */
 
 	@RequestMapping(value = "/sourceofincome/", method = RequestMethod.POST)
 	public ApiResponse sourceofIncome() {
@@ -174,7 +166,7 @@ public class RemittanceController {
 		JaxContextUtil.setJaxEvent(JaxEvent.CREATE_APPLICATION);
 		JaxContextUtil.setRequestModel(model);
 		logger.info("In Save-Application with parameters" + model.toString());
-		ApiResponse response = remittanceTransactionService.saveApplication(model);
+		ApiResponse response = remittanceTransactionService.saveApplicationV2(model);
 		return response;
 	}
 	

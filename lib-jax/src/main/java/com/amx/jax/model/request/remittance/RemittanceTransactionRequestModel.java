@@ -11,8 +11,8 @@ import com.amx.jax.model.response.ExchangeRateBreakup;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-@JsonDeserialize(as = RemittanceTransactionDrRequestModel.class)
-@JsonIgnoreProperties(ignoreUnknown = true)
+/*@JsonDeserialize(as = RemittanceTransactionDrRequestModel.class)
+@JsonIgnoreProperties(ignoreUnknown = true)*/
 public class RemittanceTransactionRequestModel extends RemittanceAdditionalBeneFieldModel implements IRemitTransReqPurpose {
 
 	/**
