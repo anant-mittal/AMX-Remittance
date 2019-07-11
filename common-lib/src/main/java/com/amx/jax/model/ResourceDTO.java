@@ -34,6 +34,10 @@ public class ResourceDTO implements IResourceEntity, Serializable {
 	 */
 	@JsonProperty("_name")
 	protected String resourceName;
+	
+	
+	@JsonProperty("_local_name")
+	protected String resourceLocalName;
 
 	/**
 	 * A short name for resource, eg:- ISO3 codes for Countries
@@ -135,6 +139,19 @@ public class ResourceDTO implements IResourceEntity, Serializable {
 
 	public String getResourceCode() {
 		return resourceCode;
+	}
+
+	public String getResourceLocalName() {
+		return resourceLocalName;
+	}
+
+	public void setResourceLocalName(String resourceLocalName) {
+		this.resourceLocalName = resourceLocalName;
+	}
+
+	@Override
+	public String resourceLocalName() {
+		return resourceLocalName;
 	}
 
 }

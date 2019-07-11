@@ -2,9 +2,11 @@ package com.amx.jax.model.response;
 
 import java.math.BigDecimal;
 
+import com.amx.jax.model.ResourceDTO;
 
 
-public class SourceOfIncomeDto {
+
+public class SourceOfIncomeDto extends ResourceDTO{
 	
 	private BigDecimal sourceofIncomeId;
 	private BigDecimal languageId;
@@ -41,6 +43,23 @@ public class SourceOfIncomeDto {
 	public void setLocalFulldesc(String localFulldesc) {
 		this.localFulldesc = localFulldesc;
 	}
+	
+	@Override
+	public String getResourceCode() {
+		return this.shortDesc;
+	}
+
+	@Override
+	public BigDecimal getResourceId() {
+		return this.sourceofIncomeId;
+	}
+	
+	@Override
+	public String getResourceLocalName() {
+		return this.localFulldesc;
+	}
+	
+	
 	
 
 }

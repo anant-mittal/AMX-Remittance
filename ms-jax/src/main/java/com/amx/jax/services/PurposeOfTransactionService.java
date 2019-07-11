@@ -163,6 +163,7 @@ public class PurposeOfTransactionService extends AbstractService {
 								adddata.setRenderInputText(false);
 								adddata.setRenderSelect(true);
 								adddata.setRenderOneSelect(false);
+								adddata.setLocalFullName(dyamicLabel.getLocalDesc());
 
 								adddata.setListadditionAmiecData(convertViewModel(listAdditionaView));
 							}
@@ -187,6 +188,7 @@ public class PurposeOfTransactionService extends AbstractService {
 					adddata.setRenderSelect(false);
 					adddata.setRenderOneSelect(false);
 					adddata.setFlexiField(dyamicLabel.getFlexiField());
+					adddata.setLocalFullName(dyamicLabel.getLocalDesc());
 					if (dyamicLabel.getLebelDesc() != null) {
 						adddata.setAdditionalDesc(dyamicLabel.getLebelDesc());
 					} else {
