@@ -1139,11 +1139,11 @@ public BeneAdditionalDto getAdditionalBeneDetailJax(BenificiaryListView benefica
 	
 	beneAddDto.setBeneBankName(bankName);
 	beneAddDto.setBeneBranchName(bankBranchName);
-	beneAddDto.setBeneFirstName(beneFirstName);
+	/*beneAddDto.setBeneFirstName(beneFirstName);
 	beneAddDto.setBeneSecondName(beneSecondName);
 	beneAddDto.setBeneThirdName(beneThirdName);
 	beneAddDto.setBeneFourthName(beneFourthName);
-	beneAddDto.setBeneFifthName(beneFifthName);
+	beneAddDto.setBeneFifthName(beneFifthName);*/
 	
 	if(beneBankBranchView!=null && !beneBankBranchView.isEmpty()) {
 		if(beneBankBranchView.get(0)!=null && beneBankBranchView.get(0).getStateId()!=null) {
