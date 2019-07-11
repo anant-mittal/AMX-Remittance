@@ -95,7 +95,7 @@ public class CustomerModelService {
 		response.setCustomerFlags(customerModelResponse.getCustomerFlags());
 		List<CustomerCommunicationChannel> customerCommunicationChannels = new ArrayList<>();
 		Customer customerdetails = customerRepository.getCustomerEmailDetails(identityInt);
-		CustomerOnlineRegistration customerOnlineRegistration = onlineCustomerRepository.getLoginCustomersById(identityInt);
+		CustomerOnlineRegistration customerOnlineRegistration = onlineCustomerRepository.getLoginCustomersDeatilsById(identityInt);
 		
 		
 		if(customerOnlineRegistration.getStatus().equalsIgnoreCase("N") && (customerdetails.getEmailVerified().equals(Status.N))) {
