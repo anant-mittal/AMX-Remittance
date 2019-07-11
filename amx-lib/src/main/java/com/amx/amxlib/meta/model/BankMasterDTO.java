@@ -17,6 +17,7 @@ public class BankMasterDTO extends ResourceDTO implements Comparable<BankMasterD
 	private BigDecimal bankCountryId;
 	private boolean ibanRequired;
 	private Boolean isCashPayout;
+	private String bankLocalName;
 
 	private ExchangeRateBreakup exRateBreakup;
 
@@ -151,6 +152,16 @@ public class BankMasterDTO extends ResourceDTO implements Comparable<BankMasterD
 	public BigDecimal getResourceId() {
 		return this.bankId;
 	}
+
+	public String getBankLocalName() {
+		return bankLocalName;
+	}
+
+	public void setBankLocalName(String bankLocalName) {
+		this.bankLocalName = bankLocalName;
+	}
+	
+	
 	
 	
 }
