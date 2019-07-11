@@ -156,6 +156,16 @@ public class RemittanceTransactionService extends AbstractService {
 		return response;
 	}
 
+	
+	public ApiResponse saveApplicationV2(RemittanceTransactionDrRequestModel model) {
+		ApiResponse response = getBlackApiResponse();
+		RemittanceApplicationResponseModel responseModel = remittanceTxnManger.saveApplicationV2(model);
+		response.getData().getValues().add(responseModel);
+		response.setResponseStatus(ResponseStatus.OK);
+		response.getData().setType(responseModel.getModelType());
+		return response;
+	}
+	
 	public ApiResponse saveRemittance(PayGModel paymentResponseDto) {
 		ApiResponse response = getBlackApiResponse();
 		return response;
