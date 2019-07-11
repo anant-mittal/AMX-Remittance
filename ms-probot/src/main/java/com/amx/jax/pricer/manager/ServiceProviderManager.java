@@ -32,6 +32,7 @@ import com.amx.jax.pricer.dto.ExchangeRateAndRoutingRequest;
 import com.amx.jax.pricer.dto.ExchangeRateBreakup;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
 import com.amx.jax.pricer.service.PartnerExchDataService;
+import com.amx.jax.pricer.var.PricerServiceConstants.CUSTOMER_CATEGORY;
 
 @Service
 public class ServiceProviderManager {
@@ -47,7 +48,7 @@ public class ServiceProviderManager {
 
 	@Async(ExecutorConfig.EXECUTER_PRICER)
 	public Future<SrvPrvFeeInqResDTO> getServiceProviderQuote(ViewExRoutingMatrix homeSendMatrix,
-			ExchangeRateAndRoutingRequest request) {
+			ExchangeRateAndRoutingRequest request, CUSTOMER_CATEGORY custCat) {
 
 		TenantContext.setCurrentTenant(AppContextUtil.getTenant().name());
 
@@ -78,6 +79,10 @@ public class ServiceProviderManager {
 		}
 
 		partnerReq.setRoutingBankDetails(routeList);
+		
+		//For Discounts
+		partnerReq.setCustomerCategory(custCat);
+		partnerReq.setChannel(request.getChannel());
 
 		SrvPrvFeeInqResDTO partnerResp = partnerDataService.getPartnerFeeinquiry(partnerReq);
 

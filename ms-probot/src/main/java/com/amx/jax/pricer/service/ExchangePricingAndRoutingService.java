@@ -31,7 +31,9 @@ import com.amx.jax.dict.UserClient.Channel;
 import com.amx.jax.multitenant.TenantContext;
 import com.amx.jax.partner.dto.SrvPrvFeeInqResDTO;
 import com.amx.jax.pricer.dao.CustomerDao;
+import com.amx.jax.pricer.dao.CustomerExtendedDao;
 import com.amx.jax.pricer.dbmodel.Customer;
+import com.amx.jax.pricer.dbmodel.CustomerExtended;
 import com.amx.jax.pricer.dbmodel.TimezoneMasterModel;
 import com.amx.jax.pricer.dbmodel.ViewExRoutingMatrix;
 import com.amx.jax.pricer.dto.BankDetailsDTO;
@@ -74,6 +76,9 @@ public class ExchangePricingAndRoutingService {
 
 	@Autowired
 	CustomerDao customerDao;
+
+	@Autowired
+	CustomerExtendedDao customerExtendedDao;
 
 	@Autowired
 	RemitPriceManager remitPriceManager;
@@ -222,21 +227,26 @@ public class ExchangePricingAndRoutingService {
 
 		List<ViewExRoutingMatrix> serviceProviderMatrix = remitRoutingManager.filterServiceProviders(routingMatrix);
 
-		/*
-		 * for (ViewExRoutingMatrix matrix : routingMatrix) { if
-		 * (matrix.getRoutingBankCode().equalsIgnoreCase("HOME")) {
-		 * serviceProviderMatrix.add(matrix); homeSendRouting = matrix; } }
-		 */
-
 		Future<SrvPrvFeeInqResDTO> sProviderFuture = null;
 
 		if (!serviceProviderMatrix.isEmpty()) {
 			isSPRouting = true;
 			homeSendMatrix = serviceProviderMatrix.get(0);
 
+			// Get Customer Category
+			CustomerExtended customerExtended = customerExtendedDao
+					.getCustomerExtendedByCustomerId(customer.getCustomerId());
+
+			CUSTOMER_CATEGORY cat = CUSTOMER_CATEGORY.BRONZE;
+
+			if (null != customerExtended && null != customerExtended.getCustomerCategoryDiscount()
+					&& null != customerExtended.getCustomerCategoryDiscount().getCustomerCategory()) {
+				cat = customerExtended.getCustomerCategoryDiscount().getCustomerCategory();
+			}
+
 			// asynch Call to get the Service Provider Prices
 			sProviderFuture = serviceProviderManager.getServiceProviderQuote(homeSendMatrix,
-					exchangeRateAndRoutingRequest);
+					exchangeRateAndRoutingRequest, cat);
 
 		}
 
@@ -501,7 +511,7 @@ public class ExchangePricingAndRoutingService {
 		System.out.println(" Tenant Context Parent  ==> " + TenantContext.getCurrentTenant());
 
 		Future<SrvPrvFeeInqResDTO> sProviderFuture = serviceProviderManager.getServiceProviderQuote(homeSendMatrix,
-				request);
+				request, CUSTOMER_CATEGORY.BRONZE);
 
 		System.out.println(" ========= Waiting For HomeSend thread to complete ======== ");
 

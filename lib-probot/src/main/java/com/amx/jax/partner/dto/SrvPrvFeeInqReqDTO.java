@@ -6,6 +6,9 @@ import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
+import com.amx.jax.dict.UserClient.Channel;
+import com.amx.jax.pricer.var.PricerServiceConstants.CUSTOMER_CATEGORY;
+
 public class SrvPrvFeeInqReqDTO implements Serializable {
 
 	/** The Constant serialVersionUID. */
@@ -35,14 +38,9 @@ public class SrvPrvFeeInqReqDTO implements Serializable {
 	@NotNull(message="amount can not be Null or Empty")
 	private BigDecimal amount;
 	
-	//@NotNull(message = "Rountry Bank Id can not be Null or Empty")
-	//private BigDecimal routingBankId;
+	private CUSTOMER_CATEGORY customerCategory;
 	
-	//@NotNull(message="Remittance Id can not be Null or Empty")
-	//private BigDecimal remittanceId;
-	
-	//@NotNull(message="Delivery Id can not be Null or Empty")
-	//private BigDecimal deliveryId;
+	private Channel channel;
 	
 	private List<RoutingBankDetails> routingBankDetails;
 	
@@ -102,32 +100,31 @@ public class SrvPrvFeeInqReqDTO implements Serializable {
 		this.applicationCountryId = applicationCountryId;
 	}
 	
-	/*public BigDecimal getRoutingBankId() {
-		return routingBankId;
-	}
-	public void setRoutingBankId(BigDecimal routingBankId) {
-		this.routingBankId = routingBankId;
-	}
-	
-	public BigDecimal getRemittanceId() {
-		return remittanceId;
-	}
-	public void setRemittanceId(BigDecimal remittanceId) {
-		this.remittanceId = remittanceId;
-	}
-	
-	public BigDecimal getDeliveryId() {
-		return deliveryId;
-	}
-	public void setDeliveryId(BigDecimal deliveryId) {
-		this.deliveryId = deliveryId;
-	}*/
-	
 	public List<RoutingBankDetails> getRoutingBankDetails() {
 		return routingBankDetails;
 	}
+	
 	public void setRoutingBankDetails(List<RoutingBankDetails> routingBankDetails) {
 		this.routingBankDetails = routingBankDetails;
 	}
+	
+	public CUSTOMER_CATEGORY getCustomerCategory() {
+		return customerCategory;
+	}
+	
+	public void setCustomerCategory(CUSTOMER_CATEGORY customerCategory) {
+		this.customerCategory = customerCategory;
+	}
+	
+	public Channel getChannel() {
+		return channel;
+	}
+	
+	public void setChannel(Channel channel) {
+		this.channel = channel;
+	}
+	
+	
+	
 				
 }
