@@ -267,7 +267,7 @@ public class RemittanceTransactionManager {
 	/** New Dynamic routing and pricing Api **/ 
 	public RemittanceTransactionResponsetModel validateTransactionDataV2(RemittanceTransactionDrRequestModel model) {
 
-		//addRequestParameters(model);
+	
 		addRequestParametersV2(model);
 		Customer customer = custDao.getCustById(meta.getCustomerId());
 		validatedObjects.put("CUSTOMER", customer);
@@ -284,10 +284,16 @@ public class RemittanceTransactionManager {
 		
 	
 		DynamicRoutingPricingDto  dynamicRoutingPricing = model.getDynamicRroutingPricingBreakup();
+		
+		if(dynamicRoutingPricing==null) {
+			throw new GlobalException(JaxError.NO_RECORD_FOUND,"Routing path is missing");
+		}
+		
 		TrnxRoutingDetails trnxRoutingDetails =  dynamicRoutingPricing.getTrnxRoutingPaths();
 		ExchangeRateBreakup breakup = dynamicRoutingPricing.getExRateBreakup();
 		Map<String, Object>  routingDetails =setupRoutingDetails(trnxRoutingDetails);
 	
+		
 		remitApplParametersMap.putAll(routingDetails);
 		//remitApplParametersMap.put("P_BENEFICIARY_SWIFT_BANK1", routingDetails.get("P_SWIFT"));
 		remitApplParametersMap.put("P_BENEFICARY_ACCOUNT_SEQ_ID", beneficiary.getBeneficiaryAccountSeqId());
