@@ -18,6 +18,7 @@ public class AdditionalBankDetailsViewDto {
 	  private BigDecimal remittanceId;
 	  private BigDecimal deliveryId;
 	  private String fieldType;
+	  private String amiecLocalDesc;
 	public BigDecimal getSrlId() {
 		return srlId;
 	}
@@ -102,6 +103,7 @@ public class AdditionalBankDetailsViewDto {
 	public void setFieldType(String fieldType) {
 		this.fieldType = fieldType;
 	}
+	
 
 	public static class AdditionalBankDetailsViewDtoComparator implements Comparator<AdditionalBankDetailsViewDto> {
 
@@ -113,5 +115,13 @@ public class AdditionalBankDetailsViewDto {
 			return 0;
 		}
 		
+	}
+
+
+	public String getAmiecLocalDesc() {
+		return amiecLocalDesc;
+	}
+	public void setAmiecLocalDesc(String amiecLocalDesc) {
+		this.amiecLocalDesc = amiecLocalDesc;
 	}
 }
