@@ -43,7 +43,7 @@ public class AdditionalBankDetailsViewx implements Serializable {
 	  }
 
 	  public AdditionalBankDetailsViewx(BigDecimal srlId, String flexField, BigDecimal countryId, String amiecCode, String amieceDescription, BigDecimal bankId, String bankCode, String bankDescription, BigDecimal serviceApplicabilityRuleId, BigDecimal applicationCountryId, BigDecimal currencyId,
-			      BigDecimal remittanceId, BigDecimal deliveryId, String fieldType) {
+			      BigDecimal remittanceId, BigDecimal deliveryId, String fieldType, String bankLocalName) {
 		    super();
 		    this.srlId = srlId;
 		    this.flexField = flexField;
@@ -60,6 +60,7 @@ public class AdditionalBankDetailsViewx implements Serializable {
 		    this.deliveryId = deliveryId;
 		    this.fieldType = fieldType;
 		    this.bankLocalName=bankLocalName;
+		    
 		    logger.info("in AdditionalBankDetailsViewx with params");
 	  }
 
