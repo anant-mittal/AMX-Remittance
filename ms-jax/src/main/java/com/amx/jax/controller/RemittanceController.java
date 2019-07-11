@@ -30,6 +30,7 @@ import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.manager.RemittancePaymentManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.remittance.IRemitTransReqPurpose;
+import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.services.CustomerRatingService;
@@ -139,6 +140,15 @@ public class RemittanceController {
 		ApiResponse response = remittanceTransactionService.validateRemittanceTransaction(model);
 		return response;
 	}
+	
+	/*
+	 * @RequestMapping(value = "/validate/v2/", method = RequestMethod.POST) public
+	 * ApiResponse validateRemittanceTransactionV2(@RequestBody
+	 * RemittanceTransactionDrRequestModel model) {
+	 * logger.info("In validate with parameters" + model.toString()); ApiResponse
+	 * response = remittanceTransactionService.validateRemittanceTransaction(model);
+	 * return response; }
+	 */
 
 	@RequestMapping(value = "/sourceofincome/", method = RequestMethod.POST)
 	public ApiResponse sourceofIncome() {
@@ -158,7 +168,19 @@ public class RemittanceController {
 		ApiResponse response = remittanceTransactionService.saveApplication(model);
 		return response;
 	}
+	
+	@RequestMapping(value = "/save-application/v2/", method = RequestMethod.POST)
+	public ApiResponse saveApplication(@RequestBody @Valid RemittanceTransactionDrRequestModel model) {
+		JaxContextUtil.setJaxEvent(JaxEvent.CREATE_APPLICATION);
+		JaxContextUtil.setRequestModel(model);
+		logger.info("In Save-Application with parameters" + model.toString());
+		ApiResponse response = remittanceTransactionService.saveApplication(model);
+		return response;
+	}
+	
 
+
+	
 	@RequestMapping(value = "/purpose-of-txn/list/", method = RequestMethod.POST)
 	public ApiResponse getPurposeOfTransaction(@RequestBody IRemitTransReqPurpose model) {
 		logger.info("In getPurposeOfTransaction with parameters" + model.toString());

@@ -94,8 +94,13 @@ public class PayGService {
 		payGParams.setDocId(docId);
 		payGParams.setDocNo(docNo);
 		payGParams.setDocFy(docFy);
+		payGParams.setTrackId(trckid);
+		return getEnCryptedDetails(payGParams);
+	}
+
+	public String getEnCryptedDetails(PayGParams payGParams) {
 		return Base64.getEncoder().encodeToString(textEncryptor
-				.encrypt(JsonUtil.toJson(JsonUtil.toJson(payGParams))).getBytes());
+				.encrypt(JsonUtil.toJson(payGParams)).getBytes());
 	}
 
 	public PayGParams getDeCryptedDetails(String enCryptedDetails) {
@@ -111,6 +116,7 @@ public class PayGService {
 		payGParams.setDocId(docId);
 		payGParams.setDocNo(docNo);
 		payGParams.setDocFy(docFy);
+		payGParams.setTrackId(trckid);
 		try {
 			payGParams.setVerification(CryptoUtil.getMD5Hash((JsonUtil.toJson(payGParams))));
 		} catch (NoSuchAlgorithmException e) {

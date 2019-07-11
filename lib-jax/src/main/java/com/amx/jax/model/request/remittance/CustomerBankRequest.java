@@ -1,10 +1,21 @@
 package com.amx.jax.model.request.remittance;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public class CustomerBankRequest {
 	
-	private BigDecimal bankId;
+	List<CustomerBankDto> customerBankDetails;
+
+	public List<CustomerBankDto> getCustomerBankDetails() {
+		return customerBankDetails;
+	}
+
+	public void setCustomerBankDetails(List<CustomerBankDto> customerBankDetails) {
+		this.customerBankDetails = customerBankDetails;
+	}
+	
+	/*private BigDecimal bankId;
 	private String bankCode;
 	private String collectionMode;
 	private String debitCardName;
@@ -43,6 +54,6 @@ public class CustomerBankRequest {
 	}
 	public void setRelationsId(BigDecimal relationsId) {
 		this.relationsId = relationsId;
-	}
+	}*/
 	
 }

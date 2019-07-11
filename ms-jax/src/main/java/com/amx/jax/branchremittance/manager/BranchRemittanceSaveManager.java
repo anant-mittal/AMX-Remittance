@@ -340,7 +340,7 @@ public class BranchRemittanceSaveManager {
 				collection.setCreatedBy(employee.getUserName());
 				collection.setLocCode(employee.getBranchId());
 				BigDecimal declarationTotalamount = getDeclarationReportAmount(ConstantDocument.DECL_REPORT_FOR_TOT_AMOUNT);
-				if(collection.getNetAmount().compareTo(declarationTotalamount)>=1) {
+				if(JaxUtil.isNullZeroBigDecimalCheck(declarationTotalamount) && collection.getNetAmount().compareTo(declarationTotalamount)>=1) {
 					collection.setCashDeclarationIndicator(ConstantDocument.Yes);
 				}
 				collection.setIsActive(ConstantDocument.Yes);
@@ -365,10 +365,10 @@ public class BranchRemittanceSaveManager {
 				
 				
 				}else {
-					throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record found to save in collection"+customerid+"\t appl No :"+shoppingCartList.get(0).getApplicationId());
+					throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record not found to save in collection"+customerid+"\t appl No :"+shoppingCartList.get(0).getApplicationId());
 				}
 			}else {
-				throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record found to save in collection");
+				throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record not found to save in collection");
 			}
 			
 		}catch(GlobalException e){
@@ -652,8 +652,6 @@ public class BranchRemittanceSaveManager {
 	
 	public Map<BigDecimal,RemittanceTransaction> saveRemittanceTrnx(BranchRemittanceRequestModel remittanceRequestModel,CollectionModel  collect)
 	{
-		//List<RemittanceTransaction> remitTrnxList      =new ArrayList<>();
-		
 		Map<BigDecimal,RemittanceTransaction> remitTrnxList      =new HashMap<>();
 		
 		List<BranchApplicationDto> shoppingCartList = remittanceRequestModel.getRemittanceApplicationId();
@@ -760,6 +758,8 @@ public class BranchRemittanceSaveManager {
 					remitTrnx.setPipsToAmt(appl.getPipsToAmt());
 					remitTrnx.setIsDiscountAvailed(appl.getIsDiscountAvailed());
 					remitTrnx.setReachedCostRateLimit(appl.getReachedCostRateLimit());
+					remitTrnx.setBeneDeductFlag(appl.getBeneDeductFlag());
+					remitTrnx.setInstruction(appl.getInstruction());
 					
 					
 					BigDecimal documentNo =generateDocumentNumber(appl.getFsCountryMasterByApplicationCountryId().getCountryId(),appl.getFsCompanyMaster().getCompanyId(),remitTrnx.getDocumentId().getDocumentCode(),remitTrnx.getDocumentFinanceYear(),remitTrnx.getLoccod(),ConstantDocument.A);
@@ -1055,8 +1055,11 @@ public String checkBlackListIndicator(BigDecimal customerId,BigDecimal  applId) 
 
 	
 	public BigDecimal getDeclarationReportAmount(String authType) {
+		BigDecimal declarationTotalamount =BigDecimal.ZERO;
 		AuthenticationLimitCheckView authParam = authenticationLimitCheck.findByAuthorizationType(authType);
-		BigDecimal declarationTotalamount = authParam.getAuthLimit()==null?BigDecimal.ZERO:authParam.getAuthLimit();
+		if(authParam!=null) {
+		 declarationTotalamount = authParam.getAuthLimit()==null?BigDecimal.ZERO:authParam.getAuthLimit();
+		}
 		return declarationTotalamount;
 	}
 	
@@ -1229,7 +1232,6 @@ public void validateSaveTrnxDetails(HashMap<String, Object> mapAllDetailRemitSav
 	Map<BigDecimal,RemittanceTransaction> remitTrnxList = (Map<BigDecimal,RemittanceTransaction>) mapAllDetailRemitSave.get("EX_REMIT_TRNX");
 	Map<BigDecimal,RemittanceBenificiary> remitBeneList = (Map<BigDecimal,RemittanceBenificiary>) mapAllDetailRemitSave.get("EX_REMIT_BENE");
 	Map<BigDecimal,List<RemittanceAdditionalInstructionData>> addlTrnxList = (Map<BigDecimal,List<RemittanceAdditionalInstructionData>>) mapAllDetailRemitSave.get("EX_REMIT_ADDL");
-	
 	if(collectModel==null) {
 		throw new GlobalException(JaxError.NO_RECORD_FOUND, "Collection data not found");
 	}	
@@ -1245,6 +1247,6 @@ public void validateSaveTrnxDetails(HashMap<String, Object> mapAllDetailRemitSav
 	if(addlTrnxList.isEmpty()) {
 		throw new GlobalException(JaxError.NO_RECORD_FOUND, "Remittance additional instruction details not found");
 	}
+	
 	}
-
 }

@@ -46,6 +46,7 @@ public class CustomerFlagManager {
 		customerFlags.setSecurityQuestionDone(!isSecurityQuestionRequired(customerOnlineRegistration));
 
 		customerFlags.setAnnualIncomeExpired(isAnnualIncomeExpired(customer));
+		customerFlags.setIsOnlineCustomer(Boolean.FALSE);
 		setCustomerCommunicationChannelFlags(customer, customerFlags);
 
 		return customerFlags;

@@ -1,7 +1,10 @@
 package com.amx.jax.payment.gateway;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import com.amx.jax.AppConfig;
 
 @Component
 public class PayGConfig {
@@ -12,8 +15,11 @@ public class PayGConfig {
 	@Value("${app.test.enabled}")
 	boolean testEnabled;
 
+	@Autowired
+	AppConfig appConfig;
+
 	public String getServiceCallbackUrl() {
-		return serviceCallbackUrl;
+		return serviceCallbackUrl + appConfig.getAppPrefix();
 	}
 
 	/**

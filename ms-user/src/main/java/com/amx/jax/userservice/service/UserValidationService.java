@@ -57,9 +57,11 @@ import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.dao.CustomerIdProofDao;
 import com.amx.jax.userservice.dao.DmsDocumentDao;
 import com.amx.jax.userservice.manager.SecurityQuestionsManager;
+import com.amx.jax.userservice.manager.UserContactVerificationManager;
 import com.amx.jax.userservice.service.CustomerValidationContext.CustomerValidation;
 import com.amx.jax.userservice.validation.ValidationClient;
 import com.amx.jax.userservice.validation.ValidationClients;
+import com.amx.jax.util.AmxDBConstants.Status;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.validation.CustomerValidationService;
@@ -133,6 +135,9 @@ public class UserValidationService {
 	
 	@Autowired
 	IBlackListDetailRepository blackListDtRepo;
+	
+	@Autowired
+	UserContactVerificationManager userContactVerificationManager;
 
 	private DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -544,6 +549,7 @@ public class UserValidationService {
 			this.incrementLockCount(onlineCustomer);
 			throw new InvalidOtpException("Mobile Otp is incorrect for identity int: " + customer.getIdentityInt());
 		}
+		
 		// email otp validation
 		if (isEOtpFlowRequired && onlineCustomer.getEmailToken() != null) {
 			String hashedEotp = cryptoUtil.getHash(customer.getIdentityInt(), model.getEotp());
@@ -554,6 +560,9 @@ public class UserValidationService {
 			}
 		}
 		this.unlockCustomer(onlineCustomer);
+		
+		// ------ Contact Verified ------
+		userContactVerificationManager.setContactVerified(customer, model.getMotp(), model.getEotp(), null);
 	}
 
 	private boolean isMOtpFlowRequired(CustomerModel model) {

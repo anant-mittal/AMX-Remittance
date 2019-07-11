@@ -15,6 +15,11 @@ public class CustomerModel extends AbstractModel implements ICustomerModel {
 
 	private static final long serialVersionUID = -8190742045911263443L;
 
+	/**
+	 * @deprecated contact Prashant T. to add identity id in this model
+	 * 
+	 */
+	@Deprecated
 	private String identityId;
 
 	private String email;

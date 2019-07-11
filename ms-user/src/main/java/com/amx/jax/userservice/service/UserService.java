@@ -92,8 +92,10 @@ import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.dao.CustomerIdProofDao;
 import com.amx.jax.userservice.manager.CustomerFlagManager;
 import com.amx.jax.userservice.manager.SecurityQuestionsManager;
+import com.amx.jax.userservice.manager.UserContactVerificationManager;
 import com.amx.jax.userservice.repository.LoginLogoutHistoryRepository;
 import com.amx.jax.userservice.service.CustomerValidationContext.CustomerValidation;
+import com.amx.jax.util.AmxDBConstants.Status;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.StringUtil;
@@ -200,6 +202,9 @@ public class UserService extends AbstractUserService {
 	PostManService postManService;
 	@Autowired
 	CustomerFlagManager customerFlagManager;
+	
+	@Autowired
+	UserContactVerificationManager userContactVerificationManager;
 
 	@Override
 	public ApiResponse registerUser(AbstractUserModel userModel) {
@@ -225,7 +230,6 @@ public class UserService extends AbstractUserService {
 
 	public CustomerModel convert(CustomerOnlineRegistration cust) {
 		CustomerModel model = new CustomerModel();
-		model.setIdentityId(cust.getUserName());
 		if (cust.getCaption() != null) {
 			model.setCaption(cryptoUtil.decrypt(cust.getUserName(), cust.getCaption()));
 		}
@@ -254,6 +258,7 @@ public class UserService extends AbstractUserService {
 			personinfo.setEmail(customer.getEmail());
 			personinfo.setMobile(customer.getMobile());
 			model.setPersoninfo(personinfo);
+			model.setIdentityId(customer.getIdentityInt());
 		} catch (Exception e) {
 			logger.error("Exception while populating PersonInfo : ", e);
 		}
@@ -637,6 +642,10 @@ public class UserService extends AbstractUserService {
 		checkListManager.updateMobileAndEmailCheck(onlineCust, custDao.getCheckListForUserId(civilId));
 		this.unlockCustomer(onlineCust);
 		custDao.saveOnlineCustomer(onlineCust);
+		
+		// ------ Mobile and Email Verified ------
+		userContactVerificationManager.setContactVerified(customer, mOtp, eOtp, null);
+		
 		ApiResponse response = getBlackApiResponse();
 		CustomerModel customerModel = convert(onlineCust);
 		response.getData().getValues().add(customerModel);
@@ -673,7 +682,7 @@ public class UserService extends AbstractUserService {
 		ApiResponse response = getBlackApiResponse();
 		CustomerModel customerModel = convert(onlineCustomer);
 
-		// afterLoginSteps(onlineCustomer);
+		afterLoginSteps(onlineCustomer);
 		response.getData().getValues().add(customerModel);
 		response.getData().setType(customerModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
@@ -683,7 +692,7 @@ public class UserService extends AbstractUserService {
 	/**
 	 * call this method to perform tasks after login
 	 */
-	private void afterLoginSteps(CustomerOnlineRegistration onlineCustomer) {
+	public void afterLoginSteps(CustomerOnlineRegistration onlineCustomer) {
 		custDao.updatetLoyaltyPoint(onlineCustomer.getCustomerId());
 		this.unlockCustomer(onlineCustomer);
 		this.saveLoginLogoutHistoryByUserName(onlineCustomer.getUserName());
@@ -1293,8 +1302,13 @@ public class UserService extends AbstractUserService {
 			userValidationService.incrementLockCount(onlineCustomer);
 			throw new InvalidOtpException("whatsapp Otp is incorrect for civil-id: " + civilId);
 		}
+		
 		ApiResponse response = getBlackApiResponse();
 		CustomerModel customerModel = convert(onlineCustomer);
+		
+		// ------ WhatsApp Verification ------
+		userContactVerificationManager.setContactVerified(customer, null, null, wOtp);
+		
 		response.getData().getValues().add(customerModel);
 		response.getData().setType(customerModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
