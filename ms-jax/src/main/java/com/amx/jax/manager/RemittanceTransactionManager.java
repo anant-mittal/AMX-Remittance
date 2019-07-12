@@ -356,6 +356,7 @@ public class RemittanceTransactionManager {
 		responseModel.setExRateBreakup(breakup);
 		addExchangeRateParameters(responseModel); 
 		applyCurrencyRoudingLogic(responseModel.getExRateBreakup());
+		setCustomerDiscountColumnsV2(responseModel, dynamicRoutingPricing);
 		return responseModel;
 
 	}
@@ -1023,16 +1024,6 @@ public class RemittanceTransactionManager {
 
 	public RemittanceApplicationResponseModel saveApplication(RemittanceTransactionRequestModel model) {
 		this.isSaveRemittanceFlow = true;
-		/*
-		RemittanceTransactionResponsetModel validationResults = null;
-		
-		if(model instanceof RemittanceTransactionDrRequestModel) {
-		RemittanceTransactionDrRequestModel modelDR  =(RemittanceTransactionDrRequestModel)model;
-		validationResults = this.validateTransactionDataV2(modelDR);
-		}else {
-			validationResults=this.validateTransactionData(model);
-		}
-		*/
 		
 		RemittanceTransactionResponsetModel validationResults = this.validateTransactionData(model);
 		
@@ -1506,25 +1497,26 @@ public class RemittanceTransactionManager {
 		BigDecimal beneCountryId = (BigDecimal) remitApplParametersMap.get("P_BENEFICIARY_COUNTRY_ID");
 
 		if (jaxTenantProperties.getIsDynamicPricingEnabled() && !remittanceParameterMapManager.isCashChannel()) {
-			ExchangeRateResponseModel exchangeRateResponseModel = newExchangeRateService
-					.getExchangeRateResponseModelUsingDynamicPricing(fCurrencyId, lcAmount, fcAmount, beneCountryId,
-							routingBankId);
+			ExchangeRateResponseModel exchangeRateResponseModel = newExchangeRateService.getExchangeRateResponseModelUsingDynamicPricing(fCurrencyId, lcAmount, fcAmount, beneCountryId,routingBankId);
 			responseModel.setDiscountAvailed(exchangeRateResponseModel.getDiscountAvailed());
 			responseModel.setCustomerDiscountDetails(exchangeRateResponseModel.getCustomerDiscountDetails());
 			responseModel.setCostRateLimitReached(exchangeRateResponseModel.getCostRateLimitReached());
 			exchangeRateBreakup = exchangeRateResponseModel.getExRateBreakup();
 		} else if (jaxTenantProperties.getExrateBestRateLogicEnable()) {
-			exchangeRateBreakup = newExchangeRateService.getExchangeRateBreakUpUsingBestRate(fCurrencyId, lcAmount,
-					fcAmount, routingBankId);
+			exchangeRateBreakup = newExchangeRateService.getExchangeRateBreakUpUsingBestRate(fCurrencyId, lcAmount,fcAmount, routingBankId);
 		} else {
-			exchangeRateBreakup = newExchangeRateService.createExchangeRateBreakUp(exchangeRates,
-					model.getLocalAmount(), model.getForeignAmount());
+			exchangeRateBreakup = newExchangeRateService.createExchangeRateBreakUp(exchangeRates,model.getLocalAmount(), model.getForeignAmount());
 		}
 
 		setNetAmountAndLoyalityState(exchangeRateBreakup, model, responseModel, comission,BigDecimal.ZERO);
 		return exchangeRateBreakup;
-
 	}
-
-	
+/** Added by Rabil on 12 Jul 2019**/
+	public void setCustomerDiscountColumnsV2(RemittanceTransactionResponsetModel validationResults,DynamicRoutingPricingDto model) {
+		validationResults.setDiscountAvailed(model.getDiscountAvailed());
+		validationResults.setDiscountOnComission(model.getDiscountOnComission());
+		validationResults.setCustomerDiscountDetails(model.getCustomerDiscountDetails());
+		validationResults.setCostRateLimitReached(model.getCostRateLimitReached());
+		
+	}
 }
