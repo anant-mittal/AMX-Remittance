@@ -148,11 +148,14 @@
 		  document.getElementById("feedback-invalid").classList.remove("dn");
 		  document.getElementById("rating-feedback").classList.add("dn");
       }
-      if(ratingData.rating.results[0].rating != null){
-        var feedbackView = document.getElementById("feedback-success");
-        var ratingView = document.getElementById("rating-feedback");
+      var feedbackView = document.getElementById("feedback-success");
+      var ratingView = document.getElementById("rating-feedback");
+      if(ratingData.rating.results[0].rating != null){      
         feedbackView.classList.remove("dn");
         ratingView.classList.add('dn');
+      } else {
+    	  feedbackView.classList.add("dn");
+          ratingView.classList.remove('dn');
       }
 
       function submitFeedback(){
@@ -165,8 +168,6 @@
       }
 
       function resolveFeedbackPost(respJson){
-        var feedbackView = document.getElementById("feedback-success");
-        var ratingView = document.getElementById("rating-feedback");
         feedbackView.classList.remove("dn");
         ratingView.classList.add('dn');
       }
