@@ -1074,7 +1074,7 @@ public BeneAdditionalDto getAdditionalBeneDetailJax(BenificiaryListView benefica
 	
 	if(serviceMasterId.compareTo(ConstantDocument.SERVICE_MASTER_ID_CASH)==0 || serviceMasterId.compareTo(ConstantDocument.SERVICE_MASTER_ID_DD)==0) {
 		
-		if(!StringUtils.isBlank(langInd) && langInd.equalsIgnoreCase(ConstantDocument.L_ARAB) && bnfBankLangInd.compareTo(new BigDecimal(2))==0) {
+		if(!StringUtils.isBlank(langInd) && langInd.equalsIgnoreCase(ConstantDocument.L_ARAB) && bnfBankLangInd != null && bnfBankLangInd.compareTo(new BigDecimal(2))==0) {
 			bankName = routingBankMasterModel.getBankFullNameAr();
 			if(!StringUtils.isBlank(routingCityNameArabic)) {
 				bankBranchName =routingBankBranchView.get(0)==null?"":routingBankBranchView.get(0).getBranchFullNameArabic()+","+ routingCityNameArabic==null?"":routingCityNameArabic;
@@ -1104,7 +1104,7 @@ public BeneAdditionalDto getAdditionalBeneDetailJax(BenificiaryListView benefica
 				throw new GlobalException(JaxError.INVALID_ROUTING_BANK, "No data found in Flex fields For this Bene bank "+beneBankMasterModel.getBankCode());
 			}
 			}else {
-				 if(!StringUtils.isBlank(langInd) && langInd.equalsIgnoreCase(ConstantDocument.L_ARAB) && bnfBankLangInd.compareTo(new BigDecimal(2))==0) {
+				 if(!StringUtils.isBlank(langInd) && langInd.equalsIgnoreCase(ConstantDocument.L_ARAB) && bnfBankLangInd!=null && bnfBankLangInd.compareTo(new BigDecimal(2))==0) {
 					 bankName = beneBankMasterModel.getBankFullNameAr(); 
 				 }else {
 					 bankName = beneBankMasterModel.getBankFullName();
