@@ -97,11 +97,9 @@ public class CustomerModelService {
 		Customer customerdetails = customerRepository.getCustomerEmailDetails(identityInt);
 		CustomerOnlineRegistration customerOnlineRegistration = onlineCustomerRepository.getLoginCustomersDeatilsById(identityInt);
 		
+		if(customerdetails.getEmailVerified()==null)
 		
-		if(customerOnlineRegistration.getStatus().equalsIgnoreCase("N") && (customerdetails.getEmailVerified().equals(Status.N))) {
-			throw new GlobalException(JaxError.EMAIL_NOT_VERIFIED, "Email id is not verified.Kinldy verify");
-		}
-		
+		{
 		if (customerFlags.getEmailVerified()) {
 			String emailId = personInfo.getEmail();
 			String email = emailId.split("@")[0];
@@ -137,10 +135,19 @@ public class CustomerModelService {
 			customerCommunicationChannels.add(new CustomerCommunicationChannel(ContactType.WHATSAPP, maskedMobile));
 
 		}
+		}
+	
+		else if(customerOnlineRegistration.getStatus().equalsIgnoreCase("N") && (customerdetails.getEmailVerified().equals(Status.N))) {
+				throw new GlobalException(JaxError.EMAIL_NOT_VERIFIED, "Email id is not verified.Kinldy verify");
+			
+			
+		}
+	
 		response.setCustomerCommunicationChannel(customerCommunicationChannels);
 		if (customerCommunicationChannels.isEmpty()) {
 			throw new GlobalException(JaxError.MISSING_OTP_CONTACT,
 					"You cannot register online. Please register contact details in the branch to proceed further.");
+		
 		}
 		return response;
 	}

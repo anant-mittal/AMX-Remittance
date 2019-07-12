@@ -131,16 +131,19 @@ public class CustomerController implements ICustomerService {
 	@RequestMapping(value = "/{civil-id}/send-reset-otp/", method = RequestMethod.GET)
 	public ApiResponse sendResetCredentialsOtp(@PathVariable("civil-id") String civilId) {
 		logger.info("Send OTP Request : civilId - " + civilId);
+		//Added by Radhika
 		Customer customerdetails = customerRepository.getCustomerEmailDetails(civilId);
 		CustomerOnlineRegistration customerOnlineRegistration = onlineCustomerRepository.getLoginCustomersDeatilsById(civilId);
-				
-		if(customerOnlineRegistration.getStatus().equalsIgnoreCase("N") && (customerdetails.getEmailVerified().equals(Status.N))) {
-			throw new GlobalException(JaxError.EMAIL_NOT_VERIFIED, "Email id is not verified.Kinldy verify");
-		}
-			
+		ApiResponse response = null;
+		if(customerdetails.getEmailVerified()==null)
+		{		
 		List<ContactType> channel = new ArrayList<>();
 		channel.add(ContactType.SMS_EMAIL);
-		ApiResponse response = userService.sendOtpForCivilId(civilId, channel, null, null);
+		response = userService.sendOtpForCivilId(civilId, channel, null, null);
+		}else if(customerOnlineRegistration.getStatus().equalsIgnoreCase("N") && (customerdetails.getEmailVerified().equals(Status.N))){
+			throw new GlobalException(JaxError.EMAIL_NOT_VERIFIED, "Email id is not verified.Kinldy verify");
+		}
+		
 		return response;
 	}
 
