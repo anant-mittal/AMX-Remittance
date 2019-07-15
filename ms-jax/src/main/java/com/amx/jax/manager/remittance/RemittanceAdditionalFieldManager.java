@@ -118,6 +118,9 @@ public class RemittanceAdditionalFieldManager {
 				case BENE_STREET_NO:
 					jaxConditionalFieldDto.getField().setDefaultValue(beneficaryMaster.getStreetNo());
 					break;
+				case BENE_ZIP_CODE:
+					jaxConditionalFieldDto.getField().setDefaultValue(beneficaryMaster.getBeneficiaryZipCode());
+					break;	
 				default:
 					break;
 				}
@@ -221,6 +224,11 @@ public class RemittanceAdditionalFieldManager {
 				}
 				if (JaxDynamicField.BENE_STREET_NO.name().equals(jaxConditionalField.getField().getName()) && fieldValue != null) {
 					beneficaryMaster.setStreetNo(fieldValue.toString());
+					logger.info("setting street no number for bene master seq id {} , : {} ", beneficiaryDetail.getBeneficaryMasterSeqId(), fieldValue);
+					beneficiaryService.saveBeneMaster(beneficaryMaster);
+				}
+				if (JaxDynamicField.BENE_ZIP_CODE.name().equals(jaxConditionalField.getField().getName()) && fieldValue != null) {
+					beneficaryMaster.setBeneficiaryZipCode(fieldValue.toString());
 					logger.info("setting street no number for bene master seq id {} , : {} ", beneficiaryDetail.getBeneficaryMasterSeqId(), fieldValue);
 					beneficiaryService.saveBeneMaster(beneficaryMaster);
 				}

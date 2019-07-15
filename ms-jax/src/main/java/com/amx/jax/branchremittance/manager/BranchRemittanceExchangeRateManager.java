@@ -314,11 +314,12 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 		TrnxRoutingDetails trnxRoutingDetails = trnxRoutingPathList.get(key);
 		if(trnxRoutingDetails!=null) {
 			result.setTrnxRoutingPaths(trnxRoutingDetails);
-		}
-		
-		if(homeSendSrvcProviderInfo!=null) {
-			ServiceProviderDto serviceProviderDto = fetchRemitServiceProviderDt(homeSendSrvcProviderInfo);
-			result.setServiceProviderDto(serviceProviderDto);
+			
+			// service provider condition check
+			if(homeSendSrvcProviderInfo != null && trnxRoutingDetails.getBankIndicator() != null && trnxRoutingDetails.getBankIndicator().equalsIgnoreCase(ConstantDocument.BANK_INDICATOR_SERVICE_PROVIDER_BANK)) {
+				ServiceProviderDto serviceProviderDto = fetchRemitServiceProviderDt(homeSendSrvcProviderInfo);
+				result.setServiceProviderDto(serviceProviderDto);
+			}
 		}
 		
 		ExchangeRateDetails sellRateDetail= bankServiceModeSellRates.get(trnxRoutingDetails.getRoutingBankId()).get(trnxRoutingDetails.getServiceMasterId());
@@ -351,18 +352,28 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 			}
 			result.setTxnFee(commission);
 			result.setDiscountOnComission(corpDiscount);
-			if (routingPricingRequest.getForeignAmount() != null) {
-				result.setExRateBreakup(exchangeRateService.createBreakUpFromForeignCurrency(sellRateDetail.getSellRateNet().getInverseRate(), routingPricingRequest.getForeignAmount()));
-			} else {
-				result.setExRateBreakup(exchangeRateService.createBreakUp(sellRateDetail.getSellRateNet().getInverseRate(), routingPricingRequest.getLocalAmount()));
+			
+			if(trnxRoutingDetails != null && trnxRoutingDetails.getBankIndicator() != null && !trnxRoutingDetails.getBankIndicator().equalsIgnoreCase(ConstantDocument.BANK_INDICATOR_SERVICE_PROVIDER_BANK)) {
+				if (routingPricingRequest.getForeignAmount() != null) {
+					result.setExRateBreakup(exchangeRateService.createBreakUpFromForeignCurrency(sellRateDetail.getSellRateNet().getInverseRate(), routingPricingRequest.getForeignAmount()));
+				} else {
+					result.setExRateBreakup(exchangeRateService.createBreakUp(sellRateDetail.getSellRateNet().getInverseRate(), routingPricingRequest.getLocalAmount()));
+				}
+			}else {
+				result.setExRateBreakup(exchangeRateService.createBreakUpSP(sellRateDetail.getSellRateNet().getInverseRate(), sellRateDetail.getSellRateNet().getConvertedLCAmount(),sellRateDetail.getSellRateNet().getConvertedFCAmount()));
 			}
+			
 			remittanceApplicationParamManager.populateRemittanceApplicationParamMap(null, beneficiaryView,result.getExRateBreakup());
 			remittanceTransactionManager.setLoyalityPointFlags(customer, result);
 			remittanceTransactionManager.setLoyalityPointIndicaters(result);
 			BranchRemittanceApplRequestModel remittanceApplRequestModel = buildRemittanceTransactionModel(routingPricingRequest);
-			remittanceTransactionManager.applyChannelAmountRouding(result.getExRateBreakup(),metaData.getChannel().getClientChannel(), true);
+			if(trnxRoutingDetails != null && trnxRoutingDetails.getBankIndicator() != null && !trnxRoutingDetails.getBankIndicator().equalsIgnoreCase(ConstantDocument.BANK_INDICATOR_SERVICE_PROVIDER_BANK)) {
+				remittanceTransactionManager.applyChannelAmountRouding(result.getExRateBreakup(),metaData.getChannel().getClientChannel(), true);
+			}
 			remittanceTransactionManager.setNetAmountAndLoyalityState(result.getExRateBreakup(), remittanceApplRequestModel, result, commission,vatDetails.getVatApplicableAmount());
-			remittanceTransactionManager.applyCurrencyRoudingLogic(result.getExRateBreakup());
+			if(trnxRoutingDetails != null && trnxRoutingDetails.getBankIndicator() != null && !trnxRoutingDetails.getBankIndicator().equalsIgnoreCase(ConstantDocument.BANK_INDICATOR_SERVICE_PROVIDER_BANK)) {
+				remittanceTransactionManager.applyCurrencyRoudingLogic(result.getExRateBreakup());
+			}
 		}
 		return result;
 	}
@@ -480,6 +491,7 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 		serviceProviderDto.setSettlementCurrency(homeSendSrvcProviderInfo.getSettlementCurrency());
 		serviceProviderDto.setTransactionMargin(homeSendSrvcProviderInfo.getTransactionMargin());
 		serviceProviderDto.setVariableCommInSettlCurr(homeSendSrvcProviderInfo.getVariableChargedAmountInSettlementCurrency());
+		serviceProviderDto.setOfferExpirationDate(homeSendSrvcProviderInfo.getOfferExpirationDate());
 		
 		return serviceProviderDto ; 
 	}

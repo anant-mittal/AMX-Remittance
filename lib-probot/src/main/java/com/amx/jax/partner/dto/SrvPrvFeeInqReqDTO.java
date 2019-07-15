@@ -38,6 +38,15 @@ public class SrvPrvFeeInqReqDTO implements Serializable {
 	@NotNull(message="amount can not be Null or Empty")
 	private BigDecimal amount;
 	
+	@NotNull(message = "Country Branch Id can not be Null or Empty")
+	private BigDecimal countryBranchId;
+	
+	@NotNull(message = "Employee Id can not be Null or Empty")
+	private BigDecimal employeeId;
+	
+	@NotNull(message = "Company Id can not be Null or Empty")
+	private BigDecimal companyId;
+	
 	private CUSTOMER_CATEGORY customerCategory;
 	
 	private Channel channel;
@@ -103,7 +112,6 @@ public class SrvPrvFeeInqReqDTO implements Serializable {
 	public List<RoutingBankDetails> getRoutingBankDetails() {
 		return routingBankDetails;
 	}
-	
 	public void setRoutingBankDetails(List<RoutingBankDetails> routingBankDetails) {
 		this.routingBankDetails = routingBankDetails;
 	}
@@ -111,7 +119,6 @@ public class SrvPrvFeeInqReqDTO implements Serializable {
 	public CUSTOMER_CATEGORY getCustomerCategory() {
 		return customerCategory;
 	}
-	
 	public void setCustomerCategory(CUSTOMER_CATEGORY customerCategory) {
 		this.customerCategory = customerCategory;
 	}
@@ -119,12 +126,29 @@ public class SrvPrvFeeInqReqDTO implements Serializable {
 	public Channel getChannel() {
 		return channel;
 	}
-	
 	public void setChannel(Channel channel) {
 		this.channel = channel;
 	}
 	
+	public BigDecimal getCountryBranchId() {
+		return countryBranchId;
+	}
+	public void setCountryBranchId(BigDecimal countryBranchId) {
+		this.countryBranchId = countryBranchId;
+	}
 	
+	public BigDecimal getEmployeeId() {
+		return employeeId;
+	}
+	public void setEmployeeId(BigDecimal employeeId) {
+		this.employeeId = employeeId;
+	}
 	
+	public BigDecimal getCompanyId() {
+		return companyId;
+	}
+	public void setCompanyId(BigDecimal companyId) {
+		this.companyId = companyId;
+	}
 				
 }

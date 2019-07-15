@@ -10,7 +10,6 @@ import com.amx.jax.partner.dto.SrvPrvFeeInqResDTO;
 import com.amx.jax.pricer.manager.PartnerDataManager;
 
 @Service
-//@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class PartnerExchDataService {
 	
 	/** The Constant LOGGER. */
@@ -24,14 +23,8 @@ public class PartnerExchDataService {
 		SrvPrvFeeInqResDTO serviceProviderRespDTO = new SrvPrvFeeInqResDTO();
 
 		partnerDataManager.validateGetQuotation(srvPrvFeeInqReqDTO);
-
-		if (srvPrvFeeInqReqDTO.getSelectedCurrency().compareTo(srvPrvFeeInqReqDTO.getLocalCurrencyId()) == 0) {
-			// local currency flow
-			serviceProviderRespDTO = partnerDataManager.fetchQuotationForLocalCurrency(srvPrvFeeInqReqDTO);
-		} else {
-			// foreign currency flow
-			serviceProviderRespDTO = partnerDataManager.fetchQuotationForForeignCurrency(srvPrvFeeInqReqDTO);
-		}
+		
+		serviceProviderRespDTO = partnerDataManager.fetchQuotationForServiceProvider(srvPrvFeeInqReqDTO);
 
 		return serviceProviderRespDTO;
 	}

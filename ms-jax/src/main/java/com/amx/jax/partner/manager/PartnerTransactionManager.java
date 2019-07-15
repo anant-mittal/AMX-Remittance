@@ -29,6 +29,9 @@ import com.amx.jax.dbmodel.CollectionDetailViewModel;
 import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.CustomerDetailsView;
 import com.amx.jax.dbmodel.ParameterDetails;
+import com.amx.jax.dbmodel.partner.BankExternalReferenceDetail;
+import com.amx.jax.dbmodel.partner.BankExternalReferenceHead;
+import com.amx.jax.dbmodel.partner.PaymentModeLimitsView;
 import com.amx.jax.dbmodel.partner.TransactionDetailsView;
 import com.amx.jax.dbmodel.remittance.AdditionalBankRuleAmiec;
 import com.amx.jax.dbmodel.remittance.AmiecAndBankMapping;
@@ -230,8 +233,6 @@ public class PartnerTransactionManager extends AbstractModel {
 		String bankCode = null;
 		String bankBranchCode = null;
 		String bankAccountTypeDesc = null;
-		
-		// need to get dynamic
 		String beneBankCode = null;
 		String beneBankBranchCode = null;
 		
@@ -239,7 +240,6 @@ public class PartnerTransactionManager extends AbstractModel {
 
 		// Beneficiary Details
 		beneficiaryDto.setBeneficiary_account_number(removeSpaces(beneficiaryDetailsDTO.getBankAccountNumber()));
-
 		
 		AccountTypeFromViewModel accountTypeFromViewModel = partnerTransactionDao.getAccountTypeDetails(beneficiaryDetailsDTO.getBankAccountTypeId());
 		if(accountTypeFromViewModel != null) {
@@ -251,7 +251,7 @@ public class PartnerTransactionManager extends AbstractModel {
 		String routingNumber_Indic2 = remitTrnxDto.getRoutingNumber_Indic2();
 		String bsbNumber_Indic3 = remitTrnxDto.getBsbNumber_Indic3();
 
-		bankCode = beneficiaryDetailsDTO.getBankCode();
+		beneBankCode = beneficiaryDetailsDTO.getBankCode();
 		if(beneficiaryDetailsDTO.getBranchCode() != null) {
 			beneBankBranchCode = beneficiaryDetailsDTO.getBranchCode().toString();
 		}
@@ -266,27 +266,24 @@ public class PartnerTransactionManager extends AbstractModel {
 			}
 		}
 
+		bankCode = beneBankCode;
 		if(routingNumber_Indic2 != null) {
 			bankCode = routingNumber_Indic2;
 		}else if(bsbNumber_Indic3 != null){
 			bankCode = bsbNumber_Indic3;
 		}else {
 			// bank code mapping based on Home request
-			bankCode = fetchBankCodeHomeSend(corBankCode,beneBankCode);
+			bankCode = fetchBankCodeHomeSend(beneficiaryDetailsDTO.getBenificaryCountry(),remitTrnxDto.getRoutingBankId(),beneficiaryDetailsDTO.getBankId());
 		}
 		if(swiftBicCode == null) {
 			// bank branch code mapping based on Home request
-			bankBranchCode = fetchBankBranchCodeHomeSend(corBankCode, beneBankCode, beneBankBranchCode);
+			bankBranchCode = fetchBankBranchCodeHomeSend(beneficiaryDetailsDTO.getBenificaryCountry(),remitTrnxDto.getRoutingBankId(),beneficiaryDetailsDTO.getBankId(),beneficiaryDetailsDTO.getBranchId());
 		}
 
 		beneficiaryDto.setBeneficiary_bank_branch_swift_code(swiftBicCode);
 		beneficiaryDto.setBeneficiary_bank_code(bankCode);
 		beneficiaryDto.setBeneficiary_branch_code(bankBranchCode);
-
-
-
 		beneficiaryDto.setBeneficiary_bank_name(beneficiaryDetailsDTO.getBankName());
-		beneficiaryDto.setBeneficiary_branch_code(beneBankBranchCode);
 		beneficiaryDto.setBeneficiary_branch_name(beneficiaryDetailsDTO.getBankBranchName());
 
 		if(beneficiaryDetailsDTO.getMapSequenceId() != null) {
@@ -298,8 +295,6 @@ public class PartnerTransactionManager extends AbstractModel {
 		int bicValue = 0;
 		int bankBranch = 0;
 		HashMap<String, Integer> mapBICandBankDt = fetchBICandBankCodeData();
-
-		
 
 		HashMap<String, String> mapBicAndBankCode = fetchBICandBankCode(destinationCountryAlpha3);
 		if (mapBicAndBankCode != null && mapBICandBankDt != null) {
@@ -335,9 +330,7 @@ public class PartnerTransactionManager extends AbstractModel {
 			}
 			beneficiaryDto.setDistrict(removeSpaces(beneficiaryDetailsDTO.getDistrictName())); 
 			beneficiaryDto.setCity(removeSpaces(beneficiaryDetailsDTO.getCityName())); 
-			beneficiaryDto.setAddress_zip("534211"); // need to get dynamic 
-		}else {
-			beneficiaryDto.setAddress_zip("534211"); // need to get dynamic 
+			beneficiaryDto.setAddress_zip(beneficiaryDetailsDTO.getBeneficiaryZipCode());
 		}
 
 		String telNumber = beneficiaryService.getBeneficiaryContactNumber(beneficiaryDetailsDTO.getBeneficaryMasterSeqId());
@@ -497,16 +490,14 @@ public class PartnerTransactionManager extends AbstractModel {
 	}
 
 	// external bank codes
-	public String fetchBankCodeHomeSend(String corBankCode,String beneBankCode){
-		HashMap<String, Object> mapBankDetails =  new HashMap<String, Object>();
+	public String fetchBankCodeHomeSend(BigDecimal countryId,BigDecimal corBankId,BigDecimal beneBankId){
 		String mapBankCode = null;
-
 		try {
-			mapBankDetails.put("corBankCode", corBankCode);
-			mapBankDetails.put("beneBankCode", beneBankCode);
-
-			//mapBankCode = ;
-
+			List<BankExternalReferenceHead> lstBankExtRefHead = partnerTransactionDao.fetchBankExternalReferenceHeadDetails(countryId, corBankId, beneBankId);
+			if(lstBankExtRefHead != null && lstBankExtRefHead.size() == 1) {
+				BankExternalReferenceHead bankExternalReferenceHead = lstBankExtRefHead.get(0);
+				mapBankCode = bankExternalReferenceHead.getBankExternalId();
+			}
 		} catch (Exception e) {
 			logger.info(e.getMessage());
 		}
@@ -515,16 +506,14 @@ public class PartnerTransactionManager extends AbstractModel {
 	}
 
 	// external bank branch codes
-	public String fetchBankBranchCodeHomeSend(String corBankCode,String beneBankCode,String beneBankBranchCode){
-		HashMap<String, Object> mapBankBranchDetails =  new HashMap<String, Object>();
+	public String fetchBankBranchCodeHomeSend(BigDecimal countryId,BigDecimal corBankId,BigDecimal beneBankId,BigDecimal beneBankBranchId){
 		String mapBankBranchCode = null;
 		try {
-			mapBankBranchDetails.put("corBankCode", corBankCode);
-			mapBankBranchDetails.put("beneBankCode", beneBankCode);
-			mapBankBranchDetails.put("beneBankBranchCode", beneBankBranchCode);
-
-			//mapBankBranchCode = 
-
+			List<BankExternalReferenceDetail> lstBankExtRefBranchDetails = partnerTransactionDao.fetchBankExternalReferenceBranchDetails(countryId, corBankId, beneBankId, beneBankBranchId);
+			if(lstBankExtRefBranchDetails != null && lstBankExtRefBranchDetails.size() == 1) {
+				BankExternalReferenceDetail bankExternalReferenceDetail = lstBankExtRefBranchDetails.get(0);
+				mapBankBranchCode = bankExternalReferenceDetail.getBankBranchExternalId();
+			}
 		} catch (Exception e) {
 			logger.info(e.getMessage());
 		}
@@ -580,7 +569,6 @@ public class PartnerTransactionManager extends AbstractModel {
 		BigDecimal remitTrnxId = null;
 		
 		Map<BigDecimal,SrvProvBeneficiaryTransactionDTO> mapTrnxPartnerData = new HashMap<BigDecimal,SrvProvBeneficiaryTransactionDTO>();
-		Map<BigDecimal,RemittanceTransactionPartnerDTO> mapTrnxPartnerWiseData = new HashMap<BigDecimal,RemittanceTransactionPartnerDTO>();
 		
 		List<TransactionDetailsView> lstTrnxDetails = partnerTransactionDao.fetchTrnxSPDetails(customerId,collectionDocYear,collectionDocNumber);
 		
@@ -622,6 +610,7 @@ public class PartnerTransactionManager extends AbstractModel {
 
 				transactionPartnerRequest.setRemittanceMode(transactionDetailsView.getRemittanceCode());
 				transactionPartnerRequest.setDeliveryMode(transactionDetailsView.getDeliveryCode());
+				transactionPartnerRequest.setRoutingBankId(transactionDetailsView.getBankId());
 				transactionPartnerRequest.setRoutingBankCode(transactionDetailsView.getBankCode());
 				transactionPartnerRequest.setDestinationAmount(transactionDetailsView.getForeignTrnxAmount());
 
@@ -637,7 +626,7 @@ public class PartnerTransactionManager extends AbstractModel {
 				transactionPartnerRequest.setPartnerTransactionReference(transactionDetailsView.getPartnerSessionId());
 				transactionPartnerRequest.setRequestSequenceId(transactionDetailsView.getAmgSessionId().toString());
 				//transactionPartnerRequest.setSourceOfFundDesc(transactionDetailsView.getSourceOfIncomeDesc());
-				transactionPartnerRequest.setSourceOfFundDesc("SAL");
+				transactionPartnerRequest.setSourceOfFundDesc(transactionDetailsView.getBankSourceOfFund());
 				transactionPartnerRequest.setFurtherInstruction(transactionDetailsView.getFurtherInstruction());
 				
 			}
@@ -706,6 +695,16 @@ public class PartnerTransactionManager extends AbstractModel {
 		}
 
 		return paymentMode;
+	}
+	
+	// fetch the payment Limits
+	public void fetchPaymentLimits(BigDecimal bankId,BigDecimal currencyId,BigDecimal customerTypeFrom,BigDecimal customerTypeTo,BigDecimal amount) {
+		List<PaymentModeLimitsView> lstpaymentLimit = partnerTransactionDao.fetchPaymentLimitDetails(bankId, currencyId, customerTypeFrom, customerTypeTo);
+		
+		if(lstpaymentLimit != null && lstpaymentLimit.size() == 1) {
+			// check the amount
+		}
+		
 	}
 
 	public void validateTransactionData(BigDecimal collectionDocYear,BigDecimal collectionDocNumber,CustomerDetailsDTO customerDetailsDTO,BeneficiaryDetailsDTO beneficiaryDetailsDTO) {

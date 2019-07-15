@@ -33,6 +33,7 @@ public class RemitApplSrvProv implements Serializable{
 	private BigDecimal variableCommInSettlCurr;
 	private String settlementCurrency;
 	private BigDecimal transactionMargin;
+	private Date offerExpirationDate;
 	
 	public RemitApplSrvProv(){
 		super();
@@ -143,6 +144,14 @@ public class RemitApplSrvProv implements Serializable{
 	}
 	public void setTransactionMargin(BigDecimal transactionMargin) {
 		this.transactionMargin = transactionMargin;
+	}
+
+	@Column(name = "OFFER_EXPIRATION_DATE")
+	public Date getOfferExpirationDate() {
+		return offerExpirationDate;
+	}
+	public void setOfferExpirationDate(Date offerExpirationDate) {
+		this.offerExpirationDate = offerExpirationDate;
 	}
 			
 }

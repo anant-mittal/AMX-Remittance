@@ -19,5 +19,7 @@ public interface CurrencyMasterRepository extends CrudRepository<CurrencyMasterM
 
 	@Query("select c from CurrencyMasterModel c where currGroupId=?1 and isactive='Y'")
 	List<CurrencyMasterModel> getCurrencyByGroupId(BigDecimal currGroupId);
+	
+	public CurrencyMasterModel findByCurrencyId(BigDecimal currencyId);
 
 }

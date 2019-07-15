@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 public class RemittanceTransactionPartnerDTO {
 	
+	private BigDecimal routingBankId;
 	private String routingBankCode;
 	private String routingNumber_Indic2;
 	private String bsbNumber_Indic3;
@@ -18,6 +19,13 @@ public class RemittanceTransactionPartnerDTO {
 	private BigDecimal settlementAmount;
 	private String sourceOfFundDesc;
 	private String trnxCollectionType;
+	
+	public BigDecimal getRoutingBankId() {
+		return routingBankId;
+	}
+	public void setRoutingBankId(BigDecimal routingBankId) {
+		this.routingBankId = routingBankId;
+	}
 	
 	public String getRoutingBankCode() {
 		return routingBankCode;

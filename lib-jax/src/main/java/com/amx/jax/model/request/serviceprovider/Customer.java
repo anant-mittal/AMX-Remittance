@@ -1,5 +1,6 @@
 package com.amx.jax.model.request.serviceprovider;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -35,6 +36,8 @@ public class Customer
 	String customer_type; // I - Individual or C - Cooperate
 	String profession;
 	String employer_name;
+	
+	BigDecimal customerId;
 
 	public String getCustomer_reference()
 	{
@@ -254,6 +257,14 @@ public class Customer
 	public void setEmployer_name(String employer_name)
 	{
 		this.employer_name = employer_name;
+	}
+
+	public BigDecimal getCustomerId() {
+		return customerId;
+	}
+
+	public void setCustomerId(BigDecimal customerId) {
+		this.customerId = customerId;
 	}
 
 	public String getFull_name()

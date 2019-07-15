@@ -146,5 +146,9 @@ public final class PricerServiceConstants {
 		}
 
 	}
+	
+	public static enum SERVICE_PROVIDER_BANK_CODE {
+		HOME, WU, MONEY;
+	}
 
 }

@@ -98,5 +98,9 @@ public class PartnerServiceDao {
 	public BigDecimal fetchServiceProviderRefernceNum() {
 		return usdExchangeRateRepository.fetchServiceProviderRefernceNum();
 	}
+	
+	public CurrencyMasterModel fetchCurrencyMaster(BigDecimal currencyId) {
+		return currencyMasterRepository.findByCurrencyId(currencyId);
+	}
 
 }

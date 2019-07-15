@@ -79,6 +79,7 @@ public class BeneficiaryDetailsDTO {
 	private String myFavouriteBene;
 	private String bankShortNames;
 	private String ibanNumber;
+	private String beneficiaryZipCode;
 	
 	public BigDecimal getIdNo() {
 		return idNo;
@@ -598,4 +599,11 @@ public class BeneficiaryDetailsDTO {
 		this.ibanNumber = ibanNumber;
 	}
 	
+	public String getBeneficiaryZipCode() {
+		return beneficiaryZipCode;
+	}
+	public void setBeneficiaryZipCode(String beneficiaryZipCode) {
+		this.beneficiaryZipCode = beneficiaryZipCode;
+	}
+		
 }

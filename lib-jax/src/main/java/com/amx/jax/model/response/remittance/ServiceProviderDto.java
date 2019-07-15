@@ -1,6 +1,7 @@
 package com.amx.jax.model.response.remittance;
 
 import java.math.BigDecimal;
+import java.util.Calendar;
 
 public class ServiceProviderDto {
 
@@ -12,6 +13,7 @@ public class ServiceProviderDto {
 	private BigDecimal variableCommInSettlCurr;
 	private String settlementCurrency;
 	private BigDecimal transactionMargin;
+	private Calendar offerExpirationDate;
 	
 	public BigDecimal getAmgSessionId() {
 		return amgSessionId;
@@ -67,6 +69,13 @@ public class ServiceProviderDto {
 	}
 	public void setTransactionMargin(BigDecimal transactionMargin) {
 		this.transactionMargin = transactionMargin;
+	}
+	
+	public Calendar getOfferExpirationDate() {
+		return offerExpirationDate;
+	}
+	public void setOfferExpirationDate(Calendar offerExpirationDate) {
+		this.offerExpirationDate = offerExpirationDate;
 	}
 	
 	/*Map<String, ServiceProviderDetailsDto> mapSrvProvDetails = new HashMap<>();

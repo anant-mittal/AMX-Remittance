@@ -59,6 +59,7 @@ public class AmxDBConstants {
 
 	public static final String BANK_INDICATOR_CORRESPONDING_BANK = "CB";
 	public static final String BANK_INDICATOR_BENEFICIARY_BANK = "BE";
+	public static final String BANK_INDICATOR_SERVICE_PROVIDER_BANK = "SB";
 	public static final BigDecimal REMITTANCE_MODE_EFT = new BigDecimal(3);
 	public static final BigDecimal REMITTANCE_MODE_RTGS = new BigDecimal(4);
 

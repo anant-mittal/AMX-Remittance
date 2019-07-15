@@ -69,6 +69,7 @@ import com.amx.jax.manager.RemittanceApplicationManager;
 import com.amx.jax.manager.RemittanceTransactionManager;
 import com.amx.jax.manager.remittance.CorporateDiscountManager;
 import com.amx.jax.manager.remittance.RemittanceAdditionalFieldManager;
+import com.amx.jax.manager.remittance.RemittanceApplicationParamManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
@@ -94,6 +95,7 @@ import com.amx.jax.service.CompanyService;
 import com.amx.jax.service.FinancialService;
 import com.amx.jax.services.BankService;
 import com.amx.jax.services.BeneficiaryService;
+import com.amx.jax.services.BeneficiaryValidationService;
 import com.amx.jax.services.LoyalityPointService;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.util.DateUtil;
@@ -207,21 +209,16 @@ public class BranchRemittanceApplManager {
 	
 	@Autowired
 	BranchRemittanceExchangeRateManager branchRemittanceExchangeRateManager;
+	
+	@Autowired
+	BeneficiaryValidationService beneValidationService;
+	
+	@Autowired
+	RemittanceApplicationParamManager remittanceApplicationParamManager;
 
 	
 	public BranchRemittanceApplResponseDto saveBranchRemittanceApplication(BranchRemittanceApplRequestModel requestApplModel) {
 		Map<String,Object> hashMap = new HashMap<>();
-		
-		ServiceProviderDto serviceProviderDto = new ServiceProviderDto();
-		serviceProviderDto.setAmgSessionId(new BigDecimal(4269428));
-		serviceProviderDto.setFixedCommInSettlCurr(new BigDecimal(2));
-		serviceProviderDto.setIntialAmountInSettlCurr(new BigDecimal(327.57886));
-		serviceProviderDto.setPartnerSessionId("31qzeirckwzgy41q4lkeoctnq75-18");
-		serviceProviderDto.setSettlementCurrency("USD");
-		serviceProviderDto.setTransactionMargin(new BigDecimal(0.0015));
-		serviceProviderDto.setVariableCommInSettlCurr(BigDecimal.ZERO);
-		
-		requestApplModel.getDynamicRroutingPricingBreakup().setServiceProviderDto(serviceProviderDto);
 		
 		validateSaveApplRequest(requestApplModel);
 		/*To fetch customer details **/
@@ -234,7 +231,6 @@ public class BranchRemittanceApplManager {
 		if(!StringUtils.isBlank(errMsg)) {
 			throw new GlobalException(JaxError.BSB_ACCOUNT_VALIATION,"Invalid account number "+errMsg);
 		}
-		 
 		 
 		/*checkingStaffIdNumberWithCustomer **/
 		 branchRemitManager.checkingStaffIdNumberWithCustomer();
@@ -255,15 +251,31 @@ public class BranchRemittanceApplManager {
 		 
 		 ExchangeRateBreakup rateBreakUp = requestApplModel.getDynamicRroutingPricingBreakup().getExRateBreakup();
 		 
-		 //Dynamic Routing and Priccing API
-	 	 BranchRemittanceGetExchangeRateResponse exchangeRateResposne =branchRemittanceExchangeRateManager.getDynamicRoutingAndPricingExchangeRateResponseCompare(requestApplModel);
+		 ExchangeRateBreakup exchangeRateBreakup = null;
+		 BigDecimal commission = null;
+		 String bankIndicator = requestApplModel.getDynamicRroutingPricingBreakup().getTrnxRoutingPaths().getBankIndicator();
+		 if(bankIndicator != null && bankIndicator.equalsIgnoreCase(ConstantDocument.BANK_INDICATOR_SERVICE_PROVIDER_BANK)) {
+			 // no need to call probot
+			 exchangeRateBreakup = rateBreakUp;
+			 commission = requestApplModel.getDynamicRroutingPricingBreakup().getTxnFee();
+			 logger.debug("branchExchangeRate :"+exchangeRateBreakup+" commission : "+commission);
+			 BenificiaryListView beneficiaryView = beneValidationService.validateBeneficiary(beneficaryDetails.getBeneficiaryRelationShipSeqId());
+			 remittanceApplicationParamManager.populateRemittanceApplicationParamMap(requestApplModel, beneficiaryView,rateBreakUp);
+		 }else {
+			//Dynamic Routing and Priccing API
+		 	 BranchRemittanceGetExchangeRateResponse exchangeRateResposne =branchRemittanceExchangeRateManager.getDynamicRoutingAndPricingExchangeRateResponseCompare(requestApplModel);
+			 remittanceTransactionRequestValidator.validateExchangeRate(requestApplModel, exchangeRateResposne);
+			 logger.debug("branchExchangeRate :"+exchangeRateResposne);
+			 
+			 exchangeRateBreakup = exchangeRateResposne.getExRateBreakup();
+			 commission = exchangeRateResposne.getTxnFee();
+			 logger.debug("branchExchangeRate :"+exchangeRateBreakup+" commission : "+commission);
+		 }
 		 
-		// remittanceTransactionRequestValidator.validateExchangeRate(requestApplModel, exchangeRateResposne);
 		 remittanceTransactionRequestValidator.validateFlexFields(requestApplModel, remitApplParametersMap);
 		 remittanceAdditionalFieldManager.validateAdditionalFields(requestApplModel, remitApplParametersMap);
 		 remittanceAdditionalFieldManager.processAdditionalFields(requestApplModel); 
-
-	    logger.debug("branchExchangeRate :"+exchangeRateResposne);
+	    
 		 /* get aml cehck   details **/
 	    List<AmlCheckResponseDto> amlList= branchRemitManager.amlTranxAmountCheckForRemittance(requestApplModel.getBeneId(),rateBreakUp.getConvertedLCAmount());
 		 logger.info("amlList :"+amlList.toString());
@@ -276,9 +288,9 @@ public class BranchRemittanceApplManager {
 		 BeneAdditionalDto beneAddlDto  =branchRemitManager.getAdditionalBeneDetailJax(beneficaryDetails,requestApplModel);
 		 
 		 /** validate trnx limit check **/
-		 branchRemitManager.validateTrnxLimitCheck(exchangeRateResposne.getExRateBreakup(),exchangeRateResposne.getTxnFee(),beneficaryDetails);
+		 branchRemitManager.validateTrnxLimitCheck(exchangeRateBreakup,commission,beneficaryDetails);
 
-		hashMap.put("EXCH_RATE_MAP", exchangeRateResposne);
+		//hashMap.put("EXCH_RATE_MAP", exchangeRateResposne);
 		hashMap.put("APPL_REQ_MODEL", requestApplModel);
 		hashMap.put("BENEFICIARY_DETAILS", beneficaryDetails);
 		//hashMap.put("ADD_BENE_DETAILS", addBeneDetails);
@@ -906,6 +918,9 @@ public RemitApplSrvProv createRemitApplSrvProv(BranchRemittanceApplRequestModel 
 		remitApplSrvProv.setVariableCommInSettlCurr(serviceProviderDto.getVariableCommInSettlCurr());
 		remitApplSrvProv.setCreatedBy(getEmployeeDetails().getUserName());
 		remitApplSrvProv.setCreatedDate(new Date());
+		if(serviceProviderDto.getOfferExpirationDate() != null) {
+			remitApplSrvProv.setOfferExpirationDate(serviceProviderDto.getOfferExpirationDate().getTime());
+		}
 	}
 
 	return remitApplSrvProv;
