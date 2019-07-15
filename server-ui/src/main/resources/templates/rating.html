@@ -51,11 +51,12 @@
       </fieldset>
 
       <div class="">
-        <div id="rating-face" class="svgicons icon-face-5">
+        <div id="rating-face" class="svgicons ">
           <span class="path1"></span><span class="path2"></span
           ><span class="path3"></span><span class="path4"></span>
         </div>
         <div class="face-title"></div>
+        <br />
         <div id="feedback" class="feedback-text hide">
           <textarea
             id="feedbackInput"
@@ -100,14 +101,15 @@
       		loader.classList.add("dn")
       	}
 	  }
-	  
+	    var faceTitle = ['','TERRIBLE','BAD','OK','GOOD','EXCELLENT'];
       var rating = document.getElementsByClassName('rating');
       var userRating = "";
       for(var i=0; i<rating.length; i++){
       	rating[i].addEventListener("change", function(e) {
       		var ratingface = document.getElementById("rating-face");
       		ratingface.className = "svgicons  icon-face-"+e.target.value;
-      		userRating = e.target.value;
+          userRating = e.target.value;
+          document.querySelector('.face-title').innerText = faceTitle[e.target.value];
       		var feedback = document.getElementById("feedback");
       		if(e.target.value < 4){
       			feedback.classList.remove("hide");
