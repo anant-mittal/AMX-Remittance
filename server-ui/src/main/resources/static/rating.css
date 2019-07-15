@@ -303,3 +303,7 @@ h1 { font-size: 1.5em; margin: 10px; }
   .dn{
       display: none
   }
+  .disable{
+    opacity: 0.5;
+    cursor: default !important;
+  }
