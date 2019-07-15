@@ -82,7 +82,10 @@ public class FilterBy {
 		}
 
 		public String toColumn() {
-			return func.toString();
+			if (!ArgUtil.isEmpty(this.func)) {
+				return func.toString() + "(" + this.column + ")";
+			}
+			return this.column;
 		}
 	}
 
@@ -117,8 +120,7 @@ public class FilterBy {
 	/**
 	 * Sets the map of filters.
 	 *
-	 * @param mapOfFilters
-	 *            the mapOfFilters to set
+	 * @param mapOfFilters the mapOfFilters to set
 	 */
 	public void setMapOfFilters(Map<String, String> mapOfFilters) {
 		this.mapOfLikeFilters = mapOfFilters;
@@ -127,10 +129,8 @@ public class FilterBy {
 	/**
 	 * Adds the sort.
 	 *
-	 * @param filterColumn
-	 *            the filter column
-	 * @param filterValue
-	 *            the filter value
+	 * @param filterColumn the filter column
+	 * @param filterValue  the filter value
 	 */
 	public void addSearchFilter(String filterColumn, String filterValue) {
 		mapOfLikeFilters.put("lower(" + filterColumn + ")", filterValue.toLowerCase());
@@ -154,8 +154,7 @@ public class FilterBy {
 	/**
 	 * Sets the global search.
 	 *
-	 * @param globalSearch
-	 *            the globalSearch to set
+	 * @param globalSearch the globalSearch to set
 	 */
 	public void setGlobalSearch(boolean globalSearch) {
 		this.globalSearch = globalSearch;
