@@ -51,11 +51,12 @@
       </fieldset>
 
       <div class="">
-        <div id="rating-face" class="svgicons icon-face-5">
+        <div id="rating-face" class="svgicons ">
           <span class="path1"></span><span class="path2"></span
           ><span class="path3"></span><span class="path4"></span>
         </div>
         <div class="face-title"></div>
+        <br />
         <div id="feedback" class="feedback-text hide">
           <textarea
             id="feedbackInput"
@@ -66,7 +67,7 @@
           ></textarea>
         </div>
         <div class="bottom-button-wrapper">
-          <button class="button ripple" onclick="submitFeedback()">
+          <button id="submit" class="button ripple disable" onclick="submitFeedback()">
             Send
           </button>
         </div>
@@ -100,21 +101,22 @@
       		loader.classList.add("dn")
       	}
 	  }
-	  
+	    var faceTitle = ['','TERRIBLE','BAD','OK','GOOD','EXCELLENT'];
       var rating = document.getElementsByClassName('rating');
       var userRating = "";
       for(var i=0; i<rating.length; i++){
       	rating[i].addEventListener("change", function(e) {
       		var ratingface = document.getElementById("rating-face");
       		ratingface.className = "svgicons  icon-face-"+e.target.value;
-      		userRating = e.target.value;
+          userRating = e.target.value;
+          document.querySelector('.face-title').innerText = faceTitle[e.target.value];
       		var feedback = document.getElementById("feedback");
       		if(e.target.value < 4){
       			feedback.classList.remove("hide");
       		} else{
       			feedback.classList.add("hide");
       		}
-
+          document.getElementById('submit').classList.remove('disable');
       	});
 	  }
 	  
@@ -144,10 +146,7 @@
 	  }
 	  
 	  console.log(ratingData);
-      if(!ratingData.valid){
-		  document.getElementById("feedback-invalid").classList.remove("dn");
-		  document.getElementById("rating-feedback").classList.add("dn");
-      }
+      
       var feedbackView = document.getElementById("feedback-success");
       var ratingView = document.getElementById("rating-feedback");
       if(ratingData.rating.results[0].rating != null){      
@@ -159,6 +158,7 @@
       }
 
       function submitFeedback(){
+        if(document.getElementById('submit').classList.contains('disable')) return; 
       	var reqObj = {
       		"rating": userRating,
       		"ratingRemark": document.getElementById('feedbackInput').value,
@@ -176,6 +176,10 @@
 	    }
       function goToHome(){
         window.location.href = "/login#close"
+      }
+      if(!ratingData.valid){
+		  document.getElementById("feedback-invalid").classList.remove("dn");
+		  document.getElementById("rating-feedback").classList.add("dn");
       }
     </script>
   </body>
