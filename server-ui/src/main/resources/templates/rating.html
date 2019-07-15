@@ -66,7 +66,7 @@
           ></textarea>
         </div>
         <div class="bottom-button-wrapper">
-          <button class="button ripple" onclick="submitFeedback()">
+          <button id="submit" class="button ripple disable" onclick="submitFeedback()">
             Send
           </button>
         </div>
@@ -114,7 +114,7 @@
       		} else{
       			feedback.classList.add("hide");
       		}
-
+          document.getElementById('submit').classList.remove('disable');
       	});
 	  }
 	  
@@ -144,10 +144,7 @@
 	  }
 	  
 	  console.log(ratingData);
-      if(!ratingData.valid){
-		  document.getElementById("feedback-invalid").classList.remove("dn");
-		  document.getElementById("rating-feedback").classList.add("dn");
-      }
+      
       var feedbackView = document.getElementById("feedback-success");
       var ratingView = document.getElementById("rating-feedback");
       if(ratingData.rating.results[0].rating != null){      
@@ -159,6 +156,7 @@
       }
 
       function submitFeedback(){
+        if(document.getElementById('submit').classList.contains('disable')) return; 
       	var reqObj = {
       		"rating": userRating,
       		"ratingRemark": document.getElementById('feedbackInput').value,
@@ -176,6 +174,10 @@
 	    }
       function goToHome(){
         window.location.href = "/login#close"
+      }
+      if(!ratingData.valid){
+		  document.getElementById("feedback-invalid").classList.remove("dn");
+		  document.getElementById("rating-feedback").classList.add("dn");
       }
     </script>
   </body>
