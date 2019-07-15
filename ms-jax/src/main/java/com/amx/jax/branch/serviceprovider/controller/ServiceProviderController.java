@@ -2,13 +2,17 @@ package com.amx.jax.branch.serviceprovider.controller;
 
 import static com.amx.amxlib.constant.ApiEndpoint.SERVICE_PROVIDER_ENDPOINT;
 
+import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.amx.amxlib.constant.ApiEndpoint.ServiceProvider;
 import com.amx.jax.api.AmxApiResponse;
@@ -33,8 +37,8 @@ public class ServiceProviderController {
 	}
 	
 	@RequestMapping(value= ServiceProvider.SERVICE_PROVIDER_UPLOAD_FILE, method = RequestMethod.POST)
-	public AmxApiResponse<BoolRespModel, Object> uploadServiceProviderFile(){
-		BoolRespModel response = serviceProviderService.uploadServiceProviderFile();
+	public AmxApiResponse<BoolRespModel, Object> uploadServiceProviderFile(@RequestParam MultipartFile file, @RequestParam Date fileDate) throws Exception{
+		BoolRespModel response = serviceProviderService.uploadServiceProviderFile(file,fileDate);
 		return AmxApiResponse.build(response);
 	}
 
