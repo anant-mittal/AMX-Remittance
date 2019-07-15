@@ -73,6 +73,7 @@ import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.dbmodel.remittance.ServiceProviderCredentialsModel;
 import com.amx.jax.dbmodel.remittance.ViewTransfer;
 import com.amx.jax.dbmodel.remittance.ViewVatDetails;
+import com.amx.jax.dict.PayGRespCodeJSONConverter;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.dict.UserClient;
 import com.amx.jax.dict.UserClient.Channel;
@@ -1141,6 +1142,11 @@ public class RemittanceTransactionManager {
 		
 		model.setErrorCategory(application.getErrorCategory());
 		model.setErrorMessage(application.getErrorMessage());
+	if(application.getErrorCategory() != null) {
+			ResponseCodeDetailDTO responseCodeDetail = PayGRespCodeJSONConverter.getResponseCodeDetail(application.getErrorCategory());
+			model.setResponseCodeDetail(responseCodeDetail);
+		}
+		
 		return model;
 	}
 
