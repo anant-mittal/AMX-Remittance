@@ -17,7 +17,6 @@ import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerContactVerification;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.error.JaxError;
-
 import com.amx.jax.model.customer.CustomerContactVerificationDto;
 import com.amx.jax.repository.CustomerContactVerificationRepository;
 import com.amx.jax.repository.CustomerRepository;

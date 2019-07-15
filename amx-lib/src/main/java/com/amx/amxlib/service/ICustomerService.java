@@ -18,6 +18,8 @@ public interface ICustomerService {
 		public static final String CUSTOMER_MODEL_RESPONSE_BY_IDENTITYINT = "/get-customer-model-response-identityint";
 		
 		public static final String CUSTOMER_MODEL_SIGNUP_RESPONSE_GET = "/get-customer-model-signup-response";
+		
+		public static final String RESEND_EMAIL_LOGIN = "/resend-email-login";
 	}
 
 	public static class Params {

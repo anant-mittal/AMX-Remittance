@@ -48,6 +48,7 @@ public class CustomerFlagManager {
 		customerFlags.setAnnualIncomeExpired(isAnnualIncomeExpired(customer));
 		customerFlags.setIsOnlineCustomer(Boolean.FALSE);
 		setCustomerCommunicationChannelFlags(customer, customerFlags);
+		customerFlags.setIsEmailMissing(isEmailMissing(customer));
 
 		return customerFlags;
 	}
@@ -124,6 +125,14 @@ public class CustomerFlagManager {
 				return false;
 			}
 		}
+	}
+	
+	public static Boolean isEmailMissing(Customer customer) {
+		if(StringUtils.isEmpty(customer.getEmail())) {
+			return true;
+		}
+		return false;
+		
 	}
 	
 }

@@ -370,6 +370,7 @@ public class UserController {
 			sessionService.getUserSession().getCustomerModel().setEmail(model.getEmail());
 			sessionService.getUserSession().getCustomerModel().getPersoninfo().setEmail(model.getEmail());
 			wrapper.setStatusEnum(OWAStatusStatusCodes.USER_UPDATE_SUCCESS);
+			userService.updateCustoemrModel();
 		}
 		return wrapper;
 	}

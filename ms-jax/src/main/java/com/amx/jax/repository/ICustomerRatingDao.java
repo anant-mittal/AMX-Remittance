@@ -1,6 +1,7 @@
 package com.amx.jax.repository;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,5 +16,8 @@ public interface ICustomerRatingDao extends JpaRepository<CustomerRating, Serial
 
 	@Query("select c from CustomerRating c where remittanceTransactionId=?1")
 	public List<Customer> getCustomerRatingByRemittanceTransactionId(String remittanceTransactionId);
+	
+	@Query("select c from CustomerRating c where remittanceTransactionId=?1")
+	public CustomerRating getCustomerRatingDataByRemittanceTransactionId(BigDecimal remittanceTransactionId);
 
 }

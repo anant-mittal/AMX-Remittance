@@ -22,7 +22,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 
+import com.amx.amxlib.meta.model.CustomerRatingDTO;
+import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.AppConstants;
+import com.amx.jax.AppContextUtil;
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.CustomerProfileClient;
 import com.amx.jax.client.JaxClientUtil;
 import com.amx.jax.dict.AmxEnums.Products;
@@ -265,7 +269,29 @@ public class HomeController {
 	@ApiJaxStatus({ JaxError.CUSTOMER_NOT_FOUND, JaxError.INVALID_OTP, JaxError.ENTITY_INVALID,
 			JaxError.ENTITY_EXPIRED })
 	@ApiStatus({ ApiStatusCodes.PARAM_MISSING })
-	@RequestMapping(value = { "/pub/rating/{prodType}/{trnxId}/{veryCode}" },
+	@RequestMapping(value = { "/pub/verify/{contactType}/resend" },
+			method = { RequestMethod.POST })
+	@ResponseBody
+	public Map<String, Object> verification(
+			@PathVariable ContactType contactType,
+			@RequestParam(required = true) String identity) {
+		String errorCode = null;
+		String errorMessage = null;
+		contactType = contactType.contactType();
+		Map<String, Object> map = new HashMap<String, Object>();
+		try {
+			customerProfileClient.createVerificationLink(null, contactType, identity);
+		} catch (AmxApiException e) {
+			map.put("errorCode", e.getErrorKey());
+			map.put("errorMessage", e.getMessage());
+		}
+		return map;
+	}
+
+	@ApiJaxStatus({ JaxError.CUSTOMER_NOT_FOUND, JaxError.INVALID_OTP, JaxError.ENTITY_INVALID,
+			JaxError.ENTITY_EXPIRED })
+	@ApiStatus({ ApiStatusCodes.PARAM_MISSING })
+	@RequestMapping(value = { "/pub/rating/{prodType}/{trnxId}/{veryCode}/**" },
 			method = { RequestMethod.GET }, produces = {
 					CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE })
 	@ResponseBody
@@ -273,10 +299,12 @@ public class HomeController {
 			@PathVariable Products prodType, @PathVariable BigDecimal trnxId, @PathVariable String veryCode) {
 
 		boolean valid = JaxClientUtil.getTransactionVeryCode(trnxId).equals(veryCode);
+		AmxApiResponse<CustomerRatingDTO, ?> rating = jaxService.getRemitClient().inquireCustomerRating(trnxId);
 
 		String errorCode = null;
 		String errorMessage = null;
 		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("rating", rating);
 		map.put("trnxId", trnxId);
 		map.put("errorCode", errorCode);
 		map.put("errorMessage", errorMessage);
@@ -289,12 +317,13 @@ public class HomeController {
 	@ApiJaxStatus({ JaxError.CUSTOMER_NOT_FOUND, JaxError.INVALID_OTP, JaxError.ENTITY_INVALID,
 			JaxError.ENTITY_EXPIRED })
 	@ApiStatus({ ApiStatusCodes.PARAM_MISSING })
-	@RequestMapping(value = { "/pub/rating/{prodType}/{trnxId}/{veryCode}/*" },
+	@RequestMapping(value = { "/pub/rating/{prodType}/{trnxId}/{veryCode}" },
 			method = { RequestMethod.GET })
 	public String rating(Model model,
 			@PathVariable Products prodType, @PathVariable BigDecimal trnxId, @PathVariable String veryCode) {
 		Map<String, Object> map = rating(prodType, trnxId, veryCode);
 		model.addAttribute("ratingData", (map));
+		model.addAttribute("companyTnt", AppContextUtil.getTenant());
 		return "rating";
 	}
 }

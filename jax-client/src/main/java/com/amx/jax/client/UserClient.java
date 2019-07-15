@@ -807,4 +807,17 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 			return JaxSystemError.evaluate(ae);
 		}
 	}
+	
+	public AmxApiResponse<BoolRespModel, Object> sendEmailOnLogin(CustomerModel customerModel) {
+		try {
+			String url = this.getBaseUrl() + UserApi.PREFIX + Path.RESEND_EMAIL_LOGIN;
+			return restService.ajax(url).meta(new JaxMetaInfo()).post(customerModel)
+					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
+					});
+		} catch (Exception ae) {
+			LOGGER.error("exception in send email on login: ", ae);
+			return JaxSystemError.evaluate(ae);
+		} // end of try-catch
+
+	}
 }

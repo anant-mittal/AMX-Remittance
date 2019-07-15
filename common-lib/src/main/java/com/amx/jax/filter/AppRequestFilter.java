@@ -93,6 +93,13 @@ public class AppRequestFilter implements Filter {
 		}
 	}
 
+	public void setFlow(HttpServletRequest req) {
+		String url = req.getRequestURI();
+		AppContextUtil.setFlowfix(url.toLowerCase().replace("pub", "b").replace("api", "p").replace("user", "")
+				.replace("get", "").replace("post", "").replace("save", "")
+				.replace("/", "").replaceAll("[AaEeIiOoUuYyWwHh]", ""));
+	}
+
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
@@ -179,6 +186,7 @@ public class AppRequestFilter implements Filter {
 				traceId = ArgUtil.parseAsString(req.getParameter(AppConstants.TRACE_ID_XKEY));
 			}
 			if (StringUtils.isEmpty(traceId)) {
+				setFlow(req);
 				HttpSession session = req.getSession(false);
 				if (ArgUtil.isEmpty(sessionId)) {
 					if (session == null) {
