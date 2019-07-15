@@ -43,7 +43,7 @@ public class ReferralController {
 		return wrapper;
 	}
 	
-	@RequestMapping(value = "/api/update/link", method = { RequestMethod.POST })
+	@RequestMapping(value = "/pub/update/link", method = { RequestMethod.POST })
 	public ResponseWrapper<LinkDTO> getUpdateRefferalLink(@RequestBody LinkDTO linkDTO) {
 		ResponseWrapper<LinkDTO> wrapper = new ResponseWrapper<LinkDTO>();
 		LinkDTO results = jaxService.setDefaults().getReferralClient().updateReferralLink(linkDTO)

@@ -40,8 +40,7 @@ public class LinkDetailsDao {
     	 }    	 
      }
      
-     public void updateLink(LinkDetails linkDetails) {
-    	 linkDetails.setModifiedBy(metaData.getCustomerId().toString());
+     public void updateLink(LinkDetails linkDetails) {    	 
     	 linkDetails.setModifiedDate(new Date());
     	 linkRepo.save(linkDetails);    	     	         
      }

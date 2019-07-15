@@ -56,10 +56,7 @@ public class ReferralController {
 	}
 
 	@RequestMapping(value = "/link/open", method = RequestMethod.POST)
-	public BoolRespModel handleOpenLink(@RequestBody @Valid LinkDTO linkDto) {
-		BigDecimal customerId = metaData.getCustomerId();
-		linkDto.setCustomerId(customerId);
-		linkService.validateLinkDto(linkDto);
+	public BoolRespModel handleOpenLink(@RequestBody @Valid LinkDTO linkDto) {				
 		referralService.validateLinkDetails(linkDto);
 		return linkService.openLink(linkDto);
 	}
