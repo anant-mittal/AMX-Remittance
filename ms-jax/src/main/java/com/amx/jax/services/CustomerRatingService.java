@@ -53,7 +53,6 @@ public class CustomerRatingService {
 		try {
 			
 			CustomerRating customerRating = new CustomerRating();
-			BigDecimal customerId = metaData.getCustomerId();
 			BigDecimal applicationCountryId = metaData.getCountryId();
 			BigDecimal remittancetrnxId = dto.getRemittanceTransactionId();
 			
@@ -78,7 +77,7 @@ public class CustomerRatingService {
 					customerRating.setRatingRemark(dto.getRatingRemark());
 					customerRating.setRemittanceApplicationId(remitAPPLTrnx.getRemittanceApplicationId());
 					customerRating.setRemittanceTransactionId(dto.getRemittanceTransactionId());
-					customerRating.setCustomerId(customerId);
+					customerRating.setCustomerId(remitAPPLTrnx.getFsCustomer().getCustomerId());
 					customerRating.setApplicationCountryId(applicationCountryId);
 					customerRating.setCreatedDate(new Date());
 					customerRatingdao.save(customerRating);
