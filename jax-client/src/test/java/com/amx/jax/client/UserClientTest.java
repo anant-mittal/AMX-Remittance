@@ -471,7 +471,7 @@ public class UserClientTest extends AbstractTestClient {
 	}
 	
 
-	//@Test
+	@Test
 	public void validateOtpTest() {
 		jaxMetaInfo.setDeviceId("301019967");
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
@@ -490,6 +490,67 @@ public class UserClientTest extends AbstractTestClient {
 		assertNotNull(response);
 	}
 	
+	//@Test
+	public void getAnnualTransactionLimitRange() {
+		jaxMetaInfo.setDeviceId("301019967");
+		jaxMetaInfo.setCountryId(new BigDecimal(91));
+		jaxMetaInfo.setCompanyId(new BigDecimal(1));
+		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
+		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
+		jaxMetaInfo.setChannel(JaxChannel.ONLINE);
+		jaxMetaInfo.setTenant(Tenant.KWT);
+		jaxMetaInfo.setLanguageId(new BigDecimal(1));
+		jaxMetaInfo.setEmployeeId(new BigDecimal(265));
+		
+		AmxApiResponse<AnnualIncomeRangeDTO,Object> response = null;
+		
+		response = client.getAnnualTransactionLimitRange();
+		LOGGER.debug("response result is "+response.getResults());
+		assertNotNull("Response is null", response);
+		assertNotNull(response);
+	}
+	
+	//@Test
+	public void saveAnnualTransactionLimit() {
+		jaxMetaInfo.setDeviceId("301019967");
+		jaxMetaInfo.setCountryId(new BigDecimal(91));
+		jaxMetaInfo.setCompanyId(new BigDecimal(1));
+		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
+		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
+		jaxMetaInfo.setChannel(JaxChannel.ONLINE);
+		jaxMetaInfo.setTenant(Tenant.KWT);
+		jaxMetaInfo.setLanguageId(new BigDecimal(1));
+		jaxMetaInfo.setEmployeeId(new BigDecimal(265));
+		IncomeDto incomeDto = new IncomeDto();
+		incomeDto.setIncomeRangeFrom(new BigDecimal(1));
+		incomeDto.setIncomeRangeTo(new BigDecimal(100));
+		AmxApiResponse<BoolRespModel,Object> response = null;
+		
+		response = client.saveAnnualTransactionLimit(incomeDto);
+		LOGGER.debug("response result is "+response.getResults());
+		assertNotNull("Response is null", response);
+		assertNotNull(response);
+	}
+	@Test
+	public void getAnnualTransactionLimit() {
+		jaxMetaInfo.setDeviceId("301019967");
+		jaxMetaInfo.setCountryId(new BigDecimal(91));
+		jaxMetaInfo.setCompanyId(new BigDecimal(1));
+		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
+		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
+		jaxMetaInfo.setChannel(JaxChannel.ONLINE);
+		jaxMetaInfo.setTenant(Tenant.KWT);
+		jaxMetaInfo.setLanguageId(new BigDecimal(1));
+		jaxMetaInfo.setEmployeeId(new BigDecimal(265));
+		
+		AmxApiResponse<AnnualIncomeRangeDTO,Object> response = null;
+		
+		response = client.getAnnualTransactionLimit();
+		LOGGER.debug("response result is "+response.getResults());
+		assertNotNull("Response is null", response);
+		assertNotNull(response);
+	}
+
 	@Test
 	public void sendEmailVeificationLink() {
 		jaxMetaInfo.setDeviceId("301019967");

@@ -77,7 +77,7 @@ public class CustomerController implements ICustomerService {
 
 	@Autowired
 	CustomerService customerService;
-	
+
 	@Autowired
 	JaxCustomerContactVerificationService jaxCustomerContactVerificationService;
 	
@@ -321,5 +321,21 @@ public class CustomerController implements ICustomerService {
 
 	}
 	
+	@RequestMapping(value = Path.ANNUAL_TRANSACTION_LIMIT_RANGE, method = RequestMethod.POST)
+	public AmxApiResponse<AnnualIncomeRangeDTO, Object> getAnnualTransactionLimitRange() {
+		List<AnnualIncomeRangeDTO> annualTransactionLimitRange = annualIncomeService.getAnnualTransactionLimitRange();
+		return AmxApiResponse.buildList(annualTransactionLimitRange);
+	}
 	
+	@RequestMapping(value = Path.SAVE_ANNUAL_TRANSACTION_LIMIT, method = RequestMethod.POST)
+	public AmxApiResponse<BoolRespModel, Object> saveAnnualTransactionLimit(@RequestBody IncomeDto incomeDto){
+		BoolRespModel boolRespModel = annualIncomeService.saveAnnualTransactionLimit(incomeDto);
+		return AmxApiResponse.build(boolRespModel);
+	}
+	
+	@RequestMapping(value = Path.GET_ANNUAL_TRANSACTION_LIMIT, method = RequestMethod.POST)
+	public AmxApiResponse<AnnualIncomeRangeDTO, Object> getAnnualTransactionLimit() {
+		AnnualIncomeRangeDTO annualTransactionLimit = annualIncomeService.getAnnualTransactionLimit();
+		return AmxApiResponse.build(annualTransactionLimit);
+	}
 }

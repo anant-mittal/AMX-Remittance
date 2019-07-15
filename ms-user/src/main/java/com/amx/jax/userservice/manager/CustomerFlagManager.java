@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.error.JaxError;
@@ -45,8 +46,8 @@ public class CustomerFlagManager {
 		customerFlags.setFingerprintlinked(isFingerprintLinked(customerOnlineRegistration));
 		customerFlags.setSecurityQuestionDone(!isSecurityQuestionRequired(customerOnlineRegistration));
 
-		customerFlags.setAnnualIncomeExpired(isAnnualIncomeExpired(customer));
-		customerFlags.setIsOnlineCustomer(Boolean.FALSE);
+		customerFlags.setAnnualIncomeExpired(Boolean.FALSE);
+		customerFlags.setAnnualTransactionLimitExpired(isAnnualTransactionLimitExpired(customer));
 		setCustomerCommunicationChannelFlags(customer, customerFlags);
 		customerFlags.setIsEmailMissing(isEmailMissing(customer));
 
@@ -127,6 +128,23 @@ public class CustomerFlagManager {
 		}
 	}
 	
+	public static Boolean isAnnualTransactionLimitExpired(Customer customer) {
+		Date annualTransactionLimitExpired = customer.getAnnualTransactionUpdatedDate();
+		if (annualTransactionLimitExpired == null) {
+			return true;
+		} else {
+			Date currentDate = new Date();
+			long millisec = currentDate.getTime() - annualTransactionLimitExpired.getTime();
+
+			if (millisec >= ConstantDocument.MILLISEC_IN_YEAR) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+	}
+	
 	public static Boolean isEmailMissing(Customer customer) {
 		if(StringUtils.isEmpty(customer.getEmail())) {
 			return true;
@@ -134,5 +152,4 @@ public class CustomerFlagManager {
 		return false;
 		
 	}
-	
 }
