@@ -847,8 +847,12 @@ public class UserValidationService {
 		}
 		return customers.get(0);
 	}
-
+	
 	public void validateCustomerContactForSendOtp(List<ContactType> contactTypes, Customer customer) {
+		validateCustomerContactForSendOtp(contactTypes, customer);
+	}
+	
+	public void validateCustomerContactForSendOtp(List<ContactType> contactTypes, Customer customer, CustomerModel customerModel) {
 		if (contactTypes == null) {
 			contactTypes = Arrays.asList(ContactType.MOBILE);
 		}
@@ -858,13 +862,17 @@ public class UserValidationService {
 			mobileErrorMessage = "Customer's mobile number is not registered. To proceed further, please register the mobile number.";
 			emailErrorMessage = "Customer's email is not registered. To proceed further, please register the email.";
 		}
+		boolean isNewEmailPresent = false;
+		if (customerModel != null && customerModel.getEmail() != null) {
+			isNewEmailPresent = true;
+		}
 		for (ContactType i : contactTypes) {
 			boolean ismOtp = (i == ContactType.SMS || i == ContactType.MOBILE || i == ContactType.SMS_EMAIL);
 			if (ismOtp && StringUtils.isEmpty(customer.getMobile())) {
 				throw new GlobalException(JaxError.CUSTOMER_MOBILE_EMPTY, mobileErrorMessage);
 			}
 			boolean iseOtp = (i == ContactType.EMAIL || i == ContactType.SMS_EMAIL);
-			if (iseOtp && StringUtils.isEmpty(customer.getEmail())) {
+			if (iseOtp && StringUtils.isEmpty(customer.getEmail()) && !isNewEmailPresent) {
 				throw new GlobalException(JaxError.CUSTOMER_EMAIL_EMPTY, emailErrorMessage);
 			}
 		}

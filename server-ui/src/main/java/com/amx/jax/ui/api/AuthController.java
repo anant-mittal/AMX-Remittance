@@ -80,6 +80,7 @@ public class AuthController {
 		if (!ArgUtil.isEmpty(authData.getLockId()) && !authData.getLockId().equalsIgnoreCase(authData.getIdentity())) {
 			throw new UIServerError(OWAStatusStatusCodes.DEVICE_LOCKED);
 		}
+		
 		if (!ArgUtil.isEmpty(authData.getDeviceToken())) {
 			return loginService.loginByDevice(authData.getIdentity(), authData.getDeviceToken());
 		} else if (!ArgUtil.isEmpty(authData.getPassword())) {

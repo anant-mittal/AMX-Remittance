@@ -27,6 +27,8 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.AnnualIncomeRangeDTO;
 import com.amx.amxlib.meta.model.IncomeDto;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.ArticleDao;
 import com.amx.jax.dal.ImageCheckDao;
 import com.amx.jax.dbmodel.BizComponentData;
@@ -42,6 +44,7 @@ import com.amx.jax.dbmodel.IncomeRangeMaster;
 import com.amx.jax.dbmodel.LanguageType;
 import com.amx.jax.dbmodel.StateMaster;
 import com.amx.jax.dbmodel.UserFinancialYear;
+import com.amx.jax.dbmodel.annualtransaction.AnnualTransactionFactorModel;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.CountryRepository;
@@ -56,6 +59,7 @@ import com.amx.jax.repository.IUserFinancialYearRepo;
 import com.amx.jax.repository.IViewCityDao;
 import com.amx.jax.repository.IViewDistrictDAO;
 import com.amx.jax.repository.IViewStateDao;
+import com.amx.jax.repository.annualtransaction.AnnualTransactionFactorRepository;
 import com.amx.jax.scope.TenantContext;
 import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.userservice.dao.CustomerDao;
@@ -135,6 +139,9 @@ public class AnnualIncomeService {
 
 	@Autowired
 	IUserFinancialYearRepo userFinancialYearRepo;
+	
+	@Autowired
+	AnnualTransactionFactorRepository annualTransactionFactorRepository;
 
 	public AmxApiResponse<AnnualIncomeRangeDTO, Object> getAnnualIncome(BigDecimal customerId) {
 		List<IncomeModel> incomeList = incomeDao.getAnnualIncome(customerId);
@@ -162,23 +169,9 @@ public class AnnualIncomeService {
 		logger.info("Income Dto value is "+incomeDto.getArticleDetailId());
 		Customer customer = custDao.getCustById(metaData.getCustomerId());
 		logger.info("fetch customer by customer id "+customer);
-		if (incomeDto.getIncomeRangeFrom() == null || incomeDto.getIncomeRangeTo() == null) {
-			throw new GlobalException("Income range cannot be null");
-		}
-
-		IncomeModel incomeModel = incomeDao.getAnnualIncomeRangeId(incomeDto.getIncomeRangeFrom(),
-				incomeDto.getIncomeRangeTo());
-		logger.info("fetch incomeModel by id "+incomeModel);
 		
-		if (incomeModel== null) {
-			throw new GlobalException("Invalid income range entered.Please enter a valid income range");
-		}
 
-		customer.setAnnualIncomeFrom(incomeDto.getIncomeRangeFrom());
-		logger.info("set annual income from by id "+customer);
-
-		customer.setAnnualIncomeTo(incomeDto.getIncomeRangeTo());
-		logger.info("set annual income to by id "+customer);
+		
 
 		customer.setAnnualIncomeUpdatedBy(metaData.getCustomerId().toString());
 		logger.info("set annual income updated by "+customer);
@@ -200,13 +193,13 @@ public class AnnualIncomeService {
 
 		customer.setFsArticleDetails(articleDao.getArticleDetailsByArticleDetailId(incomeDto.getArticleDetailId()));
 		logger.info("set designation id : ");
-		logger.info("Annual income from is "+incomeDto.getIncomeRangeFrom().longValue());
+		
 		logger.info("Constant is "+Constants.ANNUALINCOME_VERIFIED_LIMIT);
-		if(incomeDto.getIncomeRangeFrom().longValue()>=Constants.ANNUALINCOME_VERIFIED_LIMIT) {
+		if(customer.getAnnualIncomeFrom().longValue()>=Constants.ANNUALINCOME_VERIFIED_LIMIT) {
 			
 			customer.setIsBusinessCardVerified("N");
 		}
-		if(customer.getAnnualIncomeUpdatedDate()!=null && "N".equals(customer.getIsBusinessCardVerified()) && incomeDto.getIncomeRangeFrom().longValue()<Constants.ANNUALINCOME_VERIFIED_LIMIT) {
+		if(customer.getAnnualIncomeUpdatedDate()!=null && "N".equals(customer.getIsBusinessCardVerified()) && customer.getAnnualIncomeFrom().longValue()<Constants.ANNUALINCOME_VERIFIED_LIMIT) {
 			customer.setIsBusinessCardVerified(null);
 		}
 		
@@ -437,6 +430,63 @@ public class AnnualIncomeService {
 		return AmxApiResponse.build(incomeDto);
 
 	}
+	
+	public List<AnnualIncomeRangeDTO> getAnnualTransactionLimitRange() {
+		List<IncomeModel> incomeList = incomeDao.getAnnualTransactionLimitRange();
+		
+		
+		if (incomeList.isEmpty()) {
+			throw new GlobalException("Annual transaction list is not available");
+		}
+		List<AnnualIncomeRangeDTO> transactionLimitRange = convertIncomeDto(incomeList);
+		return transactionLimitRange;
+	}
+	public BoolRespModel saveAnnualTransactionLimit(IncomeDto incomeDto) {
+		BoolRespModel boolRespModel = new BoolRespModel();
+		if(incomeDto.getIncomeRangeFrom()==null||incomeDto.getIncomeRangeTo()==null) {
+			throw new GlobalException("Income range should not be null");
+		}
+		
+		List<IncomeModel> incomeModel = incomeDao.getAnnualIncomeRangeId(incomeDto.getIncomeRangeFrom(),
+				incomeDto.getIncomeRangeTo());
+		
+		int c = 0;
+		for (int i = 0; i < incomeModel.size(); i++) {
+			if (!incomeModel.get(i).getRangeType().equalsIgnoreCase(ConstantDocument.ANNUAL_TRANSACTION_LIMIT)) {
+				c++;
 
+			}
+		}
+		if (c == incomeModel.size()) {
+			throw new GlobalException("Invalid income range entered.Please enter a valid income range");
+		}
+		
+		
+		
+		Iterable<AnnualTransactionFactorModel> annualTransactionFactorModelList=annualTransactionFactorRepository.findAll();
+		AnnualTransactionFactorModel annualTransactionFactorModel = annualTransactionFactorModelList.iterator().next();
+		BigDecimal annualTransactionModelFactor = annualTransactionFactorModel.getFactor();
+		Customer customer = custDao.getCustById(metaData.getCustomerId());
+		customer.setAnnualTransactionLimitFrom(incomeDto.getIncomeRangeFrom());
+		customer.setAnnualTransactionLimitTo(incomeDto.getIncomeRangeTo());
+		customer.setAnnualTransactionUpdatedDate(new Date());
+		customer.setAnnualIncomeFrom(incomeDto.getIncomeRangeFrom().multiply(annualTransactionModelFactor));
+		customer.setAnnualIncomeTo(incomeDto.getIncomeRangeFrom().multiply(annualTransactionModelFactor));
+		customer.setAnnualIncomeFrom(incomeDto.getIncomeRangeTo().multiply(annualTransactionModelFactor));
+		
+		
+		repo.save(customer);
+		
+		boolRespModel.setSuccess(Boolean.TRUE);
+		return boolRespModel;
+	}
+	
+	public AnnualIncomeRangeDTO getAnnualTransactionLimit() {
+		Customer customer = custDao.getCustById(metaData.getCustomerId());
+		AnnualIncomeRangeDTO annualIncomeRangeDTO = new AnnualIncomeRangeDTO();
+		annualIncomeRangeDTO.setIncomeRangeFrom(customer.getAnnualTransactionLimitFrom());
+		annualIncomeRangeDTO.setIncomeRangeTo(customer.getAnnualTransactionLimitTo());
+		return annualIncomeRangeDTO;
+	}
 	
 }

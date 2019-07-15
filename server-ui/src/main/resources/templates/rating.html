@@ -1,32 +1,182 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:th="http://www.thymeleaf.org"
-	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport"
-	content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>Remmtance Feedback</title>
-<style type="text/css">
-body, html {
-	font-family: arial;
-	font-size: 14px;
-	color: #000;
-	margin: 0;
-	padding: 0;
-	vertical-align: middle;
-}
-</style>
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Remmtance Feedback</title>
+    <link rel="stylesheet" type="text/css" href="/rating.css" />
 
-<script th:inline="javascript">
-	var ratingData = ([[${ratingData}]]);
-</script>
-</head>
-<body>
+    <script th:inline="javascript">
+      var ratingData = ([[${ratingData}]]);
+    </script>
+  </head>
+  <body>
+    <div class="header">
+      <div class="logo">
+       <a href="/login#close">
+       <img th:src="@{'/logo-'+ ${companyTnt}+ '.png'}" alt="logo" />
+      </a>
+      </div>
+    </div>
+    <div id="rating-feedback" class="rating-feedback ">
+      <h4>Rate your Experience</h4>
+      <fieldset class="rating">
+        <input type="radio" id="star5" name="rating" value="5" /><label
+          class="full"
+          for="star5"
+        ></label>
+        <input type="radio" id="star4" name="rating" value="4" /><label
+          class="full"
+          for="star4"
+        ></label>
+        <input type="radio" id="star3" name="rating" value="3" /><label
+          class="full"
+          for="star3"
+        ></label>
+        <input type="radio" id="star2" name="rating" value="2" /><label
+          class="full"
+          for="star2"
+        ></label>
+        <input type="radio" id="star1" name="rating" value="1" /><label
+          class="full"
+          for="star1"
+        ></label>
+      </fieldset>
 
-</body>
+      <div class="">
+        <div id="rating-face" class="svgicons icon-face-5">
+          <span class="path1"></span><span class="path2"></span
+          ><span class="path3"></span><span class="path4"></span>
+        </div>
+        <div class="face-title"></div>
+        <div id="feedback" class="feedback-text hide">
+          <textarea
+            id="feedbackInput"
+            placeholder="Any Suggesstion"
+            cols="30"
+            maxLength="140"
+            rows="5"
+          ></textarea>
+        </div>
+        <div class="bottom-button-wrapper">
+          <button class="button ripple" onclick="submitFeedback()">
+            Send
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="feedback-success" class="feedback-success dn">
+      <h4>Rate your Experience</h4>
+      <div class="svgicons icon-thumb"></div>
+      <h4 class="success-message">
+        Thanks you for the feedback on your experience with Al Mulla Exchange.
+        We appreciate the review and it will help us build a better customer
+        experience.
+      </h4>
+      <button class="button ripple" onclick="goToHome()">
+        Home
+      </button>
+    </div>
+
+    <div id="feedback-invalid" class="feedback-invalid dn">
+      <h4>Invalid URL</h4>
+    </div>
+    <div id="loading" class="dn"><div class="loader"></div></div>
+    <script th:inline="javascript">
+
+      function showLoader(b){
+      	var loader = document.getElementById("loading");
+      	if(b){
+      		loader.classList.remove("dn")
+      	} else{
+      		loader.classList.add("dn")
+      	}
+	  }
+	  
+      var rating = document.getElementsByClassName('rating');
+      var userRating = "";
+      for(var i=0; i<rating.length; i++){
+      	rating[i].addEventListener("change", function(e) {
+      		var ratingface = document.getElementById("rating-face");
+      		ratingface.className = "svgicons  icon-face-"+e.target.value;
+      		userRating = e.target.value;
+      		var feedback = document.getElementById("feedback");
+      		if(e.target.value < 4){
+      			feedback.classList.remove("hide");
+      		} else{
+      			feedback.classList.add("hide");
+      		}
+
+      	});
+	  }
+	  
+      function makeAjaxCall(url, methodType,data, resolve, reject){
+      	showLoader(true)
+      	var xhr = new XMLHttpRequest();
+      	xhr.open(methodType, url, true);
+      	xhr.setRequestHeader("Content-Type", "application/json");
+      	xhr.send(data? data : '');
+      	xhr.onreadystatechange = function(){
+      		showLoader(false)
+      		if (xhr.readyState === 4){
+      			if (xhr.status === 200){
+      			console.log("xhr done successfully");
+      			var resp = xhr.responseText;
+      			var respJson = JSON.parse(resp);
+      			resolve ? resolve(respJson) : "";
+      			} else {
+      			console.log("xhr failed");
+      			reject ? reject(respJson) : "";
+      			}
+      		} else {
+      			console.log("xhr processing going on");
+      		}
+      	}
+      	console.log("request sent succesfully");
+	  }
+	  
+	  console.log(ratingData);
+      if(!ratingData.valid){
+		  document.getElementById("feedback-invalid").classList.remove("dn");
+		  document.getElementById("rating-feedback").classList.add("dn");
+      }
+      var feedbackView = document.getElementById("feedback-success");
+      var ratingView = document.getElementById("rating-feedback");
+      if(ratingData.rating.results[0].rating != null){      
+        feedbackView.classList.remove("dn");
+        ratingView.classList.add('dn');
+      } else {
+    	  feedbackView.classList.add("dn");
+          ratingView.classList.remove('dn');
+      }
+
+      function submitFeedback(){
+      	var reqObj = {
+      		"rating": userRating,
+      		"ratingRemark": document.getElementById('feedbackInput').value,
+      		"remittanceTransactionId": ratingData.trnxId
+      	}
+      	makeAjaxCall('/pub/remitt/tranx/rating?veryCode=' + ratingData.verCode,'POST', JSON.stringify(reqObj),resolveFeedbackPost,rejectFeedbackPost)
+      }
+
+      function resolveFeedbackPost(respJson){
+        feedbackView.classList.remove("dn");
+        ratingView.classList.add('dn');
+      }
+      function rejectFeedbackPost(respJson){
+      	console.log("Fail");
+	    }
+      function goToHome(){
+        window.location.href = "/login#close"
+      }
+    </script>
+  </body>
 </html>
-
-
-
-

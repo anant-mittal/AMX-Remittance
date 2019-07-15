@@ -28,6 +28,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	WebLoginUrlEntry loginUrlEntry;
 
 	public static final Pattern pattern = Pattern.compile("^\\/(register|home|login|pub).*$");
+	public static final Pattern secured_pattern = Pattern.compile("^\\/(app|api).*$");
 
 	/*
 	 * (non-Javadoc)
@@ -65,17 +66,19 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	public static boolean isPublicUrl(String url) {
 		Matcher matcher = pattern.matcher(url);
-		
+		return matcher.find();
+	}
+
+	public static boolean isSecuredUrl(String url) {
+		Matcher matcher = secured_pattern.matcher(url);
 		return matcher.find();
 	}
 
 	/**
 	 * Configure global.
 	 *
-	 * @param auth
-	 *            the auth
-	 * @throws Exception
-	 *             the exception
+	 * @param auth the auth
+	 * @throws Exception the exception
 	 */
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {

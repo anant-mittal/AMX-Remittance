@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.meta.model.AnnualIncomeRangeDTO;
 import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.meta.model.IncomeDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
@@ -370,6 +371,7 @@ public class UserController {
 			sessionService.getUserSession().getCustomerModel().setEmail(model.getEmail());
 			sessionService.getUserSession().getCustomerModel().getPersoninfo().setEmail(model.getEmail());
 			wrapper.setStatusEnum(OWAStatusStatusCodes.USER_UPDATE_SUCCESS);
+			userService.updateCustoemrModel();
 		}
 		return wrapper;
 	}
@@ -537,6 +539,22 @@ public class UserController {
 	@RequestMapping(value = "/api/user/income", method = { RequestMethod.GET })
 	public ResponseWrapper<IncomeDto> getAnnualIncomeDetais() {
 		return ResponseWrapper.build(jaxService.setDefaults().getUserclient().getAnnualIncomeDetais());
+	}
+
+	@RequestMapping(value = "/api/user/trnx_limit", method = { RequestMethod.POST })
+	public ResponseWrapper<BoolRespModel> saveAnnualTransactionLimit(
+			@RequestBody IncomeDto incomeDto) {
+		try {
+			return ResponseWrapper
+					.build(jaxService.setDefaults().getUserclient().saveAnnualTransactionLimit(incomeDto));
+		} finally {
+			userService.updateCustoemrModel();
+		}
+	}
+
+	@RequestMapping(value = "/api/user/trnx_limit", method = { RequestMethod.GET })
+	public ResponseWrapper<AnnualIncomeRangeDTO> getAnnualTransactionLimit() {
+		return ResponseWrapper.build(jaxService.setDefaults().getUserclient().getAnnualTransactionLimit());
 	}
 
 	@RequestMapping(value = "/api/user/device/link", method = { RequestMethod.POST })

@@ -99,6 +99,7 @@ import com.amx.jax.util.AmxDBConstants.Status;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.StringUtil;
+import com.amx.jax.util.AmxDBConstants.Status;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Random;
 
@@ -204,8 +205,10 @@ public class UserService extends AbstractUserService {
 	CustomerFlagManager customerFlagManager;
 	
 	@Autowired
+	CustomerRepository customerrepository;
+	@Autowired
 	UserContactVerificationManager userContactVerificationManager;
-
+	
 	@Override
 	public ApiResponse registerUser(AbstractUserModel userModel) {
 		UserModel kwUserModel = (UserModel) userModel;
@@ -230,6 +233,7 @@ public class UserService extends AbstractUserService {
 
 	public CustomerModel convert(CustomerOnlineRegistration cust) {
 		CustomerModel model = new CustomerModel();
+		model.setIdentityId(cust.getUserName());
 		if (cust.getCaption() != null) {
 			model.setCaption(cryptoUtil.decrypt(cust.getUserName(), cust.getCaption()));
 		}
@@ -480,7 +484,7 @@ public class UserService extends AbstractUserService {
 		}
 		// userValidationService.validateCustomerLockCount(onlineCust);
 		userValidationService.validateTokenSentCount(onlineCust);
-		userValidationService.validateCustomerContactForSendOtp(channels, customer);
+		userValidationService.validateCustomerContactForSendOtp(channels, customer ,customerModel);
 		generateToken(civilId, model, channels);
 		onlineCust.setEmailToken(model.getHashedeOtp());
 		onlineCust.setSmsToken(model.getHashedmOtp());
@@ -659,8 +663,15 @@ public class UserService extends AbstractUserService {
 		if (tenantContext.getKey().equals("OMN")) {
 			tenantContext.get().validateCivilId(userId);
 		}
+		List<Customer> customerData = customerrepository.getCustomerByIdentityInt(userId);
+		
+		if(customerData.get(0).getEmailVerified()==Status.N) {
+			throw new GlobalException(JaxError.EMAIL_NOT_VERIFIED, "Email id is not verified . Please wait for 24 hrs");
+			
+		}else {
 		List<Customer> validCustomer = userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(userId,
 				JaxApiFlow.LOGIN);
+		
 		CustomerOnlineRegistration onlineCustomer = custDao
 				.getOnlineCustByCustomerId(validCustomer.get(0).getCustomerId());
 		if (onlineCustomer == null) {
@@ -679,14 +690,17 @@ public class UserService extends AbstractUserService {
 		userValidationService.validateCustIdProofs(onlineCustomer.getCustomerId());
 		userValidationService.validateCustomerData(onlineCustomer, customer);
 		userValidationService.validateBlackListedCustomerForLogin(customer);
+		
+		
 		ApiResponse response = getBlackApiResponse();
 		CustomerModel customerModel = convert(onlineCustomer);
 
-		afterLoginSteps(onlineCustomer);
+		// afterLoginSteps(onlineCustomer);
 		response.getData().getValues().add(customerModel);
 		response.getData().setType(customerModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
 		return response;
+	}
 	}
 
 	/**

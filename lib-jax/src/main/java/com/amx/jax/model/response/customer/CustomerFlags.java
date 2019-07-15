@@ -22,7 +22,29 @@ public class CustomerFlags {
 	/* new login */
 
 	public Boolean annualIncomeExpired;
+	
+	public Boolean annualTransactionLimitExpired;
+	
+
+	public Boolean getAnnualTransactionLimitExpired() {
+		return annualTransactionLimitExpired;
+	}
+
+	public void setAnnualTransactionLimitExpired(Boolean annualTransactionLimitExpired) {
+		this.annualTransactionLimitExpired = annualTransactionLimitExpired;
+	}
+
 	public Boolean isOnlineCustomer;
+	
+	public Boolean isEmailMissing;
+
+	public Boolean getIsEmailMissing() {
+		return isEmailMissing;
+	}
+
+	public void setIsEmailMissing(Boolean isEmailMissing) {
+		this.isEmailMissing = isEmailMissing;
+	}
 
 	public Boolean getIsOnlineCustomer() {
 		return isOnlineCustomer;

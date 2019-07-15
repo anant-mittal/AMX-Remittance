@@ -9,7 +9,8 @@ import com.amx.jax.model.response.customer.CustomerFlags;
 import com.amx.jax.scope.TenantSpecific;
 import com.amx.jax.ui.UIConstants.Features;
 import com.amx.jax.ui.auth.AuthLibContext.AuthLib;
-import com.amx.jax.ui.model.AuthData;
+import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
+import com.amx.jax.ui.config.UIServerError;
 import com.amx.jax.ui.service.LoginService;
 import com.amx.jax.ui.service.SessionService;
 
@@ -172,17 +173,23 @@ public class AuthLibKWT implements AuthLib {
 	@Override
 	public CustomerFlags checkModule(AuthState authState, CustomerFlags customerFlags, Features feature) {
 		switch (feature) {
+		case DASHBOARD:
+			AuthPermUtil.checkEmailUpdate(authState, customerFlags);
+			break;
 		case REMIT:
 		case BENE_UPDATE:
 		case FXORDER:
+			AuthPermUtil.checkEmailUpdate(authState, customerFlags);
 			AuthPermUtil.checkIdProofExpiry(authState, customerFlags);
 			AuthPermUtil.checkSQASetup(authState, customerFlags);
 			AuthPermUtil.checkSQA(authState, customerFlags);
 			break;
 		case SQA_UPDATE:
+			AuthPermUtil.checkEmailUpdate(authState, customerFlags);
 			AuthPermUtil.checkSQASetup(authState, customerFlags);
 			break;
 		default:
+			AuthPermUtil.checkEmailUpdate(authState, customerFlags);
 			break;
 		}
 

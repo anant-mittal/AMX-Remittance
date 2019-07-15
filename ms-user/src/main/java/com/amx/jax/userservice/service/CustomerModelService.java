@@ -23,9 +23,12 @@ import com.amx.jax.model.response.customer.CustomerFlags;
 import com.amx.jax.model.response.customer.CustomerModelResponse;
 import com.amx.jax.model.response.customer.CustomerModelSignupResponse;
 import com.amx.jax.model.response.customer.PersonInfo;
+import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.manager.CustomerFlagManager;
 import com.amx.jax.userservice.manager.OnlineCustomerManager;
+import com.amx.jax.userservice.repository.OnlineCustomerRepository;
+import com.amx.jax.util.AmxDBConstants.Status;
 import com.amx.utils.MaskUtil;
 
 @Service
@@ -44,6 +47,10 @@ public class CustomerModelService {
 	MetaData metaData;
 	@Autowired
 	OnlineCustomerManager onlineCustomerManager;
+	@Autowired
+	CustomerRepository customerRepository;
+	@Autowired
+	OnlineCustomerRepository onlineCustomerRepository;
 
 	public CustomerModelResponse getCustomerModelResponse(String identityInt) {
 		// userValidationService.validateIdentityInt(identityInt,
@@ -87,6 +94,12 @@ public class CustomerModelService {
 		CustomerModelSignupResponse response = new CustomerModelSignupResponse();
 		response.setCustomerFlags(customerModelResponse.getCustomerFlags());
 		List<CustomerCommunicationChannel> customerCommunicationChannels = new ArrayList<>();
+		Customer customerdetails = customerRepository.getCustomerEmailDetails(identityInt);
+		CustomerOnlineRegistration customerOnlineRegistration = onlineCustomerRepository.getLoginCustomersDeatilsById(identityInt);
+		
+		if(customerdetails.getEmailVerified()==null)
+		
+		{
 		if (customerFlags.getEmailVerified()) {
 			String emailId = personInfo.getEmail();
 			String email = emailId.split("@")[0];
@@ -122,10 +135,19 @@ public class CustomerModelService {
 			customerCommunicationChannels.add(new CustomerCommunicationChannel(ContactType.WHATSAPP, maskedMobile));
 
 		}
+		}
+	
+		else if(customerOnlineRegistration.getStatus().equalsIgnoreCase("N") && (customerdetails.getEmailVerified().equals(Status.N))) {
+				throw new GlobalException(JaxError.EMAIL_NOT_VERIFIED, "Email id is not verified.Kinldy verify");
+			
+			
+		}
+	
 		response.setCustomerCommunicationChannel(customerCommunicationChannels);
 		if (customerCommunicationChannels.isEmpty()) {
 			throw new GlobalException(JaxError.MISSING_OTP_CONTACT,
 					"You cannot register online. Please register contact details in the branch to proceed further.");
+		
 		}
 		return response;
 	}
