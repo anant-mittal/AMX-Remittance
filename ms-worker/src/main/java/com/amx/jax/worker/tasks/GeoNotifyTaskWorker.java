@@ -8,13 +8,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.model.MinMaxExRateDTO;
 import com.amx.jax.client.BeneClient;
 import com.amx.jax.client.ExchangeRateClient;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.dict.Language;
 import com.amx.jax.logger.AuditService;
+import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.postman.client.PostManClient;
 import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.model.PushMessage;

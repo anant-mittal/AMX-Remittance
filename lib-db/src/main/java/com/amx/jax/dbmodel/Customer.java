@@ -145,9 +145,8 @@ public class Customer implements java.io.Serializable {
 	private Date annualIncomeUpdatedDate;
 	private String isBusinessCardVerified;
 	
-
-	
 	private String customerVatNumber;
+	private String premInsurance;
 	
 	
 	public String getIsBusinessCardVerified() {
@@ -1077,6 +1076,15 @@ public class Customer implements java.io.Serializable {
 	@Column(name="VAT_NUMBER")
 	public String getCustomerVatNumber() {
 		return customerVatNumber;
+	}
+
+	@Column(name="PREM_INSURANCE")
+	public String getPremInsurance() {
+		return premInsurance;
+	}
+
+	public void setPremInsurance(String premInsurance) {
+		this.premInsurance = premInsurance;
 	}
 
 	@Override
