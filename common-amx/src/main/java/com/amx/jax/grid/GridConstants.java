@@ -23,6 +23,23 @@ public class GridConstants {
 		STRING, NUMBER, DATE, TIME, TIMESTAMP
 	}
 
+	public static enum ColumnFunction {
+		TRUNC("trunc"), LOWER("lower"), UPPER("upper");
+		
+		String colFunc;
+		
+		ColumnFunction(String colFunc) {
+			this.colFunc = colFunc;
+		}
+		public String getColFunc() {
+			return colFunc;
+		}
+		
+		
+		
+	}
+	
+	
 	public static final String GRID_DATE_FORMAT_SQL = "DD-MM-YYYY";
 	public static final String GRID_DATE_FORMAT_JAVA = "dd-MM-YYYY";
 	public static final String GRID_TIME_FORMAT_SQL = "DD-MM-YYYY HH24:MI:SS";
