@@ -151,12 +151,12 @@ public class RemittancePaymentManager extends AbstractService{
 				remitanceMap = remittanceApplicationService.saveRemittance(paymentResponse);
 				
 				/** Referral Code **/
-//				List<RemittanceTransaction> remittanceList = remitAppDao.getOnlineRemittanceList(paymentResponse.getCustomerId());
-//				if(remittanceList.size() == 0) {
+				List<RemittanceTransaction> remittanceList = remitAppDao.getOnlineRemittanceList(paymentResponse.getCustomerId());
+				if(remittanceList.size() == 0) {
 					ReferralDetails referralDetails = refDao.getReferralByCustomerId(paymentResponse.getCustomerId());
 					referralDetails.setIsConsumed("Y");
 					refDao.updateReferralCode(referralDetails);
-//				}			
+				}			
 				
 				errorMsg = (String)remitanceMap.get("P_ERROR_MESG");
 				errorMsg= null;
