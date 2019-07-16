@@ -302,6 +302,12 @@ public class CountryMasterView implements java.io.Serializable, IResourceEntity 
 	public void setLocalName(String localName) {
 		this.localName = localName;
 	}
+
+	@Override
+	public String resourceLocalName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 	
 

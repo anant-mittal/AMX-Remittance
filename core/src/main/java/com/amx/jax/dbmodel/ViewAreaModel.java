@@ -60,4 +60,10 @@ public class ViewAreaModel implements IResourceEntity {
 	public String resourceCode() {
 		return this.shortDesc;
 	}
+
+	@Override
+	public String resourceLocalName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
