@@ -21,6 +21,9 @@ public enum AmxTunnelEvents implements ITunnelEventsDict {
 		public static final String DATAUPD_CUSTOMER = "DATAUPD_CUSTOMER";
 		public static final String DATAUPD_TRNX = "DATAUPD_TRNX";
 		public static final String UPDATE_DEVICE_STATUS = "UPDATE_DEVICE_STATUS";
+		public static final String INS_POLICY_ELIGIBLE = "INS_POLICY_ELIGIBLE";
+		public static final String INS_OPTOUT = "INS_OPTOUT";
+		public static final String INS_EXPIRY = "INS_EXPIRY";
 
 	}
 

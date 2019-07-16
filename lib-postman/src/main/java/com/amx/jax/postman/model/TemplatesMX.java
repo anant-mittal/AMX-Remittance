@@ -60,7 +60,16 @@ public enum TemplatesMX implements ITemplate {
 	FINGERPRINT_LINKED_SUCCESS("FingerprintLinkedSuccess"),
 	FINGERPRINT_DELINKED_SUCCESS("FingerprintDelinkedSuccess"),
 	FINGERPRINT_DELINKED_ATTEMP_SUCCESS("FingerprintDelinkInCorrectAttem"),
-
+	
+	
+	// GIG Policy Event Notification Templates
+	POLICY_CONFIRMATION("PolicyConfirmation"),
+	POLICY_OPTOUT_CUSTOMER("PolicyOptoutCustomer"),
+	POLICY_OPTOUT_SYSTEM("PolicyOptoutSystem"),
+	POLICY_EXPIRY_REMINDER("PolicyExpiryReminder"),
+	POLICY_EXPIRED("PolicyExpired"),
+	
+	
 	// Default add enums above this
 	DEFAULT("default");
 
