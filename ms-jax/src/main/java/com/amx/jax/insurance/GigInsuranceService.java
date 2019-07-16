@@ -218,4 +218,13 @@ public class GigInsuranceService {
 		return user;
 	}
 
+	public Boolean hasAddedNominee(BigDecimal customerId) {
+		List<InsurnaceClaimNominee> nominees = insurnaceClaimNomineeRepository.findByCustomerIdAndIsActive(customerId, ConstantDocument.Yes);
+		return nominees.size() > 0;
+	}
+
+	public void optInOutInsurance() {
+		// TODO Auto-generated method stub
+
+	}
 }

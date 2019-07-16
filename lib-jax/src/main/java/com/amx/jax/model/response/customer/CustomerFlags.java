@@ -21,8 +21,10 @@ public class CustomerFlags {
 	Boolean securityQuestionDone;
 	/* new login */
 
-	public Boolean annualIncomeExpired;
-	public Boolean isOnlineCustomer;
+	Boolean annualIncomeExpired;
+	Boolean isOnlineCustomer;
+	Boolean forceUpdateInsurance;
+	
 
 	public Boolean getIsOnlineCustomer() {
 		return isOnlineCustomer;
@@ -102,5 +104,13 @@ public class CustomerFlags {
 
 	public void setAnnualIncomeExpired(Boolean annualIncomeExpired) {
 		this.annualIncomeExpired = annualIncomeExpired;
+	}
+
+	public Boolean getForceUpdateInsurance() {
+		return forceUpdateInsurance;
+	}
+
+	public void setForceUpdateInsurance(Boolean forceUpdateInsurance) {
+		this.forceUpdateInsurance = forceUpdateInsurance;
 	}
 }
