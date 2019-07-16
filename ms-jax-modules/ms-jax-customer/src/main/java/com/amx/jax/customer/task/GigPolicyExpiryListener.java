@@ -40,52 +40,41 @@ public class GigPolicyExpiryListener implements ITunnelSubscriber<DBEvent> {
 
 	@Autowired
 	CustomerRepository customerRepository;
-	
+
 	@Autowired
 	CustomerFlagManager customerFlagManager;
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
-	
-	
+
 	private static final String CUST_ID = "CUST_ID";
 	private static final String EXP_DT = "EXP_DT";
 	private static final String TYPE = "TYPE";
 	private static final String TRNX_LEFT = "TRNX_LEFT";
 	private static final String LANG_ID = "LANG_ID";
+
 	@Override
 	public void onMessage(String channel, DBEvent event) {
-LOGGER.info("======onMessage1==={} ====  {}", channel, JsonUtil.toJson(event));
-		
-		
+		LOGGER.debug("======onMessage1==={} ====  {}", channel, JsonUtil.toJson(event));
+
 		BigDecimal custId = ArgUtil.parseAsBigDecimal(event.getData().get(CUST_ID));
 		Date policyEndDate = ArgUtil.parseAsSimpleDate(event.getData().get(EXP_DT));
 		String type = ArgUtil.parseAsString(event.getData().get(TYPE));
 		BigDecimal trnxLeft = ArgUtil.parseAsBigDecimal(event.getData().get(TRNX_LEFT));
 		String langId = ArgUtil.parseAsString(event.getData().get(LANG_ID));
-		
-		LOGGER.info("Customer id is "+custId);
-		Customer c = customerRepository.getCustomerByCustomerIdAndIsActive(custId, "Y");
-		LOGGER.info("Customer object is "+c.toString());
-		String emailId = c.getEmail();
-		
-		
-		String custName;
-		if(StringUtils.isEmpty(c.getMiddleName())) {
-			c.setMiddleName("");
-			custName=c.getFirstName()+c.getMiddleName() + ' '+c.getLastName();
-		}else {
-			custName=c.getFirstName()+' '+c.getMiddleName() + ' '+c.getLastName();
-		}
-		
-		 
-		LOGGER.info("type of expiry is   "+type);
-		/*NumberFormat myFormat = NumberFormat.getInstance();
-		myFormat.setGroupingUsed(true);
-		String trnxAmountval = myFormat.format(trnxAmount);*/
 
-		
-		
-		
-		
+		LOGGER.debug("Customer id is " + custId);
+		Customer c = customerRepository.getCustomerByCustomerIdAndIsActive(custId, "Y");
+		LOGGER.debug("Customer object is " + c.toString());
+		String emailId = c.getEmail();
+
+		String custName;
+		if (StringUtils.isEmpty(c.getMiddleName())) {
+			c.setMiddleName("");
+			custName = c.getFirstName() + c.getMiddleName() + ' ' + c.getLastName();
+		} else {
+			custName = c.getFirstName() + ' ' + c.getMiddleName() + ' ' + c.getLastName();
+		}
+
+		LOGGER.debug("type of expiry is   " + type);
 		Map<String, Object> wrapper = new HashMap<String, Object>();
 		Map<String, Object> modeldata = new HashMap<String, Object>();
 		modeldata.put("to", emailId);
@@ -93,17 +82,14 @@ LOGGER.info("======onMessage1==={} ====  {}", channel, JsonUtil.toJson(event));
 		modeldata.put("type", type);
 		modeldata.put("trnxleft", trnxLeft);
 		modeldata.put("policyenddate", policyEndDate);
-		
 
 		for (Map.Entry<String, Object> entry : modeldata.entrySet()) {
-			LOGGER.info("KeyModel = " + entry.getKey() + ", ValueModel = " + entry.getValue());
+			LOGGER.debug("KeyModel = " + entry.getKey() + ", ValueModel = " + entry.getValue());
 		}
 
 		wrapper.put("data", modeldata);
-		LOGGER.info("email is is "+emailId);
+		LOGGER.debug("email is is " + emailId);
 		if (!ArgUtil.isEmpty(emailId)) {
-			
-			
 
 			Email email = new Email();
 			if ("2".equals(langId)) {
@@ -114,38 +100,32 @@ LOGGER.info("======onMessage1==={} ====  {}", channel, JsonUtil.toJson(event));
 				modeldata.put("languageid", Language.EN);
 			}
 			for (Map.Entry<String, Object> entry : wrapper.entrySet()) {
-				LOGGER.info("KeyModelWrap = " + entry.getKey() + ", ValueModelWrap = " + entry.getValue());
+				LOGGER.debug("KeyModelWrap = " + entry.getKey() + ", ValueModelWrap = " + entry.getValue());
 			}
-			LOGGER.info("Json value of wrapper is "+JsonUtil.toJson(wrapper));
-			LOGGER.info("Wrapper data is {}", wrapper.get("data"));
+			LOGGER.debug("Json value of wrapper is " + JsonUtil.toJson(wrapper));
+			LOGGER.debug("Wrapper data is {}", wrapper.get("data"));
 			email.setModel(wrapper);
 			email.addTo(emailId);
 			email.setHtml(true);
-			
+
 			if (type.equals("")) {
 				email.setITemplate(TemplatesMX.POLICY_EXPIRY_REMINDER);
-			}
-			else {
+			} else {
 				email.setITemplate(TemplatesMX.POLICY_EXPIRED);
 			}
-			
-				
+
 			sendEmail(email);
 		}
-
-		
 
 		if (!ArgUtil.isEmpty(custId)) {
 			PushMessage pushMessage = new PushMessage();
 
-			if(type.equals("R")) {
+			if (type.equals("R")) {
 				pushMessage.setITemplate(TemplatesMX.POLICY_EXPIRY_REMINDER);
-			}
-			else {
+			} else {
 				pushMessage.setITemplate(TemplatesMX.POLICY_EXPIRED);
 			}
-			
-			
+
 			pushMessage.setModel(wrapper);
 			pushMessage.addToUser(custId);
 			pushMessage.setModel(wrapper);
@@ -153,14 +133,15 @@ LOGGER.info("======onMessage1==={} ====  {}", channel, JsonUtil.toJson(event));
 		}
 
 	}
+
 	@Async(ExecutorConfig.DEFAULT)
 	public void sendEmail(Email email) {
 		try {
-			LOGGER.info("email sent");
+			LOGGER.debug("email sent");
 			postManService.sendEmailAsync(email);
 		} catch (PostManException e) {
-			
-			LOGGER.info("error in expired policy", e);
+
+			LOGGER.debug("error in expired policy", e);
 		}
 	}
 
