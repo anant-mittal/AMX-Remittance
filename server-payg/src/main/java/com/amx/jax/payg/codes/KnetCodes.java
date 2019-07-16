@@ -1,7 +1,7 @@
 package com.amx.jax.payg.codes;
 
-import com.amx.jax.payg.PayGCodes.CodeCategory;
-import com.amx.jax.payg.PayGCodes.IPayGCode;
+import com.amx.jax.dict.PayGCodes.CodeCategory;
+import com.amx.jax.dict.PayGCodes.IPayGCode;
 
 public enum KnetCodes implements IPayGCode {
 
