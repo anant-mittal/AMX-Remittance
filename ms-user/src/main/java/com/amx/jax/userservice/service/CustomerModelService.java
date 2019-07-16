@@ -97,7 +97,7 @@ public class CustomerModelService {
 		Customer customerdetails = customerRepository.getCustomerEmailDetails(identityInt);
 		CustomerOnlineRegistration customerOnlineRegistration = onlineCustomerRepository.getLoginCustomersDeatilsById(identityInt);
 		
-		if(customerdetails.getEmailVerified()==null)
+		if(customerdetails.getEmailVerified()==null ||customerdetails.getEmailVerified().equals(Status.Y))
 		
 		{
 		if (customerFlags.getEmailVerified()) {
