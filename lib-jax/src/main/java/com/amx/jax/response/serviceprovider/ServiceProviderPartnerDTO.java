@@ -1,10 +1,8 @@
-package com.amx.jax.response.branchuser;
-
-import java.math.BigDecimal;
+package com.amx.jax.response.serviceprovider;
 
 import com.amx.jax.model.ResourceDTO;
 
-public class ServiceProviderPartnerResponse extends ResourceDTO {
+public class ServiceProviderPartnerDTO extends ResourceDTO {
 	
 	/**
 	 * 

@@ -2,13 +2,11 @@ package com.amx.jax.serviceprovider.service;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
-
 import java.util.List;
 
 import org.apache.poi.ss.usermodel.Cell;
@@ -27,13 +25,15 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.dbmodel.FileUploadTempModel;
 import com.amx.jax.dbmodel.ServiceProviderPartner;
+import com.amx.jax.dbmodel.ServiceProviderSummaryModel;
 import com.amx.jax.meta.MetaData;
-import com.amx.jax.response.branchuser.ServiceProviderPartnerResponse;
+import com.amx.jax.response.serviceprovider.ServiceProviderPartnerDTO;
+import com.amx.jax.response.serviceprovider.ServiceProviderSummaryDTO;
 import com.amx.jax.serviceprovider.dao.ServiceProviderDao;
 import com.amx.jax.services.AbstractService;
+
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -46,7 +46,7 @@ public class ServiceProviderService extends AbstractService {
 	@Autowired
 	MetaData metaData;
 	
-	public List<ServiceProviderPartnerResponse> getServiceProviderPartner() {
+	public List<ServiceProviderPartnerDTO> getServiceProviderPartner() {
 		List<ServiceProviderPartner> serviceProviderPartner = serviceProviderDao.getServiceProviderPartner();
 		if(serviceProviderPartner.isEmpty()) {
 			throw new GlobalException("Service provider partner list cannot be empty");
@@ -54,11 +54,11 @@ public class ServiceProviderService extends AbstractService {
 		return convertServiceProviderPartner(serviceProviderPartner);
 		
 	}
-	private List<ServiceProviderPartnerResponse> convertServiceProviderPartner(
+	private List<ServiceProviderPartnerDTO> convertServiceProviderPartner(
 			List<ServiceProviderPartner> serviceProviderPartnerList) {
-		List<ServiceProviderPartnerResponse> output = new ArrayList<>();
+		List<ServiceProviderPartnerDTO> output = new ArrayList<>();
 		for (ServiceProviderPartner serviceProviderPartner : serviceProviderPartnerList) {
-			ServiceProviderPartnerResponse serviceProviderPartnerResponse = new ServiceProviderPartnerResponse();
+			ServiceProviderPartnerDTO serviceProviderPartnerResponse = new ServiceProviderPartnerDTO();
 			serviceProviderPartnerResponse.setRecordId(serviceProviderPartner.getRecordId());
 			serviceProviderPartnerResponse.setResourceName(serviceProviderPartner.getTpcName());
 			serviceProviderPartnerResponse.setResourceCode(serviceProviderPartner.getTpcCode());
@@ -68,7 +68,8 @@ public class ServiceProviderService extends AbstractService {
 		
 	}
 	
-	public BoolRespModel uploadServiceProviderFile(MultipartFile file,Date fileDate,String tpcCode) throws Exception {
+	public List<ServiceProviderSummaryDTO> uploadServiceProviderFile(MultipartFile file,Date fileDate,String tpcCode) throws Exception {
+		summaryValidations(fileDate, tpcCode);
 		InputStream in = file.getInputStream();
 		File currDir = new File(".");
 		String path = currDir.getAbsolutePath();
@@ -81,7 +82,7 @@ public class ServiceProviderService extends AbstractService {
 	        f.write(ch);
 	    }
 	    f.flush();
-	    f.close(); 
+	    f.close();
 	    int i,j;
 	    Workbook workbook = WorkbookFactory.create(new File(fileLocation));
 	    LocalDate today = fileDate.toLocalDate();
@@ -154,13 +155,70 @@ public class ServiceProviderService extends AbstractService {
         }
 	    
 	    serviceProviderDao.saveDataByProcedure(fileDate,tpcCode);
+	    List<ServiceProviderSummaryModel> serviceProviderSummaryModelList=serviceProviderDao.getSummary();
 	    
 	    workbook.close();
-		BoolRespModel boolRespModel = new BoolRespModel();
-		boolRespModel.setSuccess(Boolean.TRUE);
-		return boolRespModel;
+	    
+		return (convertServiceProviderSummary(serviceProviderSummaryModelList));
 		
 	}
 	
+	public List<ServiceProviderSummaryDTO> convertServiceProviderSummary(
+			List<ServiceProviderSummaryModel> serviceProviderSummaryModelList) {
+		List<ServiceProviderSummaryDTO> serviceProviderSummaryDTOList = new ArrayList<ServiceProviderSummaryDTO>();
+		for (ServiceProviderSummaryModel serviceProviderSummaryModel : serviceProviderSummaryModelList) {
+			ServiceProviderSummaryDTO serviceProviderSummaryDTO = new ServiceProviderSummaryDTO();
+			serviceProviderSummaryDTO.setSendPayIndicator(serviceProviderSummaryModel.getSendPayIndicator());
+			serviceProviderSummaryDTO.setTotalCount(serviceProviderSummaryModel.getTotalTransaction());
+			serviceProviderSummaryDTO.setCommission(serviceProviderSummaryModel.getUnmatchedCount());
+			serviceProviderSummaryDTO.setUnmatchedCount(serviceProviderSummaryModel.getUnmatchedCommission());
+			serviceProviderSummaryDTO.setExchangeGain(serviceProviderSummaryModel.getUnmatchedExchangeGain());
+
+			serviceProviderSummaryDTOList.add(serviceProviderSummaryDTO);
+		}
+		ServiceProviderSummaryDTO serviceProviderSummaryDTO = new ServiceProviderSummaryDTO();
+		if (serviceProviderSummaryModelList.size() == 2) {
+			serviceProviderSummaryDTO.setTotalTransactionCount(serviceProviderSummaryModelList.get(0)
+					.getTotalTransaction().add(serviceProviderSummaryModelList.get(1).getTotalTransaction()));
+			serviceProviderSummaryDTO.setTotalUnmatchedCount(serviceProviderSummaryModelList.get(0).getUnmatchedCount()
+					.add(serviceProviderSummaryModelList.get(1).getUnmatchedCount()));
+			serviceProviderSummaryDTO.setTotalExchangeGain(serviceProviderSummaryModelList.get(0)
+					.getUnmatchedExchangeGain().add(serviceProviderSummaryModelList.get(1).getUnmatchedExchangeGain()));
+			serviceProviderSummaryDTO.setTotalCommission(serviceProviderSummaryModelList.get(0).getUnmatchedCommission()
+					.add(serviceProviderSummaryModelList.get(1).getUnmatchedCommission()));
+
+		} else {
+			serviceProviderSummaryDTO
+					.setTotalTransactionCount(serviceProviderSummaryModelList.get(0).getTotalTransaction());
+			serviceProviderSummaryDTO
+					.setTotalUnmatchedCount(serviceProviderSummaryModelList.get(0).getUnmatchedCount());
+			serviceProviderSummaryDTO
+					.setTotalExchangeGain(serviceProviderSummaryModelList.get(0).getUnmatchedExchangeGain());
+			serviceProviderSummaryDTO
+					.setTotalCommission(serviceProviderSummaryModelList.get(0).getUnmatchedCommission());
+		}
+
+		serviceProviderSummaryDTOList.add(serviceProviderSummaryDTO);
+		return serviceProviderSummaryDTOList;
+	}
+	public void summaryValidations(Date fileDate,String tpcCode){
+		
+		Date todayDate = new Date(System.currentTimeMillis());
+		LocalDate localFileDate = fileDate.toLocalDate();
+		LocalDate localTodayDate = todayDate.toLocalDate();
+		if(localFileDate.compareTo(localTodayDate)>=0) {
+			throw new GlobalException("File Upload date is not correct");
+		}
+		int c=0;
+		List<ServiceProviderPartner> serviceProviderPartnerList = serviceProviderDao.getServiceProviderPartner();
+		for(ServiceProviderPartner serviceProviderPartner:serviceProviderPartnerList) {
+			if(!serviceProviderPartner.getTpcCode().equals(tpcCode)) {
+				c++;
+			}
+		}
+		if(c==serviceProviderPartnerList.size()) {
+			throw new GlobalException("Tpc code is not valid");
+		}
+	}
 	
 }

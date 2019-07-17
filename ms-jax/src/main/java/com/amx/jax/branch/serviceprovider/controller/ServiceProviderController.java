@@ -15,8 +15,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.amx.amxlib.constant.ApiEndpoint.ServiceProvider;
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.api.BoolRespModel;
-import com.amx.jax.response.branchuser.ServiceProviderPartnerResponse;
+import com.amx.jax.response.serviceprovider.ServiceProviderPartnerDTO;
+import com.amx.jax.response.serviceprovider.ServiceProviderSummaryDTO;
 import com.amx.jax.serviceprovider.service.ServiceProviderService;
 @RestController
 @RequestMapping(SERVICE_PROVIDER_ENDPOINT)
@@ -29,16 +29,16 @@ public class ServiceProviderController {
 	ServiceProviderService serviceProviderService;
 	
 	@RequestMapping(value = ServiceProvider.SERVICE_PROVIDER_PARTNER, method = RequestMethod.GET)
-	public AmxApiResponse<ServiceProviderPartnerResponse, Object> getServiceProviderPartner() {
-		List<ServiceProviderPartnerResponse> response = serviceProviderService.getServiceProviderPartner();
+	public AmxApiResponse<ServiceProviderPartnerDTO, Object> getServiceProviderPartner() {
+		List<ServiceProviderPartnerDTO> response = serviceProviderService.getServiceProviderPartner();
 		return AmxApiResponse.buildList(response);
 
 	}
 	
 	@RequestMapping(value= ServiceProvider.SERVICE_PROVIDER_UPLOAD_FILE, method = RequestMethod.POST)
-	public AmxApiResponse<BoolRespModel, Object> uploadServiceProviderFile(@RequestParam MultipartFile file, @RequestParam Date fileDate, @RequestParam String tpcCode) throws Exception{
-		BoolRespModel response = serviceProviderService.uploadServiceProviderFile(file,fileDate,tpcCode);
-		return AmxApiResponse.build(response);
+	public AmxApiResponse<ServiceProviderSummaryDTO, Object> uploadServiceProviderFile(@RequestParam MultipartFile file, @RequestParam Date fileDate, @RequestParam String tpcCode) throws Exception{
+		List<ServiceProviderSummaryDTO> response = serviceProviderService.uploadServiceProviderFile(file,fileDate,tpcCode);
+		return AmxApiResponse.buildList(response);
 	}
 
 }

@@ -4,7 +4,6 @@ import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.SQLException;
-
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -17,9 +16,11 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.jax.dbmodel.FileUploadTempModel;
 import com.amx.jax.dbmodel.ServiceProviderPartner;
+import com.amx.jax.dbmodel.ServiceProviderSummaryModel;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.multitenant.MultiTenantConnectionProviderImpl;
 import com.amx.jax.repository.ServiceProviderPartnerRepository;
+import com.amx.jax.repository.ServiceProviderSummaryRepository;
 import com.amx.jax.repository.ServiceProviderTempUploadRepository;
 import com.amx.jax.util.DBUtil;
 
@@ -32,9 +33,12 @@ public class ServiceProviderDao {
 	@Autowired
 	ServiceProviderTempUploadRepository serviceProviderTempUploadRepository;
 	@Autowired
+	ServiceProviderSummaryRepository serviceProviderSummaryRepository;
+	@Autowired
 	MultiTenantConnectionProviderImpl connectionProvider;
 	@Autowired
 	MetaData metaData;
+	
 	
 	public List<ServiceProviderPartner> getServiceProviderPartner() {
 		List<ServiceProviderPartner> serviceProviderPartner =  serviceProviderPartnerRepository.getServiceProviderPartner();
@@ -62,6 +66,11 @@ public class ServiceProviderDao {
 		}finally {
 			DBUtil.closeResources(cs, connection);
 		}
+	}
+	
+	public List<ServiceProviderSummaryModel> getSummary() {
+		List<ServiceProviderSummaryModel> serviceProviderSummaryModelList = serviceProviderSummaryRepository.getServiceProviderSummary();
+		return serviceProviderSummaryModelList;
 	}
 	
 }
