@@ -1,7 +1,10 @@
 package com.amx.jax.insurance;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -25,18 +28,23 @@ import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.insurance.CustomerInsurance;
+import com.amx.jax.dbmodel.insurance.InsuranceAction;
+import com.amx.jax.dbmodel.insurance.InsuranceSetupMaster;
 import com.amx.jax.dbmodel.insurance.InsurnaceClaimNominee;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.model.request.insurance.CreateOrUpdateNomineeRequest;
+import com.amx.jax.model.request.insurance.OptInOutRequest;
 import com.amx.jax.model.request.insurance.SaveInsuranceDetailRequest;
 import com.amx.jax.model.response.insurance.GigInsuranceDetail;
 import com.amx.jax.model.response.insurance.NomineeDetailDto;
 import com.amx.jax.repository.insurance.CustomerInsuranceRepository;
+import com.amx.jax.repository.insurance.InsuranceActionRepository;
 import com.amx.jax.repository.insurance.InsurnaceClaimNomineeRepository;
 import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.services.BeneficiaryService;
-import com.amx.jax.userservice.service.UserService;
+import com.amx.jax.userservice.dao.CustomerDao;
+import com.amx.jax.util.DateUtil;
 import com.amx.utils.JsonUtil;
 
 @Service
@@ -54,7 +62,9 @@ public class GigInsuranceService {
 	@Autowired
 	BeneficiaryService beneficiaryService;
 	@Autowired
-	UserService userService;
+	InsuranceActionRepository insuranceActionRepository;
+	@Autowired
+	CustomerDao customerDao;
 
 	private static final Logger log = LoggerFactory.getLogger(GigInsuranceService.class);
 
@@ -79,7 +89,7 @@ public class GigInsuranceService {
 			nomineeDetail.add(nomineeDto);
 		}
 		gigInsuranceDetail.setNomineeDetail(nomineeDetail);
-		Customer customer = userService.getCustById(customerId);
+		Customer customer = customerDao.getCustById(customerId);
 		String isGigOptedInd = customer.getPremInsurance();
 		Boolean isGigOpted = ConstantDocument.Yes.equalsIgnoreCase(isGigOptedInd);
 		gigInsuranceDetail.setIsOptIn(isGigOpted);
@@ -223,8 +233,85 @@ public class GigInsuranceService {
 		return nominees.size() > 0;
 	}
 
-	public void optInOutInsurance() {
-		// TODO Auto-generated method stub
+	public void optInOutInsurance(OptInOutRequest request) {
+		log.debug("optInOutInsurance request {}", JsonUtil.toJson(request));
+		BigDecimal customerId = metaData.getCustomerId();
+		CustomerInsurance insuranceDetail = customerInsuranceRepository.findByCustomerIdAndIsActive(customerId, ConstantDocument.Yes);
+		if (insuranceDetail == null) {
+			throw new GlobalException("Insurnace detail not found");
+		}
+		if (request.getOptIn()) {
+			optIn(request, insuranceDetail);
+		} else {
+			optOut(request, insuranceDetail);
+		}
 
+	}
+
+	private void optOut(OptInOutRequest request, CustomerInsurance insuranceDetail) {
+
+		InsuranceAction currentAction = insuranceActionRepository.findByActionId(insuranceDetail.getCurrenctActionId());
+		if (currentAction.getOptOutDate() != null) {
+			throw new GlobalException("Already opted out this insurance");
+		}
+		currentAction.setOptOutDate(new Date());
+		try {
+			currentAction.setOptOutDateAccount(new SimpleDateFormat("dd/MM/yyyy").parse(DateUtil.getCurrentAccMMYear()));
+		} catch (ParseException e) {
+			log.error("error in parsedate in optIn function");
+		}
+		currentAction.setModifiedBy(getCreatedBy());
+		currentAction.setModifiedDate(new Date());
+		currentAction.setModifiedDeviceId(metaData.getDeviceId());
+		currentAction.setModifiedDeviceType(metaData.getDeviceType());
+		insuranceActionRepository.save(currentAction);
+		Customer customer = customerDao.getCustById(metaData.getCustomerId());
+		customer.setPremInsurance(ConstantDocument.No);
+		customerDao.saveCustomer(customer);
+
+	}
+
+	private void optIn(OptInOutRequest request, CustomerInsurance insuranceDetail) {
+		InsuranceSetupMaster setup = insuranceDetail.getInsuranceSetupMaster();
+		if (!ConstantDocument.Yes.equals(setup.getOptInAllowed())) {
+			throw new GlobalException("Opt in not allowed");
+		}
+		int optInHours = setup.getOtpInHours();
+		if (!ConstantDocument.Yes.equals(setup.getOptInAllowed())) {
+			throw new GlobalException("Opt in not allowed");
+		}
+		InsuranceAction currentAction = insuranceActionRepository.findByActionId(insuranceDetail.getCurrenctActionId());
+		Date newOptInDate = new Date();
+		Calendar now = Calendar.getInstance();
+		now.setTime(currentAction.getOptInDate());
+		now.add(Calendar.HOUR, optInHours);
+		Date validOptInStartDate = now.getTime();
+		if (newOptInDate.before(validOptInStartDate)) {
+			throw new GlobalException("You can opt in again after " + optInHours + " hours from last opt date");
+		}
+		if (currentAction.getOptOutDate() != null) {
+			// create new action
+			InsuranceAction newAction = new InsuranceAction();
+			newAction.setApplicationCountryId(metaData.getCountryId());
+			newAction.setCreatedBy(getCreatedBy());
+			newAction.setCreatedDate(new Date());
+			newAction.setCreatedDeviceId(metaData.getDeviceId());
+			newAction.setCreatedDeviceType(metaData.getDeviceType());
+			newAction.setInsuranceId(insuranceDetail.getInsuranceId());
+			newAction.setOptInDate(new Date());
+			try {
+				newAction.setOptInDateAccount(new SimpleDateFormat("dd/MM/yyyy").parse(DateUtil.getCurrentAccMMYear()));
+			} catch (ParseException e) {
+				log.error("error in parsedate in optIn function");
+			}
+			insuranceActionRepository.save(newAction);
+			insuranceDetail.setCurrenctActionId(newAction.getActionId());
+			customerInsuranceRepository.save(insuranceDetail);
+			Customer customer = customerDao.getCustById(metaData.getCustomerId());
+			customer.setPremInsurance(ConstantDocument.Yes);
+			customerDao.saveCustomer(customer);
+		} else {
+			throw new GlobalException("Already opted this insurance");
+		}
 	}
 }

@@ -2,6 +2,7 @@ package com.amx.jax.insurance;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.model.request.insurance.OptInOutRequest;
 import com.amx.jax.model.request.insurance.SaveInsuranceDetailRequest;
 import com.amx.jax.model.response.insurance.GigInsuranceDetail;
 
@@ -23,5 +24,5 @@ public interface IGigInsuranceService {
 
 	AmxApiResponse<BoolRespModel, Object> saveInsuranceDetail(SaveInsuranceDetailRequest request);
 
-	AmxApiResponse<BoolRespModel, Object> optInOutInsurance();
+	AmxApiResponse<BoolRespModel, Object> optInOutInsurance(OptInOutRequest request);
 }

@@ -21,6 +21,12 @@ public class InsuranceSetupMaster {
 	@Column(name = "ISACTIVE")
 	String isActive;
 
+	@Column(name = "OPT_IN_ALLOWED")
+	String optInAllowed;
+
+	@Column(name = "OPT_IN_HOURS")
+	Integer otpInHours;
+
 	public BigDecimal getInsurnaceSetupId() {
 		return insurnaceSetupId;
 	}
@@ -44,6 +50,21 @@ public class InsuranceSetupMaster {
 	public void setIsActive(String isActive) {
 		this.isActive = isActive;
 	}
-	
-	
+
+	public String getOptInAllowed() {
+		return optInAllowed;
+	}
+
+	public void setOptInAllowed(String optInAllowed) {
+		this.optInAllowed = optInAllowed;
+	}
+
+	public Integer getOtpInHours() {
+		return otpInHours;
+	}
+
+	public void setOtpInHours(Integer otpInHours) {
+		this.otpInHours = otpInHours;
+	}
+
 }

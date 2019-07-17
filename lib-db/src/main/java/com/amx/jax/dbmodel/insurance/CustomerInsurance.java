@@ -44,6 +44,9 @@ public class CustomerInsurance {
 	@Column(name = "ISACTIVE")
 	String isActive;
 
+	@Column(name = "CURRENT_ACTION_ID")
+	BigDecimal currenctActionId;
+
 	public BigDecimal getApplicationCountryId() {
 		return applicationCountryId;
 	}
@@ -114,6 +117,14 @@ public class CustomerInsurance {
 
 	public void setInsuranceSetupMaster(InsuranceSetupMaster insuranceSetupMaster) {
 		this.insuranceSetupMaster = insuranceSetupMaster;
+	}
+
+	public BigDecimal getCurrenctActionId() {
+		return currenctActionId;
+	}
+
+	public void setCurrenctActionId(BigDecimal currenctActionId) {
+		this.currenctActionId = currenctActionId;
 	}
 
 }
