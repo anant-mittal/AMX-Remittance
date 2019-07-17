@@ -100,4 +100,7 @@ public interface CustomerRepository extends CrudRepository<Customer, BigDecimal>
 	@Query("select c from Customer c where identityInt=?1")
 	public Customer getCustomerEmailDetails(String identityInt);
 	
+	@Query("select c from Customer c where customerId=?1 and isActive='Y'")
+	public Customer getActiveCustomerDetailsByCustomerId(BigDecimal customerId);
+	
 }
