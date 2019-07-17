@@ -471,8 +471,8 @@ public class AnnualIncomeService {
 		customer.setAnnualTransactionLimitTo(incomeDto.getIncomeRangeTo());
 		customer.setAnnualTransactionUpdatedDate(new Date());
 		customer.setAnnualIncomeFrom(incomeDto.getIncomeRangeFrom().multiply(annualTransactionModelFactor));
-		customer.setAnnualIncomeTo(incomeDto.getIncomeRangeFrom().multiply(annualTransactionModelFactor));
-		customer.setAnnualIncomeFrom(incomeDto.getIncomeRangeTo().multiply(annualTransactionModelFactor));
+		customer.setAnnualIncomeTo(incomeDto.getIncomeRangeTo().multiply(annualTransactionModelFactor));
+		
 		
 		
 		repo.save(customer);
