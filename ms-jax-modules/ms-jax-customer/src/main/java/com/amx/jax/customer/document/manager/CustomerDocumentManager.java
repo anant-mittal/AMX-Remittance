@@ -103,7 +103,15 @@ public class CustomerDocumentManager {
 	}
 
 	private CustomerDocumentInfo fetchKycCustomerImage(BigDecimal customerId) {
+		Customer customer = userService.getCustById(customerId);
 		CustomerIdProof customerIdProof = customerIdProofManager.getCustomerIdProofByCustomerId(customerId);
+		if (customerIdProof == null) {
+			List<CustomerIdProof> idProofPendingCompliance = customerIdProofManager.getCustomerIdProofPendingCompliance(customer.getCustomerId(),
+					customer.getIdentityTypeId());
+			if (idProofPendingCompliance.size() > 0) {
+				customerIdProof = idProofPendingCompliance.get(0);
+			}
+		}
 		CustomerDocumentInfo customerDocumentImage = null;
 		if (customerIdProof != null && customerIdProof.getScanSystem() != null) {
 			switch (customerIdProof.getScanSystem()) {

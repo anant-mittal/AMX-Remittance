@@ -162,10 +162,11 @@ public class DatabaseScanManager implements DocumentScanManager {
 		if (docBlobUpload != null) {
 			String docImage;
 			try {
-				docImage = IoUtils.inputStreamToString(docBlobUpload.getDocContent().getBinaryStream());
-				docImage = Base64.encodeBase64String(docImage.getBytes());
+				int blobLength = (int) docBlobUpload.getDocContent().length();
+				byte[] blobAsBytes = docBlobUpload.getDocContent().getBytes(1, blobLength);
+				docImage = Base64.encodeBase64String(blobAsBytes);
 				info.setDocumentString(docImage);
-			} catch (IOException | SQLException e) {
+			} catch (SQLException e) {
 				log.error("error in getDocumentInfo", e);
 			}
 		}

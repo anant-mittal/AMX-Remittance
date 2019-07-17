@@ -206,4 +206,8 @@ public class CustomerIdProofManager {
 		customerIdProofRepository.save(existingIdProof);
 
 	}
+
+	public List<CustomerIdProof> getCustomerIdProofPendingCompliance(BigDecimal customerId, BigDecimal identityTypeId) {
+		return customerIdProofDao.getCompliancePendingCustomerIdProof(customerId, identityTypeId);
+	}
 }
