@@ -49,23 +49,38 @@ public class CustomerAddressDetailsManager {
 				fsBizComponentDataByContactTypeId.setComponentDataId(req.getContactType());
 				contactDetail.setFsBizComponentDataByContactTypeId(fsBizComponentDataByContactTypeId);
 				contactDetail.setActiveStatus(ConstantDocument.Yes);
+				contactDetail.setCreatedBy(jaxDbservice.getCreatedOrUpdatedBy());
+				contactDetail.setCreationDate(customer.getCreationDate());
+				contactDetail.setFsCustomer(customer);
+				contactDetail.setLanguageId(customer.getLanguageId());
+				contactDetail.setMobile(customer.getMobile());
+				contactDetail.setTelephoneCode(customer.getPrefixCodeMobile());
+				contactDetail.setIsWatsApp(customer.getIsMobileWhatsApp());
 			}
-			contactDetail.setFsCountryMaster(new CountryMaster(req.getCountryId()));
-			contactDetail.setFsDistrictMaster(new DistrictMaster(req.getDistrictId()));
-			contactDetail.setFsStateMaster(new StateMaster(req.getStateId()));
-			contactDetail.setFsCityMaster(new CityMaster(req.getCityId()));
-			contactDetail.setBuildingNo(req.getHouse());
-			contactDetail.setFlat(req.getFlat());
-			contactDetail.setBlock(req.getBlock());
-			contactDetail.setStreet(req.getStreet());
-			contactDetail.setFsCustomer(customer);
-			contactDetail.setLanguageId(customer.getLanguageId());
-			contactDetail.setCreatedBy(jaxDbservice.getCreatedOrUpdatedBy());
-			contactDetail.setCreationDate(customer.getCreationDate());
-
-			contactDetail.setMobile(customer.getMobile());
-			contactDetail.setTelephoneCode(customer.getPrefixCodeMobile());
-			contactDetail.setIsWatsApp(customer.getIsMobileWhatsApp());
+			if (req.getCountryId() != null) {
+				contactDetail.setFsCountryMaster(new CountryMaster(req.getCountryId()));
+			}
+			if (req.getDistrictId() != null) {
+				contactDetail.setFsDistrictMaster(new DistrictMaster(req.getDistrictId()));
+			}
+			if (req.getStateId() != null) {
+				contactDetail.setFsStateMaster(new StateMaster(req.getStateId()));
+			}
+			if (req.getCityId() != null) {
+				contactDetail.setFsCityMaster(new CityMaster(req.getCityId()));
+			}
+			if (req.getHouse() != null) {
+				contactDetail.setBuildingNo(req.getHouse());
+			}
+			if (req.getFlat() != null) {
+				contactDetail.setFlat(req.getFlat());
+			}
+			if (req.getBlock() != null) {
+				contactDetail.setBlock(req.getBlock());
+			}
+			if (req.getStreet() != null) {
+				contactDetail.setStreet(req.getStreet());
+			}
 
 		}
 		return contactDetail;

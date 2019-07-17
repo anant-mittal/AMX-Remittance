@@ -26,6 +26,7 @@ import com.amx.jax.customer.validation.CustomerManagementValidation;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerCategoryDiscountModel;
 import com.amx.jax.dbmodel.CustomerExtendedModel;
+import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
@@ -40,6 +41,7 @@ import com.amx.jax.repository.ICustomerCategoryDiscountRepo;
 import com.amx.jax.repository.ICustomerExtendedRepository;
 import com.amx.jax.repository.remittance.IIdNumberLengthCheckRepository;
 import com.amx.jax.userservice.dao.CustomerDao;
+import com.amx.jax.userservice.dao.CustomerIdProofDao;
 import com.amx.jax.userservice.manager.CustomerFlagManager;
 import com.amx.jax.userservice.manager.OnlineCustomerManager;
 import com.amx.jax.userservice.service.ContactDetailService;
@@ -80,6 +82,8 @@ public class CustomerManagementManager {
 	CustomerDao custDao;
 	@Autowired
 	CustomerUpdateManager customerUpdateManager;
+	@Autowired
+	CustomerIdProofDao customerIdProofDao;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CustomerManagementManager.class);
 
@@ -164,7 +168,7 @@ public class CustomerManagementManager {
 		if (ConstantDocument.Yes.equals(isActive)) {
 			jaxError = JaxError.CUSTOMER_ACTIVE;
 		}
-
+		JaxError statusKeyBefore = jaxError;
 		try {
 			userValidationService.validateCustIdProofs(customer.getCustomerId());
 			userValidationService.validateCustContact(customer);
@@ -172,6 +176,15 @@ public class CustomerManagementManager {
 		} catch (GlobalException ex) {
 			jaxError = (JaxError) ex.getError();
 		}
+		// compliance pending status
+		if (JaxError.NO_ID_PROOFS_AVAILABLE.equals(jaxError)) {
+			List<CustomerIdProof> compliancePendingProofs = customerIdProofDao.getCompliancePendingCustomerIdProof(customer.getCustomerId(),
+					customer.getIdentityTypeId());
+			if (compliancePendingProofs.size() > 0) {
+				jaxError = statusKeyBefore;
+			}
+		}
+
 		return jaxError;
 	}
 
