@@ -169,5 +169,8 @@ public class AmxDBConstants {
 	public static final String  VAT_CATEGORY= "OUTPUT_TAX";
 	public static final String  BENE_ACCT_VALID="BENE_ACCT_VALID";
 	
+	public static final String  COMM_INCLUDE= "I";
+	public static final String COMM_EXCLUDE="E";
+	
 	
 }
