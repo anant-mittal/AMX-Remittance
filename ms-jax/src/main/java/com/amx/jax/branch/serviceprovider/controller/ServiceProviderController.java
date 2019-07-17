@@ -2,8 +2,7 @@ package com.amx.jax.branch.serviceprovider.controller;
 
 import static com.amx.amxlib.constant.ApiEndpoint.SERVICE_PROVIDER_ENDPOINT;
 
-import java.io.IOException;
-import java.util.Date;
+import java.sql.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -37,8 +36,8 @@ public class ServiceProviderController {
 	}
 	
 	@RequestMapping(value= ServiceProvider.SERVICE_PROVIDER_UPLOAD_FILE, method = RequestMethod.POST)
-	public AmxApiResponse<BoolRespModel, Object> uploadServiceProviderFile(@RequestParam MultipartFile file, @RequestParam Date fileDate) throws Exception{
-		BoolRespModel response = serviceProviderService.uploadServiceProviderFile(file,fileDate);
+	public AmxApiResponse<BoolRespModel, Object> uploadServiceProviderFile(@RequestParam MultipartFile file, @RequestParam Date fileDate, @RequestParam String tpcCode) throws Exception{
+		BoolRespModel response = serviceProviderService.uploadServiceProviderFile(file,fileDate,tpcCode);
 		return AmxApiResponse.build(response);
 	}
 

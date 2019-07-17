@@ -5,9 +5,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
+
 import java.util.List;
 
 import org.apache.poi.ss.usermodel.Cell;
@@ -29,6 +30,7 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.dbmodel.FileUploadTempModel;
 import com.amx.jax.dbmodel.ServiceProviderPartner;
+import com.amx.jax.meta.MetaData;
 import com.amx.jax.response.branchuser.ServiceProviderPartnerResponse;
 import com.amx.jax.serviceprovider.dao.ServiceProviderDao;
 import com.amx.jax.services.AbstractService;
@@ -41,6 +43,8 @@ public class ServiceProviderService extends AbstractService {
 	Logger logger = LoggerFactory.getLogger(getClass());
 	@Autowired
 	ServiceProviderDao serviceProviderDao;
+	@Autowired
+	MetaData metaData;
 	
 	public List<ServiceProviderPartnerResponse> getServiceProviderPartner() {
 		List<ServiceProviderPartner> serviceProviderPartner = serviceProviderDao.getServiceProviderPartner();
@@ -64,7 +68,7 @@ public class ServiceProviderService extends AbstractService {
 		
 	}
 	
-	public BoolRespModel uploadServiceProviderFile(MultipartFile file,Date fileDate) throws Exception {
+	public BoolRespModel uploadServiceProviderFile(MultipartFile file,Date fileDate,String tpcCode) throws Exception {
 		InputStream in = file.getInputStream();
 		File currDir = new File(".");
 		String path = currDir.getAbsolutePath();
@@ -80,7 +84,7 @@ public class ServiceProviderService extends AbstractService {
 	    f.close(); 
 	    int i,j;
 	    Workbook workbook = WorkbookFactory.create(new File(fileLocation));
-	    LocalDate today = LocalDate.now();
+	    LocalDate today = fileDate.toLocalDate();
 	    int year = today.getYear();
 	    int month = today.getMonthValue();
 	    int day = today.getDayOfMonth();
@@ -141,8 +145,9 @@ public class ServiceProviderService extends AbstractService {
             Cell cell11 = row.getCell(11);
             String cellValue11 = dataFormatter.formatCellValue(cell11);
             fileUploadTempModel.setMtcnNo(cellValue11);
-            serviceProviderDao.saveFileUploadTemp(fileUploadTempModel);
-            logger.info("\n");
+            fileUploadTempModel.setApplicationCountryId(metaData.getCountryId());
+            serviceProviderDao.saveFileUploadTemp(fileUploadTempModel,fileDate,tpcCode);
+            
         }
 	    
 	    
