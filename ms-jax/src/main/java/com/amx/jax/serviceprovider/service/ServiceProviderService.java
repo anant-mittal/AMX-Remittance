@@ -106,8 +106,9 @@ public class ServiceProviderService extends AbstractService {
 	    		j=4;
 	    	}
 	    }
-	    FileUploadTempModel fileUploadTempModel = new FileUploadTempModel();
-	    for(i=1;i<sheet.getLastRowNum();i++) {
+	    
+	    for(i=1;i<=sheet.getLastRowNum();i++) {
+	    	FileUploadTempModel fileUploadTempModel = new FileUploadTempModel();
 	    	Row row = sheet.getRow(i);
 	    	Cell cell0 = row.getCell(0);
 	    	String cellValue0 = dataFormatter.formatCellValue(cell0);
@@ -146,11 +147,13 @@ public class ServiceProviderService extends AbstractService {
             String cellValue11 = dataFormatter.formatCellValue(cell11);
             fileUploadTempModel.setMtcnNo(cellValue11);
             fileUploadTempModel.setApplicationCountryId(metaData.getCountryId());
-            serviceProviderDao.saveFileUploadTemp(fileUploadTempModel,fileDate,tpcCode);
+            fileUploadTempModel.setUploadDate(fileDate);
+            fileUploadTempModel.setTpcCode(tpcCode);
+            serviceProviderDao.saveFileUploadTemp(fileUploadTempModel);
             
         }
 	    
-	    
+	    serviceProviderDao.saveDataByProcedure(fileDate,tpcCode);
 	    
 	    workbook.close();
 		BoolRespModel boolRespModel = new BoolRespModel();

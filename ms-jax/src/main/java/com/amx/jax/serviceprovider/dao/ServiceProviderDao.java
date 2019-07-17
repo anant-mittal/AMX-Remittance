@@ -21,6 +21,7 @@ import com.amx.jax.meta.MetaData;
 import com.amx.jax.multitenant.MultiTenantConnectionProviderImpl;
 import com.amx.jax.repository.ServiceProviderPartnerRepository;
 import com.amx.jax.repository.ServiceProviderTempUploadRepository;
+import com.amx.jax.util.DBUtil;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -40,11 +41,11 @@ public class ServiceProviderDao {
 		return serviceProviderPartner;
 		
 	}
-	public void saveFileUploadTemp(FileUploadTempModel fileUploadTempModel, Date fileUploadDate, String tpcCode) {
+	public void saveFileUploadTemp(FileUploadTempModel fileUploadTempModel) {
 		
 		serviceProviderTempUploadRepository.save(fileUploadTempModel);
-		
-		
+	}
+	public void saveDataByProcedure(Date fileUploadDate, String tpcCode) {
 		Connection connection = null;
 		CallableStatement cs = null;
 		try {
@@ -54,13 +55,13 @@ public class ServiceProviderDao {
 			cs.setBigDecimal(1, metaData.getCountryId());
 			cs.setString(2, tpcCode);
 			cs.setDate(3, fileUploadDate);
-			cs.execute();
+			cs.executeUpdate();
 			
 		}catch(DataAccessException | SQLException e) {
 			logger.info("Exception in procedure to save temporary data" + e.getMessage());
+		}finally {
+			DBUtil.closeResources(cs, connection);
 		}
-		
-		
 	}
 	
 }
