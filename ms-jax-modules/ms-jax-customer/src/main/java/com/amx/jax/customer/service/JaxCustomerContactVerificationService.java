@@ -99,6 +99,9 @@ public class JaxCustomerContactVerificationService extends AbstractService {
 			logger.info("Customer Data ------ : " +cv.toString());
 			cv.setVerificationStatus(ConstantDocument.Yes);
 			customerVerificationRepository.save(cv);
+			CustomerOnlineRegistration customerOnlineRegistration = onlineCustRepo.getLoginCustomersDeatilsById(identityId);
+			customerOnlineRegistration.setStatus("Y");
+			onlineCustRepo.save(customerOnlineRegistration);
 		}else if(customer.get(0).getEmailVerified()==Status.N) {
 			//@Radhika
 			throw new GlobalException(JaxError.EMAIL_NOT_VERIFIED, "Email id is not verified . Please wait for 24 hrs");
