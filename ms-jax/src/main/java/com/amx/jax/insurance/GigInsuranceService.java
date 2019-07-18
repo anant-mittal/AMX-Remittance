@@ -6,7 +6,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -38,6 +40,9 @@ import com.amx.jax.model.request.insurance.OptInOutRequest;
 import com.amx.jax.model.request.insurance.SaveInsuranceDetailRequest;
 import com.amx.jax.model.response.insurance.GigInsuranceDetail;
 import com.amx.jax.model.response.insurance.NomineeDetailDto;
+import com.amx.jax.postman.PostManService;
+import com.amx.jax.postman.model.Email;
+import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.repository.insurance.CustomerInsuranceRepository;
 import com.amx.jax.repository.insurance.InsuranceActionRepository;
 import com.amx.jax.repository.insurance.InsurnaceClaimNomineeRepository;
@@ -65,6 +70,8 @@ public class GigInsuranceService {
 	InsuranceActionRepository insuranceActionRepository;
 	@Autowired
 	CustomerDao customerDao;
+	@Autowired
+	PostManService postManService;
 
 	private static final Logger log = LoggerFactory.getLogger(GigInsuranceService.class);
 
@@ -268,7 +275,21 @@ public class GigInsuranceService {
 		Customer customer = customerDao.getCustById(metaData.getCustomerId());
 		customer.setPremInsurance(ConstantDocument.No);
 		customerDao.saveCustomer(customer);
+		sendOptOutNotification(customer);
+	}
 
+	private void sendOptOutNotification(Customer customer) {
+		Email email = new Email();
+		Map<String, Object> modeldata = new HashMap<String, Object>();
+		Map<String, Object> wrapper = new HashMap<String, Object>();
+		modeldata.put("customer", customer.getFirstName() + " " + customer.getLastName());
+		modeldata.put("optoutby", "C");
+		wrapper.put("data", modeldata);
+		email.setModel(wrapper);
+		email.setITemplate(TemplatesMX.POLICY_OPTOUT_CUSTOMER);
+		email.setHtml(true);
+		email.addTo(customer.getEmail());
+		postManService.sendEmail(email);
 	}
 
 	private void optIn(OptInOutRequest request, CustomerInsurance insuranceDetail) {
