@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.amxlib.exception.jax.UserNotFoundException;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.jax.async.ExecutorConfig;
 import com.amx.jax.constant.ConstantDocument;
@@ -89,8 +90,14 @@ public class JaxCustomerContactVerificationService extends AbstractService {
 		}
 	}
 	
+	
+	
 	public void validateEmailVerification(String identityId) {
 		List<Customer> customer = customerRepository.findActiveCustomers(identityId);
+		CustomerOnlineRegistration customerOnlineRegistration = onlineCustRepo.getLoginCustomersDeatilsById(identityId);
+		if(customerOnlineRegistration.getStatus().equalsIgnoreCase("N")) {
+			throw new GlobalException("Customer is not active Online");
+		}
 		
 		if(customer.get(0).getEmailVerified()==Status.Y) {
 			CustomerVerification cv = customerVerificationService.getVerification(customer.get(0).getCustomerId(),
@@ -99,7 +106,6 @@ public class JaxCustomerContactVerificationService extends AbstractService {
 			logger.info("Customer Data ------ : " +cv.toString());
 			cv.setVerificationStatus(ConstantDocument.Yes);
 			customerVerificationRepository.save(cv);
-			CustomerOnlineRegistration customerOnlineRegistration = onlineCustRepo.getLoginCustomersDeatilsById(identityId);
 			customerOnlineRegistration.setStatus("Y");
 			onlineCustRepo.save(customerOnlineRegistration);
 		}else if(customer.get(0).getEmailVerified()==Status.N) {
