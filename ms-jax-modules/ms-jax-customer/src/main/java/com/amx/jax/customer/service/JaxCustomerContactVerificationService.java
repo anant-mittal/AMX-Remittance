@@ -99,7 +99,7 @@ public class JaxCustomerContactVerificationService extends AbstractService {
 			throw new GlobalException("Customer is not active Online");
 		}
 		
-		if(customer.get(0).getEmailVerified()==Status.Y) {
+		else if(customer.get(0).getEmailVerified()==Status.Y) {
 			CustomerVerification cv = customerVerificationService.getVerification(customer.get(0).getCustomerId(),
 					CustomerVerificationType.EMAIL);
 			logger.info("Customer Mail ------ : ");
