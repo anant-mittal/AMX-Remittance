@@ -109,9 +109,9 @@ public class CustomerController implements ICustomerService {
 			jaxCustomerContactVerificationService.sendEmailVerifyLinkOnReg(customerModel);
 		}
 		ApiResponse response = userService.saveCustomer(customerModel);
-		/*if(StringUtils.isEmpty(cust.getEmail())) {
+		if(StringUtils.isEmpty(cust.getEmail())) {
 			jaxCustomerContactVerificationService.sendEmailVerifyLinkOnReg(customerModel);
-		}*/
+		}
 		return response;
 	}
 
