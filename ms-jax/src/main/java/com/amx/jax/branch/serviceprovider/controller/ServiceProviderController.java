@@ -14,14 +14,17 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.amx.amxlib.constant.ApiEndpoint.ServiceProvider;
+import com.amx.jax.IServiceProviderService;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.response.serviceprovider.ServiceProviderDefaultDateDTO;
 import com.amx.jax.response.serviceprovider.ServiceProviderPartnerDTO;
 import com.amx.jax.response.serviceprovider.ServiceProviderSummaryDTO;
 import com.amx.jax.serviceprovider.service.ServiceProviderService;
 @RestController
 @RequestMapping(SERVICE_PROVIDER_ENDPOINT)
 @SuppressWarnings("rawtypes")
-public class ServiceProviderController {
+public class ServiceProviderController implements IServiceProviderService{
 
 	Logger logger = Logger.getLogger(ServiceProviderController.class);
 	
@@ -40,5 +43,19 @@ public class ServiceProviderController {
 		List<ServiceProviderSummaryDTO> response = serviceProviderService.uploadServiceProviderFile(file,fileDate,tpcCode);
 		return AmxApiResponse.buildList(response);
 	}
+	
+	@RequestMapping(value= ServiceProvider.SERVICE_PROVIDER_CONFIRMATION, method = RequestMethod.POST)
+	public AmxApiResponse<BoolRespModel, Object> serviceProviderConfirmation(@RequestParam Date fileDate, @RequestParam String tpcCode){
+		BoolRespModel boolRespModel = serviceProviderService.serviceProviderConfirmation(fileDate,tpcCode);
+		return AmxApiResponse.build(boolRespModel);
+	}
+	
+	@RequestMapping(value=ServiceProvider.SERVICE_PROVIDER_DEFAULT_DATE, method=RequestMethod.POST)
+	public AmxApiResponse<ServiceProviderDefaultDateDTO, Object> getServiceProviderDefaultDate(@RequestParam String tpcCode){
+		ServiceProviderDefaultDateDTO defaultUploadDate = serviceProviderService.getServiceProviderDefaultDate(tpcCode);
+		return AmxApiResponse.build(defaultUploadDate);
+	}
+	
+	
 
 }

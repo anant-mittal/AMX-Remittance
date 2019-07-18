@@ -204,6 +204,10 @@ public class ApiEndpoint {
 		public static final String SERVICE_PROVIDER_PARTNER = "/service-provider-partner";
 		
 		public static final String SERVICE_PROVIDER_UPLOAD_FILE="/service-provider-upload-file";
+		
+		public static final String SERVICE_PROVIDER_CONFIRMATION="/service-provider-confirmation";
+		
+		public static final String SERVICE_PROVIDER_DEFAULT_DATE = "/service-provider-default-date";
 	}
 
 }

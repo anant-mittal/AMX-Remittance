@@ -25,10 +25,12 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.dbmodel.FileUploadTempModel;
 import com.amx.jax.dbmodel.ServiceProviderPartner;
 import com.amx.jax.dbmodel.ServiceProviderSummaryModel;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.response.serviceprovider.ServiceProviderDefaultDateDTO;
 import com.amx.jax.response.serviceprovider.ServiceProviderPartnerDTO;
 import com.amx.jax.response.serviceprovider.ServiceProviderSummaryDTO;
 import com.amx.jax.serviceprovider.dao.ServiceProviderDao;
@@ -156,7 +158,7 @@ public class ServiceProviderService extends AbstractService {
 	    
 	    serviceProviderDao.saveDataByProcedure(fileDate,tpcCode);
 	    List<ServiceProviderSummaryModel> serviceProviderSummaryModelList=serviceProviderDao.getSummary();
-	    
+	    serviceProviderDao.deleteTemporaryData();
 	    workbook.close();
 	    
 		return (convertServiceProviderSummary(serviceProviderSummaryModelList));
@@ -219,6 +221,20 @@ public class ServiceProviderService extends AbstractService {
 		if(c==serviceProviderPartnerList.size()) {
 			throw new GlobalException("Tpc code is not valid");
 		}
+	}
+	
+	public BoolRespModel serviceProviderConfirmation(Date fileDate,String tpcCode) {
+		serviceProviderDao.serviceProviderConfirmation(fileDate,tpcCode);
+		BoolRespModel boolRespModel = new BoolRespModel();
+		boolRespModel.setSuccess(Boolean.TRUE);
+		return boolRespModel;
+	}
+	
+	public ServiceProviderDefaultDateDTO getServiceProviderDefaultDate(String tpcCode) {
+		ServiceProviderDefaultDateDTO serviceProviderDefaultDateDTO = new ServiceProviderDefaultDateDTO();
+		Date defaultUploadDate = serviceProviderDao.getServiceProviderDefaultDate(tpcCode);
+		serviceProviderDefaultDateDTO.setDefaultUploadDate(defaultUploadDate);
+		return serviceProviderDefaultDateDTO;
 	}
 	
 }
