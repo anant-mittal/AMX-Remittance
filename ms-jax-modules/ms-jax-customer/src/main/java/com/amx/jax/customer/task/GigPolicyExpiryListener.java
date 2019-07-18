@@ -1,6 +1,7 @@
 package com.amx.jax.customer.task;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -60,7 +61,9 @@ public class GigPolicyExpiryListener implements ITunnelSubscriber<DBEvent> {
 		String type = ArgUtil.parseAsString(event.getData().get(TYPE));
 		BigDecimal trnxLeft = ArgUtil.parseAsBigDecimal(event.getData().get(TRNX_LEFT));
 		String langId = ArgUtil.parseAsString(event.getData().get(LANG_ID));
-
+		SimpleDateFormat formatter = new SimpleDateFormat("dd MMMM yyyy"); 
+		
+		String policyEndDatestr = formatter.format(policyEndDate) ;
 		LOGGER.debug("Customer id is " + custId);
 		Customer c = customerRepository.getCustomerByCustomerIdAndIsActive(custId, "Y");
 		LOGGER.debug("Customer object is " + c.toString());
@@ -81,7 +84,7 @@ public class GigPolicyExpiryListener implements ITunnelSubscriber<DBEvent> {
 		modeldata.put("customer", custName);
 		modeldata.put("type", type);
 		modeldata.put("trnxleft", trnxLeft);
-		modeldata.put("policyenddate", policyEndDate);
+		modeldata.put("policyenddate", policyEndDatestr);
 
 		for (Map.Entry<String, Object> entry : modeldata.entrySet()) {
 			LOGGER.debug("KeyModel = " + entry.getKey() + ", ValueModel = " + entry.getValue());

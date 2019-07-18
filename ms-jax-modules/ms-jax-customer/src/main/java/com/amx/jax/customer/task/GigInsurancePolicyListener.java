@@ -1,6 +1,7 @@
 package com.amx.jax.customer.task;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -59,8 +60,11 @@ public class GigInsurancePolicyListener implements ITunnelSubscriber<DBEvent> {
 		BigDecimal custId = ArgUtil.parseAsBigDecimal(event.getData().get(CUST_ID));
 		Date policyStartDate = ArgUtil.parseAsSimpleDate(event.getData().get(EFF_DT));
 		Date policyEndDate = ArgUtil.parseAsSimpleDate(event.getData().get(EXP_DT));
-
 		String langId = ArgUtil.parseAsString(event.getData().get(LANG_ID));
+		
+		SimpleDateFormat formatter = new SimpleDateFormat("dd MMMM yyyy"); 
+		String policyStartDatestr = formatter.format(policyStartDate) ;
+		String policyEndDatestr = formatter.format(policyEndDate) ;
 
 		LOGGER.debug("Customer id is " + custId);
 		Customer c = customerRepository.getCustomerByCustomerIdAndIsActive(custId, "Y");
@@ -80,8 +84,8 @@ public class GigInsurancePolicyListener implements ITunnelSubscriber<DBEvent> {
 		Map<String, Object> modeldata = new HashMap<String, Object>();
 		modeldata.put("to", emailId);
 		modeldata.put("customer", custName);
-		modeldata.put("policystartdate", policyStartDate);
-		modeldata.put("policyenddate", policyEndDate);
+		modeldata.put("policystartdate", policyStartDatestr);
+		modeldata.put("policyenddate", policyEndDatestr);
 
 		for (Map.Entry<String, Object> entry : modeldata.entrySet()) {
 			LOGGER.debug("KeyModel = " + entry.getKey() + ", ValueModel = " + entry.getValue());
