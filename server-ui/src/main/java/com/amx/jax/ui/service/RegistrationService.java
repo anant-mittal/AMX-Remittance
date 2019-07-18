@@ -21,6 +21,7 @@ import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseMessage;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.session.UserSession;
+import com.amx.utils.ArgUtil;
 
 /**
  * The Class RegistrationService.
@@ -169,7 +170,7 @@ public class RegistrationService {
 		sessionService.authorize(model, false); // TODO:- validate this
 		sessionService.getGuestSession().getState().setValidMotp(true);
 
-		if (model.getEmail() != null) {
+		if (ArgUtil.isEmpty(model.getEmail())) {
 			sessionService.getGuestSession().getState().setPresentEmail(true);
 		} else {
 			ApiResponse<QuestModelDTO> response2 = jaxClient.setDefaults().getUserclient()
@@ -211,7 +212,7 @@ public class RegistrationService {
 		sessionService.authorize(model, false); // TODO:- validate this
 		sessionService.getGuestSession().getState().setValidMotp(true);
 
-		if (model.getEmail() != null) {
+		if (!ArgUtil.isEmpty(model.getEmail())) {
 			sessionService.getGuestSession().getState().setPresentEmail(true);
 		} else {
 			ApiResponse<QuestModelDTO> response2 = jaxClient.setDefaults().getUserclient()
@@ -346,7 +347,7 @@ public class RegistrationService {
 		jaxClient.setDefaults().getUserclient().saveCredentials(loginId, password, mOtp, eOtp, email).getResult();
 
 		userService.updateCustoemrModel();
-		
+
 		if (doLogin) {
 			sessionService.authorize(sessionService.getGuestSession().getCustomerModel(), true);
 			jaxClient.getUserclient().customerLoggedIn(sessionService.getAppDevice().getUserDevice());
