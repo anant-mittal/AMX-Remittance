@@ -150,7 +150,7 @@ public class CustomerController implements ICustomerService {
 		List<ContactType> channel = new ArrayList<>();
 		channel.add(ContactType.SMS_EMAIL);
 		response = userService.sendOtpForCivilId(civilId, channel, null, null);
-		}else if(customerOnlineRegistration.getStatus().equalsIgnoreCase("N") && (customerdetails.getEmailVerified().equals(Status.N))){
+		}else if(customerOnlineRegistration.getStatus().equalsIgnoreCase("N") && (customerdetails.getEmailVerified().equals(Status.N))||(customerdetails.getEmailVerified().equals(Status.N)&&customerOnlineRegistration.getStatus().equalsIgnoreCase("Y"))){
 			throw new GlobalException(JaxError.EMAIL_NOT_VERIFIED, "Email id is not verified.Kinldy verify");
 		}
 		
