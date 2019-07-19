@@ -87,7 +87,7 @@ public class JaxAuthContext {
 		return secAns;
 	}
 
-	public static String contactType(String contactType) {
+	public static ContactType contactType(ContactType contactType) {
 		if (ArgUtil.isEmpty(contactType)) {
 			return getContactType();
 		}
