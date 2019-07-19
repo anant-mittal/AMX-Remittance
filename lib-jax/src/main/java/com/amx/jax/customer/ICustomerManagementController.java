@@ -4,6 +4,7 @@ import java.text.ParseException;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.model.customer.CreateCustomerInfoRequest;
 import com.amx.jax.model.customer.DuplicateCustomerDto;
 import com.amx.jax.model.customer.IdentityTypeDto;
@@ -14,6 +15,7 @@ import com.amx.jax.model.customer.document.UploadCustomerDocumentResponse;
 import com.amx.jax.model.customer.document.UploadCustomerKycRequest;
 import com.amx.jax.model.customer.document.UploadCustomerKycResponse;
 import com.amx.jax.model.request.CustomerPersonalDetail;
+import com.amx.jax.model.request.VerifyCustomerContactRequest;
 import com.amx.jax.model.request.customer.UpdateCustomerInfoRequest;
 import com.amx.jax.model.response.CustomerInfo;
 import com.amx.libjax.model.jaxfield.JaxFieldDto;
@@ -33,6 +35,7 @@ public interface ICustomerManagementController {
 		public static final String DOCUMENT_TYPE_GET = PREFIX + "/list-document-type";
 		public static final String DOCUMENT_FIELD_GET = PREFIX + "/list-document-fields";
 		public static final String DOCUMENT_DYNAMIC_FIELD_LIST = PREFIX + "/get-document-dynamic-field-list";
+		public static final String VERIFY_CONTACT = PREFIX + "/verify-contact";
 	}
 
 	public static class ApiParams {
@@ -67,5 +70,7 @@ public interface ICustomerManagementController {
 	AmxApiResponse<CustomerDocumentTypeDto, Object> getDocumentType(String documentCategory);
 
 	AmxApiResponse<JaxFieldDto, Object> getDocumentFields(String documentCategory, String documentType);
+
+	AmxApiResponse<BoolRespModel, Object> verifyContact(VerifyCustomerContactRequest request);
 
 }

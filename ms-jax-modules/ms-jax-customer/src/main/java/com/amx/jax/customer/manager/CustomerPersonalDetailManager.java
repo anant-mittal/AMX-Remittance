@@ -1,5 +1,6 @@
 package com.amx.jax.customer.manager;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,14 +15,18 @@ import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerContactVerification;
 import com.amx.jax.dict.ContactType;
+import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.UpdateCustomerPersonalDetailRequest;
+import com.amx.jax.model.request.VerifyCustomerContactRequest;
 import com.amx.jax.scope.TenantContext;
 import com.amx.jax.services.JaxDBService;
 import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.userservice.dao.CustomerDao;
+import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.userservice.service.CustomerValidationContext.CustomerValidation;
 import com.amx.jax.util.AmxDBConstants.Status;
 import com.amx.jax.validation.CountryMetaValidation;
+import com.amx.utils.JsonUtil;
 
 @Component
 public class CustomerPersonalDetailManager {
@@ -38,12 +43,15 @@ public class CustomerPersonalDetailManager {
 	CustomerContactVerificationManager customerContactVerificationManager;
 	@Autowired
 	JaxNotificationService jaxNotificationService;
+	@Autowired
+	MetaData metaData;
+	@Autowired
+	UserService userService;
 
 	private static final Logger log = LoggerFactory.getLogger(CustomerPersonalDetailManager.class);
 
 	@Transactional
 	public void updateCustomerPersonalDetail(Customer customer, UpdateCustomerPersonalDetailRequest req) {
-
 		if (req.getDateOfBirth() != null) {
 			customer.setDateOfBirth(req.getDateOfBirth());
 		}
@@ -77,6 +85,17 @@ public class CustomerPersonalDetailManager {
 		jaxNotificationService.sendCustomerVerificationNotification(cvs, customer);
 		customer.setUpdatedBy(jaxDbService.getCreatedOrUpdatedBy());
 		customerDao.saveCustomer(customer);
+	}
+
+	@Transactional
+	public void verifyContact(VerifyCustomerContactRequest request) {
+		log.debug("in verifyContact with contactType {}", JsonUtil.toJson(request));
+		BigDecimal customerId = metaData.getCustomerId();
+		Customer customer = userService.getCustById(customerId);
+		UpdateCustomerPersonalDetailRequest updateRequest = new UpdateCustomerPersonalDetailRequest();
+		updateRequest.setEmail(request.getEmail());
+		updateRequest.setMobile(request.getMobile());
+		updateCustomerPersonalDetail(customer, updateRequest);
 	}
 
 }

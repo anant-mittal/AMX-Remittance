@@ -3,8 +3,6 @@
  */
 package com.amx.jax.client.customer;
 
-import java.text.ParseException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +25,7 @@ import com.amx.jax.model.customer.document.UploadCustomerDocumentResponse;
 import com.amx.jax.model.customer.document.UploadCustomerKycRequest;
 import com.amx.jax.model.customer.document.UploadCustomerKycResponse;
 import com.amx.jax.model.request.CustomerPersonalDetail;
+import com.amx.jax.model.request.VerifyCustomerContactRequest;
 import com.amx.jax.model.request.customer.UpdateCustomerInfoRequest;
 import com.amx.jax.model.response.CustomerInfo;
 import com.amx.jax.rest.RestService;
@@ -203,6 +202,18 @@ public class CustomerManagementClient implements ICustomerManagementController {
 					});
 		} catch (Exception ae) {
 			LOGGER.error("exception in getDocumentFields : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}
+	}
+
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> verifyContact(VerifyCustomerContactRequest request) {
+		try {
+			return restService.ajax(appConfig.getJaxURL()).path(ApiPath.VERIFY_CONTACT).meta(new JaxMetaInfo()).post(request)
+					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
+					});
+		} catch (Exception ae) {
+			LOGGER.error("exception in verifyContact : ", ae);
 			return JaxSystemError.evaluate(ae);
 		}
 	}

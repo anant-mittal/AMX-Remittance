@@ -1,6 +1,18 @@
 package com.amx.jax.customer.api;
 
-import static com.amx.jax.customer.ICustomerManagementController.ApiPath.*;
+import static com.amx.jax.customer.ICustomerManagementController.ApiPath.CREATE_CUSTOMER;
+import static com.amx.jax.customer.ICustomerManagementController.ApiPath.DOCUMENT_CATEGORY_GET;
+import static com.amx.jax.customer.ICustomerManagementController.ApiPath.DOCUMENT_FIELD_GET;
+import static com.amx.jax.customer.ICustomerManagementController.ApiPath.DOCUMENT_TYPE_GET;
+import static com.amx.jax.customer.ICustomerManagementController.ApiPath.DUPLICATE_CUSTOMER_CHECK;
+import static com.amx.jax.customer.ICustomerManagementController.ApiPath.GET_IDENTITY_TPYES;
+import static com.amx.jax.customer.ICustomerManagementController.ApiPath.LOCK_ONLINE_CUSTOMER;
+import static com.amx.jax.customer.ICustomerManagementController.ApiPath.UNLOCK_ONLINE_CUSTOMER;
+import static com.amx.jax.customer.ICustomerManagementController.ApiPath.UPDATE_CUSTOMER;
+import static com.amx.jax.customer.ICustomerManagementController.ApiPath.UPLOAD_CUSTOMER_DOCUMENT;
+import static com.amx.jax.customer.ICustomerManagementController.ApiPath.UPLOAD_CUSTOMER_KYC;
+import static com.amx.jax.customer.ICustomerManagementController.ApiPath.VERIFY_CONTACT;
+
 import java.text.ParseException;
 import java.util.List;
 
@@ -21,6 +33,7 @@ import com.amx.jax.customer.ICustomerManagementController;
 import com.amx.jax.customer.document.manager.CustomerDocMasterManager;
 import com.amx.jax.customer.document.manager.CustomerDocumentManager;
 import com.amx.jax.customer.manager.CustomerManagementManager;
+import com.amx.jax.customer.manager.CustomerPersonalDetailManager;
 import com.amx.jax.customer.service.CustomerService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.customer.CreateCustomerInfoRequest;
@@ -33,6 +46,7 @@ import com.amx.jax.model.customer.document.UploadCustomerDocumentResponse;
 import com.amx.jax.model.customer.document.UploadCustomerKycRequest;
 import com.amx.jax.model.customer.document.UploadCustomerKycResponse;
 import com.amx.jax.model.request.CustomerPersonalDetail;
+import com.amx.jax.model.request.VerifyCustomerContactRequest;
 import com.amx.jax.model.request.customer.UpdateCustomerInfoRequest;
 import com.amx.jax.model.response.CustomerInfo;
 import com.amx.jax.userservice.manager.OnlineCustomerManager;
@@ -54,6 +68,8 @@ public class CustomerManagementController implements ICustomerManagementControll
 	MetaData metaData;
 	@Autowired
 	CustomerDocMasterManager customerDocMasterManager;
+	@Autowired
+	CustomerPersonalDetailManager customerPersonalDetailManager;
 
 	private static final Logger log = LoggerFactory.getLogger(CustomerManagementController.class);
 
@@ -144,5 +160,12 @@ public class CustomerManagementController implements ICustomerManagementControll
 			@RequestParam(name = ApiParams.DOCUMENT_TYPE) String documentType) {
 		List<JaxFieldDto> list = customerDocMasterManager.getDocumentFields(documentCategory, documentType);
 		return AmxApiResponse.buildList(list);
+	}
+
+	@Override
+	@RequestMapping(path = VERIFY_CONTACT, method = { RequestMethod.POST })
+	public AmxApiResponse<BoolRespModel, Object> verifyContact(@RequestBody VerifyCustomerContactRequest request) {
+		customerPersonalDetailManager.verifyContact(request);
+		return AmxApiResponse.build(new BoolRespModel());
 	}
 }
