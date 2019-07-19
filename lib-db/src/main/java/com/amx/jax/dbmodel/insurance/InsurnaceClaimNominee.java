@@ -19,7 +19,7 @@ public class InsurnaceClaimNominee {
 	BigDecimal applicationCountryId;
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "EX_NOMINEE_SEQ")
-	@SequenceGenerator(name = "EX_NOMINEE_SEQ", allocationSize = 1, sequenceName="EX_NOMINEE_SEQ")
+	@SequenceGenerator(name = "EX_NOMINEE_SEQ", allocationSize = 1, sequenceName = "EX_NOMINEE_SEQ")
 	@Column(name = "NOMINEE_ID")
 	BigDecimal nomineeId;
 	@Column(name = "CUSTOMER_ID")
@@ -44,6 +44,8 @@ public class InsurnaceClaimNominee {
 	String modifiedDeviceId;
 	@Column(name = "MODIFIED_DVCTYP")
 	String modifiedDeviceType;
+	@Column(name = "CREATED_DVCTYP")
+	String createdDeviceType;
 
 	public BigDecimal getApplicationCountryId() {
 		return applicationCountryId;
@@ -147,6 +149,14 @@ public class InsurnaceClaimNominee {
 
 	public void setModifiedDeviceType(String modifiedDeviceType) {
 		this.modifiedDeviceType = modifiedDeviceType;
+	}
+
+	public String getCreatedDeviceType() {
+		return createdDeviceType;
+	}
+
+	public void setCreatedDeviceType(String createdDeviceType) {
+		this.createdDeviceType = createdDeviceType;
 	}
 
 }

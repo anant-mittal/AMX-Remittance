@@ -153,6 +153,7 @@ public class GigInsuranceService {
 			newNominee.setCustomerId(metaData.getCustomerId());
 			newNominee.setIsActive(ConstantDocument.Yes);
 			newNominee.setSharePercent(new BigDecimal(i.getPercentage()));
+			newNominee.setCreatedDeviceType(metaData.getDeviceType());
 			return newNominee;
 		}).collect(Collectors.toList());
 		log.debug("adding {} nominees ", newNomineesEntity.size());
@@ -274,6 +275,7 @@ public class GigInsuranceService {
 		insuranceActionRepository.save(currentAction);
 		Customer customer = customerDao.getCustById(metaData.getCustomerId());
 		customer.setPremInsurance(ConstantDocument.No);
+		customer.setMedicalInsuranceInd(ConstantDocument.No);
 		customerDao.saveCustomer(customer);
 		sendOptOutNotification(customer);
 	}
