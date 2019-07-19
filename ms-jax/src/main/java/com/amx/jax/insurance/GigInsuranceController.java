@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.client.insurance.IGigInsuranceService;
 import com.amx.jax.model.request.insurance.OptInOutRequest;
 import com.amx.jax.model.request.insurance.SaveInsuranceDetailRequest;
 import com.amx.jax.model.response.insurance.GigInsuranceDetail;

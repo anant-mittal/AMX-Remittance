@@ -1,4 +1,4 @@
-package com.amx.jax.insurance;
+package com.amx.jax.client.insurance;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
