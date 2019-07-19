@@ -56,7 +56,8 @@ public class GigInsurancePolicyListener implements ITunnelSubscriber<DBEvent> {
 	public void onMessage(String channel, DBEvent event) {
 
 		LOGGER.info("======onMessage1==={} ====  {}", channel, JsonUtil.toJson(event));
-
+		
+		LOGGER.info("Data from db is "+event.getData());
 		BigDecimal custId = ArgUtil.parseAsBigDecimal(event.getData().get(CUST_ID));
 		LOGGER.info("customer id is "+custId);
 		Date policyStartDate = ArgUtil.parseAsSimpleDate(event.getData().get(EFF_DT));
