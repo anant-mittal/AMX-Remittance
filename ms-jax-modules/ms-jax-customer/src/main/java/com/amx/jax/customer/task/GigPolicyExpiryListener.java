@@ -29,6 +29,7 @@ import com.amx.jax.tunnel.TunnelEventMapping;
 import com.amx.jax.tunnel.TunnelEventXchange;
 import com.amx.jax.userservice.manager.CustomerFlagManager;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.DateUtil;
 import com.amx.utils.JsonUtil;
 
 @TunnelEventMapping(topic = AmxTunnelEvents.Names.INS_EXPIRY, scheme = TunnelEventXchange.TASK_WORKER)
@@ -57,13 +58,19 @@ public class GigPolicyExpiryListener implements ITunnelSubscriber<DBEvent> {
 		LOGGER.debug("======onMessage1==={} ====  {}", channel, JsonUtil.toJson(event));
 
 		BigDecimal custId = ArgUtil.parseAsBigDecimal(event.getData().get(CUST_ID));
-		Date policyEndDate = ArgUtil.parseAsSimpleDate(event.getData().get(EXP_DT));
+		String policyEndDate = ArgUtil.parseAsString(event.getData().get(EXP_DT));
+		LOGGER.info("Date from db is "+policyEndDate);
+		Date policyEndDatestrDate = DateUtil.parseDateDBEvent(policyEndDate);
+		LOGGER.info("Date after formatting is "+policyEndDatestrDate);
+		
 		String type = ArgUtil.parseAsString(event.getData().get(TYPE));
 		BigDecimal trnxLeft = ArgUtil.parseAsBigDecimal(event.getData().get(TRNX_LEFT));
 		String langId = ArgUtil.parseAsString(event.getData().get(LANG_ID));
-		SimpleDateFormat formatter = new SimpleDateFormat("dd MMMM yyyy"); 
+		SimpleDateFormat formatter = new SimpleDateFormat("dd-MMMM-yyyy"); 
 		
-		String policyEndDatestr = formatter.format(policyEndDate) ;
+		String policyEndDatestr = formatter.format(policyEndDatestrDate);
+		LOGGER.info("Date to template is "+policyEndDatestr);
+		
 		LOGGER.debug("Customer id is " + custId);
 		Customer c = customerRepository.getCustomerByCustomerIdAndIsActive(custId, "Y");
 		LOGGER.debug("Customer object is " + c.toString());

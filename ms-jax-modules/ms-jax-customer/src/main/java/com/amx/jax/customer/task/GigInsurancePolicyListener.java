@@ -65,14 +65,14 @@ public class GigInsurancePolicyListener implements ITunnelSubscriber<DBEvent> {
 		Date policyStartDatestrDate = DateUtil.parseDateDBEvent(policyStartDate);
 		//Date policyStartDate = ArgUtil.parseAsSimpleDate(event.getData().get(EFF_DT));
 		LOGGER.info("policy start date is "+policyStartDatestrDate);
-		String policyEndDate = ArgUtil.parseAsString(event.getData().get(EFF_DT));
+		String policyEndDate = ArgUtil.parseAsString(event.getData().get(EXP_DT));
 		Date policyEndDatestrDate = DateUtil.parseDateDBEvent(policyEndDate);
 		//Date policyEndDate = ArgUtil.parseAsSimpleDate(event.getData().get(EXP_DT));
 		LOGGER.info("policy end date is "+policyEndDatestrDate);
 		String langId = ArgUtil.parseAsString(event.getData().get(LANG_ID));
 		LOGGER.info("language id is "+langId);
 		
-		SimpleDateFormat formatter = new SimpleDateFormat("dd MMMM yyyy"); 
+		SimpleDateFormat formatter = new SimpleDateFormat("dd-MMMM-yyyy"); 
 		String policyStartDatestr = formatter.format(policyStartDatestrDate) ;
 		String policyEndDatestr = formatter.format(policyEndDatestrDate) ;
 
