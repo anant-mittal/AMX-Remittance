@@ -38,7 +38,7 @@ public final class DateUtil {
 	/** The Constant DEFAULT_DATE_FORMAT. */
 	private static final String DEFAULT_DATE_FORMAT = "dd/MM/yyyy";
 	
-	private static final String DEFAULT_DATE_FORMAT_EVENT = "dd MMMM yyyy";
+	private static final String DEFAULT_DATE_FORMAT_EVENT = "dd-MMM-yyyy";
 
 	/** The Constant DEFAULT_DATE_TIME_FORMAT. */
 	private static final String DEFAULT_DATE_TIME_FORMAT = "dd/MM/yyyy HH:mm";

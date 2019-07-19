@@ -1,6 +1,7 @@
 package com.amx.jax.customer.task;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -61,19 +62,19 @@ public class GigInsurancePolicyListener implements ITunnelSubscriber<DBEvent> {
 		BigDecimal custId = ArgUtil.parseAsBigDecimal(event.getData().get(CUST_ID));
 		LOGGER.info("customer id is "+custId);
 		String policyStartDate = ArgUtil.parseAsString(event.getData().get(EFF_DT));
-		Date policyStartDatestr = DateUtil.parseDateDBEvent(policyStartDate);
+		Date policyStartDatestrDate = DateUtil.parseDateDBEvent(policyStartDate);
 		//Date policyStartDate = ArgUtil.parseAsSimpleDate(event.getData().get(EFF_DT));
-		LOGGER.info("policy start date is "+policyStartDatestr);
+		LOGGER.info("policy start date is "+policyStartDatestrDate);
 		String policyEndDate = ArgUtil.parseAsString(event.getData().get(EFF_DT));
-		Date policyEndDatestr = DateUtil.parseDateDBEvent(policyEndDate);
+		Date policyEndDatestrDate = DateUtil.parseDateDBEvent(policyEndDate);
 		//Date policyEndDate = ArgUtil.parseAsSimpleDate(event.getData().get(EXP_DT));
-		LOGGER.info("policy end date is "+policyEndDatestr);
+		LOGGER.info("policy end date is "+policyEndDatestrDate);
 		String langId = ArgUtil.parseAsString(event.getData().get(LANG_ID));
 		LOGGER.info("language id is "+langId);
 		
-		/*SimpleDateFormat formatter = new SimpleDateFormat("dd MMMM yyyy"); 
-		String policyStartDatestr = formatter.format(policyStartDate) ;
-		String policyEndDatestr = formatter.format(policyEndDate) ;*/
+		SimpleDateFormat formatter = new SimpleDateFormat("dd MMMM yyyy"); 
+		String policyStartDatestr = formatter.format(policyStartDatestrDate) ;
+		String policyEndDatestr = formatter.format(policyEndDatestrDate) ;
 
 		LOGGER.info("Customer id is " + custId);
 		Customer c = customerRepository.getCustomerByCustomerIdAndIsActive(custId, "Y");
@@ -88,7 +89,7 @@ public class GigInsurancePolicyListener implements ITunnelSubscriber<DBEvent> {
 			custName = c.getFirstName() + ' ' + c.getMiddleName() + ' ' + c.getLastName();
 		}
 
-		LOGGER.info("policy start date is   " + policyStartDatestr);
+		LOGGER.info("policy start date is   " + policyStartDatestrDate);
 		Map<String, Object> wrapper = new HashMap<String, Object>();
 		Map<String, Object> modeldata = new HashMap<String, Object>();
 		modeldata.put("to", emailId);
