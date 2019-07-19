@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.insurance.IGigInsuranceService;
-import com.amx.jax.model.request.insurance.OptInOutRequest;
 import com.amx.jax.model.request.insurance.SaveInsuranceDetailRequest;
 import com.amx.jax.model.response.insurance.GigInsuranceDetail;
 
@@ -32,13 +31,6 @@ public class GigInsuranceController implements IGigInsuranceService {
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> saveInsuranceDetail(@RequestBody @Valid SaveInsuranceDetailRequest request) {
 		gigInsuranceService.saveInsuranceDetail(request);
-		return AmxApiResponse.build(new BoolRespModel(true));
-	}
-
-	@RequestMapping(value = Path.OPT_IN_OUT_INSURANCE, method = RequestMethod.POST)
-	@Override
-	public AmxApiResponse<BoolRespModel, Object> optInOutInsurance(@RequestBody @Valid OptInOutRequest request) {
-		gigInsuranceService.optInOutInsurance(request);
 		return AmxApiResponse.build(new BoolRespModel(true));
 	}
 }

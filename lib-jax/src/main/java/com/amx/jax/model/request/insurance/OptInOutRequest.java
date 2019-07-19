@@ -7,6 +7,15 @@ public class OptInOutRequest {
 	@NotNull
 	Boolean optIn;
 
+	public OptInOutRequest() {
+		super();
+	}
+
+	public OptInOutRequest(Boolean optIn) {
+		super();
+		this.optIn = optIn;
+	}
+
 	public Boolean getOptIn() {
 		return optIn;
 	}

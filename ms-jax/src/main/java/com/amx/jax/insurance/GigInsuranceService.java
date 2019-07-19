@@ -103,9 +103,21 @@ public class GigInsuranceService {
 		return gigInsuranceDetail;
 	}
 
-	@Transactional
 	public void saveInsuranceDetail(SaveInsuranceDetailRequest request) {
 		log.debug("saveInsuranceDetail {}", JsonUtil.toJson(request));
+		if (request.getOptIn() == null || request.getAddNomineeRequestData() == null) {
+			throw new GlobalException("either opt inout or nominee data should be present");
+		}
+		if (request.getOptIn() != null) {
+			optInOutInsurance(new OptInOutRequest(request.getOptIn()));
+		}
+		if (request.getAddNomineeRequestData() != null) {
+			saveNomineeDetail(request);
+		}
+	}
+
+	@Transactional
+	public void saveNomineeDetail(SaveInsuranceDetailRequest request) {
 		validatesaveInsuranceDetailRequest(request);
 		List<InsurnaceClaimNominee> customerInsuranceNominees = insurnaceClaimNomineeRepository.findByCustomerIdAndIsActive(metaData.getCustomerId(),
 				ConstantDocument.Yes);
@@ -240,7 +252,7 @@ public class GigInsuranceService {
 		List<InsurnaceClaimNominee> nominees = insurnaceClaimNomineeRepository.findByCustomerIdAndIsActive(customerId, ConstantDocument.Yes);
 		return nominees.size() > 0;
 	}
-	
+
 	public boolean isInsuranceActive(BigDecimal customerId) {
 		CustomerInsurance insuranceDetail = customerInsuranceRepository.findByCustomerIdAndIsActive(customerId, ConstantDocument.Yes);
 		return insuranceDetail != null;
