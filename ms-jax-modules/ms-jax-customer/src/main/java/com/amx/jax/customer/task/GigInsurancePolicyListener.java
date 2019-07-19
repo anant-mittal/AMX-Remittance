@@ -55,7 +55,7 @@ public class GigInsurancePolicyListener implements ITunnelSubscriber<DBEvent> {
 	@Override
 	public void onMessage(String channel, DBEvent event) {
 
-		LOGGER.debug("======onMessage1==={} ====  {}", channel, JsonUtil.toJson(event));
+		LOGGER.info("======onMessage1==={} ====  {}", channel, JsonUtil.toJson(event));
 
 		BigDecimal custId = ArgUtil.parseAsBigDecimal(event.getData().get(CUST_ID));
 		Date policyStartDate = ArgUtil.parseAsSimpleDate(event.getData().get(EFF_DT));
@@ -66,9 +66,9 @@ public class GigInsurancePolicyListener implements ITunnelSubscriber<DBEvent> {
 		String policyStartDatestr = formatter.format(policyStartDate) ;
 		String policyEndDatestr = formatter.format(policyEndDate) ;
 
-		LOGGER.debug("Customer id is " + custId);
+		LOGGER.info("Customer id is " + custId);
 		Customer c = customerRepository.getCustomerByCustomerIdAndIsActive(custId, "Y");
-		LOGGER.debug("Customer object is " + c.toString());
+		LOGGER.info("Customer object is " + c.toString());
 		String emailId = c.getEmail();
 
 		String custName;
@@ -79,7 +79,7 @@ public class GigInsurancePolicyListener implements ITunnelSubscriber<DBEvent> {
 			custName = c.getFirstName() + ' ' + c.getMiddleName() + ' ' + c.getLastName();
 		}
 
-		LOGGER.debug("policy start date is   " + policyStartDate);
+		LOGGER.info("policy start date is   " + policyStartDate);
 		Map<String, Object> wrapper = new HashMap<String, Object>();
 		Map<String, Object> modeldata = new HashMap<String, Object>();
 		modeldata.put("to", emailId);
@@ -88,11 +88,11 @@ public class GigInsurancePolicyListener implements ITunnelSubscriber<DBEvent> {
 		modeldata.put("policyenddate", policyEndDatestr);
 
 		for (Map.Entry<String, Object> entry : modeldata.entrySet()) {
-			LOGGER.debug("KeyModel = " + entry.getKey() + ", ValueModel = " + entry.getValue());
+			LOGGER.info("KeyModel = " + entry.getKey() + ", ValueModel = " + entry.getValue());
 		}
 
 		wrapper.put("data", modeldata);
-		LOGGER.debug("email is is " + emailId);
+		LOGGER.info("email is is " + emailId);
 		if (!ArgUtil.isEmpty(emailId)) {
 
 			Email email = new Email();
@@ -104,10 +104,10 @@ public class GigInsurancePolicyListener implements ITunnelSubscriber<DBEvent> {
 				modeldata.put("languageid", Language.EN);
 			}
 			for (Map.Entry<String, Object> entry : wrapper.entrySet()) {
-				LOGGER.debug("KeyModelWrap = " + entry.getKey() + ", ValueModelWrap = " + entry.getValue());
+				LOGGER.info("KeyModelWrap = " + entry.getKey() + ", ValueModelWrap = " + entry.getValue());
 			}
-			LOGGER.debug("Json value of wrapper is " + JsonUtil.toJson(wrapper));
-			LOGGER.debug("Wrapper data is {}", wrapper.get("data"));
+			LOGGER.info("Json value of wrapper is " + JsonUtil.toJson(wrapper));
+			LOGGER.info("Wrapper data is {}", wrapper.get("data"));
 			email.setModel(wrapper);
 			email.addTo(emailId);
 			email.setHtml(true);
@@ -133,11 +133,11 @@ public class GigInsurancePolicyListener implements ITunnelSubscriber<DBEvent> {
 	@Async(ExecutorConfig.DEFAULT)
 	public void sendEmail(Email email) {
 		try {
-			LOGGER.debug("email sent");
+			LOGGER.info("email sent");
 			postManService.sendEmailAsync(email);
 		} catch (PostManException e) {
 
-			LOGGER.debug("error in confirm policy", e);
+			LOGGER.info("error in confirm policy", e);
 		}
 	}
 
