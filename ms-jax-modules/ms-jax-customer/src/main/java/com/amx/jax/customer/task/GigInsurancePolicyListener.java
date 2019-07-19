@@ -1,7 +1,6 @@
 package com.amx.jax.customer.task;
 
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -61,10 +60,12 @@ public class GigInsurancePolicyListener implements ITunnelSubscriber<DBEvent> {
 		LOGGER.info("Data from db is "+event.getData());
 		BigDecimal custId = ArgUtil.parseAsBigDecimal(event.getData().get(CUST_ID));
 		LOGGER.info("customer id is "+custId);
-		Date policyStartDatestr = DateUtil.parseDateDBEvent(event.getData().get(EFF_DT));
+		String policyStartDate = ArgUtil.parseAsString(event.getData().get(EFF_DT));
+		Date policyStartDatestr = DateUtil.parseDateDBEvent(policyStartDate);
 		//Date policyStartDate = ArgUtil.parseAsSimpleDate(event.getData().get(EFF_DT));
 		LOGGER.info("policy start date is "+policyStartDatestr);
-		Date policyEndDatestr = DateUtil.parseDateDBEvent(event.getData().get(EXP_DT));
+		String policyEndDate = ArgUtil.parseAsString(event.getData().get(EFF_DT));
+		Date policyEndDatestr = DateUtil.parseDateDBEvent(policyEndDate);
 		//Date policyEndDate = ArgUtil.parseAsSimpleDate(event.getData().get(EXP_DT));
 		LOGGER.info("policy end date is "+policyEndDatestr);
 		String langId = ArgUtil.parseAsString(event.getData().get(LANG_ID));
