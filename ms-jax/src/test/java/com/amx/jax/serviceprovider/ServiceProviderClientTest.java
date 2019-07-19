@@ -4,6 +4,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,11 +15,12 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.ServiceProviderClient;
-import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.meta.MetaData;
 import com.amx.jax.response.serviceprovider.ServiceProviderDefaultDateDTO;
 import com.amx.jax.response.serviceprovider.ServiceProviderPartnerDTO;
+import com.amx.jax.response.serviceprovider.ServiceProviderSummaryDTO;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.serviceprovider.service.ServiceProviderService;
 
@@ -32,7 +34,7 @@ public class ServiceProviderClientTest {
 	ServiceProviderClient serviceProviderClient;
 
 	@Autowired
-	private JaxMetaInfo jaxMetaInfo;
+	private MetaData jaxMetaInfo;
 	
 	@Autowired
 	ServiceProviderService serviceProviderService;
@@ -60,7 +62,17 @@ public class ServiceProviderClientTest {
 		assertNotNull(response.getResult());
 	}
 
-	
+	@Test
+	public void testForUploadServiceProviderFile() throws Exception {
+		setDefaults();
+		List<ServiceProviderSummaryDTO> response = null;
+		LOGGER.debug("Response not set");
+		Date fileDate = Date.valueOf("2019-7-17");
+		response = serviceProviderService.testUploadServiceProviderFile("D:\\income-jax\\amx-jax\\ms-jax\\UploadFile.xlsx", fileDate, "WU");
+		LOGGER.debug("Response is set");
+		assertNotNull("Response is null", response);
+		assertNotNull(response.get(0));
+	}
 
 	@Test
 	public void testForServiceProviderConfirmation() {

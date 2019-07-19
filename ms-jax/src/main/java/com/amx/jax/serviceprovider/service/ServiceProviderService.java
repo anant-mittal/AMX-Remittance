@@ -237,4 +237,88 @@ public class ServiceProviderService extends AbstractService {
 		return serviceProviderDefaultDateDTO;
 	}
 	
-}
+	public List<ServiceProviderSummaryDTO> testUploadServiceProviderFile(String fileLocation,Date fileDate,String tpcCode) throws Exception{
+	    int i,j;
+	    
+	    
+	    Workbook workbook = WorkbookFactory.create(new File(fileLocation));
+	    LocalDate today = fileDate.toLocalDate();
+	    int year = today.getYear();
+	    int month = today.getMonthValue();
+	    int day = today.getDayOfMonth();
+	    
+	    Sheet sheet = workbook.getSheetAt(0);
+	    DataFormatter dataFormatter = new DataFormatter();
+	    for(i=1;i<sheet.getLastRowNum();i++) {
+	    	Row r = sheet.getRow(i);
+	    	for(j=1;j<4;j++) {
+	    		Cell cell1 = r.getCell(j);
+	    		Cell cell2 = r.getCell(j+1);
+	    		Cell cell3 = r.getCell(j+2);
+	    		String cellValue1 = dataFormatter.formatCellValue(cell1);
+	    		String cellValue2 = dataFormatter.formatCellValue(cell2);
+	    		String cellValue3 = dataFormatter.formatCellValue(cell3);
+	    		if(!(cellValue1.equals(String.valueOf(year))&&cellValue2.equals(String.valueOf(month))&&cellValue3.equals(String.valueOf(day)))) {
+	    			throw new GlobalException("File Date is not matching with the date input");
+	    		}
+	    		j=4;
+	    	}
+	    }
+	    
+	    for(i=1;i<=sheet.getLastRowNum();i++) {
+	    	FileUploadTempModel fileUploadTempModel = new FileUploadTempModel();
+	    	Row row = sheet.getRow(i);
+	    	Cell cell0 = row.getCell(0);
+	    	String cellValue0 = dataFormatter.formatCellValue(cell0);
+	    	fileUploadTempModel.setLocalYear(new BigDecimal(cellValue0));
+	    	Cell cell1 = row.getCell(1);
+	    	String cellValue1 = dataFormatter.formatCellValue(cell1);
+	    	fileUploadTempModel.setReportingYear(new BigDecimal(cellValue1));
+	    	Cell cell2 = row.getCell(2);
+	    	String cellValue2 = dataFormatter.formatCellValue(cell2);
+	    	fileUploadTempModel.setReportingMonth(new BigDecimal(cellValue2));
+	    	Cell cell3 = row.getCell(3);
+	    	String cellValue3 = dataFormatter.formatCellValue(cell3);
+	    	fileUploadTempModel.setReportingDate(new BigDecimal(cellValue3));
+	    	Cell cell4 = row.getCell(4);
+	    	String cellValue4 = dataFormatter.formatCellValue(cell4);
+	    	fileUploadTempModel.setDirection(cellValue4);
+	    	Cell cell5 = row.getCell(5);
+	    	String cellValue5 = dataFormatter.formatCellValue(cell5);
+	    	fileUploadTempModel.setAccountNo(cellValue5);
+	    	Cell cell6 = row.getCell(6);
+	    	String cellValue6 = dataFormatter.formatCellValue(cell6);
+	    	fileUploadTempModel.setLocationName(cellValue6);
+	    	Cell cell7 = row.getCell(7);
+	    	String cellValue7 = dataFormatter.formatCellValue(cell7);
+	    	fileUploadTempModel.setLocalCurrencyCode(cellValue7);
+	    	Cell cell8 = row.getCell(8);
+	    	String cellValue8 = dataFormatter.formatCellValue(cell8);
+	    	fileUploadTempModel.setCompanyShareLocal(new BigDecimal(cellValue8));
+	    	Cell cell9 = row.getCell(9);
+	    	String cellValue9 = dataFormatter.formatCellValue(cell9);
+	    	fileUploadTempModel.setExchangeGainLocal(new BigDecimal(cellValue9));
+	    	Cell cell10 = row.getCell(10);
+	    	String cellValue10 = dataFormatter.formatCellValue(cell10);
+	    	fileUploadTempModel.setSendPayIndicator(cellValue10);
+            Cell cell11 = row.getCell(11);
+            String cellValue11 = dataFormatter.formatCellValue(cell11);
+            fileUploadTempModel.setMtcnNo(cellValue11);
+            fileUploadTempModel.setApplicationCountryId(metaData.getCountryId());
+            fileUploadTempModel.setUploadDate(fileDate);
+            fileUploadTempModel.setTpcCode(tpcCode);
+            serviceProviderDao.saveFileUploadTemp(fileUploadTempModel);
+            
+        }
+	    
+	    serviceProviderDao.saveDataByProcedure(fileDate,tpcCode);
+	    List<ServiceProviderSummaryModel> serviceProviderSummaryModelList=serviceProviderDao.getSummary();
+	    serviceProviderDao.deleteTemporaryData();
+	    workbook.close();
+	    
+		return (convertServiceProviderSummary(serviceProviderSummaryModelList));
+		
+	}
+	}
+	
+
