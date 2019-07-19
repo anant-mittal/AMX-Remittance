@@ -32,6 +32,8 @@ public final class DateUtil {
 
 	/** The Constant DEFAULT_DATE_FORMAT. */
 	private static final String DEFAULT_DATE_FORMAT = "dd/MM/yyyy";
+	
+	private static final String DEFAULT_DATE_FORMAT_EVENT = "dd MMMM yyyy";
 
 	/** The Constant DEFAULT_DATE_TIME_FORMAT. */
 	private static final String DEFAULT_DATE_TIME_FORMAT = "dd/MM/yyyy HH:mm";
@@ -83,6 +85,24 @@ public final class DateUtil {
 	public static Date parseDate(String dateStr) {
 		dateStr = dateStr.trim();
 		SimpleDateFormat format = new SimpleDateFormat(DEFAULT_DATE_FORMAT);
+		format.setTimeZone(TimeZone.getTimeZone(GMT));
+		Date newDate;
+		try {
+			newDate = setDefaultGMTTime(format.parse(dateStr));
+		} catch (ParseException e) {
+			// try parsing as long
+			try {
+				newDate = setDefaultGMTTime(new Date(Long.parseLong(dateStr)));
+			} catch (NumberFormatException ex) {
+				/* return null if date string cannot be parsed */
+				newDate = null;
+			}
+		}
+		return newDate;
+	}
+	public static Date parseDateDBEvent(String dateStr) {
+		dateStr = dateStr.trim();
+		SimpleDateFormat format = new SimpleDateFormat(DEFAULT_DATE_FORMAT_EVENT);
 		format.setTimeZone(TimeZone.getTimeZone(GMT));
 		Date newDate;
 		try {
