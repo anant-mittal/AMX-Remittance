@@ -18,6 +18,7 @@ import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.tunnel.TunnelEventXchange;
 import com.amx.jax.tunnel.TunnelMessage;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.ContextUtil;
 import com.amx.utils.HttpUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -91,6 +92,16 @@ public class RequestTrackEvent extends AuditEvent {
 
 	public RequestTrackEvent track(HttpServletResponse response, HttpServletRequest request) {
 		this.description = String.format("%s %s=%s", this.type, response.getStatus(), request.getRequestURI());
+
+		ApiAuditEvent apiEventObject = (ApiAuditEvent) ContextUtil.map().getOrDefault("api_event", null);
+
+		if (!ArgUtil.isEmpty(apiEventObject)) {
+			this.result = apiEventObject.getResult();
+			this.message = apiEventObject.getMessage();
+			this.details = apiEventObject.getDetails();
+			this.errorCode = apiEventObject.getErrorCode();
+		}
+
 		return this;
 	}
 

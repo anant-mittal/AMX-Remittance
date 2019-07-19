@@ -95,6 +95,7 @@ public class AppRequestFilter implements Filter {
 
 	public void setFlow(HttpServletRequest req) {
 		String url = req.getRequestURI();
+		AppContextUtil.setFlow(url);
 		AppContextUtil.setFlowfix(url.toLowerCase().replace("pub", "b").replace("api", "p").replace("user", "")
 				.replace("get", "").replace("post", "").replace("save", "")
 				.replace("/", "").replaceAll("[AaEeIiOoUuYyWwHh]", ""));

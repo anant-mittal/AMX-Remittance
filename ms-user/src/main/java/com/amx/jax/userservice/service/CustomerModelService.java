@@ -95,59 +95,62 @@ public class CustomerModelService {
 		response.setCustomerFlags(customerModelResponse.getCustomerFlags());
 		List<CustomerCommunicationChannel> customerCommunicationChannels = new ArrayList<>();
 		Customer customerdetails = customerRepository.getCustomerEmailDetails(identityInt);
-		CustomerOnlineRegistration customerOnlineRegistration = onlineCustomerRepository.getLoginCustomersDeatilsById(identityInt);
-		
-		if(customerdetails.getEmailVerified()==null ||customerdetails.getEmailVerified().equals(Status.Y))
-		
+		CustomerOnlineRegistration customerOnlineRegistration = onlineCustomerRepository
+				.getLoginCustomersDeatilsById(identityInt);
+
+		if (customerdetails.getEmailVerified() == null || customerdetails.getEmailVerified().equals(Status.Y))
+
 		{
-		if (customerFlags.getEmailVerified()) {
-			String emailId = personInfo.getEmail();
-			String email = emailId.split("@")[0];
-			int maskLength = 4;
+			if (customerFlags.getEmailVerified() && personInfo.getEmail() != null
+					&& !"null".equals(personInfo.getEmail())) {
 
-			if (email.length() <= 4) {
-				maskLength = 0;
+				String emailId = personInfo.getEmail();
+				String email = emailId.split("@")[0];
+				int maskLength = 4;
+
+				if (email.length() <= 4) {
+					maskLength = 0;
+				}
+				String maskedEmail = MaskUtil.maskEmail(personInfo.getEmail(), maskLength, "*");
+				customerCommunicationChannels.add(new CustomerCommunicationChannel(ContactType.EMAIL, maskedEmail));
+
 			}
-			String maskedEmail = MaskUtil.maskEmail(personInfo.getEmail(), maskLength, "*");
-			customerCommunicationChannels.add(new CustomerCommunicationChannel(ContactType.EMAIL, maskedEmail));
+			if (customerFlags.getMobileVerified()) {
+				String mobileNo = personInfo.getMobile();
+				int maskLength = 4;
+				if (mobileNo.length() <= 4) {
+					maskLength = 0;
+				}
+				String maskedMobile = personInfo.getPrefixCodeMobile() + " "
+						+ MaskUtil.leftMask(personInfo.getMobile(), maskLength, "*");
 
-		}
-		if (customerFlags.getMobileVerified()) {
-			String mobileNo = personInfo.getMobile();
-			int maskLength = 4;
-			if (mobileNo.length() <= 4) {
-				maskLength = 0;
+				customerCommunicationChannels.add(new CustomerCommunicationChannel(ContactType.SMS, maskedMobile));
+
 			}
-			String maskedMobile = personInfo.getPrefixCodeMobile() + " "
-					+ MaskUtil.leftMask(personInfo.getMobile(), maskLength, "*");
+			if (customerFlags.getWhatsAppVerified()) {
+				String whatsappNo = personInfo.getWhatsAppNumber();
+				int maskLength = 4;
+				if (whatsappNo.length() <= 4) {
+					maskLength = 0;
+				}
+				String maskedMobile = personInfo.getWhatsappPrefixCode() + " "
+						+ MaskUtil.leftMask(personInfo.getWhatsAppNumber(), maskLength, "*");
+				customerCommunicationChannels.add(new CustomerCommunicationChannel(ContactType.WHATSAPP, maskedMobile));
 
-			customerCommunicationChannels.add(new CustomerCommunicationChannel(ContactType.SMS, maskedMobile));
-
-		}
-		if (customerFlags.getWhatsAppVerified()) {
-			String whatsappNo = personInfo.getWhatsAppNumber();
-			int maskLength = 4;
-			if (whatsappNo.length() <= 4) {
-				maskLength = 0;
 			}
-			String maskedMobile = personInfo.getWhatsappPrefixCode() + " "
-					+ MaskUtil.leftMask(personInfo.getWhatsAppNumber(), maskLength, "*");
-			customerCommunicationChannels.add(new CustomerCommunicationChannel(ContactType.WHATSAPP, maskedMobile));
+		}
+
+		else if (customerOnlineRegistration.getStatus().equalsIgnoreCase("N")
+				&& (customerdetails.getEmailVerified().equals(Status.N))) {
+			throw new GlobalException(JaxError.EMAIL_NOT_VERIFIED, "Email id is not verified.Kinldy verify");
 
 		}
-		}
-	
-		else if(customerOnlineRegistration.getStatus().equalsIgnoreCase("N") && (customerdetails.getEmailVerified().equals(Status.N))) {
-				throw new GlobalException(JaxError.EMAIL_NOT_VERIFIED, "Email id is not verified.Kinldy verify");
-			
-			
-		}
-	
+
 		response.setCustomerCommunicationChannel(customerCommunicationChannels);
 		if (customerCommunicationChannels.isEmpty()) {
 			throw new GlobalException(JaxError.MISSING_OTP_CONTACT,
 					"You cannot register online. Please register contact details in the branch to proceed further.");
-		
+
 		}
 		return response;
 	}

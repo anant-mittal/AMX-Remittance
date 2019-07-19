@@ -167,6 +167,14 @@ public class AppContextUtil {
 		ContextUtil.setFlowfix(flowfix);
 	}
 
+	public static void setFlow(String flow) {
+		getParams().put("flow", flow);
+	}
+
+	public static String getFlow() {
+		return ArgUtil.parseAsString(getParams().get("flow"));
+	}
+
 	public static void setTraceTime(long timestamp) {
 		ContextUtil.map().put(AppConstants.TRACE_TIME_XKEY, timestamp);
 	}

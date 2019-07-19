@@ -73,6 +73,7 @@ public abstract class AmxAdvice implements ResponseBodyAdvice<AmxApiResponse<?, 
 	}
 
 	private void alert(AmxApiException ex) {
+		//Raise Alert for Specific Event
 		auditService.log(new ApiAuditEvent(ex), ex);
 	}
 
