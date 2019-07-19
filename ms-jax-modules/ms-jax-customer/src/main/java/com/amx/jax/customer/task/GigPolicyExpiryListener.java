@@ -118,7 +118,7 @@ public class GigPolicyExpiryListener implements ITunnelSubscriber<DBEvent> {
 			email.addTo(emailId);
 			email.setHtml(true);
 
-			if (type.equals("")) {
+			if (type.equals("R")) {
 				email.setITemplate(TemplatesMX.POLICY_EXPIRY_REMINDER);
 			} else {
 				email.setITemplate(TemplatesMX.POLICY_EXPIRED);
