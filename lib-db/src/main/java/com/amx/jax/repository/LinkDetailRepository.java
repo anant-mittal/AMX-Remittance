@@ -13,4 +13,7 @@ public interface LinkDetailRepository extends CrudRepository<LinkDetails, BigDec
 	
 	@Query("select l from LinkDetails l where linkId=?1")
 	public List<LinkDetails> getLinkDetailsById(String linkId);
+	
+	@Query("select l from LinkDetails l where customerId=?1")
+	public List<LinkDetails> getLinkDetailsByCustomerId(String customerId);
 }

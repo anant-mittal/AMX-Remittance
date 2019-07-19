@@ -9,6 +9,7 @@ public class LinkDTO extends AbstractModel implements Cloneable{
 	private String linkId;
 	private BigDecimal customerId;
 	private String customerDetail;
+	private String contactType;
 	
     
 	
@@ -33,7 +34,17 @@ public class LinkDTO extends AbstractModel implements Cloneable{
 	}
 	public void setCustomerDetail(String customerDetail) {
 		this.customerDetail = customerDetail;
+	}
+
+	public String getContactType() {
+		return contactType;
+	}
+
+	public void setContactType(String contactType) {
+		this.contactType = contactType;
 	}	
+	
+	
 	
 	
 }

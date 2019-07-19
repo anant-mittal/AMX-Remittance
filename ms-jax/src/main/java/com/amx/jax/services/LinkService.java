@@ -18,7 +18,10 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.dbmodel.ContactLinkDetails;
 import com.amx.jax.dbmodel.LinkDetails;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.userservice.dao.LinkDetailsDao;
+import com.amx.utils.MapBuilder;
+import com.amx.utils.MapBuilder.BuilderMap;
 
 @Service
 @SuppressWarnings("rawtypes")
@@ -40,6 +43,9 @@ public class LinkService extends AbstractService{
 				responseDTO.setLinkId(uuid.toString());
 				
 			}
+			if (dto.getContactType() != null) {
+				linkDetails.setContactType(dto.getContactType());
+			}
 			if(dto.getCustomerDetail() != null) {				
 		        String delimiter = "\\,";
 		        String[] contactDetailsArray = dto.getCustomerDetail().split(delimiter);
@@ -52,12 +58,16 @@ public class LinkService extends AbstractService{
 		            contactLinkDetailList.add(contactLinkDetails);
 		        }
 		        linkDao.saveLinkContacs(contactLinkDetailList);
+			}else {
+				linkDetails.setNoOfContacts(0);
 			}
 			linkDao.saveLink(linkDetails);
 			LinkResponseModel linkResponseModel = new LinkResponseModel();
 			linkResponseModel.setLinkId(responseDTO.getLinkId());
 		return AmxApiResponse.build(linkResponseModel);
 	}
+	
+	
 	
 	public void validateLinkDto(LinkDTO dto) {
 		if(dto.getCustomerId() == null ) {

@@ -17,6 +17,7 @@ public class LinkDetails implements java.io.Serializable{
 	private Integer openCounter;
 	private Integer noOfContacts;
 //	private String isActive;
+	private String contactType;
 	private String createdBy;
 	private Date createdDate;
 	private String modifiedBy;
@@ -107,6 +108,17 @@ public class LinkDetails implements java.io.Serializable{
 	public void setModifiedDate(Date modifiedDate) {
 		this.modifiedDate = modifiedDate;
 	}
+
+	@Column(name = "contact_type")
+	public String getContactType() {
+		return contactType;
+	}
+
+	public void setContactType(String contactType) {
+		this.contactType = contactType;
+	}
+	
+	
 	
    
 	

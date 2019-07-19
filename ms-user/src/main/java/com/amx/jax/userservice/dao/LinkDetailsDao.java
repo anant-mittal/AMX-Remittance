@@ -40,7 +40,7 @@ public class LinkDetailsDao {
     	 }    	 
      }
      
-     public void updateLink(LinkDetails linkDetails) {    	 
+     public void updateLink(LinkDetails linkDetails) {
     	 linkDetails.setModifiedDate(new Date());
     	 linkRepo.save(linkDetails);    	     	         
      }
