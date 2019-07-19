@@ -23,7 +23,7 @@ public class CustomerFlags {
 
 	Boolean annualIncomeExpired;
 	Boolean isOnlineCustomer;
-	Boolean forceUpdateInsurance;
+	Boolean forceUpdateInsurance = false;
 	
 
 	public Boolean getIsOnlineCustomer() {

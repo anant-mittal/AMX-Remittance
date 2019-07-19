@@ -34,6 +34,7 @@ import com.amx.jax.model.customer.SecurityQuestionModel;
 import com.amx.jax.model.response.customer.CustomerModelResponse;
 import com.amx.jax.model.response.customer.CustomerModelSignupResponse;
 import com.amx.jax.services.CustomerDataVerificationService;
+import com.amx.jax.services.JaxCustomerModelService;
 import com.amx.jax.userservice.service.AnnualIncomeService;
 import com.amx.jax.userservice.service.CustomerModelService;
 import com.amx.jax.userservice.service.UserService;
@@ -64,6 +65,8 @@ public class CustomerController implements ICustomerService {
 	CustomerModelService customerModelService;
 	@Autowired
 	AnnualIncomeService annualIncomeService;
+	@Autowired
+	JaxCustomerModelService jaxCustomerModelService;
 
 	@Autowired
 	CustomerService customerService;
@@ -239,6 +242,7 @@ public class CustomerController implements ICustomerService {
 	public AmxApiResponse<CustomerModelResponse, Object> getCustomerModelResponse(
 			@RequestParam(name = Params.IDENTITY_INT) String identityInt) {
 		CustomerModelResponse response = customerModelService.getCustomerModelResponse(identityInt);
+		jaxCustomerModelService.updateCustomerModelResponse(response);
 		return AmxApiResponse.build(response);
 	}
 
@@ -246,6 +250,7 @@ public class CustomerController implements ICustomerService {
 	@Override
 	public AmxApiResponse<CustomerModelResponse, Object> getCustomerModelResponse() {
 		CustomerModelResponse response = customerModelService.getCustomerModelResponse();
+		jaxCustomerModelService.updateCustomerModelResponse(response);
 		return AmxApiResponse.build(response);
 	}
 

@@ -240,6 +240,11 @@ public class GigInsuranceService {
 		List<InsurnaceClaimNominee> nominees = insurnaceClaimNomineeRepository.findByCustomerIdAndIsActive(customerId, ConstantDocument.Yes);
 		return nominees.size() > 0;
 	}
+	
+	public boolean isInsuranceActive(BigDecimal customerId) {
+		CustomerInsurance insuranceDetail = customerInsuranceRepository.findByCustomerIdAndIsActive(customerId, ConstantDocument.Yes);
+		return insuranceDetail != null;
+	}
 
 	public void optInOutInsurance(OptInOutRequest request) {
 		log.debug("optInOutInsurance request {}", JsonUtil.toJson(request));
