@@ -38,8 +38,7 @@ import com.jax.amxlib.exception.jax.GlobaLException;
 
 @Service
 public class JaxCustomerContactVerificationService extends AbstractService {
-	
-	
+
 	Logger logger = Logger.getLogger(JaxCustomerContactVerificationService.class);
 	@Autowired
 	CustomerContactVerificationManager customerContactVerificationManager;
@@ -51,34 +50,29 @@ public class JaxCustomerContactVerificationService extends AbstractService {
 	PostManService postManService;
 	@Autowired
 	private CustomerVerificationService customerVerificationService;
-	@Autowired
-	private CustomerVerificationRepository customerVerificationRepository;
-	@Autowired
-	private CustomerDao custDao;
-	@Autowired
-	private OnlineCustomerRepository onlineCustRepo;
-	
-	//changes done by Radhika
+
+	// changes done by Radhika
 	public void sendEmailVerifyLinkOnReg(CustomerModel customerModel) {
 		Customer customer = customerRepository.getActiveCustomerDetailsByCustomerId(customerModel.getCustomerId());
 		customer.setEmailVerified(Status.N);
 		customerRepository.save(customer);
 		customer.setEmail(customerModel.getEmail());
-		CustomerContactVerification customerContactVerification = customerContactVerificationManager.create(customer, ContactType.EMAIL);
-				
+		CustomerContactVerification customerContactVerification = customerContactVerificationManager.create(customer,
+				ContactType.EMAIL);
+
 		Email email = new Email();
-		
+
 		email.setITemplate(TemplatesMX.CONTACT_VERIFICATION_EMAIL);
 		email.getModel().put("customer", EntityDtoUtil.entityToDto(customer, new CustomerDto()));
 		email.getModel().put("link", customerContactVerification);
 		email.addTo(customer.getEmail());
 		email.setHtml(true);
 		sendEmail(email);
-		if(customer.getEmailVerified()==Status.N) {
+		if (customer.getEmailVerified() == Status.N) {
 			throw new GlobalException(JaxError.EMAIL_NOT_VERIFIED, "Email id is not verified . Please wait for 24 hrs");
 		}
 	}
-	
+
 	@Async(ExecutorConfig.DEFAULT)
 	public void sendEmail(Email email) {
 		try {
@@ -86,31 +80,22 @@ public class JaxCustomerContactVerificationService extends AbstractService {
 			postManService.sendEmailAsync(email);
 		} catch (PostManException e) {
 			logger.debug("customer email verifivcation exception");
-			
+
 		}
 	}
-	
-	
-	
+
 	public void validateEmailVerification(String identityId) {
 		List<Customer> customer = customerRepository.findActiveCustomers(identityId);
-		CustomerOnlineRegistration customerOnlineRegistration = onlineCustRepo.getLoginCustomersDeatilsById(identityId);
-		/*if(customerOnlineRegistration.getStatus().equalsIgnoreCase("N")) {
-			throw new GlobalException("Customer is not active Online");
-		}*/
-		
-		if(customer.get(0).getEmailVerified()==Status.Y) {
+		if (customer.get(0).getEmailVerified() == Status.Y) {
 			CustomerVerification cv = customerVerificationService.getVerification(customer.get(0).getCustomerId(),
 					CustomerVerificationType.EMAIL);
 			logger.info("Customer Mail ------ : ");
-			logger.info("Customer Data ------ : " +cv.toString());
+			logger.info("Customer Data ------ : " + cv.toString());
 			cv.setVerificationStatus(ConstantDocument.Yes);
-		}else if(customer.get(0).getEmailVerified()==Status.N) {
-			//@Radhika
+		} else if (customer.get(0).getEmailVerified() == Status.N) {
+			// @Radhika
 			throw new GlobalException(JaxError.EMAIL_NOT_VERIFIED, "Email id is not verified . Please wait for 24 hrs");
- 		}
-		
+		}
+
 	}
 }
-	
-	
