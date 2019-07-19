@@ -59,7 +59,9 @@ public class GigInsurancePolicyListener implements ITunnelSubscriber<DBEvent> {
 
 		BigDecimal custId = ArgUtil.parseAsBigDecimal(event.getData().get(CUST_ID));
 		Date policyStartDate = ArgUtil.parseAsSimpleDate(event.getData().get(EFF_DT));
+		LOGGER.info("polivy start date is "+policyStartDate);
 		Date policyEndDate = ArgUtil.parseAsSimpleDate(event.getData().get(EXP_DT));
+		LOGGER.info("policy end date is "+policyEndDate);
 		String langId = ArgUtil.parseAsString(event.getData().get(LANG_ID));
 		
 		SimpleDateFormat formatter = new SimpleDateFormat("dd MMMM yyyy"); 
