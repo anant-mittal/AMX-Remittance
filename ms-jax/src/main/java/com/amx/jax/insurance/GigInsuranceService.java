@@ -103,9 +103,10 @@ public class GigInsuranceService {
 		return gigInsuranceDetail;
 	}
 
+	@Transactional
 	public void saveInsuranceDetail(SaveInsuranceDetailRequest request) {
 		log.debug("saveInsuranceDetail {}", JsonUtil.toJson(request));
-		if (request.getOptIn() == null || request.getAddNomineeRequestData() == null) {
+		if (request.getOptIn() == null && request.getAddNomineeRequestData() == null) {
 			throw new GlobalException("either opt inout or nominee data should be present");
 		}
 		if (request.getOptIn() != null) {
@@ -116,7 +117,6 @@ public class GigInsuranceService {
 		}
 	}
 
-	@Transactional
 	public void saveNomineeDetail(SaveInsuranceDetailRequest request) {
 		validatesaveInsuranceDetailRequest(request);
 		List<InsurnaceClaimNominee> customerInsuranceNominees = insurnaceClaimNomineeRepository.findByCustomerIdAndIsActive(metaData.getCustomerId(),
@@ -142,6 +142,7 @@ public class GigInsuranceService {
 				}
 				i.setModifiedBy(getCreatedBy());
 				i.setModifiedDate(new Date());
+				i.setIsActive(ConstantDocument.Yes);
 				i.setModifiedDeviceId(metaData.getDeviceId());
 				i.setModifiedDeviceType(metaData.getDeviceType());
 			} else {

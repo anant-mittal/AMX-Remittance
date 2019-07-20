@@ -14,4 +14,5 @@ public interface InsurnaceClaimNomineeRepository extends CrudRepository<Insurnac
 
 	public List<InsurnaceClaimNominee> findByNomineeIdIn(List<BigDecimal> nomineeIds);
 	
+	public List<InsurnaceClaimNominee> findByCustomerId(BigDecimal customerId);
 }
