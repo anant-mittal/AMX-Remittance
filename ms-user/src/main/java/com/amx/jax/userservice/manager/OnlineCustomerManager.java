@@ -1,5 +1,6 @@
 package com.amx.jax.userservice.manager;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
@@ -7,15 +8,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.amxlib.model.CustomerModel;
 import com.amx.jax.JaxAuthContext;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxApiFlow;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
+import com.amx.jax.dbmodel.LoginLogoutHistory;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.customer.SecurityQuestionModel;
+import com.amx.jax.model.response.customer.CustomerFlags;
+import com.amx.jax.model.response.customer.CustomerModelResponse;
+import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.userservice.service.UserValidationService;
@@ -35,6 +41,9 @@ public class OnlineCustomerManager {
 	UserValidationService userValidationService;
 	@Autowired
 	CustomerAuthManager customerAuthManager;
+	
+	@Autowired
+	CustomerDBAuthManager customerDBAuthManager;
 
 	public void saveCustomerSecQuestions(List<SecurityQuestionModel> securityQuestions) {
 		CustomerOnlineRegistration customerOnlineRegistration = custDao
@@ -85,4 +94,8 @@ public class OnlineCustomerManager {
 		userValidationService.validateBlackListedCustomerForLogin(customer);
 		userValidationService.validateCustomerVerification(customer.getCustomerId());
 	}
+
+	public void resetForgotPassword(String identityInt, String resetPwd) {
+		customerDBAuthManager.validateAndSendOtp(identityInt, resetPwd);
+	}		
 }
