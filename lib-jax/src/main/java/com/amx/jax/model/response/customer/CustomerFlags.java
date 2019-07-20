@@ -1,5 +1,7 @@
 package com.amx.jax.model.response.customer;
 
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -24,8 +26,7 @@ public class CustomerFlags {
 	Boolean annualIncomeExpired;
 	Boolean isOnlineCustomer;
 	Boolean isForceUpdateInsuranceRequired = false;
-	Boolean displayInsuranceDetail = false;
-	
+	Boolean isInsuranceActive = false;
 
 	public Boolean getIsOnlineCustomer() {
 		return isOnlineCustomer;
@@ -115,12 +116,22 @@ public class CustomerFlags {
 		this.isForceUpdateInsuranceRequired = isForceUpdateInsuranceRequired;
 	}
 
+	@Deprecated
 	public Boolean getDisplayInsuranceDetail() {
-		return displayInsuranceDetail;
+		return isInsuranceActive;
 	}
 
+	@Deprecated
 	public void setDisplayInsuranceDetail(Boolean displayInsuranceDetail) {
-		this.displayInsuranceDetail = displayInsuranceDetail;
+		this.isInsuranceActive = displayInsuranceDetail;
+	}
+
+	public Boolean getIsInsuranceActive() {
+		return isInsuranceActive;
+	}
+
+	public void setIsInsuranceActive(Boolean isInsuranceActive) {
+		this.isInsuranceActive = isInsuranceActive;
 	}
 
 }
