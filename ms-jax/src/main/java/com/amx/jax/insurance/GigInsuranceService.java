@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import javax.transaction.Transactional;
 
@@ -120,6 +121,7 @@ public class GigInsuranceService {
 		}
 	}
 
+	@Transactional
 	public void saveNomineeDetail(SaveInsuranceDetailRequest request) {
 		validatesaveInsuranceDetailRequest(request);
 		List<InsurnaceClaimNominee> customerInsuranceNominees = insurnaceClaimNomineeRepository.findByCustomerIdAndIsActive(metaData.getCustomerId(),
@@ -209,6 +211,17 @@ public class GigInsuranceService {
 		}
 		validateNomineePercentage(nominees);
 		validateDuplicateNominee(request);
+		List<InsurnaceClaimNominee> customerInsuranceNominees = insurnaceClaimNomineeRepository.findByCustomerIdAndIsActive(metaData.getCustomerId(),
+				ConstantDocument.Yes);
+		List<BigDecimal> existingNomineesToUpdate = request.getAddNomineeRequestData().stream().filter(i -> {
+			return i.getNomineeId() != null;
+		}).map(i -> i.getNomineeId()).collect(Collectors.toList());
+		for (BigDecimal nomineeToUpdate : existingNomineesToUpdate) {
+			boolean anyMatch = customerInsuranceNominees.stream().anyMatch(i -> i.getNomineeId().equals(nomineeToUpdate));
+			if (!anyMatch) {
+				throw new GlobalException("No active nominee found for nominee id " + nomineeToUpdate);
+			}
+		}
 	}
 
 	private void validateDuplicateNominee(SaveInsuranceDetailRequest request) {
