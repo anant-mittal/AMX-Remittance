@@ -23,7 +23,8 @@ public class CustomerFlags {
 
 	Boolean annualIncomeExpired;
 	Boolean isOnlineCustomer;
-	Boolean forceUpdateInsurance = false;
+	Boolean isForceUpdateInsuranceRequired = false;
+	Boolean displayInsuranceDetail = false;
 	
 
 	public Boolean getIsOnlineCustomer() {
@@ -106,11 +107,20 @@ public class CustomerFlags {
 		this.annualIncomeExpired = annualIncomeExpired;
 	}
 
-	public Boolean getForceUpdateInsurance() {
-		return forceUpdateInsurance;
+	public Boolean getIsForceUpdateInsuranceRequired() {
+		return isForceUpdateInsuranceRequired;
 	}
 
-	public void setForceUpdateInsurance(Boolean forceUpdateInsurance) {
-		this.forceUpdateInsurance = forceUpdateInsurance;
+	public void setIsForceUpdateInsuranceRequired(Boolean isForceUpdateInsuranceRequired) {
+		this.isForceUpdateInsuranceRequired = isForceUpdateInsuranceRequired;
 	}
+
+	public Boolean getDisplayInsuranceDetail() {
+		return displayInsuranceDetail;
+	}
+
+	public void setDisplayInsuranceDetail(Boolean displayInsuranceDetail) {
+		this.displayInsuranceDetail = displayInsuranceDetail;
+	}
+
 }

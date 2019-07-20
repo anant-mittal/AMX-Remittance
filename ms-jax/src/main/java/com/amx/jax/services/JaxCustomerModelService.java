@@ -21,7 +21,8 @@ public class JaxCustomerModelService {
 		// update insurance flag
 		CustomerFlags customerFlag = customerModelResponse.getCustomerFlags();
 		if (gigInsuranceService.isInsuranceActive(customerModelResponse.getCustomerId())) {
-			customerFlag.setForceUpdateInsurance(!gigInsuranceService.hasAddedNominee(customerModelResponse.getCustomerId()));
+			customerFlag.setIsForceUpdateInsuranceRequired(!gigInsuranceService.hasAddedNominee(customerModelResponse.getCustomerId()));
+			customerFlag.setDisplayInsuranceDetail(true);
 		}
 	}
 }

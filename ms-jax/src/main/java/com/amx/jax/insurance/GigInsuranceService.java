@@ -3,6 +3,9 @@ package com.amx.jax.insurance;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -256,7 +259,9 @@ public class GigInsuranceService {
 
 	public boolean isInsuranceActive(BigDecimal customerId) {
 		CustomerInsurance insuranceDetail = customerInsuranceRepository.findByCustomerIdAndIsActive(customerId, ConstantDocument.Yes);
-		return insuranceDetail != null;
+		LocalDate today = LocalDateTime.now().toLocalDate();
+		LocalDate expiryDate = LocalDateTime.ofInstant(new Date().toInstant(), ZoneId.systemDefault()).toLocalDate();
+		return insuranceDetail != null && today.isBefore(expiryDate);
 	}
 
 	public void optInOutInsurance(OptInOutRequest request) {
@@ -265,6 +270,13 @@ public class GigInsuranceService {
 		CustomerInsurance insuranceDetail = customerInsuranceRepository.findByCustomerIdAndIsActive(customerId, ConstantDocument.Yes);
 		if (insuranceDetail == null) {
 			throw new GlobalException("Insurnace detail not found");
+		}
+		InsuranceAction currentAction = insuranceActionRepository.findByActionId(insuranceDetail.getCurrenctActionId());
+		if (currentAction.getOptInDate() != null && Boolean.TRUE.equals(request.getOptIn())) {
+			return;
+		}
+		if (currentAction.getOptOutDate() != null && !Boolean.TRUE.equals(request.getOptIn())) {
+			return;
 		}
 		if (request.getOptIn()) {
 			optIn(request, insuranceDetail);
@@ -277,9 +289,6 @@ public class GigInsuranceService {
 	private void optOut(OptInOutRequest request, CustomerInsurance insuranceDetail) {
 
 		InsuranceAction currentAction = insuranceActionRepository.findByActionId(insuranceDetail.getCurrenctActionId());
-		if (currentAction.getOptOutDate() != null) {
-			throw new GlobalException("Already opted out this insurance");
-		}
 		currentAction.setOptOutDate(new Date());
 		try {
 			currentAction.setOptOutDateAccount(new SimpleDateFormat("dd/MM/yyyy").parse(DateUtil.getCurrentAccMMYear()));
@@ -318,9 +327,6 @@ public class GigInsuranceService {
 			throw new GlobalException("Opt in not allowed");
 		}
 		int optInHours = setup.getOtpInHours();
-		if (!ConstantDocument.Yes.equals(setup.getOptInAllowed())) {
-			throw new GlobalException("Opt in not allowed");
-		}
 		InsuranceAction currentAction = insuranceActionRepository.findByActionId(insuranceDetail.getCurrenctActionId());
 		Date newOptInDate = new Date();
 		Calendar now = Calendar.getInstance();
