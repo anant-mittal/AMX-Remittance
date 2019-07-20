@@ -832,8 +832,23 @@ public class RemittanceTransactionManager {
 		}
 		String appCurrencyQuote = currencyMasterService.getApplicationCountryCurrencyQuote();
 		BigDecimal netAmount = breakup.getNetAmount();
+		String inclusiveExclusiveComm = null;
 		AuthenticationLimitCheckView onlineTxnLimit = parameterService.getOnlineTxnLimit();
-		if (netAmount.compareTo(onlineTxnLimit.getAuthLimit()) > 0) {
+		if(onlineTxnLimit!=null ) {
+			inclusiveExclusiveComm = onlineTxnLimit.getCharField2();
+			if(!StringUtils.isBlank(inclusiveExclusiveComm)  && inclusiveExclusiveComm.equalsIgnoreCase(ConstantDocument.COMM_EXCLUDE)) {
+			netAmount =netAmount.subtract(newCommission==null?BigDecimal.ZERO:newCommission);
+			}else if(!StringUtils.isBlank(inclusiveExclusiveComm)  && inclusiveExclusiveComm.equalsIgnoreCase(ConstantDocument.COMM_INCLUDE)) {
+				netAmount =breakup.getNetAmount();
+				
+		}else {
+				netAmount =netAmount.subtract(newCommission==null?BigDecimal.ZERO:newCommission);
+
+			}
+			
+		}
+		
+		if (onlineTxnLimit!=null && onlineTxnLimit.getAuthLimit() !=null && netAmount.compareTo(onlineTxnLimit.getAuthLimit()) > 0) {
 			StringBuilder errorMessage = new StringBuilder();
 			errorMessage.append("Online Transaction Amount should not exceed - ").append(appCurrencyQuote);
 			errorMessage.append(" ").append(onlineTxnLimit.getAuthLimit());
@@ -868,7 +883,6 @@ public class RemittanceTransactionManager {
 		}
 		validateNewBeneTransactionAmount(breakup);
 	}
-
 	private void validateNewBeneTransactionAmount(ExchangeRateBreakup breakup) {
 		AuthenticationLimitCheckView authLimit = parameterService
 				.getAuthenticationViewRepository(AuthType.NEW_BENE_TRANSACT_AMOUNT_LIMIT.getAuthType());
