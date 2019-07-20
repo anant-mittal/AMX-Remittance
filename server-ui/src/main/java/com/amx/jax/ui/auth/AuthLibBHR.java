@@ -171,6 +171,7 @@ public class AuthLibBHR implements AuthLib {
 		switch (feature) {
 		case DASHBOARD:
 			AuthPermUtil.checkEmailUpdate(authState, customerFlags);
+			AuthPermUtil.checkInsuranceUpdate(authState, customerFlags);
 			break;
 		case REMIT:
 		case BENE_UPDATE:
@@ -179,13 +180,16 @@ public class AuthLibBHR implements AuthLib {
 			AuthPermUtil.checkIdProofExpiry(authState, customerFlags);
 			AuthPermUtil.checkSQASetup(authState, customerFlags);
 			AuthPermUtil.checkSQA(authState, customerFlags);
+			AuthPermUtil.checkInsuranceUpdate(authState, customerFlags);
 			break;
 		case SQA_UPDATE:
 			AuthPermUtil.checkEmailUpdate(authState, customerFlags);
 			AuthPermUtil.checkSQASetup(authState, customerFlags);
+			AuthPermUtil.checkInsuranceUpdate(authState, customerFlags);
 			break;
 		default:
 			AuthPermUtil.checkEmailUpdate(authState, customerFlags);
+			AuthPermUtil.checkInsuranceUpdate(authState, customerFlags);
 			break;
 		}
 
