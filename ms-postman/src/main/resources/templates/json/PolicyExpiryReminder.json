@@ -1,0 +1,4 @@
+{
+  "_subject": "AMIEC Group Life Insurance Expiry Reminder",
+  "_message": "Greetings from Al Mulla Exchange! Your Group Life Insurance worth KD 5,000 is expiring as on [[${data.policyenddate}]]. Your are [[${data.trnxleft}]] transactions away to renew the same policy again."
+}

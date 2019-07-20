@@ -147,7 +147,8 @@ public class Customer implements java.io.Serializable {
 	
 		
 	private String customerVatNumber;
-
+	private String premInsurance;
+	
 	// annual transaction limit fields added
 
 	private BigDecimal annualTransactionLimitFrom;
@@ -178,7 +179,7 @@ public class Customer implements java.io.Serializable {
 	public void setAnnualTransactionUpdatedDate(Date annualTransactionUpdatedDate) {
 		this.annualTransactionUpdatedDate = annualTransactionUpdatedDate;
 	}
-
+	
 	public String getIsBusinessCardVerified() {
 		return isBusinessCardVerified;
 	}
@@ -1106,6 +1107,15 @@ public class Customer implements java.io.Serializable {
 	@Column(name="VAT_NUMBER")
 	public String getCustomerVatNumber() {
 		return customerVatNumber;
+	}
+
+	@Column(name="PREM_INSURANCE")
+	public String getPremInsurance() {
+		return premInsurance;
+	}
+
+	public void setPremInsurance(String premInsurance) {
+		this.premInsurance = premInsurance;
 	}
 
 	@Override

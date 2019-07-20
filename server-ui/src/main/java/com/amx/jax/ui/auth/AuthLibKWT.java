@@ -196,4 +196,13 @@ public class AuthLibKWT implements AuthLib {
 		return customerFlags;
 	}
 
+	public boolean hasFeature(AuthState authState, CustomerFlags customerFlags, Features feature) {
+		switch (feature) {
+		case INSURANCE:
+			return customerFlags.getIsInsuranceActive();
+		default:
+			return true;
+		}
+	}
+
 }
