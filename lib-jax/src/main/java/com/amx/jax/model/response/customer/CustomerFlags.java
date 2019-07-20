@@ -1,7 +1,5 @@
 package com.amx.jax.model.response.customer;
 
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -27,7 +25,6 @@ public class CustomerFlags {
 	Boolean isOnlineCustomer;
 	Boolean isForceUpdateInsuranceRequired = false;
 	Boolean isInsuranceActive = false;
-	public Boolean annualIncomeExpired;
 	
 	public Boolean annualTransactionLimitExpired;
 	
@@ -39,8 +36,6 @@ public class CustomerFlags {
 	public void setAnnualTransactionLimitExpired(Boolean annualTransactionLimitExpired) {
 		this.annualTransactionLimitExpired = annualTransactionLimitExpired;
 	}
-
-	public Boolean isOnlineCustomer;
 
 	public Boolean isEmailMissing;
 
