@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -93,6 +94,8 @@ public class PartnerDataManager {
 		
 		AmxApiResponse<Quotation_Call_Response, Object> quotationResponse = null;
 		
+		ProductDetailsDTO productDetailsDTO = fetchProductDetails(srvPrvFeeInqReqDTO);
+		
 		String bankCode = "HOME";
 		if(bankCode.equalsIgnoreCase(SERVICE_PROVIDER_BANK_CODE.HOME.name())) {
 			BigDecimal settlementExchangeRate = fetchUsdExchangeRate();
@@ -101,7 +104,6 @@ public class PartnerDataManager {
 				CurrencyMasterModel currencyMasterModel = fetchCurrencyMasterDetails(PricerServiceConstants.SETTLEMENT_CURRENCY_CODE, PricerServiceConstants.Yes);
 				if(currencyMasterModel != null) {
 					validateExchangeRate(settlementExchangeRate,currencyMasterModel.getFundMinRate(),currencyMasterModel.getFundMaxRate());
-					ProductDetailsDTO productDetailsDTO = fetchProductDetails(srvPrvFeeInqReqDTO);
 					ServiceProviderRateView serviceProviderRateView = fetchMarginByProduct(productDetailsDTO);
 					if(serviceProviderRateView != null) {
 						marginAmount = serviceProviderRateView.getMargin() == null ? BigDecimal.ZERO : serviceProviderRateView.getMargin();
@@ -117,10 +119,11 @@ public class PartnerDataManager {
 							if(quotationResponse != null) {
 								localCurrencySrvPrvFeeInqResDTO = ServiceProviderResponse(quotationResponse, srvPrvFeeInqReqDTO, productDetailsDTO, serviceProviderRateView, settlementExchangeRate, settlementTotalDiscountPips);
 								// call the customer discounts
-								//DiscountDetailsReqRespDTO discountDetailsReqRespDTO = getDiscountDetailsCountryCurrency(srvPrvFeeInqReqDTO);
 								if(localCurrencySrvPrvFeeInqResDTO != null) {
 									ExchangeRateDetails exchangeRateDetails = fetchCustomerChannelDiscounts(srvPrvFeeInqReqDTO, productDetailsDTO, marginAmount, localCurrencySrvPrvFeeInqResDTO.getForeignAmount());
-									settlementTotalDiscountPips = convertDiscountToSettlementCurrency(exchangeRateDetails, settlementExchangeRate);
+									if(exchangeRateDetails != null) {
+										settlementTotalDiscountPips = convertDiscountToSettlementCurrency(exchangeRateDetails, settlementExchangeRate);
+									}
 									
 									amxRateWithMargin = settlementExchangeRate.add(marginAmount).subtract(settlementTotalDiscountPips);
 									settlementAmtwithDecimal = new BigDecimal(srvPrvFeeInqReqDTO.getAmount().doubleValue()/amxRateWithMargin.doubleValue());
@@ -129,6 +132,7 @@ public class PartnerDataManager {
 									quotationResponse = fetchQuotationDetails(srvPrvFeeInqReqDTO, serviceProviderRateView, settlementAmount);
 									if(quotationResponse != null) {
 										srvPrvFeeInqResDTO = ServiceProviderResponse(quotationResponse, srvPrvFeeInqReqDTO, productDetailsDTO, serviceProviderRateView, settlementExchangeRate, settlementTotalDiscountPips);
+										srvPrvFeeInqResDTO.getHomeSendInfoDTO().setExchangeDiscountsData(exchangeRateDetails);
 									}
 								}
 							}
@@ -136,11 +140,13 @@ public class PartnerDataManager {
 							quotationResponse = fetchQuotationDetails(srvPrvFeeInqReqDTO, serviceProviderRateView, srvPrvFeeInqReqDTO.getAmount());
 							if(quotationResponse != null) {
 								// call the customer discounts
-								//DiscountDetailsReqRespDTO discountDetailsReqRespDTO = getDiscountDetailsCountryCurrency(srvPrvFeeInqReqDTO);
 								ExchangeRateDetails exchangeRateDetails = fetchCustomerChannelDiscounts(srvPrvFeeInqReqDTO, productDetailsDTO, marginAmount, srvPrvFeeInqReqDTO.getAmount());
-								settlementTotalDiscountPips = convertDiscountToSettlementCurrency(exchangeRateDetails, settlementExchangeRate);
+								if(exchangeRateDetails != null) {
+									settlementTotalDiscountPips = convertDiscountToSettlementCurrency(exchangeRateDetails, settlementExchangeRate);
+								}
 
 								srvPrvFeeInqResDTO = ServiceProviderResponse(quotationResponse, srvPrvFeeInqReqDTO, productDetailsDTO, serviceProviderRateView, settlementExchangeRate, settlementTotalDiscountPips);
+								srvPrvFeeInqResDTO.getHomeSendInfoDTO().setExchangeDiscountsData(exchangeRateDetails);
 							}
 						}
 					}else {
@@ -162,7 +168,6 @@ public class PartnerDataManager {
 			}
 			
 		}
-		
 		
 		return srvPrvFeeInqResDTO;
 	}
@@ -408,7 +413,7 @@ public class PartnerDataManager {
 
 			LOGGER.info("Inputs passed to Service Provider Home Send : " + JsonUtil.toJson(quatationRequestDto));
 			srvPrvResp = serviceProviderClient.getQuatation(quatationRequestDto);
-			//saveServiceProviderXml(srvPrvResp);
+			fetchServiceProviderData(srvPrvResp,srvPrvFeeInqReqDTO);
 			LOGGER.info("Output from Service Provider Home Send : " + JsonUtil.toJson(srvPrvResp));
 
 		}catch (Exception e) {
@@ -742,28 +747,52 @@ public class PartnerDataManager {
 		}
 	}
 	
-	public void saveServiceProviderXml(String filename, String content,BigDecimal referenceNo,BigDecimal seq,String xmlType,String trnxType,String bene_Bank_Txn_Ref) {
-
-		//writeToFile("feeEnquiryReq", accountCharges.getRequest_XML(),getReferenceNo(),seq,Constants.Req,null,null);
-		//writeToFile("feeEnquiryRes", accountCharges.getResponse_XML(),getReferenceNo(),seq,Constants.Res,null,null);
+	// iterate the response and insert the log table
+	public void fetchServiceProviderData(AmxApiResponse<Quotation_Call_Response, Object> srvPrvResp,SrvPrvFeeInqReqDTO srvPrvFeeInqReqDTO) {
+		String requestXml = null;
+		String responseXml = null;
+		String referenceNo = null;
+		String partnerReference = null;
+		String trnxType = PricerServiceConstants.SEND_TRNX;
+		BigDecimal reqSeq = new BigDecimal(1);
+		BigDecimal resSeq = new BigDecimal(2);
+		
+		if(srvPrvResp != null && srvPrvResp.getResult() != null) {
+			if(srvPrvResp.getResult().getOut_going_transaction_reference() != null) {
+				referenceNo = srvPrvResp.getResult().getOut_going_transaction_reference();
+			}
+			if(srvPrvResp.getResult().getRequest_XML() != null) {
+				requestXml = srvPrvResp.getResult().getRequest_XML();
+				saveServiceProviderXml("feeEnquiryReq", requestXml, referenceNo, reqSeq, PricerServiceConstants.REQUEST, trnxType, partnerReference,srvPrvFeeInqReqDTO);
+			}
+			if(srvPrvResp.getResult().getResponse_XML() != null) {
+				responseXml = srvPrvResp.getResult().getResponse_XML();
+				saveServiceProviderXml("feeEnquiryRes", responseXml, referenceNo, resSeq, PricerServiceConstants.RESPONSE, trnxType, partnerReference,srvPrvFeeInqReqDTO);
+			}
+		}
+	}
+	
+	public void saveServiceProviderXml(String filename, String content,String referenceNo,BigDecimal seq,String xmlType,String trnxType,String bene_Bank_Txn_Ref,SrvPrvFeeInqReqDTO srvPrvFeeInqReqDTO) {
 
 		try {
 
 			ServiceProviderXmlLog serviceProviderXmlLog = new ServiceProviderXmlLog();
 
-			//serviceProviderXmlLog.setApplicationCountryId(applicationCountryId);
-			//serviceProviderXmlLog.setCompanyId(companyId);
-			//serviceProviderXmlLog.setCountryBranchId(countryBranchId);
+			serviceProviderXmlLog.setApplicationCountryId(srvPrvFeeInqReqDTO.getApplicationCountryId());
+			serviceProviderXmlLog.setCompanyId(srvPrvFeeInqReqDTO.getCompanyId());
+			serviceProviderXmlLog.setCountryBranchId(srvPrvFeeInqReqDTO.getCountryBranchId());
 			//serviceProviderXmlLog.setCreatedBy(createdBy);
-			//serviceProviderXmlLog.setCreatedDate(createdDate);
-			//serviceProviderXmlLog.setCustomerId(customerId);
+			serviceProviderXmlLog.setCreatedDate(new Date());
+			serviceProviderXmlLog.setCustomerId(srvPrvFeeInqReqDTO.getCustomerId());
 			//serviceProviderXmlLog.setCustomerReference(customerReference);
 			//serviceProviderXmlLog.setEmosBranchCode(emosBranchCode);
 			serviceProviderXmlLog.setFileName(filename);
 			//serviceProviderXmlLog.setForeignTerminalId(foreignTerminalId);
 			//serviceProviderXmlLog.setIdentifier(identifier);
 			serviceProviderXmlLog.setMtcNo(bene_Bank_Txn_Ref);
-			serviceProviderXmlLog.setRefernceNo(referenceNo);
+			if(referenceNo != null) {
+				serviceProviderXmlLog.setRefernceNo(new BigDecimal(referenceNo));
+			}
 			serviceProviderXmlLog.setSequence(seq);
 			serviceProviderXmlLog.setTransactionType(trnxType);
 			serviceProviderXmlLog.setXmlData(IoUtils.stringToClob(content));
@@ -809,8 +838,8 @@ public class PartnerDataManager {
 		CustomerDiscountReqDTO customerDiscountReqDTO = new CustomerDiscountReqDTO();
 		
 		//testing
-		customerDiscountReqDTO.setBankId(new BigDecimal(351));
-		//customerDiscountReqDTO.setBankId(productDetailsDTO.getBankId());
+		//customerDiscountReqDTO.setBankId(new BigDecimal(351));
+		customerDiscountReqDTO.setBankId(productDetailsDTO.getBankId());
 		customerDiscountReqDTO.setChannel(srvPrvFeeInqReqDTO.getChannel());
 		customerDiscountReqDTO.setCustomerId(srvPrvFeeInqReqDTO.getCustomerId());
 		customerDiscountReqDTO.setForeignCurrencyId(srvPrvFeeInqReqDTO.getForeignCurrencyId());
@@ -839,5 +868,6 @@ public class PartnerDataManager {
 		
 		return settlementTotalDiscountPips;
 	}
+	
 
 }

@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Calendar;
 
+import com.amx.jax.pricer.dto.ExchangeRateDetails;
+
 public class HomeSendSrvcProviderInfo implements Serializable {
 
 	/**
@@ -11,28 +13,30 @@ public class HomeSendSrvcProviderInfo implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	Calendar offerExpirationDate;
+	private Calendar offerExpirationDate;
 
-	String partnerTransactionReference;
-	String outGoingTransactionReference;
-	String settlementCurrency;
-	String destinationCurrency;
-	String actionInd;
-	String responseCode;
-	String responseDescription;
-	String technicalDetails;
-	String requestXML;
-	String responseXML;
+	private String partnerTransactionReference;
+	private String outGoingTransactionReference;
+	private String settlementCurrency;
+	private String destinationCurrency;
+	private String actionInd;
+	private String responseCode;
+	private String responseDescription;
+	private String technicalDetails;
+	private String requestXML;
+	private String responseXML;
 
-	boolean isBeneficiaryDeduct;
+	private boolean isBeneficiaryDeduct;
 
-	BigDecimal creditedAmountInDestinationCurrency;
-	BigDecimal initialAmountInSettlementCurrency;
-	BigDecimal fixChargedAmountInSettlementCurrency;
-	BigDecimal variableChargedAmountInSettlementCurrency;
-	BigDecimal totalChargedAmountInSettlementCurrency;
-	BigDecimal wholeSaleFxRate;
-	BigDecimal transactionMargin;
+	private BigDecimal creditedAmountInDestinationCurrency;
+	private BigDecimal initialAmountInSettlementCurrency;
+	private BigDecimal fixChargedAmountInSettlementCurrency;
+	private BigDecimal variableChargedAmountInSettlementCurrency;
+	private BigDecimal totalChargedAmountInSettlementCurrency;
+	private BigDecimal wholeSaleFxRate;
+	private BigDecimal transactionMargin;
+	
+	private ExchangeRateDetails exchangeDiscountsData;
 	
 	
 	public Calendar getOfferExpirationDate() {
@@ -167,5 +171,11 @@ public class HomeSendSrvcProviderInfo implements Serializable {
 	public void setTransactionMargin(BigDecimal transactionMargin) {
 		this.transactionMargin = transactionMargin;
 	}
-
+	
+	public ExchangeRateDetails getExchangeDiscountsData() {
+		return exchangeDiscountsData;
+	}
+	public void setExchangeDiscountsData(ExchangeRateDetails exchangeDiscountsData) {
+		this.exchangeDiscountsData = exchangeDiscountsData;
+	}
 }

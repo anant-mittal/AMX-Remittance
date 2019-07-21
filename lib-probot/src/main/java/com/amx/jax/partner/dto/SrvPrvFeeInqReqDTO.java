@@ -41,7 +41,6 @@ public class SrvPrvFeeInqReqDTO implements Serializable {
 	@NotNull(message = "Country Branch Id can not be Null or Empty")
 	private BigDecimal countryBranchId;
 	
-	@NotNull(message = "Employee Id can not be Null or Empty")
 	private BigDecimal employeeId;
 	
 	@NotNull(message = "Company Id can not be Null or Empty")

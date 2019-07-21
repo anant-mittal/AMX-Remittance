@@ -150,5 +150,9 @@ public final class PricerServiceConstants {
 	public static enum SERVICE_PROVIDER_BANK_CODE {
 		HOME, WU, MONEY;
 	}
+	
+	public static final String SEND_TRNX = "S";
+	public static final String REQUEST = "R";
+	public static final String RESPONSE = "P";
 
 }

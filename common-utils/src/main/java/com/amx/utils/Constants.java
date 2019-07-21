@@ -124,4 +124,6 @@ public class Constants {
 	public static final String FEMALE = "FEMALE";
 	
 	public static final String GENDER_FEMALE = "F";
+	
+	public static final String SENDER_ZIP_CODE = "13077";
 }

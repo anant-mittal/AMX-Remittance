@@ -28,6 +28,7 @@ import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.CurrencyWiseDenomination;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ParameterDetails;
+import com.amx.jax.dbmodel.partner.RemitApplSrvProv;
 import com.amx.jax.dbmodel.remittance.CustomerBank;
 import com.amx.jax.dbmodel.remittance.LocalBankDetailsView;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
@@ -54,6 +55,7 @@ import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
 import com.amx.jax.repository.IBankMasterFromViewDao;
 import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.ICustomerRepository;
+import com.amx.jax.repository.IRemitApplSrvProvRepository;
 import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.util.DateUtil;
@@ -94,7 +96,8 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 	@Autowired
 	ICurrencyDao currDao;
 	
-	
+	@Autowired
+	IRemitApplSrvProvRepository remitApplSrvProvRepository;
 
 
 	/* 
@@ -209,7 +212,7 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		shoppingCartDataTableBean.setSourceOfIncomeDesc(shoppingCartDetails.getSourceOfIncomeDesc());
 		shoppingCartDataTableBean.setRemittanceDesc(shoppingCartDetails.getRemittanceDescription());
 		shoppingCartDataTableBean.setDeliveryDesc(shoppingCartDetails.getDeliveryDescription());
-		
+
 		if (shoppingCartDetails.getForeignTranxAmount() != null && breakup.getFcDecimalNumber() != null) {
 			shoppingCartDataTableBean.setForeignTranxAmount(RoundUtil.roundBigDecimal(shoppingCartDetails.getForeignTranxAmount(),breakup.getFcDecimalNumber().intValue()));
 		}
@@ -231,7 +234,7 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		} else {
 			shoppingCartDataTableBean.setSpldealStatus(ConstantDocument.No);
 		}
-		
+
 		List<BanksView> bankView =bankMaster.getBankListByBankId(shoppingCartDetails.getRoutingBankId());
 		if(bankView != null && !bankView.isEmpty()) {
 			shoppingCartDataTableBean.setRoutingBank(bankView.get(0)==null?"":bankView.get(0).getBankFullName());
@@ -241,16 +244,19 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		shoppingCartDataTableBean.setDomXRate(RoundUtil.roundBigDecimal(BigDecimal.ONE.divide(shoppingCartDetails.getExchangeRateApplied(),10,RoundingMode.HALF_UP),breakup.getFcDecimalNumber().intValue()));
 		shoppingCartDataTableBean.setCustomerSignatureString(shoppingCartDetails.getCustomerSignatureClob());
 		if(JaxUtil.isNullZeroBigDecimalCheck(shoppingCartDetails.getLocalCurrency())){
-		CurrencyMasterModel localCurr = currDao.getOne(shoppingCartDetails.getLocalCurrency());
+			CurrencyMasterModel localCurr = currDao.getOne(shoppingCartDetails.getLocalCurrency());
 			shoppingCartDataTableBean.setLocalCurrencyCode(localCurr.getQuoteName()==null?"":localCurr.getQuoteName());
 		}
-		
+
 		if(JaxUtil.isNullZeroBigDecimalCheck(shoppingCartDetails.getForeignCurrency())){
 			CurrencyMasterModel fcCurr = currDao.getOne(shoppingCartDetails.getForeignCurrency());
-				shoppingCartDataTableBean.setForeignCurrencyCode(fcCurr.getQuoteName()==null?"":fcCurr.getQuoteName());
-			}
+			shoppingCartDataTableBean.setForeignCurrencyCode(fcCurr.getQuoteName()==null?"":fcCurr.getQuoteName());
+		}
 		
-		
+		// fetch trnx expiry date
+		RemitApplSrvProv remitApplSrvProv = remitApplSrvProvRepository.findByRemittanceApplicationId(shoppingCartDetails.getRemittanceApplicationId());
+		shoppingCartDataTableBean.setTrnxExpirationDate(remitApplSrvProv.getOfferExpirationDate());
+
 		return shoppingCartDataTableBean;
 	}
 

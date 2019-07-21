@@ -2,6 +2,7 @@ package com.amx.jax.model.response.remittance;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Date;
 
 public class CustomerShoppingCartDto implements Serializable{
 
@@ -62,6 +63,8 @@ public class CustomerShoppingCartDto implements Serializable{
 	private String localCurrencyCode;
 	private String foreignCurrencyCode;
 	
+	/* adding service provider trnx duration */	
+	private Date trnxExpirationDate;
 	
 	public BigDecimal getDocumentNo() {
 		return documentNo;
@@ -421,6 +424,12 @@ public class CustomerShoppingCartDto implements Serializable{
 	}
 	public void setForeignCurrencyCode(String foreignCurrencyCode) {
 		this.foreignCurrencyCode = foreignCurrencyCode;
+	}
+	public Date getTrnxExpirationDate() {
+		return trnxExpirationDate;
+	}
+	public void setTrnxExpirationDate(Date trnxExpirationDate) {
+		this.trnxExpirationDate = trnxExpirationDate;
 	}
 	
 }

@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
@@ -16,14 +17,24 @@ public class PaymentModeLimitsView implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	
+	private BigDecimal paymentModeLimitIdl;
 	private BigDecimal applicationCountryId;
 	private BigDecimal companyId;
 	private BigDecimal bankId;
 	private BigDecimal currencyId;
-	private BigDecimal customerTypeFrom;
-	private BigDecimal customerTypeTo;
+	private String customerTypeFrom;
+	private String customerTypeTo;
 	private BigDecimal cashLimit;
 	private BigDecimal knetLimit;
+	
+	@Id
+	@Column(name = "PAYMENT_MODE_LIMIT_ID")
+	public BigDecimal getPaymentModeLimitIdl() {
+		return paymentModeLimitIdl;
+	}
+	public void setPaymentModeLimitIdl(BigDecimal paymentModeLimitIdl) {
+		this.paymentModeLimitIdl = paymentModeLimitIdl;
+	}
 	
 	@Column(name = "APPLICATION_COUNTRY_ID")
 	public BigDecimal getApplicationCountryId() {
@@ -58,18 +69,18 @@ public class PaymentModeLimitsView implements Serializable {
 	}
 	
 	@Column(name = "CUSTOMER_TYPE_FROM")
-	public BigDecimal getCustomerTypeFrom() {
+	public String getCustomerTypeFrom() {
 		return customerTypeFrom;
 	}
-	public void setCustomerTypeFrom(BigDecimal customerTypeFrom) {
+	public void setCustomerTypeFrom(String customerTypeFrom) {
 		this.customerTypeFrom = customerTypeFrom;
 	}
 	
 	@Column(name = "CUSTOMER_TYPE_TO")
-	public BigDecimal getCustomerTypeTo() {
+	public String getCustomerTypeTo() {
 		return customerTypeTo;
 	}
-	public void setCustomerTypeTo(BigDecimal customerTypeTo) {
+	public void setCustomerTypeTo(String customerTypeTo) {
 		this.customerTypeTo = customerTypeTo;
 	}
 	
