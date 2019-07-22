@@ -17,6 +17,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.JaxFieldEntity;
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.model.GetJaxFieldRequest;
 import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.JaxFieldDto;
@@ -27,6 +28,7 @@ import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxDynamicField;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.CountryBranch;
+import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.bene.BeneficaryAccount;
 import com.amx.jax.dbmodel.bene.BeneficaryMaster;
 import com.amx.jax.dbmodel.remittance.AdditionalDataDisplayView;
@@ -35,6 +37,9 @@ import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.remittance.RemittanceAdditionalBeneFieldModel;
 import com.amx.jax.model.response.remittance.AmlCheckResponseDto;
+import com.amx.jax.partner.manager.PartnerTransactionManager;
+import com.amx.jax.pricer.var.PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE;
+import com.amx.jax.repository.CountryMasterRepository;
 import com.amx.jax.repository.IAdditionalDataDisplayDao;
 import com.amx.jax.repository.remittance.StaffAuthorizationRepository;
 import com.amx.jax.service.BankMetaService;
@@ -66,14 +71,22 @@ public class RemittanceAdditionalFieldManager {
 	
 	@Autowired
 	MetaData metaData;
+	
+	@Autowired
+	PartnerTransactionManager partnerTransactionManager;
+	
+	@Autowired
+	CountryMasterRepository countryMasterRepository;
 
 	Logger logger = LoggerFactory.getLogger(getClass());
 
 	public void validateAdditionalFields(RemittanceAdditionalBeneFieldModel model, Map<String, Object> remitApplParametersMap) {
 		ApiResponse<JaxConditionalFieldDto> apiResponse = jaxFieldService.getJaxFieldsForEntity(new GetJaxFieldRequest(JaxFieldEntity.REMITTANCE_ONLINE));
-
+		ApiResponse<JaxConditionalFieldDto> spApiResponse = additionalFlexFieldsServProvider(model, remitApplParametersMap);
 		List<JaxConditionalFieldDto> allJaxConditionalFields = apiResponse.getResults();
-
+		if(spApiResponse != null && spApiResponse.getResults() != null) {
+			allJaxConditionalFields.addAll(spApiResponse.getResults());
+		}
 		Map<String, AdditionalDataDisplayView> flexFieldMap = getAdditionalDataDisplayMap(remitApplParametersMap);
 		List<JaxConditionalFieldDto> missingJaxConditionalFields = new ArrayList<>();
 		Map<String, Object> additionalFields = model.getAdditionalFields();
@@ -120,7 +133,10 @@ public class RemittanceAdditionalFieldManager {
 					break;
 				case BENE_ZIP_CODE:
 					jaxConditionalFieldDto.getField().setDefaultValue(beneficaryMaster.getBeneficiaryZipCode());
-					break;	
+					break;
+				case BENE_CITY_NAME:
+					jaxConditionalFieldDto.getField().setDefaultValue(beneficaryMaster.getCityName());
+					break;
 				default:
 					break;
 				}
@@ -229,7 +245,12 @@ public class RemittanceAdditionalFieldManager {
 				}
 				if (JaxDynamicField.BENE_ZIP_CODE.name().equals(jaxConditionalField.getField().getName()) && fieldValue != null) {
 					beneficaryMaster.setBeneficiaryZipCode(fieldValue.toString());
-					logger.info("setting street no number for bene master seq id {} , : {} ", beneficiaryDetail.getBeneficaryMasterSeqId(), fieldValue);
+					logger.info("setting zip code for bene master seq id {} , : {} ", beneficiaryDetail.getBeneficaryMasterSeqId(), fieldValue);
+					beneficiaryService.saveBeneMaster(beneficaryMaster);
+				}
+				if (JaxDynamicField.BENE_CITY_NAME.name().equals(jaxConditionalField.getField().getName()) && fieldValue != null) {
+					beneficaryMaster.setCityName(fieldValue.toString());
+					logger.info("setting city name for bene master seq id {} , : {} ", beneficiaryDetail.getBeneficaryMasterSeqId(), fieldValue);
 					beneficiaryService.saveBeneMaster(beneficaryMaster);
 				}
 			}
@@ -281,5 +302,29 @@ public class RemittanceAdditionalFieldManager {
 		return allJaxConditionalFields;
 	}
 	
+	// condition for Service Provider [Home Send] Transaction
+	public ApiResponse<JaxConditionalFieldDto> additionalFlexFieldsServProvider(RemittanceAdditionalBeneFieldModel model, Map<String, Object> remitApplParametersMap) {
+		ApiResponse<JaxConditionalFieldDto> apiResponse = new ApiResponse<>();
+		boolean status = Boolean.FALSE;
+		BigDecimal routingBankId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_BANK_ID");
+		if(routingBankId != null) {
+			BankMasterDTO bankMasterDTO = bankMetaService.getBankMasterDTObyId(routingBankId);
+			if(bankMasterDTO.getBankCode().equalsIgnoreCase(SERVICE_PROVIDER_BANK_CODE.HOME.name())) {
+				BenificiaryListView beneficiaryDetail = beneficiaryService.getBeneByIdNo(model.getBeneId());
+				BigDecimal beneCountryId = beneficiaryDetail.getBenificaryCountry();
+				if(beneCountryId != null) {
+					CountryMaster beneCountryMaster = countryMasterRepository.getCountryMasterByCountryId(beneCountryId);
+					if(beneCountryMaster != null && bankMasterDTO != null) {
+						status = partnerTransactionManager.checkBeneCountryParam(beneCountryMaster.getCountryAlpha3Code());
+						if(!status) {
+							apiResponse = jaxFieldService.getJaxFieldsForEntity(new GetJaxFieldRequest(JaxFieldEntity.SERVICE_PROVIDER));
+						}
+					}
+				}
+			}
+		}
+		
+		return apiResponse;
+	}
 
 }

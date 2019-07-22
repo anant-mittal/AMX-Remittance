@@ -126,6 +126,15 @@ public class PartnerTransactionManager extends AbstractModel {
 		Customer customerDto = fetchSPCustomerDto(customerDetailsDTO);
 
 		Map<BigDecimal,SrvProvBeneficiaryTransactionDTO> trnxPartnerData = fetchTransactionDetails(collectionDocYear, collectionDocNumber, customerId);
+		
+		BigDecimal applicationCountryId = metaData.getCountryId();
+		String applicationCountryAlpha3 = null;
+		if(applicationCountryId != null){
+			CountryMaster countryMaster = fetchCountryMasterDetails(applicationCountryId);
+			if(countryMaster != null) {
+				applicationCountryAlpha3 = countryMaster.getCountryAlpha3Code();
+			}
+		}
 
 		for (Entry<BigDecimal, SrvProvBeneficiaryTransactionDTO> srvProvBeneTrnx : trnxPartnerData.entrySet()) {
 
@@ -147,7 +156,7 @@ public class PartnerTransactionManager extends AbstractModel {
 			Benificiary beneficiaryDto = fetchSPBeneficiaryDto(customerDetailsDTO, beneficiaryDetailsDTO,remittanceTransactionPartnerDTO,destinationCountryAlpha3);
 			serviceProviderCallRequestDto.setBeneficiaryDto(beneficiaryDto);
 
-			TransactionData transactionDto = fetchSPTransactionDto(customerDetailsDTO, beneficiaryDetailsDTO,remittanceTransactionPartnerDTO,destinationCountryAlpha3,destinationCountryAlpha2);
+			TransactionData transactionDto = fetchSPTransactionDto(customerDetailsDTO, beneficiaryDetailsDTO,remittanceTransactionPartnerDTO,destinationCountryAlpha3,destinationCountryAlpha2,applicationCountryAlpha3);
 			serviceProviderCallRequestDto.setTransactionDto(transactionDto);
 
 			lstTransactionRequestDto.add(serviceProviderCallRequestDto);
@@ -395,18 +404,10 @@ public class PartnerTransactionManager extends AbstractModel {
 		return beneficiaryDto;
 	}
 
-	public TransactionData fetchSPTransactionDto(CustomerDetailsDTO customerDetailsDTO,BeneficiaryDetailsDTO beneficiaryDetailsDTO,RemittanceTransactionPartnerDTO remitTrnxDto,String destinationCountryAlpha3,String destinationCountryAlpha2) {
+	public TransactionData fetchSPTransactionDto(CustomerDetailsDTO customerDetailsDTO,BeneficiaryDetailsDTO beneficiaryDetailsDTO,RemittanceTransactionPartnerDTO remitTrnxDto,String destinationCountryAlpha3,String destinationCountryAlpha2,String applicationCountryAlpha3) {
 		TransactionData transactionDto = new TransactionData();
 
 		//Transaction Details
-		BigDecimal applicationCountryId = metaData.getCountryId();
-		String applicationCountryAlpha3 = null;
-		if(applicationCountryId != null){
-			CountryMaster countryMaster = fetchCountryMasterDetails(applicationCountryId);
-			if(countryMaster != null) {
-				applicationCountryAlpha3 = countryMaster.getCountryAlpha3Code();
-			}
-		}
 		transactionDto.setApplication_country_3_digit_ISO(applicationCountryAlpha3);
 		transactionDto.setDestination_country_2_digit_ISO(destinationCountryAlpha2);
 		transactionDto.setDestination_country_3_digit_ISO(destinationCountryAlpha3);
