@@ -1,6 +1,5 @@
 package com.amx.jax.client;
 
-import static com.amx.amxlib.constant.ApiEndpoint.BENE_API_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.REMIT_API_ENDPOINT;
 
 import java.math.BigDecimal;
@@ -11,13 +10,10 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Component;
 
-import com.amx.amxlib.constant.ApiEndpoint.MetaApi;
 import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.exception.RemittanceTransactionValidationException;
-import com.amx.amxlib.meta.model.BeneficiaryListDTO;
-import com.amx.amxlib.meta.model.CountryMasterDTO;
 import com.amx.amxlib.meta.model.CustomerRatingDTO;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
