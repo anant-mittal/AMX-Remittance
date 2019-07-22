@@ -89,9 +89,12 @@ public class JaxCustomerContactVerificationService extends AbstractService {
 		if (customer.get(0).getEmailVerified() == Status.Y) {
 			CustomerVerification cv = customerVerificationService.getVerification(customer.get(0).getCustomerId(),
 					CustomerVerificationType.EMAIL);
-			logger.info("Customer Mail ------ : ");
-			logger.info("Customer Data ------ : " + cv.toString());
-			cv.setVerificationStatus(ConstantDocument.Yes);
+			if(cv!=null) {
+				logger.info("Customer Mail ------ : ");
+				logger.info("Customer Data ------ : " + cv.toString());
+				cv.setVerificationStatus(ConstantDocument.Yes);
+			}
+			
 		} else if (customer.get(0).getEmailVerified() == Status.N) {
 			// @Radhika
 			throw new GlobalException(JaxError.EMAIL_NOT_VERIFIED, "Email id is not verified . Please wait for 24 hrs");
