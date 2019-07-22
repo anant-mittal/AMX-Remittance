@@ -340,7 +340,7 @@ public class UserService extends AbstractUserService {
 		response.setResponseStatus(ResponseStatus.OK);
 
 		// this is to send email on OLD email id
-		if (model.getEmail() != null) {
+		if ((model.getEmail() != null)&& oldEmail!=null) {
 			model.setEmail(oldEmail);
 		}
 

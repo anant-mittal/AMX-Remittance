@@ -1115,7 +1115,10 @@ public BeneAdditionalDto getAdditionalBeneDetailJax(BenificiaryListView benefica
 		/** for Branch **/
 		if(serviceApplRuleforBranch!=null && serviceApplRuleforBranch.getValidate()!=null && serviceApplRuleforBranch.getValidate().equalsIgnoreCase(ConstantDocument.Yes)) {
 			
-			List<ViewBnkFlexVal>  bankFlexField = viewBankFlxValRepository.findByBnkcodeAndFileNameAndBeneBankCode(routingBankMasterModel.getBankCode(), ConstantDocument.BNFBRCH, beneBankMasterModel.getBankCode());
+			//List<ViewBnkFlexVal>  bankFlexField = viewBankFlxValRepository.findByBnkcodeAndFileNameAndBeneBankCode(routingBankMasterModel.getBankCode(), ConstantDocument.BNFBRCH, beneBankMasterModel.getBankCode());
+			
+			List<ViewBnkFlexVal>  bankFlexField = viewBankFlxValRepository.findByBnkcodeAndFileNameAndBeneBankCodeAndBeneBranchCode(routingBankMasterModel.getBankCode(), ConstantDocument.BNFBRCH, beneBankMasterModel.getBankCode(),beneBankBranchView.get(0).getBranchCode());
+			
 			if(bankFlexField!=null && !bankFlexField.isEmpty()) {
 				if(bankFlexField.size()>1) {
 					throw new GlobalException(JaxError.INVALID_ROUTING_BANK, "Too many rows for this combination in  Bene bank and branch for flex rules "+beneBankMasterModel.getBankCode());

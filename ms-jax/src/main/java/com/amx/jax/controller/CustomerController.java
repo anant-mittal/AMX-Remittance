@@ -108,13 +108,20 @@ public class CustomerController implements ICustomerService {
 		BigDecimal customerId = (customerModel.getCustomerId() == null) ? metaData.getCustomerId() : customerModel.getCustomerId();
 		Customer cust = custDao.getCustById(customerId);
 		logger.debug("customer model is "+cust.toString());
+		GlobalException ex = null;
+		try {
 		if(StringUtils.isEmpty(cust.getEmail())) {
 			jaxCustomerContactVerificationService.sendEmailVerifyLinkOnReg(customerModel);
+			
 		}
-		ApiResponse response = userService.saveCustomer(customerModel);
-		if(StringUtils.isEmpty(cust.getEmail())) {
-			jaxCustomerContactVerificationService.sendEmailVerifyLinkOnReg(customerModel);
+		}catch(GlobalException e) {
+			ex = e;
 		}
+	   ApiResponse response = userService.saveCustomer(customerModel);
+	   if(ex != null) {
+		   throw ex;
+	   }
+		
 		return response;
 	}
 
@@ -146,7 +153,7 @@ public class CustomerController implements ICustomerService {
 		List<ContactType> channel = new ArrayList<>();
 		channel.add(ContactType.SMS_EMAIL);
 		response = userService.sendOtpForCivilId(civilId, channel, null, null);
-		}else if(customerOnlineRegistration.getStatus().equalsIgnoreCase("N") && (customerdetails.getEmailVerified().equals(Status.N))){
+		}else if(customerOnlineRegistration.getStatus().equalsIgnoreCase("N") && (customerdetails.getEmailVerified().equals(Status.N))||(customerdetails.getEmailVerified().equals(Status.N)&&customerOnlineRegistration.getStatus().equalsIgnoreCase("Y"))){
 			throw new GlobalException(JaxError.EMAIL_NOT_VERIFIED, "Email id is not verified.Kinldy verify");
 		}
 		
