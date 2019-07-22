@@ -849,7 +849,7 @@ public class UserValidationService {
 	}
 	
 	public void validateCustomerContactForSendOtp(List<ContactType> contactTypes, Customer customer) {
-		validateCustomerContactForSendOtp(contactTypes, customer);
+		validateCustomerContactForSendOtp(contactTypes, customer, null);
 	}
 	
 	public void validateCustomerContactForSendOtp(List<ContactType> contactTypes, Customer customer, CustomerModel customerModel) {

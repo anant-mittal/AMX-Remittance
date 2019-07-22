@@ -1456,9 +1456,8 @@ public class RemittanceTransactionManager {
 	/** added by Rabil on 28 May 2019 **/
 	private String accountValidationApi(String bankCode,String beneBankaccount) {
 		String errorMessage =null;
-		try {
-	
-		String accountValidation=null;
+		String accountValidation="Y";
+		
 		ServiceProviderCredentialsModel crdeModel = serviceProviderCredentailsRepository.findByLoginCredential1(ConstantDocument.BENE_ACCT_VALID);
 		String bankUrl =null;
 		if(crdeModel!=null && !StringUtils.isBlank(crdeModel.getLoginCredential2())) {
@@ -1466,48 +1465,28 @@ public class RemittanceTransactionManager {
 		}
 		if(!StringUtils.isBlank(bankUrl)) {
 			String url = bankUrl+"?bank_code="+bankCode+"&bene_bank_account="+beneBankaccount;
+			try {
 			String response = restService.ajax(url).post().asString();
 			logger.info("response :"+response);
 			if(!StringUtils.isBlank(response)) {
 				BsbApiResponse bsbApi=null;
-				try {
+					
 					bsbApi = JsonUtil.getMapper().readValue(response, BsbApiResponse.class);
-				} catch (JsonParseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (JsonMappingException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				if(bsbApi!=null && bsbApi.getIs_valid_account()) {
-					accountValidation ="Y";
-					//errorMessage = bsbApi.getResponseCode()+"-"+bsbApi.getResponseDesc();
-				}else {
-					accountValidation ="N";
-					errorMessage =bsbApi.getResponseDesc();
-				}
+
+					if(bsbApi!=null &&  bsbApi.getTechError() == false && bsbApi.getIs_valid_account() == false) {
+						accountValidation ="N";
+						errorMessage =bsbApi.getResponseDesc();
+					}
 			}else {
 				logger.info("BSB API Resonse :"+response);
 			}
-			System.out.println("BSB API Resonse :"+response);
-			
-		/*	
-			if(!StringUtils.isBlank(accountValidation) && accountValidation.equalsIgnoreCase(ConstantDocument.No)) {
-				logger.error("response :"+bankCode +"-"+errorMessage);
-				throw new GlobalException(JaxError.BSB_ACCOUNT_VALIATION,"Bank account validation failed  : "+errorMessage==null?"":errorMessage);
-			}*/
+		} catch(Exception ee){
+			accountValidation ="Y";
+			ee.printStackTrace();
 		}
-		return errorMessage;
-	}catch(GlobalException e) {
-		e.printStackTrace();
-		logger.error("response :"+bankCode +"-"+errorMessage);
-		throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
+		}	
+		return accountValidation;	
 	}
-	}
-	
 	
 	private ExchangeRateBreakup getExchangeRateBreakup(List<ExchangeRateApprovalDetModel> exchangeRates,RemittanceTransactionRequestModel model, RemittanceTransactionResponsetModel responseModel,BigDecimal comission) {
 		BigDecimal fcAmount = model.getForeignAmount();
