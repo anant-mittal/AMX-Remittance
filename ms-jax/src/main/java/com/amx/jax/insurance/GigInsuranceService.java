@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import javax.transaction.Transactional;
 
@@ -86,6 +85,9 @@ public class GigInsuranceService {
 		BigDecimal customerId = metaData.getCustomerId();
 		List<InsurnaceClaimNominee> nominees = insurnaceClaimNomineeRepository.findByCustomerIdAndIsActive(customerId, ConstantDocument.Yes);
 		CustomerInsurance insuranceDetail = customerInsuranceRepository.findByCustomerIdAndIsActive(customerId, ConstantDocument.Yes);
+		if (insuranceDetail == null) {
+			throw new GlobalException("Insurnace detail not found");
+		}
 		BigDecimal policyAmount = insuranceDetail.getInsuranceSetupMaster().getCoverAmount();
 		gigInsuranceDetail.setPolicyAmount(policyAmount);
 		gigInsuranceDetail.setPolicyStartDate(insuranceDetail.getEffectiveDate());
