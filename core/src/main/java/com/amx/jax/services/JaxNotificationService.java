@@ -139,7 +139,8 @@ public class JaxNotificationService {
 			email.getModel().put("change_type", ChangeType.MOBILE_CHANGE);
 
 		} else if (customerModel.getEmail() != null) {
-			if(customerModel.getEmail().equals(pinfo.getEmail())) {
+			// Customer model has old email and Person info has new email
+			if(!customerModel.getEmail().equals(pinfo.getEmail())) {
 
 			email.getModel().put("change_type", ChangeType.EMAIL_CHANGE);
 
