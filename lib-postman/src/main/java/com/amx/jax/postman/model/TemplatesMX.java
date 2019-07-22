@@ -22,8 +22,6 @@ public enum TemplatesMX implements ITemplate {
 	REMIT_RECEIPT_JASPER_NO_HEADER("TransactionReceiptNoHeader_jasper", PDFConverter.JASPER, "TransactionReceipt.json"),
 	REMIT_APPLICATION_RECEIPT_JASPER("ApplicationReceipt_jasper", PDFConverter.JASPER, "ApplicationReceipt.json"),
 
-
-
 	REMIT_RECEIPT_COPY("TransactionReceiptCopy"), REMIT_STATMENT("TransactionList"),
 	REMIT_STATMENT_EMAIL("RemittanceStatmentEmail"),
 	REMIT_STATMENT_EMAIL_FILE("TransactionStatementHistory"),
@@ -44,6 +42,7 @@ public enum TemplatesMX implements ITemplate {
 	PARTIAL_REGISTRATION_EMAIL("PartialRegistrationCompletionEMail"), TRANSACTION_FAILURE("TransactionFailure"),
 
 	PROMOTION_WINNER("PromotionWinner"), PROMOTION_COUPON("PromotionCoupon"),
+	WANTIT_BUYIT_PROMOTION("WantITBuyItPromotionCoupon"),
 
 	SERVER_PING("server-ping"),
 
@@ -79,6 +78,11 @@ public enum TemplatesMX implements ITemplate {
 	@Override
 	public String getHtmlFile() {
 		return "html/" + getFileName();
+	}
+
+	@Override
+	public String getSMSFile() {
+		return "html/sms/" + getFileName();
 	}
 
 	@Override

@@ -29,6 +29,9 @@ public class RemittanceTransactionResponsetModel extends AbstractModel {
 	private Map<DISCOUNT_TYPE, ExchangeDiscountInfo> customerDiscountDetails;
 	private Boolean discountAvailed;
 	private Boolean costRateLimitReached;
+	private String vatType;
+	private BigDecimal vatPercentage;
+	private BigDecimal vatAmount;
 
 	/*
 	 * (non-Javadoc)
@@ -127,5 +130,31 @@ public class RemittanceTransactionResponsetModel extends AbstractModel {
 	public void setCostRateLimitReached(Boolean costRateLimitReached) {
 		this.costRateLimitReached = costRateLimitReached;
 	}
+
+	public String getVatType() {
+		return vatType;
+	}
+
+	public void setVatType(String vatType) {
+		this.vatType = vatType;
+	}
+
+	public BigDecimal getVatPercentage() {
+		return vatPercentage;
+	}
+
+	public void setVatPercentage(BigDecimal vatPercentage) {
+		this.vatPercentage = vatPercentage;
+	}
+
+	public BigDecimal getVatAmount() {
+		return vatAmount;
+	}
+
+	public void setVatAmount(BigDecimal vatAmount) {
+		this.vatAmount = vatAmount;
+	}
+	
+	
 
 }

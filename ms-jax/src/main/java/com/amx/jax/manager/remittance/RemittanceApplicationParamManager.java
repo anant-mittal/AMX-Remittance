@@ -41,20 +41,28 @@ public class RemittanceApplicationParamManager {
 
 	public void populateRemittanceApplicationParamMap(IRemittanceApplicationParams remittanceApplicationParams,
 			BenificiaryListView beneficiaryView, ExchangeRateBreakup exchangeRateBreakup) {
-		BankMasterModel routintBankMaster = bankService.getBankById(remittanceApplicationParams.getCorrespondanceBankIdBD());
+		BankMasterModel routintBankMaster = null;
+		if(remittanceApplicationParams!=null) {
+		 routintBankMaster = bankService.getBankById(remittanceApplicationParams.getCorrespondanceBankIdBD());
+		 P_ROUTING_BANK_ID.putValue(remitApplParametersMap, remittanceApplicationParams.getCorrespondanceBankIdBD());
+		 P_REMITTANCE_MODE_ID.putValue(remitApplParametersMap, remittanceApplicationParams.getRemitModeIdBD());
+		 P_DELIVERY_MODE_ID.putValue(remitApplParametersMap, remittanceApplicationParams.getDeliveryModeIdBD());
+		 
+		}
 		P_APPLICATION_COUNTRY_ID.putValue(remitApplParametersMap, beneficiaryView.getApplicationCountryId());
+		if(routintBankMaster!=null) {
 		P_ROUTING_COUNTRY_ID.putValue(remitApplParametersMap, routintBankMaster.getBankCountryId());
+		}
 		P_FOREIGN_CURRENCY_ID.putValue(remitApplParametersMap, beneficiaryView.getCurrencyId());
-		P_ROUTING_BANK_ID.putValue(remitApplParametersMap, remittanceApplicationParams.getCorrespondanceBankIdBD());
-		P_REMITTANCE_MODE_ID.putValue(remitApplParametersMap, remittanceApplicationParams.getRemitModeIdBD());
-		P_DELIVERY_MODE_ID.putValue(remitApplParametersMap, remittanceApplicationParams.getDeliveryModeIdBD());
+		
+		
 		if (exchangeRateBreakup != null) {
 			P_CALCULATED_FC_AMOUNT.putValue(remitApplParametersMap, exchangeRateBreakup.getConvertedFCAmount());
 		}
-		if (remittanceApplicationParams.getLocalAmountBD() != null) {
+		if (remittanceApplicationParams != null && remittanceApplicationParams.getLocalAmountBD() != null) {
 			P_LC_AMOUNT.putValue(remitApplParametersMap, remittanceApplicationParams.getLocalAmountBD());
 		}
-		if (remittanceApplicationParams.getForeignAmountBD() != null) {
+		if (remittanceApplicationParams != null &&  remittanceApplicationParams.getForeignAmountBD() != null) {
 			P_FC_AMOUNT.putValue(remitApplParametersMap, remittanceApplicationParams.getForeignAmountBD());
 		}
 		P_BENEFICIARY_BANK_ID.putValue(remitApplParametersMap, beneficiaryView.getBankId());

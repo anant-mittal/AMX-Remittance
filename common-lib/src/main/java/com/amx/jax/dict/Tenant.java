@@ -73,6 +73,10 @@ public enum Tenant {
 		this(id, code, name, true, currency);
 	}
 
+	Tenant() {
+		this(null, 0, null);
+	}
+
 	public String getId() {
 		return id;
 	}
@@ -137,6 +141,10 @@ public enum Tenant {
 
 	public Currency getCurrency() {
 		return currency;
+	}
+
+	public String toString() {
+		return this.name();
 	}
 
 }

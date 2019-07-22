@@ -35,17 +35,20 @@ public class SSOConstants {
 	public static final String REDIRECT = "redirect:";
 
 	public static final String PARAM_REDIRECT = "redirect";
+	public static final String PARAM_REFRESH_TIME = "refresh";
 	public static final String PARAM_SOTP = "sotp";
 	public static final String PARAM_SESSION_TOKEN = "x-session-token";
+	public static final String PARAM_SESSION_TOKEN_CLEAN = PARAM_SESSION_TOKEN.replaceAll("[-]", "_");
 	public static final String PARAM_STEP = "step";
 
 	public static final String SECURITY_CODE_KEY = "sec_code";
 	public static final String PARTNER_SECURITY_CODE_KEY = "partner_sec_code";
+	public static final String SSO_TENANT_KEY = "sso_tenant";
 
-    public static final String PARAM_SSO_LOGIN_URL = "SSO_LOGIN_URL";
-    public static final String PARAM_SSO_LOGIN_PREFIX = "SSO_LOGIN_PREFIX";
-    
-    public static final String ADAPTER_URL = "ADAPTER_URL";
+	public static final String PARAM_SSO_LOGIN_URL = "SSO_LOGIN_URL";
+	public static final String PARAM_SSO_LOGIN_PREFIX = "SSO_LOGIN_PREFIX";
+
+	public static final String ADAPTER_URL = "ADAPTER_URL";
 
 	public enum SSOAuthStep {
 		START, SESSION, DO, DONE, REQUIRED, CHECK, CREDS, OTP, VERIFY

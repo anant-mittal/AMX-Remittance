@@ -22,7 +22,15 @@ public class CustomerFlags {
 	/* new login */
 
 	public Boolean annualIncomeExpired;
-	
+	public Boolean isOnlineCustomer;
+
+	public Boolean getIsOnlineCustomer() {
+		return isOnlineCustomer;
+	}
+
+	public void setIsOnlineCustomer(Boolean isOnlineCustomer) {
+		this.isOnlineCustomer = isOnlineCustomer;
+	}
 
 	public Boolean getFingerprintlinked() {
 		return fingerprintlinked;

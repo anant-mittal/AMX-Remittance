@@ -7,6 +7,8 @@ import java.util.regex.Pattern;
 
 import javax.annotation.PostConstruct;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -23,6 +25,7 @@ import com.amx.jax.filter.AppClientErrorHanlder;
 import com.amx.jax.filter.AppClientInterceptor;
 import com.amx.jax.scope.TenantProperties;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.Constants;
 import com.amx.utils.JsonUtil.JsonUtilConfigurable;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,8 +36,10 @@ import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties
 @EnableEncryptableProperties
 public class AppConfig {
 
-	private static final String PROP_SUFFIX = "}";
+	private Logger LOGGER = LoggerFactory.getLogger(AppConfig.class);
+
 	private static final String PROP_PREFIX = "${";
+	private static final String PROP_SUFFIX = "}";
 	public static final Pattern pattern = Pattern.compile("^\\$\\{(.*)\\}$");
 	public static final String APP_ENV = "${app.env}";
 	public static final String APP_GROUP = "${app.group}";
@@ -59,7 +64,9 @@ public class AppConfig {
 	public static final String APP_AUTH_TOKEN = "${app.auth.token}";
 	public static final String APP_AUTH_ENABLED = "${app.auth.enabled}";
 
-	public static final String DEFAULT_TENANT = "${default.tenant}";
+	public static final String DEFAULT_TENANT_KEY = "default.tenant";
+
+	public static final String DEFAULT_TENANT_EXP = PROP_PREFIX + DEFAULT_TENANT_KEY + PROP_SUFFIX;
 
 	public static final String JAX_CDN_URL = "${jax.cdn.url}";
 	public static final String JAX_APP_URL = "${jax.app.url}";
@@ -138,7 +145,7 @@ public class AppConfig {
 	@AppParamKey(AppParam.APP_CACHE)
 	private Boolean cache;
 
-	@Value(DEFAULT_TENANT)
+	@Value(DEFAULT_TENANT_EXP)
 	@AppParamKey(AppParam.DEFAULT_TENANT)
 	private Tenant defaultTenant;
 
@@ -193,6 +200,9 @@ public class AppConfig {
 	@Value(APP_CONTEXT_PREFIX)
 	@AppParamKey(AppParam.APP_CONTEXT_PREFIX)
 	private String appPrefix;
+
+	@Value("${app.response.ok}")
+	private boolean appResponseOK;
 
 	@Value("${server.session.cookie.http-only}")
 	private boolean cookieHttpOnly;
@@ -267,6 +277,8 @@ public class AppConfig {
 	@Bean
 	public AppParam loadAppParams() {
 
+		LOGGER.info("Loading loadAppParams");
+
 		for (Field field : AppConfig.class.getDeclaredFields()) {
 			AppParamKey s = field.getAnnotation(AppParamKey.class);
 			Value v = field.getAnnotation(Value.class);
@@ -287,7 +299,7 @@ public class AppConfig {
 				}
 
 				if ("java.lang.String".equals(typeName)) {
-					s.value().setValue(ArgUtil.parseAsString(value));
+					s.value().setValue(ArgUtil.parseAsString(value, Constants.BLANK).trim());
 				} else if ("boolean".equals(typeName) || "java.lang.Boolean".equals(typeName)) {
 					s.value().setEnabled(ArgUtil.parseAsBoolean(value));
 				}
@@ -422,6 +434,10 @@ public class AppConfig {
 
 	public void setAppVersion(String appVersion) {
 		this.appVersion = appVersion;
+	}
+
+	public boolean isAppResponseOK() {
+		return appResponseOK;
 	}
 
 }

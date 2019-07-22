@@ -35,6 +35,9 @@ public class OnlineCustomerManager {
 	UserValidationService userValidationService;
 	@Autowired
 	CustomerAuthManager customerAuthManager;
+	
+	@Autowired
+	UserContactVerificationManager userContactVerificationManager;
 
 	public void saveCustomerSecQuestions(List<SecurityQuestionModel> securityQuestions) {
 		CustomerOnlineRegistration customerOnlineRegistration = custDao
@@ -59,6 +62,7 @@ public class OnlineCustomerManager {
 				// signifies that it is validate otp flow
 				if (JaxAuthContext.getMotp() != null) {
 					userService.unlockCustomer(customerOnlineRegistration);
+					userContactVerificationManager.setContactVerified(customer, JaxAuthContext.getMotp(), null, null);
 				}
 			} catch (GlobalException ex) {
 				if (JaxError.INVALID_OTP.equals(ex.getError())) {

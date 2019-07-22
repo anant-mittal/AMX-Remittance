@@ -14,6 +14,7 @@ import com.amx.jax.AppConfig;
 import com.amx.jax.CustomerCredential;
 import com.amx.jax.ICustRegService;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.exception.JaxSystemError;
 import com.amx.jax.logger.LoggerService;
@@ -32,6 +33,7 @@ import com.amx.jax.model.response.ComponentDataDto;
 import com.amx.jax.model.response.CustomerInfo;
 import com.amx.jax.model.response.FieldListDto;
 import com.amx.jax.model.response.IncomeRangeDto;
+import com.amx.jax.model.response.customer.AddressProofDTO;
 import com.amx.jax.model.response.customer.OffsiteCustomerDataDTO;
 import com.amx.jax.rest.RestService;
 import com.amx.jax.scope.TenantContextHolder;
@@ -263,8 +265,7 @@ public class OffsiteCustRegClient implements ICustRegService {
 			return JaxSystemError.evaluate(e);
 		} // end of try-catch}
 	}
-	
-	
+
 	@Override
 	public AmxApiResponse<ResourceDTO, Object> getDesignationList() {
 		try {
@@ -291,6 +292,34 @@ public class OffsiteCustRegClient implements ICustRegService {
 			LOGGER.error("exception in saveLoginDetailOffsite : ", e);
 			return JaxSystemError.evaluate(e);
 		} // end of try-c
+	}
+
+	@Override
+	public AmxApiResponse<AddressProofDTO, Object> getAddressProof() {
+		try {
+			return restService.ajax(appConfig.getJaxURL()).meta(new JaxMetaInfo())
+					.path(CustRegApiEndPoints.ADDRESS_PROOF).get()
+					.as(new ParameterizedTypeReference<AmxApiResponse<AddressProofDTO, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in get address proof");
+			return JaxSystemError.evaluate(e);
+		}
+	}
+
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> saveDocumentUploadReference(
+			ImageSubmissionRequest imageSubmissionRequest) {
+		try {
+			return restService.ajax(appConfig.getJaxURL()).meta(new JaxMetaInfo())
+					.path(CustRegApiEndPoints.DOCUMENT_UPLOAD_REFERENCE)
+					.post(imageSubmissionRequest)
+					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in saveDocumentUploadReference : ", e);
+			return JaxSystemError.evaluate(e);
+		} // end of try-catch}
 	}
 
 }

@@ -5,6 +5,7 @@ package com.amx.jax.payment.controller;
 
 import static com.amx.jax.payment.PaymentConstant.PAYMENT_API_ENDPOINT;
 
+import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Base64;
 import java.util.Calendar;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.amx.jax.dict.Channel;
@@ -26,6 +28,7 @@ import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.payg.PayGParams;
+import com.amx.jax.payg.PayGService;
 import com.amx.jax.payment.PaymentConstant;
 import com.amx.jax.payment.gateway.PayGClient;
 import com.amx.jax.payment.gateway.PayGClients;
@@ -73,6 +76,25 @@ public class PayGController {
 	@Autowired
 	PayGConfig payGConfig;
 
+	@Autowired
+	PayGService payGService;
+
+	@ResponseBody
+	@RequestMapping(value = { "/register/*" }, method = RequestMethod.GET)
+	public PayGParams initTransaction(
+			@RequestParam String trckid,
+			@RequestParam(required = false) String docId, @RequestParam(required = false) String docNo,
+			@RequestParam(required = false) String docFy,
+			@RequestParam String amount,
+
+			@RequestParam Tenant tnt, @RequestParam String pg, @RequestParam(required = false) Channel channel,
+			@RequestParam(required = false) String prod,
+
+			@RequestParam(required = false) String callbackd,
+			Model model) throws NoSuchAlgorithmException {
+		return payGService.getVerifyHash(trckid, amount, docId, docNo, docFy);
+	}
+
 	@RequestMapping(value = { "/payment/*", "/payment" }, method = RequestMethod.GET)
 
 	public String handleUrlPaymentRemit(
@@ -83,9 +105,22 @@ public class PayGController {
 
 			@RequestParam Tenant tnt, @RequestParam String pg, @RequestParam(required = false) Channel channel,
 			@RequestParam(required = false) String prod,
-
 			@RequestParam(required = false) String callbackd,
-			Model model) {
+			@RequestParam(required = false) String verify,
+			@RequestParam(required = false) String detail,
+			Model model) throws NoSuchAlgorithmException {
+
+		PayGParams detailParam = payGService.getDeCryptedDetails(detail);
+		trckid = detailParam.getTrackId();
+		amount = detailParam.getAmount();
+		docId = detailParam.getDocId();
+		docNo = detailParam.getDocNo();
+		docFy = detailParam.getDocFy();
+
+		if (!ArgUtil.isEmpty(verify)
+				&& !verify.equals(payGService.getVerifyHash(trckid, amount, docId, docNo, docFy).getVerification())) {
+			return "thymeleaf/pg_security";
+		}
 
 		TenantContextHolder.setCurrent(tnt);
 		String uuid = payGSession.uuid(true);

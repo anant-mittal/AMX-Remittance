@@ -14,6 +14,8 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.thavam.util.concurrent.blockingMap.BlockingHashMap;
 
+import com.amx.jax.AppContextUtil;
+import com.amx.jax.api.AmxFieldError;
 import com.amx.jax.cache.MCQStatus.MCQStatusCodes;
 import com.amx.jax.cache.MCQStatus.MCQStatusError;
 import com.amx.jax.def.ICacheBox;
@@ -99,7 +101,14 @@ public class CacheBox<T> implements ICacheBox<T> {
 			return this.map().get(key);
 		} catch (Exception e) {
 			LOGGER.error("REDIS_READ_EXCEPTION KEY:" + key, e);
-			throw new MCQStatusError(MCQStatusCodes.DATA_READ_ERROR, "REDIS_READ_EXCEPTION KEY:" + key);
+			AmxFieldError w = new AmxFieldError();
+			w.setCode(MCQStatusCodes.DATA_READ_ERROR.toString());
+			w.setDescription("REDIS_READ_EXCEPTION KEY");
+			w.setField(key);
+			AppContextUtil.addWarning(w);
+			// throw new MCQStatusError(MCQStatusCodes.DATA_READ_ERROR,
+			// "REDIS_READ_EXCEPTION KEY:" + key);
+			return null;
 		}
 	}
 

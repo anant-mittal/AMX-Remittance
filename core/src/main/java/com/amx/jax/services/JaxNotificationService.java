@@ -6,6 +6,7 @@ import static com.amx.amxlib.constant.NotificationConstants.RESP_DATA_KEY;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,7 @@ import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.model.response.fx.FxDeliveryDetailNotificationDto;
 import com.amx.jax.model.response.fx.FxOrderDetailNotificationDto;
 import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
+import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.client.WhatsAppClient;
@@ -52,6 +54,8 @@ public class JaxNotificationService {
 
 	@Autowired
 	JaxNotificationService jaxNotificationService;
+	@Autowired
+	JaxEmailNotificationService jaxEmailNotificationService;
 
 	Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -70,20 +74,22 @@ public class JaxNotificationService {
 			email.setSubject("Your transaction on Modern Exchange - Oman is successful");
 		}
 
-		email.addTo(pinfo.getEmail());
-		email.setITemplate(TemplatesMX.TXN_CRT_SUCC);
-		email.setHtml(true);
-		email.getModel().put(RESP_DATA_KEY, pinfo);
 
-		File file = new File();
-		file.setITemplate(TemplatesMX.REMIT_RECEIPT_JASPER);
-		file.setName("TransactionReceipt");
-		file.setType(File.Type.PDF);
-		file.getModel().put(RESP_DATA_KEY, remittanceReceiptSubreport);
+			email.addTo(pinfo.getEmail());
+			email.setITemplate(TemplatesMX.TXN_CRT_SUCC);
+			email.setHtml(true);
+			email.getModel().put(RESP_DATA_KEY, pinfo);
 
-		email.addFile(file);
-		logger.debug("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getFirstName());
-		sendEmail(email);
+			File file = new File();
+			file.setITemplate(TemplatesMX.REMIT_RECEIPT_JASPER);
+			file.setName("TransactionReceipt");
+			file.setType(File.Type.PDF);
+			file.getModel().put(RESP_DATA_KEY, remittanceReceiptSubreport);
+
+			email.addFile(file);
+			logger.debug("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getFirstName());
+			sendEmail(email);
+		
 	}
 
 	public void sendTransactionNotification(FxOrderReportResponseDto remittanceReceiptSubreport,
@@ -356,4 +362,17 @@ public class JaxNotificationService {
 		return "Almulla Exchange Account - Phone number Change";
 	}
 
+	public void sendTransactionErrorAlertEmail(String errorMsg, String subject, PaymentResponseDto paymentResponse) {
+		String[] receiverList = jaxEmailNotificationService.getBeneCreationErrorEmailList();
+		if (StringUtils.isNotBlank(errorMsg) && receiverList != null && receiverList.length > 0) {
+			StringBuffer message = new StringBuffer();
+			message.append("errorMsg: ").append(errorMsg);
+			message.append("paymentResponse: ").append(paymentResponse);
+			Email email = new Email();
+			email.setSubject(subject);
+			email.addTo(receiverList);
+			email.setMessage(message.toString());
+			sendEmail(email);
+		}
+	}
 }

@@ -80,8 +80,7 @@ public class RemittanceClientTest {
 	}
 
 	// @Test
-	public void testsaveTxn() throws IOException, ResourceNotFoundException, InvalidInputException,
-			RemittanceTransactionValidationException, LimitExeededException {
+	/*public void testsaveTxn() throws IOException, ResourceNotFoundException, InvalidInputException,RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
 		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
@@ -109,7 +108,7 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult());
 		assertNotNull(response.getResult().getModelType());
 	}
-
+*/
 	private ApiResponse<RemittanceApplicationResponseModel> resendRequestWithAddtionalFlexField(
 			RemittanceTransactionRequestModel request, List<JaxConditionalFieldDto> list) {
 
