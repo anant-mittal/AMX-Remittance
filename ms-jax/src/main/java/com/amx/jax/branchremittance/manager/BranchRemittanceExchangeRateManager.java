@@ -245,8 +245,8 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 		BenificiaryListView beneficiaryView = beneValidationService.validateBeneficiary(routingPricingRequest.getBeneficiaryRelationshipSeqId());
 		Customer customer = userService.getCustById(metaData.getCustomerId());
 		BigDecimal exclusiveBankId= null;
-		String errorMsg = remittanceTransactionManager.beneAccountValidationThroughApi(beneficiaryView.getServiceGroupId(), beneficiaryView.getBankId(), beneficiaryView);
-		if(!StringUtils.isBlank(errorMsg)) {
+		String accValid = remittanceTransactionManager.beneAccountValidationThroughApi(beneficiaryView.getServiceGroupId(), beneficiaryView.getBankId(), beneficiaryView);
+		if(!StringUtils.isBlank(accValid) && accValid.equals(ConstantDocument.No)) {
 			exclusiveBankId = beneficiaryView.getBankId();
 		}
 		AmxApiResponse<ExchangeRateAndRoutingResponse,Object> apiResposne = jaxDynamicRoutingPriceService.getDynamicRoutingAndPrice(metaData.getDefaultCurrencyId(), beneficiaryView.getCurrencyId(), routingPricingRequest.getLocalAmount(),
