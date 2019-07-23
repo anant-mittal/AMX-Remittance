@@ -14,6 +14,7 @@ public class ServiceProviderDto {
 	private String settlementCurrency;
 	private BigDecimal transactionMargin;
 	private Calendar offerExpirationDate;
+	private Calendar offerStartingDate;
 	
 	public BigDecimal getAmgSessionId() {
 		return amgSessionId;
@@ -76,6 +77,13 @@ public class ServiceProviderDto {
 	}
 	public void setOfferExpirationDate(Calendar offerExpirationDate) {
 		this.offerExpirationDate = offerExpirationDate;
+	}
+	
+	public Calendar getOfferStartingDate() {
+		return offerStartingDate;
+	}
+	public void setOfferStartingDate(Calendar offerStartingDate) {
+		this.offerStartingDate = offerStartingDate;
 	}
 	
 	/*Map<String, ServiceProviderDetailsDto> mapSrvProvDetails = new HashMap<>();

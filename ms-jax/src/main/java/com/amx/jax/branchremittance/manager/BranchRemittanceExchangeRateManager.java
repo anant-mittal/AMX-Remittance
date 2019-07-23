@@ -492,6 +492,7 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 		serviceProviderDto.setTransactionMargin(homeSendSrvcProviderInfo.getTransactionMargin());
 		serviceProviderDto.setVariableCommInSettlCurr(homeSendSrvcProviderInfo.getVariableChargedAmountInSettlementCurrency());
 		serviceProviderDto.setOfferExpirationDate(homeSendSrvcProviderInfo.getOfferExpirationDate());
+		serviceProviderDto.setOfferStartingDate(homeSendSrvcProviderInfo.getOfferStartDate());
 		
 		return serviceProviderDto ; 
 	}

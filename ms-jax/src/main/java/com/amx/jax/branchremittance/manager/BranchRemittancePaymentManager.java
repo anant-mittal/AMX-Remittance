@@ -255,8 +255,15 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		
 		// fetch trnx expiry date
 		RemitApplSrvProv remitApplSrvProv = remitApplSrvProvRepository.findByRemittanceApplicationId(shoppingCartDetails.getRemittanceApplicationId());
-		shoppingCartDataTableBean.setTrnxExpirationDate(remitApplSrvProv.getOfferExpirationDate());
-
+		if(remitApplSrvProv != null) {
+			if(remitApplSrvProv.getOfferExpirationDate() != null) {
+				shoppingCartDataTableBean.setTrnxExpirationDate(remitApplSrvProv.getOfferExpirationDate().getTime());
+			}
+			if(remitApplSrvProv.getOfferStartingDate() != null) {
+				shoppingCartDataTableBean.setTrnxStartDate(remitApplSrvProv.getOfferStartingDate().getTime());
+			}
+		}
+		
 		return shoppingCartDataTableBean;
 	}
 

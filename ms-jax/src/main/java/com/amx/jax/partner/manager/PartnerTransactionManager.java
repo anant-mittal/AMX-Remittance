@@ -2,11 +2,15 @@ package com.amx.jax.partner.manager;
 
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import javax.sql.rowset.serial.SerialException;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
@@ -29,9 +33,11 @@ import com.amx.jax.dbmodel.CollectionDetailViewModel;
 import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.CustomerDetailsView;
 import com.amx.jax.dbmodel.ParameterDetails;
+import com.amx.jax.dbmodel.fx.EmployeeDetailsView;
 import com.amx.jax.dbmodel.partner.BankExternalReferenceDetail;
 import com.amx.jax.dbmodel.partner.BankExternalReferenceHead;
 import com.amx.jax.dbmodel.partner.PaymentModeLimitsView;
+import com.amx.jax.dbmodel.partner.ServiceProviderXmlLog;
 import com.amx.jax.dbmodel.partner.TransactionDetailsView;
 import com.amx.jax.dbmodel.remittance.AdditionalBankRuleAmiec;
 import com.amx.jax.dbmodel.remittance.AmiecAndBankMapping;
@@ -44,12 +50,14 @@ import com.amx.jax.model.request.partner.SrvProvBeneficiaryTransactionDTO;
 import com.amx.jax.model.request.serviceprovider.Benificiary;
 import com.amx.jax.model.request.serviceprovider.Customer;
 import com.amx.jax.model.request.serviceprovider.ServiceProviderCallRequestDto;
+import com.amx.jax.model.request.serviceprovider.ServiceProviderLogDTO;
 import com.amx.jax.model.request.serviceprovider.TransactionData;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.serviceprovider.ServiceProviderResponse;
 import com.amx.jax.partner.dao.PartnerTransactionDao;
 import com.amx.jax.partner.dto.BeneficiaryDetailsDTO;
 import com.amx.jax.partner.dto.CustomerDetailsDTO;
+import com.amx.jax.partner.repository.IServiceProviderXMLRepository;
 import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.var.PricerServiceConstants;
@@ -58,10 +66,12 @@ import com.amx.jax.repository.IAdditionalBankRuleAmiecRepository;
 import com.amx.jax.repository.IAmiecAndBankMappingRepository;
 import com.amx.jax.repository.ICollectionDetailViewDao;
 import com.amx.jax.repository.ISourceOfIncomeDao;
+import com.amx.jax.repository.fx.EmployeeDetailsRepository;
 import com.amx.jax.services.BankService;
 import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.util.AmxDBConstants;
 import com.amx.utils.Constants;
+import com.amx.utils.IoUtils;
 import com.amx.utils.JsonUtil;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -106,6 +116,12 @@ public class PartnerTransactionManager extends AbstractModel {
 
 	@Autowired
 	ICollectionDetailViewDao collectionDetailViewDao;
+	
+	@Autowired
+	EmployeeDetailsRepository employeeDetailsRepository;
+	
+	@Autowired
+	IServiceProviderXMLRepository serviceProviderXMLRepository;
 
 	public void callingPartnerApi(Map<BigDecimal,RemittanceTransaction> remitTrnxList,Map<BigDecimal,RemittanceBenificiary> remitBeneList,RemittanceResponseDto responseDto) {
 		BigDecimal customerId = metaData.getCustomerId();
@@ -741,31 +757,36 @@ public class PartnerTransactionManager extends AbstractModel {
 			}
 			if(srvPrvResp.getResult().getRequest_XML() != null) {
 				requestXml = srvPrvResp.getResult().getRequest_XML();
-				saveServiceProviderXml("feeEnquiryReq", requestXml, referenceNo, reqSeq, PricerServiceConstants.REQUEST, trnxType, partnerReference,serviceProviderCallRequestDto);
+				saveServiceProviderXMLlogData("feeEnquiryReq", requestXml, referenceNo, reqSeq, PricerServiceConstants.REQUEST, trnxType, partnerReference);
 			}
 			if(srvPrvResp.getResult().getResponse_XML() != null) {
 				responseXml = srvPrvResp.getResult().getResponse_XML();
-				saveServiceProviderXml("feeEnquiryRes", responseXml, referenceNo, resSeq, PricerServiceConstants.RESPONSE, trnxType, partnerReference,serviceProviderCallRequestDto);
+				saveServiceProviderXMLlogData("feeEnquiryRes", responseXml, referenceNo, resSeq, PricerServiceConstants.RESPONSE, trnxType, partnerReference);
 			}
 		}
 	}
-
-	public void saveServiceProviderXml(String filename, String content,String referenceNo,BigDecimal seq,String xmlType,String trnxType,String bene_Bank_Txn_Ref,ServiceProviderCallRequestDto serviceProviderCallRequestDto) {
+	
+	public void saveServiceProviderXMLlogData(String filename, String content,String referenceNo,BigDecimal seq,String xmlType,String trnxType,String bene_Bank_Txn_Ref) {
 
 		try {
 
-			/*ServiceProviderXmlLog serviceProviderXmlLog = new ServiceProviderXmlLog();
+			ServiceProviderLogDTO serviceProviderXmlLog = new ServiceProviderLogDTO();
 
-			serviceProviderXmlLog.setApplicationCountryId(srvPrvFeeInqReqDTO.getApplicationCountryId());
-			serviceProviderXmlLog.setCompanyId(srvPrvFeeInqReqDTO.getCompanyId());
-			serviceProviderXmlLog.setCountryBranchId(srvPrvFeeInqReqDTO.getCountryBranchId());
-			//serviceProviderXmlLog.setCreatedBy(createdBy);
+			serviceProviderXmlLog.setApplicationCountryId(metaData.getCountryId());
+			serviceProviderXmlLog.setCompanyId(metaData.getCompanyId());
+			serviceProviderXmlLog.setCountryBranchId(metaData.getCountryBranchId());
+			
 			serviceProviderXmlLog.setCreatedDate(new Date());
-			serviceProviderXmlLog.setCustomerId(srvPrvFeeInqReqDTO.getCustomerId());
+			serviceProviderXmlLog.setCustomerId(metaData.getCustomerId());
 			//serviceProviderXmlLog.setCustomerReference(customerReference);
 			//serviceProviderXmlLog.setEmosBranchCode(emosBranchCode);
 			serviceProviderXmlLog.setFileName(filename);
-			//serviceProviderXmlLog.setForeignTerminalId(foreignTerminalId);
+			if(metaData.getEmployeeId() != null) {
+				EmployeeDetailsView empDetails = employeeDetailsRepository.findByEmployeeId(metaData.getEmployeeId());
+				serviceProviderXmlLog.setForeignTerminalId(metaData.getEmployeeId().toPlainString());
+				serviceProviderXmlLog.setCreatedBy(empDetails.getUserName());
+			}
+			
 			//serviceProviderXmlLog.setIdentifier(identifier);
 			serviceProviderXmlLog.setMtcNo(bene_Bank_Txn_Ref);
 			if(referenceNo != null) {
@@ -774,12 +795,30 @@ public class PartnerTransactionManager extends AbstractModel {
 			serviceProviderXmlLog.setSequence(seq);
 			serviceProviderXmlLog.setTransactionType(trnxType);
 			serviceProviderXmlLog.setXmlData(IoUtils.stringToClob(content));
-			serviceProviderXmlLog.setXmlType(xmlType);*/
+			serviceProviderXmlLog.setXmlType(xmlType);
 
-		} catch (Exception e) {
+		} catch (SerialException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 
+	}
+
+	public void saveServiceProviderXml(ServiceProviderLogDTO serviceProviderLogDTO) {
+		try {
+			ServiceProviderXmlLog serviceProviderXmlLog =  new ServiceProviderXmlLog();
+			try {
+				BeanUtils.copyProperties(serviceProviderXmlLog, serviceProviderLogDTO);
+				serviceProviderXMLRepository.save(serviceProviderXmlLog);
+			} catch (IllegalAccessException | InvocationTargetException e) {
+				logger.error("Unable to convert Customer Details Exception " +e);
+				throw new PricerServiceException(PricerServiceError.UNKNOWN_EXCEPTION,
+						"Unable to convert Customer Details");
+			}
+		}  catch (Exception e) {
+			logger.error("Unable to saveServiceProviderXml Exception " +e);
+		}
 	}
 
 }

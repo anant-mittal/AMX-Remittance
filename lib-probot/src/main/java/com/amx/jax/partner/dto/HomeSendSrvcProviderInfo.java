@@ -14,6 +14,7 @@ public class HomeSendSrvcProviderInfo implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private Calendar offerExpirationDate;
+	private Calendar offerStartDate;
 
 	private String partnerTransactionReference;
 	private String outGoingTransactionReference;
@@ -44,6 +45,13 @@ public class HomeSendSrvcProviderInfo implements Serializable {
 	}
 	public void setOfferExpirationDate(Calendar offerExpirationDate) {
 		this.offerExpirationDate = offerExpirationDate;
+	}
+	
+	public Calendar getOfferStartDate() {
+		return offerStartDate;
+	}
+	public void setOfferStartDate(Calendar offerStartDate) {
+		this.offerStartDate = offerStartDate;
 	}
 	
 	public String getPartnerTransactionReference() {

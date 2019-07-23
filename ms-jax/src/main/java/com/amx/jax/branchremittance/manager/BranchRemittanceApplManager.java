@@ -101,6 +101,7 @@ import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.validation.RemittanceTransactionRequestValidator;
+import com.amx.utils.JsonUtil;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
@@ -902,8 +903,6 @@ public RemitApplSrvProv createRemitApplSrvProv(BranchRemittanceApplRequestModel 
 	
 	ServiceProviderDto serviceProviderDto = requestApplModel.getDynamicRroutingPricingBreakup().getServiceProviderDto();
 
-	//Map<String, ServiceProviderDetailsDto> mapSrvProvDetails = serviceProviderDto.getMapSrvProvDetails();
-
 	RemitApplSrvProv remitApplSrvProv = new RemitApplSrvProv();
 
 	if (serviceProviderDto != null) {
@@ -921,6 +920,11 @@ public RemitApplSrvProv createRemitApplSrvProv(BranchRemittanceApplRequestModel 
 		if(serviceProviderDto.getOfferExpirationDate() != null) {
 			remitApplSrvProv.setOfferExpirationDate(serviceProviderDto.getOfferExpirationDate().getTime());
 		}
+		if(serviceProviderDto.getOfferStartingDate() != null) {
+			remitApplSrvProv.setOfferStartingDate(serviceProviderDto.getOfferStartingDate().getTime());
+		}
+		
+		logger.warn("RemitApplSrvProv : " + JsonUtil.toJson(remitApplSrvProv));
 	}
 
 	return remitApplSrvProv;

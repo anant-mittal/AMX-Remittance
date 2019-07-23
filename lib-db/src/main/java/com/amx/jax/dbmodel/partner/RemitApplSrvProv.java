@@ -34,6 +34,7 @@ public class RemitApplSrvProv implements Serializable{
 	private String settlementCurrency;
 	private BigDecimal transactionMargin;
 	private Date offerExpirationDate;
+	private Date offerStartingDate;
 	
 	public RemitApplSrvProv(){
 		super();
@@ -152,6 +153,14 @@ public class RemitApplSrvProv implements Serializable{
 	}
 	public void setOfferExpirationDate(Date offerExpirationDate) {
 		this.offerExpirationDate = offerExpirationDate;
+	}
+
+	@Column(name = "OFFER_STARTING_DATE")
+	public Date getOfferStartingDate() {
+		return offerStartingDate;
+	}
+	public void setOfferStartingDate(Date offerStartingDate) {
+		this.offerStartingDate = offerStartingDate;
 	}
 			
 }

@@ -1,4 +1,4 @@
-package com.amx.jax.pricer.dbmodel;
+package com.amx.jax.dbmodel.partner;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
