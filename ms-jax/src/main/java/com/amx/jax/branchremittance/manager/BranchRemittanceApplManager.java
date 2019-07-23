@@ -227,11 +227,12 @@ public class BranchRemittanceApplManager {
 		/** To fetch bene details **/
 		 BenificiaryListView beneficaryDetails =getBeneDetails(requestApplModel);
 		 
-		 /* to vlidate BSB  account though api **/
-		String errMsg = remitTrnxManager.beneAccountValidationThroughApi(requestApplModel.getServiceMasterId(),requestApplModel.getRoutingBankId(),beneficaryDetails);
-		if(!StringUtils.isBlank(errMsg)) {
-			throw new GlobalException(JaxError.BSB_ACCOUNT_VALIATION,"Invalid account number "+errMsg);
-		}
+		 /** to vlidate BSB  account though api **/
+			 /*	String errMsg = remitTrnxManager.beneAccountValidationThroughApi(requestApplModel.getServiceMasterId(),requestApplModel.getRoutingBankId(),beneficaryDetails);
+			if(!StringUtils.isBlank(errMsg)) {
+				throw new GlobalException(JaxError.BSB_ACCOUNT_VALIATION,"Invalid account number "+errMsg);
+			}*/
+		 /** end here */
 		 
 		/*checkingStaffIdNumberWithCustomer **/
 		 branchRemitManager.checkingStaffIdNumberWithCustomer();
@@ -276,7 +277,8 @@ public class BranchRemittanceApplManager {
 		 remittanceTransactionRequestValidator.validateFlexFields(requestApplModel, remitApplParametersMap);
 		 remittanceAdditionalFieldManager.validateAdditionalFields(requestApplModel, remitApplParametersMap);
 		 remittanceAdditionalFieldManager.processAdditionalFields(requestApplModel); 
-	    
+
+	    logger.debug("branchExchangeRate :"+exchangeRateResposne);
 		 /* get aml cehck   details **/
 	    List<AmlCheckResponseDto> amlList= branchRemitManager.amlTranxAmountCheckForRemittance(requestApplModel.getBeneId(),rateBreakUp.getConvertedLCAmount());
 		 logger.info("amlList :"+amlList.toString());

@@ -276,14 +276,6 @@ public class RemittanceTransactionRequestValidator {
 	private List<JaxFieldValueDto> getPurposeOfTrnx(BigDecimal beneRelaId,BigDecimal routingCountryId) {
 		List<AdditionalExchAmiecDto> purposeOfTrnxList =  branchRemitManager.getPurposeOfTrnx(beneRelaId,routingCountryId);
 		if(purposeOfTrnxList !=null && !purposeOfTrnxList.isEmpty()) {
-		/*	JaxConditionalFieldDto jaxcondDto = new JaxConditionalFieldDto();
-			jaxcondDto.setEntityName(JaxFieldEntity.PURPOSE_OF_TRNX);
-			JaxFieldDto field = new JaxFieldDto();
-			field.setName(purposeOfTrnxList.get(0).getFlexField());
-			field.setRequired(true);
-			field.setMinLength(BigDecimal.ONE);
-			field.setMaxLength(new BigDecimal(100));
-			jaxcondDto.setId(purposeOfTrnxList.get(0).getAdditionalBankFieldId());*/
 			return purposeOfTrnxList.stream().map(x -> {
 				FlexFieldDto ffDto = new FlexFieldDto(x.getAdditionalBankFieldId(), x.getResourceId(), x.getResourceName());
 				JaxFieldValueDto dto = new JaxFieldValueDto();

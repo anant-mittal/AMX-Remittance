@@ -156,8 +156,8 @@ public class AmxDBConstants {
 	public static final String IND_COUNTRY_CODE = "004";
 
 	/** E-Eng,A-Arabic **/
-	public static final String L_ENG = "E";
-	public static final String L_ARAB = "A";
+	public static final String L_ENG = "1";
+	public static final String L_ARAB = "2";
 	public static final String BNFBANK = "BNFBANK";
 	public static final String BNFBRCH = "BNFBRCH";
 	public static final String BNFBANK_SWIFT = "BNFBANK_SWIFT";
@@ -176,6 +176,8 @@ public class AmxDBConstants {
 	public static final String  VAT_CATEGORY= "OUTPUT_TAX";
 	public static final String  BENE_ACCT_VALID="BENE_ACCT_VALID";
 	
-
-
+	public static final String  COMM_INCLUDE= "I";
+	public static final String COMM_EXCLUDE="E";
+	
+	
 }

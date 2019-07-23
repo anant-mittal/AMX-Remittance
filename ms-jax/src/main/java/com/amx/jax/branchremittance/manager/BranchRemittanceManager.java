@@ -1074,7 +1074,7 @@ public BeneAdditionalDto getAdditionalBeneDetailJax(BenificiaryListView benefica
 	
 	if(serviceMasterId.compareTo(ConstantDocument.SERVICE_MASTER_ID_CASH)==0 || serviceMasterId.compareTo(ConstantDocument.SERVICE_MASTER_ID_DD)==0) {
 		
-		if(!StringUtils.isBlank(langInd) && langInd.equalsIgnoreCase(ConstantDocument.L_ARAB) && bnfBankLangInd.compareTo(new BigDecimal(2))==0) {
+		if(!StringUtils.isBlank(langInd) && langInd.equalsIgnoreCase(ConstantDocument.L_ARAB) && bnfBankLangInd != null && bnfBankLangInd.compareTo(new BigDecimal(2))==0) {
 			bankName = routingBankMasterModel.getBankFullNameAr();
 			if(!StringUtils.isBlank(routingCityNameArabic)) {
 				bankBranchName =routingBankBranchView.get(0)==null?"":routingBankBranchView.get(0).getBranchFullNameArabic()+","+ routingCityNameArabic==null?"":routingCityNameArabic;
@@ -1104,7 +1104,7 @@ public BeneAdditionalDto getAdditionalBeneDetailJax(BenificiaryListView benefica
 				throw new GlobalException(JaxError.INVALID_ROUTING_BANK, "No data found in Flex fields For this Bene bank "+beneBankMasterModel.getBankCode());
 			}
 			}else {
-				 if(!StringUtils.isBlank(langInd) && langInd.equalsIgnoreCase(ConstantDocument.L_ARAB) && bnfBankLangInd.compareTo(new BigDecimal(2))==0) {
+				 if(!StringUtils.isBlank(langInd) && langInd.equalsIgnoreCase(ConstantDocument.L_ARAB) && bnfBankLangInd!=null && bnfBankLangInd.compareTo(new BigDecimal(2))==0) {
 					 bankName = beneBankMasterModel.getBankFullNameAr(); 
 				 }else {
 					 bankName = beneBankMasterModel.getBankFullName();
@@ -1115,7 +1115,10 @@ public BeneAdditionalDto getAdditionalBeneDetailJax(BenificiaryListView benefica
 		/** for Branch **/
 		if(serviceApplRuleforBranch!=null && serviceApplRuleforBranch.getValidate()!=null && serviceApplRuleforBranch.getValidate().equalsIgnoreCase(ConstantDocument.Yes)) {
 			
-			List<ViewBnkFlexVal>  bankFlexField = viewBankFlxValRepository.findByBnkcodeAndFileNameAndBeneBankCode(routingBankMasterModel.getBankCode(), ConstantDocument.BNFBRCH, beneBankMasterModel.getBankCode());
+			//List<ViewBnkFlexVal>  bankFlexField = viewBankFlxValRepository.findByBnkcodeAndFileNameAndBeneBankCode(routingBankMasterModel.getBankCode(), ConstantDocument.BNFBRCH, beneBankMasterModel.getBankCode());
+			
+			List<ViewBnkFlexVal>  bankFlexField = viewBankFlxValRepository.findByBnkcodeAndFileNameAndBeneBankCodeAndBeneBranchCode(routingBankMasterModel.getBankCode(), ConstantDocument.BNFBRCH, beneBankMasterModel.getBankCode(),beneBankBranchView.get(0).getBranchCode());
+			
 			if(bankFlexField!=null && !bankFlexField.isEmpty()) {
 				if(bankFlexField.size()>1) {
 					throw new GlobalException(JaxError.INVALID_ROUTING_BANK, "Too many rows for this combination in  Bene bank and branch for flex rules "+beneBankMasterModel.getBankCode());
@@ -1139,11 +1142,11 @@ public BeneAdditionalDto getAdditionalBeneDetailJax(BenificiaryListView benefica
 	
 	beneAddDto.setBeneBankName(bankName);
 	beneAddDto.setBeneBranchName(bankBranchName);
-	beneAddDto.setBeneFirstName(beneFirstName);
+	/*beneAddDto.setBeneFirstName(beneFirstName);
 	beneAddDto.setBeneSecondName(beneSecondName);
 	beneAddDto.setBeneThirdName(beneThirdName);
 	beneAddDto.setBeneFourthName(beneFourthName);
-	beneAddDto.setBeneFifthName(beneFifthName);
+	beneAddDto.setBeneFifthName(beneFifthName);*/
 	
 	if(beneBankBranchView!=null && !beneBankBranchView.isEmpty()) {
 		if(beneBankBranchView.get(0)!=null && beneBankBranchView.get(0).getStateId()!=null) {
