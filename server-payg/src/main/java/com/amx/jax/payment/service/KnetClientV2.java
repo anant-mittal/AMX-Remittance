@@ -202,6 +202,7 @@ public class KnetClientV2 implements PayGClient, InitializingBean {
 				gatewayResponse.setUdf4(pipe.getUdf4());
 				gatewayResponse.setUdf5(pipe.getUdf5());
 				gatewayResponse.setPaymentId(pipe.getPaymentId());
+				gatewayResponse.setAuth(pipe.getAuth());
 			} else {
 				gatewayResponse.setErrorText(request.getParameter("ErrorText"));
 				gatewayResponse.setPaymentId(request.getParameter("paymentid"));
