@@ -266,9 +266,12 @@ public class GigInsuranceService {
 
 	public boolean isInsuranceActive(BigDecimal customerId) {
 		CustomerInsurance insuranceDetail = customerInsuranceRepository.findByCustomerIdAndIsActive(customerId, ConstantDocument.Yes);
-		LocalDate today = LocalDateTime.now().toLocalDate();
-		LocalDate expiryDate = LocalDateTime.ofInstant(insuranceDetail.getExpiryDate().toInstant(), ZoneId.systemDefault()).toLocalDate();
-		return insuranceDetail != null && today.isBefore(expiryDate);
+		if (insuranceDetail != null) {
+			LocalDate today = LocalDateTime.now().toLocalDate();
+			LocalDate expiryDate = LocalDateTime.ofInstant(insuranceDetail.getExpiryDate().toInstant(), ZoneId.systemDefault()).toLocalDate();
+			return insuranceDetail != null && today.isBefore(expiryDate);
+		}
+		return false;
 	}
 
 	public void optInOutInsurance(OptInOutRequest request) {
