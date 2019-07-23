@@ -750,32 +750,33 @@ public class PartnerTransactionManager extends AbstractModel {
 		String trnxType = PricerServiceConstants.SEND_TRNX;
 		BigDecimal reqSeq = new BigDecimal(3);
 		BigDecimal resSeq = new BigDecimal(4);
-
 		if(serviceProviderCallRequestDto != null) {
 			if(serviceProviderCallRequestDto.getTransactionDto() != null &&  serviceProviderCallRequestDto.getTransactionDto().getOut_going_transaction_reference() != null) {
 				referenceNo = serviceProviderCallRequestDto.getTransactionDto().getOut_going_transaction_reference();
 			}
 			if(srvPrvResp.getResult().getRequest_XML() != null) {
 				requestXml = srvPrvResp.getResult().getRequest_XML();
-				saveServiceProviderXMLlogData("feeEnquiryReq", requestXml, referenceNo, reqSeq, PricerServiceConstants.REQUEST, trnxType, partnerReference);
+				ServiceProviderLogDTO serviceProviderXmlLog = saveServiceProviderXMLlogData("feeEnquiryReq", requestXml, referenceNo, reqSeq, PricerServiceConstants.REQUEST, trnxType, partnerReference);
+				if(serviceProviderXmlLog != null) {
+					saveServiceProviderXml(serviceProviderXmlLog);
+				}
 			}
 			if(srvPrvResp.getResult().getResponse_XML() != null) {
 				responseXml = srvPrvResp.getResult().getResponse_XML();
-				saveServiceProviderXMLlogData("feeEnquiryRes", responseXml, referenceNo, resSeq, PricerServiceConstants.RESPONSE, trnxType, partnerReference);
+				ServiceProviderLogDTO serviceProviderXmlLog = saveServiceProviderXMLlogData("feeEnquiryRes", responseXml, referenceNo, resSeq, PricerServiceConstants.RESPONSE, trnxType, partnerReference);
+				if(serviceProviderXmlLog != null) {
+					saveServiceProviderXml(serviceProviderXmlLog);
+				}
 			}
 		}
 	}
 	
-	public void saveServiceProviderXMLlogData(String filename, String content,String referenceNo,BigDecimal seq,String xmlType,String trnxType,String bene_Bank_Txn_Ref) {
-
+	public ServiceProviderLogDTO saveServiceProviderXMLlogData(String filename, String content,String referenceNo,BigDecimal seq,String xmlType,String trnxType,String bene_Bank_Txn_Ref) {
+		ServiceProviderLogDTO serviceProviderXmlLog = new ServiceProviderLogDTO();
 		try {
-
-			ServiceProviderLogDTO serviceProviderXmlLog = new ServiceProviderLogDTO();
-
 			serviceProviderXmlLog.setApplicationCountryId(metaData.getCountryId());
 			serviceProviderXmlLog.setCompanyId(metaData.getCompanyId());
 			serviceProviderXmlLog.setCountryBranchId(metaData.getCountryBranchId());
-			
 			serviceProviderXmlLog.setCreatedDate(new Date());
 			serviceProviderXmlLog.setCustomerId(metaData.getCustomerId());
 			//serviceProviderXmlLog.setCustomerReference(customerReference);
@@ -802,7 +803,7 @@ public class PartnerTransactionManager extends AbstractModel {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-
+		return serviceProviderXmlLog;
 	}
 
 	public void saveServiceProviderXml(ServiceProviderLogDTO serviceProviderLogDTO) {

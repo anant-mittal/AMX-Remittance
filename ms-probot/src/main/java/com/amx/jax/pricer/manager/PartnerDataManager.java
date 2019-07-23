@@ -773,32 +773,34 @@ public class PartnerDataManager {
 		String trnxType = PricerServiceConstants.SEND_TRNX;
 		BigDecimal reqSeq = new BigDecimal(1);
 		BigDecimal resSeq = new BigDecimal(2);
-		
 		if(srvPrvResp != null && srvPrvResp.getResult() != null) {
 			if(srvPrvResp.getResult().getOut_going_transaction_reference() != null) {
 				referenceNo = srvPrvResp.getResult().getOut_going_transaction_reference();
 			}
 			if(srvPrvResp.getResult().getRequest_XML() != null) {
 				requestXml = srvPrvResp.getResult().getRequest_XML();
-				saveServiceProviderXMLlogData("feeEnquiryReq", requestXml, referenceNo, reqSeq, PricerServiceConstants.REQUEST, trnxType, partnerReference,srvPrvFeeInqReqDTO);
+				ServiceProviderLogDTO serviceProviderXmlLog = saveServiceProviderXMLlogData("feeEnquiryReq", requestXml, referenceNo, reqSeq, PricerServiceConstants.REQUEST, trnxType, partnerReference,srvPrvFeeInqReqDTO);
+				if(serviceProviderXmlLog != null) {
+					saveServiceProviderXml(serviceProviderXmlLog);
+				}
 			}
 			if(srvPrvResp.getResult().getResponse_XML() != null) {
 				responseXml = srvPrvResp.getResult().getResponse_XML();
-				saveServiceProviderXMLlogData("feeEnquiryRes", responseXml, referenceNo, resSeq, PricerServiceConstants.RESPONSE, trnxType, partnerReference,srvPrvFeeInqReqDTO);
+				ServiceProviderLogDTO serviceProviderXmlLog = saveServiceProviderXMLlogData("feeEnquiryRes", responseXml, referenceNo, resSeq, PricerServiceConstants.RESPONSE, trnxType, partnerReference,srvPrvFeeInqReqDTO);
+				if(serviceProviderXmlLog != null) {
+					saveServiceProviderXml(serviceProviderXmlLog);
+				}
 			}
 		}
 	}
 	
-	public void saveServiceProviderXMLlogData(String filename,String content,String referenceNo,BigDecimal seq,String xmlType,String trnxType,String bene_Bank_Txn_Ref,SrvPrvFeeInqReqDTO srvPrvFeeInqReqDTO) {
-
+	public ServiceProviderLogDTO saveServiceProviderXMLlogData(String filename,String content,String referenceNo,BigDecimal seq,String xmlType,String trnxType,String bene_Bank_Txn_Ref,SrvPrvFeeInqReqDTO srvPrvFeeInqReqDTO) {
+		ServiceProviderLogDTO serviceProviderXmlLog = new ServiceProviderLogDTO();
 		try {
-
-			ServiceProviderLogDTO serviceProviderXmlLog = new ServiceProviderLogDTO();
-
 			serviceProviderXmlLog.setApplicationCountryId(srvPrvFeeInqReqDTO.getApplicationCountryId());
 			serviceProviderXmlLog.setCompanyId(srvPrvFeeInqReqDTO.getCompanyId());
 			serviceProviderXmlLog.setCountryBranchId(srvPrvFeeInqReqDTO.getCountryBranchId());
-			
+
 			serviceProviderXmlLog.setCreatedDate(new Date());
 			serviceProviderXmlLog.setCustomerId(srvPrvFeeInqReqDTO.getCustomerId());
 			//serviceProviderXmlLog.setCustomerReference(customerReference);
@@ -809,7 +811,7 @@ public class PartnerDataManager {
 				serviceProviderXmlLog.setForeignTerminalId(srvPrvFeeInqReqDTO.getEmployeeId().toPlainString());
 				//serviceProviderXmlLog.setCreatedBy(empDetails.getUserName());
 			}
-			
+
 			//serviceProviderXmlLog.setIdentifier(identifier);
 			serviceProviderXmlLog.setMtcNo(bene_Bank_Txn_Ref);
 			if(referenceNo != null) {
@@ -819,13 +821,12 @@ public class PartnerDataManager {
 			serviceProviderXmlLog.setTransactionType(trnxType);
 			serviceProviderXmlLog.setXmlData(IoUtils.stringToClob(content));
 			serviceProviderXmlLog.setXmlType(xmlType);
-
 		} catch (SerialException e) {
 			e.printStackTrace();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-
+		return serviceProviderXmlLog;
 	}
 	
 	public void saveServiceProviderXml(ServiceProviderLogDTO serviceProviderLogDTO) {
