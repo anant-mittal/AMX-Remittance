@@ -21,7 +21,10 @@ public class CustomerFlags {
 	Boolean securityQuestionDone;
 	/* new login */
 
-	public Boolean annualIncomeExpired;
+	Boolean annualIncomeExpired;
+	Boolean isOnlineCustomer;
+	Boolean isForceUpdateInsuranceRequired = false;
+	Boolean isInsuranceActive = false;
 	
 	public Boolean annualTransactionLimitExpired;
 	
@@ -34,8 +37,6 @@ public class CustomerFlags {
 		this.annualTransactionLimitExpired = annualTransactionLimitExpired;
 	}
 
-	public Boolean isOnlineCustomer;
-	
 	public Boolean isEmailMissing;
 
 	public Boolean getIsEmailMissing() {
@@ -125,4 +126,31 @@ public class CustomerFlags {
 	public void setAnnualIncomeExpired(Boolean annualIncomeExpired) {
 		this.annualIncomeExpired = annualIncomeExpired;
 	}
+
+	public Boolean getIsForceUpdateInsuranceRequired() {
+		return isForceUpdateInsuranceRequired;
+	}
+
+	public void setIsForceUpdateInsuranceRequired(Boolean isForceUpdateInsuranceRequired) {
+		this.isForceUpdateInsuranceRequired = isForceUpdateInsuranceRequired;
+	}
+
+	@Deprecated
+	public Boolean getDisplayInsuranceDetail() {
+		return isInsuranceActive;
+	}
+
+	@Deprecated
+	public void setDisplayInsuranceDetail(Boolean displayInsuranceDetail) {
+		this.isInsuranceActive = displayInsuranceDetail;
+	}
+
+	public Boolean getIsInsuranceActive() {
+		return isInsuranceActive;
+	}
+
+	public void setIsInsuranceActive(Boolean isInsuranceActive) {
+		this.isInsuranceActive = isInsuranceActive;
+	}
+
 }

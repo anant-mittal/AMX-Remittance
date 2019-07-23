@@ -1,4 +1,4 @@
-package com.amx.amxlib.meta.model;
+package com.amx.jax.model;
 
 public class BeneficiaryErrorStatusDto {
 	private String errorCode;

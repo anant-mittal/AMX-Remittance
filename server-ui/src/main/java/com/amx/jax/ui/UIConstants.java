@@ -38,7 +38,13 @@ public final class UIConstants extends Constants {
 		SQA_UPDATE,
 		EMAIL_UPDATE,
 		MOBILE_UPDATE, FINGERPRINT_UPDATE,
-		EMP_DETAILS_UPDATE, PSWD_UPDATE;
+		EMP_DETAILS_UPDATE, PSWD_UPDATE,
+
+		// PERMISSIONED
+		INSURANCE,
+
+		// DEFAULT
+		DEFAULT;
 
 		@JsonValue
 		@Override

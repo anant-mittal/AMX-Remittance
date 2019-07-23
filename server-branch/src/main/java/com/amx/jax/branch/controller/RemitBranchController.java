@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
@@ -27,6 +26,7 @@ import com.amx.jax.client.BeneClient;
 import com.amx.jax.client.RemitClient;
 import com.amx.jax.client.remittance.RemittanceClient;
 import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
+import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.request.device.SignaturePadRemittanceInfo;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;

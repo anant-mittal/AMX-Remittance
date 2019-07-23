@@ -60,4 +60,11 @@ public class AuthPermUtil {
 		}
 	}
 
+	public static void checkInsuranceUpdate(AuthState authState, CustomerFlags customerFlags) {
+		if (ArgUtil.nullAsFalse(customerFlags.getIsForceUpdateInsuranceRequired())) {
+			throw new UIServerError(OWAStatusStatusCodes.REDIRECT_MODULE)
+					.redirectUrl("/app/myaccount/insurance?update=required");
+		}
+	}
+
 }

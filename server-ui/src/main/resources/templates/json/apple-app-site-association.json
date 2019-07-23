@@ -6,7 +6,8 @@
 				"appID": "[[${appid}]]",
 				"paths": [
 					"/app/landing/remittance",
-					"/pub/rating/REMIT/*"
+					"/pub/rating/REMIT/*",
+					"/app/myaccount/insurance"
 				]
 			}
 		]

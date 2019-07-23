@@ -1,6 +1,7 @@
 package com.amx.jax.ui.api;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -152,7 +153,6 @@ public class UserController {
 		wrapper.getData().setTenantCode(AppContextUtil.getTenant().getCode());
 		wrapper.getData().setLang(httpService.getLanguage());
 		wrapper.getData().setCdnUrl(appConfig.getCdnURL());
-		wrapper.getData().setFeatures(webAppConfig.getFeatures());
 
 		wrapper.getData().setDevice(sessionService.getAppDevice().getUserDevice());
 		wrapper.getData().setState(sessionService.getGuestSession().getState());
@@ -183,6 +183,12 @@ public class UserController {
 			wrapper.getData().setConfig(jaxService.setDefaults().getMetaClient().getJaxMetaParameter().getResult());
 			wrapper.getData().getSubscriptions().addAll(userService.getNotifyTopics("/topics/"));
 			wrapper.getData().setReturnUrl(sessionService.getGuestSession().getReturnUrl());
+
+			wrapper.getData().setFeatures(
+					authLibContext.get().filterFeatures(sessionService.getGuestSession().getState(), customerFlags,
+							webAppConfig.getFeaturesList()));
+		} else {
+			wrapper.getData().setFeatures(webAppConfig.getFeaturesList());
 		}
 
 		wrapper.getData().setNotifyRangeShort(webAppConfig.getNotifyRangeShort());
