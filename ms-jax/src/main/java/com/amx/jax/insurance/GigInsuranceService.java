@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
@@ -29,7 +28,6 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constants.JaxChannel;
-import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.insurance.CustomerInsurance;
@@ -44,7 +42,9 @@ import com.amx.jax.model.request.insurance.SaveInsuranceDetailRequest;
 import com.amx.jax.model.response.insurance.GigInsuranceDetail;
 import com.amx.jax.model.response.insurance.NomineeDetailDto;
 import com.amx.jax.postman.PostManService;
+import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.model.Email;
+import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.repository.insurance.CustomerInsuranceRepository;
 import com.amx.jax.repository.insurance.InsuranceActionRepository;
@@ -78,6 +78,8 @@ public class GigInsuranceService {
 	PostManService postManService;
 	@Autowired
 	UserService userService;
+	@Autowired
+	PushNotifyClient pushNotifyClient;
 
 	private static final Logger log = LoggerFactory.getLogger(GigInsuranceService.class);
 
@@ -330,6 +332,13 @@ public class GigInsuranceService {
 		email.setHtml(true);
 		email.addTo(customer.getEmail());
 		postManService.sendEmail(email);
+
+		PushMessage pushMessage = new PushMessage();
+		pushMessage.setITemplate(TemplatesMX.POLICY_OPTOUT_CUSTOMER);
+		pushMessage.setModel(wrapper);
+		pushMessage.addToUser(customer.getCustomerId());
+		pushMessage.setModel(wrapper);
+		pushNotifyClient.send(pushMessage);
 	}
 
 	private void optIn(OptInOutRequest request, CustomerInsurance insuranceDetail) {
