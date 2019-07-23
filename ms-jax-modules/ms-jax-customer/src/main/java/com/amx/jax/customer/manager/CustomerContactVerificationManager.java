@@ -185,7 +185,7 @@ public class CustomerContactVerificationManager {
 		if (!ArgUtil.isEmpty(otherCustomers)) {
 			customerRepository.save(otherCustomers);
 		}
-
+		
 		customerRepository.save(c);
 
 	}
@@ -201,6 +201,17 @@ public class CustomerContactVerificationManager {
 		markCustomerContactVerified(c, link.getContactType(), link.getContactValue());
 
 		link.setIsActive(Status.D);
+		
+		List<CustomerContactVerification> oldlinks = getValidCustomerContactVerificationsByCustomerId(c.getCustomerId(),
+				link.getContactType(),
+				link.getContactValue());
+		if(!ArgUtil.isEmpty(oldlinks)) {
+			for (CustomerContactVerification customerContactVerification : oldlinks) {
+				customerContactVerification.setIsActive(Status.N);
+			}
+			customerContactVerificationRepository.save(oldlinks);
+		}
+		
 		customerContactVerificationRepository.save(link);
 
 		return link;
