@@ -240,19 +240,6 @@ public class GigInsuranceService {
 		if (distinct != count) {
 			throw new GlobalException("Duplicate nominees found. please choose distict nominees");
 		}
-		List<BigDecimal> newNomineesBeneRelSeqIdList = request.getAddNomineeRequestData().stream().filter(i -> {
-			return (i.getBeneRelationshipSeqId() != null) && (i.getNomineeId() == null);
-		}).map(i -> i.getBeneRelationshipSeqId()).collect(Collectors.toList());
-		List<BenificiaryListView> nomineeBeneRelationships = beneficiaryService.getBeneByIdNos(newNomineesBeneRelSeqIdList);
-		List<InsurnaceClaimNominee> existingNominees = insurnaceClaimNomineeRepository.findByCustomerIdAndIsActive(metaData.getCustomerId(),
-				ConstantDocument.Yes);
-		Set<BigDecimal> newNomineesBeneMasterSeqIdSet = nomineeBeneRelationships.stream().map(i -> i.getBeneficaryMasterSeqId())
-				.collect(Collectors.toSet());
-		for (InsurnaceClaimNominee nominee : existingNominees) {
-			if (newNomineesBeneMasterSeqIdSet.contains(nominee.getBeneMasterSeqId())) {
-				throw new GlobalException("Nominee already added, can not add as new nominee. Use update to modify.");
-			}
-		}
 	}
 
 	private void validateNomineePercentage(List<CreateOrUpdateNomineeRequest> nominees) {
