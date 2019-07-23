@@ -581,6 +581,10 @@ public class BeneficiaryService extends AbstractService {
 		return beneficiaryOnlineDao.findOne(idNo);
 	}
 	
+	public BeneficiaryListDTO getBeneDtoByIdNo(BigDecimal idNo) {
+		return convertBeneModelToDto(beneficiaryOnlineDao.findOne(idNo));
+	}
+	
 	public List<BenificiaryListView> getBeneByIdNos(List<BigDecimal> idNos) {
 		return beneficiaryOnlineDao.findByIdNoIn(idNos);
 	}

@@ -95,7 +95,7 @@ public class GigInsuranceService {
 		List<NomineeDetailDto> nomineeDetail = new ArrayList<>();
 		for (InsurnaceClaimNominee nominee : nominees) {
 			NomineeDetailDto nomineeDto = new NomineeDetailDto();
-			BeneficiaryListDTO beneDetail = beneficiaryService.getBeneficiaryByMasterSeqid(nominee.getCustomerId(), nominee.getBeneMasterSeqId());
+			BeneficiaryListDTO beneDetail = beneficiaryService.getBeneDtoByIdNo(nominee.getBeneRelationshipId());
 			nomineeDto.setBeneficiaryListDTO(beneDetail);
 			nomineeDto.setPercent(nominee.getSharePercent().intValue());
 			nomineeDto.setNomineeId(nominee.getNomineeId());
@@ -146,6 +146,7 @@ public class GigInsuranceService {
 				if (updateData.getBeneRelationshipSeqId() != null) {
 					BigDecimal beneMasterSeqId = beneficiaryService.getBeneByIdNo(updateData.getBeneRelationshipSeqId()).getBeneficaryMasterSeqId();
 					i.setBeneMasterSeqId(beneMasterSeqId);
+					i.setBeneRelationshipId(updateData.getBeneRelationshipSeqId());
 				}
 				i.setModifiedBy(getCreatedBy());
 				i.setModifiedDate(new Date());
@@ -167,6 +168,7 @@ public class GigInsuranceService {
 			InsurnaceClaimNominee newNominee = new InsurnaceClaimNominee();
 			newNominee.setApplicationCountryId(metaData.getCountryId());
 			newNominee.setBeneMasterSeqId(beneMasterSeqId);
+			newNominee.setBeneRelationshipId(i.getBeneRelationshipSeqId());
 			newNominee.setCreatedBy(getCreatedBy());
 			newNominee.setCreatedDate(new Date());
 			newNominee.setCreatedDeviceId(metaData.getDeviceId());

@@ -46,6 +46,8 @@ public class InsurnaceClaimNominee {
 	String modifiedDeviceType;
 	@Column(name = "CREATED_DVCTYP")
 	String createdDeviceType;
+	@Column(name="BENEFICARY_RELATIONSHIP_SEQ_ID")
+	BigDecimal beneRelationshipId;
 
 	public BigDecimal getApplicationCountryId() {
 		return applicationCountryId;
@@ -157,6 +159,14 @@ public class InsurnaceClaimNominee {
 
 	public void setCreatedDeviceType(String createdDeviceType) {
 		this.createdDeviceType = createdDeviceType;
+	}
+
+	public BigDecimal getBeneRelationshipId() {
+		return beneRelationshipId;
+	}
+
+	public void setBeneRelationshipId(BigDecimal beneRelationshipId) {
+		this.beneRelationshipId = beneRelationshipId;
 	}
 
 }
