@@ -52,6 +52,7 @@ import com.amx.jax.repository.insurance.InsurnaceClaimNomineeRepository;
 import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.userservice.dao.CustomerDao;
+import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.DateUtil;
 import com.amx.utils.JsonUtil;
 
@@ -75,6 +76,8 @@ public class GigInsuranceService {
 	CustomerDao customerDao;
 	@Autowired
 	PostManService postManService;
+	@Autowired
+	UserService userService;
 
 	private static final Logger log = LoggerFactory.getLogger(GigInsuranceService.class);
 
@@ -288,13 +291,14 @@ public class GigInsuranceService {
 		if (insuranceDetail == null) {
 			throw new GlobalException("Insurnace detail not found");
 		}
-		InsuranceAction currentAction = insuranceActionRepository.findByActionId(insuranceDetail.getCurrenctActionId());
-		if (currentAction.getOptInDate() != null && Boolean.TRUE.equals(request.getOptIn())) {
+		Customer customer = userService.getCustById(customerId);
+		if (ConstantDocument.Yes.equals(customer.getPremInsurance()) && Boolean.TRUE.equals(request.getOptIn())) {
 			return;
 		}
-		if (currentAction.getOptOutDate() != null && !Boolean.TRUE.equals(request.getOptIn())) {
+		if (!ConstantDocument.Yes.equals(customer.getPremInsurance()) && !Boolean.TRUE.equals(request.getOptIn())) {
 			return;
 		}
+
 		if (request.getOptIn()) {
 			optIn(request, insuranceDetail);
 		} else {
