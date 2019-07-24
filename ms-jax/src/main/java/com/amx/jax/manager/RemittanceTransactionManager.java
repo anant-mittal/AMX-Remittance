@@ -1411,35 +1411,6 @@ public class RemittanceTransactionManager {
 		}
 		
 
-		/*if(JaxUtil.isNullZeroBigDecimalCheck(serviceId) && serviceId.compareTo(ConstantDocument.SERVICE_MASTER_ID_EFT)==0) {
-			BankMasterModel bankMaster = bankService.getBankById(beneficiary.getBankId());
-			OWSScheduleModel oWSScheduleModel = iOWSScheduleModelRepository.findByCorBank(bankMaster.getBankCode());
-			if(oWSScheduleModel!=null && oWSScheduleModel.getBeneAccountCheckInd()!=null && oWSScheduleModel.getBeneAccountCheckInd().equalsIgnoreCase("1")) {
-				Boolean ibankCheck = checkIbanNumber(bankMaster);
-				if(ibankCheck) {
-					accountNo = beneficiary.getIbanNumber();
-				}else {
-					accountNo = beneficiary.getBankAccountNumber();
-				}
-				if(!StringUtils.isBlank(accountNo)) {
-					errorMsg = accountValidationApi(bankMaster.getBankCode(),accountNo);
-				}
-			}
-		}else if(JaxUtil.isNullZeroBigDecimalCheck(serviceId) && serviceId.compareTo(ConstantDocument.SERVICE_MASTER_ID_TT)==0) { *//** for TT Check **//*
-			BankMasterModel bankMaster = bankService.getBankById(routingBankId);
-			OWSScheduleModel oWSScheduleModel = iOWSScheduleModelRepository.findByCorBank(bankMaster.getBankCode());
-			if(oWSScheduleModel!=null && !StringUtils.isBlank(oWSScheduleModel.getBeneAccountCheckInd()) && oWSScheduleModel.getBeneAccountCheckInd().equalsIgnoreCase("1") && !StringUtils.isBlank(oWSScheduleModel.getTtbeneAccountCheckInd()) && oWSScheduleModel.getTtbeneAccountCheckInd().equals("1")) {
-				Boolean ibankCheck = checkIbanNumber(bankMaster);
-				if(ibankCheck) {
-					accountNo = beneficiary.getIbanNumber();
-				}else {
-					accountNo = beneficiary.getBankAccountNumber();
-				}
-				if(!StringUtils.isBlank(accountNo)) {
-					errorMsg = accountValidationApi(bankMaster.getBankCode(),accountNo);
-				}
-			}
-		}*/
 
 		return errorMsg;
 	}
