@@ -17,6 +17,7 @@ import com.amx.jax.constant.CustomerVerificationType;
 import com.amx.jax.db.utils.EntityDtoUtil;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerContactVerification;
+import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.CustomerVerification;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.error.JaxError;
@@ -24,6 +25,7 @@ import com.amx.jax.model.customer.CustomerContactVerificationDto;
 import com.amx.jax.repository.CustomerContactVerificationRepository;
 import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.userservice.repository.CustomerVerificationRepository;
+import com.amx.jax.userservice.repository.OnlineCustomerRepository;
 import com.amx.jax.userservice.service.CustomerVerificationService;
 import com.amx.jax.util.AmxDBConstants;
 import com.amx.jax.util.AmxDBConstants.Status;
@@ -51,6 +53,9 @@ public class CustomerContactVerificationManager {
 	
 	@Autowired
 	private CustomerVerificationRepository customerVerificationRepository;
+	
+	@Autowired
+	OnlineCustomerRepository onlineCustomerRepository;
 
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
@@ -157,6 +162,7 @@ public class CustomerContactVerificationManager {
 		List<Customer> otherCustomers = null;
 		CustomerVerification cv = customerVerificationService.getVerification(c.getCustomerId(),
 				CustomerVerificationType.EMAIL);
+		CustomerOnlineRegistration customerOnlineRegistration = onlineCustomerRepository.getLoginCustomersDeatilsById(c.getIdentityInt());
 		if (ContactType.EMAIL.equals(type)) {
 			if (!contact.equals(c.getEmail())) {
 				throw new GlobalException(JaxError.ENTITY_INVALID,
@@ -169,6 +175,7 @@ public class CustomerContactVerificationManager {
 			c.setEmailVerified(Status.Y);
 			
 			cv.setVerificationStatus(ConstantDocument.Yes);
+			customerOnlineRegistration.setStatus(ConstantDocument.Yes);
 		} else if (ContactType.SMS.equals(type)) {
 			String mobile = c.getPrefixCodeMobile() + c.getMobile();
 			if (!contact.equals(mobile)) {
@@ -202,6 +209,7 @@ public class CustomerContactVerificationManager {
 		
 		customerRepository.save(c);
 		customerVerificationRepository.save(cv);
+		onlineCustomerRepository.save(customerOnlineRegistration);
 
 	}
 
