@@ -1,10 +1,16 @@
 package com.amx.jax.model.request.serviceprovider;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Clob;
 import java.util.Date;
 
-public class ServiceProviderLogDTO {
+public class ServiceProviderLogDTO implements Serializable{
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	
 	private BigDecimal applicationCountryId;
 	private BigDecimal companyId;
