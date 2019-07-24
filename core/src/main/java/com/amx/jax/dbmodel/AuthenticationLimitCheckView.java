@@ -82,6 +82,13 @@ public class AuthenticationLimitCheckView implements Serializable{
 	public void setAuthDesc(String authDesc) {
 		this.authDesc = authDesc;
 	}
+	@Column(name="CHAR_FIELD2")
+	public String getCharField2() {
+		return charField2;
+	}
+	public void setCharField2(String charField2) {
+		this.charField2 = charField2;
+	}
 	
 	
 	@Column(name="CHAR_FIELD2")
