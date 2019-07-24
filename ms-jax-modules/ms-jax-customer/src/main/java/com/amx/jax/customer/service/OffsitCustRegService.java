@@ -34,7 +34,6 @@ import com.amx.amxlib.constant.PrefixEnum;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.CustomerCredential;
-import com.amx.jax.ICustRegService;
 import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
@@ -598,14 +597,14 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 	@Transactional
 	public AmxApiResponse<CustomerInfo, Object> saveCustomerInfo(CustomerInfoRequest model) {
 		offsiteCustomerRegValidator.validateLocalContact(model.getLocalAddressDetails());
-		offsiteCustomerRegValidator.validateHomeContact(model.getHomeAddressDestails());
+		offsiteCustomerRegValidator.validateHomeContact(model.getHomeAddressDetails());
 		LOGGER.debug("hello");
 		LOGGER.debug("in saveCustomerInfo with request model: {}", JsonUtil.toJson(model));
 		CustomerPersonalDetail customerDetails = new CustomerPersonalDetail();
 		jaxUtil.convert(model.getCustomerPersonalDetail(), customerDetails);
 		Customer customer = commitCustomer(customerDetails, model.getCustomerEmploymentDetails());
 		commitCustomerLocalContact(model.getLocalAddressDetails(), customer, customerDetails);
-		commitCustomerHomeContact(model.getHomeAddressDestails(), customer, customerDetails);
+		commitCustomerHomeContact(model.getHomeAddressDetails(), customer, customerDetails);
 		customerIdProofManager.commitOnlineCustomerIdProof(customer);
 		commitEmploymentDetails(model.getCustomerEmploymentDetails(), customer, model.getLocalAddressDetails());
 		auditService.log(new CActivityEvent(CActivityEvent.Type.PROFILE_UPDATE).result(Result.DONE));
@@ -701,17 +700,17 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 				contactDetail = new ContactDetail();
 			}
 
-			contactDetail.setFsCountryMaster(new CountryMaster(homeAddressDestails.getCountryId()));
-			if(null != homeAddressDestails.getDistrictId()) {
-				contactDetail.setFsDistrictMaster(new DistrictMaster(homeAddressDestails.getDistrictId()));
+			contactDetail.setFsCountryMaster(new CountryMaster(homeAddressDetails.getCountryId()));
+			if(null != homeAddressDetails.getDistrictId()) {
+				contactDetail.setFsDistrictMaster(new DistrictMaster(homeAddressDetails.getDistrictId()));
 			}
-			if(null != homeAddressDestails.getStateId()) {
-				contactDetail.setFsStateMaster(new StateMaster(homeAddressDestails.getStateId()));
+			if(null != homeAddressDetails.getStateId()) {
+				contactDetail.setFsStateMaster(new StateMaster(homeAddressDetails.getStateId()));
 			}
 			
 			
-			if(null != homeAddressDestails.getCityId()) {
-				contactDetail.setFsCityMaster(new CityMaster(homeAddressDestails.getCityId()));
+			if(null != homeAddressDetails.getCityId()) {
+				contactDetail.setFsCityMaster(new CityMaster(homeAddressDetails.getCityId()));
 			}
 			contactDetail.setBuildingNo(homeAddressDetails.getHouse());
 			contactDetail.setFlat(homeAddressDetails.getFlat());

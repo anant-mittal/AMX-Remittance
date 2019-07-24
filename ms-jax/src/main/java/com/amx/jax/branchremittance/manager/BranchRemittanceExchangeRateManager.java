@@ -7,7 +7,6 @@ import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_BANK_I
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_COUNTRY_ID;
 
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -29,8 +28,6 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.exception.AdditionalFlexRequiredException;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.BankMasterDTO;
-import com.amx.amxlib.model.JaxConditionalFieldDto;
-import com.amx.amxlib.model.JaxFieldDto;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.amxlib.util.JaxValidationUtil;
 import com.amx.jax.AppContextUtil;
@@ -40,11 +37,7 @@ import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.Customer;
-import com.amx.jax.dbmodel.CustomerCoreDetailsView;
-import com.amx.jax.dbmodel.CustomerEmploymentInfo;
 import com.amx.jax.dbmodel.remittance.AdditionalBankRuleAmiec;
-import com.amx.jax.dbmodel.remittance.CorporateMasterModel;
-import com.amx.jax.dbmodel.remittance.ViewVatDetails;
 import com.amx.jax.dict.UserClient.Channel;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.exrateservice.service.ExchangeRateService;
@@ -68,14 +61,11 @@ import com.amx.jax.model.response.remittance.branch.DynamicRoutingPricingRespons
 import com.amx.jax.pricer.dto.ExchangeDiscountInfo;
 import com.amx.jax.pricer.dto.ExchangeRateAndRoutingResponse;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
-import com.amx.jax.pricer.dto.PricingResponseDTO;
 import com.amx.jax.pricer.dto.TrnxRoutingDetails;
 import com.amx.jax.pricer.var.PricerServiceConstants.DISCOUNT_TYPE;
 import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_TYPE;
 import com.amx.jax.remittance.manager.RemittanceParameterMapManager;
-import com.amx.jax.repository.CustomerCoreDetailsRepository;
 import com.amx.jax.repository.IAdditionalBankRuleAmiecRepository;
-import com.amx.jax.repository.ICustomerEmploymentInfoRepository;
 import com.amx.jax.repository.remittance.ICorporateMasterRepository;
 import com.amx.jax.repository.remittance.IViewVatDetailsRespository;
 import com.amx.jax.service.BankMetaService;
@@ -83,8 +73,8 @@ import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.services.BeneficiaryValidationService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.JaxUtil;
-import com.amx.jax.util.RoundUtil;
 import com.amx.jax.validation.RemittanceTransactionRequestValidator;
+import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component

@@ -1114,6 +1114,8 @@ public class Customer implements java.io.Serializable {
 	@Column(name="VAT_NUMBER")
 	public String getCustomerVatNumber() {
 		return customerVatNumber;
+	}
+	
 	@ManyToMany(cascade = CascadeType.ALL, fetch=FetchType.LAZY)
 	@JoinTable(  name = "JAX_COMPLIANCE_BLOCKED_DOC_MAP", joinColumns = @JoinColumn(name = "CUSTOMER_ID", referencedColumnName="CUSTOMER_ID"), inverseJoinColumns = @JoinColumn(name = "CUSTOMER_DOC_TYPE_MASTER_ID",
 			referencedColumnName="ID"))
@@ -1139,6 +1141,8 @@ public class Customer implements java.io.Serializable {
 
 	public void setCustomerVatNumber(String customerVatNumber) {
 		this.customerVatNumber = customerVatNumber;
+	}
+	
 	public void setComplianceBlockedDocuments(List<CustomerDocumentTypeMaster> complianceBlockedDocuments) {
 		this.complianceBlockedDocuments = complianceBlockedDocuments;
 	}
