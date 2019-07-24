@@ -374,7 +374,7 @@ public class UserService extends AbstractUserService {
 
 			if (cv != null && cv.getFieldValue() != null && !ConstantDocument.Yes.equals(cv.getVerificationStatus())) {
 				throw new GlobalException(
-						JaxError.USER_DATA_VERIFICATION_PENDING,
+						JaxError.EMAIL_NOT_VERIFIED,
 						"Thank you for registration, Our helpdesk will get in touch with you in 48 hours");
 			}
 
@@ -665,10 +665,7 @@ public class UserService extends AbstractUserService {
 		}
 		List<Customer> customerData = customerrepository.getCustomerByIdentityInt(userId);
 		
-		if(customerData.get(0).getEmailVerified()==Status.N) {
-			throw new GlobalException(JaxError.EMAIL_NOT_VERIFIED, "Email id is not verified . Please wait for 24 hrs");
-			
-		}else {
+		
 		List<Customer> validCustomer = userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(userId,
 				JaxApiFlow.LOGIN);
 		
@@ -700,7 +697,7 @@ public class UserService extends AbstractUserService {
 		response.getData().setType(customerModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
 		return response;
-	}
+	
 	}
 
 	/**
