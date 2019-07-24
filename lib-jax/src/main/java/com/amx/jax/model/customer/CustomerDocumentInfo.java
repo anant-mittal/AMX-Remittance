@@ -2,6 +2,8 @@ package com.amx.jax.model.customer;
 
 import java.util.Date;
 
+import com.amx.jax.model.customer.document.CustomerDocUtil;
+
 public class CustomerDocumentInfo {
 
 	DocumentImageRenderType documentRenderType;
@@ -9,8 +11,10 @@ public class CustomerDocumentInfo {
 	String documentString;
 	Date uploadedDate;
 	String documentType;
+	String documentTypeDesc;
 	String documentFormat;
 	String documentCategory;
+	String documentCategoryDesc;
 
 	public DocumentImageRenderType getDocumentRenderType() {
 		return documentRenderType;
@@ -50,6 +54,7 @@ public class CustomerDocumentInfo {
 
 	public void setDocumentType(String documentType) {
 		this.documentType = documentType;
+		this.documentTypeDesc = CustomerDocUtil.getDescription(documentType);
 	}
 
 	public String getDocumentFormat() {
@@ -66,6 +71,23 @@ public class CustomerDocumentInfo {
 
 	public void setDocumentCategory(String documentCategory) {
 		this.documentCategory = documentCategory;
+		this.documentCategoryDesc = CustomerDocUtil.getDescription(documentCategory);
+	}
+
+	public String getDocumentTypeDesc() {
+		return documentTypeDesc;
+	}
+
+	public void setDocumentTypeDesc(String documentTypeDesc) {
+		this.documentTypeDesc = documentTypeDesc;
+	}
+
+	public String getDocumentCategoryDesc() {
+		return documentCategoryDesc;
+	}
+
+	public void setDocumentCategoryDesc(String documentCategoryDesc) {
+		this.documentCategoryDesc = documentCategoryDesc;
 	}
 
 }

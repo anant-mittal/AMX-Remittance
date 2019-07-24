@@ -43,6 +43,7 @@ import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.manager.CustomerIdProofManager;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.utils.JsonUtil;
+import com.amx.utils.StringUtils;
 import com.jax.amxlib.exception.jax.GlobaLException;
 
 @Component
@@ -262,4 +263,5 @@ public class CustomerDocumentManager {
 	public void saveCustomerDocumentUploadsRefs(List<CustomerDocumentUploadReference> uploads) {
 		customerDocumentUploadReferenceRepo.save(uploads);
 	}
+	
 }
