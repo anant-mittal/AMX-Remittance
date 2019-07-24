@@ -151,7 +151,42 @@ public class Customer implements java.io.Serializable {
 	private Date annualIncomeUpdatedDate;
 	private String isBusinessCardVerified;
 	private List<CustomerDocumentTypeMaster> complianceBlockedDocuments;
+	
+		
+	private String customerVatNumber;
+	private String premInsurance;
+	
+	// annual transaction limit fields added
 
+	private BigDecimal annualTransactionLimitFrom;
+	private BigDecimal annualTransactionLimitTo;
+	private Date annualTransactionUpdatedDate;
+	
+	@Column(name="ANNUAL_TRNXLIMIT_FROM")
+	public BigDecimal getAnnualTransactionLimitFrom() {
+		return annualTransactionLimitFrom;
+	}
+
+	public void setAnnualTransactionLimitFrom(BigDecimal annualTransactionLimitFrom) {
+		this.annualTransactionLimitFrom = annualTransactionLimitFrom;
+	}
+	@Column(name="ANNUAL_TRNXLIMIT_TO")
+	public BigDecimal getAnnualTransactionLimitTo() {
+		return annualTransactionLimitTo;
+	}
+
+	public void setAnnualTransactionLimitTo(BigDecimal annualTransactionLimitTo) {
+		this.annualTransactionLimitTo = annualTransactionLimitTo;
+	}
+	@Column(name="ANNUAL_TRNXLIMIT_UPDATED_DATE")
+	public Date getAnnualTransactionUpdatedDate() {
+		return annualTransactionUpdatedDate;
+	}
+
+	public void setAnnualTransactionUpdatedDate(Date annualTransactionUpdatedDate) {
+		this.annualTransactionUpdatedDate = annualTransactionUpdatedDate;
+	}
+	
 	public String getIsBusinessCardVerified() {
 		return isBusinessCardVerified;
 	}
@@ -1076,6 +1111,9 @@ public class Customer implements java.io.Serializable {
 		this.mobileVerified = mobileVerified;
 	}
 
+	@Column(name="VAT_NUMBER")
+	public String getCustomerVatNumber() {
+		return customerVatNumber;
 	@ManyToMany(cascade = CascadeType.ALL, fetch=FetchType.LAZY)
 	@JoinTable(  name = "JAX_COMPLIANCE_BLOCKED_DOC_MAP", joinColumns = @JoinColumn(name = "CUSTOMER_ID", referencedColumnName="CUSTOMER_ID"), inverseJoinColumns = @JoinColumn(name = "CUSTOMER_DOC_TYPE_MASTER_ID",
 			referencedColumnName="ID"))
@@ -1083,6 +1121,24 @@ public class Customer implements java.io.Serializable {
 		return complianceBlockedDocuments;
 	}
 
+	@Column(name="PREM_INSURANCE")
+	public String getPremInsurance() {
+		return premInsurance;
+	}
+
+	public void setPremInsurance(String premInsurance) {
+		this.premInsurance = premInsurance;
+	}
+
+	@Override
+	public String toString() {
+		return "Customer [customerId=" + customerId +", email=" + email + 
+				 ", emailVerified=" + emailVerified + ", mobileVerified="
+				+ mobileVerified + "]";
+	}
+
+	public void setCustomerVatNumber(String customerVatNumber) {
+		this.customerVatNumber = customerVatNumber;
 	public void setComplianceBlockedDocuments(List<CustomerDocumentTypeMaster> complianceBlockedDocuments) {
 		this.complianceBlockedDocuments = complianceBlockedDocuments;
 	}

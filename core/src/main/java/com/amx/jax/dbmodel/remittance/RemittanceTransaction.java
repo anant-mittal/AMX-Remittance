@@ -145,8 +145,13 @@ public class RemittanceTransaction implements Serializable {
 	private BigDecimal pipsDiscount;	
 	private String  reachedCostRateLimit;
 	
-
 	
+	private String vatType;
+	private BigDecimal vatPercentage;
+	private BigDecimal vatAmount;
+	
+
+	private String beneDeductFlag;
 	
 	
 	public RemittanceTransaction() {
@@ -1104,6 +1109,43 @@ public class RemittanceTransaction implements Serializable {
 		this.reachedCostRateLimit = reachedCostRateLimit;
 	}
 
+	@Column(name="VAT_TYPE")
+	public String getVatType() {
+		return vatType;
+	}
+
+	public void setVatType(String vatType) {
+		this.vatType = vatType;
+	}
+
+	@Column(name="VAT_PERCENTAGE")
+	public BigDecimal getVatPercentage() {
+		return vatPercentage;
+	}
+
+	public void setVatPercentage(BigDecimal vatPercentage) {
+		this.vatPercentage = vatPercentage;
+	}
+
+	@Column(name="VAT_AMOUNT")
+	public BigDecimal getVatAmount() {
+		return vatAmount;
+	}
+
+	public void setVatAmount(BigDecimal vatAmount) {
+		this.vatAmount = vatAmount;
+	}
+
+
+
+	@Column(name="BENE_DEDUCT_FLAG")
+	public String getBeneDeductFlag() {
+		return beneDeductFlag;
+	}
+
+	public void setBeneDeductFlag(String beneDeductFlag) {
+		this.beneDeductFlag = beneDeductFlag;
+	}
 
 
 }

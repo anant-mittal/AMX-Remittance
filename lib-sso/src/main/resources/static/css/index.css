@@ -130,6 +130,15 @@ header {
 	padding: 9px 11px;
 }
 
+.logo-img {
+	float: left;
+    background: black;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    padding: 10px 11px;
+}
+
 .login-form {
 	display: flex;
 	flex-wrap: wrap;

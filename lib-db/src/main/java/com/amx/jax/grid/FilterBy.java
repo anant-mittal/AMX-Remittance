@@ -3,6 +3,7 @@ package com.amx.jax.grid;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.amx.jax.grid.GridConstants.ColumnFunction;
 import com.amx.jax.grid.GridConstants.FilterDataType;
 import com.amx.jax.grid.GridConstants.FilterOperater;
 import com.amx.utils.ArgUtil;
@@ -17,6 +18,7 @@ public class FilterBy {
 	public static class Condition {
 		private String column;
 		private String value;
+		private ColumnFunction func;
 		private FilterOperater opertor;
 		private FilterDataType type;
 
@@ -26,6 +28,25 @@ public class FilterBy {
 			this.opertor = opertor;
 			this.value = value;
 			this.type = type;
+			this.func = null;
+		}
+
+		public Condition(String column, FilterOperater opertor, String value, FilterDataType type,
+				ColumnFunction func) {
+			super();
+			this.column = column;
+			this.opertor = opertor;
+			this.value = value;
+			this.type = type;
+			this.func = func;
+		}
+
+		public ColumnFunction getFunc() {
+			return func;
+		}
+
+		public void setFunc(ColumnFunction func) {
+			this.func = func;
 		}
 
 		public String getValue() {
@@ -58,6 +79,13 @@ public class FilterBy {
 
 		public void setColumn(String column) {
 			this.column = column;
+		}
+
+		public String toColumn() {
+			if (!ArgUtil.isEmpty(this.func)) {
+				return func.toString() + "(" + this.column + ")";
+			}
+			return this.column;
 		}
 	}
 
@@ -105,14 +133,13 @@ public class FilterBy {
 	 * @param filterValue  the filter value
 	 */
 	public void addSearchFilter(String filterColumn, String filterValue) {
-		mapOfLikeFilters.put(filterColumn, filterValue);
+		mapOfLikeFilters.put("lower(" + filterColumn + ")", filterValue.toLowerCase());
 	}
 
 	public void addWhereFilter(GridColumn colSpec) {
-		FilterOperater filterOperater = (FilterOperater) ArgUtil.parseAsEnum(colSpec.getOperator(),
-				FilterOperater.EQ);
-		mapOfWhereFilters.put(colSpec.getKey() + colSpec.getIndex(),
-				new Condition(colSpec.getKey(), filterOperater, colSpec.getValue(), colSpec.getDataType()));
+		FilterOperater filterOperater = (FilterOperater) ArgUtil.parseAsEnum(colSpec.getOperator(), FilterOperater.EQ);
+		mapOfWhereFilters.put(colSpec.getKey() + colSpec.getIndex(), new Condition(colSpec.getKey(), filterOperater,
+				colSpec.getValue(), colSpec.getDataType(), colSpec.getFunc()));
 	}
 
 	/**

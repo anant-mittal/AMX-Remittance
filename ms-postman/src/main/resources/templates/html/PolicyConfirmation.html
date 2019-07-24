@@ -1,0 +1,534 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:th="http://www.thymeleaf.org"
+  lang="ar"
+>
+  <head>
+    <meta name="viewport" content="width=device-width" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>AMIEC Group Life Insurance Policy Registration</title>
+    <style>
+      * {
+        margin: 0;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        box-sizing: border-box;
+        font-size: 14px;
+      }
+
+      img {
+        max-width: 100%;
+      }
+
+      body {
+        -webkit-font-smoothing: antialiased;
+        -webkit-text-size-adjust: none;
+        width: 100% !important;
+        height: 100%;
+        line-height: 1.6em;
+        /* 1.6em * 14px = 22.4px, use px to get airier line-height also in Thunderbird, and Yahoo!, Outlook.com, AOL webmail clients */
+        /*line-height: 22px;*/
+      }
+
+      table td {
+        vertical-align: top;
+      }
+
+      body {
+        background-color: #f6f6f6;
+      }
+
+      .body-wrap {
+        background-color: #f6f6f6;
+        width: 100%;
+      }
+
+      .container {
+        display: block !important;
+        max-width: 600px !important;
+        margin: 0 auto !important;
+        /* makes it centered */
+        clear: both !important;
+      }
+
+      .content {
+        max-width: 600px;
+        margin: 0 auto;
+        display: block;
+        padding: 20px;
+      }
+
+      .main {
+        background-color: #fff;
+        border: 1px solid #e9e9e9;
+        border-radius: 3px;
+      }
+
+      .content-wrap {
+        padding: 20px;
+      }
+
+      .content-block {
+        padding: 0 0 20px;
+      }
+
+      .header {
+        width: 100%;
+        margin-bottom: 20px;
+      }
+
+      .footer {
+        width: 100%;
+        clear: both;
+        color: #999;
+        padding: 20px;
+      }
+
+      .footer p,
+      .footer a,
+      .footer td {
+        color: #999;
+        font-size: 12px;
+      }
+
+      h1,
+      h2,
+      h3 {
+        font-family: "Helvetica Neue", Helvetica, Arial, "Lucida Grande",
+          sans-serif;
+        color: #000;
+        margin: 0;
+        line-height: 1.2em;
+        font-weight: 400;
+      }
+
+      h1 {
+        font-size: 32px;
+        font-weight: 500;
+        /* 1.2em * 32px = 38.4px, use px to get airier line-height also in Thunderbird, and Yahoo!, Outlook.com, AOL webmail clients */
+        /*line-height: 38px;*/
+      }
+
+      h2 {
+        font-size: 24px;
+        /* 1.2em * 24px = 28.8px, use px to get airier line-height also in Thunderbird, and Yahoo!, Outlook.com, AOL webmail clients */
+        /*line-height: 29px;*/
+      }
+
+      h3 {
+        font-size: 18px;
+        /* 1.2em * 18px = 21.6px, use px to get airier line-height also in Thunderbird, and Yahoo!, Outlook.com, AOL webmail clients */
+        /*line-height: 22px;*/
+      }
+
+      h4 {
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      p,
+      ul,
+      ol {
+        margin-bottom: 10px;
+        font-weight: normal;
+      }
+
+      p li,
+      ul li,
+      ol li {
+        margin-left: 5px;
+        list-style-position: inside;
+      }
+
+      a {
+        color: #348eda;
+        text-decoration: underline;
+      }
+
+      .btn-primary {
+        text-decoration: none;
+        color: #fff;
+        background-color: #348eda;
+        border: solid #348eda;
+        border-width: 5px 10px;
+        line-height: 2em;
+        /* 2em * 14px = 28px, use px to get airier line-height also in Thunderbird, and Yahoo!, Outlook.com, AOL webmail clients */
+        /*line-height: 28px;*/
+        font-weight: bold;
+        text-align: center;
+        cursor: pointer;
+        display: inline-block;
+        border-radius: 5px;
+        text-transform: capitalize;
+        font-size: 18px;
+      }
+
+      .last {
+        margin-bottom: 0;
+      }
+
+      .first {
+        margin-top: 0;
+      }
+
+      .aligncenter {
+        text-align: center;
+      }
+
+      .alignright {
+        text-align: right;
+      }
+
+      .alignleft {
+        text-align: left;
+      }
+
+      .clear {
+        clear: both;
+      }
+
+      .alert {
+        font-size: 16px;
+        color: #fff;
+        font-weight: 500;
+        padding: 20px;
+        text-align: center;
+        border-radius: 3px 3px 0 0;
+      }
+
+      .alert a {
+        color: #fff;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 16px;
+      }
+
+      .alert.alert-warning {
+        background-color: #000000;
+      }
+
+      .alert.alert-bad {
+        background-color: #d0021b;
+      }
+
+      .alert.alert-good {
+        background-color: #68b90f;
+      }
+
+      .invoice {
+        margin: 40px auto;
+        text-align: left;
+        width: 80%;
+      }
+
+      .invoice td {
+        padding: 5px 0;
+      }
+
+      .invoice .invoice-items {
+        width: 100%;
+      }
+
+      .invoice .invoice-items td {
+        border-top: #eee 1px solid;
+      }
+
+      .invoice .invoice-items .total td {
+        border-top: 2px solid #333;
+        border-bottom: 2px solid #333;
+        font-weight: 700;
+      }
+
+      @media only screen and (max-width: 640px) {
+        body {
+          padding: 0 !important;
+        }
+        h1,
+        h2,
+        h3,
+        h4 {
+          font-weight: 800 !important;
+          margin: 20px 0 5px !important;
+        }
+        h1 {
+          font-size: 22px !important;
+        }
+        h2 {
+          font-size: 18px !important;
+        }
+        h3 {
+          font-size: 16px !important;
+        }
+        .container {
+          padding: 0 !important;
+          width: 100% !important;
+        }
+        .content {
+          padding: 0 !important;
+        }
+        .content-wrap {
+          padding: 10px !important;
+        }
+        .invoice {
+          width: 100% !important;
+        }
+      }
+    </style>
+  </head>
+  <body itemtype="http://schema.org/EmailMessage">
+    <table class="body-wrap">
+      <tr>
+        <td></td>
+        <td class="container" width="600">
+          <div class="content">
+            <table class="main" width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td
+                  class="alert alert-warning"
+                  align="center"
+                  bgcolor="#000000"
+                >
+                  <img
+                    th:attr="src=${'cid:' + _tu.prop('company.logo.path')}"
+                  />
+                </td>
+              </tr>
+              <tr>
+                <td class="content-wrap">
+                  <table width="100%" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td class="content-block">
+                        <strong
+                          >Dear
+                          <span th:text="${data.customer}"></span>,</strong
+                        >
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="content-block">
+                        <p>
+                          We are pleased to inform you that as you are a part of
+                          Al Mulla Exchange family, we have offered you an Group
+                          Life Insurance Policy for you from
+                          <span th:text="${data.policystartdate}"></span> to
+                          <span th:text="${data.policyenddate}"></span>.
+                        </p>
+                        <p>General Terms & Conditions:</p>
+                        <ul>
+                          <li>
+                            <strong>Life Insurance Policy</strong>
+                            <ul>
+                              <li>
+                                <strong
+                                  >This group life insurance policy has been
+                                  brought to you by Al Mulla Exchange through
+                                  GIG, Kuwait</strong
+                                >
+                              </li>
+                              <li>
+                                <strong
+                                  >The Life Insurance is for an amount of KD
+                                  5,000</strong
+                                >
+                              </li>
+                              <li>
+                                The Insurance is valid only for natural or
+                                accidental death
+                              </li>
+                            </ul>
+                          </li>
+                          <li>
+                            <strong>Eligibility Criterion</strong>
+                            <ul>
+                              <li>
+                                All Customers doing 10 remittance transactions
+                                on the online or App platform, within a period
+                                of 12 months, automatically become eligible for
+                                this Life Insurance Policy
+                              </li>
+                              <li>
+                                The policy will be automatically renewed in the
+                                next year, if the eligibility criterion is met
+                                on the date of the expiry of the policy
+                              </li>
+                              <li>
+                                Online Foreign Currency Delivery, At Branch -
+                                Foreign Currency Sale / Purchase and remittance
+                                transactions are not included in the Life
+                                Insurance program criteria
+                              </li>
+                              <li>
+                                If the qualifying transaction is cancelled, the
+                                policy shall immediately terminate and the
+                                customer will requalify only upon undertaking a
+                                fresh qualifying transaction
+                              </li>
+                            </ul>
+                          </li>
+                          <li>
+                            <strong>Age Criterion </strong>
+                            <ul>
+                              <li>
+                                Maximum age eligibility for entry into the
+                                Insurance cover is 64 Years of age at the time
+                                of undertaking the qualifying transaction
+                              </li>
+                            </ul>
+                          </li>
+                          <li>
+                            <strong>Validity</strong>
+                            <ul>
+                              <li>
+                                The GIG Life Insurance Policy is considered
+                                effective from your last qualifying transaction,
+                                for a period of 1 year
+                              </li>
+                            </ul>
+                          </li>
+                          <li>
+                            <strong>Nomination</strong>
+                            <ul>
+                              <li>
+                                <strong
+                                  >The customer is required to nominate the
+                                  beneficiaries of the Life Insurance, in case
+                                  of an untimely event</strong
+                                >
+                              </li>
+                              <li>
+                                <strong
+                                  >The nominee(s) can be from amongst the
+                                  existing beneficiaries or will needed to be
+                                  added as a beneficiary with full bank
+                                  details</strong
+                                >
+                              </li>
+                            </ul>
+                          </li>
+                          <li>
+                            <strong>Cancellation / Expiry</strong>
+                            <ul>
+                              <li>
+                                The Policy will expire once the customer reach
+                                65 years of age
+                              </li>
+                              <li>
+                                The customer can choose to Opt Out for the
+                                policy at any-time
+                              </li>
+                            </ul>
+                          </li>
+                          <li>
+                            <strong>Authorization</strong>
+                            <ul>
+                              <li>
+                                I hereby authorize Al Mulla Exchange to obtain
+                                from the Public Authority for Civil Information,
+                                my business and residence addresses.
+                              </li>
+                            </ul>
+                          </li>
+                          <li>
+                            <strong>Exercise of the Policy</strong>
+                            <ul>
+                              <li>
+                                The policy discharge shall be on the basis of
+                                the terms set out by GIG and may undergo changes
+                                from time to time
+                              </li>
+                              <li>
+                                The customer’s nominees need to initiate the
+                                claim process within 85 days of the date of the
+                                event. This claim needs to be a physical form to
+                                be submitted to the Admin Manager at the Al
+                                Mulla Exchange Office located at 1<sup>st</sup>
+                                Floor, Ahmed Saleh &amp; Sons Building, Block
+                                10, Near KPTC Bus Stand, Murgab, Kuwait
+                              </li>
+                            </ul>
+                          </li>
+                        </ul>
+                        <p><strong>Disclaimer</strong></p>
+                        <p>
+                          Al Mulla Exchange reserves the right to amend any of
+                          these Terms and Conditions at any time and any
+                          amendment announced by Al Mulla Exchange by any means
+                          – electronic or at branches, means as deemed
+                          appropriate, shall constitute a valid and effective
+                          amendment as from the date thereof and shall be
+                          binding upon all customers
+                        </p>
+                        <p>
+                          To opt out, please click the OPT OUT button below. To
+                          add nominees, please click NOMINATE YOUR BENEFICIARIES
+                          button.
+                        </p>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td
+                        class="content-block"
+                        align="center"
+                        style="padding:20px"
+                      >
+                        <a
+                          th:href="${_tu.prop('company.app.url')	 + '/app/myaccount/insurance?optin=false'}"
+                          style="width:200px"
+                          class="btn-primary"
+                          target="_blank"
+                          >OPT OUT</a
+                        >
+                      </td>
+                    </tr>
+                    <tr>
+                      <td
+                        class="content-block"
+                        align="center"
+                        style="padding:20px"
+                      >
+                        <a
+                          th:href="${_tu.prop('company.app.url')	 + '/app/myaccount/insurance?optin=true'}"
+                          style="width:200px"
+                          class="btn-primary"
+                          target="_blank"
+                          >NOMINATE YOUR BENEFICIARIES
+                        </a>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td class="content-block">
+                        Thanks and Regards,<br />
+                        <strong
+                          ><span
+                            th:text="${_tu.prop('company.fullname')}"
+                            th:remove="tag"
+                          ></span
+                          >,</strong
+                        ><br />
+                        <span
+                          th:text="${_tu.prop('company.country')}"
+                          th:remove="tag"
+                        ></span
+                        ><br />
+                        <span
+                          th:text="${_tu.prop('support.contact.from')}"
+                          th:remove="tag"
+                        ></span
+                        ><br />
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+
+            <div class="footer"></div>
+          </div>
+        </td>
+        <td></td>
+      </tr>
+    </table>
+  </body>
+</html>

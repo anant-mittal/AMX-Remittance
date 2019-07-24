@@ -13,7 +13,7 @@ import com.amx.jax.pricer.repository.MarginMarkupRepository;
 public class MarginMarkupDao {
 
 	@Autowired
-	MarginMarkupRepository marginMarkupRepository;
+	private MarginMarkupRepository marginMarkupRepository;
 
 	public OnlineMarginMarkup getMarkupForCountryAndCurrency(BigDecimal aplCountryId, BigDecimal countryId,
 			BigDecimal currencyId) {

@@ -45,7 +45,7 @@ public class UserMetaData extends AbstractModel {
 
 	String cdnUrl = null;
 
-	Features[] features = null;
+	List<Features> features = new ArrayList<Features>();;
 
 	List<String> subscriptions = new ArrayList<String>();
 
@@ -249,7 +249,7 @@ public class UserMetaData extends AbstractModel {
 	 *
 	 * @return the features
 	 */
-	public Features[] getFeatures() {
+	public List<Features> getFeatures() {
 		return features;
 	}
 
@@ -258,7 +258,7 @@ public class UserMetaData extends AbstractModel {
 	 * 
 	 * @param features the new features
 	 */
-	public void setFeatures(Features[] features) {
+	public void setFeatures(List<Features> features) {
 		this.features = features;
 	}
 

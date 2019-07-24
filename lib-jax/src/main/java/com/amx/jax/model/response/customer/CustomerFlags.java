@@ -23,7 +23,38 @@ public class CustomerFlags {
 
 	Boolean annualIncomeExpired;
 	Boolean isDeactivated;
+	Boolean isOnlineCustomer;
+	Boolean isForceUpdateInsuranceRequired = false;
+	Boolean isInsuranceActive = false;
 	
+	public Boolean annualTransactionLimitExpired;
+	
+
+	public Boolean getAnnualTransactionLimitExpired() {
+		return annualTransactionLimitExpired;
+	}
+
+	public void setAnnualTransactionLimitExpired(Boolean annualTransactionLimitExpired) {
+		this.annualTransactionLimitExpired = annualTransactionLimitExpired;
+	}
+
+	public Boolean isEmailMissing;
+
+	public Boolean getIsEmailMissing() {
+		return isEmailMissing;
+	}
+
+	public void setIsEmailMissing(Boolean isEmailMissing) {
+		this.isEmailMissing = isEmailMissing;
+	}
+
+	public Boolean getIsOnlineCustomer() {
+		return isOnlineCustomer;
+	}
+
+	public void setIsOnlineCustomer(Boolean isOnlineCustomer) {
+		this.isOnlineCustomer = isOnlineCustomer;
+	}
 
 	public Boolean getFingerprintlinked() {
 		return fingerprintlinked;
@@ -97,11 +128,38 @@ public class CustomerFlags {
 		this.annualIncomeExpired = annualIncomeExpired;
 	}
 
+	public Boolean getIsForceUpdateInsuranceRequired() {
+		return isForceUpdateInsuranceRequired;
+	}
+
 	public Boolean getIsDeactivated() {
 		return isDeactivated;
+	}
+
+	public void setIsForceUpdateInsuranceRequired(Boolean isForceUpdateInsuranceRequired) {
+		this.isForceUpdateInsuranceRequired = isForceUpdateInsuranceRequired;
 	}
 
 	public void setIsDeactivated(Boolean isDeactivated) {
 		this.isDeactivated = isDeactivated;
 	}
+
+	@Deprecated
+	public Boolean getDisplayInsuranceDetail() {
+		return isInsuranceActive;
+	}
+
+	@Deprecated
+	public void setDisplayInsuranceDetail(Boolean displayInsuranceDetail) {
+		this.isInsuranceActive = displayInsuranceDetail;
+	}
+
+	public Boolean getIsInsuranceActive() {
+		return isInsuranceActive;
+	}
+
+	public void setIsInsuranceActive(Boolean isInsuranceActive) {
+		this.isInsuranceActive = isInsuranceActive;
+	}
+
 }

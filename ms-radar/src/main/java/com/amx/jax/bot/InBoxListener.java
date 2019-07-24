@@ -12,6 +12,8 @@ import com.amx.jax.dict.ContactType;
 import com.amx.jax.postman.client.WhatsAppClient;
 import com.amx.jax.postman.events.UserInboxEvent;
 import com.amx.jax.postman.model.WAMessage;
+import com.amx.jax.radar.EsConfig;
+import com.amx.jax.radar.RadarConfig;
 import com.amx.jax.radar.jobs.customer.OracleViewDocument;
 import com.amx.jax.radar.service.SnapDocumentRepository;
 import com.amx.jax.repository.CustomerRepository;
@@ -46,20 +48,26 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 	@Autowired
 	SnapDocumentRepository snapApiService;
 
+	@Autowired
+	RadarConfig radarConfig;
+
+	@Autowired
+	EsConfig esConfig;
+
 	public static final String FOUND_MATCHED = "Thank you for verification. Your account is now linked to this whatsApp number.";
-	public static final String FOUND_MATCH_NOT = "This WhatsApp number is not linked to the Civil ID entered. "
-			+ "Please recheck. In case the Civil ID is correct, please go to the branch and update your"
+	public static final String FOUND_MATCH_NOT = "This WhatsApp number is not linked to the {companyIDType} entered. "
+			+ "Please recheck. In case the {companyIDType} is correct, please go to the branch and update your"
 			+ " WhatsApp number with any of our counter staff.";
-	public static final String FOUND_NOT = "We cannot find an account with this Civil ID. "
-			+ "Kindly check if Civil ID is correct or visit branch to create a new account. "
-			+ "You can also register online on https://www.almullaexchange.com";
+	public static final String FOUND_NOT = "We cannot find an account with this {companyIDType}. "
+			+ "Kindly check if {companyIDType} is correct or visit branch to create a new account. "
+			+ "You can also register online on https://{companyWebSiteUrl}";
 	public static final String ANY_TEXT = "We cannot find any account linked with this WhatsApp number. "
-			+ "Please send Civil ID to link your account. Eg : LINK 123456789987";
-	public static final String NO_ACTION = "Your number is verified. Visit https://www.almullaexchange.com or download our app, "
+			+ "Please send {companyIDType} to link your account. Eg : LINK 123456789987";
+	public static final String NO_ACTION = "Your number is verified. Visit https://{companyWebSiteUrl} or download our app, "
 			+ "register yourself and see exchange rates, view past transactions, place orders for targeted exchange rates, "
 			+ "do remittances and order Foreign Exchange to be delivered to you.";
 	public static final String SOME_ERROR = "There is some issue while verifying your WhatsApp number."
-			+ "Please recheck. In case the Civil ID is correct, please go to the branch and update your"
+			+ "Please recheck. In case the {companyIDType} is correct, please go to the branch and update your"
 			+ " WhatsApp number with any of our counter staff.";
 
 	@Override
@@ -116,7 +124,7 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 
 				}
 
-			} else {
+			} else if (esConfig.isEnabled()) {
 				OracleViewDocument doc = snapApiService.getCustomerByWhatsApp(swissISDProtoString,
 						swissNumberProtoString);
 				if (!ArgUtil.isEmpty(doc)) {
@@ -128,8 +136,15 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 				} else {
 					replyMessage = ANY_TEXT;
 				}
+			} else {
+				replyMessage = ANY_TEXT;
 			}
-			return event.replyWAMessage(replyMessage);
+
+			return event.replyWAMessage(replyMessage.replace("{companyName}", radarConfig.getCompanyName())
+					.replace("{companyWebSiteUrl}", radarConfig.getCompanyWebSiteUrl())
+					.replace("{companyIDType}", radarConfig.getCompanyIDType())
+
+			);
 		} else {
 			return event.replyWAMessage(null);
 		}

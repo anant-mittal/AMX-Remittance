@@ -16,12 +16,16 @@ import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.ListRequestModel;
 import com.amx.jax.async.ExecutorConfig;
 import com.amx.jax.dict.ContactType;
+import com.amx.jax.logger.AuditService;
+import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.postman.PostManConfig;
+import com.amx.jax.postman.audit.PMGaugeEvent;
 import com.amx.jax.postman.events.UserInboxEvent;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.WAMessage;
 import com.amx.jax.tunnel.TunnelService;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.CollectionUtil;
 import com.amx.utils.Constants;
 import com.amx.utils.MapBuilder;
 
@@ -45,11 +49,14 @@ public class WhatsAppService {
 	@Autowired
 	private FileService fileService;
 
+	@Autowired
+	private AuditService auditService;
+
 	private RBlockingQueue<WAMessage> getQueue(BigDecimal queueId) {
 		if (ArgUtil.isEmpty(queueId) || queueId.equals(BigDecimal.ZERO)) {
-			return redisson.getBlockingQueue(WHATS_MESSAGES);
+			return redisson.getBlockingQueue(WHATS_MESSAGES + "_" + AppContextUtil.getTenant());
 		}
-		return redisson.getBlockingQueue(WHATS_MESSAGES + "_" + queueId);
+		return redisson.getBlockingQueue(WHATS_MESSAGES + "_" + queueId + "_" + AppContextUtil.getTenant());
 	}
 
 	public WAMessage resolveTemplate(WAMessage waMessage) {
@@ -62,7 +69,7 @@ public class WhatsAppService {
 			file.setModel(waMessage.getModel());
 			file.setLang(waMessage.getLang());
 
-			waMessage.setMessage(fileService.create(file,ContactType.WHATSAPP).getContent());
+			waMessage.setMessage(fileService.create(file, ContactType.WHATSAPP).getContent());
 		}
 		return waMessage;
 	}
@@ -115,7 +122,19 @@ public class WhatsAppService {
 			userInboxEvent.setFrom(ArgUtil.parseAsString(map.get("from"), Constants.BLANK));
 			userInboxEvent.setTo(ArgUtil.parseAsString(map.get("to"), Constants.BLANK));
 			userInboxEvent.setMessage(ArgUtil.parseAsString(map.get("text"), Constants.BLANK));
-			tunnelService.task(userInboxEvent);
+
+			PMGaugeEvent pMGaugeEvent = new PMGaugeEvent(PMGaugeEvent.Type.ON_WHATSAPP);
+			pMGaugeEvent.setTo(CollectionUtil.getList(userInboxEvent.getFrom()));
+			pMGaugeEvent.setMessage(userInboxEvent.getMessage());
+			pMGaugeEvent.setResult(Result.DONE);
+
+			try {
+				tunnelService.task(userInboxEvent);
+				auditService.gauge(pMGaugeEvent.set(Result.DONE));
+			} catch (Exception e) {
+				auditService.excep(pMGaugeEvent.set(Result.DONE), e);
+			}
+
 		}
 	}
 }

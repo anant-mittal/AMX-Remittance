@@ -62,7 +62,8 @@ public class CustomerBranchController {
 
 	@RequestMapping(value = "/api/customer/details", method = { RequestMethod.POST })
 	public AmxApiResponse<OffsiteCustomerDataDTO, Object> setCustomerDetails(@RequestParam String identity,
-			@RequestParam BigDecimal identityType, @RequestParam boolean session) {
+			@RequestParam BigDecimal identityType,
+			@RequestParam boolean session) {
 		AmxApiResponse<OffsiteCustomerDataDTO, Object> customerResponse = offsiteCustRegClient
 				.getOffsiteCustomerDetails(identity, identityType);
 		if (session) {

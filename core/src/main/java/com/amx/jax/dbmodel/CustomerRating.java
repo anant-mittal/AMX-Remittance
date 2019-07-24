@@ -94,6 +94,8 @@ public class CustomerRating implements java.io.Serializable{
 	}
 	public void setRatingRemark(String ratingRemark) {
 		this.ratingRemark = ratingRemark;
-	}	
+	}
+	
+	
 	
 }

@@ -27,9 +27,10 @@ public class CustomerFlagManager {
 	private static final Logger logger = Logger.getLogger(CustomerFlags.class);
 	@Autowired
 	UserValidationService userValidationService;
-
+	
 	@Autowired
 	private CustomerDao custDao;
+
 
 	public CustomerFlags getCustomerFlags(BigDecimal customerId) {
 		CustomerFlags customerFlags = new CustomerFlags();
@@ -45,9 +46,11 @@ public class CustomerFlagManager {
 		customerFlags.setFingerprintlinked(isFingerprintLinked(customerOnlineRegistration));
 		customerFlags.setSecurityQuestionDone(!isSecurityQuestionRequired(customerOnlineRegistration));
 
-		customerFlags.setAnnualIncomeExpired(isAnnualIncomeExpired(customer));
+		customerFlags.setAnnualIncomeExpired(Boolean.FALSE);
+		customerFlags.setAnnualTransactionLimitExpired(isAnnualTransactionLimitExpired(customer));
 		customerFlags.setIsDeactivated(ConstantDocument.Deleted.equals(customer.getIsActive()));
 		setCustomerCommunicationChannelFlags(customer, customerFlags);
+		customerFlags.setIsEmailMissing(isEmailMissing(customer));
 
 		return customerFlags;
 	}
@@ -125,5 +128,29 @@ public class CustomerFlagManager {
 			}
 		}
 	}
+	
+	public static Boolean isAnnualTransactionLimitExpired(Customer customer) {
+		Date annualTransactionLimitExpired = customer.getAnnualTransactionUpdatedDate();
+		if (annualTransactionLimitExpired == null) {
+			return true;
+		} else {
+			Date currentDate = new Date();
+			long millisec = currentDate.getTime() - annualTransactionLimitExpired.getTime();
 
+			if (millisec >= ConstantDocument.MILLISEC_IN_YEAR) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+	}
+	
+	public static Boolean isEmailMissing(Customer customer) {
+		if(StringUtils.isEmpty(customer.getEmail())) {
+			return true;
+		}
+		return false;
+		
+	}
 }

@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.meta.model.TransactionHistoryDto;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.response.ApiResponse;
@@ -33,6 +32,7 @@ import com.amx.jax.dbmodel.CustomerRemittanceTransactionHistoryView;
 import com.amx.jax.dbmodel.CustomerRemittanceTransactionView;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.ITransactionHistroyDAO;
 import com.amx.jax.repository.TransactionHistoryDAO;
@@ -63,43 +63,27 @@ public class TransactionHistroyService extends AbstractService {
 	Logger logger = LoggerFactory.getLogger(TransactionHistroyDTO.class);
 
 	public ApiResponse getTransactionHistroy(BigDecimal cutomerReference, BigDecimal docfyr) {
-		
-		List<CustomerRemittanceTransactionHistoryView> trnxHistoryList = new ArrayList<CustomerRemittanceTransactionHistoryView>();
-		List<CustomerRemittanceTransactionView> trnxList = transactionHistroyDao
+		List<CustomerRemittanceTransactionView> trnxHisList = transactionHistroyDao
 				.getTransactionHistroy(cutomerReference);
 		ApiResponse response = getBlackApiResponse();
-		if (trnxList.isEmpty()) {
-			trnxHistoryList = transactionHistroyDAO
-					.getTransactionHistroy(cutomerReference);
-			Set<BigDecimal> beneRelSeqSet = trnxHistoryList.stream().map(emp -> emp.getBeneficiaryRelationSeqId())
-					.collect(Collectors.toSet());
-			List<BenificiaryListView> beneList = beneficiaryOnlineDao.getBeneficiaryRelationShipSeqIds(
-					metaData.getCustomerId(), new ArrayList<BigDecimal>(beneRelSeqSet));
-			Map<BigDecimal, BenificiaryListView> beneMap = beneList.stream()
-					.collect(Collectors.toMap(BenificiaryListView::getBeneficiaryRelationShipSeqId, x -> x));
-			response.getData().getValues().addAll(convert_v2(trnxHistoryList,beneMap));
-			response.setResponseStatus(ResponseStatus.OK);
-		
+		if (trnxHisList.isEmpty()) {
+			throw new GlobalException(JaxError.TRANSACTION_HISTORY_NOT_FOUND,"Transaction histroy not found");
 		} else {
 		    
-			Set<BigDecimal> beneRelSeqSet = trnxList.stream().map(emp -> emp.getBeneficiaryRelationSeqId())
+			Set<BigDecimal> beneRelSeqSet = trnxHisList.stream().map(emp -> emp.getBeneficiaryRelationSeqId())
 					.collect(Collectors.toSet());
 			List<BenificiaryListView> beneList = beneficiaryOnlineDao.getBeneficiaryRelationShipSeqIds(
 					metaData.getCustomerId(), new ArrayList<BigDecimal>(beneRelSeqSet));
 			Map<BigDecimal, BenificiaryListView> beneMap = beneList.stream()
 					.collect(Collectors.toMap(BenificiaryListView::getBeneficiaryRelationShipSeqId, x -> x));
 		    
-		    response.getData().getValues().addAll(convert(trnxList,beneMap));
+		    response.getData().getValues().addAll(convert(trnxHisList,beneMap));
 			response.setResponseStatus(ResponseStatus.OK);
-		}
-		if (trnxList.isEmpty() && trnxHistoryList.isEmpty()) {
-			throw new GlobalException(JaxError.TRANSACTION_HISTORY_NOT_FOUND, "Transaction histroy not found");
 		}
 		response.getData().setType("trnxHist");
 		return response;
-	
 	}
-	
+
 
     public ApiResponse getTransactionHistroyByDocumentNumber(BigDecimal cutomerReference, BigDecimal docfyr,
 			BigDecimal docNumber) { 

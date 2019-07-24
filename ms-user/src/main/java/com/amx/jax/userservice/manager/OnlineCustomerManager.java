@@ -24,6 +24,7 @@ import com.amx.jax.services.JaxDBService;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.userservice.service.UserValidationService;
+import com.amx.jax.util.AmxDBConstants.Status;
 
 @Component
 public class OnlineCustomerManager {
@@ -46,6 +47,8 @@ public class OnlineCustomerManager {
 	
 	private static final Logger log = LoggerFactory.getLogger(OnlineCustomerManager.class);
 
+	@Autowired
+	UserContactVerificationManager userContactVerificationManager;
 
 	public void saveCustomerSecQuestions(List<SecurityQuestionModel> securityQuestions) {
 		CustomerOnlineRegistration customerOnlineRegistration = custDao
@@ -88,6 +91,9 @@ public class OnlineCustomerManager {
 				JaxApiFlow.SIGNUP_ONLINE);
 		Customer customer = customers.get(0);
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customer.getCustomerId());
+		if(customer.getEmailVerified() == Status.N) {
+			throw new GlobalException(JaxError.EMAIL_NOT_VERIFIED, "Email id is not verified . Please wait for 24 hrs");
+		}
 		if (onlineCustomer != null && ConstantDocument.Yes.equals(onlineCustomer.getStatus())) {
 			throw new GlobalException(JaxError.USER_ALREADY_ACTIVE,
 					"You are already registered with us. Please login.");

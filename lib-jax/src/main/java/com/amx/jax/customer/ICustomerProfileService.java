@@ -29,6 +29,15 @@ public interface ICustomerProfileService {
 		public static final String CONTACT = "contact";
 	}
 
+	/**
+	 * 
+	 * 
+	 * @param customerId
+	 * @param type       - contact type
+	 * @param identity
+	 * @param send       - to send link or not
+	 * @return
+	 */
 	@ApiJaxStatus({ JaxError.CUSTOMER_NOT_FOUND, JaxError.MISSING_CONTACT })
 	@ApiStatus({ ApiStatusCodes.PARAM_MISSING })
 	AmxApiResponse<CustomerContactVerificationDto, Object> createVerificationLink(BigDecimal customerId,

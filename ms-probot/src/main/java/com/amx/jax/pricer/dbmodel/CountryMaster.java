@@ -85,13 +85,17 @@ public class CountryMaster implements Serializable {
 	private String countryActive;
 	private String businessCountry;
 	private List<CountryMasterDesc> fsCountryMasterDescs = new ArrayList<CountryMasterDesc>();
-	//private CountryMasterDesc fsCountryMasterDescs;
+	// private CountryMasterDesc fsCountryMasterDescs;
 	private String createdBy;
 	private Date createdDate;
 	private String isActive;
 	private Date approvedDate;
 	private String approvedBy;
 	private String countryMobileLength;
+
+	private BigDecimal timezoneId;
+	private BigDecimal workTimeFrom;
+	private BigDecimal workTimeTo;
 
 	public CountryMaster(BigDecimal countryId) {
 		this.countryId = countryId;
@@ -167,14 +171,14 @@ public class CountryMaster implements Serializable {
 		this.countryActive = countryActive;
 	}
 
-	
-	 @OneToMany(fetch = FetchType.EAGER, mappedBy = "fsCountryMaster") public
-	 List<CountryMasterDesc> getFsCountryMasterDescs() { return
-	 this.fsCountryMasterDescs; }
-	 
-	 public void setFsCountryMasterDescs( List<CountryMasterDesc>
-	 fsCountryMasterDescs) { this.fsCountryMasterDescs = fsCountryMasterDescs; }
-	 
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "fsCountryMaster")
+	public List<CountryMasterDesc> getFsCountryMasterDescs() {
+		return this.fsCountryMasterDescs;
+	}
+
+	public void setFsCountryMasterDescs(List<CountryMasterDesc> fsCountryMasterDescs) {
+		this.fsCountryMasterDescs = fsCountryMasterDescs;
+	}
 
 	@Column(name = "BUSINESS_COUNTRY", length = 1)
 	public String getBusinessCountry() {
@@ -238,4 +242,32 @@ public class CountryMaster implements Serializable {
 	public void setCountryMobileLength(String countryMobileLength) {
 		this.countryMobileLength = countryMobileLength;
 	}
+
+	@Column(name = "TIMEZONE_ID")
+	public BigDecimal getTimezoneId() {
+		return timezoneId;
+	}
+
+	public void setTimezoneId(BigDecimal timezoneId) {
+		this.timezoneId = timezoneId;
+	}
+
+	@Column(name = "WORK_TIME_FROM")
+	public BigDecimal getWorkTimeFrom() {
+		return workTimeFrom;
+	}
+
+	public void setWorkTimeFrom(BigDecimal workTimeFrom) {
+		this.workTimeFrom = workTimeFrom;
+	}
+
+	@Column(name = "WORK_TIME_TO")
+	public BigDecimal getWorkTimeTo() {
+		return workTimeTo;
+	}
+
+	public void setWorkTimeTo(BigDecimal workTimeTo) {
+		this.workTimeTo = workTimeTo;
+	}
+
 }

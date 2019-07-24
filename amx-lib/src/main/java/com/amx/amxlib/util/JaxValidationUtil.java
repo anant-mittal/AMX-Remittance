@@ -3,6 +3,8 @@
  */
 package com.amx.amxlib.util;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.error.JaxError;
 
@@ -26,5 +28,11 @@ public class JaxValidationUtil {
 
 	public static void validatePositiveNumber(Number num) {
 		validatePositiveNumber(num, "Number is not positive", JaxError.INVALID_NUMBER);
+	}
+
+	public static void validateNonEmpty(String fieldValue, String fieldName) {
+		if (StringUtils.isBlank(fieldValue)) {
+			throw new GlobalException(String.format("Field %s can't be blank", fieldName));
+		}
 	}
 }

@@ -14,6 +14,8 @@ public class CurrencyMasterDTO implements Serializable {
 	private String currencyName;
 	
 	private String quoteName;
+	
+	private BigDecimal currGroupId;
 
 	public BigDecimal getCurrencyId() {
 		return currencyId;
@@ -45,6 +47,14 @@ public class CurrencyMasterDTO implements Serializable {
 
 	public void setQuoteName(String quoteName) {
 		this.quoteName = quoteName;
+	}
+
+	public BigDecimal getCurrGroupId() {
+		return currGroupId;
+	}
+
+	public void setCurrGroupId(BigDecimal currGroupId) {
+		this.currGroupId = currGroupId;
 	}
 	
 }

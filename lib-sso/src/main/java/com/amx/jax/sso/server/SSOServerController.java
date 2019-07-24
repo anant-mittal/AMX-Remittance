@@ -113,6 +113,7 @@ public class SSOServerController {
 		map.put(SSOConstants.PARAM_SSO_LOGIN_PREFIX, appConfig.getAppPrefix());
 		map.put(SSOConstants.SECURITY_CODE_KEY, ssoUser.getSelfSAC());
 		map.put(SSOConstants.PARTNER_SECURITY_CODE_KEY, ssoUser.getPartnerSAC());
+		map.put(SSOConstants.SSO_TENANT_KEY, AppContextUtil.getTenant());
 
 		String adapterUrl = sSOConfig.getAdapterUrl();
 		Cookie kooky = commonHttpRequest.getCookie("adapter.url");
@@ -154,7 +155,7 @@ public class SSOServerController {
 				resp.setHeader("Location", builder.getURL());
 				resp.setStatus(302);
 			} else {
-				sSOTranx.put(x);
+				sSOTranx.fastPut(x);
 			}
 		}
 		ssoUser.generateSAC();

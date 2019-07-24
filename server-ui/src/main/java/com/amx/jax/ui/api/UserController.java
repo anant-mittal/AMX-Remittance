@@ -1,12 +1,12 @@
 package com.amx.jax.ui.api;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import org.jolokia.restrictor.policy.MBeanAccessChecker.Arg;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.meta.model.AnnualIncomeRangeDTO;
 import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.meta.model.IncomeDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
@@ -152,7 +153,6 @@ public class UserController {
 		wrapper.getData().setTenantCode(AppContextUtil.getTenant().getCode());
 		wrapper.getData().setLang(httpService.getLanguage());
 		wrapper.getData().setCdnUrl(appConfig.getCdnURL());
-		wrapper.getData().setFeatures(webAppConfig.getFeatures());
 
 		wrapper.getData().setDevice(sessionService.getAppDevice().getUserDevice());
 		wrapper.getData().setState(sessionService.getGuestSession().getState());
@@ -183,6 +183,12 @@ public class UserController {
 			wrapper.getData().setConfig(jaxService.setDefaults().getMetaClient().getJaxMetaParameter().getResult());
 			wrapper.getData().getSubscriptions().addAll(userService.getNotifyTopics("/topics/"));
 			wrapper.getData().setReturnUrl(sessionService.getGuestSession().getReturnUrl());
+
+			wrapper.getData().setFeatures(
+					authLibContext.get().filterFeatures(sessionService.getGuestSession().getState(), customerFlags,
+							webAppConfig.getFeaturesList()));
+		} else {
+			wrapper.getData().setFeatures(webAppConfig.getFeaturesList());
 		}
 
 		wrapper.getData().setNotifyRangeShort(webAppConfig.getNotifyRangeShort());
@@ -370,6 +376,7 @@ public class UserController {
 			sessionService.getUserSession().getCustomerModel().setEmail(model.getEmail());
 			sessionService.getUserSession().getCustomerModel().getPersoninfo().setEmail(model.getEmail());
 			wrapper.setStatusEnum(OWAStatusStatusCodes.USER_UPDATE_SUCCESS);
+			userService.updateCustoemrModel();
 		}
 		return wrapper;
 	}
@@ -537,6 +544,22 @@ public class UserController {
 	@RequestMapping(value = "/api/user/income", method = { RequestMethod.GET })
 	public ResponseWrapper<IncomeDto> getAnnualIncomeDetais() {
 		return ResponseWrapper.build(jaxService.setDefaults().getUserclient().getAnnualIncomeDetais());
+	}
+
+	@RequestMapping(value = "/api/user/trnx_limit", method = { RequestMethod.POST })
+	public ResponseWrapper<BoolRespModel> saveAnnualTransactionLimit(
+			@RequestBody IncomeDto incomeDto) {
+		try {
+			return ResponseWrapper
+					.build(jaxService.setDefaults().getUserclient().saveAnnualTransactionLimit(incomeDto));
+		} finally {
+			userService.updateCustoemrModel();
+		}
+	}
+
+	@RequestMapping(value = "/api/user/trnx_limit", method = { RequestMethod.GET })
+	public ResponseWrapper<AnnualIncomeRangeDTO> getAnnualTransactionLimit() {
+		return ResponseWrapper.build(jaxService.setDefaults().getUserclient().getAnnualTransactionLimit());
 	}
 
 	@RequestMapping(value = "/api/user/device/link", method = { RequestMethod.POST })

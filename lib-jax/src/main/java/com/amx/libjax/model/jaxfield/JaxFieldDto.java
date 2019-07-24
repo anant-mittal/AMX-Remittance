@@ -5,19 +5,44 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.amx.jax.swagger.ApiMockModelProperty;
+import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
+
 public class JaxFieldDto {
 
+	@ApiMockModelProperty(value = "Name of param", example = "BENE_HOUSE_NO")
 	String name;
+
+	@ApiMockModelProperty(value = "If params is mandatory", example = "true")
 	Boolean required;
+
+	@ApiMockModelProperty(value = "Type of param", example = "TEXT")
 	String type;
+
+	@ApiMockModelProperty(value = "Default value of param", example = "null")
 	String defaultValue;
+
+	@ApiMockModelProperty(value = "Minimum lenght of validation", example = "1")
 	BigDecimal minLength;
+
+	@ApiMockModelProperty(value = "Maximum lenght of validation", example = "100")
 	BigDecimal maxLength;
+
 	List<ValidationRegexDto> validationRegex;
+
+	@ApiMockModelProperty(value = "Label", example = "House No")
 	String label;
+
 	List<JaxFieldValueDto> possibleValues;
+
+	@ApiMockModelProperty(value = "json path of param in request", example = "additionalFields.BENE_HOUSE_NO")
 	String dtoPath;
+
 	Map<String, Object> additionalValidations = new HashMap<>();
+	
+	
+
+	
 
 	public String getName() {
 		return name;

@@ -65,9 +65,9 @@ public class ViewCompanyDetails implements Serializable {
 	private String arabicAddress3;
 	private String registrationNumber;
 	
+	private String vatNumber;
+	private String vatRegistrationDate;
 	
-	
-
 	private BigDecimal idNo;
 	
 	@Id
@@ -302,6 +302,24 @@ public class ViewCompanyDetails implements Serializable {
 		this.registrationNumber = registrationNumber;
 	}
 
+	
+	@Column(name="VAT_NUMBER")
+		public String getVatNumber() {
+			return vatNumber;
+		}
+	
+		public void setVatNumber(String vatNumber) {
+			this.vatNumber = vatNumber;
+		}
+	
+		@Column(name="VAT_REGISTRATION_DATE")
+		public String getVatRegistrationDate() {
+			return vatRegistrationDate;
+		}
+	
+		public void setVatRegistrationDate(String vatRegistrationDate) {
+			this.vatRegistrationDate = vatRegistrationDate;
+		}
 	
 	
 

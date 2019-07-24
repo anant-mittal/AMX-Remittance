@@ -14,14 +14,21 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.amx.amxlib.constant.JaxFieldEntity;
 import com.amx.amxlib.exception.AdditionalFlexRequiredException;
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.amxlib.model.JaxConditionalFieldDto;
+import com.amx.amxlib.model.JaxFieldDto;
+import com.amx.amxlib.model.JaxFieldValueDto;
+import com.amx.jax.branchremittance.manager.BranchRemittanceManager;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.FlexFieldBehaviour;
 import com.amx.jax.constants.JaxChannel;
-import com.amx.jax.constants.JaxFieldEntity;
 import com.amx.jax.dao.RemittanceApplicationDao;
+import com.amx.jax.dbmodel.BenificiaryListView;
+import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.remittance.AdditionalBankDetailsViewx;
+import com.amx.jax.dbmodel.remittance.AdditionalBankRuleAmiec;
 import com.amx.jax.dbmodel.remittance.AdditionalBankRuleMap;
 import com.amx.jax.dbmodel.remittance.AdditionalDataDisplayView;
 import com.amx.jax.dbmodel.remittance.FlexFiledView;
@@ -30,6 +37,7 @@ import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.remittance.AbstractRemittanceApplicationRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceAdditionalBeneFieldModel;
 import com.amx.jax.model.response.ExchangeRateBreakup;
+import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.FlexFieldDto;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.repository.IAdditionalBankDetailsDao;
@@ -40,6 +48,7 @@ import com.amx.jax.util.DateUtil;
 import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
 import com.amx.libjax.model.jaxfield.JaxFieldDto;
 import com.amx.libjax.model.jaxfield.JaxFieldValueDto;
+import com.amx.jax.util.JaxUtil;
 
 @Component
 public class RemittanceTransactionRequestValidator {
@@ -60,6 +69,12 @@ public class RemittanceTransactionRequestValidator {
 	DateUtil dateUtil;
 	@Autowired
 	MetaData metaData;
+	
+	@Autowired
+	BranchRemittanceManager branchRemitManager;
+	
+	
+	
 	
 	public void validateExchangeRate(AbstractRemittanceApplicationRequestModel request,
 			RemittanceTransactionResponsetModel response) {
@@ -136,6 +151,27 @@ public class RemittanceTransactionRequestValidator {
 		List<JaxFieldDto> jaxFieldDtos = requiredFlexFields.stream().map(i -> i.getField()).collect(Collectors.toList());
 		jaxFieldService.updateDtoFromDb(jaxFieldDtos);
 		updateAdditionalValidations(jaxFieldDtos);
+		
+		
+		if (!JaxChannel.ONLINE.equals(metaData.getChannel()) && !JaxUtil.isNullZeroBigDecimalCheck(request.getPurposeOfTrnxId())) {
+			JaxConditionalFieldDto dto = new JaxConditionalFieldDto();
+			dto.setEntityName(JaxFieldEntity.PURPOSE_OF_TRNX);
+			JaxFieldDto field = new JaxFieldDto();
+			field.setName(ConstantDocument.INDIC1);
+			field.setType(FlexFieldBehaviour.PRE_DEFINED.toString());
+			field.setRequired(true);
+			field.setMinLength(BigDecimal.ONE);
+			field.setMaxLength(new BigDecimal(100));
+			List<JaxFieldValueDto> purposeTrnxValue = getPurposeOfTrnx(request.getBeneId(), routingCountryId);
+			if(purposeTrnxValue!=null && !purposeTrnxValue.isEmpty()) {
+				field.setPossibleValues(purposeTrnxValue);
+			}
+			dto.setField(field);
+			requiredFlexFields.add(dto);
+		}
+		
+		
+		
 		
 		if (!requiredFlexFields.isEmpty()) {
 			LOGGER.error(requiredFlexFields.toString());
@@ -228,8 +264,7 @@ public class RemittanceTransactionRequestValidator {
 	private List<JaxFieldValueDto> getAmiecValues(String flexiField, BigDecimal countryId, BigDecimal deleveryModeId,
 			BigDecimal remittanceModeId, BigDecimal bankId, BigDecimal currencyId,
 			BigDecimal additionalBankRuleFiledId) {
-		List<AdditionalBankDetailsViewx> addtionalBankDetails = additionalBankDetailsDao
-				.getAdditionalBankDetails(currencyId, bankId, remittanceModeId, deleveryModeId, countryId, flexiField);
+		List<AdditionalBankDetailsViewx> addtionalBankDetails = additionalBankDetailsDao.getAdditionalBankDetails(currencyId, bankId, remittanceModeId, deleveryModeId, countryId, flexiField);
 		return addtionalBankDetails.stream().map(x -> {
 			FlexFieldDto ffDto = new FlexFieldDto(additionalBankRuleFiledId, x.getSrlId(), x.getAmieceDescription());
 			JaxFieldValueDto dto = new JaxFieldValueDto();
@@ -238,5 +273,21 @@ public class RemittanceTransactionRequestValidator {
 			dto.setValue(ffDto);
 			return dto;
 		}).collect(Collectors.toList());
+	}
+
+
+	private List<JaxFieldValueDto> getPurposeOfTrnx(BigDecimal beneRelaId,BigDecimal routingCountryId) {
+		List<AdditionalExchAmiecDto> purposeOfTrnxList =  branchRemitManager.getPurposeOfTrnx(beneRelaId,routingCountryId);
+		if(purposeOfTrnxList !=null && !purposeOfTrnxList.isEmpty()) {
+			return purposeOfTrnxList.stream().map(x -> {
+				FlexFieldDto ffDto = new FlexFieldDto(x.getAdditionalBankFieldId(), x.getResourceId(), x.getResourceName());
+				JaxFieldValueDto dto = new JaxFieldValueDto();
+				dto.setId(ffDto.getSrlId());
+				dto.setOptLable(ffDto.getAmieceDescription());
+				dto.setValue(ffDto);
+				return dto;
+			}).collect(Collectors.toList());
+		}
+		return null;
 	}
 }

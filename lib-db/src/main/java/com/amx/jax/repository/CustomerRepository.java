@@ -3,6 +3,8 @@ package com.amx.jax.repository;
 import java.math.BigDecimal;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
@@ -58,6 +60,9 @@ public interface CustomerRepository extends CrudRepository<Customer, BigDecimal>
 
 	@Query("select c from Customer c where identityInt=?1 and isActive='N'")
 	public Customer getCustomerDetails(String loginId);
+	
+	@Query("select c from Customer c where identityInt=?1 and isActive='Y'")
+	public Customer getActiveCustomerDetails(String loginId);
 
 	@Query("select c from Customer c where identityInt=?1 and identityTypeId = ?2 and isActive='N'")
 	public Customer getCustomerData(String identityInt, BigDecimal identityTypeId);
@@ -96,4 +101,11 @@ public interface CustomerRepository extends CrudRepository<Customer, BigDecimal>
 	public List<Customer> getCustomerForDuplicateCheck(BigDecimal nationality, String mobile, String email,
 			String firstName);
 
+	
+	@Query("select c from Customer c where identityInt=?1")
+	public Customer getCustomerEmailDetails(String identityInt);
+	
+	@Query("select c from Customer c where customerId=?1 and isActive='Y'")
+	public Customer getActiveCustomerDetailsByCustomerId(BigDecimal customerId);
+	
 }
