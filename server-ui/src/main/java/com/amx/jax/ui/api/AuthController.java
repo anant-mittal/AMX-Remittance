@@ -14,7 +14,9 @@ import com.amx.jax.AppContextUtil;
 import com.amx.jax.JaxAuthContext;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.exception.AmxApiError;
+import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.model.AuthState.AuthFlow;
+import com.amx.jax.postman.client.GoogleService;
 import com.amx.jax.ui.config.OWAStatus.ApiOWAStatus;
 import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 import com.amx.jax.ui.config.UIServerError;
@@ -43,6 +45,12 @@ public class AuthController {
 	/** The session service. */
 	@Autowired
 	private SessionService sessionService;
+
+	@Autowired
+	private GoogleService googleService;
+
+	@Autowired
+	private CommonHttpRequest httpService;
 
 	/**
 	 * Asks for user login and password.
@@ -87,7 +95,12 @@ public class AuthController {
 		if (!ArgUtil.isEmpty(authData.getDeviceToken())) {
 			return loginService.loginByDevice(authData.getIdentity(), authData.getDeviceToken());
 		} else if (!ArgUtil.isEmpty(authData.getPassword())) {
-			return loginService.loginUserPass(authData.getIdentity(), authData.getPassword());
+			if (!ArgUtil.isEmpty(authData.getCaptachKey()) &&
+					googleService.verifyCaptcha(authData.getCaptachKey(), httpService.getIPAddress())) {
+				return loginService.loginUserPass(authData.getIdentity(), authData.getPassword());
+			} else {
+				throw new UIServerError(OWAStatusStatusCodes.CAPTCHA_REQUIRED);
+			}
 		} else {
 			throw new UIServerError(OWAStatusStatusCodes.MISSING_CREDENTIALS);
 		}
