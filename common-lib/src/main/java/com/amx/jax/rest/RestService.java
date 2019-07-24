@@ -1,7 +1,10 @@
 package com.amx.jax.rest;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -17,15 +20,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.amx.jax.AppConfig;
@@ -443,4 +451,14 @@ public class RestService {
 			}
 		}
 	}
+	
+	public static Resource getByteArrayFile(MultipartFile file) throws IOException {
+		Path testFile = Files.createTempFile("test-file", ".txt");
+		LOGGER.info("Creating and Uploading Test File: " + testFile);
+		Files.write(testFile, file.getBytes());
+		return new FileSystemResource(testFile.toFile());
+	}
+	
+	
+	
 }
