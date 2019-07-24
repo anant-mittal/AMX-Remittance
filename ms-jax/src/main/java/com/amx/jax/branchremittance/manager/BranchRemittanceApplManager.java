@@ -278,7 +278,7 @@ public class BranchRemittanceApplManager {
 		 remittanceAdditionalFieldManager.validateAdditionalFields(requestApplModel, remitApplParametersMap);
 		 remittanceAdditionalFieldManager.processAdditionalFields(requestApplModel); 
 
-	    logger.debug("branchExchangeRate :"+exchangeRateResposne);
+	    //logger.debug("branchExchangeRate :"+exchangeRateResposne);
 		 /* get aml cehck   details **/
 	    List<AmlCheckResponseDto> amlList= branchRemitManager.amlTranxAmountCheckForRemittance(requestApplModel.getBeneId(),rateBreakUp.getConvertedLCAmount());
 		 logger.info("amlList :"+amlList.toString());
@@ -311,7 +311,7 @@ public class BranchRemittanceApplManager {
 		List<RemitApplAmlModel> amlData = this.saveRemittanceAppAML(remittanceApplication,hashMap);
 		
 		// Remittance srv prov details
-		RemitApplSrvProv remitApplSrvProv = createRemitApplSrvProv(requestApplModel);
+		RemitApplSrvProv remitApplSrvProv = createRemitApplSrvProv(requestApplModel.getDynamicRroutingPricingBreakup());
 		
 		/* Saving application deatils */
 		HashMap<String, Object> mapAllDetailApplSave = new HashMap<String, Object>();
@@ -901,15 +901,15 @@ private void validateSaveApplRequest(BranchRemittanceApplRequestModel request) {
 	JaxValidationUtil.validatePositiveNumber(request.getDeliveryModeId(),"Delivery mode id must be positive number");
 }
 
-public RemitApplSrvProv createRemitApplSrvProv(BranchRemittanceApplRequestModel requestApplModel) {
+public RemitApplSrvProv createRemitApplSrvProv(DynamicRoutingPricingDto dynamicRoutingPricingDto) {
 	
-	ServiceProviderDto serviceProviderDto = requestApplModel.getDynamicRroutingPricingBreakup().getServiceProviderDto();
+	ServiceProviderDto serviceProviderDto = dynamicRoutingPricingDto.getServiceProviderDto();
 
 	RemitApplSrvProv remitApplSrvProv = new RemitApplSrvProv();
 
 	if (serviceProviderDto != null) {
 		remitApplSrvProv.setAmgSessionId(serviceProviderDto.getAmgSessionId());
-		remitApplSrvProv.setBankId(requestApplModel.getRoutingBankId());
+		remitApplSrvProv.setBankId(dynamicRoutingPricingDto.getTrnxRoutingPaths().getRoutingBankId());
 		remitApplSrvProv.setFixedCommInSettlCurr(serviceProviderDto.getFixedCommInSettlCurr());
 		remitApplSrvProv.setIntialAmountInSettlCurr(serviceProviderDto.getIntialAmountInSettlCurr());
 		remitApplSrvProv.setPartnerReferenceNo(serviceProviderDto.getPartnerReferenceNo());

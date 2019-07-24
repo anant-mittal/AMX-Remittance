@@ -283,8 +283,9 @@ public class BranchRemittanceSaveManager {
 			mapAllDetailRemitSave.put("EX_REMIT_SRV_PROV", mapRemitTrnxSrvProv);
 			validateSaveTrnxDetails(mapAllDetailRemitSave);
 			responseDto = brRemittanceDao.saveRemittanceTransaction(mapAllDetailRemitSave);
-			if(responseDto != null && mapRemitTrnxSrvProv != null && !mapRemitTrnxSrvProv.isEmpty()) {
-				partnerTransactionManager.callingPartnerApi(remitTrnxList,remitBeneList,responseDto);
+			// service Provider api
+			if(responseDto != null) {
+				partnerTransactionManager.callingPartnerApi(responseDto);
 			}
 			auditService.log(new CActivityEvent(Type.TRANSACTION_CREATED,String.format("%s/%s", responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo())).field("STATUS").to(JaxTransactionStatus.PAYMENT_SUCCESS_APPLICATION_SUCCESS).result(Result.DONE));
 	}catch (GlobalException e) {
@@ -791,7 +792,7 @@ public class BranchRemittanceSaveManager {
 					saveRemitnaceinstructionData(appl,remitTrnx);
 					saveRemittanceAml(appl, remitTrnx);
 					saveLoyaltyPoints(remitTrnx);
-					saveRemitTrnxSrvProv(appl, remitTrnx);
+					saveRemitTrnxSrvProv(appl.getRemittanceApplicationId(), remitTrnx.getCreatedBy());
 				}
 			}
 			
@@ -1268,11 +1269,11 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
 
 	}
 	
-	public void saveRemitTrnxSrvProv(RemittanceApplication applicationNo,RemittanceTransaction remitTrnx) {
+	public void saveRemitTrnxSrvProv(BigDecimal remittanceApplicationId,String createdBy) {
 		
 		RemitTrnxSrvProv remitTrnxSrvProv = new RemitTrnxSrvProv();
 		
-		RemitApplSrvProv applSrvProv = remitApplSrvProvRepository.findByRemittanceApplicationId(applicationNo.getRemittanceApplicationId());
+		RemitApplSrvProv applSrvProv = remitApplSrvProvRepository.findByRemittanceApplicationId(remittanceApplicationId);
 
 		if (applSrvProv != null) {
 			remitTrnxSrvProv.setAmgSessionId(applSrvProv.getAmgSessionId());
@@ -1284,9 +1285,9 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
 			remitTrnxSrvProv.setSettlementCurrency(applSrvProv.getSettlementCurrency());
 			remitTrnxSrvProv.setTransactionMargin(applSrvProv.getTransactionMargin());
 			remitTrnxSrvProv.setVariableCommInSettlCurr(applSrvProv.getVariableCommInSettlCurr());
-			remitTrnxSrvProv.setCreatedBy(remitTrnx.getCreatedBy());
+			remitTrnxSrvProv.setCreatedBy(createdBy);
 			remitTrnxSrvProv.setCreatedDate(new Date());
-			mapRemitTrnxSrvProv.put(applicationNo.getRemittanceApplicationId(), remitTrnxSrvProv);
+			mapRemitTrnxSrvProv.put(remittanceApplicationId, remitTrnxSrvProv);
 		}
 
 	}

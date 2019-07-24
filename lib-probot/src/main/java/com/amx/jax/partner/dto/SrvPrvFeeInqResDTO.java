@@ -3,8 +3,6 @@ package com.amx.jax.partner.dto;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-import com.amx.jax.pricer.dto.ExchangeRateDetails;
-
 public class SrvPrvFeeInqResDTO implements Serializable {
 
 	/** The Constant serialVersionUID. */

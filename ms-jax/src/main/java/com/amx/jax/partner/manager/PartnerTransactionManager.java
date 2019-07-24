@@ -41,8 +41,6 @@ import com.amx.jax.dbmodel.partner.ServiceProviderXmlLog;
 import com.amx.jax.dbmodel.partner.TransactionDetailsView;
 import com.amx.jax.dbmodel.remittance.AdditionalBankRuleAmiec;
 import com.amx.jax.dbmodel.remittance.AmiecAndBankMapping;
-import com.amx.jax.dbmodel.remittance.RemittanceBenificiary;
-import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.request.partner.RemittanceTransactionPartnerDTO;
@@ -123,7 +121,7 @@ public class PartnerTransactionManager extends AbstractModel {
 	@Autowired
 	IServiceProviderXMLRepository serviceProviderXMLRepository;
 
-	public void callingPartnerApi(Map<BigDecimal,RemittanceTransaction> remitTrnxList,Map<BigDecimal,RemittanceBenificiary> remitBeneList,RemittanceResponseDto responseDto) {
+	public void callingPartnerApi(RemittanceResponseDto responseDto) {
 		BigDecimal customerId = metaData.getCustomerId();
 		BigDecimal collectionDocYear = responseDto.getCollectionDocumentFYear();
 		BigDecimal collectionDocNumber = responseDto.getCollectionDocumentNo();
