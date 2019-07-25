@@ -169,5 +169,9 @@ public class AmxDBConstants {
 	public static final String  VAT_CATEGORY= "OUTPUT_TAX";
 	public static final String  BENE_ACCT_VALID="BENE_ACCT_VALID";
 	
+	// Constants for Serviceprovider
+	
+	public static final String TOTAL_PAY_INDICATOR  = "T";
+	
 	
 }

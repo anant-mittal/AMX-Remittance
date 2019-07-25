@@ -26,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.FileUploadTempModel;
 import com.amx.jax.dbmodel.ServiceProviderPartner;
 import com.amx.jax.dbmodel.ServiceProviderSummaryModel;
@@ -180,6 +181,7 @@ public class ServiceProviderService extends AbstractService {
 		}
 		ServiceProviderSummaryDTO serviceProviderSummaryDTO = new ServiceProviderSummaryDTO();
 		if (serviceProviderSummaryModelList.size() == 2) {
+			serviceProviderSummaryDTO.setSendPayIndicator(ConstantDocument.TOTAL_PAY_INDICATOR);
 			serviceProviderSummaryDTO.setTotalTransactionCount(serviceProviderSummaryModelList.get(0)
 					.getTotalTransaction().add(serviceProviderSummaryModelList.get(1).getTotalTransaction()));
 			serviceProviderSummaryDTO.setTotalUnmatchedCount(serviceProviderSummaryModelList.get(0).getUnmatchedCount()
@@ -190,6 +192,7 @@ public class ServiceProviderService extends AbstractService {
 					.add(serviceProviderSummaryModelList.get(1).getUnmatchedCommission()));
 
 		} else {
+			serviceProviderSummaryDTO.setSendPayIndicator(ConstantDocument.TOTAL_PAY_INDICATOR);
 			serviceProviderSummaryDTO
 					.setTotalTransactionCount(serviceProviderSummaryModelList.get(0).getTotalTransaction());
 			serviceProviderSummaryDTO
