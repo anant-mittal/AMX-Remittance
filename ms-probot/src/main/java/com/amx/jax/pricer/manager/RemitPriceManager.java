@@ -1,7 +1,7 @@
 package com.amx.jax.pricer.manager;
 
-import static com.amx.jax.pricer.var.PricerServiceConstants.DEF_DECIMAL_SCALE;
 import static com.amx.jax.pricer.var.PricerServiceConstants.DEF_CONTEXT;
+import static com.amx.jax.pricer.var.PricerServiceConstants.DEF_DECIMAL_SCALE;
 
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
@@ -29,16 +29,15 @@ import com.amx.jax.dict.UserClient.Channel;
 import com.amx.jax.pricer.dao.CountryBranchDao;
 import com.amx.jax.pricer.dao.CurrencyMasterDao;
 import com.amx.jax.pricer.dao.ExchangeRateDao;
-import com.amx.jax.pricer.dao.ExchangeRateProcedureDao;
 import com.amx.jax.pricer.dao.MarginMarkupDao;
 import com.amx.jax.pricer.dao.PipsMasterDao;
-import com.amx.jax.pricer.dao.RoutingDao;
+import com.amx.jax.pricer.dao.RoutingDaoAlt;
 import com.amx.jax.pricer.dao.ViewExGLCBALDao;
 import com.amx.jax.pricer.dbmodel.BankMasterModel;
 import com.amx.jax.pricer.dbmodel.CountryBranch;
 import com.amx.jax.pricer.dbmodel.CurrencyMasterModel;
 import com.amx.jax.pricer.dbmodel.ExchangeRateAPRDET;
-import com.amx.jax.pricer.dbmodel.ExchangeRateApprovalDetModel;
+import com.amx.jax.pricer.dbmodel.ExchangeRateApprovalDetModelAlt;
 import com.amx.jax.pricer.dbmodel.OnlineMarginMarkup;
 import com.amx.jax.pricer.dbmodel.PipsMaster;
 import com.amx.jax.pricer.dbmodel.RoutingHeader;
@@ -64,8 +63,8 @@ public class RemitPriceManager {
 	@Autowired
 	ExchangeRateDao exchangeRateDao;
 
-	@Autowired
-	ExchangeRateProcedureDao exchangeRateProcedureDao;
+	//@Autowired
+	//ExchangeRateProcedureDao exchangeRateProcedureDao;
 
 	@Autowired
 	ViewExGLCBALDao viewExGLCBALDao;
@@ -80,7 +79,7 @@ public class RemitPriceManager {
 	CurrencyMasterDao currencyMasterDao;
 
 	@Autowired
-	RoutingDao routingDao;
+	RoutingDaoAlt routingDaoAlt;
 
 	@Resource
 	ExchRateAndRoutingTransientDataCache exchRateAndRoutingTransientDataCache;
@@ -226,7 +225,7 @@ public class RemitPriceManager {
 
 			/************* Process Bank Exchange Rates ***********/
 
-			List<ExchangeRateApprovalDetModel> bankExchangeRates;
+			List<ExchangeRateApprovalDetModelAlt> bankExchangeRates;
 
 			// Filter Bank Exchange rates for Required Service Indicator Ids
 			if (requestDto.getServiceIndicatorId() != null) {
@@ -250,7 +249,7 @@ public class RemitPriceManager {
 						"Missing Valid Exchange rates : None Found");
 			}
 
-			for (ExchangeRateApprovalDetModel exchangeRate : bankExchangeRates) {
+			for (ExchangeRateApprovalDetModelAlt exchangeRate : bankExchangeRates) {
 
 				BankDetailsDTO bankDetailsDTO;
 
@@ -503,7 +502,7 @@ public class RemitPriceManager {
 		 **/
 
 		/** Start: Routing Bank Find **/
-		List<RoutingHeader> routingHeaders = routingDao.getRoutHeadersByCountryIdAndCurrenyId(fCountryId, fCurrencyId);
+		List<RoutingHeader> routingHeaders = routingDaoAlt.getRoutHeadersByCountryIdAndCurrenyId(fCountryId, fCurrencyId);
 
 		List<BigDecimal> availableBankIds = routingHeaders.stream().map(rh -> rh.getRoutingBankId()).distinct().sorted()
 				.collect(Collectors.toList());

@@ -11,7 +11,7 @@ import org.springframework.data.repository.CrudRepository;
 
 import com.amx.jax.pricer.dbmodel.RoutingHeader;
 
-public interface RoutingHeaderRepository extends CrudRepository<RoutingHeader, Serializable> {
+public interface RoutingHeaderRepositoryAlt extends CrudRepository<RoutingHeader, Serializable> {
 
 	public List<RoutingHeader> findByCountryIdAndCurrenyIdAndIsActive(BigDecimal countryId, BigDecimal currencyId, String isActive);
 
