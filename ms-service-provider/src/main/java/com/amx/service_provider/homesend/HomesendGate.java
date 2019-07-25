@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amg.vcHomeSend.ows.AdviceOfChargeRequest;
@@ -37,6 +38,7 @@ import com.amx.jax.model.response.serviceprovider.Status_Call_Response;
 import com.amx.service_provider.dbmodel.webservice.OwsParamRespcode;
 import com.amx.service_provider.dbmodel.webservice.OwsParamRespcodeKey;
 import com.amx.service_provider.repository.webservice.OwsParamRespcodeRepository;
+import com.amx.service_provider.utils.MSServiceProviderConfig;
 import com.amx.utils.JsonUtil;
 
 /*
@@ -60,6 +62,7 @@ import com.amx.utils.JsonUtil;
 
 public class HomesendGate
 {
+	
 	private OwsParamRespcodeRepository owsParamRespcodeRepository;
 	
 	// initialize BindingStub
@@ -87,11 +90,11 @@ public class HomesendGate
 	private final String TRUST_STORE_LOCATION = "D:\\Salman\\SSL_Config\\TrustStore\\truststore.jks";
 	private final String TRUST_STORE_PASSWORD = "changeit";*/
 	
-	private final String KEY_STORE_LOCATION = "/var/opt/amiec/homesend/UAT/home_send_uat_keystore.jks";
+	/*private final String KEY_STORE_LOCATION = "/var/opt/amiec/homesend/UAT/home_send_uat_keystore.jks";
 	private final String KEY_STORE_PASSWORD = "changeit";
 
 	private final String TRUST_STORE_LOCATION = "/var/opt/amiec/homesend/UAT/truststore.jks";
-	private final String TRUST_STORE_PASSWORD = "changeit";
+	private final String TRUST_STORE_PASSWORD = "changeit";*/
 	
 	/*private final String KEY_STORE_LOCATION = "/var/opt/homesend/home_send_uat_keystore.jks";
 	private final String KEY_STORE_PASSWORD = "changeit";
@@ -108,8 +111,41 @@ public class HomesendGate
 	// private final String TRUST_STORE_PASSWORD = "changeit";
 
 	Logger logger = Logger.getLogger("WService.class");
+	
+	public HomesendGate(HomeSendDTO homeSendDTO) {
+		try
+		{
+			// new Log4jPropConfig().log4jconfig();
 
-	public HomesendGate(String api_login, String api_password, String vendor_id, String api_url, OwsParamRespcodeRepository owsParamRespcodeRepository)
+			HomeSend_HWS_2_3Locator HomeSend_RemitLocator = new HomeSend_HWS_2_3Locator();
+
+			HomeSend_RemitLocator.setHWSPort_2_3EndpointAddress(homeSendDTO.getApi_url());
+			HomeSend_BindingStub = (HWSBinding_2_3Stub) HomeSend_RemitLocator.getHWSPort_2_3();
+
+			API_LOGIN = homeSendDTO.getApi_login();
+			API_PASSWORD = homeSendDTO.getApi_password();
+			new UnsignedInt(homeSendDTO.getVendor_id());
+			this.owsParamRespcodeRepository = homeSendDTO.getOwsParamRespcodeRepository();
+
+			System.setProperty("javax.net.ssl.trustStore", homeSendDTO.getTrustStoreLocation());
+			System.setProperty("javax.net.ssl.trustStorePassword", homeSendDTO.getTrustStorePassword()); // changeit
+
+			System.setProperty("javax.net.ssl.keyStore", homeSendDTO.getKeyStoreLocation());
+			System.setProperty("javax.net.ssl.keyStorePassword", homeSendDTO.getKeyStorePassword());
+
+			System.setProperty("jdk.tls.client.protocols", "TLSv1.2");
+		}
+		catch (Exception e)
+		{
+			logger.info("Error: WService:: ");
+			logger.info(HomesendUtils.getStackTrace(e));
+
+			throw new RuntimeException(e.getMessage());
+		}
+	
+	}
+
+	/*public HomesendGate(String api_login, String api_password, String vendor_id, String api_url, OwsParamRespcodeRepository owsParamRespcodeRepository)
 	{
 		try
 		{
@@ -125,11 +161,11 @@ public class HomesendGate
 			new UnsignedInt(vendor_id);
 			this.owsParamRespcodeRepository = owsParamRespcodeRepository;
 
-			System.setProperty("javax.net.ssl.trustStore", TRUST_STORE_LOCATION);
-			System.setProperty("javax.net.ssl.trustStorePassword", TRUST_STORE_PASSWORD); // changeit
+			System.setProperty("javax.net.ssl.trustStore", msServiceProviderConfig.getTrustStoreLocation());
+			System.setProperty("javax.net.ssl.trustStorePassword", msServiceProviderConfig.getTrustStorePassword()); // changeit
 
-			System.setProperty("javax.net.ssl.keyStore", KEY_STORE_LOCATION);
-			System.setProperty("javax.net.ssl.keyStorePassword", KEY_STORE_PASSWORD);
+			System.setProperty("javax.net.ssl.keyStore", msServiceProviderConfig.getKeyStoreLocation());
+			System.setProperty("javax.net.ssl.keyStorePassword", msServiceProviderConfig.getKeyStorePassword());
 
 			System.setProperty("jdk.tls.client.protocols", "TLSv1.2");
 		}
@@ -140,7 +176,7 @@ public class HomesendGate
 
 			throw new RuntimeException(e.getMessage());
 		}
-	}
+	}*/
 
       public Quotation_Call_Response getQuotation(BigDecimal settlement_amount,
 							String settlement_currency,

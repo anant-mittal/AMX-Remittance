@@ -16,8 +16,10 @@ import com.amx.jax.model.request.serviceprovider.TransactionData;
 import com.amx.jax.model.response.serviceprovider.Quotation_Call_Response;
 import com.amx.jax.model.response.serviceprovider.ServiceProviderResponse;
 import com.amx.service_provider.dbmodel.webservice.ExOwsLoginCredentials;
+import com.amx.service_provider.homesend.HomeSendDTO;
 import com.amx.service_provider.homesend.HomesendGate;
 import com.amx.service_provider.repository.webservice.OwsParamRespcodeRepository;
+import com.amx.service_provider.utils.MSServiceProviderConfig;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -32,6 +34,9 @@ public class ServiceProviderManger implements IServiceProvider
 	
 	@Autowired
 	private OwsParamRespcodeRepository owsParamRespcodeRepository;
+	
+	@Autowired
+	MSServiceProviderConfig msServiceProviderConfig;
 
 	public Quotation_Call_Response getQutation(ServiceProviderCallRequestDto quatationRequestDto)
 	{
@@ -74,13 +79,27 @@ public class ServiceProviderManger implements IServiceProvider
 				// Selecting which service to call based on the routing bank code
 				if (txn_data.getRoutting_bank_code().equals("HOME")) // HomeSend
 				{
+					
+					HomeSendDTO homeSendDTO = new HomeSendDTO();
+					homeSendDTO.setApi_login(owsLoginCredentialsObject.getWsUserName());
+					homeSendDTO.setApi_password(owsLoginCredentialsObject.getWsPassword());
+					homeSendDTO.setApi_url(owsLoginCredentialsObject.getFlexiField1());
+					homeSendDTO.setKeyStoreLocation(msServiceProviderConfig.getKeyStoreLocation());
+					homeSendDTO.setKeyStorePassword(msServiceProviderConfig.getKeyStorePassword());
+					homeSendDTO.setOwsParamRespcodeRepository(owsParamRespcodeRepository);
+					homeSendDTO.setTrustStoreLocation(msServiceProviderConfig.getTrustStoreLocation());
+					homeSendDTO.setTrustStorePassword(msServiceProviderConfig.getTrustStorePassword());
+					homeSendDTO.setVendor_id(owsLoginCredentialsObject.getWsAgentId());
+					
+					HomesendGate homesend_service = new HomesendGate(homeSendDTO);
+					
 					// Service Initialization
-					HomesendGate homesend_service = new HomesendGate(
-							owsLoginCredentialsObject.getWsUserName()/* api_login */,
-							owsLoginCredentialsObject.getWsPassword()/* api_password */,
-							owsLoginCredentialsObject.getWsAgentId()/* vendor_id */,
-							owsLoginCredentialsObject.getFlexiField1()/* api_url */,
-							owsParamRespcodeRepository);
+					/*HomesendGate homesend_service = new HomesendGate(
+							owsLoginCredentialsObject.getWsUserName() api_login ,
+							owsLoginCredentialsObject.getWsPassword() api_password ,
+							owsLoginCredentialsObject.getWsAgentId() vendor_id ,
+							owsLoginCredentialsObject.getFlexiField1() api_url ,
+							owsParamRespcodeRepository);*/
 
 					// Calling the quotation service
 					response = homesend_service.getQuotation(txn_data.getSettlement_amount(),
@@ -160,12 +179,25 @@ public class ServiceProviderManger implements IServiceProvider
 				if (txn_data.getRoutting_bank_code().equals("HOME")) // HomeSend
 				{
 					// Service Initialization
-					HomesendGate homesend_service = new HomesendGate(
-							owsLoginCredentialsObject.getWsUserName()/* api_login */,
-							owsLoginCredentialsObject.getWsPassword()/* api_password */,
-							owsLoginCredentialsObject.getWsAgentId()/* vendor_id */,
-							owsLoginCredentialsObject.getFlexiField1()/* api_url */,
-							owsParamRespcodeRepository);
+					HomeSendDTO homeSendDTO = new HomeSendDTO();
+					homeSendDTO.setApi_login(owsLoginCredentialsObject.getWsUserName());
+					homeSendDTO.setApi_password(owsLoginCredentialsObject.getWsPassword());
+					homeSendDTO.setApi_url(owsLoginCredentialsObject.getFlexiField1());
+					homeSendDTO.setKeyStoreLocation(msServiceProviderConfig.getKeyStoreLocation());
+					homeSendDTO.setKeyStorePassword(msServiceProviderConfig.getKeyStorePassword());
+					homeSendDTO.setOwsParamRespcodeRepository(owsParamRespcodeRepository);
+					homeSendDTO.setTrustStoreLocation(msServiceProviderConfig.getTrustStoreLocation());
+					homeSendDTO.setTrustStorePassword(msServiceProviderConfig.getTrustStorePassword());
+					homeSendDTO.setVendor_id(owsLoginCredentialsObject.getWsAgentId());
+					
+					HomesendGate homesend_service = new HomesendGate(homeSendDTO);
+					
+					/*HomesendGate homesend_service = new HomesendGate(
+							owsLoginCredentialsObject.getWsUserName() api_login ,
+							owsLoginCredentialsObject.getWsPassword() api_password ,
+							owsLoginCredentialsObject.getWsAgentId() vendor_id ,
+							owsLoginCredentialsObject.getFlexiField1() api_url ,
+							owsParamRespcodeRepository);*/
 
 					// Calling the send remittance service
 					response = homesend_service.send_remittance(txn_data, customer_data, bene_data);

@@ -134,11 +134,11 @@
 			<artifactId>spring-boot-configuration-processor</artifactId>
 			<optional>true</optional>
 		</dependency-->
-		<dependency>
+		<!-- <dependency>
 			<groupId>com.amx.jax</groupId>
 			<artifactId>ms-meta</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
+		</dependency> -->
 
 		<!-- AMX libs -->
 
