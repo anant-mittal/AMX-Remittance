@@ -62,25 +62,22 @@ public class CustomerBranchController {
 
 	@RequestMapping(value = "/api/customer/details", method = { RequestMethod.POST })
 	public AmxApiResponse<OffsiteCustomerDataDTO, Object> setCustomerDetails(@RequestParam String identity,
-			@RequestParam BigDecimal identityType,
-			@RequestParam boolean session) {
-		AmxApiResponse<OffsiteCustomerDataDTO, Object> customerResponse = offsiteCustRegClient
+			@RequestParam BigDecimal identityType, @RequestParam boolean session) {
+		branchSession.getCustomerContext(session).refresh();
+		AmxApiResponse<OffsiteCustomerDataDTO, Object> customer = offsiteCustRegClient
 				.getOffsiteCustomerDetails(identity, identityType);
-		if (session) {
-			branchSession.setCustomer(customerResponse.getResult());
-		}
-		return customerResponse;
+		return customer;
 	}
 
 	@RequestMapping(value = "/api/customer/details", method = { RequestMethod.GET })
 	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getCustomerDetails() {
-		return AmxApiResponse.build(branchSession.getCustomer());
+		return AmxApiResponse.build(branchSession.getCustomerData());
 	}
 
 	@RequestMapping(value = "/api/customer/details", method = { RequestMethod.DELETE })
 	public AmxApiResponse<OffsiteCustomerDataDTO, Object> clearCustomerDetails() {
 		branchSession.setCustomer(null);
-		return AmxApiResponse.build(branchSession.getCustomer());
+		return AmxApiResponse.build(new OffsiteCustomerDataDTO());
 	}
 
 	@RequestMapping(value = "/api/customer/trnxdata", method = { RequestMethod.GET })
@@ -124,6 +121,7 @@ public class CustomerBranchController {
 	@RequestMapping(value = "/api/customer/update", method = { RequestMethod.POST })
 	public AmxApiResponse<BoolRespModel, Object> updateCustomer(
 			@RequestBody UpdateCustomerInfoRequest updateCustomerRequest) {
+		branchSession.getCustomerContext().refresh();
 		return customerManagementClient.updateCustomer(updateCustomerRequest);
 	}
 
@@ -146,7 +144,7 @@ public class CustomerBranchController {
 
 	@RequestMapping(value = "/api/customer/doc/fields", method = { RequestMethod.GET })
 	public AmxApiResponse<JaxFieldDto, Object> getDocFields(@RequestParam(required = true) String documentCategory,
-			@RequestParam (required = true) String documentType) {
+			@RequestParam(required = true) String documentType) {
 		return customerManagementClient.getDocumentFields(documentCategory, documentType);
 	}
 
