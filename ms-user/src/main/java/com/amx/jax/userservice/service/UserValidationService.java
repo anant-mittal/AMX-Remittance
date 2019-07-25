@@ -666,7 +666,7 @@ public class UserValidationService {
 			CustomerVerification cv = customerVerificationService.getVerification(customerId,
 					CustomerVerificationType.EMAIL);
 			if (cv != null && ConstantDocument.No.equals(cv.getVerificationStatus()) && cv.getFieldValue() != null) {
-				throw new GlobalException(JaxError.USER_DATA_VERIFICATION_PENDING_REG,
+				throw new GlobalException(JaxError.EMAIL_NOT_VERIFIED,
 						"Your email verificaiton is pending");
 			}
 		}
