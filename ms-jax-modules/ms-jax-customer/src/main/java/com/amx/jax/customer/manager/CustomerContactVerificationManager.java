@@ -59,7 +59,6 @@ public class CustomerContactVerificationManager {
 
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
-
 	public CustomerContactVerification getCustomerContactVerification(BigDecimal id) {
 		return customerContactVerificationRepository.findById(id);
 	}
@@ -170,7 +169,7 @@ public class CustomerContactVerificationManager {
 			}
 			otherCustomers = customerRepository.getCustomersByEmail(c.getEmail());
 			for (Customer customer : otherCustomers) {
-				customer.setEmailVerified(Status.N);
+				customer.setEmailVerified(Status.D);
 			}
 			c.setEmailVerified(Status.Y);
 			
@@ -184,7 +183,7 @@ public class CustomerContactVerificationManager {
 			}
 			otherCustomers = customerRepository.getCustomersByMobile(c.getPrefixCodeMobile(), c.getMobile());
 			for (Customer customer : otherCustomers) {
-				customer.setMobileVerified(Status.N);
+				customer.setMobileVerified(Status.D);
 			}
 			c.setMobileVerified(Status.Y);
 		} else if (ContactType.WHATSAPP.equals(type)) {
@@ -195,7 +194,7 @@ public class CustomerContactVerificationManager {
 			}
 			otherCustomers = customerRepository.getCustomersByWhatsApp(c.getWhatsappPrefix(), c.getWhatsapp());
 			for (Customer customer : otherCustomers) {
-				customer.setWhatsAppVerified(Status.N);
+				customer.setWhatsAppVerified(Status.D);
 			}
 			c.setWhatsAppVerified(Status.Y);
 		} else {
@@ -206,7 +205,7 @@ public class CustomerContactVerificationManager {
 		if (!ArgUtil.isEmpty(otherCustomers)) {
 			customerRepository.save(otherCustomers);
 		}
-		
+
 		customerRepository.save(c);
 		customerVerificationRepository.save(cv);
 		onlineCustomerRepository.save(customerOnlineRegistration);
@@ -224,17 +223,17 @@ public class CustomerContactVerificationManager {
 		markCustomerContactVerified(c, link.getContactType(), link.getContactValue());
 
 		link.setIsActive(Status.D);
-		
+
 		List<CustomerContactVerification> oldlinks = getValidCustomerContactVerificationsByCustomerId(c.getCustomerId(),
 				link.getContactType(),
 				link.getContactValue());
-		if(!ArgUtil.isEmpty(oldlinks)) {
+		if (!ArgUtil.isEmpty(oldlinks)) {
 			for (CustomerContactVerification customerContactVerification : oldlinks) {
 				customerContactVerification.setIsActive(Status.N);
 			}
 			customerContactVerificationRepository.save(oldlinks);
 		}
-		
+
 		customerContactVerificationRepository.save(link);
 
 		return link;
