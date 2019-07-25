@@ -31,6 +31,7 @@ import com.amx.jax.dbmodel.FileUploadTempModel;
 import com.amx.jax.dbmodel.ServiceProviderPartner;
 import com.amx.jax.dbmodel.ServiceProviderSummaryModel;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.repository.ServiceProviderDefaultDateRepository;
 import com.amx.jax.response.serviceprovider.ServiceProviderDefaultDateDTO;
 import com.amx.jax.response.serviceprovider.ServiceProviderPartnerDTO;
 import com.amx.jax.response.serviceprovider.ServiceProviderSummaryDTO;
@@ -48,7 +49,8 @@ public class ServiceProviderService extends AbstractService {
 	ServiceProviderDao serviceProviderDao;
 	@Autowired
 	MetaData metaData;
-	
+	@Autowired
+	ServiceProviderDefaultDateRepository serviceProviderConfRepository;
 	public List<ServiceProviderPartnerDTO> getServiceProviderPartner() {
 		List<ServiceProviderPartner> serviceProviderPartner = serviceProviderDao.getServiceProviderPartner();
 		if(serviceProviderPartner.isEmpty()) {
@@ -94,6 +96,9 @@ public class ServiceProviderService extends AbstractService {
 	    int day = today.getDayOfMonth();
 	    
 	    Sheet sheet = workbook.getSheetAt(0);
+	    if(sheet.getRow(1).getLastCellNum()>12) {
+	    	throw new GlobalException("File format is not correct");
+	    }
 	    DataFormatter dataFormatter = new DataFormatter();
 	    for(i=1;i<sheet.getLastRowNum();i++) {
 	    	Row r = sheet.getRow(i);
@@ -214,6 +219,11 @@ public class ServiceProviderService extends AbstractService {
 		if(localFileDate.compareTo(localTodayDate)>=0) {
 			throw new GlobalException("File Upload date is not correct");
 		}
+		
+		Date serviceProviderConfirmDate =  serviceProviderConfRepository.getServiceProviderRevenueModel(metaData.getCountryId(),tpcCode);
+		if(serviceProviderConfirmDate.compareTo(fileDate)==0) {
+			throw new GlobalException("You have already uploaded file once for this date");
+		}
 		int c=0;
 		List<ServiceProviderPartner> serviceProviderPartnerList = serviceProviderDao.getServiceProviderPartner();
 		for(ServiceProviderPartner serviceProviderPartner:serviceProviderPartnerList) {
@@ -227,6 +237,21 @@ public class ServiceProviderService extends AbstractService {
 	}
 	
 	public BoolRespModel serviceProviderConfirmation(Date fileDate,String tpcCode) {
+		Date serviceProviderConfirmDate =  serviceProviderConfRepository.getServiceProviderRevenueModel(metaData.getCountryId(),tpcCode);
+		if(serviceProviderConfirmDate.compareTo(fileDate)==0) {
+			throw new GlobalException("You have already uploaded file once for this date");
+		}
+		int c=0;
+		List<ServiceProviderPartner> serviceProviderPartnerList = serviceProviderDao.getServiceProviderPartner();
+		for(ServiceProviderPartner serviceProviderPartner:serviceProviderPartnerList) {
+			if(!serviceProviderPartner.getTpcCode().equals(tpcCode)) {
+				c++;
+			}
+		}
+		if(c==serviceProviderPartnerList.size()) {
+			throw new GlobalException("Tpc code is not valid");
+		}
+		
 		serviceProviderDao.serviceProviderConfirmation(fileDate,tpcCode);
 		BoolRespModel boolRespModel = new BoolRespModel();
 		boolRespModel.setSuccess(Boolean.TRUE);
@@ -234,6 +259,16 @@ public class ServiceProviderService extends AbstractService {
 	}
 	
 	public ServiceProviderDefaultDateDTO getServiceProviderDefaultDate(String tpcCode) {
+		int c=0;
+		List<ServiceProviderPartner> serviceProviderPartnerList = serviceProviderDao.getServiceProviderPartner();
+		for(ServiceProviderPartner serviceProviderPartner:serviceProviderPartnerList) {
+			if(!serviceProviderPartner.getTpcCode().equals(tpcCode)) {
+				c++;
+			}
+		}
+		if(c==serviceProviderPartnerList.size()) {
+			throw new GlobalException("Tpc code is not valid");
+		}
 		ServiceProviderDefaultDateDTO serviceProviderDefaultDateDTO = new ServiceProviderDefaultDateDTO();
 		Date defaultUploadDate = serviceProviderDao.getServiceProviderDefaultDate(tpcCode);
 		serviceProviderDefaultDateDTO.setDefaultUploadDate(defaultUploadDate);
