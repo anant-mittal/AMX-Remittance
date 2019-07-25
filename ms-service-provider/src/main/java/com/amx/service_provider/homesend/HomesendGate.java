@@ -81,10 +81,16 @@ public class HomesendGate
 	private final String TRUST_STORE_LOCATION = "D:\\Exchange\\OWS\\Projects\\HomeSend\\Docs\\UAT\\SSL_Config\\TrustStore\\truststore.jks";
 	private final String TRUST_STORE_PASSWORD = "changeit";*/
 	
-	private final String KEY_STORE_LOCATION = "D:\\Salman\\SSL_Config\\KeyStore\\home_send_uat_keystore.jks";
+	/*private final String KEY_STORE_LOCATION = "D:\\Salman\\SSL_Config\\KeyStore\\home_send_uat_keystore.jks";
 	private final String KEY_STORE_PASSWORD = "changeit";
 
 	private final String TRUST_STORE_LOCATION = "D:\\Salman\\SSL_Config\\TrustStore\\truststore.jks";
+	private final String TRUST_STORE_PASSWORD = "changeit";*/
+	
+	private final String KEY_STORE_LOCATION = "/var/opt/amiec/homesend/UAT/home_send_uat_keystore.jks";
+	private final String KEY_STORE_PASSWORD = "changeit";
+
+	private final String TRUST_STORE_LOCATION = "/var/opt/amiec/homesend/UAT/truststore.jks";
 	private final String TRUST_STORE_PASSWORD = "changeit";
 	
 	/*private final String KEY_STORE_LOCATION = "/var/opt/homesend/home_send_uat_keystore.jks";
