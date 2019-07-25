@@ -36,6 +36,7 @@ import com.amx.jax.model.customer.CustomerStatusModel;
 import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.model.request.customer.UpdateCustomerInfoRequest;
 import com.amx.jax.model.response.CustomerInfo;
+import com.amx.jax.model.response.customer.CustomerShortInfo;
 import com.amx.jax.model.response.customer.OffsiteCustomerDataDTO;
 import com.amx.jax.repository.ICustomerCategoryDiscountRepo;
 import com.amx.jax.repository.ICustomerExtendedRepository;
@@ -261,6 +262,20 @@ public class CustomerManagementManager {
 	public void updateCustomer(UpdateCustomerInfoRequest updateCustomerInfoRequest) throws ParseException {
 		customerManagementValidation.validateDocumentsData(updateCustomerInfoRequest);
 		customerUpdateManager.updateCustomer(updateCustomerInfoRequest);
+	}
+
+	public CustomerShortInfo getCustomerShortDetail(String identityInt, BigDecimal identityType) {
+		customerManagementValidation.validateIdentityIntLength(identityInt, identityType);
+		List<Customer> customerList = userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(identityInt,
+				JaxApiFlow.OFFSITE_REGISTRATION);
+		if (customerList.size() > 0) {
+			Customer customer = customerList.get(0);
+			CustomerShortInfo info = new CustomerShortInfo();
+			info.setCustomerId(customer.getCustomerId());
+			return info;
+		} else {
+			throw new GlobalException(JaxError.CUSTOMER_NOT_FOUND, "customer not found");
+		}
 	}
 
 }

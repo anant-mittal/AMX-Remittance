@@ -3,6 +3,8 @@
  */
 package com.amx.jax.client.customer;
 
+import java.math.BigDecimal;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,7 @@ import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.model.request.VerifyCustomerContactRequest;
 import com.amx.jax.model.request.customer.UpdateCustomerInfoRequest;
 import com.amx.jax.model.response.CustomerInfo;
+import com.amx.jax.model.response.customer.CustomerShortInfo;
 import com.amx.jax.rest.RestService;
 import com.amx.libjax.model.jaxfield.JaxFieldDto;
 
@@ -214,6 +217,19 @@ public class CustomerManagementClient implements ICustomerManagementController {
 					});
 		} catch (Exception ae) {
 			LOGGER.error("exception in verifyContact : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}
+	}
+
+	@Override
+	public AmxApiResponse<CustomerShortInfo, Object> getCustomerShortDetail(String identityInt, BigDecimal identityType) {
+		try {
+			return restService.ajax(appConfig.getJaxURL()).path(ApiPath.GET_CUSTOMER_SHORT_DETAIL).meta(new JaxMetaInfo())
+					.queryParam(ApiParams.IDENTITY, identityInt).queryParam(ApiParams.IDENTITY_TYPE_ID, identityType).get()
+					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerShortInfo, Object>>() {
+					});
+		} catch (Exception ae) {
+			LOGGER.error("exception in getCustomerShortDetail : ", ae);
 			return JaxSystemError.evaluate(ae);
 		}
 	}

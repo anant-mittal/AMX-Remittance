@@ -1,5 +1,6 @@
 package com.amx.jax.customer;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 
 import com.amx.jax.api.AmxApiResponse;
@@ -18,6 +19,7 @@ import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.model.request.VerifyCustomerContactRequest;
 import com.amx.jax.model.request.customer.UpdateCustomerInfoRequest;
 import com.amx.jax.model.response.CustomerInfo;
+import com.amx.jax.model.response.customer.CustomerShortInfo;
 import com.amx.libjax.model.jaxfield.JaxFieldDto;
 
 public interface ICustomerManagementController {
@@ -36,10 +38,12 @@ public interface ICustomerManagementController {
 		public static final String DOCUMENT_FIELD_GET = PREFIX + "/list-document-fields";
 		public static final String DOCUMENT_DYNAMIC_FIELD_LIST = PREFIX + "/get-document-dynamic-field-list";
 		public static final String VERIFY_CONTACT = PREFIX + "/verify-contact";
+		public static final String GET_CUSTOMER_SHORT_DETAIL = PREFIX + "/get-customer-short-detail";
 	}
 
 	public static class ApiParams {
-		public static final String IDENTITY = "identity";
+		public static final String IDENTITY = "identityIntId";
+		public static final String IDENTITY_TYPE_ID = "identityTypeId";
 		public static final String CUSTOMER_ID = "customerId";
 		public static final String CONTACT_TYPE = "contactType";
 		public static final String VERIFICATION_CODE = "code";
@@ -72,5 +76,7 @@ public interface ICustomerManagementController {
 	AmxApiResponse<JaxFieldDto, Object> getDocumentFields(String documentCategory, String documentType);
 
 	AmxApiResponse<BoolRespModel, Object> verifyContact(VerifyCustomerContactRequest request);
+
+	AmxApiResponse<CustomerShortInfo, Object> getCustomerShortDetail(String identityInt, BigDecimal identityType);
 
 }

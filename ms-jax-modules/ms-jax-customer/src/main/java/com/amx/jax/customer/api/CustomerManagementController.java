@@ -5,6 +5,7 @@ import static com.amx.jax.customer.ICustomerManagementController.ApiPath.DOCUMEN
 import static com.amx.jax.customer.ICustomerManagementController.ApiPath.DOCUMENT_FIELD_GET;
 import static com.amx.jax.customer.ICustomerManagementController.ApiPath.DOCUMENT_TYPE_GET;
 import static com.amx.jax.customer.ICustomerManagementController.ApiPath.DUPLICATE_CUSTOMER_CHECK;
+import static com.amx.jax.customer.ICustomerManagementController.ApiPath.GET_CUSTOMER_SHORT_DETAIL;
 import static com.amx.jax.customer.ICustomerManagementController.ApiPath.GET_IDENTITY_TPYES;
 import static com.amx.jax.customer.ICustomerManagementController.ApiPath.LOCK_ONLINE_CUSTOMER;
 import static com.amx.jax.customer.ICustomerManagementController.ApiPath.UNLOCK_ONLINE_CUSTOMER;
@@ -13,6 +14,7 @@ import static com.amx.jax.customer.ICustomerManagementController.ApiPath.UPLOAD_
 import static com.amx.jax.customer.ICustomerManagementController.ApiPath.UPLOAD_CUSTOMER_KYC;
 import static com.amx.jax.customer.ICustomerManagementController.ApiPath.VERIFY_CONTACT;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.List;
 
@@ -49,6 +51,7 @@ import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.model.request.VerifyCustomerContactRequest;
 import com.amx.jax.model.request.customer.UpdateCustomerInfoRequest;
 import com.amx.jax.model.response.CustomerInfo;
+import com.amx.jax.model.response.customer.CustomerShortInfo;
 import com.amx.jax.userservice.manager.OnlineCustomerManager;
 import com.amx.libjax.model.jaxfield.JaxFieldDto;
 import com.amx.utils.JsonUtil;
@@ -167,5 +170,14 @@ public class CustomerManagementController implements ICustomerManagementControll
 	public AmxApiResponse<BoolRespModel, Object> verifyContact(@RequestBody VerifyCustomerContactRequest request) {
 		customerPersonalDetailManager.verifyContact(request);
 		return AmxApiResponse.build(new BoolRespModel());
+	}
+
+	@Override
+	@RequestMapping(path = GET_CUSTOMER_SHORT_DETAIL, method = RequestMethod.GET)
+	public AmxApiResponse<CustomerShortInfo, Object> getCustomerShortDetail(
+			@RequestParam(value = ApiParams.IDENTITY, required = true) String identityInt,
+			@RequestParam(value = ApiParams.IDENTITY_TYPE_ID, required = true) BigDecimal identityType) {
+		CustomerShortInfo customerShortDetail = customerManagementManager.getCustomerShortDetail(identityInt, identityType);
+		return AmxApiResponse.build(customerShortDetail);
 	}
 }
