@@ -75,6 +75,7 @@ public class ServiceProviderService extends AbstractService {
 	
 	public List<ServiceProviderSummaryDTO> uploadServiceProviderFile(MultipartFile file,Date fileDate,String tpcCode) throws Exception {
 		summaryValidations(fileDate, tpcCode);
+		serviceProviderDao.deleteTemporaryData();
 		InputStream in = file.getInputStream();
 		File currDir = new File(".");
 		String path = currDir.getAbsolutePath();
@@ -164,7 +165,7 @@ public class ServiceProviderService extends AbstractService {
 	    
 	    serviceProviderDao.saveDataByProcedure(fileDate,tpcCode);
 	    List<ServiceProviderSummaryModel> serviceProviderSummaryModelList=serviceProviderDao.getSummary();
-	    serviceProviderDao.deleteTemporaryData();
+	   
 	    workbook.close();
 	    
 		return (convertServiceProviderSummary(serviceProviderSummaryModelList));
