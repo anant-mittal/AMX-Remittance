@@ -4,6 +4,7 @@ import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.SQLException;
+import java.util.Calendar;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -97,6 +98,11 @@ public class ServiceProviderDao {
 	
 	public Date getServiceProviderDefaultDate(String tpcCode) {
 		Date serviceProviderConfirmDate =  serviceProviderConfRepository.getServiceProviderRevenueModel(metaData.getCountryId(),tpcCode);
+		if(serviceProviderConfirmDate==null) {
+			Calendar today = Calendar.getInstance();
+			today.add(Calendar.DATE, -1);
+			serviceProviderConfirmDate=new java.sql.Date(today.getTimeInMillis());
+		}
 		return serviceProviderConfirmDate;
 	}
 	
