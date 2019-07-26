@@ -96,7 +96,7 @@ public class ServiceProviderService extends AbstractService {
 	    int day = today.getDayOfMonth();
 	    
 	    Sheet sheet = workbook.getSheetAt(0);
-	    if(sheet.getRow(1).getLastCellNum()>12) {
+	    if(sheet.getRow(1).getPhysicalNumberOfCells()!=12) {
 	    	throw new GlobalException("File format is not correct");
 	    }
 	    DataFormatter dataFormatter = new DataFormatter();
