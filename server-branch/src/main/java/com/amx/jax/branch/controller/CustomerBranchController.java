@@ -77,7 +77,7 @@ public class CustomerBranchController {
 	@RequestMapping(value = "/api/customer/details", method = { RequestMethod.DELETE })
 	public AmxApiResponse<OffsiteCustomerDataDTO, Object> clearCustomerDetails() {
 		branchSession.setCustomer(null);
-		return AmxApiResponse.build(new OffsiteCustomerDataDTO());
+		return AmxApiResponse.build(branchSession.getCustomerData());
 	}
 
 	@RequestMapping(value = "/api/customer/trnxdata", method = { RequestMethod.GET })
