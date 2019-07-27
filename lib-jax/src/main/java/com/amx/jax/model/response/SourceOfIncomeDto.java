@@ -12,7 +12,7 @@ public class SourceOfIncomeDto extends ResourceDTO{
 	private BigDecimal languageId;
 	private String description;
 	private String shortDesc;
-	private String localFulldesc;
+	private String localName;
 	public BigDecimal getSourceofIncomeId() {
 		return sourceofIncomeId;
 	}
@@ -37,13 +37,14 @@ public class SourceOfIncomeDto extends ResourceDTO{
 	public void setShortDesc(String shortDesc) {
 		this.shortDesc = shortDesc;
 	}
-	public String getLocalFulldesc() {
-		return localFulldesc;
-	}
-	public void setLocalFulldesc(String localFulldesc) {
-		this.localFulldesc = localFulldesc;
-	}
+
 	
+	public String getLocalName() {
+		return localName;
+	}
+	public void setLocalName(String localName) {
+		this.localName = localName;
+	}
 	@Override
 	public String getResourceCode() {
 		return this.shortDesc;
@@ -56,7 +57,7 @@ public class SourceOfIncomeDto extends ResourceDTO{
 	
 	@Override
 	public String getResourceLocalName() {
-		return this.localFulldesc;
+		return this.localName;
 	}
 	
 	

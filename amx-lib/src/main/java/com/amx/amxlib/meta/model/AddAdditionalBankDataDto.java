@@ -31,7 +31,7 @@ public class AddAdditionalBankDataDto {
     private String amicDesc;
     private Boolean msgRender = false;
     private String exceptionMessage;
-    private String LocalFullName;
+    private String localName;
 
     public List<AdditionalBankRuleAddDataDto> additionalBankRuleData = new ArrayList<>();
     public List<AdditionalBankDetailsViewDto> listadditionAmiecData = new ArrayList<>();
@@ -45,7 +45,7 @@ public class AddAdditionalBankDataDto {
             String mandatory, int minLenght, BigDecimal maxLenght, String validation, String isActive,
             BigDecimal fieldLength, Boolean required, Boolean renderInputText, Boolean renderSelect,
             Boolean renderOneSelect, String oneAdditional, BigDecimal oneAdditionalId, String amicCode, String amicDesc,
-            Boolean msgRender, String LocalFullName) {
+            Boolean msgRender, String localName) {
         super();
         this.additionalBankRuleFiledId = additionalBankRuleFiledId;
         this.additionalDesc = additionalDesc;
@@ -69,7 +69,7 @@ public class AddAdditionalBankDataDto {
         this.oneAdditionalId = oneAdditionalId;
         this.amicCode = amicCode;
         this.amicDesc = amicDesc;
-        this.LocalFullName = LocalFullName;
+        this.localName = localName;
 
         this.msgRender = msgRender;
     }
@@ -282,17 +282,12 @@ public class AddAdditionalBankDataDto {
         this.exceptionMessage = exceptionMessage;
     }
 
-	public String getLocalFullName() {
-		return LocalFullName;
+	public String getLocalName() {
+		return localName;
 	}
 
-	public void setLocalFullName(String localFullName) {
-		LocalFullName = localFullName;
+	public void setLocalName(String localName) {
+		this.localName = localName;
 	}
-
-	
-
-	
-    
     
 }

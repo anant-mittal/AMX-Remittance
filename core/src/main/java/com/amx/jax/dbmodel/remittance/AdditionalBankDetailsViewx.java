@@ -36,14 +36,13 @@ public class AdditionalBankDetailsViewx implements Serializable {
 	  private BigDecimal remittanceId;
 	  private BigDecimal deliveryId;
 	  private String fieldType;
-	  private String bankLocalName;
 
 	  public AdditionalBankDetailsViewx() {
 		    super();
 	  }
 
 	  public AdditionalBankDetailsViewx(BigDecimal srlId, String flexField, BigDecimal countryId, String amiecCode, String amieceDescription, BigDecimal bankId, String bankCode, String bankDescription, BigDecimal serviceApplicabilityRuleId, BigDecimal applicationCountryId, BigDecimal currencyId,
-			      BigDecimal remittanceId, BigDecimal deliveryId, String fieldType, String bankLocalName) {
+			      BigDecimal remittanceId, BigDecimal deliveryId, String fieldType) {
 		    super();
 		    this.srlId = srlId;
 		    this.flexField = flexField;
@@ -59,7 +58,6 @@ public class AdditionalBankDetailsViewx implements Serializable {
 		    this.remittanceId = remittanceId;
 		    this.deliveryId = deliveryId;
 		    this.fieldType = fieldType;
-		    this.bankLocalName=bankLocalName;
 		    
 		    logger.info("in AdditionalBankDetailsViewx with params");
 	  }
@@ -190,14 +188,5 @@ public class AdditionalBankDetailsViewx implements Serializable {
 	  public void setFieldType(String fieldType) {
 		    this.fieldType = fieldType;
 	  }
-	  @Column(name = "AMIEC_LOCAL_DESCRIPTION") 
-	public String getBankLocalName() {
-		return bankLocalName;
-	}
-
-	public void setBankLocalName(String bankLocalName) {
-		this.bankLocalName = bankLocalName;
-	}
-	  
 
 }
