@@ -49,7 +49,7 @@ public class CustomerContext {
 		BigDecimal identityTypeId = branchSession.getCustomer() != null ? branchSession.getCustomer().getIdentityTypeId() : null;
 		if (branchSession.getCustomer() != null && !ArgUtil.isEmpty(identityInt) && !ArgUtil.isEmpty(identityTypeId)) {
 			AmxApiResponse<OffsiteCustomerDataDTO, Object> offsiteCustomerData = offsiteCustRegClient
-					.getOffsiteCustomerData(identityInt, identityTypeId);
+					.getOffsiteCustomerDetails(identityInt, identityTypeId);
 			return offsiteCustomerData.getResult();
 		}
 		return null;
