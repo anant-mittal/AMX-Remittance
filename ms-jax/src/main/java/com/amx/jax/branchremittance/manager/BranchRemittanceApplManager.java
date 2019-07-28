@@ -215,13 +215,7 @@ public class BranchRemittanceApplManager {
 		/** To fetch bene details **/
 		 BenificiaryListView beneficaryDetails =getBeneDetails(requestApplModel);
 		 
-		 /** to vlidate BSB  account though api **/
-			 /*	String errMsg = remitTrnxManager.beneAccountValidationThroughApi(requestApplModel.getServiceMasterId(),requestApplModel.getRoutingBankId(),beneficaryDetails);
-			if(!StringUtils.isBlank(errMsg)) {
-				throw new GlobalException(JaxError.BSB_ACCOUNT_VALIATION,"Invalid account number "+errMsg);
-			}*/
-		 /** end here */
-		 
+
 		/*checkingStaffIdNumberWithCustomer **/
 		 branchRemitManager.checkingStaffIdNumberWithCustomer();
 		 /*checking bene account exception  **/
@@ -724,7 +718,7 @@ public class BranchRemittanceApplManager {
 	}
 	
 	public BenificiaryListView getBeneDetails(BranchRemittanceApplRequestModel requestApplModel) { 
-		BenificiaryListView beneficaryDetails =beneficiaryRepository.findByCustomerIdAndBeneficiaryRelationShipSeqId(metaData.getCustomerId(),requestApplModel.getBeneId());
+		BenificiaryListView beneficaryDetails =beneficiaryRepository.findByCustomerIdAndBeneficiaryRelationShipSeqIdAndIsActive(metaData.getCustomerId(),requestApplModel.getBeneId(),ConstantDocument.Yes);
 		if(beneficaryDetails==null) {
 			throw new GlobalException(JaxError.BENEFICIARY_LIST_NOT_FOUND,"Beneficairy not found "+metaData.getCustomerId()+"/"+requestApplModel.getBeneId());
 		}

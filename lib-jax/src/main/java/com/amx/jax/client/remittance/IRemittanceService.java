@@ -1,5 +1,8 @@
 package com.amx.jax.client.remittance;
 
+/**
+ * @author rabil
+ */
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -20,6 +23,7 @@ import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.FlexFieldReponseDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
+import com.amx.jax.model.response.remittance.ParameterDetailsResponseDto;
 import com.amx.jax.model.response.remittance.PaymentModeDto;
 import com.amx.jax.model.response.remittance.RemittanceDeclarationReportDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
@@ -54,7 +58,7 @@ public interface IRemittanceService extends  IJaxService {
 		public static final String BR_RECEIPT_ON_EMAIL				=PREFIX + "/send-receipt-on-email/";
 		public static final String BR_REMITTANCE_GET_ROUTING_PRICING_RATE = PREFIX + "/get-routing-pricing-exchrate/";
 		public static final String BR_REMITTANCE_GET_FLEX_FIELDS = PREFIX + "/get-flex-field/";
-		
+		public static final String BR_REMITTANCE_GET_GIFT_PACKAGE = PREFIX + "/get-gift-package/";
 		
 		
 	}
@@ -110,7 +114,6 @@ public interface IRemittanceService extends  IJaxService {
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND})
 	AmxApiResponse<UserStockDto, Object> fetchLocalCurrencyRefundDenomination();
 
-	//AmxApiResponse<BoolRespModel, Object> saveCustomerBankDetails(List<CustomerBankRequest> customerBank);
 	AmxApiResponse<BoolRespModel, Object> saveCustomerBankDetails(CustomerBankRequest customerBank);
 	
 	AmxApiResponse<BoolRespModel, Object> validationStaffCredentials(String staffUserName, String staffPassword);
@@ -147,6 +150,9 @@ public interface IRemittanceService extends  IJaxService {
 	
 	@ApiJaxStatus({JaxError.DATA_NOT_FOUND})
 	AmxApiResponse<FlexFieldReponseDto,Object> getFlexField(BranchRemittanceGetExchangeRateRequest request);
+
+	@ApiJaxStatus({JaxError.NO_RECORD_FOUND})
+	AmxApiResponse<ParameterDetailsResponseDto, Object> getGiftService(BigDecimal beneRelaId);
 	
 }
 

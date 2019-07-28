@@ -172,5 +172,6 @@ public class AmxDBConstants {
 	public static final String  COMM_INCLUDE= "I";
 	public static final String COMM_EXCLUDE="E";
 	
+	public static final String BPI_GIFT="GIFT";
 	
 }

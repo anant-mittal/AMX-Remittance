@@ -26,6 +26,7 @@ import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.FlexFieldReponseDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
+import com.amx.jax.model.response.remittance.ParameterDetailsResponseDto;
 import com.amx.jax.model.response.remittance.PaymentModeDto;
 import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
 import com.amx.jax.model.response.remittance.RemittanceDeclarationReportDto;
@@ -412,6 +413,25 @@ public class RemittanceClient implements IRemittanceService {
 				LOGGER.error("exception in getExchaneRate : ", e);
 				return JaxSystemError.evaluate(e);
 			}
+	}
+	
+	@Override
+	public AmxApiResponse<ParameterDetailsResponseDto, Object> getGiftService(BigDecimal beneRelaId) {
+		
+		//beneRelationshipId
+		
+		try {
+			LOGGER.debug("in getGiftService :" + beneRelaId);
+			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_GET_GIFT_PACKAGE).meta(new JaxMetaInfo())
+					.queryParam(Params.BENE_RELATION_SHIP_ID, beneRelaId).meta(new JaxMetaInfo())
+					.post()
+					.as(new ParameterizedTypeReference<AmxApiResponse<ParameterDetailsResponseDto, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in validationStaffCredentials : ", e);
+			return JaxSystemError.evaluate(e);
+		} // end of try-cat
+		
 	}
 
 
