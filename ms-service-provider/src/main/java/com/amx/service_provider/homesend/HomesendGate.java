@@ -535,7 +535,7 @@ public class HomesendGate
 			else
 			{
 				customer_data.setCustomer_reference(CUSTOMER_ID_PREFIX + customer_data.getCustomer_reference());
-				local_api_response.setOut_going_transaction_reference(txn_data.getOut_going_transaction_reference());
+				local_api_response.setOut_going_transaction_reference(txn_data.getRequest_sequence_id());
 
 				bene_data.setBeneficiary_account_number(
 						HomesendUtils.form_bank_account(bene_data.getBeneficiary_account_number(),

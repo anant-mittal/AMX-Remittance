@@ -754,14 +754,14 @@ public class PartnerTransactionManager extends AbstractModel {
 			}
 			if(srvPrvResp.getResult().getRequest_XML() != null) {
 				requestXml = srvPrvResp.getResult().getRequest_XML();
-				ServiceProviderLogDTO serviceProviderXmlLog = saveServiceProviderXMLlogData("feeEnquiryReq", requestXml, referenceNo, reqSeq, PricerServiceConstants.REQUEST, trnxType, partnerReference);
+				ServiceProviderLogDTO serviceProviderXmlLog = saveServiceProviderXMLlogData("commitTransactionReq", requestXml, referenceNo, reqSeq, PricerServiceConstants.REQUEST, trnxType, partnerReference);
 				if(serviceProviderXmlLog != null) {
 					saveServiceProviderXml(serviceProviderXmlLog);
 				}
 			}
 			if(srvPrvResp.getResult().getResponse_XML() != null) {
 				responseXml = srvPrvResp.getResult().getResponse_XML();
-				ServiceProviderLogDTO serviceProviderXmlLog = saveServiceProviderXMLlogData("feeEnquiryRes", responseXml, referenceNo, resSeq, PricerServiceConstants.RESPONSE, trnxType, partnerReference);
+				ServiceProviderLogDTO serviceProviderXmlLog = saveServiceProviderXMLlogData("commitTransactionRes", responseXml, referenceNo, resSeq, PricerServiceConstants.RESPONSE, trnxType, partnerReference);
 				if(serviceProviderXmlLog != null) {
 					saveServiceProviderXml(serviceProviderXmlLog);
 				}

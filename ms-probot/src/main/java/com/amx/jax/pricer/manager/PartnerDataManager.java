@@ -19,7 +19,6 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.serviceprovider.ServiceProviderClient;
-import com.amx.jax.dbmodel.fx.EmployeeDetailsView;
 import com.amx.jax.dbmodel.partner.ServiceProviderXmlLog;
 import com.amx.jax.model.request.serviceprovider.Benificiary;
 import com.amx.jax.model.request.serviceprovider.Customer;
