@@ -268,16 +268,14 @@ public class CustomerManagementManager {
 		customerManagementValidation.validateIdentityIntLength(identityInt, identityType);
 		List<Customer> customerList = userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(identityInt,
 				JaxApiFlow.OFFSITE_REGISTRATION);
+		CustomerShortInfo info = new CustomerShortInfo();
 		if (customerList.size() > 0) {
 			Customer customer = customerList.get(0);
-			CustomerShortInfo info = new CustomerShortInfo();
 			info.setCustomerId(customer.getCustomerId());
 			info.setIdentityInt(customer.getIdentityInt());
 			info.setIdentityTypeId(customer.getIdentityTypeId());
-			return info;
-		} else {
-			throw new GlobalException(JaxError.CUSTOMER_NOT_FOUND, "customer not found");
 		}
+		return info;
 	}
 
 }

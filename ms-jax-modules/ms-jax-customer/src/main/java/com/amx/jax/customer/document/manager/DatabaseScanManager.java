@@ -1,6 +1,5 @@
 package com.amx.jax.customer.document.manager;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 
@@ -31,7 +30,6 @@ import com.amx.jax.model.customer.document.UploadCustomerDocumentRequest;
 import com.amx.jax.model.customer.document.UploadCustomerKycRequest;
 import com.amx.jax.repository.DOCBLOBRepository;
 import com.amx.jax.userservice.manager.CustomerIdProofManager;
-import com.amx.utils.IoUtils;
 import com.amx.utils.JsonUtil;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -70,13 +68,14 @@ public class DatabaseScanManager implements DocumentScanManager {
 					return customerDocumentImage;
 				}
 				customerDocumentImage.setDocumentRenderType(DocumentImageRenderType.TEXT);
-				String kycImage = IoUtils.inputStreamToString(docBlobUpload.getDocContent().getBinaryStream());
-				kycImage = Base64.encodeBase64String(kycImage.getBytes());
+				int blobLength = (int) docBlobUpload.getDocContent().length();
+				byte[] blobAsBytes = docBlobUpload.getDocContent().getBytes(1, blobLength);
+				String kycImage = Base64.encodeBase64String(blobAsBytes);
 				customerDocumentImage.setDocumentString(kycImage);
 				customerDocumentImage.setDocumentFormat(dmsMapping.getDocFormat());
 				customerDocumentImage.setUploadedDate(dmsMapping.getCreatedOn());
 
-			} catch (IOException | SQLException e) {
+			} catch (SQLException e) {
 				log.error("error in fetch kyc imagage", e);
 			}
 		}

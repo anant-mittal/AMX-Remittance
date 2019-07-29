@@ -70,7 +70,7 @@ public class CustomerDocMasterManager {
 		List<JaxFieldDto> jaxFields = new ArrayList<>();
 		jaxFields = docTypeMaster.getJaxFields().stream().map(i -> {
 			JaxFieldDto jaxField = convert(i);
-			jaxField.setDtoPath("data");
+			jaxField.setDtoPath("data." + i.getName());
 			return jaxField;
 		}).collect(Collectors.toList());
 		return jaxFields;
