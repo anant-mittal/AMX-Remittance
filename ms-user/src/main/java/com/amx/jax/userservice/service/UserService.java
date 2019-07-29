@@ -324,8 +324,11 @@ public class UserService extends AbstractUserService {
 		if (metaData.getCustomerId() != null && (model.getEmail() != null || model.getMobile() != null)) {
 			custDao.callProcedurePopulateCusmas(metaData.getCustomerId());
 		}
+		
 		updateCustomerVerification(onlineCust, model, cust);
-		setCustomerStatus(onlineCust, model, cust);
+		
+		
+		
 		checkListManager.updateCustomerChecks(onlineCust, model);
 		ApiResponse response = getBlackApiResponse();
 
@@ -343,7 +346,7 @@ public class UserService extends AbstractUserService {
 		if ((model.getEmail() != null)&& oldEmail!=null) {
 			model.setEmail(oldEmail);
 		}
-
+		
 		if (isNewUserRegistrationSuccess(model, onlineCust)) {
 			jaxNotificationService.sendNewRegistrationSuccessEmailNotification(outputModel.getPersoninfo(),
 					onlineCust.getEmail());
@@ -351,6 +354,7 @@ public class UserService extends AbstractUserService {
 			jaxNotificationService.sendProfileChangeNotificationEmail(model, outputModel.getPersoninfo());
 			jaxNotificationService.sendProfileChangeNotificationMobile(model, outputModel.getPersoninfo(), oldMobile);
 		}
+		setCustomerStatus(onlineCust, model, cust);
 		auditService.log(auditEvent.result(Result.DONE));
 		return response;
 	}
@@ -386,7 +390,7 @@ public class UserService extends AbstractUserService {
 
 	private boolean isNewUserRegistrationSuccess(CustomerModel model, CustomerOnlineRegistration onlineCust) {
 
-		if (model.getPassword() != null && ConstantDocument.Yes.equals(onlineCust.getStatus())) {
+		if (model.getPassword() != null) {
 			return true;
 		}
 		return false;
