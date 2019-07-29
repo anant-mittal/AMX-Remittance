@@ -43,7 +43,7 @@ public class SrvPrvFeeInqReqDTO implements Serializable {
 	
 	private BigDecimal employeeId;
 	
-	@NotNull(message = "Company Id can not be Null or Empty")
+	//@NotNull(message = "Company Id can not be Null or Empty")
 	private BigDecimal companyId;
 	
 	private CUSTOMER_CATEGORY customerCategory;
@@ -146,6 +146,7 @@ public class SrvPrvFeeInqReqDTO implements Serializable {
 	public BigDecimal getCompanyId() {
 		return companyId;
 	}
+	
 	public void setCompanyId(BigDecimal companyId) {
 		this.companyId = companyId;
 	}

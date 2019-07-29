@@ -79,10 +79,14 @@ public class ServiceProviderManager {
 		}
 
 		partnerReq.setRoutingBankDetails(routeList);
-		
-		//For Discounts
+
+		// For Discounts
 		partnerReq.setCustomerCategory(custCat);
 		partnerReq.setChannel(request.getChannel());
+
+		// Meta
+		partnerReq.setEmployeeId(request.getEmployeeId());
+		partnerReq.setCompanyId(request.getEmployeeId());
 
 		SrvPrvFeeInqResDTO partnerResp = partnerDataService.getPartnerFeeinquiry(partnerReq);
 
