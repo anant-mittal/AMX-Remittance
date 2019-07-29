@@ -106,11 +106,9 @@
 		</dependency>
 
         <dependency>
-			<groupId>com.oracle</groupId>
-			<artifactId>ojdbc6</artifactId>
-			<version>11.2.4</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/src/main/resources/ojdbc6.jar</systemPath>
+				<groupId>com.amx.jax</groupId>
+				<artifactId>lib-db</artifactId>
+				<version>${amx.version}</version>
 		</dependency>
 
 		<dependency>
