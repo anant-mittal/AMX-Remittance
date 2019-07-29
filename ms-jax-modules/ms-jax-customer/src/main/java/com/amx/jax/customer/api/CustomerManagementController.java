@@ -17,6 +17,7 @@ import static com.amx.jax.customer.ICustomerManagementController.ApiPath.VERIFY_
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -53,6 +54,7 @@ import com.amx.jax.model.request.customer.UpdateCustomerInfoRequest;
 import com.amx.jax.model.response.CustomerInfo;
 import com.amx.jax.model.response.customer.CustomerShortInfo;
 import com.amx.jax.userservice.manager.OnlineCustomerManager;
+import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
 import com.amx.libjax.model.jaxfield.JaxFieldDto;
 import com.amx.utils.JsonUtil;
 
@@ -159,10 +161,13 @@ public class CustomerManagementController implements ICustomerManagementControll
 
 	@Override
 	@RequestMapping(path = DOCUMENT_FIELD_GET, method = { RequestMethod.POST })
-	public AmxApiResponse<JaxFieldDto, Object> getDocumentFields(@RequestParam(name = ApiParams.DOCUMENT_CATEGORY) String documentCategory,
+	public AmxApiResponse<JaxConditionalFieldDto, Object> getDocumentFields(@RequestParam(name = ApiParams.DOCUMENT_CATEGORY) String documentCategory,
 			@RequestParam(name = ApiParams.DOCUMENT_TYPE) String documentType) {
 		List<JaxFieldDto> list = customerDocMasterManager.getDocumentFields(documentCategory, documentType);
-		return AmxApiResponse.buildList(list);
+		List<JaxConditionalFieldDto> outputDtoList = list.stream().map(i -> {
+			return new JaxConditionalFieldDto(i);
+		}).collect(Collectors.toList());
+		return AmxApiResponse.buildList(outputDtoList);
 	}
 
 	@Override

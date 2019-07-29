@@ -175,7 +175,8 @@ public class CustRegController implements ICustRegService {
 	@RequestMapping(value = CustRegApiEndPoints.GET_OFFSITE_CUSTOMER_DATA_V1, method = RequestMethod.GET)
 	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerDataV1(
 			@RequestBody @Valid GetOffsiteCustomerDetailRequest request) {
-		return offsiteCustRegService.getOffsiteCustomerData(request);
+		//return offsiteCustRegService.getOffsiteCustomerData(request);
+		return null;
 	}
 
 	@RequestMapping(value = CustRegApiEndPoints.ADDRESS_PROOF, method = RequestMethod.GET)

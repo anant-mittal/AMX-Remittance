@@ -32,7 +32,7 @@ import com.amx.jax.model.request.customer.UpdateCustomerInfoRequest;
 import com.amx.jax.model.response.CustomerInfo;
 import com.amx.jax.model.response.customer.CustomerShortInfo;
 import com.amx.jax.rest.RestService;
-import com.amx.libjax.model.jaxfield.JaxFieldDto;
+import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
 
 /**
  * @author prashant
@@ -197,11 +197,11 @@ public class CustomerManagementClient implements ICustomerManagementController {
 	}
 
 	@Override
-	public AmxApiResponse<JaxFieldDto, Object> getDocumentFields(String documentCategory, String documentType) {
+	public AmxApiResponse<JaxConditionalFieldDto, Object> getDocumentFields(String documentCategory, String documentType) {
 		try {
 			return restService.ajax(appConfig.getJaxURL()).path(ApiPath.DOCUMENT_FIELD_GET).meta(new JaxMetaInfo())
 					.queryParam(ApiParams.DOCUMENT_CATEGORY, documentCategory).queryParam(ApiParams.DOCUMENT_TYPE, documentType).post()
-					.as(new ParameterizedTypeReference<AmxApiResponse<JaxFieldDto, Object>>() {
+					.as(new ParameterizedTypeReference<AmxApiResponse<JaxConditionalFieldDto, Object>>() {
 					});
 		} catch (Exception ae) {
 			LOGGER.error("exception in getDocumentFields : ", ae);

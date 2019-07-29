@@ -7,9 +7,13 @@ import javax.validation.constraints.Pattern;
 
 import org.hibernate.validator.constraints.Email;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class UpdateCustomerPersonalDetailRequest {
 
 	Date dateOfBirth;
+	String insuranceInd;
+	@JsonIgnore
 	Boolean insurance;
 	String customerSignature;
 	Boolean pepsIndicator;
@@ -94,6 +98,17 @@ public class UpdateCustomerPersonalDetailRequest {
 
 	public void setWatsAppMobileNo(BigDecimal watsAppMobileNo) {
 		this.watsAppMobileNo = watsAppMobileNo;
+	}
+
+	public String getInsuranceInd() {
+		return insuranceInd;
+	}
+
+	public void setInsuranceInd(String insuranceInd) {
+		this.insuranceInd = insuranceInd;
+		if (insuranceInd != null) {
+			this.insurance = "Y".equalsIgnoreCase(insuranceInd);
+		}
 	}
 
 }
