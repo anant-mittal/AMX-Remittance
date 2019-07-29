@@ -95,7 +95,7 @@ public class RemittanceTransactionRequestValidator {
 		} else {
 			validateFlexFieldValues(requestFlexFields);
 		}
-		requestFlexFields.put("INDIC1",new FlexFieldDto(request.getAdditionalBankRuleFiledId(), request.getSrlId(), null));
+		requestFlexFields.put("INDIC1",new FlexFieldDto(request.getAdditionalBankRuleFiledId(), request.getSrlId(), null,null));
 		BigDecimal applicationCountryId = (BigDecimal) remitApplParametersMap.get("P_APPLICATION_COUNTRY_ID");
 		BigDecimal routingCountryId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_COUNTRY_ID");
 		BigDecimal remittanceModeId = (BigDecimal) remitApplParametersMap.get("P_REMITTANCE_MODE_ID");
@@ -263,7 +263,7 @@ public class RemittanceTransactionRequestValidator {
 			BigDecimal additionalBankRuleFiledId) {
 		List<AdditionalBankDetailsViewx> addtionalBankDetails = additionalBankDetailsDao.getAdditionalBankDetails(currencyId, bankId, remittanceModeId, deleveryModeId, countryId, flexiField);
 		return addtionalBankDetails.stream().map(x -> {
-			FlexFieldDto ffDto = new FlexFieldDto(additionalBankRuleFiledId, x.getSrlId(), x.getAmieceDescription());
+			FlexFieldDto ffDto = new FlexFieldDto(additionalBankRuleFiledId, x.getSrlId(), x.getAmieceDescription(),x.getAmiecCode());
 			JaxFieldValueDto dto = new JaxFieldValueDto();
 			dto.setId(ffDto.getSrlId());
 			dto.setOptLable(ffDto.getAmieceDescription());
@@ -277,7 +277,7 @@ public class RemittanceTransactionRequestValidator {
 		List<AdditionalExchAmiecDto> purposeOfTrnxList =  branchRemitManager.getPurposeOfTrnx(beneRelaId,routingCountryId);
 		if(purposeOfTrnxList !=null && !purposeOfTrnxList.isEmpty()) {
 			return purposeOfTrnxList.stream().map(x -> {
-				FlexFieldDto ffDto = new FlexFieldDto(x.getAdditionalBankFieldId(), x.getResourceId(), x.getResourceName());
+				FlexFieldDto ffDto = new FlexFieldDto(x.getAdditionalBankFieldId(), x.getResourceId(), x.getResourceName(),x.getResourceCode());
 				JaxFieldValueDto dto = new JaxFieldValueDto();
 				dto.setId(ffDto.getSrlId());
 				dto.setOptLable(ffDto.getAmieceDescription());

@@ -248,7 +248,7 @@ public class ViewParameterDetails implements IResourceEntity{
 	@Override
 	public BigDecimal resourceId() {
 		// TODO Auto-generated method stub
-		return this.paramCodeDef==null?BigDecimal.ZERO:new BigDecimal(paramCodeDef);
+		return this.parameterDetailsId;
 	}
 
 	@Override
@@ -260,7 +260,7 @@ public class ViewParameterDetails implements IResourceEntity{
 	@Override
 	public String resourceCode() {
 		// TODO Auto-generated method stub
-		return this.numericField2==null?"":numericField2.toString();
+		return this.paramCodeDef;
 	}
 
 	

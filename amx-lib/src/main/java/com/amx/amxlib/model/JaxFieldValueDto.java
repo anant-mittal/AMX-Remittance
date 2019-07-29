@@ -5,6 +5,7 @@ public class JaxFieldValueDto {
 	Object id;
 	Object optLable;
 	Object value;
+	Object code;
 
 	public Object getId() {
 		return id;
@@ -28,5 +29,13 @@ public class JaxFieldValueDto {
 
 	public void setValue(Object value) {
 		this.value = value;
+	}
+
+	public Object getCode() {
+		return code;
+	}
+
+	public void setCode(Object code) {
+		this.code = code;
 	}
 }
