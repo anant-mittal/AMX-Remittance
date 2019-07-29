@@ -1100,23 +1100,26 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
 
  public TransferDto getTrasnferModeByBankServiceRule(RemittanceTransaction remitTrnx){
 	 Map<String,Object> mapBankServiceRule= routingProDao.checkBankServiceRule(remitTrnx);
+	 logger.debug("getTrasnferModeByBankServiceRule request json : {}", JsonUtil.toJson(remitTrnx));
 	 TransferDto dto = new TransferDto();
 	 String transferMode=null;
 	 BigDecimal transferModeId=BigDecimal.ZERO;
-	 if(mapBankServiceRule!=null) {
+	 if(mapBankServiceRule!=null && !mapBankServiceRule.isEmpty()) {
 		 transferMode = mapBankServiceRule.get("P_TRANSFER_MODE")==null?"":mapBankServiceRule.get("P_TRANSFER_MODE").toString();
 		 transferModeId = mapBankServiceRule.get("P_TRANSFER_MODE_ID")==null?BigDecimal.ZERO:(BigDecimal)mapBankServiceRule.get("P_TRANSFER_MODE_ID");
-		 if(transferMode!=null && transferMode.equalsIgnoreCase(ConstantDocument.FILE_CREATION)) {
-			 transferMode=ConstantDocument.Yes;
-		 }else if(transferMode!=null && transferMode.equalsIgnoreCase(ConstantDocument.WEB_SERVICE)) {
-			 transferMode=ConstantDocument.No;
-		 }
-		 if(!JaxUtil.isNullZeroBigDecimalCheck(transferModeId)){
-			 throw new GlobalException(JaxError.NO_RECORD_FOUND,"Please check bank service rule.:"+remitTrnx);
+		 
+		 if(!JaxUtil.isNullZeroBigDecimalCheck(transferModeId) && StringUtils.isBlank(transferMode)){
+			 throw new GlobalException(JaxError.NO_RECORD_FOUND,"Transfer mode is not defined in bank service rule");
 		 }
 		 
-	 }else {
-		 throw new GlobalException(JaxError.NO_RECORD_FOUND,"Please check bank service rule.:"+remitTrnx);
+		 if(!StringUtils.isBlank(transferMode) && (transferMode.equalsIgnoreCase(ConstantDocument.FILE_CREATION) || transferMode.equalsIgnoreCase(ConstantDocument.TELEX_TRANFER))) {
+			 transferMode=ConstantDocument.Yes;
+		 }else if(!StringUtils.isBlank(transferMode) && transferMode.equalsIgnoreCase(ConstantDocument.WEB_SERVICE)) {
+			 transferMode=ConstantDocument.No;
+		 }
+		 
+	 }else {		
+		 throw new GlobalException(JaxError.NO_RECORD_FOUND,"Transfer mode is not defined in bank service rule");
 	 }
 	
 	 dto.setTransferModeId(transferModeId);

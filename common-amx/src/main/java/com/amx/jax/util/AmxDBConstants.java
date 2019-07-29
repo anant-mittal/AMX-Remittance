@@ -174,4 +174,9 @@ public class AmxDBConstants {
 	
 	public static final String BPI_GIFT="GIFT";
 	
+	public static final String TELEX_TRANFER = "T";
+	public static final String DEMAND_DRAFT = "D";
+	
+	
+	
 }
