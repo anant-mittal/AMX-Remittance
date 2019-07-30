@@ -148,7 +148,10 @@ public class CustomerController implements ICustomerService {
 		Customer customerdetails = customerRepository.getCustomerEmailDetails(civilId);
 		//CustomerOnlineRegistration customerOnlineRegistration = onlineCustomerRepository.getLoginCustomersDeatilsById(civilId);
 		ApiResponse response = null;
-		userValidationService.validateCustomerVerification(customerdetails.getCustomerId());
+		if(customerdetails!=null) {
+			userValidationService.validateCustomerVerification(customerdetails.getCustomerId());
+		}
+		
 		List<ContactType> channel = new ArrayList<>();
 		channel.add(ContactType.SMS_EMAIL);
 		response = userService.sendOtpForCivilId(civilId, channel, null, null);
