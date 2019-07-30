@@ -107,13 +107,7 @@ public class ViewExRoutingMatrix implements Serializable {
 
 	@Column(name = "DELIVERY_HOURS")
 	private BigDecimal delievryHours;
-
-	//@Column(name = "TXN_AMT_FROM")
-	//private BigDecimal txnAmtFrom;
-
-	//@Column(name = "TXN_AMT_TO")
-	//private BigDecimal txnAmtTo;
-
+	
 	@Column(name = "FROM_AMOUNT")
 	private BigDecimal fromAmount;
 
@@ -146,6 +140,12 @@ public class ViewExRoutingMatrix implements Serializable {
 
 	@Column(name = "BENE_DEDUCT_CHARGE_AMOUNT")
 	private BigDecimal beneDeductChargeAmount;
+
+	@Column(name = "BRANCH_APPLICABILITY")
+	private String branchApplicability;
+
+	@Column(name = "IS_FC_ROUDNING_ALLOWED")
+	private String isFcRoundingAllowed;
 
 	public String getUuid() {
 		return uuid;
@@ -387,17 +387,6 @@ public class ViewExRoutingMatrix implements Serializable {
 		this.delievryHours = delievryHours;
 	}
 
-	/*
-	 * public BigDecimal getTxnAmtFrom() { return txnAmtFrom; }
-	 * 
-	 * public void setTxnAmtFrom(BigDecimal txnAmtFrom) { this.txnAmtFrom =
-	 * txnAmtFrom; }
-	 * 
-	 * public BigDecimal getTxnAmtTo() { return txnAmtTo; }
-	 * 
-	 * public void setTxnAmtTo(BigDecimal txnAmtTo) { this.txnAmtTo = txnAmtTo; }
-	 */
-
 	public BigDecimal getFromAmount() {
 		return fromAmount;
 	}
@@ -484,6 +473,22 @@ public class ViewExRoutingMatrix implements Serializable {
 
 	public void setBeneDeductChargeAmount(BigDecimal noBeneDeductChargeAmount) {
 		this.beneDeductChargeAmount = noBeneDeductChargeAmount;
+	}
+
+	public String getBranchApplicability() {
+		return branchApplicability;
+	}
+
+	public void setBranchApplicability(String branchApplicability) {
+		this.branchApplicability = branchApplicability;
+	}
+
+	public String getIsFcRoundingAllowed() {
+		return isFcRoundingAllowed;
+	}
+
+	public void setIsFcRoundingAllowed(String isFcRoundingAllowed) {
+		this.isFcRoundingAllowed = isFcRoundingAllowed;
 	}
 
 }
