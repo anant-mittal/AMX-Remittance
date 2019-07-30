@@ -144,8 +144,8 @@ public class ViewExRoutingMatrix implements Serializable {
 	@Column(name = "BRANCH_APPLICABILITY")
 	private String branchApplicability;
 
-	@Column(name = "IS_FC_ROUDNING_ALLOWED")
-	private String isFcRoundingAllowed;
+	//@Column(name = "IS_FC_ROUDNING_ALLOWED")
+	//private String isFcRoundingAllowed;
 
 	public String getUuid() {
 		return uuid;
@@ -483,12 +483,12 @@ public class ViewExRoutingMatrix implements Serializable {
 		this.branchApplicability = branchApplicability;
 	}
 
-	public String getIsFcRoundingAllowed() {
+	/*public String getIsFcRoundingAllowed() {
 		return isFcRoundingAllowed;
 	}
 
 	public void setIsFcRoundingAllowed(String isFcRoundingAllowed) {
 		this.isFcRoundingAllowed = isFcRoundingAllowed;
-	}
+	}*/
 
 }
