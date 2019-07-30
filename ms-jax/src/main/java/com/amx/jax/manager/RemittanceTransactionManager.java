@@ -1258,6 +1258,12 @@ public class RemittanceTransactionManager {
 		model.setErrorMessage(application.getErrorMessage());
 	if(application.getErrorCategory() != null) {
 			ResponseCodeDetailDTO responseCodeDetail = PayGRespCodeJSONConverter.getResponseCodeDetail(application.getErrorCategory());
+			
+			responseCodeDetail.setPgPaymentId(application.getPaymentId());
+			responseCodeDetail.setPgReferenceId(application.getPgReferenceId());
+			responseCodeDetail.setPgTransId(application.getPgTransactionId());
+			responseCodeDetail.setPgAuth(application.getPgAuthCode());
+			
 			model.setResponseCodeDetail(responseCodeDetail);
 		}
 		

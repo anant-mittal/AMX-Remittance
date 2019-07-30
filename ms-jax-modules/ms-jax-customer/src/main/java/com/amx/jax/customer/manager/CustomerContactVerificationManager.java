@@ -122,7 +122,7 @@ public class CustomerContactVerificationManager {
 
 		if (!ArgUtil.isEmpty(oldlinks) && oldlinks.size() > 3) {
 			throw new GlobalException(JaxError.SEND_OTP_LIMIT_EXCEEDED,
-					"Sending Verification Limit(3) has exceeded try again after 24 hrs" + contactType);
+					"Sending Verification Limit(4) has exceeded try again after 24 hours");
 		}
 
 		return customerContactVerificationRepository.save(link);
