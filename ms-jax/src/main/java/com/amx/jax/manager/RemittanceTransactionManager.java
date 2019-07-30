@@ -34,7 +34,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.AuthType;
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.PromotionDto;
@@ -42,6 +41,7 @@ import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
+import com.amx.jax.api.ResponseCodeDetailDTO;
 import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxDbConfig;
@@ -74,6 +74,7 @@ import com.amx.jax.dbmodel.remittance.ServiceProviderCredentialsModel;
 import com.amx.jax.dbmodel.remittance.ViewTransfer;
 import com.amx.jax.dbmodel.remittance.ViewVatDetails;
 import com.amx.jax.dict.ContactType;
+import com.amx.jax.dict.PayGRespCodeJSONConverter;
 import com.amx.jax.dict.UserClient;
 import com.amx.jax.dict.UserClient.Channel;
 import com.amx.jax.error.JaxError;
@@ -88,6 +89,7 @@ import com.amx.jax.logger.events.RemitInfo;
 import com.amx.jax.manager.remittance.CorporateDiscountManager;
 import com.amx.jax.manager.remittance.RemittanceAdditionalFieldManager;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.model.request.remittance.AbstractRemittanceApplicationRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
@@ -879,7 +881,6 @@ public class RemittanceTransactionManager {
 		}
 		validateNewBeneTransactionAmount(breakup);
 	}
-
 	private void validateNewBeneTransactionAmount(ExchangeRateBreakup breakup) {
 		AuthenticationLimitCheckView authLimit = parameterService
 				.getAuthenticationViewRepository(AuthType.NEW_BENE_TRANSACT_AMOUNT_LIMIT.getAuthType());
@@ -1253,6 +1254,17 @@ public class RemittanceTransactionManager {
 		
 		model.setErrorCategory(application.getErrorCategory());
 		model.setErrorMessage(application.getErrorMessage());
+	if(application.getErrorCategory() != null) {
+			ResponseCodeDetailDTO responseCodeDetail = PayGRespCodeJSONConverter.getResponseCodeDetail(application.getErrorCategory());
+			
+			responseCodeDetail.setPgPaymentId(application.getPaymentId());
+			responseCodeDetail.setPgReferenceId(application.getPgReferenceId());
+			responseCodeDetail.setPgTransId(application.getPgTransactionId());
+			responseCodeDetail.setPgAuth(application.getPgAuthCode());
+			
+			model.setResponseCodeDetail(responseCodeDetail);
+		}
+		
 		return model;
 	}
 
@@ -1450,7 +1462,6 @@ public class RemittanceTransactionManager {
 		}	
 		return accountValidation;	
 	}
-	
 	
 	private ExchangeRateBreakup getExchangeRateBreakup(List<ExchangeRateApprovalDetModel> exchangeRates,RemittanceTransactionRequestModel model, RemittanceTransactionResponsetModel responseModel,BigDecimal comission) {
 		BigDecimal fcAmount = model.getForeignAmount();

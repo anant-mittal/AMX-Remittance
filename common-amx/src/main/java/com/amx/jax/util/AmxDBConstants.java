@@ -169,6 +169,15 @@ public class AmxDBConstants {
 	public static final String  VAT_CATEGORY= "OUTPUT_TAX";
 	public static final String  BENE_ACCT_VALID="BENE_ACCT_VALID";
 	
+	// Constants for annual income
+	
+	public static final String ANNUAL_INCOME_RANGE = "AIR";
+	
+	// Constants for annual transaction limit range
+	
+	public static final String ANNUAL_TRANSACTION_LIMIT = "ATL";
+	public static final long MILLISEC_IN_YEAR = 31540000000L;
+	
 	public static final String  COMM_INCLUDE= "I";
 	public static final String COMM_EXCLUDE="E";
 	

@@ -46,7 +46,7 @@
 						</goals>
 						<configuration>
 							<finalName>bhr-benefit</finalName>
-							<outputDirectory>${basedir}/../../lib/</outputDirectory>
+							<outputDirectory>${basedir}/../../lib/shaded/</outputDirectory>
 							<relocations>
 								<relocation>
 									<pattern>com.aciworldwide.commerce.gateway.plugins</pattern>

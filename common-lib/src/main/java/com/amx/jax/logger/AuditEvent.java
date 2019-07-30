@@ -1,5 +1,7 @@
 package com.amx.jax.logger;
 
+import java.util.Map;
+
 import com.amx.jax.dict.UserClient.UserDeviceClient;
 import com.amx.jax.exception.IExceptionEnum;
 import com.amx.utils.ArgUtil;
@@ -24,7 +26,7 @@ public abstract class AuditEvent extends AbstractEvent {
 	@JsonProperty(PROP_RESULT)
 	protected Result result;
 
-	protected IExceptionEnum errorCode;
+	protected String errorCode;
 
 	@JsonProperty("trxTym")
 	protected long tranxTime;
@@ -54,6 +56,7 @@ public abstract class AuditEvent extends AbstractEvent {
 
 	@JsonIgnore
 	boolean success;
+	protected Map<String, String> details;
 
 	public static enum Result {
 		DEFAULT, DONE, REJECTED, FAIL, ERROR, PASS;
@@ -156,11 +159,11 @@ public abstract class AuditEvent extends AbstractEvent {
 		this.data = data;
 	}
 
-	public IExceptionEnum getErrorCode() {
+	public String getErrorCode() {
 		return errorCode;
 	}
 
-	public void setErrorCode(IExceptionEnum errorCode) {
+	public void setErrorCode(String errorCode) {
 		this.errorCode = errorCode;
 	}
 
@@ -193,6 +196,14 @@ public abstract class AuditEvent extends AbstractEvent {
 
 	public void setSuccess(boolean success) {
 		this.success = success;
+	}
+
+	public Map<String, String> getDetails() {
+		return details;
+	}
+
+	public void setDetails(Map<String, String> details) {
+		this.details = details;
 	}
 
 }

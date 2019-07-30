@@ -15,9 +15,8 @@ import org.springframework.beans.factory.annotation.Value;
 import com.aciworldwide.commerce.gateway.plugins.e24PaymentPipe;
 import com.amx.jax.AppConfig;
 import com.amx.jax.dict.PayGServiceCode;
-import com.amx.jax.payg.PayGCodes;
+import com.amx.jax.dict.ResponseCodeKWT;
 import com.amx.jax.payg.PayGParams;
-import com.amx.jax.payg.codes.KnetCodes;
 import com.amx.jax.payment.PaymentConstant;
 import com.amx.jax.payment.gateway.PayGClient;
 import com.amx.jax.payment.gateway.PayGConfig;
@@ -79,8 +78,7 @@ public class KnetClient implements PayGClient {
 		configMap.put("action", knetAction);
 		configMap.put("currency", knetCurrency);
 		configMap.put("languageCode", knetLanguageCode);
-		configMap.put("responseUrl", payGConfig.getServiceCallbackUrl() +
-				PaymentConstant.getCalbackUrl(params));
+		configMap.put("responseUrl", payGConfig.getServiceCallbackUrl() + PaymentConstant.getCalbackUrl(params));
 		configMap.put("resourcePath", knetCertpath);
 		configMap.put("aliasName", knetAliasName);
 		LOGGER.info("KNET payment configuration : " + JsonUtil.toJson(configMap));
@@ -112,8 +110,7 @@ public class KnetClient implements PayGClient {
 			 * redirect user to client application (server-ui,kiosk,branch-ui) with
 			 * transaction identifier
 			 */
-			String responseUrl = payGConfig.getServiceCallbackUrl() +
-					PaymentConstant.getCalbackUrl(params);
+			String responseUrl = payGConfig.getServiceCallbackUrl() + PaymentConstant.getCalbackUrl(params);
 			pipe.setResponseURL(responseUrl);
 			pipe.setErrorURL(responseUrl);
 			pipe.setResourcePath(knetCertpath);
@@ -176,13 +173,22 @@ public class KnetClient implements PayGClient {
 
 		LOGGER.info("Params captured from KNET : " + JsonUtil.toJson(gatewayResponse));
 
-		KnetCodes knetCodes = (KnetCodes) PayGCodes.getPayGCode(resultResponse, KnetCodes.UNKNOWN);
+		//KnetCodes knetCodes = (KnetCodes) PayGCodes.getPayGCode(resultResponse, KnetCodes.UNKNOWN);
 
 		LOGGER.info("resultResponse ---> " + resultResponse);
-		gatewayResponse.setErrorCategory(knetCodes.getCategory());
+		
+		//gatewayResponse.setErrorCategory(knetCodes.getCategory().name());
+		ResponseCodeKWT responseCodeEnum = ResponseCodeKWT.getResponseCodeEnumByCode(resultResponse);
+		if(responseCodeEnum != null) {
+			gatewayResponse.setErrorCategory(responseCodeEnum.name());
+			LOGGER.info("Result from response Values IF---> " + responseCodeEnum);
+		}else {
+			gatewayResponse.setErrorCategory(ResponseCodeKWT.UNKNOWN.name());
+			LOGGER.info("Result from response Values ELSE---> " + responseCodeEnum);
+		}
 
 		LOGGER.info("Result from response Values ---> " + gatewayResponse.getErrorCategory());
-		/* gatewayResponse.setError(resultResponse); */
+		gatewayResponse.setError(resultResponse);
 
 		paymentService.capturePayment(params, gatewayResponse);
 		// Capturing JAX Response

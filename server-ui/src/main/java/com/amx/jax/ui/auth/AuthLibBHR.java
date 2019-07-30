@@ -169,21 +169,40 @@ public class AuthLibBHR implements AuthLib {
 	@Override
 	public CustomerFlags checkModule(AuthState authState, CustomerFlags customerFlags, Features feature) {
 		switch (feature) {
+		case DASHBOARD:
+			AuthPermUtil.checkEmailUpdate(authState, customerFlags);
+			AuthPermUtil.checkInsuranceUpdate(authState, customerFlags);
+			break;
 		case REMIT:
 		case BENE_UPDATE:
 		case FXORDER:
+			AuthPermUtil.checkEmailUpdate(authState, customerFlags);
 			AuthPermUtil.checkIdProofExpiry(authState, customerFlags);
 			AuthPermUtil.checkSQASetup(authState, customerFlags);
 			AuthPermUtil.checkSQA(authState, customerFlags);
+			AuthPermUtil.checkInsuranceUpdate(authState, customerFlags);
 			break;
 		case SQA_UPDATE:
+			AuthPermUtil.checkEmailUpdate(authState, customerFlags);
 			AuthPermUtil.checkSQASetup(authState, customerFlags);
+			AuthPermUtil.checkInsuranceUpdate(authState, customerFlags);
 			break;
 		default:
+			AuthPermUtil.checkEmailUpdate(authState, customerFlags);
+			AuthPermUtil.checkInsuranceUpdate(authState, customerFlags);
 			break;
 		}
 
 		return customerFlags;
+	}
+
+	public boolean hasFeature(AuthState authState, CustomerFlags customerFlags, Features feature) {
+		switch (feature) {
+		case INSURANCE:
+			return customerFlags.getIsInsuranceActive();
+		default:
+			return true;
+		}
 	}
 
 }

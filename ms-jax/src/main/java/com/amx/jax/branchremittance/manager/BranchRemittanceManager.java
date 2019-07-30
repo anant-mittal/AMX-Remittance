@@ -20,7 +20,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dal.RoutingProcedureDao;
@@ -48,6 +47,7 @@ import com.amx.jax.manager.RemittanceApplicationManager;
 import com.amx.jax.manager.RemittanceTransactionManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.AbstractModel;
+import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;

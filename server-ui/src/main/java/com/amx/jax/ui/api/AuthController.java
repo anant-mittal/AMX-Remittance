@@ -10,8 +10,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.JaxAuthContext;
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.exception.AmxApiError;
+import com.amx.jax.model.AuthState.AuthFlow;
 import com.amx.jax.ui.config.OWAStatus.ApiOWAStatus;
 import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 import com.amx.jax.ui.config.UIServerError;
@@ -73,13 +76,14 @@ public class AuthController {
 	 * @return the response wrapper
 	 */
 	@ApiOWAStatus({ OWAStatusStatusCodes.DEVICE_LOCKED, OWAStatusStatusCodes.AUTH_DONE,
-		OWAStatusStatusCodes.AUTH_FAILED, OWAStatusStatusCodes.AUTH_OK })
+			OWAStatusStatusCodes.AUTH_FAILED, OWAStatusStatusCodes.AUTH_OK })
 	@RequestMapping(value = "/pub/auth/login/v2", method = { RequestMethod.POST })
 	public ResponseWrapper<AuthResponse> loginUserPass(@Valid @RequestBody AuthRequest authData) {
 
 		if (!ArgUtil.isEmpty(authData.getLockId()) && !authData.getLockId().equalsIgnoreCase(authData.getIdentity())) {
 			throw new UIServerError(OWAStatusStatusCodes.DEVICE_LOCKED);
 		}
+
 		if (!ArgUtil.isEmpty(authData.getDeviceToken())) {
 			return loginService.loginByDevice(authData.getIdentity(), authData.getDeviceToken());
 		} else if (!ArgUtil.isEmpty(authData.getPassword())) {
@@ -128,7 +132,9 @@ public class AuthController {
 	 *
 	 * @param authData the auth data
 	 * @return the response wrapper
+	 * @deprecated - use : /pub/auth/password/v2
 	 */
+	@Deprecated
 	@RequestMapping(value = "/pub/auth/reset", method = { RequestMethod.POST })
 	public ResponseWrapper<AuthResponse> initReset(@Valid @RequestBody AuthRequest authData) {
 		if (authData.getmOtp() == null && authData.geteOtp() == null) {
@@ -138,12 +144,32 @@ public class AuthController {
 		}
 	}
 
+	@RequestMapping(value = "/pub/auth/reset/v2", method = { RequestMethod.POST })
+	public ResponseWrapper<AuthResponse> initResetV2(@Valid @RequestBody AuthRequest authData,
+			@RequestParam(required = false) String otp,
+			@RequestParam(required = false) ContactType contactType) {
+		contactType = ArgUtil.ifNotEmpty(contactType);
+		otp = ArgUtil.ifNotEmpty(otp, authData.getmOtp(), authData.geteOtp());
+		AppContextUtil.setFlow(AuthFlow.RESET_PASS.toString());
+		sessionService.getGuestSession().setIdentity(authData.getIdentity());
+		return loginService.sendOTP(AuthFlow.RESET_PASS, authData.getIdentity(), contactType, otp);
+	}
+
+	@ApiOWAStatus({ OWAStatusStatusCodes.USER_UPDATE_SUCCESS })
+	@RequestMapping(value = "/pub/auth/password/v2", method = { RequestMethod.POST })
+	public ResponseWrapper<UserUpdateData> resetPasswordV2(@Valid @RequestBody AuthRequest authData) {
+		return loginService.updatepwdV2(authData.getPassword(), authData.getmOtp(), authData.geteOtp());
+	}
+
 	/**
 	 * Reset password.
 	 *
 	 * @param authData the auth data
 	 * @return the response wrapper
+	 * 
+	 * @deprecated - use : /pub/auth/password/v2
 	 */
+	@Deprecated
 	@ApiOWAStatus({ OWAStatusStatusCodes.USER_UPDATE_SUCCESS })
 	@RequestMapping(value = "/pub/auth/password", method = { RequestMethod.POST })
 	public ResponseWrapper<UserUpdateData> resetPassword(@Valid @RequestBody AuthRequest authData) {

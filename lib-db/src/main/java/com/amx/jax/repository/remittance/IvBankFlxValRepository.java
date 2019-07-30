@@ -17,5 +17,4 @@ public interface IvBankFlxValRepository extends CrudRepository<ViewBnkFlexVal, S
 	
 	public List<ViewBnkFlexVal> findByBnkcodeAndFileNameAndBeneBankCodeAndBeneBranchCode(String bankCode,String fileName,String beneBankCode,BigDecimal beneBranchCode);
 	
-	
  }
