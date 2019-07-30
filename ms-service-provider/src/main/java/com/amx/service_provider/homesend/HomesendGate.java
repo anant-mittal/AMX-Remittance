@@ -7,12 +7,6 @@ import java.util.ResourceBundle;
 
 import org.apache.axis.types.UnsignedInt;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
-import org.springframework.web.context.WebApplicationContext;
 
 import com.amg.vcHomeSend.ows.AdviceOfChargeRequest;
 import com.amg.vcHomeSend.ows.AdviceOfChargeResponse;
@@ -38,7 +32,6 @@ import com.amx.jax.model.response.serviceprovider.Status_Call_Response;
 import com.amx.service_provider.dbmodel.webservice.OwsParamRespcode;
 import com.amx.service_provider.dbmodel.webservice.OwsParamRespcodeKey;
 import com.amx.service_provider.repository.webservice.OwsParamRespcodeRepository;
-import com.amx.service_provider.utils.MSServiceProviderConfig;
 import com.amx.utils.JsonUtil;
 
 /*

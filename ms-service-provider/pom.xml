@@ -80,9 +80,16 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.amx.service-provider.homesend</groupId>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-ext-jar</artifactId>
+			<type>pom</type>
+		</dependency>
+
+		<dependency>
+			<groupId>com.amg.homesend</groupId>
 			<artifactId>homesend</artifactId>
 			<version>1.0</version>
+			<!-- scope>system</scope> <systemPath>${project.basedir}/src/main/resources/OWS_HomeSend_stub.jar</systemPath -->
 		</dependency>
 
 		<dependency>
@@ -103,10 +110,10 @@
 			<version>1.2.17</version>
 		</dependency>
 
-        <dependency>
-				<groupId>com.amx.jax</groupId>
-				<artifactId>lib-db</artifactId>
-				<version>${amx.version}</version>
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-db</artifactId>
+			<version>${amx.version}</version>
 		</dependency>
 
 		<dependency>
