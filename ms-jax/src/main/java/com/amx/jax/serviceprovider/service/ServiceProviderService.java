@@ -82,17 +82,9 @@ public class ServiceProviderService extends AbstractService {
 		logger.info("FUll path is "+path);
 	    String fileLocation = path.substring(0, path.length() - 1) + file.getOriginalFilename();
 	    logger.info("File path is "+fileLocation);
-	    /*
-	    FileOutputStream f = new FileOutputStream(fileLocation);
-	    int ch = 0;
-	    while ((ch = in.read()) != -1) {
-	        f.write(ch);
-	    }
-	    f.flush();
-	    f.close();
-	    */
+
 	    int i,j;
-	    Workbook workbook = WorkbookFactory.create(new File(fileLocation));
+	    Workbook workbook = WorkbookFactory.create(file.getInputStream());
 	    LocalDate today = fileDate.toLocalDate();
 	    int year = today.getYear();
 	    int month = today.getMonthValue();
