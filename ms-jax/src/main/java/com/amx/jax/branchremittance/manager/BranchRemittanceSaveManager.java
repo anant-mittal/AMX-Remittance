@@ -1117,7 +1117,6 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
 		 }else if(!StringUtils.isBlank(transferMode) && transferMode.equalsIgnoreCase(ConstantDocument.WEB_SERVICE)) {
 			 transferMode=ConstantDocument.No;
 		 }
-		 
 	 }else {		
 		 throw new GlobalException(JaxError.NO_RECORD_FOUND,"Transfer mode is not defined in bank service rule");
 	 }

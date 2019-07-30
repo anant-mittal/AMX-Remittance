@@ -234,4 +234,29 @@ public class DateUtil {
 		}
 		   return accountingMonthYear;
 	   }
+	 
+	 /** added by Rabil 30 07 2019 **/
+	 public static String convertDatetostringWithddMmYyyywithHMinute() {
+		 String dateString = null;
+		 try {
+			 SimpleDateFormat format = new SimpleDateFormat("dd/mm/yyyy hh:mm:ss a");
+				Date date = new Date();
+				 dateString = format.format(date);
+		 }catch (Exception e) {
+			 e.printStackTrace();
+			}
+		 return dateString;
+	 }
+	 
+	 public static Date convertStringToDatewithddMmYyyywithHMinute(String dateString) {
+		 SimpleDateFormat formatter = new SimpleDateFormat("dd/mm/yyyy hh:mm:ss a");
+			Date date = new Date();
+			try {
+				date = formatter.parse(dateString);
+			} catch (ParseException e) {
+
+			}
+			return date;
+		}
+	 
 }
