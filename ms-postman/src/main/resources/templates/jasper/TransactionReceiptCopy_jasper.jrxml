@@ -444,7 +444,7 @@
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$R{label.pinNumber}]]>
+                                    <![CDATA[$R{label.transactionId}]]>
                                 </textFieldExpression>
                             </textField>
 
@@ -491,7 +491,7 @@
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$R{label.beneficiaryName}]]>
+                                    <![CDATA[$R{label.referenceId}]]>
                                 </textFieldExpression>
                             </textField>
 
