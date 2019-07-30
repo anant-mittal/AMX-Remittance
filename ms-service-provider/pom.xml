@@ -83,8 +83,6 @@
 			<groupId>com.amx.service-provider.homesend</groupId>
 			<artifactId>homesend</artifactId>
 			<version>1.0</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/src/main/resources/OWS_HomeSend_stub.jar</systemPath>
 		</dependency>
 
 		<dependency>
