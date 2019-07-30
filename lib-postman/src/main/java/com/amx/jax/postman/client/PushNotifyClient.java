@@ -74,4 +74,15 @@ public class PushNotifyClient implements IPushNotifyService {
 
 	}
 
+	@Override
+	public String shortLink(String relativeUrl) throws PostManException {
+		LOGGER.info("Subscribing for Push Notifications on web" + appConfig.getPostmapURL());
+		try {
+			return restService.ajax(appConfig.getPostmapURL()).path(PostManUrls.SHORT_LINK)
+					.queryParam(PARAM_RELATIVE_URL, relativeUrl).post().asString();
+		} catch (Exception e) {
+			throw new PostManException(e);
+		}
+	}
+
 }

@@ -27,6 +27,7 @@ import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.db.utils.EntityDtoUtil;
 import com.amx.jax.dbmodel.ReferralDetails;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.rest.RestService;
 import com.amx.jax.userservice.dao.ReferralDetailsDao;
 
@@ -40,6 +41,10 @@ public class ReferralService extends AbstractService {
 	/** The rest service. */
 	@Autowired
 	RestService restService;
+	
+	/** The fb push client. */
+	@Autowired
+	private PushNotifyClient pushNotifyClient;
 
 	public AmxApiResponse saveReferral(ReferralDTO dto) {
 		ReferralDetails referralDetails;
@@ -72,43 +77,54 @@ public class ReferralService extends AbstractService {
 		referralResponseModel.setCustomerRefferalCode(dto.getCustomerReferralCode());
 
 		Callable<String> callable = () -> {
-			Map<String, Object> androidInfo = new HashMap<String, Object>();
-			androidInfo.put("androidPackageName", "com.amx.amxremit.dev");
-			Map<String, Object> iosInfo = new HashMap<String, Object>();
-			iosInfo.put("iosBundleId", "com.amxremit.almulla.exchange");
-
-			Map<String, Object> dynamicLinkInfo = new HashMap<String, Object>();
-			dynamicLinkInfo.put("domainUriPrefix", "amx.page.link");
-			dynamicLinkInfo.put("link",
-					"https://appd-kwt.amxremit.com/refer?senderId=" + referralResponseModel.getCustomerReferralCode());
-			dynamicLinkInfo.put("androidInfo", androidInfo);
-			dynamicLinkInfo.put("iosInfo", iosInfo);
-
-			Map<String, Object> suffix = new HashMap<String, Object>();
-
-			suffix.put("option", "SHORT");
-
-			Map<String, Object> fields = new HashMap<String, Object>();
-
-			fields.put("dynamicLinkInfo", dynamicLinkInfo);
-			fields.put("suffix", suffix);
-			return restService.ajax(
-					"https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=AIzaSyCbSk1C_rK-0FqIWNq1rJ1HQdQFBqcvdQs")
-					.header("Content-Type", "application/json").post(fields).asString();
+//			Map<String, Object> androidInfo = new HashMap<String, Object>();
+//			androidInfo.put("androidPackageName", "com.amx.amxremit.qa");
+//			Map<String, Object> iosInfo = new HashMap<String, Object>();
+//			iosInfo.put("iosBundleId", "com.amxremit.almulla.exchange");
+//
+//			Map<String, Object> dynamicLinkInfo = new HashMap<String, Object>();
+//			dynamicLinkInfo.put("domainUriPrefix", "amx.page.link");
+//			dynamicLinkInfo.put("link",
+//					"https://appq-kwt.amxremit.com/refer?senderId=" + referralResponseModel.getCustomerReferralCode());
+//			dynamicLinkInfo.put("androidInfo", androidInfo);
+//			dynamicLinkInfo.put("iosInfo", iosInfo);
+//
+//			Map<String, Object> suffix = new HashMap<String, Object>();
+//
+//			suffix.put("option", "SHORT");
+//
+//			Map<String, Object> fields = new HashMap<String, Object>();
+//
+//			fields.put("dynamicLinkInfo", dynamicLinkInfo);
+//			fields.put("suffix", suffix);
+//			return restService.ajax(
+//					"https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=AIzaSyCbSk1C_rK-0FqIWNq1rJ1HQdQFBqcvdQs")
+//					.header("Content-Type", "application/json").post(fields).asString();
+			
+			return pushNotifyClient.shortLink("/refer?senderId="+referralResponseModel.getCustomerReferralCode());
 
 		};
 		ExecutorService executorService = Executors.newSingleThreadExecutor();
 		Future<String> future = executorService.submit(callable);
-
+		
+		Map<String, Object> responseMap;
 		try {
-			String result = future.get();
-			Map<String, Object> responseMap = jsonToMap(new JSONObject(result));
-			if (responseMap.containsKey("shortLink")) {
-				referralResponseModel.setLink(responseMap.get("shortLink").toString());
-				return AmxApiResponse.build(referralResponseModel);
-			}
-
-		} catch (InterruptedException | ExecutionException | JSONException e) {
+			String response = future.get();
+			JSONObject responseObject = new JSONObject(response);
+			if(responseObject.has("results")){
+				JSONArray resultsArray = responseObject.getJSONArray("results");
+				if(resultsArray.length() > 0) {
+					String linkId = resultsArray.getString(0);
+					referralResponseModel.setLink(linkId);
+				}
+			}			
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ExecutionException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
