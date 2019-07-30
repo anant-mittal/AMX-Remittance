@@ -6,6 +6,8 @@ import com.amx.jax.dict.UserClient.AppType;
 import com.amx.jax.dict.UserClient.DevicePlatform;
 import com.amx.jax.dict.UserClient.DeviceType;
 import com.amx.jax.dict.UserClient.UserDeviceClient;
+import com.amx.utils.EntityDtoUtil;
+import com.amx.utils.StringUtils;
 
 import eu.bitwalker.useragentutils.UserAgent;
 
@@ -144,6 +146,12 @@ public class UserDevice implements Serializable {
 		userClient.setFingerprint(this.getFingerprint());
 		return userClient;
 
+	}
+
+	public UserDevice toSanitized() {
+		UserDevice userDevice = EntityDtoUtil.entityToDto(this, new UserDevice());
+		userDevice.setIp(StringUtils.mask(userDevice.getIp()));
+		return userDevice;
 	}
 
 }
