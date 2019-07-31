@@ -25,72 +25,76 @@
       </a>
       </div>
     </div>
-    <div id="rating-feedback" class="rating-feedback ">
-      <h4>Rate your Experience</h4>
-      <fieldset class="rating">
-        <input type="radio" id="star5" name="rating" value="5" /><label
-          class="full"
-          for="star5"
-        ></label>
-        <input type="radio" id="star4" name="rating" value="4" /><label
-          class="full"
-          for="star4"
-        ></label>
-        <input type="radio" id="star3" name="rating" value="3" /><label
-          class="full"
-          for="star3"
-        ></label>
-        <input type="radio" id="star2" name="rating" value="2" /><label
-          class="full"
-          for="star2"
-        ></label>
-        <input type="radio" id="star1" name="rating" value="1" /><label
-          class="full"
-          for="star1"
-        ></label>
-      </fieldset>
+    <div class="container">
 
-      <div class="">
-        <div id="rating-face" class="svgicons ">
-          <span class="path1"></span><span class="path2"></span
-          ><span class="path3"></span><span class="path4"></span>
-        </div>
-        <div class="face-title"></div>
-        <br />
-        <div id="feedback" class="feedback-text hide">
-          <textarea
-            id="feedbackInput"
-            placeholder="Any Suggesstion"
-            cols="30"
-            maxLength="140"
-            rows="5"
-          ></textarea>
-        </div>
-        <div class="bottom-button-wrapper">
-          <button id="submit" class="button ripple disable" onclick="submitFeedback()">
-            Send
-          </button>
+      <div id="rating-feedback" class="rating-feedback ">
+        <h4>Rate your Experience</h4>
+        <fieldset class="rating">
+          <input type="radio" id="star5" name="rating" value="5" /><label
+            class="full"
+            for="star5"
+          ></label>
+          <input type="radio" id="star4" name="rating" value="4" /><label
+            class="full"
+            for="star4"
+          ></label>
+          <input type="radio" id="star3" name="rating" value="3" /><label
+            class="full"
+            for="star3"
+          ></label>
+          <input type="radio" id="star2" name="rating" value="2" /><label
+            class="full"
+            for="star2"
+          ></label>
+          <input type="radio" id="star1" name="rating" value="1" /><label
+            class="full"
+            for="star1"
+          ></label>
+        </fieldset>
+  
+        <div class="">
+          <div id="rating-face" class="svgicons ">
+            <span class="path1"></span><span class="path2"></span
+            ><span class="path3"></span><span class="path4"></span>
+          </div>
+          <div class="face-title"></div>
+          <br />
+          <div id="feedback" class="feedback-text hide">
+            <textarea
+              id="feedbackInput"
+              placeholder="Any Suggesstion"
+              cols="30"
+              maxLength="140"
+              rows="3"
+            ></textarea>
+          </div>
+          <div class="bottom-button-wrapper">
+            <button id="submit" class="button ripple disable" onclick="submitFeedback()">
+              Send
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+  
+      <div id="feedback-success" class="feedback-success dn">
+        <h4>Rate your Experience</h4>
+        <div class="svgicons icon-thumb"></div>
+        <h4 class="success-message">
+          Thank you for the feedback on your experience with Al Mulla Exchange.
+          We appreciate the review and it will help us build a better customer
+          experience.
+        </h4>
+        <button class="button ripple" onclick="goToHome()">
+          Home
+        </button>
+      </div>
+  
+      <div id="feedback-invalid" class="feedback-invalid dn">
+        <h4>Invalid URL</h4>
+      </div>
+      <div id="loading" class="dn"><div class="loader"></div></div>
 
-    <div id="feedback-success" class="feedback-success dn">
-      <h4>Rate your Experience</h4>
-      <div class="svgicons icon-thumb"></div>
-      <h4 class="success-message">
-        Thank you for the feedback on your experience with Al Mulla Exchange.
-        We appreciate the review and it will help us build a better customer
-        experience.
-      </h4>
-      <button class="button ripple" onclick="goToHome()">
-        Home
-      </button>
     </div>
-
-    <div id="feedback-invalid" class="feedback-invalid dn">
-      <h4>Invalid URL</h4>
-    </div>
-    <div id="loading" class="dn"><div class="loader"></div></div>
     <script th:inline="javascript">
 
       function showLoader(b){
