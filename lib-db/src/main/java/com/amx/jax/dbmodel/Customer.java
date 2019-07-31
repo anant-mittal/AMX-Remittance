@@ -1087,6 +1087,10 @@ public class Customer implements java.io.Serializable {
 		this.whatsAppVerified = whatsAppVerified;
 	}
 
+	public boolean canSendWhatsApp() {
+		return !(Status.D.equals(this.whatsAppVerified) || Status.N.equals(this.whatsAppVerified));
+	}
+
 	private Status emailVerified;
 
 	@Column(name = "EMAIL_VERIFIED")
@@ -1097,6 +1101,10 @@ public class Customer implements java.io.Serializable {
 
 	public void setEmailVerified(Status emailVerified) {
 		this.emailVerified = emailVerified;
+	}
+
+	public boolean canSendEmail() {
+		return !(Status.D.equals(this.emailVerified) || Status.N.equals(this.emailVerified));
 	}
 
 	private Status mobileVerified;
@@ -1111,7 +1119,11 @@ public class Customer implements java.io.Serializable {
 		this.mobileVerified = mobileVerified;
 	}
 
-	@Column(name="VAT_NUMBER")
+	public boolean canSendMobile() {
+		return !(Status.D.equals(this.mobileVerified) || Status.N.equals(this.mobileVerified));
+	}
+
+	@Column(name = "VAT_NUMBER")
 	public String getCustomerVatNumber() {
 		return customerVatNumber;
 	}

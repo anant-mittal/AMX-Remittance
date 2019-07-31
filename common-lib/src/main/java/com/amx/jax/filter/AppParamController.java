@@ -91,7 +91,7 @@ public class AppParamController {
 		AppContextUtil.addWarning("THis is a warning for no reason");
 		AmxApiResponse<UserDevice, Map<String, Object>> resp = new AmxApiResponse<UserDevice, Map<String, Object>>();
 		resp.setMeta(map);
-		resp.setData(commonHttpRequest.getUserDevice());
+		resp.setData(commonHttpRequest.getUserDevice().toSanitized());
 		return resp;
 	}
 

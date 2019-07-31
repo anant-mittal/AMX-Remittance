@@ -18,6 +18,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.constant.PrefixEnum;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.CustomerHomeAddress;
+import com.amx.jax.AppConstants;
 import com.amx.jax.CustomerCredential;
 import com.amx.jax.cache.TransactionModel;
 import com.amx.jax.constant.ConstantDocument;
@@ -61,7 +62,9 @@ import com.amx.jax.util.AmxDBConstants.Status;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.validation.CustomerValidationService;
+import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
+import com.amx.utils.ContextUtil;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -492,18 +495,27 @@ public class CustomerRegistrationManager extends TransactionModel<CustomerRegist
 	}
 	
 	
-private ResourceDTO getCustomerCategory(BigDecimal customerId) {
-	ResourceDTO dto = new ResourceDTO();
-	CustomerExtendedModel customerExtendedModel =  customerExtendedRepo.findByCustomerId(customerId);
-	if(customerExtendedModel != null) {
-		CustomerCategoryDiscountModel categorydiscountModel = customerCategoryRepository.findByIdAndIsActive(customerExtendedModel.getCustCatMasterId(),ConstantDocument.Yes);
-		
-		dto.setResourceId(categorydiscountModel.getId());
-		dto.setResourceName(categorydiscountModel.getCustomerCatagory());
+	private ResourceDTO getCustomerCategory(BigDecimal customerId) {
+		ResourceDTO dto = new ResourceDTO();
+		CustomerExtendedModel customerExtendedModel = customerExtendedRepo.findByCustomerId(customerId);
+		if (customerExtendedModel != null) {
+			CustomerCategoryDiscountModel categorydiscountModel = customerCategoryRepository
+					.findByIdAndIsActive(customerExtendedModel.getCustCatMasterId(), ConstantDocument.Yes);
+
+			dto.setResourceId(categorydiscountModel.getId());
+			dto.setResourceName(categorydiscountModel.getCustomerCatagory());
+		}
+		return dto;
 	}
-	return dto ; 
-}
 
-
-	
+	@Override
+	protected String getTranxId() {
+		String key = ArgUtil.parseAsString(ContextUtil.map().get(AppConstants.TRANX_ID_XKEY));
+		if (ArgUtil.isEmptyString(key)) {
+			key = getJaxTransactionId();
+			ContextUtil.map().put(AppConstants.TRANX_ID_XKEY, key);
+			LOGGER.info("************ Creating New Tranx Id {} *******************", key);
+		}
+		return super.getTranxId();
+	}
 }

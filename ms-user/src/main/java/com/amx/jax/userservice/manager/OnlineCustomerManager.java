@@ -91,9 +91,7 @@ public class OnlineCustomerManager {
 				JaxApiFlow.SIGNUP_ONLINE);
 		Customer customer = customers.get(0);
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customer.getCustomerId());
-		if(customer.getEmailVerified() == Status.N) {
-			throw new GlobalException(JaxError.EMAIL_NOT_VERIFIED, "Email id is not verified . Please wait for 24 hrs");
-		}
+		
 		if (onlineCustomer != null && ConstantDocument.Yes.equals(onlineCustomer.getStatus())) {
 			throw new GlobalException(JaxError.USER_ALREADY_ACTIVE,
 					"You are already registered with us. Please login.");

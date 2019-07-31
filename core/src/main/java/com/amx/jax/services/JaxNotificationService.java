@@ -168,8 +168,9 @@ public class JaxNotificationService {
 					+ oldPinfo.getEmail());
 			sendEmail(emailToOld);
 		}
+			email.getModel().put("change_type", ChangeType.EMAIL_CHANGE);
 		}
-		email.getModel().put("change_type", ChangeType.EMAIL_CHANGE);
+		
 		email.addTo(pinfo.getEmail());
 		email.setITemplate(TemplatesMX.PROFILE_CHANGE);
 		email.setHtml(true);

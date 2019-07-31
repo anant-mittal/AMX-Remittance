@@ -13,6 +13,12 @@ public class ResponseCodeDetailDTO implements Serializable {
 	private String responseDesc; // client
 	private String almullaErrorCode;
 	private CodeCategory category;
+
+	private String pgPaymentId;
+	private String pgReferenceId;
+	private String pgAuth;
+	private String pgTransId;
+
 	// Type
 	private String type;
 	// Status
@@ -74,6 +80,38 @@ public class ResponseCodeDetailDTO implements Serializable {
 
 	public void setClientResponse(Map<String, String> clientResponse) {
 		this.clientResponse = clientResponse;
+	}
+
+	public String getPgPaymentId() {
+		return pgPaymentId;
+	}
+
+	public void setPgPaymentId(String pgPaymentId) {
+		this.pgPaymentId = pgPaymentId;
+	}
+
+	public String getPgReferenceId() {
+		return pgReferenceId;
+	}
+
+	public void setPgReferenceId(String pgReferenceId) {
+		this.pgReferenceId = pgReferenceId;
+	}
+
+	public String getPgAuth() {
+		return pgAuth;
+	}
+
+	public void setPgAuth(String pgAuth) {
+		this.pgAuth = pgAuth;
+	}
+
+	public String getPgTransId() {
+		return pgTransId;
+	}
+
+	public void setPgTransId(String pgTransId) {
+		this.pgTransId = pgTransId;
 	}
 
 }
