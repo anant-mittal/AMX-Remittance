@@ -1191,9 +1191,11 @@ public ParameterDetailsResponseDto getGiftService(BigDecimal beneId) {
 					pdto.importFrom(viewParameterDetails);
 					
 					//TODO:- Rabil Check
-					new FlexFieldDto(null, null, 
-							viewParameterDetails.getCharField1(),
-							viewParameterDetails.getParamCodeDef());
+					pdto.setResourceValue(
+							new FlexFieldDto(null, null, 
+									viewParameterDetails.getCharField1(),
+									viewParameterDetails.getParamCodeDef())
+							);
 					
 					//Set Additional properties
 					pdto.setParameterMasterId(viewParameterDetails.getParameterMasterId());
