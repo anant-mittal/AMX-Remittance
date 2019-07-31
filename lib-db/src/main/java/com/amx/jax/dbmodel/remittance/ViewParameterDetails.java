@@ -4,9 +4,9 @@ package com.amx.jax.dbmodel.remittance;
  * Date 	: 25/07/2019
  */
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -247,19 +247,16 @@ public class ViewParameterDetails implements IResourceEntity{
 
 	@Override
 	public BigDecimal resourceId() {
-		// TODO Auto-generated method stub
 		return this.parameterDetailsId;
 	}
 
 	@Override
 	public String resourceName() {
-		// TODO Auto-generated method stub
 		return this.charField1;
 	}
 
 	@Override
 	public String resourceCode() {
-		// TODO Auto-generated method stub
 		return this.paramCodeDef;
 	}
 

@@ -35,6 +35,7 @@ import com.amx.amxlib.model.response.PurposeOfTransactionModel;
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.jax.JaxAuthContext;
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.JaxClientUtil;
 import com.amx.jax.client.remittance.RemittanceClient;
 import com.amx.jax.dict.Language;
@@ -45,6 +46,7 @@ import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.request.remittance.RoutingPricingRequest;
 import com.amx.jax.model.response.CurrencyMasterDTO;
 import com.amx.jax.model.response.remittance.FlexFieldReponseDto;
+import com.amx.jax.model.response.remittance.ParameterDetailsDto;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.model.response.remittance.branch.DynamicRoutingPricingResponse;
 import com.amx.jax.payg.PayGParams;
@@ -365,6 +367,11 @@ public class RemittController {
 		ResponseWrapper<List<PurposeOfTransactionModel>> wrapper = new ResponseWrapper<List<PurposeOfTransactionModel>>();
 		wrapper.setData(jaxService.setDefaults().getRemitClient().getPurposeOfTransactions(beneId).getResults());
 		return wrapper;
+	}
+
+	@RequestMapping(value = "/api/remitt/package/list", method = { RequestMethod.POST })
+	public AmxApiResponse<ParameterDetailsDto, Object> getPackages(@RequestParam BigDecimal beneId) {
+		return ResponseWrapper.buildList(remittanceClient.getGiftService(beneId).getResult().getParameterDetailsDto());
 	}
 
 	/**

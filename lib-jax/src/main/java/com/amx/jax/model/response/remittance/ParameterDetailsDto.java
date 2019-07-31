@@ -7,11 +7,11 @@ package com.amx.jax.model.response.remittance;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import com.amx.jax.model.IResourceEntity;
 import com.amx.jax.model.ResourceDTO;
 
-public class ParameterDetailsDto  {
+public class ParameterDetailsDto extends ResourceDTO {
 
+	private static final long serialVersionUID = -3369097385587671323L;
 	private BigDecimal parameterDetailsId;
 	private BigDecimal parameterMasterId;
 	private String recordId;

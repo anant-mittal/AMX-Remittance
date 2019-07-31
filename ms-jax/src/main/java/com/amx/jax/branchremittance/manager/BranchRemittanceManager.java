@@ -56,6 +56,7 @@ import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.AmlCheckResponseDto;
 import com.amx.jax.model.response.remittance.BeneAdditionalDto;
 import com.amx.jax.model.response.remittance.BranchExchangeRateBreakup;
+import com.amx.jax.model.response.remittance.FlexFieldDto;
 import com.amx.jax.model.response.remittance.ParameterDetailsDto;
 import com.amx.jax.model.response.remittance.ParameterDetailsResponseDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
@@ -1186,6 +1187,15 @@ public ParameterDetailsResponseDto getGiftService(BigDecimal beneId) {
 				for (ViewParameterDetails viewParameterDetails : vwParamDetailsList) {
 					ParameterDetailsDto pdto = new ParameterDetailsDto();
 					
+					//Set default properties
+					pdto.importFrom(viewParameterDetails);
+					
+					//TODO:- Rabil Check
+					new FlexFieldDto(null, null, 
+							viewParameterDetails.getCharField1(),
+							viewParameterDetails.getParamCodeDef());
+					
+					//Set Additional properties
 					pdto.setParameterMasterId(viewParameterDetails.getParameterMasterId());
 					pdto.setParameterDetailsId(viewParameterDetails.getParameterDetailsId());
 					pdto.setRecordId(viewParameterDetails.getRecordId());
@@ -1201,7 +1211,10 @@ public ParameterDetailsResponseDto getGiftService(BigDecimal beneId) {
 					pdto.setNumericUdf3(viewParameterDetails.getNumericField3());
 					pdto.setNumericUdf4(viewParameterDetails.getNumericField4());
 					pdto.setNumericUdf5(viewParameterDetails.getNumericField5());
+					
+					//TODO:- Evaluate if required????
 					pdto.setResourceDto(ResourceDTO.create(viewParameterDetails));
+					
 					dtoList.add(pdto);
 				}
 				responseDto.setParameterDetailsDto(dtoList);

@@ -10,4 +10,8 @@ public interface IResourceEntity {
 
 	public String resourceCode();
 
+	public default Object resourceValue() {
+		return null;
+	}
+
 }
