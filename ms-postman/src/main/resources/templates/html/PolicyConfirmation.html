@@ -300,7 +300,7 @@
            				 <td class="content-block">
                        <strong>
                           Dear
-                        <span th:text="${data.customer}"></span>,</strong
+                     <span th:text="${data.customer}"></span>,</strong
                         >  
                       </td> 
                     </tr>
@@ -310,8 +310,8 @@
                           We are pleased to inform you that as you are a part of
                           Al Mulla Exchange family, we have offered you an Group
                           Life Insurance Policy for you from
-                     	 <span th:text="${data.policystartdate}"></span> to
-                         <span th:text="${data.policyenddate}"></span>. 
+                  		<span th:text="${data.policystartdate}"></span> to
+                         <span th:text="${data.policyenddate}"></span>.  
                         </p>
                         <p>General Terms & Conditions:</p>
                         <ul>
@@ -470,7 +470,7 @@
                       <span  style="margin-right:42px">
                         <a
                           th:href="${_tu.prop('company.app.url')	 + '/app/myaccount/insurance?optin=false'}"
-                          style="width:40%;font-size:9px;color:white;"
+                          style="width:40%;font-size:9px;color:white;background-color:#33bb55;border: solid #33bb55;"
                           class="btn-primary"
                           target="_blank"
                           >OPT OUT</a
@@ -479,7 +479,7 @@
                         <span>
                          <a
                           th:href="${_tu.prop('company.app.url')	 + '/app/myaccount/insurance?optin=true'}"
-                          style="width:40%;font-size:9px;color:white;"
+                          style="width:40%;font-size:9px;color:white;background-color:#33bb55;border: solid #33bb55;"
                           class="btn-primary"
                           target="_blank"
                           >NOMINATE YOUR BENEFICIARIES
