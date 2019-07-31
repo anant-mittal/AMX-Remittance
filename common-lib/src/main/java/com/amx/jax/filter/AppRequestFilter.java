@@ -98,7 +98,7 @@ public class AppRequestFilter implements Filter {
 		AppContextUtil.setFlow(url);
 		AppContextUtil.setFlowfix(url.toLowerCase().replace("pub", "b").replace("api", "p").replace("user", "")
 				.replace("get", "").replace("post", "").replace("save", "")
-				.replace("/", "").replaceAll("[AaEeIiOoUuYyWwHh]", ""));
+				.replaceAll("[^a-zA-Z0-9]+", "").replaceAll("[AaEeIiOoUuYyWwHh]", ""));
 	}
 
 	@Override
