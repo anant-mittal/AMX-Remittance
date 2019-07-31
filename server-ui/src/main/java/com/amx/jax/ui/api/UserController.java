@@ -154,7 +154,7 @@ public class UserController {
 		wrapper.getData().setLang(httpService.getLanguage());
 		wrapper.getData().setCdnUrl(appConfig.getCdnURL());
 
-		wrapper.getData().setDevice(sessionService.getAppDevice().getUserDevice());
+		wrapper.getData().setDevice(sessionService.getAppDevice().getUserDevice().toSanitized());
 		wrapper.getData().setState(sessionService.getGuestSession().getState());
 		wrapper.getData().setValidSession(sessionService.getUserSession().isValid());
 

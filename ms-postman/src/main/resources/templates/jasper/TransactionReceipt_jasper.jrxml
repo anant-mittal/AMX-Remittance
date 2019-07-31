@@ -444,7 +444,7 @@
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$R{label.pinNumber}]]>
+                                    <![CDATA[$R{label.transactionId}]]>
                                 </textFieldExpression>
                             </textField>
 
@@ -491,7 +491,7 @@
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$R{label.beneficiaryName}]]>
+                                    <![CDATA[$R{label.referenceId}]]>
                                 </textFieldExpression>
                             </textField>
 
@@ -908,7 +908,7 @@
                         
                            <!--##################Commission START####################-->
                         <frame>
-                            <reportElement x="5" y="408" width="585" height="15"/>
+                            <reportElement x="5" y="410" width="585" height="15"/>
                             <staticText>
                                 <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
@@ -958,10 +958,9 @@
 
                         </frame>
                         <!--##################Commission END####################-->
-                        
-                         <!--##################Other Charges START####################-->
+                          <!--##################Other Charges START####################-->
                         <frame>
-                            <reportElement x="5" y="425" width="585" height="15"/>
+                            <reportElement x="5" y="427" width="585" height="15"/>
                             <staticText>
                                 <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
@@ -1007,7 +1006,7 @@
                         <!--##################Other Charges END####################-->
                           <!--#################Customer To pay START####################-->
                         <frame>
-                            <reportElement x="5" y="440" width="585" height="15"/>
+                            <reportElement x="5" y="442" width="585" height="15"/>
                             <staticText>
                                 <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
@@ -1051,9 +1050,10 @@
 
                         </frame>
                         <!--##################Customer To pay END####################-->
-                     <!--##################Payment Details START####################-->
+                        
+                         <!--##################Payment Details START####################-->
                         <frame>
-                            <reportElement x="5" y="456" width="585" height="15"/>
+                            <reportElement x="5" y="458" width="585" height="15"/>
                            <staticText>
                                 <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#000000" /></box>
@@ -1145,9 +1145,11 @@
 
                         </frame>
                         
+                        
+                       
                             <!--##################Payment Mode START####################-->
                         <componentElement>
-                            <reportElement x="0" y="477" width="595" height="48"/>
+                            <reportElement x="0" y="479" width="595" height="48"/>
                             <d:list xmlns:d="http://jasperreports.sourceforge.net/jasperreports/components"
                                     xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd"
                                     printOrder="Vertical">
@@ -1203,7 +1205,7 @@
                         </componentElement>
 
                         <frame>
-                            <reportElement x="0" y="470" width="585" height="30"/>
+                            <reportElement x="0" y="472" width="585" height="30"/>
                             <staticText>
                                 <reportElement mode = "Transparent" x = "0" y = "2" width = "585" height = "30"  />
                                 <textElement />
