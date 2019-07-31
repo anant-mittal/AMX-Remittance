@@ -164,7 +164,7 @@ public class AppContextUtil {
 	}
 
 	public static void setFlowfix(String flowfix) {
-		ContextUtil.setFlowfix(flowfix);
+		ContextUtil.setFlowfix(flowfix.replaceAll("[^a-zA-Z0-9]+", ""));
 	}
 
 	public static void setFlow(String flow) {
