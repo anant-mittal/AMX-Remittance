@@ -342,6 +342,10 @@ public class RemittController {
 			remittancePageDto = jaxService.setDefaults().getBeneClient().poBeneficiary(placeorderId).getResult();
 		}
 
+		if (!ArgUtil.isEmpty(beneId)) {
+			remittancePageDto.setPackages(remittanceClient.getGiftService(beneId).getResult().getParameterDetailsDto());
+		}
+
 		BigDecimal forCurId = remittancePageDto.getBeneficiaryDto().getCurrencyId();
 
 		for (CurrencyMasterDTO currency : tenantContext.getOnlineCurrencies()) {
@@ -370,8 +374,9 @@ public class RemittController {
 	}
 
 	@RequestMapping(value = "/api/remitt/package/list", method = { RequestMethod.POST })
-	public AmxApiResponse<ParameterDetailsDto, Object> getPackages(@RequestParam BigDecimal beneId) {
-		return ResponseWrapper.buildList(remittanceClient.getGiftService(beneId).getResult().getParameterDetailsDto());
+	public ResponseWrapper<List<ParameterDetailsDto>> getPackages(@RequestParam BigDecimal beneId) {
+		return new ResponseWrapper<List<ParameterDetailsDto>>(
+				remittanceClient.getGiftService(beneId).getResult().getParameterDetailsDto());
 	}
 
 	/**
