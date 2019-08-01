@@ -41,6 +41,8 @@ import com.amx.jax.ui.session.UserSession;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.ListManager;
 
+import net.bytebuddy.asm.Advice.Unused;
+
 /**
  * The Class LoginService.
  */
@@ -321,6 +323,21 @@ public class LoginService {
 		return wrapper;
 	}
 
+	@Autowired
+	Transactions transactions;
+
+	public ResponseWrapper<AuthResponse> initResetPassword2(String identity, String password) {
+		return null;
+	}
+
+	/**
+	 * NOt used yett
+	 * 
+	 * @param password
+	 * @param mOtp
+	 * @param eOtp
+	 * @return
+	 */
 	public ResponseWrapper<UserUpdateData> updatepwdV2(String password, String mOtp, String eOtp) {
 		if (!transactions.validate(AuthFlow.RESET_PASS)) {
 			throw new HttpUnauthorizedException(HttpUnauthorizedException.UN_SEQUENCE);
@@ -335,9 +352,15 @@ public class LoginService {
 		return wrapper;
 	}
 
-	@Autowired
-	Transactions transactions;
-
+	/**
+	 * NOt used yett
+	 * 
+	 * @param authFlow
+	 * @param identity
+	 * @param contactType
+	 * @param otp
+	 * @return
+	 */
 	public ResponseWrapper<AuthResponse> sendOTP(AuthFlow authFlow, String identity, ContactType contactType,
 			String otp) {
 		contactType = ArgUtil.ifNotEmpty(contactType, JaxAuthContext.getContactType());

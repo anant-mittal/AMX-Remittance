@@ -19,6 +19,7 @@ import com.amx.jax.model.AuthState.AuthFlow;
 import com.amx.jax.postman.client.GoogleService;
 import com.amx.jax.ui.config.OWAStatus.ApiOWAStatus;
 import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
+import com.amx.jax.ui.config.HttpUnauthorizedException;
 import com.amx.jax.ui.config.UIServerError;
 import com.amx.jax.ui.model.AuthDataInterface.AuthRequest;
 import com.amx.jax.ui.model.AuthDataInterface.AuthResponse;
@@ -27,6 +28,7 @@ import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.LoginService;
 import com.amx.jax.ui.service.SessionService;
+import com.amx.jax.ui.session.Transactions;
 import com.amx.utils.ArgUtil;
 
 import io.swagger.annotations.Api;
@@ -157,15 +159,22 @@ public class AuthController {
 		}
 	}
 
+	@Autowired
+	Transactions transactions;
+
 	@RequestMapping(value = "/pub/auth/reset/v2", method = { RequestMethod.POST })
 	public ResponseWrapper<AuthResponse> initResetV2(@Valid @RequestBody AuthRequest authData,
-			@RequestParam(required = false) String otp,
 			@RequestParam(required = false) ContactType contactType) {
 		contactType = ArgUtil.ifNotEmpty(contactType);
-		otp = ArgUtil.ifNotEmpty(otp, authData.getmOtp(), authData.geteOtp());
+		String otp = JaxAuthContext.getAnyOtp();
 		AppContextUtil.setFlow(AuthFlow.RESET_PASS.toString());
+		if (!ArgUtil.isEmpty(otp) && transactions.validate(AuthFlow.RESET_PASS)) {
+			throw new HttpUnauthorizedException(HttpUnauthorizedException.UN_SEQUENCE);
+		} else {
+			transactions.create(AuthFlow.RESET_PASS);
+		}
 		sessionService.getGuestSession().setIdentity(authData.getIdentity());
-		return loginService.sendOTP(AuthFlow.RESET_PASS, authData.getIdentity(), contactType, otp);
+		return loginService.initResetPassword2(authData.getIdentity(), authData.getPassword());
 	}
 
 	@ApiOWAStatus({ OWAStatusStatusCodes.USER_UPDATE_SUCCESS })
