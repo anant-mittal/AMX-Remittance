@@ -300,6 +300,7 @@ public enum JaxError implements IExceptionEnum {
 	MUTIPLE_RECORD_FOUND,
 	
 	//ContactType
+	RESET_PWD_REQUIRED,
 	MISSING_CONTACT_TYPE;
 	
 	

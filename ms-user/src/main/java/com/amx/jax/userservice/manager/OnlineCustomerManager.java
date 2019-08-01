@@ -106,6 +106,8 @@ public class OnlineCustomerManager {
 		String userId = onlineCust.getUserName();
 		if (resetPwd != null) {
 			onlineCust.setPassword(cryptoUtil.getHash(userId, resetPwd));
+		}else {
+			throw new GlobalException(JaxError.RESET_PWD_REQUIRED, "Please Enter Reset password");
 		}
 	}	
 }
