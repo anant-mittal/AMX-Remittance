@@ -195,13 +195,6 @@ public class AnnualIncomeService {
 		logger.info("set designation id : ");
 		
 		logger.info("Constant is "+Constants.ANNUALINCOME_VERIFIED_LIMIT);
-		if(customer.getAnnualIncomeFrom().longValue()>=Constants.ANNUALINCOME_VERIFIED_LIMIT) {
-			
-			customer.setIsBusinessCardVerified("N");
-		}
-		if(customer.getAnnualIncomeUpdatedDate()!=null && "N".equals(customer.getIsBusinessCardVerified()) && customer.getAnnualIncomeFrom().longValue()<Constants.ANNUALINCOME_VERIFIED_LIMIT) {
-			customer.setIsBusinessCardVerified(null);
-		}
 		
 		CustomerEmploymentInfo customerEmploymentInfo = incomeDao.getCustById(metaData.getCustomerId());
 		
@@ -407,6 +400,8 @@ public class AnnualIncomeService {
 			IncomeRangeMaster articleDetails = customer.getFsIncomeRangeMaster();
 			incomeDto.setIncomeRangeFrom(articleDetails.getIncomeRangeFrom());
 			incomeDto.setIncomeRangeTo(articleDetails.getIncomeRangeTo());
+			incomeDto.setArticleDetailId(customer.getFsArticleDetails().getArticleDetailId());
+			incomeDto.setCompanyName(customerEmploymentInfo.getEmployerName());
 		} else {
 
 			if (customer.getAnnualIncomeFrom() == null || customer.getAnnualIncomeTo() == null) {

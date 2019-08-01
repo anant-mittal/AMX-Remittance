@@ -54,4 +54,35 @@ public final class UIConstants extends Constants {
 
 	}
 
+	/**
+	 * IMPORTANT:- All the milestones MUST be in order. between ZERO and INFINITY
+	 * 
+	 * @author lalittanwar
+	 *
+	 */
+	public enum MileStone {
+		ZERO,
+		// Add MileStones after this;
+
+		DPR, GIG, HOMESEND,
+
+		// Add MileStones before this;
+		FUTRUE;
+
+		private static final int latest = FUTRUE.ordinal() - 1;
+		public static final MileStone[] LIST = MileStone.values();
+
+		@JsonValue
+		@Override
+		public String toString() {
+			return this.name();
+		}
+
+		public boolean isLegacy() {
+
+			return this.ordinal() < latest;
+		}
+
+	}
+
 }
