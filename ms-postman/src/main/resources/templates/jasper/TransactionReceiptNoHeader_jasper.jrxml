@@ -561,14 +561,16 @@
                                 <textElement />
                                 <text><![CDATA[]]></text>
                             </staticText>
-                            <staticText>
+                            <textField isStretchWithOverflow="true">
                                 <reportElement x="0" y="3" width="90" height="23" isPrintWhenDetailOverflows="true"/>
-                                <textElement>
+                                <textElement textAlignment="Left">
                                     <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
-                                <text><![CDATA[Remit Amount, Rate, KD Amount]]></text>
-                            </staticText>
+                                <textFieldExpression class="java.lang.String">
+                            		<![CDATA[$P{TU}.prop("company.rateAmt")]]>
+                                </textFieldExpression>
+                            </textField>
 
                             <textField isStretchWithOverflow="true">
                                 <reportElement x="100" y="4" width="485" height="15"
@@ -583,10 +585,12 @@
                                 </textFieldExpression>
                             </textField>
 
-                            <textField isStretchWithOverflow="true">
+                              <textField isStretchWithOverflow="true">
                                 <reportElement x="485" y="4" width="100" height="15"
                                                forecolor="#000000"
-                                               isPrintWhenDetailOverflows="true"/>
+                                               isPrintWhenDetailOverflows="true">
+                              	<printWhenExpression><![CDATA[$P{TU}.prop("tenant").toUpperCase().trim().equalsIgnoreCase("KWT")]]></printWhenExpression>
+                                 </reportElement>
                                 <textElement textAlignment="Right">
                                     <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
@@ -595,6 +599,39 @@
                                     <![CDATA[$R{label.currencyAndAmount}]]>
                                 </textFieldExpression>
                             </textField>
+                            
+                            <textField isStretchWithOverflow="true">
+                                <reportElement x="485" y="4" width="100" height="15"
+                                               forecolor="#000000"
+                                               isPrintWhenDetailOverflows="true">
+                              	<printWhenExpression><![CDATA[$P{TU}.prop("tenant").toUpperCase().trim().equalsIgnoreCase("BHR")]]></printWhenExpression>
+                               
+                                </reportElement>
+                                <textElement textAlignment="Right">
+                                    <font fontName="Arial" size="8" isItalic="true"
+                                          pdfFontName="fonts/all/arialbd.ttf"/>
+                                </textElement>
+                                <textFieldExpression class="java.lang.String">
+                                    <![CDATA[$R{label.bhdCurrencyAndAmount}]]>
+                                </textFieldExpression>
+                            </textField>
+                            
+                             <textField isStretchWithOverflow="true">
+                                <reportElement x="485" y="4" width="100" height="15"
+                                               forecolor="#000000"
+                                               isPrintWhenDetailOverflows="true">
+                              	<printWhenExpression><![CDATA[$P{TU}.prop("tenant").toUpperCase().trim().equalsIgnoreCase("OMN")]]></printWhenExpression>
+                               
+                                </reportElement>
+                                <textElement textAlignment="Right">
+                                    <font fontName="Arial" size="8" isItalic="true"
+                                          pdfFontName="fonts/all/arialbd.ttf"/>
+                                </textElement>
+                                <textFieldExpression class="java.lang.String">
+                                    <![CDATA[$R{label.omrCurrencyAndAmount}]]>
+                                </textFieldExpression>
+                            </textField>
+                            
 
                         </frame>
                         <!--##################Currency &amp; Amount END####################-->
@@ -658,15 +695,18 @@
                                 <textElement />
                                 <text><![CDATA[]]></text>
                             </staticText>
-                            <staticText>
+                            
+                            <textField isStretchWithOverflow="true">
                                 <reportElement x="0" y="3" width="90" height="23" isPrintWhenDetailOverflows="true"/>
-                                <textElement>
+                                <textElement textAlignment="Left">
                                     <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
-                                <text><![CDATA[Remit Amount, Spcl. Rate, KD Amount]]></text>
-                            </staticText>
-
+                                <textFieldExpression class="java.lang.String">
+                            		<![CDATA[$P{TU}.prop("company.specialRateAmt")]]>
+                                </textFieldExpression>
+                            </textField>
+                            
                             <textField isStretchWithOverflow="true">
                                 <reportElement x="100" y="4" width="485" height="15"
                                                forecolor="#000000"
@@ -680,16 +720,48 @@
                                 </textFieldExpression>
                             </textField>
 
-                            <textField isStretchWithOverflow="true">
+                          <textField isStretchWithOverflow="true">
                                 <reportElement x="485" y="4" width="100" height="15"
                                                forecolor="#000000"
-                                               isPrintWhenDetailOverflows="true"/>
-                                <textElement textAlignment="Right">
+                                               isPrintWhenDetailOverflows="true">
+                              	<printWhenExpression><![CDATA[$P{TU}.prop("tenant").toUpperCase().trim().equalsIgnoreCase("KWT")]]></printWhenExpression>
+                                </reportElement>
+                                 <textElement textAlignment="Right">
                                     <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
                                     <![CDATA[$R{label.kwdSpecialRate}]]>
+                                </textFieldExpression>
+                            </textField>
+                            
+                             <textField isStretchWithOverflow="true">
+                                <reportElement x="485" y="4" width="100" height="15"
+                                               forecolor="#000000"
+                                               isPrintWhenDetailOverflows="true">
+                                <printWhenExpression><![CDATA[$P{TU}.prop("tenant").toUpperCase().trim().equalsIgnoreCase("BHR")]]></printWhenExpression>
+                                 </reportElement>
+                                 <textElement textAlignment="Right">
+                                    <font fontName="Arial" size="8" isItalic="true"
+                                          pdfFontName="fonts/all/arialbd.ttf"/>
+                                </textElement>
+                                <textFieldExpression class="java.lang.String">
+                                    <![CDATA[$R{label.bhdSpecialRate}]]>
+                                </textFieldExpression>
+                            </textField>
+                            
+                             <textField isStretchWithOverflow="true">
+                                <reportElement x="485" y="4" width="100" height="15"
+                                               forecolor="#000000"
+                                               isPrintWhenDetailOverflows="true">
+                               <printWhenExpression><![CDATA[$P{TU}.prop("tenant").toUpperCase().trim().equalsIgnoreCase("OMN")]]></printWhenExpression>
+                               </reportElement>
+                                 <textElement textAlignment="Right">
+                                    <font fontName="Arial" size="8" isItalic="true"
+                                          pdfFontName="fonts/all/arialbd.ttf"/>
+                                </textElement>
+                                <textFieldExpression class="java.lang.String">
+                                    <![CDATA[$R{label.omrSpecialRate}]]>
                                 </textFieldExpression>
                             </textField>
 

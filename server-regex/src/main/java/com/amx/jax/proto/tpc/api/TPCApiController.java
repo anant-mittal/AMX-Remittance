@@ -1,11 +1,16 @@
 package com.amx.jax.proto.tpc.api;
 
+import java.util.List;
+
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.AmxResponseSchemes.ApiDataMetaResponse;
 import com.amx.jax.api.AmxResponseSchemes.ApiDataResponse;
 import com.amx.jax.api.AmxResponseSchemes.ApiMetaResponse;
 import com.amx.jax.api.AmxResponseSchemes.ApiResultsResponse;
@@ -21,12 +26,14 @@ import com.amx.jax.proto.tpc.models.CustomerAuth.CustomerAuthResponse;
 import com.amx.jax.proto.tpc.models.CustomerBeneDTO;
 import com.amx.jax.proto.tpc.models.CustomerDetails;
 import com.amx.jax.proto.tpc.models.PurposeOfTrnxDTO;
-import com.amx.jax.proto.tpc.models.RemittenceModels.RemitInitResponse;
-import com.amx.jax.proto.tpc.models.RemittenceModels.RemitInquiryRequest;
-import com.amx.jax.proto.tpc.models.RemittenceModels.RemitInquiryResponse;
 import com.amx.jax.proto.tpc.models.RemittenceModels.RemitConfirmPaymentRequest;
 import com.amx.jax.proto.tpc.models.RemittenceModels.RemitConfirmPaymentResponse;
+import com.amx.jax.proto.tpc.models.RemittenceModels.RemitInquiryRequest;
+import com.amx.jax.proto.tpc.models.RemittenceModels.RemitInquiryResponse;
+import com.amx.jax.proto.tpc.models.RemittenceModels.RemitVerifyResponse;
+import com.amx.jax.proto.tpc.models.RemittenceModels.RemittenceDTO;
 import com.amx.jax.proto.tpc.models.SourceOfFundDTO;
+import com.amx.utils.CollectionUtil;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -92,38 +99,42 @@ public class TPCApiController {
 	@ApiTPCStatus({ TPCServerCodes.INVALID_CUSTOMER_TOKEN, TPCServerCodes.INVALID_SESSION_TOKEN })
 	@TPCApiCustomerHeaders
 	@RequestMapping(value = { TPCApiConstants.Path.CUSTOMER_REMIT_INQUIRY }, method = { RequestMethod.POST })
-	public ApiDataResponse<RemitInquiryResponse> inquireRemitTranx(
+	public ApiDataMetaResponse<RemitInquiryResponse, List<JaxConditionalFieldDto>> inquireRemitTranx(
 			@RequestBody RemitInquiryRequest remitInquiryRequest) {
-		return AmxApiResponse.buildData(new RemitInquiryResponse());
+		return AmxApiResponse.buildData(new RemitInquiryResponse(),
+				CollectionUtil.getList(new JaxConditionalFieldDto()));
 	}
 
-	@ApiOperation(value = "5: Init Remit Request", notes = "To intiate remittance transaction.")
-	@ApiTPCStatus({ TPCServerCodes.INVALID_CUSTOMER_TOKEN, TPCServerCodes.INVALID_SESSION_TOKEN })
-	@TPCApiCustomerHeaders
-	@RequestMapping(value = { TPCApiConstants.Path.CUSTOMER_REMIT_APPLICATION }, method = { RequestMethod.POST })
-	public ApiDataResponse<RemitInitResponse> initiateRemitTranx(
-			@RequestBody RemitInquiryRequest remitInquiryRequest) {
-		return AmxApiResponse.buildData(new RemitInitResponse());
-	}
-
-	@ApiOperation(value = "6: Confirm after Payment",
+	@ApiOperation(value = "5: Confirm after Payment",
 			notes = "To confirm transaction after payment is done by customer")
 	@ApiTPCStatus({ TPCServerCodes.INVALID_CUSTOMER_TOKEN, TPCServerCodes.INVALID_SESSION_TOKEN })
 	@TPCApiCustomerHeaders
 	@RequestMapping(value = { TPCApiConstants.Path.CUSTOMER_REMIT_PAYMENT }, method = { RequestMethod.POST })
-	public ApiDataResponse<RemitConfirmPaymentResponse> confirmPaymentRemitTranx(
+	public ApiDataMetaResponse<RemitConfirmPaymentResponse, List<JaxConditionalFieldDto>> confirmPaymentRemitTranx(
 			@RequestBody RemitConfirmPaymentRequest remitVerifyRequest) {
-		return AmxApiResponse.buildData(new RemitConfirmPaymentResponse());
+		return AmxApiResponse.buildData(new RemittenceDTO(),
+				CollectionUtil.getList(new JaxConditionalFieldDto()));
 	}
 
-	@ApiOperation(value = "7: Tranx Verification",
+	@ApiOperation(value = "6: Tranx Verification",
 			notes = "This API must be implemented by CLIENT to verify remit application details ")
 	@ApiTPCStatus({ TPCServerCodes.INVALID_CUSTOMER_TOKEN, TPCServerCodes.INVALID_SESSION_TOKEN })
 	@TPCApiCustomerHeaders
 	@RequestMapping(value = { TPCApiConstants.Path.CUSTOMER_REMIT_VERIFY }, method = { RequestMethod.POST })
-	public ApiDataResponse<RemitConfirmPaymentResponse> verifyRemitTranx(
+	public ApiDataResponse<RemitVerifyResponse> verifyRemitTranx(
 			@RequestBody RemitConfirmPaymentRequest remitVerifyRequest) {
-		return AmxApiResponse.buildData(new RemitConfirmPaymentResponse());
+		return AmxApiResponse.buildData(new RemittenceDTO());
+	}
+
+	@ApiOperation(value = "7: Transaction Status",
+			notes = "To check status of transaction after payment is done by customer")
+	@ApiTPCStatus({ TPCServerCodes.INVALID_CUSTOMER_TOKEN, TPCServerCodes.INVALID_SESSION_TOKEN })
+	@TPCApiCustomerHeaders
+	@RequestMapping(value = { TPCApiConstants.Path.CUSTOMER_REMIT_STATUS }, method = { RequestMethod.POST })
+	public ApiDataResponse<RemitConfirmPaymentResponse> statusRemitTranx(
+			@RequestParam String applicationId) {
+		return AmxApiResponse.buildData(new RemittenceDTO(),
+				CollectionUtil.getList(new JaxConditionalFieldDto()));
 	}
 
 }

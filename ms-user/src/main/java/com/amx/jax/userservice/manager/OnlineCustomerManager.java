@@ -21,6 +21,7 @@ import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.userservice.service.UserValidationService;
 import com.amx.jax.util.CryptoUtil;
+import com.amx.jax.util.AmxDBConstants.Status;
 
 @Component
 public class OnlineCustomerManager {
@@ -43,6 +44,9 @@ public class OnlineCustomerManager {
 	
 	@Autowired
 	private CryptoUtil cryptoUtil;
+	
+	@Autowired
+	UserContactVerificationManager userContactVerificationManager;
 
 	public void saveCustomerSecQuestions(List<SecurityQuestionModel> securityQuestions) {
 		CustomerOnlineRegistration customerOnlineRegistration = custDao
@@ -67,6 +71,7 @@ public class OnlineCustomerManager {
 				// signifies that it is validate otp flow
 				if (JaxAuthContext.getMotp() != null) {
 					userService.unlockCustomer(customerOnlineRegistration);
+					userContactVerificationManager.setContactVerified(customer, JaxAuthContext.getMotp(), null, null);
 				}
 			} catch (GlobalException ex) {
 				if (JaxError.INVALID_OTP.equals(ex.getError())) {

@@ -151,7 +151,7 @@ public class RemittanceTransaction implements Serializable {
 	private BigDecimal vatAmount;
 	
 
-	
+	private String beneDeductFlag;
 	
 	
 	public RemittanceTransaction() {
@@ -1137,6 +1137,15 @@ public class RemittanceTransaction implements Serializable {
 	}
 
 
+
+	@Column(name="BENE_DEDUCT_FLAG")
+	public String getBeneDeductFlag() {
+		return beneDeductFlag;
+	}
+
+	public void setBeneDeductFlag(String beneDeductFlag) {
+		this.beneDeductFlag = beneDeductFlag;
+	}
 
 
 }

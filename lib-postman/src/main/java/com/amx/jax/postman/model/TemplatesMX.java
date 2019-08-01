@@ -34,14 +34,15 @@ public enum TemplatesMX implements ITemplate {
 	// Rate Alert, PlaceOrder
 	RATE_ALERT("place-order"), RATE_ALERT_COMPLETION("place-order-executed"),
 
-	BRANCH_SEARCH_EMPTY("BranchSearchEmpty"), TEST("test"), BRANCH_FEEDBACK("trnx-feedback"), TT("tt"), EFT("eft"),
-	CASH("cash"),
+	BRANCH_SEARCH_EMPTY("BranchSearchEmpty"), TEST("test"), BRANCH_FEEDBACK("trnx-feedback", Channel.NOTIPY), TT("tt", Channel.NOTIPY), EFT("eft", Channel.NOTIPY),
+	CASH("cash", Channel.NOTIPY),
 
 	CIVILID_EXPIRY("civilexpiry"), CIVILID_EXPIRED("civilexpired"),
 
 	PARTIAL_REGISTRATION_EMAIL("PartialRegistrationCompletionEMail"), TRANSACTION_FAILURE("TransactionFailure"),
 
-	PROMOTION_WINNER("PromotionWinner"), PROMOTION_COUPON("PromotionCoupon"),WANTIT_BUYIT_PROMOTION("WantITBuyItPromotionCoupon"),
+	PROMOTION_WINNER("PromotionWinner"), PROMOTION_COUPON("PromotionCoupon"),
+	WANTIT_BUYIT_PROMOTION("WantITBuyItPromotionCoupon"),
 
 	SERVER_PING("server-ping"),
 
@@ -59,7 +60,16 @@ public enum TemplatesMX implements ITemplate {
 	FINGERPRINT_LINKED_SUCCESS("FingerprintLinkedSuccess"),
 	FINGERPRINT_DELINKED_SUCCESS("FingerprintDelinkedSuccess"),
 	FINGERPRINT_DELINKED_ATTEMP_SUCCESS("FingerprintDelinkInCorrectAttem"),
-
+	
+	
+	// GIG Policy Event Notification Templates
+	POLICY_CONFIRMATION("PolicyConfirmation"),
+	POLICY_OPTOUT_CUSTOMER("PolicyOptoutCustomer"),
+	POLICY_OPTOUT_SYSTEM("PolicyOptoutSystem"),
+	POLICY_EXPIRY_REMINDER("PolicyExpiryReminder"),
+	POLICY_EXPIRED("PolicyExpired"),
+	
+	
 	// Default add enums above this
 	DEFAULT("default");
 
@@ -77,6 +87,11 @@ public enum TemplatesMX implements ITemplate {
 	@Override
 	public String getHtmlFile() {
 		return "html/" + getFileName();
+	}
+
+	@Override
+	public String getSMSFile() {
+		return "html/sms/" + getFileName();
 	}
 
 	@Override

@@ -52,6 +52,9 @@ public class EsConfig extends AbstractFactoryBean {
 	@Value("${elasticsearch.password}")
 	private String clusterPass;
 
+	@Value("${elasticsearch.enabled}")
+	private boolean enabled;
+
 	private HttpHeaders basicAuthHeader;
 
 	private RestHighLevelClient restHighLevelClient;
@@ -147,6 +150,10 @@ public class EsConfig extends AbstractFactoryBean {
 			};
 		}
 		return basicAuthHeader;
+	}
+
+	public boolean isEnabled() {
+		return enabled;
 	}
 
 }

@@ -3,6 +3,7 @@ package com.amx.jax.controller;
 import static com.amx.amxlib.constant.ApiEndpoint.CUSTOMER_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.UPDATE_CUSTOMER_PASSWORD_ENDPOINT;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.constant.ApiEndpoint.CustomerApi;
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.AnnualIncomeRangeDTO;
 import com.amx.amxlib.meta.model.IncomeDto;
 import com.amx.amxlib.model.CustomerModel;
@@ -27,18 +29,27 @@ import com.amx.amxlib.service.ICustomerService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.customer.service.CustomerService;
+import com.amx.jax.customer.service.JaxCustomerContactVerificationService;
+import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dict.ContactType;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.model.customer.SecurityQuestionModel;
 import com.amx.jax.model.response.customer.CustomerModelResponse;
 import com.amx.jax.model.response.customer.CustomerModelSignupResponse;
+import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.services.CustomerDataVerificationService;
+import com.amx.jax.services.JaxCustomerModelService;
+import com.amx.jax.userservice.dao.CustomerDao;
+import com.amx.jax.userservice.repository.OnlineCustomerRepository;
 import com.amx.jax.userservice.service.AnnualIncomeService;
 import com.amx.jax.userservice.service.CustomerModelService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.userservice.service.UserValidationService;
 import com.amx.jax.util.ConverterUtil;
+import com.amx.jax.util.AmxDBConstants.Status;
 
 @RestController
 @RequestMapping(CUSTOMER_ENDPOINT)
@@ -64,9 +75,23 @@ public class CustomerController implements ICustomerService {
 	CustomerModelService customerModelService;
 	@Autowired
 	AnnualIncomeService annualIncomeService;
+	@Autowired
+	JaxCustomerModelService jaxCustomerModelService;
 
 	@Autowired
 	CustomerService customerService;
+
+	@Autowired
+	JaxCustomerContactVerificationService jaxCustomerContactVerificationService;
+	
+	@Autowired
+	CustomerDao custDao;
+	
+	@Autowired
+	CustomerRepository customerRepository;
+	
+	@Autowired
+	OnlineCustomerRepository onlineCustomerRepository;
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -80,7 +105,23 @@ public class CustomerController implements ICustomerService {
 	@RequestMapping(method = RequestMethod.POST)
 	public ApiResponse saveCust(@RequestBody CustomerModel customerModel) {
 		logger.info("saveCust Request:" + customerModel);
-		ApiResponse response = userService.saveCustomer(customerModel);
+		BigDecimal customerId = (customerModel.getCustomerId() == null) ? metaData.getCustomerId() : customerModel.getCustomerId();
+		Customer cust = custDao.getCustById(customerId);
+		logger.debug("customer model is "+cust.toString());
+		GlobalException ex = null;
+		try {
+		if(StringUtils.isEmpty(cust.getEmail())) {
+			jaxCustomerContactVerificationService.sendEmailVerifyLinkOnReg(customerModel);
+			
+		}
+		}catch(GlobalException e) {
+			ex = e;
+		}
+	   ApiResponse response = userService.saveCustomer(customerModel);
+	   if(ex != null) {
+		   throw ex;
+	   }
+		
 		return response;
 	}
 
@@ -101,9 +142,19 @@ public class CustomerController implements ICustomerService {
 	@RequestMapping(value = "/{civil-id}/send-reset-otp/", method = RequestMethod.GET)
 	public ApiResponse sendResetCredentialsOtp(@PathVariable("civil-id") String civilId) {
 		logger.info("Send OTP Request : civilId - " + civilId);
+		//Added by Radhika
+		Customer customerdetails = customerRepository.getCustomerEmailDetails(civilId);
+		//CustomerOnlineRegistration customerOnlineRegistration = onlineCustomerRepository.getLoginCustomersDeatilsById(civilId);
+		ApiResponse response = null;
+		if(customerdetails!=null) {
+			userValidationService.validateCustomerVerification(customerdetails.getCustomerId());
+		}
+		
 		List<ContactType> channel = new ArrayList<>();
 		channel.add(ContactType.SMS_EMAIL);
-		ApiResponse response = userService.sendOtpForCivilId(civilId, channel, null, null);
+		response = userService.sendOtpForCivilId(civilId, channel, null, null);
+		
+		
 		return response;
 	}
 
@@ -239,6 +290,7 @@ public class CustomerController implements ICustomerService {
 	public AmxApiResponse<CustomerModelResponse, Object> getCustomerModelResponse(
 			@RequestParam(name = Params.IDENTITY_INT) String identityInt) {
 		CustomerModelResponse response = customerModelService.getCustomerModelResponse(identityInt);
+		jaxCustomerModelService.updateCustomerModelResponse(response);
 		return AmxApiResponse.build(response);
 	}
 
@@ -246,6 +298,7 @@ public class CustomerController implements ICustomerService {
 	@Override
 	public AmxApiResponse<CustomerModelResponse, Object> getCustomerModelResponse() {
 		CustomerModelResponse response = customerModelService.getCustomerModelResponse();
+		jaxCustomerModelService.updateCustomerModelResponse(response);
 		return AmxApiResponse.build(response);
 	}
 
@@ -281,6 +334,24 @@ public class CustomerController implements ICustomerService {
 
 	}
 	
+	@RequestMapping(value = Path.ANNUAL_TRANSACTION_LIMIT_RANGE, method = RequestMethod.POST)
+	public AmxApiResponse<AnnualIncomeRangeDTO, Object> getAnnualTransactionLimitRange() {
+		List<AnnualIncomeRangeDTO> annualTransactionLimitRange = annualIncomeService.getAnnualTransactionLimitRange();
+		return AmxApiResponse.buildList(annualTransactionLimitRange);
+	}
+	
+	@RequestMapping(value = Path.SAVE_ANNUAL_TRANSACTION_LIMIT, method = RequestMethod.POST)
+	public AmxApiResponse<BoolRespModel, Object> saveAnnualTransactionLimit(@RequestBody IncomeDto incomeDto){
+		BoolRespModel boolRespModel = annualIncomeService.saveAnnualTransactionLimit(incomeDto);
+		return AmxApiResponse.build(boolRespModel);
+	}
+	
+	@RequestMapping(value = Path.GET_ANNUAL_TRANSACTION_LIMIT, method = RequestMethod.POST)
+	public AmxApiResponse<AnnualIncomeRangeDTO, Object> getAnnualTransactionLimit() {
+		AnnualIncomeRangeDTO annualTransactionLimit = annualIncomeService.getAnnualTransactionLimit();
+		return AmxApiResponse.build(annualTransactionLimit);
+	}
+
 	@RequestMapping(value = CustomerApi.RESET_PASSWORD_FLOW, method = RequestMethod.POST)
 	public AmxApiResponse<BoolRespModel, Object> resetPasswordFlow(@RequestParam("identityInt") String identityInt, 
 			@RequestParam(name = "resetPassword",  required = false) String resetPassword) {

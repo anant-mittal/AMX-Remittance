@@ -36,6 +36,7 @@ public class TPCApiConstants {
 		public static final String CUSTOMER_REMIT_APPLICATION = "/tpc/customer/remit/application";
 		public static final String CUSTOMER_REMIT_PAYMENT = "/tpc/customer/remit/payment";
 		public static final String CUSTOMER_REMIT_VERIFY = "/tpc/customer/remit/verify";
+		public static final String CUSTOMER_REMIT_STATUS = "/tpc/customer/remit/status";
 	}
 
 	public static class Params {

@@ -38,6 +38,7 @@ public class SSOConstants {
 	public static final String PARAM_REFRESH_TIME = "refresh";
 	public static final String PARAM_SOTP = "sotp";
 	public static final String PARAM_SESSION_TOKEN = "x-session-token";
+	public static final String PARAM_SESSION_TOKEN_CLEAN = PARAM_SESSION_TOKEN.replaceAll("[-]", "_");
 	public static final String PARAM_STEP = "step";
 
 	public static final String SECURITY_CODE_KEY = "sec_code";

@@ -169,8 +169,7 @@ public final class ArgUtil {
 			return ArgUtil.parseAsEnumIgnoreCase(value, clazz);
 
 		if (required) {
-			throw new IllegalArgumentException("Cannot parse Object : " + objectvalue
-					+ " as " + typeName);
+			throw new IllegalArgumentException("Cannot parse Object : " + objectvalue + " as " + typeName);
 		}
 		return value;
 	}
@@ -287,7 +286,7 @@ public final class ArgUtil {
 		} else if (value instanceof Number) {
 			return Boolean.valueOf(((Number) value).intValue() != 0);
 		} else if (value instanceof String) {
-			return Boolean.valueOf(((String) value).equalsIgnoreCase("true"));
+			return Boolean.valueOf(((String) value).trim().equalsIgnoreCase("true"));
 		}
 		return null;
 	}
@@ -557,6 +556,14 @@ public final class ArgUtil {
 		}
 	}
 
+	public static Enum parseAsEnum(Object value, Enum nullValue, Enum defaultValue) {
+		if (ArgUtil.isEmpty(value)) {
+			return parseAsEnum(value, nullValue);
+		} else {
+			return parseAsEnum(value, defaultValue);
+		}
+	}
+
 	public static Enum parseAsEnum(Object value, Type type) {
 		String enumString = null;
 		try {
@@ -589,15 +596,14 @@ public final class ArgUtil {
 					return candidate;
 				}
 			}
-			throw new IllegalArgumentException("No enum constant "
-					+ enumType.getCanonicalName() + "." + source);
+			throw new IllegalArgumentException("No enum constant " + enumType.getCanonicalName() + "." + source);
 		}
 	}
 
 	private static String getLettersAndDigits(String name) {
 		StringBuilder canonicalName = new StringBuilder(name.length());
-		name.chars().map((c) -> (char) c).filter(Character::isLetterOrDigit)
-				.map(Character::toLowerCase).forEach(canonicalName::append);
+		name.chars().map((c) -> (char) c).filter(Character::isLetterOrDigit).map(Character::toLowerCase)
+				.forEach(canonicalName::append);
 		return canonicalName.toString();
 	}
 
@@ -677,6 +683,10 @@ public final class ArgUtil {
 
 	public static boolean nullAsTrue(Boolean a) {
 		return ArgUtil.isEmpty(a) || a;
+	}
+
+	public static <T> T assignDefaultIfNull(T assignee, T defaultVal) {
+		return (null == assignee) ? defaultVal : assignee;
 	}
 
 }

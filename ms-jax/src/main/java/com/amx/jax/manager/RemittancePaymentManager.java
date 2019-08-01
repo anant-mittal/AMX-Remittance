@@ -239,15 +239,16 @@ public class RemittancePaymentManager extends AbstractService{
 			}
 			
 		}catch(Exception e) {
-			e.printStackTrace();
-			
+			logger.error("error occured in paymentCapture", e);
 			lstPayIdDetails =applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(paymentResponse.getUdf3(),new Customer(paymentResponse.getCustomerId()));
-			if (lstPayIdDetails.get(0).getResultCode() != null) {
-				logger.info("Existing payment id found: {}", lstPayIdDetails.get(0).getPaymentId());
-				return response;
-			}
+			
 			if(!lstPayIdDetails.isEmpty()) {
+				if (lstPayIdDetails.get(0).getResultCode() != null) {
+					logger.info("Existing payment id found: {}", lstPayIdDetails.get(0).getPaymentId());
+					return response;
+				}
 				remittanceApplicationService.updatePayTokenNull(lstPayIdDetails, paymentResponse);
+				
 			}
 			
 			throw new GlobalException(JaxError.PG_ERROR,"Remittance error :"+errorMsg);
@@ -326,6 +327,7 @@ public class RemittancePaymentManager extends AbstractService{
 	private void validateAmountMismatch(RemittanceApplication remittanceApplication, PaymentResponseDto paymentResponse) {
 		BigDecimal localNetTraxAmount = remittanceApplication.getLocalNetTranxAmount();
 		BigDecimal loyalityPointEncashed = remittanceApplication.getLoyaltyPointsEncashed();
+		loyalityPointEncashed = (loyalityPointEncashed == null ? BigDecimal.ZERO : loyalityPointEncashed);
 		BigDecimal localCurrencyDecimalNumber = remittanceApplication.getExCurrencyMasterByLocalChargeCurrencyId().getDecinalNumber();
 		BigDecimal payableAmount = localNetTraxAmount.subtract(loyalityPointEncashed);
 		if (paymentResponse.getAmount() == null) {

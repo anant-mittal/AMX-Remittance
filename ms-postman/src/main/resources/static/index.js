@@ -1,4 +1,4 @@
-let VALID_MD_PWD = "79ef08083ae1c8dcb33386831674350a";
+let VALID_MD_PWD = "b13a15ce0828f4e3ddafe01072aac223";
 let SUCCES_NOTIF_DELAY = 12500;
 
 async function initSub() {

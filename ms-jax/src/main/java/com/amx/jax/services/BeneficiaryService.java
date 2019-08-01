@@ -30,7 +30,6 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.constant.BeneficiaryConstant.BeneStatus;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.BeneCountryDTO;
-import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.meta.model.CountryMasterDTO;
 import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.meta.model.RoutingBankMasterDTO;
@@ -70,6 +69,7 @@ import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.events.CActivityEvent;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.model.response.CurrencyMasterDTO;
 import com.amx.jax.model.response.customer.PersonInfo;
@@ -403,12 +403,8 @@ public class BeneficiaryService extends AbstractService {
 						beneRealtionId);
 			} else {
 				beneList = beneficiaryOnlineDao.getDefaultBeneficiary(customerId, applicationCountryId);
-
 			}
-
-			if (beneList == null) {
-				throw new GlobalException("Not found");
-			} else {
+			if(beneList!=null){
 				beneDto = beneCheck.beneCheck(convertBeneModelToDto((beneList)));
 				if (beneDto != null && !JaxUtil.isNullZeroBigDecimalCheck(transactionId)
 						&& (JaxUtil.isNullZeroBigDecimalCheck(beneRealtionId)
@@ -583,6 +579,14 @@ public class BeneficiaryService extends AbstractService {
 
 	public BenificiaryListView getBeneByIdNo(BigDecimal idNo) {
 		return beneficiaryOnlineDao.findOne(idNo);
+	}
+	
+	public BeneficiaryListDTO getBeneDtoByIdNo(BigDecimal idNo) {
+		return convertBeneModelToDto(beneficiaryOnlineDao.findOne(idNo));
+	}
+	
+	public List<BenificiaryListView> getBeneByIdNos(List<BigDecimal> idNos) {
+		return beneficiaryOnlineDao.findByIdNoIn(idNos);
 	}
 
 	public BenificiaryListView getLastTransactionBene() {
@@ -1040,9 +1044,10 @@ public class BeneficiaryService extends AbstractService {
 	private CurrencyMasterDTO getCurrencyDTO(BigDecimal currencyId) {
 		CurrencyMasterDTO dto = new CurrencyMasterDTO();
 		List<CurrencyMasterModel> currencyList = currencyDao.getCurrencyList(currencyId);
-		if (currencyList.isEmpty()) {
-			throw new GlobalException("Currency details not avaliable");
-		} else {
+		/*
+		 * if (currencyList.isEmpty()) { throw new
+		 * GlobalException("Currency details not avaliable"); }
+		 */if(currencyList!=null && !currencyList.isEmpty()) {
 			CurrencyMasterModel curModel = currencyList.get(0);
 			dto.setCountryId(curModel.getCountryId());
 			dto.setCurrencyCode(curModel.getCurrencyCode());
@@ -1074,5 +1079,10 @@ public class BeneficiaryService extends AbstractService {
 
 	public boolean isCashBene(BenificiaryListView benificiaryListView) {
 		return BigDecimal.ONE.equals(benificiaryListView.getServiceGroupId());
+	}
+	
+	public BeneficiaryListDTO getBeneficiaryByMasterSeqid(BigDecimal customerId, BigDecimal beneMasterSeqId) {
+		BenificiaryListView beneDetailModel = beneficiaryOnlineDao.findByCustomerIdAndBeneficaryMasterSeqIdAndIsActive(customerId, beneMasterSeqId, ConstantDocument.Yes);
+		return convertBeneModelToDto(beneDetailModel);
 	}
 }

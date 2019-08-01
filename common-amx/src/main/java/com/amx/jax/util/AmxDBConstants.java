@@ -68,6 +68,7 @@ public class AmxDBConstants {
 	public static final BigDecimal SERVICE_MASTER_ID_EFT = new BigDecimal(101);
 	public static final BigDecimal SERVICE_MASTER_ID_TT = new BigDecimal(102);
 	public static final BigDecimal SERVICE_MASTER_ID_DD = new BigDecimal(104);
+	public static final BigDecimal SERVICE_MASTER_ID_CASH = new BigDecimal(103);
 
 
 	public static final String VOUCHER_ONLINE_PROMOTION_STR = "CHICKEN KING SAGAR VOUCHER";
@@ -152,14 +153,33 @@ public class AmxDBConstants {
 	public static final String VOUCHER = "V";
 	public static final String IMPS_CODE = "13";
 	public static final String IND_COUNTRY_CODE = "004";
+	/** E-Eng,A-Arabic **/
+	public static final String L_ENG = "1";
+	public static final String L_ARAB = "2";
+	public static final String BNFBANK = "BNFBANK";
+	public static final String BNFBRCH = "BNFBRCH";
+	public static final String BNFBANK_SWIFT = "BNFBANK_SWIFT";
 	
 	// Constant for Article detail id "Others"
 	
 	public static final BigDecimal ARTICLE_DETAIL_ID_OTHERS = new BigDecimal(16);
 	public static final String  VAT_ACCOUNT_TYPE_COMM = "COMMISSION";
-	public static final String  VAT_CALCULATION_TYPE_INCLUDE= "E";
+	public static final String  VAT_CALCULATION_TYPE_INCLUDE= "I";
+	public static final String  VAT_CALCULATION_TYPE_EXCLUDE="E";
 	public static final String  VAT_CATEGORY= "OUTPUT_TAX";
 	public static final String  BENE_ACCT_VALID="BENE_ACCT_VALID";
+	
+	// Constants for annual income
+	
+	public static final String ANNUAL_INCOME_RANGE = "AIR";
+	
+	// Constants for annual transaction limit range
+	
+	public static final String ANNUAL_TRANSACTION_LIMIT = "ATL";
+	public static final long MILLISEC_IN_YEAR = 31540000000L;
+	
+	public static final String  COMM_INCLUDE= "I";
+	public static final String COMM_EXCLUDE="E";
 	
 	
 }

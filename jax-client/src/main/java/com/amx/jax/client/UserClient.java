@@ -807,25 +807,60 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 			return JaxSystemError.evaluate(ae);
 		}
 	}
-	
-	public ApiResponse<CivilIdOtpModel> sendOtpForCivilIdV2(String identityId, ContactType contactType)
-			throws InvalidInputException, CustomerValidationException, LimitExeededException {
+
+	@Override
+	public AmxApiResponse<AnnualIncomeRangeDTO, Object> getAnnualTransactionLimitRange() {
 		try {
-			Boolean initRegistration = new Boolean(false);
-			HttpEntity<AbstractUserModel> requestEntity = new HttpEntity<AbstractUserModel>(getHeader());
-			String sendOtpUrl = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/" + identityId + "/" + initRegistration
-					+ "/send-otp/";
-			LOGGER.info("calling sendOtpForCivilIdV2 api: " + sendOtpUrl);
-			return restService.ajax(sendOtpUrl).get(requestEntity)
-					.queryParam("contactType", contactType)
-					.as(new ParameterizedTypeReference<ApiResponse<CivilIdOtpModel>>() {
+
+			return restService.ajax(appConfig.getJaxURL())
+					.path(CustomerApi.PREFIX + Path.ANNUAL_TRANSACTION_LIMIT_RANGE)
+					.meta(new JaxMetaInfo()).post()
+					.as(new ParameterizedTypeReference<AmxApiResponse<AnnualIncomeRangeDTO, Object>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in sendOtpForCivilIdV2 : ", e);
-			throw new JaxSystemError();
+		} catch (Exception ae) {
+			LOGGER.error("exception in Annual Income transaction limit: ", ae);
+			return JaxSystemError.evaluate(ae);
+		}
+	}
+
+	public AmxApiResponse<BoolRespModel, Object> saveAnnualTransactionLimit(IncomeDto incomeDto) {
+		try {
+			String url = this.getBaseUrl() + CustomerApi.PREFIX + Path.SAVE_ANNUAL_TRANSACTION_LIMIT;
+			return restService.ajax(url).meta(new JaxMetaInfo()).post(incomeDto)
+					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
+					});
+		} catch (Exception ae) {
+			LOGGER.error("exception in saveAnnualTransaction limit: ", ae);
+			return JaxSystemError.evaluate(ae);
 		} // end of try-catch
+
+	}
+
+	public AmxApiResponse<AnnualIncomeRangeDTO, Object> getAnnualTransactionLimit() {
+		try {
+			return restService.ajax(appConfig.getJaxURL())
+					.path(CustomerApi.PREFIX + Path.GET_ANNUAL_TRANSACTION_LIMIT)
+					.meta(new JaxMetaInfo()).post()
+					.as(new ParameterizedTypeReference<AmxApiResponse<AnnualIncomeRangeDTO, Object>>() {
+					});
+		} catch (Exception ae) {
+			LOGGER.error("exception in Annual Income details : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}
+	}
+
+	
+	public AmxApiResponse<BoolRespModel, Object> sendEmailOnLogin(CustomerModel customerModel) {
+		try {
+			String url = this.getBaseUrl() + UserApi.PREFIX + Path.RESEND_EMAIL_LOGIN;
+			return restService.ajax(url).meta(new JaxMetaInfo()).post(customerModel)
+					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
+					});
+		} catch (Exception ae) {
+			LOGGER.error("exception in send email on login: ", ae);
+			return JaxSystemError.evaluate(ae);
+		} // end of try-catch
+
 	}
 
 	@Override
