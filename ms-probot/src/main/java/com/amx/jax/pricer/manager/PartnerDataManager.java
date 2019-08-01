@@ -142,7 +142,7 @@ public class PartnerDataManager {
 									quotationResponse = fetchQuotationDetails(srvPrvFeeInqReqDTO, serviceProviderRateView, settlementAmount);
 									if(quotationResponse != null) {
 										srvPrvFeeInqResDTO = ServiceProviderResponse(quotationResponse, srvPrvFeeInqReqDTO, productDetailsDTO, serviceProviderRateView, settlementExchangeRate, settlementTotalDiscountPips,servProvFeeStartTime);
-										srvPrvFeeInqResDTO.getHomeSendInfoDTO().setExchangeDiscountsData(exchangeRateDetails);
+										srvPrvFeeInqResDTO.setCustomerDiscountDetails(exchangeRateDetails.getCustomerDiscountDetails());
 									}
 								}
 							}
@@ -156,7 +156,7 @@ public class PartnerDataManager {
 								}
 
 								srvPrvFeeInqResDTO = ServiceProviderResponse(quotationResponse, srvPrvFeeInqReqDTO, productDetailsDTO, serviceProviderRateView, settlementExchangeRate, settlementTotalDiscountPips,servProvFeeStartTime);
-								srvPrvFeeInqResDTO.getHomeSendInfoDTO().setExchangeDiscountsData(exchangeRateDetails);
+								srvPrvFeeInqResDTO.setCustomerDiscountDetails(exchangeRateDetails.getCustomerDiscountDetails());
 							}
 						}
 					}else {

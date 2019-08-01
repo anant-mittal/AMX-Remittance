@@ -2,6 +2,10 @@ package com.amx.jax.partner.dto;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Map;
+
+import com.amx.jax.pricer.dto.ExchangeDiscountInfo;
+import com.amx.jax.pricer.var.PricerServiceConstants.DISCOUNT_TYPE;
 
 public class SrvPrvFeeInqResDTO implements Serializable {
 
@@ -18,6 +22,7 @@ public class SrvPrvFeeInqResDTO implements Serializable {
 	private BigDecimal grossAmount;
 	private BigDecimal margin;
 	private HomeSendSrvcProviderInfo homeSendSrvcProviderInfo;
+	private Map<DISCOUNT_TYPE, ExchangeDiscountInfo> customerDiscountDetails;
 	
 	public BigDecimal getExchangeRateWithPips() {
 		return exchangeRateWithPips;
@@ -87,6 +92,13 @@ public class SrvPrvFeeInqResDTO implements Serializable {
 	}
 	public void setMargin(BigDecimal margin) {
 		this.margin = margin;
+	}
+	
+	public Map<DISCOUNT_TYPE, ExchangeDiscountInfo> getCustomerDiscountDetails() {
+		return customerDiscountDetails;
+	}
+	public void setCustomerDiscountDetails(Map<DISCOUNT_TYPE, ExchangeDiscountInfo> discountPipsDetails) {
+		this.customerDiscountDetails = discountPipsDetails;
 	}
 		
 }

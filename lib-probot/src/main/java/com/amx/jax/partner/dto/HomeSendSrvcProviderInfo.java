@@ -3,8 +3,11 @@ package com.amx.jax.partner.dto;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Calendar;
+import java.util.Map;
 
+import com.amx.jax.pricer.dto.ExchangeDiscountInfo;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
+import com.amx.jax.pricer.var.PricerServiceConstants.DISCOUNT_TYPE;
 
 public class HomeSendSrvcProviderInfo implements Serializable {
 
@@ -36,9 +39,6 @@ public class HomeSendSrvcProviderInfo implements Serializable {
 	private BigDecimal totalChargedAmountInSettlementCurrency;
 	private BigDecimal wholeSaleFxRate;
 	private BigDecimal transactionMargin;
-	
-	private ExchangeRateDetails exchangeDiscountsData;
-	
 	
 	public Calendar getOfferExpirationDate() {
 		return offerExpirationDate;
@@ -180,10 +180,4 @@ public class HomeSendSrvcProviderInfo implements Serializable {
 		this.transactionMargin = transactionMargin;
 	}
 	
-	public ExchangeRateDetails getExchangeDiscountsData() {
-		return exchangeDiscountsData;
-	}
-	public void setExchangeDiscountsData(ExchangeRateDetails exchangeDiscountsData) {
-		this.exchangeDiscountsData = exchangeDiscountsData;
-	}
 }

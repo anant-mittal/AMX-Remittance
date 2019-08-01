@@ -22,6 +22,7 @@ import org.springframework.stereotype.Component;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.branchremittance.dao.BranchRemittanceDao;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constants.JaxTransactionStatus;
@@ -75,6 +76,8 @@ import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.model.response.remittance.RemittanceCollectionDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.TransferDto;
+import com.amx.jax.model.response.serviceprovider.ServiceProviderResponse;
+import com.amx.jax.partner.dto.RemitTrnxSPDTO;
 import com.amx.jax.partner.manager.PartnerTransactionManager;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.repository.AdditionalInstructionDataRepository;
@@ -285,7 +288,10 @@ public class BranchRemittanceSaveManager {
 			responseDto = brRemittanceDao.saveRemittanceTransaction(mapAllDetailRemitSave);
 			// service Provider api
 			if(responseDto != null) {
-				partnerTransactionManager.callingPartnerApi(responseDto);
+				AmxApiResponse<ServiceProviderResponse, Object> apiResponse = partnerTransactionManager.callingPartnerApi(responseDto);
+				if(apiResponse != null) {
+					RemitTrnxSPDTO remitTrnxSPDTO = partnerTransactionManager.saveRemitTransactionDetails(apiResponse,responseDto);
+				}
 			}
 			auditService.log(new CActivityEvent(Type.TRANSACTION_CREATED,String.format("%s/%s", responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo())).field("STATUS").to(JaxTransactionStatus.PAYMENT_SUCCESS_APPLICATION_SUCCESS).result(Result.DONE));
 	}catch (GlobalException e) {
@@ -1287,6 +1293,9 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
 			remitTrnxSrvProv.setVariableCommInSettlCurr(applSrvProv.getVariableCommInSettlCurr());
 			remitTrnxSrvProv.setCreatedBy(createdBy);
 			remitTrnxSrvProv.setCreatedDate(new Date());
+			remitTrnxSrvProv.setOfferExpirationDate(applSrvProv.getOfferExpirationDate());
+			remitTrnxSrvProv.setOfferStartingDate(applSrvProv.getOfferStartingDate());
+			
 			mapRemitTrnxSrvProv.put(remittanceApplicationId, remitTrnxSrvProv);
 		}
 

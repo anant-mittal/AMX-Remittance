@@ -905,9 +905,12 @@ public RemitApplSrvProv createRemitApplSrvProv(DynamicRoutingPricingDto dynamicR
 	
 	ServiceProviderDto serviceProviderDto = dynamicRoutingPricingDto.getServiceProviderDto();
 
-	RemitApplSrvProv remitApplSrvProv = new RemitApplSrvProv();
+	RemitApplSrvProv remitApplSrvProv = null;
 
 	if (serviceProviderDto != null) {
+		
+		remitApplSrvProv = new RemitApplSrvProv();
+		
 		remitApplSrvProv.setAmgSessionId(serviceProviderDto.getAmgSessionId());
 		remitApplSrvProv.setBankId(dynamicRoutingPricingDto.getTrnxRoutingPaths().getRoutingBankId());
 		remitApplSrvProv.setFixedCommInSettlCurr(serviceProviderDto.getFixedCommInSettlCurr());

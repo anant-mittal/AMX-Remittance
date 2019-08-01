@@ -21,18 +21,24 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.branchremittance.manager.BranchRemittanceSaveManager;
 import com.amx.jax.branchremittance.manager.BranchRoutingManager;
 import com.amx.jax.client.serviceprovider.ServiceProviderClient;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.BankDao;
 import com.amx.jax.dbmodel.AccountTypeFromViewModel;
 import com.amx.jax.dbmodel.BankBranchView;
+import com.amx.jax.dbmodel.BankMasterModel;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.CollectionDetailViewModel;
 import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.CustomerDetailsView;
 import com.amx.jax.dbmodel.ParameterDetails;
+import com.amx.jax.dbmodel.RemittanceTransactionView;
 import com.amx.jax.dbmodel.fx.EmployeeDetailsView;
 import com.amx.jax.dbmodel.partner.BankExternalReferenceDetail;
 import com.amx.jax.dbmodel.partner.BankExternalReferenceHead;
@@ -41,6 +47,8 @@ import com.amx.jax.dbmodel.partner.ServiceProviderXmlLog;
 import com.amx.jax.dbmodel.partner.TransactionDetailsView;
 import com.amx.jax.dbmodel.remittance.AdditionalBankRuleAmiec;
 import com.amx.jax.dbmodel.remittance.AmiecAndBankMapping;
+import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.request.partner.RemittanceTransactionPartnerDTO;
@@ -55,14 +63,18 @@ import com.amx.jax.model.response.serviceprovider.ServiceProviderResponse;
 import com.amx.jax.partner.dao.PartnerTransactionDao;
 import com.amx.jax.partner.dto.BeneficiaryDetailsDTO;
 import com.amx.jax.partner.dto.CustomerDetailsDTO;
+import com.amx.jax.partner.dto.RemitTrnxSPDTO;
 import com.amx.jax.partner.repository.IServiceProviderXMLRepository;
 import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.var.PricerServiceConstants;
 import com.amx.jax.pricer.var.PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE;
+import com.amx.jax.repository.BankMasterRepository;
 import com.amx.jax.repository.IAdditionalBankRuleAmiecRepository;
 import com.amx.jax.repository.IAmiecAndBankMappingRepository;
 import com.amx.jax.repository.ICollectionDetailViewDao;
+import com.amx.jax.repository.IRemittanceTransactionDao;
+import com.amx.jax.repository.IRemittanceTransactionRepository;
 import com.amx.jax.repository.ISourceOfIncomeDao;
 import com.amx.jax.repository.fx.EmployeeDetailsRepository;
 import com.amx.jax.services.BankService;
@@ -120,16 +132,27 @@ public class PartnerTransactionManager extends AbstractModel {
 	
 	@Autowired
 	IServiceProviderXMLRepository serviceProviderXMLRepository;
+	
+	@Autowired
+	IRemittanceTransactionDao remittanceTransactionDao;
+	
+	@Autowired
+	BankMasterRepository bankMasterRepo;
+	
+	@Autowired
+	IRemittanceTransactionRepository remittanceTransactionRepository;
+	
 
-	public void callingPartnerApi(RemittanceResponseDto responseDto) {
+	public AmxApiResponse<ServiceProviderResponse, Object> callingPartnerApi(RemittanceResponseDto responseDto) {
 		BigDecimal customerId = metaData.getCustomerId();
 		BigDecimal collectionDocYear = responseDto.getCollectionDocumentFYear();
 		BigDecimal collectionDocNumber = responseDto.getCollectionDocumentNo();
 
-		convertingTransactionPartnerDetails(customerId, collectionDocYear, collectionDocNumber);
+		AmxApiResponse<ServiceProviderResponse, Object> srvPrvResp = convertingTransactionPartnerDetails(customerId, collectionDocYear, collectionDocNumber);
+		return srvPrvResp;
 	}
 
-	public void convertingTransactionPartnerDetails(BigDecimal customerId,BigDecimal collectionDocYear,BigDecimal collectionDocNumber) {
+	public AmxApiResponse<ServiceProviderResponse, Object> convertingTransactionPartnerDetails(BigDecimal customerId,BigDecimal collectionDocYear,BigDecimal collectionDocNumber) {
 		String destinationCountryAlpha3 = null;
 		String destinationCountryAlpha2 = null;
 		AmxApiResponse<ServiceProviderResponse, Object> srvPrvResp = null;
@@ -183,7 +206,8 @@ public class PartnerTransactionManager extends AbstractModel {
 			logger.info("Output from Service Provider Home Send : " + JsonUtil.toJson(srvPrvResp));
 			fetchServiceProviderData(serviceProviderCallRequestDto,srvPrvResp);
 		}
-
+		
+		return srvPrvResp;
 	}
 
 	public Customer fetchSPCustomerDto(CustomerDetailsDTO customerDetailsDTO) {
@@ -819,5 +843,74 @@ public class PartnerTransactionManager extends AbstractModel {
 			logger.error("Unable to saveServiceProviderXml Exception " +e);
 		}
 	}
+	
+	// saving the remarks and delivery indicator to remit trnx
+	public RemitTrnxSPDTO saveRemitTransactionDetails(AmxApiResponse<ServiceProviderResponse, Object> apiResponse,RemittanceResponseDto responseDto) {
+		String actionInd = null; 
+		String responseDescription = null;
+		RemitTrnxSPDTO remitTrnxSPDTO = null;
+		
+		if(responseDto != null && responseDto.getCollectionDocumentFYear() != null && responseDto.getCollectionDocumentNo() != null) {
+			
+			// checking home send transaction
+			BankMasterModel bankMaster = bankMasterRepo.findByBankCodeAndRecordStatus(PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name(), PricerServiceConstants.Yes);
+			if(bankMaster == null) {
+				throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record not found for bank code :"+PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name());
+			}
+			
+			List<RemittanceTransactionView> transctionDetail = remittanceTransactionDao.getRemittanceTransactionByRoutingBank(responseDto.getCollectionDocumentNo(), 
+					responseDto.getCollectionDocumentFYear(), responseDto.getCollectionDocumentCode(),bankMaster.getBankId());
+			
+			if (transctionDetail.isEmpty()) {
+				throw new GlobalException("Transaction details not avaliable");
+			} else {
+				if(transctionDetail.size() == 1) {
+					
+					RemittanceTransactionView remittanceTransactionView = transctionDetail.get(0);
+					ServiceProviderResponse serviceProviderResponse = apiResponse.getResult();
+					
+					if(serviceProviderResponse != null && serviceProviderResponse.getAction_ind() != null) {
+						if(serviceProviderResponse.getAction_ind().equalsIgnoreCase(PricerServiceConstants.ACTION_IND_I) || serviceProviderResponse.getAction_ind().equalsIgnoreCase(PricerServiceConstants.ACTION_IND_P) ||
+								serviceProviderResponse.getAction_ind().equalsIgnoreCase(PricerServiceConstants.ACTION_IND_F)){
+							actionInd = serviceProviderResponse.getAction_ind();
+							responseDescription = serviceProviderResponse.getResponse_description();
+						}else if(serviceProviderResponse.getAction_ind().equalsIgnoreCase(PricerServiceConstants.ACTION_IND_T)){
+							actionInd = PricerServiceConstants.ACTION_IND_U;
+							responseDescription = PricerServiceConstants.RESPONSE_UNKNOWN_ERROR;
+						}else if(serviceProviderResponse.getAction_ind().equalsIgnoreCase(PricerServiceConstants.ACTION_IND_R)){
+							actionInd = serviceProviderResponse.getAction_ind();
+							responseDescription = serviceProviderResponse.getResponse_description();
+						}else{
+							actionInd = serviceProviderResponse.getAction_ind();
+							responseDescription = serviceProviderResponse.getResponse_description();
+						}
+						
+						remitTrnxSPDTO = new RemitTrnxSPDTO();
+						remitTrnxSPDTO.setActionInd(actionInd);
+						remitTrnxSPDTO.setResponseDescription(responseDescription);
+						
+						// save remit trnx
+						RemittanceTransaction remittanceTransaction = remittanceTransactionRepository.findOne(remittanceTransactionView.getRemittanceTransactionId());
+						if(remittanceTransaction != null) {
+							remittanceTransaction.setDeliveryInd(remitTrnxSPDTO.getActionInd());
+							remittanceTransaction.setRemarks(remitTrnxSPDTO.getResponseDescription());
+							remittanceTransactionRepository.save(remittanceTransaction);
+						}else {
+							throw new GlobalException("Unable to get remittance trnx to update remarks and delivery indicator");
+						}
+						
+						logger.info(" Service provider result " +JsonUtil.toJson(serviceProviderResponse));
+					}else {
+						throw new GlobalException("Service Provider details not avaliable");
+					}
+				}else {
+					throw new GlobalException("Service Provider details multiple avaliable");
+				}
+			}
+		}
+		
+		return remitTrnxSPDTO;
+	}
+	
 
 }
