@@ -24,11 +24,7 @@ public class JaxAuthContext {
 	public static ContactType getContactType() {
 		return ArgUtil.parseAsEnumIgnoreCase(AppContextUtil.getParams().get("contactType"), ContactType.class);
 	}
-
-	public static ContactType getContactType() {
-		return (ContactType) ArgUtil.parseAsEnum(AppContextUtil.getParams().get("cType"), ContactType.EMPTY);
-	}
-
+	
 	public static String getFlow() {
 		return AppContextUtil.getFlow();
 	}
@@ -97,14 +93,6 @@ public class JaxAuthContext {
 		}
 		AppContextUtil.getParams().put("secAns", secAns);
 		return secAns;
-	}
-
-	public static ContactType contactType(ContactType contactType) {
-		if (ArgUtil.isEmpty(contactType)) {
-			return getContactType();
-		}
-		AppContextUtil.getParams().put("contactType", contactType);
-		return contactType;
 	}
 
 	public static String flow(String flow) {
