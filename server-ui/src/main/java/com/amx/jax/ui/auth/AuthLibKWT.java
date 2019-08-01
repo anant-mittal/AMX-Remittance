@@ -184,16 +184,16 @@ public class AuthLibKWT implements AuthLib {
 			AuthPermUtil.checkIdProofExpiry(authState, customerFlags);
 			AuthPermUtil.checkSQASetup(authState, customerFlags);
 			AuthPermUtil.checkSQA(authState, customerFlags);
-			AuthPermUtil.checkInsuranceUpdate(authState, customerFlags);
+			//AuthPermUtil.checkInsuranceUpdate(authState, customerFlags);
 			break;
 		case SQA_UPDATE:
 			AuthPermUtil.checkEmailUpdate(authState, customerFlags);
 			AuthPermUtil.checkSQASetup(authState, customerFlags);
-			AuthPermUtil.checkInsuranceUpdate(authState, customerFlags);
+			//AuthPermUtil.checkInsuranceUpdate(authState, customerFlags);
 			break;
 		default:
 			AuthPermUtil.checkEmailUpdate(authState, customerFlags);
-			AuthPermUtil.checkInsuranceUpdate(authState, customerFlags);
+			//AuthPermUtil.checkInsuranceUpdate(authState, customerFlags);
 			break;
 		}
 
