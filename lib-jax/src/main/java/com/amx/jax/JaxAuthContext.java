@@ -20,11 +20,11 @@ public class JaxAuthContext {
 	public static String getWotp() {
 		return ArgUtil.parseAsString(AppContextUtil.getParams().get("wOtp"));
 	}
-
+	
 	public static ContactType getContactType() {
-		return (ContactType) ArgUtil.parseAsEnum(AppContextUtil.getParams().get("cType"), ContactType.EMPTY);
+		return ArgUtil.parseAsEnumIgnoreCase(AppContextUtil.getParams().get("contactType"), ContactType.class);
 	}
-
+	
 	public static String getFlow() {
 		return AppContextUtil.getFlow();
 	}
@@ -79,20 +79,20 @@ public class JaxAuthContext {
 		return eOtp;
 	}
 
-	public static String secAns(String secAns) {
-		if (ArgUtil.isEmpty(secAns)) {
-			return getSecAns();
-		}
-		AppContextUtil.getParams().put("secAns", secAns);
-		return secAns;
-	}
-
 	public static ContactType contactType(ContactType contactType) {
 		if (ArgUtil.isEmpty(contactType)) {
 			return getContactType();
 		}
 		AppContextUtil.getParams().put("contactType", contactType);
 		return contactType;
+	}
+
+	public static String secAns(String secAns) {
+		if (ArgUtil.isEmpty(secAns)) {
+			return getSecAns();
+		}
+		AppContextUtil.getParams().put("secAns", secAns);
+		return secAns;
 	}
 
 	public static String flow(String flow) {

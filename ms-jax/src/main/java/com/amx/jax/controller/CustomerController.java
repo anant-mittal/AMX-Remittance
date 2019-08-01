@@ -128,9 +128,7 @@ public class CustomerController implements ICustomerService {
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	public ApiResponse save(@RequestBody CustomerModel customerModel) {
 		logger.info("saveCust Request:" + customerModel.toString());
-		
 		ApiResponse response = userService.saveCustomer(customerModel);
-		
 		return response;
 	}
 
@@ -352,5 +350,12 @@ public class CustomerController implements ICustomerService {
 	public AmxApiResponse<AnnualIncomeRangeDTO, Object> getAnnualTransactionLimit() {
 		AnnualIncomeRangeDTO annualTransactionLimit = annualIncomeService.getAnnualTransactionLimit();
 		return AmxApiResponse.build(annualTransactionLimit);
+	}
+
+	@RequestMapping(value = CustomerApi.RESET_PASSWORD_FLOW, method = RequestMethod.POST)
+	public AmxApiResponse<BoolRespModel, Object> resetPasswordFlow(@RequestParam("identityInt") String identityInt, 
+			@RequestParam(name = "resetPassword",  required = false) String resetPassword) {
+		AmxApiResponse<BoolRespModel, Object> response = customerService.resetPasswordFlow(identityInt, resetPassword);
+		return response;
 	}
 }

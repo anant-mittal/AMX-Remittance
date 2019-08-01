@@ -400,6 +400,8 @@ public class AnnualIncomeService {
 			IncomeRangeMaster articleDetails = customer.getFsIncomeRangeMaster();
 			incomeDto.setIncomeRangeFrom(articleDetails.getIncomeRangeFrom());
 			incomeDto.setIncomeRangeTo(articleDetails.getIncomeRangeTo());
+			incomeDto.setArticleDetailId(customer.getFsArticleDetails().getArticleDetailId());
+			incomeDto.setCompanyName(customerEmploymentInfo.getEmployerName());
 		} else {
 
 			if (customer.getAnnualIncomeFrom() == null || customer.getAnnualIncomeTo() == null) {

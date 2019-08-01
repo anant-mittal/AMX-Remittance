@@ -862,4 +862,20 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 		} // end of try-catch
 
 	}
+
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> resetPasswordFlow(String identityInt, String resetPassword) {
+		try {
+			return restService.ajax(appConfig.getJaxURL()).meta(new JaxMetaInfo())
+					.path(CustomerApi.PREFIX + CustomerApi.RESET_PASSWORD_FLOW)
+					.queryParam("identityInt", identityInt)
+					.queryParam("resetPassword", resetPassword)
+					.post()
+					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in Reset password flow : ", e);
+			return JaxSystemError.evaluate(e);
+		}
+	}
 }

@@ -5,6 +5,8 @@ import java.util.List;
 import com.amx.amxlib.meta.model.AnnualIncomeRangeDTO;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.error.JaxError;
+import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
 import com.amx.jax.model.customer.SecurityQuestionModel;
 import com.amx.jax.model.response.customer.CustomerModelResponse;
 import com.amx.jax.model.response.customer.CustomerModelSignupResponse;
@@ -42,6 +44,10 @@ public interface ICustomerService {
 	AmxApiResponse<CustomerModelResponse, Object> getCustomerModelResponse();
 
 	AmxApiResponse<CustomerModelSignupResponse, Object> getCustomerModelSignupResponse(String identityInt);
+	
+	@ApiJaxStatus({ JaxError.MISSING_CONTACT_TYPE, JaxError.MOTP_REQUIRED, JaxError.EOTP_REQUIRED, JaxError.DOTP_REQUIRED, 
+		JaxError.INVALID_OTP })
+	AmxApiResponse<BoolRespModel, Object> resetPasswordFlow(String identityInt, String resetPassword);
 
 	AmxApiResponse<AnnualIncomeRangeDTO, Object> getAnnualTransactionLimitRange();
 
