@@ -199,6 +199,11 @@ public class CustomerService extends AbstractService {
 		boolRespModel.setSuccess(Boolean.TRUE);
 		return AmxApiResponse.build(boolRespModel);
 	}
+	
+	public AmxApiResponse<CustomerModel, Object> validateCustomer(String identityInt) {
+		CustomerModel c = onlineCustomerManager.validateCustomer(identityInt);
+		return AmxApiResponse.build(c);
+	}
 
 	public AmxApiResponse<BoolRespModel, Object> resetPasswordFlow(String identityInt, String resetPwd) {
 		onlineCustomerManager.resetForgotPassword(identityInt, resetPwd);

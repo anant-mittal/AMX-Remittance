@@ -3,6 +3,7 @@ package com.amx.amxlib.service;
 import java.util.List;
 
 import com.amx.amxlib.meta.model.AnnualIncomeRangeDTO;
+import com.amx.amxlib.model.CustomerModel;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.error.JaxError;
@@ -12,28 +13,26 @@ import com.amx.jax.model.response.customer.CustomerModelResponse;
 import com.amx.jax.model.response.customer.CustomerModelSignupResponse;
 
 public interface ICustomerService {
-	
+
 	public static class Path {
-		
-		
+
 		public static final String CUSTOMER_MODEL_RESPONSE_GET = "/get-customer-model-response";
-		
+
 		public static final String CUSTOMER_MODEL_RESPONSE_BY_IDENTITYINT = "/get-customer-model-response-identityint";
-		
+
 		public static final String CUSTOMER_MODEL_SIGNUP_RESPONSE_GET = "/get-customer-model-signup-response";
-		
+
 		public static final String RESEND_EMAIL_LOGIN = "/resend-email-login";
-		public static final String ANNUAL_TRANSACTION_LIMIT_RANGE  ="/get-annual-transaction-limit-range";
-		
-		public static final String SAVE_ANNUAL_TRANSACTION_LIMIT ="/save-annual-transaction-limit";
-		
+		public static final String ANNUAL_TRANSACTION_LIMIT_RANGE = "/get-annual-transaction-limit-range";
+
+		public static final String SAVE_ANNUAL_TRANSACTION_LIMIT = "/save-annual-transaction-limit";
+
 		public static final String GET_ANNUAL_TRANSACTION_LIMIT = "/get-annual-transaction-limit";
-		
+
 	}
 
 	public static class Params {
-		
-		
+
 		public static final String IDENTITY_INT = "identityInt";
 	}
 
@@ -44,9 +43,14 @@ public interface ICustomerService {
 	AmxApiResponse<CustomerModelResponse, Object> getCustomerModelResponse();
 
 	AmxApiResponse<CustomerModelSignupResponse, Object> getCustomerModelSignupResponse(String identityInt);
-	
-	@ApiJaxStatus({ JaxError.MISSING_CONTACT_TYPE, JaxError.MOTP_REQUIRED, JaxError.EOTP_REQUIRED, JaxError.DOTP_REQUIRED, 
-		JaxError.INVALID_OTP })
+
+	@ApiJaxStatus({ JaxError.CONTACT_TYPE_REQUIRED, JaxError.MOTP_REQUIRED, JaxError.EOTP_REQUIRED,
+			JaxError.DOTP_REQUIRED, JaxError.INVALID_OTP })
+	AmxApiResponse<CustomerModel, Object> validateCustomer(String identityInt);
+
+	@ApiJaxStatus({ JaxError.CONTACT_TYPE_REQUIRED, JaxError.MOTP_REQUIRED, JaxError.EOTP_REQUIRED,
+			JaxError.DOTP_REQUIRED,
+			JaxError.INVALID_OTP, JaxError.RESET_PWD_REQUIRED })
 	AmxApiResponse<BoolRespModel, Object> resetPasswordFlow(String identityInt, String resetPassword);
 
 	AmxApiResponse<AnnualIncomeRangeDTO, Object> getAnnualTransactionLimitRange();

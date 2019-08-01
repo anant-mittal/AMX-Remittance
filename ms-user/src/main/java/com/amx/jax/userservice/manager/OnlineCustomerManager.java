@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.amxlib.model.CustomerModel;
 import com.amx.jax.JaxAuthContext;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxApiFlow;
@@ -97,6 +98,10 @@ public class OnlineCustomerManager {
 		userValidationService.validateCustIdProofs(customer.getCustomerId());
 		userValidationService.validateBlackListedCustomerForLogin(customer);
 		userValidationService.validateCustomerVerification(customer.getCustomerId());
+	}
+	
+	public CustomerModel validateCustomer(String identityInt) {
+		return customerDBAuthManager.validateAndSendOtp(identityInt);
 	}
 
 	public void resetForgotPassword(String identityInt, String resetPwd) {

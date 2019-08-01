@@ -878,4 +878,22 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 			return JaxSystemError.evaluate(e);
 		}
 	}
+
+	/**
+	 * To Validate Customer with OTP
+	 */
+	@Override
+	public AmxApiResponse<CustomerModel, Object> validateCustomer(String identityInt) {
+		try {
+			return restService.ajax(appConfig.getJaxURL()).meta(new JaxMetaInfo())
+					.path(CustomerApi.PREFIX + CustomerApi.VALIDATE_CUSTOMER_FLOW)
+					.queryParam("identityInt", identityInt)
+					.post()
+					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerModel, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in Validate Customer flow : ", e);
+			return JaxSystemError.evaluate(e);
+		}
+	}
 }

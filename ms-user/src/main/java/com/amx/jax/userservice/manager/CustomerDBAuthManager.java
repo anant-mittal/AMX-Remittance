@@ -15,6 +15,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.CivilIdOtpModel;
+import com.amx.amxlib.model.CustomerModel;
 import com.amx.jax.JaxAuthContext;
 import com.amx.jax.JaxAuthMetaResp;
 import com.amx.jax.dbmodel.Customer;
@@ -58,7 +59,7 @@ public class CustomerDBAuthManager {
 
 	private static final Logger log = LoggerFactory.getLogger(CustomerDBAuthManager.class);
 
-	public void validateAndSendOtp(String identityInt) {
+	public CustomerModel validateAndSendOtp(String identityInt) {
 		List<Customer> customers = userService.getCustomerByIdentityInt(identityInt);
 		Customer customerVal = userValidationService.validateCustomerForDuplicateRecords(customers);
 		BigDecimal customerId = customerVal.getCustomerId();
@@ -75,7 +76,7 @@ public class CustomerDBAuthManager {
 					.getCustomerCommunicationChannels(identityInt);
 
 			// set communication channel in meta of exception then throw exception
-			GlobalException ex = new GlobalException(JaxError.MISSING_CONTACT_TYPE, "Contact Type is missing");
+			GlobalException ex = new GlobalException(JaxError.CONTACT_TYPE_REQUIRED, "Contact Type is missing");
 			ex.setMeta(communicationChannelContact);
 			throw ex;
 		}
@@ -144,6 +145,8 @@ public class CustomerDBAuthManager {
 			ex.setMeta(jaxAuthMetaResp);
 			throw ex;
 		}
+		
+		return userService.convert(onlineCust);
 	}
 
 	void sendEotp(JaxAuthMetaResp jaxAuthMetaResp, CustomerOnlineRegistration onlineCust, Customer customer) {

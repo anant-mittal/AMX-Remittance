@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.service.ICustomerService;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.JaxAuthContext;
 import com.amx.jax.dict.ContactType;
@@ -17,6 +18,7 @@ import com.amx.jax.exception.AmxApiError;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.model.AuthState.AuthFlow;
 import com.amx.jax.postman.client.GoogleService;
+import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
 import com.amx.jax.ui.config.OWAStatus.ApiOWAStatus;
 import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 import com.amx.jax.ui.config.HttpUnauthorizedException;
@@ -38,6 +40,7 @@ import io.swagger.annotations.Api;
  */
 @RestController
 @Api(value = "User Auth APIs")
+@ApiStatusService(ICustomerService.class)
 public class AuthController {
 
 	/** The login service. */
@@ -163,16 +166,12 @@ public class AuthController {
 	Transactions transactions;
 
 	@RequestMapping(value = "/pub/auth/reset/v2", method = { RequestMethod.POST })
-	public ResponseWrapper<AuthResponse> initResetV2(@Valid @RequestBody AuthRequest authData,
+	public ResponseWrapper<AuthResponse> resetPasswordFlow(@Valid @RequestBody AuthRequest authData,
 			@RequestParam(required = false) ContactType contactType) {
 		contactType = ArgUtil.ifNotEmpty(contactType);
 		String otp = JaxAuthContext.getAnyOtp();
 		AppContextUtil.setFlow(AuthFlow.RESET_PASS.toString());
-		if (!ArgUtil.isEmpty(otp) && transactions.validate(AuthFlow.RESET_PASS)) {
-			throw new HttpUnauthorizedException(HttpUnauthorizedException.UN_SEQUENCE);
-		} else {
-			transactions.create(AuthFlow.RESET_PASS);
-		}
+		transactions.create(AuthFlow.RESET_PASS);
 		sessionService.getGuestSession().setIdentity(authData.getIdentity());
 		return loginService.initResetPassword2(authData.getIdentity(), authData.getPassword());
 	}
@@ -180,7 +179,10 @@ public class AuthController {
 	@ApiOWAStatus({ OWAStatusStatusCodes.USER_UPDATE_SUCCESS })
 	@RequestMapping(value = "/pub/auth/password/v2", method = { RequestMethod.POST })
 	public ResponseWrapper<UserUpdateData> resetPasswordV2(@Valid @RequestBody AuthRequest authData) {
-		return loginService.updatepwdV2(authData.getPassword(), authData.getmOtp(), authData.geteOtp());
+		if (transactions.validate(AuthFlow.RESET_PASS)) {
+			throw new HttpUnauthorizedException(HttpUnauthorizedException.UN_SEQUENCE);
+		}
+		return loginService.updatepwdV2(authData.getPassword());
 	}
 
 	/**

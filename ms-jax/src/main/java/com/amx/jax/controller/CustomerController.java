@@ -31,9 +31,7 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.customer.service.CustomerService;
 import com.amx.jax.customer.service.JaxCustomerContactVerificationService;
 import com.amx.jax.dbmodel.Customer;
-import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dict.ContactType;
-import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.model.customer.SecurityQuestionModel;
@@ -49,7 +47,6 @@ import com.amx.jax.userservice.service.CustomerModelService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.userservice.service.UserValidationService;
 import com.amx.jax.util.ConverterUtil;
-import com.amx.jax.util.AmxDBConstants.Status;
 
 @RestController
 @RequestMapping(CUSTOMER_ENDPOINT)
@@ -352,6 +349,11 @@ public class CustomerController implements ICustomerService {
 		return AmxApiResponse.build(annualTransactionLimit);
 	}
 
+	@RequestMapping(value = CustomerApi.VALIDATE_CUSTOMER_FLOW, method = RequestMethod.POST)
+	public AmxApiResponse<CustomerModel, Object> validateCustomer(@RequestParam("identityInt") String identityInt) {
+		return customerService.validateCustomer(identityInt);
+	}
+	
 	@RequestMapping(value = CustomerApi.RESET_PASSWORD_FLOW, method = RequestMethod.POST)
 	public AmxApiResponse<BoolRespModel, Object> resetPasswordFlow(@RequestParam("identityInt") String identityInt, 
 			@RequestParam(name = "resetPassword",  required = false) String resetPassword) {

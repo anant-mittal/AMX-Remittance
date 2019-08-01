@@ -317,7 +317,7 @@ public enum JaxError implements IExceptionEnum {
 	EXCH_ROUTING_DEAILS_NOT_AVAIL,
 	// ContactType
 	RESET_PWD_REQUIRED,
-	MISSING_CONTACT_TYPE,
+	CONTACT_TYPE_REQUIRED,
 
 	// Default in last, IMPORTANT:- It should be last
 	JAX_SYSTEM_ERROR;
