@@ -1141,7 +1141,7 @@ public class RemittanceTransactionManager {
 		}
 		RemitApplSrvProv remitApplSrvProv = null;
 		if(model.getDynamicRroutingPricingBreakup() != null) {
-			remitApplSrvProv = branchRemittanceApplManager.createRemitApplSrvProv(model.getDynamicRroutingPricingBreakup());
+			remitApplSrvProv = branchRemittanceApplManager.createRemitApplSrvProv(model.getDynamicRroutingPricingBreakup(),remittanceApplication.getCreatedBy());
 		}
 		remitAppDao.saveAllApplicationData(remittanceApplication, remittanceAppBeneficairy, additionalInstrumentData,remitApplSrvProv);
 		remitAppDao.updatePlaceOrderV2(model, remittanceApplication);

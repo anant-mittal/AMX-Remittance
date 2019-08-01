@@ -222,6 +222,9 @@ public class BranchRemittanceApplManager {
 		Map<String,Object> hashMap = new HashMap<>();
 		
 		validateSaveApplRequest(requestApplModel);
+		
+		//checkSerprovider();
+		
 		/*To fetch customer details **/
 		 Customer customer = custDao.getCustById(metaData.getCustomerId());
 		/** To fetch bene details **/
@@ -311,7 +314,7 @@ public class BranchRemittanceApplManager {
 		List<RemitApplAmlModel> amlData = this.saveRemittanceAppAML(remittanceApplication,hashMap);
 		
 		// Remittance srv prov details
-		RemitApplSrvProv remitApplSrvProv = createRemitApplSrvProv(requestApplModel.getDynamicRroutingPricingBreakup());
+		RemitApplSrvProv remitApplSrvProv = createRemitApplSrvProv(requestApplModel.getDynamicRroutingPricingBreakup(),remittanceApplication.getCreatedBy());
 		
 		/* Saving application deatils */
 		HashMap<String, Object> mapAllDetailApplSave = new HashMap<String, Object>();
@@ -901,7 +904,7 @@ private void validateSaveApplRequest(BranchRemittanceApplRequestModel request) {
 	JaxValidationUtil.validatePositiveNumber(request.getDeliveryModeId(),"Delivery mode id must be positive number");
 }
 
-public RemitApplSrvProv createRemitApplSrvProv(DynamicRoutingPricingDto dynamicRoutingPricingDto) {
+public RemitApplSrvProv createRemitApplSrvProv(DynamicRoutingPricingDto dynamicRoutingPricingDto,String createdBy) {
 	
 	ServiceProviderDto serviceProviderDto = dynamicRoutingPricingDto.getServiceProviderDto();
 
@@ -920,7 +923,7 @@ public RemitApplSrvProv createRemitApplSrvProv(DynamicRoutingPricingDto dynamicR
 		remitApplSrvProv.setSettlementCurrency(serviceProviderDto.getSettlementCurrency());
 		remitApplSrvProv.setTransactionMargin(serviceProviderDto.getTransactionMargin());
 		remitApplSrvProv.setVariableCommInSettlCurr(serviceProviderDto.getVariableCommInSettlCurr());
-		remitApplSrvProv.setCreatedBy(getEmployeeDetails().getUserName());
+		remitApplSrvProv.setCreatedBy(createdBy);
 		remitApplSrvProv.setCreatedDate(new Date());
 		if(serviceProviderDto.getOfferExpirationDate() != null) {
 			remitApplSrvProv.setOfferExpirationDate(serviceProviderDto.getOfferExpirationDate().getTime());
