@@ -40,7 +40,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		// http.headers().frameOptions().disable();
-		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+		http.sessionManagement()
+				.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
 				// Register Calls
 				.and().authorizeRequests().antMatchers("/register/**").permitAll()
 				// Home Pages Calls
@@ -97,5 +98,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	public void configure(WebSecurity web) throws Exception {
 		web.ignoring().antMatchers("/resources/**", "/static/**", "/css/**", "/js/**", "/images/**");
 	}
+
+//	@Bean
+//	public CookieSerializer cookieSerializer() {
+//		DefaultCookieSerializer serializer = new DefaultCookieSerializer();
+//		serializer.setCookieName("JSESSIONID");
+//		serializer.setDomainName("local-kwt.amxremit.com");
+//		serializer.setCookiePath("/");
+//		//serializer.setDomainNamePattern("^.+?\\.(\\w+\\.[a-z]+)$");
+//		serializer.setCookieMaxAge(10); // Set the cookie max age in seconds, e.g. 10 seconds
+//		return serializer;
+//	}
 
 }

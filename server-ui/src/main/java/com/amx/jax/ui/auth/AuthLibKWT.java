@@ -9,10 +9,9 @@ import com.amx.jax.model.response.customer.CustomerFlags;
 import com.amx.jax.scope.TenantSpecific;
 import com.amx.jax.ui.UIConstants.Features;
 import com.amx.jax.ui.auth.AuthLibContext.AuthLib;
-import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
-import com.amx.jax.ui.config.UIServerError;
 import com.amx.jax.ui.service.LoginService;
 import com.amx.jax.ui.service.SessionService;
+import com.amx.jax.ui.session.UserDeviceBean;
 
 /**
  * The Class AuthLibKWT.
@@ -26,6 +25,9 @@ public class AuthLibKWT implements AuthLib {
 
 	@Autowired
 	private LoginService loginService;
+
+	@Autowired
+	private UserDeviceBean userDevice;
 
 	/*
 	 * (non-Javadoc)
@@ -175,7 +177,7 @@ public class AuthLibKWT implements AuthLib {
 		switch (feature) {
 		case DASHBOARD:
 			AuthPermUtil.checkEmailUpdate(authState, customerFlags);
-			AuthPermUtil.checkInsuranceUpdate(authState, customerFlags);
+			AuthPermUtil.checkInsuranceUpdate(authState, customerFlags, userDevice.getUserDevice());
 			break;
 		case REMIT:
 		case BENE_UPDATE:
@@ -184,16 +186,16 @@ public class AuthLibKWT implements AuthLib {
 			AuthPermUtil.checkIdProofExpiry(authState, customerFlags);
 			AuthPermUtil.checkSQASetup(authState, customerFlags);
 			AuthPermUtil.checkSQA(authState, customerFlags);
-			AuthPermUtil.checkInsuranceUpdate(authState, customerFlags);
+			AuthPermUtil.checkInsuranceUpdate(authState, customerFlags, userDevice.getUserDevice());
 			break;
 		case SQA_UPDATE:
 			AuthPermUtil.checkEmailUpdate(authState, customerFlags);
 			AuthPermUtil.checkSQASetup(authState, customerFlags);
-			AuthPermUtil.checkInsuranceUpdate(authState, customerFlags);
+			AuthPermUtil.checkInsuranceUpdate(authState, customerFlags, userDevice.getUserDevice());
 			break;
 		default:
 			AuthPermUtil.checkEmailUpdate(authState, customerFlags);
-			AuthPermUtil.checkInsuranceUpdate(authState, customerFlags);
+			AuthPermUtil.checkInsuranceUpdate(authState, customerFlags, userDevice.getUserDevice());
 			break;
 		}
 

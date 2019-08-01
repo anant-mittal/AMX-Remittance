@@ -117,6 +117,12 @@ public class RemittanceReportBean {
 	private String promotionMessage;
 	private Boolean isArabic;
 	private String totalAmountSavedStr;
+	
+	//Fields getting from KNET
+	private String pgPaymentId;
+	private String pgReferenceId;
+	private String pgAuth;
+	private String pgTransId;
 
 	public String getTotalAmountSavedStr() {
 		return totalAmountSavedStr;
@@ -868,6 +874,38 @@ public class RemittanceReportBean {
 
 	public void setIsArabic(Boolean isArabic) {
 		this.isArabic = isArabic;
+	}
+
+	public String getPgPaymentId() {
+		return pgPaymentId;
+	}
+
+	public void setPgPaymentId(String pgPaymentId) {
+		this.pgPaymentId = pgPaymentId;
+	}
+
+	public String getPgReferenceId() {
+		return pgReferenceId;
+	}
+
+	public void setPgReferenceId(String pgReferenceId) {
+		this.pgReferenceId = pgReferenceId;
+	}
+
+	public String getPgAuth() {
+		return pgAuth;
+	}
+
+	public void setPgAuth(String pgAuth) {
+		this.pgAuth = pgAuth;
+	}
+
+	public String getPgTransId() {
+		return pgTransId;
+	}
+
+	public void setPgTransId(String pgTransId) {
+		this.pgTransId = pgTransId;
 	}
 
 }
