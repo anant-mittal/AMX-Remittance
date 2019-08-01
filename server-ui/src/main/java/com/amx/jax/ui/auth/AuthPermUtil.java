@@ -36,33 +36,33 @@ public class AuthPermUtil {
 
 	public static void checkSQA(AuthState authState, CustomerFlags customerFlags) {
 		if (!authState.isValidSecQues()) {
-			throw new GlobalException(JaxError.SQA_REQUIRED, "Sec QA setup is required");
+			throw new GlobalException(JaxError.SQA_REQUIRED, "Security Answer is required");
 		}
 	}
 
 	public static void checkSQASetup(AuthState authState, CustomerFlags customerFlags) {
 		if (!ArgUtil.nullAsFalse(customerFlags.getSecurityQuestionDone())) {
-			throw new GlobalException(JaxError.SQA_SETUP_REQUIRED, "Sec QA setup is required");
+			throw new GlobalException(JaxError.SQA_SETUP_REQUIRED, "Security QA setup is required");
 		}
 	}
 
 	public static void checkEmailUpdate(AuthState authState, CustomerFlags customerFlags) {
 		if (ArgUtil.nullAsFalse(customerFlags.getIsEmailMissing())) {
-			throw new UIServerError(OWAStatusStatusCodes.REDIRECT_MODULE)
+			throw new UIServerError(OWAStatusStatusCodes.REDIRECT_MODULE, "Email update is required")
 					.redirectUrl("/app/myaccount/contact?tab=email");
 		}
 	}
 
 	public static void checkMobileUpdate(AuthState authState, CustomerFlags customerFlags) {
 		if (ArgUtil.nullAsFalse(customerFlags.getIsEmailMissing())) {
-			throw new UIServerError(OWAStatusStatusCodes.REDIRECT_MODULE)
+			throw new UIServerError(OWAStatusStatusCodes.REDIRECT_MODULE, "Mobile update is required")
 					.redirectUrl("/app/myaccount/contact?tab=mobile");
 		}
 	}
 
 	public static void checkInsuranceUpdate(AuthState authState, CustomerFlags customerFlags) {
 		if (ArgUtil.nullAsFalse(customerFlags.getIsForceUpdateInsuranceRequired())) {
-			throw new UIServerError(OWAStatusStatusCodes.REDIRECT_MODULE)
+			throw new UIServerError(OWAStatusStatusCodes.REDIRECT_MODULE, "Insurance update is required")
 					.redirectUrl("/app/myaccount/insurance?update=required");
 		}
 	}
