@@ -53,6 +53,10 @@ public class UserClient {
 		public boolean isRelated(DeviceType check) {
 			return check.isParentOf(this.parent);
 		}
+
+		public boolean isMobile() {
+			return this.hasParent(MOBILE);
+		}
 	}
 
 	/**
@@ -85,6 +89,10 @@ public class UserClient {
 
 		public Channel getChannel() {
 			return channel;
+		}
+
+		public boolean isMobile() {
+			return this.channel == Channel.MOBILE;
 		}
 	}
 
