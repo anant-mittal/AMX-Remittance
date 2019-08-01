@@ -25,11 +25,11 @@ public class ComplianceTransactionManager {
 		}
 		List<HighValueTrnxDto> output = null;
 		switch (trnxType) {
-		case HVT_FC:
+		case HVT_KD:
 			List<HighValueAMLAuthViewLocal> hvtLocal = highValueAMLAuthViewLocalRepo.findAll();
 			output = hvtLocal.stream().map(i -> convertHvtLocal(i)).collect(Collectors.toList());
 			break;
-		case HVT_KD:
+		case HVT_FC:
 			break;
 		case SUSPICIOUS:
 			break;
@@ -48,7 +48,7 @@ public class ComplianceTransactionManager {
 		dto.setLocalTransactionAmount(i.getLocalTransactionAmount());
 		dto.setDocumentFinancialYear(i.getDocumentFinanceYear());
 		dto.setDocumentNo(i.getDocumentNo());
-		return null;
+		return dto;
 	}
 
 }
