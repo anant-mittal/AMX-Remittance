@@ -145,7 +145,7 @@ public class AuthController {
 	 *
 	 * @param authData the auth data
 	 * @return the response wrapper
-	 * @deprecated - use : /pub/auth/password/v2
+	 * @deprecated - use : /pub/auth/reset/v2
 	 */
 	@Deprecated
 	@RequestMapping(value = "/pub/auth/reset", method = { RequestMethod.POST })
