@@ -1,5 +1,7 @@
 package com.amx.jax.userservice.manager;
 
+import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -20,8 +22,10 @@ import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.response.customer.CustomerCommunicationChannel;
 import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.userservice.dao.CustomerDao;
+import com.amx.jax.userservice.service.CommunicationChannelContactService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.userservice.service.UserValidationService;
 import com.amx.jax.util.CryptoUtil;
@@ -49,51 +53,69 @@ public class CustomerDBAuthManager {
 	@Autowired
 	private UserValidationService userValidationService;
 
+	@Autowired
+	CommunicationChannelContactService communicationChannelContactService;
+
 	private static final Logger log = LoggerFactory.getLogger(CustomerDBAuthManager.class);
 
-	public void validateAndSendOtp(String identityInt, String resetPwd) {
-		List<ContactType> contactTypes = null;
-		// contact type list check here....
-		
-		CustomerOnlineRegistration onlineCust = custDao.getOnlineCustByCustomerId(metaData.getCustomerId());
-		Customer customer = custDao.getCustById(metaData.getCustomerId());
-				
+	public void validateAndSendOtp(String identityInt) {
+		List<Customer> customers = userService.getCustomerByIdentityInt(identityInt);
+		Customer customerVal = userValidationService.validateCustomerForDuplicateRecords(customers);
+		BigDecimal customerId = customerVal.getCustomerId();
+
+		CustomerOnlineRegistration onlineCust = custDao.getOnlineCustByCustomerId(customerId);
+		Customer customer = custDao.getCustById(customerId);
+
+		ContactType contactType = JaxAuthContext.getContactType();
+
+		if (contactType == null) {
+
+			// send list of contact types available for customer
+			List<CustomerCommunicationChannel> communicationChannelContact = communicationChannelContactService
+					.getCustomerCommunicationChannels(identityInt);
+
+			// set communication channel in meta of exception then throw exception
+			GlobalException ex = new GlobalException(JaxError.MISSING_CONTACT_TYPE, "Contact Type is missing");
+			ex.setMeta(communicationChannelContact);
+			throw ex;
+		}
+
 		boolean isMotpRequired = false;
 		boolean isEotpRequired = false;
-		for (ContactType type : contactTypes) {
-			switch (type) {
-			case MOBILE:
-			case SMS:
-				if (JaxAuthContext.getMotp() == null) {
-					isMotpRequired = true;
-				} else {
-					validateMotp(onlineCust, customer);
-				}
-				break;
-			case SMS_EMAIL:
-				if (JaxAuthContext.getMotp() == null) {
-					isMotpRequired = true;
-				} else {
-					validateMotp(onlineCust, customer);
-				}
-				if (JaxAuthContext.getEotp() == null) {
-					isEotpRequired = true;
-				} else {
-					validateEotp(onlineCust, customer);
-				}
-				break;
-			case EMAIL:
-				if (JaxAuthContext.getEotp() == null) {
-					isEotpRequired = true;
-				} else {
-					validateEotp(onlineCust, customer);
-				}
-				break;
 
-			default:
-				break;
+		switch (contactType) {
+		case MOBILE:
+		case SMS:
+			if (StringUtils.isBlank(JaxAuthContext.getMotp())) {
+				isMotpRequired = true;
+			} else {
+				validateMotp(onlineCust, customer);
 			}
+			break;
+		case SMS_EMAIL:
+			if (StringUtils.isBlank(JaxAuthContext.getMotp())) {
+				isMotpRequired = true;
+			} else {
+				validateMotp(onlineCust, customer);
+			}
+			if (StringUtils.isBlank(JaxAuthContext.getEotp())) {
+				isEotpRequired = true;
+			} else {
+				validateEotp(onlineCust, customer);
+			}
+			break;
+		case EMAIL:
+			if (StringUtils.isBlank(JaxAuthContext.getEotp())) {
+				isEotpRequired = true;
+			} else {
+				validateEotp(onlineCust, customer);
+			}
+			break;
+
+		default:
+			break;
 		}
+
 		GlobalException ex = null;
 		if (isMotpRequired && isEotpRequired) {
 			ex = new GlobalException(JaxError.DOTP_REQUIRED, "e and m otp required");
@@ -105,6 +127,12 @@ public class CustomerDBAuthManager {
 			ex = new GlobalException(JaxError.EOTP_REQUIRED, "e otp required");
 		}
 		if (ex != null) {
+			// send otp validations here
+			userValidationService.validateCustomerContactForSendOtp(Arrays.asList(contactType), customer);
+			userService.validateTokenExpiryTime(onlineCust);
+			userValidationService.validateTokenSentCount(onlineCust);
+			userService.incrementTokenSentCount(onlineCust);
+
 			log.debug("sending otp of types:- {}, {}", isMotpRequired, isEotpRequired);
 			JaxAuthMetaResp jaxAuthMetaResp = new JaxAuthMetaResp();
 			if (isMotpRequired) {
@@ -163,10 +191,13 @@ public class CustomerDBAuthManager {
 			userValidationService.incrementLockCount(onlineCust);
 			throw new GlobalException(JaxError.INVALID_OTP, "invalid eOtp");
 		}
+		// unlock method here
+		userService.unlockCustomer(onlineCust);
+		custDao.saveOnlineCustomer(onlineCust);
 	}
 
 	public void validateMotp(CustomerOnlineRegistration onlineCust, Customer customer) {
-		String mOtp = JaxAuthContext.getEotp();
+		String mOtp = JaxAuthContext.getMotp();
 		String mtokenHash = onlineCust.getSmsToken();
 		String mOtpHash = null;
 		if (StringUtils.isNotBlank(mOtp)) {
@@ -176,6 +207,9 @@ public class CustomerDBAuthManager {
 			userValidationService.incrementLockCount(onlineCust);
 			throw new GlobalException(JaxError.INVALID_OTP, "invalid mOtp");
 		}
+		// unlock method here
+		userService.unlockCustomer(onlineCust);
+		custDao.saveOnlineCustomer(onlineCust);
 	}
 
 }

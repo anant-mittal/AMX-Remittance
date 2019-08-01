@@ -194,7 +194,6 @@ public class CustomerService extends AbstractService {
 	}
 
 	public AmxApiResponse<BoolRespModel, Object> resetPasswordFlow(String identityInt, String resetPwd) {
-
 		onlineCustomerManager.resetForgotPassword(identityInt, resetPwd);
 		
 		BoolRespModel boolRespModel = new BoolRespModel();

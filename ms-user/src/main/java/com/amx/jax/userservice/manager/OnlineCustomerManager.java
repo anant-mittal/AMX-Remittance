@@ -8,23 +8,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.model.CustomerModel;
 import com.amx.jax.JaxAuthContext;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxApiFlow;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
-import com.amx.jax.dbmodel.LoginLogoutHistory;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.customer.SecurityQuestionModel;
-import com.amx.jax.model.response.customer.CustomerFlags;
-import com.amx.jax.model.response.customer.CustomerModelResponse;
-import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.userservice.service.UserValidationService;
+import com.amx.jax.util.CryptoUtil;
 
 @Component
 public class OnlineCustomerManager {
@@ -44,6 +40,9 @@ public class OnlineCustomerManager {
 	
 	@Autowired
 	CustomerDBAuthManager customerDBAuthManager;
+	
+	@Autowired
+	private CryptoUtil cryptoUtil;
 
 	public void saveCustomerSecQuestions(List<SecurityQuestionModel> securityQuestions) {
 		CustomerOnlineRegistration customerOnlineRegistration = custDao
@@ -96,6 +95,17 @@ public class OnlineCustomerManager {
 	}
 
 	public void resetForgotPassword(String identityInt, String resetPwd) {
-		customerDBAuthManager.validateAndSendOtp(identityInt, resetPwd);
-	}		
+		customerDBAuthManager.validateAndSendOtp(identityInt);
+		
+		// reset password
+		List<Customer> customers = userService.getCustomerByIdentityInt(identityInt);
+		Customer customerVal = userValidationService.validateCustomerForDuplicateRecords(customers);
+		BigDecimal customerId = customerVal.getCustomerId();
+		
+		CustomerOnlineRegistration onlineCust = custDao.getOnlineCustomerByCustomerId(customerId);
+		String userId = onlineCust.getUserName();
+		if (resetPwd != null) {
+			onlineCust.setPassword(cryptoUtil.getHash(userId, resetPwd));
+		}
+	}	
 }

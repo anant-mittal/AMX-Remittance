@@ -282,9 +282,8 @@ public class CustomerController implements ICustomerService {
 	}
 	
 	@RequestMapping(value = CustomerApi.RESET_PASSWORD_FLOW, method = RequestMethod.POST)
-	public AmxApiResponse<BoolRespModel, Object> forgotResetPassword(@RequestParam("identityInt") String identityInt, 
+	public AmxApiResponse<BoolRespModel, Object> resetPasswordFlow(@RequestParam("identityInt") String identityInt, 
 			@RequestParam("resetPassword") String resetPassword) {
-		logger.info(" ------ In Forgot Reset Password scenario ------ ");
 		AmxApiResponse<BoolRespModel, Object> response = customerService.resetPasswordFlow(identityInt, resetPassword);
 		return response;
 	}

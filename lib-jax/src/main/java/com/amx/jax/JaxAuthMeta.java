@@ -19,6 +19,7 @@ public class JaxAuthMeta implements Serializable {
 		this.eOtpHash = "";
 		this.wOtpHash = "";
 		this.secAnsHash = "";
+		this.contactType = "";
 	}
 
 	public JaxAuthMeta(String id) {
@@ -63,6 +64,10 @@ public class JaxAuthMeta implements Serializable {
 	@JsonProperty(value = "secAns")
 	@ApiMockModelProperty(example = "black")
 	String secAnsHash;
+	
+	@JsonProperty(value = "contactType")
+	@ApiMockModelProperty(example = "SMS")
+	String contactType;
 
 	/**
 	 * @return the questId
@@ -124,5 +129,13 @@ public class JaxAuthMeta implements Serializable {
 
 	public void setSecAnsHash(String secAnsHash) {
 		this.secAnsHash = secAnsHash;
+	}
+
+	public String getContactType() {
+		return contactType;
+	}
+
+	public void setContactType(String contactType) {
+		this.contactType = contactType;
 	}
 }

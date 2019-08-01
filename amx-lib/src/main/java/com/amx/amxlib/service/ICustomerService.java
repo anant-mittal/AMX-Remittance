@@ -33,5 +33,7 @@ public interface ICustomerService {
 	AmxApiResponse<CustomerModelResponse, Object> getCustomerModelResponse();
 
 	AmxApiResponse<CustomerModelSignupResponse, Object> getCustomerModelSignupResponse(String identityInt);
+	
+	AmxApiResponse<BoolRespModel, Object> resetPasswordFlow(String identityInt, String resetPassword);
 
 }
