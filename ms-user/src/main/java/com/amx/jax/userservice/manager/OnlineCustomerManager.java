@@ -22,7 +22,6 @@ import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.userservice.service.UserValidationService;
 import com.amx.jax.util.CryptoUtil;
-import com.amx.jax.util.AmxDBConstants.Status;
 
 @Component
 public class OnlineCustomerManager {
@@ -100,13 +99,11 @@ public class OnlineCustomerManager {
 		userValidationService.validateCustomerVerification(customer.getCustomerId());
 	}
 	
-	public CustomerModel validateCustomer(String identityInt) {
+	public CustomerModel validateCustomerLoginOtp(String identityInt) {
 		return customerDBAuthManager.validateAndSendOtp(identityInt);
 	}
 
-	public void resetForgotPassword(String identityInt, String resetPwd) {
-		customerDBAuthManager.validateAndSendOtp(identityInt);
-		
+	public void updatePassword(String identityInt, String resetPwd) {
 		// reset password
 		List<Customer> customers = userService.getCustomerByIdentityInt(identityInt);
 		Customer customerVal = userValidationService.validateCustomerForDuplicateRecords(customers);
@@ -117,7 +114,7 @@ public class OnlineCustomerManager {
 		if (resetPwd != null) {
 			onlineCust.setPassword(cryptoUtil.getHash(userId, resetPwd));
 		}else {
-			throw new GlobalException(JaxError.RESET_PWD_REQUIRED, "Please Enter Reset password");
+			throw new GlobalException(JaxError.UPDATE_PWD_REQUIRED, "Please enter Password to reset");
 		}
 	}	
 }

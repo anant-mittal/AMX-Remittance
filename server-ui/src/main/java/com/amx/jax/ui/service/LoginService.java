@@ -328,7 +328,7 @@ public class LoginService {
 
 	public ResponseWrapper<AuthResponse> initResetPassword2(String identity, String password) {
 		ResponseWrapper<AuthResponse> wrapper = new ResponseWrapper<AuthResponse>(new AuthData());
-		AmxApiResponse<CustomerModel, Object> x = jaxService.getUserclient().validateCustomer(identity);
+		AmxApiResponse<CustomerModel, Object> x = jaxService.getUserclient().validateCustomerLoginOtp(identity);
 		sessionService.getGuestSession().setCustomerModel(x.getResult());
 		return wrapper;
 	}

@@ -349,15 +349,10 @@ public class CustomerController implements ICustomerService {
 		return AmxApiResponse.build(annualTransactionLimit);
 	}
 
-	@RequestMapping(value = CustomerApi.VALIDATE_CUSTOMER_FLOW, method = RequestMethod.POST)
-	public AmxApiResponse<CustomerModel, Object> validateCustomer(@RequestParam("identityInt") String identityInt) {
-		return customerService.validateCustomer(identityInt);
-	}
-	
-	@RequestMapping(value = CustomerApi.RESET_PASSWORD_FLOW, method = RequestMethod.POST)
-	public AmxApiResponse<BoolRespModel, Object> resetPasswordFlow(@RequestParam("identityInt") String identityInt, 
+	@RequestMapping(value = CustomerApi.UPDATE_PASSWORD_CUSTOMER, method = RequestMethod.POST)
+	public AmxApiResponse<BoolRespModel, Object> updatePasswordCustomer(@RequestParam("identityInt") String identityInt, 
 			@RequestParam(name = "resetPassword",  required = false) String resetPassword) {
-		AmxApiResponse<BoolRespModel, Object> response = customerService.resetPasswordFlow(identityInt, resetPassword);
+		AmxApiResponse<BoolRespModel, Object> response = customerService.updatePasswordCustomer(identityInt, resetPassword);
 		return response;
 	}
 }

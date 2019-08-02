@@ -91,6 +91,7 @@ import com.amx.jax.userservice.dao.AbstractUserDao;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.dao.CustomerIdProofDao;
 import com.amx.jax.userservice.manager.CustomerFlagManager;
+import com.amx.jax.userservice.manager.OnlineCustomerManager;
 import com.amx.jax.userservice.manager.SecurityQuestionsManager;
 import com.amx.jax.userservice.manager.UserContactVerificationManager;
 import com.amx.jax.userservice.repository.LoginLogoutHistoryRepository;
@@ -99,7 +100,6 @@ import com.amx.jax.util.AmxDBConstants.Status;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.StringUtil;
-import com.amx.jax.util.AmxDBConstants.Status;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Random;
 
@@ -208,6 +208,9 @@ public class UserService extends AbstractUserService {
 	CustomerRepository customerrepository;
 	@Autowired
 	UserContactVerificationManager userContactVerificationManager;
+	
+	@Autowired
+	OnlineCustomerManager onlineCustomerManager;
 	
 	@Override
 	public ApiResponse registerUser(AbstractUserModel userModel) {
@@ -1353,5 +1356,10 @@ public class UserService extends AbstractUserService {
 			Customer customer = getCustById(customerId);
 			userValidationService.validateCustomerContactForSendOtp(contactTypes, customer);
 		}
+	}
+
+	public AmxApiResponse<CustomerModel, Object> validateCustomerLoginOtp(String identityInt) {
+		CustomerModel c = onlineCustomerManager.validateCustomerLoginOtp(identityInt);
+		return AmxApiResponse.build(c);
 	}
 }

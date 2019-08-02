@@ -36,6 +36,7 @@ import com.amx.amxlib.model.UserFingerprintResponseModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.amxlib.service.ICustomerService;
+import com.amx.amxlib.service.IUserService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.configs.JaxMetaInfo;
@@ -48,7 +49,7 @@ import com.amx.jax.model.response.customer.CustomerModelSignupResponse;
 import com.amx.jax.rest.RestService;
 
 @Component
-public class UserClient extends AbstractJaxServiceClient implements ICustomerService {
+public class UserClient extends AbstractJaxServiceClient implements ICustomerService, IUserService {
 
 	private static final Logger LOGGER = Logger.getLogger(UserClient.class);
 
@@ -864,10 +865,10 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 	}
 
 	@Override
-	public AmxApiResponse<BoolRespModel, Object> resetPasswordFlow(String identityInt, String resetPassword) {
+	public AmxApiResponse<BoolRespModel, Object> updatePasswordCustomer(String identityInt, String resetPassword) {
 		try {
 			return restService.ajax(appConfig.getJaxURL()).meta(new JaxMetaInfo())
-					.path(CustomerApi.PREFIX + CustomerApi.RESET_PASSWORD_FLOW)
+					.path(CustomerApi.PREFIX + CustomerApi.UPDATE_PASSWORD_CUSTOMER)
 					.queryParam("identityInt", identityInt)
 					.queryParam("resetPassword", resetPassword)
 					.post()
@@ -883,10 +884,10 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 	 * To Validate Customer with OTP
 	 */
 	@Override
-	public AmxApiResponse<CustomerModel, Object> validateCustomer(String identityInt) {
+	public AmxApiResponse<CustomerModel, Object> validateCustomerLoginOtp(String identityInt) {
 		try {
 			return restService.ajax(appConfig.getJaxURL()).meta(new JaxMetaInfo())
-					.path(CustomerApi.PREFIX + CustomerApi.VALIDATE_CUSTOMER_FLOW)
+					.path(UserApi.PREFIX + UserApi.VALIDATE_CUSTOMER_LOGIN_OTP)
 					.queryParam("identityInt", identityInt)
 					.post()
 					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerModel, Object>>() {

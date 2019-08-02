@@ -200,13 +200,8 @@ public class CustomerService extends AbstractService {
 		return AmxApiResponse.build(boolRespModel);
 	}
 	
-	public AmxApiResponse<CustomerModel, Object> validateCustomer(String identityInt) {
-		CustomerModel c = onlineCustomerManager.validateCustomer(identityInt);
-		return AmxApiResponse.build(c);
-	}
-
-	public AmxApiResponse<BoolRespModel, Object> resetPasswordFlow(String identityInt, String resetPwd) {
-		onlineCustomerManager.resetForgotPassword(identityInt, resetPwd);
+	public AmxApiResponse<BoolRespModel, Object> updatePasswordCustomer(String identityInt, String resetPwd) {
+		onlineCustomerManager.updatePassword(identityInt, resetPwd);
 		
 		BoolRespModel boolRespModel = new BoolRespModel();
 		boolRespModel.setSuccess(Boolean.TRUE);
