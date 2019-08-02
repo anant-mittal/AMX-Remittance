@@ -412,15 +412,16 @@ public class AnnualIncomeService {
 				throw new GlobalException("Please set your designation");
 			}
 
-			if (customerEmploymentInfo.getEmployerName() == null) {
-				throw new GlobalException("Please set your company name");
-			}
+			
 			incomeDto.setIncomeRangeFrom(customer.getAnnualIncomeFrom());
 			incomeDto.setIncomeRangeTo(customer.getAnnualIncomeTo());
 
 			incomeDto.setArticleDetailId(customer.getFsArticleDetails().getArticleDetailId());
-			incomeDto.setCompanyName(customerEmploymentInfo.getEmployerName());
-			incomeDto.setFileName(customerEmploymentInfo.getFileName());
+			if(customerEmploymentInfo!=null && customerEmploymentInfo.getEmployerName()!=null && customerEmploymentInfo.getFileName()!=null) {
+				incomeDto.setCompanyName(customerEmploymentInfo.getEmployerName());
+				incomeDto.setFileName(customerEmploymentInfo.getFileName());
+			}
+			
 		}
 		logger.info("Article detailed id returned is "+incomeDto.getArticleDetailId());
 		return AmxApiResponse.build(incomeDto);
