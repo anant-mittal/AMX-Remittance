@@ -158,5 +158,10 @@ public final class PricerServiceConstants {
 	public static final String SEND_TRNX = "S";
 	public static final String REQUEST = "R";
 	public static final String RESPONSE = "P";
+	
+	public static final String FEE_REQUEST = "fee Request";
+	public static final String FEE_RESPONSE = "fee Response";
+	public static final String COMMIT_REQUEST = "commit Request";
+	public static final String COMMIT_RESPONSE = "commit response";
 
 }

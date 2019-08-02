@@ -86,7 +86,8 @@ public class ServiceProviderManager {
 
 		// Meta
 		partnerReq.setEmployeeId(request.getEmployeeId());
-		partnerReq.setCompanyId(request.getEmployeeId());
+		partnerReq.setCompanyId(request.getCompanyId());
+		partnerReq.setCountryBranchId(request.getCountryBranchId());
 
 		SrvPrvFeeInqResDTO partnerResp = partnerDataService.getPartnerFeeinquiry(partnerReq);
 
