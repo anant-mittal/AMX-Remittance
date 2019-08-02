@@ -17,7 +17,7 @@ public class Notipy extends Message {
 	}
 
 	public static enum Channel implements IChannel {
-		NOTIPY("C9AK11W2K"), ALERTY("CET4055AB"), FEED("CET8JSKFZ"), DEPLOYER("C8L3GL92A"),
+		TEMPLATETEST("CM131D1T8"), NOTIPY("C9AK11W2K"), ALERTY("CET4055AB"), FEED("CET8JSKFZ"), DEPLOYER("C8L3GL92A"),
 		GENERAL("C7F823MLJ"), INQUIRY("CAQ4WUNAZ", Workspace.MODEX);
 
 		String code;

@@ -402,6 +402,7 @@ public class AnnualIncomeService {
 			incomeDto.setIncomeRangeTo(articleDetails.getIncomeRangeTo());
 			incomeDto.setArticleDetailId(customer.getFsArticleDetails().getArticleDetailId());
 			incomeDto.setCompanyName(customerEmploymentInfo.getEmployerName());
+			incomeDto.setFileName(customerEmploymentInfo.getFileName());
 		} else {
 
 			if (customer.getAnnualIncomeFrom() == null || customer.getAnnualIncomeTo() == null) {
