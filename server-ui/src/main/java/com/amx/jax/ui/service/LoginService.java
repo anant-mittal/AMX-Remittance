@@ -323,9 +323,6 @@ public class LoginService {
 		return wrapper;
 	}
 
-	@Autowired
-	private Transactions transactions;
-
 	public ResponseWrapper<AuthResponse> initResetPassword2(String identity, String password) {
 		ResponseWrapper<AuthResponse> wrapper = new ResponseWrapper<AuthResponse>(new AuthData());
 		AmxApiResponse<CustomerModel, Object> x = jaxService.getUserclient().validateCustomerLoginOtp(identity);
