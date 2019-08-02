@@ -165,11 +165,9 @@ public class AuthController {
 	@Autowired
 	Transactions transactions;
 
-	@RequestMapping(value = "/pub/auth/reset/v2", method = { RequestMethod.POST })
+	@RequestMapping(value = "/pub/auth/password/v2/reset", method = { RequestMethod.POST })
 	public ResponseWrapper<AuthResponse> resetPasswordFlow(@Valid @RequestBody AuthRequest authData,
 			@RequestParam(required = false) ContactType contactType) {
-		contactType = ArgUtil.ifNotEmpty(contactType);
-		String otp = JaxAuthContext.getAnyOtp();
 		AppContextUtil.setFlow(AuthFlow.RESET_PASS.toString());
 		transactions.create(AuthFlow.RESET_PASS);
 		sessionService.getGuestSession().setIdentity(authData.getIdentity());
@@ -177,7 +175,7 @@ public class AuthController {
 	}
 
 	@ApiOWAStatus({ OWAStatusStatusCodes.USER_UPDATE_SUCCESS })
-	@RequestMapping(value = "/pub/auth/password/v2", method = { RequestMethod.POST })
+	@RequestMapping(value = "/pub/auth/password/v2/update", method = { RequestMethod.POST })
 	public ResponseWrapper<UserUpdateData> resetPasswordV2(@Valid @RequestBody AuthRequest authData) {
 		if (transactions.validate(AuthFlow.RESET_PASS)) {
 			throw new HttpUnauthorizedException(HttpUnauthorizedException.UN_SEQUENCE);

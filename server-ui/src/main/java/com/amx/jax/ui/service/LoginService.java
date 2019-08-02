@@ -339,7 +339,9 @@ public class LoginService {
 	 */
 	public ResponseWrapper<UserUpdateData> updatepwdV2(String password) {
 		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
-		BoolRespModel model = jaxService.setDefaults().getUserclient().updatePassword(password, null, null).getResult();
+		BoolRespModel model = jaxService.setDefaults().getUserclient().updatePasswordCustomer(
+				sessionService.getGuestSession().getCustomerModel().getIdentityId(),
+				password).getResult();
 		if (model.isSuccess()) {
 			wrapper.setMessage(OWAStatusStatusCodes.USER_UPDATE_SUCCESS, "Password Updated Succesfully");
 			sessionService.getGuestSession().endStep(AuthStep.CREDS_SET);
