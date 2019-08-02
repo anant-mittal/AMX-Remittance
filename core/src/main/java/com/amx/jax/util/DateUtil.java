@@ -236,11 +236,11 @@ public class DateUtil {
 	   }
 	 
 	 /** added by Rabil 30 07 2019 **/
-	 public static String convertDatetostringWithddMmYyyywithHMinute() {
+	 public static String convertDatetostringWithddMmYyyywithHMinute(Date date) {
 		 String dateString = null;
 		 try {
-			 SimpleDateFormat format = new SimpleDateFormat("dd/mm/yyyy hh:mm:ss a");
-				Date date = new Date();
+			 SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss a");
+				 //Date date = new Date();
 				 dateString = format.format(date);
 		 }catch (Exception e) {
 			 e.printStackTrace();
@@ -249,7 +249,7 @@ public class DateUtil {
 	 }
 	 
 	 public static Date convertStringToDatewithddMmYyyywithHMinute(String dateString) {
-		 SimpleDateFormat formatter = new SimpleDateFormat("dd/mm/yyyy hh:mm:ss a");
+		 SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss a");
 			Date date = new Date();
 			try {
 				date = formatter.parse(dateString);

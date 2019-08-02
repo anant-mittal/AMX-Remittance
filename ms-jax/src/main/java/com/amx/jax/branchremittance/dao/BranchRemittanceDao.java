@@ -24,6 +24,7 @@ import com.amx.jax.dbmodel.CollectDetailModel;
 import com.amx.jax.dbmodel.CollectionModel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ForeignCurrencyAdjust;
+import com.amx.jax.dbmodel.RemittanceTransactionView;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.remittance.AdditionalInstructionData;
 import com.amx.jax.dbmodel.remittance.LoyaltyClaimRequest;
@@ -38,6 +39,7 @@ import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
+import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.repository.AdditionalInstructionDataRepository;
 import com.amx.jax.repository.ForeignCurrencyAdjustRepository;
 import com.amx.jax.repository.ICollectionDetailRepository;
@@ -47,6 +49,7 @@ import com.amx.jax.repository.IRemitApplAmlRepository;
 import com.amx.jax.repository.IRemittanceAdditionalInstructionRepository;
 import com.amx.jax.repository.IRemittanceAmlRepository;
 import com.amx.jax.repository.IRemittanceBenificiaryRepository;
+import com.amx.jax.repository.IRemittanceTransactionDao;
 import com.amx.jax.repository.IRemittanceTransactionRepository;
 import com.amx.jax.repository.RemittanceApplicationBeneRepository;
 import com.amx.jax.repository.RemittanceApplicationRepository;
@@ -107,6 +110,9 @@ public class BranchRemittanceDao {
 
 	@Autowired
 	JdbcTemplate jdbcTemplate;
+	
+	@Autowired
+	IRemittanceTransactionDao remittanceTransactionDao;
 
 	@Transactional
 	@SuppressWarnings("unchecked")
@@ -319,5 +325,16 @@ public class BranchRemittanceDao {
 				}
 			}
 		}
+	}
+	
+	public void updateSignatureHash(RemittanceTransactionView trnxDetails,String Signature) {
+	if(trnxDetails!=null && !StringUtils.isBlank(Signature) && JaxUtil.isNullZeroBigDecimalCheck(trnxDetails.getRemittanceTransactionId())) {
+		RemittanceTransaction remit = remitTrnxRepository.findOne(trnxDetails.getRemittanceTransactionId());
+		if(remit!=null) {
+			remit.setCustomerSignature(Signature);
+			remitTrnxRepository.save(remit);
+		}
+	}
+	
 	}
 }

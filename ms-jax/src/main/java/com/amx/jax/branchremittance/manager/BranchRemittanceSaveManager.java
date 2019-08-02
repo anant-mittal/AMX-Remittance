@@ -23,6 +23,7 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.jax.branchremittance.dao.BranchRemittanceDao;
+import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constants.JaxTransactionStatus;
 import com.amx.jax.dal.RoutingProcedureDao;
@@ -205,6 +206,9 @@ public class BranchRemittanceSaveManager {
 	@Autowired
 	private CustomerDao customerDao;
 	
+	@Autowired
+	RemittanceSignatureManager remittanceSignatureManager;
+	
 	
 	List<LoyaltyPointsModel> loyaltyPoints 	 = new ArrayList<>();
 	Map<BigDecimal,RemittanceBenificiary> remitBeneList = new HashMap<>();
@@ -214,6 +218,10 @@ public class BranchRemittanceSaveManager {
 	
 	@Autowired
     AuditService auditService;
+	
+	
+	@Autowired
+	JaxTenantProperties jaxTenantProperties;
 	
 	/**
 	 * 
@@ -238,6 +246,9 @@ public class BranchRemittanceSaveManager {
 			paymentResponse.setCompanyId(metaData.getCompanyId());
 			paymentResponse.setApplicationCountryId(metaData.getCountryId());
 			paymentResponse.setCustomerId(metaData.getCustomerId());
+			if(jaxTenantProperties.getHashSigEnable()==true) {
+				remittanceSignatureManager.updateSignatureHash(paymentResponse);
+			}
 			remittanceApplicationService.saveRemittancetoOldEmos(paymentResponse);
 			String promotionMsg = promotionManager.getPromotionPrizeForBranch(responseDto);
 			responseDto.setPromotionMessage(promotionMsg);
@@ -698,7 +709,11 @@ public class BranchRemittanceSaveManager {
 					remitTrnx.setCustomerSignatureClob(appl.getCustomerSignatureClob());
 					remitTrnx.setDebitAccountNo(appl.getDebitAccountNo()); //need to check
 					remitTrnx.setDeliveryModeId(appl.getExDeliveryMode());
-					remitTrnx.setDocumentDate(new Date());
+					
+					//String dateStr =DateUtil.convertDatetostringWithddMmYyyywithHMinute(); 
+					//Date documentDate = DateUtil.convertStringToDatewithddMmYyyywithHMinute(dateStr);
+					//remitTrnx.setDocumentDate(documentDate);
+				    remitTrnx.setDocumentDate(new Date());
 					remitTrnx.setDocumentFinanceYear(appl.getDocumentFinancialyear());
 					remitTrnx.setDocumentFinanceYr(appl.getExUserFinancialYearByDocumentFinanceYear().getFinancialYearID());
 					

@@ -245,6 +245,7 @@ public class ViewParameterDetails implements IResourceEntity{
 		this.dateField5 = dateField5;
 	}
 
+
 	@Override
 	public BigDecimal resourceId() {
 		return this.parameterDetailsId;
@@ -260,5 +261,6 @@ public class ViewParameterDetails implements IResourceEntity{
 		return this.paramCodeDef;
 	}
 
+	
 	
 }

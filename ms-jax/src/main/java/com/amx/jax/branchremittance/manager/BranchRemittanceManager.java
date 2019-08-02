@@ -34,11 +34,13 @@ import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.dbmodel.ParameterDetails;
+import com.amx.jax.dbmodel.RemittanceTransactionView;
 import com.amx.jax.dbmodel.ServiceApplicabilityRule;
 import com.amx.jax.dbmodel.ViewCity;
 import com.amx.jax.dbmodel.fx.EmployeeDetailsView;
 import com.amx.jax.dbmodel.remittance.AdditionalBankRuleAmiec;
 import com.amx.jax.dbmodel.remittance.BeneficiaryAccountException;
+import com.amx.jax.dbmodel.remittance.RemittanceBenificiary;
 import com.amx.jax.dbmodel.remittance.ViewBnkFlexVal;
 import com.amx.jax.dbmodel.remittance.ViewParameterDetails;
 import com.amx.jax.error.JaxError;
@@ -61,6 +63,7 @@ import com.amx.jax.model.response.remittance.ParameterDetailsDto;
 import com.amx.jax.model.response.remittance.ParameterDetailsResponseDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
+import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.repository.BankMasterRepository;
 import com.amx.jax.repository.IAccountTypeFromViewDao;
 import com.amx.jax.repository.IAdditionalBankRuleAmiecRepository;
@@ -69,6 +72,8 @@ import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.ICollectionDetailRepository;
 import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.ICustomerRepository;
+import com.amx.jax.repository.IRemittanceBenificiaryRepository;
+import com.amx.jax.repository.IRemittanceTransactionDao;
 import com.amx.jax.repository.IServiceApplicabilityRuleDao;
 import com.amx.jax.repository.ITransactionHistroyDAO;
 import com.amx.jax.repository.IViewCityDao;
@@ -210,6 +215,8 @@ public class BranchRemittanceManager extends AbstractModel {
 	@Autowired
 	IViewParameterDetailsRespository viewParameterDetailsRespository;
 	
+	
+
 	
 	public void checkingStaffIdNumberWithCustomer() {
 		boolean checkStatus = Boolean.FALSE;
@@ -1215,7 +1222,7 @@ public ParameterDetailsResponseDto getGiftService(BigDecimal beneId) {
 					pdto.setNumericUdf5(viewParameterDetails.getNumericField5());
 					
 					//TODO:- Evaluate if required????
-					pdto.setResourceDto(ResourceDTO.create(viewParameterDetails));
+					//pdto.setResourceDto(ResourceDTO.create(viewParameterDetails));
 					
 					dtoList.add(pdto);
 				}
@@ -1230,6 +1237,8 @@ public ParameterDetailsResponseDto getGiftService(BigDecimal beneId) {
 	
 	return responseDto;
 }
+
+
 
 }	
 

@@ -53,6 +53,30 @@ public class JaxTenantProperties {
 	@TenantValue("${wantit.buyit.enddate}")
 	private String endDate;
 
+	
+	@TenantValue("${jax.properties.hash.signature}")
+	private Boolean hashSigEnable;
+	
+	
+	@TenantValue("${key.store.location}")
+	private String keyStoreLocatin;
+	
+	
+	@TenantValue("${key.alias.in.keystore}")
+	private String keyStoreAlias;
+	
+	
+	@TenantValue("${key.store.password}")
+	private String keyStorePwd;
+	
+	@TenantValue("${signature.algorithem}")
+	private String sigAlgorithem;
+	
+	
+
+	
+	
+	
 	public Boolean getCashDisable() {
 		return cashDisable;
 	}
@@ -123,6 +147,48 @@ public class JaxTenantProperties {
 
 	public void setEndDate(String endDate) {
 		this.endDate = endDate;
+	}
+
+	
+
+	public String getKeyStoreLocatin() {
+		return keyStoreLocatin;
+	}
+
+	public void setKeyStoreLocatin(String keyStoreLocatin) {
+		this.keyStoreLocatin = keyStoreLocatin;
+	}
+
+	public String getKeyStoreAlias() {
+		return keyStoreAlias;
+	}
+
+	public void setKeyStoreAlias(String keyStoreAlias) {
+		this.keyStoreAlias = keyStoreAlias;
+	}
+
+	public String getKeyStorePwd() {
+		return keyStorePwd;
+	}
+
+	public void setKeyStorePwd(String keyStorePwd) {
+		this.keyStorePwd = keyStorePwd;
+	}
+
+	public String getSigAlgorithem() {
+		return sigAlgorithem;
+	}
+
+	public void setSigAlgorithem(String sigAlgorithem) {
+		this.sigAlgorithem = sigAlgorithem;
+	}
+
+	public Boolean getHashSigEnable() {
+		return hashSigEnable;
+	}
+
+	public void setHashSigEnable(Boolean hashSigEnable) {
+		this.hashSigEnable = hashSigEnable;
 	}
 
 

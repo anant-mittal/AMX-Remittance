@@ -30,4 +30,7 @@ public interface IRemittanceTransactionDao extends JpaRepository<RemittanceTrans
 	public List<RemittanceTransactionView> getRemittanceTransactionForReport(@Param("documentNo") BigDecimal documentNo,
 			@Param("fYear") BigDecimal fYear, @Param("documentCode") BigDecimal documentCode,
 			@Param("idProofTypeId") BigDecimal idProofTypeId);
+	
+	public List<RemittanceTransactionView> findByCustomerIdAndCollectionDocumentNoAndCollectionDocFinanceYearAndCollectionDocCode(BigDecimal customerId,BigDecimal collDocNo,BigDecimal collDocFYear,BigDecimal collDocCode);
+	
 }
