@@ -22,10 +22,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.branchremittance.manager.BranchRemittanceSaveManager;
 import com.amx.jax.branchremittance.manager.BranchRoutingManager;
 import com.amx.jax.client.serviceprovider.ServiceProviderClient;
 import com.amx.jax.constant.ConstantDocument;
@@ -142,7 +139,6 @@ public class PartnerTransactionManager extends AbstractModel {
 	@Autowired
 	IRemittanceTransactionRepository remittanceTransactionRepository;
 	
-
 	public AmxApiResponse<ServiceProviderResponse, Object> callingPartnerApi(RemittanceResponseDto responseDto) {
 		BigDecimal customerId = metaData.getCustomerId();
 		BigDecimal collectionDocYear = responseDto.getCollectionDocumentFYear();

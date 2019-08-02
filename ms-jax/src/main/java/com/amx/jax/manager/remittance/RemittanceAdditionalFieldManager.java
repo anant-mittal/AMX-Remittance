@@ -211,6 +211,14 @@ public class RemittanceAdditionalFieldManager {
 	public void processAdditionalFields(RemittanceAdditionalBeneFieldModel model) {
 		ApiResponse<JaxConditionalFieldDto> apiResponse = jaxFieldService.getJaxFieldsForEntity(new GetJaxFieldRequest(JaxFieldEntity.REMITTANCE_ONLINE));
 		List<JaxConditionalFieldDto> allJaxConditionalFields = apiResponse.getResults();
+		
+		// service Provider details
+		ApiResponse<JaxConditionalFieldDto> spApiResponse = jaxFieldService.getJaxFieldsForEntity(new GetJaxFieldRequest(JaxFieldEntity.SERVICE_PROVIDER));
+		List<JaxConditionalFieldDto> allSPJaxConditionalFields = spApiResponse.getResults();
+		if(allSPJaxConditionalFields != null && allSPJaxConditionalFields.size() != 0) {
+			allJaxConditionalFields.addAll(allSPJaxConditionalFields);
+		}
+		
 		Map<String, Object> fieldValues = model.getAdditionalFields();
 		if (allJaxConditionalFields != null && fieldValues != null) {
 			BenificiaryListView beneficiaryDetail = beneficiaryService.getBeneByIdNo(model.getBeneId());
