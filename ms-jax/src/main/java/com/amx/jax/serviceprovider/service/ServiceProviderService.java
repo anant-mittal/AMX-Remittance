@@ -233,7 +233,7 @@ public class ServiceProviderService extends AbstractService {
 	
 	public BoolRespModel serviceProviderConfirmation(Date fileDate,String tpcCode) {
 		Date serviceProviderConfirmDate =  serviceProviderConfRepository.getServiceProviderRevenueModel(metaData.getCountryId(),tpcCode);
-		if(serviceProviderConfirmDate.compareTo(fileDate)==0) {
+		if(serviceProviderConfirmDate!=null&&serviceProviderConfirmDate.compareTo(fileDate)==0) {
 			throw new GlobalException("You have already uploaded file once for this date");
 		}
 		int c=0;
