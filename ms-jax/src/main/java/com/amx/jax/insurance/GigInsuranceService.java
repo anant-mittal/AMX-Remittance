@@ -191,7 +191,7 @@ public class GigInsuranceService {
 	private void validatesaveInsuranceDetailRequest(SaveInsuranceDetailRequest request) {
 
 		List<CreateOrUpdateNomineeRequest> nominees = request.getAddNomineeRequestData();
-		if (nominees.size() < 1) {
+		if (nominees.size() < 1 && Boolean.TRUE.equals(request.getOptIn())) {
 			throw new GlobalException("Minimum nominess must be 1");
 		}
 		if (nominees.size() > 4) {
@@ -245,10 +245,11 @@ public class GigInsuranceService {
 	}
 
 	private void validateNomineePercentage(List<CreateOrUpdateNomineeRequest> nominees) {
-
-		int totalPercentage = nominees.stream().mapToInt(i -> i.getPercentage()).sum();
-		if (totalPercentage != 100) {
-			throw new GlobalException("Total nominee percentage must be 100");
+		if (nominees.size() > 0) {
+			int totalPercentage = nominees.stream().mapToInt(i -> i.getPercentage()).sum();
+			if (totalPercentage != 100) {
+				throw new GlobalException("Total nominee percentage must be 100");
+			}
 		}
 	}
 
