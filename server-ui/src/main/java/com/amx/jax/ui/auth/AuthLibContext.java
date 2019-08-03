@@ -49,9 +49,9 @@ public class AuthLibContext extends TenantContext<AuthLib> {
 			return true;
 		};
 
-		public default ArrayList<Features> filterFeatures(AuthState authState, CustomerFlags customerFlags,
-				ArrayList<Features> features) {
-			ArrayList<Features> newfeatures = new ArrayList<Features>();
+		public default List<Features> filterFeatures(AuthState authState, CustomerFlags customerFlags,
+				List<Features> features) {
+			List<Features> newfeatures = new ArrayList<Features>();
 			for (int i = 0; i < features.size(); i++) {
 				if (this.hasFeature(authState, customerFlags, features.get(i))) {
 					newfeatures.add(features.get(i));
