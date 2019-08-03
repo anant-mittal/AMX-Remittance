@@ -1,5 +1,6 @@
 package com.amx.jax.compliance;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.compliance.ComplianceBlockedTrnxType;
 import com.amx.jax.client.compliance.HighValueTrnxDto;
 import com.amx.jax.client.compliance.IComplianceService;
+import com.amx.jax.model.customer.ComplianceTrnxDocumentInfo;
 
 @RestController
 public class ComplianceController implements IComplianceService {
@@ -25,5 +27,13 @@ public class ComplianceController implements IComplianceService {
 			@RequestParam(name = Params.TRANSACTION_BLOCK_TYPE) ComplianceBlockedTrnxType trnxType) {
 		List<HighValueTrnxDto> hvtList = complianceTransactionManager.listHighValueTransaction(trnxType);
 		return AmxApiResponse.buildList(hvtList);
+	}
+
+	@Override
+	@RequestMapping(path = Path.GET_TRANSACTION_DOCUMENT, method = RequestMethod.GET)
+	public AmxApiResponse<ComplianceTrnxDocumentInfo, Object> getTransactionDocuments(@RequestParam(name = Params.TRANSACTION_ID) Long trnxId) {
+
+		List<ComplianceTrnxDocumentInfo> trnxDocs = complianceTransactionManager.getTransactionDocuments(BigDecimal.valueOf(trnxId));
+		return AmxApiResponse.buildList(trnxDocs);
 	}
 }

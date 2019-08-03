@@ -50,6 +50,9 @@ public class CustomerDocumentUploadReference {
 	
 	@Column(name = "CREATED_AT")
 	Date createdAt;
+	
+	@Column(name="EXPIRY_DATE")
+	Date expiryDate;
 
 	public BigDecimal getId() {
 		return id;
@@ -105,5 +108,13 @@ public class CustomerDocumentUploadReference {
 
 	public void setCreatedAt(Date createdAt) {
 		this.createdAt = createdAt;
+	}
+
+	public Date getExpiryDate() {
+		return expiryDate;
+	}
+
+	public void setExpiryDate(Date expiryDate) {
+		this.expiryDate = expiryDate;
 	}
 }

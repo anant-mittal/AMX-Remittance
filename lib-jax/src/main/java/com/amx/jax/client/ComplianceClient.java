@@ -13,6 +13,7 @@ import com.amx.jax.client.compliance.IComplianceService;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.client.customer.CustomerManagementClient;
 import com.amx.jax.exception.JaxSystemError;
+import com.amx.jax.model.customer.ComplianceTrnxDocumentInfo;
 import com.amx.jax.rest.RestService;
 
 public class ComplianceClient implements IComplianceService {
@@ -26,7 +27,6 @@ public class ComplianceClient implements IComplianceService {
 
 	@Override
 	public AmxApiResponse<HighValueTrnxDto, Object> listHighValueTransaction(ComplianceBlockedTrnxType trnxType) {
-
 		try {
 			LOGGER.debug("in listHighValueTransaction :  ");
 			String url = appConfig.getJaxURL() + Path.LIST_HVT;
@@ -38,6 +38,20 @@ public class ComplianceClient implements IComplianceService {
 			return JaxSystemError.evaluate(e);
 		}
 
+	}
+
+	@Override
+	public AmxApiResponse<ComplianceTrnxDocumentInfo, Object> getTransactionDocuments(Long trnxId) {
+		try {
+			LOGGER.debug("in getTransactionDocuments :  ");
+			String url = appConfig.getJaxURL() + Path.GET_TRANSACTION_DOCUMENT;
+			return restService.ajax(url).meta(new JaxMetaInfo()).queryParam(Params.TRANSACTION_ID, trnxId).get()
+					.as(new ParameterizedTypeReference<AmxApiResponse<ComplianceTrnxDocumentInfo, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in listHighValueTransaction : ", e);
+			return JaxSystemError.evaluate(e);
+		}
 	}
 
 }

@@ -169,6 +169,7 @@ public class DatabaseScanManager implements DocumentScanManager {
 				log.error("error in getDocumentInfo", e);
 			}
 		}
+		info.setExpiryDate(upload.getExpiryDate());
 		return info;
 	}
 }

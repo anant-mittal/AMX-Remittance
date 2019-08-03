@@ -43,7 +43,6 @@ import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.manager.CustomerIdProofManager;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.utils.JsonUtil;
-import com.amx.utils.StringUtils;
 import com.jax.amxlib.exception.jax.GlobaLException;
 
 @Component
@@ -264,4 +263,11 @@ public class CustomerDocumentManager {
 		customerDocumentUploadReferenceRepo.save(uploads);
 	}
 	
+	public CustomerDocumentInfo convertToCustomerDocumentInfo(CustomerDocumentUploadReference uploadRef) {
+		CustomerDocumentInfo docInfo = null;
+		if (uploadRef.getScanIndic().equals(DocumentScanIndic.DB_SCAN)) {
+			docInfo = databaseImageScanManager.getDocumentInfo(uploadRef);
+		}
+		return docInfo;
+	}
 }

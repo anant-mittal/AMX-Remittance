@@ -15,6 +15,7 @@ public class CustomerDocumentInfo {
 	String documentFormat;
 	String documentCategory;
 	String documentCategoryDesc;
+	Date expiryDate;
 
 	public DocumentImageRenderType getDocumentRenderType() {
 		return documentRenderType;
@@ -88,6 +89,14 @@ public class CustomerDocumentInfo {
 
 	public void setDocumentCategoryDesc(String documentCategoryDesc) {
 		this.documentCategoryDesc = documentCategoryDesc;
+	}
+
+	public Date getExpiryDate() {
+		return expiryDate;
+	}
+
+	public void setExpiryDate(Date expiryDate) {
+		this.expiryDate = expiryDate;
 	}
 
 }
