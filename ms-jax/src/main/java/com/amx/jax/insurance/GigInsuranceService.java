@@ -191,7 +191,16 @@ public class GigInsuranceService {
 	private void validatesaveInsuranceDetailRequest(SaveInsuranceDetailRequest request) {
 
 		List<CreateOrUpdateNomineeRequest> nominees = request.getAddNomineeRequestData();
-		if (nominees.size() < 1 && Boolean.TRUE.equals(request.getOptIn())) {
+		Customer customer = userService.getCustById(metaData.getCustomerId());
+		String isGigOptedInd = customer.getPremInsurance();
+		Boolean optInBool = ConstantDocument.Yes.equalsIgnoreCase(isGigOptedInd);
+		boolean optIn;
+		if (request.getOptIn() == null) {
+			optIn = optInBool.booleanValue();
+		} else {
+			optIn = Boolean.TRUE.equals(request.getOptIn());
+		}
+		if (nominees.size() < 1 && optIn) {
 			throw new GlobalException("Minimum nominess must be 1");
 		}
 		if (nominees.size() > 4) {
