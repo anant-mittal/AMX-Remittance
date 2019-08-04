@@ -358,9 +358,12 @@ public class GigInsuranceService {
 		}
 		int optInHours = setup.getOtpInHours();
 		InsuranceAction currentAction = insuranceActionRepository.findByActionId(insuranceDetail.getCurrenctActionId());
+		if (currentAction.getOptOutDate() == null) {
+			throw new GlobalException("Already opted in this insurance");
+		}
 		Date newOptInDate = new Date();
 		Calendar now = Calendar.getInstance();
-		now.setTime(currentAction.getOptInDate());
+		now.setTime(currentAction.getOptOutDate());
 		now.add(Calendar.HOUR, optInHours);
 		Date validOptInStartDate = now.getTime();
 		if (newOptInDate.before(validOptInStartDate)) {
@@ -390,5 +393,11 @@ public class GigInsuranceService {
 		} else {
 			throw new GlobalException("Already opted this insurance");
 		}
+	}
+
+	public boolean isCustomerInsuranceOptIn(BigDecimal customerId) {
+		Customer customer = userService.getCustById(customerId);
+		String isGigOptedInd = customer.getPremInsurance();
+		return ConstantDocument.Yes.equalsIgnoreCase(isGigOptedInd);
 	}
 }
