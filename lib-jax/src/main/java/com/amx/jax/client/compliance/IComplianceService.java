@@ -1,7 +1,5 @@
 package com.amx.jax.client.compliance;
 
-import java.math.BigDecimal;
-
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.model.customer.ComplianceTrnxDocumentInfo;
 

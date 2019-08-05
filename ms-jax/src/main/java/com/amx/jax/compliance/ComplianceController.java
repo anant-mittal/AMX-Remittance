@@ -25,6 +25,7 @@ public class ComplianceController implements IComplianceService {
 	@Override
 	public AmxApiResponse<HighValueTrnxDto, Object> listHighValueTransaction(
 			@RequestParam(name = Params.TRANSACTION_BLOCK_TYPE) ComplianceBlockedTrnxType trnxType) {
+		
 		List<HighValueTrnxDto> hvtList = complianceTransactionManager.listHighValueTransaction(trnxType);
 		return AmxApiResponse.buildList(hvtList);
 	}
