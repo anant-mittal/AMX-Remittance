@@ -235,8 +235,9 @@ h1 { font-size: 1.5em; margin: 10px; }
     line-height: 33px;
     text-transform: none;
     margin-top: 35px;
-    padding: 10px 240px;
+    padding: 10px;
     font-size: 22px;
+    max-width: 680px;
   }
   .hide.hide.hide {
     max-height: 0.1%;
