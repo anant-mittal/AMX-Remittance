@@ -29,6 +29,7 @@ import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.BankDao;
 import com.amx.jax.dao.BranchRemittancePaymentDao;
 import com.amx.jax.dbmodel.AccountTypeFromViewModel;
+import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
 import com.amx.jax.dbmodel.BankBranchView;
 import com.amx.jax.dbmodel.BankMasterModel;
 import com.amx.jax.dbmodel.BenificiaryListView;
@@ -1079,5 +1080,49 @@ public class PartnerTransactionManager extends AbstractModel {
 		spConfigDto.setNonCashLimit(otherLimits);
 		return spConfigDto;
 	}
+	
+	public AuthenticationLimitCheckView onlineServiceProviderLimit(AuthenticationLimitCheckView authenticationLimitCheckView) {
+		AuthenticationLimitCheckView spAuthLimit = authenticationLimitCheckView;
+		BigDecimal otherLimits = spAuthLimit.getAuthLimit();
+		boolean includeSPlimits = Boolean.FALSE;
+		ShoppingCartDetails shoppingCartSPData = null;
+		
+		BankMasterModel bankMaster = bankMasterRepo.findByBankCodeAndRecordStatus(PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name(), PricerServiceConstants.Yes);
+		if(bankMaster == null) {
+			// no need error
+		}else {
+			List<ShoppingCartDetails> lstCustomerShopping = branchRemittancePaymentDao.fetchCustomerShoppingCart(metaData.getCustomerId());
+			if(lstCustomerShopping != null && lstCustomerShopping.size() != 0) {
+				for (ShoppingCartDetails shoppingCartDetails : lstCustomerShopping) {
+					if(shoppingCartDetails.getApplicationType()!=null && !shoppingCartDetails.getApplicationType().equalsIgnoreCase("FS")) {
+						if(shoppingCartDetails.getRoutingBankId().compareTo(bankMaster.getBankId()) == 0) {
+							shoppingCartSPData = shoppingCartDetails;
+							includeSPlimits = Boolean.TRUE;
+							break;
+						}
+					}
+				}
+			}
+			
+			if(includeSPlimits && shoppingCartSPData != null) {
+				PaymentLimitDTO paymentLimitDTO = new PaymentLimitDTO();
+				paymentLimitDTO.setBankId(bankMaster.getBankId());
+				paymentLimitDTO.setBeneficiaryRelationshipId(shoppingCartSPData.getBeneRelationseqId());
+				paymentLimitDTO.setCurrencyQuote(PricerServiceConstants.SETTLEMENT_CURRENCY_CODE);
+				Map<String, BigDecimal> srvprvlimit = fetchPaymentLimitsForSP(paymentLimitDTO);
+				if(srvprvlimit != null && srvprvlimit.size() != 0) {
+					for (Map.Entry<String,BigDecimal> paymentAmount : srvprvlimit.entrySet()) {
+						if(paymentAmount.getKey().contains("OTHERS")) {
+							otherLimits = paymentAmount.getValue();
+						}
+					}
+				}
+			}
+		}
+		
+		spAuthLimit.setAuthLimit(otherLimits);
+		return spAuthLimit;
+	}
+	
 
 }

@@ -102,6 +102,7 @@ import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;
 import com.amx.jax.model.response.remittance.LoyalityPointState;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.model.response.remittance.VatDetailsDto;
+import com.amx.jax.partner.manager.PartnerTransactionManager;
 import com.amx.jax.pricer.dto.TrnxRoutingDetails;
 import com.amx.jax.remittance.manager.RemittanceParameterMapManager;
 import com.amx.jax.repository.AuthenticationViewRepository;
@@ -212,6 +213,7 @@ public class RemittanceTransactionManager {
 
 	@Autowired
 	private RemittanceTransactionRequestValidator remittanceTransactionRequestValidator;
+	
 	@Autowired
 	RemittanceAdditionalFieldManager remittanceAdditionalFieldManager;
 
@@ -220,6 +222,9 @@ public class RemittanceTransactionManager {
 	
 	@Autowired
 	DailyPromotionManager dailyPromotionManager;
+	
+	@Autowired
+	PartnerTransactionManager partnerTransactionManager;
 
 	protected Map<String, Object> validatedObjects = new HashMap<>();
 
@@ -842,6 +847,7 @@ public class RemittanceTransactionManager {
 		AuthenticationLimitCheckView onlineTxnLimit = parameterService.getOnlineTxnLimit();
 		
 		// online sp limit check
+		onlineTxnLimit = partnerTransactionManager.onlineServiceProviderLimit(onlineTxnLimit);
 		
 		if(onlineTxnLimit!=null ) {
 			inclusiveExclusiveComm = onlineTxnLimit.getCharField2();
