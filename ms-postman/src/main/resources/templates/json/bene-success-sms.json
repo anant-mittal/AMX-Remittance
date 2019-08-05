@@ -1,0 +1,4 @@
+{
+	"_subject": "New Beneficiary Addition Success",
+	"_message": "Congratulations! You have successfully created a new beneficiary [[${data.customerName}]] - [[${data.beneCountry}]] - [[${data.beneBank}]] account with us and is active for transaction."
+}

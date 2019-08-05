@@ -69,7 +69,10 @@ public enum TemplatesMX implements ITemplate {
 	POLICY_EXPIRY_REMINDER("PolicyExpiryReminder"),
 	POLICY_EXPIRED("PolicyExpired"),
 	
-	
+	//Add Bene Templates
+	BENE_SUCC("BeneSuccess"),
+	BENE_SUCC_SMS("bene-success-sms",Channel.NOTIPY),
+
 	// Default add enums above this
 	DEFAULT("default");
 
