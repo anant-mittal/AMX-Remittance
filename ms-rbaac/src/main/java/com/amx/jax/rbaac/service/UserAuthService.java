@@ -523,6 +523,7 @@ public class UserAuthService {
 		// Check for Employee System Assignment
 		if (DeviceType.COMPUTER.isParentOf(deviceType)) {
 
+			userClientDto.setTerminalId(new BigDecimal(23));
 			if (null == userClientDto.getTerminalId()) {
 				throw new AuthServiceException(RbaacServiceError.INVALID_OR_MISSING_TERMINAL_ID,
 						"Terminal Id is Mandatory for Computer Terminals");

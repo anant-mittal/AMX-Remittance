@@ -5,11 +5,13 @@ package com.amx.jax.payment;
 
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.security.NoSuchAlgorithmException;
 
 import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.payg.PayGParams;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.CryptoUtil;
 import com.amx.utils.Urly;
 
 /**
@@ -70,5 +72,28 @@ public class PaymentConstant {
 	public static String getCalbackUrl(PayGParams payGParams) {
 		return getCalbackUrl(payGParams.getTenant(), payGParams.getServiceCode(),
 				payGParams.getChannel(), payGParams.getProduct(), payGParams.getUuid());
+	}
+	
+	public static final String KWT_SECRETE_SALT = "KWT-SALT";
+	public static final String OMN_SECRETE_SALT = "KWT-SALT";
+	public static final String BHR_SECRETE_SALT = "KWT-SALT";
+
+	public static String getHashedSecrete(String paymentParamStr, String secreteSalt) {
+
+		if (paymentParamStr == null) {
+			paymentParamStr = "";
+		}
+
+		String hashedSecrete;
+
+		try {
+			hashedSecrete = CryptoUtil.getSHA2Hash(paymentParamStr + secreteSalt);
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+			hashedSecrete = null;
+		}
+
+		return hashedSecrete;
+
 	}
 }

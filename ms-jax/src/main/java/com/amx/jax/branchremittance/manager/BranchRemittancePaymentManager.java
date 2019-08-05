@@ -52,6 +52,7 @@ import com.amx.jax.model.response.remittance.CustomerShoppingCartDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
 import com.amx.jax.model.response.remittance.PaymentModeDto;
 import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
+import com.amx.jax.partner.manager.PartnerTransactionManager;
 import com.amx.jax.repository.IBankMasterFromViewDao;
 import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.ICustomerRepository;
@@ -98,6 +99,9 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 	
 	@Autowired
 	IRemitApplSrvProvRepository remitApplSrvProvRepository;
+	
+	@Autowired
+	PartnerTransactionManager partnerTransactionManager;
 
 
 	/* 
@@ -130,6 +134,11 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 			deActivateOnlineApplication();
 			
 			List<ShoppingCartDetails> lstCustomerShopping = branchRemittancePaymentDao.fetchCustomerShoppingCart(customerId);
+			
+			ConfigDto config = getLimitCheck(metaData.getCustomerId());
+			config = partnerTransactionManager.paymentModeServiceProviderLimit(config,lstCustomerShopping);
+			cartList.setConfigDto(config);
+			
 			if(lstCustomerShopping != null && !lstCustomerShopping.isEmpty() && lstCustomerShopping.size() != 0) {
 				for (ShoppingCartDetails customerApplDto : lstCustomerShopping) {
 					if(customerApplDto.getApplicationType()!=null && !customerApplDto.getApplicationType().equalsIgnoreCase("FS")) {
@@ -276,6 +285,7 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		List<PaymentModeOfPaymentDto> lstModeofPayment = new ArrayList<>();
 		List<Object[]> lstPayment = branchRemittancePaymentDao.fetchModeOfPayment(languageId);
 		ConfigDto config= getLimitCheck(metaData.getCustomerId());
+		//config = partnerTransactionManager.paymentModeServiceProviderLimit(config);
 		if (lstPayment != null && lstPayment.size() != 0) {
 			for (Object object : lstPayment) {
 				Object[] paymentModes = (Object[]) object;

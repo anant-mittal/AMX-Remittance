@@ -163,5 +163,10 @@ public final class PricerServiceConstants {
 	public static final String FEE_RESPONSE = "fee Response";
 	public static final String COMMIT_REQUEST = "commit Request";
 	public static final String COMMIT_RESPONSE = "commit response";
+	
+	public static final String COUNTRY_AUS_ALPHA3CODE = "AUS";
+	
+	public static final String Business = "B";
+	public static final String Personal = "P";
 
 }

@@ -1,4 +1,4 @@
-package com.amx.jax.pricer.repository;
+package com.amx.jax.repository.remittance;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -6,7 +6,8 @@ import java.math.BigDecimal;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
-import com.amx.jax.pricer.dbmodel.USDExchangeRateView;
+import com.amx.jax.dbmodel.remittance.USDExchangeRateView;
+
 
 public interface IUsdExchangeRateRepository extends CrudRepository<USDExchangeRateView, Serializable> {
 	

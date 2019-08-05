@@ -139,6 +139,8 @@ public class JaxNotificationService {
 			email.getModel().put("change_type", ChangeType.MOBILE_CHANGE);
 
 		} else if (customerModel.getEmail() != null) {
+			// Customer model has old email and Person info has new email
+			if(!customerModel.getEmail().equals(pinfo.getEmail())) {
 
 			email.getModel().put("change_type", ChangeType.EMAIL_CHANGE);
 
@@ -161,7 +163,9 @@ public class JaxNotificationService {
 					+ oldPinfo.getEmail());
 			sendEmail(emailToOld);
 		}
-
+			email.getModel().put("change_type", ChangeType.EMAIL_CHANGE);
+		}
+		
 		email.addTo(pinfo.getEmail());
 		email.setITemplate(TemplatesMX.PROFILE_CHANGE);
 		email.setHtml(true);

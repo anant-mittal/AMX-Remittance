@@ -27,6 +27,7 @@ public class SnapConstants {
 		TRANX_DONE("tranx-done", SnapIndexName.TRANX),
 		TRANX_ANOMALY("tranx-anomaly", SnapIndexName.TRANX),
 		XRATE_SELL_TRANSFER("xrate-sell-transfer", SnapIndexName.XRATE),
+		BUGZ_STORIES("bugz-stories", SnapIndexName.ALL),
 		;
 
 		String file;

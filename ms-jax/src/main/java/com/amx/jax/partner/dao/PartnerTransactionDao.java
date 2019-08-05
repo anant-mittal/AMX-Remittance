@@ -24,6 +24,7 @@ import com.amx.jax.repository.IAccountTypeFromViewDao;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.ICustomerViewRepository;
 import com.amx.jax.repository.ParameterDetailsRespository;
+import com.amx.jax.repository.remittance.IUsdExchangeRateRepository;
 
 @Component
 public class PartnerTransactionDao {
@@ -54,6 +55,9 @@ public class PartnerTransactionDao {
 	
 	@Autowired
 	IPaymentModeLimitsRepository paymentModeLimitsRepository;
+	
+	@Autowired
+	IUsdExchangeRateRepository usdExchangeRateRepository;
 	
 	public BenificiaryListView getBeneficiaryDetails(BigDecimal customerId,BigDecimal beneficiaryRelationShipSeqId) {
 		return beneficiaryViewRepository.findByCustomerIdAndBeneficiaryRelationShipSeqId(customerId, beneficiaryRelationShipSeqId);
@@ -95,8 +99,12 @@ public class PartnerTransactionDao {
 		return bankExternalReferenceDetailsRepository.fetchBankExternalBranchDetails(countryId, corBankId, beneBankId, beneBankBranchId);
 	}
 	
-	public List<PaymentModeLimitsView> fetchPaymentLimitDetails(BigDecimal bankId,BigDecimal currencyId,BigDecimal customerTypeFrom,BigDecimal customerTypeTo){ 
+	public List<PaymentModeLimitsView> fetchPaymentLimitDetails(BigDecimal bankId,BigDecimal currencyId,String customerTypeFrom,String customerTypeTo){ 
 		return paymentModeLimitsRepository.fetchPaymentLimitDetails(bankId, currencyId, customerTypeFrom, customerTypeTo);
+	}
+	
+	public BigDecimal fetchUsdExchangeRate() {
+		return usdExchangeRateRepository.fetchUsdExchangeRate();
 	}
 	
 }

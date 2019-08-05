@@ -5,8 +5,13 @@ import java.io.Serializable;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.EnumType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+@JsonInclude(Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public abstract class AbstractEvent implements Serializable {
 
 	public static final String PROP_TRC_ID = "trcId";
@@ -15,6 +20,7 @@ public abstract class AbstractEvent implements Serializable {
 	public static final String PROP_COMPONENT = "ms";
 	public static final String PROP_TIMSTAMP = "ts";
 	public static final String PROP_TYPE = "type";
+	public static final String PROP_FLOW = "flow";
 	private static final long serialVersionUID = -3042991299608634785L;
 
 	public enum EventMarker implements EnumType {
@@ -83,6 +89,9 @@ public abstract class AbstractEvent implements Serializable {
 
 	@JsonProperty(PROP_TRX_ID)
 	protected String tranxId;
+
+	@JsonProperty(PROP_FLOW)
+	protected String flow;
 
 	public AbstractEvent() {
 		this.timestamp = System.currentTimeMillis();
@@ -159,6 +168,14 @@ public abstract class AbstractEvent implements Serializable {
 	@JsonIgnore
 	public void setDebugEvent(boolean debugEvent) {
 		this.debugEvent = debugEvent;
+	}
+
+	public String getFlow() {
+		return flow;
+	}
+
+	public void setFlow(String flow) {
+		this.flow = flow;
 	}
 
 }

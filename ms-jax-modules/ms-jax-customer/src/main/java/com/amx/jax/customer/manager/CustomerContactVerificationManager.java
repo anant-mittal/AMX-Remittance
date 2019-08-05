@@ -12,19 +12,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.jax.db.utils.EntityDtoUtil;
+import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.constant.CustomerVerificationType;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerContactVerification;
+import com.amx.jax.dbmodel.CustomerOnlineRegistration;
+import com.amx.jax.dbmodel.CustomerVerification;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.error.JaxError;
-
 import com.amx.jax.model.customer.CustomerContactVerificationDto;
 import com.amx.jax.repository.CustomerContactVerificationRepository;
 import com.amx.jax.repository.CustomerRepository;
+import com.amx.jax.userservice.repository.CustomerVerificationRepository;
+import com.amx.jax.userservice.repository.OnlineCustomerRepository;
+import com.amx.jax.userservice.service.CustomerVerificationService;
 import com.amx.jax.util.AmxDBConstants;
 import com.amx.jax.util.AmxDBConstants.Status;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
+import com.amx.utils.EntityDtoUtil;
 import com.amx.utils.Random;
 import com.amx.utils.TimeUtils;
 
@@ -41,9 +47,17 @@ public class CustomerContactVerificationManager {
 
 	@Autowired
 	CustomerRepository customerRepository;
+	
+	@Autowired
+	private CustomerVerificationService customerVerificationService;
+	
+	@Autowired
+	private CustomerVerificationRepository customerVerificationRepository;
+	
+	@Autowired
+	OnlineCustomerRepository onlineCustomerRepository;
 
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
-
 
 	public CustomerContactVerification getCustomerContactVerification(BigDecimal id) {
 		return customerContactVerificationRepository.findById(id);
@@ -108,7 +122,7 @@ public class CustomerContactVerificationManager {
 
 		if (!ArgUtil.isEmpty(oldlinks) && oldlinks.size() > 3) {
 			throw new GlobalException(JaxError.SEND_OTP_LIMIT_EXCEEDED,
-					"Sending Verification Limit(3) has exceeded try again after 24 hrs" + contactType);
+					"Sending Verification Limit(4) has exceeded try again after 24 hours");
 		}
 
 		return customerContactVerificationRepository.save(link);
@@ -145,7 +159,9 @@ public class CustomerContactVerificationManager {
 	public void markCustomerContactVerified(Customer c, ContactType type, String contact) {
 
 		List<Customer> otherCustomers = null;
-
+		CustomerVerification cv = customerVerificationService.getVerification(c.getCustomerId(),
+				CustomerVerificationType.EMAIL);
+		CustomerOnlineRegistration customerOnlineRegistration = onlineCustomerRepository.getLoginCustomersDeatilsById(c.getIdentityInt());
 		if (ContactType.EMAIL.equals(type)) {
 			if (!contact.equals(c.getEmail())) {
 				throw new GlobalException(JaxError.ENTITY_INVALID,
@@ -153,9 +169,12 @@ public class CustomerContactVerificationManager {
 			}
 			otherCustomers = customerRepository.getCustomersByEmail(c.getEmail());
 			for (Customer customer : otherCustomers) {
-				customer.setEmailVerified(Status.N);
+				customer.setEmailVerified(Status.D);
 			}
 			c.setEmailVerified(Status.Y);
+			
+			cv.setVerificationStatus(ConstantDocument.Yes);
+			customerOnlineRegistration.setStatus(ConstantDocument.Yes);
 		} else if (ContactType.SMS.equals(type)) {
 			String mobile = c.getPrefixCodeMobile() + c.getMobile();
 			if (!contact.equals(mobile)) {
@@ -164,7 +183,7 @@ public class CustomerContactVerificationManager {
 			}
 			otherCustomers = customerRepository.getCustomersByMobile(c.getPrefixCodeMobile(), c.getMobile());
 			for (Customer customer : otherCustomers) {
-				customer.setMobileVerified(Status.N);
+				customer.setMobileVerified(Status.D);
 			}
 			c.setMobileVerified(Status.Y);
 		} else if (ContactType.WHATSAPP.equals(type)) {
@@ -175,19 +194,21 @@ public class CustomerContactVerificationManager {
 			}
 			otherCustomers = customerRepository.getCustomersByWhatsApp(c.getWhatsappPrefix(), c.getWhatsapp());
 			for (Customer customer : otherCustomers) {
-				customer.setWhatsAppVerified(Status.N);
+				customer.setWhatsAppVerified(Status.D);
 			}
 			c.setWhatsAppVerified(Status.Y);
 		} else {
 			throw new GlobalException(JaxError.ENTITY_INVALID,
 					"Verification linkType is Invalid : " + type);
 		}
-
+		
 		if (!ArgUtil.isEmpty(otherCustomers)) {
 			customerRepository.save(otherCustomers);
 		}
 
 		customerRepository.save(c);
+		customerVerificationRepository.save(cv);
+		onlineCustomerRepository.save(customerOnlineRegistration);
 
 	}
 
@@ -202,6 +223,17 @@ public class CustomerContactVerificationManager {
 		markCustomerContactVerified(c, link.getContactType(), link.getContactValue());
 
 		link.setIsActive(Status.D);
+
+		List<CustomerContactVerification> oldlinks = getValidCustomerContactVerificationsByCustomerId(c.getCustomerId(),
+				link.getContactType(),
+				link.getContactValue());
+		if (!ArgUtil.isEmpty(oldlinks)) {
+			for (CustomerContactVerification customerContactVerification : oldlinks) {
+				customerContactVerification.setIsActive(Status.N);
+			}
+			customerContactVerificationRepository.save(oldlinks);
+		}
+
 		customerContactVerificationRepository.save(link);
 
 		return link;

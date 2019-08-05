@@ -12,12 +12,17 @@ import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
+import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.jax.JaxAuthContext;
 import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.exception.AmxApiError;
 import com.amx.jax.logger.AuditActor;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.events.AuditActorInfo;
 import com.amx.jax.model.AuthState;
+import com.amx.jax.model.AuthState.AuthFlow;
 import com.amx.jax.model.AuthState.AuthStep;
 import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.model.customer.SecurityQuestionModel;
@@ -31,7 +36,9 @@ import com.amx.jax.ui.model.AuthDataInterface.AuthResponse;
 import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseMessage;
 import com.amx.jax.ui.response.ResponseWrapper;
+import com.amx.jax.ui.session.Transactions;
 import com.amx.jax.ui.session.UserSession;
+import com.amx.utils.ArgUtil;
 import com.amx.utils.ListManager;
 
 /**
@@ -312,6 +319,82 @@ public class LoginService {
 			wrapper.getData().setState(sessionService.getGuestSession().getState());
 		}
 		return wrapper;
+	}
+
+	public ResponseWrapper<UserUpdateData> updatepwdV2(String password, String mOtp, String eOtp) {
+		if (!transactions.validate(AuthFlow.RESET_PASS)) {
+			throw new HttpUnauthorizedException(HttpUnauthorizedException.UN_SEQUENCE);
+		}
+		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
+		BoolRespModel model = jaxService.setDefaults().getUserclient().updatePassword(password, mOtp, eOtp).getResult();
+		if (model.isSuccess()) {
+			wrapper.setMessage(OWAStatusStatusCodes.USER_UPDATE_SUCCESS, "Password Updated Succesfully");
+			sessionService.getGuestSession().endStep(AuthStep.CREDS_SET);
+			wrapper.getData().setState(sessionService.getGuestSession().getState());
+		}
+		return wrapper;
+	}
+
+	@Autowired
+	Transactions transactions;
+
+	public ResponseWrapper<AuthResponse> sendOTP(AuthFlow authFlow, String identity, ContactType contactType,
+			String otp) {
+		contactType = ArgUtil.ifNotEmpty(contactType, JaxAuthContext.getContactType());
+		otp = ArgUtil.ifNotEmpty(otp, JaxAuthContext.getAnyOtp());
+
+		if (ArgUtil.isEmpty(contactType) || ContactType.EMPTY.equals(contactType)) {
+			AmxApiError amxApiError = new AmxApiError(OWAStatusStatusCodes.CONTACT_TYPE_REQUIRED);
+			amxApiError.setMeta(
+					jaxService.setDefaults().getUserclient().getCustomerModelSignupResponse(identity).getResult()
+							.getCustomerCommunicationChannel());
+			throw new UIServerError(amxApiError);
+		} else if (ArgUtil.isEmpty(otp)) {
+
+			ResponseWrapper<AuthResponse> wrapper = new ResponseWrapper<AuthResponse>(new AuthData());
+
+//			CivilIdOtpModel model = jaxService.setDefaults().getUserclient().initRegistration(identity, contactType)
+//					.getResult();
+
+			CivilIdOtpModel model = jaxService.setDefaults().getUserclient().sendResetOtpForCivilId(identity)
+					.getResult();
+
+			switch (contactType) {
+			case SMS:
+				wrapper.getData().setOtpPrefix((model.getmOtpPrefix()));
+				break;
+			case EMAIL:
+				wrapper.getData().setOtpPrefix((model.geteOtpPrefix()));
+				break;
+			case WHATSAPP:
+				wrapper.getData().setOtpPrefix((model.getwOtpPrefix()));
+				break;
+			default:
+				wrapper.getData().setOtpPrefix((model.getmOtpPrefix()));
+				break;
+			}
+
+			wrapper.getData().setmOtpPrefix((model.getmOtpPrefix()));
+			wrapper.getData().seteOtpPrefix((model.geteOtpPrefix()));
+			wrapper.getData().setwOtpPrefix((model.getwOtpPrefix()));
+
+			wrapper.setMessage(OWAStatusStatusCodes.OTP_SENT);
+			wrapper.setStatusEnum(OWAStatusStatusCodes.OTP_REQUIRED);
+			wrapper.setMeta(wrapper.getData());
+			return wrapper;
+		} else {
+			ResponseWrapper<AuthResponse> wrapper = new ResponseWrapper<AuthResponse>(new AuthData());
+			String mOtp = contactType == ContactType.SMS ? otp : null;
+			String eOtp = contactType == ContactType.EMAIL ? otp : null;
+			String wOtp = contactType == ContactType.WHATSAPP ? otp : null;
+			ApiResponse<CustomerModel> response = jaxService.setDefaults().getUserclient().validateOtp(identity, mOtp,
+					eOtp, wOtp);
+			CustomerModel model = response.getResult();
+			sessionService.getGuestSession().setCustomerModel(model);
+			transactions.create(authFlow);
+			wrapper.setMessage(OWAStatusStatusCodes.VERIFY_SUCCESS, ResponseMessage.AUTH_SUCCESS);
+			return wrapper;
+		}
 	}
 
 }

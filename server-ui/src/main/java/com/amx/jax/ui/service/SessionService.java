@@ -79,8 +79,7 @@ public class SessionService {
 	/**
 	 * Sets the app device.
 	 *
-	 * @param appDevice
-	 *            the new app device
+	 * @param appDevice the new app device
 	 */
 	public void setAppDevice(UserDeviceBean appDevice) {
 		this.appDevice = appDevice;
@@ -128,10 +127,8 @@ public class SessionService {
 	/**
 	 * authorize user based on customerModel.
 	 *
-	 * @param customerModel
-	 *            the customer model
-	 * @param valid
-	 *            the valid
+	 * @param customerModel the customer model
+	 * @param valid         the valid
 	 */
 	public void authorize(CustomerModel customerModel, Boolean valid) {
 		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
@@ -158,8 +155,7 @@ public class SessionService {
 	/**
 	 * Validates/Invalidates curent Session.
 	 * 
-	 * @param valid
-	 *            - true/false
+	 * @param valid - true/false
 	 * 
 	 * 
 	 */
@@ -193,8 +189,7 @@ public class SessionService {
 	 * Creates Index for current user and session. which will be maintained across
 	 * multiple deployments.
 	 *
-	 * @param authentication
-	 *            the authentication
+	 * @param authentication the authentication
 	 */
 	public void indexUser(Authentication authentication) {
 		String userKeyString = getUserKeyString();
@@ -244,7 +239,7 @@ public class SessionService {
 	}
 
 	public boolean isRequestAuthorized() {
-		
+
 		if (WebSecurityConfig.isPublicUrl(request.getRequestURI())) {
 			return true;
 		}
@@ -258,7 +253,7 @@ public class SessionService {
 			this.unauthorize();
 			return false;
 		}
-		return true;
+		return !WebSecurityConfig.isSecuredUrl(request.getRequestURI()) || this.validatedUser();
 	}
 
 	/**
