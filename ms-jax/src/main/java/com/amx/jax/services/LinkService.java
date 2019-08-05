@@ -18,6 +18,7 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.dbmodel.ContactLinkDetails;
 import com.amx.jax.dbmodel.LinkDetails;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.userservice.dao.LinkDetailsDao;
 import com.amx.utils.MapBuilder;
@@ -28,6 +29,9 @@ import com.amx.utils.MapBuilder.BuilderMap;
 public class LinkService extends AbstractService{
 	@Autowired
 	private LinkDetailsDao linkDao;
+	
+	@Autowired
+	private PushNotifyClient pushNotifyClient;
 	
 	
 	public AmxApiResponse<LinkResponseModel, Object> makeLink(LinkDTO dto) {		
@@ -81,6 +85,14 @@ public class LinkService extends AbstractService{
 		int openCounter = linkDetails.getOpenCounter();
 		linkDetails.setOpenCounter(openCounter+1);	
 		linkDao.updateLink(linkDetails);
+		if(linkDetails.getCustomerId() != null) {
+			PushMessage pushMessage = new PushMessage();
+			pushMessage.setSubject("Refer To Win!");
+			pushMessage.setMessage(
+					"Congraturlations! Your reference has downloaded the app. Keep sharing the links to as many contacts you can and win exciting prices on referral success!");
+			pushMessage.addToUser(linkDetails.getCustomerId());
+			pushNotifyClient.send(pushMessage);
+		}
 		return new BoolRespModel(true);
 	}
 	
