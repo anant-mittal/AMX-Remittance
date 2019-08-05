@@ -34,6 +34,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.AuthType;
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.PromotionDto;
@@ -262,7 +263,7 @@ public class RemittanceTransactionManager {
 	private RestService restService;
 	@Autowired
 	BankService bankService;
-	
+
 	@Autowired
 	BranchRemittanceApplManager branchRemittanceApplManager;
 
@@ -849,7 +850,7 @@ public class RemittanceTransactionManager {
 			}else if(!StringUtils.isBlank(inclusiveExclusiveComm)  && inclusiveExclusiveComm.equalsIgnoreCase(ConstantDocument.COMM_INCLUDE)) {
 				netAmount =breakup.getNetAmount();
 				
-			}else {
+		}else {
 				netAmount =netAmount.subtract(newCommission==null?BigDecimal.ZERO:newCommission);
 			}
 			
