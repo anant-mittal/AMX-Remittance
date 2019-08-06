@@ -424,6 +424,7 @@ public class UserValidationService {
 
 	public void validateCustomerLockCount(CustomerOnlineRegistration onlineCustomer) {
 		final Integer MAX_OTP_ATTEMPTS = otpSettings.getMaxValidateOtpAttempts();
+		final Integer MAX_CAPTCHA_COUNT = otpSettings.getMaxSendCaptchaAttempts();
 		if (onlineCustomer.getLockCnt() != null) {
 			int lockCnt = onlineCustomer.getLockCnt().intValue();
 			Date midnightTomorrow = getMidnightToday();
@@ -434,6 +435,9 @@ public class UserValidationService {
 					onlineCustomer.setLockDt(null);
 					custDao.saveOnlineCustomer(onlineCustomer);
 					lockCnt = 0;
+				}
+				if(lockCnt == MAX_CAPTCHA_COUNT) {
+					throw new GlobalException(JaxError.CAPTCHA_REQUIRED, "Captcha Required");
 				}
 				if (lockCnt >= MAX_OTP_ATTEMPTS) {
 					throw new GlobalException(JaxError.USER_LOGIN_ATTEMPT_EXCEEDED,
