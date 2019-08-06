@@ -10,7 +10,7 @@ import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.customer.document.manager.CustomerDocMasterManager;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.customer.CustomerDocumentTypeMaster;
-import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReference;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.customer.document.UploadCustomerDocumentRequest;
 import com.amx.jax.model.customer.document.UploadCustomerKycRequest;
@@ -54,10 +54,14 @@ public class DocumentScanValidator {
 			uploadCustomerDocumentRequest.setIdentityInt(customer.getIdentityInt());
 			uploadCustomerDocumentRequest.setIdentityTypeId(customer.getIdentityTypeId());
 		}
-		CustomerDocumentTypeMaster docTypeMaster = customerDocMasterManager.getDocTypeMaster(uploadCustomerDocumentRequest.getDocumentCategory(),
-				uploadCustomerDocumentRequest.getDocumentType());
+		validateDocCatAndDocType(uploadCustomerDocumentRequest.getDocumentCategory(), uploadCustomerDocumentRequest.getDocumentType());
+	}
+
+	public CustomerDocumentTypeMaster validateDocCatAndDocType(String cat, String type) {
+		CustomerDocumentTypeMaster docTypeMaster = customerDocMasterManager.getDocTypeMaster(cat, type);
 		if (docTypeMaster == null) {
-			throw new GlobalException("No doc type master found in db");
+			throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Invalid doc category or doc type");
 		}
+		return docTypeMaster;
 	}
 }

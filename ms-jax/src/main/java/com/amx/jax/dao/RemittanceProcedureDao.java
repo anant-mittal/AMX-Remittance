@@ -46,8 +46,7 @@ public class RemittanceProcedureDao {
 
 		try {
 			connection = connectionProvider.getDataSource().getConnection();
-			CallableStatement cs = connection
-					.prepareCall("{call EX_INSERT_REMITTANCE_ONLINE(?,?,?,?,?,?,?,?,?,?,?,?)}");
+			CallableStatement cs = connection.prepareCall("{call EX_INSERT_REMITTANCE_ONLINE(?,?,?,?,?,?,?,?,?,?,?,?)}");
 
 			cs.setBigDecimal(1, applicationCountryId);
 			cs.setBigDecimal(2, companyId);
@@ -119,6 +118,47 @@ public class RemittanceProcedureDao {
 
 		} catch (Exception e) {
 			LOGGER.error("Error while calling EX_INSERT_EMOS_TRANSFER_LIVE : ", e);
+		} finally {
+			try {
+				if (connection != null)
+					connection.close();
+			} catch (Exception ee) {
+				LOGGER.error("Error while closing connection. : ", ee);
+			}
+		}
+		return output;
+	}
+
+	@Transactional
+	public Map<String, Object> updateAmlAuth(Map<String, Object> inputValues) {
+
+		BigDecimal remittanceTrnxId = (BigDecimal) inputValues.get("P_REMITTANCE_TRANSACTION_ID");
+		String remark = (String) inputValues.get("P_REMARKS");
+		String authBy = (String) inputValues.get("P_AUTHORIZED_BY");
+		String hvtLocal = (String) inputValues.get("P_HIGH_VALUE_TRANX");
+		String hvtFc = (String) inputValues.get("P_FC_HIGH_VALUE_TRANX");
+
+		LOGGER.info("EX_UPDATE_AML_AUTH INPUT :" + inputValues.toString());
+
+		Map<String, Object> output = new HashMap<>();
+
+		Connection connection = null;
+
+		try {
+			connection = connectionProvider.getDataSource().getConnection();
+			CallableStatement cs = connection.prepareCall(" { call EX_UPDATE_AML_AUTH(?,?,?,?,?)}");
+			cs.setBigDecimal(1, remittanceTrnxId);
+			cs.setString(2, remark);
+			cs.setString(3, authBy);
+			cs.setString(4, hvtLocal);
+			cs.setString(5, hvtFc);
+			cs.execute();
+			output.put("P_ERROR_MESSAGE", cs.getString(6));
+			LOGGER.info("EX_INSERT_EMOS_TRANSFER_LIVE OUTPUT :" + output.toString());
+			cs.close();
+
+		} catch (Exception e) {
+			LOGGER.error("Error while calling EX_UPDATE_AML_AUTH : ", e);
 		} finally {
 			try {
 				if (connection != null)

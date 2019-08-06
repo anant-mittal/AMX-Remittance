@@ -7,6 +7,8 @@ import org.springframework.core.ParameterizedTypeReference;
 
 import com.amx.jax.AppConfig;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.client.compliance.ApproveDocRequest;
 import com.amx.jax.client.compliance.ComplianceBlockedTrnxType;
 import com.amx.jax.client.compliance.HighValueTrnxDto;
 import com.amx.jax.client.compliance.IComplianceService;
@@ -50,6 +52,20 @@ public class ComplianceClient implements IComplianceService {
 					});
 		} catch (Exception e) {
 			LOGGER.error("exception in listHighValueTransaction : ", e);
+			return JaxSystemError.evaluate(e);
+		}
+	}
+
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> approveTrnxDoc(ApproveDocRequest request) {
+		try {
+			LOGGER.debug("in approveTrnxDoc :  ");
+			String url = appConfig.getJaxURL() + Path.APPROVE_TRANSACTOIN_DOCUMENT;
+			return restService.ajax(url).meta(new JaxMetaInfo()).post(request)
+					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in approveTrnxDoc : ", e);
 			return JaxSystemError.evaluate(e);
 		}
 	}

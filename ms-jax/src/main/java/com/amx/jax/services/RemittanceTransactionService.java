@@ -2,7 +2,11 @@ package com.amx.jax.services;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -17,7 +21,10 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.client.compliance.ComplianceBlockedTrnxType;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.RemittanceApplicationDao;
+import com.amx.jax.dao.RemittanceProcedureDao;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.RemittanceTransactionView;
@@ -34,6 +41,7 @@ import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel
 import com.amx.jax.payg.PayGModel;
 import com.amx.jax.repository.IRemittanceTransactionDao;
 import com.amx.jax.repository.ISourceOfIncomeDao;
+import com.amx.jax.repository.RemittanceTransactionRepository;
 import com.amx.jax.service.CountryService;
 import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.userservice.service.UserService;
@@ -66,6 +74,10 @@ public class RemittanceTransactionService extends AbstractService {
 	UserService userSerivce;
 	@Autowired
 	CountryService countryService;
+	@Autowired
+	RemittanceProcedureDao  remittanceProcedureDao;
+	@Autowired
+	RemittanceTransactionRepository remittanceTransactionRepository;
 	
 	public ApiResponse getRemittanceTransactionDetails(BigDecimal collectionDocumentNo, BigDecimal fYear,
 			BigDecimal collectionDocumentCode) {
@@ -231,5 +243,26 @@ public class RemittanceTransactionService extends AbstractService {
 		BigDecimal beneficiaryRelationShipSeqId = remittanceApplication.getExRemittanceAppBenificiary().get(0)
 				.getBeneficiaryRelationShipSeqId();
 		return beneficiaryService.getBeneBybeneficiaryRelationShipSeqId(beneficiaryRelationShipSeqId);
+	}
+	
+	@Transactional
+	public void clearHighValueTransaction(BigDecimal remittanceTransactionId, ComplianceBlockedTrnxType trnxType) {
+		RemittanceTransaction trnx = getRemittanceTransactionById(remittanceTransactionId);
+		Map<String, Object> inputValues = new HashMap<>();
+		inputValues.put("P_REMITTANCE_TRANSACTION_ID", remittanceTransactionId);
+		inputValues.put("P_REMARKS", "");
+		inputValues.put("P_AUTHORIZED_BY", remittanceTransactionId);
+		inputValues.put("P_HIGH_VALUE_TRANX", trnxType.equals(ComplianceBlockedTrnxType.HVT_LOCAL) ? "Y" : "N");
+		inputValues.put("P_FC_HIGH_VALUE_TRANX", trnxType.equals(ComplianceBlockedTrnxType.HVT_FC) ? "Y" : "N");
+		switch (trnxType) {
+		case HVT_FC:
+		case HVT_LOCAL:
+			remittanceProcedureDao.updateAmlAuth(inputValues);
+			break;
+		case SUSPICIOUS:
+			trnx.setSuspicousTransaction(ConstantDocument.No);
+			remittanceTransactionRepository.save(trnx);
+			break;
+		}
 	}
 }

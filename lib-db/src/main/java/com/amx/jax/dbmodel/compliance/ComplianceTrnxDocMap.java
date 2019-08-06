@@ -4,10 +4,14 @@ import java.math.BigDecimal;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.amx.jax.client.compliance.ComplianceTrnxStatus;
 import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReference;
 
 @Entity
@@ -19,12 +23,13 @@ public class ComplianceTrnxDocMap {
 	BigDecimal id;
 
 	@Column(name = "STATUS")
-	String status;
+	@Enumerated(EnumType.STRING)
+	ComplianceTrnxStatus status;
 
 	@Column(name = "REMITTANCE_TRANSACTION_ID")
 	BigDecimal remittanceTransaction;
 
-	@Column(name = "CUST_DOC_UPLOAD_REF_ID")
+	@JoinColumn(name = "CUST_DOC_UPLOAD_REF_ID")
 	@OneToOne
 	CustomerDocumentUploadReference customerDocumentUploadReference;
 
@@ -36,11 +41,11 @@ public class ComplianceTrnxDocMap {
 		this.id = id;
 	}
 
-	public String getStatus() {
+	public ComplianceTrnxStatus getStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(ComplianceTrnxStatus status) {
 		this.status = status;
 	}
 

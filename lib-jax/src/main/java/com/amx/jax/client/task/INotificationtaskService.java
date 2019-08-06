@@ -7,6 +7,7 @@ public interface INotificationtaskService {
 	public static class Path {
 
 		public static final String NOTIFY_BU_FOR_CUSTOMER_DOC_UPLOAD = "/notify-bu-cust-doc-upload";
+		public static final String LIST_USER_NOTIFICATION_TASKS = "/list-user-notification-tasks";
 	}
 
 	public static class Params {
@@ -16,5 +17,7 @@ public interface INotificationtaskService {
 	}
 
 	AmxApiResponse<BoolRespModel, Object> notifyBranchUserForDocumentUpload(CustomerDocUploadNotificationTaskData data);
+
+	AmxApiResponse<NotificationTaskDto, Object> listUserNotificationTasks();
 
 }

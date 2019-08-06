@@ -1,5 +1,6 @@
 package com.amx.jax.model.customer;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import com.amx.jax.model.customer.document.CustomerDocUtil;
@@ -16,6 +17,7 @@ public class CustomerDocumentInfo {
 	String documentCategory;
 	String documentCategoryDesc;
 	Date expiryDate;
+	BigDecimal uploadRefId;
 
 	public DocumentImageRenderType getDocumentRenderType() {
 		return documentRenderType;
@@ -97,6 +99,14 @@ public class CustomerDocumentInfo {
 
 	public void setExpiryDate(Date expiryDate) {
 		this.expiryDate = expiryDate;
+	}
+
+	public BigDecimal getUploadRefId() {
+		return uploadRefId;
+	}
+
+	public void setUploadRefId(BigDecimal uploadRefId) {
+		this.uploadRefId = uploadRefId;
 	}
 
 }

@@ -1,4 +1,4 @@
-package com.amx.jax.customer.api;
+package com.amx.jax.controller;
 
 import static com.amx.jax.customer.ICustomerManagementController.ApiPath.CREATE_CUSTOMER;
 import static com.amx.jax.customer.ICustomerManagementController.ApiPath.DOCUMENT_CATEGORY_GET;
@@ -53,6 +53,7 @@ import com.amx.jax.model.request.VerifyCustomerContactRequest;
 import com.amx.jax.model.request.customer.UpdateCustomerInfoRequest;
 import com.amx.jax.model.response.CustomerInfo;
 import com.amx.jax.model.response.customer.CustomerShortInfo;
+import com.amx.jax.services.NotificationTaskService;
 import com.amx.jax.userservice.manager.OnlineCustomerManager;
 import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
 import com.amx.libjax.model.jaxfield.JaxFieldDto;
@@ -75,6 +76,8 @@ public class CustomerManagementController implements ICustomerManagementControll
 	CustomerDocMasterManager customerDocMasterManager;
 	@Autowired
 	CustomerPersonalDetailManager customerPersonalDetailManager;
+	@Autowired
+	NotificationTaskService notificationTaskService;
 
 	private static final Logger log = LoggerFactory.getLogger(CustomerManagementController.class);
 
@@ -112,6 +115,7 @@ public class CustomerManagementController implements ICustomerManagementControll
 			@RequestBody @Valid UploadCustomerDocumentRequest uploadCustomerDocumentRequest) {
 		log.info("request uploadCustomerDocumentRequest {}", JsonUtil.toJson(uploadCustomerDocumentRequest));
 		UploadCustomerDocumentResponse uploadReference = customerDocumentManager.uploadDocument(uploadCustomerDocumentRequest);
+		notificationTaskService.updateDocUploadNotificationTask(uploadCustomerDocumentRequest);
 		return AmxApiResponse.build(uploadReference);
 	}
 

@@ -2,23 +2,34 @@ package com.amx.jax.compliance;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.transaction.Transactional;
+
 import org.apache.commons.beanutils.BeanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.jax.client.compliance.ApproveDocRequest;
 import com.amx.jax.client.compliance.ComplianceBlockedTrnxType;
+import com.amx.jax.client.compliance.ComplianceTrnxStatus;
 import com.amx.jax.client.compliance.HighValueTrnxDto;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.customer.document.manager.CustomerDocumentManager;
+import com.amx.jax.customer.document.validate.DocumentScanValidator;
 import com.amx.jax.dbmodel.compliance.ComplianceTrnxDocMap;
 import com.amx.jax.dbmodel.compliance.HighValueComplianceAuth;
+import com.amx.jax.dbmodel.customer.CustomerDocumentTypeMaster;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.model.customer.ComplianceTrnxDocumentInfo;
+import com.amx.jax.model.customer.CustomerDocumentInfo;
 import com.amx.jax.repository.compliance.ComplianceTrnxDocMapRepo;
 import com.amx.jax.repository.compliance.HighValueComplianceAuthRepo;
+import com.amx.jax.services.RemittanceTransactionService;
 
 @Component
 public class ComplianceTransactionManager {
@@ -29,6 +40,12 @@ public class ComplianceTransactionManager {
 	ComplianceTrnxDocMapRepo complianceTrnxDocMapRepo;
 	@Autowired
 	CustomerDocumentManager customerDocumentManager;
+	@Autowired
+	DocumentScanValidator documentScanValidator;
+	@Autowired
+	RemittanceTransactionService remittanceTransactionService;
+
+	private static final Logger log = LoggerFactory.getLogger(ComplianceTransactionManager.class);
 
 	public List<HighValueTrnxDto> listHighValueTransaction(ComplianceBlockedTrnxType trnxType) {
 		if (trnxType == null) {
@@ -66,16 +83,50 @@ public class ComplianceTransactionManager {
 		return dto;
 	}
 
+	@Transactional
 	public List<ComplianceTrnxDocumentInfo> getTransactionDocuments(BigDecimal trnxId) {
 
 		List<ComplianceTrnxDocMap> docs = complianceTrnxDocMapRepo.findById(trnxId);
-		return docs.stream().map(i -> customerDocumentManager.convertToCustomerDocumentInfo(i.getCustomerDocumentUploadReference())).map(j -> {
+		Map<BigDecimal, ComplianceTrnxDocMap> uploadIdTrnxDocMapMapping = docs.stream()
+				.collect(Collectors.toMap(i -> i.getCustomerDocumentUploadReference().getId(), i -> i));
+		List<CustomerDocumentInfo> customerDocInfoList = docs.stream()
+				.map(i -> customerDocumentManager.convertToCustomerDocumentInfo(i.getCustomerDocumentUploadReference())).collect(Collectors.toList());
+		List<ComplianceTrnxDocumentInfo> list = customerDocInfoList.stream().map(j -> {
+			ComplianceTrnxDocMap doc = uploadIdTrnxDocMapMapping.get(j.getUploadRefId());
 			ComplianceTrnxDocumentInfo trnxDocInfo = new ComplianceTrnxDocumentInfo();
 			try {
 				BeanUtils.copyProperties(trnxDocInfo, j);
 			} catch (Exception e) {
 			}
+			trnxDocInfo.setStatus(doc.getStatus());
 			return trnxDocInfo;
 		}).collect(Collectors.toList());
+		return list;
+	}
+
+	@Transactional
+	public void approveTrnxDoc(ApproveDocRequest request) {
+		log.info("approving hvt request: {}", request);
+		CustomerDocumentTypeMaster docTypemaster = documentScanValidator.validateDocCatAndDocType(request.getDocumentCategory(),
+				request.getDocumentType());
+		List<ComplianceTrnxDocMap> allDocs = complianceTrnxDocMapRepo.findById(request.getRemittanceTransactionId());
+		boolean allDocsApproved = true;
+		for (ComplianceTrnxDocMap i : allDocs) {
+			CustomerDocumentTypeMaster trnxDocTypeMaster = i.getCustomerDocumentUploadReference().getCustomerDocumentTypeMaster();
+			if (trnxDocTypeMaster.equals(docTypemaster)) {
+				i.setStatus(ComplianceTrnxStatus.APPROVED);
+				complianceTrnxDocMapRepo.save(i);
+			}
+			if (!i.getStatus().equals(ComplianceTrnxStatus.APPROVED)) {
+				allDocsApproved = false;
+			}
+		}
+		if (allDocsApproved) {
+			log.info("clearing transaction as all docs are approved");
+			remittanceTransactionService.clearHighValueTransaction(request.getRemittanceTransactionId(),
+					ComplianceBlockedTrnxType.valueOf(request.getDocumentCategory()));
+			// TODO remove notification
+
+		}
 	}
 }

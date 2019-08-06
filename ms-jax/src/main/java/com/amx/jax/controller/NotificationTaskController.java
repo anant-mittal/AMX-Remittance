@@ -1,5 +1,9 @@
 package com.amx.jax.controller;
 
+import java.util.List;
+
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,6 +14,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.task.CustomerDocUploadNotificationTaskData;
 import com.amx.jax.client.task.INotificationtaskService;
+import com.amx.jax.client.task.NotificationTaskDto;
 import com.amx.jax.services.NotificationTaskService;
 
 @RestController
@@ -20,9 +25,16 @@ public class NotificationTaskController implements INotificationtaskService {
 
 	@RequestMapping(path = Path.NOTIFY_BU_FOR_CUSTOMER_DOC_UPLOAD, method = RequestMethod.POST)
 	@Override
-	public AmxApiResponse<BoolRespModel, Object> notifyBranchUserForDocumentUpload(@RequestBody CustomerDocUploadNotificationTaskData data) {
+	public AmxApiResponse<BoolRespModel, Object> notifyBranchUserForDocumentUpload(@Valid @RequestBody CustomerDocUploadNotificationTaskData data) {
 		notificationTaskService.notifyBranchUserForDocumentUpload(data);
 		return AmxApiResponse.build();
+	}
+
+	@RequestMapping(path = Path.LIST_USER_NOTIFICATION_TASKS, method = RequestMethod.GET)
+	@Override
+	public AmxApiResponse<NotificationTaskDto, Object> listUserNotificationTasks() {
+		List<NotificationTaskDto> notifications = notificationTaskService.listUserNotificationTasks();
+		return AmxApiResponse.buildList(notifications);
 	}
 
 }

@@ -12,22 +12,25 @@ import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Cascade;
+
 @Entity
 @Table(name = "JAX_NOTIFICATION_TASK_ASSIGN")
 public class JaxNotificationTaskAssign {
 
 	@Id
 	@Column(name = "ID")
-	@GeneratedValue(generator = "JAX_NOTIFICATION_TASK_ASSIGN_SEQ", strategy = GenerationType.SEQUENCE)
-	@SequenceGenerator(name = "JAX_NOTIFICATION_TASK_ASSIGN_SEQ", sequenceName = "JAX_NOTIFICATION_TASK_ASSIGN_SEQ", allocationSize = 1)
+	@GeneratedValue(generator = "JAX_NOTIFICATION_TASK_ASSIGN_S", strategy = GenerationType.SEQUENCE)
+	@SequenceGenerator(name = "JAX_NOTIFICATION_TASK_ASSIGN_S", sequenceName = "JAX_NOTIFICATION_TASK_ASSIGN_S", allocationSize = 1)
 	BigDecimal id;
 
 	@ManyToOne
 	@JoinColumn(name = "NOTIFICATION_TASK_ID")
+	@Cascade(org.hibernate.annotations.CascadeType.ALL)
 	JaxNotificationTask task;
 
-	@Column(name = "EMPLOYEE_ROLE_ID")
-	BigDecimal employeeRoleId;
+	@Column(name = "PERMISSIONS")
+	String permissions;
 
 	@Column(name = "COUNTRY_BRANCH_ID")
 	BigDecimal countryBranchId;
@@ -48,20 +51,20 @@ public class JaxNotificationTaskAssign {
 		this.task = task;
 	}
 
-	public BigDecimal getEmployeeRoleId() {
-		return employeeRoleId;
-	}
-
-	public void setEmployeeRoleId(BigDecimal employeeRoleId) {
-		this.employeeRoleId = employeeRoleId;
-	}
-
 	public BigDecimal getCountryBranchId() {
 		return countryBranchId;
 	}
 
 	public void setCountryBranchId(BigDecimal countryBranchId) {
 		this.countryBranchId = countryBranchId;
+	}
+
+	public String getPermissions() {
+		return permissions;
+	}
+
+	public void setPermissions(String permissions) {
+		this.permissions = permissions;
 	}
 
 }

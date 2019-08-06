@@ -262,12 +262,14 @@ public class CustomerDocumentManager {
 	public void saveCustomerDocumentUploadsRefs(List<CustomerDocumentUploadReference> uploads) {
 		customerDocumentUploadReferenceRepo.save(uploads);
 	}
-	
+
 	public CustomerDocumentInfo convertToCustomerDocumentInfo(CustomerDocumentUploadReference uploadRef) {
 		CustomerDocumentInfo docInfo = null;
 		if (uploadRef.getScanIndic().equals(DocumentScanIndic.DB_SCAN)) {
 			docInfo = databaseImageScanManager.getDocumentInfo(uploadRef);
+			docInfo.setUploadRefId(uploadRef.getId());
 		}
 		return docInfo;
 	}
+
 }

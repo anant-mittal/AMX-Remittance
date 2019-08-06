@@ -1,25 +1,30 @@
-package com.amx.jax.client.task;
+package com.amx.jax.client.compliance;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
-import com.amx.jax.swagger.ApiMockModelProperty;
+import io.swagger.annotations.ApiModelProperty;
 
-public class CustomerDocUploadNotificationTaskData {
+public class ApproveDocRequest {
 
+	@ApiModelProperty(example = "BANK_STATEMENT")
 	@NotNull
-	@ApiMockModelProperty(example = "HVT_LOCAL_TRNX")
+	String documentType;
+	@ApiModelProperty(example = "HVT_LOCAL_TRNX")
+	@NotNull
 	String documentCategory;
-
+	@ApiModelProperty(example = "4228")
 	@NotNull
-	@ApiMockModelProperty(example = "[BANK_STATEMENT]")
-	List<String> documentTypes;
-
-	@NotNull
-	@ApiMockModelProperty(example = "4228")
 	BigDecimal remittanceTransactionId;
+
+	public String getDocumentType() {
+		return documentType;
+	}
+
+	public void setDocumentType(String documentType) {
+		this.documentType = documentType;
+	}
 
 	public String getDocumentCategory() {
 		return documentCategory;
@@ -35,13 +40,5 @@ public class CustomerDocUploadNotificationTaskData {
 
 	public void setRemittanceTransactionId(BigDecimal remittanceTransactionId) {
 		this.remittanceTransactionId = remittanceTransactionId;
-	}
-
-	public List<String> getDocumentTypes() {
-		return documentTypes;
-	}
-
-	public void setDocumentTypes(List<String> documentTypes) {
-		this.documentTypes = documentTypes;
 	}
 }
