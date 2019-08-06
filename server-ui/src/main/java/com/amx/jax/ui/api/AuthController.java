@@ -97,11 +97,13 @@ public class AuthController {
 			throw new UIServerError(OWAStatusStatusCodes.DEVICE_LOCKED);
 		}
 
+		String captcha = JaxAuthContext.captcha(authData.getCaptachKey());
+
 		if (!ArgUtil.isEmpty(authData.getDeviceToken())) {
 			return loginService.loginByDevice(authData.getIdentity(), authData.getDeviceToken());
 		} else if (!ArgUtil.isEmpty(authData.getPassword())) {
 			if (!ArgUtil.isEmpty(authData.getCaptachKey()) &&
-					googleService.verifyCaptcha(authData.getCaptachKey(), httpService.getIPAddress())) {
+					googleService.verifyCaptcha(captcha, httpService.getIPAddress())) {
 				return loginService.loginUserPass(authData.getIdentity(), authData.getPassword());
 			} else {
 				throw new UIServerError(OWAStatusStatusCodes.CAPTCHA_REQUIRED);
