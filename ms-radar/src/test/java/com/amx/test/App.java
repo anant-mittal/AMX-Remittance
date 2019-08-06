@@ -3,7 +3,6 @@ package com.amx.test;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URISyntaxException;
-import java.util.Base64;
 import java.util.regex.Pattern;
 
 import org.jsoup.Connection;
@@ -37,9 +36,14 @@ public class App { // Noncompliant
 	 * @throws IOException
 	 */
 	public static void main(String[] args) throws URISyntaxException, IOException {
+
+		String filePath = "file://" + System.getProperty("user.dir")
+				+ "/src/test/java/com/../../java/com/amx/test/appParams.json";
+
+		String filePathNormalized = FileUtil.normalize(filePath);
+
 		String json = FileUtil
-				.readFile("file://" + System.getProperty("user.dir")
-						+ "/src/test/java/com/amx/test/appParams.json");
+				.readFile(filePathNormalized);
 		PayGParams rates2 = JsonUtil.getMapper().readValue(json, PayGParams.class);
 
 		PayGService service = new PayGService();
