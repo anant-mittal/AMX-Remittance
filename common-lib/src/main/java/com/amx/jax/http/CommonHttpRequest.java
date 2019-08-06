@@ -24,6 +24,7 @@ import org.springframework.web.util.WebUtils;
 
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppConstants;
+import com.amx.jax.AppContext;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.dict.Language;
 import com.amx.jax.dict.UserClient;
@@ -116,7 +117,9 @@ public class CommonHttpRequest {
 	}
 
 	public Language getLanguage() {
-		return (Language) ArgUtil.parseAsEnum(request.getLocale().getLanguage(), Language.DEFAULT);
+		return (Language) ArgUtil.parseAsEnum(
+				ArgUtil.ifNotEmpty(getRequestParam(AppConstants.LANG_PARAM_KEY), request.getLocale().getLanguage()),
+				Language.DEFAULT);
 	}
 
 	public Device getCurrentDevice() {
