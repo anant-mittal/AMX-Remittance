@@ -18,7 +18,7 @@ import com.amx.jax.ui.service.SessionService;
  * The Class AuthLibKWT.
  */
 @Component
-@TenantSpecific({ Tenant.KWT })
+@TenantSpecific({ Tenant.KWT,Tenant.KWT2})
 public class AuthLibKWT implements AuthLib {
 
 	@Autowired
