@@ -20,11 +20,15 @@ public class JaxAuthContext {
 	public static String getWotp() {
 		return ArgUtil.parseAsString(AppContextUtil.getParams().get("wOtp"));
 	}
-	
+
+	public static String getCaptcha() {
+		return ArgUtil.parseAsString(AppContextUtil.getParams().get("captcha"));
+	}
+
 	public static ContactType getContactType() {
 		return ArgUtil.parseAsEnumIgnoreCase(AppContextUtil.getParams().get("contactType"), ContactType.class);
 	}
-	
+
 	public static String getFlow() {
 		return AppContextUtil.getFlow();
 	}
@@ -77,6 +81,14 @@ public class JaxAuthContext {
 		}
 		AppContextUtil.getParams().put("eOtp", eOtp);
 		return eOtp;
+	}
+
+	public static String captcha(String captcha) {
+		if (ArgUtil.isEmpty(captcha)) {
+			return getCaptcha();
+		}
+		AppContextUtil.getParams().put("captcha", captcha);
+		return captcha;
 	}
 
 	public static ContactType contactType(ContactType contactType) {

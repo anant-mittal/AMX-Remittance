@@ -20,6 +20,7 @@ public class JaxAuthMeta implements Serializable {
 		this.wOtpHash = "";
 		this.secAnsHash = "";
 		this.contactType = "";
+		this.captcha = "";
 	}
 
 	public JaxAuthMeta(String id) {
@@ -29,6 +30,7 @@ public class JaxAuthMeta implements Serializable {
 		this.eOtpHash = "";
 		this.wOtpHash = "";
 		this.secAnsHash = "";
+		this.captcha = "";
 	}
 
 	public JaxAuthMeta(String mOtp, String eOtp, String secAns) {
@@ -57,6 +59,10 @@ public class JaxAuthMeta implements Serializable {
 	@ApiMockModelProperty(example = "123456")
 	String wOtpHash;
 
+	@JsonProperty(value = "captcha")
+	@ApiMockModelProperty(example = "1121212hsjkdsjhdhsdho2o23222323223232")
+	String captcha;
+
 	@JsonProperty(value = "questId")
 	@ApiMockModelProperty(example = "Q1")
 	BigDecimal questId;
@@ -64,7 +70,7 @@ public class JaxAuthMeta implements Serializable {
 	@JsonProperty(value = "secAns")
 	@ApiMockModelProperty(example = "black")
 	String secAnsHash;
-	
+
 	@JsonProperty(value = "contactType")
 	@ApiMockModelProperty(example = "SMS")
 	String contactType;
@@ -137,5 +143,13 @@ public class JaxAuthMeta implements Serializable {
 
 	public void setContactType(String contactType) {
 		this.contactType = contactType;
+	}
+
+	public String getCaptcha() {
+		return captcha;
+	}
+
+	public void setCaptcha(String captcha) {
+		this.captcha = captcha;
 	}
 }
