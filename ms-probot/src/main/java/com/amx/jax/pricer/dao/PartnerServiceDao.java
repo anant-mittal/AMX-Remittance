@@ -22,7 +22,7 @@ import com.amx.jax.pricer.repository.IBeneficiaryViewRepository;
 import com.amx.jax.pricer.repository.ICustomerViewRepository;
 import com.amx.jax.pricer.repository.IParameterDetailsRespository;
 import com.amx.jax.pricer.repository.IServiceProviderMarginRepository;
-import com.amx.jax.repository.remittance.IUsdExchangeRateRepository;
+import com.amx.jax.pricer.repository.IUsdExchangeRateRepository;
 
 @Component
 public class PartnerServiceDao {
