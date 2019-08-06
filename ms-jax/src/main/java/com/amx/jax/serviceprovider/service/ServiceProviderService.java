@@ -173,8 +173,8 @@ public class ServiceProviderService extends AbstractService {
 			ServiceProviderSummaryDTO serviceProviderSummaryDTO = new ServiceProviderSummaryDTO();
 			serviceProviderSummaryDTO.setSendPayIndicator(serviceProviderSummaryModel.getSendPayIndicator());
 			serviceProviderSummaryDTO.setTotalCount(serviceProviderSummaryModel.getTotalTransaction());
-			serviceProviderSummaryDTO.setCommission(serviceProviderSummaryModel.getUnmatchedCount());
-			serviceProviderSummaryDTO.setUnmatchedCount(serviceProviderSummaryModel.getUnmatchedCommission());
+			serviceProviderSummaryDTO.setCommission(serviceProviderSummaryModel.getUnmatchedCommission());
+			serviceProviderSummaryDTO.setUnmatchedCount(serviceProviderSummaryModel.getUnmatchedCount());
 			serviceProviderSummaryDTO.setExchangeGain(serviceProviderSummaryModel.getUnmatchedExchangeGain());
 
 			serviceProviderSummaryDTOList.add(serviceProviderSummaryDTO);
