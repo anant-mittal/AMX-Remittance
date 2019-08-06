@@ -145,7 +145,7 @@ public class CustomerController implements ICustomerService {
 	public ApiResponse sendResetCredentialsOtp(@PathVariable("civil-id") String civilId) {
 		logger.info("Send OTP Request : civilId - " + civilId);
 		//Added by Radhika
-		Customer customerdetails = customerRepository.getCustomerEmailDetails(civilId);
+		Customer customerdetails = customerRepository.getActiveCustomerDetails(civilId);
 		//CustomerOnlineRegistration customerOnlineRegistration = onlineCustomerRepository.getLoginCustomersDeatilsById(civilId);
 		ApiResponse response = null;
 		if(customerdetails!=null) {
