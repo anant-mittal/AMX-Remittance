@@ -54,7 +54,6 @@ public class JaxServiceStartUpInit {
 			otpSettings.setMaxValidateOtpAttempts(WRONG_OTP_ATTEMPTS_ALLOWED);
 			otpSettings.setMaxSendOtpAttempts(3);
 			otpSettings.setOtpValidityTime(3); // minutes
-			otpSettings.setMaxSendCaptchaAttempts(2);
 		}
 
 	}

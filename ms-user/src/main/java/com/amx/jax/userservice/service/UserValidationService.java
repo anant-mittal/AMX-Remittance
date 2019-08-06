@@ -27,7 +27,9 @@ import com.amx.amxlib.exception.jax.InvalidCivilIdException;
 import com.amx.amxlib.exception.jax.InvalidOtpException;
 import com.amx.amxlib.exception.jax.UserNotFoundException;
 import com.amx.amxlib.model.CustomerModel;
+import com.amx.jax.JaxAuthContext;
 import com.amx.jax.amxlib.config.OtpSettings;
+import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.CustomerVerificationType;
 import com.amx.jax.constant.JaxApiFlow;
@@ -138,6 +140,9 @@ public class UserValidationService {
 	
 	@Autowired
 	UserContactVerificationManager userContactVerificationManager;
+	
+	@Autowired
+	JaxTenantProperties jaxTenantProperties;
 
 	private DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -424,7 +429,6 @@ public class UserValidationService {
 
 	public void validateCustomerLockCount(CustomerOnlineRegistration onlineCustomer) {
 		final Integer MAX_OTP_ATTEMPTS = otpSettings.getMaxValidateOtpAttempts();
-		final Integer MAX_CAPTCHA_COUNT = otpSettings.getMaxSendCaptchaAttempts();
 		if (onlineCustomer.getLockCnt() != null) {
 			int lockCnt = onlineCustomer.getLockCnt().intValue();
 			Date midnightTomorrow = getMidnightToday();
@@ -435,9 +439,6 @@ public class UserValidationService {
 					onlineCustomer.setLockDt(null);
 					custDao.saveOnlineCustomer(onlineCustomer);
 					lockCnt = 0;
-				}
-				if(lockCnt == MAX_CAPTCHA_COUNT) {
-					throw new GlobalException(JaxError.CAPTCHA_REQUIRED, "Captcha Required");
 				}
 				if (lockCnt >= MAX_OTP_ATTEMPTS) {
 					throw new GlobalException(JaxError.USER_LOGIN_ATTEMPT_EXCEEDED,
@@ -462,6 +463,7 @@ public class UserValidationService {
 		}
 		onlineCustomer.setLockCnt(new BigDecimal(lockCnt));
 		custDao.saveOnlineCustomer(onlineCustomer);
+		
 		if (lockCnt >= MAX_OTP_ATTEMPTS) {
 			logger.info("lock count has exceeded");
 			String errorExpression = JaxError.USER_LOGIN_ATTEMPT_EXCEEDED.toString();
@@ -880,5 +882,18 @@ public class UserValidationService {
 				throw new GlobalException(JaxError.CUSTOMER_EMAIL_EMPTY, emailErrorMessage);
 			}
 		}
+	}
+
+	public void requiredCaptchaOrNot(CustomerOnlineRegistration onlineCustomer) {
+		final Integer MAX_CAPTCHA_COUNT = jaxTenantProperties.getMaxCaptchaCount();
+		if (onlineCustomer.getLockCnt() != null) {
+			int lockCnt = onlineCustomer.getLockCnt().intValue();
+			if (StringUtils.isBlank(JaxAuthContext.getCaptcha())){
+				if(lockCnt == MAX_CAPTCHA_COUNT) {
+					throw new GlobalException(JaxError.CAPTCHA_REQUIRED, "Captcha Required");
+				}
+			}
+		}
+		
 	}
 }

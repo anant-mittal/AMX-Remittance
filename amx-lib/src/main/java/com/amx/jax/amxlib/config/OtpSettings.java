@@ -8,16 +8,7 @@ public class OtpSettings {
 	Integer maxValidateOtpAttempts;
 	Integer maxSendOtpAttempts;
 	Integer otpValidityTime;
-	Integer maxSendCaptchaAttempts;
 
-	public OtpSettings(Integer maxValidateOtpAttempts,Integer maxSendOtpAttempts,
-			Integer otpValidityTime,Integer maxSendCaptchaAttempts) {
-		this.maxValidateOtpAttempts=maxValidateOtpAttempts;
-		this.maxSendOtpAttempts=maxSendOtpAttempts;
-		this.otpValidityTime=otpValidityTime;
-		this.maxSendCaptchaAttempts=maxSendCaptchaAttempts;
-	}
-	
 	public OtpSettings(Integer maxValidateOtpAttempts,Integer maxSendOtpAttempts,Integer otpValidityTime) {
 		this.maxValidateOtpAttempts=maxValidateOtpAttempts;
 		this.maxSendOtpAttempts=maxSendOtpAttempts;
@@ -51,14 +42,6 @@ public class OtpSettings {
 
 	public void setOtpValidityTime(Integer otpValidityTime) {
 		this.otpValidityTime = otpValidityTime;
-	}
-
-	public Integer getMaxSendCaptchaAttempts() {
-		return maxSendCaptchaAttempts;
-	}
-
-	public void setMaxSendCaptchaAttempts(Integer maxSendCaptchaAttempts) {
-		this.maxSendCaptchaAttempts = maxSendCaptchaAttempts;
 	}
 
 	public static final String getType() {
