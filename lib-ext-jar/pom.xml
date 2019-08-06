@@ -316,6 +316,24 @@
 							<generatePom>true</generatePom>
 						</configuration>
 					</execution>
+					
+					<!-- New Config for Homesend Jar -->
+					<execution>
+						<id>homesend</id>
+						<phase>package</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<groupId>com.amg.homesend</groupId>
+							<artifactId>homesend</artifactId>
+							<version>1.0</version>
+							<packaging>jar</packaging>
+							<file>${basedir}/lib/vendor/OWS_HomeSend_stub.jar</file>
+							<generatePom>true</generatePom>
+						</configuration>
+					</execution>
+					
 
 
 					<!-- New KNET Integration -->
@@ -432,7 +450,7 @@
 						</configuration>
 					</execution>
 					-->
-					
+
 				</executions>
 			</plugin>
 		</plugins>

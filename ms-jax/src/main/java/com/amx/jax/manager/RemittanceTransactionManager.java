@@ -34,6 +34,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.AuthType;
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.PromotionDto;
@@ -42,6 +43,7 @@ import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.jax.api.ResponseCodeDetailDTO;
+import com.amx.jax.branchremittance.manager.BranchRemittanceApplManager;
 import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxDbConfig;
@@ -65,6 +67,7 @@ import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ExchangeRateApprovalDetModel;
 import com.amx.jax.dbmodel.TransactionLimitCheckView;
+import com.amx.jax.dbmodel.partner.RemitApplSrvProv;
 import com.amx.jax.dbmodel.remittance.AdditionalInstructionData;
 import com.amx.jax.dbmodel.remittance.OWSScheduleModel;
 import com.amx.jax.dbmodel.remittance.RemittanceAppBenificiary;
@@ -260,6 +263,9 @@ public class RemittanceTransactionManager {
 	private RestService restService;
 	@Autowired
 	BankService bankService;
+
+	@Autowired
+	BranchRemittanceApplManager branchRemittanceApplManager;
 
 
 	private static final String IOS = "IOS";
@@ -834,6 +840,9 @@ public class RemittanceTransactionManager {
 		BigDecimal netAmount = breakup.getNetAmount();
 		String inclusiveExclusiveComm = null;
 		AuthenticationLimitCheckView onlineTxnLimit = parameterService.getOnlineTxnLimit();
+		
+		// online sp limit check
+		
 		if(onlineTxnLimit!=null ) {
 			inclusiveExclusiveComm = onlineTxnLimit.getCharField2();
 			if(!StringUtils.isBlank(inclusiveExclusiveComm)  && inclusiveExclusiveComm.equalsIgnoreCase(ConstantDocument.COMM_EXCLUDE)) {
@@ -843,7 +852,6 @@ public class RemittanceTransactionManager {
 				
 		}else {
 				netAmount =netAmount.subtract(newCommission==null?BigDecimal.ZERO:newCommission);
-
 			}
 			
 		}
@@ -1068,7 +1076,10 @@ public class RemittanceTransactionManager {
 		} else {
 			additionalInstrumentData = oldRemittanceApplicationAdditionalDataManager.createAdditionalInstnData(remittanceApplication);
 		}
-		remitAppDao.saveAllApplicationData(remittanceApplication, remittanceAppBeneficairy, additionalInstrumentData);
+	
+		// save service provider
+		RemitApplSrvProv remitApplSrvProv = null;
+		remitAppDao.saveAllApplicationData(remittanceApplication, remittanceAppBeneficairy, additionalInstrumentData,remitApplSrvProv);
 		remitAppDao.updatePlaceOrder(model, remittanceApplication);
 		remiteAppModel.setRemittanceAppId(remittanceApplication.getRemittanceApplicationId());
 		remiteAppModel.setNetPayableAmount(netAmountPayable);
@@ -1132,7 +1143,11 @@ public class RemittanceTransactionManager {
 		} else {
 			additionalInstrumentData = oldRemittanceApplicationAdditionalDataManager.createAdditionalInstnData(remittanceApplication);
 		}
-		remitAppDao.saveAllApplicationData(remittanceApplication, remittanceAppBeneficairy, additionalInstrumentData);
+		RemitApplSrvProv remitApplSrvProv = null;
+		if(model.getDynamicRroutingPricingBreakup() != null) {
+			remitApplSrvProv = branchRemittanceApplManager.createRemitApplSrvProv(model.getDynamicRroutingPricingBreakup(),remittanceApplication.getCreatedBy());
+		}
+		remitAppDao.saveAllApplicationData(remittanceApplication, remittanceAppBeneficairy, additionalInstrumentData,remitApplSrvProv);
 		remitAppDao.updatePlaceOrderV2(model, remittanceApplication);
 		remiteAppModel.setRemittanceAppId(remittanceApplication.getRemittanceApplicationId());
 		remiteAppModel.setNetPayableAmount(netAmountPayable);

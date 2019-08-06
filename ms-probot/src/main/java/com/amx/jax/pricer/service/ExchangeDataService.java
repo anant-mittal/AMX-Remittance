@@ -19,7 +19,7 @@ import com.amx.jax.pricer.dao.CustCatDiscountDao;
 import com.amx.jax.pricer.dao.DiscountMasterDao;
 import com.amx.jax.pricer.dao.GroupingMasterDao;
 import com.amx.jax.pricer.dao.PipsMasterDao;
-import com.amx.jax.pricer.dao.RoutingDao;
+import com.amx.jax.pricer.dao.RoutingDaoAlt;
 import com.amx.jax.pricer.dao.ServiceMasterDescDao;
 import com.amx.jax.pricer.dbmodel.CountryBranch;
 import com.amx.jax.pricer.dbmodel.CurrencyMasterModel;
@@ -53,7 +53,7 @@ public class ExchangeDataService {
 	PipsMasterDao pipsMasterDao;
 
 	@Autowired
-	RoutingDao routingDao;
+	RoutingDaoAlt routingDaoAlt;
 
 	@Autowired
 	BankMasterDao bankMasterDao;
@@ -146,7 +146,7 @@ public class ExchangeDataService {
 	}
 
 	public List<RoutBanksAndServiceRespDTO> getRoutBanksAndServices(BigDecimal countryId, BigDecimal currencyId) {
-		List<RoutingHeader> allRountingHeaderData = routingDao.getRoutHeadersByCountryIdAndCurrenyId(countryId,
+		List<RoutingHeader> allRountingHeaderData = routingDaoAlt.getRoutHeadersByCountryIdAndCurrenyId(countryId,
 				currencyId);
 
 		List<RoutingHeader> rountingHeaderData = new ArrayList<RoutingHeader>();

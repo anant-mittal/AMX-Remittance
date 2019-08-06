@@ -7,14 +7,15 @@ multitenancy:
         password: 
         driverClassName: org.h2.Driver
       -
-        tenantId: KWT
-        url: jdbc:oracle:thin:@10.28.42.10:1521:TEMOS
+        tenantId: KWT2
+        url: jdbc:oracle:thin:@172.17.1.99:1522:TEMOS
         username: TEMOS
         password: TEMOS
         driverClassName: oracle.jdbc.OracleDriver
       -
-        tenantId: KWT2
-        url: jdbc:oracle:thin:@192.170.161.99:1521:QEMOS
+        tenantId: KWT
+        #url: jdbc:oracle:thin:@192.170.161.99:1521:QEMOS
+        url: jdbc:oracle:thin:@172.17.1.99:1521:QEMOS
         username: QEMOS
         password: QEMOS
         driverClassName: oracle.jdbc.OracleDriver

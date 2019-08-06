@@ -23,9 +23,5 @@ public interface ProbotExchangeRateService extends AbstractProbotInterface {
 	@PricerApiStatus({ PricerServiceError.MISSING_AMOUNT, PricerServiceError.MISSING_ROUTING_BANK_IDS })
 	public AmxApiResponse<ExchangeRateAndRoutingResponse, Object> fetchRemitRoutesAndPrices(ExchangeRateAndRoutingRequest dprRequestDTO);
 	
-	
-
-	
-	
 
 }

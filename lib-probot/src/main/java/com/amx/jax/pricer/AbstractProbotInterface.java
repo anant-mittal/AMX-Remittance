@@ -6,6 +6,8 @@ public interface AbstractProbotInterface {
 		/** The Constant SERVICE_PREFIX. */
 		// private static final String SERVICE_PREFIX = "/probot";
 
+		//// @formatter:off
+ 
 		private static final String SERVICE_PREFIX = "";
 
 		/** The Constant API_VERSION_V1. */
@@ -21,7 +23,6 @@ public interface AbstractProbotInterface {
 		public static final String FETCH_DISCOUNTED_RATES = SERVICE_PREFIX + API_VERSION_V1 + "/fetch-discounted-rates";
 		
 		// Service Controllers for Exchange Rate Related Data
-		
 		public static final String GET_CB_AND_PRODUCTS = SERVICE_PREFIX + API_VERSION_V1 + "/get-cb-and-products";
 		
 		public static final String PRICE_TEST = SERVICE_PREFIX + API_VERSION_V1 + "/price-test";
@@ -44,6 +45,10 @@ public interface AbstractProbotInterface {
 		public static final String UPDATE_CUR_GROUP_ID = SERVICE_PREFIX + API_VERSION_V1 + "/update-currency-group-id";
 		
 		public static final String GET_CUR_BY_GROUP_ID = SERVICE_PREFIX + API_VERSION_V1 + "/get-currency-by-group-id";
-
+		
+		// Service Provider for transaction
+		public static final String GET_SERVICE_PROVIDER_QUOTE = SERVICE_PREFIX + API_VERSION_V1 + "/get-service-provider-quote";
+		
+		// @formatter:on
 	}
 }
