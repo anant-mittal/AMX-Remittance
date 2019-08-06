@@ -95,7 +95,7 @@ public class ServiceProviderService extends AbstractService {
 	    	throw new GlobalException("File format is not correct");
 	    }
 	    DataFormatter dataFormatter = new DataFormatter();
-	    for(i=1;i<sheet.getLastRowNum();i++) {
+	    for(i=1;i<=sheet.getLastRowNum();i++) {
 	    	Row r = sheet.getRow(i);
 	    	for(j=1;j<4;j++) {
 	    		Cell cell1 = r.getCell(j);
