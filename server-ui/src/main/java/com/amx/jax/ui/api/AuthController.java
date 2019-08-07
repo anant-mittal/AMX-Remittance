@@ -101,7 +101,7 @@ public class AuthController {
 
 		if (!ArgUtil.isEmpty(captcha) &&
 				!googleService.verifyCaptcha(captcha, httpService.getIPAddress())) {
-			throw new UIServerError(OWAStatusStatusCodes.CAPTCHA_REQUIRED);
+			throw new UIServerError(OWAStatusStatusCodes.CAPTCHA_REQUIRED).redirectUrl("/pub/recaptcha/DASHBOARD");
 		}
 
 		if (!ArgUtil.isEmpty(authData.getDeviceToken())) {
