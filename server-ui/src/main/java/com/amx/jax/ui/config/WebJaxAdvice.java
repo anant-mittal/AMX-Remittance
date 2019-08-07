@@ -81,7 +81,7 @@ public class WebJaxAdvice {
 		String errorKey = ArgUtil.parseAsString(exc.getErrorKey(), OWAStatusStatusCodes.UNKNOWN_JAX_ERROR.toString());
 		if (exc.isReportable()) {
 			LOG.error(errorKey, exc);
-			postManService.notifyException(errorKey, exc);
+			//postManService.notifyException(errorKey, exc);
 		} else {
 			LOG.error(ArgUtil.parseAsString(errorKey, exc.getErrorMessage()));
 		}
@@ -226,7 +226,7 @@ public class WebJaxAdvice {
 		wrapper.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
 		wrapper.setException(ex.getClass().getName());
 		LOG.error("In Advice Exception Captured", ex);
-		postManService.notifyException(wrapper.getStatus(), ex);
+		//postManService.notifyException(wrapper.getStatus(), ex);
 		return new ResponseEntity<ResponseWrapper<Object>>(wrapper, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
