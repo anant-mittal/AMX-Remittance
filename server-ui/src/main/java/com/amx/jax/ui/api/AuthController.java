@@ -99,15 +99,15 @@ public class AuthController {
 
 		String captcha = JaxAuthContext.captcha(authData.getCaptachKey());
 
+		if (!ArgUtil.isEmpty(captcha) &&
+				!googleService.verifyCaptcha(captcha, httpService.getIPAddress())) {
+			throw new UIServerError(OWAStatusStatusCodes.CAPTCHA_REQUIRED);
+		}
+
 		if (!ArgUtil.isEmpty(authData.getDeviceToken())) {
 			return loginService.loginByDevice(authData.getIdentity(), authData.getDeviceToken());
 		} else if (!ArgUtil.isEmpty(authData.getPassword())) {
-			if (!ArgUtil.isEmpty(authData.getCaptachKey()) &&
-					googleService.verifyCaptcha(captcha, httpService.getIPAddress())) {
-				return loginService.loginUserPass(authData.getIdentity(), authData.getPassword());
-			} else {
-				throw new UIServerError(OWAStatusStatusCodes.CAPTCHA_REQUIRED);
-			}
+			return loginService.loginUserPass(authData.getIdentity(), authData.getPassword());
 		} else {
 			throw new UIServerError(OWAStatusStatusCodes.MISSING_CREDENTIALS);
 		}
