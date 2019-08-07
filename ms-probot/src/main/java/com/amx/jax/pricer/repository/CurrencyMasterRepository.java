@@ -13,9 +13,13 @@ import com.amx.jax.pricer.dbmodel.CurrencyMasterModel;
 @Transactional
 public interface CurrencyMasterRepository extends CrudRepository<CurrencyMasterModel, BigDecimal> {
 
-	CurrencyMasterModel findByCurrencyCode(String currencyCode);
+	public List<CurrencyMasterModel> findByIsoCurrencyCodeAndIsactive(String currencyCode,String isActive);
+	
+	public CurrencyMasterModel findByCurrencyCode(String currencyCode);
 
 	@Query("select c from CurrencyMasterModel c where currGroupId=?1 and isactive='Y'")
 	List<CurrencyMasterModel> getCurrencyByGroupId(BigDecimal currGroupId);
+	
+	public CurrencyMasterModel findByCurrencyId(BigDecimal currencyId);
 
 }

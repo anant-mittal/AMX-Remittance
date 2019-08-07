@@ -94,9 +94,7 @@ public class CustomerModelService {
 		CustomerModelSignupResponse response = new CustomerModelSignupResponse();
 		response.setCustomerFlags(customerModelResponse.getCustomerFlags());
 		List<CustomerCommunicationChannel> customerCommunicationChannels = new ArrayList<>();
-		Customer customerdetails = customerRepository.getCustomerEmailDetails(identityInt);
-		CustomerOnlineRegistration customerOnlineRegistration = onlineCustomerRepository
-				.getLoginCustomersDeatilsById(identityInt);
+		
 		if (customerFlags.getEmailVerified() && personInfo.getEmail() != null
 				&& !"null".equals(personInfo.getEmail())) {
 

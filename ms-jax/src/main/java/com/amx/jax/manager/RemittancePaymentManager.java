@@ -22,8 +22,8 @@ import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.PromotionDto;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.async.ExecutorConfig;
-import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.JaxEmployeeDao;
 import com.amx.jax.dao.RemittanceApplicationDao;
@@ -36,6 +36,10 @@ import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.dbmodel.remittance.ShoppingCartDetails;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.model.response.customer.PersonInfo;
+import com.amx.jax.model.response.remittance.RemittanceResponseDto;
+import com.amx.jax.model.response.serviceprovider.ServiceProviderResponse;
+import com.amx.jax.partner.dto.RemitTrnxSPDTO;
+import com.amx.jax.partner.manager.PartnerTransactionManager;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.repository.IPlaceOrderDao;
@@ -107,6 +111,9 @@ public class RemittancePaymentManager extends AbstractService{
 	@Autowired
 	DailyPromotionManager dailyPromotionManager;
 	
+	@Autowired
+	PartnerTransactionManager partnerTransactionManager;
+	
 	public ApiResponse<PaymentResponseDto> paymentCapture(PaymentResponseDto paymentResponse) {
 		ApiResponse response = null;
 		logger.info("paymment capture :"+paymentResponse.toString());
@@ -118,19 +125,19 @@ public class RemittancePaymentManager extends AbstractService{
 		BigDecimal collectionDocumentCode = null;
 		String errorMsg = null;
 		Map<String,Object> remitanceMap  = null;
-		
+
 		logger.info("Customer Id :"+paymentResponse.getCustomerId());
 		logger.info("Result code :"+paymentResponse.getResultCode()+"\t Auth Code :"+paymentResponse.getAuth_appNo());
 		logger.info("Application country Id :"+paymentResponse.getApplicationCountryId());
 		logger.info("Company Id:"+paymentResponse.getCompanyId());
 		logger.info("UDF 1:"+paymentResponse.getUdf1()+"\t UDF 2 :"+paymentResponse.getUdf2()+"\t UDF 3 :"+paymentResponse.getUdf3()+"\t UDF4 :"+paymentResponse.getUdf4());
-		
+
 		try {
-			 response = getBlackApiResponse();
+			response = getBlackApiResponse();
 			if(!StringUtils.isBlank(paymentResponse.getPaymentId()) && !StringUtils.isBlank(paymentResponse.getResultCode()) 
-			&& (paymentResponse.getResultCode().equalsIgnoreCase(ConstantDocument.CAPTURED)|| paymentResponse.getResultCode().equalsIgnoreCase(ConstantDocument.APPROVED))) 
+					&& (paymentResponse.getResultCode().equalsIgnoreCase(ConstantDocument.CAPTURED)|| paymentResponse.getResultCode().equalsIgnoreCase(ConstantDocument.APPROVED))) 
 			{
-				
+
 				lstPayIdDetails = applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(paymentResponse.getUdf3(),new Customer(paymentResponse.getCustomerId()));
 				RemittanceApplication remittanceApplication = lstPayIdDetails.get(0);
 				validateAmountMismatch(remittanceApplication, paymentResponse);
@@ -147,7 +154,7 @@ public class RemittancePaymentManager extends AbstractService{
 				errorMsg = (String)remitanceMap.get("P_ERROR_MESG");
 				errorMsg= null;
 				if(remitanceMap!=null && !remitanceMap.isEmpty() && StringUtils.isBlank(errorMsg)){
-					
+
 					collectionFinanceYear = (BigDecimal)remitanceMap.get("P_COLLECT_FINYR");
 					collectionDocumentNumber = (BigDecimal)remitanceMap.get("P_COLLECTION_NO");
 					collectionDocumentCode = (BigDecimal)remitanceMap.get("P_COLLECTION_DOCUMENT_CODE");
@@ -158,13 +165,25 @@ public class RemittancePaymentManager extends AbstractService{
 					logger.info("collectionDocumentCode : " + collectionDocumentCode);
 					logger.info("EX_INSERT_REMITTANCE_ONLINE errorMsg : " + errorMsg);
 					
+					// service Provider api
+					RemittanceResponseDto responseDto = new RemittanceResponseDto();
+					responseDto.setCollectionDocumentFYear(collectionFinanceYear);
+					responseDto.setCollectionDocumentNo(collectionDocumentNumber);
+					responseDto.setCollectionDocumentCode(collectionDocumentCode);
+					if(responseDto != null) {
+						AmxApiResponse<ServiceProviderResponse, Object> apiResponse = partnerTransactionManager.callingPartnerApi(responseDto);
+						if(apiResponse != null) {
+							RemitTrnxSPDTO remitTrnxSPDTO = partnerTransactionManager.saveRemitTransactionDetails(apiResponse,responseDto);
+						}
+					}
+
 					//Update remittance_transaction_id for place order method call
 					if (lstPayIdDetails.get(0) != null)	{	
 						updatePlaceOrderTransactionId(lstPayIdDetails.get(0),paymentResponse);
 					} 	
-					
-				/** Calling stored procedure  to move remittance to old emos **/
-				if(JaxUtil.isNullZeroBigDecimalCheck(collectionDocumentNumber)) {
+
+					/** Calling stored procedure  to move remittance to old emos **/
+					if(JaxUtil.isNullZeroBigDecimalCheck(collectionDocumentNumber)) {
 						paymentResponse.setCollectionDocumentCode(collectionDocumentCode);
 						paymentResponse.setCollectionDocumentNumber(collectionDocumentNumber);
 						paymentResponse.setCollectionFinanceYear(collectionFinanceYear);
@@ -172,13 +191,13 @@ public class RemittancePaymentManager extends AbstractService{
 						errorMsg = (String) remitanceMap.get("P_ERROR_MESSAGE");
 						paymentResponse.setErrorText(errorMsg);
 						logger.info("EX_INSERT_EMOS_TRANSFER_LIVE :" + errorMsg);
-					
-					/** For Receipt Print **/
-					
-					//response.getData().getValues().add(paymentResponse);
-					response.setResponseStatus(ResponseStatus.OK);
-				    //response.getData().setType("pg_remit_response");
-				}
+
+						/** For Receipt Print **/
+
+						//response.getData().getValues().add(paymentResponse);
+						response.setResponseStatus(ResponseStatus.OK);
+						//response.getData().setType("pg_remit_response");
+					}
 					try {
 						RemittanceTransaction remittanceTransaction = remitAppDao.getRemittanceTransaction(
 								lstPayIdDetails.get(0).getDocumentNo(),
@@ -199,10 +218,10 @@ public class RemittancePaymentManager extends AbstractService{
 						if(personInfo!=null && !StringUtils.isBlank(personInfo.getEmail())) {
 							promotionManager.sendVoucherEmail(promotDto, personInfo);
 						}
-						
+
 						// --- WantIT BuyIT Coupons Promotions
 						dailyPromotionManager.applyWantITbuyITCoupans(remittanceTransaction.getRemittanceTransactionId(), personInfo);
-						
+
 						reportManagerService.generatePersonalRemittanceReceiptReportDetails(trxnDto, Boolean.TRUE);
 						List<RemittanceReceiptSubreport> rrsrl = reportManagerService
 								.getRemittanceReceiptSubreportList();
@@ -220,7 +239,7 @@ public class RemittancePaymentManager extends AbstractService{
 
 				}else {
 					logger.info("PaymentResponseDto "+paymentResponse.getPaymentId()+"\t Result :"+paymentResponse.getResultCode()+"\t Custoemr Id :"+paymentResponse.getCustomerId());
-					
+
 					lstPayIdDetails =applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(paymentResponse.getPaymentId(),new Customer(paymentResponse.getCustomerId()));
 					if(!lstPayIdDetails.isEmpty()) {
 						paymentResponse.setErrorText(errorMsg);
@@ -228,7 +247,7 @@ public class RemittancePaymentManager extends AbstractService{
 					}
 				}
 
-				
+
 			}else{
 				logger.info("PaymentResponseDto "+paymentResponse.getPaymentId()+"\t Result :"+paymentResponse.getResultCode()+"\t Custoemr Id :"+paymentResponse.getCustomerId());
 				lstPayIdDetails =applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(paymentResponse.getUdf3(),new Customer(paymentResponse.getCustomerId()));
@@ -237,7 +256,7 @@ public class RemittancePaymentManager extends AbstractService{
 				}
 				response.setResponseStatus(ResponseStatus.INTERNAL_ERROR);
 			}
-			
+
 		}catch(Exception e) {
 			logger.error("error occured in paymentCapture", e);
 			lstPayIdDetails =applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(paymentResponse.getUdf3(),new Customer(paymentResponse.getCustomerId()));
@@ -250,11 +269,11 @@ public class RemittancePaymentManager extends AbstractService{
 				remittanceApplicationService.updatePayTokenNull(lstPayIdDetails, paymentResponse);
 				
 			}
-			
+
 			throw new GlobalException(JaxError.PG_ERROR,"Remittance error :"+errorMsg);
 		}
 		response.getData().getValues().add(paymentResponse);
-	    response.getData().setType("pg_remit_response");
+		response.getData().setType("pg_remit_response");
 		checkAndSendAlertEmail(errorMsg, paymentResponse);
 		return response;
 	}

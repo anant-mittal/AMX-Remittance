@@ -177,7 +177,7 @@ public class AuthLibKWT implements AuthLib {
 		switch (feature) {
 		case DASHBOARD:
 			AuthPermUtil.checkEmailUpdate(authState, customerFlags);
-			AuthPermUtil.checkInsuranceUpdate(authState, customerFlags, userDevice.getUserDevice());
+			//AuthPermUtil.checkInsuranceUpdate(authState, customerFlags, userDevice.getUserDevice());
 			break;
 		case REMIT:
 		case BENE_UPDATE:
@@ -186,16 +186,16 @@ public class AuthLibKWT implements AuthLib {
 			AuthPermUtil.checkIdProofExpiry(authState, customerFlags);
 			AuthPermUtil.checkSQASetup(authState, customerFlags);
 			AuthPermUtil.checkSQA(authState, customerFlags);
-			AuthPermUtil.checkInsuranceUpdate(authState, customerFlags, userDevice.getUserDevice());
+			//AuthPermUtil.checkInsuranceUpdate(authState, customerFlags, userDevice.getUserDevice());
 			break;
 		case SQA_UPDATE:
 			AuthPermUtil.checkEmailUpdate(authState, customerFlags);
 			AuthPermUtil.checkSQASetup(authState, customerFlags);
-			AuthPermUtil.checkInsuranceUpdate(authState, customerFlags, userDevice.getUserDevice());
+			//AuthPermUtil.checkInsuranceUpdate(authState, customerFlags, userDevice.getUserDevice());
 			break;
 		default:
 			AuthPermUtil.checkEmailUpdate(authState, customerFlags);
-			AuthPermUtil.checkInsuranceUpdate(authState, customerFlags, userDevice.getUserDevice());
+			//AuthPermUtil.checkInsuranceUpdate(authState, customerFlags, userDevice.getUserDevice());
 			break;
 		}
 

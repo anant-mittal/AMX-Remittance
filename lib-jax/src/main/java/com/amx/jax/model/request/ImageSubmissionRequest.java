@@ -5,12 +5,9 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.format.annotation.DateTimeFormat;
-
 import com.amx.jax.swagger.ApiMockModelProperty;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonFormat.Shape;
-import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatTypes;
 
 public class ImageSubmissionRequest implements Serializable {
 

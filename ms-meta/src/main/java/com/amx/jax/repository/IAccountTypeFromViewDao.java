@@ -14,5 +14,7 @@ public interface IAccountTypeFromViewDao extends JpaRepository<AccountTypeFromVi
 	
 	@Query("select av from AccountTypeFromViewModel av where av.countryId=?1")
 	public List<AccountTypeFromViewModel> getAccountTypeByCountryId(BigDecimal countryId);
+	
+	public AccountTypeFromViewModel findByAdditionalAmiecId(BigDecimal additionalAmiecId);
 
 }

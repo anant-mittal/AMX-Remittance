@@ -34,8 +34,8 @@ public enum TemplatesMX implements ITemplate {
 	// Rate Alert, PlaceOrder
 	RATE_ALERT("place-order"), RATE_ALERT_COMPLETION("place-order-executed"),
 
-	BRANCH_SEARCH_EMPTY("BranchSearchEmpty"), TEST("test"), BRANCH_FEEDBACK("trnx-feedback", Channel.TEMPLATETEST), TT("tt", Channel.TEMPLATETEST), EFT("eft", Channel.TEMPLATETEST),
-	CASH("cash", Channel.TEMPLATETEST),
+	BRANCH_SEARCH_EMPTY("BranchSearchEmpty"), TEST("test"), BRANCH_FEEDBACK("trnx-feedback", Channel.FEED), TT("tt", Channel.FEED), EFT("eft", Channel.FEED),
+	CASH("cash", Channel.FEED),
 
 	CIVILID_EXPIRY("civilexpiry"), CIVILID_EXPIRED("civilexpired"),
 
@@ -68,7 +68,8 @@ public enum TemplatesMX implements ITemplate {
 	POLICY_OPTOUT_SYSTEM("PolicyOptoutSystem"),
 	POLICY_EXPIRY_REMINDER("PolicyExpiryReminder"),
 	POLICY_EXPIRED("PolicyExpired"),
-	
+	HOMESEND_TRANSACTION_FAILAURE("HomeSendTransactionFailure"),
+
 	
 	// Default add enums above this
 	DEFAULT("default");

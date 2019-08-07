@@ -51,7 +51,8 @@ public class CustProfileController implements ICustomerProfileService {
 
 		Customer c;
 		if (!ArgUtil.isEmpty(identity)) {
-			c = customerRepository.getCustomerOneByIdentityInt(identity);
+			// Active customer record fetched
+			c = customerRepository.getActiveCustomerDetails(identity);
 		} else if (!ArgUtil.isEmpty(customerId)) {
 			c = customerRepository.findOne(customerId);
 		} else {
