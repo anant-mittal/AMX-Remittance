@@ -1221,6 +1221,8 @@ public ParameterDetailsResponseDto getGiftService(BigDecimal beneId) {
 					pdto.setNumericUdf4(viewParameterDetails.getNumericField4());
 					pdto.setNumericUdf5(viewParameterDetails.getNumericField5());
 					
+					pdto.setAmount(viewParameterDetails.getNumericField2());
+					
 					//TODO:- Evaluate if required????
 					//pdto.setResourceDto(ResourceDTO.create(viewParameterDetails));
 					
