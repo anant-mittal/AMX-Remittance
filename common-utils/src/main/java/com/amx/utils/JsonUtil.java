@@ -80,7 +80,7 @@ public final class JsonUtil {
 			try {
 				return getMapper().readValue(json, type);
 			} catch (IOException e) {
-				LOG.warn("error converting from json=" + json, e);
+				LOG.warn("error converting from json=" + json + e.getMessage());
 			}
 			return null;
 		}
