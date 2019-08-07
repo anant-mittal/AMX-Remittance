@@ -109,7 +109,7 @@ public class ExchangePricingAndRoutingService {
 
 		}
 
-		remitPriceManager.computeBaseSellRatesPrices(pricingRequestDTO);
+		remitPriceManager.computeBaseSellRates(pricingRequestDTO);
 
 		customerDiscountManager.getDiscountedRates(pricingRequestDTO, customer, CUSTOMER_CATEGORY.BRONZE);
 
@@ -139,7 +139,7 @@ public class ExchangePricingAndRoutingService {
 
 		validatePricingRequest(pricingRequestDTO, Boolean.FALSE);
 
-		remitPriceManager.computeBaseSellRatesPrices(pricingRequestDTO);
+		remitPriceManager.computeBaseSellRates(pricingRequestDTO);
 
 		PricingResponseDTO pricingResponseDTO = new PricingResponseDTO();
 
@@ -162,7 +162,7 @@ public class ExchangePricingAndRoutingService {
 	public List<PricingResponseDTO> fetchDiscountedRatesAcrossCustCategories(PricingRequestDTO pricingRequestDTO) {
 		validatePricingRequest(pricingRequestDTO, Boolean.FALSE);
 
-		remitPriceManager.computeBaseSellRatesPrices(pricingRequestDTO);
+		remitPriceManager.computeBaseSellRates(pricingRequestDTO);
 
 		List<ExchangeRateDetails> baseRateDetails = getClonedExchangeRates(
 				exchRateAndRoutingTransientDataCache.getSellRateDetails());
@@ -258,7 +258,7 @@ public class ExchangePricingAndRoutingService {
 		exchangeRateAndRoutingRequest.setPricingLevel(PRICE_BY.ROUTING_BANK);
 
 		// Get The Rates for Routing Banks.
-		remitPriceManager.computeBaseSellRatesPrices(exchangeRateAndRoutingRequest);
+		remitPriceManager.computeBaseSellRates(exchangeRateAndRoutingRequest);
 
 		SrvPrvFeeInqResDTO partnerResp = null;
 

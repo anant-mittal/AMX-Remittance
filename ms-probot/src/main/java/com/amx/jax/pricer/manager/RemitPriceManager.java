@@ -26,6 +26,7 @@ import com.amx.jax.cache.BankGLCData;
 import com.amx.jax.cache.ExchRateAndRoutingTransientDataCache;
 import com.amx.jax.dict.UserClient;
 import com.amx.jax.dict.UserClient.Channel;
+import com.amx.jax.pricer.dao.BankApplicabilityDao;
 import com.amx.jax.pricer.dao.CountryBranchDao;
 import com.amx.jax.pricer.dao.CurrencyMasterDao;
 import com.amx.jax.pricer.dao.ExchangeRateDao;
@@ -33,6 +34,8 @@ import com.amx.jax.pricer.dao.MarginMarkupDao;
 import com.amx.jax.pricer.dao.PipsMasterDao;
 import com.amx.jax.pricer.dao.RoutingDaoAlt;
 import com.amx.jax.pricer.dao.ViewExGLCBALDao;
+import com.amx.jax.pricer.dbmodel.BankApplicability;
+import com.amx.jax.pricer.dbmodel.BankIndicator;
 import com.amx.jax.pricer.dbmodel.BankMasterModel;
 import com.amx.jax.pricer.dbmodel.CountryBranch;
 import com.amx.jax.pricer.dbmodel.CurrencyMasterModel;
@@ -48,6 +51,7 @@ import com.amx.jax.pricer.dto.ExchangeRateDetails;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
+import com.amx.jax.pricer.var.PricerServiceConstants;
 import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_BY;
 import com.amx.jax.pricer.var.PricerServiceConstants.SERVICE_GROUP;
 
@@ -63,8 +67,8 @@ public class RemitPriceManager {
 	@Autowired
 	ExchangeRateDao exchangeRateDao;
 
-	//@Autowired
-	//ExchangeRateProcedureDao exchangeRateProcedureDao;
+	@Autowired
+	BankApplicabilityDao bankApplicabilityDao;
 
 	@Autowired
 	ViewExGLCBALDao viewExGLCBALDao;
@@ -104,7 +108,7 @@ public class RemitPriceManager {
 	 * 
 	 * @param requestDto
 	 */
-	public void computeBaseSellRatesPrices(PricingRequestDTO requestDto) {
+	public void computeBaseSellRates(PricingRequestDTO requestDto) {
 
 		List<ExchangeRateDetails> bankWiseRates = new ArrayList<ExchangeRateDetails>();
 		exchRateAndRoutingTransientDataCache.setSellRateDetails(bankWiseRates);
@@ -502,10 +506,21 @@ public class RemitPriceManager {
 		 **/
 
 		/** Start: Routing Bank Find **/
-		List<RoutingHeader> routingHeaders = routingDaoAlt.getRoutHeadersByCountryIdAndCurrenyId(fCountryId, fCurrencyId);
+		List<RoutingHeader> routingHeaders = routingDaoAlt.getRoutHeadersByCountryIdAndCurrenyId(fCountryId,
+				fCurrencyId);
 
-		List<BigDecimal> availableBankIds = routingHeaders.stream().map(rh -> rh.getRoutingBankId()).distinct().sorted()
-				.collect(Collectors.toList());
+		if (routingHeaders == null || routingHeaders.isEmpty()) {
+			return new ArrayList<>();
+		}
+
+		List<BigDecimal> allAvailableBankIds = routingHeaders.stream().map(rh -> rh.getRoutingBankId()).distinct()
+				.sorted().collect(Collectors.toList());
+
+		List<BigDecimal> availableBankIds = filterBankIdByIndicator(allAvailableBankIds);
+
+		if (availableBankIds == null || availableBankIds.isEmpty()) {
+			return availableBankIds;
+		}
 
 		/** End: Routing Bank Find **/
 
@@ -529,6 +544,37 @@ public class RemitPriceManager {
 		}
 
 		return validBankIds;
+	}
+
+	private List<BigDecimal> filterBankIdByIndicator(List<BigDecimal> bankIds) {
+
+		if (bankIds == null || bankIds.isEmpty())
+			return bankIds;
+
+		List<BankMasterModel> bankMasterModels = new ArrayList<BankMasterModel>();
+
+		for (BigDecimal bankId : bankIds) {
+			BankMasterModel model = new BankMasterModel(bankId);
+			bankMasterModels.add(model);
+		}
+
+		List<BankApplicability> bApplicabilities = bankApplicabilityDao.findByBankMasterIds(bankMasterModels);
+
+		List<BigDecimal> filteredBanks = new ArrayList<BigDecimal>();
+
+		for (BankApplicability applicability : bApplicabilities) {
+
+			BankIndicator indicator = applicability.getBankInd();
+
+			if (indicator != null && !PricerServiceConstants.SERVICE_PROVIDER_INDICATOR
+					.equalsIgnoreCase(indicator.getBankIndicatorCode())) {
+
+				filteredBanks.add(applicability.getBankMaster().getBankId());
+			}
+		}
+
+		return filteredBanks;
+
 	}
 
 	private BankDetailsDTO convertBankMasterData(BankMasterModel dbmodel) {
@@ -746,7 +792,7 @@ public class RemitPriceManager {
 		return exchangeRateBreakup;
 
 	}
-	
+
 	public static ExchangeRateBreakup createBreakUpSP(BigDecimal exrate, BigDecimal lcAmount, BigDecimal fcAmount) {
 		ExchangeRateBreakup breakup = null;
 		if (exrate != null) {
