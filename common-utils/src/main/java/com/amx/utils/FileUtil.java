@@ -112,7 +112,7 @@ public final class FileUtil {
 		File file = new File(fileLocation);
 
 		try {
-			output = new BufferedWriter(new FileWriter(fileLocation));
+			output = new BufferedWriter(new FileWriter(file));
 			output.write(content);
 
 		} catch (IOException io) {
