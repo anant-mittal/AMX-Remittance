@@ -199,7 +199,7 @@ public class PartnerDataManager {
 		marginAmount = serviceProviderRateView.getMargin() == null ? BigDecimal.ZERO : serviceProviderRateView.getMargin();
 		LOGGER.info("Margin : "+marginAmount);
 
-		if(marginAmount.compareTo(settlementTotalDiscountPips) <= 0 ) {
+		if(marginAmount.compareTo(settlementTotalDiscountPips) >= 0 ) {
 			amxRateWithMargin = settlementExchangeRate.add(marginAmount).subtract(settlementTotalDiscountPips);
 		}else {
 			amxRateWithMargin = settlementExchangeRate;

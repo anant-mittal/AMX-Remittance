@@ -945,6 +945,9 @@ public class BranchRemittanceApplManager {
 
 	public void checkServiceProviderSingleTransaction(BranchRemittanceApplRequestModel requestApplModel) {
 		boolean errorStatus = Boolean.FALSE;
+		Boolean multipleTrnx = Boolean.FALSE;
+		int trnxCount = 1;
+		
 		if(requestApplModel != null) {
 			// fetch any shopping records available
 			List<ShoppingCartDetails> lstCustomerShopping = branchRemittancePaymentDao.fetchCustomerShoppingCart(metaData.getCustomerId());
@@ -952,22 +955,33 @@ public class BranchRemittanceApplManager {
 				// checking home send transaction
 				BankMasterModel bankMaster = bankMasterRepo.findByBankCodeAndRecordStatus(PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name(), PricerServiceConstants.Yes);
 				if(bankMaster == null) {
-					throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record not found for bank code :"+PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name());
+					//throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record not found for bank code :"+PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name());
+					// not required to send error
 				}else {
 					for (ShoppingCartDetails shoppingCartDetails : lstCustomerShopping) {
-						if(shoppingCartDetails.getRoutingBankId().compareTo(bankMaster.getBankId()) == 0) {
-							errorStatus = Boolean.TRUE;
-							break;
+						if(shoppingCartDetails.getApplicationType() != null && !shoppingCartDetails.getApplicationType().equalsIgnoreCase("FS")) {
+							trnxCount++;
+							if(shoppingCartDetails.getRoutingBankId().compareTo(bankMaster.getBankId()) == 0) {
+								errorStatus = Boolean.TRUE;
+								break;
+							}
 						}
 					}
 				}
-				// checking f
-				if(requestApplModel.getDynamicRroutingPricingBreakup() != null && requestApplModel.getDynamicRroutingPricingBreakup().getServiceProviderDto() != null) {
+				if(trnxCount > 1) {
+					multipleTrnx = Boolean.TRUE;
+				}
+				// checking unless no homesend application available create application for Home Send also
+				/*if(requestApplModel.getDynamicRroutingPricingBreakup() != null && requestApplModel.getDynamicRroutingPricingBreakup().getServiceProviderDto() != null) {
 					// raise error
 					errorStatus = Boolean.TRUE;
-				}
+				}*/
 				if(errorStatus) {
-					throw new GlobalException(JaxError.SINGLE_TRANSACTION_SERVICE_PROVIDER,"Shopping Cart flow will not allow for Service Provider");
+					if(multipleTrnx) {
+						throw new GlobalException(JaxError.SINGLE_TRANSACTION_SERVICE_PROVIDER,"You cannot create the next application as HomeSend application is created as the last application.");
+					}else {
+						throw new GlobalException(JaxError.SINGLE_TRANSACTION_SERVICE_PROVIDER,"You cannot create the next application as HomeSend application is created.");
+					}
 				}
 			}
 		}
