@@ -24,7 +24,6 @@ public class ParameterDetailsDto extends ResourceDTO {
 	private BigDecimal numericUdf3;
 	private BigDecimal numericUdf4;
 	private BigDecimal numericUdf5;
-	private BigDecimal amount;
 	private String charUdf1;
 	private String charUdf2;
 	private String charUdf3;
@@ -216,11 +215,11 @@ public class ParameterDetailsDto extends ResourceDTO {
 	}
 
 	public BigDecimal getAmount() {
-		return amount;
+		return numericUdf2;
 	}
 
 	public void setAmount(BigDecimal amount) {
-		this.amount = amount;
+		this.numericUdf2 = amount;
 	}
 
 }
