@@ -1,7 +1,10 @@
 package com.amx.jax.postman;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -9,8 +12,10 @@ import com.amx.jax.dict.Language;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.Message;
 import com.amx.jax.postman.model.Notipy.Channel;
+import com.amx.jax.scope.TenantProperties;
 import com.amx.jax.scope.TenantScoped;
 import com.amx.jax.scope.TenantValue;
+import com.amx.utils.ArgUtil;
 
 /**
  * The Class PostManConfig.
@@ -31,31 +36,27 @@ public class PostManConfig {
 	@TenantValue("${slack.exception.channel}")
 	private String exceptionChannelCode;
 
-	@TenantValue("${slack.channel.notipy.tnt}")
-	private String channelNotipy;
-	@TenantValue("${slack.channel.deployer.tnt}")
-	private String channelDeployer;
 	@TenantValue("${slack.channel.genral.tnt}")
 	private String channelGenral;
-	@TenantValue("${slack.channel.inquiry.tnt}")
-	private String channelInquiry;
+
+	@Autowired
+	TenantProperties tenantProperties;
+	private Map<Channel, String> channelMap = null;
 
 	public String getChannelCode(Channel channel) {
-		if (channel == null) {
-			return channelGenral;
+		if (channelMap == null) {
+			channelMap = new HashMap<Channel, String>();
+			for (Channel eachChannel : Channel.values()) {
+				String propValue = tenantProperties.getProperties()
+						.getProperty("slack.channel." + eachChannel.toString().toLowerCase() + ".tnt");
+				if (ArgUtil.isEmpty(propValue)) {
+					channelMap.put(eachChannel, eachChannel.getCode());
+				} else {
+					channelMap.put(eachChannel, propValue);
+				}
+			}
 		}
-		switch (channel) {
-		case NOTIPY:
-			return channelNotipy;
-		case DEPLOYER:
-			return channelDeployer;
-		case INQUIRY:
-			return channelInquiry;
-		case GENERAL:
-			return channelGenral;
-		default:
-			return channelGenral;
-		}
+		return channelMap.getOrDefault(channel, channelGenral);
 	}
 
 	/**
