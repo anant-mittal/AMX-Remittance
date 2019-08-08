@@ -30,6 +30,7 @@ import com.amx.jax.userservice.service.CommunicationChannelContactService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.userservice.service.UserValidationService;
 import com.amx.jax.util.CryptoUtil;
+import com.amx.utils.ArgUtil;
 import com.amx.utils.Random;
 
 @Component
@@ -154,6 +155,7 @@ public class CustomerDBAuthManager {
 		String eOtpPrefix = Random.randomAlpha(3);
 		String hashedeOtp = cryptoUtil.getHash(customer.getIdentityInt(), eOtp);
 		jaxAuthMetaResp.seteOtpPrefix(eOtpPrefix);
+		jaxAuthMetaResp.setOtpPrefix(eOtpPrefix);
 
 		CivilIdOtpModel model = new CivilIdOtpModel();
 		model.seteOtp(eOtp);
@@ -171,6 +173,7 @@ public class CustomerDBAuthManager {
 		String mOtpPrefix = Random.randomAlpha(3);
 		String hashedmOtp = cryptoUtil.getHash(customer.getIdentityInt(), mOtp);
 		jaxAuthMetaResp.setmOtpPrefix(mOtpPrefix);
+		jaxAuthMetaResp.setOtpPrefix(mOtpPrefix);
 
 		CivilIdOtpModel model = new CivilIdOtpModel();
 		model.setmOtp(mOtp);
@@ -184,7 +187,7 @@ public class CustomerDBAuthManager {
 	}
 
 	public void validateEotp(CustomerOnlineRegistration onlineCust, Customer customer) {
-		String eOtp = JaxAuthContext.getEotp();
+		String eOtp = ArgUtil.ifNotEmpty(JaxAuthContext.getEotp(),JaxAuthContext.getOtp());
 		String etokenHash = onlineCust.getEmailToken();
 		String eOtpHash = null;
 		if (StringUtils.isNotBlank(eOtp)) {
@@ -200,7 +203,7 @@ public class CustomerDBAuthManager {
 	}
 
 	public void validateMotp(CustomerOnlineRegistration onlineCust, Customer customer) {
-		String mOtp = JaxAuthContext.getMotp();
+		String mOtp = ArgUtil.ifNotEmpty(JaxAuthContext.getMotp(),JaxAuthContext.getOtp());
 		String mtokenHash = onlineCust.getSmsToken();
 		String mOtpHash = null;
 		if (StringUtils.isNotBlank(mOtp)) {

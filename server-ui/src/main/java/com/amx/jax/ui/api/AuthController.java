@@ -167,12 +167,18 @@ public class AuthController {
 	@Autowired
 	Transactions transactions;
 
+	@SuppressWarnings("deprecation")
 	@RequestMapping(value = "/pub/auth/password/v2/reset", method = { RequestMethod.POST })
 	public ResponseWrapper<AuthResponse> resetPasswordFlow(@Valid @RequestBody AuthRequest authData,
 			@RequestParam(required = false) ContactType contactType) {
 		AppContextUtil.setFlow(AuthFlow.RESET_PASS.toString());
 		transactions.create(AuthFlow.RESET_PASS);
 		sessionService.getGuestSession().setIdentity(authData.getIdentity());
+		JaxAuthContext.contactType(contactType);
+		JaxAuthContext.otp(authData.getOtp());
+		JaxAuthContext.mOtp(authData.getmOtp());
+		JaxAuthContext.eOtp(authData.geteOtp());
+		JaxAuthContext.wOtp(authData.getwOtp());
 		return loginService.initResetPassword2(authData.getIdentity(), authData.getPassword());
 	}
 
