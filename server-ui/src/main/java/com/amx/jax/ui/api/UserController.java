@@ -181,6 +181,7 @@ public class UserController {
 
 		Language lang = httpService.getLanguage();
 		httpService.setCookie("lang", lang.toString(), 60 * 60 * 2);
+		sessionService.getGuestSession().setLanguage(lang);
 
 		wrapper.getData().setTenant(AppContextUtil.getTenant());
 		wrapper.getData().setTenantCode(AppContextUtil.getTenant().getCode());

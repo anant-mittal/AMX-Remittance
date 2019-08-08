@@ -107,6 +107,10 @@ public class AppContextUtil {
 		return (Language) ArgUtil.parseAsEnum(ContextUtil.map().get(AppConstants.LANG_PARAM_KEY), Language.EN);
 	}
 
+	public static Language getLang(Language lang) {
+		return (Language) ArgUtil.parseAsEnum(ContextUtil.map().get(AppConstants.LANG_PARAM_KEY), lang);
+	}
+
 	public static UserDeviceClient getUserClient() {
 		Object userDeviceClientObject = ContextUtil.map().get(AppConstants.USER_CLIENT_XKEY);
 		UserDeviceClient userDeviceClient = null;
@@ -383,7 +387,7 @@ public class AppContextUtil {
 				List<String> traceIds = httpHeaders.get(AppConstants.TRACE_ID_XKEY);
 				if (traceIds.size() >= 0) {
 					setTranceId(traceIds.get(0));
-				} 
+				}
 			}
 		}
 
