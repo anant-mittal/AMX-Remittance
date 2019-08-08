@@ -85,6 +85,7 @@ public class OWAStatus extends IStatusCodeListPlugin<OWAStatusStatusCodes, ApiOW
 
 		INCOME_UPDATE_REQUIRED(200),
 		CONTACT_TYPE_REQUIRED(200),
+		REDIRECT_MODULE(200),
 
 		/** The unknown jax error. */
 		UNKNOWN_JAX_ERROR("500"),

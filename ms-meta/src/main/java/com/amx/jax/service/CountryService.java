@@ -47,25 +47,25 @@ public class CountryService extends AbstractService {
 	private Logger logger = Logger.getLogger(CountryService.class);
 	
 	public AmxApiResponse<CountryMasterView, Object> getCountryListResponse() {
-
+	
 		List<CountryMasterView> countryList = null;
 		BigDecimal languageIdValue = new BigDecimal("1");
 		ApiResponse response = getBlackApiResponse();
-
+		
 		countryList = countryRepository.findByLanguageId(meta.getLanguageId());
 
 		if (!(meta.getLanguageId().equals(languageIdValue)) || !(meta.getLanguageId().toString().equalsIgnoreCase("en"))) {
-
+			
 			countryList = countryRepository.findByLanguageId(meta.getLanguageId());
-			response.getData().getValues().addAll(countryList);
-			response.setResponseStatus(ResponseStatus.OK);
+		response.getData().getValues().addAll(countryList);
+		response.setResponseStatus(ResponseStatus.OK);
 		}
-
-		if (countryList.isEmpty()) {
+		
+		if(countryList.isEmpty()) {
 			throw new GlobalException("Country list is not abaliable");
-		} else {
-			response.getData().getValues().addAll(countryList);
-			response.setResponseStatus(ResponseStatus.OK);
+		}else {
+		response.getData().getValues().addAll(countryList);
+		response.setResponseStatus(ResponseStatus.OK);
 		}
 		response.getData().setType("country");
 		return AmxApiResponse.buildList(countryList);

@@ -12,6 +12,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class BranchRemittanceApplRequestModel extends RemittanceAdditionalBeneFieldModel implements IRemittanceApplicationParams {
 	
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3456657697014683661L;
 	private String signature;
 	private String amlRemarks;
 	private BigDecimal serviceMasterId;

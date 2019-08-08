@@ -21,6 +21,7 @@ import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxEvent;
 import com.amx.jax.dao.RemittanceApplicationDao;
@@ -81,6 +82,7 @@ public class RemittanceController {
    	
    	@Autowired
    	UserService userService;
+   	
 
 	@RequestMapping(value = "/trnxHist/", method = RequestMethod.GET)
 	public ApiResponse getTrnxHistroyDetailResponse(@RequestParam(required = false, value = "docfyr") BigDecimal docfyr,
@@ -141,14 +143,6 @@ public class RemittanceController {
 		return response;
 	}
 	
-	/*
-	 * @RequestMapping(value = "/validate/v2/", method = RequestMethod.POST) public
-	 * ApiResponse validateRemittanceTransactionV2(@RequestBody
-	 * RemittanceTransactionDrRequestModel model) {
-	 * logger.info("In validate with parameters" + model.toString()); ApiResponse
-	 * response = remittanceTransactionService.validateRemittanceTransaction(model);
-	 * return response; }
-	 */
 
 	@RequestMapping(value = "/sourceofincome/", method = RequestMethod.POST)
 	public ApiResponse sourceofIncome() {
@@ -174,7 +168,7 @@ public class RemittanceController {
 		JaxContextUtil.setJaxEvent(JaxEvent.CREATE_APPLICATION);
 		JaxContextUtil.setRequestModel(model);
 		logger.info("In Save-Application with parameters" + model.toString());
-		ApiResponse response = remittanceTransactionService.saveApplication(model);
+		ApiResponse response = remittanceTransactionService.saveApplicationV2(model);
 		return response;
 	}
 	
@@ -273,4 +267,12 @@ public class RemittanceController {
 	public AmxApiResponse<CustomerRating, ?> saveCustomerRating(@RequestBody @Valid CustomerRatingDTO dto) {
 		return customerRatingService.saveCustomerRating(dto);
 	}
+	
+	//radhika
+	@RequestMapping(value = "/customer-trnx-rating/", method = RequestMethod.POST)
+	public AmxApiResponse<CustomerRating, ?> inquireCustomerRating(@RequestParam BigDecimal remittanceTrnxId) {
+		return  customerRatingService.inquireCustomerRating(remittanceTrnxId);
+		
+	}
+	
 }

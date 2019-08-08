@@ -4,7 +4,9 @@ public enum ContactType {
 	SMS("sms"), EMAIL("email"), WHATSAPP("wa"), SMS_EMAIL("esms"),
 
 	// Deprecated
-	MOBILE(SMS);
+	MOBILE(SMS),
+	// Default Null Value
+	EMPTY("");
 
 	ContactType contactType;
 	String shortCode;

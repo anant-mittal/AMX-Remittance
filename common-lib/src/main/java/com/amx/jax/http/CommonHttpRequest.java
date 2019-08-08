@@ -178,6 +178,25 @@ public class CommonHttpRequest {
 		}
 	}
 
+	/**
+	 * 
+	 * @param name
+	 * @param value
+	 * @param expiry - Sets the maximum age of the cookie in seconds.
+	 */
+	public void setCookie(String name, String value, int expiry) {
+		Cookie kooky = new Cookie(name, value);
+		kooky.setMaxAge(expiry);
+		kooky.setHttpOnly(appConfig.isCookieHttpOnly());
+		kooky.setSecure(appConfig.isCookieSecure());
+		kooky.setPath("/");
+		setCookie(kooky);
+	}
+
+	public void setCookie(String name, String value) {
+		setCookie(name, value, 31622400);
+	}
+
 	public Cookie getCookie(String name) {
 		return WebUtils.getCookie(request, name);
 	}

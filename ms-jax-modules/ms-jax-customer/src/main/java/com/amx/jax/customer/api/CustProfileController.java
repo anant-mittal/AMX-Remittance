@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.jax.ICustomerProfileService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.customer.manager.CustomerContactVerificationManager;
-import com.amx.jax.db.utils.EntityDtoUtil;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerContactVerification;
 import com.amx.jax.dict.ContactType;
@@ -27,6 +26,7 @@ import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.repository.CustomerRepository;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.EntityDtoUtil;
 
 @RestController
 public class CustProfileController implements ICustomerProfileService {
@@ -51,7 +51,8 @@ public class CustProfileController implements ICustomerProfileService {
 
 		Customer c;
 		if (!ArgUtil.isEmpty(identity)) {
-			c = customerRepository.getCustomerOneByIdentityInt(identity);
+			// Active customer record fetched
+			c = customerRepository.getActiveCustomerDetails(identity);
 		} else if (!ArgUtil.isEmpty(customerId)) {
 			c = customerRepository.findOne(customerId);
 		} else {

@@ -22,6 +22,7 @@ import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.manager.RemittanceApplicationManager;
+import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.repository.AdditionalInstructionDataRepository;
 import com.amx.jax.repository.IFlexFiledView;
@@ -122,6 +123,28 @@ public class RemittanceApplicationDao {
 		}
 
 	}
+	
+	
+	public void updatePlaceOrderV2(RemittanceTransactionDrRequestModel model, RemittanceApplication remittanceApplication) {
+
+		// to update place order status we update applicaiton id in placeorder table
+		if (model.getPlaceOrderId() != null) {
+			List<PlaceOrder> poList = placeOrderdao.getPlaceOrderForId(model.getPlaceOrderId());
+			PlaceOrder po = null;
+			if (poList != null && poList.size() != 0) {
+				po = poList.get(0);
+				po.setRemittanceApplicationId(remittanceApplication.getRemittanceApplicationId());
+				// po.setIsActive("C");
+				placeOrderdao.save(po);
+			} else {
+				logger.info("Place Order not found for place_order_id: " + model.getPlaceOrderId());
+				throw new GlobalException(JaxError.PLACE_ORDER_NOT_ACTIVE_OR_EXPIRED, "The order is not available");
+			}
+			logger.info("Place Order updated for place_order_id: " + model.getPlaceOrderId());
+		}
+
+	}
+	
 	
 	public RemittanceTransaction getRemittanceTransactionById(BigDecimal remittanceTransactionId) {
 		return remittanceTransactionRepository.findOne(remittanceTransactionId);

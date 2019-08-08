@@ -117,7 +117,6 @@ public class UserService {
 			ex.setMeta(authData.toJaxAuthMetaResp());
 			throw ex;
 		}
-
 	}
 
 	/**
@@ -159,6 +158,7 @@ public class UserService {
 			sessionService.getUserSession().getCustomerModel().setEmail(model.getEmail());
 			sessionService.getUserSession().getCustomerModel().getPersoninfo().setEmail(model.getEmail());
 			wrapper.setMessage(OWAStatusStatusCodes.USER_UPDATE_SUCCESS, "Email Updated");
+			updateCustoemrModel();
 		}
 		return wrapper;
 	}

@@ -14,13 +14,18 @@ import java.util.Date;
 import java.util.SimpleTimeZone;
 import java.util.TimeZone;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
+
 // TODO: Auto-generated Javadoc
 /**
  * The Class DateUtil.
  */
 // Needs further Customizations
 public final class DateUtil {
-
+	
 	/** The Constant GMT. */
 	private static final String GMT = "GMT";
 
@@ -32,6 +37,8 @@ public final class DateUtil {
 
 	/** The Constant DEFAULT_DATE_FORMAT. */
 	private static final String DEFAULT_DATE_FORMAT = "dd/MM/yyyy";
+	
+	private static final String DEFAULT_DATE_FORMAT_EVENT = "dd-MMM-yyyy";
 
 	/** The Constant DEFAULT_DATE_TIME_FORMAT. */
 	private static final String DEFAULT_DATE_TIME_FORMAT = "dd/MM/yyyy HH:mm";
@@ -69,6 +76,8 @@ public final class DateUtil {
 	/**
 	 * Instantiates a new date util.
 	 */
+	private static final Logger LOGGER = LoggerFactory.getLogger(DateUtil.class);
+	
 	private DateUtil() {
 		throw new IllegalStateException("This is a class with static methods and should not be instantiated");
 	}
@@ -93,6 +102,30 @@ public final class DateUtil {
 				newDate = setDefaultGMTTime(new Date(Long.parseLong(dateStr)));
 			} catch (NumberFormatException ex) {
 				/* return null if date string cannot be parsed */
+				newDate = null;
+			}
+		}
+		return newDate;
+	}
+	public static Date parseDateDBEvent(String dateStr) {
+		
+		dateStr = dateStr.trim();
+		LOGGER.info("datestr is "+dateStr);
+		SimpleDateFormat format = new SimpleDateFormat(DEFAULT_DATE_FORMAT_EVENT);
+		format.setTimeZone(TimeZone.getTimeZone(GMT));
+		Date newDate;
+		try {
+			newDate = setDefaultGMTTime(format.parse(dateStr));
+			LOGGER.info("newDate is gmt "+newDate);
+		} catch (ParseException e) {
+			// try parsing as long
+			try {
+				
+				newDate = setDefaultGMTTime(new Date(Long.parseLong(dateStr)));
+				LOGGER.info("newDate is "+newDate);
+			} catch (NumberFormatException ex) {
+				/* return null if date string cannot be parsed */
+				LOGGER.info("Exception is "+ex);
 				newDate = null;
 			}
 		}

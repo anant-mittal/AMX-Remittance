@@ -129,7 +129,7 @@ public class BranchUserManager  extends AbstractModel {
 				List<CollectDetailModel> branchDayCoolectionDetailList = collecDetailRepository.getCollectionDetailsForUser(empDetails.getUserName(), accMonthYear,empDetails.getCountryBranchId());
 				if (branchDayCoolectionDetailList != null && !branchDayCoolectionDetailList.isEmpty()) {
 					for (CollectDetailModel collectDetail : branchDayCoolectionDetailList) {
-						if (collectDetail.getCollectionMode() != null) {
+						if (collectDetail.getCollectionMode() != null && collectDetail.getExCurrencyMaster() !=null &&  collectDetail.getExCurrencyMaster().getCurrencyId().compareTo(metaData.getDefaultCurrencyId())==0) {
 							if (collectDetail.getCollectionMode().equalsIgnoreCase(ConstantDocument.CASH)) {
 								totalCash = totalCash.add(collectDetail.getCollAmt());
 							} else if (collectDetail.getCollectionMode().equalsIgnoreCase(ConstantDocument.KNET_CODE)) {

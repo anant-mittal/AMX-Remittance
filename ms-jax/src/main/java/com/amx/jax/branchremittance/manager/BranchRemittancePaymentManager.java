@@ -540,7 +540,7 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		Map<String,Object> map =routingProDao.limitCheck(inputValues);
 		Map<String,Object> mapRemit=routingProDao.todayRemitAmount(inputValues);
 		Map<String,Object> mapReceipt=routingProDao.todayReceiptAmount(inputValues);
-		Map<String,Object> mapMisAmount=routingProDao.todayMisReceAmount(inputValues);
+		//Map<String,Object> mapMisAmount=routingProDao.todayMisReceAmount(inputValues);
 		BigDecimal todayTrnxLimit = BigDecimal.ZERO;
 		if(map!=null) {
 			config.setCashLimit(map.get("W_CB_LIMIT")==null?BigDecimal.ZERO:(BigDecimal)map.get("W_CB_LIMIT"));
@@ -554,10 +554,10 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 			todayTrnxLimit = todayTrnxLimit.add(mapReceipt.get("REMIT_AMT")==null?BigDecimal.ZERO:(BigDecimal)mapReceipt.get("REMIT_AMT"));
 		}
 		
-		if(mapMisAmount!=null){
+		/*if(mapMisAmount!=null){
 			todayTrnxLimit = todayTrnxLimit.add(mapMisAmount.get("REMIT_AMT")==null?BigDecimal.ZERO:(BigDecimal)mapMisAmount.get("REMIT_AMT"));
 		}
-		
+		*/
 		config.setTodayTrnxAmount(todayTrnxLimit);
 		return config;
 		

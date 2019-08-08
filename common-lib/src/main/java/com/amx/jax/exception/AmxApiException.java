@@ -33,6 +33,8 @@ public abstract class AmxApiException extends AmxException {
 	 */
 	protected String errorMessage;
 
+	protected String redirectUrl;
+
 	AmxApiError apiError;
 
 	Map<String, String> detailMap = null;
@@ -50,6 +52,7 @@ public abstract class AmxApiException extends AmxException {
 		}
 		this.errorKey = amxApiError.getErrorKey();
 		this.errorMessage = amxApiError.getMessage();
+		amxApiError.getRedirectUrl();
 	}
 
 	public AmxApiException(String errorMessage) {
@@ -261,4 +264,18 @@ public abstract class AmxApiException extends AmxException {
 	public String toURL() {
 		return this.getClass().getName() + "/" + ArgUtil.parseAsString(error);
 	}
+
+	public String getRedirectUrl() {
+		return redirectUrl;
+	}
+
+	public void setRedirectUrl(String redirectUrl) {
+		this.redirectUrl = redirectUrl;
+	}
+
+	public AmxApiException redirectUrl(String redirectUrl) {
+		this.setRedirectUrl(redirectUrl);
+		return this;
+	}
+
 }

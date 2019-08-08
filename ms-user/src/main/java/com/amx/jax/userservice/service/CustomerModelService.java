@@ -23,9 +23,12 @@ import com.amx.jax.model.response.customer.CustomerFlags;
 import com.amx.jax.model.response.customer.CustomerModelResponse;
 import com.amx.jax.model.response.customer.CustomerModelSignupResponse;
 import com.amx.jax.model.response.customer.PersonInfo;
+import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.manager.CustomerFlagManager;
 import com.amx.jax.userservice.manager.OnlineCustomerManager;
+import com.amx.jax.userservice.repository.OnlineCustomerRepository;
+import com.amx.jax.util.AmxDBConstants.Status;
 import com.amx.utils.MaskUtil;
 
 @Service
@@ -44,6 +47,10 @@ public class CustomerModelService {
 	MetaData metaData;
 	@Autowired
 	OnlineCustomerManager onlineCustomerManager;
+	@Autowired
+	CustomerRepository customerRepository;
+	@Autowired
+	OnlineCustomerRepository onlineCustomerRepository;
 
 	public CustomerModelResponse getCustomerModelResponse(String identityInt) {
 		// userValidationService.validateIdentityInt(identityInt,
@@ -87,7 +94,10 @@ public class CustomerModelService {
 		CustomerModelSignupResponse response = new CustomerModelSignupResponse();
 		response.setCustomerFlags(customerModelResponse.getCustomerFlags());
 		List<CustomerCommunicationChannel> customerCommunicationChannels = new ArrayList<>();
-		if (customerFlags.getEmailVerified()) {
+		
+		if (customerFlags.getEmailVerified() && personInfo.getEmail() != null
+				&& !"null".equals(personInfo.getEmail())) {
+
 			String emailId = personInfo.getEmail();
 			String email = emailId.split("@")[0];
 			int maskLength = 4;
@@ -122,10 +132,12 @@ public class CustomerModelService {
 			customerCommunicationChannels.add(new CustomerCommunicationChannel(ContactType.WHATSAPP, maskedMobile));
 
 		}
+
 		response.setCustomerCommunicationChannel(customerCommunicationChannels);
 		if (customerCommunicationChannels.isEmpty()) {
 			throw new GlobalException(JaxError.MISSING_OTP_CONTACT,
 					"You cannot register online. Please register contact details in the branch to proceed further.");
+
 		}
 		return response;
 	}

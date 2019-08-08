@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.amx.jax.dbmodel.BranchSystemDetail;
 import com.amx.jax.dbmodel.Device;
+import com.amx.jax.dbmodel.FeedbackStarRating;
 import com.amx.jax.dbmodel.employee.UserSession;
 import com.amx.jax.grid.views.CustomerDetailViewRecord;
 import com.amx.jax.grid.views.EmployeeDetailViewRecord;
@@ -30,6 +31,8 @@ public class GridViewFactory {
 		map.put(GridView.VW_CUSTOMER_KIBANA, new GridInfo<CustomerDetailViewRecord>(CustomerDetailViewRecord.class));
 		map.put(GridView.VW_KIBANA_TRNX, new GridInfo<TranxViewRecord>(TranxViewRecord.class));
 		map.put(GridView.EX_V_RATE_PATTERN, new GridInfo<XRateViewRecord>(XRateViewRecord.class));
+		map.put(GridView.VW_TRNX_FEEDBACK, new GridInfo<FeedbackStarRating>(FeedbackStarRating.class));
+
 
 	}
 

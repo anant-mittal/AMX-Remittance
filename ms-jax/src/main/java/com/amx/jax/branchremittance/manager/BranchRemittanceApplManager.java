@@ -215,12 +215,12 @@ public class BranchRemittanceApplManager {
 		/** To fetch bene details **/
 		 BenificiaryListView beneficaryDetails =getBeneDetails(requestApplModel);
 		 
-		 /* to vlidate BSB  account though api **/
-		String errMsg = remitTrnxManager.beneAccountValidationThroughApi(requestApplModel.getServiceMasterId(),requestApplModel.getRoutingBankId(),beneficaryDetails);
-		if(!StringUtils.isBlank(errMsg)) {
-			throw new GlobalException(JaxError.BSB_ACCOUNT_VALIATION,"Invalid account number "+errMsg);
-		}
-		 
+		 /** to vlidate BSB  account though api **/
+			 /*	String errMsg = remitTrnxManager.beneAccountValidationThroughApi(requestApplModel.getServiceMasterId(),requestApplModel.getRoutingBankId(),beneficaryDetails);
+			if(!StringUtils.isBlank(errMsg)) {
+				throw new GlobalException(JaxError.BSB_ACCOUNT_VALIATION,"Invalid account number "+errMsg);
+			}*/
+		 /** end here */
 		 
 		/*checkingStaffIdNumberWithCustomer **/
 		 branchRemitManager.checkingStaffIdNumberWithCustomer();
@@ -257,7 +257,7 @@ public class BranchRemittanceApplManager {
 		 branchRemitManager.validateAdditionalCheck(customer,beneficaryDetails,rateBreakUp.getNetAmount(),requestApplModel);
 		 
 		/** bene additional check **/
-		 Map<String, Object> addBeneDetails =branchRemitManager.validateAdditionalBeneDetails(beneficaryDetails,requestApplModel);
+		// Map<String, Object> addBeneDetails =branchRemitManager.validateAdditionalBeneDetails(beneficaryDetails,requestApplModel);
 		 
 		 BeneAdditionalDto beneAddlDto  =branchRemitManager.getAdditionalBeneDetailJax(beneficaryDetails,requestApplModel);
 		 
