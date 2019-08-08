@@ -86,21 +86,27 @@ public class RemittanceTransactionService extends AbstractService {
 
 	public ApiResponse getSourceOfIncome(BigDecimal languageId) {
 		List<SourceOfIncomeView> sourceOfIncomeList;
-		if(languageId==new BigDecimal(1))
+		List<SourceOfIncomeView> sourceOfIncomeListArabic;
+		ApiResponse response = getBlackApiResponse();
+		if((languageId==null) || languageId.equals(new BigDecimal(1)))
 		{
 		sourceOfIncomeList = sourceOfIncomeDao.getSourceofIncome(languageId);
+		response.getData().getValues().addAll(convertSourceOfIncomeForEnglish(sourceOfIncomeList));
+		response.setResponseStatus(ResponseStatus.OK);
 		}
 		else {
-			sourceOfIncomeList = sourceOfIncomeDao.getSourceofIncome(languageId);
-		}
-		
-		ApiResponse response = getBlackApiResponse();
-		if (sourceOfIncomeList.isEmpty()) {
-			throw new GlobalException("No data found");
-		} else {
+			sourceOfIncomeList = sourceOfIncomeDao.getSourceofIncome(new BigDecimal(1));
+			
+			sourceOfIncomeListArabic= sourceOfIncomeDao.getSourceofIncome(languageId);
+			sourceOfIncomeList.get(0).setLocalName(sourceOfIncomeListArabic.get(0).getLocalName());
 			response.getData().getValues().addAll(convertSourceOfIncome(sourceOfIncomeList));
 			response.setResponseStatus(ResponseStatus.OK);
 		}
+		
+		
+		if (sourceOfIncomeList.isEmpty()) {
+			throw new GlobalException("No data found");
+		} 
 		response.getData().setType("sourceofincome");
 		return response;
 	}
@@ -149,6 +155,23 @@ public class RemittanceTransactionService extends AbstractService {
 			dto.setLanguageId(model.getLanguageId());
 			dto.setDescription(model.getDescription());
 			dto.setLocalName(model.getLocalName());
+
+			list.add(dto);
+		}
+		return list;
+
+	}
+	
+	public List<SourceOfIncomeDto> convertSourceOfIncomeForEnglish(List<SourceOfIncomeView> sourceOfIncomeList) {
+		List<SourceOfIncomeDto> list = new ArrayList<>();
+		for (SourceOfIncomeView model : sourceOfIncomeList) {
+			SourceOfIncomeDto dto = new SourceOfIncomeDto();
+			dto.setSourceofIncomeId(model.getSourceofIncomeId());
+			//dto.setShortDesc(model.getShortDesc());
+			dto.setLanguageId(model.getLanguageId());
+			dto.setDescription(model.getDescription());
+			dto.setLocalName(model.getDescription());
+
 			list.add(dto);
 		}
 		return list;

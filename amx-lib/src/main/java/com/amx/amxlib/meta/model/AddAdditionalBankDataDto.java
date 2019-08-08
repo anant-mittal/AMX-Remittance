@@ -4,7 +4,9 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AddAdditionalBankDataDto {
+import com.amx.jax.model.ResourceDTO;
+
+public class AddAdditionalBankDataDto extends ResourceDTO{
     private BigDecimal additionalBankRuleFiledId;
     private String additionalDesc;
     private String flexiField;
@@ -283,11 +285,25 @@ public class AddAdditionalBankDataDto {
     }
 
 	public String getLocalName() {
+
 		return localName;
 	}
 
 	public void setLocalName(String localName) {
 		this.localName = localName;
+
 	}
+
+
+	@Override
+	public String getResourceLocalName() {
+		return this.localName;
+	}
+	
+	
+
+	
+    
+
     
 }

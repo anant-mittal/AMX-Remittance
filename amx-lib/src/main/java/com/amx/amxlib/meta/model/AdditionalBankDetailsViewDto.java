@@ -21,7 +21,7 @@ public class AdditionalBankDetailsViewDto extends ResourceDTO{
 	  private BigDecimal deliveryId;
 	  private String fieldType;
 	  private String localName;
-	  
+
 	public BigDecimal getSrlId() {
 		return srlId;
 	}

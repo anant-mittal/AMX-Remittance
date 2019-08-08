@@ -21,13 +21,18 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.BankBranchDto;
 import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.model.request.GetBankBranchRequest;
+import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.BankBranchView;
 import com.amx.jax.dbmodel.BankMasterModel;
 import com.amx.jax.dbmodel.CountryBranch;
+import com.amx.jax.dbmodel.SourceOfIncomeView;
 import com.amx.jax.dbmodel.treasury.BankApplicability;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.response.SourceOfIncomeDto;
 import com.amx.jax.repository.BankMasterRepository;
 import com.amx.jax.repository.CountryBranchRepository;
 import com.amx.jax.repository.VwBankBranchRepository;
@@ -41,22 +46,36 @@ public class BankMetaService extends AbstractService {
 	private Logger logger = Logger.getLogger(BankMetaService.class);
 
 	@Autowired
-	private BankMasterRepository repo;
+    BankMasterRepository repo;
 	@Autowired
 	private CountryBranchRepository countryBranchRepository;
 	@Autowired
 	private VwBankBranchRepository vwBankBranchRepository;
 	@Autowired
 	BankApplicabilityRepository bankApplicabilityRepository;
-
+	@Autowired
+	MetaData metaData;
+	
 	public List<BankMasterModel> getBanksByCountryId(BigDecimal countryId) {
+	
 		return repo.findBybankCountryIdAndRecordStatusOrderByBankShortNameAsc(countryId, ConstantDocument.Yes);
 	}
 
 	public AmxApiResponse<BankMasterDTO, Object> getBanksApiResponseByCountryId(BigDecimal countryId) {
-		List<BankMasterModel> banks = this.getBanksByCountryId(countryId);
+		
+		BigDecimal languageId = metaData.getLanguageId();
+		List<BankMasterModel> banks = new ArrayList<>();
+		
+		banks =this.getBanksByCountryId(countryId);
+		
 		if (banks.isEmpty()) {
 			throw new GlobalException("banks details not avaliable");
+		}
+		else if(languageId.equals(new BigDecimal(2))) {
+			
+			List<BankMasterModel> bankArabicName = repo.findBybankCountryIdAndLanguageInd(countryId, languageId.toString());
+			banks.addAll(bankArabicName);
+						
 		}
 		return AmxApiResponse.buildList(convert(banks));
 	}

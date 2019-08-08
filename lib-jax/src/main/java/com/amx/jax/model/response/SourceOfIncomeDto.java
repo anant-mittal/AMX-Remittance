@@ -38,13 +38,6 @@ public class SourceOfIncomeDto extends ResourceDTO{
 		this.shortDesc = shortDesc;
 	}
 
-	
-	public String getLocalName() {
-		return localName;
-	}
-	public void setLocalName(String localName) {
-		this.localName = localName;
-	}
 	@Override
 	public String getResourceCode() {
 		return this.shortDesc;
@@ -58,6 +51,14 @@ public class SourceOfIncomeDto extends ResourceDTO{
 	@Override
 	public String getResourceLocalName() {
 		return this.localName;
+
+	}
+	public String getLocalName() {
+		return localName;
+	}
+	public void setLocalName(String localName) {
+		this.localName = localName;
+
 	}
 	
 	

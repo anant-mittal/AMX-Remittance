@@ -166,6 +166,7 @@ public class BankMasterDTO extends ResourceDTO implements Comparable<BankMasterD
 	public String getResourceLocalName() {
 		return this.localName;
 	}
+
 	
 	
 }

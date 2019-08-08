@@ -157,6 +157,7 @@ public class PurposeOfTransactionService extends AbstractService {
 
 								// setting dynamic functionality
 								adddata.setMandatory(dyamicLabel.getMandatory());
+								
 								if (dyamicLabel.getMinLenght() != null) {
 									adddata.setMinLenght(dyamicLabel.getMinLenght().intValue());
 								} else {
@@ -202,6 +203,7 @@ public class PurposeOfTransactionService extends AbstractService {
 					adddata.setRenderSelect(false);
 					adddata.setRenderOneSelect(false);
 					adddata.setFlexiField(dyamicLabel.getFlexiField());
+
 					if (dyamicLabel.getLebelDesc() != null) {
 						adddata.setAdditionalDesc(dyamicLabel.getLebelDesc());
 					} else {
