@@ -699,6 +699,7 @@ public class UserService extends AbstractUserService {
 
 		userValidationService.validateCustomerLockCount(onlineCustomer);
 		userValidationService.validatePassword(onlineCustomer, password, captchaEnable);
+		userService.unlockCustomer(customer.getCustomerId());
 		userValidationService.validateCustIdProofs(onlineCustomer.getCustomerId());
 		userValidationService.validateCustomerData(onlineCustomer, customer);
 		userValidationService.validateBlackListedCustomerForLogin(customer);
