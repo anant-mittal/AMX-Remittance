@@ -134,13 +134,13 @@ public class UserValidationService {
 
 	@Autowired
 	IContactDetailDao contactDetailDao;
-	
+
 	@Autowired
 	IBlackListDetailRepository blackListDtRepo;
-	
+
 	@Autowired
 	UserContactVerificationManager userContactVerificationManager;
-	
+
 	@Autowired
 	JaxTenantProperties jaxTenantProperties;
 
@@ -202,11 +202,19 @@ public class UserValidationService {
 		}
 	}
 
-	protected void validatePassword(CustomerOnlineRegistration customer, String password) {
+	protected void validatePassword(CustomerOnlineRegistration customer, String password, boolean validateCaptcha) {
+		if(validateCaptcha) {
+			validateCaptcha(customer);
+		}
 		String dbPwd = customer.getPassword();
 		String passwordhashed = cryptoUtil.getHash(customer.getUserName(), password);
 		if (!dbPwd.equals(passwordhashed)) {
 			Integer attemptsLeft = incrementLockCount(customer);
+			
+			if(validateCaptcha) {
+				validateCaptcha(customer);
+			}
+			
 			String errorExpression = JaxError.WRONG_PASSWORD.toString();
 			if (attemptsLeft > 0) {
 				errorExpression = jaxUtil.buildErrorExpression(JaxError.WRONG_PASSWORDS_ATTEMPTS.toString(),
@@ -216,6 +224,10 @@ public class UserValidationService {
 		}
 	}
 	
+	protected void validatePassword(CustomerOnlineRegistration customer, String password) {
+		validatePassword(customer, password, false);
+	}
+
 	protected void validateDevicePassword(CustomerOnlineRegistration customer, String password) {
 		String dbPassword = customer.getDevicePassword();
 		String passwordHashed = null;
@@ -427,7 +439,23 @@ public class UserValidationService {
 
 	}
 
-	public void validateCustomerLockCount(CustomerOnlineRegistration onlineCustomer) {
+	public void validateCaptcha(CustomerOnlineRegistration onlineCustomer) {
+		final Integer MAX_CAPTCHA_COUNT = jaxTenantProperties.getMaxCaptchaCount();
+		if (onlineCustomer.getLockCnt() != null) {
+			int lockCnt = onlineCustomer.getLockCnt().intValue();
+			if (StringUtils.isBlank(JaxAuthContext.getCaptcha())) {
+				if (lockCnt == MAX_CAPTCHA_COUNT) {
+					throw new GlobalException(JaxError.CAPTCHA_REQUIRED, "Captcha Required");
+				}
+			}
+		}
+
+	}
+
+	public void validateCustomerLockCount(CustomerOnlineRegistration onlineCustomer, boolean validateCaptcha) {
+		if(validateCaptcha) {
+			validateCaptcha(onlineCustomer);
+		}
 		final Integer MAX_OTP_ATTEMPTS = otpSettings.getMaxValidateOtpAttempts();
 		if (onlineCustomer.getLockCnt() != null) {
 			int lockCnt = onlineCustomer.getLockCnt().intValue();
@@ -447,6 +475,10 @@ public class UserValidationService {
 			}
 		}
 	}
+	
+	public void validateCustomerLockCount(CustomerOnlineRegistration onlineCustomer) {
+		validateCustomerLockCount(onlineCustomer, false);
+	}
 
 	/**
 	 * updates lock count by one due to wrong password/otp attempt
@@ -463,7 +495,7 @@ public class UserValidationService {
 		}
 		onlineCustomer.setLockCnt(new BigDecimal(lockCnt));
 		custDao.saveOnlineCustomer(onlineCustomer);
-		
+
 		if (lockCnt >= MAX_OTP_ATTEMPTS) {
 			logger.info("lock count has exceeded");
 			String errorExpression = JaxError.USER_LOGIN_ATTEMPT_EXCEEDED.toString();
@@ -496,36 +528,35 @@ public class UserValidationService {
 	protected CustomerOnlineRegistration validateOnlineCustomerByIdentityId(String identityInt,
 			BigDecimal identityType) {
 		Customer customer = custDao.getActiveCustomerByIndentityIntAndType(identityInt, identityType);
-		
+
 		if (customer == null) {
 			throw new GlobalException(JaxError.CUSTOMER_NOT_FOUND.getStatusKey(), "Online Customer id not found");
 		}
-		
+
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customer.getCustomerId());
 		if (onlineCustomer == null) {
 			throw new GlobalException(JaxError.CUSTOMER_NOT_FOUND.getStatusKey(), "Online Customer id not found");
 		}
 		return onlineCustomer;
 	}
-	
+
 	public CustomerOnlineRegistration validateOnlineCustomerByIdentityId(BigDecimal customerId) {
 		Customer customer = custDao.getCustById(customerId);
 		if (customer == null) {
 			throw new GlobalException(JaxError.CUSTOMER_NOT_FOUND.getStatusKey(), "Online Customer id not found");
 		}
-		if(!customer.getIdentityTypeId().toString().equals(Constants.IDENTITY_TYPE_CIVIL_ID_STR) && !customer.getIdentityTypeId().toString().equals(Constants.IDENTITY_TYPE_CIVIL_ID_STRING)) {
-			throw new GlobalException("The ID you have entered is not a Civil ID. Please enter the Civil ID to set up fingerprint login.");
+		if (!customer.getIdentityTypeId().toString().equals(Constants.IDENTITY_TYPE_CIVIL_ID_STR)
+				&& !customer.getIdentityTypeId().toString().equals(Constants.IDENTITY_TYPE_CIVIL_ID_STRING)) {
+			throw new GlobalException(
+					"The ID you have entered is not a Civil ID. Please enter the Civil ID to set up fingerprint login.");
 		}
-			
-			
+
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customer.getCustomerId());
 		if (onlineCustomer == null) {
 			throw new GlobalException(JaxError.CUSTOMER_NOT_FOUND.getStatusKey(), "Online Customer id not found");
 		}
 		return onlineCustomer;
 	}
-	
-	
 
 	public void validateOtpFlow(CustomerModel model) {
 		if (model.isRegistrationFlow()) {
@@ -555,7 +586,7 @@ public class UserValidationService {
 			this.incrementLockCount(onlineCustomer);
 			throw new InvalidOtpException("Mobile Otp is incorrect for identity int: " + customer.getIdentityInt());
 		}
-		
+
 		// email otp validation
 		if (isEOtpFlowRequired && onlineCustomer.getEmailToken() != null) {
 			String hashedEotp = cryptoUtil.getHash(customer.getIdentityInt(), model.getEotp());
@@ -566,7 +597,7 @@ public class UserValidationService {
 			}
 		}
 		this.unlockCustomer(onlineCustomer);
-		
+
 		// ------ Contact Verified ------
 		userContactVerificationManager.setContactVerified(customer, model.getMotp(), model.getEotp(), null);
 	}
@@ -698,14 +729,15 @@ public class UserValidationService {
 		}
 		onlineCustomer.setTokenSentCount(BigDecimal.ZERO);
 	}
-	
+
 	public List<Customer> validateNonActiveOrNonRegisteredCustomerStatus(String identityInt, JaxApiFlow apiFlow) {
 		return validateNonActiveOrNonRegisteredCustomerStatus(identityInt, null, apiFlow);
 	}
 
 	/**
 	 * validates inactive or not registered customers status
-	 * @return 
+	 * 
+	 * @return
 	 */
 	@SuppressWarnings("unused")
 	public List<Customer> validateNonActiveOrNonRegisteredCustomerStatus(String identityInt, BigDecimal identityType,
@@ -754,7 +786,7 @@ public class UserValidationService {
 	}
 
 	private void validateCustomerForOffisteReg(List<Customer> customer) {
-		
+
 	}
 
 	private void validateCustomerDefault(Customer customer) {
@@ -775,7 +807,8 @@ public class UserValidationService {
 		userValidationService.validateCustomerVerification(onlineCustomer.getCustomerId());
 
 		if (!ConstantDocument.Yes.equals(onlineCustomer.getStatus())) {
-			throw new GlobalException(JaxError.CUSTOMER_NOT_ACTIVE_ONLINE, "You are not registered online. Please click Sign Up for registration");
+			throw new GlobalException(JaxError.CUSTOMER_NOT_ACTIVE_ONLINE,
+					"You are not registered online. Please click Sign Up for registration");
 		}
 	}
 
@@ -798,7 +831,8 @@ public class UserValidationService {
 		userValidationService.validateCustomerVerification(onlineCustomer.getCustomerId());
 
 		if (!ConstantDocument.Yes.equals(onlineCustomer.getStatus())) {
-			throw new GlobalException(JaxError.CUSTOMER_NOT_ACTIVE_ONLINE, "You are not registered online. Please click Sign Up for registration");
+			throw new GlobalException(JaxError.CUSTOMER_NOT_ACTIVE_ONLINE,
+					"You are not registered online. Please click Sign Up for registration");
 		}
 		if (ConstantDocument.Yes.equals(customer.getIsActive())) {
 			throw new GlobalException(JaxError.CUSTOMER_ACTIVE_BRANCH, "Customer active in branch");
@@ -823,7 +857,7 @@ public class UserValidationService {
 		}
 		tenantContext.get().validateIdentityInt(identityInt, identyType);
 	}
-	
+
 	public void validateFingerprintDeviceId(CustomerOnlineRegistration customer, String fingerprintDeviceId) {
 		String dbFingerprintDeviceId = customer.getFingerprintDeviceId();
 		if (!fingerprintDeviceId.equals(dbFingerprintDeviceId) || fingerprintDeviceId == null) {
@@ -853,12 +887,13 @@ public class UserValidationService {
 		}
 		return customers.get(0);
 	}
-	
+
 	public void validateCustomerContactForSendOtp(List<ContactType> contactTypes, Customer customer) {
 		validateCustomerContactForSendOtp(contactTypes, customer, null);
 	}
-	
-	public void validateCustomerContactForSendOtp(List<ContactType> contactTypes, Customer customer, CustomerModel customerModel) {
+
+	public void validateCustomerContactForSendOtp(List<ContactType> contactTypes, Customer customer,
+			CustomerModel customerModel) {
 		if (contactTypes == null) {
 			contactTypes = Arrays.asList(ContactType.MOBILE);
 		}
@@ -884,16 +919,4 @@ public class UserValidationService {
 		}
 	}
 
-	public void requiredCaptchaOrNot(CustomerOnlineRegistration onlineCustomer) {
-		final Integer MAX_CAPTCHA_COUNT = jaxTenantProperties.getMaxCaptchaCount();
-		if (onlineCustomer.getLockCnt() != null) {
-			int lockCnt = onlineCustomer.getLockCnt().intValue();
-			if (StringUtils.isBlank(JaxAuthContext.getCaptcha())){
-				if(lockCnt == MAX_CAPTCHA_COUNT) {
-					throw new GlobalException(JaxError.CAPTCHA_REQUIRED, "Captcha Required");
-				}
-			}
-		}
-		
-	}
 }

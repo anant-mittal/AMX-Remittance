@@ -683,8 +683,6 @@ public class UserService extends AbstractUserService {
 					"User with userId: " + userId + " is not registered");
 		}
 		
-		userValidationService.requiredCaptchaOrNot(onlineCustomer);
-		
 		Customer customer = custDao.getCustById(onlineCustomer.getCustomerId());
 		// userValidationService.validateCustomerVerification(onlineCustomer.getCustomerId());
 		if (!ConstantDocument.Yes.equals(onlineCustomer.getStatus())) {
@@ -693,7 +691,7 @@ public class UserService extends AbstractUserService {
 		}
 
 		userValidationService.validateCustomerLockCount(onlineCustomer);
-		userValidationService.validatePassword(onlineCustomer, password);
+		userValidationService.validatePassword(onlineCustomer, password, true);
 		userValidationService.validateCustIdProofs(onlineCustomer.getCustomerId());
 		userValidationService.validateCustomerData(onlineCustomer, customer);
 		userValidationService.validateBlackListedCustomerForLogin(customer);
