@@ -50,7 +50,11 @@ public final class FileUtil {
 	public static String normalize(String path) {
 		String resolvedPath = null;
 		try {
-			resolvedPath = new URI(path).normalize().toString();
+			String forwrdPath = path.replace("\\", "/");
+			//URI uri = new File(path).toURI();
+			URI uri = new URI(forwrdPath);
+			
+			resolvedPath = uri.normalize().toString();
 			if (resolvedPath.contains(FILE_TRAVER_BACK) || resolvedPath.contains(FILE_TRAVER_HOME)) {
 				throw new Exception();
 			}
