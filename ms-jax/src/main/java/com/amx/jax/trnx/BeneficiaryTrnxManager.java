@@ -156,7 +156,7 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		beneDetails.setBeneBankName(beneListView.getBankShortNames());
 		beneDetails.setBeneCountry(beneListView.getBenificaryBankCountryName());
 		beneDetails.setBeneName(beneListView.getBenificaryName());
-		beneDetails.setCustomerName(personInfo.getFirstName() +""+personInfo.getLastName());
+		beneDetails.setCustomerName(personInfo.getFirstName() +" "+personInfo.getLastName());
 
 		sendNotificationTemplate(beneDetails, personInfo, custId);
 		return beneficiaryTrnxModel;
