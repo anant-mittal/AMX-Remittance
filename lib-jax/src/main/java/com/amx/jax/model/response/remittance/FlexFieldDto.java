@@ -15,6 +15,7 @@ public class FlexFieldDto implements Serializable {
 	private BigDecimal srlId;
 	private String amieceDescription;
 	private String amieceCode;
+	private String indic;
 	public FlexFieldDto(BigDecimal additionalBankRuleFiledId, BigDecimal srlId, String amieceDescription,String amieceCode) {
 		super();
 		this.additionalBankRuleFiledId = additionalBankRuleFiledId;
@@ -23,6 +24,17 @@ public class FlexFieldDto implements Serializable {
 		this.amieceCode =amieceCode;
 	}
 
+	
+	public FlexFieldDto(BigDecimal additionalBankRuleFiledId, BigDecimal srlId, String amieceDescription,String amieceCode,String indic) {
+		super();
+		this.additionalBankRuleFiledId = additionalBankRuleFiledId;
+		this.srlId = srlId;
+		this.amieceDescription = amieceDescription;
+		this.amieceCode =amieceCode;
+		this.indic=indic;
+	}
+	
+	
 	public FlexFieldDto(String amieceDescription) {
 		this.amieceDescription = amieceDescription;
 	}
@@ -93,6 +105,14 @@ public class FlexFieldDto implements Serializable {
 
 	public void setAmieceCode(String amieceCode) {
 		this.amieceCode = amieceCode;
+	}
+
+	public String getIndic() {
+		return indic;
+	}
+
+	public void setIndic(String indic) {
+		this.indic = indic;
 	}
 
 }

@@ -1201,7 +1201,8 @@ public ParameterDetailsResponseDto getGiftService(BigDecimal beneId) {
 					pdto.setResourceValue(
 							new FlexFieldDto(null, null, 
 									viewParameterDetails.getCharField1(),
-									viewParameterDetails.getParamCodeDef())
+									viewParameterDetails.getParamCodeDef(),
+									viewParameterDetails.getCharField3())
 							);
 					
 					//Set Additional properties

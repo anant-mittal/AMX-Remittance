@@ -131,7 +131,13 @@ public class RemittanceTransactionRequestValidator {
 			if (FlexFieldBehaviour.PRE_DEFINED.toString().equals(fieldBehaviour)) {
 				field.setType(FlexFieldBehaviour.PRE_DEFINED.getFieldType().toString());
 				List<JaxFieldValueDto> amiecValues = getAmiecValues(bankRule.getFlexField(), routingCountryId,deliveryModeId, remittanceModeId, routingBankId, foreignCurrencyId,bankRule.getAdditionalBankRuleId());
+				
+				//To set default value for bpi gift service provider
+				if(request!=null && request.getServicePackage()!=null && request.getServicePackage().getIndic() !=null && request.getServicePackage().getAmieceCode()!=null && request.getServicePackage().getIndic().equalsIgnoreCase(field.getName())) {
+					amiecValues = getDefaultForServicePackage(request,amiecValues);
+				}
 				field.setPossibleValues(amiecValues);
+				
 			} else {
 				field.setType(FlexFieldBehaviour.USER_ENTERABLE.getFieldType().toString());
 			}
@@ -287,4 +293,18 @@ public class RemittanceTransactionRequestValidator {
 		}
 		return null;
 	}
+	
+	
+	private List<JaxFieldValueDto> getDefaultForServicePackage(RemittanceAdditionalBeneFieldModel request,List<JaxFieldValueDto> amiecValues){
+		List<JaxFieldValueDto> amiecValue = new ArrayList<>();
+		FlexFieldDto servicePackDtoValue   = request.getServicePackage();
+		for(JaxFieldValueDto flexDto : amiecValues) {
+			FlexFieldDto flex = (FlexFieldDto)flexDto.getValue();
+			if(flex!=null && flex.getAmieceCode() !=null && flex.getAmieceCode().equals(servicePackDtoValue.getAmieceCode())) {
+				amiecValue .add(flexDto);
+			}
+		}
+		return amiecValue;
+	}
+	
 }
