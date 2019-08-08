@@ -55,7 +55,7 @@ public final class FileUtil {
 				throw new Exception();
 			}
 		} catch (Exception e) {
-			LOG.debug("Path normalize {}  to {} ", path, resolvedPath);
+			LOG.error("Path normalize {}  to {} ", path, resolvedPath);
 			throw new RuntimeException("FILE_TRAVERSAL FOUND");
 		}
 		return path;
