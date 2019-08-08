@@ -165,7 +165,7 @@ public class CustomerDBAuthManager {
 		onlineCust.setEmailToken(model.getHashedeOtp());
 		custDao.saveOnlineCustomer(onlineCust);
 
-		jaxNotificationService.sendOtpEmail(userService.getPersonInfo(metaData.getCustomerId()), model);
+		jaxNotificationService.sendOtpEmail(userService.getPersonInfo(customer.getCustomerId()), model);
 	}
 
 	private void sendMotp(JaxAuthMetaResp jaxAuthMetaResp, CustomerOnlineRegistration onlineCust, Customer customer) {
@@ -183,7 +183,7 @@ public class CustomerDBAuthManager {
 		onlineCust.setSmsToken(model.getHashedmOtp());
 		custDao.saveOnlineCustomer(onlineCust);
 
-		jaxNotificationService.sendOtpSms(userService.getPersonInfo(metaData.getCustomerId()), model);
+		jaxNotificationService.sendOtpSms(userService.getPersonInfo(customer.getCustomerId()), model);
 	}
 
 	public void validateEotp(CustomerOnlineRegistration onlineCust, Customer customer) {
