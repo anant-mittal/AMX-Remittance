@@ -7,8 +7,11 @@ import java.util.List;
 import org.springframework.data.repository.CrudRepository;
 
 import com.amx.jax.dbmodel.compliance.ComplianceTrnxDocMap;
+import com.amx.jax.dbmodel.customer.CustomerDocumentTypeMaster;
 
 public interface ComplianceTrnxDocMapRepo extends CrudRepository<ComplianceTrnxDocMap, Serializable> {
 
-	List<ComplianceTrnxDocMap> findById(BigDecimal trnxId);
+	List<ComplianceTrnxDocMap> findByRemittanceTransaction(BigDecimal trnxId);
+
+	List<ComplianceTrnxDocMap> findByDocTypeMasterAndCustomerId(CustomerDocumentTypeMaster docTypeMaster, BigDecimal customerId);
 }

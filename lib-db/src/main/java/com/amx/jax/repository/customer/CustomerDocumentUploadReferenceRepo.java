@@ -15,6 +15,9 @@ public interface CustomerDocumentUploadReferenceRepo extends CrudRepository<Cust
 			BigDecimal customerId);
 
 	public List<CustomerDocumentUploadReference> findByCustomerId(BigDecimal customerId);
-	
+
 	public List<CustomerDocumentUploadReference> findByCustomerIdAndStatusIn(BigDecimal customerId, List<String> status);
+
+	public List<CustomerDocumentUploadReference> findByCustomerDocumentTypeMasterAndCustomerIdAndStatus(
+			CustomerDocumentTypeMaster customerDocumentTypeMaster, BigDecimal customerId, String status);
 }

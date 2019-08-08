@@ -2,8 +2,10 @@ package com.amx.jax.customer.document.manager;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
@@ -23,12 +25,15 @@ import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReference;
 import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReferenceTemp;
 import com.amx.jax.dbmodel.customer.DbScanRef;
 import com.amx.jax.dbmodel.customer.DmsDocumentBlobTemparory;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.customer.CustomerDocumentUploadReferenceRepo;
 import com.amx.jax.repository.customer.CustomerDocumentUploadReferenceTempRepo;
 import com.amx.jax.repository.customer.DbScanRefRepo;
 import com.amx.jax.repository.customer.DmsDocumentBlobTemparoryRepository;
 import com.amx.jax.services.JaxDBService;
+import com.amx.jax.userservice.service.UserService;
+import com.jax.amxlib.exception.jax.GlobaLException;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -54,6 +59,8 @@ public class CustomerDocumentUploadManager {
 	CustomerDocMasterManager customerDocMasterManager;
 	@Autowired
 	DbScanRefRepo dbScanRefRepo;
+	@Autowired
+	UserService userSerivce;
 
 	public void findAndDeleteExistingUploadData(String identityInt, BigDecimal identityType, CustomerDocumentTypeMaster customerDocumentTypeMaster) {
 
@@ -151,4 +158,29 @@ public class CustomerDocumentUploadManager {
 		}
 	}
 
+	public List<CustomerDocumentTypeMaster> fetchCustomerUploadedDocMasterList() {
+		BigDecimal customerId = metaData.getCustomerId();
+		if (customerId == null) {
+			throw new GlobaLException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Missing customer id");
+		}
+		Customer customer = userSerivce.getCustById(customerId);
+		List<CustomerDocumentUploadReferenceTemp> customerUploads = getCustomerUploads(customer.getIdentityInt(), customer.getIdentityTypeId());
+		return customerUploads.stream().map(i -> {
+			return i.getCustomerDocumentTypeMaster();
+		}).collect(Collectors.toList());
+
+	}
+
+	public List<CustomerDocumentUploadReference> fetchCustomerUploadedDocRef(List<CustomerDocumentTypeMaster> customerTempUploads,
+			BigDecimal customerId) {
+		List<CustomerDocumentUploadReference> uploadRefs = new ArrayList<CustomerDocumentUploadReference>();
+		for (CustomerDocumentTypeMaster cdtm : customerTempUploads) {
+			List<CustomerDocumentUploadReference> list = customerDocumentUploadReferenceRepo
+					.findByCustomerDocumentTypeMasterAndCustomerIdAndStatus(cdtm, customerId, ConstantDocument.Processing);
+			if (!CollectionUtils.isEmpty(list)) {
+				uploadRefs.addAll(list);
+			}
+		}
+		return uploadRefs;
+	}
 }

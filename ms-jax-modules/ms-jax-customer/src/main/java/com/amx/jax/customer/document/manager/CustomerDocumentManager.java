@@ -203,11 +203,11 @@ public class CustomerDocumentManager {
 				.getDocTypeMaster(uploadCustomerDocumentRequest.getDocumentCategory(), uploadCustomerDocumentRequest.getDocumentType());
 		customerDocumentUploadManager.findAndDeleteExistingUploadData(uploadCustomerDocumentRequest.getIdentityInt(),
 				uploadCustomerDocumentRequest.getIdentityTypeId(), customerDocumentTypeMaster);
-		BigDecimal blobId = databaseImageScanManager.uploadCustomerDocument(uploadCustomerDocumentRequest);
+		BigDecimal uploadTempRefId = databaseImageScanManager.uploadCustomerDocument(uploadCustomerDocumentRequest);
 		if (metaData.getCustomerId() != null) {
 			checkAndRemoveBlockedDocuments(metaData.getCustomerId(), customerDocumentTypeMaster);
 		}
-		return new UploadCustomerDocumentResponse(blobId);
+		return new UploadCustomerDocumentResponse(uploadTempRefId);
 	}
 
 	public void checkAndActivateCustomer(List<CustomerDocumentUploadReferenceTemp> uploads, BigDecimal customerId) {

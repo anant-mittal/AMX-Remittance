@@ -35,9 +35,11 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.customer.ICustomerManagementController;
 import com.amx.jax.customer.document.manager.CustomerDocMasterManager;
 import com.amx.jax.customer.document.manager.CustomerDocumentManager;
+import com.amx.jax.customer.document.manager.CustomerDocumentUploadManager;
 import com.amx.jax.customer.manager.CustomerManagementManager;
 import com.amx.jax.customer.manager.CustomerPersonalDetailManager;
 import com.amx.jax.customer.service.CustomerService;
+import com.amx.jax.dbmodel.customer.CustomerDocumentTypeMaster;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.customer.CreateCustomerInfoRequest;
 import com.amx.jax.model.customer.DuplicateCustomerDto;
@@ -78,6 +80,8 @@ public class CustomerManagementController implements ICustomerManagementControll
 	CustomerPersonalDetailManager customerPersonalDetailManager;
 	@Autowired
 	NotificationTaskService notificationTaskService;
+	@Autowired
+	CustomerDocumentUploadManager customerDocumentUploadManager;
 
 	private static final Logger log = LoggerFactory.getLogger(CustomerManagementController.class);
 
@@ -95,7 +99,9 @@ public class CustomerManagementController implements ICustomerManagementControll
 	public AmxApiResponse<BoolRespModel, Object> updateCustomer(@RequestBody @Valid UpdateCustomerInfoRequest updateCustomerInfoRequest)
 			throws ParseException {
 		log.debug("request updateCustomer {}", JsonUtil.toJson(updateCustomerInfoRequest));
+		List<CustomerDocumentTypeMaster> customerTempUploads = customerDocumentUploadManager.fetchCustomerUploadedDocMasterList();
 		customerManagementManager.updateCustomer(updateCustomerInfoRequest);
+		notificationTaskService.updateDocUploadNotificationTask(customerTempUploads);
 		customerManagementManager.moveCustomerDataUsingProcedures();
 		return AmxApiResponse.build();
 	}
@@ -115,7 +121,6 @@ public class CustomerManagementController implements ICustomerManagementControll
 			@RequestBody @Valid UploadCustomerDocumentRequest uploadCustomerDocumentRequest) {
 		log.info("request uploadCustomerDocumentRequest {}", JsonUtil.toJson(uploadCustomerDocumentRequest));
 		UploadCustomerDocumentResponse uploadReference = customerDocumentManager.uploadDocument(uploadCustomerDocumentRequest);
-		notificationTaskService.updateDocUploadNotificationTask(uploadCustomerDocumentRequest);
 		return AmxApiResponse.build(uploadReference);
 	}
 

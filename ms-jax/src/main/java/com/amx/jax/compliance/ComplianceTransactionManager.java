@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.client.compliance.ApproveDocRequest;
 import com.amx.jax.client.compliance.ComplianceBlockedTrnxType;
-import com.amx.jax.client.compliance.ComplianceTrnxStatus;
+import com.amx.jax.client.compliance.ComplianceTrnxdDocStatus;
 import com.amx.jax.client.compliance.HighValueTrnxDto;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.customer.document.manager.CustomerDocumentManager;
@@ -24,6 +24,7 @@ import com.amx.jax.customer.document.validate.DocumentScanValidator;
 import com.amx.jax.dbmodel.compliance.ComplianceTrnxDocMap;
 import com.amx.jax.dbmodel.compliance.HighValueComplianceAuth;
 import com.amx.jax.dbmodel.customer.CustomerDocumentTypeMaster;
+import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReference;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.model.customer.ComplianceTrnxDocumentInfo;
 import com.amx.jax.model.customer.CustomerDocumentInfo;
@@ -86,7 +87,7 @@ public class ComplianceTransactionManager {
 	@Transactional
 	public List<ComplianceTrnxDocumentInfo> getTransactionDocuments(BigDecimal trnxId) {
 
-		List<ComplianceTrnxDocMap> docs = complianceTrnxDocMapRepo.findById(trnxId);
+		List<ComplianceTrnxDocMap> docs = complianceTrnxDocMapRepo.findByRemittanceTransaction(trnxId);
 		Map<BigDecimal, ComplianceTrnxDocMap> uploadIdTrnxDocMapMapping = docs.stream()
 				.collect(Collectors.toMap(i -> i.getCustomerDocumentUploadReference().getId(), i -> i));
 		List<CustomerDocumentInfo> customerDocInfoList = docs.stream()
@@ -109,15 +110,15 @@ public class ComplianceTransactionManager {
 		log.info("approving hvt request: {}", request);
 		CustomerDocumentTypeMaster docTypemaster = documentScanValidator.validateDocCatAndDocType(request.getDocumentCategory(),
 				request.getDocumentType());
-		List<ComplianceTrnxDocMap> allDocs = complianceTrnxDocMapRepo.findById(request.getRemittanceTransactionId());
+		List<ComplianceTrnxDocMap> allDocs = complianceTrnxDocMapRepo.findByRemittanceTransaction(request.getRemittanceTransactionId());
 		boolean allDocsApproved = true;
 		for (ComplianceTrnxDocMap i : allDocs) {
 			CustomerDocumentTypeMaster trnxDocTypeMaster = i.getCustomerDocumentUploadReference().getCustomerDocumentTypeMaster();
 			if (trnxDocTypeMaster.equals(docTypemaster)) {
-				i.setStatus(ComplianceTrnxStatus.APPROVED);
+				i.setStatus(ComplianceTrnxdDocStatus.APPROVED);
 				complianceTrnxDocMapRepo.save(i);
 			}
-			if (!i.getStatus().equals(ComplianceTrnxStatus.APPROVED)) {
+			if (!i.getStatus().equals(ComplianceTrnxdDocStatus.APPROVED)) {
 				allDocsApproved = false;
 			}
 		}
@@ -128,5 +129,18 @@ public class ComplianceTransactionManager {
 			// TODO remove notification
 
 		}
+	}
+
+	public void updateTrnxDocMap(List<CustomerDocumentUploadReference> customerUploadRefs, BigDecimal customerId) {
+		for (CustomerDocumentUploadReference customerUploadRef : customerUploadRefs) {
+			List<ComplianceTrnxDocMap> trnxDocMapList = complianceTrnxDocMapRepo
+					.findByDocTypeMasterAndCustomerId(customerUploadRef.getCustomerDocumentTypeMaster(), customerId);
+			trnxDocMapList.forEach(i -> {
+				i.setCustomerDocumentUploadReference(customerUploadRef);
+				i.setStatus(ComplianceTrnxdDocStatus.UPLOADED);
+			});
+			complianceTrnxDocMapRepo.save(trnxDocMapList);
+		}
+
 	}
 }
