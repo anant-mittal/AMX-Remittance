@@ -44,6 +44,7 @@ import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.async.ExecutorConfig;
+import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.CustomerVerificationType;
 import com.amx.jax.constant.JaxApiFlow;
@@ -211,6 +212,9 @@ public class UserService extends AbstractUserService {
 	
 	@Autowired
 	OnlineCustomerManager onlineCustomerManager;
+	
+	@Autowired
+	JaxTenantProperties jaxTenantProperties;
 	
 	@Override
 	public ApiResponse registerUser(AbstractUserModel userModel) {
@@ -670,6 +674,9 @@ public class UserService extends AbstractUserService {
 		if (tenantContext.getKey().equals("OMN")) {
 			tenantContext.get().validateCivilId(userId);
 		}
+		
+		Boolean captchaEnable = jaxTenantProperties.getCaptchaEnable();
+		
 		List<Customer> customerData = customerrepository.getCustomerByIdentityInt(userId);
 		
 		
@@ -691,7 +698,7 @@ public class UserService extends AbstractUserService {
 		}
 
 		userValidationService.validateCustomerLockCount(onlineCustomer);
-		userValidationService.validatePassword(onlineCustomer, password, true);
+		userValidationService.validatePassword(onlineCustomer, password, captchaEnable);
 		userValidationService.validateCustIdProofs(onlineCustomer.getCustomerId());
 		userValidationService.validateCustomerData(onlineCustomer, customer);
 		userValidationService.validateBlackListedCustomerForLogin(customer);
