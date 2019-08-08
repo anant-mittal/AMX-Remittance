@@ -184,6 +184,9 @@ public class UserClient {
 		@JsonProperty("cv")
 		private String clientVersion;
 
+		@JsonProperty("lang")
+		private Language lang;
+
 		public String getIp() {
 			return ip;
 		}
@@ -248,6 +251,14 @@ public class UserClient {
 
 		public void setClientVersion(String clientVersion) {
 			this.clientVersion = clientVersion;
+		}
+
+		public Language getLang() {
+			return lang;
+		}
+
+		public void setLang(Language lang) {
+			this.lang = lang;
 		}
 
 	}

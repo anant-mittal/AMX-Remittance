@@ -23,6 +23,7 @@ import org.springframework.util.StringUtils;
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppConstants;
 import com.amx.jax.AppContextUtil;
+import com.amx.jax.dict.Language;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.dict.UserClient.UserDeviceClient;
 import com.amx.jax.http.CommonHttpRequest;
@@ -109,6 +110,7 @@ public class AppRequestFilter implements Filter {
 		HttpServletResponse resp = ((HttpServletResponse) response);
 		try {
 			ApiRequestDetail apiRequest = commonHttpRequest.getApiRequest(req);
+			CommonHttpRequest localCommonHttpRequest = commonHttpRequest.instance(req, resp, appConfig);
 			RequestType reqType = apiRequest.getType();
 
 			AppContextUtil.setRequestType(reqType);
@@ -155,12 +157,19 @@ public class AppRequestFilter implements Filter {
 				AppContextUtil.setActorId(actorId);
 			}
 
+			// User Language Tracking
+			Language lang = localCommonHttpRequest.getLanguage();
+
+			if (!StringUtils.isEmpty(lang)) {
+				AppContextUtil.setLang(lang);
+			}
+
 			// UserClient Tracking
 			String userClientJson = req.getHeader(AppConstants.USER_CLIENT_XKEY);
 			if (!StringUtils.isEmpty(userClientJson)) {
 				AppContextUtil.setUserClient(JsonUtil.fromJson(userClientJson, UserDeviceClient.class));
 			} else {
-				UserDeviceClient userDevice = commonHttpRequest.instance(req, resp, appConfig).getUserDevice()
+				UserDeviceClient userDevice = localCommonHttpRequest.getUserDevice()
 						.toUserDeviceClient();
 				UserDeviceClient userClient = AppContextUtil.getUserClient();
 				userClient.importFrom(userDevice);

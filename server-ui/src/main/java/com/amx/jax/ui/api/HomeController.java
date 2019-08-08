@@ -43,6 +43,7 @@ import com.amx.jax.logger.LoggerService;
 import com.amx.jax.rest.RestService;
 import com.amx.jax.swagger.ApiStatusBuilder.ApiStatus;
 import com.amx.jax.ui.UIConstants;
+import com.amx.jax.ui.UIConstants.Features;
 import com.amx.jax.ui.WebAppConfig;
 import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 import com.amx.jax.ui.model.ServerStatus;
@@ -323,5 +324,13 @@ public class HomeController {
 		model.addAttribute("ratingData", (map));
 		model.addAttribute("companyTnt", AppContextUtil.getTenant());
 		return "rating";
+	}
+
+	@RequestMapping(value = { "/pub/recaptcha/{feature}" },
+			method = { RequestMethod.GET })
+	public String recaptach(Model model, @PathVariable Features feature) {
+		model.addAttribute("googelReCaptachSiteKey", webAppConfig.getGoogelReCaptachSiteKey());
+		model.addAttribute("companyTnt", AppContextUtil.getTenant());
+		return "recaptcha";
 	}
 }

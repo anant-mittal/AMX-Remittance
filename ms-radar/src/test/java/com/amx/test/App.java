@@ -40,18 +40,37 @@ public class App { // Noncompliant
 		String filePath = "file://" + System.getProperty("user.dir")
 				+ "/src/test/java/com/../../java/com/amx/test/appParams.json";
 
-		String filePathNormalized = FileUtil.normalize(filePath);
+		//FileUtil.normalize("file://" + System.getProperty("user.dir") + "/src/test/java/com/../../../../../../../java/com/amx/test/appParams.json");
 
-		String json = FileUtil
-				.readFile(filePathNormalized);
-		PayGParams rates2 = JsonUtil.getMapper().readValue(json, PayGParams.class);
+		FileUtil.normalize("/D:\\workspace_master_june\\amx-jax\\common-lib\\target/application.env.properties");
+		FileUtil.normalize("/D:\\workspace_master_june\\amx-jax\\common-lib\\target/..\\..\\..\\..\\..\\..\\..\\..\\..\\..\\..\\..\\..\\application.env.properties");
 
-		PayGService service = new PayGService();
-		System.out.println("RATE2 ============" + JsonUtil.toJson(rates2));
-		String details = service.getEnCryptedDetails(rates2);
-		System.out.println("ENCRYPTED ============" + details);
-		PayGParams rates3 = service.getDeCryptedDetails(details);
-		System.out.println("RATE3 ============" + JsonUtil.toJson(rates3));
+		return;
+		/*
+		 * FileUtil.normalize("file://" + System.getProperty("user.dir") +
+		 * "/src/test/java/com/../../java/com/amx/test/appParams.json");
+		 * 
+		 * FileUtil.normalize("src/test/java/com/../../java/com/amx/test/appParams.json"
+		 * );
+		 * 
+		 * FileUtil.normalize(
+		 * "/src/test/java/com/../../java/com/amx/test/appParams.json");
+		 * 
+		 * FileUtil.normalize("file://" + System.getProperty("user.dir") +
+		 * "/src/test/java/com/../../java/com/amx/test/appParams.json");
+		 * 
+		 * 
+		 * String json = FileUtil.readFile(filePath); PayGParams rates2 =
+		 * JsonUtil.getMapper().readValue(json, PayGParams.class);
+		 * 
+		 * PayGService service = new PayGService();
+		 * System.out.println("RATE2 ============" + JsonUtil.toJson(rates2)); String
+		 * details = service.getEnCryptedDetails(rates2);
+		 * System.out.println("ENCRYPTED ============" + details); PayGParams rates3 =
+		 * service.getDeCryptedDetails(details); System.out.println("RATE3 ============"
+		 * + JsonUtil.toJson(rates3));
+		 * 
+		 */
 
 	}
 
@@ -97,8 +116,7 @@ public class App { // Noncompliant
 		Elements trs = doc.select("#ctl10_updatepnl table.table tbody tr");
 		for (Element tr : trs) {
 			Elements tds = tr.select("td");
-			Currency cur = (Currency) ArgUtil.parseAsEnum(tds.get(2).text(),
-					Currency.UNKNOWN);
+			Currency cur = (Currency) ArgUtil.parseAsEnum(tds.get(2).text(), Currency.UNKNOWN);
 			if (!Currency.UNKNOWN.equals(cur) && tds.size() >= 3) {
 				BigDecimal rate = ArgUtil.parseAsBigDecimal(tds.get(3).text());
 				if (!ArgUtil.isEmpty(rate)) {

@@ -81,6 +81,7 @@ public class OWAStatus extends IStatusCodeListPlugin<OWAStatusStatusCodes, ApiOW
 		DOTP_REQUIRED("300"),
 		MOTP_REQUIRED("300"),
 		OTP_REQUIRED(200),
+		CAPTCHA_REQUIRED(200),
 		INVALID_LINK(200),
 
 		INCOME_UPDATE_REQUIRED(200),

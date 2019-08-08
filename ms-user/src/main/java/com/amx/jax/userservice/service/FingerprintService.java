@@ -260,7 +260,7 @@ public class FingerprintService {
 		Customer customer = custDao.getCustById(customerOnlineRegistration.getCustomerId());
 		logger.info("Customer id is " + metaData.getCustomerId());
 		
-		userValidationService.validateCustomerLockCount(customerOnlineRegistration);
+		userValidationService.validateCustomerLockCount(customerOnlineRegistration, true);
 		userValidationService.validateCustIdProofs(customerOnlineRegistration.getCustomerId());
 		userValidationService.validateCustomerData(customerOnlineRegistration, customer);
 		userValidationService.validateBlackListedCustomerForLogin(customer);
