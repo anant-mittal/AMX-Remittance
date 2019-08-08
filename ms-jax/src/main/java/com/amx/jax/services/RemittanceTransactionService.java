@@ -95,7 +95,7 @@ public class RemittanceTransactionService extends AbstractService {
 		response.setResponseStatus(ResponseStatus.OK);
 		}
 		else {
-			sourceOfIncomeList = sourceOfIncomeDao.getSourceofIncome(new BigDecimal(1));
+			sourceOfIncomeList = sourceOfIncomeDao.getSourceofIncome(new BigDecimal(2));
 			
 			sourceOfIncomeListArabic= sourceOfIncomeDao.getSourceofIncome(languageId);
 			sourceOfIncomeList.get(0).setLocalName(sourceOfIncomeListArabic.get(0).getLocalName());

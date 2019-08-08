@@ -198,7 +198,7 @@ public class AdditionalBankDetailsViewx implements Serializable {
 	  }
 
 	
-	  @Column(name = "AMIEC_LOCAL_DESCRIPTION") 
+	/*  @Column(name = "AMIEC_LOCAL_DESCRIPTION") 
 	public String getLocalName() {
 		return localName;
 	}
@@ -206,7 +206,7 @@ public class AdditionalBankDetailsViewx implements Serializable {
 	public void setLocalName(String localName) {
 		this.localName = localName;
 	}
-	  
+	  */
 	
 
 
