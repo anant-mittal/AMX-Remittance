@@ -946,7 +946,7 @@ public class BranchRemittanceApplManager {
 	public void checkServiceProviderSingleTransaction(BranchRemittanceApplRequestModel requestApplModel) {
 		boolean errorStatus = Boolean.FALSE;
 		Boolean multipleTrnx = Boolean.FALSE;
-		int trnxCount = 1;
+		int trnxCount = 0;
 		
 		if(requestApplModel != null) {
 			// fetch any shopping records available

@@ -107,6 +107,14 @@ public enum PricerServiceError implements IExceptionEnum {
 	
 	INVALID_QUOTATION_RESPONSE,
 	
+	INVALID_BANK_API_CALL,
+	
+	INVALID_BANK_ID,
+	
+	INVALID_AMOUNT,
+	
+	MISSING_PAYMENT_LIMIT_DATA,
+	
 	/** The unknown exception. */
 	// MISC
 	UNKNOWN_EXCEPTION;

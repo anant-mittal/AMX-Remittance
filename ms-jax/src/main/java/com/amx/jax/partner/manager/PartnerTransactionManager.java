@@ -910,7 +910,6 @@ public class PartnerTransactionManager extends AbstractModel {
 							remittanceTransaction.setDeliveryInd(remitTrnxSPDTO.getActionInd());
 							remittanceTransaction.setRemarks(remitTrnxSPDTO.getResponseDescription());
 							remittanceTransactionRepository.save(remittanceTransaction);
-							emailStatus = Boolean.FALSE;
 							if(emailStatus) {
 								sendSrvPrvTranxFailReport(remittanceTransactionView, remitTrnxSPDTO, transactionId);
 							}
@@ -1049,15 +1048,16 @@ public class PartnerTransactionManager extends AbstractModel {
 		return servProviderAmtlimit;
 	}
 	
-	public ConfigDto paymentModeServiceProviderLimit(ConfigDto config,List<ShoppingCartDetails> customerShoppingCart) {
+	public ConfigDto paymentModeServiceProviderLimit(ConfigDto config,List<ShoppingCartDetails> customerShoppingCart,BigDecimal identityTypeId) {
 		ConfigDto spConfigDto = config;
 		BigDecimal otherLimits = new BigDecimal(-1);
 		boolean includeSPlimits = Boolean.FALSE;
 		ShoppingCartDetails shoppingCartSPData = null;
 		BigDecimal cashTotalCashLimit = BigDecimal.ZERO;
 		BigDecimal otherShoppingCartAmt = BigDecimal.ZERO;
-		int trnxCount = 1;
+		int trnxCount = 0;
 		Boolean multipleTrnx = Boolean.FALSE;
+		BigDecimal cashlimit = BigDecimal.ZERO;
 		
 		BankMasterModel bankMaster = bankMasterRepo.findByBankCodeAndRecordStatus(PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name(), PricerServiceConstants.Yes);
 		if(bankMaster == null) {
@@ -1072,7 +1072,6 @@ public class PartnerTransactionManager extends AbstractModel {
 						if(shoppingCartDetails.getRoutingBankId().compareTo(bankMaster.getBankId()) == 0) {
 							shoppingCartSPData = shoppingCartDetails;
 							includeSPlimits = Boolean.TRUE;
-							break;
 						}else {
 							otherShoppingCartAmt = otherShoppingCartAmt.add(shoppingCartDetails.getLocalNextTranxAmount());
 						}
@@ -1090,24 +1089,58 @@ public class PartnerTransactionManager extends AbstractModel {
 				paymentLimitDTO.setCurrencyQuote(PricerServiceConstants.SETTLEMENT_CURRENCY_CODE);
 				Map<String, BigDecimal> srvprvlimit = fetchPaymentLimitsForSP(paymentLimitDTO);
 				if(srvprvlimit != null && srvprvlimit.size() != 0) {
-					if(config.getCashLimit().compareTo(config.getTodayTrnxAmount()) >= 0) {
-						cashTotalCashLimit = config.getCashLimit();
+					
+					// check customer what type {civil id , new civil id 3000} , {passport 300} and {gcc 1000}
+					if(identityTypeId != null) {
+						if(identityTypeId.compareTo(AmxDBConstants.BIZ_COMPONENT_ID_CIVIL_ID) == 0 || identityTypeId.compareTo(AmxDBConstants.BIZ_COMPONENT_ID_NEW_CIVIL_ID) == 0) {
+							cashlimit = config.getCashLimit();
+						}else if(identityTypeId.compareTo(AmxDBConstants.BIZ_COMPONENT_ID_PASSPORT) == 0) {
+							cashlimit = config.getPassportLimit();
+						}else if(identityTypeId.compareTo(AmxDBConstants.BIZ_COMPONENT_ID_GCC_ID) == 0) {
+							cashlimit = config.getGccLimit();
+						}else {
+							cashlimit = config.getCashLimit();
+						}
+					}else {
+						// throw error
+						throw new GlobalException("Customer Identity Type Id is empty");
+					}
+					
+					if(cashlimit.compareTo(config.getTodayTrnxAmount()) >= 0) {
+						cashTotalCashLimit = cashlimit;
 						cashTotalCashLimit = cashTotalCashLimit.subtract(config.getTodayTrnxAmount());
 					}else {
-						cashTotalCashLimit = config.getCashLimit();
+						cashTotalCashLimit = BigDecimal.ZERO;
 					}
 					
 					for (Map.Entry<String,BigDecimal> paymentAmount : srvprvlimit.entrySet()) {
 						if(paymentAmount.getKey().contains("CASH")) {
 							BigDecimal hsCashAmount = paymentAmount.getValue();
 							if(hsCashAmount.compareTo(shoppingCartSPData.getLocalNextTranxAmount()) >= 0) {
-								spConfigDto.setCashLimit(config.getCashLimit());
+								spConfigDto.setCashLimit(cashlimit);
 							}else {
-								if(hsCashAmount.compareTo(cashTotalCashLimit) <= 0) {
-									hsCashAmount = hsCashAmount.add(config.getTodayTrnxAmount());
-									spConfigDto.setCashLimit(hsCashAmount);
+								BigDecimal totalhsOtherAmt = BigDecimal.ZERO;
+								if(otherShoppingCartAmt.compareTo(BigDecimal.ZERO) != 0) {
+									totalhsOtherAmt = hsCashAmount.add(otherShoppingCartAmt);
+								}
+								if(cashTotalCashLimit.compareTo(BigDecimal.ZERO) != 0) {
+									if(totalhsOtherAmt.compareTo(BigDecimal.ZERO) != 0) {
+										if(totalhsOtherAmt.compareTo(cashTotalCashLimit) <= 0) {
+											hsCashAmount = totalhsOtherAmt.add(config.getTodayTrnxAmount());
+											spConfigDto.setCashLimit(hsCashAmount);
+										}else {
+											spConfigDto.setCashLimit(cashlimit);
+										}
+									}else {
+										if(hsCashAmount.compareTo(cashTotalCashLimit) <= 0) {
+											hsCashAmount = hsCashAmount.add(config.getTodayTrnxAmount());
+											spConfigDto.setCashLimit(hsCashAmount);
+										}else {
+											spConfigDto.setCashLimit(cashlimit);
+										}
+									}
 								}else {
-									spConfigDto.setCashLimit(config.getCashLimit());
+									spConfigDto.setCashLimit(cashlimit);
 								}
 							}
 						}
