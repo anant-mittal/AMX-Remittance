@@ -32,6 +32,7 @@ import com.amx.jax.dbmodel.ServiceProviderPartner;
 import com.amx.jax.dbmodel.ServiceProviderSummaryModel;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.ServiceProviderDefaultDateRepository;
+import com.amx.jax.repository.ServiceProviderTempUploadRepository;
 import com.amx.jax.response.serviceprovider.ServiceProviderDefaultDateDTO;
 import com.amx.jax.response.serviceprovider.ServiceProviderPartnerDTO;
 import com.amx.jax.response.serviceprovider.ServiceProviderSummaryDTO;
@@ -51,6 +52,8 @@ public class ServiceProviderService extends AbstractService {
 	MetaData metaData;
 	@Autowired
 	ServiceProviderDefaultDateRepository serviceProviderConfRepository;
+	@Autowired
+	ServiceProviderTempUploadRepository serviceProviderTempUploadRepository;
 	public List<ServiceProviderPartnerDTO> getServiceProviderPartner() {
 		List<ServiceProviderPartner> serviceProviderPartner = serviceProviderDao.getServiceProviderPartner();
 		if(serviceProviderPartner.isEmpty()) {
@@ -111,6 +114,7 @@ public class ServiceProviderService extends AbstractService {
 	    	}
 	    }
 	    
+	    List<FileUploadTempModel> fileRowList = new ArrayList<FileUploadTempModel>();
 	    for(i=1;i<=sheet.getLastRowNum();i++) {
 	    	FileUploadTempModel fileUploadTempModel = new FileUploadTempModel();
 	    	Row row = sheet.getRow(i);
@@ -153,9 +157,12 @@ public class ServiceProviderService extends AbstractService {
             fileUploadTempModel.setApplicationCountryId(metaData.getCountryId());
             fileUploadTempModel.setUploadDate(fileDate);
             fileUploadTempModel.setTpcCode(tpcCode);
-            serviceProviderDao.saveFileUploadTemp(fileUploadTempModel);
+            fileRowList.add(fileUploadTempModel);
+            
             
         }
+	    
+		serviceProviderTempUploadRepository.save(fileRowList);
 	    
 	    serviceProviderDao.saveDataByProcedure(fileDate,tpcCode);
 	    List<ServiceProviderSummaryModel> serviceProviderSummaryModelList=serviceProviderDao.getSummary();
