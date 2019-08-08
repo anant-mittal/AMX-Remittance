@@ -31,10 +31,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.dict.UserClient.Channel;
+import com.amx.jax.partner.dto.SrvPrvFeeInqReqDTO;
+import com.amx.jax.partner.dto.SrvPrvFeeInqResDTO;
+import com.amx.jax.pricer.PartnerDataService;
 import com.amx.jax.pricer.PricerServiceClient;
 import com.amx.jax.pricer.ProbotDataService;
 import com.amx.jax.pricer.ProbotExchangeRateService;
-import com.amx.jax.pricer.AbstractProbotInterface.ApiEndPoints;
 import com.amx.jax.pricer.dto.BankDetailsDTO;
 import com.amx.jax.pricer.dto.CurrencyMasterDTO;
 import com.amx.jax.pricer.dto.DiscountDetailsReqRespDTO;
@@ -58,7 +60,7 @@ import com.amx.utils.ArgUtil;
  */
 @RestController
 @RequestMapping("test/")
-public class PricerServiceApiTest implements ProbotExchangeRateService, ProbotDataService {
+public class PricerServiceApiTest implements ProbotExchangeRateService, ProbotDataService, PartnerDataService {
 
 	/** The rbaac service client. */
 	@Autowired
@@ -90,7 +92,8 @@ public class PricerServiceApiTest implements ProbotExchangeRateService, ProbotDa
 
 	@Override
 	@RequestMapping(value = ApiEndPoints.FETCH_REMIT_ROUTES_PRICES, method = RequestMethod.POST)
-	public AmxApiResponse<ExchangeRateAndRoutingResponse, Object> fetchRemitRoutesAndPrices(ExchangeRateAndRoutingRequest dprRequestDTO) {
+	public AmxApiResponse<ExchangeRateAndRoutingResponse, Object> fetchRemitRoutesAndPrices(
+			ExchangeRateAndRoutingRequest dprRequestDTO) {
 		return pricerServiceClient.fetchRemitRoutesAndPrices(dprRequestDTO);
 	}
 
@@ -441,8 +444,8 @@ public class PricerServiceApiTest implements ProbotExchangeRateService, ProbotDa
 
 	@Override
 	@RequestMapping(value = ApiEndPoints.GET_ROUTBANKS_AND_SEVICES, method = RequestMethod.POST)
-	public AmxApiResponse<RoutBanksAndServiceRespDTO, Object> getRbanksAndServices(@RequestParam(required = true) BigDecimal countryId,
-			@RequestParam(required = true) BigDecimal currencyId) {
+	public AmxApiResponse<RoutBanksAndServiceRespDTO, Object> getRbanksAndServices(
+			@RequestParam(required = true) BigDecimal countryId, @RequestParam(required = true) BigDecimal currencyId) {
 		// TODO Subodh To Fix This
 		return pricerServiceClient.getRbanksAndServices(countryId, currencyId);
 	}
@@ -484,20 +487,28 @@ public class PricerServiceApiTest implements ProbotExchangeRateService, ProbotDa
 
 	@Override
 	@RequestMapping(value = ApiEndPoints.UPDATE_CUR_GROUP_ID, method = RequestMethod.POST)
-	public AmxApiResponse<CurrencyMasterDTO, Object> updateCurrencyGroupId(@RequestParam(required = true) BigDecimal groupId, 
-			@RequestParam(required = true) BigDecimal currencyId) {
+	public AmxApiResponse<CurrencyMasterDTO, Object> updateCurrencyGroupId(
+			@RequestParam(required = true) BigDecimal groupId, @RequestParam(required = true) BigDecimal currencyId) {
 		// TODO Subodh To Fix This
 		return pricerServiceClient.updateCurrencyGroupId(groupId, currencyId);
 	}
 
 	@Override
 	@RequestMapping(value = ApiEndPoints.GET_CUR_BY_GROUP_ID, method = RequestMethod.POST)
-	public AmxApiResponse<CurrencyMasterDTO, Object> getCurrencyByGroupId(@RequestParam(required = true) BigDecimal groupId) {
+	public AmxApiResponse<CurrencyMasterDTO, Object> getCurrencyByGroupId(
+			@RequestParam(required = true) BigDecimal groupId) {
 		// TODO Subodh To Fix This
 		return pricerServiceClient.getCurrencyByGroupId(groupId);
 	}
 	
 	
 	
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.GET_SERVICE_PROVIDER_QUOTE, method = RequestMethod.POST)
+	public AmxApiResponse<SrvPrvFeeInqResDTO, Object> getServiceProviderQuotation(
+			SrvPrvFeeInqReqDTO srvPrvFeeInqReqDTO) {
+		return pricerServiceClient.getServiceProviderQuotation(srvPrvFeeInqReqDTO);
+	}
 
 }

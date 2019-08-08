@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.AsyncConfigurerSupport;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 @Configuration
 public class ExecutorConfig extends AsyncConfigurerSupport {
@@ -18,6 +17,7 @@ public class ExecutorConfig extends AsyncConfigurerSupport {
 	public static final String EXECUTER_GOLD = "gldExec";
 	public static final String EXECUTER_PLATINUM = "pltnmExe";
 	public static final String EXECUTER_DIAMOND = "dmndExec";
+	public static final String EXECUTER_PRICER = "pricerExec";
 
 	@Override
 	@Bean
@@ -74,6 +74,17 @@ public class ExecutorConfig extends AsyncConfigurerSupport {
 		executor.setAllowCoreThreadTimeOut(true);
 		executor.setKeepAliveSeconds(120);
 		executor.setThreadNamePrefix(EXECUTER_BRONZE + "-");
+		executor.initialize();
+		return executor;
+	}
+
+	@Bean(name = EXECUTER_PRICER)
+	public TaskExecutor taskExecutorPricer() {
+		ContextAwarePoolExecutor executor = new ContextAwarePoolExecutor();
+		executor.setCorePoolSize(300);
+		executor.setAllowCoreThreadTimeOut(true);
+		executor.setKeepAliveSeconds(10);
+		executor.setThreadNamePrefix(EXECUTER_PRICER + "-");
 		executor.initialize();
 		return executor;
 	}

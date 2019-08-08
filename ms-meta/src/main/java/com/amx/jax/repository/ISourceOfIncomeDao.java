@@ -13,7 +13,7 @@ public interface ISourceOfIncomeDao extends JpaRepository<SourceOfIncomeView, Se
 	
 	@Query("select si from SourceOfIncomeView si where si.languageId=?1 order by si.description asc")
 	public List<SourceOfIncomeView> getSourceofIncome(BigDecimal languageId);
-	
+
 	@Query("select si from SourceOfIncomeView si where si.languageId=?1 and si.sourceofIncomeId=?2")
 	public SourceOfIncomeView getSourceofIncomeDetails(BigDecimal languageId,BigDecimal sourceofIncomeId);
 	
