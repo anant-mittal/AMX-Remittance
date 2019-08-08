@@ -505,15 +505,6 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 			beneCreationEmail.getModel().put(NotificationConstants.RESP_DATA_KEY, wrapper);
 			postManService.sendEmailAsync(beneCreationEmail);
 
-			// Send SMS
-			SMS sms = new SMS();
-			if (personInfo.getMobile() != null) {
-				sms.addTo(personInfo.getMobile());
-			}
-			sms.getModel().put(NotificationConstants.RESP_DATA_KEY, wrapper);
-			sms.setITemplate(TemplatesMX.BENE_SUCC_SMS);
-			postManService.sendSMSAsync(sms);
-
 			// Send Push Message
 			PushMessage pushMessage = new PushMessage();
 
