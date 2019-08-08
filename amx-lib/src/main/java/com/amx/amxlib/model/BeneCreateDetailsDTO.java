@@ -7,6 +7,8 @@ public class BeneCreateDetailsDTO {
 	private String beneBankName;
 	
 	private String beneCountry;
+	
+	private String beneName;
 
 	public String getCustomerName() {
 		return customerName;
@@ -32,6 +34,15 @@ public class BeneCreateDetailsDTO {
 		this.beneCountry = beneCountry;
 	}
 
+	public String getBeneName() {
+		return beneName;
+	}
+
+	public void setBeneName(String beneName) {
+		this.beneName = beneName;
+	}
+
+	
 	
 	
 
