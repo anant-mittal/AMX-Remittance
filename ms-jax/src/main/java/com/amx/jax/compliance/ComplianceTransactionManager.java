@@ -1,6 +1,7 @@
 package com.amx.jax.compliance;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -18,10 +19,12 @@ import com.amx.jax.client.compliance.ApproveDocRequest;
 import com.amx.jax.client.compliance.ComplianceBlockedTrnxType;
 import com.amx.jax.client.compliance.ComplianceTrnxdDocStatus;
 import com.amx.jax.client.compliance.HighValueTrnxDto;
+import com.amx.jax.client.compliance.RejectDocRequest;
+import com.amx.jax.client.task.CustomerDocUploadNotificationTaskData;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.customer.document.manager.CustomerDocumentManager;
 import com.amx.jax.customer.document.validate.DocumentScanValidator;
-import com.amx.jax.dbmodel.compliance.ComplianceTrnxDocMap;
+import com.amx.jax.dbmodel.compliance.ComplianceBlockedTrnxDocMap;
 import com.amx.jax.dbmodel.compliance.HighValueComplianceAuth;
 import com.amx.jax.dbmodel.customer.CustomerDocumentTypeMaster;
 import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReference;
@@ -30,6 +33,7 @@ import com.amx.jax.model.customer.ComplianceTrnxDocumentInfo;
 import com.amx.jax.model.customer.CustomerDocumentInfo;
 import com.amx.jax.repository.compliance.ComplianceTrnxDocMapRepo;
 import com.amx.jax.repository.compliance.HighValueComplianceAuthRepo;
+import com.amx.jax.services.NotificationTaskService;
 import com.amx.jax.services.RemittanceTransactionService;
 
 @Component
@@ -45,6 +49,8 @@ public class ComplianceTransactionManager {
 	DocumentScanValidator documentScanValidator;
 	@Autowired
 	RemittanceTransactionService remittanceTransactionService;
+	@Autowired
+	NotificationTaskService notificationTaskService;
 
 	private static final Logger log = LoggerFactory.getLogger(ComplianceTransactionManager.class);
 
@@ -87,13 +93,13 @@ public class ComplianceTransactionManager {
 	@Transactional
 	public List<ComplianceTrnxDocumentInfo> getTransactionDocuments(BigDecimal trnxId) {
 
-		List<ComplianceTrnxDocMap> docs = complianceTrnxDocMapRepo.findByRemittanceTransaction(trnxId);
-		Map<BigDecimal, ComplianceTrnxDocMap> uploadIdTrnxDocMapMapping = docs.stream()
+		List<ComplianceBlockedTrnxDocMap> docs = complianceTrnxDocMapRepo.findByRemittanceTransaction(trnxId);
+		Map<BigDecimal, ComplianceBlockedTrnxDocMap> uploadIdTrnxDocMapMapping = docs.stream()
 				.collect(Collectors.toMap(i -> i.getCustomerDocumentUploadReference().getId(), i -> i));
 		List<CustomerDocumentInfo> customerDocInfoList = docs.stream()
 				.map(i -> customerDocumentManager.convertToCustomerDocumentInfo(i.getCustomerDocumentUploadReference())).collect(Collectors.toList());
 		List<ComplianceTrnxDocumentInfo> list = customerDocInfoList.stream().map(j -> {
-			ComplianceTrnxDocMap doc = uploadIdTrnxDocMapMapping.get(j.getUploadRefId());
+			ComplianceBlockedTrnxDocMap doc = uploadIdTrnxDocMapMapping.get(j.getUploadRefId());
 			ComplianceTrnxDocumentInfo trnxDocInfo = new ComplianceTrnxDocumentInfo();
 			try {
 				BeanUtils.copyProperties(trnxDocInfo, j);
@@ -110,9 +116,9 @@ public class ComplianceTransactionManager {
 		log.info("approving hvt request: {}", request);
 		CustomerDocumentTypeMaster docTypemaster = documentScanValidator.validateDocCatAndDocType(request.getDocumentCategory(),
 				request.getDocumentType());
-		List<ComplianceTrnxDocMap> allDocs = complianceTrnxDocMapRepo.findByRemittanceTransaction(request.getRemittanceTransactionId());
+		List<ComplianceBlockedTrnxDocMap> allDocs = complianceTrnxDocMapRepo.findByRemittanceTransaction(request.getRemittanceTransactionId());
 		boolean allDocsApproved = true;
-		for (ComplianceTrnxDocMap i : allDocs) {
+		for (ComplianceBlockedTrnxDocMap i : allDocs) {
 			CustomerDocumentTypeMaster trnxDocTypeMaster = i.getCustomerDocumentUploadReference().getCustomerDocumentTypeMaster();
 			if (trnxDocTypeMaster.equals(docTypemaster)) {
 				i.setStatus(ComplianceTrnxdDocStatus.APPROVED);
@@ -126,14 +132,14 @@ public class ComplianceTransactionManager {
 			log.info("clearing transaction as all docs are approved");
 			remittanceTransactionService.clearHighValueTransaction(request.getRemittanceTransactionId(),
 					ComplianceBlockedTrnxType.valueOf(request.getDocumentCategory()));
-			// TODO remove notification
-
+			notificationTaskService.removeTaskForTransaction(request.getRemittanceTransactionId());
 		}
+
 	}
 
 	public void updateTrnxDocMap(List<CustomerDocumentUploadReference> customerUploadRefs, BigDecimal customerId) {
 		for (CustomerDocumentUploadReference customerUploadRef : customerUploadRefs) {
-			List<ComplianceTrnxDocMap> trnxDocMapList = complianceTrnxDocMapRepo
+			List<ComplianceBlockedTrnxDocMap> trnxDocMapList = complianceTrnxDocMapRepo
 					.findByDocTypeMasterAndCustomerId(customerUploadRef.getCustomerDocumentTypeMaster(), customerId);
 			trnxDocMapList.forEach(i -> {
 				i.setCustomerDocumentUploadReference(customerUploadRef);
@@ -142,5 +148,25 @@ public class ComplianceTransactionManager {
 			complianceTrnxDocMapRepo.save(trnxDocMapList);
 		}
 
+	}
+
+	public void rejectTrnxDoc(RejectDocRequest request) {
+		log.info("rejecting hvt doc request: {}", request);
+		CustomerDocumentTypeMaster docTypemaster = documentScanValidator.validateDocCatAndDocType(request.getDocumentCategory(),
+				request.getDocumentType());
+		List<ComplianceBlockedTrnxDocMap> allDocs = complianceTrnxDocMapRepo.findByRemittanceTransaction(request.getRemittanceTransactionId());
+		for (ComplianceBlockedTrnxDocMap i : allDocs) {
+			CustomerDocumentTypeMaster trnxDocTypeMaster = i.getCustomerDocumentUploadReference().getCustomerDocumentTypeMaster();
+			if (trnxDocTypeMaster.equals(docTypemaster)) {
+				i.setStatus(ComplianceTrnxdDocStatus.REJECTED);
+				complianceTrnxDocMapRepo.save(i);
+			}
+			CustomerDocUploadNotificationTaskData data = new CustomerDocUploadNotificationTaskData();
+			data.setDocumentCategory(request.getDocumentCategory());
+			data.setDocumentTypes(Arrays.asList(request.getNewDocumentType()));
+			data.setRemittanceTransactionId(request.getRemittanceTransactionId());
+			notificationTaskService.notifyBranchUserForDocumentUpload(data);
+		}
+		notificationTaskService.removeTaskForTransaction(request.getRemittanceTransactionId());
 	}
 }

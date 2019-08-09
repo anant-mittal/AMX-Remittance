@@ -25,4 +25,6 @@ public interface IComplianceService {
 
 	AmxApiResponse<BoolRespModel, Object> approveTrnxDoc(ApproveDocRequest request);
 
+	AmxApiResponse<BoolRespModel, Object> rejectTrnxDoc(RejectDocRequest request);
+
 }

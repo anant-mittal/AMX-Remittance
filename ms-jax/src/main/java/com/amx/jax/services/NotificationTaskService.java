@@ -3,7 +3,6 @@ package com.amx.jax.services;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,15 +14,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.amx.jax.apiwrapper.JaxRbaacServiceWrapper;
 import com.amx.jax.client.compliance.ComplianceTrnxdDocStatus;
 import com.amx.jax.client.task.CustomerDocUploadNotificationTaskData;
 import com.amx.jax.client.task.NotificationTaskDto;
-import com.amx.jax.client.task.NotificationTaskPermission;
+import com.amx.jax.client.task.NotificationTaskRole;
 import com.amx.jax.compliance.ComplianceTransactionManager;
 import com.amx.jax.customer.dao.EmployeeDao;
 import com.amx.jax.customer.document.manager.CustomerDocumentUploadManager;
 import com.amx.jax.dbmodel.Customer;
-import com.amx.jax.dbmodel.compliance.ComplianceTrnxDocMap;
+import com.amx.jax.dbmodel.compliance.ComplianceBlockedTrnxDocMap;
 import com.amx.jax.dbmodel.customer.CustomerDocumentTypeMaster;
 import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReference;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
@@ -61,6 +61,8 @@ public class NotificationTaskService {
 	CustomerDocumentUploadManager customerDocumentUploadManager;
 	@Autowired
 	ComplianceTransactionManager complianceTransactionManager;
+	@Autowired
+	JaxRbaacServiceWrapper jaxRbaacServiceWrapper;
 
 	private static final Logger log = LoggerFactory.getLogger(NotificationTaskService.class);
 
@@ -73,18 +75,18 @@ public class NotificationTaskService {
 		task.setCreatedAt(new Date());
 		task.setDocumentCategory(data.getDocumentCategory());
 		task.setDocumentTypes(serializeDocumentTypes(data.getDocumentTypes()));
-		task.setMessage(getNotificationMessageForDocUpload(data));
 		task.setRemittanceTransactionid(data.getRemittanceTransactionId());
 		task.setCustomerId(trnx.getCustomerId().getCustomerId());
 		task.setTaskType(JaxNotificationTaskType.DOCUMENT_UPLOAD);
+		task.setMessage(getDocUploadNotificationMessageForBranchStaff(task));
 		JaxNotificationTaskAssign taskAssign = new JaxNotificationTaskAssign();
 		taskAssign.setTask(task);
-		taskAssign.setPermissions(NotificationTaskPermission.BRANCH_STAFF_VIEW_TASK.toString());
+		taskAssign.setRoles(NotificationTaskRole.BRANCH_MANAGER.toString());
 		taskAssign.setCountryBranchId(trnx.getBranchId().getCountryBranchId());
 		jaxNotificationTaskAssignRepo.save(taskAssign);
 
 		for (String docType : data.getDocumentTypes()) {
-			ComplianceTrnxDocMap complianceTrnxDocMap = new ComplianceTrnxDocMap();
+			ComplianceBlockedTrnxDocMap complianceTrnxDocMap = new ComplianceBlockedTrnxDocMap();
 			complianceTrnxDocMap.setCustomerId(trnx.getCustomerId().getCustomerId());
 			complianceTrnxDocMap.setDocTypeMaster(customerDocumentTypeMasterRepo.findByDocumentCategoryAndDocumentType(docCategory, docType));
 			complianceTrnxDocMap.setRemittanceTransaction(data.getRemittanceTransactionId());
@@ -97,32 +99,43 @@ public class NotificationTaskService {
 		return String.join(",", documentTypes);
 	}
 
-	private String getNotificationMessageForDocUpload(CustomerDocUploadNotificationTaskData data) {
-		RemittanceTransaction trnx = remittanceTransactionService.getRemittanceTransactionById(data.getRemittanceTransactionId());
+	private String getDocUploadNotificationMessageForBranchStaff(JaxNotificationTask task) {
+		RemittanceTransaction trnx = remittanceTransactionService.getRemittanceTransactionById(task.getRemittanceTransactionid());
 		Customer customer = trnx.getCustomerId();
 		StringBuilder sBuild = new StringBuilder();
 		sBuild.append("Please request ");
 		sBuild.append(customer.getFirstName()).append(" ").append(customer.getLastName());
 		sBuild.append("-").append(customer.getIdentityInt());
-		sBuild.append(" to submit ").append(String.join(",", data.getDocumentTypes()));
+		sBuild.append(" to submit ").append(task.getDocumentTypes());
+		sBuild.append(" for Trnx ID ").append(trnx.getDocumentFinanceYear()).append("/").append(trnx.getDocumentNo());
+		return sBuild.toString();
+	}
+
+	private String getDocUploadNotificationMessageForCompliance(JaxNotificationTask task) {
+		RemittanceTransaction trnx = remittanceTransactionService.getRemittanceTransactionById(task.getRemittanceTransactionid());
+		Customer customer = trnx.getCustomerId();
+		StringBuilder sBuild = new StringBuilder();
+		sBuild.append(customer.getFirstName()).append(" ").append(customer.getLastName());
+		sBuild.append("-").append(customer.getIdentityInt());
+		sBuild.append(" has submitted ").append(task.getDocumentTypes());
 		sBuild.append(" for Trnx ID ").append(trnx.getDocumentFinanceYear()).append("/").append(trnx.getDocumentNo());
 		return sBuild.toString();
 	}
 
 	public List<NotificationTaskDto> listUserNotificationTasks() {
 		List<JaxNotificationTaskAssign> allNotifications = jaxNotificationTaskAssignRepo.findByCountryBranchId(metaData.getCountryBranchId());
-		List<String> empViewPermissions = null; // TODO call rbaac api to fetch logged in emplyee's permissions
+		List<String> empRoles = jaxRbaacServiceWrapper.getEmployeeRoles();
 		List<JaxNotificationTaskAssign> allowedNotifications = allNotifications.stream().filter(i -> {
-			String[] taskViewPermission = i.getPermissions().split(",");
-			List<String> taskViewPermissionList = Arrays.asList(taskViewPermission);
-			if (empViewPermissions != null) {
-				for (String perm : empViewPermissions) {
-					if (taskViewPermissionList.contains(perm)) {
+			String[] taskViewRoles = i.getRoles().split(",");
+			List<String> taskViewRoleList = Arrays.asList(taskViewRoles);
+			if (empRoles != null) {
+				for (String taskViewRole : taskViewRoleList) {
+					if (empRoles.contains(taskViewRole)) {
 						return true;
 					}
 				}
 			}
-			return true;
+			return false;
 		}).collect(Collectors.toList());
 		return convert(allowedNotifications);
 	}
@@ -147,28 +160,29 @@ public class NotificationTaskService {
 		BigDecimal customerId = metaData.getCustomerId();
 		List<CustomerDocumentUploadReference> custUploadReferences = customerDocumentUploadManager.fetchCustomerUploadedDocRef(customerTempUploads,
 				customerId);
-		if (CollectionUtils.isNotEmpty(custUploadReferences)) {	
+		if (CollectionUtils.isNotEmpty(custUploadReferences)) {
 			log.info("sending notification to compliance user");
 			for (CustomerDocumentUploadReference uploadDocMaster : custUploadReferences) {
 				CustomerDocumentTypeMaster docTypeMaster = uploadDocMaster.getCustomerDocumentTypeMaster();
-				List<JaxNotificationTask> tasks = jaxNotificationTaskRepo.findByCustomerIdAndTaskTypeAndDocumentCategory(metaData.getCustomerId(),
-						JaxNotificationTaskType.DOCUMENT_UPLOAD, docTypeMaster.getDocumentCategory());
-				String uploadDocType = docTypeMaster.getDocumentType();
-				for (JaxNotificationTask task : tasks) {
-					String[] docTypes = task.getDocumentTypes().split(",");
-					List<String> docTypeList = new LinkedList<>(Arrays.asList(docTypes));
-					boolean containDocType = docTypeList.stream().anyMatch(uploadDocType::equals);
-					if (containDocType) {
-						docTypeList.remove(uploadDocType);
-						if (docTypeList.size() == 0) {
-							// re assign notfic to compliance
-							task.getTaskAssign().forEach(i -> i.setPermissions(NotificationTaskPermission.COMPLIANCE_VIEW_TASK.toString()));
-
-						} else {
-							task.setDocumentTypes(String.join(",", docTypeList));
-						}
-						jaxNotificationTaskRepo.save(task);
-					}
+				List<ComplianceBlockedTrnxDocMap> complianceBlockedTrnxDocMap = complianceTrnxDocMapRepo
+						.findByDocTypeMasterAndCustomerIdAndStatus(docTypeMaster, customerId, ComplianceTrnxdDocStatus.REQUESTED);
+				for (ComplianceBlockedTrnxDocMap complianceBlockedTrnxDoc : complianceBlockedTrnxDocMap) {
+					// notify compliance of upload
+					JaxNotificationTask task = new JaxNotificationTask();
+					task.setCreatedAt(new Date());
+					task.setDocumentCategory(docTypeMaster.getDocumentCategory());
+					task.setDocumentTypes(docTypeMaster.getDocumentType());
+					task.setRemittanceTransactionid(complianceBlockedTrnxDoc.getRemittanceTransaction());
+					task.setCustomerId(customerId);
+					task.setTaskType(JaxNotificationTaskType.DOCUMENT_UPLOAD);
+					task.setMessage(getDocUploadNotificationMessageForCompliance(task));
+					JaxNotificationTaskAssign taskAssign = new JaxNotificationTaskAssign();
+					taskAssign.setTask(task);
+					taskAssign.setRoles(NotificationTaskRole.COMPLIANCE_USER.toString());
+					jaxNotificationTaskAssignRepo.save(taskAssign);
+					// change status of trnx to uploaded
+					complianceBlockedTrnxDoc.setStatus(ComplianceTrnxdDocStatus.UPLOADED);
+					complianceTrnxDocMapRepo.save(complianceBlockedTrnxDoc);
 				}
 			}
 			// update trnx doc map
@@ -176,4 +190,10 @@ public class NotificationTaskService {
 		}
 	}
 
+	public void removeTaskForTransaction(BigDecimal remittanceTransactionId) {
+		List<JaxNotificationTask> tasks = jaxNotificationTaskRepo.findByRemittanceTransactionid(remittanceTransactionId);
+		String tids = tasks.stream().map(i -> i.getId().toString()).collect(Collectors.joining(","));
+		log.debug("removing tasks " + tids);
+		jaxNotificationTaskRepo.delete(tasks);
+	}
 }

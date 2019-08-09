@@ -13,4 +13,6 @@ public interface JaxNotificationTaskRepo extends CrudRepository<JaxNotificationT
 
 	List<JaxNotificationTask> findByCustomerIdAndTaskTypeAndDocumentCategory(BigDecimal customerId, JaxNotificationTaskType taskType,
 			String documentCat);
+	
+	List<JaxNotificationTask> findByRemittanceTransactionid(BigDecimal remittanceTransactionId);
 }

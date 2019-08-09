@@ -6,12 +6,16 @@ import java.util.List;
 
 import org.springframework.data.repository.CrudRepository;
 
-import com.amx.jax.dbmodel.compliance.ComplianceTrnxDocMap;
+import com.amx.jax.client.compliance.ComplianceTrnxdDocStatus;
+import com.amx.jax.dbmodel.compliance.ComplianceBlockedTrnxDocMap;
 import com.amx.jax.dbmodel.customer.CustomerDocumentTypeMaster;
 
-public interface ComplianceTrnxDocMapRepo extends CrudRepository<ComplianceTrnxDocMap, Serializable> {
+public interface ComplianceTrnxDocMapRepo extends CrudRepository<ComplianceBlockedTrnxDocMap, Serializable> {
 
-	List<ComplianceTrnxDocMap> findByRemittanceTransaction(BigDecimal trnxId);
+	List<ComplianceBlockedTrnxDocMap> findByRemittanceTransaction(BigDecimal trnxId);
 
-	List<ComplianceTrnxDocMap> findByDocTypeMasterAndCustomerId(CustomerDocumentTypeMaster docTypeMaster, BigDecimal customerId);
+	List<ComplianceBlockedTrnxDocMap> findByDocTypeMasterAndCustomerId(CustomerDocumentTypeMaster docTypeMaster, BigDecimal customerId);
+
+	List<ComplianceBlockedTrnxDocMap> findByDocTypeMasterAndCustomerIdAndStatus(CustomerDocumentTypeMaster docTypeMaster, BigDecimal customerId,
+			ComplianceTrnxdDocStatus status);
 }

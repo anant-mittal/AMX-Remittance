@@ -31,6 +31,9 @@ public class JaxNotificationTaskAssign {
 
 	@Column(name = "PERMISSIONS")
 	String permissions;
+	
+	@Column(name = "ROLES")
+	String roles;
 
 	@Column(name = "COUNTRY_BRANCH_ID")
 	BigDecimal countryBranchId;
@@ -65,6 +68,14 @@ public class JaxNotificationTaskAssign {
 
 	public void setPermissions(String permissions) {
 		this.permissions = permissions;
+	}
+
+	public String getRoles() {
+		return roles;
+	}
+
+	public void setRoles(String roles) {
+		this.roles = roles;
 	}
 
 }

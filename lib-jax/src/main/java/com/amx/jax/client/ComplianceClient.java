@@ -12,6 +12,7 @@ import com.amx.jax.client.compliance.ApproveDocRequest;
 import com.amx.jax.client.compliance.ComplianceBlockedTrnxType;
 import com.amx.jax.client.compliance.HighValueTrnxDto;
 import com.amx.jax.client.compliance.IComplianceService;
+import com.amx.jax.client.compliance.RejectDocRequest;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.client.customer.CustomerManagementClient;
 import com.amx.jax.exception.JaxSystemError;
@@ -66,6 +67,20 @@ public class ComplianceClient implements IComplianceService {
 					});
 		} catch (Exception e) {
 			LOGGER.error("exception in approveTrnxDoc : ", e);
+			return JaxSystemError.evaluate(e);
+		}
+	}
+
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> rejectTrnxDoc(RejectDocRequest request) {
+		try {
+			LOGGER.debug("in rejectTrnxDoc :  ");
+			String url = appConfig.getJaxURL() + Path.REJECT_TRANSACTOIN_DOCUMENT;
+			return restService.ajax(url).meta(new JaxMetaInfo()).post(request)
+					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in rejectTrnxDoc : ", e);
 			return JaxSystemError.evaluate(e);
 		}
 	}

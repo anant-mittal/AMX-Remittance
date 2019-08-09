@@ -15,6 +15,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
 @Entity
 @Table(name = "JAX_NOTIFICATION_TASK")
 public class JaxNotificationTask {
@@ -44,9 +47,10 @@ public class JaxNotificationTask {
 	BigDecimal customerId;
 
 	@OneToMany(mappedBy = "task")
+	@Cascade(value = { CascadeType.ALL })
 	List<JaxNotificationTaskAssign> taskAssign;
-	
-	@Column(name="TASK_TYPE")
+
+	@Column(name = "TASK_TYPE")
 	@Enumerated(EnumType.STRING)
 	JaxNotificationTaskType taskType;
 

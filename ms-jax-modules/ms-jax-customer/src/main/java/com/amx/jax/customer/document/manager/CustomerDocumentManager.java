@@ -19,6 +19,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.jax.client.compliance.ComplianceTrnxdDocStatus;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constants.DocumentScanIndic;
 import com.amx.jax.customer.document.validate.DocumentScanValidator;
@@ -26,6 +27,7 @@ import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.dbmodel.DmsApplMapping;
 import com.amx.jax.dbmodel.IdentityTypeMaster;
+import com.amx.jax.dbmodel.compliance.ComplianceBlockedCustomerDocMap;
 import com.amx.jax.dbmodel.customer.CustomerDocumentTypeMaster;
 import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReference;
 import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReferenceTemp;
@@ -37,6 +39,7 @@ import com.amx.jax.model.customer.document.UploadCustomerDocumentRequest;
 import com.amx.jax.model.customer.document.UploadCustomerDocumentResponse;
 import com.amx.jax.model.customer.document.UploadCustomerKycRequest;
 import com.amx.jax.model.customer.document.UploadCustomerKycResponse;
+import com.amx.jax.repository.compliance.ComplianceBlockedCustomerDocMapRepo;
 import com.amx.jax.repository.customer.CustomerDocumentUploadReferenceRepo;
 import com.amx.jax.repository.customer.DbScanRefRepo;
 import com.amx.jax.userservice.dao.CustomerDao;
@@ -73,6 +76,8 @@ public class CustomerDocumentManager {
 	CustomerDocumentUploadReferenceRepo customerDocumentUploadReferenceRepo;
 	@Autowired
 	DbScanRefRepo dbScanRefRepo;
+	@Autowired
+	ComplianceBlockedCustomerDocMapRepo complianceBlockedCustomerDocMapRepo;
 
 	private static final Logger log = LoggerFactory.getLogger(CustomerDocumentManager.class);
 
@@ -241,11 +246,14 @@ public class CustomerDocumentManager {
 	@Transactional
 	public void checkAndRemoveBlockedDocuments(BigDecimal customerId, CustomerDocumentTypeMaster docTypeMaster) {
 		Customer customer = userService.getCustById(customerId);
-		List<CustomerDocumentTypeMaster> complianceBlocked = customer.getComplianceBlockedDocuments();
-		if (complianceBlocked.contains(docTypeMaster)) {
-			complianceBlocked.remove(docTypeMaster);
-		}
-		customerDao.saveCustomer(customer);
+		List<ComplianceBlockedCustomerDocMap> complianceBlockedDocs = customer.getComplianceBlockedDocuments();
+		complianceBlockedDocs.stream().forEach(i -> {
+			if (i.getStatus().equals(ComplianceTrnxdDocStatus.REQUESTED) && i.getDocTypeMaster().equals(docTypeMaster)) {
+				i.setStatus(ComplianceTrnxdDocStatus.UPLOADED);
+			}
+		});
+
+		complianceBlockedCustomerDocMapRepo.save(complianceBlockedDocs);
 	}
 
 	public List<CustomerDocumentUploadReference> getCustomerUploads(BigDecimal customerId) {

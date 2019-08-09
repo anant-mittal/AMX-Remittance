@@ -27,6 +27,7 @@ import javax.persistence.TemporalType;
 import org.hibernate.annotations.Proxy;
 
 import com.amx.jax.constants.CustomerRegistrationType;
+import com.amx.jax.dbmodel.compliance.ComplianceBlockedCustomerDocMap;
 import com.amx.jax.dbmodel.customer.CustomerDocumentTypeMaster;
 import com.amx.jax.util.AmxDBConstants.Status;
 
@@ -150,7 +151,7 @@ public class Customer implements java.io.Serializable {
 	private String annualIncomeUpdatedBy;
 	private Date annualIncomeUpdatedDate;
 	private String isBusinessCardVerified;
-	private List<CustomerDocumentTypeMaster> complianceBlockedDocuments;
+	private List<ComplianceBlockedCustomerDocMap> complianceBlockedDocuments;
 	
 		
 	private String customerVatNumber;
@@ -1129,9 +1130,9 @@ public class Customer implements java.io.Serializable {
 	}
 	
 	@ManyToMany(cascade = CascadeType.ALL, fetch=FetchType.LAZY)
-	@JoinTable(  name = "JAX_COMPLIANCE_BLOCKED_DOC_MAP", joinColumns = @JoinColumn(name = "CUSTOMER_ID", referencedColumnName="CUSTOMER_ID"), inverseJoinColumns = @JoinColumn(name = "CUSTOMER_DOC_TYPE_MASTER_ID",
+	@JoinTable(  name = "JAX_COMPLIANCE_BLOCKED_DOC_MAP", joinColumns = @JoinColumn(name = "CUSTOMER_ID", referencedColumnName="CUSTOMER_ID"), inverseJoinColumns = @JoinColumn(name = "COMP_BLOCKED_CUST_DOC_MAP_ID",
 			referencedColumnName="ID"))
-	public List<CustomerDocumentTypeMaster> getComplianceBlockedDocuments() {
+	public List<ComplianceBlockedCustomerDocMap> getComplianceBlockedDocuments() {
 		return complianceBlockedDocuments;
 	}
 
@@ -1155,7 +1156,7 @@ public class Customer implements java.io.Serializable {
 		this.customerVatNumber = customerVatNumber;
 	}
 	
-	public void setComplianceBlockedDocuments(List<CustomerDocumentTypeMaster> complianceBlockedDocuments) {
+	public void setComplianceBlockedDocuments(List<ComplianceBlockedCustomerDocMap> complianceBlockedDocuments) {
 		this.complianceBlockedDocuments = complianceBlockedDocuments;
 	}
 }

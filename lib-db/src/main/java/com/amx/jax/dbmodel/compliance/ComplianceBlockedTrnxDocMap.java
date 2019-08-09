@@ -20,7 +20,7 @@ import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReference;
 
 @Entity
 @Table(name = "JAX_COMP_CUST_DOC_TRNX_MAP")
-public class ComplianceTrnxDocMap {
+public class ComplianceBlockedTrnxDocMap {
 
 	@Id
 	@Column(name = "ID")

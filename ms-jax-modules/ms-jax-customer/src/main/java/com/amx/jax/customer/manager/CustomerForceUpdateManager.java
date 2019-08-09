@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.dbmodel.Customer;
-import com.amx.jax.dbmodel.customer.CustomerDocumentTypeMaster;
+import com.amx.jax.dbmodel.compliance.ComplianceBlockedCustomerDocMap;
 import com.amx.jax.model.response.customer.CustomerForceUpdateModel;
 import com.amx.jax.model.response.customer.CustomerMgmtUIField;
 import com.amx.jax.model.response.customer.DocumentUploadMeta;
@@ -23,7 +23,7 @@ public class CustomerForceUpdateManager {
 	public List<CustomerForceUpdateModel> getBlockedCustomerModel(BigDecimal customerId) {
 		List<CustomerForceUpdateModel> customerForceUpdateModel = new ArrayList<>();
 		Customer customer = userService.getCustById(customerId);
-		List<CustomerDocumentTypeMaster> blockedDocuments = customer.getComplianceBlockedDocuments();
+		List<ComplianceBlockedCustomerDocMap> blockedDocuments = customer.getComplianceBlockedDocuments();
 		blockedDocuments.forEach(i -> {
 			CustomerForceUpdateModel model = new CustomerForceUpdateModel();
 			model.setField(CustomerMgmtUIField.DOCUMENT);
