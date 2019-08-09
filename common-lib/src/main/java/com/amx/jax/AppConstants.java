@@ -27,6 +27,7 @@ public class AppConstants extends Constants {
 	public static final String SESSION_ID_XKEY = "x-session-id";
 	public static final String SESSION_UID_XKEY = "x-session-uid";
 	public static final String TRACE_ID_XKEY = "x-trace-id";
+	public static final String LANG_PARAM_KEY = "lang";
 	public static final String TRACE_TIME_XKEY = "x-time-id";
 	public static final String REQUEST_TYPE_XKEY = "x-request-type";
 	public static final String REQUEST_WARNING_XKEY = "x-request-warning";
