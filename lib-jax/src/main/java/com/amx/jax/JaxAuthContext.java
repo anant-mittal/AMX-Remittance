@@ -33,6 +33,14 @@ public class JaxAuthContext {
 		return AppContextUtil.getFlow();
 	}
 
+	public static String getMotpOrOtp() {
+		return ArgUtil.ifNotEmpty(getMotp(), getOtp());
+	}
+
+	public static String getEotpOrOtp() {
+		return ArgUtil.ifNotEmpty(getEotp(), getOtp());
+	}
+
 	public static String getAnyOtp() {
 		String otp = getOtp();
 		if (ArgUtil.isEmpty(otp)) {

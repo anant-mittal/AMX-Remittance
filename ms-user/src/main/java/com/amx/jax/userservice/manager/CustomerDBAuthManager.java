@@ -84,30 +84,33 @@ public class CustomerDBAuthManager {
 
 		boolean isMotpRequired = false;
 		boolean isEotpRequired = false;
+		
+		String mOtp = JaxAuthContext.getMotpOrOtp();
+		String eOtp = JaxAuthContext.getEotpOrOtp();
 
 		switch (contactType) {
 		case MOBILE:
 		case SMS:
-			if (StringUtils.isBlank(JaxAuthContext.getMotp())) {
+			if (ArgUtil.isEmpty(mOtp)) {
 				isMotpRequired = true;
 			} else {
 				validateMotp(onlineCust, customer);
 			}
 			break;
 		case SMS_EMAIL:
-			if (StringUtils.isBlank(JaxAuthContext.getMotp())) {
+			if (ArgUtil.isEmpty(mOtp)) {
 				isMotpRequired = true;
 			} else {
 				validateMotp(onlineCust, customer);
 			}
-			if (StringUtils.isBlank(JaxAuthContext.getEotp())) {
+			if (ArgUtil.isEmpty(eOtp)) {
 				isEotpRequired = true;
 			} else {
 				validateEotp(onlineCust, customer);
 			}
 			break;
 		case EMAIL:
-			if (StringUtils.isBlank(JaxAuthContext.getEotp())) {
+			if (ArgUtil.isEmpty(eOtp)) {
 				isEotpRequired = true;
 			} else {
 				validateEotp(onlineCust, customer);
@@ -187,7 +190,7 @@ public class CustomerDBAuthManager {
 	}
 
 	public void validateEotp(CustomerOnlineRegistration onlineCust, Customer customer) {
-		String eOtp = ArgUtil.ifNotEmpty(JaxAuthContext.getEotp(),JaxAuthContext.getOtp());
+		String eOtp = JaxAuthContext.getEotpOrOtp();
 		String etokenHash = onlineCust.getEmailToken();
 		String eOtpHash = null;
 		if (StringUtils.isNotBlank(eOtp)) {
@@ -203,7 +206,7 @@ public class CustomerDBAuthManager {
 	}
 
 	public void validateMotp(CustomerOnlineRegistration onlineCust, Customer customer) {
-		String mOtp = ArgUtil.ifNotEmpty(JaxAuthContext.getMotp(),JaxAuthContext.getOtp());
+		String mOtp = JaxAuthContext.getMotpOrOtp(); 
 		String mtokenHash = onlineCust.getSmsToken();
 		String mOtpHash = null;
 		if (StringUtils.isNotBlank(mOtp)) {
