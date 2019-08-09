@@ -194,7 +194,7 @@ public class AuthController {
 	@ApiOWAStatus({ OWAStatusStatusCodes.USER_UPDATE_SUCCESS })
 	@RequestMapping(value = "/pub/auth/password/v2/update", method = { RequestMethod.POST })
 	public ResponseWrapper<UserUpdateData> resetPasswordV2(@Valid @RequestBody AuthRequest authData) {
-		if (transactions.validate(AuthFlow.RESET_PASS)) {
+		if (!transactions.validate(AuthFlow.RESET_PASS)) {
 			throw new HttpUnauthorizedException(HttpUnauthorizedException.UN_SEQUENCE);
 		}
 		return loginService.updatepwdV2(authData.getPassword());
