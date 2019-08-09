@@ -1,6 +1,6 @@
 package com.amx.jax.branch.serviceprovider.controller;
 
-import static com.amx.amxlib.constant.ApiEndpoint.SERVICE_PROVIDER_ENDPOINT;
+import static com.amx.amxlib.constant.ApiEndpoint.REVENUE_REPORT_ENDPOINT;
 
 import java.sql.Date;
 import java.util.List;
@@ -22,7 +22,7 @@ import com.amx.jax.response.serviceprovider.ServiceProviderPartnerDTO;
 import com.amx.jax.response.serviceprovider.ServiceProviderSummaryDTO;
 import com.amx.jax.serviceprovider.service.ServiceProviderService;
 @RestController
-@RequestMapping(SERVICE_PROVIDER_ENDPOINT)
+@RequestMapping(REVENUE_REPORT_ENDPOINT)
 @SuppressWarnings("rawtypes")
 public class ServiceProviderController implements IServiceProviderService{
 
@@ -31,26 +31,26 @@ public class ServiceProviderController implements IServiceProviderService{
 	@Autowired
 	ServiceProviderService serviceProviderService;
 	
-	@RequestMapping(value = ServiceProvider.SERVICE_PROVIDER_PARTNER, method = RequestMethod.GET)
+	@RequestMapping(value = ServiceProvider.REVENUE_REPORT_PARTNER, method = RequestMethod.GET)
 	public AmxApiResponse<ServiceProviderPartnerDTO, Object> getServiceProviderPartner() {
 		List<ServiceProviderPartnerDTO> response = serviceProviderService.getServiceProviderPartner();
 		return AmxApiResponse.buildList(response);
 
 	}
 	
-	@RequestMapping(value= ServiceProvider.SERVICE_PROVIDER_UPLOAD_FILE, method = RequestMethod.POST)
+	@RequestMapping(value= ServiceProvider.REVENUE_REPORT_UPLOAD_FILE, method = RequestMethod.POST)
 	public AmxApiResponse<ServiceProviderSummaryDTO, Object> uploadServiceProviderFile(@RequestParam MultipartFile file, @RequestParam Date fileDate, @RequestParam String tpcCode) throws Exception{
 		List<ServiceProviderSummaryDTO> response = serviceProviderService.uploadServiceProviderFile(file,fileDate,tpcCode);
 		return AmxApiResponse.buildList(response);
 	}
 	
-	@RequestMapping(value= ServiceProvider.SERVICE_PROVIDER_CONFIRMATION, method = RequestMethod.POST)
+	@RequestMapping(value= ServiceProvider.REVENUE_REPORT_CONFIRMATION, method = RequestMethod.POST)
 	public AmxApiResponse<BoolRespModel, Object> serviceProviderConfirmation(@RequestParam Date fileDate, @RequestParam String tpcCode){
 		BoolRespModel boolRespModel = serviceProviderService.serviceProviderConfirmation(fileDate,tpcCode);
 		return AmxApiResponse.build(boolRespModel);
 	}
 	
-	@RequestMapping(value=ServiceProvider.SERVICE_PROVIDER_DEFAULT_DATE, method=RequestMethod.POST)
+	@RequestMapping(value=ServiceProvider.REVENUE_REPORT_DEFAULT_DATE, method=RequestMethod.POST)
 	public AmxApiResponse<ServiceProviderDefaultDateDTO, Object> getServiceProviderDefaultDate(@RequestParam String tpcCode){
 		ServiceProviderDefaultDateDTO defaultUploadDate = serviceProviderService.getServiceProviderDefaultDate(tpcCode);
 		return AmxApiResponse.build(defaultUploadDate);
