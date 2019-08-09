@@ -13,15 +13,15 @@ import com.amx.jax.response.serviceprovider.ServiceProviderSummaryDTO;
 public interface IServiceProviderService extends IJaxService {
 	
 	public static class ServiceProviderApiEndpoints {
-		public static final String PREFIX = "/service-provider";
+		public static final String PREFIX = "/revenue-report";
 		
-		public static final String SERVICE_PROVIDER_PARTNER = "/service-provider-partner";
+		public static final String REVENUE_REPORT_PARTNER = "/revenue-report-partner";
 		
-		public static final String SERVICE_PROVIDER_UPLOAD_FILE="/service-provider-upload-file";
+		public static final String REVENUE_REPORT_UPLOAD_FILE="/revenue-report-upload-file";
 		
-		public static final String SERVICE_PROVIDER_CONFIRMATION="/service-provider-confirmation";
+		public static final String REVENUE_REPORT_CONFIRMATION="/revenue-report-confirmation";
 		
-		public static final String SERVICE_PROVIDER_DEFAULT_DATE = "/service-provider-default-date";
+		public static final String REVENUE_REPORT_DEFAULT_DATE = "/revenue-report-default-date";
 	}
 	public static class Params {
 		public static final String FILE_DATE="fileDate";

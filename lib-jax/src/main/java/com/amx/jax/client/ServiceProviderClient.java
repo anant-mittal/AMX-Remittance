@@ -46,7 +46,7 @@ public class ServiceProviderClient implements IServiceProviderService {
 		try {
 
 			return restService.ajax(appConfig.getJaxURL())
-					.path(ServiceProviderApiEndpoints.PREFIX + ServiceProviderApiEndpoints.SERVICE_PROVIDER_PARTNER)
+					.path(ServiceProviderApiEndpoints.PREFIX + ServiceProviderApiEndpoints.REVENUE_REPORT_PARTNER)
 					.meta(new JaxMetaInfo()).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<ServiceProviderPartnerDTO, Object>>() {
 					});
@@ -63,7 +63,7 @@ public class ServiceProviderClient implements IServiceProviderService {
 		try {
 			return restService.ajax(appConfig.getJaxURL()).meta(new JaxMetaInfo())
 					.path(ServiceProviderApiEndpoints.PREFIX
-							+ ServiceProviderApiEndpoints.SERVICE_PROVIDER_CONFIRMATION)
+							+ ServiceProviderApiEndpoints.REVENUE_REPORT_CONFIRMATION)
 					.queryParam(Params.FILE_DATE, fileDate).queryParam(Params.TPC_CODE, tpcCode).post()
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});
@@ -80,7 +80,7 @@ public class ServiceProviderClient implements IServiceProviderService {
 		try {
 			return restService.ajax(appConfig.getJaxURL()).meta(new JaxMetaInfo())
 					.path(ServiceProviderApiEndpoints.PREFIX
-							+ ServiceProviderApiEndpoints.SERVICE_PROVIDER_DEFAULT_DATE)
+							+ ServiceProviderApiEndpoints.REVENUE_REPORT_DEFAULT_DATE)
 					.queryParam(Params.TPC_CODE, tpcCode).post()
 					.as(new ParameterizedTypeReference<AmxApiResponse<ServiceProviderDefaultDateDTO, Object>>() {
 					});
@@ -105,7 +105,7 @@ public class ServiceProviderClient implements IServiceProviderService {
 			HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
 			return restService.ajax(appConfig.getJaxURL()).meta(new JaxMetaInfo())
-					.path(ServiceProviderApiEndpoints.PREFIX + ServiceProviderApiEndpoints.SERVICE_PROVIDER_UPLOAD_FILE)
+					.path(ServiceProviderApiEndpoints.PREFIX + ServiceProviderApiEndpoints.REVENUE_REPORT_UPLOAD_FILE)
 					.queryParam(Params.FILE_DATE, fileDate)
 					.queryParam(Params.TPC_CODE, tpcCode).post(requestEntity)
 					.as(new ParameterizedTypeReference<AmxApiResponse<ServiceProviderSummaryDTO, Object>>() {

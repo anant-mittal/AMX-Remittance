@@ -50,7 +50,7 @@ public class ServiceProviderClientTest {
 		TenantContextHolder.setCurrent(Tenant.KWT);
 		jaxMetaInfo.setReferrer("DEV-TESTING");
 	}
-
+	
 	@Test
 	public void testForServicePartner() {
 		setDefaults();
