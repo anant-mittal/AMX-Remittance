@@ -123,4 +123,12 @@ public class JaxAuthContext {
 		return flow;
 	}
 
+	public static boolean isCaptchaCheck() {
+		return ArgUtil.parseAsBoolean(AppContextUtil.getParams().get("captcha_check"), false);
+	}
+
+	public static void setCaptchaCheck(boolean captchaCheck) {
+		AppContextUtil.getParams().put("captchaCheck", captchaCheck);
+	}
+
 }

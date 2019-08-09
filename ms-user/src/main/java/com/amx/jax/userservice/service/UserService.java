@@ -41,6 +41,7 @@ import com.amx.amxlib.model.UserVerificationCheckListDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.JaxAuthContext;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.async.ExecutorConfig;
@@ -697,8 +698,8 @@ public class UserService extends AbstractUserService {
 					"User with userId: " + userId + " is not registered or not active");
 		}
 
-		userValidationService.validateCustomerLockCount(onlineCustomer);
-		userValidationService.validatePassword(onlineCustomer, password, captchaEnable);
+		userValidationService.validateCustomerLockCount(onlineCustomer,captchaEnable);
+		userValidationService.validatePassword(onlineCustomer, password, captchaEnable && JaxAuthContext.isCaptchaCheck());
 		userService.unlockCustomer(customer.getCustomerId());
 		userValidationService.validateCustIdProofs(onlineCustomer.getCustomerId());
 		userValidationService.validateCustomerData(onlineCustomer, customer);

@@ -19,9 +19,9 @@ import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.model.AuthState.AuthFlow;
 import com.amx.jax.postman.client.GoogleService;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
+import com.amx.jax.ui.config.HttpUnauthorizedException;
 import com.amx.jax.ui.config.OWAStatus.ApiOWAStatus;
 import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
-import com.amx.jax.ui.config.HttpUnauthorizedException;
 import com.amx.jax.ui.config.UIServerError;
 import com.amx.jax.ui.model.AuthDataInterface.AuthRequest;
 import com.amx.jax.ui.model.AuthDataInterface.AuthResponse;
@@ -31,6 +31,7 @@ import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.LoginService;
 import com.amx.jax.ui.service.SessionService;
 import com.amx.jax.ui.session.Transactions;
+import com.amx.jax.ui.session.UserDeviceBean;
 import com.amx.utils.ArgUtil;
 
 import io.swagger.annotations.Api;
@@ -167,6 +168,9 @@ public class AuthController {
 	@Autowired
 	Transactions transactions;
 
+	@Autowired
+	UserDeviceBean userDeviceBean;
+
 	@SuppressWarnings("deprecation")
 	@RequestMapping(value = "/pub/auth/password/v2/reset", method = { RequestMethod.POST })
 	public ResponseWrapper<AuthResponse> resetPasswordFlow(@Valid @RequestBody AuthRequest authData,
@@ -179,6 +183,11 @@ public class AuthController {
 		JaxAuthContext.mOtp(authData.getmOtp());
 		JaxAuthContext.eOtp(authData.geteOtp());
 		JaxAuthContext.wOtp(authData.getwOtp());
+
+		if (!userDeviceBean.getUserDevice().isMobile()) {
+			JaxAuthContext.setCaptchaCheck(true);
+		}
+
 		return loginService.initResetPassword2(authData.getIdentity(), authData.getPassword());
 	}
 
