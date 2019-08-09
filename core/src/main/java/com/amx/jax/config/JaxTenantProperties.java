@@ -52,6 +52,9 @@ public class JaxTenantProperties {
 	
 	@TenantValue("${jax.max.captcha.count}")
 	private Integer maxCaptchaCount;
+	
+	@TenantValue("${jax.max.captcha.enabled}")
+	Boolean captchaEnable;
 
 	public Boolean getCashDisable() {
 		return cashDisable;
@@ -131,6 +134,14 @@ public class JaxTenantProperties {
 
 	public void setMaxCaptchaCount(Integer maxCaptchaCount) {
 		this.maxCaptchaCount = maxCaptchaCount;
+	}
+
+	public Boolean getCaptchaEnable() {
+		return captchaEnable;
+	}
+
+	public void setCaptchaEnable(Boolean captchaEnable) {
+		this.captchaEnable = captchaEnable;
 	}
 
 
