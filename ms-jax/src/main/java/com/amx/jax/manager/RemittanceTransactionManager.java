@@ -1513,4 +1513,26 @@ public class RemittanceTransactionManager {
 		validationResults.setCostRateLimitReached(model.getCostRateLimitReached());
 		
 	}
+	
+	public void applyCurrencyRoudingLogicSP(ExchangeRateBreakup exRatebreakUp) {
+		BigDecimal fcurrencyId = (BigDecimal) remitApplParametersMap.get("P_FOREIGN_CURRENCY_ID");
+		BigDecimal localCurrencyId = meta.getDefaultCurrencyId();
+		exRatebreakUp.setFcDecimalNumber(currencyMasterService.getCurrencyMasterById(fcurrencyId).getDecinalNumber());
+		exRatebreakUp.setLcDecimalNumber(currencyMasterService.getCurrencyMasterById(localCurrencyId).getDecinalNumber());
+
+		if (exRatebreakUp.getConvertedFCAmount() != null) {
+			logger.debug("getConvertedFCAmount :"+ RoundUtil.roundToZeroDecimalPlaces(exRatebreakUp.getConvertedFCAmount()));
+			exRatebreakUp.setConvertedFCAmount(RoundUtil.roundBigDecimal(exRatebreakUp.getConvertedFCAmount(),exRatebreakUp.getFcDecimalNumber().intValue()));
+		}
+
+		if (exRatebreakUp.getConvertedLCAmount() != null) {
+			exRatebreakUp.setConvertedLCAmount(RoundUtil.roundBigDecimal(exRatebreakUp.getConvertedLCAmount(),exRatebreakUp.getLcDecimalNumber().intValue()));
+		}
+
+		exRatebreakUp.setNetAmount(RoundUtil.roundBigDecimal(exRatebreakUp.getNetAmount(), exRatebreakUp.getLcDecimalNumber().intValue()));
+		
+		logger.info("amount in ex:" +exRatebreakUp.getNetAmount());
+		exRatebreakUp.setNetAmountWithoutLoyality(RoundUtil.roundBigDecimal(exRatebreakUp.getNetAmountWithoutLoyality(),exRatebreakUp.getLcDecimalNumber().intValue()));
+		exRatebreakUp.setInverseRate((RoundUtil.roundBigDecimal(exRatebreakUp.getInverseRate(), 6)));
+	}
 }

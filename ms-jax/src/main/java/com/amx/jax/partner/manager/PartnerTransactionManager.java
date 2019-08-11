@@ -62,6 +62,7 @@ import com.amx.jax.model.request.serviceprovider.Customer;
 import com.amx.jax.model.request.serviceprovider.ServiceProviderCallRequestDto;
 import com.amx.jax.model.request.serviceprovider.ServiceProviderLogDTO;
 import com.amx.jax.model.request.serviceprovider.TransactionData;
+import com.amx.jax.model.response.CurrencyMasterDTO;
 import com.amx.jax.model.response.remittance.ConfigDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.serviceprovider.ServiceProviderResponse;
@@ -1212,12 +1213,21 @@ public class PartnerTransactionManager extends AbstractModel {
 		model.setBeneficiaryBankName(remittanceTransactionView.getBeneficiaryBank());
 		model.setBeneficiaryBranchName(remittanceTransactionView.getBenefeciaryBranch());
 		model.setBeneficiaryName(remittanceTransactionView.getBeneficiaryName());
-		model.setCurrencyQuoteName(remittanceTransactionView.getCurrencyQuoteName());
+		if(remittanceTransactionView.getLocalTransactionCurrencyId() != null) {
+			// settlement currency data
+			CurrencyMasterModel settlementCurrencyModel = currencyMasterService.getCurrencyMasterById(remittanceTransactionView.getLocalTransactionCurrencyId());
+			if(settlementCurrencyModel != null) {
+				model.setLocalCurrencyQuote(settlementCurrencyModel.getQuoteName());
+			}
+		}
+		model.setForeignCurrencyQuote(remittanceTransactionView.getCurrencyQuoteName());
 		model.setCustomerName(remittanceTransactionView.getFirstName().concat(" ").concat(remittanceTransactionView.getMiddleName()).concat(" ").concat(remittanceTransactionView.getLastName()));
 		model.setCustomerReference(remittanceTransactionView.getCustomerReference());
-		model.setExceptionMessage(remitTrnxSPDTO.getActionInd() + " : " + remitTrnxSPDTO.getResponseDescription());
+		model.setCustomerContact(remittanceTransactionView.getContactNumber());
+		model.setExceptionMessage(remitTrnxSPDTO.getActionInd() + " : " + remitTrnxSPDTO.getResponseDescription() + " : " + remittanceTransactionView.getCountryBranchName() + " : " +remittanceTransactionView.getCreatedBy());
 		model.setRoutingBankCode(PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name());
 		model.setTransactionAmount(remittanceTransactionView.getLocalNetTransactionAmount());
+		model.setTransactionForeignAmount(remittanceTransactionView.getForeignTransactionAmount());
 		model.setTransactionDocNumber(remittanceTransactionView.getDocumentNo());
 		model.setTransactionDocYear(remittanceTransactionView.getDocumentFinancialYear());
 		model.setTransactionId(transactionId);

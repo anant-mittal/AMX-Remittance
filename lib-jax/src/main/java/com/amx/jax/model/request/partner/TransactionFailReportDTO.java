@@ -7,14 +7,17 @@ public class TransactionFailReportDTO {
 	private String transactionId;
 	private String routingBankCode;
 	private String beneficiaryAccount;
-	private String currencyQuoteName;
+	private String localCurrencyQuote;
+	private String foreignCurrencyQuote;
 	private String beneficiaryBankName;
 	private String beneficiaryBranchName;
 	private String beneficiaryName;
 	private String customerName;
+	private String customerContact;
 	private String exceptionMessage;
 	private BigDecimal customerReference;
 	private BigDecimal transactionAmount;
+	private BigDecimal transactionForeignAmount;
 	private BigDecimal transactionDocYear;
 	private BigDecimal transactionDocNumber;
 	
@@ -88,13 +91,6 @@ public class TransactionFailReportDTO {
 		this.transactionDocNumber = transactionDocNumber;
 	}
 	
-	public String getCurrencyQuoteName() {
-		return currencyQuoteName;
-	}
-	public void setCurrencyQuoteName(String currencyQuoteName) {
-		this.currencyQuoteName = currencyQuoteName;
-	}
-	
 	public String getExceptionMessage() {
 		return exceptionMessage;
 	}
@@ -107,6 +103,34 @@ public class TransactionFailReportDTO {
 	}
 	public void setCustomerReference(BigDecimal customerReference) {
 		this.customerReference = customerReference;
+	}
+	
+	public String getLocalCurrencyQuote() {
+		return localCurrencyQuote;
+	}
+	public void setLocalCurrencyQuote(String localCurrencyQuote) {
+		this.localCurrencyQuote = localCurrencyQuote;
+	}
+	
+	public String getForeignCurrencyQuote() {
+		return foreignCurrencyQuote;
+	}
+	public void setForeignCurrencyQuote(String foreignCurrencyQuote) {
+		this.foreignCurrencyQuote = foreignCurrencyQuote;
+	}
+	
+	public String getCustomerContact() {
+		return customerContact;
+	}
+	public void setCustomerContact(String customerContact) {
+		this.customerContact = customerContact;
+	}
+	
+	public BigDecimal getTransactionForeignAmount() {
+		return transactionForeignAmount;
+	}
+	public void setTransactionForeignAmount(BigDecimal transactionForeignAmount) {
+		this.transactionForeignAmount = transactionForeignAmount;
 	}
 		
 }

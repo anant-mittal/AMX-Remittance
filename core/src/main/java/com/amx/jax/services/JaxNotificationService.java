@@ -390,7 +390,7 @@ public class JaxNotificationService {
 				Email email = new Email();
 				email.setSubject(SERVICE_PROVIDER_RESPONSE);
 				email.addTo(emailid);
-				email.setITemplate(TemplatesMX.TRANSACTION_FAILURE);
+				email.setITemplate(TemplatesMX.HOMESEND_TRANSACTION_FAILAURE);
 				email.setHtml(true);
 				email.getModel().put(RESP_DATA_KEY, model);
 				sendEmail(email);
