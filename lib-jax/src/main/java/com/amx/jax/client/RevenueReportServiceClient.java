@@ -1,28 +1,20 @@
 package com.amx.jax.client;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.sql.Date;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.amx.jax.AppConfig;
-import com.amx.jax.IServiceProviderService;
+import com.amx.jax.IRevenuereportService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.configs.JaxMetaInfo;
@@ -33,8 +25,8 @@ import com.amx.jax.response.serviceprovider.ServiceProviderSummaryDTO;
 import com.amx.jax.rest.RestService;
 
 @Component
-public class ServiceProviderClient implements IServiceProviderService {
-	private static final Logger LOGGER = Logger.getLogger(ServiceProviderClient.class);
+public class RevenueReportServiceClient implements IRevenuereportService {
+	private static final Logger LOGGER = Logger.getLogger(RevenueReportServiceClient.class);
 	@Autowired
 	RestService restService;
 

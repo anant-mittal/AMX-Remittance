@@ -5,6 +5,7 @@ import java.math.RoundingMode;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -49,6 +50,8 @@ public class RemitRoutingManager {
 
 	private static final int MAX_DELIVERY_ATTEMPT_DAYS = 60;
 	private static final BigDecimal FROM_AMT_FRACTION = new BigDecimal(0.00000001);
+	
+	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd-MMM hh:mm a");
 
 	// TODO : Treasury Funding Time.
 	// private static final int KWT_TREASURY_FUNDING_TIME = 12;
@@ -257,7 +260,7 @@ public class RemitRoutingManager {
 	 */
 	public void computeTrnxRoutesAndDelivery(ExchangeRateAndRoutingRequest exchangeRateAndRoutingRequest) {
 
-		getTimezoneForCountry(exchangeRateAndRoutingRequest.getLocalCountryId());
+		String localTimezone = getTimezoneForCountry(exchangeRateAndRoutingRequest.getLocalCountryId());
 
 		List<TransientRoutingComputeDetails> routingDetailsList = transientDataCache.getRoutingMatrixData();
 
@@ -487,6 +490,8 @@ public class RemitRoutingManager {
 				completionDateForeign = estmdBeneDeliveryDetails.getCompletionDateForeign();
 			}
 
+			// finalDeliveryDetails.setStartTT(transientDataCache.getTrnxBeginTime());
+
 			finalDeliveryDetails.setProcessTimeAbsoluteInSeconds(processTimeAbs);
 			finalDeliveryDetails.setProcessTimeOperationalInSeconds(processTimeOps);
 			finalDeliveryDetails.setProcessTimeTotalInSeconds(processTimeTotal);
@@ -499,7 +504,11 @@ public class RemitRoutingManager {
 			finalDeliveryDetails.setStartDateForeign(startDateForeign);
 			finalDeliveryDetails.setCompletionDateForeign(completionDateForeign);
 
-			finalDeliveryDetails.setDeliveryDuration(getDeliveryDuration(processTimeTotal));
+			// Change the Duration String -- 12th-Aug-2019
+			finalDeliveryDetails.setDeliveryDuration(getDeliveryAtLocalTime(transientDataCache.getTrnxBeginTime(), finalCompletionTT, localTimezone,
+					processTimeTotal));
+
+			//finalDeliveryDetails.setDeliveryDuration(getDeliveryDuration(processTimeTotal));
 
 			finalDeliveryDetails.setCrossedMaxDeliveryDays(crossedMaxDeliveryDays);
 
@@ -853,6 +862,38 @@ public class RemitRoutingManager {
 		estimatedDeliveryDetails.setStartDateForeign(estimatedGoodBusinessDay);
 		estimatedDeliveryDetails.setCrossedMaxDeliveryDays(true);
 		return estimatedDeliveryDetails;
+
+	}
+
+	private String getDeliveryAtLocalTime(long startTT, long completionTT, String timezoneLocal, long durationInSecs) {
+
+		// Get the appropriate Timezone
+		ZoneId zoneId = ZoneId.of(timezoneLocal);
+
+		// Compute the Correct Zone Date and Time of Block Delivery BEGIN
+		Instant epochStartInstant = Instant.ofEpochMilli(startTT);
+		ZonedDateTime beginZonedDT = ZonedDateTime.ofInstant(epochStartInstant, zoneId);
+
+		// Compute the Correct Zone Date and Time of Block Delivery COMPLETE
+		Instant epochCompletionInstant = Instant.ofEpochMilli(completionTT);
+		ZonedDateTime completionZonedDT = ZonedDateTime.ofInstant(epochCompletionInstant, zoneId);
+
+		String deliveryAt;
+
+		if (beginZonedDT.getDayOfMonth() == completionZonedDT.getDayOfMonth()) {
+			deliveryAt = getDeliveryDuration(durationInSecs);
+		} else {
+			// Set Delivery at : dd-mmm HH:MM
+			
+			deliveryAt = completionZonedDT.format(DATE_FORMATTER);
+			
+			//deliveryAt = completionZonedDT.getDayOfMonth() + "-" + completionZonedDT.getMonth().name() + " "
+			//		+ completionZonedDT.getHour() + ":" + completionZonedDT.getMinute();
+		}
+
+		System.out.println(" Delivery At Local ==> " + deliveryAt);
+		
+		return deliveryAt;
 
 	}
 

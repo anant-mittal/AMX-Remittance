@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.amx.amxlib.constant.ApiEndpoint.ServiceProvider;
-import com.amx.jax.IServiceProviderService;
+import com.amx.jax.IRevenuereportService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.response.serviceprovider.ServiceProviderDefaultDateDTO;
@@ -24,7 +24,7 @@ import com.amx.jax.serviceprovider.service.ServiceProviderService;
 @RestController
 @RequestMapping(REVENUE_REPORT_ENDPOINT)
 @SuppressWarnings("rawtypes")
-public class ServiceProviderController implements IServiceProviderService{
+public class ServiceProviderController implements IRevenuereportService{
 
 	Logger logger = Logger.getLogger(ServiceProviderController.class);
 	

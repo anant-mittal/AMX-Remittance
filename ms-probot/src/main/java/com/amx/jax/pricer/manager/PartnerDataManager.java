@@ -125,6 +125,7 @@ public class PartnerDataManager {
 					"Invalid bank id Details : None Found " + productDetailsDTO.getBankId());
 		}else {
 			bankCode = bankMasterModel.getBankCode();
+			productDetailsDTO.setCountryId(bankMasterModel.getBankCountryId());
 		}
 		if(bankCode != null && bankCode.equalsIgnoreCase(SERVICE_PROVIDER_BANK_CODE.HOME.name())) {
 			Long servProvFeeStartTime = System.currentTimeMillis();
@@ -255,7 +256,7 @@ public class PartnerDataManager {
 
 				BankServiceRule bankServiceRule = fetchBankserviceRule(productDetailsDTO);
 				if(bankServiceRule != null) {
-					BankCharges bankCharges = fetchBankChargesServiceProvider(bankServiceRule.getBankServiceRuleId(), destinationAmt, PricerServiceConstants.BOTH_BANK_SERVICE_COMPONENT, PricerServiceConstants.CHARGES_TYPE);
+					BankCharges bankCharges = fetchBankChargesServiceProvider(bankServiceRule.getBankServiceRuleId(), destinationAmt, PricerServiceConstants.BOTH_BANK_SERVICE_COMPONENT, PricerServiceConstants.CHARGES_TYPE, productDetailsDTO.getBeneCountryId());
 					if(bankCharges != null) {
 						amiecCommissionAmt =  bankCharges.getChargeAmount();
 						exchangeRate = new BigDecimal(settlementExchangeRate.doubleValue()/hsForeignSettleCurrencyRate.doubleValue());
@@ -585,7 +586,7 @@ public class PartnerDataManager {
 
 	// fetch margin from foreign country , currency , remittance and delivery code data
 	public ServiceProviderRateView fetchMarginByProduct(ProductDetailsDTO productDetailsDTO) {
-		ServiceProviderRateView serviceProviderRateView = partnerServiceDao.fetchMarginByProduct(productDetailsDTO.getCountryId(), productDetailsDTO.getBankId(), productDetailsDTO.getCurrencyId(), productDetailsDTO.getRemittanceId(), productDetailsDTO.getDeliveryId());
+		ServiceProviderRateView serviceProviderRateView = partnerServiceDao.fetchMarginByProduct(productDetailsDTO.getBeneCountryId(), productDetailsDTO.getBankId(), productDetailsDTO.getCurrencyId(), productDetailsDTO.getRemittanceId(), productDetailsDTO.getDeliveryId());
 		return serviceProviderRateView;
 	}
 
@@ -611,9 +612,9 @@ public class PartnerDataManager {
 	}
 
 	// fetch bank Service Rule for charges
-	public BankCharges fetchBankChargesServiceProvider(BigDecimal bankServiceRuleId,BigDecimal fcAmount,BigDecimal chargesFor,String chargesType) {
+	public BankCharges fetchBankChargesServiceProvider(BigDecimal bankServiceRuleId,BigDecimal fcAmount,BigDecimal chargesFor,String chargesType,BigDecimal beneCountryId) {
 		BankCharges bankChargesDt = new BankCharges();
-		List<BankCharges> bankCharges = partnerServiceDao.fetchBankChargesDetails(bankServiceRuleId, fcAmount, chargesFor, chargesType);
+		List<BankCharges> bankCharges = partnerServiceDao.fetchBankChargesDetails(bankServiceRuleId, fcAmount, chargesFor, chargesType, beneCountryId);
 		if(bankCharges != null && bankCharges.size() != 0) {
 			if(bankCharges.size() == 1) {
 				bankChargesDt = bankCharges.get(0);
@@ -743,12 +744,19 @@ public class PartnerDataManager {
 		homeSendSrvcProviderInfo.setWholeSaleFxRate(quotationCall.getWhole_sale_fx_rate());
 		homeSendSrvcProviderInfo.setBeneficiaryDeduct(Boolean.FALSE);
 		homeSendSrvcProviderInfo.setTransactionMargin(marginAmount);
+		
+		LOGGER.warn("HomeSendSrvcProviderInfo orignal expiry time  : " + JsonUtil.toJson(homeSendSrvcProviderInfo));
 
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTimeInMillis(servProvFeeStartTime);
-		homeSendSrvcProviderInfo.setOfferStartDate(calendar);
+		Calendar startcalendar = Calendar.getInstance();
+		startcalendar.setTimeInMillis(servProvFeeStartTime);
+		homeSendSrvcProviderInfo.setOfferStartDate(startcalendar);
+		
+		Calendar endcalendar = Calendar.getInstance();
+		endcalendar.setTimeInMillis(servProvFeeStartTime);
+		endcalendar.add(Calendar.MINUTE, 5);
+		homeSendSrvcProviderInfo.setOfferExpirationDate(endcalendar);
 
-		LOGGER.warn("HomeSendSrvcProviderInfo : " + JsonUtil.toJson(homeSendSrvcProviderInfo));
+		LOGGER.warn("HomeSendSrvcProviderInfo fixed : " + JsonUtil.toJson(homeSendSrvcProviderInfo));
 
 		return homeSendSrvcProviderInfo;
 	}
@@ -757,7 +765,7 @@ public class PartnerDataManager {
 
 		ProductDetailsDTO productDetailsDTO = new ProductDetailsDTO();
 
-		productDetailsDTO.setCountryId(srvPrvFeeInqReqDTO.getDestinationCountryId());
+		productDetailsDTO.setBeneCountryId(srvPrvFeeInqReqDTO.getDestinationCountryId());
 		productDetailsDTO.setCurrencyId(srvPrvFeeInqReqDTO.getForeignCurrencyId());
 
 		if(srvPrvFeeInqReqDTO.getRoutingBankDetails() != null) {
