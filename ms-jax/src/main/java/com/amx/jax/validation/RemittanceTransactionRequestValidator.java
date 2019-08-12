@@ -27,6 +27,7 @@ import com.amx.jax.constants.JaxChannel;
 import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.CountryMaster;
+import com.amx.jax.dbmodel.PurposeTrnxAmicDesc;
 import com.amx.jax.dbmodel.remittance.AdditionalBankDetailsViewx;
 import com.amx.jax.dbmodel.remittance.AdditionalBankRuleAmiec;
 import com.amx.jax.dbmodel.remittance.AdditionalBankRuleMap;
@@ -43,6 +44,7 @@ import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel
 import com.amx.jax.repository.IAdditionalBankDetailsDao;
 import com.amx.jax.repository.IAdditionalBankRuleMapDao;
 import com.amx.jax.repository.IAdditionalDataDisplayDao;
+import com.amx.jax.repository.IPurposeTrnxAmicDescRepository;
 import com.amx.jax.services.JaxFieldService;
 import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
@@ -69,6 +71,8 @@ public class RemittanceTransactionRequestValidator {
 	
 	@Autowired
 	BranchRemittanceManager branchRemitManager;
+	@Autowired
+	IPurposeTrnxAmicDescRepository purposeTrnxAmicDescRepository;
 	
 	
 	
@@ -95,7 +99,7 @@ public class RemittanceTransactionRequestValidator {
 		} else {
 			validateFlexFieldValues(requestFlexFields);
 		}
-		requestFlexFields.put("INDIC1",new FlexFieldDto(request.getAdditionalBankRuleFiledId(), request.getSrlId(), null));
+		requestFlexFields.put("INDIC1",new FlexFieldDto(request.getAdditionalBankRuleFiledId(), request.getSrlId(), null, null));
 		BigDecimal applicationCountryId = (BigDecimal) remitApplParametersMap.get("P_APPLICATION_COUNTRY_ID");
 		BigDecimal routingCountryId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_COUNTRY_ID");
 		BigDecimal remittanceModeId = (BigDecimal) remitApplParametersMap.get("P_REMITTANCE_MODE_ID");
@@ -131,6 +135,7 @@ public class RemittanceTransactionRequestValidator {
 			if (FlexFieldBehaviour.PRE_DEFINED.toString().equals(fieldBehaviour)) {
 				field.setType(FlexFieldBehaviour.PRE_DEFINED.getFieldType().toString());
 				List<JaxFieldValueDto> amiecValues = getAmiecValues(bankRule.getFlexField(), routingCountryId,deliveryModeId, remittanceModeId, routingBankId, foreignCurrencyId,bankRule.getAdditionalBankRuleId());
+			
 				field.setPossibleValues(amiecValues);
 			} else {
 				field.setType(FlexFieldBehaviour.USER_ENTERABLE.getFieldType().toString());
@@ -139,7 +144,7 @@ public class RemittanceTransactionRequestValidator {
 			if (flexFieldValueInRequest == null) {
 				requiredFlexFields.add(dto);
 			} else {
-				if (field.getPossibleValues() != null  && hasFieldValueChanged(field, flexFieldValueInRequest)) {
+				if (field.getPossibleValues() != null  && hasFieldValueChanged(field, flexFieldValueInRequest)) {                                                                                                                                                                                                                                                                                                                                     
 					requiredFlexFields.add(dto);
 				}
 			}
@@ -179,6 +184,7 @@ public class RemittanceTransactionRequestValidator {
 		}
 
 	}
+	
 
 	/**
 	 * process flex fields for further modification
@@ -263,10 +269,14 @@ public class RemittanceTransactionRequestValidator {
 			BigDecimal additionalBankRuleFiledId) {
 		List<AdditionalBankDetailsViewx> addtionalBankDetails = additionalBankDetailsDao.getAdditionalBankDetails(currencyId, bankId, remittanceModeId, deleveryModeId, countryId, flexiField);
 		return addtionalBankDetails.stream().map(x -> {
-			FlexFieldDto ffDto = new FlexFieldDto(additionalBankRuleFiledId, x.getSrlId(), x.getAmieceDescription());
+			FlexFieldDto ffDto = new FlexFieldDto(additionalBankRuleFiledId, x.getSrlId(), x.getAmieceDescription(), x.getAmieceDescription());
+			
+			PurposeTrnxAmicDesc purposeTrnxAmicDescs = purposeTrnxAmicDescRepository.fetchAllAmicDataByLanguageId(x.getAmiecCode().toString(), metaData.getLanguageId());
+						
 			JaxFieldValueDto dto = new JaxFieldValueDto();
 			dto.setId(ffDto.getSrlId());
 			dto.setOptLable(ffDto.getAmieceDescription());
+			dto.setLocalName(purposeTrnxAmicDescs.getLocalFulldesc());
 			dto.setValue(ffDto);
 			return dto;
 		}).collect(Collectors.toList());
@@ -277,11 +287,15 @@ public class RemittanceTransactionRequestValidator {
 		List<AdditionalExchAmiecDto> purposeOfTrnxList =  branchRemitManager.getPurposeOfTrnx(beneRelaId,routingCountryId);
 		if(purposeOfTrnxList !=null && !purposeOfTrnxList.isEmpty()) {
 			return purposeOfTrnxList.stream().map(x -> {
-				FlexFieldDto ffDto = new FlexFieldDto(x.getAdditionalBankFieldId(), x.getResourceId(), x.getResourceName());
+				FlexFieldDto ffDto = new FlexFieldDto(x.getAdditionalBankFieldId(), x.getResourceId(), x.getResourceName(), x.getLocalName());
+				
+				PurposeTrnxAmicDesc purposeTrnxAmicDescs = purposeTrnxAmicDescRepository.fetchAllAmicDataByLanguageId(x.getAdditionalBankFieldId().toString(), metaData.getLanguageId());
+				
 				JaxFieldValueDto dto = new JaxFieldValueDto();
 				dto.setId(ffDto.getSrlId());
 				dto.setOptLable(ffDto.getAmieceDescription());
 				dto.setValue(ffDto);
+				dto.setLocalName(purposeTrnxAmicDescs.getLocalFulldesc());
 				return dto;
 			}).collect(Collectors.toList());
 		}

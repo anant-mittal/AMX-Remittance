@@ -3,9 +3,11 @@ package com.amx.jax.model.response.remittance;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
+import com.amx.jax.model.ResourceDTO;
 
 
-public class FlexFieldDto implements Serializable {
+
+public class FlexFieldDto extends ResourceDTO{
 
 	/**
 	 * 
@@ -14,12 +16,14 @@ public class FlexFieldDto implements Serializable {
 	private BigDecimal additionalBankRuleFiledId;
 	private BigDecimal srlId;
 	private String amieceDescription;
+	private String localName;
 
-	public FlexFieldDto(BigDecimal additionalBankRuleFiledId, BigDecimal srlId, String amieceDescription) {
+	public FlexFieldDto(BigDecimal additionalBankRuleFiledId, BigDecimal srlId, String amieceDescription,String localName) {
 		super();
 		this.additionalBankRuleFiledId = additionalBankRuleFiledId;
 		this.srlId = srlId;
 		this.amieceDescription = amieceDescription;
+		this.localName = localName;
 	}
 
 	public FlexFieldDto(String amieceDescription) {
@@ -80,10 +84,26 @@ public class FlexFieldDto implements Serializable {
 			return false;
 		return true;
 	}
+	
+	
+
+	public String getLocalName() {
+		return localName;
+	}
+
+	public void setLocalName(String localName) {
+		this.localName = localName;
+	}
 
 	public FlexFieldDto() {
 		super();
 		// TODO Auto-generated constructor stub
+	}
+	
+	@Override
+	public String getResourceLocalName() {
+		return this.localName;
+
 	}
 
 }

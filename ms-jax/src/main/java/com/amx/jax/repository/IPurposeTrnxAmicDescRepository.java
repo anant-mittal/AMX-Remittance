@@ -13,4 +13,6 @@ public interface IPurposeTrnxAmicDescRepository extends CrudRepository<PurposeTr
 	@Query(value = "SELECT * FROM JAX_PURPOSE_TRNX_AMIEC_DESC WHERE AMIEC_CODE in ?1 AND LANGUAGE_ID = ?2 ", nativeQuery = true)
 	public List<PurposeTrnxAmicDesc> fetchAllAmiecDataByLanguageId(List<String> amiecCode, BigDecimal languageId);
 
+	@Query(value = "SELECT * FROM JAX_PURPOSE_TRNX_AMIEC_DESC WHERE AMIEC_CODE in ?1 AND LANGUAGE_ID = ?2 ", nativeQuery = true)
+	public PurposeTrnxAmicDesc fetchAllAmicDataByLanguageId(String amiecCode, BigDecimal languageId);
 }
