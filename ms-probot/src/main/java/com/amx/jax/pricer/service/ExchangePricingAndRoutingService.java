@@ -253,12 +253,14 @@ public class ExchangePricingAndRoutingService {
 		// Get Non-Service-Provider Core Routing Bank Ids.
 		List<BigDecimal> routingBankIds = remitRoutingManager.getRoutingBankIds(routingMatrix);
 
-		exchangeRateAndRoutingRequest.setRoutingBankIds(routingBankIds);
+		if (routingBankIds != null && !routingBankIds.isEmpty()) {
+			exchangeRateAndRoutingRequest.setRoutingBankIds(routingBankIds);
 
-		exchangeRateAndRoutingRequest.setPricingLevel(PRICE_BY.ROUTING_BANK);
+			exchangeRateAndRoutingRequest.setPricingLevel(PRICE_BY.ROUTING_BANK);
 
-		// Get The Rates for Routing Banks.
-		remitPriceManager.computeBaseSellRates(exchangeRateAndRoutingRequest);
+			// Get The Rates for Routing Banks.
+			remitPriceManager.computeBaseSellRates(exchangeRateAndRoutingRequest);
+		}
 
 		SrvPrvFeeInqResDTO partnerResp = null;
 
