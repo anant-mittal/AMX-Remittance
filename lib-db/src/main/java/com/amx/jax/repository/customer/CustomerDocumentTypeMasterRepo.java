@@ -12,7 +12,7 @@ public interface CustomerDocumentTypeMasterRepo extends CrudRepository<CustomerD
 
 	CustomerDocumentTypeMaster findByDocumentCategoryAndDocumentType(String docCategory, String docType);
 
-	@Query(value = "SELECT DISTINCT(DOC_CATEGORY) FROM JAX_CUSTOMER_DOC_TYPE_MASTER", nativeQuery = true)
+	@Query(value = "SELECT DISTINCT(DOC_CATEGORY) FROM JAX_CUSTOMER_DOC_TYPE_MASTER WHERE RENDER='Y'", nativeQuery = true)
 	public List<String> getDistinctDocumentCategory();
 
 	public List<CustomerDocumentTypeMaster> findByDocumentCategory(String documentCategory);
