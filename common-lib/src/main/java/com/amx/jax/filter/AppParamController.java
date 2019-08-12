@@ -2,6 +2,7 @@ package com.amx.jax.filter;
 
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.jasypt.util.text.BasicTextEncryptor;
@@ -20,6 +21,7 @@ import com.amx.jax.AppContextUtil;
 import com.amx.jax.AppParam;
 import com.amx.jax.AppTenantConfig;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.def.IndicatorListner;
 import com.amx.jax.exception.AmxApiError;
 import com.amx.jax.http.ApiRequest;
 import com.amx.jax.http.CommonHttpRequest;
@@ -50,6 +52,9 @@ public class AppParamController {
 	@Autowired
 	AppTenantConfig appTenantConfig;
 
+	@Autowired(required = false)
+	List<IndicatorListner> listners;
+
 	@ApiRequest(type = RequestType.NO_TRACK_PING)
 	@RequestMapping(value = PARAM_URL, method = RequestMethod.GET)
 	public AppParam[] geoLocation(@RequestParam(required = false) AppParam id) {
@@ -66,6 +71,11 @@ public class AppParamController {
 		Map<String, Object> map = new HashMap<String, Object>();
 		for (AppParam eachAppParam : AppParam.values()) {
 			map.put(eachAppParam.toString(), eachAppParam);
+		}
+		if (!ArgUtil.isEmpty(listners)) {
+			for (IndicatorListner eachListner : listners) {
+				map.putAll(eachListner.getIndicators());
+			}
 		}
 		return map;
 	}
