@@ -884,14 +884,8 @@ public class RemitRoutingManager {
 			deliveryAt = getDeliveryDuration(durationInSecs);
 		} else {
 			// Set Delivery at : dd-mmm HH:MM
-			
 			deliveryAt = completionZonedDT.format(DATE_FORMATTER);
-			
-			//deliveryAt = completionZonedDT.getDayOfMonth() + "-" + completionZonedDT.getMonth().name() + " "
-			//		+ completionZonedDT.getHour() + ":" + completionZonedDT.getMinute();
 		}
-
-		System.out.println(" Delivery At Local ==> " + deliveryAt);
 		
 		return deliveryAt;
 
