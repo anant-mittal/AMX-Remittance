@@ -39,7 +39,7 @@ public class ExchRateAndRoutingTransientDataCache {
 
 	private CUSTOMER_CATEGORY customerCategory;
 
-	//1
+	// 1
 	private List<ExchangeRateDetails> sellRateDetails = new ArrayList<>();
 
 	private Map<BigDecimal, BankDetailsDTO> bankDetails;
@@ -184,6 +184,10 @@ public class ExchRateAndRoutingTransientDataCache {
 	 * @return
 	 */
 	public BigDecimal getAvgRateGLCForBank(BigDecimal bankId) {
+
+		if (this.bankGlcBalMap == null) {
+			return null;
+		}
 
 		BankGLCData bankGLCData = this.bankGlcBalMap.get(bankId);
 
