@@ -37,6 +37,7 @@ import com.amx.jax.partner.dto.RoutingBankDetails;
 import com.amx.jax.partner.dto.SrvPrvFeeInqReqDTO;
 import com.amx.jax.partner.dto.SrvPrvFeeInqResDTO;
 import com.amx.jax.pricer.dao.PartnerServiceDao;
+import com.amx.jax.pricer.dbmodel.AuthenticationLimitCheckView;
 import com.amx.jax.pricer.dbmodel.BankCharges;
 import com.amx.jax.pricer.dbmodel.BankMasterModel;
 import com.amx.jax.pricer.dbmodel.BankServiceRule;
@@ -51,6 +52,7 @@ import com.amx.jax.pricer.dto.DiscountMgmtReqDTO;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
 import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
+import com.amx.jax.pricer.repository.AuthenticationLimitCheckRepository;
 import com.amx.jax.pricer.repository.BankMasterRepository;
 import com.amx.jax.pricer.repository.IPaymentModeLimitsRepository;
 import com.amx.jax.pricer.repository.IServiceProviderXMLRepository;
@@ -92,6 +94,9 @@ public class PartnerDataManager {
 	
 	@Autowired
 	IPaymentModeLimitsRepository paymentModeLimitsRepository;
+	
+	@Autowired
+	AuthenticationLimitCheckRepository authenticationLimitCheckRepository;
 
 	// validate get quotation
 	public void validateGetQuotation(SrvPrvFeeInqReqDTO srvPrvFeeInqReqDTO) {
@@ -751,10 +756,18 @@ public class PartnerDataManager {
 		startcalendar.setTimeInMillis(servProvFeeStartTime);
 		homeSendSrvcProviderInfo.setOfferStartDate(startcalendar);
 		
-		Calendar endcalendar = Calendar.getInstance();
-		endcalendar.setTimeInMillis(servProvFeeStartTime);
-		endcalendar.add(Calendar.MINUTE, 5);
-		homeSendSrvcProviderInfo.setOfferExpirationDate(endcalendar);
+		AuthenticationLimitCheckView authHSLimit = authenticationLimitCheckRepository.getHomeSendTimerLimit();
+		if(authHSLimit != null && authHSLimit.getAuthLimit() != null && authHSLimit.getAuthLimit().compareTo(BigDecimal.ZERO) != 0) {
+			Calendar endcalendar = Calendar.getInstance();
+			endcalendar.setTimeInMillis(servProvFeeStartTime);
+			endcalendar.add(Calendar.MINUTE, authHSLimit.getAuthLimit().intValue());
+			homeSendSrvcProviderInfo.setOfferExpirationDate(endcalendar);
+		}else {
+			Calendar endcalendar = Calendar.getInstance();
+			endcalendar.setTimeInMillis(servProvFeeStartTime);
+			endcalendar.add(Calendar.MINUTE, 5);
+			homeSendSrvcProviderInfo.setOfferExpirationDate(endcalendar);
+		}
 
 		LOGGER.warn("HomeSendSrvcProviderInfo fixed : " + JsonUtil.toJson(homeSendSrvcProviderInfo));
 
