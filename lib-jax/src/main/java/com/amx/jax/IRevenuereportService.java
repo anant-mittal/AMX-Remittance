@@ -10,7 +10,7 @@ import com.amx.jax.response.serviceprovider.ServiceProviderDefaultDateDTO;
 import com.amx.jax.response.serviceprovider.ServiceProviderPartnerDTO;
 import com.amx.jax.response.serviceprovider.ServiceProviderSummaryDTO;
 
-public interface IServiceProviderService extends IJaxService {
+public interface IRevenuereportService extends IJaxService {
 	
 	public static class ServiceProviderApiEndpoints {
 		public static final String PREFIX = "/revenue-report";
