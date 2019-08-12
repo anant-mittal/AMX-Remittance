@@ -492,7 +492,7 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 	public void sendNotificationTemplate(BeneCreateDetailsDTO wrapper, PersonInfo personInfo, BigDecimal custId) {
 		try {
 
-			logger.info("Sending beneCreationEmail  to customer : ");
+			logger.debug("Sending beneCreationEmail  to customer : ");
 			// Send Email
 			Email beneCreationEmail = new Email();
 			beneCreationEmail.setSubject("New Beneficiary Addition Success");
