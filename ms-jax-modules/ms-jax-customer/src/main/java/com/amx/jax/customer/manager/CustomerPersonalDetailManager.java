@@ -52,6 +52,7 @@ public class CustomerPersonalDetailManager {
 
 	@Transactional
 	public void updateCustomerPersonalDetail(Customer customer, UpdateCustomerPersonalDetailRequest req) {
+		log.debug("in updateCustomerPersonalDetail");
 		if (req.getDateOfBirth() != null) {
 			customer.setDateOfBirth(req.getDateOfBirth());
 		}

@@ -70,9 +70,11 @@ public class CustomerKycManager {
 	BizcomponentDao bizcomponentDao;
 	@Autowired
 	CustomerDao customerDao;
+	
+	
 
 	public void uploadAndCreateKyc(Customer customer, CustomerDocumentUploadReferenceTemp upload) throws ParseException {
-
+		log.debug("in uploadAndCreateKyc");
 		createIdProofForActivateCustomers(customer, upload);
 		switch (upload.getScanIndic()) {
 		case DB_SCAN:
@@ -84,6 +86,7 @@ public class CustomerKycManager {
 	}
 
 	private void createIdProofForActivateCustomers(Customer customer, CustomerDocumentUploadReferenceTemp upload) {
+		log.debug("in createIdProofForActivateCustomers");
 
 		if (!ConstantDocument.Yes.equals(customer.getIsActive())) {
 			return;
@@ -123,6 +126,7 @@ public class CustomerKycManager {
 	}
 
 	private void uploadDbScan(Customer customer, CustomerDocumentUploadReferenceTemp upload) throws ParseException {
+		log.debug("in uploadDbScan");
 		DmsDocumentBlobTemparory dmsDocumentBlobTemparory = new DmsDocumentBlobTemparory();
 		dmsDocumentBlobTemparory.setCreatedBy(jaxDBService.getCreatedOrUpdatedBy());
 		dmsDocumentBlobTemparory.setCreatedDate(new Date());

@@ -91,4 +91,9 @@ public class CustomerDocMasterManager {
 		dto.setValidationRegex(validationdtos);
 		return dto;
 	}
+	
+	public boolean hasKycDocTypeMaster(List<CustomerDocumentTypeMaster> docTypeMasters, BigDecimal identityTypeId) {
+		CustomerDocumentTypeMaster kycDocTypeMaster = getKycDocTypeMaster(identityTypeId);
+		return docTypeMasters.stream().anyMatch(i -> i.getId().equals(kycDocTypeMaster.getId()));
+	}
 }

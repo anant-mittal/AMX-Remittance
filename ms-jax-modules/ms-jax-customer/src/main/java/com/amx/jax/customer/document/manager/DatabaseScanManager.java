@@ -90,6 +90,7 @@ public class DatabaseScanManager implements DocumentScanManager {
 	 */
 	@Transactional
 	public BigDecimal uploadKycDocument(UploadCustomerKycRequest uploadCustomerKycRequest) {
+		log.debug("in uploadKycDocument");
 		CustomerDocumentTypeMaster docTypeMaster = customerDocMasterManager.getKycDocTypeMaster(uploadCustomerKycRequest.getIdentityTypeId());
 		customerDocumentUploadManager.findAndDeleteExistingUploadData(uploadCustomerKycRequest.getIdentityInt(),
 				uploadCustomerKycRequest.getIdentityTypeId(), docTypeMaster);

@@ -1,5 +1,7 @@
 package com.amx.jax.customer.manager;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -21,6 +23,10 @@ public class CustomerEmployementManager {
 	ArticleDao articleDao;
 	@Autowired
 	BizcomponentDao bizcomponentDao;
+	
+	
+	private static final Logger log = LoggerFactory.getLogger(CustomerEmployementManager.class);
+
 
 	public CustomerEmploymentDetails createCustomerEmploymentDetail(Customer customer) {
 		// --- Customer Employment Data
@@ -48,6 +54,7 @@ public class CustomerEmployementManager {
 
 	public void updateCustomerEmploymentInfo(Customer customer, UpdateCustomerEmploymentDetailsReq req) {
 
+		log.debug("in updateCustomerEmploymentInfo");
 		EmployeeDetails employeeModel = customerEmployeeDetailsRepository.getCustomerEmploymentData(customer);
 		if (employeeModel == null) {
 			throw new GlobaLException("Employment record not found for customer");

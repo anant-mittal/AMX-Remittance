@@ -102,7 +102,7 @@ public class CustomerManagementController implements ICustomerManagementControll
 		List<CustomerDocumentTypeMaster> customerTempUploads = customerDocumentUploadManager.fetchCustomerUploadedDocMasterList();
 		customerManagementManager.updateCustomer(updateCustomerInfoRequest);
 		notificationTaskService.updateDocUploadNotificationTask(customerTempUploads);
-		customerManagementManager.moveCustomerDataUsingProcedures();
+		customerManagementManager.moveCustomerDataUsingProcedures(customerTempUploads);
 		return AmxApiResponse.build();
 	}
 

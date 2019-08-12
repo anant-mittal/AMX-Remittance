@@ -126,4 +126,11 @@ public class CustomerDocumentUploadReferenceTemp {
 		this.docFormat = docFormat;
 	}
 
+	@Override
+	public String toString() {
+		return "CustomerDocumentUploadReferenceTemp [scanIndic=" + scanIndic + ", documentEraScanRef=" + documentEraScanRef + ", identityInt="
+				+ identityInt + ", identityTypeId=" + identityTypeId + ", customerDocumentTypeMaster=" + customerDocumentTypeMaster + ", docFormat="
+				+ docFormat + "]";
+	}
+
 }

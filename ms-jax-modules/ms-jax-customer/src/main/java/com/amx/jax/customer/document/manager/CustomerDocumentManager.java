@@ -139,6 +139,7 @@ public class CustomerDocumentManager {
 		IdentityTypeMaster identityMaster = customerIdProofManager.getIdentityTypeMaster(customerIdProof.getIdentityTypeId(), ConstantDocument.Yes);
 		customerDocumentImage.setDocumentType(identityMaster.getIdentityType());
 		customerDocumentImage.setUploadedDate(customerIdProof.getCreationDate());
+		customerDocumentImage.setExpiryDate(customerIdProof.getIdentityExpiryDate());
 	}
 
 	public UploadCustomerKycResponse uploadKycDocument(UploadCustomerKycRequest uploadCustomerKycRequest) {
@@ -150,6 +151,7 @@ public class CustomerDocumentManager {
 	}
 
 	public void addCustomerDocument(BigDecimal customerId) throws ParseException {
+		log.debug("in addCustomerDocument");
 		Customer customer = userService.getCustById(customerId);
 		List<CustomerDocumentUploadReferenceTemp> uploads = customerDocumentUploadManager.getCustomerUploads(customer.getIdentityInt(),
 				customer.getIdentityTypeId());
@@ -175,7 +177,6 @@ public class CustomerDocumentManager {
 	}
 
 	public void moveCustomerDBDocuments(BigDecimal customerId) {
-		Customer customer = userService.getCustById(customerId);
 		List<CustomerDocumentUploadReference> customerUploadDocuments = getInProcessCustomerUploads(customerId);
 		if (CollectionUtils.isEmpty(customerUploadDocuments)) {
 			return;
@@ -188,14 +189,10 @@ public class CustomerDocumentManager {
 			i.setStatus(ConstantDocument.Yes);
 		});
 		saveCustomerDocumentUploadsRefs(customerUploadDocuments);
-		try {
-			moveCustomerDBKycDocuments(customer);
-		} catch (Exception e) {
-			log.error("error occured in moving kyc docs {} ", e.getMessage());
-		}
 	}
 
 	public void moveCustomerDBKycDocuments(Customer customer) {
+		log.info("moving customer db kyc docs");
 		DmsApplMapping dmsMapping = customerIdProofManager.getDmsMapping(customer);
 		if (dmsMapping != null) {
 			databaseImageScanManager.copyBlobDataFromJava(dmsMapping.getDocBlobId(), dmsMapping.getFinancialYear());
@@ -216,6 +213,7 @@ public class CustomerDocumentManager {
 	}
 
 	public void checkAndActivateCustomer(List<CustomerDocumentUploadReferenceTemp> uploads, BigDecimal customerId) {
+		log.debug("in checkAndActivateCustomer");
 		Customer customer = userService.getCustById(customerId);
 		CustomerDocumentTypeMaster kycDocTypeMaster = customerDocMasterManager.getKycDocTypeMaster(customer.getIdentityTypeId());
 		Optional<CustomerDocumentUploadReferenceTemp> kycUpload = uploads.stream()

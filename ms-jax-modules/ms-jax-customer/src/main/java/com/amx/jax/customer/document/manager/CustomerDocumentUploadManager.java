@@ -67,7 +67,7 @@ public class CustomerDocumentUploadManager {
 		CustomerDocumentUploadReferenceTemp existing = customerDocumentUploadReferenceTempRepo
 				.findByidentityIntAndIdentityTypeIdAndCustomerDocumentTypeMaster(identityInt, identityType, customerDocumentTypeMaster);
 		if (existing != null) {
-			log.debug("found exising uploaded record {}", log);
+			log.debug("found exising uploaded record {}", existing);
 			customerDocumentUploadReferenceTempRepo.delete(existing);
 		}
 	}
@@ -77,7 +77,7 @@ public class CustomerDocumentUploadManager {
 		List<CustomerDocumentUploadReferenceTemp> existing = customerDocumentUploadReferenceTempRepo.findByidentityIntAndIdentityTypeId(identityInt,
 				identityType);
 		if (existing != null) {
-			log.debug("found exising uploaded record {}", log);
+			log.debug("found exising uploaded record {}", existing);
 			customerDocumentUploadReferenceTempRepo.delete(existing);
 		}
 	}
@@ -109,6 +109,7 @@ public class CustomerDocumentUploadManager {
 	}
 
 	public void uploadDocument(Customer customer, CustomerDocumentUploadReferenceTemp upload) throws ParseException {
+		log.debug("in uploadDocument");
 		switch (upload.getScanIndic()) {
 		case DB_SCAN:
 			uploadDbDocument(customer, upload);
@@ -119,6 +120,7 @@ public class CustomerDocumentUploadManager {
 	}
 
 	private void uploadDbDocument(Customer customer, CustomerDocumentUploadReferenceTemp upload) throws ParseException {
+		log.debug("in uploadDbDocument");
 		DmsDocumentBlobTemparory dmsDocumentBlobTemparory = new DmsDocumentBlobTemparory();
 		dmsDocumentBlobTemparory.setCreatedBy(jaxDBService.getCreatedOrUpdatedBy());
 		dmsDocumentBlobTemparory.setCreatedDate(new Date());
@@ -137,6 +139,7 @@ public class CustomerDocumentUploadManager {
 	}
 
 	private void createDocumentUploadReference(CustomerDocumentUploadReferenceTemp upload, BigDecimal docBlobId, BigDecimal docFinYear) {
+		log.debug("in createDocumentUploadReference");
 		List<CustomerDocumentUploadReference> existingUploads = customerDocumentUploadReferenceRepo
 				.findByCustomerDocumentTypeMasterAndCustomerId(upload.getCustomerDocumentTypeMaster(), metaData.getCustomerId());
 		existingUploads.forEach(i -> i.setStatus(ConstantDocument.No));

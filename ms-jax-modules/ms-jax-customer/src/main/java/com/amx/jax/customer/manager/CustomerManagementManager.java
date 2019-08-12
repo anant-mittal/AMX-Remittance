@@ -20,6 +20,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxApiFlow;
 import com.amx.jax.constants.CustomerRegistrationType;
+import com.amx.jax.customer.document.manager.CustomerDocMasterManager;
 import com.amx.jax.customer.document.manager.CustomerDocumentManager;
 import com.amx.jax.customer.service.OffsitCustRegService;
 import com.amx.jax.customer.validation.CustomerManagementValidation;
@@ -28,6 +29,7 @@ import com.amx.jax.dbmodel.CustomerCategoryDiscountModel;
 import com.amx.jax.dbmodel.CustomerExtendedModel;
 import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
+import com.amx.jax.dbmodel.customer.CustomerDocumentTypeMaster;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.ResourceDTO;
@@ -85,6 +87,8 @@ public class CustomerManagementManager {
 	CustomerUpdateManager customerUpdateManager;
 	@Autowired
 	CustomerIdProofDao customerIdProofDao;
+	@Autowired
+	CustomerDocMasterManager customerDocMasterManager;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CustomerManagementManager.class);
 
@@ -249,13 +253,21 @@ public class CustomerManagementManager {
 
 	}
 
-	public void moveCustomerDataUsingProcedures(BigDecimal customerId) {
+	public void moveCustomerDataUsingProcedures(BigDecimal customerId, List<CustomerDocumentTypeMaster> customerTempUploads) {
+		Customer customer = userService.getCustById(customerId);
 		customerDocumentManager.moveCustomerDBDocuments(customerId);
+		if (customerDocMasterManager.hasKycDocTypeMaster(customerTempUploads, customer.getIdentityTypeId())) {
+			try {
+				customerDocumentManager.moveCustomerDBKycDocuments(customer);
+			} catch (Exception e) {
+				LOGGER.error("error occured in moving kyc docs {} ", e.getMessage());
+			}
+		}
 		custDao.callProcedurePopulateCusmas(customerId);
 	}
 
-	public void moveCustomerDataUsingProcedures() {
-		moveCustomerDataUsingProcedures(metaData.getCustomerId());
+	public void moveCustomerDataUsingProcedures(List<CustomerDocumentTypeMaster> customerTempUploads) {
+		moveCustomerDataUsingProcedures(metaData.getCustomerId(), customerTempUploads);
 	}
 
 	@Transactional

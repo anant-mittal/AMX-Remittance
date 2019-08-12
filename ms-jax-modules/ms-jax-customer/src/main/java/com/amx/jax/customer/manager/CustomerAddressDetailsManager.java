@@ -1,5 +1,7 @@
 package com.amx.jax.customer.manager;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -26,8 +28,13 @@ public class CustomerAddressDetailsManager {
 	MetaData metaData;
 	@Autowired
 	JaxDBService jaxDbservice;
+	
+	
+	private static final Logger log = LoggerFactory.getLogger(CustomerAddressDetailsManager.class);
+
 
 	public void updateCustomerAddressDetail(Customer customer, UpdateCustomerAddressDetailRequest req) {
+		log.debug("in updateCustomerAddressDetail");
 		if (req.getContactType() == null) {
 			throw new GlobalException("null contact type passed");
 		}

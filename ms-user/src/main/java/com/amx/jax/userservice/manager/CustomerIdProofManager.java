@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -58,6 +60,10 @@ public class CustomerIdProofManager {
 	IdentityTypeMasterRepository identityTypeMasterRepository;
 	@Autowired
 	DmsApplMappingRepository dmsApplMappingRepository;
+	
+	
+	private static final Logger log = LoggerFactory.getLogger(CustomerIdProofManager.class);
+
 
 	/**
 	 * deletes previous active id proof and activate new one
@@ -175,6 +181,7 @@ public class CustomerIdProofManager {
 	}
 
 	public void activateCustomerPendingCompliance(Customer customer, Date identityExpiryDate) {
+		log.debug("in activateCustomerPendingCompliance");
 		List<CustomerIdProof> compliancePendingRecords = customerIdProofDao
 				.getCompliancePendingCustomerIdProof(customer.getCustomerId(), customer.getIdentityTypeId());
 		if (CollectionUtils.isNotEmpty(compliancePendingRecords)) {

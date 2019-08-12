@@ -99,4 +99,10 @@ public class CustomerDocumentTypeMaster {
 			return false;
 		return true;
 	}
+
+	@Override
+	public String toString() {
+		return "CustomerDocumentTypeMaster [id=" + id + ", documentCategory=" + documentCategory + ", documentType=" + documentType + ", isActive="
+				+ isActive + "]";
+	}
 }
