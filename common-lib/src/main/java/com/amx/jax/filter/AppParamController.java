@@ -39,6 +39,7 @@ public class AppParamController {
 	public static final String PUB_AMX_PREFIX = "/pub/amx";
 	public static final String PUBG_AMX_PREFIX = "/pubg/";
 	public static final String PARAM_URL = PUB_AMX_PREFIX + "/params";
+	public static final String METRIC_URL = PUB_AMX_PREFIX + "/metric";
 
 	@Autowired
 	CommonHttpRequest commonHttpRequest;
@@ -57,6 +58,16 @@ public class AppParamController {
 			LOGGER.info("App Param {} changed to {}", id, id.isEnabled());
 		}
 		return AppParam.values();
+	}
+
+	@ApiRequest(type = RequestType.NO_TRACK_PING)
+	@RequestMapping(value = METRIC_URL, method = RequestMethod.GET)
+	public Map<String, Object> metric() {
+		Map<String, Object> map = new HashMap<String, Object>();
+		for (AppParam eachAppParam : AppParam.values()) {
+			map.put(eachAppParam.toString(), eachAppParam);
+		}
+		return map;
 	}
 
 	@Autowired
