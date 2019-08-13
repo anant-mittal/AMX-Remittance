@@ -257,11 +257,7 @@ public class CustomerManagementManager {
 		Customer customer = userService.getCustById(customerId);
 		customerDocumentManager.moveCustomerDBDocuments(customerId);
 		if (customerDocMasterManager.hasKycDocTypeMaster(customerTempUploads, customer.getIdentityTypeId())) {
-			try {
-				customerDocumentManager.moveCustomerDBKycDocuments(customer);
-			} catch (Exception e) {
-				LOGGER.error("error occured in moving kyc docs {} ", e.getMessage());
-			}
+			customerDocumentManager.moveCustomerDBKycDocuments(customer);
 		}
 		custDao.callProcedurePopulateCusmas(customerId);
 	}

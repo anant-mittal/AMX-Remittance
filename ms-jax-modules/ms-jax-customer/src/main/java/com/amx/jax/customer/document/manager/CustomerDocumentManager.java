@@ -32,6 +32,7 @@ import com.amx.jax.dbmodel.customer.CustomerDocumentTypeMaster;
 import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReference;
 import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReferenceTemp;
 import com.amx.jax.dbmodel.customer.DbScanRef;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.customer.CustomerDocumentInfo;
 import com.amx.jax.model.customer.CustomerKycData;
@@ -194,9 +195,15 @@ public class CustomerDocumentManager {
 	public void moveCustomerDBKycDocuments(Customer customer) {
 		log.info("moving customer db kyc docs");
 		DmsApplMapping dmsMapping = customerIdProofManager.getDmsMapping(customer);
-		if (dmsMapping != null) {
-			databaseImageScanManager.copyBlobDataFromJava(dmsMapping.getDocBlobId(), dmsMapping.getFinancialYear());
+		if (dmsMapping == null) {
+			StringBuffer sbuff = new StringBuffer();
+			sbuff.append("dmsappl map record not found params: identity int: ").append(customer.getIdentityInt());
+			sbuff.append(" id type: ").append(customer.getIdentityTypeId());
+			sbuff.append(" customer id: ").append(customer.getCustomerId());
+			sbuff.append("id expiery date: ").append(customer.getIdentityExpiredDate());
+			throw new GlobaLException(JaxError.JAX_FIELD_VALIDATION_FAILURE, sbuff.toString());
 		}
+		databaseImageScanManager.copyBlobDataFromJava(dmsMapping.getDocBlobId(), dmsMapping.getFinancialYear());
 	}
 
 	public UploadCustomerDocumentResponse uploadDocument(UploadCustomerDocumentRequest uploadCustomerDocumentRequest) {
