@@ -12,7 +12,7 @@ public enum ResponseCodeKWT {
 	NOT_CAPTURED("NOT CAPTURED","Transaction was not approved", "100035", CodeCategory.TXN_AUTH),
 	VOIDED("VOIDED","Transaction was voided", "100079", CodeCategory.TXN_DATA),
 	GENERIC_ERROR("GENERIC ERROR","Generic Error", "100060", CodeCategory.TXN_DATA),
-	CANCELLED("CANCELED","Canceled Transaction", "100080", CodeCategory.TXN_CANCEL_SUCC),
+	CANCELED("CANCELED","Canceled Transaction", "100080", CodeCategory.TXN_CANCEL_SUCC),
 	UNKNOWN("UNKNOWN","Error code may not be mapped","UNKNOWN",CodeCategory.UNKNOWN);
 	
 	private String responseCode;
