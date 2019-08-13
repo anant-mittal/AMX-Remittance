@@ -64,6 +64,7 @@ import com.amx.jax.dbmodel.BlackListModel;
 import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ExchangeRateApprovalDetModel;
+import com.amx.jax.dbmodel.ReferralDetails;
 import com.amx.jax.dbmodel.TransactionLimitCheckView;
 import com.amx.jax.dbmodel.remittance.AdditionalInstructionData;
 import com.amx.jax.dbmodel.remittance.OWSScheduleModel;
@@ -99,6 +100,8 @@ import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;
 import com.amx.jax.model.response.remittance.LoyalityPointState;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.model.response.remittance.VatDetailsDto;
+import com.amx.jax.postman.client.PushNotifyClient;
+import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.pricer.dto.TrnxRoutingDetails;
 import com.amx.jax.remittance.manager.RemittanceParameterMapManager;
 import com.amx.jax.repository.AuthenticationViewRepository;
@@ -120,6 +123,7 @@ import com.amx.jax.services.RemittanceApplicationService;
 import com.amx.jax.services.RoutingService;
 import com.amx.jax.services.TransactionHistroyService;
 import com.amx.jax.userservice.dao.CustomerDao;
+import com.amx.jax.userservice.dao.ReferralDetailsDao;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
@@ -260,6 +264,12 @@ public class RemittanceTransactionManager {
 	private RestService restService;
 	@Autowired
 	BankService bankService;
+	
+	@Autowired
+   	ReferralDetailsDao refDao;
+	
+	@Autowired
+	PushNotifyClient pushNotifyClient;
 
 
 	private static final String IOS = "IOS";
@@ -1132,6 +1142,31 @@ public class RemittanceTransactionManager {
 		} else {
 			additionalInstrumentData = oldRemittanceApplicationAdditionalDataManager.createAdditionalInstnData(remittanceApplication);
 		}
+		
+		/** Referral Code **/
+		List<RemittanceTransaction> remittanceList = remitAppDao.getOnlineRemittanceList(meta.getCustomerId());
+		if(remittanceList.size() == 0) {
+			ReferralDetails referralDetails = refDao.getReferralByCustomerId(meta.getCustomerId());
+			referralDetails.setIsConsumed("Y");
+			refDao.updateReferralCode(referralDetails);
+			if (referralDetails.getRefferedByCustomerId() != null) {
+				PushMessage pushMessage = new PushMessage();
+				pushMessage.setSubject("Refer To Win!");
+				pushMessage.setMessage(
+						"Congraturlations! Your reference has done the first transaction on AMIEC App! You will get a chance to win from our awesome Referral Program! Keep sharing the links to as many contacts you can and win exciting prices on referral success!");
+				pushMessage.addToUser(referralDetails.getRefferedByCustomerId());
+				pushNotifyClient.send(pushMessage);
+			}
+			
+			if(referralDetails.getCustomerId() != null) {
+				PushMessage pushMessage = new PushMessage();
+				pushMessage.setSubject("Refer To Win!");
+				pushMessage.setMessage(
+						"Welcome to Al Mulla family! Win a chance to get exciting offers at Al Mulla Exchange by sharing the links to as many contacts as you can.");
+				pushMessage.addToUser(referralDetails.getRefferedByCustomerId());
+				pushNotifyClient.send(pushMessage);	
+			}
+		}	
 		remitAppDao.saveAllApplicationData(remittanceApplication, remittanceAppBeneficairy, additionalInstrumentData);
 		remitAppDao.updatePlaceOrderV2(model, remittanceApplication);
 		remiteAppModel.setRemittanceAppId(remittanceApplication.getRemittanceApplicationId());
