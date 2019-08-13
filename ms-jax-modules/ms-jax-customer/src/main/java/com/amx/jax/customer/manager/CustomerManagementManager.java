@@ -3,6 +3,7 @@ package com.amx.jax.customer.manager;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.List;
+import java.util.Optional;
 
 import javax.transaction.Transactional;
 
@@ -29,7 +30,7 @@ import com.amx.jax.dbmodel.CustomerCategoryDiscountModel;
 import com.amx.jax.dbmodel.CustomerExtendedModel;
 import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
-import com.amx.jax.dbmodel.customer.CustomerDocumentTypeMaster;
+import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReferenceTemp;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.ResourceDTO;
@@ -253,16 +254,17 @@ public class CustomerManagementManager {
 
 	}
 
-	public void moveCustomerDataUsingProcedures(BigDecimal customerId, List<CustomerDocumentTypeMaster> customerTempUploads) {
+	public void moveCustomerDataUsingProcedures(BigDecimal customerId, List<CustomerDocumentUploadReferenceTemp> customerTempUploads) {
 		Customer customer = userService.getCustById(customerId);
 		customerDocumentManager.moveCustomerDBDocuments(customerId);
 		if (customerDocMasterManager.hasKycDocTypeMaster(customerTempUploads, customer.getIdentityTypeId())) {
-			customerDocumentManager.moveCustomerDBKycDocuments(customer);
+			Optional<CustomerDocumentUploadReferenceTemp> kycUpload = customerDocMasterManager.getKycDocUpload(customerTempUploads, customer.getIdentityTypeId());
+			customerDocumentManager.moveCustomerDBKycDocuments(customer, kycUpload.get());
 		}
 		custDao.callProcedurePopulateCusmas(customerId);
 	}
 
-	public void moveCustomerDataUsingProcedures(List<CustomerDocumentTypeMaster> customerTempUploads) {
+	public void moveCustomerDataUsingProcedures(List<CustomerDocumentUploadReferenceTemp> customerTempUploads) {
 		moveCustomerDataUsingProcedures(metaData.getCustomerId(), customerTempUploads);
 	}
 

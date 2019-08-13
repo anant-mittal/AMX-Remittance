@@ -192,9 +192,10 @@ public class CustomerDocumentManager {
 		saveCustomerDocumentUploadsRefs(customerUploadDocuments);
 	}
 
-	public void moveCustomerDBKycDocuments(Customer customer) {
+	public void moveCustomerDBKycDocuments(Customer customer, CustomerDocumentUploadReferenceTemp kycUploadReferenceTemp) {
 		log.info("moving customer db kyc docs");
-		DmsApplMapping dmsMapping = customerIdProofManager.getDmsMapping(customer);
+		CustomerKycData data = JsonUtil.fromJson(kycUploadReferenceTemp.getUploadData(), CustomerKycData.class);
+		DmsApplMapping dmsMapping = customerIdProofManager.getDmsMapping(customer, data.getExpiryDate());
 		if (dmsMapping == null) {
 			StringBuffer sbuff = new StringBuffer();
 			sbuff.append("dmsappl map record not found params: identity int: ").append(customer.getIdentityInt());

@@ -40,6 +40,7 @@ import com.amx.jax.customer.manager.CustomerManagementManager;
 import com.amx.jax.customer.manager.CustomerPersonalDetailManager;
 import com.amx.jax.customer.service.CustomerService;
 import com.amx.jax.dbmodel.customer.CustomerDocumentTypeMaster;
+import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReferenceTemp;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.customer.CreateCustomerInfoRequest;
 import com.amx.jax.model.customer.DuplicateCustomerDto;
@@ -99,9 +100,10 @@ public class CustomerManagementController implements ICustomerManagementControll
 	public AmxApiResponse<BoolRespModel, Object> updateCustomer(@RequestBody @Valid UpdateCustomerInfoRequest updateCustomerInfoRequest)
 			throws ParseException {
 		log.debug("request updateCustomer {}", JsonUtil.toJson(updateCustomerInfoRequest));
-		List<CustomerDocumentTypeMaster> customerTempUploads = customerDocumentUploadManager.fetchCustomerUploadedDocMasterList();
+		List<CustomerDocumentTypeMaster> customerTempUploadMasters = customerDocumentUploadManager.fetchCustomerUploadedDocMasterList();
+		List<CustomerDocumentUploadReferenceTemp> customerTempUploads = customerDocumentUploadManager.fetchCustomerUploadsTemp();
 		customerManagementManager.updateCustomer(updateCustomerInfoRequest);
-		notificationTaskService.updateDocUploadNotificationTask(customerTempUploads);
+		notificationTaskService.updateDocUploadNotificationTask(customerTempUploadMasters);
 		customerManagementManager.moveCustomerDataUsingProcedures(customerTempUploads);
 		return AmxApiResponse.build();
 	}

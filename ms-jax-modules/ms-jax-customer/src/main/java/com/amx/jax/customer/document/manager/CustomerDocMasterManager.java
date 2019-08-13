@@ -3,6 +3,7 @@ package com.amx.jax.customer.document.manager;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import com.amx.jax.dbmodel.JaxField;
 import com.amx.jax.dbmodel.customer.CustomerDocumentCategory;
 import com.amx.jax.dbmodel.customer.CustomerDocumentType;
 import com.amx.jax.dbmodel.customer.CustomerDocumentTypeMaster;
+import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReferenceTemp;
 import com.amx.jax.model.customer.document.CustomerDocumentCategoryDto;
 import com.amx.jax.model.customer.document.CustomerDocumentTypeDto;
 import com.amx.jax.repository.customer.CustomerDocumentTypeMasterRepo;
@@ -91,9 +93,17 @@ public class CustomerDocMasterManager {
 		dto.setValidationRegex(validationdtos);
 		return dto;
 	}
-	
-	public boolean hasKycDocTypeMaster(List<CustomerDocumentTypeMaster> docTypeMasters, BigDecimal identityTypeId) {
+
+	public boolean hasKycDocTypeMaster(List<CustomerDocumentUploadReferenceTemp> docTypeMasters, BigDecimal identityTypeId) {
 		CustomerDocumentTypeMaster kycDocTypeMaster = getKycDocTypeMaster(identityTypeId);
-		return docTypeMasters.stream().anyMatch(i -> i.getId().equals(kycDocTypeMaster.getId()));
+		return docTypeMasters.stream().anyMatch(i -> i.getCustomerDocumentTypeMaster().getId().equals(kycDocTypeMaster.getId()));
+	}
+
+	public Optional<CustomerDocumentUploadReferenceTemp> getKycDocUpload(List<CustomerDocumentUploadReferenceTemp> customerTempUploads,
+			BigDecimal identityTypeId) {
+		CustomerDocumentTypeMaster kycDocTypeMaster = getKycDocTypeMaster(identityTypeId);
+		Optional<CustomerDocumentUploadReferenceTemp> kycUpload = customerTempUploads.stream()
+				.filter(i -> i.getCustomerDocumentTypeMaster().getId().equals(kycDocTypeMaster.getId())).findFirst();
+		return kycUpload;
 	}
 }

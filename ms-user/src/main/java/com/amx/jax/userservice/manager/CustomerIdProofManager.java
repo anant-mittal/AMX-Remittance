@@ -170,6 +170,16 @@ public class CustomerIdProofManager {
 		}
 		return mapping;
 	}
+	
+	public DmsApplMapping getDmsMapping(Customer customer, Date idExpiryDate) {
+		DmsApplMapping mapping = null;
+		List<DmsApplMapping> dmsApplMapping = dmsApplMappingRepository.getDmsApplMapping(customer.getCustomerId(),
+				customer.getIdentityInt(), customer.getIdentityTypeId(), idExpiryDate);
+		if (CollectionUtils.isNotEmpty(dmsApplMapping)) {
+			mapping = dmsApplMapping.get(0);
+		}
+		return mapping;
+	}
 
 	public DmsApplMapping getDmsMappingByCustomer(Customer customer) {
 		DmsApplMapping mapping = null;

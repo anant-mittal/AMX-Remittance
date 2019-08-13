@@ -173,6 +173,17 @@ public class CustomerDocumentUploadManager {
 		}).collect(Collectors.toList());
 
 	}
+	
+	public List<CustomerDocumentUploadReferenceTemp> fetchCustomerUploadsTemp() {
+		BigDecimal customerId = metaData.getCustomerId();
+		if (customerId == null) {
+			throw new GlobaLException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Missing customer id");
+		}
+		Customer customer = userSerivce.getCustById(customerId);
+		List<CustomerDocumentUploadReferenceTemp> customerUploads = getCustomerUploads(customer.getIdentityInt(), customer.getIdentityTypeId());
+		return customerUploads;
+
+	}
 
 	public List<CustomerDocumentUploadReference> fetchCustomerUploadedDocRef(List<CustomerDocumentTypeMaster> customerTempUploads,
 			BigDecimal customerId) {
