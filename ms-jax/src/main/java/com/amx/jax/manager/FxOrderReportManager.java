@@ -460,6 +460,12 @@ public class FxOrderReportManager {
 				logger.info("Result Category from PLUS : "+resultCategory);
 			}
 			ResponseCodeDetailDTO responseCodeDetail = PayGRespCodeJSONConverter.getResponseCodeDetail(resultCategory);
+			
+			responseCodeDetail.setPgPaymentId(pgDetailsModel.getPgPaymentId());
+			responseCodeDetail.setPgReferenceId(pgDetailsModel.getPgReferenceId());
+			responseCodeDetail.setPgTransId(pgDetailsModel.getPgTransactionId());
+			responseCodeDetail.setPgAuth(pgDetailsModel.getPgAuthCode());
+			
 			responseModel.setResponseCodeDetail(responseCodeDetail);
 		}
 
