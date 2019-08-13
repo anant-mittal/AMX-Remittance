@@ -10,6 +10,7 @@ import java.net.URISyntaxException;
 import javax.annotation.PostConstruct;
 import javax.swing.ImageIcon;
 
+import org.apache.commons.lang.SystemUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -58,11 +59,14 @@ public class SWAdapterLauncher {
 		EventQueue.invokeLater(() -> {
 			SWAdapterGUI ex = ctx.getBean(SWAdapterGUI.class);
 			SWAdapterGUI.CONTEXT = ex;
+
 			Image icon = new ImageIcon(FileUtil.getResource("logo.png", SWAdapterLauncher.class)).getImage();
-			try {
-				com.apple.eawt.Application.getApplication().setDockIconImage(icon);
-			} catch (Exception e) {
-				System.out.println("Not Able to Set Icon for Mac Device");
+			if (SystemUtils.IS_OS_MAC) {
+				try {
+					com.apple.eawt.Application.getApplication().setDockIconImage(icon);
+				} catch (Exception e) {
+					System.out.println("Not Able to Set Icon for Mac Device");
+				}
 			}
 
 			ex.setIconImage(icon);
