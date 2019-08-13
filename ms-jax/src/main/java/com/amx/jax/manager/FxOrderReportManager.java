@@ -456,7 +456,7 @@ public class FxOrderReportManager {
 				logger.info("Result Category from SPACE : "+resultCategory);
 			}
 			if(resultCategory.contains("+")) {
-				resultCategory = resultCategory.replace("\\+", "_");
+				resultCategory = resultCategory.replace("+", "_");
 				logger.info("Result Category from PLUS : "+resultCategory);
 			}
 			ResponseCodeDetailDTO responseCodeDetail = PayGRespCodeJSONConverter.getResponseCodeDetail(resultCategory);
