@@ -95,11 +95,9 @@ import com.amx.jax.userservice.manager.SecurityQuestionsManager;
 import com.amx.jax.userservice.manager.UserContactVerificationManager;
 import com.amx.jax.userservice.repository.LoginLogoutHistoryRepository;
 import com.amx.jax.userservice.service.CustomerValidationContext.CustomerValidation;
-import com.amx.jax.util.AmxDBConstants.Status;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.StringUtil;
-import com.amx.jax.util.AmxDBConstants.Status;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Random;
 
@@ -1272,9 +1270,7 @@ public class UserService extends AbstractUserService {
 	 * @param customerId
 	 */
 	public void deActivateCustomerIdProof(BigDecimal customerId) {
-		Customer customer = repo.findOne(customerId);
-		List<CustomerIdProof> activeIdProofs = customerIdProofDao.getActiveCustomerIdProof(customerId,
-				customer.getIdentityTypeId());
+		List<CustomerIdProof> activeIdProofs = customerIdProofDao.getActiveCustomerIdProof(customerId);
 		for (CustomerIdProof customerIdProof : activeIdProofs) {
 			customerIdProof.setIdentityStatus(ConstantDocument.Deleted);
 		}
@@ -1284,9 +1280,7 @@ public class UserService extends AbstractUserService {
 	}
 
 	public void deactiveteCustomerIdProofPendingCompliance(BigDecimal customerId) {
-		Customer customer = repo.findOne(customerId);
-		List<CustomerIdProof> deActiveIdProofs = customerIdProofDao.getCompliancePendingCustomerIdProof(customerId,
-				customer.getIdentityTypeId());
+		List<CustomerIdProof> deActiveIdProofs = customerIdProofDao.getCompliancePendingCustomerIdProof(customerId);
 		for (CustomerIdProof customerIdProof : deActiveIdProofs) {
 			customerIdProof.setIdentityStatus(ConstantDocument.Deleted);
 		}
