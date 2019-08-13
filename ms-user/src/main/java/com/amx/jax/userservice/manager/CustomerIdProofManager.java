@@ -136,7 +136,7 @@ public class CustomerIdProofManager {
 	public CustomerIdProof getCustomerIdProofByCustomerId(BigDecimal customerId) {
 		List<CustomerIdProof> activeIdProofs = customerIdProofDao.getCustomerIdProofs(customerId);
 		Optional<CustomerIdProof> lastestRecordByExpiry = activeIdProofs.stream().sorted((o1, o2) -> {
-			return o1.getIdentityExpiryDate().compareTo(o2.getIdentityExpiryDate());
+			return o2.getIdentityExpiryDate().compareTo(o1.getIdentityExpiryDate());
 		}).findFirst();
 		return lastestRecordByExpiry.isPresent() ? lastestRecordByExpiry.get() : null;
 	}
