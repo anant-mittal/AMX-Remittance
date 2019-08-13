@@ -17,7 +17,7 @@ public class MCQIndicator implements IndicatorListner {
 	@Override
 	public Map<String, Object> getIndicators() {
 		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("tunnel.subs", TunnelSubscriberFactory.getStatus());
+		map.put("tunnel.listner", TunnelSubscriberFactory.getStatus());
 		return map;
 	}
 

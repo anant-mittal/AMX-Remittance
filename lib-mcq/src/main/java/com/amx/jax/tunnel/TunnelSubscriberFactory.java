@@ -47,6 +47,11 @@ public class TunnelSubscriberFactory {
 		return statusMap;
 	}
 
+	public static String messageSubscribed(String channel) {
+		statusMap.put("channel." + channel + "sub.ts", TS_FORMAT.format(new Date()));
+		return channel;
+	}
+
 	public static void messageRcvd(String channel) {
 		statusMap.put("channel." + channel + "rcvd.ts", TS_FORMAT.format(new Date()));
 	}
@@ -141,7 +146,7 @@ public class TunnelSubscriberFactory {
 	public <M> void addShoutListener(String topic, RedissonClient redisson, ITunnelSubscriber<M> listener,
 			boolean integrity, String listentName) {
 		RTopic<TunnelMessage<M>> topicQueue = redisson.getTopic(TunnelEventXchange.SHOUT_LISTNER.getTopic(topic));
-		LOGGER.info("Subscription on Topic : {}", TunnelEventXchange.SHOUT_LISTNER.getTopic(topic));
+		LOGGER.info("Subscription on Topic : {}", messageSubscribed(TunnelEventXchange.SHOUT_LISTNER.getTopic(topic)));
 		topicQueue.addListener(new WrapperML<M>(listener, integrity) {
 			@Override
 			public void onMessage(String channel, TunnelMessage<M> msg) {
@@ -183,7 +188,8 @@ public class TunnelSubscriberFactory {
 	public <M> void addQueuedListener(String topicName, RedissonClient redisson, ITunnelSubscriber<M> listener,
 			boolean integrity, String listenrName) {
 		RTopic<TunnelMessage<M>> eventTopic = redisson.getTopic(TunnelEventXchange.SEND_LISTNER.getTopic(topicName));
-		LOGGER.info("Subscription on Topic : {}", TunnelEventXchange.SEND_LISTNER.getTopic(topicName));
+		LOGGER.info("Subscription on Topic : {}",
+				messageSubscribed(TunnelEventXchange.SEND_LISTNER.getTopic(topicName)));
 		eventTopic.addListener(new WrapperML<M>(listener, integrity) {
 			@Override
 			public void onMessage(String channel, TunnelMessage<M> msg) {
@@ -235,7 +241,7 @@ public class TunnelSubscriberFactory {
 	public <M> void addTaskWorker(String topic, RedissonClient redisson, ITunnelSubscriber<M> listener,
 			boolean integrity, String listentName) {
 		RTopic<String> topicQueue = redisson.getTopic(TunnelEventXchange.TASK_WORKER.getTopic(topic));
-		LOGGER.info("Subscription on Topic : {}", TunnelEventXchange.TASK_WORKER.getTopic(topic));
+		LOGGER.info("Subscription on Topic : {}", messageSubscribed(TunnelEventXchange.TASK_WORKER.getTopic(topic)));
 		topicQueue.addListener(new MessageListener<String>() {
 			@Override
 			public void onMessage(String channel, String msgId) {
@@ -280,7 +286,7 @@ public class TunnelSubscriberFactory {
 	public <M> void addAuditListener(String topic, RedissonClient redisson, ITunnelSubscriber<M> listener,
 			boolean integrity, String listentName) {
 		RTopic<String> topicQueue = redisson.getTopic(TunnelEventXchange.AUDIT.getTopic(topic));
-		LOGGER.info("Subscription on Topic : {}", TunnelEventXchange.AUDIT.getTopic(topic));
+		LOGGER.info("Subscription on Topic : {}", messageSubscribed(TunnelEventXchange.AUDIT.getTopic(topic)));
 		topicQueue.addListener(new MessageListener<String>() {
 			@Override
 			public void onMessage(String channel, String msgId) {
