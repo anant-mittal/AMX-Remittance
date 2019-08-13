@@ -13,6 +13,7 @@ public enum ResponseCodeKWT {
 	VOIDED("VOIDED","Transaction was voided", "100079", CodeCategory.TXN_DATA),
 	GENERIC_ERROR("GENERIC ERROR","Generic Error", "100060", CodeCategory.TXN_DATA),
 	CANCELED("CANCELED","Canceled Transaction", "100080", CodeCategory.TXN_CANCEL_SUCC),
+	CANCELLED("CANCELLED","Cancelled Transaction", "100080", CodeCategory.TXN_CANCEL_SUCC),
 	UNKNOWN("UNKNOWN","Error code may not be mapped","UNKNOWN",CodeCategory.UNKNOWN);
 	
 	private String responseCode;
