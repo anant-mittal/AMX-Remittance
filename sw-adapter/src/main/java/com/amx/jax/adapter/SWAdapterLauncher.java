@@ -4,11 +4,15 @@ import java.awt.Desktop;
 import java.awt.EventQueue;
 import java.awt.Image;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 
 import javax.annotation.PostConstruct;
 import javax.swing.ImageIcon;
+import javax.tools.JavaCompiler;
+import javax.tools.ToolProvider;
 
 import org.apache.commons.lang.SystemUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -63,12 +67,20 @@ public class SWAdapterLauncher {
 			Image icon = new ImageIcon(FileUtil.getResource("logo.png", SWAdapterLauncher.class)).getImage();
 			if (SystemUtils.IS_OS_MAC) {
 				try {
-					com.apple.eawt.Application.getApplication().setDockIconImage(icon);
+					// com.apple.eawt.Application.getApplication().setDockIconImage(icon);
+					Class.forName("com.apple.eawt.Application");
+					// Test whether the compilation has worked
+					Class<?> applClass = Class.forName("com.apple.eawt.Application");
+					// application.setEnabledPreferencesMenu(true);
+					Method getApplication = applClass.getMethod("getApplication");
+					Method setDockIconImage = applClass.getMethod("setDockIconImage", new Class[] { Image.class });
+					Object app = getApplication.invoke(null);
+					setDockIconImage.invoke(app, icon);
+
 				} catch (Exception e) {
 					System.out.println("Not Able to Set Icon for Mac Device");
 				}
 			}
-
 			ex.setIconImage(icon);
 			ex.setVisible(true);
 			// opnePage();
