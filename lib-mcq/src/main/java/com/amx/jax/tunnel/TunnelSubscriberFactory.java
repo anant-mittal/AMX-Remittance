@@ -48,24 +48,24 @@ public class TunnelSubscriberFactory {
 	}
 
 	public static String messageSubscribed(String channel) {
-		statusMap.put("channel." + channel + "sub.ts", TS_FORMAT.format(new Date()));
+		statusMap.put("channel." + channel + ".sub.ts", TS_FORMAT.format(new Date()));
 		return channel;
 	}
 
 	public static void messageRcvd(String channel) {
-		statusMap.put("channel." + channel + "rcvd.ts", TS_FORMAT.format(new Date()));
+		statusMap.put("channel." + channel + ".rcvd.ts", TS_FORMAT.format(new Date()));
 	}
 
 	public static void messageProcessed(String channel) {
-		statusMap.put("channel." + channel + "prcsd.ts", TS_FORMAT.format(new Date()));
+		statusMap.put("channel." + channel + ".prcsd.ts", TS_FORMAT.format(new Date()));
 	}
 
 	public static void messageIgnored(String channel) {
-		statusMap.put("channel." + channel + "ignrd.ts", TS_FORMAT.format(new Date()));
+		statusMap.put("channel." + channel + ".ignrd.ts", TS_FORMAT.format(new Date()));
 	}
 
 	public static void messageException(String channel) {
-		statusMap.put("channel." + channel + "excep.ts", TS_FORMAT.format(new Date()));
+		statusMap.put("channel." + channel + ".excep.ts", TS_FORMAT.format(new Date()));
 	}
 
 	private AppConfig appConfig;
