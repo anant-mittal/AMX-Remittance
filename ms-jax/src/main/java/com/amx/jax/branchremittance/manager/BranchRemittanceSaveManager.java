@@ -1275,13 +1275,16 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
 
 	}
 	
-	public void saveRemitTrnxSrvProv(BigDecimal remittanceApplicationId,String createdBy) {
-		
-		RemitTrnxSrvProv remitTrnxSrvProv = new RemitTrnxSrvProv();
+	public Map<BigDecimal,RemitTrnxSrvProv> saveRemitTrnxSrvProv(BigDecimal remittanceApplicationId,String createdBy) {
+		Map<BigDecimal,RemitTrnxSrvProv> mapRemitTrnxSrvProv = null;
+		RemitTrnxSrvProv remitTrnxSrvProv = null;
 		
 		RemitApplSrvProv applSrvProv = remitApplSrvProvRepository.findByRemittanceApplicationId(remittanceApplicationId);
 
 		if (applSrvProv != null) {
+			mapRemitTrnxSrvProv = new HashMap<>();
+			remitTrnxSrvProv = new RemitTrnxSrvProv();
+			
 			remitTrnxSrvProv.setAmgSessionId(applSrvProv.getAmgSessionId());
 			remitTrnxSrvProv.setBankId(applSrvProv.getBankId());
 			remitTrnxSrvProv.setFixedCommInSettlCurr(applSrvProv.getFixedCommInSettlCurr());
@@ -1298,7 +1301,8 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
 			
 			mapRemitTrnxSrvProv.put(remittanceApplicationId, remitTrnxSrvProv);
 		}
-
+		
+		return mapRemitTrnxSrvProv;
 	}
 
 }

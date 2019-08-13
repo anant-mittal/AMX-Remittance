@@ -17,6 +17,7 @@ public class ProductDetailsDTO implements Serializable {
 	public BigDecimal deliveryId;
 	public BigDecimal amount;
 	public BigDecimal customerTypeId;
+	public BigDecimal beneCountryId;
 	
 	
 	public BigDecimal getCountryId() {
@@ -68,4 +69,11 @@ public class ProductDetailsDTO implements Serializable {
 		this.customerTypeId = customerTypeId;
 	}
 	
+	public BigDecimal getBeneCountryId() {
+		return beneCountryId;
+	}
+	public void setBeneCountryId(BigDecimal beneCountryId) {
+		this.beneCountryId = beneCountryId;
+	}
+		
 }

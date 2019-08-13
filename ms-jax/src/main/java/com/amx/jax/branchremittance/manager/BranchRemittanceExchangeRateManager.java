@@ -373,6 +373,8 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 			remittanceTransactionManager.setNetAmountAndLoyalityState(result.getExRateBreakup(), remittanceApplRequestModel, result, commission,vatDetails.getVatApplicableAmount());
 			if(trnxRoutingDetails != null && trnxRoutingDetails.getBankIndicator() != null && !trnxRoutingDetails.getBankIndicator().equalsIgnoreCase(ConstantDocument.BANK_INDICATOR_SERVICE_PROVIDER_BANK)) {
 				remittanceTransactionManager.applyCurrencyRoudingLogic(result.getExRateBreakup());
+			}else {
+				remittanceTransactionManager.applyCurrencyRoudingLogicSP(result.getExRateBreakup());
 			}
 		}
 		return result;

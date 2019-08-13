@@ -136,7 +136,7 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 			List<ShoppingCartDetails> lstCustomerShopping = branchRemittancePaymentDao.fetchCustomerShoppingCart(customerId);
 			
 			ConfigDto config = getLimitCheck(metaData.getCustomerId());
-			config = partnerTransactionManager.paymentModeServiceProviderLimit(config,lstCustomerShopping);
+			config = partnerTransactionManager.paymentModeServiceProviderLimit(config,lstCustomerShopping,customer.getIdentityTypeId());
 			cartList.setConfigDto(config);
 			
 			if(lstCustomerShopping != null && !lstCustomerShopping.isEmpty() && lstCustomerShopping.size() != 0) {

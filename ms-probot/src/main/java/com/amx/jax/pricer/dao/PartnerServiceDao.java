@@ -83,8 +83,8 @@ public class PartnerServiceDao {
 	}
 
 	public List<BankCharges> fetchBankChargesDetails(BigDecimal bankServiceRuleId, BigDecimal fcAmount,
-			BigDecimal chargesFor, String chargesType) {
-		return bankChargesRepository.fetchBankCharges(bankServiceRuleId, fcAmount, chargesFor, chargesType);
+			BigDecimal chargesFor, String chargesType,BigDecimal beneCountryId) {
+		return bankChargesRepository.fetchBankCharges(bankServiceRuleId, fcAmount, chargesFor, chargesType, beneCountryId);
 	}
 
 	public ParameterDetailsModel fetchServPrvBankCode(String recordId, String beneCountryCode) {
