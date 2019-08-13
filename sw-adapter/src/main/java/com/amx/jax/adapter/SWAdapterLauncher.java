@@ -2,11 +2,13 @@ package com.amx.jax.adapter;
 
 import java.awt.Desktop;
 import java.awt.EventQueue;
+import java.awt.Image;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
 import javax.annotation.PostConstruct;
+import javax.swing.ImageIcon;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -20,6 +22,8 @@ import org.springframework.boot.autoconfigure.websocket.WebSocketAutoConfigurati
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
+
+import com.amx.utils.FileUtil;
 
 @SpringBootApplication
 @ComponentScan(value = "com.amx.jax")
@@ -54,6 +58,14 @@ public class SWAdapterLauncher {
 		EventQueue.invokeLater(() -> {
 			SWAdapterGUI ex = ctx.getBean(SWAdapterGUI.class);
 			SWAdapterGUI.CONTEXT = ex;
+			Image icon = new ImageIcon(FileUtil.getResource("logo.png", SWAdapterLauncher.class)).getImage();
+			try {
+				com.apple.eawt.Application.getApplication().setDockIconImage(icon);
+			} catch (Exception e) {
+				System.out.println("Not Able to Set Icon for Mac Device");
+			}
+
+			ex.setIconImage(icon);
 			ex.setVisible(true);
 			// opnePage();
 		});
