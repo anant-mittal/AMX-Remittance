@@ -83,11 +83,22 @@ public class BankMetaService extends AbstractService {
 	private List<BankMasterDTO> convert(List<BankMasterModel> banks) {
 
 		List<BankMasterDTO> bankdtos = new ArrayList<>();
+		
+		BigDecimal arabicLanguageInd = new BigDecimal("2");
+		
 		banks.forEach(i -> {
 			BankMasterDTO bankDto = convert(i);
+			
+			if(!metaData.getLanguageId().equals(arabicLanguageInd)) {
+				bankDto.setLocalName(i.getBankFullName());
+				
+			}else {
+				bankDto.setLocalName(i.getLocalName());
+			}
 			if (ConstantDocument.Yes.equalsIgnoreCase(i.getIbanFlag())) {
 				bankDto.setIbanRequired(true);
-			}
+						}
+							
 			bankdtos.add(bankDto);
 		});
 		return bankdtos;
