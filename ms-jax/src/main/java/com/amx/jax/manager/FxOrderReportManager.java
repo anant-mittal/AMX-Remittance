@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.jax.api.ResponseCodeDetailDTO;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constants.JaxTransactionStatus;
 import com.amx.jax.dal.LoyaltyInsuranceProDao;
@@ -38,6 +39,7 @@ import com.amx.jax.dbmodel.ViewDistrict;
 import com.amx.jax.dbmodel.ViewState;
 import com.amx.jax.dbmodel.fx.FxDeliveryDetailsModel;
 import com.amx.jax.dbmodel.fx.FxOrderTransactionModel;
+import com.amx.jax.dict.PayGRespCodeJSONConverter;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.response.fx.FxDeliveryDetailDto;
@@ -446,6 +448,17 @@ public class FxOrderReportManager {
 			deliveryCharges = fxDelDetailModel.getDeliveryCharges();
 		}	
 
+		if(pgDetailsModel.getResultCode() != null) {
+			String resultCategory = pgDetailsModel.getResultCode();
+			if(resultCategory.contains(" ")) {
+				resultCategory = resultCategory.replace(" ", "_");
+			}
+			if(resultCategory.contains("\\+")) {
+				resultCategory = resultCategory.replace("\\+", "_");
+			}
+			ResponseCodeDetailDTO responseCodeDetail = PayGRespCodeJSONConverter.getResponseCodeDetail(resultCategory);
+			responseModel.setResponseCodeDetail(responseCodeDetail);
+		}
 
 		responseModel.setNetAmount(netAmount.add(deliveryCharges));
 		responseModel.setStatus(jaxTrnxStatus);
