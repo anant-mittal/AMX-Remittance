@@ -3,7 +3,7 @@ package com.amx.jax.payg;
 import java.math.BigDecimal;
 
 import com.amx.jax.api.ARespModel;
-import com.amx.jax.payg.PayGCodes.CodeCategory;
+import com.amx.jax.dict.PayGCodes.CodeCategory;
 import com.amx.utils.JsonUtil;
 
 public class PayGModel extends ARespModel {
@@ -16,7 +16,7 @@ public class PayGModel extends ARespModel {
 	private String udf3 = null;
 	private String udf4 = null;
 	private String udf5 = null;
-	private CodeCategory errorCategory = null;
+	private String errorCategory = null;
 	private String error = null;
 	private String errorText = null;
 	private String paymentId;
@@ -95,11 +95,11 @@ public class PayGModel extends ARespModel {
 		this.error = error;
 	}
 
-	public CodeCategory getErrorCategory() {
+	public String getErrorCategory() {
 		return errorCategory;
 	}
 
-	public void setErrorCategory(CodeCategory codeCategory) {
+	public void setErrorCategory(String codeCategory) {
 		this.errorCategory = codeCategory;
 	}
 

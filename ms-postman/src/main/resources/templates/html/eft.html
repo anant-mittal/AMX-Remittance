@@ -204,7 +204,21 @@
 			padding-right:30px;
 			padding-bottom:30px;
 		}
-
+        .htmlHead .btn-primary {
+            text-decoration: none;
+            color: #FFF;
+            background-color: #348eda;
+            border: solid #348eda;
+            border-width: 5px 10px;
+            line-height: 2em;
+            font-weight: bold;
+            text-align: center;
+            cursor: pointer;
+            display: inline-block;
+            border-radius: 5px;
+            text-transform: capitalize;
+            font-size: 18px;
+        }
         /* -------------------------------------------
                 PHONE
                 For clients that support media queries.
@@ -268,7 +282,11 @@
                                   		<p class="lead">Greetings from <span th:text="${_tu.prop('company.name')}" th:remove="tag"></span> !</p> <br/>
                                   		<p class="lead">Your transaction with us dated <strong th:text="${data.date}"></strong> having Trans Ref No: <strong th:text="${data.refno}"></strong> for <strong th:text="${data.currency}"></strong> <strong th:text="${data.amount}"></strong>   has been successfully transferred to the beneficiary account. Thank you for your continued patronage.</p>
                                         <p class="lead">We are now available <a th:href="${_tu.prop('company.app.url')}"><span >online</span></a> and on App's for <a th:href="${_tu.prop('company.ios.url')}"><span>IOS</span></a> and <a th:href="${_tu.prop('company.android.url')}"><span>Android</span>.</a></p>
-                                    
+                                        <p class="lead" th:if="${data.verifylink}">Please click the Verify your email button below to confirm that you want to use this email ID for all communication from Al Mulla Exchange.</p>
+										<p align="center" th:if="${data.verifylink}"><a th:href="${_tu.prop('company.app.url')+ '/pub/verify/email/' + data.verifylink.id +'/'+data.verifylink.verificationCode}" style="width:200px" class="btn-primary" target="_blank">Verify Email</a></p>
+                                   		<br/>
+              							<p align="center"><a th:href="${_tu.prop('company.app.url') + '/pub/rating/REMIT/' + data.tranxId + '/' + data.verCode }" style="width:200px" class="btn-primary" target="_blank">Rate this transaction</a></p>
+                                   		
                                    		<!-- A Real Hero (and a real human being) -->
                                         <p style="padding:40px 0" align="center"><img src="cid:images/product-1.png"/></p><!-- /hero -->
                                         <h4 align="center">There are a lot of reasons to continue transacting with <span th:text="${_tu.prop('company.name')}" th:remove="tag"></span> and few of these are:</h4>

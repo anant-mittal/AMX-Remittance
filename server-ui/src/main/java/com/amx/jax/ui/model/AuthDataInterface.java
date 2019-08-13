@@ -167,6 +167,10 @@ public final class AuthDataInterface {
 		String getwOtpPrefix();
 
 		void setwOtpPrefix(String wOtpPrefix);
+
+		String getOtpPrefix();
+
+		void setOtpPrefix(String wOtpPrefix);
 	}
 
 	@JsonDeserialize(as = AuthData.class)
@@ -196,6 +200,8 @@ public final class AuthDataInterface {
 	/**
 	 * The Interface AuthResponse.
 	 */
+	@JsonDeserialize(as = AuthData.class)
+	@JsonIgnoreProperties(ignoreUnknown = true)
 	public interface AuthResponse extends AuthResponseOTPprefix {
 
 		/**

@@ -21,6 +21,7 @@ import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxEvent;
 import com.amx.jax.dao.RemittanceApplicationDao;
@@ -30,6 +31,7 @@ import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.manager.RemittancePaymentManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.remittance.IRemitTransReqPurpose;
+import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.services.CustomerRatingService;
@@ -141,6 +143,7 @@ public class RemittanceController {
 		ApiResponse response = remittanceTransactionService.validateRemittanceTransaction(model);
 		return response;
 	}
+	
 
 	@RequestMapping(value = "/sourceofincome/", method = RequestMethod.POST)
 	public ApiResponse sourceofIncome() {
@@ -160,7 +163,19 @@ public class RemittanceController {
 		ApiResponse response = remittanceTransactionService.saveApplication(model);
 		return response;
 	}
+	
+	@RequestMapping(value = "/save-application/v2/", method = RequestMethod.POST)
+	public ApiResponse saveApplication(@RequestBody @Valid RemittanceTransactionDrRequestModel model) {
+		JaxContextUtil.setJaxEvent(JaxEvent.CREATE_APPLICATION);
+		JaxContextUtil.setRequestModel(model);
+		logger.info("In Save-Application with parameters" + model.toString());
+		ApiResponse response = remittanceTransactionService.saveApplicationV2(model);
+		return response;
+	}
+	
 
+
+	
 	@RequestMapping(value = "/purpose-of-txn/list/", method = RequestMethod.POST)
 	public ApiResponse getPurposeOfTransaction(@RequestBody IRemitTransReqPurpose model) {
 		logger.info("In getPurposeOfTransaction with parameters" + model.toString());
@@ -253,4 +268,12 @@ public class RemittanceController {
 	public AmxApiResponse<CustomerRating, ?> saveCustomerRating(@RequestBody @Valid CustomerRatingDTO dto) {
 		return customerRatingService.saveCustomerRating(dto);
 	}
+	
+	//radhika
+	@RequestMapping(value = "/customer-trnx-rating/", method = RequestMethod.POST)
+	public AmxApiResponse<CustomerRating, ?> inquireCustomerRating(@RequestParam BigDecimal remittanceTrnxId) {
+		return  customerRatingService.inquireCustomerRating(remittanceTrnxId);
+		
+	}
+	
 }

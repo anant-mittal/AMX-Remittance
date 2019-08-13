@@ -74,20 +74,22 @@ public class JaxNotificationService {
 			email.setSubject("Your transaction on Modern Exchange - Oman is successful");
 		}
 
-		email.addTo(pinfo.getEmail());
-		email.setITemplate(TemplatesMX.TXN_CRT_SUCC);
-		email.setHtml(true);
-		email.getModel().put(RESP_DATA_KEY, pinfo);
 
-		File file = new File();
-		file.setITemplate(TemplatesMX.REMIT_RECEIPT_JASPER);
-		file.setName("TransactionReceipt");
-		file.setType(File.Type.PDF);
-		file.getModel().put(RESP_DATA_KEY, remittanceReceiptSubreport);
+			email.addTo(pinfo.getEmail());
+			email.setITemplate(TemplatesMX.TXN_CRT_SUCC);
+			email.setHtml(true);
+			email.getModel().put(RESP_DATA_KEY, pinfo);
 
-		email.addFile(file);
-		logger.debug("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getFirstName());
-		sendEmail(email);
+			File file = new File();
+			file.setITemplate(TemplatesMX.REMIT_RECEIPT_JASPER);
+			file.setName("TransactionReceipt");
+			file.setType(File.Type.PDF);
+			file.getModel().put(RESP_DATA_KEY, remittanceReceiptSubreport);
+
+			email.addFile(file);
+			logger.debug("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getFirstName());
+			sendEmail(email);
+		
 	}
 
 	public void sendTransactionNotification(FxOrderReportResponseDto remittanceReceiptSubreport,
@@ -137,6 +139,8 @@ public class JaxNotificationService {
 			email.getModel().put("change_type", ChangeType.MOBILE_CHANGE);
 
 		} else if (customerModel.getEmail() != null) {
+			// Customer model has old email and Person info has new email
+			if(!customerModel.getEmail().equals(pinfo.getEmail())) {
 
 			email.getModel().put("change_type", ChangeType.EMAIL_CHANGE);
 
@@ -159,7 +163,9 @@ public class JaxNotificationService {
 					+ oldPinfo.getEmail());
 			sendEmail(emailToOld);
 		}
-
+			email.getModel().put("change_type", ChangeType.EMAIL_CHANGE);
+		}
+		
 		email.addTo(pinfo.getEmail());
 		email.setITemplate(TemplatesMX.PROFILE_CHANGE);
 		email.setHtml(true);

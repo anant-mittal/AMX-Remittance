@@ -19,6 +19,7 @@ import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ExEmailNotification;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.IExEmailNotificationDao;
@@ -59,14 +60,33 @@ public class ApplicationCreationFailureAlert implements IAlert {
 		if(!isApplicable(ex)) {
 			return;
 		}
-		RemittanceTransactionRequestModel model = (RemittanceTransactionRequestModel) JaxContextUtil.getRequestModel();
+		
+		RemittanceTransactionRequestModel model = null;
+		RemittanceTransactionDrRequestModel modelDr = null;
+		
+		
+		//RemittanceTransactionRequestModel model = (RemittanceTransactionRequestModel) JaxContextUtil.getRequestModel();
+		
+		Object Object = (Object)JaxContextUtil.getRequestModel();
+		
+		if(Object instanceof RemittanceTransactionRequestModel) {
+			model = (RemittanceTransactionRequestModel) JaxContextUtil.getRequestModel();
+		}else if(Object instanceof RemittanceTransactionDrRequestModel) {
+			modelDr = (RemittanceTransactionDrRequestModel) JaxContextUtil.getRequestModel();
+		}
+		
+		
 		BenificiaryListView benificiaryListView = null;
 		List<ExEmailNotification> emailid =null;
 		String product = "Product could not be derived";
 		StringBuilder cusName = new StringBuilder();
 		
 		try {
+			if(model!=null) {
 			benificiaryListView = beneficiaryOnlineDao.findOne(model.getBeneId());
+			}else {
+				benificiaryListView = beneficiaryOnlineDao.findOne(modelDr.getBeneId());
+			}
 			BigDecimal customerId = benificiaryListView.getCustomerId();
 			Customer customer = custDao.getCustById(customerId);
 		    emailid = emailNotificationDao.getEmailNotification();
@@ -80,7 +100,11 @@ public class ApplicationCreationFailureAlert implements IAlert {
 			remittanceTransactionFailure.setCurrencyQuoteName(benificiaryListView.getCurrencyQuoteName());
 			remittanceTransactionFailure.setService(product);
 			remittanceTransactionFailure.setCustomerContact(customer.getMobile());
+			if(model!=null) {
 			remittanceTransactionFailure.setTransactionAmount(model.getLocalAmount());
+			}else if(modelDr!=null) {
+				remittanceTransactionFailure.setTransactionAmount(modelDr.getLocalAmount());
+			}
 			remittanceTransactionFailure.setExceptionMessage(ex.getErrorMessage());
 			String currencyQuoteName = tenantService.getDefaultCurrencyMaster().getQuoteName();
 			remittanceTransactionFailure.setCurrencyQuoteName(currencyQuoteName);
@@ -104,7 +128,7 @@ public class ApplicationCreationFailureAlert implements IAlert {
 		}
 
 	}
-
+	
 	private boolean isApplicable(AbstractJaxException ex) {
 		if (ex.getErrorKey().equals(JaxError.ADDTIONAL_FLEX_FIELD_REQUIRED.toString())) {
 			return false;

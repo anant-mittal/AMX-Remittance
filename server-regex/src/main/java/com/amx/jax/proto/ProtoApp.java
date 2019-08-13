@@ -10,7 +10,13 @@ import org.springframework.boot.autoconfigure.validation.ValidationAutoConfigura
 import org.springframework.boot.autoconfigure.websocket.WebSocketAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.web.context.WebApplicationContext;
+
+import com.amx.jax.client.configs.JaxMetaInfo;
 
 @SpringBootApplication
 @ComponentScan(value = "com.amx.jax")
@@ -24,6 +30,12 @@ public class ProtoApp {
 		ConfigurableApplicationContext ctx = new SpringApplicationBuilder(ProtoApp.class)
 				.run(args);
 
+	}
+
+	@Bean
+	@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
+	public JaxMetaInfo jaxMetaInfo() {
+		return new JaxMetaInfo();
 	}
 
 }

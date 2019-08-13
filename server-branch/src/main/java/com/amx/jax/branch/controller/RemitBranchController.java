@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
@@ -27,12 +26,14 @@ import com.amx.jax.client.BeneClient;
 import com.amx.jax.client.RemitClient;
 import com.amx.jax.client.remittance.RemittanceClient;
 import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
+import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.request.device.SignaturePadRemittanceInfo;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.BranchRemittanceGetExchangeRateRequest;
 import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
 import com.amx.jax.model.request.remittance.CustomerBankRequest;
+import com.amx.jax.model.request.remittance.RoutingPricingRequest;
 import com.amx.jax.model.response.SourceOfIncomeDto;
 import com.amx.jax.model.response.fx.FcSaleOrderManagementDTO;
 import com.amx.jax.model.response.fx.UserStockDto;
@@ -44,6 +45,7 @@ import com.amx.jax.model.response.remittance.PaymentModeDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
+import com.amx.jax.model.response.remittance.branch.DynamicRoutingPricingResponse;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.File;
@@ -91,8 +93,9 @@ public class RemitBranchController {
 	}
 
 	@RequestMapping(value = "/api/remitt/purpose/list", method = { RequestMethod.POST })
-	public AmxApiResponse<AdditionalExchAmiecDto, Object> getPurposeList(@RequestParam BigDecimal beneId) {
-		return branchRemittanceClient.getPurposeOfTrnx(beneId);
+	public AmxApiResponse<AdditionalExchAmiecDto, Object> getPurposeList(@RequestParam BigDecimal beneId,
+			@RequestParam BigDecimal routingCountryId) {
+		return branchRemittanceClient.getPurposeOfTrnx(beneId, routingCountryId);
 	}
 
 	@RequestMapping(value = "/api/remitt/income_sources/list", method = { RequestMethod.POST })
@@ -185,8 +188,8 @@ public class RemitBranchController {
 
 	@RequestMapping(value = "/api/remitt/customer_bank/save", method = { RequestMethod.POST })
 	public AmxApiResponse<BoolRespModel, Object> saveCustomerBankDetails(
-			@RequestBody ListRequestModel<CustomerBankRequest> customerbanks) {
-		return branchRemittanceClient.saveCustomerBankDetails(customerbanks.getValues());
+			@RequestBody CustomerBankRequest customerBankRequest) {
+		return branchRemittanceClient.saveCustomerBankDetails(customerBankRequest);
 	}
 
 	@RequestMapping(value = "/api/remitt/customer_bank/relations", method = { RequestMethod.GET })
@@ -232,18 +235,16 @@ public class RemitBranchController {
 				.report(tranxDTO, !duplicate.booleanValue(), branchMetaOutFilter.exportMeta()).getResult();
 		AmxApiResponse<RemittanceReceiptSubreport, Object> wrapper = AmxApiResponse.buildData(rspt);
 		if (File.Type.PDF.equals(ext)) {
-			File file = postManService.processTemplate(
-					new File(duplicate ? TemplatesMX.REMIT_RECEIPT_COPY_JASPER : TemplatesMX.REMIT_RECEIPT_JASPER_NO_HEADER,
-							wrapper, File.Type.PDF))
-					.getResult();
+			File file = postManService.processTemplate(new File(
+					duplicate ? TemplatesMX.REMIT_RECEIPT_COPY_JASPER : TemplatesMX.REMIT_RECEIPT_JASPER_NO_HEADER,
+					wrapper, File.Type.PDF)).getResult();
 			return PostManUtil.download(file);
 			// file.create(response, false);
 			// return null;
 		} else if (File.Type.HTML.equals(ext)) {
-			File file = postManService.processTemplate(
-					new File(duplicate ? TemplatesMX.REMIT_RECEIPT_COPY_JASPER : TemplatesMX.REMIT_RECEIPT_JASPER_NO_HEADER,
-							wrapper, null))
-					.getResult();
+			File file = postManService.processTemplate(new File(
+					duplicate ? TemplatesMX.REMIT_RECEIPT_COPY_JASPER : TemplatesMX.REMIT_RECEIPT_JASPER_NO_HEADER,
+					wrapper, null)).getResult();
 			// return file.getContent();
 			return PostManUtil.download(file);
 		} else {
@@ -311,5 +312,11 @@ public class RemitBranchController {
 			@RequestParam(value = "staffUserName", required = true) String staffUserName,
 			@RequestParam(value = "staffPassword", required = true) String staffPassword) {
 		return branchRemittanceClient.validationStaffCredentials(staffUserName, staffPassword);
+	}
+
+	@RequestMapping(value = "/api/remitt/routes", method = { RequestMethod.POST })
+	public AmxApiResponse<DynamicRoutingPricingResponse, Object> getDynamicRoutingPricingRoutes(
+			@RequestBody RoutingPricingRequest routingPricingRequest) {
+		return branchRemittanceClient.getDynamicRoutingPricing(routingPricingRequest);
 	}
 }

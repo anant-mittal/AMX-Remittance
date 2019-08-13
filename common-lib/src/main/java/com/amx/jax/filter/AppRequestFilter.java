@@ -35,7 +35,6 @@ import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.CryptoUtil;
 import com.amx.utils.JsonUtil;
-import com.amx.utils.UniqueID;
 import com.amx.utils.Urly;
 
 @Component
@@ -92,6 +91,14 @@ public class AppRequestFilter implements Filter {
 		} else {
 			return true;
 		}
+	}
+
+	public void setFlow(HttpServletRequest req) {
+		String url = req.getRequestURI();
+		AppContextUtil.setFlow(url);
+		AppContextUtil.setFlowfix(url.toLowerCase().replace("pub", "b").replace("api", "p").replace("user", "")
+				.replace("get", "").replace("post", "").replace("save", "")
+				.replaceAll("[AaEeIiOoUuYyWwHh]", ""));
 	}
 
 	@Override
@@ -180,6 +187,7 @@ public class AppRequestFilter implements Filter {
 				traceId = ArgUtil.parseAsString(req.getParameter(AppConstants.TRACE_ID_XKEY));
 			}
 			if (StringUtils.isEmpty(traceId)) {
+				setFlow(req);
 				HttpSession session = req.getSession(false);
 				if (ArgUtil.isEmpty(sessionId)) {
 					if (session == null) {

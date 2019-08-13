@@ -2,6 +2,7 @@
 package com.amx.jax.ui.api;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -21,8 +22,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 
+import com.amx.amxlib.meta.model.CustomerRatingDTO;
 import com.amx.jax.AppConstants;
+import com.amx.jax.AppContextUtil;
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.CustomerProfileClient;
+import com.amx.jax.client.JaxClientUtil;
 import com.amx.jax.dict.AmxEnums.Products;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.dict.Language;
@@ -32,6 +37,7 @@ import com.amx.jax.exception.AmxApiException;
 import com.amx.jax.exception.ApiHttpExceptions.ApiStatusCodes;
 import com.amx.jax.http.ApiRequest;
 import com.amx.jax.http.CommonHttpRequest;
+import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
 import com.amx.jax.http.RequestType;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.rest.RestService;
@@ -132,7 +138,7 @@ public class HomeController {
 		wrapper.getData().setDomain(request.getRequestURL().toString());
 		wrapper.getData().setRequestUri(request.getRequestURI());
 		wrapper.getData().setRemoteAddr(httpService.getIPAddress());
-		wrapper.getData().setDevice(userDevice.getUserDevice());
+		wrapper.getData().setDevice(userDevice.getUserDevice().toSanitized());
 		return JsonUtil.toJson(wrapper);
 	}
 
@@ -254,6 +260,68 @@ public class HomeController {
 		model.addAttribute("verId", verId);
 		model.addAttribute("verCode", verCode);
 		model.addAttribute("idType", webAppConfig.getCompanyIdtype());
+		model.addAttribute("companyTnt", webAppConfig.getCompanyTnt());
 		return "verify";
+	}
+
+	@ApiJaxStatus({ JaxError.CUSTOMER_NOT_FOUND, JaxError.INVALID_OTP, JaxError.ENTITY_INVALID,
+			JaxError.ENTITY_EXPIRED })
+	@ApiStatus({ ApiStatusCodes.PARAM_MISSING })
+	@RequestMapping(value = { "/pub/verify/{contactType}/resend" },
+			method = { RequestMethod.POST })
+	@ResponseBody
+	public Map<String, Object> verification(
+			@PathVariable ContactType contactType,
+			@RequestParam(required = true) String identity) {
+		String errorCode = null;
+		String errorMessage = null;
+		contactType = contactType.contactType();
+		Map<String, Object> map = new HashMap<String, Object>();
+		try {
+			customerProfileClient.createVerificationLink(null, contactType, identity);
+		} catch (AmxApiException e) {
+			map.put("errorCode", e.getErrorKey());
+			map.put("errorMessage", e.getMessage());
+		}
+		return map;
+	}
+
+	@ApiJaxStatus({ JaxError.CUSTOMER_NOT_FOUND, JaxError.INVALID_OTP, JaxError.ENTITY_INVALID,
+			JaxError.ENTITY_EXPIRED })
+	@ApiStatus({ ApiStatusCodes.PARAM_MISSING })
+	@RequestMapping(value = { "/pub/rating/{prodType}/{trnxId}/{veryCode}/**" },
+			method = { RequestMethod.GET }, produces = {
+					CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE })
+	@ResponseBody
+	public Map<String, Object> rating(
+			@PathVariable Products prodType, @PathVariable BigDecimal trnxId, @PathVariable String veryCode) {
+
+		boolean valid = JaxClientUtil.getTransactionVeryCode(trnxId).equals(veryCode);
+		AmxApiResponse<CustomerRatingDTO, ?> rating = jaxService.getRemitClient().inquireCustomerRating(trnxId);
+
+		String errorCode = null;
+		String errorMessage = null;
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("rating", rating);
+		map.put("trnxId", trnxId);
+		map.put("errorCode", errorCode);
+		map.put("errorMessage", errorMessage);
+		map.put("prodType", prodType);
+		map.put("verCode", veryCode);
+		map.put("valid", valid);
+		return map;
+	}
+
+	@ApiJaxStatus({ JaxError.CUSTOMER_NOT_FOUND, JaxError.INVALID_OTP, JaxError.ENTITY_INVALID,
+			JaxError.ENTITY_EXPIRED })
+	@ApiStatus({ ApiStatusCodes.PARAM_MISSING })
+	@RequestMapping(value = { "/pub/rating/{prodType}/{trnxId}/{veryCode}" },
+			method = { RequestMethod.GET })
+	public String rating(Model model,
+			@PathVariable Products prodType, @PathVariable BigDecimal trnxId, @PathVariable String veryCode) {
+		Map<String, Object> map = rating(prodType, trnxId, veryCode);
+		model.addAttribute("ratingData", (map));
+		model.addAttribute("companyTnt", AppContextUtil.getTenant());
+		return "rating";
 	}
 }

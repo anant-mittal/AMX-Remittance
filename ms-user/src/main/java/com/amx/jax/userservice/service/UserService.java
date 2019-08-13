@@ -33,7 +33,6 @@ import com.amx.amxlib.exception.jax.InvalidCivilIdException;
 import com.amx.amxlib.exception.jax.InvalidJsonInputException;
 import com.amx.amxlib.exception.jax.InvalidOtpException;
 import com.amx.amxlib.exception.jax.UserNotFoundException;
-import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.model.AbstractUserModel;
 import com.amx.amxlib.model.CivilIdOtpModel;
@@ -71,6 +70,7 @@ import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.events.CActivityEvent;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.AbstractModel;
+import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.model.customer.SecurityQuestionModel;
 import com.amx.jax.model.response.customer.CustomerFlags;
@@ -96,11 +96,14 @@ import com.amx.jax.userservice.dao.CustomerIdProofDao;
 import com.amx.jax.userservice.dao.ReferralDetailsDao;
 import com.amx.jax.userservice.manager.CustomerFlagManager;
 import com.amx.jax.userservice.manager.SecurityQuestionsManager;
+import com.amx.jax.userservice.manager.UserContactVerificationManager;
 import com.amx.jax.userservice.repository.LoginLogoutHistoryRepository;
 import com.amx.jax.userservice.service.CustomerValidationContext.CustomerValidation;
+import com.amx.jax.util.AmxDBConstants.Status;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.StringUtil;
+import com.amx.jax.util.AmxDBConstants.Status;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Random;
 
@@ -210,6 +213,12 @@ public class UserService extends AbstractUserService {
 	
 	
 
+	
+	@Autowired
+	CustomerRepository customerrepository;
+	@Autowired
+	UserContactVerificationManager userContactVerificationManager;
+	
 	@Override
 	public ApiResponse registerUser(AbstractUserModel userModel) {
 		UserModel kwUserModel = (UserModel) userModel;
@@ -263,6 +272,7 @@ public class UserService extends AbstractUserService {
 			personinfo.setEmail(customer.getEmail());
 			personinfo.setMobile(customer.getMobile());
 			model.setPersoninfo(personinfo);
+			model.setIdentityId(customer.getIdentityInt());
 		} catch (Exception e) {
 			logger.error("Exception while populating PersonInfo : ", e);
 		}
@@ -324,8 +334,11 @@ public class UserService extends AbstractUserService {
 		if (metaData.getCustomerId() != null && (model.getEmail() != null || model.getMobile() != null)) {
 			custDao.callProcedurePopulateCusmas(metaData.getCustomerId());
 		}
+		
 		updateCustomerVerification(onlineCust, model, cust);
-		setCustomerStatus(onlineCust, model, cust);
+		
+		
+		
 		checkListManager.updateCustomerChecks(onlineCust, model);
 		ApiResponse response = getBlackApiResponse();
 
@@ -340,10 +353,10 @@ public class UserService extends AbstractUserService {
 		response.setResponseStatus(ResponseStatus.OK);
 
 		// this is to send email on OLD email id
-		if (model.getEmail() != null) {
+		if ((model.getEmail() != null)&& oldEmail!=null) {
 			model.setEmail(oldEmail);
 		}
-
+		
 		if (isNewUserRegistrationSuccess(model, onlineCust)) {
 			jaxNotificationService.sendNewRegistrationSuccessEmailNotification(outputModel.getPersoninfo(),
 					onlineCust.getEmail());
@@ -362,6 +375,7 @@ public class UserService extends AbstractUserService {
 			newReferralDetail.setCustomerId(onlineCust.getCustomerId());
 			refDao.saveReferralCode(newReferralDetail);
 		}
+		setCustomerStatus(onlineCust, model, cust);
 		auditService.log(auditEvent.result(Result.DONE));
 		return response;
 	}
@@ -385,7 +399,7 @@ public class UserService extends AbstractUserService {
 
 			if (cv != null && cv.getFieldValue() != null && !ConstantDocument.Yes.equals(cv.getVerificationStatus())) {
 				throw new GlobalException(
-						JaxError.USER_DATA_VERIFICATION_PENDING,
+						JaxError.EMAIL_NOT_VERIFIED,
 						"Thank you for registration, Our helpdesk will get in touch with you in 48 hours");
 			}
 
@@ -397,7 +411,7 @@ public class UserService extends AbstractUserService {
 
 	private boolean isNewUserRegistrationSuccess(CustomerModel model, CustomerOnlineRegistration onlineCust) {
 
-		if (model.getPassword() != null && ConstantDocument.Yes.equals(onlineCust.getStatus())) {
+		if (model.getPassword() != null) {
 			return true;
 		}
 		return false;
@@ -495,7 +509,7 @@ public class UserService extends AbstractUserService {
 		}
 		// userValidationService.validateCustomerLockCount(onlineCust);
 		userValidationService.validateTokenSentCount(onlineCust);
-		userValidationService.validateCustomerContactForSendOtp(channels, customer);
+		userValidationService.validateCustomerContactForSendOtp(channels, customer ,customerModel);
 		generateToken(civilId, model, channels);
 		onlineCust.setEmailToken(model.getHashedeOtp());
 		onlineCust.setSmsToken(model.getHashedmOtp());
@@ -657,6 +671,10 @@ public class UserService extends AbstractUserService {
 		checkListManager.updateMobileAndEmailCheck(onlineCust, custDao.getCheckListForUserId(civilId));
 		this.unlockCustomer(onlineCust);
 		custDao.saveOnlineCustomer(onlineCust);
+		
+		// ------ Mobile and Email Verified ------
+		userContactVerificationManager.setContactVerified(customer, mOtp, eOtp, null);
+		
 		ApiResponse response = getBlackApiResponse();
 		CustomerModel customerModel = convert(onlineCust);
 		response.getData().getValues().add(customerModel);
@@ -670,8 +688,12 @@ public class UserService extends AbstractUserService {
 		if (tenantContext.getKey().equals("OMN")) {
 			tenantContext.get().validateCivilId(userId);
 		}
+		List<Customer> customerData = customerrepository.getCustomerByIdentityInt(userId);
+		
+		
 		List<Customer> validCustomer = userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(userId,
 				JaxApiFlow.LOGIN);
+		
 		CustomerOnlineRegistration onlineCustomer = custDao
 				.getOnlineCustByCustomerId(validCustomer.get(0).getCustomerId());
 		if (onlineCustomer == null) {
@@ -690,6 +712,8 @@ public class UserService extends AbstractUserService {
 		userValidationService.validateCustIdProofs(onlineCustomer.getCustomerId());
 		userValidationService.validateCustomerData(onlineCustomer, customer);
 		userValidationService.validateBlackListedCustomerForLogin(customer);
+		
+		
 		ApiResponse response = getBlackApiResponse();
 		CustomerModel customerModel = convert(onlineCustomer);
 
@@ -698,12 +722,13 @@ public class UserService extends AbstractUserService {
 		response.getData().setType(customerModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
 		return response;
+	
 	}
 
 	/**
 	 * call this method to perform tasks after login
 	 */
-	private void afterLoginSteps(CustomerOnlineRegistration onlineCustomer) {
+	public void afterLoginSteps(CustomerOnlineRegistration onlineCustomer) {
 		custDao.updatetLoyaltyPoint(onlineCustomer.getCustomerId());
 		this.unlockCustomer(onlineCustomer);
 		this.saveLoginLogoutHistoryByUserName(onlineCustomer.getUserName());
@@ -1315,8 +1340,13 @@ public class UserService extends AbstractUserService {
 			userValidationService.incrementLockCount(onlineCustomer);
 			throw new InvalidOtpException("whatsapp Otp is incorrect for civil-id: " + civilId);
 		}
+		
 		ApiResponse response = getBlackApiResponse();
 		CustomerModel customerModel = convert(onlineCustomer);
+		
+		// ------ WhatsApp Verification ------
+		userContactVerificationManager.setContactVerified(customer, null, null, wOtp);
+		
 		response.getData().getValues().add(customerModel);
 		response.getData().setType(customerModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);

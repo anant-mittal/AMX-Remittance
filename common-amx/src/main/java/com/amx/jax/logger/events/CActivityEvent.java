@@ -21,7 +21,7 @@ public class CActivityEvent extends AuditEvent {
 
 		VALIDATION,
 
-		PROFILE_UPDATE,
+		PROFILE_UPDATE, ACCOUNT_LOCKED, ACCOUNT_UNLOCKED,
 
 		BENE_ADD, BENE_UPDATE,
 

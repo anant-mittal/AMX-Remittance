@@ -1,5 +1,7 @@
 package com.amx.jax;
 
+import org.jasypt.util.text.BasicTextEncryptor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -11,6 +13,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.jax.client.configs.JaxMetaInfo;
+import com.amx.jax.config.JaxProperties;
 import com.amx.jax.swagger.MockParamBuilder;
 import com.amx.jax.swagger.MockParamBuilder.MockParam;
 
@@ -20,9 +23,11 @@ import com.amx.jax.swagger.MockParamBuilder.MockParam;
 @EnableAsync
 public class JaxServiceApplication {
 
+	@Autowired
+	JaxProperties jaxProperties;
+	
 	public static void main(String[] args) {
 		SpringApplication.run(JaxServiceApplication.class, args);
-		//SysUtils.disableSysOut();
 	}
 
 	@Bean
@@ -40,4 +45,10 @@ public class JaxServiceApplication {
 				.parameterType(MockParamBuilder.MockParamType.HEADER).required(true).build();
 	}
 
+	@Bean(name = "jaxTpBasicTextEncryptor")
+	public BasicTextEncryptor jaxTpBasicTextEncryptor() {
+		BasicTextEncryptor basicTextEncryptor = new BasicTextEncryptor();
+		basicTextEncryptor.setPassword(jaxProperties.getTpcSecret());
+		return basicTextEncryptor;
+	}
 }

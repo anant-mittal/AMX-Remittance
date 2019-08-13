@@ -31,7 +31,16 @@ public class App { // Noncompliant
 	 * @throws MalformedURLException
 	 * @throws URISyntaxException
 	 */
-	public static void main(String[] args) throws MalformedURLException, URISyntaxException {
+
+	public static void main(String[] args) {
+		String url = "/api/user/tranx/history";
+		System.out.println(url.toLowerCase().replace("pub", "b").replace("api", "p").replace("user", "")
+				.replace("get", "").replace("post", "").replace("save", "")
+				.replace("/", "").replaceAll("[AaEeIiOoUuYyWwHh]", ""));
+	}
+
+	public static void main2(String[] args) throws MalformedURLException, URISyntaxException {
+
 		AppContext context = AppContextUtil.getContext();
 
 		UserDeviceClient client = new UserDeviceClient();
@@ -43,9 +52,7 @@ public class App { // Noncompliant
 		context.setClient(client);
 		context.setTraceId("TST-1d59nub55kbgg-1d59nub5827sx");
 		context.setTranxId("TST-1d59nub55kbgg-1d59nub5827sx");
-		
 
-		
 		TunnelMessage<Map<String, String>> message = new TunnelMessage<Map<String, String>>(
 				new HashMap<String, String>(), context);
 		message.setTopic("DATAUPD_CUSTOMER");

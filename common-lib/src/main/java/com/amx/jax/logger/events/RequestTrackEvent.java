@@ -18,6 +18,7 @@ import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.tunnel.TunnelEventXchange;
 import com.amx.jax.tunnel.TunnelMessage;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.ContextUtil;
 import com.amx.utils.HttpUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -58,7 +59,7 @@ public class RequestTrackEvent extends AuditEvent {
 	public <T> RequestTrackEvent(Type type, TunnelEventXchange xchange, TunnelMessage<T> message) {
 		super(type);
 		this.topic = new HashMap<String, String>();
-		this.description = String.format("%s %s=%s", this.type, xchange, message.getTopic());
+		this.description = String.format("%s %s", this.type, xchange.getTopic(message.getTopic()));
 		topic.put("id", message.getId());
 		topic.put("name", message.getTopic());
 		this.context = message.getContext();
@@ -91,6 +92,16 @@ public class RequestTrackEvent extends AuditEvent {
 
 	public RequestTrackEvent track(HttpServletResponse response, HttpServletRequest request) {
 		this.description = String.format("%s %s=%s", this.type, response.getStatus(), request.getRequestURI());
+
+		ApiAuditEvent apiEventObject = (ApiAuditEvent) ContextUtil.map().getOrDefault("api_event", null);
+
+		if (!ArgUtil.isEmpty(apiEventObject)) {
+			this.result = apiEventObject.getResult();
+			this.message = apiEventObject.getMessage();
+			this.details = apiEventObject.getDetails();
+			this.errorCode = apiEventObject.getErrorCode();
+		}
+
 		return this;
 	}
 

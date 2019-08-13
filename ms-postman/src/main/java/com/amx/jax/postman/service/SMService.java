@@ -13,6 +13,7 @@ import org.thymeleaf.context.Context;
 
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppContextUtil;
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.LoggerService;
@@ -139,15 +140,15 @@ public class SMService {
 			if (sms.getTemplate() != null) {
 				Context context = new Context(postManConfig.getLocal(sms));
 				context.setVariables(sms.getModel());
-				
+
 				File file = new File();
 				file.setTemplate(sms.getTemplate());
 				file.setModel(sms.getModel());
 				file.setLang(sms.getLang());
-				
-				sms.setMessage(fileService.create(file).getContent() 
-						//templateService.processHtml(sms.getITemplate(), context)
-						);
+
+				sms.setMessage(fileService.create(file, ContactType.SMS).getContent()
+				// templateService.processHtml(sms.getITemplate(), context)
+				);
 			}
 
 			if (ArgUtil.isEmpty(to)) {
