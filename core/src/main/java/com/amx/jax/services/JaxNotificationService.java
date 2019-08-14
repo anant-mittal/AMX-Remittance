@@ -87,6 +87,7 @@ public class JaxNotificationService {
 			file.setName("TransactionReceipt");
 			file.setType(File.Type.PDF);
 			file.getModel().put(RESP_DATA_KEY, remittanceReceiptSubreport);
+			file.setPassword(pinfo.getIdentityInt());
 
 			email.addFile(file);
 			logger.debug("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getFirstName());
