@@ -22,6 +22,7 @@ import com.amx.jax.AppParam;
 import com.amx.jax.AppTenantConfig;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.def.IndicatorListner;
+import com.amx.jax.def.IndicatorListner.GaugeIndicator;
 import com.amx.jax.exception.AmxApiError;
 import com.amx.jax.http.ApiRequest;
 import com.amx.jax.http.CommonHttpRequest;
@@ -72,9 +73,10 @@ public class AppParamController {
 		for (AppParam eachAppParam : AppParam.values()) {
 			map.put(eachAppParam.toString(), eachAppParam);
 		}
+		GaugeIndicator gaugeIndicator = new GaugeIndicator();
 		if (!ArgUtil.isEmpty(listners)) {
 			for (IndicatorListner eachListner : listners) {
-				map.putAll(eachListner.getIndicators());
+				map.putAll(eachListner.getIndicators(gaugeIndicator));
 			}
 		}
 		return map;
