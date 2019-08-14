@@ -176,7 +176,7 @@ public class RemittancePaymentManager extends AbstractService{
 						pushMessage.setSubject("Refer To Win!");
 						pushMessage.setMessage(
 								"Welcome to Al Mulla family! Win a chance to get exciting offers at Al Mulla Exchange by sharing the links to as many contacts as you can.");
-						pushMessage.addToUser(referralDetails.getRefferedByCustomerId());
+						pushMessage.addToUser(referralDetails.getCustomerId());
 						pushNotifyClient.send(pushMessage);	
 					}
 				}			
