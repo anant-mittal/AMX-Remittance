@@ -29,11 +29,12 @@ public class MCQIndicator implements IndicatorListner {
 	public static String TIMER = null;
 
 	@Override
-	public Map<String, Object> getIndicators() {
+	public Map<String, Object> getIndicators(GaugeIndicator gauge) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("tunnel.listner", MCQIndicator.getStatus());
 
 		Map<String, Object> cacheMap = new HashMap<String, Object>();
+		cacheMap.put("status", "UP");
 
 		if (ArgUtil.isEmpty(TIMER)) {
 			TIMER = appConfig.getSpringAppName() + System.currentTimeMillis();
@@ -42,15 +43,21 @@ public class MCQIndicator implements IndicatorListner {
 		try {
 			sampleTestCacheBox.get(TIMER);
 			cacheMap.put("GET", "PASS");
+			gauge.set("redis_get", GaugeIndicator.UP);
 		} catch (Exception e) {
 			cacheMap.put("GET", "FAIL");
+			cacheMap.put("status", "DOWN");
+			gauge.set("redis_get", GaugeIndicator.DOWN);
 		}
 
 		try {
 			sampleTestCacheBox.remove(TIMER);
 			cacheMap.put("DEL", "PASS");
+			gauge.set("redis_del", GaugeIndicator.UP);
 		} catch (Exception e) {
 			cacheMap.put("DEL", "FAIL");
+			cacheMap.put("status", "DOWN");
+			gauge.set("redis_del", GaugeIndicator.DOWN);
 		}
 
 		TIMER = appConfig.getSpringAppName() + System.currentTimeMillis();
@@ -58,8 +65,11 @@ public class MCQIndicator implements IndicatorListner {
 		try {
 			sampleTestCacheBox.put(TIMER, "PASS");
 			cacheMap.put("PUT", "PASS");
+			gauge.set("redis_put", GaugeIndicator.UP);
 		} catch (Exception e) {
 			cacheMap.put("PUT", "FAIL");
+			cacheMap.put("status", "DOWN");
+			gauge.set("redis_put", GaugeIndicator.DOWN);
 		}
 
 		map.put("redis.cache", cacheMap);
