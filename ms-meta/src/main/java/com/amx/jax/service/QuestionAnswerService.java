@@ -53,7 +53,7 @@ public class QuestionAnswerService extends AbstractService {
 			model.setCountryId(quest.getCountryId());
 			model.setDescription(questList1.getDescription());
 			model.setLanguageId(quest.getLanguageId());
-			model.setQuestId(quest.getQuestId());
+			model.setQuestId(questList1.getQuestId());
 			model.setQuestNumber(quest.getQuestNumber());
 			model.setStatus(quest.getStatus());
 			list.add(model);
