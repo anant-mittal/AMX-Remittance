@@ -410,11 +410,6 @@ public class BranchRemittanceApplManager {
 			remittanceApplication.setExCurrencyMasterByLocalNetCurrencyId(localCurrency);
 			remittanceApplication.setSpotRateInd(ConstantDocument.No);
 
-
-
-
-
-
 			// company Id and code
 			CompanyMaster companymaster = new CompanyMaster();
 			companymaster.setCompanyId(applSetup.getCompanyId());
@@ -533,7 +528,10 @@ public class BranchRemittanceApplManager {
 			if(dynamicRoutingPricingResponse.getCostRateLimitReached()!=null) {
 				remittanceApplication.setReachedCostRateLimit(dynamicRoutingPricingResponse.getCostRateLimitReached()==false?"N":"Y");
 			}
-
+			
+			if(JaxUtil.isNullZeroBigDecimalCheck(rateBreakUp.getBaseRate())) {
+				remittanceApplication.setOriginalExchangeRate(rateBreakUp.getBaseRate());
+			}			
 
 			remittanceApplication.setBeneDeductFlag(dynamicRoutingPricingResponse.getBeneDeductFlag());
 
