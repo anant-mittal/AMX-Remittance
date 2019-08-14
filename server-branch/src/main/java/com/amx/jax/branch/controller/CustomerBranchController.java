@@ -16,6 +16,7 @@ import com.amx.jax.model.customer.document.UploadCustomerDocumentResponse;
 import com.amx.jax.model.customer.document.UploadCustomerKycRequest;
 import com.amx.jax.model.customer.document.UploadCustomerKycResponse;
 import com.amx.jax.model.request.EmploymentDetailsRequest;
+import com.amx.jax.model.request.VerifyCustomerContactRequest;
 import com.amx.jax.model.request.customer.UpdateCustomerInfoRequest;
 import com.amx.jax.model.request.device.SignaturePadCustomerRegStateMetaInfo;
 import com.amx.jax.model.response.ArticleDetailsDescDto;
@@ -167,6 +168,12 @@ public class CustomerBranchController {
 			@RequestBody SignaturePadCustomerRegStateMetaInfo signaturePadCustRegInfo) {
 		return terminalService.updateCustomerProfileStateData(ssoUser.getUserClient().getTerminalId().intValue(),
 				ssoUser.getUserDetails().getEmployeeId(), signaturePadCustRegInfo);
+	}
+
+	@RequestMapping(value = "/api/customer/contact/verify", method = { RequestMethod.POST })
+	public AmxApiResponse<BoolRespModel, Object> uploadCustomerKyc(
+			@RequestBody VerifyCustomerContactRequest request) {
+		return customerManagementClient.verifyContact(request);
 	}
 
 }
