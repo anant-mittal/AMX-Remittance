@@ -250,6 +250,7 @@ public class PartnerDataManager {
 
 		SrvPrvFeeInqResDTO srvPrvFeeInqResDTO = null;
 		CurrencyMasterModel localCurrencyMaster = fetchCurrencyMasterData(srvPrvFeeInqReqDTO.getLocalCurrencyId());
+		CurrencyMasterModel foreignCurrencyMaster = fetchCurrencyMasterData(srvPrvFeeInqReqDTO.getForeignCurrencyId());
 
 		marginAmount = serviceProviderRateView.getMargin() == null ? BigDecimal.ZERO : serviceProviderRateView.getMargin();
 		LOGGER.info("Margin : "+marginAmount);
@@ -321,13 +322,16 @@ public class PartnerDataManager {
 							// checking with local amount
 							BigDecimal baseGrossAmount = srvPrvFeeInqReqDTO.getAmount();
 							srvPrvFeeInqResDTO.setBaseLocalAmount(baseGrossAmount.add(commissionAmt));
+							BigDecimal calBaseForeignAmt = new BigDecimal(baseGrossAmount.doubleValue()/exchangeRate.doubleValue());
+							calBaseForeignAmt = RoundUtil.roundBigDecimal(calBaseForeignAmt, foreignCurrencyMaster.getDecinalNumber().intValue());
+							srvPrvFeeInqResDTO.setBaseForeignAmount(calBaseForeignAmt);
 						} else {
 							// checking with destination amount
 							BigDecimal exchangeBaseLocalAmt = destinationAmt.multiply(exchangeRate);
+							exchangeBaseLocalAmt = RoundUtil.roundBigDecimal(exchangeBaseLocalAmt, localCurrencyMaster.getDecinalNumber().intValue());
 							srvPrvFeeInqResDTO.setBaseLocalAmount(exchangeBaseLocalAmt.add(commissionAmt));
+							srvPrvFeeInqResDTO.setBaseForeignAmount(destinationAmt);
 						}
-						
-						srvPrvFeeInqResDTO.setBaseForeignAmount(destinationAmt);
 
 						HomeSendSrvcProviderInfo homeSendSrvcProviderInfo = fetchHomeSendData(serviceProviderResponse,quotationCall,marginAmount,servProvFeeStartTime);
 						srvPrvFeeInqResDTO.setHomeSendInfoDTO(homeSendSrvcProviderInfo);
