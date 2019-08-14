@@ -24,13 +24,13 @@ public class JaxRbaacServiceWrapper {
 
 	public RoleMappingForEmployee getRoleMappingsForEmployee() {
 		AmxApiResponse<RoleMappingForEmployee, Object> response = rbaacServiceClient.getRoleMappingsForEmployee(metaData.getEmployeeId(),
-				metaData.getDeviceId(), null, null);
+				metaData.getDeviceIp(), null, null);
 		return response.getResult();
 	}
 
 	public List<String> getEmployeeRoles() {
 		AmxApiResponse<RoleMappingForEmployee, Object> response = rbaacServiceClient.getRoleMappingsForEmployee(metaData.getEmployeeId(),
-				metaData.getDeviceId(), null, null);
+				metaData.getDeviceIp(), null, null);
 		Map<BigDecimal, RoleResponseDTO> roleInfoMap = response.getResult().getRoleInfoMap();
 		List<String> roles = new ArrayList<String>();
 		roleInfoMap.forEach((k, v) -> {

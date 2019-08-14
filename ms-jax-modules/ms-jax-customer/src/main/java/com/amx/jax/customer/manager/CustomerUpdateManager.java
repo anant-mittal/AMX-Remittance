@@ -10,11 +10,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.customer.document.manager.CustomerDocumentManager;
 import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.ViewCompanyDetails;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.customer.UpdateCustomerInfoRequest;
+import com.amx.jax.service.CompanyService;
+import com.amx.jax.service.CountryService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.utils.JsonUtil;
 
@@ -33,6 +37,10 @@ public class CustomerUpdateManager {
 	UserService userService;
 	@Autowired
 	CustomerDocumentManager customerDocumentManager;
+	@Autowired
+	CompanyService companyService;
+	@Autowired
+	CountryService countryService;
 
 	private static final Logger log = LoggerFactory.getLogger(CustomerUpdateManager.class);
 
@@ -45,10 +53,11 @@ public class CustomerUpdateManager {
 			customerEmployementManager.updateCustomerEmploymentInfo(customer, req.getEmploymentDetail());
 		}
 		if (req.getHomeAddressDetail() != null) {
-			 req.getHomeAddressDetail().setContactType(ConstantDocument.CONTACT_TYPE_FOR_HOME);
+			req.getHomeAddressDetail().setContactType(ConstantDocument.CONTACT_TYPE_FOR_HOME);
 			customerAddressDetailsManager.updateCustomerAddressDetail(customer, req.getHomeAddressDetail());
 		}
 		if (req.getLocalAddressDetail() != null) {
+			validateLocalContactDetail(req);
 			req.getLocalAddressDetail().setContactType(ConstantDocument.CONTACT_TYPE_FOR_LOCAL);
 			customerAddressDetailsManager.updateCustomerAddressDetail(customer, req.getLocalAddressDetail());
 		}
@@ -56,6 +65,16 @@ public class CustomerUpdateManager {
 			customerPersonalDetailManager.updateCustomerPersonalDetail(customer, req.getPersonalDetailInfo());
 		}
 		customerDocumentManager.addCustomerDocument(metaData.getCustomerId());
+	}
+
+	private void validateLocalContactDetail(UpdateCustomerInfoRequest req) {
+		ViewCompanyDetails companyDetail = companyService.getCompanyDetail();
+		BigDecimal appCountry = companyDetail.getApplicationCountryId();
+		String countryName = countryService.getCountryMaster(appCountry).getFsCountryMasterDescs().get(0).getCountryName();
+
+		if (!appCountry.equals(req.getLocalAddressDetail().getCountryId())) {
+			throw new GlobalException("Local country should be " + countryName);
+		}
 	}
 
 }

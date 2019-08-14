@@ -41,7 +41,7 @@ public class JaxServiceApplication {
 	public MockParam metaInfo() {
 		return new MockParamBuilder().name("meta-info").description("meta-info")
 				.defaultValue("{\"countryId\":91,\"customerId\":5218,\"companyId\":1,\"channel\":\"ONLINE\" , "
-						+ "\"countryBranchId\":\"78\", \"tenant\":\"KWT\",\"languageId\":1,\"employeeId\":265 }")
+						+ "\"countryBranchId\":\"78\", \"tenant\":\"KWT\",\"languageId\":1,\"employeeId\":265 ,\"deviceIp\":10.29.90.24}")
 				.parameterType(MockParamBuilder.MockParamType.HEADER).required(true).build();
 	}
 

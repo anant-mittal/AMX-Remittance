@@ -17,7 +17,7 @@ import com.amx.jax.customer.document.manager.CustomerDocumentUploadManager;
 import com.amx.jax.customer.manager.OffsiteCustomerRegManager;
 import com.amx.jax.customer.service.OffsitCustRegService;
 import com.amx.jax.dbmodel.Customer;
-import com.amx.jax.dbmodel.DmsApplMapping;
+import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.dbmodel.customer.CustomerDocumentCategory;
 import com.amx.jax.dbmodel.customer.CustomerDocumentTypeMaster;
 import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReferenceTemp;
@@ -93,36 +93,34 @@ public class CustomerManagementValidation {
 			identityInt = customer.getIdentityInt();
 			identityTypeId = customer.getIdentityTypeId();
 		}
-		List<CustomerDocumentUploadReferenceTemp> customerUploads = customerDocumentUploadManager.getCustomerUploads(identityInt,
-				identityTypeId);
+		List<CustomerDocumentUploadReferenceTemp> customerUploads = customerDocumentUploadManager.getCustomerUploads(identityInt, identityTypeId);
 		List<CustomerDocValidationResponseData> missingDocData = new ArrayList<>();
 		CustomerDocumentTypeMaster customerDocumentTypeMaster = customerDocMasterManager.getKycDocTypeMaster(identityTypeId);
 		String kycDocCategory = customerDocumentTypeMaster.getDocumentCategory();
 		boolean isKycDone = true;
 		if (customer != null) {
-			DmsApplMapping mappingData = customerIdProofManager.getDmsMappingByCustomer(customer);
-			if (mappingData == null) {
+			CustomerIdProof idProof = customerIdProofManager.getCustomerIdProofByCustomerId(customer.getCustomerId());
+			if (idProof == null) {
 				isKycDone = false;
 			}
 		}
-		/*// article detail
-		if (data.getArticleDetailsId() != null) {
-			Optional<CustomerDocumentUploadReferenceTemp> uploadedProof = customerUploads.stream()
-					.filter(i -> kycDocCategory.equals(i.getCustomerDocumentTypeMaster().getDocumentCategory())).findFirst();
-			if (!uploadedProof.isPresent()) {
-				missingDocData.add(new CustomerDocValidationResponseData(kycDocCategory));
-			}
-		}
-
-		// employer change
-		if (data.getEmployer() != null) {
-			Optional<CustomerDocumentUploadReferenceTemp> uploadedProof = customerUploads.stream()
-					.filter(i -> CustomerDocumentCategory.EMPLOYMENT_PROOF.name().equals(i.getCustomerDocumentTypeMaster().getDocumentCategory()))
-					.findFirst();
-			if (!uploadedProof.isPresent()) {
-				missingDocData.add(new CustomerDocValidationResponseData(CustomerDocumentCategory.EMPLOYMENT_PROOF.name()));
-			}
-		}*/
+		/*
+		 * // article detail if (data.getArticleDetailsId() != null) {
+		 * Optional<CustomerDocumentUploadReferenceTemp> uploadedProof =
+		 * customerUploads.stream() .filter(i ->
+		 * kycDocCategory.equals(i.getCustomerDocumentTypeMaster().getDocumentCategory()
+		 * )).findFirst(); if (!uploadedProof.isPresent()) { missingDocData.add(new
+		 * CustomerDocValidationResponseData(kycDocCategory)); } }
+		 * 
+		 * // employer change if (data.getEmployer() != null) {
+		 * Optional<CustomerDocumentUploadReferenceTemp> uploadedProof =
+		 * customerUploads.stream() .filter(i ->
+		 * CustomerDocumentCategory.EMPLOYMENT_PROOF.name().equals(i.
+		 * getCustomerDocumentTypeMaster().getDocumentCategory())) .findFirst(); if
+		 * (!uploadedProof.isPresent()) { missingDocData.add(new
+		 * CustomerDocValidationResponseData(CustomerDocumentCategory.EMPLOYMENT_PROOF.
+		 * name())); } }
+		 */
 
 		// income range
 		if (data.getIncomeRangeId() != null) {
