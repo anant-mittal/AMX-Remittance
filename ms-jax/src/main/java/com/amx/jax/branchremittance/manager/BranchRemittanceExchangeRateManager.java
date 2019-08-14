@@ -361,6 +361,9 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 				}
 			}else {
 				result.setExRateBreakup(exchangeRateService.createBreakUpSP(sellRateDetail.getSellRateNet().getInverseRate(), sellRateDetail.getSellRateNet().getConvertedLCAmount(),sellRateDetail.getSellRateNet().getConvertedFCAmount()));
+				if(sellRateDetail.getSellRateBase().getInverseRate() != null) {
+					result.getExRateBreakup().setBaseRate(sellRateDetail.getSellRateBase().getInverseRate());
+				}
 			}
 			
 			remittanceApplicationParamManager.populateRemittanceApplicationParamMap(null, beneficiaryView,result.getExRateBreakup());

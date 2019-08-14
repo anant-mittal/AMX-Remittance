@@ -98,32 +98,49 @@ public class ServiceProviderManager {
 	public void processServiceProviderData(ViewExRoutingMatrix homeSendMatrix, SrvPrvFeeInqResDTO partnerResp) {
 
 		ExchangeRateBreakup sellRateBase = new ExchangeRateBreakup();
+		ExchangeRateBreakup sellRateNet = new ExchangeRateBreakup();
 
-		sellRateBase.setInverseRate(partnerResp.getExchangeRateWithPips());
+		sellRateBase.setInverseRate(partnerResp.getExchangeRateBase());
+		sellRateNet.setInverseRate(partnerResp.getExchangeRateWithPips());
 
-		if (partnerResp.getExchangeRateWithPips() != null
-				&& partnerResp.getExchangeRateWithPips().compareTo(BigDecimal.ZERO) != 0) {
+		// Base Rate
+		if (partnerResp.getExchangeRateBase() != null
+				&& partnerResp.getExchangeRateBase().compareTo(BigDecimal.ZERO) != 0) {
 
-			sellRateBase.setRate(BigDecimal.ONE.divide(partnerResp.getExchangeRateWithPips(), DEF_CONTEXT));
+			sellRateBase.setRate(BigDecimal.ONE.divide(partnerResp.getExchangeRateBase(), DEF_CONTEXT));
 		} else {
 
 			sellRateBase.setRate(BigDecimal.ZERO);
 		}
 
+		// Net Rate
+		if (partnerResp.getExchangeRateWithPips() != null
+				&& partnerResp.getExchangeRateWithPips().compareTo(BigDecimal.ZERO) != 0) {
+
+			sellRateNet.setRate(BigDecimal.ONE.divide(partnerResp.getExchangeRateWithPips(), DEF_CONTEXT));
+		} else {
+
+			sellRateNet.setRate(BigDecimal.ZERO);
+		}
+
 		sellRateBase.setConvertedLCAmount(partnerResp.getGrossAmount());
 		sellRateBase.setConvertedFCAmount(partnerResp.getForeignAmount());
+		
+		sellRateNet.setConvertedLCAmount(partnerResp.getGrossAmount());
+		sellRateNet.setConvertedFCAmount(partnerResp.getForeignAmount());
 
 		ExchangeRateDetails exchRateDetails = new ExchangeRateDetails();
 		exchRateDetails.setBankId(homeSendMatrix.getRoutingBankId());
 
 		exchRateDetails.setCostRateLimitReached(false);
-
-		// TODO : Check
 		exchRateDetails.setDiscountAvailed(true);
 		exchRateDetails.setLowGLBalance(false);
 		exchRateDetails.setSellRateBase(sellRateBase);
-		// exchRateDetails.setSellRateNet(sellRateBase);
+		exchRateDetails.setSellRateNet(sellRateNet);
 		exchRateDetails.setServiceIndicatorId(homeSendMatrix.getServiceMasterId());
+		
+		// Set Discount Details
+		exchRateDetails.setCustomerDiscountDetails(partnerResp.getCustomerDiscountDetails());
 
 		if (null == transientDataCache.getSellRateDetails()) {
 			List<ExchangeRateDetails> bankWiseRates = new ArrayList<ExchangeRateDetails>();

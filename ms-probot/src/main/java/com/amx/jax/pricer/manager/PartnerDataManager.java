@@ -110,6 +110,7 @@ public class PartnerDataManager {
 		SrvPrvFeeInqResDTO localCurrencySrvPrvFeeInqResDTO = null;
 		BigDecimal marginAmount = BigDecimal.ZERO;
 		BigDecimal amxRateWithMargin = BigDecimal.ZERO;
+		BigDecimal amxRateWithMarginWithPips = BigDecimal.ZERO;
 		BigDecimal settlementAmtwithDecimal = BigDecimal.ZERO;
 		BigDecimal settlementAmount = BigDecimal.ZERO;
 		BigDecimal settlementTotalDiscountPips = BigDecimal.ZERO;
@@ -151,12 +152,13 @@ public class PartnerDataManager {
 							settlementAmount = RoundUtil.roundBigDecimal(settlementAmtwithDecimal, currencyMasterModel.getDecinalNumber().intValue());
 							LOGGER.info("Amx Exchange Rate with Margin : "+amxRateWithMargin+" settlement Amount : "+settlementAmtwithDecimal+" settlement Amount with round : "+settlementAmount);
 							
-							checkingAmountLimit(bankMasterModel.getBankId(), currencyMasterModel.getCurrencyId(), customerDetailsDTO.getCustomerTypeCode(), beneficiaryDetailsDTO.getBenificaryStatusId(), settlementAmount);
+							//checkingAmountLimit(bankMasterModel.getBankId(), currencyMasterModel.getCurrencyId(), customerDetailsDTO.getCustomerTypeCode(), beneficiaryDetailsDTO.getBenificaryStatusId(), settlementAmount);
 
 							quotationResponse = fetchQuotationDetails(srvPrvFeeInqReqDTO, serviceProviderRateView, settlementAmount, customerDetailsDTO, beneficiaryDetailsDTO);
 
 							if(quotationResponse != null) {
-								localCurrencySrvPrvFeeInqResDTO = ServiceProviderResponse(quotationResponse, srvPrvFeeInqReqDTO, productDetailsDTO, serviceProviderRateView, settlementExchangeRate, settlementTotalDiscountPips,servProvFeeStartTime);
+								//localCurrencySrvPrvFeeInqResDTO = ServiceProviderResponse(quotationResponse, srvPrvFeeInqReqDTO, productDetailsDTO, serviceProviderRateView, settlementExchangeRate, settlementTotalDiscountPips,servProvFeeStartTime);
+								localCurrencySrvPrvFeeInqResDTO = ServiceProviderResponse(quotationResponse, srvPrvFeeInqReqDTO, productDetailsDTO, serviceProviderRateView, amxRateWithMargin, settlementTotalDiscountPips,servProvFeeStartTime);
 								// call the customer discounts
 								if(localCurrencySrvPrvFeeInqResDTO != null) {
 									ExchangeRateDetails exchangeRateDetails = fetchCustomerChannelDiscounts(srvPrvFeeInqReqDTO, productDetailsDTO, marginAmount, localCurrencySrvPrvFeeInqResDTO.getForeignAmount());
@@ -164,15 +166,23 @@ public class PartnerDataManager {
 										settlementTotalDiscountPips = convertDiscountToSettlementCurrency(exchangeRateDetails, settlementExchangeRate);
 									}
 
-									amxRateWithMargin = settlementExchangeRate.add(marginAmount).subtract(settlementTotalDiscountPips);
-									settlementAmtwithDecimal = new BigDecimal(srvPrvFeeInqReqDTO.getAmount().doubleValue()/amxRateWithMargin.doubleValue());
+									if(marginAmount.compareTo(settlementTotalDiscountPips) >= 0 ) {
+										//amxRateWithMargin = settlementExchangeRate.add(marginAmount).subtract(settlementTotalDiscountPips);
+										amxRateWithMarginWithPips = amxRateWithMargin.subtract(settlementTotalDiscountPips);
+									}else {
+										//amxRateWithMargin = settlementExchangeRate.add(marginAmount);
+										amxRateWithMarginWithPips = amxRateWithMargin;
+									}
+									//settlementAmtwithDecimal = new BigDecimal(srvPrvFeeInqReqDTO.getAmount().doubleValue()/amxRateWithMargin.doubleValue());
+									settlementAmtwithDecimal = new BigDecimal(srvPrvFeeInqReqDTO.getAmount().doubleValue()/amxRateWithMarginWithPips.doubleValue());
 									settlementAmount = RoundUtil.roundBigDecimal(settlementAmtwithDecimal, currencyMasterModel.getDecinalNumber().intValue());
 									
 									checkingAmountLimit(bankMasterModel.getBankId(), currencyMasterModel.getCurrencyId(), customerDetailsDTO.getCustomerTypeCode(), beneficiaryDetailsDTO.getBenificaryStatusId(), settlementAmount);
 
 									quotationResponse = fetchQuotationDetails(srvPrvFeeInqReqDTO, serviceProviderRateView, settlementAmount, customerDetailsDTO, beneficiaryDetailsDTO);
 									if(quotationResponse != null) {
-										srvPrvFeeInqResDTO = ServiceProviderResponse(quotationResponse, srvPrvFeeInqReqDTO, productDetailsDTO, serviceProviderRateView, settlementExchangeRate, settlementTotalDiscountPips,servProvFeeStartTime);
+										//srvPrvFeeInqResDTO = ServiceProviderResponse(quotationResponse, srvPrvFeeInqReqDTO, productDetailsDTO, serviceProviderRateView, settlementExchangeRate, settlementTotalDiscountPips,servProvFeeStartTime);
+										srvPrvFeeInqResDTO = ServiceProviderResponse(quotationResponse, srvPrvFeeInqReqDTO, productDetailsDTO, serviceProviderRateView, amxRateWithMargin, settlementTotalDiscountPips,servProvFeeStartTime);
 										srvPrvFeeInqResDTO.setCustomerDiscountDetails(exchangeRateDetails.getCustomerDiscountDetails());
 									}
 								}
@@ -191,7 +201,8 @@ public class PartnerDataManager {
 									settlementTotalDiscountPips = convertDiscountToSettlementCurrency(exchangeRateDetails, settlementExchangeRate);
 								}
 
-								srvPrvFeeInqResDTO = ServiceProviderResponse(quotationResponse, srvPrvFeeInqReqDTO, productDetailsDTO, serviceProviderRateView, settlementExchangeRate, settlementTotalDiscountPips,servProvFeeStartTime);
+								//srvPrvFeeInqResDTO = ServiceProviderResponse(quotationResponse, srvPrvFeeInqReqDTO, productDetailsDTO, serviceProviderRateView, settlementExchangeRate, settlementTotalDiscountPips,servProvFeeStartTime);
+								srvPrvFeeInqResDTO = ServiceProviderResponse(quotationResponse, srvPrvFeeInqReqDTO, productDetailsDTO, serviceProviderRateView, amxRateWithMargin, settlementTotalDiscountPips,servProvFeeStartTime);
 								srvPrvFeeInqResDTO.setCustomerDiscountDetails(exchangeRateDetails.getCustomerDiscountDetails());
 							}
 						}
@@ -222,8 +233,8 @@ public class PartnerDataManager {
 	}
 
 	// home send response drive
-	public SrvPrvFeeInqResDTO ServiceProviderResponse(AmxApiResponse<Quotation_Call_Response, Object> quotationResponse,SrvPrvFeeInqReqDTO srvPrvFeeInqReqDTO,ProductDetailsDTO productDetailsDTO,ServiceProviderRateView serviceProviderRateView,BigDecimal settlementExchangeRate,BigDecimal settlementTotalDiscountPips,Long servProvFeeStartTime) {
-		BigDecimal amxRateWithMargin = null;
+	public SrvPrvFeeInqResDTO ServiceProviderResponse(AmxApiResponse<Quotation_Call_Response, Object> quotationResponse,SrvPrvFeeInqReqDTO srvPrvFeeInqReqDTO,ProductDetailsDTO productDetailsDTO,ServiceProviderRateView serviceProviderRateView,BigDecimal amxRateWithMargin,BigDecimal settlementTotalDiscountPips,Long servProvFeeStartTime) {
+		BigDecimal amxRateWithMarginWithPips = null;
 		BigDecimal marginAmount = null;
 
 		BigDecimal hsForeignSettleCurrencyRate = null;
@@ -235,19 +246,23 @@ public class PartnerDataManager {
 		BigDecimal exchangeRatewithpips = null;
 		BigDecimal exchangeLocalAmt = null;
 		BigDecimal commissionAmt = null;
+		BigDecimal settlementExchangeRate = null;
 
 		SrvPrvFeeInqResDTO srvPrvFeeInqResDTO = null;
 		CurrencyMasterModel localCurrencyMaster = fetchCurrencyMasterData(srvPrvFeeInqReqDTO.getLocalCurrencyId());
 
 		marginAmount = serviceProviderRateView.getMargin() == null ? BigDecimal.ZERO : serviceProviderRateView.getMargin();
 		LOGGER.info("Margin : "+marginAmount);
+		settlementExchangeRate = amxRateWithMargin.subtract(marginAmount);
 
 		if(marginAmount.compareTo(settlementTotalDiscountPips) >= 0 ) {
-			amxRateWithMargin = settlementExchangeRate.add(marginAmount).subtract(settlementTotalDiscountPips);
+			//amxRateWithMargin = settlementExchangeRate.add(marginAmount).subtract(settlementTotalDiscountPips);
+			amxRateWithMarginWithPips = amxRateWithMargin.subtract(settlementTotalDiscountPips);
 		}else {
-			amxRateWithMargin = settlementExchangeRate;
+			//amxRateWithMargin = settlementExchangeRate.add(marginAmount);
+			amxRateWithMarginWithPips = amxRateWithMargin;
 		}
-		LOGGER.info("Amx Exchange Rate with Margin : "+amxRateWithMargin);
+		LOGGER.info("Amx Exchange Rate with Margin : "+amxRateWithMarginWithPips);
 
 		if(quotationResponse != null && quotationResponse.getResult() != null) {
 			Quotation_Call_Response quotationCall = quotationResponse.getResult();
@@ -264,11 +279,13 @@ public class PartnerDataManager {
 					BankCharges bankCharges = fetchBankChargesServiceProvider(bankServiceRule.getBankServiceRuleId(), destinationAmt, PricerServiceConstants.BOTH_BANK_SERVICE_COMPONENT, PricerServiceConstants.CHARGES_TYPE, productDetailsDTO.getBeneCountryId());
 					if(bankCharges != null) {
 						amiecCommissionAmt =  bankCharges.getChargeAmount();
-						exchangeRate = new BigDecimal(settlementExchangeRate.doubleValue()/hsForeignSettleCurrencyRate.doubleValue());
+						//exchangeRate = new BigDecimal(settlementExchangeRate.doubleValue()/hsForeignSettleCurrencyRate.doubleValue());
+						exchangeRate = new BigDecimal(amxRateWithMargin.doubleValue()/hsForeignSettleCurrencyRate.doubleValue());
 						exchangeRate = RoundUtil.roundBigDecimal(exchangeRate, 6);
 
 						// formula
-						exchangeRatewithpips = new BigDecimal(amxRateWithMargin.doubleValue()/hsForeignSettleCurrencyRate.doubleValue());
+						//exchangeRatewithpips = new BigDecimal(amxRateWithMargin.doubleValue()/hsForeignSettleCurrencyRate.doubleValue());
+						exchangeRatewithpips = new BigDecimal(amxRateWithMarginWithPips.doubleValue()/hsForeignSettleCurrencyRate.doubleValue());
 						exchangeRatewithpips = RoundUtil.roundBigDecimal(exchangeRatewithpips, 6);
 						exchangeLocalAmt = destinationAmt.multiply(exchangeRatewithpips);
 
@@ -280,7 +297,8 @@ public class PartnerDataManager {
 						srvPrvFeeInqResDTO.setCommissionAmount(commissionAmt);
 
 						srvPrvFeeInqResDTO.setExchangeRateByServiceProvider(hsForeignSettleCurrencyRate);
-						srvPrvFeeInqResDTO.setExchangeRateWithLocalAndSettlementCurrency(settlementExchangeRate);
+						//srvPrvFeeInqResDTO.setExchangeRateWithLocalAndSettlementCurrency(settlementExchangeRate);
+						srvPrvFeeInqResDTO.setExchangeRateWithLocalAndSettlementCurrency(amxRateWithMargin);
 						srvPrvFeeInqResDTO.setExchangeRateWithPips(exchangeRatewithpips);
 						srvPrvFeeInqResDTO.setForeignAmount(destinationAmt);
 
@@ -298,6 +316,18 @@ public class PartnerDataManager {
 
 						srvPrvFeeInqResDTO.setExchangeRateBase(exchangeRate);
 						srvPrvFeeInqResDTO.setMargin(marginAmount);
+						
+						if (srvPrvFeeInqReqDTO.getSelectedCurrency().compareTo(srvPrvFeeInqReqDTO.getLocalCurrencyId()) == 0) {
+							// checking with local amount
+							BigDecimal baseGrossAmount = srvPrvFeeInqReqDTO.getAmount();
+							srvPrvFeeInqResDTO.setBaseLocalAmount(baseGrossAmount.add(commissionAmt));
+						} else {
+							// checking with destination amount
+							BigDecimal exchangeBaseLocalAmt = destinationAmt.multiply(exchangeRate);
+							srvPrvFeeInqResDTO.setBaseLocalAmount(exchangeBaseLocalAmt.add(commissionAmt));
+						}
+						
+						srvPrvFeeInqResDTO.setBaseForeignAmount(destinationAmt);
 
 						HomeSendSrvcProviderInfo homeSendSrvcProviderInfo = fetchHomeSendData(serviceProviderResponse,quotationCall,marginAmount,servProvFeeStartTime);
 						srvPrvFeeInqResDTO.setHomeSendInfoDTO(homeSendSrvcProviderInfo);
