@@ -157,6 +157,7 @@ public class RemittancePaymentManager extends AbstractService{
 				
 				/** Referral Code **/
 				List<RemittanceTransaction> remittanceList = remitAppDao.getOnlineRemittanceList(paymentResponse.getCustomerId());
+				logger.info("Remittance Count:" + remittanceList.size());
 				if(remittanceList.size() == 0) {
 					ReferralDetails referralDetails = refDao.getReferralByCustomerId(paymentResponse.getCustomerId());
 					referralDetails.setIsConsumed("Y");
