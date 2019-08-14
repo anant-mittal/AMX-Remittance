@@ -14,6 +14,7 @@ import com.amx.jax.AbstractModel;
 import com.amx.jax.constants.CustomerRegistrationType;
 import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.swagger.ApiMockModelProperty;
+import com.amx.jax.util.AmxDBConstants;
 
 /**
  * Customer personal detail model
@@ -114,18 +115,18 @@ public class CustomerPersonalDetail extends AbstractModel {
 
 	@ApiMockModelProperty(example = "9321484252")
 	private BigDecimal watsAppMobileNo;
-	
+
 	@ApiMockModelProperty(example = "Y")
 	private String isWatsApp;
-	
+
 	@ApiMockModelProperty(example = "OFF_CUSTOMER")
 	private CustomerRegistrationType registrationType;
-	
+
 	BigDecimal customerId;
 	String customerSignature;
-	
+
 	private ResourceDTO customerCategory;
-	
+
 	Boolean pepsIndicator;
 
 	public CustomerRegistrationType getRegistrationType() {
@@ -261,6 +262,9 @@ public class CustomerPersonalDetail extends AbstractModel {
 	}
 
 	public void setInsurance(String insurance) {
+		if (insurance == null) {
+			insurance = AmxDBConstants.No;
+		}
 		this.insurance = insurance;
 	}
 
@@ -279,7 +283,7 @@ public class CustomerPersonalDetail extends AbstractModel {
 	public void setWatsAppMobileNo(BigDecimal watsAppMobileNo) {
 		this.watsAppMobileNo = watsAppMobileNo;
 	}
-	
+
 	public String getIsWatsApp() {
 		return isWatsApp;
 	}
@@ -290,13 +294,11 @@ public class CustomerPersonalDetail extends AbstractModel {
 
 	@Override
 	public String toString() {
-		return "CustomerPersonalDetail [countryId=" + countryId + ", nationalityId=" + nationalityId + ", identityInt="
-				+ identityInt + ", title=" + title + ", firstName=" + firstName + ", lastName=" + lastName + ", email="
-				+ email + ", mobile=" + mobile + ", telPrefix=" + telPrefix + ", firstNameLocal=" + firstNameLocal
-				+ ", lastNameLocal=" + lastNameLocal + ", issueDate=" + issueDate + ", expiryDate=" + expiryDate
-				+ ", dateOfBirth=" + dateOfBirth + ", identityTypeId=" + identityTypeId + ", insurance=" + insurance
-				+ ", watsAppTelePrefix=" + watsAppTelePrefix + ", watsAppMobileNo=" + watsAppMobileNo  
-				+ ", isWatsApp=" + isWatsApp + "]";
+		return "CustomerPersonalDetail [countryId=" + countryId + ", nationalityId=" + nationalityId + ", identityInt=" + identityInt + ", title="
+				+ title + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email + ", mobile=" + mobile + ", telPrefix="
+				+ telPrefix + ", firstNameLocal=" + firstNameLocal + ", lastNameLocal=" + lastNameLocal + ", issueDate=" + issueDate + ", expiryDate="
+				+ expiryDate + ", dateOfBirth=" + dateOfBirth + ", identityTypeId=" + identityTypeId + ", insurance=" + insurance
+				+ ", watsAppTelePrefix=" + watsAppTelePrefix + ", watsAppMobileNo=" + watsAppMobileNo + ", isWatsApp=" + isWatsApp + "]";
 	}
 
 	public BigDecimal getCustomerId() {
@@ -318,7 +320,7 @@ public class CustomerPersonalDetail extends AbstractModel {
 	public ResourceDTO getCustomerCategory() {
 		return customerCategory;
 	}
-	
+
 	public void setCustomerCategory(ResourceDTO customerCategory) {
 		this.customerCategory = customerCategory;
 	}
