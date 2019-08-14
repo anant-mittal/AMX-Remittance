@@ -20,7 +20,7 @@ public interface RemittanceTransactionRepository extends CrudRepository<Remittan
 	
 	RemittanceTransaction findByRemittanceTransactionId(BigDecimal remittanceTransactionid);
 		
-	@Query(value = "SELECT * FROM EX_REMIT_TRNX WHERE CUSTOMER_ID=?1  AND ((CREATED_BY = 'ANDROID') OR (CREATED_BY = 'IOS') OR (CREATED_BY = 'ONLINE'));", nativeQuery = true)
+	@Query(value = "SELECT * FROM EX_REMIT_TRNX WHERE CUSTOMER_ID=?1  AND ((CREATED_BY = 'ANDROID') OR (CREATED_BY = 'IOS') OR (CREATED_BY = 'ONLINE'))", nativeQuery = true)
 	public List<RemittanceTransaction> getTransactionMadeByOnline(String customerId);
 
 }
