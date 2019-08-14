@@ -72,7 +72,7 @@ public class CustomerDiscountManager {
 
 	@Autowired
 	DiscountMasterDao discountMasterDao;
-	
+
 	@Autowired
 	CustomerDiscountDao customerDiscountDao;
 
@@ -117,7 +117,7 @@ public class CustomerDiscountManager {
 
 			channelDiscountPips = ((null != channelDiscountMaster
 					&& DbValueUtil.isActive(channelDiscountMaster.getIsActive()))
-					? channelDiscountMaster.getDiscountPips()
+							? channelDiscountMaster.getDiscountPips()
 							: BigDecimal.ZERO);
 		}
 
@@ -138,28 +138,28 @@ public class CustomerDiscountManager {
 
 			CustomerCategoryDiscount ccDiscount = customerExtended != null
 					? customerExtended.getCustomerCategoryDiscount()
-							: null;
+					: null;
 
-					if (ccDiscount != null && ccDiscount.getId() != null && curGroup != null
-							&& DbValueUtil.isActive(ccDiscount.getIsActive())) {
+			if (ccDiscount != null && ccDiscount.getId() != null && curGroup != null
+					&& DbValueUtil.isActive(ccDiscount.getIsActive())) {
 
-						DiscountMaster ccDiscountMaster = discountMasterDao.getByDiscountTypeAndDiscountTypeIdAndGroupId(
-								DISCOUNT_TYPE.CUSTOMER_CATEGORY.getTypeKey(), ccDiscount.getId(), curGroup.getId());
+				DiscountMaster ccDiscountMaster = discountMasterDao.getByDiscountTypeAndDiscountTypeIdAndGroupId(
+						DISCOUNT_TYPE.CUSTOMER_CATEGORY.getTypeKey(), ccDiscount.getId(), curGroup.getId());
 
-						ccDiscountPips = ((null != ccDiscountMaster && DbValueUtil.isActive(ccDiscountMaster.getIsActive()))
-								? ccDiscountMaster.getDiscountPips()
-										: BigDecimal.ZERO);
+				ccDiscountPips = ((null != ccDiscountMaster && DbValueUtil.isActive(ccDiscountMaster.getIsActive()))
+						? ccDiscountMaster.getDiscountPips()
+						: BigDecimal.ZERO);
 
-					}
+			}
 
-					// Customer Category Info
-					custCategoryInfo.setId(ccDiscount.getId());
-					custCategoryInfo.setDiscountType(DISCOUNT_TYPE.CUSTOMER_CATEGORY);
-					custCategoryInfo.setDiscountTypeValue(ccDiscount.getCustomerCategory().toString());
-					custCategoryInfo.setDiscountPipsValue(ccDiscountPips);
+			// Customer Category Info
+			custCategoryInfo.setId(ccDiscount.getId());
+			custCategoryInfo.setDiscountType(DISCOUNT_TYPE.CUSTOMER_CATEGORY);
+			custCategoryInfo.setDiscountTypeValue(ccDiscount.getCustomerCategory().toString());
+			custCategoryInfo.setDiscountPipsValue(ccDiscountPips);
 
-					// Updated Customer Category
-					exchRateAndRoutingTransientDataCache.setCustomerCategory(ccDiscount.getCustomerCategory());
+			// Updated Customer Category
+			exchRateAndRoutingTransientDataCache.setCustomerCategory(ccDiscount.getCustomerCategory());
 
 		} else {
 			CustomerCategoryDiscount ccDiscount = custCatDiscountDao.getDiscountByCustomerCategory(customerCategory);
@@ -170,7 +170,7 @@ public class CustomerDiscountManager {
 
 				ccDiscountPips = ((null != ccDiscount && DbValueUtil.isActive(ccDiscountMaster.getIsActive()))
 						? ccDiscountMaster.getDiscountPips()
-								: BigDecimal.ZERO);
+						: BigDecimal.ZERO);
 			}
 
 			custCategoryInfo.setId(ccDiscount.getId());
@@ -198,7 +198,7 @@ public class CustomerDiscountManager {
 				if (bankAmountSlabDiscounts.containsKey(pipsMaster.getBankMaster().getBankId().longValue())) {
 
 					bankAmountSlabDiscounts.get(pipsMaster.getBankMaster().getBankId().longValue())
-					.put(pipsMaster.getToAmount(), pipsMaster);
+							.put(pipsMaster.getToAmount(), pipsMaster);
 
 				} else {
 
@@ -206,10 +206,6 @@ public class CustomerDiscountManager {
 					slabPipsMap.put(pipsMaster.getToAmount(), pipsMaster);
 					bankAmountSlabDiscounts.put(pipsMaster.getBankMaster().getBankId().longValue(), slabPipsMap);
 				}
-
-				// System.out.println(" Pips Master Discount ==> "
-				// +
-				// bankAmountSlabDiscounts.get(pipsMaster.getBankMaster().getBankId().longValue()));
 
 			}
 		}
@@ -219,100 +215,106 @@ public class CustomerDiscountManager {
 
 		BigDecimal margin = exchRateAndRoutingTransientDataCache.getMargin() != null
 				? exchRateAndRoutingTransientDataCache.getMargin().getMarginMarkup()
-						: BIGD_ZERO;
+				: BIGD_ZERO;
 
-				for (ExchangeRateDetails bankExRateDetail : exchRateAndRoutingTransientDataCache.getSellRateDetails()) {
+		for (ExchangeRateDetails bankExRateDetail : exchRateAndRoutingTransientDataCache.getSellRateDetails()) {
 
-					BigDecimal amountSlabPips = BIGD_ZERO;
-					ExchangeDiscountInfo amountSlabPipsInfo = new ExchangeDiscountInfo();
+			// Check if discount is already applied
+			// Avoid Double Discount Application
+			if (bankExRateDetail.isDiscountAvailed() == true) {
+				continue;
+			}
 
-					if (bankAmountSlabDiscounts.containsKey(bankExRateDetail.getBankId().longValue())) {
-						TreeMap<BigDecimal, PipsMaster> pipsMap = bankAmountSlabDiscounts
-								.get(bankExRateDetail.getBankId().longValue());
-						for (Entry<BigDecimal, PipsMaster> entry : pipsMap.entrySet()) {
+			BigDecimal amountSlabPips = BIGD_ZERO;
+			ExchangeDiscountInfo amountSlabPipsInfo = new ExchangeDiscountInfo();
 
-							if (bankExRateDetail.getSellRateBase().getConvertedFCAmount().compareTo(entry.getKey()) <= 0) {
-								amountSlabPips = entry.getValue().getPipsNo();
+			if (bankAmountSlabDiscounts.containsKey(bankExRateDetail.getBankId().longValue())) {
+				TreeMap<BigDecimal, PipsMaster> pipsMap = bankAmountSlabDiscounts
+						.get(bankExRateDetail.getBankId().longValue());
+				for (Entry<BigDecimal, PipsMaster> entry : pipsMap.entrySet()) {
 
-								amountSlabPipsInfo.setId(entry.getValue().getPipsMasterId());
-								amountSlabPipsInfo.setDiscountType(DISCOUNT_TYPE.AMOUNT_SLAB);
-								amountSlabPipsInfo.setDiscountTypeValue(entry.getValue().getFromAmount().longValue() + "-"
-										+ entry.getValue().getToAmount().longValue());
-								amountSlabPipsInfo.setDiscountPipsValue(amountSlabPips);
+					if (bankExRateDetail.getSellRateBase().getConvertedFCAmount().compareTo(entry.getKey()) <= 0) {
+						amountSlabPips = entry.getValue().getPipsNo();
 
-								break;
-							} // if
+						amountSlabPipsInfo.setId(entry.getValue().getPipsMasterId());
+						amountSlabPipsInfo.setDiscountType(DISCOUNT_TYPE.AMOUNT_SLAB);
+						amountSlabPipsInfo.setDiscountTypeValue(entry.getValue().getFromAmount().longValue() + "-"
+								+ entry.getValue().getToAmount().longValue());
+						amountSlabPipsInfo.setDiscountPipsValue(amountSlabPips);
 
-						} // for
-					}
+						break;
+					} // if
 
-					BigDecimal discountedSellRate;
+				} // for
+			}
 
-					if (bankExRateDetail.isCostRateLimitReached()) {
-						// No further Discounts If the Cost+Margin Limit is Reached at Base Sell Rate
-						// Level.
-						discountedSellRate = bankExRateDetail.getSellRateBase().getInverseRate();
-						bankExRateDetail.setDiscountAvailed(false);
+			BigDecimal discountedSellRate;
 
-					} else {
+			if (bankExRateDetail.isCostRateLimitReached()) {
+				// No further Discounts If the Cost+Margin Limit is Reached at Base Sell Rate
+				// Level.
+				discountedSellRate = bankExRateDetail.getSellRateBase().getInverseRate();
+				bankExRateDetail.setDiscountAvailed(false);
 
-						BigDecimal totalDiscountPips = amountSlabPips.add(channelDiscountPips).add(ccDiscountPips);
+			} else {
 
-						discountedSellRate = bankExRateDetail.getSellRateBase().getInverseRate().subtract(totalDiscountPips);
+				BigDecimal totalDiscountPips = amountSlabPips.add(channelDiscountPips).add(ccDiscountPips);
 
-						bankExRateDetail.setDiscountAvailed(true);
+				discountedSellRate = bankExRateDetail.getSellRateBase().getInverseRate().subtract(totalDiscountPips);
 
-						/**
-						 * Compute Base Sell rate : Cost + Margin
-						 */
-						BigDecimal adjustedBaseSellRate = BigDecimal.ZERO;
+				bankExRateDetail.setDiscountAvailed(true);
 
-						if (exchRateAndRoutingTransientDataCache.getAvgRateGLCForBank(bankExRateDetail.getBankId()) != null) {
+				/**
+				 * Compute Base Sell rate : Cost + Margin
+				 */
+				BigDecimal adjustedBaseSellRate = BigDecimal.ZERO;
 
-							// New Logic
-							adjustedBaseSellRate = exchRateAndRoutingTransientDataCache
-									.getAvgRateGLCForBank(bankExRateDetail.getBankId()).add(margin);
+				if (exchRateAndRoutingTransientDataCache.getAvgRateGLCForBank(bankExRateDetail.getBankId()) != null) {
 
-						}
+					// New Logic
+					adjustedBaseSellRate = exchRateAndRoutingTransientDataCache
+							.getAvgRateGLCForBank(bankExRateDetail.getBankId()).add(margin);
 
-						if (discountedSellRate.compareTo(adjustedBaseSellRate) <= 0) {
+				}
 
-							discountedSellRate = adjustedBaseSellRate;
+				if (discountedSellRate.compareTo(adjustedBaseSellRate) <= 0) {
 
-							bankExRateDetail.setDiscountAvailed(true);
-							bankExRateDetail.setCostRateLimitReached(true);
+					discountedSellRate = adjustedBaseSellRate;
 
-						}
+					bankExRateDetail.setDiscountAvailed(true);
+					bankExRateDetail.setCostRateLimitReached(true);
 
-					}
+				}
 
-					bankExRateDetail.setCustomerDiscountDetails(new HashMap<DISCOUNT_TYPE, ExchangeDiscountInfo>());
+			}
 
-					bankExRateDetail.getCustomerDiscountDetails().put(DISCOUNT_TYPE.CHANNEL, channelInfo);
-					bankExRateDetail.getCustomerDiscountDetails().put(DISCOUNT_TYPE.CUSTOMER_CATEGORY, custCategoryInfo);
-					bankExRateDetail.getCustomerDiscountDetails().put(DISCOUNT_TYPE.AMOUNT_SLAB, amountSlabPipsInfo);
+			bankExRateDetail.setCustomerDiscountDetails(new HashMap<DISCOUNT_TYPE, ExchangeDiscountInfo>());
 
-					if (pricingRequestDTO.getLocalAmount() != null) {
+			bankExRateDetail.getCustomerDiscountDetails().put(DISCOUNT_TYPE.CHANNEL, channelInfo);
+			bankExRateDetail.getCustomerDiscountDetails().put(DISCOUNT_TYPE.CUSTOMER_CATEGORY, custCategoryInfo);
+			bankExRateDetail.getCustomerDiscountDetails().put(DISCOUNT_TYPE.AMOUNT_SLAB, amountSlabPipsInfo);
 
-						// Get Bank Wise Rates for Local Currency
-						bankExRateDetail.setSellRateNet(RemitPriceManager.createBreakUpForLcCur(discountedSellRate,
-								pricingRequestDTO.getLocalAmount()));
+			if (pricingRequestDTO.getLocalAmount() != null) {
 
-					} else {
+				// Get Bank Wise Rates for Local Currency
+				bankExRateDetail.setSellRateNet(RemitPriceManager.createBreakUpForLcCur(discountedSellRate,
+						pricingRequestDTO.getLocalAmount()));
 
-						// Get Bank wise Rates for Foreign Currency
-						bankExRateDetail.setSellRateNet(RemitPriceManager.createBreakUpForFcCur(discountedSellRate,
-								pricingRequestDTO.getForeignAmount()));
+			} else {
 
-					}
+				// Get Bank wise Rates for Foreign Currency
+				bankExRateDetail.setSellRateNet(RemitPriceManager.createBreakUpForFcCur(discountedSellRate,
+						pricingRequestDTO.getForeignAmount()));
 
-					// discountedRatesNPrices.add(discountedRateDetail);
+			}
 
-					// System.out.println(" Discounted Rates ==> " + discountedRateDetail);
+			// discountedRatesNPrices.add(discountedRateDetail);
 
-				} // for (Bank...
+			// System.out.println(" Discounted Rates ==> " + discountedRateDetail);
 
-				// return discountedRatesNPrices;
+		} // for (Bank...
+
+		// return discountedRatesNPrices;
 	}
 
 	// iterate the response of discount
@@ -331,23 +333,31 @@ public class CustomerDiscountManager {
 
 		// Find the Currency Group to which the currency belongs
 		// TODO: Optimize this to Save it in the Cache and retrieve it from thr
-		CurrencyMasterModel currencyMasterModel = currencyMasterDao.getByCurrencyId(customerDiscountReqDTO.getForeignCurrencyId());
+		CurrencyMasterModel currencyMasterModel = currencyMasterDao
+				.getByCurrencyId(customerDiscountReqDTO.getForeignCurrencyId());
 
 		if (currencyMasterModel.getCurrGroupId() != null) {
 			curGroup = groupingMasterDao.getGroupById(currencyMasterModel.getCurrGroupId());
 			if (curGroup == null) {
-				LOGGER.warn(" ****** MAJOR : Currency Group is Null for Currency Group Id : " + currencyMasterModel.getCurrGroupId() + " and Currency Id :" + currencyMasterModel.getCurrencyId());
+				LOGGER.warn(" ****** MAJOR : Currency Group is Null for Currency Group Id : "
+						+ currencyMasterModel.getCurrGroupId() + " and Currency Id :"
+						+ currencyMasterModel.getCurrencyId());
 			}
 		} else {
-			LOGGER.warn(" ****** MAJOR : Currency Group is Null for Currency Id : " + currencyMasterModel.getCurrencyId());
+			LOGGER.warn(
+					" ****** MAJOR : Currency Group is Null for Currency Id : " + currencyMasterModel.getCurrencyId());
 		}
 
 		// Compute Channel Discount
 		ChannelDiscount channelDiscount = channelDiscountDao.getDiscountByChannel(customerDiscountReqDTO.getChannel());
 
 		if (channelDiscount != null && curGroup != null && DbValueUtil.isActive(channelDiscount.getIsActive())) {
-			DiscountMaster channelDiscountMaster = discountMasterDao.getByDiscountTypeAndDiscountTypeIdAndGroupId(DISCOUNT_TYPE.CHANNEL.getTypeKey(), channelDiscount.getId(), curGroup.getId());
-			channelDiscountPips = ((null != channelDiscountMaster && DbValueUtil.isActive(channelDiscountMaster.getIsActive())) ? channelDiscountMaster.getDiscountPips() : BigDecimal.ZERO);
+			DiscountMaster channelDiscountMaster = discountMasterDao.getByDiscountTypeAndDiscountTypeIdAndGroupId(
+					DISCOUNT_TYPE.CHANNEL.getTypeKey(), channelDiscount.getId(), curGroup.getId());
+			channelDiscountPips = ((null != channelDiscountMaster
+					&& DbValueUtil.isActive(channelDiscountMaster.getIsActive()))
+							? channelDiscountMaster.getDiscountPips()
+							: BigDecimal.ZERO);
 		}
 
 		// Channel Info
@@ -359,30 +369,40 @@ public class CustomerDiscountManager {
 		LOGGER.warn("channelInfo : " + JsonUtil.toJson(channelInfo));
 
 		// Compute Customer category Discount
-		CustomerDiscountsView customerDiscountsView = customerDiscountDao.fetchCustomerDiscount(customerDiscountReqDTO.getCustomerId(),DISCOUNT_TYPE.CUSTOMER_CATEGORY.getTypeKey(),curGroup.getId());
-		
-		if(customerDiscountsView.getDiscountType() != null && customerDiscountsView.getDiscountType().equalsIgnoreCase(DISCOUNT_TYPE.CUSTOMER_CATEGORY.getTypeKey())) {
-			ccDiscountPips = (null != customerDiscountsView.getDiscountPips() ? customerDiscountsView.getDiscountPips() : BigDecimal.ZERO);
+		CustomerDiscountsView customerDiscountsView = customerDiscountDao.fetchCustomerDiscount(
+				customerDiscountReqDTO.getCustomerId(), DISCOUNT_TYPE.CUSTOMER_CATEGORY.getTypeKey(), curGroup.getId());
+
+		if (customerDiscountsView.getDiscountType() != null && customerDiscountsView.getDiscountType()
+				.equalsIgnoreCase(DISCOUNT_TYPE.CUSTOMER_CATEGORY.getTypeKey())) {
+			ccDiscountPips = (null != customerDiscountsView.getDiscountPips() ? customerDiscountsView.getDiscountPips()
+					: BigDecimal.ZERO);
 			// Customer Category Info
 			custCategoryInfo.setId(customerDiscountsView.getDiscountTypeId());
 			custCategoryInfo.setDiscountType(DISCOUNT_TYPE.CUSTOMER_CATEGORY);
 			custCategoryInfo.setDiscountTypeValue(customerDiscountsView.getCustomerCategory().toString());
 			custCategoryInfo.setDiscountPipsValue(ccDiscountPips);
 		}
-		
-		/*CustomerExtended customerExtended = customerExtendedDao.getCustomerExtendedByCustomerId(customerDiscountReqDTO.getCustomerId());
-		CustomerCategoryDiscount ccDiscount = customerExtended != null ? customerExtended.getCustomerCategoryDiscount() : null;
 
-		if (ccDiscount != null && ccDiscount.getId() != null && curGroup != null && DbValueUtil.isActive(ccDiscount.getIsActive())) {
-			DiscountMaster ccDiscountMaster = discountMasterDao.getByDiscountTypeAndDiscountTypeIdAndGroupId(DISCOUNT_TYPE.CUSTOMER_CATEGORY.getTypeKey(), ccDiscount.getId(), curGroup.getId());
-			ccDiscountPips = ((null != ccDiscountMaster && DbValueUtil.isActive(ccDiscountMaster.getIsActive())) ? ccDiscountMaster.getDiscountPips() : BigDecimal.ZERO);
-		}
-
-		// Customer Category Info
-		custCategoryInfo.setId(ccDiscount.getId());
-		custCategoryInfo.setDiscountType(DISCOUNT_TYPE.CUSTOMER_CATEGORY);
-		custCategoryInfo.setDiscountTypeValue(ccDiscount.getCustomerCategory().toString());
-		custCategoryInfo.setDiscountPipsValue(ccDiscountPips);*/ 
+		/*
+		 * CustomerExtended customerExtended =
+		 * customerExtendedDao.getCustomerExtendedByCustomerId(customerDiscountReqDTO.
+		 * getCustomerId()); CustomerCategoryDiscount ccDiscount = customerExtended !=
+		 * null ? customerExtended.getCustomerCategoryDiscount() : null;
+		 * 
+		 * if (ccDiscount != null && ccDiscount.getId() != null && curGroup != null &&
+		 * DbValueUtil.isActive(ccDiscount.getIsActive())) { DiscountMaster
+		 * ccDiscountMaster =
+		 * discountMasterDao.getByDiscountTypeAndDiscountTypeIdAndGroupId(DISCOUNT_TYPE.
+		 * CUSTOMER_CATEGORY.getTypeKey(), ccDiscount.getId(), curGroup.getId());
+		 * ccDiscountPips = ((null != ccDiscountMaster &&
+		 * DbValueUtil.isActive(ccDiscountMaster.getIsActive())) ?
+		 * ccDiscountMaster.getDiscountPips() : BigDecimal.ZERO); }
+		 * 
+		 * // Customer Category Info custCategoryInfo.setId(ccDiscount.getId());
+		 * custCategoryInfo.setDiscountType(DISCOUNT_TYPE.CUSTOMER_CATEGORY);
+		 * custCategoryInfo.setDiscountTypeValue(ccDiscount.getCustomerCategory().
+		 * toString()); custCategoryInfo.setDiscountPipsValue(ccDiscountPips);
+		 */
 
 		LOGGER.warn("custCategoryInfo : " + JsonUtil.toJson(custCategoryInfo));
 
@@ -394,13 +414,15 @@ public class CustomerDiscountManager {
 		List<BigDecimal> validBankIds = new ArrayList<BigDecimal>();
 		validBankIds.add(customerDiscountReqDTO.getBankId());
 
-		List<PipsMaster> pipsList = pipsMasterDao.getPipsForFcCurAndBank(customerDiscountReqDTO.getForeignCurrencyId(),OnlineCountryBranchId, validBankIds);
+		List<PipsMaster> pipsList = pipsMasterDao.getPipsForFcCurAndBank(customerDiscountReqDTO.getForeignCurrencyId(),
+				OnlineCountryBranchId, validBankIds);
 		Map<Long, TreeMap<BigDecimal, PipsMaster>> bankAmountSlabDiscounts = new HashMap<Long, TreeMap<BigDecimal, PipsMaster>>();
 
 		if (null != pipsList) {
 			for (PipsMaster pipsMaster : pipsList) {
 				if (bankAmountSlabDiscounts.containsKey(pipsMaster.getBankMaster().getBankId().longValue())) {
-					bankAmountSlabDiscounts.get(pipsMaster.getBankMaster().getBankId().longValue()).put(pipsMaster.getToAmount(), pipsMaster);
+					bankAmountSlabDiscounts.get(pipsMaster.getBankMaster().getBankId().longValue())
+							.put(pipsMaster.getToAmount(), pipsMaster);
 				} else {
 					TreeMap<BigDecimal, PipsMaster> slabPipsMap = new TreeMap<BigDecimal, PipsMaster>();
 					slabPipsMap.put(pipsMaster.getToAmount(), pipsMaster);
@@ -410,7 +432,8 @@ public class CustomerDiscountManager {
 		}
 
 		if (bankAmountSlabDiscounts.containsKey(customerDiscountReqDTO.getBankId().longValue())) {
-			TreeMap<BigDecimal, PipsMaster> pipsMap = bankAmountSlabDiscounts.get(customerDiscountReqDTO.getBankId().longValue());
+			TreeMap<BigDecimal, PipsMaster> pipsMap = bankAmountSlabDiscounts
+					.get(customerDiscountReqDTO.getBankId().longValue());
 			for (Entry<BigDecimal, PipsMaster> entry : pipsMap.entrySet()) {
 
 				if (customerDiscountReqDTO.getForeignAmount().compareTo(entry.getKey()) <= 0) {
@@ -418,22 +441,23 @@ public class CustomerDiscountManager {
 
 					amountSlabPipsInfo.setId(entry.getValue().getPipsMasterId());
 					amountSlabPipsInfo.setDiscountType(DISCOUNT_TYPE.AMOUNT_SLAB);
-					amountSlabPipsInfo.setDiscountTypeValue(entry.getValue().getFromAmount().longValue() + "-" + entry.getValue().getToAmount().longValue());
+					amountSlabPipsInfo.setDiscountTypeValue(entry.getValue().getFromAmount().longValue() + "-"
+							+ entry.getValue().getToAmount().longValue());
 					amountSlabPipsInfo.setDiscountPipsValue(amountSlabPips == null ? BigDecimal.ZERO : amountSlabPips);
 
 					break;
-				} 
+				}
 			}
 		}
 
 		LOGGER.warn("amountSlabPipsInfo : " + JsonUtil.toJson(amountSlabPipsInfo));
-		
+
 		bankExRateDetail.setBankId(customerDiscountReqDTO.getBankId());
 		bankExRateDetail.setCustomerDiscountDetails(new HashMap<DISCOUNT_TYPE, ExchangeDiscountInfo>());
 		bankExRateDetail.getCustomerDiscountDetails().put(DISCOUNT_TYPE.CHANNEL, channelInfo);
 		bankExRateDetail.getCustomerDiscountDetails().put(DISCOUNT_TYPE.CUSTOMER_CATEGORY, custCategoryInfo);
 		bankExRateDetail.getCustomerDiscountDetails().put(DISCOUNT_TYPE.AMOUNT_SLAB, amountSlabPipsInfo);
-		
+
 		return bankExRateDetail;
 	}
 }
