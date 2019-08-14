@@ -1145,6 +1145,7 @@ public class RemittanceTransactionManager {
 		
 		/** Referral Code **/
 		List<RemittanceTransaction> remittanceList = remitAppDao.getOnlineRemittanceList(meta.getCustomerId());
+		logger.info("Remittance Count:" + remittanceList.size());
 		if(remittanceList.size() == 0) {
 			ReferralDetails referralDetails = refDao.getReferralByCustomerId(meta.getCustomerId());
 			referralDetails.setIsConsumed("Y");
