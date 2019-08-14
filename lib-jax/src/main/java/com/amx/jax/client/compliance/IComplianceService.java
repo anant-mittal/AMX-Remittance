@@ -11,6 +11,7 @@ public interface IComplianceService {
 		public static final String GET_TRANSACTION_DOCUMENT = "/view-trnx-doc";
 		public static final String APPROVE_TRANSACTOIN_DOCUMENT = "/approve-trnx-doc";
 		public static final String REJECT_TRANSACTOIN_DOCUMENT = "/reject-trnx-doc";
+		public static final String DEACTIVATE_CUSTOMER = "/deactivate-customer";
 	}
 
 	public static class Params {
@@ -26,5 +27,7 @@ public interface IComplianceService {
 	AmxApiResponse<BoolRespModel, Object> approveTrnxDoc(ApproveDocRequest request);
 
 	AmxApiResponse<BoolRespModel, Object> rejectTrnxDoc(RejectDocRequest request);
+
+	AmxApiResponse<BoolRespModel, Object> deactivateCustomer(DeactivateCustomerRequest request);
 
 }

@@ -18,23 +18,28 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.client.compliance.ApproveDocRequest;
 import com.amx.jax.client.compliance.ComplianceBlockedTrnxType;
 import com.amx.jax.client.compliance.ComplianceTrnxdDocStatus;
+import com.amx.jax.client.compliance.DeactivateCustomerRequest;
 import com.amx.jax.client.compliance.HighValueTrnxDto;
 import com.amx.jax.client.compliance.RejectDocRequest;
 import com.amx.jax.client.task.CustomerDocUploadNotificationTaskData;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.customer.document.manager.CustomerDocumentManager;
 import com.amx.jax.customer.document.validate.DocumentScanValidator;
+import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.compliance.ComplianceBlockedTrnxDocMap;
 import com.amx.jax.dbmodel.compliance.HighValueComplianceAuth;
 import com.amx.jax.dbmodel.customer.CustomerDocumentTypeMaster;
 import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReference;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.customer.ComplianceTrnxDocumentInfo;
 import com.amx.jax.model.customer.CustomerDocumentInfo;
 import com.amx.jax.repository.compliance.ComplianceTrnxDocMapRepo;
 import com.amx.jax.repository.compliance.HighValueComplianceAuthRepo;
 import com.amx.jax.services.NotificationTaskService;
 import com.amx.jax.services.RemittanceTransactionService;
+import com.amx.jax.userservice.dao.CustomerDao;
+import com.amx.jax.userservice.service.UserService;
 
 @Component
 public class ComplianceTransactionManager {
@@ -51,6 +56,12 @@ public class ComplianceTransactionManager {
 	RemittanceTransactionService remittanceTransactionService;
 	@Autowired
 	NotificationTaskService notificationTaskService;
+	@Autowired
+	CustomerDao customerDao;
+	@Autowired
+	MetaData metaData;
+	@Autowired
+	UserService userService;
 
 	private static final Logger log = LoggerFactory.getLogger(ComplianceTransactionManager.class);
 
@@ -168,5 +179,14 @@ public class ComplianceTransactionManager {
 			notificationTaskService.notifyBranchUserForDocumentUpload(data);
 		}
 		notificationTaskService.removeTaskForTransaction(request.getRemittanceTransactionId());
+	}
+
+	@Transactional
+	public void deactivateCustomer(DeactivateCustomerRequest request) {
+		log.info("deactivating customer by compliance");
+		userService.deactivateCustomer(metaData.getCustomerId());
+		Customer customer = customerDao.getCustById(metaData.getCustomerId());
+		customer.setRemarks(request.getRemark());
+		customerDao.saveCustomer(customer);
 	}
 }

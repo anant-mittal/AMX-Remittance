@@ -16,6 +16,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.compliance.ApproveDocRequest;
 import com.amx.jax.client.compliance.ComplianceBlockedTrnxType;
+import com.amx.jax.client.compliance.DeactivateCustomerRequest;
 import com.amx.jax.client.compliance.HighValueTrnxDto;
 import com.amx.jax.client.compliance.IComplianceService;
 import com.amx.jax.client.compliance.RejectDocRequest;
@@ -53,6 +54,13 @@ public class ComplianceController implements IComplianceService {
 	@RequestMapping(path = Path.REJECT_TRANSACTOIN_DOCUMENT, method = RequestMethod.POST)
 	public AmxApiResponse<BoolRespModel, Object> rejectTrnxDoc(@RequestBody @Valid RejectDocRequest request) {
 		complianceTransactionManager.rejectTrnxDoc(request);
+		return AmxApiResponse.build();
+	}
+	
+	@Override
+	@RequestMapping(path = Path.DEACTIVATE_CUSTOMER, method = RequestMethod.POST)
+	public AmxApiResponse<BoolRespModel, Object> deactivateCustomer(@RequestBody @Valid DeactivateCustomerRequest request) {
+		complianceTransactionManager.deactivateCustomer(request);
 		return AmxApiResponse.build();
 	}
 }

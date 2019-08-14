@@ -10,6 +10,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.compliance.ApproveDocRequest;
 import com.amx.jax.client.compliance.ComplianceBlockedTrnxType;
+import com.amx.jax.client.compliance.DeactivateCustomerRequest;
 import com.amx.jax.client.compliance.HighValueTrnxDto;
 import com.amx.jax.client.compliance.IComplianceService;
 import com.amx.jax.client.compliance.RejectDocRequest;
@@ -81,6 +82,20 @@ public class ComplianceClient implements IComplianceService {
 					});
 		} catch (Exception e) {
 			LOGGER.error("exception in rejectTrnxDoc : ", e);
+			return JaxSystemError.evaluate(e);
+		}
+	}
+
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> deactivateCustomer(DeactivateCustomerRequest request) {
+		try {
+			LOGGER.debug("in deactivateCustomer :  ");
+			String url = appConfig.getJaxURL() + Path.DEACTIVATE_CUSTOMER;
+			return restService.ajax(url).meta(new JaxMetaInfo()).post(request)
+					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in deactivateCustomer : ", e);
 			return JaxSystemError.evaluate(e);
 		}
 	}
