@@ -275,8 +275,9 @@ public class RemittanceTransactionRequestValidator {
 						
 			JaxFieldValueDto dto = new JaxFieldValueDto();
 			dto.setId(ffDto.getSrlId());
-			dto.setOptLable(ffDto.getAmieceDescription());
+			dto.setOptLable(purposeTrnxAmicDescs.getLocalFulldesc());
 			dto.setLocalName(purposeTrnxAmicDescs.getLocalFulldesc());
+			dto.setResourceName(ffDto.getAmieceDescription());
 			dto.setValue(ffDto);
 			return dto;
 		}).collect(Collectors.toList());
@@ -293,9 +294,10 @@ public class RemittanceTransactionRequestValidator {
 				
 				JaxFieldValueDto dto = new JaxFieldValueDto();
 				dto.setId(ffDto.getSrlId());
-				dto.setOptLable(ffDto.getAmieceDescription());
+				dto.setOptLable(purposeTrnxAmicDescs.getLocalFulldesc());
 				dto.setValue(ffDto);
 				dto.setLocalName(purposeTrnxAmicDescs.getLocalFulldesc());
+				dto.setResourceName(ffDto.getAmieceDescription());
 				return dto;
 			}).collect(Collectors.toList());
 		}

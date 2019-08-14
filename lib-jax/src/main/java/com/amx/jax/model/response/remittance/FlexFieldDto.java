@@ -105,5 +105,10 @@ public class FlexFieldDto extends ResourceDTO{
 		return this.localName;
 
 	}
+	
+	@Override
+	public String getResourceName() {
+		return this.amieceDescription;
+	}
 
 }
