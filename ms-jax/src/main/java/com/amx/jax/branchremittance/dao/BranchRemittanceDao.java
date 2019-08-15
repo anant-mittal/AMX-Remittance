@@ -229,7 +229,9 @@ public class BranchRemittanceDao {
 					if(remitSprProvList != null && !remitSprProvList.isEmpty()) {
 						logger.debug("remit service provider Repository.save ApplicationId :"+applicationId);
 						RemitTrnxSrvProv remitTrnxSrvProv = remitSprProvList.get(applicationId);
-						remitTrnx.setUsdAmt(remitTrnxSrvProv.getIntialAmountInSettlCurr());
+						if(remitTrnxSrvProv != null) {
+							remitTrnx.setUsdAmt(remitTrnxSrvProv.getIntialAmountInSettlCurr());
+						}
 					}
 					
 					RemittanceTransaction remitTrnx1 = remitTrnxRepository.save(remitTrnx);
@@ -268,8 +270,10 @@ public class BranchRemittanceDao {
 					if(remitSprProvList != null && !remitSprProvList.isEmpty()) {
 						logger.debug("remit service provider Repository.save ApplicationId :"+applicationId);
 						RemitTrnxSrvProv remitTrnxSrvProv = remitSprProvList.get(applicationId);
-						remitTrnxSrvProv.setRemittanceTransactionId(remitTrnx1.getRemittanceTransactionId());
-						remitTrnxSrvProvRepository.save(remitTrnxSrvProv);
+						if(remitTrnxSrvProv != null) {
+							remitTrnxSrvProv.setRemittanceTransactionId(remitTrnx1.getRemittanceTransactionId());
+							remitTrnxSrvProvRepository.save(remitTrnxSrvProv);
+						}
 					}
 				}
 
