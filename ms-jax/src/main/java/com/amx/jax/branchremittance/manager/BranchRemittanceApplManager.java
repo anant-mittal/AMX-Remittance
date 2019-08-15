@@ -907,6 +907,8 @@ public class BranchRemittanceApplManager {
 		JaxValidationUtil.validatePositiveNumber(request.getServiceMasterId(), "service indic id bank must be positive number");
 		JaxValidationUtil.validatePositiveNumber(request.getRemittanceModeId(),"Remittance mode id must be positive number");
 		JaxValidationUtil.validatePositiveNumber(request.getDeliveryModeId(),"Delivery mode id must be positive number");
+		JaxValidationUtil.validatePositiveNumber(request.getSourceOfFund(),"Source of id must be positive number");
+		JaxValidationUtil.validatePositiveNumber(request.getPurposeOfTrnxId(),"Purpose of id must be positive number");
 	}
 
 	public RemitApplSrvProv createRemitApplSrvProv(DynamicRoutingPricingDto dynamicRoutingPricingDto,String createdBy) {
