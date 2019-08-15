@@ -26,6 +26,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.branchremittance.manager.BranchRoutingManager;
 import com.amx.jax.client.serviceprovider.ServiceProviderClient;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.constants.JaxTransactionStatus;
 import com.amx.jax.dao.BankDao;
 import com.amx.jax.dao.BranchRemittancePaymentDao;
 import com.amx.jax.dbmodel.AccountTypeFromViewModel;
@@ -51,6 +52,10 @@ import com.amx.jax.dbmodel.remittance.AmiecAndBankMapping;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.dbmodel.remittance.ShoppingCartDetails;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.logger.AuditService;
+import com.amx.jax.logger.AuditEvent.Result;
+import com.amx.jax.logger.events.CActivityEvent;
+import com.amx.jax.logger.events.CActivityEvent.Type;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.request.partner.PaymentLimitDTO;
@@ -159,6 +164,9 @@ public class PartnerTransactionManager extends AbstractModel {
 	
 	@Autowired
 	IExEmailNotificationDao emailNotificationDao;
+	
+	@Autowired
+    AuditService auditService;
 
 
 	public AmxApiResponse<ServiceProviderResponse, Object> callingPartnerApi(RemittanceResponseDto responseDto) {
@@ -912,7 +920,11 @@ public class PartnerTransactionManager extends AbstractModel {
 							remittanceTransaction.setRemarks(remitTrnxSPDTO.getResponseDescription());
 							remittanceTransactionRepository.save(remittanceTransaction);
 							if(emailStatus) {
+								logger.error("Service provider api fail to execute : ColDocNo : ", responseDto.getCollectionDocumentNo() + " : ColDocCod : " +responseDto.getCollectionDocumentCode()+"  : ColDocYear : "+responseDto.getCollectionDocumentFYear());
+								auditService.log(new CActivityEvent(Type.TRANSACTION_CREATED,String.format("%s/%s", responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo())).field("STATUS").to(JaxTransactionStatus.PAYMENT_SUCCESS_SERVICE_PROVIDER_FAIL).result(Result.DONE));
 								sendSrvPrvTranxFailReport(remittanceTransactionView, remitTrnxSPDTO, transactionId);
+							}else {
+								auditService.log(new CActivityEvent(Type.TRANSACTION_CREATED,String.format("%s/%s", responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo())).field("STATUS").to(JaxTransactionStatus.PAYMENT_SUCCESS_SERVICE_PROVIDER_SUCCESS).result(Result.DONE));
 							}
 						}else {
 							throw new GlobalException("Unable to get remittance trnx to update remarks and delivery indicator");
