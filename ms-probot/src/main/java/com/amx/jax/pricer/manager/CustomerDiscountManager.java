@@ -179,17 +179,22 @@ public class CustomerDiscountManager {
 			custCategoryInfo.setDiscountPipsValue(ccDiscountPips);
 
 		}
-
-		List<BigDecimal> validBankIds = new ArrayList<BigDecimal>(
-				exchRateAndRoutingTransientDataCache.getBankDetails().keySet());
+		
+		List<BigDecimal> validBankIds = null;
+		if(exchRateAndRoutingTransientDataCache.getBankDetails() != null) {
+			validBankIds = new ArrayList<BigDecimal>(exchRateAndRoutingTransientDataCache.getBankDetails().keySet());
+		}
 
 		if (OnlineCountryBranchId == null) {
 			CountryBranch cb = countryBranchDao.getOnlineCountryBranch();
 			OnlineCountryBranchId = cb.getCountryBranchId();
 		}
 
-		List<PipsMaster> pipsList = pipsMasterDao.getPipsForFcCurAndBank(pricingRequestDTO.getForeignCurrencyId(),
-				OnlineCountryBranchId, validBankIds);
+		List<PipsMaster> pipsList = null;
+		if(validBankIds != null) {
+			pipsList = pipsMasterDao.getPipsForFcCurAndBank(pricingRequestDTO.getForeignCurrencyId(),
+					OnlineCountryBranchId, validBankIds);
+		}
 
 		Map<Long, TreeMap<BigDecimal, PipsMaster>> bankAmountSlabDiscounts = new HashMap<Long, TreeMap<BigDecimal, PipsMaster>>();
 
