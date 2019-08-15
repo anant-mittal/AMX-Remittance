@@ -798,7 +798,7 @@ public class BranchRemittanceSaveManager {
 					saveRemitnaceinstructionData(appl,remitTrnx);
 					saveRemittanceAml(appl, remitTrnx);
 					saveLoyaltyPoints(remitTrnx);
-					saveRemitTrnxSrvProv(appl.getRemittanceApplicationId(), remitTrnx.getCreatedBy());
+					mapRemitTrnxSrvProv = saveRemitTrnxSrvProv(appl.getRemittanceApplicationId(), remitTrnx.getCreatedBy());
 				}
 			}
 			
