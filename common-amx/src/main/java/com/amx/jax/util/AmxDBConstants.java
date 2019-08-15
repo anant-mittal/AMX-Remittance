@@ -191,5 +191,11 @@ public class AmxDBConstants {
 	public static final String  COMM_INCLUDE= "I";
 	public static final String COMM_EXCLUDE="E";
 	
+	/** added by rabil  fro corporate remittance**/
 	
+	public static final String  CORPORATE= "C";
+	
+
+
+
 }

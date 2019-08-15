@@ -219,6 +219,15 @@ public class RemittanceAdditionalFieldManager {
 			allJaxConditionalFields.addAll(allSPJaxConditionalFields);
 		}
 		
+		/** for corpoare remittance  additional details **/
+		ApiResponse<JaxConditionalFieldDto> swiftApiResponse = jaxFieldService.getJaxFieldsForEntity(new GetJaxFieldRequest(JaxFieldEntity.BENEFICIARY_SWIFT_BANK));
+		List<JaxConditionalFieldDto> allCrJaxConditionalFields = swiftApiResponse.getResults();
+		
+		if(!allCrJaxConditionalFields.isEmpty() && allCrJaxConditionalFields.size()>0) {
+			allJaxConditionalFields.addAll(allCrJaxConditionalFields);
+		}
+		
+		
 		Map<String, Object> fieldValues = model.getAdditionalFields();
 		if (allJaxConditionalFields != null && fieldValues != null) {
 			BenificiaryListView beneficiaryDetail = beneficiaryService.getBeneByIdNo(model.getBeneId());
