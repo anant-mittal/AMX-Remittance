@@ -12,4 +12,5 @@ public interface JaxNotificationTaskAssignRepo extends CrudRepository<JaxNotific
 
 	List<JaxNotificationTaskAssign> findByCountryBranchId(BigDecimal countryBranchId);
 	
+	List<JaxNotificationTaskAssign> findAll();
 }

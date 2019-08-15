@@ -1,6 +1,7 @@
 package com.amx.jax.services;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +38,7 @@ import com.amx.jax.repository.customer.CustomerDocumentTypeMasterRepo;
 import com.amx.jax.repository.task.JaxNotificationTaskAssignRepo;
 import com.amx.jax.repository.task.JaxNotificationTaskRepo;
 import com.amx.jax.userservice.service.UserService;
+import com.amx.jax.validation.NotificationTaskServiceValidator;
 import com.amx.utils.JsonUtil;
 
 @Service
@@ -63,12 +66,15 @@ public class NotificationTaskService {
 	ComplianceTransactionManager complianceTransactionManager;
 	@Autowired
 	JaxRbaacServiceWrapper jaxRbaacServiceWrapper;
+	@Autowired
+	NotificationTaskServiceValidator notificationTaskServiceValidator;
 
 	private static final Logger log = LoggerFactory.getLogger(NotificationTaskService.class);
 
 	@Transactional
 	public void notifyBranchUserForDocumentUpload(CustomerDocUploadNotificationTaskData data) {
 		log.debug("notifyBranchUserForDocumentUpload service data: {} ", JsonUtil.toJson(data));
+		notificationTaskServiceValidator.validateNotifyBranchUserForDocumentUpload(data);
 		RemittanceTransaction trnx = remittanceTransactionService.getRemittanceTransactionById(data.getRemittanceTransactionId());
 		String docCategory = data.getDocumentCategory();
 		JaxNotificationTask task = new JaxNotificationTask();
@@ -123,9 +129,12 @@ public class NotificationTaskService {
 	}
 
 	public List<NotificationTaskDto> listUserNotificationTasks() {
-		List<JaxNotificationTaskAssign> allNotifications = jaxNotificationTaskAssignRepo.findByCountryBranchId(metaData.getCountryBranchId());
+		List<JaxNotificationTaskAssign> allNotifications = jaxNotificationTaskAssignRepo.findAll();
 		List<String> empRoles = jaxRbaacServiceWrapper.getEmployeeRoles();
 		List<JaxNotificationTaskAssign> allowedNotifications = allNotifications.stream().filter(i -> {
+			if (i.getCountryBranchId() != null && !metaData.getCountryBranchId().equals(i.getCountryBranchId())) {
+				return false;
+			}
 			String[] taskViewRoles = i.getRoles().split(",");
 			List<String> taskViewRoleList = Arrays.asList(taskViewRoles);
 			if (empRoles != null) {
@@ -135,6 +144,7 @@ public class NotificationTaskService {
 					}
 				}
 			}
+
 			return false;
 		}).collect(Collectors.toList());
 		return convert(allowedNotifications);
@@ -178,15 +188,45 @@ public class NotificationTaskService {
 					task.setMessage(getDocUploadNotificationMessageForCompliance(task));
 					JaxNotificationTaskAssign taskAssign = new JaxNotificationTaskAssign();
 					taskAssign.setTask(task);
-					taskAssign.setRoles(NotificationTaskRole.COMPLIANCE_USER.toString());
+					taskAssign.setRoles(NotificationTaskRole.AML_USER.toString());
 					jaxNotificationTaskAssignRepo.save(taskAssign);
 					// change status of trnx to uploaded
 					complianceBlockedTrnxDoc.setStatus(ComplianceTrnxdDocStatus.UPLOADED);
 					complianceTrnxDocMapRepo.save(complianceBlockedTrnxDoc);
 				}
+				// delete or update earlier task of branch mananger
+				removeCurrentTaskNofication(docTypeMaster, customerId);
 			}
 			// update trnx doc map
 			complianceTransactionManager.updateTrnxDocMap(custUploadReferences, customerId);
+		}
+	}
+
+	private void removeCurrentTaskNofication(CustomerDocumentTypeMaster docTypeMaster, BigDecimal customerId) {
+
+		String uploadedDocType = docTypeMaster.getDocumentType();
+		List<JaxNotificationTask> branchTaskNotifications = jaxNotificationTaskRepo.findByCustomerIdAndTaskTypeAndDocumentCategory(customerId,
+				JaxNotificationTaskType.DOCUMENT_UPLOAD, docTypeMaster.getDocumentCategory());
+		for (JaxNotificationTask task : branchTaskNotifications) {
+			boolean delete = false;
+			if (StringUtils.isBlank(task.getDocumentTypes())) {
+				delete = true;
+			}
+			String[] docTypes = task.getDocumentTypes().split(",");
+			List<String> docTypeList = new ArrayList<>(Arrays.asList(docTypes));
+			if (docTypeList.contains(uploadedDocType)) {
+				docTypeList.remove(uploadedDocType);
+			}
+			if (docTypeList.isEmpty()) {
+				delete = true;
+			}
+			if (delete) {
+				// all docs are uploaded then delete task & assign
+				jaxNotificationTaskRepo.delete(task);
+			} else {
+				task.setDocumentTypes(String.join(",", docTypeList));
+				jaxNotificationTaskRepo.save(task);
+			}
 		}
 	}
 
