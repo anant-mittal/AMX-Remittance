@@ -346,7 +346,7 @@ public class CustomerRegistrationManager extends TransactionModel<CustomerRegist
 
 	}
 	
-	public OffsiteCustomerDataDTO getCustomerDeatils(String  identityInt,BigDecimal identityTypeId) {
+	public OffsiteCustomerDataDTO getCustomerDeatils(String  identityInt,BigDecimal identityTypeId,BigDecimal customerId) {
 		OffsiteCustomerDataDTO offsiteCustomer = new OffsiteCustomerDataDTO();
 		CustomerPersonalDetail customerDetails = new CustomerPersonalDetail();
 		LOGGER.debug("identityInt :"+identityInt+"\t identityTypeId :"+identityTypeId+"\t country id "+jaxMetaInfo.getCountryId());

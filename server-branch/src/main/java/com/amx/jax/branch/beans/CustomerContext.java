@@ -40,13 +40,15 @@ public class CustomerContext {
 
 	public OffsiteCustomerDataDTO refresh() {
 		String identity = commonHttpRequest.get("identity");
-		if (!ArgUtil.isEmpty(identity)) {
+		BigDecimal customerId = ArgUtil.parseAsBigDecimal(commonHttpRequest.get("customerId"));
+
+		if (!ArgUtil.isEmpty(identity) || !ArgUtil.isEmpty(customerId)) {
 			BigDecimal identityType = ArgUtil.parseAsBigDecimal(commonHttpRequest.get("identityType"));
 
 			AmxApiResponse<OffsiteCustomerDataDTO, Object> customerResponse = offsiteCustRegClient
 					.getOffsiteCustomerDetails(
 							identity,
-							identityType);
+							identityType,customerId);
 			setCustomer(customerResponse.getResult());
 			branchSession.setCustomer(customerResponse.getResult());
 		}
