@@ -235,15 +235,7 @@ public class RemitRoutingManager {
 					exchangeRateDetails.setDiscountAvailed(false);
 				}
 
-			} /*else if (PricerServiceConstants.SERVICE_PROVIDER_INDICATOR.equalsIgnoreCase(view.getBankIndicator())) {
-
-				// TODO : Base Rates should be without Pips and Net Rate With Pips
-				// For Service Providers Always Set the Net Rate Same as Base Rate
-				if (exchangeRateDetails != null && exchangeRateDetails.getSellRateBase() != null) {
-					exchangeRateDetails.setSellRateNet(exchangeRateDetails.getSellRateBase());
-				}
-
-			}*/
+			}
 
 			routeComputeDetails.setExchangeRateDetails(exchangeRateDetails);
 
