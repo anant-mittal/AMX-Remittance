@@ -107,7 +107,6 @@ public class ViewExRoutingMatrix implements Serializable {
 
 	@Column(name = "DELIVERY_HOURS")
 	private BigDecimal delievryHours;
-	
 	@Column(name = "FROM_AMOUNT")
 	private BigDecimal fromAmount;
 
@@ -146,6 +145,9 @@ public class ViewExRoutingMatrix implements Serializable {
 
 	@Column(name = "IS_FC_ROUDNING_ALLOWED")
 	private String isFcRoundingAllowed;
+
+	@Column(name = "SPLIT_AMOUNT")
+	private BigDecimal splitAmount;
 
 	public String getUuid() {
 		return uuid;
@@ -483,12 +485,23 @@ public class ViewExRoutingMatrix implements Serializable {
 		this.branchApplicability = branchApplicability;
 	}
 
-	public String getIsFcRoundingAllowed() {
+public String getIsFcRoundingAllowed() {
 		return isFcRoundingAllowed;
 	}
 
 	public void setIsFcRoundingAllowed(String isFcRoundingAllowed) {
 		this.isFcRoundingAllowed = isFcRoundingAllowed;
 	}
+
+
+	public BigDecimal getSplitAmount() {
+		return splitAmount;
+	}
+
+	public void setSplitAmount(BigDecimal splitAmount) {
+		this.splitAmount = splitAmount;
+	}
+
+	
 
 }
