@@ -110,15 +110,16 @@ public class ReferralService extends AbstractService {
 		Map<String, Object> responseMap;
 		try {
 			String response = future.get();
-			JSONObject responseObject = new JSONObject(response);
-			if(responseObject.has("results")){
-				JSONArray resultsArray = responseObject.getJSONArray("results");
-				if(resultsArray.length() > 0) {
-					String linkId = resultsArray.getString(0);
-					referralResponseModel.setLink(linkId);
-				}
-			}			
-		} catch (JSONException e) {
+			referralResponseModel.setLink(response);
+//			JSONObject responseObject = new JSONObject(response);
+//			if(responseObject.has("results")){
+//				JSONArray resultsArray = responseObject.getJSONArray("results");
+//				if(resultsArray.length() > 0) {
+//					String linkId = resultsArray.getString(0);
+//					referralResponseModel.setLink(linkId);
+//				}
+//			}			
+		} catch (NullPointerException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InterruptedException e) {
