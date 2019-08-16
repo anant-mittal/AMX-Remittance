@@ -181,7 +181,7 @@ public class HomeController {
 	 * @param model the model
 	 * @return the string
 	 */
-	@RequestMapping(value = { "/register/**", "/app/**", "/home/**", "/" }, method = { RequestMethod.GET })
+	@RequestMapping(value = { "/register/**", "/app/**", "/home/**", "/refer/**", "/" }, method = { RequestMethod.GET })
 	public String defaultPage(Model model) {
 		model.addAttribute("lang", httpService.getLanguage());
 		model.addAttribute("applicationTitle", webAppConfig.getAppTitle());
