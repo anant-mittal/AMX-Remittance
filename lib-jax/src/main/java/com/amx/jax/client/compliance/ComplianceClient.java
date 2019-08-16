@@ -1,4 +1,4 @@
-package com.amx.jax.client;
+package com.amx.jax.client.compliance;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,12 +8,6 @@ import org.springframework.core.ParameterizedTypeReference;
 import com.amx.jax.AppConfig;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
-import com.amx.jax.client.compliance.ApproveDocRequest;
-import com.amx.jax.client.compliance.ComplianceBlockedTrnxType;
-import com.amx.jax.client.compliance.DeactivateCustomerRequest;
-import com.amx.jax.client.compliance.HighValueTrnxDto;
-import com.amx.jax.client.compliance.IComplianceService;
-import com.amx.jax.client.compliance.RejectDocRequest;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.client.customer.CustomerManagementClient;
 import com.amx.jax.exception.JaxSystemError;
