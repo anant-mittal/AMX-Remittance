@@ -31,7 +31,7 @@ public class CustomerBranchController {
 	private BranchUserClient branchUserClient;
 
 	@RequestMapping(value = "/api/customer/details", method = { RequestMethod.POST })
-	public AmxApiResponse<OffsiteCustomerDataDTO, Object> setCustomerDetails(	@RequestParam(value = "identityInt", required = false)  String identity,
+	public AmxApiResponse<OffsiteCustomerDataDTO, Object> setCustomerDetails(@RequestParam(value = "identity", required = false)  String identity,
 			@RequestParam(value = "identityType", required = true)  BigDecimal identityType,@RequestParam(value = "customerId", required = false) BigDecimal customerId,
 			@RequestParam boolean session) {
 		return AmxApiResponse.build(branchSession.getCustomerContext(session).refresh());
