@@ -134,7 +134,7 @@ public class RemittanceProcedureDao {
 
 		BigDecimal remittanceTrnxId = (BigDecimal) inputValues.get("P_REMITTANCE_TRANSACTION_ID");
 		String remark = (String) inputValues.get("P_REMARKS");
-		String authBy = (String) inputValues.get("P_AUTHORIZED_BY");
+		BigDecimal authBy = (BigDecimal) inputValues.get("P_AUTHORIZED_BY");
 		String hvtLocal = (String) inputValues.get("P_HIGH_VALUE_TRANX");
 		String hvtFc = (String) inputValues.get("P_FC_HIGH_VALUE_TRANX");
 
@@ -149,7 +149,7 @@ public class RemittanceProcedureDao {
 			CallableStatement cs = connection.prepareCall(" { call EX_UPDATE_AML_AUTH(?,?,?,?,?)}");
 			cs.setBigDecimal(1, remittanceTrnxId);
 			cs.setString(2, remark);
-			cs.setString(3, authBy);
+			cs.setBigDecimal(3, authBy);
 			cs.setString(4, hvtLocal);
 			cs.setString(5, hvtFc);
 			cs.execute();

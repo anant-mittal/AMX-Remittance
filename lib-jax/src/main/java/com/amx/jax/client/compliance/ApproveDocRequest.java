@@ -17,6 +17,8 @@ public class ApproveDocRequest {
 	@ApiModelProperty(example = "4228")
 	@NotNull
 	BigDecimal remittanceTransactionId;
+	@NotNull
+	ComplianceBlockedTrnxType complianceBlockedTrnxType;
 
 	public String getDocumentType() {
 		return documentType;
@@ -40,5 +42,13 @@ public class ApproveDocRequest {
 
 	public void setRemittanceTransactionId(BigDecimal remittanceTransactionId) {
 		this.remittanceTransactionId = remittanceTransactionId;
+	}
+
+	public ComplianceBlockedTrnxType getComplianceBlockedTrnxType() {
+		return complianceBlockedTrnxType;
+	}
+
+	public void setComplianceBlockedTrnxType(ComplianceBlockedTrnxType complianceBlockedTrnxType) {
+		this.complianceBlockedTrnxType = complianceBlockedTrnxType;
 	}
 }

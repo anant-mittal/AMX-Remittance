@@ -141,8 +141,7 @@ public class ComplianceTransactionManager {
 		}
 		if (allDocsApproved) {
 			log.info("clearing transaction as all docs are approved");
-			remittanceTransactionService.clearHighValueTransaction(request.getRemittanceTransactionId(),
-					ComplianceBlockedTrnxType.valueOf(request.getDocumentCategory()));
+			remittanceTransactionService.clearHighValueTransaction(request.getRemittanceTransactionId(), request.getComplianceBlockedTrnxType());
 			notificationTaskService.removeTaskForTransaction(request.getRemittanceTransactionId());
 		}
 
