@@ -27,6 +27,9 @@ public class CustomerRating implements java.io.Serializable{
 	private Date createdDate;
 	private BigDecimal rating;
 	private String ratingRemark;
+	private String productType;
+	private BigDecimal fxOrderTransactionId;
+	private BigDecimal fxOrderApplicationId;
 	
 	
 	@Id
@@ -95,6 +98,31 @@ public class CustomerRating implements java.io.Serializable{
 	public void setRatingRemark(String ratingRemark) {
 		this.ratingRemark = ratingRemark;
 	}
+	
+	@Column(name = "PRODUCT")
+	public String getProductType() {
+		return productType;
+	}
+	public void setProducttype(String productType) {
+		this.productType = productType;
+	}
+	
+	@Column(name = "FXORDER_TRANSACTION_ID")
+	public BigDecimal getFxOrderTransactionId() {
+		return fxOrderTransactionId;
+	}
+	public void setFxOrderTransactionId(BigDecimal fxOrderTransactionId) {
+		this.fxOrderTransactionId = fxOrderTransactionId;
+	}
+	
+	@Column(name = "FXORDER_APPLICATION_ID")
+	public BigDecimal getFxOrderApplicationId() {
+		return fxOrderApplicationId;
+	}
+	public void setFxOrderApplicationId(BigDecimal fxOrderApplicationId) {
+		this.fxOrderApplicationId = fxOrderApplicationId;
+	}
+	
 	
 	
 	
