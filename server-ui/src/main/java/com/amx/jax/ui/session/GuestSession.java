@@ -276,29 +276,6 @@ public class GuestSession implements Serializable {
 		quesIndex++;
 	}
 
-	/**
-	 * Started.
-	 *
-	 * @throws Exception the exception
-	 */
-	@PostConstruct
-	public void started() {
-		SessionEvent evt = new SessionEvent();
-		evt.setType(SessionEvent.Type.SESSION_STARTED);
-		auditService.log(evt);
-	}
-
-	/**
-	 * Ended.
-	 *
-	 * @throws Exception the exception
-	 */
-	@PreDestroy
-	public void ended() {
-		SessionEvent evt = new SessionEvent();
-		evt.setType(SessionEvent.Type.SESSION_ENDED);
-		auditService.log(evt);
-	}
 
 	/**
 	 * Gets the return url.

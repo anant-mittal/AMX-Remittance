@@ -143,13 +143,6 @@ public class SessionService {
 		userSession.setValid(valid);
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 
-		if (valid) {
-			SessionEvent sessionEvent = new SessionEvent();
-			sessionEvent.setUserKey(getUserKeyString());
-			sessionEvent.setType(SessionEvent.Type.SESSION_AUTHED);
-			auditService.log(sessionEvent);
-		}
-
 	}
 
 	/**
@@ -287,11 +280,6 @@ public class SessionService {
 			map.fastRemove(userKeyString);
 			auditService.log(new CAuthEvent(AuthFlow.LOGOUT, AuthStep.UNAUTH));
 		}
-
-		SessionEvent sessionEvent = new SessionEvent();
-		sessionEvent.setUserKey(userKeyString);
-		sessionEvent.setType(SessionEvent.Type.SESSION_UNAUTHED);
-		auditService.log(sessionEvent);
 
 		this.clear();
 		this.invalidate();
