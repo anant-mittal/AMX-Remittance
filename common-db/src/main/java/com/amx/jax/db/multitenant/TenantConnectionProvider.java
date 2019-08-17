@@ -17,7 +17,7 @@ import com.amx.jax.scope.TenantContextHolder;
 public class TenantConnectionProvider implements MultiTenantConnectionProvider {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
 	@Autowired
@@ -42,8 +42,10 @@ public class TenantConnectionProvider implements MultiTenantConnectionProvider {
 		Connection connection;
 
 		if (ds != null) {
+			LOGGER.debug("Gettign Connection from Tenant DataSource");
 			connection = ds.getConnection();
 		} else {
+			LOGGER.debug("Gettign Connection from Default DataSource");
 			connection = getAnyConnection();
 		}
 		return connection;
@@ -57,6 +59,7 @@ public class TenantConnectionProvider implements MultiTenantConnectionProvider {
 
 	@Override
 	public void releaseConnection(String tenantIdentifier, Connection connection) throws SQLException {
+		LOGGER.debug("Releasing Connection");
 		connection.close();
 	}
 

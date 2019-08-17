@@ -45,7 +45,7 @@ public class TenantDBConfig {
 
 	public DataSource getDataSource() {
 		if (dataSource == null) {
-			LOGGER.info("dataSource is NULL So creating One");
+			LOGGER.debug("dataSource is NULL So creating One");
 			DataSourceBuilder factory = DataSourceBuilder.create().url(getDataSourceUrl())
 					.username(getDataSourceUsername()).password(getDataSourcePassword())
 					.driverClassName(getDataSourceDriverClassName());
@@ -55,7 +55,7 @@ public class TenantDBConfig {
 			tomcatDataSource.setValidationQuery("select 1 from dual");
 			tomcatDataSource.setTestWhileIdle(true);
 			dataSource = tomcatDataSource;
-			LOGGER.info("dataSource was NULL So created One");
+			LOGGER.debug("dataSource was NULL So created One");
 		}
 		return dataSource;
 	}
