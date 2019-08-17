@@ -48,6 +48,7 @@ public class TenantConnectionProvider implements MultiTenantConnectionProvider {
 			LOGGER.debug("Gettign Connection from Default DataSource");
 			connection = getAnyConnection();
 		}
+		LOGGER.debug("Recvd Connection");
 		return connection;
 	}
 

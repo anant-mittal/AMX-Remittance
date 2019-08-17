@@ -52,15 +52,20 @@ public class BrokerScheduler {
 		Tenant[] tenants = brokerConfig.getTenants();
 		for (Tenant tenant : tenants) {
 			try {
+				logger.debug("Working for {}", tenant.toString());
 				AppContextUtil.setTenant(tenant);
 				String sessionId = UniqueID.generateString();
 				AppContextUtil.setSessionId(sessionId);
 				AppContextUtil.getTraceId(true, true);
 				AppContextUtil.init();
+				logger.debug("Before Lock {}");
 				Candidate candidate = getLock(tenants.toString());
 				if (mcq.lead(candidate)) {
+					logger.debug("Candidate is leading");
 					brokerService.pushNewEventNotifications(tenant, sessionId);
 					mcq.resign(candidate);
+				} else {
+					logger.debug("Candidate is Not leading");
 				}
 			} catch (Exception e) {
 				logger.error("Scheduler Fetch ERROR", e);
