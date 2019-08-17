@@ -1,0 +1,17 @@
+{
+	"link": {
+		"id": "123",
+		"verificationCode": "ASADAS"
+	},
+	"customer": {
+		"firstName": "Riddhi",
+		"lastName": "Madhu",
+		"middleName" : "Pata nhi",
+		"email" : "xxxxxadhu@gmail.com"
+	},
+	"data":{
+		"curQutoe" : "KD",
+		"amount" : 500,
+		"requestData" : "12-Jul-2019"
+	}
+}

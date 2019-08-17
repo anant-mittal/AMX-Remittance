@@ -68,7 +68,7 @@ public enum TemplatesMX implements ITemplate {
 	POLICY_OPTOUT_SYSTEM("PolicyOptoutSystem"),
 	POLICY_EXPIRY_REMINDER("PolicyExpiryReminder"),
 	POLICY_EXPIRED("PolicyExpired"),
-	
+	PAYMENT_LINK("PaymentLink"),
 	
 	// Default add enums above this
 	DEFAULT("default");
