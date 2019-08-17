@@ -48,7 +48,7 @@ public class TenantDBConfig {
 	public DataSource getDataSource() {
 		if (dataSource == null) {
 			synchronized (lock) {
-				LOGGER.debug("dataSource is NULL So creating One");
+				LOGGER.debug("dataSource is NULL So creating One {} {}", getDataSourceUrl(), getDataSourceUsername());
 				DataSourceBuilder factory = DataSourceBuilder.create().url(getDataSourceUrl())
 						.username(getDataSourceUsername()).password(getDataSourcePassword())
 						.driverClassName(getDataSourceDriverClassName());
