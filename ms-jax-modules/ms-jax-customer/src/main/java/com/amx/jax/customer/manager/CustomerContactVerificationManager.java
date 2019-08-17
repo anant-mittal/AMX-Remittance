@@ -172,10 +172,15 @@ public class CustomerContactVerificationManager {
 				customer.setEmailVerified(Status.D);
 			}
 			c.setEmailVerified(Status.Y);
-			cv.setVerificationStatus(ConstantDocument.Yes);
-			customerOnlineRegistration.setStatus(ConstantDocument.Yes);
-			onlineCustomerRepository.save(customerOnlineRegistration);
-			customerVerificationRepository.save(cv);
+			if(cv != null) {
+				cv.setVerificationStatus(ConstantDocument.Yes);
+				customerVerificationRepository.save(cv);
+			}
+			if(customerOnlineRegistration != null) {
+				customerOnlineRegistration.setStatus(ConstantDocument.Yes);
+				onlineCustomerRepository.save(customerOnlineRegistration);
+			}
+			
 		} else if (ContactType.SMS.equals(type)) {
 			String mobile = c.getPrefixCodeMobile() + c.getMobile();
 			if (!contact.equals(mobile)) {
