@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import com.amx.jax.AppContextUtil;
+import com.amx.jax.db.multitenant.TenantDBConfig;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.mcq.Candidate;
@@ -36,6 +37,9 @@ public class BrokerScheduler {
 	BrokerConfig brokerConfig;
 
 	@Autowired
+	TenantDBConfig tenantDBConfig;
+
+	@Autowired
 	private MCQLocker mcq;
 
 	private Candidate getLock(String tenant) {
@@ -49,6 +53,11 @@ public class BrokerScheduler {
 
 	@Scheduled(fixedDelay = BrokerConstants.PUSH_NOTIFICATION_FREQUENCY)
 	public void pushNewEventNotifications() {
+		if (!tenantDBConfig.isReady()) {
+			logger.warn("DB is Not Ready : Exit");
+			return;
+		}
+
 		Tenant[] tenants = brokerConfig.getTenants();
 		for (Tenant tenant : tenants) {
 			try {

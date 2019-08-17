@@ -43,6 +43,8 @@ public class TenantDBConfig {
 
 	DataSource dataSource;
 
+	boolean ready = false;
+
 	private static Object lock = new Object();
 
 	public DataSource getDataSource() {
@@ -59,9 +61,14 @@ public class TenantDBConfig {
 				tomcatDataSource.setTestWhileIdle(true);
 				dataSource = tomcatDataSource;
 				LOGGER.debug("dataSource was NULL So created One");
+				ready = true;
 			}
 		}
 		return dataSource;
+	}
+
+	public boolean isReady() {
+		return ready;
 	}
 
 }
