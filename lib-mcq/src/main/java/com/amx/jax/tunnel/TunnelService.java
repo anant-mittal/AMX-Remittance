@@ -59,6 +59,11 @@ public class TunnelService implements ITunnelService {
 		return topicQueue.publish(message);
 	}
 
+	@Override
+	public <T> long shout(ITunnelEventsDict topic, T messagePayload) {
+		return this.shout(topic.name(), messagePayload);
+	}
+
 	/**
 	 * @see #shout(String, Object)
 	 * @param event
