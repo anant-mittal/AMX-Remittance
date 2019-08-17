@@ -43,19 +43,23 @@ public class TenantDBConfig {
 
 	DataSource dataSource;
 
+	private static Object lock = new Object();
+
 	public DataSource getDataSource() {
 		if (dataSource == null) {
-			LOGGER.debug("dataSource is NULL So creating One");
-			DataSourceBuilder factory = DataSourceBuilder.create().url(getDataSourceUrl())
-					.username(getDataSourceUsername()).password(getDataSourcePassword())
-					.driverClassName(getDataSourceDriverClassName());
-			org.apache.tomcat.jdbc.pool.DataSource tomcatDataSource = (org.apache.tomcat.jdbc.pool.DataSource) factory
-					.build();
-			tomcatDataSource.setTestOnBorrow(true);
-			tomcatDataSource.setValidationQuery("select 1 from dual");
-			tomcatDataSource.setTestWhileIdle(true);
-			dataSource = tomcatDataSource;
-			LOGGER.debug("dataSource was NULL So created One");
+			synchronized (lock) {
+				LOGGER.debug("dataSource is NULL So creating One");
+				DataSourceBuilder factory = DataSourceBuilder.create().url(getDataSourceUrl())
+						.username(getDataSourceUsername()).password(getDataSourcePassword())
+						.driverClassName(getDataSourceDriverClassName());
+				org.apache.tomcat.jdbc.pool.DataSource tomcatDataSource = (org.apache.tomcat.jdbc.pool.DataSource) factory
+						.build();
+				tomcatDataSource.setTestOnBorrow(true);
+				tomcatDataSource.setValidationQuery("select 1 from dual");
+				tomcatDataSource.setTestWhileIdle(true);
+				dataSource = tomcatDataSource;
+				LOGGER.debug("dataSource was NULL So created One");
+			}
 		}
 		return dataSource;
 	}
