@@ -18,7 +18,6 @@ import org.springframework.stereotype.Component;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.logger.AuditService;
-import com.amx.jax.logger.events.SessionEvent;
 import com.amx.jax.model.AuthState;
 import com.amx.jax.model.AuthState.AuthFlow;
 import com.amx.jax.model.AuthState.AuthStep;
