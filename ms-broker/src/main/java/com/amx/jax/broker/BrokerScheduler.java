@@ -58,7 +58,7 @@ public class BrokerScheduler {
 				AppContextUtil.setSessionId(sessionId);
 				AppContextUtil.getTraceId(true, true);
 				AppContextUtil.init();
-				logger.debug("Before Lock {}");
+				logger.debug("Before Lock");
 				Candidate candidate = getLock(tenants.toString());
 				if (mcq.lead(candidate)) {
 					logger.debug("Candidate is leading");
