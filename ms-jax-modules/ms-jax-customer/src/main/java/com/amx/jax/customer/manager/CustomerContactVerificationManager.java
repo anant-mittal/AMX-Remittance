@@ -172,9 +172,10 @@ public class CustomerContactVerificationManager {
 				customer.setEmailVerified(Status.D);
 			}
 			c.setEmailVerified(Status.Y);
-			
 			cv.setVerificationStatus(ConstantDocument.Yes);
 			customerOnlineRegistration.setStatus(ConstantDocument.Yes);
+			onlineCustomerRepository.save(customerOnlineRegistration);
+			customerVerificationRepository.save(cv);
 		} else if (ContactType.SMS.equals(type)) {
 			String mobile = c.getPrefixCodeMobile() + c.getMobile();
 			if (!contact.equals(mobile)) {
@@ -207,9 +208,6 @@ public class CustomerContactVerificationManager {
 		}
 
 		customerRepository.save(c);
-		customerVerificationRepository.save(cv);
-		onlineCustomerRepository.save(customerOnlineRegistration);
-
 	}
 
 	public CustomerContactVerification verify(Customer c, CustomerContactVerification link, String identity) {
