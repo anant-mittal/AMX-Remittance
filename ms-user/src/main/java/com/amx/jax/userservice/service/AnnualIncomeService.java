@@ -195,13 +195,6 @@ public class AnnualIncomeService {
 		logger.info("set designation id : ");
 		
 		logger.info("Constant is "+Constants.ANNUALINCOME_VERIFIED_LIMIT);
-		if(customer.getAnnualIncomeFrom().longValue()>=Constants.ANNUALINCOME_VERIFIED_LIMIT) {
-			
-			customer.setIsBusinessCardVerified("N");
-		}
-		if(customer.getAnnualIncomeUpdatedDate()!=null && "N".equals(customer.getIsBusinessCardVerified()) && customer.getAnnualIncomeFrom().longValue()<Constants.ANNUALINCOME_VERIFIED_LIMIT) {
-			customer.setIsBusinessCardVerified(null);
-		}
 		
 		CustomerEmploymentInfo customerEmploymentInfo = incomeDao.getCustById(metaData.getCustomerId());
 		
@@ -407,6 +400,9 @@ public class AnnualIncomeService {
 			IncomeRangeMaster articleDetails = customer.getFsIncomeRangeMaster();
 			incomeDto.setIncomeRangeFrom(articleDetails.getIncomeRangeFrom());
 			incomeDto.setIncomeRangeTo(articleDetails.getIncomeRangeTo());
+			incomeDto.setArticleDetailId(customer.getFsArticleDetails().getArticleDetailId());
+			incomeDto.setCompanyName(customerEmploymentInfo.getEmployerName());
+			incomeDto.setFileName(customerEmploymentInfo.getFileName());
 		} else {
 
 			if (customer.getAnnualIncomeFrom() == null || customer.getAnnualIncomeTo() == null) {
@@ -416,15 +412,16 @@ public class AnnualIncomeService {
 				throw new GlobalException("Please set your designation");
 			}
 
-			if (customerEmploymentInfo.getEmployerName() == null) {
-				throw new GlobalException("Please set your company name");
-			}
+			
 			incomeDto.setIncomeRangeFrom(customer.getAnnualIncomeFrom());
 			incomeDto.setIncomeRangeTo(customer.getAnnualIncomeTo());
 
 			incomeDto.setArticleDetailId(customer.getFsArticleDetails().getArticleDetailId());
-			incomeDto.setCompanyName(customerEmploymentInfo.getEmployerName());
-			incomeDto.setFileName(customerEmploymentInfo.getFileName());
+			if(customerEmploymentInfo!=null && customerEmploymentInfo.getEmployerName()!=null && customerEmploymentInfo.getFileName()!=null) {
+				incomeDto.setCompanyName(customerEmploymentInfo.getEmployerName());
+				incomeDto.setFileName(customerEmploymentInfo.getFileName());
+			}
+			
 		}
 		logger.info("Article detailed id returned is "+incomeDto.getArticleDetailId());
 		return AmxApiResponse.build(incomeDto);

@@ -16,7 +16,7 @@ import com.amx.jax.pricer.dao.CurrencyMasterDao;
 import com.amx.jax.pricer.dao.CustCatDiscountDao;
 import com.amx.jax.pricer.dao.DiscountMasterDao;
 import com.amx.jax.pricer.dao.PipsMasterDao;
-import com.amx.jax.pricer.dao.RoutingDao;
+import com.amx.jax.pricer.dao.RoutingDaoAlt;
 import com.amx.jax.pricer.dao.ServiceMasterDescDao;
 import com.amx.jax.pricer.dbmodel.BankMasterModel;
 import com.amx.jax.pricer.dbmodel.ChannelDiscount;
@@ -50,7 +50,7 @@ public class DiscountManager {
 	PipsMasterDao pipsMasterDao;
 
 	@Autowired
-	RoutingDao routingDao;
+	RoutingDaoAlt routingDaoAlt;
 
 	@Autowired
 	BankMasterDao bankMasterDao;
@@ -134,9 +134,9 @@ public class DiscountManager {
 			RoutBanksAndServiceRespDTO routBanksAndServiceRespData = new RoutBanksAndServiceRespDTO();
 			routBanksAndServiceRespData.setRoutingBankId(routingData.getRoutingBankId());
 
-			BankMasterModel bankName = bankMasterDao.getBankById(routingData.getRoutingBankId());
-			if (null != bankName) {
-				routBanksAndServiceRespData.setRoutingBankName(bankName.getBankFullName());
+			BankMasterModel bankModel = bankMasterDao.getBankById(routingData.getRoutingBankId());
+			if (null != bankModel) {
+				routBanksAndServiceRespData.setRoutingBankName(bankModel.getBankFullName());
 			}
 
 			routBanksAndServiceRespData.setServiceId(routingData.getServiceMasterId());

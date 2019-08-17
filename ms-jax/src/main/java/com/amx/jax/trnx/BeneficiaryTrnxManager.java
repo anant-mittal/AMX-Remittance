@@ -14,7 +14,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.BeanPropertyBindingResult;
 
 import com.amx.amxlib.constant.AuthType;
+import com.amx.amxlib.constant.NotificationConstants;
 import com.amx.amxlib.model.BeneAccountModel;
+import com.amx.amxlib.model.BeneCreateDetailsDTO;
 import com.amx.amxlib.model.BenePersonalDetailModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.trnx.BeneficiaryTrnxModel;
@@ -22,16 +24,24 @@ import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constants.JaxChannel;
 import com.amx.jax.dao.BeneficiaryDao;
 import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
+import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.bene.BeneficaryAccount;
 import com.amx.jax.dbmodel.bene.BeneficaryContact;
 import com.amx.jax.dbmodel.bene.BeneficaryMaster;
 import com.amx.jax.dbmodel.bene.BeneficaryRelationship;
 import com.amx.jax.dbmodel.bene.BeneficaryStatus;
+import com.amx.jax.model.response.customer.PersonInfo;
+import com.amx.jax.postman.PostManService;
+import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.model.Email;
+import com.amx.jax.postman.model.PushMessage;
+import com.amx.jax.postman.model.SMS;
+import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.repository.BeneficaryStatusRepository;
 import com.amx.jax.repository.IBeneficaryContactDao;
 import com.amx.jax.repository.IBeneficiaryAccountDao;
 import com.amx.jax.repository.IBeneficiaryMasterDao;
+import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.IBeneficiaryRelationshipDao;
 import com.amx.jax.service.MetaService;
 import com.amx.jax.service.ParameterService;
@@ -86,9 +96,18 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 
 	@Autowired
 	BeneficiaryDao beneficiaryDao;
-	
+
 	@Autowired
 	JaxEmailNotificationService jaxEmailNotificationService;
+
+	@Autowired
+	PostManService postManService;
+
+	@Autowired
+	private PushNotifyClient pushNotifyClient;
+
+	@Autowired
+	IBeneficiaryOnlineDao beneficiaryOnlineDao;
 
 	@Override
 	public BeneficiaryTrnxModel init() {
@@ -127,6 +146,19 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		}else {
 			logger.info("Map Sequence Id generated: {}", beneRelationship.getMapSequenceId());
 		}
+		BenificiaryListView beneListView = beneficiaryOnlineDao
+				.findBybeneficiaryRelationShipSeqId(beneRelationship.getBeneficaryRelationshipId());
+
+		BigDecimal custId = beneListView.getCustomerId();
+		PersonInfo personInfo = userService.getPersonInfo(custId);
+
+		BeneCreateDetailsDTO beneDetails = new BeneCreateDetailsDTO();
+		beneDetails.setBeneBankName(beneListView.getBankShortNames());
+		beneDetails.setBeneCountry(beneListView.getBenificaryBankCountryName());
+		beneDetails.setBeneName(beneListView.getBenificaryName());
+		beneDetails.setCustomerName(personInfo.getFirstName() +" "+personInfo.getLastName());
+
+		sendNotificationTemplate(beneDetails, personInfo, custId);
 		return beneficiaryTrnxModel;
 	}
 
@@ -457,5 +489,34 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		// TODO Auto-generated method stub
 		return null;
 	}
+	public void sendNotificationTemplate(BeneCreateDetailsDTO wrapper, PersonInfo personInfo, BigDecimal custId) {
+		try {
+
+			logger.debug("Sending beneCreationEmail  to customer : ");
+			// Send Email
+			Email beneCreationEmail = new Email();
+			beneCreationEmail.setSubject("New Beneficiary Addition Success");
+			if (personInfo.getEmail() != null) {
+				beneCreationEmail.addTo(personInfo.getEmail());
+			}
+			beneCreationEmail.setITemplate(TemplatesMX.BENE_SUCC);
+			beneCreationEmail.setHtml(true);
+
+			beneCreationEmail.getModel().put(NotificationConstants.RESP_DATA_KEY, wrapper);
+			postManService.sendEmailAsync(beneCreationEmail);
+
+			// Send Push Message
+			PushMessage pushMessage = new PushMessage();
+
+			pushMessage.setITemplate(TemplatesMX.BENE_SUCC);
+			pushMessage.getModel().put(NotificationConstants.RESP_DATA_KEY, wrapper);
+			pushMessage.addToUser(custId);
+			pushNotifyClient.send(pushMessage);
+
+		} catch (Exception e) {
+			logger.error("Error while sending mail beneCreationEmail : " , e);
+		}
+	}
+
 
 }

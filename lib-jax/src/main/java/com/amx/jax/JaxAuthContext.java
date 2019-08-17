@@ -21,8 +21,12 @@ public class JaxAuthContext {
 		return ArgUtil.parseAsString(AppContextUtil.getParams().get("wOtp"));
 	}
 
+	public static String getCaptcha() {
+		return ArgUtil.parseAsString(AppContextUtil.getParams().get("captcha"));
+	}
+
 	public static ContactType getContactType() {
-		return (ContactType) ArgUtil.parseAsEnum(AppContextUtil.getParams().get("cType"), ContactType.EMPTY);
+		return ArgUtil.parseAsEnumIgnoreCase(AppContextUtil.getParams().get("contactType"), ContactType.class);
 	}
 
 	public static String getFlow() {
@@ -79,12 +83,12 @@ public class JaxAuthContext {
 		return eOtp;
 	}
 
-	public static String secAns(String secAns) {
-		if (ArgUtil.isEmpty(secAns)) {
-			return getSecAns();
+	public static String captcha(String captcha) {
+		if (ArgUtil.isEmpty(captcha)) {
+			return getCaptcha();
 		}
-		AppContextUtil.getParams().put("secAns", secAns);
-		return secAns;
+		AppContextUtil.getParams().put("captcha", captcha);
+		return captcha;
 	}
 
 	public static ContactType contactType(ContactType contactType) {
@@ -93,6 +97,14 @@ public class JaxAuthContext {
 		}
 		AppContextUtil.getParams().put("contactType", contactType);
 		return contactType;
+	}
+
+	public static String secAns(String secAns) {
+		if (ArgUtil.isEmpty(secAns)) {
+			return getSecAns();
+		}
+		AppContextUtil.getParams().put("secAns", secAns);
+		return secAns;
 	}
 
 	public static String flow(String flow) {

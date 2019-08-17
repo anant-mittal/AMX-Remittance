@@ -29,6 +29,7 @@ import com.amx.jax.dbmodel.ExEmailNotification;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.model.response.customer.CustomerDto;
+import com.amx.jax.model.request.partner.TransactionFailReportDTO;
 import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.model.response.fx.FxDeliveryDetailNotificationDto;
 import com.amx.jax.model.response.fx.FxOrderDetailNotificationDto;
@@ -408,5 +409,23 @@ public class JaxNotificationService {
 			}
 		});
 
+	}
+
+public void sendSPErrorEmail(TransactionFailReportDTO model,
+			List<ExEmailNotification> emailNotification) {
+		try {
+			for (ExEmailNotification emailNot : emailNotification) {
+				String emailid = emailNot.getEmailId();
+				Email email = new Email();
+				email.setSubject(SERVICE_PROVIDER_RESPONSE);
+				email.addTo(emailid);
+				email.setITemplate(TemplatesMX.HOMESEND_TRANSACTION_FAILAURE);
+				email.setHtml(true);
+				email.getModel().put(RESP_DATA_KEY, model);
+				sendEmail(email);
+			}
+		} catch (Exception e) {
+			logger.error("error in sendErrormail", e);
+		}
 	}
 }

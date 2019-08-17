@@ -16,10 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.cache.ExchRateAndRoutingTransientDataCache;
+import com.amx.jax.partner.dto.CustomerDiscountReqDTO;
 import com.amx.jax.pricer.dao.ChannelDiscountDao;
 import com.amx.jax.pricer.dao.CountryBranchDao;
 import com.amx.jax.pricer.dao.CurrencyMasterDao;
 import com.amx.jax.pricer.dao.CustCatDiscountDao;
+import com.amx.jax.pricer.dao.CustomerDiscountDao;
 import com.amx.jax.pricer.dao.CustomerExtendedDao;
 import com.amx.jax.pricer.dao.DiscountMasterDao;
 import com.amx.jax.pricer.dao.GroupingMasterDao;
@@ -29,6 +31,7 @@ import com.amx.jax.pricer.dbmodel.CountryBranch;
 import com.amx.jax.pricer.dbmodel.CurrencyMasterModel;
 import com.amx.jax.pricer.dbmodel.Customer;
 import com.amx.jax.pricer.dbmodel.CustomerCategoryDiscount;
+import com.amx.jax.pricer.dbmodel.CustomerDiscountsView;
 import com.amx.jax.pricer.dbmodel.CustomerExtended;
 import com.amx.jax.pricer.dbmodel.DiscountMaster;
 import com.amx.jax.pricer.dbmodel.GroupingMaster;
@@ -39,6 +42,7 @@ import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.util.DbValueUtil;
 import com.amx.jax.pricer.var.PricerServiceConstants.CUSTOMER_CATEGORY;
 import com.amx.jax.pricer.var.PricerServiceConstants.DISCOUNT_TYPE;
+import com.amx.utils.JsonUtil;
 
 @Component
 public class CustomerDiscountManager {
@@ -68,6 +72,9 @@ public class CustomerDiscountManager {
 
 	@Autowired
 	DiscountMasterDao discountMasterDao;
+
+	@Autowired
+	CustomerDiscountDao customerDiscountDao;
 
 	@Resource
 	ExchRateAndRoutingTransientDataCache exchRateAndRoutingTransientDataCache;
@@ -133,11 +140,6 @@ public class CustomerDiscountManager {
 					? customerExtended.getCustomerCategoryDiscount()
 					: null;
 
-			// System.out.println(" Id: " + ccDiscount.getId() + " Flags: " +
-			// ccDiscount.getFlags() + " cat:" + ccDiscount.getCustomerCategory()) ;
-
-			// System.out.println(" CC Discount ==> " + JsonUtil.toJson(ccDiscount));
-
 			if (ccDiscount != null && ccDiscount.getId() != null && curGroup != null
 					&& DbValueUtil.isActive(ccDiscount.getIsActive())) {
 
@@ -186,11 +188,6 @@ public class CustomerDiscountManager {
 			OnlineCountryBranchId = cb.getCountryBranchId();
 		}
 
-		if (OnlineCountryBranchId == null) {
-			CountryBranch cb = countryBranchDao.getOnlineCountryBranch();
-			OnlineCountryBranchId = cb.getCountryBranchId();
-		}
-
 		List<PipsMaster> pipsList = pipsMasterDao.getPipsForFcCurAndBank(pricingRequestDTO.getForeignCurrencyId(),
 				OnlineCountryBranchId, validBankIds);
 
@@ -210,10 +207,6 @@ public class CustomerDiscountManager {
 					bankAmountSlabDiscounts.put(pipsMaster.getBankMaster().getBankId().longValue(), slabPipsMap);
 				}
 
-				// System.out.println(" Pips Master Discount ==> "
-				// +
-				// bankAmountSlabDiscounts.get(pipsMaster.getBankMaster().getBankId().longValue()));
-
 			}
 		}
 
@@ -225,6 +218,12 @@ public class CustomerDiscountManager {
 				: BIGD_ZERO;
 
 		for (ExchangeRateDetails bankExRateDetail : exchRateAndRoutingTransientDataCache.getSellRateDetails()) {
+
+			// Check if discount is already applied
+			// Avoid Double Discount Application
+			if (bankExRateDetail.isDiscountAvailed() == true) {
+				continue;
+			}
 
 			BigDecimal amountSlabPips = BIGD_ZERO;
 			ExchangeDiscountInfo amountSlabPipsInfo = new ExchangeDiscountInfo();
@@ -318,4 +317,147 @@ public class CustomerDiscountManager {
 		// return discountedRatesNPrices;
 	}
 
+	// iterate the response of discount
+	public ExchangeRateDetails fetchCustomerChannelDiscounts(CustomerDiscountReqDTO customerDiscountReqDTO) {
+
+		GroupingMaster curGroup = null;
+		BigDecimal OnlineCountryBranchId = null;
+		BigDecimal ccDiscountPips = BigDecimal.ZERO;
+		BigDecimal amountSlabPips = BigDecimal.ZERO;
+		BigDecimal channelDiscountPips = BigDecimal.ZERO;
+
+		ExchangeRateDetails bankExRateDetail = new ExchangeRateDetails();
+		ExchangeDiscountInfo custCategoryInfo = new ExchangeDiscountInfo();
+		ExchangeDiscountInfo amountSlabPipsInfo = new ExchangeDiscountInfo();
+		ExchangeDiscountInfo channelInfo = new ExchangeDiscountInfo();
+
+		// Find the Currency Group to which the currency belongs
+		// TODO: Optimize this to Save it in the Cache and retrieve it from thr
+		CurrencyMasterModel currencyMasterModel = currencyMasterDao
+				.getByCurrencyId(customerDiscountReqDTO.getForeignCurrencyId());
+
+		if (currencyMasterModel.getCurrGroupId() != null) {
+			curGroup = groupingMasterDao.getGroupById(currencyMasterModel.getCurrGroupId());
+			if (curGroup == null) {
+				LOGGER.warn(" ****** MAJOR : Currency Group is Null for Currency Group Id : "
+						+ currencyMasterModel.getCurrGroupId() + " and Currency Id :"
+						+ currencyMasterModel.getCurrencyId());
+			}
+		} else {
+			LOGGER.warn(
+					" ****** MAJOR : Currency Group is Null for Currency Id : " + currencyMasterModel.getCurrencyId());
+		}
+
+		// Compute Channel Discount
+		ChannelDiscount channelDiscount = channelDiscountDao.getDiscountByChannel(customerDiscountReqDTO.getChannel());
+
+		if (channelDiscount != null && curGroup != null && DbValueUtil.isActive(channelDiscount.getIsActive())) {
+			DiscountMaster channelDiscountMaster = discountMasterDao.getByDiscountTypeAndDiscountTypeIdAndGroupId(
+					DISCOUNT_TYPE.CHANNEL.getTypeKey(), channelDiscount.getId(), curGroup.getId());
+			channelDiscountPips = ((null != channelDiscountMaster
+					&& DbValueUtil.isActive(channelDiscountMaster.getIsActive()))
+							? channelDiscountMaster.getDiscountPips()
+							: BigDecimal.ZERO);
+		}
+
+		// Channel Info
+		channelInfo.setId(channelDiscount.getId());
+		channelInfo.setDiscountType(DISCOUNT_TYPE.CHANNEL);
+		channelInfo.setDiscountTypeValue(customerDiscountReqDTO.getChannel().name());
+		channelInfo.setDiscountPipsValue(channelDiscountPips);
+
+		LOGGER.warn("channelInfo : " + JsonUtil.toJson(channelInfo));
+
+		// Compute Customer category Discount
+		CustomerDiscountsView customerDiscountsView = customerDiscountDao.fetchCustomerDiscount(
+				customerDiscountReqDTO.getCustomerId(), DISCOUNT_TYPE.CUSTOMER_CATEGORY.getTypeKey(), curGroup.getId());
+
+		if (customerDiscountsView.getDiscountType() != null && customerDiscountsView.getDiscountType()
+				.equalsIgnoreCase(DISCOUNT_TYPE.CUSTOMER_CATEGORY.getTypeKey())) {
+			ccDiscountPips = (null != customerDiscountsView.getDiscountPips() ? customerDiscountsView.getDiscountPips()
+					: BigDecimal.ZERO);
+			// Customer Category Info
+			custCategoryInfo.setId(customerDiscountsView.getDiscountTypeId());
+			custCategoryInfo.setDiscountType(DISCOUNT_TYPE.CUSTOMER_CATEGORY);
+			custCategoryInfo.setDiscountTypeValue(customerDiscountsView.getCustomerCategory().toString());
+			custCategoryInfo.setDiscountPipsValue(ccDiscountPips);
+		}
+
+		/*
+		 * CustomerExtended customerExtended =
+		 * customerExtendedDao.getCustomerExtendedByCustomerId(customerDiscountReqDTO.
+		 * getCustomerId()); CustomerCategoryDiscount ccDiscount = customerExtended !=
+		 * null ? customerExtended.getCustomerCategoryDiscount() : null;
+		 * 
+		 * if (ccDiscount != null && ccDiscount.getId() != null && curGroup != null &&
+		 * DbValueUtil.isActive(ccDiscount.getIsActive())) { DiscountMaster
+		 * ccDiscountMaster =
+		 * discountMasterDao.getByDiscountTypeAndDiscountTypeIdAndGroupId(DISCOUNT_TYPE.
+		 * CUSTOMER_CATEGORY.getTypeKey(), ccDiscount.getId(), curGroup.getId());
+		 * ccDiscountPips = ((null != ccDiscountMaster &&
+		 * DbValueUtil.isActive(ccDiscountMaster.getIsActive())) ?
+		 * ccDiscountMaster.getDiscountPips() : BigDecimal.ZERO); }
+		 * 
+		 * // Customer Category Info custCategoryInfo.setId(ccDiscount.getId());
+		 * custCategoryInfo.setDiscountType(DISCOUNT_TYPE.CUSTOMER_CATEGORY);
+		 * custCategoryInfo.setDiscountTypeValue(ccDiscount.getCustomerCategory().
+		 * toString()); custCategoryInfo.setDiscountPipsValue(ccDiscountPips);
+		 */
+
+		LOGGER.warn("custCategoryInfo : " + JsonUtil.toJson(custCategoryInfo));
+
+		if (OnlineCountryBranchId == null) {
+			CountryBranch cb = countryBranchDao.getOnlineCountryBranch();
+			OnlineCountryBranchId = cb.getCountryBranchId();
+		}
+
+		List<BigDecimal> validBankIds = new ArrayList<BigDecimal>();
+		validBankIds.add(customerDiscountReqDTO.getBankId());
+
+		List<PipsMaster> pipsList = pipsMasterDao.getPipsForFcCurAndBank(customerDiscountReqDTO.getForeignCurrencyId(),
+				OnlineCountryBranchId, validBankIds);
+		Map<Long, TreeMap<BigDecimal, PipsMaster>> bankAmountSlabDiscounts = new HashMap<Long, TreeMap<BigDecimal, PipsMaster>>();
+
+		if (null != pipsList) {
+			for (PipsMaster pipsMaster : pipsList) {
+				if (bankAmountSlabDiscounts.containsKey(pipsMaster.getBankMaster().getBankId().longValue())) {
+					bankAmountSlabDiscounts.get(pipsMaster.getBankMaster().getBankId().longValue())
+							.put(pipsMaster.getToAmount(), pipsMaster);
+				} else {
+					TreeMap<BigDecimal, PipsMaster> slabPipsMap = new TreeMap<BigDecimal, PipsMaster>();
+					slabPipsMap.put(pipsMaster.getToAmount(), pipsMaster);
+					bankAmountSlabDiscounts.put(pipsMaster.getBankMaster().getBankId().longValue(), slabPipsMap);
+				}
+			}
+		}
+
+		if (bankAmountSlabDiscounts.containsKey(customerDiscountReqDTO.getBankId().longValue())) {
+			TreeMap<BigDecimal, PipsMaster> pipsMap = bankAmountSlabDiscounts
+					.get(customerDiscountReqDTO.getBankId().longValue());
+			for (Entry<BigDecimal, PipsMaster> entry : pipsMap.entrySet()) {
+
+				if (customerDiscountReqDTO.getForeignAmount().compareTo(entry.getKey()) <= 0) {
+					amountSlabPips = entry.getValue().getPipsNo();
+
+					amountSlabPipsInfo.setId(entry.getValue().getPipsMasterId());
+					amountSlabPipsInfo.setDiscountType(DISCOUNT_TYPE.AMOUNT_SLAB);
+					amountSlabPipsInfo.setDiscountTypeValue(entry.getValue().getFromAmount().longValue() + "-"
+							+ entry.getValue().getToAmount().longValue());
+					amountSlabPipsInfo.setDiscountPipsValue(amountSlabPips == null ? BigDecimal.ZERO : amountSlabPips);
+
+					break;
+				}
+			}
+		}
+
+		LOGGER.warn("amountSlabPipsInfo : " + JsonUtil.toJson(amountSlabPipsInfo));
+
+		bankExRateDetail.setBankId(customerDiscountReqDTO.getBankId());
+		bankExRateDetail.setCustomerDiscountDetails(new HashMap<DISCOUNT_TYPE, ExchangeDiscountInfo>());
+		bankExRateDetail.getCustomerDiscountDetails().put(DISCOUNT_TYPE.CHANNEL, channelInfo);
+		bankExRateDetail.getCustomerDiscountDetails().put(DISCOUNT_TYPE.CUSTOMER_CATEGORY, custCategoryInfo);
+		bankExRateDetail.getCustomerDiscountDetails().put(DISCOUNT_TYPE.AMOUNT_SLAB, amountSlabPipsInfo);
+
+		return bankExRateDetail;
+	}
 }

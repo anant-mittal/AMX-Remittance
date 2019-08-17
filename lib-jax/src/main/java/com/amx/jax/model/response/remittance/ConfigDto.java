@@ -8,6 +8,7 @@ public class ConfigDto {
 	public BigDecimal passportLimit;
 	public BigDecimal gccLimit;
 	public BigDecimal todayTrnxAmount;
+	public BigDecimal totalLimit; // cash,knet,cheque,banktransfer
 	
 	public BigDecimal getPassportLimit() {
 		return passportLimit;
@@ -33,6 +34,11 @@ public class ConfigDto {
 	public void setTodayTrnxAmount(BigDecimal todayTrnxAmount) {
 		this.todayTrnxAmount = todayTrnxAmount;
 	}
-	
+	public BigDecimal getTotalLimit() {
+		return totalLimit;
+	}
+	public void setTotalLimit(BigDecimal totalLimit) {
+		this.totalLimit = totalLimit;
+	}
 	
 }

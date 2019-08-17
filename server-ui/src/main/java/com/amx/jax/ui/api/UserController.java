@@ -4,7 +4,9 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -31,6 +33,7 @@ import com.amx.jax.JaxAuthContext;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.JaxPushNotificationClient;
+import com.amx.jax.dict.Language;
 import com.amx.jax.dict.UserClient.AppType;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.logger.AuditActor;
@@ -40,6 +43,7 @@ import com.amx.jax.model.response.customer.CustomerModelSignupResponse;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.ui.UIConstants.Features;
+import com.amx.jax.ui.UIConstants.MileStone;
 import com.amx.jax.ui.WebAppConfig;
 import com.amx.jax.ui.auth.AuthLibContext;
 import com.amx.jax.ui.config.OWAStatus.ApiOWAStatus;
@@ -120,9 +124,10 @@ public class UserController {
 
 	@ApiOWAStatus(OWAStatusStatusCodes.INCOME_UPDATE_REQUIRED)
 	@RequestMapping(value = "/pub/user/meta", method = { RequestMethod.POST, RequestMethod.GET })
-	public ResponseWrapper<UserMetaData> getMeta(@RequestParam(required = false) AppType appType,
-			@RequestParam(required = false) String appVersion) {
-		return this.getMetaV2(appType, appVersion, false, false);
+	public ResponseWrapper<UserMetaData> getMeta(HttpServletResponse response,
+			@RequestParam(required = false) AppType appType,
+			@RequestParam(required = false) String appVersion, @RequestParam(required = false) String milestone) {
+		return this.getMetaV2(response, appType, appVersion, milestone, false, false);
 	}
 
 	/**
@@ -134,8 +139,10 @@ public class UserController {
 	 */
 	@ApiOWAStatus(OWAStatusStatusCodes.INCOME_UPDATE_REQUIRED)
 	@RequestMapping(value = "/pub/v2/user/meta", method = { RequestMethod.POST, RequestMethod.GET })
-	public ResponseWrapper<UserMetaData> getMetaV2(@RequestParam(required = false) AppType appType,
+	public ResponseWrapper<UserMetaData> getMetaV2(HttpServletResponse response,
+			@RequestParam(required = false) AppType appType,
 			@RequestParam(required = false) String appVersion,
+			@RequestParam(required = false) String milestone,
 			@RequestParam(required = false, defaultValue = "false") boolean refresh,
 			@RequestParam(required = false, defaultValue = "false") boolean validate) {
 		ResponseWrapper<UserMetaData> wrapper = new ResponseWrapper<UserMetaData>(new UserMetaData());
@@ -148,6 +155,32 @@ public class UserController {
 		if (appVersion != null) {
 			sessionService.getAppDevice().getUserDevice().setAppVersion(appVersion);
 		}
+
+		Cookie kooky = httpService.getCookie("S");
+
+		if (ArgUtil.isEmpty(kooky) || ArgUtil.isEmpty(kooky.getValue())) {
+			String serverVersion = null;
+
+			MileStone milestoneEnum = (MileStone) ArgUtil.parseAsEnum(milestone, MileStone.ZERO, MileStone.FUTRUE);
+
+			if (milestoneEnum == MileStone.ZERO || milestoneEnum.isLegacy()) {
+				serverVersion = "O";
+			} else {
+				serverVersion = "N";
+			}
+
+			httpService.setCookie("S", serverVersion, 60 * 60 * 2);
+
+			String s = httpService.getRequestParam("S");
+			if (ArgUtil.isEmpty(s)) {
+				response.setHeader("Location", "/pub/v2/user/meta?S=" + serverVersion + "&milestone=" + milestoneEnum);
+				response.setStatus(302);
+				return wrapper;
+			}
+		}
+
+		Language lang = httpService.getLanguage();
+		httpService.setCookie("lang", lang.toString(), 60 * 60 * 2);
 
 		wrapper.getData().setTenant(AppContextUtil.getTenant());
 		wrapper.getData().setTenantCode(AppContextUtil.getTenant().getCode());
@@ -191,6 +224,7 @@ public class UserController {
 			wrapper.getData().setFeatures(webAppConfig.getFeaturesList());
 		}
 
+		wrapper.getData().setMileStones(MileStone.LIST);
 		wrapper.getData().setNotifyRangeShort(webAppConfig.getNotifyRangeShort());
 		wrapper.getData().setNotifyRangeLong(webAppConfig.getNotifyRangeLong());
 		wrapper.getData().setNotificationGap(webAppConfig.getNotificationGap());

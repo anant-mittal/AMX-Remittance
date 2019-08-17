@@ -467,4 +467,8 @@ public class FcSaleBranchDao {
 		return Lists.newArrayList(fxOrdersItr);
 	}
 	
+	public List<UserStockView> fetchUserStockAllCurrencyCurrentDate(String userName,BigDecimal countryBranchId,List<BigDecimal> foreignCurrencyId){
+		return userStockRepository.fetchUserStockByAllCurrencyDate(userName, countryBranchId, foreignCurrencyId);
+	}
+	
 }

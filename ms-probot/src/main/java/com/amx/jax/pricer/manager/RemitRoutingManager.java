@@ -5,12 +5,14 @@ import java.math.RoundingMode;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
@@ -28,7 +30,7 @@ import com.amx.jax.dict.UserClient.Channel;
 import com.amx.jax.pricer.dao.CountryMasterDao;
 import com.amx.jax.pricer.dao.TimezoneDao;
 import com.amx.jax.pricer.dao.ViewExRoutingMatrixDao;
-import com.amx.jax.pricer.dbmodel.CountryMaster;
+import com.amx.jax.pricer.dbmodel.CountryMasterModel;
 import com.amx.jax.pricer.dbmodel.HolidayListMasterModel;
 import com.amx.jax.pricer.dbmodel.TimezoneMasterModel;
 import com.amx.jax.pricer.dbmodel.ViewExRoutingMatrix;
@@ -48,6 +50,8 @@ public class RemitRoutingManager {
 
 	private static final int MAX_DELIVERY_ATTEMPT_DAYS = 60;
 	private static final BigDecimal FROM_AMT_FRACTION = new BigDecimal(0.00000001);
+	
+	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd-MMM hh:mm a");
 
 	// TODO : Treasury Funding Time.
 	// private static final int KWT_TREASURY_FUNDING_TIME = 12;
@@ -137,10 +141,11 @@ public class RemitRoutingManager {
 			}
 
 		}
-		
-		
-		// This is Interim FIX FOR HOME-SEND EXclussion and should be removed on Priority.
-		routingMatrix = excludeSbRoutingBanks(routingMatrix);
+
+		// This is Interim FIX FOR HOME-SEND EXclussion and should be removed on
+		// Priority.
+		// NOT to Excluded for HOMESEND
+		// routingMatrix = excludeSbRoutingBanks(routingMatrix);
 
 		if (null == routingMatrix || routingMatrix.isEmpty()) {
 
@@ -225,15 +230,20 @@ public class RemitRoutingManager {
 			if (PricerServiceConstants.SERVICE_GROUP.CASH.getGroupCode().equalsIgnoreCase(view.getServiceGroupCode())
 					&& !com.amx.utils.StringUtils.anyMatch(view.getDiscountAllowed(), "Y", "YES")) {
 
-				// ExchangeRateBreakup baseRateClonned =
-				// exchangeRateDetails.getSellRateBase().clone();
-				// exchangeRateDetails.setSellRateNet(baseRateClonned);
 				if (exchangeRateDetails.isDiscountAvailed()) {
 					exchangeRateDetails.setSellRateNet(exchangeRateDetails.getSellRateBase());
 					exchangeRateDetails.setDiscountAvailed(false);
 				}
 
-			}
+			} /*else if (PricerServiceConstants.SERVICE_PROVIDER_INDICATOR.equalsIgnoreCase(view.getBankIndicator())) {
+
+				// TODO : Base Rates should be without Pips and Net Rate With Pips
+				// For Service Providers Always Set the Net Rate Same as Base Rate
+				if (exchangeRateDetails != null && exchangeRateDetails.getSellRateBase() != null) {
+					exchangeRateDetails.setSellRateNet(exchangeRateDetails.getSellRateBase());
+				}
+
+			}*/
 
 			routeComputeDetails.setExchangeRateDetails(exchangeRateDetails);
 
@@ -250,7 +260,7 @@ public class RemitRoutingManager {
 	 */
 	public void computeTrnxRoutesAndDelivery(ExchangeRateAndRoutingRequest exchangeRateAndRoutingRequest) {
 
-		getTimezoneForCountry(exchangeRateAndRoutingRequest.getLocalCountryId());
+		String localTimezone = getTimezoneForCountry(exchangeRateAndRoutingRequest.getLocalCountryId());
 
 		List<TransientRoutingComputeDetails> routingDetailsList = transientDataCache.getRoutingMatrixData();
 
@@ -347,11 +357,11 @@ public class RemitRoutingManager {
 									+ exchangeRateAndRoutingRequest.toJSON());
 				}
 
-				CountryMaster countryMaster = getCountryMaster(oneMatrix.getProcessingCountryId());
+				CountryMasterModel countryMasterModel = getCountryMaster(oneMatrix.getProcessingCountryId());
 
 				// Default is Zero -- if Null
-				BigDecimal processingStartTime = null != countryMaster.getWorkTimeFrom()
-						? countryMaster.getWorkTimeFrom()
+				BigDecimal processingStartTime = null != countryMasterModel.getWorkTimeFrom()
+						? countryMasterModel.getWorkTimeFrom()
 						: BigDecimal.ZERO;
 
 				// Default is 24 -- if Null
@@ -410,11 +420,11 @@ public class RemitRoutingManager {
 									+ exchangeRateAndRoutingRequest.toJSON());
 				}
 
-				CountryMaster countryMaster = getCountryMaster(oneMatrix.getBeneCountryId());
+				CountryMasterModel countryMasterModel = getCountryMaster(oneMatrix.getBeneCountryId());
 
 				// Default is Zero -- if Null
-				BigDecimal beneProcessStartTime = null != countryMaster.getWorkTimeFrom()
-						? countryMaster.getWorkTimeFrom()
+				BigDecimal beneProcessStartTime = null != countryMasterModel.getWorkTimeFrom()
+						? countryMasterModel.getWorkTimeFrom()
 						: BigDecimal.ZERO;
 
 				// Default is 24 -- if Null
@@ -480,6 +490,8 @@ public class RemitRoutingManager {
 				completionDateForeign = estmdBeneDeliveryDetails.getCompletionDateForeign();
 			}
 
+			// finalDeliveryDetails.setStartTT(transientDataCache.getTrnxBeginTime());
+
 			finalDeliveryDetails.setProcessTimeAbsoluteInSeconds(processTimeAbs);
 			finalDeliveryDetails.setProcessTimeOperationalInSeconds(processTimeOps);
 			finalDeliveryDetails.setProcessTimeTotalInSeconds(processTimeTotal);
@@ -492,7 +504,11 @@ public class RemitRoutingManager {
 			finalDeliveryDetails.setStartDateForeign(startDateForeign);
 			finalDeliveryDetails.setCompletionDateForeign(completionDateForeign);
 
-			finalDeliveryDetails.setDeliveryDuration(getDeliveryDuration(processTimeTotal));
+			// Change the Duration String -- 12th-Aug-2019
+			finalDeliveryDetails.setDeliveryDuration(getDeliveryAtLocalTime(transientDataCache.getTrnxBeginTime(), finalCompletionTT, localTimezone,
+					processTimeTotal));
+
+			//finalDeliveryDetails.setDeliveryDuration(getDeliveryDuration(processTimeTotal));
 
 			finalDeliveryDetails.setCrossedMaxDeliveryDays(crossedMaxDeliveryDays);
 
@@ -616,17 +632,17 @@ public class RemitRoutingManager {
 		return goodBusinessDeliveryDT;
 	}
 
-	private CountryMaster getCountryMaster(BigDecimal countryId) {
-		CountryMaster countryMaster = transientDataCache.getCountryById(countryId);
+	private CountryMasterModel getCountryMaster(BigDecimal countryId) {
+		CountryMasterModel countryMasterModel = transientDataCache.getCountryById(countryId);
 
-		if (null == countryMaster) {
-			countryMaster = countryMasterDao.getByCountryId(countryId);
-			if (null != countryMaster) {
-				transientDataCache.setCountry(countryMaster);
+		if (null == countryMasterModel) {
+			countryMasterModel = countryMasterDao.getByCountryId(countryId);
+			if (null != countryMasterModel) {
+				transientDataCache.setCountry(countryMasterModel);
 			}
 		}
 
-		return countryMaster;
+		return countryMasterModel;
 	}
 
 	private String getTimezoneForCountry(BigDecimal countryId) {
@@ -635,13 +651,13 @@ public class RemitRoutingManager {
 
 		if (null == tzMasterModel) {
 
-			CountryMaster countryMaster = this.getCountryMaster(countryId);
+			CountryMasterModel countryMasterModel = this.getCountryMaster(countryId);
 
-			if (null == countryMaster || null == countryMaster.getTimezoneId()) {
+			if (null == countryMasterModel || null == countryMasterModel.getTimezoneId()) {
 				return null;
 			}
 
-			tzMasterModel = tzDao.findById(countryMaster.getTimezoneId());
+			tzMasterModel = tzDao.findById(countryMasterModel.getTimezoneId());
 
 			if (null == tzMasterModel) {
 				return null;
@@ -849,6 +865,32 @@ public class RemitRoutingManager {
 
 	}
 
+	private String getDeliveryAtLocalTime(long startTT, long completionTT, String timezoneLocal, long durationInSecs) {
+
+		// Get the appropriate Timezone
+		ZoneId zoneId = ZoneId.of(timezoneLocal);
+
+		// Compute the Correct Zone Date and Time of Block Delivery BEGIN
+		Instant epochStartInstant = Instant.ofEpochMilli(startTT);
+		ZonedDateTime beginZonedDT = ZonedDateTime.ofInstant(epochStartInstant, zoneId);
+
+		// Compute the Correct Zone Date and Time of Block Delivery COMPLETE
+		Instant epochCompletionInstant = Instant.ofEpochMilli(completionTT);
+		ZonedDateTime completionZonedDT = ZonedDateTime.ofInstant(epochCompletionInstant, zoneId);
+
+		String deliveryAt;
+
+		if (beginZonedDT.getDayOfMonth() == completionZonedDT.getDayOfMonth()) {
+			deliveryAt = getDeliveryDuration(durationInSecs);
+		} else {
+			// Set Delivery at : dd-mmm HH:MM
+			deliveryAt = completionZonedDT.format(DATE_FORMATTER);
+		}
+		
+		return deliveryAt;
+
+	}
+
 	private String getDeliveryDuration(long durationInSecs) {
 
 		TimeUnit tu = TimeUnit.SECONDS;
@@ -879,33 +921,38 @@ public class RemitRoutingManager {
 
 	}
 
-	private List<ViewExRoutingMatrix> excludeSbRoutingBanks(List<ViewExRoutingMatrix> routingMatrix) {
+	/**
+	 * 
+	 * @param routingMatrix
+	 * @return ServiceProviders View Matrix List
+	 */
+	public List<ViewExRoutingMatrix> filterServiceProviders(List<ViewExRoutingMatrix> routingMatrix) {
 
 		if (routingMatrix == null || routingMatrix.isEmpty())
-			return routingMatrix;
+			return new ArrayList<ViewExRoutingMatrix>();
 
-		List<ViewExRoutingMatrix> removeMatrix = new ArrayList<>();
-
-		/*
-		 * for (ViewExRoutingMatrix matrix : routingMatrix) { if
-		 * (matrix.getRoutingBankId().compareTo(homeSendId) == 0) {
-		 * removeMatrix.add(matrix); homeSendRouting = matrix; } }
-		 */
+		List<ViewExRoutingMatrix> serviceProvidersMatrix = new ArrayList<>();
 
 		for (ViewExRoutingMatrix matrix : routingMatrix) {
-			if (matrix.getBankIndicator().trim().equalsIgnoreCase("SB")) {
-				removeMatrix.add(matrix);
+			if (matrix.getBankIndicator().trim().equalsIgnoreCase(PricerServiceConstants.SERVICE_PROVIDER_INDICATOR)) {
+				serviceProvidersMatrix.add(matrix);
 			}
 		}
 
-		if (!removeMatrix.isEmpty()) {
-			for (ViewExRoutingMatrix matrix : removeMatrix) {
-				routingMatrix.remove(matrix);
-			}
-		}
+		return serviceProvidersMatrix;
 
-		return routingMatrix;
+	}
 
+	public List<BigDecimal> getRoutingBankIds(List<ViewExRoutingMatrix> routingMatrix) {
+
+		if (routingMatrix == null)
+			return null;
+
+		List<BigDecimal> routingBankIds = routingMatrix.stream()
+				.filter(rm -> !rm.getBankIndicator().trim().equalsIgnoreCase("SB")).map(rm -> rm.getRoutingBankId())
+				.distinct().collect(Collectors.toList());
+
+		return routingBankIds;
 	}
 
 }

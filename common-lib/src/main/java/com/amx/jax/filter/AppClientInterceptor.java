@@ -37,7 +37,7 @@ public class AppClientInterceptor implements ClientHttpRequestInterceptor {
 		AppRequestUtil.printIfDebug(request, body);
 
 		ClientHttpResponse response = execution.execute(request, body);
-		AppContextUtil.importAppContextFrom(response.getHeaders());
+		AppContextUtil.importAppContextFromResponseHEader(response.getHeaders());
 		AuditServiceClient.trackStatic(new RequestTrackEvent(response, request));
 
 		return AppRequestUtil.printIfDebug(response);

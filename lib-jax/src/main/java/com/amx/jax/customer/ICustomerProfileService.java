@@ -5,8 +5,8 @@ import java.math.BigDecimal;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
-import com.amx.jax.exception.ApiHttpExceptions.ApiStatusCodes;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.exception.ApiHttpExceptions.ApiStatusCodes;
 import com.amx.jax.model.customer.CustomerContactVerificationDto;
 import com.amx.jax.swagger.ApiStatusBuilder.ApiStatus;
 

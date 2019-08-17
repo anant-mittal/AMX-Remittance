@@ -154,6 +154,10 @@ public class RemittanceTransaction implements Serializable {
 	private String beneDeductFlag;
 	private String suspicousTransaction;
 	
+	private String deliveryInd;
+	private String remarks;
+	private BigDecimal usdAmt;
+	
 	
 	public RemittanceTransaction() {
 	}
@@ -1137,6 +1141,8 @@ public class RemittanceTransaction implements Serializable {
 		this.vatAmount = vatAmount;
 	}
 
+
+
 	@Column(name="BENE_DEDUCT_FLAG")
 	public String getBeneDeductFlag() {
 		return beneDeductFlag;
@@ -1155,6 +1161,29 @@ public class RemittanceTransaction implements Serializable {
 		this.suspicousTransaction = suspicousTransaction;
 	}
 	
+	@Column(name="DELIVERY_IND")
+	public String getDeliveryInd() {
+		return deliveryInd;
+	}
+	public void setDeliveryInd(String deliveryInd) {
+		this.deliveryInd = deliveryInd;
+	}
+
+	@Column(name="REMARKS")
+	public String getRemarks() {
+		return remarks;
+	}
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
+	}
+
+	@Column(name="USD_AMT")
+	public BigDecimal getUsdAmt() {
+		return usdAmt;
+	}
+	public void setUsdAmt(BigDecimal usdAmt) {
+		this.usdAmt = usdAmt;
+	}
 
 }
  

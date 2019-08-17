@@ -191,7 +191,16 @@ public class GigInsuranceService {
 	private void validatesaveInsuranceDetailRequest(SaveInsuranceDetailRequest request) {
 
 		List<CreateOrUpdateNomineeRequest> nominees = request.getAddNomineeRequestData();
-		if (nominees.size() < 1) {
+		Customer customer = userService.getCustById(metaData.getCustomerId());
+		String isGigOptedInd = customer.getPremInsurance();
+		Boolean optInBool = ConstantDocument.Yes.equalsIgnoreCase(isGigOptedInd);
+		boolean optIn;
+		if (request.getOptIn() == null) {
+			optIn = optInBool.booleanValue();
+		} else {
+			optIn = Boolean.TRUE.equals(request.getOptIn());
+		}
+		if (nominees.size() < 1 && optIn) {
 			throw new GlobalException("Minimum nominess must be 1");
 		}
 		if (nominees.size() > 4) {
@@ -245,10 +254,11 @@ public class GigInsuranceService {
 	}
 
 	private void validateNomineePercentage(List<CreateOrUpdateNomineeRequest> nominees) {
-
-		int totalPercentage = nominees.stream().mapToInt(i -> i.getPercentage()).sum();
-		if (totalPercentage != 100) {
-			throw new GlobalException("Total nominee percentage must be 100");
+		if (nominees.size() > 0) {
+			int totalPercentage = nominees.stream().mapToInt(i -> i.getPercentage()).sum();
+			if (totalPercentage != 100) {
+				throw new GlobalException("Total nominee percentage must be 100");
+			}
 		}
 	}
 
@@ -348,9 +358,12 @@ public class GigInsuranceService {
 		}
 		int optInHours = setup.getOtpInHours();
 		InsuranceAction currentAction = insuranceActionRepository.findByActionId(insuranceDetail.getCurrenctActionId());
+		if (currentAction.getOptOutDate() == null) {
+			throw new GlobalException("Already opted in this insurance");
+		}
 		Date newOptInDate = new Date();
 		Calendar now = Calendar.getInstance();
-		now.setTime(currentAction.getOptInDate());
+		now.setTime(currentAction.getOptOutDate());
 		now.add(Calendar.HOUR, optInHours);
 		Date validOptInStartDate = now.getTime();
 		if (newOptInDate.before(validOptInStartDate)) {
@@ -380,5 +393,11 @@ public class GigInsuranceService {
 		} else {
 			throw new GlobalException("Already opted this insurance");
 		}
+	}
+
+	public boolean isCustomerInsuranceOptIn(BigDecimal customerId) {
+		Customer customer = userService.getCustById(customerId);
+		String isGigOptedInd = customer.getPremInsurance();
+		return ConstantDocument.Yes.equalsIgnoreCase(isGigOptedInd);
 	}
 }

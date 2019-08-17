@@ -179,6 +179,7 @@ public class SWAdapterGUI extends JFrame {
 		tabs.addTab("Logs", pane);
 		tabs.addTab("About", about);
 		add(tabs);
+		
 
 	}
 

@@ -216,6 +216,14 @@ public class CustomerService extends AbstractService {
 		return AmxApiResponse.build(boolRespModel);
 	}
 
+	public AmxApiResponse<BoolRespModel, Object> updatePasswordCustomer(String identityInt, String resetPwd) {
+		onlineCustomerManager.updatePassword(identityInt, resetPwd);
+		
+		BoolRespModel boolRespModel = new BoolRespModel();
+		boolRespModel.setSuccess(Boolean.TRUE);
+		return AmxApiResponse.build(boolRespModel);
+	}	
+
 	public List<DuplicateCustomerDto> checkForDuplicateCustomer(CustomerPersonalDetail customerPersonalDetail) {
 		Set<DuplicateCustomerDto> duplicateCustomerDtoSet = new HashSet<>();
 		List<Customer> duplicateRecords = customerDao.findDuplicateCustomerRecords(customerPersonalDetail.getNationalityId(),

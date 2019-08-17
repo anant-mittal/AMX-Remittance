@@ -17,8 +17,8 @@ import com.amx.amxlib.constant.ApiEndpoint.UserApi;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.UserFingerprintResponseModel;
 import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.amxlib.service.ICustomerService.Params;
 import com.amx.amxlib.service.ICustomerService.Path;
+import com.amx.amxlib.service.IUserService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.logger.LoggerService;
@@ -32,7 +32,7 @@ import com.amx.utils.Constants;
 @RestController
 @RequestMapping(USER_API_ENDPOINT)
 @SuppressWarnings("rawtypes")
-public class UserController {
+public class UserController implements IUserService {
 
 	@Autowired
 	private UserService userService;
@@ -112,5 +112,12 @@ public class UserController {
 		BoolRespModel boolRespModel = new BoolRespModel();
 		boolRespModel.setSuccess(Boolean.TRUE);
 		return AmxApiResponse.build(boolRespModel);
+	}
+
+
+	@RequestMapping(value = UserApi.VALIDATE_CUSTOMER_LOGIN_OTP, method = RequestMethod.POST)
+	@Override
+	public AmxApiResponse<CustomerModel, Object> validateCustomerLoginOtp(String identityInt) {
+		return userService.validateCustomerLoginOtp(identityInt);
 	}
 }

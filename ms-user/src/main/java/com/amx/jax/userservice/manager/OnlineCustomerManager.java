@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.amxlib.model.CustomerModel;
 import com.amx.jax.JaxAuthContext;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxApiFlow;
@@ -24,7 +25,7 @@ import com.amx.jax.services.JaxDBService;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.userservice.service.UserValidationService;
-import com.amx.jax.util.AmxDBConstants.Status;
+import com.amx.jax.util.CryptoUtil;
 
 @Component
 public class OnlineCustomerManager {
@@ -42,8 +43,11 @@ public class OnlineCustomerManager {
 	@Autowired
 	CustomerAuthManager customerAuthManager;
 	@Autowired
+	CustomerDBAuthManager customerDBAuthManager;
+	@Autowired
 	JaxDBService jaxDBService;
-	
+	@Autowired
+	private CryptoUtil cryptoUtil;
 	
 	private static final Logger log = LoggerFactory.getLogger(OnlineCustomerManager.class);
 
@@ -73,6 +77,7 @@ public class OnlineCustomerManager {
 				// signifies that it is validate otp flow
 				if (JaxAuthContext.getMotp() != null) {
 					userService.unlockCustomer(customerOnlineRegistration);
+					userContactVerificationManager.setContactVerified(customer, JaxAuthContext.getMotp(), null, null);
 				}
 			} catch (GlobalException ex) {
 				if (JaxError.INVALID_OTP.equals(ex.getError())) {
@@ -100,6 +105,25 @@ public class OnlineCustomerManager {
 		userValidationService.validateBlackListedCustomerForLogin(customer);
 		userValidationService.validateCustomerVerification(customer.getCustomerId());
 	}
+
+	public CustomerModel validateCustomerLoginOtp(String identityInt) {
+		return customerDBAuthManager.validateAndSendOtp(identityInt);
+	}
+
+	public void updatePassword(String identityInt, String resetPwd) {
+		// reset password
+		List<Customer> customers = userService.getCustomerByIdentityInt(identityInt);
+		Customer customerVal = userValidationService.validateCustomerForDuplicateRecords(customers);
+		BigDecimal customerId = customerVal.getCustomerId();
+		
+		CustomerOnlineRegistration onlineCust = custDao.getOnlineCustomerByCustomerId(customerId);
+		String userId = onlineCust.getUserName();
+		if (resetPwd != null) {
+			onlineCust.setPassword(cryptoUtil.getHash(userId, resetPwd));
+		}else {
+			throw new GlobalException(JaxError.UPDATE_PWD_REQUIRED, "Please enter Password to reset");
+		}
+	}	
 
 	public CustomerOnlineRegistration getOnlineCustomerByCustomerId(BigDecimal customerId) {
 		return custDao.getOnlineCustByCustomerId(customerId);

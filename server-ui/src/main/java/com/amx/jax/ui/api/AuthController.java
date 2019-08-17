@@ -10,13 +10,18 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.service.ICustomerService;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.JaxAuthContext;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.exception.AmxApiError;
+import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.model.AuthState.AuthFlow;
+import com.amx.jax.postman.client.GoogleService;
+import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
 import com.amx.jax.ui.config.OWAStatus.ApiOWAStatus;
 import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
+import com.amx.jax.ui.config.HttpUnauthorizedException;
 import com.amx.jax.ui.config.UIServerError;
 import com.amx.jax.ui.model.AuthDataInterface.AuthRequest;
 import com.amx.jax.ui.model.AuthDataInterface.AuthResponse;
@@ -25,6 +30,7 @@ import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.LoginService;
 import com.amx.jax.ui.service.SessionService;
+import com.amx.jax.ui.session.Transactions;
 import com.amx.utils.ArgUtil;
 
 import io.swagger.annotations.Api;
@@ -34,6 +40,7 @@ import io.swagger.annotations.Api;
  */
 @RestController
 @Api(value = "User Auth APIs")
+@ApiStatusService(ICustomerService.class)
 public class AuthController {
 
 	/** The login service. */
@@ -43,6 +50,12 @@ public class AuthController {
 	/** The session service. */
 	@Autowired
 	private SessionService sessionService;
+
+	@Autowired
+	private GoogleService googleService;
+
+	@Autowired
+	private CommonHttpRequest httpService;
 
 	/**
 	 * Asks for user login and password.
@@ -82,6 +95,13 @@ public class AuthController {
 
 		if (!ArgUtil.isEmpty(authData.getLockId()) && !authData.getLockId().equalsIgnoreCase(authData.getIdentity())) {
 			throw new UIServerError(OWAStatusStatusCodes.DEVICE_LOCKED);
+		}
+
+		String captcha = JaxAuthContext.captcha(authData.getCaptachKey());
+
+		if (!ArgUtil.isEmpty(captcha) &&
+				!googleService.verifyCaptcha(captcha, httpService.getIPAddress())) {
+			throw new UIServerError(OWAStatusStatusCodes.CAPTCHA_REQUIRED).redirectUrl("/pub/recaptcha/DASHBOARD");
 		}
 
 		if (!ArgUtil.isEmpty(authData.getDeviceToken())) {
@@ -132,7 +152,7 @@ public class AuthController {
 	 *
 	 * @param authData the auth data
 	 * @return the response wrapper
-	 * @deprecated - use : /pub/auth/password/v2
+	 * @deprecated - use : /pub/auth/reset/v2
 	 */
 	@Deprecated
 	@RequestMapping(value = "/pub/auth/reset", method = { RequestMethod.POST })
@@ -144,21 +164,25 @@ public class AuthController {
 		}
 	}
 
-	@RequestMapping(value = "/pub/auth/reset/v2", method = { RequestMethod.POST })
-	public ResponseWrapper<AuthResponse> initResetV2(@Valid @RequestBody AuthRequest authData,
-			@RequestParam(required = false) String otp,
+	@Autowired
+	Transactions transactions;
+
+	@RequestMapping(value = "/pub/auth/password/v2/reset", method = { RequestMethod.POST })
+	public ResponseWrapper<AuthResponse> resetPasswordFlow(@Valid @RequestBody AuthRequest authData,
 			@RequestParam(required = false) ContactType contactType) {
-		contactType = ArgUtil.ifNotEmpty(contactType);
-		otp = ArgUtil.ifNotEmpty(otp, authData.getmOtp(), authData.geteOtp());
 		AppContextUtil.setFlow(AuthFlow.RESET_PASS.toString());
+		transactions.create(AuthFlow.RESET_PASS);
 		sessionService.getGuestSession().setIdentity(authData.getIdentity());
-		return loginService.sendOTP(AuthFlow.RESET_PASS, authData.getIdentity(), contactType, otp);
+		return loginService.initResetPassword2(authData.getIdentity(), authData.getPassword());
 	}
 
 	@ApiOWAStatus({ OWAStatusStatusCodes.USER_UPDATE_SUCCESS })
-	@RequestMapping(value = "/pub/auth/password/v2", method = { RequestMethod.POST })
+	@RequestMapping(value = "/pub/auth/password/v2/update", method = { RequestMethod.POST })
 	public ResponseWrapper<UserUpdateData> resetPasswordV2(@Valid @RequestBody AuthRequest authData) {
-		return loginService.updatepwdV2(authData.getPassword(), authData.getmOtp(), authData.geteOtp());
+		if (transactions.validate(AuthFlow.RESET_PASS)) {
+			throw new HttpUnauthorizedException(HttpUnauthorizedException.UN_SEQUENCE);
+		}
+		return loginService.updatepwdV2(authData.getPassword());
 	}
 
 	/**
