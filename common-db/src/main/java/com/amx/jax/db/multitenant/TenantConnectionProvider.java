@@ -17,7 +17,7 @@ import com.amx.jax.scope.TenantContextHolder;
 public class TenantConnectionProvider implements MultiTenantConnectionProvider {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
 	@Autowired
