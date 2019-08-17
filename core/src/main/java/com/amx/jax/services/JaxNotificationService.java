@@ -16,6 +16,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.constant.NotificationConstants;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.model.BranchSearchNotificationModel;
 import com.amx.amxlib.model.CivilIdOtpModel;
@@ -417,7 +418,7 @@ public void sendSPErrorEmail(TransactionFailReportDTO model,
 			for (ExEmailNotification emailNot : emailNotification) {
 				String emailid = emailNot.getEmailId();
 				Email email = new Email();
-				email.setSubject(SERVICE_PROVIDER_RESPONSE);
+				email.setSubject(NotificationConstants.SERVICE_PROVIDER_RESPONSE);
 				email.addTo(emailid);
 				email.setITemplate(TemplatesMX.HOMESEND_TRANSACTION_FAILAURE);
 				email.setHtml(true);
