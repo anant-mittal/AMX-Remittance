@@ -6,6 +6,7 @@ import java.util.List;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.broker.entity.EventNotificationEntity;
@@ -25,7 +26,7 @@ public class EventNotificationDao {
 	@Transactional
 	public List<EventNotificationView> getNewlyInserted_EventNotificationRecords()
 	{
-		return eventNotificationViewRepository.getNewlyInserted_EventNotificationRecords();
+		return eventNotificationViewRepository.getNewlyInserted_EventNotificationRecords(new PageRequest(0, 1000)).getContent();
 	}
 	
 	@Transactional

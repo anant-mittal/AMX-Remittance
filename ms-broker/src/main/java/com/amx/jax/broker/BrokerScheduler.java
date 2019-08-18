@@ -56,7 +56,6 @@ public class BrokerScheduler {
 	public void pushNewEventNotifications() {
 		if (!tenantDBConfig.isReady()) {
 			logger.warn("P:DB is Not Ready : Exit");
-			return;
 		}
 
 		Tenant[] tenants = brokerConfig.getTenants();
