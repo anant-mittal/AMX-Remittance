@@ -38,6 +38,7 @@ import com.amx.jax.partner.dto.SrvPrvFeeInqReqDTO;
 import com.amx.jax.partner.dto.SrvPrvFeeInqResDTO;
 import com.amx.jax.pricer.dao.PartnerServiceDao;
 import com.amx.jax.pricer.dbmodel.AuthenticationLimitCheckView;
+import com.amx.jax.pricer.dbmodel.BankBranchView;
 import com.amx.jax.pricer.dbmodel.BankCharges;
 import com.amx.jax.pricer.dbmodel.BankMasterModel;
 import com.amx.jax.pricer.dbmodel.BankServiceRule;
@@ -54,6 +55,7 @@ import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.repository.AuthenticationLimitCheckRepository;
 import com.amx.jax.pricer.repository.BankMasterRepository;
+import com.amx.jax.pricer.repository.IBankBranchViewRepository;
 import com.amx.jax.pricer.repository.IPaymentModeLimitsRepository;
 import com.amx.jax.pricer.repository.IServiceProviderXMLRepository;
 import com.amx.jax.pricer.service.ExchangeDataService;
@@ -97,6 +99,9 @@ public class PartnerDataManager {
 	
 	@Autowired
 	AuthenticationLimitCheckRepository authenticationLimitCheckRepository;
+	
+	@Autowired
+	IBankBranchViewRepository bankBranchViewRepository;
 
 	// validate get quotation
 	public void validateGetQuotation(SrvPrvFeeInqReqDTO srvPrvFeeInqReqDTO) {
@@ -260,8 +265,8 @@ public class PartnerDataManager {
 			//amxRateWithMargin = settlementExchangeRate.add(marginAmount).subtract(settlementTotalDiscountPips);
 			amxRateWithMarginWithPips = amxRateWithMargin.subtract(settlementTotalDiscountPips);
 		}else {
-			//amxRateWithMargin = settlementExchangeRate.add(marginAmount);
-			amxRateWithMarginWithPips = amxRateWithMargin;
+			//margin and settlementTotalDiscountPips becomes zero. only usd rate is applied
+			amxRateWithMarginWithPips = settlementExchangeRate;
 		}
 		LOGGER.info("Amx Exchange Rate with Margin : "+amxRateWithMarginWithPips);
 
@@ -430,7 +435,12 @@ public class PartnerDataManager {
 			if(beneficiaryDetailsDTO.getMapSequenceId() != null) {
 				beneficiaryDto.setBeneficiary_reference(beneficiaryDetailsDTO.getMapSequenceId().toString());
 			}
-			beneficiaryDto.setBeneficiary_type(beneficiaryDetailsDTO.getBenificaryStatusName());
+			
+			if(beneficiaryDetailsDTO.getBenificaryStatusId() != null && beneficiaryDetailsDTO.getBenificaryStatusId().compareTo(BigDecimal.ONE) == 0) {
+				beneficiaryDto.setBeneficiary_type(AmxDBConstants.Individual);
+			}else {
+				beneficiaryDto.setBeneficiary_type(AmxDBConstants.Non_Individual);
+			}
 
 			if(beneficiaryDetailsDTO.getFirstName() != null){
 				beneFirstName = beneficiaryDetailsDTO.getFirstName();
@@ -462,7 +472,15 @@ public class PartnerDataManager {
 			beneficiaryDto.setMiddle_name(beneMiddleName);
 			beneficiaryDto.setLast_name(beneLastName);
 			
-			String bankAccountNumber = validateBeneBankAccount(beneficiaryDetailsDTO.getBankAccountNumber(), designationCountryAlpha3Code);
+			String bankAccountNumber = null;
+			String dummyRoutingNumber = null;
+			HashMap<String, String> beneAccountDetails = validateBeneBankAccount(beneficiaryDetailsDTO.getBankAccountNumber(), designationCountryAlpha3Code);
+			if(beneAccountDetails != null) {
+				bankAccountNumber = beneAccountDetails.get("beneBankAccount");
+				dummyRoutingNumber = beneAccountDetails.get("dummyRoutingNumber");
+			}else {
+				bankAccountNumber = beneficiaryDetailsDTO.getBankAccountNumber();
+			}
 			beneficiaryDto.setBeneficiary_account_number(bankAccountNumber);
 
 			HashMap<String, Integer> mapBICandBankDt = fetchBICandBankCodeData();
@@ -487,7 +505,30 @@ public class PartnerDataManager {
 			if(beneficiaryDetailsDTO.getBranchCode() != null) {
 				beneficiaryDto.setBeneficiary_branch_code(beneficiaryDetailsDTO.getBranchCode().toString());
 			}
-			beneficiaryDto.setBeneficiary_bank_branch_swift_code(beneficiaryDetailsDTO.getSwiftBic());
+			
+			if(dummyRoutingNumber != null) {
+				// dummy account purpose
+				beneficiaryDto.setBeneficiary_bank_branch_swift_code(dummyRoutingNumber);
+			}else if(beneficiaryDetailsDTO.getSwiftBic() != null){
+				beneficiaryDto.setBeneficiary_bank_branch_swift_code(beneficiaryDetailsDTO.getSwiftBic());
+			}else {
+				List<BankBranchView> bankBranchView = bankBranchViewRepository.getBankBranch(beneficiaryDetailsDTO.getBankId(), beneficiaryDetailsDTO.getBranchId());
+				if(bankBranchView != null && bankBranchView.size() == 1) {
+					BankBranchView branchDetails = bankBranchView.get(0);
+					if(branchDetails != null) {
+						if(branchDetails.getSwift() != null) {
+							beneficiaryDto.setBeneficiary_bank_branch_swift_code(branchDetails.getSwift());
+						}else if(branchDetails.getIfscCode() != null) {
+							beneficiaryDto.setBeneficiary_bank_branch_swift_code(branchDetails.getIfscCode());
+						}else {
+							// error
+						}
+					}else {
+						// error
+					}
+				}
+			}
+			
 			if(beneficiaryDetailsDTO.getServiceProvider() != null) {
 				beneficiaryDto.setWallet_service_provider(beneficiaryDetailsDTO.getServiceProvider().toString());
 			}
@@ -998,8 +1039,10 @@ public class PartnerDataManager {
 	}
 
 	// validating account number for AUS
-	public String validateBeneBankAccount(String bankAccount,String countryAplha3Code) {
-		String beneBankAccount = null;
+	public HashMap<String, String> validateBeneBankAccount(String bankAccount,String countryAplha3Code) {
+		HashMap<String, String> mapValidAcc = new HashMap<String, String>();
+		String beneBankAccount = bankAccount;
+		String dummyRoutingNumber = null;
 		String bsbCode = null;
 		String errorMsg = null;
 		if(bankAccount != null) {
@@ -1007,28 +1050,30 @@ public class PartnerDataManager {
 				int accountLength = bankAccount.length();
 				if(accountLength >= 6 && accountLength<= 9) {
 					// continue as account number
-					beneBankAccount = bankAccount;
-					bsbCode = null;
-					errorMsg = null;
 				}else if(accountLength >= 12 && accountLength<= 15) {
 					// need to remove first 6 digits BSB code from account number
 					beneBankAccount = bankAccount.substring(6);
 					bsbCode = bankAccount.substring(0, 6);
-					errorMsg = null;
-				}else {
-					beneBankAccount = bankAccount;
-					bsbCode = null;
-					errorMsg = "Beneficiary Account is not valid";
-					LOGGER.warn("HOME SEND : " + errorMsg);
 				}
-			}else {
-				beneBankAccount = bankAccount;
-				bsbCode = null;
-				errorMsg = null;
+			}if(countryAplha3Code.equals(PricerServiceConstants.COUNTRY_USA_ALPHA3CODE)) {
+				List<ParameterDetailsModel> lstparameterDetails = partnerServiceDao.fetchUSDummyAccountDetails(PricerServiceConstants.PARAM_FEE_DUMMY_ACCOUNT,PricerServiceConstants.Yes);
+				if(lstparameterDetails != null && lstparameterDetails.size() != 0) {
+					for (ParameterDetailsModel parameterDetails : lstparameterDetails) {
+						if(parameterDetails.getCharField1() != null && parameterDetails.getCharField1().equalsIgnoreCase(countryAplha3Code)) {
+							beneBankAccount = parameterDetails.getCharField2();
+							dummyRoutingNumber = parameterDetails.getCharField3();
+							break;
+						}
+					}
+				}
 			}
 		}
 
-		return beneBankAccount; 
+		mapValidAcc.put("beneBankAccount", beneBankAccount);
+		mapValidAcc.put("dummyRoutingNumber", dummyRoutingNumber);
+		mapValidAcc.put("bsbCode", bsbCode);
+		
+		return mapValidAcc;
 	}
 	
 	// checking the usd amount with limit

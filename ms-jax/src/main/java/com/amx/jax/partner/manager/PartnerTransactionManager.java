@@ -41,6 +41,7 @@ import com.amx.jax.dbmodel.CustomerDetailsView;
 import com.amx.jax.dbmodel.ExEmailNotification;
 import com.amx.jax.dbmodel.ParameterDetails;
 import com.amx.jax.dbmodel.RemittanceTransactionView;
+import com.amx.jax.dbmodel.bene.BeneficaryMaster;
 import com.amx.jax.dbmodel.fx.EmployeeDetailsView;
 import com.amx.jax.dbmodel.partner.BankExternalReferenceDetail;
 import com.amx.jax.dbmodel.partner.BankExternalReferenceHead;
@@ -52,8 +53,8 @@ import com.amx.jax.dbmodel.remittance.AmiecAndBankMapping;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.dbmodel.remittance.ShoppingCartDetails;
 import com.amx.jax.error.JaxError;
-import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.AuditEvent.Result;
+import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.events.CActivityEvent;
 import com.amx.jax.logger.events.CActivityEvent.Type;
 import com.amx.jax.meta.MetaData;
@@ -67,7 +68,6 @@ import com.amx.jax.model.request.serviceprovider.Customer;
 import com.amx.jax.model.request.serviceprovider.ServiceProviderCallRequestDto;
 import com.amx.jax.model.request.serviceprovider.ServiceProviderLogDTO;
 import com.amx.jax.model.request.serviceprovider.TransactionData;
-import com.amx.jax.model.response.CurrencyMasterDTO;
 import com.amx.jax.model.response.remittance.ConfigDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.serviceprovider.ServiceProviderResponse;
@@ -83,6 +83,7 @@ import com.amx.jax.pricer.var.PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE;
 import com.amx.jax.repository.BankMasterRepository;
 import com.amx.jax.repository.IAdditionalBankRuleAmiecRepository;
 import com.amx.jax.repository.IAmiecAndBankMappingRepository;
+import com.amx.jax.repository.IBeneficiaryMasterDao;
 import com.amx.jax.repository.ICollectionDetailViewDao;
 import com.amx.jax.repository.IExEmailNotificationDao;
 import com.amx.jax.repository.IRemittanceTransactionDao;
@@ -167,6 +168,9 @@ public class PartnerTransactionManager extends AbstractModel {
 	
 	@Autowired
     AuditService auditService;
+	
+	@Autowired
+	IBeneficiaryMasterDao beneficiaryMasterDao;
 
 
 	public AmxApiResponse<ServiceProviderResponse, Object> callingPartnerApi(RemittanceResponseDto responseDto) {
@@ -358,7 +362,11 @@ public class PartnerTransactionManager extends AbstractModel {
 			beneficiaryDto.setBeneficiary_reference(beneficiaryDetailsDTO.getMapSequenceId().toPlainString());
 		}
 
-		beneficiaryDto.setBeneficiary_type(removeSpaces(beneficiaryDetailsDTO.getBenificaryStatusName()));
+		if(beneficiaryDetailsDTO.getBenificaryStatusId() != null && beneficiaryDetailsDTO.getBenificaryStatusId().compareTo(BigDecimal.ONE) == 0) {
+			beneficiaryDto.setBeneficiary_type(AmxDBConstants.Individual);
+		}else {
+			beneficiaryDto.setBeneficiary_type(AmxDBConstants.Non_Individual);
+		}
 
 		int bicValue = 0;
 		int bankBranch = 0;
@@ -396,8 +404,13 @@ public class PartnerTransactionManager extends AbstractModel {
 			if (strAdd != null) {
 				beneficiaryDto.setFull_addrerss(removeSpaces(strAdd.toString())); 
 			}
-			beneficiaryDto.setDistrict(removeSpaces(beneficiaryDetailsDTO.getDistrictName())); 
-			beneficiaryDto.setCity(removeSpaces(beneficiaryDetailsDTO.getCityName())); 
+			beneficiaryDto.setDistrict(removeSpaces(beneficiaryDetailsDTO.getDistrictName()));
+			if(beneficiaryDetailsDTO.getBeneficaryMasterSeqId() != null) {
+				BeneficaryMaster beneficaryMaster = beneficiaryMasterDao.findByBeneficaryMasterSeqId(beneficiaryDetailsDTO.getBeneficaryMasterSeqId());
+				if(beneficaryMaster.getCityName() != null) {
+					beneficiaryDto.setCity(removeSpaces(beneficaryMaster.getCityName()));
+				}
+			}
 			beneficiaryDto.setAddress_zip(beneficiaryDetailsDTO.getBeneficiaryZipCode());
 		}
 
