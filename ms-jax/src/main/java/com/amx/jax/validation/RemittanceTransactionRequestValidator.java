@@ -124,8 +124,13 @@ public class RemittanceTransactionRequestValidator {
 			field.setName(bankRule.getFlexField());
 			field.setLabel(bankRule.getFieldName());
 			field.setRequired(ConstantDocument.Yes.equals(flexField.getIsRequired()));
-			field.setMinLength(BigDecimal.ONE);
-			field.setMaxLength(new BigDecimal(100));
+			if(flexField.getMinLength() != null && flexField.getMinLength().compareTo(BigDecimal.ZERO) != 0 && flexField.getMaxLength() != null && flexField.getMaxLength().compareTo(BigDecimal.ZERO) != 0) {
+				field.setMinLength(flexField.getMinLength());
+				field.setMaxLength(flexField.getMaxLength());
+			}else {
+				field.setMinLength(BigDecimal.ONE);
+				field.setMaxLength(new BigDecimal(100));
+			}
 			field.setDtoPath("flexFields." + bankRule.getFlexField());
 			dto.setId(bankRule.getAdditionalBankRuleId());
 			if (FlexFieldBehaviour.PRE_DEFINED.toString().equals(fieldBehaviour)) {

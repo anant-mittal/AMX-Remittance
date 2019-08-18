@@ -80,6 +80,7 @@ public class BeneficiaryDetailsDTO {
 	private String bankShortNames;
 	private String ibanNumber;
 	private String beneficiaryZipCode;
+	private String ifscCode;
 	
 	public BigDecimal getIdNo() {
 		return idNo;
@@ -605,5 +606,12 @@ public class BeneficiaryDetailsDTO {
 	public void setBeneficiaryZipCode(String beneficiaryZipCode) {
 		this.beneficiaryZipCode = beneficiaryZipCode;
 	}
-		
+	
+	public String getIfscCode() {
+		return ifscCode;
+	}
+	public void setIfscCode(String ifscCode) {
+		this.ifscCode = ifscCode;
+	}
+
 }
