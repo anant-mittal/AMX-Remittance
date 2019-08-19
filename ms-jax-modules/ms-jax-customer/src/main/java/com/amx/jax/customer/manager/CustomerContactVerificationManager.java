@@ -172,8 +172,10 @@ public class CustomerContactVerificationManager {
 				customer.setEmailVerified(Status.D);
 			}
 			c.setEmailVerified(Status.Y);
+			if(cv!=null) {
+				cv.setVerificationStatus(ConstantDocument.Yes);
+			}
 			
-			cv.setVerificationStatus(ConstantDocument.Yes);
 			customerOnlineRegistration.setStatus(ConstantDocument.Yes);
 		} else if (ContactType.SMS.equals(type)) {
 			String mobile = c.getPrefixCodeMobile() + c.getMobile();
