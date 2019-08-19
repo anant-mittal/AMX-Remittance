@@ -59,7 +59,7 @@ public class RequestTrackEvent extends AuditEvent {
 	public <T> RequestTrackEvent(Type type, TunnelEventXchange xchange, TunnelMessage<T> message) {
 		super(type);
 		this.topic = new HashMap<String, String>();
-		this.description = String.format("%s %s=%s", this.type, xchange, message.getTopic());
+		this.description = String.format("%s %s", this.type, xchange.getTopic(message.getTopic()));
 		topic.put("id", message.getId());
 		topic.put("name", message.getTopic());
 		this.context = message.getContext();

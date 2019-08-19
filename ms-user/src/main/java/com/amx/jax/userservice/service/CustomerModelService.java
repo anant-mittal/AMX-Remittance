@@ -94,55 +94,42 @@ public class CustomerModelService {
 		CustomerModelSignupResponse response = new CustomerModelSignupResponse();
 		response.setCustomerFlags(customerModelResponse.getCustomerFlags());
 		List<CustomerCommunicationChannel> customerCommunicationChannels = new ArrayList<>();
-		Customer customerdetails = customerRepository.getCustomerEmailDetails(identityInt);
-		CustomerOnlineRegistration customerOnlineRegistration = onlineCustomerRepository
-				.getLoginCustomersDeatilsById(identityInt);
+		
+		if (customerFlags.getEmailVerified() && personInfo.getEmail() != null
+				&& !"null".equals(personInfo.getEmail())) {
 
-		if (customerdetails.getEmailVerified() == null || customerdetails.getEmailVerified().equals(Status.Y))
+			String emailId = personInfo.getEmail();
+			String email = emailId.split("@")[0];
+			int maskLength = 4;
 
-		{
-			if (customerFlags.getEmailVerified() && personInfo.getEmail() != null
-					&& !"null".equals(personInfo.getEmail())) {
-
-				String emailId = personInfo.getEmail();
-				String email = emailId.split("@")[0];
-				int maskLength = 4;
-
-				if (email.length() <= 4) {
-					maskLength = 0;
-				}
-				String maskedEmail = MaskUtil.maskEmail(personInfo.getEmail(), maskLength, "*");
-				customerCommunicationChannels.add(new CustomerCommunicationChannel(ContactType.EMAIL, maskedEmail));
-
+			if (email.length() <= 4) {
+				maskLength = 0;
 			}
-			if (customerFlags.getMobileVerified()) {
-				String mobileNo = personInfo.getMobile();
-				int maskLength = 4;
-				if (mobileNo.length() <= 4) {
-					maskLength = 0;
-				}
-				String maskedMobile = personInfo.getPrefixCodeMobile() + " "
-						+ MaskUtil.leftMask(personInfo.getMobile(), maskLength, "*");
+			String maskedEmail = MaskUtil.maskEmail(personInfo.getEmail(), maskLength, "*");
+			customerCommunicationChannels.add(new CustomerCommunicationChannel(ContactType.EMAIL, maskedEmail));
 
-				customerCommunicationChannels.add(new CustomerCommunicationChannel(ContactType.SMS, maskedMobile));
-
-			}
-			if (customerFlags.getWhatsAppVerified()) {
-				String whatsappNo = personInfo.getWhatsAppNumber();
-				int maskLength = 4;
-				if (whatsappNo.length() <= 4) {
-					maskLength = 0;
-				}
-				String maskedMobile = personInfo.getWhatsappPrefixCode() + " "
-						+ MaskUtil.leftMask(personInfo.getWhatsAppNumber(), maskLength, "*");
-				customerCommunicationChannels.add(new CustomerCommunicationChannel(ContactType.WHATSAPP, maskedMobile));
-
-			}
 		}
+		if (customerFlags.getMobileVerified()) {
+			String mobileNo = personInfo.getMobile();
+			int maskLength = 4;
+			if (mobileNo.length() <= 4) {
+				maskLength = 0;
+			}
+			String maskedMobile = personInfo.getPrefixCodeMobile() + " "
+					+ MaskUtil.leftMask(personInfo.getMobile(), maskLength, "*");
 
-		else if (customerOnlineRegistration.getStatus().equalsIgnoreCase("N")
-				&& (customerdetails.getEmailVerified().equals(Status.N))) {
-			throw new GlobalException(JaxError.EMAIL_NOT_VERIFIED, "Email id is not verified.Kinldy verify");
+			customerCommunicationChannels.add(new CustomerCommunicationChannel(ContactType.SMS, maskedMobile));
+
+		}
+		if (customerFlags.getWhatsAppVerified()) {
+			String whatsappNo = personInfo.getWhatsAppNumber();
+			int maskLength = 4;
+			if (whatsappNo.length() <= 4) {
+				maskLength = 0;
+			}
+			String maskedMobile = personInfo.getWhatsappPrefixCode() + " "
+					+ MaskUtil.leftMask(personInfo.getWhatsAppNumber(), maskLength, "*");
+			customerCommunicationChannels.add(new CustomerCommunicationChannel(ContactType.WHATSAPP, maskedMobile));
 
 		}
 

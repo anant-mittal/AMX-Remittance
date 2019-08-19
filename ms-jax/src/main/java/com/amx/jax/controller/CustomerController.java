@@ -145,17 +145,17 @@ public class CustomerController implements ICustomerService {
 	public ApiResponse sendResetCredentialsOtp(@PathVariable("civil-id") String civilId) {
 		logger.info("Send OTP Request : civilId - " + civilId);
 		//Added by Radhika
-		Customer customerdetails = customerRepository.getCustomerEmailDetails(civilId);
-		CustomerOnlineRegistration customerOnlineRegistration = onlineCustomerRepository.getLoginCustomersDeatilsById(civilId);
+		Customer customerdetails = customerRepository.getActiveCustomerDetails(civilId);
+		//CustomerOnlineRegistration customerOnlineRegistration = onlineCustomerRepository.getLoginCustomersDeatilsById(civilId);
 		ApiResponse response = null;
-		if(customerdetails.getEmailVerified()==null || customerdetails.getEmailVerified().equals(Status.Y))
-		{		
+		if(customerdetails!=null) {
+			userValidationService.validateCustomerVerification(customerdetails.getCustomerId());
+		}
+		
 		List<ContactType> channel = new ArrayList<>();
 		channel.add(ContactType.SMS_EMAIL);
 		response = userService.sendOtpForCivilId(civilId, channel, null, null);
-		}else if(customerOnlineRegistration.getStatus().equalsIgnoreCase("N") && (customerdetails.getEmailVerified().equals(Status.N))||(customerdetails.getEmailVerified().equals(Status.N)&&customerOnlineRegistration.getStatus().equalsIgnoreCase("Y"))){
-			throw new GlobalException(JaxError.EMAIL_NOT_VERIFIED, "Email id is not verified.Kinldy verify");
-		}
+		
 		
 		return response;
 	}
