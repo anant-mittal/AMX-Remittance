@@ -14,4 +14,10 @@ public interface MarginMarkupRepository extends CrudRepository<OnlineMarginMarku
 	List<OnlineMarginMarkup> findByApplicationCountryIdAndCountryIdAndCurrencyId(BigDecimal aplCountryId,
 			BigDecimal countryId, BigDecimal currencyId);
 
+	List<OnlineMarginMarkup> findByApplicationCountryIdAndCountryIdAndCurrencyIdAndBankId(BigDecimal aplCountryId,
+			BigDecimal countryId, BigDecimal currencyId, BigDecimal bankId);
+
+	List<OnlineMarginMarkup> findByApplicationCountryIdAndCurrencyIdAndBankIdIn(BigDecimal aplCountryId,
+			BigDecimal currencyId, List<BigDecimal> bankIds);
+
 }

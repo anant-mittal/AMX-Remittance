@@ -179,9 +179,9 @@ public class CustomerDiscountManager {
 			custCategoryInfo.setDiscountPipsValue(ccDiscountPips);
 
 		}
-		
+
 		List<BigDecimal> validBankIds = null;
-		if(exchRateAndRoutingTransientDataCache.getBankDetails() != null) {
+		if (exchRateAndRoutingTransientDataCache.getBankDetails() != null) {
 			validBankIds = new ArrayList<BigDecimal>(exchRateAndRoutingTransientDataCache.getBankDetails().keySet());
 		}
 
@@ -191,7 +191,7 @@ public class CustomerDiscountManager {
 		}
 
 		List<PipsMaster> pipsList = null;
-		if(validBankIds != null) {
+		if (validBankIds != null) {
 			pipsList = pipsMasterDao.getPipsForFcCurAndBank(pricingRequestDTO.getForeignCurrencyId(),
 					OnlineCountryBranchId, validBankIds);
 		}
@@ -218,9 +218,11 @@ public class CustomerDiscountManager {
 		// List<BankRateDetailsDTO> discountedRatesNPrices = new
 		// ArrayList<BankRateDetailsDTO>();
 
-		BigDecimal margin = exchRateAndRoutingTransientDataCache.getMargin() != null
-				? exchRateAndRoutingTransientDataCache.getMargin().getMarginMarkup()
-				: BIGD_ZERO;
+		// Old
+		// BigDecimal margin =
+		// exchRateAndRoutingTransientDataCache.getMarginForBank(bankId)) != null
+		// ? exchRateAndRoutingTransientDataCache.getMargin().getMarginMarkup()
+		// : BIGD_ZERO;
 
 		for (ExchangeRateDetails bankExRateDetail : exchRateAndRoutingTransientDataCache.getSellRateDetails()) {
 
@@ -269,6 +271,9 @@ public class CustomerDiscountManager {
 
 				bankExRateDetail.setDiscountAvailed(true);
 
+				BigDecimal marginVal = exchRateAndRoutingTransientDataCache
+						.getMarginForBank(bankExRateDetail.getBankId()).getMarginMarkup();
+
 				/**
 				 * Compute Base Sell rate : Cost + Margin
 				 */
@@ -278,7 +283,7 @@ public class CustomerDiscountManager {
 
 					// New Logic
 					adjustedBaseSellRate = exchRateAndRoutingTransientDataCache
-							.getAvgRateGLCForBank(bankExRateDetail.getBankId()).add(margin);
+							.getAvgRateGLCForBank(bankExRateDetail.getBankId()).add(marginVal);
 
 				}
 

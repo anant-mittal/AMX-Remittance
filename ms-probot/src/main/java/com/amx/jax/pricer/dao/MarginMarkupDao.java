@@ -1,7 +1,9 @@
 package com.amx.jax.pricer.dao;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -15,10 +17,11 @@ public class MarginMarkupDao {
 	@Autowired
 	private MarginMarkupRepository marginMarkupRepository;
 
-	public OnlineMarginMarkup getMarkupForCountryAndCurrency(BigDecimal aplCountryId, BigDecimal countryId,
-			BigDecimal currencyId) {
+	public OnlineMarginMarkup getMarkupForCountryAndCurrencyAndBank(BigDecimal aplCountryId, BigDecimal countryId,
+			BigDecimal currencyId, BigDecimal bankId) {
 		List<OnlineMarginMarkup> marginList = marginMarkupRepository
-				.findByApplicationCountryIdAndCountryIdAndCurrencyId(aplCountryId, countryId, currencyId);
+				.findByApplicationCountryIdAndCountryIdAndCurrencyIdAndBankId(aplCountryId, countryId, currencyId,
+						bankId);
 
 		// Only One Margin is valid at Any Point of time
 		if (marginList != null && !marginList.isEmpty()) {
@@ -26,6 +29,34 @@ public class MarginMarkupDao {
 		}
 
 		return null;
+
+	}
+
+	public Map<BigDecimal, OnlineMarginMarkup> getMarkupForCurrencyAndBanksIn(BigDecimal aplCountryId,
+			BigDecimal currencyId, List<BigDecimal> bankIds) {
+
+		List<OnlineMarginMarkup> allBankMarkups = marginMarkupRepository
+				.findByApplicationCountryIdAndCurrencyIdAndBankIdIn(aplCountryId, currencyId, bankIds);
+
+		Map<BigDecimal, OnlineMarginMarkup> bankMarkups = new HashMap<BigDecimal, OnlineMarginMarkup>();
+
+		if (allBankMarkups != null && !allBankMarkups.isEmpty()) {
+			for (OnlineMarginMarkup markup : allBankMarkups) {
+				if (markup.getBankId() != null) {
+					bankMarkups.put(markup.getBankId(), markup);
+				}
+			}
+		}
+
+		return bankMarkups;
+
+	}
+
+	public List<OnlineMarginMarkup> getMarkupForCountryAndCurrency(BigDecimal aplCountryId, BigDecimal countryId,
+			BigDecimal currencyId) {
+
+		return marginMarkupRepository.findByApplicationCountryIdAndCountryIdAndCurrencyId(aplCountryId, countryId,
+				currencyId);
 
 	}
 

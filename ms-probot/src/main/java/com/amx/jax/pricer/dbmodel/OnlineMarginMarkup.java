@@ -31,8 +31,12 @@ public class OnlineMarginMarkup implements Serializable {
 	@Column(name = "CURRENCY_ID")
 	private BigDecimal currencyId;
 
+	@Column(name = "BANK_ID")
+	private BigDecimal bankId;
+
 	@Column(name = "EMOS_COUNTRY")
 	private String emosCountry;
+
 	@Column(name = "EMOS_CURCOD")
 	private String emosCurcod;
 
@@ -93,6 +97,14 @@ public class OnlineMarginMarkup implements Serializable {
 
 	public void setCurrencyId(BigDecimal currencyId) {
 		this.currencyId = currencyId;
+	}
+
+	public BigDecimal getBankId() {
+		return bankId;
+	}
+
+	public void setBankId(BigDecimal bankId) {
+		this.bankId = bankId;
 	}
 
 	public String getEmosCountry() {
