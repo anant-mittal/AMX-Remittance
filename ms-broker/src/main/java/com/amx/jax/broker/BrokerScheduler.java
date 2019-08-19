@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import com.amx.jax.AppContextUtil;
+import com.amx.jax.db.multitenant.TenantDBConfig;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.mcq.Candidate;
@@ -36,6 +37,9 @@ public class BrokerScheduler {
 	BrokerConfig brokerConfig;
 
 	@Autowired
+	TenantDBConfig tenantDBConfig;
+
+	@Autowired
 	private MCQLocker mcq;
 
 	private Candidate getLock(String tenant) {
@@ -47,23 +51,33 @@ public class BrokerScheduler {
 		return LOCK_MAP.get(tenant);
 	}
 
-	@Scheduled(fixedDelay = BrokerConstants.PUSH_NOTIFICATION_FREQUENCY)
+	@Scheduled(fixedDelay = BrokerConstants.PUSH_NOTIFICATION_FREQUENCY,
+			initialDelay = BrokerConstants.PUSH_NOTIFICATION_FREQUENCY)
 	public void pushNewEventNotifications() {
+		if (!tenantDBConfig.isReady()) {
+			logger.warn("P:DB is Not Ready : Exit");
+		}
+
 		Tenant[] tenants = brokerConfig.getTenants();
 		for (Tenant tenant : tenants) {
 			try {
+				logger.debug("P:Working for {}", tenant.toString());
 				AppContextUtil.setTenant(tenant);
 				String sessionId = UniqueID.generateString();
 				AppContextUtil.setSessionId(sessionId);
 				AppContextUtil.getTraceId(true, true);
 				AppContextUtil.init();
+				logger.debug("P:Before Lock");
 				Candidate candidate = getLock(tenants.toString());
 				if (mcq.lead(candidate)) {
+					logger.debug("P:Candidate is leading");
 					brokerService.pushNewEventNotifications(tenant, sessionId);
 					mcq.resign(candidate);
+				} else {
+					logger.debug("P:Candidate is Not leading");
 				}
 			} catch (Exception e) {
-				logger.error("Scheduler Fetch ERROR", e);
+				logger.error("P:Scheduler Fetch ERROR", e);
 			}
 		}
 	}
@@ -76,14 +90,16 @@ public class BrokerScheduler {
 		Tenant[] tenants = brokerConfig.getTenants();
 		for (Tenant tenant : tenants) {
 			try {
+				logger.debug("D:Working for {}", tenant.toString());
 				AppContextUtil.setTenant(tenant);
 				String sessionId = UniqueID.generateString();
 				AppContextUtil.setSessionId(sessionId);
 				AppContextUtil.getTraceId(true, true);
 				AppContextUtil.init();
+				logger.debug("D:Before CleanUP");
 				brokerService.cleanUpEventNotificationRecords(tenant, sessionId);
 			} catch (Exception e) {
-				logger.error("Scheduler Delete ERROR", e);
+				logger.error("D:Scheduler Delete ERROR", e);
 			}
 		}
 	}
