@@ -122,7 +122,11 @@ public class RemitBranchController {
 	public AmxApiResponse<RemittancePageDto, Object> defaultBeneficiary(
 			@RequestParam(required = false) BigDecimal beneId,
 			@RequestParam(required = false) BigDecimal transactionId) {
-		return AmxApiResponse.buildList(beneClient.defaultBeneficiary(beneId, transactionId).getResults());
+		RemittancePageDto remittancePageDto = beneClient.defaultBeneficiary(beneId, transactionId).getResult();
+		if (!ArgUtil.isEmpty(beneId)) {
+			remittancePageDto.setPackages(branchRemittanceClient.getGiftService(beneId).getResult().getParameterDetailsDto());
+		}
+		return AmxApiResponse.build(remittancePageDto);
 	}
 
 	@RequestMapping(value = "/api/remitt/tranxrate", method = { RequestMethod.POST })
