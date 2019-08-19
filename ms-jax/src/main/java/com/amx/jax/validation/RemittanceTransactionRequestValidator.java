@@ -25,10 +25,7 @@ import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.FlexFieldBehaviour;
 import com.amx.jax.constants.JaxChannel;
 import com.amx.jax.dao.RemittanceApplicationDao;
-import com.amx.jax.dbmodel.BenificiaryListView;
-import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.remittance.AdditionalBankDetailsViewx;
-import com.amx.jax.dbmodel.remittance.AdditionalBankRuleAmiec;
 import com.amx.jax.dbmodel.remittance.AdditionalBankRuleMap;
 import com.amx.jax.dbmodel.remittance.AdditionalDataDisplayView;
 import com.amx.jax.dbmodel.remittance.FlexFiledView;
@@ -124,14 +121,18 @@ public class RemittanceTransactionRequestValidator {
 			field.setName(bankRule.getFlexField());
 			field.setLabel(bankRule.getFieldName());
 			field.setRequired(ConstantDocument.Yes.equals(flexField.getIsRequired()));
-			field.setMinLength(BigDecimal.ONE);
-			field.setMaxLength(new BigDecimal(100));
+			if(flexField.getMinLength() != null && flexField.getMinLength().compareTo(BigDecimal.ZERO) != 0 && flexField.getMaxLength() != null && flexField.getMaxLength().compareTo(BigDecimal.ZERO) != 0) {
+				field.setMinLength(flexField.getMinLength());
+				field.setMaxLength(flexField.getMaxLength());
+			}else {
+				field.setMinLength(BigDecimal.ONE);
+				field.setMaxLength(new BigDecimal(100));
+			}
 			field.setDtoPath("flexFields." + bankRule.getFlexField());
 			dto.setId(bankRule.getAdditionalBankRuleId());
 			if (FlexFieldBehaviour.PRE_DEFINED.toString().equals(fieldBehaviour)) {
 				field.setType(FlexFieldBehaviour.PRE_DEFINED.getFieldType().toString());
 				List<JaxFieldValueDto> amiecValues = getAmiecValues(bankRule.getFlexField(), routingCountryId,deliveryModeId, remittanceModeId, routingBankId, foreignCurrencyId,bankRule.getAdditionalBankRuleId());
-				
 				//To set default value for bpi gift service provider
 				if(request!=null && request.getServicePackage()!=null && request.getServicePackage().getIndic() !=null && request.getServicePackage().getAmieceCode()!=null && request.getServicePackage().getIndic().equalsIgnoreCase(field.getName())) {
 					amiecValues = getDefaultForServicePackage(request,amiecValues);

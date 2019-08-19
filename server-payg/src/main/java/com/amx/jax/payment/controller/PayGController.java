@@ -128,7 +128,7 @@ public class PayGController {
 			pg = "BENEFIT";
 			appRedirectUrl = bhrRedirectURL;
 		} else if (tnt.equals(Tenant.KWT)) {
-			if ("KNET2".equalsIgnoreCase(pg)) {
+			if ("KNET".equalsIgnoreCase(pg)) {
 				pg = "KNET2";
 				appRedirectUrl = kwtRedirectURL;
 			} else {
@@ -244,8 +244,6 @@ public class PayGController {
 		if (paygCode.toString().equals("OMANNET") && channel.equals(Channel.ONLINE)) {
 			return "redirect:" + redirectUrl;
 			// }else if (paygCode.toString().equals("KOMANNET")) {
-		} else if (paygCode.toString().equals("KNET") && channel.equals(Channel.ONLINE)) {
-			return "redirect:" + redirectUrl;
 		} else if (paygCode.toString().equals("OMANNET") && channel.equals(Channel.KIOSK)) {
 			ra.addAttribute("paymentId", payGResponse.getPaymentId());
 			ra.addAttribute("result", payGResponse.getResult());

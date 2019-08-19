@@ -1,9 +1,11 @@
 package com.amx.jax.ui;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.HashMap;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -61,6 +63,9 @@ public class WebAppConfig {
 
 	@TenantValue("${company.tnt}")
 	private String companyTnt;
+	
+	@Value("${google.recaptach.site.key}")
+	private String googelReCaptachSiteKey;
 
 	/**
 	 * Gets the features.
@@ -73,10 +78,10 @@ public class WebAppConfig {
 
 	@Autowired
 	TenantProperties tenantProperties;
-	private ArrayList<Features> featuresList = null;
+	private List<Features> featuresList = null;
 
-	public ArrayList<Features> getFeaturesList() {
-		if (ArgUtil.isEmpty(featuresList)) {
+	public List<Features> getFeaturesList() {
+		if (null == featuresList) {
 			featuresList = new ArrayList<Features>();
 			Features[] allFeatures = Features.values();
 			Map<Features, Boolean> map = new HashMap<Features, Boolean>();
@@ -164,6 +169,10 @@ public class WebAppConfig {
 
 	public String getCompanyTnt() {
 		return this.companyTnt;
+	}
+
+	public String getGoogelReCaptachSiteKey() {
+		return googelReCaptachSiteKey;
 	}
 
 }

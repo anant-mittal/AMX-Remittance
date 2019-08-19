@@ -22,6 +22,8 @@ public class ApiEndpoint {
 	public static final String EXCHANGE_RATE_ENDPOINT = "/exchange-rate";
 
 	public static final String ONLINE_CUSTOMER_VALIDATE_URL = "/nationality-id/{nationality-id}/validate";
+	
+	public static final String REVENUE_REPORT_ENDPOINT = "/revenue-report";
 
 	public final class MetaApi {
 		// Prefix
@@ -148,6 +150,7 @@ public class ApiEndpoint {
 		public static final String SAVE_ANNUAL_INCOME = "/saveAnnualIncome/";
 		public static final String GET_ANNUAL_INCOME_DETAILS = "/getAnnualIncomeDetails/";
 		public static final String SAVE_SECURITY_QUESTIONS = "/save-security-questions/";
+		public static final String UPDATE_PASSWORD_CUSTOMER = "/update-password-customer/";
 		//params
 		public static final String PARAM_INCOMEDTO = "incomeDto";
 		
@@ -180,6 +183,9 @@ public class ApiEndpoint {
 
 		public static final String DELINK_FINGERPRINT = "/delink-fingerprint";
 		public static final String RESET_FINGERPRINT = "/reset-fingerprint";
+		
+		//validate login otp
+		public static final String VALIDATE_CUSTOMER_LOGIN_OTP = "/validate-customer-login-otp/";
 
 	}
 	
@@ -192,6 +198,20 @@ public class ApiEndpoint {
 		// Paths
 		public static final String EKYC_SAVE_CUSTOMER = "/ekyc-save-customer/";
 		
+	}
+	
+	public final class ServiceProvider{
+		public static final String PREFIX = REVENUE_REPORT_ENDPOINT;
+		
+		//Paths
+		
+		public static final String REVENUE_REPORT_PARTNER = "/revenue-report-partner";
+		
+		public static final String REVENUE_REPORT_UPLOAD_FILE="/revenue-report-upload-file";
+		
+		public static final String REVENUE_REPORT_CONFIRMATION="/revenue-report-confirmation";
+		
+		public static final String REVENUE_REPORT_DEFAULT_DATE = "/revenue-report-default-date";
 	}
 
 }

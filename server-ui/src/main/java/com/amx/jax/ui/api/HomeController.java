@@ -23,7 +23,6 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 
 import com.amx.amxlib.meta.model.CustomerRatingDTO;
-import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.AppConstants;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
@@ -38,12 +37,13 @@ import com.amx.jax.exception.AmxApiException;
 import com.amx.jax.exception.ApiHttpExceptions.ApiStatusCodes;
 import com.amx.jax.http.ApiRequest;
 import com.amx.jax.http.CommonHttpRequest;
-import com.amx.jax.http.RequestType;
 import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
+import com.amx.jax.http.RequestType;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.rest.RestService;
 import com.amx.jax.swagger.ApiStatusBuilder.ApiStatus;
 import com.amx.jax.ui.UIConstants;
+import com.amx.jax.ui.UIConstants.Features;
 import com.amx.jax.ui.WebAppConfig;
 import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 import com.amx.jax.ui.model.ServerStatus;
@@ -54,7 +54,6 @@ import com.amx.jax.ui.service.SessionService;
 import com.amx.jax.ui.session.UserDeviceBean;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
-import com.amx.utils.CryptoUtil.HashBuilder;
 
 import io.swagger.annotations.Api;
 
@@ -140,7 +139,7 @@ public class HomeController {
 		wrapper.getData().setDomain(request.getRequestURL().toString());
 		wrapper.getData().setRequestUri(request.getRequestURI());
 		wrapper.getData().setRemoteAddr(httpService.getIPAddress());
-		wrapper.getData().setDevice(userDevice.getUserDevice());
+		wrapper.getData().setDevice(userDevice.getUserDevice().toSanitized());
 		return JsonUtil.toJson(wrapper);
 	}
 
@@ -325,5 +324,13 @@ public class HomeController {
 		model.addAttribute("ratingData", (map));
 		model.addAttribute("companyTnt", AppContextUtil.getTenant());
 		return "rating";
+	}
+
+	@RequestMapping(value = { "/pub/recaptcha/{feature}" },
+			method = { RequestMethod.GET })
+	public String recaptach(Model model, @PathVariable Features feature) {
+		model.addAttribute("googelReCaptachSiteKey", webAppConfig.getGoogelReCaptachSiteKey());
+		model.addAttribute("companyTnt", AppContextUtil.getTenant());
+		return "recaptcha";
 	}
 }

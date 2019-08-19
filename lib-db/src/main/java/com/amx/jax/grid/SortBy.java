@@ -29,7 +29,8 @@ public class SortBy {
 	/**
 	 * Adds the sort.
 	 *
-	 * @param sortBy the sort by
+	 * @param sortBy
+	 *            the sort by
 	 */
 	public void addSort(String sortBy) {
 		mapOfSorts.put(sortBy, SortOrder.ASC);
@@ -38,11 +39,15 @@ public class SortBy {
 	/**
 	 * Adds the sort.
 	 *
-	 * @param sortBy    the sort by
-	 * @param sortOrder the sort order
+	 * @param sortBy
+	 *            the sort by
+	 * @param sortOrder
+	 *            the sort order
 	 */
 	public void addSort(String sortBy, SortOrder sortOrder) {
-		mapOfSorts.put(sortBy, sortOrder);
+		if (!mapOfSorts.containsKey(sortBy)) {
+			mapOfSorts.put(sortBy, sortOrder);
+		}
 	}
 
 }

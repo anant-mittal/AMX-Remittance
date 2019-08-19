@@ -1,7 +1,6 @@
 package com.amx.jax.api;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.Map;
 
 import com.amx.jax.dict.PayGCodes.CodeCategory;

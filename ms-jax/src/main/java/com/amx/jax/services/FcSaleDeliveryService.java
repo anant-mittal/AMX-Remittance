@@ -347,11 +347,16 @@ public class FcSaleDeliveryService {
 		if (!deliveryDetail.getOrderStatus().equals(ConstantDocument.OFD_ACK)) {
 			throw new GlobalException(JaxError.FC_CURRENCY_DELIVERY_INVALID_STATUS, "Order status should be OFD_ACK");
 		}
-		deliveryDetail.setOrderStatus(ConstantDocument.OFD_CNF);
-		fcSaleApplicationDao.saveDeliveryDetail(deliveryDetail);
-		fcSaleBranchOrderManager.currentStockMigration(deliveryDetailSeqId, deliveryDetail.getDriverEmployeeId(),
-				deliveryDetail.getEmployeeId());
-		fcSaleBranchOrderManager.saveFCStockTransferDetails(deliveryDetailSeqId, deliveryDetail.getDriverEmployeeId(), deliveryDetail.getEmployeeId(), ConstantDocument.OFD_CNF);
+		boolean stockCheck = fcSaleBranchOrderManager.validateUserStock(deliveryDetailSeqId, deliveryDetail.getEmployeeId());
+		if(stockCheck) {
+			deliveryDetail.setOrderStatus(ConstantDocument.OFD_CNF);
+			fcSaleApplicationDao.saveDeliveryDetail(deliveryDetail);
+			fcSaleBranchOrderManager.currentStockMigration(deliveryDetailSeqId, deliveryDetail.getDriverEmployeeId(),
+					deliveryDetail.getEmployeeId());
+			fcSaleBranchOrderManager.saveFCStockTransferDetails(deliveryDetailSeqId, deliveryDetail.getDriverEmployeeId(), deliveryDetail.getEmployeeId(), ConstantDocument.OFD_CNF);
+		}else {
+			throw new GlobalException(JaxError.MISMATCH_CURRENT_STOCK,"Employee current stock not matcing to move to driver");
+		}
 		logStatusChangeAuditEvent(deliveryDetailSeqId, oldOrderStatus);
 		return new BoolRespModel(true);
 	}

@@ -13,7 +13,6 @@ import com.amx.jax.async.ExecutorConfig;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.CustomerVerificationType;
 import com.amx.jax.customer.manager.CustomerContactVerificationManager;
-import com.amx.jax.db.utils.EntityDtoUtil;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerContactVerification;
 import com.amx.jax.dbmodel.CustomerVerification;
@@ -30,6 +29,7 @@ import com.amx.jax.services.AbstractService;
 import com.amx.jax.userservice.service.CustomerVerificationService;
 import com.amx.jax.userservice.service.UserValidationService;
 import com.amx.jax.util.AmxDBConstants.Status;
+import com.amx.utils.EntityDtoUtil;
 
 @Service
 public class JaxCustomerContactVerificationService extends AbstractService {

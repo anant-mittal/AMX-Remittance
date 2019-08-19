@@ -31,7 +31,7 @@ public class KWTCardReaderService extends ACardReaderService {
 				LISTNER.setEnabled(false);
 				API.RemoveEventListener(LISTNER);
 			}
-			API = new PACICardAPI(false, 0);
+			API = new PACICardAPI();
 			LISTNER = new KWTCardReaderListner();
 			LISTNER.setEnabled(true);
 			API.AddEventListener(LISTNER);

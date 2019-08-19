@@ -77,7 +77,7 @@ public final class ContextUtil {
 	}
 
 	public static void setFlowfix(String flowfix) {
-		context.get().put(FLOW_FIX_KEY, flowfix);
+		context.get().put(FLOW_FIX_KEY, StringUtils.removeSpecialCharacter(flowfix));
 	}
 
 	/**

@@ -10,7 +10,7 @@ import org.springframework.data.repository.CrudRepository;
 
 import com.amx.jax.pricer.dbmodel.BankMasterModel;
 import com.amx.jax.pricer.dbmodel.CountryBranch;
-import com.amx.jax.pricer.dbmodel.CountryMaster;
+import com.amx.jax.pricer.dbmodel.CountryMasterModel;
 import com.amx.jax.pricer.dbmodel.CurrencyMasterModel;
 import com.amx.jax.pricer.dbmodel.PipsMaster;
 
@@ -23,22 +23,22 @@ public interface PipsMasterRepository extends CrudRepository<PipsMaster, BigDeci
 
 	@Query("select pips from PipsMaster pips where pips.countryBranch=?1 and pips.countryMaster=?2 and pips.bankMaster=?3 and"
 			+ " pips.currencyMaster=?4 and pips.fromAmount <= ?5 and pips.toAmount >= ?5")
-	public List<PipsMaster> getPipsMasterForBranch(CountryBranch countryBranch, CountryMaster countryMaster,
+	public List<PipsMaster> getPipsMasterForBranch(CountryBranch countryBranch, CountryMasterModel countryMasterModel,
 			BankMasterModel bankMaster, CurrencyMasterModel currencyMaster, BigDecimal fcAmount);
 
 	@Query("select pips from PipsMaster pips where pips.countryBranch=?1 and pips.countryMaster=?2 and"
 			+ " pips.currencyMaster=?3 and pips.fromAmount <= ?4 and pips.toAmount >= ?4")
-	public List<PipsMaster> getPipsMasterForBranch(CountryBranch countryBranch, CountryMaster countryMaster,
+	public List<PipsMaster> getPipsMasterForBranch(CountryBranch countryBranch, CountryMasterModel countryMasterModel,
 			CurrencyMasterModel currencyMaster, BigDecimal fcAmount);
 
 	@Query("select pips from PipsMaster pips where pips.countryMaster=?1 and"
 			+ " pips.currencyMaster=?2 and pips.fromAmount <= ?3 and pips.toAmount >= ?3")
-	public List<PipsMaster> getPipsMasterForBranch(CountryMaster countryMaster, CurrencyMasterModel currencyMaster,
+	public List<PipsMaster> getPipsMasterForBranch(CountryMasterModel countryMasterModel, CurrencyMasterModel currencyMaster,
 			BigDecimal fcAmount);
 
 	@Query(value = "select * from EX_PIPS_MASTER where CURRENCY_ID=?1 and COUNTRY_BRANCH_ID=?2 and ISACTIVE='Y'"
 			+ " and ?3/DERIVED_SELL_RATE >= FROM_AMOUNT and ?3/DERIVED_SELL_RATE  <= TO_AMOUNT and COUNTRY_ID=?4"
-			+ " and BANK_ID in (?5) order by DERIVED_SELL_RATE asc", nativeQuery = true)
+			+ " and BANK_ID in (?5) and nvl(DERIVED_SELL_RATE,0) <> 0 order by DERIVED_SELL_RATE asc", nativeQuery = true)
 	public List<PipsMaster> getPipsMasterForLcCurOnline(BigDecimal toCurrency, BigDecimal countryBranchId,
 			BigDecimal lcAmount, BigDecimal countryId, List<BigDecimal> validBankIds);
 
@@ -49,7 +49,7 @@ public interface PipsMasterRepository extends CrudRepository<PipsMaster, BigDeci
 			BigDecimal fcAmount, BigDecimal countryId, List<BigDecimal> validBankIds);
 
 	@Query(value = "select * from EX_PIPS_MASTER where CURRENCY_ID=?1 and COUNTRY_BRANCH_ID=?2 and ISACTIVE='Y'"
-			+ " and ?3/DERIVED_SELL_RATE >= FROM_AMOUNT and ?3/DERIVED_SELL_RATE  <= TO_AMOUNT and BANK_ID=?4 order by DERIVED_SELL_RATE asc", nativeQuery = true)
+			+ " and ?3/DERIVED_SELL_RATE >= FROM_AMOUNT and ?3/DERIVED_SELL_RATE  <= TO_AMOUNT and BANK_ID=?4 and nvl(DERIVED_SELL_RATE,0) <> 0 order by DERIVED_SELL_RATE asc", nativeQuery = true)
 	public List<PipsMaster> getPipsMasterForLocalAmount(BigDecimal toCurrency, BigDecimal countryBranchId,
 			BigDecimal lcAmount, BigDecimal bankId);
 

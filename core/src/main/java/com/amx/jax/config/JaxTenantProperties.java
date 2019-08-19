@@ -52,7 +52,10 @@ public class JaxTenantProperties {
 	
 	@TenantValue("${wantit.buyit.enddate}")
 	private String endDate;
-
+	
+	@TenantValue("${jax.max.captcha.count}")
+	private Integer maxCaptchaCount;
+	
 	
 	@TenantValue("${jax.properties.hash.signature}")
 	private Boolean hashSigEnable;
@@ -71,12 +74,7 @@ public class JaxTenantProperties {
 	
 	@TenantValue("${signature.algorithem}")
 	private String sigAlgorithem;
-	
-	
 
-	
-	
-	
 	public Boolean getCashDisable() {
 		return cashDisable;
 	}
@@ -149,7 +147,21 @@ public class JaxTenantProperties {
 		this.endDate = endDate;
 	}
 
-	
+	public Integer getMaxCaptchaCount() {
+		return maxCaptchaCount;
+	}
+
+	public void setMaxCaptchaCount(Integer maxCaptchaCount) {
+		this.maxCaptchaCount = maxCaptchaCount;
+	}
+
+	public Boolean getHashSigEnable() {
+		return hashSigEnable;
+	}
+
+	public void setHashSigEnable(Boolean hashSigEnable) {
+		this.hashSigEnable = hashSigEnable;
+	}
 
 	public String getKeyStoreLocatin() {
 		return keyStoreLocatin;
@@ -181,14 +193,6 @@ public class JaxTenantProperties {
 
 	public void setSigAlgorithem(String sigAlgorithem) {
 		this.sigAlgorithem = sigAlgorithem;
-	}
-
-	public Boolean getHashSigEnable() {
-		return hashSigEnable;
-	}
-
-	public void setHashSigEnable(Boolean hashSigEnable) {
-		this.hashSigEnable = hashSigEnable;
 	}
 
 

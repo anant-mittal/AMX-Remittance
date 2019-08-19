@@ -15,7 +15,7 @@ public interface IJaxPushNotificationDao extends JpaRepository<PushNotificationR
 
 	@Query("select n from PushNotificationRecord n where (n.customerId=:customerId "
 			+ "or (n.customerId is null and (n.nationalityId=:nationalityId or "
-			+ "(n.nationalityId is null and n.countryId=:countryId)))) and  trunc(n.notificationDate) = trunc(:notificationDate) ")
+			+ "(n.nationalityId is null and n.countryId=:countryId)))) and  n.notificationDate >= trunc(:notificationDate) ")
 	public List<PushNotificationRecord> getJaxNotification(@Param("customerId") BigDecimal customerId,
 			@Param("nationalityId") BigDecimal nationalityId, @Param("countryId") BigDecimal countryId, @Param("notificationDate")Date notificationDate);
 }

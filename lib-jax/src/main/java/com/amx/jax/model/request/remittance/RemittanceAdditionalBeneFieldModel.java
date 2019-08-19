@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 import com.amx.jax.model.response.remittance.FlexFieldDto;
 import com.amx.utils.JsonUtil;
 
-public abstract class RemittanceAdditionalBeneFieldModel extends AbstractRemittanceApplicationRequestModel {
+public abstract class RemittanceAdditionalBeneFieldModel extends AbstractRemittanceApplicationRequestModel{
 
 	protected BigDecimal beneId;
 	private BigDecimal additionalBankRuleFiledId;
@@ -19,11 +19,10 @@ public abstract class RemittanceAdditionalBeneFieldModel extends AbstractRemitta
 	private Map<String, FlexFieldDto> flexFieldDtoMap;
 	private Map<String, Object> additionalFields;
 	private BigDecimal purposeOfTrnxId;
-	private FlexFieldDto servicePackage;
-
 	private String staffUserName;
 	private String amlRemarks;
-
+	private FlexFieldDto servicePackage;
+	
 	public Map<String, Object> getAdditionalFields() {
 		return additionalFields;
 	}
@@ -31,6 +30,7 @@ public abstract class RemittanceAdditionalBeneFieldModel extends AbstractRemitta
 	public void setAdditionalFields(Map<String, Object> additionalFields) {
 		this.additionalFields = additionalFields;
 	}
+	
 
 	public BigDecimal getBeneId() {
 		return beneId;
@@ -39,7 +39,7 @@ public abstract class RemittanceAdditionalBeneFieldModel extends AbstractRemitta
 	public void setBeneId(BigDecimal beneId) {
 		this.beneId = beneId;
 	}
-
+	
 	public BigDecimal getSrlId() {
 		return srlId;
 	}
@@ -55,7 +55,7 @@ public abstract class RemittanceAdditionalBeneFieldModel extends AbstractRemitta
 	public void setAdditionalBankRuleFiledId(BigDecimal additionalBankRuleFiledId) {
 		this.additionalBankRuleFiledId = additionalBankRuleFiledId;
 	}
-
+	
 	public Map<String, FlexFieldDto> getFlexFieldDtoMap() {
 		return flexFieldDtoMap;
 	}
@@ -79,11 +79,10 @@ public abstract class RemittanceAdditionalBeneFieldModel extends AbstractRemitta
 				}
 				return flexFieldDto;
 			};
-			this.flexFieldDtoMap = flexFieldMap.entrySet().stream()
-					.collect(Collectors.toMap(Map.Entry::getKey, valueMapper));
+			this.flexFieldDtoMap = flexFieldMap.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, valueMapper));
 		}
 	}
-
+	
 	public Map<String, Object> getFlexFields() {
 		return flexFields;
 	}
@@ -91,22 +90,21 @@ public abstract class RemittanceAdditionalBeneFieldModel extends AbstractRemitta
 	public void setFlexFields(Map<String, Object> flexFields) {
 		this.flexFields = flexFields;
 	}
-
+	
 	private Map<String, String> createFlexFieldMap(Map<String, Object> flexFields2) {
 
 		Set<Entry<String, Object>> es = flexFields2.entrySet();
-		Map<String, String> output = es.stream()
-				.collect(Collectors.toMap(x -> x.getKey(), x -> JsonUtil.toJson(x.getValue())));
+		Map<String, String> output = es.stream().collect(Collectors.toMap(x -> x.getKey(), x -> JsonUtil.toJson(x.getValue())));
 		return output;
 	}
-
+	
 	public BigDecimal getPurposeOfTrnxId() {
 		return purposeOfTrnxId;
 	}
-
 	public void setPurposeOfTrnxId(BigDecimal purposeOfTrnxId) {
 		this.purposeOfTrnxId = purposeOfTrnxId;
 	}
+
 
 	public String getStaffUserName() {
 		return staffUserName;
@@ -132,4 +130,6 @@ public abstract class RemittanceAdditionalBeneFieldModel extends AbstractRemitta
 		this.servicePackage = servicePackage;
 	}
 
+	
+	
 }

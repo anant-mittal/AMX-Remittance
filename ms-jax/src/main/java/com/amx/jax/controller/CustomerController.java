@@ -31,9 +31,7 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.customer.service.CustomerService;
 import com.amx.jax.customer.service.JaxCustomerContactVerificationService;
 import com.amx.jax.dbmodel.Customer;
-import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dict.ContactType;
-import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.model.customer.SecurityQuestionModel;
@@ -49,7 +47,6 @@ import com.amx.jax.userservice.service.CustomerModelService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.userservice.service.UserValidationService;
 import com.amx.jax.util.ConverterUtil;
-import com.amx.jax.util.AmxDBConstants.Status;
 
 @RestController
 @RequestMapping(CUSTOMER_ENDPOINT)
@@ -128,9 +125,7 @@ public class CustomerController implements ICustomerService {
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	public ApiResponse save(@RequestBody CustomerModel customerModel) {
 		logger.info("saveCust Request:" + customerModel.toString());
-		
 		ApiResponse response = userService.saveCustomer(customerModel);
-		
 		return response;
 	}
 
@@ -145,7 +140,7 @@ public class CustomerController implements ICustomerService {
 	public ApiResponse sendResetCredentialsOtp(@PathVariable("civil-id") String civilId) {
 		logger.info("Send OTP Request : civilId - " + civilId);
 		//Added by Radhika
-		Customer customerdetails = customerRepository.getCustomerEmailDetails(civilId);
+		Customer customerdetails = customerRepository.getActiveCustomerDetails(civilId);
 		//CustomerOnlineRegistration customerOnlineRegistration = onlineCustomerRepository.getLoginCustomersDeatilsById(civilId);
 		ApiResponse response = null;
 		if(customerdetails!=null) {
@@ -352,5 +347,12 @@ public class CustomerController implements ICustomerService {
 	public AmxApiResponse<AnnualIncomeRangeDTO, Object> getAnnualTransactionLimit() {
 		AnnualIncomeRangeDTO annualTransactionLimit = annualIncomeService.getAnnualTransactionLimit();
 		return AmxApiResponse.build(annualTransactionLimit);
+	}
+
+	@RequestMapping(value = CustomerApi.UPDATE_PASSWORD_CUSTOMER, method = RequestMethod.POST)
+	public AmxApiResponse<BoolRespModel, Object> updatePasswordCustomer(@RequestParam("identityInt") String identityInt, 
+			@RequestParam(name = "resetPassword",  required = false) String resetPassword) {
+		AmxApiResponse<BoolRespModel, Object> response = customerService.updatePasswordCustomer(identityInt, resetPassword);
+		return response;
 	}
 }

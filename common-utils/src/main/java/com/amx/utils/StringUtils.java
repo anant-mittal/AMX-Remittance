@@ -39,6 +39,16 @@ public final class StringUtils {
 		return !ArgUtil.isEmptyString(str);
 	}
 
+	/**
+	 * Remove all characters which are not Alpha or Numeric
+	 * 
+	 * @param inputString
+	 * @return
+	 */
+	public static String removeSpecialCharacter(String inputString) {
+		return inputString.replaceAll("[^a-zA-Z0-9]+", "");
+	}
+
 	// public static Map<String, String> getMapFromString(String splitter_char,
 	// String key_value_separator_char,
 	// String data) {
@@ -96,6 +106,45 @@ public final class StringUtils {
 		} else {
 			return str.substring(0, length);
 		}
+	}
+
+	private static String mask(String strText, int start, int end, char maskChar) {
+
+		if (strText == null || strText.equals(""))
+			return "";
+
+		if (start < 0)
+			start = 0;
+
+		if (end > strText.length())
+			end = strText.length();
+
+		if (start > end) {
+			start = end;
+		}
+
+		int maskLength = end - start;
+
+		if (maskLength == 0)
+			return strText;
+
+		StringBuilder sbMaskString = new StringBuilder(maskLength);
+
+		for (int i = 0; i < maskLength; i++) {
+			sbMaskString.append(maskChar);
+		}
+
+		return strText.substring(0, start)
+				+ sbMaskString.toString()
+				+ strText.substring(start + maskLength);
+	}
+
+	public static String mask(String strText) {
+		if (ArgUtil.isEmpty(strText)) {
+			return strText;
+		}
+		int len = strText.length();
+		return mask(strText, len / 10 * 2, len / 10 * 7, '*');
 	}
 
 	public static boolean anyMatch(String val, String... matchers) {

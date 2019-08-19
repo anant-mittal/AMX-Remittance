@@ -33,6 +33,7 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.LoyaltyInsuranceProDao;
+import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.CollectionDetailViewModel;
 import com.amx.jax.dbmodel.CollectionPaymentDetailsViewModel;
 import com.amx.jax.dbmodel.CountryMaster;
@@ -40,6 +41,7 @@ import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.PurposeOfRemittanceViewModel;
 import com.amx.jax.dbmodel.RemittanceTransactionView;
 import com.amx.jax.dbmodel.ViewCompanyDetails;
+import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.manager.PromotionManager;
 import com.amx.jax.meta.MetaData;
@@ -89,6 +91,9 @@ public class ReportManagerService extends AbstractService{
 	
 	@Autowired
 	CustomerRepository customerRepository;
+	
+	@Autowired
+	RemittanceApplicationDao remittanceApplicationDao;
 	
 	
 	private List<RemittanceReceiptSubreport> remittanceReceiptSubreportList;
@@ -391,7 +396,8 @@ public class ReportManagerService extends AbstractService{
 				obj.setFutherInstructions(view.getInstructions());
 				obj.setSourceOfIncome(view.getSourceOfIncomeDesc());
 				obj.setIntermediataryBank(view.getBenefeciaryInterBank1());
-
+				
+				getParamsFromPayg(view, obj);
 
 				List<CollectionDetailViewModel> collectionDetailList1= collectionDetailViewDao.getCollectionDetailView(view.getCompanyId(),view.getCollectionDocumentNo(),view.getCollectionDocFinanceYear(),view.getCollectionDocCode());
 						
@@ -600,6 +606,19 @@ public class ReportManagerService extends AbstractService{
 	
 	}
 		
+	
+
+	// ----------------- Params Getting from PAYG -------------------
+	private void getParamsFromPayg(RemittanceTransactionView view, RemittanceReportBean obj) {
+		RemittanceApplication remittanceApplication = remittanceApplicationDao.getApplication(view.getApplicationDocumentNo(), view.getAppFinancialYear());  
+		if(remittanceApplication != null) {
+			obj.setPgPaymentId(remittanceApplication.getPaymentId());
+			obj.setPgReferenceId(remittanceApplication.getPgReferenceId());
+			obj.setPgTransId(remittanceApplication.getPgTransactionId());
+			obj.setPgAuth(remittanceApplication.getPgAuthCode());
+		}
+	}
+	
 	// ----------------- SPECIAL RATE RECEIPT DATA -------------------
 	private void getSpecialRateData(RemittanceTransactionView view, RemittanceReportBean obj, String currencyQuoteName,
 			int decimalPerCurrency) {

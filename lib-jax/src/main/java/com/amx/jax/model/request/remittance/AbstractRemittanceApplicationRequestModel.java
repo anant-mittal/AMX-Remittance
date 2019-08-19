@@ -13,6 +13,8 @@ public abstract class AbstractRemittanceApplicationRequestModel extends Abstract
 	protected boolean availLoyalityPoints;
 	protected BigDecimal domXRate;
 	
+	protected BigDecimal settlementAmount;
+	
 	/**
 	 * @return exiting exrate breakup
 	 */
@@ -57,4 +59,14 @@ public abstract class AbstractRemittanceApplicationRequestModel extends Abstract
 	public void setDomXRate(BigDecimal domXRate) {
 		this.domXRate = domXRate;
 	}
+
+	public BigDecimal getSettlementAmount() {
+		return settlementAmount;
+	}
+
+	public void setSettlementAmount(BigDecimal settlementAmount) {
+		this.settlementAmount = settlementAmount;
+	}
+	
+	
 }

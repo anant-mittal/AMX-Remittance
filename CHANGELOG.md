@@ -6,5 +6,9 @@
 * forgot password
 * partial registration, account activation
 
+## fs_captcha
+* reset password
+* login with captcha
+
 
 ## MileStone Branches

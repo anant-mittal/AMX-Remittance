@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.CustomerVerificationType;
-import com.amx.jax.db.utils.EntityDtoUtil;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerContactVerification;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
@@ -31,6 +30,7 @@ import com.amx.jax.util.AmxDBConstants;
 import com.amx.jax.util.AmxDBConstants.Status;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
+import com.amx.utils.EntityDtoUtil;
 import com.amx.utils.Random;
 import com.amx.utils.TimeUtils;
 
@@ -122,7 +122,7 @@ public class CustomerContactVerificationManager {
 
 		if (!ArgUtil.isEmpty(oldlinks) && oldlinks.size() > 3) {
 			throw new GlobalException(JaxError.SEND_OTP_LIMIT_EXCEEDED,
-					"Sending Verification Limit(4) has exceeded try again after 24 hours" + contactType);
+					"Sending Verification Limit(4) has exceeded try again after 24 hours");
 		}
 
 		return customerContactVerificationRepository.save(link);

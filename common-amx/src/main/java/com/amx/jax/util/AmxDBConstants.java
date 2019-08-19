@@ -25,6 +25,7 @@ public class AmxDBConstants {
 	public static final BigDecimal DOCUMENT_CODE_CUSTOMER_SERIAL_NUMBER = new BigDecimal(8);
 	// peronsl remittancew
 	public static final String Individual = "I";
+	public static final String Non_Individual = "C";
 	public static final String Online = "O";
 	public static final String INDIVIDUAL_STRING = "Individual";
 	public static final String NON_INDIVIDUAL_STRING = "Non-Individual";
@@ -59,6 +60,7 @@ public class AmxDBConstants {
 
 	public static final String BANK_INDICATOR_CORRESPONDING_BANK = "CB";
 	public static final String BANK_INDICATOR_BENEFICIARY_BANK = "BE";
+	public static final String BANK_INDICATOR_SERVICE_PROVIDER_BANK = "SB";
 	public static final BigDecimal REMITTANCE_MODE_EFT = new BigDecimal(3);
 	public static final BigDecimal REMITTANCE_MODE_RTGS = new BigDecimal(4);
 
@@ -153,6 +155,7 @@ public class AmxDBConstants {
 	public static final String VOUCHER = "V";
 	public static final String IMPS_CODE = "13";
 	public static final String IND_COUNTRY_CODE = "004";
+
 	/** E-Eng,A-Arabic **/
 	public static final String L_ENG = "1";
 	public static final String L_ARAB = "2";
@@ -160,7 +163,12 @@ public class AmxDBConstants {
 	public static final String BNFBRCH = "BNFBRCH";
 	public static final String BNFBANK_SWIFT = "BNFBANK_SWIFT";
 	
-	// Constant for Article detail id "Others"
+	public static final String HOME_SEND_PAYMENT_TYPE_CASH = "CASH";
+	public static final String HOME_SEND_PAYMENT_TYPE_KNET = "CARD";
+	public static final String HOME_SEND_PAYMENT_TYPE_BANK_TRANSFER = "BANK";
+	public static final String HOME_SEND_PAYMENT_TYPE_CHEQUE = "CHEQUE";
+	
+   // Constant for Article detail id "Others"
 	
 	public static final BigDecimal ARTICLE_DETAIL_ID_OTHERS = new BigDecimal(16);
 	public static final String  VAT_ACCOUNT_TYPE_COMM = "COMMISSION";
@@ -169,8 +177,11 @@ public class AmxDBConstants {
 	public static final String  VAT_CATEGORY= "OUTPUT_TAX";
 	public static final String  BENE_ACCT_VALID="BENE_ACCT_VALID";
 	
-	// Constants for annual income
+	// Constants for Serviceprovider
 	
+	public static final String TOTAL_PAY_INDICATOR  = "T";
+
+	// Constants for annual income
 	public static final String ANNUAL_INCOME_RANGE = "AIR";
 	
 	// Constants for annual transaction limit range

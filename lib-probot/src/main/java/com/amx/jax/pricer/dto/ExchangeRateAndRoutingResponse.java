@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.amx.jax.io.JSONable;
+import com.amx.jax.partner.dto.HomeSendSrvcProviderInfo;
 import com.amx.jax.pricer.var.PricerServiceConstants.CUSTOMER_CATEGORY;
 import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_TYPE;
 
@@ -29,6 +30,8 @@ public class ExchangeRateAndRoutingResponse implements Serializable, JSONable {
 	private Map<String, TrnxRoutingDetails> trnxRoutingPaths;
 
 	private Map<PRICE_TYPE, List<String>> bestExchangeRatePaths;
+
+	private HomeSendSrvcProviderInfo homeSendSrvcProviderInfo;
 
 	private String localTimezone;
 
@@ -105,6 +108,14 @@ public class ExchangeRateAndRoutingResponse implements Serializable, JSONable {
 
 	public void setServiceIdDescription(Map<BigDecimal, String> serviceIdDescription) {
 		this.serviceIdDescription = serviceIdDescription;
+	}
+
+	public HomeSendSrvcProviderInfo getHomeSendSrvcProviderInfo() {
+		return homeSendSrvcProviderInfo;
+	}
+
+	public void setHomeSendSrvcProviderInfo(HomeSendSrvcProviderInfo homeSendSrvcProviderInfo) {
+		this.homeSendSrvcProviderInfo = homeSendSrvcProviderInfo;
 	}
 
 }
