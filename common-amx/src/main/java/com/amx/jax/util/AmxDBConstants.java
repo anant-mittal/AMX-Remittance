@@ -25,6 +25,7 @@ public class AmxDBConstants {
 	public static final BigDecimal DOCUMENT_CODE_CUSTOMER_SERIAL_NUMBER = new BigDecimal(8);
 	// peronsl remittancew
 	public static final String Individual = "I";
+	public static final String Non_Individual = "C";
 	public static final String Online = "O";
 	public static final String INDIVIDUAL_STRING = "Individual";
 	public static final String NON_INDIVIDUAL_STRING = "Non-Individual";
