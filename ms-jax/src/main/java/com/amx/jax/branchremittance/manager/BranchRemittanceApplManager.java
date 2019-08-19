@@ -525,7 +525,12 @@ public class BranchRemittanceApplManager {
 			remittanceApplication.setSourceofincome(applRequestModel.getSourceOfFund());
 			remittanceApplication.setApplInd(ConstantDocument.COUNTER);
 			remittanceApplication.setWuIpAddress(metaData.getDeviceIp());
-			remittanceApplication.setInstruction("URGENT");
+			if(applRequestModel.getAdditionalFields()!=null && applRequestModel.getAdditionalFields().get("INSTRUCTION")!=null) { //INSTRUCTION
+			remittanceApplication.setInstruction(applRequestModel.getAdditionalFields().get("INSTRUCTION").toString());
+			}else {
+				remittanceApplication.setInstruction("URGENT");
+			}
+			
 			if(JaxUtil.isNullZeroBigDecimalCheck(remittanceApplication.getLocalCommisionAmount())) {
 				remittanceApplication.setDiscountOnCommission(corporateDiscountManager.corporateDiscount());
 			}

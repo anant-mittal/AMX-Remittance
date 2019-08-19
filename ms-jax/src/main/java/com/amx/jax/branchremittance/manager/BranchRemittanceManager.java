@@ -333,7 +333,6 @@ public class BranchRemittanceManager extends AbstractModel {
 		try {
 			
 			BenificiaryListView beneficaryDetails =beneficiaryRepository.findBybeneficiaryRelationShipSeqId(requestModel.getBeneId());
-			//BranchExchangeRateBreakup brExchRateBreakup =  requestModel.getBranchExRateBreakup();
 			Customer customer = custDao.getCustById(metaData.getCustomerId());
 			String customerType =getCustomerType(customer.getCustomerTypeId());  
 			BigDecimal routingBankId = BigDecimal.ZERO;
@@ -368,24 +367,24 @@ public class BranchRemittanceManager extends AbstractModel {
 			Map<String, Object> inputValues = new HashMap<>();
 			inputValues.put("P_USER_TYPE", ConstantDocument.BRANCH);
 			inputValues.put("P_APPLICATION_COUNTRY_ID", beneficaryDetails.getApplicationCountryId());
-			inputValues.put("P_ROUTING_COUNTRY_ID",branchRoutingDto.getRoutingCountrydto().get(0).getResourceId()); // map.get("P_ROUTING_COUNTRY_ID"));
+			inputValues.put("P_ROUTING_COUNTRY_ID",branchRoutingDto.getRoutingCountrydto().get(0).getResourceId()); 
 			inputValues.put("P_BRANCH_ID",metaData.getCountryBranchId());
 			inputValues.put("P_COMPANY_ID",metaData.getCompanyId());
-			inputValues.put("P_ROUTING_BANK_ID", routingBankId);//map.get("P_ROUTING_BANK_ID"));
-			inputValues.put("P_SERVICE_MASTER_ID", serviceMasterId);// map.get("P_SERVICE_MASTER_ID"));
-			inputValues.put("P_DELIVERY_MODE_ID", branchRoutingDto.getDeliveryModeList().get(0).getDeliveryModeId());//map.get("P_DELIVERY_MODE_ID"));
-			inputValues.put("P_REMITTANCE_MODE_ID", remittancModeId);//map.get("P_REMITTANCE_MODE_ID")); 
-			inputValues.put("P_FOREIGN_CURRENCY_ID", beneficaryDetails.getCurrencyId()); //NC
-			inputValues.put("P_SELECTED_CURRENCY_ID", getSelectedCurrency(beneficaryDetails.getCurrencyId(), requestModel)); // NC
+			inputValues.put("P_ROUTING_BANK_ID", routingBankId);
+			inputValues.put("P_SERVICE_MASTER_ID", serviceMasterId);
+			inputValues.put("P_DELIVERY_MODE_ID", branchRoutingDto.getDeliveryModeList().get(0).getDeliveryModeId());
+			inputValues.put("P_REMITTANCE_MODE_ID", remittancModeId);
+			inputValues.put("P_FOREIGN_CURRENCY_ID", beneficaryDetails.getCurrencyId()); 
+			inputValues.put("P_SELECTED_CURRENCY_ID", getSelectedCurrency(beneficaryDetails.getCurrencyId(), requestModel)); 
 			inputValues.put("P_CUSTOMER_ID", metaData.getCustomerId());
 			inputValues.put("P_CUSTOMER_TYPE", customerType);
 			inputValues.put("P_LOYALTY_POINTS_IND", requestModel.isAvailLoyalityPoints()==true?ConstantDocument.Yes:ConstantDocument.No);
 			inputValues.put("P_SPECIAL_DEAL_RATE", null);
 			inputValues.put("P_OVERSEAS_CHRG_IND", null);
-			inputValues.put("P_SELECTED_CURRENCY_AMOUNT", getSelectedCurrencyAmount(beneficaryDetails.getCurrencyId(), requestModel));//requestModel.getBranchExRateBreakup().getConvertedFCAmount());
+			inputValues.put("P_SELECTED_CURRENCY_AMOUNT", getSelectedCurrencyAmount(beneficaryDetails.getCurrencyId(), requestModel));
 			inputValues.put("P_SPOT_RATE", null);
 			inputValues.put("P_CASH_ROUND_IND", null);
-			inputValues.put("P_ROUTING_BANK_BRANCH_ID", branchRoutingDto.getRoutingBankBranchDto().get(0).getBankBranchId());//map.get("P_ROUTING_BANK_BRANCH_ID"));
+			inputValues.put("P_ROUTING_BANK_BRANCH_ID", branchRoutingDto.getRoutingBankBranchDto().get(0).getBankBranchId());
 			inputValues.put("P_BENE_ID", beneficaryDetails.getBeneficaryMasterSeqId());
 			inputValues.put("P_BENEFICIARY_COUNTRY_ID", beneficaryDetails.getBenificaryCountry());
 			inputValues.put("P_BENE_BANK_ID", beneficaryDetails.getBankId());
@@ -406,7 +405,6 @@ public class BranchRemittanceManager extends AbstractModel {
 	}
 
 	
-	//public List<AmlCheckResponseDto> amlTranxAmountCheckForRemittance(BranchRemittanceApplRequestModel requestModel,BranchRemittanceGetExchangeRateResponse exchangeRateResposne){
 	
 	public List<AmlCheckResponseDto> amlTranxAmountCheckForRemittance(BigDecimal beneRelId,BigDecimal foreignamount){
 		Map<String, Object> outPut = new HashMap<>();

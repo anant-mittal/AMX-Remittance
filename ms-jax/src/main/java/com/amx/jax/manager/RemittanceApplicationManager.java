@@ -224,7 +224,13 @@ public class RemittanceApplicationManager {
 		validateAdditionalErrorMessages(requestModel);
 		validateBannedBank();
 		validateDailyBeneficiaryTransactionLimit(beneDetails);
-		remittanceApplication.setInstruction("URGENT");
+		
+		
+		if(requestModel.getAdditionalFields()!=null && requestModel.getAdditionalFields().get("INSTRUCTION")!=null) { //INSTRUCTION
+			remittanceApplication.setInstruction(requestModel.getAdditionalFields().get("INSTRUCTION").toString());
+		}else {
+			remittanceApplication.setInstruction("URGENT");
+		}
 		setCustomerDiscountColumns(remittanceApplication, validationResults);
 		setVatDetails(remittanceApplication, validationResults);
 		return remittanceApplication;
