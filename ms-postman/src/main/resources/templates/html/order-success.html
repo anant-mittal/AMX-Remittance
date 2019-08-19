@@ -293,6 +293,11 @@ a {
 										</td>
 									</tr>
 									<tr>
+											<td class="content-block">
+													<p align="center"><a th:href="${_tu.prop('company.app.url') + '/pub/rating/FXORDER/' + data.tranxId + '/' + data.verCode }" style="width:200px" class="btn-primary" target="_blank">Rate this transaction</a></p>
+											</td>
+										</tr>
+									<tr>
 										<td class="content-block">Thanks and Regards,<br/>
 											<strong><span th:text="${_tu.prop('company.fullname')}" th:remove="tag"></span>,</strong><br/>
 											<span th:text="${_tu.prop('company.country')}" th:remove="tag"></span><br/>
