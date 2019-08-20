@@ -894,11 +894,27 @@ public BeneAdditionalDto getAdditionalBeneDetailJax(BenificiaryListView benefica
 	 BigDecimal remittanceModeId = requestApplModel.getRemittanceModeId();
 	 BigDecimal deliveryModeId = requestApplModel.getDeliveryModeId();
 	 
-	 /** GET THE SERVICE APPL RULE  FOR BANK **/
-	 ServiceApplicabilityRule serviceApplRuleforBank =serviceApplRule.getServiceApplicabilityRulesForBank(applicationCountry, beneCountry, currencyId, ConstantDocument.BNFBANK, remittanceModeId, deliveryModeId);
+	 boolean spStatus = Boolean.FALSE;
+	 if(requestApplModel.getDynamicRroutingPricingBreakup().getServiceProviderDto() != null) {
+		 spStatus = Boolean.TRUE;
+	 }
 	 
-	 /** GET THE SERVICE APPL RULE  FOR BRANCH **/
-	 ServiceApplicabilityRule serviceApplRuleforBranch =serviceApplRule.getServiceApplicabilityRulesForBranchAndSwift(applicationCountry, beneCountry, currencyId, ConstantDocument.BNFBRCH, remittanceModeId, deliveryModeId);
+	 ServiceApplicabilityRule serviceApplRuleforBank = null;
+	 ServiceApplicabilityRule serviceApplRuleforBranch = null;
+	 BigDecimal routingCountry = routingBankMasterModel.getBankCountryId();
+	 if(spStatus) {
+		 /** GET THE SERVICE APPL RULE  FOR BANK **/
+		 serviceApplRuleforBank =serviceApplRule.getServiceApplicabilityRulesForBank(applicationCountry, routingCountry, currencyId, ConstantDocument.BNFBANK, remittanceModeId, deliveryModeId);
+		 
+		 /** GET THE SERVICE APPL RULE  FOR BRANCH **/
+		 serviceApplRuleforBranch =serviceApplRule.getServiceApplicabilityRulesForBranchAndSwift(applicationCountry, routingCountry, currencyId, ConstantDocument.BNFBRCH, remittanceModeId, deliveryModeId);
+	 }else {
+		 /** GET THE SERVICE APPL RULE  FOR BANK **/
+		 serviceApplRuleforBank =serviceApplRule.getServiceApplicabilityRulesForBank(applicationCountry, beneCountry, currencyId, ConstantDocument.BNFBANK, remittanceModeId, deliveryModeId);
+		 
+		 /** GET THE SERVICE APPL RULE  FOR BRANCH **/
+		 serviceApplRuleforBranch =serviceApplRule.getServiceApplicabilityRulesForBranchAndSwift(applicationCountry, beneCountry, currencyId, ConstantDocument.BNFBRCH, remittanceModeId, deliveryModeId);
+	 }
 	 
 	 /** GET THE SERVICE APPL RULE  FOR SWIFT BANK **/
 	 ServiceApplicabilityRule serviceApplRuleforBeneSwiftBank =serviceApplRule.getServiceApplicabilityRulesForBranchAndSwift(applicationCountry, routingCountryId, currencyId, ConstantDocument.BNFBANK_SWIFT, remittanceModeId, deliveryModeId);
