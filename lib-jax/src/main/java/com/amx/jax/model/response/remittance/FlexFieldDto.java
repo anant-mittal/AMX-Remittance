@@ -14,12 +14,22 @@ public class FlexFieldDto implements Serializable {
 	private BigDecimal additionalBankRuleFiledId;
 	private BigDecimal srlId;
 	private String amieceDescription;
+	private String amiecCode;
 
 	public FlexFieldDto(BigDecimal additionalBankRuleFiledId, BigDecimal srlId, String amieceDescription) {
 		super();
 		this.additionalBankRuleFiledId = additionalBankRuleFiledId;
 		this.srlId = srlId;
 		this.amieceDescription = amieceDescription;
+	}
+	
+	
+	public FlexFieldDto(BigDecimal additionalBankRuleFiledId, BigDecimal srlId, String amieceDescription,String amiecCode) {
+		super();
+		this.additionalBankRuleFiledId = additionalBankRuleFiledId;
+		this.srlId = srlId;
+		this.amieceDescription = amieceDescription;
+		this.amiecCode = amiecCode;
 	}
 
 	public FlexFieldDto(String amieceDescription) {
@@ -84,6 +94,16 @@ public class FlexFieldDto implements Serializable {
 	public FlexFieldDto() {
 		super();
 		// TODO Auto-generated constructor stub
+	}
+
+
+	public String getAmiecCode() {
+		return amiecCode;
+	}
+
+
+	public void setAmiecCode(String amiecCode) {
+		this.amiecCode = amiecCode;
 	}
 
 }
