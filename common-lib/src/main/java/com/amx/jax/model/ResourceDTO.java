@@ -148,7 +148,7 @@ public class ResourceDTO implements IResourceEntity, Serializable {
 		return list;
 	}
 
-	public static List<ResourceDTO> createList(List<? extends IResourceEntity> entityList) {
+	public static List<ResourceDTO> createList(List<IResourceEntity> entityList) {
 		List<ResourceDTO> list = new ArrayList<ResourceDTO>();
 		for (IResourceEntity entity : entityList) {
 			ResourceDTO dto = create(entity);
