@@ -203,6 +203,14 @@ public class TransactionHistroyService extends AbstractService {
 	            model.setBeneficiaryRelationSeqId(hist.getBeneficiaryRelationSeqId());
 	            model.setLocalTrnxAmount(hist.getLocalTrnxAmount());
 	            model.setSourceOfIncomeId(hist.getSourceOfIncomeId());
+	            
+	            model.setExRateApplied(hist.getExRateApplied());
+				if(hist.getExRateApplied() != null) {
+					BigDecimal rateRev = hist.getExRateApplied();
+					BigDecimal rateReversedFinal = new BigDecimal(1).divide(rateRev,2, BigDecimal.ROUND_HALF_UP);
+					model.setExRateReversed(rateReversedFinal);
+				}
+	            
 	            model.setTransactionReference(getTransactionReferece(hist));
 	            
 			BenificiaryListView beneViewModel = beneficiaryOnlineDao.getBeneficiaryByRelationshipId(
@@ -312,6 +320,14 @@ public class TransactionHistroyService extends AbstractService {
 			model.setBeneficiaryRelationSeqId(hist.getBeneficiaryRelationSeqId());
 			model.setLocalTrnxAmount(hist.getLocalTrnxAmount());
 			model.setSourceOfIncomeId(hist.getSourceOfIncomeId());
+			
+			model.setExRateApplied(hist.getExRateApplied());
+			if(hist.getExRateApplied() != null) {
+				BigDecimal rateRev = hist.getExRateApplied();
+				BigDecimal rateReversedFinal = new BigDecimal(1).divide(rateRev,2, BigDecimal.ROUND_HALF_UP);
+				model.setExRateReversed(rateReversedFinal);
+			}
+			
 			model.setTransactionReference(getTransactionReferece(hist));
 
 			if (beneMap!=null  && model.getBeneficiaryRelationSeqId()!=null) {
