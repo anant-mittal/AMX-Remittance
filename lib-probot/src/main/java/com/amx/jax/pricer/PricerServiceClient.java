@@ -23,6 +23,7 @@ import com.amx.jax.pricer.dto.ExchangeRateAndRoutingRequest;
 import com.amx.jax.pricer.dto.ExchangeRateAndRoutingResponse;
 import com.amx.jax.pricer.dto.GroupDetails;
 import com.amx.jax.pricer.dto.HolidayResponseDTO;
+import com.amx.jax.pricer.dto.PricingAndCostResponseDTO;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
@@ -67,13 +68,13 @@ public class PricerServiceClient implements ProbotExchangeRateService, ProbotDat
 	}
 
 	@Override
-	public AmxApiResponse<PricingResponseDTO, Object> fetchDiscountedRates(PricingRequestDTO pricingRequestDTO) {
+	public AmxApiResponse<PricingAndCostResponseDTO, Object> fetchDiscountedRates(PricingRequestDTO pricingRequestDTO) {
 		LOGGER.info("Get Discounted Rate/Price Request Called for : transaction Id: {}, with TraceId: {}",
 				AppContextUtil.getTranxId(), AppContextUtil.getTraceId());
 
 		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.FETCH_DISCOUNTED_RATES)
 				.post(pricingRequestDTO)
-				.as(new ParameterizedTypeReference<AmxApiResponse<PricingResponseDTO, Object>>() {
+				.as(new ParameterizedTypeReference<AmxApiResponse<PricingAndCostResponseDTO, Object>>() {
 				});
 	}
 
