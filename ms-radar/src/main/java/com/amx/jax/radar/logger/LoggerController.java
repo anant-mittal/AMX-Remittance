@@ -12,7 +12,7 @@ import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.logger.events.CActivityEvent;
-import com.amx.jax.logger.events.SessionEvent;
+
 import com.amx.jax.tunnel.TunnelService;
 
 /**

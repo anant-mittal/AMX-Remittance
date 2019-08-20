@@ -17,6 +17,10 @@ public class FlexFieldDto extends ResourceDTO{
 	private BigDecimal srlId;
 	private String amieceDescription;
 	private String localName;
+	private String amieceCode;
+	private String indic;
+	
+	
 
 	public FlexFieldDto(BigDecimal additionalBankRuleFiledId, BigDecimal srlId, String amieceDescription,String localName) {
 		super();

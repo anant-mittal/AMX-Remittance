@@ -261,6 +261,12 @@ public class ViewParameterDetails implements IResourceEntity{
 		return this.paramCodeDef;
 	}
 
+	@Override
+	public String resourceLocalName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	
 	
 }
