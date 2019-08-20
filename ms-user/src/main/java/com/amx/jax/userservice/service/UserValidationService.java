@@ -222,6 +222,9 @@ public class UserValidationService {
 			}
 			throw new GlobalException(errorExpression, "Incorrect/wrong password");
 		}
+		customer.setLockCnt(new BigDecimal(0));
+		customer.setLockDt(null);
+		custDao.saveOnlineCustomer(customer);
 	}
 	
 	protected void validatePassword(CustomerOnlineRegistration customer, String password) {

@@ -102,5 +102,9 @@ public class PartnerServiceDao {
 	public CurrencyMasterModel fetchCurrencyMaster(BigDecimal currencyId) {
 		return currencyMasterRepository.findByCurrencyId(currencyId);
 	}
+	
+	public List<ParameterDetailsModel> fetchUSDummyAccountDetails(String recordId, String isactive) {
+		return parameterDetailsRespository.findByRecordIdAndIsActive(recordId, isactive);
+	}
 
 }

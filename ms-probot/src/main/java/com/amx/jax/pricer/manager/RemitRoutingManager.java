@@ -49,8 +49,11 @@ import com.amx.utils.DateUtil;
 public class RemitRoutingManager {
 
 	private static final int MAX_DELIVERY_ATTEMPT_DAYS = 60;
+
+	private static final BigDecimal DEF_DELIVERY_HRS = new BigDecimal(5 * 24);
+
 	private static final BigDecimal FROM_AMT_FRACTION = new BigDecimal(0.00000001);
-	
+
 	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd-MMM hh:mm a");
 
 	// TODO : Treasury Funding Time.
@@ -233,14 +236,6 @@ public class RemitRoutingManager {
 				if (exchangeRateDetails.isDiscountAvailed()) {
 					exchangeRateDetails.setSellRateNet(exchangeRateDetails.getSellRateBase());
 					exchangeRateDetails.setDiscountAvailed(false);
-				}
-
-			} else if (PricerServiceConstants.SERVICE_PROVIDER_INDICATOR.equalsIgnoreCase(view.getBankIndicator())) {
-
-				// TODO : Base Rates should be without Pips and Net Rate With Pips
-				// For Service Providers Always Set the Net Rate Same as Base Rate
-				if (exchangeRateDetails != null && exchangeRateDetails.getSellRateBase() != null) {
-					exchangeRateDetails.setSellRateNet(exchangeRateDetails.getSellRateBase());
 				}
 
 			}
@@ -505,10 +500,10 @@ public class RemitRoutingManager {
 			finalDeliveryDetails.setCompletionDateForeign(completionDateForeign);
 
 			// Change the Duration String -- 12th-Aug-2019
-			finalDeliveryDetails.setDeliveryDuration(getDeliveryAtLocalTime(transientDataCache.getTrnxBeginTime(), finalCompletionTT, localTimezone,
-					processTimeTotal));
+			finalDeliveryDetails.setDeliveryDuration(getDeliveryAtLocalTime(transientDataCache.getTrnxBeginTime(),
+					finalCompletionTT, localTimezone, processTimeTotal));
 
-			//finalDeliveryDetails.setDeliveryDuration(getDeliveryDuration(processTimeTotal));
+			// finalDeliveryDetails.setDeliveryDuration(getDeliveryDuration(processTimeTotal));
 
 			finalDeliveryDetails.setCrossedMaxDeliveryDays(crossedMaxDeliveryDays);
 
@@ -687,7 +682,7 @@ public class RemitRoutingManager {
 		weekEndHrsFrom = ArgUtil.assignDefaultIfNull(weekEndHrsFrom, BigDecimal.ZERO);
 		weekEndHrsTo = ArgUtil.assignDefaultIfNull(weekEndHrsTo, BigDecimal.ZERO);
 
-		processTimeInHrs = ArgUtil.assignDefaultIfNull(processTimeInHrs, BigDecimal.ZERO);
+		processTimeInHrs = ArgUtil.assignDefaultIfNull(processTimeInHrs, DEF_DELIVERY_HRS);
 
 		WorkingHoursData workingHoursData = new WorkingHoursData();
 
@@ -886,7 +881,7 @@ public class RemitRoutingManager {
 			// Set Delivery at : dd-mmm HH:MM
 			deliveryAt = completionZonedDT.format(DATE_FORMATTER);
 		}
-		
+
 		return deliveryAt;
 
 	}

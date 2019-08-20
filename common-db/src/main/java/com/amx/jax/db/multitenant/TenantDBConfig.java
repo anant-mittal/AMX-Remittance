@@ -43,9 +43,14 @@ public class TenantDBConfig {
 
 	DataSource dataSource;
 
+	boolean ready = false;
+
+	private static Object lock = new Object();
+
 	public DataSource getDataSource() {
 		if (dataSource == null) {
-			LOGGER.debug("dataSource is NULL So creating One");
+			synchronized (lock) {
+				LOGGER.debug("dataSource is NULL So creating One {} {}", getDataSourceUrl(), getDataSourceUsername());
 			DataSourceBuilder factory = DataSourceBuilder.create().url(getDataSourceUrl())
 					.username(getDataSourceUsername()).password(getDataSourcePassword())
 					.driverClassName(getDataSourceDriverClassName());
@@ -55,9 +60,15 @@ public class TenantDBConfig {
 			tomcatDataSource.setValidationQuery("select 1 from dual");
 			tomcatDataSource.setTestWhileIdle(true);
 			dataSource = tomcatDataSource;
-			LOGGER.debug("dataSource was NULL So created One");
+				LOGGER.debug("dataSource was NULL So created One");
+				ready = true;
+			}
 		}
 		return dataSource;
+	}
+
+	public boolean isReady() {
+		return ready;
 	}
 
 }
