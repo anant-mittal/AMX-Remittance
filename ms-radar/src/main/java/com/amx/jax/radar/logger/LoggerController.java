@@ -44,17 +44,6 @@ public class LoggerController {
 	 * @param event
 	 *            the event
 	 */
-	@RequestMapping(value = "/api/event/SessionEvent", method = RequestMethod.POST)
-	public void syncPermsMeta(@RequestBody SessionEvent event) {
-		auditService.log(event);
-	}
-
-	/**
-	 * Sync perms meta.
-	 *
-	 * @param event
-	 *            the event
-	 */
 	@RequestMapping(value = "/api/event/CActivityEvent", method = RequestMethod.POST)
 	public void syncPermsMeta(@RequestBody CActivityEvent event) {
 		auditService.log(event);

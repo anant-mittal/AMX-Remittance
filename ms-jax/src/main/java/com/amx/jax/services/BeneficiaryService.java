@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
-
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrSubstitutor;
@@ -26,7 +25,6 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
-
 import com.amx.amxlib.constant.BeneficiaryConstant.BeneStatus;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.BeneCountryDTO;
@@ -901,10 +899,15 @@ public class BeneficiaryService extends AbstractService {
 		} else {
 			if (jaxConfigService.getBooleanConfigValue(JaxDbConfig.BLOCK_BENE_RISK_TRANSACTION, true)) {
 				Customer customer = userService.getCustById(customerId);
+				if(metaData.getLanguageId()==new BigDecimal("1")) {
 				countryList = countryRepository.findByLanguageIdAndNonBeneRisk(metaData.getLanguageId(),
 						customer.getNationalityId());
+				}else {
+					countryList = countryRepository.findByArabicLanguageIdAndNonBeneRisk(metaData.getLanguageId(),
+							customer.getNationalityId());
+				}
 			} else {
-				countryList = countryRepository.findByLanguageId(metaData.getLanguageId());
+				countryList = countryRepository.findByArabicLanguageId(metaData.getLanguageId());
 			}
 		}
 		List<BigDecimal> supportedServiceGroupList = beneDao.getRoutingBankMasterList(); // add for channeling

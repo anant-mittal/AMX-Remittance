@@ -3,7 +3,9 @@ package com.amx.amxlib.meta.model;
 import java.math.BigDecimal;
 import java.util.Comparator;
 
-public class AdditionalBankDetailsViewDto {
+import com.amx.jax.model.ResourceDTO;
+
+public class AdditionalBankDetailsViewDto extends ResourceDTO{
 	  private BigDecimal srlId;
 	  private String flexField;
 	  private BigDecimal countryId;
@@ -18,6 +20,8 @@ public class AdditionalBankDetailsViewDto {
 	  private BigDecimal remittanceId;
 	  private BigDecimal deliveryId;
 	  private String fieldType;
+	  private String localName;
+
 	public BigDecimal getSrlId() {
 		return srlId;
 	}
@@ -102,6 +106,7 @@ public class AdditionalBankDetailsViewDto {
 	public void setFieldType(String fieldType) {
 		this.fieldType = fieldType;
 	}
+	
 
 	public static class AdditionalBankDetailsViewDtoComparator implements Comparator<AdditionalBankDetailsViewDto> {
 
@@ -114,4 +119,19 @@ public class AdditionalBankDetailsViewDto {
 		}
 		
 	}
+
+
+	public String getLocalName() {
+		return localName;
+	}
+	public void setLocalName(String localName) {
+		this.localName = localName;
+	}
+
+	@Override
+	public String getResourceLocalName() {
+		return this.localName;
+	}
+	
+	
 }

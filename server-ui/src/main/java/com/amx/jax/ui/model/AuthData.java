@@ -263,6 +263,7 @@ public class AuthData extends AbstractModel implements AuthResponse, AuthRequest
 	 *
 	 * @return the otp
 	 */
+	@Override
 	public String getOtp() {
 		return otp;
 	}
@@ -272,6 +273,7 @@ public class AuthData extends AbstractModel implements AuthResponse, AuthRequest
 	 *
 	 * @param otp the new otp
 	 */
+	@Override
 	public void setOtp(String otp) {
 		this.otp = otp;
 	}

@@ -25,7 +25,7 @@ public class AmxConfig {
 
 	@TenantValue("${app.default.branch.id}")
 	BigDecimal defaultBranchId;
-	
+
 	@TenantValue("${app.online.branch.id}")
 	BigDecimal onlineBranchId;
 
@@ -52,5 +52,5 @@ public class AmxConfig {
 	public BigDecimal getOnlineBranchId() {
 		return onlineBranchId;
 	}
-	
+
 }

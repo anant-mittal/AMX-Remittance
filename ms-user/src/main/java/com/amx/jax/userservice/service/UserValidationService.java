@@ -231,7 +231,10 @@ public class UserValidationService {
 		validatePassword(customer, password, false);
 	}
 
-	protected void validateDevicePassword(CustomerOnlineRegistration customer, String password) {
+	protected void validateDevicePassword(CustomerOnlineRegistration customer, String password, boolean validateCaptcha) {
+		if(validateCaptcha) {
+			validateCaptcha(customer);
+		}
 		String dbPassword = customer.getDevicePassword();
 		String passwordHashed = null;
 		try {
@@ -242,6 +245,11 @@ public class UserValidationService {
 		}
 		if (!dbPassword.equals(passwordHashed)) {
 			Integer attemptsLeft = incrementLockCount(customer);
+			
+			if(validateCaptcha) {
+				validateCaptcha(customer);
+			}
+			
 			String errorExpression = JaxError.WRONG_PASSWORD.toString();
 			if (attemptsLeft > 0) {
 				errorExpression = jaxUtil.buildErrorExpression(JaxError.WRONG_PASSWORDS_ATTEMPTS.toString(),
@@ -249,6 +257,10 @@ public class UserValidationService {
 			}
 			throw new GlobalException(errorExpression, "Incorrect/wrong password");
 		}
+	}
+	
+	protected void validateDevicePassword(CustomerOnlineRegistration customer, String password) {
+		validateDevicePassword(customer, password, false);
 	}
 
 	public void validateCustIdProofs(BigDecimal custId) {

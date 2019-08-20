@@ -9,9 +9,7 @@ public interface IResourceEntity {
 	public String resourceName();
 
 	public String resourceCode();
-
-	public default Object resourceValue() {
-		return null;
-	}
-
+	
+	public String resourceLocalName();
+	
 }
