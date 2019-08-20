@@ -1186,7 +1186,7 @@ public class PartnerTransactionManager extends AbstractModel {
 		return spConfigDto;
 	}
 	
-	public AuthenticationLimitCheckView onlineServiceProviderLimit(AuthenticationLimitCheckView authenticationLimitCheckView) {
+	public BigDecimal onlineServiceProviderLimit(AuthenticationLimitCheckView authenticationLimitCheckView) {
 		AuthenticationLimitCheckView spAuthLimit = authenticationLimitCheckView;
 		BigDecimal otherLimits = spAuthLimit.getAuthLimit();
 		boolean includeSPlimits = Boolean.FALSE;
@@ -1225,8 +1225,7 @@ public class PartnerTransactionManager extends AbstractModel {
 			}
 		}
 		
-		spAuthLimit.setAuthLimit(otherLimits);
-		return spAuthLimit;
+		return otherLimits;
 	}
 	
 	// template to send fail transaction
