@@ -76,7 +76,7 @@ public class CustomerRatingService {
 					customerRating.setCustomerId(remitAPPLTrnx.getFsCustomer().getCustomerId());
 					customerRating.setApplicationCountryId(applicationCountryId);
 					customerRating.setCreatedDate(new Date());
-					customerRating.setProducttype(AmxEnums.Products.REMIT.toString());
+					customerRating.setFeedbackType(AmxEnums.Products.REMIT.toString());
 					customerRatingdao.save(customerRating);
 				}
 					else {
@@ -120,7 +120,7 @@ public class CustomerRatingService {
 					customerRating.setRatingId(customerRatingvalue.getRatingId());
 					customerRating.setRatingRemark(customerRatingvalue.getRatingRemark());
 					customerRating.setRemittanceApplicationId(customerRatingvalue.getRemittanceApplicationId());
-					customerRating.setProducttype(AmxEnums.Products.FXORDER.toString());
+					customerRating.setFeedbackType(AmxEnums.Products.REMIT.toString());
 					
 				}else {
 					
@@ -169,7 +169,7 @@ public class CustomerRatingService {
 					customerRating.setCustomerId(remitAPPLTrnx.getFsCustomer().getCustomerId());
 					customerRating.setApplicationCountryId(applicationCountryId);
 					customerRating.setCreatedDate(new Date());
-					customerRating.setProducttype(AmxEnums.Products.FXORDER.toString());
+					customerRating.setFeedbackType(AmxEnums.Products.FXORDER.toString());
 					customerRatingdao.save(customerRating);
 				}
 					else {
@@ -215,7 +215,7 @@ public class CustomerRatingService {
 					customerRating.setRatingId(customerRatingvalue.getRatingId());
 					customerRating.setRatingRemark(customerRatingvalue.getRatingRemark());
 					customerRating.setRemittanceApplicationId(customerRatingvalue.getRemittanceApplicationId());
-					customerRating.setProducttype(AmxEnums.Products.FXORDER.toString());
+					customerRating.setFeedbackType(AmxEnums.Products.FXORDER.toString());
 					
 				}else {
 					
