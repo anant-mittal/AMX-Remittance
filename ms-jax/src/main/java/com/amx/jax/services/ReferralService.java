@@ -41,7 +41,7 @@ public class ReferralService extends AbstractService {
 	/** The rest service. */
 	@Autowired
 	RestService restService;
-	
+
 	/** The fb push client. */
 	@Autowired
 	private PushNotifyClient pushNotifyClient;
@@ -100,13 +100,13 @@ public class ReferralService extends AbstractService {
 //			return restService.ajax(
 //					"https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=AIzaSyCbSk1C_rK-0FqIWNq1rJ1HQdQFBqcvdQs")
 //					.header("Content-Type", "application/json").post(fields).asString();
-			
-			return pushNotifyClient.shortLink("/refer?senderId="+referralResponseModel.getCustomerReferralCode());
+
+			return pushNotifyClient.shortLink("/refer?senderId=" + referralResponseModel.getCustomerReferralCode());
 
 		};
 		ExecutorService executorService = Executors.newSingleThreadExecutor();
 		Future<String> future = executorService.submit(callable);
-		
+
 		Map<String, Object> responseMap;
 		try {
 			String response = future.get();

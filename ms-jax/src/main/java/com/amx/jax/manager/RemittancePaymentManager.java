@@ -155,31 +155,31 @@ public class RemittancePaymentManager extends AbstractService{
 				/** Calling stored procedure  insertRemittanceOnline **/
 				remitanceMap = remittanceApplicationService.saveRemittance(paymentResponse);
 				
-				/** Referral Code **/
-				List<RemittanceTransaction> remittanceList = remitAppDao.getOnlineRemittanceList(paymentResponse.getCustomerId());
-				logger.info("Remittance Count:" + remittanceList.size());
-				if(remittanceList.size() == 0) {
-					ReferralDetails referralDetails = refDao.getReferralByCustomerId(paymentResponse.getCustomerId());
-					referralDetails.setIsConsumed("Y");
-					refDao.updateReferralCode(referralDetails);
-					if (referralDetails.getRefferedByCustomerId() != null) {
-						PushMessage pushMessage = new PushMessage();
-						pushMessage.setSubject("Refer To Win!");
-						pushMessage.setMessage(
-								"Congraturlations! Your reference has done the first transaction on AMIEC App! You will get a chance to win from our awesome Referral Program! Keep sharing the links to as many contacts you can and win exciting prices on referral success!");
-						pushMessage.addToUser(referralDetails.getRefferedByCustomerId());
-						pushNotifyClient.send(pushMessage);
-					}
-					
-					if(referralDetails.getCustomerId() != null) {
-						PushMessage pushMessage = new PushMessage();
-						pushMessage.setSubject("Refer To Win!");
-						pushMessage.setMessage(
-								"Welcome to Al Mulla family! Win a chance to get exciting offers at Al Mulla Exchange by sharing the links to as many contacts as you can.");
-						pushMessage.addToUser(referralDetails.getCustomerId());
-						pushNotifyClient.send(pushMessage);	
-					}
-				}			
+//				/** Referral Code **/
+//				List<RemittanceTransaction> remittanceList = remitAppDao.getOnlineRemittanceList(paymentResponse.getCustomerId());
+//				logger.info("Remittance Count:" + remittanceList.size());
+//				if(remittanceList.size() == 0) {
+//					ReferralDetails referralDetails = refDao.getReferralByCustomerId(paymentResponse.getCustomerId());
+//					referralDetails.setIsConsumed("Y");
+//					refDao.updateReferralCode(referralDetails);
+//					if (referralDetails.getRefferedByCustomerId() != null) {
+//						PushMessage pushMessage = new PushMessage();
+//						pushMessage.setSubject("Refer To Win!");
+//						pushMessage.setMessage(
+//								"Congraturlations! Your reference has done the first transaction on AMIEC App! You will get a chance to win from our awesome Referral Program! Keep sharing the links to as many contacts you can and win exciting prices on referral success!");
+//						pushMessage.addToUser(referralDetails.getRefferedByCustomerId());
+//						pushNotifyClient.send(pushMessage);
+//					}
+//					
+//					if(referralDetails.getCustomerId() != null) {
+//						PushMessage pushMessage = new PushMessage();
+//						pushMessage.setSubject("Refer To Win!");
+//						pushMessage.setMessage(
+//								"Welcome to Al Mulla family! Win a chance to get exciting offers at Al Mulla Exchange by sharing the links to as many contacts as you can.");
+//						pushMessage.addToUser(referralDetails.getCustomerId());
+//						pushNotifyClient.send(pushMessage);	
+//					}
+//				}			
 				
 				errorMsg = (String)remitanceMap.get("P_ERROR_MESG");
 				errorMsg= null;

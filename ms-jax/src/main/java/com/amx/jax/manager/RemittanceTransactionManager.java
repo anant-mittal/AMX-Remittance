@@ -9,7 +9,6 @@ import static com.amx.jax.error.JaxError.TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED;
 import static com.amx.jax.error.JaxError.TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED_NEW_BENE;
 import static com.amx.jax.error.JaxError.TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED_PER_BENE;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
@@ -130,8 +129,6 @@ import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.RoundUtil;
 import com.amx.jax.validation.RemittanceTransactionRequestValidator;
 import com.amx.utils.JsonUtil;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -1143,31 +1140,31 @@ public class RemittanceTransactionManager {
 			additionalInstrumentData = oldRemittanceApplicationAdditionalDataManager.createAdditionalInstnData(remittanceApplication);
 		}
 		
-		/** Referral Code **/
-		List<RemittanceTransaction> remittanceList = remitAppDao.getOnlineRemittanceList(meta.getCustomerId());
-		logger.info("Remittance Count:" + remittanceList.size());
-		if(remittanceList.size() == 0) {
-			ReferralDetails referralDetails = refDao.getReferralByCustomerId(meta.getCustomerId());
-			referralDetails.setIsConsumed("Y");
-			refDao.updateReferralCode(referralDetails);
-			if (referralDetails.getRefferedByCustomerId() != null) {
-				PushMessage pushMessage = new PushMessage();
-				pushMessage.setSubject("Refer To Win!");
-				pushMessage.setMessage(
-						"Congraturlations! Your reference has done the first transaction on AMIEC App! You will get a chance to win from our awesome Referral Program! Keep sharing the links to as many contacts you can and win exciting prices on referral success!");
-				pushMessage.addToUser(referralDetails.getRefferedByCustomerId());
-				pushNotifyClient.send(pushMessage);
-			}
-			
-			if(referralDetails.getCustomerId() != null) {
-				PushMessage pushMessage = new PushMessage();
-				pushMessage.setSubject("Refer To Win!");
-				pushMessage.setMessage(
-						"Welcome to Al Mulla family! Win a chance to get exciting offers at Al Mulla Exchange by sharing the links to as many contacts as you can.");
-				pushMessage.addToUser(referralDetails.getRefferedByCustomerId());
-				pushNotifyClient.send(pushMessage);	
-			}
-		}	
+//		/** Referral Code **/
+//		List<RemittanceTransaction> remittanceList = remitAppDao.getOnlineRemittanceList(meta.getCustomerId());
+//		logger.info("Remittance Count:" + remittanceList.size());
+//		if(remittanceList.size() == 0) {
+//			ReferralDetails referralDetails = refDao.getReferralByCustomerId(meta.getCustomerId());
+//			referralDetails.setIsConsumed("Y");
+//			refDao.updateReferralCode(referralDetails);
+//			if (referralDetails.getRefferedByCustomerId() != null) {
+//				PushMessage pushMessage = new PushMessage();
+//				pushMessage.setSubject("Refer To Win!");
+//				pushMessage.setMessage(
+//						"Congraturlations! Your reference has done the first transaction on AMIEC App! You will get a chance to win from our awesome Referral Program! Keep sharing the links to as many contacts you can and win exciting prices on referral success!");
+//				pushMessage.addToUser(referralDetails.getRefferedByCustomerId());
+//				pushNotifyClient.send(pushMessage);
+//			}
+//			
+//			if(referralDetails.getCustomerId() != null) {
+//				PushMessage pushMessage = new PushMessage();
+//				pushMessage.setSubject("Refer To Win!");
+//				pushMessage.setMessage(
+//						"Welcome to Al Mulla family! Win a chance to get exciting offers at Al Mulla Exchange by sharing the links to as many contacts as you can.");
+//				pushMessage.addToUser(referralDetails.getCustomerId());
+//				pushNotifyClient.send(pushMessage);	
+//			}
+//		}	
 		remitAppDao.saveAllApplicationData(remittanceApplication, remittanceAppBeneficairy, additionalInstrumentData);
 		remitAppDao.updatePlaceOrderV2(model, remittanceApplication);
 		remiteAppModel.setRemittanceAppId(remittanceApplication.getRemittanceApplicationId());
