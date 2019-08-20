@@ -210,7 +210,7 @@ public class SignPadController {
 
 	@ApiRequest(type = RequestType.POLL)
 	@ApiDeviceHeaders
-	@RequestMapping(value = Path.SIGNPAD_STATUS_SIGNATURE, method = { RequestMethod.GET },
+	@RequestMapping(value = Path.SIGNPAD_STATUS_SIGNATURE + "/**", method = { RequestMethod.GET },
 			produces = { CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE })
 	public AmxApiResponse<FileSubmitRequestModel, Object> getSignatureStateDataImage(HttpServletResponse response)
 			throws ParseException, IOException {
