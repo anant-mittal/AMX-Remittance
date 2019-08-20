@@ -48,6 +48,7 @@ public class TransactionDetailsView implements Serializable {
 	private BigDecimal localNetTrnxAmount;
 	private BigDecimal beneficiaryRelationShipId;
 	private String bankSourceOfFund;
+	private String bankPurposeOfTransaction;
 	
 	public TransactionDetailsView() {
 		super();
@@ -300,6 +301,14 @@ public class TransactionDetailsView implements Serializable {
 	}
 	public void setBankSourceOfFund(String bankSourceOfFund) {
 		this.bankSourceOfFund = bankSourceOfFund;
+	}
+
+	@Column(name = "PURPOSE_OF_TRANX_BANK_CODE")
+	public String getBankPurposeOfTransaction() {
+		return bankPurposeOfTransaction;
+	}
+	public void setBankPurposeOfTransaction(String bankPurposeOfTransaction) {
+		this.bankPurposeOfTransaction = bankPurposeOfTransaction;
 	}
 	
 }
