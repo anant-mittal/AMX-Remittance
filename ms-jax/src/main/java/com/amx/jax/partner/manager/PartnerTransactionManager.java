@@ -707,7 +707,7 @@ public class PartnerTransactionManager extends AbstractModel {
 			}
 
 			if(transactionDetailsView.getFlexField() != null && transactionDetailsView.getFlexField().equalsIgnoreCase(AmxDBConstants.INDIC1)) {
-				transactionPartnerRequest.setPurposeOfTransaction_Indic1(transactionDetailsView.getFlexFieldValue());
+				transactionPartnerRequest.setPurposeOfTransaction_Indic1(transactionDetailsView.getBankPurposeOfTransaction());
 			}else if(transactionDetailsView.getFlexField() != null && transactionDetailsView.getFlexField().equalsIgnoreCase(AmxDBConstants.INDIC2)) {
 				transactionPartnerRequest.setRoutingNumber_Indic2(transactionDetailsView.getFlexFieldValue());
 			}else if(transactionDetailsView.getFlexField() != null && transactionDetailsView.getFlexField().equalsIgnoreCase(AmxDBConstants.INDIC3)) {
@@ -1186,7 +1186,7 @@ public class PartnerTransactionManager extends AbstractModel {
 		return spConfigDto;
 	}
 	
-	public AuthenticationLimitCheckView onlineServiceProviderLimit(AuthenticationLimitCheckView authenticationLimitCheckView) {
+	public BigDecimal onlineServiceProviderLimit(AuthenticationLimitCheckView authenticationLimitCheckView) {
 		AuthenticationLimitCheckView spAuthLimit = authenticationLimitCheckView;
 		BigDecimal otherLimits = spAuthLimit.getAuthLimit();
 		boolean includeSPlimits = Boolean.FALSE;
@@ -1225,8 +1225,7 @@ public class PartnerTransactionManager extends AbstractModel {
 			}
 		}
 		
-		spAuthLimit.setAuthLimit(otherLimits);
-		return spAuthLimit;
+		return otherLimits;
 	}
 	
 	// template to send fail transaction

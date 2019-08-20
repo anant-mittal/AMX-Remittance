@@ -50,6 +50,7 @@ import com.amx.jax.dbmodel.fx.EmployeeDetailsView;
 import com.amx.jax.dbmodel.partner.RemitApplSrvProv;
 import com.amx.jax.dbmodel.remittance.AdditionalBankRuleMap;
 import com.amx.jax.dbmodel.remittance.AdditionalInstructionData;
+import com.amx.jax.dbmodel.remittance.AmiecAndBankMapping;
 import com.amx.jax.dbmodel.remittance.BankBranch;
 import com.amx.jax.dbmodel.remittance.DeliveryMode;
 import com.amx.jax.dbmodel.remittance.Document;
@@ -85,6 +86,7 @@ import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeR
 import com.amx.jax.pricer.var.PricerServiceConstants;
 import com.amx.jax.repository.BankMasterRepository;
 import com.amx.jax.repository.DeviceStateRepository;
+import com.amx.jax.repository.IAmiecAndBankMappingRepository;
 import com.amx.jax.repository.IApplicationCountryRepository;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.ICurrencyDao;
@@ -100,6 +102,7 @@ import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.services.BeneficiaryValidationService;
 import com.amx.jax.services.LoyalityPointService;
 import com.amx.jax.userservice.dao.CustomerDao;
+import com.amx.jax.util.AmxDBConstants;
 import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.validation.RemittanceTransactionRequestValidator;
@@ -221,6 +224,8 @@ public class BranchRemittanceApplManager {
 	@Autowired
 	BankMasterRepository bankMasterRepo;
 	
+	@Autowired
+	IAmiecAndBankMappingRepository amiecAndBankMappingRepository;
 	
 	public BranchRemittanceApplResponseDto saveBranchRemittanceApplication(BranchRemittanceApplRequestModel requestApplModel) {
 		Map<String,Object> hashMap = new HashMap<>();
@@ -313,6 +318,19 @@ public class BranchRemittanceApplManager {
 
 		// Remittance srv prov details
 		RemitApplSrvProv remitApplSrvProv = createRemitApplSrvProv(requestApplModel.getDynamicRroutingPricingBreakup(),remittanceApplication.getCreatedBy());
+		if(remitApplSrvProv != null) {
+			for (AdditionalInstructionData applAddlData : additioalInstructionData) {
+				if(applAddlData.getFlexField() != null && applAddlData.getFlexField().equalsIgnoreCase(AmxDBConstants.INDIC1)) {
+					if(applAddlData.getAmiecCode() != null) {
+						AmiecAndBankMapping amicAndBankMapping = amiecAndBankMappingRepository.fetchAmiecBankData(remittanceApplication.getFsCountryMasterByBankCountryId().getCountryId(), remitApplSrvProv.getBankId(), applAddlData.getFlexField(), applAddlData.getAmiecCode(), AmxDBConstants.Yes);
+						if(amicAndBankMapping != null) {
+							remittanceApplication.setWuPurposeOfTransaction(amicAndBankMapping.getBankCode());
+							break;
+						}
+					}
+				}
+			}
+		}
 
 		/* Saving application deatils */
 		HashMap<String, Object> mapAllDetailApplSave = new HashMap<String, Object>();
@@ -524,7 +542,11 @@ public class BranchRemittanceApplManager {
 			
 			if(JaxUtil.isNullZeroBigDecimalCheck(rateBreakUp.getBaseRate())) {
 				remittanceApplication.setOriginalExchangeRate(rateBreakUp.getBaseRate());
-			}			
+			}
+			
+			if(dynamicRoutingPricingResponse.getServiceProviderDto() != null && dynamicRoutingPricingResponse.getServiceProviderDto().getIntialAmountInSettlCurr() != null) {
+				remittanceApplication.setUsdAmt(dynamicRoutingPricingResponse.getServiceProviderDto().getIntialAmountInSettlCurr());
+			}
 
 			remittanceApplication.setBeneDeductFlag(dynamicRoutingPricingResponse.getBeneDeductFlag());
 

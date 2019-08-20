@@ -839,29 +839,29 @@ public class RemittanceTransactionManager {
 		BigDecimal netAmount = breakup.getNetAmount();
 		String inclusiveExclusiveComm = null;
 		AuthenticationLimitCheckView onlineTxnLimit = parameterService.getOnlineTxnLimit();
-		
+
 		// online sp limit check
-		onlineTxnLimit = partnerTransactionManager.onlineServiceProviderLimit(onlineTxnLimit);
-		
-		if(onlineTxnLimit!=null ) {
+		BigDecimal onlineTxnAmtLimit = partnerTransactionManager.onlineServiceProviderLimit(onlineTxnLimit);
+
+		if(onlineTxnLimit != null ) {
 			inclusiveExclusiveComm = onlineTxnLimit.getCharField2();
 			if(!StringUtils.isBlank(inclusiveExclusiveComm)  && inclusiveExclusiveComm.equalsIgnoreCase(ConstantDocument.COMM_EXCLUDE)) {
-			netAmount =netAmount.subtract(newCommission==null?BigDecimal.ZERO:newCommission);
+				netAmount =netAmount.subtract(newCommission==null?BigDecimal.ZERO:newCommission);
 			}else if(!StringUtils.isBlank(inclusiveExclusiveComm)  && inclusiveExclusiveComm.equalsIgnoreCase(ConstantDocument.COMM_INCLUDE)) {
 				netAmount =breakup.getNetAmount();
-				
-		}else {
+			}else {
 				netAmount =netAmount.subtract(newCommission==null?BigDecimal.ZERO:newCommission);
 			}
-			
+
 		}
-		
-		if (onlineTxnLimit!=null && onlineTxnLimit.getAuthLimit() !=null && netAmount.compareTo(onlineTxnLimit.getAuthLimit()) > 0) {
+
+		if (onlineTxnLimit!=null && onlineTxnAmtLimit !=null && netAmount.compareTo(onlineTxnAmtLimit) > 0) {
 			StringBuilder errorMessage = new StringBuilder();
 			errorMessage.append("Online Transaction Amount should not exceed - ").append(appCurrencyQuote);
-			errorMessage.append(" ").append(onlineTxnLimit.getAuthLimit());
+			errorMessage.append(" ").append(onlineTxnAmtLimit);
 			throw new GlobalException(TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED, errorMessage.toString());
 		}
+		
 		CurrencyMasterModel beneCurrencyMaster = currencyMasterService.getCurrencyMasterById(currencyId);
 		BigDecimal decimalCurrencyValue = beneCurrencyMaster.getDecinalNumber();
 		String currencyQuoteName = beneCurrencyMaster.getQuoteName();

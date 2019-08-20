@@ -232,15 +232,6 @@ public class BranchRemittanceDao {
 					remitTrnx.setDocumentNo(documentNo);
 					remitTrnx.setCollectionDocumentNo(collectModel.getDocumentNo());
 					
-					// checking sprProv details
-					if(remitSprProvList != null && !remitSprProvList.isEmpty()) {
-						logger.debug("remit service provider Repository.save ApplicationId :"+applicationId);
-						RemitTrnxSrvProv remitTrnxSrvProv = remitSprProvList.get(applicationId);
-						if(remitTrnxSrvProv != null) {
-							remitTrnx.setUsdAmt(remitTrnxSrvProv.getIntialAmountInSettlCurr());
-						}
-					}
-					
 					RemittanceTransaction remitTrnx1 = remitTrnxRepository.save(remitTrnx);
 
 					if (remitBeneList != null && !remitBeneList.isEmpty()) {
