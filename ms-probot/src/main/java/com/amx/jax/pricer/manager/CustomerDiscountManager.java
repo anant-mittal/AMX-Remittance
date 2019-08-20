@@ -88,7 +88,6 @@ public class CustomerDiscountManager {
 			CUSTOMER_CATEGORY customerCategory) {
 
 		// Find the Currency Group to which the currency belongs
-		// TODO: Optimize this to Save it in the Cache and retrieve it from thr
 		CurrencyMasterModel currencyMasterModel = currencyMasterDao
 				.getByCurrencyId(pricingRequestDTO.getForeignCurrencyId());
 
@@ -342,7 +341,6 @@ public class CustomerDiscountManager {
 		ExchangeDiscountInfo channelInfo = new ExchangeDiscountInfo();
 
 		// Find the Currency Group to which the currency belongs
-		// TODO: Optimize this to Save it in the Cache and retrieve it from thr
 		CurrencyMasterModel currencyMasterModel = currencyMasterDao
 				.getByCurrencyId(customerDiscountReqDTO.getForeignCurrencyId());
 
@@ -451,8 +449,8 @@ public class CustomerDiscountManager {
 
 					amountSlabPipsInfo.setId(entry.getValue().getPipsMasterId());
 					amountSlabPipsInfo.setDiscountType(DISCOUNT_TYPE.AMOUNT_SLAB);
-					amountSlabPipsInfo.setDiscountTypeValue(entry.getValue().getFromAmount().longValue() + "-"
-							+ entry.getValue().getToAmount().longValue());
+					amountSlabPipsInfo.setDiscountTypeValue(entry.getValue().getFromAmount().toPlainString() + "-"
+							+ entry.getValue().getToAmount().toPlainString());
 					amountSlabPipsInfo.setDiscountPipsValue(amountSlabPips == null ? BigDecimal.ZERO : amountSlabPips);
 
 					break;
