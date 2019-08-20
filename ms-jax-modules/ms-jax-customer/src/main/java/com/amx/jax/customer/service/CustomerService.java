@@ -21,6 +21,7 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.ArticleDao;
 import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dbmodel.ContactDetail;
@@ -166,6 +167,7 @@ public class CustomerService extends AbstractService {
 		} catch (Exception e) {
 		}
 		customerDto.setTitle(getTitleDescription(customer.getTitle()));
+		customerDto.setMedicalInsuranceInd(ConstantDocument.Yes.equalsIgnoreCase(customer.getMedicalInsuranceInd()));
 		return customerDto;
 	}
 

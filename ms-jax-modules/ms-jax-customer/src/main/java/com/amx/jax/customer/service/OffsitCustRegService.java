@@ -598,7 +598,6 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 	public AmxApiResponse<CustomerInfo, Object> saveCustomerInfo(CustomerInfoRequest model) {
 		offsiteCustomerRegValidator.validateLocalContact(model.getLocalAddressDetails());
 		offsiteCustomerRegValidator.validateHomeContact(model.getHomeAddressDetails());
-		LOGGER.debug("hello");
 		LOGGER.debug("in saveCustomerInfo with request model: {}", JsonUtil.toJson(model));
 		CustomerPersonalDetail customerDetails = new CustomerPersonalDetail();
 		jaxUtil.convert(model.getCustomerPersonalDetail(), customerDetails);
