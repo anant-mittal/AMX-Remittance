@@ -66,7 +66,7 @@ public class SSOUserSessions extends CacheBox<Long> {
 	}
 
 	public void invalidateTerminal(String terminalId) {
-		if (ArgUtil.isEmpty(terminalId)) {
+		if (!ArgUtil.isEmpty(terminalId)) {
 			String terminalKey = "T#" + terminalId;
 			this.put(terminalKey, System.currentTimeMillis());
 		}
