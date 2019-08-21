@@ -22,8 +22,8 @@ import com.amx.jax.scope.TenantContext;
 import com.amx.jax.services.JaxDBService;
 import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.userservice.dao.CustomerDao;
-import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.userservice.service.CustomerValidationContext.CustomerValidation;
+import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.AmxDBConstants.Status;
 import com.amx.jax.validation.CountryMetaValidation;
 import com.amx.utils.JsonUtil;
@@ -66,13 +66,18 @@ public class CustomerPersonalDetailManager {
 		if (req.getMobile() != null) {
 			countryMetaValidation.validateMobileNumber(customer.getCountryId(), req.getMobile());
 			countryMetaValidation.validateMobileNumberLength(customer.getCountryId(), req.getMobile());
+			if (!req.getMobile().equals(customer.getMobile())) {
+				tenantContext.get().validateDuplicateMobile(req.getMobile());
+			}
 			customer.setMobile(req.getMobile());
 			customer.setMobileVerified(Status.N);
 			CustomerContactVerification cv = customerContactVerificationManager.create(customer, ContactType.MOBILE);
 			cvs.add(cv);
 		}
 		if (req.getEmail() != null) {
-			tenantContext.get().validateEmailId(req.getEmail());
+			if (!req.getEmail().equals(customer.getEmail())) {
+				tenantContext.get().validateEmailId(req.getEmail());
+			}
 			customer.setEmail(req.getEmail());
 			customer.setEmailVerified(Status.N);
 			cvs.add(customerContactVerificationManager.create(customer, ContactType.EMAIL));
