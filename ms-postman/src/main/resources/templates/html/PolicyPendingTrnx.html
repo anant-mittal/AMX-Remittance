@@ -7,7 +7,7 @@
   <head>
     <meta name="viewport" content="width=device-width" />
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>AMIEC Group Life Insurance Expiry Reminder</title>
+    <title>You are just <span th:text="${data.numoftrnx}"></span> online transaction(s) away from getting Free Life Insurance worth KD 5,000</title>
     <style>
       * {
         margin: 0;
@@ -332,7 +332,7 @@
                         </ul>
 
                         <p>
-                          You are just (<span th:text="${data.numoftrnx}"></span>) transaction(s) away from being
+                          You are just <span th:text="${data.numoftrnx}"></span> transaction(s) away from being
                           eligible for the policy. We urge you to do a
                           remittance online by <span th:text="${data.policyvaliddate}"></span> and get eligible for
                           the policy.
