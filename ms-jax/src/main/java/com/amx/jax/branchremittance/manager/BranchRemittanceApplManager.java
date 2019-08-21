@@ -83,6 +83,7 @@ import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.model.response.remittance.ServiceProviderDto;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
+import com.amx.jax.partner.manager.PartnerTransactionManager;
 import com.amx.jax.pricer.var.PricerServiceConstants;
 import com.amx.jax.repository.BankMasterRepository;
 import com.amx.jax.repository.DeviceStateRepository;
@@ -228,12 +229,17 @@ public class BranchRemittanceApplManager {
 	@Autowired
 	IAmiecAndBankMappingRepository amiecAndBankMappingRepository;
 	
+	@Autowired
+	PartnerTransactionManager partnerTransactionManager;
+	
+	
 	public BranchRemittanceApplResponseDto saveBranchRemittanceApplication(BranchRemittanceApplRequestModel requestApplModel) {
 		Map<String,Object> hashMap = new HashMap<>();
 
 		validateSaveApplRequest(requestApplModel);
 
-		checkServiceProviderSingleTransaction(requestApplModel);
+		// validation for Home Send SP
+		checkServiceProviderValidation(requestApplModel);
 
 		/*To fetch customer details **/
 		Customer customer = custDao.getCustById(metaData.getCustomerId());
@@ -963,7 +969,7 @@ public class BranchRemittanceApplManager {
 		return remitApplSrvProv;
 	}
 
-	public void checkServiceProviderSingleTransaction(BranchRemittanceApplRequestModel requestApplModel) {
+	public void checkServiceProviderValidation(BranchRemittanceApplRequestModel requestApplModel) {
 		boolean errorStatus = Boolean.FALSE;
 		Boolean multipleTrnx = Boolean.FALSE;
 		int trnxCount = 0;
@@ -991,17 +997,21 @@ public class BranchRemittanceApplManager {
 				if(trnxCount > 1) {
 					multipleTrnx = Boolean.TRUE;
 				}
-				// checking unless no homesend application available create application for Home Send also
-				/*if(requestApplModel.getDynamicRroutingPricingBreakup() != null && requestApplModel.getDynamicRroutingPricingBreakup().getServiceProviderDto() != null) {
-					// raise error
-					errorStatus = Boolean.TRUE;
-				}*/
+
 				if(errorStatus) {
 					if(multipleTrnx) {
 						throw new GlobalException(JaxError.SINGLE_TRANSACTION_SERVICE_PROVIDER,"You cannot create the next application as HomeSend application is created as the last application.");
 					}else {
 						throw new GlobalException(JaxError.SINGLE_TRANSACTION_SERVICE_PROVIDER,"You cannot create the next application as HomeSend application is created.");
 					}
+				}
+			}
+			
+			if(requestApplModel.getDynamicRroutingPricingBreakup() != null && requestApplModel.getDynamicRroutingPricingBreakup().getServiceProviderDto() != null) {
+				BankMasterModel bankMaster = bankMasterRepo.findByBankCodeAndRecordStatus(PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name(), PricerServiceConstants.Yes);
+				// home send related validation check
+				if(bankMaster != null && requestApplModel.getRoutingBankId().compareTo(bankMaster.getBankId()) == 0) {
+					partnerTransactionManager.validateServiceProvider(requestApplModel);
 				}
 			}
 		}
