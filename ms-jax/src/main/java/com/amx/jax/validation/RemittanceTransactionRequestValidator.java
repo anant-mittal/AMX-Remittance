@@ -277,14 +277,19 @@ public class RemittanceTransactionRequestValidator {
 			BigDecimal additionalBankRuleFiledId) {
 		List<AdditionalBankDetailsViewx> addtionalBankDetails = additionalBankDetailsDao.getAdditionalBankDetails(currencyId, bankId, remittanceModeId, deleveryModeId, countryId, flexiField);
 		return addtionalBankDetails.stream().map(x -> {
-			FlexFieldDto ffDto = new FlexFieldDto(additionalBankRuleFiledId, x.getSrlId(), x.getAmieceDescription(), x.getAmieceDescription());
+			FlexFieldDto ffDto = new FlexFieldDto(additionalBankRuleFiledId, x.getSrlId(), x.getAmieceDescription(), x.getAmiecCode());
 			
 			PurposeTrnxAmicDesc purposeTrnxAmicDescs = purposeTrnxAmicDescRepository.fetchAllAmicDataByLanguageId(x.getAmiecCode().toString(), metaData.getLanguageId());
 						
 			JaxFieldValueDto dto = new JaxFieldValueDto();
-			dto.setId(ffDto.getSrlId());
+			dto.setId(ffDto.getAmieceCode());
+			if(metaData.getLanguageId()==new BigDecimal("2")) {
 			dto.setOptLable(purposeTrnxAmicDescs.getLocalFulldesc());
 			dto.setLocalName(purposeTrnxAmicDescs.getLocalFulldesc());
+			}else {
+				dto.setOptLable(null);
+				dto.setLocalName(purposeTrnxAmicDescs.getLocalFulldesc());	
+			}
 			dto.setResourceName(ffDto.getAmieceDescription());
 			dto.setValue(ffDto);
 			return dto;
