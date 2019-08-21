@@ -209,7 +209,10 @@ public class CustomerContactVerificationManager {
 		}
 
 		customerRepository.save(c);
-		customerVerificationRepository.save(cv);
+		if(cv!=null) {
+			customerVerificationRepository.save(cv);
+		}
+		
 		onlineCustomerRepository.save(customerOnlineRegistration);
 
 	}
