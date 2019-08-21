@@ -6,6 +6,8 @@ import java.sql.SQLException;
 import javax.sql.DataSource;
 
 import org.hibernate.engine.jdbc.connections.spi.MultiTenantConnectionProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +17,8 @@ import com.amx.jax.scope.TenantContextHolder;
 public class TenantConnectionProvider implements MultiTenantConnectionProvider {
 
 	private static final long serialVersionUID = 1L;
+
+	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
 	@Autowired
 	private DataSource dataSource;
@@ -38,10 +42,13 @@ public class TenantConnectionProvider implements MultiTenantConnectionProvider {
 		Connection connection;
 
 		if (ds != null) {
+			LOGGER.debug("Gettign Connection from Tenant DataSource");
 			connection = ds.getConnection();
 		} else {
+			LOGGER.debug("Gettign Connection from Default DataSource");
 			connection = getAnyConnection();
 		}
+		LOGGER.debug("Recvd Connection");
 		return connection;
 	}
 
@@ -53,6 +60,7 @@ public class TenantConnectionProvider implements MultiTenantConnectionProvider {
 
 	@Override
 	public void releaseConnection(String tenantIdentifier, Connection connection) throws SQLException {
+		LOGGER.debug("Releasing Connection");
 		connection.close();
 	}
 
