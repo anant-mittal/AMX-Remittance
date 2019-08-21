@@ -288,7 +288,7 @@ public class RemittanceTransactionRequestValidator {
 			dto.setLocalName(purposeTrnxAmicDescs.getLocalFulldesc());
 			}else {
 				dto.setOptLable(null);
-				dto.setLocalName(purposeTrnxAmicDescs.getLocalFulldesc());	
+				dto.setLocalName(purposeTrnxAmicDescs.getFullDesc());	
 			}
 			dto.setResourceName(ffDto.getAmieceDescription());
 			dto.setValue(ffDto);
