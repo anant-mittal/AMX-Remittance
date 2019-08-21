@@ -141,7 +141,9 @@ public class RemittanceTransactionRequestValidator {
 				List<JaxFieldValueDto> amiecValues = getAmiecValues(bankRule.getFlexField(), routingCountryId,deliveryModeId, remittanceModeId, routingBankId, foreignCurrencyId,bankRule.getAdditionalBankRuleId());
 				//To set default value for bpi gift service provider
 				if(request!=null && request.getServicePackage()!=null && request.getServicePackage().getIndic() !=null && request.getServicePackage().getAmieceCode()!=null && request.getServicePackage().getIndic().equalsIgnoreCase(field.getName())) {
-					amiecValues = getDefaultForServicePackage(request,amiecValues);
+					amiecValues = getDefaultForServicePackage(request,amiecValues);  //rabil need toa dd default value
+					if(amiecValues!=null && !amiecValues.isEmpty())
+					field.setDefaultValue(amiecValues.get(0).getId().toString());
 				}
 				field.setPossibleValues(amiecValues);
 				
