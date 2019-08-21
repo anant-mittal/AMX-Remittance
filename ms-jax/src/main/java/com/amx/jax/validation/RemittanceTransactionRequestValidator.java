@@ -282,8 +282,8 @@ public class RemittanceTransactionRequestValidator {
 			PurposeTrnxAmicDesc purposeTrnxAmicDescs = purposeTrnxAmicDescRepository.fetchAllAmicDataByLanguageId(x.getAmiecCode().toString(), metaData.getLanguageId());
 						
 			JaxFieldValueDto dto = new JaxFieldValueDto();
-			if(metaData.getLanguageId()==new BigDecimal("2")) {
-			dto.setId(ffDto.getAmieceCode());
+			if(metaData.getLanguageId().equals(new BigDecimal("2"))) {
+			dto.setId(ffDto.getSrlId());
 			dto.setOptLable(purposeTrnxAmicDescs.getLocalFulldesc());
 			dto.setLocalName(purposeTrnxAmicDescs.getLocalFulldesc());
 			}else {
