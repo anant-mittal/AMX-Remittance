@@ -28,11 +28,11 @@ public abstract class AbstractTestClient {
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
 		jaxMetaInfo.setLanguageId(new BigDecimal(1));
 		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
-		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
+		jaxMetaInfo.setCustomerId(new BigDecimal(184466));
 		jaxMetaInfo.setTenant(Tenant.KWT);
 		TenantContextHolder.setCurrent(Tenant.KWT);
 		jaxMetaInfo.setReferrer("DEV-TESTING");
-		jaxMetaInfo.setEmployeeId(new BigDecimal(536));
+		jaxMetaInfo.setEmployeeId(new BigDecimal(265));
 		
 		
 	}

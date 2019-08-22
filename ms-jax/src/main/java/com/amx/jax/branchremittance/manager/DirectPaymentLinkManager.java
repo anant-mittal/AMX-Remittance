@@ -55,6 +55,7 @@ public class DirectPaymentLinkManager extends AbstractModel {
 		String hashVerifyCode = null;
 		try {
 			hashVerifyCode = com.amx.utils.CryptoUtil.getSHA2Hash(code);
+			logger.info("Code Inside If : " + code);
 			logger.info("HashCode Inside If : " + hashVerifyCode);
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
