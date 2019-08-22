@@ -135,10 +135,20 @@ public abstract class AuditEvent extends AbstractEvent {
 		this.exceptionType = exceptionType;
 	}
 
+	/**
+	 * gets the minimum actor info
+	 * 
+	 * @param actorId
+	 */
 	public String getActorId() {
 		return actorId;
 	}
 
+	/**
+	 * Sets the minimum actor info
+	 * 
+	 * @param actorId
+	 */
 	public void setActorId(String actorId) {
 		this.actorId = actorId;
 	}
