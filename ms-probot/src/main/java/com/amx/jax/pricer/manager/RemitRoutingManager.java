@@ -144,7 +144,7 @@ public class RemitRoutingManager {
 			}
 
 		}
-
+		
 		// This is Interim FIX FOR HOME-SEND EXclussion and should be removed on
 		// Priority.
 		// NOT to Excluded for HOMESEND
@@ -522,6 +522,9 @@ public class RemitRoutingManager {
 
 		List<TransientRoutingComputeDetails> removeList = new ArrayList<TransientRoutingComputeDetails>();
 
+		BigDecimal minFromAmt = null;
+		BigDecimal maxtoAmt = null;
+
 		for (TransientRoutingComputeDetails routeData : routeDataList) {
 
 			ViewExRoutingMatrix matrix = routeData.getViewExRoutingMatrix();
@@ -553,9 +556,24 @@ public class RemitRoutingManager {
 				fromAmt = fromAmt.subtract(BigDecimal.ONE).add(FROM_AMT_FRACTION).setScale(8, RoundingMode.UP);
 			}
 
-			if (fromAmt.compareTo(breakup.getConvertedFCAmount()) > 0
-					|| toAmt.compareTo(breakup.getConvertedFCAmount()) < 0) {
+			if (fromAmt.compareTo(breakup.getConvertedFCAmount()) > 0) {
+
 				removeList.add(routeData);
+
+				if (minFromAmt == null || minFromAmt.compareTo(fromAmt) > 0) {
+					minFromAmt = matrix.getFromAmount() == null ? BigDecimal.ZERO : matrix.getFromAmount();
+				}
+
+				continue;
+
+			} else if (toAmt.compareTo(breakup.getConvertedFCAmount()) < 0) {
+
+				removeList.add(routeData);
+
+				if (maxtoAmt == null || maxtoAmt.compareTo(toAmt) < 0) {
+					maxtoAmt = toAmt;
+				}
+
 				continue;
 			}
 
@@ -567,10 +585,19 @@ public class RemitRoutingManager {
 
 		if (routeDataList.isEmpty()) {
 
-			LOGGER.info("No Valid Transaction Routes are Available for Transaction Routing");
+			LOGGER.info(
+					"No Valid Transaction Routes are Available for Transaction Routing: From / To Amount Check Limit is Voided");
 
+			if (minFromAmt != null) {
+				throw new PricerServiceException(PricerServiceError.INVALID_TNX_AMOUNT_TOO_LOW,
+						"No valid transaction routes are eligible for amount less than " + minFromAmt + " FC");
+			} else if (maxtoAmt != null) {
+				throw new PricerServiceException(PricerServiceError.INVALID_TNX_AMOUNT_TOO_HIGH,
+						"No valid transaction routes are eligible for amount more than " + maxtoAmt + " FC");
+			} else {
 			throw new PricerServiceException(PricerServiceError.NO_VALID_TNX_ROUTES_AVAILABLE,
 					"No Valid Transaction Routes are Eligible for Transaction Routing");
+			}
 		}
 
 	}
@@ -936,7 +963,7 @@ public class RemitRoutingManager {
 
 		return serviceProvidersMatrix;
 
-	}
+		}
 
 	public List<BigDecimal> getRoutingBankIds(List<ViewExRoutingMatrix> routingMatrix) {
 

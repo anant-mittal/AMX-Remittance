@@ -1,7 +1,5 @@
 package com.amx.jax.logger.client;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,10 +19,10 @@ import com.amx.jax.AppContextUtil;
 import com.amx.jax.logger.AbstractEvent;
 import com.amx.jax.logger.AbstractEvent.EventMarker;
 import com.amx.jax.logger.AbstractEvent.EventType;
-import com.amx.jax.logger.events.ApiAuditEvent;
 import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.logger.AuditLoggerResponse;
 import com.amx.jax.logger.AuditService;
+import com.amx.jax.logger.events.ApiAuditEvent;
 import com.amx.jax.tunnel.ITunnelService;
 import com.amx.utils.ContextUtil;
 import com.amx.utils.JsonUtil;
