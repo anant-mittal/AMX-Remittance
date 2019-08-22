@@ -77,7 +77,7 @@ import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.model.response.remittance.RemittanceCollectionDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.TransferDto;
-import com.amx.jax.model.response.serviceprovider.ServiceProviderResponse;
+import com.amx.jax.model.response.serviceprovider.Remittance_Call_Response;
 import com.amx.jax.partner.dao.PartnerTransactionDao;
 import com.amx.jax.partner.dto.RemitTrnxSPDTO;
 import com.amx.jax.partner.manager.PartnerTransactionManager;
@@ -263,7 +263,7 @@ public class BranchRemittanceSaveManager {
 			}
 
 			if(spCheckStatus) {
-				AmxApiResponse<ServiceProviderResponse, Object> apiResponse = partnerTransactionManager.callingPartnerApi(responseDto);
+				AmxApiResponse<Remittance_Call_Response, Object> apiResponse = partnerTransactionManager.callingPartnerApi(responseDto);
 				if(apiResponse != null) {
 					RemitTrnxSPDTO remitTrnxSPDTO = partnerTransactionManager.saveRemitTransactionDetails(apiResponse,responseDto);
 					if(remitTrnxSPDTO != null && remitTrnxSPDTO.getActionInd() != null && remitTrnxSPDTO.getResponseDescription() != null) {
