@@ -22,12 +22,12 @@ public class FlexFieldDto extends ResourceDTO{
 	
 	
 
-	public FlexFieldDto(BigDecimal additionalBankRuleFiledId, BigDecimal srlId, String amieceDescription,String localName) {
+	public FlexFieldDto(BigDecimal additionalBankRuleFiledId, BigDecimal srlId, String amieceDescription,String amieceCode) {
 		super();
 		this.additionalBankRuleFiledId = additionalBankRuleFiledId;
 		this.srlId = srlId;
 		this.amieceDescription = amieceDescription;
-		this.localName = localName;
+		this.amieceCode = amieceCode;
 	}
 
 	
