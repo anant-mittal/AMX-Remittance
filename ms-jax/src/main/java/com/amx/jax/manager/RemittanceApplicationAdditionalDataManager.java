@@ -212,7 +212,7 @@ public class RemittanceApplicationAdditionalDataManager {
 			throw new GlobalException(JaxError.ADDTIONAL_FLEX_FIELD_REQUIRED, "Flexi filed  is not defined ");
 		}
 		
-		requestFlexFields.put("INDIC1",new FlexFieldDto(amiecDetails.getAdditionalBankFieldId().getAdditionalBankRuleId(), remittanceTransactionRequestModel.getPurposeOfTrnxId(), amicAndBankMapping.getAmiecDescription(), amicAndBankMapping.getAmicLocalDesc()));
+		requestFlexFields.put("INDIC1",new FlexFieldDto(amiecDetails.getAdditionalBankFieldId().getAdditionalBankRuleId(), remittanceTransactionRequestModel.getPurposeOfTrnxId(), amicAndBankMapping.getAmiecDescription(), amicAndBankMapping.getAmiecCode()));
 		
 		List<AdditionalInstructionData> lstAddInstrData = new ArrayList<AdditionalInstructionData>();
 		
