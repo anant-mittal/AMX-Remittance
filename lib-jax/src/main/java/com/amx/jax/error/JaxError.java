@@ -315,7 +315,10 @@ public enum JaxError implements IExceptionEnum {
 	INVALID_TRANSACTION_ID,
 	BSB_ACCOUNT_VALIATION,
 	ROUTING_DETAILS_NOT_AVAIL,
-	EXCH_ROUTING_DEAILS_NOT_AVAIL;
+	EXCH_ROUTING_DEAILS_NOT_AVAIL,
+	
+	//Direct Payment Link
+	VERIFICATION_CODE_MISMATCH;
 	
 	@Deprecated
 	public String getCode() {

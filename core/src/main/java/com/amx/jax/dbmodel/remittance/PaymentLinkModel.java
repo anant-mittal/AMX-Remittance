@@ -6,7 +6,10 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
@@ -28,6 +31,8 @@ public class PaymentLinkModel implements Serializable {
 	private String modifiedBy;
 
 	@Id
+	@GeneratedValue(generator = "ex_payment_link_seq", strategy = GenerationType.SEQUENCE)
+	@SequenceGenerator(name = "ex_payment_link_seq", sequenceName = "EX_PAYMENT_LINK_SEQ", allocationSize = 1)
 	@Column(name = "ID")
 	public BigDecimal getLinkId() {
 		return linkId;

@@ -1,7 +1,6 @@
 package com.amx.jax.client.remittance;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 import com.amx.jax.IJaxService;
 import com.amx.jax.api.AmxApiResponse;
@@ -20,6 +19,7 @@ import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.FlexFieldReponseDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
+import com.amx.jax.model.response.remittance.PaymentLinkRespDTO;
 import com.amx.jax.model.response.remittance.PaymentModeDto;
 import com.amx.jax.model.response.remittance.RemittanceDeclarationReportDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
@@ -54,6 +54,8 @@ public interface IRemittanceService extends  IJaxService {
 		public static final String BR_RECEIPT_ON_EMAIL				=PREFIX + "/send-receipt-on-email/";
 		public static final String BR_REMITTANCE_GET_ROUTING_PRICING_RATE = PREFIX + "/get-routing-pricing-exchrate/";
 		public static final String BR_REMITTANCE_GET_FLEX_FIELDS = PREFIX + "/get-flex-field/";
+		public static final String BR_REMITTANCE_PAYMENT_LINK = PREFIX + "/payment-link/";
+		public static final String BR_REMITTANCE_VALIDATE_PAY_LINK = PREFIX + "/validate-payment-link/";
 		
 		
 		
@@ -147,6 +149,11 @@ public interface IRemittanceService extends  IJaxService {
 	
 	@ApiJaxStatus({JaxError.DATA_NOT_FOUND})
 	AmxApiResponse<FlexFieldReponseDto,Object> getFlexField(BranchRemittanceGetExchangeRateRequest request);
+	
+	AmxApiResponse<PaymentLinkRespDTO, Object> createAndSendPaymentLink();
+	
+	@ApiJaxStatus({JaxError.VERIFICATION_CODE_MISMATCH})
+	AmxApiResponse<PaymentLinkRespDTO, Object> validatePayLink(BigDecimal linkId,String verificationCode);
 	
 }
 

@@ -54,8 +54,10 @@ import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
 import com.amx.jax.repository.IBankMasterFromViewDao;
 import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.ICustomerRepository;
+import com.amx.jax.repository.IPaymentLinkDetailsRepository;
 import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.service.CurrencyMasterService;
+import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.RoundUtil;
@@ -94,7 +96,11 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 	@Autowired
 	ICurrencyDao currDao;
 	
+	@Autowired
+	CryptoUtil cryptoUtil;
 	
+	@Autowired
+	IPaymentLinkDetailsRepository paymentLinkDetailsRepository;
 
 
 	/* 
@@ -562,4 +568,6 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		return config;
 		
 	}
+
+		
 }

@@ -5,7 +5,6 @@ package com.amx.jax.branchremittance.controller;
  */
 
 import java.math.BigDecimal;
-import java.util.List;
 
 import javax.validation.Valid;
 
@@ -36,6 +35,7 @@ import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.FlexFieldReponseDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
+import com.amx.jax.model.response.remittance.PaymentLinkRespDTO;
 import com.amx.jax.model.response.remittance.PaymentModeDto;
 import com.amx.jax.model.response.remittance.RemittanceDeclarationReportDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
@@ -252,7 +252,18 @@ public class BranchRemittanceController implements IRemittanceService {
 	return branchRemittanceExchangeRateService.getFlexField(request);
 	}
 
+	@RequestMapping(value = Path.BR_REMITTANCE_PAYMENT_LINK, method = RequestMethod.GET)
+	@Override
+	public AmxApiResponse<PaymentLinkRespDTO, Object> createAndSendPaymentLink() {
+		logger.info("Payment Link API Call ------ ");
+		return branchRemitService.createAndSendPaymentLink();
+	}
 
-
+	@RequestMapping(value=Path.BR_REMITTANCE_VALIDATE_PAY_LINK,method=RequestMethod.POST)
+	@Override
+	public AmxApiResponse<PaymentLinkRespDTO, Object> validatePayLink(BigDecimal linkId, String verificationCode) {
+		logger.info(" ------ Validate Payment Link API Call ------ ");
+		return branchRemitService.validatePayLink(linkId, verificationCode);
+	}
 	
 }
