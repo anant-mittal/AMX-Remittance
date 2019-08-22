@@ -44,20 +44,20 @@ public class PlaceOrderController {
 		wrapper.setData(results);
 		return wrapper;
 	}
-	
+
 	@ApiOperation(value = "List of All bnfcries for PlaceOrder")
 	@RequestMapping(value = "/api/po/bnfcry/list", method = { RequestMethod.POST })
 	public ResponseWrapper<List<BeneficiaryListDTO>> beneList() {
 		ResponseWrapper<List<BeneficiaryListDTO>> wrapper = new ResponseWrapper<>();
-		wrapper.setData(jaxService.setDefaults().getBeneClient().getBeneficiaryList(new BigDecimal(0)).getResults());
+		wrapper.setData(
+				jaxService.setDefaults().getBeneClient().getBeneficiaryList(new BigDecimal(0), true).getResults());
 		return wrapper;
 	}
 
 	/**
 	 * Save place order.
 	 *
-	 * @param placeOrderDTO
-	 *            the place order DTO
+	 * @param placeOrderDTO the place order DTO
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/api/po/save", method = { RequestMethod.POST })
@@ -72,8 +72,7 @@ public class PlaceOrderController {
 	/**
 	 * Update place order.
 	 *
-	 * @param placeOrderDTO
-	 *            the place order DTO
+	 * @param placeOrderDTO the place order DTO
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/api/po/update", method = { RequestMethod.POST })
@@ -88,8 +87,7 @@ public class PlaceOrderController {
 	/**
 	 * Delete place order.
 	 *
-	 * @param placeOrderDTO
-	 *            the place order DTO
+	 * @param placeOrderDTO the place order DTO
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/api/po/delete", method = { RequestMethod.POST })
