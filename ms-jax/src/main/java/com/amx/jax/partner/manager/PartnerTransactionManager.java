@@ -1290,7 +1290,7 @@ public class PartnerTransactionManager extends AbstractModel {
 	}
 	
 	// validation for saving application 
-	public void validateServiceProvider(BranchRemittanceApplRequestModel requestApplModel) {
+	public void validateServiceProvider(Map<String, Object> fieldValues,BigDecimal beneId) { //(BranchRemittanceApplRequestModel requestApplModel) {
 		// home send validation
 		ApiResponse<JaxConditionalFieldDto> apiResponse = jaxFieldService.getJaxFieldsForEntity(new GetJaxFieldRequest(JaxFieldEntity.REMITTANCE_ONLINE));
 		List<JaxConditionalFieldDto> allJaxConditionalFields = apiResponse.getResults();
@@ -1302,9 +1302,10 @@ public class PartnerTransactionManager extends AbstractModel {
 			allJaxConditionalFields.addAll(allSPJaxConditionalFields);
 		}
 
-		Map<String, Object> fieldValues = requestApplModel.getAdditionalFields();
+		//Map<String, Object> fieldValues = requestApplModel.getAdditionalFields();
 		if (allJaxConditionalFields != null && fieldValues != null) {
-			BenificiaryListView beneficiaryDetail = beneficiaryService.getBeneByIdNo(requestApplModel.getBeneId());
+			//BenificiaryListView beneficiaryDetail = beneficiaryService.getBeneByIdNo(requestApplModel.getBeneId());
+			BenificiaryListView beneficiaryDetail = beneficiaryService.getBeneByIdNo(beneId);
 			for (JaxConditionalFieldDto jaxConditionalField : allJaxConditionalFields) {
 				Object fieldValue = fieldValues.get(jaxConditionalField.getField().getName());
 				if (JaxDynamicField.BENE_STREET_NO.name().equals(jaxConditionalField.getField().getName()) && fieldValue != null) {

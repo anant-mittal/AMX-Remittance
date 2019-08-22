@@ -56,6 +56,7 @@ import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.services.LoyalityPointService;
 import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
+import com.amx.utils.JsonUtil;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
@@ -350,6 +351,13 @@ public class RemittanceApplicationManager {
 		DynamicRoutingPricingDto dynamicRoutingPricingResponse = requestModel.getDynamicRroutingPricingBreakup();
 		if(dynamicRoutingPricingResponse.getServiceProviderDto() != null && dynamicRoutingPricingResponse.getServiceProviderDto().getIntialAmountInSettlCurr() != null) {
 			remittanceApplication.setUsdAmt(dynamicRoutingPricingResponse.getServiceProviderDto().getIntialAmountInSettlCurr());
+			if(remittanceApplication.getOriginalExchangeRate() != null && remittanceApplication.getOriginalExchangeRate().compareTo(BigDecimal.ZERO) != 0) {
+				// getting original rate
+				logger.info("SP Original Exchange Rate : "+JsonUtil.toJson(validationResults.getExRateBreakup()));
+			}else {
+				logger.info("Unable to get Original Exchange Rate : "+JsonUtil.toJson(validationResults.getExRateBreakup()));
+				throw new GlobalException("Unable to get Original Exchange Rate");
+			}
 		}
 		
 		validateAdditionalErrorMessagesV2(requestModel);

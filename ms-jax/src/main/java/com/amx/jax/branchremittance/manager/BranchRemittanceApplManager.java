@@ -1011,7 +1011,7 @@ public class BranchRemittanceApplManager {
 				BankMasterModel bankMaster = bankMasterRepo.findByBankCodeAndRecordStatus(PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name(), PricerServiceConstants.Yes);
 				// home send related validation check
 				if(bankMaster != null && requestApplModel.getRoutingBankId().compareTo(bankMaster.getBankId()) == 0) {
-					partnerTransactionManager.validateServiceProvider(requestApplModel);
+					partnerTransactionManager.validateServiceProvider(requestApplModel.getAdditionalFields(),requestApplModel.getBeneId());
 				}
 			}
 		}
