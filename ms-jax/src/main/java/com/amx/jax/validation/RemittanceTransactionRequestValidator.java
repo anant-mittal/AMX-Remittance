@@ -149,7 +149,7 @@ public class RemittanceTransactionRequestValidator {
 						&& request.getServicePackage().getIndic() != null
 						&& request.getServicePackage().getAmieceCode() != null
 						&& request.getServicePackage().getIndic().equalsIgnoreCase(field.getName())) {
-					amiecValues = getDefaultForServicePackage(request, amiecValues); // rabil need toa dd default value
+					amiecValues = getDefaultForServicePackage(request, amiecValues); 
 					if (amiecValues != null && !amiecValues.isEmpty())
 						field.setDefaultValue(amiecValues.get(0).getId().toString());
 				}
@@ -179,7 +179,7 @@ public class RemittanceTransactionRequestValidator {
 			dto.setEntityName(JaxFieldEntity.PURPOSE_OF_TRNX);
 			JaxFieldDto field = new JaxFieldDto();
 			field.setName(ConstantDocument.INDIC1);
-			field.setType(FlexFieldBehaviour.PRE_DEFINED.toString());
+			field.setType(FlexFieldBehaviour.PRE_DEFINED.getFieldType().toString());
 			field.setRequired(true);
 			field.setMinLength(BigDecimal.ONE);
 			field.setMaxLength(new BigDecimal(100));
