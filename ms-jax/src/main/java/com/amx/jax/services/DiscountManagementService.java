@@ -17,6 +17,7 @@ import com.amx.jax.dbmodel.CountryBranch;
 import com.amx.jax.pricer.PricerServiceClient;
 import com.amx.jax.pricer.dto.ExchangeRateBreakup;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
+import com.amx.jax.pricer.dto.PricingAndCostResponseDTO;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
 import com.amx.jax.pricer.exception.PricerServiceException;
@@ -67,7 +68,7 @@ public class DiscountManagementService {
 		return list;
 	}
 	
-	public AmxApiResponse<PricingResponseDTO, Object> fetchDiscountedRates(PricingRequestDTO pricingRequestDTO) {
+	public AmxApiResponse<PricingAndCostResponseDTO, Object> fetchDiscountedRates(PricingRequestDTO pricingRequestDTO) {
 		if((pricingRequestDTO.getChannel().name() == "BRANCH" || pricingRequestDTO.getChannel().name() == "KIOSK") && 
 				pricingRequestDTO.getCountryBranchId() == null) {
 			throw new GlobalException("Country Branch Id can not be null or empty for BRANCH or KIOSK");
@@ -80,7 +81,7 @@ public class DiscountManagementService {
 		pricingRequestDTO.setLocalCountryId(amxConfig.getDefaultCountryId());
 		pricingRequestDTO.setLocalCurrencyId(amxConfig.getDefaultCurrencyId());
 		
-		AmxApiResponse<PricingResponseDTO, Object> response = null;
+		AmxApiResponse<PricingAndCostResponseDTO, Object> response = null;
 		try {
 			response = pricerServiceClient.fetchDiscountedRates(pricingRequestDTO);
 		} catch (PricerServiceException e) {

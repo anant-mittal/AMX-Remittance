@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.partner.dto.SrvPrvFeeInqReqDTO;
 import com.amx.jax.partner.dto.SrvPrvFeeInqResDTO;
@@ -23,6 +24,8 @@ import com.amx.jax.pricer.dto.ExchangeRateAndRoutingRequest;
 import com.amx.jax.pricer.dto.ExchangeRateAndRoutingResponse;
 import com.amx.jax.pricer.dto.GroupDetails;
 import com.amx.jax.pricer.dto.HolidayResponseDTO;
+import com.amx.jax.pricer.dto.OnlineMarginMarkupInfo;
+import com.amx.jax.pricer.dto.OnlineMarginMarkupReq;
 import com.amx.jax.pricer.dto.PricingAndCostResponseDTO;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
@@ -187,6 +190,31 @@ public class PricerServiceClient implements ProbotExchangeRateService, ProbotDat
 				.post(srvPrvFeeInqReqDTO)
 				.as(new ParameterizedTypeReference<AmxApiResponse<SrvPrvFeeInqResDTO, Object>>() {
 				});
+	}
+
+	@Override
+	public AmxApiResponse<OnlineMarginMarkupInfo, Object> getOnlineMarginMarkupData(
+			OnlineMarginMarkupReq OnlineMarginMarkupReq) {
+				LOGGER.info("fetch Online Margin Markup Details : transaction Id: {}, with TraceId: {}",
+				AppContextUtil.getTranxId(), AppContextUtil.getTraceId());
+
+		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.GET_MARKUP_DETAILS)
+				.post(OnlineMarginMarkupReq)
+				.as(new ParameterizedTypeReference<AmxApiResponse<OnlineMarginMarkupInfo, Object>>() {
+				});
+	}
+
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> saveOnlineMarginMarkupData(
+			OnlineMarginMarkupInfo onlineMarginMarkupInfo) {
+	
+			LOGGER.info("fetch Online Margin Markup Details : transaction Id: {}, with TraceId: {}",
+					AppContextUtil.getTranxId(), AppContextUtil.getTraceId());
+			return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.SAVE_MARKUP_DETAILS)
+					.post(onlineMarginMarkupInfo)
+					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
+					});
+		
 	}
 
 }

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.pricer.dbmodel.OnlineMarginMarkup;
+import com.amx.jax.pricer.dbmodel.PipsMaster;
 import com.amx.jax.pricer.repository.MarginMarkupRepository;
 
 @Component
@@ -58,6 +59,16 @@ public class MarginMarkupDao {
 		return marginMarkupRepository.findByApplicationCountryIdAndCountryIdAndCurrencyId(aplCountryId, countryId,
 				currencyId);
 
+	}
+	
+	public  OnlineMarginMarkup getMarkupData(BigDecimal countryId,BigDecimal currencyId,BigDecimal bankId)
+	 {
+		 return marginMarkupRepository.getMarkupData(countryId, currencyId, bankId);
+	 }
+	
+	
+	public void saveOnlineMarginMarkup(OnlineMarginMarkup marginMarkup) {
+		marginMarkupRepository.save(marginMarkup);
 	}
 
 }

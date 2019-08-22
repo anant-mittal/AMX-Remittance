@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.dict.UserClient.Channel;
 import com.amx.jax.partner.dto.SrvPrvFeeInqReqDTO;
 import com.amx.jax.partner.dto.SrvPrvFeeInqResDTO;
@@ -46,6 +47,8 @@ import com.amx.jax.pricer.dto.ExchangeRateAndRoutingResponse;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
 import com.amx.jax.pricer.dto.GroupDetails;
 import com.amx.jax.pricer.dto.HolidayResponseDTO;
+import com.amx.jax.pricer.dto.OnlineMarginMarkupInfo;
+import com.amx.jax.pricer.dto.OnlineMarginMarkupReq;
 import com.amx.jax.pricer.dto.PricingAndCostResponseDTO;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
@@ -507,6 +510,19 @@ public class PricerServiceApiTest implements ProbotExchangeRateService, ProbotDa
 	public AmxApiResponse<SrvPrvFeeInqResDTO, Object> getServiceProviderQuotation(
 			SrvPrvFeeInqReqDTO srvPrvFeeInqReqDTO) {
 		return pricerServiceClient.getServiceProviderQuotation(srvPrvFeeInqReqDTO);
+	}
+
+	@Override
+	public AmxApiResponse<OnlineMarginMarkupInfo, Object> getOnlineMarginMarkupData(
+			OnlineMarginMarkupReq OnlineMarginMarkupReq) {
+		return pricerServiceClient.getOnlineMarginMarkupData(OnlineMarginMarkupReq);
+
+	}
+
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> saveOnlineMarginMarkupData(
+			OnlineMarginMarkupInfo onlineMarginMarkupInfo) {
+		return pricerServiceClient.saveOnlineMarginMarkupData(onlineMarginMarkupInfo);
 	}
 
 }
