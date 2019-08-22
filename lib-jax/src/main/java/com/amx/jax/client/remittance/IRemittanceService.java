@@ -75,6 +75,8 @@ public interface IRemittanceService extends  IJaxService {
 		public static final String LOCAL_AMOUNT = "localAmount";
 		public static final String FOREIGN_AMOUNT = "foreignAmount";
 		public static final String ROUTING_COUNTRY_ID="routingcountryId"; 
+		public static final String LINK_ID="linkId";
+		public static final String VERIFICATION_CODE="verificationCode";
 		
 	}
 	

@@ -23,6 +23,7 @@ import com.amx.jax.dbmodel.remittance.ShoppingCartDetails;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.response.remittance.PaymentLinkRespDTO;
+import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.repository.IPaymentLinkDetailsRepository;
 import com.amx.utils.Random;
 
@@ -130,5 +131,12 @@ public class DirectPaymentLinkManager extends AbstractModel {
 		}
 		return paymentLinkResp;
 	}
+
+	public PaymentResponseDto paymentCaptureForPayLink(PaymentResponseDto paymentResponse) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	
 
 }
