@@ -22,6 +22,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.constant.NotificationConstants;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.client.JaxClientUtil;
 import com.amx.jax.client.JaxStompClient;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxDbConfig;
@@ -177,6 +178,7 @@ public class FcSaleDeliveryService {
 		email.addTo(pinfo.getEmail());
 		email.setITemplate(TemplatesMX.FC_ORDER_SUCCESS);
 		email.setHtml(true);
+		email.getModel().put("verCode", JaxClientUtil.getTransactionVeryCode(fcSaleDeliveryMarkDeliveredRequest.getDeliveryDetailSeqId()).output());
 		FxDeliveryDetailDto ddDto = createFxDeliveryDetailDto(vwdeliveryDetail);
 		FxDeliveryDetailNotificationDto notificationModel = new FxDeliveryDetailNotificationDto(ddDto);
 		email.getModel().put(NotificationConstants.RESP_DATA_KEY, notificationModel);
