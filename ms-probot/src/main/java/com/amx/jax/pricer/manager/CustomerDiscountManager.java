@@ -225,11 +225,11 @@ public class CustomerDiscountManager {
 
 		for (ExchangeRateDetails bankExRateDetail : exchRateAndRoutingTransientDataCache.getSellRateDetails()) {
 
-			// Check if discount is already applied
-			// Avoid Double Discount Application
-			if (bankExRateDetail.isDiscountAvailed() == true) {
-				continue;
-			}
+			// // Check if discount is already applied
+			// // Avoid Double Discount Application
+			// if (bankExRateDetail.isDiscountAvailed() == true) {
+			// continue;
+			// }
 
 			BigDecimal amountSlabPips = BIGD_ZERO;
 			ExchangeDiscountInfo amountSlabPipsInfo = new ExchangeDiscountInfo();
@@ -237,6 +237,7 @@ public class CustomerDiscountManager {
 			if (bankAmountSlabDiscounts.containsKey(bankExRateDetail.getBankId().longValue())) {
 				TreeMap<BigDecimal, PipsMaster> pipsMap = bankAmountSlabDiscounts
 						.get(bankExRateDetail.getBankId().longValue());
+
 				for (Entry<BigDecimal, PipsMaster> entry : pipsMap.entrySet()) {
 
 					if (bankExRateDetail.getSellRateBase().getConvertedFCAmount().compareTo(entry.getKey()) <= 0) {
@@ -248,10 +249,23 @@ public class CustomerDiscountManager {
 								+ entry.getValue().getToAmount().longValue());
 						amountSlabPipsInfo.setDiscountPipsValue(amountSlabPips);
 
+						Entry<BigDecimal, PipsMaster> nextEntry = pipsMap.higherEntry(entry.getKey());
+
+						if (nextEntry != null) {
+							bankExRateDetail.setBetterRateAvailable(true);
+							bankExRateDetail.setBetterRateAmountSlab(nextEntry.getValue().getFromAmount());
+						}
 						break;
 					} // if
 
 				} // for
+			}
+
+			// Check if discount is already applied
+			// Avoid Double Discount Application
+			// Shifted place for Next Amount Slab Calculations
+			if (bankExRateDetail.isDiscountAvailed() == true) {
+				continue;
 			}
 
 			BigDecimal discountedSellRate;
@@ -261,6 +275,10 @@ public class CustomerDiscountManager {
 				// Level.
 				discountedSellRate = bankExRateDetail.getSellRateBase().getInverseRate();
 				bankExRateDetail.setDiscountAvailed(false);
+				
+				// Set Better Rate Availability to false
+				bankExRateDetail.setBetterRateAvailable(false);
+				bankExRateDetail.setBetterRateAmountSlab(null);
 
 			} else {
 
@@ -292,6 +310,10 @@ public class CustomerDiscountManager {
 
 					bankExRateDetail.setDiscountAvailed(true);
 					bankExRateDetail.setCostRateLimitReached(true);
+					
+					// Set Better Rate Availability to false
+					bankExRateDetail.setBetterRateAvailable(false);
+					bankExRateDetail.setBetterRateAmountSlab(null);
 
 				}
 
