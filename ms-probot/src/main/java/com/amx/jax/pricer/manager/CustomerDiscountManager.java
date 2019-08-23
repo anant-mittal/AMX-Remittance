@@ -81,7 +81,6 @@ public class CustomerDiscountManager {
 			CUSTOMER_CATEGORY customerCategory) {
 
 		// Find the Currency Group to which the currency belongs
-		// TODO: Optimize this to Save it in the Cache and retrieve it from thr
 		CurrencyMasterModel currencyMasterModel = currencyMasterDao
 				.getByCurrencyId(pricingRequestDTO.getForeignCurrencyId());
 
