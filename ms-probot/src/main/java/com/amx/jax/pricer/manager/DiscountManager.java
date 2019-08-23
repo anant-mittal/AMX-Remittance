@@ -413,7 +413,7 @@ public class DiscountManager {
 		
 	}
 	public Boolean commitMarkup(OnlineMarginMarkup marginMarkupData,OnlineMarginMarkupInfo request) {
-		if (marginMarkupData.getOnlineMarginMarkupId()!=null) 
+		if (marginMarkupData !=null) 
 		 {
 			marginMarkupData.setMarginMarkup(request.getMarginMarkup());
 			marginMarkupData.setModifiedDate(new Date());

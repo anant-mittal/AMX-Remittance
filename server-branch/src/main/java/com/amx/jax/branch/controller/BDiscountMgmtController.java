@@ -2,6 +2,7 @@ package com.amx.jax.branch.controller;
 
 import java.math.BigDecimal;
 
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +18,7 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.branch.beans.BranchSession;
 import com.amx.jax.client.DiscountMgmtClient;
 import com.amx.jax.client.MetaClient;
+import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.response.CurrencyMasterDTO;
 import com.amx.jax.pricer.dto.DiscountDetailsReqRespDTO;
 import com.amx.jax.pricer.dto.DiscountMgmtReqDTO;
@@ -48,6 +50,8 @@ public class BDiscountMgmtController {
 	
 	@Autowired
 	private SSOUser ssoUser;
+	private static final Logger LOGGER = LoggerService.getLogger(BDiscountMgmtController.class);
+
 
 	@RequestMapping(value = "/api/discount/country/list", method = { RequestMethod.GET })
 	public AmxApiResponse<CountryMasterDTO, Object> getAllCountry() {
@@ -130,7 +134,9 @@ public class BDiscountMgmtController {
 	
 	@RequestMapping(value = "/api/save-markup/details", method = { RequestMethod.POST })
 	public AmxApiResponse<BoolRespModel, Object> saveOnlineMarginMarkupData(@RequestBody OnlineMarginMarkupInfo onlineMarginMarkupInfo) {
-		onlineMarginMarkupInfo.setEmpName(ssoUser.getUserDetails().getEmployeeName());
+		 LOGGER.info("ssoUser.getUserDetails().getEmployeeName()",ssoUser.getUserDetails().getEmployeeName());
+		 String username=ssoUser.getUserDetails().getEmployeeName()!= null ? ssoUser.getUserDetails().getEmployeeName(): "";
+		onlineMarginMarkupInfo.setEmpName(username);
 		return discountMgmtClient.saveOnlineMarginMarkupData(onlineMarginMarkupInfo);
 	}
 	

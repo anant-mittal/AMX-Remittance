@@ -230,7 +230,15 @@ public class ExchangeDataService {
 	}
 	public OnlineMarginMarkupInfo getOnlineMarginMarkupData(OnlineMarginMarkupReq request) {
 		 OnlineMarginMarkup marginMarkupData= marginMarkupDao.getMarkupData(request.getCountryId(), request.getCurrencyId(), request.getBankId());
-		 OnlineMarginMarkupInfo marginMarkupInfo=discountManager.convertMarkup(marginMarkupData);
+		 OnlineMarginMarkupInfo marginMarkupInfo;
+		 if(marginMarkupData!=null) {
+		  marginMarkupInfo=discountManager.convertMarkup(marginMarkupData);
+		 }
+
+		 marginMarkupInfo=new OnlineMarginMarkupInfo();
+		 /*else {
+			 
+		 }*/
 		return marginMarkupInfo;
 	}
 	public BoolRespModel saveOnlineMarginMarkupData(OnlineMarginMarkupInfo request) {
