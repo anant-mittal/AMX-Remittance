@@ -234,11 +234,10 @@ public class ExchangeDataService {
 		 if(marginMarkupData!=null) {
 		  marginMarkupInfo=discountManager.convertMarkup(marginMarkupData);
 		 }
-
+		 else {
 		 marginMarkupInfo=new OnlineMarginMarkupInfo();
-		 /*else {
-			 
-		 }*/
+		 }
+		
 		return marginMarkupInfo;
 	}
 	public BoolRespModel saveOnlineMarginMarkupData(OnlineMarginMarkupInfo request) {
