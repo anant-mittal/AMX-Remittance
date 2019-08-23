@@ -427,6 +427,7 @@ public class DiscountManager {
 			 onlineMarginMarkup.setCountryId(request.getCountryId());
 			 onlineMarginMarkup.setCurrencyId(request.getCurrencyId());
 			 onlineMarginMarkup.setIsActive("Y");
+			 onlineMarginMarkup.setMarginMarkup(request.getMarginMarkup());
 			 onlineMarginMarkup.setCreatedDate(new Date());
 			 onlineMarginMarkup.setModifiedDate(new Date());
 			 onlineMarginMarkup.setModifiedBy(request.getEmpName());
