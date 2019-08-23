@@ -16,6 +16,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.amx.amxlib.model.CountryBranchDTO;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.dict.UserClient.Channel;
+import com.amx.jax.pricer.dto.PricingAndCostResponseDTO;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
 import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_BY;
@@ -45,7 +46,7 @@ public class DiscountMgmtClientTest extends AbstractTestClient {
 	public void testFetchDiscountRates() {
 		setDefaults();
 		
-		AmxApiResponse<PricingResponseDTO,Object> response = null;
+		AmxApiResponse<PricingAndCostResponseDTO,Object> response = null;
 		LOGGER.info("In Fetch Discount Client Test ");
 		PricingRequestDTO pricingRequestDTO = new PricingRequestDTO();
 		

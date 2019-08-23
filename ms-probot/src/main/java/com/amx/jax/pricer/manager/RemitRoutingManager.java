@@ -1,7 +1,6 @@
 package com.amx.jax.pricer.manager;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -552,9 +551,10 @@ public class RemitRoutingManager {
 			BigDecimal toAmt = matrix.getToAmount() == null ? PricerServiceConstants.MAX_BIGD_12 : matrix.getToAmount();
 
 			// Adjust the from amount for Range Correction - only for perfect Integer
-			if (fromAmt.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0) {
-				fromAmt = fromAmt.subtract(BigDecimal.ONE).add(FROM_AMT_FRACTION).setScale(8, RoundingMode.UP);
-			}
+			// if (fromAmt.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0) {
+			// fromAmt = fromAmt.subtract(BigDecimal.ONE).add(FROM_AMT_FRACTION).setScale(8,
+			// RoundingMode.UP);
+			// }
 
 			if (fromAmt.compareTo(breakup.getConvertedFCAmount()) > 0) {
 
