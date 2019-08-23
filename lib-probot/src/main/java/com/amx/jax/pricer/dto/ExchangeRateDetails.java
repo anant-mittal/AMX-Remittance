@@ -30,6 +30,10 @@ public class ExchangeRateDetails implements Serializable, Cloneable, Comparable<
 	private boolean isCostRateLimitReached = false;
 
 	private boolean isLowGLBalance = false;
+	
+	private boolean isBetterRateAvailable = false;
+
+	private BigDecimal betterRateAmountSlab;
 
 	public BigDecimal getBankId() {
 		return bankId;
@@ -93,6 +97,22 @@ public class ExchangeRateDetails implements Serializable, Cloneable, Comparable<
 
 	public void setLowGLBalance(boolean isLowGLBalance) {
 		this.isLowGLBalance = isLowGLBalance;
+	}
+
+	public boolean isBetterRateAvailable() {
+		return isBetterRateAvailable;
+	}
+
+	public void setBetterRateAvailable(boolean isBetterRateAvailable) {
+		this.isBetterRateAvailable = isBetterRateAvailable;
+	}
+
+	public BigDecimal getBetterRateAmountSlab() {
+		return betterRateAmountSlab;
+	}
+
+	public void setBetterRateAmountSlab(BigDecimal betterRateAmountSlab) {
+		this.betterRateAmountSlab = betterRateAmountSlab;
 	}
 
 	@Override
