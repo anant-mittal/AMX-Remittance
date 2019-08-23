@@ -57,6 +57,9 @@ public interface RemittanceApplicationRepository extends CrudRepository<Remittan
 	 
 	 @Query("select ra from RemittanceApplication ra where ra.documentNo=?1 and ra.documentFinancialyear = ?2")
 		public RemittanceApplication getRemittanceApplicationId(BigDecimal applicationDocumentNo, BigDecimal docFinYear);
+	 
+	 @Query("select rv from RemittanceApplication rv where rv.remittanceApplicationId=?1")
+		public RemittanceApplication fetchByRemittanceApplicationId(BigDecimal remittanceApplicationId);
 	
 	 
 }

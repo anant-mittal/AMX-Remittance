@@ -17,8 +17,10 @@ import com.amx.jax.branchremittance.manager.DirectPaymentLinkManager;
 import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.model.response.remittance.PaymentLinkRespDTO;
 import com.amx.jax.payg.PaymentResponseDto;
+import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
+import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.services.AbstractService;
 import com.amx.jax.userservice.service.UserService;
@@ -42,6 +44,7 @@ public class DirectPaymentLinkService extends AbstractService {
 		
 		PersonInfo personInfo = userService.getPersonInfo(customerId);
 		sendDirectLinkEmail(paymentdto, personInfo);
+		sendDirectLinkSMS(paymentdto, personInfo);
 
 		return paymentdto;
 	}
@@ -73,9 +76,27 @@ public class DirectPaymentLinkService extends AbstractService {
 	
 		
 	}
+	
+	private void sendDirectLinkSMS(PaymentLinkRespDTO paymentdto, PersonInfo personInfo) {
+		if(paymentdto != null) {
+			logger.info(String.format("Sending mOTP SMS to customer :%s on mobile_no :%s  ", personInfo.getFirstName(),
+					personInfo.getMobile()));
 
-	public AmxApiResponse<PaymentResponseDto, Object> saveDirectLinkPayment(PaymentResponseDto paymentResponse) {
-		PaymentResponseDto paymentResponseDto =directPaymentLinkManager.paymentCaptureForPayLink(paymentResponse);
+			SMS sms = new SMS();
+			sms.addTo(personInfo.getMobile());
+			sms.getModel().put(NotificationConstants.RESP_DATA_KEY, paymentdto);
+			sms.setITemplate(TemplatesMX.PAYMENT_LINK);
+
+			try {
+				postManService.sendSMSAsync(sms);
+			} catch (PostManException e) {
+				logger.error("error in sendLinkSms", e);
+			}
+		}
+	}
+
+	public AmxApiResponse<PaymentResponseDto, Object> saveDirectLinkPayment(PaymentResponseDto paymentResponse, BigDecimal linkId) {
+		PaymentResponseDto paymentResponseDto =directPaymentLinkManager.paymentCaptureForPayLink(paymentResponse, linkId);
 		return AmxApiResponse.build(paymentResponseDto);
 	}
 }

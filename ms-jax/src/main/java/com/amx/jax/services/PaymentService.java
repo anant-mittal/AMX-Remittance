@@ -14,6 +14,7 @@ import com.amx.jax.manager.RemittancePaymentManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.util.JaxContextUtil;
+import com.amx.utils.ArgUtil;
 
 @Component
 public class PaymentService {
@@ -65,7 +66,7 @@ public class PaymentService {
 	public AmxApiResponse<PaymentResponseDto, Object> captrueForDirectLink(@RequestBody PaymentResponseDto paymentResponse) {
 		logger.info("Direct Link :" + paymentResponse.getCustomerId() + "\t country ID :"
 				+ paymentResponse.getApplicationCountryId() + "\t Compa Id:" + paymentResponse.getCompanyId());
-		
-		return directPaymentLinkService.saveDirectLinkPayment(paymentResponse);
+		BigDecimal linkId = ArgUtil.parseAsBigDecimal(paymentResponse.getPayId());
+		return directPaymentLinkService.saveDirectLinkPayment(paymentResponse, linkId);
 	}
 }

@@ -27,7 +27,7 @@ public class PaymentController {
 			return paymentService.captrueForRemittance(paymentResponse);
 		} else if (AmxEnums.Products.FXORDER.equals(product)) {
 			return paymentService.captrueForFxOrder(paymentResponse);
-		} else if (AmxEnums.Products.DIRECTLINK.equals(product)) {
+		} else if (AmxEnums.Products.REMITLINK.equals(product)) {
 			return paymentService.captrueForDirectLink(paymentResponse);
 		}
 

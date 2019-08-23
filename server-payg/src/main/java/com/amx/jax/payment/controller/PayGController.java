@@ -83,19 +83,21 @@ public class PayGController {
 	@RequestMapping(value = { "/register/*" }, method = RequestMethod.GET)
 	public PayGParams initTransaction(@RequestParam String trckid, @RequestParam(required = false) String docId,
 			@RequestParam(required = false) String docNo, @RequestParam(required = false) String docFy,
+			 @RequestParam(required = false) String payId,
 			@RequestParam String amount,
 
 			@RequestParam Tenant tnt, @RequestParam String pg, @RequestParam(required = false) Channel channel,
 			@RequestParam(required = false) String prod,
 
 			@RequestParam(required = false) String callbackd, Model model) throws NoSuchAlgorithmException {
-		return payGService.getVerifyHash(trckid, amount, docId, docNo, docFy);
+		return payGService.getVerifyHash(trckid, amount, docId, docNo, docFy,payId);
 	}
 
 	@RequestMapping(value = { "/payment/*", "/payment" }, method = RequestMethod.GET)
 
 	public String handleUrlPaymentRemit(@RequestParam String trckid, @RequestParam(required = false) String docId,
 			@RequestParam(required = false) String docNo, @RequestParam(required = false) String docFy,
+			@RequestParam(required = false) String payId,
 			@RequestParam String amount,
 
 			@RequestParam Tenant tnt, @RequestParam String pg, @RequestParam(required = false) Channel channel,
@@ -112,10 +114,11 @@ public class PayGController {
 			docId = detailParam.getDocId();
 			docNo = detailParam.getDocNo();
 			docFy = detailParam.getDocFy();
+			payId = detailParam.getPayId();
 		}
 
 		if (!ArgUtil.isEmpty(verify)
-				&& !verify.equals(payGService.getVerifyHash(trckid, amount, docId, docNo, docFy).getVerification())) {
+				&& !verify.equals(payGService.getVerifyHash(trckid, amount, docId, docNo, docFy,payId).getVerification())) {
 			return "thymeleaf/pg_security";
 		}
 
@@ -161,6 +164,7 @@ public class PayGController {
 		payGParams.setDocNo(docNo);
 		payGParams.setDocId(docId);
 		payGParams.setDocFy(docFy);
+		payGParams.setPayId(payId);
 		payGParams.setTenant(tnt);
 		if (channel == null)
 			channel = Channel.ONLINE;

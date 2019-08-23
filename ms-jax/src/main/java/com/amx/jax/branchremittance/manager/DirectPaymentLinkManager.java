@@ -5,8 +5,10 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,15 +18,18 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.BranchRemittancePaymentDao;
 import com.amx.jax.dao.DirectPaymentLinkDao;
 import com.amx.jax.dbmodel.remittance.PaymentLinkModel;
+import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.ShoppingCartDetails;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.response.remittance.PaymentLinkRespDTO;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.repository.IPaymentLinkDetailsRepository;
+import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.utils.Random;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -42,6 +47,9 @@ public class DirectPaymentLinkManager extends AbstractModel {
 
 	@Autowired
 	BranchRemittancePaymentDao branchRemittancePaymentDao;
+	
+	@Autowired
+	RemittanceApplicationRepository remittanceApplicationRepository;
 
 	public PaymentLinkRespDTO fetchPaymentLinkDetails(BigDecimal customerId, BigDecimal localCurrencyId) {
 
@@ -81,6 +89,23 @@ public class DirectPaymentLinkManager extends AbstractModel {
 
 			paymentLinkData.add(paymentApplication);
 			directPaymentLinkDao.savePaymentLinkDetails(paymentLinkData);
+			
+			// Save link id against application Id's 
+			PaymentLinkModel fetchPaymentLinkData = directPaymentLinkDao.fetchPaymentLinkId(customerId, hashVerifyCode);
+			if(fetchPaymentLinkData != null) {
+				String applicationid = fetchPaymentLinkData.getApplicationIds();
+				StringTokenizer tokenizer = new StringTokenizer(applicationid, ",");
+		        
+		        while (tokenizer.hasMoreTokens()) {
+		        	String token = tokenizer.nextToken();
+		            BigDecimal appId = new BigDecimal(token);
+		            logger.info("Application Id : " + appId);
+		            RemittanceApplication fetchApplication = remittanceApplicationRepository.fetchByRemittanceApplicationId(appId);
+		            fetchApplication.setPaymentLinkId(fetchPaymentLinkData.getLinkId());
+		            
+		            remittanceApplicationRepository.save(fetchApplication);
+		        } 
+			}
 		}
 
 		logger.info("HashCode Outside If : " + hashVerifyCode);
@@ -133,8 +158,27 @@ public class DirectPaymentLinkManager extends AbstractModel {
 		return paymentLinkResp;
 	}
 
-	public PaymentResponseDto paymentCaptureForPayLink(PaymentResponseDto paymentResponse) {
-		// TODO Auto-generated method stub
+	public PaymentResponseDto paymentCaptureForPayLink(PaymentResponseDto paymentResponse, BigDecimal linkId) {
+		logger.info("paymment capture :" + paymentResponse.toString());
+		logger.info("Customer Id :" + paymentResponse.getCustomerId());
+		logger.info(
+				"Result code :" + paymentResponse.getResultCode() + "\t Auth Code :" + paymentResponse.getAuth_appNo());
+		logger.info("paymment capture Payment ID :" + paymentResponse.getPaymentId() + "\t Merchant Track Id :"
+				+ paymentResponse.getTrackId() + "\t UDF 3 :" + paymentResponse.getUdf3() + "\t Udf 2 :"
+				+ paymentResponse.getUdf2());
+		
+		try {
+			if (!StringUtils.isBlank(paymentResponse.getPaymentId())
+					&& !StringUtils.isBlank(paymentResponse.getResultCode())
+					&& (paymentResponse.getResultCode().equalsIgnoreCase(ConstantDocument.CAPTURED)
+							|| paymentResponse.getResultCode().equalsIgnoreCase(ConstantDocument.APPROVED))) {
+				// update payg details in payment link table
+				directPaymentLinkDao.updatePaygDetailsInPayLink(paymentResponse, linkId);
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
 		return null;
 	}
 
