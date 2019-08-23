@@ -178,6 +178,7 @@ public class FcSaleDeliveryService {
 		email.addTo(pinfo.getEmail());
 		email.setITemplate(TemplatesMX.FC_ORDER_SUCCESS);
 		email.setHtml(true);
+		email.getModel().put("tranxId", fcSaleDeliveryMarkDeliveredRequest.getDeliveryDetailSeqId());
 		email.getModel().put("verCode", JaxClientUtil.getTransactionVeryCode(fcSaleDeliveryMarkDeliveredRequest.getDeliveryDetailSeqId()).output());
 		FxDeliveryDetailDto ddDto = createFxDeliveryDetailDto(vwdeliveryDetail);
 		FxDeliveryDetailNotificationDto notificationModel = new FxDeliveryDetailNotificationDto(ddDto);
