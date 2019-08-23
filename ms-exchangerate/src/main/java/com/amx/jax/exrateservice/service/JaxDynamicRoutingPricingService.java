@@ -183,6 +183,8 @@ public class JaxDynamicRoutingPricingService {
 		}else if(serviceGroup!=null && serviceGroup.equals(ConstantDocument.SERVICE_GROUP_CODE_CASH)) {
 			routingPricingRequestDTO.setServiceGroup(SERVICE_GROUP.CASH);
 		}
+		routingPricingRequestDTO.setCompanyId(metaData.getCompanyId());
+		routingPricingRequestDTO.setEmployeeId(metaData.getEmployeeId());
 		
 		return routingPricingRequestDTO;
 	}

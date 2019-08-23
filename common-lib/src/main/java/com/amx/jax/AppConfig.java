@@ -82,6 +82,7 @@ public class AppConfig {
 	public static final String SPRING_REDIS_HOST = "${spring.redis.host}";
 	public static final String SPRING_REDIS_PORT = "${spring.redis.port}";
 	public static final String JAX_PRICER_URL = "${jax.pricer.url}";
+	public static final String JAX_SERVICE_PROVIDER_URL = "${jax.service-provider.url}";
 
 	@Value(APP_ENV)
 	@AppParamKey(AppParam.APP_ENV)
@@ -200,6 +201,10 @@ public class AppConfig {
 	@Value(APP_CONTEXT_PREFIX)
 	@AppParamKey(AppParam.APP_CONTEXT_PREFIX)
 	private String appPrefix;
+	
+	@Value(JAX_SERVICE_PROVIDER_URL)
+	@AppParamKey(AppParam.JAX_SERVICE_PROVIDER_URL)
+	private String serviceProviderURL;
 
 	@Value("${app.response.ok}")
 	private boolean appResponseOK;
@@ -440,4 +445,12 @@ public class AppConfig {
 		return appResponseOK;
 	}
 
+	public String getServiceProviderURL() {
+		return serviceProviderURL;
+	}
+
+	public void setServiceProviderURL(String serviceProviderURL) {
+		this.serviceProviderURL = serviceProviderURL;
+	}
+	
 }

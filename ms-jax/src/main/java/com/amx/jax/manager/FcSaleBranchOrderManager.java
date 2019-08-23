@@ -1394,7 +1394,7 @@ public class FcSaleBranchOrderManager {
 					}
 				}
 			}
-
+			
 			if(lstTotalStock != null && lstTotalStock.size() != 0) {
 				HashMap<String, Object> saveFcAdjPurchase = saveFcAdjJava(lstTotalStock,toUserName,toUserName,ConstantDocument.P,toCountryBranchId);
 
@@ -1836,6 +1836,66 @@ public class FcSaleBranchOrderManager {
 	public Map<String, Object> generateDocumentNumber(BigDecimal branchId, BigDecimal appCountryId,BigDecimal companyId,String processInd,BigDecimal finYear,BigDecimal documentId) {
 		Map<String, Object> output = applicationProcedureDao.getDocumentSeriality(appCountryId, companyId, documentId,finYear, processInd, branchId);
 		return output;
+	}
+	
+	public boolean validateUserStock(BigDecimal deliveryDetailSeqId,BigDecimal fromEmployeeId) {
+		boolean stockStatus = Boolean.FALSE;
+		String fromUserName = null;
+		BigDecimal fromCountryBranchId = null;
+		BigDecimal fromBranchId = null;
+		Map<BigDecimal, BigDecimal> currencyStock = new HashMap<>();
+		List<BigDecimal> foreignCurrencyId = new ArrayList<>();
+		List<ForeignCurrencyAdjust> lstTotalStock = new ArrayList<ForeignCurrencyAdjust>();
+		
+		FxEmployeeDetailsDto reqEmployeeDt = fetchEmployee(fromEmployeeId);
+		if(reqEmployeeDt != null && reqEmployeeDt.getEmployeeId() != null){
+			fromUserName = reqEmployeeDt.getUserName();
+			fromCountryBranchId = reqEmployeeDt.getCountryBranchId();
+			fromBranchId = reqEmployeeDt.getBranchId();
+		}
+		
+		// fetch records customer records
+		List<OrderManagementView> lstOrderManager = fcSaleBranchDao.fetchOrdersByDeliveryDetailId(deliveryDetailSeqId);
+		if(lstOrderManager != null && lstOrderManager.size() != 0){
+			for (OrderManagementView orderManagementView : lstOrderManager) {
+				if(!foreignCurrencyId.contains(orderManagementView.getForeignCurrencyId())) {
+					foreignCurrencyId.add(orderManagementView.getForeignCurrencyId());
+				}
+				if(orderManagementView.getDocumentNo() != null && orderManagementView.getCollectionDocFinanceYear() != null) {
+					List<ForeignCurrencyAdjust> lstFcAdj = fcSaleBranchDao.fetchByCollectionDetails(orderManagementView.getDocumentNo(), orderManagementView.getCollectionDocFinanceYear(), metaData.getCompanyId(), ConstantDocument.DOCUMENT_CODE_FOR_FCSALE,ConstantDocument.Yes);
+					if(lstFcAdj != null && lstFcAdj.size() != 0) {
+						lstTotalStock.addAll(lstFcAdj);
+					}
+				}
+			}
+		}
+		
+		if(lstTotalStock != null && lstTotalStock.size() != 0) {
+			if(foreignCurrencyId != null && foreignCurrencyId.size() != 0) {
+				// fetch staff currency stock
+				List<UserStockView> userStockData = fcSaleBranchDao.fetchUserStockAllCurrencyCurrentDate(fromUserName,fromCountryBranchId,foreignCurrencyId);
+				for (UserStockView userStockView : userStockData) {
+					currencyStock.put(userStockView.getDenominationId(), userStockView.getCurrentStock());
+				}
+			}
+			
+			// compare currency stock which is need to moved
+			if(currencyStock != null && currencyStock.size() != 0) {
+				for (ForeignCurrencyAdjust orderManagementView : lstTotalStock) {
+					if(orderManagementView.getNotesQuantity().compareTo(currencyStock.get(orderManagementView.getFsDenominationId().getDenominationId())) <= 0) {
+						// continue
+						stockStatus = Boolean.TRUE;
+					}else {
+						// break
+						logger.error("Error in Stock Mismatch deliveryDetailSeqId : "+deliveryDetailSeqId+" fromEmployeeId : "+fromEmployeeId+" denomination Id : "+orderManagementView.getFsDenominationId().getDenominationId());
+						stockStatus = Boolean.FALSE;
+						break;
+					}
+				}
+			}
+		}
+
+		return stockStatus;
 	}
 
 }

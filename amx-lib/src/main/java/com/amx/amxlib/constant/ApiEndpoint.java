@@ -150,6 +150,7 @@ public class ApiEndpoint {
 		public static final String SAVE_ANNUAL_INCOME = "/saveAnnualIncome/";
 		public static final String GET_ANNUAL_INCOME_DETAILS = "/getAnnualIncomeDetails/";
 		public static final String SAVE_SECURITY_QUESTIONS = "/save-security-questions/";
+		public static final String UPDATE_PASSWORD_CUSTOMER = "/update-password-customer/";
 		//params
 		public static final String PARAM_INCOMEDTO = "incomeDto";
 		
@@ -182,6 +183,9 @@ public class ApiEndpoint {
 
 		public static final String DELINK_FINGERPRINT = "/delink-fingerprint";
 		public static final String RESET_FINGERPRINT = "/reset-fingerprint";
+		
+		//validate login otp
+		public static final String VALIDATE_CUSTOMER_LOGIN_OTP = "/validate-customer-login-otp/";
 
 	}
 	

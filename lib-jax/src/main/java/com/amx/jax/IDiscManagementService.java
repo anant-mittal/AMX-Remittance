@@ -1,6 +1,7 @@
 package com.amx.jax;
 
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.pricer.dto.PricingAndCostResponseDTO;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
 
@@ -16,5 +17,5 @@ public interface IDiscManagementService {
 		
 	}
 
-	AmxApiResponse<PricingResponseDTO, Object> fetchDiscountedRates(PricingRequestDTO pricingRequestDTO);
+	AmxApiResponse<PricingAndCostResponseDTO, Object> fetchDiscountedRates(PricingRequestDTO pricingRequestDTO);
 }

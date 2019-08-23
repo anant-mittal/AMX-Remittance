@@ -2,6 +2,7 @@ package com.amx.jax.branch.controller;
 
 import java.math.BigDecimal;
 
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,16 +14,22 @@ import com.amx.amxlib.meta.model.CountryMasterDTO;
 import com.amx.amxlib.model.CountryBranchDTO;
 import com.amx.jax.IDiscManagementService;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.branch.beans.BranchSession;
 import com.amx.jax.client.DiscountMgmtClient;
 import com.amx.jax.client.MetaClient;
+import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.response.CurrencyMasterDTO;
 import com.amx.jax.pricer.dto.DiscountDetailsReqRespDTO;
 import com.amx.jax.pricer.dto.DiscountMgmtReqDTO;
 import com.amx.jax.pricer.dto.GroupDetails;
+import com.amx.jax.pricer.dto.OnlineMarginMarkupInfo;
+import com.amx.jax.pricer.dto.OnlineMarginMarkupReq;
+import com.amx.jax.pricer.dto.PricingAndCostResponseDTO;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
+import com.amx.jax.sso.SSOUser;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
 
 import io.swagger.annotations.Api;
@@ -40,6 +47,11 @@ public class BDiscountMgmtController {
 
 	@Autowired
 	BranchSession branchSession;
+	
+	@Autowired
+	private SSOUser ssoUser;
+	private static final Logger LOGGER = LoggerService.getLogger(BDiscountMgmtController.class);
+
 
 	@RequestMapping(value = "/api/discount/country/list", method = { RequestMethod.GET })
 	public AmxApiResponse<CountryMasterDTO, Object> getAllCountry() {
@@ -68,7 +80,7 @@ public class BDiscountMgmtController {
 	}
 
 	@RequestMapping(value = "/api/discount/rates/list", method = { RequestMethod.POST })
-	public AmxApiResponse<PricingResponseDTO, Object> fetchDiscountedRates(
+	public AmxApiResponse<PricingAndCostResponseDTO, Object> fetchDiscountedRates(
 			@RequestBody PricingRequestDTO pricingRequestDTO) {
 		return discountMgmtClient.fetchDiscountedRates(pricingRequestDTO);
 	}
@@ -113,6 +125,19 @@ public class BDiscountMgmtController {
 	@RequestMapping(value = "/api/discount/currencyGroup/list", method = { RequestMethod.POST })
 	public AmxApiResponse<com.amx.jax.pricer.dto.CurrencyMasterDTO, Object> getCurrencyByGroupId(@RequestParam(value = "groupId", required = true)BigDecimal groupId) {
 			return discountMgmtClient.getCurrencyByGroupId(groupId);
+	}
+	
+	@RequestMapping(value = "/api/online-markup/list", method = { RequestMethod.POST })
+	public AmxApiResponse<OnlineMarginMarkupInfo, Object> getOnlineMarginMarkupData(@RequestBody OnlineMarginMarkupReq request) {
+		return discountMgmtClient.getOnlineMarginMarkupData(request);
+	}
+	
+	@RequestMapping(value = "/api/save-markup/details", method = { RequestMethod.POST })
+	public AmxApiResponse<BoolRespModel, Object> saveOnlineMarginMarkupData(@RequestBody OnlineMarginMarkupInfo onlineMarginMarkupInfo) {
+		 LOGGER.info("ssoUser.getUserDetails().getEmployeeName()",ssoUser.getUserDetails().getEmployeeName());
+		 String username=ssoUser.getUserDetails().getEmployeeName()!= null ? ssoUser.getUserDetails().getEmployeeName(): "";
+		onlineMarginMarkupInfo.setEmpName(username);
+		return discountMgmtClient.saveOnlineMarginMarkupData(onlineMarginMarkupInfo);
 	}
 	
 }

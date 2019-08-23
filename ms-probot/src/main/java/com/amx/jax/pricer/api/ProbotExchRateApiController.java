@@ -23,6 +23,7 @@ import com.amx.jax.cache.ExchRateAndRoutingTransientDataCache;
 import com.amx.jax.pricer.ProbotExchangeRateService;
 import com.amx.jax.pricer.dto.ExchangeRateAndRoutingRequest;
 import com.amx.jax.pricer.dto.ExchangeRateAndRoutingResponse;
+import com.amx.jax.pricer.dto.PricingAndCostResponseDTO;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
 import com.amx.jax.pricer.service.ExchangePricingAndRoutingService;
@@ -82,12 +83,12 @@ public class ProbotExchRateApiController implements ProbotExchangeRateService {
 
 	@Override
 	@RequestMapping(value = ApiEndPoints.FETCH_DISCOUNTED_RATES, method = RequestMethod.POST)
-	public AmxApiResponse<PricingResponseDTO, Object> fetchDiscountedRates(
+	public AmxApiResponse<PricingAndCostResponseDTO, Object> fetchDiscountedRates(
 			@RequestBody @Valid PricingRequestDTO pricingRequestDTO) {
 
 		LOGGER.info("Received Fetch Discounted Rate Request " + " with TraceId: " + AppContextUtil.getTraceId());
 
-		List<PricingResponseDTO> pricingResponseDTOList = exchangePricingAndRoutingService
+		List<PricingAndCostResponseDTO> pricingResponseDTOList = exchangePricingAndRoutingService
 				.fetchDiscountedRatesAcrossCustCategories(pricingRequestDTO);
 
 		return AmxApiResponse.buildList(pricingResponseDTOList);
@@ -108,5 +109,6 @@ public class ProbotExchRateApiController implements ProbotExchangeRateService {
 		return AmxApiResponse.build(exchangeRateAndRoutingResponse);
 
 	}
+	
 
 }

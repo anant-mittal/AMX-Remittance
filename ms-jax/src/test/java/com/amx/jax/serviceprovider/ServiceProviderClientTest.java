@@ -14,7 +14,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
-import com.amx.jax.client.ServiceProviderClient;
+import com.amx.jax.client.RevenueReportServiceClient;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.meta.MetaData;
@@ -31,7 +31,7 @@ import ch.qos.logback.classic.Logger;
 public class ServiceProviderClientTest {
 	private static final Logger LOGGER = (Logger) LoggerService.getLogger(ServiceProviderClientTest.class);
 	@Autowired
-	ServiceProviderClient serviceProviderClient;
+	RevenueReportServiceClient revenueReportServiceClient;
 
 	@Autowired
 	private MetaData jaxMetaInfo;
@@ -56,7 +56,7 @@ public class ServiceProviderClientTest {
 		setDefaults();
 		AmxApiResponse<ServiceProviderPartnerDTO, Object> response = null;
 		LOGGER.debug("Response not set");
-		response = serviceProviderClient.getServiceProviderPartner();
+		response = revenueReportServiceClient.getServiceProviderPartner();
 		LOGGER.debug("Response is set");
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
@@ -80,7 +80,7 @@ public class ServiceProviderClientTest {
 		AmxApiResponse<BoolRespModel, Object> response = null;
 		LOGGER.debug("Response not set");
 		Date fileDate = Date.valueOf("2019-7-17");
-		response = serviceProviderClient.serviceProviderConfirmation(fileDate, "WU");
+		response = revenueReportServiceClient.serviceProviderConfirmation(fileDate, "WU");
 		LOGGER.debug("Response is set");
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
@@ -92,7 +92,7 @@ public class ServiceProviderClientTest {
 		AmxApiResponse<ServiceProviderDefaultDateDTO, Object> response = null;
 		LOGGER.debug("Response not set");
 
-		response = serviceProviderClient.getServiceProviderDefaultDate("WU");
+		response = revenueReportServiceClient.getServiceProviderDefaultDate("WU");
 		LOGGER.debug("Response is set");
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());

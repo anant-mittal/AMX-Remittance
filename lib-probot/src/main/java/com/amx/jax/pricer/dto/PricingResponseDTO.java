@@ -24,6 +24,18 @@ public class PricingResponseDTO implements Serializable {
 
 	private CUSTOMER_CATEGORY customerCategory;
 
+	/*public PricingResponseDTO() {
+		super();
+	}
+
+	public PricingResponseDTO(PricingResponseDTO that) {
+		this.sellRateDetails = that.sellRateDetails;
+		this.bankDetails = that.bankDetails;
+		this.serviceIdDescription = that.serviceIdDescription;
+		this.info = that.info;
+		this.customerCategory = that.customerCategory;
+	}*/
+
 	public List<ExchangeRateDetails> getSellRateDetails() {
 		return sellRateDetails;
 	}

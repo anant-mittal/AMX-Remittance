@@ -1,8 +1,5 @@
 package com.amx.jax.config;
 
-import java.util.Date;
-
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.scope.TenantScoped;
@@ -52,6 +49,9 @@ public class JaxTenantProperties {
 	
 	@TenantValue("${wantit.buyit.enddate}")
 	private String endDate;
+	
+	@TenantValue("${jax.max.captcha.count}")
+	private Integer maxCaptchaCount;
 
 	public Boolean getCashDisable() {
 		return cashDisable;
@@ -123,6 +123,14 @@ public class JaxTenantProperties {
 
 	public void setEndDate(String endDate) {
 		this.endDate = endDate;
+	}
+
+	public Integer getMaxCaptchaCount() {
+		return maxCaptchaCount;
+	}
+
+	public void setMaxCaptchaCount(Integer maxCaptchaCount) {
+		this.maxCaptchaCount = maxCaptchaCount;
 	}
 
 

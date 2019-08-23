@@ -11,7 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
-import com.amx.jax.client.ServiceProviderClient;
+import com.amx.jax.client.RevenueReportServiceClient;
 import com.amx.jax.response.serviceprovider.ServiceProviderDefaultDateDTO;
 import com.amx.jax.response.serviceprovider.ServiceProviderPartnerDTO;
 import com.amx.jax.response.serviceprovider.ServiceProviderSummaryDTO;
@@ -23,29 +23,29 @@ import io.swagger.annotations.Api;
 public class ServiceProviderBranchController {
 
 	@Autowired
-	ServiceProviderClient serviceProviderClient;
+	RevenueReportServiceClient revenueReportServiceClient;
 
 	@RequestMapping(value = "/api/service-provider/list", method = { RequestMethod.GET })
 	public AmxApiResponse<ServiceProviderPartnerDTO, Object> getServiceProviderPartner() {
-		return serviceProviderClient.getServiceProviderPartner();
+		return revenueReportServiceClient.getServiceProviderPartner();
 	}
 
 	@RequestMapping(value = "/api/service-provider/defaultdate", method = { RequestMethod.POST })
 	public AmxApiResponse<ServiceProviderDefaultDateDTO, Object> getServiceProviderDefaultDate(
 			@RequestParam(value = "tpcCode", required = true) String tpcCode) {
-		return serviceProviderClient.getServiceProviderDefaultDate(tpcCode);
+		return revenueReportServiceClient.getServiceProviderDefaultDate(tpcCode);
 	}
 
 	@RequestMapping(value = "/api/service-provider/confirm", method = { RequestMethod.POST })
 	public AmxApiResponse<BoolRespModel, Object> serviceProviderConfirmation(@RequestParam Date fileDate,
 			@RequestParam String tpcCode) {
-		return serviceProviderClient.serviceProviderConfirmation(fileDate, tpcCode);
+		return revenueReportServiceClient.serviceProviderConfirmation(fileDate, tpcCode);
 	}
 
 	@RequestMapping(value = "/api/service-provider/fileupload", method = { RequestMethod.POST })
 	public AmxApiResponse<ServiceProviderSummaryDTO, Object> uploadServiceProviderFile(@RequestParam MultipartFile file,
 			@RequestParam Date fileDate, @RequestParam String tpcCode) throws Exception {
-		return serviceProviderClient.uploadServiceProviderFile(file, fileDate, tpcCode);
+		return revenueReportServiceClient.uploadServiceProviderFile(file, fileDate, tpcCode);
 	}
 
 }
