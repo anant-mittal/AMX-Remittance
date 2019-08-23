@@ -114,8 +114,8 @@ public class RemitBranchController {
 	}
 
 	@RequestMapping(value = "/api/remitt/bnfcry/list", method = { RequestMethod.POST })
-	public AmxApiResponse<BeneficiaryListDTO, Object> beneList() {
-		return AmxApiResponse.buildList(beneClient.getBeneficiaryList(new BigDecimal(0)).getResults());
+	public AmxApiResponse<BeneficiaryListDTO, Object> beneList(@RequestParam(required = false, defaultValue = "false") boolean excludePackages) {
+		return AmxApiResponse.buildList(beneClient.getBeneficiaryList(new BigDecimal(0), excludePackages).getResults());
 	}
 
 	@RequestMapping(value = "/api/remitt/default", method = { RequestMethod.POST })
