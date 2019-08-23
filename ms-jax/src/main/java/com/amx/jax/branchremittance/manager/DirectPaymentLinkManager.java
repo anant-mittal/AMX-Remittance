@@ -111,8 +111,11 @@ public class DirectPaymentLinkManager extends AbstractModel {
 		logger.info("HashCode Outside If : " + hashVerifyCode);
 		PaymentLinkModel paymentLinkId = directPaymentLinkDao.fetchPaymentLinkId(customerId, hashVerifyCode);
 		if (paymentLinkId != null) {
-			paymentLinkResp.setLinkId(paymentLinkId.getLinkId());
+			paymentLinkResp.setId(paymentLinkId.getLinkId());
 			paymentLinkResp.setVerificationCode(code);
+			paymentLinkResp.setCurQutoe("KD");
+			paymentLinkResp.setAmount(paymentLinkId.getPaymentAmount());
+			paymentLinkResp.setRequestData(paymentLinkId.getLinkDate());
 
 			return paymentLinkResp;
 		}

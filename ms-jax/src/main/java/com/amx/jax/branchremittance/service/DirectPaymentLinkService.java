@@ -14,6 +14,8 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.constant.NotificationConstants;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.branchremittance.manager.DirectPaymentLinkManager;
+import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.model.response.customer.CustomerDto;
 import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.model.response.remittance.PaymentLinkRespDTO;
 import com.amx.jax.payg.PaymentResponseDto;
@@ -22,8 +24,11 @@ import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.TemplatesMX;
+import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.services.AbstractService;
 import com.amx.jax.userservice.service.UserService;
+import com.amx.utils.EntityDtoUtil;
+import com.amx.utils.JsonUtil;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -38,13 +43,16 @@ public class DirectPaymentLinkService extends AbstractService {
 	
 	@Autowired
 	PostManService postManService;
+	
+	@Autowired
+	CustomerRepository customerRepository;
 
 	public PaymentLinkRespDTO fetchPaymentLinkDetails(BigDecimal customerId, BigDecimal localCurrencyId) {
 		PaymentLinkRespDTO paymentdto = directPaymentLinkManager.fetchPaymentLinkDetails(customerId, localCurrencyId);
 		
 		PersonInfo personInfo = userService.getPersonInfo(customerId);
-		sendDirectLinkEmail(paymentdto, personInfo);
-		sendDirectLinkSMS(paymentdto, personInfo);
+		sendDirectLinkEmail(paymentdto, personInfo, customerId);
+		sendDirectLinkSMS(paymentdto, personInfo, customerId);
 
 		return paymentdto;
 	}
@@ -54,8 +62,9 @@ public class DirectPaymentLinkService extends AbstractService {
 		return paymentdto;
 	}
 
-	public void sendDirectLinkEmail(PaymentLinkRespDTO paymentdto, PersonInfo personInfo) {
+	public void sendDirectLinkEmail(PaymentLinkRespDTO paymentdto, PersonInfo personInfo,BigDecimal customerId) {
 
+		Customer customer = customerRepository.getActiveCustomerDetailsByCustomerId(customerId);
 		try {
 			if (paymentdto != null) {
 				logger.info("Sending Direct Link Email to customer : ");
@@ -66,31 +75,37 @@ public class DirectPaymentLinkService extends AbstractService {
 				}
 				directLinkEmail.setITemplate(TemplatesMX.PAYMENT_LINK);
 				directLinkEmail.setHtml(true);
+				directLinkEmail.getModel().put("link", paymentdto);
+				directLinkEmail.getModel().put("customer", EntityDtoUtil.entityToDto(customer, new CustomerDto()));
 				directLinkEmail.getModel().put(NotificationConstants.RESP_DATA_KEY, paymentdto);
+				logger.info("Payment Link ENTIRE JSON : "+JsonUtil.toJson(directLinkEmail.getModel()));
 				postManService.sendEmailAsync(directLinkEmail);
 			}
 			
 		} catch (Exception e) {
-			logger.error("Error while sending mail WantIT BuyIT : " + e.getMessage());
+			logger.error("Error while sending MAIL for Direct Link : " + e.getMessage());
 		}
 	
 		
 	}
 	
-	private void sendDirectLinkSMS(PaymentLinkRespDTO paymentdto, PersonInfo personInfo) {
+	private void sendDirectLinkSMS(PaymentLinkRespDTO paymentdto, PersonInfo personInfo, BigDecimal customerId) {
+		Customer customer = customerRepository.getActiveCustomerDetailsByCustomerId(customerId);
 		if(paymentdto != null) {
 			logger.info(String.format("Sending mOTP SMS to customer :%s on mobile_no :%s  ", personInfo.getFirstName(),
 					personInfo.getMobile()));
 
 			SMS sms = new SMS();
 			sms.addTo(personInfo.getMobile());
+			sms.getModel().put("link", paymentdto);
+			sms.getModel().put("customer", EntityDtoUtil.entityToDto(customer, new CustomerDto()));
 			sms.getModel().put(NotificationConstants.RESP_DATA_KEY, paymentdto);
 			sms.setITemplate(TemplatesMX.PAYMENT_LINK);
 
 			try {
 				postManService.sendSMSAsync(sms);
 			} catch (PostManException e) {
-				logger.error("error in sendLinkSms", e);
+				logger.error("Error while sending SMS for Direct Link : ", e.getMessage());
 			}
 		}
 	}
