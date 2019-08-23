@@ -29,12 +29,23 @@ import com.amx.jax.tunnel.TunnelEventXchange;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
 
-@TunnelEventMapping(topic = AmxTunnelEvents.Names.DATAUPD_TRNX, scheme = TunnelEventXchange.TASK_WORKER)
+//@TunnelEventMapping(topic = AmxTunnelEvents.Names.DATAUPD_TRNX, scheme = TunnelEventXchange.TASK_WORKER)
+@TunnelEventMapping(topic = AmxTunnelEvents.Names.TRNX_BENE_CREDIT, scheme = TunnelEventXchange.TASK_LISTNER)
 public class TranxDataUpdateListner implements ITunnelSubscriber<DBEvent> {
 
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
 	private static final String ID = "APP_ID";
+	private static final String CUST_ID = "CUST_ID";
+	private static final String TRANX_ID = "TRANX_ID";
+	private static final String TRNXAMT = "TRNXAMT";
+	private static final String LOYALTY = "LOYALTY";
+	private static final String TRNREF = "TRNREF";
+	private static final String TRNDATE = "TRNDATE";
+	private static final String LANG_ID = "LANG_ID";
+	private static final String TENANT = "TENANT";
+	private static final String CURNAME = "CURNAME";
+	private static final String TYPE = "TYPE";
 
 	@Autowired
 	public AppConfig appConfig;
@@ -51,7 +62,16 @@ public class TranxDataUpdateListner implements ITunnelSubscriber<DBEvent> {
 	@Override
 	public void onMessage(String channel, DBEvent event) {
 		LOGGER.info("======onMessage1==={} ====  {}", channel, JsonUtil.toJson(event));
-		String custId = ArgUtil.parseAsString(event.getData().get(ID));
+
+		String custId = ArgUtil.parseAsString(event.getData().get(CUST_ID));
+		String trnxRef = ArgUtil.parseAsString(event.getData().get(TRNREF));
+		String trnxDate = ArgUtil.parseAsString(event.getData().get(TRNDATE));
+		String tranxId = ArgUtil.parseAsString(event.getData().get(TRANX_ID));
+
+		if (ArgUtil.isEmpty(tranxId)) {
+			LOGGER.info("Nothing to Do as Transaction Id is Empty");
+			return;
+		}
 
 		// Query
 		GridQuery gridQuery = new GridQuery();
@@ -60,10 +80,10 @@ public class TranxDataUpdateListner implements ITunnelSubscriber<DBEvent> {
 
 		// Conditions/Filters
 		GridColumn column = new GridColumn();
-		column.setKey("id");
+		column.setKey("trnxId");
 		column.setOperator(FilterOperater.EQ);
 		column.setDataType(FilterDataType.NUMBER);
-		column.setValue(custId);
+		column.setValue(tranxId);
 		column.setSortDir(SortOrder.ASC);
 		gridQuery.getColumns().add(column);
 
@@ -82,7 +102,7 @@ public class TranxDataUpdateListner implements ITunnelSubscriber<DBEvent> {
 				document.setTimestamp(new Date(System.currentTimeMillis()));
 				builder.update(oracleVarsCache.getTranxIndex(), document);
 			} catch (Exception e) {
-				LOGGER.error("CustomerViewTask Excep", e);
+				LOGGER.error("TranxViewTask Excep", e);
 			}
 		}
 		esRepository.bulk(builder.build());

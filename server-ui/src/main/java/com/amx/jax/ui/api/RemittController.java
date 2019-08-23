@@ -508,6 +508,5 @@ public class RemittController {
 			throw new UIServerError(OWAStatusStatusCodes.INVALID_LINK);
 		}
 		return ResponseWrapper.build(jaxService.setDefaults().getRemitClient().saveCustomerRating(customerRatingDTO));
-
 	}
 }

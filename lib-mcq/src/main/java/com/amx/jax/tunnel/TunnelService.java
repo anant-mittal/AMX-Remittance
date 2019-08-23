@@ -109,14 +109,20 @@ public class TunnelService implements ITunnelService {
 	}
 
 	/**
-	 * To assign a job to one of the worker
+	 * To assign a job to one of the worker, subscriber to this can be of two types
+	 * : TASK_WORKER & TASK_LISTNER
+	 * 
+	 * 
+	 * Multiple TASK_LISTNER can listner to event and act upon, but only one of the
+	 * workeres will recieve event
+	 * 
 	 * 
 	 * @param topic          - name of task
 	 * @param messagePayload - data to be used for task
-	 * @return
+	 * @return - unique message id
 	 * 
 	 * @reliable true
-	 * @uniqueness only one task will execute per event
+	 * @uniqueness only one WORKER and multple LISTNERS will execute per event
 	 */
 	@Override
 	public <T> long task(String topic, T messagePayload) {
@@ -129,11 +135,14 @@ public class TunnelService implements ITunnelService {
 
 		RQueue<TunnelMessage<T>> queue = redisson.getQueue(TunnelEventXchange.TASK_WORKER.getQueue(topic));
 		RTopic<String> topicQueue = redisson.getTopic(TunnelEventXchange.TASK_WORKER.getTopic(topic));
+		RTopic<TunnelMessage<T>> taskListnerPublisher = redisson
+				.getTopic(TunnelEventXchange.TASK_LISTNER.getTopic(topic));
 
 		AuditServiceClient.trackStatic(
 				new RequestTrackEvent(RequestTrackEvent.Type.PUB_OUT, TunnelEventXchange.TASK_WORKER, message));
 		debugEvent(message);
 		queue.add(message);
+		taskListnerPublisher.publish(message);
 		return topicQueue.publish(message.getId());
 	}
 

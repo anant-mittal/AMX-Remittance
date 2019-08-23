@@ -75,6 +75,9 @@ public class TunnelSubscriberFactory {
 				TunnelEventXchange scheme = tunnelEvent.scheme();
 				if (scheme == TunnelEventXchange.TASK_WORKER) {
 					this.addTaskWorker(eventTopic, redisson, listener, integrity, c.getClass().getName());
+				} else if (scheme == TunnelEventXchange.TASK_LISTNER) {
+					this.addTaskListner(eventTopic, redisson, listener, TunnelEventXchange.TASK_LISTNER,
+							c.getClass().getName());
 				} else if (scheme == TunnelEventXchange.AUDIT) {
 					this.addAuditListener(eventTopic, redisson, listener, integrity, c.getClass().getName());
 				} else if (scheme == TunnelEventXchange.SEND_LISTNER) {
@@ -91,11 +94,18 @@ public class TunnelSubscriberFactory {
 
 		ITunnelSubscriber<M> subscriber = null;
 		boolean integrity = false;
+		TunnelEventXchange exchange;
 
 		public WrapperML(ITunnelSubscriber<M> subscriber, boolean integrity) {
 			super();
 			this.subscriber = subscriber;
 			this.integrity = integrity;
+		}
+
+		public WrapperML(ITunnelSubscriber<M> subscriber, TunnelEventXchange exchange) {
+			super();
+			this.subscriber = subscriber;
+			this.exchange = exchange;
 		}
 
 		@Override
@@ -116,7 +126,8 @@ public class TunnelSubscriberFactory {
 	public <M> void addShoutListener(String topic, RedissonClient redisson, ITunnelSubscriber<M> listener,
 			boolean integrity, String listentName) {
 		RTopic<TunnelMessage<M>> topicQueue = redisson.getTopic(TunnelEventXchange.SHOUT_LISTNER.getTopic(topic));
-		LOGGER.info("Subscription on Topic : {}", MCQIndicator.messageSubscribed(TunnelEventXchange.SHOUT_LISTNER.getTopic(topic)));
+		LOGGER.info("Subscription on Topic : {}",
+				MCQIndicator.messageSubscribed(TunnelEventXchange.SHOUT_LISTNER.getTopic(topic)));
 		topicQueue.addListener(new WrapperML<M>(listener, integrity) {
 			@Override
 			public void onMessage(String channel, TunnelMessage<M> msg) {
@@ -208,10 +219,66 @@ public class TunnelSubscriberFactory {
 		});
 	}
 
+	public <M> void addTaskListner(String topic, RedissonClient redisson, ITunnelSubscriber<M> listener,
+			TunnelEventXchange exchange, String listentName) {
+		RTopic<TunnelMessage<M>> topicQueue = redisson.getTopic(TunnelEventXchange.TASK_LISTNER.getTopic(topic));
+		LOGGER.info("Subscription on Topic : {}",
+				MCQIndicator.messageSubscribed(TunnelEventXchange.TASK_LISTNER.getTopic(topic)));
+		topicQueue.addListener(new WrapperML<M>(listener, exchange) {
+			@Override
+			public void onMessage(String channel, TunnelMessage<M> msg) {
+				MCQIndicator.messageRcvd(channel);
+				if (ArgUtil.isEmpty(msg) || ArgUtil.isEmpty(msg.getId())) {
+					LOGGER.warn("NULL msgId Rcvd for EVENT " + channel + " : ");
+				}
+
+				if (TunnelEventXchange.TASK_WORKER.equals(this.exchange)) {
+					RQueue<TunnelMessage<M>> topicMessageQueue = redisson
+							.getQueue(TunnelEventXchange.TASK_WORKER.getQueue(topic));
+					onTaskWorkerEvent(channel, topicMessageQueue, msg.getId());
+				} else {
+					doTask(channel, msg);
+				}
+			}
+
+			private void onTaskWorkerEvent(String channel, RQueue<TunnelMessage<M>> topicMessageQueue, String msgId) {
+				TunnelMessage<M> msg = pollSafely(channel, topicMessageQueue, msgId);
+				doTask(channel, msg);
+				onTaskWorkerEvent(channel, topicMessageQueue, msgId);
+			}
+
+			private void doTask(String channel, TunnelMessage<M> msg) {
+				if (msg == null) {
+					return;
+				}
+				if (!TimeUtils.isDead(msg.getTimestamp(), TIME_TO_EXPIRE_MILLIS)) {
+					AppContext context = msg.getContext();
+					AppContextUtil.setContext(context);
+					AppContextUtil.init();
+					AuditServiceClient.trackStatic(
+							new RequestTrackEvent(RequestTrackEvent.Type.SUB_IN, this.exchange, msg));
+					try {
+						if (ArgUtil.isEmpty(msg.getData())) {
+							LOGGER.warn("NULL Event Rcvd for EVENT " + channel + " : ");
+						} else {
+							this.subscriber.onMessage(channel, msg.getData());
+							MCQIndicator.messageProcessed(channel);
+						}
+					} catch (Exception e) {
+						LOGGER.error("EXCEPTION in EVENT " + channel + " : " + msg.getId(), e);
+						MCQIndicator.messageException(channel);
+					}
+				}
+			}
+
+		});
+	}
+
 	public <M> void addTaskWorker(String topic, RedissonClient redisson, ITunnelSubscriber<M> listener,
 			boolean integrity, String listentName) {
 		RTopic<String> topicQueue = redisson.getTopic(TunnelEventXchange.TASK_WORKER.getTopic(topic));
-		LOGGER.info("Subscription on Topic : {}", MCQIndicator.messageSubscribed(TunnelEventXchange.TASK_WORKER.getTopic(topic)));
+		LOGGER.info("Subscription on Topic : {}",
+				MCQIndicator.messageSubscribed(TunnelEventXchange.TASK_WORKER.getTopic(topic)));
 		topicQueue.addListener(new MessageListener<String>() {
 			@Override
 			public void onMessage(String channel, String msgId) {
@@ -256,7 +323,8 @@ public class TunnelSubscriberFactory {
 	public <M> void addAuditListener(String topic, RedissonClient redisson, ITunnelSubscriber<M> listener,
 			boolean integrity, String listentName) {
 		RTopic<String> topicQueue = redisson.getTopic(TunnelEventXchange.AUDIT.getTopic(topic));
-		LOGGER.info("Subscription on Topic : {}", MCQIndicator.messageSubscribed(TunnelEventXchange.AUDIT.getTopic(topic)));
+		LOGGER.info("Subscription on Topic : {}",
+				MCQIndicator.messageSubscribed(TunnelEventXchange.AUDIT.getTopic(topic)));
 		topicQueue.addListener(new MessageListener<String>() {
 			@Override
 			public void onMessage(String channel, String msgId) {
