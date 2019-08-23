@@ -1,7 +1,6 @@
 package com.amx.jax.pricer.manager;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -49,8 +48,8 @@ import com.amx.utils.DateUtil;
 public class RemitRoutingManager {
 
 	private static final int MAX_DELIVERY_ATTEMPT_DAYS = 60;
-	private static final BigDecimal FROM_AMT_FRACTION = new BigDecimal(0.00000001);
-	
+	//private static final BigDecimal FROM_AMT_FRACTION = new BigDecimal(0.00000001);
+
 	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd-MMM hh:mm a");
 
 	// TODO : Treasury Funding Time.
@@ -497,10 +496,10 @@ public class RemitRoutingManager {
 			finalDeliveryDetails.setCompletionDateForeign(completionDateForeign);
 
 			// Change the Duration String -- 12th-Aug-2019
-			finalDeliveryDetails.setDeliveryDuration(getDeliveryAtLocalTime(transientDataCache.getTrnxBeginTime(), finalCompletionTT, localTimezone,
-					processTimeTotal));
+			finalDeliveryDetails.setDeliveryDuration(getDeliveryAtLocalTime(transientDataCache.getTrnxBeginTime(),
+					finalCompletionTT, localTimezone, processTimeTotal));
 
-			//finalDeliveryDetails.setDeliveryDuration(getDeliveryDuration(processTimeTotal));
+			// finalDeliveryDetails.setDeliveryDuration(getDeliveryDuration(processTimeTotal));
 
 			finalDeliveryDetails.setCrossedMaxDeliveryDays(crossedMaxDeliveryDays);
 
@@ -549,9 +548,10 @@ public class RemitRoutingManager {
 			BigDecimal toAmt = matrix.getToAmount() == null ? PricerServiceConstants.MAX_BIGD_12 : matrix.getToAmount();
 
 			// Adjust the from amount for Range Correction - only for perfect Integer
-			if (fromAmt.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0) {
-				fromAmt = fromAmt.subtract(BigDecimal.ONE).add(FROM_AMT_FRACTION).setScale(8, RoundingMode.UP);
-			}
+			// if (fromAmt.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0) {
+			// fromAmt = fromAmt.subtract(BigDecimal.ONE).add(FROM_AMT_FRACTION).setScale(8,
+			// RoundingMode.UP);
+			// }
 
 			if (fromAmt.compareTo(breakup.getConvertedFCAmount()) > 0) {
 
@@ -905,7 +905,7 @@ public class RemitRoutingManager {
 			// Set Delivery at : dd-mmm HH:MM
 			deliveryAt = completionZonedDT.format(DATE_FORMATTER);
 		}
-		
+
 		return deliveryAt;
 
 	}
