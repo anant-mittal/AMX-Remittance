@@ -510,15 +510,19 @@ public class PartnerDataManager {
 			beneficiaryDto.setBic_indicator(bicValue);
 			beneficiaryDto.setBeneficiary_bank_branch_indicator(bankBranch);
 
-			beneficiaryDto.setBeneficiary_bank_code(beneficiaryDetailsDTO.getBankCode());
+			 
+			if(dummyRoutingNumber != null) {
+				// dummy routing number setted for USA to Home Send
+				beneficiaryDto.setBeneficiary_bank_code(dummyRoutingNumber);
+			}else {
+				beneficiaryDto.setBeneficiary_bank_code(beneficiaryDetailsDTO.getBankCode());
+			}
+			
 			if(beneficiaryDetailsDTO.getBranchCode() != null) {
 				beneficiaryDto.setBeneficiary_branch_code(beneficiaryDetailsDTO.getBranchCode().toString());
 			}
 			
-			if(dummyRoutingNumber != null) {
-				// dummy account purpose
-				beneficiaryDto.setBeneficiary_bank_branch_swift_code(dummyRoutingNumber);
-			}else if(beneficiaryDetailsDTO.getSwiftBic() != null){
+			if(beneficiaryDetailsDTO.getSwiftBic() != null){
 				beneficiaryDto.setBeneficiary_bank_branch_swift_code(beneficiaryDetailsDTO.getSwiftBic());
 			}else {
 				List<BankBranchView> bankBranchView = bankBranchViewRepository.getBankBranch(beneficiaryDetailsDTO.getBankId(), beneficiaryDetailsDTO.getBranchId());
@@ -1066,7 +1070,6 @@ public class PartnerDataManager {
 		String beneBankAccount = bankAccount;
 		String dummyRoutingNumber = null;
 		String bsbCode = null;
-		String errorMsg = null;
 		if(bankAccount != null) {
 			if(countryAplha3Code.equals(PricerServiceConstants.COUNTRY_AUS_ALPHA3CODE)) {
 				int accountLength = bankAccount.length();

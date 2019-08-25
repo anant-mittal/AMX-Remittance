@@ -334,8 +334,14 @@ public class PartnerTransactionManager extends AbstractModel {
 
 		AccountTypeFromViewModel accountTypeFromViewModel = partnerTransactionDao.getAccountTypeDetails(beneficiaryDetailsDTO.getBankAccountTypeId());
 		if(accountTypeFromViewModel != null) {
-			bankAccountTypeDesc = accountTypeFromViewModel.getAmiecDesc();
+			AmiecAndBankMapping amiecCodes = amiecAndBankMappingRepository.fetchAmiecBankData(metaData.getCountryId(), remitTrnxDto.getRoutingBankId(), accountTypeFromViewModel.getFlexiFiled(), accountTypeFromViewModel.getAmiecCode(),AmxDBConstants.Yes);
+			if(amiecCodes != null && amiecCodes.getBankCode() != null) {
+				bankAccountTypeDesc = amiecCodes.getBankCode();
+			}else {
+				bankAccountTypeDesc = accountTypeFromViewModel.getAmiecDesc();
+			}
 		}
+		
 		beneficiaryDto.setBeneficiary_account_type(removeSpaces(bankAccountTypeDesc));
 
 		String routingNumber_Indic2 = remitTrnxDto.getRoutingNumber_Indic2();
