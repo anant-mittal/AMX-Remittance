@@ -425,6 +425,7 @@ public class DiscountManager {
 		 else {
 			 OnlineMarginMarkup onlineMarginMarkup=new OnlineMarginMarkup();
 			 onlineMarginMarkup.setCountryId(request.getCountryId());
+			 onlineMarginMarkup.setBankId(request.getBankId());
 			 onlineMarginMarkup.setCurrencyId(request.getCurrencyId());
 			 onlineMarginMarkup.setIsActive("Y");
 			 onlineMarginMarkup.setMarginMarkup(request.getMarginMarkup());
