@@ -53,6 +53,12 @@
 			<groupId>com.amx.jax</groupId>
 			<artifactId>lib-probot</artifactId>
 		</dependency>
+		
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>amx-lib</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 
 	<build>

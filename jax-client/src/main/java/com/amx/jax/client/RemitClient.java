@@ -327,6 +327,26 @@ public class RemitClient extends AbstractJaxServiceClient {
 
 	}
 	
+	
+	public AmxApiResponse<CustomerRatingDTO, ?> saveFxorderCustomerRating(CustomerRatingDTO customerRatingDTO)
+			throws RemittanceTransactionValidationException, LimitExeededException {
+
+		try {
+			HttpEntity<CustomerRatingDTO> requestEntity = new HttpEntity<CustomerRatingDTO>(customerRatingDTO,
+					getHeader());
+
+			String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/save-fxorder-customer-rating/";
+			LOGGER.info(" Calling customer rating :" + customerRatingDTO.toString());
+			return restService.ajax(url).post(requestEntity).asApiResponse(CustomerRatingDTO.class);
+		} catch (AbstractJaxException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in customer rating : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
+
+	}
+	
 	public AmxApiResponse<CustomerRatingDTO, ?> inquireCustomerRating(BigDecimal remittanceTrnxId)
 			throws RemittanceTransactionValidationException, LimitExeededException {
 

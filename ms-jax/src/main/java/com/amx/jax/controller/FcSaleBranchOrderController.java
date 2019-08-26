@@ -2,9 +2,6 @@ package com.amx.jax.controller;
 
 
 import java.math.BigDecimal;
-
-import javax.validation.Valid;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +21,7 @@ import com.amx.jax.model.response.fx.FcSaleOrderManagementDTO;
 import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
 import com.amx.jax.model.response.fx.FxOrderTransactionHistroyDto;
 import com.amx.jax.model.response.fx.UserStockDto;
+import com.amx.jax.services.CustomerRatingService;
 import com.amx.jax.services.FcSaleBranchService;
 
 /**
@@ -42,6 +40,9 @@ public class FcSaleBranchOrderController implements IFxBranchOrderService {
 
 	@Autowired
 	MetaData metaData;
+	
+	@Autowired
+	CustomerRatingService customerRatingService;
 	
 
 	/**
@@ -232,6 +233,4 @@ public class FcSaleBranchOrderController implements IFxBranchOrderService {
 		return fcSaleBranch.searchOrder(fcDeliveryBranchOrderSearchRequest);
 	}
 
-	
-
-}
+	}

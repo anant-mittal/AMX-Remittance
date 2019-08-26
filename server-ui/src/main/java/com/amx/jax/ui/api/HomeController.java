@@ -312,6 +312,32 @@ public class HomeController {
 		map.put("valid", valid);
 		return map;
 	}
+	
+	@ApiJaxStatus({ JaxError.CUSTOMER_NOT_FOUND, JaxError.INVALID_OTP, JaxError.ENTITY_INVALID,
+		JaxError.ENTITY_EXPIRED })
+@ApiStatus({ ApiStatusCodes.PARAM_MISSING })
+@RequestMapping(value = { "/pub/rating/{prodType}/{deliveryDetailSeqId}/{veryCode}/**" },
+		method = { RequestMethod.GET }, produces = {
+				CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE })
+@ResponseBody
+public Map<String, Object> fsOrderrating(
+		@PathVariable Products prodType, @PathVariable BigDecimal deliveryDetailSeqId, @PathVariable String veryCode) {
+
+	boolean valid = JaxClientUtil.getTransactionVeryCode(deliveryDetailSeqId).equals(veryCode);
+	AmxApiResponse<CustomerRatingDTO, ?> rating = jaxService.getFxOrderBranchClient().inquirefxOrderCustomerRating(deliveryDetailSeqId,prodType.toString());
+
+	String errorCode = null;
+	String errorMessage = null;
+	Map<String, Object> map = new HashMap<String, Object>();
+	map.put("rating", rating);
+	map.put("trnxId", deliveryDetailSeqId);
+	map.put("errorCode", errorCode);
+	map.put("errorMessage", errorMessage);
+	map.put("prodType", prodType);
+	map.put("verCode", veryCode);
+	map.put("valid", valid);
+	return map;
+}
 
 	@ApiJaxStatus({ JaxError.CUSTOMER_NOT_FOUND, JaxError.INVALID_OTP, JaxError.ENTITY_INVALID,
 			JaxError.ENTITY_EXPIRED })

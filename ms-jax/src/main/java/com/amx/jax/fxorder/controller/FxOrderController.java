@@ -1,4 +1,8 @@
 package com.amx.jax.fxorder.controller;
+/**
+ * Author : Radhika
+ * Date   : 09/07/2019
+ */
 
 import static com.amx.amxlib.constant.ApiEndpoint.FX_ORDER_ENDPOINT;
 
@@ -15,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.CustomerRatingDTO;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.client.fx.IFxBranchOrderService.Path;
 import com.amx.jax.dbmodel.CustomerRating;
 import com.amx.jax.dict.AmxEnums;
 import com.amx.jax.services.CustomerRatingService;
@@ -28,17 +33,18 @@ public class FxOrderController {
 	CustomerRatingService customerRatingService;
 
 	
-	
-	@RequestMapping(value = "/save-customer-rating/", method = RequestMethod.POST)
-	public AmxApiResponse<CustomerRating, ?> saveCustomerRating(@RequestBody @Valid CustomerRatingDTO dto) {
+	@RequestMapping(value = "/save-fxorder-customer-rating/", method = RequestMethod.POST)
+	public AmxApiResponse<CustomerRating, ?> saveFxorderCustomerRating(@RequestBody @Valid CustomerRatingDTO dto) {
 		return customerRatingService.fxOrdersaveCustomerRating(dto);
 	}
 
-	// radhika
-	@RequestMapping(value = "/customer-trnx-rating/", method = RequestMethod.POST)
-	public AmxApiResponse<CustomerRating, ?> inquireCustomerRating(@RequestParam BigDecimal remittanceTrnxId,String product) {
-		return customerRatingService.fxOrderinquireCustomerRating(remittanceTrnxId, product);
 
-	}
+		@RequestMapping(value = Path.FC_CUSTOMER_RATING , method = RequestMethod.POST)
+		public AmxApiResponse<CustomerRating, ?> inquireFxOrderCustomerRating(@RequestParam BigDecimal deliveryDetailSeqId,String product) {
+			return customerRatingService.fxOrderinquireCustomerRating(deliveryDetailSeqId, product);
+
+		}
+
+	
 
 }

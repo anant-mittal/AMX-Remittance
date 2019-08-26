@@ -1,12 +1,19 @@
 package com.amx.jax.client.fx;
 
+import static com.amx.amxlib.constant.ApiEndpoint.REMIT_API_ENDPOINT;
+
 import java.math.BigDecimal;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Component;
 
+import com.amx.amxlib.exception.AbstractJaxException;
+import com.amx.amxlib.exception.LimitExeededException;
+import com.amx.amxlib.exception.RemittanceTransactionValidationException;
+import com.amx.amxlib.meta.model.CustomerRatingDTO;
 import com.amx.jax.AppConfig;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
@@ -32,6 +39,8 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 
 	@Autowired
 	AppConfig appConfig;
+	
+	
 	
 	/**
 	 * 
@@ -314,6 +323,31 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 			LOGGER.error("exception in SearchOrder : ", e);
 			return JaxSystemError.evaluate(e);
 		}
+	}
+
+	
+	public AmxApiResponse<CustomerRatingDTO, ?> inquirefxOrderCustomerRating(BigDecimal deliveryDetailSeqId, String product)
+			throws RemittanceTransactionValidationException, LimitExeededException {
+
+		try {
+					
+			CustomerRatingDTO request = new CustomerRatingDTO();
+			request.setRemittanceTransactionId(deliveryDetailSeqId);
+			request.setProducttype(product);
+			HttpEntity<CustomerRatingDTO> requestEntity = new HttpEntity<CustomerRatingDTO>(
+					request, getHeader());
+			
+			return restService.ajax(appConfig.getJaxURL() + Path.FC_CUSTOMER_RATING).meta(new JaxMetaInfo()).post(requestEntity)
+					.queryParam("deliveryDetailSeqId", deliveryDetailSeqId)
+					.queryParam("product", product)
+					.asApiResponse(CustomerRatingDTO.class);
+		} catch (AbstractJaxException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in Inquire customer rating : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
+
 	}
 
 }
