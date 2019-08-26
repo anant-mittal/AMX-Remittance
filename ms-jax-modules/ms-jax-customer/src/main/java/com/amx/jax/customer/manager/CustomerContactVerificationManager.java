@@ -187,8 +187,12 @@ public class CustomerContactVerificationManager {
 	private void markCustomerContactVerified(Customer c, ContactType type, String contact) {
 
 		List<Customer> otherCustomers = null;
+		/**
+		 * Old Customer Links from Branch Verified
+		 */
 		CustomerVerification cv = customerVerificationService.getVerification(c.getCustomerId(),
 				CustomerVerificationType.EMAIL);
+		
 		CustomerOnlineRegistration customerOnlineRegistration = onlineCustomerRepository
 				.getLoginCustomersDeatilsById(c.getIdentityInt());
 
@@ -205,8 +209,6 @@ public class CustomerContactVerificationManager {
 			if(cv!=null) {
 				cv.setVerificationStatus(ConstantDocument.Yes);
 			}
-			
-			cv.setVerificationStatus(ConstantDocument.Yes);
 			customerOnlineRegistration.setStatus(ConstantDocument.Yes);
 		} else if (ContactType.SMS.equals(type)) {
 			String mobile = c.getPrefixCodeMobile() + c.getMobile();
@@ -240,8 +242,9 @@ public class CustomerContactVerificationManager {
 		}
 
 		customerRepository.save(c);
+		
 		if(cv!=null) {
-		customerVerificationRepository.save(cv);
+			customerVerificationRepository.save(cv);
 		}
 		
 		onlineCustomerRepository.save(customerOnlineRegistration);
