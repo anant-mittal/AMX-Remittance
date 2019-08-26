@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.fx.FcSaleOrderClient;
 import com.amx.jax.client.fx.IFxOrderService;
@@ -208,7 +209,7 @@ public class FxOrderController {
 		if (File.Type.PDF.equals(ext)) {
 			File file = postManService.processTemplate(
 					new File(duplicate ? TemplatesMX.FXO_RECEIPT : TemplatesMX.FXO_RECEIPT,
-							wrapper, File.Type.PDF))
+							wrapper, File.Type.PDF).lang(AppContextUtil.getTenant().defaultLang()))
 					.getResult();
 			// file.create(response, false);
 			// return null;
@@ -217,7 +218,7 @@ public class FxOrderController {
 		} else if (File.Type.HTML.equals(ext)) {
 			File file = postManService.processTemplate(
 					new File(duplicate ? TemplatesMX.FXO_RECEIPT : TemplatesMX.FXO_RECEIPT,
-							wrapper, File.Type.HTML))
+							wrapper, File.Type.HTML).lang(AppContextUtil.getTenant().defaultLang()))
 					.getResult();
 			// return file.getContent();
 			return PostManUtil.download(file);
