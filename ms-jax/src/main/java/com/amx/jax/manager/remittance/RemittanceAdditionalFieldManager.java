@@ -397,7 +397,7 @@ private List<JaxFieldValueDto> getSwiftBankDetails(BigDecimal beneBankCountryId)
 			FlexFieldDto ffDto = new FlexFieldDto(x.getSerialNumber(), x.getSwiftId(),x.getBankName(),x.getSwiftBIC());
 			JaxFieldValueDto dto = new JaxFieldValueDto();
 			dto.setId(ffDto.getSrlId());
-			dto.setOptLable(ffDto.getAmieceDescription());
+			dto.setOptLable(ffDto.getAmiecCode()+"-"+ffDto.getAmieceDescription());
 			dto.setValue(ffDto);
 			return dto;
 		}).collect(Collectors.toList());
