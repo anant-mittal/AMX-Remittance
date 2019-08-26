@@ -30,6 +30,7 @@ import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ParameterDetails;
 import com.amx.jax.dbmodel.remittance.CustomerBank;
 import com.amx.jax.dbmodel.remittance.LocalBankDetailsView;
+import com.amx.jax.dbmodel.remittance.PaymentLinkModel;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.ShoppingCartDetails;
 import com.amx.jax.dbmodel.remittance.StaffAuthorizationView;
@@ -49,12 +50,15 @@ import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.CustomerBankRelationNameDto;
 import com.amx.jax.model.response.remittance.CustomerShoppingCartDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
+import com.amx.jax.model.response.remittance.PaymentLinkAppDto;
 import com.amx.jax.model.response.remittance.PaymentModeDto;
 import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
 import com.amx.jax.repository.IBankMasterFromViewDao;
 import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.ICustomerRepository;
 import com.amx.jax.repository.IPaymentLinkDetailsRepository;
+import com.amx.jax.repository.IShoppingCartDetailsDao;
+import com.amx.jax.repository.IShoppingCartDetailsRepository;
 import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.util.CryptoUtil;
@@ -101,6 +105,9 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 	
 	@Autowired
 	IPaymentLinkDetailsRepository paymentLinkDetailsRepository;
+	
+	@Autowired
+	IShoppingCartDetailsRepository iShoppingCartDetailsRepository;
 
 
 	/* 
@@ -119,6 +126,7 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		
 		
 		List<CustomerShoppingCartDto> lstCustShpcrt = new ArrayList<>();
+		List<PaymentLinkAppDto> listPaymentLinkAppDto = new ArrayList<PaymentLinkAppDto>();
 		FxExchangeRateBreakup breakup = new FxExchangeRateBreakup();
 		BigDecimal decimalNumber = BigDecimal.ZERO;
 		CurrencyMasterModel currencyMaster = currencyMasterService.getCurrencyMasterById(localCurrencyId);
@@ -160,7 +168,22 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 					if(currencyMaster != null) {
 						breakup.setFcDecimalNumber(currencyMaster.getDecinalNumber() == null ? decimalNumber : currencyMaster.getDecinalNumber());
 						lstCustShpcrt.add(createCustomerShoppingCartDto(customerApplDto,localCurrencyId,fcCurrencyId,breakup));
+						if(customerApplDto.getPaymentLinkId()!=null) {
+							PaymentLinkModel paymentLinkModel = paymentLinkDetailsRepository.findOne(customerApplDto.getPaymentLinkId());
+							if(ConstantDocument.DIRECT_PAYMENT_LINK_PAID.equalsIgnoreCase(paymentLinkModel.getIsActive())) {
+								String applicationIds = paymentLinkModel.getApplicationIds();
+								String appIdsArray[] = applicationIds.split(",");
+								for(int i=0;i<appIdsArray.length;i++) {
+									listPaymentLinkAppDto.add(createPaymentLinkAppDto(new BigDecimal(appIdsArray[i]), paymentLinkModel));
+									cartList.setPaymentLinkAppDto(listPaymentLinkAppDto);
+								}
+							}
+							
+							
+						}
+						
 						cartList.setShoppingCartDetails(lstCustShpcrt);
+						
 						
 					}else {
 						throw new GlobalException(JaxError.INVALID_CURRENCY_ID, "Invalid foreign currency id passed");
@@ -566,6 +589,21 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		*/
 		config.setTodayTrnxAmount(todayTrnxLimit);
 		return config;
+		
+	}
+	
+	private PaymentLinkAppDto createPaymentLinkAppDto(BigDecimal remittanceApplicationId,PaymentLinkModel paymentLinkModel) {
+		ShoppingCartDetails shoppingCartDetails=iShoppingCartDetailsRepository.findByCustomerIdAndRemittanceApplicationId(metaData.getCustomerId(), remittanceApplicationId); 
+		PaymentLinkAppDto paymentLinkAppDto = new PaymentLinkAppDto();
+		paymentLinkAppDto.setRemittanceApplicationId(remittanceApplicationId);
+		paymentLinkAppDto.setLinkDate(paymentLinkModel.getLinkDate());
+		paymentLinkAppDto.setCustomerId(metaData.getCustomerId());
+		paymentLinkAppDto.setAmount(shoppingCartDetails.getLocalNextTranxAmount());
+		paymentLinkAppDto.setForeignAmount(shoppingCartDetails.getForeignTranxAmount());
+		paymentLinkAppDto.setExchangeRate(shoppingCartDetails.getExchangeRateApplied());
+		paymentLinkAppDto.setForeignCurrencyDesc(shoppingCartDetails.getForeignCurrencyDesc());
+		return paymentLinkAppDto;
+		
 		
 	}
 

@@ -67,7 +67,16 @@ public class ShoppingCartDetails implements Serializable {
 	private BigDecimal amtbCouponEncashed;
 	private BigDecimal routingBankId;
 	private BigDecimal beneRelationseqId;
+	private BigDecimal paymentLinkId;
 	
+	public BigDecimal getPaymentLinkId() {
+		return paymentLinkId;
+	}
+
+	public void setPaymentLinkId(BigDecimal paymentLinkId) {
+		this.paymentLinkId = paymentLinkId;
+	}
+
 	public ShoppingCartDetails() {
 		super();
 	}
