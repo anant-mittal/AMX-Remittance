@@ -28,6 +28,7 @@ import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.CustomerProfileClient;
 import com.amx.jax.client.JaxClientUtil;
+import com.amx.jax.client.remittance.RemittanceClient;
 import com.amx.jax.dict.AmxEnums.Products;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.dict.Language;
@@ -98,6 +99,9 @@ public class HomeController {
 	/** The post man service. */
 	@Autowired
 	private RestService restService;
+
+	@Autowired
+	RemittanceClient remittanceClient;
 
 	/**
 	 * Gets the version.
@@ -322,6 +326,18 @@ public class HomeController {
 		Map<String, Object> map = rating(prodType, trnxId, veryCode);
 		model.addAttribute("ratingData", (map));
 		model.addAttribute("companyTnt", AppContextUtil.getTenant());
+		return "rating";
+	}
+
+	@ApiJaxStatus({ JaxError.CUSTOMER_NOT_FOUND, JaxError.INVALID_OTP, JaxError.ENTITY_INVALID,
+			JaxError.ENTITY_EXPIRED })
+	@ApiStatus({ ApiStatusCodes.PARAM_MISSING })
+	@RequestMapping(value = { "/pub/pay/{prodType}/{linkId}/{veryCode}" },
+			method = { RequestMethod.GET })
+	public String directPayment(Model model,
+			@PathVariable Products prodType, @PathVariable BigDecimal linkId, @PathVariable String veryCode) {
+		model.addAttribute("cart", remittanceClient.validatePayLink(linkId, veryCode));
+		model.addAttribute("tnt", AppContextUtil.getTenant());
 		return "rating";
 	}
 }
