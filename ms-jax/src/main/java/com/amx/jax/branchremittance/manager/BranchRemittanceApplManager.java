@@ -365,7 +365,8 @@ public class BranchRemittanceApplManager {
 			if(!StringUtils.isBlank(applRequestModel.getSignature())) {
 				signature =applRequestModel.getSignature();
 			}else {
-				signature =getCustomerSignature();
+				//signature =getCustomerSignature();
+				throw new GlobalException(JaxError.CUSTOMER__SIGNATURE_UNAVAILABLE,"Customer signature required");
 			}
 
 			if(!StringUtils.isBlank(signature)) {
