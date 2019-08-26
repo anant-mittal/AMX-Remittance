@@ -3,6 +3,7 @@ package com.amx.jax.pricer.service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.pricer.dao.BankMasterDao;
 import com.amx.jax.pricer.dao.ChannelDiscountDao;
 import com.amx.jax.pricer.dao.CountryBranchDao;
@@ -18,6 +20,7 @@ import com.amx.jax.pricer.dao.CurrencyMasterDao;
 import com.amx.jax.pricer.dao.CustCatDiscountDao;
 import com.amx.jax.pricer.dao.DiscountMasterDao;
 import com.amx.jax.pricer.dao.GroupingMasterDao;
+import com.amx.jax.pricer.dao.MarginMarkupDao;
 import com.amx.jax.pricer.dao.PipsMasterDao;
 import com.amx.jax.pricer.dao.RoutingDaoAlt;
 import com.amx.jax.pricer.dao.ServiceMasterDescDao;
@@ -25,6 +28,7 @@ import com.amx.jax.pricer.dbmodel.CountryBranch;
 import com.amx.jax.pricer.dbmodel.CurrencyMasterModel;
 import com.amx.jax.pricer.dbmodel.DiscountMaster;
 import com.amx.jax.pricer.dbmodel.GroupingMaster;
+import com.amx.jax.pricer.dbmodel.OnlineMarginMarkup;
 import com.amx.jax.pricer.dbmodel.PipsMaster;
 import com.amx.jax.pricer.dbmodel.RoutingHeader;
 import com.amx.jax.pricer.dto.AmountSlabDetails;
@@ -34,11 +38,15 @@ import com.amx.jax.pricer.dto.CustomerCategoryDetails;
 import com.amx.jax.pricer.dto.DiscountDetailsReqRespDTO;
 import com.amx.jax.pricer.dto.DiscountMgmtReqDTO;
 import com.amx.jax.pricer.dto.GroupDetails;
+import com.amx.jax.pricer.dto.OnlineMarginMarkupInfo;
+import com.amx.jax.pricer.dto.OnlineMarginMarkupReq;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
 import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.manager.DiscountManager;
+import com.amx.jax.pricer.meta.ProbotMetaInfo;
 import com.amx.jax.pricer.var.PricerServiceConstants.DISCOUNT_TYPE;
+
 
 @Service
 public class ExchangeDataService {
@@ -75,6 +83,12 @@ public class ExchangeDataService {
 
 	@Autowired
 	CurrencyMasterDao currencyMasterDao;
+	
+	@Autowired
+	MarginMarkupDao marginMarkupDao;
+	
+	@Autowired
+	private ProbotMetaInfo metaInfo;
 
 	private static BigDecimal OnlineCountryBranchId;
 
@@ -128,7 +142,7 @@ public class ExchangeDataService {
 		}
 
 		if (discountMgmtReqDTO.getDiscountType().contains(DISCOUNT_TYPE.AMOUNT_SLAB)) {
-			if (null != discountMgmtReqDTO.getCountryId() && null != discountMgmtReqDTO.getCurrencyId()) {
+			if (null != discountMgmtReqDTO.getCountryId() && null != discountMgmtReqDTO.getCurrencyId() && null != discountMgmtReqDTO.getBankId()) {
 
 				if (OnlineCountryBranchId == null) {
 					CountryBranch cb = countryBranchDao.getOnlineCountryBranch();
@@ -136,10 +150,12 @@ public class ExchangeDataService {
 				}
 
 				List<PipsMaster> pipsMasterData = pipsMasterDao.getAmountSlab(discountMgmtReqDTO.getCountryId(),
-						discountMgmtReqDTO.getCurrencyId(), OnlineCountryBranchId);
+						discountMgmtReqDTO.getCurrencyId(), OnlineCountryBranchId,discountMgmtReqDTO.getBankId());
 				List<AmountSlabDetails> amountSlabData = discountManager.convertAmountSlabData(pipsMasterData);
+				
 				discountMgmtRespDTO.setAmountSlabDetails(amountSlabData);
 			}
+			
 		}
 
 		return discountMgmtRespDTO;
@@ -185,7 +201,9 @@ public class ExchangeDataService {
 
 		if (null != discountdetailsRequestDTO.getAmountSlabDetails()) {
 			discountManager.commitPipsDiscount(discountdetailsRequestDTO.getAmountSlabDetails());
+
 		}
+		
 
 		return AmxApiResponse.build();
 	}
@@ -210,5 +228,26 @@ public class ExchangeDataService {
 		List<CurrencyMasterDTO> currencyData = discountManager.convertCurrencyData(currencyByGrId);
 		return currencyData;
 	}
-
+	public OnlineMarginMarkupInfo getOnlineMarginMarkupData(OnlineMarginMarkupReq request) {
+		 OnlineMarginMarkup marginMarkupData= marginMarkupDao.getMarkupData(request.getCountryId(), request.getCurrencyId(), request.getBankId());
+		 OnlineMarginMarkupInfo marginMarkupInfo;
+		 if(marginMarkupData!=null) {
+		  marginMarkupInfo=discountManager.convertMarkup(marginMarkupData);
+		 }
+		 else {
+		 marginMarkupInfo=new OnlineMarginMarkupInfo();
+		 }
+		
+		return marginMarkupInfo;
+	}
+	public BoolRespModel saveOnlineMarginMarkupData(OnlineMarginMarkupInfo request) {
+		 OnlineMarginMarkup marginMarkupData= marginMarkupDao.getMarkupData(request.getCountryId(), request.getCurrencyId(), request.getBankId());
+		 Boolean resp=discountManager.commitMarkup(marginMarkupData,request );
+		 if(resp == true)
+		 return new BoolRespModel(Boolean.TRUE);
+		 else
+	    return new BoolRespModel(Boolean.FALSE);
+				
+		}
+	
 }

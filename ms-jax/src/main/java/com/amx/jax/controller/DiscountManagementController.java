@@ -14,6 +14,7 @@ import com.amx.amxlib.model.CountryBranchDTO;
 import com.amx.jax.IDiscManagementService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.pricer.dto.PricingAndCostResponseDTO;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
 import com.amx.jax.services.DiscountManagementService;
@@ -35,7 +36,7 @@ public class DiscountManagementController implements IDiscManagementService {
 	
 	@Override
 	@RequestMapping(value = ApiEndPoints.GET_DISCOUTN_RATE, method = RequestMethod.POST)
-	public AmxApiResponse<PricingResponseDTO, Object> fetchDiscountedRates(@RequestBody @Valid PricingRequestDTO pricingRequestDTO) {
+	public AmxApiResponse<PricingAndCostResponseDTO, Object> fetchDiscountedRates(@RequestBody @Valid PricingRequestDTO pricingRequestDTO) {
 		return discountManagementService.fetchDiscountedRates(pricingRequestDTO);
 	}
 }

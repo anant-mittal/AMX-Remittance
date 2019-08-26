@@ -380,12 +380,16 @@ public class RemittancePaymentManager extends AbstractService{
 	}
 	
 	public void callingServiceProviderApi(RemittanceResponseDto responseDto,BigDecimal customerId) {
+		TransactionDetailsView serviceProviderView = null;
+		String partnerTransactionId = null;
+		
 		if(responseDto!=null && JaxUtil.isNullZeroBigDecimalCheck(responseDto.getCollectionDocumentNo())) {
 			Boolean spCheckStatus = Boolean.FALSE;
 			List<TransactionDetailsView> lstTrnxDetails = partnerTransactionDao.fetchTrnxSPDetails(customerId,responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo());
 			for (TransactionDetailsView transactionDetailsView : lstTrnxDetails) {
 				if(transactionDetailsView.getBankCode().equalsIgnoreCase(SERVICE_PROVIDER_BANK_CODE.HOME.name())) {
 					spCheckStatus = Boolean.TRUE;
+					serviceProviderView = transactionDetailsView;
 					break;
 				}
 			}
@@ -393,7 +397,10 @@ public class RemittancePaymentManager extends AbstractService{
 			if(spCheckStatus) {
 				AmxApiResponse<Remittance_Call_Response, Object> apiResponse = partnerTransactionManager.callingPartnerApi(responseDto);
 				if(apiResponse != null) {
-					RemitTrnxSPDTO remitTrnxSPDTO = partnerTransactionManager.saveRemitTransactionDetails(apiResponse,responseDto);
+					if(serviceProviderView != null && serviceProviderView.getPartnerSessionId() != null) {
+						partnerTransactionId = serviceProviderView.getPartnerSessionId();
+					}
+					RemitTrnxSPDTO remitTrnxSPDTO = partnerTransactionManager.saveRemitTransactionDetails(apiResponse,responseDto,partnerTransactionId);
 					if(remitTrnxSPDTO != null && remitTrnxSPDTO.getActionInd() != null && remitTrnxSPDTO.getResponseDescription() != null) {
 						// got success to fetch response from API
 						logger.info(" Service provider result Action Ind " +remitTrnxSPDTO.getActionInd() + " Description : " + remitTrnxSPDTO.getResponseDescription());

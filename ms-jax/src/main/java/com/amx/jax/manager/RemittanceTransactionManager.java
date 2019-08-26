@@ -314,11 +314,13 @@ public class RemittanceTransactionManager {
 		Map<String, Object>  routingDetails =setupRoutingDetails(trnxRoutingDetails);
 		
 		// validation for Home Send SP
+		boolean spStatus = Boolean.FALSE;
 		if(dynamicRoutingPricing != null && dynamicRoutingPricing.getServiceProviderDto() != null) {
 			BankMasterModel bankMaster = bankMasterRepo.findByBankCodeAndRecordStatus(PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name(), PricerServiceConstants.Yes);
 			// home send related validation check
 			if(bankMaster != null && trnxRoutingDetails.getRoutingBankId().compareTo(bankMaster.getBankId()) == 0) {
 				partnerTransactionManager.validateServiceProvider(model.getAdditionalFields(),model.getBeneId());
+				spStatus = Boolean.TRUE;
 			}
 		}
 		
@@ -376,14 +378,25 @@ public class RemittanceTransactionManager {
 
 		logger.info("rountingCountryId: " + rountingCountryId + " serviceMasterId: " + serviceMasterId);
 
-		applyCurrencyRoudingLogic(breakup);
+		if(spStatus) {
+			applyCurrencyRoudingLogicSP(breakup);
+		}else {
+			applyCurrencyRoudingLogic(breakup);
+		}
+		
 		validateTransactionAmount(breakup, commission, currencyId);
 		// commission
 		responseModel.setTxnFee(commission);
 		// exrate
 		responseModel.setExRateBreakup(breakup);
-		addExchangeRateParameters(responseModel); 
-		applyCurrencyRoudingLogic(responseModel.getExRateBreakup());
+		addExchangeRateParameters(responseModel);
+		
+		if(spStatus) {
+			applyCurrencyRoudingLogicSP(responseModel.getExRateBreakup());
+		}else {
+			applyCurrencyRoudingLogic(responseModel.getExRateBreakup());
+		}
+		
 		setCustomerDiscountColumnsV2(responseModel, dynamicRoutingPricing);
 		return responseModel;
 

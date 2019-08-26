@@ -901,6 +901,7 @@ public BeneAdditionalDto getAdditionalBeneDetailJax(BenificiaryListView benefica
 	 
 	 ServiceApplicabilityRule serviceApplRuleforBank = null;
 	 ServiceApplicabilityRule serviceApplRuleforBranch = null;
+	 ServiceApplicabilityRule serviceApplRuleforBeneSwiftBank = null;
 	 BigDecimal routingCountry = routingBankMasterModel.getBankCountryId();
 	 if(spStatus) {
 		 /** GET THE SERVICE APPL RULE  FOR BANK **/
@@ -914,20 +915,16 @@ public BeneAdditionalDto getAdditionalBeneDetailJax(BenificiaryListView benefica
 		 
 		 /** GET THE SERVICE APPL RULE  FOR BRANCH **/
 		 serviceApplRuleforBranch =serviceApplRule.getServiceApplicabilityRulesForBranchAndSwift(applicationCountry, beneCountry, currencyId, ConstantDocument.BNFBRCH, remittanceModeId, deliveryModeId);
+		 
+		 /** GET THE SERVICE APPL RULE  FOR SWIFT BANK **/
+		 serviceApplRuleforBeneSwiftBank =serviceApplRule.getServiceApplicabilityRulesForBranchAndSwift(applicationCountry, routingCountryId, currencyId, ConstantDocument.BNFBANK_SWIFT, remittanceModeId, deliveryModeId);
 	 }
-	 
-	 /** GET THE SERVICE APPL RULE  FOR SWIFT BANK **/
-	 ServiceApplicabilityRule serviceApplRuleforBeneSwiftBank =serviceApplRule.getServiceApplicabilityRulesForBranchAndSwift(applicationCountry, routingCountryId, currencyId, ConstantDocument.BNFBANK_SWIFT, remittanceModeId, deliveryModeId);
-		
-	
 	 
 	/** GET THE ROUTING BANK AND BRANCH NAME **/
 	 List<BankBranchView> routingBankBranchView = bankBranchRepo.getBankBranch(routingBankId,routingBranchId);
 	
 	 /**  GET THE BENEFICARY BANK AND BRANCH NAME **/
 	 List<BankBranchView> beneBankBranchView = bankBranchRepo.getBankBranch(beneBankId,beneBranchId);
-	 
-	 
 	 
 	if(routingBankMasterModel==null) {
 		throw new GlobalException(JaxError.INVALID_ROUTING_BANK, "Invalid  bank");
@@ -952,10 +949,6 @@ public BeneAdditionalDto getAdditionalBeneDetailJax(BenificiaryListView benefica
 		engBeneName = beneficaryDetails.getBenificaryName();
 	}
 	 
-	
-	
-	
-	
 	if(langInd.equalsIgnoreCase(ConstantDocument.L_ENG)){
 		if(StringUtils.isBlank(engBeneName)) {
 				throw new GlobalException(JaxError.BENE_ENGLISH_NAME_REQUIRED, "English name not available for beneficiary");
@@ -1076,7 +1069,6 @@ public BeneAdditionalDto getAdditionalBeneDetailJax(BenificiaryListView benefica
 		if(StringUtils.isBlank(swiftBic)) {
 			throw new GlobalException(JaxError.BANK_SWIFT_EMPTY, " Beneficiary swift is mandatory  "+beneBankName +"\t bene branch "+beneBranchFullName);
 		}
-		
 	}
 	
 	
