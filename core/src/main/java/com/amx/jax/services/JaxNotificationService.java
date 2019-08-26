@@ -111,6 +111,7 @@ public class JaxNotificationService {
 		file.setITemplate(TemplatesMX.FXO_RECEIPT);
 		file.setType(File.Type.PDF);
 		file.getModel().put(Message.RESULTS_KEY, CollectionUtil.getList(remittanceReceiptSubreport));
+		file.setLang(AppContextUtil.getTenant().defaultLang());
 
 		email.addFile(file);
 		logger.debug("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getCustomerName());
