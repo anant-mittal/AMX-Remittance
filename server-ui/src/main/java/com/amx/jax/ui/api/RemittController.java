@@ -149,7 +149,6 @@ public class RemittController {
 		file.setITemplate(TemplatesMX.REMIT_STATMENT_EMAIL_FILE);
 		file.setType(File.Type.PDF);
 		file.getModel().put(UIConstants.RESP_DATA_KEY, data);
-		file.setLang(AppContextUtil.getTenant().defaultLang());
 		Email email = new Email();
 		email.setSubject(String.format("Transaction Statement %s - %s", fromDate, toDate));
 		email.addTo(sessionService.getUserSession().getCustomerModel().getEmail());
