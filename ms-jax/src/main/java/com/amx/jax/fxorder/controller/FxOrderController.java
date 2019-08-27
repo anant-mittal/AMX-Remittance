@@ -17,11 +17,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.amx.amxlib.meta.model.CustomerRatingDTO;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.fx.IFxBranchOrderService.Path;
 import com.amx.jax.dbmodel.CustomerRating;
 import com.amx.jax.dict.AmxEnums;
+import com.amx.jax.model.customer.CustomerRatingDTO;
 import com.amx.jax.services.CustomerRatingService;
 
 @RestController

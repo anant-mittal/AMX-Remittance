@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 
-import com.amx.amxlib.meta.model.CustomerRatingDTO;
 import com.amx.jax.AppConstants;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
@@ -40,6 +39,7 @@ import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
 import com.amx.jax.http.RequestType;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.model.customer.CustomerRatingDTO;
 import com.amx.jax.rest.RestService;
 import com.amx.jax.swagger.ApiStatusBuilder.ApiStatus;
 import com.amx.jax.ui.UIConstants;

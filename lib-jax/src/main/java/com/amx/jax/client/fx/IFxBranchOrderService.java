@@ -2,7 +2,6 @@ package com.amx.jax.client.fx;
 
 import java.math.BigDecimal;
 
-import com.amx.amxlib.meta.model.CustomerRatingDTO;
 import com.amx.jax.IJaxService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;

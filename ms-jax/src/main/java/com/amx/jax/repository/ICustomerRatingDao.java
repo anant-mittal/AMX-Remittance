@@ -7,9 +7,9 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import com.amx.amxlib.meta.model.CustomerRatingDTO;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerRating;
+import com.amx.jax.model.customer.CustomerRatingDTO;
 
 public interface ICustomerRatingDao extends JpaRepository<CustomerRating, Serializable> {
 	void save(CustomerRatingDTO dto);

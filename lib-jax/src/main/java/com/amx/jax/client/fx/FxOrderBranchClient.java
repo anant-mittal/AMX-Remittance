@@ -1,6 +1,5 @@
 package com.amx.jax.client.fx;
 
-import static com.amx.amxlib.constant.ApiEndpoint.REMIT_API_ENDPOINT;
 
 import java.math.BigDecimal;
 
@@ -10,16 +9,13 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Component;
 
-import com.amx.amxlib.exception.AbstractJaxException;
-import com.amx.amxlib.exception.LimitExeededException;
-import com.amx.amxlib.exception.RemittanceTransactionValidationException;
-import com.amx.amxlib.meta.model.CustomerRatingDTO;
 import com.amx.jax.AppConfig;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.configs.JaxMetaInfo;
-
+import com.amx.jax.exception.AbstractJaxException;
 import com.amx.jax.exception.JaxSystemError;
+import com.amx.jax.model.customer.CustomerRatingDTO;
 import com.amx.jax.model.request.fx.FcDeliveryBranchOrderSearchRequest;
 import com.amx.jax.model.request.fx.FcSaleBranchDispatchRequest;
 import com.amx.jax.model.response.fx.FcEmployeeDetailsDto;
@@ -326,8 +322,7 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 	}
 
 	
-	public AmxApiResponse<CustomerRatingDTO, ?> inquirefxOrderCustomerRating(BigDecimal deliveryDetailSeqId, String product)
-			throws RemittanceTransactionValidationException, LimitExeededException {
+	public AmxApiResponse<CustomerRatingDTO, ?> inquirefxOrderCustomerRating(BigDecimal deliveryDetailSeqId, String product) {
 
 		try {
 					
