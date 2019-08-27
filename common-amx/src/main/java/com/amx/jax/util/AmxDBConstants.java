@@ -192,5 +192,11 @@ public class AmxDBConstants {
 	public static final String  COMM_INCLUDE= "I";
 	public static final String COMM_EXCLUDE="E";
 	
+	// Constants for WU Notifications
+	public static final String WU_PAID = "PAID";
+	public static final String WU_PICK = "PICK_REMINDER";
+	public static final String WU_CANC_REM = "CANC_REMINDER";
+	
+	
 	
 }
