@@ -13,10 +13,12 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.NotificationConstants;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.branchremittance.manager.BranchRemittancePaymentManager;
 import com.amx.jax.branchremittance.manager.DirectPaymentLinkManager;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.model.response.customer.CustomerDto;
 import com.amx.jax.model.response.customer.PersonInfo;
+import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.PaymentLinkRespDTO;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.postman.PostManException;
@@ -46,20 +48,28 @@ public class DirectPaymentLinkService extends AbstractService {
 	
 	@Autowired
 	CustomerRepository customerRepository;
+	
+	@Autowired
+	BranchRemittancePaymentManager branchRemittancePaymentManager;
 
 	public PaymentLinkRespDTO fetchPaymentLinkDetails(BigDecimal customerId, BigDecimal localCurrencyId) {
-		PaymentLinkRespDTO paymentdto = directPaymentLinkManager.fetchPaymentLinkDetails(customerId, localCurrencyId);
+		
+		BranchRemittanceApplResponseDto shpCartData = branchRemittancePaymentManager.fetchCustomerShoppingCart(customerId, localCurrencyId);
+		//PaymentLinkRespDTO paymentdto = directPaymentLinkManager.fetchPaymentLinkDetails(customerId, localCurrencyId);
+		
+		PaymentLinkRespDTO paymentDtoNEW = directPaymentLinkManager.getPaymentLinkDetails(customerId, shpCartData);
 		
 		PersonInfo personInfo = userService.getPersonInfo(customerId);
-		sendDirectLinkEmail(paymentdto, personInfo, customerId);
-		sendDirectLinkSMS(paymentdto, personInfo, customerId);
+		sendDirectLinkEmail(paymentDtoNEW, personInfo, customerId);
+		sendDirectLinkSMS(paymentDtoNEW, personInfo, customerId);
 
-		return paymentdto;
+		return paymentDtoNEW;
 	}
 
 	public PaymentLinkRespDTO validatePayLink(BigDecimal linkId, String verificationCode) {
-		PaymentLinkRespDTO paymentdto = directPaymentLinkManager.validatePayLink(linkId, verificationCode);
-		return paymentdto;
+		//PaymentLinkRespDTO paymentdto = directPaymentLinkManager.validatePayLink(linkId, verificationCode);
+		PaymentLinkRespDTO paymentdtoNew = directPaymentLinkManager.validatePaymentLinkNew(linkId, verificationCode);
+		return paymentdtoNew;
 	}
 
 	public void sendDirectLinkEmail(PaymentLinkRespDTO paymentdto, PersonInfo personInfo,BigDecimal customerId) {

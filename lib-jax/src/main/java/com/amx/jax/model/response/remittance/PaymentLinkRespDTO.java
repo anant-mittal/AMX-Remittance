@@ -14,11 +14,20 @@ public class PaymentLinkRespDTO implements Serializable {
 	private String applicationIds;
 
 	private String curQutoe;
-	private BigDecimal amount;
+	private BigDecimal netAmount;
 	private Date requestData;
+	
+	private BigDecimal totalTrnxAmount;
+	private BigDecimal totalCommissionAmt;
 
 	private List<TransactionDetailsDTO> transactionDetails;
 	private PaymentLinkRespStatus paymentLinkRespStatus;
+
+	private List<CustomerShoppingCartDto> shoppingCartDetails;
+
+	public List<CustomerShoppingCartDto> getShoppingCartDetails() {
+		return shoppingCartDetails;
+	}
 
 	public BigDecimal getId() {
 		return id;
@@ -52,12 +61,28 @@ public class PaymentLinkRespDTO implements Serializable {
 		this.curQutoe = curQutoe;
 	}
 
-	public BigDecimal getAmount() {
-		return amount;
+	public BigDecimal getNetAmount() {
+		return netAmount;
 	}
 
-	public void setAmount(BigDecimal amount) {
-		this.amount = amount;
+	public void setNetAmount(BigDecimal netAmount) {
+		this.netAmount = netAmount;
+	}
+
+	public BigDecimal getTotalTrnxAmount() {
+		return totalTrnxAmount;
+	}
+
+	public void setTotalTrnxAmount(BigDecimal totalTrnxAmount) {
+		this.totalTrnxAmount = totalTrnxAmount;
+	}
+
+	public BigDecimal getTotalCommissionAmt() {
+		return totalCommissionAmt;
+	}
+
+	public void setTotalCommissionAmt(BigDecimal totalCommissionAmt) {
+		this.totalCommissionAmt = totalCommissionAmt;
 	}
 
 	public Date getRequestData() {
@@ -82,6 +107,10 @@ public class PaymentLinkRespDTO implements Serializable {
 
 	public void setPaymentLinkRespStatus(PaymentLinkRespStatus paymentLinkRespStatus) {
 		this.paymentLinkRespStatus = paymentLinkRespStatus;
+	}
+
+	public void setShoppingCartDetails(List<CustomerShoppingCartDto> shoppingCartDetails) {
+		this.shoppingCartDetails = shoppingCartDetails;
 	}
 
 }
