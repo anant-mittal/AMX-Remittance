@@ -1074,6 +1074,7 @@ public class PartnerDataManager {
 		totalDiscountPips = (amountSlabPips == null ? BigDecimal.ZERO : amountSlabPips).add(channelDiscountPips == null ? BigDecimal.ZERO : channelDiscountPips).add(ccDiscountPips == null ? BigDecimal.ZERO : ccDiscountPips);
 
 		BigDecimal settlementTotalDiscountPips = settlementExchangeRate.multiply(totalDiscountPips);
+		settlementTotalDiscountPips = RoundUtil.roundBigDecimal(settlementTotalDiscountPips, AmxDBConstants.EXCHANGE_RATE_DECIMAL.intValue());
 
 		return settlementTotalDiscountPips;
 	}
