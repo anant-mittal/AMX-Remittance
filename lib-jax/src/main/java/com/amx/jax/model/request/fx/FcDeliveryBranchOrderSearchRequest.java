@@ -12,7 +12,7 @@ public class FcDeliveryBranchOrderSearchRequest {
 	private String civilId;
 	private String orderStatus;
 	
-	@JsonIgnore
+	//@JsonIgnore
 	private BigDecimal customerId;
 	@JsonIgnore
 	private String countryBranchName;
