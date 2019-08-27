@@ -1,7 +1,6 @@
 package com.amx.jax.client.remittance;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 import com.amx.jax.IJaxService;
 import com.amx.jax.api.AmxApiResponse;

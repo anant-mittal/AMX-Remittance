@@ -1,4 +1,4 @@
-package com.amx.amxlib.meta.model;
+package com.amx.jax.model.response;
 
 import java.math.BigDecimal;
 import java.util.Comparator;
@@ -6,7 +6,6 @@ import java.util.Comparator;
 import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.IResourceEntity;
 import com.amx.jax.model.ResourceDTO;
-import com.amx.jax.model.response.ExchangeRateBreakup;
 
 public class BankMasterDTO extends ResourceDTO implements Comparable<BankMasterDTO> {
 

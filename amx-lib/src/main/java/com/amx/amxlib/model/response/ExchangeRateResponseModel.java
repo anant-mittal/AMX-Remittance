@@ -3,8 +3,8 @@ package com.amx.amxlib.model.response;
 import java.util.List;
 import java.util.Map;
 
-import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.jax.model.AbstractModel;
+import com.amx.jax.model.response.BankMasterDTO;
 import com.amx.jax.model.response.ExchangeRateBreakup;
 import com.amx.jax.pricer.dto.ExchangeDiscountInfo;
 import com.amx.jax.pricer.var.PricerServiceConstants.DISCOUNT_TYPE;

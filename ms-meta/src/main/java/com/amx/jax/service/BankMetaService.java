@@ -19,7 +19,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.BankBranchDto;
-import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.model.request.GetBankBranchRequest;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.constant.ConstantDocument;
@@ -28,6 +27,7 @@ import com.amx.jax.dbmodel.BankMasterModel;
 import com.amx.jax.dbmodel.CountryBranch;
 import com.amx.jax.dbmodel.treasury.BankApplicability;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.model.response.BankMasterDTO;
 import com.amx.jax.repository.BankMasterRepository;
 import com.amx.jax.repository.CountryBranchRepository;
 import com.amx.jax.repository.VwBankBranchRepository;
@@ -61,7 +61,7 @@ public class BankMetaService extends AbstractService {
 		return AmxApiResponse.buildList(convert(banks));
 	}
 
-	private List<BankMasterDTO> convert(List<BankMasterModel> banks) {
+	public List<BankMasterDTO> convert(List<BankMasterModel> banks) {
 
 		List<BankMasterDTO> bankdtos = new ArrayList<>();
 		banks.forEach(i -> {

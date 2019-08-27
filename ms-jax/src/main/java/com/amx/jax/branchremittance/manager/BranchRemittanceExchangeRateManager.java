@@ -27,7 +27,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.AdditionalFlexRequiredException;
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.amxlib.util.JaxValidationUtil;
@@ -54,6 +53,7 @@ import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.IRemittanceApplicationParams;
 import com.amx.jax.model.request.remittance.RoutingPricingRequest;
+import com.amx.jax.model.response.BankMasterDTO;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchExchangeRateBreakup;
 import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;

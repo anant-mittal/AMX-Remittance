@@ -14,10 +14,12 @@ import com.amx.jax.dbmodel.BankBranchView;
 import com.amx.jax.dbmodel.BankMasterModel;
 import com.amx.jax.dbmodel.bene.BankAccountLength;
 import com.amx.jax.dbmodel.remittance.AdditionalBankDetailsViewx;
+import com.amx.jax.model.response.BankMasterDTO;
 import com.amx.jax.repository.BankMasterRepository;
 import com.amx.jax.repository.IAdditionalBankDetailsDao;
 import com.amx.jax.repository.IBankAccountLengthDao;
 import com.amx.jax.repository.IBankBranchView;
+import com.amx.jax.service.BankMetaService;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -37,6 +39,8 @@ public class BankService {
 	
 	@Autowired
 	BankMasterRepository bankMasterRepository;
+	@Autowired
+	BankMetaService bankMetaService;
 
 	public String getBranchSwiftCode(BigDecimal bankId, BigDecimal bankBranchId) {
 		BankBranchView branch = bankDao.getBankBranchById(bankId, bankBranchId);
@@ -70,5 +74,10 @@ public class BankService {
 	
 	public BankMasterModel getBankById(BigDecimal bankId) {
 		return bankMasterRepository.findOne(bankId);
+	}
+	
+	public List<BankMasterDTO> getBankByCountryAndCurrency(BigDecimal countryId, BigDecimal currencyId) {
+		List<BankMasterModel> list = bankMasterRepository.findBankByCountryCurrency(countryId, currencyId);
+		return bankMetaService.convert(list);
 	}
 }

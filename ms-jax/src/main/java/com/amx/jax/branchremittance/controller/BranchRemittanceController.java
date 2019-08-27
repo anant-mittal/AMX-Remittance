@@ -5,7 +5,6 @@ package com.amx.jax.branchremittance.controller;
  */
 
 import java.math.BigDecimal;
-import java.util.List;
 
 import javax.validation.Valid;
 

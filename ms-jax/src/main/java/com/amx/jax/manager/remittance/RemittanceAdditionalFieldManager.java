@@ -17,7 +17,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.JaxFieldEntity;
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.model.GetJaxFieldRequest;
 import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.JaxFieldDto;
@@ -36,6 +35,7 @@ import com.amx.jax.dbmodel.remittance.StaffAuthorizationView;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.remittance.RemittanceAdditionalBeneFieldModel;
+import com.amx.jax.model.response.BankMasterDTO;
 import com.amx.jax.model.response.remittance.AmlCheckResponseDto;
 import com.amx.jax.partner.manager.PartnerTransactionManager;
 import com.amx.jax.pricer.var.PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE;
