@@ -92,23 +92,6 @@ public class RemittanceApplicationService {
 		
 	}
 	
-/*public void updatePayTokenNull(List<ShoppingCartDetails> lstShoppingCartAppl,PaymentResponseDto paymentResponse) {
-	
-	for(ShoppingCartDetails shopAppl : lstShoppingCartAppl) {
-		RemittanceApplication appl = remittanceApplicationRepository.findOne(shopAppl.getApplicationId());
-		if(appl!=null) {
-			appl.setResultCode(paymentResponse.getResultCode());
-			appl.setPaymentId(paymentResponse.getPaymentId());
-			appl.setPayToken(null);
-			appl.setApplicaitonStatus(null);
-			appl.setIsactive("D");
-			remittanceApplicationRepository.save(appl);
-		}
-	}
-	
-}*/
-
-
 
 
 public void updatePayTokenNull(List<RemittanceApplication> lstPayIdDetails,PaymentResponseDto paymentResponse) {

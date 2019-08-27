@@ -159,10 +159,13 @@ public class RemittancePaymentManager extends AbstractService{
 			{
 
 				lstPayIdDetails = applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(paymentResponse.getUdf3(),new Customer(paymentResponse.getCustomerId()));
+				
+				validateAmountMismatch(lstPayIdDetails, paymentResponse);
+				// need to check with Prashant  why he adde this code .
 				RemittanceApplication remittanceApplication = lstPayIdDetails.get(0);
-				validateAmountMismatch(remittanceApplication, paymentResponse);
 				remittanceApplication.setIsactive(ConstantDocument.Yes);
 				applicationDao.save(remittanceApplication);
+				
 				paymentResponse.setCompanyId(remittanceApplication.getFsCompanyMaster().getCompanyId());
 				if (remittanceApplication.getResultCode() != null) {
 					logger.info("Existing payment id found: {}", remittanceApplication.getPaymentId());
@@ -358,21 +361,31 @@ public class RemittancePaymentManager extends AbstractService{
        
     }
 
-	private void validateAmountMismatch(RemittanceApplication remittanceApplication, PaymentResponseDto paymentResponse) {
-		BigDecimal localNetTraxAmount = remittanceApplication.getLocalNetTranxAmount();
-		BigDecimal loyalityPointEncashed = remittanceApplication.getLoyaltyPointsEncashed();
-		loyalityPointEncashed = (loyalityPointEncashed == null ? BigDecimal.ZERO : loyalityPointEncashed);
-		BigDecimal localCurrencyDecimalNumber = remittanceApplication.getExCurrencyMasterByLocalChargeCurrencyId().getDecinalNumber();
-		BigDecimal payableAmount = localNetTraxAmount.subtract(loyalityPointEncashed);
+	private void validateAmountMismatch(List<RemittanceApplication> lstPayIdDetails, PaymentResponseDto paymentResponse) {
+		
+		BigDecimal localCurrencyDecimalNumber = BigDecimal.ZERO;
+		BigDecimal totalPayableAmount = BigDecimal.ZERO;
+		String applicationIds = null;
+		for(RemittanceApplication remittanceApplication :lstPayIdDetails ) {
+			BigDecimal localNetTraxAmount = remittanceApplication.getLocalNetTranxAmount();
+			BigDecimal loyalityPointEncashed = remittanceApplication.getLoyaltyPointsEncashed();
+			loyalityPointEncashed = (loyalityPointEncashed == null ? BigDecimal.ZERO : loyalityPointEncashed);
+			localCurrencyDecimalNumber = remittanceApplication.getExCurrencyMasterByLocalChargeCurrencyId().getDecinalNumber();
+			BigDecimal payableAmount =localNetTraxAmount.subtract(loyalityPointEncashed);
+			payableAmount = RoundUtil.roundBigDecimal(payableAmount, localCurrencyDecimalNumber.intValue());
+			totalPayableAmount =totalPayableAmount.add(payableAmount); 
+			applicationIds = remittanceApplication.getRemittanceApplicationId()!=null?"":remittanceApplication.getRemittanceApplicationId().toString()+",";
+		}
+		
+	
 		if (paymentResponse.getAmount() == null) {
 			logger.info("amount null in paymentResponse");
 		}
 		BigDecimal paidAmount = new BigDecimal(paymentResponse.getAmount());
-		payableAmount = RoundUtil.roundBigDecimal(payableAmount, localCurrencyDecimalNumber.intValue());
 		paidAmount = RoundUtil.roundBigDecimal(paidAmount, localCurrencyDecimalNumber.intValue());
-		if (!paidAmount.equals(payableAmount)) {
-			String errorMessage = String.format("paidAmount: %s and payableAmount: %s mismatch for remittanceApplicationId: %s", paidAmount,
-					payableAmount, remittanceApplication.getRemittanceApplicationId());
+		
+		if (!paidAmount.equals(totalPayableAmount)) {
+			String errorMessage = String.format("paidAmount: %s and payableAmount: %s mismatch for remittanceApplicationId: %s", paidAmount,totalPayableAmount, applicationIds);
 			logger.info(errorMessage);
 			jaxNotificationService.sendTransactionErrorAlertEmail(errorMessage, "Remittance Amount mistmatch", paymentResponse);
 			throw new GlobalException("paid and payable amount mismatch");
