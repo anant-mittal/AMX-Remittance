@@ -188,7 +188,7 @@ public class RemittancePaymentManager extends AbstractService{
 					logger.info("collectionDocumentCode : " + collectionDocumentCode);
 					logger.info("EX_INSERT_REMITTANCE_ONLINE errorMsg : " + errorMsg);
 					
-					// service Provider api
+					/** service Provider api **/
 					RemittanceResponseDto responseDto = new RemittanceResponseDto();
 					responseDto.setCollectionDocumentFYear(collectionFinanceYear);
 					responseDto.setCollectionDocumentNo(collectionDocumentNumber);
@@ -196,9 +196,15 @@ public class RemittancePaymentManager extends AbstractService{
 					callingServiceProviderApi(responseDto,paymentResponse.getCustomerId());
 
 					//Update remittance_transaction_id for place order method call
-					if (lstPayIdDetails.get(0) != null)	{	
-						updatePlaceOrderTransactionId(lstPayIdDetails.get(0),paymentResponse);
-					} 	
+					/*
+					 * if (lstPayIdDetails.get(0) != null) {
+					 * updatePlaceOrderTransactionId(lstPayIdDetails.get(0),paymentResponse); }
+					 */	
+					
+					 for(RemittanceApplication remitAppl :lstPayIdDetails) {
+						 updatePlaceOrderTransactionId(remitAppl,paymentResponse); 
+					 }
+					
 
 					/** Calling stored procedure  to move remittance to old emos **/
 					if(JaxUtil.isNullZeroBigDecimalCheck(collectionDocumentNumber)) {
@@ -211,10 +217,8 @@ public class RemittancePaymentManager extends AbstractService{
 						logger.info("EX_INSERT_EMOS_TRANSFER_LIVE :" + errorMsg);
 
 						/** For Receipt Print **/
-
-						//response.getData().getValues().add(paymentResponse);
 						response.setResponseStatus(ResponseStatus.OK);
-						//response.getData().setType("pg_remit_response");
+						
 					}
 					try {
 						RemittanceTransaction remittanceTransaction = remitAppDao.getRemittanceTransaction(
@@ -225,7 +229,7 @@ public class RemittancePaymentManager extends AbstractService{
 								remittanceTransaction.getDocumentNo());
 						Customer customer = customerDao.getCustById(remittanceTransaction.getCustomerId().getCustomerId());
 						setMetaInfo(trxnDto, paymentResponse);
-						// promotion check not for amg employee
+						/** promotion check not for amg employee **/
 						if (!employeeDao.isAmgEmployee(customer.getIdentityInt())) {
 							promotionManager.promotionWinnerCheck(remittanceTransaction.getDocumentNo(),
 									remittanceTransaction.getDocumentFinanceYear());
@@ -338,8 +342,16 @@ public class RemittancePaymentManager extends AbstractService{
 		if (lstPayIdDetails == null || lstPayIdDetails.isEmpty()) {
 			throw new GlobalException("No Application data found for given payment id: " + paymentResponse.getUdf3());
 		}
-		lstPayIdDetails.get(0).setPaymentId(paymentResponse.getPaymentId());
-		applicationDao.save(lstPayIdDetails.get(0));
+		
+		 /** Blocked by Rabil **/ 
+		//lstPayIdDetails.get(0).setPaymentId(paymentResponse.getPaymentId());
+		//applicationDao.save(lstPayIdDetails.get(0));
+		/** added for shopping cart **/
+		for(RemittanceApplication remittanceApplication : lstPayIdDetails) {
+			remittanceApplication.setPaymentId(paymentResponse.getPaymentId());	
+			applicationDao.save(remittanceApplication);
+		}
+		
 		response.getData().getValues().add(paymentResponse);
 		response.getData().setType("pg_remit_response");
 		return response;
@@ -378,7 +390,7 @@ public class RemittancePaymentManager extends AbstractService{
 		}
 		
 	
-		if (paymentResponse.getAmount() == null) {
+		if (paymentResponse !=null && paymentResponse.getAmount() == null) {
 			logger.info("amount null in paymentResponse");
 		}
 		BigDecimal paidAmount = new BigDecimal(paymentResponse.getAmount());
