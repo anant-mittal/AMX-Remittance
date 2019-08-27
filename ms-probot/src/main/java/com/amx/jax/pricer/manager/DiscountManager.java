@@ -444,10 +444,10 @@ public class DiscountManager {
 			 return true;
 
 		 }
-	 }catch(Exception e)
+	 }catch(PricerServiceException e)
 		{
-		LOGGER.error("exception in save OnlineMarginMarkupData : ", e);
-		return false;
+		 throw new PricerServiceException(PricerServiceError.INVALID_MARKUP,
+					e.getErrorMessage());
 		}
 	}
 	
