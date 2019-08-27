@@ -61,9 +61,9 @@ public class MarginMarkupDao {
 
 	}
 	
-	public  OnlineMarginMarkup getMarkupData(BigDecimal countryId,BigDecimal currencyId,BigDecimal bankId)
+	public  OnlineMarginMarkup getMarkupData(BigDecimal aplCountryId,BigDecimal countryId,BigDecimal currencyId,BigDecimal bankId)
 	 {
-		 return marginMarkupRepository.getMarkupData(countryId, currencyId, bankId);
+		 return marginMarkupRepository.getMarkupData(aplCountryId,countryId, currencyId, bankId);
 	 }
 	
 	

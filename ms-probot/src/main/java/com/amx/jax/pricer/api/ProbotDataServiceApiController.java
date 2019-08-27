@@ -122,18 +122,18 @@ public class ProbotDataServiceApiController implements ProbotDataService{
 	@Override
 	@RequestMapping(value = ApiEndPoints.GET_MARKUP_DETAILS, method = RequestMethod.POST)
 	public AmxApiResponse<OnlineMarginMarkupInfo, Object> getOnlineMarginMarkupData(
-			@RequestBody @Valid OnlineMarginMarkupReq OnlineMarginMarkupReq ) {
-		LOGGER.info("Received Request for markup " +OnlineMarginMarkupReq.toString());
-		OnlineMarginMarkupInfo marginMarkupResp = dataService.getOnlineMarginMarkupData(OnlineMarginMarkupReq);
+			@RequestBody @Valid OnlineMarginMarkupReq onlineMarginMarkupReq ) {
+		LOGGER.info("Received Request for markup " +onlineMarginMarkupReq.toString());
+		OnlineMarginMarkupInfo marginMarkupResp = dataService.getOnlineMarginMarkupData(onlineMarginMarkupReq);
 		return AmxApiResponse.build(marginMarkupResp);	
 		}
 	
 	@Override
 	@RequestMapping(value = ApiEndPoints.SAVE_MARKUP_DETAILS, method = RequestMethod.POST)
 	public AmxApiResponse<BoolRespModel, Object> saveOnlineMarginMarkupData(
-			@RequestBody @Valid OnlineMarginMarkupInfo OnlineMarginMarkupReq ) {
-		LOGGER.info("Received Request for Discount Management " +OnlineMarginMarkupReq.toString());
-		BoolRespModel marginMarkupResp = dataService.saveOnlineMarginMarkupData(OnlineMarginMarkupReq);;
+			@RequestBody @Valid OnlineMarginMarkupInfo onlineMarginMarkupInfo ) {
+		LOGGER.info("Received Request for save  markup " +onlineMarginMarkupInfo.toString());
+		BoolRespModel marginMarkupResp = dataService.saveOnlineMarginMarkupData(onlineMarginMarkupInfo);;
 		return  AmxApiResponse.build(marginMarkupResp);
 		}
 

@@ -13,10 +13,13 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.CountryBranchDTO;
 import com.amx.jax.AmxConfig;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.dbmodel.CountryBranch;
 import com.amx.jax.pricer.PricerServiceClient;
 import com.amx.jax.pricer.dto.ExchangeRateBreakup;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
+import com.amx.jax.pricer.dto.OnlineMarginMarkupInfo;
+import com.amx.jax.pricer.dto.OnlineMarginMarkupReq;
 import com.amx.jax.pricer.dto.PricingAndCostResponseDTO;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
@@ -91,6 +94,27 @@ public class DiscountManagementService {
 		
 		response.getResult().getSellRateDetails().forEach(i -> applyRoundingLogic(i));
 		return response;
+	}
+
+	public AmxApiResponse<OnlineMarginMarkupInfo, Object> getOnlineMarginMarkupData(OnlineMarginMarkupReq onlineMarginMarkupReq) {
+		try {
+		onlineMarginMarkupReq.setApplicationCountryId(amxConfig.getDefaultCountryId());
+		return pricerServiceClient.getOnlineMarginMarkupData(onlineMarginMarkupReq);
+		} catch (PricerServiceException e) {
+		LOGGER.info("ErrorKey : - " +e.getErrorKey()+ " ErrorMessage : - " +e.getErrorMessage());
+		throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
+		}
+		
+	}
+
+	public AmxApiResponse<BoolRespModel, Object> saveOnlineMarginMarkupData(OnlineMarginMarkupInfo onlineMarginMarkupInfo) {
+		onlineMarginMarkupInfo.setApplicationCountryId(amxConfig.getDefaultCountryId());
+		try {
+		return pricerServiceClient.saveOnlineMarginMarkupData(onlineMarginMarkupInfo);
+		} catch (PricerServiceException e) {
+		LOGGER.info("ErrorKey : - " +e.getErrorKey()+ " ErrorMessage : - " +e.getErrorMessage());
+		throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
+	}
 	}
 
 
