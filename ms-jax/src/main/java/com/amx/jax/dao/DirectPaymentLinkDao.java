@@ -50,6 +50,7 @@ public class DirectPaymentLinkDao {
 				pgLinkModel.setPgTransactionId(paymentResponse.getTransactionId());
 				pgLinkModel.setPgReceiptDate(paymentResponse.getPostDate());
 				pgLinkModel.setPgReferenceId(paymentResponse.getReferenceId());
+				pgLinkModel.setIsActive("P");
 				if(paymentResponse.getErrorCategory() != null)
 					pgLinkModel.setErrorCategory(paymentResponse.getErrorCategory());
 				pgLinkModel.setModifiedDate(new Date());

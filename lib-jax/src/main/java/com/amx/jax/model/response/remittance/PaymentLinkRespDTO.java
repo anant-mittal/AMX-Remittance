@@ -3,6 +3,7 @@ package com.amx.jax.model.response.remittance;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 public class PaymentLinkRespDTO implements Serializable {
 
@@ -11,10 +12,13 @@ public class PaymentLinkRespDTO implements Serializable {
 	private BigDecimal id;
 	private String verificationCode;
 	private String applicationIds;
-	
+
 	private String curQutoe;
 	private BigDecimal amount;
 	private Date requestData;
+
+	private List<TransactionDetailsDTO> transactionDetails;
+	private PaymentLinkRespStatus paymentLinkRespStatus;
 
 	public BigDecimal getId() {
 		return id;
@@ -64,5 +68,20 @@ public class PaymentLinkRespDTO implements Serializable {
 		this.requestData = requestData;
 	}
 
-	
+	public List<TransactionDetailsDTO> getTransactionDetails() {
+		return transactionDetails;
+	}
+
+	public void setTransactionDetails(List<TransactionDetailsDTO> transactionDetails) {
+		this.transactionDetails = transactionDetails;
+	}
+
+	public PaymentLinkRespStatus getPaymentLinkRespStatus() {
+		return paymentLinkRespStatus;
+	}
+
+	public void setPaymentLinkRespStatus(PaymentLinkRespStatus paymentLinkRespStatus) {
+		this.paymentLinkRespStatus = paymentLinkRespStatus;
+	}
+
 }

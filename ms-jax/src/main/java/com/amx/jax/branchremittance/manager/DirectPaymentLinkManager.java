@@ -18,16 +18,22 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.jax.api.ResponseCodeDetailDTO;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.constants.JaxTransactionStatus;
 import com.amx.jax.dao.BranchRemittancePaymentDao;
 import com.amx.jax.dao.DirectPaymentLinkDao;
+import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.remittance.PaymentLinkModel;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.ShoppingCartDetails;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.response.remittance.PaymentLinkRespDTO;
+import com.amx.jax.model.response.remittance.PaymentLinkRespStatus;
+import com.amx.jax.model.response.remittance.TransactionDetailsDTO;
 import com.amx.jax.payg.PaymentResponseDto;
+import com.amx.jax.repository.CurrencyRepository;
 import com.amx.jax.repository.IPaymentLinkDetailsRepository;
 import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.utils.Random;
@@ -50,6 +56,9 @@ public class DirectPaymentLinkManager extends AbstractModel {
 	
 	@Autowired
 	RemittanceApplicationRepository remittanceApplicationRepository;
+	
+	@Autowired
+	CurrencyRepository currencyRepository;
 
 	public PaymentLinkRespDTO fetchPaymentLinkDetails(BigDecimal customerId, BigDecimal localCurrencyId) {
 
@@ -59,7 +68,7 @@ public class DirectPaymentLinkManager extends AbstractModel {
 		List<ShoppingCartDetails> lstCustomerShopping = branchRemittancePaymentDao
 				.fetchCustomerShoppingCart(customerId);
 		List<PaymentLinkModel> paymentLinkData = new ArrayList<>();
-		String code = Random.randomAlphaNumeric(4);
+		String code = Random.randomAlphaNumeric(8);
 		String hashVerifyCode = null;
 		try {
 			hashVerifyCode = com.amx.utils.CryptoUtil.getSHA2Hash(code);
@@ -152,13 +161,129 @@ public class DirectPaymentLinkManager extends AbstractModel {
 			e.printStackTrace();
 		}
 		PaymentLinkModel paymentLink = directPaymentLinkDao.validatePaymentLinkByCode(linkId, hashVerifyCode);
-		if (paymentLink != null) {
-			paymentLinkResp.setApplicationIds(paymentLink.getApplicationIds());
+		
+		if(paymentLink != null) {
+			PaymentLinkRespStatus statusModel = new PaymentLinkRespStatus();
+			if(paymentLink.getIsActive().equals("Y")) {
+				List<ShoppingCartDetails> lstCustomerShopping = branchRemittancePaymentDao.fetchCustomerShoppingCart(paymentLink.getCustomerId());
+				
+				if (lstCustomerShopping != null && !lstCustomerShopping.isEmpty() && lstCustomerShopping.size() != 0) {
+					double totalNetAmountDouble = lstCustomerShopping.stream()
+							.mapToDouble(i -> i.getLocalNextTranxAmount().doubleValue()).sum();
+					BigDecimal totalNetAmounts = new BigDecimal(totalNetAmountDouble);
+					int value = totalNetAmounts.compareTo(paymentLink.getPaymentAmount());
+					if(value == -1) {
+						throw new GlobalException(JaxError.AMOUNT_MISMATCH,	"Amount is Mismatch, Invalid Link");
+					}
+				}
+				
+				List<TransactionDetailsDTO> trnxInfoList = new ArrayList<>();
+				
+				String applicationid = paymentLink.getApplicationIds();
+				StringTokenizer tokenizer = new StringTokenizer(applicationid, ",");
+		        while (tokenizer.hasMoreTokens()) {
+		        	String token = tokenizer.nextToken();
+		            BigDecimal appId = new BigDecimal(token);
+		            logger.info("Application Id : " + appId);
+		            
+		            for (ShoppingCartDetails cartList : lstCustomerShopping) {
+		            	if(cartList.getRemittanceApplicationId().equals(appId)) {
+		            		TransactionDetailsDTO trnxDetails = new TransactionDetailsDTO();
+		            		trnxDetails.setApplicationId(cartList.getRemittanceApplicationId());
+		            		trnxDetails.setAccountNumber(cartList.getBeneficiaryAccountNo());
+		        			trnxDetails.setBankName(cartList.getBeneficiaryBank());
+		        			trnxDetails.setBeneName(cartList.getBeneficiaryName());
+		        			trnxDetails.setLocalTrnxAmt(cartList.getLocalTranxAmount());
+		        			trnxDetails.setLocalComAmt(cartList.getLocalCommisionAmount());
+		        			trnxDetails.setLocalNetTrnxAmt(cartList.getLocalNextTranxAmount());
+		        			trnxDetails.setExRateAppl(cartList.getExchangeRateApplied());
+		        			if(cartList.getLocalCurrency() != null) {
+		        				trnxDetails.setLocalCurId(cartList.getLocalCurrency());
+		        				CurrencyMasterModel currencyQuote = currencyRepository.findOne(cartList.getLocalCurrency());
+		        				if(currencyQuote != null) {
+		        					trnxDetails.setLocalCur(currencyQuote.getQuoteName());
+		        				}
+		        			}
+		        			if(cartList.getForeignCurrency() != null) {
+		        				trnxDetails.setForeignCurId(cartList.getForeignCurrency());
+		        				CurrencyMasterModel currencyQuote = currencyRepository.findOne(cartList.getForeignCurrency());
+		        				if(currencyQuote != null) {
+		        					trnxDetails.setForeignCurrency(currencyQuote.getQuoteName());
+		        				}
+		        			}
+		        			if(cartList.getExchangeRateApplied() != null) {
+		        				BigDecimal rateRev = cartList.getExchangeRateApplied();
+		        				BigDecimal rateReversedFinal = new BigDecimal(1).divide(rateRev,2, BigDecimal.ROUND_HALF_UP);
+		        				trnxDetails.setExRateRev(rateReversedFinal);
+		        			}
+		        			
+		        			trnxInfoList.add(trnxDetails);
+		            	}
+		            	//trnxInfoList.add(trnxDetails);
+					}
+		        } 
+				
+				
+				//List<TransactionDetailsDTO> trnxInfo = convertGroupInfo(lstCustomerShopping);
+				
+				paymentLinkResp.setTransactionDetails(trnxInfoList);
+				paymentLinkResp.setApplicationIds(paymentLink.getApplicationIds());
+			
+			}
+			if(paymentLink.getIsActive().equals("P")) {
+				JaxTransactionStatus status = getJaxTransactionStatus(paymentLink);
+				statusModel.setStatus(status);
+				
+				statusModel.setNetAmount(paymentLink.getPaymentAmount());
+				statusModel.setTransactionReference(paymentLink.getApplicationIds());
+				statusModel.setErrorCategory(paymentLink.getErrorCategory());
+				statusModel.setErrorMessage(paymentLink.getErrorMessage());
+				
+				ResponseCodeDetailDTO responseCodeDetail = new ResponseCodeDetailDTO();
+				
+				responseCodeDetail.setPgPaymentId(paymentLink.getPaymentId());
+				responseCodeDetail.setPgReferenceId(paymentLink.getPgReferenceId());
+				responseCodeDetail.setPgTransId(paymentLink.getPgTransactionId());
+				responseCodeDetail.setPgAuth(paymentLink.getPgAuthCode());
+				
+				statusModel.setResponseCodeDetail(responseCodeDetail);
+				
+				paymentLinkResp.setPaymentLinkRespStatus(statusModel);
+				paymentLinkResp.setApplicationIds(paymentLink.getApplicationIds());
+			}
+			
 		} else {
 			throw new GlobalException(JaxError.VERIFICATION_CODE_MISMATCH,
 					"Invalidate link, Verification Code Mismatch");
 		}
 		return paymentLinkResp;
+	}
+
+	private JaxTransactionStatus getJaxTransactionStatus(PaymentLinkModel paymentLink) {
+		JaxTransactionStatus status = JaxTransactionStatus.APPLICATION_CREATED;
+		String applicationStatus = paymentLink.getIsActive();
+		
+		if (StringUtils.isBlank(applicationStatus) && paymentLink.getPaymentId() != null) {
+			status = JaxTransactionStatus.PAYMENT_IN_PROCESS;
+		}
+		String resultCode = paymentLink.getResultCode();
+		if ("CAPTURED".equalsIgnoreCase(resultCode)) {
+			status = JaxTransactionStatus.PAYMENT_SUCCESS_APPLICATION_SUCCESS;
+
+			/*if ("S".equals(applicationStatus) || "T".equals(applicationStatus)) {
+				status = JaxTransactionStatus.PAYMENT_SUCCESS_APPLICATION_SUCCESS;
+			} else {
+				status = JaxTransactionStatus.PAYMENT_SUCCESS_APPLICATION_FAIL;
+			}*/
+		}
+		if ("NOT CAPTURED".equalsIgnoreCase(resultCode)) {
+			status = JaxTransactionStatus.PAYMENT_FAIL;
+		}
+		if ("CANCELED".equalsIgnoreCase(resultCode) || "CANCELLED".equalsIgnoreCase(resultCode)) {
+			status = JaxTransactionStatus.PAYMENT_CANCELED_BY_USER;
+		}
+
+		return status;
 	}
 
 	public PaymentResponseDto paymentCaptureForPayLink(PaymentResponseDto paymentResponse, BigDecimal linkId) {
@@ -179,12 +304,10 @@ public class DirectPaymentLinkManager extends AbstractModel {
 				directPaymentLinkDao.updatePaygDetailsInPayLink(paymentResponse, linkId);
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
+			e.printStackTrace();
 		}
 		
 		return null;
 	}
-
-	
 
 }

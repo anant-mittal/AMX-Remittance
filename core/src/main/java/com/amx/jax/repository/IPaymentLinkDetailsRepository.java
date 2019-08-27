@@ -18,7 +18,7 @@ public interface IPaymentLinkDetailsRepository extends CrudRepository<PaymentLin
 			+ " and pl.isActive ='Y' ")
 	PaymentLinkModel fetchPayLinkIdForCustomer(BigDecimal customerId, String hashVerifyCode);
 
-	@Query("select pl from PaymentLinkModel pl where pl.linkId=?1 and verificationCode=?2 " + " and pl.isActive ='Y' ")
+	@Query("select pl from PaymentLinkModel pl where pl.linkId=?1 and verificationCode=?2 ")
 	PaymentLinkModel fetchPaymentByLinkIdandCode(BigDecimal linkId, String verificationCode);
 
 }
