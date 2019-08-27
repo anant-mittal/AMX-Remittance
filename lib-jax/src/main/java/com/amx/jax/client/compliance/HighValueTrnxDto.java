@@ -13,6 +13,7 @@ public class HighValueTrnxDto {
 	String bankBranch;
 	BigDecimal documentNo;
 	BigDecimal documentFinancialYear;
+	BigDecimal transactionId;
 
 	public String getCustomerFullName() {
 		return customerFullName;
@@ -84,6 +85,14 @@ public class HighValueTrnxDto {
 
 	public void setDocumentFinancialYear(BigDecimal documentFinancialYear) {
 		this.documentFinancialYear = documentFinancialYear;
+	}
+
+	public BigDecimal getTransactionId() {
+		return transactionId;
+	}
+
+	public void setTransactionId(BigDecimal transactionId) {
+		this.transactionId = transactionId;
 	}
 
 }

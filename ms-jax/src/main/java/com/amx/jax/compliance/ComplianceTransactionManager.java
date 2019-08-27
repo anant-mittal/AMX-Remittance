@@ -98,6 +98,7 @@ public class ComplianceTransactionManager {
 		dto.setLocalTransactionAmount(i.getLocalTransactionAmount());
 		dto.setDocumentFinancialYear(i.getDocumentFinanceYear());
 		dto.setDocumentNo(i.getDocumentNo());
+		dto.setTransactionId(i.getIdNo());
 		return dto;
 	}
 
