@@ -22,7 +22,7 @@ import com.amx.jax.pricer.dto.OnlineMarginMarkupInfo;
 import com.amx.jax.pricer.dto.OnlineMarginMarkupReq;
 import com.amx.jax.pricer.dto.PricingAndCostResponseDTO;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
-import com.amx.jax.pricer.dto.PricingResponseDTO;
+import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.repository.DiscountManagementRepository;
 import com.amx.jax.util.RoundUtil;
@@ -113,7 +113,8 @@ public class DiscountManagementService {
 		return pricerServiceClient.saveOnlineMarginMarkupData(onlineMarginMarkupInfo);
 		} catch (PricerServiceException e) {
 		LOGGER.info("ErrorKey : - " +e.getErrorKey()+ " ErrorMessage : - " +e.getErrorMessage());
-		throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
+		 throw new PricerServiceException(PricerServiceError.INVALID_MARKUP,
+					"The markup value entered is not valid for the selected country,currency and bank.");
 	}
 	}
 

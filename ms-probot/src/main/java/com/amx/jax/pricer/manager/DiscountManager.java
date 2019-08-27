@@ -445,8 +445,9 @@ public class DiscountManager {
 		 }
 	 }catch(PricerServiceException e)
 		{
+		 LOGGER.info("ErrorKey : - " +e.getErrorKey()+ " ErrorMessage : - " +e.getErrorMessage());
 		 throw new PricerServiceException(PricerServiceError.INVALID_MARKUP,
-					e.getErrorMessage());
+					"The markup value entered is not valid for the selected country,currency and bank.");
 		}
 	}
 	
