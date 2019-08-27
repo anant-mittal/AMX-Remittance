@@ -1,9 +1,11 @@
 package com.amx.jax;
 
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.pricer.dto.OnlineMarginMarkupInfo;
+import com.amx.jax.pricer.dto.OnlineMarginMarkupReq;
 import com.amx.jax.pricer.dto.PricingAndCostResponseDTO;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
-import com.amx.jax.pricer.dto.PricingResponseDTO;
 
 public interface IDiscManagementService {
 
@@ -15,7 +17,15 @@ public interface IDiscManagementService {
 		
 		public static final String GET_DISCOUTN_RATE= PREFIX + "/get-discount-rate";
 		
+		public static final String GET_MARKUP_DETAILS=PREFIX + "/get-margin-markup";
+
+		public static final String SAVE_MARKUP_DETAILS=PREFIX + "/save-margin-markup";
+		
 	}
 
 	AmxApiResponse<PricingAndCostResponseDTO, Object> fetchDiscountedRates(PricingRequestDTO pricingRequestDTO);
+	
+	AmxApiResponse<OnlineMarginMarkupInfo, Object> getOnlineMarginMarkupData( OnlineMarginMarkupReq onlineMarginMarkupReq);
+	
+	AmxApiResponse<BoolRespModel, Object> saveOnlineMarginMarkupData( OnlineMarginMarkupInfo onlineMarginMarkupInfo );
 }
