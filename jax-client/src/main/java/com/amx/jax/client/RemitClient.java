@@ -4,11 +4,14 @@ import static com.amx.amxlib.constant.ApiEndpoint.REMIT_API_ENDPOINT;
 
 import java.math.BigDecimal;
 
+import javax.validation.Valid;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.amxlib.exception.JaxSystemError;
@@ -25,6 +28,7 @@ import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.client.util.ConverterUtility;
+import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
 import com.amx.jax.model.request.remittance.IRemitTransReqPurpose;
 import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
@@ -32,6 +36,8 @@ import com.amx.jax.model.response.SourceOfIncomeDto;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.rest.RestService;
+
+import io.swagger.annotations.ApiOperation;
 
 @Component
 public class RemitClient extends AbstractJaxServiceClient {
@@ -355,9 +361,7 @@ public class RemitClient extends AbstractJaxServiceClient {
 			RemittanceTransactionRequestModel request)
 			throws RemittanceTransactionValidationException, LimitExeededException {
 		try {
-			HttpEntity<RemittanceTransactionRequestModel> requestEntity = new HttpEntity<RemittanceTransactionRequestModel>(
-					request, getHeader());
-
+			HttpEntity<RemittanceTransactionRequestModel> requestEntity = new HttpEntity<RemittanceTransactionRequestModel>(request, getHeader());
 			String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/calc/";
 			LOGGER.info(" Calling calcEquivalentAmount :");
 			return restService.ajax(url).post(requestEntity)
@@ -371,4 +375,22 @@ public class RemitClient extends AbstractJaxServiceClient {
 		} // end of try-catch
 	}
 
+	
+	
+	
+	@ApiOperation("API for Online shopping cart")
+	public AmxApiResponse<RemittanceApplicationResponseModel,Object> payShoppingCart(BranchRemittanceRequestModel remittanceRequestModel) throws RemittanceTransactionValidationException, LimitExeededException {
+		try {
+			HttpEntity<BranchRemittanceRequestModel> requestEntity = new HttpEntity<BranchRemittanceRequestModel>(remittanceRequestModel,getHeader());
+			String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/pay-shopping-cart/";
+			LOGGER.info(" Calling customer rating :" + remittanceRequestModel.toString());
+			return restService.ajax(url).post(requestEntity).asApiResponse(RemittanceApplicationResponseModel.class);
+		
+		} catch (AbstractJaxException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in payShoppingCart : ", e);
+			throw new JaxSystemError();
+		} // end of tr
+	}
 }

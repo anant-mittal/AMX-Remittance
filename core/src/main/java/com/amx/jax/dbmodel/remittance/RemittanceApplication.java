@@ -142,6 +142,8 @@ public class RemittanceApplication implements Serializable {
 	/** added by rabil **/
 	private String beneDeductFlag;
 	private String wuPurposeOfTransaction;
+	
+	private BigDecimal paygTrnxDetailId;
 
 
 	private List<RemittanceAppBenificiary> exRemittanceAppBenificiary = new ArrayList<RemittanceAppBenificiary>(0);
@@ -976,6 +978,15 @@ public class RemittanceApplication implements Serializable {
 	}
 	public void setWuPurposeOfTransaction(String wuPurposeOfTransaction) {
 		this.wuPurposeOfTransaction = wuPurposeOfTransaction;
+	}
+
+	@Column(name="PAYG_TRNX_DTLS_ID")
+	public BigDecimal getPaygTrnxDetailId() {
+		return paygTrnxDetailId;
+	}
+
+	public void setPaygTrnxDetailId(BigDecimal paygTrnxDetailId) {
+		this.paygTrnxDetailId = paygTrnxDetailId;
 	}
 	
 	

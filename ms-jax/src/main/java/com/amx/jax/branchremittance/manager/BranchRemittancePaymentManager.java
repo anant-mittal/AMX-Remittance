@@ -131,7 +131,7 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 				totalCustomerLoyaltyPoits = customer.getLoyaltyPoints()==null?BigDecimal.ZERO:customer.getLoyaltyPoints();
 			}
 			
-			deActivateOnlineApplication();
+			//deActivateOnlineApplication();
 			
 			List<ShoppingCartDetails> lstCustomerShopping = branchRemittancePaymentDao.fetchCustomerShoppingCart(customerId);
 			

@@ -18,12 +18,14 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dbmodel.CollectDetailModel;
 import com.amx.jax.dbmodel.CollectionModel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ForeignCurrencyAdjust;
+import com.amx.jax.dbmodel.PaygDetailsModel;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.partner.RemitApplSrvProv;
 import com.amx.jax.dbmodel.partner.RemitTrnxSrvProv;
@@ -39,6 +41,7 @@ import com.amx.jax.dbmodel.remittance.RemittanceBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.request.remittance.BranchApplicationDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.repository.AdditionalInstructionDataRepository;
 import com.amx.jax.repository.ForeignCurrencyAdjustRepository;
@@ -52,6 +55,7 @@ import com.amx.jax.repository.IRemittanceAdditionalInstructionRepository;
 import com.amx.jax.repository.IRemittanceAmlRepository;
 import com.amx.jax.repository.IRemittanceBenificiaryRepository;
 import com.amx.jax.repository.IRemittanceTransactionRepository;
+import com.amx.jax.repository.PaygDetailsRepository;
 import com.amx.jax.repository.RemittanceApplicationBeneRepository;
 import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.repository.remittance.ILoyaltyPointRepository;
@@ -117,6 +121,9 @@ public class BranchRemittanceDao {
 	
 	@Autowired
 	IRemitTrnxSrvProvRepository remitTrnxSrvProvRepository;
+	
+	@Autowired
+	PaygDetailsRepository pgRepository;
 
 	@Transactional
 	@SuppressWarnings("unchecked")
@@ -349,4 +356,34 @@ public class BranchRemittanceDao {
 			}
 		}
 	}
+	
+	
+	@Transactional
+	@SuppressWarnings("unchecked")
+	public RemittanceApplicationResponseModel saveAndUpdateAll(HashMap<String, Object> mapAllDetailApplSave) {
+		RemittanceApplicationResponseModel responseModel = new RemittanceApplicationResponseModel();
+	if(mapAllDetailApplSave!=null) {
+	   PaygDetailsModel 			pgModel = (PaygDetailsModel)mapAllDetailApplSave.get("PG_DETAILS");
+	   List<BranchApplicationDto>   applList =(List<BranchApplicationDto>)mapAllDetailApplSave.get("APPL");
+	   
+	    if(pgModel!=null) {
+	    	PaygDetailsModel pgDetails = pgRepository.save(pgModel);
+	    	responseModel.setDocumentIdForPayment(pgDetails.getPaygTrnxSeqId().toString());
+	    	responseModel.setRemittanceAppId(pgDetails.getPaygTrnxSeqId());
+	    }
+	    for(BranchApplicationDto applIdDto : applList) {
+	    	RemittanceApplication appl = appRepo.findOne(applIdDto.getApplicationId());
+	    	responseModel.setDocumentFinancialYear(appl.getDocumentFinancialyear());
+	    	if(appl!=null && appl.getIsactive().equalsIgnoreCase(ConstantDocument.Yes)) {
+	    		appl.setPaygTrnxDetailId(responseModel.getRemittanceAppId());
+	    		appl.setPaymentId(responseModel.getRemittanceAppId()==null?appl.getPaymentId():responseModel.getRemittanceAppId().toString());
+	    		appRepo.save(appl);
+	    	}
+	    }
+	}
+	
+	return responseModel;
+	}
+	
+	
 }
