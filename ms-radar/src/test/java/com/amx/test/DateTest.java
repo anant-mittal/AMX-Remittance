@@ -12,7 +12,6 @@ import com.amx.jax.grid.views.CustomerDetailViewRecord;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.radar.ESDocumentParser;
 import com.amx.jax.radar.jobs.customer.CustomerViewTask;
-import com.amx.jax.rates.AmxCurConstants;
 import com.amx.utils.JsonUtil;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 

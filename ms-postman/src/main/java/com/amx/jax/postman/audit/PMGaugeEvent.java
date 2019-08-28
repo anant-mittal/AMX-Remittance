@@ -5,10 +5,10 @@ import java.util.List;
 import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
+import com.amx.jax.postman.model.Message.IChannel;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.WAMessage;
-import com.amx.jax.postman.model.Message.IChannel;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**

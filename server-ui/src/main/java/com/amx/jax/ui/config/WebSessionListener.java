@@ -16,7 +16,6 @@ import com.amx.jax.logger.events.SessionEvent;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.ContextUtil;
-import com.amx.utils.UniqueID;
 
 /**
  * The listener interface for receiving webSession events. The class that is

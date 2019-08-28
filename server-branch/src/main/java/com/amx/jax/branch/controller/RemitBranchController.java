@@ -20,7 +20,6 @@ import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.BeneRelationsDescriptionDto;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
-import com.amx.jax.api.ListRequestModel;
 import com.amx.jax.branch.BranchMetaOutFilter;
 import com.amx.jax.client.BeneClient;
 import com.amx.jax.client.RemitClient;

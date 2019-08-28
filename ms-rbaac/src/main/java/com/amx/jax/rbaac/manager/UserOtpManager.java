@@ -22,7 +22,6 @@ import com.amx.jax.rbaac.dbmodel.Employee;
 import com.amx.jax.rbaac.exception.AuthServiceException;
 import com.amx.utils.CryptoUtil;
 import com.amx.utils.CryptoUtil.HashBuilder;
-import com.amx.utils.JsonUtil;
 
 /**
  * The Class UserOtpManager.

@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.regex.Pattern;
 
-import org.springframework.data.redis.core.TimeoutUtils;
-
 import com.amx.utils.TimeUtils;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.google.i18n.phonenumbers.NumberParseException;

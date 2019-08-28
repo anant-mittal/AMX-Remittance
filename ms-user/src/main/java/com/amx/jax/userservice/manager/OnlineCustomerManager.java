@@ -19,7 +19,6 @@ import com.amx.jax.model.customer.SecurityQuestionModel;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.userservice.service.UserValidationService;
-import com.amx.jax.util.AmxDBConstants.Status;
 
 @Component
 public class OnlineCustomerManager {

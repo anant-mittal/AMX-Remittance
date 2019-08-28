@@ -34,7 +34,6 @@ import com.amx.jax.dict.UserClient.Channel;
 import com.amx.jax.pricer.PricerServiceClient;
 import com.amx.jax.pricer.ProbotDataService;
 import com.amx.jax.pricer.ProbotExchangeRateService;
-import com.amx.jax.pricer.AbstractProbotInterface.ApiEndPoints;
 import com.amx.jax.pricer.dto.BankDetailsDTO;
 import com.amx.jax.pricer.dto.CurrencyMasterDTO;
 import com.amx.jax.pricer.dto.DiscountDetailsReqRespDTO;

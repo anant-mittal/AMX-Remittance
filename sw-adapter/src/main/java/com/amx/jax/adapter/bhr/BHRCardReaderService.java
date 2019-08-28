@@ -13,17 +13,12 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.adapter.ACardReaderService;
-import com.amx.jax.adapter.ACardReaderService.CardStatus;
-import com.amx.jax.adapter.kwt.KWTCardReaderService;
 import com.amx.jax.device.CardData;
 import com.amx.jax.rest.RestService;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 import com.amx.utils.JsonPath;
-import com.amx.utils.JsonUtil;
 import com.amx.utils.TimeUtils;
-
-import ch.qos.logback.core.util.TimeUtil;
 
 @Configuration
 @EnableScheduling

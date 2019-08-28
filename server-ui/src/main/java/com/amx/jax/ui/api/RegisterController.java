@@ -15,7 +15,6 @@ import com.amx.jax.CustomerCredential;
 import com.amx.jax.JaxAuthContext;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.exception.AmxApiError;
-import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 import com.amx.jax.ui.config.UIServerError;

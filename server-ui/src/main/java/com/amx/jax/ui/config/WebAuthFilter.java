@@ -11,10 +11,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import com.amx.jax.exception.ApiHttpExceptions.ApiHttpNotFoundException;
 import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.service.SessionService;
 

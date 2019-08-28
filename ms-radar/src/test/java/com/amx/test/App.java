@@ -3,7 +3,6 @@ package com.amx.test;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URISyntaxException;
-import java.util.Base64;
 import java.util.regex.Pattern;
 
 import org.jsoup.Connection;

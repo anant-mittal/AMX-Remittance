@@ -22,7 +22,6 @@ import com.amx.jax.rbaac.dto.request.EmployeeDetailsRequestDTO;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
 import com.amx.jax.rbaac.error.RbaacServiceError;
 import com.amx.jax.rbaac.exception.AuthServiceException;
-import com.amx.utils.CollectionUtil;
 
 /**
  * The Class UserAccountService.

@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 import org.thymeleaf.context.Context;
 
 import com.amx.jax.logger.AuditEvent.Result;
-import com.amx.jax.dict.Channel;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.postman.PostManConfig;
