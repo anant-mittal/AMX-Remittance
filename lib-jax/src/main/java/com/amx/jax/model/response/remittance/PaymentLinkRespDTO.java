@@ -1,11 +1,10 @@
 package com.amx.jax.model.response.remittance;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
-public class PaymentLinkRespDTO implements Serializable {
+public class PaymentLinkRespDTO extends RemittanceApplicationResponseModel {
 
 	private static final long serialVersionUID = 2315791709068216697L;
 
@@ -16,7 +15,7 @@ public class PaymentLinkRespDTO implements Serializable {
 	private String curQutoe;
 	private BigDecimal netAmount;
 	private Date requestData;
-	
+
 	private BigDecimal totalTrnxAmount;
 	private BigDecimal totalCommissionAmt;
 

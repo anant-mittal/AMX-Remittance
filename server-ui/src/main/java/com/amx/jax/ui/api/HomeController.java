@@ -41,6 +41,9 @@ import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
 import com.amx.jax.http.RequestType;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.model.response.remittance.PaymentLinkRespDTO;
+import com.amx.jax.payg.PayGParams;
+import com.amx.jax.payg.PayGService;
 import com.amx.jax.rest.RestService;
 import com.amx.jax.swagger.ApiStatusBuilder.ApiStatus;
 import com.amx.jax.ui.UIConstants;
@@ -53,6 +56,7 @@ import com.amx.jax.ui.service.JaxService;
 import com.amx.jax.ui.service.SessionService;
 import com.amx.jax.ui.session.UserDeviceBean;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.HttpUtils;
 import com.amx.utils.JsonUtil;
 
 import io.swagger.annotations.Api;
@@ -329,6 +333,9 @@ public class HomeController {
 		return "rating";
 	}
 
+	@Autowired
+	private PayGService payGService;
+
 	@ApiJaxStatus({ JaxError.CUSTOMER_NOT_FOUND, JaxError.INVALID_OTP, JaxError.ENTITY_INVALID,
 			JaxError.ENTITY_EXPIRED })
 	@ApiStatus({ ApiStatusCodes.PARAM_MISSING })
@@ -336,8 +343,24 @@ public class HomeController {
 			method = { RequestMethod.GET })
 	public String directPayment(Model model,
 			@PathVariable Products prodType, @PathVariable BigDecimal linkId,
-			@RequestParam(value = "v") String veryCode) {
-		model.addAttribute("cart", remittanceClient.validatePayLink(linkId, veryCode).getResult());
+			@RequestParam(value = "v") String veryCode,
+			HttpServletRequest request) {
+
+		PaymentLinkRespDTO link = remittanceClient.validatePayLink(linkId, veryCode).getResult();
+
+		PayGParams payment = new PayGParams();
+		payment.setPayId(ArgUtil.parseAsString(link.getId()));
+
+		payment.setDocFyObject(respTxMdl.getDocumentFinancialYear());
+		payment.setDocNo(respTxMdl.getDocumentIdForPayment());
+		payment.setTrackIdObject(respTxMdl.getMerchantTrackId());
+		payment.setAmountObject(link.getNetAmount());
+		payment.setServiceCode(link.get);
+
+		wrapper.setRedirectUrl(payGService.getPaymentUrl(payment,
+				HttpUtils.getServerName(request) + "/app/landing/remittance"));
+
+		model.addAttribute("cart", link);
 		model.addAttribute("linkId", linkId);
 		model.addAttribute("veryCode", veryCode);
 		model.addAttribute("tnt", AppContextUtil.getTenant());
