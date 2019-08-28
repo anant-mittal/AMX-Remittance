@@ -2,6 +2,8 @@
 package com.amx.jax.ui.api;
 
 import java.math.BigDecimal;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -58,6 +60,7 @@ import com.amx.jax.ui.session.UserDeviceBean;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.HttpUtils;
 import com.amx.utils.JsonUtil;
+import com.amx.utils.Urly;
 
 import io.swagger.annotations.Api;
 
@@ -336,29 +339,31 @@ public class HomeController {
 	@Autowired
 	private PayGService payGService;
 
+	public static final String PAYMENT_PATH = "/pub/pay/{prodType}/{linkId}";
+
 	@ApiJaxStatus({ JaxError.CUSTOMER_NOT_FOUND, JaxError.INVALID_OTP, JaxError.ENTITY_INVALID,
 			JaxError.ENTITY_EXPIRED })
 	@ApiStatus({ ApiStatusCodes.PARAM_MISSING })
-	@RequestMapping(value = { "/pub/pay/{prodType}/{linkId}" },
+	@RequestMapping(value = { PAYMENT_PATH },
 			method = { RequestMethod.GET })
 	public String directPayment(Model model,
 			@PathVariable Products prodType, @PathVariable BigDecimal linkId,
 			@RequestParam(value = "v") String veryCode,
-			HttpServletRequest request) {
+			HttpServletRequest request) throws MalformedURLException, URISyntaxException {
 
 		PaymentLinkRespDTO link = remittanceClient.validatePayLink(linkId, veryCode).getResult();
 
 		PayGParams payment = new PayGParams();
 		payment.setPayId(ArgUtil.parseAsString(link.getId()));
 
-		payment.setDocFyObject(respTxMdl.getDocumentFinancialYear());
-		payment.setDocNo(respTxMdl.getDocumentIdForPayment());
-		payment.setTrackIdObject(respTxMdl.getMerchantTrackId());
+		payment.setDocFyObject(link.getDocumentFinancialYear());
+		payment.setDocNo(link.getDocumentIdForPayment());
+		payment.setTrackIdObject(link.getMerchantTrackId());
 		payment.setAmountObject(link.getNetAmount());
-		payment.setServiceCode(link.get);
-
-		wrapper.setRedirectUrl(payGService.getPaymentUrl(payment,
-				HttpUtils.getServerName(request) + "/app/landing/remittance"));
+		payment.setServiceCode(link.getPgCode());
+		model.addAttribute("payment_link", payGService.getPaymentUrl(payment,
+				Urly.parse(HttpUtils.getServerName(request)).path(PAYMENT_PATH).pathParam("prodType", prodType)
+						.pathParam("linkId", linkId).queryParam("v", veryCode).getURL()));
 
 		model.addAttribute("cart", link);
 		model.addAttribute("linkId", linkId);
