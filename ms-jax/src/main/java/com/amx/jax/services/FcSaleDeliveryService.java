@@ -153,7 +153,7 @@ public class FcSaleDeliveryService {
 	 */
 	@Transactional
 	public BoolRespModel markDelivered(FcSaleDeliveryMarkDeliveredRequest fcSaleDeliveryMarkDeliveredRequest) {
-		logger.debug("markDelivered request: {}", fcSaleDeliveryMarkDeliveredRequest);
+		logger.info("markDelivered request: {}", fcSaleDeliveryMarkDeliveredRequest);
 		FxDeliveryDetailsModel deliveryDetail = validateFxDeliveryModel(
 				fcSaleDeliveryMarkDeliveredRequest.getDeliveryDetailSeqId());
 		VwFxDeliveryDetailsModel vwdeliveryDetail = validatetDeliveryDetailView(
@@ -173,6 +173,8 @@ public class FcSaleDeliveryService {
 				deliveryDetail.getDriverEmployeeId());
 		fcSaleBranchOrderManager.saveFCStockTransferDetails(deliveryDetail.getDeleviryDelSeqId(),null,deliveryDetail.getDriverEmployeeId(), ConstantDocument.DVD);
 		PersonInfo pinfo = userService.getPersonInfo(vwdeliveryDetail.getCustomerId());
+		logger.debug("FC_ORDER_SUCCESSStart: {emial sending}");
+		logger.info("FC_ORDER_SUCCESSStart: {emial sending}");
 		Email email = new Email();
 		email.setSubject("FC Order Successfully Delivered");
 		email.addTo(pinfo.getEmail());
