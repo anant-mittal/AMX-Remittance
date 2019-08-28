@@ -100,7 +100,7 @@ public class CustomerRating implements java.io.Serializable{
 	}
 	
 	
-	@Column(name = "FXORDER_TRANSACTION_ID")
+	@Column(name = "COLLECTION_DOCUMENT_NO")
 	public BigDecimal getFxOrderTransactionId() {
 		return fxOrderTransactionId;
 	}
@@ -108,7 +108,7 @@ public class CustomerRating implements java.io.Serializable{
 		this.fxOrderTransactionId = fxOrderTransactionId;
 	}
 	
-	@Column(name = "FXORDER_APPLICATION_ID")
+	@Column(name = "COLLECTION_DOC_FINANCE_YEAR")
 	public BigDecimal getFxOrderApplicationId() {
 		return fxOrderApplicationId;
 	}
