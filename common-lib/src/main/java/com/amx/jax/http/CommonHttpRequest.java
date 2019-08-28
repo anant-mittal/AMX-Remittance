@@ -25,7 +25,6 @@ import org.springframework.web.util.WebUtils;
 
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppConstants;
-import com.amx.jax.AppContext;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.dict.Language;
 import com.amx.jax.dict.UserClient;
@@ -369,7 +368,7 @@ public class CommonHttpRequest {
 		return null;
 	}
 
-	public boolean createApiRequestModels() {
+	private boolean createApiRequestModels() {
 		if (IS_API_REQUEST_MAPPED) {
 			return true;
 		}
@@ -403,6 +402,7 @@ public class CommonHttpRequest {
 		RequestType type;
 		boolean useAuthToken;
 		boolean useAuthKey;
+		String flow;
 
 		public RequestType getType() {
 			return type;
@@ -427,6 +427,14 @@ public class CommonHttpRequest {
 		public void setUseAuthKey(boolean useAuthKey) {
 			this.useAuthKey = useAuthKey;
 		}
+
+		public String getFlow() {
+			return flow;
+		}
+
+		public void setFlow(String flow) {
+			this.flow = flow;
+		}
 	}
 
 	public ApiRequestDetail getApiRequest(HttpServletRequest req) {
@@ -436,6 +444,7 @@ public class CommonHttpRequest {
 			detail.setType(x.type());
 			detail.setUseAuthKey(x.useAuthKey());
 			detail.setUseAuthToken(x.useAuthToken());
+			detail.setFlow(x.flow());
 		}
 
 		if (ArgUtil.isEmpty(detail.getType()) || RequestType.DEFAULT.equals(detail.getType())) {

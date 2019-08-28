@@ -15,6 +15,7 @@ import com.amx.jax.AppContextUtil;
 import com.amx.jax.JaxAuthContext;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.exception.AmxApiError;
+import com.amx.jax.http.ApiRequest;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.model.AuthState.AuthFlow;
 import com.amx.jax.postman.client.GoogleService;
@@ -22,6 +23,8 @@ import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
 import com.amx.jax.ui.config.HttpUnauthorizedException;
 import com.amx.jax.ui.config.OWAStatus.ApiOWAStatus;
 import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
+import com.amx.jax.ui.UIConstants.FLOW;
+import com.amx.jax.ui.config.HttpUnauthorizedException;
 import com.amx.jax.ui.config.UIServerError;
 import com.amx.jax.ui.model.AuthDataInterface.AuthRequest;
 import com.amx.jax.ui.model.AuthDataInterface.AuthResponse;
@@ -65,6 +68,7 @@ public class AuthController {
 	 * @return the response wrapper
 	 */
 	@Deprecated
+	@ApiRequest(flow = FLOW.LOGIN_V1)
 	@ApiOWAStatus({ OWAStatusStatusCodes.DEVICE_LOCKED, OWAStatusStatusCodes.AUTH_DONE,
 			OWAStatusStatusCodes.AUTH_FAILED, OWAStatusStatusCodes.AUTH_OK })
 	@RequestMapping(value = "/pub/auth/login", method = { RequestMethod.POST })
@@ -89,6 +93,7 @@ public class AuthController {
 	 * @param authData the auth data
 	 * @return the response wrapper
 	 */
+	@ApiRequest(flow = FLOW.LOGIN_V2)
 	@ApiOWAStatus({ OWAStatusStatusCodes.DEVICE_LOCKED, OWAStatusStatusCodes.AUTH_DONE,
 			OWAStatusStatusCodes.AUTH_FAILED, OWAStatusStatusCodes.AUTH_OK })
 	@RequestMapping(value = "/pub/auth/login/v2", method = { RequestMethod.POST })
@@ -156,6 +161,7 @@ public class AuthController {
 	 * @deprecated - use : /pub/auth/reset/v2
 	 */
 	@Deprecated
+	@ApiRequest(flow = FLOW.RESET_PASS)
 	@RequestMapping(value = "/pub/auth/reset", method = { RequestMethod.POST })
 	public ResponseWrapper<AuthResponse> initReset(@Valid @RequestBody AuthRequest authData) {
 		if (authData.getmOtp() == null && authData.geteOtp() == null) {
@@ -172,6 +178,7 @@ public class AuthController {
 	UserDeviceBean userDeviceBean;
 
 	@SuppressWarnings("deprecation")
+	@ApiRequest(flow = FLOW.RESET_PASS_2)
 	@RequestMapping(value = "/pub/auth/password/v2/reset", method = { RequestMethod.POST })
 	public ResponseWrapper<AuthResponse> resetPasswordFlow(@Valid @RequestBody AuthRequest authData,
 			@RequestParam(required = false) ContactType contactType) {
@@ -191,6 +198,7 @@ public class AuthController {
 		return loginService.initResetPassword2(authData.getIdentity(), authData.getPassword());
 	}
 
+	@ApiRequest(flow = FLOW.RESET_PASS_2)
 	@ApiOWAStatus({ OWAStatusStatusCodes.USER_UPDATE_SUCCESS })
 	@RequestMapping(value = "/pub/auth/password/v2/update", method = { RequestMethod.POST })
 	public ResponseWrapper<UserUpdateData> resetPasswordV2(@Valid @RequestBody AuthRequest authData) {
@@ -209,6 +217,7 @@ public class AuthController {
 	 * @deprecated - use : /pub/auth/password/v2
 	 */
 	@Deprecated
+	@ApiRequest(flow = FLOW.RESET_PASS)
 	@ApiOWAStatus({ OWAStatusStatusCodes.USER_UPDATE_SUCCESS })
 	@RequestMapping(value = "/pub/auth/password", method = { RequestMethod.POST })
 	public ResponseWrapper<UserUpdateData> resetPassword(@Valid @RequestBody AuthRequest authData) {
@@ -220,6 +229,7 @@ public class AuthController {
 	 *
 	 * @return the response wrapper
 	 */
+	@ApiRequest(flow = FLOW.LOGOUT)
 	@ApiOWAStatus({ OWAStatusStatusCodes.LOGOUT_DONE })
 	@RequestMapping(value = "/pub/auth/logout", method = { RequestMethod.POST })
 	public ResponseWrapper<UserMetaData> logout() {

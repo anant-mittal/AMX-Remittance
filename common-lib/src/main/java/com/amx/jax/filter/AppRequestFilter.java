@@ -94,8 +94,8 @@ public class AppRequestFilter implements Filter {
 		}
 	}
 
-	public void setFlow(HttpServletRequest req) {
-		String url = req.getRequestURI();
+	public void setFlow(HttpServletRequest req, ApiRequestDetail apiRequest) {
+		String url = ArgUtil.ifNotEmpty(apiRequest.getFlow(), req.getRequestURI());
 		AppContextUtil.setFlow(url);
 		AppContextUtil.setFlowfix(url.toLowerCase().replace("pub", "b").replace("api", "p").replace("user", "")
 				.replace("get", "").replace("post", "").replace("save", "")
@@ -196,7 +196,7 @@ public class AppRequestFilter implements Filter {
 				traceId = ArgUtil.parseAsString(req.getParameter(AppConstants.TRACE_ID_XKEY));
 			}
 			if (StringUtils.isEmpty(traceId)) {
-				setFlow(req);
+				setFlow(req, apiRequest);
 				HttpSession session = req.getSession(false);
 				if (ArgUtil.isEmpty(sessionId)) {
 					if (session == null) {
