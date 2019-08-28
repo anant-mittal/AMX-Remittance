@@ -19,4 +19,8 @@ public interface VwBankBranchRepository extends CrudRepository<BankBranchView, B
 			String branchName, Sort sort);
 	
 	List<BankBranchView> findByCountryIdAndBankId(BigDecimal countryId, BigDecimal bankId,  Sort sort);
+	
+	List<BankBranchView> findByCountryIdAndBankIdAndIfscCode(BigDecimal countryId, BigDecimal bankId, String ifsc, Sort sort);
+
+	List<BankBranchView> findByCountryIdAndBankIdAndSwift(BigDecimal countryId, BigDecimal bankId, String swift, Sort sort);
 }

@@ -18,7 +18,6 @@ import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.meta.model.ApplicationSetupDTO;
 import com.amx.amxlib.meta.model.AuthenticationLimitCheckDTO;
-import com.amx.amxlib.meta.model.BankBranchDto;
 import com.amx.amxlib.meta.model.BranchDetailDTO;
 import com.amx.amxlib.meta.model.CountryMasterDTO;
 import com.amx.amxlib.meta.model.DeclarationDTO;
@@ -45,6 +44,7 @@ import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.model.response.BankMasterDTO;
 import com.amx.jax.model.response.BranchSystemDetailDto;
 import com.amx.jax.model.response.CurrencyMasterDTO;
+import com.amx.jax.model.response.benebranch.BankBranchDto;
 import com.amx.jax.rest.RestService;
 
 /**

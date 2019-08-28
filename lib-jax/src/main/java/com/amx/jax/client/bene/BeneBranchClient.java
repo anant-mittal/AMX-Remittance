@@ -10,8 +10,10 @@ import com.amx.jax.client.branch.IBranchBeneService;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.client.serviceprovider.RoutingBankMasterDTO;
 import com.amx.jax.exception.JaxSystemError;
+import com.amx.jax.model.request.benebranch.ListBankBranchRequest;
 import com.amx.jax.model.request.benebranch.ListBeneBankOrCashRequest;
 import com.amx.jax.model.response.BankMasterDTO;
+import com.amx.jax.model.response.benebranch.BankBranchDto;
 import com.amx.jax.rest.RestService;
 
 public class BeneBranchClient implements IBranchBeneService {
@@ -46,6 +48,19 @@ public class BeneBranchClient implements IBranchBeneService {
 					});
 		} catch (Exception e) {
 			LOGGER.error("exception in listBeneCashAgents : ", e);
+			return JaxSystemError.evaluate(e);
+		}
+	}
+
+	@Override
+	public AmxApiResponse<BankBranchDto, Object> listBankBranch(ListBankBranchRequest request) {
+		try {
+			LOGGER.debug("in listBankBranch :");
+			return restService.ajax(appConfig.getJaxURL() + Path.LIST_BANK_BRANCH).meta(new JaxMetaInfo()).post(request)
+					.as(new ParameterizedTypeReference<AmxApiResponse<BankBranchDto, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in listBankBranch : ", e);
 			return JaxSystemError.evaluate(e);
 		}
 	}

@@ -16,8 +16,10 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.branch.IBranchBeneService;
 import com.amx.jax.client.serviceprovider.RoutingBankMasterDTO;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.request.benebranch.ListBankBranchRequest;
 import com.amx.jax.model.request.benebranch.ListBeneBankOrCashRequest;
 import com.amx.jax.model.response.BankMasterDTO;
+import com.amx.jax.model.response.benebranch.BankBranchDto;
 import com.amx.utils.JsonUtil;
 
 import io.swagger.annotations.ApiOperation;
@@ -50,4 +52,12 @@ public class BeneBranchController implements IBranchBeneService {
 		return AmxApiResponse.buildList(output);
 	}
 
+	@RequestMapping(value = Path.LIST_BANK_BRANCH, method = RequestMethod.POST)
+	@Override
+	@ApiOperation("List bank branches")
+	public AmxApiResponse<BankBranchDto, Object> listBankBranch(@RequestBody @Valid ListBankBranchRequest request) {
+		logger.debug("request listBankBranch: {} ", JsonUtil.toJson(request));
+		List<BankBranchDto> output = beneBranchService.listBankBranch(request);
+		return AmxApiResponse.buildList(output);
+	}
 }

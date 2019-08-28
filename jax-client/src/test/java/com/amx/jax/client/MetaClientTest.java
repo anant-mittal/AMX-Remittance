@@ -14,7 +14,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.amx.amxlib.exception.InvalidInputException;
 import com.amx.amxlib.exception.ResourceNotFoundException;
 import com.amx.amxlib.meta.model.ApplicationSetupDTO;
-import com.amx.amxlib.meta.model.BankBranchDto;
 import com.amx.amxlib.meta.model.BranchDetailDTO;
 import com.amx.amxlib.meta.model.CountryMasterDTO;
 import com.amx.amxlib.meta.model.DeclarationDTO;
@@ -32,6 +31,7 @@ import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.model.response.BankMasterDTO;
 import com.amx.jax.model.response.BranchSystemDetailDto;
 import com.amx.jax.model.response.CurrencyMasterDTO;
+import com.amx.jax.model.response.benebranch.BankBranchDto;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes=JaxServiceClientApplication.class)

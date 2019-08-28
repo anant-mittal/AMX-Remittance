@@ -1,6 +1,5 @@
 package com.amx.jax.branchbene;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -14,10 +13,12 @@ import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterServiceI
 import com.amx.jax.client.serviceprovider.RoutingBankMasterDTO;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.meta.ServiceGroupMaster;
-import com.amx.jax.dbmodel.meta.ServiceMaster;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.request.benebranch.ListBankBranchRequest;
 import com.amx.jax.model.request.benebranch.ListBeneBankOrCashRequest;
 import com.amx.jax.model.response.BankMasterDTO;
+import com.amx.jax.model.response.benebranch.BankBranchDto;
+import com.amx.jax.service.BankMetaService;
 import com.amx.jax.service.MetaService;
 import com.amx.jax.services.BankService;
 import com.amx.jax.services.BeneficiaryService;
@@ -35,6 +36,8 @@ public class BeneBranchService {
 	MetaService metaService;
 	@Autowired
 	BeneficiaryService beneService;
+	@Autowired
+	BankMetaService bankMetaService;
 
 	// bank
 	public List<BankMasterDTO> getBankByCountryAndCurrency(ListBeneBankOrCashRequest request) {
@@ -44,6 +47,7 @@ public class BeneBranchService {
 	}
 
 	// cash
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public List<RoutingBankMasterDTO> getServiceProviderList(ListBeneBankOrCashRequest request) {
 		ServiceGroupMaster cashserviceMaster = metaService.getServiceGroupMasterByCode(ConstantDocument.SERVICE_GROUP_CODE_CASH);
 		RoutingBankMasterServiceImpl param = new RoutingBankMasterParam.RoutingBankMasterServiceImpl(metaData.getCountryId(), request.getCountryId(),
@@ -51,6 +55,10 @@ public class BeneBranchService {
 		ApiResponse serviceProviderResponse = beneService.getServiceProviderList(param);
 		List<RoutingBankMasterDTO> serviceProviderList = serviceProviderResponse.getResults();
 		return serviceProviderList;
+	}
+
+	public List<BankBranchDto> listBankBranch(ListBankBranchRequest request) {
+		return bankMetaService.getBankBranches(request);
 	}
 
 }
