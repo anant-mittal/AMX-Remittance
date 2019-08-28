@@ -184,6 +184,6 @@ public class AmxDBConstants {
 	// Constants for direct payment link
 	
 	public static final String DIRECT_PAYMENT_LINK_PAID ="P";
-	
+	public static final String DIRECT_LINK ="LINK";
 	
 }

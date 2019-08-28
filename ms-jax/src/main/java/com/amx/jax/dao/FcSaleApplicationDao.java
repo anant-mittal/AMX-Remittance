@@ -433,5 +433,10 @@ public class FcSaleApplicationDao {
 	public List<PaygDetailsModel> deactivatePreviousLink(BigDecimal customerId) {
 		return pgRepository.deactivatePrevLink(customerId);
 	}
+
+	public List<PaygDetailsModel> deactivatePreviousLinkResend(BigDecimal customerId) {
+		String paymentType = ConstantDocument.DIRECT_LINK;
+		return pgRepository.deactivatePreviousLinkResend(customerId, paymentType);
+	}
 	
 }

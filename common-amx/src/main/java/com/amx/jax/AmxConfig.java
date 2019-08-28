@@ -29,7 +29,7 @@ public class AmxConfig {
 	@TenantValue("${app.online.branch.id}")
 	BigDecimal onlineBranchId;
 	
-	@TenantValue("${app.default.currency.quote}")
+	@TenantValue("${app.local.currency.iso2}")
 	private String defCurrencyQuote;
 
 	public BigDecimal getDefaultLanguageId() {

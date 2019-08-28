@@ -318,7 +318,8 @@ public enum JaxError implements IExceptionEnum {
 	EXCH_ROUTING_DEAILS_NOT_AVAIL,
 	
 	//Direct Payment Link
-	VERIFICATION_CODE_MISMATCH;
+	VERIFICATION_CODE_MISMATCH,
+	DIRECT_LINK_DEACTIVATED;
 	
 	@Deprecated
 	public String getCode() {

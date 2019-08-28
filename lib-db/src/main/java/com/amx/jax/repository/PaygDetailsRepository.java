@@ -23,6 +23,10 @@ public interface PaygDetailsRepository extends CrudRepository<PaygDetailsModel, 
 	public PaygDetailsModel fetchPaymentByLinkIdandCode(BigDecimal linkId, String verificationCode);
 
 	@Query("select pl from PaygDetailsModel pl where pl.customerId=?1 and trunc(sysdate) > trunc(pl.linkDate) "
-			+ " and pl.isActive ='Y' ")
+			+ " and pl.linkActive ='Y' ")
 	public List<PaygDetailsModel> deactivatePrevLink(BigDecimal customerId);
+
+	@Query("select pl from PaygDetailsModel pl where pl.customerId=?1 and  pl.paymentType=?2 "
+			+ " and pl.linkActive ='Y' ")
+	public List<PaygDetailsModel> deactivatePreviousLinkResend(BigDecimal customerId, String paymentType);
 }

@@ -101,6 +101,9 @@ public class PaygDetailsModel implements Serializable{
 
     @Column(name="LINK_ISACTIVE")
     private String linkActive;
+    
+    @Column(name="PAYMENT_TYPE")
+    private String paymentType;
 
 	public BigDecimal getPaygTrnxSeqId() {
 		return paygTrnxSeqId;
@@ -292,6 +295,14 @@ public class PaygDetailsModel implements Serializable{
 
 	public void setLinkActive(String linkActive) {
 		this.linkActive = linkActive;
+	}
+
+	public String getPaymentType() {
+		return paymentType;
+	}
+
+	public void setPaymentType(String paymentType) {
+		this.paymentType = paymentType;
 	}
 	
 }

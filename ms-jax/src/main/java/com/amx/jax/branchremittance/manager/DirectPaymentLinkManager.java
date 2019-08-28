@@ -80,7 +80,7 @@ public class DirectPaymentLinkManager extends AbstractModel {
 	
 	public PaymentLinkRespDTO getPaymentLinkDetails(BigDecimal customerId, BranchRemittanceApplResponseDto shpCartData) {
 		deactivatePaymentLink(customerId);
-
+		deactivatePreviousLinkResend(customerId);	
 		PaymentLinkRespDTO paymentLinkResp = new PaymentLinkRespDTO();
 		
 		String code = Random.randomAlphaNumeric(8);
@@ -105,9 +105,10 @@ public class DirectPaymentLinkManager extends AbstractModel {
 				paymentApplication.setCustomerId(shpCartAppl.getCustomerId());
 				paymentApplication.setPayAmount(shpCartData.getTotalNetAmount());
 				paymentApplication.setApplIds(remittanceApplications);
-				paymentApplication.setLinkActive("Y");
+				paymentApplication.setLinkActive(ConstantDocument.Yes);
 				paymentApplication.setLinkDate(new Date());
 				paymentApplication.setVerifycode(hashVerifyCode);
+				paymentApplication.setPaymentType(ConstantDocument.DIRECT_LINK);
 				
 				fcSaleApplicationDao.savePaymentLinkApplication(paymentApplication);
 				
@@ -214,6 +215,10 @@ public class DirectPaymentLinkManager extends AbstractModel {
 				paymentLinkResp.setPaymentLinkRespStatus(statusModel);
 				paymentLinkResp.setApplicationIds(paymentLink.getApplIds());
 			}
+			if (paymentLink.getLinkActive().equals("D")) {
+				throw new GlobalException(JaxError.DIRECT_LINK_DEACTIVATED,
+						"Payment link is deactivated");
+			}
 			
 
 		} else {
@@ -229,9 +234,28 @@ public class DirectPaymentLinkManager extends AbstractModel {
 			if (!listOfPaymentLink.isEmpty() && listOfPaymentLink != null) {
 				for (PaygDetailsModel payLink : listOfPaymentLink) {
 					PaygDetailsModel paymentLink = pgRepository.findOne(payLink.getPaygTrnxSeqId());
-					paymentLink.setLinkActive("D");
+					paymentLink.setLinkActive(ConstantDocument.Deleted);
 					paymentLink.setModifiedDate(new Date());
 					pgRepository.save(paymentLink);//PaymentLinkModel
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new GlobalException("deActivate Payment Link failed for custoemr : " + customerId);
+		}
+		return true;
+	}
+	
+	private Boolean deactivatePreviousLinkResend(BigDecimal customerId) {
+		try {
+			List<PaygDetailsModel> listOfPaymentLink = fcSaleApplicationDao.deactivatePreviousLinkResend(customerId);
+			if (!listOfPaymentLink.isEmpty() && listOfPaymentLink != null) {
+				for (PaygDetailsModel payLink : listOfPaymentLink) {
+					PaygDetailsModel paymentLink = pgRepository.findOne(payLink.getPaygTrnxSeqId());
+					paymentLink.setLinkActive(ConstantDocument.Deleted);
+					paymentLink.setModifiedDate(new Date());
+					pgRepository.save(paymentLink);
 				}
 			}
 
@@ -284,7 +308,7 @@ public class DirectPaymentLinkManager extends AbstractModel {
 					&& (paymentResponse.getResultCode().equalsIgnoreCase(ConstantDocument.CAPTURED)
 							|| paymentResponse.getResultCode().equalsIgnoreCase(ConstantDocument.APPROVED))) {
 				// update payg details in payment link table
-				directPaymentLinkDao.updatePaygDetailsInPayLink(paymentResponse, linkId);
+				//directPaymentLinkDao.updatePaygDetailsInPayLink(paymentResponse, linkId);
 				fcSaleApplicationDao.updatePaygDetailsInPayLink(paymentResponse, linkId);
 			}
 		} catch (Exception e) {
