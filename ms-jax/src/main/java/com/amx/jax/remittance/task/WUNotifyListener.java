@@ -1,9 +1,7 @@
 package com.amx.jax.remittance.task;
 
 import java.math.BigDecimal;
-import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,14 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 
 import com.amx.jax.async.ExecutorConfig;
-import com.amx.jax.client.JaxClientUtil;
 import com.amx.jax.constant.ConstantDocument;
-import com.amx.jax.customer.manager.CustomerContactVerificationManager;
 import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.Customer;
-import com.amx.jax.dbmodel.CustomerContactVerification;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
-import com.amx.jax.dict.ContactType;
 import com.amx.jax.dict.Language;
 import com.amx.jax.event.AmxTunnelEvents;
 import com.amx.jax.postman.PostManException;
@@ -39,9 +33,7 @@ import com.amx.jax.tunnel.ITunnelSubscriber;
 import com.amx.jax.tunnel.TunnelEventMapping;
 import com.amx.jax.tunnel.TunnelEventXchange;
 import com.amx.jax.userservice.manager.CustomerFlagManager;
-import com.amx.jax.util.AmxDBConstants;
 import com.amx.utils.ArgUtil;
-import com.amx.utils.DateUtil;
 import com.amx.utils.JsonUtil;
 
 @TunnelEventMapping(topic = AmxTunnelEvents.Names.CASH_TRNX_COMM, scheme = TunnelEventXchange.TASK_WORKER)
@@ -52,8 +44,6 @@ public class WUNotifyListener implements ITunnelSubscriber<DBEvent> {
 	@Autowired
 	private PushNotifyClient pushNotifyClient;
 
-	@Autowired
-	private CustomerContactVerificationManager customerContactVerificationManager;
 
 	@Autowired
 	CustomerRepository customerRepository;
