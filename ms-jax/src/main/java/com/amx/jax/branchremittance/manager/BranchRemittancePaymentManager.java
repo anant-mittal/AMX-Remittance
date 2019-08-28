@@ -28,6 +28,7 @@ import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.CurrencyWiseDenomination;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ParameterDetails;
+import com.amx.jax.dbmodel.PaygDetailsModel;
 import com.amx.jax.dbmodel.remittance.CustomerBank;
 import com.amx.jax.dbmodel.remittance.LocalBankDetailsView;
 import com.amx.jax.dbmodel.remittance.PaymentLinkModel;
@@ -59,6 +60,7 @@ import com.amx.jax.repository.ICustomerRepository;
 import com.amx.jax.repository.IPaymentLinkDetailsRepository;
 import com.amx.jax.repository.IShoppingCartDetailsDao;
 import com.amx.jax.repository.IShoppingCartDetailsRepository;
+import com.amx.jax.repository.PaygDetailsRepository;
 import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.util.CryptoUtil;
@@ -109,7 +111,8 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 	@Autowired
 	IShoppingCartDetailsRepository iShoppingCartDetailsRepository;
 
-
+	@Autowired
+	PaygDetailsRepository payGDetailsRepository;
 	/* 
 	 * @param   :fetch customer shopping cart application
 	 * @return CustomerShoppingCartDto
@@ -169,9 +172,9 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 						breakup.setFcDecimalNumber(currencyMaster.getDecinalNumber() == null ? decimalNumber : currencyMaster.getDecinalNumber());
 						lstCustShpcrt.add(createCustomerShoppingCartDto(customerApplDto,localCurrencyId,fcCurrencyId,breakup));
 						if(customerApplDto.getPaymentLinkId()!=null) {
-							PaymentLinkModel paymentLinkModel = paymentLinkDetailsRepository.findOne(customerApplDto.getPaymentLinkId());
-							if(paymentLinkModel != null && ConstantDocument.DIRECT_PAYMENT_LINK_PAID.equalsIgnoreCase(paymentLinkModel.getIsActive())) {
-								String applicationIds = paymentLinkModel.getApplicationIds();
+							PaygDetailsModel paymentLinkModel = payGDetailsRepository.findOne(customerApplDto.getPaymentLinkId());
+							if(paymentLinkModel != null && ConstantDocument.DIRECT_PAYMENT_LINK_PAID.equalsIgnoreCase(paymentLinkModel.getLinkActive())) {
+								String applicationIds = paymentLinkModel.getApplIds();
 								String appIdsArray[] = applicationIds.split(",");
 								for(int i=0;i<appIdsArray.length;i++) {
 									listPaymentLinkAppDto.add(createPaymentLinkAppDto(new BigDecimal(appIdsArray[i]), paymentLinkModel));
@@ -592,7 +595,7 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		
 	}
 	
-	private PaymentLinkAppDto createPaymentLinkAppDto(BigDecimal remittanceApplicationId,PaymentLinkModel paymentLinkModel) {
+	private PaymentLinkAppDto createPaymentLinkAppDto(BigDecimal remittanceApplicationId,PaygDetailsModel paymentLinkModel) {
 		ShoppingCartDetails shoppingCartDetails=iShoppingCartDetailsRepository.findByCustomerIdAndRemittanceApplicationId(metaData.getCustomerId(), remittanceApplicationId); 
 		PaymentLinkAppDto paymentLinkAppDto = new PaymentLinkAppDto();
 		paymentLinkAppDto.setRemittanceApplicationId(remittanceApplicationId);
