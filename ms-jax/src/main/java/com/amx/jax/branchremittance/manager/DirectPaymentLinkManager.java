@@ -308,14 +308,15 @@ public class DirectPaymentLinkManager extends AbstractModel {
 					&& (paymentResponse.getResultCode().equalsIgnoreCase(ConstantDocument.CAPTURED)
 							|| paymentResponse.getResultCode().equalsIgnoreCase(ConstantDocument.APPROVED))) {
 				// update payg details in payment link table
-				//directPaymentLinkDao.updatePaygDetailsInPayLink(paymentResponse, linkId);
 				fcSaleApplicationDao.updatePaygDetailsInPayLink(paymentResponse, linkId);
+			} else {
+				fcSaleApplicationDao.updatePaygDetailsFail(paymentResponse, linkId);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
-		return null;
+		return paymentResponse;
 	}
 
 	
