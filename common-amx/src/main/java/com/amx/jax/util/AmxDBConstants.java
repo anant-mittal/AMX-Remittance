@@ -196,6 +196,7 @@ public class AmxDBConstants {
 	public static final String WU_PAID = "PAID";
 	public static final String WU_PICK = "PICK_REMINDER";
 	public static final String WU_CANC_REM = "CANC_REMINDER";
+	public static final String WU_CANCELLED = "WU_CANC";
 	
 	
 	
