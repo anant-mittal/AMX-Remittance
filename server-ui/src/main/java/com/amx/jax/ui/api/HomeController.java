@@ -15,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -45,6 +46,7 @@ import com.amx.jax.swagger.ApiStatusBuilder.ApiStatus;
 import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.UIConstants.Features;
 import com.amx.jax.ui.WebAppConfig;
+import com.amx.jax.ui.config.UIServerError;
 import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 import com.amx.jax.ui.model.ServerStatus;
 import com.amx.jax.ui.response.ResponseMessage;
@@ -297,8 +299,18 @@ public class HomeController {
 	public Map<String, Object> rating(
 			@PathVariable Products prodType, @PathVariable BigDecimal trnxId, @PathVariable String veryCode) {
 
-		boolean valid = JaxClientUtil.getTransactionVeryCode(trnxId).equals(veryCode);
-		AmxApiResponse<CustomerRatingDTO, ?> rating = jaxService.getRemitClient().inquireCustomerRating(trnxId);
+		boolean valid = false;
+		AmxApiResponse<CustomerRatingDTO, ?> rating = null;
+		
+		if(prodType.equals(Products.REMIT)) {
+			valid = JaxClientUtil.getTransactionVeryCode(trnxId).equals(veryCode);
+			rating = jaxService.getRemitClient().inquireCustomerRating(trnxId);
+		}
+		if(prodType.equals(Products.FXORDER)) {
+			valid = JaxClientUtil.getTransactionVeryCode(trnxId).equals(veryCode);
+			rating = jaxService.getFxOrderBranchClient().inquirefxOrderCustomerRating(trnxId,prodType.toString());
+		}
+		
 
 		String errorCode = null;
 		String errorMessage = null;
@@ -312,32 +324,7 @@ public class HomeController {
 		map.put("valid", valid);
 		return map;
 	}
-	
-	@ApiJaxStatus({ JaxError.CUSTOMER_NOT_FOUND, JaxError.INVALID_OTP, JaxError.ENTITY_INVALID,
-		JaxError.ENTITY_EXPIRED })
-@ApiStatus({ ApiStatusCodes.PARAM_MISSING })
-@RequestMapping(value = { "/pub/rating/{prodType}/{deliveryDetailSeqId}/{veryCode}/**" },
-		method = { RequestMethod.GET }, produces = {
-				CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE })
-@ResponseBody
-public Map<String, Object> fsOrderrating(
-		@PathVariable Products prodType, @PathVariable BigDecimal deliveryDetailSeqId, @PathVariable String veryCode) {
 
-	boolean valid = JaxClientUtil.getTransactionVeryCode(deliveryDetailSeqId).equals(veryCode);
-	AmxApiResponse<CustomerRatingDTO, ?> rating = jaxService.getFxOrderBranchClient().inquirefxOrderCustomerRating(deliveryDetailSeqId,prodType.toString());
-
-	String errorCode = null;
-	String errorMessage = null;
-	Map<String, Object> map = new HashMap<String, Object>();
-	map.put("rating", rating);
-	map.put("trnxId", deliveryDetailSeqId);
-	map.put("errorCode", errorCode);
-	map.put("errorMessage", errorMessage);
-	map.put("prodType", prodType);
-	map.put("verCode", veryCode);
-	map.put("valid", valid);
-	return map;
-}
 
 	@ApiJaxStatus({ JaxError.CUSTOMER_NOT_FOUND, JaxError.INVALID_OTP, JaxError.ENTITY_INVALID,
 			JaxError.ENTITY_EXPIRED })
@@ -358,5 +345,27 @@ public Map<String, Object> fsOrderrating(
 		model.addAttribute("googelReCaptachSiteKey", webAppConfig.getGoogelReCaptachSiteKey());
 		model.addAttribute("companyTnt", AppContextUtil.getTenant());
 		return "recaptcha";
+	}
+	
+	
+	
+	@RequestMapping(value = {"/pub/{prodType}/tranx/rating" }, method = { RequestMethod.POST })
+	public ResponseWrapper<CustomerRatingDTO> appStatus(@RequestBody CustomerRatingDTO customerRatingDTO,
+			@RequestParam String veryCode, @PathVariable Products prodType) {
+		
+		
+		if(prodType.equals(Products.REMIT)) {
+			if (!JaxClientUtil.getTransactionVeryCode(customerRatingDTO.getRemittanceTransactionId()).equals(veryCode)) {
+				throw new UIServerError(OWAStatusStatusCodes.INVALID_LINK);
+			}
+		}
+		if(prodType.equals(Products.FXORDER)) {
+			if (!JaxClientUtil.getTransactionVeryCode(customerRatingDTO.getFxOrderTransactionId()).equals(veryCode)) {
+				throw new UIServerError(OWAStatusStatusCodes.INVALID_LINK);
+			}
+		}
+		
+		return ResponseWrapper.build(jaxService.setDefaults().getRemitClient().saveCustomerRating(customerRatingDTO));
+
 	}
 }
