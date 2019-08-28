@@ -16,6 +16,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.branchremittance.manager.BranchRemittancePaymentManager;
 import com.amx.jax.branchremittance.manager.DirectPaymentLinkManager;
 import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.response.customer.CustomerDto;
 import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
@@ -29,6 +30,7 @@ import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.services.AbstractService;
 import com.amx.jax.userservice.service.UserService;
+import com.amx.jax.validation.FxOrderValidation;
 import com.amx.utils.EntityDtoUtil;
 import com.amx.utils.JsonUtil;
 
@@ -37,6 +39,9 @@ import com.amx.utils.JsonUtil;
 public class DirectPaymentLinkService extends AbstractService {
 	Logger logger = LoggerFactory.getLogger(getClass());
 
+	@Autowired
+	FxOrderValidation validation;
+	
 	@Autowired
 	DirectPaymentLinkManager directPaymentLinkManager;
 	
@@ -51,25 +56,29 @@ public class DirectPaymentLinkService extends AbstractService {
 	
 	@Autowired
 	BranchRemittancePaymentManager branchRemittancePaymentManager;
+	
+	@Autowired
+	MetaData metaData;
 
-	public PaymentLinkRespDTO fetchPaymentLinkDetails(BigDecimal customerId, BigDecimal localCurrencyId) {
+	public AmxApiResponse<PaymentLinkRespDTO, Object> fetchPaymentLinkDetails() {
+		
+		validation.validateHeaderInfo();
+		BigDecimal customerId = metaData.getCustomerId();
+		BigDecimal localCurrencyId = metaData.getDefaultCurrencyId();
 		
 		BranchRemittanceApplResponseDto shpCartData = branchRemittancePaymentManager.fetchCustomerShoppingCart(customerId, localCurrencyId);
-		//PaymentLinkRespDTO paymentdto = directPaymentLinkManager.fetchPaymentLinkDetails(customerId, localCurrencyId);
-		
 		PaymentLinkRespDTO paymentDtoNEW = directPaymentLinkManager.getPaymentLinkDetails(customerId, shpCartData);
 		
 		PersonInfo personInfo = userService.getPersonInfo(customerId);
 		sendDirectLinkEmail(paymentDtoNEW, personInfo, customerId);
 		sendDirectLinkSMS(paymentDtoNEW, personInfo, customerId);
 
-		return paymentDtoNEW;
+		return AmxApiResponse.build(paymentDtoNEW);
 	}
 
-	public PaymentLinkRespDTO validatePayLink(BigDecimal linkId, String verificationCode) {
-		//PaymentLinkRespDTO paymentdto = directPaymentLinkManager.validatePayLink(linkId, verificationCode);
+	public AmxApiResponse<PaymentLinkRespDTO, Object> validatePayLink(BigDecimal linkId, String verificationCode) {
 		PaymentLinkRespDTO paymentdtoNew = directPaymentLinkManager.validatePaymentLinkNew(linkId, verificationCode);
-		return paymentdtoNew;
+		return AmxApiResponse.build(paymentdtoNew);
 	}
 
 	public void sendDirectLinkEmail(PaymentLinkRespDTO paymentdto, PersonInfo personInfo,BigDecimal customerId) {

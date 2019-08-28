@@ -170,7 +170,7 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 						lstCustShpcrt.add(createCustomerShoppingCartDto(customerApplDto,localCurrencyId,fcCurrencyId,breakup));
 						if(customerApplDto.getPaymentLinkId()!=null) {
 							PaymentLinkModel paymentLinkModel = paymentLinkDetailsRepository.findOne(customerApplDto.getPaymentLinkId());
-							if(ConstantDocument.DIRECT_PAYMENT_LINK_PAID.equalsIgnoreCase(paymentLinkModel.getIsActive())) {
+							if(paymentLinkModel != null && ConstantDocument.DIRECT_PAYMENT_LINK_PAID.equalsIgnoreCase(paymentLinkModel.getIsActive())) {
 								String applicationIds = paymentLinkModel.getApplicationIds();
 								String appIdsArray[] = applicationIds.split(",");
 								for(int i=0;i<appIdsArray.length;i++) {

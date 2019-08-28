@@ -18,15 +18,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.jax.AmxConfig;
 import com.amx.jax.api.ResponseCodeDetailDTO;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constants.JaxTransactionStatus;
 import com.amx.jax.dao.BranchRemittancePaymentDao;
 import com.amx.jax.dao.DirectPaymentLinkDao;
-import com.amx.jax.dbmodel.CurrencyMasterModel;
-import com.amx.jax.dbmodel.remittance.PaymentLinkModel;
+import com.amx.jax.dao.FcSaleApplicationDao;
+import com.amx.jax.dbmodel.PaygDetailsModel;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
-import com.amx.jax.dbmodel.remittance.ShoppingCartDetails;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.AbstractModel;
@@ -34,10 +34,10 @@ import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerShoppingCartDto;
 import com.amx.jax.model.response.remittance.PaymentLinkRespDTO;
 import com.amx.jax.model.response.remittance.PaymentLinkRespStatus;
-import com.amx.jax.model.response.remittance.TransactionDetailsDTO;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.repository.CurrencyRepository;
 import com.amx.jax.repository.IPaymentLinkDetailsRepository;
+import com.amx.jax.repository.PaygDetailsRepository;
 import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.utils.Random;
 
@@ -68,15 +68,21 @@ public class DirectPaymentLinkManager extends AbstractModel {
 	
 	@Autowired
 	MetaData metaData;
-
-	public PaymentLinkRespDTO fetchPaymentLinkDetails(BigDecimal customerId, BigDecimal localCurrencyId) {
-
+	
+	@Autowired
+	FcSaleApplicationDao fcSaleApplicationDao;
+	
+	@Autowired
+	PaygDetailsRepository pgRepository;
+	
+	@Autowired
+	AmxConfig amxConfig;
+	
+	public PaymentLinkRespDTO getPaymentLinkDetails(BigDecimal customerId, BranchRemittanceApplResponseDto shpCartData) {
 		deactivatePaymentLink(customerId);
 
 		PaymentLinkRespDTO paymentLinkResp = new PaymentLinkRespDTO();
-		List<ShoppingCartDetails> lstCustomerShopping = branchRemittancePaymentDao
-				.fetchCustomerShoppingCart(customerId);
-		List<PaymentLinkModel> paymentLinkData = new ArrayList<>();
+		
 		String code = Random.randomAlphaNumeric(8);
 		String hashVerifyCode = null;
 		try {
@@ -86,70 +92,146 @@ public class DirectPaymentLinkManager extends AbstractModel {
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		}
-
-		if (lstCustomerShopping != null && !lstCustomerShopping.isEmpty() && lstCustomerShopping.size() != 0) {
-			ShoppingCartDetails shpCartAppl = lstCustomerShopping.get(0);
-
-			double totalNetAmountDouble = lstCustomerShopping.stream()
-					.mapToDouble(i -> i.getLocalNextTranxAmount().doubleValue()).sum();
-			BigDecimal totalNetAmounts = new BigDecimal(totalNetAmountDouble);
-			String remittanceApplications = lstCustomerShopping.stream()
-					.map(i -> i.getRemittanceApplicationId().toString()).collect(Collectors.joining(","));
-
-			PaymentLinkModel paymentApplication = new PaymentLinkModel();
-			paymentApplication.setApplicationCountryId(new BigDecimal(91));
-			paymentApplication.setCustomerId(shpCartAppl.getCustomerId());
-			paymentApplication.setPaymentAmount(totalNetAmounts);
-			paymentApplication.setApplicationIds(remittanceApplications);
-			paymentApplication.setIsActive("Y");
-			paymentApplication.setLinkDate(new Date());
-			paymentApplication.setVerificationCode(hashVerifyCode);
-
-			paymentLinkData.add(paymentApplication);
-			directPaymentLinkDao.savePaymentLinkDetails(paymentLinkData);
+		
+		if(shpCartData != null){
+			List<CustomerShoppingCartDto> shoppingCartDetails = shpCartData.getShoppingCartDetails();
 			
-			// Save link id against application Id's 
-			PaymentLinkModel fetchPaymentLinkData = directPaymentLinkDao.fetchPaymentLinkId(customerId, hashVerifyCode);
-			if(fetchPaymentLinkData != null) {
-				String applicationid = fetchPaymentLinkData.getApplicationIds();
-				StringTokenizer tokenizer = new StringTokenizer(applicationid, ",");
-		        
-		        while (tokenizer.hasMoreTokens()) {
-		        	String token = tokenizer.nextToken();
-		            BigDecimal appId = new BigDecimal(token);
-		            logger.info("Application Id : " + appId);
-		            RemittanceApplication fetchApplication = remittanceApplicationRepository.fetchByRemittanceApplicationId(appId);
-		            fetchApplication.setPaymentLinkId(fetchPaymentLinkData.getLinkId());
-		            
-		            remittanceApplicationRepository.save(fetchApplication);
-		        } 
+			if(shoppingCartDetails != null) {
+				CustomerShoppingCartDto shpCartAppl = shoppingCartDetails.get(0);
+				String remittanceApplications = shoppingCartDetails.stream()
+						.map(i -> i.getRemittanceApplicationId().toString()).collect(Collectors.joining(","));
+				
+				PaygDetailsModel paymentApplication = new PaygDetailsModel();
+				paymentApplication.setCustomerId(shpCartAppl.getCustomerId());
+				paymentApplication.setPayAmount(shpCartData.getTotalNetAmount());
+				paymentApplication.setApplIds(remittanceApplications);
+				paymentApplication.setLinkActive("Y");
+				paymentApplication.setLinkDate(new Date());
+				paymentApplication.setVerifycode(hashVerifyCode);
+				
+				fcSaleApplicationDao.savePaymentLinkApplication(paymentApplication);
+				
+				// Save link id against application Id's 
+				PaygDetailsModel fetchPaymentLinkData = fcSaleApplicationDao.fetchPaymentLinkId(customerId, hashVerifyCode);
+				if(fetchPaymentLinkData != null) {
+					String applicationid = fetchPaymentLinkData.getApplIds();
+					StringTokenizer tokenizer = new StringTokenizer(applicationid, ",");
+			        
+			        while (tokenizer.hasMoreTokens()) {
+			        	String token = tokenizer.nextToken();
+			            BigDecimal appId = new BigDecimal(token);
+			            logger.info("Application Id : " + appId);
+			            RemittanceApplication fetchApplication = remittanceApplicationRepository.fetchByRemittanceApplicationId(appId);
+			            fetchApplication.setPaymentLinkId(fetchPaymentLinkData.getPaygTrnxSeqId());
+			            
+			            remittanceApplicationRepository.save(fetchApplication);
+			        } 
+				}
 			}
 		}
-
-		logger.info("HashCode Outside If : " + hashVerifyCode);
-		PaymentLinkModel paymentLinkId = directPaymentLinkDao.fetchPaymentLinkId(customerId, hashVerifyCode);
+		
+		PaygDetailsModel paymentLinkId = fcSaleApplicationDao.fetchPaymentLinkId(customerId, hashVerifyCode);
 		if (paymentLinkId != null) {
-			paymentLinkResp.setId(paymentLinkId.getLinkId());
+			String currencyQuote = amxConfig.getDefCurrencyQuote();
+			paymentLinkResp.setId(paymentLinkId.getPaygTrnxSeqId());
 			paymentLinkResp.setVerificationCode(code);
-			paymentLinkResp.setCurQutoe("KD");
-			paymentLinkResp.setNetAmount(paymentLinkId.getPaymentAmount());
+			paymentLinkResp.setCurQutoe(currencyQuote);
+			paymentLinkResp.setNetAmount(paymentLinkId.getPayAmount());
 			paymentLinkResp.setRequestData(paymentLinkId.getLinkDate());
 
 			return paymentLinkResp;
 		}
+		
+		
+		return paymentLinkResp;
+	}
+	
+	public PaymentLinkRespDTO validatePaymentLinkNew(BigDecimal linkId, String verificationCode) {
+		PaymentLinkRespDTO paymentLinkResp = new PaymentLinkRespDTO();
+		BigDecimal localCurrencyId = amxConfig.getDefaultCurrencyId();
+		//BigDecimal localCurrencyId = metaData.getDefaultCurrencyId();
+		String hashVerifyCode = null;
+		try {
+			hashVerifyCode = com.amx.utils.CryptoUtil.getSHA2Hash(verificationCode);
+			logger.info("HashCode Inside If : " + hashVerifyCode);
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+		PaygDetailsModel paymentLink = fcSaleApplicationDao.validatePaymentLinkByCode(linkId, hashVerifyCode);
+		if (paymentLink != null) {
+			PaymentLinkRespStatus statusModel = new PaymentLinkRespStatus();
+			if (paymentLink.getLinkActive().equals("Y")) {
+				BranchRemittanceApplResponseDto shpCartData = branchRemittancePaymentManager
+						.fetchCustomerShoppingCart(paymentLink.getCustomerId(), localCurrencyId);
 
+				List<CustomerShoppingCartDto> shoppingCartDetails = shpCartData.getShoppingCartDetails();
+				if (shoppingCartDetails != null) {
+					BigDecimal totalNetAmounts = shpCartData.getTotalNetAmount();
+					int value = totalNetAmounts.compareTo(paymentLink.getPayAmount());
+					if (value == -1) {
+						throw new GlobalException(JaxError.AMOUNT_MISMATCH, "Amount is Mismatch, Invalid Link");
+					}
+				}
+
+				List<CustomerShoppingCartDto> custShopList = new ArrayList<>();
+
+				String applicationid = paymentLink.getApplIds();
+				StringTokenizer tokenizer = new StringTokenizer(applicationid, ",");
+				while (tokenizer.hasMoreTokens()) {
+					String token = tokenizer.nextToken();
+					BigDecimal appId = new BigDecimal(token);
+					logger.info("Application Id : " + appId);
+
+					for (CustomerShoppingCartDto cartList : shoppingCartDetails) {
+						if (cartList.getRemittanceApplicationId().equals(appId)) {
+							custShopList.add(cartList);
+						}
+					}
+				}
+				paymentLinkResp.setNetAmount(shpCartData.getTotalNetAmount());
+				paymentLinkResp.setTotalTrnxAmount(shpCartData.getTotalLocalAmount());
+				paymentLinkResp.setTotalCommissionAmt(shpCartData.getTotalTrnxFees());
+				paymentLinkResp.setShoppingCartDetails(shoppingCartDetails);
+				paymentLinkResp.setApplicationIds(paymentLink.getApplIds());
+			}
+			if(paymentLink.getLinkActive().equals("P")) {
+				JaxTransactionStatus status = getJaxTransactionStatus(paymentLink);
+				statusModel.setStatus(status);
+				
+				statusModel.setNetAmount(paymentLink.getPayAmount());
+				statusModel.setTransactionReference(paymentLink.getApplIds());
+				statusModel.setErrorMessage(paymentLink.getErrorMessage());
+				
+				ResponseCodeDetailDTO responseCodeDetail = new ResponseCodeDetailDTO();
+				
+				responseCodeDetail.setPgPaymentId(paymentLink.getPgPaymentId());
+				responseCodeDetail.setPgReferenceId(paymentLink.getPgReferenceId());
+				responseCodeDetail.setPgTransId(paymentLink.getPgTransactionId());
+				responseCodeDetail.setPgAuth(paymentLink.getPgAuthCode());
+				
+				statusModel.setResponseCodeDetail(responseCodeDetail);
+				
+				paymentLinkResp.setPaymentLinkRespStatus(statusModel);
+				paymentLinkResp.setApplicationIds(paymentLink.getApplIds());
+			}
+			
+
+		} else {
+			throw new GlobalException(JaxError.VERIFICATION_CODE_MISMATCH,
+					"Invalidate link, Verification Code Mismatch");
+		}
 		return paymentLinkResp;
 	}
 
 	public Boolean deactivatePaymentLink(BigDecimal customerId) {
 		try {
-			List<PaymentLinkModel> listOfPaymentLink = directPaymentLinkDao.deactivatePreviousLink(customerId);
+			List<PaygDetailsModel> listOfPaymentLink = fcSaleApplicationDao.deactivatePreviousLink(customerId);
 			if (!listOfPaymentLink.isEmpty() && listOfPaymentLink != null) {
-				for (PaymentLinkModel payLink : listOfPaymentLink) {
-					PaymentLinkModel paymentLink = paymentLinkDetailsRepository.findOne(payLink.getLinkId());
-					paymentLink.setIsActive("D");
+				for (PaygDetailsModel payLink : listOfPaymentLink) {
+					PaygDetailsModel paymentLink = pgRepository.findOne(payLink.getPaygTrnxSeqId());
+					paymentLink.setLinkActive("D");
 					paymentLink.setModifiedDate(new Date());
-					paymentLinkDetailsRepository.save(paymentLink);
+					pgRepository.save(paymentLink);//PaymentLinkModel
 				}
 			}
 
@@ -160,114 +242,11 @@ public class DirectPaymentLinkManager extends AbstractModel {
 		return true;
 	}
 
-	public PaymentLinkRespDTO validatePayLink(BigDecimal linkId, String verificationCode) {
-		PaymentLinkRespDTO paymentLinkResp = new PaymentLinkRespDTO();
-		String hashVerifyCode = null;
-		try {
-			hashVerifyCode = com.amx.utils.CryptoUtil.getSHA2Hash(verificationCode);
-			logger.info("HashCode Inside If : " + hashVerifyCode);
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		}
-		PaymentLinkModel paymentLink = directPaymentLinkDao.validatePaymentLinkByCode(linkId, hashVerifyCode);
-		
-		if(paymentLink != null) {
-			PaymentLinkRespStatus statusModel = new PaymentLinkRespStatus();
-			if(paymentLink.getIsActive().equals("Y")) {
-				List<ShoppingCartDetails> lstCustomerShopping = branchRemittancePaymentDao.fetchCustomerShoppingCart(paymentLink.getCustomerId());
-				
-				if (lstCustomerShopping != null && !lstCustomerShopping.isEmpty() && lstCustomerShopping.size() != 0) {
-					double totalNetAmountDouble = lstCustomerShopping.stream()
-							.mapToDouble(i -> i.getLocalNextTranxAmount().doubleValue()).sum();
-					BigDecimal totalNetAmounts = new BigDecimal(totalNetAmountDouble);
-					int value = totalNetAmounts.compareTo(paymentLink.getPaymentAmount());
-					if(value == -1) {
-						throw new GlobalException(JaxError.AMOUNT_MISMATCH,	"Amount is Mismatch, Invalid Link");
-					}
-				}
-				
-				List<TransactionDetailsDTO> trnxInfoList = new ArrayList<>();
-				
-				String applicationid = paymentLink.getApplicationIds();
-				StringTokenizer tokenizer = new StringTokenizer(applicationid, ",");
-		        while (tokenizer.hasMoreTokens()) {
-		        	String token = tokenizer.nextToken();
-		            BigDecimal appId = new BigDecimal(token);
-		            logger.info("Application Id : " + appId);
-		            
-		            for (ShoppingCartDetails cartList : lstCustomerShopping) {
-		            	if(cartList.getRemittanceApplicationId().equals(appId)) {
-		            		TransactionDetailsDTO trnxDetails = new TransactionDetailsDTO();
-		            		trnxDetails.setApplicationId(cartList.getRemittanceApplicationId());
-		            		trnxDetails.setAccountNumber(cartList.getBeneficiaryAccountNo());
-		        			trnxDetails.setBankName(cartList.getBeneficiaryBank());
-		        			trnxDetails.setBeneName(cartList.getBeneficiaryName());
-		        			trnxDetails.setLocalTrnxAmt(cartList.getLocalTranxAmount());
-		        			trnxDetails.setLocalComAmt(cartList.getLocalCommisionAmount());
-		        			trnxDetails.setLocalNetTrnxAmt(cartList.getLocalNextTranxAmount());
-		        			trnxDetails.setExRateAppl(cartList.getExchangeRateApplied());
-		        			if(cartList.getLocalCurrency() != null) {
-		        				trnxDetails.setLocalCurId(cartList.getLocalCurrency());
-		        				CurrencyMasterModel currencyQuote = currencyRepository.findOne(cartList.getLocalCurrency());
-		        				if(currencyQuote != null) {
-		        					trnxDetails.setLocalCur(currencyQuote.getQuoteName());
-		        				}
-		        			}
-		        			if(cartList.getForeignCurrency() != null) {
-		        				trnxDetails.setForeignCurId(cartList.getForeignCurrency());
-		        				CurrencyMasterModel currencyQuote = currencyRepository.findOne(cartList.getForeignCurrency());
-		        				if(currencyQuote != null) {
-		        					trnxDetails.setForeignCurrency(currencyQuote.getQuoteName());
-		        				}
-		        			}
-		        			if(cartList.getExchangeRateApplied() != null) {
-		        				BigDecimal rateRev = cartList.getExchangeRateApplied();
-		        				BigDecimal rateReversedFinal = new BigDecimal(1).divide(rateRev,2, BigDecimal.ROUND_HALF_UP);
-		        				trnxDetails.setExRateRev(rateReversedFinal);
-		        			}
-		        			
-		        			trnxInfoList.add(trnxDetails);
-		            	}
-					}
-		        }
-				paymentLinkResp.setTransactionDetails(trnxInfoList);
-				paymentLinkResp.setApplicationIds(paymentLink.getApplicationIds());
-			
-			}
-			if(paymentLink.getIsActive().equals("P")) {
-				JaxTransactionStatus status = getJaxTransactionStatus(paymentLink);
-				statusModel.setStatus(status);
-				
-				statusModel.setNetAmount(paymentLink.getPaymentAmount());
-				statusModel.setTransactionReference(paymentLink.getApplicationIds());
-				statusModel.setErrorCategory(paymentLink.getErrorCategory());
-				statusModel.setErrorMessage(paymentLink.getErrorMessage());
-				
-				ResponseCodeDetailDTO responseCodeDetail = new ResponseCodeDetailDTO();
-				
-				responseCodeDetail.setPgPaymentId(paymentLink.getPaymentId());
-				responseCodeDetail.setPgReferenceId(paymentLink.getPgReferenceId());
-				responseCodeDetail.setPgTransId(paymentLink.getPgTransactionId());
-				responseCodeDetail.setPgAuth(paymentLink.getPgAuthCode());
-				
-				statusModel.setResponseCodeDetail(responseCodeDetail);
-				
-				paymentLinkResp.setPaymentLinkRespStatus(statusModel);
-				paymentLinkResp.setApplicationIds(paymentLink.getApplicationIds());
-			}
-			
-		} else {
-			throw new GlobalException(JaxError.VERIFICATION_CODE_MISMATCH,
-					"Invalidate link, Verification Code Mismatch");
-		}
-		return paymentLinkResp;
-	}
-
-	private JaxTransactionStatus getJaxTransactionStatus(PaymentLinkModel paymentLink) {
+	private JaxTransactionStatus getJaxTransactionStatus(PaygDetailsModel paymentLink) {
 		JaxTransactionStatus status = JaxTransactionStatus.APPLICATION_CREATED;
-		String applicationStatus = paymentLink.getIsActive();
+		String applicationStatus = paymentLink.getLinkActive();
 		
-		if (StringUtils.isBlank(applicationStatus) && paymentLink.getPaymentId() != null) {
+		if (StringUtils.isBlank(applicationStatus) && paymentLink.getPgPaymentId() != null) {
 			status = JaxTransactionStatus.PAYMENT_IN_PROCESS;
 		}
 		String resultCode = paymentLink.getResultCode();
@@ -306,6 +285,7 @@ public class DirectPaymentLinkManager extends AbstractModel {
 							|| paymentResponse.getResultCode().equalsIgnoreCase(ConstantDocument.APPROVED))) {
 				// update payg details in payment link table
 				directPaymentLinkDao.updatePaygDetailsInPayLink(paymentResponse, linkId);
+				fcSaleApplicationDao.updatePaygDetailsInPayLink(paymentResponse, linkId);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -314,151 +294,8 @@ public class DirectPaymentLinkManager extends AbstractModel {
 		return null;
 	}
 
-	public PaymentLinkRespDTO getPaymentLinkDetails(BigDecimal customerId, BranchRemittanceApplResponseDto shpCartData) {
-		deactivatePaymentLink(customerId);
+	
 
-		PaymentLinkRespDTO paymentLinkResp = new PaymentLinkRespDTO();
-		
-		List<PaymentLinkModel> paymentLinkData = new ArrayList<>();
-		String code = Random.randomAlphaNumeric(8);
-		String hashVerifyCode = null;
-		try {
-			hashVerifyCode = com.amx.utils.CryptoUtil.getSHA2Hash(code);
-			logger.info("Code Inside If : " + code);
-			logger.info("HashCode Inside If : " + hashVerifyCode);
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		}
-		
-		if(shpCartData != null){
-			List<CustomerShoppingCartDto> shoppingCartDetails = shpCartData.getShoppingCartDetails();
-			
-			if(shoppingCartDetails != null) {
-				CustomerShoppingCartDto shpCartAppl = shoppingCartDetails.get(0);
-				String remittanceApplications = shoppingCartDetails.stream()
-						.map(i -> i.getRemittanceApplicationId().toString()).collect(Collectors.joining(","));
-				
-				PaymentLinkModel paymentApplication = new PaymentLinkModel();
-				paymentApplication.setApplicationCountryId(new BigDecimal(91));
-				paymentApplication.setCustomerId(shpCartAppl.getCustomerId());
-				paymentApplication.setPaymentAmount(shpCartData.getTotalNetAmount());
-				paymentApplication.setApplicationIds(remittanceApplications);
-				paymentApplication.setIsActive("Y");
-				paymentApplication.setLinkDate(new Date());
-				paymentApplication.setVerificationCode(hashVerifyCode);
-
-				paymentLinkData.add(paymentApplication);
-				directPaymentLinkDao.savePaymentLinkDetails(paymentLinkData);
-				
-				// Save link id against application Id's 
-				PaymentLinkModel fetchPaymentLinkData = directPaymentLinkDao.fetchPaymentLinkId(customerId, hashVerifyCode);
-				if(fetchPaymentLinkData != null) {
-					String applicationid = fetchPaymentLinkData.getApplicationIds();
-					StringTokenizer tokenizer = new StringTokenizer(applicationid, ",");
-			        
-			        while (tokenizer.hasMoreTokens()) {
-			        	String token = tokenizer.nextToken();
-			            BigDecimal appId = new BigDecimal(token);
-			            logger.info("Application Id : " + appId);
-			            RemittanceApplication fetchApplication = remittanceApplicationRepository.fetchByRemittanceApplicationId(appId);
-			            fetchApplication.setPaymentLinkId(fetchPaymentLinkData.getLinkId());
-			            
-			            remittanceApplicationRepository.save(fetchApplication);
-			        } 
-				}
-			}
-		}
-		logger.info("HashCode Outside If : " + hashVerifyCode);
-		PaymentLinkModel paymentLinkId = directPaymentLinkDao.fetchPaymentLinkId(customerId, hashVerifyCode);
-		if (paymentLinkId != null) {
-			paymentLinkResp.setId(paymentLinkId.getLinkId());
-			paymentLinkResp.setVerificationCode(code);
-			paymentLinkResp.setCurQutoe("KD");
-			paymentLinkResp.setNetAmount(paymentLinkId.getPaymentAmount());
-			paymentLinkResp.setRequestData(paymentLinkId.getLinkDate());
-
-			return paymentLinkResp;
-		}
-		
-		
-		return paymentLinkResp;
-	}
-
-	public PaymentLinkRespDTO validatePaymentLinkNew(BigDecimal linkId, String verificationCode) {
-		PaymentLinkRespDTO paymentLinkResp = new PaymentLinkRespDTO();
-		BigDecimal localCurrencyId = metaData.getDefaultCurrencyId();
-		String hashVerifyCode = null;
-		try {
-			hashVerifyCode = com.amx.utils.CryptoUtil.getSHA2Hash(verificationCode);
-			logger.info("HashCode Inside If : " + hashVerifyCode);
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		}
-		PaymentLinkModel paymentLink = directPaymentLinkDao.validatePaymentLinkByCode(linkId, hashVerifyCode);
-		if (paymentLink != null) {
-			PaymentLinkRespStatus statusModel = new PaymentLinkRespStatus();
-			if (paymentLink.getIsActive().equals("Y")) {
-				BranchRemittanceApplResponseDto shpCartData = branchRemittancePaymentManager
-						.fetchCustomerShoppingCart(paymentLink.getCustomerId(), localCurrencyId);
-
-				List<CustomerShoppingCartDto> shoppingCartDetails = shpCartData.getShoppingCartDetails();
-				if (shoppingCartDetails != null) {
-					BigDecimal totalNetAmounts = shpCartData.getTotalNetAmount();
-					int value = totalNetAmounts.compareTo(paymentLink.getPaymentAmount());
-					if (value == -1) {
-						throw new GlobalException(JaxError.AMOUNT_MISMATCH, "Amount is Mismatch, Invalid Link");
-					}
-				}
-
-				List<CustomerShoppingCartDto> custShopList = new ArrayList<>();
-
-				String applicationid = paymentLink.getApplicationIds();
-				StringTokenizer tokenizer = new StringTokenizer(applicationid, ",");
-				while (tokenizer.hasMoreTokens()) {
-					String token = tokenizer.nextToken();
-					BigDecimal appId = new BigDecimal(token);
-					logger.info("Application Id : " + appId);
-
-					for (CustomerShoppingCartDto cartList : shoppingCartDetails) {
-						if (cartList.getRemittanceApplicationId().equals(appId)) {
-							custShopList.add(cartList);
-						}
-					}
-				}
-				paymentLinkResp.setNetAmount(shpCartData.getTotalNetAmount());
-				paymentLinkResp.setTotalTrnxAmount(shpCartData.getTotalLocalAmount());
-				paymentLinkResp.setTotalCommissionAmt(shpCartData.getTotalTrnxFees());
-				paymentLinkResp.setShoppingCartDetails(shoppingCartDetails);
-				paymentLinkResp.setApplicationIds(paymentLink.getApplicationIds());
-			}
-			if(paymentLink.getIsActive().equals("P")) {
-				JaxTransactionStatus status = getJaxTransactionStatus(paymentLink);
-				statusModel.setStatus(status);
-				
-				statusModel.setNetAmount(paymentLink.getPaymentAmount());
-				statusModel.setTransactionReference(paymentLink.getApplicationIds());
-				statusModel.setErrorCategory(paymentLink.getErrorCategory());
-				statusModel.setErrorMessage(paymentLink.getErrorMessage());
-				
-				ResponseCodeDetailDTO responseCodeDetail = new ResponseCodeDetailDTO();
-				
-				responseCodeDetail.setPgPaymentId(paymentLink.getPaymentId());
-				responseCodeDetail.setPgReferenceId(paymentLink.getPgReferenceId());
-				responseCodeDetail.setPgTransId(paymentLink.getPgTransactionId());
-				responseCodeDetail.setPgAuth(paymentLink.getPgAuthCode());
-				
-				statusModel.setResponseCodeDetail(responseCodeDetail);
-				
-				paymentLinkResp.setPaymentLinkRespStatus(statusModel);
-				paymentLinkResp.setApplicationIds(paymentLink.getApplicationIds());
-			}
-			
-
-		} else {
-			throw new GlobalException(JaxError.VERIFICATION_CODE_MISMATCH,
-					"Invalidate link, Verification Code Mismatch");
-		}
-		return paymentLinkResp;
-	}
+	
 
 }

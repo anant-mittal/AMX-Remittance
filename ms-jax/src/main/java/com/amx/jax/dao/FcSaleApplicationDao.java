@@ -33,6 +33,7 @@ import com.amx.jax.dbmodel.fx.FxDeliveryDetailsModel;
 import com.amx.jax.dbmodel.fx.FxDeliveryRemark;
 import com.amx.jax.dbmodel.fx.StatusMaster;
 import com.amx.jax.dbmodel.fx.VwFxDeliveryDetailsModel;
+import com.amx.jax.dbmodel.remittance.PaymentLinkModel;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.model.request.fx.FcSaleOrderPaynowRequestModel;
 import com.amx.jax.model.response.fx.FxApplicationDto;
@@ -387,6 +388,50 @@ public class FcSaleApplicationDao {
 		Map<String, Object> output = applicationProcedureDao.getDocumentSeriality(appCountryId, companyId, documentId,
 				finYear, processInd, branchId);
 		return (BigDecimal) output.get("P_DOC_NO");
+	}
+
+	public void savePaymentLinkApplication(PaygDetailsModel paymentApplication) {
+		pgRepository.save(paymentApplication);
+		
+	}
+
+	public PaygDetailsModel fetchPaymentLinkId(BigDecimal customerId, String hashVerifyCode) {
+		return pgRepository.fetchPayLinkIdForCustomer(customerId, hashVerifyCode);
+	}
+
+	public PaygDetailsModel validatePaymentLinkByCode(BigDecimal linkId, String verificationCode) {
+		return pgRepository.fetchPaymentByLinkIdandCode(linkId, verificationCode);
+	}
+
+	public void updatePaygDetailsInPayLink(PaymentResponseDto paymentResponse, BigDecimal linkId) {
+		try {
+			if(paymentResponse!= null && paymentResponse.getUdf3()!=null){
+				PaygDetailsModel pgLinkModel =pgRepository.findOne(linkId);
+				pgLinkModel.setResultCode(paymentResponse.getResultCode());
+				pgLinkModel.setPgAuthCode(paymentResponse.getAuth_appNo());
+				pgLinkModel.setPgErrorText(paymentResponse.getErrorText());
+				pgLinkModel.setPgPaymentId(paymentResponse.getPaymentId());
+				pgLinkModel.setPgTransactionId(paymentResponse.getTransactionId());
+				pgLinkModel.setPgReceiptDate(paymentResponse.getPostDate());
+				pgLinkModel.setPgReferenceId(paymentResponse.getReferenceId());
+				pgLinkModel.setLinkActive("P");
+				/*if(paymentResponse.getErrorCategory() != null)
+					pgLinkModel.setErrorCategory(paymentResponse.getErrorCategory());*/
+				pgLinkModel.setModifiedDate(new Date());
+				pgRepository.save(pgLinkModel);
+			}else{
+				logger.error("Update after PG details Payment Id :"+paymentResponse.getPaymentId()+"\t Udf 3--Pg trnx seq Id :"+paymentResponse.getUdf3()+"Result code :"+paymentResponse.getResultCode());
+				throw new GlobalException(JaxError.PAYMENT_UPDATION_FAILED,"PG updatio failed");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("catch Update after PG details Payment Id :"+paymentResponse.getPaymentId()+"\t Udf 3--Pg trnx seq Id :"+paymentResponse.getUdf3()+"Result code :"+paymentResponse.getResultCode());
+			throw new GlobalException(JaxError.PAYMENT_UPDATION_FAILED,"PG updatio failed");
+		}
+	}
+
+	public List<PaygDetailsModel> deactivatePreviousLink(BigDecimal customerId) {
+		return pgRepository.deactivatePrevLink(customerId);
 	}
 	
 }

@@ -64,8 +64,9 @@ public class DirectPaymentLinkDao {
 			logger.error("catch Update after PG details Payment Id :"+paymentResponse.getPaymentId()+"\t Udf 3--Pg trnx seq Id :"+paymentResponse.getUdf3()+"Result code :"+paymentResponse.getResultCode());
 			throw new GlobalException(JaxError.PAYMENT_UPDATION_FAILED,"PG updatio failed");
 		}
-		
-		
-		
+	}
+
+	public void savePaymentLinkApplication(PaymentLinkModel paymentApplication) {
+		paymentLinkDetailsRepository.save(paymentApplication);
 	}
 }

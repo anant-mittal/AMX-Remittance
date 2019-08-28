@@ -210,7 +210,7 @@ public class BranchRemittanceService extends AbstractService{
 	}
 
 
-	public AmxApiResponse<PaymentLinkRespDTO, Object> createAndSendPaymentLink() {
+	/*public AmxApiResponse<PaymentLinkRespDTO, Object> createAndSendPaymentLink() {
 		validation.validateHeaderInfo();
 		BigDecimal customerId = metaData.getCustomerId();
 		BigDecimal localCurrencyId = metaData.getDefaultCurrencyId();
@@ -218,13 +218,13 @@ public class BranchRemittanceService extends AbstractService{
 		PaymentLinkRespDTO paymentdto = directPaymentLinkService.fetchPaymentLinkDetails(customerId,localCurrencyId);
 				
 		return AmxApiResponse.build(paymentdto);
-	}
+	}*/
 
-	public AmxApiResponse<PaymentLinkRespDTO, Object> validatePayLink(BigDecimal linkId, String verificationCode) {
+	/*public AmxApiResponse<PaymentLinkRespDTO, Object> validatePayLink(BigDecimal linkId, String verificationCode) {
 		PaymentLinkRespDTO paymentdto = directPaymentLinkService.validatePayLink(linkId, verificationCode);
 		
 		return AmxApiResponse.build(paymentdto);
-	}
+	}*/
 	
 	
 

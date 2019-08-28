@@ -83,6 +83,24 @@ public class PaygDetailsModel implements Serializable{
 	
 	@Column(name="REMARKS")
 	private String remarks;
+	
+	@Column(name="APPLICATION_IDS")
+	private String applIds;
+
+	@Column(name="VERIFICATION_CODE")
+    private String verifycode;
+
+    @Column(name="LINK_DATE")
+    private Date linkDate;
+
+    @Column(name="PAYMENT_DATE")
+    private Date paymentDate;
+
+    @Column(name="PAYMENT_AMOUNT")
+    private BigDecimal payAmount;
+
+    @Column(name="LINK_ISACTIVE")
+    private String linkActive;
 
 	public BigDecimal getPaygTrnxSeqId() {
 		return paygTrnxSeqId;
@@ -227,4 +245,53 @@ public class PaygDetailsModel implements Serializable{
 	public void setRemarks(String remarks) {
 		this.remarks = remarks;
 	}
+
+	public String getApplIds() {
+		return applIds;
+	}
+
+	public void setApplIds(String applIds) {
+		this.applIds = applIds;
+	}
+
+	public String getVerifycode() {
+		return verifycode;
+	}
+
+	public void setVerifycode(String verifycode) {
+		this.verifycode = verifycode;
+	}
+
+	public Date getLinkDate() {
+		return linkDate;
+	}
+
+	public void setLinkDate(Date linkDate) {
+		this.linkDate = linkDate;
+	}
+
+	public Date getPaymentDate() {
+		return paymentDate;
+	}
+
+	public void setPaymentDate(Date paymentDate) {
+		this.paymentDate = paymentDate;
+	}
+
+	public BigDecimal getPayAmount() {
+		return payAmount;
+	}
+
+	public void setPayAmount(BigDecimal payAmount) {
+		this.payAmount = payAmount;
+	}
+
+	public String getLinkActive() {
+		return linkActive;
+	}
+
+	public void setLinkActive(String linkActive) {
+		this.linkActive = linkActive;
+	}
+	
 }
