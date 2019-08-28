@@ -1,0 +1,7 @@
+{
+	"_subject": "Your [[${_tu.prop('company.name')}]] WU Transaction needs to be cancelled",
+  "_message": "Your transaction dated [[${data.date}]] having Trans Ref No: [[${data.refno}]] for [[${data.foreigncurcode}]] [[${data.foreignamount}]] / [[${data.localcurcode}]] [[${data.localamount}]] has been cancelled. Incase of any queries, call customer care [[${_tu.prop('company.helpno')}]]"
+}
+
+
+
