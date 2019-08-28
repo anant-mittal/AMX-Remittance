@@ -338,6 +338,6 @@ public class HomeController {
 			@PathVariable Products prodType, @PathVariable BigDecimal linkId, @PathVariable String veryCode) {
 		model.addAttribute("cart", remittanceClient.validatePayLink(linkId, veryCode));
 		model.addAttribute("tnt", AppContextUtil.getTenant());
-		return "rating";
+		return "pay";
 	}
 }

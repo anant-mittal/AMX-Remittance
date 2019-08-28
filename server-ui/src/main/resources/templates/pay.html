@@ -166,6 +166,10 @@
 	  }
 	  
     </style>
+    <script th:inline="javascript">
+        var cart = ([[${cart}]]);
+        console.log(cart);
+    </script>
   </head>
   <body>
     <div class="header">
