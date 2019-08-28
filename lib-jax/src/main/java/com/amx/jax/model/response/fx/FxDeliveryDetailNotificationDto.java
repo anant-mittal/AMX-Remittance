@@ -1,10 +1,37 @@
 package com.amx.jax.model.response.fx;
 
+import java.math.BigDecimal;
+
 public class FxDeliveryDetailNotificationDto {
+
+	public BigDecimal getTranxId() {
+		return tranxId;
+	}
+
+
+	public void setTranxId(BigDecimal tranxId) {
+		this.tranxId = tranxId;
+	}
+
+
+
+	public String getVerCode() {
+		return verCode;
+	}
+
+
+	public void setVerCode(String verCode) {
+		this.verCode = verCode;
+	}
+
+
 
 	String mOtp;
 	String mOtpPrefix;
 	FxDeliveryDetailDto deliveryDetail;
+	BigDecimal tranxId;
+	String verCode;
+	
 
 	public FxDeliveryDetailNotificationDto(String mOtp, String mOtpPrefix, FxDeliveryDetailDto deliveryDetail) {
 		super();

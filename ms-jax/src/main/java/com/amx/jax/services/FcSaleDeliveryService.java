@@ -184,10 +184,12 @@ public class FcSaleDeliveryService {
 		logger.debug("FC_ORDER_SUCCESS: {emial sent}");
 		logger.info("FC_ORDER_SUCCESS: {emial sent}");
 		email.setHtml(true);
-		email.getModel().put("tranxId", fcSaleDeliveryMarkDeliveredRequest.getDeliveryDetailSeqId());
-		email.getModel().put("verCode", JaxClientUtil.getTransactionVeryCode(fcSaleDeliveryMarkDeliveredRequest.getDeliveryDetailSeqId()).output());
+		/*email.getModel().put("tranxId", fcSaleDeliveryMarkDeliveredRequest.getDeliveryDetailSeqId());
+		email.getModel().put("verCode", JaxClientUtil.getTransactionVeryCode(fcSaleDeliveryMarkDeliveredRequest.getDeliveryDetailSeqId()).output());*/
 		FxDeliveryDetailDto ddDto = createFxDeliveryDetailDto(vwdeliveryDetail);
 		FxDeliveryDetailNotificationDto notificationModel = new FxDeliveryDetailNotificationDto(ddDto);
+		notificationModel.setTranxId(fcSaleDeliveryMarkDeliveredRequest.getDeliveryDetailSeqId());
+		notificationModel.setVerCode(JaxClientUtil.getTransactionVeryCode(fcSaleDeliveryMarkDeliveredRequest.getDeliveryDetailSeqId()).output());
 		email.getModel().put(NotificationConstants.RESP_DATA_KEY, notificationModel);
 		jaxNotificationService.sendEmail(email);
 		logStatusChangeAuditEvent(fcSaleDeliveryMarkDeliveredRequest.getDeliveryDetailSeqId(), oldStatus);
