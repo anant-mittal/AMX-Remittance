@@ -37,12 +37,14 @@ import com.amx.jax.pricer.dbmodel.CustomerExtended;
 import com.amx.jax.pricer.dbmodel.TimezoneMasterModel;
 import com.amx.jax.pricer.dbmodel.ViewExRoutingMatrix;
 import com.amx.jax.pricer.dto.BankDetailsDTO;
+import com.amx.jax.pricer.dto.CostRateDetails;
 import com.amx.jax.pricer.dto.EstimatedDeliveryDetails;
 import com.amx.jax.pricer.dto.ExchangeDiscountInfo;
 import com.amx.jax.pricer.dto.ExchangeRateAndRoutingRequest;
 import com.amx.jax.pricer.dto.ExchangeRateAndRoutingResponse;
 import com.amx.jax.pricer.dto.ExchangeRateBreakup;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
+import com.amx.jax.pricer.dto.PricingAndCostResponseDTO;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
 import com.amx.jax.pricer.dto.TrnxRoutingDetails;
@@ -159,7 +161,8 @@ public class ExchangePricingAndRoutingService {
 		return pricingResponseDTO;
 	}
 
-	public List<PricingResponseDTO> fetchDiscountedRatesAcrossCustCategories(PricingRequestDTO pricingRequestDTO) {
+	public List<PricingAndCostResponseDTO> fetchDiscountedRatesAcrossCustCategories(
+			PricingRequestDTO pricingRequestDTO) {
 		validatePricingRequest(pricingRequestDTO, Boolean.FALSE);
 
 		remitPriceManager.computeBaseSellRates(pricingRequestDTO);
@@ -167,33 +170,70 @@ public class ExchangePricingAndRoutingService {
 		List<ExchangeRateDetails> baseRateDetails = getClonedExchangeRates(
 				exchRateAndRoutingTransientDataCache.getSellRateDetails());
 
-		List<PricingResponseDTO> allDiscountedRates = new ArrayList<PricingResponseDTO>();
+		List<PricingAndCostResponseDTO> allDiscountedRates = new ArrayList<PricingAndCostResponseDTO>();
 
 		for (CUSTOMER_CATEGORY cc : CUSTOMER_CATEGORY.values()) {
 
 			exchRateAndRoutingTransientDataCache.setSellRateDetails(getClonedExchangeRates(baseRateDetails));
 
 			customerDiscountManager.getDiscountedRates(pricingRequestDTO, null, cc);
-			PricingResponseDTO pricingResponseDTO = new PricingResponseDTO();
+			PricingAndCostResponseDTO pricingAndCostResponseDTO = new PricingAndCostResponseDTO();
 
-			pricingResponseDTO.setBankDetails(exchRateAndRoutingTransientDataCache.getBankDetails());
+			pricingAndCostResponseDTO.setBankDetails(exchRateAndRoutingTransientDataCache.getBankDetails());
 
-			pricingResponseDTO.setSellRateDetails(exchRateAndRoutingTransientDataCache.getSellRateDetails());
+			pricingAndCostResponseDTO.setSellRateDetails(exchRateAndRoutingTransientDataCache.getSellRateDetails());
 
-			pricingResponseDTO.setCustomerCategory(cc);
+			pricingAndCostResponseDTO.setCustomerCategory(cc);
+
+			// Set Cost Rate Details
+			Map<BigDecimal, CostRateDetails> bankCostRateDetails = new HashMap<BigDecimal, CostRateDetails>();
+
+			for (ExchangeRateDetails exchRate : exchRateAndRoutingTransientDataCache.getSellRateDetails()) {
+
+				BigDecimal bankId = exchRate.getBankId();
+
+				CostRateDetails costRateDetails = new CostRateDetails();
+
+				costRateDetails.setAvgGlcCostRateInv(exchRateAndRoutingTransientDataCache.getAvgRateGLCForBank(bankId));
+
+				costRateDetails
+						.setMarkup(exchRateAndRoutingTransientDataCache.getMarginForBank(bankId).getMarginMarkup());
+
+				if (BigDecimal.ZERO.compareTo(costRateDetails.getAvgGlcCostRateInv()) != 0) {
+					costRateDetails.setAvgGlcCostRate(
+							BigDecimal.ONE.divide(costRateDetails.getAvgGlcCostRateInv(), 10, RoundingMode.HALF_UP));
+
+					costRateDetails.setAdjustedCostRateInv(
+							costRateDetails.getAvgGlcCostRateInv().add(costRateDetails.getMarkup()));
+
+					costRateDetails.setAdjustedCostRate(
+							BigDecimal.ONE.divide(costRateDetails.getAdjustedCostRateInv(), 10, RoundingMode.HALF_UP));
+				} else {
+					costRateDetails.setAvgGlcCostRate(BigDecimal.ZERO);
+
+					costRateDetails.setAdjustedCostRateInv(BigDecimal.ZERO);
+
+					costRateDetails.setAdjustedCostRate(BigDecimal.ZERO);
+				}
+
+				bankCostRateDetails.put(bankId, costRateDetails);
+
+			}
+
+			pricingAndCostResponseDTO.setBankCostRateDetails(bankCostRateDetails);
 
 			// 3
 			// Collections.sort(pricingResponseDTO.getSellRateDetails(),
 			// Collections.reverseOrder());
 
 			// Sort Order Modified : Sorting on the basis of InverseRate Now.
-			Collections.sort(pricingResponseDTO.getSellRateDetails());
+			Collections.sort(pricingAndCostResponseDTO.getSellRateDetails());
 
-			pricingResponseDTO.setInfo(exchRateAndRoutingTransientDataCache.getInfo());
+			pricingAndCostResponseDTO.setInfo(exchRateAndRoutingTransientDataCache.getInfo());
 
-			pricingResponseDTO.setServiceIdDescription(getServiceIdDescriptions());
+			pricingAndCostResponseDTO.setServiceIdDescription(getServiceIdDescriptions());
 
-			allDiscountedRates.add(pricingResponseDTO);
+			allDiscountedRates.add(pricingAndCostResponseDTO);
 		}
 
 		return allDiscountedRates;

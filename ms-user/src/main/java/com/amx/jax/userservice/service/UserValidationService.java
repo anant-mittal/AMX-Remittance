@@ -459,7 +459,7 @@ public class UserValidationService {
 		if (onlineCustomer.getLockCnt() != null) {
 			int lockCnt = onlineCustomer.getLockCnt().intValue();
 			if (StringUtils.isBlank(JaxAuthContext.getCaptcha())) {
-				if (lockCnt == MAX_CAPTCHA_COUNT) {
+				if (lockCnt == MAX_CAPTCHA_COUNT.intValue()) {
 					throw new GlobalException(JaxError.CAPTCHA_REQUIRED, "Captcha Required");
 				}
 			}

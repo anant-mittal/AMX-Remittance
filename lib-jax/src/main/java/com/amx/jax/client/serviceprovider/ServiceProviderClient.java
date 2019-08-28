@@ -11,7 +11,7 @@ import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.exception.JaxSystemError;
 import com.amx.jax.model.request.serviceprovider.ServiceProviderCallRequestDto;
 import com.amx.jax.model.response.serviceprovider.Quotation_Call_Response;
-import com.amx.jax.model.response.serviceprovider.ServiceProviderResponse;
+import com.amx.jax.model.response.serviceprovider.Remittance_Call_Response;
 import com.amx.jax.rest.RestService;
 
 @Component
@@ -45,13 +45,13 @@ public class ServiceProviderClient implements IServiceProviderService
 	}
 
 	@Override
-	public AmxApiResponse<ServiceProviderResponse, Object> sendRemittance(ServiceProviderCallRequestDto sendRemittanceRequestDto)
+	public AmxApiResponse<Remittance_Call_Response, Object> sendRemittance(ServiceProviderCallRequestDto sendRemittanceRequestDto)
 	{
 		try
 		{
 			LOGGER.debug("in send remittance :");
 			return restService.ajax(appConfig.getServiceProviderURL() + Path.SEND_REMITTANCE).meta(new JaxMetaInfo()).post(sendRemittanceRequestDto)
-					.as(new ParameterizedTypeReference<AmxApiResponse<ServiceProviderResponse, Object>>()
+					.as(new ParameterizedTypeReference<AmxApiResponse<Remittance_Call_Response, Object>>()
 					{
 					});
 		}

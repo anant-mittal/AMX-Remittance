@@ -67,6 +67,7 @@ import com.amx.jax.dbmodel.ExchangeRateApprovalDetModel;
 import com.amx.jax.dbmodel.TransactionLimitCheckView;
 import com.amx.jax.dbmodel.partner.RemitApplSrvProv;
 import com.amx.jax.dbmodel.remittance.AdditionalInstructionData;
+import com.amx.jax.dbmodel.remittance.AmiecAndBankMapping;
 import com.amx.jax.dbmodel.remittance.OWSScheduleModel;
 import com.amx.jax.dbmodel.remittance.RemittanceAppBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
@@ -102,8 +103,11 @@ import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel
 import com.amx.jax.model.response.remittance.VatDetailsDto;
 import com.amx.jax.partner.manager.PartnerTransactionManager;
 import com.amx.jax.pricer.dto.TrnxRoutingDetails;
+import com.amx.jax.pricer.var.PricerServiceConstants;
 import com.amx.jax.remittance.manager.RemittanceParameterMapManager;
 import com.amx.jax.repository.AuthenticationViewRepository;
+import com.amx.jax.repository.BankMasterRepository;
+import com.amx.jax.repository.IAmiecAndBankMappingRepository;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.VTransferRepository;
@@ -123,6 +127,7 @@ import com.amx.jax.services.RoutingService;
 import com.amx.jax.services.TransactionHistroyService;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.service.UserService;
+import com.amx.jax.util.AmxDBConstants;
 import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.RoundUtil;
@@ -267,6 +272,12 @@ public class RemittanceTransactionManager {
 
 	@Autowired
 	BranchRemittanceApplManager branchRemittanceApplManager;
+	
+	@Autowired
+	IAmiecAndBankMappingRepository amiecAndBankMappingRepository;
+	
+	@Autowired
+	BankMasterRepository bankMasterRepo;
 
 
 	private static final String IOS = "IOS";
@@ -301,7 +312,17 @@ public class RemittanceTransactionManager {
 		TrnxRoutingDetails trnxRoutingDetails =  dynamicRoutingPricing.getTrnxRoutingPaths();
 		ExchangeRateBreakup breakup = dynamicRoutingPricing.getExRateBreakup();
 		Map<String, Object>  routingDetails =setupRoutingDetails(trnxRoutingDetails);
-	
+		
+		// validation for Home Send SP
+		boolean spStatus = Boolean.FALSE;
+		if(dynamicRoutingPricing != null && dynamicRoutingPricing.getServiceProviderDto() != null) {
+			BankMasterModel bankMaster = bankMasterRepo.findByBankCodeAndRecordStatus(PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name(), PricerServiceConstants.Yes);
+			// home send related validation check
+			if(bankMaster != null && trnxRoutingDetails.getRoutingBankId().compareTo(bankMaster.getBankId()) == 0) {
+				partnerTransactionManager.validateServiceProvider(model.getAdditionalFields(),model.getBeneId());
+				spStatus = Boolean.TRUE;
+			}
+		}
 		
 		remitApplParametersMap.putAll(routingDetails);
 		//remitApplParametersMap.put("P_BENEFICIARY_SWIFT_BANK1", routingDetails.get("P_SWIFT"));
@@ -357,14 +378,25 @@ public class RemittanceTransactionManager {
 
 		logger.info("rountingCountryId: " + rountingCountryId + " serviceMasterId: " + serviceMasterId);
 
-		applyCurrencyRoudingLogic(breakup);
+		if(spStatus) {
+			applyCurrencyRoudingLogicSP(breakup);
+		}else {
+			applyCurrencyRoudingLogic(breakup);
+		}
+		
 		validateTransactionAmount(breakup, commission, currencyId);
 		// commission
 		responseModel.setTxnFee(commission);
 		// exrate
 		responseModel.setExRateBreakup(breakup);
-		addExchangeRateParameters(responseModel); 
-		applyCurrencyRoudingLogic(responseModel.getExRateBreakup());
+		addExchangeRateParameters(responseModel);
+		
+		if(spStatus) {
+			applyCurrencyRoudingLogicSP(responseModel.getExRateBreakup());
+		}else {
+			applyCurrencyRoudingLogic(responseModel.getExRateBreakup());
+		}
+		
 		setCustomerDiscountColumnsV2(responseModel, dynamicRoutingPricing);
 		return responseModel;
 
@@ -1146,6 +1178,19 @@ public class RemittanceTransactionManager {
 		RemitApplSrvProv remitApplSrvProv = null;
 		if(model.getDynamicRroutingPricingBreakup() != null) {
 			remitApplSrvProv = branchRemittanceApplManager.createRemitApplSrvProv(model.getDynamicRroutingPricingBreakup(),remittanceApplication.getCreatedBy());
+			if(remitApplSrvProv != null) {
+				for (AdditionalInstructionData applAddlData : additionalInstrumentData) {
+					if(applAddlData.getFlexField() != null && applAddlData.getFlexField().equalsIgnoreCase(AmxDBConstants.INDIC1)) {
+						if(applAddlData.getAmiecCode() != null) {
+							AmiecAndBankMapping amicAndBankMapping = amiecAndBankMappingRepository.fetchAmiecBankData(remittanceApplication.getFsCountryMasterByBankCountryId().getCountryId(), remitApplSrvProv.getBankId(), applAddlData.getFlexField(), applAddlData.getAmiecCode(), AmxDBConstants.Yes);
+							if(amicAndBankMapping != null) {
+								remittanceApplication.setWuPurposeOfTransaction(amicAndBankMapping.getBankCode());
+								break;
+							}
+						}
+					}
+				}
+			}
 		}
 		remitAppDao.saveAllApplicationData(remittanceApplication, remittanceAppBeneficairy, additionalInstrumentData,remitApplSrvProv);
 		remitAppDao.updatePlaceOrderV2(model, remittanceApplication);
@@ -1531,6 +1576,6 @@ public class RemittanceTransactionManager {
 		
 		logger.info("amount in ex:" +exRatebreakUp.getNetAmount());
 		exRatebreakUp.setNetAmountWithoutLoyality(RoundUtil.roundBigDecimal(exRatebreakUp.getNetAmountWithoutLoyality(),exRatebreakUp.getLcDecimalNumber().intValue()));
-		exRatebreakUp.setInverseRate((RoundUtil.roundBigDecimal(exRatebreakUp.getInverseRate(), 6)));
+		exRatebreakUp.setInverseRate((RoundUtil.roundBigDecimal(exRatebreakUp.getInverseRate(), AmxDBConstants.EXCHANGE_RATE_DECIMAL.intValue())));
 	}
 }

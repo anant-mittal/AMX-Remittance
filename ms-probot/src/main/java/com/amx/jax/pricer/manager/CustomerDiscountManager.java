@@ -88,7 +88,6 @@ public class CustomerDiscountManager {
 			CUSTOMER_CATEGORY customerCategory) {
 
 		// Find the Currency Group to which the currency belongs
-		// TODO: Optimize this to Save it in the Cache and retrieve it from thr
 		CurrencyMasterModel currencyMasterModel = currencyMasterDao
 				.getByCurrencyId(pricingRequestDTO.getForeignCurrencyId());
 
@@ -179,9 +178,9 @@ public class CustomerDiscountManager {
 			custCategoryInfo.setDiscountPipsValue(ccDiscountPips);
 
 		}
-		
+
 		List<BigDecimal> validBankIds = null;
-		if(exchRateAndRoutingTransientDataCache.getBankDetails() != null) {
+		if (exchRateAndRoutingTransientDataCache.getBankDetails() != null) {
 			validBankIds = new ArrayList<BigDecimal>(exchRateAndRoutingTransientDataCache.getBankDetails().keySet());
 		}
 
@@ -191,7 +190,7 @@ public class CustomerDiscountManager {
 		}
 
 		List<PipsMaster> pipsList = null;
-		if(validBankIds != null) {
+		if (validBankIds != null) {
 			pipsList = pipsMasterDao.getPipsForFcCurAndBank(pricingRequestDTO.getForeignCurrencyId(),
 					OnlineCountryBranchId, validBankIds);
 		}
@@ -218,9 +217,11 @@ public class CustomerDiscountManager {
 		// List<BankRateDetailsDTO> discountedRatesNPrices = new
 		// ArrayList<BankRateDetailsDTO>();
 
-		BigDecimal margin = exchRateAndRoutingTransientDataCache.getMargin() != null
-				? exchRateAndRoutingTransientDataCache.getMargin().getMarginMarkup()
-				: BIGD_ZERO;
+		// Old
+		// BigDecimal margin =
+		// exchRateAndRoutingTransientDataCache.getMarginForBank(bankId)) != null
+		// ? exchRateAndRoutingTransientDataCache.getMargin().getMarginMarkup()
+		// : BIGD_ZERO;
 
 		for (ExchangeRateDetails bankExRateDetail : exchRateAndRoutingTransientDataCache.getSellRateDetails()) {
 
@@ -269,6 +270,9 @@ public class CustomerDiscountManager {
 
 				bankExRateDetail.setDiscountAvailed(true);
 
+				BigDecimal marginVal = exchRateAndRoutingTransientDataCache
+						.getMarginForBank(bankExRateDetail.getBankId()).getMarginMarkup();
+
 				/**
 				 * Compute Base Sell rate : Cost + Margin
 				 */
@@ -278,7 +282,7 @@ public class CustomerDiscountManager {
 
 					// New Logic
 					adjustedBaseSellRate = exchRateAndRoutingTransientDataCache
-							.getAvgRateGLCForBank(bankExRateDetail.getBankId()).add(margin);
+							.getAvgRateGLCForBank(bankExRateDetail.getBankId()).add(marginVal);
 
 				}
 
@@ -337,7 +341,6 @@ public class CustomerDiscountManager {
 		ExchangeDiscountInfo channelInfo = new ExchangeDiscountInfo();
 
 		// Find the Currency Group to which the currency belongs
-		// TODO: Optimize this to Save it in the Cache and retrieve it from thr
 		CurrencyMasterModel currencyMasterModel = currencyMasterDao
 				.getByCurrencyId(customerDiscountReqDTO.getForeignCurrencyId());
 
@@ -446,8 +449,8 @@ public class CustomerDiscountManager {
 
 					amountSlabPipsInfo.setId(entry.getValue().getPipsMasterId());
 					amountSlabPipsInfo.setDiscountType(DISCOUNT_TYPE.AMOUNT_SLAB);
-					amountSlabPipsInfo.setDiscountTypeValue(entry.getValue().getFromAmount().longValue() + "-"
-							+ entry.getValue().getToAmount().longValue());
+					amountSlabPipsInfo.setDiscountTypeValue(entry.getValue().getFromAmount().toPlainString() + "-"
+							+ entry.getValue().getToAmount().toPlainString());
 					amountSlabPipsInfo.setDiscountPipsValue(amountSlabPips == null ? BigDecimal.ZERO : amountSlabPips);
 
 					break;

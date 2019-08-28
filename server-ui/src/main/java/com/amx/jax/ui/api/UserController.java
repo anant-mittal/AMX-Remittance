@@ -175,8 +175,8 @@ public class UserController {
 
 			String s = httpService.getRequestParam("S");
 			if (ArgUtil.isEmpty(s)) {
+				response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
 				response.setHeader("Location", "/pub/v2/user/meta?S=" + serverVersion + "&milestone=" + milestoneEnum);
-				response.setStatus(302);
 				return wrapper;
 			}
 		}

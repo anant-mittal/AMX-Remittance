@@ -126,7 +126,9 @@ public class AmxDBConstants {
 
 	public static final BigDecimal BIZ_COMPONENT_ID_GCC_ID = new BigDecimal(201);
 	public static final BigDecimal BIZ_COMPONENT_ID_BEDOUIN_ID = new BigDecimal(197);
-	public static final BigDecimal MURQAB_FOREIGNCURRENCY = new BigDecimal(89);
+	public static final BigDecimal KUWAIT_FOREIGNCURRENCY = new BigDecimal(89);
+	public static final BigDecimal OMAN_FOREIGNCURRENCY = new BigDecimal(99);
+	public static final BigDecimal BAHRAIN_FOREIGNCURRENCY = new BigDecimal(70);
 	public static final BigDecimal BIZ_COMPONENT_ID_PASSPORT = new BigDecimal(204);
 	
 
@@ -198,5 +200,6 @@ public class AmxDBConstants {
 	public static final String DEMAND_DRAFT = "D";
 	
 	
+	public static final BigDecimal EXCHANGE_RATE_DECIMAL = new BigDecimal(9);
 	
 }

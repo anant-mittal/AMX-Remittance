@@ -222,10 +222,15 @@ public class RemitPriceManager {
 			getGLCBALRates(requestDto.getForeignCurrencyId(), validBankIds);
 
 			/**
-			 * Get margin for the Rate
+			 * Get margin for the Rate : Per Bank - modified on 2019/08/19
 			 */
-			OnlineMarginMarkup margin = getOnlineMarginMarkup(requestDto.getLocalCountryId(),
-					requestDto.getForeignCountryId(), requestDto.getForeignCurrencyId(), requestDto.getChannel());
+			setMarkupForBanks(requestDto.getLocalCountryId(), validBankIds, requestDto.getForeignCurrencyId(),
+					requestDto.getChannel());
+
+			// Old Call -- For
+			// getOnlineMarginMarkup(requestDto.getLocalCountryId(),
+			// requestDto.getForeignCountryId(),
+			// requestDto.getForeignCurrencyId(), requestDto.getChannel());
 
 			/************* Process Bank Exchange Rates ***********/
 
@@ -278,14 +283,17 @@ public class RemitPriceManager {
 							createBreakUpForFcCur(exchangeRate.getSellRateMin(), requestDto.getForeignAmount()));
 				}
 
-				BigDecimal avgBankGLCBALRate = exchRateAndRoutingTransientDataCache
-						.getAvgRateGLCForBank(exchangeRate.getBankMaster().getBankId());
+				BigDecimal rBankId = exchangeRate.getBankMaster().getBankId();
 
-				BigDecimal maxFcCurBal = exchRateAndRoutingTransientDataCache
-						.getMaxGLLcBalForBank(exchangeRate.getBankMaster().getBankId(), Boolean.TRUE);
+				BigDecimal avgBankGLCBALRate = exchRateAndRoutingTransientDataCache.getAvgRateGLCForBank(rBankId);
+
+				BigDecimal maxFcCurBal = exchRateAndRoutingTransientDataCache.getMaxGLLcBalForBank(rBankId,
+						Boolean.TRUE);
 
 				// Update GLCBAL Rate to Markup Adjusted Rates
 				BigDecimal adjustedSellRate = new BigDecimal(0);
+
+				OnlineMarginMarkup margin = exchRateAndRoutingTransientDataCache.getMarginForBank(rBankId);
 
 				if (avgBankGLCBALRate != null) {
 					adjustedSellRate = avgBankGLCBALRate.add(margin.getMarginMarkup());
@@ -319,12 +327,12 @@ public class RemitPriceManager {
 		/**
 		 * Get margin for the Rate
 		 */
-		OnlineMarginMarkup margin = getOnlineMarginMarkup(applicationCountryId, foreignCountryId, currencyId, channel);
+		setMarkupForBanks(applicationCountryId, routingBankIds, currencyId, channel);
 
-		/**
-		 * For Further computations
-		 */
-		exchRateAndRoutingTransientDataCache.setMargin(margin);
+		// Old - Disabled
+		// OnlineMarginMarkup margin = getOnlineMarginMarkup(applicationCountryId,
+		// foreignCountryId, currencyId, channel);
+		// exchRateAndRoutingTransientDataCache.setMargin(margin);
 
 		// Get Distinct Bank Rates from APRDET - for a given Currency, destination
 		// country, routing banks and service Indicator Ids.
@@ -353,6 +361,8 @@ public class RemitPriceManager {
 			BigDecimal avgBankGLCBALRate = exchRateAndRoutingTransientDataCache.getAvgRateGLCForBank(bankId);
 
 			if (null != avgBankGLCBALRate) {
+
+				OnlineMarginMarkup margin = this.exchRateAndRoutingTransientDataCache.getMarginForBank(bankId);
 
 				// Update GLCBAL Rate to Markup Adjusted Rates
 				BigDecimal adjustedSellRate = avgBankGLCBALRate.add(margin.getMarginMarkup());
@@ -392,26 +402,16 @@ public class RemitPriceManager {
 		return bankExchangeRateMap;
 	}
 
-	private OnlineMarginMarkup getOnlineMarginMarkup(BigDecimal applicationCountryId, BigDecimal foreignCountryId,
-			BigDecimal currencyId, Channel channel) {
-		/**
-		 * Get margin for the Rate
-		 */
-
-		OnlineMarginMarkup margin = null;
+	private void setMarkupForBanks(BigDecimal applicationCountryId, List<BigDecimal> bankIds, BigDecimal currencyId,
+			Channel channel) {
 
 		if (Channel.ONLINE.equals(channel) || Channel.MOBILE.equals(channel)) {
-			margin = marginMarkupDao.getMarkupForCountryAndCurrency(applicationCountryId, foreignCountryId, currencyId);
+
+			exchRateAndRoutingTransientDataCache.setMargins(
+					marginMarkupDao.getMarkupForCurrencyAndBanksIn(applicationCountryId, currencyId, bankIds));
+
 		}
 
-		if (null == margin) {
-			margin = new OnlineMarginMarkup();
-			margin.setMarginMarkup(new BigDecimal(0));
-		}
-
-		exchRateAndRoutingTransientDataCache.setMargin(margin);
-
-		return margin;
 	}
 
 	/**

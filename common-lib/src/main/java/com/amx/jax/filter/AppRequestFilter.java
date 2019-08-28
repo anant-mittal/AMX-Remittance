@@ -31,8 +31,10 @@ import com.amx.jax.http.CommonHttpRequest.ApiRequestDetail;
 import com.amx.jax.http.RequestType;
 import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.logger.events.RequestTrackEvent;
+import com.amx.jax.model.MapModel;
 import com.amx.jax.rest.AppRequestContextInFilter;
 import com.amx.jax.scope.TenantContextHolder;
+import com.amx.jax.session.SessionContextService;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.CryptoUtil;
 import com.amx.utils.JsonUtil;
@@ -61,6 +63,9 @@ public class AppRequestFilter implements Filter {
 
 	@Autowired(required = false)
 	AppRequestContextInFilter appContextInFilter;
+
+	@Autowired(required = false)
+	SessionContextService sessionContextService;
 
 	private boolean doesTokenMatch(HttpServletRequest req, HttpServletResponse resp, String traceId,
 			boolean checkHMAC) {
@@ -174,6 +179,14 @@ public class AppRequestFilter implements Filter {
 				UserDeviceClient userClient = AppContextUtil.getUserClient();
 				userClient.importFrom(userDevice);
 				AppContextUtil.setUserClient(userClient);
+			}
+
+			// Session Actor Tracking
+			if (!ArgUtil.isEmpty(sessionId) && !ArgUtil.isEmpty(sessionContextService)) {
+				String actorInfoJson = req.getHeader(AppConstants.ACTOR_INFO_XKEY);
+				if (!StringUtils.isEmpty(actorInfoJson)) {
+					sessionContextService.setContext(new MapModel(actorInfoJson));
+				}
 			}
 
 			String requestdParamsJson = ArgUtil.ifNotEmpty(req.getParameter(AppConstants.REQUESTD_PARAMS_XKEY),

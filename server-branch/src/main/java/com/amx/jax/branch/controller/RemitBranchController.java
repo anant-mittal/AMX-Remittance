@@ -9,6 +9,7 @@ import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.BeneRelationsDescriptionDto;
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.branch.BranchMetaOutFilter;
@@ -241,7 +242,7 @@ public class RemitBranchController {
 		if (File.Type.PDF.equals(ext)) {
 			File file = postManService.processTemplate(new File(
 					duplicate ? TemplatesMX.REMIT_RECEIPT_COPY_JASPER : TemplatesMX.REMIT_RECEIPT_JASPER_NO_HEADER,
-					wrapper, File.Type.PDF)).getResult();
+					wrapper, File.Type.PDF).lang(AppContextUtil.getTenant().defaultLang())).getResult();
 			return PostManUtil.download(file);
 			// file.create(response, false);
 			// return null;
@@ -273,7 +274,7 @@ public class RemitBranchController {
 		if (File.Type.PDF.equals(ext)) {
 			File file = postManService.processTemplate(
 					new File(TemplatesMX.REMIT_APPLICATION_RECEIPT_JASPER,
-							wrapper, File.Type.PDF))
+							wrapper, File.Type.PDF).lang(AppContextUtil.getTenant().defaultLang()))
 					.getResult();
 			return PostManUtil.download(file);
 			// file.create(response, false);

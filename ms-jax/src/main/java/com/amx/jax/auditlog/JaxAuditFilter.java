@@ -30,7 +30,8 @@ public class JaxAuditFilter implements AuditFilter<CActivityEvent> {
 			event.setCustomerId(metaData.getCustomerId());
 		}
 		if (CActivityEvent.Type.TRANSACTION_CREATED.equals(event.getType())
-				|| CActivityEvent.Type.APPLICATION_CREATED.equals(event.getType())) {
+				|| CActivityEvent.Type.APPLICATION_CREATED.equals(event.getType())
+				|| CActivityEvent.Type.CONTACT_VERF.equals(event.getType())) {
 			AuditActorInfo x = sessionContextService.getContext(AuditActorInfo.class);
 			event.setActor(x);
 		}
