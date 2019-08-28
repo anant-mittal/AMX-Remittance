@@ -332,11 +332,14 @@ public class HomeController {
 	@ApiJaxStatus({ JaxError.CUSTOMER_NOT_FOUND, JaxError.INVALID_OTP, JaxError.ENTITY_INVALID,
 			JaxError.ENTITY_EXPIRED })
 	@ApiStatus({ ApiStatusCodes.PARAM_MISSING })
-	@RequestMapping(value = { "/pub/pay/{prodType}/{linkId}/{veryCode}" },
+	@RequestMapping(value = { "/pub/pay/{prodType}/{linkId}" },
 			method = { RequestMethod.GET })
 	public String directPayment(Model model,
-			@PathVariable Products prodType, @PathVariable BigDecimal linkId, @PathVariable String veryCode) {
-		model.addAttribute("cart", remittanceClient.validatePayLink(linkId, veryCode));
+			@PathVariable Products prodType, @PathVariable BigDecimal linkId,
+			@RequestParam(value = "v") String veryCode) {
+		model.addAttribute("cart", remittanceClient.validatePayLink(linkId, veryCode).getResult());
+		model.addAttribute("linkId", linkId);
+		model.addAttribute("veryCode", veryCode);
 		model.addAttribute("tnt", AppContextUtil.getTenant());
 		return "pay";
 	}
