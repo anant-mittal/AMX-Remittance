@@ -422,7 +422,10 @@ public class CustomerRegistrationManager extends TransactionModel<CustomerRegist
 			customerDetails.setIdentityInt(customer.getIdentityInt());
 			customerDetails.setTitle(customer.getTitle());
 			customerDetails.setFirstName(customer.getFirstName());
-			customerDetails.setLastName(customer.getLastName());
+			if(!StringUtils.isEmpty(customer.getLastName())) {
+				customerDetails.setLastName(customer.getLastName());
+			}
+			
 			customerDetails.setEmail(customer.getEmail());
 			customerDetails.setMobile(customer.getMobile());
 			customerDetails.setTelPrefix(customer.getPrefixCodeMobile());
