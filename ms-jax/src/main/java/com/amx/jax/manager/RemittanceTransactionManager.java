@@ -670,11 +670,9 @@ public class RemittanceTransactionManager {
 
 				BigDecimal oldLcAmount = exchangeRateBreakup.getConvertedLCAmount();
 
-				BigDecimal newLcAmount = new BigDecimal(exchangeRateBreakup.getConvertedLCAmount().longValue())
-						.add(newDecimalAmt);
+				BigDecimal newLcAmount = new BigDecimal(exchangeRateBreakup.getConvertedLCAmount().longValue()).add(newDecimalAmt);
 
-				BigDecimal bumpedFcVal = (newLcAmount.subtract(oldLcAmount)).multiply(exchangeRateBreakup.getRate())
-						.setScale(10, RoundingMode.HALF_EVEN);
+				BigDecimal bumpedFcVal = (newLcAmount.subtract(oldLcAmount)).multiply(exchangeRateBreakup.getRate()).setScale(10, RoundingMode.HALF_EVEN);
 
 				BigDecimal newFcAmount = exchangeRateBreakup.getConvertedFCAmount().add(bumpedFcVal);
 

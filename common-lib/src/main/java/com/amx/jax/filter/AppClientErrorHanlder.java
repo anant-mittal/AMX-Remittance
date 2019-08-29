@@ -81,6 +81,7 @@ public class AppClientErrorHanlder implements ResponseErrorHandler {
 			if (defExcp != null) {
 				throw defExcp.getInstance(apiError);
 			}
+			return apiError;
 		}
 		AmxApiError defaulError = new AmxApiError(errorEnum);
 		defaulError.setMessage(apiErrorJson);

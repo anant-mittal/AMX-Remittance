@@ -96,9 +96,8 @@ public class DeviceService extends AbstractService {
 		}
 		// send device deactivated notification to other services
 		deactivatedDevices.forEach(i -> {
-			ResourceUpdateEvent event = new ResourceUpdateEvent();
-			event.setResourceId(i.getRegistrationId());
-			tunnelService.task(AmxTunnelEvents.UPDATE_DEVICE_STATUS.name(), event);
+			tunnelService.shout(AmxTunnelEvents.UPDATE_DEVICE_STATUS, new ResourceUpdateEvent(i.getRegistrationId(),
+					ResourceUpdateEvent.ResourceUpdateEventType.DEACTIVATED));
 		});
 		deviceDao.saveDevice(device);
 	}
@@ -114,16 +113,20 @@ public class DeviceService extends AbstractService {
 		Device device = deviceDao.findDevice(new BigDecimal(deviceRegId));
 		deviceValidation.validateNullDevice(device);
 		deactivateDevice(device);
+		
+		tunnelService.shout(AmxTunnelEvents.UPDATE_DEVICE_STATUS, new ResourceUpdateEvent(device.getRegistrationId(),
+				ResourceUpdateEvent.ResourceUpdateEventType.DEACTIVATED));
+
 		return new BoolRespModel(Boolean.TRUE);
 	}
 
-	public void deactivateDevice(Device device) {
+	private void deactivateDevice(Device device) {
 		device.setStatus("N");
 		device.setState(DeviceState.REGISTERED_NOT_ACTIVE);
 		deviceDao.saveDevice(device);
 	}
 	
-	public void deleteDevice(Device device) {
+	private void deleteDevice(Device device) {
 		device.setStatus(Constants.DELETED_SOFT);
 		device.setState(DeviceState.DELETED);
 		deviceDao.saveDevice(device);
@@ -180,6 +183,10 @@ public class DeviceService extends AbstractService {
 		Device device = deviceDao.getDeviceByRegId(new BigDecimal(deviceRegId));
 		deviceValidation.validateNullDevice(device);
 		deleteDevice(device);
+		
+		tunnelService.shout(AmxTunnelEvents.UPDATE_DEVICE_STATUS, new ResourceUpdateEvent(device.getRegistrationId(),
+				ResourceUpdateEvent.ResourceUpdateEventType.DELETED));
+
 		return new BoolRespModel(Boolean.TRUE);
 	}
 

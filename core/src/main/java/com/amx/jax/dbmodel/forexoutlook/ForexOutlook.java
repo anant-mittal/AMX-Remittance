@@ -135,6 +135,12 @@ public class ForexOutlook implements IResourceEntity  {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public String resourceLocalName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 	
 
