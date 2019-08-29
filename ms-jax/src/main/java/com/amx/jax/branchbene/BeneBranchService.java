@@ -1,5 +1,8 @@
 package com.amx.jax.branchbene;
 
+import static com.amx.amxlib.constant.NotificationConstants.BRANCH_SEARCH;
+import static com.amx.amxlib.constant.NotificationConstants.RESP_DATA_KEY;
+
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -8,28 +11,39 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.amx.amxlib.meta.model.ViewCityDto;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterServiceImpl;
 import com.amx.jax.client.serviceprovider.RoutingBankMasterDTO;
+import com.amx.jax.config.JaxProperties;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.BenificiaryListView;
+import com.amx.jax.dbmodel.CountryMasterDesc;
+import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.bene.BeneficaryMaster;
 import com.amx.jax.dbmodel.bene.BeneficaryStatus;
 import com.amx.jax.dbmodel.meta.ServiceGroupMaster;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.AbstractBeneDetailDto;
+import com.amx.jax.model.request.benebranch.AddNewBankBranchRequest;
 import com.amx.jax.model.request.benebranch.BeneficiaryTrnxModel;
 import com.amx.jax.model.request.benebranch.ListBankBranchRequest;
 import com.amx.jax.model.request.benebranch.ListBeneBankOrCashRequest;
 import com.amx.jax.model.response.BankMasterDTO;
+import com.amx.jax.model.response.benebranch.AddBeneBankBranchRequestModel;
 import com.amx.jax.model.response.benebranch.BankBranchDto;
+import com.amx.jax.postman.PostManService;
+import com.amx.jax.postman.model.Email;
+import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.service.BankMetaService;
+import com.amx.jax.service.CountryService;
 import com.amx.jax.service.MetaService;
 import com.amx.jax.services.BankService;
 import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.services.BeneficiaryValidationService;
 import com.amx.jax.trnx.BeneficiaryTrnxManager;
+import com.amx.jax.userservice.service.UserService;
 
 @Service
 public class BeneBranchService {
@@ -50,6 +64,14 @@ public class BeneBranchService {
 	BeneficiaryValidationService beneficiaryValidationService;
 	@Autowired
 	BeneficiaryTrnxManager beneficiaryTrnxManager;
+	@Autowired
+	CountryService countryService;
+	@Autowired
+	UserService userService;
+	@Autowired
+	JaxProperties jaxProperties;
+	@Autowired
+	PostManService postManService;
 
 	// bank
 	public List<BankMasterDTO> getBankByCountryAndCurrency(ListBeneBankOrCashRequest request) {
@@ -100,6 +122,40 @@ public class BeneBranchService {
 		}
 		beneficaryMaster.setDateOfBrith(request.getDateOfBirth());
 		beneService.saveBeneMaster(beneficaryMaster);
+	}
+
+	public void addNewBankBranchRequest(AddNewBankBranchRequest request) {
+		AddBeneBankBranchRequestModel model = new AddBeneBankBranchRequestModel();
+		model.setBankFullName(bankService.getBankById(request.getBankId()).getBankFullName());
+		model.setBranchAddress(request.getBranchAddress());
+		model.setBranchName(request.getBranchName());
+		ViewCityDto cityView = metaService.getCityDescription(request.getDistrictId(), metaData.getLanguageId(), request.getCityId()).getResult();
+		model.setCity(cityView.getCityName());
+		CountryMasterDesc countryMasterDesc = countryService.getCountryMasterDesc(request.getCountryId(), metaData.getLanguageId());
+		model.setCountryName(countryMasterDesc.getCountryName());
+		Customer customer = userService.getCustById(metaData.getCustomerId());
+		String firstname = customer.getFirstName();
+		String lastename = customer.getLastName();
+		model.setCustomerName(firstname + lastename);
+		model.setDistrict(metaService.getDistrictMasterById(request.getDistrictId()).getDistrictDesc());
+		model.setIdentityId(customer.getIdentityInt());
+		model.setIfscCode(request.getIfscCode());
+		model.setState(metaService.getStateMasterById(request.getStateId()).getStateName());
+		model.setSwift(request.getSwift());
+		sendaddNewBankBranchRequestEmail(model);
+	}
+
+	private void sendaddNewBankBranchRequestEmail(AddBeneBankBranchRequestModel model) {
+		Email email = new Email();
+		String emailid = jaxProperties.getSupportSoaEmail().get(0);
+		email.setSubject(BRANCH_SEARCH);
+		email.addTo(jaxProperties.getSupportSoaEmail().get(0));
+		email.setITemplate(TemplatesMX.BRANCH_SEARCH_EMPTY_BRANCH);
+		email.setHtml(true);
+		email.getModel().put(RESP_DATA_KEY, model);
+
+		logger.info("Email to - " + emailid + " first name : " + model.getCustomerName());
+		postManService.sendEmailAsync(email);
 	}
 
 }

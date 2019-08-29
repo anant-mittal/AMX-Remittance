@@ -5,6 +5,7 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.serviceprovider.RoutingBankMasterDTO;
 import com.amx.jax.model.request.benebranch.AddBeneBankRequest;
 import com.amx.jax.model.request.benebranch.AddBeneCashRequest;
+import com.amx.jax.model.request.benebranch.AddNewBankBranchRequest;
 import com.amx.jax.model.request.benebranch.ListBankBranchRequest;
 import com.amx.jax.model.request.benebranch.ListBeneBankOrCashRequest;
 import com.amx.jax.model.response.BankMasterDTO;
@@ -19,6 +20,7 @@ public interface IBranchBeneService {
 		public static final String LIST_BANK_BRANCH = PREFIX + "/list-bank-branch/";
 		public static final String ADD_BENE_BANK = PREFIX + "/add-bene-bank/";
 		public static final String ADD_BENE_CASH = PREFIX + "/add-bene-cash/";
+		public static final String ADD_NEW_BRANCH_REQUEST = PREFIX + "/add-new-branch-request/";
 	}
 
 	public static class Params {
@@ -34,5 +36,7 @@ public interface IBranchBeneService {
 	AmxApiResponse<BoolRespModel, Object> addBeneBank(AddBeneBankRequest request);
 
 	AmxApiResponse<BoolRespModel, Object> addBenecash(AddBeneCashRequest request);
+
+	AmxApiResponse<BoolRespModel, Object> addNewBankBranchRequest(AddNewBankBranchRequest request);
 
 }

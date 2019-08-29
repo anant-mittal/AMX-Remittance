@@ -37,7 +37,7 @@ public class BankBranchSearchRequestlValidator implements Validator {
 		}
 	}
 
-	private void validateIfscCode(String ifscCode) {
+	public void validateIfscCode(String ifscCode) {
 		if (StringUtils.isNotBlank(ifscCode) && ifscCode.length() < 3) {
 			throw new GlobalException(JaxError.INVALID_BANK_IFSC, "Invalid ifsc");
 		}
@@ -52,20 +52,3 @@ public class BankBranchSearchRequestlValidator implements Validator {
 	}
 
 }
-	
-	/*private void validateIfscCode(String ifscCode) {
-		final Pattern pattern = Pattern.compile("^[A-Za-z]{4}0[a-zA-Z0-9]{6}$");
-		if (!pattern.matcher(ifscCode).matches()) {
-			throw new GlobalException("Invalid ifsc", JaxError.INVALID_BANK_IFSC);
-		}
-
-	}
-
-	private void validateSwiftCode(String swift) {
-		final Pattern pattern = Pattern.compile("^[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?$");
-		if (!pattern.matcher(swift).matches()) {
-			throw new GlobalException("Invalid swift", JaxError.INVALID_BANK_SWIFT);
-		}*/
-
-
-

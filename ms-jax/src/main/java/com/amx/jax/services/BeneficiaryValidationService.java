@@ -42,6 +42,7 @@ import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.IServiceApplicabilityRuleDao;
 import com.amx.jax.service.CountryService;
 import com.amx.jax.util.JaxUtil;
+import com.amx.jax.validation.BankBranchSearchRequestlValidator;
 import com.amx.jax.validation.BenePersonalDetailValidator;
 import com.google.common.collect.Iterables;
 import com.querydsl.core.types.Predicate;
@@ -96,6 +97,8 @@ public class BeneficiaryValidationService {
 	
 	@Autowired
 	BenePersonalDetailValidator benePersonalDetailValidator;
+	@Autowired
+	BankBranchSearchRequestlValidator bankBranchSearchRequestlValidator;
 
 	/**
 	 * @param beneAccountModel
@@ -122,22 +125,45 @@ public class BeneficiaryValidationService {
 			throw new GlobalException(JaxError.BANK_IBAN_EMPTY, "IBAN is required");
 		}
 	}
-
+	
 	private void validateSwiftCode(BeneAccountModel beneAccountModel) {
-		List<ServiceApplicabilityRule> swiftRules = serviceApplicablilityRuleDao
-				.getServiceApplicabilityRulesForBeneficiary(metaData.getCountryId(),
-						beneAccountModel.getBeneficaryCountryId(), beneAccountModel.getCurrencyId(),
-						ServiceApplicabilityField.BNFBANK_SWIFT.toString());
+		validateSwiftCode(beneAccountModel.getBeneficaryCountryId(), beneAccountModel.getCurrencyId(), beneAccountModel.getSwiftCode());
+	}
+
+	public void validateSwiftCode(BigDecimal beneBankCountryId, BigDecimal beneBankCurrencyId, String swiftCode) {
+		List<ServiceApplicabilityRule> swiftRules = serviceApplicablilityRuleDao.getServiceApplicabilityRulesForBeneficiary(metaData.getCountryId(),
+				beneBankCountryId, beneBankCurrencyId, ServiceApplicabilityField.BNFBANK_SWIFT.toString());
 		swiftRules.forEach(i -> {
 			if (ConstantDocument.Yes.equals(i.getMandatory())) {
-				if (StringUtils.isEmpty(beneAccountModel.getSwiftCode())) {
+				if (StringUtils.isEmpty(swiftCode)) {
 					throw new GlobalException(JaxError.BANK_SWIFT_EMPTY, "Swift code is required");
 				}
-				validateSwiftCode(beneAccountModel.getSwiftCode());
+				validateSwiftCode(swiftCode);
 			}
 		});
-		if (!StringUtils.isEmpty(beneAccountModel.getSwiftCode())) {
-			validateSwiftCode(beneAccountModel.getSwiftCode());
+		if (!StringUtils.isEmpty(swiftCode)) {
+			validateSwiftCode(swiftCode);
+		}
+	}
+	
+	public void validateIFscCode(BeneAccountModel beneAccountModel) {
+		validateIFscCode(beneAccountModel.getBeneficaryCountryId(), beneAccountModel.getCurrencyId(), beneAccountModel.getIfscCode());
+	}
+
+	public void validateIFscCode(BigDecimal beneBankCountryId, BigDecimal beneBankCurrencyId, String ifscCode) {
+		List<ServiceApplicabilityRule> swiftRules = serviceApplicablilityRuleDao.getServiceApplicabilityRulesForBeneficiary(metaData.getCountryId(),
+				beneBankCountryId, beneBankCurrencyId, ServiceApplicabilityField.BNFBANK_IFSC.toString());
+		swiftRules.forEach(i -> {
+			if (ConstantDocument.Yes.equals(i.getMandatory())) {
+				if (StringUtils.isEmpty(ifscCode)) {
+					throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "ifsc code is required");
+				}
+				bankBranchSearchRequestlValidator.validateIfscCode(ifscCode);
+			}
+		});
+		if (!StringUtils.isEmpty(ifscCode)) {
+			validateSwiftCode(ifscCode);
+			bankBranchSearchRequestlValidator.validateIfscCode(ifscCode);
 		}
 	}
 

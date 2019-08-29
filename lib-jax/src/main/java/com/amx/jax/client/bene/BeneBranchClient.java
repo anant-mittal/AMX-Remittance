@@ -13,6 +13,7 @@ import com.amx.jax.client.serviceprovider.RoutingBankMasterDTO;
 import com.amx.jax.exception.JaxSystemError;
 import com.amx.jax.model.request.benebranch.AddBeneBankRequest;
 import com.amx.jax.model.request.benebranch.AddBeneCashRequest;
+import com.amx.jax.model.request.benebranch.AddNewBankBranchRequest;
 import com.amx.jax.model.request.benebranch.ListBankBranchRequest;
 import com.amx.jax.model.request.benebranch.ListBeneBankOrCashRequest;
 import com.amx.jax.model.response.BankMasterDTO;
@@ -86,6 +87,19 @@ public class BeneBranchClient implements IBranchBeneService {
 		try {
 			LOGGER.debug("in addBenecash :");
 			return restService.ajax(appConfig.getJaxURL() + Path.ADD_BENE_CASH).meta(new JaxMetaInfo()).post(request)
+					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in addBenecash : ", e);
+			return JaxSystemError.evaluate(e);
+		}
+	}
+
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> addNewBankBranchRequest(AddNewBankBranchRequest request) {
+		try {
+			LOGGER.debug("in addBenecash :");
+			return restService.ajax(appConfig.getJaxURL() + Path.ADD_NEW_BRANCH_REQUEST).meta(new JaxMetaInfo()).post(request)
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});
 		} catch (Exception e) {
