@@ -452,7 +452,7 @@ public class FcSaleApplicationDao {
 				pgLinkModel.setPgReceiptDate(paymentResponse.getPostDate());
 				pgLinkModel.setPgReferenceId(paymentResponse.getReferenceId());
 				pgLinkModel.setTrnxType(null);
-				pgLinkModel.setLinkActive("P");
+				//pgLinkModel.setLinkActive("P");
 				pgLinkModel.setModifiedDate(new Date());
 				pgRepository.save(pgLinkModel);
 			}else{
