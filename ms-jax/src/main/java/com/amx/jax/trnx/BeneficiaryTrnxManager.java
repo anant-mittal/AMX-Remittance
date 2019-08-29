@@ -138,6 +138,7 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 				beneMaster.getBeneficaryMasterSeqId(), beneAccount.getBeneficaryAccountSeqId());
 		logger.info("commit done");
 		logger.info("Beneficiary Relationship Sequence Id : " +beneRelationship.getBeneficaryRelationshipId());
+		beneficiaryTrnxModel.setBeneficaryRelationSeqId(beneRelationship.getBeneficaryRelationshipId());
 		populateOldEmosData(beneficiaryTrnxModel, beneMaster.getBeneficaryMasterSeqId(),
 				beneAccount);
 		beneRelationship = beneficiaryRelationshipDao.findOne(beneRelationship.getBeneficaryRelationshipId());

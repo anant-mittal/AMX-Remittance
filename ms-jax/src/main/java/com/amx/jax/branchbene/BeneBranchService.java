@@ -1,5 +1,6 @@
 package com.amx.jax.branchbene;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -7,17 +8,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterServiceImpl;
 import com.amx.jax.client.serviceprovider.RoutingBankMasterDTO;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.dbmodel.BenificiaryListView;
+import com.amx.jax.dbmodel.bene.BeneficaryMaster;
+import com.amx.jax.dbmodel.bene.BeneficaryStatus;
 import com.amx.jax.dbmodel.meta.ServiceGroupMaster;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.AbstractBeneDetailDto;
-import com.amx.jax.model.request.benebranch.AddBeneBankRequest;
-import com.amx.jax.model.request.benebranch.AddBeneCashRequest;
 import com.amx.jax.model.request.benebranch.BeneficiaryTrnxModel;
 import com.amx.jax.model.request.benebranch.ListBankBranchRequest;
 import com.amx.jax.model.request.benebranch.ListBeneBankOrCashRequest;
@@ -76,22 +77,29 @@ public class BeneBranchService {
 		BeneficiaryTrnxModel beneficiaryTrnxModel = request.createBeneficiaryTrnxModelObject();
 		beneficiaryValidationService.validateBeneficiaryTrnxModel(beneficiaryTrnxModel);
 		beneficiaryTrnxManager.commit(beneficiaryTrnxModel);
-
+		setAdditionalBranchFields(beneficiaryTrnxModel.getBeneficaryRelationSeqId(), request);
 	}
 
-	public void validateaddBeneBank(AddBeneBankRequest request) {
-		ServiceGroupMaster bankserviceMaster = metaService.getServiceGroupMasterByCode(ConstantDocument.SERVICE_GROUP_CODE_BANK);
-		if (!bankserviceMaster.getServiceGroupId().equals(request.getServiceGroupId())) {
-			throw new GlobalException("service group id does not belong to bank");
+	private void setAdditionalBranchFields(BigDecimal beneficaryRelationSeqId, AbstractBeneDetailDto request) {
+		BenificiaryListView beneRelationship = beneService.getBeneByIdNo(beneficaryRelationSeqId);
+		BeneficaryMaster beneficaryMaster = beneService.getBeneficiaryMasterBybeneficaryMasterSeqId(beneRelationship.getBeneficaryMasterSeqId());
+		if (ConstantDocument.INDIVIDUAL_STRING.equals(request.getBeneficaryType())) {
+			BeneficaryStatus beneStatus = beneService.getBeneStatusByNameByName(ConstantDocument.INDIVIDUAL_STRING);
+			beneficaryMaster.setBeneficaryStatus(beneStatus.getBeneficaryStatusId());
+			beneficaryMaster.setBeneficaryStatusName(beneStatus.getBeneficaryStatusName());
+		} else {
+			BeneficaryStatus beneStatus = beneService.getBeneStatusByNameByName(ConstantDocument.NON_INDIVIDUAL_STRING);
+			beneficaryMaster.setBeneficaryStatus(beneStatus.getBeneficaryStatusId());
+			beneficaryMaster.setBeneficaryStatusName(beneStatus.getBeneficaryStatusName());
 		}
-
-	}
-
-	public void validateaddBenecash(AddBeneCashRequest request) {
-		ServiceGroupMaster cashserviceMaster = metaService.getServiceGroupMasterByCode(ConstantDocument.SERVICE_GROUP_CODE_CASH);
-		if (!cashserviceMaster.getServiceGroupId().equals(request.getServiceGroupId())) {
-			throw new GlobalException("service group id does not belong to cash");
+		if (request.getAge() != null) {
+			beneficaryMaster.setAge(BigDecimal.valueOf(request.getAge()));
 		}
+		if (request.getYearOfBirth() != null) {
+			beneficaryMaster.setYearOfBrith(BigDecimal.valueOf(request.getYearOfBirth()));
+		}
+		beneficaryMaster.setDateOfBrith(request.getDateOfBirth());
+		beneService.saveBeneMaster(beneficaryMaster);
 	}
 
 }

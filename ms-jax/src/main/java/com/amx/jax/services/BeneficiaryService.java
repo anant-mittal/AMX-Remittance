@@ -62,6 +62,7 @@ import com.amx.jax.dbmodel.bene.BeneficaryAccount;
 import com.amx.jax.dbmodel.bene.BeneficaryContact;
 import com.amx.jax.dbmodel.bene.BeneficaryMaster;
 import com.amx.jax.dbmodel.bene.BeneficaryRelationship;
+import com.amx.jax.dbmodel.bene.BeneficaryStatus;
 import com.amx.jax.dbmodel.bene.RelationsDescription;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.error.JaxError;
@@ -74,6 +75,7 @@ import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.model.response.CurrencyMasterDTO;
 import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.repository.BeneficaryAccountRepository;
+import com.amx.jax.repository.BeneficaryStatusRepository;
 import com.amx.jax.repository.CountryRepository;
 import com.amx.jax.repository.IBeneficaryContactDao;
 import com.amx.jax.repository.IBeneficiaryCountryDao;
@@ -169,6 +171,8 @@ public class BeneficiaryService extends AbstractService {
 	JaxConfigService jaxConfigService;
 	@Autowired
 	IBeneficiaryMasterDao beneficaryMasterRepository;
+	@Autowired
+	BeneficaryStatusRepository beneficaryStatusRepository;
 
 	public ApiResponse getBeneficiaryListForOnline(BigDecimal customerId, BigDecimal applicationCountryId,
 			BigDecimal beneCountryId) {
@@ -1084,5 +1088,9 @@ public class BeneficiaryService extends AbstractService {
 	public BeneficiaryListDTO getBeneficiaryByMasterSeqid(BigDecimal customerId, BigDecimal beneMasterSeqId) {
 		BenificiaryListView beneDetailModel = beneficiaryOnlineDao.findByCustomerIdAndBeneficaryMasterSeqIdAndIsActive(customerId, beneMasterSeqId, ConstantDocument.Yes);
 		return convertBeneModelToDto(beneDetailModel);
+	}
+
+	public BeneficaryStatus getBeneStatusByNameByName(String beneficaryStatusName) {
+		return beneficaryStatusRepository.findByBeneficaryStatusName(beneficaryStatusName);
 	}
 }

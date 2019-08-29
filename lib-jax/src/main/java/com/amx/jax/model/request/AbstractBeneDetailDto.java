@@ -2,7 +2,9 @@ package com.amx.jax.model.request;
 
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
+import java.util.Date;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -85,14 +87,23 @@ public abstract class AbstractBeneDetailDto {
 	@NotNull
 	@ApiMockModelProperty(example = "91")
 	private String countryTelCode;
-	
 
 	@NotNull(message = "serviceGroupId may not be null")
 	@ApiMockModelProperty(example = "2")
 	private BigDecimal serviceGroupId;
-	
+
 	@ApiMockModelProperty(example = "HDFCINBBAHM")
 	String swiftCode;
+
+	Date dateOfBirth;
+
+	@ApiMockModelProperty(example = "25")
+	@Min(1)
+	Integer age;
+
+	@ApiMockModelProperty(example = "1986")
+	@Min(1900)
+	Integer yearOfBirth;
 
 	public String getBeneficaryType() {
 		return beneficaryType;
@@ -237,7 +248,7 @@ public abstract class AbstractBeneDetailDto {
 	public void setCountryTelCode(String countryTelCode) {
 		this.countryTelCode = countryTelCode;
 	}
-	
+
 	protected BenePersonalDetailModel createPersonalDetailObject() {
 		BenePersonalDetailModel model = new BenePersonalDetailModel();
 		try {
@@ -247,14 +258,14 @@ public abstract class AbstractBeneDetailDto {
 		}
 		return model;
 	}
-	
+
 	public BeneficiaryTrnxModel createBeneficiaryTrnxModelObject() {
 		BeneficiaryTrnxModel model = new BeneficiaryTrnxModel();
 		model.setBeneAccountModel(createBeneAccountModelObject());
 		model.setBenePersonalDetailModel(createPersonalDetailObject());
 		return model;
 	}
-	
+
 	protected abstract BeneAccountModel createBeneAccountModelObject();
 
 	public BigDecimal getServiceGroupId() {
@@ -271,5 +282,29 @@ public abstract class AbstractBeneDetailDto {
 
 	public void setSwiftCode(String swiftCode) {
 		this.swiftCode = swiftCode;
+	}
+
+	public Date getDateOfBirth() {
+		return dateOfBirth;
+	}
+
+	public void setDateOfBirth(Date dateOfBirth) {
+		this.dateOfBirth = dateOfBirth;
+	}
+
+	public Integer getAge() {
+		return age;
+	}
+
+	public void setAge(Integer age) {
+		this.age = age;
+	}
+
+	public Integer getYearOfBirth() {
+		return yearOfBirth;
+	}
+
+	public void setYearOfBirth(Integer yearOfBirth) {
+		this.yearOfBirth = yearOfBirth;
 	}
 }

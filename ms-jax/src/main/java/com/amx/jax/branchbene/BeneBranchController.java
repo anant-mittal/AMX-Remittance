@@ -36,6 +36,8 @@ public class BeneBranchController implements IBranchBeneService {
 	MetaData metaData;
 	@Autowired
 	BeneBranchService beneBranchService;
+	@Autowired
+	BeneBranchValidation beneBranchValidation;
 
 	@RequestMapping(value = Path.LIST_BANK_BY_COUNTRY_CURRENCY, method = RequestMethod.POST)
 	@Override
@@ -69,7 +71,7 @@ public class BeneBranchController implements IBranchBeneService {
 	@ApiOperation("add bene bank")
 	public AmxApiResponse<BoolRespModel, Object> addBeneBank(@RequestBody @Valid AddBeneBankRequest request) {
 		logger.debug("request addBeneBank: {} ", JsonUtil.toJson(request));
-		beneBranchService.validateaddBeneBank(request);
+		beneBranchValidation.validateaddBeneBank(request);
 		beneBranchService.addBeneBankorCash(request);
 		return AmxApiResponse.build(new BoolRespModel(true));
 	}
@@ -79,7 +81,7 @@ public class BeneBranchController implements IBranchBeneService {
 	@ApiOperation("add bene cash")
 	public AmxApiResponse<BoolRespModel, Object> addBenecash(@RequestBody @Valid AddBeneCashRequest request) {
 		logger.debug("request addBenecash: {} ", JsonUtil.toJson(request));
-		beneBranchService.validateaddBenecash(request);
+		beneBranchValidation.validateaddBenecash(request);
 		beneBranchService.addBeneBankorCash(request);
 		return AmxApiResponse.build(new BoolRespModel(true));
 	}
