@@ -37,9 +37,6 @@ public class NotificationTaskController implements INotificationtaskService {
 	@RequestMapping(path = Path.LIST_USER_NOTIFICATION_TASKS, method = RequestMethod.GET)
 	@Override
 	public AmxApiResponse<NotificationTaskDto, Object> listUserNotificationTasks() {
-		if (metaData.getDeviceIp() == null) {
-			throw new GlobaLException("Device ip is required");
-		}
 		List<NotificationTaskDto> notifications = notificationTaskService.listUserNotificationTasks();
 		return AmxApiResponse.buildList(notifications);
 	}
