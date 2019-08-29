@@ -2,6 +2,8 @@ package com.amx.jax.branchremittance.service;
 
 import java.math.BigDecimal;
 
+import javax.transaction.Transactional;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,6 +78,7 @@ public class DirectPaymentLinkService extends AbstractService {
 		return AmxApiResponse.build(paymentDtoNEW);
 	}
 
+	@Transactional
 	public AmxApiResponse<PaymentLinkRespDTO, Object> validatePayLink(BigDecimal linkId, String verificationCode) {
 		PaymentLinkRespDTO paymentdtoNew = directPaymentLinkManager.validatePaymentLinkNew(linkId, verificationCode);
 		return AmxApiResponse.build(paymentdtoNew);
