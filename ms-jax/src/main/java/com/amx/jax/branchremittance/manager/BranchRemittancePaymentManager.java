@@ -31,7 +31,6 @@ import com.amx.jax.dbmodel.ParameterDetails;
 import com.amx.jax.dbmodel.PaygDetailsModel;
 import com.amx.jax.dbmodel.remittance.CustomerBank;
 import com.amx.jax.dbmodel.remittance.LocalBankDetailsView;
-import com.amx.jax.dbmodel.remittance.PaymentLinkModel;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.ShoppingCartDetails;
 import com.amx.jax.dbmodel.remittance.StaffAuthorizationView;
@@ -57,7 +56,6 @@ import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
 import com.amx.jax.repository.IBankMasterFromViewDao;
 import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.ICustomerRepository;
-import com.amx.jax.repository.IPaymentLinkDetailsRepository;
 import com.amx.jax.repository.IShoppingCartDetailsDao;
 import com.amx.jax.repository.IShoppingCartDetailsRepository;
 import com.amx.jax.repository.PaygDetailsRepository;
@@ -104,10 +102,7 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 	
 	@Autowired
 	CryptoUtil cryptoUtil;
-	
-	@Autowired
-	IPaymentLinkDetailsRepository paymentLinkDetailsRepository;
-	
+		
 	@Autowired
 	IShoppingCartDetailsRepository iShoppingCartDetailsRepository;
 

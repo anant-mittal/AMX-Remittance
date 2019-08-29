@@ -33,7 +33,6 @@ import com.amx.jax.dbmodel.fx.FxDeliveryDetailsModel;
 import com.amx.jax.dbmodel.fx.FxDeliveryRemark;
 import com.amx.jax.dbmodel.fx.StatusMaster;
 import com.amx.jax.dbmodel.fx.VwFxDeliveryDetailsModel;
-import com.amx.jax.dbmodel.remittance.PaymentLinkModel;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.model.request.fx.FcSaleOrderPaynowRequestModel;
 import com.amx.jax.model.response.fx.FxApplicationDto;

@@ -23,7 +23,6 @@ import com.amx.jax.api.ResponseCodeDetailDTO;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constants.JaxTransactionStatus;
 import com.amx.jax.dao.BranchRemittancePaymentDao;
-import com.amx.jax.dao.DirectPaymentLinkDao;
 import com.amx.jax.dao.FcSaleApplicationDao;
 import com.amx.jax.dbmodel.PaygDetailsModel;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
@@ -39,7 +38,6 @@ import com.amx.jax.model.response.remittance.PaymentLinkRespStatus;
 import com.amx.jax.model.response.remittance.RemittanceCollectionDto;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.repository.CurrencyRepository;
-import com.amx.jax.repository.IPaymentLinkDetailsRepository;
 import com.amx.jax.repository.PaygDetailsRepository;
 import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.utils.Random;
@@ -50,12 +48,6 @@ public class DirectPaymentLinkManager extends AbstractModel {
 
 	Logger logger = LoggerFactory.getLogger(getClass());
 	private static final long serialVersionUID = 1L;
-
-	@Autowired
-	DirectPaymentLinkDao directPaymentLinkDao;
-
-	@Autowired
-	IPaymentLinkDetailsRepository paymentLinkDetailsRepository;
 
 	@Autowired
 	BranchRemittancePaymentDao branchRemittancePaymentDao;
@@ -243,7 +235,7 @@ public class DirectPaymentLinkManager extends AbstractModel {
 					PaygDetailsModel paymentLink = pgRepository.findOne(payLink.getPaygTrnxSeqId());
 					paymentLink.setLinkActive(ConstantDocument.Deleted);
 					paymentLink.setModifiedDate(new Date());
-					pgRepository.save(paymentLink);//PaymentLinkModel
+					pgRepository.save(paymentLink);
 				}
 			}
 
