@@ -30,10 +30,13 @@ import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.AbstractModel;
+import com.amx.jax.model.request.remittance.BranchApplicationDto;
+import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerShoppingCartDto;
 import com.amx.jax.model.response.remittance.PaymentLinkRespDTO;
 import com.amx.jax.model.response.remittance.PaymentLinkRespStatus;
+import com.amx.jax.model.response.remittance.RemittanceCollectionDto;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.repository.CurrencyRepository;
 import com.amx.jax.repository.IPaymentLinkDetailsRepository;
@@ -78,6 +81,9 @@ public class DirectPaymentLinkManager extends AbstractModel {
 	@Autowired
 	AmxConfig amxConfig;
 	
+	@Autowired
+	BranchRemittanceSaveManager branchRemittanceSaveManager;
+	
 	public PaymentLinkRespDTO getPaymentLinkDetails(BigDecimal customerId, BranchRemittanceApplResponseDto shpCartData) {
 		deactivatePaymentLink(customerId);
 		deactivatePreviousLinkResend(customerId);	
@@ -109,6 +115,7 @@ public class DirectPaymentLinkManager extends AbstractModel {
 				paymentApplication.setLinkDate(new Date());
 				paymentApplication.setVerifycode(hashVerifyCode);
 				paymentApplication.setPaymentType(ConstantDocument.DIRECT_LINK);
+				paymentApplication.setCollDocFYear(shpCartAppl.getDocumentFinanceYear());
 				
 				fcSaleApplicationDao.savePaymentLinkApplication(paymentApplication);
 				
@@ -309,6 +316,42 @@ public class DirectPaymentLinkManager extends AbstractModel {
 							|| paymentResponse.getResultCode().equalsIgnoreCase(ConstantDocument.APPROVED))) {
 				// update payg details in payment link table
 				fcSaleApplicationDao.updatePaygDetailsInPayLink(paymentResponse, linkId);
+				
+				//payment process to remittance
+				PaygDetailsModel paymentLinkData =pgRepository.findOne(linkId);
+				BranchRemittanceRequestModel request = new BranchRemittanceRequestModel();
+				List<BranchApplicationDto> remittanceApplicationIds =new ArrayList<>();
+				List<RemittanceCollectionDto> collctionModeDto = new ArrayList<>();
+				//List<UserStockDto> currencyRefundDenomination = new ArrayList<>();
+				BranchApplicationDto remitApplicationId = new BranchApplicationDto();
+				
+				String applicationid = paymentLinkData.getApplIds();
+				StringTokenizer tokenizer = new StringTokenizer(applicationid, ",");
+				while (tokenizer.hasMoreTokens()) {
+					String token = tokenizer.nextToken();
+					BigDecimal appId = new BigDecimal(token);
+					logger.info("Application Id : " + appId);
+					remitApplicationId.setApplicationId(appId);
+					remittanceApplicationIds.add(remitApplicationId);
+				}
+				
+				RemittanceCollectionDto remittanceCollection = new RemittanceCollectionDto();
+				remittanceCollection.setPaymentModeId(paymentLinkData.getPaygTrnxSeqId());
+				remittanceCollection.setPaymentAmount(paymentLinkData.getPayAmount());
+				remittanceCollection.setApprovalNo(paymentLinkData.getPgAuthCode());
+				
+				collctionModeDto.add(remittanceCollection);
+				
+				
+				//Set request Parameter
+				request.setRemittanceApplicationId(remittanceApplicationIds);
+				request.setCollctionModeDto(collctionModeDto);
+				request.setCurrencyRefundDenomination(null);
+				request.setTotalTrnxAmount(paymentLinkData.getPayAmount());
+				request.setTotalLoyaltyAmount(null);
+				
+				branchRemittanceSaveManager.saveRemittanceTrnx(request);
+				
 			} else {
 				fcSaleApplicationDao.updatePaygDetailsFail(paymentResponse, linkId);
 			}
