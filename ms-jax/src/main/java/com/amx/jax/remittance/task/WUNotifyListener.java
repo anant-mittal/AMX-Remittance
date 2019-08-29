@@ -111,7 +111,7 @@ public class WUNotifyListener implements ITunnelSubscriber<DBEvent> {
 		modeldata.put("date", trnxDate);
 		
 		modeldata.put("localcurcode", currencyMasterModelLocal.getQuoteName());
-		modeldata.put("localamount", remittanceTransaction.getLocalNetTranxAmount());
+		modeldata.put("localamount", remittanceTransaction.getLocalTranxAmount());
 		modeldata.put("foreigncurcode",currencyMasterModelForeign.getQuoteName());
 		modeldata.put("foreignamount", remittanceTransaction.getForeignTranxAmount());
 		
