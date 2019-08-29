@@ -171,7 +171,8 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 					if(currencyMaster != null) {
 						breakup.setFcDecimalNumber(currencyMaster.getDecinalNumber() == null ? decimalNumber : currencyMaster.getDecinalNumber());
 						lstCustShpcrt.add(createCustomerShoppingCartDto(customerApplDto,localCurrencyId,fcCurrencyId,breakup));
-						if(customerApplDto.getPaymentLinkId()!=null) {
+						// Direct Payment link application now getting converted to remittance so commenting the following code
+						/*if(customerApplDto.getPaymentLinkId()!=null) {
 							PaygDetailsModel paymentLinkModel = payGDetailsRepository.findOne(customerApplDto.getPaymentLinkId());
 							if(paymentLinkModel != null && ConstantDocument.DIRECT_PAYMENT_LINK_PAID.equalsIgnoreCase(paymentLinkModel.getLinkActive())) {
 								String applicationIds = paymentLinkModel.getApplIds();
@@ -183,7 +184,7 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 							}
 							
 							
-						}
+						}*/
 						
 						cartList.setShoppingCartDetails(lstCustShpcrt);
 						
@@ -594,7 +595,8 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		return config;
 		
 	}
-	
+	// Direct Payment link application now getting converted to remittance so commenting the following code
+	@Deprecated
 	private PaymentLinkAppDto createPaymentLinkAppDto(BigDecimal remittanceApplicationId,PaygDetailsModel paymentLinkModel) {
 		ShoppingCartDetails shoppingCartDetails=iShoppingCartDetailsRepository.findByCustomerIdAndRemittanceApplicationId(metaData.getCustomerId(), remittanceApplicationId); 
 		PaymentLinkAppDto paymentLinkAppDto = new PaymentLinkAppDto();
