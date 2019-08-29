@@ -23,6 +23,7 @@ import com.amx.jax.device.DeviceData;
 import com.amx.jax.device.DeviceRequest;
 import com.amx.jax.http.ApiRequest;
 import com.amx.jax.http.RequestType;
+import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
 import com.amx.jax.model.response.DeviceStatusInfoDto;
 import com.amx.jax.terminal.TerminalBox;
 import com.amx.jax.terminal.TerminalService;
@@ -205,6 +206,31 @@ public class SignPadController {
 		file.setName(signPadData.getSignature().getName());
 		return ResponseEntity.ok().contentLength(file.getBody().length)
 				.contentType(MediaType.valueOf(file.getType().getContentType())).body(file.getBody());
+	}
+
+	@ApiRequest(type = RequestType.POLL)
+	@ApiDeviceHeaders
+	@RequestMapping(value = Path.SIGNPAD_STATUS_SIGNATURE + "/**", method = { RequestMethod.GET },
+			produces = { CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE })
+	public AmxApiResponse<FileSubmitRequestModel, Object> getSignatureStateDataImage(HttpServletResponse response)
+			throws ParseException, IOException {
+
+		String terminalId = null;
+
+		if (!ArgUtil.isEmpty(sSOUser) && sSOUser.isAuthDone() && !ArgUtil.isEmpty(sSOUser.getUserClient())) {
+			terminalId = ArgUtil.parseAsString(sSOUser.getUserClient().getTerminalId());
+		} else {
+			DeviceData deviceData = deviceRequestValidator.getDeviceData();
+			terminalId = deviceData.getTerminalId();
+		}
+
+		SignPadData signPadData = signPadBox.getOrDefault(terminalId);
+		if (ArgUtil.isEmpty(signPadData.getSignature())) {
+			return AmxApiResponse.build(new FileSubmitRequestModel());
+		}
+
+		return AmxApiResponse.build(signPadData.getSignature());
+
 	}
 
 }

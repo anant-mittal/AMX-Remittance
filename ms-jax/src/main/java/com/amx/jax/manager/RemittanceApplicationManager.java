@@ -41,6 +41,7 @@ import com.amx.jax.model.request.remittance.AbstractRemittanceApplicationRequest
 import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.response.ExchangeRateBreakup;
+import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.pricer.dto.ExchangeDiscountInfo;
 import com.amx.jax.pricer.var.PricerServiceConstants.DISCOUNT_TYPE;
@@ -55,6 +56,7 @@ import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.services.LoyalityPointService;
 import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
+import com.amx.utils.JsonUtil;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
@@ -221,6 +223,7 @@ public class RemittanceApplicationManager {
 		remittanceApplication.setDocumentNo(generateDocumentNumber(remittanceApplication.getExCountryBranch(), ConstantDocument.Update));
 		remittanceApplication.setPaymentId(remittanceApplication.getDocumentNo().toString());
 		remittanceApplication.setWuIpAddress(metaData.getDeviceIp());
+		
 		validateAdditionalErrorMessages(requestModel);
 		validateBannedBank();
 		validateDailyBeneficiaryTransactionLimit(beneDetails);
@@ -344,6 +347,19 @@ public class RemittanceApplicationManager {
 		remittanceApplication.setDocumentNo(generateDocumentNumber(remittanceApplication.getExCountryBranch(), ConstantDocument.Update));
 		remittanceApplication.setPaymentId(remittanceApplication.getDocumentNo().toString());
 		remittanceApplication.setWuIpAddress(metaData.getDeviceIp());
+		
+		DynamicRoutingPricingDto dynamicRoutingPricingResponse = requestModel.getDynamicRroutingPricingBreakup();
+		if(dynamicRoutingPricingResponse.getServiceProviderDto() != null && dynamicRoutingPricingResponse.getServiceProviderDto().getIntialAmountInSettlCurr() != null) {
+			remittanceApplication.setUsdAmt(dynamicRoutingPricingResponse.getServiceProviderDto().getIntialAmountInSettlCurr());
+			if(remittanceApplication.getOriginalExchangeRate() != null && remittanceApplication.getOriginalExchangeRate().compareTo(BigDecimal.ZERO) != 0) {
+				// getting original rate
+				logger.info("SP Original Exchange Rate : "+JsonUtil.toJson(validationResults.getExRateBreakup()));
+			}else {
+				logger.info("Unable to get Original Exchange Rate : "+JsonUtil.toJson(validationResults.getExRateBreakup()));
+				throw new GlobalException("Unable to get Original Exchange Rate");
+			}
+		}
+		
 		validateAdditionalErrorMessagesV2(requestModel);
 		validateBannedBank();
 		validateDailyBeneficiaryTransactionLimit(beneDetails);
@@ -523,6 +539,9 @@ public class RemittanceApplicationManager {
 		remittanceApplication.setLocalDeliveryAmount(BigDecimal.ZERO);
 		remittanceApplication.setLocalNetTranxAmount(breakup.getNetAmountWithoutLoyality());
 		remittanceApplication.setLoyaltyPointsEncashed(loyalityPointsEncashed);
+		if(JaxUtil.isNullZeroBigDecimalCheck(breakup.getBaseRate())) {
+			remittanceApplication.setOriginalExchangeRate(breakup.getBaseRate());
+		}
 	}
 	
 	
@@ -542,6 +561,9 @@ public class RemittanceApplicationManager {
 		remittanceApplication.setLocalDeliveryAmount(BigDecimal.ZERO);
 		remittanceApplication.setLocalNetTranxAmount(breakup.getNetAmountWithoutLoyality());
 		remittanceApplication.setLoyaltyPointsEncashed(loyalityPointsEncashed);
+		if(JaxUtil.isNullZeroBigDecimalCheck(breakup.getBaseRate())) {
+			remittanceApplication.setOriginalExchangeRate(breakup.getBaseRate());
+		}
 	}
 	
 	

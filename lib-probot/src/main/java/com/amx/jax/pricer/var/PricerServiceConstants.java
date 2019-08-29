@@ -37,7 +37,9 @@ public final class PricerServiceConstants {
 	
 	public static final String PARAM_BIC_BRANCH = "HSBS";
 	
-	public static final String PARAM_BENE_ADDRESS = "HSEC"; 
+	public static final String PARAM_BENE_ADDRESS = "HSEC";
+	
+	public static final String PARAM_FEE_DUMMY_ACCOUNT = "HMUS";
 	
 	public static final BigDecimal BOTH_BANK_SERVICE_COMPONENT = new BigDecimal(777);
 
@@ -47,7 +49,7 @@ public final class PricerServiceConstants {
 	
 	
 	// Def Pricing Scale
-	public static int DEF_DECIMAL_SCALE = 8;
+	public static int DEF_DECIMAL_SCALE = 9;
 
 	public static MathContext DEF_CONTEXT = new MathContext(DEF_DECIMAL_SCALE, RoundingMode.HALF_EVEN);
 	
@@ -165,6 +167,7 @@ public final class PricerServiceConstants {
 	public static final String COMMIT_RESPONSE = "commit response";
 	
 	public static final String COUNTRY_AUS_ALPHA3CODE = "AUS";
+	public static final String COUNTRY_USA_ALPHA3CODE = "USA";
 	
 	public static final String Business = "B";
 	public static final String Personal = "P";

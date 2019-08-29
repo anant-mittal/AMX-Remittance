@@ -20,6 +20,11 @@ import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.CustomerVerification;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.logger.AuditEvent.Result;
+import com.amx.jax.logger.AuditService;
+import com.amx.jax.logger.events.CActivityEvent;
+import com.amx.jax.logger.events.CActivityEvent.Step;
+import com.amx.jax.logger.events.CActivityEvent.Type;
 import com.amx.jax.model.customer.CustomerContactVerificationDto;
 import com.amx.jax.repository.CustomerContactVerificationRepository;
 import com.amx.jax.repository.CustomerRepository;
@@ -47,15 +52,18 @@ public class CustomerContactVerificationManager {
 
 	@Autowired
 	CustomerRepository customerRepository;
-	
+
 	@Autowired
 	private CustomerVerificationService customerVerificationService;
-	
+
 	@Autowired
 	private CustomerVerificationRepository customerVerificationRepository;
-	
+
 	@Autowired
 	OnlineCustomerRepository onlineCustomerRepository;
+
+	@Autowired
+	AuditService auditService;
 
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
@@ -91,6 +99,12 @@ public class CustomerContactVerificationManager {
 
 		contactType = contactType.contactType();
 
+		// Audit Info
+		CActivityEvent audit = new CActivityEvent(Type.CONTACT_VERF).step(Step.INIT);
+		audit.setCustomerId(c.getCustomerId());
+		audit.setCustomer(c.getIdentityInt());
+		audit.setContactType(contactType);
+
 		CustomerContactVerification link = new CustomerContactVerification();
 		link.setCustomerId(c.getCustomerId());
 		link.setContactType(contactType);
@@ -99,31 +113,43 @@ public class CustomerContactVerificationManager {
 		link.setAppCountryId(c.getCountryId());
 		link.setIsActive(Status.Y);
 
-		if (ContactType.EMAIL.equals(contactType)) {
-			if (ArgUtil.isEmpty(c.getEmail())) {
-				throw new GlobalException(JaxError.MISSING_CONTACT, "Email is missing for customer");
+		try {
+
+			if (ContactType.EMAIL.equals(contactType)) {
+				if (ArgUtil.isEmpty(c.getEmail())) {
+
+					throw new GlobalException(JaxError.MISSING_CONTACT, "Email is missing for customer");
+				}
+				link.setContactValue(c.getEmail());
+			} else if (ContactType.SMS.equals(contactType)) {
+				if (ArgUtil.isEmpty(c.getMobile()) || ArgUtil.isEmpty(c.getPrefixCodeMobile())) {
+
+					throw new GlobalException(JaxError.MISSING_CONTACT, "Mobile is missing for customer");
+				}
+				link.setContactValue(c.getPrefixCodeMobile() + c.getMobile());
+			} else if (ContactType.WHATSAPP.equals(contactType)) {
+				if (ArgUtil.isEmpty(c.getWhatsapp()) || ArgUtil.isEmpty(c.getWhatsappPrefix())) {
+					throw new GlobalException(JaxError.MISSING_CONTACT, "WhatsApp is missing for customer");
+				}
+				link.setContactValue(c.getWhatsappPrefix() + c.getWhatsapp());
 			}
-			link.setContactValue(c.getEmail());
-		} else if (ContactType.SMS.equals(contactType)) {
-			if (ArgUtil.isEmpty(c.getMobile()) || ArgUtil.isEmpty(c.getPrefixCodeMobile())) {
-				throw new GlobalException(JaxError.MISSING_CONTACT, "Mobile is missing for customer");
+
+			List<CustomerContactVerification> oldlinks = getValidCustomerContactVerificationsByCustomerId(
+					c.getCustomerId(),
+					contactType,
+					link.getContactValue());
+
+			if (!ArgUtil.isEmpty(oldlinks) && oldlinks.size() > 3) {
+				throw new GlobalException(JaxError.SEND_OTP_LIMIT_EXCEEDED,
+						"Sending Verification Limit(4) has exceeded try again after 24 hours");
 			}
-			link.setContactValue(c.getPrefixCodeMobile() + c.getMobile());
-		} else if (ContactType.WHATSAPP.equals(contactType)) {
-			if (ArgUtil.isEmpty(c.getWhatsapp()) || ArgUtil.isEmpty(c.getWhatsappPrefix())) {
-				throw new GlobalException(JaxError.MISSING_CONTACT, "WhatsApp is missing for customer");
-			}
-			link.setContactValue(c.getWhatsappPrefix() + c.getWhatsapp());
+		} catch (GlobalException e) {
+			auditService.log(audit.result(Result.FAIL).message(e.getError()));
+			throw e;
 		}
 
-		List<CustomerContactVerification> oldlinks = getValidCustomerContactVerificationsByCustomerId(c.getCustomerId(),
-				contactType,
-				link.getContactValue());
-
-		if (!ArgUtil.isEmpty(oldlinks) && oldlinks.size() > 3) {
-			throw new GlobalException(JaxError.SEND_OTP_LIMIT_EXCEEDED,
-					"Sending Verification Limit(4) has exceeded try again after 24 hours");
-		}
+		// Audit Info
+		auditService.log(audit.result(Result.DONE));
 
 		return customerContactVerificationRepository.save(link);
 	}
@@ -156,12 +182,18 @@ public class CustomerContactVerificationManager {
 	 * @param type
 	 * @param contact
 	 */
-	public void markCustomerContactVerified(Customer c, ContactType type, String contact) {
+	private void markCustomerContactVerified(Customer c, ContactType type, String contact) {
 
 		List<Customer> otherCustomers = null;
+		/**
+		 * Old Customer Links from Branch Verified
+		 */
 		CustomerVerification cv = customerVerificationService.getVerification(c.getCustomerId(),
 				CustomerVerificationType.EMAIL);
-		CustomerOnlineRegistration customerOnlineRegistration = onlineCustomerRepository.getLoginCustomersDeatilsById(c.getIdentityInt());
+
+		CustomerOnlineRegistration customerOnlineRegistration = onlineCustomerRepository
+				.getLoginCustomersDeatilsById(c.getIdentityInt());
+
 		if (ContactType.EMAIL.equals(type)) {
 			if (!contact.equals(c.getEmail())) {
 				throw new GlobalException(JaxError.ENTITY_INVALID,
@@ -172,11 +204,13 @@ public class CustomerContactVerificationManager {
 				customer.setEmailVerified(Status.D);
 			}
 			c.setEmailVerified(Status.Y);
-			if(cv!=null) {
+			if (cv != null) {
 				cv.setVerificationStatus(ConstantDocument.Yes);
 			}
-			
-			customerOnlineRegistration.setStatus(ConstantDocument.Yes);
+			if (customerOnlineRegistration != null) {
+				customerOnlineRegistration.setStatus(ConstantDocument.Yes);
+			}
+
 		} else if (ContactType.SMS.equals(type)) {
 			String mobile = c.getPrefixCodeMobile() + c.getMobile();
 			if (!contact.equals(mobile)) {
@@ -203,43 +237,60 @@ public class CustomerContactVerificationManager {
 			throw new GlobalException(JaxError.ENTITY_INVALID,
 					"Verification linkType is Invalid : " + type);
 		}
-		
+
 		if (!ArgUtil.isEmpty(otherCustomers)) {
 			customerRepository.save(otherCustomers);
 		}
 
 		customerRepository.save(c);
-		if(cv!=null) {
+
+		if (cv != null) {
 			customerVerificationRepository.save(cv);
 		}
-		
-		onlineCustomerRepository.save(customerOnlineRegistration);
+
+		if (customerOnlineRegistration != null) {
+			onlineCustomerRepository.save(customerOnlineRegistration);
+		}
 
 	}
 
 	public CustomerContactVerification verify(Customer c, CustomerContactVerification link, String identity) {
 
-		link = validate(link);
+		// Audit Info
+		CActivityEvent audit = new CActivityEvent(Type.CONTACT_VERF).step(Step.COMPLETE);
+		audit.setCustomerId(c.getCustomerId());
+		audit.setCustomer(c.getIdentityInt());
+		audit.setContactType(link.getContactType());
 
-		if (ArgUtil.isEmpty(identity) || !identity.equals(c.getIdentityInt())) {
-			throw new GlobalException(JaxError.INVALID_CIVIL_ID,
-					"Invalid civil id, does not match with Verification link");
-		}
-		markCustomerContactVerified(c, link.getContactType(), link.getContactValue());
+		try {
 
-		link.setIsActive(Status.D);
+			link = validate(link);
 
-		List<CustomerContactVerification> oldlinks = getValidCustomerContactVerificationsByCustomerId(c.getCustomerId(),
-				link.getContactType(),
-				link.getContactValue());
-		if (!ArgUtil.isEmpty(oldlinks)) {
-			for (CustomerContactVerification customerContactVerification : oldlinks) {
-				customerContactVerification.setIsActive(Status.N);
+			if (ArgUtil.isEmpty(identity) || !identity.equals(c.getIdentityInt())) {
+				throw new GlobalException(JaxError.INVALID_CIVIL_ID,
+						"Invalid civil id, does not match with Verification link");
 			}
-			customerContactVerificationRepository.save(oldlinks);
-		}
+			markCustomerContactVerified(c, link.getContactType(), link.getContactValue());
 
-		customerContactVerificationRepository.save(link);
+			link.setIsActive(Status.D);
+
+			List<CustomerContactVerification> oldlinks = getValidCustomerContactVerificationsByCustomerId(
+					c.getCustomerId(),
+					link.getContactType(),
+					link.getContactValue());
+			if (!ArgUtil.isEmpty(oldlinks)) {
+				for (CustomerContactVerification customerContactVerification : oldlinks) {
+					customerContactVerification.setIsActive(Status.N);
+				}
+				customerContactVerificationRepository.save(oldlinks);
+			}
+
+			customerContactVerificationRepository.save(link);
+
+		} catch (GlobalException e) {
+			auditService.log(audit.result(Result.FAIL).message(e.getError()));
+			throw e;
+		}
 
 		return link;
 	}

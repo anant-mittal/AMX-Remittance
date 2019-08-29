@@ -1,4 +1,4 @@
-package com.amx.jax.partner.repository;
+package com.amx.jax.pricer.repository;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -9,7 +9,7 @@ import org.springframework.data.repository.CrudRepository;
 
 import com.amx.jax.dbmodel.partner.BankExternalReferenceDetail;
 
-public interface IBankExternalReferenceDetailsRepository extends CrudRepository<BankExternalReferenceDetail, Serializable>{
+public interface IBankExternalReferDetailsRepository extends CrudRepository<BankExternalReferenceDetail, Serializable>{
 	
 	@Query(value = "SELECT * FROM EX_BANK_EXTERNAL_REF_DETAIL WHERE COUNTRY_ID =?1 AND BANK_ID=?2 AND BENEFICARY_BANK_ID=?3 AND BENEFICARY_BRANCH_ID=?4 AND ISACTIVE = 'Y'", nativeQuery = true)
 	public List<BankExternalReferenceDetail> fetchBankExternalBranchDetails(BigDecimal countryId,BigDecimal corBankId,BigDecimal beneBankId,BigDecimal beneBankBranchId);

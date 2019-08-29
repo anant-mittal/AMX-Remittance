@@ -222,6 +222,9 @@ public class UserValidationService {
 			}
 			throw new GlobalException(errorExpression, "Incorrect/wrong password");
 		}
+		customer.setLockCnt(new BigDecimal(0));
+		customer.setLockDt(null);
+		custDao.saveOnlineCustomer(customer);
 	}
 	
 	protected void validatePassword(CustomerOnlineRegistration customer, String password) {
@@ -444,7 +447,7 @@ public class UserValidationService {
 		if (onlineCustomer.getLockCnt() != null) {
 			int lockCnt = onlineCustomer.getLockCnt().intValue();
 			if (StringUtils.isBlank(JaxAuthContext.getCaptcha())) {
-				if (lockCnt == MAX_CAPTCHA_COUNT) {
+				if (lockCnt == MAX_CAPTCHA_COUNT.intValue()) {
 					throw new GlobalException(JaxError.CAPTCHA_REQUIRED, "Captcha Required");
 				}
 			}

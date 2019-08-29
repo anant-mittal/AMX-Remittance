@@ -48,7 +48,10 @@ import com.amx.utils.DateUtil;
 public class RemitRoutingManager {
 
 	private static final int MAX_DELIVERY_ATTEMPT_DAYS = 60;
-	//private static final BigDecimal FROM_AMT_FRACTION = new BigDecimal(0.00000001);
+
+	private static final BigDecimal DEF_DELIVERY_HRS = new BigDecimal(5 * 24);
+
+	private static final BigDecimal FROM_AMT_FRACTION = new BigDecimal(0.00000001);
 
 	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd-MMM hh:mm a");
 
@@ -140,7 +143,7 @@ public class RemitRoutingManager {
 			}
 
 		}
-
+		
 		// This is Interim FIX FOR HOME-SEND EXclussion and should be removed on
 		// Priority.
 		// NOT to Excluded for HOMESEND
@@ -592,8 +595,8 @@ public class RemitRoutingManager {
 				throw new PricerServiceException(PricerServiceError.INVALID_TNX_AMOUNT_TOO_HIGH,
 						"No valid transaction routes are eligible for amount more than " + maxtoAmt + " FC");
 			} else {
-				throw new PricerServiceException(PricerServiceError.NO_VALID_TNX_ROUTES_AVAILABLE,
-						"No Valid Transaction Routes are Eligible for Transaction Routing");
+			throw new PricerServiceException(PricerServiceError.NO_VALID_TNX_ROUTES_AVAILABLE,
+					"No Valid Transaction Routes are Eligible for Transaction Routing");
 			}
 		}
 
@@ -706,7 +709,7 @@ public class RemitRoutingManager {
 		weekEndHrsFrom = ArgUtil.assignDefaultIfNull(weekEndHrsFrom, BigDecimal.ZERO);
 		weekEndHrsTo = ArgUtil.assignDefaultIfNull(weekEndHrsTo, BigDecimal.ZERO);
 
-		processTimeInHrs = ArgUtil.assignDefaultIfNull(processTimeInHrs, BigDecimal.ZERO);
+		processTimeInHrs = ArgUtil.assignDefaultIfNull(processTimeInHrs, DEF_DELIVERY_HRS);
 
 		WorkingHoursData workingHoursData = new WorkingHoursData();
 
@@ -960,7 +963,7 @@ public class RemitRoutingManager {
 
 		return serviceProvidersMatrix;
 
-	}
+		}
 
 	public List<BigDecimal> getRoutingBankIds(List<ViewExRoutingMatrix> routingMatrix) {
 

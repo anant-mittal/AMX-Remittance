@@ -134,7 +134,7 @@ public class BDiscountMgmtController {
 	
 	@RequestMapping(value = "/api/save-markup/details", method = { RequestMethod.POST })
 	public AmxApiResponse<BoolRespModel, Object> saveOnlineMarginMarkupData(@RequestBody OnlineMarginMarkupInfo onlineMarginMarkupInfo) {
-		 LOGGER.info("ssoUser.getUserDetails().getEmployeeName()",ssoUser.getUserDetails().getEmployeeName());
+		 LOGGER.debug("ssoUser.getUserDetails().getEmployeeName()",ssoUser.getUserDetails().getEmployeeName());
 		 String username=ssoUser.getUserDetails().getEmployeeName()!= null ? ssoUser.getUserDetails().getEmployeeName(): "";
 		onlineMarginMarkupInfo.setEmpName(username);
 		return discountMgmtClient.saveOnlineMarginMarkupData(onlineMarginMarkupInfo);

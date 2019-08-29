@@ -229,20 +229,19 @@ public class ExchangeDataService {
 		return currencyData;
 	}
 	public OnlineMarginMarkupInfo getOnlineMarginMarkupData(OnlineMarginMarkupReq request) {
-		 OnlineMarginMarkup marginMarkupData= marginMarkupDao.getMarkupData(request.getCountryId(), request.getCurrencyId(), request.getBankId());
+		 OnlineMarginMarkup marginMarkupData= marginMarkupDao.getMarkupData(request.getApplicationCountryId(),request.getCountryId(), request.getCurrencyId(), request.getBankId());
 		 OnlineMarginMarkupInfo marginMarkupInfo;
 		 if(marginMarkupData!=null) {
 		  marginMarkupInfo=discountManager.convertMarkup(marginMarkupData);
 		 }
-
+		 else {
 		 marginMarkupInfo=new OnlineMarginMarkupInfo();
-		 /*else {
-			 
-		 }*/
+		 }
+		
 		return marginMarkupInfo;
 	}
 	public BoolRespModel saveOnlineMarginMarkupData(OnlineMarginMarkupInfo request) {
-		 OnlineMarginMarkup marginMarkupData= marginMarkupDao.getMarkupData(request.getCountryId(), request.getCurrencyId(), request.getBankId());
+		 OnlineMarginMarkup marginMarkupData= marginMarkupDao.getMarkupData(request.getApplicationCountryId(),request.getCountryId(), request.getCurrencyId(), request.getBankId());
 		 Boolean resp=discountManager.commitMarkup(marginMarkupData,request );
 		 if(resp == true)
 		 return new BoolRespModel(Boolean.TRUE);

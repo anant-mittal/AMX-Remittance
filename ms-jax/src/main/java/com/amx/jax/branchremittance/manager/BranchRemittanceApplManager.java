@@ -50,6 +50,7 @@ import com.amx.jax.dbmodel.fx.EmployeeDetailsView;
 import com.amx.jax.dbmodel.partner.RemitApplSrvProv;
 import com.amx.jax.dbmodel.remittance.AdditionalBankRuleMap;
 import com.amx.jax.dbmodel.remittance.AdditionalInstructionData;
+import com.amx.jax.dbmodel.remittance.AmiecAndBankMapping;
 import com.amx.jax.dbmodel.remittance.BankBranch;
 import com.amx.jax.dbmodel.remittance.DeliveryMode;
 import com.amx.jax.dbmodel.remittance.Document;
@@ -82,9 +83,11 @@ import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.model.response.remittance.ServiceProviderDto;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
+import com.amx.jax.partner.manager.PartnerTransactionManager;
 import com.amx.jax.pricer.var.PricerServiceConstants;
 import com.amx.jax.repository.BankMasterRepository;
 import com.amx.jax.repository.DeviceStateRepository;
+import com.amx.jax.repository.IAmiecAndBankMappingRepository;
 import com.amx.jax.repository.IApplicationCountryRepository;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.ICurrencyDao;
@@ -100,6 +103,7 @@ import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.services.BeneficiaryValidationService;
 import com.amx.jax.services.LoyalityPointService;
 import com.amx.jax.userservice.dao.CustomerDao;
+import com.amx.jax.util.AmxDBConstants;
 import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.validation.RemittanceTransactionRequestValidator;
@@ -222,13 +226,20 @@ public class BranchRemittanceApplManager {
 	@Autowired
 	BankMasterRepository bankMasterRepo;
 	
+	@Autowired
+	IAmiecAndBankMappingRepository amiecAndBankMappingRepository;
+	
+	@Autowired
+	PartnerTransactionManager partnerTransactionManager;
+	
 	
 	public BranchRemittanceApplResponseDto saveBranchRemittanceApplication(BranchRemittanceApplRequestModel requestApplModel) {
 		Map<String,Object> hashMap = new HashMap<>();
 
 		validateSaveApplRequest(requestApplModel);
 
-		checkServiceProviderSingleTransaction(requestApplModel);
+		// validation for Home Send SP
+		checkServiceProviderValidation(requestApplModel);
 
 		/*To fetch customer details **/
 		Customer customer = custDao.getCustById(metaData.getCustomerId());
@@ -320,6 +331,19 @@ public class BranchRemittanceApplManager {
 
 		// Remittance srv prov details
 		RemitApplSrvProv remitApplSrvProv = createRemitApplSrvProv(requestApplModel.getDynamicRroutingPricingBreakup(),remittanceApplication.getCreatedBy());
+		if(remitApplSrvProv != null) {
+			for (AdditionalInstructionData applAddlData : additioalInstructionData) {
+				if(applAddlData.getFlexField() != null && applAddlData.getFlexField().equalsIgnoreCase(AmxDBConstants.INDIC1)) {
+					if(applAddlData.getAmiecCode() != null) {
+						AmiecAndBankMapping amicAndBankMapping = amiecAndBankMappingRepository.fetchAmiecBankData(remittanceApplication.getFsCountryMasterByBankCountryId().getCountryId(), remitApplSrvProv.getBankId(), applAddlData.getFlexField(), applAddlData.getAmiecCode(), AmxDBConstants.Yes);
+						if(amicAndBankMapping != null) {
+							remittanceApplication.setWuPurposeOfTransaction(amicAndBankMapping.getBankCode());
+							break;
+						}
+					}
+				}
+			}
+		}
 
 		/* Saving application deatils */
 		HashMap<String, Object> mapAllDetailApplSave = new HashMap<String, Object>();
@@ -354,7 +378,8 @@ public class BranchRemittanceApplManager {
 			if(!StringUtils.isBlank(applRequestModel.getSignature())) {
 				signature =applRequestModel.getSignature();
 			}else {
-				signature =getCustomerSignature();
+				//signature =getCustomerSignature();
+				throw new GlobalException(JaxError.CUSTOMER__SIGNATURE_UNAVAILABLE,"Customer signature required");
 			}
 
 			if(!StringUtils.isBlank(signature)) {
@@ -531,7 +556,11 @@ public class BranchRemittanceApplManager {
 			
 			if(JaxUtil.isNullZeroBigDecimalCheck(rateBreakUp.getBaseRate())) {
 				remittanceApplication.setOriginalExchangeRate(rateBreakUp.getBaseRate());
-			}			
+			}
+			
+			if(dynamicRoutingPricingResponse.getServiceProviderDto() != null && dynamicRoutingPricingResponse.getServiceProviderDto().getIntialAmountInSettlCurr() != null) {
+				remittanceApplication.setUsdAmt(dynamicRoutingPricingResponse.getServiceProviderDto().getIntialAmountInSettlCurr());
+			}
 
 			remittanceApplication.setBeneDeductFlag(dynamicRoutingPricingResponse.getBeneDeductFlag());
 
@@ -941,7 +970,7 @@ public class BranchRemittanceApplManager {
 		return remitApplSrvProv;
 	}
 
-	public void checkServiceProviderSingleTransaction(BranchRemittanceApplRequestModel requestApplModel) {
+	public void checkServiceProviderValidation(BranchRemittanceApplRequestModel requestApplModel) {
 		boolean errorStatus = Boolean.FALSE;
 		Boolean multipleTrnx = Boolean.FALSE;
 		int trnxCount = 0;
@@ -969,17 +998,21 @@ public class BranchRemittanceApplManager {
 				if(trnxCount > 1) {
 					multipleTrnx = Boolean.TRUE;
 				}
-				// checking unless no homesend application available create application for Home Send also
-				/*if(requestApplModel.getDynamicRroutingPricingBreakup() != null && requestApplModel.getDynamicRroutingPricingBreakup().getServiceProviderDto() != null) {
-					// raise error
-					errorStatus = Boolean.TRUE;
-				}*/
+
 				if(errorStatus) {
 					if(multipleTrnx) {
 						throw new GlobalException(JaxError.SINGLE_TRANSACTION_SERVICE_PROVIDER,"You cannot create the next application as HomeSend application is created as the last application.");
 					}else {
 						throw new GlobalException(JaxError.SINGLE_TRANSACTION_SERVICE_PROVIDER,"You cannot create the next application as HomeSend application is created.");
 					}
+				}
+			}
+			
+			if(requestApplModel.getDynamicRroutingPricingBreakup() != null && requestApplModel.getDynamicRroutingPricingBreakup().getServiceProviderDto() != null) {
+				BankMasterModel bankMaster = bankMasterRepo.findByBankCodeAndRecordStatus(PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name(), PricerServiceConstants.Yes);
+				// home send related validation check
+				if(bankMaster != null && requestApplModel.getRoutingBankId().compareTo(bankMaster.getBankId()) == 0) {
+					partnerTransactionManager.validateServiceProvider(requestApplModel.getAdditionalFields(),requestApplModel.getBeneId());
 				}
 			}
 		}
