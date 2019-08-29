@@ -25,6 +25,7 @@ import com.amx.jax.constants.JaxTransactionStatus;
 import com.amx.jax.dao.BranchRemittancePaymentDao;
 import com.amx.jax.dao.FcSaleApplicationDao;
 import com.amx.jax.dbmodel.PaygDetailsModel;
+import com.amx.jax.dbmodel.PaymentModeModel;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
@@ -39,6 +40,7 @@ import com.amx.jax.model.response.remittance.RemittanceCollectionDto;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.repository.CurrencyRepository;
 import com.amx.jax.repository.PaygDetailsRepository;
+import com.amx.jax.repository.PaymentModeRepository;
 import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.utils.Random;
 
@@ -75,6 +77,9 @@ public class DirectPaymentLinkManager extends AbstractModel {
 	
 	@Autowired
 	BranchRemittanceSaveManager branchRemittanceSaveManager;
+	
+	@Autowired
+	PaymentModeRepository payModeRepositoy;
 	
 	public PaymentLinkRespDTO getPaymentLinkDetails(BigDecimal customerId, BranchRemittanceApplResponseDto shpCartData) {
 		deactivatePaymentLink(customerId);
@@ -327,8 +332,11 @@ public class DirectPaymentLinkManager extends AbstractModel {
 					remittanceApplicationIds.add(remitApplicationId);
 				}
 				
+				PaymentModeModel payModeModel = payModeRepositoy.getPaymentModeDetails(ConstantDocument.KNET_CODE);
+				
 				RemittanceCollectionDto remittanceCollection = new RemittanceCollectionDto();
-				remittanceCollection.setPaymentModeId(paymentLinkData.getPaygTrnxSeqId());
+				//remittanceCollection.setPaymentModeId(paymentLinkData.getPaygTrnxSeqId());
+				remittanceCollection.setPaymentModeId(payModeModel.getPaymentModeId());
 				remittanceCollection.setPaymentAmount(paymentLinkData.getPayAmount());
 				remittanceCollection.setApprovalNo(paymentLinkData.getPgAuthCode());
 				
