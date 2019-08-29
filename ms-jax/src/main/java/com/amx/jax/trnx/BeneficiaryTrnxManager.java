@@ -15,11 +15,8 @@ import org.springframework.validation.BeanPropertyBindingResult;
 
 import com.amx.amxlib.constant.AuthType;
 import com.amx.amxlib.constant.NotificationConstants;
-import com.amx.amxlib.model.BeneAccountModel;
 import com.amx.amxlib.model.BeneCreateDetailsDTO;
-import com.amx.amxlib.model.BenePersonalDetailModel;
 import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.amxlib.model.trnx.BeneficiaryTrnxModel;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constants.JaxChannel;
 import com.amx.jax.dao.BeneficiaryDao;
@@ -30,12 +27,14 @@ import com.amx.jax.dbmodel.bene.BeneficaryContact;
 import com.amx.jax.dbmodel.bene.BeneficaryMaster;
 import com.amx.jax.dbmodel.bene.BeneficaryRelationship;
 import com.amx.jax.dbmodel.bene.BeneficaryStatus;
+import com.amx.jax.model.request.benebranch.BeneAccountModel;
+import com.amx.jax.model.request.benebranch.BenePersonalDetailModel;
+import com.amx.jax.model.request.benebranch.BeneficiaryTrnxModel;
 import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.PushMessage;
-import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.repository.BeneficaryStatusRepository;
 import com.amx.jax.repository.IBeneficaryContactDao;
@@ -115,7 +114,7 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		save(model);
 		return model;
 	}
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -125,6 +124,12 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 	@Transactional
 	public BeneficiaryTrnxModel commit() {
 		BeneficiaryTrnxModel beneficiaryTrnxModel = get();
+		return commit(beneficiaryTrnxModel);
+	}
+
+
+	public BeneficiaryTrnxModel commit(BeneficiaryTrnxModel beneficiaryTrnxModel) {
+		
 		logger.info("commiting beneficary: " + beneficiaryTrnxModel.toString());
 		BeneficaryMaster beneMaster = commitBeneMaster(beneficiaryTrnxModel);
 		commitBeneContact(beneficiaryTrnxModel, beneMaster.getBeneficaryMasterSeqId());

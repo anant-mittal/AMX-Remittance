@@ -13,13 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.amx.amxlib.model.BeneAccountModel;
-import com.amx.amxlib.model.BenePersonalDetailModel;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.JaxTransactionResponse;
 import com.amx.jax.AppConstants;
 import com.amx.jax.client.configs.JaxMetaInfo;
+import com.amx.jax.model.request.benebranch.BeneAccountModel;
+import com.amx.jax.model.request.benebranch.BenePersonalDetailModel;
 import com.amx.utils.ContextUtil;
 import com.amx.utils.JsonUtil;
 

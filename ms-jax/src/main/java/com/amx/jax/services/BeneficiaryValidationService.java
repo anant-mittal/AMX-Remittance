@@ -14,12 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.model.BeneAccountModel;
-import com.amx.amxlib.model.BenePersonalDetailModel;
-import com.amx.amxlib.model.trnx.BeneficiaryTrnxModel;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.ServiceApplicabilityField;
 import com.amx.jax.dao.BlackListDao;
@@ -35,12 +33,16 @@ import com.amx.jax.dbmodel.bene.predicate.BeneficiaryAccountPredicateCreator;
 import com.amx.jax.dbmodel.bene.predicate.BeneficiaryPersonalDetailPredicateCreator;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.request.benebranch.BeneAccountModel;
+import com.amx.jax.model.request.benebranch.BenePersonalDetailModel;
+import com.amx.jax.model.request.benebranch.BeneficiaryTrnxModel;
 import com.amx.jax.repository.IBeneficiaryAccountDao;
 import com.amx.jax.repository.IBeneficiaryMasterDao;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.IServiceApplicabilityRuleDao;
 import com.amx.jax.service.CountryService;
 import com.amx.jax.util.JaxUtil;
+import com.amx.jax.validation.BenePersonalDetailValidator;
 import com.google.common.collect.Iterables;
 import com.querydsl.core.types.Predicate;
 
@@ -91,6 +93,9 @@ public class BeneficiaryValidationService {
 	
 	@Autowired
 	BlackListDao blackListDao;
+	
+	@Autowired
+	BenePersonalDetailValidator benePersonalDetailValidator;
 
 	/**
 	 * @param beneAccountModel
@@ -304,4 +309,13 @@ public class BeneficiaryValidationService {
 		return beneficiaryView;
 	}
 
+	public void validateBeneficiaryTrnxModel(BeneficiaryTrnxModel trnxModel) {
+		Object benePersonalDetailModel = trnxModel.getBenePersonalDetailModel();
+		BeanPropertyBindingResult errors = new BeanPropertyBindingResult(benePersonalDetailModel,
+				"benePersonalDetailModel");
+		BeneAccountModel beneAccountModel = trnxModel.getBeneAccountModel();
+		validateBeneAccount(beneAccountModel);
+		validateDuplicateCashBeneficiary(trnxModel);
+		benePersonalDetailValidator.validate(trnxModel, errors);
+	}
 }

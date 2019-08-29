@@ -13,9 +13,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.branch.IBranchBeneService;
 import com.amx.jax.client.serviceprovider.RoutingBankMasterDTO;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.request.benebranch.AddBeneBankRequest;
+import com.amx.jax.model.request.benebranch.AddBeneCashRequest;
 import com.amx.jax.model.request.benebranch.ListBankBranchRequest;
 import com.amx.jax.model.request.benebranch.ListBeneBankOrCashRequest;
 import com.amx.jax.model.response.BankMasterDTO;
@@ -59,5 +62,25 @@ public class BeneBranchController implements IBranchBeneService {
 		logger.debug("request listBankBranch: {} ", JsonUtil.toJson(request));
 		List<BankBranchDto> output = beneBranchService.listBankBranch(request);
 		return AmxApiResponse.buildList(output);
+	}
+
+	@RequestMapping(value = Path.ADD_BENE_BANK, method = RequestMethod.POST)
+	@Override
+	@ApiOperation("add bene bank")
+	public AmxApiResponse<BoolRespModel, Object> addBeneBank(@RequestBody @Valid AddBeneBankRequest request) {
+		logger.debug("request addBeneBank: {} ", JsonUtil.toJson(request));
+		beneBranchService.validateaddBeneBank(request);
+		beneBranchService.addBeneBankorCash(request);
+		return AmxApiResponse.build(new BoolRespModel(true));
+	}
+
+	@RequestMapping(value = Path.ADD_BENE_CASH, method = RequestMethod.POST)
+	@Override
+	@ApiOperation("add bene cash")
+	public AmxApiResponse<BoolRespModel, Object> addBenecash(@RequestBody @Valid AddBeneCashRequest request) {
+		logger.debug("request addBenecash: {} ", JsonUtil.toJson(request));
+		beneBranchService.validateaddBenecash(request);
+		beneBranchService.addBeneBankorCash(request);
+		return AmxApiResponse.build(new BoolRespModel(true));
 	}
 }

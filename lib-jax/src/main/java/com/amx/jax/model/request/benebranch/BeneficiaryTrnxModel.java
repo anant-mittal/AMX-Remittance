@@ -1,10 +1,7 @@
-package com.amx.amxlib.model.trnx;
+package com.amx.jax.model.request.benebranch;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-
-import com.amx.amxlib.model.BeneAccountModel;
-import com.amx.amxlib.model.BenePersonalDetailModel;
 
 public class BeneficiaryTrnxModel implements Serializable {
 

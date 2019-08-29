@@ -26,6 +26,8 @@ public class ListBankBranchRequest {
 	String ifscCode;
 
 	String swift;
+	
+	String branchName;
 
 	public BigDecimal getBankId() {
 		return bankId;
@@ -57,6 +59,14 @@ public class ListBankBranchRequest {
 
 	public void setSwift(String swift) {
 		this.swift = swift;
+	}
+
+	public String getBranchName() {
+		return branchName;
+	}
+
+	public void setBranchName(String branchName) {
+		this.branchName = branchName;
 	}
 
 }

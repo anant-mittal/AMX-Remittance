@@ -1,13 +1,16 @@
 package com.amx.jax.model.request.benebranch;
 
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 
 import javax.validation.constraints.NotNull;
 
-import com.amx.jax.model.request.AddBenePersonalDetailDto;
+import org.apache.commons.beanutils.BeanUtils;
+
+import com.amx.jax.model.request.AbstractBeneDetailDto;
 import com.amx.jax.swagger.ApiMockModelProperty;
 
-public class AddBeneCashRequest extends AddBenePersonalDetailDto {
+public class AddBeneCashRequest extends AbstractBeneDetailDto {
 
 	@NotNull(message = "Beneficary Country Id may not be null")
 	@ApiMockModelProperty(example = "94")
@@ -80,6 +83,16 @@ public class AddBeneCashRequest extends AddBenePersonalDetailDto {
 	public void setServiceProviderBranchId(BigDecimal serviceProviderBranchId) {
 		this.serviceProviderBranchId = serviceProviderBranchId;
 	}
-	
-	
+
+	@Override
+	protected BeneAccountModel createBeneAccountModelObject() {
+		BeneAccountModel model = new BeneAccountModel();
+		try {
+			BeanUtils.copyProperties(model, this);
+			model.setBankId(this.getAgentId());
+		} catch (IllegalAccessException | InvocationTargetException e) {
+			e.printStackTrace();
+		}
+		return model;
+	}
 }

@@ -2,8 +2,8 @@ package com.amx.jax.dbmodel.bene.predicate;
 
 import org.springframework.stereotype.Component;
 
-import com.amx.amxlib.model.BenePersonalDetailModel;
 import com.amx.jax.dbmodel.bene.QBeneficaryMaster;
+import com.amx.jax.model.request.benebranch.BenePersonalDetailModel;
 import com.amx.utils.StringUtils;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;

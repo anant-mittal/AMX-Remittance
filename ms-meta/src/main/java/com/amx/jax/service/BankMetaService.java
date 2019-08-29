@@ -115,23 +115,20 @@ public class BankMetaService extends AbstractService {
 		Sort sortByBranchName = new Sort("branchFullName");
 		if (StringUtils.isNotBlank(ifsc)) {
 			ifsc = "%" + ifsc + "%";
-			branchesList.addAll(
-					vwBankBranchRepository.findByCountryIdAndBankIdAndIfscCodeIgnoreCaseLike(countryId, bankId, ifsc,
-							sortByBranchName));
+			branchesList.addAll(vwBankBranchRepository.findByCountryIdAndBankIdAndIfscCodeIgnoreCaseLike(countryId,
+					bankId, ifsc, sortByBranchName));
 			isparametersSet = true;
 		}
 		if (StringUtils.isNotBlank(swift)) {
 			swift = "%" + swift + "%";
-			branchesList.addAll(
-					vwBankBranchRepository.findByCountryIdAndBankIdAndSwiftIgnoreCaseLike(countryId, bankId, swift,
-							sortByBranchName));
+			branchesList.addAll(vwBankBranchRepository.findByCountryIdAndBankIdAndSwiftIgnoreCaseLike(countryId, bankId,
+					swift, sortByBranchName));
 			isparametersSet = true;
 		}
 		if (StringUtils.isNotBlank(branchName)) {
 			branchName = "%" + branchName + "%";
-			branchesList.addAll(vwBankBranchRepository
-					.findByCountryIdAndBankIdAndBranchFullNameIgnoreCaseLike(countryId, bankId, branchName,
-							sortByBranchName));
+			branchesList.addAll(vwBankBranchRepository.findByCountryIdAndBankIdAndBranchFullNameIgnoreCaseLike(
+					countryId, bankId, branchName, sortByBranchName));
 			isparametersSet = true;
 		}
 		if (!isparametersSet) {
@@ -190,19 +187,24 @@ public class BankMetaService extends AbstractService {
 		BigDecimal countryId = request.getCountryId();
 		String ifsc = request.getIfscCode();
 		String swift = request.getSwift();
+		String branchName = request.getBranchName();
 		Set<BankBranchView> branchesList = new LinkedHashSet<>();
 		Sort sortByBranchName = new Sort("branchFullName");
 		if (StringUtils.isNotBlank(ifsc)) {
-			branchesList.addAll(
-					vwBankBranchRepository.findByCountryIdAndBankIdAndIfscCode(countryId, bankId, ifsc,
-							sortByBranchName));
+			branchesList.addAll(vwBankBranchRepository.findByCountryIdAndBankIdAndIfscCode(countryId, bankId, ifsc,
+					sortByBranchName));
 		}
+
 		if (StringUtils.isNotBlank(swift)) {
-			branchesList.addAll(
-					vwBankBranchRepository.findByCountryIdAndBankIdAndSwift(countryId, bankId, swift,
-							sortByBranchName));
+			branchesList.addAll(vwBankBranchRepository.findByCountryIdAndBankIdAndSwift(countryId, bankId, swift,
+					sortByBranchName));
 		}
-		
+
+		if (branchesList.isEmpty() && StringUtils.isNotBlank(request.getBranchName())) {
+			branchName = "%" + branchName + "%";
+			branchesList.addAll(vwBankBranchRepository.findByCountryIdAndBankIdAndBranchFullNameIgnoreCaseLike(
+					countryId, bankId, branchName, sortByBranchName));
+		}
 
 		if (branchesList.isEmpty()) {
 			throw new GlobalException(JaxError.BANK_BRANCH_SEARCH_EMPTY, "Bank branch list is empty.");

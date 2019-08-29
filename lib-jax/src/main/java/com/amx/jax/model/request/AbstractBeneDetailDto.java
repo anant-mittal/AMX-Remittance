@@ -1,15 +1,20 @@
 package com.amx.jax.model.request;
 
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.format.annotation.NumberFormat;
 
+import com.amx.jax.model.request.benebranch.BeneAccountModel;
+import com.amx.jax.model.request.benebranch.BenePersonalDetailModel;
+import com.amx.jax.model.request.benebranch.BeneficiaryTrnxModel;
 import com.amx.jax.swagger.ApiMockModelProperty;
 
-public class AddBenePersonalDetailDto {
+public abstract class AbstractBeneDetailDto {
 	// bene details
 	@NotNull
 	@ApiMockModelProperty(example = "Individual")
@@ -80,6 +85,14 @@ public class AddBenePersonalDetailDto {
 	@NotNull
 	@ApiMockModelProperty(example = "91")
 	private String countryTelCode;
+	
+
+	@NotNull(message = "serviceGroupId may not be null")
+	@ApiMockModelProperty(example = "2")
+	private BigDecimal serviceGroupId;
+	
+	@ApiMockModelProperty(example = "HDFCINBBAHM")
+	String swiftCode;
 
 	public String getBeneficaryType() {
 		return beneficaryType;
@@ -224,5 +237,39 @@ public class AddBenePersonalDetailDto {
 	public void setCountryTelCode(String countryTelCode) {
 		this.countryTelCode = countryTelCode;
 	}
+	
+	protected BenePersonalDetailModel createPersonalDetailObject() {
+		BenePersonalDetailModel model = new BenePersonalDetailModel();
+		try {
+			BeanUtils.copyProperties(model, this);
+		} catch (IllegalAccessException | InvocationTargetException e) {
+			e.printStackTrace();
+		}
+		return model;
+	}
+	
+	public BeneficiaryTrnxModel createBeneficiaryTrnxModelObject() {
+		BeneficiaryTrnxModel model = new BeneficiaryTrnxModel();
+		model.setBeneAccountModel(createBeneAccountModelObject());
+		model.setBenePersonalDetailModel(createPersonalDetailObject());
+		return model;
+	}
+	
+	protected abstract BeneAccountModel createBeneAccountModelObject();
 
+	public BigDecimal getServiceGroupId() {
+		return serviceGroupId;
+	}
+
+	public void setServiceGroupId(BigDecimal serviceGroupId) {
+		this.serviceGroupId = serviceGroupId;
+	}
+
+	public String getSwiftCode() {
+		return swiftCode;
+	}
+
+	public void setSwiftCode(String swiftCode) {
+		this.swiftCode = swiftCode;
+	}
 }
