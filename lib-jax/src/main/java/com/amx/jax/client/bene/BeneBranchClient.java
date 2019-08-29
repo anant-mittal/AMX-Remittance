@@ -18,6 +18,7 @@ import com.amx.jax.model.request.benebranch.ListBankBranchRequest;
 import com.amx.jax.model.request.benebranch.ListBeneBankOrCashRequest;
 import com.amx.jax.model.response.BankMasterDTO;
 import com.amx.jax.model.response.benebranch.BankBranchDto;
+import com.amx.jax.model.response.benebranch.BeneStatusDto;
 import com.amx.jax.rest.RestService;
 
 public class BeneBranchClient implements IBranchBeneService {
@@ -104,6 +105,19 @@ public class BeneBranchClient implements IBranchBeneService {
 					});
 		} catch (Exception e) {
 			LOGGER.error("exception in addBenecash : ", e);
+			return JaxSystemError.evaluate(e);
+		}
+	}
+
+	@Override
+	public AmxApiResponse<BeneStatusDto, Object> getBeneListStatuses() {
+		try {
+			LOGGER.debug("in getBeneListStatuses :");
+			return restService.ajax(appConfig.getJaxURL() + Path.GET_BENE_LIST_STATUSES).meta(new JaxMetaInfo()).get()
+					.as(new ParameterizedTypeReference<AmxApiResponse<BeneStatusDto, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in getBeneListStatuses : ", e);
 			return JaxSystemError.evaluate(e);
 		}
 	}

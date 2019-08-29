@@ -4,7 +4,9 @@ import static com.amx.amxlib.constant.NotificationConstants.BRANCH_SEARCH;
 import static com.amx.amxlib.constant.NotificationConstants.RESP_DATA_KEY;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +17,7 @@ import com.amx.amxlib.meta.model.ViewCityDto;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterServiceImpl;
+import com.amx.jax.branchbene.BeneficiaryConstant.BeneStatus;
 import com.amx.jax.client.serviceprovider.RoutingBankMasterDTO;
 import com.amx.jax.config.JaxProperties;
 import com.amx.jax.constant.ConstantDocument;
@@ -33,6 +36,7 @@ import com.amx.jax.model.request.benebranch.ListBeneBankOrCashRequest;
 import com.amx.jax.model.response.BankMasterDTO;
 import com.amx.jax.model.response.benebranch.AddBeneBankBranchRequestModel;
 import com.amx.jax.model.response.benebranch.BankBranchDto;
+import com.amx.jax.model.response.benebranch.BeneStatusDto;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.TemplatesMX;
@@ -156,6 +160,15 @@ public class BeneBranchService {
 
 		logger.info("Email to - " + emailid + " first name : " + model.getCustomerName());
 		postManService.sendEmailAsync(email);
+	}
+
+	public List<BeneStatusDto> getBeneListStatuses() {
+		List<BeneStatus> list = Arrays.asList(BeneficiaryConstant.BeneStatus.values());
+		List<BeneStatusDto> output = list.stream().map(i -> {
+			BeneStatusDto dto = new BeneStatusDto(i.name(), i.getDescription());
+			return dto;
+		}).collect(Collectors.toList());
+		return output;
 	}
 
 }

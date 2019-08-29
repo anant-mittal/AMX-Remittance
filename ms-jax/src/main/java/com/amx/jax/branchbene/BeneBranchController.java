@@ -24,6 +24,7 @@ import com.amx.jax.model.request.benebranch.ListBankBranchRequest;
 import com.amx.jax.model.request.benebranch.ListBeneBankOrCashRequest;
 import com.amx.jax.model.response.BankMasterDTO;
 import com.amx.jax.model.response.benebranch.BankBranchDto;
+import com.amx.jax.model.response.benebranch.BeneStatusDto;
 import com.amx.utils.JsonUtil;
 
 import io.swagger.annotations.ApiOperation;
@@ -86,7 +87,7 @@ public class BeneBranchController implements IBranchBeneService {
 		beneBranchService.addBeneBankorCash(request);
 		return AmxApiResponse.build(new BoolRespModel(true));
 	}
-	
+
 	@RequestMapping(value = Path.ADD_NEW_BRANCH_REQUEST, method = RequestMethod.POST)
 	@Override
 	@ApiOperation("add new branch req")
@@ -95,5 +96,13 @@ public class BeneBranchController implements IBranchBeneService {
 		beneBranchValidation.validateAddNewBankBranchRequest(request);
 		beneBranchService.addNewBankBranchRequest(request);
 		return AmxApiResponse.build(new BoolRespModel(true));
+	}
+
+	@RequestMapping(value = Path.GET_BENE_LIST_STATUSES, method = RequestMethod.GET)
+	@Override
+	@ApiOperation("get bene list statuss")
+	public AmxApiResponse<BeneStatusDto, Object> getBeneListStatuses() {
+		List<BeneStatusDto> list = beneBranchService.getBeneListStatuses();
+		return AmxApiResponse.buildList(list);
 	}
 }

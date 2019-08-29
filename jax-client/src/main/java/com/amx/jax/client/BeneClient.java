@@ -22,7 +22,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.amx.amxlib.constant.BeneficiaryConstant.BeneStatus;
 import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.amxlib.exception.CustomerValidationException;
 import com.amx.amxlib.exception.IncorrectInputException;
@@ -49,6 +48,7 @@ import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.model.request.benebranch.BeneAccountModel;
 import com.amx.jax.model.request.benebranch.BenePersonalDetailModel;
 import com.amx.jax.model.request.benebranch.BeneficiaryTrnxModel;
+import com.amx.jax.model.response.benebranch.BeneStatusDto;
 import com.amx.jax.rest.RestService;
 
 @Component
@@ -293,7 +293,7 @@ public class BeneClient extends AbstractJaxServiceClient {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public ApiResponse updateStatus(BigDecimal beneMasSeqId, String remarks, BeneStatus status, String mOtp,
+	public ApiResponse updateStatus(BigDecimal beneMasSeqId, String remarks, BeneStatusDto status, String mOtp,
 			String eOtp) {
 		try {
 			StringBuffer sb = new StringBuffer();

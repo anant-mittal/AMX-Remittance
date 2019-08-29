@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.amx.amxlib.constant.BeneficiaryConstant.BeneStatus;
 import com.amx.amxlib.meta.model.BeneCountryDTO;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.response.JaxTransactionResponse;
 import com.amx.jax.JaxAuthContext;
+import com.amx.jax.branchbene.BeneficiaryConstant.BeneStatus;
 import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.model.request.benebranch.BeneAccountModel;
 import com.amx.jax.model.request.benebranch.BenePersonalDetailModel;
