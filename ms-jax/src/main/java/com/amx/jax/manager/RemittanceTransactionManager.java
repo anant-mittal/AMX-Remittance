@@ -768,7 +768,7 @@ public class RemittanceTransactionManager {
 		List<ViewTransfer> transfers = transferRepo.todayTransactionCheck(customer.getCustomerReference(),
 				beneficiary.getBankCode(),
 				beneficiary.getBankAccountNumber() == null ? "" : beneficiary.getBankAccountNumber(),
-				beneficiary.getBenificaryName(), new BigDecimal(90));
+				beneficiary.getBenificaryName(), ConstantDocument.ONLINE_BRANCH_LOC_CODE);
 		logger.debug("in validateBeneficiaryTransactionLimit today bene with BeneficiaryRelationShipSeqId: "
 				+ beneficiary.getBeneficiaryRelationShipSeqId() + " and todays tnx are: " + transfers.size());
 		if (beneficiaryPerDayLimit != null && transfers != null
@@ -1580,4 +1580,7 @@ public class RemittanceTransactionManager {
 		exRatebreakUp.setNetAmountWithoutLoyality(RoundUtil.roundBigDecimal(exRatebreakUp.getNetAmountWithoutLoyality(),exRatebreakUp.getLcDecimalNumber().intValue()));
 		exRatebreakUp.setInverseRate((RoundUtil.roundBigDecimal(exRatebreakUp.getInverseRate(), 6)));
 	}
+	
+	
+	
 }
