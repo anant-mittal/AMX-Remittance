@@ -203,6 +203,17 @@ public class HomeController {
 		return "app";
 	}
 
+	@RequestMapping(value = { "/pub/app/**" }, method = { RequestMethod.GET })
+	public String defaultPubPage(Model model) {
+		model.addAttribute("lang", httpService.getLanguage());
+		model.addAttribute("applicationTitle", webAppConfig.getAppTitle());
+		model.addAttribute("cdnUrl", webAppConfig.getCleanCDNUrl());
+		model.addAttribute(UIConstants.CDN_VERSION, getVersion());
+		model.addAttribute(AppConstants.DEVICE_ID_KEY, userDevice.getUserDevice().getFingerprint());
+		model.addAttribute("fcmSenderId", webAppConfig.getFcmSenderId());
+		return "pay";
+	}
+
 	/**
 	 * Terms page.
 	 *
@@ -345,8 +356,10 @@ public class HomeController {
 			JaxError.ENTITY_EXPIRED })
 	@ApiStatus({ ApiStatusCodes.PARAM_MISSING })
 	@RequestMapping(value = { PAYMENT_PATH },
-			method = { RequestMethod.GET })
-	public String directPayment(Model model,
+			method = { RequestMethod.GET }, produces = {
+					CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE })
+	@ResponseBody
+	public Map<String, Object> directPaymentJson(Model model,
 			@PathVariable Products prodType, @PathVariable BigDecimal linkId,
 			@RequestParam(value = "v") String veryCode,
 			HttpServletRequest request) throws MalformedURLException, URISyntaxException {
@@ -361,14 +374,17 @@ public class HomeController {
 		payment.setTrackIdObject(link.getMerchantTrackId());
 		payment.setAmountObject(link.getNetAmount());
 		payment.setServiceCode(link.getPgCode());
-		model.addAttribute("payment_link", payGService.getPaymentUrl(payment,
+
+		Map<String, Object> map = new HashMap<String, Object>();
+
+		map.put("payment_link", payGService.getPaymentUrl(payment,
 				Urly.parse(HttpUtils.getServerName(request)).path(PAYMENT_PATH).pathParam("prodType", prodType)
 						.pathParam("linkId", linkId).queryParam("v", veryCode).getURL()));
 
-		model.addAttribute("cart", link);
-		model.addAttribute("linkId", linkId);
-		model.addAttribute("veryCode", veryCode);
-		model.addAttribute("tnt", AppContextUtil.getTenant());
-		return "pay";
+		map.put("cart", link);
+		map.put("linkId", linkId);
+		map.put("veryCode", veryCode);
+		map.put("tnt", AppContextUtil.getTenant());
+		return map;
 	}
 }
