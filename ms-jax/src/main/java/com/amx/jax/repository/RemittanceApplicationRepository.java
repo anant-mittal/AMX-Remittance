@@ -68,7 +68,7 @@ public interface RemittanceApplicationRepository extends CrudRepository<Remittan
     @Transactional
 	@Modifying
 	@Query("update RemittanceApplication appl set isactive = 'D',applicaitonStatus = null where appl.fsCustomer=:customerId and trunc(sysdate)=trunc(createdDate) " 
-			+"and isactive <> 'D' and NVL(resultCode,' ') NOT IN('CAPTURED','APPROVED') and appl.loccod =:locCod")
+			+"and isactive <> 'D' and NVL(resultCode,' ') NOT IN('CAPTURED','APPROVED') and appl.loccod =:locCod and paymentType <> 'WT'")
 	public void deActivateNotUsedOnlineApplication(@Param("customerId") Customer customerId,@Param("locCod") BigDecimal locCod);
     
     @Transactional

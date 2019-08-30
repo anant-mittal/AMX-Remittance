@@ -347,6 +347,14 @@ public class RemittanceApplicationManager {
 		remittanceApplication.setDocumentNo(generateDocumentNumber(remittanceApplication.getExCountryBranch(), ConstantDocument.Update));
 		remittanceApplication.setPaymentId(remittanceApplication.getDocumentNo().toString());
 		remittanceApplication.setWuIpAddress(metaData.getDeviceIp());
+		remittanceApplication.setPaymentType(requestModel.getPaymentType());
+		if (ConstantDocument.WIRE_TRANSFER_PAYMENT.equalsIgnoreCase(requestModel.getPaymentType())) {
+
+			remittanceApplication.setWtStatus(ConstantDocument.WT_STATUS_NEW);
+		}
+		
+		
+		
 		
 		DynamicRoutingPricingDto dynamicRoutingPricingResponse = requestModel.getDynamicRroutingPricingBreakup();
 		if(dynamicRoutingPricingResponse.getServiceProviderDto() != null && dynamicRoutingPricingResponse.getServiceProviderDto().getIntialAmountInSettlCurr() != null) {

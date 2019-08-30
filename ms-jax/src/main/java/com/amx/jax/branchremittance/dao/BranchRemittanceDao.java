@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.ApplicationProcedureDao;
+import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.CollectDetailModel;
 import com.amx.jax.dbmodel.CollectionModel;
 import com.amx.jax.dbmodel.Customer;
@@ -117,6 +118,9 @@ public class BranchRemittanceDao {
 	
 	@Autowired
 	IRemitTrnxSrvProvRepository remitTrnxSrvProvRepository;
+	
+	@Autowired
+	RemittanceApplicationDao remittanceApplicationDao;
 
 	@Transactional
 	@SuppressWarnings("unchecked")
@@ -224,6 +228,10 @@ public class BranchRemittanceDao {
 					}
 					remitTrnx.setDocumentNo(documentNo);
 					remitTrnx.setCollectionDocumentNo(collectModel.getDocumentNo());
+					RemittanceApplication remittanceApplication = remittanceApplicationDao.getApplication(applicationId);
+					if(ConstantDocument.WIRE_TRANSFER_PAYMENT.equalsIgnoreCase(remittanceApplication.getPaymentType())) {
+						remitTrnx.setPaymentType(ConstantDocument.WIRE_TRANSFER_PAYMENT);
+					}
 					
 					RemittanceTransaction remitTrnx1 = remitTrnxRepository.save(remitTrnx);
 

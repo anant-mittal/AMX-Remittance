@@ -226,6 +226,9 @@ public class BranchRemittanceSaveManager {
 	@Autowired
 	PartnerTransactionDao partnerTransactionDao;
 	
+	@Autowired
+	RemittanceApplicationDao remittanceApplicationDao;
+	
 	
 	List<LoyaltyPointsModel> loyaltyPoints 	 = new ArrayList<>();
 	Map<BigDecimal,RemittanceBenificiary> remitBeneList = new HashMap<>();
@@ -304,6 +307,17 @@ public class BranchRemittanceSaveManager {
 			responseDto.setPromotionMessage(promotionMsg);
 		}else {
 			logger.error("NOT moved to old emos ", responseDto.getCollectionDocumentNo() + "" +responseDto.getCollectionDocumentCode()+" "+responseDto.getCollectionDocumentFYear());
+		}
+		
+		int i;
+		for(i=0;i<shoppingCartList.size();i++) {
+			
+			RemittanceApplication remittanceApplication = remittanceApplicationDao.getApplication(shoppingCartList.get(i).getApplicationId());
+			if(remittanceApplication!=null && ConstantDocument.WIRE_TRANSFER_PAYMENT.equalsIgnoreCase(remittanceApplication.getPaymentType())&& ConstantDocument.WT_STATUS_NEW.equalsIgnoreCase(remittanceApplication.getWtStatus())) {
+				remittanceApplication.setWtStatus(ConstantDocument.WT_STATUS_PAID);
+				remittanceApplicationRepository.save(remittanceApplication);
+				
+			}
 		}
 		return responseDto;
 	}
