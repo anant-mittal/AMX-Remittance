@@ -294,9 +294,11 @@ public class RemittanceTransactionRequestValidator {
 
 			JaxFieldValueDto dto = new JaxFieldValueDto();
 			if (metaData.getLanguageId().equals(new BigDecimal("2"))) {
-				dto.setId(ffDto.getSrlId());
-				dto.setOptLable(purposeTrnxAmicDescs.getLocalFulldesc());
-				dto.setLocalName(purposeTrnxAmicDescs.getLocalFulldesc());
+				if(purposeTrnxAmicDescs != null) {
+					dto.setId(ffDto.getSrlId());
+					dto.setOptLable(purposeTrnxAmicDescs.getLocalFulldesc());
+					dto.setLocalName(purposeTrnxAmicDescs.getLocalFulldesc());
+				}
 			} else {
 				dto.setId(ffDto.getSrlId());
 				dto.setOptLable(ffDto.getAmieceDescription());
