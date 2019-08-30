@@ -335,7 +335,9 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 			return restService.ajax(appConfig.getJaxURL() + Path.FC_CUSTOMER_RATING).meta(new JaxMetaInfo()).post(requestEntity)
 					.queryParam("deliveryDetailSeqId", deliveryDetailSeqId)
 					.queryParam("product", product)
-					.asApiResponse(CustomerRatingDTO.class);
+					.post()
+					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerRatingDTO,Object>>() {
+					});
 		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
