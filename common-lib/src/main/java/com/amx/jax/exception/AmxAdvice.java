@@ -235,7 +235,7 @@ public abstract class AmxAdvice implements ResponseBodyAdvice<AmxApiResponse<?, 
 				&& exception.getCause().getMessage().startsWith("The temporary upload location")) {
 			String pathToRecreate = exception.getMessage().substring(exception.getMessage().indexOf("[") + 1,
 					exception.getMessage().indexOf("]"));
-			Set<PosixFilePermission> perms = new HashSet<>();
+			Set<PosixFilePermission> perms = new HashSet<PosixFilePermission>();
 			// add permission as rw-r--r-- 644
 			perms.add(PosixFilePermission.OWNER_WRITE);
 			perms.add(PosixFilePermission.OWNER_READ);
