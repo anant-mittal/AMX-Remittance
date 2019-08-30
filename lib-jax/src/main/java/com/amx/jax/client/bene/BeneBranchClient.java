@@ -11,11 +11,13 @@ import com.amx.jax.client.branch.IBranchBeneService;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.client.serviceprovider.RoutingBankMasterDTO;
 import com.amx.jax.exception.JaxSystemError;
+import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.model.request.benebranch.AddBeneBankRequest;
 import com.amx.jax.model.request.benebranch.AddBeneCashRequest;
 import com.amx.jax.model.request.benebranch.AddNewBankBranchRequest;
 import com.amx.jax.model.request.benebranch.ListBankBranchRequest;
 import com.amx.jax.model.request.benebranch.ListBeneBankOrCashRequest;
+import com.amx.jax.model.request.benebranch.ListBeneRequest;
 import com.amx.jax.model.response.BankMasterDTO;
 import com.amx.jax.model.response.benebranch.BankBranchDto;
 import com.amx.jax.model.response.benebranch.BeneStatusDto;
@@ -118,6 +120,19 @@ public class BeneBranchClient implements IBranchBeneService {
 					});
 		} catch (Exception e) {
 			LOGGER.error("exception in getBeneListStatuses : ", e);
+			return JaxSystemError.evaluate(e);
+		}
+	}
+
+	@Override
+	public AmxApiResponse<BeneficiaryListDTO, Object> listBene(ListBeneRequest request) {
+		try {
+			LOGGER.debug("in listBene :");
+			return restService.ajax(appConfig.getJaxURL() + Path.LIST_BANK_BRANCH).meta(new JaxMetaInfo()).get()
+					.as(new ParameterizedTypeReference<AmxApiResponse<BeneficiaryListDTO, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in listBene : ", e);
 			return JaxSystemError.evaluate(e);
 		}
 	}

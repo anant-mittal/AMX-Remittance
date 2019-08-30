@@ -12,6 +12,18 @@ public class BeneficiaryConstant {
 		String dbFlag;
 		String description;
 
+		public static BeneStatus findBeneStatusBydbFlag(String dbFlag) {
+			BeneStatus output = null;
+			BeneStatus[] values = BeneStatus.values();
+			for (BeneStatus s : values) {
+				if (s.getDbFlag().equals(dbFlag)) {
+					output = s;
+					break;
+				}
+			}
+			return output;
+		}
+
 		private BeneStatus(String dbFlag, String description) {
 			this.dbFlag = dbFlag;
 			this.description = description;

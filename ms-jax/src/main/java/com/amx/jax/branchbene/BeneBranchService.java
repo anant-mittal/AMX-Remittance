@@ -28,11 +28,13 @@ import com.amx.jax.dbmodel.bene.BeneficaryMaster;
 import com.amx.jax.dbmodel.bene.BeneficaryStatus;
 import com.amx.jax.dbmodel.meta.ServiceGroupMaster;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.model.request.AbstractBeneDetailDto;
 import com.amx.jax.model.request.benebranch.AddNewBankBranchRequest;
 import com.amx.jax.model.request.benebranch.BeneficiaryTrnxModel;
 import com.amx.jax.model.request.benebranch.ListBankBranchRequest;
 import com.amx.jax.model.request.benebranch.ListBeneBankOrCashRequest;
+import com.amx.jax.model.request.benebranch.ListBeneRequest;
 import com.amx.jax.model.response.BankMasterDTO;
 import com.amx.jax.model.response.benebranch.AddBeneBankBranchRequestModel;
 import com.amx.jax.model.response.benebranch.BankBranchDto;
@@ -165,10 +167,23 @@ public class BeneBranchService {
 	public List<BeneStatusDto> getBeneListStatuses() {
 		List<BeneStatus> list = Arrays.asList(BeneficiaryConstant.BeneStatus.values());
 		List<BeneStatusDto> output = list.stream().map(i -> {
-			BeneStatusDto dto = new BeneStatusDto(i.name(), i.getDescription());
+			BeneStatusDto dto = new BeneStatusDto(i.getDescription(), i.name());
 			return dto;
 		}).collect(Collectors.toList());
 		return output;
+	}
+
+	public List<BeneficiaryListDTO> listBene(ListBeneRequest request) {
+		ApiResponse beneList = beneService.getBeneficiaryListForBranch(metaData.getCustomerId(), metaData.getCountryId(),
+				BigDecimal.valueOf(request.getBeneCoutryId()));
+		List<BeneficiaryListDTO> beneListDto = beneList.getResults();
+		beneListDto.forEach(i -> {
+			String dbFlag = i.getIsActive();
+			BeneStatus beneStatus = BeneficiaryConstant.BeneStatus.findBeneStatusBydbFlag(dbFlag);
+			BeneStatusDto dto = new BeneStatusDto(beneStatus.getDescription(), beneStatus.name());
+			i.setBeneStatusDto(dto);
+		});
+		return beneListDto;
 	}
 
 }

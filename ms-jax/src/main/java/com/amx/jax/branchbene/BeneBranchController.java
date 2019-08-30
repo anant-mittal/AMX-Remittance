@@ -17,11 +17,13 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.branch.IBranchBeneService;
 import com.amx.jax.client.serviceprovider.RoutingBankMasterDTO;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.model.request.benebranch.AddBeneBankRequest;
 import com.amx.jax.model.request.benebranch.AddBeneCashRequest;
 import com.amx.jax.model.request.benebranch.AddNewBankBranchRequest;
 import com.amx.jax.model.request.benebranch.ListBankBranchRequest;
 import com.amx.jax.model.request.benebranch.ListBeneBankOrCashRequest;
+import com.amx.jax.model.request.benebranch.ListBeneRequest;
 import com.amx.jax.model.response.BankMasterDTO;
 import com.amx.jax.model.response.benebranch.BankBranchDto;
 import com.amx.jax.model.response.benebranch.BeneStatusDto;
@@ -103,6 +105,14 @@ public class BeneBranchController implements IBranchBeneService {
 	@ApiOperation("get bene list statuss")
 	public AmxApiResponse<BeneStatusDto, Object> getBeneListStatuses() {
 		List<BeneStatusDto> list = beneBranchService.getBeneListStatuses();
+		return AmxApiResponse.buildList(list);
+	}
+
+	@RequestMapping(value = Path.LIST_BENE, method = RequestMethod.POST)
+	@Override
+	@ApiOperation("get bene list statuss")
+	public AmxApiResponse<BeneficiaryListDTO, Object> listBene(ListBeneRequest request) {
+		List<BeneficiaryListDTO> list = beneBranchService.listBene(request);
 		return AmxApiResponse.buildList(list);
 	}
 }
