@@ -82,7 +82,7 @@ public class WUNotifyListener implements ITunnelSubscriber<DBEvent> {
 		
 		BigDecimal tranxId = ArgUtil.parseAsBigDecimal(event.getData().get(TRANX_ID), new BigDecimal(0));
 		LOGGER.info("Customer id is "+custId);
-		Customer c = customerRepository.getCustomerByCustomerIdAndIsActive(custId, "Y");
+		Customer c = customerRepository.getNationalityValue(custId);
 		LOGGER.info("Customer object is "+c.toString());
 		String emailId = c.getEmail();
 		String smsNo = c.getMobile();
