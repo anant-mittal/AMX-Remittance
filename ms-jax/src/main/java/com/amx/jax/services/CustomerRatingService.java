@@ -47,7 +47,7 @@ public class CustomerRatingService {
 	 */
 	public AmxApiResponse<CustomerRating, ?> saveCustomerRating(CustomerRatingDTO dto) {
 		try {
-			
+			if(dto.getProducttype().equals(AmxEnums.Products.REMIT.toString())) {
 			CustomerRating customerRating = new CustomerRating();
 			BigDecimal applicationCountryId = metaData.getCountryId();
 			BigDecimal remittancetrnxId = dto.getRemittanceTransactionId();
@@ -90,7 +90,55 @@ public class CustomerRatingService {
 				}
 				
 						
-		} catch (GlobalException e) {
+		} else {
+			
+			CustomerRating customerRating = new CustomerRating();
+			BigDecimal applicationCountryId = metaData.getCountryId();
+			BigDecimal fxOrdertrnxId = dto.getFxOrderTransactionId();
+			
+			if(fxOrdertrnxId!=null) {
+				
+				CustomerRating customerRatingvalue = customerRatingdao.getCustomerRatingDataByfxOrderTransactionId(fxOrdertrnxId);
+				
+				if(customerRatingvalue!=null) {
+									
+					logger.info("Transaction Details are already Rated for the Remittance transaction ID" +fxOrdertrnxId);
+				throw new GlobalException(JaxError.TRANSACTION_ALREADY_RATED.getStatusKey(),"Transaction Details are already Rated for the Remittance transaction ID");
+													
+				}else
+				{
+					RemittanceTransaction remittanceApplicationTxnxId = remittanceTransactionRepository.findByRemittanceTransactionId(dto.getRemittanceTransactionId());
+					if(remittanceApplicationTxnxId!=null) {
+					RemittanceApplication remitAPPLTrnx = remittanceApplicationRepository.getRemittanceApplicationId(remittanceApplicationTxnxId.getApplicationDocumentNo(),remittanceApplicationTxnxId.getDocumentFinanceYear());
+					
+					if(remitAPPLTrnx!=null) {
+					
+					customerRating.setRating(dto.getRating());
+					customerRating.setRatingRemark(dto.getRatingRemark());
+					customerRating.setRemittanceApplicationId(remitAPPLTrnx.getRemittanceApplicationId());
+					customerRating.setRemittanceTransactionId(dto.getRemittanceTransactionId());
+					customerRating.setCustomerId(remitAPPLTrnx.getFsCustomer().getCustomerId());
+					customerRating.setApplicationCountryId(applicationCountryId);
+					customerRating.setCreatedDate(new Date());
+					customerRating.setFeedbackType(AmxEnums.Products.FXORDER.toString());
+					customerRatingdao.save(customerRating);
+				}
+					else {
+						throw new GlobalException(JaxError.INVALID_TRANSACTION_ID.getStatusKey(),"Invalid transaction ID");
+					}
+				}
+					else {
+						throw new GlobalException(JaxError.INVALID_TRANSACTION_ID.getStatusKey(),"Invalid transaction ID");
+					}	
+				}
+				}
+				
+		}
+			
+		}
+			
+			
+			catch (GlobalException e) {
 			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}
 		return AmxApiResponse.build();

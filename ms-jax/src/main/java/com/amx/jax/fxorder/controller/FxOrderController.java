@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.constant.ApiEndpoint.UserApi;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.client.fx.IFxBranchOrderService.Params;
 import com.amx.jax.client.fx.IFxBranchOrderService.Path;
 import com.amx.jax.dbmodel.CustomerRating;
 import com.amx.jax.dict.AmxEnums;
@@ -33,18 +35,9 @@ public class FxOrderController {
 	CustomerRatingService customerRatingService;
 
 	
-	@RequestMapping(value = "/save-fxorder-customer-rating/", method = RequestMethod.POST)
-	public AmxApiResponse<CustomerRating, ?> saveFxorderCustomerRating(@RequestBody @Valid CustomerRatingDTO dto) {
-		return customerRatingService.fxOrdersaveCustomerRating(dto);
-	}
-
-
-		@RequestMapping(value = Path.FC_CUSTOMER_RATING , method = RequestMethod.POST)
-		public AmxApiResponse<CustomerRating, ?> inquireFxOrderCustomerRating(@RequestParam BigDecimal deliveryDetailSeqId,String product) {
-			return customerRatingService.fxOrderinquireCustomerRating(deliveryDetailSeqId, product);
-
-		}
-
 	
+
+
+			
 
 }

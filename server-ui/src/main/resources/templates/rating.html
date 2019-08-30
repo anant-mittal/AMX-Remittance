@@ -168,7 +168,7 @@
       		"ratingRemark": document.getElementById('feedbackInput').value,
       		"remittanceTransactionId": ratingData.trnxId
       	}
-      	makeAjaxCall('/pub/remitt/'+ ratingData.prodType +'/rating?veryCode=' + ratingData.verCode,'POST', JSON.stringify(reqObj),resolveFeedbackPost,rejectFeedbackPost)
+      	makeAjaxCall('/pub/'+ ratingData.prodType +'/tranx/rating?veryCode=' + ratingData.verCode,'POST', JSON.stringify(reqObj),resolveFeedbackPost,rejectFeedbackPost)
       }
 
       function resolveFeedbackPost(respJson){

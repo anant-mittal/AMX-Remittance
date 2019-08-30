@@ -1,6 +1,7 @@
 package com.amx.jax.client.fx;
 
 
+
 import java.math.BigDecimal;
 
 import org.apache.log4j.Logger;
@@ -8,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Component;
-
 import com.amx.jax.AppConfig;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
@@ -322,29 +322,19 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 	}
 
 	
-	public AmxApiResponse<CustomerRatingDTO, ?> inquirefxOrderCustomerRating(BigDecimal deliveryDetailSeqId, String product) {
-
+	public AmxApiResponse<CustomerRatingDTO, ?> inquirefxOrderCustomerRating(BigDecimal deliveryDetailSeqId, String product) 
+	{
 		try {
-					
-			CustomerRatingDTO request = new CustomerRatingDTO();
-			request.setRemittanceTransactionId(deliveryDetailSeqId);
-			request.setProducttype(product);
-			HttpEntity<CustomerRatingDTO> requestEntity = new HttpEntity<CustomerRatingDTO>(
-					request, getHeader());
-			
-			return restService.ajax(appConfig.getJaxURL() + Path.FC_CUSTOMER_RATING).meta(new JaxMetaInfo()).post(requestEntity)
-					.queryParam("deliveryDetailSeqId", deliveryDetailSeqId)
-					.queryParam("product", product)
-					.post()
-					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerRatingDTO,Object>>() {
+
+			return restService.ajax(appConfig.getJaxURL()).path(Path.FC_CUSTOMER_RATING).meta(new JaxMetaInfo()).post()
+					.queryParam(Params.FX_DELIVERY_SEQ_ID, deliveryDetailSeqId).queryParam(Params.FX_PRODUCT, product)
+					.post().as(new ParameterizedTypeReference<AmxApiResponse<CustomerRatingDTO, ?>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in Inquire customer rating : ", e);
-			throw new JaxSystemError();
-		} // end of try-catch
+		} catch (Exception ae) {
 
+			LOGGER.error("exception in Inquire customer rating : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}
 	}
-
+	
 }

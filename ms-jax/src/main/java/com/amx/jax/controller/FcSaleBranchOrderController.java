@@ -2,6 +2,9 @@ package com.amx.jax.controller;
 
 
 import java.math.BigDecimal;
+
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.fx.IFxBranchOrderService;
+import com.amx.jax.client.fx.IFxBranchOrderService.Params;
+import com.amx.jax.client.fx.IFxBranchOrderService.Path;
+import com.amx.jax.dbmodel.CustomerRating;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.customer.CustomerRatingDTO;
 import com.amx.jax.model.request.fx.FcDeliveryBranchOrderSearchRequest;
 import com.amx.jax.model.request.fx.FcSaleBranchDispatchRequest;
 import com.amx.jax.model.response.fx.FcEmployeeDetailsDto;
@@ -232,5 +239,20 @@ public class FcSaleBranchOrderController implements IFxBranchOrderService {
 	public AmxApiResponse<FxOrderTransactionHistroyDto, Object> searchOrder(@RequestBody FcDeliveryBranchOrderSearchRequest fcDeliveryBranchOrderSearchRequest) {
 		return fcSaleBranch.searchOrder(fcDeliveryBranchOrderSearchRequest);
 	}
+	
+	
+	@RequestMapping(value = Path.FC_CUSTOMER_RATING , method = RequestMethod.POST)
+	public AmxApiResponse<CustomerRating, ?> inquireFxOrderCustomerRating(@RequestParam(value = Params.FX_DELIVERY_SEQ_ID) BigDecimal deliveryDetailSeqId,@RequestParam(value=Params.FX_PRODUCT) String product) {
+		return customerRatingService.fxOrderinquireCustomerRating(deliveryDetailSeqId, product);
+
+	}
+	
+	@RequestMapping(value = "/save-fxorder-customer-rating/", method = RequestMethod.POST)
+	public AmxApiResponse<CustomerRating, ?> saveFxorderCustomerRating(@RequestBody @Valid CustomerRatingDTO dto) {
+		return customerRatingService.fxOrdersaveCustomerRating(dto);
+	}
+
+
+
 
 	}

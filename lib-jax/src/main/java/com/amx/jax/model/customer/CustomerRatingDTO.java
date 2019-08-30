@@ -20,12 +20,12 @@ public class CustomerRatingDTO extends AbstractModel {
 	
 	private BigDecimal remittanceApplicationId;
 	
-	@NotNull(message="remittanceApplicationId may not be null")
+	//@NotNull(message="remittanceApplicationId may not be null")
 	private BigDecimal remittanceTransactionId;
 	private Date createdDate;
 
 	
-	@NotNull
+	//@NotNull
 	@Range(min=1, max=10,message="rating should be between 1 and 10 range")
 	private BigDecimal rating;
 	
