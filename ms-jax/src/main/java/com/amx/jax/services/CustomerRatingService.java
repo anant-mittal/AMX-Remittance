@@ -109,15 +109,17 @@ public class CustomerRatingService {
 				{
 					RemittanceTransaction remittanceApplicationTxnxId = remittanceTransactionRepository.findByRemittanceTransactionId(dto.getRemittanceTransactionId());
 					if(remittanceApplicationTxnxId!=null) {
-					RemittanceApplication remitAPPLTrnx = remittanceApplicationRepository.getRemittanceApplicationId(remittanceApplicationTxnxId.getApplicationDocumentNo(),remittanceApplicationTxnxId.getDocumentFinanceYear());
+				//	RemittanceApplication remitAPPLTrnx = remittanceApplicationRepository.getRemittanceApplicationId(remittanceApplicationTxnxId.getApplicationDocumentNo(),remittanceApplicationTxnxId.getDocumentFinanceYear());
 					
-					if(remitAPPLTrnx!=null) {
+					//if(remitAPPLTrnx!=null) {
 					
 					customerRating.setRating(dto.getRating());
 					customerRating.setRatingRemark(dto.getRatingRemark());
-					customerRating.setRemittanceApplicationId(remitAPPLTrnx.getRemittanceApplicationId());
-					customerRating.setRemittanceTransactionId(dto.getRemittanceTransactionId());
-					customerRating.setCustomerId(remitAPPLTrnx.getFsCustomer().getCustomerId());
+					customerRating.setFxOrderTransactionId(remittanceApplicationTxnxId.getCollectionDocumentNo());
+					//customerRating.setRemittanceApplicationId(remitAPPLTrnx.getRemittanceApplicationId());
+					customerRating.setFxOrderApplicationId(remittanceApplicationTxnxId.getCollectionDocFinanceYear());
+					//c//ustomerRating.setRemittanceTransactionId(dto.getRemittanceTransactionId());
+					//customerRating.setCustomerId(remitAPPLTrnx.getFsCustomer().getCustomerId());
 					customerRating.setApplicationCountryId(applicationCountryId);
 					customerRating.setCreatedDate(new Date());
 					customerRating.setFeedbackType(AmxEnums.Products.FXORDER.toString());
@@ -127,10 +129,8 @@ public class CustomerRatingService {
 						throw new GlobalException(JaxError.INVALID_TRANSACTION_ID.getStatusKey(),"Invalid transaction ID");
 					}
 				}
-					else {
-						throw new GlobalException(JaxError.INVALID_TRANSACTION_ID.getStatusKey(),"Invalid transaction ID");
-					}	
-				}
+						
+				
 				}
 				
 		}
