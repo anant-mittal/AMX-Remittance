@@ -5,6 +5,7 @@ package com.amx.jax.branchremittance.controller;
  */
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import javax.validation.Valid;
 
@@ -22,18 +23,21 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.branchremittance.service.BranchRemittanceExchangeRateService;
 import com.amx.jax.branchremittance.service.BranchRemittanceService;
 import com.amx.jax.client.remittance.IRemittanceService;
+import com.amx.jax.manager.remittance.ServiceApplicabilityManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.BranchRemittanceGetExchangeRateRequest;
 import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
 import com.amx.jax.model.request.remittance.CustomerBankRequest;
+import com.amx.jax.model.request.remittance.GetServiceApplicabilityRequest;
 import com.amx.jax.model.request.remittance.RoutingPricingRequest;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.FlexFieldReponseDto;
+import com.amx.jax.model.response.remittance.GetServiceApplicabilityResponse;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
 import com.amx.jax.model.response.remittance.PaymentModeDto;
 import com.amx.jax.model.response.remittance.RemittanceDeclarationReportDto;
@@ -52,6 +56,8 @@ public class BranchRemittanceController implements IRemittanceService {
 	BranchRemittanceService branchRemitService;
 	@Autowired
 	BranchRemittanceExchangeRateService branchRemittanceExchangeRateService;
+	@Autowired
+	ServiceApplicabilityManager serviceApplicabilityManager;
 
 	@RequestMapping(value = Path.BR_REMITTANCE_SAVE_APPL, method = RequestMethod.POST)
 	@Override
@@ -250,8 +256,12 @@ public class BranchRemittanceController implements IRemittanceService {
 	logger.debug("getExchaneRate : " + request);
 	return branchRemittanceExchangeRateService.getFlexField(request);
 	}
-
-
-
+	
+	@RequestMapping(value = Path.GET_SERVICE_APPLICABILITY, method = RequestMethod.POST)
+	@Override
+	public AmxApiResponse<GetServiceApplicabilityResponse, Object> getServiceApplicability(@RequestBody @Valid GetServiceApplicabilityRequest request) {
+		List<GetServiceApplicabilityResponse> rules = serviceApplicabilityManager.getServiceApplicability(request);
+		return AmxApiResponse.buildList(rules);
+	}
 	
 }

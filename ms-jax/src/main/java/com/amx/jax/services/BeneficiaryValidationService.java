@@ -152,7 +152,7 @@ public class BeneficiaryValidationService {
 
 	public void validateIFscCode(BigDecimal beneBankCountryId, BigDecimal beneBankCurrencyId, String ifscCode) {
 		List<ServiceApplicabilityRule> swiftRules = serviceApplicablilityRuleDao.getServiceApplicabilityRulesForBeneficiary(metaData.getCountryId(),
-				beneBankCountryId, beneBankCurrencyId, ServiceApplicabilityField.BNFBANK_IFSC.toString());
+				beneBankCountryId, beneBankCurrencyId, ServiceApplicabilityField.BRANCH_IFSC.toString());
 		swiftRules.forEach(i -> {
 			if (ConstantDocument.Yes.equals(i.getMandatory())) {
 				if (StringUtils.isEmpty(ifscCode)) {

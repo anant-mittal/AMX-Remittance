@@ -19,12 +19,14 @@ import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.BranchRemittanceGetExchangeRateRequest;
 import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
 import com.amx.jax.model.request.remittance.CustomerBankRequest;
+import com.amx.jax.model.request.remittance.GetServiceApplicabilityRequest;
 import com.amx.jax.model.request.remittance.RoutingPricingRequest;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.FlexFieldReponseDto;
+import com.amx.jax.model.response.remittance.GetServiceApplicabilityResponse;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
 import com.amx.jax.model.response.remittance.PaymentModeDto;
 import com.amx.jax.model.response.remittance.RemittanceDeclarationReportDto;
@@ -411,6 +413,19 @@ public class RemittanceClient implements IRemittanceService {
 				LOGGER.error("exception in getExchaneRate : ", e);
 				return JaxSystemError.evaluate(e);
 			}
+	}
+
+	@Override
+	public AmxApiResponse<GetServiceApplicabilityResponse, Object> getServiceApplicability(GetServiceApplicabilityRequest request) {
+		try {
+			LOGGER.debug("in getServiceApplicability :" + request);
+			return restService.ajax(appConfig.getJaxURL() + Path.GET_SERVICE_APPLICABILITY).meta(new JaxMetaInfo()).post(request)
+					.as(new ParameterizedTypeReference<AmxApiResponse<GetServiceApplicabilityResponse, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in getServiceApplicability : ", e);
+			return JaxSystemError.evaluate(e);
+		}
 	}
 
 

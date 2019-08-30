@@ -12,12 +12,14 @@ import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.BranchRemittanceGetExchangeRateRequest;
 import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
 import com.amx.jax.model.request.remittance.CustomerBankRequest;
+import com.amx.jax.model.request.remittance.GetServiceApplicabilityRequest;
 import com.amx.jax.model.request.remittance.RoutingPricingRequest;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.FlexFieldReponseDto;
+import com.amx.jax.model.response.remittance.GetServiceApplicabilityResponse;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
 import com.amx.jax.model.response.remittance.PaymentModeDto;
 import com.amx.jax.model.response.remittance.RemittanceDeclarationReportDto;
@@ -53,6 +55,9 @@ public interface IRemittanceService extends  IJaxService {
 		public static final String BR_RECEIPT_ON_EMAIL				=PREFIX + "/send-receipt-on-email/";
 		public static final String BR_REMITTANCE_GET_ROUTING_PRICING_RATE = PREFIX + "/get-routing-pricing-exchrate/";
 		public static final String BR_REMITTANCE_GET_FLEX_FIELDS = PREFIX + "/get-flex-field/";
+
+		public static final String GET_SERVICE_APPLICABILITY = PREFIX + "/get-service-applicability/";
+
 		
 		
 		
@@ -146,6 +151,8 @@ public interface IRemittanceService extends  IJaxService {
 	
 	@ApiJaxStatus({JaxError.DATA_NOT_FOUND})
 	AmxApiResponse<FlexFieldReponseDto,Object> getFlexField(BranchRemittanceGetExchangeRateRequest request);
+
+	AmxApiResponse<GetServiceApplicabilityResponse, Object> getServiceApplicability(GetServiceApplicabilityRequest request);
 	
 }
 

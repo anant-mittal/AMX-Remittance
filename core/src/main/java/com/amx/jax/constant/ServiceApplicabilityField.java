@@ -6,5 +6,5 @@ package com.amx.jax.constant;
  */
 public enum ServiceApplicabilityField {
 
-	BNFBANK_SWIFT,BNFBANK_IFSC;
+	BNFBANK_SWIFT,BRANCH_IFSC;
 }
