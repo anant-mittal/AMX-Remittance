@@ -27,6 +27,7 @@ import com.amx.jax.dao.FcSaleApplicationDao;
 import com.amx.jax.dbmodel.PaygDetailsModel;
 import com.amx.jax.dbmodel.PaymentModeModel;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
+import com.amx.jax.dict.PayGRespCodeJSONConverter;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.AbstractModel;
@@ -214,6 +215,9 @@ public class DirectPaymentLinkManager extends AbstractModel {
 				
 				ResponseCodeDetailDTO responseCodeDetail = new ResponseCodeDetailDTO();
 				
+				if(paymentLink.getResultCode() != null) {
+					responseCodeDetail = PayGRespCodeJSONConverter.getResponseCodeDetail(paymentLink.getResultCode());
+				}
 				responseCodeDetail.setPgPaymentId(paymentLink.getPgPaymentId());
 				responseCodeDetail.setPgReferenceId(paymentLink.getPgReferenceId());
 				responseCodeDetail.setPgTransId(paymentLink.getPgTransactionId());
