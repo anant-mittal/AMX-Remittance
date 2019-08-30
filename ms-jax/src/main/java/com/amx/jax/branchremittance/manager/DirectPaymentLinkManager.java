@@ -162,6 +162,10 @@ public class DirectPaymentLinkManager extends AbstractModel {
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		}
+		
+		validatePreviiousDateLink(linkId);
+		
+		
 		PaygDetailsModel paymentLink = fcSaleApplicationDao.validatePaymentLinkByCode(linkId, hashVerifyCode);
 		if (paymentLink != null) {
 			PaymentLinkRespStatus statusModel = new PaymentLinkRespStatus();
@@ -186,10 +190,11 @@ public class DirectPaymentLinkManager extends AbstractModel {
 					String token = tokenizer.nextToken();
 					BigDecimal appId = new BigDecimal(token);
 					logger.info("Application Id : " + appId);
-
-					for (CustomerShoppingCartDto cartList : shoppingCartDetails) {
-						if (cartList.getRemittanceApplicationId().equals(appId)) {
-							custShopList.add(cartList);
+					if (shoppingCartDetails != null) {
+						for (CustomerShoppingCartDto cartList : shoppingCartDetails) {
+							if (cartList.getRemittanceApplicationId().equals(appId)) {
+								custShopList.add(cartList);
+							}
 						}
 					}
 				}
@@ -230,6 +235,26 @@ public class DirectPaymentLinkManager extends AbstractModel {
 					"Invalidate link, Verification Code Mismatch");
 		}
 		return paymentLinkResp;
+	}
+
+	private Boolean validatePreviiousDateLink(BigDecimal linkId) {
+		try {
+			List<PaygDetailsModel> listOfPaymentLink = fcSaleApplicationDao.validatePrevLink(linkId);
+			if (!listOfPaymentLink.isEmpty() && listOfPaymentLink != null) {
+				for (PaygDetailsModel payLink : listOfPaymentLink) {
+					PaygDetailsModel paymentLink = pgRepository.findOne(payLink.getPaygTrnxSeqId());
+					paymentLink.setLinkActive(ConstantDocument.Deleted);
+					paymentLink.setModifiedDate(new Date());
+					pgRepository.save(paymentLink);
+					
+					//throw new GlobalException(JaxError.DIRECT_LINK_DEACTIVATED,	"Payment link is deactivated");
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new GlobalException("deActivate Payment Link failed for validate previous ");
+		}
+		return true;
 	}
 
 	public Boolean deactivatePaymentLink(BigDecimal customerId) {
@@ -348,7 +373,7 @@ public class DirectPaymentLinkManager extends AbstractModel {
 				request.setCollctionModeDto(collctionModeDto);
 				request.setCurrencyRefundDenomination(null);
 				request.setTotalTrnxAmount(paymentLinkData.getPayAmount());
-				request.setTotalLoyaltyAmount(null);
+				request.setTotalLoyaltyAmount(BigDecimal.ZERO);
 				
 				branchRemittanceSaveManager.saveRemittanceTrnx(request);
 				

@@ -465,4 +465,7 @@ public class FcSaleApplicationDao {
 		}
 	}
 	
+	public List<PaygDetailsModel> validatePrevLink(BigDecimal linkId) {
+		return pgRepository.validatePrevLink(linkId);
+	}
 }
