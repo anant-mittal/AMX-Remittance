@@ -1,6 +1,7 @@
 package com.amx.jax.pricer.manager;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -48,6 +49,9 @@ import com.amx.utils.JsonUtil;
 public class CustomerDiscountManager {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CustomerDiscountManager.class);
+
+	private static final BigDecimal BtrRateIndicatorMarginPercent = new BigDecimal(0.15).setScale(2,
+			RoundingMode.HALF_EVEN);
 
 	@Autowired
 	PipsMasterDao pipsMasterDao;
@@ -252,8 +256,27 @@ public class CustomerDiscountManager {
 						Entry<BigDecimal, PipsMaster> nextEntry = pipsMap.higherEntry(entry.getKey());
 
 						if (nextEntry != null) {
-							bankExRateDetail.setBetterRateAvailable(true);
-							bankExRateDetail.setBetterRateAmountSlab(nextEntry.getValue().getFromAmount());
+
+							// Check if Next Slab falls within the tolerance limit of the Current Base Fc
+							// Amount
+
+							BigDecimal bumpedFcVal = bankExRateDetail.getSellRateBase().getConvertedFCAmount()
+									.add(bankExRateDetail.getSellRateBase().getConvertedFCAmount()
+											.multiply(BtrRateIndicatorMarginPercent));
+
+							// System.out.println("\n\n Limit Val ==>" +
+							// nextEntry.getValue().getFromAmount());
+
+							// System.out.println(
+							// " Base Val ==>" + bankExRateDetail.getSellRateBase().getConvertedFCAmount());
+
+							// System.out.println(" Bumpd Val ==>" + bumpedFcVal);
+
+							if (bumpedFcVal.compareTo(nextEntry.getValue().getFromAmount()) >= 0) {
+
+								bankExRateDetail.setBetterRateAvailable(true);
+								bankExRateDetail.setBetterRateAmountSlab(nextEntry.getValue().getFromAmount());
+							}
 						}
 						break;
 					} // if
@@ -265,6 +288,25 @@ public class CustomerDiscountManager {
 			// Avoid Double Discount Application
 			// Shifted place for Next Amount Slab Calculations
 			if (bankExRateDetail.isDiscountAvailed() == true) {
+				if (bankExRateDetail.isBetterRateAvailable()) {
+					if (bankExRateDetail.getSellRateNet() != null
+							&& bankExRateDetail.getSellRateNet().getConvertedFCAmount() != null) {
+
+						BigDecimal diffAmt = bankExRateDetail.getBetterRateAmountSlab()
+								.subtract(bankExRateDetail.getSellRateNet().getConvertedFCAmount())
+								.setScale(0, RoundingMode.UP);
+
+						bankExRateDetail.setDiffInBetterRateFcAmount(diffAmt);
+
+					} else {
+
+						BigDecimal diffAmt = bankExRateDetail.getBetterRateAmountSlab()
+								.subtract(bankExRateDetail.getSellRateBase().getConvertedFCAmount())
+								.setScale(0, RoundingMode.UP);
+
+						bankExRateDetail.setDiffInBetterRateFcAmount(diffAmt);
+					}
+				}
 				continue;
 			}
 
@@ -275,7 +317,7 @@ public class CustomerDiscountManager {
 				// Level.
 				discountedSellRate = bankExRateDetail.getSellRateBase().getInverseRate();
 				bankExRateDetail.setDiscountAvailed(false);
-				
+
 				// Set Better Rate Availability to false
 				bankExRateDetail.setBetterRateAvailable(false);
 				bankExRateDetail.setBetterRateAmountSlab(null);
@@ -310,7 +352,7 @@ public class CustomerDiscountManager {
 
 					bankExRateDetail.setDiscountAvailed(true);
 					bankExRateDetail.setCostRateLimitReached(true);
-					
+
 					// Set Better Rate Availability to false
 					bankExRateDetail.setBetterRateAvailable(false);
 					bankExRateDetail.setBetterRateAmountSlab(null);
@@ -337,6 +379,16 @@ public class CustomerDiscountManager {
 				bankExRateDetail.setSellRateNet(RemitPriceManager.createBreakUpForFcCur(discountedSellRate,
 						pricingRequestDTO.getForeignAmount()));
 
+			}
+
+			// Set the better Rate diff - Round to Next Int Val
+			if (bankExRateDetail.isBetterRateAvailable()) {
+
+				BigDecimal diffAmt = bankExRateDetail.getBetterRateAmountSlab()
+						.subtract(bankExRateDetail.getSellRateNet().getConvertedFCAmount())
+						.setScale(0, RoundingMode.UP);
+
+				bankExRateDetail.setDiffInBetterRateFcAmount(diffAmt);
 			}
 
 			// discountedRatesNPrices.add(discountedRateDetail);
