@@ -107,9 +107,10 @@ public class ComplianceTransactionManager {
 
 		List<ComplianceBlockedTrnxDocMap> docs = complianceTrnxDocMapRepo.findByRemittanceTransaction(trnxId);
 		Map<BigDecimal, ComplianceBlockedTrnxDocMap> uploadIdTrnxDocMapMapping = docs.stream()
+				.filter(i -> i.getCustomerDocumentUploadReference() != null)
 				.collect(Collectors.toMap(i -> i.getCustomerDocumentUploadReference().getId(), i -> i));
 		List<CustomerDocumentInfo> customerDocInfoList = docs.stream()
-				.map(i -> customerDocumentManager.convertToCustomerDocumentInfo(i.getCustomerDocumentUploadReference())).collect(Collectors.toList());
+				.map(i -> customerDocumentManager.convertToCustomerDocumentInfo(i)).collect(Collectors.toList());
 		List<ComplianceTrnxDocumentInfo> list = customerDocInfoList.stream().map(j -> {
 			ComplianceBlockedTrnxDocMap doc = uploadIdTrnxDocMapMapping.get(j.getUploadRefId());
 			ComplianceTrnxDocumentInfo trnxDocInfo = new ComplianceTrnxDocumentInfo();

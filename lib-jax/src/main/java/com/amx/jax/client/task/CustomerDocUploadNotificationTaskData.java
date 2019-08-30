@@ -10,11 +10,11 @@ import com.amx.jax.swagger.ApiMockModelProperty;
 public class CustomerDocUploadNotificationTaskData {
 
 	@NotNull
-	@ApiMockModelProperty(example = "HVT_LOCAL_TRNX")
+	@ApiMockModelProperty(example = "INCOME_PROOF")
 	String documentCategory;
 
 	@NotNull
-	@ApiMockModelProperty(example = "[BANK_STATEMENT]")
+	@ApiMockModelProperty(example = "[LOAN_STATEMENT]")
 	List<String> documentTypes;
 
 	@NotNull

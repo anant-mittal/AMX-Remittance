@@ -17,10 +17,12 @@ import com.amx.jax.dbmodel.IdentityTypeMaster;
 import com.amx.jax.dbmodel.JaxField;
 import com.amx.jax.dbmodel.customer.CustomerDocumentCategory;
 import com.amx.jax.dbmodel.customer.CustomerDocumentType;
+import com.amx.jax.dbmodel.customer.CustomerDocumentTypeDesc;
 import com.amx.jax.dbmodel.customer.CustomerDocumentTypeMaster;
 import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReferenceTemp;
 import com.amx.jax.model.customer.document.CustomerDocumentCategoryDto;
 import com.amx.jax.model.customer.document.CustomerDocumentTypeDto;
+import com.amx.jax.repository.customer.CustomerDocumentTypeDescRepo;
 import com.amx.jax.repository.customer.CustomerDocumentTypeMasterRepo;
 import com.amx.jax.userservice.manager.CustomerIdProofManager;
 import com.amx.jax.util.JaxUtil;
@@ -37,6 +39,8 @@ public class CustomerDocMasterManager {
 	CustomerIdProofManager customerIdProofManager;
 	@Autowired
 	JaxUtil jaxUtil;
+	@Autowired
+	CustomerDocumentTypeDescRepo customerDocumentTypeDescRepo;
 
 	public CustomerDocumentTypeMaster getDocTypeMaster(String docCategory, String docType) {
 		return customerDocumentTypeMasterRepo.findByDocumentCategoryAndDocumentType(docCategory, docType);
@@ -63,7 +67,12 @@ public class CustomerDocMasterManager {
 
 	public List<CustomerDocumentTypeDto> getDocumentType(String documentCategory) {
 		return customerDocumentTypeMasterRepo.findByDocumentCategory(documentCategory).stream().map(i -> {
-			return new CustomerDocumentTypeDto(i.getDocumentType());
+			CustomerDocumentTypeDesc docTypeDesc = customerDocumentTypeDescRepo.findByDocumentType(i.getDocumentType());
+			CustomerDocumentTypeDto dto = new CustomerDocumentTypeDto(i.getDocumentType());
+			if (docTypeDesc != null) {
+				dto.setDocumentTypeDesc(docTypeDesc.getDescription());
+			}
+			return dto;
 		}).collect(Collectors.toList());
 	}
 
@@ -105,5 +114,14 @@ public class CustomerDocMasterManager {
 		Optional<CustomerDocumentUploadReferenceTemp> kycUpload = customerTempUploads.stream()
 				.filter(i -> i.getCustomerDocumentTypeMaster().getId().equals(kycDocTypeMaster.getId())).findFirst();
 		return kycUpload;
+	}
+
+	public String getDocumentTypeDesc(String docType) {
+		CustomerDocumentTypeDesc docTypeDesc = customerDocumentTypeDescRepo.findByDocumentType(docType);
+		String desc = null;
+		if (docTypeDesc != null) {
+			desc = docTypeDesc.getDescription();
+		}
+		return desc;
 	}
 }

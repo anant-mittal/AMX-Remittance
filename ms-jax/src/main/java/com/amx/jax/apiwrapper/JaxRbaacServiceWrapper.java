@@ -1,8 +1,7 @@
 package com.amx.jax.apiwrapper;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,14 +28,14 @@ public class JaxRbaacServiceWrapper {
 		return response.getResult();
 	}
 
-	public List<String> getEmployeeRoles() {
+	public Map<String, Map<String, String>> getEmployeePermissions() {
 		AmxApiResponse<RoleMappingForEmployee, Object> response = rbaacServiceClient.getRoleMappingsForEmployee(metaData.getEmployeeId(),
 				AppContextUtil.getUserClient().getIp(), null, Boolean.TRUE);
 		Map<BigDecimal, RoleResponseDTO> roleInfoMap = response.getResult().getRoleInfoMap();
-		List<String> roles = new ArrayList<String>();
+		Map<String, Map<String, String>> permissions = new HashMap<>();
 		roleInfoMap.forEach((k, v) -> {
-			roles.add(v.getRole());
+			permissions.putAll(v.getPermissionMap());
 		});
-		return roles;
+		return permissions;
 	}
 }

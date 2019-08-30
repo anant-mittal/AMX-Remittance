@@ -6,6 +6,7 @@ public class NotificationTaskDto {
 
 	String message;
 	Date creationDate;
+	String requestId;
 	Object data;
 
 	public String getMessage() {
@@ -30,6 +31,14 @@ public class NotificationTaskDto {
 
 	public void setData(Object data) {
 		this.data = data;
+	}
+
+	public String getRequestId() {
+		return requestId;
+	}
+
+	public void setRequestId(String requestId) {
+		this.requestId = requestId;
 	}
 
 }

@@ -11,8 +11,8 @@ import com.amx.jax.dbmodel.task.JaxNotificationTaskType;
 
 public interface JaxNotificationTaskRepo extends CrudRepository<JaxNotificationTask, Serializable> {
 
-	List<JaxNotificationTask> findByCustomerIdAndTaskTypeAndDocumentCategory(BigDecimal customerId, JaxNotificationTaskType taskType,
-			String documentCat);
+	List<JaxNotificationTask> findByCustomerIdAndTaskTypeAndDocumentCategoryAndDocumentTypes(BigDecimal customerId, JaxNotificationTaskType taskType,
+			String documentCat, String documentType);
 	
 	List<JaxNotificationTask> findByRemittanceTransactionid(BigDecimal remittanceTransactionId);
 }

@@ -28,6 +28,7 @@ import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.dbmodel.DmsApplMapping;
 import com.amx.jax.dbmodel.IdentityTypeMaster;
 import com.amx.jax.dbmodel.compliance.ComplianceBlockedCustomerDocMap;
+import com.amx.jax.dbmodel.compliance.ComplianceBlockedTrnxDocMap;
 import com.amx.jax.dbmodel.customer.CustomerDocumentTypeMaster;
 import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReference;
 import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReferenceTemp;
@@ -277,11 +278,18 @@ public class CustomerDocumentManager {
 		customerDocumentUploadReferenceRepo.save(uploads);
 	}
 
-	public CustomerDocumentInfo convertToCustomerDocumentInfo(CustomerDocumentUploadReference uploadRef) {
-		CustomerDocumentInfo docInfo = null;
-		if (uploadRef.getScanIndic().equals(DocumentScanIndic.DB_SCAN)) {
-			docInfo = databaseImageScanManager.getDocumentInfo(uploadRef);
-			docInfo.setUploadRefId(uploadRef.getId());
+	public CustomerDocumentInfo convertToCustomerDocumentInfo(ComplianceBlockedTrnxDocMap complianceBlockedTrnxDocMap) {
+		CustomerDocumentInfo docInfo = new CustomerDocumentInfo();
+		CustomerDocumentUploadReference i = complianceBlockedTrnxDocMap.getCustomerDocumentUploadReference();
+		String docType = complianceBlockedTrnxDocMap.getDocTypeMaster().getDocumentType();
+		if (i != null && i.getScanIndic().equals(DocumentScanIndic.DB_SCAN)) {
+			docInfo = databaseImageScanManager.getDocumentInfo(i);
+			docInfo.setUploadRefId(i.getId());
+		}
+		docInfo.setDocumentCategory(complianceBlockedTrnxDocMap.getDocTypeMaster().getDocumentCategory());
+		docInfo.setDocumentType(docType);
+		if (customerDocMasterManager.getDocumentTypeDesc(docType) != null) {
+			docInfo.setDocumentTypeDesc(customerDocMasterManager.getDocumentTypeDesc(docType));
 		}
 		return docInfo;
 	}

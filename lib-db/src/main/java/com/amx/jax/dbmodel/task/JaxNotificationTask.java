@@ -22,6 +22,10 @@ import org.hibernate.annotations.CascadeType;
 @Table(name = "JAX_NOTIFICATION_TASK")
 public class JaxNotificationTask {
 
+	public JaxNotificationTask() {
+		super();
+	}
+
 	@Id
 	@Column(name = "ID")
 	@GeneratedValue(generator = "JAX_NOTIFICATION_TASK_SEQ", strategy = GenerationType.SEQUENCE)
@@ -53,6 +57,18 @@ public class JaxNotificationTask {
 	@Column(name = "TASK_TYPE")
 	@Enumerated(EnumType.STRING)
 	JaxNotificationTaskType taskType;
+
+	@Column(name = "PERMISSION")
+	String permission;
+
+	@Column(name = "REQUEST_ID")
+	String requestId;
+
+	@Column(name = "RESPONSE_ID")
+	String responseId;
+
+	@Column(name = "ISACTIVE")
+	String isActive;
 
 	public BigDecimal getId() {
 		return id;
@@ -124,6 +140,38 @@ public class JaxNotificationTask {
 
 	public void setTaskType(JaxNotificationTaskType taskType) {
 		this.taskType = taskType;
+	}
+
+	public String getRequestId() {
+		return requestId;
+	}
+
+	public void setRequestId(String requestId) {
+		this.requestId = requestId;
+	}
+
+	public String getResponseId() {
+		return responseId;
+	}
+
+	public void setResponseId(String responseId) {
+		this.responseId = responseId;
+	}
+
+	public String getPermission() {
+		return permission;
+	}
+
+	public void setPermission(String permission) {
+		this.permission = permission;
+	}
+
+	public String getIsActive() {
+		return isActive;
+	}
+
+	public void setIsActive(String isActive) {
+		this.isActive = isActive;
 	}
 
 }
