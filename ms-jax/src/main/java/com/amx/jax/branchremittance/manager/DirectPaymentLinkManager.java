@@ -154,6 +154,7 @@ public class DirectPaymentLinkManager extends AbstractModel {
 	
 	public PaymentLinkRespDTO validatePaymentLinkNew(BigDecimal linkId, String verificationCode) {
 		PaymentLinkRespDTO paymentLinkResp = new PaymentLinkRespDTO();
+		paymentLinkResp.setId(linkId);
 		BigDecimal localCurrencyId = amxConfig.getDefaultCurrencyId();
 		//BigDecimal localCurrencyId = metaData.getDefaultCurrencyId();
 		String hashVerifyCode = null;
@@ -199,6 +200,7 @@ public class DirectPaymentLinkManager extends AbstractModel {
 						}
 					}
 				}
+				
 				paymentLinkResp.setNetAmount(shpCartData.getTotalNetAmount());
 				paymentLinkResp.setTotalTrnxAmount(shpCartData.getTotalLocalAmount());
 				paymentLinkResp.setTotalCommissionAmt(shpCartData.getTotalTrnxFees());
