@@ -4,30 +4,31 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
+import com.amx.jax.model.customer.document.CustomerDocInfoDto;
 import com.amx.jax.swagger.ApiMockModelProperty;
 
 public class CustomerDocUploadNotificationTaskData {
 
 	@NotNull
-	@ApiMockModelProperty(example = "INCOME_PROOF")
-	String documentCategory;
+	@Size(min = 1)
+	List<CustomerDocInfoDto> customerDocInfo;
 
-	@NotNull
-	@ApiMockModelProperty(example = "[LOAN_STATEMENT]")
-	List<String> documentTypes;
+	public CustomerDocUploadNotificationTaskData() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public CustomerDocUploadNotificationTaskData(List<CustomerDocInfoDto> customerDocInfo, BigDecimal remittanceTransactionId) {
+		super();
+		this.customerDocInfo = customerDocInfo;
+		this.remittanceTransactionId = remittanceTransactionId;
+	}
 
 	@NotNull
 	@ApiMockModelProperty(example = "4228")
 	BigDecimal remittanceTransactionId;
-
-	public String getDocumentCategory() {
-		return documentCategory;
-	}
-
-	public void setDocumentCategory(String documentCategory) {
-		this.documentCategory = documentCategory;
-	}
 
 	public BigDecimal getRemittanceTransactionId() {
 		return remittanceTransactionId;
@@ -37,11 +38,12 @@ public class CustomerDocUploadNotificationTaskData {
 		this.remittanceTransactionId = remittanceTransactionId;
 	}
 
-	public List<String> getDocumentTypes() {
-		return documentTypes;
+	public List<CustomerDocInfoDto> getCustomerDocInfo() {
+		return customerDocInfo;
 	}
 
-	public void setDocumentTypes(List<String> documentTypes) {
-		this.documentTypes = documentTypes;
+	public void setCustomerDocInfo(List<CustomerDocInfoDto> customerDocInfo) {
+		this.customerDocInfo = customerDocInfo;
 	}
+
 }

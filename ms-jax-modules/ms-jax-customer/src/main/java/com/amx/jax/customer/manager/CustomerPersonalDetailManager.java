@@ -16,6 +16,7 @@ import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerContactVerification;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.customer.document.CustomerDocCatTypeDto;
 import com.amx.jax.model.request.UpdateCustomerPersonalDetailRequest;
 import com.amx.jax.model.request.VerifyCustomerContactRequest;
 import com.amx.jax.scope.TenantContext;

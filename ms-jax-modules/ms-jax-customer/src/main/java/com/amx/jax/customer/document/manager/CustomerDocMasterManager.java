@@ -20,6 +20,7 @@ import com.amx.jax.dbmodel.customer.CustomerDocumentType;
 import com.amx.jax.dbmodel.customer.CustomerDocumentTypeDesc;
 import com.amx.jax.dbmodel.customer.CustomerDocumentTypeMaster;
 import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReferenceTemp;
+import com.amx.jax.model.customer.document.CustomerDocCatTypeDto;
 import com.amx.jax.model.customer.document.CustomerDocumentCategoryDto;
 import com.amx.jax.model.customer.document.CustomerDocumentTypeDto;
 import com.amx.jax.repository.customer.CustomerDocumentTypeDescRepo;
@@ -123,5 +124,16 @@ public class CustomerDocMasterManager {
 			desc = docTypeDesc.getDescription();
 		}
 		return desc;
+	}
+
+	public List<CustomerDocCatTypeDto> listDocCatType() {
+		List<CustomerDocCatTypeDto> list = new ArrayList<>();
+		List<CustomerDocumentCategoryDto> docCategories = getDocumentCategory();
+
+		for (CustomerDocumentCategoryDto documentCategory : docCategories) {
+			List<CustomerDocumentTypeDto> documentTypes = getDocumentType(documentCategory.getDocumentCategory());
+			list.add(new CustomerDocCatTypeDto(documentCategory, documentTypes));
+		}
+		return list;
 	}
 }

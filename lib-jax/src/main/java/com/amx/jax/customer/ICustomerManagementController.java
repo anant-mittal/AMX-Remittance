@@ -5,10 +5,10 @@ import java.text.ParseException;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
-import com.amx.jax.dict.ContactType;
 import com.amx.jax.model.customer.CreateCustomerInfoRequest;
 import com.amx.jax.model.customer.DuplicateCustomerDto;
 import com.amx.jax.model.customer.IdentityTypeDto;
+import com.amx.jax.model.customer.document.CustomerDocCatTypeDto;
 import com.amx.jax.model.customer.document.CustomerDocumentCategoryDto;
 import com.amx.jax.model.customer.document.CustomerDocumentTypeDto;
 import com.amx.jax.model.customer.document.UploadCustomerDocumentRequest;
@@ -21,7 +21,6 @@ import com.amx.jax.model.request.customer.UpdateCustomerInfoRequest;
 import com.amx.jax.model.response.CustomerInfo;
 import com.amx.jax.model.response.customer.CustomerShortInfo;
 import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
-import com.amx.libjax.model.jaxfield.JaxFieldDto;
 
 public interface ICustomerManagementController {
 	public static class ApiPath {
@@ -40,6 +39,7 @@ public interface ICustomerManagementController {
 		public static final String DOCUMENT_DYNAMIC_FIELD_LIST = PREFIX + "/get-document-dynamic-field-list";
 		public static final String VERIFY_CONTACT = PREFIX + "/verify-contact";
 		public static final String GET_CUSTOMER_SHORT_DETAIL = PREFIX + "/get-customer-short-detail";
+		public static final String DOCUMENT_CAT_TYPE_LIST_GET = PREFIX + "/list-document-cat-type";
 	}
 
 	public static class ApiParams {
@@ -79,5 +79,7 @@ public interface ICustomerManagementController {
 	AmxApiResponse<BoolRespModel, Object> verifyContact(VerifyCustomerContactRequest request);
 
 	AmxApiResponse<CustomerShortInfo, Object> getCustomerShortDetail(String identityInt, BigDecimal identityType);
+
+	AmxApiResponse<CustomerDocCatTypeDto, Object> listDocCatType();
 
 }

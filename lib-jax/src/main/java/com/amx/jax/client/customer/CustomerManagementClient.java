@@ -20,6 +20,7 @@ import com.amx.jax.exception.JaxSystemError;
 import com.amx.jax.model.customer.CreateCustomerInfoRequest;
 import com.amx.jax.model.customer.DuplicateCustomerDto;
 import com.amx.jax.model.customer.IdentityTypeDto;
+import com.amx.jax.model.customer.document.CustomerDocCatTypeDto;
 import com.amx.jax.model.customer.document.CustomerDocumentCategoryDto;
 import com.amx.jax.model.customer.document.CustomerDocumentTypeDto;
 import com.amx.jax.model.customer.document.UploadCustomerDocumentRequest;
@@ -230,6 +231,18 @@ public class CustomerManagementClient implements ICustomerManagementController {
 					});
 		} catch (Exception ae) {
 			LOGGER.error("exception in getCustomerShortDetail : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}
+	}
+
+	@Override
+	public AmxApiResponse<CustomerDocCatTypeDto, Object> listDocCatType() {
+		try {
+			return restService.ajax(appConfig.getJaxURL()).path(ApiPath.DOCUMENT_CAT_TYPE_LIST_GET).meta(new JaxMetaInfo()).get()
+					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerDocCatTypeDto, Object>>() {
+					});
+		} catch (Exception ae) {
+			LOGGER.error("exception in listDocCatType : ", ae);
 			return JaxSystemError.evaluate(ae);
 		}
 	}

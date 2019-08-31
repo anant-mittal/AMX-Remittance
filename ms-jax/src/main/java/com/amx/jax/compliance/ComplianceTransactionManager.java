@@ -34,6 +34,7 @@ import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.customer.ComplianceTrnxDocumentInfo;
 import com.amx.jax.model.customer.CustomerDocumentInfo;
+import com.amx.jax.model.customer.document.CustomerDocInfoDto;
 import com.amx.jax.repository.compliance.ComplianceTrnxDocMapRepo;
 import com.amx.jax.repository.compliance.HighValueComplianceAuthRepo;
 import com.amx.jax.services.NotificationTaskService;
@@ -106,22 +107,18 @@ public class ComplianceTransactionManager {
 	public List<ComplianceTrnxDocumentInfo> getTransactionDocuments(BigDecimal trnxId) {
 
 		List<ComplianceBlockedTrnxDocMap> docs = complianceTrnxDocMapRepo.findByRemittanceTransaction(trnxId);
-		Map<BigDecimal, ComplianceBlockedTrnxDocMap> uploadIdTrnxDocMapMapping = docs.stream()
-				.filter(i -> i.getCustomerDocumentUploadReference() != null)
-				.collect(Collectors.toMap(i -> i.getCustomerDocumentUploadReference().getId(), i -> i));
-		List<CustomerDocumentInfo> customerDocInfoList = docs.stream()
-				.map(i -> customerDocumentManager.convertToCustomerDocumentInfo(i)).collect(Collectors.toList());
-		List<ComplianceTrnxDocumentInfo> list = customerDocInfoList.stream().map(j -> {
-			ComplianceBlockedTrnxDocMap doc = uploadIdTrnxDocMapMapping.get(j.getUploadRefId());
-			ComplianceTrnxDocumentInfo trnxDocInfo = new ComplianceTrnxDocumentInfo();
+		List<ComplianceTrnxDocumentInfo> complianceBlockedDocList = docs.stream().map(i -> {
+			CustomerDocumentInfo customerDocInfo = customerDocumentManager.convertToCustomerDocumentInfo(i);
+			ComplianceTrnxDocumentInfo complianceTrnxDocInfo = new ComplianceTrnxDocumentInfo();
 			try {
-				BeanUtils.copyProperties(trnxDocInfo, j);
+				BeanUtils.copyProperties(complianceTrnxDocInfo, customerDocInfo);
 			} catch (Exception e) {
 			}
-			trnxDocInfo.setStatus(doc.getStatus());
-			return trnxDocInfo;
+			complianceTrnxDocInfo.setStatus(i.getStatus());
+			return complianceTrnxDocInfo;
 		}).collect(Collectors.toList());
-		return list;
+
+		return complianceBlockedDocList;
 	}
 
 	@Transactional
@@ -151,8 +148,8 @@ public class ComplianceTransactionManager {
 
 	public void updateTrnxDocMap(List<CustomerDocumentUploadReference> customerUploadRefs, BigDecimal customerId) {
 		for (CustomerDocumentUploadReference customerUploadRef : customerUploadRefs) {
-			List<ComplianceBlockedTrnxDocMap> trnxDocMapList = complianceTrnxDocMapRepo
-					.findByDocTypeMasterAndCustomerId(customerUploadRef.getCustomerDocumentTypeMaster(), customerId);
+			List<ComplianceBlockedTrnxDocMap> trnxDocMapList = complianceTrnxDocMapRepo.findByDocTypeMasterAndCustomerIdAndStatus(
+					customerUploadRef.getCustomerDocumentTypeMaster(), customerId, ComplianceTrnxdDocStatus.REQUESTED);
 			trnxDocMapList.forEach(i -> {
 				i.setCustomerDocumentUploadReference(customerUploadRef);
 				i.setStatus(ComplianceTrnxdDocStatus.UPLOADED);
@@ -173,9 +170,9 @@ public class ComplianceTransactionManager {
 				i.setStatus(ComplianceTrnxdDocStatus.REJECTED);
 				complianceTrnxDocMapRepo.save(i);
 			}
+			CustomerDocInfoDto customerDocInfoDto = new CustomerDocInfoDto(request.getDocumentCategory(), request.getNewDocumentType());
 			CustomerDocUploadNotificationTaskData data = new CustomerDocUploadNotificationTaskData();
-			data.setDocumentCategory(request.getDocumentCategory());
-			data.setDocumentTypes(Arrays.asList(request.getNewDocumentType()));
+			data.setCustomerDocInfo(Arrays.asList(customerDocInfoDto));
 			data.setRemittanceTransactionId(request.getRemittanceTransactionId());
 			notificationTaskService.notifyBranchUserForDocumentUpload(data);
 		}
