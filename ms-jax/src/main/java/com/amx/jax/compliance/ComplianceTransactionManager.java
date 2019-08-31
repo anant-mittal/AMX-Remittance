@@ -3,7 +3,6 @@ package com.amx.jax.compliance;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
@@ -26,10 +25,12 @@ import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.customer.document.manager.CustomerDocumentManager;
 import com.amx.jax.customer.document.validate.DocumentScanValidator;
 import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.RemittanceTransactionView;
 import com.amx.jax.dbmodel.compliance.ComplianceBlockedTrnxDocMap;
 import com.amx.jax.dbmodel.compliance.HighValueComplianceAuth;
 import com.amx.jax.dbmodel.customer.CustomerDocumentTypeMaster;
 import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReference;
+import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.customer.ComplianceTrnxDocumentInfo;
@@ -100,6 +101,10 @@ public class ComplianceTransactionManager {
 		dto.setDocumentFinancialYear(i.getDocumentFinanceYear());
 		dto.setDocumentNo(i.getDocumentNo());
 		dto.setTransactionId(i.getIdNo());
+		RemittanceTransaction remittanceTransaction = remittanceTransactionService.getRemittanceTransactionById(i.getIdNo());
+		dto.setCollectionDocNo(remittanceTransaction.getCollectionDocumentNo());
+		dto.setCollectionDocCode(remittanceTransaction.getCollectionDocCode());
+		dto.setCollectionDocYear(remittanceTransaction.getCollectionDocFinanceYear());
 		return dto;
 	}
 
