@@ -1,313 +1,34 @@
-<!-- <!DOCTYPE html>
-<html
-  xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:th="http://www.thymeleaf.org"
-  xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
->
-  <head>
-    <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-    />
-    <title>Invoice</title>
-    <style type="text/css">
-      body,
-      html {
-        font-family: "OpenSans", Arial, Helvetica, sans-serif;
-        font-size: 14px;
-        color: #000;
-        margin: 0;
-        padding: 0;
-        vertical-align: middle;
-        height: 100%;
-      }
-      * {
-        box-sizing: border-box;
-      }
-      .header {
-        width: 100%;
-        height: 63px;
-        background: #000;
-        position: relative;
-        -webkit-filter: drop-shadow(0px 4px 3px rgba(0, 0, 0, 0.44));
-        filter: drop-shadow(0px 4px 3px rgba(0, 0, 0, 0.44));
-        z-index: 10;
-      }
-
-      .header .logo {
-        position: absolute;
-        width: 267px;
-        text-align: center;
-        padding-bottom: 12px;
-        top: 12px;
-        transition: all 0.2s;
-      }
-
-      h1 {
-        font-size: 20px;
-        font-weight: bold;
-        color: rgb(49, 194, 92);
-        text-align: center;
-        line-height: 75px;
-        margin: 0;
-        padding: 0;
-      }
-
-      .box-container {
-        border-radius: 4px;
-        box-shadow: 0 -1px 8px -1px rgba(118, 118, 118, 0.5);
-        background-color: rgb(255, 255, 255);
-      }
-      h2 {
-        font-size: 14px;
-        font-weight: 600;
-        color: rgb(49, 194, 92);
-      }
-      .cart-item-list,
-      .order-summary {
-        width: 100%;
-        padding: 0 11px;
-        max-width: 400px;
-        min-width: 320px;
-        flex-grow: 1;
-      }
-      .cart-item-list {
-        height: 100%;
-        overflow: auto;
-      }
-      .cart-item {
-        padding: 21px;
-        margin: 14px 0;
-      }
-      .label {
-        font-size: 12px;
-        color: rgb(90, 90, 90);
-        line-height: 18px;
-      }
-      .value {
-        font-size: 14px;
-        color: rgb(0, 0, 0);
-        line-height: 20px;
-      }
-      .value-m {
-        font-size: 16px;
-        color: rgb(0, 0, 0);
-        line-height: 23px;
-      }
-      .bold {
-        font-weight: bold;
-      }
-      .pb10 {
-        padding-bottom: 10px;
-      }
-      .mb10 {
-        margin-bottom: 10px;
-      }
-      .mtb5 {
-        margin: 5px 0;
-      }
-      hr {
-        color: rgb(190, 190, 190);
-        background-color: rgb(190, 190, 190);
-        height: 1px;
-        border: 0;
-        margin: 0;
-      }
-      .row::after {
-        content: "";
-        display: block;
-        clear: both;
-      }
-      .left-item {
-        float: left;
-      }
-      .right-item {
-        float: right;
-      }
-
-      .wrapper {
-        display: flex;
-        justify-content: center;
-        flex-wrap: wrap;
-        height: calc(100% - 75px);
-      }
-      .button {
-        width: 210px;
-        border-radius: 21.5px;
-        background-color: rgb(0, 185, 53);
-        font-size: 18px;
-        font-weight: 600;
-        padding: 10px 0;
-        color: #fff;
-        display: block;
-        text-align: center;
-        text-decoration: none;
-        margin: 20px auto;
-	  }
-	  .container{
-		  height: calc(100% - 63px);
-	  }
-
-      @media only screen and (max-width: 800px) {
-        .cart-item-list {
-          height: auto;
-          overflow: visible;
-        }
-        .container {
-		  overflow: auto;
-		  height: calc(100% - 150px);
-		}
-		.button {
-		  position: fixed;
-		  bottom: 0;
-		  left: calc(50% - 105px);
-	  	}
-	  }
-	  
-    </style>
-    <script th:inline="javascript">
-        var cart = ([[${cart}]]);
-        console.log(cart);
-    </script>
-  </head>
-  <body>
-    <div class="header">
-      <div class="logo">
-        <img th:src="@{'/logo-'+ ${companyTnt}+ '.png'}" alt="logo" />
-      </div>
-    </div>
-    <div class="container">
-      <h1>Remittence Details</h1>
-      <div class="wrapper">
-        <div class="cart-item-list">
-          <div class="box-container cart-item">
-            <h2>Remittance Details - 1</h2>
-
-            <div class="label">Bene Name</div>
-            <div class="value pb10">Mohammad Abdulfattah Almaslemi</div>
-            <div class="label">Bank</div>
-            <div class="value pb10">Axis Bank</div>
-            <div class="label">Account</div>
-            <div class="value pb10">34502745770</div>
-            <hr class="mb10" />
-            <div class="row">
-              <div class="left-item value-m ">KWD => INR</div>
-              <div class="right-item value-m ">INR => KWD</div>
-            </div>
-            <div class="row">
-              <div class="left-item value ">208.86</div>
-              <div class="right-item value ">0.004788</div>
-            </div>
-            <hr class="mtb5" />
-            <div class="row">
-              <div class="left-item label ">You send</div>
-              <div class="right-item value  bold">200KD</div>
-            </div>
-            <div class="row">
-              <div class="left-item label ">Transaction fees</div>
-              <div class="right-item value bold ">+ 1 KWD</div>
-            </div>
-            <hr class="mtb5" />
-            <div class="row">
-              <div class="left-item label bold">You Pay</div>
-              <div class="right-item value bold">200 KD</div>
-            </div>
-            <hr class="mtb5" />
-            <div class="row">
-              <div class="left-item label bold">Receive</div>
-              <div class="right-item value bold">41,772 INR</div>
-            </div>
-          </div>
-
-          <div class="box-container cart-item">
-            <h2>Remittance Details - 1</h2>
-
-            <div class="label">Bene Name</div>
-            <div class="value pb10">Mohammad Abdulfattah Almaslemi</div>
-            <div class="label">Bank</div>
-            <div class="value pb10">Axis Bank</div>
-            <div class="label">Account</div>
-            <div class="value pb10">34502745770</div>
-            <hr class="mb10" />
-            <div class="row">
-              <div class="left-item value-m ">KWD => INR</div>
-              <div class="right-item value-m ">INR => KWD</div>
-            </div>
-            <div class="row">
-              <div class="left-item value ">208.86</div>
-              <div class="right-item value ">0.004788</div>
-            </div>
-            <hr class="mtb5" />
-            <div class="row">
-              <div class="left-item label ">You send</div>
-              <div class="right-item value  bold">200KD</div>
-            </div>
-            <div class="row">
-              <div class="left-item label ">Transaction fees</div>
-              <div class="right-item value bold ">+ 1 KWD</div>
-            </div>
-            <hr class="mtb5" />
-            <div class="row">
-              <div class="left-item label bold">You Pay</div>
-              <div class="right-item value bold">200 KD</div>
-            </div>
-            <hr class="mtb5" />
-            <div class="row">
-              <div class="left-item label bold">Receive</div>
-              <div class="right-item value bold">41,772 INR</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="order-summary">
-          <div class="box-container cart-item">
-            <div class="value bold">Remittance Details - 1</div>
-            <hr class="mtb5" />
-            <div class="row">
-              <div class="left-item label ">Remittance Amount</div>
-              <div class="right-item value  bold">200KD</div>
-            </div>
-            <div class="row">
-              <div class="left-item label ">Total Transaction Fees</div>
-              <div class="right-item value bold ">2 KWD</div>
-            </div>
-            <hr class="mtb5" />
-            <div class="row">
-              <div class="left-item label bold">
-                Total Amount to be Received
-              </div>
-              <div class="right-item value bold">200 KD</div>
-            </div>
-            <hr class="mtb5" />
-            <div class="row">
-              <div class="left-item label bold">0 KWD added</div>
-              <div class="right-item value bold">202 KWD</div>
-            </div>
-            <div class="row">
-              <div class="right-item value">remaining</div>
-            </div>
-          </div>
-
-          <a href="#" class="button">Pay Now</a>
-        </div>
-      </div>
-    </div>
-  </body>
-</html> -->
-
-
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:th="http://www.thymeleaf.org"
-	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3" >
 <head>
-  <meta charset="UTF-8"/>
-  <title>Almulla Online</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title th:text="${applicationTitle}">Al Mulla Online</title>
 </head>
 <body>
-<div id="app"></div>
-<script>
+	<div id="app"></div>
+	<script>
+window.CONST = {
+	    dev: false,
+	    remoteServerUrl: '',
+	    remoteJsUrl: '[[${cdnUrl}]]', //
+	    remoteJsVersion: '[[${CDN_VERSION}]]', //
+	    dummyApi: false,
+	    fpath : '[[${cdnUrl}]]/dist/fingerprint.js',
+	    did : '[[${did}]]',
+	    lang : '[[${lang}]]',
+	    fcmSenderId: '[[${fcmSenderId}]]'
+	  };
+</script>
+	<script th:if="${did==null}">
+	(function(a){if("localStorage"in a){var b=a.localStorage.getItem("__did__");b?(a=new Date,a.setTime(a.getTime()+31536E6),a="expires="+a.toUTCString(),document.cookie="did="+b+";"+a+";path=/"):(b=a.CONST.fpath,a=document.createElement("script"),a.type="application/javascript",a.src=b,document.body.appendChild(a))}})(this);
+</script>
+	<script th:unless="${did==null}">
+(function(win){if("localStorage"in win)if(win.CONST.did)win.localStorage.setItem("__did__",win.CONST.did)})(this);
+</script>
+	<script>
   function getJson(str) {
     var json;
     try {
@@ -318,12 +39,6 @@
     }
     return json;
   }
-  window.CONST = {
-    dev: false,
-    remoteServerUrl: '',
-    remoteJsUrl: 'http://10.28.42.83/onlinewebapp',
-    dummyApi: false
-  };
   var config = getJson(window.localStorage.getItem('debugConfig'));
   if (config) {
     window.CONST.dev = config.dev || false;
@@ -336,9 +51,11 @@
   var head = document.getElementsByTagName('head')[0];
   var js = document.createElement('script');
   js.type = 'text/javascript';
-  js.src = window.CONST.remoteJsUrl + '/dist/pay.bundle.js';
+  js.src = window.CONST.remoteJsUrl + '/dist/pay.bundle.js?_=' + window.CONST.remoteJsVersion;
   var css = document.createElement('link');
   css.rel = 'stylesheet';
+  css.href = window.CONST.remoteJsUrl + '/dist/pay.css?_=' + window.CONST.remoteJsVersion;
+  head.appendChild(css);
   head.appendChild(js);
 
   // add favicon
@@ -351,4 +68,3 @@
 </script>
 </body>
 </html>
-
