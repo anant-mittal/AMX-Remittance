@@ -211,6 +211,10 @@ public class KnetClientV2 implements PayGClient, InitializingBean {
 			}
 		}
 		
+		if ("NOT+CAPTURED".equalsIgnoreCase(gatewayResponse.getResult())) {
+			gatewayResponse.setResult("NOT CAPTURED");
+		}
+		
 		String expectedSecrete = PaymentConstant.getHashedSecrete(
 				getPaymentParamStr(gatewayResponse.getUdf3().trim(), gatewayResponse.getTrackId()),
 				PaymentConstant.KWT_SECRETE_SALT);
