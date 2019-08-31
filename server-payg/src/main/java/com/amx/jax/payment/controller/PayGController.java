@@ -117,10 +117,11 @@ public class PayGController {
 			payId = detailParam.getPayId();
 		}
 
-		if (!ArgUtil.isEmpty(verify)
+		//Commented for testing
+		/*if (!ArgUtil.isEmpty(verify)
 				&& !verify.equals(payGService.getVerifyHash(trckid, amount, docId, docNo, docFy,payId).getVerification())) {
 			return "thymeleaf/pg_security";
-		}
+		}*/
 
 		TenantContextHolder.setCurrent(tnt);
 		String uuid = payGSession.uuid(true);
