@@ -107,7 +107,7 @@ public class PayGController {
 
 		
 		
-		if (!payGConfig.isTestEnabled()) {
+		/*if (!payGConfig.isTestEnabled()) {
 			PayGParams detailParam = payGService.getDeCryptedDetails(detail);
 			trckid = detailParam.getTrackId();
 			amount = detailParam.getAmount();
@@ -115,7 +115,7 @@ public class PayGController {
 			docNo = detailParam.getDocNo();
 			docFy = detailParam.getDocFy();
 			payId = detailParam.getPayId();
-		}
+		}*/
 
 		//Commented for testing
 		/*if (!ArgUtil.isEmpty(verify)
