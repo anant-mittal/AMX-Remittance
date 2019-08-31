@@ -10,6 +10,7 @@ public class PaymentLinkRespDTO extends RemittanceApplicationResponseModel {
 	private BigDecimal id;
 	private String verificationCode;
 	private String applicationIds;
+	private String linkStatus;
 
 	private String curQutoe;
 	private BigDecimal netAmount;
@@ -18,7 +19,6 @@ public class PaymentLinkRespDTO extends RemittanceApplicationResponseModel {
 	private BigDecimal totalTrnxAmount;
 	private BigDecimal totalCommissionAmt;
 
-	private List<TransactionDetailsDTO> transactionDetails;
 	private PaymentLinkRespStatus paymentLinkRespStatus;
 
 	private List<CustomerShoppingCartDto> shoppingCartDetails;
@@ -49,6 +49,14 @@ public class PaymentLinkRespDTO extends RemittanceApplicationResponseModel {
 
 	public void setApplicationIds(String applicationIds) {
 		this.applicationIds = applicationIds;
+	}
+	
+	public String getLinkStatus() {
+		return linkStatus;
+	}
+
+	public void setLinkStatus(String linkStatus) {
+		this.linkStatus = linkStatus;
 	}
 
 	public String getCurQutoe() {
@@ -89,14 +97,6 @@ public class PaymentLinkRespDTO extends RemittanceApplicationResponseModel {
 
 	public void setRequestData(String requestData) {
 		this.requestData = requestData;
-	}
-
-	public List<TransactionDetailsDTO> getTransactionDetails() {
-		return transactionDetails;
-	}
-
-	public void setTransactionDetails(List<TransactionDetailsDTO> transactionDetails) {
-		this.transactionDetails = transactionDetails;
 	}
 
 	public PaymentLinkRespStatus getPaymentLinkRespStatus() {

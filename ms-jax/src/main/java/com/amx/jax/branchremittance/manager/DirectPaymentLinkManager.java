@@ -210,6 +210,7 @@ public class DirectPaymentLinkManager extends AbstractModel {
 				paymentLinkResp.setShoppingCartDetails(shoppingCartDetails);
 				paymentLinkResp.setApplicationIds(paymentLink.getApplIds());
 				paymentLinkResp.setCurQutoe(currencyQuote);
+				paymentLinkResp.setLinkStatus(paymentLink.getLinkActive());
 			}
 			if(paymentLink.getLinkActive().equals("P")) {
 				JaxTransactionStatus status = getJaxTransactionStatus(paymentLink);
@@ -233,6 +234,7 @@ public class DirectPaymentLinkManager extends AbstractModel {
 				
 				paymentLinkResp.setPaymentLinkRespStatus(statusModel);
 				paymentLinkResp.setApplicationIds(paymentLink.getApplIds());
+				paymentLinkResp.setLinkStatus(paymentLink.getLinkActive());
 			}
 			if (paymentLink.getLinkActive().equals("D")) {
 				throw new GlobalException(JaxError.DIRECT_LINK_DEACTIVATED,
