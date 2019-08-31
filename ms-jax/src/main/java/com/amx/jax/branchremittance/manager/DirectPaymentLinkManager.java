@@ -2,6 +2,7 @@ package com.amx.jax.branchremittance.manager;
 
 import java.math.BigDecimal;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -143,7 +144,8 @@ public class DirectPaymentLinkManager extends AbstractModel {
 			paymentLinkResp.setVerificationCode(code);
 			paymentLinkResp.setCurQutoe(currencyQuote);
 			paymentLinkResp.setNetAmount(paymentLinkId.getPayAmount());
-			paymentLinkResp.setRequestData(paymentLinkId.getLinkDate());
+			//paymentLinkResp.setRequestData(paymentLinkId.getLinkDate());
+			paymentLinkResp.setRequestData(new SimpleDateFormat("dd-MM-YYYY hh:mm").format(paymentLinkId.getLinkDate()));
 
 			return paymentLinkResp;
 		}
@@ -156,6 +158,7 @@ public class DirectPaymentLinkManager extends AbstractModel {
 		PaymentLinkRespDTO paymentLinkResp = new PaymentLinkRespDTO();
 		paymentLinkResp.setId(linkId);
 		BigDecimal localCurrencyId = amxConfig.getDefaultCurrencyId();
+		String currencyQuote = amxConfig.getDefCurrencyQuote();
 		//BigDecimal localCurrencyId = metaData.getDefaultCurrencyId();
 		String hashVerifyCode = null;
 		try {
@@ -206,6 +209,7 @@ public class DirectPaymentLinkManager extends AbstractModel {
 				paymentLinkResp.setTotalCommissionAmt(shpCartData.getTotalTrnxFees());
 				paymentLinkResp.setShoppingCartDetails(shoppingCartDetails);
 				paymentLinkResp.setApplicationIds(paymentLink.getApplIds());
+				paymentLinkResp.setCurQutoe(currencyQuote);
 			}
 			if(paymentLink.getLinkActive().equals("P")) {
 				JaxTransactionStatus status = getJaxTransactionStatus(paymentLink);

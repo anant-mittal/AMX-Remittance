@@ -1,7 +1,6 @@
 package com.amx.jax.model.response.remittance;
 
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.List;
 
 public class PaymentLinkRespDTO extends RemittanceApplicationResponseModel {
@@ -14,7 +13,7 @@ public class PaymentLinkRespDTO extends RemittanceApplicationResponseModel {
 
 	private String curQutoe;
 	private BigDecimal netAmount;
-	private Date requestData;
+	private String requestData;
 
 	private BigDecimal totalTrnxAmount;
 	private BigDecimal totalCommissionAmt;
@@ -84,11 +83,11 @@ public class PaymentLinkRespDTO extends RemittanceApplicationResponseModel {
 		this.totalCommissionAmt = totalCommissionAmt;
 	}
 
-	public Date getRequestData() {
+	public String getRequestData() {
 		return requestData;
 	}
 
-	public void setRequestData(Date requestData) {
+	public void setRequestData(String requestData) {
 		this.requestData = requestData;
 	}
 
