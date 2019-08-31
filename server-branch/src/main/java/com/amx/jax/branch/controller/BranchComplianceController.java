@@ -4,7 +4,9 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.compliance.ComplianceBlockedTrnxType;
 import com.amx.jax.client.compliance.ComplianceClient;
 import com.amx.jax.client.compliance.HighValueTrnxDto;
+import com.amx.jax.client.customer.CustomerManagementClient;
 import com.amx.jax.model.customer.ComplianceTrnxDocumentInfo;
+import com.amx.jax.model.customer.document.CustomerDocCatTypeDto;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +22,9 @@ public class BranchComplianceController {
 	@Autowired
 	private ComplianceClient complianceClient;
 
+	@Autowired
+	CustomerManagementClient customerManagementClient;
+
 	@RequestMapping(value = "/api/compliance/trnx/list", method = { RequestMethod.GET })
 	public AmxApiResponse<HighValueTrnxDto, Object> getTransactions(ComplianceBlockedTrnxType trnxType) {
 		return complianceClient.listHighValueTransaction(trnxType);
@@ -30,6 +35,12 @@ public class BranchComplianceController {
 	public AmxApiResponse<ComplianceTrnxDocumentInfo, Object> clearCustomerDetails(Long trnxId) {
 		return complianceClient.getTransactionDocuments(trnxId);
 	}
+
+	@RequestMapping(value = "/api/compliance/doc/types", method = { RequestMethod.GET })
+	public AmxApiResponse<CustomerDocCatTypeDto, Object> getDocTypes() {
+		return customerManagementClient.listDocCatType();
+	}
+
 
 
 }
