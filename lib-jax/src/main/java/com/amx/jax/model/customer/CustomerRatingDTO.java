@@ -32,8 +32,8 @@ public class CustomerRatingDTO extends AbstractModel {
 	private String ratingRemark;
 	
 	//fxOrder 
-	private BigDecimal fxOrderApplicationId;
-	private BigDecimal fxOrderTransactionId;
+	private BigDecimal collectionDocNo;
+	private BigDecimal collectionDocfyr;
 	private String producttype;
 
 	@Override
@@ -105,20 +105,20 @@ public class CustomerRatingDTO extends AbstractModel {
 		this.ratingRemark = ratingRemark;
 	}
 
-	public BigDecimal getFxOrderApplicationId() {
-		return fxOrderApplicationId;
+	public BigDecimal getCollectionDocNo() {
+		return collectionDocNo;
 	}
 
-	public void setFxOrderApplicationId(BigDecimal fxOrderApplicationId) {
-		this.fxOrderApplicationId = fxOrderApplicationId;
+	public void setCollectionDocNo(BigDecimal collectionDocNo) {
+		this.collectionDocNo = collectionDocNo;
 	}
 
-	public BigDecimal getFxOrderTransactionId() {
-		return fxOrderTransactionId;
+	public BigDecimal getCollectionDocfyr() {
+		return collectionDocfyr;
 	}
 
-	public void setFxOrderTransactionId(BigDecimal fxOrderTransactionId) {
-		this.fxOrderTransactionId = fxOrderTransactionId;
+	public void setCollectionDocfyr(BigDecimal collectionDocfyr) {
+		this.collectionDocfyr = collectionDocfyr;
 	}
 
 	public String getProducttype() {

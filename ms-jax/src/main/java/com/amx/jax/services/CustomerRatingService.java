@@ -99,11 +99,11 @@ public class CustomerRatingService {
 			
 			CustomerRating customerRating = new CustomerRating();
 			BigDecimal applicationCountryId = metaData.getCountryId();
-			BigDecimal fxOrdertrnxId = dto.getFxOrderTransactionId();
+			BigDecimal fxOrdertrnxId = dto.getCollectionDocNo();
 			
 			if(fxOrdertrnxId!=null) {
 				
-				CustomerRating customerRatingvalue = customerRatingdao.getCustomerRatingDataByfxOrderTransactionId(fxOrdertrnxId);
+				CustomerRating customerRatingvalue = customerRatingdao.getCustomerRatingDataBycollectionDocNo(fxOrdertrnxId);
 				
 				if(customerRatingvalue!=null) {
 									
@@ -198,11 +198,11 @@ public class CustomerRatingService {
 			
 			CustomerRating customerRating = new CustomerRating();
 			BigDecimal applicationCountryId = metaData.getCountryId();
-			BigDecimal fxOrdertrnxId = dto.getFxOrderTransactionId();
+			BigDecimal fxOrdertrnxId = dto.getCollectionDocNo();
 			
 			if(fxOrdertrnxId!=null) {
 				
-				CustomerRating customerRatingvalue = customerRatingdao.getCustomerRatingDataByfxOrderTransactionId(fxOrdertrnxId);
+				CustomerRating customerRatingvalue = customerRatingdao.getCustomerRatingDataBycollectionDocNo(fxOrdertrnxId);
 				
 				if(customerRatingvalue!=null) {
 									
@@ -259,17 +259,17 @@ public class CustomerRatingService {
 			if (fxOrdertrnxId != null) {
 				
 				CustomerRating customerRatingvalue = customerRatingdao
-						.getCustomerRatingDataByfxOrderTransactionId(fxOrdertrnxId);
+						.getCustomerRatingDataBycollectionDocNo(fxOrdertrnxId);
 				if (customerRatingvalue != null) {
 					
 					customerRating.setRating(customerRatingvalue.getRating());
 					customerRating.setApplicationCountryId(customerRatingvalue.getApplicationCountryId());
 					customerRating.setCreatedDate(customerRatingvalue.getCreatedDate());
 					customerRating.setCustomerId(customerRatingvalue.getCustomerId());
-					customerRating.setRemittanceTransactionId(customerRatingvalue.getRemittanceTransactionId());
+					customerRating.setCollectionDocNo(customerRatingvalue.getCollectionDocNo());
 					customerRating.setRatingId(customerRatingvalue.getRatingId());
 					customerRating.setRatingRemark(customerRatingvalue.getRatingRemark());
-					customerRating.setRemittanceApplicationId(customerRatingvalue.getRemittanceApplicationId());
+					customerRating.setCollectionDocFyr(customerRatingvalue.getCollectionDocFyr());
 					customerRating.setFeedbackType(AmxEnums.Products.FXORDER.toString());
 					
 				}else {

@@ -20,8 +20,8 @@ public interface ICustomerRatingDao extends JpaRepository<CustomerRating, Serial
 	@Query("select c from CustomerRating c where remittanceTransactionId=?1")
 	public CustomerRating getCustomerRatingDataByRemittanceTransactionId(BigDecimal remittanceTransactionId);
 		
-	@Query("select c from CustomerRating c where fxOrderTransactionId=?1")
-	public CustomerRating getCustomerRatingDataByfxOrderTransactionId(BigDecimal fxOrderTransactionId);
+	@Query("select c from CustomerRating c where collectionDocNo=?1")
+	public CustomerRating getCustomerRatingDataBycollectionDocNo(BigDecimal collectionDocNo);
 	
 	
 
