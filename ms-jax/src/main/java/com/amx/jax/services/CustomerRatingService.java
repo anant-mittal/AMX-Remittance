@@ -11,12 +11,14 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.dbmodel.CustomerRating;
+import com.amx.jax.dbmodel.ReceiptPayment;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.dict.AmxEnums;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.customer.CustomerRatingDTO;
+import com.amx.jax.partner.repository.ReceiptPaymenttRepository;
 import com.amx.jax.repository.ICustomerRatingDao;
 import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.repository.RemittanceTransactionRepository;
@@ -35,6 +37,9 @@ public class CustomerRatingService {
 	
 	@Autowired
 	RemittanceApplicationRepository remittanceApplicationRepository;
+	
+	@Autowired
+	ReceiptPaymenttRepository receiptPaymenttRepository;
 
 	@Autowired
 	MetaData metaData;
@@ -90,7 +95,7 @@ public class CustomerRatingService {
 				}
 				
 						
-		} else {
+			}else {
 			
 			CustomerRating customerRating = new CustomerRating();
 			BigDecimal applicationCountryId = metaData.getCountryId();
@@ -107,19 +112,21 @@ public class CustomerRatingService {
 													
 				}else
 				{
-					RemittanceTransaction remittanceApplicationTxnxId = remittanceTransactionRepository.findByRemittanceTransactionId(dto.getRemittanceTransactionId());
-					if(remittanceApplicationTxnxId!=null) {
+					//RemittanceTransaction remittanceApplicationTxnxId = remittanceTransactionRepository.findByRemittanceTransactionId(dto.getRemittanceTransactionId());
+					
+					ReceiptPayment receiptPaymentdetails =receiptPaymenttRepository.findByDeliveryDetSeqId(fxOrdertrnxId);
+					if(receiptPaymentdetails!=null) {
 				//	RemittanceApplication remitAPPLTrnx = remittanceApplicationRepository.getRemittanceApplicationId(remittanceApplicationTxnxId.getApplicationDocumentNo(),remittanceApplicationTxnxId.getDocumentFinanceYear());
 					
 					//if(remitAPPLTrnx!=null) {
 					
 					customerRating.setRating(dto.getRating());
 					customerRating.setRatingRemark(dto.getRatingRemark());
-					customerRating.setFxOrderTransactionId(remittanceApplicationTxnxId.getCollectionDocumentNo());
+					customerRating.setCollectionDocNo(receiptPaymentdetails.getColDocNo());
 					//customerRating.setRemittanceApplicationId(remitAPPLTrnx.getRemittanceApplicationId());
-					customerRating.setFxOrderApplicationId(remittanceApplicationTxnxId.getCollectionDocFinanceYear());
+					customerRating.setCollectionDocFyr(receiptPaymentdetails.getColDocFyr());
 					//c//ustomerRating.setRemittanceTransactionId(dto.getRemittanceTransactionId());
-					//customerRating.setCustomerId(remitAPPLTrnx.getFsCustomer().getCustomerId());
+					customerRating.setCustomerId(receiptPaymentdetails.getFsCustomer().getCustomerId());
 					customerRating.setApplicationCountryId(applicationCountryId);
 					customerRating.setCreatedDate(new Date());
 					customerRating.setFeedbackType(AmxEnums.Products.FXORDER.toString());

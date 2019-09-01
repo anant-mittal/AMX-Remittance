@@ -27,8 +27,8 @@ public class CustomerRating implements java.io.Serializable{
 	private Date createdDate;
 	private BigDecimal rating;
 	private String ratingRemark;
-	private BigDecimal fxOrderTransactionId;
-	private BigDecimal fxOrderApplicationId;
+	private BigDecimal collectionDocNo;
+	private BigDecimal collectionDocFyr;
 	private String feedbackType;
 	
 	
@@ -98,28 +98,26 @@ public class CustomerRating implements java.io.Serializable{
 	public void setRatingRemark(String ratingRemark) {
 		this.ratingRemark = ratingRemark;
 	}
-	
-	
-	@Column(name = "COLLECTION_DOCUMENT_NO")
-	public BigDecimal getFxOrderTransactionId() {
-		return fxOrderTransactionId;
-	}
-	public void setFxOrderTransactionId(BigDecimal fxOrderTransactionId) {
-		this.fxOrderTransactionId = fxOrderTransactionId;
-	}
-	
-	@Column(name = "COLLECTION_DOC_FINANCE_YEAR")
-	public BigDecimal getFxOrderApplicationId() {
-		return fxOrderApplicationId;
-	}
-	public void setFxOrderApplicationId(BigDecimal fxOrderApplicationId) {
-		this.fxOrderApplicationId = fxOrderApplicationId;
-	}
+	@Column(name = "FEEDBACK_TYPE ")
 	public String getFeedbackType() {
 		return feedbackType;
 	}
 	public void setFeedbackType(String feedbackType) {
 		this.feedbackType = feedbackType;
+	}
+	@Column(name = "COLLECTION_DOCUMENT_NO")
+	public BigDecimal getCollectionDocNo() {
+		return collectionDocNo;
+	}
+	public void setCollectionDocNo(BigDecimal collectionDocNo) {
+		this.collectionDocNo = collectionDocNo;
+	}
+	@Column(name = "COLLECTION_DOC_FINANCE_YEAR")
+	public BigDecimal getCollectionDocFyr() {
+		return collectionDocFyr;
+	}
+	public void setCollectionDocFyr(BigDecimal collectionDocFyr) {
+		this.collectionDocFyr = collectionDocFyr;
 	}
 	
 	
