@@ -38,11 +38,15 @@ import com.amx.jax.dbmodel.RemittanceTransactionView;
 import com.amx.jax.dbmodel.ServiceApplicabilityRule;
 import com.amx.jax.dbmodel.ViewCity;
 import com.amx.jax.dbmodel.fx.EmployeeDetailsView;
+import com.amx.jax.dbmodel.remittance.AdditionalBankDetailsViewx;
 import com.amx.jax.dbmodel.remittance.AdditionalBankRuleAmiec;
+import com.amx.jax.dbmodel.remittance.AdditionalBankRuleMap;
 import com.amx.jax.dbmodel.remittance.BeneficiaryAccountException;
 import com.amx.jax.dbmodel.remittance.RemittanceBenificiary;
 import com.amx.jax.dbmodel.remittance.ViewBnkFlexVal;
+import com.amx.jax.dbmodel.remittance.ViewDeliveryMode;
 import com.amx.jax.dbmodel.remittance.ViewParameterDetails;
+import com.amx.jax.dbmodel.remittance.ViewRemittanceMode;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.manager.RemittanceApplicationAdditionalDataManager;
 import com.amx.jax.manager.RemittanceApplicationManager;
@@ -67,6 +71,7 @@ import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.repository.BankMasterRepository;
 import com.amx.jax.repository.IAccountTypeFromViewDao;
 import com.amx.jax.repository.IAdditionalBankRuleAmiecRepository;
+import com.amx.jax.repository.IAdditionalBankRuleMapRepos;
 import com.amx.jax.repository.IBankBranchView;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.ICollectionDetailRepository;
@@ -80,7 +85,9 @@ import com.amx.jax.repository.IViewCityDao;
 import com.amx.jax.repository.fx.EmployeeDetailsRepository;
 import com.amx.jax.repository.remittance.BeneficiaryAccountExceptRepository;
 import com.amx.jax.repository.remittance.BranchDayTransactionRepository;
+import com.amx.jax.repository.remittance.IViewDeliveryMode;
 import com.amx.jax.repository.remittance.IViewParameterDetailsRespository;
+import com.amx.jax.repository.remittance.IViewRemittanceMode;
 import com.amx.jax.repository.remittance.IvBankFlxValRepository;
 import com.amx.jax.services.BankService;
 import com.amx.jax.services.BeneficiaryCheckService;
@@ -194,11 +201,12 @@ public class BranchRemittanceManager extends AbstractModel {
 	@Autowired
 	BankMasterRepository bankMasterDao;
 	
+	@Autowired
+	IViewRemittanceMode viewRemittanceMode;
 	
+	@Autowired
+	IViewDeliveryMode viewDeliveryMode;
 
-	
-	
-	
 	@Autowired
 	IServiceApplicabilityRuleDao serviceApplRule;
 	
@@ -217,6 +225,9 @@ public class BranchRemittanceManager extends AbstractModel {
 	
 	
 
+	@Autowired
+	IAdditionalBankRuleMapRepos additionalBankRuleMapRepos;
+	
 	
 	public void checkingStaffIdNumberWithCustomer() {
 		boolean checkStatus = Boolean.FALSE;
@@ -1202,12 +1213,36 @@ public ParameterDetailsResponseDto getGiftService(BigDecimal beneId) {
 				for (ViewParameterDetails viewParameterDetails : vwParamDetailsList) {
 					ParameterDetailsDto pdto = new ParameterDetailsDto();
 					
+					if(StringUtils.isBlank(viewParameterDetails.getCharField3())) {
+						throw new GlobalException(JaxError.BPI_SETUP_IS_MISSING,"Indicator value is missing");
+					}
+					if(StringUtils.isBlank(viewParameterDetails.getCharField4())) {
+						throw new GlobalException(JaxError.BPI_SETUP_IS_MISSING,"Remittance code is missing");
+					}
+					
+					if(StringUtils.isBlank(viewParameterDetails.getCharField5())) {
+						throw new GlobalException(JaxError.BPI_SETUP_IS_MISSING,"Delivery code is missing");
+					}
+						
+					
+					AdditionalBankRuleMap addlMap = additionalBankRuleMapRepos.findByFlexFieldAndIsActive(viewParameterDetails.getCharField3(), ConstantDocument.Yes);
+					BankMasterModel bankMasterModel = bankService.getByBankCode(viewParameterDetails.getCharField2());
+					List<CurrencyMasterModel> currLsit = currencyDao.getCurrencyListByCountryId(bankMasterModel.getBankCountryId());
+					ViewRemittanceMode remitMode = viewRemittanceMode.findByRemittancCode(viewParameterDetails.getCharField4());
+					ViewDeliveryMode   delMode   =viewDeliveryMode.findByDeliveryCode(viewParameterDetails.getCharField5());
+					BigDecimal currencyId = BigDecimal.ZERO;
+					if(!currLsit.isEmpty()) {
+						currencyId = currLsit.get(0).getCurrencyId();
+					}
+					AdditionalBankDetailsViewx additionaBnankDetail = bankService.getBankAddDetails(bankMasterModel.getBankCountryId(),viewParameterDetails.getCharField3(), currencyId, bankMasterModel.getBankId(), remitMode.getRemittanceModeId(), delMode.getDeliveryModeId(), viewParameterDetails.getParamCodeDef());
+				
+					
 					//Set default properties
 					pdto.importFrom(viewParameterDetails);
 					
 					//TODO:- Rabil Check
 					pdto.setResourceValue(
-							new FlexFieldDto(null, null, 
+							new FlexFieldDto(addlMap.getAdditionalBankRuleId(), additionaBnankDetail.getSrlId(), 
 									viewParameterDetails.getCharField1(),
 									viewParameterDetails.getParamCodeDef(),
 									viewParameterDetails.getCharField3())
@@ -1248,6 +1283,8 @@ public ParameterDetailsResponseDto getGiftService(BigDecimal beneId) {
 	
 	return responseDto;
 }
+
+
 
 
 
