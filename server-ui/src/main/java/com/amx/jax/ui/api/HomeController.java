@@ -362,7 +362,7 @@ public class HomeController {
 			}
 		}
 		if(prodType.equals(Products.FXORDER)) {
-			if (!JaxClientUtil.getTransactionVeryCode(customerRatingDTO.getFxOrderTransactionId()).equals(veryCode)) {
+			if (!JaxClientUtil.getTransactionVeryCode(customerRatingDTO.getCollectionDocNo()).equals(veryCode)) {
 				throw new UIServerError(OWAStatusStatusCodes.INVALID_LINK);
 			}
 		}
