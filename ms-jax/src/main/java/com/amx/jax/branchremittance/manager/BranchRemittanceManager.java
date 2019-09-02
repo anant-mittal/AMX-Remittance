@@ -1230,6 +1230,15 @@ public ParameterDetailsResponseDto getGiftService(BigDecimal beneId) {
 					List<CurrencyMasterModel> currLsit = currencyDao.getCurrencyListByCountryId(bankMasterModel.getBankCountryId());
 					ViewRemittanceMode remitMode = viewRemittanceMode.findByRemittancCode(viewParameterDetails.getCharField4());
 					ViewDeliveryMode   delMode   =viewDeliveryMode.findByDeliveryCode(viewParameterDetails.getCharField5());
+					
+					if(remitMode==null) {
+						throw new GlobalException(JaxError.BPI_SETUP_IS_MISSING,"Remittance code is missing");
+					}
+						
+					if(delMode ==null) {
+						throw new GlobalException(JaxError.BPI_SETUP_IS_MISSING,"Delivery code is missing");
+					}
+					
 					BigDecimal currencyId = BigDecimal.ZERO;
 					if(!currLsit.isEmpty()) {
 						currencyId = currLsit.get(0).getCurrencyId();
