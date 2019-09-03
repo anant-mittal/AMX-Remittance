@@ -376,12 +376,13 @@ public class HomeController {
 		payment.setServiceCode(link.getPgCode());
 		payment.setProduct(prodType);
 
-		LOGGER.info("Payment Link Response DTO Values : " +link.toString());
-		
+		LOGGER.info("Payment Link Response DTO Values : " + link.toString());
+
 		Map<String, Object> map = new HashMap<String, Object>();
 
 		map.put("payment_link", payGService.getPaymentUrl(payment,
-				Urly.parse(HttpUtils.getServerName(request)).path(PAYMENT_PATH).pathParam("prodType", prodType)
+				Urly.parse(HttpUtils.getServerName(request)).path("/pub/app/pay/{prodType}/{linkId}")
+						.pathParam("prodType", prodType)
 						.pathParam("linkId", linkId).queryParam("v", veryCode).getURL()));
 
 		map.put("cart", link);
