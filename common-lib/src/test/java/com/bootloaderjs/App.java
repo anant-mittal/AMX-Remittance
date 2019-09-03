@@ -15,7 +15,9 @@ import com.amx.jax.dict.UserClient.AppType;
 import com.amx.jax.dict.UserClient.DeviceType;
 import com.amx.jax.dict.UserClient.UserDeviceClient;
 import com.amx.jax.tunnel.TunnelMessage;
+import com.amx.utils.HttpUtils;
 import com.amx.utils.JsonUtil;
+import com.amx.utils.Urly;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 public class App { // Noncompliant
@@ -32,7 +34,23 @@ public class App { // Noncompliant
 	 * @throws URISyntaxException
 	 */
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws MalformedURLException, URISyntaxException {
+		String url = Urly.parse("https://some.spoof.com").path("/pub/app/pay/{prodType}/{linkId}")
+				.pathParam("prodType", "RMIT_LINK")
+				.pathParam("linkId", 1234).queryParam("v", "VXGFTR").getURL();
+
+		String callbackUrl = Urly.parse(url).queryParam("docNo", "docNo")
+				.queryParam("docNo", "docNo")
+				.queryParam("docFy", "docFy")
+				.queryParam("docId", "docId")
+				.queryParam("trckid", "trckid")
+				.queryParam("payId", "payId").getURL();
+		
+		System.out.println(callbackUrl);
+
+	}
+
+	public static void main3(String[] args) {
 		String url = "/api/user/tranx/history";
 		System.out.println(url.toLowerCase().replace("pub", "b").replace("api", "p").replace("user", "")
 				.replace("get", "").replace("post", "").replace("save", "")

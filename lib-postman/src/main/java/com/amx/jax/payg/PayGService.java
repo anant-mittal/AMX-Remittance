@@ -62,7 +62,7 @@ public class PayGService {
 
 		URLBuilder builder = new URLBuilder(appConfig.getPaygURL());
 
-		String callbackUrl = Urly.parse(callback).queryParam("docNo", payment.getDocNo())
+		String callbackUrl = Urly.parse(callback)
 				.queryParam("docNo", payment.getDocNo())
 				.queryParam("docFy", payment.getDocFy())
 				.queryParam("docId", payment.getDocId())
