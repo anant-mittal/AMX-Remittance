@@ -2,6 +2,7 @@ package com.amx.jax.userservice.manager;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -20,6 +21,7 @@ import com.amx.jax.JaxAuthContext;
 import com.amx.jax.JaxAuthMetaResp;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
+import com.amx.jax.dbmodel.ViewOnlineCurrency;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
@@ -75,6 +77,17 @@ public class CustomerDBAuthManager {
 			// send list of contact types available for customer
 			List<CustomerCommunicationChannel> communicationChannelContact = communicationChannelContactService
 					.getCustomerCommunicationChannels(identityInt);
+			
+			Iterator<CustomerCommunicationChannel> itr = communicationChannelContact.iterator();
+			if (!communicationChannelContact.isEmpty()) {
+				while (itr.hasNext()) {
+					ContactType name = itr.next().getContactType();
+					log.info("CONTACT TYPE NAME ---> "+name);
+					if(ContactType.WHATSAPP.equals(name)) {
+						itr.remove();
+					}
+				}
+			}
 
 			// set communication channel in meta of exception then throw exception
 			GlobalException ex = new GlobalException(JaxError.CONTACT_TYPE_REQUIRED, "Contact Type is missing");
