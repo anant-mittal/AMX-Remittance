@@ -376,6 +376,8 @@ public class HomeController {
 		payment.setServiceCode(link.getPgCode());
 		payment.setProduct(prodType);
 
+		LOGGER.info("Payment Link Response DTO Values : " +link.toString());
+		
 		Map<String, Object> map = new HashMap<String, Object>();
 
 		map.put("payment_link", payGService.getPaymentUrl(payment,

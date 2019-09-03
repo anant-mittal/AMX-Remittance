@@ -110,5 +110,19 @@ public class PaymentLinkRespDTO extends RemittanceApplicationResponseModel {
 	public void setShoppingCartDetails(List<CustomerShoppingCartDto> shoppingCartDetails) {
 		this.shoppingCartDetails = shoppingCartDetails;
 	}
+
+	@Override
+	public String toString() {
+		return "PaymentLinkRespDTO [id=" + id + ", verificationCode=" + verificationCode + ", applicationIds="
+				+ applicationIds + ", linkStatus=" + linkStatus + ", curQutoe=" + curQutoe + ", netAmount=" + netAmount
+				+ ", requestData=" + requestData + ", totalTrnxAmount=" + totalTrnxAmount + ", totalCommissionAmt="
+				+ totalCommissionAmt + ", paymentLinkRespStatus=" + paymentLinkRespStatus + ", shoppingCartDetails="
+				+ shoppingCartDetails + ", getPgCode()=" + getPgCode() + ", getModelType()=" + getModelType()
+				+ ", getRemittanceAppId()=" + getRemittanceAppId() + ", getNetPayableAmount()=" + getNetPayableAmount()
+				+ ", getDocumentIdForPayment()=" + getDocumentIdForPayment() + ", getMerchantTrackId()="
+				+ getMerchantTrackId() + ", getDocumentFinancialYear()=" + getDocumentFinancialYear() + "]";
+	}
+	
+	
 	
 }
