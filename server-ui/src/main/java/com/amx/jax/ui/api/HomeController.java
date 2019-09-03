@@ -374,6 +374,7 @@ public class HomeController {
 		payment.setTrackIdObject(link.getMerchantTrackId());
 		payment.setAmountObject(link.getNetAmount());
 		payment.setServiceCode(link.getPgCode());
+		payment.setProduct(prodType);
 
 		Map<String, Object> map = new HashMap<String, Object>();
 
