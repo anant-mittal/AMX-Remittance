@@ -45,7 +45,7 @@ public class ConverterJasper implements FileConverter {
 
 	/** The simple report filler. */
 	@Autowired
-	SimpleReportFiller simpleReportFiller;
+	SimpleReportFiller simpleReportFiller2;
 
 	/** The simple exporter. */
 	@Autowired
