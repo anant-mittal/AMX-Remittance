@@ -14,8 +14,16 @@ public class App { // Noncompliant
 	 */
 	TemplateUtils templateUtils = new TemplateUtils();
 	public static final Pattern pattern = Pattern.compile("^(.*)<(.*)>$");
+	
 
 	public static void main(String[] args) {
+		String from = "Al Mulla International Exchange<amxjax@gmail.com>";
+		String[] path = "html/sms/omsoe".split("^html\\/");
+
+		System.out.println(path[0] + " " + path[1]);
+	}
+	
+	public static void main4(String[] args) {
 		String from = "Al Mulla International Exchange<amxjax@gmail.com>";
 		String[] path = "html/sms/omsoe".split("^html\\/");
 

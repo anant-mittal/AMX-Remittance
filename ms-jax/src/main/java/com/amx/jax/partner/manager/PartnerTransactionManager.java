@@ -868,6 +868,8 @@ public class PartnerTransactionManager extends AbstractModel {
 				EmployeeDetailsView empDetails = employeeDetailsRepository.findByEmployeeId(metaData.getEmployeeId());
 				serviceProviderXmlLog.setForeignTerminalId(metaData.getEmployeeId().toPlainString());
 				serviceProviderXmlLog.setCreatedBy(empDetails.getUserName());
+			}else {
+				serviceProviderXmlLog.setCreatedBy("ON_LINE");
 			}
 
 			serviceProviderXmlLog.setIdentifier(PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name());
