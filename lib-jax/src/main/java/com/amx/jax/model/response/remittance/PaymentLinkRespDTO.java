@@ -18,6 +18,7 @@ public class PaymentLinkRespDTO extends RemittanceApplicationResponseModel {
 
 	private BigDecimal totalTrnxAmount;
 	private BigDecimal totalCommissionAmt;
+	private BigDecimal merchantTrackId;
 
 	private PaymentLinkRespStatus paymentLinkRespStatus;
 
@@ -111,4 +112,12 @@ public class PaymentLinkRespDTO extends RemittanceApplicationResponseModel {
 		this.shoppingCartDetails = shoppingCartDetails;
 	}
 
+	public BigDecimal getMerchantTrackId() {
+		return merchantTrackId;
+	}
+
+	public void setMerchantTrackId(BigDecimal merchantTrackId) {
+		this.merchantTrackId = merchantTrackId;
+	}
+	
 }

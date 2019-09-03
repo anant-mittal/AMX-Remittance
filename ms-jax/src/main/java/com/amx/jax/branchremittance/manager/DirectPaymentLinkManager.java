@@ -211,6 +211,7 @@ public class DirectPaymentLinkManager extends AbstractModel {
 				paymentLinkResp.setApplicationIds(paymentLink.getApplIds());
 				paymentLinkResp.setCurQutoe(currencyQuote);
 				paymentLinkResp.setLinkStatus(paymentLink.getLinkActive());
+				paymentLinkResp.setMerchantTrackId(paymentLink.getCustomerId());
 			}
 			if(paymentLink.getLinkActive().equals("P")) {
 				JaxTransactionStatus status = getJaxTransactionStatus(paymentLink);
