@@ -156,39 +156,15 @@ public class WUNotifyListener implements ITunnelSubscriber<DBEvent> {
 			sendEmail(email);
 	}	
 
-		if (!ArgUtil.isEmpty(smsNo)&&c.canSendMobile()) {
-			
-				
-			SMS sms = new SMS();
-			if ("2".equals(langId)) {
-				sms.setLang(Language.AR);
-				modeldata.put("languageid", Language.AR);
-			} else {
-				sms.setLang(Language.EN);
-				modeldata.put("languageid", Language.EN);
-			}
-			LOGGER.info("Json value of wrapper is "+JsonUtil.toJson(wrapper));
-			LOGGER.info("Wrapper data is {}", wrapper.get("data"));
-			sms.addTo(c.getMobile());
-			sms.setModel(wrapper);
-			
-			
-			if(notifyType.equalsIgnoreCase(ConstantDocument.WU_PICK)) {
-				sms.setITemplate(TemplatesMX.WU_PICKUP_REMINDER);
-			}else if(notifyType.equalsIgnoreCase(ConstantDocument.WU_CANC_REM)) {
-				sms.setITemplate(TemplatesMX.WU_CANCEL_REMINDER);
-			}else if(notifyType.equalsIgnoreCase(ConstantDocument.WU_CANCELLED)){
-				sms.setITemplate(TemplatesMX.WU_TRNX_CANCELLED);
-			}
-			postManService.sendSMSAsync(sms);
-
-		}
+		
 
 		if (!ArgUtil.isEmpty(custId)) {
 			PushMessage pushMessage = new PushMessage();
+			if(notifyType.equalsIgnoreCase(ConstantDocument.WU_PAID)) {
+				pushMessage.setITemplate(TemplatesMX.WU_TRNX_SUCCESS);
+			}
 			
-			
-			if(notifyType.equalsIgnoreCase(ConstantDocument.WU_PICK)) {
+			else if(notifyType.equalsIgnoreCase(ConstantDocument.WU_PICK)) {
 				pushMessage.setITemplate(TemplatesMX.WU_PICKUP_REMINDER);
 			}else if(notifyType.equalsIgnoreCase(ConstantDocument.WU_CANC_REM)) {
 				pushMessage.setITemplate(TemplatesMX.WU_CANCEL_REMINDER);
