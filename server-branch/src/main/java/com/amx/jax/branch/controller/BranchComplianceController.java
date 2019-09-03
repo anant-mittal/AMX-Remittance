@@ -1,9 +1,12 @@
 package com.amx.jax.branch.controller;
 
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.client.compliance.ApproveDocRequest;
 import com.amx.jax.client.compliance.ComplianceBlockedTrnxType;
 import com.amx.jax.client.compliance.ComplianceClient;
 import com.amx.jax.client.compliance.HighValueTrnxDto;
+import com.amx.jax.client.compliance.RejectDocRequest;
 import com.amx.jax.client.customer.CustomerManagementClient;
 import com.amx.jax.model.customer.ComplianceTrnxDocumentInfo;
 import com.amx.jax.model.customer.document.CustomerDocCatTypeDto;
@@ -39,6 +42,16 @@ public class BranchComplianceController {
 	@RequestMapping(value = "/api/compliance/doc/types", method = { RequestMethod.GET })
 	public AmxApiResponse<CustomerDocCatTypeDto, Object> getDocTypes() {
 		return customerManagementClient.listDocCatType();
+	}
+
+	@RequestMapping(value = "/api/compliance/doc/approve", method = { RequestMethod.GET })
+	public AmxApiResponse<BoolRespModel, Object> approveTrnxDoc(ApproveDocRequest request) {
+		return complianceClient.approveTrnxDoc(request);
+	}
+
+	@RequestMapping(value = "/api/compliance/doc/reject", method = { RequestMethod.GET })
+	public AmxApiResponse<BoolRespModel, Object> rejectTrnxDoc(RejectDocRequest request) {
+		return complianceClient.rejectTrnxDoc(request);
 	}
 
 
