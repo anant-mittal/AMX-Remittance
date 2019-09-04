@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +31,7 @@ import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.UserVerificationCheckListModel;
 import com.amx.jax.dbmodel.ViewCompanyDetails;
 import com.amx.jax.dbmodel.ViewOnlineCustomerCheck;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.customer.SecurityQuestionModel;
 import com.amx.jax.repository.CustomerRepository;
@@ -41,6 +43,7 @@ import com.amx.jax.userservice.repository.ViewOnlineCustomerCheckRepository;
 import com.amx.jax.util.AmxDBConstants;
 import com.amx.jax.util.CryptoUtil;
 import com.google.common.collect.Lists;
+import com.jax.amxlib.exception.jax.GlobaLException;
 
 @Component
 public class CustomerDao {
@@ -332,10 +335,16 @@ public class CustomerDao {
 		};
 		output = jdbcTemplate.call(callableStatement, declareInAndOutputParameters);
 		if (!AmxDBConstants.No.equals(output.get("P_ERROR_IND")) || output.get("P_ERROR_MSG") != null) {
-			LOGGER.error("Error in callProcedurePopulateCusmas, P_ERROR_IND: " + output.get("P_ERROR_IND")
-					+ " P_ERROR_MSG: " + output.get("P_ERROR_MSG"));
+			String errorText = "Error in callProcedurePopulateCusmas, P_ERROR_IND: " + output.get("P_ERROR_IND")
+					+ " P_ERROR_MSG: " + output.get("P_ERROR_MSG");
+			LOGGER.error(errorText);
+			throw new GlobaLException(JaxError.JAX_FIELD_VALIDATION_FAILURE, errorText);
 		}
 		return output;
 	}
-	
+
+	public List<Customer> findDuplicateCustomerRecords(BigDecimal nationality, String mobile, String email,
+			String firstName) {
+		return repo.getCustomerForDuplicateCheck(nationality, mobile, email, firstName);
+	}
 }

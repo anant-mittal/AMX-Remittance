@@ -34,7 +34,12 @@ public interface CustomerIdProofRepository extends JpaRepository<CustomerIdProof
 			+ " and NVL(ISACTIVE,'') ='Y'", nativeQuery = true)
 	public List<CustomerIdProof> getActiveCustomerIdProof(BigDecimal customerId, BigDecimal identityTypeId);
 	
-	@Query(value = "select * from FS_CUSTOMER_ID_PROOF where CUSTOMER_ID=?1 and ISACTIVE  in ( ?2) ", nativeQuery = true)
+	@Query(value = "select * from FS_CUSTOMER_ID_PROOF where CUSTOMER_ID=?1 and ISACTIVE  in ?2 ", nativeQuery = true)
 	public List<CustomerIdProof> getCustomerIdProofs(BigDecimal customerId, String[] isActive);
 
+	@Query(value = "select * from FS_CUSTOMER_ID_PROOF where CUSTOMER_ID=?1 and NVL(ISACTIVE,'') ='Y'", nativeQuery = true)
+	public List<CustomerIdProof> getActiveCustomerIdProof(BigDecimal customerId);
+
+	@Query(value = "select * from FS_CUSTOMER_ID_PROOF where CUSTOMER_ID=?1 and NVL(ISACTIVE,'') ='C'", nativeQuery = true)
+	public List<CustomerIdProof> getCompliancePendingCustomerIdProof(BigDecimal customerId);
 }

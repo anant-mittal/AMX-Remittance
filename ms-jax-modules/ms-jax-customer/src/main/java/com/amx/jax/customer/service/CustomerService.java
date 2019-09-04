@@ -1,9 +1,15 @@
 package com.amx.jax.customer.service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +26,12 @@ import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dbmodel.ContactDetail;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerIdProof;
+import com.amx.jax.dbmodel.IdentityTypeMaster;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.customer.DuplicateCustomerDto;
+import com.amx.jax.model.customer.IdentityTypeDto;
 import com.amx.jax.model.customer.SecurityQuestionModel;
+import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.model.response.customer.CustomerContactDto;
 import com.amx.jax.model.response.customer.CustomerDto;
 import com.amx.jax.model.response.customer.CustomerIdProofDto;
@@ -31,8 +41,10 @@ import com.amx.jax.repository.IContactDetailDao;
 import com.amx.jax.repository.ICustomerRepository;
 import com.amx.jax.service.CountryService;
 import com.amx.jax.services.AbstractService;
+import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.userservice.dao.CustomerIdProofDao;
+import com.amx.jax.userservice.manager.CustomerIdProofManager;
 import com.amx.jax.userservice.manager.OnlineCustomerManager;
 import com.amx.jax.userservice.service.UserService;
 
@@ -57,6 +69,10 @@ public class CustomerService extends AbstractService {
 	MetaData metaData;
 	@Autowired
 	OnlineCustomerManager onlineCustomerManager;
+	@Autowired
+	CustomerDao customerDao;
+	@Autowired
+	CustomerIdProofManager customerIdProofManager;
 	@Autowired
 	JaxNotificationService jaxNotificationService ; 
 	
@@ -199,14 +215,44 @@ public class CustomerService extends AbstractService {
 		boolRespModel.setSuccess(Boolean.TRUE);
 		return AmxApiResponse.build(boolRespModel);
 	}
-	
+
 	public AmxApiResponse<BoolRespModel, Object> updatePasswordCustomer(String identityInt, String resetPwd) {
 		onlineCustomerManager.updatePassword(identityInt, resetPwd);
 		
 		BoolRespModel boolRespModel = new BoolRespModel();
 		boolRespModel.setSuccess(Boolean.TRUE);
 		return AmxApiResponse.build(boolRespModel);
+	}	
+
+	public List<DuplicateCustomerDto> checkForDuplicateCustomer(CustomerPersonalDetail customerPersonalDetail) {
+		Set<DuplicateCustomerDto> duplicateCustomerDtoSet = new HashSet<>();
+		List<Customer> duplicateRecords = customerDao.findDuplicateCustomerRecords(customerPersonalDetail.getNationalityId(),
+				customerPersonalDetail.getMobile(), customerPersonalDetail.getEmail(), customerPersonalDetail.getFirstName());
+
+		if (CollectionUtils.isNotEmpty(duplicateRecords)) {
+			ListIterator<Customer> itr = duplicateRecords.listIterator();
+			while (itr.hasNext()) {
+				Customer customer = itr.next();
+				duplicateCustomerDtoSet.add(convert(customer));
+			}
+		}
+		return new ArrayList<>(duplicateCustomerDtoSet);
 	}
 
-	
+	DuplicateCustomerDto convert(Customer customer) {
+		DuplicateCustomerDto dto = new DuplicateCustomerDto();
+		dto.setDateOfBirth(customer.getDateOfBirth());
+		dto.setFirstName(customer.getFirstName());
+		dto.setIdentityInt(customer.getIdentityInt());
+		dto.setIdentityTypeId(customer.getIdentityTypeId());
+		dto.setLastName(customer.getLastName());
+		dto.setNationalityId(customer.getNationalityId());
+		dto.setCustomerId(customer.getCustomerId());
+		return dto;
+	}
+
+	public List<IdentityTypeDto> getIdentityTypes() {
+		List<IdentityTypeMaster> identityTypes = customerIdProofManager.getActiveIdentityTypes();
+		return identityTypes.stream().map(i -> new IdentityTypeDto(i.getBusinessComponentId(), i.getIdentityType())).collect(Collectors.toList());
+	}
 }

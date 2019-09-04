@@ -8,9 +8,9 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppConfig;
-import com.amx.jax.ICustomerProfileService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.configs.JaxMetaInfo;
+import com.amx.jax.customer.ICustomerProfileService;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.exception.JaxSystemError;
 import com.amx.jax.logger.LoggerService;

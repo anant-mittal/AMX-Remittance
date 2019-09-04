@@ -346,7 +346,7 @@ public class CustomerRegistrationManager extends TransactionModel<CustomerRegist
 
 	}
 	
-	public OffsiteCustomerDataDTO getCustomerDeatils(String  identityInt,BigDecimal identityTypeId,BigDecimal customerId) {
+	public OffsiteCustomerDataDTO getCustomerDeatils(String  identityInt,BigDecimal identityTypeId) {
 		OffsiteCustomerDataDTO offsiteCustomer = new OffsiteCustomerDataDTO();
 		CustomerPersonalDetail customerDetails = new CustomerPersonalDetail();
 		LOGGER.debug("identityInt :"+identityInt+"\t identityTypeId :"+identityTypeId+"\t country id "+jaxMetaInfo.getCountryId());
@@ -398,7 +398,7 @@ public class CustomerRegistrationManager extends TransactionModel<CustomerRegist
 			}
 			
 			if(customer.getSignatureSpecimenClob()==null){
-				throw new GlobalException(JaxError.CUSTOMER__SIGNATURE_UNAVAILABLE,"Customer signature not available.");
+				throw new GlobalException(JaxError.CUSTOMER_SIGNATURE_UNAVAILABLE,"Customer signature not available.");
 			}
 			
 			boolean insuranceCheck = ("Y".equals(customer.getMedicalInsuranceInd())|| "N".equals(customer.getMedicalInsuranceInd()));
@@ -485,7 +485,7 @@ public class CustomerRegistrationManager extends TransactionModel<CustomerRegist
 				if(null != homeData.getFsCityMaster()) {
 					homeAddress.setCityId(homeData.getFsCityMaster().getCityId());		
 				}
-				offsiteCustomer.setHomeAddressDestails(homeAddress);
+				offsiteCustomer.setHomeAddressDetails(homeAddress);
 			}
 		}else {
 			throw new GlobalException(JaxError.NO_RECORD_FOUND,"The customer does not exist in the system :"+identityInt);

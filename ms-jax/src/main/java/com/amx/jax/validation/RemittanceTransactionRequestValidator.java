@@ -14,21 +14,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.amx.amxlib.constant.JaxFieldEntity;
 import com.amx.amxlib.exception.AdditionalFlexRequiredException;
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.model.JaxConditionalFieldDto;
-import com.amx.amxlib.model.JaxFieldDto;
-import com.amx.amxlib.model.JaxFieldValueDto;
 import com.amx.jax.branchremittance.manager.BranchRemittanceManager;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.FlexFieldBehaviour;
 import com.amx.jax.constants.JaxChannel;
+import com.amx.jax.constants.JaxFieldEntity;
 import com.amx.jax.dao.RemittanceApplicationDao;
-import com.amx.jax.dbmodel.BenificiaryListView;
-import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.remittance.AdditionalBankDetailsViewx;
-import com.amx.jax.dbmodel.remittance.AdditionalBankRuleAmiec;
 import com.amx.jax.dbmodel.remittance.AdditionalBankRuleMap;
 import com.amx.jax.dbmodel.remittance.AdditionalDataDisplayView;
 import com.amx.jax.dbmodel.remittance.FlexFiledView;
@@ -46,6 +40,9 @@ import com.amx.jax.repository.IAdditionalDataDisplayDao;
 import com.amx.jax.services.JaxFieldService;
 import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
+import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
+import com.amx.libjax.model.jaxfield.JaxFieldDto;
+import com.amx.libjax.model.jaxfield.JaxFieldValueDto;
 
 @Component
 public class RemittanceTransactionRequestValidator {

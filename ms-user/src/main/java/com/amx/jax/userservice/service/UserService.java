@@ -96,7 +96,6 @@ import com.amx.jax.userservice.manager.SecurityQuestionsManager;
 import com.amx.jax.userservice.manager.UserContactVerificationManager;
 import com.amx.jax.userservice.repository.LoginLogoutHistoryRepository;
 import com.amx.jax.userservice.service.CustomerValidationContext.CustomerValidation;
-import com.amx.jax.util.AmxDBConstants.Status;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.StringUtil;
@@ -836,7 +835,7 @@ public class UserService extends AbstractUserService {
 		onlineCustomer.setTokenSentCount(BigDecimal.ZERO);
 	}
 
-	protected LoginLogoutHistory getLoginLogoutHistoryByUserName(String userName) {
+	public LoginLogoutHistory getLoginLogoutHistoryByUserName(String userName) {
 
 		Sort sort = new Sort(Direction.DESC, "loginLogoutId");
 		List<LoginLogoutHistory> last2HistoryList = loginLogoutHistoryRepositoryRepo.findFirst2ByuserName(userName,
@@ -1103,6 +1102,7 @@ public class UserService extends AbstractUserService {
 			personInfo.setWhatsAppNumber(customer.getWhatsapp());
 			personInfo.setPrefixCodeMobile("+" + customer.getPrefixCodeMobile());
 			personInfo.setWhatsappPrefixCode("+" + customer.getWhatsappPrefix());
+			personInfo.setIdentityTypeId(customer.getIdentityTypeId());
 
 		} catch (Exception e) {
 		}
@@ -1276,9 +1276,7 @@ public class UserService extends AbstractUserService {
 	 * @param customerId
 	 */
 	public void deActivateCustomerIdProof(BigDecimal customerId) {
-		Customer customer = repo.findOne(customerId);
-		List<CustomerIdProof> activeIdProofs = customerIdProofDao.getActiveCustomerIdProof(customerId,
-				customer.getIdentityTypeId());
+		List<CustomerIdProof> activeIdProofs = customerIdProofDao.getActiveCustomerIdProof(customerId);
 		for (CustomerIdProof customerIdProof : activeIdProofs) {
 			customerIdProof.setIdentityStatus(ConstantDocument.Deleted);
 		}
@@ -1288,9 +1286,7 @@ public class UserService extends AbstractUserService {
 	}
 
 	public void deactiveteCustomerIdProofPendingCompliance(BigDecimal customerId) {
-		Customer customer = repo.findOne(customerId);
-		List<CustomerIdProof> deActiveIdProofs = customerIdProofDao.getCompliancePendingCustomerIdProof(customerId,
-				customer.getIdentityTypeId());
+		List<CustomerIdProof> deActiveIdProofs = customerIdProofDao.getCompliancePendingCustomerIdProof(customerId);
 		for (CustomerIdProof customerIdProof : deActiveIdProofs) {
 			customerIdProof.setIdentityStatus(ConstantDocument.Deleted);
 		}

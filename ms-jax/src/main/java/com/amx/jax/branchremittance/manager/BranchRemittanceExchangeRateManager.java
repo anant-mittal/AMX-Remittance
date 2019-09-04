@@ -28,7 +28,6 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.exception.AdditionalFlexRequiredException;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.BankMasterDTO;
-import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.amxlib.util.JaxValidationUtil;
 import com.amx.jax.AppContextUtil;
@@ -39,7 +38,6 @@ import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.remittance.AdditionalBankRuleAmiec;
-import com.amx.jax.dbmodel.remittance.ViewVatDetails;
 import com.amx.jax.dict.UserClient.Channel;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.exrateservice.service.ExchangeRateService;
@@ -77,8 +75,8 @@ import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.services.BeneficiaryValidationService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.JaxUtil;
-import com.amx.jax.util.RoundUtil;
 import com.amx.jax.validation.RemittanceTransactionRequestValidator;
+import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
@@ -257,7 +255,6 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 		if (apiResponse != null) {
 				Map<PRICE_TYPE, List<String>> bestExchangeRatePaths =apiResponse.getResult().getBestExchangeRatePaths();
 				List<Map<String,List<DynamicRoutingPricingDto>>> dynamicRoutingPricingList = new ArrayList<>();
-				
 				
 				if(bestExchangeRatePaths!=null && !bestExchangeRatePaths.isEmpty()) {
 					for (Map.Entry<PRICE_TYPE, List<String>> mapEntry : bestExchangeRatePaths.entrySet()) {

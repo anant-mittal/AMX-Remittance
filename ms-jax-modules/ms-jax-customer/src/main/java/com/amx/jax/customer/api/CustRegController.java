@@ -16,10 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.CustomerCredential;
-import com.amx.jax.ICustRegService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.customer.ICustRegService;
 import com.amx.jax.customer.manager.OffsiteAddressProofManager;
+import com.amx.jax.customer.service.CustomerManagementService;
 import com.amx.jax.customer.service.OffsitCustRegService;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.LoggerService;
@@ -47,9 +48,9 @@ import com.amx.jax.service.CountryService;
 import com.amx.jax.service.MetaService;
 import com.amx.jax.service.ViewDistrictService;
 import com.amx.jax.service.ViewStateService;
-import com.amx.jax.userservice.service.CustomerRegistrationService;
 import com.amx.jax.userservice.service.UserService;
-import com.jax.amxlib.exception.jax.GlobaLException;
+import com.amx.utils.ArgUtil;
+
 
 @RestController
 public class CustRegController implements ICustRegService {
@@ -69,7 +70,7 @@ public class CustRegController implements ICustRegService {
 	ViewStateService stateService;
 
 	@Autowired
-	private CustomerRegistrationService customerRegistrationService;
+	CustomerManagementService customerManagementService;
 
 	@Autowired
 	ViewDistrictService districtService;
@@ -152,14 +153,14 @@ public class CustRegController implements ICustRegService {
 	@RequestMapping(value = CustRegApiEndPoints.SCAN_CARD, method = RequestMethod.POST)
 	public AmxApiResponse<CardDetail, Object> cardScan(CardDetail cardDetail) {
 		return offsiteCustRegService.cardScan(cardDetail);
-	}
-
+	}	
+	
 	@RequestMapping(value = CustRegApiEndPoints.SAVE_OFFSITE_LOGIN, method = RequestMethod.POST)
 	public AmxApiResponse<CustomerCredential, Object> saveLoginDetailOffsite(
 			@RequestBody CustomerCredential customerCredential) {
 		return offsiteCustRegService.saveLoginDetailOffsite(customerCredential);
 	}
-
+	
 	@RequestMapping(value = CustRegApiEndPoints.GET_OFFSITE_CUSTOMER_DATA, method = RequestMethod.GET)
 	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerData(
 			@RequestParam(value = "identityInt", required = true) String identityInt,
@@ -167,40 +168,56 @@ public class CustRegController implements ICustRegService {
 		return offsiteCustRegService.getOffsiteCustomerData(identityInt, identityType);
 	}
 
+	
 	@RequestMapping(value = CustRegApiEndPoints.DESIGNATION_LIST, method = RequestMethod.GET)
 	public AmxApiResponse<ResourceDTO, Object> getDesignationList() {
 		return offsiteCustRegService.getDesignationList();
 	}
-
+	
 	@RequestMapping(value = CustRegApiEndPoints.GET_CUSTOMER_DEATILS, method = RequestMethod.GET)
 	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerDetails(
-			@RequestParam(value = "identityInt", required = false) String identityInt,
-		@RequestParam(value = "identityType", required = true) BigDecimal identityType,
+		@RequestParam(value = "identityInt", required = false) String identityInt,
+		@RequestParam(value = "identityType", required = false) BigDecimal identityType,
 		@RequestParam(value = "customerId", required = false) BigDecimal customerId) {
 		
-		if(identityInt == null && customerId == null)
+		if((ArgUtil.isEmpty(identityInt)  && ArgUtil.isEmpty(identityType) &&  ArgUtil.isEmpty(customerId)))
 		{
-			throw new GlobalException(JaxError.VALIDATION_NOT_NULL, "Field should not be null");
+			throw new GlobalException(JaxError.VALIDATION_NOT_NULL, "Civil ID,Customer ID,Type should not be null");
+		}
+
+    	if(ArgUtil.isEmpty(identityType) && !ArgUtil.isEmpty(identityInt))
+		{
+			throw new GlobalException(JaxError.VALIDATION_NOT_NULL, "Civil ID should not be null");
 
 		}
+    	if((ArgUtil.isEmpty(identityInt) && !ArgUtil.isEmpty(identityType)))
+		{
+			throw new GlobalException(JaxError.VALIDATION_NOT_NULL, "Customer ID should not be null");
+
+		}
+		
 		AmxApiResponse<OffsiteCustomerDataDTO, Object> response=null;
-		if(identityInt == null)
+		if(!ArgUtil.isEmpty(customerId))
 		{
 			PersonInfo personInfo = userService.getPersonInfo(customerId);
 			String identityIntByCustId =personInfo.getIdentityInt();
-			response=offsiteCustRegService.getOffsiteCustomerDetails(identityIntByCustId, identityType,customerId);
+			response=customerManagementService.getCustomerDetail(identityIntByCustId, personInfo.getIdentityTypeId());
 		}
 		else {
-		response=offsiteCustRegService.getOffsiteCustomerDetails(identityInt, identityType,customerId);
+			response=customerManagementService.getCustomerDetail(identityInt, identityType);
 		}
+		
 
 		return response;
-	}
+		
 
+	}
+	
 	@RequestMapping(value = CustRegApiEndPoints.GET_OFFSITE_CUSTOMER_DATA_V1, method = RequestMethod.GET)
 	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerDataV1(
 			@RequestBody @Valid GetOffsiteCustomerDetailRequest request) {
-		return offsiteCustRegService.getOffsiteCustomerData(request);
+		//return offsiteCustRegService.getOffsiteCustomerData(request);
+		return null;
 	}
 
 	@RequestMapping(value = CustRegApiEndPoints.ADDRESS_PROOF, method = RequestMethod.GET)

@@ -1,6 +1,8 @@
 package com.amx.utils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -154,6 +156,24 @@ public final class StringUtils {
 
 		return Stream.of(matchers).anyMatch(val::equalsIgnoreCase);
 
+	}
+	
+	public static List<String> capitalize(List<String> input) {
+		List<String> output = new ArrayList<>();
+		input.forEach(i -> {
+			output.add(capitalize(i));
+		});
+		return output;
+	}
+
+	public static String capitalize(String input) {
+		if (!StringUtils.isNotBlank(input)) {
+			return input;
+		}
+		if (input.length() == 1) {
+			return input.substring(0, 1).toUpperCase();
+		}
+		return input.substring(0, 1).toUpperCase() + input.substring(1).toLowerCase();
 	}
 
 }

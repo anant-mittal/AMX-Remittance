@@ -96,6 +96,11 @@ public interface CustomerRepository extends CrudRepository<Customer, BigDecimal>
 
 	@Query("select c from Customer c where customerId =?1")
 	public Customer getNationalityValue(BigDecimal customerId);
+
+	@Query(value = "select * from fs_customer where nationality=?1 and mobile=?2 and email = ?3 and first_name = ?4  and isactive='Y' order by last_updated", nativeQuery = true)
+	public List<Customer> getCustomerForDuplicateCheck(BigDecimal nationality, String mobile, String email,
+			String firstName);
+
 	
 	@Query("select c from Customer c where identityInt=?1")
 	public Customer getCustomerEmailDetails(String identityInt);

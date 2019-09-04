@@ -11,6 +11,7 @@ public class AmxDBConstants {
 	public static final String Update = "U";
 	public static final String Black = "B";
 	public static final String Compliance = "C";
+	public static final String Processing = "P";
 
 	public static enum Status {
 		Y, N, D, U, B, C
@@ -192,4 +193,20 @@ public class AmxDBConstants {
 	public static final String COMM_EXCLUDE="E";
 	
 	
+
+	// Arcmate Scanning
+	public static String CHECK;
+	public static String SCAN;
+	public static String VIEW = "VIEW";
+	public static String MODIFY;
+	public static String OCR;
+	public static String NON_OCR;
+	public static String BOTH_VIEW="BOTH";
+	public static String BEDOUIN;
+	public static String PASSPORT;
+	public static String GCC_NATIONAL_ID;
+	public static String LICENSE_NO;
+	public static String CHECK_DOCUMENT;
+	public static String CHECK_FILE;
+	public static String BANKTRANSFER;
 }

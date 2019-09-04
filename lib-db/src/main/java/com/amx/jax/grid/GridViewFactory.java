@@ -8,7 +8,10 @@ import com.amx.jax.dbmodel.Device;
 import com.amx.jax.dbmodel.FeedbackStarRating;
 import com.amx.jax.dbmodel.employee.UserSession;
 import com.amx.jax.grid.views.CustomerDetailViewRecord;
+import com.amx.jax.grid.views.CustomerLogViewRecord;
 import com.amx.jax.grid.views.EmployeeDetailViewRecord;
+import com.amx.jax.grid.views.OneViewTrnx;
+import com.amx.jax.grid.views.OneViewTrnxRecordByBene;
 import com.amx.jax.grid.views.TranxViewRecord;
 import com.amx.jax.grid.views.TranxViewRecordByBene;
 import com.amx.jax.grid.views.UserSessionRecord;
@@ -35,6 +38,9 @@ public class GridViewFactory {
 				TranxViewRecordByBene.class));
 		map.put(GridView.EX_V_RATE_PATTERN, new GridInfo<XRateViewRecord>(XRateViewRecord.class));
 		map.put(GridView.VW_TRNX_FEEDBACK, new GridInfo<FeedbackStarRating>(FeedbackStarRating.class));
+		map.put(GridView.VW_ONEVIEW_TRNX, new GridInfo<OneViewTrnx>(OneViewTrnx.class));
+		map.put(GridView.VW_ONEVIEW_TRNX_BY_BENE, new GridInfo<OneViewTrnxRecordByBene>(OneViewTrnxRecordByBene.class));
+		map.put(GridView.VW_CUST_LOG, new GridInfo<CustomerLogViewRecord>(CustomerLogViewRecord.class));
 
 	}
 
