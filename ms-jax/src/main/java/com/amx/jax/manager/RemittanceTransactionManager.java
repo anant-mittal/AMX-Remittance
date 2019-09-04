@@ -1285,48 +1285,51 @@ public class RemittanceTransactionManager {
 				.getRemittanceTransaction(request.getApplicationDocumentNumber(), request.getDocumentFinancialYear());
 		RemittanceApplication application = remitAppDao.getApplication(request.getApplicationDocumentNumber(),
 				request.getDocumentFinancialYear());
-		remittanceApplicationService.checkForSuspiciousPaymentAttempts(application.getRemittanceApplicationId());
-		if (remittanceTransaction != null) {
-			BigDecimal cutomerReference = remittanceTransaction.getCustomerId().getCustomerId();
-			BigDecimal remittancedocfyr = remittanceTransaction.getDocumentFinanceYear();
-			BigDecimal remittancedocNumber = remittanceTransaction.getDocumentNo();
-			TransactionHistroyDTO transactionHistoryDto = transactionHistroyService
-					.getTransactionHistoryDto(cutomerReference, remittancedocfyr, remittancedocNumber);
-			model.setTransactionHistroyDTO(transactionHistoryDto);
-			if (Boolean.TRUE.equals(request.getPromotion())) {
-				PromotionDto promoDto = promotionManager.getPromotionDto(remittancedocNumber, remittancedocfyr);
-				if (promoDto != null && !promoDto.isChichenVoucher()) {
-					model.setPromotionDto(promotionManager.getPromotionDto(remittancedocNumber, remittancedocfyr));
+		if(application == null) {
+			throw new GlobalException("Invalid application document details.");
+		}else {
+			remittanceApplicationService.checkForSuspiciousPaymentAttempts(application.getRemittanceApplicationId());
+			if (remittanceTransaction != null) {
+				BigDecimal cutomerReference = remittanceTransaction.getCustomerId().getCustomerId();
+				BigDecimal remittancedocfyr = remittanceTransaction.getDocumentFinanceYear();
+				BigDecimal remittancedocNumber = remittanceTransaction.getDocumentNo();
+				TransactionHistroyDTO transactionHistoryDto = transactionHistroyService
+						.getTransactionHistoryDto(cutomerReference, remittancedocfyr, remittancedocNumber);
+				model.setTransactionHistroyDTO(transactionHistoryDto);
+				if (Boolean.TRUE.equals(request.getPromotion())) {
+					PromotionDto promoDto = promotionManager.getPromotionDto(remittancedocNumber, remittancedocfyr);
+					if (promoDto != null && !promoDto.isChichenVoucher()) {
+						model.setPromotionDto(promotionManager.getPromotionDto(remittancedocNumber, remittancedocfyr));
+					}
 				}
 			}
-		}
-		model.setTransactionReference(getTransactionReference(application));
-		if ("Y".equals(application.getLoyaltyPointInd())) {
-			model.setNetAmount(application.getLocalTranxAmount());
-		} else {
-			model.setNetAmount(application.getLocalNetTranxAmount());
-		}
-		JaxTransactionStatus status = getJaxTransactionStatus(application);
-		model.setStatus(status);
-		
-		if (remittanceTransaction != null) {
-			PromotionDto obj = dailyPromotionManager.getWanitBuyitMsg(remittanceTransaction);
-			if(obj != null) {
-				model.setPromotionDto(obj);
+			model.setTransactionReference(getTransactionReference(application));
+			if ("Y".equals(application.getLoyaltyPointInd())) {
+				model.setNetAmount(application.getLocalTranxAmount());
+			} else {
+				model.setNetAmount(application.getLocalNetTranxAmount());
 			}
-		}
-		
-		model.setErrorCategory(application.getErrorCategory());
-		model.setErrorMessage(application.getErrorMessage());
-	if(application.getErrorCategory() != null) {
-			ResponseCodeDetailDTO responseCodeDetail = PayGRespCodeJSONConverter.getResponseCodeDetail(application.getErrorCategory());
-			
-			responseCodeDetail.setPgPaymentId(application.getPaymentId());
-			responseCodeDetail.setPgReferenceId(application.getPgReferenceId());
-			responseCodeDetail.setPgTransId(application.getPgTransactionId());
-			responseCodeDetail.setPgAuth(application.getPgAuthCode());
-			
-			model.setResponseCodeDetail(responseCodeDetail);
+			JaxTransactionStatus status = getJaxTransactionStatus(application);
+			model.setStatus(status);
+
+			if (remittanceTransaction != null) {
+				PromotionDto obj = dailyPromotionManager.getWanitBuyitMsg(remittanceTransaction);
+				if(obj != null) {
+					model.setPromotionDto(obj);
+				}
+			}
+			model.setErrorCategory(application.getErrorCategory());
+			model.setErrorMessage(application.getErrorMessage());
+			if(application.getErrorCategory() != null) {
+				ResponseCodeDetailDTO responseCodeDetail = PayGRespCodeJSONConverter.getResponseCodeDetail(application.getErrorCategory());
+
+				responseCodeDetail.setPgPaymentId(application.getPaymentId());
+				responseCodeDetail.setPgReferenceId(application.getPgReferenceId());
+				responseCodeDetail.setPgTransId(application.getPgTransactionId());
+				responseCodeDetail.setPgAuth(application.getPgAuthCode());
+
+				model.setResponseCodeDetail(responseCodeDetail);
+			}
 		}
 		
 		return model;
