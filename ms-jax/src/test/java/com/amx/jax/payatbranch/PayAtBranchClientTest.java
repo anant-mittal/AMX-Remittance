@@ -1,4 +1,4 @@
-package com.amx.jax.client;
+package com.amx.jax.payatbranch;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -12,6 +12,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.client.PayAtBranchClient;
+
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.constants.JaxChannel;
 import com.amx.jax.dict.Tenant;
@@ -20,7 +22,7 @@ import com.amx.jax.response.payatbranch.PayAtBranchTrnxListDTO;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class PayAtBranchClientTest extends AbstractClientTest {
+public class PayAtBranchClientTest {
 	private static final Logger LOGGER = Logger.getLogger(PayAtBranchClientTest.class);
 
 	@Autowired
@@ -49,7 +51,7 @@ public class PayAtBranchClientTest extends AbstractClientTest {
 
 	
 
-	@Test
+	//@Test
 	public void getPbTrnxList() {
 		jaxMetaInfo.setDeviceId("301019967");
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
@@ -67,7 +69,7 @@ public class PayAtBranchClientTest extends AbstractClientTest {
 		assertNotNull(response);
 	}
 
-	@Test
+	//@Test
 	public void getPbTrnxListBranch() {
 		jaxMetaInfo.setDeviceId("301019967");
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
@@ -84,5 +86,4 @@ public class PayAtBranchClientTest extends AbstractClientTest {
 		assertNotNull("Response is null", response);
 		assertNotNull(response);
 	}
-
 }

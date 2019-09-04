@@ -3,6 +3,8 @@ package com.amx.jax.client;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.stereotype.Component;
+
 
 import com.amx.jax.AppConfig;
 import com.amx.jax.api.AmxApiResponse;
@@ -12,7 +14,7 @@ import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.response.payatbranch.PayAtBranchTrnxListDTO;
 import com.amx.jax.rest.RestService;
 import com.amx.jax.service.IWireTransferService;
-
+@Component
 public class PayAtBranchClient implements IWireTransferService{
 	private static final Logger logger = Logger.getLogger(PayAtBranchClient.class);
 
@@ -32,7 +34,7 @@ public class PayAtBranchClient implements IWireTransferService{
 					.as(new ParameterizedTypeReference<AmxApiResponse<ResourceDTO, Object>>() {
 					});
 		} catch (Exception ae) {
-			logger.error("exception in get Payment Modes : ", ae);
+			logger.error("exception in Annual Income details : ", ae);
 			return JaxSystemError.evaluate(ae);
 		}
 	}
