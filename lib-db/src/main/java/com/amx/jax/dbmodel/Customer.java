@@ -1134,7 +1134,8 @@ public class Customer implements java.io.Serializable, Communicatable {
 	@Override
 	public String toString() {
 		return "Customer [customerId=" + customerId + ", email=" + email +
-				", emailVerified=" + emailVerified + ", mobileVerified="
+				", whatsApp=" + whatsapp + ", mobile=" + mobile +
+				", emailVerified=" + emailVerified + ", whatsAppVerified=" + whatsAppVerified + ", mobileVerified="
 				+ mobileVerified + "]";
 	}
 

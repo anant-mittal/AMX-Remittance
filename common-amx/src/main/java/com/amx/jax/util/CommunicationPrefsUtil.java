@@ -64,6 +64,7 @@ public class CommunicationPrefsUtil {
 	}
 
 	public CommunicationPrefsResult forCustomer(CommunicationEvents event, Communicatable communicatable) {
+		//amxSharedConfigClient.clear();
 		CommunicationPrefs prefs = get(event);
 
 		CommunicationPrefsResult result = new CommunicationPrefsResult();
