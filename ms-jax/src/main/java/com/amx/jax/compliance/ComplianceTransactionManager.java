@@ -25,7 +25,6 @@ import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.customer.document.manager.CustomerDocumentManager;
 import com.amx.jax.customer.document.validate.DocumentScanValidator;
 import com.amx.jax.dbmodel.Customer;
-import com.amx.jax.dbmodel.RemittanceTransactionView;
 import com.amx.jax.dbmodel.compliance.ComplianceBlockedTrnxDocMap;
 import com.amx.jax.dbmodel.compliance.HighValueComplianceAuth;
 import com.amx.jax.dbmodel.customer.CustomerDocumentTypeMaster;
@@ -42,6 +41,7 @@ import com.amx.jax.services.NotificationTaskService;
 import com.amx.jax.services.RemittanceTransactionService;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.service.UserService;
+import com.amx.utils.JsonUtil;
 
 @Component
 public class ComplianceTransactionManager {
@@ -128,7 +128,7 @@ public class ComplianceTransactionManager {
 
 	@Transactional
 	public void approveTrnxDoc(ApproveDocRequest request) {
-		log.info("approving hvt request: {}", request);
+		log.info("approving hvt request: {}", JsonUtil.toJson( request));
 		CustomerDocumentTypeMaster docTypemaster = documentScanValidator.validateDocCatAndDocType(request.getDocumentCategory(),
 				request.getDocumentType());
 		List<ComplianceBlockedTrnxDocMap> allDocs = complianceTrnxDocMapRepo.findByRemittanceTransaction(request.getRemittanceTransactionId());
@@ -165,7 +165,7 @@ public class ComplianceTransactionManager {
 	}
 
 	public void rejectTrnxDoc(RejectDocRequest request) {
-		log.info("rejecting hvt doc request: {}", request);
+		log.info("rejecting hvt doc request: {}", JsonUtil.toJson(request));
 		CustomerDocumentTypeMaster docTypemaster = documentScanValidator.validateDocCatAndDocType(request.getDocumentCategory(),
 				request.getDocumentType());
 		List<ComplianceBlockedTrnxDocMap> allDocs = complianceTrnxDocMapRepo.findByRemittanceTransaction(request.getRemittanceTransactionId());
