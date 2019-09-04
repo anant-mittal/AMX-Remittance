@@ -66,7 +66,8 @@ public class PayGService {
 				+ "&docId=" + payment.getDocId()
 				+ "&trckid=" + payment.getTrackId();
 
-		if (PayGServiceCode.WT.equals(payment.getServiceCode())) {
+		if (PayGServiceCode.WT.equals(payment.getServiceCode())
+				|| PayGServiceCode.PAY_AT_BRANCH.equals(payment.getServiceCode())) {
 			return callbackUrl;
 		}
 
