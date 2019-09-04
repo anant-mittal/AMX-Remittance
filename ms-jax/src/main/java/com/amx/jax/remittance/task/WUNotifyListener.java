@@ -175,7 +175,7 @@ public class WUNotifyListener implements ITunnelSubscriber<DBEvent> {
 			LOGGER.info("Wrapper data is {}", wrapper.get("data"));
 			pushMessage.setModel(wrapper);
 			pushMessage.addToUser(custId);
-			pushMessage.setModel(wrapper);
+			
 			pushNotifyClient.send(pushMessage);
 		}
 		
