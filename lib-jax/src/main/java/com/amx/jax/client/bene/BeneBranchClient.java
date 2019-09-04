@@ -18,6 +18,7 @@ import com.amx.jax.model.request.benebranch.AddNewBankBranchRequest;
 import com.amx.jax.model.request.benebranch.ListBankBranchRequest;
 import com.amx.jax.model.request.benebranch.ListBeneBankOrCashRequest;
 import com.amx.jax.model.request.benebranch.ListBeneRequest;
+import com.amx.jax.model.request.benebranch.UpdateBeneStatusRequest;
 import com.amx.jax.model.response.BankMasterDTO;
 import com.amx.jax.model.response.benebranch.BankBranchDto;
 import com.amx.jax.model.response.benebranch.BeneStatusDto;
@@ -133,6 +134,19 @@ public class BeneBranchClient implements IBranchBeneService {
 					});
 		} catch (Exception e) {
 			LOGGER.error("exception in listBene : ", e);
+			return JaxSystemError.evaluate(e);
+		}
+	}
+
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> updateBeneStatus(UpdateBeneStatusRequest request) {
+		try {
+			LOGGER.debug("in updateBeneStatus :");
+			return restService.ajax(appConfig.getJaxURL() + Path.UPDATE_BENE_STATUS).meta(new JaxMetaInfo()).post(request)
+					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in updateBeneStatus : ", e);
 			return JaxSystemError.evaluate(e);
 		}
 	}

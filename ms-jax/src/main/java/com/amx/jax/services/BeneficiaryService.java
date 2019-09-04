@@ -40,7 +40,7 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam;
-import com.amx.jax.branchbene.BeneficiaryConstant.BeneStatus;
+import com.amx.jax.client.bene.BeneficiaryConstant.BeneStatus;
 import com.amx.jax.client.serviceprovider.RoutingBankMasterDTO;
 import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.constant.ConstantDocument;

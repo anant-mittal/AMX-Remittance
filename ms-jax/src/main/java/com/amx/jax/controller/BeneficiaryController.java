@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam;
-import com.amx.jax.branchbene.BeneficiaryConstant.BeneStatus;
+import com.amx.jax.client.bene.BeneficiaryConstant.BeneStatus;
 import com.amx.jax.constants.JaxChannel;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.meta.MetaData;

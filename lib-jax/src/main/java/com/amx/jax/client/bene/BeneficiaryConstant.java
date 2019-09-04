@@ -1,4 +1,4 @@
-package com.amx.jax.branchbene;
+package com.amx.jax.client.bene;
 
 import com.amx.jax.util.AmxDBConstants;
 import com.fasterxml.jackson.annotation.JsonIgnore;

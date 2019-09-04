@@ -10,6 +10,7 @@ import com.amx.jax.model.request.benebranch.AddNewBankBranchRequest;
 import com.amx.jax.model.request.benebranch.ListBankBranchRequest;
 import com.amx.jax.model.request.benebranch.ListBeneBankOrCashRequest;
 import com.amx.jax.model.request.benebranch.ListBeneRequest;
+import com.amx.jax.model.request.benebranch.UpdateBeneStatusRequest;
 import com.amx.jax.model.response.BankMasterDTO;
 import com.amx.jax.model.response.benebranch.BankBranchDto;
 import com.amx.jax.model.response.benebranch.BeneStatusDto;
@@ -26,6 +27,7 @@ public interface IBranchBeneService {
 		public static final String ADD_NEW_BRANCH_REQUEST = PREFIX + "/add-new-branch-request/";
 		public static final String GET_BENE_LIST_STATUSES = PREFIX + "/get-bene-list-statuses/";
 		public static final String LIST_BENE = PREFIX + "/list-bene/";
+		public static final String UPDATE_BENE_STATUS = PREFIX + "/update-bene-status/";
 	}
 
 	public static class Params {
@@ -47,5 +49,7 @@ public interface IBranchBeneService {
 	AmxApiResponse<BeneStatusDto, Object> getBeneListStatuses();
 
 	AmxApiResponse<BeneficiaryListDTO, Object> listBene(ListBeneRequest request);
+
+	AmxApiResponse<BoolRespModel, Object> updateBeneStatus(UpdateBeneStatusRequest request);
 
 }

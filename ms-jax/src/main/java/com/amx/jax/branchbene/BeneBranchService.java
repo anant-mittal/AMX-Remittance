@@ -17,7 +17,8 @@ import com.amx.amxlib.meta.model.ViewCityDto;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterServiceImpl;
-import com.amx.jax.branchbene.BeneficiaryConstant.BeneStatus;
+import com.amx.jax.client.bene.BeneficiaryConstant;
+import com.amx.jax.client.bene.BeneficiaryConstant.BeneStatus;
 import com.amx.jax.client.serviceprovider.RoutingBankMasterDTO;
 import com.amx.jax.config.JaxProperties;
 import com.amx.jax.constant.ConstantDocument;
@@ -35,6 +36,7 @@ import com.amx.jax.model.request.benebranch.BeneficiaryTrnxModel;
 import com.amx.jax.model.request.benebranch.ListBankBranchRequest;
 import com.amx.jax.model.request.benebranch.ListBeneBankOrCashRequest;
 import com.amx.jax.model.request.benebranch.ListBeneRequest;
+import com.amx.jax.model.request.benebranch.UpdateBeneStatusRequest;
 import com.amx.jax.model.response.BankMasterDTO;
 import com.amx.jax.model.response.benebranch.AddBeneBankBranchRequestModel;
 import com.amx.jax.model.response.benebranch.BankBranchDto;
@@ -78,6 +80,8 @@ public class BeneBranchService {
 	JaxProperties jaxProperties;
 	@Autowired
 	PostManService postManService;
+	@Autowired
+	BeneBranchManager beneBranchManager;
 
 	// bank
 	public List<BankMasterDTO> getBankByCountryAndCurrency(ListBeneBankOrCashRequest request) {
@@ -184,6 +188,10 @@ public class BeneBranchService {
 			i.setBeneStatusDto(dto);
 		});
 		return beneListDto;
+	}
+
+	public void updateBeneStatus(UpdateBeneStatusRequest request) {
+		beneBranchManager.updateBeneStatus(request);
 	}
 
 }
