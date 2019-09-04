@@ -128,13 +128,13 @@ public class ComplianceTransactionManager {
 
 	@Transactional
 	public void approveTrnxDoc(ApproveDocRequest request) {
-		log.info("approving hvt request: {}", JsonUtil.toJson( request));
+		log.info("approving hvt request: {}", JsonUtil.toJson(request));
 		CustomerDocumentTypeMaster docTypemaster = documentScanValidator.validateDocCatAndDocType(request.getDocumentCategory(),
 				request.getDocumentType());
 		List<ComplianceBlockedTrnxDocMap> allDocs = complianceTrnxDocMapRepo.findByRemittanceTransaction(request.getRemittanceTransactionId());
 		boolean allDocsApproved = true;
 		for (ComplianceBlockedTrnxDocMap i : allDocs) {
-			CustomerDocumentTypeMaster trnxDocTypeMaster = i.getCustomerDocumentUploadReference().getCustomerDocumentTypeMaster();
+			CustomerDocumentTypeMaster trnxDocTypeMaster = i.getDocTypeMaster();
 			if (trnxDocTypeMaster.equals(docTypemaster)) {
 				i.setStatus(ComplianceTrnxdDocStatus.APPROVED);
 				complianceTrnxDocMapRepo.save(i);
