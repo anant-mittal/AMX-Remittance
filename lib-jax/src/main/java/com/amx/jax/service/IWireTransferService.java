@@ -9,8 +9,8 @@ public interface IWireTransferService {
 		public static final String PREFIX = "/payat-branch";
 		public static final String PAYMENT_MODES = "/payment-modes";
 		
-		public static final String WT_TRNX_LIST = "/pb-trnx-list";
-		public static final String WT_TRNX_LIST_BRANCH = "/pb-trnx-list-branch";
+		public static final String PB_TRNX_LIST = "/pb-trnx-list";
+		public static final String PB_TRNX_LIST_BRANCH = "/pb-trnx-list-branch";
 		
 	}
 
@@ -22,10 +22,10 @@ public interface IWireTransferService {
 
 	
 
-	AmxApiResponse<PayAtBranchTrnxListDTO, Object> getWtTrnxList();
+	AmxApiResponse<PayAtBranchTrnxListDTO, Object> getPbTrnxList();
 
 	
 
-	AmxApiResponse<PayAtBranchTrnxListDTO, Object> getWtTrnxListBranch();
+	AmxApiResponse<PayAtBranchTrnxListDTO, Object> getPbTrnxListBranch();
 
 }

@@ -20,14 +20,14 @@ import com.amx.jax.response.payatbranch.PayAtBranchTrnxListDTO;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class WireTransferClientTest extends AbstractClientTest {
-	private static final Logger LOGGER = Logger.getLogger(WireTransferClientTest.class);
+public class PayAtBranchClientTest extends AbstractClientTest {
+	private static final Logger LOGGER = Logger.getLogger(PayAtBranchClientTest.class);
 
 	@Autowired
 	private JaxMetaInfo jaxMetaInfo;
 
 	@Autowired
-	private WireTransferClient wireTransferClient;
+	private PayAtBranchClient payAtBranchClient;
 
 	@Test
 	public void getPaymentModes() {
@@ -42,7 +42,7 @@ public class WireTransferClientTest extends AbstractClientTest {
 		jaxMetaInfo.setEmployeeId(new BigDecimal(265));
 		AmxApiResponse<ResourceDTO, Object> response = null;
 
-		response = wireTransferClient.getPaymentModes();
+		response = payAtBranchClient.getPaymentModes();
 		assertNotNull("Response is null", response);
 		assertNotNull(response);
 	}
@@ -50,37 +50,37 @@ public class WireTransferClientTest extends AbstractClientTest {
 	
 
 	@Test
-	public void getWtTrnxList() {
-		jaxMetaInfo.setDeviceId("301019967");
-		jaxMetaInfo.setCountryId(new BigDecimal(91));
-		jaxMetaInfo.setCompanyId(new BigDecimal(1));
-		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
-		jaxMetaInfo.setCustomerId(new BigDecimal(287932));
-		jaxMetaInfo.setChannel(JaxChannel.ONLINE);
-		jaxMetaInfo.setTenant(Tenant.OMN);
-		jaxMetaInfo.setLanguageId(new BigDecimal(1));
-		jaxMetaInfo.setEmployeeId(new BigDecimal(265));
-		AmxApiResponse<PayAtBranchTrnxListDTO, Object> response = null;
-
-		response = wireTransferClient.getWtTrnxList();
-		assertNotNull("Response is null", response);
-		assertNotNull(response);
-	}
-
-	@Test
-	public void getWtTrnxListBranch() {
+	public void getPbTrnxList() {
 		jaxMetaInfo.setDeviceId("301019967");
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
 		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
 		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
 		jaxMetaInfo.setChannel(JaxChannel.ONLINE);
-		jaxMetaInfo.setTenant(Tenant.OMN);
+		jaxMetaInfo.setTenant(Tenant.KWT);
 		jaxMetaInfo.setLanguageId(new BigDecimal(1));
 		jaxMetaInfo.setEmployeeId(new BigDecimal(265));
 		AmxApiResponse<PayAtBranchTrnxListDTO, Object> response = null;
 
-		response = wireTransferClient.getWtTrnxListBranch();
+		response = payAtBranchClient.getPbTrnxList();
+		assertNotNull("Response is null", response);
+		assertNotNull(response);
+	}
+
+	@Test
+	public void getPbTrnxListBranch() {
+		jaxMetaInfo.setDeviceId("301019967");
+		jaxMetaInfo.setCountryId(new BigDecimal(91));
+		jaxMetaInfo.setCompanyId(new BigDecimal(1));
+		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
+		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
+		jaxMetaInfo.setChannel(JaxChannel.ONLINE);
+		jaxMetaInfo.setTenant(Tenant.KWT);
+		jaxMetaInfo.setLanguageId(new BigDecimal(1));
+		jaxMetaInfo.setEmployeeId(new BigDecimal(265));
+		AmxApiResponse<PayAtBranchTrnxListDTO, Object> response = null;
+
+		response = payAtBranchClient.getPbTrnxListBranch();
 		assertNotNull("Response is null", response);
 		assertNotNull(response);
 	}

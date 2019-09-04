@@ -13,8 +13,8 @@ import com.amx.jax.response.payatbranch.PayAtBranchTrnxListDTO;
 import com.amx.jax.rest.RestService;
 import com.amx.jax.service.IWireTransferService;
 
-public class WireTransferClient implements IWireTransferService{
-	private static final Logger logger = Logger.getLogger(WireTransferClient.class);
+public class PayAtBranchClient implements IWireTransferService{
+	private static final Logger logger = Logger.getLogger(PayAtBranchClient.class);
 
 	@Autowired
 	RestService restService;
@@ -38,11 +38,11 @@ public class WireTransferClient implements IWireTransferService{
 	}
 	
 	@Override
-	public AmxApiResponse<PayAtBranchTrnxListDTO, Object> getWtTrnxList() {
+	public AmxApiResponse<PayAtBranchTrnxListDTO, Object> getPbTrnxList() {
 
 		try {
 			return restService.ajax(appConfig.getJaxURL())
-					.path(Path.PREFIX + Path.WT_TRNX_LIST)
+					.path(Path.PREFIX + Path.PB_TRNX_LIST)
 					.meta(new JaxMetaInfo()).post()
 					.as(new ParameterizedTypeReference<AmxApiResponse<PayAtBranchTrnxListDTO, Object>>() {
 					});
@@ -53,11 +53,11 @@ public class WireTransferClient implements IWireTransferService{
 	}
 
 	@Override
-	public AmxApiResponse<PayAtBranchTrnxListDTO, Object> getWtTrnxListBranch() {
+	public AmxApiResponse<PayAtBranchTrnxListDTO, Object> getPbTrnxListBranch() {
 
 		try {
 			return restService.ajax(appConfig.getJaxURL())
-					.path(Path.PREFIX + Path.WT_TRNX_LIST_BRANCH)
+					.path(Path.PREFIX + Path.PB_TRNX_LIST_BRANCH)
 					.meta(new JaxMetaInfo()).post()
 					.as(new ParameterizedTypeReference<AmxApiResponse<PayAtBranchTrnxListDTO, Object>>() {
 					});
