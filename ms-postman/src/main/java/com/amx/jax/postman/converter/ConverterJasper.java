@@ -53,7 +53,7 @@ public class ConverterJasper implements FileConverter {
 
 	/** The simple report filler. */
 	@Autowired
-	SimpleReportFiller simpleReportFiller;
+	SimpleReportFiller simpleReportFiller2;
 
 	/** The simple exporter. */
 	@Autowired
@@ -85,6 +85,8 @@ public class ConverterJasper implements FileConverter {
 		String jasperFileName = templateUtils.getTemplateFile(
 				"jasper/" + file.getITemplate().getFileName(), AppContextUtil.getTenant(),
 				postManConfig.getLocal(file), null);
+		
+		SimpleReportFiller simpleReportFiller = new SimpleReportFiller();
 
 		simpleReportFiller.setReportFileName("templates/" + jasperFileName + ".jrxml");
 		simpleReportFiller.compileReport();
