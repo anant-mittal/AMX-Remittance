@@ -32,3 +32,4 @@ logs/*.log
 *-*/target/*.*
 *-*/target/test-classes/*.*
 *-*-*/*-*-*/target/
+ms-radar/ext-resources/*
