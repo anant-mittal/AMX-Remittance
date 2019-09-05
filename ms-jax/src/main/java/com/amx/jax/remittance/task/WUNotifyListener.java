@@ -16,6 +16,7 @@ import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
+import com.amx.jax.dict.AmxEnums.CommunicationEvents;
 import com.amx.jax.dict.Language;
 import com.amx.jax.event.AmxTunnelEvents;
 import com.amx.jax.postman.PostManException;
@@ -33,6 +34,8 @@ import com.amx.jax.tunnel.ITunnelSubscriber;
 import com.amx.jax.tunnel.TunnelEventMapping;
 import com.amx.jax.tunnel.TunnelEventXchange;
 import com.amx.jax.userservice.manager.CustomerFlagManager;
+import com.amx.jax.util.CommunicationPrefsUtil;
+import com.amx.jax.util.CommunicationPrefsUtil.CommunicationPrefsResult;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
 
@@ -57,6 +60,8 @@ public class WUNotifyListener implements ITunnelSubscriber<DBEvent> {
 	@Autowired
 	CurrencyMasterService currencyMasterService;
 	
+	@Autowired
+	CommunicationPrefsUtil communicationPrefsUtil;
 
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 	private static final String CUST_ID = "CUST_ID";
@@ -83,6 +88,7 @@ public class WUNotifyListener implements ITunnelSubscriber<DBEvent> {
 		BigDecimal tranxId = ArgUtil.parseAsBigDecimal(event.getData().get(TRANX_ID), new BigDecimal(0));
 		LOGGER.info("Customer id is "+custId);
 		Customer c = customerRepository.getNationalityValue(custId);
+		
 		LOGGER.info("Customer object is "+c.toString());
 		String emailId = c.getEmail();
 		String smsNo = c.getMobile();
@@ -120,7 +126,11 @@ public class WUNotifyListener implements ITunnelSubscriber<DBEvent> {
 			LOGGER.info("KeyModel = " + entry.getKey() + ", ValueModel = " + entry.getValue());
 		}
 		wrapper.put("data", modeldata);
-		if(!ArgUtil.isEmpty(emailId)&&c.canSendEmail()) {
+		CommunicationPrefsResult x = communicationPrefsUtil.forCustomer(CommunicationEvents.CASH_PICKUP_WU, c);
+		
+		
+		
+		if(x.isEmail()) {
 			
 
 			
@@ -158,7 +168,7 @@ public class WUNotifyListener implements ITunnelSubscriber<DBEvent> {
 
 		
 
-		if (!ArgUtil.isEmpty(custId)) {
+		if (x.isPushNotify()) {
 			PushMessage pushMessage = new PushMessage();
 			if(notifyType.equalsIgnoreCase(ConstantDocument.WU_PAID)) {
 				pushMessage.setITemplate(TemplatesMX.WU_TRNX_SUCCESS);

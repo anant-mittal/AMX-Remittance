@@ -24,6 +24,7 @@ import org.hibernate.annotations.Proxy;
 import com.amx.jax.constants.CustomerRegistrationType;
 import com.amx.jax.dict.Communicatable;
 import com.amx.jax.util.AmxDBConstants.Status;
+import com.amx.utils.ArgUtil;
 
 @Entity
 @Table(name = "FS_CUSTOMER")
@@ -1098,7 +1099,7 @@ public class Customer implements java.io.Serializable, Communicatable {
 	}
 
 	public boolean canSendEmail() {
-		return !(Status.D.equals(this.emailVerified) || Status.N.equals(this.emailVerified));
+		return !(Status.D.equals(this.emailVerified) || Status.N.equals(this.emailVerified) || ArgUtil.isEmpty(this.email));
 	}
 
 	private Status mobileVerified;
