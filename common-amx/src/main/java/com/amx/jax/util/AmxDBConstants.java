@@ -13,7 +13,7 @@ public class AmxDBConstants {
 	public static final String Compliance = "C";
 
 	public static enum Status {
-		Y, N, D, U, B, C
+		Y, N, D, U, B, C, V
 	}
 
 	// document id
@@ -72,7 +72,6 @@ public class AmxDBConstants {
 	public static final BigDecimal SERVICE_MASTER_ID_DD = new BigDecimal(104);
 	public static final BigDecimal SERVICE_MASTER_ID_CASH = new BigDecimal(103);
 
-
 	public static final String VOUCHER_ONLINE_PROMOTION_STR = "CHICKEN KING SAGAR VOUCHER";
 	public static final BigDecimal IDENTITY_FOR_ID_PROOF = new BigDecimal(48);
 	public static final BigDecimal BIZ_COMPONENT_ID_CIVIL_ID = new BigDecimal(198);
@@ -130,7 +129,6 @@ public class AmxDBConstants {
 	public static final BigDecimal OMAN_FOREIGNCURRENCY = new BigDecimal(99);
 	public static final BigDecimal BAHRAIN_FOREIGNCURRENCY = new BigDecimal(70);
 	public static final BigDecimal BIZ_COMPONENT_ID_PASSPORT = new BigDecimal(204);
-	
 
 	public static final String ARTICLE_20_CODE = "20";
 	public static final BigDecimal BIZ_COMPONENT_ID_NEW_CIVIL_ID = new BigDecimal(2000);
@@ -164,36 +162,36 @@ public class AmxDBConstants {
 	public static final String BNFBANK = "BNFBANK";
 	public static final String BNFBRCH = "BNFBRCH";
 	public static final String BNFBANK_SWIFT = "BNFBANK_SWIFT";
-	
+
 	public static final String HOME_SEND_PAYMENT_TYPE_CASH = "CASH";
 	public static final String HOME_SEND_PAYMENT_TYPE_KNET = "CARD";
 	public static final String HOME_SEND_PAYMENT_TYPE_BANK_TRANSFER = "BANK";
 	public static final String HOME_SEND_PAYMENT_TYPE_CHEQUE = "CHEQUE";
-	
-   // Constant for Article detail id "Others"
-	
+
+	// Constant for Article detail id "Others"
+
 	public static final BigDecimal ARTICLE_DETAIL_ID_OTHERS = new BigDecimal(16);
-	public static final String  VAT_ACCOUNT_TYPE_COMM = "COMMISSION";
-	public static final String  VAT_CALCULATION_TYPE_INCLUDE= "I";
-	public static final String  VAT_CALCULATION_TYPE_EXCLUDE="E";
-	public static final String  VAT_CATEGORY= "OUTPUT_TAX";
-	public static final String  BENE_ACCT_VALID="BENE_ACCT_VALID";
-	
+	public static final String VAT_ACCOUNT_TYPE_COMM = "COMMISSION";
+	public static final String VAT_CALCULATION_TYPE_INCLUDE = "I";
+	public static final String VAT_CALCULATION_TYPE_EXCLUDE = "E";
+	public static final String VAT_CATEGORY = "OUTPUT_TAX";
+	public static final String BENE_ACCT_VALID = "BENE_ACCT_VALID";
+
 	// Constants for Serviceprovider
-	
-	public static final String TOTAL_PAY_INDICATOR  = "T";
+
+	public static final String TOTAL_PAY_INDICATOR = "T";
 
 	// Constants for annual income
 	public static final String ANNUAL_INCOME_RANGE = "AIR";
-	
+
 	// Constants for annual transaction limit range
-	
+
 	public static final String ANNUAL_TRANSACTION_LIMIT = "ATL";
 	public static final long MILLISEC_IN_YEAR = 31540000000L;
-	
-	public static final String  COMM_INCLUDE= "I";
-	public static final String COMM_EXCLUDE="E";
-	
+
+	public static final String COMM_INCLUDE = "I";
+	public static final String COMM_EXCLUDE = "E";
+
 	public static final BigDecimal EXCHANGE_RATE_DECIMAL = new BigDecimal(9);
-	
+
 }

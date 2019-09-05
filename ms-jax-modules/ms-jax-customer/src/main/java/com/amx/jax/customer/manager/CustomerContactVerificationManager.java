@@ -272,19 +272,18 @@ public class CustomerContactVerificationManager {
 			}
 			markCustomerContactVerified(c, link.getContactType(), link.getContactValue());
 
-			link.setIsActive(Status.D);
-
 			List<CustomerContactVerification> oldlinks = getValidCustomerContactVerificationsByCustomerId(
 					c.getCustomerId(),
 					link.getContactType(),
 					link.getContactValue());
 			if (!ArgUtil.isEmpty(oldlinks)) {
 				for (CustomerContactVerification customerContactVerification : oldlinks) {
-					customerContactVerification.setIsActive(Status.N);
+					customerContactVerification.setIsActive(Status.D);
 				}
 				customerContactVerificationRepository.save(oldlinks);
 			}
 
+			link.setIsActive(Status.N);
 			customerContactVerificationRepository.save(link);
 
 		} catch (GlobalException e) {
