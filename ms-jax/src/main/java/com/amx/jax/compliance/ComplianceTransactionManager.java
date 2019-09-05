@@ -21,6 +21,7 @@ import com.amx.jax.client.compliance.DeactivateCustomerRequest;
 import com.amx.jax.client.compliance.HighValueTrnxDto;
 import com.amx.jax.client.compliance.RejectDocRequest;
 import com.amx.jax.client.task.CustomerDocUploadNotificationTaskData;
+import com.amx.jax.client.task.JaxNotificationTaskType;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.customer.document.manager.CustomerDocumentManager;
 import com.amx.jax.customer.document.validate.DocumentScanValidator;
@@ -105,6 +106,7 @@ public class ComplianceTransactionManager {
 		dto.setCollectionDocNo(remittanceTransaction.getCollectionDocumentNo());
 		dto.setCollectionDocCode(remittanceTransaction.getCollectionDocCode());
 		dto.setCollectionDocYear(remittanceTransaction.getCollectionDocFinanceYear());
+		dto.setCustomerId(i.getCustomerId());
 		return dto;
 	}
 
@@ -134,19 +136,24 @@ public class ComplianceTransactionManager {
 		List<ComplianceBlockedTrnxDocMap> allDocs = complianceTrnxDocMapRepo.findByRemittanceTransaction(request.getRemittanceTransactionId());
 		boolean allDocsApproved = true;
 		for (ComplianceBlockedTrnxDocMap i : allDocs) {
+			BigDecimal customerId = i.getCustomerId();
 			CustomerDocumentTypeMaster trnxDocTypeMaster = i.getDocTypeMaster();
+			CustomerDocumentUploadReference docUploadReference = i.getCustomerDocumentUploadReference();
 			if (trnxDocTypeMaster.equals(docTypemaster)) {
 				i.setStatus(ComplianceTrnxdDocStatus.APPROVED);
+				if (request.getExpiryDate() != null) {
+					docUploadReference.setExpiryDate(request.getExpiryDate());
+				}
 				complianceTrnxDocMapRepo.save(i);
 			}
 			if (!i.getStatus().equals(ComplianceTrnxdDocStatus.APPROVED)) {
 				allDocsApproved = false;
 			}
+			notificationTaskService.removeCurrentTaskNofication(docTypemaster, customerId, JaxNotificationTaskType.DOCUMENT_VERIFY);
 		}
 		if (allDocsApproved) {
 			log.info("clearing transaction as all docs are approved");
 			remittanceTransactionService.clearHighValueTransaction(request.getRemittanceTransactionId(), request.getComplianceBlockedTrnxType());
-			notificationTaskService.removeTaskForTransaction(request.getRemittanceTransactionId());
 		}
 
 	}
@@ -171,6 +178,7 @@ public class ComplianceTransactionManager {
 		List<ComplianceBlockedTrnxDocMap> allDocs = complianceTrnxDocMapRepo.findByRemittanceTransaction(request.getRemittanceTransactionId());
 		for (ComplianceBlockedTrnxDocMap i : allDocs) {
 			CustomerDocumentTypeMaster trnxDocTypeMaster = i.getCustomerDocumentUploadReference().getCustomerDocumentTypeMaster();
+			BigDecimal customerId = i.getCustomerId();
 			if (trnxDocTypeMaster.equals(docTypemaster)) {
 				i.setStatus(ComplianceTrnxdDocStatus.REJECTED);
 				complianceTrnxDocMapRepo.save(i);
@@ -179,9 +187,10 @@ public class ComplianceTransactionManager {
 			CustomerDocUploadNotificationTaskData data = new CustomerDocUploadNotificationTaskData();
 			data.setCustomerDocInfo(Arrays.asList(customerDocInfoDto));
 			data.setRemittanceTransactionId(request.getRemittanceTransactionId());
+			notificationTaskService.removeCurrentTaskNofication(trnxDocTypeMaster, customerId, JaxNotificationTaskType.DOCUMENT_VERIFY);
 			notificationTaskService.notifyBranchUserForDocumentUpload(data);
 		}
-		notificationTaskService.removeTaskForTransaction(request.getRemittanceTransactionId());
+
 	}
 
 	@Transactional

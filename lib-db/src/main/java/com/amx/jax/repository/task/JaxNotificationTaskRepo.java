@@ -6,8 +6,8 @@ import java.util.List;
 
 import org.springframework.data.repository.CrudRepository;
 
+import com.amx.jax.client.task.JaxNotificationTaskType;
 import com.amx.jax.dbmodel.task.JaxNotificationTask;
-import com.amx.jax.dbmodel.task.JaxNotificationTaskType;
 
 public interface JaxNotificationTaskRepo extends CrudRepository<JaxNotificationTask, Serializable> {
 

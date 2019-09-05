@@ -14,6 +14,8 @@ public class ListCustomerDocInfoTaskDto {
 
 	BigDecimal remittanceTransactionId;
 	
+	BigDecimal customerId;
+	
 	public String getDocumentCategory() {
 		return documentCategory;
 	}
@@ -36,5 +38,13 @@ public class ListCustomerDocInfoTaskDto {
 
 	public void setRemittanceTransactionId(BigDecimal remittanceTransactionId) {
 		this.remittanceTransactionId = remittanceTransactionId;
+	}
+
+	public BigDecimal getCustomerId() {
+		return customerId;
+	}
+
+	public void setCustomerId(BigDecimal customerId) {
+		this.customerId = customerId;
 	}
 }

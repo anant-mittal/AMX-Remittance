@@ -2,10 +2,12 @@ package com.amx.jax.dbmodel.compliance;
 
 import java.math.BigDecimal;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -36,7 +38,7 @@ public class ComplianceBlockedTrnxDocMap {
 	BigDecimal remittanceTransaction;
 
 	@JoinColumn(name = "CUST_DOC_UPLOAD_REF_ID")
-	@OneToOne
+	@OneToOne(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
 	CustomerDocumentUploadReference customerDocumentUploadReference;
 
 	@Column(name = "CUSTOMER_ID")

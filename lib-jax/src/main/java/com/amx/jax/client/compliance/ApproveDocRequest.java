@@ -1,6 +1,7 @@
 package com.amx.jax.client.compliance;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 import javax.validation.constraints.NotNull;
 
@@ -19,6 +20,7 @@ public class ApproveDocRequest {
 	BigDecimal remittanceTransactionId;
 	@NotNull
 	ComplianceBlockedTrnxType complianceBlockedTrnxType;
+	Date expiryDate;
 
 	public String getDocumentType() {
 		return documentType;
@@ -50,5 +52,13 @@ public class ApproveDocRequest {
 
 	public void setComplianceBlockedTrnxType(ComplianceBlockedTrnxType complianceBlockedTrnxType) {
 		this.complianceBlockedTrnxType = complianceBlockedTrnxType;
+	}
+
+	public Date getExpiryDate() {
+		return expiryDate;
+	}
+
+	public void setExpiryDate(Date expiryDate) {
+		this.expiryDate = expiryDate;
 	}
 }

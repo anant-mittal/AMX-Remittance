@@ -17,6 +17,7 @@ public class HighValueTrnxDto {
 	BigDecimal collectionDocNo;
 	BigDecimal collectionDocYear;
 	BigDecimal collectionDocCode;
+	BigDecimal customerId;
 
 	public String getCustomerFullName() {
 		return customerFullName;
@@ -120,6 +121,14 @@ public class HighValueTrnxDto {
 
 	public void setCollectionDocCode(BigDecimal collectionDocCode) {
 		this.collectionDocCode = collectionDocCode;
+	}
+
+	public BigDecimal getCustomerId() {
+		return customerId;
+	}
+
+	public void setCustomerId(BigDecimal customerId) {
+		this.customerId = customerId;
 	}
 
 }

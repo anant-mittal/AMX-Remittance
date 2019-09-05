@@ -17,13 +17,12 @@ import com.amx.jax.client.task.INotificationtaskService;
 import com.amx.jax.client.task.NotificationTaskDto;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.services.NotificationTaskService;
-import com.jax.amxlib.exception.jax.GlobaLException;
 
 @RestController
 public class NotificationTaskController implements INotificationtaskService {
 
 	@Autowired
-	NotificationTaskService notificationTaskService;
+	NotificationTaskService notificationTaskService;	
 	@Autowired
 	MetaData metaData;
 
