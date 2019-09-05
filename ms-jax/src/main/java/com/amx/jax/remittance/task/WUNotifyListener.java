@@ -168,7 +168,7 @@ public class WUNotifyListener implements ITunnelSubscriber<DBEvent> {
 				pushMessage.setITemplate(TemplatesMX.WU_PICKUP_REMINDER);
 			}else if(notifyType.equalsIgnoreCase(ConstantDocument.WU_CANC_REM)) {
 				pushMessage.setITemplate(TemplatesMX.WU_CANCEL_REMINDER);
-			}else if(notifyType.equalsIgnoreCase(ConstantDocument.WU_CANCELLED)){
+			}else {
 				pushMessage.setITemplate(TemplatesMX.WU_TRNX_CANCELLED);
 			}
 			LOGGER.info("Json value of wrapper is "+JsonUtil.toJson(wrapper));
