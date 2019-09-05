@@ -66,6 +66,7 @@ public class BrokerScheduler {
 				String sessionId = UniqueID.generateString();
 				AppContextUtil.setSessionId(sessionId);
 				AppContextUtil.getTraceId(true, true);
+				AppContextUtil.resetTraceTime();
 				AppContextUtil.init();
 				logger.debug("P:Before Lock");
 				Candidate candidate = getLock(tenants.toString());
@@ -95,6 +96,7 @@ public class BrokerScheduler {
 				String sessionId = UniqueID.generateString();
 				AppContextUtil.setSessionId(sessionId);
 				AppContextUtil.getTraceId(true, true);
+				AppContextUtil.resetTraceTime();
 				AppContextUtil.init();
 				logger.debug("D:Before CleanUP");
 				brokerService.cleanUpEventNotificationRecords(tenant, sessionId);

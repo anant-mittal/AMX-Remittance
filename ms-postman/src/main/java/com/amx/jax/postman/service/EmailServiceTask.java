@@ -43,6 +43,7 @@ public class EmailServiceTask {
 						TimeUtils.getReverseRotationNumber(EmailService.RESEND_INTERVAL, 0x1)
 						+ "_" + postManConfig.getEmailRetryPoll());
 
+		//AppContextUtil.getTraceTime();
 		for (int i = 0; i < postManConfig.getEmailRetryBatch(); i++) {
 			TunnelMessage<Email> emailtask = emailQueue.poll();
 			if (!ArgUtil.isEmpty(emailtask)) {

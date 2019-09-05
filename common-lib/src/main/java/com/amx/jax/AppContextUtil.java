@@ -184,6 +184,10 @@ public class AppContextUtil {
 		ContextUtil.map().put(AppConstants.TRACE_TIME_XKEY, timestamp);
 	}
 
+	public static void resetTraceTime() {
+		ContextUtil.map().put(AppConstants.TRACE_TIME_XKEY, System.currentTimeMillis());
+	}
+
 	public static void setActorId(Object actorId) {
 		ContextUtil.map().put(AppConstants.ACTOR_ID_XKEY, actorId);
 	}
@@ -383,7 +387,7 @@ public class AppContextUtil {
 				List<String> traceIds = httpHeaders.get(AppConstants.TRACE_ID_XKEY);
 				if (traceIds.size() >= 0) {
 					setTranceId(traceIds.get(0));
-				} 
+				}
 			}
 		}
 
