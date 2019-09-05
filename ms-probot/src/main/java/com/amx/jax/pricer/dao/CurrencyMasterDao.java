@@ -16,12 +16,12 @@ public class CurrencyMasterDao {
 	@Autowired
 	CurrencyMasterRepository repo;
 
-	//@CacheForTenant
+	@CacheForTenant
 	public CurrencyMasterModel getByCurrencyCode(String currencyCode) {
 		return repo.findByCurrencyCode(currencyCode);
 	}
 
-	//@CacheForTenant
+	@CacheForTenant
 	public CurrencyMasterModel getByCurrencyId(BigDecimal currencyId) {
 		return repo.findOne(currencyId);
 	}

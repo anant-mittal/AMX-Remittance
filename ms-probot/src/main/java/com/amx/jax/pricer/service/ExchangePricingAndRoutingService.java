@@ -284,7 +284,7 @@ public class ExchangePricingAndRoutingService {
 				cat = customerExtended.getCustomerCategoryDiscount().getCustomerCategory();
 			}
 
-			// asynch Call to get the Service Provider Prices
+			// async Call to get the Service Provider Prices
 			sProviderFuture = serviceProviderManager.getServiceProviderQuote(homeSendMatrix,
 					exchangeRateAndRoutingRequest, cat);
 
