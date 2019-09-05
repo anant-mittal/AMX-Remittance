@@ -75,8 +75,6 @@ public class OnlineCouponListener implements ITunnelSubscriber<DBEvent> {
 		Map<String, Object> modeldata = new HashMap<String, Object>();
 		modeldata.put("to", emailId);
 		modeldata.put("customer", custName);
-		modeldata.put("custId", custId);
-		modeldata.put("civilId", civilId);
 		modeldata.put("cummDiscount", cummDiscount);
 		modeldata.put("trnxDiscount", trnxDiscount);
 
