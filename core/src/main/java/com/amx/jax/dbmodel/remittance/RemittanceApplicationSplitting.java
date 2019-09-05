@@ -1,14 +1,19 @@
 package com.amx.jax.dbmodel.remittance;
 
+
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -27,9 +32,9 @@ public class RemittanceApplicationSplitting implements Serializable{
 
 	private BigDecimal applTrnxSplitId;
 	
-	@Column(name = "REMITTANCE_APPLICATION_ID")
-	private BigDecimal remittanceApplicationId;
 	
+	private RemittanceApplication remittanceApplicationId;
+
 	
 	@Column(name = "DOCUMENT_FINANCE_YEAR")
 	private BigDecimal documentFinanceYear;
@@ -71,8 +76,9 @@ public class RemittanceApplicationSplitting implements Serializable{
 	@Column(name = "FOREIGN_TRANX_AMOUNT")
 	private BigDecimal foreignTranxAmount;
 	
-	@Column(name = "LOCAL_TRANX_AMOUNT")
-	private BigDecimal localTranxAmount;
+	/*
+	 * @Column(name = "LOCAL_TRANX_AMOUNT") private BigDecimal localTranxAmount;
+	 */
 	
 	@Column(name="REMARKS")
 	private String remarks;
@@ -90,9 +96,7 @@ public class RemittanceApplicationSplitting implements Serializable{
 		this.applTrnxSplitId = applTrnxSplitId;
 	}
 	
-	public void setRemittanceApplicationId(BigDecimal remittanceApplicationId) {
-		this.remittanceApplicationId = remittanceApplicationId;
-	}
+	
 	public BigDecimal getDocumentFinanceYear() {
 		return documentFinanceYear;
 	}
@@ -165,16 +169,25 @@ public class RemittanceApplicationSplitting implements Serializable{
 	public void setForeignTranxAmount(BigDecimal foreignTranxAmount) {
 		this.foreignTranxAmount = foreignTranxAmount;
 	}
-	public BigDecimal getLocalTranxAmount() {
-		return localTranxAmount;
-	}
-	public void setLocalTranxAmount(BigDecimal localTranxAmount) {
-		this.localTranxAmount = localTranxAmount;
-	}
+
+	/*
+	 * public BigDecimal getLocalTranxAmount() { return localTranxAmount; } public
+	 * void setLocalTranxAmount(BigDecimal localTranxAmount) { this.localTranxAmount
+	 * = localTranxAmount; }
+	 */
 	public String getRemarks() {
 		return remarks;
 	}
 	public void setRemarks(String remarks) {
 		this.remarks = remarks;
+	}
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "REMITTANCE_APPLICATION_ID")
+	public RemittanceApplication getRemittanceApplicationId() {
+		return remittanceApplicationId;
+	}
+	public void setRemittanceApplicationId(RemittanceApplication remittanceApplicationId) {
+		this.remittanceApplicationId = remittanceApplicationId;
 	}
 }

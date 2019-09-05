@@ -150,6 +150,8 @@ public class RemittanceApplication implements Serializable {
 	
 	private String wuPurposeOfTransaction;
 
+	private String applSplit;
+	
 
 	private List<RemittanceAppBenificiary> exRemittanceAppBenificiary = new ArrayList<RemittanceAppBenificiary>(0);
 	
@@ -992,6 +994,15 @@ public class RemittanceApplication implements Serializable {
 	}
 	public void setWuPurposeOfTransaction(String wuPurposeOfTransaction) {
 		this.wuPurposeOfTransaction = wuPurposeOfTransaction;
+	}
+
+	@Column(name="IS_SPLITTED")
+	public String getApplSplit() {
+		return applSplit;
+	}
+
+	public void setApplSplit(String applSplit) {
+		this.applSplit = applSplit;
 	}
 	
 	

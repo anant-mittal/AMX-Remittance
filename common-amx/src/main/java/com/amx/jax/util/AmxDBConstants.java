@@ -248,4 +248,5 @@ public class AmxDBConstants {
 	public static final String DIRECT_PAYMENT_LINK_PAID ="P";
 	public static final String DIRECT_LINK ="LINK";
 	
+public static final String IMPS = "IMPS";
 }
