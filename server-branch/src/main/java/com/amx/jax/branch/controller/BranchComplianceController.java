@@ -12,6 +12,7 @@ import com.amx.jax.model.customer.ComplianceTrnxDocumentInfo;
 import com.amx.jax.model.customer.document.CustomerDocCatTypeDto;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -44,13 +45,13 @@ public class BranchComplianceController {
 		return customerManagementClient.listDocCatType();
 	}
 
-	@RequestMapping(value = "/api/compliance/doc/approve", method = { RequestMethod.GET })
-	public AmxApiResponse<BoolRespModel, Object> approveTrnxDoc(ApproveDocRequest request) {
+	@RequestMapping(value = "/api/compliance/doc/approve", method = { RequestMethod.POST })
+	public AmxApiResponse<BoolRespModel, Object> approveTrnxDoc(@RequestBody ApproveDocRequest request) {
 		return complianceClient.approveTrnxDoc(request);
 	}
 
-	@RequestMapping(value = "/api/compliance/doc/reject", method = { RequestMethod.GET })
-	public AmxApiResponse<BoolRespModel, Object> rejectTrnxDoc(RejectDocRequest request) {
+	@RequestMapping(value = "/api/compliance/doc/reject", method = { RequestMethod.POST })
+	public AmxApiResponse<BoolRespModel, Object> rejectTrnxDoc(@RequestBody RejectDocRequest request) {
 		return complianceClient.rejectTrnxDoc(request);
 	}
 
