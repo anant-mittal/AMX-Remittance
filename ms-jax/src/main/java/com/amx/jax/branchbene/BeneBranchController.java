@@ -24,6 +24,7 @@ import com.amx.jax.model.request.benebranch.AddNewBankBranchRequest;
 import com.amx.jax.model.request.benebranch.ListBankBranchRequest;
 import com.amx.jax.model.request.benebranch.ListBeneBankOrCashRequest;
 import com.amx.jax.model.request.benebranch.ListBeneRequest;
+import com.amx.jax.model.request.benebranch.UpdateBeneBankRequest;
 import com.amx.jax.model.request.benebranch.UpdateBeneStatusRequest;
 import com.amx.jax.model.response.BankMasterDTO;
 import com.amx.jax.model.response.benebranch.BankBranchDto;
@@ -123,6 +124,16 @@ public class BeneBranchController implements IBranchBeneService {
 	public AmxApiResponse<BoolRespModel, Object> updateBeneStatus(UpdateBeneStatusRequest request) {
 		logger.debug("updateBeneStatus request: {}", JsonUtil.toJson(request));
 		beneBranchService.updateBeneStatus(request);
+		return AmxApiResponse.build(new BoolRespModel(true));
+	}
+	
+	@RequestMapping(value = Path.UPDATE_BENE_BANK, method = RequestMethod.POST)
+	@Override
+	@ApiOperation("add bene bank")
+	public AmxApiResponse<BoolRespModel, Object> updateBeneBank(@RequestBody @Valid UpdateBeneBankRequest request) {
+		logger.debug("request updateBeneBank: {} ", JsonUtil.toJson(request));
+		beneBranchValidation.validateUpdateBeneBank(request);
+		beneBranchService.updateBeneBankorCash(request);
 		return AmxApiResponse.build(new BoolRespModel(true));
 	}
 }

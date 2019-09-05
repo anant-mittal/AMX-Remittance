@@ -266,7 +266,7 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 	 * @return bankbranch code
 	 * 
 	 */
-	private BigDecimal getBankBranchCode(BigDecimal bankId, BigDecimal bankBranchId) {
+	public BigDecimal getBankBranchCode(BigDecimal bankId, BigDecimal bankBranchId) {
 		return bankService.getBankBranchView(bankId, bankBranchId).getBranchCode();
 	}
 

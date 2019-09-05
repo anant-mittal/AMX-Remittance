@@ -1,5 +1,7 @@
 package com.amx.jax.validation;
 
+import java.util.regex.Pattern;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -41,7 +43,11 @@ public class BankBranchSearchRequestlValidator implements Validator {
 		if (StringUtils.isNotBlank(ifscCode) && ifscCode.length() < 3) {
 			throw new GlobalException(JaxError.INVALID_BANK_IFSC, "Invalid ifsc");
 		}
-
+		String ifscRegex = "^[A-Za-z]{4}\\d{7}$";
+		Pattern pattern = Pattern.compile(ifscRegex);
+		if (!pattern.matcher(ifscCode).matches()) {
+			throw new GlobalException(JaxError.INVALID_BANK_IFSC, "Invalid ifsc");
+		}
 	}
 
 	private void validateSwiftCode(String swift) {

@@ -162,7 +162,6 @@ public class BeneficiaryValidationService {
 			}
 		});
 		if (!StringUtils.isEmpty(ifscCode)) {
-			validateSwiftCode(ifscCode);
 			bankBranchSearchRequestlValidator.validateIfscCode(ifscCode);
 		}
 	}

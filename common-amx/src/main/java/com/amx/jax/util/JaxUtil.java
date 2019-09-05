@@ -1,5 +1,6 @@
 package com.amx.jax.util;
 
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.text.DateFormatSymbols;
 import java.util.ArrayList;
@@ -229,6 +230,21 @@ public class JaxUtil {
 		} catch (Exception e) {
 			logger.error("error in convert", e);
 		}
+	}
+	
+	/**
+	 * true if object has all fields null
+	 * 
+	 * @return
+	 * @throws IllegalAccessException
+	 */
+	public static boolean checkNull(Object obj) throws IllegalAccessException {
+		for (Field f : obj.getClass().getDeclaredFields()) {
+			if (f.get(obj) != null) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 }

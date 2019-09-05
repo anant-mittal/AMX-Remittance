@@ -1093,4 +1093,17 @@ public class BeneficiaryService extends AbstractService {
 	public BeneficaryStatus getBeneStatusByNameByName(String beneficaryStatusName) {
 		return beneficaryStatusRepository.findByBeneficaryStatusName(beneficaryStatusName);
 	}
+
+	public BeneficaryRelationship getBeneRelationshipByIdNo(BigDecimal relationshipSeqId) {
+		return beneRelationShipDao.findOne(relationshipSeqId);
+	}
+
+	public BeneficaryContact getBeneficiaryContactByMasterId(BigDecimal beneMasterId) {
+		List<BeneficaryContact> beneContactList = beneficiaryContactDao.getBeneContact(beneMasterId);
+		BeneficaryContact beneContact = null;
+		if (!beneContactList.isEmpty()) {
+			beneContact = beneContactList.get(0);
+		}
+		return beneContact;
+	}
 }

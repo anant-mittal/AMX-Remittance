@@ -2,6 +2,7 @@ package com.amx.jax.branchbene;
 
 import java.math.BigDecimal;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +15,7 @@ import com.amx.jax.model.request.benebranch.AddBeneCashRequest;
 import com.amx.jax.model.request.benebranch.AddNewBankBranchRequest;
 import com.amx.jax.model.request.benebranch.BeneAccountModel;
 import com.amx.jax.model.request.benebranch.BeneficiaryTrnxModel;
+import com.amx.jax.model.request.benebranch.UpdateBeneBankRequest;
 import com.amx.jax.service.MetaService;
 import com.amx.jax.services.BeneficiaryValidationService;
 import com.amx.utils.AgeUtil;
@@ -64,6 +66,15 @@ public class BeneBranchValidation {
 		beneficiaryValidationService.validateIFscCode(beneBankCountryId, beneBankCurrencyId, ifscCode);
 		String swiftCode = request.getSwift();
 		beneficiaryValidationService.validateSwiftCode(beneBankCountryId, beneBankCurrencyId, swiftCode);
+
+	}
+
+	public void validateUpdateBeneBank(UpdateBeneBankRequest request) {
+		BeneficiaryTrnxModel beneTrnxModel = request.createBeneficiaryTrnxModelObject();
+		BeneAccountModel beneAccountModel = beneTrnxModel.getBeneAccountModel();
+		if (StringUtils.isNotBlank(beneAccountModel.getIfscCode())) {
+			beneficiaryValidationService.validateIFscCode(beneAccountModel);
+		}
 
 	}
 }

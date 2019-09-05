@@ -26,16 +26,20 @@ import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.CountryMasterDesc;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.bene.BeneficaryMaster;
+import com.amx.jax.dbmodel.bene.BeneficaryRelationship;
 import com.amx.jax.dbmodel.bene.BeneficaryStatus;
 import com.amx.jax.dbmodel.meta.ServiceGroupMaster;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.model.request.AbstractBeneDetailDto;
 import com.amx.jax.model.request.benebranch.AddNewBankBranchRequest;
+import com.amx.jax.model.request.benebranch.BeneAccountModel;
+import com.amx.jax.model.request.benebranch.BenePersonalDetailModel;
 import com.amx.jax.model.request.benebranch.BeneficiaryTrnxModel;
 import com.amx.jax.model.request.benebranch.ListBankBranchRequest;
 import com.amx.jax.model.request.benebranch.ListBeneBankOrCashRequest;
 import com.amx.jax.model.request.benebranch.ListBeneRequest;
+import com.amx.jax.model.request.benebranch.UpdateBeneBankRequest;
 import com.amx.jax.model.request.benebranch.UpdateBeneStatusRequest;
 import com.amx.jax.model.response.BankMasterDTO;
 import com.amx.jax.model.response.benebranch.AddBeneBankBranchRequestModel;
@@ -52,6 +56,7 @@ import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.services.BeneficiaryValidationService;
 import com.amx.jax.trnx.BeneficiaryTrnxManager;
 import com.amx.jax.userservice.service.UserService;
+import com.amx.utils.JsonUtil;
 
 @Service
 public class BeneBranchService {
@@ -192,6 +197,17 @@ public class BeneBranchService {
 
 	public void updateBeneStatus(UpdateBeneStatusRequest request) {
 		beneBranchManager.updateBeneStatus(request);
+	}
+
+	public void updateBeneBankorCash(UpdateBeneBankRequest request) {
+		logger.info("updateBeneBankorCash request: {} ", JsonUtil.toJson(request));
+		BeneficiaryTrnxModel beneficiaryTrnxModel = request.createBeneficiaryTrnxModelObject();
+		BeneAccountModel beneAccountDetail = beneficiaryTrnxModel.getBeneAccountModel();
+		BenePersonalDetailModel benePersonalDetail = beneficiaryTrnxModel.getBenePersonalDetailModel();
+		BeneficaryRelationship beneRelationship = beneService.getBeneRelationshipByIdNo(BigDecimal.valueOf(request.getIdNo()));
+		beneBranchManager.updateBeneMaster(beneRelationship, benePersonalDetail);
+		beneBranchManager.updateBeneContact(beneRelationship, benePersonalDetail);
+		beneBranchManager.updateBeneAccount(beneRelationship, beneAccountDetail);
 	}
 
 }
