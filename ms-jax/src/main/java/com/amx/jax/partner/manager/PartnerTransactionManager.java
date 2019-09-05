@@ -939,7 +939,7 @@ public class PartnerTransactionManager extends AbstractModel {
 								serviceProviderResponse.getAction_ind().equalsIgnoreCase(PricerServiceConstants.ACTION_IND_F)){
 							actionInd = serviceProviderResponse.getAction_ind();
 							responseDescription = serviceProviderResponse.getResponse_description();
-							emailStatus = Boolean.TRUE; // testing
+							//emailStatus = Boolean.TRUE; // testing
 						}else if(serviceProviderResponse.getAction_ind().equalsIgnoreCase(PricerServiceConstants.ACTION_IND_T)){
 							actionInd = PricerServiceConstants.ACTION_IND_U;
 							responseDescription = PricerServiceConstants.RESPONSE_UNKNOWN_ERROR;
