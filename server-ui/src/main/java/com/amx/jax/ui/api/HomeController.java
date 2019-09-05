@@ -292,7 +292,7 @@ public class HomeController {
 	@ApiJaxStatus({ JaxError.CUSTOMER_NOT_FOUND, JaxError.INVALID_OTP, JaxError.ENTITY_INVALID,
 			JaxError.ENTITY_EXPIRED })
 	@ApiStatus({ ApiStatusCodes.PARAM_MISSING })
-	@RequestMapping(value = { "/pub/rating/{prodType}/{trnxId}/{veryCode}" },
+	@RequestMapping(value = { "/pub/rating/{prodType}/{trnxId}/{veryCode}/**" },
 			method = { RequestMethod.GET }, produces = {
 					CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE })
 	@ResponseBody
@@ -329,7 +329,7 @@ public class HomeController {
 	@ApiJaxStatus({ JaxError.CUSTOMER_NOT_FOUND, JaxError.INVALID_OTP, JaxError.ENTITY_INVALID,
 			JaxError.ENTITY_EXPIRED })
 	@ApiStatus({ ApiStatusCodes.PARAM_MISSING })
-	@RequestMapping(value = { "/pub/rating/{prodType}/{trnxId}/{veryCode}" },
+	@RequestMapping(value = { "/pub/rating/{prodType}/{trnxId}/{veryCode}" }, 
 			method = { RequestMethod.GET })
 	public String rating(Model model,
 			@PathVariable Products prodType, @PathVariable BigDecimal trnxId, @PathVariable String veryCode) {
@@ -362,12 +362,12 @@ public class HomeController {
 			}
 		}
 		if(prodType.equals(Products.FXORDER)) {
-			if (!JaxClientUtil.getTransactionVeryCode(customerRatingDTO.getCollectionDocNo()).equals(veryCode)) {
+			if (!JaxClientUtil.getTransactionVeryCode(customerRatingDTO.getRemittanceTransactionId()).equals(veryCode)) {
        				throw new UIServerError(OWAStatusStatusCodes.INVALID_LINK);
 			}
 		}
 		
-		return ResponseWrapper.build(jaxService.setDefaults().getRemitClient().saveCustomerRating(customerRatingDTO));
+		return ResponseWrapper.build(jaxService.setDefaults().getRemitClient().saveCustomerRating(customerRatingDTO,prodType));
 
 	}
 }

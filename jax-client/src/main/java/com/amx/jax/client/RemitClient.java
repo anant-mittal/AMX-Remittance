@@ -24,6 +24,7 @@ import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.client.util.ConverterUtility;
+import com.amx.jax.dict.AmxEnums.Products;
 import com.amx.jax.model.customer.CustomerRatingDTO;
 import com.amx.jax.model.request.remittance.IRemitTransReqPurpose;
 import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
@@ -308,10 +309,12 @@ public class RemitClient extends AbstractJaxServiceClient {
 
 	}
 
-	public AmxApiResponse<CustomerRatingDTO, ?> saveCustomerRating(CustomerRatingDTO customerRatingDTO)
+	public AmxApiResponse<CustomerRatingDTO, ?> saveCustomerRating(CustomerRatingDTO customerRatingDTO,Products prodType)
 			throws RemittanceTransactionValidationException, LimitExeededException {
 
 		try {
+			customerRatingDTO.setProducttype(prodType);;
+			
 			HttpEntity<CustomerRatingDTO> requestEntity = new HttpEntity<CustomerRatingDTO>(customerRatingDTO,
 					getHeader());
 

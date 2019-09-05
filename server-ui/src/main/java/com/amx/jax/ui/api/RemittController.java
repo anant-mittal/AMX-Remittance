@@ -37,6 +37,7 @@ import com.amx.jax.JaxAuthContext;
 import com.amx.jax.client.JaxClientUtil;
 import com.amx.jax.client.remittance.RemittanceClient;
 import com.amx.jax.dict.Language;
+import com.amx.jax.dict.AmxEnums.Products;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.customer.CustomerRatingDTO;
 import com.amx.jax.model.request.remittance.BranchRemittanceGetExchangeRateRequest;
@@ -490,12 +491,12 @@ public class RemittController {
 
 	@RequestMapping(value = { "/api/remitt/tranx/rating", "/pub/remitt/tranx/rating" }, method = { RequestMethod.POST })
 	public ResponseWrapper<CustomerRatingDTO> appStatus(@RequestBody CustomerRatingDTO customerRatingDTO,
-			@RequestParam String veryCode) {
+			@RequestParam String veryCode,@PathVariable Products prodType) {
 
 		if (!JaxClientUtil.getTransactionVeryCode(customerRatingDTO.getRemittanceTransactionId()).equals(veryCode)) {
 			throw new UIServerError(OWAStatusStatusCodes.INVALID_LINK);
 		}
-		return ResponseWrapper.build(jaxService.setDefaults().getRemitClient().saveCustomerRating(customerRatingDTO));
+		return ResponseWrapper.build(jaxService.setDefaults().getRemitClient().saveCustomerRating(customerRatingDTO,prodType));
 
 	}
 }

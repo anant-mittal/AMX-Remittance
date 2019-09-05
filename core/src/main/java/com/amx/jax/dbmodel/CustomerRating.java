@@ -30,6 +30,7 @@ public class CustomerRating implements java.io.Serializable{
 	private BigDecimal collectionDocNo;
 	private BigDecimal collectionDocFyr;
 	private String feedbackType;
+	private BigDecimal delvSeqId;
 	
 	
 	@Id
@@ -119,6 +120,17 @@ public class CustomerRating implements java.io.Serializable{
 	public void setCollectionDocFyr(BigDecimal collectionDocFyr) {
 		this.collectionDocFyr = collectionDocFyr;
 	}
+	
+	@Column(name = "DELV_SEQ_ID")
+	public BigDecimal getDelvSeqId() {
+		return delvSeqId;
+	}
+	public void setDelvSeqId(BigDecimal delvSeqId) {
+		this.delvSeqId = delvSeqId;
+	}
+	
+	
+	
 	
 	
 	

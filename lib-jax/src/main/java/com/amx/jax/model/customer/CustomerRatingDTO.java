@@ -7,7 +7,10 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.Range;
 
+import com.amx.jax.dict.AmxEnums.Products;
 import com.amx.jax.model.AbstractModel;
+
+import reactor.jarjar.com.lmax.disruptor.dsl.ProducerType;
 
 public class CustomerRatingDTO extends AbstractModel {
 	
@@ -16,8 +19,6 @@ public class CustomerRatingDTO extends AbstractModel {
 	private BigDecimal customerId;
 	private BigDecimal ratingId;
 	private BigDecimal applicationCountryId;
-	
-	
 	private BigDecimal remittanceApplicationId;
 	
 	//@NotNull(message="remittanceApplicationId may not be null")
@@ -25,7 +26,7 @@ public class CustomerRatingDTO extends AbstractModel {
 	private Date createdDate;
 
 	
-	//@NotNull
+	@NotNull
 	@Range(min=1, max=10,message="rating should be between 1 and 10 range")
 	private BigDecimal rating;
 	
@@ -34,7 +35,18 @@ public class CustomerRatingDTO extends AbstractModel {
 	//fxOrder 
 	private BigDecimal collectionDocNo;
 	private BigDecimal collectionDocfyr;
-	private String producttype;
+	private BigDecimal delvSeqId;
+	private String feedbackType;
+	
+	public BigDecimal getDelvSeqId() {
+		return delvSeqId;
+	}
+
+	public void setDelvSeqId(BigDecimal delvSeqId) {
+		this.delvSeqId = delvSeqId;
+	}
+
+	Products producttype;
 
 	@Override
 	public String getModelType() {
@@ -71,6 +83,16 @@ public class CustomerRatingDTO extends AbstractModel {
 
 	public void setRemittanceApplicationId(BigDecimal remittanceApplicationId) {
 		this.remittanceApplicationId = remittanceApplicationId;
+	}
+	
+	
+
+	public String getFeedbackType() {
+		return feedbackType;
+	}
+
+	public void setFeedbackType(String feedbackType) {
+		this.feedbackType = feedbackType;
 	}
 
 	public BigDecimal getRemittanceTransactionId() {
@@ -121,13 +143,15 @@ public class CustomerRatingDTO extends AbstractModel {
 		this.collectionDocfyr = collectionDocfyr;
 	}
 
-	public String getProducttype() {
+	public Products getProducttype() {
 		return producttype;
 	}
 
-	public void setProducttype(String producttype) {
+	public void setProducttype(Products producttype) {
 		this.producttype = producttype;
 	}
+
+	
 	
 	
 	

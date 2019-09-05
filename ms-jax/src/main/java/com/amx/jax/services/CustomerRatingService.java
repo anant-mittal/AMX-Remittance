@@ -99,7 +99,7 @@ public class CustomerRatingService {
 			
 			CustomerRating customerRating = new CustomerRating();
 			BigDecimal applicationCountryId = metaData.getCountryId();
-			BigDecimal fxOrdertrnxId = dto.getCollectionDocNo();
+			BigDecimal fxOrdertrnxId = dto.getRemittanceTransactionId();
 			
 			if(fxOrdertrnxId!=null) {
 				
@@ -112,24 +112,20 @@ public class CustomerRatingService {
 													
 				}else
 				{
-					//RemittanceTransaction remittanceApplicationTxnxId = remittanceTransactionRepository.findByRemittanceTransactionId(dto.getRemittanceTransactionId());
 					
 					ReceiptPayment receiptPaymentdetails =receiptPaymenttRepository.findByDeliveryDetSeqId(fxOrdertrnxId);
 					if(receiptPaymentdetails!=null) {
-				//	RemittanceApplication remitAPPLTrnx = remittanceApplicationRepository.getRemittanceApplicationId(remittanceApplicationTxnxId.getApplicationDocumentNo(),remittanceApplicationTxnxId.getDocumentFinanceYear());
-					
-					//if(remitAPPLTrnx!=null) {
-					
+									
 					customerRating.setRating(dto.getRating());
 					customerRating.setRatingRemark(dto.getRatingRemark());
+					//customerRating.setRatingId(customerRatingvalue.getRatingId());
 					customerRating.setCollectionDocNo(receiptPaymentdetails.getColDocNo());
-					//customerRating.setRemittanceApplicationId(remitAPPLTrnx.getRemittanceApplicationId());
 					customerRating.setCollectionDocFyr(receiptPaymentdetails.getColDocFyr());
-					//c//ustomerRating.setRemittanceTransactionId(dto.getRemittanceTransactionId());
 					customerRating.setCustomerId(receiptPaymentdetails.getFsCustomer().getCustomerId());
 					customerRating.setApplicationCountryId(applicationCountryId);
-					customerRating.setCreatedDate(new Date());
+					customerRating.setCreatedDate(receiptPaymentdetails.getCreatedDate());
 					customerRating.setFeedbackType(AmxEnums.Products.FXORDER.toString());
+					customerRating.setDelvSeqId(fxOrdertrnxId);
 					customerRatingdao.save(customerRating);
 				}
 					else {
@@ -179,7 +175,9 @@ public class CustomerRatingService {
 					
 				}else {
 					
-					// do nothing
+					logger.info("Transaction Details are already Rated for the Remittance transaction ID" +remittanceTrnxId);
+					throw new GlobalException(JaxError.TRANSACTION_ALREADY_RATED.getStatusKey(),"Transaction Details are already Rated for the Remittance transaction ID");
+				
 				}
 			}
 
@@ -251,6 +249,7 @@ public class CustomerRatingService {
 	public AmxApiResponse<CustomerRating, ?> fxOrderinquireCustomerRating(BigDecimal fxOrdertrnxId, String product) {
 		
 		CustomerRating customerRating = new CustomerRating();
+		
 		try {
 			
 			if(AmxEnums.Products.FXORDER.toString().equals(product)) {
@@ -258,30 +257,39 @@ public class CustomerRatingService {
 					
 			if (fxOrdertrnxId != null) {
 				
-				CustomerRating customerRatingvalue = customerRatingdao
-						.getCustomerRatingDataBycollectionDocNo(fxOrdertrnxId);
-				if (customerRatingvalue != null) {
-					
-					customerRating.setRating(customerRatingvalue.getRating());
-					customerRating.setApplicationCountryId(customerRatingvalue.getApplicationCountryId());
-					customerRating.setCreatedDate(customerRatingvalue.getCreatedDate());
-					customerRating.setCustomerId(customerRatingvalue.getCustomerId());
-					customerRating.setCollectionDocNo(customerRatingvalue.getCollectionDocNo());
-					customerRating.setRatingId(customerRatingvalue.getRatingId());
-					customerRating.setRatingRemark(customerRatingvalue.getRatingRemark());
-					customerRating.setCollectionDocFyr(customerRatingvalue.getCollectionDocFyr());
+				ReceiptPayment receiptPaymentdetails =receiptPaymenttRepository.findByDeliveryDetSeqId(fxOrdertrnxId);
+				if(receiptPaymentdetails!=null) {
+				CustomerRating customerRatingvalue = customerRatingdao.getCustomerRatingDataBydelvSeqId(receiptPaymentdetails.getDeliveryDetSeqId());
+				if(customerRatingvalue!=null) {
+									
+					customerRating.setRating(customerRating.getRating());
+					customerRating.setApplicationCountryId(receiptPaymentdetails.getFsCountryMaster().getCountryId());
+					customerRating.setCreatedDate(receiptPaymentdetails.getCreatedDate());
+					customerRating.setCustomerId(receiptPaymentdetails.getFsCustomer().getCustomerId());
+					customerRating.setCollectionDocNo(receiptPaymentdetails.getColDocNo());
+					customerRating.setRatingId(customerRating.getRatingId());
+					customerRating.setRatingRemark(customerRating.getRatingRemark());
+					customerRating.setCollectionDocFyr(receiptPaymentdetails.getColDocFyr());
 					customerRating.setFeedbackType(AmxEnums.Products.FXORDER.toString());
+					customerRating.setDelvSeqId(fxOrdertrnxId);
+					customerRating.setRemittanceApplicationId(null);
+					customerRating.setRemittanceTransactionId(null);
+					customerRatingdao.save(customerRating);
 					
 				}else {
 					
-					// do nothing
+					
+			//DO NOTHING
+					
 				}
+			}
 			}
 			}
 
 		} catch (GlobalException e) {
 			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}
+		
 		return  AmxApiResponse.build(customerRating);
 	}
 }
