@@ -289,6 +289,14 @@ public class HomeController {
 		return map;
 	}
 
+	@RequestMapping(value = { "/pub/recaptcha/{feature}" },
+			method = { RequestMethod.GET })
+	public String recaptach(Model model, @PathVariable Features feature) {
+		model.addAttribute("googelReCaptachSiteKey", webAppConfig.getGoogelReCaptachSiteKey());
+		model.addAttribute("companyTnt", AppContextUtil.getTenant());
+		return "recaptcha";
+	}
+
 	@ApiJaxStatus({ JaxError.CUSTOMER_NOT_FOUND, JaxError.INVALID_OTP, JaxError.ENTITY_INVALID,
 			JaxError.ENTITY_EXPIRED })
 	@ApiStatus({ ApiStatusCodes.PARAM_MISSING })
@@ -301,16 +309,15 @@ public class HomeController {
 
 		boolean valid = false;
 		AmxApiResponse<CustomerRatingDTO, ?> rating = null;
-		
-		if(prodType.equals(Products.REMIT)) {
+
+		if (prodType.equals(Products.REMIT)) {
 			valid = JaxClientUtil.getTransactionVeryCode(trnxId).equals(veryCode);
 			rating = jaxService.getRemitClient().inquireCustomerRating(trnxId);
 		}
-		if(prodType.equals(Products.FXORDER)) {
+		if (prodType.equals(Products.FXORDER)) {
 			valid = JaxClientUtil.getTransactionVeryCode(trnxId).equals(veryCode);
-			rating = jaxService.getFxOrderBranchClient().inquirefxOrderCustomerRating(trnxId,prodType.toString());
+			rating = jaxService.getFxOrderBranchClient().inquirefxOrderCustomerRating(trnxId, prodType.toString());
 		}
-		
 
 		String errorCode = null;
 		String errorMessage = null;
@@ -325,11 +332,10 @@ public class HomeController {
 		return map;
 	}
 
-
 	@ApiJaxStatus({ JaxError.CUSTOMER_NOT_FOUND, JaxError.INVALID_OTP, JaxError.ENTITY_INVALID,
 			JaxError.ENTITY_EXPIRED })
 	@ApiStatus({ ApiStatusCodes.PARAM_MISSING })
-	@RequestMapping(value = { "/pub/rating/{prodType}/{trnxId}/{veryCode}" }, 
+	@RequestMapping(value = { "/pub/rating/{prodType}/{trnxId}/{veryCode}" },
 			method = { RequestMethod.GET })
 	public String rating(Model model,
 			@PathVariable Products prodType, @PathVariable BigDecimal trnxId, @PathVariable String veryCode) {
@@ -339,35 +345,29 @@ public class HomeController {
 		return "rating";
 	}
 
-	@RequestMapping(value = { "/pub/recaptcha/{feature}" },
-			method = { RequestMethod.GET })
-	public String recaptach(Model model, @PathVariable Features feature) {
-		model.addAttribute("googelReCaptachSiteKey", webAppConfig.getGoogelReCaptachSiteKey());
-		model.addAttribute("companyTnt", AppContextUtil.getTenant());
-		return "recaptcha";
-	}
-	
-	
 	@ApiJaxStatus({ JaxError.CUSTOMER_NOT_FOUND, JaxError.INVALID_OTP, JaxError.ENTITY_INVALID,
-		JaxError.ENTITY_EXPIRED })
+			JaxError.ENTITY_EXPIRED })
 	@ApiStatus({ ApiStatusCodes.PARAM_MISSING })
-	@RequestMapping(value = {"/pub/{prodType}/tranx/rating" }, method = { RequestMethod.POST })
+	@RequestMapping(value = { "/pub/rating/{prodType}/submit" }, method = { RequestMethod.POST })
+	@ResponseBody
 	public ResponseWrapper<CustomerRatingDTO> appStatus(@RequestBody CustomerRatingDTO customerRatingDTO,
 			@RequestParam String veryCode, @PathVariable Products prodType) {
-		
-		
-		if(prodType.equals(Products.REMIT)) {
-			if (!JaxClientUtil.getTransactionVeryCode(customerRatingDTO.getRemittanceTransactionId()).equals(veryCode)) {
+
+		if (prodType.equals(Products.REMIT)) {
+			if (!JaxClientUtil.getTransactionVeryCode(customerRatingDTO.getRemittanceTransactionId())
+					.equals(veryCode)) {
 				throw new UIServerError(OWAStatusStatusCodes.INVALID_LINK);
 			}
 		}
-		if(prodType.equals(Products.FXORDER)) {
-			if (!JaxClientUtil.getTransactionVeryCode(customerRatingDTO.getRemittanceTransactionId()).equals(veryCode)) {
-       				throw new UIServerError(OWAStatusStatusCodes.INVALID_LINK);
+		if (prodType.equals(Products.FXORDER)) {
+			if (!JaxClientUtil.getTransactionVeryCode(customerRatingDTO.getRemittanceTransactionId())
+					.equals(veryCode)) {
+				throw new UIServerError(OWAStatusStatusCodes.INVALID_LINK);
 			}
 		}
-		
-		return ResponseWrapper.build(jaxService.setDefaults().getRemitClient().saveCustomerRating(customerRatingDTO,prodType));
+
+		return ResponseWrapper
+				.build(jaxService.setDefaults().getRemitClient().saveCustomerRating(customerRatingDTO, prodType));
 
 	}
 }
