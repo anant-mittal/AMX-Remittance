@@ -74,9 +74,14 @@ public enum TemplatesMX implements ITemplate {
 	//Add Bene Templates
 	BENE_SUCC("BeneCreationSuccess"),
 	BENE_SUCC_SMS("bene-success-sms",Channel.NOTIPY),
+	
+	// Online coupon template
+	ONLINE_COUPON("ONLINE_COUPON"),
 
 	// Default add enums above this
 	DEFAULT("default");
+	
+	
 
 	String fileName;
 	PDFConverter converter;
