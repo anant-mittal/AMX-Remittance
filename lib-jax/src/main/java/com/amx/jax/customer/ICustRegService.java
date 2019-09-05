@@ -60,6 +60,7 @@ public interface ICustRegService extends IJaxService {
 	public static class Params {
 		public static final String IDENTITY_INT = "identityInt";
 		public static final String IDENTITY_TYPE = "identityType";
+		public static final String CUSTOMER_ID = "customerId";
 	}
 
 	@JsonDeserialize(as = CustRegRequestModel.class)
@@ -117,12 +118,13 @@ public interface ICustRegService extends IJaxService {
 
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND })
 	AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerDetails(String identityInt,
-			BigDecimal identityType);
+			BigDecimal identityType,BigDecimal customerId);
 
 	@ApiJaxStatus({ JaxError.EMPTY_ADDRESS_PROOF_LIST })
 	AmxApiResponse<AddressProofDTO, Object> getAddressProof();
 
 	AmxApiResponse<BoolRespModel, Object> saveDocumentUploadReference(ImageSubmissionRequest imageSubmissionRequest)
 			throws ParseException, Exception;
+
 
 }

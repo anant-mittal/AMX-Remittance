@@ -281,11 +281,12 @@ public class OffsiteCustRegClient implements ICustRegService {
 
 	@Override
 	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerDetails(String identityInt,
-			BigDecimal identityType) {
+			BigDecimal identityType,BigDecimal customerId) {
 		try {
 			return restService.ajax(appConfig.getJaxURL()).meta(new JaxMetaInfo())
 					.path(CustRegApiEndPoints.GET_CUSTOMER_DEATILS).queryParam(Params.IDENTITY_INT, identityInt)
 					.queryParam(Params.IDENTITY_TYPE, identityType).get()
+					.queryParam(Params.CUSTOMER_ID, customerId).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<OffsiteCustomerDataDTO, Object>>() {
 					});
 		} catch (Exception e) {

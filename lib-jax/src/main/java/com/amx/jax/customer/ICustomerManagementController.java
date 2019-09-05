@@ -78,7 +78,7 @@ public interface ICustomerManagementController {
 
 	AmxApiResponse<BoolRespModel, Object> verifyContact(VerifyCustomerContactRequest request);
 
-	AmxApiResponse<CustomerShortInfo, Object> getCustomerShortDetail(String identityInt, BigDecimal identityType);
+	AmxApiResponse<CustomerShortInfo, Object> getCustomerShortDetail(String identityInt, BigDecimal identityType,BigDecimal customerId);
 
 	AmxApiResponse<CustomerDocCatTypeDto, Object> listDocCatType();
 

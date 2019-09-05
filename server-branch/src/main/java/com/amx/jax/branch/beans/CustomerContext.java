@@ -46,10 +46,12 @@ public class CustomerContext {
 
 	public OffsiteCustomerDataDTO getCustomerData() {
 		String identityInt = branchSession.getCustomer() != null ? branchSession.getCustomer().getIdentityInt() : "";
+		BigDecimal customerId = ArgUtil.parseAsBigDecimal(commonHttpRequest.get("customerId"));
+
 		BigDecimal identityTypeId = branchSession.getCustomer() != null ? branchSession.getCustomer().getIdentityTypeId() : null;
 		if (branchSession.getCustomer() != null && !ArgUtil.isEmpty(identityInt) && !ArgUtil.isEmpty(identityTypeId)) {
 			AmxApiResponse<OffsiteCustomerDataDTO, Object> offsiteCustomerData = offsiteCustRegClient
-					.getOffsiteCustomerDetails(identityInt, identityTypeId);
+					.getOffsiteCustomerDetails(identityInt, identityTypeId,customerId);
 			return offsiteCustomerData.getResult();
 		}
 		return null;
@@ -58,12 +60,15 @@ public class CustomerContext {
 
 	public CustomerShortInfo refresh() {
 		String identity = commonHttpRequest.get("identity");
+		BigDecimal customerId = ArgUtil.parseAsBigDecimal(commonHttpRequest.get("customerId"));
 		String currentIdentity = branchSession.getCustomer() != null ? branchSession.getCustomer().getIdentityInt() : "";
-		if (!ArgUtil.isEmpty(identity) && !identity.equals(currentIdentity)) {
+
+		if (!ArgUtil.isEmpty(identity) && !identity.equals(currentIdentity)|| !ArgUtil.isEmpty(customerId)) {
 			BigDecimal identityType = ArgUtil.parseAsBigDecimal(commonHttpRequest.get("identityType"));
 			AmxApiResponse<CustomerShortInfo, Object> customerShortDetail = customerManagementClient
-					.getCustomerShortDetail(identity, identityType);
+					.getCustomerShortDetail(identity, identityType,customerId);
 			setCustomer(customerShortDetail.getResult());
+
 		}
 		return customer;
 	}

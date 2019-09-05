@@ -223,10 +223,11 @@ public class CustomerManagementClient implements ICustomerManagementController {
 	}
 
 	@Override
-	public AmxApiResponse<CustomerShortInfo, Object> getCustomerShortDetail(String identityInt, BigDecimal identityType) {
+	public AmxApiResponse<CustomerShortInfo, Object> getCustomerShortDetail(String identityInt, BigDecimal identityType, BigDecimal customerId) {
 		try {
 			return restService.ajax(appConfig.getJaxURL()).path(ApiPath.GET_CUSTOMER_SHORT_DETAIL).meta(new JaxMetaInfo())
-					.queryParam(ApiParams.IDENTITY, identityInt).queryParam(ApiParams.IDENTITY_TYPE_ID, identityType).get()
+					.queryParam(ApiParams.IDENTITY, identityInt).queryParam(ApiParams.IDENTITY_TYPE_ID, identityType)
+					.queryParam(ApiParams.CUSTOMER_ID, customerId).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerShortInfo, Object>>() {
 					});
 		} catch (Exception ae) {

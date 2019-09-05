@@ -835,7 +835,7 @@ public class UserService extends AbstractUserService {
 		onlineCustomer.setTokenSentCount(BigDecimal.ZERO);
 	}
 
-	protected LoginLogoutHistory getLoginLogoutHistoryByUserName(String userName) {
+	public LoginLogoutHistory getLoginLogoutHistoryByUserName(String userName) {
 
 		Sort sort = new Sort(Direction.DESC, "loginLogoutId");
 		List<LoginLogoutHistory> last2HistoryList = loginLogoutHistoryRepositoryRepo.findFirst2ByuserName(userName,
@@ -1102,6 +1102,7 @@ public class UserService extends AbstractUserService {
 			personInfo.setWhatsAppNumber(customer.getWhatsapp());
 			personInfo.setPrefixCodeMobile("+" + customer.getPrefixCodeMobile());
 			personInfo.setWhatsappPrefixCode("+" + customer.getWhatsappPrefix());
+			personInfo.setIdentityTypeId(customer.getIdentityTypeId());
 
 		} catch (Exception e) {
 		}

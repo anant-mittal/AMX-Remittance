@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.customer.ICustomerManagementController;
@@ -42,6 +43,7 @@ import com.amx.jax.customer.manager.CustomerPersonalDetailManager;
 import com.amx.jax.customer.service.CustomerService;
 import com.amx.jax.dbmodel.customer.CustomerDocumentTypeMaster;
 import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReferenceTemp;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.customer.CreateCustomerInfoRequest;
 import com.amx.jax.model.customer.DuplicateCustomerDto;
@@ -58,10 +60,14 @@ import com.amx.jax.model.request.VerifyCustomerContactRequest;
 import com.amx.jax.model.request.customer.UpdateCustomerInfoRequest;
 import com.amx.jax.model.response.CustomerInfo;
 import com.amx.jax.model.response.customer.CustomerShortInfo;
+import com.amx.jax.model.response.customer.OffsiteCustomerDataDTO;
+import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.services.NotificationTaskService;
 import com.amx.jax.userservice.manager.OnlineCustomerManager;
+import com.amx.jax.userservice.service.UserService;
 import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
 import com.amx.libjax.model.jaxfield.JaxFieldDto;
+import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
 
 @RestController
@@ -85,6 +91,8 @@ public class CustomerManagementController implements ICustomerManagementControll
 	NotificationTaskService notificationTaskService;
 	@Autowired
 	CustomerDocumentUploadManager customerDocumentUploadManager;
+	@Autowired
+	UserService userService;
 
 	private static final Logger log = LoggerFactory.getLogger(CustomerManagementController.class);
 
@@ -195,9 +203,38 @@ public class CustomerManagementController implements ICustomerManagementControll
 	@Override
 	@RequestMapping(path = GET_CUSTOMER_SHORT_DETAIL, method = RequestMethod.GET)
 	public AmxApiResponse<CustomerShortInfo, Object> getCustomerShortDetail(
-			@RequestParam(value = ApiParams.IDENTITY, required = true) String identityInt,
-			@RequestParam(value = ApiParams.IDENTITY_TYPE_ID, required = true) BigDecimal identityType) {
-		CustomerShortInfo customerShortDetail = customerManagementManager.getCustomerShortDetail(identityInt, identityType);
+			@RequestParam(value = ApiParams.IDENTITY ,required = false) String identityInt,
+			@RequestParam(value = ApiParams.IDENTITY_TYPE_ID,required = false) BigDecimal identityType,
+			@RequestParam(value = ApiParams.CUSTOMER_ID,required = false) BigDecimal customerId) {
+		
+		if((ArgUtil.isEmpty(identityInt)  && ArgUtil.isEmpty(identityType) &&  ArgUtil.isEmpty(customerId)))
+		{
+			throw new GlobalException(JaxError.VALIDATION_NOT_NULL, "Civil ID,Customer ID,Type should not be null");
+		}
+
+    	if(ArgUtil.isEmpty(identityType) && !ArgUtil.isEmpty(identityInt))
+		{
+			throw new GlobalException(JaxError.VALIDATION_NOT_NULL, "Civil ID should not be null");
+
+		}
+    	if((ArgUtil.isEmpty(identityInt) && !ArgUtil.isEmpty(identityType)))
+		{
+			throw new GlobalException(JaxError.VALIDATION_NOT_NULL, "Customer ID should not be null");
+
+		}
+		
+    	CustomerShortInfo customerShortDetail=null;
+		if(!ArgUtil.isEmpty(customerId))
+		{
+			PersonInfo personInfo = userService.getPersonInfo(customerId);
+			String identityIntByCustId =personInfo.getIdentityInt();
+			customerShortDetail=customerManagementManager.getCustomerShortDetail(identityIntByCustId, personInfo.getIdentityTypeId());
+
+		}
+		else {
+			customerShortDetail=customerManagementManager.getCustomerShortDetail(identityInt, identityType);
+		}
+		
 		return AmxApiResponse.build(customerShortDetail);
 	}
 

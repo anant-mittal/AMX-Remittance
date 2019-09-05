@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.CustomerCredential;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
@@ -21,6 +22,7 @@ import com.amx.jax.customer.ICustRegService;
 import com.amx.jax.customer.manager.OffsiteAddressProofManager;
 import com.amx.jax.customer.service.CustomerManagementService;
 import com.amx.jax.customer.service.OffsitCustRegService;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.CardDetail;
@@ -41,10 +43,14 @@ import com.amx.jax.model.response.FieldListDto;
 import com.amx.jax.model.response.IncomeRangeDto;
 import com.amx.jax.model.response.customer.AddressProofDTO;
 import com.amx.jax.model.response.customer.OffsiteCustomerDataDTO;
+import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.service.CountryService;
 import com.amx.jax.service.MetaService;
 import com.amx.jax.service.ViewDistrictService;
 import com.amx.jax.service.ViewStateService;
+import com.amx.jax.userservice.service.UserService;
+import com.amx.utils.ArgUtil;
+
 
 @RestController
 public class CustRegController implements ICustRegService {
@@ -74,6 +80,9 @@ public class CustRegController implements ICustRegService {
 
 	@Autowired
 	OffsiteAddressProofManager offsiteAddressProofManager;
+	
+	@Autowired
+	UserService userService;
 
 	@RequestMapping(value = CustRegApiEndPoints.GET_ID_TYPES, method = RequestMethod.POST)
 	public AmxApiResponse<ComponentDataDto, Object> getIdTypes() {
@@ -167,9 +176,41 @@ public class CustRegController implements ICustRegService {
 	
 	@RequestMapping(value = CustRegApiEndPoints.GET_CUSTOMER_DEATILS, method = RequestMethod.GET)
 	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerDetails(
-			@RequestParam(value = "identityInt", required = true) String identityInt,
-			@RequestParam(value = "identityType", required = true) BigDecimal identityType) {
-		return customerManagementService.getCustomerDetail(identityInt, identityType);
+		@RequestParam(value = "identityInt", required = false) String identityInt,
+		@RequestParam(value = "identityType", required = false) BigDecimal identityType,
+		@RequestParam(value = "customerId", required = false) BigDecimal customerId) {
+		
+		if((ArgUtil.isEmpty(identityInt)  && ArgUtil.isEmpty(identityType) &&  ArgUtil.isEmpty(customerId)))
+		{
+			throw new GlobalException(JaxError.VALIDATION_NOT_NULL, "Civil ID,Customer ID,Type should not be null");
+		}
+
+    	if(ArgUtil.isEmpty(identityType) && !ArgUtil.isEmpty(identityInt))
+		{
+			throw new GlobalException(JaxError.VALIDATION_NOT_NULL, "Civil ID should not be null");
+
+		}
+    	if((ArgUtil.isEmpty(identityInt) && !ArgUtil.isEmpty(identityType)))
+		{
+			throw new GlobalException(JaxError.VALIDATION_NOT_NULL, "Customer ID should not be null");
+
+		}
+		
+		AmxApiResponse<OffsiteCustomerDataDTO, Object> response=null;
+		if(!ArgUtil.isEmpty(customerId))
+		{
+			PersonInfo personInfo = userService.getPersonInfo(customerId);
+			String identityIntByCustId =personInfo.getIdentityInt();
+			response=customerManagementService.getCustomerDetail(identityIntByCustId, personInfo.getIdentityTypeId());
+		}
+		else {
+			response=customerManagementService.getCustomerDetail(identityInt, identityType);
+		}
+		
+
+		return response;
+		
+
 	}
 	
 	@RequestMapping(value = CustRegApiEndPoints.GET_OFFSITE_CUSTOMER_DATA_V1, method = RequestMethod.GET)
@@ -189,5 +230,8 @@ public class CustRegController implements ICustRegService {
 			@RequestBody ImageSubmissionRequest imageSubmissionRequest) throws Exception {
 		return AmxApiResponse.build(offsiteAddressProofManager.saveDocumentUploadReference(imageSubmissionRequest));
 	}
+
+	
+	
 
 }
