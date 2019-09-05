@@ -76,7 +76,7 @@ public enum TemplatesMX implements ITemplate {
 	BENE_SUCC_SMS("bene-success-sms",Channel.NOTIPY),
 	
 	// Online coupon template
-	ONLINE_COUPON("ONLINE_COUPON"),
+	ONLINE_COUPON("OnlineCoupon"),
 
 	// Default add enums above this
 	DEFAULT("default");
