@@ -10,8 +10,6 @@ import org.hibernate.validator.constraints.Range;
 import com.amx.jax.dict.AmxEnums.Products;
 import com.amx.jax.model.AbstractModel;
 
-import reactor.jarjar.com.lmax.disruptor.dsl.ProducerType;
-
 public class CustomerRatingDTO extends AbstractModel {
 	
 	private static final long serialVersionUID = -254755940678862078L;
@@ -26,27 +24,17 @@ public class CustomerRatingDTO extends AbstractModel {
 	private Date createdDate;
 
 	
-	@NotNull
+	//@NotNull
 	@Range(min=1, max=10,message="rating should be between 1 and 10 range")
 	private BigDecimal rating;
-	
 	private String ratingRemark;
 	
 	//fxOrder 
 	private BigDecimal collectionDocNo;
 	private BigDecimal collectionDocfyr;
-	private BigDecimal delvSeqId;
-	private String feedbackType;
+	private String producttype;
 	
-	public BigDecimal getDelvSeqId() {
-		return delvSeqId;
-	}
-
-	public void setDelvSeqId(BigDecimal delvSeqId) {
-		this.delvSeqId = delvSeqId;
-	}
-
-	Products producttype;
+	Products prodType;
 
 	@Override
 	public String getModelType() {
@@ -85,15 +73,6 @@ public class CustomerRatingDTO extends AbstractModel {
 		this.remittanceApplicationId = remittanceApplicationId;
 	}
 	
-	
-
-	public String getFeedbackType() {
-		return feedbackType;
-	}
-
-	public void setFeedbackType(String feedbackType) {
-		this.feedbackType = feedbackType;
-	}
 
 	public BigDecimal getRemittanceTransactionId() {
 		return remittanceTransactionId;
@@ -143,15 +122,21 @@ public class CustomerRatingDTO extends AbstractModel {
 		this.collectionDocfyr = collectionDocfyr;
 	}
 
-	public Products getProducttype() {
+	public String getProducttype() {
 		return producttype;
 	}
 
-	public void setProducttype(Products producttype) {
+	public void setProducttype(String producttype) {
 		this.producttype = producttype;
 	}
 
-	
+	public Products getProdType() {
+		return prodType;
+	}
+
+	public void setProdType(Products prodType) {
+		this.prodType = prodType;
+	}
 	
 	
 	

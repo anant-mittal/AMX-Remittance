@@ -313,7 +313,7 @@ public class RemitClient extends AbstractJaxServiceClient {
 			throws RemittanceTransactionValidationException, LimitExeededException {
 
 		try {
-			customerRatingDTO.setProducttype(prodType);;
+			customerRatingDTO.setProdType(prodType);
 			
 			HttpEntity<CustomerRatingDTO> requestEntity = new HttpEntity<CustomerRatingDTO>(customerRatingDTO,
 					getHeader());
