@@ -22,6 +22,15 @@ public class PayAtBranchTrnxListDTO {
 	public BigDecimal identityTypeId;
 	public String foreignCurrencyDescription;
 	public String statusDesc;
+	public BigDecimal beneId;
+
+	public BigDecimal getBeneId() {
+		return beneId;
+	}
+
+	public void setBeneId(BigDecimal beneId) {
+		this.beneId = beneId;
+	}
 
 	public String getStatusDesc() {
 		return statusDesc;

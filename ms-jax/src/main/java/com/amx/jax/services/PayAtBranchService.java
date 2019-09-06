@@ -18,9 +18,12 @@ import com.amx.jax.dao.PayAtBranchDao;
 import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.PayAtBranchTrnxModel;
 import com.amx.jax.dbmodel.PaymentModesModel;
+import com.amx.jax.dbmodel.remittance.RemittanceAppBenificiary;
+import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.postman.PostManService;
+import com.amx.jax.repository.RemittanceApplicationBeneRepository;
 import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.response.payatbranch.PayAtBranchTrnxListDTO;
 import com.amx.jax.service.CurrencyMasterService;
@@ -56,6 +59,9 @@ public class PayAtBranchService {
 
 	@Autowired
 	JaxTenantProperties jaxTenantProperties;
+	
+	@Autowired
+	RemittanceApplicationBeneRepository remittanceApplicationBeneRepository;
 
 	Logger logger = Logger.getLogger(PayAtBranchService.class);
 
@@ -74,7 +80,7 @@ public class PayAtBranchService {
 		return convertPbTrnxList(pbTrnxList);
 	}
 
-	public static List<PayAtBranchTrnxListDTO> convertPbTrnxList(List<PayAtBranchTrnxModel> pbTrnxList) {
+	public  List<PayAtBranchTrnxListDTO> convertPbTrnxList(List<PayAtBranchTrnxModel> pbTrnxList) {
 		List<PayAtBranchTrnxListDTO> output = new ArrayList<>();
 		for (PayAtBranchTrnxModel payAtBranchTrnxModel : pbTrnxList) {
 			PayAtBranchTrnxListDTO pbTrnxListDTO = new PayAtBranchTrnxListDTO();
@@ -90,6 +96,9 @@ public class PayAtBranchService {
 			if (payAtBranchTrnxModel.getWireTransferStatus().equalsIgnoreCase(ConstantDocument.WT_STATUS_PAID)) {
 				pbTrnxListDTO.setTransactionDocumentNo(payAtBranchTrnxModel.getTransactionDocumentNo());
 			}
+			RemittanceApplication remittanceApplication= remittanceApplicationDao.getApplication(payAtBranchTrnxModel.getTransactionId());
+			RemittanceAppBenificiary remittanceAppBeneficiary=remittanceApplicationBeneRepository.findByExRemittanceAppfromBenfi(remittanceApplication);
+			pbTrnxListDTO.setBeneId(remittanceAppBeneficiary.getBeneficiaryId());
 			output.add(pbTrnxListDTO);
 
 		}
