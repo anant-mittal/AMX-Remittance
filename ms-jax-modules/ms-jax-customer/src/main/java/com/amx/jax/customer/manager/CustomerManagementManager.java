@@ -131,11 +131,13 @@ public class CustomerManagementManager {
 			offsiteCustomer.setCustomerDocuments(customerDocumentManager.getCustomerUploadDocuments(customer.getCustomerId()));
 			offsiteCustomer.setLastLoginDetails(createLastLoginDetails(customer));
 			CustomerInsurance custInsurance=customerInsuranceRepo.findByCustomerIdAndIsActive(customer.getCustomerId(),ConstantDocument.Yes);
-			PolicyDetails policyDetails= new PolicyDetails();
-			policyDetails.setEntryDate(custInsurance.getEntryDate());
-			policyDetails.setExpiryDate(custInsurance.getExpiryDate());
-			offsiteCustomer.setPolicyDetails(policyDetails);
-			
+			if(custInsurance !=null)
+			{
+				PolicyDetails policyDetails= new PolicyDetails();
+				policyDetails.setEntryDate(custInsurance.getEntryDate());
+				policyDetails.setExpiryDate(custInsurance.getExpiryDate());
+				offsiteCustomer.setPolicyDetails(policyDetails);
+			}
 			
 		} else {
 			jaxError = JaxError.CUSTOMER_NOT_FOUND;
