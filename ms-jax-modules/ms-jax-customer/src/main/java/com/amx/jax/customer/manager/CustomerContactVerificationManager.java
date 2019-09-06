@@ -120,8 +120,8 @@ public class CustomerContactVerificationManager {
 		if (!ArgUtil.isEmpty(actor)) {
 			link.setCreatedById(actor.getActorIdAsBigDecimal());
 			link.setCreatedByType(actor.getActorType());
-			link.setSendById(actor.getActorIdAsBigDecimal());
-			link.setSendByType(actor.getActorType());
+			//link.setSendById(actor.getActorIdAsBigDecimal());
+			//link.setSendByType(actor.getActorType());
 		}
 
 		try {
