@@ -17,7 +17,6 @@ public class OneViewTrnxRecordByBene implements Serializable {
 
 	private static final long serialVersionUID = -7797281945216488011L;
 
-	@Id
 	@Column(name = "CUSTOMER_ID")
 	private BigDecimal custmerId;
 
@@ -27,6 +26,7 @@ public class OneViewTrnxRecordByBene implements Serializable {
 	@Column(name = "BENE_COUNTRY_NAME")
 	private String beneCountryName;
 
+	@Id
 	@Column(name = "BENEFICIARY_ID")
 	private BigDecimal beneId;
 
@@ -45,7 +45,10 @@ public class OneViewTrnxRecordByBene implements Serializable {
 
 	@Column(name = "FOREIGN_CURRENCY")
 	private String foreignCurrency;
-
+	
+/*	@Column(name = "DOCUMENT_DATE")
+	private Date trnxDate;
+*/
 	@GridGroup("sum(LOCAL_TRANX_AMOUNT)")
 	@Column(name = "LOCAL_TRANX_AMOUNT_TOTAL")
 	private BigDecimal totalLocalTranxAmount;
@@ -141,5 +144,15 @@ public class OneViewTrnxRecordByBene implements Serializable {
 	public void setLocalTrnxCount(BigDecimal localTrnxCount) {
 		this.localTrnxCount = localTrnxCount;
 	}
+
+	/*public Date getTrnxDate() {
+		return trnxDate;
+	}
+
+	public void setTrnxDate(Date trnxDate) {
+		this.trnxDate = trnxDate;
+	}*/
+	
+	
 
 }
