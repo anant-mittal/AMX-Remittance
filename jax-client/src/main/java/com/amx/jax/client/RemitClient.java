@@ -363,8 +363,7 @@ public class RemitClient extends AbstractJaxServiceClient {
 
 			String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/customer-trnx-rating/";
 			
-			return restService.ajax(url).post(requestEntity)
-					.queryParam("remittanceTrnxId", remittanceTrnxId)
+			return restService.ajax(url).queryParam("remittanceTrnxId", remittanceTrnxId).queryParam("product", product).post(requestEntity)
 					.asApiResponse(CustomerRatingDTO.class);
 		} catch (AbstractJaxException ae) {
 			throw ae;
