@@ -37,6 +37,7 @@ public interface IFxBranchOrderService extends IJaxService {
 		public static final String FC_CUSTOMER_RATING = PREFIX + "/fc-customer-rating/";
 		
 		
+		
 	}
 
 	public static class Params {

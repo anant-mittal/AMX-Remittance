@@ -350,13 +350,14 @@ public class RemitClient extends AbstractJaxServiceClient {
 
 	}
 	
-	public AmxApiResponse<CustomerRatingDTO, ?> inquireCustomerRating(BigDecimal remittanceTrnxId)
+	public AmxApiResponse<CustomerRatingDTO, ?> inquireCustomerRating(BigDecimal remittanceTrnxId, String product)
 			throws RemittanceTransactionValidationException, LimitExeededException {
 
 		try {
 					
 			CustomerRatingDTO request = new CustomerRatingDTO();
 			request.setRemittanceTransactionId(remittanceTrnxId);
+			request.setProducttype(product);
 			HttpEntity<CustomerRatingDTO> requestEntity = new HttpEntity<CustomerRatingDTO>(
 					request, getHeader());
 

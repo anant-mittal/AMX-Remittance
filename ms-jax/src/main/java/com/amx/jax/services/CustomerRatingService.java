@@ -150,7 +150,7 @@ public class CustomerRatingService {
 	 * 
 	 */
 	
-	public AmxApiResponse<CustomerRating, ?> inquireCustomerRating(BigDecimal remittanceTrnxId) {
+	public AmxApiResponse<CustomerRating, ?> inquireCustomerRating(BigDecimal remittanceTrnxId, String product) {
 	
 		CustomerRating customerRating = new CustomerRating();
 		try {

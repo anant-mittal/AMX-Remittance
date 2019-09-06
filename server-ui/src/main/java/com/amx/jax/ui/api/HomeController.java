@@ -312,7 +312,7 @@ public class HomeController {
 
 		if (prodType.equals(Products.REMIT)) {
 			valid = JaxClientUtil.getTransactionVeryCode(trnxId).equals(veryCode);
-			rating = jaxService.getRemitClient().inquireCustomerRating(trnxId);
+			rating = jaxService.getRemitClient().inquireCustomerRating(trnxId, prodType.toString());
 		}
 		if (prodType.equals(Products.FXORDER)) {
 			valid = JaxClientUtil.getTransactionVeryCode(trnxId).equals(veryCode);

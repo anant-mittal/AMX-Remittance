@@ -21,6 +21,7 @@ import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.client.fx.IFxBranchOrderService.Params;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxEvent;
 import com.amx.jax.dao.RemittanceApplicationDao;
@@ -270,8 +271,8 @@ public class RemittanceController {
 	
 	//radhika
 	@RequestMapping(value = "/customer-trnx-rating/", method = RequestMethod.POST)
-	public AmxApiResponse<CustomerRating, ?> inquireCustomerRating(@RequestParam BigDecimal remittanceTrnxId) {
-		return  customerRatingService.inquireCustomerRating(remittanceTrnxId);
+	public AmxApiResponse<CustomerRating, ?> inquireCustomerRating(@RequestParam BigDecimal remittanceTrnxId,@RequestParam(value=Params.FX_PRODUCT) String product) {
+		return  customerRatingService.inquireCustomerRating(remittanceTrnxId,product);
 		
 	}
 	
