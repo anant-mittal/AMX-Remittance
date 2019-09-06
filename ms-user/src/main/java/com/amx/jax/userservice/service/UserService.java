@@ -95,6 +95,7 @@ import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.dao.CustomerIdProofDao;
 import com.amx.jax.userservice.dao.ReferralDetailsDao;
 import com.amx.jax.userservice.manager.CustomerFlagManager;
+import com.amx.jax.userservice.manager.OnlineCustomerManager;
 import com.amx.jax.userservice.manager.SecurityQuestionsManager;
 import com.amx.jax.userservice.manager.UserContactVerificationManager;
 import com.amx.jax.userservice.repository.LoginLogoutHistoryRepository;
@@ -103,7 +104,6 @@ import com.amx.jax.util.AmxDBConstants.Status;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.StringUtil;
-import com.amx.jax.util.AmxDBConstants.Status;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Random;
 
@@ -218,6 +218,9 @@ public class UserService extends AbstractUserService {
 	CustomerRepository customerrepository;
 	@Autowired
 	UserContactVerificationManager userContactVerificationManager;
+	
+	@Autowired
+	OnlineCustomerManager onlineCustomerManager;
 	
 	@Override
 	public ApiResponse registerUser(AbstractUserModel userModel) {
@@ -700,6 +703,7 @@ public class UserService extends AbstractUserService {
 			throw new GlobalException(JaxError.USER_NOT_REGISTERED,
 					"User with userId: " + userId + " is not registered");
 		}
+		
 		Customer customer = custDao.getCustById(onlineCustomer.getCustomerId());
 		// userValidationService.validateCustomerVerification(onlineCustomer.getCustomerId());
 		if (!ConstantDocument.Yes.equals(onlineCustomer.getStatus())) {
@@ -708,7 +712,7 @@ public class UserService extends AbstractUserService {
 		}
 
 		userValidationService.validateCustomerLockCount(onlineCustomer);
-		userValidationService.validatePassword(onlineCustomer, password);
+		userValidationService.validatePassword(onlineCustomer, password, true);
 		userValidationService.validateCustIdProofs(onlineCustomer.getCustomerId());
 		userValidationService.validateCustomerData(onlineCustomer, customer);
 		userValidationService.validateBlackListedCustomerForLogin(customer);
@@ -1376,5 +1380,10 @@ public class UserService extends AbstractUserService {
 			Customer customer = getCustById(customerId);
 			userValidationService.validateCustomerContactForSendOtp(contactTypes, customer);
 		}
+	}
+
+	public AmxApiResponse<CustomerModel, Object> validateCustomerLoginOtp(String identityInt) {
+		CustomerModel c = onlineCustomerManager.validateCustomerLoginOtp(identityInt);
+		return AmxApiResponse.build(c);
 	}
 }

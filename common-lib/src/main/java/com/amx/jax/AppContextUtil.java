@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 
 import com.amx.jax.api.AmxFieldError;
+import com.amx.jax.dict.Language;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.dict.UserClient.UserDeviceClient;
 import com.amx.jax.http.RequestType;
@@ -102,6 +103,10 @@ public class AppContextUtil {
 		return ArgUtil.parseAsString(ContextUtil.map().get(AppConstants.ACTOR_ID_XKEY));
 	}
 
+	public static Language getLang() {
+		return (Language) ArgUtil.parseAsEnum(ContextUtil.map().get(AppConstants.LANG_PARAM_KEY), Language.EN);
+	}
+
 	public static UserDeviceClient getUserClient() {
 		Object userDeviceClientObject = ContextUtil.map().get(AppConstants.USER_CLIENT_XKEY);
 		UserDeviceClient userDeviceClient = null;
@@ -181,6 +186,10 @@ public class AppContextUtil {
 
 	public static void setActorId(Object actorId) {
 		ContextUtil.map().put(AppConstants.ACTOR_ID_XKEY, actorId);
+	}
+
+	public static void setLang(Object lang) {
+		ContextUtil.map().put(AppConstants.LANG_PARAM_KEY, lang);
 	}
 
 	public static void setRequestType(RequestType reqType) {
@@ -317,6 +326,7 @@ public class AppContextUtil {
 		String contextId = getContextId();
 		String tranxId = getTranxId();
 		String userId = getActorId();
+		Language lang = getLang();
 		UserDeviceClient userClient = getUserClient();
 		Map<String, Object> params = getParams();
 		httpHeaders.add(TenantContextHolder.TENANT, getTenant().toString());
@@ -326,6 +336,9 @@ public class AppContextUtil {
 		}
 		if (!ArgUtil.isEmpty(traceId)) {
 			httpHeaders.add(AppConstants.TRACE_ID_XKEY, traceId);
+		}
+		if (!ArgUtil.isEmpty(traceId)) {
+			httpHeaders.add(AppConstants.LANG_PARAM_KEY, lang.toString());
 		}
 		if (!ArgUtil.isEmpty(contextId)) {
 			httpHeaders.add(AppConstants.CONTEXT_ID_XKEY, contextId);
@@ -349,7 +362,7 @@ public class AppContextUtil {
 	 * 
 	 * @param httpHeaders
 	 */
-	public static void importAppContextFrom(HttpHeaders httpHeaders) {
+	public static void importAppContextFromResponseHEader(HttpHeaders httpHeaders) {
 		if (httpHeaders.containsKey(AppConstants.TRANX_ID_XKEY)) {
 			List<String> tranxids = httpHeaders.get(AppConstants.TRANX_ID_XKEY);
 			if (tranxids.size() >= 0) {
@@ -370,7 +383,7 @@ public class AppContextUtil {
 				List<String> traceIds = httpHeaders.get(AppConstants.TRACE_ID_XKEY);
 				if (traceIds.size() >= 0) {
 					setTranceId(traceIds.get(0));
-				}
+				} 
 			}
 		}
 

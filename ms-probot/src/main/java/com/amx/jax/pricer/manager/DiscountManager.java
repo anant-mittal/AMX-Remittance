@@ -3,10 +3,12 @@ package com.amx.jax.pricer.manager;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,8 +17,9 @@ import com.amx.jax.pricer.dao.ChannelDiscountDao;
 import com.amx.jax.pricer.dao.CurrencyMasterDao;
 import com.amx.jax.pricer.dao.CustCatDiscountDao;
 import com.amx.jax.pricer.dao.DiscountMasterDao;
+import com.amx.jax.pricer.dao.MarginMarkupDao;
 import com.amx.jax.pricer.dao.PipsMasterDao;
-import com.amx.jax.pricer.dao.RoutingDao;
+import com.amx.jax.pricer.dao.RoutingDaoAlt;
 import com.amx.jax.pricer.dao.ServiceMasterDescDao;
 import com.amx.jax.pricer.dbmodel.BankMasterModel;
 import com.amx.jax.pricer.dbmodel.ChannelDiscount;
@@ -24,6 +27,7 @@ import com.amx.jax.pricer.dbmodel.CurrencyMasterModel;
 import com.amx.jax.pricer.dbmodel.CustomerCategoryDiscount;
 import com.amx.jax.pricer.dbmodel.DiscountMaster;
 import com.amx.jax.pricer.dbmodel.GroupingMaster;
+import com.amx.jax.pricer.dbmodel.OnlineMarginMarkup;
 import com.amx.jax.pricer.dbmodel.PipsMaster;
 import com.amx.jax.pricer.dbmodel.RoutingHeader;
 import com.amx.jax.pricer.dbmodel.ServiceMasterDesc;
@@ -32,9 +36,11 @@ import com.amx.jax.pricer.dto.ChannelDetails;
 import com.amx.jax.pricer.dto.CurrencyMasterDTO;
 import com.amx.jax.pricer.dto.CustomerCategoryDetails;
 import com.amx.jax.pricer.dto.GroupDetails;
+import com.amx.jax.pricer.dto.OnlineMarginMarkupInfo;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
 import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
+import com.amx.jax.pricer.meta.ProbotMetaInfo;
 import com.amx.jax.pricer.var.PricerServiceConstants.DISCOUNT_TYPE;
 
 @Component
@@ -50,7 +56,7 @@ public class DiscountManager {
 	PipsMasterDao pipsMasterDao;
 
 	@Autowired
-	RoutingDao routingDao;
+	RoutingDaoAlt routingDaoAlt;
 
 	@Autowired
 	BankMasterDao bankMasterDao;
@@ -63,6 +69,15 @@ public class DiscountManager {
 	
 	@Autowired
 	CurrencyMasterDao currencyMasterDao;
+	
+	@Autowired
+	MarginMarkupDao marginMarkupDao;
+	
+	@Autowired
+	private ProbotMetaInfo metaInfo;
+	
+	private static final Logger LOGGER = Logger.getLogger(DiscountManager.class);
+
 
 	// ------ To get Discount details Start here ------
 	public List<ChannelDetails> convertChannelData(List<ChannelDiscount> channelDiscount, BigDecimal groupId) {
@@ -97,8 +112,9 @@ public class DiscountManager {
 
 	public List<AmountSlabDetails> convertAmountSlabData(List<PipsMaster> pipsMasterData) {
 		List<AmountSlabDetails> list = new ArrayList<>();
-
+		
 		for (PipsMaster pipsMasterList : pipsMasterData) {
+			
 			AmountSlabDetails amountSlabDetail = new AmountSlabDetails();
 			amountSlabDetail.setPipsMasterId(pipsMasterList.getPipsMasterId());
 			amountSlabDetail.setFromAmount(pipsMasterList.getFromAmount());
@@ -121,8 +137,8 @@ public class DiscountManager {
 			}
 			amountSlabDetail.setMinDiscountPips(pipsMasterList.getMinDiscountPips());
 			amountSlabDetail.setMaxDiscountPips(pipsMasterList.getMaxDiscountPips());
-
 			list.add(amountSlabDetail);
+		
 		}
 		return list;
 	}
@@ -134,9 +150,9 @@ public class DiscountManager {
 			RoutBanksAndServiceRespDTO routBanksAndServiceRespData = new RoutBanksAndServiceRespDTO();
 			routBanksAndServiceRespData.setRoutingBankId(routingData.getRoutingBankId());
 
-			BankMasterModel bankName = bankMasterDao.getBankById(routingData.getRoutingBankId());
-			if (null != bankName) {
-				routBanksAndServiceRespData.setRoutingBankName(bankName.getBankFullName());
+			BankMasterModel bankModel = bankMasterDao.getBankById(routingData.getRoutingBankId());
+			if (null != bankModel) {
+				routBanksAndServiceRespData.setRoutingBankName(bankModel.getBankFullName());
 			}
 
 			routBanksAndServiceRespData.setServiceId(routingData.getServiceMasterId());
@@ -386,4 +402,53 @@ public class DiscountManager {
 		}
 		return list;
 	}
+	
+	public OnlineMarginMarkupInfo convertMarkup(OnlineMarginMarkup onlineMarginMarkup ) {
+		OnlineMarginMarkupInfo markupDetails=new OnlineMarginMarkupInfo();
+			markupDetails.setBankId(onlineMarginMarkup.getBankId());
+			markupDetails.setMarginMarkup(onlineMarginMarkup.getMarginMarkup());
+			markupDetails.setCountryId(onlineMarginMarkup.getCountryId());
+			markupDetails.setCurrencyId(onlineMarginMarkup.getCurrencyId());
+			markupDetails.setOnlineMarginMarkupId(onlineMarginMarkup.getOnlineMarginMarkupId());
+			markupDetails.setEmpName(onlineMarginMarkup.getCreatedBy());
+			return markupDetails;
+		
+		
+	}
+	public Boolean commitMarkup(OnlineMarginMarkup marginMarkupData,OnlineMarginMarkupInfo request) {
+		try {
+			
+			if (marginMarkupData !=null) 
+			{
+			marginMarkupData.setMarginMarkup(request.getMarginMarkup());
+			marginMarkupData.setModifiedDate(new Date());
+			marginMarkupData.setModifiedBy(request.getEmpName());
+			marginMarkupDao.saveOnlineMarginMarkup(marginMarkupData);
+			return true;
+
+			}
+		 else {
+			 OnlineMarginMarkup onlineMarginMarkup=new OnlineMarginMarkup();
+			 onlineMarginMarkup.setCountryId(request.getCountryId());
+			 onlineMarginMarkup.setBankId(request.getBankId());
+			 onlineMarginMarkup.setCurrencyId(request.getCurrencyId());
+			 onlineMarginMarkup.setIsActive("Y");
+			 onlineMarginMarkup.setMarginMarkup(request.getMarginMarkup());
+			 onlineMarginMarkup.setCreatedDate(new Date());
+			 onlineMarginMarkup.setModifiedDate(new Date());
+			 onlineMarginMarkup.setModifiedBy(request.getEmpName());
+			 onlineMarginMarkup.setCreatedBy(request.getEmpName());
+			 onlineMarginMarkup.setApplicationCountryId(request.getApplicationCountryId());
+			 marginMarkupDao.saveOnlineMarginMarkup(onlineMarginMarkup);
+			 return true;
+
+		 }
+	 }catch(PricerServiceException e)
+		{
+		 LOGGER.info("ErrorKey : - " +e.getErrorKey()+ " ErrorMessage : - " +e.getErrorMessage());
+		 throw new PricerServiceException(PricerServiceError.INVALID_MARKUP,
+					"The markup value entered is not valid for the selected country,currency and bank.");
+		}
+	}
+	
 }

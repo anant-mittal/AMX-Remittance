@@ -33,6 +33,7 @@ import com.amx.jax.JaxAuthContext;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.JaxPushNotificationClient;
+import com.amx.jax.dict.Language;
 import com.amx.jax.dict.UserClient.AppType;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.logger.AuditActor;
@@ -172,11 +173,14 @@ public class UserController {
 
 			String s = httpService.getRequestParam("S");
 			if (ArgUtil.isEmpty(s)) {
+				response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
 				response.setHeader("Location", "/pub/v2/user/meta?S=" + serverVersion + "&milestone=" + milestoneEnum);
-				response.setStatus(302);
 				return wrapper;
 			}
 		}
+
+		Language lang = httpService.getLanguage();
+		httpService.setCookie("lang", lang.toString(), 60 * 60 * 2);
 
 		wrapper.getData().setTenant(AppContextUtil.getTenant());
 		wrapper.getData().setTenantCode(AppContextUtil.getTenant().getCode());

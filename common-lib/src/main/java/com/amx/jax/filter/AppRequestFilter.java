@@ -23,6 +23,7 @@ import org.springframework.util.StringUtils;
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppConstants;
 import com.amx.jax.AppContextUtil;
+import com.amx.jax.dict.Language;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.dict.UserClient.UserDeviceClient;
 import com.amx.jax.http.CommonHttpRequest;
@@ -30,8 +31,10 @@ import com.amx.jax.http.CommonHttpRequest.ApiRequestDetail;
 import com.amx.jax.http.RequestType;
 import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.logger.events.RequestTrackEvent;
+import com.amx.jax.model.MapModel;
 import com.amx.jax.rest.AppRequestContextInFilter;
 import com.amx.jax.scope.TenantContextHolder;
+import com.amx.jax.session.SessionContextService;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.CryptoUtil;
 import com.amx.utils.JsonUtil;
@@ -60,6 +63,9 @@ public class AppRequestFilter implements Filter {
 
 	@Autowired(required = false)
 	AppRequestContextInFilter appContextInFilter;
+
+	@Autowired(required = false)
+	SessionContextService sessionContextService;
 
 	private boolean doesTokenMatch(HttpServletRequest req, HttpServletResponse resp, String traceId,
 			boolean checkHMAC) {
@@ -93,8 +99,8 @@ public class AppRequestFilter implements Filter {
 		}
 	}
 
-	public void setFlow(HttpServletRequest req) {
-		String url = req.getRequestURI();
+	public void setFlow(HttpServletRequest req, ApiRequestDetail apiRequest) {
+		String url = ArgUtil.ifNotEmpty(apiRequest.getFlow(), req.getRequestURI());
 		AppContextUtil.setFlow(url);
 		AppContextUtil.setFlowfix(url.toLowerCase().replace("pub", "b").replace("api", "p").replace("user", "")
 				.replace("get", "").replace("post", "").replace("save", "")
@@ -109,6 +115,7 @@ public class AppRequestFilter implements Filter {
 		HttpServletResponse resp = ((HttpServletResponse) response);
 		try {
 			ApiRequestDetail apiRequest = commonHttpRequest.getApiRequest(req);
+			CommonHttpRequest localCommonHttpRequest = commonHttpRequest.instance(req, resp, appConfig);
 			RequestType reqType = apiRequest.getType();
 
 			AppContextUtil.setRequestType(reqType);
@@ -155,16 +162,31 @@ public class AppRequestFilter implements Filter {
 				AppContextUtil.setActorId(actorId);
 			}
 
+			// User Language Tracking
+			Language lang = localCommonHttpRequest.getLanguage();
+
+			if (!StringUtils.isEmpty(lang)) {
+				AppContextUtil.setLang(lang);
+			}
+
 			// UserClient Tracking
 			String userClientJson = req.getHeader(AppConstants.USER_CLIENT_XKEY);
 			if (!StringUtils.isEmpty(userClientJson)) {
 				AppContextUtil.setUserClient(JsonUtil.fromJson(userClientJson, UserDeviceClient.class));
 			} else {
-				UserDeviceClient userDevice = commonHttpRequest.instance(req, resp, appConfig).getUserDevice()
+				UserDeviceClient userDevice = localCommonHttpRequest.getUserDevice()
 						.toUserDeviceClient();
 				UserDeviceClient userClient = AppContextUtil.getUserClient();
 				userClient.importFrom(userDevice);
 				AppContextUtil.setUserClient(userClient);
+			}
+
+			// Session Actor Tracking
+			if (!ArgUtil.isEmpty(sessionId) && !ArgUtil.isEmpty(sessionContextService)) {
+				String actorInfoJson = req.getHeader(AppConstants.ACTOR_INFO_XKEY);
+				if (!StringUtils.isEmpty(actorInfoJson)) {
+					sessionContextService.setContext(new MapModel(actorInfoJson));
+				}
 			}
 
 			String requestdParamsJson = ArgUtil.ifNotEmpty(req.getParameter(AppConstants.REQUESTD_PARAMS_XKEY),
@@ -187,7 +209,7 @@ public class AppRequestFilter implements Filter {
 				traceId = ArgUtil.parseAsString(req.getParameter(AppConstants.TRACE_ID_XKEY));
 			}
 			if (StringUtils.isEmpty(traceId)) {
-				setFlow(req);
+				setFlow(req, apiRequest);
 				HttpSession session = req.getSession(false);
 				if (ArgUtil.isEmpty(sessionId)) {
 					if (session == null) {

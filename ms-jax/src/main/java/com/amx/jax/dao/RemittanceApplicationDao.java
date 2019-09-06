@@ -16,6 +16,7 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.dbmodel.PlaceOrder;
 import com.amx.jax.dbmodel.ReferralDetails;
 import com.amx.jax.dbmodel.RemittanceTransactionView;
+import com.amx.jax.dbmodel.partner.RemitApplSrvProv;
 import com.amx.jax.dbmodel.remittance.AdditionalInstructionData;
 import com.amx.jax.dbmodel.remittance.FlexFiledView;
 import com.amx.jax.dbmodel.remittance.RemittanceAppBenificiary;
@@ -28,6 +29,7 @@ import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.repository.AdditionalInstructionDataRepository;
 import com.amx.jax.repository.IFlexFiledView;
 import com.amx.jax.repository.IPlaceOrderDao;
+import com.amx.jax.repository.IRemitApplSrvProvRepository;
 import com.amx.jax.repository.RemittanceApplicationBeneRepository;
 import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.repository.RemittanceTransactionRepository;
@@ -65,13 +67,20 @@ public class RemittanceApplicationDao {
     @Autowired
     ReferralDetailsDao refDao;
     
+    @Autowired
+	IRemitApplSrvProvRepository remitApplSrvProvRepository;
+    
 	@Transactional
 	public void saveAllApplicationData(RemittanceApplication app, RemittanceAppBenificiary appBene,
-			List<AdditionalInstructionData> additionalInstrumentData) {
+			List<AdditionalInstructionData> additionalInstrumentData,RemitApplSrvProv remitApplSrvProv) {
 
 		appRepo.save(app);
 		appBeneRepo.save(appBene);
 		addlInstDataRepo.save(additionalInstrumentData);
+		if (remitApplSrvProv != null) {
+			remitApplSrvProv.setRemittanceApplicationId(app.getRemittanceApplicationId());
+			remitApplSrvProvRepository.save(remitApplSrvProv);
+		}
 		logger.info("Application saved in the database, docNo: " + app.getDocumentNo());
 	}
 

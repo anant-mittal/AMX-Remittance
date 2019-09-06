@@ -356,7 +356,8 @@ public class FBPushServiceImpl implements IPushNotifyService {
 			auditServiceClient.gauge(pMGaugeEvent);
 		} catch (Exception e) {
 			auditServiceClient.excep(pMGaugeEvent, LOGGER, e);
-			slackService.sendException(topic, e);
+			//Slack Exception Handling should be for specific cases
+			//slackService.sendException(topic, e);
 		}
 		return AmxApiResponse.build(token);
 	}

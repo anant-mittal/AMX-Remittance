@@ -50,6 +50,7 @@
 			<groupId>com.amx.jax</groupId>
 			<artifactId>lib-jax</artifactId>
 		</dependency>
+		
 	</dependencies>
 
 </project>

@@ -141,7 +141,7 @@ public class FcSaleApplicationDao {
 		}
 		}catch (Exception e) {
 			e.printStackTrace();
-			throw new GlobalException("deActivateApplication faliled for custoemr:"+customerId);
+			throw new GlobalException("De-Activate Application failed for customer:"+customerId);
 		}
 	}
 	

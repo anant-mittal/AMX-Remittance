@@ -116,7 +116,9 @@ public class CommonHttpRequest {
 	}
 
 	public Language getLanguage() {
-		return (Language) ArgUtil.parseAsEnum(request.getLocale().getLanguage(), Language.DEFAULT);
+		return (Language) ArgUtil.parseAsEnum(
+				ArgUtil.ifNotEmpty(getRequestParam(AppConstants.LANG_PARAM_KEY), request.getLocale().getLanguage()),
+				Language.DEFAULT);
 	}
 
 	public Device getCurrentDevice() {
@@ -361,7 +363,7 @@ public class CommonHttpRequest {
 		return null;
 	}
 
-	public boolean createApiRequestModels() {
+	private boolean createApiRequestModels() {
 		if (IS_API_REQUEST_MAPPED) {
 			return true;
 		}
@@ -395,6 +397,7 @@ public class CommonHttpRequest {
 		RequestType type;
 		boolean useAuthToken;
 		boolean useAuthKey;
+		String flow;
 
 		public RequestType getType() {
 			return type;
@@ -419,6 +422,14 @@ public class CommonHttpRequest {
 		public void setUseAuthKey(boolean useAuthKey) {
 			this.useAuthKey = useAuthKey;
 		}
+
+		public String getFlow() {
+			return flow;
+		}
+
+		public void setFlow(String flow) {
+			this.flow = flow;
+		}
 	}
 
 	public ApiRequestDetail getApiRequest(HttpServletRequest req) {
@@ -428,6 +439,7 @@ public class CommonHttpRequest {
 			detail.setType(x.type());
 			detail.setUseAuthKey(x.useAuthKey());
 			detail.setUseAuthToken(x.useAuthToken());
+			detail.setFlow(x.flow());
 		}
 
 		if (ArgUtil.isEmpty(detail.getType()) || RequestType.DEFAULT.equals(detail.getType())) {

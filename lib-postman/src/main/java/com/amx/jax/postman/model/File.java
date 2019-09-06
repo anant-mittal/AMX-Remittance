@@ -57,6 +57,11 @@ public class File implements Serializable {
 		this.lang = lang;
 	}
 
+	public File lang(Language lang) {
+		this.setLang(lang);
+		return this;
+	}
+
 	private String content;
 	private String name;
 	private String title;
