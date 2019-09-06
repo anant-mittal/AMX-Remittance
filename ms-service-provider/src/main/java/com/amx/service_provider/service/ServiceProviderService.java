@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.amx.jax.model.request.serviceprovider.ServiceProviderCallRequestDto;
 import com.amx.jax.model.response.serviceprovider.Quotation_Call_Response;
-import com.amx.jax.model.response.serviceprovider.ServiceProviderResponse;
+import com.amx.jax.model.response.serviceprovider.Remittance_Call_Response;
 import com.amx.service_provider.manger.ServiceProviderManger;
 
 @Service
@@ -21,7 +21,7 @@ public class ServiceProviderService
 		return serviceProviderGateWayManger.getQutation(quatationRequestDto);
 	}
 
-	public ServiceProviderResponse sendRemittance(ServiceProviderCallRequestDto sendRemittanceRequestDto)
+	public Remittance_Call_Response sendRemittance(ServiceProviderCallRequestDto sendRemittanceRequestDto)
 	{
 		// TODO: see if you need to get data from Repo to get the customer and bene
 		// objects using incoming Ids only

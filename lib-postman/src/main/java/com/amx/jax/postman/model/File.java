@@ -57,11 +57,17 @@ public class File implements Serializable {
 		this.lang = lang;
 	}
 
+	public File lang(Language lang) {
+		this.setLang(lang);
+		return this;
+	}
+
 	private String content;
 	private String name;
 	private String title;
 	private Type type;
 	private PDFConverter converter;
+	private String password;
 
 	public PDFConverter getConverter() {
 		return converter;
@@ -233,6 +239,14 @@ public class File implements Serializable {
 		file.setType(extension);
 		file.setBody(DatatypeConverter.parseBase64Binary(dataPart));
 		return file;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 }

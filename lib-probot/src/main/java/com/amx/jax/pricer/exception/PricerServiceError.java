@@ -25,6 +25,10 @@ public enum PricerServiceError implements IExceptionEnum {
 
 	NO_VALID_TNX_ROUTES_AVAILABLE,
 
+	INVALID_TNX_AMOUNT_TOO_LOW,
+
+	INVALID_TNX_AMOUNT_TOO_HIGH,
+
 	INVALID_ROUTING_BANK_IDS,
 
 	INVALID_OR_MISSING_ROUTE,
@@ -114,6 +118,9 @@ public enum PricerServiceError implements IExceptionEnum {
 	INVALID_AMOUNT,
 	
 	MISSING_PAYMENT_LIMIT_DATA,
+	
+	INVALID_MARKUP,
+
 	
 	/** The unknown exception. */
 	// MISC

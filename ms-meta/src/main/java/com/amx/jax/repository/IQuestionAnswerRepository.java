@@ -16,4 +16,7 @@ public interface IQuestionAnswerRepository extends JpaRepository<OnlineQuestMode
 	@Query("Select qa from OnlineQuestModel qa where  languageId=?1 and countryId=?2 and questId=?3")
 	List<OnlineQuestModel> getQuestionDescription(BigDecimal languageId,BigDecimal countryId,BigDecimal questId);
 	
+	@Query("Select qa from OnlineQuestModel qa where  languageId=?1 and countryId=?2 and questId=?3")
+	OnlineQuestModel getEngQuestionDescription(BigDecimal languageId,BigDecimal countryId,BigDecimal questId);
+	
 }

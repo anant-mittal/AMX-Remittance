@@ -157,6 +157,7 @@ public class RemittanceTransaction implements Serializable {
 	private String deliveryInd;
 	private String remarks;
 	private BigDecimal usdAmt;
+	private String wuPurposeOfTransaction;
 	
 	
 	public RemittanceTransaction() {
@@ -1184,6 +1185,15 @@ public class RemittanceTransaction implements Serializable {
 	public void setUsdAmt(BigDecimal usdAmt) {
 		this.usdAmt = usdAmt;
 	}
+	
+	@Column(name="WU_PURPOSE_OF_TRANSACTION")
+	public String getWuPurposeOfTransaction() {
+		return wuPurposeOfTransaction;
+	}
+	public void setWuPurposeOfTransaction(String wuPurposeOfTransaction) {
+		this.wuPurposeOfTransaction = wuPurposeOfTransaction;
+	}
+	
 
 }
  

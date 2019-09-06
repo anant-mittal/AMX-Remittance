@@ -88,7 +88,6 @@ public class CustomerDiscountManager {
 			CUSTOMER_CATEGORY customerCategory) {
 
 		// Find the Currency Group to which the currency belongs
-		// TODO: Optimize this to Save it in the Cache and retrieve it from thr
 		CurrencyMasterModel currencyMasterModel = currencyMasterDao
 				.getByCurrencyId(pricingRequestDTO.getForeignCurrencyId());
 
@@ -180,16 +179,21 @@ public class CustomerDiscountManager {
 
 		}
 
-		List<BigDecimal> validBankIds = new ArrayList<BigDecimal>(
-				exchRateAndRoutingTransientDataCache.getBankDetails().keySet());
+		List<BigDecimal> validBankIds = null;
+		if (exchRateAndRoutingTransientDataCache.getBankDetails() != null) {
+			validBankIds = new ArrayList<BigDecimal>(exchRateAndRoutingTransientDataCache.getBankDetails().keySet());
+		}
 
 		if (OnlineCountryBranchId == null) {
 			CountryBranch cb = countryBranchDao.getOnlineCountryBranch();
 			OnlineCountryBranchId = cb.getCountryBranchId();
 		}
 
-		List<PipsMaster> pipsList = pipsMasterDao.getPipsForFcCurAndBank(pricingRequestDTO.getForeignCurrencyId(),
-				OnlineCountryBranchId, validBankIds);
+		List<PipsMaster> pipsList = null;
+		if (validBankIds != null) {
+			pipsList = pipsMasterDao.getPipsForFcCurAndBank(pricingRequestDTO.getForeignCurrencyId(),
+					OnlineCountryBranchId, validBankIds);
+		}
 
 		Map<Long, TreeMap<BigDecimal, PipsMaster>> bankAmountSlabDiscounts = new HashMap<Long, TreeMap<BigDecimal, PipsMaster>>();
 
@@ -213,9 +217,11 @@ public class CustomerDiscountManager {
 		// List<BankRateDetailsDTO> discountedRatesNPrices = new
 		// ArrayList<BankRateDetailsDTO>();
 
-		BigDecimal margin = exchRateAndRoutingTransientDataCache.getMargin() != null
-				? exchRateAndRoutingTransientDataCache.getMargin().getMarginMarkup()
-				: BIGD_ZERO;
+		// Old
+		// BigDecimal margin =
+		// exchRateAndRoutingTransientDataCache.getMarginForBank(bankId)) != null
+		// ? exchRateAndRoutingTransientDataCache.getMargin().getMarginMarkup()
+		// : BIGD_ZERO;
 
 		for (ExchangeRateDetails bankExRateDetail : exchRateAndRoutingTransientDataCache.getSellRateDetails()) {
 
@@ -264,6 +270,9 @@ public class CustomerDiscountManager {
 
 				bankExRateDetail.setDiscountAvailed(true);
 
+				BigDecimal marginVal = exchRateAndRoutingTransientDataCache
+						.getMarginForBank(bankExRateDetail.getBankId()).getMarginMarkup();
+
 				/**
 				 * Compute Base Sell rate : Cost + Margin
 				 */
@@ -273,7 +282,7 @@ public class CustomerDiscountManager {
 
 					// New Logic
 					adjustedBaseSellRate = exchRateAndRoutingTransientDataCache
-							.getAvgRateGLCForBank(bankExRateDetail.getBankId()).add(margin);
+							.getAvgRateGLCForBank(bankExRateDetail.getBankId()).add(marginVal);
 
 				}
 
@@ -332,20 +341,21 @@ public class CustomerDiscountManager {
 		ExchangeDiscountInfo channelInfo = new ExchangeDiscountInfo();
 
 		// Find the Currency Group to which the currency belongs
-		// TODO: Optimize this to Save it in the Cache and retrieve it from thr
 		CurrencyMasterModel currencyMasterModel = currencyMasterDao
 				.getByCurrencyId(customerDiscountReqDTO.getForeignCurrencyId());
 
-		if (currencyMasterModel.getCurrGroupId() != null) {
-			curGroup = groupingMasterDao.getGroupById(currencyMasterModel.getCurrGroupId());
-			if (curGroup == null) {
-				LOGGER.warn(" ****** MAJOR : Currency Group is Null for Currency Group Id : "
-						+ currencyMasterModel.getCurrGroupId() + " and Currency Id :"
-						+ currencyMasterModel.getCurrencyId());
+		if (currencyMasterModel != null) {
+			if (currencyMasterModel.getCurrGroupId() != null) {
+				curGroup = groupingMasterDao.getGroupById(currencyMasterModel.getCurrGroupId());
+				if (curGroup == null) {
+					LOGGER.warn(" ****** MAJOR : Currency Group is Null for Currency Group Id : "
+							+ currencyMasterModel.getCurrGroupId() + " and Currency Id :"
+							+ currencyMasterModel.getCurrencyId());
+				}
+			} else {
+				LOGGER.warn(
+						" ****** MAJOR : Currency Group is Null for Currency Id : " + currencyMasterModel.getCurrencyId());
 			}
-		} else {
-			LOGGER.warn(
-					" ****** MAJOR : Currency Group is Null for Currency Id : " + currencyMasterModel.getCurrencyId());
 		}
 
 		// Compute Channel Discount
@@ -372,7 +382,7 @@ public class CustomerDiscountManager {
 		CustomerDiscountsView customerDiscountsView = customerDiscountDao.fetchCustomerDiscount(
 				customerDiscountReqDTO.getCustomerId(), DISCOUNT_TYPE.CUSTOMER_CATEGORY.getTypeKey(), curGroup.getId());
 
-		if (customerDiscountsView.getDiscountType() != null && customerDiscountsView.getDiscountType()
+		if (customerDiscountsView != null && customerDiscountsView.getDiscountType() != null && customerDiscountsView.getDiscountType()
 				.equalsIgnoreCase(DISCOUNT_TYPE.CUSTOMER_CATEGORY.getTypeKey())) {
 			ccDiscountPips = (null != customerDiscountsView.getDiscountPips() ? customerDiscountsView.getDiscountPips()
 					: BigDecimal.ZERO);
@@ -441,8 +451,8 @@ public class CustomerDiscountManager {
 
 					amountSlabPipsInfo.setId(entry.getValue().getPipsMasterId());
 					amountSlabPipsInfo.setDiscountType(DISCOUNT_TYPE.AMOUNT_SLAB);
-					amountSlabPipsInfo.setDiscountTypeValue(entry.getValue().getFromAmount().longValue() + "-"
-							+ entry.getValue().getToAmount().longValue());
+					amountSlabPipsInfo.setDiscountTypeValue(entry.getValue().getFromAmount().toPlainString() + "-"
+							+ entry.getValue().getToAmount().toPlainString());
 					amountSlabPipsInfo.setDiscountPipsValue(amountSlabPips == null ? BigDecimal.ZERO : amountSlabPips);
 
 					break;

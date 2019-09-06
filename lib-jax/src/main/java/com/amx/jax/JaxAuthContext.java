@@ -33,6 +33,14 @@ public class JaxAuthContext {
 		return AppContextUtil.getFlow();
 	}
 
+	public static String getMotpOrOtp() {
+		return ArgUtil.ifNotEmpty(getMotp(), getOtp());
+	}
+
+	public static String getEotpOrOtp() {
+		return ArgUtil.ifNotEmpty(getEotp(), getOtp());
+	}
+
 	public static String getAnyOtp() {
 		String otp = getOtp();
 		if (ArgUtil.isEmpty(otp)) {
@@ -113,6 +121,14 @@ public class JaxAuthContext {
 		}
 		AppContextUtil.setFlow(flow);
 		return flow;
+	}
+
+	public static boolean isCaptchaCheck() {
+		return ArgUtil.parseAsBoolean(AppContextUtil.getParams().get("captcha_check"), false);
+	}
+
+	public static void setCaptchaCheck(boolean captchaCheck) {
+		AppContextUtil.getParams().put("captchaCheck", captchaCheck);
 	}
 
 }

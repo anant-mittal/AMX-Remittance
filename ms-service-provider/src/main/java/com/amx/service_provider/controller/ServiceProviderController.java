@@ -12,7 +12,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.serviceprovider.IServiceProviderService;
 import com.amx.jax.model.request.serviceprovider.ServiceProviderCallRequestDto;
 import com.amx.jax.model.response.serviceprovider.Quotation_Call_Response;
-import com.amx.jax.model.response.serviceprovider.ServiceProviderResponse;
+import com.amx.jax.model.response.serviceprovider.Remittance_Call_Response;
 import com.amx.service_provider.service.ServiceProviderService;
 
 @RestController
@@ -29,7 +29,7 @@ public class ServiceProviderController implements IServiceProviderService
 	}
 
 	@RequestMapping(value = IServiceProviderService.Path.SEND_REMITTANCE, method = RequestMethod.POST)
-	public AmxApiResponse<ServiceProviderResponse, Object> sendRemittance(@Valid @RequestBody ServiceProviderCallRequestDto sendRemittanceRequestDto)
+	public AmxApiResponse<Remittance_Call_Response, Object> sendRemittance(@Valid @RequestBody ServiceProviderCallRequestDto sendRemittanceRequestDto)
 	{
 		return AmxApiResponse.build(serviceProviderGateService.sendRemittance(sendRemittanceRequestDto));
 	}

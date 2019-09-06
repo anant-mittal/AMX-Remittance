@@ -74,8 +74,8 @@ public class PipsMasterDao {
 	}
 
 	public List<PipsMaster> getAmountSlab(BigDecimal countryId, BigDecimal currencyId,
-			BigDecimal onlineCountryBranchId) {
-		return repo.getPipsMasterForAmountSlab(countryId, currencyId, onlineCountryBranchId);
+			BigDecimal onlineCountryBranchId,BigDecimal bankId) {
+		return repo.getPipsMasterForAmountSlab(countryId, currencyId, onlineCountryBranchId,bankId);
 	}
 
 	public PipsMaster getPipsById(BigDecimal id) {

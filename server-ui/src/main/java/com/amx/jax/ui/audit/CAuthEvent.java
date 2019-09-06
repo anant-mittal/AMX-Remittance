@@ -26,7 +26,7 @@ public class CAuthEvent extends AuditEvent {
 	 * @param step the step
 	 */
 	public CAuthEvent(AuthFlow flow, AuthStep step) {
-		super(flow);
+		super(ArgUtil.ifNotEmpty(flow, AuthFlow.DEFAULT));
 		this.step = step;
 	}
 
