@@ -560,7 +560,7 @@ public class UserValidationService {
 		if (customer == null) {
 			throw new GlobalException(JaxError.CUSTOMER_NOT_FOUND.getStatusKey(), "Online Customer id not found");
 		}
-		if (!customer.getIdentityTypeId().toString().equals(Constants.IDENTITY_TYPE_CIVIL_ID_STR)
+		if (!Constants.IDENTITY_TYPE_CIVIL_ID_STR.equals(customer.getIdentityTypeId().toString())
 				&& !customer.getIdentityTypeId().toString().equals(Constants.IDENTITY_TYPE_CIVIL_ID_STRING)) {
 			throw new GlobalException(
 					"The ID you have entered is not a Civil ID. Please enter the Civil ID to set up fingerprint login.");
