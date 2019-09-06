@@ -32,6 +32,7 @@ import com.amx.jax.dbmodel.ExEmailNotification;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.model.request.partner.TransactionFailReportDTO;
+import com.amx.jax.model.response.customer.CustomerDto;
 import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.model.response.fx.FxDeliveryDetailNotificationDto;
 import com.amx.jax.model.response.fx.FxOrderDetailNotificationDto;
