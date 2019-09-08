@@ -53,6 +53,10 @@ public class FxDeliveryTimeSlotMaster implements Serializable{
 	private BigDecimal officeEndTime;
 	
 	
+	@Column(name="OFFICE_START_TIME")
+	private BigDecimal officeStartTime;
+	
+	
 	
 	public BigDecimal getDeliveryTimeSlotId() {
 		return deliveryTimeSlotId;
@@ -113,6 +117,12 @@ public class FxDeliveryTimeSlotMaster implements Serializable{
 	}
 	public void setOfficeEndTime(BigDecimal officeEndTime) {
 		this.officeEndTime = officeEndTime;
+	}
+	public BigDecimal getOfficeStartTime() {
+		return officeStartTime;
+	}
+	public void setOfficeStartTime(BigDecimal officeStartTime) {
+		this.officeStartTime = officeStartTime;
 	}
 	
 	

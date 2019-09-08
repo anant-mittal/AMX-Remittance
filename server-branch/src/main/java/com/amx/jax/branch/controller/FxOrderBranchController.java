@@ -179,4 +179,5 @@ public class FxOrderBranchController {
 	public AmxApiResponse<FxOrderTransactionHistroyDto,Object> getPastOrdersList(@RequestBody FcDeliveryBranchOrderSearchRequest fcDeliveryBranchOrderSearchRequest){
 		return fxOrderBranchClient.searchOrder(fcDeliveryBranchOrderSearchRequest);
 	}
+
 }

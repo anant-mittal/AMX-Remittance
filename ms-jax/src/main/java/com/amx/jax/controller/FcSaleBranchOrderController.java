@@ -21,6 +21,7 @@ import com.amx.jax.model.request.fx.FcDeliveryBranchOrderSearchRequest;
 import com.amx.jax.model.request.fx.FcSaleBranchDispatchRequest;
 import com.amx.jax.model.response.fx.FcEmployeeDetailsDto;
 import com.amx.jax.model.response.fx.FcSaleOrderManagementDTO;
+import com.amx.jax.model.response.fx.FxDeliveryTimeSlotDto;
 import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
 import com.amx.jax.model.response.fx.FxOrderTransactionHistroyDto;
 import com.amx.jax.model.response.fx.UserStockDto;
@@ -231,7 +232,17 @@ public class FcSaleBranchOrderController implements IFxBranchOrderService {
 	public AmxApiResponse<FxOrderTransactionHistroyDto, Object> searchOrder(@RequestBody FcDeliveryBranchOrderSearchRequest fcDeliveryBranchOrderSearchRequest) {
 		return fcSaleBranch.searchOrder(fcDeliveryBranchOrderSearchRequest);
 	}
-
 	
+
+	@RequestMapping(value = Path.FC_ORDER_DELIVERY_TIME_SETUP , method = RequestMethod.POST)
+	public AmxApiResponse<BoolRespModel,Object> setDeliveryTiming(@RequestParam(value = "startTime", required = true) BigDecimal startTime,
+			@RequestParam(value = "endTime", required = true) BigDecimal endTime,
+			@RequestParam(value = "timeSlot", required = true) BigDecimal timeSlot,
+			@RequestParam(value = "product", required = true) String product) {
+		BigDecimal countryId = metaData.getCountryId();
+		BigDecimal companyId = metaData.getCompanyId();
+		BoolRespModel result =fcSaleBranch.saveFcDeliveryTiming(startTime,endTime,timeSlot,product,countryId,companyId);
+		return AmxApiResponse.build(result);
+	}
 
 }

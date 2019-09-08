@@ -48,9 +48,11 @@ import com.amx.jax.dbmodel.fx.EmployeeDetailsView;
 import com.amx.jax.dbmodel.fx.ForeignCurrencyOldModel;
 import com.amx.jax.dbmodel.fx.ForeignCurrencyStockTransfer;
 import com.amx.jax.dbmodel.fx.FxDeliveryDetailsModel;
+import com.amx.jax.dbmodel.fx.FxDeliveryTimeSlotMaster;
 import com.amx.jax.dbmodel.fx.OrderManagementView;
 import com.amx.jax.dbmodel.fx.UserStockView;
 import com.amx.jax.dbmodel.remittance.Document;
+import com.amx.jax.dict.AmxEnums;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.AuditService;
@@ -67,6 +69,7 @@ import com.amx.jax.repository.ICustomerRepository;
 import com.amx.jax.repository.IDocumentDao;
 import com.amx.jax.repository.JaxConfigRepository;
 import com.amx.jax.repository.fx.FxDeliveryDetailsRepository;
+import com.amx.jax.repository.fx.FxOrderDeliveryTimeSlotRepository;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.service.CompanyService;
 import com.amx.jax.services.FcSaleDeliveryService;
@@ -138,6 +141,9 @@ public class FcSaleBranchOrderManager {
 	
 	@Autowired
 	CustomerService customerService;
+	
+	@Autowired
+	FxOrderDeliveryTimeSlotRepository fcSaleOrderTimeSlotDao;
 
 	public HashMap<String, Object> fetchFcSaleOrderManagement(BigDecimal applicationCountryId,BigDecimal employeeId){
 		HashMap<String, Object> fetchOrder = new HashMap<>();
@@ -1917,4 +1923,45 @@ public class FcSaleBranchOrderManager {
 		return stockStatus;
 	}
 
+	
+	public Boolean saveFcDeliveryTiming(BigDecimal startTime, BigDecimal endTime, BigDecimal timeSlot, String product,
+			BigDecimal countryId, BigDecimal companyId) {
+		Boolean status = Boolean.FALSE;
+		FxDeliveryTimeSlotMaster fxDeliveryTimeSlotMaster = new FxDeliveryTimeSlotMaster();
+		
+		try {
+
+			fxDeliveryTimeSlotMaster = fcSaleOrderTimeSlotDao.saveDeliveryTimeSlot(countryId, companyId, ConstantDocument.Yes);
+
+			if (product.equalsIgnoreCase(ConstantDocument.FX_LHA)) {
+				
+				fxDeliveryTimeSlotMaster.setEndTime(endTime);
+				fxDeliveryTimeSlotMaster.setStartTime(startTime);
+				fxDeliveryTimeSlotMaster.setTimeInterval(timeSlot);
+				fcSaleOrderTimeSlotDao.save(fxDeliveryTimeSlotMaster);
+
+			} else if (product.equalsIgnoreCase(ConstantDocument.FX_LOA)) {
+				
+				fxDeliveryTimeSlotMaster.setOfficeStartTime(endTime);
+				fxDeliveryTimeSlotMaster.setOfficeEndTime(startTime);
+				fxDeliveryTimeSlotMaster.setTimeInterval(timeSlot);
+				fcSaleOrderTimeSlotDao.save(fxDeliveryTimeSlotMaster);
+
+				
+			}
+			status = Boolean.TRUE;
+
+		} catch (GlobalException e) {
+			e.printStackTrace();
+			logger.error("Error in setFcDeliveryTiming",
+					e.getMessage() + " countryId :" + countryId + " companyId :" + companyId + " product :" + product);
+			throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error in setFcDeliveryTiming",
+					e.getMessage() + " countryId :" + countryId + " companyId :" + companyId + " product :" + product);
+			throw new GlobalException(e.getMessage());
+		}
+		return status;
+	}
 }

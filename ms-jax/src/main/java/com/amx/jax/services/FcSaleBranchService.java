@@ -3,6 +3,7 @@ package com.amx.jax.services;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
@@ -22,9 +23,12 @@ import com.amx.jax.constant.JaxApiFlow;
 import com.amx.jax.dao.FcSaleBranchDao;
 import com.amx.jax.dbmodel.CountryBranch;
 import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.fx.FxDeliveryTimeSlotMaster;
 import com.amx.jax.dbmodel.fx.FxOrderTransactionModel;
 import com.amx.jax.dbmodel.fx.OrderManagementView;
 import com.amx.jax.dbmodel.fx.StatusMaster;
+import com.amx.jax.dict.AmxEnums;
+import com.amx.jax.dict.AmxEnums.Products;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.manager.FcDeliveryOrdersearchManager;
 import com.amx.jax.manager.FcSaleApplicationTransactionManager;
@@ -35,11 +39,13 @@ import com.amx.jax.model.request.fx.FcSaleBranchDispatchRequest;
 import com.amx.jax.model.response.fx.FcEmployeeDetailsDto;
 import com.amx.jax.model.response.fx.FcSaleCurrencyAmountModel;
 import com.amx.jax.model.response.fx.FcSaleOrderManagementDTO;
+import com.amx.jax.model.response.fx.FxDeliveryTimeSlotDto;
 import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
 import com.amx.jax.model.response.fx.FxOrderTransactionHistroyDto;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.repository.fx.FxDeliveryDetailsRepository;
+import com.amx.jax.repository.fx.FxOrderDeliveryTimeSlotRepository;
 import com.amx.jax.repository.fx.FxOrderTransactionRespository;
 import com.amx.jax.repository.fx.VwFxDeliveryDetailsRepository;
 import com.amx.jax.service.CountryBranchService;
@@ -47,6 +53,7 @@ import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.userservice.service.UserValidationService;
 import com.amx.jax.util.RoundUtil;
 import com.amx.jax.validation.FcDeliveryBranchOrderSearchRequestValidation;
+import com.google.common.collect.Lists;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -90,6 +97,10 @@ public class FcSaleBranchService extends AbstractService{
 	
 	@Autowired
 	FxOrderTransactionRespository fxOrderTransactionRespository;
+	
+	@Autowired
+	FxOrderDeliveryTimeSlotRepository fcSaleOrderTimeSlotDao;
+
 
 
 	/* 
@@ -802,7 +813,42 @@ public class FcSaleBranchService extends AbstractService{
 		return AmxApiResponse.build(fxOrderReportResponseDto);
 	}
 	
-	
-	
-	
+	public BoolRespModel saveFcDeliveryTiming(BigDecimal startTime,BigDecimal endTime,BigDecimal timeSlot,String product, BigDecimal countryId,BigDecimal companyId){
+		Boolean status = Boolean.FALSE;	
+		if(countryId == null || countryId.compareTo(BigDecimal.ZERO)==0){
+			throw new GlobalException(JaxError.NULL_COUNTRY_ID,"Country id should not be blank");
+		}
+		if(companyId == null || companyId.compareTo(BigDecimal.ZERO)==0){
+			throw new GlobalException(JaxError.NULL_COMPANY_ID,"Company id should not be blank");
+		}
+		
+		if(product == null || product.isEmpty()){
+			throw new GlobalException(JaxError.NULL_PRODUCT,"Product should not be blank");
+		}
+		
+		if(endTime == null || endTime.compareTo(BigDecimal.ZERO)==0){
+			throw new GlobalException(JaxError.NULL_END_TIME,"End time should not be blank");
+		}
+		
+		if(timeSlot == null || timeSlot.compareTo(BigDecimal.ZERO)==0){
+			throw new GlobalException(JaxError.NULL_TIME_SLOT,"Time slot should not be blank");
+		}
+	try {	
+		
+		status=branchOrderManager.saveFcDeliveryTiming(startTime, endTime, timeSlot, product,countryId, companyId );
+		if(status) {
+			// success
+		}else {
+			throw new GlobalException(JaxError.SAVE_FAILED,"Release Order lock didn't updated");
+		}
+	}catch (GlobalException e) {
+		throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
+	}catch (Exception e) {
+		throw new GlobalException(e.getMessage());
+	}
+
+	return new BoolRespModel(status);
 }
+	
+}	
+
