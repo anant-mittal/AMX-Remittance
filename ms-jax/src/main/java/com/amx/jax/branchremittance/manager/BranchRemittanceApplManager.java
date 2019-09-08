@@ -1053,17 +1053,17 @@ public class BranchRemittanceApplManager {
 	}
 
 
-	List<RemittanceApplicationSplitting> createChildApplication(RemittanceApplication remitAppl,DynamicRoutingPricingDto dyRandPriDto){
+	public List<RemittanceApplicationSplitting> createChildApplication(RemittanceApplication remitAppl,DynamicRoutingPricingDto dyRandPriDto){
 		
 		 applSplitList = new ArrayList<RemittanceApplicationSplitting>();
-		
-		
-		
-	       TrnxRoutingDetails routingDetails = dyRandPriDto.getTrnxRoutingPaths();
-		
-		try{
-			
-			if(remitAppl!=null && JaxUtil.isNullZeroBigDecimalCheck(remitAppl.getForeignTranxAmount()) && routingDetails!=null && JaxUtil.isNullZeroBigDecimalCheck(routingDetails.getSplitAmount())){
+		 try{
+		 
+		 if(remitAppl !=null && dyRandPriDto!=null) {
+			 TrnxRoutingDetails routingDetails = dyRandPriDto.getTrnxRoutingPaths(); 
+
+			 if(routingDetails!= null && routingDetails.getRemittanceDescription().equalsIgnoreCase(ConstantDocument.IMPS) && JaxUtil.isNullZeroBigDecimalCheck(remitAppl.getForeignTranxAmount())  && remitAppl.getForeignTranxAmount().compareTo(routingDetails.getSplitAmount())>0) {
+			 
+			//if(JaxUtil.isNullZeroBigDecimalCheck(remitAppl.getForeignTranxAmount()) && routingDetails!=null && JaxUtil.isNullZeroBigDecimalCheck(routingDetails.getSplitAmount())){
 				BigDecimal[] splitCount = remitAppl.getForeignTranxAmount().divideAndRemainder(routingDetails.getSplitAmount());
 				BigDecimal count = new BigDecimal(0);
 				Map<BigDecimal,BigDecimal> mapSplitAmount = new HashMap<>();
@@ -1103,12 +1103,13 @@ public class BranchRemittanceApplManager {
 					 applSplitList.add(applSplit);
 				 }
 			}
-			
-		}catch(Exception e) {
+	//}
+	}
+		 
+	 }catch(Exception e) {
 			e.printStackTrace();
 		}
-		
-		
+				 
 		return applSplitList;
 	}
 	
