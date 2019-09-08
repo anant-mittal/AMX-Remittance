@@ -16,18 +16,26 @@ public class ServiceProviderService
 
 	public Quotation_Call_Response getQutation(ServiceProviderCallRequestDto quatationRequestDto)
 	{
-		// TODO: see if you need to get data from Repo to get the customer and bene
-		// objects using incoming Ids only
 		return serviceProviderGateWayManger.getQutation(quatationRequestDto);
+	}
+	
+	public ServiceProviderResponse validateRemittanceInputs(ServiceProviderCallRequestDto validateRemittanceInputsRequestDto)
+	{
+		return serviceProviderGateWayManger.validateRemittanceInputs(validateRemittanceInputsRequestDto);
 	}
 
 	public ServiceProviderResponse sendRemittance(ServiceProviderCallRequestDto sendRemittanceRequestDto)
 	{
-		// TODO: see if you need to get data from Repo to get the customer and bene
-		// objects using incoming Ids only
 		return serviceProviderGateWayManger.sendRemittance(sendRemittanceRequestDto);
 	}
-
 	
+	public ServiceProviderResponse getRemittanceDetails(ServiceProviderCallRequestDto getRemittanceDetailsRequestDto)
+	{
+		return serviceProviderGateWayManger.getRemittanceDetails(getRemittanceDetailsRequestDto);
+	}
 
+	public ServiceProviderResponse getRemittanceStatus(ServiceProviderCallRequestDto getRemittanceStatusRequestDto)
+	{
+		return serviceProviderGateWayManger.getRemittanceStatus(getRemittanceStatusRequestDto);
+	}
 }

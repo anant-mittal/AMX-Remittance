@@ -41,10 +41,14 @@ public class Benificiary
 	String state;
 	String district;
 	String contact_no;
+	String email;
 
 	String profession;
 	String beneficiary_type;
 	String relation_to_beneficiary;
+
+	String partner_beneficiary_id;
+	String partner_beneficiary_type;
 
 	public String validate_benificiary_input(String remittance_mode, String destination_country_2_digit_ISO)
 	{
@@ -74,17 +78,20 @@ public class Benificiary
 			if (last_name == null)
 				validation_error_list.add("Last name is empty");
 		}
-		
-		// TODO: If the country support IBAN number, then we need to validate if the give account number is IBAN or not
-		// We can achieve that by following the same checks apply in online an app. There they have a master setup on country level (most likely) to tell if 
+
+		// TODO: If the country support IBAN number, then we need to validate if the
+		// give account number is IBAN or not
+		// We can achieve that by following the same checks apply in online an app.
+		// There they have a master setup on country level (most likely) to tell if
 		// a given country support IBAN or not
 
-		
-		// TODO: Also there are some parameter checks in some parameter table need to be applied. Check with Chiranjiv on that and see what he did exactly
-		
+		// TODO: Also there are some parameter checks in some parameter table need to be
+		// applied. Check with Chiranjiv on that and see what he did exactly
+
 		if (destination_country_2_digit_ISO != null)
 		{
-			// Special checks apply at code level due. TODO: check if those checks can be applied on the screen
+			// Special checks apply at code level due. TODO: check if those checks can be
+			// applied on the screen
 			if (destination_country_2_digit_ISO.equals("UK"))
 			{
 				// Validate that the street should contains at least two words
@@ -97,13 +104,13 @@ public class Benificiary
 			else if (destination_country_2_digit_ISO.equals("AU"))
 			{
 				// Validate if BSB code is in correct format (6 digits)
-				if (beneficiary_bank_code == null || beneficiary_bank_code.trim().length()!=6)
+				if (beneficiary_bank_code == null || beneficiary_bank_code.trim().length() != 6)
 					validation_error_list.add("BSB code should be 6 digit lenght for Australia");
 			}
 			else if (destination_country_2_digit_ISO.equals("BD"))
 			{
 				// Validate if Routing number is in correct format (9 digits)
-				if (beneficiary_bank_code == null || beneficiary_bank_code.trim().length()!=9)
+				if (beneficiary_bank_code == null || beneficiary_bank_code.trim().length() != 9)
 					validation_error_list.add("Routing number should be 9 digit lenght for Bangladesh");
 			}
 		}
@@ -421,10 +428,43 @@ public class Benificiary
 		this.relation_to_beneficiary = relation_to_beneficiary;
 	}
 
+	public String getPartner_beneficiary_id()
+	{
+		return partner_beneficiary_id;
+	}
+
+	public void setPartner_beneficiary_id(String partner_beneficiary_id)
+	{
+		this.partner_beneficiary_id = partner_beneficiary_id;
+	}
+
+	public String getPartner_beneficiary_type()
+	{
+		return partner_beneficiary_type;
+	}
+
+	public void setPartner_beneficiary_type(String partner_beneficiary_type)
+	{
+		this.partner_beneficiary_type = partner_beneficiary_type;
+	}
+
+	public String getEmail()
+	{
+		return email;
+	}
+
+	public void setEmail(String email)
+	{
+		this.email = email;
+	}
+
 	public String getFull_name()
 	{
-		return StringUtils.normalizeSpace(first_name + " " + (middle_name == null ? "" : middle_name) + " "
-				+ (last_name == null ? "" : last_name));
+		return StringUtils.normalizeSpace(first_name +
+				" " +
+				(middle_name == null ? "" : middle_name) +
+				" " +
+				(last_name == null ? "" : last_name));
 	}
 
 	private int get_words_count(String str)
@@ -454,20 +494,71 @@ public class Benificiary
 	@Override
 	public String toString()
 	{
-		return "Benificiary [beneficiary_reference=" + beneficiary_reference + ", is_iban_number_holder="
-				+ is_iban_number_holder + ", bic_indicator=" + bic_indicator + ", beneficiary_bank_branch_indicator="
-				+ beneficiary_bank_branch_indicator + ", beneficiary_account_number=" + beneficiary_account_number
-				+ ", beneficiary_account_type=" + beneficiary_account_type + ", beneficiary_bank_code="
-				+ beneficiary_bank_code + ", beneficiary_bank_branch_swift_code=" + beneficiary_bank_branch_swift_code
-				+ ", beneficiary_bank_name=" + beneficiary_bank_name + ", wallet_service_provider="
-				+ wallet_service_provider + ", beneficiary_branch_code=" + beneficiary_branch_code
-				+ ", beneficiary_branch_name=" + beneficiary_branch_name + ", beneficiary_id_number="
-				+ beneficiary_id_number + ", beneficiary_id_type=" + beneficiary_id_type + ", nationality_3_digit_ISO="
-				+ nationality_3_digit_ISO + ", date_of_birth=" + date_of_birth + ", first_name=" + first_name
-				+ ", middle_name=" + middle_name + ", last_name=" + last_name + ", full_addrerss=" + full_addrerss
-				+ ", address_zip=" + address_zip + ", street=" + street + ", city=" + city + ", state=" + state
-				+ ", district=" + district + ", contact_no=" + contact_no + ", profession=" + profession
-				+ ", beneficiary_type=" + beneficiary_type + ", relation_to_beneficiary=" + relation_to_beneficiary
-				+ "]";
+		return "Benificiary [beneficiary_reference=" +
+				beneficiary_reference +
+				", is_iban_number_holder=" +
+				is_iban_number_holder +
+				", bic_indicator=" +
+				bic_indicator +
+				", beneficiary_bank_branch_indicator=" +
+				beneficiary_bank_branch_indicator +
+				", beneficiary_account_number=" +
+				beneficiary_account_number +
+				", beneficiary_account_type=" +
+				beneficiary_account_type +
+				", beneficiary_bank_code=" +
+				beneficiary_bank_code +
+				", beneficiary_bank_branch_swift_code=" +
+				beneficiary_bank_branch_swift_code +
+				", beneficiary_bank_name=" +
+				beneficiary_bank_name +
+				", wallet_service_provider=" +
+				wallet_service_provider +
+				", beneficiary_branch_code=" +
+				beneficiary_branch_code +
+				", beneficiary_branch_name=" +
+				beneficiary_branch_name +
+				", beneficiary_id_number=" +
+				beneficiary_id_number +
+				", beneficiary_id_type=" +
+				beneficiary_id_type +
+				", nationality_3_digit_ISO=" +
+				nationality_3_digit_ISO +
+				", date_of_birth=" +
+				date_of_birth +
+				", first_name=" +
+				first_name +
+				", middle_name=" +
+				middle_name +
+				", last_name=" +
+				last_name +
+				", full_addrerss=" +
+				full_addrerss +
+				", address_zip=" +
+				address_zip +
+				", street=" +
+				street +
+				", city=" +
+				city +
+				", state=" +
+				state +
+				", district=" +
+				district +
+				", contact_no=" +
+				contact_no +
+				", email=" +
+				email +
+				", profession=" +
+				profession +
+				", beneficiary_type=" +
+				beneficiary_type +
+				", relation_to_beneficiary=" +
+				relation_to_beneficiary +
+				", partner_beneficiary_id=" +
+				partner_beneficiary_id +
+				", partner_beneficiary_type=" +
+				partner_beneficiary_type +
+				"]";
 	}
+
 }

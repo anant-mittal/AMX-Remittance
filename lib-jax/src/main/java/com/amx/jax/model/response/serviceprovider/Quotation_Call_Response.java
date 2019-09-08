@@ -10,6 +10,7 @@ public class Quotation_Call_Response extends ServiceProviderResponse
 {
 	String partner_transaction_reference; // transaction number generated from partner
 	String out_going_transaction_reference; // transaction number generated locally
+	
 	Calendar offer_expiration_date;
 
 	String settlement_currency;
@@ -32,12 +33,14 @@ public class Quotation_Call_Response extends ServiceProviderResponse
 	{
 		this.partner_transaction_reference = partner_transaction_reference;
 	}
-
-	public String getOut_going_transaction_reference() {
+	
+	public String getOut_going_transaction_reference()
+	{
 		return out_going_transaction_reference;
 	}
 
-	public void setOut_going_transaction_reference(String out_going_transaction_reference) {
+	public void setOut_going_transaction_reference(String out_going_transaction_reference)
+	{
 		this.out_going_transaction_reference = out_going_transaction_reference;
 	}
 

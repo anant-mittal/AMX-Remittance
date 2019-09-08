@@ -2,21 +2,28 @@ package com.amx.jax.model.request.serviceprovider;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class TransactionData
-{	
+{
 	String application_country_3_digit_ISO; // KWT, OMN or BHR
+	String application_country_2_digit_ISO;
 	String routting_bank_code;
-	
+
 	// sequence number that identify the transaction at our system and.
 	// Same value need to be use for get quotation, remittance and status call.
 	String request_sequence_id;
 
 	String partner_transaction_reference; // transaction number generated from partner
+	String bene_bank_remittance_reference;
+	String addtional_external_reference; // Used to store additional reference from bene bank or partner side. example (SSS PRN from Vintja)
 	String out_going_transaction_reference; // transaction number generated locally
 
+	// For internal use
 	String remittance_mode;
 	String delivery_mode;
+	int company_code, document_code, document_finance_year, document_no;
+	long remittance_transaction_id;
 
 	BigDecimal settlement_amount;
 	String settlement_currency;
@@ -33,7 +40,12 @@ public class TransactionData
 	String purpose_of_remittance;
 	String further_instruction;
 
-	
+	Date coverage_start_date;
+	Date coverage_end_date;
+
+	// General purpose fields could have different interpretation as per the partner
+	String flexi_field_1, flexi_field_2;
+
 	public String getApplication_country_3_digit_ISO()
 	{
 		return application_country_3_digit_ISO;
@@ -42,6 +54,16 @@ public class TransactionData
 	public void setApplication_country_3_digit_ISO(String application_country_3_digit_ISO)
 	{
 		this.application_country_3_digit_ISO = application_country_3_digit_ISO;
+	}
+
+	public String getApplication_country_2_digit_ISO()
+	{
+		return application_country_2_digit_ISO;
+	}
+
+	public void setApplication_country_2_digit_ISO(String application_country_2_digit_ISO)
+	{
+		this.application_country_2_digit_ISO = application_country_2_digit_ISO;
 	}
 
 	public String getRoutting_bank_code()
@@ -79,9 +101,99 @@ public class TransactionData
 		return out_going_transaction_reference;
 	}
 
+	public String getBene_bank_remittance_reference()
+	{
+		return bene_bank_remittance_reference;
+	}
+
+	public void setBene_bank_remittance_reference(String bene_bank_remittance_reference)
+	{
+		this.bene_bank_remittance_reference = bene_bank_remittance_reference;
+	}
+
+	public String getAddtional_external_reference()
+	{
+		return addtional_external_reference;
+	}
+
+	public void setAddtional_external_reference(String addtional_external_reference)
+	{
+		this.addtional_external_reference = addtional_external_reference;
+	}
+
 	public void setOut_going_transaction_reference(String out_going_transaction_reference)
 	{
 		this.out_going_transaction_reference = out_going_transaction_reference;
+	}
+
+	public int getCompany_code()
+	{
+		return company_code;
+	}
+
+	public void setCompany_code(int company_code)
+	{
+		this.company_code = company_code;
+	}
+
+	public int getDocument_code()
+	{
+		return document_code;
+	}
+
+	public void setDocument_code(int document_code)
+	{
+		this.document_code = document_code;
+	}
+
+	public int getDocument_finance_year()
+	{
+		return document_finance_year;
+	}
+
+	public void setDocument_finance_year(int document_finance_year)
+	{
+		this.document_finance_year = document_finance_year;
+	}
+
+	public int getDocument_no()
+	{
+		return document_no;
+	}
+
+	public void setDocument_no(int document_no)
+	{
+		this.document_no = document_no;
+	}
+
+	public long getRemittance_transaction_id()
+	{
+		return remittance_transaction_id;
+	}
+
+	public void setRemittance_transaction_id(long remittance_transaction_id)
+	{
+		this.remittance_transaction_id = remittance_transaction_id;
+	}
+
+	public Date getCoverage_start_date()
+	{
+		return coverage_start_date;
+	}
+
+	public void setCoverage_start_date(Date coverage_start_date)
+	{
+		this.coverage_start_date = coverage_start_date;
+	}
+
+	public Date getCoverage_end_date()
+	{
+		return coverage_end_date;
+	}
+
+	public void setCoverage_end_date(Date coverage_end_date)
+	{
+		this.coverage_end_date = coverage_end_date;
 	}
 
 	public String getRemittance_mode()
@@ -214,56 +326,74 @@ public class TransactionData
 		this.further_instruction = further_instruction;
 	}
 
-    public String validate_transactionData_input()
-	 {
-	    ArrayList<String> validation_error_list = new ArrayList<String>();
-	    String validation_errors = "";
+	public String getFlexi_field_1()
+	{
+		return flexi_field_1;
+	}
 
-	    if (request_sequence_id == null)
-	       validation_error_list.add("Request sequence ID is empty");
+	public void setFlexi_field_1(String flexi_field_1)
+	{
+		this.flexi_field_1 = flexi_field_1;
+	}
 
-	    if (partner_transaction_reference == null)
-	       validation_error_list.add("Partner Transaction ID is empty");
+	public String getFlexi_field_2()
+	{
+		return flexi_field_2;
+	}
 
-	    if (settlement_amount == null)
-	       validation_error_list.add("Settlement amount is empty");
+	public void setFlexi_field_2(String flexi_field_2)
+	{
+		this.flexi_field_2 = flexi_field_2;
+	}
 
-	    if (settlement_currency == null)
-	       validation_error_list.add("Settlement currency is empty");
+	public String validate_transactionData_input()
+	{
+		ArrayList<String> validation_error_list = new ArrayList<String>();
+		String validation_errors = "";
 
-	    if (destination_amount != null)
-	       if (destination_currency == null)
-		  validation_error_list.add("Destination currency is empty");
+		if (request_sequence_id == null)
+			validation_error_list.add("Request sequence ID is empty");
 
-	    if (origin_country_3_digit_ISO == null)
-	       validation_error_list.add("Origin country ISO is empty");
+		if (partner_transaction_reference == null)
+			validation_error_list.add("Partner Transaction ID is empty");
 
-	    if (destination_country_3_digit_ISO == null)
-	       validation_error_list.add("Destination country ISO is empty");
+		if (settlement_amount == null)
+			validation_error_list.add("Settlement amount is empty");
 
-	    if (source_of_fund_desc == null)
-	       validation_error_list.add("Source of Fund is empty");
+		if (settlement_currency == null)
+			validation_error_list.add("Settlement currency is empty");
 
-	    if (txn_collocation_type == null)
-	       validation_error_list.add("Collection Type is empty");
+		if (destination_amount != null)
+			if (destination_currency == null)
+				validation_error_list.add("Destination currency is empty");
 
-	    if (purpose_of_remittance == null)
-	       validation_error_list.add("Purpose of Remittance is empty");
+		if (origin_country_3_digit_ISO == null)
+			validation_error_list.add("Origin country ISO is empty");
 
-	    if (delivery_mode == null)
-	       validation_error_list.add("Delivery mode is empty");
+		if (destination_country_3_digit_ISO == null)
+			validation_error_list.add("Destination country ISO is empty");
 
-	    for (int i = 0; i < validation_error_list.size(); i++)
-	       {
-		  if (i != 0)
-		     validation_errors += "\n";
+		if (source_of_fund_desc == null)
+			validation_error_list.add("Source of Fund is empty");
 
-		  validation_errors = validation_errors + (i + 1)
-				      + "- "
-				      + validation_error_list.get(i);
-	       }
+		if (txn_collocation_type == null)
+			validation_error_list.add("Collection Type is empty");
 
-	    return validation_errors;
-	 }
+		if (purpose_of_remittance == null)
+			validation_error_list.add("Purpose of Remittance is empty");
+
+		if (delivery_mode == null)
+			validation_error_list.add("Delivery mode is empty");
+
+		for (int i = 0; i < validation_error_list.size(); i++)
+		{
+			if (i != 0)
+				validation_errors += "\n";
+
+			validation_errors = validation_errors + (i + 1) + "- " + validation_error_list.get(i);
+		}
+
+		return validation_errors;
+	}
 
 }
