@@ -57,9 +57,10 @@ public class CustomerRatingService {
 	 * @return
 	 */
 	public AmxApiResponse<CustomerRating, ?> saveCustomerRating(CustomerRatingDTO dto) {
+		CustomerRating customerRating = new CustomerRating();
 		try {
 			if (dto.getProdType().equals(AmxEnums.Products.REMIT)) {
-				CustomerRating customerRating = new CustomerRating();
+				
 				BigDecimal applicationCountryId = metaData.getCountryId();
 				BigDecimal remittancetrnxId = dto.getRemittanceTransactionId();
 
@@ -107,7 +108,6 @@ public class CustomerRatingService {
 
 			} else {
 
-				CustomerRating customerRating = new CustomerRating();
 				BigDecimal applicationCountryId = metaData.getCountryId();
 				BigDecimal fxOrdertrnxId = dto.getRemittanceTransactionId();
 
@@ -168,6 +168,7 @@ public class CustomerRatingService {
 		catch (GlobalException e) {
 			throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
 		}
+		
 		return AmxApiResponse.build();
 	}
 
@@ -219,14 +220,11 @@ public class CustomerRatingService {
 
 		try {
 
-			if (AmxEnums.Products.FXORDER.toString().equals(product)) {
-
 				if (fxOrdertrnxId != null) {
 
-					BigDecimal colldocNo = receiptPaymenttRepository.findcolDocNo(fxOrdertrnxId);
-					if (colldocNo != null) {
+				
 						CustomerRating customerRatingvalue = customerRatingdao
-								.getCustomerRatingDataBydelvSeqId(colldocNo);
+								.getCustomerRatingDataBydelvSeqId(fxOrdertrnxId);
 						if (customerRatingvalue != null) {
 
 							customerRating.setRating(customerRatingvalue.getRating());
@@ -239,17 +237,15 @@ public class CustomerRatingService {
 							customerRating.setCollectionDocFyr(customerRatingvalue.getCollectionDocFyr());
 							customerRating.setFeedbackType(AmxEnums.Products.FXORDER.toString());
 							customerRating.setDelvSeqId(fxOrdertrnxId);
-							customerRating.setRemittanceApplicationId(null);
-							customerRating.setRemittanceTransactionId(null);
-
+						
 						} else {
 
 							// DO NOTHING
 
 						}
 					}
-				}
-			}
+				
+			
 
 		} catch (GlobalException e) {
 			throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
