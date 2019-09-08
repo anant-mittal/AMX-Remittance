@@ -63,10 +63,11 @@ public class SnapQueryService {
 
 	public SnapModelWrapper executeQuery(Map<String, Object> query, String index) {
 		Map<String, Object> x = null;
+		String fullIndex = EsConfig.indexName(index);
 		try {
 			x = restService.ajax(ssConfig.getClusterUrl())
 					.header(ssConfig.getBasicAuthHeader()).path(
-							EsConfig.indexName(index) + "/_search")
+							fullIndex + "/_search")
 					.post(query)
 					.asMap();
 		} catch (Exception e) {
@@ -76,6 +77,8 @@ public class SnapQueryService {
 			x = new HashMap<String, Object>();
 		}
 		x.put("_query", query);
+		x.put("_index", index);
+		x.put("__index", fullIndex);
 		// System.out.println(JsonUtil.toJson(query));
 		return new SnapModelWrapper(x);
 	}

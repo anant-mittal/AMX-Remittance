@@ -243,7 +243,7 @@ public class HomeController {
 		contactType = contactType.contactType();
 		try {
 			if (!ArgUtil.isEmpty(resend)) {
-				customerProfileClient.createVerificationLink(null, contactType, identity);
+				customerProfileClient.resendLink(identity, verId, verCode);
 			} else if (identity == null) {
 				customerProfileClient.validateVerificationLink(verId).getResult();
 			} else {
