@@ -51,7 +51,7 @@ public class RemitRoutingManager {
 
 	private static final BigDecimal DEF_DELIVERY_HRS = new BigDecimal(5 * 24);
 
-	private static final BigDecimal FROM_AMT_FRACTION = new BigDecimal(0.00000001);
+	//private static final BigDecimal FROM_AMT_FRACTION = new BigDecimal(0.00000001);
 
 	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd-MMM hh:mm a");
 

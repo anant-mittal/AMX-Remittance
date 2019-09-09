@@ -34,6 +34,7 @@ import com.amx.jax.pricer.dao.MarginMarkupDao;
 import com.amx.jax.pricer.dao.PipsMasterDao;
 import com.amx.jax.pricer.dao.RoutingDaoAlt;
 import com.amx.jax.pricer.dao.ViewExGLCBALDao;
+import com.amx.jax.pricer.dao.VwExGLCBalProvDao;
 import com.amx.jax.pricer.dbmodel.BankApplicability;
 import com.amx.jax.pricer.dbmodel.BankIndicator;
 import com.amx.jax.pricer.dbmodel.BankMasterModel;
@@ -45,6 +46,7 @@ import com.amx.jax.pricer.dbmodel.OnlineMarginMarkup;
 import com.amx.jax.pricer.dbmodel.PipsMaster;
 import com.amx.jax.pricer.dbmodel.RoutingHeader;
 import com.amx.jax.pricer.dbmodel.ViewExGLCBAL;
+import com.amx.jax.pricer.dbmodel.ViewExGLCBalProvisional;
 import com.amx.jax.pricer.dto.BankDetailsDTO;
 import com.amx.jax.pricer.dto.ExchangeRateBreakup;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
@@ -72,6 +74,9 @@ public class RemitPriceManager {
 
 	@Autowired
 	ViewExGLCBALDao viewExGLCBALDao;
+
+	@Autowired
+	VwExGLCBalProvDao viewExGlcBalProvDao;
 
 	@Autowired
 	MarginMarkupDao marginMarkupDao;
@@ -439,7 +444,11 @@ public class RemitPriceManager {
 
 		String curCode = curMaster.getCurrencyCode();
 
+		// Get GLCBAL Data
 		List<ViewExGLCBAL> glcbalRatesForBanks = viewExGLCBALDao.getGLCBALforCurrencyAndBank(curCode, routingBankIds);
+
+		List<ViewExGLCBalProvisional> glcBalProvForBanks = viewExGlcBalProvDao.getByCurrencyCodeAndBankIdIn(curCode,
+				routingBankIds);
 
 		if (glcbalRatesForBanks == null || glcbalRatesForBanks.isEmpty()) {
 			throw new PricerServiceException(PricerServiceError.MISSING_GLCBAL_ENTRIES,
