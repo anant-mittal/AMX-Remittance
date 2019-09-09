@@ -292,6 +292,8 @@ public class CustomerContactVerificationManager {
 			throw e;
 		}
 
+		auditService.log(audit.result(Result.DONE));
+
 		return link;
 	}
 
