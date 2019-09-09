@@ -206,11 +206,7 @@ public class CustRegController implements ICustRegService {
 		else {
 			response=customerManagementService.getCustomerDetail(identityInt, identityType);
 		}
-		
-
 		return response;
-		
-
 	}
 	
 	@RequestMapping(value = CustRegApiEndPoints.GET_OFFSITE_CUSTOMER_DATA_V1, method = RequestMethod.GET)

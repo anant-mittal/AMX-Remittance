@@ -37,7 +37,13 @@ public class CustomerEmployementManager {
 		// --- Customer Employment Data
 		CustomerEmploymentDetails employmentDetails = new CustomerEmploymentDetails();
 		EmployeeDetails employmentData = customerEmployeeDetailsRepository.getCustomerEmploymentData(customer);
-		String articleDesc=articleDao.getArticleDesc(customer);
+		String articleDesc=null;
+		
+		if(null != customer.getFsArticleDetails())
+		{
+			if(null != customer.getFsArticleDetails().getArticleDetailId())
+			articleDesc=articleDao.getArticleDesc(customer);
+		}
 		
 		CustomerCoreDetailsView customercoreView = customerCoreDetailsRepositroy.findByCustomerID(customer.getCustomerId());
 		if (employmentData != null) {

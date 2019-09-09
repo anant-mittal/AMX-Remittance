@@ -130,15 +130,8 @@ public class CustomerManagementManager {
 			offsiteCustomer.setCustomerEmploymentDetails(customerEmployementManager.createCustomerEmploymentDetail(customer));
 			offsiteCustomer.setCustomerDocuments(customerDocumentManager.getCustomerUploadDocuments(customer.getCustomerId()));
 			offsiteCustomer.setLastLoginDetails(createLastLoginDetails(customer));
-			CustomerInsurance custInsurance=customerInsuranceRepo.findByCustomerIdAndIsActive(customer.getCustomerId(),ConstantDocument.Yes);
-			if(custInsurance !=null)
-			{
-				PolicyDetails policyDetails= new PolicyDetails();
-				policyDetails.setEntryDate(custInsurance.getEntryDate());
-				policyDetails.setExpiryDate(custInsurance.getExpiryDate());
-				offsiteCustomer.setPolicyDetails(policyDetails);
-			}
-			
+			offsiteCustomer.setPolicyDetails(createPolicyDetails(customer));
+
 		} else {
 			jaxError = JaxError.CUSTOMER_NOT_FOUND;
 		}
@@ -316,12 +309,26 @@ public class CustomerManagementManager {
 
 	private LastLoginDetails createLastLoginDetails(Customer customer) {
 		LoginLogoutHistory history = userService.getLoginLogoutHistoryByUserName(customer.getIdentityInt());
-
 		LastLoginDetails lastLoginDetails = new LastLoginDetails();
-		lastLoginDetails.setLoginTime(history.getLoginTime());
-		lastLoginDetails.setLogoutTime(history.getLogoutTime());
+
+		if(history!=null) {
+			lastLoginDetails.setLoginTime(history.getLoginTime());
+			lastLoginDetails.setLogoutTime(history.getLogoutTime());
+		}
 		
 		return lastLoginDetails;
+	}
+	private PolicyDetails createPolicyDetails(Customer customer)
+	{
+		CustomerInsurance custInsurance=customerInsuranceRepo.findByCustomerIdAndIsActive(customer.getCustomerId(),ConstantDocument.Yes);
+		PolicyDetails policyDetails= new PolicyDetails();
+
+		if(custInsurance !=null)
+		{
+			policyDetails.setEntryDate(custInsurance.getEntryDate());
+			policyDetails.setExpiryDate(custInsurance.getExpiryDate());
+		}
+		return policyDetails;
 	}
 
 }
