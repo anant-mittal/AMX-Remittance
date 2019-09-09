@@ -110,6 +110,7 @@ import com.amx.jax.repository.BankMasterRepository;
 import com.amx.jax.repository.IAmiecAndBankMappingRepository;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.ICurrencyDao;
+import com.amx.jax.repository.RemittanceApplicationBeneRepository;
 import com.amx.jax.repository.VTransferRepository;
 import com.amx.jax.repository.remittance.IOWSScheduleModelRepository;
 import com.amx.jax.repository.remittance.IServiceProviderCredentailsRepository;
@@ -278,6 +279,9 @@ public class RemittanceTransactionManager {
 	
 	@Autowired
 	BankMasterRepository bankMasterRepo;
+	
+	@Autowired
+	RemittanceApplicationBeneRepository remittanceApplicationBeneRepository;
 
 
 	private static final String IOS = "IOS";
@@ -1288,7 +1292,12 @@ public class RemittanceTransactionManager {
 				.getRemittanceTransaction(request.getApplicationDocumentNumber(), request.getDocumentFinancialYear());
 		RemittanceApplication application = remitAppDao.getApplication(request.getApplicationDocumentNumber(),
 				request.getDocumentFinancialYear());
+		RemittanceAppBenificiary remittanceBenificiary = remittanceApplicationBeneRepository.findByExRemittanceAppfromBenfi(application);
 		remittanceApplicationService.checkForSuspiciousPaymentAttempts(application.getRemittanceApplicationId());
+		if(ConstantDocument.WIRE_TRANSFER_PAYMENT.equalsIgnoreCase(application.getPaymentType())) {
+			model.setBeneName(remittanceBenificiary.getBeneficiaryName());
+		}
+		
 		if (remittanceTransaction != null) {
 			BigDecimal cutomerReference = remittanceTransaction.getCustomerId().getCustomerId();
 			BigDecimal remittancedocfyr = remittanceTransaction.getDocumentFinanceYear();
@@ -1350,6 +1359,10 @@ public class RemittanceTransactionManager {
 			status = JaxTransactionStatus.PAYMENT_IN_PROCESS;
 		}
 		String resultCode = remittanceApplication.getResultCode();
+		if (ConstantDocument.WIRE_TRANSFER_PAYMENT.equalsIgnoreCase(remittanceApplication.getPaymentType())){
+			status = JaxTransactionStatus.NEW_APPLICATION_SUCCESS;
+			return status;
+		}
 		if ("CAPTURED".equalsIgnoreCase(resultCode)) {
 			if ("S".equals(applicationStatus) || "T".equals(applicationStatus)) {
 				status = JaxTransactionStatus.PAYMENT_SUCCESS_APPLICATION_SUCCESS;
@@ -1363,6 +1376,8 @@ public class RemittanceTransactionManager {
 		if ("CANCELED".equalsIgnoreCase(resultCode) || "CANCELLED".equalsIgnoreCase(resultCode)) {
 			status = JaxTransactionStatus.PAYMENT_CANCELED_BY_USER;
 		}
+		
+
 
 		return status;
 	}
