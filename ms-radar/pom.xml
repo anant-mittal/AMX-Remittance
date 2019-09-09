@@ -159,6 +159,12 @@
 			<version>8.10.5</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.mozilla</groupId>
+			<artifactId>rhino</artifactId>
+			<version>1.7.11</version>
+		</dependency>
+
 	</dependencies>
 
 
