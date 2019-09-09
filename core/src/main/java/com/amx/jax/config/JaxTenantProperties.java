@@ -52,6 +52,9 @@ public class JaxTenantProperties {
 	
 	@TenantValue("${jax.max.captcha.count}")
 	private Integer maxCaptchaCount;
+	
+	@TenantValue("${support.app.email}")
+	private String appSupportEmail;
 
 	public Boolean getCashDisable() {
 		return cashDisable;
@@ -131,6 +134,14 @@ public class JaxTenantProperties {
 
 	public void setMaxCaptchaCount(Integer maxCaptchaCount) {
 		this.maxCaptchaCount = maxCaptchaCount;
+	}
+
+	public String getAppSupportEmail() {
+		return appSupportEmail;
+	}
+
+	public void setAppSupportEmail(String appSupportEmail) {
+		this.appSupportEmail = appSupportEmail;
 	}
 
 
