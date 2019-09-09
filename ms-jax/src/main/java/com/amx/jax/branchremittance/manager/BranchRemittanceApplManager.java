@@ -589,11 +589,8 @@ public class BranchRemittanceApplManager {
 				throw new GlobalException(JaxError.INVALID_APPLICATION_DOCUMENT_NO,"Application document number shouldnot be null or blank");
 			}			
 
-			if(dynamicRoutingPricingResponse.getTrnxRoutingPaths()!= null 
-			&& dynamicRoutingPricingResponse.getTrnxRoutingPaths().getRemittanceDescription().equalsIgnoreCase(ConstantDocument.IMPS) 
-			&& remittanceApplication.getForeignTranxAmount().compareTo(dynamicRoutingPricingResponse.getTrnxRoutingPaths().getSplitAmount())>0) {
-				applSplitList = createChildApplication(remittanceApplication, dynamicRoutingPricingResponse);
-			}
+	
+			applSplitList = createChildApplication(remittanceApplication, dynamicRoutingPricingResponse);
 			
 			if(!applSplitList.isEmpty()) {
 				remittanceApplication.setApplSplit(ConstantDocument.Yes);
@@ -1061,9 +1058,10 @@ public class BranchRemittanceApplManager {
 		 if(remitAppl !=null && dyRandPriDto!=null) {
 			 TrnxRoutingDetails routingDetails = dyRandPriDto.getTrnxRoutingPaths(); 
 
-			 if(routingDetails!= null && routingDetails.getRemittanceDescription().equalsIgnoreCase(ConstantDocument.IMPS) && JaxUtil.isNullZeroBigDecimalCheck(remitAppl.getForeignTranxAmount())  && remitAppl.getForeignTranxAmount().compareTo(routingDetails.getSplitAmount())>0) {
-			 
-			//if(JaxUtil.isNullZeroBigDecimalCheck(remitAppl.getForeignTranxAmount()) && routingDetails!=null && JaxUtil.isNullZeroBigDecimalCheck(routingDetails.getSplitAmount())){
+			 if(routingDetails!= null && routingDetails.getRemittanceDescription().equalsIgnoreCase(ConstantDocument.IMPS) 
+					 && JaxUtil.isNullZeroBigDecimalCheck(remitAppl.getForeignTranxAmount()) 
+					 && JaxUtil.isNullZeroBigDecimalCheck(routingDetails.getSplitAmount())
+					 && remitAppl.getForeignTranxAmount().compareTo(routingDetails.getSplitAmount())>0) {
 				BigDecimal[] splitCount = remitAppl.getForeignTranxAmount().divideAndRemainder(routingDetails.getSplitAmount());
 				BigDecimal count = new BigDecimal(0);
 				Map<BigDecimal,BigDecimal> mapSplitAmount = new HashMap<>();
@@ -1103,7 +1101,6 @@ public class BranchRemittanceApplManager {
 					 applSplitList.add(applSplit);
 				 }
 			}
-	//}
 	}
 		 
 	 }catch(Exception e) {
