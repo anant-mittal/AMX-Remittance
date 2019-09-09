@@ -12,16 +12,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.customer.service.JaxCustomerContactVerificationService;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerContactVerification;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.meta.MetaData;
-import com.amx.jax.model.customer.document.CustomerDocCatTypeDto;
 import com.amx.jax.model.request.UpdateCustomerPersonalDetailRequest;
 import com.amx.jax.model.request.VerifyCustomerContactRequest;
 import com.amx.jax.scope.TenantContext;
 import com.amx.jax.services.JaxDBService;
-import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.service.CustomerValidationContext.CustomerValidation;
 import com.amx.jax.userservice.service.UserService;
@@ -43,7 +42,7 @@ public class CustomerPersonalDetailManager {
 	@Autowired
 	CustomerContactVerificationManager customerContactVerificationManager;
 	@Autowired
-	JaxNotificationService jaxNotificationService;
+	JaxCustomerContactVerificationService jaxCustomerContactVerificationService;
 	@Autowired
 	MetaData metaData;
 	@Autowired
@@ -89,7 +88,7 @@ public class CustomerPersonalDetailManager {
 			customer.setWhatsAppVerified(Status.N);
 			cvs.add(customerContactVerificationManager.create(customer, ContactType.WHATSAPP));
 		}
-		jaxNotificationService.sendCustomerVerificationNotification(cvs, customer);
+		cvs.forEach(x -> jaxCustomerContactVerificationService.sendVerificationLink(customer, x));
 		customer.setUpdatedBy(jaxDbService.getCreatedOrUpdatedBy());
 		customerDao.saveCustomer(customer);
 	}

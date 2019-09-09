@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.customer.ICustomerProfileService;
 import com.amx.jax.customer.manager.CustomerContactVerificationManager;
+import com.amx.jax.customer.service.JaxCustomerContactVerificationService;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerContactVerification;
 import com.amx.jax.dict.ContactType;
@@ -40,7 +41,7 @@ public class CustProfileController implements ICustomerProfileService {
 	CustomerRepository customerRepository;
 
 	@Autowired
-	private PostManService postManService;
+	JaxCustomerContactVerificationService jaxCustomerContactVerificationService;
 
 	@Override
 	@RequestMapping(value = ApiPath.CONTACT_LINK_CREATE, method = RequestMethod.POST)
@@ -60,33 +61,14 @@ public class CustProfileController implements ICustomerProfileService {
 		}
 
 		CustomerContactVerification x = customerContactVerificationManager.create(c, contactType);
-
-		if (ContactType.EMAIL.equals(contactType)) {
-			Email email = new Email();
-			email.addTo(c.getEmail());
-			email.setITemplate(TemplatesMX.CONTACT_VERIFICATION_EMAIL);
-			email.getModel().put("customer", EntityDtoUtil.entityToDto(c, new CustomerDto()));
-			email.getModel().put("link", x);
-			postManService.sendEmailAsync(email);
-		} else if (ContactType.SMS.equals(contactType)) {
-			SMS sms = new SMS();
-			sms.addTo(c.getMobile());
-			sms.setITemplate(TemplatesMX.CONTACT_VERIFICATION_SMS);
-
-			sms.getModel().put("customer", EntityDtoUtil.entityToDto(c, new CustomerDto()));
-			sms.getModel().put("link", x);
-			postManService.sendSMSAsync(sms);
-		} else if (ContactType.WHATSAPP.equals(contactType)) {
-
-		}
+		jaxCustomerContactVerificationService.sendVerificationLink(c, x);
 
 		return AmxApiResponse.build(customerContactVerificationManager.convertToDto(x));
 	}
 
 	@Override
 	@RequestMapping(value = ApiPath.CONTACT_LINK_VALIDATE, method = RequestMethod.POST)
-	public AmxApiResponse<CustomerContactVerificationDto, Object> validateVerificationLink(
-			@RequestParam(value = ApiParams.LINK_ID) BigDecimal id) {
+	public AmxApiResponse<CustomerContactVerificationDto, Object> validateVerificationLink(@RequestParam(value = ApiParams.LINK_ID) BigDecimal id) {
 		CustomerContactVerification x = customerContactVerificationManager.getCustomerContactVerification(id);
 		x = customerContactVerificationManager.validate(x);
 		return AmxApiResponse.build(customerContactVerificationManager.convertToDto(x));
@@ -94,20 +76,16 @@ public class CustProfileController implements ICustomerProfileService {
 
 	@Override
 	@RequestMapping(value = ApiPath.CONTACT_LINK_VERIFY_BY_CODE, method = RequestMethod.POST)
-	public AmxApiResponse<CustomerContactVerificationDto, Object> verifyLinkByCode(
-			@RequestParam(value = ApiParams.IDENTITY) String identity,
-			@RequestParam(value = ApiParams.LINK_ID) BigDecimal linkId,
-			@RequestParam(value = ApiParams.VERIFICATION_CODE) String code) {
+	public AmxApiResponse<CustomerContactVerificationDto, Object> verifyLinkByCode(@RequestParam(value = ApiParams.IDENTITY) String identity,
+			@RequestParam(value = ApiParams.LINK_ID) BigDecimal linkId, @RequestParam(value = ApiParams.VERIFICATION_CODE) String code) {
 		CustomerContactVerification x = customerContactVerificationManager.verifyByCode(identity, linkId, code);
 		return AmxApiResponse.build(customerContactVerificationManager.convertToDto(x));
 	}
 
 	@Override
 	@RequestMapping(value = ApiPath.CONTACT_LINK_VERIFY_BY_CONTACT, method = RequestMethod.POST)
-	public AmxApiResponse<CustomerContactVerificationDto, Object> verifyLinkByContact(
-			@RequestParam(value = ApiParams.IDENTITY) String identity,
-			@RequestParam(value = ApiParams.CONTACT_TYPE) ContactType type,
-			@RequestParam(value = ApiParams.CONTACT) String contact) {
+	public AmxApiResponse<CustomerContactVerificationDto, Object> verifyLinkByContact(@RequestParam(value = ApiParams.IDENTITY) String identity,
+			@RequestParam(value = ApiParams.CONTACT_TYPE) ContactType type, @RequestParam(value = ApiParams.CONTACT) String contact) {
 		CustomerContactVerification x = customerContactVerificationManager.verifyByContact(identity, type, contact);
 		return AmxApiResponse.build(customerContactVerificationManager.convertToDto(x));
 	}
