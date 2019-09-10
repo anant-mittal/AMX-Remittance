@@ -41,7 +41,7 @@ import com.amx.utils.ArgUtil;
 @Service
 //@ConditionalOnExpression(TestSizeApp.ENABLE_JOBS)
 //@ConditionalOnProperty({ "jax.jobs.scrapper.rate", "elasticsearch.enabled" })
-@ConditionalOnExpression(RadarConfig.CE_RATE_SCRAPPER_AND_ES_AND_KWT)
+@ConditionalOnExpression(RadarConfig.CE_RATE_SCRAPPER_AND_ES_AND_ANY_TNT)
 public class AMXRatesJob extends ARadarTask {
 
 	@Autowired
