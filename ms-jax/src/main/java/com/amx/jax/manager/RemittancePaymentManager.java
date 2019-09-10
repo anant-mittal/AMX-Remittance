@@ -64,6 +64,7 @@ import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.RoundUtil;
+import com.amx.utils.JsonUtil;
 
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -136,7 +137,7 @@ public class RemittancePaymentManager extends AbstractService{
 	
 	public ApiResponse<PaymentResponseDto> paymentCapture(PaymentResponseDto paymentResponse) {
 		ApiResponse response = null;
-		logger.info("paymment capture :"+paymentResponse.toString());
+		logger.debug("paymment capture :{}", JsonUtil.toJson(paymentResponse));
 		List<ShoppingCartDetails>  shoppingCartList = new ArrayList<>();
 		UserFinancialYear userFinancialYear = finanacialService.getUserFinancialYear();
 		List<RemittanceApplication> lstPayIdDetails =null;
