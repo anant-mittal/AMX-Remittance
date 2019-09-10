@@ -623,7 +623,8 @@ public class RemittanceTransactionManager {
 		logger.info("amount in ex:" +exRatebreakUp.getNetAmount());
 		exRatebreakUp.setNetAmountWithoutLoyality(RoundUtil.roundBigDecimal(exRatebreakUp.getNetAmountWithoutLoyality(),
 				exRatebreakUp.getLcDecimalNumber().intValue()));
-		exRatebreakUp.setInverseRate((RoundUtil.roundBigDecimal(exRatebreakUp.getInverseRate(), 6)));
+		//exRatebreakUp.setInverseRate((RoundUtil.roundBigDecimal(exRatebreakUp.getInverseRate(), 6)));
+		exRatebreakUp.setInverseRate(exRatebreakUp.getInverseRate());
 	}
 
 	public ExchangeRateBreakup applyChannelAmountRouding(ExchangeRateBreakup exchangeRateBreakup,
