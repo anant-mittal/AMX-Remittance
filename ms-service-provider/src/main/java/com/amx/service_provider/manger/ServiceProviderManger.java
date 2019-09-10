@@ -2,7 +2,6 @@ package com.amx.service_provider.manger;
 
 import java.util.HashMap;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -18,7 +17,6 @@ import com.amx.service_provider.api_gates.common.Common_API_Utils;
 import com.amx.service_provider.api_gates.homesend.HomesendGate;
 import com.amx.service_provider.api_gates.vintaja.VintajaGate;
 import com.amx.service_provider.dbmodel.webservice.ExOwsLoginCredentials;
-import com.amx.service_provider.homesend.HomesendGate;
 import com.amx.service_provider.repository.webservice.ExOwsLoginCredentialsRepository;
 import com.amx.service_provider.repository.webservice.OwsParamRespcodeRepository;
 import com.amx.service_provider.repository.webservice.OwsTransferLogRepository;

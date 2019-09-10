@@ -35,11 +35,11 @@ public class VintajaGate
 		// TODO: Remove after testing
 
 		System.setProperty("javax.net.ssl.trustStore",
-				"D:\\Exchange\\OWS\\Projects\\Vintaja\\App\\SSL\\truststore.jks");
+				"D:\\certificateSetup\\truststore.jks");
 		System.setProperty("javax.net.ssl.trustStorePassword", "changeit"); // changeit
 
 		System.setProperty("javax.net.ssl.keyStore",
-				"D:\\Exchange\\OWS\\Projects\\Vintaja\\App\\SSL\\131011900001.jks");
+				"D:\\certificateSetup\\131011900001.jks");
 		System.setProperty("javax.net.ssl.keyStorePassword", "1234567890");
 	}
 

@@ -1,4 +1,4 @@
-package com.amx.service_provider.homesend;
+package com.amx.service_provider.api_gates.homesend;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -7,11 +7,6 @@ import java.util.ResourceBundle;
 
 import org.apache.axis.types.UnsignedInt;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
-import org.springframework.stereotype.Component;
-import org.springframework.web.context.WebApplicationContext;
 
 import com.amg.vcHomeSend.ows.AdviceOfChargeRequest;
 import com.amg.vcHomeSend.ows.AdviceOfChargeResponse;
@@ -34,6 +29,7 @@ import com.amx.jax.model.request.serviceprovider.TransactionData;
 import com.amx.jax.model.response.serviceprovider.Quotation_Call_Response;
 import com.amx.jax.model.response.serviceprovider.Remittance_Call_Response;
 import com.amx.jax.model.response.serviceprovider.Status_Call_Response;
+import com.amx.service_provider.api_gates.common.Common_API_Utils;
 import com.amx.service_provider.dbmodel.webservice.OwsParamRespcode;
 import com.amx.service_provider.dbmodel.webservice.OwsParamRespcodeKey;
 import com.amx.service_provider.repository.webservice.OwsParamRespcodeRepository;
@@ -756,14 +752,12 @@ public class HomesendGate
 
 					if (response.getStatus().getComplete() != null)
 					{
-						local_api_response.setHigh_level_response("Completed");
 						local_api_response.setResponse_code("Completed");
 						local_api_response.setResponse_description("Remittance Completed");
 						local_api_response.setAction_ind("P"); // Paid
 					}
 					else if (response.getStatus().getPending() != null)
 					{
-						local_api_response.setHigh_level_response("Pending");
 						local_api_response.setResponse_code(response.getStatus().getPending().getState());
 						local_api_response.setResponse_description(response.getStatus().getPending().getLabel());
 						local_api_response.setAction_ind("I"); // InProcess
@@ -777,7 +771,6 @@ public class HomesendGate
 										SERVICE_PROVIDER, response.getStatus().getRejected().getCode(),
 										REMITTANCE_STATUS_INQ_IND));
 
-						local_api_response.setHigh_level_response("Rejected");
 						local_api_response.setResponse_code(response.getStatus().getRejected().getCode());
 						local_api_response.setResponse_description(response.getStatus().getRejected().getMessage());
 						local_api_response.setAction_ind(

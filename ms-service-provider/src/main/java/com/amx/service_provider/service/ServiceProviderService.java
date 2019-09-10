@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.amx.jax.model.request.serviceprovider.ServiceProviderCallRequestDto;
-import com.amx.jax.model.response.serviceprovider.Quotation_Call_Response;
 import com.amx.jax.model.response.serviceprovider.ServiceProviderResponse;
 import com.amx.service_provider.manger.ServiceProviderManger;
 
@@ -14,7 +13,7 @@ public class ServiceProviderService
 	@Autowired
 	ServiceProviderManger serviceProviderGateWayManger;
 
-	public Quotation_Call_Response getQutation(ServiceProviderCallRequestDto quatationRequestDto)
+	public ServiceProviderResponse getQutation(ServiceProviderCallRequestDto quatationRequestDto)
 	{
 		return serviceProviderGateWayManger.getQutation(quatationRequestDto);
 	}
