@@ -2,20 +2,13 @@ package com.amx.test;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.List;
 import java.util.regex.Pattern;
 
-import org.mozilla.javascript.Scriptable;
 import org.slf4j.Logger;
 
-import com.amx.jax.client.snap.SnapModels.AggregationField;
-import com.amx.jax.client.snap.SnapModels.Aggregations;
 import com.amx.jax.client.snap.SnapModels.SnapModelWrapper;
 import com.amx.jax.logger.LoggerService;
 import com.amx.utils.FileUtil;
-import com.amx.utils.JsonUtil;
-
-import net.minidev.json.JSONUtil;
 
 public class EsToCSVTest { // Noncompliant
 
@@ -54,33 +47,33 @@ public class EsToCSVTest { // Noncompliant
 	}
 
 	private static void runScript(String javaScriptCode, String functionNameInJavaScriptCode, Object[] params) {
-		org.mozilla.javascript.Context rhino = org.mozilla.javascript.Context.enter();
-		rhino.setOptimizationLevel(-1);
-		try {
-			Scriptable scope = rhino.initStandardObjects();
-
-			rhino.evaluateString(scope, javaScriptCode, "JavaScript", 1, null);
-
-			// Get the functionName defined in JavaScriptCode
-			Object obj = scope.get(functionNameInJavaScriptCode, scope);
-
-			if (obj instanceof org.mozilla.javascript.Function) {
-				org.mozilla.javascript.Function jsFunc = (org.mozilla.javascript.Function) obj;
-
-				// Call the function with params
-				Object jsResult = jsFunc.call(rhino, scope, scope, params);
-				System.out.println(JsonUtil.toJson(jsResult));
-				// Parse the jsResult object to a String
-				String result = org.mozilla.javascript.Context.toString(jsResult);
-				System.out.println(result);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		finally {
-			org.mozilla.javascript.Context.exit();
-		}
+//		org.mozilla.javascript.Context rhino = org.mozilla.javascript.Context.enter();
+//		rhino.setOptimizationLevel(-1);
+//		try {
+//			Scriptable scope = rhino.initStandardObjects();
+//
+//			rhino.evaluateString(scope, javaScriptCode, "JavaScript", 1, null);
+//
+//			// Get the functionName defined in JavaScriptCode
+//			Object obj = scope.get(functionNameInJavaScriptCode, scope);
+//
+//			if (obj instanceof org.mozilla.javascript.Function) {
+//				org.mozilla.javascript.Function jsFunc = (org.mozilla.javascript.Function) obj;
+//
+//				// Call the function with params
+//				Object jsResult = jsFunc.call(rhino, scope, scope, params);
+//				System.out.println(JsonUtil.toJson(jsResult));
+//				// Parse the jsResult object to a String
+//				String result = org.mozilla.javascript.Context.toString(jsResult);
+//				System.out.println(result);
+//			}
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//
+//		finally {
+//			org.mozilla.javascript.Context.exit();
+//		}
 
 	}
 
