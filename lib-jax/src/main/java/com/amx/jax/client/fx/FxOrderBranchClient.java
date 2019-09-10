@@ -1,6 +1,7 @@
 package com.amx.jax.client.fx;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -293,7 +294,7 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 			return restService.ajax(appConfig.getJaxURL() + Path.FC_REPRINT_ORDER).meta(new JaxMetaInfo())
 					.queryParam(Params.FX_ORDER_NUMBER, orderNumber).meta(new JaxMetaInfo())
 					.queryParam(Params.FX_ORDER_YEAR, orderYear)
-					.get()
+					.post()
 					.as(new ParameterizedTypeReference<AmxApiResponse<FxOrderReportResponseDto,Object>>() {
 					});
 		} catch (Exception e) {
@@ -314,6 +315,22 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 			LOGGER.error("exception in SearchOrder : ", e);
 			return JaxSystemError.evaluate(e);
 		}
+	}
+
+	@Override
+	public AmxApiResponse<FcSaleOrderManagementDTO, Object> searchOrderByDates(Date fromDate, Date toDate) {
+		try {
+			LOGGER.debug("in fetchBranchOrderManagement :");
+			return restService.ajax(appConfig.getJaxURL() + Path.FC_SEARCH_ORDER_BY_DATES).meta(new JaxMetaInfo())
+					.queryParam(Params.FX_ORDER_FROM_DATE, fromDate).meta(new JaxMetaInfo())
+					.queryParam(Params.FX_ORDER_TO_DATE, toDate)
+					.get()
+					.as(new ParameterizedTypeReference<AmxApiResponse<FcSaleOrderManagementDTO, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in fetchBranchOrderManagement : ", e);
+			return JaxSystemError.evaluate(e);
+		} // end of try-catch
 	}
 
 }
