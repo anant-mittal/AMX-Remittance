@@ -113,6 +113,8 @@ public class RemittanceController {
 	public ApiResponse getRemittanceDetailForReport(@RequestBody String jsonTransactionHistroyDTO,
 			@RequestParam("promotion") Boolean promotion) {
 		logger.info("getRemittanceDetailForReport Trnx Report:");
+		logger.debug("Json tras history is "+jsonTransactionHistroyDTO);
+		logger.debug("promotion value is "+promotion);
 		TransactionHistroyDTO transactionHistroyDTO = (TransactionHistroyDTO) converterUtil
 				.unmarshall(jsonTransactionHistroyDTO, TransactionHistroyDTO.class);
 		logger.info("Colle Doc No :" + transactionHistroyDTO.getCollectionDocumentNo());
@@ -183,6 +185,7 @@ public class RemittanceController {
 	public ApiResponse saveRemittance(@RequestBody PaymentResponseDto paymentResponse) {
 		JaxContextUtil.setJaxEvent(JaxEvent.CREATE_REMITTANCE);
 		JaxContextUtil.setRequestModel(paymentResponse);
+		logger.debug("Payment respone is "+paymentResponse.toString());
 		logger.info("save-Remittance Controller :" + paymentResponse.getCustomerId() + "\t country ID :"
 				+ paymentResponse.getApplicationCountryId() + "\t Compa Id:" + paymentResponse.getCompanyId());
 
