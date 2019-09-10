@@ -172,28 +172,28 @@ public class CustomerContactVerification implements java.io.Serializable {
 		this.sendDate = sendDate;
 	}
 
-	BigDecimal sendById;
-
-	@Column(name = "SEND_BY_ID")
-	public BigDecimal getSendById() {
-		return this.sendById;
-	}
-
-	public void setSendById(BigDecimal sendById) {
-		this.sendById = sendById;
-	}
-
-	ActorType sendByType;
-
-	@Column(name = "Send_BY_TYPE", length = 1)
-	@Enumerated(value = EnumType.STRING)
-	public ActorType getSendByType() {
-		return sendByType;
-	}
-
-	public void setSendByType(ActorType sendByType) {
-		this.sendByType = sendByType;
-	}
+//	BigDecimal sendById;
+//
+//	@Column(name = "SEND_BY_ID")
+//	public BigDecimal getSendById() {
+//		return this.sendById;
+//	}
+//
+//	public void setSendById(BigDecimal sendById) {
+//		this.sendById = sendById;
+//	}
+//
+//	ActorType sendByType;
+//
+//	@Column(name = "Send_BY_TYPE", length = 1)
+//	@Enumerated(value = EnumType.STRING)
+//	public ActorType getSendByType() {
+//		return sendByType;
+//	}
+//
+//	public void setSendByType(ActorType sendByType) {
+//		this.sendByType = sendByType;
+//	}
 
 	Date verifiedDate;
 

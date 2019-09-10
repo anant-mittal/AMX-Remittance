@@ -96,7 +96,18 @@ public class RemittanceApplicationAdditionalDataManager {
 			}
 		});
 
+		/** For BPI gift Package **/
+		if(remittanceTransactionRequestModel!=null && remittanceTransactionRequestModel.getServicePackage()!=null) {
+			FlexFieldDto dto = remittanceTransactionRequestModel.getServicePackage();
+			AdditionalInstructionData additionalInsDataTmp = createAdditionalIndicatorsData(remittanceApplication,applicationCountryId, dto.getIndic(), dto.getAmieceCode() ,dto.getAmieceDescription(),dto.getAdditionalBankRuleFiledId());
+			lstAddInstrData.add(additionalInsDataTmp);
+		}
+		
+		
+		
 		logger.info(" Exit from saveAdditionalInstnData ");
+		
+		
 
 		return lstAddInstrData;
 	}
@@ -126,6 +137,16 @@ public class RemittanceApplicationAdditionalDataManager {
 			}
 		});
 
+		
+		/** For BPI gift Package **/
+		if(remittanceTransactionRequestModel!=null && remittanceTransactionRequestModel.getServicePackage()!=null) {
+			FlexFieldDto dto = remittanceTransactionRequestModel.getServicePackage();
+			AdditionalInstructionData additionalInsDataTmp = createAdditionalIndicatorsData(remittanceApplication,applicationCountryId, dto.getIndic(), dto.getAmieceCode() ,dto.getAmieceDescription(),dto.getAdditionalBankRuleFiledId());
+			lstAddInstrData.add(additionalInsDataTmp);
+		}
+		
+		
+		
 		logger.info(" Exit from saveAdditionalInstnData ");
 
 		return lstAddInstrData;
@@ -242,6 +263,15 @@ public class RemittanceApplicationAdditionalDataManager {
 
 		logger.info(" Exit from saveAdditionalInstnData ");
 
+		
+		/** For BPI gift Package **/
+		if(remittanceTransactionRequestModel!=null && remittanceTransactionRequestModel.getServicePackage()!=null) {
+			FlexFieldDto dto = remittanceTransactionRequestModel.getServicePackage();
+			AdditionalInstructionData additionalInsDataTmp = createAdditionalIndicatorsData(remittanceApplication,applicationCountryId, dto.getIndic(), dto.getAmieceCode() ,dto.getAmieceDescription(),dto.getAdditionalBankRuleFiledId());
+			lstAddInstrData.add(additionalInsDataTmp);
+		}
+		
+		
 		return lstAddInstrData;
 	}
 	
@@ -277,4 +307,6 @@ public class RemittanceApplicationAdditionalDataManager {
 		}
 
 	}
+	
+	
 }

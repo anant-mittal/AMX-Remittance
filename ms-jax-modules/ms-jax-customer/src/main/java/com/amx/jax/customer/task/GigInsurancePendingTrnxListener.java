@@ -18,7 +18,9 @@ import com.amx.jax.dict.Language;
 import com.amx.jax.event.AmxTunnelEvents;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
+import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.model.Email;
+import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.tunnel.DBEvent;
@@ -42,6 +44,10 @@ public class GigInsurancePendingTrnxListener implements ITunnelSubscriber<DBEven
 
 	@Autowired
 	CustomerFlagManager customerFlagManager;
+	
+	@Autowired
+	PushNotifyClient pushNotifyClient;
+	
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
 	private static final String CUST_ID = "CUST_ID";
@@ -122,9 +128,20 @@ public class GigInsurancePendingTrnxListener implements ITunnelSubscriber<DBEven
 			sendEmail(email);
 		}
 
-		
+		if(!ArgUtil.isEmpty(custId)){
+			PushMessage pushMessage = new PushMessage();
+
+			
+
+			pushMessage.setITemplate(TemplatesMX.POLICY_PENDING_TRNX);
+			pushMessage.addToUser(custId);
+			pushMessage.setModel(wrapper);
+			pushNotifyClient.send(pushMessage);
+		}
 
 	}
+	
+	
 
 	@Async(ExecutorConfig.DEFAULT)
 	public void sendEmail(Email email) {

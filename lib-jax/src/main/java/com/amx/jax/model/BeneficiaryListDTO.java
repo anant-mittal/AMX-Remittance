@@ -91,6 +91,8 @@ public class BeneficiaryListDTO {
 	private String bankShortNames;
 	private Boolean canTransact;
 	
+	private String bankLocalName;
+	
 	
 	
 	public BigDecimal getIdNo() {
@@ -554,6 +556,12 @@ public class BeneficiaryListDTO {
 	}
 	public void setCanTransact(Boolean canTransact) {
 		this.canTransact = canTransact;
+	}
+	public String getBankLocalName() {
+		return bankLocalName;
+	}
+	public void setBankLocalName(String bankLocalName) {
+		this.bankLocalName = bankLocalName;
 	}
 	
 	
