@@ -26,6 +26,7 @@ public class BanksView implements Serializable {
 	private BigDecimal serviceGroupId;
 	private String bankInd;
 	private String languageInd;
+	private String bankLocalName;
 	
 	@Id
 	@Column(name = "ROW_ID")
@@ -99,5 +100,15 @@ public class BanksView implements Serializable {
 	public void setLanguageInd(String languageInd) {
 		this.languageInd = languageInd;
 	}
+	
+	@Column(name = "BANK_LOCAL_NAME")
+	public String getBankLocalName() {
+		return bankLocalName;
+	}
+	public void setBankLocalName(String bankLocalName) {
+		this.bankLocalName = bankLocalName;
+	}
+	
+	
 }	
 	

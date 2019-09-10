@@ -507,7 +507,11 @@ public class BeneficiaryService extends AbstractService {
 		}
 		beneCheck.setCanTransact(dto);
 		if (isCashBene(beneModel)) {
-			dto.setBankName(dto.getBankName() + " CASH PAYOUT");
+			if((metaData.getLanguageId()==null) || metaData.getLanguageId().equals(new BigDecimal(1))) {
+				dto.setBankName(dto.getBankName() + " CASH PAYOUT");
+			}else {
+				dto.setBankName(dto.getBankLocalName() + " CASH PAYOUT");
+			}
 			dto.setBankShortNames(dto.getBankShortNames() + " CASH PAYOUT");
 		}
 		return dto;
