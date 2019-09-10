@@ -11,7 +11,7 @@ public class DeviceConstants {
 
 		@Deprecated
 		public static final long REQUEST_TOKEN_VALIDITY_OLD = 30;
-		public static final long SESSION_TOKEN_VALIDITY = 3 * 3600;
+		public static final long SESSION_TOKEN_VALIDITY = 8 * 3600;
 	}
 
 	public static class Keys {

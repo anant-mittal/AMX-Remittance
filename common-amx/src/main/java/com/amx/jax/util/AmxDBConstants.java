@@ -13,7 +13,7 @@ public class AmxDBConstants {
 	public static final String Compliance = "C";
 
 	public static enum Status {
-		Y, N, D, U, B, C
+		Y, N, D, U, B, C, V
 	}
 
 	// document id
