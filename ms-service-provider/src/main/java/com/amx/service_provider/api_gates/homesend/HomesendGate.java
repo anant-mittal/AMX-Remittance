@@ -32,6 +32,7 @@ import com.amx.jax.model.response.serviceprovider.Status_Call_Response;
 import com.amx.service_provider.api_gates.common.Common_API_Utils;
 import com.amx.service_provider.dbmodel.webservice.OwsParamRespcode;
 import com.amx.service_provider.dbmodel.webservice.OwsParamRespcodeKey;
+import com.amx.service_provider.homesend.HomeSendDTO;
 import com.amx.service_provider.repository.webservice.OwsParamRespcodeRepository;
 
 /*
@@ -88,8 +89,7 @@ public class HomesendGate
 
 	Logger logger = Logger.getLogger("WService.class");
 
-	public HomesendGate(String api_login, String api_password, String vendor_id, String api_url,
-			OwsParamRespcodeRepository owsParamRespcodeRepository)
+	public HomesendGate(HomeSendDTO homeSendDTO)
 	{
 		try
 		{
@@ -97,13 +97,13 @@ public class HomesendGate
 
 			HomeSend_HWS_2_3Locator HomeSend_RemitLocator = new HomeSend_HWS_2_3Locator();
 
-			HomeSend_RemitLocator.setHWSPort_2_3EndpointAddress(api_url);
+			HomeSend_RemitLocator.setHWSPort_2_3EndpointAddress(homeSendDTO.getApi_url());
 			HomeSend_BindingStub = (HWSBinding_2_3Stub) HomeSend_RemitLocator.getHWSPort_2_3();
 
-			API_LOGIN = api_login;
-			API_PASSWORD = api_password;
-			new UnsignedInt(vendor_id);
-			this.owsParamRespcodeRepository = owsParamRespcodeRepository;
+			API_LOGIN = homeSendDTO.getApi_login();
+			API_PASSWORD = homeSendDTO.getApi_password();
+			new UnsignedInt(homeSendDTO.getVendor_id());
+			this.owsParamRespcodeRepository = homeSendDTO.getOwsParamRespcodeRepository();
 
 			System.setProperty("javax.net.ssl.trustStore", TRUST_STORE_LOCATION);
 			System.setProperty("javax.net.ssl.trustStorePassword", TRUST_STORE_PASSWORD); // changeit

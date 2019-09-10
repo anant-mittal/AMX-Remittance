@@ -34,7 +34,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.AuthType;
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.PromotionDto;

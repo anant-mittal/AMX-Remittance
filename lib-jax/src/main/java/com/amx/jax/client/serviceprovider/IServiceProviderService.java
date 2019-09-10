@@ -4,6 +4,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.model.request.serviceprovider.ServiceProviderCallRequestDto;
+import com.amx.jax.model.response.serviceprovider.Quotation_Call_Response;
 import com.amx.jax.model.response.serviceprovider.ServiceProviderResponse;
 
 public interface IServiceProviderService
@@ -19,7 +20,7 @@ public interface IServiceProviderService
 	}
 
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND })
-	AmxApiResponse<ServiceProviderResponse, Object> getQuatation(ServiceProviderCallRequestDto quatationRequestDto);
+	AmxApiResponse<Quotation_Call_Response, Object> getQuatation(ServiceProviderCallRequestDto quatationRequestDto);
 
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND })
 	AmxApiResponse<ServiceProviderResponse, Object> sendRemittance(ServiceProviderCallRequestDto sendRemittanceRequestDto);

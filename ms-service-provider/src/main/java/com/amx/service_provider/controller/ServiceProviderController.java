@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.serviceprovider.IServiceProviderService;
 import com.amx.jax.model.request.serviceprovider.ServiceProviderCallRequestDto;
+import com.amx.jax.model.response.serviceprovider.Quotation_Call_Response;
 import com.amx.jax.model.response.serviceprovider.ServiceProviderResponse;
 import com.amx.service_provider.service.ServiceProviderService;
 
@@ -22,8 +23,7 @@ public class ServiceProviderController implements IServiceProviderService
 	ServiceProviderService serviceProviderGateService;
 
 	@RequestMapping(value = IServiceProviderService.Path.GET_QUATATION, method = RequestMethod.POST)
-	public AmxApiResponse<ServiceProviderResponse, Object> getQuatation(
-			@Valid @RequestBody ServiceProviderCallRequestDto quatationRequestDto)
+	public AmxApiResponse<Quotation_Call_Response, Object> getQuatation(@Valid @RequestBody ServiceProviderCallRequestDto quatationRequestDto)
 	{
 		return AmxApiResponse.build(serviceProviderGateService.getQutation(quatationRequestDto));
 	}
