@@ -109,6 +109,6 @@ public class BanksView implements Serializable {
 		this.bankLocalName = bankLocalName;
 	}
 	
-	
+		
 }	
 	
