@@ -23,11 +23,13 @@ public class File implements Serializable {
 
 	private static final long serialVersionUID = -3165262414318034816L;
 	private static Logger LOGGER = LoggerService.getLogger(File.class);
+	private static Map<String, Type> TYPEMAP = new HashMap<String, Type>();
 
 	public enum Type implements EnumType {
 		PDF("application/pdf"), CSV("text/csv"),
 
-		PNG("image/png"), JPEG("image/jpeg"), JPG("image/jpg"),
+		PNG("image/png"), JPEG("image/jpeg"), JPG("image/jpg"), BMP("image/bmp"), GIF("image/gif"),
+		TIFF("image/tiff"), TIF("image/tif"),
 
 		JSON("application/json"), HTML("text/html"), TEXT(
 				"text/plain");
@@ -40,7 +42,13 @@ public class File implements Serializable {
 
 		Type(String contentType) {
 			this.contentType = contentType;
+			TYPEMAP.put(contentType, this);
 		}
+
+		public static Type from(String contentType) {
+			return TYPEMAP.get(contentType);
+		}
+
 	}
 
 	public enum PDFConverter {
