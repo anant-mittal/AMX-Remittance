@@ -60,6 +60,7 @@ import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.fx.FcSaleBranchDispatchModel;
 import com.amx.jax.model.request.fx.FcSaleBranchDispatchRequest;
 import com.amx.jax.model.response.fx.FcEmployeeDetailsDto;
+import com.amx.jax.model.response.fx.FxDeliveryTimeSlotDto;
 import com.amx.jax.model.response.fx.FxEmployeeDetailsDto;
 import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
 import com.amx.jax.model.response.fx.UserStockDto;
@@ -1924,44 +1925,37 @@ public class FcSaleBranchOrderManager {
 	}
 
 	
-	public Boolean saveFcDeliveryTiming(BigDecimal startTime, BigDecimal endTime, BigDecimal timeSlot, String product,
-			BigDecimal countryId, BigDecimal companyId) {
+	public Boolean saveFcDeliveryTiming(FxDeliveryTimeSlotDto fxDeliveryTimeSlotDto) {
 		Boolean status = Boolean.FALSE;
 		FxDeliveryTimeSlotMaster fxDeliveryTimeSlotMaster = new FxDeliveryTimeSlotMaster();
 		
 		try {
 
-			fxDeliveryTimeSlotMaster = fcSaleOrderTimeSlotDao.saveDeliveryTimeSlot(countryId, companyId, ConstantDocument.Yes);
+			fxDeliveryTimeSlotMaster = fcSaleOrderTimeSlotDao.saveDeliveryTimeSlot(fxDeliveryTimeSlotDto.getCountryId(), fxDeliveryTimeSlotDto.getCompanyId(), ConstantDocument.Yes);
 
-			if (product.equalsIgnoreCase(ConstantDocument.FX_LHA)) {
-				
-				fxDeliveryTimeSlotMaster.setEndTime(endTime);
-				fxDeliveryTimeSlotMaster.setStartTime(startTime);
-				fxDeliveryTimeSlotMaster.setTimeInterval(timeSlot);
-				fcSaleOrderTimeSlotDao.save(fxDeliveryTimeSlotMaster);
-
-			} else if (product.equalsIgnoreCase(ConstantDocument.FX_LOA)) {
-				
-				fxDeliveryTimeSlotMaster.setOfficeStartTime(endTime);
-				fxDeliveryTimeSlotMaster.setOfficeEndTime(startTime);
-				fxDeliveryTimeSlotMaster.setTimeInterval(timeSlot);
-				fcSaleOrderTimeSlotDao.save(fxDeliveryTimeSlotMaster);
+			fxDeliveryTimeSlotMaster.setStartTime(fxDeliveryTimeSlotDto.getStartTime());
+			fxDeliveryTimeSlotMaster.setEndTime(fxDeliveryTimeSlotDto.getEndTime());
+			fxDeliveryTimeSlotMaster.setOfficeStartTime(fxDeliveryTimeSlotDto.getOfficeStartTime());
+			fxDeliveryTimeSlotMaster.setOfficeEndTime(fxDeliveryTimeSlotDto.getOfficeEndTime());
+			fxDeliveryTimeSlotMaster.setTimeInterval(fxDeliveryTimeSlotDto.getTimeInterval());	
+			fcSaleOrderTimeSlotDao.save(fxDeliveryTimeSlotMaster);
 
 				
-			}
+			
 			status = Boolean.TRUE;
 
 		} catch (GlobalException e) {
 			e.printStackTrace();
 			logger.error("Error in setFcDeliveryTiming",
-					e.getMessage() + " countryId :" + countryId + " companyId :" + companyId + " product :" + product);
+					e.getMessage() + " countryId :" + fxDeliveryTimeSlotDto.getCountryId() + " companyId :" + fxDeliveryTimeSlotDto.getCompanyId());
 			throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Error in setFcDeliveryTiming",
-					e.getMessage() + " countryId :" + countryId + " companyId :" + companyId + " product :" + product);
+					e.getMessage() + " countryId :" + fxDeliveryTimeSlotDto.getCountryId() + " companyId :" + fxDeliveryTimeSlotDto.getCompanyId());
 			throw new GlobalException(e.getMessage());
 		}
 		return status;
 	}
+	
 }

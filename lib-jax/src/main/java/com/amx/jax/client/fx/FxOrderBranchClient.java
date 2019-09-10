@@ -317,5 +317,21 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 		}
 	}
 	
+	
+	@Override
+	public AmxApiResponse<BoolRespModel,Object> saveFcDeliveryTimeSlot(FxDeliveryTimeSlotDto fxDeliveryTimeSlotDto) {
+		try {
+			LOGGER.debug("in saveFcDeliveryTimeSlot :"+fxDeliveryTimeSlotDto);
+			return restService.ajax(appConfig.getJaxURL() + Path.FC_ORDER_DELIVERY_TIME_SETUP).meta(new JaxMetaInfo())
+					.post(fxDeliveryTimeSlotDto)
+					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel,Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in acceptOrderLock : ", e);
+			return JaxSystemError.evaluate(e);
+		} // end of try-catch
+	}
+
+	
 
 }

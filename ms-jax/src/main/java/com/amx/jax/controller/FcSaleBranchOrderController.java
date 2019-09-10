@@ -233,16 +233,17 @@ public class FcSaleBranchOrderController implements IFxBranchOrderService {
 		return fcSaleBranch.searchOrder(fcDeliveryBranchOrderSearchRequest);
 	}
 	
-
+	/**
+	 * To get the FC-delivery Time setup 
+	* @author : Radhika
+    * @date : 21/08/2019
+	*/
 	@RequestMapping(value = Path.FC_ORDER_DELIVERY_TIME_SETUP , method = RequestMethod.POST)
-	public AmxApiResponse<BoolRespModel,Object> setDeliveryTiming(@RequestParam(value = "startTime", required = true) BigDecimal startTime,
-			@RequestParam(value = "endTime", required = true) BigDecimal endTime,
-			@RequestParam(value = "timeSlot", required = true) BigDecimal timeSlot,
-			@RequestParam(value = "product", required = true) String product) {
-		BigDecimal countryId = metaData.getCountryId();
-		BigDecimal companyId = metaData.getCompanyId();
-		BoolRespModel result =fcSaleBranch.saveFcDeliveryTiming(startTime,endTime,timeSlot,product,countryId,companyId);
+	public AmxApiResponse<BoolRespModel,Object> saveFcDeliveryTimeSlot(@RequestBody FxDeliveryTimeSlotDto fxDeliveryTimeSlotDto) {
+		fxDeliveryTimeSlotDto.setCountryId(metaData.getCountryId());
+		fxDeliveryTimeSlotDto.setCompanyId(metaData.getCompanyId());
+		BoolRespModel result =fcSaleBranch.saveFcDeliveryTiming(fxDeliveryTimeSlotDto);
 		return AmxApiResponse.build(result);
 	}
-
+	
 }

@@ -104,4 +104,6 @@ public interface IFxBranchOrderService extends IJaxService {
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND })
 	AmxApiResponse<FxOrderTransactionHistroyDto, Object> searchOrder(FcDeliveryBranchOrderSearchRequest fcDeliveryBranchOrderSearchRequest);
 
+	AmxApiResponse<BoolRespModel, Object> saveFcDeliveryTimeSlot(FxDeliveryTimeSlotDto fxDeliveryTimeSlotDto);
+
 }
