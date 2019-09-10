@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -36,7 +37,6 @@ import com.amx.jax.pricer.dto.CurrencyMasterDTO;
 import com.amx.jax.pricer.dto.CustomerCategoryDetails;
 import com.amx.jax.pricer.dto.GroupDetails;
 import com.amx.jax.pricer.dto.OnlineMarginMarkupInfo;
-import com.amx.jax.pricer.dto.OnlineMarginMarkupReq;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
 import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
@@ -75,6 +75,9 @@ public class DiscountManager {
 	
 	@Autowired
 	private ProbotMetaInfo metaInfo;
+	
+	private static final Logger LOGGER = Logger.getLogger(DiscountManager.class);
+
 
 	// ------ To get Discount details Start here ------
 	public List<ChannelDetails> convertChannelData(List<ChannelDiscount> channelDiscount, BigDecimal groupId) {
@@ -413,15 +416,17 @@ public class DiscountManager {
 		
 	}
 	public Boolean commitMarkup(OnlineMarginMarkup marginMarkupData,OnlineMarginMarkupInfo request) {
-		if (marginMarkupData !=null) 
-		 {
+		try {
+			
+			if (marginMarkupData !=null) 
+			{
 			marginMarkupData.setMarginMarkup(request.getMarginMarkup());
 			marginMarkupData.setModifiedDate(new Date());
 			marginMarkupData.setModifiedBy(request.getEmpName());
 			marginMarkupDao.saveOnlineMarginMarkup(marginMarkupData);
 			return true;
 
-		 }
+			}
 		 else {
 			 OnlineMarginMarkup onlineMarginMarkup=new OnlineMarginMarkup();
 			 onlineMarginMarkup.setCountryId(request.getCountryId());
@@ -433,11 +438,17 @@ public class DiscountManager {
 			 onlineMarginMarkup.setModifiedDate(new Date());
 			 onlineMarginMarkup.setModifiedBy(request.getEmpName());
 			 onlineMarginMarkup.setCreatedBy(request.getEmpName());
-			 onlineMarginMarkup.setApplicationCountryId(metaInfo.getCountryId());
-			marginMarkupDao.saveOnlineMarginMarkup(onlineMarginMarkup);
-			return true;
+			 onlineMarginMarkup.setApplicationCountryId(request.getApplicationCountryId());
+			 marginMarkupDao.saveOnlineMarginMarkup(onlineMarginMarkup);
+			 return true;
 
 		 }
+	 }catch(PricerServiceException e)
+		{
+		 LOGGER.info("ErrorKey : - " +e.getErrorKey()+ " ErrorMessage : - " +e.getErrorMessage());
+		 throw new PricerServiceException(PricerServiceError.INVALID_MARKUP,
+					"The markup value entered is not valid for the selected country,currency and bank.");
+		}
 	}
 	
 }

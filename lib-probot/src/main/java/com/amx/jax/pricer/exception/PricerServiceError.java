@@ -119,6 +119,9 @@ public enum PricerServiceError implements IExceptionEnum {
 	
 	MISSING_PAYMENT_LIMIT_DATA,
 	
+	INVALID_MARKUP,
+
+	
 	/** The unknown exception. */
 	// MISC
 	UNKNOWN_EXCEPTION;

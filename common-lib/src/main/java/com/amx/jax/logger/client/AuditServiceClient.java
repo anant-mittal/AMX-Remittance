@@ -19,10 +19,12 @@ import com.amx.jax.AppContextUtil;
 import com.amx.jax.logger.AbstractEvent;
 import com.amx.jax.logger.AbstractEvent.EventMarker;
 import com.amx.jax.logger.AbstractEvent.EventType;
+import com.amx.jax.logger.AuditActor;
 import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.logger.AuditLoggerResponse;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.events.ApiAuditEvent;
+import com.amx.jax.session.SessionContextService;
 import com.amx.jax.tunnel.ITunnelService;
 import com.amx.utils.ContextUtil;
 import com.amx.utils.JsonUtil;
@@ -48,6 +50,9 @@ public class AuditServiceClient implements AuditService {
 	private static boolean AUDIT_LOGGER_ENABLED = false;
 
 	private static ITunnelService ITUNNEL_SERVICE;
+
+	@Autowired
+	SessionContextService sessionContextService;
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Autowired
@@ -289,6 +294,16 @@ public class AuditServiceClient implements AuditService {
 
 	public static boolean isDebugEnabled() {
 		return LOGGER.isDebugEnabled();
+	}
+
+	@Override
+	public AuditActor getActor() {
+		return sessionContextService.getContext(AuditActor.class);
+	}
+
+	@Override
+	public <T extends AuditActor> T getActor(Class<T> class1) {
+		return sessionContextService.getContext(class1);
 	}
 
 }

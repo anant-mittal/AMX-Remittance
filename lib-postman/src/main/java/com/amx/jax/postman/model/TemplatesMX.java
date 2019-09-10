@@ -68,13 +68,16 @@ public enum TemplatesMX implements ITemplate {
 	POLICY_OPTOUT_SYSTEM("PolicyOptoutSystem"),
 	POLICY_EXPIRY_REMINDER("PolicyExpiryReminder"),
 	POLICY_EXPIRED("PolicyExpired"),
+	POLICY_PENDING_TRNX("PolicyPendingTrnx"),
 
 	HOMESEND_TRANSACTION_FAILAURE("HomeSendTransactionFailure"),
 
 	//Add Bene Templates
 	BENE_SUCC("BeneCreationSuccess"),
 	BENE_SUCC_SMS("bene-success-sms",Channel.NOTIPY),
-	
+
+	// Online coupon template
+	ONLINE_COUPON("OnlineCoupon"),
 	
 	//WU Notifications Templates
 	

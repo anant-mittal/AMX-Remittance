@@ -53,6 +53,7 @@ public class BankMasterModel implements java.io.Serializable {
 	private String splitIndicator;
 	private BigDecimal bankCountryId;
 	private String ibanFlag;
+	private String localName;
 	
 	public BankMasterModel() {
 	}
@@ -564,11 +565,15 @@ public class BankMasterModel implements java.io.Serializable {
 				return false;
 		} else if (!zipCode.equals(other.zipCode))
 		return false;
-	if(ibanFlag ==null) {
-		if(other.ibanFlag !=null)
+		if(ibanFlag ==null) {
+			if(other.ibanFlag !=null)
+				return false;
+		}else if (!ibanFlag.equals(other.ibanFlag))
 			return false;
-	}
-		
+		if (localName == null) {
+			if (other.localName != null)
+				return false;
+		}
 		return true;
 	}
 
@@ -580,7 +585,19 @@ public class BankMasterModel implements java.io.Serializable {
 	public void setIbanFlag(String ibanFlag) {
 		this.ibanFlag = ibanFlag;
 	}
-	 
+
+	@Column(name = "BANK_LOCAL_NAME")
+	public String getLocalName() {
+		return localName;
+	}
+
+	public void setLocalName(String localName) {
+		this.localName = localName;
+	}
+	
+	
+	
+	
 	 
 	
 }

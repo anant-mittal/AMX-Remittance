@@ -13,7 +13,7 @@ public class AmxDBConstants {
 	public static final String Compliance = "C";
 
 	public static enum Status {
-		Y, N, D, U, B, C
+		Y, N, D, U, B, C, V
 	}
 
 	// document id
@@ -127,6 +127,9 @@ public class AmxDBConstants {
 	public static final BigDecimal BIZ_COMPONENT_ID_GCC_ID = new BigDecimal(201);
 	public static final BigDecimal BIZ_COMPONENT_ID_BEDOUIN_ID = new BigDecimal(197);
 	public static final BigDecimal MURQAB_FOREIGNCURRENCY = new BigDecimal(89);
+	public static final BigDecimal KUWAIT_FOREIGNCURRENCY = new BigDecimal(89);
+	public static final BigDecimal OMAN_FOREIGNCURRENCY = new BigDecimal(99);
+	public static final BigDecimal BAHRAIN_FOREIGNCURRENCY = new BigDecimal(70);
 	public static final BigDecimal BIZ_COMPONENT_ID_PASSPORT = new BigDecimal(204);
 	
 
@@ -192,12 +195,17 @@ public class AmxDBConstants {
 	public static final String  COMM_INCLUDE= "I";
 	public static final String COMM_EXCLUDE="E";
 	
-	// Constants for WU Notifications
+	public static final String BPI_GIFT="GIFT";
+	
+	public static final String TELEX_TRANFER = "T";
+	public static final String DEMAND_DRAFT = "D";
+	
+	
+	public static final BigDecimal EXCHANGE_RATE_DECIMAL = new BigDecimal(9);
+
 	public static final String WU_PAID = "PAID";
 	public static final String WU_PICK = "PICK_REMINDER";
 	public static final String WU_CANC_REM = "CANC_REMINDER";
 	public static final String WU_CANCELLED = "WU_CANC";
-	
-	
 	
 }

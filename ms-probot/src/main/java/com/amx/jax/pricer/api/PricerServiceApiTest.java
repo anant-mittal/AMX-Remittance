@@ -504,6 +504,9 @@ public class PricerServiceApiTest implements ProbotExchangeRateService, ProbotDa
 		// TODO Subodh To Fix This
 		return pricerServiceClient.getCurrencyByGroupId(groupId);
 	}
+	
+	
+	
 
 	@Override
 	@RequestMapping(value = ApiEndPoints.GET_SERVICE_PROVIDER_QUOTE, method = RequestMethod.POST)

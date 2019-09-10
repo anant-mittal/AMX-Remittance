@@ -18,6 +18,8 @@ public class OnlineMarginMarkupInfo implements Serializable {
 	private BigDecimal currencyId;
 	
 	private String empName;
+	
+	private BigDecimal applicationCountryId;
 
 	public BigDecimal getOnlineMarginMarkupId() {
 		return onlineMarginMarkupId;
@@ -69,6 +71,14 @@ public class OnlineMarginMarkupInfo implements Serializable {
 
 	public void setEmpName(String empName) {
 		this.empName = empName;
+	}
+
+	public BigDecimal getApplicationCountryId() {
+		return applicationCountryId;
+	}
+
+	public void setApplicationCountryId(BigDecimal applicationCountryId) {
+		this.applicationCountryId = applicationCountryId;
 	}
 
 
