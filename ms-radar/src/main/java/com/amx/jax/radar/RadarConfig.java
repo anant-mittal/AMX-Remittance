@@ -23,6 +23,9 @@ public class RadarConfig {
 			"&& ${elasticsearch.enabled:true} " +
 			"&& '${default.tenant}'=='KWT'";
 
+	public static final String CE_RATE_SCRAPPER_AND_ES_AND_ANY_TNT = "${jax.jobs.scrapper.rate:true} " +
+			"&& ${elasticsearch.enabled:true} ";
+	
 	public static final String CE_RATE_SYNC_AND_ES = "${jax.jobs.rate:true} " +
 			"&& ${elasticsearch.enabled:true} ";
 

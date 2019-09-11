@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 
+import com.amx.jax.AppConfig;
 import com.amx.jax.client.snap.SnapConstants.SnapQueryTemplate;
 import com.amx.jax.client.snap.SnapModels.SnapModelWrapper;
 import com.amx.jax.client.snap.SnapQueryException;
@@ -20,6 +21,7 @@ import com.amx.jax.radar.AESRepository.BulkRequestBuilder;
 import com.amx.jax.radar.ESRepository;
 import com.amx.jax.radar.EsConfig;
 import com.amx.jax.rest.RestService;
+import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
 
 /**
@@ -43,6 +45,17 @@ public class SnapQueryService {
 	@Autowired
 	public ESRepository esRepository;
 
+	@Autowired
+	AppConfig appConfig;
+
+	public String resolveIndex(String index) {
+		String fullIndex = appConfig.prop("es.index.alias."+index);
+		if (ArgUtil.isEmpty(fullIndex)) {
+			return index;
+		}
+		return fullIndex;
+	}
+
 	public String processJson(SnapQueryTemplate template, Context context) {
 		return templateEngine.process("json/" + template.getFile(), context);
 	}
@@ -51,7 +64,7 @@ public class SnapQueryService {
 		Locale locale = new Locale("en");
 		Context context = new Context(locale);
 		if (!map.containsKey("_type")) {
-			map.put("_type", template.getIndexName());
+			map.put("_type", template.getIndexType());
 		}
 		context.setVariables(map);
 		return this.processJson(template, context);
@@ -63,7 +76,7 @@ public class SnapQueryService {
 
 	public SnapModelWrapper executeQuery(Map<String, Object> query, String index) {
 		Map<String, Object> x = null;
-		String fullIndex = EsConfig.indexName(index);
+		String fullIndex = resolveIndex(EsConfig.indexName(index));
 		try {
 			x = restService.ajax(ssConfig.getClusterUrl())
 					.header(ssConfig.getBasicAuthHeader()).path(
@@ -79,6 +92,7 @@ public class SnapQueryService {
 		x.put("_query", query);
 		x.put("_index", index);
 		x.put("__index", fullIndex);
+
 		// System.out.println(JsonUtil.toJson(query));
 		return new SnapModelWrapper(x);
 	}
