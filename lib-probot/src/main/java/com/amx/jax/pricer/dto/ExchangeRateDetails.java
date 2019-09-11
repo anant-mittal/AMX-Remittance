@@ -31,6 +31,8 @@ public class ExchangeRateDetails implements Serializable, Cloneable, Comparable<
 
 	private boolean isLowGLBalance = false;
 
+	private boolean isFundedIntermediary = false;
+	
 	private boolean isBetterRateAvailable = false;
 
 	private BigDecimal betterRateAmountSlab;
@@ -99,6 +101,14 @@ public class ExchangeRateDetails implements Serializable, Cloneable, Comparable<
 
 	public void setLowGLBalance(boolean isLowGLBalance) {
 		this.isLowGLBalance = isLowGLBalance;
+	}
+
+	public boolean isFundedIntermediary() {
+		return isFundedIntermediary;
+	}
+
+	public void setFundedIntermediary(boolean isFunded) {
+		this.isFundedIntermediary = isFunded;
 	}
 
 	public boolean isBetterRateAvailable() {

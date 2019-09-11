@@ -320,6 +320,63 @@ public class ExchRateAndRoutingTransientDataCache {
 
 	}
 
+	public BigDecimal getAdjustedGLCBalForBank(BigDecimal bankId, boolean isFc) {
+
+		BankGLCData bankGLCData = this.bankGlcBalMap.get(bankId);
+
+		if (null == bankGLCData || null == bankGLCData.getGlAccountsDetails()
+				|| bankGLCData.getGlAccountsDetails().isEmpty()) {
+			return null;
+		}
+
+		if (bankGLCData.getAdjustedLcCurBal() == null || bankGLCData.getAdjustedFcCurBal() == null) {
+
+			BigDecimal maxFcCurBal = getMaxGLCBalForBank(bankId, true);
+			BigDecimal maxLcCurBal = getMaxGLCBalForBank(bankId, false);
+
+			BigDecimal avgGlcCostRate = getAvgRateGLCForBank(bankId);
+
+			BigDecimal adjustedFcCurBal, adjustedLcCurBal;
+
+			if (bankGLCData.getFundingGlAcDetails() != null && !bankGLCData.getFundingGlAcDetails().isEmpty()) {
+				BigDecimal fundingLcBal = BigDecimal.ZERO;
+
+				for (ViewExGLCBAL fundingBal : bankGLCData.getFundingGlAcDetails()) {
+					if (fundingBal != null && fundingBal.getRateCurBal() != null) {
+						fundingLcBal = fundingLcBal.add(fundingBal.getRateCurBal());
+					}
+				}
+
+				adjustedLcCurBal = fundingLcBal.add(maxLcCurBal);
+				adjustedFcCurBal = adjustedLcCurBal.divide(avgGlcCostRate, 3, RoundingMode.HALF_DOWN);
+
+				// adjustedFcCurBal = maxFcCurBal.add( fundingLcBal.divide(avgGlcCostRate, 3,
+				// RoundingMode.HALF_DOWN));
+
+			} else {
+				adjustedFcCurBal = maxFcCurBal;
+				adjustedLcCurBal = maxLcCurBal;
+			}
+
+			bankGLCData.setAdjustedLcCurBal(adjustedLcCurBal);
+			bankGLCData.setAdjustedFcCurBal(adjustedFcCurBal);
+
+			System.out.println("\n Max Lc Bal ==> " + maxLcCurBal);
+			System.out.println(" Max Fc Bal ==> " + maxFcCurBal);
+
+			System.out.println(" Adjusted Lc Bal ==> " + bankGLCData.getAdjustedLcCurBal());
+			System.out.println(" Adjusted Fc Bal ==> " + bankGLCData.getAdjustedFcCurBal());
+			System.out.println(" Exchange Rate ====> " + avgGlcCostRate);
+		}
+
+		if (isFc) {
+			return bankGLCData.getAdjustedFcCurBal();
+		} else {
+			return bankGLCData.getAdjustedLcCurBal();
+		}
+
+	}
+
 	public void setTimezoneForCountry(BigDecimal countryId, TimezoneMasterModel tz) {
 		this.countryTimezones.put(countryId, tz);
 	}

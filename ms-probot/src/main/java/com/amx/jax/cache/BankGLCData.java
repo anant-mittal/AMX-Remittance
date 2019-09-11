@@ -10,10 +10,15 @@ import com.amx.jax.pricer.dbmodel.ViewExGLCBalProvisional;
 public class BankGLCData {
 
 	private List<ViewExGLCBAL> glAccountsDetails;
+	
 	private BigDecimal avgLcRate;
 	private BigDecimal avgFcRate;
+	
 	private BigDecimal maxLcCurBalAmount;
 	private BigDecimal maxFcCurBalAmount;
+	
+	private BigDecimal adjustedLcCurBal;
+	private BigDecimal adjustedFcCurBal;
 
 	private ViewExGLCBalProvisional provisionalBalDetails;
 
@@ -61,6 +66,22 @@ public class BankGLCData {
 
 	public void setMaxFcCurBalAmount(BigDecimal maxFcCurBalAmount) {
 		this.maxFcCurBalAmount = maxFcCurBalAmount;
+	}
+
+	public BigDecimal getAdjustedLcCurBal() {
+		return adjustedLcCurBal;
+	}
+
+	public void setAdjustedLcCurBal(BigDecimal adjustedLcCurBal) {
+		this.adjustedLcCurBal = adjustedLcCurBal;
+	}
+
+	public BigDecimal getAdjustedFcCurBal() {
+		return adjustedFcCurBal;
+	}
+
+	public void setAdjustedFcCurBal(BigDecimal adjustedFcCurBal) {
+		this.adjustedFcCurBal = adjustedFcCurBal;
 	}
 
 	public ViewExGLCBalProvisional getProvisionalBalDetails() {

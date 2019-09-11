@@ -200,6 +200,15 @@ public class RemitPriceManager {
 				if (maxFcCurBal.compareTo(exRateDetails.getSellRateBase().getConvertedFCAmount()) < 0) {
 
 					exRateDetails.setLowGLBalance(true);
+
+					// Check if funded enough in Settlement/Intermediary Currency
+					BigDecimal adjustedFcCurBal = exchRateAndRoutingTransientDataCache
+							.getAdjustedGLCBalForBank(exchangeRate.getBankMaster().getBankId(), Boolean.TRUE);
+
+					if (adjustedFcCurBal != null
+							&& adjustedFcCurBal.compareTo(exRateDetails.getSellRateBase().getConvertedFCAmount()) > 0) {
+						exRateDetails.setFundedIntermediary(true);
+					}
 				}
 
 				bankWiseRates.add(exRateDetails);
@@ -316,6 +325,16 @@ public class RemitPriceManager {
 
 				if (maxFcCurBal.compareTo(exRateDetails.getSellRateBase().getConvertedFCAmount()) < 0) {
 					exRateDetails.setLowGLBalance(true);
+
+					// Check if funded enough in Settlement/Intermediary Currency
+					BigDecimal adjustedFcCurBal = exchRateAndRoutingTransientDataCache
+							.getAdjustedGLCBalForBank(exchangeRate.getBankMaster().getBankId(), Boolean.TRUE);
+
+					if (adjustedFcCurBal != null
+							&& adjustedFcCurBal.compareTo(exRateDetails.getSellRateBase().getConvertedFCAmount()) > 0) {
+						exRateDetails.setFundedIntermediary(true);
+					}
+
 				}
 
 				bankWiseRates.add(exRateDetails);
