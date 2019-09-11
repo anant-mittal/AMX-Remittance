@@ -202,6 +202,6 @@ public class AmxDBConstants {
 	public static final String WT_STATUS_CONFIRM = "CONF";
 	public static final String WT_STATUS_CANCELLED = "CANC";
 	public static final String WT_STATUS_PAID  ="PAID";
-	public static final String WIRE_TRANSFER_PAYMENT="WT";
+	public static final String WIRE_TRANSFER_PAYMENT="PB";
 	
 }

@@ -3,7 +3,7 @@ package com.amx.jax.dict;
 public enum PayGServiceCode {
 	KNET("knet"), BENEFIT("benefit"), OMANNET("omannet"), KOMANNET("komannet"), BENEFIT_UPGRADE("benefit_upgrade")
 
-	, WT("wt"), KNET2("knet2"), PAY_AT_BRANCH("patb");
+	, WT("wt"), KNET2("knet2"), PB("pb");
 
 	public static final PayGServiceCode DEFAULT = KNET;
 
