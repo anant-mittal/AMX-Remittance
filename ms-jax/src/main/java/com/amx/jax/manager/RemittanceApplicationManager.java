@@ -348,9 +348,9 @@ public class RemittanceApplicationManager {
 		remittanceApplication.setPaymentId(remittanceApplication.getDocumentNo().toString());
 		remittanceApplication.setWuIpAddress(metaData.getDeviceIp());
 		remittanceApplication.setPaymentType(requestModel.getPaymentType());
-		if (ConstantDocument.WIRE_TRANSFER_PAYMENT.equalsIgnoreCase(requestModel.getPaymentType())) {
+		if (ConstantDocument.PB_PAYMENT.equalsIgnoreCase(requestModel.getPaymentType())) {
 
-			remittanceApplication.setWtStatus(ConstantDocument.WT_STATUS_NEW);
+			remittanceApplication.setWtStatus(ConstantDocument.PB_STATUS_NEW);
 		}
 		
 		

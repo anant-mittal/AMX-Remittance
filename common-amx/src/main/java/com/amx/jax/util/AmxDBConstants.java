@@ -198,10 +198,10 @@ public class AmxDBConstants {
 	
 	// Wire transfer status constants
 	
-	public static final String WT_STATUS_NEW = "NEW";
+	public static final String PB_STATUS_NEW = "NEW";
 	public static final String WT_STATUS_CONFIRM = "CONF";
 	public static final String WT_STATUS_CANCELLED = "CANC";
 	public static final String WT_STATUS_PAID  ="PAID";
-	public static final String WIRE_TRANSFER_PAYMENT="PB";
+	public static final String PB_PAYMENT="PB";
 	
 }

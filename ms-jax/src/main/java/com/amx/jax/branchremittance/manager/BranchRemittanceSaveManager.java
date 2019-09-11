@@ -313,7 +313,7 @@ public class BranchRemittanceSaveManager {
 		for(i=0;i<shoppingCartList.size();i++) {
 			
 			RemittanceApplication remittanceApplication = remittanceApplicationDao.getApplication(shoppingCartList.get(i).getApplicationId());
-			if(remittanceApplication!=null && ConstantDocument.WIRE_TRANSFER_PAYMENT.equalsIgnoreCase(remittanceApplication.getPaymentType())&& ConstantDocument.WT_STATUS_NEW.equalsIgnoreCase(remittanceApplication.getWtStatus())) {
+			if(remittanceApplication!=null && ConstantDocument.PB_PAYMENT.equalsIgnoreCase(remittanceApplication.getPaymentType())&& ConstantDocument.PB_STATUS_NEW.equalsIgnoreCase(remittanceApplication.getWtStatus())) {
 				remittanceApplication.setWtStatus(ConstantDocument.WT_STATUS_PAID);
 				remittanceApplicationRepository.save(remittanceApplication);
 				

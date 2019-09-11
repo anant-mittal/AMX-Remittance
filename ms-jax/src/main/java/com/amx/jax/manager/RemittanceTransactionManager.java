@@ -1294,7 +1294,7 @@ public class RemittanceTransactionManager {
 				request.getDocumentFinancialYear());
 		RemittanceAppBenificiary remittanceBenificiary = remittanceApplicationBeneRepository.findByExRemittanceAppfromBenfi(application);
 		remittanceApplicationService.checkForSuspiciousPaymentAttempts(application.getRemittanceApplicationId());
-		if(ConstantDocument.WIRE_TRANSFER_PAYMENT.equalsIgnoreCase(application.getPaymentType())) {
+		if(ConstantDocument.PB_PAYMENT.equalsIgnoreCase(application.getPaymentType())) {
 			model.setBeneName(remittanceBenificiary.getBeneficiaryName());
 		}
 		
@@ -1359,7 +1359,7 @@ public class RemittanceTransactionManager {
 			status = JaxTransactionStatus.PAYMENT_IN_PROCESS;
 		}
 		String resultCode = remittanceApplication.getResultCode();
-		if (ConstantDocument.WIRE_TRANSFER_PAYMENT.equalsIgnoreCase(remittanceApplication.getPaymentType())){
+		if (ConstantDocument.PB_PAYMENT.equalsIgnoreCase(remittanceApplication.getPaymentType())){
 			status = JaxTransactionStatus.NEW_APPLICATION_SUCCESS;
 			return status;
 		}

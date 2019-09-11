@@ -229,8 +229,8 @@ public class BranchRemittanceDao {
 					remitTrnx.setDocumentNo(documentNo);
 					remitTrnx.setCollectionDocumentNo(collectModel.getDocumentNo());
 					RemittanceApplication remittanceApplication = remittanceApplicationDao.getApplication(applicationId);
-					if(ConstantDocument.WIRE_TRANSFER_PAYMENT.equalsIgnoreCase(remittanceApplication.getPaymentType())) {
-						remitTrnx.setPaymentType(ConstantDocument.WIRE_TRANSFER_PAYMENT);
+					if(ConstantDocument.PB_PAYMENT.equalsIgnoreCase(remittanceApplication.getPaymentType())) {
+						remitTrnx.setPaymentType(ConstantDocument.PB_PAYMENT);
 					}
 					
 					RemittanceTransaction remitTrnx1 = remitTrnxRepository.save(remitTrnx);
