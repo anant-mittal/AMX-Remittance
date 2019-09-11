@@ -112,7 +112,7 @@ public class RemittanceApplicationService {
 
 
 public void updatePayTokenNull(List<RemittanceApplication> lstPayIdDetails,PaymentResponseDto paymentResponse) {
-	
+	logger.debug("In update payment token method");
 	for(RemittanceApplication shopAppl : lstPayIdDetails) {
 		RemittanceApplication appl = remittanceApplicationRepository.findOne(shopAppl.getRemittanceApplicationId());
 		if(appl!=null) {
