@@ -26,7 +26,25 @@ public class PayAtBranchTrnxListDTO {
 	public String beneBranch;
 	public String beneName;
 	public String documentFinanceYear;
+	public BigDecimal localExchangeRate;
+	public BigDecimal foreignExchangeRate;
 	
+
+	public BigDecimal getLocalExchangeRate() {
+		return localExchangeRate;
+	}
+
+	public void setLocalExchangeRate(BigDecimal localExchangeRate) {
+		this.localExchangeRate = localExchangeRate;
+	}
+
+	public BigDecimal getForeignExchangeRate() {
+		return foreignExchangeRate;
+	}
+
+	public void setForeignExchangeRate(BigDecimal foreignExchangeRate) {
+		this.foreignExchangeRate = foreignExchangeRate;
+	}
 
 	public String getBeneBank() {
 		return beneBank;

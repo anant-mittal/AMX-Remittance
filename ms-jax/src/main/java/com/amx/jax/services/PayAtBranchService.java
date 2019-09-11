@@ -1,5 +1,7 @@
 package com.amx.jax.services;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -101,6 +103,8 @@ public class PayAtBranchService {
 			pbTrnxListDTO.setBeneBranch(remittanceAppBeneficiary.getBeneficiaryBranch());
 			pbTrnxListDTO.setBeneName(remittanceAppBeneficiary.getBeneficiaryName());
 			pbTrnxListDTO.setAccountNo(remittanceAppBeneficiary.getBeneficiaryAccountNo());
+			pbTrnxListDTO.setForeignExchangeRate(payAtBranchTrnxModel.getExchangeRate());
+			pbTrnxListDTO.setLocalExchangeRate(new BigDecimal(1).divide(payAtBranchTrnxModel.getExchangeRate(), 10, RoundingMode.HALF_UP));
 			output.add(pbTrnxListDTO);
 
 		}
