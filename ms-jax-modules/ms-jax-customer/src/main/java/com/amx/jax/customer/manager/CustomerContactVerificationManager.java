@@ -74,7 +74,11 @@ public class CustomerContactVerificationManager {
 	public List<CustomerContactVerification> getValidCustomerContactVerificationsByCustomerId(BigDecimal customerId,
 			ContactType contactType, String contact) {
 		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.DATE, -1);
+		if (ContactType.WHATSAPP.equals(contactType)) {
+			cal.add(Calendar.DATE, -30);
+		} else {
+			cal.add(Calendar.DATE, -1);
+		}
 		java.util.Date oneDay = new java.util.Date(cal.getTimeInMillis());
 		List<CustomerContactVerification> links = customerContactVerificationRepository.getByContact(customerId,
 				contactType,
@@ -84,9 +88,6 @@ public class CustomerContactVerificationManager {
 
 	public CustomerContactVerification getValidCustomerContactVerificationByCustomerId(BigDecimal customerId,
 			ContactType contactType, String contact) {
-		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.DATE, -1);
-		java.util.Date oneDay = new java.util.Date(cal.getTimeInMillis());
 		List<CustomerContactVerification> links = getValidCustomerContactVerificationsByCustomerId(customerId,
 				contactType, contact);
 		if (ArgUtil.isEmpty(links) || links.size() == 0) {
