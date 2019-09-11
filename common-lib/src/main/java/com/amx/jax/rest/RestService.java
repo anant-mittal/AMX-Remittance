@@ -156,7 +156,7 @@ public class RestService {
 		HttpEntity<?> requestEntity;
 		HttpMethod method;
 		Map<String, String> uriParams = new HashMap<String, String>();
-		MultiValueMap<String, String> parameters = new LinkedMultiValueMap<String, String>();
+		MultiValueMap<String, Object> parameters = new LinkedMultiValueMap<String, Object>();
 		RestTemplate restTemplate;
 		private HttpHeaders headers = new HttpHeaders();
 		Map<String, String> headersMeta = new HashMap<String, String>();
@@ -212,6 +212,17 @@ public class RestService {
 
 		public Ajax field(String paramKey, Object paramValue) {
 			parameters.add(paramKey, ArgUtil.parseAsString(paramValue));
+			return this;
+		}
+
+		public Ajax field(String paramKey, MultipartFile file) throws IOException {
+			headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+			parameters.add(paramKey, RestService.getByteArrayFile(file));
+			return this;
+		}
+
+		public Ajax resource(String paramKey, Object paramValue) {
+			parameters.add(paramKey, paramValue);
 			return this;
 		}
 
@@ -289,7 +300,7 @@ public class RestService {
 
 		public Ajax postForm() {
 			this.isForm = true;
-			return this.post(new HttpEntity<MultiValueMap<String, String>>(parameters, headers));
+			return this.post(new HttpEntity<MultiValueMap<String, Object>>(parameters, headers));
 		}
 
 		public <T> Ajax postJson(T body) {
@@ -451,14 +462,15 @@ public class RestService {
 			}
 		}
 	}
-	
+
 	public static Resource getByteArrayFile(MultipartFile file) throws IOException {
-		Path testFile = Files.createTempFile("test-file", ".txt");
-		LOGGER.info("Creating and Uploading Test File: " + testFile);
+		String fileName = file.getOriginalFilename();
+		String ext = "";
+		if (fileName.lastIndexOf(".") != -1 && fileName.lastIndexOf(".") != 0)
+			ext = fileName.substring(fileName.lastIndexOf(".") + 1);
+		Path testFile = Files.createTempFile(file.getName(), "." + ext);
 		Files.write(testFile, file.getBytes());
 		return new FileSystemResource(testFile.toFile());
 	}
-	
-	
-	
+
 }

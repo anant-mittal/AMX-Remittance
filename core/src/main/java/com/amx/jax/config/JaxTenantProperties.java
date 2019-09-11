@@ -55,7 +55,7 @@ public class JaxTenantProperties {
 	
 	@TenantValue("${jax.max.captcha.count}")
 	private Integer maxCaptchaCount;
-
+	
 	@TenantValue("${support.app.email}")
 	private String appSupportEmail;
 
@@ -83,7 +83,7 @@ public class JaxTenantProperties {
 	public Boolean getCashDisable() {
 		return cashDisable;
 	}
-
+	
 	public void setCashDisable(Boolean cashDisable) {
 		this.cashDisable = cashDisable;
 	}
@@ -160,6 +160,16 @@ public class JaxTenantProperties {
 		this.maxCaptchaCount = maxCaptchaCount;
 	}
 
+
+	public String getAppSupportEmail() {
+		return appSupportEmail;
+	}
+
+	public void setAppSupportEmail(String appSupportEmail) {
+		this.appSupportEmail = appSupportEmail;
+	}
+
+
 	public Boolean getHashSigEnable() {
 		return hashSigEnable;
 	}
@@ -206,13 +216,6 @@ public class JaxTenantProperties {
 	public void setCaptchaEnable(Boolean captchaEnable) {
 		this.captchaEnable = captchaEnable;
 
-	}
-	public String getAppSupportEmail() {
-		return appSupportEmail;
-	}
-
-	public void setAppSupportEmail(String appSupportEmail) {
-		this.appSupportEmail = appSupportEmail;
 	}
 
 
