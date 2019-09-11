@@ -488,7 +488,8 @@ public class PartnerDataManager {
 			String dummyRoutingNumber = null;
 			HashMap<String, String> beneAccountDetails = validateBeneBankAccount(beneficiaryDetailsDTO.getBankAccountNumber(), designationCountryAlpha3Code);
 			if(beneAccountDetails != null) {
-				bankAccountNumber = beneAccountDetails.get("beneBankAccount");
+				//bankAccountNumber = beneAccountDetails.get("beneBankAccount");
+				bankAccountNumber = beneficiaryDetailsDTO.getBankAccountNumber();
 				dummyRoutingNumber = beneAccountDetails.get("dummyRoutingNumber");
 			}else {
 				bankAccountNumber = beneficiaryDetailsDTO.getBankAccountNumber();
@@ -1100,7 +1101,7 @@ public class PartnerDataManager {
 				if(lstparameterDetails != null && lstparameterDetails.size() != 0) {
 					for (ParameterDetailsModel parameterDetails : lstparameterDetails) {
 						if(parameterDetails.getCharField1() != null && parameterDetails.getCharField1().equalsIgnoreCase(countryAplha3Code)) {
-							beneBankAccount = parameterDetails.getCharField2();
+							//beneBankAccount = parameterDetails.getCharField2();
 							dummyRoutingNumber = parameterDetails.getCharField3();
 							break;
 						}
