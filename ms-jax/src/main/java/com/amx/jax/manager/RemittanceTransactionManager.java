@@ -77,6 +77,7 @@ import com.amx.jax.dbmodel.remittance.ViewTransfer;
 import com.amx.jax.dbmodel.remittance.ViewVatDetails;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.dict.PayGRespCodeJSONConverter;
+import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.dict.UserClient;
 import com.amx.jax.dict.UserClient.Channel;
 import com.amx.jax.error.JaxError;
@@ -1219,7 +1220,10 @@ public class RemittanceTransactionManager {
 			userService.validateOtp(null, model.getmOtp(), null);
 		}
 		remiteAppModel.setCivilIdOtpModel(civilIdOtpModel);
-
+		if(model.getPaymentType().equalsIgnoreCase(ConstantDocument.PB_PAYMENT)) {
+			remiteAppModel.setPgCode(PayGServiceCode.PB);
+		}
+		
 		logger.info("Application saved successfully, response: " + remiteAppModel.toString());
 
 		auditService.log(new CActivityEvent(Type.APPLICATION_CREATED,
