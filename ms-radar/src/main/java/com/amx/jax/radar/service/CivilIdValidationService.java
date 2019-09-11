@@ -3,6 +3,8 @@ package com.amx.jax.radar.service;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
+import java.util.regex.Pattern;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.logger.LoggerService;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.StringUtils.StringMatcher;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 @Component
@@ -24,13 +27,27 @@ public class CivilIdValidationService {
 	private static final String PARAM_NAME = "name";
 	private static final String TAG_INPUT = "input";
 
+	public static final Pattern VALID_CARD = Pattern.compile("you are holding a valid Civil ID card (.*)$");
+	public static final Pattern INVALID_CARD = Pattern.compile("^Validation Failure: Not A Valid Civil Number");
+	public static final Pattern INVALID_CARD_RECEIPT = Pattern.compile(
+			"^Validation Failure: Card supplied has invalid length - Neither a receipt number nor a valid civil id number");
+	public static final Pattern INVALID_RECEIPT = Pattern
+			.compile("^Validation Failure: Not a valid Card Receipt Number");
+
 	XmlMapper xmlMapper = new XmlMapper();
 
 	CaptchaSolver captchaSolver = new CaptchaSolver("tessdata0");
 
 	public static final Logger LOGGER = LoggerService.getLogger(CivilIdValidationService.class);
 
-	public void validate(String identity) throws IOException {
+	public static class CivilIdValidationResponse implements Serializable {
+		private static final long serialVersionUID = -2503512814079715347L;
+		public String identity;
+		public String response;
+		public String status;
+	}
+
+	public CivilIdValidationResponse validate(String identity) throws IOException {
 
 		Document doc0 = Jsoup.connect(UAE_XCHANGE_URL).get();
 
@@ -52,14 +69,33 @@ public class CivilIdValidationService {
 
 		Document doc1 = con1.post();
 
+		CivilIdValidationResponse resp = new CivilIdValidationResponse();
+		resp.identity = identity;
+		resp.status = "INVALID";
+
 		Elements trs = doc1.select(".section.group .alert .labelText");
 		for (Element divs : trs) {
 			String key = divs.id();
 			if (!ArgUtil.isEmpty(key) && key.endsWith("_lblResult")) {
-				LOGGER.info("{} ==  {}", key, divs.text());
+				resp.response = divs.text();
+				LOGGER.debug("{} ==  {}", key, divs.text());
+				break;
 			}
-
 		}
+
+		StringMatcher matcher = new StringMatcher(resp.response);
+
+		if (matcher.isMatch(VALID_CARD)) {
+			resp.status = "VALID_CARD";
+		} else if (matcher.isMatch(INVALID_CARD)) {
+			resp.status = "INVALID_CARD";
+		} else if (matcher.isMatch(INVALID_CARD_RECEIPT) || matcher.isMatch(INVALID_RECEIPT)) {
+			resp.status = "INVALID_INPUT";
+		} else {
+			resp.status = "EXPIRED";
+		}
+
+		return resp;
 	}
 
 	private static final String PACI_URL = "https://www.paci.gov.kw/Default.aspx";

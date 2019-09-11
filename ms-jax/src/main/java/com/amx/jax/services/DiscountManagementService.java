@@ -132,7 +132,8 @@ public class DiscountManagementService {
 		int lcIndex = sellRateNet.getConvertedLCAmount().intValue();
 		sellRateNet.setConvertedLCAmount(RoundUtil.roundBigDecimal(lcAmount, lcIndex));
 		BigDecimal invRate = sellRateNet.getInverseRate();
-		sellRateNet.setInverseRate(RoundUtil.roundBigDecimal(invRate, 6));
+		sellRateNet.setInverseRate(invRate);
+		//sellRateNet.setInverseRate(RoundUtil.roundBigDecimal(invRate, 6));
 	}
 	
 	
