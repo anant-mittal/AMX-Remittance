@@ -7,8 +7,8 @@ public class PayAtBranchTrnxListDTO {
 	public BigDecimal transactionId;
 	public Date confirmDate;
 	public String status;
-	public String accountNo;
-	public String bank;
+	public String beneAccountNo;
+	public String beneBank;
 	public BigDecimal amount;
 	public String identityInt;
 	public BigDecimal exchangeRate;
@@ -23,6 +23,42 @@ public class PayAtBranchTrnxListDTO {
 	public String foreignCurrencyDescription;
 	public String statusDesc;
 	public BigDecimal beneId;
+	public String beneBranch;
+	public String beneName;
+	public String documentFinanceYear;
+	
+
+	public String getBeneBank() {
+		return beneBank;
+	}
+
+	public void setBeneBank(String beneBank) {
+		this.beneBank = beneBank;
+	}
+
+	public String getBeneBranch() {
+		return beneBranch;
+	}
+
+	public void setBeneBranch(String beneBranch) {
+		this.beneBranch = beneBranch;
+	}
+
+	public String getBeneName() {
+		return beneName;
+	}
+
+	public void setBeneName(String beneName) {
+		this.beneName = beneName;
+	}
+
+	public String getDocumentFinanceYear() {
+		return documentFinanceYear;
+	}
+
+	public void setDocumentFinanceYear(String documentFinanceYear) {
+		this.documentFinanceYear = documentFinanceYear;
+	}
 
 	public BigDecimal getBeneId() {
 		return beneId;
@@ -154,19 +190,19 @@ public class PayAtBranchTrnxListDTO {
 	}
 
 	public String getAccountNo() {
-		return accountNo;
+		return beneAccountNo;
 	}
 
-	public void setAccountNo(String accountNo) {
-		this.accountNo = accountNo;
+	public void setAccountNo(String beneAccountNo) {
+		this.beneAccountNo = beneAccountNo;
 	}
 
 	public String getBank() {
-		return bank;
+		return beneBank;
 	}
 
-	public void setBank(String bank) {
-		this.bank = bank;
+	public void setBank(String beneBank) {
+		this.beneBank = beneBank;
 	}
 
 	public BigDecimal getAmount() {

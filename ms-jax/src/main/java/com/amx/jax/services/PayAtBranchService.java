@@ -20,6 +20,7 @@ import com.amx.jax.dbmodel.PayAtBranchTrnxModel;
 import com.amx.jax.dbmodel.PaymentModesModel;
 import com.amx.jax.dbmodel.remittance.RemittanceAppBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.postman.PostManService;
@@ -74,7 +75,7 @@ public class PayAtBranchService {
 	public List<PayAtBranchTrnxListDTO> getPbTrnxList() {
 		List<PayAtBranchTrnxModel> pbTrnxList = payAtBranchDao.getPbTrnxList();
 		if (pbTrnxList.isEmpty()) {
-			throw new GlobalException("No wire transfer transaction found");
+			throw new GlobalException(JaxError.PAYAT_BRANCH_TRNX_NOT_FOUND,"No pay at branch transaction found");
 		}
 
 		return convertPbTrnxList(pbTrnxList);
@@ -87,18 +88,19 @@ public class PayAtBranchService {
 			pbTrnxListDTO.setTransactionId(payAtBranchTrnxModel.getTransactionId());
 			pbTrnxListDTO.setStatus(payAtBranchTrnxModel.getWireTransferStatus());
 			pbTrnxListDTO.setStatusDesc(payAtBranchTrnxModel.getStatusDescription());
-			pbTrnxListDTO.setBank(payAtBranchTrnxModel.getBankName());
-			pbTrnxListDTO.setAccountNo(payAtBranchTrnxModel.getBankAccountNo());
 			pbTrnxListDTO.setAmount(payAtBranchTrnxModel.getNetAmount());
 			pbTrnxListDTO.setDocumentDate(payAtBranchTrnxModel.getDocumentDate());
 			pbTrnxListDTO.setApplIsActive(payAtBranchTrnxModel.getApplIsActive());
 			pbTrnxListDTO.setForeignCurrencyDescription(payAtBranchTrnxModel.getForeignCurrencyDescription());
-			if (payAtBranchTrnxModel.getWireTransferStatus().equalsIgnoreCase(ConstantDocument.WT_STATUS_PAID)) {
-				pbTrnxListDTO.setTransactionDocumentNo(payAtBranchTrnxModel.getTransactionDocumentNo());
-			}
+		
 			RemittanceApplication remittanceApplication= remittanceApplicationDao.getApplication(payAtBranchTrnxModel.getTransactionId());
 			RemittanceAppBenificiary remittanceAppBeneficiary=remittanceApplicationBeneRepository.findByExRemittanceAppfromBenfi(remittanceApplication);
 			pbTrnxListDTO.setBeneId(remittanceAppBeneficiary.getBeneficiaryId());
+			pbTrnxListDTO.setDocumentFinanceYear(payAtBranchTrnxModel.getDocumentFinanceYear());
+			pbTrnxListDTO.setBeneBank(remittanceAppBeneficiary.getBeneficiaryBank());
+			pbTrnxListDTO.setBeneBranch(remittanceAppBeneficiary.getBeneficiaryBranch());
+			pbTrnxListDTO.setBeneName(remittanceAppBeneficiary.getBeneficiaryName());
+			pbTrnxListDTO.setAccountNo(remittanceAppBeneficiary.getBeneficiaryAccountNo());
 			output.add(pbTrnxListDTO);
 
 		}
@@ -108,7 +110,9 @@ public class PayAtBranchService {
 
 	public List<PayAtBranchTrnxListDTO> getPbTrnxListBranch() {
 		List<PayAtBranchTrnxModel> pbTrnxList = payAtBranchDao.getPbTrnxListBranch();
-
+		if (pbTrnxList.isEmpty()) {
+			throw new GlobalException(JaxError.PAYAT_BRANCH_TRNX_NOT_FOUND,"No pay at branch transaction found");
+		}
 		return convertPbTrnxListBranch(pbTrnxList);
 	}
 

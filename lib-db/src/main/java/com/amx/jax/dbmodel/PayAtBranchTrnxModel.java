@@ -69,6 +69,19 @@ private static final long serialVersionUID = 7309549091432024935L;
 	@Column(name="STATUS_DESCRIPTION")
 	private String statusDescription;
 	
+	@Column(name="DOCUMENT_FINANCE_YEAR")
+	private String documentFinanceYear;
+	
+	
+	
+	public String getDocumentFinanceYear() {
+		return documentFinanceYear;
+	}
+
+	public void setDocumentFinanceYear(String documentFinanceYear) {
+		this.documentFinanceYear = documentFinanceYear;
+	}
+
 	public String getStatusDescription() {
 		return statusDescription;
 	}
