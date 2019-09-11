@@ -1,8 +1,7 @@
 package com.amx.jax.config;
 
-import java.util.Date;
+import java.math.BigDecimal;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.scope.TenantScoped;
@@ -76,6 +75,9 @@ public class JaxTenantProperties {
 	
 	@TenantValue("${signature.algorithem}")
 	private String sigAlgorithem;
+	
+	@TenantValue("${jax.max.loyalty.count}")
+	private BigDecimal loyaltyCount;
 
 	public Boolean getCashDisable() {
 		return cashDisable;
@@ -206,6 +208,14 @@ public class JaxTenantProperties {
 
 	}
 
+	public BigDecimal getLoyaltyCount() {
+		return loyaltyCount;
+	}
 
+	public void setLoyaltyCount(BigDecimal loyaltyCount) {
+		this.loyaltyCount = loyaltyCount;
+	}
+
+	
 
 }
