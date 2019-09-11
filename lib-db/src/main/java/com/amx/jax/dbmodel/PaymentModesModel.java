@@ -46,13 +46,13 @@ private static final long serialVersionUID = 7309549091432024935L;
 	@Override
 	public String resourceName() {
 		
-		return paymentType;
+		return paymentDescription;
 	}
 
 	@Override
 	public String resourceCode() {
 		
-		return paymentDescription;
+		return paymentType;
 	}
 
 	
