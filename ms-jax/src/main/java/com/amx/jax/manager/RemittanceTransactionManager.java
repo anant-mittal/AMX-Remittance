@@ -1169,9 +1169,9 @@ public class RemittanceTransactionManager {
 		logger.info("amount in exchnagerate break up"+breakup.getNetAmount());
 		BigDecimal netAmountPayable = breakup.getNetAmount();
 		RemittanceApplicationResponseModel remiteAppModel = new RemittanceApplicationResponseModel();
-		if(!ConstantDocument.WIRE_TRANSFER_PAYMENT.equalsIgnoreCase(model.getPaymentType())) {
-			deactivatePreviousApplications();
-		}
+		
+		deactivatePreviousApplications();
+		
 		
 		validateAdditionalCheck();
 		validateAdditionalBeneDetailsV2(model);
