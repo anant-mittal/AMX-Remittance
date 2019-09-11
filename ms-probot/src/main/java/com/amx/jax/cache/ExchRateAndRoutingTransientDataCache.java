@@ -14,6 +14,7 @@ import com.amx.jax.pricer.dbmodel.HolidayListMasterModel;
 import com.amx.jax.pricer.dbmodel.OnlineMarginMarkup;
 import com.amx.jax.pricer.dbmodel.TimezoneMasterModel;
 import com.amx.jax.pricer.dbmodel.ViewExGLCBAL;
+import com.amx.jax.pricer.dbmodel.ViewExGLCBalProvisional;
 import com.amx.jax.pricer.dto.BankDetailsDTO;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
 import com.amx.jax.pricer.var.PricerServiceConstants.CUSTOMER_CATEGORY;
@@ -258,7 +259,7 @@ public class ExchRateAndRoutingTransientDataCache {
 
 	}
 
-	public BigDecimal getMaxGLLcBalForBank(BigDecimal bankId, boolean isFc) {
+	public BigDecimal getMaxGLCBalForBank(BigDecimal bankId, boolean isFc) {
 
 		BankGLCData bankGLCData = this.bankGlcBalMap.get(bankId);
 
@@ -294,6 +295,14 @@ public class ExchRateAndRoutingTransientDataCache {
 				} else {
 					rateLcCurBal = glcBalList.get(0).getRateCurBal();
 					rateFcCurBal = glcBalList.get(0).getRateFcCurBal();
+				}
+
+				// Adjust the FC and LC Amount for the Pending Provisional Adjustments.
+				ViewExGLCBalProvisional provision = bankGLCData.getProvisionalBalDetails();
+
+				if (provision != null && provision.getRateCurBal() != null && provision.getRateFcCurBal() != null) {
+					rateLcCurBal = rateLcCurBal.add(provision.getRateCurBal());
+					rateFcCurBal = rateFcCurBal.add(provision.getRateFcCurBal());
 				}
 
 			}

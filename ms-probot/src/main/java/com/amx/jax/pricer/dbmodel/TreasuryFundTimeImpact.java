@@ -33,6 +33,9 @@ public class TreasuryFundTimeImpact implements Serializable {
 	@Column(name = "CURRENCY_ID")
 	private BigDecimal currencyId;
 
+	@Column(name = "FUNDING_CUR_ID")
+	private BigDecimal fundingCurId;
+
 	@Column(name = "FUND_STATUS")
 	private String fundStatus;
 
@@ -103,6 +106,14 @@ public class TreasuryFundTimeImpact implements Serializable {
 
 	public void setCurrencyId(BigDecimal currencyId) {
 		this.currencyId = currencyId;
+	}
+
+	public BigDecimal getFundingCurId() {
+		return fundingCurId;
+	}
+
+	public void setFundingCurId(BigDecimal fundingCurId) {
+		this.fundingCurId = fundingCurId;
 	}
 
 	public String getFundStatus() {

@@ -38,6 +38,10 @@ public class ViewExGLCBAL implements Serializable {
 	/** The currency code. */
 	@Column(name = "CURRENCY_CODE")
 	private String currencyCode;
+	
+	/** The Bank Country Id. */
+	@Column(name = "BANK_COUNTRY_ID")
+	private BigDecimal bankCountryId;
 
 	/** The currency name. */
 	@Column(name = "CURRENCY_NAME")
@@ -133,6 +137,14 @@ public class ViewExGLCBAL implements Serializable {
 	 */
 	public void setBankFullName(String bankFullName) {
 		this.bankFullName = bankFullName;
+	}
+
+	public BigDecimal getBankCountryId() {
+		return bankCountryId;
+	}
+
+	public void setBankCountryId(BigDecimal bankCountryId) {
+		this.bankCountryId = bankCountryId;
 	}
 
 	/**

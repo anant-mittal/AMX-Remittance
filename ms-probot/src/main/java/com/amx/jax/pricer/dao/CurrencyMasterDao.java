@@ -34,4 +34,9 @@ public class CurrencyMasterDao {
 		return repo.getCurrencyByGroupId(groupId);
 	}
 
+	@CacheForTenant
+	public List<CurrencyMasterModel> getCurrencyByIds(List<BigDecimal> currencyIds) {
+		return repo.findByCurrencyIdIn(currencyIds);
+	}
+
 }

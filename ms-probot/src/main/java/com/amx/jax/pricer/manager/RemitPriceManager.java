@@ -33,6 +33,7 @@ import com.amx.jax.pricer.dao.ExchangeRateDao;
 import com.amx.jax.pricer.dao.MarginMarkupDao;
 import com.amx.jax.pricer.dao.PipsMasterDao;
 import com.amx.jax.pricer.dao.RoutingDaoAlt;
+import com.amx.jax.pricer.dao.TreasuryFTImpactDao;
 import com.amx.jax.pricer.dao.ViewExGLCBALDao;
 import com.amx.jax.pricer.dao.VwExGLCBalProvDao;
 import com.amx.jax.pricer.dbmodel.BankApplicability;
@@ -45,6 +46,7 @@ import com.amx.jax.pricer.dbmodel.ExchangeRateApprovalDetModelAlt;
 import com.amx.jax.pricer.dbmodel.OnlineMarginMarkup;
 import com.amx.jax.pricer.dbmodel.PipsMaster;
 import com.amx.jax.pricer.dbmodel.RoutingHeader;
+import com.amx.jax.pricer.dbmodel.TreasuryFundTimeImpact;
 import com.amx.jax.pricer.dbmodel.ViewExGLCBAL;
 import com.amx.jax.pricer.dbmodel.ViewExGLCBalProvisional;
 import com.amx.jax.pricer.dto.BankDetailsDTO;
@@ -56,6 +58,7 @@ import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.var.PricerServiceConstants;
 import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_BY;
 import com.amx.jax.pricer.var.PricerServiceConstants.SERVICE_GROUP;
+import com.amx.jax.pricer.var.PricerServiceConstants.TREASURY_FUND_STATUS;
 
 @Component
 public class RemitPriceManager {
@@ -77,6 +80,9 @@ public class RemitPriceManager {
 
 	@Autowired
 	VwExGLCBalProvDao viewExGlcBalProvDao;
+
+	@Autowired
+	TreasuryFTImpactDao treasuryFTImpactDao;
 
 	@Autowired
 	MarginMarkupDao marginMarkupDao;
@@ -186,7 +192,7 @@ public class RemitPriceManager {
 
 				// Check if the GL Account is running low
 				BigDecimal maxFcCurBal = exchRateAndRoutingTransientDataCache
-						.getMaxGLLcBalForBank(exchangeRate.getBankMaster().getBankId(), Boolean.TRUE);
+						.getMaxGLCBalForBank(exchangeRate.getBankMaster().getBankId(), Boolean.TRUE);
 
 				// System.out.println(" Required Amt ==> " +
 				// exRateDetails.getSellRateBase().getConvertedFCAmount().toPlainString()
@@ -292,7 +298,7 @@ public class RemitPriceManager {
 
 				BigDecimal avgBankGLCBALRate = exchRateAndRoutingTransientDataCache.getAvgRateGLCForBank(rBankId);
 
-				BigDecimal maxFcCurBal = exchRateAndRoutingTransientDataCache.getMaxGLLcBalForBank(rBankId,
+				BigDecimal maxFcCurBal = exchRateAndRoutingTransientDataCache.getMaxGLCBalForBank(rBankId,
 						Boolean.TRUE);
 
 				// Update GLCBAL Rate to Markup Adjusted Rates
@@ -445,10 +451,7 @@ public class RemitPriceManager {
 		String curCode = curMaster.getCurrencyCode();
 
 		// Get GLCBAL Data
-		List<ViewExGLCBAL> glcbalRatesForBanks = viewExGLCBALDao.getGLCBALforCurrencyAndBank(curCode, routingBankIds);
-
-		List<ViewExGLCBalProvisional> glcBalProvForBanks = viewExGlcBalProvDao.getByCurrencyCodeAndBankIdIn(curCode,
-				routingBankIds);
+		List<ViewExGLCBAL> glcbalRatesForBanks = viewExGLCBALDao.getGLCBALforCurrencyAndBanks(curCode, routingBankIds);
 
 		if (glcbalRatesForBanks == null || glcbalRatesForBanks.isEmpty()) {
 			throw new PricerServiceException(PricerServiceError.MISSING_GLCBAL_ENTRIES,
@@ -466,13 +469,19 @@ public class RemitPriceManager {
 			}
 		}
 
+		// Get Pending Provisional GL Accumulations
+		Map<BigDecimal, ViewExGLCBalProvisional> glcBalProvForBanks = viewExGlcBalProvDao
+				.getByCurrencyCodeAndBankIdIn(curCode, routingBankIds);
+
 		Map<BigDecimal, BankGLCData> bankGlcBalDataMap = new HashMap<BigDecimal, BankGLCData>();
 
 		for (ViewExGLCBAL viewExGLCBAL : glcbalRatesForBanks) {
 
+			BankGLCData glData;
+
 			if (bankGlcBalDataMap.containsKey(viewExGLCBAL.getBankId())) {
 
-				BankGLCData glData = bankGlcBalDataMap.get(viewExGLCBAL.getBankId());
+				glData = bankGlcBalDataMap.get(viewExGLCBAL.getBankId());
 
 				if (glData.getGlAccountsDetails() == null) {
 					glData.setGlAccountsDetails(new ArrayList<ViewExGLCBAL>());
@@ -482,7 +491,7 @@ public class RemitPriceManager {
 
 			} else {
 
-				BankGLCData glData = new BankGLCData();
+				glData = new BankGLCData();
 
 				List<ViewExGLCBAL> glcBalList = new ArrayList<ViewExGLCBAL>();
 
@@ -491,6 +500,36 @@ public class RemitPriceManager {
 				glData.setGlAccountsDetails(glcBalList);
 
 				bankGlcBalDataMap.put(viewExGLCBAL.getBankId(), glData);
+			}
+
+			if (glcBalProvForBanks.containsKey(viewExGLCBAL.getBankId())) {
+				glData.setProvisionalBalDetails(glcBalProvForBanks.get(viewExGLCBAL.getBankId()));
+			}
+
+			// Treasury Funding Time Impact Details
+			Map<TREASURY_FUND_STATUS, TreasuryFundTimeImpact> treasuryFundImpacts = treasuryFTImpactDao
+					.findByCountryIdAndCurrencyId(viewExGLCBAL.getBankCountryId(), currencyId);
+
+			TreasuryFundTimeImpact fundedImpact = treasuryFundImpacts.get(TREASURY_FUND_STATUS.FUNDED);
+
+			glData.setFundedTimeImpact(fundedImpact);
+			glData.setOutOfFundTimeImpact(treasuryFundImpacts.get(TREASURY_FUND_STATUS.OUT_OF_FUND));
+
+			if (fundedImpact != null && fundedImpact.getFundingCurId() != null) {
+
+				CurrencyMasterModel fundCurMaster = currencyMasterDao.getByCurrencyId(fundedImpact.getFundingCurId());
+
+				if (null == fundCurMaster) {
+					LOGGER.warn("Critical: Invalid Fund Currency Id: " + fundedImpact.getFundingCurId());
+				} else {
+
+					String fundCurCode = fundCurMaster.getCurrencyCode();
+					List<ViewExGLCBAL> fundGLCBalList = viewExGLCBALDao.getGLCBALforCurrencyAndBank(fundCurCode,
+							viewExGLCBAL.getBankId());
+
+					glData.setFundingGlAcDetails(fundGLCBalList);
+				}
+
 			}
 
 		}

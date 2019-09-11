@@ -3,7 +3,9 @@ package com.amx.jax.cache;
 import java.math.BigDecimal;
 import java.util.List;
 
+import com.amx.jax.pricer.dbmodel.TreasuryFundTimeImpact;
 import com.amx.jax.pricer.dbmodel.ViewExGLCBAL;
+import com.amx.jax.pricer.dbmodel.ViewExGLCBalProvisional;
 
 public class BankGLCData {
 
@@ -12,6 +14,14 @@ public class BankGLCData {
 	private BigDecimal avgFcRate;
 	private BigDecimal maxLcCurBalAmount;
 	private BigDecimal maxFcCurBalAmount;
+
+	private ViewExGLCBalProvisional provisionalBalDetails;
+
+	private List<ViewExGLCBAL> FundingGlAcDetails;
+
+	private TreasuryFundTimeImpact fundedTimeImpact;
+
+	private TreasuryFundTimeImpact outOfFundTimeImpact;
 
 	public List<ViewExGLCBAL> getGlAccountsDetails() {
 		return glAccountsDetails;
@@ -52,5 +62,40 @@ public class BankGLCData {
 	public void setMaxFcCurBalAmount(BigDecimal maxFcCurBalAmount) {
 		this.maxFcCurBalAmount = maxFcCurBalAmount;
 	}
+
+	public ViewExGLCBalProvisional getProvisionalBalDetails() {
+		return provisionalBalDetails;
+	}
+
+	public void setProvisionalBalDetails(ViewExGLCBalProvisional provisionalBalDetails) {
+		this.provisionalBalDetails = provisionalBalDetails;
+	}
+
+	public List<ViewExGLCBAL> getFundingGlAcDetails() {
+		return FundingGlAcDetails;
+	}
+
+	public void setFundingGlAcDetails(List<ViewExGLCBAL> fundingGlAcDetails) {
+		FundingGlAcDetails = fundingGlAcDetails;
+	}
+
+	public TreasuryFundTimeImpact getFundedTimeImpact() {
+		return fundedTimeImpact;
+	}
+
+	public void setFundedTimeImpact(TreasuryFundTimeImpact fundedTimeImpact) {
+		this.fundedTimeImpact = fundedTimeImpact;
+	}
+
+	public TreasuryFundTimeImpact getOutOfFundTimeImpact() {
+		return outOfFundTimeImpact;
+	}
+
+	public void setOutOfFundTimeImpact(TreasuryFundTimeImpact outOfFundTimeImpact) {
+		this.outOfFundTimeImpact = outOfFundTimeImpact;
+	}
+	
+	
+	
 
 }

@@ -450,10 +450,10 @@ public class ExchangePricingAndRoutingService {
 
 						// GLC Comparison goes here.
 						BigDecimal lastGlcBalFc = exchRateAndRoutingTransientDataCache
-								.getMaxGLLcBalForBank(lastNoBeneRoute.getExchangeRateDetails().getBankId(), true);
+								.getMaxGLCBalForBank(lastNoBeneRoute.getExchangeRateDetails().getBankId(), true);
 
 						BigDecimal curGLCBalFc = exchRateAndRoutingTransientDataCache
-								.getMaxGLLcBalForBank(routeDetails.getExchangeRateDetails().getBankId(), true);
+								.getMaxGLCBalForBank(routeDetails.getExchangeRateDetails().getBankId(), true);
 
 						if (curGLCBalFc.compareTo(lastGlcBalFc) > 0) {
 							// Replace only if the Current GLC BAL is More than the prev GLC BAL
@@ -484,10 +484,10 @@ public class ExchangePricingAndRoutingService {
 
 						// GLC Comparison goes here.
 						BigDecimal lastGlcBalFc = exchRateAndRoutingTransientDataCache
-								.getMaxGLLcBalForBank(lastNoBeneRoute.getExchangeRateDetails().getBankId(), true);
+								.getMaxGLCBalForBank(lastNoBeneRoute.getExchangeRateDetails().getBankId(), true);
 
 						BigDecimal curGLCBalFc = exchRateAndRoutingTransientDataCache
-								.getMaxGLLcBalForBank(routeDetails.getExchangeRateDetails().getBankId(), true);
+								.getMaxGLCBalForBank(routeDetails.getExchangeRateDetails().getBankId(), true);
 
 						if (curGLCBalFc.compareTo(lastGlcBalFc) > 0) {
 							// Replace only if the Current GLC BAL is More than the prev GLC BAL
