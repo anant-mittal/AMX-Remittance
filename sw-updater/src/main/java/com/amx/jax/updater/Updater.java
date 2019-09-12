@@ -76,11 +76,13 @@ public class Updater extends JFrame {
 		pan2.setLayout(new FlowLayout());
 
 		aboutTextArea = new JTextArea();
+		aboutTextArea.setWrapStyleWord(true);
+		aboutTextArea.setLineWrap(true);
 		sp = new JScrollPane();
 		sp.setViewportView(aboutTextArea);
 
 		launchAppButton = new JButton("Run Adapter");
-		launchAppButton.setEnabled(false);
+		launchAppButton.setEnabled(true);
 		launchAppButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -116,6 +118,7 @@ public class Updater extends JFrame {
 	}
 
 	private void checkForUpdate() {
+		console("File : " + ADAPTER_FOLDER + "/" + adapterFile);
 		worker = new Thread(
 				new Runnable() {
 					public void run() {
@@ -127,7 +130,6 @@ public class Updater extends JFrame {
 								updateButton.setEnabled(true);
 							} else {
 								console("No Update Required");
-								launchAppButton.setEnabled(true);
 							}
 						} catch (Exception ex) {
 							ex.printStackTrace();
@@ -169,7 +171,7 @@ public class Updater extends JFrame {
 			console(ex.toString());
 			ex.printStackTrace();
 		}
-		
+
 	}
 
 	private void remove(File f) {
