@@ -9,13 +9,17 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.amx.jax.AppConstants;
 import com.amx.jax.AppContext;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.dict.UserClient.AppType;
 import com.amx.jax.dict.UserClient.DeviceType;
 import com.amx.jax.dict.UserClient.UserDeviceClient;
 import com.amx.jax.tunnel.TunnelMessage;
+import com.amx.utils.ArgUtil;
+import com.amx.utils.ContextUtil;
 import com.amx.utils.JsonUtil;
+import com.amx.utils.TimeUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 public class App { // Noncompliant
@@ -31,7 +35,24 @@ public class App { // Noncompliant
 	 * @throws MalformedURLException
 	 * @throws URISyntaxException
 	 */
-	public static void main(String[] args) throws MalformedURLException, URISyntaxException {
+
+	public static void main(String[] args) {
+		Long traceTime = ArgUtil.parseAsLong(ContextUtil.map().get(AppConstants.TRACE_TIME_XKEY), 0L);
+		if (traceTime != null && traceTime != 0L) {
+			System.out.println(TimeUtils.timeSince(AppContextUtil.getTraceTime()));
+		}
+
+	}
+
+	public static void main3(String[] args) {
+		String url = "/api/user/tranx/history";
+		System.out.println(url.toLowerCase().replace("pub", "b").replace("api", "p").replace("user", "")
+				.replace("get", "").replace("post", "").replace("save", "")
+				.replace("/", "").replaceAll("[AaEeIiOoUuYyWwHh]", ""));
+	}
+
+	public static void main2(String[] args) throws MalformedURLException, URISyntaxException {
+
 		AppContext context = AppContextUtil.getContext();
 
 		UserDeviceClient client = new UserDeviceClient();
@@ -43,9 +64,7 @@ public class App { // Noncompliant
 		context.setClient(client);
 		context.setTraceId("TST-1d59nub55kbgg-1d59nub5827sx");
 		context.setTranxId("TST-1d59nub55kbgg-1d59nub5827sx");
-		
 
-		
 		TunnelMessage<Map<String, String>> message = new TunnelMessage<Map<String, String>>(
 				new HashMap<String, String>(), context);
 		message.setTopic("DATAUPD_CUSTOMER");

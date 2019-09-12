@@ -13,7 +13,7 @@ import com.amx.jax.pricer.repository.VwExGLCBALRepository;
 public class ViewExGLCBALDao {
 
 	@Autowired
-	VwExGLCBALRepository vwExGLCBALRepository;
+	private VwExGLCBALRepository vwExGLCBALRepository;
 
 	public List<ViewExGLCBAL> getGLCBALforCurrencyAndBank(String currencyCode, List<BigDecimal> bankIds) {
 		return vwExGLCBALRepository.findByCurrencyCodeAndBankIdIn(currencyCode, bankIds);

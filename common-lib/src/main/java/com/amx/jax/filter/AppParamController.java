@@ -2,13 +2,13 @@ package com.amx.jax.filter;
 
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.jasypt.util.text.BasicTextEncryptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +21,8 @@ import com.amx.jax.AppContextUtil;
 import com.amx.jax.AppParam;
 import com.amx.jax.AppTenantConfig;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.def.IndicatorListner;
+import com.amx.jax.def.IndicatorListner.GaugeIndicator;
 import com.amx.jax.exception.AmxApiError;
 import com.amx.jax.http.ApiRequest;
 import com.amx.jax.http.CommonHttpRequest;
@@ -40,6 +42,7 @@ public class AppParamController {
 	public static final String PUB_AMX_PREFIX = "/pub/amx";
 	public static final String PUBG_AMX_PREFIX = "/pubg/";
 	public static final String PARAM_URL = PUB_AMX_PREFIX + "/params";
+	public static final String METRIC_URL = PUB_AMX_PREFIX + "/metric";
 
 	@Autowired
 	CommonHttpRequest commonHttpRequest;
@@ -50,6 +53,9 @@ public class AppParamController {
 	@Autowired
 	AppTenantConfig appTenantConfig;
 
+	@Autowired(required = false)
+	List<IndicatorListner> listners;
+
 	@ApiRequest(type = RequestType.NO_TRACK_PING)
 	@RequestMapping(value = PARAM_URL, method = RequestMethod.GET)
 	public AppParam[] geoLocation(@RequestParam(required = false) AppParam id) {
@@ -58,6 +64,22 @@ public class AppParamController {
 			LOGGER.info("App Param {} changed to {}", id, id.isEnabled());
 		}
 		return AppParam.values();
+	}
+
+	@ApiRequest(type = RequestType.NO_TRACK_PING)
+	@RequestMapping(value = METRIC_URL, method = RequestMethod.GET)
+	public Map<String, Object> metric() {
+		Map<String, Object> map = new HashMap<String, Object>();
+		for (AppParam eachAppParam : AppParam.values()) {
+			map.put(eachAppParam.toString(), eachAppParam);
+		}
+		GaugeIndicator gaugeIndicator = new GaugeIndicator();
+		if (!ArgUtil.isEmpty(listners)) {
+			for (IndicatorListner eachListner : listners) {
+				map.putAll(eachListner.getIndicators(gaugeIndicator));
+			}
+		}
+		return map;
 	}
 
 	@Autowired
@@ -91,7 +113,7 @@ public class AppParamController {
 		AppContextUtil.addWarning("THis is a warning for no reason");
 		AmxApiResponse<UserDevice, Map<String, Object>> resp = new AmxApiResponse<UserDevice, Map<String, Object>>();
 		resp.setMeta(map);
-		resp.setData(commonHttpRequest.getUserDevice());
+		resp.setData(commonHttpRequest.getUserDevice().toSanitized());
 		return resp;
 	}
 

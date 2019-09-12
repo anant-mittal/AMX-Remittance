@@ -9,6 +9,6 @@ public class TenantBeanFactoryPostProcessor implements BeanFactoryPostProcessor 
 	@Override
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory factory) throws BeansException {
 		factory.registerScope("tenant", new TenantScope());
-		factory.registerScope("thread", new TenantScope());
+		factory.registerScope("thread", new ThreadScope());
 	}
 }

@@ -75,13 +75,14 @@ public class TemplateService {
 	/**
 	 * Process html.
 	 *
-	 * @param template the template
-	 * @param context  the context
+	 * @param template    the template
+	 * @param context     the context
+	 * @param contactType
 	 * @return the string
 	 */
-	public String processHtml(ITemplate template, Context context, Locale locale) {
+	public String processHtml(ITemplate template, Context context, Locale locale, ContactType contactType) {
 		String rawStr = templateEngine.process(
-				templateUtils.getTemplateFile(template.getHtmlFile(), AppContextUtil.getTenant(), locale),
+				templateUtils.getTemplateFile(template.getHtmlFile(), AppContextUtil.getTenant(), locale, contactType),
 				context);
 
 		Pattern p = Pattern.compile("src=\"inline:(.*?)\"");
@@ -99,9 +100,29 @@ public class TemplateService {
 		return rawStr;
 	}
 
-	public String processJson(ITemplate template, Context context, Locale locale) {
+	public String processSMS(ITemplate template, Context context, Locale locale, ContactType contactType) {
+		String rawStr = templateEngine.process(
+				templateUtils.getTemplateFile(template.getSMSFile(), AppContextUtil.getTenant(), locale, contactType),
+				context);
+
+		Pattern p = Pattern.compile("src=\"inline:(.*?)\"");
+		Matcher m = p.matcher(rawStr);
+		while (m.find()) {
+			String contentId = m.group(1);
+			try {
+				rawStr = rawStr.replace("src=\"inline:" + contentId + "\"",
+						"src=\"" + templateUtils.readAsBase64String(contentId) + "\"");
+			} catch (IOException e) {
+				log.error("Template parsing Error : " + template.getFileName(), e);
+			}
+		}
+		return rawStr;
+	}
+
+	public String processJson(ITemplate template, Context context, Locale locale, ContactType contactType) {
 		return templateEngine.process(
-				templateUtils.getTemplateFile(template.getJsonFile(), AppContextUtil.getTenant(), locale), context);
+				templateUtils.getTemplateFile(template.getJsonFile(), AppContextUtil.getTenant(), locale, contactType),
+				context);
 	}
 
 	/**
@@ -147,10 +168,10 @@ public class TemplateService {
 		context.setVariables(file.getModel());
 		if (file.getITemplate().isThymleaf()) {
 			String content;
-			if (file.getType() == File.Type.JSON) {
-				content = this.processJson(file.getITemplate(), context, locale);
+			if (file.getType() == File.Type.JSON || ContactType.FBPUSH == contactType) {
+				content = this.processJson(file.getITemplate(), context, locale, contactType);
 			} else {
-				content = this.processHtml(file.getITemplate(), context, locale);
+				content = this.processHtml(file.getITemplate(), context, locale, contactType);
 			}
 			file.setContent(content);
 		}

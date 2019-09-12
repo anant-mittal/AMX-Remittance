@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.constant.BeneficiaryConstant.BeneStatus;
-import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.model.BeneAccountModel;
 import com.amx.amxlib.model.BenePersonalDetailModel;
 import com.amx.amxlib.model.response.ApiResponse;
@@ -33,6 +32,7 @@ import com.amx.jax.amxlib.model.RoutingBankMasterParam;
 import com.amx.jax.constants.JaxChannel;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.service.AccountTypeService;
 import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.trnx.BeneficiaryTrnxManager;
@@ -71,20 +71,14 @@ public class BeneficiaryController {
 	private UserService userService;
 
 	@RequestMapping(value = "/beneList/", method = RequestMethod.GET)
-	public ApiResponse getBeneficiaryListResponse(@RequestParam("beneCountryId") BigDecimal beneCountryId) {
+	public ApiResponse getBeneficiaryListResponse(@RequestParam("beneCountryId") BigDecimal beneCountryId,@RequestParam("excludePackage") Boolean excludePackage) {
 		BigDecimal customerId = metaData.getCustomerId();
 		BigDecimal applicationCountryId = metaData.getCountryId();
 		JaxChannel channel = metaData.getChannel();
-		/*
-		 * LOGGER.debug("userType :" + channel.name() + "\t customerId :" + customerId +
-		 * "\t applicationCountryId :" + applicationCountryId + "\t beneCountryId :" +
-		 * beneCountryId);
-		 */
-
 		if (channel != null && channel.equals(JaxChannel.BRANCH)) {
 			return beneService.getBeneficiaryListForBranch(customerId, applicationCountryId, beneCountryId);
 		} else {
-			return beneService.getBeneficiaryListForOnline(customerId, applicationCountryId, beneCountryId);
+			return beneService.getBeneficiaryListForOnline(customerId, applicationCountryId, beneCountryId,excludePackage);
 		}
 	}
 
@@ -92,7 +86,6 @@ public class BeneficiaryController {
 	public ApiResponse getBeneficiaryCountryListResponse() {
 		BigDecimal customerId = metaData.getCustomerId();
 		JaxChannel channel = metaData.getChannel();
-
 		LOGGER.debug("userType :" + channel + "\t customerId :" + customerId);
 
 		if (channel != null && channel.equals(JaxChannel.BRANCH)) {
@@ -115,19 +108,13 @@ public class BeneficiaryController {
 			@RequestParam(required = false, value = "beneRelationId") BigDecimal beneRelationId,
 			@RequestParam(required = false, value = "transactionId") BigDecimal transactionId) {
 		LOGGER.debug("Bene disable method Trnx Report:");
-		ApiResponse response = null;
-		try {
-			BigDecimal customerId = metaData.getCustomerId();
-			BigDecimal applicationCountryId = metaData.getCountryId();
-			LOGGER.debug(RELATIONSHIP_ID + beneRelationId);
-			LOGGER.debug(CUSTOMER_ID + customerId);
-			LOGGER.debug("applicationCountryId  :" + applicationCountryId);
-			response = beneService.getDefaultBeneficiary(customerId, applicationCountryId, beneRelationId,
-					transactionId);
-		} catch (Exception e) {
-			LOGGER.error("exception in defaultBeneficiary : ", e);
-		}
-		return response;
+		BigDecimal customerId = metaData.getCustomerId();
+		BigDecimal applicationCountryId = metaData.getCountryId();
+		LOGGER.debug(RELATIONSHIP_ID + beneRelationId);
+		LOGGER.debug(CUSTOMER_ID + customerId);
+		LOGGER.debug("applicationCountryId  :" + applicationCountryId);
+		return beneService.getDefaultBeneficiary(customerId, applicationCountryId, beneRelationId,
+				transactionId);
 	}
 
 	/**
@@ -145,9 +132,7 @@ public class BeneficiaryController {
 		BigDecimal applicationCountryId = metaData.getCountryId();
 		LOGGER.info("favouritebene customerId Id :" + customerId);
 		LOGGER.info("favouritebene applicationCountryId  :" + applicationCountryId);
-
 		response = beneService.getFavouriteBeneficiaryList(customerId, applicationCountryId);
-
 		return response;
 	}
 

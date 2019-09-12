@@ -24,6 +24,7 @@ public class AuthenticationLimitCheckView implements Serializable{
 	private String authMessage;
 	private BigDecimal authPercentage;
 	private String authDesc;
+	private String charField2;
 	
 	@Id
 	@Column(name = "AUTH_ID")
@@ -81,7 +82,13 @@ public class AuthenticationLimitCheckView implements Serializable{
 	public void setAuthDesc(String authDesc) {
 		this.authDesc = authDesc;
 	}
-	
+	@Column(name="CHAR_FIELD2")
+	public String getCharField2() {
+		return charField2;
+	}
+	public void setCharField2(String charField2) {
+		this.charField2 = charField2;
+	}
 	
 	
 	

@@ -81,7 +81,7 @@ public class WebJaxAdvice {
 		String errorKey = ArgUtil.parseAsString(exc.getErrorKey(), OWAStatusStatusCodes.UNKNOWN_JAX_ERROR.toString());
 		if (exc.isReportable()) {
 			LOG.error(errorKey, exc);
-			postManService.notifyException(errorKey, exc);
+			//postManService.notifyException(errorKey, exc);
 		} else {
 			LOG.error(ArgUtil.parseAsString(errorKey, exc.getErrorMessage()));
 		}
@@ -95,8 +95,8 @@ public class WebJaxAdvice {
 			sessionService.unIndexUser();
 		}
 
+		wrapper.setRedirectUrl(exc.getRedirectUrl());
 		wrapper.setException(exc.getClass().getName());
-
 		return new ResponseEntity<ResponseWrapper<Object>>(wrapper, HttpStatus.OK);
 	}
 
@@ -108,7 +108,7 @@ public class WebJaxAdvice {
 	 */
 	@ExceptionHandler(ConstraintViolationException.class)
 	@ResponseBody
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)	
 	public ResponseEntity<ResponseWrapper<Object>> handle(ConstraintViolationException exception) {
 		ResponseWrapper<Object> wrapper = new ResponseWrapper<Object>();
 		List<AmxFieldError> errors = new ArrayList<AmxFieldError>();
@@ -226,7 +226,7 @@ public class WebJaxAdvice {
 		wrapper.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
 		wrapper.setException(ex.getClass().getName());
 		LOG.error("In Advice Exception Captured", ex);
-		postManService.notifyException(wrapper.getStatus(), ex);
+		//postManService.notifyException(wrapper.getStatus(), ex);
 		return new ResponseEntity<ResponseWrapper<Object>>(wrapper, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 

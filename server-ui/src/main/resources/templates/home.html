@@ -23,7 +23,8 @@
     dev: false,
     remoteServerUrl: '',
     remoteJsUrl: 'http://10.28.42.83/onlinewebapp',
-    dummyApi: false
+    dummyApi: false,
+    remoteJsVersion: '[[${CDN_VERSION}]]', //
   };
   var config = getJson(window.localStorage.getItem('debugConfig'));
   if (config) {
@@ -31,16 +32,17 @@
     window.CONST.dummyApi = config.dummyApi || false;
     window.CONST.remoteServerUrl = config.remoteServerUrl || '';
     window.CONST.remoteJsUrl = config.remoteJsUrl || '';
+    window.CONST.remoteJsVersion = 'dev';
   }
 
   // add css and js
   var head = document.getElementsByTagName('head')[0];
   var js = document.createElement('script');
   js.type = 'text/javascript';
-  js.src = window.CONST.remoteJsUrl + '/dist/main.bundle.js';
+  js.src = window.CONST.remoteJsUrl + '/dist/main.bundle.'+ window.CONST.remoteJsVersion +'.js';
   var css = document.createElement('link');
   css.rel = 'stylesheet';
-  css.href = window.CONST.remoteJsUrl + '/dist/style.css';
+  css.href = window.CONST.remoteJsUrl + '/dist/style.'+ window.CONST.remoteJsVersion +'.css';
   head.appendChild(css);
   head.appendChild(js);
 

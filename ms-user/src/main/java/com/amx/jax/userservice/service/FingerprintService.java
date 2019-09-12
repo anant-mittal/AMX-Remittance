@@ -21,8 +21,10 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.UserFingerprintResponseModel;
+import com.amx.jax.JaxAuthContext;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.async.ExecutorConfig;
+import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxApiFlow;
 import com.amx.jax.dbmodel.Customer;
@@ -121,7 +123,8 @@ public class FingerprintService {
 	@Autowired
 	private PostManService postManService;
 	
-	
+	@Autowired
+	JaxTenantProperties jaxTenantProperties;
 	
 	protected LoginLogoutHistory getLoginLogoutHistoryByUserName(String userName) {
 
@@ -138,7 +141,6 @@ public class FingerprintService {
 	
 	public CustomerModel convert(CustomerOnlineRegistration cust) {
 		CustomerModel model = new CustomerModel();
-		model.setIdentityId(cust.getUserName());
 		if (cust.getCaption() != null) {
 			model.setCaption(cryptoUtil.decrypt(cust.getUserName(), cust.getCaption()));
 		}
@@ -166,6 +168,7 @@ public class FingerprintService {
 			personinfo.setEmail(customer.getEmail());
 			personinfo.setMobile(customer.getMobile());
 			model.setPersoninfo(personinfo);
+			model.setIdentityId(customer.getIdentityInt());
 		} catch (Exception e) {
 			logger.error("Exception while populating PersonInfo : ", e);
 		}
@@ -241,6 +244,8 @@ public class FingerprintService {
 			throw new GlobalException("Device id cannot be null");
 		}
 		
+		Boolean captchaEnable = jaxTenantProperties.getCaptchaEnable();
+		
 		CustomerOnlineRegistration customerOnlineRegistration = null;
 		if (identityTypeStr == null) {
 			try {
@@ -260,12 +265,13 @@ public class FingerprintService {
 		Customer customer = custDao.getCustById(customerOnlineRegistration.getCustomerId());
 		logger.info("Customer id is " + metaData.getCustomerId());
 		
-		userValidationService.validateCustomerLockCount(customerOnlineRegistration);
+		userValidationService.validateCustomerLockCount(customerOnlineRegistration,captchaEnable);
 		userValidationService.validateCustIdProofs(customerOnlineRegistration.getCustomerId());
 		userValidationService.validateCustomerData(customerOnlineRegistration, customer);
 		userValidationService.validateBlackListedCustomerForLogin(customer);
 		userValidationService.validateFingerprintDeviceId(customerOnlineRegistration, fingerprintDeviceId);
-		userValidationService.validateDevicePassword(customerOnlineRegistration, password);
+		userValidationService.validateDevicePassword(customerOnlineRegistration, password,  captchaEnable && JaxAuthContext.isCaptchaCheck());
+		userService.afterLoginSteps(customerOnlineRegistration);
 		CustomerModel customerModel = convert(customerOnlineRegistration);
 		return customerModel;
 	}

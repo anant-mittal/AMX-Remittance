@@ -13,7 +13,7 @@ public class AmxDBConstants {
 	public static final String Compliance = "C";
 
 	public static enum Status {
-		Y, N, D, U, B, C
+		Y, N, D, U, B, C, V
 	}
 
 	// document id
@@ -25,6 +25,7 @@ public class AmxDBConstants {
 	public static final BigDecimal DOCUMENT_CODE_CUSTOMER_SERIAL_NUMBER = new BigDecimal(8);
 	// peronsl remittancew
 	public static final String Individual = "I";
+	public static final String Non_Individual = "C";
 	public static final String Online = "O";
 	public static final String INDIVIDUAL_STRING = "Individual";
 	public static final String NON_INDIVIDUAL_STRING = "Non-Individual";
@@ -59,6 +60,7 @@ public class AmxDBConstants {
 
 	public static final String BANK_INDICATOR_CORRESPONDING_BANK = "CB";
 	public static final String BANK_INDICATOR_BENEFICIARY_BANK = "BE";
+	public static final String BANK_INDICATOR_SERVICE_PROVIDER_BANK = "SB";
 	public static final BigDecimal REMITTANCE_MODE_EFT = new BigDecimal(3);
 	public static final BigDecimal REMITTANCE_MODE_RTGS = new BigDecimal(4);
 
@@ -68,6 +70,7 @@ public class AmxDBConstants {
 	public static final BigDecimal SERVICE_MASTER_ID_EFT = new BigDecimal(101);
 	public static final BigDecimal SERVICE_MASTER_ID_TT = new BigDecimal(102);
 	public static final BigDecimal SERVICE_MASTER_ID_DD = new BigDecimal(104);
+	public static final BigDecimal SERVICE_MASTER_ID_CASH = new BigDecimal(103);
 
 
 	public static final String VOUCHER_ONLINE_PROMOTION_STR = "CHICKEN KING SAGAR VOUCHER";
@@ -124,8 +127,11 @@ public class AmxDBConstants {
 	public static final BigDecimal BIZ_COMPONENT_ID_GCC_ID = new BigDecimal(201);
 	public static final BigDecimal BIZ_COMPONENT_ID_BEDOUIN_ID = new BigDecimal(197);
 	public static final BigDecimal MURQAB_FOREIGNCURRENCY = new BigDecimal(89);
+	public static final BigDecimal KUWAIT_FOREIGNCURRENCY = new BigDecimal(89);
+	public static final BigDecimal OMAN_FOREIGNCURRENCY = new BigDecimal(99);
+	public static final BigDecimal BAHRAIN_FOREIGNCURRENCY = new BigDecimal(70);
 	public static final BigDecimal BIZ_COMPONENT_ID_PASSPORT = new BigDecimal(204);
-	
+
 
 	public static final String ARTICLE_20_CODE = "20";
 	public static final BigDecimal BIZ_COMPONENT_ID_NEW_CIVIL_ID = new BigDecimal(2000);
@@ -152,14 +158,53 @@ public class AmxDBConstants {
 	public static final String VOUCHER = "V";
 	public static final String IMPS_CODE = "13";
 	public static final String IND_COUNTRY_CODE = "004";
-	
+
+	/** E-Eng,A-Arabic **/
+	public static final String L_ENG = "1";
+	public static final String L_ARAB = "2";
+	public static final String BNFBANK = "BNFBANK";
+	public static final String BNFBRCH = "BNFBRCH";
+	public static final String BNFBANK_SWIFT = "BNFBANK_SWIFT";
+
+	public static final String HOME_SEND_PAYMENT_TYPE_CASH = "CASH";
+	public static final String HOME_SEND_PAYMENT_TYPE_KNET = "CARD";
+	public static final String HOME_SEND_PAYMENT_TYPE_BANK_TRANSFER = "BANK";
+	public static final String HOME_SEND_PAYMENT_TYPE_CHEQUE = "CHEQUE";
+
 	// Constant for Article detail id "Others"
-	
+
 	public static final BigDecimal ARTICLE_DETAIL_ID_OTHERS = new BigDecimal(16);
-	public static final String  VAT_ACCOUNT_TYPE_COMM = "COMMISSION";
-	public static final String  VAT_CALCULATION_TYPE_INCLUDE= "E";
-	public static final String  VAT_CATEGORY= "OUTPUT_TAX";
-	public static final String  BENE_ACCT_VALID="BENE_ACCT_VALID";
+	public static final String VAT_ACCOUNT_TYPE_COMM = "COMMISSION";
+	public static final String VAT_CALCULATION_TYPE_INCLUDE = "I";
+	public static final String VAT_CALCULATION_TYPE_EXCLUDE = "E";
+	public static final String VAT_CATEGORY = "OUTPUT_TAX";
+	public static final String BENE_ACCT_VALID = "BENE_ACCT_VALID";
+
+	// Constants for Serviceprovider
+
+	public static final String TOTAL_PAY_INDICATOR = "T";
+
+	// Constants for annual income
+	public static final String ANNUAL_INCOME_RANGE = "AIR";
+
+	// Constants for annual transaction limit range
+
+	public static final String ANNUAL_TRANSACTION_LIMIT = "ATL";
+	public static final long MILLISEC_IN_YEAR = 31540000000L;
 	
+	public static final String  COMM_INCLUDE= "I";
+	public static final String COMM_EXCLUDE="E";
 	
+	public static final String BPI_GIFT="GIFT";
+	
+	public static final String TELEX_TRANFER = "T";
+	public static final String DEMAND_DRAFT = "D";
+
+	public static final BigDecimal EXCHANGE_RATE_DECIMAL = new BigDecimal(9);
+
+	public static final String WU_PAID = "PAID";
+	public static final String WU_PICK = "PICK_REMINDER";
+	public static final String WU_CANC_REM = "CANC_REMINDER";
+	public static final String WU_CANCELLED = "WU_CANC";
+
 }

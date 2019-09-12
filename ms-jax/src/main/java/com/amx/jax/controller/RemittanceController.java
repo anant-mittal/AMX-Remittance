@@ -20,16 +20,20 @@ import com.amx.amxlib.meta.model.CustomerRatingDTO;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.jax.AmxMeta;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxEvent;
 import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerRating;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
+import com.amx.jax.dict.Language;
 import com.amx.jax.manager.RemittancePaymentManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.remittance.IRemitTransReqPurpose;
+import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.services.CustomerRatingService;
@@ -75,11 +79,11 @@ public class RemittanceController {
 	@Autowired
 	RemittanceApplicationDao remitAppDao;
 
-   	@Autowired
+	@Autowired
 	CustomerRatingService customerRatingService;
-   	
-   	@Autowired
-   	UserService userService;
+
+	@Autowired
+	UserService userService;
 
 	@RequestMapping(value = "/trnxHist/", method = RequestMethod.GET)
 	public ApiResponse getTrnxHistroyDetailResponse(@RequestParam(required = false, value = "docfyr") BigDecimal docfyr,
@@ -109,6 +113,8 @@ public class RemittanceController {
 	public ApiResponse getRemittanceDetailForReport(@RequestBody String jsonTransactionHistroyDTO,
 			@RequestParam("promotion") Boolean promotion) {
 		logger.info("getRemittanceDetailForReport Trnx Report:");
+		logger.debug("Json tras history is "+jsonTransactionHistroyDTO);
+		logger.debug("promotion value is "+promotion);
 		TransactionHistroyDTO transactionHistroyDTO = (TransactionHistroyDTO) converterUtil
 				.unmarshall(jsonTransactionHistroyDTO, TransactionHistroyDTO.class);
 		logger.info("Colle Doc No :" + transactionHistroyDTO.getCollectionDocumentNo());
@@ -140,12 +146,12 @@ public class RemittanceController {
 		return response;
 	}
 
+	@Autowired
+	protected AmxMeta amxMeta;
+
 	@RequestMapping(value = "/sourceofincome/", method = RequestMethod.POST)
 	public ApiResponse sourceofIncome() {
-		BigDecimal languageId = metaData.getLanguageId();
-		if (languageId == null || languageId.compareTo(BigDecimal.ZERO) == 0) {
-			languageId = new BigDecimal(1);
-		}
+		BigDecimal languageId = amxMeta.getClientLanguage(Language.EN).getBDCode();
 		ApiResponse response = remittanceTransactionService.getSourceOfIncome(languageId);
 		return response;
 	}
@@ -156,6 +162,15 @@ public class RemittanceController {
 		JaxContextUtil.setRequestModel(model);
 		logger.info("In Save-Application with parameters" + model.toString());
 		ApiResponse response = remittanceTransactionService.saveApplication(model);
+		return response;
+	}
+
+	@RequestMapping(value = "/save-application/v2/", method = RequestMethod.POST)
+	public ApiResponse saveApplication(@RequestBody @Valid RemittanceTransactionDrRequestModel model) {
+		JaxContextUtil.setJaxEvent(JaxEvent.CREATE_APPLICATION);
+		JaxContextUtil.setRequestModel(model);
+		logger.info("In Save-Application with parameters" + model.toString());
+		ApiResponse response = remittanceTransactionService.saveApplicationV2(model);
 		return response;
 	}
 
@@ -170,6 +185,7 @@ public class RemittanceController {
 	public ApiResponse saveRemittance(@RequestBody PaymentResponseDto paymentResponse) {
 		JaxContextUtil.setJaxEvent(JaxEvent.CREATE_REMITTANCE);
 		JaxContextUtil.setRequestModel(paymentResponse);
+		logger.debug("Payment respone is "+paymentResponse.toString());
 		logger.info("save-Remittance Controller :" + paymentResponse.getCustomerId() + "\t country ID :"
 				+ paymentResponse.getApplicationCountryId() + "\t Compa Id:" + paymentResponse.getCompanyId());
 
@@ -200,7 +216,6 @@ public class RemittanceController {
 		return response;
 	}
 
-	
 	@RequestMapping(value = "/save-payment-id/", method = RequestMethod.POST)
 	public ApiResponse savePaymentId(@RequestBody PaymentResponseDto paymentResponse) {
 		logger.info("save-Remittance Controller :" + paymentResponse.getCustomerId() + "\t country ID :"
@@ -222,7 +237,7 @@ public class RemittanceController {
 		ApiResponse response = remittancePaymentManager.savePaymentId(paymentResponse);
 		return response;
 	}
-	
+
 	@RequestMapping(value = "/trnx/receipt", method = RequestMethod.POST)
 	public ApiResponse getReceiptJson(@RequestParam BigDecimal appDocNo, @RequestParam BigDecimal appDocFinYear) {
 		RemittanceTransaction remittanceTransaction = remitAppDao.getRemittanceTransaction(appDocNo, appDocFinYear);
@@ -234,7 +249,8 @@ public class RemittanceController {
 		BigDecimal remittancedocfyr = remittanceTransaction.getDocumentFinanceYear();
 		BigDecimal remittancedocNumber = remittanceTransaction.getDocumentNo();
 
-		TransactionHistroyDTO transactionHistoryDto = transactionHistroyService.getTransactionHistoryDto(cutomerReference, remittancedocfyr,
+		TransactionHistroyDTO transactionHistoryDto = transactionHistroyService.getTransactionHistoryDto(
+				cutomerReference, remittancedocfyr,
 				remittancedocNumber);
 		transactionHistoryDto.setApplicationCountryId(metaData.getCountryId());
 		return reportManagerService.generatePersonalRemittanceReceiptReportDetails(transactionHistoryDto, true);
@@ -251,4 +267,12 @@ public class RemittanceController {
 	public AmxApiResponse<CustomerRating, ?> saveCustomerRating(@RequestBody @Valid CustomerRatingDTO dto) {
 		return customerRatingService.saveCustomerRating(dto);
 	}
+
+	// radhika
+	@RequestMapping(value = "/customer-trnx-rating/", method = RequestMethod.POST)
+	public AmxApiResponse<CustomerRating, ?> inquireCustomerRating(@RequestParam BigDecimal remittanceTrnxId) {
+		return customerRatingService.inquireCustomerRating(remittanceTrnxId);
+
+	}
+
 }

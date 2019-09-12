@@ -3,6 +3,8 @@ package com.amx.jax.ui.config;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -12,12 +14,15 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 
+import com.amx.jax.http.ApiRequestConfig;
+import com.amx.jax.http.RequestType;
+
 /**
  * The Class WebSecurityConfig.
  */
 @Configuration
 @EnableWebSecurity
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements ApiRequestConfig {
 
 	/** The custom auth provider. */
 	@Autowired
@@ -28,6 +33,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	WebLoginUrlEntry loginUrlEntry;
 
 	public static final Pattern pattern = Pattern.compile("^\\/(register|home|login|pub).*$");
+	public static final Pattern secured_pattern = Pattern.compile("^\\/(app|api).*$");
 
 	/*
 	 * (non-Javadoc)
@@ -39,7 +45,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		// http.headers().frameOptions().disable();
-		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+		http.sessionManagement()
+				.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
 				// Register Calls
 				.and().authorizeRequests().antMatchers("/register/**").permitAll()
 				// Home Pages Calls
@@ -65,17 +72,19 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	public static boolean isPublicUrl(String url) {
 		Matcher matcher = pattern.matcher(url);
-		
+		return matcher.find();
+	}
+
+	public static boolean isSecuredUrl(String url) {
+		Matcher matcher = secured_pattern.matcher(url);
 		return matcher.find();
 	}
 
 	/**
 	 * Configure global.
 	 *
-	 * @param auth
-	 *            the auth
-	 * @throws Exception
-	 *             the exception
+	 * @param auth the auth
+	 * @throws Exception the exception
 	 */
 	@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
@@ -83,6 +92,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.roles("USER");
 	}
 
+	public static final Pattern SILENT = Pattern.compile("^\\/(resources|static|css|js|images|apple-app-site-association|.well-known|favicon.ico).*$");
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -92,7 +103,30 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	 */
 	@Override
 	public void configure(WebSecurity web) throws Exception {
-		web.ignoring().antMatchers("/resources/**", "/static/**", "/css/**", "/js/**", "/images/**");
+		web.ignoring().antMatchers("/resources/**", "/static/**", "/css/**", "/js/**", "/images/**",
+				"/apple-app-site-association", "/.well-known/apple-app-site-association", "/favicon.ico");
 	}
+
+	@Override
+	public RequestType from(HttpServletRequest req, RequestType reqType) {
+		if (RequestType.DEFAULT.equals(reqType)) {
+			Matcher matcher = SILENT.matcher(req.getRequestURI());
+			if(matcher.find()) {
+				return RequestType.NO_TRACK_PING;
+			}
+		}
+		return reqType;
+	}
+
+//	@Bean
+//	public CookieSerializer cookieSerializer() {
+//		DefaultCookieSerializer serializer = new DefaultCookieSerializer();
+//		serializer.setCookieName("JSESSIONID");
+//		serializer.setDomainName("local-kwt.amxremit.com");
+//		serializer.setCookiePath("/");
+//		//serializer.setDomainNamePattern("^.+?\\.(\\w+\\.[a-z]+)$");
+//		serializer.setCookieMaxAge(10); // Set the cookie max age in seconds, e.g. 10 seconds
+//		return serializer;
+//	}
 
 }

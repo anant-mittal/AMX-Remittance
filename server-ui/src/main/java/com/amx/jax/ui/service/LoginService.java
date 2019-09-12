@@ -12,6 +12,7 @@ import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.AuditActor;
@@ -306,6 +307,34 @@ public class LoginService {
 			// throw new HttpUnauthorizedException(HttpUnauthorizedException.UN_AUTHORIZED);
 		}
 		BoolRespModel model = jaxService.setDefaults().getUserclient().updatePassword(password, mOtp, eOtp).getResult();
+		if (model.isSuccess()) {
+			wrapper.setMessage(OWAStatusStatusCodes.USER_UPDATE_SUCCESS, "Password Updated Succesfully");
+			sessionService.getGuestSession().endStep(AuthStep.CREDS_SET);
+			wrapper.getData().setState(sessionService.getGuestSession().getState());
+		}
+		return wrapper;
+	}
+
+	public ResponseWrapper<AuthResponse> initResetPassword2(String identity, String password) {
+		ResponseWrapper<AuthResponse> wrapper = new ResponseWrapper<AuthResponse>(new AuthData());
+		
+		AmxApiResponse<CustomerModel, Object> x = jaxService.getUserclient().validateCustomerLoginOtp(identity);
+		sessionService.getGuestSession().setCustomerModel(x.getResult());
+		return wrapper;
+	}
+
+	/**
+	 * 
+	 * @param password
+	 * @param mOtp
+	 * @param eOtp
+	 * @return
+	 */
+	public ResponseWrapper<UserUpdateData> updatepwdV2(String password) {
+		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
+		BoolRespModel model = jaxService.setDefaults().getUserclient().updatePasswordCustomer(
+				sessionService.getGuestSession().getCustomerModel().getIdentityId(),
+				password).getResult();
 		if (model.isSuccess()) {
 			wrapper.setMessage(OWAStatusStatusCodes.USER_UPDATE_SUCCESS, "Password Updated Succesfully");
 			sessionService.getGuestSession().endStep(AuthStep.CREDS_SET);

@@ -12,7 +12,6 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.log4j.Logger;
-import org.jasypt.util.text.BasicTextEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -29,6 +28,7 @@ import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.payg.PayGParams;
+import com.amx.jax.payg.PayGService;
 import com.amx.jax.payment.PaymentConstant;
 import com.amx.jax.payment.gateway.PayGClient;
 import com.amx.jax.payment.gateway.PayGClients;
@@ -39,8 +39,6 @@ import com.amx.jax.payment.gateway.PaymentGateWayResponse;
 import com.amx.jax.payment.gateway.PaymentGateWayResponse.PayGStatus;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.ArgUtil;
-import com.amx.utils.CryptoUtil;
-import com.amx.utils.JsonUtil;
 
 import io.swagger.annotations.Api;
 
@@ -78,47 +76,46 @@ public class PayGController {
 	@Autowired
 	PayGConfig payGConfig;
 
-	private static BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
-	{
-		textEncryptor.setPasswordCharArray("payg".toCharArray());
-	}
-
-	private PayGParams getVerifyHash(String amount) throws NoSuchAlgorithmException {
-		PayGParams payGParams = new PayGParams();
-		payGParams.setVerification(CryptoUtil.getMD5Hash((JsonUtil.toJson(payGParams))));
-		return payGParams;
-	}
+	@Autowired
+	PayGService payGService;
 
 	@ResponseBody
-	@RequestMapping(value = { "/init_tranx/*" }, method = RequestMethod.GET)
-	public PayGParams initTransaction(
-			@RequestParam String trckid,
-			@RequestParam(required = false) String docId, @RequestParam(required = false) String docNo,
-			@RequestParam(required = false) String docFy,
+	@RequestMapping(value = { "/register/*" }, method = RequestMethod.GET)
+	public PayGParams initTransaction(@RequestParam String trckid, @RequestParam(required = false) String docId,
+			@RequestParam(required = false) String docNo, @RequestParam(required = false) String docFy,
 			@RequestParam String amount,
 
 			@RequestParam Tenant tnt, @RequestParam String pg, @RequestParam(required = false) Channel channel,
 			@RequestParam(required = false) String prod,
 
-			@RequestParam(required = false) String callbackd,
-			Model model) throws NoSuchAlgorithmException {
-		return getVerifyHash(amount);
+			@RequestParam(required = false) String callbackd, Model model) throws NoSuchAlgorithmException {
+		return payGService.getVerifyHash(trckid, amount, docId, docNo, docFy);
 	}
 
 	@RequestMapping(value = { "/payment/*", "/payment" }, method = RequestMethod.GET)
-	public String handleUrlPaymentRemit(
-			@RequestParam String trckid,
-			@RequestParam(required = false) String docId, @RequestParam(required = false) String docNo,
-			@RequestParam(required = false) String docFy,
+
+	public String handleUrlPaymentRemit(@RequestParam String trckid, @RequestParam(required = false) String docId,
+			@RequestParam(required = false) String docNo, @RequestParam(required = false) String docFy,
 			@RequestParam String amount,
 
 			@RequestParam Tenant tnt, @RequestParam String pg, @RequestParam(required = false) Channel channel,
-			@RequestParam(required = false) String prod,
-			@RequestParam(required = false) String callbackd,
-			@RequestParam(required = false) String verify,
-			Model model) throws NoSuchAlgorithmException {
+			@RequestParam(required = false) String prod, @RequestParam(required = false) String callbackd,
+			@RequestParam(required = false) String verify, @RequestParam(required = false) String detail, Model model)
+			throws NoSuchAlgorithmException {
 
-		if (!ArgUtil.isEmpty(verify) && !verify.equals(getVerifyHash(amount).getVerification())) {
+		
+		
+		if (!payGConfig.isTestEnabled()) {
+			PayGParams detailParam = payGService.getDeCryptedDetails(detail);
+			trckid = detailParam.getTrackId();
+			amount = detailParam.getAmount();
+			docId = detailParam.getDocId();
+			docNo = detailParam.getDocNo();
+			docFy = detailParam.getDocFy();
+		}
+
+		if (!ArgUtil.isEmpty(verify)
+				&& !verify.equals(payGService.getVerifyHash(trckid, amount, docId, docNo, docFy).getVerification())) {
 			return "thymeleaf/pg_security";
 		}
 
@@ -131,10 +128,19 @@ public class PayGController {
 			pg = "BENEFIT";
 			appRedirectUrl = bhrRedirectURL;
 		} else if (tnt.equals(Tenant.KWT)) {
-			appRedirectUrl = kwtRedirectURL;
+			if ("KNET".equalsIgnoreCase(pg)) {
+				pg = "KNET2";
+				appRedirectUrl = kwtRedirectURL;
+			} else {
+				pg = "KNET2";
+				appRedirectUrl = kwtRedirectURL;
+			}
 		} else if (tnt.equals(Tenant.OMN)) {
 			pg = "OMANNET";
 			appRedirectUrl = omnRedirectURL;
+		} else if (tnt.equals(Tenant.KWTV2)) {
+			pg = "KNETV2";
+			appRedirectUrl = kwtRedirectURL;
 		}
 
 		if (callbackd != null) {
@@ -182,7 +188,6 @@ public class PayGController {
 			String returnTime = df.format(cal.getTime());
 			model.addAttribute("REDIRECTURL", appRedirectUrl);
 			model.addAttribute("RETURN_TIME", returnTime);
-			model.addAttribute("TNT", tnt.toString());
 			return "thymeleaf/pg_error";
 		}
 
@@ -196,14 +201,10 @@ public class PayGController {
 	}
 
 	@RequestMapping(value = { PaymentConstant.Path.PAYMENT_CAPTURE_CALLBACK_V1_WILDCARD,
-			PaymentConstant.Path.PAYMENT_CAPTURE_CALLBACK_V1,
-			PaymentConstant.Path.PAYMENT_CAPTURE_CALLBACK_V2,
-			PaymentConstant.Path.PAYMENT_CAPTURE_CALLBACK_V2_WILDCARD
-	})
-	public String paymentCapture(Model model, RedirectAttributes ra,
-			@PathVariable("tenant") Tenant tnt,
-			@PathVariable("paygCode") PayGServiceCode paygCode,
-			@PathVariable("channel") Channel channel,
+			PaymentConstant.Path.PAYMENT_CAPTURE_CALLBACK_V1, PaymentConstant.Path.PAYMENT_CAPTURE_CALLBACK_V2,
+			PaymentConstant.Path.PAYMENT_CAPTURE_CALLBACK_V2_WILDCARD })
+	public String paymentCapture(Model model, RedirectAttributes ra, @PathVariable("tenant") Tenant tnt,
+			@PathVariable("paygCode") PayGServiceCode paygCode, @PathVariable("channel") Channel channel,
 			@PathVariable(value = "product", required = false) String product,
 			@PathVariable(value = "uuid", required = false) String uuid) {
 
@@ -258,6 +259,8 @@ public class PayGController {
 			ra.addAttribute("udf5", payGResponse.getUdf5());
 			LOGGER.info("PAYG Response is ----> " + payGResponse.toString());
 			return "redirect:" + kioskOmnRedirectURL;
+		} else if (paygCode.toString().equals("KNET2") && channel.equals(Channel.ONLINE)) {
+			return "redirect:" + redirectUrl;
 		} else {
 			return "thymeleaf/repback";
 		}

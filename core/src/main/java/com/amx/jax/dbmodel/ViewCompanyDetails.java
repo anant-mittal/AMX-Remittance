@@ -48,31 +48,28 @@ public class ViewCompanyDetails implements Serializable {
 	private String onlineInnerHeaderEnglishText;
 	private String onlineInnerHeaderArabicText;
 	private BigDecimal countryId;
-	
-	
+
+
 	private String faxNo;
 	private String estYear;
 	private BigDecimal currencyId;
 	private String capitalAmount;
-	
+
 	//ADDRESS2
 	private String engAddress1;
 	private String engAddress2;
 	private String engAddress3;
-	
+
 	private String arabicAddress1;
 	private String arabicAddress2;
 	private String arabicAddress3;
 	private String registrationNumber;
-	
-	
+
 	private String vatNumber;
 	private String vatRegistrationDate;
-	
-	
 
 	private BigDecimal idNo;
-	
+
 	@Id
 	@Column(name="IDNO")
 	public BigDecimal getIdNo() {
@@ -82,8 +79,8 @@ public class ViewCompanyDetails implements Serializable {
 	public void setIdNo(BigDecimal idNo) {
 		this.idNo = idNo;
 	}
-	
-	
+
+
 	@Column(name = "COMPANY_ID", length = 2)
 	public BigDecimal getCompanyId() {
 		return this.companyId;
@@ -92,8 +89,8 @@ public class ViewCompanyDetails implements Serializable {
 	public void setCompanyId(BigDecimal companyId) {
 		this.companyId = companyId;
 	}
-	
-	
+
+
 	@Column(name="LANGUAGE_ID")
 	public BigDecimal getLanguageId() {
 		return languageId;
@@ -112,7 +109,7 @@ public class ViewCompanyDetails implements Serializable {
 		this.companyCode = companyCode;
 	}
 
-	
+
 	@Column(name = "ISACTIVE", length = 1)
 	public String getIsActive() {
 		return isActive;
@@ -122,7 +119,7 @@ public class ViewCompanyDetails implements Serializable {
 		this.isActive = isActive;
 	}
 
-	
+
 
 	@Column(name = "TELEPHONE_NO")
 	public String getTelephoneNo() {
@@ -131,57 +128,57 @@ public class ViewCompanyDetails implements Serializable {
 	public void setTelephoneNo(String telephoneNo) {
 		this.telephoneNo=telephoneNo;
 	}
-	
+
 	@Column(name = "FAX_NO")
 	public String getFaxNo() {
 		return faxNo;
 	}
-	
+
 	public void setFaxNo(String faxNo) {
-	this.faxNo=faxNo;
+		this.faxNo=faxNo;
 	}
-	
+
 	@Column(name = "EXCHANGE_FROM_EMAIL_ID")
 	public String getEmail() {
 		return email;
 	}
-	
+
 	public void setEmail(String email) {
 		this.email=email;
 	}
-	
+
 	@Column(name = "EST_YEAR")
 	public String getEstYear() {
 		return estYear;
 	}
-	
+
 	public void setEstYear(String estYear) {
 		this.estYear=estYear;
 	}
-	
-	
+
+
 	@Column(name = "CURRENCY_ID")
 	public BigDecimal getCurrencyId() {
 		return currencyId;
 	}
-	
 
-	
+
+
 	@Column(name = "CAPITAL_AMOUNT")
 	public String getCapitalAmount() {
 		return capitalAmount;
 	}
-	
+
 	public void setCapitalAmount(String capitalAmount) {
 		this.capitalAmount=capitalAmount;
 	}
-	
-	
-	
+
+
+
 	public void setCurrencyId(BigDecimal currencyId) {
 		this.currencyId = currencyId;
 	}
-	
+
 	@Column(name="COMPANY_NAME")
 	public String getCompanyName() {
 		return companyName;
@@ -203,7 +200,7 @@ public class ViewCompanyDetails implements Serializable {
 	public void setApplicationCountryId(BigDecimal applicationCountryId) {
 		this.applicationCountryId = applicationCountryId;
 	}
-    
+
 
 	@Column(name="ONLINE_HEADER_EN_TEXT")
 	public String getOnlineHeaderEnglishText() {
@@ -221,7 +218,7 @@ public class ViewCompanyDetails implements Serializable {
 	public void setOnlineHeaderArabicText(String onlineHeaderArabicText) {
 		this.onlineHeaderArabicText = onlineHeaderArabicText;
 	}
-	
+
 	@Column(name="ONLINE_INNER_HEADER_EN_TEXT")
 	public String getOnlineInnerHeaderEnglishText() {
 		return onlineInnerHeaderEnglishText;
@@ -257,7 +254,7 @@ public class ViewCompanyDetails implements Serializable {
 	public void setEngAddress2(String engAddress2) {
 		this.engAddress2 = engAddress2;
 	}
-	
+
 	@Column(name="ADDRESS3")
 	public String getEngAddress3() {
 		return engAddress3;
@@ -276,13 +273,13 @@ public class ViewCompanyDetails implements Serializable {
 	public void setArabicAddress1(String arabicAddress1) {
 		this.arabicAddress1 = arabicAddress1;
 	}
-	
+
 	@Column(name="AR_ADDR2")
 	public String getArabicAddress2() {
 		return arabicAddress2;
 	}
 
-	
+
 	public void setArabicAddress2(String arabicAddress2) {
 		this.arabicAddress2 = arabicAddress2;
 	}
@@ -305,26 +302,26 @@ public class ViewCompanyDetails implements Serializable {
 		this.registrationNumber = registrationNumber;
 	}
 
-	
+
 	@Column(name="VAT_NUMBER")
-		public String getVatNumber() {
-			return vatNumber;
-		}
-	
-		public void setVatNumber(String vatNumber) {
-			this.vatNumber = vatNumber;
-		}
-	
-		@Column(name="VAT_REGISTRATION_DATE")
-		public String getVatRegistrationDate() {
-			return vatRegistrationDate;
-		}
-	
-		public void setVatRegistrationDate(String vatRegistrationDate) {
-			this.vatRegistrationDate = vatRegistrationDate;
-		}
-	
-	
+	public String getVatNumber() {
+		return vatNumber;
+	}
+
+	public void setVatNumber(String vatNumber) {
+		this.vatNumber = vatNumber;
+	}
+
+	@Column(name="VAT_REGISTRATION_DATE")
+	public String getVatRegistrationDate() {
+		return vatRegistrationDate;
+	}
+
+	public void setVatRegistrationDate(String vatRegistrationDate) {
+		this.vatRegistrationDate = vatRegistrationDate;
+	}
+
+
 
 
 }

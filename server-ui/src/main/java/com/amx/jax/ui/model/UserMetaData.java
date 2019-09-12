@@ -14,6 +14,7 @@ import com.amx.jax.model.response.CurrencyMasterDTO;
 import com.amx.jax.model.response.customer.CustomerFlags;
 import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.ui.UIConstants.Features;
+import com.amx.jax.ui.UIConstants.MileStone;
 import com.amx.jax.ui.service.GeoHotPoints;
 
 /**
@@ -45,7 +46,7 @@ public class UserMetaData extends AbstractModel {
 
 	String cdnUrl = null;
 
-	Features[] features = null;
+	List<Features> features = new ArrayList<Features>();;
 
 	List<String> subscriptions = new ArrayList<String>();
 
@@ -63,6 +64,8 @@ public class UserMetaData extends AbstractModel {
 
 	/** The hot points. */
 	GeoHotPoints[] hotPoints = GeoHotPoints.values();
+
+	private MileStone[] mileStones;
 
 	/**
 	 * Gets the config.
@@ -249,7 +252,7 @@ public class UserMetaData extends AbstractModel {
 	 *
 	 * @return the features
 	 */
-	public Features[] getFeatures() {
+	public List<Features> getFeatures() {
 		return features;
 	}
 
@@ -258,7 +261,7 @@ public class UserMetaData extends AbstractModel {
 	 * 
 	 * @param features the new features
 	 */
-	public void setFeatures(Features[] features) {
+	public void setFeatures(List<Features> features) {
 		this.features = features;
 	}
 
@@ -412,6 +415,14 @@ public class UserMetaData extends AbstractModel {
 
 	public void setFlags(CustomerFlags flags) {
 		this.flags = flags;
+	}
+
+	public void setMileStones(MileStone[] list) {
+		this.mileStones = list;
+	}
+
+	public MileStone[] getMileStones() {
+		return mileStones;
 	}
 
 }

@@ -53,6 +53,10 @@ public class UserClient {
 		public boolean isRelated(DeviceType check) {
 			return check.isParentOf(this.parent);
 		}
+
+		public boolean isMobile() {
+			return this.hasParent(MOBILE);
+		}
 	}
 
 	/**
@@ -85,6 +89,10 @@ public class UserClient {
 
 		public Channel getChannel() {
 			return channel;
+		}
+
+		public boolean isMobile() {
+			return this.channel == Channel.MOBILE;
 		}
 	}
 
@@ -176,6 +184,9 @@ public class UserClient {
 		@JsonProperty("cv")
 		private String clientVersion;
 
+		@JsonProperty("lang")
+		private Language lang;
+
 		public String getIp() {
 			return ip;
 		}
@@ -240,6 +251,14 @@ public class UserClient {
 
 		public void setClientVersion(String clientVersion) {
 			this.clientVersion = clientVersion;
+		}
+
+		public Language getLang() {
+			return lang;
+		}
+
+		public void setLang(Language lang) {
+			this.lang = lang;
 		}
 
 	}

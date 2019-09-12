@@ -33,6 +33,7 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.LoyaltyInsuranceProDao;
+import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.CollectionDetailViewModel;
 import com.amx.jax.dbmodel.CollectionPaymentDetailsViewModel;
 import com.amx.jax.dbmodel.CountryMaster;
@@ -40,6 +41,7 @@ import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.PurposeOfRemittanceViewModel;
 import com.amx.jax.dbmodel.RemittanceTransactionView;
 import com.amx.jax.dbmodel.ViewCompanyDetails;
+import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.manager.PromotionManager;
 import com.amx.jax.meta.MetaData;
@@ -89,6 +91,9 @@ public class ReportManagerService extends AbstractService{
 	
 	@Autowired
 	CustomerRepository customerRepository;
+	
+	@Autowired
+	RemittanceApplicationDao remittanceApplicationDao;
 	
 	
 	private List<RemittanceReceiptSubreport> remittanceReceiptSubreportList;
@@ -218,6 +223,8 @@ public class ReportManagerService extends AbstractService{
 					obj.setFirstName(view.getCustomerReference().toString());
 				} else if (view.getCustomerReference() != null && view.getFirstName() != null && view.getMiddleName() == null && view.getLastName()!=null) {
 					obj.setFirstName(view.getCustomerReference().toString() + " " + view.getFirstName()+" "+view.getLastName());
+				} else if (view.getCustomerReference()!=null && view.getFirstName() != null && view.getMiddleName()!=null && view.getLastName()==null) {
+					obj.setFirstName(view.getCustomerReference().toString() + " / " + view.getFirstName()+" "+view.getMiddleName());
 				}
 				if (StringUtils.isNotBlank(view.getContactNumber())) {
 					obj.setMobileNo(new BigDecimal(view.getContactNumber()));
@@ -391,7 +398,8 @@ public class ReportManagerService extends AbstractService{
 				obj.setFutherInstructions(view.getInstructions());
 				obj.setSourceOfIncome(view.getSourceOfIncomeDesc());
 				obj.setIntermediataryBank(view.getBenefeciaryInterBank1());
-
+				
+				getParamsFromPayg(view, obj);
 
 				List<CollectionDetailViewModel> collectionDetailList1= collectionDetailViewDao.getCollectionDetailView(view.getCompanyId(),view.getCollectionDocumentNo(),view.getCollectionDocFinanceYear(),view.getCollectionDocCode());
 						
@@ -468,7 +476,7 @@ public class ReportManagerService extends AbstractService{
 						if (companyMaster.get(0).getRegistrationNumber() != null && companyMaster.get(0).getRegistrationNumber().length() > 0) {
 							engCompanyInfo = engCompanyInfo.append("C.R. " + companyMaster.get(0).getRegistrationNumber() + ",");
 						}
-						if (companyMaster.get(0).getCapitalAmount() != null && companyMaster.get(0).getCapitalAmount().length() > 0) {
+						if (companyMaster.get(0).getCapitalAmount() != null && !companyMaster.get(0).getCapitalAmount().equals("0") && companyMaster.get(0).getCapitalAmount().length() > 0) {
 							engCompanyInfo = engCompanyInfo.append("Share Capital-" + companyMaster.get(0).getCapitalAmount());
 						}
 						obj.setEngCompanyInfo(engCompanyInfo.toString());
@@ -487,15 +495,21 @@ public class ReportManagerService extends AbstractService{
 						if (companyMaster.get(0).getRegistrationNumber() != null && companyMaster.get(0).getRegistrationNumber().length() > 0) {
 							arabicCompanyInfo = arabicCompanyInfo.append(ConstantDocument.CR + " " + companyMaster.get(0).getRegistrationNumber() + ",");
 						}
-						if (companyMaster.get(0).getCapitalAmount() != null && companyMaster.get(0).getCapitalAmount().length() > 0) {
+						if (companyMaster.get(0).getCapitalAmount() != null && !companyMaster.get(0).getCapitalAmount().equals("0") && companyMaster.get(0).getCapitalAmount().length() > 0) {
 							arabicCompanyInfo = arabicCompanyInfo.append(ConstantDocument.Share_Capital + " " + companyMaster.get(0).getCapitalAmount());
 						}
 						obj.setArabicCompanyInfo(arabicCompanyInfo.toString());
-						/** added by Radhika on 21May 2019**/
-						obj.setVatNumber(companyMaster.get(0).getVatNumber()==null?"":companyMaster.get(0).getVatNumber());
-						obj.setVatDate(companyMaster.get(0).getVatRegistrationDate()==null?"":companyMaster.get(0).getVatRegistrationDate());
 					}
 					// 
+					
+					if(JaxUtil.isNullZeroBigDecimalCheck(view.getVatAmount())) {
+					BigDecimal vatAmount=RoundUtil.roundBigDecimal((view.getVatAmount()),decimalPerCurrency);
+					 obj.setVatAmount(currencyQuoteName+"     "+vatAmount.toString());
+					}
+					obj.setVatPercentage(view.getVatPercentage()==null?BigDecimal.ZERO:view.getVatPercentage());
+					obj.setVatType(view.getVatType()==null?"":view.getVatType());
+					obj.setCustomerVatNumber(view.getCustomerVatNumber()==null?"":view.getCustomerVatNumber());
+					/** end **/
 					
 					/** added by rabil  It should be print conditionally.if IS_DISCOUNT_AVAILED = 'Y' and KD_SAVED > 0 **/
 					 if(!StringUtils.isBlank(view.getIsDiscAvail()) && view.getIsDiscAvail().equalsIgnoreCase(ConstantDocument.Yes) && JaxUtil.isNullZeroBigDecimalCheck(view.getAmountSaved()) && view.getAmountSaved().compareTo(BigDecimal.ZERO)>0) {
@@ -594,6 +608,19 @@ public class ReportManagerService extends AbstractService{
 	
 	}
 		
+	
+
+	// ----------------- Params Getting from PAYG -------------------
+	private void getParamsFromPayg(RemittanceTransactionView view, RemittanceReportBean obj) {
+		RemittanceApplication remittanceApplication = remittanceApplicationDao.getApplication(view.getApplicationDocumentNo(), view.getAppFinancialYear());  
+		if(remittanceApplication != null) {
+			obj.setPgPaymentId(remittanceApplication.getPaymentId());
+			obj.setPgReferenceId(remittanceApplication.getPgReferenceId());
+			obj.setPgTransId(remittanceApplication.getPgTransactionId());
+			obj.setPgAuth(remittanceApplication.getPgAuthCode());
+		}
+	}
+	
 	// ----------------- SPECIAL RATE RECEIPT DATA -------------------
 	private void getSpecialRateData(RemittanceTransactionView view, RemittanceReportBean obj, String currencyQuoteName,
 			int decimalPerCurrency) {

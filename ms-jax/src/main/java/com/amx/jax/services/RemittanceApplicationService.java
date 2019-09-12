@@ -17,6 +17,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.constant.NotificationConstants;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.config.JaxTenantProperties;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dao.RemittanceProcedureDao;
@@ -79,7 +80,7 @@ public class RemittanceApplicationService {
 					remittanceApplication.setPgErrorText(paymentResponse.getErrorText());
 					remittanceApplication.setPgReceiptDate(paymentResponse.getPostDate());
 					if(paymentResponse.getErrorCategory() != null)
-					remittanceApplication.setErrorCategory(paymentResponse.getErrorCategory().name());
+					remittanceApplication.setErrorCategory(paymentResponse.getErrorCategory());
 					remittanceApplication.setApplicaitonStatus("S");
 				}
 				remittanceApplicationRepository.save(remittanceApplication);
@@ -119,7 +120,7 @@ public void updatePayTokenNull(List<RemittanceApplication> lstPayIdDetails,Payme
 			appl.setPaymentId(paymentResponse.getPaymentId());
 			appl.setPgReferenceId(paymentResponse.getReferenceId());
 			appl.setPgTransactionId(paymentResponse.getTransactionId());
-			appl.setErrorCategory(paymentResponse.getErrorCategory().name());
+			appl.setErrorCategory(paymentResponse.getErrorCategory());
 			appl.setPayToken(null);
 			appl.setApplicaitonStatus(null);
 			appl.setIsactive("D");
@@ -133,8 +134,11 @@ public void updatePayTokenNull(List<RemittanceApplication> lstPayIdDetails,Payme
 	
 	public void deActivateApplication(BigDecimal customerId) {
 		try {
+
+			// deactivate all the application
+			remittanceApplicationRepository.deActivateNotUsedAllApplication(new Customer(metaData.getCustomerId()));
 			
-			List<RemittanceApplication> listOfApplication = remittanceApplicationRepository.deActivateNotUsedApplication(new Customer(customerId));
+			/*List<RemittanceApplication> listOfApplication = remittanceApplicationRepository.deActivateNotUsedApplication(new Customer(customerId));
 			if(!listOfApplication.isEmpty()) {
 				for(RemittanceApplication application : listOfApplication) {
 					RemittanceApplication remittanceApplication =  remittanceApplicationRepository.findOne(application.getRemittanceApplicationId());
@@ -143,11 +147,11 @@ public void updatePayTokenNull(List<RemittanceApplication> lstPayIdDetails,Payme
 					remittanceApplicationRepository.save(remittanceApplication);
 				}
 				
-			}
+			}*/
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new GlobalException("deActivateApplication faliled for custoemr:"+customerId);
+			throw new GlobalException("De-Activate Application failed for customer:"+customerId);
 		}
 	}
 	

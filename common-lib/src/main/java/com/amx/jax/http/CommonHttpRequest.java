@@ -16,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.mobile.device.Device;
 import org.springframework.mobile.device.DeviceUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
@@ -30,6 +31,7 @@ import com.amx.jax.dict.UserClient;
 import com.amx.jax.dict.UserClient.AppType;
 import com.amx.jax.dict.UserClient.DevicePlatform;
 import com.amx.jax.dict.UserClient.DeviceType;
+import com.amx.jax.filter.AppParamController;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.UserDevice;
 import com.amx.utils.ArgUtil;
@@ -82,6 +84,9 @@ public class CommonHttpRequest {
 	@Autowired(required = false)
 	private HttpServletResponse response;
 
+	@Autowired(required = false)
+	private ApiRequestConfig apiRequestConfig;
+
 	@Autowired
 	private AppConfig appConfig;
 
@@ -116,7 +121,9 @@ public class CommonHttpRequest {
 	}
 
 	public Language getLanguage() {
-		return (Language) ArgUtil.parseAsEnum(request.getLocale().getLanguage(), Language.DEFAULT);
+		return (Language) ArgUtil.parseAsEnum(
+				ArgUtil.ifNotEmpty(getRequestParam(AppConstants.LANG_PARAM_KEY), request.getLocale().getLanguage()),
+				Language.DEFAULT);
 	}
 
 	public Device getCurrentDevice() {
@@ -176,6 +183,25 @@ public class CommonHttpRequest {
 		if (response != null) {
 			response.addCookie(kooky);
 		}
+	}
+
+	/**
+	 * 
+	 * @param name
+	 * @param value
+	 * @param expiry - Sets the maximum age of the cookie in seconds.
+	 */
+	public void setCookie(String name, String value, int expiry) {
+		Cookie kooky = new Cookie(name, value);
+		kooky.setMaxAge(expiry);
+		kooky.setHttpOnly(appConfig.isCookieHttpOnly());
+		kooky.setSecure(appConfig.isCookieSecure());
+		kooky.setPath("/");
+		setCookie(kooky);
+	}
+
+	public void setCookie(String name, String value) {
+		setCookie(name, value, 31622400);
 	}
 
 	public Cookie getCookie(String name) {
@@ -342,7 +368,7 @@ public class CommonHttpRequest {
 		return null;
 	}
 
-	public boolean createApiRequestModels() {
+	private boolean createApiRequestModels() {
 		if (IS_API_REQUEST_MAPPED) {
 			return true;
 		}
@@ -376,6 +402,7 @@ public class CommonHttpRequest {
 		RequestType type;
 		boolean useAuthToken;
 		boolean useAuthKey;
+		String flow;
 
 		public RequestType getType() {
 			return type;
@@ -400,6 +427,14 @@ public class CommonHttpRequest {
 		public void setUseAuthKey(boolean useAuthKey) {
 			this.useAuthKey = useAuthKey;
 		}
+
+		public String getFlow() {
+			return flow;
+		}
+
+		public void setFlow(String flow) {
+			this.flow = flow;
+		}
 	}
 
 	public ApiRequestDetail getApiRequest(HttpServletRequest req) {
@@ -409,22 +444,44 @@ public class CommonHttpRequest {
 			detail.setType(x.type());
 			detail.setUseAuthKey(x.useAuthKey());
 			detail.setUseAuthToken(x.useAuthToken());
+			detail.setFlow(x.flow());
 		}
 
 		if (ArgUtil.isEmpty(detail.getType()) || RequestType.DEFAULT.equals(detail.getType())) {
-			detail.setType(RequestType.from(req));
+			detail.setType(from(req, apiRequestConfig));
 		}
 		return detail;
 	}
 
 	public RequestType getApiRequestType(HttpServletRequest req) {
-		RequestType reqType = RequestType.from(req);
+		RequestType reqType = from(req, apiRequestConfig);
 		if (reqType == RequestType.DEFAULT) {
 			ApiRequest x = getApiRequestModel(req);
 			if (x != null) {
 				return x.type();
 			}
 		}
+		return reqType;
+	}
+
+	public static RequestType from(HttpServletRequest req, ApiRequestConfig apiRequestConfig) {
+		if (req.getRequestURI().contains(AppParamController.PUB_AMX_PREFIX)) {
+			return RequestType.PING;
+		}
+		if (req.getRequestURI().contains(AppParamController.PUBG_AMX_PREFIX)) {
+			return RequestType.PUBG;
+		}
+
+		RequestType reqType = RequestType.DEFAULT;
+		String reqTypeStr = req.getHeader(AppConstants.REQUEST_TYPE_XKEY);
+		if (!StringUtils.isEmpty(reqTypeStr)) {
+			reqType = (RequestType) ArgUtil.parseAsEnum(reqTypeStr, reqType);
+		}
+
+		if (apiRequestConfig != null) {
+			return apiRequestConfig.from(req, reqType);
+		}
+
 		return reqType;
 	}
 }

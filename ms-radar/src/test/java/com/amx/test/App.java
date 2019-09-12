@@ -14,7 +14,8 @@ import org.jsoup.select.Elements;
 import com.amx.jax.client.snap.ISnapService.RateSource;
 import com.amx.jax.client.snap.ISnapService.RateType;
 import com.amx.jax.dict.Currency;
-import com.amx.jax.radar.jobs.scrapper.AmanKuwaitModels;
+import com.amx.jax.payg.PayGParams;
+import com.amx.jax.payg.PayGService;
 import com.amx.jax.rates.AmxCurRate;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.FileUtil;
@@ -35,11 +36,42 @@ public class App { // Noncompliant
 	 * @throws IOException
 	 */
 	public static void main(String[] args) throws URISyntaxException, IOException {
-		String json = FileUtil
-				.readFile("file://" + System.getProperty("user.dir")
-						+ "/src/test/java/com/amx/test/amankuwaitratesample.json");
-		AmanKuwaitModels.Rates rates2 = JsonUtil.getMapper().readValue(json, AmanKuwaitModels.RatesJson.class);
-		rates2.getCurRates();
+
+		String filePath = "file://" + System.getProperty("user.dir")
+				+ "/src/test/java/com/../../java/com/amx/test/appParams.json";
+
+		//FileUtil.normalize("file://" + System.getProperty("user.dir") + "/src/test/java/com/../../../../../../../java/com/amx/test/appParams.json");
+
+		FileUtil.normalize("/D:\\workspace_master_june\\amx-jax\\common-lib\\target/application.env.properties");
+		FileUtil.normalize("/D:\\workspace_master_june\\amx-jax\\common-lib\\target/..\\..\\..\\..\\..\\..\\..\\..\\..\\..\\..\\..\\..\\application.env.properties");
+
+		return;
+		/*
+		 * FileUtil.normalize("file://" + System.getProperty("user.dir") +
+		 * "/src/test/java/com/../../java/com/amx/test/appParams.json");
+		 * 
+		 * FileUtil.normalize("src/test/java/com/../../java/com/amx/test/appParams.json"
+		 * );
+		 * 
+		 * FileUtil.normalize(
+		 * "/src/test/java/com/../../java/com/amx/test/appParams.json");
+		 * 
+		 * FileUtil.normalize("file://" + System.getProperty("user.dir") +
+		 * "/src/test/java/com/../../java/com/amx/test/appParams.json");
+		 * 
+		 * 
+		 * String json = FileUtil.readFile(filePath); PayGParams rates2 =
+		 * JsonUtil.getMapper().readValue(json, PayGParams.class);
+		 * 
+		 * PayGService service = new PayGService();
+		 * System.out.println("RATE2 ============" + JsonUtil.toJson(rates2)); String
+		 * details = service.getEnCryptedDetails(rates2);
+		 * System.out.println("ENCRYPTED ============" + details); PayGParams rates3 =
+		 * service.getDeCryptedDetails(details); System.out.println("RATE3 ============"
+		 * + JsonUtil.toJson(rates3));
+		 * 
+		 */
+
 	}
 
 	public static void main2(String[] args) throws URISyntaxException, IOException {
@@ -84,8 +116,7 @@ public class App { // Noncompliant
 		Elements trs = doc.select("#ctl10_updatepnl table.table tbody tr");
 		for (Element tr : trs) {
 			Elements tds = tr.select("td");
-			Currency cur = (Currency) ArgUtil.parseAsEnum(tds.get(2).text(),
-					Currency.UNKNOWN);
+			Currency cur = (Currency) ArgUtil.parseAsEnum(tds.get(2).text(), Currency.UNKNOWN);
 			if (!Currency.UNKNOWN.equals(cur) && tds.size() >= 3) {
 				BigDecimal rate = ArgUtil.parseAsBigDecimal(tds.get(3).text());
 				if (!ArgUtil.isEmpty(rate)) {

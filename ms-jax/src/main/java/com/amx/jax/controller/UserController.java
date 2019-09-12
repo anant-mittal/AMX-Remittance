@@ -17,11 +17,14 @@ import com.amx.amxlib.constant.ApiEndpoint.UserApi;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.UserFingerprintResponseModel;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.amxlib.service.ICustomerService.Path;
+import com.amx.amxlib.service.IUserService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.userservice.service.FingerprintService;
+import com.amx.jax.customer.service.JaxCustomerContactVerificationService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.userservice.service.UserValidationService;
 import com.amx.utils.Constants;
@@ -29,7 +32,7 @@ import com.amx.utils.Constants;
 @RestController
 @RequestMapping(USER_API_ENDPOINT)
 @SuppressWarnings("rawtypes")
-public class UserController {
+public class UserController implements IUserService {
 
 	@Autowired
 	private UserService userService;
@@ -44,6 +47,9 @@ public class UserController {
 	@Autowired
 	UserValidationService userValidationService;
 	
+	@Autowired
+	JaxCustomerContactVerificationService jaxCustomerContactVerificationService;
+	
 	
 
 	private Logger logger = LoggerService.getLogger(UserController.class);
@@ -51,6 +57,8 @@ public class UserController {
 	@RequestMapping(value = "/login/", method = RequestMethod.POST)
 	public ApiResponse loginUser(@RequestBody CustomerModel customerModel) {
 		logger.info("loginUser Request: usreid: " + customerModel.getLoginId());
+		//jaxCustomerContactVerificationService.validateEmailVerification(customerModel.getLoginId());
+		jaxCustomerContactVerificationService.validateEmailVerification(customerModel.getLoginId());
 		ApiResponse response = userService.loginUser(customerModel.getLoginId(), customerModel.getPassword());
 		return response;
 	}
@@ -80,7 +88,8 @@ public class UserController {
 			@RequestParam(value = UserApi.PASSWORD) String password) {
 		logger.debug(MessageFormat.format("IdentityInt value is {0} :", identityInt));
 		logger.debug(MessageFormat.format("IdentityType value is {0} :", identityType));
-		
+		// Validate TODO:- @Anant
+		jaxCustomerContactVerificationService.validateEmailVerification(identityInt);
 		CustomerModel customerModel = fingerprintService.loginCustomerByFingerprint(identityInt, identityType, password,
 				metaData.getDeviceId());
 
@@ -97,5 +106,18 @@ public class UserController {
 			@RequestParam(defaultValue = Constants.IDENTITY_TYPE_CIVIL_ID_STR) String identityType) {
 		return fingerprintService.resetFingerprint(identity, identityType);
 	}
+	@RequestMapping(value = Path.RESEND_EMAIL_LOGIN, method = RequestMethod.POST)
+	public AmxApiResponse<BoolRespModel, Object> sendEmailOnLogin(@RequestBody CustomerModel customerModel){
+		jaxCustomerContactVerificationService.sendEmailVerifyLinkOnReg(customerModel);
+		BoolRespModel boolRespModel = new BoolRespModel();
+		boolRespModel.setSuccess(Boolean.TRUE);
+		return AmxApiResponse.build(boolRespModel);
+	}
 
+
+	@RequestMapping(value = UserApi.VALIDATE_CUSTOMER_LOGIN_OTP, method = RequestMethod.POST)
+	@Override
+	public AmxApiResponse<CustomerModel, Object> validateCustomerLoginOtp(String identityInt) {
+		return userService.validateCustomerLoginOtp(identityInt);
+	}
 }

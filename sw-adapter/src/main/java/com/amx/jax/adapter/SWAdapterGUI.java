@@ -28,6 +28,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 
+import org.springframework.stereotype.Component;
+
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.adapter.ACardReaderService.CardStatus;
 import com.amx.jax.adapter.ACardReaderService.DataStatus;

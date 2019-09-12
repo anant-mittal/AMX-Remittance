@@ -1,6 +1,5 @@
 package com.amx.jax.ui.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -27,8 +26,6 @@ import com.amx.jax.ui.model.AuthDataInterface.UserUpdateResponse;
 import com.amx.jax.ui.model.UserBean;
 import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseWrapper;
-import com.amx.utils.ArgUtil;
-import com.amx.utils.Constants;
 import com.amx.utils.ListManager;
 
 /**
@@ -117,7 +114,6 @@ public class UserService {
 			ex.setMeta(authData.toJaxAuthMetaResp());
 			throw ex;
 		}
-
 	}
 
 	/**
@@ -159,6 +155,7 @@ public class UserService {
 			sessionService.getUserSession().getCustomerModel().setEmail(model.getEmail());
 			sessionService.getUserSession().getCustomerModel().getPersoninfo().setEmail(model.getEmail());
 			wrapper.setMessage(OWAStatusStatusCodes.USER_UPDATE_SUCCESS, "Email Updated");
+			updateCustoemrModel();
 		}
 		return wrapper;
 	}

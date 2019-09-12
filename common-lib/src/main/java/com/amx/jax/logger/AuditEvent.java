@@ -1,6 +1,9 @@
 package com.amx.jax.logger;
 
+import java.util.Map;
+
 import com.amx.jax.dict.UserClient.UserDeviceClient;
+import com.amx.jax.exception.AmxApiException;
 import com.amx.jax.exception.IExceptionEnum;
 import com.amx.utils.ArgUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -24,7 +27,7 @@ public abstract class AuditEvent extends AbstractEvent {
 	@JsonProperty(PROP_RESULT)
 	protected Result result;
 
-	protected IExceptionEnum errorCode;
+	protected String errorCode;
 
 	@JsonProperty("trxTym")
 	protected long tranxTime;
@@ -54,6 +57,7 @@ public abstract class AuditEvent extends AbstractEvent {
 
 	@JsonIgnore
 	boolean success;
+	protected Map<String, String> details;
 
 	public static enum Result {
 		DEFAULT, DONE, REJECTED, FAIL, ERROR, PASS;
@@ -132,10 +136,20 @@ public abstract class AuditEvent extends AbstractEvent {
 		this.exceptionType = exceptionType;
 	}
 
+	/**
+	 * gets the minimum actor info
+	 * 
+	 * @param actorId
+	 */
 	public String getActorId() {
 		return actorId;
 	}
 
+	/**
+	 * Sets the minimum actor info
+	 * 
+	 * @param actorId
+	 */
 	public void setActorId(String actorId) {
 		this.actorId = actorId;
 	}
@@ -156,11 +170,11 @@ public abstract class AuditEvent extends AbstractEvent {
 		this.data = data;
 	}
 
-	public IExceptionEnum getErrorCode() {
+	public String getErrorCode() {
 		return errorCode;
 	}
 
-	public void setErrorCode(IExceptionEnum errorCode) {
+	public void setErrorCode(String errorCode) {
 		this.errorCode = errorCode;
 	}
 
@@ -182,6 +196,13 @@ public abstract class AuditEvent extends AbstractEvent {
 		return this;
 	}
 
+	public AuditEvent result(Result result, AmxApiException excep) {
+		this.setResult(result);
+		this.errorCode = ArgUtil.isEmpty(excep.getErrorKey()) ? ArgUtil.parseAsString(excep.getError())
+				: excep.getErrorKey();
+		return this;
+	}
+
 	public AuditEvent message(Object message) {
 		this.setMessage(ArgUtil.parseAsString(message));
 		return this;
@@ -193,6 +214,14 @@ public abstract class AuditEvent extends AbstractEvent {
 
 	public void setSuccess(boolean success) {
 		this.success = success;
+	}
+
+	public Map<String, String> getDetails() {
+		return details;
+	}
+
+	public void setDetails(Map<String, String> details) {
+		this.details = details;
 	}
 
 }

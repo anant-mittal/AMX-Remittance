@@ -19,9 +19,9 @@ public abstract class RemittanceAdditionalBeneFieldModel extends AbstractRemitta
 	private Map<String, FlexFieldDto> flexFieldDtoMap;
 	private Map<String, Object> additionalFields;
 	private BigDecimal purposeOfTrnxId;
-	
 	private String staffUserName;
 	private String amlRemarks;
+	private FlexFieldDto servicePackage;
 	
 	public Map<String, Object> getAdditionalFields() {
 		return additionalFields;
@@ -120,6 +120,14 @@ public abstract class RemittanceAdditionalBeneFieldModel extends AbstractRemitta
 
 	public void setAmlRemarks(String amlRemarks) {
 		this.amlRemarks = amlRemarks;
+	}
+
+	public FlexFieldDto getServicePackage() {
+		return servicePackage;
+	}
+
+	public void setServicePackage(FlexFieldDto servicePackage) {
+		this.servicePackage = servicePackage;
 	}
 
 	

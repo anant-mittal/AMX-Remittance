@@ -26,6 +26,7 @@ import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.exrateservice.service.NewExchangeRateService;
 import com.amx.jax.manager.RemittanceTransactionManager;
+import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.response.ExchangeRateBreakup;
 import com.amx.jax.model.response.SourceOfIncomeDto;
@@ -84,15 +85,28 @@ public class RemittanceTransactionService extends AbstractService {
 	}
 
 	public ApiResponse getSourceOfIncome(BigDecimal languageId) {
-
-		List<SourceOfIncomeView> sourceOfIncomeList = sourceOfIncomeDao.getSourceofIncome(languageId);
+		List<SourceOfIncomeView> sourceOfIncomeList;
+		List<SourceOfIncomeView> sourceOfIncomeListArabic;
 		ApiResponse response = getBlackApiResponse();
-		if (sourceOfIncomeList.isEmpty()) {
-			throw new GlobalException("No data found");
-		} else {
+		if((languageId==null) || languageId.equals(new BigDecimal(1)))
+		{
+		sourceOfIncomeList = sourceOfIncomeDao.getSourceofIncome(languageId);
+		response.getData().getValues().addAll(convertSourceOfIncomeForEnglish(sourceOfIncomeList));
+		response.setResponseStatus(ResponseStatus.OK);
+		}
+		else {
+			sourceOfIncomeList = sourceOfIncomeDao.getSourceofIncome(new BigDecimal(2));
+			
+			sourceOfIncomeListArabic= sourceOfIncomeDao.getSourceofIncome(languageId);
+			sourceOfIncomeList.get(0).setLocalName(sourceOfIncomeListArabic.get(0).getLocalName());
 			response.getData().getValues().addAll(convertSourceOfIncome(sourceOfIncomeList));
 			response.setResponseStatus(ResponseStatus.OK);
 		}
+		
+		
+		if (sourceOfIncomeList.isEmpty()) {
+			throw new GlobalException("No data found");
+		} 
 		response.getData().setType("sourceofincome");
 		return response;
 	}
@@ -111,13 +125,26 @@ public class RemittanceTransactionService extends AbstractService {
 
 	public ApiResponse validateRemittanceTransaction(RemittanceTransactionRequestModel model) {
 		ApiResponse response = getBlackApiResponse();
-		RemittanceTransactionResponsetModel responseModel = remittanceTxnManger.validateTransactionData(model);
+		RemittanceTransactionResponsetModel responseModel  = remittanceTxnManger.validateTransactionData(model);
 		response.getData().getValues().add(responseModel);
 		response.setResponseStatus(ResponseStatus.OK);
 		response.getData().setType(model.getModelType());
 		return response;
 
 	}
+	
+	
+	
+	public ApiResponse validateRemittanceTransactionV2(RemittanceTransactionDrRequestModel model) {
+		ApiResponse response = getBlackApiResponse();
+		RemittanceTransactionResponsetModel responseModel  = remittanceTxnManger.validateTransactionDataV2(model);
+		response.getData().getValues().add(responseModel);
+		response.setResponseStatus(ResponseStatus.OK);
+		response.getData().setType(model.getModelType());
+		return response;
+
+	}
+	
 
 	public List<SourceOfIncomeDto> convertSourceOfIncome(List<SourceOfIncomeView> sourceOfIncomeList) {
 		List<SourceOfIncomeDto> list = new ArrayList<>();
@@ -127,6 +154,24 @@ public class RemittanceTransactionService extends AbstractService {
 			dto.setShortDesc(model.getShortDesc());
 			dto.setLanguageId(model.getLanguageId());
 			dto.setDescription(model.getDescription());
+			dto.setLocalName(model.getLocalName());
+
+			list.add(dto);
+		}
+		return list;
+
+	}
+	
+	public List<SourceOfIncomeDto> convertSourceOfIncomeForEnglish(List<SourceOfIncomeView> sourceOfIncomeList) {
+		List<SourceOfIncomeDto> list = new ArrayList<>();
+		for (SourceOfIncomeView model : sourceOfIncomeList) {
+			SourceOfIncomeDto dto = new SourceOfIncomeDto();
+			dto.setSourceofIncomeId(model.getSourceofIncomeId());
+			//dto.setShortDesc(model.getShortDesc());
+			dto.setLanguageId(model.getLanguageId());
+			dto.setDescription(model.getDescription());
+			dto.setLocalName(model.getDescription());
+
 			list.add(dto);
 		}
 		return list;
@@ -142,6 +187,16 @@ public class RemittanceTransactionService extends AbstractService {
 		return response;
 	}
 
+	
+	public ApiResponse saveApplicationV2(RemittanceTransactionDrRequestModel model) {
+		ApiResponse response = getBlackApiResponse();
+		RemittanceApplicationResponseModel responseModel = remittanceTxnManger.saveApplicationV2(model);
+		response.getData().getValues().add(responseModel);
+		response.setResponseStatus(ResponseStatus.OK);
+		response.getData().setType(responseModel.getModelType());
+		return response;
+	}
+	
 	public ApiResponse saveRemittance(PayGModel paymentResponseDto) {
 		ApiResponse response = getBlackApiResponse();
 		return response;
@@ -159,7 +214,7 @@ public class RemittanceTransactionService extends AbstractService {
 	
 	@SuppressWarnings("unchecked")
 	public ApiResponse<RemittanceTransactionResponsetModel> calcEquivalentAmount(
-			@RequestBody RemittanceTransactionRequestModel model) {
+@RequestBody RemittanceTransactionRequestModel model) {
 		ApiResponse<RemittanceTransactionResponsetModel> response = getBlackApiResponse();
 		RemittanceTransactionResponsetModel respModel = remittanceTxnManger.validateTransactionData(model);
 		BigDecimal fcCurrencyId = beneficiaryService.getBeneByIdNo(model.getBeneId()).getCurrencyId();
@@ -177,8 +232,7 @@ public class RemittanceTransactionService extends AbstractService {
 		return response;
 	}
 
-	public SuspiciousTransactionPaymentDto getSuspiciousTransactionPaymentDto(BigDecimal remittanceApplicationId,
-			Long noOfAttempts) {
+	public SuspiciousTransactionPaymentDto getSuspiciousTransactionPaymentDto(BigDecimal remittanceApplicationId,Long noOfAttempts) {
 		SuspiciousTransactionPaymentDto dto = new SuspiciousTransactionPaymentDto();
 		BenificiaryListView beneView = getBeneBybeneficiaryView(remittanceApplicationId);
 		dto.setBankName(beneView.getBankName());

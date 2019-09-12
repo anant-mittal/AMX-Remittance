@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.meta.model.TransactionHistoryDto;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.response.ApiResponse;
@@ -33,6 +32,7 @@ import com.amx.jax.dbmodel.CustomerRemittanceTransactionHistoryView;
 import com.amx.jax.dbmodel.CustomerRemittanceTransactionView;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.ITransactionHistroyDAO;
 import com.amx.jax.repository.TransactionHistoryDAO;
@@ -203,6 +203,14 @@ public class TransactionHistroyService extends AbstractService {
 	            model.setBeneficiaryRelationSeqId(hist.getBeneficiaryRelationSeqId());
 	            model.setLocalTrnxAmount(hist.getLocalTrnxAmount());
 	            model.setSourceOfIncomeId(hist.getSourceOfIncomeId());
+	            
+	            model.setExRateApplied(hist.getExRateApplied());
+				if(hist.getExRateApplied() != null) {
+					BigDecimal rateRev = hist.getExRateApplied();
+					BigDecimal rateReversedFinal = new BigDecimal(1).divide(rateRev,2, BigDecimal.ROUND_HALF_UP);
+					model.setExRateReversed(rateReversedFinal);
+				}
+	            
 	            model.setTransactionReference(getTransactionReferece(hist));
 	            
 			BenificiaryListView beneViewModel = beneficiaryOnlineDao.getBeneficiaryByRelationshipId(
@@ -312,6 +320,14 @@ public class TransactionHistroyService extends AbstractService {
 			model.setBeneficiaryRelationSeqId(hist.getBeneficiaryRelationSeqId());
 			model.setLocalTrnxAmount(hist.getLocalTrnxAmount());
 			model.setSourceOfIncomeId(hist.getSourceOfIncomeId());
+			
+			model.setExRateApplied(hist.getExRateApplied());
+			if(hist.getExRateApplied() != null) {
+				BigDecimal rateRev = hist.getExRateApplied();
+				BigDecimal rateReversedFinal = new BigDecimal(1).divide(rateRev,2, BigDecimal.ROUND_HALF_UP);
+				model.setExRateReversed(rateReversedFinal);
+			}
+			
 			model.setTransactionReference(getTransactionReferece(hist));
 
 			if (beneMap!=null  && model.getBeneficiaryRelationSeqId()!=null) {

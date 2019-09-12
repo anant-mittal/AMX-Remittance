@@ -12,4 +12,6 @@ public interface IViewDeliveryMode extends CrudRepository<ViewDeliveryMode, Seri
 	
 	 List<ViewDeliveryMode> findByDeliveryModeIdAndLanguageId(BigDecimal deliveryModeId,BigDecimal languageId);
 
+	 ViewDeliveryMode findByDeliveryCode(String deliveryCode);
+
 }

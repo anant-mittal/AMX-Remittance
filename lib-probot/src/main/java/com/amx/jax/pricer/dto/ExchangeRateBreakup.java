@@ -55,7 +55,7 @@ public class ExchangeRateBreakup implements Cloneable, Comparable<ExchangeRateBr
 		if (null == o) {
 			return 1;
 		}
-		return this.rate.compareTo(o.rate);
+		return this.inverseRate.compareTo(o.inverseRate);
 	}
 
 	@Override

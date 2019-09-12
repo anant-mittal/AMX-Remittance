@@ -31,7 +31,6 @@ import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.exception.UnknownJaxError;
 import com.amx.amxlib.meta.model.AccountTypeDto;
-import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.meta.model.CountryMasterDTO;
 import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.meta.model.RoutingBankMasterDTO;
@@ -49,6 +48,7 @@ import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterAgentPar
 import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterServiceProviderParam;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.client.util.ConverterUtility;
+import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.rest.RestService;
 
 @Component
@@ -68,10 +68,11 @@ public class BeneClient extends AbstractJaxServiceClient {
 	 * @param beneCountryId
 	 * @return
 	 */
-	public ApiResponse<BeneficiaryListDTO> getBeneficiaryList(BigDecimal beneCountryId) {
+	public ApiResponse<BeneficiaryListDTO> getBeneficiaryList(BigDecimal beneCountryId,Boolean excludePackage) {
 		try {
 			return restService.ajax(appConfig.getJaxURL() + BENE_API_ENDPOINT + "/beneList/")
 					.queryParam("beneCountryId", beneCountryId)
+					.queryParam("excludePackage", excludePackage)
 					.meta(new JaxMetaInfo()).get()
 					.as(new ParameterizedTypeReference<ApiResponse<BeneficiaryListDTO>>() {
 					});

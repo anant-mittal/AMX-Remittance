@@ -101,4 +101,5 @@ public class WebApplication extends SpringBootServletInitializer {
 	public JaxMetaInfo jaxMetaInfo() {
 		return new JaxMetaInfo();
 	}
+
 }

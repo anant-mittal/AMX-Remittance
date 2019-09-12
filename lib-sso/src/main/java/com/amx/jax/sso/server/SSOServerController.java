@@ -140,22 +140,21 @@ public class SSOServerController {
 			if ((ArgUtil.isEmpty(refresh) || TimeUtils.isExpired(refresh, 10 * 1000))) {
 				String newTranxId = AppContextUtil.getTraceId(true, true);
 				ssoUser.setTranxId(newTranxId);
-				
+
 				URLBuilder builder = Urly.parse(
-							ArgUtil.ifNotEmpty(sSOTranx.get().getAppUrl(),
-									appConfig.getAppPrefix() + SSOConstants.APP_LOGIN_URL_DONE))
-							.queryParam(AppConstants.TRANX_ID_XKEY, newTranxId)
-							.queryParam(SSOConstants.PARAM_STEP, SSOAuthStep.DONE)
-							.queryParam(SSOConstants.PARAM_SOTP, sSOTranx.get().getAppToken())
-							;
-				
-				///builder.path(appConfig.getAppPrefix() + SSOConstants.SSO_LOGIN_URL)
-						//.queryParam("refresh", System.currentTimeMillis())
-						;
+						ArgUtil.ifNotEmpty(sSOTranx.get().getAppUrl(),
+								appConfig.getAppPrefix() + SSOConstants.APP_LOGIN_URL_DONE))
+						.queryParam(AppConstants.TRANX_ID_XKEY, newTranxId)
+						.queryParam(SSOConstants.PARAM_STEP, SSOAuthStep.DONE)
+						.queryParam(SSOConstants.PARAM_SOTP, sSOTranx.get().getAppToken());
+
+				/// builder.path(appConfig.getAppPrefix() + SSOConstants.SSO_LOGIN_URL)
+				// .queryParam("refresh", System.currentTimeMillis())
+				;
 				resp.setHeader("Location", builder.getURL());
 				resp.setStatus(302);
 			} else {
-				sSOTranx.put(x);
+				sSOTranx.fastPut(x);
 			}
 		}
 		ssoUser.generateSAC();
@@ -304,6 +303,8 @@ public class SSOServerController {
 					if (ArgUtil.isEmpty(terminalId)) {
 						auth.setIpAddress(userDeviceClient.getIp());
 					} else {
+						ssoUser.setTerminalId(terminalId);
+						// TODO:-- TO validate
 						auth.setIpAddress(terminalId);
 					}
 

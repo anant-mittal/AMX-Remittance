@@ -66,5 +66,10 @@ public class VwGovernateModel implements IResourceEntity{
 		// TODO Auto-generated method stub
 		return this.arFullName;
 	}
+	@Override
+	public String resourceLocalName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
 

@@ -12,6 +12,14 @@ public class VatDetailsDto {
 	private String calculatuonType;
 	private BigDecimal roudingOff=BigDecimal.ZERO;
 	private BigDecimal commission=BigDecimal.ZERO;
+	private BigDecimal vatApplicableAmount=BigDecimal.ZERO;
+	
+	public BigDecimal getVatApplicableAmount() {
+		return vatApplicableAmount;
+	}
+	public void setVatApplicableAmount(BigDecimal vatApplicableAmount) {
+		this.vatApplicableAmount = vatApplicableAmount;
+	}
 	public BigDecimal getVatPercentage() {
 		return vatPercentage;
 	}

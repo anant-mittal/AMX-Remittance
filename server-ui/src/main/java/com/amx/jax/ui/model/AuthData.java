@@ -37,6 +37,8 @@ public class AuthData extends AbstractModel implements AuthResponse, AuthRequest
 
 	private String lockId = null;
 
+	private String captachKey = null;
+
 	private ContactType contactType;
 
 	/*
@@ -261,6 +263,7 @@ public class AuthData extends AbstractModel implements AuthResponse, AuthRequest
 	 *
 	 * @return the otp
 	 */
+	@Override
 	public String getOtp() {
 		return otp;
 	}
@@ -270,6 +273,7 @@ public class AuthData extends AbstractModel implements AuthResponse, AuthRequest
 	 *
 	 * @param otp the new otp
 	 */
+	@Override
 	public void setOtp(String otp) {
 		this.otp = otp;
 	}
@@ -453,6 +457,16 @@ public class AuthData extends AbstractModel implements AuthResponse, AuthRequest
 	@Override
 	public void setwOtp(String wOtp) {
 		this.wOtp = wOtp;
+	}
+
+	@Override
+	public String getCaptachKey() {
+		return captachKey;
+	}
+
+	@Override
+	public void setCaptachKey(String captachKey) {
+		this.captachKey = captachKey;
 	}
 
 }

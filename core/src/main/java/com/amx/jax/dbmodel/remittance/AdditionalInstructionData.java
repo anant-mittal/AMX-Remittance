@@ -53,8 +53,6 @@ public class AdditionalInstructionData implements Serializable {
 	private Date approvedDate;
 	private String approvedBy;
 	private String amiecCode;
-
-	
 	
 
 	public AdditionalInstructionData() {
@@ -281,7 +279,6 @@ public class AdditionalInstructionData implements Serializable {
 	public void setAmiecCode(String amiecCode) {
 		this.amiecCode = amiecCode;
 	}
-
 	
 	
 }

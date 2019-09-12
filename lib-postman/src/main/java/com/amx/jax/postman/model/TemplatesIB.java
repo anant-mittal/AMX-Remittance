@@ -70,4 +70,9 @@ public enum TemplatesIB implements ITemplate {
 		return "html/" + fileName;
 	}
 
+	@Override
+	public String getSMSFile() {
+		return "html/" + fileName;
+	}
+
 }

@@ -22,12 +22,14 @@ import javax.persistence.TemporalType;
 import org.hibernate.annotations.Proxy;
 
 import com.amx.jax.constants.CustomerRegistrationType;
+import com.amx.jax.dict.Communicatable;
 import com.amx.jax.util.AmxDBConstants.Status;
+import com.amx.utils.ArgUtil;
 
 @Entity
 @Table(name = "FS_CUSTOMER")
 @Proxy(lazy = false)
-public class Customer implements java.io.Serializable {
+public class Customer implements java.io.Serializable, Communicatable {
 
 	private static final long serialVersionUID = 1L;
 	private BigDecimal customerId;
@@ -135,16 +137,51 @@ public class Customer implements java.io.Serializable {
 	private String prefixCodeMobileOther;
 	private String isMobileWhatsApp;
 	private String isMobileOtherWhatsApp;
-	
-	
-	//income related fields are added
-	
+
+	// income related fields are added
+
 	private BigDecimal annualIncomeFrom;
 	private BigDecimal annualIncomeTo;
 	private String annualIncomeUpdatedBy;
 	private Date annualIncomeUpdatedDate;
 	private String isBusinessCardVerified;
-	
+
+	private String customerVatNumber;
+	private String premInsurance;
+
+	// annual transaction limit fields added
+
+	private BigDecimal annualTransactionLimitFrom;
+	private BigDecimal annualTransactionLimitTo;
+	private Date annualTransactionUpdatedDate;
+
+	@Column(name = "ANNUAL_TRNXLIMIT_FROM")
+	public BigDecimal getAnnualTransactionLimitFrom() {
+		return annualTransactionLimitFrom;
+	}
+
+	public void setAnnualTransactionLimitFrom(BigDecimal annualTransactionLimitFrom) {
+		this.annualTransactionLimitFrom = annualTransactionLimitFrom;
+	}
+
+	@Column(name = "ANNUAL_TRNXLIMIT_TO")
+	public BigDecimal getAnnualTransactionLimitTo() {
+		return annualTransactionLimitTo;
+	}
+
+	public void setAnnualTransactionLimitTo(BigDecimal annualTransactionLimitTo) {
+		this.annualTransactionLimitTo = annualTransactionLimitTo;
+	}
+
+	@Column(name = "ANNUAL_TRNXLIMIT_UPDATED_DATE")
+	public Date getAnnualTransactionUpdatedDate() {
+		return annualTransactionUpdatedDate;
+	}
+
+	public void setAnnualTransactionUpdatedDate(Date annualTransactionUpdatedDate) {
+		this.annualTransactionUpdatedDate = annualTransactionUpdatedDate;
+	}
+
 	public String getIsBusinessCardVerified() {
 		return isBusinessCardVerified;
 	}
@@ -1045,6 +1082,10 @@ public class Customer implements java.io.Serializable {
 		this.whatsAppVerified = whatsAppVerified;
 	}
 
+	public boolean canSendWhatsApp() {
+		return !(Status.D.equals(this.whatsAppVerified) || Status.N.equals(this.whatsAppVerified));
+	}
+
 	private Status emailVerified;
 
 	@Column(name = "EMAIL_VERIFIED")
@@ -1055,6 +1096,10 @@ public class Customer implements java.io.Serializable {
 
 	public void setEmailVerified(Status emailVerified) {
 		this.emailVerified = emailVerified;
+	}
+
+	public boolean canSendEmail() {
+		return !(Status.D.equals(this.emailVerified) || Status.N.equals(this.emailVerified) || ArgUtil.isEmpty(this.email));
 	}
 
 	private Status mobileVerified;
@@ -1068,4 +1113,35 @@ public class Customer implements java.io.Serializable {
 	public void setMobileVerified(Status mobileVerified) {
 		this.mobileVerified = mobileVerified;
 	}
+
+	public boolean canSendMobile() {
+		return !(Status.D.equals(this.mobileVerified) || Status.N.equals(this.mobileVerified));
+	}
+
+	@Column(name = "VAT_NUMBER")
+	public String getCustomerVatNumber() {
+		return customerVatNumber;
+	}
+
+	@Column(name = "PREM_INSURANCE")
+	public String getPremInsurance() {
+		return premInsurance;
+	}
+
+	public void setPremInsurance(String premInsurance) {
+		this.premInsurance = premInsurance;
+	}
+
+	@Override
+	public String toString() {
+		return "Customer [customerId=" + customerId + ", email=" + email +
+				", whatsApp=" + whatsapp + ", mobile=" + mobile +
+				", emailVerified=" + emailVerified + ", whatsAppVerified=" + whatsAppVerified + ", mobileVerified="
+				+ mobileVerified + "]";
+	}
+
+	public void setCustomerVatNumber(String customerVatNumber) {
+		this.customerVatNumber = customerVatNumber;
+	}
+
 }

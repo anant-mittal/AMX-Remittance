@@ -70,5 +70,10 @@ public class VwGovernateAreaModel implements IResourceEntity, Serializable{
 	public String resourceCode() {
 		return this.arFullName;
 	}
+	@Override
+	public String resourceLocalName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
 

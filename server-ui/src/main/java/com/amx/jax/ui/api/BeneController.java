@@ -14,13 +14,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.constant.BeneficiaryConstant.BeneStatus;
 import com.amx.amxlib.meta.model.BeneCountryDTO;
-import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.model.BeneAccountModel;
 import com.amx.amxlib.model.BenePersonalDetailModel;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.response.JaxTransactionResponse;
 import com.amx.amxlib.model.trnx.BeneficiaryTrnxModel;
 import com.amx.jax.JaxAuthContext;
+import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 import com.amx.jax.ui.model.AuthData;
 import com.amx.jax.ui.model.AuthDataInterface.AuthRequestOTP;
@@ -56,9 +56,11 @@ public class BeneController {
 	 */
 	@ApiOperation(value = "List of All bnfcry")
 	@RequestMapping(value = "/api/user/bnfcry/list", method = { RequestMethod.POST })
-	public ResponseWrapper<List<BeneficiaryListDTO>> beneList() {
+	public ResponseWrapper<List<BeneficiaryListDTO>> beneList(
+			@RequestParam(required = false, defaultValue = "false") boolean excludePackages) {
 		ResponseWrapper<List<BeneficiaryListDTO>> wrapper = new ResponseWrapper<>();
-		wrapper.setData(jaxService.setDefaults().getBeneClient().getBeneficiaryList(new BigDecimal(0)).getResults());
+		wrapper.setData(jaxService.setDefaults().getBeneClient().getBeneficiaryList(new BigDecimal(0), excludePackages)
+				.getResults());
 		return wrapper;
 	}
 
