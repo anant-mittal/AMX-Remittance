@@ -12,6 +12,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
@@ -519,6 +521,7 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 	
 	private String impsSplittingMessage(DynamicRoutingPricingDto drDto) {
 		String msg = null;
+		String reminder = "";
 		try {
 		TrnxRoutingDetails routingDetails = drDto.getTrnxRoutingPaths();
 		BigDecimal foreignAmont = drDto.getExRateBreakup().getConvertedFCAmount();
@@ -531,7 +534,15 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 		Map<BigDecimal,BigDecimal> mapSplitAmount = new HashMap<>();
 		if(splitCount!=null && splitCount.length>0) {
 			count = splitCount[0].add(splitCount[1].compareTo(BigDecimal.ZERO)>0?BigDecimal.ONE:BigDecimal.ZERO);
-		    msg = "This single remittance will be reflected as {"+count.intValue()+"} transactions in your bank account.The {"+splitCount[0].intValue()+"} transactions will be "+currQuoteName+" {"+routingDetails.getSplitAmount()+"} and "+currQuoteName+" {"+splitCount[1]+"}.";
+			List<String> amountStrList= new ArrayList<>();
+			for(int i=0;i<splitCount[0].intValue();i++) {
+				amountStrList.add(routingDetails.getSplitAmount().toString());
+			}
+			String joinedString = amountStrList.stream().collect(Collectors.joining(","));
+			if(splitCount[1]!=null && splitCount[1].compareTo(BigDecimal.ZERO)>0) { 
+				reminder ="and "+ currQuoteName+" {"+splitCount[1]+"}";
+			}
+		    msg = "This single remittance will be reflected as {"+count.intValue()+"} transactions in your bank account.The {"+count.intValue()+"} transactions will be "+currQuoteName+" {"+joinedString+"} "+reminder +".";
 		}
 		
 		}catch(Exception e) {
