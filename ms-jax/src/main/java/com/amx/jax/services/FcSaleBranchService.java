@@ -33,6 +33,7 @@ import com.amx.jax.manager.FcSaleBranchOrderManager;
 import com.amx.jax.manager.StatusMasterManager;
 import com.amx.jax.model.request.fx.FcDeliveryBranchOrderSearchRequest;
 import com.amx.jax.model.request.fx.FcSaleBranchDispatchRequest;
+import com.amx.jax.model.request.fx.FcSaleOrderManagementDatesRequest;
 import com.amx.jax.model.response.fx.FcEmployeeDetailsDto;
 import com.amx.jax.model.response.fx.FcSaleCurrencyAmountModel;
 import com.amx.jax.model.response.fx.FcSaleOrderManagementDTO;
@@ -815,7 +816,7 @@ public class FcSaleBranchService extends AbstractService{
 		return AmxApiResponse.build(fxOrderReportResponseDto);
 	}
 	
-	public AmxApiResponse<FcSaleOrderManagementDTO,Object> searchOrderByDates(BigDecimal applicationCountryId,BigDecimal employeeId,Date fromDate,Date toDate){
+	public AmxApiResponse<FcSaleOrderManagementDTO,Object> searchOrderByDates(BigDecimal applicationCountryId,BigDecimal employeeId,FcSaleOrderManagementDatesRequest fcSaleDates){
 		List<FcSaleOrderManagementDTO> saleOrderManage = null;
 
 		if(applicationCountryId == null || applicationCountryId.compareTo(BigDecimal.ZERO) == 0){
@@ -824,9 +825,12 @@ public class FcSaleBranchService extends AbstractService{
 		if(employeeId == null || employeeId.compareTo(BigDecimal.ZERO) == 0){
 			throw new GlobalException(JaxError.NULL_EMPLOYEE_ID,"Employee Id should not be blank");
 		}
+		if(fcSaleDates == null) {
+			throw new GlobalException(JaxError.FC_SALE_SELECTED_DATES,"Dates should not blank");
+		}
 		
 		try {
-			HashMap<String, Object> orderDetails = branchOrderManager.fetchFcSaleOrderManagement(applicationCountryId,employeeId,fromDate,toDate);
+			HashMap<String, Object> orderDetails = branchOrderManager.fetchFcSaleOrderManagement(applicationCountryId,employeeId,fcSaleDates.getFromDate(),fcSaleDates.getToDate());
 			if(orderDetails != null) {
 				if(orderDetails.get("ORDERS") != null && orderDetails.get("AREA") != null) {
 					List<OrderManagementView> orderManagement = (List<OrderManagementView>) orderDetails.get("ORDERS");

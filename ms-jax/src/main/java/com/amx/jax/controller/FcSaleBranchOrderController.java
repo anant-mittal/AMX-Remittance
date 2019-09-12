@@ -2,7 +2,6 @@ package com.amx.jax.controller;
 
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +18,7 @@ import com.amx.jax.client.fx.IFxBranchOrderService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.fx.FcDeliveryBranchOrderSearchRequest;
 import com.amx.jax.model.request.fx.FcSaleBranchDispatchRequest;
+import com.amx.jax.model.request.fx.FcSaleOrderManagementDatesRequest;
 import com.amx.jax.model.response.fx.FcEmployeeDetailsDto;
 import com.amx.jax.model.response.fx.FcSaleOrderManagementDTO;
 import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
@@ -239,10 +239,10 @@ public class FcSaleBranchOrderController implements IFxBranchOrderService {
 	 */
 	@RequestMapping(value = Path.FC_SEARCH_ORDER_BY_DATES , method = RequestMethod.POST)
 	@Override
-	public AmxApiResponse<FcSaleOrderManagementDTO,Object> searchOrderByDates(@RequestParam(value = "fromDate", required = true) Date fromDate,@RequestParam(value = "toDate", required = true) Date toDate){
+	public AmxApiResponse<FcSaleOrderManagementDTO,Object> searchOrderByDates(@RequestBody FcSaleOrderManagementDatesRequest fcSaleDates){
 		BigDecimal countryId = metaData.getCountryId();
 		BigDecimal employeeId = metaData.getEmployeeId();
-		return fcSaleBranch.searchOrderByDates(countryId,employeeId,fromDate,toDate);
+		return fcSaleBranch.searchOrderByDates(countryId,employeeId,fcSaleDates);
 	}
 	
 

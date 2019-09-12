@@ -1,7 +1,6 @@
 package com.amx.jax.client.fx;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +11,10 @@ import com.amx.jax.AppConfig;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.configs.JaxMetaInfo;
-
 import com.amx.jax.exception.JaxSystemError;
 import com.amx.jax.model.request.fx.FcDeliveryBranchOrderSearchRequest;
 import com.amx.jax.model.request.fx.FcSaleBranchDispatchRequest;
+import com.amx.jax.model.request.fx.FcSaleOrderManagementDatesRequest;
 import com.amx.jax.model.response.fx.FcEmployeeDetailsDto;
 import com.amx.jax.model.response.fx.FcSaleOrderManagementDTO;
 import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
@@ -318,17 +317,15 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 	}
 
 	@Override
-	public AmxApiResponse<FcSaleOrderManagementDTO, Object> searchOrderByDates(Date fromDate, Date toDate) {
+	public AmxApiResponse<FcSaleOrderManagementDTO, Object> searchOrderByDates(FcSaleOrderManagementDatesRequest fcSaleDates) {
 		try {
-			LOGGER.debug("in fetchBranchOrderManagement :");
+			LOGGER.debug("in searchOrderByDates :");
 			return restService.ajax(appConfig.getJaxURL() + Path.FC_SEARCH_ORDER_BY_DATES).meta(new JaxMetaInfo())
-					.queryParam(Params.FX_ORDER_FROM_DATE, fromDate).meta(new JaxMetaInfo())
-					.queryParam(Params.FX_ORDER_TO_DATE, toDate)
-					.post()
+					.post(fcSaleDates)
 					.as(new ParameterizedTypeReference<AmxApiResponse<FcSaleOrderManagementDTO, Object>>() {
 					});
 		} catch (Exception e) {
-			LOGGER.error("exception in fetchBranchOrderManagement : ", e);
+			LOGGER.error("exception in searchOrderByDates : ", e);
 			return JaxSystemError.evaluate(e);
 		} // end of try-catch
 	}

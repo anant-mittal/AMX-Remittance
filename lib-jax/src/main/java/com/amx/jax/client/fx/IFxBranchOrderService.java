@@ -1,7 +1,6 @@
 package com.amx.jax.client.fx;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 import com.amx.jax.IJaxService;
 import com.amx.jax.api.AmxApiResponse;
@@ -10,6 +9,7 @@ import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.model.request.fx.FcDeliveryBranchOrderSearchRequest;
 import com.amx.jax.model.request.fx.FcSaleBranchDispatchRequest;
+import com.amx.jax.model.request.fx.FcSaleOrderManagementDatesRequest;
 import com.amx.jax.model.response.fx.FcEmployeeDetailsDto;
 import com.amx.jax.model.response.fx.FcSaleOrderManagementDTO;
 import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
@@ -105,5 +105,5 @@ public interface IFxBranchOrderService extends IJaxService {
 	AmxApiResponse<FxOrderTransactionHistroyDto, Object> searchOrder(FcDeliveryBranchOrderSearchRequest fcDeliveryBranchOrderSearchRequest);
 	
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND })
-	AmxApiResponse<FcSaleOrderManagementDTO, Object> searchOrderByDates(Date fromDate,Date toDate);
+	AmxApiResponse<FcSaleOrderManagementDTO, Object> searchOrderByDates(FcSaleOrderManagementDatesRequest fcSaleDates);
 }
