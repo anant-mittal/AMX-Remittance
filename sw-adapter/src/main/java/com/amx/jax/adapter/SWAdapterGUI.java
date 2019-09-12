@@ -197,7 +197,7 @@ public class SWAdapterGUI extends JFrame {
 		aboutTextPane = new JScrollPane();
 		aboutTextPane.setViewportView(aboutTextArea);
 
-		updateButton = new JButton("Update");
+		updateButton = new JButton("Check Update");
 		updateButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				checkUpdate();
