@@ -398,10 +398,11 @@ public class SWAdapterGUI extends JFrame {
 			String[] run = { "java", "-jar", ADAPTER_FOLDER + "/" + updaterFile, adapterjarFile };
 			try {
 				Runtime.getRuntime().exec(run);
+				System.exit(0);
 			} catch (Exception ex) {
 				ex.printStackTrace();
+				console(ex.toString());
 			}
-			System.exit(0);
 		} else {
 			console("Adapter is not ready please wait.");
 		}

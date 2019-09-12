@@ -164,10 +164,12 @@ public class Updater extends JFrame {
 		String[] run = { "java", "-jar", ADAPTER_FOLDER + "/" + adapterFile };
 		try {
 			Runtime.getRuntime().exec(run);
+			System.exit(0);
 		} catch (Exception ex) {
+			console(ex.toString());
 			ex.printStackTrace();
 		}
-		System.exit(0);
+		
 	}
 
 	private void remove(File f) {
