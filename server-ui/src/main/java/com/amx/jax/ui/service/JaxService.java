@@ -255,4 +255,14 @@ public class JaxService implements IMetaRequestOutFilter<JaxMetaInfo>, AppReques
 				: AuditActor.ActorType.GUEST, sessionService.getUserSession().getUserid());
 	}
 
+	public FxOrderBranchClient getFxOrderBranchClient() {
+		return fxOrderBranchClient;
+	}
+
+	public void setFxOrderBranchClient(FxOrderBranchClient fxOrderBranchClient) {
+		this.fxOrderBranchClient = fxOrderBranchClient;
+	}
+	
+	
+
 }
