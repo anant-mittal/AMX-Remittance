@@ -391,15 +391,19 @@ public class SWAdapterGUI extends JFrame {
 	}
 
 	private void launchApp() {
-		String adapterjarFile = String.format("sw-adapter-%s-$s-%s.jar", ACardReaderService.CONTEXT.getEnv(),
-				ACardReaderService.CONTEXT.getTnt(), ACardReaderService.CONTEXT.getLane());
-		console("Launching " + ADAPTER_FOLDER + "/" + updaterFile + " " + adapterjarFile);
-		String[] run = { "java", "-jar", ADAPTER_FOLDER + "/" + updaterFile, adapterjarFile };
-		try {
-			Runtime.getRuntime().exec(run);
-		} catch (Exception ex) {
-			ex.printStackTrace();
+		if (ACardReaderService.CONTEXT != null) {
+			String adapterjarFile = String.format("sw-adapter-%s-$s-%s.jar", ACardReaderService.CONTEXT.getEnv(),
+					ACardReaderService.CONTEXT.getTnt(), ACardReaderService.CONTEXT.getLane());
+			console("Launching " + ADAPTER_FOLDER + "/" + updaterFile + " " + adapterjarFile);
+			String[] run = { "java", "-jar", ADAPTER_FOLDER + "/" + updaterFile, adapterjarFile };
+			try {
+				Runtime.getRuntime().exec(run);
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+			System.exit(0);
+		} else {
+			console("Adapter is not ready please wait.");
 		}
-		System.exit(0);
 	}
 }
