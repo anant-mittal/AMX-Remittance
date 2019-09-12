@@ -324,7 +324,7 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 			return restService.ajax(appConfig.getJaxURL() + Path.FC_SEARCH_ORDER_BY_DATES).meta(new JaxMetaInfo())
 					.queryParam(Params.FX_ORDER_FROM_DATE, fromDate).meta(new JaxMetaInfo())
 					.queryParam(Params.FX_ORDER_TO_DATE, toDate)
-					.get()
+					.post()
 					.as(new ParameterizedTypeReference<AmxApiResponse<FcSaleOrderManagementDTO, Object>>() {
 					});
 		} catch (Exception e) {
