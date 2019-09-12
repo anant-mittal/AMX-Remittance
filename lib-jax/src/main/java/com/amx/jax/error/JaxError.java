@@ -288,7 +288,6 @@ public enum JaxError implements IExceptionEnum {
 	MISSING_OTP_CONTACT,
 	
 	// Default for code symettry
-	JAX_SYSTEM_ERROR,
 	APPL_CREATION_ERROR,
 	APPL_BENE_CREATION_ERROR,
 	APPL_ADD_INSTRUCTION_ERROR,

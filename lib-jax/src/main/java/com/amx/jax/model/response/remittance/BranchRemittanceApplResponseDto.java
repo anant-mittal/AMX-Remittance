@@ -25,8 +25,6 @@ public class BranchRemittanceApplResponseDto {
 	/* application records */
 	List<CustomerShoppingCartDto> shoppingCartDetails;
 	
-	List<CustomerShoppingCartDto> shoppingCartDetails;
-	
 	List<PaymentLinkAppDto> paymentLinkAppDto;  
 	public List<PaymentLinkAppDto> getPaymentLinkAppDto() {
 		return paymentLinkAppDto;

@@ -15,16 +15,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.jax.JaxAuthContext;
 import com.amx.jax.JaxAuthMetaResp;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
-import com.amx.jax.dbmodel.ViewOnlineCurrency;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.CivilIdOtpModel;
 import com.amx.jax.model.response.customer.CustomerCommunicationChannel;
 import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.userservice.dao.CustomerDao;
