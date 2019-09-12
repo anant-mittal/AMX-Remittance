@@ -531,7 +531,7 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 		Map<BigDecimal,BigDecimal> mapSplitAmount = new HashMap<>();
 		if(splitCount!=null && splitCount.length>0) {
 			count = splitCount[0].add(splitCount[1].compareTo(BigDecimal.ZERO)>0?BigDecimal.ONE:BigDecimal.ZERO);
-		    msg = "This single remittance will be reflected as {"+count.intValue()+"} transactions in your bank account.The {"+count.intValue()+"} transactions will be "+currQuoteName+" {"+routingDetails.getSplitAmount()+"} and "+currQuoteName+" {"+splitCount[1]+"}.";
+		    msg = "This single remittance will be reflected as {"+count.intValue()+"} transactions in your bank account.The {"+splitCount[0].intValue()+"} transactions will be "+currQuoteName+" {"+routingDetails.getSplitAmount()+"} and "+currQuoteName+" {"+splitCount[1]+"}.";
 		}
 		
 		}catch(Exception e) {
