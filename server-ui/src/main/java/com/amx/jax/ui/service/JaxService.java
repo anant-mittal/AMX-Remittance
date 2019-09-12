@@ -20,6 +20,7 @@ import com.amx.jax.client.RateAlertClient;
 import com.amx.jax.client.RemitClient;
 import com.amx.jax.client.UserClient;
 import com.amx.jax.client.configs.JaxMetaInfo;
+import com.amx.jax.client.fx.FxOrderBranchClient;
 import com.amx.jax.dict.Language;
 import com.amx.jax.dict.UserClient.AppType;
 import com.amx.jax.dict.UserClient.Channel;
@@ -72,6 +73,9 @@ public class JaxService implements IMetaRequestOutFilter<JaxMetaInfo>, AppReques
 
 	@Autowired
 	CustomerRegistrationClient customerRegistrationClient;
+	
+	@Autowired
+	FxOrderBranchClient fxOrderBranchClient;
 
 	/**
 	 * Gets the jax field client.
@@ -262,6 +266,7 @@ public class JaxService implements IMetaRequestOutFilter<JaxMetaInfo>, AppReques
 	public void setFxOrderBranchClient(FxOrderBranchClient fxOrderBranchClient) {
 		this.fxOrderBranchClient = fxOrderBranchClient;
 	}
+	
 	
 	
 

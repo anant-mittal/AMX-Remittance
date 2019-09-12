@@ -15,11 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.amx.amxlib.meta.model.CustomerRatingDTO;
+import com.amx.jax.client.fx.IFxBranchOrderService.Params;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.jax.AmxMeta;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.constant.ConstantDocument;
@@ -30,6 +30,7 @@ import com.amx.jax.dbmodel.CustomerRating;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.manager.RemittancePaymentManager;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.customer.CustomerRatingDTO;
 import com.amx.jax.model.request.remittance.IRemitTransReqPurpose;
 import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
@@ -42,6 +43,7 @@ import com.amx.jax.services.TransactionHistroyService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.ConverterUtil;
 import com.amx.jax.util.JaxContextUtil;
+import com.amx.jax.dict.Language;
 
 @RestController
 @RequestMapping(REMIT_API_ENDPOINT)
@@ -82,6 +84,9 @@ public class RemittanceController {
 
 	@Autowired
 	UserService userService;
+	
+	@Autowired
+	protected AmxMeta amxMeta;
 
 	@RequestMapping(value = "/trnxHist/", method = RequestMethod.GET)
 	public ApiResponse getTrnxHistroyDetailResponse(@RequestParam(required = false, value = "docfyr") BigDecimal docfyr,
@@ -142,8 +147,7 @@ public class RemittanceController {
 		return response;
 	}
 
-	@Autowired
-	protected AmxMeta amxMeta;
+	
 
 	@RequestMapping(value = "/sourceofincome/", method = RequestMethod.POST)
 	public ApiResponse sourceofIncome() {
@@ -268,8 +272,8 @@ public class RemittanceController {
 	
 	//radhika
 	@RequestMapping(value = "/customer-trnx-rating/", method = RequestMethod.POST)
-	public AmxApiResponse<CustomerRating, ?> inquireCustomerRating(@RequestParam BigDecimal remittanceTrnxId) {
-		return customerRatingService.inquireCustomerRating(remittanceTrnxId);
+	public AmxApiResponse<CustomerRating, ?> inquireCustomerRating(@RequestParam BigDecimal remittanceTrnxId,@RequestParam(value=Params.FX_PRODUCT) String product) {
+		return  customerRatingService.inquireCustomerRating(remittanceTrnxId,product);
 
 	}
 	
