@@ -84,6 +84,9 @@ public abstract class ACardReaderService {
 	@Value("${app.profile.tnt}")
 	String tnt;
 
+	@Value("${app.profile.lane}")
+	String lane;
+
 	@Value("${app.profile.env}")
 	String env;
 
@@ -566,5 +569,9 @@ public abstract class ACardReaderService {
 
 	public String getEnv() {
 		return env;
+	}
+
+	public String getLane() {
+		return lane;
 	}
 }

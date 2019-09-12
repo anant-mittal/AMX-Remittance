@@ -391,7 +391,8 @@ public class SWAdapterGUI extends JFrame {
 	}
 
 	private void launchApp() {
-		String adapterjarFile = String.format("sw-adapter-%s-$s-%s.jar");
+		String adapterjarFile = String.format("sw-adapter-%s-$s-%s.jar", ACardReaderService.CONTEXT.getEnv(),
+				ACardReaderService.CONTEXT.getTnt(), ACardReaderService.CONTEXT.getLane());
 		console("Launching " + ADAPTER_FOLDER + "/" + updaterFile + " " + adapterjarFile);
 		String[] run = { "java", "-jar", ADAPTER_FOLDER + "/" + updaterFile, adapterjarFile };
 		try {
