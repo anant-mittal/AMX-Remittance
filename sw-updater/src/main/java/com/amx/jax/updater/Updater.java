@@ -38,25 +38,30 @@ import javax.swing.JTextArea;
 public class Updater extends JFrame {
 
 	private static final long serialVersionUID = 7655016354046052027L;
-	private static File adapterFolder = null;
+	private static File ADAPTER_FOLDER = null;
 	private static String sourceServer = "https://docs.amxremit.com/dist-sw-adapter/";
 	private static String adapterFile = "sw-adapter-appd-kwt-java8.jar";
 	private static String adapterFileMd5 = adapterFile + ".md5";
 
+	private static String adapterFileMd5() {
+		return adapterFile + ".md5";
+	}
+
 	private Thread worker;
 	private final String root = "update/";
 
-	private JTextArea outText;
-	private JButton cancle;
-	private JButton launch;
+	private JTextArea aboutTextArea;
+	private JButton cancleUpdateButton;
+	private JButton launchAppButton;
+	private JButton updateButton;
 	private JScrollPane sp;
 	private JPanel pan1;
 	private JPanel pan2;
 
 	public Updater() {
 		initComponents();
-		outText.setText("Contacting Download Server...");
-		download();
+		console("Connecting to UpdateCenter...");
+		checkForUpdate();
 	}
 
 	private void initComponents() {
@@ -69,28 +74,38 @@ public class Updater extends JFrame {
 		pan2 = new JPanel();
 		pan2.setLayout(new FlowLayout());
 
-		outText = new JTextArea();
+		aboutTextArea = new JTextArea();
 		sp = new JScrollPane();
-		sp.setViewportView(outText);
+		sp.setViewportView(aboutTextArea);
 
-		launch = new JButton("Launch App");
-		launch.setEnabled(false);
-		launch.addActionListener(new ActionListener() {
+		launchAppButton = new JButton("Launch App");
+		launchAppButton.setEnabled(false);
+		launchAppButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				launch();
+				launchApp();
 			}
 		});
-		pan2.add(launch);
+		pan2.add(launchAppButton);
 
-		cancle = new JButton("Cancel Update");
-		cancle.addActionListener(new ActionListener() {
+		updateButton = new JButton("Update");
+		updateButton.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				updateAdapter();
+			}
+		});
+		pan2.add(updateButton);
+
+		cancleUpdateButton = new JButton("Exit");
+		cancleUpdateButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
 				System.exit(0);
 			}
 		});
-		pan2.add(cancle);
+		pan2.add(cancleUpdateButton);
+
 		pan1.add(sp, BorderLayout.CENTER);
 		pan1.add(pan2, BorderLayout.SOUTH);
 
@@ -99,7 +114,7 @@ public class Updater extends JFrame {
 		this.setSize(500, 400);
 	}
 
-	private void download() {
+	private void checkForUpdate() {
 		worker = new Thread(
 				new Runnable() {
 					public void run() {
@@ -107,15 +122,11 @@ public class Updater extends JFrame {
 
 							String fileLink = getDownloadLinkFromHost();
 							if (fileLink != null) {
-								downloadFile(adapterFile, adapterFile);
-								downloadFile(adapterFileMd5, adapterFileMd5);
-								// unzip();
-								// copyFiles(new File(root), new File("").getAbsolutePath());
-								// cleanup();
-								launch.setEnabled(true);
-								outText.setText(outText.getText() + "\nUpdate Finished!");
+								console("New version is avaiable, click Update to get Latest Adapter");
+								updateButton.setEnabled(true);
 							} else {
-								outText.setText(outText.getText() + "\nNo Update Required!");
+								console("No Update Required");
+								launchAppButton.setEnabled(true);
 							}
 						} catch (Exception ex) {
 							ex.printStackTrace();
@@ -126,22 +137,35 @@ public class Updater extends JFrame {
 		worker.start();
 	}
 
-	private void launch() {
-		String[] run = { "java", "-jar", "update app.jar" };
+	private void updateAdapter() {
+		worker = new Thread(
+				new Runnable() {
+					public void run() {
+						try {
+							downloadFile(adapterFile, adapterFile);
+							downloadFile(adapterFileMd5(), adapterFileMd5());
+							// unzip();
+							// copyFiles(new File(root), new File("").getAbsolutePath());
+							// cleanup();
+							console("Update Finished!");
+							launchAppButton.setEnabled(true);
+						} catch (Exception ex) {
+							ex.printStackTrace();
+							JOptionPane.showMessageDialog(null, "An error occured while preforming update!");
+						}
+					}
+				});
+		worker.start();
+	}
+
+	private void launchApp() {
+		String[] run = { "java", "-jar", ADAPTER_FOLDER + "/" + adapterFile };
 		try {
 			Runtime.getRuntime().exec(run);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 		System.exit(0);
-	}
-
-	private void cleanup() {
-		outText.setText(outText.getText() + "\nPreforming clean up...");
-		File f = new File("update.zip");
-		f.delete();
-		remove(new File(root));
-		new File(root).delete();
 	}
 
 	private void remove(File f) {
@@ -153,19 +177,6 @@ public class Updater extends JFrame {
 			} else {
 				ff.delete();
 			}
-		}
-	}
-
-	private void copyFiles(File f, String dir) throws IOException {
-		File[] files = f.listFiles();
-		for (File ff : files) {
-			if (ff.isDirectory()) {
-				new File(dir + "/" + ff.getName()).mkdir();
-				copyFiles(ff, dir + "/" + ff.getName());
-			} else {
-				copy(ff.getAbsolutePath(), dir + "/" + ff.getName());
-			}
-
 		}
 	}
 
@@ -187,35 +198,8 @@ public class Updater extends JFrame {
 		out.close();
 	}
 
-	private void unzip() throws IOException {
-		int BUFFER = 2048;
-		BufferedOutputStream dest = null;
-		BufferedInputStream is = null;
-		ZipEntry entry;
-		ZipFile zipfile = new ZipFile("update.zip");
-		Enumeration e = zipfile.entries();
-		(new File(root)).mkdir();
-		while (e.hasMoreElements()) {
-			entry = (ZipEntry) e.nextElement();
-			outText.setText(outText.getText() + "\nExtracting: " + entry);
-			if (entry.isDirectory())
-				(new File(root + entry.getName())).mkdir();
-			else {
-				(new File(root + entry.getName())).createNewFile();
-				is = new BufferedInputStream(zipfile.getInputStream(entry));
-				int count;
-				byte data[] = new byte[BUFFER];
-				FileOutputStream fos = new FileOutputStream(root + entry.getName());
-				dest = new BufferedOutputStream(fos, BUFFER);
-				while ((count = is.read(data, 0, BUFFER)) != -1) {
-					dest.write(data, 0, count);
-				}
-				dest.flush();
-				dest.close();
-				is.close();
-			}
-		}
-
+	private void console(String msg) {
+		aboutTextArea.setText(aboutTextArea.getText() + "\n" + msg);
 	}
 
 	private void downloadFile(String source, String target) throws MalformedURLException, IOException {
@@ -223,9 +207,10 @@ public class Updater extends JFrame {
 		URLConnection conn = url.openConnection();
 		InputStream is = conn.getInputStream();
 		long max = conn.getContentLength();
-		outText.setText(outText.getText() + "\n" + "Downloding file...\nUpdate Size(compressed): " + max + " Bytes");
+		console("Downloding file " + source + " ...");
+		console("Update Size(compressed): " + max + " Bytes");
 		BufferedOutputStream fOut = new BufferedOutputStream(
-				new FileOutputStream(new File(adapterFolder + "/" + target)));
+				new FileOutputStream(new File(ADAPTER_FOLDER + "/" + target)));
 		byte[] buffer = new byte[32 * 1024];
 		int bytesRead = 0;
 		int in = 0;
@@ -236,14 +221,13 @@ public class Updater extends JFrame {
 		fOut.flush();
 		fOut.close();
 		is.close();
-		outText.setText(outText.getText() + "\nDownload Complete!");
-
+		console("Download Complete!");
 	}
 
 	private String getDownloadLinkFromHost() throws MalformedURLException, IOException {
 		String currentMD5String = null;
 		BufferedReader brG = null;
-		try (BufferedReader br = new BufferedReader(new FileReader(adapterFolder + "/" + adapterFileMd5))) {
+		try (BufferedReader br = new BufferedReader(new FileReader(ADAPTER_FOLDER + "/" + adapterFileMd5()))) {
 			StringBuilder sb = new StringBuilder();
 			String line = br.readLine();
 
@@ -264,7 +248,7 @@ public class Updater extends JFrame {
 
 		String newMD5String = null;
 		try {
-			URL url = new URL(sourceServer + "/" + adapterFileMd5);
+			URL url = new URL(sourceServer + "/" + adapterFileMd5());
 			InputStream html = null;
 			html = url.openStream();
 			int c = 0;
@@ -291,16 +275,16 @@ public class Updater extends JFrame {
 		final Class<?> referenceClass = Updater.class;
 		final URL url = referenceClass.getProtectionDomain().getCodeSource().getLocation();
 		try {
-			adapterFolder = new File(url.toURI()).getParentFile();
+			ADAPTER_FOLDER = new File(url.toURI()).getParentFile();
 			// this is the path you want
-			String[] filenames = adapterFolder.list();
+			String[] filenames = ADAPTER_FOLDER.list();
 
 			for (String file : filenames) {
 				if (file.endsWith(".jar")) {
 					adapterFile = file;
 				}
 			}
-			adapterFileMd5 = adapterFile + ".md5";
+			adapterFileMd5 = adapterFileMd5();
 
 		} catch (final URISyntaxException e) {
 			// etc.
@@ -322,4 +306,53 @@ public class Updater extends JFrame {
 		});
 	}
 
+	private void unzip() throws IOException {
+		int BUFFER = 2048;
+		BufferedOutputStream dest = null;
+		BufferedInputStream is = null;
+		ZipEntry entry;
+		ZipFile zipfile = new ZipFile("update.zip");
+		Enumeration e = zipfile.entries();
+		(new File(root)).mkdir();
+		while (e.hasMoreElements()) {
+			entry = (ZipEntry) e.nextElement();
+			aboutTextArea.setText(aboutTextArea.getText() + "\nExtracting: " + entry);
+			if (entry.isDirectory())
+				(new File(root + entry.getName())).mkdir();
+			else {
+				(new File(root + entry.getName())).createNewFile();
+				is = new BufferedInputStream(zipfile.getInputStream(entry));
+				int count;
+				byte data[] = new byte[BUFFER];
+				FileOutputStream fos = new FileOutputStream(root + entry.getName());
+				dest = new BufferedOutputStream(fos, BUFFER);
+				while ((count = is.read(data, 0, BUFFER)) != -1) {
+					dest.write(data, 0, count);
+				}
+				dest.flush();
+				dest.close();
+				is.close();
+			}
+		}
+	}
+
+	private void copyFiles(File f, String dir) throws IOException {
+		File[] files = f.listFiles();
+		for (File ff : files) {
+			if (ff.isDirectory()) {
+				new File(dir + "/" + ff.getName()).mkdir();
+				copyFiles(ff, dir + "/" + ff.getName());
+			} else {
+				copy(ff.getAbsolutePath(), dir + "/" + ff.getName());
+			}
+		}
+	}
+
+	private void cleanup() {
+		aboutTextArea.setText(aboutTextArea.getText() + "\nPreforming clean up...");
+		File f = new File("update.zip");
+		f.delete();
+		remove(new File(root));
+		new File(root).delete();
+	}
 }

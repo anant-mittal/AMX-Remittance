@@ -1,16 +1,29 @@
 package com.amx.jax.adapter;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.Date;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -59,8 +72,9 @@ public class SWAdapterGUI extends JFrame {
 
 	private JScrollPane pane = null;
 
-	private JScrollPane about = null;
+	private JScrollPane aboutTextPane = null;
 	JTextArea aboutTextArea = null;
+	private JButton updateButton;
 
 	private void initUI() {
 
@@ -169,15 +183,34 @@ public class SWAdapterGUI extends JFrame {
 		textArea.setEditable(false);
 		pane = new JScrollPane(textArea);
 
+		// About Area
+		JPanel aboutPaneWrapper = new JPanel();
+		aboutPaneWrapper.setLayout(new BorderLayout());
+
+		JPanel innerAboutPane = new JPanel();
+		innerAboutPane.setLayout(new FlowLayout());
+
 		aboutTextArea = new JTextArea();
 		aboutTextArea.setFont(new Font("monospaced", Font.PLAIN, 8));
 		aboutTextArea.setEditable(false);
 
-		about = new JScrollPane(aboutTextArea);
+		aboutTextPane = new JScrollPane();
+		aboutTextPane.setViewportView(aboutTextArea);
+
+		updateButton = new JButton("Update");
+		updateButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				checkUpdate();
+			}
+		});
+		innerAboutPane.add(updateButton);
+
+		aboutPaneWrapper.add(aboutTextPane, BorderLayout.CENTER);
+		aboutPaneWrapper.add(innerAboutPane, BorderLayout.SOUTH);
 
 		tabs.addTab("Adapter", newPanel);
 		tabs.addTab("Logs", pane);
-		tabs.addTab("About", about);
+		tabs.addTab("About", aboutPaneWrapper);
 		add(tabs);
 
 	}
@@ -301,4 +334,69 @@ public class SWAdapterGUI extends JFrame {
 		return aboutTextArea;
 	}
 
+	public static String sourceServer = "https://docs.amxremit.com/dist-sw-adapter/";
+	public static String updaterFile = "sw-updater.jar";
+	public static File ADAPTER_FOLDER;
+	private Thread worker;
+
+	private void console(String msg) {
+		aboutTextArea.setText(aboutTextArea.getText() + "\n" + msg);
+	}
+
+	private void downloadFile(String source, String target) throws MalformedURLException, IOException {
+
+		File updater = new File(ADAPTER_FOLDER + "/" + target);
+
+		if (!updater.exists()) {
+			URL url = new URL(sourceServer + source);
+			URLConnection conn = url.openConnection();
+			InputStream is = conn.getInputStream();
+			long max = conn.getContentLength();
+			console("Downloding file " + source + " ...");
+			console("Update Size(compressed): " + max + " Bytes");
+			BufferedOutputStream fOut = new BufferedOutputStream(
+					new FileOutputStream(updater));
+			byte[] buffer = new byte[32 * 1024];
+			int bytesRead = 0;
+			int in = 0;
+			while ((bytesRead = is.read(buffer)) != -1) {
+				in += bytesRead;
+				fOut.write(buffer, 0, bytesRead);
+			}
+			fOut.flush();
+			fOut.close();
+			is.close();
+			console("Download Complete!");
+		} else {
+			console("Updater exists!");
+		}
+
+	}
+
+	public void checkUpdate() {
+		worker = new Thread(
+				new Runnable() {
+					public void run() {
+						try {
+							downloadFile(updaterFile, updaterFile);
+							launchApp();
+						} catch (Exception ex) {
+							ex.printStackTrace();
+							console(ex.toString());
+							JOptionPane.showMessageDialog(null, "An error occured while preforming update!");
+						}
+					}
+				});
+		worker.start();
+	}
+
+	private void launchApp() {
+		String[] run = { "java", "-jar", ADAPTER_FOLDER + "/" + updaterFile };
+		try {
+			Runtime.getRuntime().exec(run);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		System.exit(0);
+	}
 }
