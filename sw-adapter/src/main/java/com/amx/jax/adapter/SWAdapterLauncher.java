@@ -61,13 +61,15 @@ public class SWAdapterLauncher {
 
 		ENABLE_GUI = true;
 		System.out.println("Starting GUI");
+		SWAdapterGUI ex = new SWAdapterGUI();
+		ex.setVisible(true);
+		ex.initUI();
 		ConfigurableApplicationContext ctx = new SpringApplicationBuilder(SWAdapterLauncher.class).headless(false)
 				.run(args);
 		EventQueue.invokeLater(() -> {
-			SWAdapterGUI ex = ctx.getBean(SWAdapterGUI.class);
-			SWAdapterGUI.CONTEXT = ex;
+			// SWAdapterGUI ex = ctx.getBean(SWAdapterGUI.class);
+			//SWAdapterGUI.CONTEXT = ex;
 			SWAdapterGUI.ADAPTER_FOLDER = ADAPTER_FOLDER;
-			ex.setVisible(true);
 			// opnePage();
 		});
 	}

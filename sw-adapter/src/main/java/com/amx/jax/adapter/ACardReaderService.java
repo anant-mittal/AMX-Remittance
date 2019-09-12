@@ -104,6 +104,7 @@ public abstract class ACardReaderService {
 	String serverUrl;
 
 	boolean isLocal = false;
+	boolean initiated = false;
 
 	String localIdentity;
 
@@ -328,14 +329,14 @@ public abstract class ACardReaderService {
 	@Scheduled(fixedDelay = 1000, initialDelay = 4000)
 	public void readTask() {
 
+		if (SWAdapterGUI.CONTEXT == null) {
+			return;
+		}
+
 		AppContextUtil.init();
 		getServerUrl();
 
 		LOGGER.debug("ACardReaderService:readTask");
-
-		if (SWAdapterGUI.CONTEXT == null) {
-			return;
-		}
 
 		if (getSessionPairingCreds() == null) {
 			return;
@@ -373,10 +374,14 @@ public abstract class ACardReaderService {
 	@Scheduled(fixedDelay = 2000, initialDelay = 5000)
 	public void pingTask() {
 
+		if (SWAdapterGUI.CONTEXT == null) {
+			return;
+		}
+
 		AppContextUtil.init();
 
 		LOGGER.debug("ACardReaderService:pingTask {} {}", tnt, env);
-		if (SWAdapterGUI.CONTEXT == null || CONTEXT == null) {
+		if (CONTEXT == null) {
 			CONTEXT = this;
 			status(DeviceStatus.DISCONNECTED);
 			SWAdapterGUI.CONTEXT.updateDeviceHealthStatus(0);// PING COUNT
@@ -574,4 +579,5 @@ public abstract class ACardReaderService {
 	public String getLane() {
 		return lane;
 	}
+
 }

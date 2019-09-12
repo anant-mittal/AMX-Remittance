@@ -15,7 +15,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Date;
@@ -29,8 +28,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 
-import org.springframework.stereotype.Component;
-
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.adapter.ACardReaderService.CardStatus;
 import com.amx.jax.adapter.ACardReaderService.DataStatus;
@@ -38,15 +35,21 @@ import com.amx.jax.adapter.ACardReaderService.DeviceStatus;
 import com.amx.utils.Constants;
 import com.amx.utils.StringUtils;
 
-@Component
+//@Component
 public class SWAdapterGUI extends JFrame {
 
 	private static final long serialVersionUID = 2703873832309041808L;
 
 	public SWAdapterGUI() {
-		initUI();
+		// initUI();
+		setTitle(WIN_TITLE);
+		setSize(400, 400);
+		setLocationRelativeTo(null);
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		System.out.println("Started SWAdapterGUI");
 	}
 
+	public static final String DASH3 = "---";
 	public static final String DOT = "|";
 	public static final String STAT_FORMAT_PRE = "%-10s";
 	public static final String STAT_FORMAT_SUF = ":%30s";
@@ -64,6 +67,7 @@ public class SWAdapterGUI extends JFrame {
 
 	JLabel labelDescription = new JLabel("....");
 	JLabel labelDescriptionDetail = new JLabel("....");
+
 	public static SWAdapterGUI CONTEXT = null;
 	public static String LOG = "";
 	public static String WIN_TITLE = "Al Mulla Exchange - BranchAdapter";
@@ -76,12 +80,8 @@ public class SWAdapterGUI extends JFrame {
 	JTextArea aboutTextArea = null;
 	private JButton updateButton;
 
-	private void initUI() {
-
-		setTitle(WIN_TITLE);
-		setSize(400, 400);
-		setLocationRelativeTo(null);
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
+	public void initUI() {
+		System.out.println("Init SWAdapterGUI");
 
 		JTabbedPane tabs = new JTabbedPane();
 
@@ -212,7 +212,11 @@ public class SWAdapterGUI extends JFrame {
 		tabs.addTab("Logs", pane);
 		tabs.addTab("About", aboutPaneWrapper);
 		add(tabs);
-
+		System.out.println("InitDone SWAdapterGUI");
+		statusReader.setText(String.format(STAT_FORMAT_READER, DASH3));
+		statusDevice.setText(String.format(STAT_FORMAT_DEVICE, DASH3));
+		statusCard.setText(String.format(STAT_FORMAT_CARD, DASH3));
+		statusData.setText(String.format(STAT_FORMAT_DATA, DASH3));
 	}
 
 	private String getDots(int count) {
