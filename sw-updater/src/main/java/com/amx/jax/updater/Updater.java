@@ -79,7 +79,7 @@ public class Updater extends JFrame {
 		sp = new JScrollPane();
 		sp.setViewportView(aboutTextArea);
 
-		launchAppButton = new JButton("Launch App");
+		launchAppButton = new JButton("Run Adapter");
 		launchAppButton.setEnabled(false);
 		launchAppButton.addActionListener(new ActionListener() {
 

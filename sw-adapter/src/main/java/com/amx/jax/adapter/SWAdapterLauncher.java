@@ -54,7 +54,7 @@ public class SWAdapterLauncher {
 	public static void main(String[] args) throws Exception {
 
 		try {
-			ADAPTER_FOLDER = JarUtil.getPath(SWAdapterLauncher.class);
+			ADAPTER_FOLDER = JarUtil.getPath(SWAdapterLauncher.class).getParentFile();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
