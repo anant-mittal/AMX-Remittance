@@ -4,6 +4,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.jsoup.Connection;
@@ -12,10 +17,16 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.postman.model.File.Type;
+import com.amx.jax.rest.RestService;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.JsonPath;
 import com.amx.utils.StringUtils.StringMatcher;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
@@ -159,5 +170,100 @@ public class CivilIdValidationService {
 		for (Element divs : trs) {
 			LOGGER.info("Result+ {}", divs.text());
 		}
+	}
+
+	@Autowired
+	RestService restService;
+
+	private static final JsonPath PARSED_TEXT = new JsonPath("ParsedResults/[0]/ParsedText");
+	private static final JsonPath PARSED_ERROR = new JsonPath("ParsedResults/[0]/ParsedText");
+	private static final Pattern FIND_CIVIL_ID = Pattern.compile("Civil ID No[\\n ](\\d{12})\n");
+	private static final Pattern FIND_NAME = Pattern.compile("Name ([a-zA-Z ]+)\n");
+	private static final Pattern FIND_NATIONALITY = Pattern.compile("Nationality ([a-zA-Z]{1,3})\n");
+	private static final Pattern FIND_DATE = Pattern.compile("\n(\\d{2}/\\d{2}/\\d{4})");
+	public static final String FIND_DATE_FORMAT_STRING = "dd/MM/YYYY";
+	public static final SimpleDateFormat FIND_DATE_FORMAT = new SimpleDateFormat(FIND_DATE_FORMAT_STRING);
+
+	public Map<String, Object> scan(MultipartFile file) throws IOException {
+		Type type = com.amx.jax.postman.model.File.Type.from(file.getContentType());
+		String fileType = "." + type.toString().toLowerCase();
+		System.out.println("fileType==" + fileType + "  -  " + file.getName());
+		int ocrEngine = 2;
+		switch (type) {
+		case TIFF:
+			ocrEngine = 1;
+			break;
+		default:
+			break;
+		}
+
+		Map<String, Object> resp =
+
+				restService.ajax("https://api.ocr.space/parse/image")
+						.field("apikey", "b21643ec2c88957")
+						.field("language", "eng")
+						.field("OCREngine", ocrEngine)
+						.field("FileType", fileType)
+						.field("fileType", fileType)
+						.field("scale", true)
+						.field("detectOrientation", true)
+						.field("file", file)
+						.queryParam("fileType", fileType)
+						// .resource("file", restService.getByteArrayFile(file))
+						.postForm()
+						.as(new ParameterizedTypeReference<Map<String, Object>>() {
+						});
+
+		Map<String, Object> output = new HashMap<String, Object>();
+		String parsedText = PARSED_TEXT.load(resp, "");
+
+		output.put("text", parsedText);
+		System.out.println(parsedText);
+
+		StringMatcher matcher = new StringMatcher(parsedText);
+		if (matcher.isMatch(FIND_CIVIL_ID)) {
+			output.put("identity", matcher.group(1));
+		}
+
+		if (matcher.isMatch(FIND_NAME)) {
+			output.put("name", matcher.group(1));
+		}
+
+		if (matcher.isMatch(FIND_DATE)) {
+
+			Date now = new Date();
+			Date dob = getDate(matcher.group(1));
+			Date expiry = null;
+
+			if (dob.after(now)) {
+				expiry = dob;
+				dob = null;
+			}
+
+			if (matcher.find()) {
+				Date date2 = getDate(matcher.group(1));
+				if (expiry == null) {
+					expiry = date2;
+				} else if (date2 != null && date2.after(expiry)) {
+					expiry = date2;
+				} else if (dob == null && date2.before(now)) {
+					dob = date2;
+				}
+			}
+
+			output.put("dob", FIND_DATE_FORMAT.format(dob));
+			output.put("expiry", FIND_DATE_FORMAT.format(expiry));
+		}
+
+		return output;
+	}
+
+	public static Date getDate(String date) {
+		try {
+			return FIND_DATE_FORMAT.parse(date);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 }

@@ -1,0 +1,12 @@
+{
+  "data": {
+    "to": "anantmittal1996@gmail.com",
+    "customer": "Anant Mittal",
+    "date": "11/02/2018",
+    "refno": "100/112",
+    "localcurcode": "KD",
+    "localamount": 100,
+    "foreigncurcode": "INR",
+    "foreignamount": 100
+  }
+}

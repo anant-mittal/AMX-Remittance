@@ -168,7 +168,7 @@ public class TemplateService {
 		context.setVariables(file.getModel());
 		if (file.getITemplate().isThymleaf()) {
 			String content;
-			if (file.getType() == File.Type.JSON) {
+			if (file.getType() == File.Type.JSON || ContactType.FBPUSH == contactType) {
 				content = this.processJson(file.getITemplate(), context, locale, contactType);
 			} else {
 				content = this.processHtml(file.getITemplate(), context, locale, contactType);

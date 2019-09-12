@@ -280,6 +280,7 @@ public class PostManControllerTest {
 		File file = new File();
 		file.setModel(map);
 		file.setITemplate(template);
+		
 		// file.setConverter(lib);
 
 		return templateService.process(file, contactType).getContent();

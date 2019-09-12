@@ -182,7 +182,6 @@
 			<version>${tesseract-platform.version}</version>
 		</dependency>
 
-
 	</dependencies>
 
 
