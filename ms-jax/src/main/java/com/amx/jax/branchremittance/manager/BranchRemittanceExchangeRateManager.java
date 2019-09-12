@@ -34,8 +34,10 @@ import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.dao.CurrencyMasterDao;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.CountryMaster;
+import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.remittance.AdditionalBankRuleAmiec;
 import com.amx.jax.dict.UserClient.Channel;
@@ -133,6 +135,10 @@ public class BranchRemittanceExchangeRateManager {
 	
 	@Autowired
 	IViewVatDetailsRespository vatDetailsRepository;
+	
+	@Autowired
+	CurrencyMasterDao currencyMasterDao;
+	
 
 public void validateGetExchangRateRequest(IRemittanceApplicationParams request) {
 
@@ -383,6 +389,9 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 			}else {
 				remittanceTransactionManager.applyCurrencyRoudingLogicSP(result.getExRateBreakup());
 			}
+			/** Imps split message for multiple trnx  **/
+			String msg = impsSplittingMessage(result);
+			result.setErrorMessage(msg);
 		}
 		return result;
 	}
@@ -504,6 +513,31 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 		serviceProviderDto.setOfferStartingDate(homeSendSrvcProviderInfo.getOfferStartDate());
 		
 		return serviceProviderDto ; 
+	}
+	
+	
+	
+	private String impsSplittingMessage(DynamicRoutingPricingDto drDto) {
+		String msg = null;
+		try {
+		TrnxRoutingDetails routingDetails = drDto.getTrnxRoutingPaths();
+		BigDecimal foreignAmont = drDto.getExRateBreakup().getConvertedFCAmount();
+		
+		BigDecimal fcurrencyId = (BigDecimal) remitApplParametersMap.get("P_FOREIGN_CURRENCY_ID");
+		CurrencyMasterModel currMaster = currencyMasterDao.getCurrencyMasterById(fcurrencyId); 
+		String currQuoteName = currMaster!=null?(currMaster.getQuoteName()==null?"":currMaster.getQuoteName()):currMaster.getCurrencyCode(); 
+		BigDecimal[] splitCount = foreignAmont.divideAndRemainder(routingDetails.getSplitAmount());
+		BigDecimal count = new BigDecimal(0);
+		Map<BigDecimal,BigDecimal> mapSplitAmount = new HashMap<>();
+		if(splitCount!=null && splitCount.length>0) {
+			count = splitCount[0].add(splitCount[1].compareTo(BigDecimal.ZERO)>0?BigDecimal.ONE:BigDecimal.ZERO);
+		    msg = "This single remittance will be reflected as {"+count.intValue()+"} transactions in your bank account.The {"+count.intValue()+"} transactions will be "+currQuoteName+" {"+routingDetails.getSplitAmount()+"} and "+currQuoteName+" {"+splitCount[1]+"}.";
+		}
+		
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return msg;
 	}
 	
 }
