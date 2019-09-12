@@ -391,7 +391,9 @@ public class SWAdapterGUI extends JFrame {
 	}
 
 	private void launchApp() {
-		String[] run = { "java", "-jar", ADAPTER_FOLDER + "/" + updaterFile };
+		String adapterjarFile = String.format("sw-adapter-%s-$s-%s.jar");
+		console("Launching " + ADAPTER_FOLDER + "/" + updaterFile + " " + adapterjarFile);
+		String[] run = { "java", "-jar", ADAPTER_FOLDER + "/" + updaterFile, adapterjarFile };
 		try {
 			Runtime.getRuntime().exec(run);
 		} catch (Exception ex) {

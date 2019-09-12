@@ -17,9 +17,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLDecoder;
+import java.security.CodeSource;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -273,21 +274,24 @@ public class Updater extends JFrame {
 
 	public static void main(String args[]) {
 		final Class<?> referenceClass = Updater.class;
-		final URL url = referenceClass.getProtectionDomain().getCodeSource().getLocation();
 		try {
-			ADAPTER_FOLDER = new File(url.toURI()).getParentFile();
+			final File jarFile = JarUtil.getPath(referenceClass);
+			System.out.println(jarFile.getAbsolutePath());
+			// URI x = url.toURI();
+			ADAPTER_FOLDER = jarFile.getParentFile();
 			// this is the path you want
-			String[] filenames = ADAPTER_FOLDER.list();
+//			String[] filenames = ADAPTER_FOLDER.list();
 
-			for (String file : filenames) {
-				if (file.endsWith(".jar")) {
-					adapterFile = file;
-				}
-			}
-			adapterFileMd5 = adapterFileMd5();
+//			for (String file : filenames) {
+//				if (file.endsWith(".jar")) {
+//					adapterFile = file;
+//				}
+//			}
+//			adapterFileMd5 = adapterFileMd5();
 
-		} catch (final URISyntaxException e) {
+		} catch (final Exception e) {
 			// etc.
+			e.printStackTrace();
 		}
 
 		if (args.length > 1) {
@@ -355,4 +359,5 @@ public class Updater extends JFrame {
 		remove(new File(root));
 		new File(root).delete();
 	}
+
 }

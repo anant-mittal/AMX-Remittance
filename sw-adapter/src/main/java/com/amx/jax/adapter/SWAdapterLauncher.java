@@ -23,6 +23,8 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
+import com.amx.utils.JarUtil;
+
 @SpringBootApplication
 @ComponentScan(value = "com.amx.jax")
 @EnableAutoConfiguration(exclude = { DataSourceAutoConfiguration.class
@@ -51,12 +53,12 @@ public class SWAdapterLauncher {
 
 	public static void main(String[] args) throws Exception {
 
-		final Class<?> referenceClass = SWAdapterLauncher.class;
-		final URL url = referenceClass.getProtectionDomain().getCodeSource().getLocation();
 		try {
-			ADAPTER_FOLDER = new File(url.toURI()).getParentFile();
-		} catch (final URISyntaxException e) {
+			ADAPTER_FOLDER = JarUtil.getPath(SWAdapterLauncher.class);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
+
 		ENABLE_GUI = true;
 		System.out.println("Starting GUI");
 		ConfigurableApplicationContext ctx = new SpringApplicationBuilder(SWAdapterLauncher.class).headless(false)

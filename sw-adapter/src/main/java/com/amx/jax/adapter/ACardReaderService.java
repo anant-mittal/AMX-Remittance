@@ -559,4 +559,12 @@ public abstract class ACardReaderService {
 	public String getVersion() {
 		return version;
 	}
+
+	public String getTnt() {
+		return tnt;
+	}
+
+	public String getEnv() {
+		return env;
+	}
 }
