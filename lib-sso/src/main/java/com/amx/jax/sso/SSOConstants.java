@@ -42,6 +42,7 @@ public class SSOConstants {
 
 	public static final String SECURITY_CODE_KEY = "sec_code";
 	public static final String PARTNER_SECURITY_CODE_KEY = "partner_sec_code";
+	public static final String SSO_TENANT_KEY = "sso_tenant";
 
 	public static final String PARAM_SSO_LOGIN_URL = "SSO_LOGIN_URL";
 	public static final String PARAM_SSO_LOGIN_PREFIX = "SSO_LOGIN_PREFIX";

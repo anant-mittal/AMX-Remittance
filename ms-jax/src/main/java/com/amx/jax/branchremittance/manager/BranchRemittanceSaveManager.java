@@ -1,5 +1,7 @@
 package com.amx.jax.branchremittance.manager;
-
+/**
+ * @author rabil
+ */
 
 import java.math.BigDecimal;
 import java.sql.Clob;
@@ -89,7 +91,7 @@ import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.repository.remittance.LocalBankDetailsRepository;
 import com.amx.jax.service.CompanyService;
 import com.amx.jax.service.FinancialService;
-import com.amx.jax.service.JaxEmailNotificationService;
+import com.amx.jax.services.JaxEmailNotificationService;
 import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.services.RemittanceApplicationService;
 import com.amx.jax.services.ReportManagerService;
@@ -267,6 +269,7 @@ public class BranchRemittanceSaveManager {
 			mapAllDetailRemitSave.put("EX_REMIT_ADDL", addInstList);
 			mapAllDetailRemitSave.put("EX_REMIT_AML", amlList);
 			mapAllDetailRemitSave.put("LOYALTY_POINTS", loyaltyPoints);
+			validateSaveTrnxDetails(mapAllDetailRemitSave);
 			responseDto = brRemittanceDao.saveRemittanceTransaction(mapAllDetailRemitSave);
 			auditService.log(new CActivityEvent(Type.TRANSACTION_CREATED,String.format("%s/%s", responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo())).field("STATUS").to(JaxTransactionStatus.PAYMENT_SUCCESS_APPLICATION_SUCCESS).result(Result.DONE));
 	}catch (GlobalException e) {
@@ -785,6 +788,7 @@ public class BranchRemittanceSaveManager {
 
 	public  Map<BigDecimal,RemittanceBenificiary>  saveBeneTrnx(RemittanceApplication applicationNo,RemittanceTransaction remitTrnx){
 	if(applicationNo!=null) {
+		logger.debug("saveBeneTrnx :"+applicationNo.getRemittanceApplicationId() +"\t Customer Id :"+metaData.getCustomerId());
 		RemittanceAppBenificiary applBene = applBeneRepository.findByExRemittanceAppfromBenfi(applicationNo);
 		if(applBene!=null) {
 			RemittanceBenificiary remitBene = new RemittanceBenificiary();
@@ -826,6 +830,7 @@ public class BranchRemittanceSaveManager {
 			remitBene.setExRemittancefromBenfi(remitTrnx);
 			remitBene.setExUserFinancialYear(getFinancialYearObj(remitTrnx.getDocumentFinanceYear()));
 			remitBene.setIsactive(ConstantDocument.Yes);
+			logger.debug("saveBeneTrnx remitBeneList.put :"+applBene.getExRemittanceAppfromBenfi().getRemittanceApplicationId() +"\t Customer Id :"+metaData.getCustomerId());
 			remitBeneList.put(applBene.getExRemittanceAppfromBenfi().getRemittanceApplicationId(), remitBene);
 		}else {
 			throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record not found in appl bene for remittance : "+remitTrnx.getApplicationDocumentNo());

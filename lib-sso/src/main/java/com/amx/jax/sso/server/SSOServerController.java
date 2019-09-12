@@ -113,6 +113,7 @@ public class SSOServerController {
 		map.put(SSOConstants.PARAM_SSO_LOGIN_PREFIX, appConfig.getAppPrefix());
 		map.put(SSOConstants.SECURITY_CODE_KEY, ssoUser.getSelfSAC());
 		map.put(SSOConstants.PARTNER_SECURITY_CODE_KEY, ssoUser.getPartnerSAC());
+		map.put(SSOConstants.SSO_TENANT_KEY, AppContextUtil.getTenant());
 
 		String adapterUrl = sSOConfig.getAdapterUrl();
 		Cookie kooky = commonHttpRequest.getCookie("adapter.url");
@@ -136,12 +137,22 @@ public class SSOServerController {
 			refresh = x.getCreatedStamp();
 			// System.out.println("=="+refresh+"===="+System.currentTimeMillis()+"trnx
 			// "+AppContextUtil.getTranxId());
-			if ((ArgUtil.isEmpty(refresh) || TimeUtils.isExpired(refresh, 60 * 1000))) {
-				URLBuilder builder = new URLBuilder();
-				builder.path(appConfig.getAppPrefix() + SSOConstants.SSO_LOGIN_URL_REQUIRED)
-						.queryParam(AppConstants.TRANX_ID_XKEY, AppContextUtil.getTraceId(true, true))
-						.queryParam("refresh", System.currentTimeMillis());
-				resp.setHeader("Location", builder.getRelativeURL());
+			if ((ArgUtil.isEmpty(refresh) || TimeUtils.isExpired(refresh, 10 * 1000))) {
+				String newTranxId = AppContextUtil.getTraceId(true, true);
+				ssoUser.setTranxId(newTranxId);
+				
+				URLBuilder builder = Urly.parse(
+							ArgUtil.ifNotEmpty(sSOTranx.get().getAppUrl(),
+									appConfig.getAppPrefix() + SSOConstants.APP_LOGIN_URL_DONE))
+							.queryParam(AppConstants.TRANX_ID_XKEY, newTranxId)
+							.queryParam(SSOConstants.PARAM_STEP, SSOAuthStep.DONE)
+							.queryParam(SSOConstants.PARAM_SOTP, sSOTranx.get().getAppToken())
+							;
+				
+				///builder.path(appConfig.getAppPrefix() + SSOConstants.SSO_LOGIN_URL)
+						//.queryParam("refresh", System.currentTimeMillis())
+						;
+				resp.setHeader("Location", builder.getURL());
 				resp.setStatus(302);
 			} else {
 				sSOTranx.put(x);

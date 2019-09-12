@@ -1,5 +1,8 @@
 package com.amx.jax.services;
 
+/**
+ * @author rabil
+ */
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -134,7 +137,7 @@ public class ReportManagerService extends AbstractService{
 		try {
 		remittanceReceiptSubreportList = new ArrayList<RemittanceReceiptSubreport>();
 		 response = getBlackApiResponse();
-		customerId = transactionHistroyDTO.getCustomerId();
+		customerId = transactionHistroyDTO.getCustomerId()==null?meta.getCustomerId():transactionHistroyDTO.getCustomerId();
 		companyId = transactionHistroyDTO.getCompanyId();
 		languageId = transactionHistroyDTO.getLanguageId();
 		applicationCountryId = transactionHistroyDTO.getApplicationCountryId();
@@ -242,7 +245,8 @@ public class ReportManagerService extends AbstractService{
 
 				Date docDate = view.getDocumentDate();
 				if(docDate != null){
-					obj.setDate(new SimpleDateFormat("dd/MM/yyy HH:mm").format(docDate));
+					//obj.setDate(new SimpleDateFormat("dd/MM/yyy HH:mm").format(docDate));
+					obj.setDate(new SimpleDateFormat("dd MMM yyyy HH:mm:ss").format(docDate));
 				}
 				
 				obj.setBeneficiaryName(view.getBeneficiaryName());
@@ -256,15 +260,17 @@ public class ReportManagerService extends AbstractService{
 			
 				logger.debug("metaDetails:"+meta.getCustomerId());
 				
-				Customer customerNationalityDetails = customerRepository.getNationalityValue(meta.getCustomerId());
+				Customer customerNationalityDetails = customerRepository.getNationalityValue(customerId);
 				
 				logger.debug("countryId:"+customerNationalityDetails.getNationalityId());
-				isArabic = countryService.getIsArabicCountry(customerNationalityDetails.getNationalityId());
+				if(customerNationalityDetails!=null) {
+					isArabic = countryService.getIsArabicCountry(customerNationalityDetails.getNationalityId());
+				}
 				logger.debug("isArabicValue:"+isArabic);
 				
 				obj.setIsArabic(isArabic);
 					
-				Map<String, Object> loyaltiPoints = loyaltyInsuranceProDao.loyaltyInsuranceProcedure(view.getCustomerReference(), obj.getDate());
+				Map<String, Object> loyaltiPoints = loyaltyInsuranceProDao.loyaltyInsuranceProcedure(view.getCustomerReference(), new SimpleDateFormat("dd/MM/yyy HH:mm").format(docDate));
 				
 				String prLtyStr1 =loyaltiPoints.get("P_LTY_STR1")==null?"":loyaltiPoints.get("P_LTY_STR1").toString();
 				String prLtyStr2 =loyaltiPoints.get("P_LTY_STR2")==null?"":loyaltiPoints.get("P_LTY_STR2").toString();
@@ -303,10 +309,7 @@ public class ReportManagerService extends AbstractService{
 					obj.setInsurence2(prInsStrAr2);
 				}
 
-
-
-
-
+			
 				if (view.getBeneCityName() != null && view.getBeneDistrictName() != null && view.getBeneStateName() != null) {
 					obj.setAddress(view.getBeneCityName() + ", " + view.getBeneDistrictName() + ", " + view.getBeneStateName());
 				} else if (view.getBeneCityName() == null && view.getBeneDistrictName() != null && view.getBeneStateName() != null) {
@@ -488,6 +491,9 @@ public class ReportManagerService extends AbstractService{
 							arabicCompanyInfo = arabicCompanyInfo.append(ConstantDocument.Share_Capital + " " + companyMaster.get(0).getCapitalAmount());
 						}
 						obj.setArabicCompanyInfo(arabicCompanyInfo.toString());
+						/** added by Radhika on 21May 2019**/
+						obj.setVatNumber(companyMaster.get(0).getVatNumber()==null?"":companyMaster.get(0).getVatNumber());
+						obj.setVatDate(companyMaster.get(0).getVatRegistrationDate()==null?"":companyMaster.get(0).getVatRegistrationDate());
 					}
 					// 
 					
@@ -496,12 +502,42 @@ public class ReportManagerService extends AbstractService{
 						 BigDecimal KdSaved=RoundUtil.roundBigDecimal((view.getAmountSaved()),decimalPerCurrency);
 						 obj.setAmountSaved(currencyQuoteName +"     "+KdSaved.toString());
 					 }
+					 
+					 
+					 if(JaxUtil.isNullZeroBigDecimalCheck(view.getTotalAmountSaved())) {
+						 BigDecimal totalKdSavedAmount=RoundUtil.roundBigDecimal((view.getTotalAmountSaved()),decimalPerCurrency);
+						 obj.setTotalAmountSavedStr(currencyQuoteName+"     "+totalKdSavedAmount.toString());
+					 }
+				
+					 
 					/** end **/
 					
 					 PromotionDto prmoDto  = promotionManager.getPromotionMessage(view.getDocumentNo(),view.getDocumentFinancialYear(),view.getCountryBranchId(),currencyQuoteName);
 					 if(prmoDto!=null && !StringUtils.isBlank(prmoDto.getPrizeMessage())) {
 						 obj.setPromotionMessage(prmoDto.getPrizeMessage());
 					 }
+					
+					if(JaxUtil.isNullZeroBigDecimalCheck(view.getVatAmount())) {
+						BigDecimal vatAmount=RoundUtil.roundBigDecimal((view.getVatAmount()),decimalPerCurrency);
+						 obj.setVatAmount(currencyQuoteName+"     "+vatAmount.toString());
+						}
+					obj.setVatPercentage(view.getVatPercentage()==null?BigDecimal.ZERO:view.getVatPercentage());
+					obj.setVatType(view.getVatType()==null?"":view.getVatType());
+			    	obj.setCustomerVatNumber(view.getCustomerVatNumber()==null?"":view.getCustomerVatNumber());
+
+						
+						logger.info("vat amount======"+currencyQuoteName+ "     " +view.getVatAmount()==null?BigDecimal.ZERO:view.getVatAmount());
+						logger.info("VatPercentage======"+view.getVatPercentage()==null?BigDecimal.ZERO:view.getVatPercentage());
+						logger.info("Vattype======"+view.getVatType()==null?"":view.getVatType());
+
+					
+						/** added by Radhika  It should be print conditionally.if IS_DISCOUNT_AVAILED = 'Y' and KD_SAVED > 0 **/
+						 if(!StringUtils.isBlank(view.getIsDiscAvail()) && view.getIsDiscAvail().equalsIgnoreCase(ConstantDocument.Yes) && JaxUtil.isNullZeroBigDecimalCheck(view.getAmountSaved()) && view.getAmountSaved().compareTo(BigDecimal.ZERO)>0) {
+							 BigDecimal KdSaved=RoundUtil.roundBigDecimal((view.getAmountSaved()),decimalPerCurrency);
+							 obj.setAmountSaved(currencyQuoteName +"     "+KdSaved.toString());
+						 }
+						/** end **/
+										
 					
 					
 				} catch (Exception e) {
@@ -628,14 +664,18 @@ public List<RemittanceReportBean> calculateCollectionMode(RemittanceTransactionV
 					obj.setKnetBooleanCheck(true);
 					if(viewObj.getCollectAmount()!=null && viewCollectionObj.getLocalTransactionCurrencyId()!=null){
 						BigDecimal collectAmount=RoundUtil.roundBigDecimal((viewObj.getCollectAmount()),currencyDao.getCurrencyList(viewCollectionObj.getLocalTransactionCurrencyId()).get(0).getDecinalNumber().intValue());
-						obj.setCollectAmount(collectAmount);
+						if(JaxUtil.isNullZeroBigDecimalCheck(collectAmount)) {
+						obj.setCollectAmount(collectAmount.toString());
+						}
 					}
 				}else{
 					obj.setCollectionMode(viewObj.getCollectionModeDesc());
 					obj.setKnetBooleanCheck(false);
 					if(viewObj.getCollectAmount()!=null && viewCollectionObj.getLocalTransactionCurrencyId()!=null){
 						BigDecimal collectAmount=RoundUtil.roundBigDecimal((viewObj.getCollectAmount()),currencyDao.getCurrencyList(viewCollectionObj.getLocalTransactionCurrencyId()).get(0).getDecinalNumber().intValue());
-						obj.setCollectAmount(collectAmount);
+						if(JaxUtil.isNullZeroBigDecimalCheck(collectAmount)) {
+						obj.setCollectAmount(collectAmount.toString());
+						}
 					}
 				}
 				if(size>1){

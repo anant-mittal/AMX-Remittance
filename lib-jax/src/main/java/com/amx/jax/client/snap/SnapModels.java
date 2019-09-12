@@ -91,7 +91,7 @@ public class SnapModels {
 		}
 
 		public Long getTotal() {
-			return this.getLong("total");
+			return this.getLong("total", 0L);
 		}
 
 	}
