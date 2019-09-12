@@ -268,6 +268,9 @@ public abstract class ACardReaderService {
 		return devicePairingCreds;
 	}
 
+	long sessionCheckInterval = 0L;
+	long sessionCheckStamp = 0L;
+
 	public SessionPairingCreds getSessionPairingCreds() {
 		if (sessionPairingCreds != null) {
 			return sessionPairingCreds;
@@ -276,10 +279,16 @@ public abstract class ACardReaderService {
 			return null;
 		}
 
+		if (!TimeUtils.isExpired(sessionCheckStamp, sessionCheckInterval)) {
+			return null;
+		}
+
 		synchronized (lock) {
 			try {
+				sessionCheckStamp = System.currentTimeMillis();
 				sessionPairingCreds = adapterServiceClient.createSession(address, devicePairingCreds).getResult();
 				status(DeviceStatus.SESSION_CREATED);
+				sessionCheckInterval = 0L;
 			} catch (AmxApiException e) {
 				status(DeviceStatus.SESSION_ERROR);
 				SWAdapterGUI.CONTEXT.log(e.getErrorKey() + " - REGID : " + devicePairingCreds.getDeviceRegId(),
@@ -289,6 +298,8 @@ public abstract class ACardReaderService {
 				} else if ("CLIENT_NOT_FOUND".equals(e.getErrorKey())) {
 					devicePairingCredsValid = false;
 					terminalId = null;
+				} else if ("CLIENT_NOT_ACTIVE".equals(e.getErrorKey())) {
+					sessionCheckInterval = sessionCheckInterval + 10000;
 				}
 				LOGGER.error("getSessionPairingCreds" + e);
 			} catch (AmxException e) {
@@ -466,8 +477,10 @@ public abstract class ACardReaderService {
 
 	public void reset() {
 		LOGGER.debug("KWTCardReader:reset");
+		sessionPairingCreds = null;
 		deviceStatus = DeviceStatus.DISCONNECTED;
-		if (this.isLocal) {
+		sessionCheckInterval = 0L;
+		if (this.isLocal && !ArgUtil.isEmpty(sessionPairingCreds)) {
 			try {
 				CardReader reader = new CardReader();
 				reader.setData(new CardData());

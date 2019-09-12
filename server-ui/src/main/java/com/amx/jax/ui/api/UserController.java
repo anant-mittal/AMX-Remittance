@@ -31,6 +31,7 @@ import com.amx.jax.JaxAuthContext;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.JaxPushNotificationClient;
+import com.amx.jax.dict.Language;
 import com.amx.jax.dict.UserClient.AppType;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.logger.AuditActor;
@@ -124,8 +125,9 @@ public class UserController {
 	@RequestMapping(value = "/pub/user/meta", method = { RequestMethod.POST, RequestMethod.GET })
 	public ResponseWrapper<UserMetaData> getMeta(HttpServletResponse response,
 			@RequestParam(required = false) AppType appType,
-			@RequestParam(required = false) String appVersion, @RequestParam(required = false) String milestone) {
-		return this.getMetaV2(response, appType, appVersion, milestone, false, false);
+			@RequestParam(required = false) String appVersion, @RequestParam(required = false) String milestone,
+			@RequestParam(required = false) Language lang) {
+		return this.getMetaV2(response, appType, appVersion, milestone, lang, false, false);
 	}
 
 	/**
@@ -141,6 +143,7 @@ public class UserController {
 			@RequestParam(required = false) AppType appType,
 			@RequestParam(required = false) String appVersion,
 			@RequestParam(required = false) String milestone,
+			@RequestParam(required = false) Language lang,
 			@RequestParam(required = false, defaultValue = "false") boolean refresh,
 			@RequestParam(required = false, defaultValue = "false") boolean validate) {
 		ResponseWrapper<UserMetaData> wrapper = new ResponseWrapper<UserMetaData>(new UserMetaData());
@@ -171,15 +174,19 @@ public class UserController {
 
 			String s = httpService.getRequestParam("S");
 			if (ArgUtil.isEmpty(s)) {
+				response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
 				response.setHeader("Location", "/pub/v2/user/meta?S=" + serverVersion + "&milestone=" + milestoneEnum);
-				response.setStatus(302);
 				return wrapper;
 			}
 		}
 
+		lang = httpService.getLanguage();
+		httpService.setCookie("lang", lang.toString(), 60 * 60 * 2);
+		sessionService.getGuestSession().setLanguage(lang);
+
 		wrapper.getData().setTenant(AppContextUtil.getTenant());
 		wrapper.getData().setTenantCode(AppContextUtil.getTenant().getCode());
-		wrapper.getData().setLang(httpService.getLanguage());
+		wrapper.getData().setLang(lang);
 		wrapper.getData().setCdnUrl(appConfig.getCdnURL());
 
 		wrapper.getData().setDevice(sessionService.getAppDevice().getUserDevice().toSanitized());

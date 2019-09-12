@@ -39,6 +39,16 @@ public final class StringUtils {
 		return !ArgUtil.isEmptyString(str);
 	}
 
+	/**
+	 * Remove all characters which are not Alpha or Numeric
+	 * 
+	 * @param inputString
+	 * @return
+	 */
+	public static String removeSpecialCharacter(String inputString) {
+		return inputString.replaceAll("[^a-zA-Z0-9]+", "");
+	}
+
 	// public static Map<String, String> getMapFromString(String splitter_char,
 	// String key_value_separator_char,
 	// String data) {

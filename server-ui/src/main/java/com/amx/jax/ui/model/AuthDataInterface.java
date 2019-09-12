@@ -129,6 +129,12 @@ public final class AuthDataInterface {
 
 		@Deprecated
 		void setwOtp(String wOtp);
+
+		@Deprecated
+		String getOtp();
+
+		@Deprecated
+		void setOtp(String otp);
 	}
 
 	/**
@@ -187,13 +193,23 @@ public final class AuthDataInterface {
 
 	}
 
+	@JsonDeserialize(as = AuthData.class)
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	public interface AuthRequestCaptcha {
+
+		public String getCaptachKey();
+
+		public void setCaptachKey(String captachKey);
+
+	}
+
 	/**
 	 * The Interface AuthRequest.
 	 */
 	@JsonDeserialize(as = AuthData.class)
 	@JsonIgnoreProperties(ignoreUnknown = true)
 	public interface AuthRequest extends AuthRequestIdentity, AuthRequestPassword, AuthRequestSecAns, AuthRequestOTP,
-			AuthRequestFingerprint {
+			AuthRequestFingerprint, AuthRequestCaptcha {
 
 	}
 

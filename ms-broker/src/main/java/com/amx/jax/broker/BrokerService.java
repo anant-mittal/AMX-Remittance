@@ -71,6 +71,7 @@ public class BrokerService {
 			AppContextUtil.setFlowfix(current_event_record.getEvent_code());
 			AppContextUtil.setSessionId(sessionId);
 			AppContextUtil.getTraceId(true, true);
+			AppContextUtil.resetTraceTime();
 			AppContextUtil.init();
 			try {
 				logger.debug("------------------ current_event_record DB Data --------------------");

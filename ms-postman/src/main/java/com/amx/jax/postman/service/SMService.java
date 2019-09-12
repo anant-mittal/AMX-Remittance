@@ -162,6 +162,7 @@ public class SMService {
 
 		} catch (Exception e) {
 			auditService.excep(pMGaugeEvent.set(sms), LOGGER, e);
+			//Slack Exception Handling should be for specific cases
 			slackService.sendException(to, e);
 		}
 		return sms;

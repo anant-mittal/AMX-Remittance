@@ -49,6 +49,7 @@ import com.amx.jax.payg.PayGService;
 import com.amx.jax.rest.RestService;
 import com.amx.jax.swagger.ApiStatusBuilder.ApiStatus;
 import com.amx.jax.ui.UIConstants;
+import com.amx.jax.ui.UIConstants.Features;
 import com.amx.jax.ui.WebAppConfig;
 import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 import com.amx.jax.ui.model.ServerStatus;
@@ -264,7 +265,7 @@ public class HomeController {
 		contactType = contactType.contactType();
 		try {
 			if (!ArgUtil.isEmpty(resend)) {
-				customerProfileClient.createVerificationLink(null, contactType, identity);
+				customerProfileClient.resendLink(identity, verId, verCode);
 			} else if (identity == null) {
 				customerProfileClient.validateVerificationLink(verId).getResult();
 			} else {
@@ -390,5 +391,13 @@ public class HomeController {
 		map.put("veryCode", veryCode);
 		map.put("tnt", AppContextUtil.getTenant());
 		return map;
+	}
+
+	@RequestMapping(value = { "/pub/recaptcha/{feature}" },
+			method = { RequestMethod.GET })
+	public String recaptach(Model model, @PathVariable Features feature) {
+		model.addAttribute("googelReCaptachSiteKey", webAppConfig.getGoogelReCaptachSiteKey());
+		model.addAttribute("companyTnt", AppContextUtil.getTenant());
+		return "recaptcha";
 	}
 }

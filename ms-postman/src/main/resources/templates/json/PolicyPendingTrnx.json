@@ -1,0 +1,4 @@
+{
+  "_subject": "You are just [[${data.numoftrnx}]] online transaction(s) away from getting Free Life Insurance worth KD 5,000",
+  "_message": "You are just [[${data.numoftrnx}]] transaction(s) away from being eligible for the policy. We urge you to do a remittance online by [[${data.policyvaliddate}]] and get eligible for the policy."
+}

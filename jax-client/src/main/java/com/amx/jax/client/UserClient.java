@@ -35,6 +35,7 @@ import com.amx.amxlib.model.UserFingerprintResponseModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.amxlib.service.ICustomerService;
+import com.amx.amxlib.service.IUserService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.configs.JaxMetaInfo;
@@ -48,7 +49,7 @@ import com.amx.jax.model.response.customer.CustomerModelSignupResponse;
 import com.amx.jax.rest.RestService;
 
 @Component
-public class UserClient extends AbstractJaxServiceClient implements ICustomerService {
+public class UserClient extends AbstractJaxServiceClient implements ICustomerService, IUserService {
 
 	private static final Logger LOGGER = Logger.getLogger(UserClient.class);
 
@@ -648,7 +649,6 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 
 			return restService.ajax(appConfig.getJaxURL()).path(UserApi.PREFIX + UserApi.LINK_DEVICE_LOGGEDIN_USER)
 					.meta(new JaxMetaInfo()).post()
-
 					.as(new ParameterizedTypeReference<AmxApiResponse<UserFingerprintResponseModel, Object>>() {
 					});
 		} catch (Exception ae) {
@@ -661,8 +661,8 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 		try {
 
 			return restService.ajax(appConfig.getJaxURL())
-					.path(UserApi.PREFIX + UserApi.LOGIN_CUSTOMER_BY_FINGERPRINT).meta(new JaxMetaInfo()).post()
-					.queryParam(UserApi.IDENTITYINT, civilId).queryParam(UserApi.PASSWORD, password).post()
+					.path(UserApi.PREFIX + UserApi.LOGIN_CUSTOMER_BY_FINGERPRINT).meta(new JaxMetaInfo())
+					.field(UserApi.IDENTITYINT, civilId).field(UserApi.PASSWORD, password).postForm()
 					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerModel, Object>>() {
 					});
 		} catch (Exception ae) {
@@ -861,5 +861,39 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 			return JaxSystemError.evaluate(ae);
 		} // end of try-catch
 
+	}
+
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> updatePasswordCustomer(String identityInt, String resetPassword) {
+		try {
+			return restService.ajax(appConfig.getJaxURL()).meta(new JaxMetaInfo())
+					.path(CustomerApi.PREFIX + CustomerApi.UPDATE_PASSWORD_CUSTOMER)
+					.queryParam("identityInt", identityInt)
+					.queryParam("resetPassword", resetPassword)
+					.post()
+					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in Reset password flow : ", e);
+			return JaxSystemError.evaluate(e);
+		}
+	}
+
+	/**
+	 * To Validate Customer with OTP
+	 */
+	@Override
+	public AmxApiResponse<CustomerModel, Object> validateCustomerLoginOtp(String identityInt) {
+		try {
+			return restService.ajax(appConfig.getJaxURL()).meta(new JaxMetaInfo())
+					.path(UserApi.PREFIX + UserApi.VALIDATE_CUSTOMER_LOGIN_OTP)
+					.queryParam("identityInt", identityInt)
+					.post()
+					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerModel, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in Validate Customer flow : ", e);
+			return JaxSystemError.evaluate(e);
+		}
 	}
 }

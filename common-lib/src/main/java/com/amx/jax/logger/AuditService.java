@@ -58,4 +58,8 @@ public interface AuditService {
 	 */
 	public AuditLoggerResponse log(AuditEvent event, Exception e);
 
+	public AuditActor getActor();
+
+	public <T extends AuditActor> T getActor(Class<T> class1);
+
 }

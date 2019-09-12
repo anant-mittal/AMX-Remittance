@@ -14,7 +14,16 @@ public class BranchRemittanceApplResponseDto {
 	BigDecimal totalLoyaltyPointAvaliable =BigDecimal.ZERO;
 	BigDecimal totalNetCollectionAmount =BigDecimal.ZERO;
 	String warnigMsg;
+	ConfigDto configDto = new ConfigDto();
 	
+	public ConfigDto getConfigDto() {
+		return configDto;
+	}
+	public void setConfigDto(ConfigDto configDto) {
+		this.configDto = configDto;
+	}
+	/* application records */
+	List<CustomerShoppingCartDto> shoppingCartDetails;
 	
 	List<CustomerShoppingCartDto> shoppingCartDetails;
 	

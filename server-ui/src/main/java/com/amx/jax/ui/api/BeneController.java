@@ -56,9 +56,11 @@ public class BeneController {
 	 */
 	@ApiOperation(value = "List of All bnfcry")
 	@RequestMapping(value = "/api/user/bnfcry/list", method = { RequestMethod.POST })
-	public ResponseWrapper<List<BeneficiaryListDTO>> beneList() {
+	public ResponseWrapper<List<BeneficiaryListDTO>> beneList(
+			@RequestParam(required = false, defaultValue = "false") boolean excludePackages) {
 		ResponseWrapper<List<BeneficiaryListDTO>> wrapper = new ResponseWrapper<>();
-		wrapper.setData(jaxService.setDefaults().getBeneClient().getBeneficiaryList(new BigDecimal(0)).getResults());
+		wrapper.setData(jaxService.setDefaults().getBeneClient().getBeneficiaryList(new BigDecimal(0), excludePackages)
+				.getResults());
 		return wrapper;
 	}
 

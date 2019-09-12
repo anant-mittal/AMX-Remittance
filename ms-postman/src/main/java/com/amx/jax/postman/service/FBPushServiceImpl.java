@@ -174,6 +174,7 @@ public class FBPushServiceImpl implements IPushNotifyService {
 				webTopic.append(topicLower + "_web");
 			}
 
+			boolean isMessageSent = false;
 			if (!ArgUtil.isEmptyString(topic)) {
 				if (msg.getMessage() != null) {
 					this.send(PMGaugeEvent.Type.NOTIFCATION_ANDROID, androidTopic.toString(), msg, msg.getMessage());
@@ -181,6 +182,7 @@ public class FBPushServiceImpl implements IPushNotifyService {
 					this.send(PMGaugeEvent.Type.NOTIFCATION_WEB, webTopic.toString(), msg, msg.getMessage());
 					userMessageEvent.setMessage(msg.getMessage());
 					tunnelService.task(userMessageEvent);
+					isMessageSent = true;
 				}
 				if (msg.getLines() != null) {
 					for (String message : msg.getLines()) {
@@ -188,10 +190,16 @@ public class FBPushServiceImpl implements IPushNotifyService {
 						this.send(PMGaugeEvent.Type.NOTIFCATION_IOS, iosTopic.toString(), msg, message);
 						this.send(PMGaugeEvent.Type.NOTIFCATION_WEB, webTopic.toString(), msg, message);
 						userMessageEvent.setMessage(message);
+						isMessageSent = true;
 						tunnelService.task(userMessageEvent);
 					}
 				}
 			}
+
+			if (!isMessageSent) {
+				throw new PostManException(PostManException.ErrorCode.NO_MESSAGE_DEFINED);
+			}
+
 			// tunnelService.task(userMessageEvent);
 			if (!ArgUtil.isEmpty(msg.getITemplate())
 					&& !ArgUtil.isEmpty(msg.getITemplate().getChannel())) {
@@ -199,7 +207,7 @@ public class FBPushServiceImpl implements IPushNotifyService {
 				noti.setSubject(msg.getSubject());
 				noti.setAuthor(String.format("Topic = %s", msg.getTo().get(0)));
 				noti.setMessage(msg.getMessage());
-				noti.setLines(msg.getLines()); 
+				noti.setLines(msg.getLines());
 				noti.setChannel(msg.getITemplate().getChannel());
 				noti.addField("TEMPLATE", msg.getITemplate().toString());
 				noti.setColor("#" + CryptoUtil.toHex(6, msg.getITemplate().toString()));
@@ -208,7 +216,8 @@ public class FBPushServiceImpl implements IPushNotifyService {
 
 		} catch (PostManException e) {
 			auditServiceClient.log(
-					new PMGaugeEvent(PMGaugeEvent.Type.NOTIFCATION).set(Result.FAIL).set(msg, msg.getMessage(), null));
+					new PMGaugeEvent(PMGaugeEvent.Type.NOTIFCATION).result(Result.FAIL, e).set(msg, msg.getMessage(),
+							null));
 		} catch (Exception e) {
 			auditServiceClient.excep(new PMGaugeEvent(PMGaugeEvent.Type.NOTIFCATION).set(msg, msg.getMessage(), null),
 					LOGGER, e);
@@ -334,7 +343,8 @@ public class FBPushServiceImpl implements IPushNotifyService {
 			auditServiceClient.gauge(pMGaugeEvent);
 		} catch (Exception e) {
 			auditServiceClient.excep(pMGaugeEvent, LOGGER, e);
-			slackService.sendException(topic, e);
+			// Slack Exception Handling should be for specific cases
+			// slackService.sendException(topic, e);
 		}
 		return AmxApiResponse.build(token);
 	}

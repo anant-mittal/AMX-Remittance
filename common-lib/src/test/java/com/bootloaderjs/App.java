@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.amx.jax.AppConstants;
 import com.amx.jax.AppContext;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.dict.UserClient.AppType;
@@ -16,7 +17,10 @@ import com.amx.jax.dict.UserClient.DeviceType;
 import com.amx.jax.dict.UserClient.UserDeviceClient;
 import com.amx.jax.tunnel.TunnelMessage;
 import com.amx.utils.HttpUtils;
+import com.amx.utils.ArgUtil;
+import com.amx.utils.ContextUtil;
 import com.amx.utils.JsonUtil;
+import com.amx.utils.TimeUtils;
 import com.amx.utils.Urly;
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -34,19 +38,11 @@ public class App { // Noncompliant
 	 * @throws URISyntaxException
 	 */
 
-	public static void main(String[] args) throws MalformedURLException, URISyntaxException {
-		String url = Urly.parse("https://some.spoof.com").path("/pub/app/pay/{prodType}/{linkId}")
-				.pathParam("prodType", "RMIT_LINK")
-				.pathParam("linkId", 1234).queryParam("v", "VXGFTR").getURL();
-
-		String callbackUrl = Urly.parse(url).queryParam("docNo", "docNo")
-				.queryParam("docNo", "docNo")
-				.queryParam("docFy", "docFy")
-				.queryParam("docId", "docId")
-				.queryParam("trckid", "trckid")
-				.queryParam("payId", "payId").getURL();
-		
-		System.out.println(callbackUrl);
+	public static void main(String[] args) {
+		Long traceTime = ArgUtil.parseAsLong(ContextUtil.map().get(AppConstants.TRACE_TIME_XKEY), 0L);
+		if (traceTime != null && traceTime != 0L) {
+			System.out.println(TimeUtils.timeSince(AppContextUtil.getTraceTime()));
+		}
 
 	}
 

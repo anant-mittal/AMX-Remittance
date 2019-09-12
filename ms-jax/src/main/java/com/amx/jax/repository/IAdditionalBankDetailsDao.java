@@ -24,4 +24,9 @@ public interface IAdditionalBankDetailsDao extends JpaRepository<AdditionalBankD
 			@Param("currencyId") BigDecimal currencyId, @Param("bankId") BigDecimal bankId,
 			@Param("remittanceModeId") BigDecimal remittanceModeId, @Param("deleveryModeId") BigDecimal deleveryModeId);
 
+
+	public AdditionalBankDetailsViewx findByCountryIdAndFlexFieldAndCurrencyIdAndBankIdAndRemittanceIdAndDeliveryIdAndAmiecCode(BigDecimal countryId,String flexField,BigDecimal currencyId, BigDecimal bankId,
+			BigDecimal remittanceModeId, BigDecimal deleveryModeId, String amiecCode);
+
 }
+

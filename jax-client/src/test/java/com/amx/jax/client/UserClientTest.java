@@ -125,7 +125,7 @@ public class UserClientTest extends AbstractTestClient {
 		assertNotNull(response.getResult());
 	}
 
-	 //@Test
+	@Test
 	public void testLoginSuccess() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
@@ -469,7 +469,7 @@ public class UserClientTest extends AbstractTestClient {
 	}
 	
 
-	@Test
+	//@Test
 	public void validateOtpTest() {
 		jaxMetaInfo.setDeviceId("301019967");
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
@@ -529,7 +529,7 @@ public class UserClientTest extends AbstractTestClient {
 		assertNotNull("Response is null", response);
 		assertNotNull(response);
 	}
-	@Test
+	//@Test
 	public void getAnnualTransactionLimit() {
 		jaxMetaInfo.setDeviceId("301019967");
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
@@ -549,7 +549,7 @@ public class UserClientTest extends AbstractTestClient {
 		assertNotNull(response);
 	}
 
-	@Test
+	//@Test
 	public void sendEmailVeificationLink() {
 		jaxMetaInfo.setDeviceId("301019967");
 		jaxMetaInfo.setCountryId(new BigDecimal(91));

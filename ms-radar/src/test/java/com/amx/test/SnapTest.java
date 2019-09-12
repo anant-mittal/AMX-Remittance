@@ -33,8 +33,8 @@ public class SnapTest { // Noncompliant
 	public static void main(String[] args) throws URISyntaxException, IOException {
 		System.out.println(System.getProperty("user.dir"));
 		String json = FileUtil
-				.readFile("file://" + System.getProperty("user.dir") + "/src/test/java/com/amx/test/sample.json");
-
+				.readFile(FileUtil.normalize(
+						"file://" + System.getProperty("user.dir") + "/src/test/java/com/amx/test/sample.json"));
 		SnapModelWrapper wrapper = new SnapModelWrapper(json);
 		AggregationField x = wrapper.getAggregations().field("tranx");
 		System.out.println("x=====" + JsonUtil.toJson(x));

@@ -24,7 +24,10 @@ import com.amx.jax.dbmodel.CollectDetailModel;
 import com.amx.jax.dbmodel.CollectionModel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ForeignCurrencyAdjust;
+import com.amx.jax.dbmodel.RemittanceTransactionView;
 import com.amx.jax.dbmodel.UserFinancialYear;
+import com.amx.jax.dbmodel.partner.RemitApplSrvProv;
+import com.amx.jax.dbmodel.partner.RemitTrnxSrvProv;
 import com.amx.jax.dbmodel.remittance.AdditionalInstructionData;
 import com.amx.jax.dbmodel.remittance.LoyaltyClaimRequest;
 import com.amx.jax.dbmodel.remittance.LoyaltyPointsModel;
@@ -38,15 +41,19 @@ import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
+import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.repository.AdditionalInstructionDataRepository;
 import com.amx.jax.repository.ForeignCurrencyAdjustRepository;
 import com.amx.jax.repository.ICollectionDetailRepository;
 import com.amx.jax.repository.ICollectionRepository;
 import com.amx.jax.repository.ILoyaltyClaimRequestRepository;
 import com.amx.jax.repository.IRemitApplAmlRepository;
+import com.amx.jax.repository.IRemitApplSrvProvRepository;
+import com.amx.jax.repository.IRemitTrnxSrvProvRepository;
 import com.amx.jax.repository.IRemittanceAdditionalInstructionRepository;
 import com.amx.jax.repository.IRemittanceAmlRepository;
 import com.amx.jax.repository.IRemittanceBenificiaryRepository;
+import com.amx.jax.repository.IRemittanceTransactionDao;
 import com.amx.jax.repository.IRemittanceTransactionRepository;
 import com.amx.jax.repository.RemittanceApplicationBeneRepository;
 import com.amx.jax.repository.RemittanceApplicationRepository;
@@ -107,6 +114,16 @@ public class BranchRemittanceDao {
 
 	@Autowired
 	JdbcTemplate jdbcTemplate;
+	
+	@Autowired
+	IRemitApplSrvProvRepository remitApplSrvProvRepository;
+	
+	@Autowired
+	IRemitTrnxSrvProvRepository remitTrnxSrvProvRepository;
+	
+       @Autowired
+	IRemittanceTransactionDao remittanceTransactionDao;
+
 
 	@Transactional
 	@SuppressWarnings("unchecked")
@@ -115,6 +132,7 @@ public class BranchRemittanceDao {
 		RemittanceAppBenificiary saveApplBene = (RemittanceAppBenificiary) mapAllDetailApplSave.get("EX_APPL_BENE");
 		List<AdditionalInstructionData> saveApplAddlData = (List<AdditionalInstructionData>) mapAllDetailApplSave.get("EX_APPL_ADDL");
 		List<RemitApplAmlModel> saveApplAmlList = (List<RemitApplAmlModel>) mapAllDetailApplSave.get("EX_APPL_AML");
+		RemitApplSrvProv saveApplSrvProv = (RemitApplSrvProv) mapAllDetailApplSave.get("EX_APPL_SRV_PROV");
 
 		if (saveApplTrnx != null) {
 			BigDecimal documentNo = generateDocumentNumber(saveApplTrnx.getFsCountryMasterByApplicationCountryId().getCountryId(), saveApplTrnx.getFsCompanyMaster().getCompanyId(),
@@ -125,6 +143,7 @@ public class BranchRemittanceDao {
 			saveApplTrnx.setDocumentNo(documentNo);
 			appRepo.save(saveApplTrnx);
 		}
+		
 		if (saveApplBene != null) {
 			appBeneRepo.save(saveApplBene);
 		}
@@ -132,8 +151,14 @@ public class BranchRemittanceDao {
 		if (saveApplAddlData != null) {
 			addlInstDataRepo.save(saveApplAddlData);
 		}
+		
 		if (saveApplAmlList != null) {
 			applAmlRepository.save(saveApplAmlList);
+		}
+		
+		if (saveApplSrvProv != null) {
+			saveApplSrvProv.setRemittanceApplicationId(saveApplTrnx.getRemittanceApplicationId());
+			remitApplSrvProvRepository.save(saveApplSrvProv);
 		}
 
 	}
@@ -152,6 +177,7 @@ public class BranchRemittanceDao {
 			Map<BigDecimal, RemittanceBenificiary> remitBeneList = (Map<BigDecimal, RemittanceBenificiary>) mapAllDetailRemitSave.get("EX_REMIT_BENE");
 			Map<BigDecimal, List<RemittanceAdditionalInstructionData>> addlTrnxList = (Map<BigDecimal, List<RemittanceAdditionalInstructionData>>) mapAllDetailRemitSave.get("EX_REMIT_ADDL");
 			Map<BigDecimal, List<RemittanceAml>> amlTrnxList = (Map<BigDecimal, List<RemittanceAml>>) mapAllDetailRemitSave.get("EX_REMIT_AML");
+			Map<BigDecimal, RemitTrnxSrvProv> remitSprProvList = (Map<BigDecimal, RemitTrnxSrvProv>) mapAllDetailRemitSave.get("EX_REMIT_SRV_PROV");
 			
 			LoyaltyClaimRequest lylClaim = (LoyaltyClaimRequest) mapAllDetailRemitSave.get("LYL_CLAIM");
 			List<LoyaltyPointsModel> loyaltyPoitns = (List<LoyaltyPointsModel>) mapAllDetailRemitSave.get("LOYALTY_POINTS");
@@ -205,6 +231,7 @@ public class BranchRemittanceDao {
 					}
 					remitTrnx.setDocumentNo(documentNo);
 					remitTrnx.setCollectionDocumentNo(collectModel.getDocumentNo());
+					
 					RemittanceTransaction remitTrnx1 = remitTrnxRepository.save(remitTrnx);
 
 					if (remitBeneList != null && !remitBeneList.isEmpty()) {
@@ -237,12 +264,21 @@ public class BranchRemittanceDao {
 							remitAmlRepository.save(remitaml);
 						}
 					}
+					
+					if(remitSprProvList != null && !remitSprProvList.isEmpty()) {
+						logger.debug("remit service provider Repository.save ApplicationId :"+applicationId);
+						RemitTrnxSrvProv remitTrnxSrvProv = remitSprProvList.get(applicationId);
+						if(remitTrnxSrvProv != null) {
+							remitTrnxSrvProv.setRemittanceTransactionId(remitTrnx1.getRemittanceTransactionId());
+							remitTrnxSrvProvRepository.save(remitTrnxSrvProv);
+						}
+					}
 				}
 
 				if (loyaltyPoitns != null && !loyaltyPoitns.isEmpty()) {
 					loyalPointsRepository.save(loyaltyPoitns);
 				}
-
+				
 			} else {
 				throw new GlobalException(JaxError.NO_RECORD_FOUND, "Remittance trnx details not found");
 			}
@@ -319,5 +355,16 @@ public class BranchRemittanceDao {
 				}
 			}
 		}
+	}
+	
+	public void updateSignatureHash(RemittanceTransactionView trnxDetails,String Signature) {
+	if(trnxDetails!=null && !StringUtils.isBlank(Signature) && JaxUtil.isNullZeroBigDecimalCheck(trnxDetails.getRemittanceTransactionId())) {
+		RemittanceTransaction remit = remitTrnxRepository.findOne(trnxDetails.getRemittanceTransactionId());
+		if(remit!=null) {
+			remit.setCustomerSignature(Signature);
+			remitTrnxRepository.save(remit);
+		}
+	}
+	
 	}
 }

@@ -144,7 +144,13 @@ public class RemittanceApplication implements Serializable {
 	/** added for direct link **/
 	private BigDecimal paymentLinkId;
 	
+
+
+
 	
+	private String wuPurposeOfTransaction;
+
+
 	private List<RemittanceAppBenificiary> exRemittanceAppBenificiary = new ArrayList<RemittanceAppBenificiary>(0);
 	
 	public RemittanceApplication() {
@@ -979,4 +985,14 @@ public class RemittanceApplication implements Serializable {
 	public void setPaymentLinkId(BigDecimal paymentLinkId) {
 		this.paymentLinkId = paymentLinkId;
 	}
+
+	@Column(name="WU_PURPOSE_OF_TRANSACTION")
+	public String getWuPurposeOfTransaction() {
+		return wuPurposeOfTransaction;
+	}
+	public void setWuPurposeOfTransaction(String wuPurposeOfTransaction) {
+		this.wuPurposeOfTransaction = wuPurposeOfTransaction;
+	}
+	
+	
 }

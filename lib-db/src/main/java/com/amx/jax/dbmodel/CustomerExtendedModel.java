@@ -12,30 +12,29 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-
 @Entity
 @Table(name = "FS_CUSTOMER_EXTENDED")
-public class CustomerExtendedModel implements Serializable{
-	
+public class CustomerExtendedModel implements Serializable {
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 4943440026915307328L;
 
 	@Id
-	@Column(name="CUSTOMER_ID")
+	@Column(name = "CUSTOMER_ID")
 	private BigDecimal customerId;
-	
-	@Column(name="CUST_CAT_MASTER_ID")
+
+	@Column(name = "CUST_CAT_MASTER_ID")
 	private BigDecimal custCatMasterId;
-	
-	@Column(name="LAST_YEAR_NO_OF_TRN")
+
+	@Column(name = "LAST_YEAR_NO_OF_TRN")
 	private BigDecimal lastYearNoOfTrnx;
-	
-	@Column(name="LAST_YEAR_REVENUE")
+
+	@Column(name = "LAST_YEAR_REVENUE")
 	private BigDecimal lastYearRevenue;
-	
-	@Column(name="LAST_YEAR_TRN_VALUE")
+
+	@Column(name = "LAST_YEAR_TRN_VALUE")
 	private BigDecimal lastYearTrnxValue;
 
 	public BigDecimal getCustomerId() {
@@ -78,12 +77,4 @@ public class CustomerExtendedModel implements Serializable{
 		this.lastYearTrnxValue = lastYearTrnxValue;
 	}
 
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
-	
-
 }
-
-
-

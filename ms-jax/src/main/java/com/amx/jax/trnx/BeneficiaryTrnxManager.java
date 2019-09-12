@@ -50,6 +50,7 @@ import com.amx.jax.services.BeneficiaryValidationService;
 import com.amx.jax.services.JaxEmailNotificationService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.validation.BenePersonalDetailValidator;
+import com.amx.utils.ArgUtil;
 
 /**
  * @author Prashant
@@ -156,7 +157,12 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		beneDetails.setBeneBankName(beneListView.getBankShortNames());
 		beneDetails.setBeneCountry(beneListView.getBenificaryBankCountryName());
 		beneDetails.setBeneName(beneListView.getBenificaryName());
-		beneDetails.setCustomerName(personInfo.getFirstName() +" "+personInfo.getLastName());
+		if(!ArgUtil.isEmpty(personInfo.getLastName())) {
+			beneDetails.setCustomerName(personInfo.getFirstName() +" "+personInfo.getLastName());
+		}
+		else {
+			beneDetails.setCustomerName(personInfo.getFirstName());
+		}
 
 		sendNotificationTemplate(beneDetails, personInfo, custId);
 		return beneficiaryTrnxModel;
@@ -492,7 +498,7 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 	public void sendNotificationTemplate(BeneCreateDetailsDTO wrapper, PersonInfo personInfo, BigDecimal custId) {
 		try {
 
-			logger.info("Sending beneCreationEmail  to customer : ");
+			logger.debug("Sending beneCreationEmail  to customer : ");
 			// Send Email
 			Email beneCreationEmail = new Email();
 			beneCreationEmail.setSubject("New Beneficiary Addition Success");

@@ -23,6 +23,7 @@ import com.amx.jax.tunnel.DBEvent;
 import com.amx.jax.tunnel.TunnelEvent;
 import com.amx.jax.tunnel.TunnelEventXchange;
 import com.amx.jax.tunnel.TunnelService;
+import com.amx.utils.ArgUtil;
 
 @Controller
 public class SnapQueryController {
@@ -87,10 +88,15 @@ public class SnapQueryController {
 	@RequestMapping(value = "/snap/view/{snapView}", method = RequestMethod.POST)
 	public SnapModelWrapper snapView(@PathVariable(value = "snapView") SnapQueryTemplate snapView,
 			@RequestBody Map<String, Object> params,
-			@RequestParam(defaultValue = "now-1m") String gte, @RequestParam(defaultValue = "now") String lte)
+			@RequestParam(defaultValue = "now-1m", required = false) String gte,
+			@RequestParam(defaultValue = "now", required = false) String lte)
 			throws IOException {
-		// params.put("gte", gte);
-		// params.put("lte", lte);
+		if (!ArgUtil.isEmpty(gte) && !params.containsKey("gte")) {
+			params.put("gte", gte);
+		}
+		if (!ArgUtil.isEmpty(lte) && !params.containsKey("lte")) {
+			params.put("lte", lte);
+		}
 		return snapQueryTemplateService.execute(snapView, params);
 	}
 

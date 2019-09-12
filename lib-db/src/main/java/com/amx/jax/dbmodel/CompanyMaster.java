@@ -79,7 +79,7 @@ public class CompanyMaster implements java.io.Serializable {
 	private Blob stampImg1;
 	private String swiftBic;
 	private String telexNo;
-	
+	private Date vatRegistrationDate;
 
 	/*private List<CompanyMasterDesc> fsCompanyMasterDescs = new ArrayList<CompanyMasterDesc>();
 	private List<Customer> fsCustomers = new ArrayList<Customer>();
@@ -873,7 +873,13 @@ public class CompanyMaster implements java.io.Serializable {
 		this.telexNo = telexNo;
 	}
 
-	
+	@Column(name="VAT_REGISTRATION_DATE")
+	public Date getVatRegistrationDate() {
+		return vatRegistrationDate;
+	}
+	public void setVatRegistrationDate(Date vatRegistrationDate) {
+		this.vatRegistrationDate = vatRegistrationDate;
+	}
 	
 	
 	

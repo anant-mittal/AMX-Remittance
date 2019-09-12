@@ -8,9 +8,11 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.springframework.http.HttpStatus;
 
+import com.amx.jax.api.AResponse.Target;
 import com.amx.jax.logger.LoggerService;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public abstract class AmxApiException extends AmxException {
 
@@ -273,8 +275,18 @@ public abstract class AmxApiException extends AmxException {
 		this.redirectUrl = redirectUrl;
 	}
 
+	@JsonIgnore
+	public void setTargetUrl(String redirectUrl, Target target) {
+		this.redirectUrl = target + ":" + redirectUrl;
+	}
+
 	public AmxApiException redirectUrl(String redirectUrl) {
 		this.setRedirectUrl(redirectUrl);
+		return this;
+	}
+
+	public AmxApiException redirectUrl(String redirectUrl, Target target) {
+		this.setTargetUrl(redirectUrl, target);
 		return this;
 	}
 

@@ -3,6 +3,7 @@ package com.amx.jax.services;
 import static com.amx.amxlib.constant.NotificationConstants.BRANCH_SEARCH;
 import static com.amx.amxlib.constant.NotificationConstants.REG_SUC;
 import static com.amx.amxlib.constant.NotificationConstants.RESP_DATA_KEY;
+import static com.amx.amxlib.constant.NotificationConstants.SERVICE_PROVIDER_RESPONSE;
 
 import java.util.List;
 
@@ -18,12 +19,14 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.model.BranchSearchNotificationModel;
+import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.notification.RemittanceTransactionFailureAlertModel;
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.dbmodel.ApplicationSetup;
 import com.amx.jax.dbmodel.ExEmailNotification;
 import com.amx.jax.dict.Tenant;
-import com.amx.jax.model.CivilIdOtpModel;
+import com.amx.jax.model.request.partner.TransactionFailReportDTO;
 import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.model.response.fx.FxDeliveryDetailNotificationDto;
 import com.amx.jax.model.response.fx.FxOrderDetailNotificationDto;
@@ -85,6 +88,8 @@ public class JaxNotificationService {
 			file.setName("TransactionReceipt");
 			file.setType(File.Type.PDF);
 			file.getModel().put(RESP_DATA_KEY, remittanceReceiptSubreport);
+			file.setPassword(pinfo.getIdentityInt());
+			file.setLang(AppContextUtil.getTenant().defaultLang());
 
 			email.addFile(file);
 			logger.debug("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getFirstName());
@@ -107,6 +112,7 @@ public class JaxNotificationService {
 		file.setITemplate(TemplatesMX.FXO_RECEIPT);
 		file.setType(File.Type.PDF);
 		file.getModel().put(Message.RESULTS_KEY, CollectionUtil.getList(remittanceReceiptSubreport));
+		file.setLang(AppContextUtil.getTenant().defaultLang());
 
 		email.addFile(file);
 		logger.debug("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getCustomerName());
@@ -377,6 +383,24 @@ public class JaxNotificationService {
 			email.addTo(receiverList);
 			email.setMessage(message.toString());
 			sendEmail(email);
+		}
+	}
+	
+	public void sendSPErrorEmail(TransactionFailReportDTO model,
+			List<ExEmailNotification> emailNotification) {
+		try {
+			for (ExEmailNotification emailNot : emailNotification) {
+				String emailid = emailNot.getEmailId();
+				Email email = new Email();
+				email.setSubject(SERVICE_PROVIDER_RESPONSE);
+				email.addTo(emailid);
+				email.setITemplate(TemplatesMX.HOMESEND_TRANSACTION_FAILAURE);
+				email.setHtml(true);
+				email.getModel().put(RESP_DATA_KEY, model);
+				sendEmail(email);
+			}
+		} catch (Exception e) {
+			logger.error("error in sendErrormail", e);
 		}
 	}
 }

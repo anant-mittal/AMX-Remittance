@@ -62,6 +62,9 @@ public class WebAppConfig {
 
 	@TenantValue("${company.tnt}")
 	private String companyTnt;
+	
+	@Value("${google.recaptach.site.key}")
+	private String googelReCaptachSiteKey;
 
 	/**
 	 * Gets the features.
@@ -165,6 +168,10 @@ public class WebAppConfig {
 
 	public String getCompanyTnt() {
 		return this.companyTnt;
+	}
+
+	public String getGoogelReCaptachSiteKey() {
+		return googelReCaptachSiteKey;
 	}
 
 }

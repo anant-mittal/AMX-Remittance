@@ -187,7 +187,7 @@ public class EmailService {
 
 		} catch (Exception e) {
 			auditService.excep(pMGaugeEvent.set(AuditEvent.Result.ERROR).set(email), LOGGER, e);
-			slackService.sendException(to, e);
+			//slackService.sendException(to, e);
 		}
 
 		if (!ArgUtil.isEmpty(emailClone) && !Status.SENT.equals(email.getStatus())

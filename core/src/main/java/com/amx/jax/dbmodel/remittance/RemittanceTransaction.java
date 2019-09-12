@@ -153,6 +153,11 @@ public class RemittanceTransaction implements Serializable {
 
 	private String beneDeductFlag;
 	
+	private String deliveryInd;
+	private String remarks;
+	private BigDecimal usdAmt;
+	private String wuPurposeOfTransaction;
+	
 	
 	public RemittanceTransaction() {
 	}
@@ -1146,7 +1151,39 @@ public class RemittanceTransaction implements Serializable {
 	public void setBeneDeductFlag(String beneDeductFlag) {
 		this.beneDeductFlag = beneDeductFlag;
 	}
+	
+	@Column(name="DELIVERY_IND")
+	public String getDeliveryInd() {
+		return deliveryInd;
+	}
+	public void setDeliveryInd(String deliveryInd) {
+		this.deliveryInd = deliveryInd;
+	}
 
+	@Column(name="REMARKS")
+	public String getRemarks() {
+		return remarks;
+	}
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
+	}
+
+	@Column(name="USD_AMT")
+	public BigDecimal getUsdAmt() {
+		return usdAmt;
+	}
+	public void setUsdAmt(BigDecimal usdAmt) {
+		this.usdAmt = usdAmt;
+	}
+	
+	@Column(name="WU_PURPOSE_OF_TRANSACTION")
+	public String getWuPurposeOfTransaction() {
+		return wuPurposeOfTransaction;
+	}
+	public void setWuPurposeOfTransaction(String wuPurposeOfTransaction) {
+		this.wuPurposeOfTransaction = wuPurposeOfTransaction;
+	}
+	
 
 }
  

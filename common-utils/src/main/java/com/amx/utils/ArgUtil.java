@@ -583,7 +583,7 @@ public final class ArgUtil {
 
 	public static <T extends Enum> T parseAsEnumIgnoreCase(Object source, Class<T> enumType) {
 		String sourceStr = parseAsString(source);
-		if (sourceStr.isEmpty()) {
+		if (isEmpty(sourceStr)) {
 			return null;
 		}
 		sourceStr = sourceStr.trim();
@@ -634,6 +634,10 @@ public final class ArgUtil {
 			return ArgUtil.isCollectionEmpty((Collection<?>) object);
 		}
 		return false;
+	}
+
+	public static boolean is(Object object) {
+		return !ArgUtil.isEmpty(object);
 	}
 
 	/**
