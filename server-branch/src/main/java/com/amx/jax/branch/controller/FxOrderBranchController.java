@@ -1,6 +1,7 @@
 package com.amx.jax.branch.controller;
 
 import java.math.BigDecimal;
+import java.sql.Date;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -8,6 +9,7 @@ import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.fx.FxOrderBranchClient;
+import com.amx.jax.client.fx.IFxBranchOrderService.Path;
 import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
 import com.amx.jax.model.request.fx.FcDeliveryBranchOrderSearchRequest;
 import com.amx.jax.model.request.fx.FcSaleBranchDispatchRequest;
@@ -178,5 +180,16 @@ public class FxOrderBranchController {
 	@RequestMapping(value = "/api/fxo/order/inquiry", method = { RequestMethod.POST })
 	public AmxApiResponse<FxOrderTransactionHistroyDto,Object> getPastOrdersList(@RequestBody FcDeliveryBranchOrderSearchRequest fcDeliveryBranchOrderSearchRequest){
 		return fxOrderBranchClient.searchOrder(fcDeliveryBranchOrderSearchRequest);
+	}
+	
+	@RequestMapping(value = "/api/fxo/order/search", method = RequestMethod.POST)
+	public AmxApiResponse<FcSaleOrderManagementDTO, Object> searchOrderByDates(
+			@RequestParam(value = "fromDate", required = true) Date fromDate,
+			@RequestParam(value = "toDate", required = true) Date toDate) {
+		System.out.println("fromDate"+fromDate);
+		/*java.util.Date utilFromDate =  new java.util.Date(fromDate.getTime());
+		java.util.Date utilToDate =  new java.util.Date(toDate.getTime());*/
+		return fxOrderBranchClient.searchOrderByDatesSql(fromDate, toDate);
+
 	}
 }
