@@ -151,6 +151,7 @@ public class Updater extends JFrame {
 							console("Update Finished!");
 							launchAppButton.setEnabled(true);
 						} catch (Exception ex) {
+							console(ex.toString());
 							ex.printStackTrace();
 							JOptionPane.showMessageDialog(null, "An error occured while preforming update!");
 						}
