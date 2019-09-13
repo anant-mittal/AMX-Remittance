@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
-public class BeneficiaryListDTO {
+public class BeneficiaryListDTO extends ResourceDTO{
 	
 	
 	private BigDecimal idNo;
@@ -564,6 +564,11 @@ public class BeneficiaryListDTO {
 		this.bankLocalName = bankLocalName;
 	}
 	
+	@Override
+	public String getResourceLocalName() {
+	    return this.bankLocalName;
+	
+	}
 	
 
 }
