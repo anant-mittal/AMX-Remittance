@@ -186,8 +186,6 @@ public class FxOrderBranchController {
 	@RequestMapping(value = "/api/fxo/order/search", method = RequestMethod.POST)
 	public AmxApiResponse<FcSaleOrderManagementDTO, Object> searchOrderByDates(
 			@RequestBody FcSaleOrderManagementDatesRequest fcSaleDates) {
-		/*java.util.Date utilFromDate =  new java.util.Date(fromDate.getTime());
-		java.util.Date utilToDate =  new java.util.Date(toDate.getTime());*/
 		return fxOrderBranchClient.searchOrderByDates(fcSaleDates);
 
 	}
