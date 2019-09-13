@@ -22,6 +22,7 @@ import com.amx.jax.tunnel.TunnelEventMapping;
 import com.amx.jax.tunnel.TunnelEventXchange;
 import com.amx.jax.util.AmxDBConstants;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.CollectionUtil;
 import com.amx.utils.StringUtils.StringMatcher;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
@@ -105,7 +106,7 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 
 				try {
 					String civilId = matcher.group(1);
-					Customer customer = customerRepository.getCustomerOneByIdentityInt(civilId);
+					Customer customer = CollectionUtil.getOne(customerRepository.findActiveCustomers(civilId));
 
 					if (ArgUtil.isEmpty(customer)) { // Customer no Found
 						replyMessage = FOUND_NOT;
@@ -125,6 +126,7 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 
 				} catch (Exception e) {
 					replyMessage = SOME_ERROR;
+					LOGGER.error("SOME_ERROR", e);
 				}
 
 			} else if (esConfig.isEnabled()) {
