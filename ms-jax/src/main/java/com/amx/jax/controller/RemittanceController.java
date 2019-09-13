@@ -95,10 +95,7 @@ public class RemittanceController {
 	
 	@Autowired
 	PushNotifyClient pushNotifyClient;
-   	   	
-
-	@Autowired
-	UserService userService;
+   	   		
 	
 	@Autowired
 	protected AmxMeta amxMeta;
