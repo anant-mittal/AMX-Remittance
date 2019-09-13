@@ -17,7 +17,7 @@ public class CivilIdTest { // Noncompliant
 	private static final Pattern FIND_NAME = Pattern.compile("Name ([a-zA-Z ]+)\n");
 	private static final Pattern FIND_NATIONALITY = Pattern.compile("Nationality ([a-zA-Z]{1,3})\n");
 	private static final Pattern FIND_DATE = Pattern.compile("\n(\\d{2}/\\d{2}/\\d{4})");
-	public static final String FIND_DATE_FORMAT_STRING = "dd/MM/YYYY";
+	public static final String FIND_DATE_FORMAT_STRING = "dd/MM/yyyy";
 	public static final SimpleDateFormat FIND_DATE_FORMAT = new SimpleDateFormat(FIND_DATE_FORMAT_STRING);
 
 	public static XmlMapper xmlMapper = new XmlMapper();
@@ -26,10 +26,12 @@ public class CivilIdTest { // Noncompliant
 
 	public static final String STR2 = "STATE OF KUWAIT CIVIL ID CARD\nCivil ID No 293040704063\nName GEETHU NAGAMANI NAGAMANI\nNationality ND\nSex\nBirth Date\nExpiry Date\nsi\nF\n07/04/1993\n20/05/2019";
 
-	
 	public static final String STR3 = "STATE OF KUWAIT CIVIL ID CARD\nCivil ID No\n293040704063\nlall ulali jis\nName GEETHU NAGAMANI NAGAMANI\nu\nNationality ND\nSex\nBirth Date\nsi\nF\n07/04/1993\n20/05/2019\npypiry Date";
-			
-			
+
+	
+	public static void main2(String[] args) throws URISyntaxException, IOException {
+		getDate("23-02-1973");
+	}
 	public static void main(String[] args) throws URISyntaxException, IOException {
 		// CivilIdValidationService service = new CivilIdValidationService();
 
@@ -69,8 +71,9 @@ public class CivilIdTest { // Noncompliant
 				}
 			}
 
-			System.out.println("DOB = " + FIND_DATE_FORMAT.format(dob));
-			System.out.println("EXP = " + FIND_DATE_FORMAT.format(expiry));
+			System.out.println("DOB = " + FIND_DATE_FORMAT.format(dob) + "    " + "23/02/1973");
+			System.out.println("EXP = " + FIND_DATE_FORMAT.format(expiry) + "    " + "09/06/2020");
+			System.out.println("======");
 		}
 
 		// service.validate2("280030801246");
@@ -80,7 +83,15 @@ public class CivilIdTest { // Noncompliant
 
 	public static Date getDate(String date) {
 		try {
-			return FIND_DATE_FORMAT.parse(date);
+
+			Date x = FIND_DATE_FORMAT.parse(date);
+			System.out.println("Input String  =  " + date);
+			System.out.println(x.getDate() + " " + x.getMonth() + " " + x.getYear());
+			System.out.println("GMT String  =  " + x.toGMTString());
+			System.out.println("Local String  =  " + x.toLocaleString());
+			System.out.println("Fetched  =  " + date + " ===> " + FIND_DATE_FORMAT.format(x));
+
+			return x;
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
