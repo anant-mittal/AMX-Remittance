@@ -98,6 +98,7 @@ public class Customer implements java.io.Serializable {
 	private String isOnlineUser;
 	private BigDecimal customerTypeId;
 	private Date identityExpiredDate;
+	
 
 	/**
 	 * Added following field for CR. DAILY_LIMIT WEEKLY_LIMIT MONTHLY_LIMIT
