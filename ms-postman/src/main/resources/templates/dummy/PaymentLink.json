@@ -11,7 +11,7 @@
 	},
 	"data":{
 		"curQutoe" : "KD",
-		"amount" : 500,
+		"netAmount" : 500,
 		"requestData" : "12-Jul-2019"
 	}
 }
