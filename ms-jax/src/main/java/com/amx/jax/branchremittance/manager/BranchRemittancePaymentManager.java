@@ -584,12 +584,12 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 	
 	public ConfigDto getLimitCheck(BigDecimal customerId) {
 		ConfigDto config = new ConfigDto();
-	
+		logger.debug("Customer id is{}",customerId);
 		String accMonthYear =DateUtil.getCurrentAccMMYear();
 		Map<String, Object> inputValues = new HashMap<>();
 		inputValues.put("P_CUSTOMER_ID", metaData.getCustomerId());
 		inputValues.put("P_ACMMYY", accMonthYear);
-		logger.debug("Country id is {}",metaData.getCountryId(),metaData.getCompanyId(),metaData.getCustomerId());
+		logger.debug("Country id is {}{}{}",metaData.getCountryId(),metaData.getCompanyId(),metaData.getCustomerId());
 		Customer customer = customerRepos.getCustomerByCountryAndCompAndCustoemrId(metaData.getCountryId(),metaData.getCompanyId(),metaData.getCustomerId());
 		logger.debug("Customer data is {}",customer.toString());
 		BigDecimal idType =null==customer.getIdentityTypeId()?BigDecimal.ZERO:customer.getIdentityTypeId();
