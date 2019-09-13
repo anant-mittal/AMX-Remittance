@@ -590,7 +590,7 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		inputValues.put("P_CUSTOMER_ID", metaData.getCustomerId());
 		inputValues.put("P_ACMMYY", accMonthYear);
 		Customer customer = customerRepos.getCustomerByCountryAndCompAndCustoemrId(metaData.getCountryId(),metaData.getCompanyId(),metaData.getCustomerId());
-		BigDecimal idType =customer.getIdentityTypeId()==null?BigDecimal.ZERO:customer.getIdentityTypeId();
+		BigDecimal idType =null==customer.getIdentityTypeId()?BigDecimal.ZERO:customer.getIdentityTypeId();
 		inputValues.put("ID_TYPE", idType);
 		
 		Map<String,Object> map =routingProDao.limitCheck(inputValues);
