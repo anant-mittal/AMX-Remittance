@@ -508,10 +508,10 @@ public class BeneficiaryService extends AbstractService {
 		BeneficiaryListDTO dto = new BeneficiaryListDTO();
 		LanguageType languageType = new LanguageType();
 		languageType = languageTypeRepository.findBylanguageId(metaData.getLanguageId());
-
-		if (languageType.getLanguageName().equals(LanguageCodeType.Arabic.toString())) {
+		
+		if(languageType.getLanguageName().equals(LanguageCodeType.Arabic.toString())){
 			beneModel.setBankLocalName(beneModel.getBankLocalName());
-		}else {
+		}	else {
 			beneModel.setBankLocalName(null);
 		}
 		try {
@@ -521,8 +521,12 @@ public class BeneficiaryService extends AbstractService {
 		}
 		beneCheck.setCanTransact(dto);
 		if (isCashBene(beneModel)) {
+			if((metaData.getLanguageId()==null) || metaData.getLanguageId().equals(new BigDecimal(1))) {
 				dto.setBankName(dto.getBankName() + " CASH PAYOUT");
+			}else {
 				dto.setBankName(dto.getBankLocalName() + " CASH PAYOUT");
+			}
+			dto.setBankShortNames(dto.getBankShortNames() + " CASH PAYOUT");
 		}
 		return dto;
 	}
@@ -634,6 +638,7 @@ public class BeneficiaryService extends AbstractService {
 		allRelationsDesc.forEach(i -> {
 			BeneRelationsDescriptionDto dto = new BeneRelationsDescriptionDto();
 			jaxUtil.convert(i, dto);
+			dto.importFrom(i);
 			allRelationsDescDto.add(dto);
 		});
 		ApiResponse apiResponse = getBlackApiResponse();
