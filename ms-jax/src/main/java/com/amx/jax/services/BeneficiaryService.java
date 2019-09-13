@@ -509,7 +509,9 @@ public class BeneficiaryService extends AbstractService {
 		LanguageType languageType = new LanguageType();
 		languageType = languageTypeRepository.findBylanguageId(metaData.getLanguageId());
 
-		if (languageType.getLanguageName().equals(LanguageCodeType.English.toString())) {
+		if (languageType.getLanguageName().equals(LanguageCodeType.Arabic.toString())) {
+			beneModel.setBankLocalName(beneModel.getBankLocalName());
+		}else {
 			beneModel.setBankLocalName(null);
 		}
 		try {
