@@ -136,6 +136,7 @@ public class PayAtBranchService {
 			pbTrnxListDTO.setAccountNo(payAtBranchTrnxModel.getBankAccountNo());
 			pbTrnxListDTO.setAmount(payAtBranchTrnxModel.getNetAmount());
 			pbTrnxListDTO.setCustomerName(payAtBranchTrnxModel.getCustomerName());
+			pbTrnxListDTO.setDocumentDate(payAtBranchTrnxModel.getDocumentDate());
 			pbTrnxListDTO.setExchangeRate(payAtBranchTrnxModel.getExchangeRate());
 			pbTrnxListDTO.setForeignAmount(payAtBranchTrnxModel.getForeignTransactionAmount());
 			pbTrnxListDTO.setIdentityInt(payAtBranchTrnxModel.getIdentityInt());
