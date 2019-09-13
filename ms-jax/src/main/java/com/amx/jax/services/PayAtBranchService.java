@@ -97,7 +97,7 @@ public class PayAtBranchService {
 		
 			RemittanceApplication remittanceApplication= remittanceApplicationDao.getApplication(payAtBranchTrnxModel.getTransactionId());
 			RemittanceAppBenificiary remittanceAppBeneficiary=remittanceApplicationBeneRepository.findByExRemittanceAppfromBenfi(remittanceApplication);
-			pbTrnxListDTO.setBeneId(remittanceAppBeneficiary.getBeneficiaryId());
+			pbTrnxListDTO.setBeneId(remittanceAppBeneficiary.getBeneficiaryRelationShipSeqId());
 			pbTrnxListDTO.setDocumentFinanceYear(payAtBranchTrnxModel.getDocumentFinanceYear());
 			pbTrnxListDTO.setBeneBank(remittanceAppBeneficiary.getBeneficiaryBank());
 			pbTrnxListDTO.setBeneBranch(remittanceAppBeneficiary.getBeneficiaryBranch());
