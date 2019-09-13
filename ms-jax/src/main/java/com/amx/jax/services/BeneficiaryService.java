@@ -510,7 +510,7 @@ public class BeneficiaryService extends AbstractService {
 		languageType = languageTypeRepository.findBylanguageId(metaData.getLanguageId());
 		
 		if(languageType.getLanguageName().equals(LanguageCodeType.English.toString())){
-			beneModel.setBankLocalName("");
+			beneModel.setBankLocalName(null);
 		}		
 		try {
 			BeanUtils.copyProperties(dto, beneModel);
