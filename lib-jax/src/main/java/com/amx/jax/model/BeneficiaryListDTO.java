@@ -566,9 +566,7 @@ public class BeneficiaryListDTO extends ResourceDTO{
 	
 	@Override
 	public String getResourceLocalName() {
-	    return this.bankLocalName;
-	
-	}
+		return this.bankLocalName;
 	
 
 }
