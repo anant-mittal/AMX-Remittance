@@ -8,16 +8,25 @@ import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.dbmodel.BenificiaryListView;
+import com.amx.jax.dbmodel.bene.BeneficaryAccount;
+import com.amx.jax.dbmodel.bene.BeneficaryContact;
+import com.amx.jax.dbmodel.bene.BeneficaryMaster;
 import com.amx.jax.dbmodel.meta.ServiceGroupMaster;
 import com.amx.jax.model.request.AbstractBeneDetailDto;
 import com.amx.jax.model.request.benebranch.AddBeneBankRequest;
 import com.amx.jax.model.request.benebranch.AddBeneCashRequest;
 import com.amx.jax.model.request.benebranch.AddNewBankBranchRequest;
 import com.amx.jax.model.request.benebranch.BeneAccountModel;
+import com.amx.jax.model.request.benebranch.BenePersonalDetailModel;
 import com.amx.jax.model.request.benebranch.BeneficiaryTrnxModel;
 import com.amx.jax.model.request.benebranch.UpdateBeneBankRequest;
+import com.amx.jax.model.request.benebranch.UpdateBeneCashRequest;
 import com.amx.jax.service.MetaService;
+import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.services.BeneficiaryValidationService;
+import com.amx.jax.util.JaxUtil;
+import com.amx.jax.validation.BenePersonalDetailValidator;
 import com.amx.utils.AgeUtil;
 
 @Component
@@ -27,6 +36,12 @@ public class BeneBranchValidation {
 	MetaService metaService;
 	@Autowired
 	BeneficiaryValidationService beneficiaryValidationService;
+	@Autowired
+	BenePersonalDetailValidator benePersonalDetailValidator;
+	@Autowired
+	BeneficiaryService beneficiaryService;
+	@Autowired
+	JaxUtil jaxUtil;
 
 	public void validateaddBeneBank(AddBeneBankRequest request) {
 		ServiceGroupMaster bankserviceMaster = metaService.getServiceGroupMasterByCode(ConstantDocument.SERVICE_GROUP_CODE_BANK);
@@ -71,10 +86,58 @@ public class BeneBranchValidation {
 
 	public void validateUpdateBeneBank(UpdateBeneBankRequest request) {
 		BeneficiaryTrnxModel beneTrnxModel = request.createBeneficiaryTrnxModelObject();
-		BeneAccountModel beneAccountModel = beneTrnxModel.getBeneAccountModel();
-		if (StringUtils.isNotBlank(beneAccountModel.getIfscCode())) {
+		BeneAccountModel beneAccountModelRequest = beneTrnxModel.getBeneAccountModel();
+		BenificiaryListView benificiaryListView = beneficiaryService.getBeneByIdNo(BigDecimal.valueOf(request.getIdNo()));
+		BeneAccountModel beneAccountModel = createBeneAccountModel(benificiaryListView, beneAccountModelRequest);
+		beneTrnxModel.setBeneAccountModel(beneAccountModel);
+
+		if (StringUtils.isNotBlank(beneAccountModelRequest.getIfscCode())) {
 			beneficiaryValidationService.validateIFscCode(beneAccountModel);
 		}
+		if (StringUtils.isNotBlank(beneAccountModelRequest.getBankAccountNumber())) {
+			beneficiaryValidationService.validateBeneAccountUpdate(beneAccountModel);
+		}
+		benePersonalDetailValidator.validateUpdateBene(beneTrnxModel);
+	}
 
+	public void validateUpdateBeneCash(UpdateBeneCashRequest request) {
+		BeneficiaryTrnxModel beneTrnxModel = request.createBeneficiaryTrnxModelObject();
+		BeneAccountModel beneAccountModelRequest = beneTrnxModel.getBeneAccountModel();
+		BenificiaryListView benificiaryListView = beneficiaryService.getBeneByIdNo(BigDecimal.valueOf(request.getIdNo()));
+		BeneAccountModel beneAccountModel = createBeneAccountModel(benificiaryListView,beneAccountModelRequest);
+		beneTrnxModel.setBeneAccountModel(beneAccountModel);
+		if (StringUtils.isNotBlank(beneAccountModelRequest.getBankAccountNumber())) {
+			beneficiaryValidationService.validateDuplicateCashBeneficiary(beneTrnxModel);
+		}
+		benePersonalDetailValidator.validateUpdateBene(beneTrnxModel);
+	}
+
+	public BeneAccountModel createBeneAccountModel(BenificiaryListView bv, BeneAccountModel beneAccountModelRequest) {
+		BeneficaryAccount beneAccount = beneficiaryService.getBeneAccountByAccountSeqId(bv.getBeneficiaryAccountSeqId());
+		BeneAccountModel beneAccountModel = new BeneAccountModel();
+		beneAccountModel.setBankAccountNumber(beneAccount.getBankAccountNumber());
+		beneAccountModel.setBankAccountTypeId(beneAccount.getBankAccountTypeId());
+		beneAccountModel.setBankBranchId(beneAccount.getBankBranchId());
+		beneAccountModel.setBankId(beneAccount.getBankId());
+		beneAccountModel.setBeneficaryCountryId(beneAccount.getBeneficaryCountryId());
+		beneAccountModel.setCurrencyId(beneAccount.getCurrencyId());
+		beneAccountModel.setIbanNumber(beneAccount.getIbanNumber());
+		beneAccountModel.setServiceGroupId(beneAccount.getServiceGroupId());
+		beneAccountModel.setServiceProviderBranchId(beneAccount.getServiceProviderBranchId());
+		beneAccountModel.setServiceProviderId(beneAccount.getServiceProviderId());
+		beneAccountModel.setSwiftCode(beneAccount.getSwiftCode());
+		jaxUtil.convertNotNull(beneAccountModelRequest, beneAccountModel);
+
+		return beneAccountModel;
+	}
+
+	public BenePersonalDetailModel createBenePersonalDetailModel(BenificiaryListView bv, BeneAccountModel beneAccountModelRequest) {
+		BeneficaryMaster beneMaster = beneficiaryService.getBeneficiaryMasterBybeneficaryMasterSeqId(bv.getBeneficaryMasterSeqId());
+		BeneficaryContact beneContact = beneficiaryService.getBeneficiaryContactByMasterId(beneMaster.getBeneficaryMasterSeqId());
+		BenePersonalDetailModel benePersonalDetailModel = new BenePersonalDetailModel();
+
+		jaxUtil.convertNotNull(beneAccountModelRequest, beneMaster);
+		jaxUtil.convertNotNull(beneAccountModelRequest, beneContact);
+		return benePersonalDetailModel;
 	}
 }

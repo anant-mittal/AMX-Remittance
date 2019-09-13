@@ -16,6 +16,7 @@ import com.amx.jax.dbmodel.bene.BeneficaryContact;
 import com.amx.jax.dbmodel.bene.BeneficaryMaster;
 import com.amx.jax.dbmodel.bene.BeneficaryRelationship;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.model.request.AbtractUpdateBeneDetailDto;
 import com.amx.jax.model.request.benebranch.BeneAccountModel;
 import com.amx.jax.model.request.benebranch.BenePersonalDetailModel;
 import com.amx.jax.model.request.benebranch.UpdateBeneStatusRequest;
@@ -59,7 +60,8 @@ public class BeneBranchManager {
 		iBeneficiaryRelationshipDao.save(beneRel);
 	}
 
-	public void updateBeneMaster(BeneficaryRelationship beneRelationship, BenePersonalDetailModel benePersonalDetail) {
+	public void updateBeneMaster(BeneficaryRelationship beneRelationship, BenePersonalDetailModel benePersonalDetail,
+			AbtractUpdateBeneDetailDto request) {
 		BeneficaryMaster beneMaster = beneficiaryService.getBeneficiaryMasterBybeneficaryMasterSeqId(beneRelationship.getBeneficaryMasterId());
 		if (benePersonalDetail.getCityId() != null) {
 			beneMaster.setFsCityMaster(benePersonalDetail.getCityId());
@@ -111,7 +113,9 @@ public class BeneBranchManager {
 		if (benePersonalDetail.getThirdName() != null) {
 			beneMaster.setThirdName(benePersonalDetail.getThirdName());
 		}
-
+		if (request.getAge() != null) {
+			beneMaster.setAge(BigDecimal.valueOf(request.getAge()));
+		}
 		try {
 			boolean isModified = !JaxUtil.checkNull(benePersonalDetail);
 			if (isModified) {

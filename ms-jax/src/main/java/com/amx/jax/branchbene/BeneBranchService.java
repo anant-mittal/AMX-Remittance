@@ -8,6 +8,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.transaction.Transactional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,7 @@ import com.amx.jax.dbmodel.meta.ServiceGroupMaster;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.model.request.AbstractBeneDetailDto;
+import com.amx.jax.model.request.AbtractUpdateBeneDetailDto;
 import com.amx.jax.model.request.benebranch.AddNewBankBranchRequest;
 import com.amx.jax.model.request.benebranch.BeneAccountModel;
 import com.amx.jax.model.request.benebranch.BenePersonalDetailModel;
@@ -39,15 +42,16 @@ import com.amx.jax.model.request.benebranch.BeneficiaryTrnxModel;
 import com.amx.jax.model.request.benebranch.ListBankBranchRequest;
 import com.amx.jax.model.request.benebranch.ListBeneBankOrCashRequest;
 import com.amx.jax.model.request.benebranch.ListBeneRequest;
-import com.amx.jax.model.request.benebranch.UpdateBeneBankRequest;
 import com.amx.jax.model.request.benebranch.UpdateBeneStatusRequest;
 import com.amx.jax.model.response.BankMasterDTO;
 import com.amx.jax.model.response.benebranch.AddBeneBankBranchRequestModel;
 import com.amx.jax.model.response.benebranch.BankBranchDto;
 import com.amx.jax.model.response.benebranch.BeneStatusDto;
+import com.amx.jax.model.response.benebranch.UpdateBeneStatus;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.TemplatesMX;
+import com.amx.jax.repository.ITransactionHistroyDAO;
 import com.amx.jax.service.BankMetaService;
 import com.amx.jax.service.CountryService;
 import com.amx.jax.service.MetaService;
@@ -87,6 +91,8 @@ public class BeneBranchService {
 	PostManService postManService;
 	@Autowired
 	BeneBranchManager beneBranchManager;
+	@Autowired
+	ITransactionHistroyDAO iTransactionHistroyDAO;
 
 	// bank
 	public List<BankMasterDTO> getBankByCountryAndCurrency(ListBeneBankOrCashRequest request) {
@@ -192,20 +198,40 @@ public class BeneBranchService {
 			BeneStatusDto dto = new BeneStatusDto(beneStatus.getDescription(), beneStatus.name());
 			i.setBeneStatusDto(dto);
 		});
+		addBeneUpdateFlag(beneListDto);
 		return beneListDto;
+	}
+
+	private void addBeneUpdateFlag(List<BeneficiaryListDTO> beneListDto) {
+
+		List<BigDecimal> beneRelSeqIds = beneListDto.stream().map(i -> i.getBeneficiaryRelationShipSeqId()).collect(Collectors.toList());
+		List<BigDecimal> beneTrnxCounts = iTransactionHistroyDAO.getbeneRelSeqlIdsTranaction(beneRelSeqIds);
+		beneListDto.forEach(i -> {
+			if (beneTrnxCounts.contains(i.getBeneficiaryRelationShipSeqId())) {
+				i.setUpdateBeneStatus(UpdateBeneStatus.OLD_BENE_TRASACT);
+			} else {
+				if (i.getBeneficiaryErrorStatus().isEmpty()) {
+					i.setUpdateBeneStatus(UpdateBeneStatus.NEW_BENE_NON_TRANSACT);
+				} else {
+					i.setUpdateBeneStatus(UpdateBeneStatus.OLD_BENE_NON_TRANSACT);
+				}
+			}
+		});
+
 	}
 
 	public void updateBeneStatus(UpdateBeneStatusRequest request) {
 		beneBranchManager.updateBeneStatus(request);
 	}
 
-	public void updateBeneBankorCash(UpdateBeneBankRequest request) {
+	@Transactional
+	public void updateBeneBankorCash(AbtractUpdateBeneDetailDto request) {
 		logger.info("updateBeneBankorCash request: {} ", JsonUtil.toJson(request));
 		BeneficiaryTrnxModel beneficiaryTrnxModel = request.createBeneficiaryTrnxModelObject();
 		BeneAccountModel beneAccountDetail = beneficiaryTrnxModel.getBeneAccountModel();
 		BenePersonalDetailModel benePersonalDetail = beneficiaryTrnxModel.getBenePersonalDetailModel();
 		BeneficaryRelationship beneRelationship = beneService.getBeneRelationshipByIdNo(BigDecimal.valueOf(request.getIdNo()));
-		beneBranchManager.updateBeneMaster(beneRelationship, benePersonalDetail);
+		beneBranchManager.updateBeneMaster(beneRelationship, benePersonalDetail, request);
 		beneBranchManager.updateBeneContact(beneRelationship, benePersonalDetail);
 		beneBranchManager.updateBeneAccount(beneRelationship, beneAccountDetail);
 	}

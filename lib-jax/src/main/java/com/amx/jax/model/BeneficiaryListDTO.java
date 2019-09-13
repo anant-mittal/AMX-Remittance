@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.amx.jax.model.response.benebranch.BeneStatusDto;
+import com.amx.jax.model.response.benebranch.UpdateBeneStatus;
 
 public class BeneficiaryListDTO {
 	
@@ -93,7 +94,7 @@ public class BeneficiaryListDTO {
 	private String bankShortNames;
 	private Boolean canTransact;
 	private BeneStatusDto beneStatusDto;
-	
+	private UpdateBeneStatus updateBeneStatus;
 	
 	public BigDecimal getIdNo() {
 		return idNo;
@@ -562,6 +563,12 @@ public class BeneficiaryListDTO {
 	}
 	public void setBeneStatusDto(BeneStatusDto beneStatusDto) {
 		this.beneStatusDto = beneStatusDto;
+	}
+	public UpdateBeneStatus getUpdateBeneStatus() {
+		return updateBeneStatus;
+	}
+	public void setUpdateBeneStatus(UpdateBeneStatus updateBeneStatus) {
+		this.updateBeneStatus = updateBeneStatus;
 	}
 	
 	

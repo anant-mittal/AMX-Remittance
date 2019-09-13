@@ -114,6 +114,20 @@ public class BeneficiaryValidationService {
 			validateSwiftCode(beneAccountModel);
 		}
 	}
+	
+	public void validateBeneAccountUpdate(BeneAccountModel beneAccountModel) {
+		// validate only for BANK channel and not for CASH channel
+		if (!BigDecimal.ONE.equals(beneAccountModel.getServiceGroupId())) {
+			validateBankAccountNumber(beneAccountModel);
+			if (StringUtils.isNotBlank(beneAccountModel.getIbanNumber())) {
+				validateIban(beneAccountModel);
+			}
+			validateDuplicateBankAccount(beneAccountModel);
+			if (StringUtils.isNotBlank(beneAccountModel.getSwiftCode())) {
+				validateSwiftCode(beneAccountModel);
+			}
+		}
+	}
 
 	private void validateIban(BeneAccountModel beneAccountModel) {
 		BankMasterModel bankMaster = bankService.getBankById(beneAccountModel.getBankId());

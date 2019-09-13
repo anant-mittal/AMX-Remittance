@@ -9,12 +9,14 @@ package com.amx.jax.repository;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.amx.jax.dbmodel.CustomerRemittanceTransactionView;
+import com.amx.jax.dbmodel.remittance.BeneTransactionCountModel;
 
 public interface ITransactionHistroyDAO extends JpaRepository<CustomerRemittanceTransactionView, Serializable> {
 
@@ -80,14 +82,6 @@ public interface ITransactionHistroyDAO extends JpaRepository<CustomerRemittance
 	public Long getCountByBenerelationshipSeqId(List<BigDecimal> idNo);
 	
 	
-	/*@Query(value="select * from JAX_VW_EX_TRANSACTION_INQUIRY t  \r\n" + 
-			"where  CREATED_BY=:username "+ 
-			"and t.DOCUMENT_DATE = (select max(f.DOCUMENT_DATE) from JAX_VW_EX_TRANSACTION_INQUIRY f where f.CREATED_BY=:username " + 
-			"and trunc(document_date)=trunc(sysdate))",nativeQuery=true)
-	public List<CustomerRemittanceTransactionView> getLastTrnxAmountFortheCustomer(@Param("username") String username);
-	*/
-	
-	
 	@Query(value= "select last_trnx_amt from ( "
 					+" select COLLECTION_DOCUMENT_NO,sum(LOCAL_NET_TRANX_AMOUNT) last_trnx_amt "
 					+" from ex_remit_trnx                                                      "
@@ -99,4 +93,9 @@ public interface ITransactionHistroyDAO extends JpaRepository<CustomerRemittance
 					+" order by COLLECTION_DOCUMENT_NO  desc ) where rownum = 1" , nativeQuery=true)
 	public BigDecimal  getLastTrnxAmountFortheUser(@Param("username") String username,@Param("accMyear") String accMyear,@Param("countrybranchId") BigDecimal countrybranchId);
 	
+	@Query(value = "select new com.amx.jax.dbmodel.remittance.BeneTransactionCountModel(th.beneficiaryRelationSeqId, count(*) ) from CustomerRemittanceTransactionView th where beneficiaryRelationSeqId in (?1) group by beneficiaryRelationSeqId")
+	public List<BeneTransactionCountModel> getTransactionCountByBeneRelSeqId(List<BigDecimal> beneRelSeqIds);
+	
+	@Query(value = "select distinct(beneficary_relationship_seq_id) from JAX_VW_EX_TRANSACTION_INQUIRY where beneficary_relationship_seq_id in (?1) ", nativeQuery = true)
+	public List<BigDecimal> getbeneRelSeqlIdsTranaction(List<BigDecimal> beneRelSeqIds);
 }

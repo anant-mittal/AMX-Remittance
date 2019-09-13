@@ -25,6 +25,7 @@ import com.amx.jax.model.request.benebranch.ListBankBranchRequest;
 import com.amx.jax.model.request.benebranch.ListBeneBankOrCashRequest;
 import com.amx.jax.model.request.benebranch.ListBeneRequest;
 import com.amx.jax.model.request.benebranch.UpdateBeneBankRequest;
+import com.amx.jax.model.request.benebranch.UpdateBeneCashRequest;
 import com.amx.jax.model.request.benebranch.UpdateBeneStatusRequest;
 import com.amx.jax.model.response.BankMasterDTO;
 import com.amx.jax.model.response.benebranch.BankBranchDto;
@@ -117,7 +118,7 @@ public class BeneBranchController implements IBranchBeneService {
 		List<BeneficiaryListDTO> list = beneBranchService.listBene(request);
 		return AmxApiResponse.buildList(list);
 	}
-	
+
 	@RequestMapping(value = Path.UPDATE_BENE_STATUS, method = RequestMethod.POST)
 	@Override
 	@ApiOperation("get bene list statuss")
@@ -126,13 +127,23 @@ public class BeneBranchController implements IBranchBeneService {
 		beneBranchService.updateBeneStatus(request);
 		return AmxApiResponse.build(new BoolRespModel(true));
 	}
-	
+
 	@RequestMapping(value = Path.UPDATE_BENE_BANK, method = RequestMethod.POST)
 	@Override
 	@ApiOperation("add bene bank")
 	public AmxApiResponse<BoolRespModel, Object> updateBeneBank(@RequestBody @Valid UpdateBeneBankRequest request) {
 		logger.debug("request updateBeneBank: {} ", JsonUtil.toJson(request));
 		beneBranchValidation.validateUpdateBeneBank(request);
+		beneBranchService.updateBeneBankorCash(request);
+		return AmxApiResponse.build(new BoolRespModel(true));
+	}
+
+	@RequestMapping(value = Path.UPDATE_BENE_CASH, method = RequestMethod.POST)
+	@Override
+	@ApiOperation("add bene bank")
+	public AmxApiResponse<BoolRespModel, Object> updateBeneCash(@RequestBody @Valid UpdateBeneCashRequest request) {
+		logger.debug("request updateBeneBank: {} ", JsonUtil.toJson(request));
+		beneBranchValidation.validateUpdateBeneCash(request);
 		beneBranchService.updateBeneBankorCash(request);
 		return AmxApiResponse.build(new BoolRespModel(true));
 	}

@@ -47,6 +47,15 @@ public class BenePersonalDetailValidator implements Validator {
 		validateBeneArabicBlacklist(benePersonalDetailModel);
 	}
 
+	public void validateUpdateBene(BeneficiaryTrnxModel beneficiaryTrnxModel) {
+		BenePersonalDetailModel benePersonalDetailModel = beneficiaryTrnxModel.getBenePersonalDetailModel();
+		if (StringUtils.isNotBlank(benePersonalDetailModel.getMobileNumber())) {
+			validateMobile(benePersonalDetailModel, beneficiaryTrnxModel);
+		}
+		validateBeneBlacklist(benePersonalDetailModel);
+		validateBeneArabicBlacklist(benePersonalDetailModel);
+	}
+
 	private void validateBeneBlacklist(BenePersonalDetailModel benePersonalDetailModel) {
 		StringBuilder beneName = new StringBuilder();
 		if (StringUtils.isNotBlank(benePersonalDetailModel.getFirstName())) {
@@ -101,16 +110,12 @@ public class BenePersonalDetailValidator implements Validator {
 		}
 	}
 
-	private void validateMobile(BenePersonalDetailModel benePersonalDetailModel,
-			BeneficiaryTrnxModel beneficiaryTrnxModel) {
+	private void validateMobile(BenePersonalDetailModel benePersonalDetailModel, BeneficiaryTrnxModel beneficiaryTrnxModel) {
 
-		List<ServiceApplicabilityRule> serviceAppList = serviceApplicabilityRuleDao.getBeneTelServiceApplicabilityRule(
-				metaData.getCountryId(), benePersonalDetailModel.getCountryId(),
-				beneficiaryTrnxModel.getBeneAccountModel().getCurrencyId());
+		List<ServiceApplicabilityRule> serviceAppList = serviceApplicabilityRuleDao.getBeneTelServiceApplicabilityRule(metaData.getCountryId(),
+				benePersonalDetailModel.getCountryId(), beneficiaryTrnxModel.getBeneAccountModel().getCurrencyId());
 
-		int benePhoneLength = (null != benePersonalDetailModel.getMobileNumber())
-				? benePersonalDetailModel.getMobileNumber().toString().length()
-				: 0;
+		int benePhoneLength = (null != benePersonalDetailModel.getMobileNumber()) ? benePersonalDetailModel.getMobileNumber().toString().length() : 0;
 
 		int minLength = serviceAppList.stream().filter(i -> i.getMinLenght() != null).mapToInt(i -> {
 			return i.getMinLenght().intValue();
