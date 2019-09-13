@@ -1,1 +1,1 @@
-<html th:inline="text" th:remove="tag">Your remittance request for a Value of [[${data.curQutoe}]] [[${data.netAmount}]] is ready for payment.[[${_tu.prop('company.app.tinyurl')+ 'pap' + link.id +'?v='+link.verificationCode}]]</html>
+<html th:inline="text" th:remove="tag">Your remittance request for a Value of [[${data.curQutoe}]] [[${data.netAmount}]] is ready for payment.[[${_tu.prop('company.app.tinyurl')+ '/papr/' + link.id +'?v='+link.verificationCode}]]</html>
