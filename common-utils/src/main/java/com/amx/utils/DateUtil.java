@@ -797,6 +797,25 @@ public final class DateUtil {
 	}
 
 	/**
+	 * Critical : Used By PROBOT For Date/Time Computations. <br>
+	 * <strong> DO NOT CHANGE or MODIFY </strong> <br>
+	 * 
+	 * Returns Plus-Day Date for the given Zoned Date. <B> Time is Reset to ZERO #
+	 * Hr:Min:Sec:Nano :: 00:00:00:000 </B>
+	 *
+	 * @param fromDateTime
+	 *            the from date time
+	 * @return the next zoned day
+	 */
+	public static ZonedDateTime getZonedDayPlus(ZonedDateTime fromDateTime, int plusDays) {
+
+		ZonedDateTime dPlusOne = fromDateTime.plusDays(plusDays);
+
+		return dPlusOne.withHour(0).withMinute(0).withSecond(0).withNano(0);
+
+	}
+
+	/**
 	 * * Critical : Used By PROBOT For Date/Time Computations. <br>
 	 * <strong> DO NOT CHANGE or MODIFY </strong> <br>
 	 * 
@@ -912,7 +931,12 @@ public final class DateUtil {
 	 */
 	public static int getHrMinIntVal(String hrMinStr) {
 
-		String[] hrMinArray = hrMinStr.split("\\.");
+		String[] hrMinArray;
+		if (hrMinStr.contains(":")) {
+			hrMinArray = hrMinStr.split(":");
+		} else {
+			hrMinArray = hrMinStr.split("\\.");
+		}
 
 		int hourOfDay = Integer.parseInt(hrMinArray[0]);
 		int minOfHr = 0;
@@ -922,6 +946,28 @@ public final class DateUtil {
 
 		return getHrMinIntVal(hourOfDay, minOfHr);
 
+	}
+
+	public static int extractHour(int hourMinVal) {
+		if (hourMinVal >= 0 && hourMinVal <= 2400) {
+			int hr = hourMinVal / 100;
+			if (hr >= 0 && hr <= 24) {
+				return hr;
+			}
+		}
+
+		return -1;
+	}
+
+	public static int extractMinute(int hourMinVal) {
+		if (hourMinVal >= 0 && hourMinVal <= 2400) {
+			int min = hourMinVal % 100;
+			if (min >= 0 && min <= 60) {
+				return min;
+			}
+		}
+
+		return -1;
 	}
 
 }

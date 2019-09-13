@@ -13,6 +13,7 @@ import com.amx.jax.pricer.dbmodel.CountryMasterModel;
 import com.amx.jax.pricer.dbmodel.HolidayListMasterModel;
 import com.amx.jax.pricer.dbmodel.OnlineMarginMarkup;
 import com.amx.jax.pricer.dbmodel.TimezoneMasterModel;
+import com.amx.jax.pricer.dbmodel.TreasuryFundTimeImpact;
 import com.amx.jax.pricer.dbmodel.ViewExGLCBAL;
 import com.amx.jax.pricer.dbmodel.ViewExGLCBalProvisional;
 import com.amx.jax.pricer.dto.BankDetailsDTO;
@@ -375,6 +376,21 @@ public class ExchRateAndRoutingTransientDataCache {
 			return bankGLCData.getAdjustedLcCurBal();
 		}
 
+	}
+
+	public TreasuryFundTimeImpact getTreasuryFundTimeImpact(BigDecimal bankId, boolean isFunded) {
+		BankGLCData bankGLCData = this.bankGlcBalMap.get(bankId);
+
+		if (null == bankGLCData || null == bankGLCData.getGlAccountsDetails()
+				|| bankGLCData.getGlAccountsDetails().isEmpty()) {
+			return null;
+		}
+
+		if (isFunded) {
+			return bankGLCData.getFundedTimeImpact();
+		} else {
+			return bankGLCData.getOutOfFundTimeImpact();
+		}
 	}
 
 	public void setTimezoneForCountry(BigDecimal countryId, TimezoneMasterModel tz) {

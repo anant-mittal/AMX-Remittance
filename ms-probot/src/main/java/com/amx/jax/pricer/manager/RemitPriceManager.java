@@ -194,9 +194,7 @@ public class RemitPriceManager {
 				BigDecimal maxFcCurBal = exchRateAndRoutingTransientDataCache
 						.getMaxGLCBalForBank(exchangeRate.getBankMaster().getBankId(), Boolean.TRUE);
 
-				// System.out.println(" Required Amt ==> " +
-				// exRateDetails.getSellRateBase().getConvertedFCAmount().toPlainString()
-				// + " Current Amt ==>" + maxFcCurBal.toPlainString());
+				// Check for Low GL Balance
 				if (maxFcCurBal.compareTo(exRateDetails.getSellRateBase().getConvertedFCAmount()) < 0) {
 
 					exRateDetails.setLowGLBalance(true);
@@ -246,12 +244,7 @@ public class RemitPriceManager {
 			 */
 			setMarkupForBanks(requestDto.getLocalCountryId(), validBankIds, requestDto.getForeignCurrencyId(),
 					requestDto.getChannel());
-
-			// Old Call -- For
-			// getOnlineMarginMarkup(requestDto.getLocalCountryId(),
-			// requestDto.getForeignCountryId(),
-			// requestDto.getForeignCurrencyId(), requestDto.getChannel());
-
+			
 			/************* Process Bank Exchange Rates ***********/
 
 			List<ExchangeRateApprovalDetModelAlt> bankExchangeRates;
@@ -322,7 +315,8 @@ public class RemitPriceManager {
 				if (exRateDetails.getSellRateBase().getInverseRate().compareTo(adjustedSellRate) <= 0) {
 					exRateDetails.setCostRateLimitReached(true);
 				}
-
+				
+				// Check for Low GL Balance
 				if (maxFcCurBal.compareTo(exRateDetails.getSellRateBase().getConvertedFCAmount()) < 0) {
 					exRateDetails.setLowGLBalance(true);
 

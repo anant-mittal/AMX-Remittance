@@ -28,10 +28,12 @@ import com.amx.jax.cache.WorkingHoursData;
 import com.amx.jax.dict.UserClient.Channel;
 import com.amx.jax.pricer.dao.CountryMasterDao;
 import com.amx.jax.pricer.dao.TimezoneDao;
+import com.amx.jax.pricer.dao.TreasuryFTImpactDao;
 import com.amx.jax.pricer.dao.ViewExRoutingMatrixDao;
 import com.amx.jax.pricer.dbmodel.CountryMasterModel;
 import com.amx.jax.pricer.dbmodel.HolidayListMasterModel;
 import com.amx.jax.pricer.dbmodel.TimezoneMasterModel;
+import com.amx.jax.pricer.dbmodel.TreasuryFundTimeImpact;
 import com.amx.jax.pricer.dbmodel.ViewExRoutingMatrix;
 import com.amx.jax.pricer.dto.EstimatedDeliveryDetails;
 import com.amx.jax.pricer.dto.ExchangeRateAndRoutingRequest;
@@ -51,7 +53,8 @@ public class RemitRoutingManager {
 
 	private static final BigDecimal DEF_DELIVERY_HRS = new BigDecimal(5 * 24);
 
-	//private static final BigDecimal FROM_AMT_FRACTION = new BigDecimal(0.00000001);
+	// private static final BigDecimal FROM_AMT_FRACTION = new
+	// BigDecimal(0.00000001);
 
 	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd-MMM hh:mm a");
 
@@ -72,6 +75,9 @@ public class RemitRoutingManager {
 
 	@Autowired
 	CountryMasterDao countryMasterDao;
+
+	@Autowired
+	TreasuryFTImpactDao treasuryFTImpactDao;
 
 	@Resource
 	ExchRateAndRoutingTransientDataCache transientDataCache;
@@ -143,7 +149,7 @@ public class RemitRoutingManager {
 			}
 
 		}
-		
+
 		// This is Interim FIX FOR HOME-SEND EXclussion and should be removed on
 		// Priority.
 		// NOT to Excluded for HOMESEND
@@ -304,19 +310,44 @@ public class RemitRoutingManager {
 
 			boolean noHolidayLag = com.amx.utils.StringUtils.anyMatch(holidayImpactStr, "N", "NO") ? true : false;
 
-			long preDelay = 0;
+			boolean glDelay = false;
+			TreasuryFundTimeImpact trImpact = null;
 
 			// Add a delay of One day in Case Running low GL Balance
 			if (routingDetails.getExchangeRateDetails() == null ? false
 					: routingDetails.getExchangeRateDetails().isLowGLBalance()) {
-				preDelay += 1;
+
+				glDelay = true;
+
+				if (routingDetails.getExchangeRateDetails().isFundedIntermediary()) {
+					trImpact = transientDataCache
+							.getTreasuryFundTimeImpact(routingDetails.getExchangeRateDetails().getBankId(), true);
+				} else {
+					trImpact = transientDataCache
+							.getTreasuryFundTimeImpact(routingDetails.getExchangeRateDetails().getBankId(), false);
+				}
+
+				// Set to Default.
+				if (trImpact == null) {
+					trImpact = new TreasuryFundTimeImpact();
+					trImpact.setInTrWindowDayImpact(BigDecimal.ONE);
+					trImpact.setInTrWindowTtdImpactMin(new BigDecimal(60));
+
+					trImpact.setOutOfTrWindowDayImpact(trImpact.getInTrWindowDayImpact());
+					trImpact.setOutOfTrWindowTtdImpactMin(trImpact.getInTrWindowTtdImpactMin());
+
+					trImpact.setTrnxTimeFrom("10:00");
+					trImpact.setTrnxTimeTo("14:30");
+				}
+
 			}
 
 			EstimatedDeliveryDetails estmdCBDeliveryDetails = this.getEstimatedBlockDelivery(
 					transientDataCache.getTrnxBeginTime(), timezone, oneMatrix.getWeekFrom(), oneMatrix.getWeekTo(),
 					oneMatrix.getWeekHoursFrom(), oneMatrix.getWeekHoursTo(), oneMatrix.getWeekendFrom(),
 					oneMatrix.getWeekendTo(), oneMatrix.getWeekendHoursFrom(), oneMatrix.getWeekendHoursTo(),
-					oneMatrix.getDelievryHours(), noHolidayLag, routingCountryId, preDelay, false, BigDecimal.ZERO);
+					oneMatrix.getDelievryHours(), noHolidayLag, routingCountryId, glDelay, trImpact, false,
+					BigDecimal.ZERO);
 
 			routingDetails.setRoutingBankDeliveryDetails(estmdCBDeliveryDetails);
 
@@ -366,7 +397,7 @@ public class RemitRoutingManager {
 				estmdProcessingDeliveryDetails = this.getEstimatedBlockDelivery(processingStartTT, pTimezone,
 						BigDecimal.ONE, new BigDecimal(7), BigDecimal.ZERO, BigDecimal.valueOf(24), BigDecimal.ZERO,
 						BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, Boolean.FALSE,
-						processingCountryId, 0, true, processingStartTime);
+						processingCountryId, false, null, true, processingStartTime);
 
 				routingDetails.setProcessingDeliveryDetails(estmdProcessingDeliveryDetails);
 
@@ -428,8 +459,8 @@ public class RemitRoutingManager {
 
 				estmdBeneDeliveryDetails = this.getEstimatedBlockDelivery(beneStartTT, beneTimezone, BigDecimal.ONE,
 						new BigDecimal(7), BigDecimal.ZERO, BigDecimal.valueOf(24), BigDecimal.ZERO, BigDecimal.ZERO,
-						BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, Boolean.FALSE, beneCountryId, 0, true,
-						beneProcessStartTime);
+						BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, Boolean.FALSE, beneCountryId, false, null,
+						true, beneProcessStartTime);
 
 				routingDetails.setBeneBankDeliveryDetails(estmdBeneDeliveryDetails);
 
@@ -595,8 +626,8 @@ public class RemitRoutingManager {
 				throw new PricerServiceException(PricerServiceError.INVALID_TNX_AMOUNT_TOO_HIGH,
 						"No valid transaction routes are eligible for amount more than " + maxtoAmt + " FC");
 			} else {
-			throw new PricerServiceException(PricerServiceError.NO_VALID_TNX_ROUTES_AVAILABLE,
-					"No Valid Transaction Routes are Eligible for Transaction Routing");
+				throw new PricerServiceException(PricerServiceError.NO_VALID_TNX_ROUTES_AVAILABLE,
+						"No Valid Transaction Routes are Eligible for Transaction Routing");
 			}
 		}
 
@@ -605,8 +636,8 @@ public class RemitRoutingManager {
 	private EstimatedDeliveryDetails getEstimatedBlockDelivery(long startTT, String timezone, BigDecimal weekFrom,
 			BigDecimal weekTo, BigDecimal weekHrsFrom, BigDecimal weekHrsTo, BigDecimal weekEndFrom,
 			BigDecimal weekEndTo, BigDecimal weekEndHrsFrom, BigDecimal weekEndHrsTo, BigDecimal processTimeInHrs,
-			boolean noHolidayLag, BigDecimal countryId, long preDelay, boolean isHolidaySnooze,
-			BigDecimal snoozeWakeUpTime) {
+			boolean noHolidayLag, BigDecimal countryId, boolean glDelay, TreasuryFundTimeImpact lowFundTimeImpact,
+			boolean isHolidaySnooze, BigDecimal snoozeWakeUpTime) {
 
 		// Get An instantaneous point on the time-line for EPOCH TT
 		Instant epochInstant = Instant.ofEpochMilli(startTT);
@@ -631,7 +662,7 @@ public class RemitRoutingManager {
 				snoozeWakeUpTime);
 
 		EstimatedDeliveryDetails goodBusinessDeliveryDT = this.getGoodBusinessDateTime(beginZonedDT, workingHoursData,
-				countryId, noHolidayLag, preDelay);
+				countryId, noHolidayLag, glDelay, lowFundTimeImpact);
 
 		/**
 		 * Add Delivery Processing Time to Arrive at the Block Completion Time.
@@ -757,13 +788,83 @@ public class RemitRoutingManager {
 	 * @return
 	 */
 	private EstimatedDeliveryDetails getGoodBusinessDateTime(ZonedDateTime beginZonedDT, WorkingHoursData workHrsData,
-			BigDecimal countryId, boolean noHolidayLag, long preDelay) {
+			BigDecimal countryId, boolean noHolidayLag, boolean glDelay, TreasuryFundTimeImpact lowFundTimeImpact) {
 
 		EstimatedDeliveryDetails estimatedDeliveryDetails = new EstimatedDeliveryDetails();
 
 		ZonedDateTime estimatedGoodBusinessDay = beginZonedDT;
 
 		boolean isSnoozed = false;
+
+		// First Process treasury low fund delay - if any
+		if (glDelay && lowFundTimeImpact != null) {
+
+			int trnxTimeFrom = DateUtil.getHrMinIntVal(lowFundTimeImpact.getTrnxTimeFrom());
+			int trnxTimeTo = DateUtil.getHrMinIntVal(lowFundTimeImpact.getTrnxTimeTo());
+
+			int nowHrMinIntVal = DateUtil.getHrMinIntVal(estimatedGoodBusinessDay.getHour(),
+					estimatedGoodBusinessDay.getMinute());
+
+			boolean isWithinTrWindow = (trnxTimeFrom <= nowHrMinIntVal && trnxTimeTo > nowHrMinIntVal) ? true : false;
+
+			int ttdImpactMin, ttdImpactDay;
+
+			// Consider In Treasury Window Time *OR* OOTW - Out of Treasury Window Time
+			if (isWithinTrWindow) {
+
+				ttdImpactMin = ArgUtil
+						.assignDefaultIfNull(lowFundTimeImpact.getInTrWindowTtdImpactMin(), BigDecimal.ZERO).intValue();
+				ttdImpactDay = ArgUtil.assignDefaultIfNull(lowFundTimeImpact.getInTrWindowDayImpact(), BigDecimal.ZERO)
+						.intValue();
+
+			} else {
+
+				ttdImpactMin = ArgUtil
+						.assignDefaultIfNull(lowFundTimeImpact.getOutOfTrWindowTtdImpactMin(), BigDecimal.ZERO)
+						.intValue();
+				ttdImpactDay = ArgUtil
+						.assignDefaultIfNull(lowFundTimeImpact.getOutOfTrWindowDayImpact(), BigDecimal.ZERO).intValue();
+
+				// Case Same day Funding Day -- offset for a less additional day.
+				if (nowHrMinIntVal < trnxTimeFrom && ttdImpactDay > 0) {
+					ttdImpactDay -= 1;
+				}
+
+			}
+
+			// Adjust the Transaction Begin Time
+			// 1. Forward by the No days - TTD Impact Days.
+			ZonedDateTime nextEstimatedGoodBusinessDay = estimatedGoodBusinessDay;
+
+			if (ttdImpactDay > 0) {
+				nextEstimatedGoodBusinessDay = DateUtil.getZonedDayPlus(estimatedGoodBusinessDay, ttdImpactDay);
+			}
+
+			// 2. Forward to the Treasury Transaction facilitation Time
+			if (!isWithinTrWindow || ttdImpactDay > 0) {
+				int hourOfDay = DateUtil.extractHour(trnxTimeFrom);
+				int minuteOfHr = DateUtil.extractMinute(trnxTimeFrom);
+
+				nextEstimatedGoodBusinessDay = nextEstimatedGoodBusinessDay.withHour(hourOfDay).withMinute(minuteOfHr)
+						.withSecond(0).withNano(0);
+
+			}
+
+			// 3. Add Absolute Treasury Fund Transfer Delay - ttd
+			nextEstimatedGoodBusinessDay = nextEstimatedGoodBusinessDay.plusSeconds(ttdImpactMin * 60);
+
+			// Compute Total Time delay offset in Seconds
+			long offsetSecs = nextEstimatedGoodBusinessDay.toInstant().getEpochSecond()
+					- estimatedGoodBusinessDay.toInstant().getEpochSecond();
+
+			estimatedDeliveryDetails.addToInsufficientFundDelay(offsetSecs);
+
+			// *** Change the begin date to fund availability date
+			estimatedGoodBusinessDay = nextEstimatedGoodBusinessDay;
+
+			// *** Set holiday lag to True
+			noHolidayLag = false;
+		}
 
 		for (int i = 0; i < MAX_DELIVERY_ATTEMPT_DAYS; i++) {
 			/**
@@ -776,12 +877,12 @@ public class RemitRoutingManager {
 			// Default Working Status
 			boolean isWorking = true;
 
-			if (preDelay > 0) {
-				isWorking = false;
-				preDelay--;
-
-			} else if (noHolidayLag
-					|| !(isHoliday = transientDataCache.isHolidayOn(countryId, estimatedGoodBusinessDay))) {
+			/*
+			 * if (glDelay > 0) { isWorking = false; glDelay--;
+			 * 
+			 * } else
+			 */
+			if (noHolidayLag || !(isHoliday = transientDataCache.isHolidayOn(countryId, estimatedGoodBusinessDay))) {
 
 				int dayOfWeek = estimatedGoodBusinessDay.getDayOfWeek().getValue();
 				int hourOfDay = estimatedGoodBusinessDay.getHour();
@@ -963,7 +1064,7 @@ public class RemitRoutingManager {
 
 		return serviceProvidersMatrix;
 
-		}
+	}
 
 	public List<BigDecimal> getRoutingBankIds(List<ViewExRoutingMatrix> routingMatrix) {
 
