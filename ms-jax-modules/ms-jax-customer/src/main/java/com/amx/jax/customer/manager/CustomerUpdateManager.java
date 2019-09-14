@@ -20,7 +20,6 @@ import com.amx.jax.model.request.customer.UpdateCustomerInfoRequest;
 import com.amx.jax.service.CompanyService;
 import com.amx.jax.service.CountryService;
 import com.amx.jax.userservice.service.UserService;
-import com.amx.utils.JsonUtil;
 
 @Component
 public class CustomerUpdateManager {
@@ -46,7 +45,6 @@ public class CustomerUpdateManager {
 
 	@Transactional
 	public void updateCustomer(UpdateCustomerInfoRequest req) throws ParseException {
-		log.info("updating customer info req: {}", JsonUtil.toJson(req));
 		BigDecimal customerId = metaData.getCustomerId();
 		Customer customer = userService.getCustById(customerId);
 		if (req.getEmploymentDetail() != null) {
