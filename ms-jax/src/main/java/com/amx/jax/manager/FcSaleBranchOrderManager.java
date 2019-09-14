@@ -1928,34 +1928,97 @@ public class FcSaleBranchOrderManager {
 	public Boolean saveFcDeliveryTiming(FxDeliveryTimeSlotDto fxDeliveryTimeSlotDto) {
 		Boolean status = Boolean.FALSE;
 		FxDeliveryTimeSlotMaster fxDeliveryTimeSlotMaster = new FxDeliveryTimeSlotMaster();
-		
+		validateTimeSlot(fxDeliveryTimeSlotDto);
 		try {
 
-			fxDeliveryTimeSlotMaster = fcSaleOrderTimeSlotDao.saveDeliveryTimeSlot(fxDeliveryTimeSlotDto.getCountryId(), fxDeliveryTimeSlotDto.getCompanyId(), ConstantDocument.Yes);
+			fxDeliveryTimeSlotMaster = fcSaleOrderTimeSlotDao.saveDeliveryTimeSlot(fxDeliveryTimeSlotDto.getCountryId(),
+					fxDeliveryTimeSlotDto.getCompanyId(), ConstantDocument.Yes);
 
 			fxDeliveryTimeSlotMaster.setStartTime(fxDeliveryTimeSlotDto.getStartTime());
 			fxDeliveryTimeSlotMaster.setEndTime(fxDeliveryTimeSlotDto.getEndTime());
 			fxDeliveryTimeSlotMaster.setOfficeStartTime(fxDeliveryTimeSlotDto.getOfficeStartTime());
 			fxDeliveryTimeSlotMaster.setOfficeEndTime(fxDeliveryTimeSlotDto.getOfficeEndTime());
-			fxDeliveryTimeSlotMaster.setTimeInterval(fxDeliveryTimeSlotDto.getTimeInterval());	
+			fxDeliveryTimeSlotMaster.setTimeInterval(fxDeliveryTimeSlotDto.getTimeInterval());
 			fcSaleOrderTimeSlotDao.save(fxDeliveryTimeSlotMaster);
 
-				
-			
 			status = Boolean.TRUE;
 
 		} catch (GlobalException e) {
 			e.printStackTrace();
-			logger.error("Error in setFcDeliveryTiming",
-					e.getMessage() + " countryId :" + fxDeliveryTimeSlotDto.getCountryId() + " companyId :" + fxDeliveryTimeSlotDto.getCompanyId());
+			logger.error("Error in setFcDeliveryTiming", e.getMessage() + " countryId :"
+					+ fxDeliveryTimeSlotDto.getCountryId() + " companyId :" + fxDeliveryTimeSlotDto.getCompanyId());
 			throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.error("Error in setFcDeliveryTiming",
-					e.getMessage() + " countryId :" + fxDeliveryTimeSlotDto.getCountryId() + " companyId :" + fxDeliveryTimeSlotDto.getCompanyId());
+			logger.error("Error in setFcDeliveryTiming", e.getMessage() + " countryId :"
+					+ fxDeliveryTimeSlotDto.getCountryId() + " companyId :" + fxDeliveryTimeSlotDto.getCompanyId());
 			throw new GlobalException(e.getMessage());
 		}
 		return status;
 	}
 	
+	public void validateTimeSlot(FxDeliveryTimeSlotDto fxDeliveryTimeSlotDto) {
+		if (fxDeliveryTimeSlotDto != null) {
+			if (fxDeliveryTimeSlotDto.getStartTime() != null) {
+				String[] splitStartTime = fxDeliveryTimeSlotDto.getStartTime().toString().split("\\.");
+				if (splitStartTime != null) {
+					if (splitStartTime.length >= 2 && splitStartTime[1] != null) {
+						if (new BigDecimal(splitStartTime[1]).compareTo(BigDecimal.ZERO) == 0
+								|| new BigDecimal(splitStartTime[1]).compareTo(new BigDecimal(30)) == 0) {
+							// continue
+						} else {
+							logger.info("Please ener minutes in 00 or 30 only for Home Start time");
+							throw new GlobalException("Please ener minutes in 00 or 30 only for Home Start time");
+						}
+					}
+				}
+			}
+			if (fxDeliveryTimeSlotDto.getEndTime() != null) {
+				String[] splitStartTime = fxDeliveryTimeSlotDto.getEndTime().toString().split("\\.");
+				if (splitStartTime != null) {
+					if (splitStartTime.length >= 2 && splitStartTime[1] != null) {
+						if (new BigDecimal(splitStartTime[1]).compareTo(BigDecimal.ZERO) == 0
+								|| new BigDecimal(splitStartTime[1]).compareTo(new BigDecimal(30)) == 0) {
+							// continue
+						} else {
+							logger.info("Please ener minutes in 00 or 30 only for Home End time");
+							throw new GlobalException("Please ener minutes in 00 or 30 only for Home End time");
+						}
+					}
+				}
+
+			}
+			if (fxDeliveryTimeSlotDto.getOfficeStartTime() != null) {
+				String[] splitStartTime = fxDeliveryTimeSlotDto.getOfficeStartTime().toString().split("\\.");
+				if (splitStartTime != null) {
+					if (splitStartTime.length >= 2 && splitStartTime[1] != null) {
+						if (new BigDecimal(splitStartTime[1]).compareTo(BigDecimal.ZERO) == 0
+								|| new BigDecimal(splitStartTime[1]).compareTo(new BigDecimal(30)) == 0) {
+							// continue
+						} else {
+							logger.info("Please ener minutes in 00 or 30 only for Office Start time");
+							throw new GlobalException("Please ener minutes in 00 or 30 only for Office Start time");
+						}
+					}
+				}
+			}
+			if (fxDeliveryTimeSlotDto.getOfficeEndTime() != null) {
+				String[] splitStartTime = fxDeliveryTimeSlotDto.getOfficeEndTime().toString().split("\\.");
+				if (splitStartTime != null) {
+					if (splitStartTime.length >= 2 && splitStartTime[1] != null) {
+						if (new BigDecimal(splitStartTime[1]).compareTo(BigDecimal.ZERO) == 0
+								|| new BigDecimal(splitStartTime[1]).compareTo(new BigDecimal(30)) == 0) {
+							// continue
+						} else {
+							logger.info("Please ener minutes in 00 or 30 only for Office End time");
+							throw new GlobalException("Please ener minutes in 00 or 30 only for Office End time");
+						}
+					}
+				}
+
+			}
+		}
+
+	}
+
 }
