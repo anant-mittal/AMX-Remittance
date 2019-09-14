@@ -3,8 +3,6 @@ package com.amx.jax.controller;
 
 import java.math.BigDecimal;
 
-import javax.validation.Valid;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,12 +11,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.fx.IFxBranchOrderService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.fx.FcDeliveryBranchOrderSearchRequest;
 import com.amx.jax.model.request.fx.FcSaleBranchDispatchRequest;
+import com.amx.jax.model.request.fx.FcSaleOrderManagementDatesRequest;
 import com.amx.jax.model.response.fx.FcEmployeeDetailsDto;
 import com.amx.jax.model.response.fx.FcSaleOrderManagementDTO;
 import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
@@ -232,6 +232,18 @@ public class FcSaleBranchOrderController implements IFxBranchOrderService {
 		return fcSaleBranch.searchOrder(fcDeliveryBranchOrderSearchRequest);
 	}
 
+	
+	/**
+	 * To get the order to based on date selection
+	 * 
+	 */
+	@RequestMapping(value = Path.FC_SEARCH_ORDER_BY_DATES , method = RequestMethod.POST)
+	@Override
+	public AmxApiResponse<FcSaleOrderManagementDTO,Object> searchOrderByDates(@RequestBody FcSaleOrderManagementDatesRequest fcSaleDates){
+		BigDecimal countryId = metaData.getCountryId();
+		BigDecimal employeeId = metaData.getEmployeeId();
+		return fcSaleBranch.searchOrderByDates(countryId,employeeId,fcSaleDates);
+	}
 	
 
 }

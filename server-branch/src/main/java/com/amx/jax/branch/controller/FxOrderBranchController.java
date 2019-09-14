@@ -1,6 +1,7 @@
 package com.amx.jax.branch.controller;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -8,9 +9,11 @@ import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.fx.FxOrderBranchClient;
+import com.amx.jax.client.fx.IFxBranchOrderService.Path;
 import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
 import com.amx.jax.model.request.fx.FcDeliveryBranchOrderSearchRequest;
 import com.amx.jax.model.request.fx.FcSaleBranchDispatchRequest;
+import com.amx.jax.model.request.fx.FcSaleOrderManagementDatesRequest;
 import com.amx.jax.model.response.fx.FcEmployeeDetailsDto;
 import com.amx.jax.model.response.fx.FcSaleOrderManagementDTO;
 import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
@@ -178,5 +181,12 @@ public class FxOrderBranchController {
 	@RequestMapping(value = "/api/fxo/order/inquiry", method = { RequestMethod.POST })
 	public AmxApiResponse<FxOrderTransactionHistroyDto,Object> getPastOrdersList(@RequestBody FcDeliveryBranchOrderSearchRequest fcDeliveryBranchOrderSearchRequest){
 		return fxOrderBranchClient.searchOrder(fcDeliveryBranchOrderSearchRequest);
+	}
+	
+	@RequestMapping(value = "/api/fxo/order/search", method = RequestMethod.POST)
+	public AmxApiResponse<FcSaleOrderManagementDTO, Object> searchOrderByDates(
+			@RequestBody FcSaleOrderManagementDatesRequest fcSaleDates) {
+		return fxOrderBranchClient.searchOrderByDates(fcSaleDates);
+
 	}
 }
