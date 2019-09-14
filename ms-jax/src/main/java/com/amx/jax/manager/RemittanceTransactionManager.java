@@ -633,8 +633,8 @@ public class RemittanceTransactionManager {
 		logger.info("amount in ex:" +exRatebreakUp.getNetAmount());
 		exRatebreakUp.setNetAmountWithoutLoyality(RoundUtil.roundBigDecimal(exRatebreakUp.getNetAmountWithoutLoyality(),
 				exRatebreakUp.getLcDecimalNumber().intValue()));
-		exRatebreakUp.setInverseRate(exRatebreakUp.getInverseRate());
 		//exRatebreakUp.setInverseRate((RoundUtil.roundBigDecimal(exRatebreakUp.getInverseRate(), 6)));
+		exRatebreakUp.setInverseRate(exRatebreakUp.getInverseRate());
 	}
 
 	public ExchangeRateBreakup applyChannelAmountRouding(ExchangeRateBreakup exchangeRateBreakup,
@@ -681,9 +681,11 @@ public class RemittanceTransactionManager {
 
 				BigDecimal oldLcAmount = exchangeRateBreakup.getConvertedLCAmount();
 
-				BigDecimal newLcAmount = new BigDecimal(exchangeRateBreakup.getConvertedLCAmount().longValue()).add(newDecimalAmt);
+				BigDecimal newLcAmount = new BigDecimal(exchangeRateBreakup.getConvertedLCAmount().longValue())
+						.add(newDecimalAmt);
 
-				BigDecimal bumpedFcVal = (newLcAmount.subtract(oldLcAmount)).multiply(exchangeRateBreakup.getRate()).setScale(10, RoundingMode.HALF_EVEN);
+				BigDecimal bumpedFcVal = (newLcAmount.subtract(oldLcAmount)).multiply(exchangeRateBreakup.getRate())
+						.setScale(10, RoundingMode.HALF_EVEN);
 
 				BigDecimal newFcAmount = exchangeRateBreakup.getConvertedFCAmount().add(bumpedFcVal);
 

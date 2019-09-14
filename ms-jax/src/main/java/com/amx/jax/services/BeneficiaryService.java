@@ -38,6 +38,7 @@ import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.PlaceOrderDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
+import com.amx.amxlib.model.response.LanguageCodeType;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam;
 import com.amx.jax.config.JaxTenantProperties;
@@ -54,6 +55,7 @@ import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.CustomerRemittanceTransactionView;
+import com.amx.jax.dbmodel.LanguageType;
 import com.amx.jax.dbmodel.ServiceProviderModel;
 import com.amx.jax.dbmodel.SwiftMasterView;
 import com.amx.jax.dbmodel.bene.BeneficaryAccount;
@@ -80,6 +82,7 @@ import com.amx.jax.repository.IBeneficiaryMasterDao;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.IBeneficiaryRelationshipDao;
 import com.amx.jax.repository.ICurrencyDao;
+import com.amx.jax.repository.ILanguageTypeRepository;
 import com.amx.jax.repository.ITransactionHistroyDAO;
 import com.amx.jax.repository.RoutingAgentLocationRepository;
 import com.amx.jax.repository.RoutingBankMasterRepository;
@@ -172,6 +175,9 @@ public class BeneficiaryService extends AbstractService {
 
 	@Autowired
 	IViewParameterDetailsRespository viewParameterDetailsRespository;
+	
+	@Autowired
+	ILanguageTypeRepository languageTypeRepository;
 	
 	
 	public ApiResponse getBeneficiaryListForOnline(BigDecimal customerId, BigDecimal applicationCountryId,BigDecimal beneCountryId,Boolean excludePackage) {
@@ -500,6 +506,14 @@ public class BeneficiaryService extends AbstractService {
 
 	private BeneficiaryListDTO convertBeneModelToDto(BenificiaryListView beneModel) {
 		BeneficiaryListDTO dto = new BeneficiaryListDTO();
+		LanguageType languageType = new LanguageType();
+		languageType = languageTypeRepository.findBylanguageId(metaData.getLanguageId());
+		
+		if(languageType.getLanguageName().equals(LanguageCodeType.Arabic.toString())){
+			beneModel.setBankLocalName(beneModel.getBankLocalName());
+		}	else {
+			beneModel.setBankLocalName(null);
+		}
 		try {
 			BeanUtils.copyProperties(dto, beneModel);
 		} catch (IllegalAccessException | InvocationTargetException e) {
@@ -624,6 +638,7 @@ public class BeneficiaryService extends AbstractService {
 		allRelationsDesc.forEach(i -> {
 			BeneRelationsDescriptionDto dto = new BeneRelationsDescriptionDto();
 			jaxUtil.convert(i, dto);
+			dto.importFrom(i);
 			allRelationsDescDto.add(dto);
 		});
 		ApiResponse apiResponse = getBlackApiResponse();

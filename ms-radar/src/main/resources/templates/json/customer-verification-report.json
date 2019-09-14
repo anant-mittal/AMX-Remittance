@@ -1,0 +1,164 @@
+{
+  "aggs": {
+    "2_cust_id": {
+      "terms": {
+        "field": "logmap.cust.id",
+        "size": 100000,
+        "order": {
+          "_key": "desc"
+        }
+      },
+      "aggs": {
+        "3_contactType": {
+          "terms": {
+            "field": "logmap.contactType.keyword",
+            "size": 5,
+            "order": {
+              "_key": "desc"
+            }
+          },
+          "aggs": {
+            "1_customer": {
+              "cardinality": {
+                "field": "logmap.cust.id"
+              }
+            },
+            "5_event": {
+              "terms": {
+                "field": "logmap.desc.keyword",
+                "size": 50,
+                "order": {
+                  "_key": "desc"
+                },
+                "missing": "__missing__"
+              },
+              "aggs": {
+                "1": {
+                  "cardinality": {
+                    "field": "logmap.cust.id"
+                  }
+                },
+                "4": {
+                  "top_hits": {
+                    "docvalue_fields": [
+                      {
+                        "field": "logmap.actor.username.keyword",
+                        "format": "use_field_mapping"
+                      }
+                    ],
+                    "_source": "logmap.actor.username.keyword",
+                    "size": 1,
+                    "sort": [
+                      {
+                        "@timestamp": {
+                          "order": "desc"
+                        }
+                      }
+                    ]
+                  }
+                },
+                "6": {
+                  "top_hits": {
+                    "docvalue_fields": [
+                      {
+                        "field": "logmap.actor.branchName.keyword",
+                        "format": "use_field_mapping"
+                      }
+                    ],
+                    "_source": "logmap.actor.branchName.keyword",
+                    "size": 1,
+                    "sort": [
+                      {
+                        "@timestamp": {
+                          "order": "desc"
+                        }
+                      }
+                    ]
+                  }
+                },
+                "7": {
+                  "top_hits": {
+                    "docvalue_fields": [
+                      {
+                        "field": "logmap.actor.areaId",
+                        "format": "use_field_mapping"
+                      }
+                    ],
+                    "_source": "logmap.actor.areaId",
+                    "size": 1,
+                    "sort": [
+                      {
+                        "@timestamp": {
+                          "order": "desc"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "size": 0,
+  "_source": {
+    "excludes": []
+  },
+  "stored_fields": [
+    "*"
+  ],
+  "script_fields": {},
+  "docvalue_fields": [
+    {
+      "field": "@timestamp",
+      "format": "date_time"
+    }
+  ],
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "match_all": {}
+        },
+        {
+          "range": {
+            "@timestamp": {
+              "gte": "[[${gte}]]",
+              "lte": "[[${lte}]]",
+              "format": "epoch_millis"
+            }
+          }
+        },
+        {
+          "match_phrase": {
+            "logmap.type.keyword": {
+              "query": "CONTACT_VERF"
+            }
+          }
+        },
+        {
+          "bool": {
+            "should": [
+              {
+                "match_phrase": {
+                  "logmap.desc.keyword": "CONTACT_VERF_INIT:DONE"
+                }
+              },
+              {
+                "match_phrase": {
+                  "logmap.desc.keyword": "CONTACT_VERF_COMPLETE:DONE"
+                }
+              }
+            ],
+            "minimum_should_match": 1
+          }
+        }
+      ],
+      "filter": [],
+      "should": [],
+      "must_not": []
+    }
+  }
+}
