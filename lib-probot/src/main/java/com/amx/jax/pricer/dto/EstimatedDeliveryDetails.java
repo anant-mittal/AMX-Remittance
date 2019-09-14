@@ -153,6 +153,10 @@ public class EstimatedDeliveryDetails implements Serializable, Comparable<Estima
 		this.processTimeOperationalInSeconds = processTimeOperationalInSeconds;
 	}
 
+	public void setInsufficientFundDelayInSeconds(long insufficientFundDelayInSeconds) {
+		this.insufficientFundDelayInSeconds = insufficientFundDelayInSeconds;
+	}
+
 	public void setProcessTimeAbsoluteInSeconds(long processTimeAbsoluteInSeconds) {
 		this.processTimeAbsoluteInSeconds = processTimeAbsoluteInSeconds;
 	}

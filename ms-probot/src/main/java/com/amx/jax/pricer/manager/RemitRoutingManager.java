@@ -474,6 +474,7 @@ public class RemitRoutingManager {
 
 			long processTimeAbs = estmdCBDeliveryDetails.getProcessTimeAbsoluteInSeconds();
 			long processTimeOps = estmdCBDeliveryDetails.getProcessTimeOperationalInSeconds();
+			long insufficientFundDelay = estmdCBDeliveryDetails.getInsufficientFundDelayInSeconds();
 			long processTimeTotal = estmdCBDeliveryDetails.getProcessTimeTotalInSeconds();
 
 			long nonWorkingDelayInDays = estmdCBDeliveryDetails.getNonWorkingDelayInDays();
@@ -519,6 +520,7 @@ public class RemitRoutingManager {
 
 			finalDeliveryDetails.setProcessTimeAbsoluteInSeconds(processTimeAbs);
 			finalDeliveryDetails.setProcessTimeOperationalInSeconds(processTimeOps);
+			finalDeliveryDetails.setInsufficientFundDelayInSeconds(insufficientFundDelay);
 			finalDeliveryDetails.setProcessTimeTotalInSeconds(processTimeTotal);
 
 			finalDeliveryDetails.setNonWorkingDelayInDays(nonWorkingDelayInDays);
@@ -648,7 +650,10 @@ public class RemitRoutingManager {
 		// Compute the Correct Zone Date and Time of Block Delivery BEGIN
 		ZonedDateTime beginZonedDT = ZonedDateTime.ofInstant(epochInstant, zoneId);
 
-		if (!noHolidayLag && !transientDataCache.isHolidayListSetForCountry(countryId)) {
+		/**
+		 * Removed noHolidayLag : on 14th Sept 2019 : For GLCDelay - which could turn this flag on later
+		 */
+		if (/*!noHolidayLag &&*/ !transientDataCache.isHolidayListSetForCountry(countryId)) {
 			List<HolidayListMasterModel> sortedHolidays = holidayListManager.getHoidaysForCountryAndDateRange(countryId,
 					Date.from(beginZonedDT.toInstant()),
 					Date.from(beginZonedDT.plusDays(MAX_DELIVERY_ATTEMPT_DAYS).toInstant()));
@@ -863,7 +868,7 @@ public class RemitRoutingManager {
 			estimatedGoodBusinessDay = nextEstimatedGoodBusinessDay;
 
 			// *** Set holiday lag to True
-			noHolidayLag = false;
+			// noHolidayLag = false;
 		}
 
 		for (int i = 0; i < MAX_DELIVERY_ATTEMPT_DAYS; i++) {

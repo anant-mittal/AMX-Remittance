@@ -361,8 +361,9 @@ public class ExchRateAndRoutingTransientDataCache {
 
 			bankGLCData.setAdjustedLcCurBal(adjustedLcCurBal);
 			bankGLCData.setAdjustedFcCurBal(adjustedFcCurBal);
-
-			System.out.println("\n Max Lc Bal ==> " + maxLcCurBal);
+			
+			System.out.println("\\n From ExchRateAndRouting Cache");
+			System.out.println(" Max Lc Bal ==> " + maxLcCurBal);
 			System.out.println(" Max Fc Bal ==> " + maxFcCurBal);
 
 			System.out.println(" Adjusted Lc Bal ==> " + bankGLCData.getAdjustedLcCurBal());
