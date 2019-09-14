@@ -61,7 +61,12 @@ public class CustomerDocMasterManager {
 	}
 
 	public List<CustomerDocumentCategoryDto> getDocumentCategory() {
-		return customerDocumentTypeMasterRepo.getDistinctDocumentCategory().stream().map(i -> {
+		return customerDocumentTypeMasterRepo.getDistinctDocumentCategory().stream().filter(i -> {
+			if (i.equals("KYC_PROOF")) {
+				return false;
+			}
+			return true;
+		}).map(i -> {
 			return new CustomerDocumentCategoryDto(i);
 		}).collect(Collectors.toList());
 	}

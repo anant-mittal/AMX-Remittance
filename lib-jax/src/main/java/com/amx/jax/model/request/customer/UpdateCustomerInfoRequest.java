@@ -92,4 +92,9 @@ public class UpdateCustomerInfoRequest implements CustomerDocValidationData {
 	public BigDecimal getIdentityTypeId() {
 		return null;
 	}
+
+	@Override
+	public Boolean isLocalAddressChange() {
+		return this.localAddressDetail != null;
+	}
 }

@@ -22,12 +22,14 @@ import com.amx.jax.dbmodel.customer.CustomerDocumentCategory;
 import com.amx.jax.dbmodel.customer.CustomerDocumentTypeMaster;
 import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReferenceTemp;
 import com.amx.jax.dbmodel.remittance.IDNumberLengthCheckView;
+import com.amx.jax.dict.Tenant;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.customer.CreateCustomerInfoRequest;
 import com.amx.jax.model.customer.document.CustomerDocValidationResponseData;
 import com.amx.jax.model.request.customer.CustomerDocValidationData;
 import com.amx.jax.repository.remittance.IIdNumberLengthCheckRepository;
+import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.userservice.manager.CustomerIdProofManager;
 import com.amx.jax.userservice.service.UserService;
 
@@ -104,31 +106,14 @@ public class CustomerManagementValidation {
 				isKycDone = false;
 			}
 		}
-		/*
-		 * // article detail if (data.getArticleDetailsId() != null) {
-		 * Optional<CustomerDocumentUploadReferenceTemp> uploadedProof =
-		 * customerUploads.stream() .filter(i ->
-		 * kycDocCategory.equals(i.getCustomerDocumentTypeMaster().getDocumentCategory()
-		 * )).findFirst(); if (!uploadedProof.isPresent()) { missingDocData.add(new
-		 * CustomerDocValidationResponseData(kycDocCategory)); } }
-		 * 
-		 * // employer change if (data.getEmployer() != null) {
-		 * Optional<CustomerDocumentUploadReferenceTemp> uploadedProof =
-		 * customerUploads.stream() .filter(i ->
-		 * CustomerDocumentCategory.EMPLOYMENT_PROOF.name().equals(i.
-		 * getCustomerDocumentTypeMaster().getDocumentCategory())) .findFirst(); if
-		 * (!uploadedProof.isPresent()) { missingDocData.add(new
-		 * CustomerDocValidationResponseData(CustomerDocumentCategory.EMPLOYMENT_PROOF.
-		 * name())); } }
-		 */
 
-		// income range
-		if (data.getIncomeRangeId() != null) {
+		// addres proof for bhr
+		if (data.isLocalAddressChange() && Tenant.BHR.equals(TenantContextHolder.currentSite())) {
 			Optional<CustomerDocumentUploadReferenceTemp> uploadedProof = customerUploads.stream()
-					.filter(i -> CustomerDocumentCategory.INCOME_PROOF.name().equals(i.getCustomerDocumentTypeMaster().getDocumentCategory()))
+					.filter(i -> CustomerDocumentCategory.ADDRESS_PROOF.name().equals(i.getCustomerDocumentTypeMaster().getDocumentCategory()))
 					.findFirst();
 			if (!uploadedProof.isPresent()) {
-				missingDocData.add(new CustomerDocValidationResponseData(CustomerDocumentCategory.INCOME_PROOF.name()));
+				missingDocData.add(new CustomerDocValidationResponseData(CustomerDocumentCategory.ADDRESS_PROOF.name()));
 			}
 		}
 		// create customer request

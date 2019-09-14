@@ -67,4 +67,9 @@ public class CreateCustomerInfoRequest extends CustomerInfoRequest implements Cu
 	public BigDecimal getIdentityTypeId() {
 		return super.getCustomerPersonalDetail().getIdentityTypeId();
 	}
+
+	@Override
+	public Boolean isLocalAddressChange() {
+		return super.getLocalAddressDetails() != null;
+	}
 }

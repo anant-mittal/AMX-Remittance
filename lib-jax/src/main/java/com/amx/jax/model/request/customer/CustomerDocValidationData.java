@@ -21,5 +21,7 @@ public interface CustomerDocValidationData {
 	String getIdentityInt();
 
 	BigDecimal getIdentityTypeId();
+	
+	Boolean isLocalAddressChange();
 
 }
