@@ -72,6 +72,7 @@ import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.model.response.CurrencyMasterDTO;
 import com.amx.jax.model.response.customer.PersonInfo;
+import com.amx.jax.model.response.remittance.LoyalityPointState;
 import com.amx.jax.repository.BeneficaryAccountRepository;
 import com.amx.jax.repository.CountryRepository;
 import com.amx.jax.repository.IBeneficaryContactDao;
@@ -172,6 +173,9 @@ public class BeneficiaryService extends AbstractService {
 
 	@Autowired
 	IViewParameterDetailsRespository viewParameterDetailsRespository;
+	
+	@Autowired
+	LoyalityPointService loyalityPointService;
 	
 	
 	public ApiResponse getBeneficiaryListForOnline(BigDecimal customerId, BigDecimal applicationCountryId,BigDecimal beneCountryId,Boolean excludePackage) {
@@ -425,6 +429,13 @@ public class BeneficiaryService extends AbstractService {
 			if (trnxView != null) {
 				remitPageDto.setTrnxHistDto(convertTranHistDto(trnxView));
 			}
+			
+			//------ Loyalty Point Status check ------
+			LoyalityPointState loyalityState = loyalityPointService.getLoyalityState(metaData.getCustomerId());
+			if(null != loyalityState) {
+				remitPageDto.setLoyalityPointState(loyalityState);
+			}
+			
 			response.getData().getValues().add(remitPageDto);
 			response.getData().setType(remitPageDto.getModelType());
 			response.setResponseStatus(ResponseStatus.OK);
