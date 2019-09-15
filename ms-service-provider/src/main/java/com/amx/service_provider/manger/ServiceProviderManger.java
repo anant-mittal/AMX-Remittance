@@ -18,7 +18,10 @@ import com.amx.service_provider.api_gates.common.Common_API_Utils;
 import com.amx.service_provider.api_gates.homesend.HomesendGate;
 import com.amx.service_provider.api_gates.vintaja.VintajaGate;
 import com.amx.service_provider.dbmodel.webservice.ExOwsLoginCredentials;
+<<<<<<< Updated upstream
 import com.amx.service_provider.homesend.HomeSendDTO;
+=======
+>>>>>>> Stashed changes
 import com.amx.service_provider.repository.webservice.ExOwsLoginCredentialsRepository;
 import com.amx.service_provider.repository.webservice.OwsParamRespcodeRepository;
 import com.amx.service_provider.repository.webservice.OwsTransferLogRepository;

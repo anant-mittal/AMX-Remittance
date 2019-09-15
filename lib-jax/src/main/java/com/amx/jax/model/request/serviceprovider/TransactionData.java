@@ -18,6 +18,9 @@ public class TransactionData
 	String bene_bank_remittance_reference;
 	String addtional_external_reference; // Used to store additional reference from bene bank or partner side. example (SSS PRN from Vintja)
 	String out_going_transaction_reference; // transaction number generated locally
+	
+	String remarks;
+	String partner_transaction_status;
 
 	// For internal use
 	String remittance_mode;
@@ -99,6 +102,26 @@ public class TransactionData
 	public String getOut_going_transaction_reference()
 	{
 		return out_going_transaction_reference;
+	}
+
+	public String getRemarks()
+	{
+		return remarks;
+	}
+
+	public void setRemarks(String remarks)
+	{
+		this.remarks = remarks;
+	}
+
+	public String getPartner_transaction_status()
+	{
+		return partner_transaction_status;
+	}
+
+	public void setPartner_transaction_status(String partner_transaction_status)
+	{
+		this.partner_transaction_status = partner_transaction_status;
 	}
 
 	public String getBene_bank_remittance_reference()

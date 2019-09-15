@@ -102,7 +102,11 @@ public class VintajaGate
 				GovermantPaymentServices target_payment_service =
 						VintajaUtils.get_goverment_payment_service(txn_data.getRemittance_mode(),
 								txn_data.getDelivery_mode());
-				if (target_payment_service == GovermantPaymentServices.SSS_CONTRIBUTION_EXISTING_PRN)
+
+				if (
+					target_payment_service == GovermantPaymentServices.SSS_CONTRIBUTION_EXISTING_PRN ||
+							target_payment_service == GovermantPaymentServices.RESERVATION_PAYMENT
+				)
 				{
 					Get_Rmittance_Details_Call_Response get_txn_detalis_response =
 							(Get_Rmittance_Details_Call_Response) send_api_call(txn_data,
@@ -113,11 +117,17 @@ public class VintajaGate
 					// Apply special validation for the service Contribution Existing PRN Code 154
 					// This line will throw an exception if the validation fails with proper
 					// response details
-					VintajaUtils.special_validation_for_SSS_contribution_existing_prn(get_txn_detalis_response,
+					VintajaUtils.special_service_validation(get_txn_detalis_response,
 							response,
 							txn_data,
 							customer_data,
 							bene_data);
+
+					if (response.getAction_ind() != null && !response.getAction_ind().equals("I"))
+					{
+						// Do not continue if validation process cause a rejection
+						return response;
+					}
 				}
 			}
 

@@ -511,8 +511,9 @@ public class VintajaUtils
 								bene_data.getBeneficiary_account_number() +
 								"\"," +
 								"\"identifier\":\"" +
-								bene_data.getFirst_name() +
-								"\"," + // TODO: Changeable as per biller, check the identifier for each biller and find a way to pass the require value correctly.
+								txn_data.getFlexi_field_1() +
+								"\"," + // TODO: Changeable as per biller, check the identifier for each biller and find
+										// a way to pass the require value correctly.
 								// account
 								// name, mobile number or contact
 								"\"amount\":" +
@@ -555,11 +556,11 @@ public class VintajaUtils
 								txn_data.getDestination_currency() +
 								"\"," +
 								"\"settlementCurrencyCode\":\"" +
-								txn_data.getDestination_currency() + // TODO: Check what is the settlement currency with
-																		// OP
+								txn_data.getSettlement_currency() + // TODO: Check what is the settlement currency with
+																	// OP
 								"\"," +
 								"\"settlementAmount\":" +
-								txn_data.getDestination_amount().setScale(2, BigDecimal.ROUND_HALF_EVEN)
+								txn_data.getSettlement_amount().setScale(2, BigDecimal.ROUND_HALF_EVEN)
 										.stripTrailingZeros().toPlainString() + // TODO: Check
 								// what is the
 								// settlement
@@ -573,22 +574,49 @@ public class VintajaUtils
 		}
 		else if (ws_call_type.equals(GET_REMITTANCE_DETAILS_METHOD_IND))
 		{
-			if (
-				txn_data.getPartner_transaction_reference() != null &&
-						txn_data.getPartner_transaction_reference().length() != 0
-			)
+			if (target_payment_service == GovermantPaymentServices.SSS_CONTRIBUTION_EXISTING_PRN)
 			{
-				target_payment_service = GovermantPaymentServices.SSS_CONTRIBUTION_SERACH_BY_PRN;
+
+				if (
+					txn_data.getPartner_transaction_reference() != null &&
+							txn_data.getPartner_transaction_reference().length() != 0
+				)
+				{
+					target_payment_service = GovermantPaymentServices.SSS_CONTRIBUTION_SERACH_BY_PRN;
+				}
+				else if (
+					bene_data.getPartner_beneficiary_id() != null && bene_data.getPartner_beneficiary_id().length() != 0
+				)
+				{
+					target_payment_service = GovermantPaymentServices.SSS_CONTRIBUTION_SERACH_BY_MEMBER_ID;
+				}
+				else
+				{
+					return null;
+				}
 			}
-			else if (
-				bene_data.getPartner_beneficiary_id() != null && bene_data.getPartner_beneficiary_id().length() != 0
-			)
+			else if (target_payment_service == GovermantPaymentServices.RESERVATION_PAYMENT)
 			{
-				target_payment_service = GovermantPaymentServices.SSS_CONTRIBUTION_SERACH_BY_MEMBER_ID;
-			}
-			else
-			{
-				return null;
+				target_payment_service = GovermantPaymentServices.RESERVATION_PAYMENT_SERACH;
+
+				// Override the common input data to include the newly changed code value for
+				// this service
+				api_request =
+						"{\"id\":\"" +
+								owsLoginCredentialsObject.getWsAgentId() +
+								"\"," +
+								"\"uid\":\"" +
+								owsLoginCredentialsObject.getWsUserName() +
+								"\"," +
+								"\"pwd\":\"" +
+								owsLoginCredentialsObject.getWsPassword() +
+								"\"," +
+								"\"code\":" +
+								target_payment_service.getService_int_value() +
+								"," +
+								"\"countryCode\":\"" +
+								txn_data.getApplication_country_2_digit_ISO() +
+								"\",";
 			}
 
 			if (target_payment_service == GovermantPaymentServices.SSS_CONTRIBUTION_SERACH_BY_PRN)
@@ -604,6 +632,10 @@ public class VintajaUtils
 								"\"birthDate\":\"" +
 								new SimpleDateFormat("yyyy-MM-dd").format(bene_data.getDate_of_birth()) +
 								"\"";
+			}
+			else if (target_payment_service == GovermantPaymentServices.RESERVATION_PAYMENT_SERACH)
+			{
+				data += "\"reservationNumber\":\"" + bene_data.getBeneficiary_account_number() + "\"";
 			}
 		}
 		else if (ws_call_type.equals(STATUS_INQ_METHOD_IND))
@@ -689,7 +721,7 @@ public class VintajaUtils
 				return GovermantPaymentServices.SSS_MISCELLANOUS;
 			}
 		}
-		else if (remittance_mode.equals("000")) // Bill Payments - TODO: Fill in the correct values
+		else if (remittance_mode.equals("118")) // Bill Payments - TODO: Fill in the correct values
 		{
 			if (delivery_mode.equals("11"))
 			{
@@ -703,7 +735,7 @@ public class VintajaUtils
 				return GovermantPaymentServices.TOP_UP_WALLET;
 			}
 		}
-		else if (remittance_mode.equals("00")) // Reservation Payment - TODO: Fill in the correct values
+		else if (remittance_mode.equals("148")) // Reservation Payment - TODO: Fill in the correct values
 		{
 			if (delivery_mode.equals("11"))
 			{
@@ -801,6 +833,36 @@ public class VintajaUtils
 							? new BigDecimal(api_response_map.get(Common_API_Utils.remove_hidden_characters("amount")))
 							: null);
 
+			((Get_Rmittance_Details_Call_Response) response).getTransactionDto().setDestination_currency(
+					api_response_map.get(Common_API_Utils.remove_hidden_characters("currencyCode")));
+
+			((Get_Rmittance_Details_Call_Response) response).getTransactionDto().setSettlement_amount(
+					api_response_map.get(Common_API_Utils.remove_hidden_characters("settlementAmount")) != null
+							? new BigDecimal(
+									api_response_map.get(Common_API_Utils.remove_hidden_characters("settlementAmount")))
+							: null);
+
+			((Get_Rmittance_Details_Call_Response) response).getTransactionDto().setSettlement_currency(
+					api_response_map.get(Common_API_Utils.remove_hidden_characters("settlementCurrencyCode")));
+
+			((Get_Rmittance_Details_Call_Response) response).getTransactionDto()
+					.setRemarks("status: " +
+							convert_reservation_payment_status_code_to_text(
+									api_response_map.get(Common_API_Utils.remove_hidden_characters("status"))) +
+							", Desc: " +
+							api_response_map.get(Common_API_Utils.remove_hidden_characters("description")) +
+							", Merchant: " +
+							api_response_map.get(Common_API_Utils.remove_hidden_characters("merchantName")) +
+							", Date Reserved: " +
+							api_response_map.get(Common_API_Utils.remove_hidden_characters("dateReserved")) + // TODO:
+																												// Change
+																												// to
+																												// readable
+																												// date
+																												// format
+							", Date Expiry: " +
+							api_response_map.get(Common_API_Utils.remove_hidden_characters("dateExpiry")));
+
 			((Get_Rmittance_Details_Call_Response) response).getTransactionDto()
 					.setFlexi_field_1(api_response_map.get(Common_API_Utils.remove_hidden_characters("flexiFund")));
 
@@ -835,7 +897,6 @@ public class VintajaUtils
 							api_response_map.get(Common_API_Utils.remove_hidden_characters("endMonth")),
 							"01"/* First day in the month */));
 		}
-
 		else if (ws_call_type.equals(SEND_TXN_METHOD_IND))
 		{
 			// Other response tags
@@ -881,14 +942,49 @@ public class VintajaUtils
 		return response;
 	}
 
+	private static String convert_reservation_payment_status_code_to_text(String status)
+	{
+		/*
+		 * 0 - Unpaid 1 - Paid 2 - Expired 3 - Cancelled by user 4 - Voided by merchant
+		 */
+		if (status != null)
+		{
+			int status_code = new Integer(status);
+
+			switch (status_code) {
+				case 0:
+					status = "Unpaid";
+					break;
+				case 1:
+					status = "Paid";
+					break;
+				case 2:
+					status = "Expired";
+					break;
+				case 3:
+					status = "Cancelled by user";
+					break;
+				case 4:
+					status = "Voided by merchant";
+					break;
+			}
+		}
+
+		return status;
+	}
+
 	// This method need to be called before going on to call SSS contribution
 	// transaction
-	public static void special_validation_for_SSS_contribution_existing_prn(
-			Get_Rmittance_Details_Call_Response get_txn_detalis_response, ServiceProviderResponse response,
-			TransactionData txn_data, Customer customer_data, Benificiary bene_data) throws Exception
+	public static void special_service_validation(Get_Rmittance_Details_Call_Response get_txn_detalis_response,
+			ServiceProviderResponse response, TransactionData txn_data, Customer customer_data, Benificiary bene_data)
+			throws Exception
 	{
 		if (get_txn_detalis_response.getAction_ind().equals("I"))
 		{
+			GovermantPaymentServices target_payment_service =
+					VintajaUtils.get_goverment_payment_service(txn_data.getRemittance_mode(),
+							txn_data.getDelivery_mode());
+
 			// Partner amount mismatch with our local amount to be sent
 			if (
 				get_txn_detalis_response.getTransactionDto().getDestination_amount()
@@ -898,42 +994,48 @@ public class VintajaUtils
 				response.setAction_ind("R");
 				response.setResponse_description("Amount (" +
 						txn_data.getDestination_amount() +
+						" - " +
+						txn_data.getDestination_currency() +
 						") given mismatch with amount (" +
 						get_txn_detalis_response.getTransactionDto().getDestination_amount() +
+						" - " +
+						get_txn_detalis_response.getTransactionDto().getDestination_currency() +
 						") need to be paid as per partner API. " +
-						get_txn_detalis_response.getResponse_description());
+						(get_txn_detalis_response.getResponse_description() != null
+								? get_txn_detalis_response.getResponse_description()
+								: ""));
 				throw new Exception(response.getResponse_description());
 			}
 
-			// Partner Flexi amount mismatch with our local amount to be sent
-			if (get_txn_detalis_response.getTransactionDto().getFlexi_field_1().equals(txn_data.getFlexi_field_1()))
+			if (target_payment_service == GovermantPaymentServices.SSS_CONTRIBUTION_EXISTING_PRN)
 			{
-				response.setAction_ind("R");
-				response.setResponse_description("Flexi Amount (" +
-						txn_data.getFlexi_field_1() +
-						") given mismatch with Flexi amount (" +
-						get_txn_detalis_response.getTransactionDto().getFlexi_field_1() +
-						") need to be paid as per partner API. " +
-						get_txn_detalis_response.getResponse_description());
+				// Partner Flexi amount mismatch with our local amount to be sent
+				if (get_txn_detalis_response.getTransactionDto().getFlexi_field_1().equals(txn_data.getFlexi_field_1()))
+				{
+					response.setAction_ind("R");
+					response.setResponse_description("Flexi Amount (" +
+							txn_data.getFlexi_field_1() +
+							") given mismatch with Flexi amount (" +
+							get_txn_detalis_response.getTransactionDto().getFlexi_field_1() +
+							") need to be paid as per partner API. " +
+							get_txn_detalis_response.getResponse_description());
 
-				throw new Exception(response.getResponse_description());
-			}
-
-			// PRN mismatch with the PRN to pass
-			if (
-				get_txn_detalis_response.getTransactionDto().getPartner_transaction_reference()
-						.equals(txn_data.getPartner_transaction_reference())
-			)
-			{
-				response.setAction_ind("R");
-				response.setResponse_description("PRN (" +
-						txn_data.getPartner_transaction_reference() +
-						") given mismatch with partner PRN (" +
-						get_txn_detalis_response.getTransactionDto().getPartner_transaction_reference() +
-						") need to be used as per partner API. " +
-						get_txn_detalis_response.getResponse_description());
-
-				throw new Exception(response.getResponse_description());
+					throw new Exception(response.getResponse_description());
+				}
+				// PRN mismatch with the PRN to pass
+				if (
+					get_txn_detalis_response.getTransactionDto().getPartner_transaction_reference()
+							.equals(txn_data.getPartner_transaction_reference())
+				)
+				{
+					response.setAction_ind("R");
+					response.setResponse_description("PRN (" +
+							txn_data.getPartner_transaction_reference() +
+							") given mismatch with partner PRN (" +
+							get_txn_detalis_response.getTransactionDto().getPartner_transaction_reference() +
+							") need to be used as per partner API. " +
+							get_txn_detalis_response.getResponse_description());
+				}
 			}
 		}
 		else
@@ -944,8 +1046,6 @@ public class VintajaUtils
 
 			response.setRequest_XML(get_txn_detalis_response.getRequest_XML());
 			response.setRequest_XML(get_txn_detalis_response.getResponse_XML());
-
-			throw new Exception(response.getResponse_description());
 		}
 	}
 }

@@ -774,8 +774,8 @@ public class Common_API_Utils
 					validation_result.put("bene_data.getBeneficiary_bank_code()",
 							" beneficiary bank code (biller code) id is empty");
 
-				if (StringUtils.isEmpty(bene_data.getFirst_name()) == true)
-					validation_result.put("bene_data.getFirst_name()", "beneficiary first name is empty");
+				if (StringUtils.isEmpty(txn_data.getFlexi_field_1()) == true)
+					validation_result.put("txn_data.getFlexi_field_1()", "Biller identifier is empty");
 
 				if (txn_data.getDestination_amount() == null)
 					validation_result.put("txn_data.getDestination_amount", "amount is empty");
