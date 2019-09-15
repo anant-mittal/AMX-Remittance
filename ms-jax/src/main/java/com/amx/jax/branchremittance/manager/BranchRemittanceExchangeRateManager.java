@@ -361,17 +361,22 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 				}
 			}else {
 				result.setExRateBreakup(exchangeRateService.createBreakUpSP(sellRateDetail.getSellRateNet().getInverseRate(), sellRateDetail.getSellRateNet().getConvertedLCAmount(),sellRateDetail.getSellRateNet().getConvertedFCAmount()));
+				if(sellRateDetail.getSellRateBase().getInverseRate() != null) {
+					result.getExRateBreakup().setBaseRate(sellRateDetail.getSellRateBase().getInverseRate());
+				}
 			}
 			
 			remittanceApplicationParamManager.populateRemittanceApplicationParamMap(null, beneficiaryView,result.getExRateBreakup());
 			remittanceTransactionManager.setLoyalityPointFlags(customer, result);
 			remittanceTransactionManager.setLoyalityPointIndicaters(result);
 			BranchRemittanceApplRequestModel remittanceApplRequestModel = buildRemittanceTransactionModel(routingPricingRequest);
-			if(trnxRoutingDetails != null && trnxRoutingDetails.getBankIndicator() != null && !trnxRoutingDetails.getBankIndicator().equalsIgnoreCase(ConstantDocument.BANK_INDICATOR_SERVICE_PROVIDER_BANK)) {
+			//if(trnxRoutingDetails != null && trnxRoutingDetails.getBankIndicator() != null && !trnxRoutingDetails.getBankIndicator().equalsIgnoreCase(ConstantDocument.BANK_INDICATOR_SERVICE_PROVIDER_BANK)) {
+			/** isFcRoundingAllowed() --Yes normal ,N -Not allowed **/
+			if(trnxRoutingDetails != null && trnxRoutingDetails.getIsFcRoundingAllowed() !=null && trnxRoutingDetails.getIsFcRoundingAllowed().equalsIgnoreCase(ConstantDocument.Yes)) { 
 				remittanceTransactionManager.applyChannelAmountRouding(result.getExRateBreakup(),metaData.getChannel().getClientChannel(), true);
 			}
 			remittanceTransactionManager.setNetAmountAndLoyalityState(result.getExRateBreakup(), remittanceApplRequestModel, result, commission,vatDetails.getVatApplicableAmount());
-			if(trnxRoutingDetails != null && trnxRoutingDetails.getBankIndicator() != null && !trnxRoutingDetails.getBankIndicator().equalsIgnoreCase(ConstantDocument.BANK_INDICATOR_SERVICE_PROVIDER_BANK)) {
+			if(trnxRoutingDetails != null && trnxRoutingDetails.getIsFcRoundingAllowed() !=null && trnxRoutingDetails.getIsFcRoundingAllowed().equalsIgnoreCase(ConstantDocument.Yes)) {
 				remittanceTransactionManager.applyCurrencyRoudingLogic(result.getExRateBreakup());
 			}else {
 				remittanceTransactionManager.applyCurrencyRoudingLogicSP(result.getExRateBreakup());

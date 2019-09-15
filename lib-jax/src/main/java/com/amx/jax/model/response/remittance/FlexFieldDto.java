@@ -3,9 +3,11 @@ package com.amx.jax.model.response.remittance;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
+import com.amx.jax.model.ResourceDTO;
 
 
-public class FlexFieldDto implements Serializable {
+
+public class FlexFieldDto extends ResourceDTO{
 
 	/**
 	 * 
@@ -14,24 +16,29 @@ public class FlexFieldDto implements Serializable {
 	private BigDecimal additionalBankRuleFiledId;
 	private BigDecimal srlId;
 	private String amieceDescription;
-	private String amiecCode;
+	private String localName;
+	private String amieceCode;
+	private String indic;
 
-	public FlexFieldDto(BigDecimal additionalBankRuleFiledId, BigDecimal srlId, String amieceDescription) {
+	public FlexFieldDto(BigDecimal additionalBankRuleFiledId, BigDecimal srlId, String amieceDescription,String amieceCode) {
 		super();
 		this.additionalBankRuleFiledId = additionalBankRuleFiledId;
 		this.srlId = srlId;
 		this.amieceDescription = amieceDescription;
+		this.amieceCode = amieceCode;
 	}
 	
 	
-	public FlexFieldDto(BigDecimal additionalBankRuleFiledId, BigDecimal srlId, String amieceDescription,String amiecCode) {
+	public FlexFieldDto(BigDecimal additionalBankRuleFiledId, BigDecimal srlId, String amieceDescription,String amieceCode,String indic) {
 		super();
 		this.additionalBankRuleFiledId = additionalBankRuleFiledId;
 		this.srlId = srlId;
 		this.amieceDescription = amieceDescription;
-		this.amiecCode = amiecCode;
+		this.amieceCode =amieceCode;
+		this.indic=indic;
 	}
-
+	
+	
 	public FlexFieldDto(String amieceDescription) {
 		this.amieceDescription = amieceDescription;
 	}
@@ -90,20 +97,48 @@ public class FlexFieldDto implements Serializable {
 			return false;
 		return true;
 	}
+	
+	
+
+	public String getLocalName() {
+		return localName;
+	}
+
+	public void setLocalName(String localName) {
+		this.localName = localName;
+	}
 
 	public FlexFieldDto() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+	
+	@Override
+	public String getResourceLocalName() {
+		return this.localName;
 
-
-	public String getAmiecCode() {
-		return amiecCode;
+	}
+	
+	@Override
+	public String getResourceName() {
+		return this.amieceDescription;
 	}
 
-
-	public void setAmiecCode(String amiecCode) {
-		this.amiecCode = amiecCode;
+	public String getAmieceCode() {
+		return amieceCode;
 	}
+
+	public void setAmieceCode(String amieceCode) {
+		this.amieceCode = amieceCode;
+	}
+
+	public String getIndic() {
+		return indic;
+	}
+
+	public void setIndic(String indic) {
+		this.indic = indic;
+	}
+
 
 }

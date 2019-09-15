@@ -1,10 +1,17 @@
 package com.amx.jax.pricer;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.MathContext;
 import java.math.RoundingMode;
+import java.security.InvalidKeyException;
+import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.RSAPublicKeySpec;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,6 +19,11 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 import org.apache.commons.lang.time.DurationFormatUtils;
 
@@ -33,7 +45,66 @@ public final class RuntimeTest {
 		}
 	}
 
-	public static void main(String[] args) throws NoSuchAlgorithmException {
+	public byte[] getRSAEncrypted(String modulusString, String publicExponentString, String toBeEncrypted)
+			throws NoSuchAlgorithmException, InvalidKeySpecException, IllegalBlockSizeException, BadPaddingException,
+			InvalidKeyException, NoSuchPaddingException, UnsupportedEncodingException {
+
+		BigInteger modulus = new BigInteger(modulusString.getBytes());
+		BigInteger pubExponent = new BigInteger(publicExponentString.getBytes());
+
+		// Create private and public key specs
+		RSAPublicKeySpec publicSpec = new RSAPublicKeySpec(modulus, pubExponent);
+
+		// Create a key factory
+		KeyFactory factory = KeyFactory.getInstance("RSA");
+
+		// Create the RSA private and public keys
+		PublicKey pub = factory.generatePublic(publicSpec);
+
+		Cipher cipher = Cipher.getInstance("RSA");
+		cipher.init(Cipher.ENCRYPT_MODE, pub);
+
+		return cipher.doFinal(toBeEncrypted.getBytes());
+
+	}
+
+	public static void main(String[] args)
+			throws NoSuchAlgorithmException, InvalidKeySpecException, IllegalBlockSizeException, BadPaddingException,
+			InvalidKeyException, NoSuchPaddingException, UnsupportedEncodingException {
+
+		String modulusString = "rqP/kEVeoNKndXPx1wCUbpm8irJoC44DCoMPZm64fPZY+68qARcK/iTRzXmfUS9ZBCSqugt3fAdR4L7nJaWM4DVbJvbWvF7Sp8KbaFlh7oCH2k1FPYAe1nBEjg3Ykj+JLawL1F36hmDY7Y1uzgrGvRYaLWrf46+GS0DeMJTiK78=";
+		String publicExponentString = "AQAB";
+
+		BigInteger modulus = new BigInteger(modulusString.getBytes());
+		BigInteger pubExponent = new BigInteger(publicExponentString.getBytes());
+
+		// Create private and public key specs
+		RSAPublicKeySpec publicSpec = new RSAPublicKeySpec(modulus, pubExponent);
+
+		// Create a key factory
+		KeyFactory factory = KeyFactory.getInstance("RSA");
+
+		// Create the RSA private and public keys
+		PublicKey pub = factory.generatePublic(publicSpec);
+
+		Cipher cipher = Cipher.getInstance("RSA");
+
+		// Cipher cipher = Cipher.getInstance("RSA");
+
+		cipher.init(Cipher.ENCRYPT_MODE, pub);
+
+		byte[] encrptedByte = cipher.doFinal("WS_KWCM_1".getBytes());
+
+		// Cipher cipher2 = Cipher.getInstance("RSA");
+		cipher.init(Cipher.DECRYPT_MODE, pub);
+		System.out.println("DeCrypted ==>" + new String(cipher.doFinal(encrptedByte), "UTF8"));
+
+		System.out.println(" Public Key Hash ==>" + pub.toString());
+
+		// ==========================
+
+		if (true)
+			return;
 
 		System.out.println(" ======== String Test ======= " + "Y".equalsIgnoreCase(null));
 
@@ -105,8 +176,7 @@ public final class RuntimeTest {
 		System.out.println(" duration days ==> " + du.toDays() + " Hrs ==> " + du.toHours() + " Mins ==>"
 				+ du.toMinutes() + " Secs ==> " + du.getSeconds());
 
-		System.out.println(
-				" Apache formatted ==>" + DurationFormatUtils.formatDurationWords(180 * 1000, true, true));
+		System.out.println(" Apache formatted ==>" + DurationFormatUtils.formatDurationWords(180 * 1000, true, true));
 
 		////////// Duration End////////
 

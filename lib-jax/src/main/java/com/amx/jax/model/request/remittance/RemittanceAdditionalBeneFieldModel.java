@@ -22,6 +22,7 @@ public abstract class RemittanceAdditionalBeneFieldModel extends AbstractRemitta
 	private String staffUserName;
 	private String amlRemarks;
 	private Map<String, FlexFieldDto> additionalDtoMap;
+	private FlexFieldDto servicePackage;
 	
 	public Map<String, Object> getAdditionalFields() {
 		return additionalFields;
@@ -162,6 +163,14 @@ public abstract class RemittanceAdditionalBeneFieldModel extends AbstractRemitta
 
 	public void setAdditionalDtoMap(Map<String, FlexFieldDto> additionalDtoMap) {
 		this.additionalDtoMap = additionalDtoMap;
+	}
+	public FlexFieldDto getServicePackage() {
+		return servicePackage;
+	}
+
+	public void setServicePackage(FlexFieldDto servicePackage) {
+		this.servicePackage = servicePackage;
+
 	}
 
 	

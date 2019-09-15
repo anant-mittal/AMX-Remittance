@@ -7,8 +7,7 @@ import com.amx.jax.api.AmxApiResponse;
 /**
  * The Class ResponseWrapper.
  *
- * @param <T>
- *            the generic type
+ * @param <T> the generic type
  */
 public class ResponseWrapper<T> extends ResponseWrapperM<T, Object> {
 
@@ -25,8 +24,7 @@ public class ResponseWrapper<T> extends ResponseWrapperM<T, Object> {
 	/**
 	 * Instantiates a new response wrapper.
 	 *
-	 * @param data
-	 *            the data
+	 * @param data the data
 	 */
 	public ResponseWrapper(T data) {
 		super(data);
@@ -35,10 +33,8 @@ public class ResponseWrapper<T> extends ResponseWrapperM<T, Object> {
 	/**
 	 * Instantiates a new response wrapper.
 	 *
-	 * @param data
-	 *            the data
-	 * @param meta
-	 *            the meta
+	 * @param data the data
+	 * @param meta the meta
 	 */
 	public ResponseWrapper(T data, Object meta) {
 		super(data, meta);

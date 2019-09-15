@@ -6,6 +6,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.dbmodel.partner.BankExternalReferenceDetail;
+import com.amx.jax.dbmodel.partner.BankExternalReferenceHead;
 import com.amx.jax.pricer.dbmodel.BankCharges;
 import com.amx.jax.pricer.dbmodel.BankServiceRule;
 import com.amx.jax.pricer.dbmodel.BenificiaryListView;
@@ -17,6 +19,8 @@ import com.amx.jax.pricer.dbmodel.ServiceProviderRateView;
 import com.amx.jax.pricer.repository.CountryMasterRepository;
 import com.amx.jax.pricer.repository.CurrencyMasterRepository;
 import com.amx.jax.pricer.repository.IBankChargesRepository;
+import com.amx.jax.pricer.repository.IBankExternalReferDetailsRepository;
+import com.amx.jax.pricer.repository.IBankExternalReferHeadRepository;
 import com.amx.jax.pricer.repository.IBankServiceRuleRepository;
 import com.amx.jax.pricer.repository.IBeneficiaryViewRepository;
 import com.amx.jax.pricer.repository.ICustomerViewRepository;
@@ -53,6 +57,12 @@ public class PartnerServiceDao {
 
 	@Autowired
 	CountryMasterRepository countryMasterRepository;
+	
+	@Autowired
+	IBankExternalReferHeadRepository bankExternalReferenceHeadRepository;
+	
+	@Autowired
+	IBankExternalReferDetailsRepository bankExternalReferenceDetailsRepository;
 
 	public BenificiaryListView getBeneficiaryDetails(BigDecimal customerId, BigDecimal beneficiaryRelationShipSeqId) {
 		return beneficiaryViewRepository.findByCustomerIdAndBeneficiaryRelationShipSeqId(customerId,
@@ -101,6 +111,18 @@ public class PartnerServiceDao {
 	
 	public CurrencyMasterModel fetchCurrencyMaster(BigDecimal currencyId) {
 		return currencyMasterRepository.findByCurrencyId(currencyId);
+	}
+	
+	public List<ParameterDetailsModel> fetchUSDummyAccountDetails(String recordId, String isactive) {
+		return parameterDetailsRespository.findByRecordIdAndIsActive(recordId, isactive);
+	}
+	
+	public List<BankExternalReferenceHead> fetchBankExternalReferenceHeadDetails(BigDecimal countryId,BigDecimal corBankId,BigDecimal beneBankId){
+		return bankExternalReferenceHeadRepository.fetchBankExternalHeaderDetails(countryId,corBankId,beneBankId);
+	}
+	
+	public List<BankExternalReferenceDetail> fetchBankExternalReferenceBranchDetails(BigDecimal countryId,BigDecimal corBankId,BigDecimal beneBankId,BigDecimal beneBankBranchId){
+		return bankExternalReferenceDetailsRepository.fetchBankExternalBranchDetails(countryId, corBankId, beneBankId, beneBankBranchId);
 	}
 
 }

@@ -6,7 +6,10 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
@@ -19,6 +22,8 @@ public class OnlineMarginMarkup implements Serializable {
 	private static final long serialVersionUID = 8010884338988580708L;
 
 	@Id
+	@GeneratedValue(generator="EX_ONLINE_MARGIN_MARKUP_SEQ",strategy=GenerationType.SEQUENCE)
+	@SequenceGenerator(name="EX_ONLINE_MARGIN_MARKUP_SEQ" ,sequenceName="EX_ONLINE_MARGIN_MARKUP_SEQ",allocationSize=1)		
 	@Column(name = "ONLINE_MARGIN_MARKUP_ID", unique = true, nullable = false)
 	private BigDecimal onlineMarginMarkupId;
 
@@ -31,8 +36,12 @@ public class OnlineMarginMarkup implements Serializable {
 	@Column(name = "CURRENCY_ID")
 	private BigDecimal currencyId;
 
+	@Column(name = "BANK_ID")
+	private BigDecimal bankId;
+
 	@Column(name = "EMOS_COUNTRY")
 	private String emosCountry;
+
 	@Column(name = "EMOS_CURCOD")
 	private String emosCurcod;
 
@@ -93,6 +102,14 @@ public class OnlineMarginMarkup implements Serializable {
 
 	public void setCurrencyId(BigDecimal currencyId) {
 		this.currencyId = currencyId;
+	}
+
+	public BigDecimal getBankId() {
+		return bankId;
+	}
+
+	public void setBankId(BigDecimal bankId) {
+		this.bankId = bankId;
 	}
 
 	public String getEmosCountry() {

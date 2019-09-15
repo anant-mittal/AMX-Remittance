@@ -38,6 +38,7 @@ public class CountryMasterDTO implements Serializable {
 	private String languageName;
 	private List<ServiceGroupMasterDescDto> supportedServiceGroup;
 	private String countryMobileLength;
+	private String localName;
 
 	public CountryMasterDTO() {
 		super();
@@ -226,4 +227,14 @@ public class CountryMasterDTO implements Serializable {
 	public void setCountryMobileLength(String countryMobileLength) {
 		this.countryMobileLength = countryMobileLength;
 	}
+
+	public String getLocalName() {
+		return localName;
+	}
+
+	public void setLocalName(String localName) {
+		this.localName = localName;
+	}
+	
+	
 }

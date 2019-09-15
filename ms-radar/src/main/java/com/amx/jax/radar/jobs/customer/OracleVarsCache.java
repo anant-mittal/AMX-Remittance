@@ -4,12 +4,16 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.client.snap.SnapConstants;
 import com.amx.jax.radar.AMXSharedValues;
 import com.amx.jax.radar.EsConfig;
+import com.amx.jax.radar.RadarConfig;
+import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncJobs;
 import com.amx.utils.ArgUtil;
 
 /**
@@ -54,10 +58,17 @@ public class OracleVarsCache {
 		public int getResetCounter() {
 			return resetCounter;
 		}
+
+		public void setResetCounter(int resetCounter) {
+			this.resetCounter = resetCounter;
+		}
 	}
 
 	@Autowired
 	AMXSharedValues amxSharedValues;
+
+	@Autowired
+	RadarConfig radarConfig;
 
 	/**
 	 * Instantiates a new logged in users.
@@ -124,6 +135,21 @@ public class OracleVarsCache {
 
 	public void clearStampEnd(DBSyncJobs job) {
 		amxSharedValues.removeValue(getIndex(job) + DESC_SEPERATOR + job.getResetCounter());
+	}
+
+	@PostConstruct
+	public void init() {
+		try {
+			DBSyncJobs.CUSTOMER_JOB.setResetCounter(Math.max(DBSyncJobs.CUSTOMER_JOB.getResetCounter(),
+					ArgUtil.parseAsInteger(radarConfig.getJobsCustomerVersion())));
+			DBSyncJobs.TRANSACTION_JOB.setResetCounter(Math.max(DBSyncJobs.TRANSACTION_JOB.getResetCounter(),
+					ArgUtil.parseAsInteger(radarConfig.getJobsTrnxVersion())));
+			DBSyncJobs.XRATE_JOB.setResetCounter(Math.max(DBSyncJobs.XRATE_JOB.getResetCounter(),
+					ArgUtil.parseAsInteger(radarConfig.getJobsRateVersion())));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 	}
 
 }

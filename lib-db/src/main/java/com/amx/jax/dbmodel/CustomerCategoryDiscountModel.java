@@ -125,6 +125,13 @@ public class CustomerCategoryDiscountModel implements Serializable,IResourceEnti
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
+
+
+	@Override
+	public String resourceLocalName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 	
 }

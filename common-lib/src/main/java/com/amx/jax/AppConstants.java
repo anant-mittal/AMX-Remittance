@@ -46,6 +46,7 @@ public class AppConstants extends Constants {
 
 	public static final String TRANX_ID_XKEY_CLEAN = TRANX_ID_XKEY.replaceAll("[-]", "_");
 	public static final String ACTOR_ID_XKEY = "x-actor-id";
+	public static final String ACTOR_INFO_XKEY = "x-actor-info";
 	public static final String DEVICE_ID_KEY = "did";
 	public static final String DEVICE_ID_XKEY = "x-did";
 	public static final String DEVICE_IP_XKEY = "x-ip";

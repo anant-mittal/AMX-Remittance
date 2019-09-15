@@ -41,9 +41,11 @@ import com.amx.amxlib.model.UserVerificationCheckListDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.JaxAuthContext;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.async.ExecutorConfig;
+import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.CustomerVerificationType;
 import com.amx.jax.constant.JaxApiFlow;
@@ -211,6 +213,9 @@ public class UserService extends AbstractUserService {
 	
 	@Autowired
 	OnlineCustomerManager onlineCustomerManager;
+	
+	@Autowired
+	JaxTenantProperties jaxTenantProperties;
 	
 	@Override
 	public ApiResponse registerUser(AbstractUserModel userModel) {
@@ -670,6 +675,9 @@ public class UserService extends AbstractUserService {
 		if (tenantContext.getKey().equals("OMN")) {
 			tenantContext.get().validateCivilId(userId);
 		}
+		
+		Boolean captchaEnable = jaxTenantProperties.getCaptchaEnable();
+		
 		List<Customer> customerData = customerrepository.getCustomerByIdentityInt(userId);
 		
 		
@@ -690,8 +698,9 @@ public class UserService extends AbstractUserService {
 					"User with userId: " + userId + " is not registered or not active");
 		}
 
-		userValidationService.validateCustomerLockCount(onlineCustomer);
-		userValidationService.validatePassword(onlineCustomer, password, true);
+		userValidationService.validateCustomerLockCount(onlineCustomer,captchaEnable);
+		userValidationService.validatePassword(onlineCustomer, password, captchaEnable && JaxAuthContext.isCaptchaCheck());
+		userService.unlockCustomer(customer.getCustomerId());
 		userValidationService.validateCustIdProofs(onlineCustomer.getCustomerId());
 		userValidationService.validateCustomerData(onlineCustomer, customer);
 		userValidationService.validateBlackListedCustomerForLogin(customer);
@@ -700,7 +709,7 @@ public class UserService extends AbstractUserService {
 		ApiResponse response = getBlackApiResponse();
 		CustomerModel customerModel = convert(onlineCustomer);
 
-		// afterLoginSteps(onlineCustomer);
+		afterLoginSteps(onlineCustomer);
 		response.getData().getValues().add(customerModel);
 		response.getData().setType(customerModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
@@ -1360,6 +1369,13 @@ public class UserService extends AbstractUserService {
 	}
 
 	public AmxApiResponse<CustomerModel, Object> validateCustomerLoginOtp(String identityInt) {
+		if (identityInt != null) {
+			userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(identityInt, JaxApiFlow.LOGIN);
+			Customer customer = custDao.getCustomerByCivilId(identityInt);
+			
+			// ---- check for blacklisted customer ----
+			userValidationService.validateBlackListedCustomerForLogin(customer);
+		}
 		CustomerModel c = onlineCustomerManager.validateCustomerLoginOtp(identityInt);
 		return AmxApiResponse.build(c);
 	}

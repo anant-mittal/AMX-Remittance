@@ -25,6 +25,12 @@ public enum TunnelEventXchange {
 	TASK_WORKER("TW"),
 
 	/**
+	 * Multiple listner will listen but only one worker will start working
+	 * 
+	 */
+	TASK_LISTNER("TL"),
+
+	/**
 	 * For Audit purpose only
 	 */
 	AUDIT("AD");

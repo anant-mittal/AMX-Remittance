@@ -354,4 +354,12 @@ public class UserUpdateData implements UserUpdateRequest, UserUpdateResponse {
 		this.otp = otp;
 	}
 
+	public String getOtp() {
+		return otp;
+	}
+
+	public void setOtp(String otp) {
+		this.otp = otp;
+	}
+
 }

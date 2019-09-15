@@ -22,12 +22,14 @@ import javax.persistence.TemporalType;
 import org.hibernate.annotations.Proxy;
 
 import com.amx.jax.constants.CustomerRegistrationType;
+import com.amx.jax.dict.Communicatable;
 import com.amx.jax.util.AmxDBConstants.Status;
+import com.amx.utils.ArgUtil;
 
 @Entity
 @Table(name = "FS_CUSTOMER")
 @Proxy(lazy = false)
-public class Customer implements java.io.Serializable {
+public class Customer implements java.io.Serializable, Communicatable {
 
 	private static final long serialVersionUID = 1L;
 	private BigDecimal customerId;
@@ -1097,7 +1099,7 @@ public class Customer implements java.io.Serializable {
 	}
 
 	public boolean canSendEmail() {
-		return !(Status.D.equals(this.emailVerified) || Status.N.equals(this.emailVerified));
+		return !(Status.D.equals(this.emailVerified) || Status.N.equals(this.emailVerified) || ArgUtil.isEmpty(this.email));
 	}
 
 	private Status mobileVerified;
@@ -1133,7 +1135,8 @@ public class Customer implements java.io.Serializable {
 	@Override
 	public String toString() {
 		return "Customer [customerId=" + customerId + ", email=" + email +
-				", emailVerified=" + emailVerified + ", mobileVerified="
+				", whatsApp=" + whatsapp + ", mobile=" + mobile +
+				", emailVerified=" + emailVerified + ", whatsAppVerified=" + whatsAppVerified + ", mobileVerified="
 				+ mobileVerified + "]";
 	}
 

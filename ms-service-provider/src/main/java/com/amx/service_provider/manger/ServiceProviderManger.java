@@ -14,6 +14,7 @@ import com.amx.jax.model.request.serviceprovider.Customer;
 import com.amx.jax.model.request.serviceprovider.ServiceProviderCallRequestDto;
 import com.amx.jax.model.request.serviceprovider.TransactionData;
 import com.amx.jax.model.response.serviceprovider.Quotation_Call_Response;
+import com.amx.jax.model.response.serviceprovider.Remittance_Call_Response;
 import com.amx.jax.model.response.serviceprovider.ServiceProviderResponse;
 import com.amx.service_provider.dbmodel.webservice.ExOwsLoginCredentials;
 import com.amx.service_provider.homesend.HomeSendDTO;
@@ -84,8 +85,8 @@ public class ServiceProviderManger implements IServiceProvider
 					homeSendDTO.setApi_login(owsLoginCredentialsObject.getWsUserName());
 					homeSendDTO.setApi_password(owsLoginCredentialsObject.getWsPassword());
 					homeSendDTO.setApi_url(owsLoginCredentialsObject.getFlexiField1());
-					homeSendDTO.setKeyStoreLocation(msServiceProviderConfig.getKeyStoreLocation());
-					homeSendDTO.setKeyStorePassword(msServiceProviderConfig.getKeyStorePassword());
+					//homeSendDTO.setKeyStoreLocation(msServiceProviderConfig.getKeyStoreLocation());
+					//homeSendDTO.setKeyStorePassword(msServiceProviderConfig.getKeyStorePassword());
 					homeSendDTO.setOwsParamRespcodeRepository(owsParamRespcodeRepository);
 					homeSendDTO.setTrustStoreLocation(msServiceProviderConfig.getTrustStoreLocation());
 					homeSendDTO.setTrustStorePassword(msServiceProviderConfig.getTrustStorePassword());
@@ -144,9 +145,10 @@ public class ServiceProviderManger implements IServiceProvider
 		return response;
 	}
 
-	public ServiceProviderResponse sendRemittance(ServiceProviderCallRequestDto sendRemittanceRequestDto)
+	public Remittance_Call_Response sendRemittance(ServiceProviderCallRequestDto sendRemittanceRequestDto)
 	{
-		ServiceProviderResponse response = new ServiceProviderResponse();
+		//ServiceProviderResponse response = new ServiceProviderResponse();
+		Remittance_Call_Response response = new Remittance_Call_Response();
 		// TODO: Validate the input for before calling the service
 
 		TransactionData txn_data = sendRemittanceRequestDto.getTransactionDto();
@@ -183,8 +185,8 @@ public class ServiceProviderManger implements IServiceProvider
 					homeSendDTO.setApi_login(owsLoginCredentialsObject.getWsUserName());
 					homeSendDTO.setApi_password(owsLoginCredentialsObject.getWsPassword());
 					homeSendDTO.setApi_url(owsLoginCredentialsObject.getFlexiField1());
-					homeSendDTO.setKeyStoreLocation(msServiceProviderConfig.getKeyStoreLocation());
-					homeSendDTO.setKeyStorePassword(msServiceProviderConfig.getKeyStorePassword());
+					//homeSendDTO.setKeyStoreLocation(msServiceProviderConfig.getKeyStoreLocation());
+					//homeSendDTO.setKeyStorePassword(msServiceProviderConfig.getKeyStorePassword());
 					homeSendDTO.setOwsParamRespcodeRepository(owsParamRespcodeRepository);
 					homeSendDTO.setTrustStoreLocation(msServiceProviderConfig.getTrustStoreLocation());
 					homeSendDTO.setTrustStorePassword(msServiceProviderConfig.getTrustStorePassword());

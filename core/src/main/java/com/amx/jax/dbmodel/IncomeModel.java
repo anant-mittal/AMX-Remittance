@@ -102,5 +102,11 @@ public class IncomeModel implements IResourceEntity, Serializable {
 		
 		return null;
 	}
+
+	@Override
+	public String resourceLocalName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 }

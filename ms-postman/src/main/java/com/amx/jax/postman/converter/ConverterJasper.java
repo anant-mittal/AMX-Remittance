@@ -3,6 +3,7 @@ package com.amx.jax.postman.converter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,11 +21,14 @@ import com.amx.jax.postman.converter.jasper.SimpleReportFiller;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.File.Type;
 import com.amx.jax.postman.service.TemplateUtils;
+import com.amx.utils.ArgUtil;
 import com.amx.utils.FlatMap;
 import com.codahale.metrics.annotation.Timed;
 
+import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
@@ -33,6 +37,10 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.SimpleJasperReportsContext;
+import net.sf.jasperreports.engine.export.JRPdfExporter;
+import net.sf.jasperreports.engine.export.JRPdfExporterParameter;
+import net.sf.jasperreports.export.SimpleExporterInput;
+import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 
 /**
  * The Class ConverterJasper.
@@ -45,7 +53,7 @@ public class ConverterJasper implements FileConverter {
 
 	/** The simple report filler. */
 	@Autowired
-	SimpleReportFiller simpleReportFiller;
+	SimpleReportFiller simpleReportFiller2;
 
 	/** The simple exporter. */
 	@Autowired
@@ -77,6 +85,8 @@ public class ConverterJasper implements FileConverter {
 		String jasperFileName = templateUtils.getTemplateFile(
 				"jasper/" + file.getITemplate().getFileName(), AppContextUtil.getTenant(),
 				postManConfig.getLocal(file), null);
+		
+		SimpleReportFiller simpleReportFiller = new SimpleReportFiller();
 
 		simpleReportFiller.setReportFileName("templates/" + jasperFileName + ".jrxml");
 		simpleReportFiller.compileReport();
@@ -106,7 +116,11 @@ public class ConverterJasper implements FileConverter {
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		try {
 
-			JasperExportManager.exportReportToPdfStream(simpleReportFiller.getJasperPrint(), outputStream);
+			if (ArgUtil.isEmpty(file.getPassword())) {
+				JasperExportManager.exportReportToPdfStream(simpleReportFiller.getJasperPrint(), outputStream);
+			} else {
+				exportReportToPdfStream(simpleReportFiller.getJasperPrint(), outputStream, file.getPassword());
+			}
 
 			file.setBody(outputStream.toByteArray());
 			file.setType(Type.PDF);
@@ -121,6 +135,23 @@ public class ConverterJasper implements FileConverter {
 			}
 		}
 		return file;
+	}
+
+	public static void exportReportToPdfStream(
+			JasperPrint jasperPrint,
+			OutputStream outputStream, String password) throws JRException {
+		JRPdfExporter exporter = new JRPdfExporter(DefaultJasperReportsContext.getInstance());
+
+		exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
+		exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, outputStream);
+		exporter.setParameter(JRPdfExporterParameter.OWNER_PASSWORD, password);
+		exporter.setParameter(JRPdfExporterParameter.USER_PASSWORD, password);
+		exporter.setParameter(JRPdfExporterParameter.IS_ENCRYPTED, Boolean.TRUE);
+
+		// exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+		// exporter.setExporterOutput(new
+		// SimpleOutputStreamExporterOutput(outputStream));
+		exporter.exportReport();
 	}
 
 	/**

@@ -55,7 +55,7 @@ public class CountryMasterView implements java.io.Serializable, IResourceEntity 
 	private String countryMobileLength;
 	private Integer beneCountryRisk;
 	private Integer remitterCountryRisk;
-
+	
 	public CountryMasterView() {
 		super();
 	}
@@ -292,5 +292,13 @@ public class CountryMasterView implements java.io.Serializable, IResourceEntity 
 	public void setRemitterCountryRisk(Integer remitterCountryRisk) {
 		this.remitterCountryRisk = remitterCountryRisk;
 	}
+
+	@Override
+	public String resourceLocalName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	
 
 }

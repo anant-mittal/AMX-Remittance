@@ -48,6 +48,7 @@ import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.response.ExchangeRateBreakup;
 import com.amx.jax.model.response.remittance.FlexFieldDto;
+import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.pricer.dto.ExchangeDiscountInfo;
 import com.amx.jax.pricer.var.PricerServiceConstants.DISCOUNT_TYPE;
@@ -62,6 +63,7 @@ import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.services.LoyalityPointService;
 import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
+import com.amx.utils.JsonUtil;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
@@ -236,6 +238,7 @@ public class RemittanceApplicationManager {
 				generateDocumentNumber(remittanceApplication.getExCountryBranch(), ConstantDocument.Update));
 		remittanceApplication.setPaymentId(remittanceApplication.getDocumentNo().toString());
 		remittanceApplication.setWuIpAddress(metaData.getDeviceIp());
+		
 		validateAdditionalErrorMessages(requestModel);
 		validateBannedBank();
 		validateDailyBeneficiaryTransactionLimit(beneDetails);
@@ -253,6 +256,7 @@ public class RemittanceApplicationManager {
 		setVatDetails(remittanceApplication, validationResults);
 		return remittanceApplication;
 	}
+	
 
 	public RemittanceApplication createRemittanceApplicationV2(RemittanceTransactionDrRequestModel requestModel,
 			Map<String, Object> validatedObjects, RemittanceTransactionResponsetModel validationResults,
@@ -268,8 +272,7 @@ public class RemittanceApplicationManager {
 		BigDecimal foreignCurrencyId = beneDetails.getCurrencyId();
 		BigDecimal deliveryId = (BigDecimal) remitApplParametersMap.get("P_DELIVERY_MODE_ID");
 		BigDecimal remittanceId = (BigDecimal) remitApplParametersMap.get("P_REMITTANCE_MODE_ID");
-		Document document = documentDao.getDocumnetByCode(ConstantDocument.DOCUMENT_CODE_FOR_REMITTANCE_APPLICATION)
-				.get(0);
+		Document document = documentDao.getDocumnetByCode(ConstantDocument.DOCUMENT_CODE_FOR_REMITTANCE_APPLICATION).get(0);
 		BigDecimal selectedCurrency = getSelectedCurrencyV2(foreignCurrencyId, requestModel);
 
 		remitApplParametersMap.put("P_DOCUMENT_ID", document.getDocumentID());
@@ -294,8 +297,7 @@ public class RemittanceApplicationManager {
 		// net amt currency
 		remittanceApplication.setExCurrencyMasterByLocalNetCurrencyId(localCurrency);
 		remittanceApplication.setSpotRateInd(ConstantDocument.No);
-		remittanceApplication.setLoyaltyPointInd(
-				loyalityPointsAvailed(requestModel, validationResults) ? ConstantDocument.Yes : ConstantDocument.No);
+		remittanceApplication.setLoyaltyPointInd(loyalityPointsAvailed(requestModel, validationResults) ? ConstantDocument.Yes : ConstantDocument.No);
 		// company Id and code
 		CompanyMaster companymaster = new CompanyMaster();
 		companymaster.setCompanyId(metaData.getCompanyId());
@@ -349,30 +351,40 @@ public class RemittanceApplicationManager {
 		remittanceApplication.setDocumentFinancialyear(userFinancialYear.getFinancialYear());
 		remittanceApplication.setSelectedCurrencyId(foreignCurrencyId);
 		try {
-			remittanceApplication
-					.setAccountMmyyyy(new SimpleDateFormat("dd/MM/yyyy").parse(DateUtil.getCurrentAccMMYear()));
+			remittanceApplication.setAccountMmyyyy(new SimpleDateFormat("dd/MM/yyyy").parse(DateUtil.getCurrentAccMMYear()));
 		} catch (ParseException e) {
 			logger.error("Error in saving application", e);
 		}
-		logger.info("Created by Refereal :" + metaData.getReferrer() + "\t Device ID :" + metaData.getDeviceId()
-				+ "\t Device Type :" + metaData.getDeviceType() + "\t App type :" + metaData.getAppType());
-		if (!StringUtils.isBlank(metaData.getReferrer())) {
+		logger.info("Created by Refereal :"+metaData.getReferrer()+"\t Device ID :"+metaData.getDeviceId()+"\t Device Type :"+metaData.getDeviceType()+"\t App type :"+metaData.getAppType());
+		if(!StringUtils.isBlank(metaData.getReferrer())){
 			remittanceApplication.setCreatedBy(metaData.getReferrer());
-		} else {
-			if (!StringUtils.isBlank(metaData.getAppType())) {
+		}else{
+			if(!StringUtils.isBlank(metaData.getAppType())){				
 				remittanceApplication.setCreatedBy(metaData.getAppType());
-			} else {
+			}else{
 				remittanceApplication.setCreatedBy("WEB");
-			}
+			 }
 		}
 		remittanceApplication.setCreatedDate(new Date());
 		remittanceApplication.setIsactive(ConstantDocument.Yes);
 		remittanceApplication.setSourceofincome(requestModel.getSourceOfFund());
 		remittanceApplication.setApplInd(ConstantDocument.Online);
-		remittanceApplication.setDocumentNo(
-				generateDocumentNumber(remittanceApplication.getExCountryBranch(), ConstantDocument.Update));
+		remittanceApplication.setDocumentNo(generateDocumentNumber(remittanceApplication.getExCountryBranch(), ConstantDocument.Update));
 		remittanceApplication.setPaymentId(remittanceApplication.getDocumentNo().toString());
 		remittanceApplication.setWuIpAddress(metaData.getDeviceIp());
+		
+		DynamicRoutingPricingDto dynamicRoutingPricingResponse = requestModel.getDynamicRroutingPricingBreakup();
+		if(dynamicRoutingPricingResponse.getServiceProviderDto() != null && dynamicRoutingPricingResponse.getServiceProviderDto().getIntialAmountInSettlCurr() != null) {
+			remittanceApplication.setUsdAmt(dynamicRoutingPricingResponse.getServiceProviderDto().getIntialAmountInSettlCurr());
+			if(remittanceApplication.getOriginalExchangeRate() != null && remittanceApplication.getOriginalExchangeRate().compareTo(BigDecimal.ZERO) != 0) {
+				// getting original rate
+				logger.info("SP Original Exchange Rate : "+JsonUtil.toJson(validationResults.getExRateBreakup()));
+			}else {
+				logger.info("Unable to get Original Exchange Rate : "+JsonUtil.toJson(validationResults.getExRateBreakup()));
+				throw new GlobalException("Unable to get Original Exchange Rate");
+			}
+		}
+		
 		validateAdditionalErrorMessagesV2(requestModel);
 		validateBannedBank();
 		validateDailyBeneficiaryTransactionLimit(beneDetails);
@@ -384,6 +396,9 @@ public class RemittanceApplicationManager {
 		setVatDetails(remittanceApplication, validationResults);
 		return remittanceApplication;
 	}
+	
+	
+	
 
 	public void setCustomerDiscountColumns(RemittanceApplication remittanceApplication,
 			RemittanceTransactionResponsetModel remittanceTransactionResponsetModel) {
@@ -392,7 +407,7 @@ public class RemittanceApplicationManager {
 						: ConstantDocument.No);
 		Map<DISCOUNT_TYPE, ExchangeDiscountInfo> customerDiscoutDetails = remittanceTransactionResponsetModel
 				.getCustomerDiscountDetails();
-		if (customerDiscoutDetails != null) {
+		if (customerDiscoutDetails != null && !customerDiscoutDetails.isEmpty()) {
 			remittanceApplication
 					.setCusCatDiscountId(customerDiscoutDetails.get(DISCOUNT_TYPE.CUSTOMER_CATEGORY).getId());
 			remittanceApplication.setCusCatDiscount(
@@ -411,23 +426,23 @@ public class RemittanceApplicationManager {
 		}
 	}
 
-	public void setVatDetails(RemittanceApplication remittanceApplication,
-			RemittanceTransactionResponsetModel remittanceTransactionResponsetModel) {
+	
+	
+	public void setVatDetails(RemittanceApplication remittanceApplication,RemittanceTransactionResponsetModel remittanceTransactionResponsetModel) {
 		remittanceApplication.setVatType(remittanceTransactionResponsetModel.getVatType());
 		remittanceApplication.setVatPercentage(remittanceTransactionResponsetModel.getVatPercentage());
 		remittanceApplication.setVatAmount(remittanceTransactionResponsetModel.getVatAmount());
 	}
-
-	private BigDecimal getSelectedCurrency(BigDecimal foreignCurrencyId,
-			RemittanceTransactionRequestModel requestModel) {
+	
+	private BigDecimal getSelectedCurrency(BigDecimal foreignCurrencyId,RemittanceTransactionRequestModel requestModel) {
 		if (requestModel.getForeignAmount() != null) {
 			return foreignCurrencyId;
 		}
 		return metaData.getDefaultCurrencyId();
 	}
 
-	private BigDecimal getSelectedCurrencyV2(BigDecimal foreignCurrencyId,
-			RemittanceTransactionDrRequestModel requestModel) {
+	
+	private BigDecimal getSelectedCurrencyV2(BigDecimal foreignCurrencyId,RemittanceTransactionDrRequestModel requestModel) {
 		if (requestModel.getForeignAmount() != null) {
 			return foreignCurrencyId;
 		}
@@ -490,6 +505,7 @@ public class RemittanceApplicationManager {
 		}
 	}
 
+	
 	public void validateAdditionalErrorMessagesV2(RemittanceTransactionDrRequestModel requestModel) {
 		remitApplParametersMap.put("P_FURTHER_INSTR", "URGENT");
 		Map<String, Object> errorResponse = applicationProcedureDao
@@ -525,6 +541,7 @@ public class RemittanceApplicationManager {
 			throw new GlobalException(JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL, errorMessage);
 		}
 	}
+	
 
 	public BigDecimal generateDocumentNumber(CountryBranch countryBranch, String processInd) {
 		BigDecimal appCountryId = metaData.getCountryId();
@@ -559,6 +576,9 @@ public class RemittanceApplicationManager {
 		remittanceApplication.setLocalDeliveryAmount(BigDecimal.ZERO);
 		remittanceApplication.setLocalNetTranxAmount(breakup.getNetAmountWithoutLoyality());
 		remittanceApplication.setLoyaltyPointsEncashed(loyalityPointsEncashed);
+		if(JaxUtil.isNullZeroBigDecimalCheck(breakup.getBaseRate())) {
+			remittanceApplication.setOriginalExchangeRate(breakup.getBaseRate());
+		}
 	}
 
 	private void setApplicableRatesV2(RemittanceApplication remittanceApplication,
@@ -577,6 +597,9 @@ public class RemittanceApplicationManager {
 		remittanceApplication.setLocalDeliveryAmount(BigDecimal.ZERO);
 		remittanceApplication.setLocalNetTranxAmount(breakup.getNetAmountWithoutLoyality());
 		remittanceApplication.setLoyaltyPointsEncashed(loyalityPointsEncashed);
+		if(JaxUtil.isNullZeroBigDecimalCheck(breakup.getBaseRate())) {
+			remittanceApplication.setOriginalExchangeRate(breakup.getBaseRate());
+		}
 	}
 
 	/**

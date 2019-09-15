@@ -31,7 +31,6 @@ import com.amx.jax.dbmodel.ParameterDetails;
 import com.amx.jax.dbmodel.partner.RemitApplSrvProv;
 import com.amx.jax.dbmodel.remittance.CustomerBank;
 import com.amx.jax.dbmodel.remittance.LocalBankDetailsView;
-import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.ShoppingCartDetails;
 import com.amx.jax.dbmodel.remittance.StaffAuthorizationView;
 import com.amx.jax.error.JaxError;
@@ -141,7 +140,7 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 			
 			if(lstCustomerShopping != null && !lstCustomerShopping.isEmpty() && lstCustomerShopping.size() != 0) {
 				for (ShoppingCartDetails customerApplDto : lstCustomerShopping) {
-					if(customerApplDto.getApplicationType()!=null && !customerApplDto.getApplicationType().equalsIgnoreCase("FS")) {
+					if(customerApplDto.getApplicationType()!=null && !customerApplDto.getApplicationType().equalsIgnoreCase(ConstantDocument.FS)) {
 					BigDecimal fcCurrencyId = customerApplDto.getForeignCurrency();
 					totalLocalAmount = totalLocalAmount.add(customerApplDto.getLocalTranxAmount()==null?BigDecimal.ZERO:customerApplDto.getLocalTranxAmount());
 					totalNetAmount   =totalNetAmount.add(customerApplDto.getLocalNextTranxAmount()==null?BigDecimal.ZERO:customerApplDto.getLocalNextTranxAmount());
@@ -525,25 +524,27 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 	}
 
 	
-
 	public Boolean deActivateOnlineApplication() {
 		try {
 			
-			List<RemittanceApplication> listOfApplication = appRepository.deActivateNotUsedApplication(new Customer(metaData.getCustomerId()));
+			// deactivate only online application
+			appRepository.deActivateNotUsedOnlineApplication(new Customer(metaData.getCustomerId()), ConstantDocument.ONLINE_BRANCH_LOC_CODE);
+			
+			/*List<RemittanceApplication> listOfApplication = appRepository.deActivateNotUsedApplication(new Customer(metaData.getCustomerId()));
 			if(!listOfApplication.isEmpty() && listOfApplication!=null) {
 				for(RemittanceApplication application : listOfApplication) {
 					if(application.getLoccod().compareTo(ConstantDocument.ONLINE_BRANCH_LOC_CODE)==0) {
-					RemittanceApplication remittanceApplication =  appRepository.findOne(application.getRemittanceApplicationId());
-					remittanceApplication.setIsactive("D");
-					remittanceApplication.setApplicaitonStatus(null);
-					appRepository.save(remittanceApplication);
+						RemittanceApplication remittanceApplication = appRepository.findOne(application.getRemittanceApplicationId());
+						remittanceApplication.setIsactive("D");
+						remittanceApplication.setApplicaitonStatus(null);
+						appRepository.save(remittanceApplication);
 					}
 				}
-			}
+			}*/
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new GlobalException("deActivateApplication faliled for custoemr:"+metaData.getCustomerId());
+			throw new GlobalException("De-Activate Application failed for customer:"+metaData.getCustomerId());
 		}
 		return true;
 	}

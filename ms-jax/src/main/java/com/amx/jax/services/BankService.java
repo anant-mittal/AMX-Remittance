@@ -9,6 +9,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.BankDao;
 import com.amx.jax.dbmodel.BankBranchView;
 import com.amx.jax.dbmodel.BankMasterModel;
@@ -71,4 +72,16 @@ public class BankService {
 	public BankMasterModel getBankById(BigDecimal bankId) {
 		return bankMasterRepository.findOne(bankId);
 	}
+	
+	
+	public AdditionalBankDetailsViewx getBankAddDetails(BigDecimal countryId,String flexField,BigDecimal currencyId, BigDecimal bankId,
+			BigDecimal remittanceModeId, BigDecimal deleveryModeId, String amiecCode) {
+		return bankDetailsDao.findByCountryIdAndFlexFieldAndCurrencyIdAndBankIdAndRemittanceIdAndDeliveryIdAndAmiecCode(countryId, flexField, currencyId,  bankId,remittanceModeId,  deleveryModeId,  amiecCode);
+	}
+	
+	
+	public BankMasterModel getByBankCode(String BankCode) {
+		return bankMasterRepository.findByBankCodeAndRecordStatus(BankCode,ConstantDocument.Yes);
+	}
+	
 }
