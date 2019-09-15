@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.fx.IFxBranchOrderService;
@@ -18,6 +19,7 @@ import com.amx.jax.dbmodel.CustomerRating;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.fx.FcDeliveryBranchOrderSearchRequest;
 import com.amx.jax.model.request.fx.FcSaleBranchDispatchRequest;
+import com.amx.jax.model.request.fx.FcSaleOrderManagementDatesRequest;
 import com.amx.jax.model.response.fx.FcEmployeeDetailsDto;
 import com.amx.jax.model.response.fx.FcSaleOrderManagementDTO;
 import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
@@ -234,6 +236,7 @@ public class FcSaleBranchOrderController implements IFxBranchOrderService {
 	public AmxApiResponse<FxOrderTransactionHistroyDto, Object> searchOrder(@RequestBody FcDeliveryBranchOrderSearchRequest fcDeliveryBranchOrderSearchRequest) {
 		return fcSaleBranch.searchOrder(fcDeliveryBranchOrderSearchRequest);
 	}
+
 	
 	/**
 	 * To get the FC-delivery Enquiry order search 
@@ -245,6 +248,20 @@ public class FcSaleBranchOrderController implements IFxBranchOrderService {
 		return customerRatingService.fxOrderinquireCustomerRating(deliveryDetailSeqId, product);
 
 	}
-	
-	
+
+    /**
+	 * To get the order to based on date selection
+	 * 
+	 */
+	@RequestMapping(value = Path.FC_SEARCH_ORDER_BY_DATES , method = RequestMethod.POST)
+	@Override
+	public AmxApiResponse<FcSaleOrderManagementDTO,Object> searchOrderByDates(@RequestBody FcSaleOrderManagementDatesRequest fcSaleDates){
+		BigDecimal countryId = metaData.getCountryId();
+		BigDecimal employeeId = metaData.getEmployeeId();
+		return fcSaleBranch.searchOrderByDates(countryId,employeeId,fcSaleDates);
 	}
+	
+
+
+	
+}

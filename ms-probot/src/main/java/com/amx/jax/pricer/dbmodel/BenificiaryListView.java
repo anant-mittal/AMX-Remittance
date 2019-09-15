@@ -91,6 +91,7 @@ public class BenificiaryListView implements Serializable {
 	private String myFavouriteBene;
 	private String bankShortNames;
 	private String ibanNumber;
+	private String beneficiaryZipCode;
 
 	@Id
 	@Column(name = "IDNO")
@@ -101,6 +102,7 @@ public class BenificiaryListView implements Serializable {
 		this.idNo = idNo;
 	}
 
+	
 	@Column(name = "BENEFICARY_MASTER_SEQ_ID")
 	public BigDecimal getBeneficaryMasterSeqId() {
 		return beneficaryMasterSeqId;
@@ -683,5 +685,13 @@ public class BenificiaryListView implements Serializable {
 	}
 	public void setIbanNumber(String ibanNumber) {
 		this.ibanNumber = ibanNumber;
+	}
+	
+	@Column(name = "BENE_ZIP_CODE")
+	public String getBeneficiaryZipCode() {
+		return beneficiaryZipCode;
+	}
+	public void setBeneficiaryZipCode(String beneficiaryZipCode) {
+		this.beneficiaryZipCode = beneficiaryZipCode;
 	}
 }

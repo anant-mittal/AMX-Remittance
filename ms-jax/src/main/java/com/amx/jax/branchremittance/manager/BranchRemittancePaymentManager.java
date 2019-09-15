@@ -31,7 +31,6 @@ import com.amx.jax.dbmodel.ParameterDetails;
 import com.amx.jax.dbmodel.partner.RemitApplSrvProv;
 import com.amx.jax.dbmodel.remittance.CustomerBank;
 import com.amx.jax.dbmodel.remittance.LocalBankDetailsView;
-import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.ShoppingCartDetails;
 import com.amx.jax.dbmodel.remittance.StaffAuthorizationView;
 import com.amx.jax.error.JaxError;
@@ -141,7 +140,7 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 			
 			if(lstCustomerShopping != null && !lstCustomerShopping.isEmpty() && lstCustomerShopping.size() != 0) {
 				for (ShoppingCartDetails customerApplDto : lstCustomerShopping) {
-					if(customerApplDto.getApplicationType()!=null && !customerApplDto.getApplicationType().equalsIgnoreCase("FS")) {
+					if(customerApplDto.getApplicationType()!=null && !customerApplDto.getApplicationType().equalsIgnoreCase(ConstantDocument.FS)) {
 					BigDecimal fcCurrencyId = customerApplDto.getForeignCurrency();
 					totalLocalAmount = totalLocalAmount.add(customerApplDto.getLocalTranxAmount()==null?BigDecimal.ZERO:customerApplDto.getLocalTranxAmount());
 					totalNetAmount   =totalNetAmount.add(customerApplDto.getLocalNextTranxAmount()==null?BigDecimal.ZERO:customerApplDto.getLocalNextTranxAmount());

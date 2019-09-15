@@ -90,7 +90,7 @@ public class CustomerRegistrationManager extends TransactionModel<CustomerRegist
 	@Autowired
 	CustomerIdProofRepository customerIdProofRepository;
 	@Autowired
-	BizcomponentDao bizcomponentDao;
+	BizcomponentDao bizcomponentDao; 
 	@Autowired
 	UserService userService;
 	
@@ -384,6 +384,10 @@ public class CustomerRegistrationManager extends TransactionModel<CustomerRegist
 				throw new GlobalException(JaxError.NO_RECORD_FOUND,"The customer does not exist in the system or inactive : "+identityInt);
 			}
 			
+			
+			String identityType = bizcomponentDao.getIdentityTypeMaster(customer.getIdentityTypeId());
+			
+		
 		
 			
 			if(StringUtils.isBlank(customer.getIsActive()) && customer.getIsActive().equalsIgnoreCase(ConstantDocument.No)) {
@@ -397,16 +401,17 @@ public class CustomerRegistrationManager extends TransactionModel<CustomerRegist
 				throw new GlobalException(JaxError.ID_PROOF_EXPIRED, "Id proof has been expired.");
 			}
 			
-			if(customer.getSignatureSpecimenClob()==null){
+		   if(!StringUtils.isBlank(identityType) && !identityType.equalsIgnoreCase(ConstantDocument.CORPORATE) && customer.getSignatureSpecimenClob()==null){
 				throw new GlobalException(JaxError.CUSTOMER__SIGNATURE_UNAVAILABLE,"Customer signature not available.");
 			}
 			
 			boolean insuranceCheck = ("Y".equals(customer.getMedicalInsuranceInd())|| "N".equals(customer.getMedicalInsuranceInd()));
-			if (!insuranceCheck) {
+			if (!StringUtils.isBlank(identityType) && !identityType.equalsIgnoreCase(ConstantDocument.CORPORATE)  && !insuranceCheck) {
 				throw new GlobalException(JaxError.INVALID_INSURANCE_INDICATOR, "INVALID MEDICAL INSURANCE INDICATOR");
 			}
-			
-			userValidationService.validateCustIdProofs(customer.getCustomerId());
+			if(!StringUtils.isBlank(identityType) && !identityType.equalsIgnoreCase(ConstantDocument.CORPORATE)){
+				userValidationService.validateCustIdProofs(customer.getCustomerId());
+			}
 			userValidationService.validateOldEmosData(customer);
 			userValidationService.validateCustContact(customer);
 			userValidationService.validateBlackListedCustomerForLogin(customer);
