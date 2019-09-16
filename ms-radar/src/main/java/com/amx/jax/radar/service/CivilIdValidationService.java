@@ -47,8 +47,6 @@ public class CivilIdValidationService {
 
 	XmlMapper xmlMapper = new XmlMapper();
 
-	CaptchaSolver captchaSolver = new CaptchaSolver("tessdata0");
-
 	public static final Logger LOGGER = LoggerService.getLogger(CivilIdValidationService.class);
 
 	public static class CivilIdValidationResponse implements Serializable {
@@ -140,7 +138,7 @@ public class CivilIdValidationService {
 		out.write(resultImageResponse.bodyAsBytes());
 		out.close();
 		LOGGER.info("Captch form {} is {}", temp.getAbsolutePath(),
-				captchaSolver.solve(temp.getAbsolutePath()));
+				CaptchaSolver.INSTANCE.solve(temp.getAbsolutePath()));
 		// Image Reading End
 
 		Connection con1 = con0
