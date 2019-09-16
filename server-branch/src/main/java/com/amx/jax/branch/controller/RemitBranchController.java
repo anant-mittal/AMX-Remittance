@@ -24,6 +24,7 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.api.ListRequestModel;
 import com.amx.jax.branch.BranchMetaOutFilter;
 import com.amx.jax.client.BeneClient;
+import com.amx.jax.client.PayAtBranchClient;
 import com.amx.jax.client.RemitClient;
 import com.amx.jax.client.remittance.RemittanceClient;
 import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
@@ -52,6 +53,7 @@ import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.rbaac.IRbaacService;
+import com.amx.jax.response.payatbranch.PayAtBranchTrnxListDTO;
 import com.amx.jax.sso.SSOUser;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
 import com.amx.jax.terminal.TerminalService;
@@ -72,6 +74,9 @@ public class RemitBranchController {
 
 	@Autowired
 	private RemittanceClient branchRemittanceClient;
+
+	@Autowired
+	private PayAtBranchClient payAtBranchClient;
 
 	@Autowired
 	private BeneClient beneClient;
@@ -258,28 +263,25 @@ public class RemitBranchController {
 		// }
 	}
 
-
 	@RequestMapping(value = "/api/remitt/cart/report", method = { RequestMethod.GET }, produces = {
-		CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE,
-		CommonMediaType.APPLICATION_PDF_VALUE, CommonMediaType.TEXT_HTML_VALUE })
-	public ResponseEntity<byte[]> report(
-			 @RequestParam("ext") File.Type ext) throws PostManException, IOException {
+			CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE,
+			CommonMediaType.APPLICATION_PDF_VALUE, CommonMediaType.TEXT_HTML_VALUE })
+	public ResponseEntity<byte[]> report(@RequestParam("ext") File.Type ext) throws PostManException, IOException {
 
 		// duplicate = (duplicate == null || duplicate.booleanValue() == false) ? false
-		AmxApiResponse<BranchRemittanceApplResponseDto, Object> wrapper = branchRemittanceClient.fetchCustomerShoppingCart();
+		AmxApiResponse<BranchRemittanceApplResponseDto, Object> wrapper = branchRemittanceClient
+				.fetchCustomerShoppingCart();
 		if (File.Type.PDF.equals(ext)) {
-			File file = postManService.processTemplate(
-					new File(TemplatesMX.REMIT_APPLICATION_RECEIPT_JASPER,
-							wrapper, File.Type.PDF).lang(AppContextUtil.getTenant().defaultLang()))
+			File file = postManService
+					.processTemplate(new File(TemplatesMX.REMIT_APPLICATION_RECEIPT_JASPER, wrapper, File.Type.PDF)
+							.lang(AppContextUtil.getTenant().defaultLang()))
 					.getResult();
 			return PostManUtil.download(file);
 			// file.create(response, false);
 			// return null;
 		} else if (File.Type.HTML.equals(ext)) {
-			File file = postManService.processTemplate(
-					new File(TemplatesMX.REMIT_APPLICATION_RECEIPT_JASPER,
-							wrapper, null))
-					.getResult();
+			File file = postManService
+					.processTemplate(new File(TemplatesMX.REMIT_APPLICATION_RECEIPT_JASPER, wrapper, null)).getResult();
 			// return file.getContent();
 			return PostManUtil.download(file);
 		} else {
@@ -291,7 +293,6 @@ public class RemitBranchController {
 		// return JsonUtil.toJson(wrapper);
 		// }
 	}
-
 
 	@RequestMapping(value = "/api/remitt/tranx/email", method = { RequestMethod.GET })
 	public AmxApiResponse<BoolRespModel, Object> sendEmail(
@@ -320,4 +321,11 @@ public class RemitBranchController {
 			@RequestBody RoutingPricingRequest routingPricingRequest) {
 		return branchRemittanceClient.getDynamicRoutingPricing(routingPricingRequest);
 	}
+
+	@RequestMapping(value = "/api/remitt/pb_trnx/list", method = { RequestMethod.POST })
+	public AmxApiResponse<PayAtBranchTrnxListDTO, Object> getPayAtBranchApplList() {
+		return payAtBranchClient.getPbTrnxListBranch();
+	}
+
+
 }
