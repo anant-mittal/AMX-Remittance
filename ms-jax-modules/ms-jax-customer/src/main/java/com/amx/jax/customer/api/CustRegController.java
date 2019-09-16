@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.CustomerCredential;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
@@ -22,7 +21,6 @@ import com.amx.jax.customer.ICustRegService;
 import com.amx.jax.customer.manager.OffsiteAddressProofManager;
 import com.amx.jax.customer.service.CustomerManagementService;
 import com.amx.jax.customer.service.OffsitCustRegService;
-import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.CardDetail;
@@ -176,35 +174,18 @@ public class CustRegController implements ICustRegService {
 	
 	@RequestMapping(value = CustRegApiEndPoints.GET_CUSTOMER_DEATILS, method = RequestMethod.GET)
 	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerDetails(
-		@RequestParam(value = "identityInt", required = false) String identityInt,
-		@RequestParam(value = "identityType", required = false) BigDecimal identityType,
-		@RequestParam(value = "customerId", required = false) BigDecimal customerId) {
-		
-		if((ArgUtil.isEmpty(identityInt)  && ArgUtil.isEmpty(identityType) &&  ArgUtil.isEmpty(customerId)))
-		{
-			throw new GlobalException(JaxError.VALIDATION_NOT_NULL, "Civil ID,Customer ID,Type should not be null");
-		}
+			@RequestParam(value = "identityInt", required = false) String identityInt,
+			@RequestParam(value = "identityType", required = false) BigDecimal identityType,
+			@RequestParam(value = "customerId", required = false) BigDecimal customerId) {
 
-    	if(ArgUtil.isEmpty(identityType) && !ArgUtil.isEmpty(identityInt))
-		{
-			throw new GlobalException(JaxError.VALIDATION_NOT_NULL, "Civil ID should not be null");
-
-		}
-    	if((ArgUtil.isEmpty(identityInt) && !ArgUtil.isEmpty(identityType)))
-		{
-			throw new GlobalException(JaxError.VALIDATION_NOT_NULL, "Customer ID should not be null");
-
-		}
-		
-		AmxApiResponse<OffsiteCustomerDataDTO, Object> response=null;
-		if(!ArgUtil.isEmpty(customerId))
-		{
+		customerManagementService.validateCustomerField(identityInt, identityType, customerId);
+		AmxApiResponse<OffsiteCustomerDataDTO, Object> response = null;
+		if (!ArgUtil.isEmpty(customerId)) {
 			PersonInfo personInfo = userService.getPersonInfo(customerId);
-			String identityIntByCustId =personInfo.getIdentityInt();
-			response=customerManagementService.getCustomerDetail(identityIntByCustId, personInfo.getIdentityTypeId());
-		}
-		else {
-			response=customerManagementService.getCustomerDetail(identityInt, identityType);
+			String identityIntByCustId = personInfo.getIdentityInt();
+			response = customerManagementService.getCustomerDetail(identityIntByCustId, personInfo.getIdentityTypeId());
+		} else {
+			response = customerManagementService.getCustomerDetail(identityInt, identityType);
 		}
 		return response;
 	}
@@ -227,7 +208,6 @@ public class CustRegController implements ICustRegService {
 		return AmxApiResponse.build(offsiteAddressProofManager.saveDocumentUploadReference(imageSubmissionRequest));
 	}
 
-	
 	
 
 }

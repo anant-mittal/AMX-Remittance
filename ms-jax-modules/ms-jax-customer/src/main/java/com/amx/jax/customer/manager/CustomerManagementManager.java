@@ -311,20 +311,19 @@ public class CustomerManagementManager {
 		LoginLogoutHistory history = userService.getLoginLogoutHistoryByUserName(customer.getIdentityInt());
 		LastLoginDetails lastLoginDetails = new LastLoginDetails();
 
-		if(history!=null) {
+		if (history != null) {
 			lastLoginDetails.setLoginTime(history.getLoginTime());
 			lastLoginDetails.setLogoutTime(history.getLogoutTime());
 		}
-		
 		return lastLoginDetails;
 	}
-	private PolicyDetails createPolicyDetails(Customer customer)
-	{
-		CustomerInsurance custInsurance=customerInsuranceRepo.findByCustomerIdAndIsActive(customer.getCustomerId(),ConstantDocument.Yes);
-		PolicyDetails policyDetails= new PolicyDetails();
 
-		if(custInsurance !=null)
-		{
+	private PolicyDetails createPolicyDetails(Customer customer) {
+		CustomerInsurance custInsurance = customerInsuranceRepo.findByCustomerIdAndIsActive(customer.getCustomerId(),
+				ConstantDocument.Yes);
+		PolicyDetails policyDetails = new PolicyDetails();
+
+		if (custInsurance != null) {
 			policyDetails.setEntryDate(custInsurance.getEntryDate());
 			policyDetails.setExpiryDate(custInsurance.getExpiryDate());
 		}

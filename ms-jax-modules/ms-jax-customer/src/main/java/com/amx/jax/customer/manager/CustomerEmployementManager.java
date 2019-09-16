@@ -39,10 +39,10 @@ public class CustomerEmployementManager {
 		EmployeeDetails employmentData = customerEmployeeDetailsRepository.getCustomerEmploymentData(customer);
 		String articleDesc=null;
 		
-		if(null != customer.getFsArticleDetails())
-		{
-			if(null != customer.getFsArticleDetails().getArticleDetailId())
-			articleDesc=articleDao.getArticleDesc(customer);
+		if (null != customer.getFsArticleDetails()) {
+			if (null != customer.getFsArticleDetails().getArticleDetailId()) {
+				articleDesc = articleDao.getArticleDesc(customer);
+			}
 		}
 		
 		CustomerCoreDetailsView customercoreView = customerCoreDetailsRepositroy.findByCustomerID(customer.getCustomerId());

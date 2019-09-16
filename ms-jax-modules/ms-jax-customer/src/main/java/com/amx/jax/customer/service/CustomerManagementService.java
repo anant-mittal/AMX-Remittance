@@ -5,11 +5,14 @@ import java.math.BigDecimal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.customer.manager.CustomerForceUpdateManager;
 import com.amx.jax.customer.manager.CustomerManagementManager;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.model.response.customer.CustomerMgmtMetaInfo;
 import com.amx.jax.model.response.customer.OffsiteCustomerDataDTO;
+import com.amx.utils.ArgUtil;
 
 @Service
 public class CustomerManagementService {
@@ -42,6 +45,16 @@ public class CustomerManagementService {
 			return metaInfo;
 		} else {
 			return null;
+		}
+	}
+	public void validateCustomerField(String identityInt, BigDecimal identityType, BigDecimal customerId) {
+		if (ArgUtil.isEmpty(identityInt) && ArgUtil.isEmpty(customerId)) {
+			throw new GlobalException(JaxError.VALIDATION_NOT_NULL, "Civil ID,Customer ID should not be null");
+
+		}
+		if (!ArgUtil.isEmpty(identityInt) && ArgUtil.isEmpty(identityType)) {
+			throw new GlobalException(JaxError.VALIDATION_NOT_NULL, "identity Type should not be null");
+
 		}
 	}
 }
