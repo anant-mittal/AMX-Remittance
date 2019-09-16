@@ -181,7 +181,7 @@ public class CivilIdValidationService {
 	private static final Pattern FIND_NAME = Pattern.compile("Name ([a-zA-Z ]+)\n");
 	private static final Pattern FIND_NATIONALITY = Pattern.compile("Nationality ([a-zA-Z]{1,3})\n");
 	private static final Pattern FIND_DATE = Pattern.compile("\n(\\d{2}/\\d{2}/\\d{4})");
-	public static final String FIND_DATE_FORMAT_STRING = "dd/MM/YYYY";
+	public static final String FIND_DATE_FORMAT_STRING = "dd/MM/yyyy";
 	public static final SimpleDateFormat FIND_DATE_FORMAT = new SimpleDateFormat(FIND_DATE_FORMAT_STRING);
 
 	public Map<String, Object> scan(MultipartFile file) throws IOException {
@@ -251,8 +251,14 @@ public class CivilIdValidationService {
 				}
 			}
 
-			output.put("dob", FIND_DATE_FORMAT.format(dob));
-			output.put("expiry", FIND_DATE_FORMAT.format(expiry));
+			if (ArgUtil.is(dob)) {
+				output.put("dob", FIND_DATE_FORMAT.format(dob));
+			}
+
+			if (ArgUtil.is(expiry)) {
+				output.put("expiry", FIND_DATE_FORMAT.format(expiry));
+			}
+
 		}
 
 		return output;

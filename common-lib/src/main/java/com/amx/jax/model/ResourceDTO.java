@@ -34,8 +34,7 @@ public class ResourceDTO implements IResourceEntity, Serializable {
 	 */
 	@JsonProperty("_name")
 	protected String resourceName;
-	
-	
+
 	@JsonProperty("_local_name")
 	protected String resourceLocalName;
 
@@ -56,7 +55,7 @@ public class ResourceDTO implements IResourceEntity, Serializable {
 		this.resourceId = resource.resourceId();
 		this.resourceName = resource.resourceName();
 		this.resourceCode = resource.resourceCode();
-		this.resourceValue = resource.resourceLocalName();
+		this.resourceLocalName = resource.resourceLocalName();
 	}
 
 	public ResourceDTO(BigDecimal resourceId, String resourceName, String resourceCode) {
@@ -117,8 +116,6 @@ public class ResourceDTO implements IResourceEntity, Serializable {
 		return resourceCode;
 	}
 
-
-
 	public Object getResourceValue() {
 		return resourceValue;
 	}
@@ -131,7 +128,7 @@ public class ResourceDTO implements IResourceEntity, Serializable {
 		this.resourceId = entity.resourceId();
 		this.resourceCode = entity.resourceCode();
 		this.resourceName = entity.resourceName();
-		this.resourceValue = entity.resourceLocalName();
+		this.resourceLocalName = entity.resourceLocalName();
 	}
 
 	public static ResourceDTO create(IResourceEntity entity) {
