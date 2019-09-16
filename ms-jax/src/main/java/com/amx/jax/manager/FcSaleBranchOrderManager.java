@@ -1924,6 +1924,23 @@ public class FcSaleBranchOrderManager {
 		return stockStatus;
 	}
 
+	public FxDeliveryTimeSlotDto fetchFcDeliveryTiming() {
+		FxDeliveryTimeSlotMaster fxDeliveryTimeSlotMaster = new FxDeliveryTimeSlotMaster();
+		FxDeliveryTimeSlotDto fxDeliveryTimeSlotDto = new FxDeliveryTimeSlotDto();
+		BigDecimal countryId = metaData.getCountryId();
+		BigDecimal companyId = metaData.getCompanyId();
+
+		fxDeliveryTimeSlotMaster = fcSaleOrderTimeSlotDao.fetchDeliveryTimeSlot(countryId, companyId);
+
+		fxDeliveryTimeSlotDto.setStartTime(fxDeliveryTimeSlotMaster.getStartTime());
+		fxDeliveryTimeSlotDto.setEndTime(fxDeliveryTimeSlotMaster.getEndTime());
+		fxDeliveryTimeSlotDto.setOfficeStartTime(fxDeliveryTimeSlotMaster.getOfficeStartTime());
+		fxDeliveryTimeSlotDto.setOfficeEndTime(fxDeliveryTimeSlotMaster.getEndTime());
+		fxDeliveryTimeSlotDto.setTimeInterval(fxDeliveryTimeSlotMaster.getTimeInterval());
+
+		return fxDeliveryTimeSlotDto;
+
+	}
 	
 	public Boolean saveFcDeliveryTiming(FxDeliveryTimeSlotDto fxDeliveryTimeSlotDto) {
 		Boolean status = Boolean.FALSE;

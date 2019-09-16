@@ -14,6 +14,10 @@ public interface FxOrderDeliveryTimeSlotRepository extends CrudRepository<FxDeli
 
 	@Query(value = "SELECT * FROM EX_DELIVERY_TIME_SLOTS WHERE COUNTRY_ID=?1 AND COMPANY_ID=?2 AND ISACTIVE=?3", nativeQuery = true)
 	public FxDeliveryTimeSlotMaster saveDeliveryTimeSlot(BigDecimal countryId,BigDecimal companyId,String isactive);
+	
+	@Query(value = "SELECT * FROM EX_DELIVERY_TIME_SLOTS WHERE COUNTRY_ID=?1 AND COMPANY_ID=?2", nativeQuery = true)
+	public FxDeliveryTimeSlotMaster fetchDeliveryTimeSlot(BigDecimal countryId,BigDecimal companyId);
+	
 		
 	
 }

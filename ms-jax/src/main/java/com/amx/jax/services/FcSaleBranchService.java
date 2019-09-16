@@ -93,6 +93,9 @@ public class FcSaleBranchService extends AbstractService{
 	
 	@Autowired
 	FxOrderDeliveryTimeSlotRepository fcSaleOrderTimeSlotDao;
+	
+	@Autowired
+	FcSaleBranchOrderManager fcSaleBranchOrderManager;
 
 
 
@@ -831,6 +834,11 @@ public class FcSaleBranchService extends AbstractService{
 
 	return new BoolRespModel(status);
 }
+	
+	public FxDeliveryTimeSlotDto fetchFcDeliveryTiming() {
+		return fcSaleBranchOrderManager.fetchFcDeliveryTiming();
+		
+	}
 	
 }	
 

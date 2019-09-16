@@ -36,6 +36,7 @@ public interface IFxBranchOrderService extends IJaxService {
 		public static final String FC_REPRINT_ORDER = PREFIX + "/reprint-order/";
 		public static final String FC_SEARCH_ORDER = PREFIX + "/search-order/";
 		public static final String FC_ORDER_DELIVERY_TIME_SETUP = PREFIX + "/delivery-time-setup/";
+		public static final String FC_ORDER_DELIVERY_TIME_SETUP_FETCH = PREFIX + "/fetching-delivery-time-setup/";
 		
 		
 	}

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.fx.IFxBranchOrderService;
+import com.amx.jax.manager.FcSaleBranchOrderManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.fx.FcDeliveryBranchOrderSearchRequest;
 import com.amx.jax.model.request.fx.FcSaleBranchDispatchRequest;
@@ -43,6 +44,9 @@ public class FcSaleBranchOrderController implements IFxBranchOrderService {
 
 	@Autowired
 	MetaData metaData;
+	
+	@Autowired
+	FcSaleBranchOrderManager fcSaleBranchOrderManager;
 	
 
 	/**
@@ -245,5 +249,13 @@ public class FcSaleBranchOrderController implements IFxBranchOrderService {
 		BoolRespModel result =fcSaleBranch.saveFcDeliveryTiming(fxDeliveryTimeSlotDto);
 		return AmxApiResponse.build(result);
 	}
+	
+	@RequestMapping(value = Path.FC_ORDER_DELIVERY_TIME_SETUP_FETCH , method = RequestMethod.GET)
+	public FxDeliveryTimeSlotDto fetchFcDeliveryTimeSlot() {
+		
+		return fcSaleBranch.fetchFcDeliveryTiming();
+		
+	}
+	
 	
 }
