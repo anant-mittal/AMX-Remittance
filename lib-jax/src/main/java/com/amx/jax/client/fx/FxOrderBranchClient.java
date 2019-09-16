@@ -340,7 +340,6 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 		}
 	}
 	
-}
 
 	@Override
 	public AmxApiResponse<FcSaleOrderManagementDTO, Object> searchOrderByDates(FcSaleOrderManagementDatesRequest fcSaleDates) {
