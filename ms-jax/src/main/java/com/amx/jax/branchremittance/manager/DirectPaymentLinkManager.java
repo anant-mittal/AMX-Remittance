@@ -175,6 +175,7 @@ public class DirectPaymentLinkManager extends AbstractModel {
 		if (paymentLink != null) {
 			PaymentLinkRespStatus statusModel = new PaymentLinkRespStatus();
 			if (paymentLink.getLinkActive().equals("Y")) {
+				metaData.setCustomerId(paymentLink.getCustomerId());
 				BranchRemittanceApplResponseDto shpCartData = branchRemittancePaymentManager
 						.fetchCustomerShoppingCart(paymentLink.getCustomerId(), localCurrencyId);
 
