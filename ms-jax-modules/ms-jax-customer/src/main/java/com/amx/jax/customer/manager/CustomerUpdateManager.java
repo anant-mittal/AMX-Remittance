@@ -40,6 +40,8 @@ public class CustomerUpdateManager {
 	CompanyService companyService;
 	@Autowired
 	CountryService countryService;
+	@Autowired
+	CustomerBranchAuditManager customerBranchAuditManager;
 
 	private static final Logger log = LoggerFactory.getLogger(CustomerUpdateManager.class);
 
@@ -63,6 +65,7 @@ public class CustomerUpdateManager {
 			customerPersonalDetailManager.updateCustomerPersonalDetail(customer, req.getPersonalDetailInfo());
 		}
 		customerDocumentManager.addCustomerDocument(metaData.getCustomerId());
+		customerBranchAuditManager.logAuditUpdateCustomer(req);
 	}
 
 	private void validateLocalContactDetail(UpdateCustomerInfoRequest req) {
