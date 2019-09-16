@@ -1219,6 +1219,7 @@ public class RemittanceTransactionManager {
 		if (model.getmOtp() == null) {
 			// this flow is for send OTP
 			civilIdOtpModel = addOtpOnRemittanceV2(model);
+			throw new GlobalException("Save application disabled");
 		} else {
 			// this flow is for validate OTP
 			userService.validateOtp(null, model.getmOtp(), null);
@@ -1469,6 +1470,8 @@ public class RemittanceTransactionManager {
 			otpMmodel = (CivilIdOtpModel) userService.sendOtpForCivilId(null, channel, null, null).getData().getValues()
 					.get(0);
 		}
+		
+		
 		return otpMmodel;
 	}
 	

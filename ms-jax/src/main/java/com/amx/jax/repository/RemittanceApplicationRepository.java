@@ -77,7 +77,7 @@ public interface RemittanceApplicationRepository extends CrudRepository<Remittan
 			+"and isactive <> 'D' and NVL(resultCode,' ') NOT IN('CAPTURED','APPROVED')")
 	public void deActivateNotUsedAllApplication(@Param("customerId") Customer customerId);
     
-    @Query("select ra from RemittanceApplication ra where ra.fsCustomer = ?1 and ra.paymentType = ?2 and ra.isActive='Y' and ra.createdDate=sysDate order by createdDate desc")
+    @Query("select ra from RemittanceApplication ra where ra.fsCustomer = ?1 and ra.paymentType = ?2 and ra.isactive='Y' and ra.createdDate=sysDate order by createdDate desc")
     public List<RemittanceApplication> getLatestPbApplication(Customer customerId , String paymentType);
     
     @Transactional
