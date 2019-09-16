@@ -1103,7 +1103,7 @@ public class RemittanceTransactionManager {
 		logger.info("amount in exchnagerate break up"+breakup.getNetAmount());
 		BigDecimal netAmountPayable = breakup.getNetAmount();
 		RemittanceApplicationResponseModel remiteAppModel = new RemittanceApplicationResponseModel();
-		deactivatePreviousApplications();
+		deactivatePreviousApplications(model.getPaymentType());
 		validateAdditionalCheck();
 		validateAdditionalBeneDetails(model);
 		remittanceAdditionalFieldManager.processAdditionalFields(model);
@@ -1171,7 +1171,7 @@ public class RemittanceTransactionManager {
 		BigDecimal netAmountPayable = breakup.getNetAmount();
 		RemittanceApplicationResponseModel remiteAppModel = new RemittanceApplicationResponseModel();
 		
-		deactivatePreviousApplications();
+		deactivatePreviousApplications(model.getPaymentType());
 		
 		
 		validateAdditionalCheck();
@@ -1239,9 +1239,14 @@ public class RemittanceTransactionManager {
 
 	
 	
-	private void deactivatePreviousApplications() {
+	private void deactivatePreviousApplications(String paymentType) {
 		BigDecimal customerId = meta.getCustomerId();
-		remittanceApplicationService.deActivateApplication(customerId);
+		if(!paymentType.equalsIgnoreCase(ConstantDocument.PB_PAYMENT)) {
+			remittanceApplicationService.deActivateApplication(customerId);
+		}else {
+			remittanceApplicationService.deActivateLatestPbApplication(customerId,paymentType);
+		}
+		
 	}
 
 	private void validateAdditionalBeneDetails(RemittanceTransactionRequestModel model) {

@@ -155,6 +155,19 @@ public void updatePayTokenNull(List<RemittanceApplication> lstPayIdDetails,Payme
 		}
 	}
 	
+	public void deActivateLatestPbApplication(BigDecimal customerId , String paymentType) {
+		try {
+
+			// deactivate all the application
+			List<RemittanceApplication> remittanceApplicationList = remittanceApplicationRepository.getLatestPbApplication(customerId, paymentType);
+			
+			remittanceApplicationRepository.deActivateLatestPbApplication(remittanceApplicationList.get(0).getRemittanceApplicationId());
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new GlobalException("De-Activate Application failed for customer:"+customerId);
+		}
+	}
 	/**
 	 * EX_INSERT_REMITTANCE_ONLINE 
 	 * 

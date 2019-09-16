@@ -74,7 +74,15 @@ public interface RemittanceApplicationRepository extends CrudRepository<Remittan
     @Transactional
 	@Modifying
 	@Query("update RemittanceApplication appl set isactive = 'D',applicaitonStatus = null where appl.fsCustomer=:customerId and trunc(sysdate)=trunc(createdDate) " 
-			+"and isactive <> 'D' and NVL(resultCode,' ') NOT IN('CAPTURED','APPROVED') and paymentType <> 'PB'")
+			+"and isactive <> 'D' and NVL(resultCode,' ') NOT IN('CAPTURED','APPROVED')")
 	public void deActivateNotUsedAllApplication(@Param("customerId") Customer customerId);
+    
+    @Query("select ra from RemittanceApplication ra where ra.customerId = ?1 and ra.paymentType = ?2 and ra.isActive='Y' and ra.createdDate=sysDate order by createdDate desc")
+    public List<RemittanceApplication> getLatestPbApplication(BigDecimal customerId , String paymentType);
+    
+    @Transactional
+	@Modifying
+	@Query("update RemittanceApplication appl set isactive = 'D',applicaitonStatus = null where appl.remittanceApplicationId=?1")
+	public void deActivateLatestPbApplication(BigDecimal remittanceApplicationId);
 	 
 }
