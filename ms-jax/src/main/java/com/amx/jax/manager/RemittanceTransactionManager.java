@@ -108,6 +108,7 @@ import com.amx.jax.pricer.var.PricerServiceConstants;
 import com.amx.jax.remittance.manager.RemittanceParameterMapManager;
 import com.amx.jax.repository.AuthenticationViewRepository;
 import com.amx.jax.repository.BankMasterRepository;
+import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.repository.IAmiecAndBankMappingRepository;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.ICurrencyDao;
@@ -228,6 +229,9 @@ public class RemittanceTransactionManager {
 	
 	@Autowired
 	PartnerTransactionManager partnerTransactionManager;
+	
+	@Autowired
+	CustomerRepository customerRepository;
 
 	protected Map<String, Object> validatedObjects = new HashMap<>();
 
@@ -1241,10 +1245,12 @@ public class RemittanceTransactionManager {
 	
 	private void deactivatePreviousApplications(String paymentType) {
 		BigDecimal customerId = meta.getCustomerId();
+		Customer customer = customerRepository.getActiveCustomerDetailsByCustomerId(customerId);
+		
 		if(!paymentType.equalsIgnoreCase(ConstantDocument.PB_PAYMENT)) {
 			remittanceApplicationService.deActivateApplication(customerId);
 		}else {
-			remittanceApplicationService.deActivateLatestPbApplication(customerId,paymentType);
+			remittanceApplicationService.deActivateLatestPbApplication(customer,paymentType);
 		}
 		
 	}

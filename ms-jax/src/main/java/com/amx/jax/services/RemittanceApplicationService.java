@@ -155,7 +155,7 @@ public void updatePayTokenNull(List<RemittanceApplication> lstPayIdDetails,Payme
 		}
 	}
 	
-	public void deActivateLatestPbApplication(BigDecimal customerId , String paymentType) {
+	public void deActivateLatestPbApplication(Customer customerId , String paymentType) {
 		try {
 
 			// deactivate all the application
