@@ -36,7 +36,7 @@ public class SnapQueryTestController {
 	private TunnelService tunnelService;
 
 	@ResponseBody
-	@RequestMapping(value = "/snap/query/{snapView}", method = RequestMethod.POST)
+	@RequestMapping(value = "/test/snap/query/{snapView}", method = RequestMethod.POST)
 	public List<Map<String, Object>> snapQuery(@PathVariable(value = "snapView") SnapQueryTemplate snapView,
 			@RequestBody Map<String, Object> params) throws IOException {
 		String json = FileUtil
