@@ -251,8 +251,14 @@ public class CivilIdValidationService {
 				}
 			}
 
-			output.put("dob", FIND_DATE_FORMAT.format(dob));
-			output.put("expiry", FIND_DATE_FORMAT.format(expiry));
+			if (ArgUtil.is(dob)) {
+				output.put("dob", FIND_DATE_FORMAT.format(dob));
+			}
+
+			if (ArgUtil.is(expiry)) {
+				output.put("expiry", FIND_DATE_FORMAT.format(expiry));
+			}
+
 		}
 
 		return output;
