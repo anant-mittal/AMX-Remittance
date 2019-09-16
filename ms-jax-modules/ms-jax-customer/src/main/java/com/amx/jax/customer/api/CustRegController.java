@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.CustomerCredential;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
@@ -21,6 +22,7 @@ import com.amx.jax.customer.ICustRegService;
 import com.amx.jax.customer.manager.OffsiteAddressProofManager;
 import com.amx.jax.customer.service.CustomerManagementService;
 import com.amx.jax.customer.service.OffsitCustRegService;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.CardDetail;
@@ -207,7 +209,5 @@ public class CustRegController implements ICustRegService {
 			@RequestBody ImageSubmissionRequest imageSubmissionRequest) throws Exception {
 		return AmxApiResponse.build(offsiteAddressProofManager.saveDocumentUploadReference(imageSubmissionRequest));
 	}
-
-	
 
 }

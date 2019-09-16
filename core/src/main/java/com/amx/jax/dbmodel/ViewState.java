@@ -88,4 +88,10 @@ public class ViewState implements Serializable, IResourceEntity {
 		return this.stateCode;
 	}
 
+	@Override
+	public String resourceLocalName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

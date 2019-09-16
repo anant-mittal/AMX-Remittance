@@ -31,8 +31,10 @@ import com.amx.jax.http.CommonHttpRequest.ApiRequestDetail;
 import com.amx.jax.http.RequestType;
 import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.logger.events.RequestTrackEvent;
+import com.amx.jax.model.MapModel;
 import com.amx.jax.rest.AppRequestContextInFilter;
 import com.amx.jax.scope.TenantContextHolder;
+import com.amx.jax.session.SessionContextService;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.CryptoUtil;
 import com.amx.utils.JsonUtil;
@@ -61,6 +63,9 @@ public class AppRequestFilter implements Filter {
 
 	@Autowired(required = false)
 	AppRequestContextInFilter appContextInFilter;
+
+	@Autowired(required = false)
+	SessionContextService sessionContextService;
 
 	private boolean doesTokenMatch(HttpServletRequest req, HttpServletResponse resp, String traceId,
 			boolean checkHMAC) {
@@ -94,8 +99,8 @@ public class AppRequestFilter implements Filter {
 		}
 	}
 
-	public void setFlow(HttpServletRequest req) {
-		String url = req.getRequestURI();
+	public void setFlow(HttpServletRequest req, ApiRequestDetail apiRequest) {
+		String url = ArgUtil.ifNotEmpty(apiRequest.getFlow(), req.getRequestURI());
 		AppContextUtil.setFlow(url);
 		AppContextUtil.setFlowfix(url.toLowerCase().replace("pub", "b").replace("api", "p").replace("user", "")
 				.replace("get", "").replace("post", "").replace("save", "")
@@ -176,6 +181,14 @@ public class AppRequestFilter implements Filter {
 				AppContextUtil.setUserClient(userClient);
 			}
 
+			// Session Actor Tracking
+			if (!ArgUtil.isEmpty(sessionId) && !ArgUtil.isEmpty(sessionContextService)) {
+				String actorInfoJson = req.getHeader(AppConstants.ACTOR_INFO_XKEY);
+				if (!StringUtils.isEmpty(actorInfoJson)) {
+					sessionContextService.setContext(new MapModel(actorInfoJson));
+				}
+			}
+
 			String requestdParamsJson = ArgUtil.ifNotEmpty(req.getParameter(AppConstants.REQUESTD_PARAMS_XKEY),
 					req.getHeader(AppConstants.REQUESTD_PARAMS_XKEY));
 			if (!ArgUtil.isEmpty(requestdParamsJson)) {
@@ -196,7 +209,7 @@ public class AppRequestFilter implements Filter {
 				traceId = ArgUtil.parseAsString(req.getParameter(AppConstants.TRACE_ID_XKEY));
 			}
 			if (StringUtils.isEmpty(traceId)) {
-				setFlow(req);
+				setFlow(req, apiRequest);
 				HttpSession session = req.getSession(false);
 				if (ArgUtil.isEmpty(sessionId)) {
 					if (session == null) {

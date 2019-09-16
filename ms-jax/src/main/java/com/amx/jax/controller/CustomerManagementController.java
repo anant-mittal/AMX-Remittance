@@ -13,6 +13,7 @@ import static com.amx.jax.customer.ICustomerManagementController.ApiPath.UPDATE_
 import static com.amx.jax.customer.ICustomerManagementController.ApiPath.UPLOAD_CUSTOMER_DOCUMENT;
 import static com.amx.jax.customer.ICustomerManagementController.ApiPath.UPLOAD_CUSTOMER_KYC;
 import static com.amx.jax.customer.ICustomerManagementController.ApiPath.VERIFY_CONTACT;
+import static com.amx.jax.customer.ICustomerManagementController.ApiPath.DOCUMENT_CAT_TYPE_LIST_GET;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -47,6 +48,7 @@ import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.customer.CreateCustomerInfoRequest;
 import com.amx.jax.model.customer.DuplicateCustomerDto;
 import com.amx.jax.model.customer.IdentityTypeDto;
+import com.amx.jax.model.customer.document.CustomerDocCatTypeDto;
 import com.amx.jax.model.customer.document.CustomerDocumentCategoryDto;
 import com.amx.jax.model.customer.document.CustomerDocumentTypeDto;
 import com.amx.jax.model.customer.document.UploadCustomerDocumentRequest;
@@ -100,6 +102,8 @@ public class CustomerManagementController implements ICustomerManagementControll
 			throws ParseException {
 		log.debug("request createCustomer  {}", JsonUtil.toJson(createCustomerRequest));
 		AmxApiResponse<CustomerInfo, Object> createCustomerResponse = customerManagementManager.createCustomer(createCustomerRequest);
+		metaData.setCustomerId(createCustomerResponse.getResult().getCustomerId());
+		updateCustomer(new UpdateCustomerInfoRequest());
 		return createCustomerResponse;
 	}
 
@@ -232,5 +236,12 @@ public class CustomerManagementController implements ICustomerManagementControll
 		}
 		
 		return AmxApiResponse.build(customerShortDetail);
+	}
+
+	@Override
+	@RequestMapping(path = DOCUMENT_CAT_TYPE_LIST_GET, method = { RequestMethod.GET })
+	public AmxApiResponse<CustomerDocCatTypeDto, Object> listDocCatType() {
+		List<CustomerDocCatTypeDto> resultList  = customerDocMasterManager.listDocCatType();
+		return AmxApiResponse.buildList(resultList);
 	}
 }

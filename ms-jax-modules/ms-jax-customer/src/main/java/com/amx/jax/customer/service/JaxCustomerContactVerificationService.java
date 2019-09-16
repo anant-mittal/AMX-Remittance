@@ -10,12 +10,9 @@ import org.springframework.stereotype.Service;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.jax.async.ExecutorConfig;
-import com.amx.jax.constant.ConstantDocument;
-import com.amx.jax.constant.CustomerVerificationType;
 import com.amx.jax.customer.manager.CustomerContactVerificationManager;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerContactVerification;
-import com.amx.jax.dbmodel.CustomerVerification;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
@@ -23,6 +20,7 @@ import com.amx.jax.model.response.customer.CustomerDto;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
+import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.services.AbstractService;
@@ -101,5 +99,29 @@ public class JaxCustomerContactVerificationService extends AbstractService {
 
 		}
 		
+	}
+
+	public void sendVerificationLink(Customer c, CustomerContactVerification x) {
+
+		ContactType contactType = x.getContactType();
+
+		if (ContactType.EMAIL.equals(contactType)) {
+			Email email = new Email();
+			email.addTo(c.getEmail());
+			email.setITemplate(TemplatesMX.CONTACT_VERIFICATION_EMAIL);
+			email.getModel().put("customer", EntityDtoUtil.entityToDto(c, new CustomerDto()));
+			email.getModel().put("link", x);
+			postManService.sendEmailAsync(email);
+		} else if (ContactType.SMS.equals(contactType)) {
+			SMS sms = new SMS();
+			sms.addTo(c.getMobile());
+			sms.setITemplate(TemplatesMX.CONTACT_VERIFICATION_SMS);
+
+			sms.getModel().put("customer", EntityDtoUtil.entityToDto(c, new CustomerDto()));
+			sms.getModel().put("link", x);
+			postManService.sendSMSAsync(sms);
+		} else if (ContactType.WHATSAPP.equals(contactType)) {
+
+		}
 	}
 }

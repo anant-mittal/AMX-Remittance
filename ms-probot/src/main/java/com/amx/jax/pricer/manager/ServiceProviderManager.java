@@ -123,8 +123,8 @@ public class ServiceProviderManager {
 			sellRateNet.setRate(BigDecimal.ZERO);
 		}
 
-		sellRateBase.setConvertedLCAmount(partnerResp.getGrossAmount());
-		sellRateBase.setConvertedFCAmount(partnerResp.getForeignAmount());
+		sellRateBase.setConvertedLCAmount(partnerResp.getBaseLocalAmount());
+		sellRateBase.setConvertedFCAmount(partnerResp.getBaseForeignAmount());
 		
 		sellRateNet.setConvertedLCAmount(partnerResp.getGrossAmount());
 		sellRateNet.setConvertedFCAmount(partnerResp.getForeignAmount());

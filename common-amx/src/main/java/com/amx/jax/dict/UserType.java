@@ -1,4 +1,4 @@
-package com.amx.jax.constant;
+package com.amx.jax.dict;
 
 public enum UserType {
 

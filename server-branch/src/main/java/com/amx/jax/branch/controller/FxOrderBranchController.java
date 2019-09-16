@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.fx.FxOrderBranchClient;
@@ -103,7 +104,7 @@ public class FxOrderBranchController {
 		if (File.Type.PDF.equals(ext)) {
 			File file = postManService.processTemplate(
 					new File(duplicate ? TemplatesMX.FXO_RECEIPT_BRANCH : TemplatesMX.FXO_RECEIPT_BRANCH,
-							wrapper, File.Type.PDF))
+							wrapper, File.Type.PDF).lang(AppContextUtil.getTenant().defaultLang()))
 					.getResult();
 			// file.create(response, false);
 			// return null;
@@ -115,7 +116,7 @@ public class FxOrderBranchController {
 		} else if (File.Type.HTML.equals(ext)) {
 			File file = postManService.processTemplate(
 					new File(duplicate ? TemplatesMX.FXO_RECEIPT_BRANCH : TemplatesMX.FXO_RECEIPT_BRANCH,
-							wrapper, File.Type.HTML))
+							wrapper, File.Type.HTML).lang(AppContextUtil.getTenant().defaultLang()))
 					.getResult();
 			
 			file.setName(file.getITemplate().getFileName() + '_' +

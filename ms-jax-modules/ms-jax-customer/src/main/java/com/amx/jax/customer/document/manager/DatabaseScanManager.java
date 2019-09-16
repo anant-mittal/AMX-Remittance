@@ -59,11 +59,12 @@ public class DatabaseScanManager implements DocumentScanManager {
 		customerDocumentImage.setDocumentCategory(kycDocTypeMaster.getDocumentCategory());
 		customerDocumentImage.setDocumentType(kycDocTypeMaster.getDocumentType());
 		if (dmsMapping != null) {
+			DocBlobUpload docBlobUpload = null;
 			try {
 				BigDecimal docBlobId = dmsMapping.getDocBlobId();
 				BigDecimal docFinYear = dmsMapping.getFinancialYear();
 				customerDocumentDao.copyBlobDataIntoJava(docBlobId, docFinYear);
-				DocBlobUpload docBlobUpload = dOCBLOBRepository.findByDocBlobIDAndDocFinYear(docBlobId, docFinYear);
+				docBlobUpload = dOCBLOBRepository.findByDocBlobIDAndDocFinYear(docBlobId, docFinYear);
 				if (docBlobUpload == null) {
 					return customerDocumentImage;
 				}
@@ -77,6 +78,11 @@ public class DatabaseScanManager implements DocumentScanManager {
 
 			} catch (SQLException e) {
 				log.error("error in fetch kyc imagage", e);
+			} finally {
+				// clean doc blob upload table
+				if (docBlobUpload != null) {
+					dOCBLOBRepository.delete(docBlobUpload);
+				}
 			}
 		}
 		return customerDocumentImage;
@@ -156,21 +162,27 @@ public class DatabaseScanManager implements DocumentScanManager {
 		BigDecimal docFinYear = upload.getDbScanRef().getDocFinYear();
 		copyBlobDataIntoJava(docBlobId, docFinYear);
 		DocBlobUpload docBlobUpload = dOCBLOBRepository.findByDocBlobIDAndDocFinYear(docBlobId, docFinYear);
-		if (docBlobUpload == null) {
-			log.error("image not found for parameters docblobid {}, docfinyear {}", docBlobId, docFinYear);
-		}
-		if (docBlobUpload != null) {
-			String docImage;
-			try {
-				int blobLength = (int) docBlobUpload.getDocContent().length();
-				byte[] blobAsBytes = docBlobUpload.getDocContent().getBytes(1, blobLength);
-				docImage = Base64.encodeBase64String(blobAsBytes);
-				info.setDocumentString(docImage);
-			} catch (SQLException e) {
-				log.error("error in getDocumentInfo", e);
+		try {
+			if (docBlobUpload == null) {
+				log.error("image not found for parameters docblobid {}, docfinyear {}", docBlobId, docFinYear);
+			}
+			if (docBlobUpload != null) {
+				String docImage;
+				try {
+					int blobLength = (int) docBlobUpload.getDocContent().length();
+					byte[] blobAsBytes = docBlobUpload.getDocContent().getBytes(1, blobLength);
+					docImage = Base64.encodeBase64String(blobAsBytes);
+					info.setDocumentString(docImage);
+				} catch (SQLException e) {
+					log.error("error in getDocumentInfo", e);
+				}
+			}
+			info.setExpiryDate(upload.getExpiryDate());
+		} finally {
+			if (docBlobUpload != null) {
+				dOCBLOBRepository.delete(docBlobUpload);
 			}
 		}
-		info.setExpiryDate(upload.getExpiryDate());
 		return info;
 	}
 }

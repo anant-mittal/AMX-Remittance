@@ -129,6 +129,12 @@ public final class AuthDataInterface {
 
 		@Deprecated
 		void setwOtp(String wOtp);
+
+		@Deprecated
+		String getOtp();
+
+		@Deprecated
+		void setOtp(String otp);
 	}
 
 	/**

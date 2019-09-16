@@ -1,12 +1,16 @@
 package com.amx.jax.client.task;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 public class NotificationTaskDto {
 
 	String message;
 	Date creationDate;
+	String requestId;
 	Object data;
+	Object messageData;
+	JaxNotificationTaskType taskType;
 
 	public String getMessage() {
 		return message;
@@ -30,6 +34,30 @@ public class NotificationTaskDto {
 
 	public void setData(Object data) {
 		this.data = data;
+	}
+
+	public String getRequestId() {
+		return requestId;
+	}
+
+	public void setRequestId(String requestId) {
+		this.requestId = requestId;
+	}
+
+	public Object getMessageData() {
+		return messageData;
+	}
+
+	public void setMessageData(Object messageData) {
+		this.messageData = messageData;
+	}
+
+	public JaxNotificationTaskType getTaskType() {
+		return taskType;
+	}
+
+	public void setTaskType(JaxNotificationTaskType taskType) {
+		this.taskType = taskType;
 	}
 
 }

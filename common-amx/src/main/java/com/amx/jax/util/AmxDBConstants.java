@@ -26,6 +26,7 @@ public class AmxDBConstants {
 	public static final BigDecimal DOCUMENT_CODE_CUSTOMER_SERIAL_NUMBER = new BigDecimal(8);
 	// peronsl remittancew
 	public static final String Individual = "I";
+	public static final String Non_Individual = "C";
 	public static final String Online = "O";
 	public static final String INDIVIDUAL_STRING = "Individual";
 	public static final String NON_INDIVIDUAL_STRING = "Non-Individual";
@@ -126,7 +127,9 @@ public class AmxDBConstants {
 
 	public static final BigDecimal BIZ_COMPONENT_ID_GCC_ID = new BigDecimal(201);
 	public static final BigDecimal BIZ_COMPONENT_ID_BEDOUIN_ID = new BigDecimal(197);
-	public static final BigDecimal MURQAB_FOREIGNCURRENCY = new BigDecimal(89);
+	public static final BigDecimal KUWAIT_FOREIGNCURRENCY = new BigDecimal(89);
+	public static final BigDecimal OMAN_FOREIGNCURRENCY = new BigDecimal(99);
+	public static final BigDecimal BAHRAIN_FOREIGNCURRENCY = new BigDecimal(70);
 	public static final BigDecimal BIZ_COMPONENT_ID_PASSPORT = new BigDecimal(204);
 	
 
@@ -192,6 +195,13 @@ public class AmxDBConstants {
 	public static final String  COMM_INCLUDE= "I";
 	public static final String COMM_EXCLUDE="E";
 	
+	public static final String BPI_GIFT="GIFT";
+	
+	public static final String TELEX_TRANFER = "T";
+	public static final String DEMAND_DRAFT = "D";
+	
+	
+	public static final BigDecimal EXCHANGE_RATE_DECIMAL = new BigDecimal(9);
 	
 
 	// Arcmate Scanning

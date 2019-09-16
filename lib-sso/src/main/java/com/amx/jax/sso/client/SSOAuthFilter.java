@@ -54,7 +54,7 @@ public class SSOAuthFilter implements Filter {
 	public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain)
 			throws IOException, ServletException {
 
-		if (sSOUser.isAuthDone() && !sSOUserSessions.isValidUnique()) {
+		if (sSOUser.isAuthDone() && sSOUserSessions.isUserToBeThrownOut()) {
 			sSOUser.setAuthDone(false);
 			HttpServletResponse response = ((HttpServletResponse) resp);
 			response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);

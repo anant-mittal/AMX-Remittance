@@ -17,13 +17,12 @@ import com.amx.jax.client.task.INotificationtaskService;
 import com.amx.jax.client.task.NotificationTaskDto;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.services.NotificationTaskService;
-import com.jax.amxlib.exception.jax.GlobaLException;
 
 @RestController
 public class NotificationTaskController implements INotificationtaskService {
 
 	@Autowired
-	NotificationTaskService notificationTaskService;
+	NotificationTaskService notificationTaskService;	
 	@Autowired
 	MetaData metaData;
 
@@ -37,9 +36,6 @@ public class NotificationTaskController implements INotificationtaskService {
 	@RequestMapping(path = Path.LIST_USER_NOTIFICATION_TASKS, method = RequestMethod.GET)
 	@Override
 	public AmxApiResponse<NotificationTaskDto, Object> listUserNotificationTasks() {
-		if (metaData.getDeviceIp() == null) {
-			throw new GlobaLException("Device ip is required");
-		}
 		List<NotificationTaskDto> notifications = notificationTaskService.listUserNotificationTasks();
 		return AmxApiResponse.buildList(notifications);
 	}

@@ -82,6 +82,10 @@ public class TransactionHistroyDTO implements Serializable {
 
 	private Boolean beneIsActive;
 	
+	private BigDecimal exRateApplied;
+	
+	private BigDecimal exRateReversed;
+	
 	
 	public String getTransactionReference() {
 		return transactionReference;
@@ -382,5 +386,21 @@ public class TransactionHistroyDTO implements Serializable {
     public void setBeneIsActive(Boolean beneIsActive) {
         this.beneIsActive = beneIsActive;
     }
+
+	public BigDecimal getExRateApplied() {
+		return exRateApplied;
+	}
+
+	public void setExRateApplied(BigDecimal exRateApplied) {
+		this.exRateApplied = exRateApplied;
+	}
+
+	public BigDecimal getExRateReversed() {
+		return exRateReversed;
+	}
+
+	public void setExRateReversed(BigDecimal exRateReversed) {
+		this.exRateReversed = exRateReversed;
+	}
 
 }

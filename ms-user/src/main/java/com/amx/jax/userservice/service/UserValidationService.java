@@ -222,13 +222,19 @@ public class UserValidationService {
 			}
 			throw new GlobalException(errorExpression, "Incorrect/wrong password");
 		}
+		customer.setLockCnt(new BigDecimal(0));
+		customer.setLockDt(null);
+		custDao.saveOnlineCustomer(customer);
 	}
 	
 	protected void validatePassword(CustomerOnlineRegistration customer, String password) {
 		validatePassword(customer, password, false);
 	}
 
-	protected void validateDevicePassword(CustomerOnlineRegistration customer, String password) {
+	protected void validateDevicePassword(CustomerOnlineRegistration customer, String password, boolean validateCaptcha) {
+		if(validateCaptcha) {
+			validateCaptcha(customer);
+		}
 		String dbPassword = customer.getDevicePassword();
 		String passwordHashed = null;
 		try {
@@ -239,6 +245,11 @@ public class UserValidationService {
 		}
 		if (!dbPassword.equals(passwordHashed)) {
 			Integer attemptsLeft = incrementLockCount(customer);
+			
+			if(validateCaptcha) {
+				validateCaptcha(customer);
+			}
+			
 			String errorExpression = JaxError.WRONG_PASSWORD.toString();
 			if (attemptsLeft > 0) {
 				errorExpression = jaxUtil.buildErrorExpression(JaxError.WRONG_PASSWORDS_ATTEMPTS.toString(),
@@ -246,6 +257,10 @@ public class UserValidationService {
 			}
 			throw new GlobalException(errorExpression, "Incorrect/wrong password");
 		}
+	}
+	
+	protected void validateDevicePassword(CustomerOnlineRegistration customer, String password) {
+		validateDevicePassword(customer, password, false);
 	}
 
 	public void validateCustIdProofs(BigDecimal custId) {
@@ -447,7 +462,7 @@ public class UserValidationService {
 		if (onlineCustomer.getLockCnt() != null) {
 			int lockCnt = onlineCustomer.getLockCnt().intValue();
 			if (StringUtils.isBlank(JaxAuthContext.getCaptcha())) {
-				if (lockCnt == MAX_CAPTCHA_COUNT) {
+				if (lockCnt == MAX_CAPTCHA_COUNT.intValue()) {
 					throw new GlobalException(JaxError.CAPTCHA_REQUIRED, "Captcha Required");
 				}
 			}
@@ -551,7 +566,7 @@ public class UserValidationService {
 		if (customer == null) {
 			throw new GlobalException(JaxError.CUSTOMER_NOT_FOUND.getStatusKey(), "Online Customer id not found");
 		}
-		if (!customer.getIdentityTypeId().toString().equals(Constants.IDENTITY_TYPE_CIVIL_ID_STR)
+		if (!Constants.IDENTITY_TYPE_CIVIL_ID_STR.equals(customer.getIdentityTypeId().toString())
 				&& !customer.getIdentityTypeId().toString().equals(Constants.IDENTITY_TYPE_CIVIL_ID_STRING)) {
 			throw new GlobalException(
 					"The ID you have entered is not a Civil ID. Please enter the Civil ID to set up fingerprint login.");

@@ -25,23 +25,31 @@ import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.async.ExecutorConfig;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.constants.JaxTransactionStatus;
 import com.amx.jax.dao.JaxEmployeeDao;
 import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dao.RemittanceProcedureDao;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.PlaceOrder;
 import com.amx.jax.dbmodel.UserFinancialYear;
+import com.amx.jax.dbmodel.partner.TransactionDetailsView;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.dbmodel.remittance.ShoppingCartDetails;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.logger.AuditEvent.Result;
+import com.amx.jax.logger.AuditService;
+import com.amx.jax.logger.events.CActivityEvent;
+import com.amx.jax.logger.events.CActivityEvent.Type;
 import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
-import com.amx.jax.model.response.serviceprovider.ServiceProviderResponse;
+import com.amx.jax.model.response.serviceprovider.Remittance_Call_Response;
+import com.amx.jax.partner.dao.PartnerTransactionDao;
 import com.amx.jax.partner.dto.RemitTrnxSPDTO;
 import com.amx.jax.partner.manager.PartnerTransactionManager;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.postman.model.Email;
+import com.amx.jax.pricer.var.PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE;
 import com.amx.jax.repository.IPlaceOrderDao;
 import com.amx.jax.repository.IShoppingCartDetailsDao;
 import com.amx.jax.repository.RemittanceApplicationRepository;
@@ -92,19 +100,25 @@ public class RemittancePaymentManager extends AbstractService{
 	
 	@Autowired
 	private ReportManagerService reportManagerService;
+	
 	@Autowired
 	PromotionManager promotionManager;
+	
 	@Autowired
 	JaxEmployeeDao employeeDao;
+	
 	@Autowired
 	UserService userService;
 	
     @Autowired
     IPlaceOrderDao placeOrderdao;
+    
 	@Autowired
 	RemittanceManager remittanceManager;
+	
 	@Autowired
 	JaxEmailNotificationService jaxEmailNotificationService;
+	
 	@Autowired
 	JaxNotificationService jaxNotificationService;
 	
@@ -113,6 +127,12 @@ public class RemittancePaymentManager extends AbstractService{
 	
 	@Autowired
 	PartnerTransactionManager partnerTransactionManager;
+	
+	@Autowired
+	PartnerTransactionDao partnerTransactionDao;
+	
+	@Autowired
+    AuditService auditService;
 	
 	public ApiResponse<PaymentResponseDto> paymentCapture(PaymentResponseDto paymentResponse) {
 		ApiResponse response = null;
@@ -170,12 +190,7 @@ public class RemittancePaymentManager extends AbstractService{
 					responseDto.setCollectionDocumentFYear(collectionFinanceYear);
 					responseDto.setCollectionDocumentNo(collectionDocumentNumber);
 					responseDto.setCollectionDocumentCode(collectionDocumentCode);
-					if(responseDto != null) {
-						AmxApiResponse<ServiceProviderResponse, Object> apiResponse = partnerTransactionManager.callingPartnerApi(responseDto);
-						if(apiResponse != null) {
-							RemitTrnxSPDTO remitTrnxSPDTO = partnerTransactionManager.saveRemitTransactionDetails(apiResponse,responseDto);
-						}
-					}
+					callingServiceProviderApi(responseDto,paymentResponse.getCustomerId());
 
 					//Update remittance_transaction_id for place order method call
 					if (lstPayIdDetails.get(0) != null)	{	
@@ -361,6 +376,47 @@ public class RemittancePaymentManager extends AbstractService{
 			logger.info(errorMessage);
 			jaxNotificationService.sendTransactionErrorAlertEmail(errorMessage, "Remittance Amount mistmatch", paymentResponse);
 			throw new GlobalException("paid and payable amount mismatch");
+		}
+	}
+	
+	public void callingServiceProviderApi(RemittanceResponseDto responseDto,BigDecimal customerId) {
+		TransactionDetailsView serviceProviderView = null;
+		String partnerTransactionId = null;
+		
+		if(responseDto!=null && JaxUtil.isNullZeroBigDecimalCheck(responseDto.getCollectionDocumentNo())) {
+			Boolean spCheckStatus = Boolean.FALSE;
+			List<TransactionDetailsView> lstTrnxDetails = partnerTransactionDao.fetchTrnxSPDetails(customerId,responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo());
+			for (TransactionDetailsView transactionDetailsView : lstTrnxDetails) {
+				if(transactionDetailsView.getBankCode().equalsIgnoreCase(SERVICE_PROVIDER_BANK_CODE.HOME.name())) {
+					spCheckStatus = Boolean.TRUE;
+					serviceProviderView = transactionDetailsView;
+					break;
+				}
+			}
+			
+			if(spCheckStatus) {
+				AmxApiResponse<Remittance_Call_Response, Object> apiResponse = partnerTransactionManager.callingPartnerApi(responseDto);
+				if(apiResponse != null) {
+					if(serviceProviderView != null && serviceProviderView.getPartnerSessionId() != null) {
+						partnerTransactionId = serviceProviderView.getPartnerSessionId();
+					}
+					RemitTrnxSPDTO remitTrnxSPDTO = partnerTransactionManager.saveRemitTransactionDetails(apiResponse,responseDto,partnerTransactionId);
+					if(remitTrnxSPDTO != null && remitTrnxSPDTO.getActionInd() != null && remitTrnxSPDTO.getResponseDescription() != null) {
+						// got success to fetch response from API
+						logger.info(" Service provider result Action Ind " +remitTrnxSPDTO.getActionInd() + " Description : " + remitTrnxSPDTO.getResponseDescription());
+					}else {
+						logger.error("Service provider api fail to execute : ColDocNo : ", responseDto.getCollectionDocumentNo() + " : ColDocCod : " +responseDto.getCollectionDocumentCode()+"  : ColDocYear : "+responseDto.getCollectionDocumentFYear());
+						auditService.log(new CActivityEvent(Type.TRANSACTION_CREATED,String.format("%s/%s", responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo())).field("STATUS").to(JaxTransactionStatus.PAYMENT_SUCCESS_SERVICE_PROVIDER_FAIL).result(Result.DONE));
+						throw new GlobalException("Transaction failed to send to Service Provider");
+					}
+				}else {
+					logger.error("Service provider api fail to execute : ColDocNo : ", responseDto.getCollectionDocumentNo() + " : ColDocCod : " +responseDto.getCollectionDocumentCode()+"  : ColDocYear : "+responseDto.getCollectionDocumentFYear());
+					auditService.log(new CActivityEvent(Type.TRANSACTION_CREATED,String.format("%s/%s", responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo())).field("STATUS").to(JaxTransactionStatus.PAYMENT_SUCCESS_SERVICE_PROVIDER_FAIL).result(Result.DONE));
+					throw new GlobalException("Transaction failed to send to Service Provider");
+				}
+			}
+		}else {
+			logger.error("Service provider api fail to execute : ColDocNo : ", responseDto.getCollectionDocumentNo() + " : ColDocCod : " +responseDto.getCollectionDocumentCode()+"  : ColDocYear : "+responseDto.getCollectionDocumentFYear());
 		}
 	}
 }

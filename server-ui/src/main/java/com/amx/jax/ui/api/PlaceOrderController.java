@@ -1,6 +1,7 @@
 
 package com.amx.jax.ui.api;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,12 +11,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.PlaceOrderDTO;
+import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.JaxService;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 /**
  * The Class PlaceOrderController.
@@ -42,11 +45,19 @@ public class PlaceOrderController {
 		return wrapper;
 	}
 
+	@ApiOperation(value = "List of All bnfcries for PlaceOrder")
+	@RequestMapping(value = "/api/po/bnfcry/list", method = { RequestMethod.POST })
+	public ResponseWrapper<List<BeneficiaryListDTO>> beneList() {
+		ResponseWrapper<List<BeneficiaryListDTO>> wrapper = new ResponseWrapper<>();
+		wrapper.setData(
+				jaxService.setDefaults().getBeneClient().getBeneficiaryList(new BigDecimal(0), true).getResults());
+		return wrapper;
+	}
+
 	/**
 	 * Save place order.
 	 *
-	 * @param placeOrderDTO
-	 *            the place order DTO
+	 * @param placeOrderDTO the place order DTO
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/api/po/save", method = { RequestMethod.POST })
@@ -61,8 +72,7 @@ public class PlaceOrderController {
 	/**
 	 * Update place order.
 	 *
-	 * @param placeOrderDTO
-	 *            the place order DTO
+	 * @param placeOrderDTO the place order DTO
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/api/po/update", method = { RequestMethod.POST })
@@ -77,8 +87,7 @@ public class PlaceOrderController {
 	/**
 	 * Delete place order.
 	 *
-	 * @param placeOrderDTO
-	 *            the place order DTO
+	 * @param placeOrderDTO the place order DTO
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/api/po/delete", method = { RequestMethod.POST })

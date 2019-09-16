@@ -51,6 +51,7 @@ import com.amx.jax.dbmodel.fx.FxDeliveryDetailsModel;
 import com.amx.jax.dbmodel.fx.OrderManagementView;
 import com.amx.jax.dbmodel.fx.UserStockView;
 import com.amx.jax.dbmodel.remittance.Document;
+import com.amx.jax.dict.Tenant;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.meta.MetaData;
@@ -66,6 +67,7 @@ import com.amx.jax.repository.ICustomerRepository;
 import com.amx.jax.repository.IDocumentDao;
 import com.amx.jax.repository.JaxConfigRepository;
 import com.amx.jax.repository.fx.FxDeliveryDetailsRepository;
+import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.service.CompanyService;
 import com.amx.jax.services.FcSaleDeliveryService;
 import com.amx.jax.util.ConverterUtil;
@@ -147,12 +149,29 @@ public class FcSaleBranchOrderManager {
 				BigDecimal branchId = employeeDt.getBranchId();
 				BigDecimal governorate = employeeDt.getGovernorates();
 				if(areaCode != null && branchId != null) {
-					if(branchId.compareTo(ConstantDocument.MURQAB_FOREIGNCURRENCY) == 0) {
-						ordermanage = fcSaleBranchDao.fetchFcSaleOrderManagementForHeadOffice(applicationCountryId);
+					BigDecimal branchCode = null;
+					if (TenantContextHolder.currentSite().equals(Tenant.KWT)) {
+						branchCode = ConstantDocument.KUWAIT_FOREIGNCURRENCY;
+					} else if (TenantContextHolder.currentSite().equals(Tenant.BHR)) {
+						branchCode = ConstantDocument.BAHRAIN_FOREIGNCURRENCY;
+					} else if (TenantContextHolder.currentSite().equals(Tenant.OMN)) {
+						branchCode = ConstantDocument.OMAN_FOREIGNCURRENCY;
+					}
+					if(branchCode != null) {
+						if(branchId.compareTo(branchCode) == 0) {
+							ordermanage = fcSaleBranchDao.fetchFcSaleOrderManagementForHeadOffice(applicationCountryId);
 
-						fetchOrder.put("ORDERS", ordermanage);
-						fetchOrder.put("AREA", Boolean.TRUE);
-						fetchOrder.put("BranchId", branchId);
+							fetchOrder.put("ORDERS", ordermanage);
+							fetchOrder.put("AREA", Boolean.TRUE);
+							fetchOrder.put("BranchId", branchId);
+						}else {
+							//ordermanage = fcSaleBranchDao.fetchFcSaleOrderManagement(applicationCountryId,areaCode);
+							ordermanage = fcSaleBranchDao.fetchFcSaleOrderManagementByGovernate(applicationCountryId,governorate);
+
+							fetchOrder.put("ORDERS", ordermanage);
+							fetchOrder.put("AREA", Boolean.FALSE);
+							fetchOrder.put("BRANCH", branchId);
+						}
 					}else {
 						//ordermanage = fcSaleBranchDao.fetchFcSaleOrderManagement(applicationCountryId,areaCode);
 						ordermanage = fcSaleBranchDao.fetchFcSaleOrderManagementByGovernate(applicationCountryId,governorate);

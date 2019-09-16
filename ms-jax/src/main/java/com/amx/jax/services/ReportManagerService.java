@@ -223,6 +223,8 @@ public class ReportManagerService extends AbstractService{
 					obj.setFirstName(view.getCustomerReference().toString());
 				} else if (view.getCustomerReference() != null && view.getFirstName() != null && view.getMiddleName() == null && view.getLastName()!=null) {
 					obj.setFirstName(view.getCustomerReference().toString() + " " + view.getFirstName()+" "+view.getLastName());
+				} else if (view.getCustomerReference()!=null && view.getFirstName() != null && view.getMiddleName()!=null && view.getLastName()==null) {
+					obj.setFirstName(view.getCustomerReference().toString() + " / " + view.getFirstName()+" "+view.getMiddleName());
 				}
 				if (StringUtils.isNotBlank(view.getContactNumber())) {
 					obj.setMobileNo(new BigDecimal(view.getContactNumber()));

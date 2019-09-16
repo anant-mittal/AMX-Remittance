@@ -21,6 +21,7 @@ public class UploadCustomerKycRequest {
 	String document;
 
 	@Valid
+	@NotNull
 	CustomerKycData customerKycData;
 	
 	@NotNull

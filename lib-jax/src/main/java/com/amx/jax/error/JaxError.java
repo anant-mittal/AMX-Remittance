@@ -329,7 +329,8 @@ public enum JaxError implements IExceptionEnum {
 	ONLINE_ACCOUNT_LOCKED,
 	CUSTOMER_ACTIVE,
 	// Default in last, IMPORTANT:- It should be last
-	JAX_SYSTEM_ERROR;
+	JAX_SYSTEM_ERROR,
+	BPI_SETUP_IS_MISSING;
 	
 	@Deprecated
 	public String getCode() {

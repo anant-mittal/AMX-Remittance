@@ -36,12 +36,15 @@ import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.FlexFieldReponseDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
+import com.amx.jax.model.response.remittance.ParameterDetailsResponseDto;
 import com.amx.jax.model.response.remittance.PaymentModeDto;
 import com.amx.jax.model.response.remittance.RemittanceDeclarationReportDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
 import com.amx.jax.model.response.remittance.branch.DynamicRoutingPricingResponse;
+
+import io.swagger.annotations.ApiOperation;
 
 @RestController
 public class BranchRemittanceController implements IRemittanceService {
@@ -250,6 +253,13 @@ public class BranchRemittanceController implements IRemittanceService {
 	public AmxApiResponse<FlexFieldReponseDto, Object> getFlexField(@Valid @RequestBody BranchRemittanceGetExchangeRateRequest request) {
 	logger.debug("getExchaneRate : " + request);
 	return branchRemittanceExchangeRateService.getFlexField(request);
+	}
+	
+
+	@RequestMapping(value=Path.BR_REMITTANCE_GET_GIFT_PACKAGE,method=RequestMethod.POST)
+	@Override
+	public AmxApiResponse<ParameterDetailsResponseDto, Object> getGiftService(@RequestParam(value = Params.BENE_RELATION_SHIP_ID, required = true) BigDecimal beneRelaId) {		
+		return branchRemitService.getGiftService(beneRelaId);
 	}
 
 

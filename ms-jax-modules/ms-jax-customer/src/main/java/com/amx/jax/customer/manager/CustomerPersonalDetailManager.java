@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.customer.service.JaxCustomerContactVerificationService;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerContactVerification;
 import com.amx.jax.dict.ContactType;
@@ -20,10 +21,9 @@ import com.amx.jax.model.request.UpdateCustomerPersonalDetailRequest;
 import com.amx.jax.model.request.VerifyCustomerContactRequest;
 import com.amx.jax.scope.TenantContext;
 import com.amx.jax.services.JaxDBService;
-import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.userservice.dao.CustomerDao;
-import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.userservice.service.CustomerValidationContext.CustomerValidation;
+import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.AmxDBConstants.Status;
 import com.amx.jax.validation.CountryMetaValidation;
 import com.amx.utils.JsonUtil;
@@ -42,7 +42,7 @@ public class CustomerPersonalDetailManager {
 	@Autowired
 	CustomerContactVerificationManager customerContactVerificationManager;
 	@Autowired
-	JaxNotificationService jaxNotificationService;
+	JaxCustomerContactVerificationService jaxCustomerContactVerificationService;
 	@Autowired
 	MetaData metaData;
 	@Autowired
@@ -66,13 +66,18 @@ public class CustomerPersonalDetailManager {
 		if (req.getMobile() != null) {
 			countryMetaValidation.validateMobileNumber(customer.getCountryId(), req.getMobile());
 			countryMetaValidation.validateMobileNumberLength(customer.getCountryId(), req.getMobile());
+			if (!req.getMobile().equals(customer.getMobile())) {
+				tenantContext.get().validateDuplicateMobile(req.getMobile());
+			}
 			customer.setMobile(req.getMobile());
 			customer.setMobileVerified(Status.N);
 			CustomerContactVerification cv = customerContactVerificationManager.create(customer, ContactType.MOBILE);
 			cvs.add(cv);
 		}
 		if (req.getEmail() != null) {
-			tenantContext.get().validateEmailId(req.getEmail());
+			if (!req.getEmail().equals(customer.getEmail())) {
+				tenantContext.get().validateEmailId(req.getEmail());
+			}
 			customer.setEmail(req.getEmail());
 			customer.setEmailVerified(Status.N);
 			cvs.add(customerContactVerificationManager.create(customer, ContactType.EMAIL));
@@ -83,7 +88,7 @@ public class CustomerPersonalDetailManager {
 			customer.setWhatsAppVerified(Status.N);
 			cvs.add(customerContactVerificationManager.create(customer, ContactType.WHATSAPP));
 		}
-		jaxNotificationService.sendCustomerVerificationNotification(cvs, customer);
+		cvs.forEach(x -> jaxCustomerContactVerificationService.sendVerificationLink(customer, x));
 		customer.setUpdatedBy(jaxDbService.getCreatedOrUpdatedBy());
 		customerDao.saveCustomer(customer);
 	}

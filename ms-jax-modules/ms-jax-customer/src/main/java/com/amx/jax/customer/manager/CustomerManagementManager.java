@@ -241,11 +241,13 @@ public class CustomerManagementManager {
 
 	public CustomerStatusModel getCustomerStatusModel(Customer customer) {
 		CustomerStatusModel customerStatusModel = new CustomerStatusModel();
+		boolean isActiveBranch = false;
 		if (ConstantDocument.Yes.equals(customer.getIsActive())) {
 			customerStatusModel.setActiveBranch(true);
+			isActiveBranch = true;
 		}
 		CustomerOnlineRegistration onlineCustomer = onlineCustomerManager.getOnlineCustomerByCustomerId(customer.getCustomerId());
-		if (onlineCustomer != null && ConstantDocument.Yes.equals(onlineCustomer.getStatus())) {
+		if (onlineCustomer != null && ConstantDocument.Yes.equals(onlineCustomer.getStatus()) && isActiveBranch) {
 			customerStatusModel.setActiveOnline(true);
 		}
 		if (onlineCustomer != null && onlineCustomer.getLockDt() != null) {
@@ -277,7 +279,8 @@ public class CustomerManagementManager {
 		Customer customer = userService.getCustById(customerId);
 		customerDocumentManager.moveCustomerDBDocuments(customerId);
 		if (customerDocMasterManager.hasKycDocTypeMaster(customerTempUploads, customer.getIdentityTypeId())) {
-			Optional<CustomerDocumentUploadReferenceTemp> kycUpload = customerDocMasterManager.getKycDocUpload(customerTempUploads, customer.getIdentityTypeId());
+			Optional<CustomerDocumentUploadReferenceTemp> kycUpload = customerDocMasterManager.getKycDocUpload(customerTempUploads,
+					customer.getIdentityTypeId());
 			customerDocumentManager.moveCustomerDBKycDocuments(customer, kycUpload.get());
 		}
 		custDao.callProcedurePopulateCusmas(customerId);

@@ -43,77 +43,85 @@ public class FcDeliveryOrdersearchManager {
 	
 	public List<FxOrderTransactionHistroyDto> convert(List<FxOrderTransactionModel> fxOrderTransactionModelValue) {
 		List<FxOrderTransactionHistroyDto> fxOrderTransactionHistroyDto = new ArrayList<>();
-		
+
 		if(fxOrderTransactionModelValue!=null && fxOrderTransactionModelValue.size()!=0) {	
-		for (FxOrderTransactionModel fxOrderTransactionModel : fxOrderTransactionModelValue) {	
-		FxOrderTransactionHistroyDto dto = new FxOrderTransactionHistroyDto();
-		dto.setTransactionReferenceNo(fxOrderTransactionModel.getTransactionReferenceNo());
-		dto.setDeliveryDate(fxOrderTransactionModel.getDeliveryDate());
-		dto.setOrderStatus(fxOrderTransactionModel.getOrderStatus());
-		dto.setOrderStatusCode(fxOrderTransactionModel.getOrderStatusCode());
-		dto.setInventoryId(fxOrderTransactionModel.getInventoryId());
-		dto.setLocalTrnxAmount(fxOrderTransactionModel.getLocalTrnxAmount());
-		dto.setCollectionDocumentNo(fxOrderTransactionModel.getCollectionDocumentNo());
-		dto.setDeliveryDate(fxOrderTransactionModel.getDeliveryDate());
-		dto.setDeliveryTime(fxOrderTransactionModel.getDeliveryTime());
-		dto.setForeignTransactionAmount(fxOrderTransactionModel.getForeignTransactionAmount());
-		dto.setBranchDesc(fxOrderTransactionModel.getBranchDesc());
-		dto.setDocumentFinanceYear(fxOrderTransactionModel.getDocumentFinanceYear());
-		dto.setCustomerName(fxOrderTransactionModel.getCustomerName());
-		dto.setCollectionDocumentCode(fxOrderTransactionModel.getCollectionDocumentCode());
-		dto.setCurrencyQuoteName(fxOrderTransactionModel.getCurrencyQuoteName());
-		dto.setCustomerId(fxOrderTransactionModel.getCustomerId());
-		dto.setCustomerReference(fxOrderTransactionModel.getCustomerReference());
-		dto.setForeignCurrencyCode(fxOrderTransactionModel.getForeignCurrencyCode());
-		dto.setDeliveryDetSeqId(fxOrderTransactionModel.getDeliveryDetSeqId());
-		dto.setDocumentNumber(fxOrderTransactionModel.getDocumentNumber());
-		
-		List<FcSaleCurrencyAmountModel> lstCurrencyAmt = new ArrayList<>();
-		String mutipleInventoryId = null;
-		for (FxOrderTransactionModel fxOrderTxnModel : fxOrderTransactionModelValue) {
-			if(fxOrderTxnModel.getDocumentFinanceYear().compareTo(fxOrderTransactionModel.getDocumentFinanceYear()) == 0 && fxOrderTxnModel.getCollectionDocumentNo().compareTo(fxOrderTransactionModel.getCollectionDocumentNo()) == 0) {
+			for (FxOrderTransactionModel fxOrderTransactionModel : fxOrderTransactionModelValue) {	
+				FxOrderTransactionHistroyDto dto = new FxOrderTransactionHistroyDto();
+				dto.setTransactionReferenceNo(fxOrderTransactionModel.getTransactionReferenceNo());
+				dto.setDeliveryDate(fxOrderTransactionModel.getDeliveryDate());
+				dto.setOrderStatus(fxOrderTransactionModel.getOrderStatus());
+				dto.setOrderStatusCode(fxOrderTransactionModel.getOrderStatusCode());
+				dto.setInventoryId(fxOrderTransactionModel.getInventoryId());
+				dto.setLocalTrnxAmount(fxOrderTransactionModel.getLocalTrnxAmount());
+				dto.setCollectionDocumentNo(fxOrderTransactionModel.getCollectionDocumentNo());
+				dto.setDeliveryDate(fxOrderTransactionModel.getDeliveryDate());
+				dto.setDeliveryTime(fxOrderTransactionModel.getDeliveryTime());
+				dto.setForeignTransactionAmount(fxOrderTransactionModel.getForeignTransactionAmount());
+				dto.setBranchDesc(fxOrderTransactionModel.getBranchDesc());
+				dto.setDocumentFinanceYear(fxOrderTransactionModel.getDocumentFinanceYear());
+				dto.setCustomerName(fxOrderTransactionModel.getCustomerName());
+				dto.setCollectionDocumentCode(fxOrderTransactionModel.getCollectionDocumentCode());
+				dto.setCurrencyQuoteName(fxOrderTransactionModel.getCurrencyQuoteName());
+				dto.setCustomerId(fxOrderTransactionModel.getCustomerId());
+				dto.setCustomerReference(fxOrderTransactionModel.getCustomerReference());
+				dto.setForeignCurrencyCode(fxOrderTransactionModel.getForeignCurrencyCode());
+				dto.setDeliveryDetSeqId(fxOrderTransactionModel.getDeliveryDetSeqId());
+				dto.setDocumentNumber(fxOrderTransactionModel.getDocumentNumber());
 
-				FcSaleCurrencyAmountModel fcSaleCurrencyAmountModel = new FcSaleCurrencyAmountModel();
-				fcSaleCurrencyAmountModel.setAmount(fxOrderTxnModel.getForeignTransactionAmount());
-				fcSaleCurrencyAmountModel.setCurrencyQuote(fxOrderTxnModel.getCurrencyQuoteName());
-				lstCurrencyAmt.add(fcSaleCurrencyAmountModel);
-				
-				if(mutipleInventoryId != null) {
-					mutipleInventoryId = mutipleInventoryId.concat(",").concat(fxOrderTxnModel.getInventoryId());
-				}else {
-					mutipleInventoryId = fxOrderTxnModel.getInventoryId();
+				List<FcSaleCurrencyAmountModel> lstCurrencyAmt = new ArrayList<>();
+				String mutipleInventoryId = null;
+				for (FxOrderTransactionModel fxOrderTxnModel : fxOrderTransactionModelValue) {
+					if(fxOrderTxnModel.getDocumentFinanceYear().compareTo(fxOrderTransactionModel.getDocumentFinanceYear()) == 0 && fxOrderTxnModel.getCollectionDocumentNo().compareTo(fxOrderTransactionModel.getCollectionDocumentNo()) == 0) {
+
+						FcSaleCurrencyAmountModel fcSaleCurrencyAmountModel = new FcSaleCurrencyAmountModel();
+						fcSaleCurrencyAmountModel.setAmount(fxOrderTxnModel.getForeignTransactionAmount());
+						fcSaleCurrencyAmountModel.setCurrencyQuote(fxOrderTxnModel.getCurrencyQuoteName());
+						lstCurrencyAmt.add(fcSaleCurrencyAmountModel);
+
+						if(mutipleInventoryId != null) {
+							mutipleInventoryId = mutipleInventoryId.concat(",").concat(fxOrderTxnModel.getInventoryId());
+						}else {
+							mutipleInventoryId = fxOrderTxnModel.getInventoryId();
+						}
+					}
 				}
-			}
-		}
 
-		dto.setMutipleFcAmount(lstCurrencyAmt);
-		dto.setMutipleInventoryId(mutipleInventoryId);
-		
-		if(fxOrderTransactionModel.getDriverEmployeeId()!=null)
-		{		
-			Employee driverDetails =  employeeValidationService.getEmployeeName(fxOrderTransactionModel.getDriverEmployeeId());	
-			if(driverDetails.getEmployeeName()!=null) {
-				dto.setDriverName(driverDetails.getEmployeeName());
-			}
-			}else {
-				dto.setDriverName(" ");
-			}	
-		if(fxOrderTransactionModel.getEmployeeId()!=null) {
-			Employee employeeDetails =  employeeValidationService.getEmployeeName(fxOrderTransactionModel.getEmployeeId());	
-			if(employeeDetails.getEmployeeName()!=null) {
-				dto.setEmployeeName(employeeDetails.getEmployeeName());
-			}
-			}else {
-				dto.setEmployeeName(" ");
-			}
-			Customer custmoerDetails = customerRepository.getCustomerDetailsByCustomerId(fxOrderTransactionModel.getCustomerId());
-			if(custmoerDetails.getMobile()!=null) {
-				dto.setPhoneNumber(custmoerDetails.getMobile());
-			}
-			else {
-				dto.setPhoneNumber("");	
-			}
-			fxOrderTransactionHistroyDto.add(dto);
+				dto.setMutipleFcAmount(lstCurrencyAmt);
+				dto.setMutipleInventoryId(mutipleInventoryId);
+
+				if(fxOrderTransactionModel.getDriverEmployeeId()!=null)
+				{		
+					Employee driverDetails =  employeeValidationService.getEmployeeName(fxOrderTransactionModel.getDriverEmployeeId());	
+					if(driverDetails != null && driverDetails.getEmployeeName()!=null) {
+						dto.setDriverName(driverDetails.getEmployeeName());
+					}else {
+						dto.setDriverName(" ");
+					}
+				}else {
+					dto.setDriverName(" ");
+				}	
+				if(fxOrderTransactionModel.getEmployeeId()!=null) {
+					Employee employeeDetails =  employeeValidationService.getEmployeeName(fxOrderTransactionModel.getEmployeeId());	
+					if(employeeDetails != null && employeeDetails.getEmployeeName() != null) {
+						dto.setEmployeeName(employeeDetails.getEmployeeName());
+					}else {
+						dto.setEmployeeName(" ");
+					}
+				}else {
+					dto.setEmployeeName(" ");
+				}
+				if(fxOrderTransactionModel.getCustomerId() != null) {
+					Customer custmoerDetails = customerRepository.getCustomerDetailsByCustomerId(fxOrderTransactionModel.getCustomerId());
+					if(custmoerDetails != null && custmoerDetails.getMobile()!=null) {
+						dto.setPhoneNumber(custmoerDetails.getMobile());
+					}else {
+						dto.setPhoneNumber("");	
+					}
+				}else {
+					dto.setPhoneNumber("");	
+				}
+							
+				fxOrderTransactionHistroyDto.add(dto);
 			}
 		}
 		return fxOrderTransactionHistroyDto;

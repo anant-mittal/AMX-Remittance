@@ -46,17 +46,15 @@ public class CountryService extends AbstractService {
 	
 	private Logger logger = Logger.getLogger(CountryService.class);
 	
+	public AmxApiResponse<CountryMasterView, Object> getCountryListResponse() {
 	
-	public AmxApiResponse<CountryMasterView, Object> getCountryListResponse(){
-		List<CountryMasterView> countryList =null;
-		
-		
-		countryList= countryRepository.findByLanguageId(meta.getLanguageId());
-		
+		List<CountryMasterView> countryList = null;
 		BigDecimal languageIdValue = new BigDecimal("1");
 		ApiResponse response = getBlackApiResponse();
 		
-		if(!(meta.getLanguageId().equals(languageIdValue)) || !(meta.getLanguageId().equals("en")) ) {
+		countryList = countryRepository.findByLanguageId(meta.getLanguageId());
+
+		if (!(meta.getLanguageId().equals(languageIdValue)) || !(meta.getLanguageId().toString().equalsIgnoreCase("en"))) {
 			
 			countryList = countryRepository.findByLanguageId(meta.getLanguageId());
 		response.getData().getValues().addAll(countryList);

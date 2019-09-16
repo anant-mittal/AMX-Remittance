@@ -12,6 +12,7 @@ import com.amx.jax.dbmodel.compliance.ComplianceBlockedTrnxDocMap;
 import com.amx.jax.dbmodel.customer.CustomerDocumentTypeMaster;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.model.customer.document.CustomerDocInfoDto;
 import com.amx.jax.repository.compliance.ComplianceTrnxDocMapRepo;
 import com.amx.jax.repository.customer.CustomerDocumentTypeMasterRepo;
 import com.amx.jax.services.RemittanceTransactionService;
@@ -27,16 +28,18 @@ public class NotificationTaskServiceValidator {
 	RemittanceTransactionService remittanceTransactionService;
 
 	public void validateNotifyBranchUserForDocumentUpload(CustomerDocUploadNotificationTaskData data) {
-		String docCategory = data.getDocumentCategory();
 		RemittanceTransaction trnx = remittanceTransactionService.getRemittanceTransactionById(data.getRemittanceTransactionId());
-		List<String> docTypes = data.getDocumentTypes();
-		for (String docType : docTypes) {
+		List<CustomerDocInfoDto> docInfos = data.getCustomerDocInfo();
+		for (CustomerDocInfoDto docInfo : docInfos) {
+			String docCategory = docInfo.getDocumentCategory();
+			String docType = docInfo.getDocumentType();
 			CustomerDocumentTypeMaster docTypeMaster = customerDocumentTypeMasterRepo.findByDocumentCategoryAndDocumentType(docCategory, docType);
 			List<ComplianceBlockedTrnxDocMap> complianceBlockedTrnxDocMap = complianceTrnxDocMapRepo.findByDocTypeMasterAndCustomerIdAndStatus(
 					docTypeMaster, trnx.getCustomerId().getCustomerId(), ComplianceTrnxdDocStatus.REQUESTED);
 			if (complianceBlockedTrnxDocMap.size() > 0) {
 				throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "You have already requested for document of type: " + docType);
 			}
+
 		}
 	}
 }

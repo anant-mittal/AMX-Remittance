@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppConfig;
 import com.amx.jax.api.AmxApiResponse;
@@ -14,6 +15,7 @@ import com.amx.jax.exception.JaxSystemError;
 import com.amx.jax.model.customer.ComplianceTrnxDocumentInfo;
 import com.amx.jax.rest.RestService;
 
+@Component
 public class ComplianceClient implements IComplianceService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CustomerManagementClient.class);
