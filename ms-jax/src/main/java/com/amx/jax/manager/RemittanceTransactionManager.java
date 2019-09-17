@@ -1227,11 +1227,15 @@ public class RemittanceTransactionManager {
 		CivilIdOtpModel civilIdOtpModel = null;
 		if (model.getmOtp() == null) {
 			// this flow is for send OTP
-			civilIdOtpModel = remittanceOtpManager.addOtpOnRemittanceV2(model);
-			remiteAppModel.setCivilIdOtpModel(civilIdOtpModel);
-			OtpRequiredException ex = new OtpRequiredException();
-			ex.setMeta(remiteAppModel);
-			throw ex;
+			boolean sendOtp = remittanceOtpManager.addOtpOnRemittanceV2(model);
+			if (sendOtp) {
+				civilIdOtpModel = remittanceOtpManager.sendOtpOnRemittance();
+				remiteAppModel.setCivilIdOtpModel(civilIdOtpModel);
+				OtpRequiredException ex = new OtpRequiredException();
+				ex.setMeta(remiteAppModel);
+				throw ex;
+			}
+
 		} else {
 			// this flow is for validate OTP
 			userService.validateOtp(null, model.getmOtp(), null);
