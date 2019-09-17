@@ -251,11 +251,13 @@ public class FcSaleBranchOrderController implements IFxBranchOrderService {
 	}
 	
 	@RequestMapping(value = Path.FC_ORDER_DELIVERY_TIME_SETUP_FETCH , method = RequestMethod.GET)
-	public FxDeliveryTimeSlotDto fetchFcDeliveryTimeSlot() {
+	public AmxApiResponse<FxDeliveryTimeSlotDto,Object> fetchFcDeliveryTiming() {
 		
 		return fcSaleBranch.fetchFcDeliveryTiming();
 		
 	}
+
+	
 	
 	
 }

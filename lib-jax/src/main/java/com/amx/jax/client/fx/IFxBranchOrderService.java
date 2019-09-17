@@ -107,4 +107,8 @@ public interface IFxBranchOrderService extends IJaxService {
 
 	AmxApiResponse<BoolRespModel, Object> saveFcDeliveryTimeSlot(FxDeliveryTimeSlotDto fxDeliveryTimeSlotDto);
 
+	AmxApiResponse<FxDeliveryTimeSlotDto, Object> fetchFcDeliveryTiming();
+	
+	
+
 }

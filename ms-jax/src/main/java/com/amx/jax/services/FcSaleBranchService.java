@@ -835,7 +835,7 @@ public class FcSaleBranchService extends AbstractService{
 	return new BoolRespModel(status);
 }
 	
-	public FxDeliveryTimeSlotDto fetchFcDeliveryTiming() {
+	public  AmxApiResponse<FxDeliveryTimeSlotDto,Object> fetchFcDeliveryTiming() {
 		return fcSaleBranchOrderManager.fetchFcDeliveryTiming();
 		
 	}

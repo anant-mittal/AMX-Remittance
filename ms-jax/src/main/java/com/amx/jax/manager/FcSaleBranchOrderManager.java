@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.customer.repository.EmployeeRepository;
 import com.amx.jax.customer.service.CustomerService;
@@ -1924,7 +1925,7 @@ public class FcSaleBranchOrderManager {
 		return stockStatus;
 	}
 
-	public FxDeliveryTimeSlotDto fetchFcDeliveryTiming() {
+	public AmxApiResponse<FxDeliveryTimeSlotDto,Object> fetchFcDeliveryTiming() {
 		FxDeliveryTimeSlotMaster fxDeliveryTimeSlotMaster = new FxDeliveryTimeSlotMaster();
 		FxDeliveryTimeSlotDto fxDeliveryTimeSlotDto = new FxDeliveryTimeSlotDto();
 		BigDecimal countryId = metaData.getCountryId();
@@ -1939,7 +1940,7 @@ public class FcSaleBranchOrderManager {
 		fxDeliveryTimeSlotDto.setTimeInterval(fxDeliveryTimeSlotMaster.getTimeInterval());
 		fxDeliveryTimeSlotDto.setTimeIntervalOffice(fxDeliveryTimeSlotMaster.getTimeIntervalOffice());
 
-		return fxDeliveryTimeSlotDto;
+		return AmxApiResponse.build(fxDeliveryTimeSlotDto);
 
 	}
 	
