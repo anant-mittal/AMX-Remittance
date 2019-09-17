@@ -18,11 +18,6 @@
             }
           },
           "aggs": {
-            "uCount": {
-              "cardinality": {
-                "field": "logmap.cust.id"
-              }
-            },
             "eventType": {
               "terms": {
                 "field": "logmap.desc.keyword",
@@ -33,7 +28,7 @@
                 "missing": "__missing__"
               },
               "aggs": {
-                "1": {
+                "uCount": {
                   "cardinality": {
                     "field": "logmap.cust.id"
                   }
@@ -154,18 +149,23 @@
             ],
             "minimum_should_match": 1
           }
-        },
-        {
-          "match_phrase": {
-            "logmap.cust.id": {
-              "query": 240
-            }
-          }
         }
       ],
       "filter": [],
       "should": [],
       "must_not": []
     }
-  }
+  },
+  "pivot" : [
+  	{
+	 "rows" : ["custId", "contactType"],
+	 "cols" : ["eventType"],
+	 "vals" : ["any areaId", "any branchName", "any branchUser", "ucount custId AS uCount", "count * AS total"]
+  	},
+  	{
+	 "rows" : ["areaId_CONTACT_VERF_INIT:DONE AS areaId", "branchName_CONTACT_VERF_INIT:DONE AS branchName","branchUser_CONTACT_VERF_INIT:DONE AS branchUser"],
+	 "cols" : ["contactType"],
+	 "vals" : ["sum uCount_CONTACT_VERF_INIT:DONE AS verification", "sum uCount_CONTACT_VERF_COMPLETE:DONE AS Confirmed"]
+  	}
+  ]
 }

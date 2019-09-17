@@ -245,4 +245,16 @@ public final class CollectionUtil {
 		}
 		return list.get(0);
 	}
+
+	public static <T> T set(List<T> list, int index, T e) {
+		if (list.size() == index) {
+			list.add(e);
+		} else if (list.size() > index) {
+			return list.set(index, e);
+		} else {
+			set(list, index - 1, null);
+			list.add(e);
+		}
+		return null;
+	}
 }
