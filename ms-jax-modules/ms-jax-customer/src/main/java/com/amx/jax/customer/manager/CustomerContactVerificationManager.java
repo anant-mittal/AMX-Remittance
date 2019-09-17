@@ -22,6 +22,7 @@ import com.amx.jax.dict.ContactType;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
+import com.amx.jax.logger.events.AuditActorInfo;
 import com.amx.jax.logger.events.CActivityEvent;
 import com.amx.jax.logger.events.CActivityEvent.Step;
 import com.amx.jax.logger.events.CActivityEvent.Type;
@@ -52,13 +53,13 @@ public class CustomerContactVerificationManager {
 
 	@Autowired
 	CustomerRepository customerRepository;
-	
+
 	@Autowired
 	private CustomerVerificationService customerVerificationService;
-	
+
 	@Autowired
 	private CustomerVerificationRepository customerVerificationRepository;
-	
+
 	@Autowired
 	OnlineCustomerRepository onlineCustomerRepository;
 
@@ -74,7 +75,11 @@ public class CustomerContactVerificationManager {
 	public List<CustomerContactVerification> getValidCustomerContactVerificationsByCustomerId(BigDecimal customerId,
 			ContactType contactType, String contact) {
 		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.DATE, -1);
+		if (ContactType.WHATSAPP.equals(contactType)) {
+			cal.add(Calendar.DATE, -30);
+		} else {
+			cal.add(Calendar.DATE, -1);
+		}
 		java.util.Date oneDay = new java.util.Date(cal.getTimeInMillis());
 		List<CustomerContactVerification> links = customerContactVerificationRepository.getByContact(customerId,
 				contactType,
@@ -112,6 +117,17 @@ public class CustomerContactVerificationManager {
 		link.setCreatedDate(new Date());
 		link.setAppCountryId(c.getCountryId());
 		link.setIsActive(Status.Y);
+
+		link.setCreatedDate(new Date());
+		link.setSendDate(new Date());
+
+		AuditActorInfo actor = auditService.getActor(AuditActorInfo.class);
+		if (!ArgUtil.isEmpty(actor)) {
+			link.setCreatedById(actor.getActorIdAsBigDecimal());
+			link.setCreatedByType(actor.getActorType());
+			//link.setSendById(actor.getActorIdAsBigDecimal());
+			//link.setSendByType(actor.getActorType());
+		}
 
 		try {
 
@@ -154,6 +170,47 @@ public class CustomerContactVerificationManager {
 		return customerContactVerificationRepository.save(link);
 	}
 
+	public CustomerContactVerification resend(Customer c, BigDecimal linkId, String code) {
+		CustomerContactVerification oldLink = this.getCustomerContactVerification(linkId);
+
+		if (ArgUtil.isEmpty(oldLink)) {
+			throw new GlobalException(JaxError.ENTITY_INVALID, "Cannot ReSend from Invalid Verification link");
+		}
+
+		if (ArgUtil.isEmpty(c)) {
+			throw new GlobalException(JaxError.CUSTOMER_NOT_FOUND, "Customer Does no exists for given civil id");
+		}
+
+		// Audit Info
+		CActivityEvent audit = new CActivityEvent(Type.CONTACT_VERF).step(Step.RESEND);
+		audit.setCustomerId(c.getCustomerId());
+		audit.setCustomer(c.getIdentityInt());
+		audit.setContactType(oldLink.getContactType());
+
+		try {
+			if (!oldLink.getCustomerId().equals(c.getCustomerId())) {
+				throw new GlobalException(JaxError.INVALID_CIVIL_ID, "Civil id does not belong to the link");
+			}
+
+			if (oldLink.hasValidStatus() && !oldLink.hasExpired()) {
+				throw new GlobalException(JaxError.SEND_OTP_LIMIT_EXCEEDED,
+						"Link is Valid for a day and cannot resend it again");
+			}
+
+			oldLink.setVerificationCode(Random.randomAlphaNumeric(8));
+			oldLink.setSendDate(new Date());
+
+		} catch (GlobalException e) {
+			auditService.log(audit.result(Result.FAIL).message(e.getError()));
+			throw e;
+		}
+
+		// Audit Info
+		auditService.log(audit.result(Result.DONE));
+
+		return customerContactVerificationRepository.save(oldLink);
+	}
+
 	/**
 	 * Validates CustomerContactVerification, throws exception if not valid or
 	 * expired
@@ -164,10 +221,9 @@ public class CustomerContactVerificationManager {
 	public CustomerContactVerification validate(CustomerContactVerification link) {
 		if (ArgUtil.isEmpty(link)) {
 			throw new GlobalException(JaxError.ENTITY_INVALID, "Verification link is Invalid");
-		} else if (AmxDBConstants.Status.D.equals(link.getIsActive())
-				|| AmxDBConstants.Status.N.equals(link.getIsActive())) {
+		} else if (!link.hasValidStatus()) {
 			throw new GlobalException(JaxError.ENTITY_INVALID, "Verification link is Invalid : " + link.getIsActive());
-		} else if (TimeUtils.isExpired(link.getCreatedDate(), Constants.TimeInterval.DAY)) {
+		} else if (link.hasExpired()) {
 			throw new GlobalException(JaxError.ENTITY_EXPIRED,
 					"Verification link is expired, Created on " + link.getCreatedDate());
 		}
@@ -237,7 +293,7 @@ public class CustomerContactVerificationManager {
 			throw new GlobalException(JaxError.ENTITY_INVALID,
 					"Verification linkType is Invalid : " + type);
 		}
-		
+
 		if (!ArgUtil.isEmpty(otherCustomers)) {
 			customerRepository.save(otherCustomers);
 		}
@@ -285,6 +341,8 @@ public class CustomerContactVerificationManager {
 				customerContactVerificationRepository.save(oldlinks);
 			}
 
+			link.setIsActive(Status.N);
+			link.setVerifiedDate(new Date());
 			customerContactVerificationRepository.save(link);
 
 		} catch (GlobalException e) {
@@ -293,6 +351,7 @@ public class CustomerContactVerificationManager {
 		}
 
 		customerContactVerificationRepository.save(link);
+		auditService.log(audit.result(Result.DONE));
 
 		return link;
 	}

@@ -29,12 +29,14 @@ import org.hibernate.annotations.Proxy;
 import com.amx.jax.constants.CustomerRegistrationType;
 import com.amx.jax.dbmodel.compliance.ComplianceBlockedCustomerDocMap;
 import com.amx.jax.dbmodel.customer.CustomerDocumentTypeMaster;
+import com.amx.jax.dict.Communicatable;
 import com.amx.jax.util.AmxDBConstants.Status;
+import com.amx.utils.ArgUtil;
 
 @Entity
 @Table(name = "FS_CUSTOMER")
 @Proxy(lazy = false)
-public class Customer implements java.io.Serializable {
+public class Customer implements java.io.Serializable, Communicatable {
 
 	private static final long serialVersionUID = 1L;
 	private BigDecimal customerId;
@@ -142,10 +144,9 @@ public class Customer implements java.io.Serializable {
 	private String prefixCodeMobileOther;
 	private String isMobileWhatsApp;
 	private String isMobileOtherWhatsApp;
-	
-	
-	//income related fields are added
-	
+
+	// income related fields are added
+
 	private BigDecimal annualIncomeFrom;
 	private BigDecimal annualIncomeTo;
 	private String annualIncomeUpdatedBy;
@@ -156,14 +157,14 @@ public class Customer implements java.io.Serializable {
 		
 	private String customerVatNumber;
 	private String premInsurance;
-	
+
 	// annual transaction limit fields added
 
 	private BigDecimal annualTransactionLimitFrom;
 	private BigDecimal annualTransactionLimitTo;
 	private Date annualTransactionUpdatedDate;
-	
-	@Column(name="ANNUAL_TRNXLIMIT_FROM")
+
+	@Column(name = "ANNUAL_TRNXLIMIT_FROM")
 	public BigDecimal getAnnualTransactionLimitFrom() {
 		return annualTransactionLimitFrom;
 	}
@@ -171,7 +172,8 @@ public class Customer implements java.io.Serializable {
 	public void setAnnualTransactionLimitFrom(BigDecimal annualTransactionLimitFrom) {
 		this.annualTransactionLimitFrom = annualTransactionLimitFrom;
 	}
-	@Column(name="ANNUAL_TRNXLIMIT_TO")
+
+	@Column(name = "ANNUAL_TRNXLIMIT_TO")
 	public BigDecimal getAnnualTransactionLimitTo() {
 		return annualTransactionLimitTo;
 	}
@@ -179,7 +181,8 @@ public class Customer implements java.io.Serializable {
 	public void setAnnualTransactionLimitTo(BigDecimal annualTransactionLimitTo) {
 		this.annualTransactionLimitTo = annualTransactionLimitTo;
 	}
-	@Column(name="ANNUAL_TRNXLIMIT_UPDATED_DATE")
+
+	@Column(name = "ANNUAL_TRNXLIMIT_UPDATED_DATE")
 	public Date getAnnualTransactionUpdatedDate() {
 		return annualTransactionUpdatedDate;
 	}
@@ -187,7 +190,7 @@ public class Customer implements java.io.Serializable {
 	public void setAnnualTransactionUpdatedDate(Date annualTransactionUpdatedDate) {
 		this.annualTransactionUpdatedDate = annualTransactionUpdatedDate;
 	}
-	
+
 	public String getIsBusinessCardVerified() {
 		return isBusinessCardVerified;
 	}
@@ -1136,7 +1139,7 @@ public class Customer implements java.io.Serializable {
 		return complianceBlockedDocuments;
 	}
 
-	@Column(name="PREM_INSURANCE")
+	@Column(name = "PREM_INSURANCE")
 	public String getPremInsurance() {
 		return premInsurance;
 	}
@@ -1147,8 +1150,9 @@ public class Customer implements java.io.Serializable {
 
 	@Override
 	public String toString() {
-		return "Customer [customerId=" + customerId +", email=" + email + 
-				 ", emailVerified=" + emailVerified + ", mobileVerified="
+		return "Customer [customerId=" + customerId + ", email=" + email +
+				", whatsApp=" + whatsapp + ", mobile=" + mobile +
+				", emailVerified=" + emailVerified + ", whatsAppVerified=" + whatsAppVerified + ", mobileVerified="
 				+ mobileVerified + "]";
 	}
 

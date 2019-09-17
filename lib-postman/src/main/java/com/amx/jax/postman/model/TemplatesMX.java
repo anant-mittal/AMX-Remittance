@@ -76,6 +76,16 @@ public enum TemplatesMX implements ITemplate {
 	BENE_SUCC("BeneCreationSuccess"),
 	BENE_SUCC_SMS("bene-success-sms",Channel.NOTIPY),
 
+	// Online coupon template
+	ONLINE_COUPON("OnlineCoupon"),
+	
+	//WU Notifications Templates
+	
+	WU_TRNX_SUCCESS("WUTrnxSuccess"),
+	WU_PICKUP_REMINDER("WUPickupReminder"),
+	WU_CANCEL_REMINDER("WUCancelReminder"),
+	WU_TRNX_CANCELLED("WUTrnxCancelled"),
+
 	// Default add enums above this
 	DEFAULT("default");
 

@@ -1,0 +1,5 @@
+{
+	"_subject": "Your [[${_tu.prop('company.name')}]] WU Transaction needs to be cancelled",
+  "_message": "Your transaction dated [[${data.date}]] having Trans Ref No: [[${data.refno}]] for [[${data.foreigncurcode}]] [[${data.foreignamount}]] / [[${data.localcurcode}]] [[${data.localamount}]] has not been picked up by beneficiary. Please visit the branch to initiate cancellation request and collect refund. Incase of any queries, call customer help desk [[${_tu.prop('company.helpno')}]]"
+}
+

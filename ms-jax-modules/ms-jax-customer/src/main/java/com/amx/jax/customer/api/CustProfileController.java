@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.jax.ICustomerProfileService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.customer.ICustomerProfileService;
 import com.amx.jax.customer.manager.CustomerContactVerificationManager;
@@ -16,6 +18,7 @@ import com.amx.jax.customer.service.JaxCustomerContactVerificationService;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerContactVerification;
 import com.amx.jax.dict.ContactType;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.exception.ApiHttpExceptions.ApiHttpArgException;
 import com.amx.jax.exception.ApiHttpExceptions.ApiStatusCodes;
 import com.amx.jax.logger.LoggerService;
@@ -39,6 +42,9 @@ public class CustProfileController implements ICustomerProfileService {
 
 	@Autowired
 	CustomerRepository customerRepository;
+
+	@Autowired
+	private PostManService postManService;
 
 	@Autowired
 	JaxCustomerContactVerificationService jaxCustomerContactVerificationService;
@@ -68,7 +74,8 @@ public class CustProfileController implements ICustomerProfileService {
 
 	@Override
 	@RequestMapping(value = ApiPath.CONTACT_LINK_VALIDATE, method = RequestMethod.POST)
-	public AmxApiResponse<CustomerContactVerificationDto, Object> validateVerificationLink(@RequestParam(value = ApiParams.LINK_ID) BigDecimal id) {
+	public AmxApiResponse<CustomerContactVerificationDto, Object> validateVerificationLink(
+			@RequestParam(value = ApiParams.LINK_ID) BigDecimal id) {
 		CustomerContactVerification x = customerContactVerificationManager.getCustomerContactVerification(id);
 		x = customerContactVerificationManager.validate(x);
 		return AmxApiResponse.build(customerContactVerificationManager.convertToDto(x));
@@ -76,8 +83,10 @@ public class CustProfileController implements ICustomerProfileService {
 
 	@Override
 	@RequestMapping(value = ApiPath.CONTACT_LINK_VERIFY_BY_CODE, method = RequestMethod.POST)
-	public AmxApiResponse<CustomerContactVerificationDto, Object> verifyLinkByCode(@RequestParam(value = ApiParams.IDENTITY) String identity,
-			@RequestParam(value = ApiParams.LINK_ID) BigDecimal linkId, @RequestParam(value = ApiParams.VERIFICATION_CODE) String code) {
+	public AmxApiResponse<CustomerContactVerificationDto, Object> verifyLinkByCode(
+			@RequestParam(value = ApiParams.IDENTITY) String identity,
+			@RequestParam(value = ApiParams.LINK_ID) BigDecimal linkId,
+			@RequestParam(value = ApiParams.VERIFICATION_CODE) String code) {
 		CustomerContactVerification x = customerContactVerificationManager.verifyByCode(identity, linkId, code);
 		return AmxApiResponse.build(customerContactVerificationManager.convertToDto(x));
 	}
