@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.model.CountryBranchDTO;
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.IDiscManagementService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
@@ -95,13 +96,36 @@ public class DiscountMgmtClient extends AbstractJaxServiceClient implements IDis
 		return pricerServiceClient.getCurrencyByGroupId(groupId);
 	}
 	
-	public AmxApiResponse<OnlineMarginMarkupInfo, Object> getOnlineMarginMarkupData(OnlineMarginMarkupReq request) {
-		return pricerServiceClient.getOnlineMarginMarkupData(request);
+	public AmxApiResponse<OnlineMarginMarkupInfo, Object> getOnlineMarginMarkupData(
+			OnlineMarginMarkupReq OnlineMarginMarkupReq) {
+			try {
+				return restService.ajax(appConfig.getJaxURL()).path(ApiEndPoints.GET_MARKUP_DETAILS).meta(new JaxMetaInfo())
+						.post(OnlineMarginMarkupReq).as(new ParameterizedTypeReference<AmxApiResponse<OnlineMarginMarkupInfo, Object>>() {
+						});
+			}catch (Exception ae) {
+				LOGGER.error("exception in getOnlineMarginMarkupData : ", ae);
+				return JaxSystemError.evaluate(ae);
+			}
 	}
-	public AmxApiResponse<BoolRespModel, Object> saveOnlineMarginMarkupData(OnlineMarginMarkupInfo request) {
-		return pricerServiceClient.saveOnlineMarginMarkupData(request);
+
+	
+	public AmxApiResponse<BoolRespModel, Object> saveOnlineMarginMarkupData(
+			OnlineMarginMarkupInfo onlineMarginMarkupInfo) {
+		try {
+			
+			return restService.ajax(appConfig.getJaxURL()).path(ApiEndPoints.SAVE_MARKUP_DETAILS).meta(new JaxMetaInfo())
+					.post(onlineMarginMarkupInfo)
+					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
+					});
+			} catch (Exception ae) {
+			LOGGER.error("exception in saveOnlineMarginMarkupData : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}
+		
 	}
 	
 
+	
+	
 
 }

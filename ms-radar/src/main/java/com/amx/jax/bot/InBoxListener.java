@@ -22,6 +22,7 @@ import com.amx.jax.tunnel.TunnelEventMapping;
 import com.amx.jax.tunnel.TunnelEventXchange;
 import com.amx.jax.util.AmxDBConstants;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.CollectionUtil;
 import com.amx.utils.StringUtils.StringMatcher;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
@@ -90,6 +91,7 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 
 	public WAMessage onMessageResponse(UserInboxEvent event) throws NumberParseException {
 		if (!ArgUtil.isEmpty(event.getWaChannel())) {
+
 			PhoneNumber swissNumberProto = phoneUtil.parse("+" + event.getFrom(), "IN");
 			LOGGER.info("Recieved {} {} ", swissNumberProto.getNationalNumber(), event.getMessage());
 			String replyMessage = "";
@@ -101,27 +103,30 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 			if (matcher.isMatch(PING)) {
 				replyMessage = "PING";
 			} else if (matcher.isMatch(LINK_CIVIL_ID)) {
-				String civilId = matcher.group(1);
 
-				Customer customer = customerRepository.getCustomerOneByIdentityInt(civilId);
+				try {
+					String civilId = matcher.group(1);
+					Customer customer = CollectionUtil.getOne(customerRepository.findActiveCustomers(civilId));
 
-				if (ArgUtil.isEmpty(customer)) { // Customer no Found
-					replyMessage = FOUND_NOT;
-				} else if (!swissNumberProtoString.equalsIgnoreCase(customer.getWhatsapp())) { // Customer number does
-					replyMessage = FOUND_MATCH_NOT;
-				} else if (AmxDBConstants.Status.Y.equals(customer.getWhatsAppVerified())) { // Already Verified so
-					replyMessage = NO_ACTION;
-				} else { // Found and matched
-					try {
-						customer.setWhatsAppVerified(AmxDBConstants.Status.Y);
+					if (ArgUtil.isEmpty(customer)) { // Customer no Found
+						replyMessage = FOUND_NOT;
+					} else if (!swissNumberProtoString.equalsIgnoreCase(customer.getWhatsapp())) { // Customer number
+																									// does
+						replyMessage = FOUND_MATCH_NOT;
+					} else if (AmxDBConstants.Status.Y.equals(customer.getWhatsAppVerified())) { // Already Verified so
+						replyMessage = NO_ACTION;
+					} else { // Found and matched
+								// customer.setWhatsAppVerified(AmxDBConstants.Status.Y);
 						customerProfileClient.verifyLinkByContact(civilId, ContactType.WHATSAPP,
 								swissISDProtoString + swissNumberProtoString);
 						// customerRepository.save(customer);
 						replyMessage = FOUND_MATCHED;
-					} catch (Exception e) {
-						replyMessage = SOME_ERROR;
+
 					}
 
+				} catch (Exception e) {
+					replyMessage = SOME_ERROR;
+					LOGGER.error("SOME_ERROR", e);
 				}
 
 			} else if (esConfig.isEnabled()) {

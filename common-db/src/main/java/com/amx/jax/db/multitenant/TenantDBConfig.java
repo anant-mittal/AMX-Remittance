@@ -51,15 +51,15 @@ public class TenantDBConfig {
 		if (dataSource == null) {
 			synchronized (lock) {
 				LOGGER.debug("dataSource is NULL So creating One {} {}", getDataSourceUrl(), getDataSourceUsername());
-				DataSourceBuilder factory = DataSourceBuilder.create().url(getDataSourceUrl())
-						.username(getDataSourceUsername()).password(getDataSourcePassword())
-						.driverClassName(getDataSourceDriverClassName());
-				org.apache.tomcat.jdbc.pool.DataSource tomcatDataSource = (org.apache.tomcat.jdbc.pool.DataSource) factory
-						.build();
-				tomcatDataSource.setTestOnBorrow(true);
-				tomcatDataSource.setValidationQuery("select 1 from dual");
-				tomcatDataSource.setTestWhileIdle(true);
-				dataSource = tomcatDataSource;
+			DataSourceBuilder factory = DataSourceBuilder.create().url(getDataSourceUrl())
+					.username(getDataSourceUsername()).password(getDataSourcePassword())
+					.driverClassName(getDataSourceDriverClassName());
+			org.apache.tomcat.jdbc.pool.DataSource tomcatDataSource = (org.apache.tomcat.jdbc.pool.DataSource) factory
+					.build();
+			tomcatDataSource.setTestOnBorrow(true);
+			tomcatDataSource.setValidationQuery("select 1 from dual");
+			tomcatDataSource.setTestWhileIdle(true);
+			dataSource = tomcatDataSource;
 				LOGGER.debug("dataSource was NULL So created One");
 				ready = true;
 			}

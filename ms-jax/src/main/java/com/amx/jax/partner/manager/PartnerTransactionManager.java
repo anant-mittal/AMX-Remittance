@@ -868,6 +868,8 @@ public class PartnerTransactionManager extends AbstractModel {
 				EmployeeDetailsView empDetails = employeeDetailsRepository.findByEmployeeId(metaData.getEmployeeId());
 				serviceProviderXmlLog.setForeignTerminalId(metaData.getEmployeeId().toPlainString());
 				serviceProviderXmlLog.setCreatedBy(empDetails.getUserName());
+			}else {
+				serviceProviderXmlLog.setCreatedBy("ON_LINE");
 			}
 
 			serviceProviderXmlLog.setIdentifier(PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name());
@@ -937,7 +939,7 @@ public class PartnerTransactionManager extends AbstractModel {
 								serviceProviderResponse.getAction_ind().equalsIgnoreCase(PricerServiceConstants.ACTION_IND_F)){
 							actionInd = serviceProviderResponse.getAction_ind();
 							responseDescription = serviceProviderResponse.getResponse_description();
-							emailStatus = Boolean.TRUE; // testing
+							//emailStatus = Boolean.TRUE; // testing
 						}else if(serviceProviderResponse.getAction_ind().equalsIgnoreCase(PricerServiceConstants.ACTION_IND_T)){
 							actionInd = PricerServiceConstants.ACTION_IND_U;
 							responseDescription = PricerServiceConstants.RESPONSE_UNKNOWN_ERROR;

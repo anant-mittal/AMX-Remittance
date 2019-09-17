@@ -80,4 +80,10 @@ public class ViewDistrict implements Serializable, IResourceEntity {
 		return null;
 	}
 
+	@Override
+	public String resourceLocalName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

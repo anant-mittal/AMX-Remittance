@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.pricer.dbmodel.OnlineMarginMarkup;
-import com.amx.jax.pricer.dbmodel.PipsMaster;
 import com.amx.jax.pricer.repository.MarginMarkupRepository;
 
 @Component
@@ -21,8 +20,8 @@ public class MarginMarkupDao {
 	public OnlineMarginMarkup getMarkupForCountryAndCurrencyAndBank(BigDecimal aplCountryId, BigDecimal countryId,
 			BigDecimal currencyId, BigDecimal bankId) {
 		List<OnlineMarginMarkup> marginList = marginMarkupRepository
-				.findByApplicationCountryIdAndCountryIdAndCurrencyIdAndBankId(aplCountryId, countryId, currencyId,
-						bankId);
+				.findByApplicationCountryIdAndCountryIdAndCurrencyIdAndBankIdAndIsActive(aplCountryId, countryId,
+						currencyId, bankId, "Y");
 
 		// Only One Margin is valid at Any Point of time
 		if (marginList != null && !marginList.isEmpty()) {
@@ -37,7 +36,7 @@ public class MarginMarkupDao {
 			BigDecimal currencyId, List<BigDecimal> bankIds) {
 
 		List<OnlineMarginMarkup> allBankMarkups = marginMarkupRepository
-				.findByApplicationCountryIdAndCurrencyIdAndBankIdIn(aplCountryId, currencyId, bankIds);
+				.findByApplicationCountryIdAndCurrencyIdAndIsActiveAndBankIdIn(aplCountryId, currencyId, "Y", bankIds);
 
 		Map<BigDecimal, OnlineMarginMarkup> bankMarkups = new HashMap<BigDecimal, OnlineMarginMarkup>();
 
@@ -60,13 +59,12 @@ public class MarginMarkupDao {
 				currencyId);
 
 	}
-	
-	public  OnlineMarginMarkup getMarkupData(BigDecimal countryId,BigDecimal currencyId,BigDecimal bankId)
-	 {
-		 return marginMarkupRepository.getMarkupData(countryId, currencyId, bankId);
-	 }
-	
-	
+
+	public OnlineMarginMarkup getMarkupData(BigDecimal aplCountryId, BigDecimal countryId, BigDecimal currencyId,
+			BigDecimal bankId) {
+		return marginMarkupRepository.getMarkupData(aplCountryId, countryId, currencyId, bankId);
+	}
+
 	public void saveOnlineMarginMarkup(OnlineMarginMarkup marginMarkup) {
 		marginMarkupRepository.save(marginMarkup);
 	}

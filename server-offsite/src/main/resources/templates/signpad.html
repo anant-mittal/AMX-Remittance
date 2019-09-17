@@ -115,6 +115,7 @@ table {
 
 </body>
 <script>
+	var serverUrl = localStorage.getItem("serverUrl") || '';
 	var terminalIP = localStorage.getItem("terminalId")
 			|| window.prompt("Enter Terminal");
 	localStorage.setItem("terminalId", terminalIP);
@@ -145,7 +146,7 @@ table {
 			return dfd.promise();
 		}
 		return $.ajax({
-			url : "/offsite/pub/device/pair",
+			url : serverUrl + "/offsite/pub/device/pair",
 			method : 'POST',
 			dataType : 'json',
 			contentType : "application/json",
@@ -173,7 +174,7 @@ table {
 	function activateDevice() {
 		if (!$activateDevice) {
 			$activateDevice = $.ajax({
-				url : "/offsite/pub/device/activate",
+				url : serverUrl + "/offsite/pub/device/activate",
 				method : 'POST',
 				dataType : 'json',
 				//contentType : "application/json",
@@ -211,7 +212,7 @@ table {
 				return dfd.promise();
 			}
 			return $.ajax({
-				url : '/offsite/pub/device/session',
+				url : serverUrl + '/offsite/pub/device/session',
 				headers : {
 					'x-device-reg-id' : deviceRegId,
 					'x-device-reg-token' : deviceRegToken
@@ -236,7 +237,7 @@ table {
 	}
 	function validateSession() {
 		return $.ajax({
-			url : "/offsite/pub/device/session/pair",
+			url : serverUrl + "/offsite/pub/device/session/pair",
 			method : 'POST',
 			dataType : 'json',
 			//contentType : "application/json",
@@ -252,7 +253,7 @@ table {
 
 	function hmac() {
 		if (deviceRegId && deviceRequestKey) {
-			return $.getJSON("/offsite/pub/amx/hmac", {
+			return $.getJSON(serverUrl + "/offsite/pub/amx/hmac", {
 				interval : 30,
 				secret : deviceRequestKey,
 				message : deviceRegId,
@@ -274,7 +275,7 @@ table {
 		pairSession().then(
 				function(resp) {
 					return $.ajax({
-						url : '/offsite/pub/signpad/status/activity',
+						url : serverUrl + '/offsite/pub/signpad/status/activity',
 						headers : {
 							'x-device-reg-id' : deviceRegId,
 							'x-device-reg-token' : deviceRegToken,
@@ -298,7 +299,7 @@ table {
 							function() {
 								$("#signature img").attr(
 										"src",
-										"/offsite/pub/signpad/signature?x-device-reg-id="
+										serverUrl + "/offsite/pub/signpad/signature?x-device-reg-id="
 												+ deviceRegId);
 								setTimeout(poll, 3000);
 							})

@@ -19,6 +19,7 @@ import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.customer.SecurityQuestionModel;
 import com.amx.jax.userservice.dao.CustomerDao;
+import com.amx.jax.userservice.repository.OnlineCustomerRepository;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.userservice.service.UserValidationService;
 import com.amx.jax.util.CryptoUtil;
@@ -47,6 +48,9 @@ public class OnlineCustomerManager {
 	
 	@Autowired
 	UserContactVerificationManager userContactVerificationManager;
+	
+	@Autowired
+	OnlineCustomerRepository onlineCustomerRepository;
 
 	public void saveCustomerSecQuestions(List<SecurityQuestionModel> securityQuestions) {
 		CustomerOnlineRegistration customerOnlineRegistration = custDao
@@ -113,6 +117,7 @@ public class OnlineCustomerManager {
 		String userId = onlineCust.getUserName();
 		if (resetPwd != null) {
 			onlineCust.setPassword(cryptoUtil.getHash(userId, resetPwd));
+			onlineCustomerRepository.save(onlineCust);
 		}else {
 			throw new GlobalException(JaxError.UPDATE_PWD_REQUIRED, "Please enter Password to reset");
 		}

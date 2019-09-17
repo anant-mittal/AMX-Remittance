@@ -18,6 +18,8 @@ public class OnlineMarginMarkupReq implements Serializable {
 	@NotNull(message = "CurrencyId can not be Null or Empty")
 	private BigDecimal currencyId;
 	
+	private BigDecimal applicationCountryId;
+	
 	public BigDecimal getBankId() {
 		return bankId;
 	}
@@ -46,6 +48,13 @@ public class OnlineMarginMarkupReq implements Serializable {
 		this.currencyId = currencyId;
 	}
 	
+	public BigDecimal getApplicationCountryId() {
+		return applicationCountryId;
+	}
+
+	public void setApplicationCountryId(BigDecimal applicationCountryId) {
+		this.applicationCountryId = applicationCountryId;
+	}
 
 	@Override
 	public String toString() {

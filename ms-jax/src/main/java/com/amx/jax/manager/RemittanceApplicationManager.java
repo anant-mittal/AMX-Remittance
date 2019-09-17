@@ -379,7 +379,7 @@ public class RemittanceApplicationManager {
 						: ConstantDocument.No);
 		Map<DISCOUNT_TYPE, ExchangeDiscountInfo> customerDiscoutDetails = remittanceTransactionResponsetModel
 				.getCustomerDiscountDetails();
-		if (customerDiscoutDetails != null) {
+		if (customerDiscoutDetails != null && !customerDiscoutDetails.isEmpty()) {
 			remittanceApplication
 					.setCusCatDiscountId(customerDiscoutDetails.get(DISCOUNT_TYPE.CUSTOMER_CATEGORY).getId());
 			remittanceApplication.setCusCatDiscount(

@@ -11,5 +11,7 @@ import com.amx.jax.dbmodel.remittance.ViewRemittanceMode;
 public interface IViewRemittanceMode  extends CrudRepository<ViewRemittanceMode, Serializable>{
 	
 	List<ViewRemittanceMode> findByRemittanceModeIdAndLanguageId(BigDecimal remittanceModeId,BigDecimal languageId);
+	
+	ViewRemittanceMode findByRemittancCode(String remittancCode); 	
 
 }

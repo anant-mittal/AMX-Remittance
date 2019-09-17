@@ -3,6 +3,7 @@ package com.amx.jax.logger;
 import java.util.Map;
 
 import com.amx.jax.dict.UserClient.UserDeviceClient;
+import com.amx.jax.exception.AmxApiException;
 import com.amx.jax.exception.IExceptionEnum;
 import com.amx.utils.ArgUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -192,6 +193,13 @@ public abstract class AuditEvent extends AbstractEvent {
 
 	public AuditEvent result(Result result) {
 		this.setResult(result);
+		return this;
+	}
+
+	public AuditEvent result(Result result, AmxApiException excep) {
+		this.setResult(result);
+		this.errorCode = ArgUtil.isEmpty(excep.getErrorKey()) ? ArgUtil.parseAsString(excep.getError())
+				: excep.getErrorKey();
 		return this;
 	}
 
