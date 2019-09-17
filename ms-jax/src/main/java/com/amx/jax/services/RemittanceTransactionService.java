@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -156,6 +158,7 @@ public class RemittanceTransactionService extends AbstractService {
 		return response;
 	}
 
+	
 	
 	public ApiResponse saveApplicationV2(RemittanceTransactionDrRequestModel model) {
 		ApiResponse response = getBlackApiResponse();

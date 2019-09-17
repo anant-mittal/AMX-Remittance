@@ -1219,8 +1219,7 @@ public class RemittanceTransactionManager {
 		if (model.getmOtp() == null) {
 			// this flow is for send OTP
 			civilIdOtpModel = addOtpOnRemittanceV2(model);
-			throw new GlobalException("Save application disabled");
-		} else {
+			
 			// this flow is for validate OTP
 			userService.validateOtp(null, model.getmOtp(), null);
 		}
@@ -1246,14 +1245,7 @@ public class RemittanceTransactionManager {
 	
 	private void deactivatePreviousApplications(String paymentType) {
 		BigDecimal customerId = meta.getCustomerId();
-		Customer customer = customerRepository.getActiveCustomerDetailsByCustomerId(customerId);
-		
-		if(!paymentType.equalsIgnoreCase(ConstantDocument.PB_PAYMENT)) {
-			remittanceApplicationService.deActivateApplication(customerId);
-		}else {
-			remittanceApplicationService.deActivateLatestPbApplication(customer,paymentType);
-		}
-		
+		remittanceApplicationService.deActivateApplication(customerId);
 	}
 
 	private void validateAdditionalBeneDetails(RemittanceTransactionRequestModel model) {
