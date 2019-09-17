@@ -70,6 +70,12 @@ public class ExOwsLoginCredentials implements Serializable
 
 	@Column(name = "KEYSTORE_ALIAS")
 	String keystore_alias;
+	
+	@Column(name = "TRUSTSTORE_PATH")
+	String truststore_path;
+
+	@Column(name = "TRUSTSTORE_PWD")
+	String trusttore_pwd;
 
 	public String getApplicationCountry()
 	{
@@ -209,5 +215,25 @@ public class ExOwsLoginCredentials implements Serializable
 	public void setKeystore_alias(String keystore_alias)
 	{
 		this.keystore_alias = keystore_alias;
+	}
+
+	public String getTruststore_path()
+	{
+		return truststore_path;
+	}
+
+	public void setTruststore_path(String truststore_path)
+	{
+		this.truststore_path = truststore_path;
+	}
+
+	public String getTrusttore_pwd()
+	{
+		return trusttore_pwd;
+	}
+
+	public void setTrusttore_pwd(String trusttore_pwd)
+	{
+		this.trusttore_pwd = trusttore_pwd;
 	}
 }

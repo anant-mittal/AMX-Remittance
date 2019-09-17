@@ -2,12 +2,13 @@ package com.amx.service_provider.manger;
 
 import java.util.HashMap;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
-import org.apache.commons.lang3.StringUtils;
+
 import com.amx.jax.model.request.serviceprovider.Benificiary;
 import com.amx.jax.model.request.serviceprovider.Customer;
 import com.amx.jax.model.request.serviceprovider.ServiceProviderCallRequestDto;
@@ -18,10 +19,6 @@ import com.amx.service_provider.api_gates.common.Common_API_Utils;
 import com.amx.service_provider.api_gates.homesend.HomesendGate;
 import com.amx.service_provider.api_gates.vintaja.VintajaGate;
 import com.amx.service_provider.dbmodel.webservice.ExOwsLoginCredentials;
-<<<<<<< Updated upstream
-import com.amx.service_provider.homesend.HomeSendDTO;
-=======
->>>>>>> Stashed changes
 import com.amx.service_provider.repository.webservice.ExOwsLoginCredentialsRepository;
 import com.amx.service_provider.repository.webservice.OwsParamRespcodeRepository;
 import com.amx.service_provider.repository.webservice.OwsTransferLogRepository;
@@ -29,9 +26,6 @@ import com.amx.service_provider.utils.MSServiceProviderConfig;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
-// @EntityScan("com.amx.jax.dbmodel.webservice")
-// @EnableJpaRepositories("com.amx.jax.dbmodel.webservice")
-// @ComponentScan(basePackages = { "com.amx.jax.dbmodel.webservice" })
 public class ServiceProviderManger implements IServiceProvider
 {
 	// Fetching access details
@@ -92,27 +86,7 @@ public class ServiceProviderManger implements IServiceProvider
 				// Selecting which service to call based on the routing bank code
 				if (txn_data.getRoutting_bank_code().equals("HOME")) // HomeSend
 				{
-					
-					HomeSendDTO homeSendDTO = new HomeSendDTO();
-					homeSendDTO.setApi_login(owsLoginCredentialsObject.getWsUserName());
-					homeSendDTO.setApi_password(owsLoginCredentialsObject.getWsPassword());
-					homeSendDTO.setApi_url(owsLoginCredentialsObject.getFlexiField1());
-					//homeSendDTO.setKeyStoreLocation(msServiceProviderConfig.getKeyStoreLocation());
-					//homeSendDTO.setKeyStorePassword(msServiceProviderConfig.getKeyStorePassword());
-					homeSendDTO.setOwsParamRespcodeRepository(owsParamRespcodeRepository);
-					homeSendDTO.setTrustStoreLocation(msServiceProviderConfig.getTrustStoreLocation());
-					homeSendDTO.setTrustStorePassword(msServiceProviderConfig.getTrustStorePassword());
-					homeSendDTO.setVendor_id(owsLoginCredentialsObject.getWsAgentId());
-					
-					HomesendGate homesend_service = new HomesendGate(homeSendDTO);
-					
-					// Service Initialization
-					/*HomesendGate homesend_service = new HomesendGate(
-							owsLoginCredentialsObject.getWsUserName() api_login ,
-							owsLoginCredentialsObject.getWsPassword() api_password ,
-							owsLoginCredentialsObject.getWsAgentId() vendor_id ,
-							owsLoginCredentialsObject.getFlexiField1() api_url ,
-							owsParamRespcodeRepository);*/
+					HomesendGate homesend_service = new HomesendGate(owsLoginCredentialsObject, owsParamRespcodeRepository);
 
 					// Calling the quotation service
 					response = homesend_service.getQuotation(txn_data.getSettlement_amount(),
@@ -261,26 +235,7 @@ public class ServiceProviderManger implements IServiceProvider
 				// Selecting which service to call based on the routing bank code
 				if (txn_data.getRoutting_bank_code().equals("HOME")) // HomeSend
 				{
-					HomeSendDTO homeSendDTO = new HomeSendDTO();
-					homeSendDTO.setApi_login(owsLoginCredentialsObject.getWsUserName());
-					homeSendDTO.setApi_password(owsLoginCredentialsObject.getWsPassword());
-					homeSendDTO.setApi_url(owsLoginCredentialsObject.getFlexiField1());
-					//homeSendDTO.setKeyStoreLocation(msServiceProviderConfig.getKeyStoreLocation());
-					//homeSendDTO.setKeyStorePassword(msServiceProviderConfig.getKeyStorePassword());
-					homeSendDTO.setOwsParamRespcodeRepository(owsParamRespcodeRepository);
-					homeSendDTO.setTrustStoreLocation(msServiceProviderConfig.getTrustStoreLocation());
-					homeSendDTO.setTrustStorePassword(msServiceProviderConfig.getTrustStorePassword());
-					homeSendDTO.setVendor_id(owsLoginCredentialsObject.getWsAgentId());
-					
-					HomesendGate homesend_service = new HomesendGate(homeSendDTO);
-					
-					// Service Initialization
-					/*HomesendGate homesend_service = new HomesendGate(
-							owsLoginCredentialsObject.getWsUserName() api_login ,
-							owsLoginCredentialsObject.getWsPassword() api_password ,
-							owsLoginCredentialsObject.getWsAgentId() vendor_id ,
-							owsLoginCredentialsObject.getFlexiField1() api_url ,
-							owsParamRespcodeRepository);*/
+					HomesendGate homesend_service = new HomesendGate(owsLoginCredentialsObject, owsParamRespcodeRepository);
 
 					// Calling the quotation service
 					response = homesend_service.getQuotation(txn_data.getSettlement_amount(),

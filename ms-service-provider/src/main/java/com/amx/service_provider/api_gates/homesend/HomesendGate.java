@@ -30,9 +30,9 @@ import com.amx.jax.model.response.serviceprovider.Quotation_Call_Response;
 import com.amx.jax.model.response.serviceprovider.Remittance_Call_Response;
 import com.amx.jax.model.response.serviceprovider.Status_Call_Response;
 import com.amx.service_provider.api_gates.common.Common_API_Utils;
+import com.amx.service_provider.dbmodel.webservice.ExOwsLoginCredentials;
 import com.amx.service_provider.dbmodel.webservice.OwsParamRespcode;
 import com.amx.service_provider.dbmodel.webservice.OwsParamRespcodeKey;
-import com.amx.service_provider.homesend.HomeSendDTO;
 import com.amx.service_provider.repository.webservice.OwsParamRespcodeRepository;
 
 /*
@@ -65,51 +65,32 @@ public class HomesendGate
 	final String SERVICE_PROVIDER_DESC = new String("HOME_SEND");
 	private final String GET_QUOTATION_METHOD_IND = new String("6"), SEND_TXN_METHOD_IND = new String("2"),
 			REMITTANCE_STATUS_INQ_IND = new String("3");
-	// SEND_CANCEL_REQUEST_IND = new String("7");
-	// CANCEL_STATUS_INQ_IND = new String("8");
+
 	private String API_LOGIN = null, API_PASSWORD = null;
 	private final String PROPERTY_FILE_PATH = "com.amx.service_provider.config.Homesend_fileds_code_mapping";
 	private final String CUSTOMER_ID_PREFIX = "ewallet:";
 
-	private final String KEY_STORE_LOCATION =
-			"D:\\Exchange\\OWS\\Projects\\HomeSend\\Docs\\UAT\\SSL_Config\\KeyStore\\home_send_uat_keystore.jks";
-	private final String KEY_STORE_PASSWORD = "changeit";
-
-	private final String TRUST_STORE_LOCATION =
-			"D:\\Exchange\\OWS\\Projects\\HomeSend\\Docs\\UAT\\SSL_Config\\TrustStore\\truststore.jks";
-	private final String TRUST_STORE_PASSWORD = "changeit";
-
-	// private final String KEY_STORE_LOCATION =
-	// "D:\\Salman\\SSL_Config\\KeyStore\\home_send_uat_keystore.jks";
-	// private final String KEY_STORE_PASSWORD = "changeit";
-	//
-	// private final String TRUST_STORE_LOCATION =
-	// "D:\\Salman\\SSL_Config\\TrustStore\\truststore.jks";
-	// private final String TRUST_STORE_PASSWORD = "changeit";
-
 	Logger logger = Logger.getLogger("WService.class");
 
-	public HomesendGate(HomeSendDTO homeSendDTO)
+	public HomesendGate(ExOwsLoginCredentials owsLoginCredentialsObject, OwsParamRespcodeRepository owsParamRespcodeRepository)
 	{
 		try
 		{
-			// new Log4jPropConfig().log4jconfig();
-
+			this.owsParamRespcodeRepository = owsParamRespcodeRepository;
+			
 			HomeSend_HWS_2_3Locator HomeSend_RemitLocator = new HomeSend_HWS_2_3Locator();
-
-			HomeSend_RemitLocator.setHWSPort_2_3EndpointAddress(homeSendDTO.getApi_url());
+			HomeSend_RemitLocator.setHWSPort_2_3EndpointAddress(owsLoginCredentialsObject.getFlexiField1());
 			HomeSend_BindingStub = (HWSBinding_2_3Stub) HomeSend_RemitLocator.getHWSPort_2_3();
 
-			API_LOGIN = homeSendDTO.getApi_login();
-			API_PASSWORD = homeSendDTO.getApi_password();
-			new UnsignedInt(homeSendDTO.getVendor_id());
-			this.owsParamRespcodeRepository = homeSendDTO.getOwsParamRespcodeRepository();
+			API_LOGIN = owsLoginCredentialsObject.getWsUserName();
+			API_PASSWORD = owsLoginCredentialsObject.getWsPassword();
 
-			System.setProperty("javax.net.ssl.trustStore", TRUST_STORE_LOCATION);
-			System.setProperty("javax.net.ssl.trustStorePassword", TRUST_STORE_PASSWORD); // changeit
+			System.setProperty("javax.net.ssl.trustStore", owsLoginCredentialsObject.getTruststore_path());
+			System.setProperty("javax.net.ssl.trustStorePassword", owsLoginCredentialsObject.getTrusttore_pwd()); // changeit
 
-			System.setProperty("javax.net.ssl.keyStore", KEY_STORE_LOCATION);
-			System.setProperty("javax.net.ssl.keyStorePassword", KEY_STORE_PASSWORD);
+			// TODO: Comment in Live
+			System.setProperty("javax.net.ssl.keyStore", owsLoginCredentialsObject.getKeystore_path());
+			System.setProperty("javax.net.ssl.keyStorePassword", owsLoginCredentialsObject.getKeystore_pwd());
 
 			System.setProperty("jdk.tls.client.protocols", "TLSv1.2");
 		}
