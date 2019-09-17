@@ -255,7 +255,6 @@ public class BranchRemittanceSaveManager {
 		logger.debug("saveRemittanceTrnx request model : {}", JsonUtil.toJson(remittanceRequestModel));
 		List<BranchApplicationDto> shoppingCartList = new ArrayList<>();
 		shoppingCartList = remittanceRequestModel.getRemittanceApplicationId();
-		//updateApplicationStatus(shoppingCartList);
 		RemittanceResponseDto responseDto = saveRemittance(remittanceRequestModel);
 		TransactionDetailsView serviceProviderView = null;
 		String partnerTransactionId = null;
@@ -345,6 +344,7 @@ public class BranchRemittanceSaveManager {
 			responseDto = brRemittanceDao.saveRemittanceTransaction(mapAllDetailRemitSave);
 			auditService.log(new CActivityEvent(Type.TRANSACTION_CREATED,String.format("%s/%s", responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo())).field("STATUS").to(JaxTransactionStatus.PAYMENT_SUCCESS_APPLICATION_SUCCESS).result(Result.DONE));
 	}catch (GlobalException e) {
+			e.printStackTrace();
 			logger.error("routing  procedure", e.getErrorMessage() + "" + e.getErrorKey());
 			throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
 		}finally {
