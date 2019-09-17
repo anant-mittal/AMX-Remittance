@@ -72,12 +72,13 @@ public class HomesendGate
 
 	Logger logger = Logger.getLogger("WService.class");
 
-	public HomesendGate(ExOwsLoginCredentials owsLoginCredentialsObject, OwsParamRespcodeRepository owsParamRespcodeRepository)
+	public HomesendGate(ExOwsLoginCredentials owsLoginCredentialsObject,
+			OwsParamRespcodeRepository owsParamRespcodeRepository)
 	{
 		try
 		{
 			this.owsParamRespcodeRepository = owsParamRespcodeRepository;
-			
+
 			HomeSend_HWS_2_3Locator HomeSend_RemitLocator = new HomeSend_HWS_2_3Locator();
 			HomeSend_RemitLocator.setHWSPort_2_3EndpointAddress(owsLoginCredentialsObject.getFlexiField1());
 			HomeSend_BindingStub = (HWSBinding_2_3Stub) HomeSend_RemitLocator.getHWSPort_2_3();
@@ -85,12 +86,18 @@ public class HomesendGate
 			API_LOGIN = owsLoginCredentialsObject.getWsUserName();
 			API_PASSWORD = owsLoginCredentialsObject.getWsPassword();
 
-			System.setProperty("javax.net.ssl.trustStore", owsLoginCredentialsObject.getTruststore_path());
-			System.setProperty("javax.net.ssl.trustStorePassword", owsLoginCredentialsObject.getTrusttore_pwd()); // changeit
+			if (owsLoginCredentialsObject.getTruststore_path() != null)
+			{
 
-			// TODO: Comment in Live
-			System.setProperty("javax.net.ssl.keyStore", owsLoginCredentialsObject.getKeystore_path());
-			System.setProperty("javax.net.ssl.keyStorePassword", owsLoginCredentialsObject.getKeystore_pwd());
+				System.setProperty("javax.net.ssl.trustStore", owsLoginCredentialsObject.getTruststore_path());
+				System.setProperty("javax.net.ssl.trustStorePassword", owsLoginCredentialsObject.getTrusttore_pwd()); // changeit
+			}
+
+			if (owsLoginCredentialsObject.getKeystore_path() != null)
+			{
+				System.setProperty("javax.net.ssl.keyStore", owsLoginCredentialsObject.getKeystore_path());
+				System.setProperty("javax.net.ssl.keyStorePassword", owsLoginCredentialsObject.getKeystore_pwd());
+			}
 
 			System.setProperty("jdk.tls.client.protocols", "TLSv1.2");
 		}
@@ -461,7 +468,7 @@ public class HomesendGate
 		{
 			// Assign the same out-going reference to the response object
 			local_api_response.setOut_going_transaction_reference(txn_data.getOut_going_transaction_reference());
-			
+
 			logger.info(HomesendUtils.log_send_remittance_input_details(txn_data, customer_data, bene_data));
 			String validation_result =
 					HomesendUtils.validate_remittance_request_input(txn_data, customer_data, bene_data);

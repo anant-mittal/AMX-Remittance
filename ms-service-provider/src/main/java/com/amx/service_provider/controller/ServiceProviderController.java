@@ -23,7 +23,7 @@ public class ServiceProviderController implements IServiceProviderService
 	ServiceProviderService serviceProviderGateService;
 
 	@RequestMapping(value = IServiceProviderService.Path.GET_QUATATION, method = RequestMethod.POST)
-	public AmxApiResponse<Quotation_Call_Response, Object> getQuatation(@Valid @RequestBody ServiceProviderCallRequestDto quatationRequestDto)
+	public AmxApiResponse<ServiceProviderResponse, Object> getQuatation(@Valid @RequestBody ServiceProviderCallRequestDto quatationRequestDto)
 	{
 		return AmxApiResponse.build(serviceProviderGateService.getQutation(quatationRequestDto));
 	}
