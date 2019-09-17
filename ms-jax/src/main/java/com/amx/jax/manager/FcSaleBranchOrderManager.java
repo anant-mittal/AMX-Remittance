@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -49,6 +50,7 @@ import com.amx.jax.dbmodel.fx.ForeignCurrencyOldModel;
 import com.amx.jax.dbmodel.fx.ForeignCurrencyStockTransfer;
 import com.amx.jax.dbmodel.fx.FxDeliveryDetailsModel;
 import com.amx.jax.dbmodel.fx.OrderManagementView;
+import com.amx.jax.dbmodel.fx.UserFcStockView;
 import com.amx.jax.dbmodel.fx.UserStockView;
 import com.amx.jax.dbmodel.remittance.Document;
 import com.amx.jax.dict.Tenant;
@@ -139,7 +141,7 @@ public class FcSaleBranchOrderManager {
 	@Autowired
 	CustomerService customerService;
 
-	public HashMap<String, Object> fetchFcSaleOrderManagement(BigDecimal applicationCountryId,BigDecimal employeeId){
+	public HashMap<String, Object> fetchFcSaleOrderManagement(BigDecimal applicationCountryId,BigDecimal employeeId,Date fromDate,Date toDate){
 		HashMap<String, Object> fetchOrder = new HashMap<>();
 		List<OrderManagementView> ordermanage = new ArrayList<>();
 		try{
@@ -157,16 +159,33 @@ public class FcSaleBranchOrderManager {
 					} else if (TenantContextHolder.currentSite().equals(Tenant.OMN)) {
 						branchCode = ConstantDocument.OMAN_FOREIGNCURRENCY;
 					}
+					
+					if(fromDate != null) {
+						// continue
+					}else {
+						// one week calculation for calendar
+						Calendar cal = Calendar.getInstance();
+						cal.add(Calendar.DAY_OF_YEAR, -7);
+						fromDate = cal.getTime();
+					}
+					
+					if(toDate != null) {
+						// continue
+					}else {
+						toDate = new Date();
+					}
+					
 					if(branchCode != null) {
 						if(branchId.compareTo(branchCode) == 0) {
-							ordermanage = fcSaleBranchDao.fetchFcSaleOrderManagementForHeadOffice(applicationCountryId);
+							//ordermanage = fcSaleBranchDao.fetchFcSaleOrderManagementForHeadOffice(applicationCountryId);
+							ordermanage = fcSaleBranchDao.fetchFcSaleOrderManagementForHeadOfficeLastOneWeek(applicationCountryId,fromDate,toDate);
 
 							fetchOrder.put("ORDERS", ordermanage);
 							fetchOrder.put("AREA", Boolean.TRUE);
 							fetchOrder.put("BranchId", branchId);
 						}else {
 							//ordermanage = fcSaleBranchDao.fetchFcSaleOrderManagement(applicationCountryId,areaCode);
-							ordermanage = fcSaleBranchDao.fetchFcSaleOrderManagementByGovernate(applicationCountryId,governorate);
+							ordermanage = fcSaleBranchDao.fetchFcSaleOrderManagementByGovernateLastOneWeek(applicationCountryId,governorate,fromDate,toDate);
 
 							fetchOrder.put("ORDERS", ordermanage);
 							fetchOrder.put("AREA", Boolean.FALSE);
@@ -174,7 +193,7 @@ public class FcSaleBranchOrderManager {
 						}
 					}else {
 						//ordermanage = fcSaleBranchDao.fetchFcSaleOrderManagement(applicationCountryId,areaCode);
-						ordermanage = fcSaleBranchDao.fetchFcSaleOrderManagementByGovernate(applicationCountryId,governorate);
+						ordermanage = fcSaleBranchDao.fetchFcSaleOrderManagementByGovernateLastOneWeek(applicationCountryId,governorate,fromDate,toDate);
 
 						fetchOrder.put("ORDERS", ordermanage);
 						fetchOrder.put("AREA", Boolean.FALSE);
@@ -1892,8 +1911,8 @@ public class FcSaleBranchOrderManager {
 		if(lstTotalStock != null && lstTotalStock.size() != 0) {
 			if(foreignCurrencyId != null && foreignCurrencyId.size() != 0) {
 				// fetch staff currency stock
-				List<UserStockView> userStockData = fcSaleBranchDao.fetchUserStockAllCurrencyCurrentDate(fromUserName,fromCountryBranchId,foreignCurrencyId);
-				for (UserStockView userStockView : userStockData) {
+				List<UserFcStockView> userStockData = fcSaleBranchDao.fetchUserFCStockAllCurrencyCurrentDate(fromUserName,fromCountryBranchId,foreignCurrencyId);
+				for (UserFcStockView userStockView : userStockData) {
 					currencyStock.put(userStockView.getDenominationId(), userStockView.getCurrentStock());
 				}
 			}

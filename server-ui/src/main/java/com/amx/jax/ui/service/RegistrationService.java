@@ -340,11 +340,11 @@ public class RegistrationService {
 	 * @return the response wrapper
 	 */
 	public ResponseWrapper<UserUpdateData> setCredentials(String loginId, String password, String mOtp, String eOtp,
-			String email, boolean doLogin) {
+			String email, String referralCode, boolean doLogin) {
 		sessionService.getGuestSession().initStep(AuthStep.CREDS_SET);
 		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
 
-		jaxClient.setDefaults().getUserclient().saveCredentials(loginId, password, mOtp, eOtp, email).getResult();
+		jaxClient.setDefaults().getUserclient().saveCredentials(loginId, password, mOtp, eOtp, email,referralCode).getResult();
 
 		userService.updateCustoemrModel();
 

@@ -3,6 +3,7 @@ package com.amx.jax.model;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.amx.jax.json.JsonSerializerType;
 import com.amx.utils.ArgUtil;
@@ -28,6 +29,13 @@ public class MapModel implements JsonSerializerType<Object> {
 
 	public Object get(String key) {
 		return this.map.get(key);
+	}
+
+	public Object getFirst() {
+		for (Entry<String, Object> iterable_element : map.entrySet()) {
+			return iterable_element.getValue();
+		}
+		return null;
 	}
 
 	public String getString(String key) {

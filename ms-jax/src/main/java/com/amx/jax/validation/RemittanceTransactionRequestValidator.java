@@ -29,6 +29,7 @@ import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.PurposeTrnxAmicDesc;
 import com.amx.jax.dbmodel.remittance.AdditionalBankDetailsViewx;
+import com.amx.jax.dbmodel.remittance.AdditionalBankRuleAmiec;
 import com.amx.jax.dbmodel.remittance.AdditionalBankRuleMap;
 import com.amx.jax.dbmodel.remittance.AdditionalDataDisplayView;
 import com.amx.jax.dbmodel.remittance.FlexFiledView;

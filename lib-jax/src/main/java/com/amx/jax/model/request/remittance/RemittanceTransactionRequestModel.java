@@ -84,5 +84,6 @@ public class RemittanceTransactionRequestModel extends RemittanceAdditionalBeneF
 		return this.exRateBreakup;
 	}
 
+
 }
 

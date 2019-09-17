@@ -249,6 +249,7 @@ public enum JaxError implements IExceptionEnum {
 	REMITTANCE_MODE_NOT_FOUND,
 	REMITTANCE_ADDITIONAL_FIELD_REQUIRED, BANK_IBAN_EMPTY,
 	INVALID_NUMBER,
+	FC_SALE_SELECTED_DATES,
 
 	// for validate new Question
 	INVALIDATE_ANSWER,
@@ -307,6 +308,10 @@ public enum JaxError implements IExceptionEnum {
     INVALID_ROUTING_BANK,
 	//Vat
 	MUTIPLE_RECORD_FOUND,
+	//Referral
+	NULL_CONTACT_DETAILS,
+	NULL_CONTACT_TYPE,
+	NULL_LINK_ID,
 	
 	//Customer Rating
 	TRANSACTION_ALREADY_RATED,

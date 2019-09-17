@@ -1,4 +1,4 @@
-package com.amx.amxlib.meta.model;
+package com.amx.jax.model.customer;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -7,6 +7,7 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.Range;
 
+import com.amx.jax.dict.AmxEnums.Products;
 import com.amx.jax.model.AbstractModel;
 
 public class CustomerRatingDTO extends AbstractModel {
@@ -16,20 +17,24 @@ public class CustomerRatingDTO extends AbstractModel {
 	private BigDecimal customerId;
 	private BigDecimal ratingId;
 	private BigDecimal applicationCountryId;
-	
-	
 	private BigDecimal remittanceApplicationId;
 	
-	@NotNull(message="remittanceApplicationId may not be null")
+	//@NotNull(message="remittanceApplicationId may not be null")
 	private BigDecimal remittanceTransactionId;
 	private Date createdDate;
 
 	
-	@NotNull
+	//@NotNull
 	@Range(min=1, max=10,message="rating should be between 1 and 10 range")
 	private BigDecimal rating;
-	
 	private String ratingRemark;
+	
+	//fxOrder 
+	private BigDecimal collectionDocNo;
+	private BigDecimal collectionDocfyr;
+	private String producttype;
+	
+	Products prodType;
 
 	@Override
 	public String getModelType() {
@@ -67,6 +72,7 @@ public class CustomerRatingDTO extends AbstractModel {
 	public void setRemittanceApplicationId(BigDecimal remittanceApplicationId) {
 		this.remittanceApplicationId = remittanceApplicationId;
 	}
+	
 
 	public BigDecimal getRemittanceTransactionId() {
 		return remittanceTransactionId;
@@ -99,6 +105,40 @@ public class CustomerRatingDTO extends AbstractModel {
 	public void setRatingRemark(String ratingRemark) {
 		this.ratingRemark = ratingRemark;
 	}
+
+	public BigDecimal getCollectionDocNo() {
+		return collectionDocNo;
+	}
+
+	public void setCollectionDocNo(BigDecimal collectionDocNo) {
+		this.collectionDocNo = collectionDocNo;
+	}
+
+	public BigDecimal getCollectionDocfyr() {
+		return collectionDocfyr;
+	}
+
+	public void setCollectionDocfyr(BigDecimal collectionDocfyr) {
+		this.collectionDocfyr = collectionDocfyr;
+	}
+
+	public String getProducttype() {
+		return producttype;
+	}
+
+	public void setProducttype(String producttype) {
+		this.producttype = producttype;
+	}
+
+	public Products getProdType() {
+		return prodType;
+	}
+
+	public void setProdType(Products prodType) {
+		this.prodType = prodType;
+	}
+	
+	
 	
 	
 }
