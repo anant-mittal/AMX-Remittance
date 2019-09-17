@@ -342,12 +342,14 @@ public class DirectPaymentLinkManager extends AbstractModel {
 
 	public PaymentResponseDto paymentCaptureForPayLink(PaymentResponseDto paymentResponse, BigDecimal linkId) {
 		logger.info("paymment capture :" + paymentResponse.toString());
-		logger.info("Customer Id :" + paymentResponse.getCustomerId());
+		logger.info("Customer Id Direct Link: " + paymentResponse.getCustomerId());
 		logger.info(
 				"Result code :" + paymentResponse.getResultCode() + "\t Auth Code :" + paymentResponse.getAuth_appNo());
 		logger.info("paymment capture Payment ID :" + paymentResponse.getPaymentId() + "\t Merchant Track Id :"
 				+ paymentResponse.getTrackId() + "\t UDF 3 :" + paymentResponse.getUdf3() + "\t Udf 2 :"
 				+ paymentResponse.getUdf2());
+		
+		metaData.setCustomerId(paymentResponse.getCustomerId());
 		
 		try {
 			if (!StringUtils.isBlank(paymentResponse.getPaymentId())
