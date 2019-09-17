@@ -29,10 +29,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.AuthType;
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.amxlib.exception.jax.OtpRequiredException;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.PromotionDto;
@@ -91,6 +94,7 @@ import com.amx.jax.logger.events.CActivityEvent.Type;
 import com.amx.jax.logger.events.RemitInfo;
 import com.amx.jax.manager.remittance.CorporateDiscountManager;
 import com.amx.jax.manager.remittance.RemittanceAdditionalFieldManager;
+import com.amx.jax.manager.remittance.RemittanceOtpManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.model.request.remittance.AbstractRemittanceApplicationRequestModel;
@@ -287,6 +291,9 @@ public class RemittanceTransactionManager {
 	
 	@Autowired
 	RemittanceApplicationBeneRepository remittanceApplicationBeneRepository;
+	
+	@Autowired
+	RemittanceOtpManager remittanceOtpManager;
 
 
 	private static final String IOS = "IOS";
@@ -1155,7 +1162,7 @@ public class RemittanceTransactionManager {
 	}
 
 	
-	
+	@Transactional
 	public RemittanceApplicationResponseModel saveApplicationV2(RemittanceTransactionDrRequestModel model) {
 		this.isSaveRemittanceFlow = true;
 		
@@ -1218,8 +1225,12 @@ public class RemittanceTransactionManager {
 		CivilIdOtpModel civilIdOtpModel = null;
 		if (model.getmOtp() == null) {
 			// this flow is for send OTP
-			civilIdOtpModel = addOtpOnRemittanceV2(model);
-			
+			civilIdOtpModel = remittanceOtpManager.addOtpOnRemittanceV2(model);
+			remiteAppModel.setCivilIdOtpModel(civilIdOtpModel);
+			OtpRequiredException ex = new OtpRequiredException();
+			ex.setMeta(remiteAppModel);
+			throw ex;
+		} else {
 			// this flow is for validate OTP
 			userService.validateOtp(null, model.getmOtp(), null);
 		}
@@ -1424,46 +1435,6 @@ public class RemittanceTransactionManager {
 			otpMmodel = (CivilIdOtpModel) userService.sendOtpForCivilId(null, channel, null, null).getData().getValues()
 					.get(0);
 		}
-		return otpMmodel;
-	}
-	
-	
-	private CivilIdOtpModel addOtpOnRemittanceV2(RemittanceTransactionDrRequestModel model) {
-
-		List<TransactionLimitCheckView> trnxLimitList = parameterService.getAllTxnLimits();
-
-		BigDecimal onlineLimit = BigDecimal.ZERO;
-		BigDecimal androidLimit = BigDecimal.ZERO;
-		BigDecimal iosLimit = BigDecimal.ZERO;
-
-		for (TransactionLimitCheckView view : trnxLimitList) {
-			if (JaxChannel.ONLINE.toString().equals(view.getChannel())) {
-				onlineLimit = view.getComplianceChkLimit();
-			}
-			if (ANDROID.equals(view.getChannel())) {
-				androidLimit = view.getComplianceChkLimit();
-			}
-			if (IOS.equals(view.getChannel())) {
-				iosLimit = view.getComplianceChkLimit();
-			}
-		}
-
-		CivilIdOtpModel otpMmodel = null;
-		BigDecimal localAmount = (BigDecimal) remitApplParametersMap.get("P_CALCULATED_LC_AMOUNT");
-		if (((meta.getChannel().equals(JaxChannel.ONLINE)) && (WEB.equals(meta.getAppType()))
-				&& (localAmount.compareTo(onlineLimit) >= 0)) ||
-
-				(IOS.equals(meta.getAppType()) && localAmount.compareTo(iosLimit) >= 0) ||
-
-				(ANDROID.equals(meta.getAppType()) && localAmount.compareTo(androidLimit) >= 0)) {
-
-			List<ContactType> channel = new ArrayList<>();
-			channel.add(ContactType.SMS_EMAIL);
-			otpMmodel = (CivilIdOtpModel) userService.sendOtpForCivilId(null, channel, null, null).getData().getValues()
-					.get(0);
-		}
-		
-		
 		return otpMmodel;
 	}
 	

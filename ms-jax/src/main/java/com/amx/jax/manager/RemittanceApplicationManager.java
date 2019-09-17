@@ -370,9 +370,9 @@ public class RemittanceApplicationManager {
 		
 		validateAdditionalErrorMessagesV2(requestModel);
 		validateBannedBank();
-		if(!requestModel.getPaymentType().equalsIgnoreCase(ConstantDocument.PB_PAYMENT)) {
-			validateDailyBeneficiaryTransactionLimit(beneDetails);
-		}
+		
+		//validateDailyBeneficiaryTransactionLimit(beneDetails);
+		
 		
 		remittanceApplication.setInstruction("URGENT");
 		setCustomerDiscountColumns(remittanceApplication, validationResults);
