@@ -1221,7 +1221,9 @@ public class RemittanceTransactionManager {
 		remiteAppModel.setDocumentFinancialYear(remittanceApplication.getDocumentFinancialyear());
 		remiteAppModel.setMerchantTrackId(meta.getCustomerId());
 		remiteAppModel.setDocumentIdForPayment(remittanceApplication.getDocumentNo().toString());
-
+		if(model.getPaymentType().equalsIgnoreCase(ConstantDocument.PB_PAYMENT)) {
+			remiteAppModel.setPgCode(PayGServiceCode.PB);
+		}
 		CivilIdOtpModel civilIdOtpModel = null;
 		if (model.getmOtp() == null) {
 			// this flow is for send OTP
@@ -1234,10 +1236,8 @@ public class RemittanceTransactionManager {
 			// this flow is for validate OTP
 			userService.validateOtp(null, model.getmOtp(), null);
 		}
-		remiteAppModel.setCivilIdOtpModel(civilIdOtpModel);
-		if(model.getPaymentType().equalsIgnoreCase(ConstantDocument.PB_PAYMENT)) {
-			remiteAppModel.setPgCode(PayGServiceCode.PB);
-		}
+		
+		
 		
 		logger.info("Application saved successfully, response: " + remiteAppModel.toString());
 
