@@ -12,6 +12,7 @@ public class FxDeliveryTimeSlotDto {
 	private BigDecimal officeStartTime;
 	private BigDecimal officeEndTime;
 	private BigDecimal timeInterval;
+	private BigDecimal timeIntervalOffice;
 	private String isActive;
 	private String remarks;
 	public BigDecimal getDeliveryTimeSlotId() {
@@ -73,6 +74,12 @@ public class FxDeliveryTimeSlotDto {
 	}
 	public void setOfficeEndTime(BigDecimal officeEndTime) {
 		this.officeEndTime = officeEndTime;
+	}
+	public BigDecimal getTimeIntervalOffice() {
+		return timeIntervalOffice;
+	}
+	public void setTimeIntervalOffice(BigDecimal timeIntervalOffice) {
+		this.timeIntervalOffice = timeIntervalOffice;
 	}
 	
 	

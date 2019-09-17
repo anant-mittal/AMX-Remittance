@@ -56,6 +56,9 @@ public class FxDeliveryTimeSlotMaster implements Serializable{
 	@Column(name="OFFICE_START_TIME")
 	private BigDecimal officeStartTime;
 	
+	@Column(name="TIME_INTERVAL_OFFICE")
+	private BigDecimal timeIntervalOffice;
+	
 	
 	
 	public BigDecimal getDeliveryTimeSlotId() {
@@ -123,6 +126,12 @@ public class FxDeliveryTimeSlotMaster implements Serializable{
 	}
 	public void setOfficeStartTime(BigDecimal officeStartTime) {
 		this.officeStartTime = officeStartTime;
+	}
+	public BigDecimal getTimeIntervalOffice() {
+		return timeIntervalOffice;
+	}
+	public void setTimeIntervalOffice(BigDecimal timeIntervalOffice) {
+		this.timeIntervalOffice = timeIntervalOffice;
 	}
 	
 	

@@ -1937,6 +1937,7 @@ public class FcSaleBranchOrderManager {
 		fxDeliveryTimeSlotDto.setOfficeStartTime(fxDeliveryTimeSlotMaster.getOfficeStartTime());
 		fxDeliveryTimeSlotDto.setOfficeEndTime(fxDeliveryTimeSlotMaster.getEndTime());
 		fxDeliveryTimeSlotDto.setTimeInterval(fxDeliveryTimeSlotMaster.getTimeInterval());
+		fxDeliveryTimeSlotDto.setTimeIntervalOffice(fxDeliveryTimeSlotMaster.getTimeIntervalOffice());
 
 		return fxDeliveryTimeSlotDto;
 
@@ -1956,6 +1957,7 @@ public class FcSaleBranchOrderManager {
 			fxDeliveryTimeSlotMaster.setOfficeStartTime(fxDeliveryTimeSlotDto.getOfficeStartTime());
 			fxDeliveryTimeSlotMaster.setOfficeEndTime(fxDeliveryTimeSlotDto.getOfficeEndTime());
 			fxDeliveryTimeSlotMaster.setTimeInterval(fxDeliveryTimeSlotDto.getTimeInterval());
+			fxDeliveryTimeSlotMaster.setTimeIntervalOffice(fxDeliveryTimeSlotDto.getTimeIntervalOffice());
 			fcSaleOrderTimeSlotDao.save(fxDeliveryTimeSlotMaster);
 
 			status = Boolean.TRUE;

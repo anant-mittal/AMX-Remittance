@@ -600,12 +600,15 @@ public class FcSaleApplicationTransactionManager extends AbstractModel {
 					: list.get(0).getOfficeEndTime();
 			BigDecimal officeStartTime = list.get(0).getOfficeStartTime() == null ? BigDecimal.ZERO
 					: list.get(0).getOfficeStartTime();
+			BigDecimal timeIntervalOffice = list.get(0).getTimeIntervalOffice() == null ? BigDecimal.ZERO
+					: list.get(0).getTimeIntervalOffice();
 			if (JaxUtil.isNullZeroBigDecimalCheck(shippingAddressId)) {
 				ShippingAddressDetail shipp = shippingAddressDao.findOne(shippingAddressId);
 				if (shipp != null && shipp.getAddressType() != null
 						&& shipp.getAddressType().equalsIgnoreCase(ConstantDocument.FX_LOA)) {
 					startTime = officeStartTime;
 					endTime = officeendTime;
+					timeInterval = timeIntervalOffice;
 				}
 			}
 
