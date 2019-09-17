@@ -43,8 +43,8 @@ public class SnapQueryTestController {
 				.readFile(FileUtil.normalize(
 						"file://" + System.getProperty("user.dir") + "/src/test/java/com/amx/test/es-output.json"));
 		SnapModelWrapper wrapper = new SnapModelWrapper(json);
-		List<Map<String, Object>> x = wrapper.getAggregations().toBulk(null);
-		
+		List<Map<String, Object>> x = wrapper.getAggregations().toBulk();
+
 		for (Map<String, Object> map : x) {
 			System.out.println(JsonUtil.toJson(map));
 		}
