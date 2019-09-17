@@ -29,6 +29,7 @@ import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.async.ExecutorConfig;
 import com.amx.jax.branchremittance.dao.BranchRemittanceDao;
+import com.amx.jax.branchremittance.manager.BranchRemittanceSaveManager;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constants.JaxTransactionStatus;
 import com.amx.jax.dao.FcSaleApplicationDao;
@@ -37,6 +38,7 @@ import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dao.RemittanceProcedureDao;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.PaygDetailsModel;
+import com.amx.jax.dbmodel.PaymentModeModel;
 import com.amx.jax.dbmodel.PlaceOrder;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.partner.TransactionDetailsView;
@@ -53,6 +55,7 @@ import com.amx.jax.model.request.remittance.BranchApplicationDto;
 import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
 import com.amx.jax.model.response.customer.PersonInfo;
+import com.amx.jax.model.response.remittance.RemittanceCollectionDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.serviceprovider.Remittance_Call_Response;
 import com.amx.jax.partner.dao.PartnerTransactionDao;
@@ -63,6 +66,7 @@ import com.amx.jax.postman.model.Email;
 import com.amx.jax.pricer.var.PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE;
 import com.amx.jax.repository.IPlaceOrderDao;
 import com.amx.jax.repository.IShoppingCartDetailsDao;
+import com.amx.jax.repository.PaymentModeRepository;
 import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.service.FinancialService;
 import com.amx.jax.services.AbstractService;
@@ -155,6 +159,12 @@ public class RemittancePaymentManager extends AbstractService{
 	@Autowired
 	FcSaleApplicationDao fcSaleApplicationDao;
 	
+	@Autowired
+	PaymentModeRepository paymentModeRepository;
+	
+	@Autowired
+	BranchRemittanceSaveManager branchRemittanceSaveManager;
+	
 	
 	
 	public ApiResponse<PaymentResponseDto> paymentCapture(PaymentResponseDto paymentResponse) {
@@ -199,24 +209,34 @@ public class RemittancePaymentManager extends AbstractService{
 				remittanceApplicationService.updatePaymentDetails(lstPayIdDetails, paymentResponse);
 				applMap.put("APPL_TRNX", lstPayIdDetails);
 				fcSaleApplicationDao.updatePaygDetails(null, paymentResponse);
+				/** for Online save in JAX **/
+				BranchRemittanceRequestModel remitRequestModel =createRequestModelForOnline(lstPayIdDetails,paymentResponse);
+				RemittanceResponseDto  responseDto = branchRemittanceSaveManager.saveRemittanceTrnx(remitRequestModel);
+				
+				
 				/** Calling stored procedure  insertRemittanceOnline **/
+				/**
 				remitanceMap = remittanceApplicationService.saveRemittance(paymentResponse);
 				errorMsg = (String)remitanceMap.get("P_ERROR_MESG");
 				errorMsg= null;
 				if(remitanceMap!=null && !remitanceMap.isEmpty() && StringUtils.isBlank(errorMsg)){
-
 					collectionFinanceYear = (BigDecimal)remitanceMap.get("P_COLLECT_FINYR");
 					collectionDocumentNumber = (BigDecimal)remitanceMap.get("P_COLLECTION_NO");
 					collectionDocumentCode = (BigDecimal)remitanceMap.get("P_COLLECTION_DOCUMENT_CODE");
 					errorMsg = (String)remitanceMap.get("P_ERROR_MESG");
-
+					**/
+				if(responseDto!=null && JaxUtil.isNullZeroBigDecimalCheck(responseDto.getCollectionDocumentNo())) {
+				  collectionFinanceYear = responseDto.getCollectionDocumentFYear();
+				  collectionDocumentNumber = responseDto.getCollectionDocumentNo();
+				  collectionDocumentCode = responseDto.getCollectionDocumentCode();
+				
 					logger.info("EX_INSERT_REMITTANCE_ONLINE collectionFinanceYear : " + collectionFinanceYear);
 					logger.info("collectionDocumentNumber : " + collectionDocumentNumber);
 					logger.info("collectionDocumentCode : " + collectionDocumentCode);
 					logger.info("EX_INSERT_REMITTANCE_ONLINE errorMsg : " + errorMsg);
 					
 					/** service Provider api **/
-					RemittanceResponseDto responseDto = new RemittanceResponseDto();
+					//RemittanceResponseDto responseDto = new RemittanceResponseDto();
 					responseDto.setCollectionDocumentFYear(collectionFinanceYear);
 					responseDto.setCollectionDocumentNo(collectionDocumentNumber);
 					responseDto.setCollectionDocumentCode(collectionDocumentCode);
@@ -523,6 +543,37 @@ public class RemittancePaymentManager extends AbstractService{
 		return pgmodel;
 	}
 	
+	/** added by Rabil on 17 Aug 2019**/
 	
-	
+	private BranchRemittanceRequestModel createRequestModelForOnline(List<RemittanceApplication> lstPayIdDetails,PaymentResponseDto payResDto) {
+		BranchRemittanceRequestModel request = new BranchRemittanceRequestModel();
+		List<BranchApplicationDto> remittanceApplicationIds =new ArrayList<>();
+		List<RemittanceCollectionDto> collctionModeDto = new ArrayList<>();
+		BranchApplicationDto remitApplicationId = new BranchApplicationDto();
+		
+		/** To set the applciation details **/
+		for(RemittanceApplication appl:lstPayIdDetails) {
+			BranchApplicationDto applDto = new BranchApplicationDto();
+			applDto.setApplicationId(appl.getRemittanceApplicationId());
+			remittanceApplicationIds.add(applDto);
+		}
+		
+		/** to set the collection amount **/
+		PaymentModeModel payModeModel = paymentModeRepository.getPaymentModeDetails(ConstantDocument.KNET_CODE);
+		RemittanceCollectionDto remittanceCollection = new RemittanceCollectionDto();
+		remittanceCollection.setPaymentModeId(payModeModel.getPaymentModeId());
+		remittanceCollection.setPaymentAmount(new BigDecimal(payResDto.getAmount()));
+		remittanceCollection.setApprovalNo(payResDto.getAuth_appNo());
+		collctionModeDto.add(remittanceCollection);
+		
+		
+		//Set request Parameter
+		request.setRemittanceApplicationId(remittanceApplicationIds);
+		request.setCollctionModeDto(collctionModeDto);
+		request.setCurrencyRefundDenomination(null);
+		request.setTotalTrnxAmount(new BigDecimal(payResDto.getAmount()));
+		request.setTotalLoyaltyAmount(BigDecimal.ZERO);
+		
+		return request;
+	}
 }
