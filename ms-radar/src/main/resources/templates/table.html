@@ -5,10 +5,20 @@
   <title>Swagger UI</title>
   
   <script src='/radar/webjars/springfox-swagger-ui/lib/jquery-1.8.0.min.js' type='text/javascript'></script>
+
  
   <link rel="stylesheet" href="//cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
   
     <script src='//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js' type='text/javascript'></script>
+    
+    <!--  PivotTable -->
+       <script src='https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js' type='text/javascript'></script>
+       <script src='https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js' type='text/javascript'></script>
+       <script src='https://cdnjs.cloudflare.com/ajax/libs/pivottable/2.13.0/pivot.min.js' type='text/javascript'></script>
+       <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pivottable/2.13.0/pivot.min.css">
+       
+        <script src='/radar/js/jSQL.js' type='text/javascript'></script>
+    
     
     <style>
     /* Dropdown Button */
@@ -137,9 +147,21 @@ function collectBucket(node, stack=[]) {
         const value = node[key];
         if (typeof value === 'object' && value !== null) {
             if ("hits" in value && Array.isArray(value.hits) && value.hits.length === 1) {
-                if ("sort" in value.hits[0]) {
-                    value.hits[0]._source['sort'] = value.hits[0].sort[0];
+                if ("fields" in value.hits[0]) {
+                	console.log(value.hits[0]['fields'])
+                    //value.hits[0]._source['fields'] = value.hits[0].sort[0];
+                    for(var __key in value.hits[0]['fields']){
+                    	return value.hits[0]['fields'][__key][0]
+                    	value.hits[0]._source[__key] = value.hits[0]['fields'][__key][0];
+                    	console.log(value.hits[0]['fields'][__key][0])
+                    }
+                    console.log(value.hits[0])
+                    //return value.hits[0]['fields'][0];
                 }
+                if ("sort" in value.hits[0]) {
+                    //value.hits[0]._source['sort'] = value.hits[0].sort[0];
+                }
+                return null;
                 return value.hits[0]._source;
             }
 
@@ -295,12 +317,15 @@ function dropdown(classname) {
     </thead>
     <tbody>
     </tbody>
-</table>
+	</table>
 
   </div>
 
+<div id="pivotTable"></div>
   
   <script>
+  var SQL_DATA;
+  var q = jSQL.qry;
   function executeQuery(url,map){
 	   $.ajax({
 		    type: 'POST',
@@ -314,16 +339,24 @@ function dropdown(classname) {
 			
 			var columns = []; 
 			var _bulkItem = bulk[0];
+			var table = [Object.keys(_bulkItem).map(function(key){
+				return key;
+			})];
 			
 			for(var i in bulk){
 				var bulkItem = bulk[i];
+				var tableItem = [];
 				for(var key in bulkItem){
 					if(bulkItem[key]){
 						if(typeof bulkItem[key] == "object")
 						bulkItem[key] = JSON.stringify(bulkItem[key]);
 					}
+					tableItem.push(bulkItem[key])
 				}
+				table.push(tableItem);
 			}
+			console.log("table",table);
+			SQL_DATA = bulk;
 			if(_bulkItem){
 				columns = Object.keys(_bulkItem).map(function(key){
 					return { data: key, title : key.toUpperCase()  };
@@ -331,7 +364,18 @@ function dropdown(classname) {
 				console.log(columns,bulk);
 				$('#tablediv').DataTable({columns : columns, data: bulk});
 			}
+			
+			var tableBulk = jSQL.qry().from(SQL_DATA,"d").groupBy("x.d.custId","x.d.contactType").sum("x.d.uCount").any("x.d.branchUser").concat("x.d.eventType").count("x.d.eventType").toArray();
 
+			$("#pivotTable").pivotUI(
+					table, {
+				    rows: ["sex", "smoker"],
+				    cols: ["day", "time"],
+				    vals: ["tip", "total_bill"],
+				    aggregatorName: "Sum over Sum",
+				    rendererName: "Heatmap"
+			});
+			
 		}); 
   }
   
@@ -363,4 +407,5 @@ function dropdown(classname) {
   </div>
 
 </body>
+
 </html>

@@ -1,6 +1,6 @@
 {
   "aggs": {
-    "2_cust_id": {
+    "custId": {
       "terms": {
         "field": "logmap.cust.id",
         "size": 100000,
@@ -9,7 +9,7 @@
         }
       },
       "aggs": {
-        "3_contactType": {
+        "contactType": {
           "terms": {
             "field": "logmap.contactType.keyword",
             "size": 5,
@@ -18,12 +18,12 @@
             }
           },
           "aggs": {
-            "1_customer": {
+            "uCount": {
               "cardinality": {
                 "field": "logmap.cust.id"
               }
             },
-            "5_event": {
+            "eventType": {
               "terms": {
                 "field": "logmap.desc.keyword",
                 "size": 50,
@@ -38,26 +38,7 @@
                     "field": "logmap.cust.id"
                   }
                 },
-                "4": {
-                  "top_hits": {
-                    "docvalue_fields": [
-                      {
-                        "field": "logmap.actor.username.keyword",
-                        "format": "use_field_mapping"
-                      }
-                    ],
-                    "_source": "logmap.actor.username.keyword",
-                    "size": 1,
-                    "sort": [
-                      {
-                        "@timestamp": {
-                          "order": "desc"
-                        }
-                      }
-                    ]
-                  }
-                },
-                "6": {
+                "branchName": {
                   "top_hits": {
                     "docvalue_fields": [
                       {
@@ -76,7 +57,7 @@
                     ]
                   }
                 },
-                "7": {
+                "area": {
                   "top_hits": {
                     "docvalue_fields": [
                       {
@@ -85,6 +66,25 @@
                       }
                     ],
                     "_source": "logmap.actor.areaId",
+                    "size": 1,
+                    "sort": [
+                      {
+                        "@timestamp": {
+                          "order": "desc"
+                        }
+                      }
+                    ]
+                  }
+                },
+                "branchUser": {
+                  "top_hits": {
+                    "docvalue_fields": [
+                      {
+                        "field": "logmap.actor.username.keyword",
+                        "format": "use_field_mapping"
+                      }
+                    ],
+                    "_source": "logmap.actor.username.keyword",
                     "size": 1,
                     "sort": [
                       {
@@ -153,6 +153,13 @@
               }
             ],
             "minimum_should_match": 1
+          }
+        },
+        {
+          "match_phrase": {
+            "logmap.cust.id": {
+              "query": 240
+            }
           }
         }
       ],
