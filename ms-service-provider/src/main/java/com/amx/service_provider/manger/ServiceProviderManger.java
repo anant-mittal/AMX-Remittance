@@ -45,7 +45,7 @@ public class ServiceProviderManger implements IServiceProvider
 	private final String SEND_TXN_METHOD_IND = new String("2"), VALIDATE_SEND_TXN_INPUTS_METHOD_IND = new String("13"),
 			GET_REMITTANCE_DETAILS_METHOD_IND = new String("12"), STATUS_INQ_METHOD_IND = new String("3");
 
-	public Quotation_Call_Response getQutation(ServiceProviderCallRequestDto quatationRequestDto)
+	public ServiceProviderResponse getQutation(ServiceProviderCallRequestDto quatationRequestDto)
 	{
 		Quotation_Call_Response response = new Quotation_Call_Response();
 
