@@ -397,7 +397,7 @@ public class DirectPaymentLinkManager extends AbstractModel {
 					logger.info("applications count ------> : " +applications);
 					for(RemittanceApplication appl: applications) {
 						totalLoyaltyEncashed=totalLoyaltyEncashed.add(appl.getLoyaltyPointsEncashed());
-						totalPaidAmount=totalPaidAmount.add(appl.getLocalTranxAmount());
+						totalPaidAmount=totalPaidAmount.add(appl.getLocalNetTranxAmount());
 					}
 				}	
 				
