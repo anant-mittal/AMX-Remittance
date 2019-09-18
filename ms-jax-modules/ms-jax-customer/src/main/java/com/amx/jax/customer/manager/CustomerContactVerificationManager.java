@@ -77,9 +77,9 @@ public class CustomerContactVerificationManager {
 			ContactType contactType, String contact) {
 		Calendar cal = Calendar.getInstance();
 		if (ContactType.WHATSAPP.equals(contactType)) {
-			cal.add(Calendar.DATE, -30);
+			cal.add(Calendar.DATE, -1 * CustomerContactVerification.EXPIRY_DAY_WHATS_APP);
 		} else {
-			cal.add(Calendar.DATE, -1);
+			cal.add(Calendar.DATE, -1 * CustomerContactVerification.EXPIRY_DAY);
 		}
 		java.util.Date oneDay = new java.util.Date(cal.getTimeInMillis());
 		List<CustomerContactVerification> links = customerContactVerificationRepository.getByContact(customerId,
@@ -122,8 +122,8 @@ public class CustomerContactVerificationManager {
 		if (!ArgUtil.isEmpty(actor)) {
 			link.setCreatedById(actor.getActorIdAsBigDecimal());
 			link.setCreatedByType(actor.getActorType());
-			//link.setSendById(actor.getActorIdAsBigDecimal());
-			//link.setSendByType(actor.getActorType());
+			// link.setSendById(actor.getActorIdAsBigDecimal());
+			// link.setSendByType(actor.getActorType());
 		}
 
 		try {

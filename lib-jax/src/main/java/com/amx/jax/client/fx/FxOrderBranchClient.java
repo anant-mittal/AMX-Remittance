@@ -300,7 +300,7 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 			return restService.ajax(appConfig.getJaxURL() + Path.FC_REPRINT_ORDER).meta(new JaxMetaInfo())
 					.queryParam(Params.FX_ORDER_NUMBER, orderNumber).meta(new JaxMetaInfo())
 					.queryParam(Params.FX_ORDER_YEAR, orderYear)
-					.post()
+					.get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<FxOrderReportResponseDto,Object>>() {
 					});
 		} catch (Exception e) {
