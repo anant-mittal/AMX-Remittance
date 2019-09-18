@@ -105,6 +105,9 @@ public class CustomerDetailViewRecord implements GridViewRecord {
 	@ESDocFormat(ESDocFormat.Type.DATE)
 	@Column(name = "LAST_TRANSACTION_DATE")
 	private Date lastTransactionDate;
+	
+	@Column(name = "TRNX_CUSTOMER_CATEGORY")
+	private String trnxCustomerCategory;
 
 	public String getName() {
 		return name;
@@ -335,5 +338,13 @@ public class CustomerDetailViewRecord implements GridViewRecord {
 
 	public void setWhatsAppVerified(String whatsAppVerified) {
 		this.whatsAppVerified = whatsAppVerified;
+	}
+
+	public String getTrnxCustomerCategory() {
+		return trnxCustomerCategory;
+	}
+
+	public void setTrnxCustomerCategory(String trnxCustomerCategory) {
+		this.trnxCustomerCategory = trnxCustomerCategory;
 	}
 }
