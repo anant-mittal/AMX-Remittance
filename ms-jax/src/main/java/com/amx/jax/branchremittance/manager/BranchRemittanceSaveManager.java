@@ -1090,6 +1090,8 @@ public void collectedAmountValidation(CollectionModel collectionModel,List<Colle
 		totalPaidAmount = collectionModel.getPaidAmount();
 		refundAmount    = collectionModel.getRefoundAmount();
 		netAmount       = collectionModel.getNetAmount();
+		
+		logger.info("collectionModel not empty ------> " +totalPaidAmount);
 		if(totalPaidAmount.subtract(refundAmount).compareTo(netAmount)!=0) {
 			throw new GlobalException(JaxError.AMOUNT_MISMATCH,"There is a mismatch found in the Net amount and Refunded amount");
 			}
