@@ -100,6 +100,7 @@ import com.amx.jax.repository.PaymentModeRepository;
 import com.amx.jax.repository.RemittanceApplicationBeneRepository;
 import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.repository.remittance.LocalBankDetailsRepository;
+import com.amx.jax.service.BankMetaService;
 import com.amx.jax.service.CompanyService;
 import com.amx.jax.service.FinancialService;
 import com.amx.jax.services.JaxEmailNotificationService;
@@ -238,11 +239,16 @@ public class BranchRemittanceSaveManager {
 	
 	
 	@Autowired
-    	AuditService auditService;
+    AuditService auditService;
 	
 	
 	@Autowired
 	JaxTenantProperties jaxTenantProperties;
+	
+	@Autowired
+	BankMetaService bankMetaService;
+	
+	
 	
 	/**
 	 * 
@@ -409,21 +415,43 @@ public class BranchRemittanceSaveManager {
 				collection.setDocumentCode(ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION);
 				collection.setReceiptType(ConstantDocument.COLLECTION_RECEIPT_TYPE);
 				collection.setCreatedDate(new Date());
+				
+				CountryBranch countryBranch = new CountryBranch();
+				countryBranch = bankMetaService.getCountryBranchById(metaData.getCountryBranchId()); //user branch not customer branch
+				if(countryBranch!=null && countryBranch.getBranchId().compareTo(ConstantDocument.ONLINE_BRANCH_LOC_CODE)==0) {
+					collection.setLocCode(countryBranch.getBranchId());
+					if(!StringUtils.isBlank(metaData.getReferrer())){
+						collection.setCreatedBy(metaData.getReferrer());
+					}else{
+						if(!StringUtils.isBlank(metaData.getAppType())){				
+							collection.setCreatedBy(metaData.getAppType());
+						}else{
+							collection.setCreatedBy("WEB");
+						 }
+					}
+				}else {
 				EmployeeDetailsView employee =branchRemittanceApplManager.getEmployeeDetails();
 				collection.setCreatedBy(employee.getUserName());
 				collection.setLocCode(employee.getBranchId());
+				countryBranch.setCountryBranchId(employee.getCountryBranchId());
+				}
+				
+				
+				if(countryBranch!=null && countryBranch.getBranchId().compareTo(ConstantDocument.ONLINE_BRANCH_LOC_CODE)!=0) {
 				BigDecimal declarationTotalamount = getDeclarationReportAmount(ConstantDocument.DECL_REPORT_FOR_TOT_AMOUNT);
 				if(JaxUtil.isNullZeroBigDecimalCheck(declarationTotalamount) && collection.getNetAmount().compareTo(declarationTotalamount)>=1) {
 					collection.setCashDeclarationIndicator(ConstantDocument.Yes);
 				}
+				}
 				collection.setIsActive(ConstantDocument.Yes);
 				
-				CountryBranch countryBranch = new CountryBranch();
-				if(employee!=null && JaxUtil.isNullZeroBigDecimalCheck(employee.getCountryBranchId())) {
-					countryBranch.setCountryBranchId(employee.getCountryBranchId());
-				}else {
-					countryBranch.setCountryBranchId(metaData.getCountryBranchId());
-				}
+				
+					/*
+					 * if(employee!=null &&
+					 * JaxUtil.isNullZeroBigDecimalCheck(employee.getCountryBranchId())) {
+					 * countryBranch.setCountryBranchId(employee.getCountryBranchId()); }else {
+					 * countryBranch.setCountryBranchId(metaData.getCountryBranchId()); }
+					 */
 				collection.setExBankBranch(countryBranch);
 				collection.setFsCompanyMaster(appl.getFsCompanyMaster());
 				collection.setTotalAmountDeclarationIndicator(null); //ned to check
