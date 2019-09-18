@@ -474,7 +474,7 @@ public class RemitRoutingManager {
 
 			long processTimeAbs = estmdCBDeliveryDetails.getProcessTimeAbsoluteInSeconds();
 			long processTimeOps = estmdCBDeliveryDetails.getProcessTimeOperationalInSeconds();
-			long insufficientFundDelay = estmdCBDeliveryDetails.getInsufficientFundDelayInSeconds();
+			long insufficientFundDelay = estmdCBDeliveryDetails.getDelayDueToInsufficientFundInSeconds();
 			long processTimeTotal = estmdCBDeliveryDetails.getProcessTimeTotalInSeconds();
 
 			long nonWorkingDelayInDays = estmdCBDeliveryDetails.getNonWorkingDelayInDays();
@@ -520,7 +520,7 @@ public class RemitRoutingManager {
 
 			finalDeliveryDetails.setProcessTimeAbsoluteInSeconds(processTimeAbs);
 			finalDeliveryDetails.setProcessTimeOperationalInSeconds(processTimeOps);
-			finalDeliveryDetails.setInsufficientFundDelayInSeconds(insufficientFundDelay);
+			finalDeliveryDetails.setDelayDueToInsufficientFundInSeconds(insufficientFundDelay);
 			finalDeliveryDetails.setProcessTimeTotalInSeconds(processTimeTotal);
 
 			finalDeliveryDetails.setNonWorkingDelayInDays(nonWorkingDelayInDays);
