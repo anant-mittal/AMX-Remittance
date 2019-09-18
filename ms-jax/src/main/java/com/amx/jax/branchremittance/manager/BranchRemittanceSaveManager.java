@@ -348,8 +348,8 @@ public class BranchRemittanceSaveManager {
 			responseDto = brRemittanceDao.saveRemittanceTransaction(mapAllDetailRemitSave);
 			auditService.log(new CActivityEvent(Type.TRANSACTION_CREATED,String.format("%s/%s", responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo())).field("STATUS").to(JaxTransactionStatus.PAYMENT_SUCCESS_APPLICATION_SUCCESS).result(Result.DONE));
 	}catch (GlobalException e) {
-			e.printStackTrace();
-			logger.error("routing  procedure", e.getErrorMessage() + "" + e.getErrorKey());
+			logger.error("routing procedure : ", e.getErrorMessage() + "" + e.getErrorKey());
+			logger.error("errror is: ",e);
 			throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
 		}finally {
 			amlList	 = new HashMap<>();
@@ -540,9 +540,10 @@ public class BranchRemittanceSaveManager {
 				collectDetails.setApprovalNo(collectDataTable.getApprovalNo());
 				collectDetails.setKnetReceiptDateTime(new SimpleDateFormat("dd/MM/YYYY hh:mm").format(new Date()));
 				collectDetails.setChequeRef(collectDataTable.getChequeBankCode());
-				BankMasterModel Model = getPosBankDetails(collectDataTable.getPosBankCode());
-				collectDetails.setPosBankId(Model.getBankId());
-				
+				if(null != collectDataTable.getPosBankCode()) {
+					BankMasterModel Model = getPosBankDetails(collectDataTable.getPosBankCode());
+					collectDetails.setPosBankId(Model.getBankId());
+				}
 			}
 			
 			if(payMode.getPaymentModeCode().equalsIgnoreCase(ConstantDocument.CHEQUE)) {
