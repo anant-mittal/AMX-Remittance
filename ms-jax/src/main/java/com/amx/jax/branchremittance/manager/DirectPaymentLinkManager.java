@@ -387,13 +387,20 @@ public class DirectPaymentLinkManager extends AbstractModel {
 				
 				collctionModeDto.add(remittanceCollection);
 				
+				BigDecimal totalLoyaltyEncashed =BigDecimal.ZERO;
+				List<RemittanceApplication> applications = remittanceApplicationRepository.getApplByPaymentlinkId(linkId);
+				
+				if(null != applications)
+				for(RemittanceApplication appl: applications) {
+					totalLoyaltyEncashed.add(appl.getLoyaltyPointsEncashed());
+				}
 				
 				//Set request Parameter
 				request.setRemittanceApplicationId(remittanceApplicationIds);
 				request.setCollctionModeDto(collctionModeDto);
 				request.setCurrencyRefundDenomination(null);
 				request.setTotalTrnxAmount(paymentLinkData.getPayAmount());
-				request.setTotalLoyaltyAmount(BigDecimal.ZERO);
+				request.setTotalLoyaltyAmount(totalLoyaltyEncashed);
 				
 				branchRemittanceSaveManager.saveRemittanceTrnx(request);
 				
