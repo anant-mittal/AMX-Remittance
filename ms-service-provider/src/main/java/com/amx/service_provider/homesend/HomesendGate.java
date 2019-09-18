@@ -121,10 +121,10 @@ public class HomesendGate
 			this.owsParamRespcodeRepository = homeSendDTO.getOwsParamRespcodeRepository();
 
 			System.setProperty("javax.net.ssl.trustStore", homeSendDTO.getTrustStoreLocation());
-			System.setProperty("javax.net.ssl.trustStorePassword", homeSendDTO.getTrustStorePassword()); // changeit
+			System.setProperty("javax.net.ssl.trustStorePassword", homeSendDTO.getTrustStorePassword());
 
-			System.setProperty("javax.net.ssl.keyStore", homeSendDTO.getKeyStoreLocation());
-			System.setProperty("javax.net.ssl.keyStorePassword", homeSendDTO.getKeyStorePassword());
+			//System.setProperty("javax.net.ssl.keyStore", homeSendDTO.getKeyStoreLocation());
+			//System.setProperty("javax.net.ssl.keyStorePassword", homeSendDTO.getKeyStorePassword());
 
 			System.setProperty("jdk.tls.client.protocols", "TLSv1.2");
 		}

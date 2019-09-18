@@ -47,6 +47,7 @@ public class AmiecAndBankMapping implements Serializable {
 	private Date approvedDate;
 	private String approvedBy;
 	private String remarks;
+
 	
 
 	private Set<AdditionalBankRuleAmiec> additionalBankRule = new HashSet<AdditionalBankRuleAmiec>(0);
@@ -89,6 +90,7 @@ public class AmiecAndBankMapping implements Serializable {
 		this.additionalBankRule = additionalBankRule;
 		this.additionalBankRuleData = additionalBankRuleData;
 		this.remarks=remarks;
+		
 	}
 
 

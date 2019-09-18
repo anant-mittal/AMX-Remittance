@@ -418,16 +418,18 @@ public class CustomerDiscountManager {
 		CurrencyMasterModel currencyMasterModel = currencyMasterDao
 				.getByCurrencyId(customerDiscountReqDTO.getForeignCurrencyId());
 
-		if (currencyMasterModel.getCurrGroupId() != null) {
-			curGroup = groupingMasterDao.getGroupById(currencyMasterModel.getCurrGroupId());
-			if (curGroup == null) {
-				LOGGER.warn(" ****** MAJOR : Currency Group is Null for Currency Group Id : "
-						+ currencyMasterModel.getCurrGroupId() + " and Currency Id :"
-						+ currencyMasterModel.getCurrencyId());
+		if (currencyMasterModel != null) {
+			if (currencyMasterModel.getCurrGroupId() != null) {
+				curGroup = groupingMasterDao.getGroupById(currencyMasterModel.getCurrGroupId());
+				if (curGroup == null) {
+					LOGGER.warn(" ****** MAJOR : Currency Group is Null for Currency Group Id : "
+							+ currencyMasterModel.getCurrGroupId() + " and Currency Id :"
+							+ currencyMasterModel.getCurrencyId());
+				}
+			} else {
+				LOGGER.warn(
+						" ****** MAJOR : Currency Group is Null for Currency Id : " + currencyMasterModel.getCurrencyId());
 			}
-		} else {
-			LOGGER.warn(
-					" ****** MAJOR : Currency Group is Null for Currency Id : " + currencyMasterModel.getCurrencyId());
 		}
 
 		// Compute Channel Discount
@@ -454,7 +456,7 @@ public class CustomerDiscountManager {
 		CustomerDiscountsView customerDiscountsView = customerDiscountDao.fetchCustomerDiscount(
 				customerDiscountReqDTO.getCustomerId(), DISCOUNT_TYPE.CUSTOMER_CATEGORY.getTypeKey(), curGroup.getId());
 
-		if (customerDiscountsView.getDiscountType() != null && customerDiscountsView.getDiscountType()
+		if (customerDiscountsView != null && customerDiscountsView.getDiscountType() != null && customerDiscountsView.getDiscountType()
 				.equalsIgnoreCase(DISCOUNT_TYPE.CUSTOMER_CATEGORY.getTypeKey())) {
 			ccDiscountPips = (null != customerDiscountsView.getDiscountPips() ? customerDiscountsView.getDiscountPips()
 					: BigDecimal.ZERO);

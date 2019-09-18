@@ -68,6 +68,7 @@ public enum TemplatesMX implements ITemplate {
 	POLICY_OPTOUT_SYSTEM("PolicyOptoutSystem"),
 	POLICY_EXPIRY_REMINDER("PolicyExpiryReminder"),
 	POLICY_EXPIRED("PolicyExpired"),
+	POLICY_PENDING_TRNX("PolicyPendingTrnx"),
 
 	HOMESEND_TRANSACTION_FAILAURE("HomeSendTransactionFailure"),
 

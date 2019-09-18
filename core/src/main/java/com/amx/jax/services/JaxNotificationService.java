@@ -88,6 +88,7 @@ public class JaxNotificationService {
 			file.setName("TransactionReceipt");
 			file.setType(File.Type.PDF);
 			file.getModel().put(RESP_DATA_KEY, remittanceReceiptSubreport);
+			file.setPassword(pinfo.getIdentityInt());
 			file.setLang(AppContextUtil.getTenant().defaultLang());
 
 			email.addFile(file);
@@ -391,6 +392,7 @@ public class JaxNotificationService {
 			for (ExEmailNotification emailNot : emailNotification) {
 				String emailid = emailNot.getEmailId();
 				Email email = new Email();
+				email.setSubject(SERVICE_PROVIDER_RESPONSE);
 				email.addTo(emailid);
 				email.setITemplate(TemplatesMX.HOMESEND_TRANSACTION_FAILAURE);
 				email.setHtml(true);

@@ -85,8 +85,8 @@ public class ServiceProviderManger implements IServiceProvider
 					homeSendDTO.setApi_login(owsLoginCredentialsObject.getWsUserName());
 					homeSendDTO.setApi_password(owsLoginCredentialsObject.getWsPassword());
 					homeSendDTO.setApi_url(owsLoginCredentialsObject.getFlexiField1());
-					homeSendDTO.setKeyStoreLocation(msServiceProviderConfig.getKeyStoreLocation());
-					homeSendDTO.setKeyStorePassword(msServiceProviderConfig.getKeyStorePassword());
+					//homeSendDTO.setKeyStoreLocation(msServiceProviderConfig.getKeyStoreLocation());
+					//homeSendDTO.setKeyStorePassword(msServiceProviderConfig.getKeyStorePassword());
 					homeSendDTO.setOwsParamRespcodeRepository(owsParamRespcodeRepository);
 					homeSendDTO.setTrustStoreLocation(msServiceProviderConfig.getTrustStoreLocation());
 					homeSendDTO.setTrustStorePassword(msServiceProviderConfig.getTrustStorePassword());
@@ -185,8 +185,8 @@ public class ServiceProviderManger implements IServiceProvider
 					homeSendDTO.setApi_login(owsLoginCredentialsObject.getWsUserName());
 					homeSendDTO.setApi_password(owsLoginCredentialsObject.getWsPassword());
 					homeSendDTO.setApi_url(owsLoginCredentialsObject.getFlexiField1());
-					homeSendDTO.setKeyStoreLocation(msServiceProviderConfig.getKeyStoreLocation());
-					homeSendDTO.setKeyStorePassword(msServiceProviderConfig.getKeyStorePassword());
+					//homeSendDTO.setKeyStoreLocation(msServiceProviderConfig.getKeyStoreLocation());
+					//homeSendDTO.setKeyStorePassword(msServiceProviderConfig.getKeyStorePassword());
 					homeSendDTO.setOwsParamRespcodeRepository(owsParamRespcodeRepository);
 					homeSendDTO.setTrustStoreLocation(msServiceProviderConfig.getTrustStoreLocation());
 					homeSendDTO.setTrustStorePassword(msServiceProviderConfig.getTrustStorePassword());

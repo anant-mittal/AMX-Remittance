@@ -12,7 +12,7 @@ import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.logger.events.CActivityEvent;
-import com.amx.jax.logger.events.SessionEvent;
+
 import com.amx.jax.tunnel.TunnelService;
 
 /**
@@ -36,17 +36,6 @@ public class LoggerController {
 	@RequestMapping(value = "/api/event/map", method = RequestMethod.POST)
 	public void syncPermsMeta(@RequestBody Map<String, Object> map) {
 		AuditServiceClient.publishAbstractEvent(map);
-	}
-
-	/**
-	 * Sync perms meta.
-	 *
-	 * @param event
-	 *            the event
-	 */
-	@RequestMapping(value = "/api/event/SessionEvent", method = RequestMethod.POST)
-	public void syncPermsMeta(@RequestBody SessionEvent event) {
-		auditService.log(event);
 	}
 
 	/**
