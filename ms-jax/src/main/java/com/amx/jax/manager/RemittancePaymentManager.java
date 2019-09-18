@@ -550,11 +550,15 @@ public class RemittancePaymentManager extends AbstractService{
 		List<BranchApplicationDto> remittanceApplicationIds =new ArrayList<>();
 		List<RemittanceCollectionDto> collctionModeDto = new ArrayList<>();
 		BranchApplicationDto remitApplicationId = new BranchApplicationDto();
+		BigDecimal totalAmount = BigDecimal.ZERO;
+		BigDecimal loyaltyAmount = BigDecimal.ZERO;
 		
 		/** To set the applciation details **/
 		for(RemittanceApplication appl:lstPayIdDetails) {
 			BranchApplicationDto applDto = new BranchApplicationDto();
 			applDto.setApplicationId(appl.getRemittanceApplicationId());
+			totalAmount =totalAmount.add(appl.getLocalNetTranxAmount());
+			loyaltyAmount = loyaltyAmount.add(appl.getLoyaltyPointsEncashed());
 			remittanceApplicationIds.add(applDto);
 		}
 		
@@ -571,8 +575,10 @@ public class RemittancePaymentManager extends AbstractService{
 		request.setRemittanceApplicationId(remittanceApplicationIds);
 		request.setCollctionModeDto(collctionModeDto);
 		request.setCurrencyRefundDenomination(null);
-		request.setTotalTrnxAmount(new BigDecimal(payResDto.getAmount()));
-		request.setTotalLoyaltyAmount(BigDecimal.ZERO);
+		request.setTotalTrnxAmount(totalAmount);
+		request.setTotalLoyaltyAmount(loyaltyAmount);
+		request.setPaidAmount(totalAmount);
+		
 		
 		return request;
 	}
