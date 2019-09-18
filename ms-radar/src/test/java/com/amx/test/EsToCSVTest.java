@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
@@ -12,6 +13,8 @@ import com.amx.jax.client.snap.SnapModels.SnapModelWrapper;
 import com.amx.jax.logger.LoggerService;
 import com.amx.utils.FileUtil;
 import com.amx.utils.JsonUtil;
+import com.axx.jax.table.PivotBucket;
+import com.axx.jax.table.PivotTable;
 
 public class EsToCSVTest { // Noncompliant
 
@@ -39,12 +42,21 @@ public class EsToCSVTest { // Noncompliant
 				.readFile(FileUtil.normalize(
 						"file://" + System.getProperty("user.dir") + "/ext-resources/es-output-short.json"));
 		SnapModelWrapper wrapper = new SnapModelWrapper(json);
-		List<Map<String, Object>> x = wrapper.getAggregations().toBulk(" ");
-		
+		List<Map<String, Object>> x = wrapper.getAggregations().toBulk();
 		for (Map<String, Object> map : x) {
 			System.out.println(JsonUtil.toJson(map));
 		}
+		System.out.println("====*****====");
 
+		PivotTable table = new PivotTable();
+		for (Map<String, Object> map : x) {
+			table.add(map);
+		}
+
+		table.calculate();
+		for (Entry<String, PivotBucket> e : table.pivotrows.entrySet()) {
+			System.out.println(JsonUtil.toJson(e.getValue().result));
+		}
 	}
 
 }

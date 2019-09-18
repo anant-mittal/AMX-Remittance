@@ -19,15 +19,18 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.data.redis.core.TimeoutUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.amx.jax.dict.Language;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.postman.model.File.Type;
 import com.amx.jax.rest.RestService;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonPath;
 import com.amx.utils.StringUtils.StringMatcher;
+import com.amx.utils.TimeUtils;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 @Component
@@ -46,8 +49,6 @@ public class CivilIdValidationService {
 			.compile("^Validation Failure: Not a valid Card Receipt Number");
 
 	XmlMapper xmlMapper = new XmlMapper();
-
-	CaptchaSolver captchaSolver = new CaptchaSolver("tessdata0");
 
 	public static final Logger LOGGER = LoggerService.getLogger(CivilIdValidationService.class);
 
@@ -140,7 +141,7 @@ public class CivilIdValidationService {
 		out.write(resultImageResponse.bodyAsBytes());
 		out.close();
 		LOGGER.info("Captch form {} is {}", temp.getAbsolutePath(),
-				captchaSolver.solve(temp.getAbsolutePath()));
+				CaptchaSolver.INSTANCE.solve(temp.getAbsolutePath()));
 		// Image Reading End
 
 		Connection con1 = con0
@@ -184,10 +185,11 @@ public class CivilIdValidationService {
 	public static final String FIND_DATE_FORMAT_STRING = "dd/MM/yyyy";
 	public static final SimpleDateFormat FIND_DATE_FORMAT = new SimpleDateFormat(FIND_DATE_FORMAT_STRING);
 
-	public Map<String, Object> scan(MultipartFile file) throws IOException {
+	public Map<String, Object> scan(MultipartFile file, Language lang) throws IOException {
 		Type type = com.amx.jax.postman.model.File.Type.from(file.getContentType());
 		String fileType = "." + type.toString().toLowerCase();
 		System.out.println("fileType==" + fileType + "  -  " + file.getName());
+		long startTime = System.currentTimeMillis();
 		int ocrEngine = 2;
 		switch (type) {
 		case TIFF:
@@ -197,22 +199,20 @@ public class CivilIdValidationService {
 			break;
 		}
 
-		Map<String, Object> resp =
-
-				restService.ajax("https://api.ocr.space/parse/image")
-						.field("apikey", "b21643ec2c88957")
-						.field("language", "eng")
-						.field("OCREngine", ocrEngine)
-						.field("FileType", fileType)
-						.field("fileType", fileType)
-						.field("scale", true)
-						.field("detectOrientation", true)
-						.field("file", file)
-						.queryParam("fileType", fileType)
-						// .resource("file", restService.getByteArrayFile(file))
-						.postForm()
-						.as(new ParameterizedTypeReference<Map<String, Object>>() {
-						});
+		Map<String, Object> resp = restService.ajax("https://api.ocr.space/parse/image")
+				.field("apikey", "b21643ec2c88957")
+				.field("language", lang.getISO3Code())
+				.field("OCREngine", ocrEngine)
+				.field("FileType", fileType)
+				.field("fileType", fileType)
+				.field("scale", true)
+				.field("detectOrientation", true)
+				.field("file", file)
+				.queryParam("fileType", fileType)
+				// .resource("file", restService.getByteArrayFile(file))
+				.postForm()
+				.as(new ParameterizedTypeReference<Map<String, Object>>() {
+				});
 
 		Map<String, Object> output = new HashMap<String, Object>();
 		String parsedText = PARSED_TEXT.load(resp, "");
@@ -259,6 +259,7 @@ public class CivilIdValidationService {
 				output.put("expiry", FIND_DATE_FORMAT.format(expiry));
 			}
 
+			output.put("timeTaken", TimeUtils.timeSince(startTime));
 		}
 
 		return output;

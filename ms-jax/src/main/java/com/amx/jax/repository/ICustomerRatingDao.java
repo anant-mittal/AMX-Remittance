@@ -11,12 +11,12 @@ import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerRating;
 import com.amx.jax.model.customer.CustomerRatingDTO;
 
-public interface ICustomerRatingDao extends JpaRepository<CustomerRating, Serializable> {
+public interface ICustomerRatingDao extends JpaRepository<CustomerRating, Serializable>{
 	void save(CustomerRatingDTO dto);
 
 	@Query("select c from CustomerRating c where remittanceTransactionId=?1")
 	public List<Customer> getCustomerRatingByRemittanceTransactionId(String remittanceTransactionId);
-	
+
 	@Query("select c from CustomerRating c where remittanceTransactionId=?1")
 	public CustomerRating getCustomerRatingDataByRemittanceTransactionId(BigDecimal remittanceTransactionId);
 		

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.amx.jax.dict.Language;
 import com.amx.jax.radar.service.CivilIdValidationService;
 import com.amx.jax.radar.service.CivilIdValidationService.CivilIdValidationResponse;
 import com.google.i18n.phonenumbers.NumberParseException;
@@ -28,9 +29,9 @@ public class SnapUtilityController {
 
 	@SuppressWarnings("static-access")
 	@RequestMapping(value = "/snap/api/utility/civil/scan/card", method = { RequestMethod.POST })
-	public Map<String, Object> uploadServiceProviderFile(@RequestParam MultipartFile file) throws Exception {
-
-		return civilIdValidationService.scan(file);
+	public Map<String, Object> uploadServiceProviderFile(@RequestParam MultipartFile file,
+			@RequestParam Language lang) throws Exception {
+		return civilIdValidationService.scan(file, lang);
 	}
 
 }
