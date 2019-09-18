@@ -36,15 +36,15 @@ public class SnapQueryTestController {
 	private TunnelService tunnelService;
 
 	@ResponseBody
-	@RequestMapping(value = "/snap/query/{snapView}", method = RequestMethod.POST)
+	@RequestMapping(value = "/test/snap/query/{snapView}", method = RequestMethod.POST)
 	public List<Map<String, Object>> snapQuery(@PathVariable(value = "snapView") SnapQueryTemplate snapView,
 			@RequestBody Map<String, Object> params) throws IOException {
 		String json = FileUtil
 				.readFile(FileUtil.normalize(
 						"file://" + System.getProperty("user.dir") + "/src/test/java/com/amx/test/es-output.json"));
 		SnapModelWrapper wrapper = new SnapModelWrapper(json);
-		List<Map<String, Object>> x = wrapper.getAggregations().toBulk(null);
-		
+		List<Map<String, Object>> x = wrapper.getAggregations().toBulk();
+
 		for (Map<String, Object> map : x) {
 			System.out.println(JsonUtil.toJson(map));
 		}

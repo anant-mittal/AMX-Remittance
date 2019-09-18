@@ -81,18 +81,6 @@ public class SnapModels {
 			}
 		}
 
-//		public Hits getHits() {
-//			Object hitsObject = map.get(HITS_KEY);
-//			if (hitsObject instanceof Hits) {
-//				return (Hits) hitsObject;
-//			} else {
-//				HashMap<String, Object> hitsMap = HITS.load(map, new HashMap<String, Object>());
-//				Hits hits = new Hits(hitsMap);
-//				map.put(HITS_KEY, hits);
-//				return hits;
-//			}
-//		}
-
 		Map<String, Object> summaryMap;
 
 		public Map<String, Object> getSummary() {
@@ -101,6 +89,20 @@ public class SnapModels {
 				map.put(SUMMARY_KEY, summaryMap);
 			}
 			return summaryMap;
+		}
+
+		List<Map<String, List<String>>> pivot;
+
+		public List<Map<String, List<String>>> getPivot() {
+			if (this.pivot == null) {
+				this.pivot = new ArrayList<Map<String, List<String>>>();
+				List<HashMap<String, List<String>>> tempbuckets = new JsonPath("_pivot").loadList(map,
+						new HashMap<String, List<String>>());
+				for (HashMap<String, List<String>> aggregationMap : tempbuckets) {
+					this.pivot.add(aggregationMap);
+				}
+			}
+			return pivot;
 		}
 	}
 
@@ -255,6 +257,15 @@ public class SnapModels {
 		}
 
 		public Map<String, Object> toBulkItem(Map<String, Object> bulkItem, String space) {
+			if (map.containsKey("value")) {
+				bulkItem.put(fieldName(), map.get("value"));
+				bulkItem.put("_id", space);
+			}
+			if (map.containsKey("hits")) {
+				bulkItem.put(fieldName(),
+						CollectionUtil.getOne(this.getHits().getHits().get(0).getFields().first().asList("")));
+				bulkItem.put("_id", space);
+			}
 			return bulkItem;
 		}
 
@@ -265,23 +276,6 @@ public class SnapModels {
 			}
 			if (map.containsKey("hits")) {
 				bulkItem.put(fieldName(), this.getHits().getHits().get(0).getFields().getFirst());
-			}
-			if (map.containsKey("buckets")) {
-				List<Aggregations> b = this.getBuckets();
-				// System.out.println(space + "[" + this.getBuckets().size() + "]");
-				List<Map<String, Object>> spreadBulk = new ArrayList<Map<String, Object>>();
-				for (Aggregations aggs : b) {
-					bulkItem.put(fieldName(), aggs.getKey());
-					// Spread;
-					Map<String, Object> spreadBulkItem = new HashMap<String, Object>();
-					spreadBulkItem.putAll(bulkItem);
-					List<Map<String, Object>> bulk = aggs.toBulk(spreadBulkItem,
-							space + " ");
-					for (Map<String, Object> _bulkItem : bulk) {
-						spreadBulk.add(_bulkItem);
-					}
-				}
-				return spreadBulk;
 			}
 			return CollectionUtil.getList(bulkItem);
 		}
@@ -316,32 +310,47 @@ public class SnapModels {
 			return fields;
 		}
 
-		public List<Map<String, Object>> toBulk(String space) {
-			return this.toBulk(new HashMap<String, Object>(), space);
+		public List<Map<String, Object>> toBulk() {
+			return this.toBulk(new HashMap<String, Object>(), "");
+		}
+
+		public static Map<String, Object> copy(Map<String, Object> map) {
+			Map<String, Object> newMap = new HashMap<String, Object>();
+			newMap.putAll(map);
+			return newMap;
 		}
 
 		public List<Map<String, Object>> toBulk(Map<String, Object> bulkItemBlank, String space) {
 			List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-			for (AggregationField x : this.fields()) {
-				// System.out.println(space + "|" + x.fieldName());
-				// Map<String, Object> bulkItem = x.toBulkItem(bulkItemBlank, " " + space);
-				List<Map<String, Object>> bulk = x.toBulk(bulkItemBlank, space, list);
-				if (bulk != null) {
-					System.out.println(space + "BULK");
-					for (Map<String, Object> _bulkItem : bulk) {
-						if (_bulkItem != null) {
-							_bulkItem.putAll(bulkItemBlank);
-							// list.add(_bulkItem);
-							System.out.println(":::::"+JsonUtil.toJson(_bulkItem));
-						} else {
-							System.out.println(space + "null");
+			long afIndex = 0;
+			for (AggregationField af : this.fields()) {
+				if (af.toMap().containsKey("buckets")) {
+					List<Aggregations> buckets = af.getBuckets();
+
+					long bucketItemIndex = 0;
+					for (Aggregations bucketItem : buckets) {
+						// System.out.println(af.fieldName() + " " + bucketItem.getKey());
+						Map<String, Object> _bulkItemBlank = copy(bulkItemBlank);
+						_bulkItemBlank.put(af.fieldName(), bucketItem.getKey());
+						List<Map<String, Object>> bulk = bucketItem.toBulk(_bulkItemBlank,
+								space + afIndex + bucketItemIndex);
+						for (Map<String, Object> bulkItem : bulk) {
+							if (bulkItem.containsKey("_id")) {
+								list.add(bulkItem);
+							}
+							// System.out.println("bulkItem " + JsonUtil.toJson(bulkItem));
 						}
+						bucketItemIndex++;
 					}
+
 				} else {
-					System.out.println(space + "NULL");
+					af.toBulkItem(bulkItemBlank, space + afIndex);
 				}
+				afIndex++;
 			}
-			list.add(bulkItemBlank);
+			if (bulkItemBlank.containsKey("_id")) {
+				list.add(bulkItemBlank);
+			}
 			return list;
 		}
 
