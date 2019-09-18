@@ -385,6 +385,8 @@ public class DirectPaymentLinkManager extends AbstractModel {
 				remittanceCollection.setPaymentAmount(paymentLinkData.getPayAmount());
 				remittanceCollection.setApprovalNo(paymentLinkData.getPgAuthCode());
 				
+				logger.info("Payment value set in remittanceCollection : "+paymentLinkData.getPayAmount());
+				
 				collctionModeDto.add(remittanceCollection);
 				
 				BigDecimal totalLoyaltyEncashed =BigDecimal.ZERO;
