@@ -58,8 +58,11 @@ public class RemitRoutingManager {
 
 	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd-MMM hh:mm a");
 
-	// TODO : Treasury Funding Time.
-	// private static final int KWT_TREASURY_FUNDING_TIME = 12;
+	private static final BigDecimal DEF_TR_TRANSACTION_START_TIME = new BigDecimal(10);
+	private static final BigDecimal DEF_TR_TRANSACTION_END_TIME = new BigDecimal(14.3);
+	
+	private static final BigDecimal DEF_TR_WORK_DAY_FROM = new BigDecimal(2);
+	private static final BigDecimal DEF_TR_WORK_DAY_TO = new BigDecimal(5);
 
 	/** The Constant LOGGER. */
 	private static final Logger LOGGER = LoggerFactory.getLogger(RemitRoutingManager.class);
@@ -336,8 +339,12 @@ public class RemitRoutingManager {
 					trImpact.setOutOfTrWindowDayImpact(trImpact.getInTrWindowDayImpact());
 					trImpact.setOutOfTrWindowTtdImpactMin(trImpact.getInTrWindowTtdImpactMin());
 
-					trImpact.setTrnxTimeFrom("10:00");
-					trImpact.setTrnxTimeTo("14:30");
+					trImpact.setTrnxTimeFrom(DEF_TR_TRANSACTION_START_TIME);
+					trImpact.setTrnxTimeTo(DEF_TR_TRANSACTION_END_TIME);
+					
+					trImpact.setWorkDayFrom(DEF_TR_WORK_DAY_FROM);
+					trImpact.setWorkDayFrom(DEF_TR_WORK_DAY_TO);
+					//TODO
 				}
 
 			}
@@ -651,9 +658,10 @@ public class RemitRoutingManager {
 		ZonedDateTime beginZonedDT = ZonedDateTime.ofInstant(epochInstant, zoneId);
 
 		/**
-		 * Removed noHolidayLag : on 14th Sept 2019 : For GLCDelay - which could turn this flag on later
+		 * Removed noHolidayLag : on 14th Sept 2019 : For GLCDelay - which could turn
+		 * this flag on later
 		 */
-		if (/*!noHolidayLag &&*/ !transientDataCache.isHolidayListSetForCountry(countryId)) {
+		if (/* !noHolidayLag && */ !transientDataCache.isHolidayListSetForCountry(countryId)) {
 			List<HolidayListMasterModel> sortedHolidays = holidayListManager.getHoidaysForCountryAndDateRange(countryId,
 					Date.from(beginZonedDT.toInstant()),
 					Date.from(beginZonedDT.plusDays(MAX_DELIVERY_ATTEMPT_DAYS).toInstant()));
@@ -793,7 +801,7 @@ public class RemitRoutingManager {
 	 * @return
 	 */
 	private EstimatedDeliveryDetails getGoodBusinessDateTime(ZonedDateTime beginZonedDT, WorkingHoursData workHrsData,
-			BigDecimal countryId, boolean noHolidayLag, boolean glDelay, TreasuryFundTimeImpact lowFundTimeImpact) {
+			BigDecimal countryId, boolean noHolidayLag, boolean preDelay, TreasuryFundTimeImpact lowFundTimeImpact) {
 
 		EstimatedDeliveryDetails estimatedDeliveryDetails = new EstimatedDeliveryDetails();
 
@@ -802,10 +810,10 @@ public class RemitRoutingManager {
 		boolean isSnoozed = false;
 
 		// First Process treasury low fund delay - if any
-		if (glDelay && lowFundTimeImpact != null) {
+		if (preDelay && lowFundTimeImpact != null) {
 
-			int trnxTimeFrom = DateUtil.getHrMinIntVal(lowFundTimeImpact.getTrnxTimeFrom());
-			int trnxTimeTo = DateUtil.getHrMinIntVal(lowFundTimeImpact.getTrnxTimeTo());
+			int trnxTimeFrom = DateUtil.getHrMinIntVal(String.valueOf(lowFundTimeImpact.getTrnxTimeFrom()));
+			int trnxTimeTo = DateUtil.getHrMinIntVal(String.valueOf(lowFundTimeImpact.getTrnxTimeTo()));
 
 			int nowHrMinIntVal = DateUtil.getHrMinIntVal(estimatedGoodBusinessDay.getHour(),
 					estimatedGoodBusinessDay.getMinute());
@@ -882,12 +890,10 @@ public class RemitRoutingManager {
 			// Default Working Status
 			boolean isWorking = true;
 
-			/*
-			 * if (glDelay > 0) { isWorking = false; glDelay--;
-			 * 
-			 * } else
-			 */
-			if (noHolidayLag || !(isHoliday = transientDataCache.isHolidayOn(countryId, estimatedGoodBusinessDay))) {
+			
+			/*if (preDelay > 0) { isWorking = false; glDelay--;
+			
+			} else*/ if (noHolidayLag || !(isHoliday = transientDataCache.isHolidayOn(countryId, estimatedGoodBusinessDay))) {
 
 				int dayOfWeek = estimatedGoodBusinessDay.getDayOfWeek().getValue();
 				int hourOfDay = estimatedGoodBusinessDay.getHour();

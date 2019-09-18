@@ -13,7 +13,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "JAX_PR_TREASURY_FT_IMPACT")
+@Table(name = "JAX_PR_TREASURY_TIME_IMPACT")
 public class TreasuryFundTimeImpact implements Serializable {
 
 	/**
@@ -23,7 +23,7 @@ public class TreasuryFundTimeImpact implements Serializable {
 
 	@Id
 	@GeneratedValue(generator = "treasury_ft_impact_seq", strategy = GenerationType.SEQUENCE)
-	@SequenceGenerator(name = "treasury_ft_impact_seq", sequenceName = "JAX_PR_TREASURY_FT_IMPACT_SEQ", allocationSize = 1)
+	@SequenceGenerator(name = "treasury_ft_impact_seq", sequenceName = "JAX_PR_TREA_TIME_IMPACT_SEQ", allocationSize = 1)
 	@Column(name = "ID", unique = true, nullable = false, precision = 22, scale = 0)
 	private BigDecimal id;
 
@@ -40,16 +40,22 @@ public class TreasuryFundTimeImpact implements Serializable {
 	private String fundStatus;
 
 	@Column(name = "TRNX_TIME_FROM")
-	private String trnxTimeFrom;
+	private BigDecimal trnxTimeFrom;
 
 	@Column(name = "TRNX_TIME_TO")
-	private String trnxTimeTo;
+	private BigDecimal trnxTimeTo;
 
 	@Column(name = "TREASURY_START_TIME")
-	private String treasuryStartTime;
+	private BigDecimal treasuryStartTime;
 
 	@Column(name = "TREASURY_END_TIME")
-	private String treasuryEndTime;
+	private BigDecimal treasuryEndTime;
+
+	@Column(name = "WORK_DAY_FROM")
+	private BigDecimal workDayFrom;
+
+	@Column(name = "WORK_DAY_TO")
+	private BigDecimal workDayTo;
 
 	@Column(name = "ITW_TTD_IMPACT_MIN")
 	private BigDecimal inTrWindowTtdImpactMin;
@@ -124,36 +130,52 @@ public class TreasuryFundTimeImpact implements Serializable {
 		this.fundStatus = fundStatus;
 	}
 
-	public String getTrnxTimeFrom() {
+	public BigDecimal getTrnxTimeFrom() {
 		return trnxTimeFrom;
 	}
 
-	public void setTrnxTimeFrom(String trnxTimeFrom) {
+	public void setTrnxTimeFrom(BigDecimal trnxTimeFrom) {
 		this.trnxTimeFrom = trnxTimeFrom;
 	}
 
-	public String getTrnxTimeTo() {
+	public BigDecimal getTrnxTimeTo() {
 		return trnxTimeTo;
 	}
 
-	public void setTrnxTimeTo(String trnxTimeTo) {
+	public void setTrnxTimeTo(BigDecimal trnxTimeTo) {
 		this.trnxTimeTo = trnxTimeTo;
 	}
 
-	public String getTreasuryStartTime() {
+	public BigDecimal getTreasuryStartTime() {
 		return treasuryStartTime;
 	}
 
-	public void setTreasuryStartTime(String treasuryStartTime) {
+	public void setTreasuryStartTime(BigDecimal treasuryStartTime) {
 		this.treasuryStartTime = treasuryStartTime;
 	}
 
-	public String getTreasuryEndTime() {
+	public BigDecimal getTreasuryEndTime() {
 		return treasuryEndTime;
 	}
 
-	public void setTreasuryEndTime(String treasuryEndTime) {
+	public void setTreasuryEndTime(BigDecimal treasuryEndTime) {
 		this.treasuryEndTime = treasuryEndTime;
+	}
+
+	public BigDecimal getWorkDayFrom() {
+		return workDayFrom;
+	}
+
+	public void setWorkDayFrom(BigDecimal workDayFrom) {
+		this.workDayFrom = workDayFrom;
+	}
+
+	public BigDecimal getWorkDayTo() {
+		return workDayTo;
+	}
+
+	public void setWorkDayTo(BigDecimal workDayTo) {
+		this.workDayTo = workDayTo;
 	}
 
 	public BigDecimal getInTrWindowTtdImpactMin() {
