@@ -32,6 +32,11 @@ public class RemittanceTransactionResponsetModel extends AbstractModel {
 	private String vatType;
 	private BigDecimal vatPercentage;
 	private BigDecimal vatAmount;
+	/** For Better rate **/ 
+	private boolean isBetterRateAvailable = false;
+	private BigDecimal betterRateAmountSlab;
+	private BigDecimal diffInBetterRateFcAmount;
+	
 
 	/*
 	 * (non-Javadoc)
@@ -153,6 +158,30 @@ public class RemittanceTransactionResponsetModel extends AbstractModel {
 
 	public void setVatAmount(BigDecimal vatAmount) {
 		this.vatAmount = vatAmount;
+	}
+
+	public boolean isBetterRateAvailable() {
+		return isBetterRateAvailable;
+	}
+
+	public void setBetterRateAvailable(boolean isBetterRateAvailable) {
+		this.isBetterRateAvailable = isBetterRateAvailable;
+	}
+
+	public BigDecimal getBetterRateAmountSlab() {
+		return betterRateAmountSlab;
+	}
+
+	public void setBetterRateAmountSlab(BigDecimal betterRateAmountSlab) {
+		this.betterRateAmountSlab = betterRateAmountSlab;
+	}
+
+	public BigDecimal getDiffInBetterRateFcAmount() {
+		return diffInBetterRateFcAmount;
+	}
+
+	public void setDiffInBetterRateFcAmount(BigDecimal diffInBetterRateFcAmount) {
+		this.diffInBetterRateFcAmount = diffInBetterRateFcAmount;
 	}
 	
 	

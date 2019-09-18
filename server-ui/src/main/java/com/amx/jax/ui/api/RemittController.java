@@ -25,7 +25,6 @@ import com.amx.amxlib.exception.InvalidInputException;
 import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.exception.RemittanceTransactionValidationException;
 import com.amx.amxlib.exception.ResourceNotFoundException;
-import com.amx.amxlib.meta.model.CustomerRatingDTO;
 import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
@@ -39,8 +38,10 @@ import com.amx.jax.JaxAuthContext;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.JaxClientUtil;
 import com.amx.jax.client.remittance.RemittanceClient;
+import com.amx.jax.dict.AmxEnums.Products;
 import com.amx.jax.dict.Language;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.model.customer.CustomerRatingDTO;
 import com.amx.jax.model.request.remittance.BranchRemittanceGetExchangeRateRequest;
 import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
@@ -175,7 +176,7 @@ public class RemittController {
 	@RequestMapping(value = "/api/user/tranx/print_history", method = { RequestMethod.POST })
 	public ResponseWrapper<List<Map<String, Object>>> printHistory(
 			@RequestBody ResponseWrapper<List<Map<String, Object>>> wrapper) throws IOException, PostManException {
-		File file = postManService.processTemplate(new File(TemplatesMX.REMIT_STATMENT, wrapper, File.Type.PDF).lang(AppContextUtil.getTenant().defaultLang()))
+		File file = postManService.processTemplate(new File(TemplatesMX.REMIT_STATMENT, wrapper, File.Type.PDF))
 				.getResult();
 		file.create(response, true);
 		return wrapper;
@@ -209,7 +210,7 @@ public class RemittController {
 		if (skipd == null || skipd.booleanValue() == false) {
 			file = postManService.processTemplate(
 					new File(duplicate ? TemplatesMX.REMIT_RECEIPT_COPY_JASPER : TemplatesMX.REMIT_RECEIPT_JASPER,
-							wrapper, File.Type.PDF).lang(AppContextUtil.getTenant().defaultLang()))
+							wrapper, File.Type.PDF))
 					.getResult();
 			file.create(response, true);
 		}
@@ -374,12 +375,6 @@ public class RemittController {
 		return wrapper;
 	}
 
-	@RequestMapping(value = "/api/remitt/package/list", method = { RequestMethod.POST })
-	public ResponseWrapper<List<ParameterDetailsDto>> getPackages(@RequestParam BigDecimal beneId) {
-		return new ResponseWrapper<List<ParameterDetailsDto>>(
-				remittanceClient.getGiftService(beneId).getResult().getParameterDetailsDto());
-	}
-
 	/**
 	 * Bnfcry check.
 	 *
@@ -503,11 +498,11 @@ public class RemittController {
 
 	@RequestMapping(value = { "/api/remitt/tranx/rating", "/pub/remitt/tranx/rating" }, method = { RequestMethod.POST })
 	public ResponseWrapper<CustomerRatingDTO> appStatus(@RequestBody CustomerRatingDTO customerRatingDTO,
-			@RequestParam String veryCode) {
+			@RequestParam String veryCode,@PathVariable Products prodType) {
 
 		if (!JaxClientUtil.getTransactionVeryCode(customerRatingDTO.getRemittanceTransactionId()).equals(veryCode)) {
 			throw new UIServerError(OWAStatusStatusCodes.INVALID_LINK);
 		}
-		return ResponseWrapper.build(jaxService.setDefaults().getRemitClient().saveCustomerRating(customerRatingDTO));
+		return ResponseWrapper.build(jaxService.setDefaults().getRemitClient().saveCustomerRating(customerRatingDTO,prodType));
 	}
 }

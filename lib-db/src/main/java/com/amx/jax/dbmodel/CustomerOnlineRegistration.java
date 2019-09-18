@@ -78,6 +78,8 @@ public class CustomerOnlineRegistration implements java.io.Serializable  {
 	private String devicePassword;
 	private String fingerprintDeviceId;
 	
+
+	
 	
 	
 	public String getFingerprintDeviceId() {
@@ -565,4 +567,5 @@ public class CustomerOnlineRegistration implements java.io.Serializable  {
 	public void setWhatsAppToken(String whatsAppToken) {
 		this.whatsAppToken = whatsAppToken;
 	}
+		
 }

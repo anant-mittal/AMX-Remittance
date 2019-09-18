@@ -1,17 +1,22 @@
 package com.amx.jax.client.fx;
 
+
+
 import java.math.BigDecimal;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppConfig;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.configs.JaxMetaInfo;
+import com.amx.jax.exception.AbstractJaxException;
 import com.amx.jax.exception.JaxSystemError;
+import com.amx.jax.model.customer.CustomerRatingDTO;
 import com.amx.jax.model.request.fx.FcDeliveryBranchOrderSearchRequest;
 import com.amx.jax.model.request.fx.FcSaleBranchDispatchRequest;
 import com.amx.jax.model.request.fx.FcSaleOrderManagementDatesRequest;
@@ -32,6 +37,8 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 
 	@Autowired
 	AppConfig appConfig;
+	
+	
 	
 	/**
 	 * 
@@ -316,6 +323,24 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 		}
 	}
 
+
+	
+	public AmxApiResponse<CustomerRatingDTO, ?> inquirefxOrderCustomerRating(BigDecimal deliveryDetailSeqId, String product) 
+	{
+		try {
+
+			return restService.ajax(appConfig.getJaxURL()).path(Path.FC_CUSTOMER_RATING).meta(new JaxMetaInfo()).post()
+					.queryParam(Params.FX_DELIVERY_SEQ_ID, deliveryDetailSeqId).queryParam(Params.FX_PRODUCT, product)
+					.post().as(new ParameterizedTypeReference<AmxApiResponse<CustomerRatingDTO, ?>>() {
+					});
+		} catch (Exception ae) {
+
+			LOGGER.error("exception in Inquire customer rating : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}
+	}
+	
+
 	@Override
 	public AmxApiResponse<FcSaleOrderManagementDTO, Object> searchOrderByDates(FcSaleOrderManagementDatesRequest fcSaleDates) {
 		try {
@@ -331,3 +356,4 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 	}
 
 }
+

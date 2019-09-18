@@ -64,6 +64,7 @@ import com.amx.jax.dbmodel.BlackListModel;
 import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ExchangeRateApprovalDetModel;
+import com.amx.jax.dbmodel.ReferralDetails;
 import com.amx.jax.dbmodel.TransactionLimitCheckView;
 import com.amx.jax.dbmodel.partner.RemitApplSrvProv;
 import com.amx.jax.dbmodel.remittance.AdditionalInstructionData;
@@ -101,6 +102,8 @@ import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;
 import com.amx.jax.model.response.remittance.LoyalityPointState;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.model.response.remittance.VatDetailsDto;
+import com.amx.jax.postman.client.PushNotifyClient;
+import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.partner.manager.PartnerTransactionManager;
 import com.amx.jax.pricer.dto.TrnxRoutingDetails;
 import com.amx.jax.pricer.var.PricerServiceConstants;
@@ -126,6 +129,7 @@ import com.amx.jax.services.RemittanceApplicationService;
 import com.amx.jax.services.RoutingService;
 import com.amx.jax.services.TransactionHistroyService;
 import com.amx.jax.userservice.dao.CustomerDao;
+import com.amx.jax.userservice.dao.ReferralDetailsDao;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.AmxDBConstants;
 import com.amx.jax.util.DateUtil;
@@ -269,6 +273,12 @@ public class RemittanceTransactionManager {
 	private RestService restService;
 	@Autowired
 	BankService bankService;
+	
+	@Autowired
+   	ReferralDetailsDao refDao;
+	
+	@Autowired
+	PushNotifyClient pushNotifyClient;
 
 	@Autowired
 	BranchRemittanceApplManager branchRemittanceApplManager;
@@ -1111,8 +1121,6 @@ public class RemittanceTransactionManager {
 		} else {
 			additionalInstrumentData = oldRemittanceApplicationAdditionalDataManager.createAdditionalInstnData(remittanceApplication);
 		}
-	
-		// save service provider
 		RemitApplSrvProv remitApplSrvProv = null;
 		remitAppDao.saveAllApplicationData(remittanceApplication, remittanceAppBeneficairy, additionalInstrumentData,remitApplSrvProv);
 		remitAppDao.updatePlaceOrder(model, remittanceApplication);

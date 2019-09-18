@@ -35,6 +35,7 @@ import com.amx.jax.userservice.service.CustomerVerificationService;
 import com.amx.jax.util.AmxDBConstants;
 import com.amx.jax.util.AmxDBConstants.Status;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.CollectionUtil;
 import com.amx.utils.Constants;
 import com.amx.utils.EntityDtoUtil;
 import com.amx.utils.Random;
@@ -372,7 +373,7 @@ public class CustomerContactVerificationManager {
 	 */
 	public CustomerContactVerification verifyByContact(String identity, ContactType type, String contact) {
 
-		Customer c = customerRepository.getCustomerOneByIdentityInt(identity);
+		Customer c = CollectionUtil.getOne(customerRepository.findActiveCustomers(identity));
 
 		CustomerContactVerification link = getValidCustomerContactVerificationByCustomerId(c.getCustomerId(), type,
 				contact);

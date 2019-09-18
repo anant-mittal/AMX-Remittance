@@ -35,6 +35,7 @@ public interface IFxBranchOrderService extends IJaxService {
 		public static final String FC_ACCEPT_CANCELLATION = PREFIX + "/accept-cancellation/";
 		public static final String FC_REPRINT_ORDER = PREFIX + "/reprint-order/";
 		public static final String FC_SEARCH_ORDER = PREFIX + "/search-order/";
+		public static final String FC_CUSTOMER_RATING = PREFIX + "/fc-customer-rating/";
 		public static final String FC_SEARCH_ORDER_BY_DATES = PREFIX + "/search-order-by-dates/";
 		
 	}
@@ -44,8 +45,11 @@ public interface IFxBranchOrderService extends IJaxService {
 		public static final String FX_ORDER_YEAR = "orderYear";
 		public static final String FX_CURRENCY_ID = "foreignCurrencyId";
 		public static final String FX_DRIVER_ID = "driverId";
+		public static final String FX_DELIVERY_SEQ_ID = "deliveryDetailSeqId";
+		public static final String FX_PRODUCT = "product";
 		public static final String FX_ORDER_FROM_DATE = "fromDate";
 		public static final String FX_ORDER_TO_DATE = "toDate";
+
 	}
 
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND,JaxError.NULL_APPLICATION_COUNTRY_ID,JaxError.NULL_EMPLOYEE_ID,JaxError.NULL_AREA_CODE,JaxError.INVALID_EMPLOYEE,JaxError.UNABLE_CONVERT_PENDING_RECORDS,JaxError.EMPTY_STOCK_EMPLOYEE })
@@ -104,6 +108,10 @@ public interface IFxBranchOrderService extends IJaxService {
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND })
 	AmxApiResponse<FxOrderTransactionHistroyDto, Object> searchOrder(FcDeliveryBranchOrderSearchRequest fcDeliveryBranchOrderSearchRequest);
 	
+
+/*	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND })
+	AmxApiResponse<CustomerRatingDTO, ?> inquirefxOrderCustomerRating(BigDecimal deliveryDetailSeqId, String product);*/
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND })
 	AmxApiResponse<FcSaleOrderManagementDTO, Object> searchOrderByDates(FcSaleOrderManagementDatesRequest fcSaleDates);
+
 }
