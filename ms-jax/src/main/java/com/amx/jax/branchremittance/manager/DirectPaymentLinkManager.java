@@ -365,6 +365,8 @@ public class DirectPaymentLinkManager extends AbstractModel {
 				List<BranchApplicationDto> remittanceApplicationIds =new ArrayList<>();
 				List<RemittanceCollectionDto> collctionModeDto = new ArrayList<>();
 				//List<UserStockDto> currencyRefundDenomination = new ArrayList<>();
+				
+				/*
 				BranchApplicationDto remitApplicationId = new BranchApplicationDto();
 				
 				String applicationid = paymentLinkData.getApplIds();
@@ -375,7 +377,9 @@ public class DirectPaymentLinkManager extends AbstractModel {
 					logger.info("Application Id : " + appId);
 					remitApplicationId.setApplicationId(appId);
 					remittanceApplicationIds.add(remitApplicationId);
-				}
+				}*/
+				
+				logger.info("Count of application Ids : "+remittanceApplicationIds.size());
 				
 				PaymentModeModel payModeModel = payModeRepositoy.getPaymentModeDetails(ConstantDocument.KNET_CODE);
 				
@@ -396,10 +400,15 @@ public class DirectPaymentLinkManager extends AbstractModel {
 				if(null != applications){
 					logger.info("applications count ------> : " +applications);
 					for(RemittanceApplication appl: applications) {
+						BranchApplicationDto applDto = new BranchApplicationDto();
+				        applDto.setApplicationId(appl.getRemittanceApplicationId());
 						totalLoyaltyEncashed=totalLoyaltyEncashed.add(appl.getLoyaltyPointsEncashed());
 						totalPaidAmount=totalPaidAmount.add(appl.getLocalNetTranxAmount());
+						remittanceApplicationIds.add(applDto);
 					}
 				}	
+				
+				logger.info("Count of application Ids : "+remittanceApplicationIds.size());
 				
 				logger.info("Total Paid Amt ------> : " +totalPaidAmount);
 				
