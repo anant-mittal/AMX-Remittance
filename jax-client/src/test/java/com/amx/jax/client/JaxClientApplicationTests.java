@@ -103,7 +103,7 @@ public class JaxClientApplicationTests extends AbstractTestClient {
 		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
 		ApiResponse<CustomerModel> response = null;
 		try {
-			response = client.saveCredentials("289072104474", "amx@123", otp, null, null);
+			response = client.saveCredentials("289072104474", "amx@123", otp,null, null, null);
 		} catch (AlreadyExistsException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -120,7 +120,7 @@ public class JaxClientApplicationTests extends AbstractTestClient {
 		testSendotpapi();
 		ApiResponse<CustomerModel> response = null;
 		try {
-			response = client.saveCredentials("289072104474", "amx@123", otp, null, "prashant.thorat@almullagroup.com");
+			response = client.saveCredentials("289072104474", "amx@123", otp, null, "prashant.thorat@almullagroup.com",null);
 		} catch (AlreadyExistsException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

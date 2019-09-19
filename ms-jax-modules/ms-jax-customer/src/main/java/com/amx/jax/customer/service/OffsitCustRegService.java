@@ -34,6 +34,7 @@ import com.amx.amxlib.constant.PrefixEnum;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.CustomerCredential;
+import com.amx.jax.ICustRegService;
 import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
@@ -261,6 +262,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 
 	@Autowired
 	EmployeeRespository employeeRespository;
+	
 	@Autowired
 	IncomeDao incomeDao;
 	
@@ -281,7 +283,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		List<ComponentDataDto> list = new ArrayList<>();
 		for (Map row : tempList) {
 			String idType = bizcomponentDao.getIdentityTypeMaster((BigDecimal) row.get("COMPONENT_DATA_ID"));
-			if (idType.equalsIgnoreCase("I")) {
+			if (!StringUtils.isBlank(idType) && idType.equalsIgnoreCase("I") || idType.equalsIgnoreCase("C")) {
 				list.add(new ComponentDataDto((BigDecimal) row.get("COMPONENT_DATA_ID"), (String) row.get("DATA_DESC"),
 						(String) row.get("SHORT_CODE")));
 			}
@@ -437,6 +439,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		LOGGER.debug("The list is ", designationDataList);
 		return AmxApiResponse.buildList(designationDataList);
 	}
+	
 
 	private List<ResourceDTO> convertDesignationIncome(List<Map<String, Object>> designationList) {
 		List<ResourceDTO> output = new ArrayList<>();
@@ -602,6 +605,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		CustomerPersonalDetail customerDetails = new CustomerPersonalDetail();
 		jaxUtil.convert(model.getCustomerPersonalDetail(), customerDetails);
 		Customer customer = commitCustomer(customerDetails, model.getCustomerEmploymentDetails());
+		
 		commitCustomerLocalContact(model.getLocalAddressDetails(), customer, customerDetails);
 		commitCustomerHomeContact(model.getHomeAddressDetails(), customer, customerDetails);
 		customerIdProofManager.commitOnlineCustomerIdProof(customer);
@@ -648,6 +652,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 
 	private void commitCustomerLocalContact(LocalAddressDetails localAddressDetails, Customer customer,
 			com.amx.jax.model.request.CustomerPersonalDetail customerDetails) {
+		
 		if (localAddressDetails != null) {
 			ContactDetail contactDetail = contactDetailService.getContactsForLocal(customer);
 
@@ -739,10 +744,10 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			CustomerEmploymentDetails customerEmploymentDetails) {
 		Customer customer = offsiteCustomerRegManager.getCustomerForRegistration(customerDetails.getIdentityInt(),
 				customerDetails.getIdentityTypeId());
-
+		
 		BigDecimal employeeId = metaData.getEmployeeId();
 		Employee employeeDetails = employeeRespository.findEmployeeById(employeeId);
-
+		
 		if (customer == null) {
 			LOGGER.info("creating new customer for offiste registration. idint {} idtype {}",
 					customerDetails.getIdentityInt(), customerDetails.getIdentityTypeId());
@@ -774,7 +779,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		countryMetaValidation.validateMobileNumber(customerDetails.getCountryId(), customerDetails.getMobile());
 		countryMetaValidation.validateMobileNumberLength(customerDetails.getCountryId(), customerDetails.getMobile());
 		jaxUtil.convertNotNull(customerDetails, customer);
-		if (customer.getCustomerReference() == null) {
+		if(customer.getCustomerReference() == null) {
 			BigDecimal customerReference = customerDao.generateCustomerReference();
 			customer.setCustomerReference(customerReference);
 			LOGGER.info("generated customer ref: {}", customerReference);
@@ -914,7 +919,9 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 				documentDetails = getDocumentUploadDetails(image, mappingData);
 				LOGGER.debug("document details are "+documentDetails.toString());
 				docblobRepository.save(documentDetails);
+				
 			}
+			
 		} else {
 			auditService.log(auditEvent.result(Result.FAIL).message(JaxError.IMAGE_NOT_AVAILABLE));
 			throw new GlobalException(JaxError.IMAGE_NOT_AVAILABLE, "Image data is not available");

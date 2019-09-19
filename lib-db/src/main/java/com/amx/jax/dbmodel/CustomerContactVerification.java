@@ -28,6 +28,8 @@ import com.amx.utils.TimeUtils;
 public class CustomerContactVerification implements java.io.Serializable {
 
 	private static final long serialVersionUID = 1L;
+	public static final int EXPIRY_DAY = 1;
+	public static final int EXPIRY_DAY_WHATS_APP = 30;
 
 	public CustomerContactVerification() {
 	}
@@ -211,9 +213,14 @@ public class CustomerContactVerification implements java.io.Serializable {
 	}
 
 	public boolean hasExpired() {
+		long intrval = Constants.TimeInterval.DAY;
+		if (ContactType.WHATSAPP.equals(contactType)) {
+			intrval = intrval * EXPIRY_DAY_WHATS_APP;
+		}
+
 		return (ArgUtil.isEmpty(this.getSendDate())
-				&& TimeUtils.isExpired(this.getCreatedDate(), Constants.TimeInterval.DAY))
-				|| TimeUtils.isExpired(this.getSendDate(), Constants.TimeInterval.DAY);
+				&& TimeUtils.isExpired(this.getCreatedDate(), intrval))
+				|| TimeUtils.isExpired(this.getSendDate(), intrval);
 	}
 
 	public boolean hasVerified() {

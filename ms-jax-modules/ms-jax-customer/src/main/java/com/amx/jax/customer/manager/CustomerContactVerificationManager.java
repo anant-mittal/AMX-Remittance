@@ -35,6 +35,7 @@ import com.amx.jax.userservice.service.CustomerVerificationService;
 import com.amx.jax.util.AmxDBConstants;
 import com.amx.jax.util.AmxDBConstants.Status;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.CollectionUtil;
 import com.amx.utils.Constants;
 import com.amx.utils.EntityDtoUtil;
 import com.amx.utils.Random;
@@ -73,18 +74,28 @@ public class CustomerContactVerificationManager {
 	}
 
 	public List<CustomerContactVerification> getValidCustomerContactVerificationsByCustomerId(BigDecimal customerId,
-			ContactType contactType, String contact) {
+			ContactType contactType, String contact, int validDays) {
 		Calendar cal = Calendar.getInstance();
-		if (ContactType.WHATSAPP.equals(contactType)) {
-			cal.add(Calendar.DATE, -30);
-		} else {
-			cal.add(Calendar.DATE, -1);
-		}
+		cal.add(Calendar.DATE, -1 * validDays);
 		java.util.Date oneDay = new java.util.Date(cal.getTimeInMillis());
 		List<CustomerContactVerification> links = customerContactVerificationRepository.getByContact(customerId,
 				contactType,
 				contact, oneDay);
 		return links;
+	}
+
+	public List<CustomerContactVerification> getValidCustomerContactVerificationsByCustomerId(BigDecimal customerId,
+			ContactType contactType, String contact) {
+		Calendar cal = Calendar.getInstance();
+		if (ContactType.WHATSAPP.equals(contactType)) {
+			cal.add(Calendar.DATE, -1 * CustomerContactVerification.EXPIRY_DAY_WHATS_APP);
+			return this.getValidCustomerContactVerificationsByCustomerId(customerId, contactType, contact,
+					CustomerContactVerification.EXPIRY_DAY_WHATS_APP);
+		} else {
+			return this.getValidCustomerContactVerificationsByCustomerId(customerId, contactType, contact,
+					CustomerContactVerification.EXPIRY_DAY);
+
+		}
 	}
 
 	public CustomerContactVerification getValidCustomerContactVerificationByCustomerId(BigDecimal customerId,
@@ -125,8 +136,8 @@ public class CustomerContactVerificationManager {
 		if (!ArgUtil.isEmpty(actor)) {
 			link.setCreatedById(actor.getActorIdAsBigDecimal());
 			link.setCreatedByType(actor.getActorType());
-			//link.setSendById(actor.getActorIdAsBigDecimal());
-			//link.setSendByType(actor.getActorType());
+			// link.setSendById(actor.getActorIdAsBigDecimal());
+			// link.setSendByType(actor.getActorType());
 		}
 
 		try {
@@ -153,7 +164,7 @@ public class CustomerContactVerificationManager {
 			List<CustomerContactVerification> oldlinks = getValidCustomerContactVerificationsByCustomerId(
 					c.getCustomerId(),
 					contactType,
-					link.getContactValue());
+					link.getContactValue(), CustomerContactVerification.EXPIRY_DAY);
 
 			if (!ArgUtil.isEmpty(oldlinks) && oldlinks.size() > 3) {
 				throw new GlobalException(JaxError.SEND_OTP_LIMIT_EXCEEDED,
@@ -379,7 +390,7 @@ public class CustomerContactVerificationManager {
 	 */
 	public CustomerContactVerification verifyByContact(String identity, ContactType type, String contact) {
 
-		Customer c = customerRepository.getCustomerOneByIdentityInt(identity);
+		Customer c = CollectionUtil.getOne(customerRepository.findActiveCustomers(identity));
 
 		CustomerContactVerification link = getValidCustomerContactVerificationByCustomerId(c.getCustomerId(), type,
 				contact);

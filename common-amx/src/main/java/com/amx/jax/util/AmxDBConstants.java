@@ -196,6 +196,10 @@ public class AmxDBConstants {
 	public static final String  COMM_INCLUDE= "I";
 	public static final String COMM_EXCLUDE="E";
 	
+
+	/** added by rabil  for corporate remittance**/
+	public static final String  CORPORATE= "C";
+
 	public static final String BPI_GIFT="GIFT";
 	
 	public static final String TELEX_TRANFER = "T";

@@ -28,6 +28,7 @@ public class PersonInfo extends AbstractModel implements Cloneable {
 	private String whatsAppNumber;
 	private String prefixCodeMobile;
 	private String whatsappPrefixCode;
+	private String referallId;
 	private String emailVerified;
 	private BigDecimal identityTypeId;
 	
@@ -207,6 +208,14 @@ public class PersonInfo extends AbstractModel implements Cloneable {
 
 	public void setWhatsAppNumber(String whatsAppNumber) {
 		this.whatsAppNumber = whatsAppNumber;
+	}
+	
+	public String getReferallId() {
+		return referallId;
+	}
+
+	public void setReferralId(String referralId) {
+		this.referallId = referralId;
 	}
 
 	public String getEmailVerified() {

@@ -160,7 +160,7 @@
     	  feedbackView.classList.add("dn");
           ratingView.classList.remove('dn');
       }
-
+		
       function submitFeedback(){
         if(document.getElementById('submit').classList.contains('disable')) return; 
       	var reqObj = {
@@ -168,7 +168,7 @@
       		"ratingRemark": document.getElementById('feedbackInput').value,
       		"remittanceTransactionId": ratingData.trnxId
       	}
-      	makeAjaxCall('/pub/remitt/tranx/rating?veryCode=' + ratingData.verCode,'POST', JSON.stringify(reqObj),resolveFeedbackPost,rejectFeedbackPost)
+      	makeAjaxCall('/pub/rating/'+ ratingData.prodType +'/submit?veryCode=' + ratingData.verCode,'POST', JSON.stringify(reqObj),resolveFeedbackPost,rejectFeedbackPost)
       }
 
       function resolveFeedbackPost(respJson){

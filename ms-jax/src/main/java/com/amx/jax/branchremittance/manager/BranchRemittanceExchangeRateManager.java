@@ -324,6 +324,10 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 			result.setCustomerDiscountDetails(sellRateDetail.getCustomerDiscountDetails());
 			result.setDiscountAvailed(sellRateDetail.isDiscountAvailed());
 			result.setCostRateLimitReached(sellRateDetail.isCostRateLimitReached());
+			result.setDiffInBetterRateFcAmount(sellRateDetail.getDiffInBetterRateFcAmount());
+			result.setBetterRateAvailable(sellRateDetail.isBetterRateAvailable());
+			result.setBetterRateAmountSlab(sellRateDetail.getBetterRateAmountSlab());
+			
 			BigDecimal commission =null;
 			if(prType.equals(PRICE_TYPE.NO_BENE_DEDUCT)) {
 			 commission =trnxRoutingDetails.getChargeAmount();

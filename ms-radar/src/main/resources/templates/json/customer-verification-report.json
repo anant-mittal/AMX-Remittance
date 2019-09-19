@@ -1,6 +1,6 @@
 {
   "aggs": {
-    "2_cust_id": {
+    "custId": {
       "terms": {
         "field": "logmap.cust.id",
         "size": 100000,
@@ -9,7 +9,7 @@
         }
       },
       "aggs": {
-        "3_contactType": {
+        "contactType": {
           "terms": {
             "field": "logmap.contactType.keyword",
             "size": 5,
@@ -18,12 +18,7 @@
             }
           },
           "aggs": {
-            "1_customer": {
-              "cardinality": {
-                "field": "logmap.cust.id"
-              }
-            },
-            "5_event": {
+            "eventType": {
               "terms": {
                 "field": "logmap.desc.keyword",
                 "size": 50,
@@ -33,31 +28,12 @@
                 "missing": "__missing__"
               },
               "aggs": {
-                "1": {
+                "uCount": {
                   "cardinality": {
                     "field": "logmap.cust.id"
                   }
                 },
-                "4": {
-                  "top_hits": {
-                    "docvalue_fields": [
-                      {
-                        "field": "logmap.actor.username.keyword",
-                        "format": "use_field_mapping"
-                      }
-                    ],
-                    "_source": "logmap.actor.username.keyword",
-                    "size": 1,
-                    "sort": [
-                      {
-                        "@timestamp": {
-                          "order": "desc"
-                        }
-                      }
-                    ]
-                  }
-                },
-                "6": {
+                "branchName": {
                   "top_hits": {
                     "docvalue_fields": [
                       {
@@ -76,7 +52,7 @@
                     ]
                   }
                 },
-                "7": {
+                "area": {
                   "top_hits": {
                     "docvalue_fields": [
                       {
@@ -85,6 +61,25 @@
                       }
                     ],
                     "_source": "logmap.actor.areaId",
+                    "size": 1,
+                    "sort": [
+                      {
+                        "@timestamp": {
+                          "order": "desc"
+                        }
+                      }
+                    ]
+                  }
+                },
+                "branchUser": {
+                  "top_hits": {
+                    "docvalue_fields": [
+                      {
+                        "field": "logmap.actor.username.keyword",
+                        "format": "use_field_mapping"
+                      }
+                    ],
+                    "_source": "logmap.actor.username.keyword",
                     "size": 1,
                     "sort": [
                       {
@@ -160,5 +155,17 @@
       "should": [],
       "must_not": []
     }
-  }
+  },
+  "pivot" : [
+  	{
+	 "rows" : ["custId", "contactType"],
+	 "cols" : ["eventType"],
+	 "vals" : ["any areaId", "any branchName", "any branchUser", "ucount custId AS uCount", "count * AS total"]
+  	},
+  	{
+	 "rows" : ["areaId_CONTACT_VERF_INIT:DONE AS areaId DEFAULT -", "branchName_CONTACT_VERF_INIT:DONE AS branchName DEFAULT -","branchUser_CONTACT_VERF_INIT:DONE AS branchUser DEFAULT SYSTEM"],
+	 "cols" : ["contactType"],
+	 "vals" : ["sum uCount_CONTACT_VERF_INIT:DONE AS verification", "sum uCount_CONTACT_VERF_COMPLETE:DONE AS Confirmed"]
+  	}
+  ]
 }
