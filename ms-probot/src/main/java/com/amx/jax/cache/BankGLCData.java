@@ -6,6 +6,7 @@ import java.util.List;
 import com.amx.jax.pricer.dbmodel.TreasuryFundTimeImpact;
 import com.amx.jax.pricer.dbmodel.ViewExGLCBAL;
 import com.amx.jax.pricer.dbmodel.ViewExGLCBalProvisional;
+import com.amx.jax.pricer.dto.EstimatedDeliveryDetails;
 
 public class BankGLCData {
 
@@ -27,6 +28,8 @@ public class BankGLCData {
 	private TreasuryFundTimeImpact fundedTimeImpact;
 
 	private TreasuryFundTimeImpact outOfFundTimeImpact;
+	
+	private EstimatedDeliveryDetails estmdFundTimeDelay;
 
 	public List<ViewExGLCBAL> getGlAccountsDetails() {
 		return glAccountsDetails;
@@ -114,6 +117,14 @@ public class BankGLCData {
 
 	public void setOutOfFundTimeImpact(TreasuryFundTimeImpact outOfFundTimeImpact) {
 		this.outOfFundTimeImpact = outOfFundTimeImpact;
+	}
+
+	public EstimatedDeliveryDetails getEstmdFundTimeDelay() {
+		return estmdFundTimeDelay;
+	}
+
+	public void setEstmdFundTimeDelay(EstimatedDeliveryDetails estmdFundTimeDelay) {
+		this.estmdFundTimeDelay = estmdFundTimeDelay;
 	}
 	
 	

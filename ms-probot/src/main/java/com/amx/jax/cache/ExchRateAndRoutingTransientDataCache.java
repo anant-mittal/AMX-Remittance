@@ -17,6 +17,7 @@ import com.amx.jax.pricer.dbmodel.TreasuryFundTimeImpact;
 import com.amx.jax.pricer.dbmodel.ViewExGLCBAL;
 import com.amx.jax.pricer.dbmodel.ViewExGLCBalProvisional;
 import com.amx.jax.pricer.dto.BankDetailsDTO;
+import com.amx.jax.pricer.dto.EstimatedDeliveryDetails;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
 import com.amx.jax.pricer.var.PricerServiceConstants.CUSTOMER_CATEGORY;
 import com.amx.jax.pricer.var.PricerServiceConstants.SERVICE_GROUP;
@@ -361,14 +362,16 @@ public class ExchRateAndRoutingTransientDataCache {
 
 			bankGLCData.setAdjustedLcCurBal(adjustedLcCurBal);
 			bankGLCData.setAdjustedFcCurBal(adjustedFcCurBal);
-			
-			System.out.println("\\n From ExchRateAndRouting Cache");
-			System.out.println(" Max Lc Bal ==> " + maxLcCurBal);
-			System.out.println(" Max Fc Bal ==> " + maxFcCurBal);
 
-			System.out.println(" Adjusted Lc Bal ==> " + bankGLCData.getAdjustedLcCurBal());
-			System.out.println(" Adjusted Fc Bal ==> " + bankGLCData.getAdjustedFcCurBal());
-			System.out.println(" Exchange Rate ====> " + avgGlcCostRate);
+			// System.out.println("\\n From ExchRateAndRouting Cache");
+			// System.out.println(" Max Lc Bal ==> " + maxLcCurBal);
+			// System.out.println(" Max Fc Bal ==> " + maxFcCurBal);
+
+			// System.out.println(" Adjusted Lc Bal ==> " +
+			// bankGLCData.getAdjustedLcCurBal());
+			// System.out.println(" Adjusted Fc Bal ==> " +
+			// bankGLCData.getAdjustedFcCurBal());
+			// System.out.println(" Exchange Rate ====> " + avgGlcCostRate);
 		}
 
 		if (isFc) {
@@ -391,6 +394,24 @@ public class ExchRateAndRoutingTransientDataCache {
 			return bankGLCData.getFundedTimeImpact();
 		} else {
 			return bankGLCData.getOutOfFundTimeImpact();
+		}
+	}
+
+	public EstimatedDeliveryDetails getTreasuryFTDelay(BigDecimal bankId) {
+		BankGLCData bankGLCData = this.bankGlcBalMap.get(bankId);
+
+		if (null != bankGLCData) {
+			return bankGLCData.getEstmdFundTimeDelay();
+		}
+
+		return null;
+	}
+
+	public void setTreasuryFTDelay(BigDecimal bankId, EstimatedDeliveryDetails treasuryFTDelay) {
+		BankGLCData bankGLCData = this.bankGlcBalMap.get(bankId);
+
+		if (null != bankGLCData) {
+			bankGLCData.setEstmdFundTimeDelay(treasuryFTDelay);
 		}
 	}
 

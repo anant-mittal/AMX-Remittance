@@ -941,7 +941,14 @@ public final class DateUtil {
 		int hourOfDay = Integer.parseInt(hrMinArray[0]);
 		int minOfHr = 0;
 		if (hrMinArray.length > 1) {
-			minOfHr = Integer.parseInt(hrMinArray[1]);
+			String paddedMin;
+			if (hrMinArray[1].length() == 1) {
+				paddedMin = hrMinArray[1] + "0";
+			} else {
+				paddedMin = hrMinArray[1];
+			}
+
+			minOfHr = Integer.parseInt(paddedMin);
 		}
 
 		return getHrMinIntVal(hourOfDay, minOfHr);
