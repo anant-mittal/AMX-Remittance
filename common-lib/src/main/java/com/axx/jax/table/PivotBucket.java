@@ -44,6 +44,21 @@ public class PivotBucket {
 		return sum;
 	}
 
+	public Object avg(String rowId) {
+		BigDecimal sum = new BigDecimal(0);
+		int count = 0;
+		for (Map<String, Object> map : rows) {
+			BigDecimal x = ArgUtil.parseAsBigDecimal(map.get(rowId), BigDecimal.ZERO);
+			sum = sum.add(x);
+			count++;
+		}
+		if (count > 0) {
+			return sum.divide(new BigDecimal(count));
+		} else {
+			return 0;
+		}
+	}
+
 	public Object count() {
 		return rows.size();
 	}
