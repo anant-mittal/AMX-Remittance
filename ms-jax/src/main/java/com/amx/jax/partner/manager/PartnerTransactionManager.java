@@ -1280,7 +1280,20 @@ public class PartnerTransactionManager extends AbstractModel {
 			}
 		}
 		model.setForeignCurrencyQuote(remittanceTransactionView.getCurrencyQuoteName());
-		model.setCustomerName(remittanceTransactionView.getFirstName().concat(" ").concat(remittanceTransactionView.getMiddleName()).concat(" ").concat(remittanceTransactionView.getLastName()));
+		StringBuffer customerName = new StringBuffer();
+		if(remittanceTransactionView.getFirstName() != null) {
+			customerName.append(remittanceTransactionView.getFirstName());
+			if(remittanceTransactionView.getMiddleName() != null) {
+				customerName.append(" ");
+				customerName.append(remittanceTransactionView.getMiddleName());
+			}
+			if(remittanceTransactionView.getLastName() != null) {
+				customerName.append(" ");
+				customerName.append(remittanceTransactionView.getLastName());
+			}
+			model.setCustomerName(customerName.toString());
+		}
+		//model.setCustomerName(remittanceTransactionView.getFirstName().concat(" ").concat(remittanceTransactionView.getMiddleName()).concat(" ").concat(remittanceTransactionView.getLastName()));
 		model.setCustomerReference(remittanceTransactionView.getCustomerReference());
 		model.setCustomerContact(remittanceTransactionView.getContactNumber());
 		model.setExceptionMessage(remitTrnxSPDTO.getActionInd() + " : " + remitTrnxSPDTO.getResponseDescription() + " : " + remittanceTransactionView.getCountryBranchName() + " : " +remittanceTransactionView.getCreatedBy());
