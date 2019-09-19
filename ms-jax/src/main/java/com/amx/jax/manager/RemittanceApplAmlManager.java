@@ -55,11 +55,12 @@ public class RemittanceApplAmlManager {
 	RoutingProcedureDao routingProcedureDao;
 	
 	public RemitApplAmlModel createRemittanceApplAml(RemittanceApplication remittanceApplication,RemittanceAppBenificiary remittanceAppBeneficairy){
-		RemitApplAmlModel amlModel= new  RemitApplAmlModel();
+		  RemitApplAmlModel amlModel = null;
 		BenificiaryListView beneficiaryDT = (BenificiaryListView) remitApplParametersMap.get("BENEFICIARY");
 		AmlCheckResponseDto amlDto = beneRiskAml(beneficiaryDT,remittanceAppBeneficairy);
 		
 		  if(amlDto!=null &&  !StringUtils.isBlank(amlDto.getHighValueTrnxFlag()) && !StringUtils.isBlank(amlDto.getStopTrnxFlag())) { 
+			  amlModel= new  RemitApplAmlModel();
 			  amlModel.setCompanyId(metaData.getCompanyId());
 			  amlModel.setCountryId(remittanceApplication.getFsCountryMasterByApplicationCountryId().getCountryId());
 			  amlModel.setExRemittanceAppfromAml(remittanceApplication);		   
