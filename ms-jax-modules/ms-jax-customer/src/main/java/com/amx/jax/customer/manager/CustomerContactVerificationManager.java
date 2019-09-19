@@ -74,18 +74,28 @@ public class CustomerContactVerificationManager {
 	}
 
 	public List<CustomerContactVerification> getValidCustomerContactVerificationsByCustomerId(BigDecimal customerId,
-			ContactType contactType, String contact) {
+			ContactType contactType, String contact, int validDays) {
 		Calendar cal = Calendar.getInstance();
-		if (ContactType.WHATSAPP.equals(contactType)) {
-			cal.add(Calendar.DATE, -1 * CustomerContactVerification.EXPIRY_DAY_WHATS_APP);
-		} else {
-			cal.add(Calendar.DATE, -1 * CustomerContactVerification.EXPIRY_DAY);
-		}
+		cal.add(Calendar.DATE, -1 * validDays);
 		java.util.Date oneDay = new java.util.Date(cal.getTimeInMillis());
 		List<CustomerContactVerification> links = customerContactVerificationRepository.getByContact(customerId,
 				contactType,
 				contact, oneDay);
 		return links;
+	}
+
+	public List<CustomerContactVerification> getValidCustomerContactVerificationsByCustomerId(BigDecimal customerId,
+			ContactType contactType, String contact) {
+		Calendar cal = Calendar.getInstance();
+		if (ContactType.WHATSAPP.equals(contactType)) {
+			cal.add(Calendar.DATE, -1 * CustomerContactVerification.EXPIRY_DAY_WHATS_APP);
+			return this.getValidCustomerContactVerificationsByCustomerId(customerId, contactType, contact,
+					CustomerContactVerification.EXPIRY_DAY_WHATS_APP);
+		} else {
+			return this.getValidCustomerContactVerificationsByCustomerId(customerId, contactType, contact,
+					CustomerContactVerification.EXPIRY_DAY);
+
+		}
 	}
 
 	public CustomerContactVerification getValidCustomerContactVerificationByCustomerId(BigDecimal customerId,
@@ -150,7 +160,7 @@ public class CustomerContactVerificationManager {
 			List<CustomerContactVerification> oldlinks = getValidCustomerContactVerificationsByCustomerId(
 					c.getCustomerId(),
 					contactType,
-					link.getContactValue());
+					link.getContactValue(), CustomerContactVerification.EXPIRY_DAY);
 
 			if (!ArgUtil.isEmpty(oldlinks) && oldlinks.size() > 3) {
 				throw new GlobalException(JaxError.SEND_OTP_LIMIT_EXCEEDED,
