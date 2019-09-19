@@ -93,7 +93,8 @@ public class FcSaleDeliveryService {
 	JaxConfigService jaxConfigService; 
 	@Autowired
 	CustomerDao custDao;
-	
+	@Autowired
+	PushNotifyClient pushNotifyClient;
 	@Autowired
 	UserContactVerificationManager userContactVerificationManager;
 
