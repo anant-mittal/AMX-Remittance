@@ -1984,11 +1984,11 @@ public class FcSaleBranchOrderManager {
 				if (splitStartTime != null) {
 					if (splitStartTime.length >= 2 && splitStartTime[1] != null) {
 						if (new BigDecimal(splitStartTime[1]).compareTo(BigDecimal.ZERO) == 0
-								|| new BigDecimal(splitStartTime[1]).compareTo(new BigDecimal(30)) == 0) {
+								|| new BigDecimal(splitStartTime[1]).compareTo(new BigDecimal(50)) == 0) {
 							// continue
 						} else {
-							logger.info("Please ener minutes in 00 or 30 only for Home Start time");
-							throw new GlobalException("Please ener minutes in 00 or 30 only for Home Start time");
+							logger.info("Please enter start time in multiples of 30 minutes");
+							throw new GlobalException("Please enter start time in multiples of 30 minutes");
 						}
 					}
 				}
@@ -1998,11 +1998,11 @@ public class FcSaleBranchOrderManager {
 				if (splitStartTime != null) {
 					if (splitStartTime.length >= 2 && splitStartTime[1] != null) {
 						if (new BigDecimal(splitStartTime[1]).compareTo(BigDecimal.ZERO) == 0
-								|| new BigDecimal(splitStartTime[1]).compareTo(new BigDecimal(30)) == 0) {
+								|| new BigDecimal(splitStartTime[1]).compareTo(new BigDecimal(50)) == 0) {
 							// continue
 						} else {
-							logger.info("Please ener minutes in 00 or 30 only for Home End time");
-							throw new GlobalException("Please ener minutes in 00 or 30 only for Home End time");
+							logger.info("Please enter EndTime in multiples of 30 minutes");
+							throw new GlobalException("Please enter EndTime in multiples of 30 minutes");
 						}
 					}
 				}
@@ -2013,11 +2013,11 @@ public class FcSaleBranchOrderManager {
 				if (splitStartTime != null) {
 					if (splitStartTime.length >= 2 && splitStartTime[1] != null) {
 						if (new BigDecimal(splitStartTime[1]).compareTo(BigDecimal.ZERO) == 0
-								|| new BigDecimal(splitStartTime[1]).compareTo(new BigDecimal(30)) == 0) {
+								|| new BigDecimal(splitStartTime[1]).compareTo(new BigDecimal(50)) == 0) {
 							// continue
 						} else {
-							logger.info("Please ener minutes in 00 or 30 only for Office Start time");
-							throw new GlobalException("Please ener minutes in 00 or 30 only for Office Start time");
+							logger.info("Please enter Office StartTime in multiples of 30 minutes");
+							throw new GlobalException("Please enter Office StartTime in multiples of 30 minutes");
 						}
 					}
 				}
@@ -2027,11 +2027,11 @@ public class FcSaleBranchOrderManager {
 				if (splitStartTime != null) {
 					if (splitStartTime.length >= 2 && splitStartTime[1] != null) {
 						if (new BigDecimal(splitStartTime[1]).compareTo(BigDecimal.ZERO) == 0
-								|| new BigDecimal(splitStartTime[1]).compareTo(new BigDecimal(30)) == 0) {
+								|| new BigDecimal(splitStartTime[1]).compareTo(new BigDecimal(50)) == 0) {
 							// continue
 						} else {
-							logger.info("Please ener minutes in 00 or 30 only for Office End time");
-							throw new GlobalException("Please ener minutes in 00 or 30 only for Office End time");
+							logger.info("Please enter Office EndTime in multiples of 30 minutes");
+							throw new GlobalException("Please enter Office EndTime in multiples of 30 minutes");
 						}
 					}
 				}

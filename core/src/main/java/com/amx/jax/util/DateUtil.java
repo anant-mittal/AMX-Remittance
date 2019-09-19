@@ -172,6 +172,8 @@ public class DateUtil {
 
 		startTime = RoundUtil.roundBigDecimal(startTime, 2);
 		String[] splitStartTime = startTime.toString().split("\\.");
+		
+				
 		if (splitStartTime != null) {
 			if (splitStartTime.length >= 1 && splitStartTime[0] != null) {
 				startHour = splitStartTime[0];
@@ -184,6 +186,9 @@ public class DateUtil {
 			}
 			if (startMinutes != null) {
 				startTimeMinutes = new BigDecimal(startMinutes);
+				if(startTimeMinutes != null && startTimeMinutes.compareTo(new BigDecimal(50)) == 0) {
+					startTimeMinutes = new BigDecimal(30);
+				}
 			}
 		}
 
@@ -193,7 +198,7 @@ public class DateUtil {
 			if (n == 0) {
 				if (hour.compareTo(startTimeHour) >= 0) {
 					if (startTimeMinutes.compareTo(BigDecimal.ZERO) != 0 && minutes.compareTo(BigDecimal.ZERO) != 0) {
-						String estStartTime = hour.toString().concat(".").concat(startMinutes);
+						String estStartTime = hour.toString().concat(".").concat(startTimeMinutes.toString());
 						startTime = new BigDecimal(estStartTime).add(timeIntVal);
 					} else {
 						String estStartTime = hour.toString().concat(".").concat("00");
@@ -202,7 +207,7 @@ public class DateUtil {
 				}
 			} else {
 				if (startTimeMinutes.compareTo(BigDecimal.ZERO) != 0 && minutes.compareTo(BigDecimal.ZERO) != 0) {
-					String estStartTime = startTimeNToday.toString().concat(".").concat(startMinutes);
+					String estStartTime = startTimeNToday.toString().concat(".").concat(startTimeMinutes.toString());
 					startTime = new BigDecimal(estStartTime);
 				} else {
 					String estStartTime = startTimeNToday.toString().concat(".").concat("00");
