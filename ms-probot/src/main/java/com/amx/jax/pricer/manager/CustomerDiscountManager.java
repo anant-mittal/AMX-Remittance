@@ -272,7 +272,8 @@ public class CustomerDiscountManager {
 
 							// System.out.println(" Bumpd Val ==>" + bumpedFcVal);
 
-							if (bumpedFcVal.compareTo(nextEntry.getValue().getFromAmount()) >= 0) {
+							if ((bumpedFcVal.compareTo(nextEntry.getValue().getFromAmount()) >= 0)
+									&& amountSlabPips.compareTo(nextEntry.getValue().getPipsNo()) < 0) {
 
 								bankExRateDetail.setBetterRateAvailable(true);
 								bankExRateDetail.setBetterRateAmountSlab(nextEntry.getValue().getFromAmount());
@@ -427,8 +428,8 @@ public class CustomerDiscountManager {
 							+ currencyMasterModel.getCurrencyId());
 				}
 			} else {
-				LOGGER.warn(
-						" ****** MAJOR : Currency Group is Null for Currency Id : " + currencyMasterModel.getCurrencyId());
+				LOGGER.warn(" ****** MAJOR : Currency Group is Null for Currency Id : "
+						+ currencyMasterModel.getCurrencyId());
 			}
 		}
 
@@ -456,8 +457,8 @@ public class CustomerDiscountManager {
 		CustomerDiscountsView customerDiscountsView = customerDiscountDao.fetchCustomerDiscount(
 				customerDiscountReqDTO.getCustomerId(), DISCOUNT_TYPE.CUSTOMER_CATEGORY.getTypeKey(), curGroup.getId());
 
-		if (customerDiscountsView != null && customerDiscountsView.getDiscountType() != null && customerDiscountsView.getDiscountType()
-				.equalsIgnoreCase(DISCOUNT_TYPE.CUSTOMER_CATEGORY.getTypeKey())) {
+		if (customerDiscountsView != null && customerDiscountsView.getDiscountType() != null && customerDiscountsView
+				.getDiscountType().equalsIgnoreCase(DISCOUNT_TYPE.CUSTOMER_CATEGORY.getTypeKey())) {
 			ccDiscountPips = (null != customerDiscountsView.getDiscountPips() ? customerDiscountsView.getDiscountPips()
 					: BigDecimal.ZERO);
 			// Customer Category Info

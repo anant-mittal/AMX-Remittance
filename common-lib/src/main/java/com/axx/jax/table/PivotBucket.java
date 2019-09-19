@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.amx.utils.ArgUtil;
+import com.amx.utils.Constants;
 
 public class PivotBucket {
 	public List<Map<String, Object>> rows = new ArrayList<Map<String, Object>>();
@@ -24,14 +25,14 @@ public class PivotBucket {
 		return this.pivotcols.get(colId);
 	}
 
-	public Object any(String rowId) {
+	public Object any(String rowId, Object defaultValue) {
 		for (Map<String, Object> map : rows) {
-			Object x = map.get(rowId);
+			Object x = map.getOrDefault(rowId, defaultValue);
 			if (ArgUtil.is(x)) {
 				return x;
 			}
 		}
-		return null;
+		return defaultValue;
 	}
 
 	public Object sum(String rowId) {
