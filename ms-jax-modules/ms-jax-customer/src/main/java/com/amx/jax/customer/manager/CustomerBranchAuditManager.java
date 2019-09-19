@@ -43,46 +43,48 @@ public class CustomerBranchAuditManager {
 			auditService.log(auditEvent);
 		}
 
-		if (request.getPersonalDetailInfo().getCustomerSignature() != null) {
-			CActivityEvent auditEvent = new CActivityEvent(CActivityEvent.Type.PROFILE_UPDATE).field(CUSTOMER_SIGNATURE);
-			auditEvent.setActorId(actor);
-			auditEvent.to(request.getPersonalDetailInfo().getCustomerSignature());
-			auditService.log(auditEvent);
-		}
+		if (request.getPersonalDetailInfo() != null) {
+			if (request.getPersonalDetailInfo().getCustomerSignature() != null) {
+				CActivityEvent auditEvent = new CActivityEvent(CActivityEvent.Type.PROFILE_UPDATE).field(CUSTOMER_SIGNATURE);
+				auditEvent.setActorId(actor);
+				auditEvent.to(request.getPersonalDetailInfo().getCustomerSignature());
+				auditService.log(auditEvent);
+			}
 
-		if (request.getPersonalDetailInfo().getEmail() != null) {
-			CActivityEvent auditEvent = new CActivityEvent(CActivityEvent.Type.PROFILE_UPDATE).field(EMAIL);
-			auditEvent.setActorId(actor);
-			auditEvent.to(request.getPersonalDetailInfo().getEmail());
-			auditService.log(auditEvent);
-		}
+			if (request.getPersonalDetailInfo().getEmail() != null) {
+				CActivityEvent auditEvent = new CActivityEvent(CActivityEvent.Type.PROFILE_UPDATE).field(EMAIL);
+				auditEvent.setActorId(actor);
+				auditEvent.to(request.getPersonalDetailInfo().getEmail());
+				auditService.log(auditEvent);
+			}
 
-		if (request.getPersonalDetailInfo().getMobile() != null) {
-			CActivityEvent auditEvent = new CActivityEvent(CActivityEvent.Type.PROFILE_UPDATE).field(MOBILE);
-			auditEvent.setActorId(actor);
-			auditEvent.to(request.getPersonalDetailInfo().getMobile());
-			auditService.log(auditEvent);
-		}
+			if (request.getPersonalDetailInfo().getMobile() != null) {
+				CActivityEvent auditEvent = new CActivityEvent(CActivityEvent.Type.PROFILE_UPDATE).field(MOBILE);
+				auditEvent.setActorId(actor);
+				auditEvent.to(request.getPersonalDetailInfo().getMobile());
+				auditService.log(auditEvent);
+			}
 
-		if (request.getPersonalDetailInfo().getWatsAppMobileNo() != null) {
-			CActivityEvent auditEvent = new CActivityEvent(CActivityEvent.Type.PROFILE_UPDATE).field(WHATSAPP);
-			auditEvent.setActorId(actor);
-			auditEvent.to(request.getPersonalDetailInfo().getWatsAppMobileNo());
-			auditService.log(auditEvent);
-		}
+			if (request.getPersonalDetailInfo().getWatsAppMobileNo() != null) {
+				CActivityEvent auditEvent = new CActivityEvent(CActivityEvent.Type.PROFILE_UPDATE).field(WHATSAPP);
+				auditEvent.setActorId(actor);
+				auditEvent.to(request.getPersonalDetailInfo().getWatsAppMobileNo());
+				auditService.log(auditEvent);
+			}
 
-		if (request.getPersonalDetailInfo().getDateOfBirth() != null) {
-			CActivityEvent auditEvent = new CActivityEvent(CActivityEvent.Type.PROFILE_UPDATE).field(DOB);
-			auditEvent.setActorId(actor);
-			auditEvent.to(request.getPersonalDetailInfo().getDateOfBirth());
-			auditService.log(auditEvent);
-		}
+			if (request.getPersonalDetailInfo().getDateOfBirth() != null) {
+				CActivityEvent auditEvent = new CActivityEvent(CActivityEvent.Type.PROFILE_UPDATE).field(DOB);
+				auditEvent.setActorId(actor);
+				auditEvent.to(request.getPersonalDetailInfo().getDateOfBirth());
+				auditService.log(auditEvent);
+			}
 
-		if (request.getPersonalDetailInfo().getPepsIndicator() != null) {
-			CActivityEvent auditEvent = new CActivityEvent(CActivityEvent.Type.PROFILE_UPDATE).field(PEPS_IND);
-			auditEvent.setActorId(actor);
-			auditEvent.to(request.getPersonalDetailInfo().getPepsIndicator());
-			auditService.log(auditEvent);
+			if (request.getPersonalDetailInfo().getPepsIndicator() != null) {
+				CActivityEvent auditEvent = new CActivityEvent(CActivityEvent.Type.PROFILE_UPDATE).field(PEPS_IND);
+				auditEvent.setActorId(actor);
+				auditEvent.to(request.getPersonalDetailInfo().getPepsIndicator());
+				auditService.log(auditEvent);
+			}
 		}
 
 		if (request.getLocalAddressDetail() != null) {

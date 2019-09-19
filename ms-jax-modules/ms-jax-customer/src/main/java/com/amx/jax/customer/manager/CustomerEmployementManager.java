@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 import com.amx.jax.dal.ArticleDao;
 import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dbmodel.Customer;
-import com.amx.jax.dbmodel.CustomerCoreDetailsView;
 import com.amx.jax.dbmodel.EmployeeDetails;
 import com.amx.jax.model.request.CustomerEmploymentDetails;
 import com.amx.jax.model.request.UpdateCustomerEmploymentDetailsReq;
@@ -37,18 +36,17 @@ public class CustomerEmployementManager {
 		// --- Customer Employment Data
 		CustomerEmploymentDetails employmentDetails = new CustomerEmploymentDetails();
 		EmployeeDetails employmentData = customerEmployeeDetailsRepository.getCustomerEmploymentData(customer);
-		String articleDesc=null;
-		
+		String articleDesc = null;
+
 		if (null != customer.getFsArticleDetails()) {
 			if (null != customer.getFsArticleDetails().getArticleDetailId()) {
 				articleDesc = articleDao.getArticleDesc(customer);
 			}
 		}
-		
-		CustomerCoreDetailsView customercoreView = customerCoreDetailsRepositroy.findByCustomerID(customer.getCustomerId());
+
 		if (employmentData != null) {
 			employmentDetails.setEmployer(employmentData.getEmployerName());
-			if(employmentData.getFsBizComponentDataByEmploymentTypeId() != null) {
+			if (employmentData.getFsBizComponentDataByEmploymentTypeId() != null) {
 				employmentDetails.setEmploymentTypeId(employmentData.getFsBizComponentDataByEmploymentTypeId().getComponentDataId());
 			}
 			if (employmentData.getFsBizComponentDataByOccupationId() != null) {
@@ -56,17 +54,14 @@ public class CustomerEmployementManager {
 			}
 			employmentDetails.setStateId(employmentData.getFsStateMaster());
 			employmentDetails.setDistrictId(employmentData.getFsDistrictMaster());
-			if(employmentData.getFsCountryMaster() != null) {
+			if (employmentData.getFsCountryMaster() != null) {
 				employmentDetails.setCountryId(employmentData.getFsCountryMaster().getCountryId());
 			}
 			employmentDetails.setArticleDetailsId(customer.getFsArticleDetails().getArticleDetailId());
 			employmentDetails.setArticleId(customer.getFsArticleDetails().getFsArticleMaster().getArticleId());
 			employmentDetails.setIncomeRangeId(customer.getFsIncomeRangeMaster().getIncomeRangeId());
-			employmentDetails.setDesignation(customercoreView.getDesignation());
-			if(articleDesc !=null)
-			{
-				employmentDetails.setArticleDesc(articleDesc);
-			}
+			employmentDetails.setDesignation(articleDesc);
+			employmentDetails.setArticleDesc(articleDesc);
 		}
 		return employmentDetails;
 	}
