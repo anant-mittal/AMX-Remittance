@@ -29,6 +29,7 @@ import com.amx.jax.client.JaxStompClient;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxDbConfig;
 import com.amx.jax.dao.FcSaleApplicationDao;
+import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ShippingAddressDetail;
 import com.amx.jax.dbmodel.fx.FxDeliveryDetailsModel;
 import com.amx.jax.dbmodel.fx.FxDeliveryRemark;
@@ -54,10 +55,13 @@ import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.postman.model.TemplatesMX;
+import com.amx.jax.userservice.dao.CustomerDao;
+import com.amx.jax.userservice.manager.UserContactVerificationManager;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.utils.DateUtil;
 import com.amx.utils.Random;
+import static com.amx.amxlib.constant.NotificationConstants.RESP_DATA_KEY;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -88,7 +92,11 @@ public class FcSaleDeliveryService {
 	@Autowired
 	JaxConfigService jaxConfigService; 
 	@Autowired
+	CustomerDao custDao;
+	@Autowired
 	PushNotifyClient pushNotifyClient;
+	@Autowired
+	UserContactVerificationManager userContactVerificationManager;
 
 
 	/**
@@ -159,7 +167,7 @@ public class FcSaleDeliveryService {
 	 */
 	@Transactional
 	public BoolRespModel markDelivered(FcSaleDeliveryMarkDeliveredRequest fcSaleDeliveryMarkDeliveredRequest) {
-		logger.info("markDelivered request: {}", fcSaleDeliveryMarkDeliveredRequest);
+		logger.debug("markDelivered request: {}", fcSaleDeliveryMarkDeliveredRequest);
 		FxDeliveryDetailsModel deliveryDetail = validateFxDeliveryModel(
 				fcSaleDeliveryMarkDeliveredRequest.getDeliveryDetailSeqId());
 		VwFxDeliveryDetailsModel vwdeliveryDetail = validatetDeliveryDetailView(
@@ -182,6 +190,7 @@ public class FcSaleDeliveryService {
 		logger.debug("FC_ORDER_SUCCESSStart: {emial sending}");
 		logger.info("FC_ORDER_SUCCESSStart: {emial sending}");
 		Email email = new Email();
+		email.setSubject("FC Order Successfully Delivered");
 		email.addTo(pinfo.getEmail());
 		logger.debug("FC_ORDER_SUCCESS: {emial sending}");
 		logger.info("FC_ORDER_SUCCESS: {emial sending}");
@@ -330,7 +339,20 @@ public class FcSaleDeliveryService {
 		
 		fxDeliveryDetailsModel.setOtpValidated(ConstantDocument.Yes);
 		fcSaleApplicationDao.saveDeliveryDetail(fxDeliveryDetailsModel);
+		
+		// ------ Contact Verified ------
+		updateContactVerifyFx(deliveryDetailSeqId, mOtp);
+		
 		return new BoolRespModel(true);
+	}
+
+	private void updateContactVerifyFx(BigDecimal deliveryDetailSeqId, String mOtp) {
+		VwFxDeliveryDetailsModel deliveryDetailModel = validatetDeliveryDetailView(deliveryDetailSeqId);
+		BigDecimal custId = deliveryDetailModel.getCustomerId();
+		Customer customer = custDao.getCustById(custId);
+		if(customer != null) {
+			userContactVerificationManager.setContactVerified(customer, mOtp, null, null);
+		}
 	}
 
 	public List<ResourceDTO> listDeliveryRemark() {
