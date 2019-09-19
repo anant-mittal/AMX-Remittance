@@ -5,6 +5,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.scope.TenantScoped;
+import com.amx.jax.scope.TenantValue;
 
 @Component
 @TenantScoped
@@ -22,6 +23,12 @@ public class SSOConfig {
 	@Value("${server.session.browser.persistent}")
 	boolean browserSessionPersist;
 
+	@TenantValue("${app.sso.login.with.rop}")
+	boolean ropEnabled;
+
+	@TenantValue("${app.sso.login.without.card}")
+	boolean loginWithoutCard;
+
 	public String getAdapterUrl() {
 		return adapterUrl;
 	}
@@ -36,6 +43,14 @@ public class SSOConfig {
 
 	public boolean isBrowserSessionPersist() {
 		return browserSessionPersist;
+	}
+
+	public boolean isRopEnabled() {
+		return ropEnabled;
+	}
+
+	public boolean isLoginWithoutCard() {
+		return loginWithoutCard;
 	}
 
 }

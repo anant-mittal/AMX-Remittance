@@ -27,6 +27,7 @@ import com.amx.jax.AppConstants;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.adapter.DeviceConnectorClient;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.AmxFieldError;
 import com.amx.jax.device.CardData;
 import com.amx.jax.device.DeviceBox;
 import com.amx.jax.device.DeviceConstants;
@@ -121,6 +122,9 @@ public class SSOServerController {
 			adapterUrl = ArgUtil.parseAsString(kooky.getValue(), adapterUrl);
 		}
 		map.put(SSOConstants.ADAPTER_URL, adapterUrl);
+		map.put("tnt", AppContextUtil.getTenant().toString());
+		map.put("loginWithRop", sSOConfig.isRopEnabled());
+		map.put("loginWithoutCard", sSOConfig.isLoginWithoutCard());
 
 		return map;
 	}
@@ -229,7 +233,10 @@ public class SSOServerController {
 				if (appConfig.isSwaggerEnabled() && !ArgUtil.isEmpty(deviceType)) {
 					userClientDto.setDeviceType(deviceType);
 				}
-
+				AmxFieldError x = new AmxFieldError();
+				x.setDescription("Terminal Id is " + sSOTranx.get().getBranchAdapterId());
+				
+				AppContextUtil.addWarning(x);
 				if (!ArgUtil.isEmpty(sSOTranx.get().getBranchAdapterId())) {
 					// Terminal Login
 					DeviceData branchDeviceData = deviceBox.get(sSOTranx.get().getBranchAdapterId());

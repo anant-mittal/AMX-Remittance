@@ -92,9 +92,19 @@
 							</div>
 						</div>
 						<div class="form-col">
-							<label>Scan Smart Card</label>
+							<label>Scan Smart Card
+							<th:block th:switch="${loginWithRop}">
+								<small style="font-weight: 200;" th:case="true">
+							    <a href="http://127.0.0.1:8020/rop"
+									  target="popup" 
+									  onclick="window.open('http://127.0.0.1:8020/rop','popup','width=600,height=600'); return false;"
+								>scan</a></small>
+							</th:block>
+								
+							</label>
 							<div class="input-wrapper">
-								<input type="text" class="scan-input" name="identity" value="" on-keyup="UI.CREDS" clear-error readonly />
+								<input type="text" class="scan-input" name="identity" value="" on-keyup="UI.CREDS" clear-error 
+								th:readonly="${loginWithoutCard==false}" />
 								<div class="error-wrapper">
 									<div class="error-message" step="CREDS"></div>
 								</div>
