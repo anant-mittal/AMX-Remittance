@@ -18,6 +18,7 @@ import com.amx.jax.dbmodel.RemittanceTransactionView;
 import com.amx.jax.dbmodel.partner.RemitApplSrvProv;
 import com.amx.jax.dbmodel.remittance.AdditionalInstructionData;
 import com.amx.jax.dbmodel.remittance.FlexFiledView;
+import com.amx.jax.dbmodel.remittance.RemitApplAmlModel;
 import com.amx.jax.dbmodel.remittance.RemittanceAppBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
@@ -28,6 +29,7 @@ import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.repository.AdditionalInstructionDataRepository;
 import com.amx.jax.repository.IFlexFiledView;
 import com.amx.jax.repository.IPlaceOrderDao;
+import com.amx.jax.repository.IRemitApplAmlRepository;
 import com.amx.jax.repository.IRemitApplSrvProvRepository;
 import com.amx.jax.repository.RemittanceApplicationBeneRepository;
 import com.amx.jax.repository.RemittanceApplicationRepository;
@@ -65,16 +67,24 @@ public class RemittanceApplicationDao {
     @Autowired
 	IRemitApplSrvProvRepository remitApplSrvProvRepository;
     
+    @Autowired
+    IRemitApplAmlRepository applAmlRepository;
+    
 	@Transactional
 	public void saveAllApplicationData(RemittanceApplication app, RemittanceAppBenificiary appBene,
-			List<AdditionalInstructionData> additionalInstrumentData,RemitApplSrvProv remitApplSrvProv) {
+			List<AdditionalInstructionData> additionalInstrumentData,RemitApplSrvProv remitApplSrvProv,RemitApplAmlModel remitApplAml) {
 
-		appRepo.save(app);
+		RemittanceApplication applObj = appRepo.save(app);
 		appBeneRepo.save(appBene);
 		addlInstDataRepo.save(additionalInstrumentData);
 		if (remitApplSrvProv != null) {
 			remitApplSrvProv.setRemittanceApplicationId(app.getRemittanceApplicationId());
 			remitApplSrvProvRepository.save(remitApplSrvProv);
+		}
+		
+		if(remitApplAml!=null) {
+			remitApplAml.setExRemittanceAppfromAml(applObj);
+			applAmlRepository.save(remitApplAml);
 		}
 		logger.info("Application saved in the database, docNo: " + app.getDocumentNo());
 	}

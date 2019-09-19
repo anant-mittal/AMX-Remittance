@@ -54,11 +54,26 @@ public class RemittanceApplAmlManager {
 	@Autowired
 	RoutingProcedureDao routingProcedureDao;
 	
-	public List<RemitApplAmlModel> createRemittanceApplAml(RemittanceApplication remittanceApplication,RemittanceAppBenificiary remittanceAppBeneficairy ){
-		List<RemitApplAmlModel> amlList= new ArrayList<>();
+	public RemitApplAmlModel createRemittanceApplAml(RemittanceApplication remittanceApplication,RemittanceAppBenificiary remittanceAppBeneficairy){
+		RemitApplAmlModel amlModel= new  RemitApplAmlModel();
 		BenificiaryListView beneficiaryDT = (BenificiaryListView) remitApplParametersMap.get("BENEFICIARY");
 		AmlCheckResponseDto amlDto = beneRiskAml(beneficiaryDT,remittanceAppBeneficairy);
-		return amlList;
+		
+		  if(amlDto!=null &&  !StringUtils.isBlank(amlDto.getHighValueTrnxFlag()) && !StringUtils.isBlank(amlDto.getStopTrnxFlag())) { 
+			  amlModel.setCompanyId(metaData.getCompanyId());
+			  amlModel.setCountryId(remittanceApplication.getFsCountryMasterByApplicationCountryId().getCountryId());
+			  amlModel.setExRemittanceAppfromAml(remittanceApplication);		   
+		  if(amlDto.getHighValueTrnxFlag()!=null && amlDto.getHighValueTrnxFlag().equalsIgnoreCase(ConstantDocument.Yes)) {
+			  if(amlDto.getStopTrnxFlag()!=null && amlDto.getStopTrnxFlag().equalsIgnoreCase(ConstantDocument.Yes)) {
+			  amlModel.setBlackListReason(amlDto.getBlackRemark1()+" "+amlDto.getBlackRemark2()+" "+amlDto.getBlackRemark3());
+			  }
+		  }
+		  	amlModel.setIsactive(ConstantDocument.Yes);
+		  	amlModel.setCreatedBy(remittanceApplication.getCreatedBy());
+		  	amlModel.setCreatedDate(remittanceApplication.getCreatedDate());
+		  }
+		 
+		return amlModel;
 	}
 	
 	private AmlCheckResponseDto beneRiskAml(BenificiaryListView beneficiaryDT,RemittanceAppBenificiary remittanceAppBeneficairy ) {

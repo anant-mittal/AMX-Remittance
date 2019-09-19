@@ -30,6 +30,7 @@ import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.response.ExchangeRateBreakup;
 import com.amx.jax.model.response.SourceOfIncomeDto;
+import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.payg.PayGModel;
 import com.amx.jax.repository.IRemittanceTransactionDao;
@@ -263,4 +264,11 @@ public class RemittanceTransactionService extends AbstractService {
 				.getBeneficiaryRelationShipSeqId();
 		return beneficiaryService.getBeneBybeneficiaryRelationShipSeqId(beneficiaryRelationShipSeqId);
 	}
+	/** added by Rabil for Online shopping cart**/
+	public BranchRemittanceApplResponseDto addtoCart(RemittanceTransactionDrRequestModel model) {
+		BranchRemittanceApplResponseDto responseModel = remittanceTxnManger.addtoCart(model);
+		return responseModel;
+	}
+	
+	
 }

@@ -33,6 +33,7 @@ import com.amx.jax.model.request.remittance.IRemitTransReqPurpose;
 import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.response.SourceOfIncomeDto;
+import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.rest.RestService;
@@ -393,4 +394,27 @@ public class RemitClient extends AbstractJaxServiceClient {
 			throw new JaxSystemError();
 		} // end of tr
 	}
+	
+	
+	
+	@ApiOperation("API for Online shopping cart")
+	public AmxApiResponse<BranchRemittanceApplResponseDto,Object> addToCart(RemittanceTransactionDrRequestModel transactionRequestModel)
+			throws RemittanceTransactionValidationException, LimitExeededException {
+		try {
+			HttpEntity<RemittanceTransactionDrRequestModel> requestEntity = new HttpEntity<RemittanceTransactionDrRequestModel>(transactionRequestModel, getHeader());
+			String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/add-to-cart/";
+			return restService.ajax(url).post(requestEntity).asApiResponse(BranchRemittanceApplResponseDto.class);
+		} catch (AbstractJaxException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in add to transaction : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
+	}
+	
+
+
+	
+	
+	
 }

@@ -37,6 +37,7 @@ import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
 import com.amx.jax.model.request.remittance.IRemitTransReqPurpose;
 import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
+import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.services.CustomerRatingService;
 import com.amx.jax.services.PurposeOfTransactionService;
@@ -286,6 +287,14 @@ public class RemittanceController {
 	
 	
 	
+	@RequestMapping(value = "/add-to-cart/", method = RequestMethod.POST)
+	public AmxApiResponse<BranchRemittanceApplResponseDto, Object> addtoCart(@RequestBody @Valid RemittanceTransactionDrRequestModel model) {
+		JaxContextUtil.setJaxEvent(JaxEvent.CREATE_APPLICATION);
+		JaxContextUtil.setRequestModel(model);
+		logger.info("In Save-Application with parameters" + model.toString());
+		BranchRemittanceApplResponseDto response = remittanceTransactionService.addtoCart(model);
+		return AmxApiResponse.build(response);
+	}
 	
 	
 	
