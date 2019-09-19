@@ -39,7 +39,6 @@ import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.remittance.AdditionalBankRuleAmiec;
-import com.amx.jax.dbmodel.remittance.ViewVatDetails;
 import com.amx.jax.dict.UserClient.Channel;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.exrateservice.service.ExchangeRateService;
@@ -77,7 +76,6 @@ import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.services.BeneficiaryValidationService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.JaxUtil;
-import com.amx.jax.util.RoundUtil;
 import com.amx.jax.validation.RemittanceTransactionRequestValidator;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -175,7 +173,6 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 		result.setCostRateLimitReached(exchangeRateResponseModel.getCostRateLimitReached());
 		// trnx fee
 		BigDecimal commission = getComission();
-		
 		VatDetailsDto vatDetails = remittanceTransactionManager.getVatAmount(commission);
 		if(vatDetails!=null && !StringUtils.isBlank(vatDetails.getVatApplicable()) && vatDetails.getVatApplicable().equalsIgnoreCase(ConstantDocument.Yes)) {
 			result.setVatAmount(vatDetails.getVatAmount()==null?BigDecimal.ZERO:vatDetails.getVatAmount());
@@ -229,6 +226,7 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 			commission =commission.subtract(corpDiscount);
 		}
 		return commission;
+		
 	}
 
 	
@@ -337,8 +335,9 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 			}
 			BigDecimal corpDiscount = corporateDiscountManager.corporateDiscount();
 			
-			if(JaxUtil.isNullZeroBigDecimalCheck(commission) && commission.compareTo(corpDiscount)>=0) {
+			if(JaxUtil.isNullZeroBigDecimalCheck(commission) &&  JaxUtil.isNullZeroBigDecimalCheck(corpDiscount) && commission.compareTo(corpDiscount)>=0) {
 				commission =commission.subtract(corpDiscount);
+				result.setDiscountOnComissionFlag(ConstantDocument.Yes);
 			}
 			
 			VatDetailsDto vatDetails = remittanceTransactionManager.getVatAmount(commission);
