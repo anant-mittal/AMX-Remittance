@@ -16,7 +16,7 @@ public class UserClient {
 	 *
 	 */
 	public enum Channel {
-		ONLINE, KIOSK, MOBILE, BRANCH, THIRD_PARTY, SYSTEM, UNKNOWN;
+		ONLINE, KIOSK, MOBILE, BRANCH, THIRD_PARTY, SYSTEM, UNKNOWN, OFFSITE;
 	}
 
 	/**
@@ -108,8 +108,7 @@ public class UserClient {
 
 		// Other Channels
 		OFFSITE_PAD(DeviceType.TABLET, Channel.BRANCH), KIOSK(DeviceType.COMPUTER, Channel.KIOSK),
-		DELIVERY_APP(DeviceType.MOBILE,
-				Channel.BRANCH),
+		DELIVERY_APP(DeviceType.MOBILE, Channel.BRANCH), REMOTE(DeviceType.COMPUTER, Channel.OFFSITE),
 
 		// Customer Facing interfaces
 		ONLINE_WEB(DeviceType.COMPUTER, Channel.ONLINE), ONLINE_AND(DeviceType.MOBILE, Channel.MOBILE),
