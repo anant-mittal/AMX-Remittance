@@ -247,12 +247,19 @@ public final class CollectionUtil {
 	}
 
 	public static <T> T set(List<T> list, int index, T e) {
-		if (list.size() == index) {
+		return set(list, index, e, null);
+	}
+
+	public static <T> T set(List<T> list, int index, T e, T emptyValue) {
+		int len = list.size();
+		if (len == index) {
 			list.add(e);
-		} else if (list.size() > index) {
+		} else if (len > index) {
 			return list.set(index, e);
 		} else {
-			set(list, index - 1, null);
+			for (int i = len; i < index; i++) {
+				list.add(emptyValue);
+			}
 			list.add(e);
 		}
 		return null;

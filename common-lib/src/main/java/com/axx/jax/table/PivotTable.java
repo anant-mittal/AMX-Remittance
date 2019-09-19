@@ -8,16 +8,21 @@ import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
 import com.amx.utils.CollectionUtil;
+import com.amx.utils.Constants;
 import com.amx.utils.StringUtils.StringMatcher;;
 
 public class PivotTable {
 
+	public static final Pattern FUN_AS_ALIAS_DEFAULT = Pattern
+			.compile("^(sum|any|count|ucount) (.+) (AS|as|As|aS) (.+) DEFAULT (.+)$");
 	public static final Pattern FUN_AS_ALIAS = Pattern.compile("^(sum|any|count|ucount) (.+) (AS|as|As|aS) (.+)$");
+	public static final Pattern ROW_AS_ALIAS_DEFAULT = Pattern.compile("^(.+) (AS|as|As|aS) (.+) DEFAULT (.+)$");
 	public static final Pattern ROW_AS_ALIAS = Pattern.compile("^(.+) (AS|as|As|aS) (.+)$");
 	public static final Pattern FUN_COLS = Pattern.compile("^(sum|any|count|ucount) (.+)$");
 
 	List<String> rows = CollectionUtil.getList("*");
 	List<String> rows_alias = CollectionUtil.getList("*");
+	List<String> rows_default = CollectionUtil.getList("");
 	List<String> cols = CollectionUtil.getList("*");
 	List<String> vals = CollectionUtil.getList("*");
 	List<String> aggs = CollectionUtil.getList("*");
@@ -43,17 +48,27 @@ public class PivotTable {
 
 		for (int r = 0; r < rowCount; r++) {
 			StringMatcher funkey = new StringMatcher(rows.get(r));
-			if (funkey.isMatch(ROW_AS_ALIAS)) {
+			if (funkey.isMatch(ROW_AS_ALIAS_DEFAULT)) {
 				this.rows.set(r, funkey.group(1));
 				CollectionUtil.set(this.rows_alias, r, funkey.group(3));
+				CollectionUtil.set(this.rows_default, r, funkey.group(4));
+			} else if (funkey.isMatch(ROW_AS_ALIAS)) {
+				this.rows.set(r, funkey.group(1));
+				CollectionUtil.set(this.rows_alias, r, funkey.group(3));
+				CollectionUtil.set(this.rows_default, r, null);
 			} else {
 				CollectionUtil.set(this.rows_alias, r, funkey.toString());
+				CollectionUtil.set(this.rows_default, r, null);
 			}
 		}
 
 		for (int v = 0; v < valCount; v++) {
 			StringMatcher funkey = new StringMatcher(vals.get(v));
-			if (funkey.isMatch(FUN_AS_ALIAS)) {
+			if (funkey.isMatch(FUN_AS_ALIAS_DEFAULT)) {
+				CollectionUtil.set(this.aggs, v, funkey.group(1));
+				this.vals.set(v, funkey.group(2));
+				CollectionUtil.set(this.alias, v, funkey.group(4));
+			} else if (funkey.isMatch(FUN_AS_ALIAS)) {
 				CollectionUtil.set(this.aggs, v, funkey.group(1));
 				this.vals.set(v, funkey.group(2));
 				CollectionUtil.set(this.alias, v, funkey.group(4));
@@ -107,30 +122,31 @@ public class PivotTable {
 
 					for (int r = 0; r < rowCount; r++) {
 						String funkey = rows.get(r);
-						row.result.put(rows_alias.get(r), col.any(funkey));
+						String funkeyDefault = rows_default.get(r);
+						row.result.put(rows_alias.get(r), col.any(funkey, funkeyDefault));
 					}
 
 					StringBuilder rowKey = new StringBuilder();
 					for (int c = 0; c < colCount; c++) {
-						rowKey.append(col.any(cols.get(c)));
+						rowKey.append(col.any(cols.get(c), Constants.BLANK));
 					}
 
 					for (int i = 0; i < valCount; i++) {
 						String fun = aggs.get(i);
 						String funkey = vals.get(i);
 						String funkeyAlias = alias.get(i);
-						this.calculate(row, funkeyAlias + "_" + rowKey.toString(), fun, funkey, col);
+						this.calculate(row, funkeyAlias + "_" + rowKey.toString(), fun, funkey, col, Constants.BLANK);
 					}
 				}
 			} else {
 				for (int r = 0; r < rowCount; r++) {
 					String funkey = rows.get(r);
-					row.result.put(funkey, row.any(funkey));
+					row.result.put(funkey, row.any(funkey, Constants.BLANK));
 				}
 				for (int i = 0; i < valCount; i++) {
 					String fun = aggs.get(i);
 					String funkey = vals.get(i);
-					this.calculate(row, funkey, fun, funkey, row);
+					this.calculate(row, funkey, fun, funkey, row, Constants.BLANK);
 				}
 			}
 
@@ -145,10 +161,11 @@ public class PivotTable {
 		return bulk;
 	}
 
-	private void calculate(PivotBucket row, String rowKey, String fun, String funkey, PivotBucket col) {
+	private void calculate(PivotBucket row, String rowKey, String fun, String funkey, PivotBucket col,
+			Object emptyValue) {
 		switch (fun) {
 		case "any":
-			row.result.put(rowKey, col.any(funkey));
+			row.result.put(rowKey, col.any(funkey, emptyValue));
 			break;
 		case "sum":
 			row.result.put(rowKey, col.sum(funkey));
