@@ -116,6 +116,9 @@ public class BeneBranchManager {
 		if (request.getAge() != null) {
 			beneMaster.setAge(BigDecimal.valueOf(request.getAge()));
 		}
+		if (request.getBeneficaryTypeId() != null) {
+			beneMaster.setBeneficaryStatus(request.getBeneficaryTypeId());
+		}
 		try {
 			boolean isModified = !JaxUtil.checkNull(benePersonalDetail);
 			if (isModified) {

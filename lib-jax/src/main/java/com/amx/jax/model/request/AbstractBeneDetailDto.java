@@ -20,7 +20,7 @@ public abstract class AbstractBeneDetailDto {
 	// bene details
 	@NotNull
 	@ApiMockModelProperty(example = "Individual")
-	String beneficaryType;
+	BigDecimal beneficaryTypeId;
 
 	@NotNull(message = "First Name may not be null")
 	@Size(min = 1, max = 50, message = "firstName should be between 1 and 50 characters")
@@ -104,14 +104,6 @@ public abstract class AbstractBeneDetailDto {
 	@ApiMockModelProperty(example = "1986")
 	@Min(1900)
 	Integer yearOfBirth;
-
-	public String getBeneficaryType() {
-		return beneficaryType;
-	}
-
-	public void setBeneficaryType(String beneficaryType) {
-		this.beneficaryType = beneficaryType;
-	}
 
 	public String getFirstName() {
 		return firstName;
@@ -306,5 +298,13 @@ public abstract class AbstractBeneDetailDto {
 
 	public void setYearOfBirth(Integer yearOfBirth) {
 		this.yearOfBirth = yearOfBirth;
+	}
+
+	public BigDecimal getBeneficaryTypeId() {
+		return beneficaryTypeId;
+	}
+
+	public void setBeneficaryTypeId(BigDecimal beneficaryTypeId) {
+		this.beneficaryTypeId = beneficaryTypeId;
 	}
 }

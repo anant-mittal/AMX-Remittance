@@ -22,8 +22,8 @@ public abstract class AbtractUpdateBeneDetailDto {
 	@ApiMockModelProperty(example = "19340")
 	Integer idNo;
 
-	@ApiMockModelProperty(example = "Individual")
-	String beneficaryType;
+	@ApiMockModelProperty(example = "1")
+	BigDecimal beneficaryTypeId;
 
 	@Size(min = 1, max = 50, message = "firstName should be between 1 and 50 characters")
 	@ApiMockModelProperty(example = "testbene")
@@ -97,14 +97,6 @@ public abstract class AbtractUpdateBeneDetailDto {
 	@ApiMockModelProperty(example = "1986")
 	@Min(1900)
 	Integer yearOfBirth;
-
-	public String getBeneficaryType() {
-		return beneficaryType;
-	}
-
-	public void setBeneficaryType(String beneficaryType) {
-		this.beneficaryType = beneficaryType;
-	}
 
 	public String getFirstName() {
 		return firstName;
@@ -308,4 +300,12 @@ public abstract class AbtractUpdateBeneDetailDto {
 	}
 
 	protected abstract BeneAccountModel createBeneAccountModelObject();
+
+	public BigDecimal getBeneficaryTypeId() {
+		return beneficaryTypeId;
+	}
+
+	public void setBeneficaryTypeId(BigDecimal beneficaryTypeId) {
+		this.beneficaryTypeId = beneficaryTypeId;
+	}
 }

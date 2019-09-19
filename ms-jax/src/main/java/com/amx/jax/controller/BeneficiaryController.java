@@ -26,7 +26,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam;
+import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.client.bene.BeneficaryStatusDto;
 import com.amx.jax.client.bene.BeneficiaryConstant.BeneStatus;
+import com.amx.jax.client.bene.IBeneficiaryService;
 import com.amx.jax.constants.JaxChannel;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.meta.MetaData;
@@ -39,6 +42,8 @@ import com.amx.jax.trnx.BeneficiaryTrnxManager;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.ConverterUtil;
 
+import io.swagger.annotations.ApiOperation;
+
 /**
  * 
  * @author :Rabil Purpose :Beneficiary related function
@@ -47,7 +52,7 @@ import com.amx.jax.util.ConverterUtil;
 @RestController
 @RequestMapping(BENE_API_ENDPOINT)
 @SuppressWarnings("rawtypes")
-public class BeneficiaryController {
+public class BeneficiaryController implements IBeneficiaryService{
 	private static final Logger LOGGER = LoggerFactory.getLogger(BeneficiaryController.class);
 	private static final String RELATIONSHIP_ID = "Relationship Id :";
 	private static final String CUSTOMER_ID = "Customer Id :";
@@ -339,4 +344,11 @@ public class BeneficiaryController {
 		return response;
 	}
 
+	@RequestMapping(value = Path.GET_BENE_STATUS_MASTER, method = RequestMethod.GET)
+	@ApiOperation("getBeneStatusMaster")
+	@Override
+	public AmxApiResponse<BeneficaryStatusDto, Object> getBeneStatusMaster() {
+		List<BeneficaryStatusDto> beneStatusDtoList = beneService.getBeneStatusMaster();
+		return AmxApiResponse.buildList(beneStatusDtoList);
+	}
 }

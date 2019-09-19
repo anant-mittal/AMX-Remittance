@@ -41,6 +41,7 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam;
+import com.amx.jax.client.bene.BeneficaryStatusDto;
 import com.amx.jax.client.bene.BeneficiaryConstant;
 import com.amx.jax.client.bene.BeneficiaryConstant.BeneStatus;
 import com.amx.jax.client.serviceprovider.RoutingBankMasterDTO;
@@ -74,7 +75,6 @@ import com.amx.jax.logger.events.CActivityEvent;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.model.auth.QuestModelDTO;
-import com.amx.jax.model.request.benebranch.BeneAccountModel;
 import com.amx.jax.model.response.CurrencyMasterDTO;
 import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.repository.BeneficaryAccountRepository;
@@ -1114,6 +1114,16 @@ public class BeneficiaryService extends AbstractService {
 			beneContact = beneContactList.get(0);
 		}
 		return beneContact;
+	}
+
+	public List<BeneficaryStatusDto> getBeneStatusMaster() {
+		return beneficaryStatusRepository.findByIsActive(ConstantDocument.Yes).stream().map(i -> {
+			BeneficaryStatusDto dto = new BeneficaryStatusDto();
+			dto.setBeneficaryStatusId(i.getBeneficaryStatusId());
+			dto.setBeneficaryStatusName(i.getBeneficaryStatusName());
+			dto.setCreatedDate(i.getCreatedDate());
+			return dto;
+		}).collect(Collectors.toList());
 	}
 	
 }

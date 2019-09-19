@@ -51,6 +51,7 @@ import com.amx.jax.model.response.benebranch.UpdateBeneStatus;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.TemplatesMX;
+import com.amx.jax.repository.BeneficaryStatusRepository;
 import com.amx.jax.repository.ITransactionHistroyDAO;
 import com.amx.jax.service.BankMetaService;
 import com.amx.jax.service.CountryService;
@@ -93,6 +94,8 @@ public class BeneBranchService {
 	BeneBranchManager beneBranchManager;
 	@Autowired
 	ITransactionHistroyDAO iTransactionHistroyDAO;
+	@Autowired
+	BeneficaryStatusRepository beneficaryStatusRepository;
 
 	// bank
 	public List<BankMasterDTO> getBankByCountryAndCurrency(ListBeneBankOrCashRequest request) {
@@ -126,15 +129,10 @@ public class BeneBranchService {
 	private void setAdditionalBranchFields(BigDecimal beneficaryRelationSeqId, AbstractBeneDetailDto request) {
 		BenificiaryListView beneRelationship = beneService.getBeneByIdNo(beneficaryRelationSeqId);
 		BeneficaryMaster beneficaryMaster = beneService.getBeneficiaryMasterBybeneficaryMasterSeqId(beneRelationship.getBeneficaryMasterSeqId());
-		if (ConstantDocument.INDIVIDUAL_STRING.equals(request.getBeneficaryType())) {
-			BeneficaryStatus beneStatus = beneService.getBeneStatusByNameByName(ConstantDocument.INDIVIDUAL_STRING);
-			beneficaryMaster.setBeneficaryStatus(beneStatus.getBeneficaryStatusId());
-			beneficaryMaster.setBeneficaryStatusName(beneStatus.getBeneficaryStatusName());
-		} else {
-			BeneficaryStatus beneStatus = beneService.getBeneStatusByNameByName(ConstantDocument.NON_INDIVIDUAL_STRING);
-			beneficaryMaster.setBeneficaryStatus(beneStatus.getBeneficaryStatusId());
-			beneficaryMaster.setBeneficaryStatusName(beneStatus.getBeneficaryStatusName());
-		}
+		BeneficaryStatus beneStatus = beneficaryStatusRepository.findOne(request.getBeneficaryTypeId());
+		beneficaryMaster.setBeneficaryStatus(beneStatus.getBeneficaryStatusId());
+		beneficaryMaster.setBeneficaryStatusName(beneStatus.getBeneficaryStatusName());
+
 		if (request.getAge() != null) {
 			beneficaryMaster.setAge(BigDecimal.valueOf(request.getAge()));
 		}
