@@ -29,6 +29,8 @@ import com.amx.jax.dbmodel.remittance.RemittanceAppBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.response.remittance.AmlCheckResponseDto;
+import com.amx.jax.repository.IBeneficiaryOnlineDao;
+import com.amx.jax.repository.RemittanceApplicationBeneRepository;
 import com.amx.jax.service.CountryService;
 import com.amx.jax.services.BankService;
 
@@ -54,10 +56,17 @@ public class RemittanceApplAmlManager {
 	@Autowired
 	RoutingProcedureDao routingProcedureDao;
 	
+	@Autowired
+	RemittanceApplicationBeneRepository applBeneRepository;
+	
+	@Autowired
+	IBeneficiaryOnlineDao beneficiaryRepository;
+	
+	
 	public RemitApplAmlModel createRemittanceApplAml(RemittanceApplication remittanceApplication,RemittanceAppBenificiary remittanceAppBeneficairy){
 		  RemitApplAmlModel amlModel = null;
 		BenificiaryListView beneficiaryDT = (BenificiaryListView) remitApplParametersMap.get("BENEFICIARY");
-		AmlCheckResponseDto amlDto = beneRiskAml(beneficiaryDT,remittanceAppBeneficairy);
+		AmlCheckResponseDto amlDto = beneRiskAml(remittanceApplication,remittanceAppBeneficairy.getBeneficiaryBankCountryId());
 		
 		  if(amlDto!=null &&  !StringUtils.isBlank(amlDto.getHighValueTrnxFlag()) && !StringUtils.isBlank(amlDto.getStopTrnxFlag())) { 
 			  amlModel= new  RemitApplAmlModel();
@@ -77,10 +86,15 @@ public class RemittanceApplAmlManager {
 		return amlModel;
 	}
 	
-	private AmlCheckResponseDto beneRiskAml(BenificiaryListView beneficiaryDT,RemittanceAppBenificiary remittanceAppBeneficairy ) {
+	public AmlCheckResponseDto beneRiskAml(RemittanceApplication remittanceApplication,BigDecimal beneficiaryBankCountryId) {
+		
+		RemittanceAppBenificiary applBene = applBeneRepository.findByExRemittanceAppfromBenfi(remittanceApplication);
+		
+		BenificiaryListView beneficiaryDT =beneficiaryRepository.findByCustomerIdAndBeneficiaryRelationShipSeqIdAndIsActive(metaData.getCustomerId(),applBene.getBeneficiaryRelationShipSeqId(),ConstantDocument.Yes);
+					
+				
 		AmlCheckResponseDto amlDto = new AmlCheckResponseDto();
-		BigDecimal beneCountryId = remittanceAppBeneficairy.getBeneficiaryBankCountryId();	
-		CountryMaster countryMaster = countryService.getCountryMaster(beneCountryId);
+		CountryMaster countryMaster = countryService.getCountryMaster(beneficiaryBankCountryId);
 		Integer riskCount = 0;
 		if(countryMaster!=null) {
 			riskCount = countryMaster.getBeneCountryRisk();
@@ -88,7 +102,7 @@ public class RemittanceApplAmlManager {
 				amlDto.setBlackRemark1("Bene country  Risk  Level   1 ");
 			}
 		}
-		if(beneficiaryDT.getNationality()!=null && new BigDecimal(beneficiaryDT.getNationality()).compareTo(beneCountryId)!=0) {
+		if(beneficiaryDT.getNationality()!=null && new BigDecimal(beneficiaryDT.getNationality()).compareTo(beneficiaryBankCountryId)!=0) {
 			amlDto.setBlackRemark2("Remitter  Nationality  Mistmatch  with  Bene  Country");
 			amlDto.setTag(ConstantDocument.Yes);
 		}

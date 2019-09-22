@@ -69,12 +69,14 @@ import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.events.CActivityEvent;
 import com.amx.jax.logger.events.CActivityEvent.Type;
 import com.amx.jax.manager.PromotionManager;
+import com.amx.jax.manager.RemittanceApplAmlManager;
 import com.amx.jax.manager.RemittanceManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.remittance.BranchApplicationDto;
 import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
 import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.model.response.fx.UserStockDto;
+import com.amx.jax.model.response.remittance.AmlCheckResponseDto;
 import com.amx.jax.model.response.remittance.RemittanceCollectionDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.TransferDto;
@@ -248,6 +250,8 @@ public class BranchRemittanceSaveManager {
 	@Autowired
 	BankMetaService bankMetaService;
 	
+	@Autowired
+	RemittanceApplAmlManager applAmlManager; 
 	
 	
 	/**
@@ -864,6 +868,14 @@ public class BranchRemittanceSaveManager {
 					remitTrnx.setInstruction(appl.getInstruction());
 					remitTrnx.setUsdAmt(appl.getUsdAmt());
 					remitTrnx.setWuPurposeOfTransaction(appl.getWuPurposeOfTransaction());
+					
+					if(remitTrnx.getLoccod().compareTo(ConstantDocument.ONLINE_BRANCH_LOC_CODE)==0) {
+					AmlCheckResponseDto amlResDto = applAmlManager.beneRiskAml(appl,remitTrnx.getBankCountryId().getCountryId());
+					if(amlResDto!=null && !StringUtils.isBlank(amlResDto.getHighValueTrnxFlag())) {
+						remitTrnx.setHighValueTranx(amlResDto.getHighValueTrnxFlag());
+					}
+				   }
+					
 					
 					BigDecimal documentNo =generateDocumentNumber(appl.getFsCountryMasterByApplicationCountryId().getCountryId(),appl.getFsCompanyMaster().getCompanyId(),remitTrnx.getDocumentId().getDocumentCode(),remitTrnx.getDocumentFinanceYear(),remitTrnx.getLoccod(),ConstantDocument.A);
 					
