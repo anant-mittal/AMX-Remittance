@@ -5,8 +5,6 @@ package com.amx.jax.manager;
  */
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -66,7 +64,7 @@ public class RemittanceApplAmlManager {
 	public RemitApplAmlModel createRemittanceApplAml(RemittanceApplication remittanceApplication,RemittanceAppBenificiary remittanceAppBeneficairy){
 		  RemitApplAmlModel amlModel = null;
 		BenificiaryListView beneficiaryDT = (BenificiaryListView) remitApplParametersMap.get("BENEFICIARY");
-		AmlCheckResponseDto amlDto = beneRiskAml(remittanceApplication,remittanceAppBeneficairy.getBeneficiaryBankCountryId());
+		AmlCheckResponseDto amlDto = beneRiskAml(beneficiaryDT.getBeneficiaryRelationShipSeqId(),remittanceAppBeneficairy.getBeneficiaryBankCountryId());
 		
 		  if(amlDto!=null &&  !StringUtils.isBlank(amlDto.getHighValueTrnxFlag()) && !StringUtils.isBlank(amlDto.getStopTrnxFlag())) { 
 			  amlModel= new  RemitApplAmlModel();
@@ -86,13 +84,9 @@ public class RemittanceApplAmlManager {
 		return amlModel;
 	}
 	
-	public AmlCheckResponseDto beneRiskAml(RemittanceApplication remittanceApplication,BigDecimal beneficiaryBankCountryId) {
+	public AmlCheckResponseDto beneRiskAml(BigDecimal beneReationId,BigDecimal beneficiaryBankCountryId) {
 		
-		RemittanceAppBenificiary applBene = applBeneRepository.findByExRemittanceAppfromBenfi(remittanceApplication);
-		
-		BenificiaryListView beneficiaryDT =beneficiaryRepository.findByCustomerIdAndBeneficiaryRelationShipSeqIdAndIsActive(metaData.getCustomerId(),applBene.getBeneficiaryRelationShipSeqId(),ConstantDocument.Yes);
-					
-				
+		BenificiaryListView beneficiaryDT =beneficiaryRepository.findByCustomerIdAndBeneficiaryRelationShipSeqIdAndIsActive(metaData.getCustomerId(),beneReationId,ConstantDocument.Yes);
 		AmlCheckResponseDto amlDto = new AmlCheckResponseDto();
 		CountryMaster countryMaster = countryService.getCountryMaster(beneficiaryBankCountryId);
 		Integer riskCount = 0;

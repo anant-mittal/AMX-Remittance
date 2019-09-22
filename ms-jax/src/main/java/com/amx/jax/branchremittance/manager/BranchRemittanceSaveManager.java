@@ -870,7 +870,8 @@ public class BranchRemittanceSaveManager {
 					remitTrnx.setWuPurposeOfTransaction(appl.getWuPurposeOfTransaction());
 					
 					if(remitTrnx.getLoccod().compareTo(ConstantDocument.ONLINE_BRANCH_LOC_CODE)==0) {
-					AmlCheckResponseDto amlResDto = applAmlManager.beneRiskAml(appl,remitTrnx.getBankCountryId().getCountryId());
+					RemittanceAppBenificiary applBene = applBeneRepository.findByExRemittanceAppfromBenfi(appl);
+					AmlCheckResponseDto amlResDto = applAmlManager.beneRiskAml(applBene.getBeneficiaryRelationShipSeqId(),remitTrnx.getBankCountryId().getCountryId());
 					if(amlResDto!=null && !StringUtils.isBlank(amlResDto.getHighValueTrnxFlag())) {
 						remitTrnx.setHighValueTranx(amlResDto.getHighValueTrnxFlag());
 					}

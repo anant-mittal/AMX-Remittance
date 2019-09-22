@@ -196,6 +196,7 @@ public class FcSaleApplicationDao {
 			
 			if(paymentResponse!= null && paymentResponse.getUdf3()!=null){
 				PaygDetailsModel pgModel =pgRepository.findOne(new BigDecimal(paymentResponse.getUdf3()));
+				if(pgModel!=null) {
 				pgModel.setResultCode(paymentResponse.getResultCode());
 				pgModel.setModifiedDate(new Date());
 				pgModel.setPgAuthCode(paymentResponse.getAuth_appNo());
@@ -205,6 +206,7 @@ public class FcSaleApplicationDao {
 				pgModel.setPgTransactionId(paymentResponse.getTransactionId());
 				pgModel.setPgReferenceId(paymentResponse.getReferenceId());
 				pgRepository.save(pgModel);
+				}
 			}else{
 				logger.error("Update after PG details Payment Id :"+paymentResponse.getPaymentId()+"\t Udf 3--Pg trnx seq Id :"+paymentResponse.getUdf3()+"Result code :"+paymentResponse.getResultCode());
 				throw new GlobalException(JaxError.PAYMENT_UPDATION_FAILED,"PG updation failed");

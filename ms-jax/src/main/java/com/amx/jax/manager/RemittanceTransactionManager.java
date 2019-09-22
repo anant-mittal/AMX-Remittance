@@ -1385,13 +1385,10 @@ public class RemittanceTransactionManager {
 		applicationProcedureDao.getAdditionalCheckProcedure(remitApplParametersMap);
 	}
 
-	public RemittanceTransactionStatusResponseModel getTransactionStatus(
-			RemittanceTransactionStatusRequestModel request) {
+	public RemittanceTransactionStatusResponseModel getTransactionStatus(RemittanceTransactionStatusRequestModel request) {
 		RemittanceTransactionStatusResponseModel model = new RemittanceTransactionStatusResponseModel();
-		RemittanceTransaction remittanceTransaction = remitAppDao
-				.getRemittanceTransaction(request.getApplicationDocumentNumber(), request.getDocumentFinancialYear());
-		RemittanceApplication application = remitAppDao.getApplication(request.getApplicationDocumentNumber(),
-				request.getDocumentFinancialYear());
+		RemittanceTransaction remittanceTransaction = remitAppDao.getRemittanceTransaction(request.getApplicationDocumentNumber(), request.getDocumentFinancialYear());
+		RemittanceApplication application = remitAppDao.getApplication(request.getApplicationDocumentNumber(),request.getDocumentFinancialYear());
 		if(application == null) {
 			throw new GlobalException("Invalid application document details.");
 		}else {
