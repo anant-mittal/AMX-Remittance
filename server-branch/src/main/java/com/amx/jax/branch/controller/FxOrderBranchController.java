@@ -181,13 +181,13 @@ public class FxOrderBranchController {
 		return fxOrderBranchClient.searchOrder(fcDeliveryBranchOrderSearchRequest);
 	}
 
-	@PreAuthorize("hasPermission('ORDER_MGMT', 'VIEW')")
+	@PreAuthorize("hasPermission('ORDER_MGMT.FX_TIME_SLOTS', 'VIEW')")
 	@RequestMapping(value = "/api/fxo/timeslot/set", method = { RequestMethod.POST })
 	public AmxApiResponse<BoolRespModel, Object> saveFxDeliveryTimeSlot(@RequestBody FxDeliveryTimeSlotDto fxDeliveryTimeSlotDto){
 		return fxOrderBranchClient.saveFcDeliveryTimeSlot(fxDeliveryTimeSlotDto);
 	}
 
-	@PreAuthorize("hasPermission('ORDER_MGMT', 'VIEW')")
+	@PreAuthorize("hasPermission('ORDER_MGMT.FX_TIME_SLOTS', 'VIEW')")
 	@RequestMapping(value = "/api/fxo/timeslot/get", method = { RequestMethod.GET })
 	public AmxApiResponse<FxDeliveryTimeSlotDto, Object> getFxDeliveryTimeSlot() {
 		return fxOrderBranchClient.fetchFcDeliveryTiming();
