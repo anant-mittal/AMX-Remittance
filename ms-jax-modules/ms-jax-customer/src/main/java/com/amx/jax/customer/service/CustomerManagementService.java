@@ -12,6 +12,7 @@ import com.amx.jax.customer.manager.CustomerManagementManager;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.model.response.customer.CustomerMgmtMetaInfo;
 import com.amx.jax.model.response.customer.OffsiteCustomerDataDTO;
+import com.amx.jax.userservice.service.UserValidationService;
 import com.amx.utils.ArgUtil;
 
 @Service
@@ -21,8 +22,11 @@ public class CustomerManagementService {
 	CustomerManagementManager customerManagementManager;
 	@Autowired
 	CustomerForceUpdateManager customerForceUpdateManager;
+	@Autowired
+	UserValidationService userValidationService;
 
 	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getCustomerDetail(String identityInt, BigDecimal identityTypeId) {
+		userValidationService.validateIdentityInt(identityInt, identityTypeId);
 		OffsiteCustomerDataDTO dto = customerManagementManager.getCustomerDeatils(identityInt, identityTypeId);
 		AmxApiResponse<OffsiteCustomerDataDTO, Object> response = AmxApiResponse.build(dto);
 		if (dto.getCustomerPersonalDetail() != null && dto.getCustomerPersonalDetail().getCustomerId() != null) {
