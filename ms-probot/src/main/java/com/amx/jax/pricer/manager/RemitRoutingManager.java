@@ -156,11 +156,6 @@ public class RemitRoutingManager {
 
 		}
 
-		// This is Interim FIX FOR HOME-SEND EXclussion and should be removed on
-		// Priority.
-		// NOT to Excluded for HOMESEND
-		// routingMatrix = excludeSbRoutingBanks(routingMatrix);
-
 		if (null == routingMatrix || routingMatrix.isEmpty()) {
 
 			LOGGER.error("Routing Matrix is Data is Empty or Null for the Pricing/Routing Request");
@@ -328,18 +323,29 @@ public class RemitRoutingManager {
 								+ " and CurrencyId: " + exchangeRateAndRoutingRequest.getForeignCurrencyId());
 
 						trImpact = new TreasuryFundTimeImpact();
-						trImpact.setInTrWindowDayImpact(BigDecimal.ONE);
-						trImpact.setInTrWindowTtdImpactMin(BIGD_SIXTY);
-
-						trImpact.setOutOfTrWindowDayImpact(trImpact.getInTrWindowDayImpact());
-						trImpact.setOutOfTrWindowTtdImpactMin(trImpact.getInTrWindowTtdImpactMin());
-
-						trImpact.setTrnxTimeFrom(DEF_TR_TRANSACTION_START_TIME);
-						trImpact.setTrnxTimeTo(DEF_TR_TRANSACTION_END_TIME);
-
-						trImpact.setWorkDayFrom(DEF_TR_WORK_DAY_FROM);
-						trImpact.setWorkDayFrom(DEF_TR_WORK_DAY_TO);
 					}
+					trImpact.setInTrWindowDayImpact(
+							ArgUtil.assignDefaultIfNull(trImpact.getInTrWindowDayImpact(), BigDecimal.ONE));
+
+					trImpact.setInTrWindowTtdImpactMin(
+							ArgUtil.assignDefaultIfNull(trImpact.getInTrWindowTtdImpactMin(), BIGD_SIXTY));
+
+					trImpact.setOutOfTrWindowDayImpact(ArgUtil.assignDefaultIfNull(trImpact.getOutOfTrWindowDayImpact(),
+							trImpact.getInTrWindowDayImpact()));
+
+					trImpact.setOutOfTrWindowTtdImpactMin(ArgUtil.assignDefaultIfNull(
+							trImpact.getOutOfTrWindowTtdImpactMin(), trImpact.getInTrWindowTtdImpactMin()));
+
+					trImpact.setTrnxTimeFrom(
+							ArgUtil.assignDefaultIfNull(trImpact.getTrnxTimeFrom(), DEF_TR_TRANSACTION_START_TIME));
+
+					trImpact.setTrnxTimeTo(
+							ArgUtil.assignDefaultIfNull(trImpact.getTrnxTimeTo(), DEF_TR_TRANSACTION_END_TIME));
+
+					trImpact.setWorkDayFrom(
+							ArgUtil.assignDefaultIfNull(trImpact.getWorkDayFrom(), DEF_TR_WORK_DAY_FROM));
+
+					trImpact.setWorkDayTo(ArgUtil.assignDefaultIfNull(trImpact.getWorkDayTo(), DEF_TR_WORK_DAY_TO));
 
 					int trnxTimeFrom = DateUtil.getHrMinIntVal(String.valueOf(trImpact.getTrnxTimeFrom()));
 					int trnxTimeTo = DateUtil.getHrMinIntVal(String.valueOf(trImpact.getTrnxTimeTo()));
