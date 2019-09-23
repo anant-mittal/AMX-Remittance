@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -63,7 +62,6 @@ import com.amx.jax.sso.SSOTranx.SSOModel;
 import com.amx.jax.sso.SSOUser;
 import com.amx.jax.sso.server.ApiHeaderAnnotations.ApiDeviceHeaders;
 import com.amx.utils.ArgUtil;
-import com.amx.utils.HttpUtils;
 import com.amx.utils.JsonUtil;
 import com.amx.utils.TimeUtils;
 import com.amx.utils.URLBuilder;
@@ -125,6 +123,8 @@ public class SSOServerController {
 		map.put("tnt", AppContextUtil.getTenant().toString());
 		map.put("loginWithRop", sSOConfig.isRopEnabled());
 		map.put("loginWithoutCard", sSOConfig.isLoginWithoutCard());
+		map.put("loginWithPartner", sSOConfig.isLoginWithPartner());
+		map.put("loginWithDevice", sSOConfig.isLoginWithDevice());
 
 		return map;
 	}
@@ -194,7 +194,7 @@ public class SSOServerController {
 
 		redirect = ArgUtil.parseAsBoolean(redirect, true);
 		isReturn = ArgUtil.parseAsBoolean(isReturn, false);
-		clientType = (ClientType) ArgUtil.parseAsEnum(clientType, ClientType.BRANCH_WEB);
+		clientType = (ClientType) ArgUtil.parseAsEnum(clientType, sSOConfig.getLoginWithClientType());
 
 		if (json == SSOAuthStep.DO) {
 			json = formdata.getStep();
@@ -235,7 +235,7 @@ public class SSOServerController {
 				}
 				AmxFieldError x = new AmxFieldError();
 				x.setDescription("Terminal Id is " + sSOTranx.get().getBranchAdapterId());
-				
+
 				AppContextUtil.addWarning(x);
 				if (!ArgUtil.isEmpty(sSOTranx.get().getBranchAdapterId())) {
 					// Terminal Login

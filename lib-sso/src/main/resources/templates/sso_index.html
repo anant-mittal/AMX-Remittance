@@ -12,7 +12,8 @@
 			CONTEXT: '[[${SSO_LOGIN_PREFIX}]]',
 			SSO_LOGIN_URL: '[[${SSO_LOGIN_URL}]]',
 			SECURITY_CODE: '[[${sec_code}]]',
-			PARTNER_SECURITY_CODE: '[[${partner_sec_code}]]'
+			PARTNER_SECURITY_CODE: '[[${partner_sec_code}]]',
+			CLIENT_TYPE : '[[${partner_sec_code}]]'
 		}
 	</script>
 	<script id="terminal_session" th:src="${ADAPTER_URL} + '/pub/script/validation.js?tranx=' + ${x_tranx_id}"></script>
@@ -26,9 +27,11 @@
 	<div class="login-form">
 		<div class="left-panel">
 			<h4>Quick Tips<br />
-				<small style="font-weight: 200;">Make sure branch adapter is running. <a target="_blank" href="http://127.0.0.1:8020">check</a></small>
+				<th:block th:switch="${loginWithDevice}">
+					<small style="font-weight: 200;" th:case="true" >Make sure branch adapter is running. <a target="_blank" href="http://127.0.0.1:8020">check</a></small>
+					<small style="font-weight: 200;" th:case="false" >Make sure device is registered. <a target="_blank" th:href="${SSO_LOGIN_PREFIX + '/pub/device/pair'}">check</a></small>
+				</th:block>
 			</h4>
-
 			<ul class="tip-list withSmartCard">
 				<li>
 					<div class="img-wrapper"><img th:src="${SSO_LOGIN_PREFIX} + '/images/civilid.png'" /></div>
@@ -75,8 +78,10 @@
 					<div>
 						<label class="radio-container"><span class="radio"><input type="radio" name="cardtype" value="SELF" checked /><span></span></span>Smart
 							Card</label>&nbsp;&nbsp;&nbsp;
-						<label class="radio-container"><span class="radio"><input type="radio" name="cardtype" value="ASSISTED" /><span></span></span>Smart
+						<th:block th:switch="${loginWithPartner}">
+						<label class="radio-container" th:case="true"><span class="radio"><input type="radio" name="cardtype" value="ASSISTED" /><span></span></span>Smart
 							Card Not Available</label>
+						</th:block>
 					</div>
 				</div>
 				<div class="withSmartCard SELF">

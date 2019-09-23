@@ -108,7 +108,7 @@ public class UserClient {
 
 		// Other Channels
 		OFFSITE_PAD(DeviceType.TABLET, Channel.BRANCH), KIOSK(DeviceType.COMPUTER, Channel.KIOSK),
-		DELIVERY_APP(DeviceType.MOBILE, Channel.BRANCH), REMOTE(DeviceType.COMPUTER, Channel.OFFSITE),
+		DELIVERY_APP(DeviceType.MOBILE, Channel.BRANCH), OFFSITE_WEB(DeviceType.COMPUTER, Channel.OFFSITE),
 
 		// Customer Facing interfaces
 		ONLINE_WEB(DeviceType.COMPUTER, Channel.ONLINE), ONLINE_AND(DeviceType.MOBILE, Channel.MOBILE),
