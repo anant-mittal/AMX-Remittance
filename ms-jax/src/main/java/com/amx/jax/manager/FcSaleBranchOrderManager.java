@@ -78,6 +78,8 @@ import com.amx.jax.services.FcSaleDeliveryService;
 import com.amx.jax.util.ConverterUtil;
 import com.amx.jax.util.DateUtil;
 
+import jodd.typeconverter.Convert;
+
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
 public class FcSaleBranchOrderManager {
@@ -1980,62 +1982,66 @@ public class FcSaleBranchOrderManager {
 	public void validateTimeSlot(FxDeliveryTimeSlotDto fxDeliveryTimeSlotDto) {
 		if (fxDeliveryTimeSlotDto != null) {
 			if (fxDeliveryTimeSlotDto.getStartTime() != null) {
-				String[] splitStartTime = fxDeliveryTimeSlotDto.getStartTime().toString().split("\\.");
-				if (splitStartTime != null) {
-					if (splitStartTime.length >= 2 && splitStartTime[1] != null) {
-						if (new BigDecimal(splitStartTime[1]).compareTo(BigDecimal.ZERO) == 0
-								|| new BigDecimal(splitStartTime[1]).compareTo(new BigDecimal(50)) == 0) {
-							// continue
-						} else {
-							logger.info("Please enter start time in multiples of 30 minutes");
-							throw new GlobalException("Please enter start time in multiples of 30 minutes");
-						}
+
+				double doubleNumber = Convert.toDouble(fxDeliveryTimeSlotDto.getStartTime());
+				String doubleAsString = String.valueOf(doubleNumber);
+				int indexOfDecimal = doubleAsString.indexOf(".");
+				Double minutes = Double.parseDouble(doubleAsString.substring(indexOfDecimal));
+				if (minutes != null && minutes != 0) {
+					minutes = (minutes * 60);
+					if (new BigDecimal(minutes).compareTo(new BigDecimal(30)) == 0) {
+						// continue
+					} else {
+						logger.info("Please enter start time in multiples of 30 minutes");
+						throw new GlobalException("Please enter start time in multiples of 30 minutes");
 					}
 				}
 			}
 			if (fxDeliveryTimeSlotDto.getEndTime() != null) {
-				String[] splitStartTime = fxDeliveryTimeSlotDto.getEndTime().toString().split("\\.");
-				if (splitStartTime != null) {
-					if (splitStartTime.length >= 2 && splitStartTime[1] != null) {
-						if (new BigDecimal(splitStartTime[1]).compareTo(BigDecimal.ZERO) == 0
-								|| new BigDecimal(splitStartTime[1]).compareTo(new BigDecimal(50)) == 0) {
-							// continue
-						} else {
-							logger.info("Please enter EndTime in multiples of 30 minutes");
-							throw new GlobalException("Please enter EndTime in multiples of 30 minutes");
-						}
-					}
-				}
-
-			}
-			if (fxDeliveryTimeSlotDto.getOfficeStartTime() != null) {
-				String[] splitStartTime = fxDeliveryTimeSlotDto.getOfficeStartTime().toString().split("\\.");
-				if (splitStartTime != null) {
-					if (splitStartTime.length >= 2 && splitStartTime[1] != null) {
-						if (new BigDecimal(splitStartTime[1]).compareTo(BigDecimal.ZERO) == 0
-								|| new BigDecimal(splitStartTime[1]).compareTo(new BigDecimal(50)) == 0) {
-							// continue
-						} else {
-							logger.info("Please enter Office StartTime in multiples of 30 minutes");
-							throw new GlobalException("Please enter Office StartTime in multiples of 30 minutes");
-						}
+				double doubleNumber = Convert.toDouble(fxDeliveryTimeSlotDto.getEndTime());
+				String doubleAsString = String.valueOf(doubleNumber);
+				int indexOfDecimal = doubleAsString.indexOf(".");
+				Double minutes = Double.parseDouble(doubleAsString.substring(indexOfDecimal));
+				if (minutes != null && minutes != 0) {
+					minutes = (minutes * 60);
+					if (new BigDecimal(minutes).compareTo(new BigDecimal(30)) == 0) {
+						// continue
+					} else {
+						logger.info("Please enter EndTime in multiples of 30 minutes");
+						throw new GlobalException("Please enter EndTime in multiples of 30 minutes");
 					}
 				}
 			}
-			if (fxDeliveryTimeSlotDto.getOfficeEndTime() != null) {
-				String[] splitStartTime = fxDeliveryTimeSlotDto.getOfficeEndTime().toString().split("\\.");
-				if (splitStartTime != null) {
-					if (splitStartTime.length >= 2 && splitStartTime[1] != null) {
-						if (new BigDecimal(splitStartTime[1]).compareTo(BigDecimal.ZERO) == 0
-								|| new BigDecimal(splitStartTime[1]).compareTo(new BigDecimal(50)) == 0) {
-							// continue
-						} else {
-							logger.info("Please enter Office EndTime in multiples of 30 minutes");
-							throw new GlobalException("Please enter Office EndTime in multiples of 30 minutes");
-						}
-					}
+		}
+		if (fxDeliveryTimeSlotDto.getOfficeStartTime() != null) {
+			double doubleNumber = Convert.toDouble(fxDeliveryTimeSlotDto.getOfficeStartTime());
+			String doubleAsString = String.valueOf(doubleNumber);
+			int indexOfDecimal = doubleAsString.indexOf(".");
+			Double minutes = Double.parseDouble(doubleAsString.substring(indexOfDecimal));
+			if (minutes != null && minutes != 0) {
+				minutes = (minutes * 60);
+				if (new BigDecimal(minutes).compareTo(new BigDecimal(30)) == 0) {
+					// continue
+				} else {
+					logger.info("Please enter Office StartTime in multiples of 30 minutes");
+					throw new GlobalException("Please enter Office StartTime in multiples of 30 minutes");
 				}
+			}
+		}
 
+		if (fxDeliveryTimeSlotDto.getOfficeEndTime() != null) {
+			double doubleNumber = Convert.toDouble(fxDeliveryTimeSlotDto.getOfficeEndTime());
+			String doubleAsString = String.valueOf(doubleNumber);
+			int indexOfDecimal = doubleAsString.indexOf(".");
+			Double minutes = Double.parseDouble(doubleAsString.substring(indexOfDecimal));
+			if (minutes != null && minutes != 0) {
+				minutes = (minutes * 60);
+				if (new BigDecimal(minutes).compareTo(new BigDecimal(30)) == 0) {
+					// continue
+				} else {
+					logger.info("Please enter Office EndTime in multiples of 30 minutes");
+					throw new GlobalException("Please enter Office EndTime in multiples of 30 minutes");
+				}
 			}
 		}
 
