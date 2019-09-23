@@ -182,7 +182,7 @@ public class DirectPaymentLinkManager extends AbstractModel {
 				List<CustomerShoppingCartDto> shoppingCartDetails = shpCartData.getShoppingCartDetails();
 				if (shoppingCartDetails != null) {
 					BigDecimal totalNetAmounts = shpCartData.getTotalNetAmount();
-					int value = paymentLink.getPayAmount().compareTo(totalNetAmounts);
+					int value = totalNetAmounts.compareTo(paymentLink.getPayAmount());
 					if (value == -1) {
 						throw new GlobalException(JaxError.AMOUNT_MISMATCH, "Amount is Mismatch, Invalid Link");
 					}
