@@ -46,6 +46,7 @@ import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.request.remittance.RoutingPricingRequest;
 import com.amx.jax.model.response.CurrencyMasterDTO;
+import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.FlexFieldReponseDto;
 import com.amx.jax.model.response.remittance.ParameterDetailsDto;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
@@ -175,7 +176,9 @@ public class RemittController {
 	@RequestMapping(value = "/api/user/tranx/print_history", method = { RequestMethod.POST })
 	public ResponseWrapper<List<Map<String, Object>>> printHistory(
 			@RequestBody ResponseWrapper<List<Map<String, Object>>> wrapper) throws IOException, PostManException {
-		File file = postManService.processTemplate(new File(TemplatesMX.REMIT_STATMENT, wrapper, File.Type.PDF).lang(AppContextUtil.getTenant().defaultLang()))
+		File file = postManService
+				.processTemplate(new File(TemplatesMX.REMIT_STATMENT, wrapper, File.Type.PDF)
+						.lang(AppContextUtil.getTenant().defaultLang()))
 				.getResult();
 		file.create(response, true);
 		return wrapper;
@@ -484,6 +487,20 @@ public class RemittController {
 				| URISyntaxException e) {
 			wrapper.setMessage(OWAStatusStatusCodes.ERROR, e);
 		}
+		return wrapper;
+	}
+
+	@RequestMapping(value = "/api/remitt/tranx/add2cart", method = { RequestMethod.POST })
+	public ResponseWrapperM<BranchRemittanceApplResponseDto, AuthResponseOTPprefix> saveToCart(
+			@RequestHeader(value = "mOtp", required = false) String mOtpHeader,
+			@RequestParam(required = false) String mOtp,
+			@RequestBody RemittanceTransactionDrRequestModel transactionRequestModel, HttpServletRequest request) {
+		ResponseWrapperM<BranchRemittanceApplResponseDto, AuthResponseOTPprefix> wrapper = new ResponseWrapperM<BranchRemittanceApplResponseDto, AuthResponseOTPprefix>();
+
+		mOtp = JaxAuthContext.mOtp(ArgUtil.ifNotEmpty(mOtp, mOtpHeader));
+		transactionRequestModel.setmOtp(mOtp);
+		wrapper.setData(jaxService.setDefaults().getRemitClient()
+				.addToCart(transactionRequestModel).getResult());
 		return wrapper;
 	}
 
