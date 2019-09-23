@@ -546,7 +546,11 @@ public class BranchRemittanceApplManager {
 			remittanceApplication.setSourceofincome(applRequestModel.getSourceOfFund());
 			remittanceApplication.setApplInd(ConstantDocument.COUNTER);
 			remittanceApplication.setWuIpAddress(metaData.getDeviceIp());
+			remittanceApplication.setInstruction("URGENT");
+			//if(JaxUtil.isNullZeroBigDecimalCheck(remittanceApplication.getLocalCommisionAmount())) {
 			
+			if(!StringUtils.isBlank(dynamicRoutingPricingResponse.getDiscountOnComissionFlag()) 
+			&& dynamicRoutingPricingResponse.getDiscountOnComissionFlag().equalsIgnoreCase(ConstantDocument.Yes)) {
 			
 			remitApplManager.setFurtherInstruction(remittanceApplication,applRequestModel.getAdditionalFields());
 			
