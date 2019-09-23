@@ -42,6 +42,7 @@ import com.amx.jax.client.remittance.RemittanceClient;
 import com.amx.jax.dict.Language;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.request.remittance.BranchRemittanceGetExchangeRateRequest;
+import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.request.remittance.RoutingPricingRequest;
@@ -526,5 +527,17 @@ public class RemittController {
 			throw new UIServerError(OWAStatusStatusCodes.INVALID_LINK);
 		}
 		return ResponseWrapper.build(jaxService.setDefaults().getRemitClient().saveCustomerRating(customerRatingDTO));
+	}
+
+	@RequestMapping(value = "/api/remitt/cart/pay", method = { RequestMethod.POST })
+	public ResponseWrapperM<RemittanceApplicationResponseModel, Object> saveToCart(
+			@RequestHeader(value = "mOtp", required = false) String mOtpHeader,
+			@RequestParam(required = false) String mOtp,
+			@RequestBody BranchRemittanceRequestModel remittanceRequestModel, HttpServletRequest request) {
+		ResponseWrapperM<RemittanceApplicationResponseModel, Object> wrapper = new ResponseWrapperM<RemittanceApplicationResponseModel, Object>();
+		mOtp = JaxAuthContext.mOtp(ArgUtil.ifNotEmpty(mOtp, mOtpHeader));
+		wrapper.setData(jaxService.setDefaults().getRemitClient().payShoppingCart(remittanceRequestModel)
+				.getResult());
+		return wrapper;
 	}
 }
