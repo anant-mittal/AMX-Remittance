@@ -593,13 +593,13 @@ public class BranchRemittanceApplManager {
 
 
 
-			return remittanceApplication;
-
+			
+			}
 		}catch(GlobalException e){
 			logger.error("create application", e.getErrorMessage() + "" +e.getErrorKey());
 			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}
-
+		return remittanceApplication;
 
 	}
 
