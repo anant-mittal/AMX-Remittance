@@ -28,7 +28,7 @@ public class SnapConstants {
 		TRANX_DONE("tranx-done", SnapIndexName.TRANX),
 		TRANX_ANOMALY("tranx-anomaly", SnapIndexName.TRANX),
 		XRATE_SELL_TRANSFER("xrate-sell-transfer", SnapIndexName.XRATE),
-		CUSTOMER_VERIFICATION_REPORT("customer-verification-report", SnapIndexName.LOGS, "amxlogs"),
+		CUSTOMER_VERIFICATION_REPORT("customer-verification-report", SnapIndexName.LOGS, "auditlogs"),
 		BUGZ_STORIES("bugz-stories", SnapIndexName.ALL),
 		;
 
