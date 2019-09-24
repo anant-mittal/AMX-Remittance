@@ -17,14 +17,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.amx.amxlib.meta.model.CustomerRatingDTO;
-import com.amx.jax.client.fx.IFxBranchOrderService.Params;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.AmxMeta;
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.client.fx.IFxBranchOrderService.Params;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxEvent;
 import com.amx.jax.dao.RemittanceApplicationDao;
@@ -42,6 +40,7 @@ import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.model.PushMessage;
+import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.services.CustomerRatingService;
 import com.amx.jax.services.PurposeOfTransactionService;
 import com.amx.jax.services.RemittanceTransactionService;
@@ -51,7 +50,6 @@ import com.amx.jax.userservice.dao.ReferralDetailsDao;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.ConverterUtil;
 import com.amx.jax.util.JaxContextUtil;
-import com.amx.jax.dict.Language;
 
 @RestController
 @RequestMapping(REMIT_API_ENDPOINT)
@@ -164,9 +162,6 @@ public class RemittanceController {
 		return response;
 	}
 
-	@Autowired
-	protected AmxMeta amxMeta;
-
 	@RequestMapping(value = "/sourceofincome/", method = RequestMethod.POST)
 	public ApiResponse sourceofIncome() {
 		BigDecimal languageId = amxMeta.getClientLanguage(Language.EN).getBDCode();
@@ -229,18 +224,14 @@ public class RemittanceController {
 			refDao.updateReferralCode(referralDetails);
 			if (referralDetails.getRefferedByCustomerId() != null) {
 				PushMessage pushMessage = new PushMessage();
-				pushMessage.setSubject("Refer To Win!");
-				pushMessage.setMessage(
-						"Congraturlations! Your reference has done the first transaction on AMIEC App! You will get a chance to win from our awesome Referral Program! Keep sharing the links to as many contacts you can and win exciting prices on referral success!");
+				pushMessage.setITemplate(TemplatesMX.FRIEND_REFERED);
 				pushMessage.addToUser(referralDetails.getRefferedByCustomerId());
 				pushNotifyClient.send(pushMessage);
 			}
 			
 			if(referralDetails.getCustomerId() != null) {
 				PushMessage pushMessage = new PushMessage();
-				pushMessage.setSubject("Refer To Win!");
-				pushMessage.setMessage(
-						"Welcome to Al Mulla family! Win a chance to get exciting offers at Al Mulla Exchange by sharing the links to as many contacts as you can.");
+				pushMessage.setITemplate(TemplatesMX.FRIEND_REFER);
 				pushMessage.addToUser(referralDetails.getCustomerId());
 				pushNotifyClient.send(pushMessage);	
 			}
