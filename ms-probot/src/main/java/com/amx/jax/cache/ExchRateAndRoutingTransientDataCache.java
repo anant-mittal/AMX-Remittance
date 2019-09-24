@@ -39,7 +39,7 @@ public class ExchRateAndRoutingTransientDataCache {
 
 	private CUSTOMER_CATEGORY customerCategory;
 
-	//1
+	// 1
 	private List<ExchangeRateDetails> sellRateDetails = new ArrayList<>();
 
 	private Map<BigDecimal, BankDetailsDTO> bankDetails;
@@ -50,7 +50,7 @@ public class ExchRateAndRoutingTransientDataCache {
 
 	private final Map<BigDecimal, Map<String, HolidayListMasterModel>> countryHolidays = new HashMap<BigDecimal, Map<String, HolidayListMasterModel>>();
 
-	private OnlineMarginMarkup margin = null;
+	private Map<BigDecimal, OnlineMarginMarkup> bankMarginMap = new HashMap<BigDecimal, OnlineMarginMarkup>();
 
 	private final Map<BigDecimal, TimezoneMasterModel> countryTimezones = new HashMap<BigDecimal, TimezoneMasterModel>();
 
@@ -86,12 +86,29 @@ public class ExchRateAndRoutingTransientDataCache {
 		this.bankGlcBalMap = bankGlcBalMap;
 	}
 
-	public OnlineMarginMarkup getMargin() {
+	public OnlineMarginMarkup getMarginForBank(BigDecimal bankId) {
+		/**
+		 * Get margin for the Rate
+		 */
+
+		OnlineMarginMarkup margin = this.bankMarginMap.get(bankId);
+
+		if (null == margin) {
+			margin = new OnlineMarginMarkup();
+			margin.setMarginMarkup(new BigDecimal(0));
+		}
+
 		return margin;
 	}
 
-	public void setMargin(OnlineMarginMarkup margin) {
-		this.margin = margin;
+	public void setMarginForBank(BigDecimal bankId, OnlineMarginMarkup margin) {
+		this.bankMarginMap.put(bankId, margin);
+	}
+
+	public void setMargins(Map<BigDecimal, OnlineMarginMarkup> bankMargins) {
+		if (bankMargins != null && !bankMargins.isEmpty()) {
+			this.bankMarginMap = bankMargins;
+		}
 	}
 
 	public List<ExchangeRateDetails> getSellRateDetails() {
@@ -184,6 +201,10 @@ public class ExchRateAndRoutingTransientDataCache {
 	 * @return
 	 */
 	public BigDecimal getAvgRateGLCForBank(BigDecimal bankId) {
+
+		if (this.bankGlcBalMap == null) {
+			return null;
+		}
 
 		BankGLCData bankGLCData = this.bankGlcBalMap.get(bankId);
 

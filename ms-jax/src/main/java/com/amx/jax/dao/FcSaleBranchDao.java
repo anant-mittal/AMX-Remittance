@@ -25,6 +25,7 @@ import com.amx.jax.dbmodel.fx.ForeignCurrencyStockTransfer;
 import com.amx.jax.dbmodel.fx.FxDeliveryDetailsModel;
 import com.amx.jax.dbmodel.fx.FxOrderTransactionModel;
 import com.amx.jax.dbmodel.fx.OrderManagementView;
+import com.amx.jax.dbmodel.fx.UserFcStockView;
 import com.amx.jax.dbmodel.fx.UserStockView;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.repository.CurrencyWiseDenominationRepository;
@@ -39,6 +40,7 @@ import com.amx.jax.repository.fx.EmployeeDetailsRepository;
 import com.amx.jax.repository.fx.FcSaleOrderManagementRepository;
 import com.amx.jax.repository.fx.FxDeliveryDetailsRepository;
 import com.amx.jax.repository.fx.FxOrderTransactionRespository;
+import com.amx.jax.repository.fx.UserFcStockRepository;
 import com.amx.jax.repository.fx.UserStockRepository;
 import com.amx.jax.repository.fx.VwFxDeliveryDetailsRepository;
 import com.google.common.collect.Lists;
@@ -91,6 +93,9 @@ public class FcSaleBranchDao {
 	
 	@Autowired
 	FxOrderTransactionRespository fxOrderTransactionRespository;
+	
+	@Autowired
+	UserFcStockRepository userFcStockRepository;
 	
 	public List<OrderManagementView> fetchFcSaleOrderManagement(BigDecimal applicationcountryId,BigDecimal areaCode){
 		return fcSaleOrderManagementRepository.findByApplicationCountryIdAndAreaCode(applicationcountryId,areaCode);
@@ -469,6 +474,18 @@ public class FcSaleBranchDao {
 	
 	public List<UserStockView> fetchUserStockAllCurrencyCurrentDate(String userName,BigDecimal countryBranchId,List<BigDecimal> foreignCurrencyId){
 		return userStockRepository.fetchUserStockByAllCurrencyDate(userName, countryBranchId, foreignCurrencyId);
+	}
+	
+	public List<OrderManagementView> fetchFcSaleOrderManagementForHeadOfficeLastOneWeek(BigDecimal applicationCountryId,Date fromDate,Date toDate){
+		return fcSaleOrderManagementRepository.fetchLastOneWeekRecords(applicationCountryId,fromDate,toDate);
+	}
+	
+	public List<OrderManagementView> fetchFcSaleOrderManagementByGovernateLastOneWeek(BigDecimal applicationcountryId,BigDecimal governate,Date fromDate,Date toDate){
+		return fcSaleOrderManagementRepository.fetchLastOneWeekRecordsByGovernateId(applicationcountryId,governate,fromDate,toDate);
+	}
+	
+	public List<UserFcStockView> fetchUserFCStockAllCurrencyCurrentDate(String userName,BigDecimal countryBranchId,List<BigDecimal> foreignCurrencyId){
+		return userFcStockRepository.fetchUserStockByAllCurrencyDate(userName, countryBranchId, foreignCurrencyId);
 	}
 	
 }

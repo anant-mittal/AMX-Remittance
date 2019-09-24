@@ -94,6 +94,7 @@ public class BenificiaryListView implements Serializable {
 	private String bankShortNames;
 	private String ibanNumber;
 	private String beneficiaryZipCode;
+	private String bankLocalName;
 
 	@Id
 	@Column(name = "IDNO")
@@ -690,4 +691,14 @@ public class BenificiaryListView implements Serializable {
 	public void setBeneficiaryZipCode(String beneficiaryZipCode) {
 		this.beneficiaryZipCode = beneficiaryZipCode;
 	}
+		
+	@Column(name = "BANK_FULL_NAME_ARABIC")
+	public String getBankLocalName() {
+		return bankLocalName;
+	}
+	public void setBankLocalName(String bankLocalName) {
+		this.bankLocalName = bankLocalName;
+	}
+	
+	
 }

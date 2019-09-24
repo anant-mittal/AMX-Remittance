@@ -1,10 +1,10 @@
 package com.amx.jax.pricer.manager;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -48,7 +48,12 @@ import com.amx.utils.DateUtil;
 public class RemitRoutingManager {
 
 	private static final int MAX_DELIVERY_ATTEMPT_DAYS = 60;
+
+	private static final BigDecimal DEF_DELIVERY_HRS = new BigDecimal(5 * 24);
+
 	private static final BigDecimal FROM_AMT_FRACTION = new BigDecimal(0.00000001);
+
+	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd-MMM hh:mm a");
 
 	// TODO : Treasury Funding Time.
 	// private static final int KWT_TREASURY_FUNDING_TIME = 12;
@@ -138,7 +143,7 @@ public class RemitRoutingManager {
 			}
 
 		}
-
+		
 		// This is Interim FIX FOR HOME-SEND EXclussion and should be removed on
 		// Priority.
 		// NOT to Excluded for HOMESEND
@@ -232,14 +237,6 @@ public class RemitRoutingManager {
 					exchangeRateDetails.setDiscountAvailed(false);
 				}
 
-			} else if (PricerServiceConstants.SERVICE_PROVIDER_INDICATOR.equalsIgnoreCase(view.getBankIndicator())) {
-
-				// TODO : Base Rates should be without Pips and Net Rate With Pips
-				// For Service Providers Always Set the Net Rate Same as Base Rate
-				if (exchangeRateDetails != null && exchangeRateDetails.getSellRateBase() != null) {
-					exchangeRateDetails.setSellRateNet(exchangeRateDetails.getSellRateBase());
-				}
-
 			}
 
 			routeComputeDetails.setExchangeRateDetails(exchangeRateDetails);
@@ -257,7 +254,7 @@ public class RemitRoutingManager {
 	 */
 	public void computeTrnxRoutesAndDelivery(ExchangeRateAndRoutingRequest exchangeRateAndRoutingRequest) {
 
-		getTimezoneForCountry(exchangeRateAndRoutingRequest.getLocalCountryId());
+		String localTimezone = getTimezoneForCountry(exchangeRateAndRoutingRequest.getLocalCountryId());
 
 		List<TransientRoutingComputeDetails> routingDetailsList = transientDataCache.getRoutingMatrixData();
 
@@ -487,6 +484,8 @@ public class RemitRoutingManager {
 				completionDateForeign = estmdBeneDeliveryDetails.getCompletionDateForeign();
 			}
 
+			// finalDeliveryDetails.setStartTT(transientDataCache.getTrnxBeginTime());
+
 			finalDeliveryDetails.setProcessTimeAbsoluteInSeconds(processTimeAbs);
 			finalDeliveryDetails.setProcessTimeOperationalInSeconds(processTimeOps);
 			finalDeliveryDetails.setProcessTimeTotalInSeconds(processTimeTotal);
@@ -499,7 +498,11 @@ public class RemitRoutingManager {
 			finalDeliveryDetails.setStartDateForeign(startDateForeign);
 			finalDeliveryDetails.setCompletionDateForeign(completionDateForeign);
 
-			finalDeliveryDetails.setDeliveryDuration(getDeliveryDuration(processTimeTotal));
+			// Change the Duration String -- 12th-Aug-2019
+			finalDeliveryDetails.setDeliveryDuration(getDeliveryAtLocalTime(transientDataCache.getTrnxBeginTime(),
+					finalCompletionTT, localTimezone, processTimeTotal));
+
+			// finalDeliveryDetails.setDeliveryDuration(getDeliveryDuration(processTimeTotal));
 
 			finalDeliveryDetails.setCrossedMaxDeliveryDays(crossedMaxDeliveryDays);
 
@@ -517,6 +520,9 @@ public class RemitRoutingManager {
 		List<TransientRoutingComputeDetails> routeDataList = transientDataCache.getRoutingMatrixData();
 
 		List<TransientRoutingComputeDetails> removeList = new ArrayList<TransientRoutingComputeDetails>();
+
+		BigDecimal minFromAmt = null;
+		BigDecimal maxtoAmt = null;
 
 		for (TransientRoutingComputeDetails routeData : routeDataList) {
 
@@ -545,13 +551,29 @@ public class RemitRoutingManager {
 			BigDecimal toAmt = matrix.getToAmount() == null ? PricerServiceConstants.MAX_BIGD_12 : matrix.getToAmount();
 
 			// Adjust the from amount for Range Correction - only for perfect Integer
-			if (fromAmt.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0) {
-				fromAmt = fromAmt.subtract(BigDecimal.ONE).add(FROM_AMT_FRACTION).setScale(8, RoundingMode.UP);
-			}
+			// if (fromAmt.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0) {
+			// fromAmt = fromAmt.subtract(BigDecimal.ONE).add(FROM_AMT_FRACTION).setScale(8,
+			// RoundingMode.UP);
+			// }
 
-			if (fromAmt.compareTo(breakup.getConvertedFCAmount()) > 0
-					|| toAmt.compareTo(breakup.getConvertedFCAmount()) < 0) {
+			if (fromAmt.compareTo(breakup.getConvertedFCAmount()) > 0) {
+
 				removeList.add(routeData);
+
+				if (minFromAmt == null || minFromAmt.compareTo(fromAmt) > 0) {
+					minFromAmt = matrix.getFromAmount() == null ? BigDecimal.ZERO : matrix.getFromAmount();
+				}
+
+				continue;
+
+			} else if (toAmt.compareTo(breakup.getConvertedFCAmount()) < 0) {
+
+				removeList.add(routeData);
+
+				if (maxtoAmt == null || maxtoAmt.compareTo(toAmt) < 0) {
+					maxtoAmt = toAmt;
+				}
+
 				continue;
 			}
 
@@ -563,10 +585,19 @@ public class RemitRoutingManager {
 
 		if (routeDataList.isEmpty()) {
 
-			LOGGER.info("No Valid Transaction Routes are Available for Transaction Routing");
+			LOGGER.info(
+					"No Valid Transaction Routes are Available for Transaction Routing: From / To Amount Check Limit is Voided");
 
+			if (minFromAmt != null) {
+				throw new PricerServiceException(PricerServiceError.INVALID_TNX_AMOUNT_TOO_LOW,
+						"No valid transaction routes are eligible for amount less than " + minFromAmt + " FC");
+			} else if (maxtoAmt != null) {
+				throw new PricerServiceException(PricerServiceError.INVALID_TNX_AMOUNT_TOO_HIGH,
+						"No valid transaction routes are eligible for amount more than " + maxtoAmt + " FC");
+			} else {
 			throw new PricerServiceException(PricerServiceError.NO_VALID_TNX_ROUTES_AVAILABLE,
 					"No Valid Transaction Routes are Eligible for Transaction Routing");
+			}
 		}
 
 	}
@@ -678,7 +709,7 @@ public class RemitRoutingManager {
 		weekEndHrsFrom = ArgUtil.assignDefaultIfNull(weekEndHrsFrom, BigDecimal.ZERO);
 		weekEndHrsTo = ArgUtil.assignDefaultIfNull(weekEndHrsTo, BigDecimal.ZERO);
 
-		processTimeInHrs = ArgUtil.assignDefaultIfNull(processTimeInHrs, BigDecimal.ZERO);
+		processTimeInHrs = ArgUtil.assignDefaultIfNull(processTimeInHrs, DEF_DELIVERY_HRS);
 
 		WorkingHoursData workingHoursData = new WorkingHoursData();
 
@@ -856,6 +887,32 @@ public class RemitRoutingManager {
 
 	}
 
+	private String getDeliveryAtLocalTime(long startTT, long completionTT, String timezoneLocal, long durationInSecs) {
+
+		// Get the appropriate Timezone
+		ZoneId zoneId = ZoneId.of(timezoneLocal);
+
+		// Compute the Correct Zone Date and Time of Block Delivery BEGIN
+		Instant epochStartInstant = Instant.ofEpochMilli(startTT);
+		ZonedDateTime beginZonedDT = ZonedDateTime.ofInstant(epochStartInstant, zoneId);
+
+		// Compute the Correct Zone Date and Time of Block Delivery COMPLETE
+		Instant epochCompletionInstant = Instant.ofEpochMilli(completionTT);
+		ZonedDateTime completionZonedDT = ZonedDateTime.ofInstant(epochCompletionInstant, zoneId);
+
+		String deliveryAt;
+
+		if (beginZonedDT.getDayOfMonth() == completionZonedDT.getDayOfMonth()) {
+			deliveryAt = getDeliveryDuration(durationInSecs);
+		} else {
+			// Set Delivery at : dd-mmm HH:MM
+			deliveryAt = completionZonedDT.format(DATE_FORMATTER);
+		}
+
+		return deliveryAt;
+
+	}
+
 	private String getDeliveryDuration(long durationInSecs) {
 
 		TimeUnit tu = TimeUnit.SECONDS;
@@ -906,7 +963,7 @@ public class RemitRoutingManager {
 
 		return serviceProvidersMatrix;
 
-	}
+		}
 
 	public List<BigDecimal> getRoutingBankIds(List<ViewExRoutingMatrix> routingMatrix) {
 

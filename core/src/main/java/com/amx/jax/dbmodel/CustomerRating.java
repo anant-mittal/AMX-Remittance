@@ -27,6 +27,10 @@ public class CustomerRating implements java.io.Serializable{
 	private Date createdDate;
 	private BigDecimal rating;
 	private String ratingRemark;
+	private BigDecimal collectionDocNo;
+	private BigDecimal collectionDocFyr;
+	private String feedbackType;
+	private BigDecimal delvSeqId;
 	
 	
 	@Id
@@ -95,6 +99,39 @@ public class CustomerRating implements java.io.Serializable{
 	public void setRatingRemark(String ratingRemark) {
 		this.ratingRemark = ratingRemark;
 	}
+	@Column(name = "FEEDBACK_TYPE ")
+	public String getFeedbackType() {
+		return feedbackType;
+	}
+	public void setFeedbackType(String feedbackType) {
+		this.feedbackType = feedbackType;
+	}
+	@Column(name = "COLLECTION_DOCUMENT_NO")
+	public BigDecimal getCollectionDocNo() {
+		return collectionDocNo;
+	}
+	public void setCollectionDocNo(BigDecimal collectionDocNo) {
+		this.collectionDocNo = collectionDocNo;
+	}
+	@Column(name = "COLLECTION_DOC_FINANCE_YEAR")
+	public BigDecimal getCollectionDocFyr() {
+		return collectionDocFyr;
+	}
+	public void setCollectionDocFyr(BigDecimal collectionDocFyr) {
+		this.collectionDocFyr = collectionDocFyr;
+	}
+	
+	@Column(name = "DELV_SEQ_ID")
+	public BigDecimal getDelvSeqId() {
+		return delvSeqId;
+	}
+	public void setDelvSeqId(BigDecimal delvSeqId) {
+		this.delvSeqId = delvSeqId;
+	}
+	
+	
+	
+	
 	
 	
 	

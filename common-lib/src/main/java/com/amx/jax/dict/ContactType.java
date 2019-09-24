@@ -2,7 +2,7 @@ package com.amx.jax.dict;
 
 public enum ContactType {
 	SMS("sms"), EMAIL("email"), WHATSAPP("wa"), SMS_EMAIL("esms"),
-
+	FBPUSH("push"),
 	// Deprecated
 	MOBILE(SMS),
 	// Default Null Value

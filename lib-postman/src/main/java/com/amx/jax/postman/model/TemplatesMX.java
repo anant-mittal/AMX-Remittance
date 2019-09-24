@@ -34,8 +34,8 @@ public enum TemplatesMX implements ITemplate {
 	// Rate Alert, PlaceOrder
 	RATE_ALERT("place-order"), RATE_ALERT_COMPLETION("place-order-executed"),
 
-	BRANCH_SEARCH_EMPTY("BranchSearchEmpty"), TEST("test"), BRANCH_FEEDBACK("trnx-feedback", Channel.TEMPLATETEST), TT("tt", Channel.TEMPLATETEST), EFT("eft", Channel.TEMPLATETEST),
-	CASH("cash", Channel.TEMPLATETEST),
+	BRANCH_SEARCH_EMPTY("BranchSearchEmpty"), TEST("test"), BRANCH_FEEDBACK("trnx-feedback", Channel.FEED), TT("tt", Channel.FEED), EFT("eft", Channel.FEED),
+	CASH("cash", Channel.FEED),
 
 	CIVILID_EXPIRY("civilexpiry"), CIVILID_EXPIRED("civilexpired"),
 
@@ -68,8 +68,24 @@ public enum TemplatesMX implements ITemplate {
 	POLICY_OPTOUT_SYSTEM("PolicyOptoutSystem"),
 	POLICY_EXPIRY_REMINDER("PolicyExpiryReminder"),
 	POLICY_EXPIRED("PolicyExpired"),
+	POLICY_PENDING_TRNX("PolicyPendingTrnx"),
+
+	HOMESEND_TRANSACTION_FAILAURE("HomeSendTransactionFailure"),
+
+	//Add Bene Templates
+	BENE_SUCC("BeneCreationSuccess"),
+	BENE_SUCC_SMS("bene-success-sms",Channel.NOTIPY),
+
+	// Online coupon template
+	ONLINE_COUPON("OnlineCoupon"),
 	
+	//WU Notifications Templates
 	
+	WU_TRNX_SUCCESS("WUTrnxSuccess"),
+	WU_PICKUP_REMINDER("WUPickupReminder"),
+	WU_CANCEL_REMINDER("WUCancelReminder"),
+	WU_TRNX_CANCELLED("WUTrnxCancelled"),
+
 	// Default add enums above this
 	DEFAULT("default");
 

@@ -6,6 +6,7 @@ import com.amx.jax.error.JaxError;
 import com.amx.jax.model.request.serviceprovider.ServiceProviderCallRequestDto;
 import com.amx.jax.model.response.serviceprovider.Quotation_Call_Response;
 import com.amx.jax.model.response.serviceprovider.ServiceProviderResponse;
+import com.amx.jax.model.response.serviceprovider.Remittance_Call_Response;
 
 public interface IServiceProviderService
 {

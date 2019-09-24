@@ -38,6 +38,7 @@ public class BankCharges implements Serializable{
 	private Date approvedDate;
 	private String approvedBy;
 	private String remarks;
+	private BigDecimal beneCountryId;
 
 	public BankCharges() {
 		super();
@@ -188,6 +189,14 @@ public class BankCharges implements Serializable{
 	}
 	public void setRemarks(String remarks) {
 		this.remarks = remarks;
+	}
+
+	@Column(name="BENE_COUNTRY_ID")
+	public BigDecimal getBeneCountryId() {
+		return beneCountryId;
+	}
+	public void setBeneCountryId(BigDecimal beneCountryId) {
+		this.beneCountryId = beneCountryId;
 	}
 
 }

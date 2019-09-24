@@ -68,6 +68,12 @@ public class JaxAuthMetaResp implements Serializable {
 		return otpPrefix;
 	}
 
+	/**
+	 * This is complimentary field, will always have duplicate value mOTP,eOTP or
+	 * wOTP
+	 * 
+	 * @param otpPrefix
+	 */
 	public void setOtpPrefix(String otpPrefix) {
 		this.otpPrefix = otpPrefix;
 	}

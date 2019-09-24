@@ -15,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,7 +23,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 
-import com.amx.amxlib.meta.model.CustomerRatingDTO;
 import com.amx.jax.AppConstants;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
@@ -40,10 +40,13 @@ import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
 import com.amx.jax.http.RequestType;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.model.customer.CustomerRatingDTO;
 import com.amx.jax.rest.RestService;
 import com.amx.jax.swagger.ApiStatusBuilder.ApiStatus;
 import com.amx.jax.ui.UIConstants;
+import com.amx.jax.ui.UIConstants.Features;
 import com.amx.jax.ui.WebAppConfig;
+import com.amx.jax.ui.config.UIServerError;
 import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 import com.amx.jax.ui.model.ServerStatus;
 import com.amx.jax.ui.response.ResponseMessage;
@@ -181,7 +184,7 @@ public class HomeController {
 	 * @param model the model
 	 * @return the string
 	 */
-	@RequestMapping(value = { "/register/**", "/app/**", "/home/**", "/" }, method = { RequestMethod.GET })
+	@RequestMapping(value = { "/register/**", "/app/**", "/home/**", "/refer/**", "/" }, method = { RequestMethod.GET })
 	public String defaultPage(Model model) {
 		model.addAttribute("lang", httpService.getLanguage());
 		model.addAttribute("applicationTitle", webAppConfig.getAppTitle());
@@ -242,7 +245,7 @@ public class HomeController {
 		contactType = contactType.contactType();
 		try {
 			if (!ArgUtil.isEmpty(resend)) {
-				customerProfileClient.createVerificationLink(null, contactType, identity);
+				customerProfileClient.resendLink(identity, verId, verCode);
 			} else if (identity == null) {
 				customerProfileClient.validateVerificationLink(verId).getResult();
 			} else {
@@ -286,6 +289,14 @@ public class HomeController {
 		return map;
 	}
 
+	@RequestMapping(value = { "/pub/recaptcha/{feature}" },
+			method = { RequestMethod.GET })
+	public String recaptach(Model model, @PathVariable Features feature) {
+		model.addAttribute("googelReCaptachSiteKey", webAppConfig.getGoogelReCaptachSiteKey());
+		model.addAttribute("companyTnt", AppContextUtil.getTenant());
+		return "recaptcha";
+	}
+
 	@ApiJaxStatus({ JaxError.CUSTOMER_NOT_FOUND, JaxError.INVALID_OTP, JaxError.ENTITY_INVALID,
 			JaxError.ENTITY_EXPIRED })
 	@ApiStatus({ ApiStatusCodes.PARAM_MISSING })
@@ -296,8 +307,17 @@ public class HomeController {
 	public Map<String, Object> rating(
 			@PathVariable Products prodType, @PathVariable BigDecimal trnxId, @PathVariable String veryCode) {
 
-		boolean valid = JaxClientUtil.getTransactionVeryCode(trnxId).equals(veryCode);
-		AmxApiResponse<CustomerRatingDTO, ?> rating = jaxService.getRemitClient().inquireCustomerRating(trnxId);
+		boolean valid = false;
+		AmxApiResponse<CustomerRatingDTO, ?> rating = null;
+
+		if (prodType.equals(Products.REMIT)) {
+			valid = JaxClientUtil.getTransactionVeryCode(trnxId).equals(veryCode);
+			rating = jaxService.getRemitClient().inquireCustomerRating(trnxId, prodType.toString());
+		}
+		if (prodType.equals(Products.FXORDER)) {
+			valid = JaxClientUtil.getTransactionVeryCode(trnxId).equals(veryCode);
+			rating = jaxService.getFxOrderBranchClient().inquirefxOrderCustomerRating(trnxId, prodType.toString());
+		}
 
 		String errorCode = null;
 		String errorMessage = null;
@@ -323,5 +343,31 @@ public class HomeController {
 		model.addAttribute("ratingData", (map));
 		model.addAttribute("companyTnt", AppContextUtil.getTenant());
 		return "rating";
+	}
+
+	@ApiJaxStatus({ JaxError.CUSTOMER_NOT_FOUND, JaxError.INVALID_OTP, JaxError.ENTITY_INVALID,
+			JaxError.ENTITY_EXPIRED })
+	@ApiStatus({ ApiStatusCodes.PARAM_MISSING })
+	@RequestMapping(value = { "/pub/rating/{prodType}/submit" }, method = { RequestMethod.POST })
+	@ResponseBody
+	public ResponseWrapper<CustomerRatingDTO> appStatus(@RequestBody CustomerRatingDTO customerRatingDTO,
+			@RequestParam String veryCode, @PathVariable Products prodType) {
+
+		if (prodType.equals(Products.REMIT)) {
+			if (!JaxClientUtil.getTransactionVeryCode(customerRatingDTO.getRemittanceTransactionId())
+					.equals(veryCode)) {
+				throw new UIServerError(OWAStatusStatusCodes.INVALID_LINK);
+			}
+		}
+		if (prodType.equals(Products.FXORDER)) {
+			if (!JaxClientUtil.getTransactionVeryCode(customerRatingDTO.getRemittanceTransactionId())
+					.equals(veryCode)) {
+				throw new UIServerError(OWAStatusStatusCodes.INVALID_LINK);
+			}
+		}
+
+		return ResponseWrapper
+				.build(jaxService.setDefaults().getRemitClient().saveCustomerRating(customerRatingDTO, prodType));
+
 	}
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.AccountTypeFromViewModel;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.CountryMaster;
@@ -60,7 +61,7 @@ public class PartnerTransactionDao {
 	IUsdExchangeRateRepository usdExchangeRateRepository;
 	
 	public BenificiaryListView getBeneficiaryDetails(BigDecimal customerId,BigDecimal beneficiaryRelationShipSeqId) {
-		return beneficiaryViewRepository.findByCustomerIdAndBeneficiaryRelationShipSeqId(customerId, beneficiaryRelationShipSeqId);
+		return beneficiaryViewRepository.findByCustomerIdAndBeneficiaryRelationShipSeqIdAndIsActive(customerId, beneficiaryRelationShipSeqId,ConstantDocument.Yes);
 	}
 	
 	public CustomerDetailsView getCustomerDetails(BigDecimal customerId) {

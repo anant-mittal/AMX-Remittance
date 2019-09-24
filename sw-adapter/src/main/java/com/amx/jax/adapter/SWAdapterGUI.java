@@ -1,16 +1,28 @@
 package com.amx.jax.adapter;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.Date;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -25,15 +37,21 @@ import com.amx.jax.adapter.ACardReaderService.DeviceStatus;
 import com.amx.utils.Constants;
 import com.amx.utils.StringUtils;
 
-@Component
+//@Component
 public class SWAdapterGUI extends JFrame {
 
 	private static final long serialVersionUID = 2703873832309041808L;
 
 	public SWAdapterGUI() {
-		initUI();
+		// initUI();
+		setTitle(WIN_TITLE);
+		setSize(400, 400);
+		setLocationRelativeTo(null);
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		System.out.println("Started SWAdapterGUI");
 	}
 
+	public static final String DASH3 = "---";
 	public static final String DOT = "|";
 	public static final String STAT_FORMAT_PRE = "%-10s";
 	public static final String STAT_FORMAT_SUF = ":%30s";
@@ -51,6 +69,7 @@ public class SWAdapterGUI extends JFrame {
 
 	JLabel labelDescription = new JLabel("....");
 	JLabel labelDescriptionDetail = new JLabel("....");
+
 	public static SWAdapterGUI CONTEXT = null;
 	public static String LOG = "";
 	public static String WIN_TITLE = "Al Mulla Exchange - BranchAdapter";
@@ -59,15 +78,12 @@ public class SWAdapterGUI extends JFrame {
 
 	private JScrollPane pane = null;
 
-	private JScrollPane about = null;
+	private JScrollPane aboutTextPane = null;
 	JTextArea aboutTextArea = null;
+	private JButton updateButton;
 
-	private void initUI() {
-
-		setTitle(WIN_TITLE);
-		setSize(400, 400);
-		setLocationRelativeTo(null);
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
+	public void initUI() {
+		System.out.println("Init SWAdapterGUI");
 
 		JTabbedPane tabs = new JTabbedPane();
 
@@ -169,17 +185,40 @@ public class SWAdapterGUI extends JFrame {
 		textArea.setEditable(false);
 		pane = new JScrollPane(textArea);
 
+		// About Area
+		JPanel aboutPaneWrapper = new JPanel();
+		aboutPaneWrapper.setLayout(new BorderLayout());
+
+		JPanel innerAboutPane = new JPanel();
+		innerAboutPane.setLayout(new FlowLayout());
+
 		aboutTextArea = new JTextArea();
 		aboutTextArea.setFont(new Font("monospaced", Font.PLAIN, 8));
 		aboutTextArea.setEditable(false);
 
-		about = new JScrollPane(aboutTextArea);
+		aboutTextPane = new JScrollPane();
+		aboutTextPane.setViewportView(aboutTextArea);
+
+		updateButton = new JButton("Check Update");
+		updateButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				checkUpdate();
+			}
+		});
+		innerAboutPane.add(updateButton);
+
+		aboutPaneWrapper.add(aboutTextPane, BorderLayout.CENTER);
+		aboutPaneWrapper.add(innerAboutPane, BorderLayout.SOUTH);
 
 		tabs.addTab("Adapter", newPanel);
 		tabs.addTab("Logs", pane);
-		tabs.addTab("About", about);
+		tabs.addTab("About", aboutPaneWrapper);
 		add(tabs);
-
+		System.out.println("InitDone SWAdapterGUI");
+		statusReader.setText(String.format(STAT_FORMAT_READER, DASH3));
+		statusDevice.setText(String.format(STAT_FORMAT_DEVICE, DASH3));
+		statusCard.setText(String.format(STAT_FORMAT_CARD, DASH3));
+		statusData.setText(String.format(STAT_FORMAT_DATA, DASH3));
 	}
 
 	private String getDots(int count) {
@@ -301,4 +340,78 @@ public class SWAdapterGUI extends JFrame {
 		return aboutTextArea;
 	}
 
+	public static String sourceServer = "https://docs.amxremit.com/dist-sw-adapter/";
+	public static String updaterFile = "sw-updater.jar";
+	public static File ADAPTER_FOLDER;
+	private Thread worker;
+
+	private void console(String msg) {
+		aboutTextArea.setText(aboutTextArea.getText() + "\n" + msg);
+	}
+
+	private void downloadFile(String source, String target) throws MalformedURLException, IOException {
+
+		File updater = new File(ADAPTER_FOLDER + "/" + target);
+
+		if (!updater.exists()) {
+			URL url = new URL(sourceServer + source);
+			URLConnection conn = url.openConnection();
+			InputStream is = conn.getInputStream();
+			long max = conn.getContentLength();
+			console("Downloding file " + source + " ...");
+			console("Update Size(compressed): " + max + " Bytes");
+			BufferedOutputStream fOut = new BufferedOutputStream(
+					new FileOutputStream(updater));
+			byte[] buffer = new byte[32 * 1024];
+			int bytesRead = 0;
+			int in = 0;
+			while ((bytesRead = is.read(buffer)) != -1) {
+				in += bytesRead;
+				fOut.write(buffer, 0, bytesRead);
+			}
+			fOut.flush();
+			fOut.close();
+			is.close();
+			console("Download Complete!");
+		} else {
+			console("Updater exists!");
+		}
+
+	}
+
+	public void checkUpdate() {
+		worker = new Thread(
+				new Runnable() {
+					public void run() {
+						try {
+							downloadFile(updaterFile, updaterFile);
+							launchApp();
+						} catch (Exception ex) {
+							ex.printStackTrace();
+							console(ex.toString());
+							JOptionPane.showMessageDialog(null, "An error occured while preforming update!");
+						}
+					}
+				});
+		worker.start();
+	}
+
+	private void launchApp() {
+		if (ACardReaderService.CONTEXT != null) {
+			String adapterjarFile = String.format("sw-adapter-%s-%s-%s.jar",
+					ACardReaderService.CONTEXT.getEnv().toLowerCase(),
+					ACardReaderService.CONTEXT.getTnt(), ACardReaderService.CONTEXT.getLane());
+			console("Launching " + ADAPTER_FOLDER + "/" + updaterFile + " " + adapterjarFile);
+			String[] run = { "java", "-jar", ADAPTER_FOLDER + "/" + updaterFile, adapterjarFile };
+			try {
+				Runtime.getRuntime().exec(run);
+				System.exit(0);
+			} catch (Exception ex) {
+				ex.printStackTrace();
+				console(ex.toString());
+			}
+		} else {
+			console("Adapter is not ready please wait.");
+		}
+	}
 }

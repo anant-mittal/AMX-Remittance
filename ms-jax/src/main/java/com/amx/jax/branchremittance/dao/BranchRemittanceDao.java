@@ -24,6 +24,7 @@ import com.amx.jax.dbmodel.CollectDetailModel;
 import com.amx.jax.dbmodel.CollectionModel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ForeignCurrencyAdjust;
+import com.amx.jax.dbmodel.RemittanceTransactionView;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.partner.RemitApplSrvProv;
 import com.amx.jax.dbmodel.partner.RemitTrnxSrvProv;
@@ -40,6 +41,7 @@ import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
+import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.repository.AdditionalInstructionDataRepository;
 import com.amx.jax.repository.ForeignCurrencyAdjustRepository;
 import com.amx.jax.repository.ICollectionDetailRepository;
@@ -51,6 +53,7 @@ import com.amx.jax.repository.IRemitTrnxSrvProvRepository;
 import com.amx.jax.repository.IRemittanceAdditionalInstructionRepository;
 import com.amx.jax.repository.IRemittanceAmlRepository;
 import com.amx.jax.repository.IRemittanceBenificiaryRepository;
+import com.amx.jax.repository.IRemittanceTransactionDao;
 import com.amx.jax.repository.IRemittanceTransactionRepository;
 import com.amx.jax.repository.RemittanceApplicationBeneRepository;
 import com.amx.jax.repository.RemittanceApplicationRepository;
@@ -117,6 +120,10 @@ public class BranchRemittanceDao {
 	
 	@Autowired
 	IRemitTrnxSrvProvRepository remitTrnxSrvProvRepository;
+	
+       @Autowired
+	IRemittanceTransactionDao remittanceTransactionDao;
+
 
 	@Transactional
 	@SuppressWarnings("unchecked")
@@ -225,13 +232,6 @@ public class BranchRemittanceDao {
 					remitTrnx.setDocumentNo(documentNo);
 					remitTrnx.setCollectionDocumentNo(collectModel.getDocumentNo());
 					
-					// 
-					if(remitSprProvList != null && !remitSprProvList.isEmpty()) {
-						logger.debug("remit service provider Repository.save ApplicationId :"+applicationId);
-						RemitTrnxSrvProv remitTrnxSrvProv = remitSprProvList.get(applicationId);
-						remitTrnx.setUsdAmt(remitTrnxSrvProv.getIntialAmountInSettlCurr());
-					}
-					
 					RemittanceTransaction remitTrnx1 = remitTrnxRepository.save(remitTrnx);
 
 					if (remitBeneList != null && !remitBeneList.isEmpty()) {
@@ -268,8 +268,10 @@ public class BranchRemittanceDao {
 					if(remitSprProvList != null && !remitSprProvList.isEmpty()) {
 						logger.debug("remit service provider Repository.save ApplicationId :"+applicationId);
 						RemitTrnxSrvProv remitTrnxSrvProv = remitSprProvList.get(applicationId);
-						remitTrnxSrvProv.setRemittanceTransactionId(remitTrnx1.getRemittanceTransactionId());
-						remitTrnxSrvProvRepository.save(remitTrnxSrvProv);
+						if(remitTrnxSrvProv != null) {
+							remitTrnxSrvProv.setRemittanceTransactionId(remitTrnx1.getRemittanceTransactionId());
+							remitTrnxSrvProvRepository.save(remitTrnxSrvProv);
+						}
 					}
 				}
 
@@ -353,5 +355,16 @@ public class BranchRemittanceDao {
 				}
 			}
 		}
+	}
+	
+	public void updateSignatureHash(RemittanceTransactionView trnxDetails,String Signature) {
+	if(trnxDetails!=null && !StringUtils.isBlank(Signature) && JaxUtil.isNullZeroBigDecimalCheck(trnxDetails.getRemittanceTransactionId())) {
+		RemittanceTransaction remit = remitTrnxRepository.findOne(trnxDetails.getRemittanceTransactionId());
+		if(remit!=null) {
+			remit.setCustomerSignature(Signature);
+			remitTrnxRepository.save(remit);
+		}
+	}
+	
 	}
 }

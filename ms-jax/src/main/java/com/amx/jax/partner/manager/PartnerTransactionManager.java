@@ -21,11 +21,17 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.constant.JaxFieldEntity;
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.amxlib.model.GetJaxFieldRequest;
+import com.amx.amxlib.model.JaxConditionalFieldDto;
+import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.branchremittance.manager.BranchRoutingManager;
 import com.amx.jax.client.serviceprovider.ServiceProviderClient;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.constant.JaxDynamicField;
+import com.amx.jax.constants.JaxTransactionStatus;
 import com.amx.jax.dao.BankDao;
 import com.amx.jax.dao.BranchRemittancePaymentDao;
 import com.amx.jax.dbmodel.AccountTypeFromViewModel;
@@ -34,11 +40,14 @@ import com.amx.jax.dbmodel.BankBranchView;
 import com.amx.jax.dbmodel.BankMasterModel;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.CollectionDetailViewModel;
+import com.amx.jax.dbmodel.CountryBranch;
 import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.CustomerDetailsView;
+import com.amx.jax.dbmodel.ExEmailNotification;
 import com.amx.jax.dbmodel.ParameterDetails;
 import com.amx.jax.dbmodel.RemittanceTransactionView;
+import com.amx.jax.dbmodel.bene.BeneficaryMaster;
 import com.amx.jax.dbmodel.fx.EmployeeDetailsView;
 import com.amx.jax.dbmodel.partner.BankExternalReferenceDetail;
 import com.amx.jax.dbmodel.partner.BankExternalReferenceHead;
@@ -50,11 +59,16 @@ import com.amx.jax.dbmodel.remittance.AmiecAndBankMapping;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.dbmodel.remittance.ShoppingCartDetails;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.logger.AuditEvent.Result;
+import com.amx.jax.logger.AuditService;
+import com.amx.jax.logger.events.CActivityEvent;
+import com.amx.jax.logger.events.CActivityEvent.Type;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.request.partner.PaymentLimitDTO;
 import com.amx.jax.model.request.partner.RemittanceTransactionPartnerDTO;
 import com.amx.jax.model.request.partner.SrvProvBeneficiaryTransactionDTO;
+import com.amx.jax.model.request.partner.TransactionFailReportDTO;
 import com.amx.jax.model.request.serviceprovider.Benificiary;
 import com.amx.jax.model.request.serviceprovider.Customer;
 import com.amx.jax.model.request.serviceprovider.ServiceProviderCallRequestDto;
@@ -62,6 +76,7 @@ import com.amx.jax.model.request.serviceprovider.ServiceProviderLogDTO;
 import com.amx.jax.model.request.serviceprovider.TransactionData;
 import com.amx.jax.model.response.remittance.ConfigDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
+import com.amx.jax.model.response.serviceprovider.Remittance_Call_Response;
 import com.amx.jax.model.response.serviceprovider.ServiceProviderResponse;
 import com.amx.jax.partner.dao.PartnerTransactionDao;
 import com.amx.jax.partner.dto.BeneficiaryDetailsDTO;
@@ -73,9 +88,12 @@ import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.var.PricerServiceConstants;
 import com.amx.jax.pricer.var.PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE;
 import com.amx.jax.repository.BankMasterRepository;
+import com.amx.jax.repository.CountryBranchRepository;
 import com.amx.jax.repository.IAdditionalBankRuleAmiecRepository;
 import com.amx.jax.repository.IAmiecAndBankMappingRepository;
+import com.amx.jax.repository.IBeneficiaryMasterDao;
 import com.amx.jax.repository.ICollectionDetailViewDao;
+import com.amx.jax.repository.IExEmailNotificationDao;
 import com.amx.jax.repository.IRemittanceTransactionDao;
 import com.amx.jax.repository.IRemittanceTransactionRepository;
 import com.amx.jax.repository.ISourceOfIncomeDao;
@@ -83,6 +101,8 @@ import com.amx.jax.repository.fx.EmployeeDetailsRepository;
 import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.services.BankService;
 import com.amx.jax.services.BeneficiaryService;
+import com.amx.jax.services.JaxFieldService;
+import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.util.AmxDBConstants;
 import com.amx.utils.Constants;
 import com.amx.utils.IoUtils;
@@ -152,21 +172,38 @@ public class PartnerTransactionManager extends AbstractModel {
 	
 	@Autowired
 	BranchRemittancePaymentDao branchRemittancePaymentDao;
+	
+	@Autowired
+	JaxNotificationService notificationService;
+	
+	@Autowired
+	IExEmailNotificationDao emailNotificationDao;
+	
+	@Autowired
+    AuditService auditService;
+	
+	@Autowired
+	IBeneficiaryMasterDao beneficiaryMasterDao;
+	
+	@Autowired
+	JaxFieldService jaxFieldService;
+	
+	@Autowired
+	CountryBranchRepository countryBranchRepository;
 
-
-	public AmxApiResponse<ServiceProviderResponse, Object> callingPartnerApi(RemittanceResponseDto responseDto) {
+	public AmxApiResponse<Remittance_Call_Response, Object> callingPartnerApi(RemittanceResponseDto responseDto) {
 		BigDecimal customerId = metaData.getCustomerId();
 		BigDecimal collectionDocYear = responseDto.getCollectionDocumentFYear();
 		BigDecimal collectionDocNumber = responseDto.getCollectionDocumentNo();
 
-		AmxApiResponse<ServiceProviderResponse, Object> srvPrvResp = convertingTransactionPartnerDetails(customerId, collectionDocYear, collectionDocNumber);
+		AmxApiResponse<Remittance_Call_Response, Object> srvPrvResp = convertingTransactionPartnerDetails(customerId, collectionDocYear, collectionDocNumber);
 		return srvPrvResp;
 	}
 
-	public AmxApiResponse<ServiceProviderResponse, Object> convertingTransactionPartnerDetails(BigDecimal customerId,BigDecimal collectionDocYear,BigDecimal collectionDocNumber) {
+	public AmxApiResponse<Remittance_Call_Response, Object> convertingTransactionPartnerDetails(BigDecimal customerId,BigDecimal collectionDocYear,BigDecimal collectionDocNumber) {
 		String destinationCountryAlpha3 = null;
 		String destinationCountryAlpha2 = null;
-		AmxApiResponse<ServiceProviderResponse, Object> srvPrvResp = null;
+		AmxApiResponse<Remittance_Call_Response, Object> srvPrvResp = null;
 
 		List<ServiceProviderCallRequestDto> lstTransactionRequestDto = new ArrayList<>();
 
@@ -215,7 +252,7 @@ public class PartnerTransactionManager extends AbstractModel {
 			logger.info("Inputs passed to Service Provider Home Send : ServiceProviderCallRequestDto : " + JsonUtil.toJson(serviceProviderCallRequestDto));
 			srvPrvResp = serviceProviderClient.sendRemittance(serviceProviderCallRequestDto);
 			logger.info("Output from Service Provider Home Send : " + JsonUtil.toJson(srvPrvResp));
-			fetchServiceProviderData(serviceProviderCallRequestDto,srvPrvResp);
+			fetchServiceProviderData(serviceProviderCallRequestDto,srvPrvResp,customerDetailsDTO);
 		}
 
 		return srvPrvResp;
@@ -302,8 +339,14 @@ public class PartnerTransactionManager extends AbstractModel {
 
 		AccountTypeFromViewModel accountTypeFromViewModel = partnerTransactionDao.getAccountTypeDetails(beneficiaryDetailsDTO.getBankAccountTypeId());
 		if(accountTypeFromViewModel != null) {
-			bankAccountTypeDesc = accountTypeFromViewModel.getAmiecDesc();
+			AmiecAndBankMapping amiecCodes = amiecAndBankMappingRepository.fetchAmiecBankData(metaData.getCountryId(), remitTrnxDto.getRoutingBankId(), accountTypeFromViewModel.getFlexiFiled(), accountTypeFromViewModel.getAmiecCode(),AmxDBConstants.Yes);
+			if(amiecCodes != null && amiecCodes.getBankCode() != null) {
+				bankAccountTypeDesc = amiecCodes.getBankCode();
+			}else {
+				bankAccountTypeDesc = accountTypeFromViewModel.getAmiecDesc();
+			}
 		}
+		
 		beneficiaryDto.setBeneficiary_account_type(removeSpaces(bankAccountTypeDesc));
 
 		String routingNumber_Indic2 = remitTrnxDto.getRoutingNumber_Indic2();
@@ -343,7 +386,11 @@ public class PartnerTransactionManager extends AbstractModel {
 			beneficiaryDto.setBeneficiary_reference(beneficiaryDetailsDTO.getMapSequenceId().toPlainString());
 		}
 
-		beneficiaryDto.setBeneficiary_type(removeSpaces(beneficiaryDetailsDTO.getBenificaryStatusName()));
+		if(beneficiaryDetailsDTO.getBenificaryStatusId() != null && beneficiaryDetailsDTO.getBenificaryStatusId().compareTo(BigDecimal.ONE) == 0) {
+			beneficiaryDto.setBeneficiary_type(AmxDBConstants.Individual);
+		}else {
+			beneficiaryDto.setBeneficiary_type(AmxDBConstants.Non_Individual);
+		}
 
 		int bicValue = 0;
 		int bankBranch = 0;
@@ -381,8 +428,13 @@ public class PartnerTransactionManager extends AbstractModel {
 			if (strAdd != null) {
 				beneficiaryDto.setFull_addrerss(removeSpaces(strAdd.toString())); 
 			}
-			beneficiaryDto.setDistrict(removeSpaces(beneficiaryDetailsDTO.getDistrictName())); 
-			beneficiaryDto.setCity(removeSpaces(beneficiaryDetailsDTO.getCityName())); 
+			beneficiaryDto.setDistrict(removeSpaces(beneficiaryDetailsDTO.getDistrictName()));
+			if(beneficiaryDetailsDTO.getBeneficaryMasterSeqId() != null) {
+				BeneficaryMaster beneficaryMaster = beneficiaryMasterDao.findByBeneficaryMasterSeqId(beneficiaryDetailsDTO.getBeneficaryMasterSeqId());
+				if(beneficaryMaster.getCityName() != null) {
+					beneficiaryDto.setCity(removeSpaces(beneficaryMaster.getCityName()));
+				}
+			}
 			beneficiaryDto.setAddress_zip(beneficiaryDetailsDTO.getBeneficiaryZipCode());
 		}
 
@@ -679,7 +731,7 @@ public class PartnerTransactionManager extends AbstractModel {
 			}
 
 			if(transactionDetailsView.getFlexField() != null && transactionDetailsView.getFlexField().equalsIgnoreCase(AmxDBConstants.INDIC1)) {
-				transactionPartnerRequest.setPurposeOfTransaction_Indic1(transactionDetailsView.getFlexFieldValue());
+				transactionPartnerRequest.setPurposeOfTransaction_Indic1(transactionDetailsView.getBankPurposeOfTransaction());
 			}else if(transactionDetailsView.getFlexField() != null && transactionDetailsView.getFlexField().equalsIgnoreCase(AmxDBConstants.INDIC2)) {
 				transactionPartnerRequest.setRoutingNumber_Indic2(transactionDetailsView.getFlexFieldValue());
 			}else if(transactionDetailsView.getFlexField() != null && transactionDetailsView.getFlexField().equalsIgnoreCase(AmxDBConstants.INDIC3)) {
@@ -765,28 +817,35 @@ public class PartnerTransactionManager extends AbstractModel {
 	}
 
 	// iterate the response and insert the log table
-	public void fetchServiceProviderData(ServiceProviderCallRequestDto serviceProviderCallRequestDto,AmxApiResponse<ServiceProviderResponse, Object> srvPrvResp) {
+	public void fetchServiceProviderData(ServiceProviderCallRequestDto serviceProviderCallRequestDto,AmxApiResponse<Remittance_Call_Response, Object> srvPrvResp,CustomerDetailsDTO customerDto) {
 		String requestXml = null;
 		String responseXml = null;
 		String referenceNo = null;
+		BigDecimal customerReference = null;
 		String partnerReference = null;
 		String trnxType = PricerServiceConstants.SEND_TRNX;
 		BigDecimal reqSeq = new BigDecimal(3);
 		BigDecimal resSeq = new BigDecimal(4);
-		if(serviceProviderCallRequestDto != null) {
-			if(serviceProviderCallRequestDto.getTransactionDto() != null &&  serviceProviderCallRequestDto.getTransactionDto().getOut_going_transaction_reference() != null) {
-				referenceNo = serviceProviderCallRequestDto.getTransactionDto().getOut_going_transaction_reference();
+		if(serviceProviderCallRequestDto != null && srvPrvResp != null) {
+			if(customerDto != null) {
+				customerReference = customerDto.getCustomerReference();
+			}
+			if(srvPrvResp.getResult() != null &&  srvPrvResp.getResult().getOut_going_transaction_reference() != null) {
+				referenceNo = srvPrvResp.getResult().getOut_going_transaction_reference();
+			}
+			if(serviceProviderCallRequestDto.getTransactionDto() != null &&  serviceProviderCallRequestDto.getTransactionDto().getPartner_transaction_reference() != null) {
+				partnerReference = serviceProviderCallRequestDto.getTransactionDto().getPartner_transaction_reference();
 			}
 			if(srvPrvResp.getResult().getRequest_XML() != null) {
 				requestXml = srvPrvResp.getResult().getRequest_XML();
-				ServiceProviderLogDTO serviceProviderXmlLog = saveServiceProviderXMLlogData(PricerServiceConstants.COMMIT_REQUEST, requestXml, referenceNo, reqSeq, PricerServiceConstants.REQUEST, trnxType, partnerReference);
+				ServiceProviderLogDTO serviceProviderXmlLog = saveServiceProviderXMLlogData(PricerServiceConstants.COMMIT_REQUEST, requestXml, referenceNo, reqSeq, PricerServiceConstants.REQUEST, trnxType, partnerReference, customerReference);
 				if(serviceProviderXmlLog != null) {
 					saveServiceProviderXml(serviceProviderXmlLog);
 				}
 			}
 			if(srvPrvResp.getResult().getResponse_XML() != null) {
 				responseXml = srvPrvResp.getResult().getResponse_XML();
-				ServiceProviderLogDTO serviceProviderXmlLog = saveServiceProviderXMLlogData(PricerServiceConstants.COMMIT_RESPONSE, responseXml, referenceNo, resSeq, PricerServiceConstants.RESPONSE, trnxType, partnerReference);
+				ServiceProviderLogDTO serviceProviderXmlLog = saveServiceProviderXMLlogData(PricerServiceConstants.COMMIT_RESPONSE, responseXml, referenceNo, resSeq, PricerServiceConstants.RESPONSE, trnxType, partnerReference, customerReference);
 				if(serviceProviderXmlLog != null) {
 					saveServiceProviderXml(serviceProviderXmlLog);
 				}
@@ -794,7 +853,7 @@ public class PartnerTransactionManager extends AbstractModel {
 		}
 	}
 
-	public ServiceProviderLogDTO saveServiceProviderXMLlogData(String filename, String content,String referenceNo,BigDecimal seq,String xmlType,String trnxType,String bene_Bank_Txn_Ref) {
+	public ServiceProviderLogDTO saveServiceProviderXMLlogData(String filename, String content,String referenceNo,BigDecimal seq,String xmlType,String trnxType,String routing_Bank_Txn_Ref,BigDecimal customerReference) {
 		ServiceProviderLogDTO serviceProviderXmlLog = new ServiceProviderLogDTO();
 		try {
 			serviceProviderXmlLog.setApplicationCountryId(metaData.getCountryId());
@@ -802,23 +861,32 @@ public class PartnerTransactionManager extends AbstractModel {
 			serviceProviderXmlLog.setCountryBranchId(metaData.getCountryBranchId());
 			serviceProviderXmlLog.setCreatedDate(new Date());
 			serviceProviderXmlLog.setCustomerId(metaData.getCustomerId());
-			//serviceProviderXmlLog.setCustomerReference(customerReference);
-			//serviceProviderXmlLog.setEmosBranchCode(emosBranchCode);
+			serviceProviderXmlLog.setCustomerReference(customerReference);
+			if(metaData.getCountryBranchId() != null) {
+				CountryBranch countryBranch = countryBranchRepository.findByCountryBranchId(metaData.getCountryBranchId());
+				if(countryBranch != null) {
+					serviceProviderXmlLog.setEmosBranchCode(countryBranch.getBranchId());
+				}
+			}
 			serviceProviderXmlLog.setFileName(filename);
 			if(metaData.getEmployeeId() != null) {
 				EmployeeDetailsView empDetails = employeeDetailsRepository.findByEmployeeId(metaData.getEmployeeId());
 				serviceProviderXmlLog.setForeignTerminalId(metaData.getEmployeeId().toPlainString());
 				serviceProviderXmlLog.setCreatedBy(empDetails.getUserName());
+			}else {
+				serviceProviderXmlLog.setCreatedBy("ON_LINE");
 			}
 
 			serviceProviderXmlLog.setIdentifier(PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name());
-			serviceProviderXmlLog.setMtcNo(bene_Bank_Txn_Ref);
+			serviceProviderXmlLog.setMtcNo(routing_Bank_Txn_Ref);
 			if(referenceNo != null) {
 				serviceProviderXmlLog.setRefernceNo(new BigDecimal(referenceNo));
 			}
 			serviceProviderXmlLog.setSequence(seq);
 			serviceProviderXmlLog.setTransactionType(trnxType);
-			serviceProviderXmlLog.setXmlData(IoUtils.stringToClob(content));
+			if(content != null) {
+				serviceProviderXmlLog.setXmlData(IoUtils.stringToClob(content));
+			}
 			serviceProviderXmlLog.setXmlType(xmlType);
 
 		} catch (SerialException e) {
@@ -846,10 +914,11 @@ public class PartnerTransactionManager extends AbstractModel {
 	}
 
 	// saving the remarks and delivery indicator to remit trnx
-	public RemitTrnxSPDTO saveRemitTransactionDetails(AmxApiResponse<ServiceProviderResponse, Object> apiResponse,RemittanceResponseDto responseDto) {
+	public RemitTrnxSPDTO saveRemitTransactionDetails(AmxApiResponse<Remittance_Call_Response, Object> apiResponse,RemittanceResponseDto responseDto,String partnerTransactionId) {
 		String actionInd = null; 
 		String responseDescription = null;
 		RemitTrnxSPDTO remitTrnxSPDTO = null;
+		boolean emailStatus = Boolean.FALSE;
 
 		if(responseDto != null && responseDto.getCollectionDocumentFYear() != null && responseDto.getCollectionDocumentNo() != null) {
 
@@ -875,30 +944,44 @@ public class PartnerTransactionManager extends AbstractModel {
 								serviceProviderResponse.getAction_ind().equalsIgnoreCase(PricerServiceConstants.ACTION_IND_F)){
 							actionInd = serviceProviderResponse.getAction_ind();
 							responseDescription = serviceProviderResponse.getResponse_description();
+							//emailStatus = Boolean.TRUE; // testing
 						}else if(serviceProviderResponse.getAction_ind().equalsIgnoreCase(PricerServiceConstants.ACTION_IND_T)){
 							actionInd = PricerServiceConstants.ACTION_IND_U;
 							responseDescription = PricerServiceConstants.RESPONSE_UNKNOWN_ERROR;
+							emailStatus = Boolean.TRUE;
 						}else if(serviceProviderResponse.getAction_ind().equalsIgnoreCase(PricerServiceConstants.ACTION_IND_R)){
 							actionInd = serviceProviderResponse.getAction_ind();
 							responseDescription = serviceProviderResponse.getResponse_description();
+							emailStatus = Boolean.TRUE;
 						}else{
 							actionInd = serviceProviderResponse.getAction_ind();
 							responseDescription = serviceProviderResponse.getResponse_description();
+							emailStatus = Boolean.TRUE;
 						}
 
 						remitTrnxSPDTO = new RemitTrnxSPDTO();
 						remitTrnxSPDTO.setActionInd(actionInd);
 						remitTrnxSPDTO.setResponseDescription(responseDescription);
-
+						remitTrnxSPDTO.setTransactionId(partnerTransactionId);
+						logger.info("actionInd : " + actionInd + " responseDescription : "+ responseDescription + " transaction Id " + remittanceTransactionView.getRemittanceTransactionId() + " partner transaction id : "  + partnerTransactionId);
 						// save remit trnx
-						RemittanceTransaction remittanceTransaction = remittanceTransactionRepository.findOne(remittanceTransactionView.getRemittanceTransactionId());
+						remittanceTransactionRepository.updateDeliveryIndRemarksBySP(remitTrnxSPDTO.getActionInd(), remitTrnxSPDTO.getResponseDescription(), remittanceTransactionView.getRemittanceTransactionId());
+						if(emailStatus) {
+							logger.error("Service provider api fail to execute : ColDocNo : ", responseDto.getCollectionDocumentNo() + " : ColDocCod : " +responseDto.getCollectionDocumentCode()+"  : ColDocYear : "+responseDto.getCollectionDocumentFYear());
+							auditService.log(new CActivityEvent(Type.TRANSACTION_CREATED,String.format("%s/%s", responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo())).field("STATUS").to(JaxTransactionStatus.PAYMENT_SUCCESS_SERVICE_PROVIDER_FAIL).result(Result.DONE));
+							sendSrvPrvTranxFailReport(remittanceTransactionView, remitTrnxSPDTO, partnerTransactionId);
+						}else {
+							auditService.log(new CActivityEvent(Type.TRANSACTION_CREATED,String.format("%s/%s", responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo())).field("STATUS").to(JaxTransactionStatus.PAYMENT_SUCCESS_SERVICE_PROVIDER_SUCCESS).result(Result.DONE));
+						}
+						
+						/*RemittanceTransaction remittanceTransaction = remittanceTransactionRepository.findOne(remittanceTransactionView.getRemittanceTransactionId());
 						if(remittanceTransaction != null) {
 							remittanceTransaction.setDeliveryInd(remitTrnxSPDTO.getActionInd());
 							remittanceTransaction.setRemarks(remitTrnxSPDTO.getResponseDescription());
 							remittanceTransactionRepository.save(remittanceTransaction);
 						}else {
 							throw new GlobalException("Unable to get remittance trnx to update remarks and delivery indicator");
-						}
+						}*/
 
 						logger.info(" Service provider result " +JsonUtil.toJson(serviceProviderResponse));
 					}else {
@@ -1031,11 +1114,17 @@ public class PartnerTransactionManager extends AbstractModel {
 		return servProviderAmtlimit;
 	}
 	
-	public ConfigDto paymentModeServiceProviderLimit(ConfigDto config,List<ShoppingCartDetails> customerShoppingCart) {
+	public ConfigDto paymentModeServiceProviderLimit(ConfigDto config,List<ShoppingCartDetails> customerShoppingCart,BigDecimal identityTypeId) {
 		ConfigDto spConfigDto = config;
-		BigDecimal otherLimits = BigDecimal.ZERO;
+		BigDecimal otherLimits = new BigDecimal(-1);
 		boolean includeSPlimits = Boolean.FALSE;
 		ShoppingCartDetails shoppingCartSPData = null;
+		BigDecimal cashTotalCashLimit = BigDecimal.ZERO;
+		BigDecimal otherShoppingCartAmt = BigDecimal.ZERO;
+		int trnxCount = 0;
+		Boolean multipleTrnx = Boolean.FALSE;
+		BigDecimal cashlimit = BigDecimal.ZERO;
+		
 		BankMasterModel bankMaster = bankMasterRepo.findByBankCodeAndRecordStatus(PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name(), PricerServiceConstants.Yes);
 		if(bankMaster == null) {
 			// no need error
@@ -1044,14 +1133,19 @@ public class PartnerTransactionManager extends AbstractModel {
 			//branchRemittancePaymentDao.fetchCustomerShoppingCart(metaData.getCustomerId());
 			if(lstCustomerShopping != null && lstCustomerShopping.size() != 0) {
 				for (ShoppingCartDetails shoppingCartDetails : lstCustomerShopping) {
-					if(shoppingCartDetails.getApplicationType()!=null && !shoppingCartDetails.getApplicationType().equalsIgnoreCase("FS")) {
+					if(shoppingCartDetails.getApplicationType() != null && !shoppingCartDetails.getApplicationType().equalsIgnoreCase("FS")) {
+						trnxCount++;
 						if(shoppingCartDetails.getRoutingBankId().compareTo(bankMaster.getBankId()) == 0) {
 							shoppingCartSPData = shoppingCartDetails;
 							includeSPlimits = Boolean.TRUE;
-							break;
+						}else {
+							otherShoppingCartAmt = otherShoppingCartAmt.add(shoppingCartDetails.getLocalNextTranxAmount());
 						}
 					}
 				}
+			}
+			if(trnxCount > 1) {
+				multipleTrnx = Boolean.TRUE;
 			}
 			
 			if(includeSPlimits && shoppingCartSPData != null) {
@@ -1061,27 +1155,78 @@ public class PartnerTransactionManager extends AbstractModel {
 				paymentLimitDTO.setCurrencyQuote(PricerServiceConstants.SETTLEMENT_CURRENCY_CODE);
 				Map<String, BigDecimal> srvprvlimit = fetchPaymentLimitsForSP(paymentLimitDTO);
 				if(srvprvlimit != null && srvprvlimit.size() != 0) {
+					
+					// check customer what type {civil id , new civil id 3000} , {passport 300} and {gcc 1000}
+					if(identityTypeId != null) {
+						if(identityTypeId.compareTo(AmxDBConstants.BIZ_COMPONENT_ID_CIVIL_ID) == 0 || identityTypeId.compareTo(AmxDBConstants.BIZ_COMPONENT_ID_NEW_CIVIL_ID) == 0) {
+							cashlimit = config.getCashLimit();
+						}else if(identityTypeId.compareTo(AmxDBConstants.BIZ_COMPONENT_ID_PASSPORT) == 0) {
+							cashlimit = config.getPassportLimit();
+						}else if(identityTypeId.compareTo(AmxDBConstants.BIZ_COMPONENT_ID_GCC_ID) == 0) {
+							cashlimit = config.getGccLimit();
+						}else {
+							cashlimit = config.getCashLimit();
+						}
+					}else {
+						// throw error
+						throw new GlobalException("Customer Identity Type Id is empty");
+					}
+					
+					if(cashlimit.compareTo(config.getTodayTrnxAmount()) >= 0) {
+						cashTotalCashLimit = cashlimit;
+						cashTotalCashLimit = cashTotalCashLimit.subtract(config.getTodayTrnxAmount());
+					}else {
+						cashTotalCashLimit = BigDecimal.ZERO;
+					}
+					
 					for (Map.Entry<String,BigDecimal> paymentAmount : srvprvlimit.entrySet()) {
 						if(paymentAmount.getKey().contains("CASH")) {
-							if(paymentAmount.getValue().compareTo(config.getCashLimit()) <= 0) {
-								spConfigDto.setCashLimit(paymentAmount.getValue());
+							BigDecimal hsCashAmount = paymentAmount.getValue();
+							if(hsCashAmount.compareTo(shoppingCartSPData.getLocalNextTranxAmount()) >= 0) {
+								spConfigDto.setCashLimit(cashlimit);
 							}else {
-								spConfigDto.setCashLimit(paymentAmount.getValue().subtract(config.getCashLimit()));
+								BigDecimal totalhsOtherAmt = BigDecimal.ZERO;
+								if(otherShoppingCartAmt.compareTo(BigDecimal.ZERO) != 0) {
+									totalhsOtherAmt = hsCashAmount.add(otherShoppingCartAmt);
+								}
+								if(cashTotalCashLimit.compareTo(BigDecimal.ZERO) != 0) {
+									if(totalhsOtherAmt.compareTo(BigDecimal.ZERO) != 0) {
+										if(totalhsOtherAmt.compareTo(cashTotalCashLimit) <= 0) {
+											hsCashAmount = totalhsOtherAmt.add(config.getTodayTrnxAmount());
+											spConfigDto.setCashLimit(hsCashAmount);
+										}else {
+											spConfigDto.setCashLimit(cashlimit);
+										}
+									}else {
+										if(hsCashAmount.compareTo(cashTotalCashLimit) <= 0) {
+											hsCashAmount = hsCashAmount.add(config.getTodayTrnxAmount());
+											spConfigDto.setCashLimit(hsCashAmount);
+										}else {
+											spConfigDto.setCashLimit(cashlimit);
+										}
+									}
+								}else {
+									spConfigDto.setCashLimit(cashlimit);
+								}
 							}
 						}
 						if(paymentAmount.getKey().contains("OTHERS")) {
-							otherLimits = paymentAmount.getValue();
+							if(multipleTrnx) {
+								spConfigDto.setTotalLimit(otherLimits);
+							}else {
+								otherLimits = paymentAmount.getValue();
+							}
 						}
 					}
 				}
 			}
 		}
 		
-		spConfigDto.setNonCashLimit(otherLimits);
+		spConfigDto.setTotalLimit(otherLimits);
 		return spConfigDto;
 	}
 	
-	public AuthenticationLimitCheckView onlineServiceProviderLimit(AuthenticationLimitCheckView authenticationLimitCheckView) {
+	public BigDecimal onlineServiceProviderLimit(AuthenticationLimitCheckView authenticationLimitCheckView) {
 		AuthenticationLimitCheckView spAuthLimit = authenticationLimitCheckView;
 		BigDecimal otherLimits = spAuthLimit.getAuthLimit();
 		boolean includeSPlimits = Boolean.FALSE;
@@ -1120,9 +1265,46 @@ public class PartnerTransactionManager extends AbstractModel {
 			}
 		}
 		
-		spAuthLimit.setAuthLimit(otherLimits);
-		return spAuthLimit;
+		return otherLimits;
 	}
 	
+	// template to send fail transaction
+	public void sendSrvPrvTranxFailReport(RemittanceTransactionView remittanceTransactionView,RemitTrnxSPDTO remitTrnxSPDTO,String transactionId) {
+		TransactionFailReportDTO model = new TransactionFailReportDTO();
+		List<ExEmailNotification> emailNotification = emailNotificationDao.getServiceProviderEmailNotification();
+		
+		model.setBeneficiaryAccount(remittanceTransactionView.getBenefeciaryAccountNo());
+		model.setBeneficiaryBankName(remittanceTransactionView.getBeneficiaryBank());
+		model.setBeneficiaryBranchName(remittanceTransactionView.getBenefeciaryBranch());
+		model.setBeneficiaryName(remittanceTransactionView.getBeneficiaryName());
+		if(remittanceTransactionView.getLocalTransactionCurrencyId() != null) {
+			// settlement currency data
+			CurrencyMasterModel settlementCurrencyModel = currencyMasterService.getCurrencyMasterById(remittanceTransactionView.getLocalTransactionCurrencyId());
+			if(settlementCurrencyModel != null) {
+				model.setLocalCurrencyQuote(settlementCurrencyModel.getQuoteName());
+			}
+		}
+		model.setForeignCurrencyQuote(remittanceTransactionView.getCurrencyQuoteName());
+		model.setCustomerName(remittanceTransactionView.getFirstName().concat(" ").concat(remittanceTransactionView.getMiddleName()).concat(" ").concat(remittanceTransactionView.getLastName()));
+		model.setCustomerReference(remittanceTransactionView.getCustomerReference());
+		model.setCustomerContact(remittanceTransactionView.getContactNumber());
+		model.setExceptionMessage(remitTrnxSPDTO.getActionInd() + " : " + remitTrnxSPDTO.getResponseDescription() + " : " + remittanceTransactionView.getCountryBranchName() + " : " +remittanceTransactionView.getCreatedBy());
+		model.setRoutingBankCode(PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name());
+		model.setTransactionAmount(remittanceTransactionView.getLocalNetTransactionAmount());
+		model.setTransactionForeignAmount(remittanceTransactionView.getForeignTransactionAmount());
+		model.setTransactionDocNumber(remittanceTransactionView.getDocumentNo());
+		model.setTransactionDocYear(remittanceTransactionView.getDocumentFinancialYear());
+		model.setTransactionId(transactionId);
+		
+		logger.info("Email Service Provider Fail Transaction : " + JsonUtil.toJson(model));
+		
+		notificationService.sendSPErrorEmail(model, emailNotification);
+	}
+	
+	// validation for saving application 
+	public void validateServiceProvider(Map<String, Object> fieldValues,BigDecimal beneId) { //(BranchRemittanceApplRequestModel requestApplModel) {
+		// home send validation
+		ApiResponse<JaxConditionalFieldDto> apiResponse = jaxFieldService.getJaxFieldsForEntity(new GetJaxFieldRequest(JaxFieldEntity.REMITTANCE_ONLINE));
+		List<JaxConditionalFieldDto> allJaxConditionalFields = apiResponse.getResults();
 
 }

@@ -19,6 +19,8 @@ public class DiscountMgmtReqDTO implements Serializable {
 	private BigDecimal countryId;
 
 	private BigDecimal currencyId;
+	
+	private BigDecimal bankId;
 
 	public List<DISCOUNT_TYPE> getDiscountType() {
 		return discountType;
@@ -43,5 +45,15 @@ public class DiscountMgmtReqDTO implements Serializable {
 	public void setCurrencyId(BigDecimal currencyId) {
 		this.currencyId = currencyId;
 	}
+
+	public BigDecimal getBankId() {
+		return bankId;
+	}
+
+	public void setBankId(BigDecimal bankId) {
+		this.bankId = bankId;
+	}
+	
+	
 
 }

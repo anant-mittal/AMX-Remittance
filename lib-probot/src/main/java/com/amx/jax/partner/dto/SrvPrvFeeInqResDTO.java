@@ -21,6 +21,8 @@ public class SrvPrvFeeInqResDTO implements Serializable {
 	private BigDecimal foreignAmount;
 	private BigDecimal grossAmount;
 	private BigDecimal margin;
+	private BigDecimal baseLocalAmount;
+	private BigDecimal baseForeignAmount;
 	private HomeSendSrvcProviderInfo homeSendSrvcProviderInfo;
 	private Map<DISCOUNT_TYPE, ExchangeDiscountInfo> customerDiscountDetails;
 	
@@ -99,6 +101,20 @@ public class SrvPrvFeeInqResDTO implements Serializable {
 	}
 	public void setCustomerDiscountDetails(Map<DISCOUNT_TYPE, ExchangeDiscountInfo> discountPipsDetails) {
 		this.customerDiscountDetails = discountPipsDetails;
+	}
+	
+	public BigDecimal getBaseLocalAmount() {
+		return baseLocalAmount;
+	}
+	public void setBaseLocalAmount(BigDecimal baseLocalAmount) {
+		this.baseLocalAmount = baseLocalAmount;
+	}
+	
+	public BigDecimal getBaseForeignAmount() {
+		return baseForeignAmount;
+	}
+	public void setBaseForeignAmount(BigDecimal baseForeignAmount) {
+		this.baseForeignAmount = baseForeignAmount;
 	}
 		
 }

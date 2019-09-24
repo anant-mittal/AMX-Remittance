@@ -14,18 +14,24 @@ import com.amx.jax.model.request.serviceprovider.Customer;
 import com.amx.jax.model.request.serviceprovider.ServiceProviderCallRequestDto;
 import com.amx.jax.model.request.serviceprovider.TransactionData;
 import com.amx.jax.model.response.serviceprovider.Quotation_Call_Response;
+import com.amx.jax.model.response.serviceprovider.Remittance_Call_Response;
 import com.amx.jax.model.response.serviceprovider.ServiceProviderResponse;
 import com.amx.service_provider.api_gates.common.Common_API_Utils;
 import com.amx.service_provider.api_gates.homesend.HomesendGate;
 import com.amx.service_provider.api_gates.vintaja.VintajaGate;
 import com.amx.service_provider.dbmodel.webservice.ExOwsLoginCredentials;
 import com.amx.service_provider.repository.webservice.ExOwsLoginCredentialsRepository;
+import com.amx.service_provider.homesend.HomeSendDTO;
+import com.amx.service_provider.homesend.HomesendGate;
 import com.amx.service_provider.repository.webservice.OwsParamRespcodeRepository;
 import com.amx.service_provider.repository.webservice.OwsTransferLogRepository;
 import com.amx.service_provider.utils.MSServiceProviderConfig;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
+// @EntityScan("com.amx.jax.dbmodel.webservice")
+// @EnableJpaRepositories("com.amx.jax.dbmodel.webservice")
+// @ComponentScan(basePackages = { "com.amx.jax.dbmodel.webservice" })
 public class ServiceProviderManger implements IServiceProvider
 {
 	// Fetching access details

@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
@@ -316,7 +317,56 @@
 							<generatePom>true</generatePom>
 						</configuration>
 					</execution>
-					
+
+
+					<execution>
+						<id>kw-card2-bcpkix</id>
+						<phase>package</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<groupId>kw-card2</groupId>
+							<artifactId>bcpkix</artifactId>
+							<version>157</version>
+							<packaging>jar</packaging>
+							<file>${basedir}/lib/kw-card2/bcpkix-jdk15on-157.jar</file>
+							<generatePom>true</generatePom>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>kw-card2-bcprov</id>
+						<phase>package</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<groupId>kw-card2</groupId>
+							<artifactId>bcprov</artifactId>
+							<version>157</version>
+							<packaging>jar</packaging>
+							<file>${basedir}/lib/kw-card2/bcprov-jdk15on-157.jar</file>
+							<generatePom>true</generatePom>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>kw-card2-paci-card-library</id>
+						<phase>package</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<groupId>kw-card2</groupId>
+							<artifactId>paci-card-library</artifactId>
+							<version>1.0</version>
+							<packaging>jar</packaging>
+							<file>${basedir}/lib/kw-card2/PACICardLibrary.jar</file>
+							<generatePom>true</generatePom>
+						</configuration>
+					</execution>
+
 					<!-- New Config for Homesend Jar -->
 					<execution>
 						<id>homesend</id>
@@ -333,7 +383,7 @@
 							<generatePom>true</generatePom>
 						</configuration>
 					</execution>
-					
+
 
 
 					<!-- New KNET Integration -->
@@ -352,7 +402,7 @@
 							<generatePom>true</generatePom>
 						</configuration>
 					</execution>
-					
+
 					<execution>
 						<id>commons-codec-v2</id>
 						<phase>package</phase>
@@ -384,7 +434,7 @@
 							<generatePom>true</generatePom>
 						</configuration>
 					</execution>
-					
+
 					<execution>
 						<id>bcprov-jdk15-145-v2</id>
 						<phase>package</phase>
@@ -400,7 +450,7 @@
 							<generatePom>true</generatePom>
 						</configuration>
 					</execution>
-					
+
 					<execution>
 						<id>bouncycastle-v2</id>
 						<phase>package</phase>
@@ -416,7 +466,7 @@
 							<generatePom>true</generatePom>
 						</configuration>
 					</execution>
-					
+
 					<execution>
 						<id>cryptix32-v2</id>
 						<phase>package</phase>
@@ -432,24 +482,12 @@
 							<generatePom>true</generatePom>
 						</configuration>
 					</execution>
-					
-					<!--										
-					<execution>
-						<id>knet_test_v2</id>
-						<phase>package</phase>
-						<goals>
-							<goal>install-file</goal>
-						</goals>
-						<configuration>
-							<groupId>kwt.com.knetv2.test</groupId>
-							<artifactId>knetv2_test</artifactId>
-							<version>1.0</version>
-							<packaging>jar</packaging>
-							<file>${basedir}/lib/knet2/ipaypipe.jar</file>
-							<generatePom>true</generatePom>
-						</configuration>
-					</execution>
-					-->
+
+					<!-- <execution> <id>knet_test_v2</id> <phase>package</phase> <goals> 
+						<goal>install-file</goal> </goals> <configuration> <groupId>kwt.com.knetv2.test</groupId> 
+						<artifactId>knetv2_test</artifactId> <version>1.0</version> <packaging>jar</packaging> 
+						<file>${basedir}/lib/knet2/ipaypipe.jar</file> <generatePom>true</generatePom> 
+						</configuration> </execution> -->
 
 				</executions>
 			</plugin>

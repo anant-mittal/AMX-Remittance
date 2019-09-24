@@ -18,6 +18,7 @@ public class AddDynamicLabel {
 	private BigDecimal fieldLength;
 	private Boolean required = false;
 	private Boolean additionalCheck=false;
+	private String localDesc;
 
 	public AddDynamicLabel() {
 		
@@ -27,7 +28,7 @@ public class AddDynamicLabel {
 			String variableName, BigDecimal lebelId, String fieldType,
 			String navicable, String mandatory, BigDecimal minLenght,
 			BigDecimal maxLenght, String validation, String isActive,
-			BigDecimal fieldLength,Boolean required) {
+			BigDecimal fieldLength,Boolean required, String localDesc) {
 		super();
 		this.lebelDesc = lebelDesc;
 		this.flexiField = flexiField;
@@ -42,6 +43,7 @@ public class AddDynamicLabel {
 		this.isActive = isActive;
 		this.fieldLength = fieldLength;
 		this.required = required;
+		this.localDesc = localDesc;
 	}
 
 
@@ -185,6 +187,14 @@ public class AddDynamicLabel {
 
 	public void setAdditionalCheck(Boolean additionalCheck) {
 		this.additionalCheck = additionalCheck;
+	}
+
+	public String getLocalDesc() {
+		return localDesc;
+	}
+
+	public void setLocalDesc(String localDesc) {
+		this.localDesc = localDesc;
 	}
 
 

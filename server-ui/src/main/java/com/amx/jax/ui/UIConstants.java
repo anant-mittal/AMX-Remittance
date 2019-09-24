@@ -30,6 +30,16 @@ public final class UIConstants extends Constants {
 	/** The Constant CACHE_TIME. */
 	public static final int CACHE_TIME = 31556926;
 
+	public static class FLOW {
+
+		public static final String LOGIN_V1 = "LGN_V1";
+		public static final String LOGIN_V2 = "LGN_V2";
+		public static final String RESET_PASS = "RST_PSS";
+		public static final String RESET_PASS_2 = "RST_PSS2";
+		public static final String LOGOUT = "LGT";
+
+	}
+
 	public enum Features {
 		DASHBOARD,
 		BENE_VIEW, BENE_UPDATE,
@@ -38,7 +48,7 @@ public final class UIConstants extends Constants {
 		SQA_UPDATE,
 		EMAIL_UPDATE,
 		MOBILE_UPDATE, FINGERPRINT_UPDATE,
-		EMP_DETAILS_UPDATE, PSWD_UPDATE,
+		EMP_DETAILS_UPDATE, PSWD_UPDATE, REFER_FRIEND,
 
 		// PERMISSIONED
 		INSURANCE,

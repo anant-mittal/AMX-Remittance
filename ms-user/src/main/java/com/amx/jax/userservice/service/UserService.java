@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
+import java.util.Base64;
 
 import javax.transaction.Transactional;
 
@@ -41,9 +43,11 @@ import com.amx.amxlib.model.UserVerificationCheckListDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.JaxAuthContext;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.async.ExecutorConfig;
+import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.CustomerVerificationType;
 import com.amx.jax.constant.JaxApiFlow;
@@ -57,6 +61,7 @@ import com.amx.jax.dbmodel.CustomerRemittanceTransactionView;
 import com.amx.jax.dbmodel.CustomerVerification;
 import com.amx.jax.dbmodel.DistrictMaster;
 import com.amx.jax.dbmodel.LoginLogoutHistory;
+import com.amx.jax.dbmodel.ReferralDetails;
 import com.amx.jax.dbmodel.ViewCity;
 import com.amx.jax.dbmodel.ViewDistrict;
 import com.amx.jax.dbmodel.ViewState;
@@ -90,7 +95,9 @@ import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.userservice.dao.AbstractUserDao;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.dao.CustomerIdProofDao;
+import com.amx.jax.userservice.dao.ReferralDetailsDao;
 import com.amx.jax.userservice.manager.CustomerFlagManager;
+import com.amx.jax.userservice.manager.OnlineCustomerManager;
 import com.amx.jax.userservice.manager.SecurityQuestionsManager;
 import com.amx.jax.userservice.manager.UserContactVerificationManager;
 import com.amx.jax.userservice.repository.LoginLogoutHistoryRepository;
@@ -99,7 +106,6 @@ import com.amx.jax.util.AmxDBConstants.Status;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.StringUtil;
-import com.amx.jax.util.AmxDBConstants.Status;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Random;
 
@@ -204,10 +210,22 @@ public class UserService extends AbstractUserService {
 	@Autowired
 	CustomerFlagManager customerFlagManager;
 	
+	@Autowired 
+	ReferralDetailsDao refDao;
+	
+	
+
+	
 	@Autowired
 	CustomerRepository customerrepository;
 	@Autowired
 	UserContactVerificationManager userContactVerificationManager;
+	
+	@Autowired
+	OnlineCustomerManager onlineCustomerManager;
+	
+	@Autowired
+	JaxTenantProperties jaxTenantProperties;
 	
 	@Override
 	public ApiResponse registerUser(AbstractUserModel userModel) {
@@ -353,6 +371,17 @@ public class UserService extends AbstractUserService {
 		} else {
 			jaxNotificationService.sendProfileChangeNotificationEmail(model, outputModel.getPersoninfo());
 			jaxNotificationService.sendProfileChangeNotificationMobile(model, outputModel.getPersoninfo(), oldMobile);
+		}
+		
+		if(model.getReferralCode()!= null) {
+			ReferralDetails refferrerDetail = refDao.getReferralByCustomerReferralCode(model.getReferralCode());
+			ReferralDetails newReferralDetail = new ReferralDetails();
+			UUID uuid = UUID.randomUUID();
+			newReferralDetail.setCustomerReferralCode(String.valueOf(uuid));
+			newReferralDetail.setRefferedByCustomerId(refferrerDetail.getCustomerId());
+			newReferralDetail.setIsConsumed(ConstantDocument.No);
+			newReferralDetail.setCustomerId(onlineCust.getCustomerId());
+			refDao.saveReferralCode(newReferralDetail);
 		}
 		setCustomerStatus(onlineCust, model, cust);
 		auditService.log(auditEvent.result(Result.DONE));
@@ -667,6 +696,9 @@ public class UserService extends AbstractUserService {
 		if (tenantContext.getKey().equals("OMN")) {
 			tenantContext.get().validateCivilId(userId);
 		}
+		
+		Boolean captchaEnable = jaxTenantProperties.getCaptchaEnable();
+		
 		List<Customer> customerData = customerrepository.getCustomerByIdentityInt(userId);
 		
 		
@@ -679,6 +711,7 @@ public class UserService extends AbstractUserService {
 			throw new GlobalException(JaxError.USER_NOT_REGISTERED,
 					"User with userId: " + userId + " is not registered");
 		}
+		
 		Customer customer = custDao.getCustById(onlineCustomer.getCustomerId());
 		// userValidationService.validateCustomerVerification(onlineCustomer.getCustomerId());
 		if (!ConstantDocument.Yes.equals(onlineCustomer.getStatus())) {
@@ -686,8 +719,9 @@ public class UserService extends AbstractUserService {
 					"User with userId: " + userId + " is not registered or not active");
 		}
 
-		userValidationService.validateCustomerLockCount(onlineCustomer);
-		userValidationService.validatePassword(onlineCustomer, password);
+		userValidationService.validateCustomerLockCount(onlineCustomer,captchaEnable);
+		userValidationService.validatePassword(onlineCustomer, password, captchaEnable && JaxAuthContext.isCaptchaCheck());
+		userService.unlockCustomer(customer.getCustomerId());
 		userValidationService.validateCustIdProofs(onlineCustomer.getCustomerId());
 		userValidationService.validateCustomerData(onlineCustomer, customer);
 		userValidationService.validateBlackListedCustomerForLogin(customer);
@@ -696,7 +730,7 @@ public class UserService extends AbstractUserService {
 		ApiResponse response = getBlackApiResponse();
 		CustomerModel customerModel = convert(onlineCustomer);
 
-		// afterLoginSteps(onlineCustomer);
+		afterLoginSteps(onlineCustomer);
 		response.getData().getValues().add(customerModel);
 		response.getData().setType(customerModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
@@ -1053,6 +1087,8 @@ public class UserService extends AbstractUserService {
 		return response;
 
 	}
+		
+	
 
 	private void resetSecurityQuestion(CustomerOnlineRegistration customerOnlineRegistration) {
 		customerOnlineRegistration.setSecurityQuestion1(null);
@@ -1353,5 +1389,17 @@ public class UserService extends AbstractUserService {
 			Customer customer = getCustById(customerId);
 			userValidationService.validateCustomerContactForSendOtp(contactTypes, customer);
 		}
+	}
+
+	public AmxApiResponse<CustomerModel, Object> validateCustomerLoginOtp(String identityInt) {
+		if (identityInt != null) {
+			userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(identityInt, JaxApiFlow.LOGIN);
+			Customer customer = custDao.getCustomerByCivilId(identityInt);
+			
+			// ---- check for blacklisted customer ----
+			userValidationService.validateBlackListedCustomerForLogin(customer);
+		}
+		CustomerModel c = onlineCustomerManager.validateCustomerLoginOtp(identityInt);
+		return AmxApiResponse.build(c);
 	}
 }

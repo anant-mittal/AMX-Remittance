@@ -18,7 +18,6 @@ import org.springframework.stereotype.Component;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.logger.AuditService;
-import com.amx.jax.logger.events.SessionEvent;
 import com.amx.jax.model.AuthState;
 import com.amx.jax.model.AuthState.AuthFlow;
 import com.amx.jax.model.AuthState.AuthStep;
@@ -142,13 +141,6 @@ public class SessionService {
 		this.indexUser(authentication);
 		userSession.setValid(valid);
 		SecurityContextHolder.getContext().setAuthentication(authentication);
-
-		if (valid) {
-			SessionEvent sessionEvent = new SessionEvent();
-			sessionEvent.setUserKey(getUserKeyString());
-			sessionEvent.setType(SessionEvent.Type.SESSION_AUTHED);
-			auditService.log(sessionEvent);
-		}
 
 	}
 
@@ -287,11 +279,6 @@ public class SessionService {
 			map.fastRemove(userKeyString);
 			auditService.log(new CAuthEvent(AuthFlow.LOGOUT, AuthStep.UNAUTH));
 		}
-
-		SessionEvent sessionEvent = new SessionEvent();
-		sessionEvent.setUserKey(userKeyString);
-		sessionEvent.setType(SessionEvent.Type.SESSION_UNAUTHED);
-		auditService.log(sessionEvent);
 
 		this.clear();
 		this.invalidate();

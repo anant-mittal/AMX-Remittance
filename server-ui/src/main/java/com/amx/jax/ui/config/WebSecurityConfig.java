@@ -3,6 +3,8 @@ package com.amx.jax.ui.config;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -12,12 +14,15 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 
+import com.amx.jax.http.ApiRequestConfig;
+import com.amx.jax.http.RequestType;
+
 /**
  * The Class WebSecurityConfig.
  */
 @Configuration
 @EnableWebSecurity
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements ApiRequestConfig {
 
 	/** The custom auth provider. */
 	@Autowired
@@ -50,6 +55,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.and().authorizeRequests().antMatchers("/pub/**").permitAll()
 				// Login Calls
 				.and().authorizeRequests().antMatchers("/login/**").permitAll()
+				// Referral Calls
+				.and().authorizeRequests().antMatchers("/refer/**").permitAll()
 				// API Calls
 				.and().authorizeRequests().antMatchers("/api/**").authenticated()
 				// App Pages
@@ -87,6 +94,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.roles("USER");
 	}
 
+	public static final Pattern SILENT = Pattern.compile("^\\/(resources|static|css|js|images|apple-app-site-association|.well-known|favicon.ico).*$");
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -96,7 +105,19 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	 */
 	@Override
 	public void configure(WebSecurity web) throws Exception {
-		web.ignoring().antMatchers("/resources/**", "/static/**", "/css/**", "/js/**", "/images/**");
+		web.ignoring().antMatchers("/resources/**", "/static/**", "/css/**", "/js/**", "/images/**",
+				"/apple-app-site-association", "/.well-known/apple-app-site-association", "/favicon.ico");
+	}
+
+	@Override
+	public RequestType from(HttpServletRequest req, RequestType reqType) {
+		if (RequestType.DEFAULT.equals(reqType)) {
+			Matcher matcher = SILENT.matcher(req.getRequestURI());
+			if(matcher.find()) {
+				return RequestType.NO_TRACK_PING;
+			}
+		}
+		return reqType;
 	}
 
 //	@Bean
