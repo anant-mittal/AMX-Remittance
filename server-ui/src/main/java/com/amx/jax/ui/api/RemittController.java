@@ -38,6 +38,7 @@ import com.amx.jax.AppContextUtil;
 import com.amx.jax.JaxAuthContext;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.JaxClientUtil;
+import com.amx.jax.client.fx.IFxOrderService.Params;
 import com.amx.jax.client.remittance.RemittanceClient;
 import com.amx.jax.dict.Language;
 import com.amx.jax.logger.LoggerService;
@@ -491,20 +492,6 @@ public class RemittController {
 		return wrapper;
 	}
 
-	@RequestMapping(value = "/api/remitt/tranx/add2cart", method = { RequestMethod.POST })
-	public ResponseWrapperM<BranchRemittanceApplResponseDto, AuthResponseOTPprefix> saveToCart(
-			@RequestHeader(value = "mOtp", required = false) String mOtpHeader,
-			@RequestParam(required = false) String mOtp,
-			@RequestBody RemittanceTransactionDrRequestModel transactionRequestModel, HttpServletRequest request) {
-		ResponseWrapperM<BranchRemittanceApplResponseDto, AuthResponseOTPprefix> wrapper = new ResponseWrapperM<BranchRemittanceApplResponseDto, AuthResponseOTPprefix>();
-
-		mOtp = JaxAuthContext.mOtp(ArgUtil.ifNotEmpty(mOtp, mOtpHeader));
-		transactionRequestModel.setmOtp(mOtp);
-		wrapper.setData(jaxService.setDefaults().getRemitClient()
-				.addToCart(transactionRequestModel).getResult());
-		return wrapper;
-	}
-
 	/**
 	 * App status.
 	 *
@@ -529,6 +516,20 @@ public class RemittController {
 		return ResponseWrapper.build(jaxService.setDefaults().getRemitClient().saveCustomerRating(customerRatingDTO));
 	}
 
+	@RequestMapping(value = "/api/remitt/cart/add", method = { RequestMethod.POST })
+	public ResponseWrapperM<BranchRemittanceApplResponseDto, AuthResponseOTPprefix> saveToCart(
+			@RequestHeader(value = "mOtp", required = false) String mOtpHeader,
+			@RequestParam(required = false) String mOtp,
+			@RequestBody RemittanceTransactionDrRequestModel transactionRequestModel, HttpServletRequest request) {
+		ResponseWrapperM<BranchRemittanceApplResponseDto, AuthResponseOTPprefix> wrapper = new ResponseWrapperM<BranchRemittanceApplResponseDto, AuthResponseOTPprefix>();
+
+		mOtp = JaxAuthContext.mOtp(ArgUtil.ifNotEmpty(mOtp, mOtpHeader));
+		transactionRequestModel.setmOtp(mOtp);
+		wrapper.setData(jaxService.setDefaults().getRemitClient()
+				.addToCart(transactionRequestModel).getResult());
+		return wrapper;
+	}
+
 	@RequestMapping(value = "/api/remitt/cart/pay", method = { RequestMethod.POST })
 	public ResponseWrapperM<RemittanceApplicationResponseModel, Object> saveToCart(
 			@RequestHeader(value = "mOtp", required = false) String mOtpHeader,
@@ -539,5 +540,17 @@ public class RemittController {
 		wrapper.setData(jaxService.setDefaults().getRemitClient().payShoppingCart(remittanceRequestModel)
 				.getResult());
 		return wrapper;
+	}
+
+	@RequestMapping(value = "/api/remitt/cart/fetch", method = { RequestMethod.GET })
+	public ResponseWrapperM<BranchRemittanceApplResponseDto, Object> fetchCart(
+			HttpServletRequest request) {
+		return ResponseWrapperM.from(remittanceClient.fetchCustomerShoppingCart());
+	}
+
+	@RequestMapping(value = "/api/remitt/cart/remove", method = { RequestMethod.GET })
+	public ResponseWrapperM<BranchRemittanceApplResponseDto, Object> removeitemCart(HttpServletRequest request,
+			@RequestParam BigDecimal appId) {
+		return ResponseWrapperM.from(remittanceClient.deleteFromShoppingCart(appId));
 	}
 }
