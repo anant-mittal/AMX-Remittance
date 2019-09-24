@@ -205,7 +205,8 @@ public class FcSaleDeliveryService {
 		jaxNotificationService.sendEmail(email);
 		PushMessage pushMessage = new PushMessage();
 		pushMessage.setITemplate(TemplatesMX.FC_ORDER_SUCCESS);
-		pushMessage.addToUser(metaData.getCustomerId());
+		pushMessage.addToUser(vwdeliveryDetail.getCustomerId());
+		logger.info("customer_id:"+vwdeliveryDetail.getCustomerId());
 		pushMessage.getModel().put(RESP_DATA_KEY, notificationModel);
 		pushNotifyClient.send(pushMessage);
 		

@@ -514,7 +514,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel {
 		shoppingCartResponseModel.setShoppingCartList(cartListDto);
 		shoppingCartResponseModel.setDeliveryCharges(deliveryCharges);
 		shoppingCartResponseModel.setTotalNetAmount(totalNetAmount.add(deliveryCharges));
-		shoppingCartResponseModel.setTotalAmount(totalAmount);
+		shoppingCartResponseModel.setTotalAmount(totalNetAmount);
 
 		return shoppingCartResponseModel;
 	}
