@@ -86,6 +86,8 @@ public class TransactionHistroyDTO implements Serializable {
 	
 	private BigDecimal exRateReversed;
 	
+	private String receiptNumber;
+	
 	
 	public String getTransactionReference() {
 		return transactionReference;
@@ -401,6 +403,14 @@ public class TransactionHistroyDTO implements Serializable {
 
 	public void setExRateReversed(BigDecimal exRateReversed) {
 		this.exRateReversed = exRateReversed;
+	}
+
+	public String getReceiptNumber() {
+		return receiptNumber;
+	}
+
+	public void setReceiptNumber(String receiptNumber) {
+		this.receiptNumber = receiptNumber;
 	}
 
 }

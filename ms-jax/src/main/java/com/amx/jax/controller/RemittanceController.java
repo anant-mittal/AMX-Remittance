@@ -218,6 +218,8 @@ public class RemittanceController {
 		ApiResponse response = remittanceTransactionService.getTransactionStatus(request);
 		return response;
 	}
+	
+	
 
 	@RequestMapping(value = "/save-payment-id/", method = RequestMethod.POST)
 	public ApiResponse savePaymentId(@RequestBody PaymentResponseDto paymentResponse) {
@@ -278,7 +280,7 @@ public class RemittanceController {
 
 	}
 	
-	
+	/** added by Rabil **/
 	@RequestMapping(value = "/pay-shopping-cart/", method = RequestMethod.POST)
 	public AmxApiResponse<RemittanceApplicationResponseModel,Object> payShoppingCart(@RequestBody @Valid BranchRemittanceRequestModel remittanceRequestModel) {
 		RemittanceApplicationResponseModel response = remittancePaymentManager.payShoppingCart(remittanceRequestModel);
@@ -286,7 +288,7 @@ public class RemittanceController {
 	}
 	
 	
-	
+	/** added by Rabil **/
 	@RequestMapping(value = "/add-to-cart/", method = RequestMethod.POST)
 	public AmxApiResponse<BranchRemittanceApplResponseDto, Object> addtoCart(@RequestBody @Valid RemittanceTransactionDrRequestModel model) {
 		JaxContextUtil.setJaxEvent(JaxEvent.CREATE_APPLICATION);
@@ -295,6 +297,16 @@ public class RemittanceController {
 		BranchRemittanceApplResponseDto response = remittanceTransactionService.addtoCart(model);
 		return AmxApiResponse.build(response);
 	}
+	
+	/** added by Rabil **/ 
+	@RequestMapping(value = "/status/v2/", method = RequestMethod.POST)
+	public ApiResponse getTransactionStatusV2(@RequestBody RemittanceTransactionStatusRequestModel request,@RequestParam("promotion") Boolean promotion) {
+		logger.info("In getTransactionStatus with param, :  " + request.toString());
+		request.setPromotion(promotion);
+		ApiResponse response = remittanceTransactionService.getTransactionStatusV2(request);
+		return response;
+	}
+	
 	
 	
 	

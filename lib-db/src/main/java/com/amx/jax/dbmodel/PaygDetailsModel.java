@@ -103,8 +103,8 @@ public class PaygDetailsModel implements Serializable{
 	@Column(name="LINK_ISACTIVE")
 	private String linkActive;
 	
-
-	
+	@Column(name="ERROR_CATEGORY")
+	private String errorCategory;
 
 	public BigDecimal getPaygTrnxSeqId() {
 		return paygTrnxSeqId;
@@ -296,5 +296,14 @@ public class PaygDetailsModel implements Serializable{
 
 	public void setLinkActive(String linkActive) {
 		this.linkActive = linkActive;
+	}
+	
+	
+	public String getErrorCategory() {
+		return errorCategory;
+	}
+
+	public void setErrorCategory(String errorCategory) {
+		this.errorCategory = errorCategory;
 	}
 }

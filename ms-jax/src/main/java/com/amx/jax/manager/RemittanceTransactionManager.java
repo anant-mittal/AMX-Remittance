@@ -62,9 +62,11 @@ import com.amx.jax.dbmodel.BankServiceRule;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.BizComponentData;
 import com.amx.jax.dbmodel.BlackListModel;
+import com.amx.jax.dbmodel.CollectDetailModel;
 import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ExchangeRateApprovalDetModel;
+import com.amx.jax.dbmodel.PaygDetailsModel;
 import com.amx.jax.dbmodel.TransactionLimitCheckView;
 import com.amx.jax.dbmodel.partner.RemitApplSrvProv;
 import com.amx.jax.dbmodel.remittance.AdditionalInstructionData;
@@ -113,6 +115,7 @@ import com.amx.jax.repository.BankMasterRepository;
 import com.amx.jax.repository.IAmiecAndBankMappingRepository;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.ICurrencyDao;
+import com.amx.jax.repository.PaygDetailsRepository;
 import com.amx.jax.repository.VTransferRepository;
 import com.amx.jax.repository.remittance.IOWSScheduleModelRepository;
 import com.amx.jax.repository.remittance.IServiceProviderCredentailsRepository;
@@ -287,6 +290,9 @@ public class RemittanceTransactionManager {
 	
 	@Autowired
 	BranchRemittancePaymentManager branchRemittancePaymentManager;
+	
+	@Autowired
+	PaygDetailsRepository paygDetailsRepository;
 
 
 	private static final String IOS = "IOS";
@@ -1470,6 +1476,10 @@ public class RemittanceTransactionManager {
 
 		return status;
 	}
+	
+	
+	
+	
 
 	private CivilIdOtpModel addOtpOnRemittance(RemittanceTransactionRequestModel model) {
 
@@ -1689,5 +1699,69 @@ public class RemittanceTransactionManager {
 	}
 	
 	
+	public RemittanceTransactionStatusResponseModel getTransactionStatusV2(RemittanceTransactionStatusRequestModel request) {
+		Customer customerId = new Customer(meta.getCustomerId());
+		RemittanceTransactionStatusResponseModel model = new RemittanceTransactionStatusResponseModel();
+		List<RemittanceTransaction> remitTrnxList = remitAppDao.getRemittanceTrnxByPaygId(customerId,request.getApplicationDocumentNumber());
+		List<RemittanceApplication> applList = remitAppDao.getApplicationDeatilsByPaygId(customerId,request.getApplicationDocumentNumber()); //Mapped tp Payg id
+		PaygDetailsModel paygDetail = paygDetailsRepository.findByPaygTrnxSeqId(request.getApplicationDocumentNumber());
+		
+		if(paygDetail==null) {
+			throw new GlobalException("Payment details not found.");
+		}
+		
+		if(applList.isEmpty()) {
+			throw new GlobalException("Invalid application document details.");
+		}else {
+			remittanceApplicationService.checkForSuspiciousPaymentAttempts(applList.get(0).getRemittanceApplicationId());
+			if (remitTrnxList!=null && !remitTrnxList.isEmpty()) {
+				BigDecimal cutomerReference = remitTrnxList.get(0).getCustomerId().getCustomerId();
+				
+				BigDecimal remittancedocfyr =remitTrnxList.get(0).getDocumentFinanceYear();
+				BigDecimal remittancedocNumber = remitTrnxList.get(0).getDocumentNo();
+				
+				BigDecimal collectiondocfyr = remitTrnxList.get(0).getCollectionDocFinanceYear();
+				BigDecimal collectiondocNumber= remitTrnxList.get(0).getCollectionDocumentNo();
+				BigDecimal collectiondocCode=	remitTrnxList.get(0).getCollectionDocCode();
+				
+				TransactionHistroyDTO transactionHistoryDto = transactionHistroyService.getTransactionHistoryDto(cutomerReference, remittancedocfyr, remittancedocNumber);
+				model.setTransactionHistroyDTO(transactionHistoryDto);
+				if (Boolean.TRUE.equals(request.getPromotion())) {
+					PromotionDto promoDto = promotionManager.getPromotionDto(remittancedocNumber, remittancedocfyr);
+					if (promoDto != null && !promoDto.isChichenVoucher()) {
+						model.setPromotionDto(promotionManager.getPromotionDto(remittancedocNumber, remittancedocfyr));
+					}
+				}
+			}
+			model.setTransactionReference(getTransactionReference(applList.get(0)));
+			if ("Y".equals(applList.get(0).getLoyaltyPointInd())) {
+				model.setNetAmount(applList.stream().map(RemittanceApplication::getLocalTranxAmount).reduce(BigDecimal.ZERO, BigDecimal::add));
+			} else {
+				model.setNetAmount(applList.stream().map(RemittanceApplication::getLocalNetTranxAmount).reduce(BigDecimal.ZERO, BigDecimal::add));
+			}
+			JaxTransactionStatus status = getJaxTransactionStatus(applList.get(0));
+			model.setStatus(status);
+
+			if (remitTrnxList!=null && !remitTrnxList.isEmpty()) {
+				PromotionDto obj = dailyPromotionManager.getWanitBuyitMsg(remitTrnxList.get(0));
+				if(obj != null) {
+					model.setPromotionDto(obj);
+				}
+			}
+			model.setErrorCategory(paygDetail.getErrorCategory());
+			model.setErrorMessage(paygDetail.getErrorMessage());
+			if(applList.get(0).getErrorCategory() != null) {
+				ResponseCodeDetailDTO responseCodeDetail = PayGRespCodeJSONConverter.getResponseCodeDetail(paygDetail.getErrorCategory());
+				responseCodeDetail.setPgPaymentId(paygDetail.getPgPaymentId());
+				responseCodeDetail.setPgReferenceId(paygDetail.getPgReferenceId());
+				responseCodeDetail.setPgTransId(paygDetail.getPgTransactionId());
+				responseCodeDetail.setPgAuth(paygDetail.getPgAuthCode());
+				model.setResponseCodeDetail(responseCodeDetail);
+			}
+		}
+		
+		return model;
+	}
+
 	
 }

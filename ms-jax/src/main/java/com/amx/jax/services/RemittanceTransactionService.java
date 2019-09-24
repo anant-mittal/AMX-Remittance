@@ -213,6 +213,16 @@ public class RemittanceTransactionService extends AbstractService {
 		return response;
 	}
 	
+	public ApiResponse getTransactionStatusV2(RemittanceTransactionStatusRequestModel request) {
+		ApiResponse response = getBlackApiResponse();
+		RemittanceTransactionStatusResponseModel responseModel = remittanceTxnManger.getTransactionStatusV2(request);
+		response.getData().getValues().add(responseModel);
+		response.setResponseStatus(ResponseStatus.OK);
+		response.getData().setType(responseModel.getModelType());
+		return response;
+	}
+	
+	
 	@SuppressWarnings("unchecked")
 	public ApiResponse<RemittanceTransactionResponsetModel> calcEquivalentAmount(
 @RequestBody RemittanceTransactionRequestModel model) {

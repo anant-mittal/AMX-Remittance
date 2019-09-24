@@ -205,6 +205,8 @@ public class FcSaleApplicationDao {
 				pgModel.setPgReceiptDate(paymentResponse.getPostDate());
 				pgModel.setPgTransactionId(paymentResponse.getTransactionId());
 				pgModel.setPgReferenceId(paymentResponse.getReferenceId());
+				pgModel.setErrorCategory(paymentResponse.getErrorCategory());
+				pgModel.setErrorMessage(paymentResponse.getErrorText());
 				pgRepository.save(pgModel);
 				}
 			}else{

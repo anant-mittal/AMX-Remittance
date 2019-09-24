@@ -12,4 +12,6 @@ public interface PaygDetailsRepository extends CrudRepository<PaygDetailsModel, 
 	public PaygDetailsModel findByCollDocNumberAndCustomerId(BigDecimal collDocNumber,BigDecimal customerId);
 	
 	public PaygDetailsModel findByPgPaymentId(BigDecimal pgPaymentId);
+	
+	public PaygDetailsModel findByPaygTrnxSeqId(BigDecimal paygTrnxSeqId);
 }

@@ -158,6 +158,8 @@ public class RemittanceTransaction implements Serializable {
 	private BigDecimal usdAmt;
 	private String wuPurposeOfTransaction;
 	
+	private BigDecimal paygTrnxDetailId;
+	
 	
 	public RemittanceTransaction() {
 	}
@@ -1184,6 +1186,13 @@ public class RemittanceTransaction implements Serializable {
 		this.wuPurposeOfTransaction = wuPurposeOfTransaction;
 	}
 	
+	@Column(name="PAYG_TRNX_DTLS_ID")
+	public BigDecimal getPaygTrnxDetailId() {
+		return paygTrnxDetailId;
+	}
 
+	public void setPaygTrnxDetailId(BigDecimal paygTrnxDetailId) {
+		this.paygTrnxDetailId = paygTrnxDetailId;
+	}
 }
  

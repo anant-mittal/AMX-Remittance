@@ -77,4 +77,8 @@ public interface RemittanceApplicationRepository extends CrudRepository<Remittan
 			+"and isactive <> 'D' and NVL(resultCode,' ') NOT IN('CAPTURED','APPROVED')")
 	public void deActivateNotUsedAllApplication(@Param("customerId") Customer customerId);
 	 
+    
+   
+	public List<RemittanceApplication> findByFsCustomerAndPaygTrnxDetailIdAndIsactive(Customer fsCustomer, BigDecimal paygTrnxDetailId,String isactive);
+    
 }

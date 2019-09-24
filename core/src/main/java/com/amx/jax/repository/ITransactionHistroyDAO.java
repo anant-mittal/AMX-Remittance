@@ -9,6 +9,9 @@ package com.amx.jax.repository;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
+
+import javax.persistence.Column;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -99,4 +102,6 @@ public interface ITransactionHistroyDAO extends JpaRepository<CustomerRemittance
 					+" order by COLLECTION_DOCUMENT_NO  desc ) where rownum = 1" , nativeQuery=true)
 	public BigDecimal  getLastTrnxAmountFortheUser(@Param("username") String username,@Param("accMyear") String accMyear,@Param("countrybranchId") BigDecimal countrybranchId);
 	
+	//	to fetch trnx histroy	
+	public List<CustomerRemittanceTransactionView> findByCustomerIdAndCollectionDocumentFinYearAndCollectionDocumentNoAndCollectionDocumentCode(BigDecimal customerId,BigDecimal collectionDocumentFinYear,BigDecimal CollectionDocumentNo,BigDecimal collectionDocumentCode); 
 }
