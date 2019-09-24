@@ -299,13 +299,17 @@ public class ExchRateAndRoutingTransientDataCache {
 					rateFcCurBal = glcBalList.get(0).getRateFcCurBal();
 				}
 
+				//// @formatter:off
+
 				// Adjust the FC and LC Amount for the Pending Provisional Adjustments.
-				ViewExGLCBalProvisional provision = bankGLCData.getProvisionalBalDetails();
+				/*ViewExGLCBalProvisional provision = bankGLCData.getProvisionalBalDetails();
 
 				if (provision != null && provision.getRateCurBal() != null && provision.getRateFcCurBal() != null) {
 					rateLcCurBal = rateLcCurBal.add(provision.getRateCurBal());
 					rateFcCurBal = rateFcCurBal.add(provision.getRateFcCurBal());
-				}
+				}*/
+				
+				// @formatter:on
 
 			}
 
