@@ -61,7 +61,7 @@ public class BeneBranchValidation {
 
 	public void validateAbtractBeneDetail(AbstractBeneDetailDto request) {
 		if (request.getDateOfBirth() == null) {
-			if (request.getAge() == null || request.getYearOfBirth() == null) {
+			if (request.getAge() == null && request.getYearOfBirth() == null) {
 				throw new GlobalException("dob or age or year of birth is mandatory");
 			}
 		} else {
@@ -70,7 +70,9 @@ public class BeneBranchValidation {
 		}
 		BeneficiaryTrnxModel beneTrnxModel = request.createBeneficiaryTrnxModelObject();
 		BeneAccountModel beneAccountModel = beneTrnxModel.getBeneAccountModel();
-		beneficiaryValidationService.validateIFscCode(beneAccountModel);
+		if (StringUtils.isNotBlank(beneAccountModel.getIfscCode())) {
+			beneficiaryValidationService.validateIFscCode(beneAccountModel);
+		}
 		// swift validation is already done inside online flow
 	}
 
@@ -104,7 +106,7 @@ public class BeneBranchValidation {
 		BeneficiaryTrnxModel beneTrnxModel = request.createBeneficiaryTrnxModelObject();
 		BeneAccountModel beneAccountModelRequest = beneTrnxModel.getBeneAccountModel();
 		BenificiaryListView benificiaryListView = beneficiaryService.getBeneByIdNo(BigDecimal.valueOf(request.getIdNo()));
-		BeneAccountModel beneAccountModel = createBeneAccountModel(benificiaryListView,beneAccountModelRequest);
+		BeneAccountModel beneAccountModel = createBeneAccountModel(benificiaryListView, beneAccountModelRequest);
 		beneTrnxModel.setBeneAccountModel(beneAccountModel);
 		if (StringUtils.isNotBlank(beneAccountModelRequest.getBankAccountNumber())) {
 			beneficiaryValidationService.validateDuplicateCashBeneficiary(beneTrnxModel);
