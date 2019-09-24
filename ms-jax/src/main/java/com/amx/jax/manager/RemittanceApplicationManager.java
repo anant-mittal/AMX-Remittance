@@ -579,6 +579,11 @@ public class RemittanceApplicationManager {
 		if(JaxUtil.isNullZeroBigDecimalCheck(breakup.getBaseRate())) {
 			remittanceApplication.setOriginalExchangeRate(breakup.getBaseRate());
 		}
+		
+		if(!StringUtils.isBlank(validationResults.getDiscountOnComissionFlag()) 
+				&& validationResults.getDiscountOnComissionFlag().equalsIgnoreCase(ConstantDocument.Yes)) {
+					remittanceApplication.setDiscountOnCommission(validationResults.getDiscountOnComission());
+		}
 	}
 
 	private void setApplicableRatesV2(RemittanceApplication remittanceApplication,
@@ -599,6 +604,10 @@ public class RemittanceApplicationManager {
 		remittanceApplication.setLoyaltyPointsEncashed(loyalityPointsEncashed);
 		if(JaxUtil.isNullZeroBigDecimalCheck(breakup.getBaseRate())) {
 			remittanceApplication.setOriginalExchangeRate(breakup.getBaseRate());
+		}
+		if(!StringUtils.isBlank(validationResults.getDiscountOnComissionFlag()) 
+				&& validationResults.getDiscountOnComissionFlag().equalsIgnoreCase(ConstantDocument.Yes)) {
+					remittanceApplication.setDiscountOnCommission(validationResults.getDiscountOnComission());
 		}
 	}
 

@@ -187,15 +187,12 @@ public class FcSaleDeliveryService {
 				deliveryDetail.getDriverEmployeeId());
 		fcSaleBranchOrderManager.saveFCStockTransferDetails(deliveryDetail.getDeleviryDelSeqId(),null,deliveryDetail.getDriverEmployeeId(), ConstantDocument.DVD);
 		PersonInfo pinfo = userService.getPersonInfo(vwdeliveryDetail.getCustomerId());
-		logger.debug("FC_ORDER_SUCCESSStart: {emial sending}");
 		logger.info("FC_ORDER_SUCCESSStart: {emial sending}");
 		Email email = new Email();
 		email.setSubject("FC Order Successfully Delivered");
 		email.addTo(pinfo.getEmail());
-		logger.debug("FC_ORDER_SUCCESS: {emial sending}");
 		logger.info("FC_ORDER_SUCCESS: {emial sending}");
 		email.setITemplate(TemplatesMX.FC_ORDER_SUCCESS);
-		logger.debug("FC_ORDER_SUCCESS: {emial sent}");
 		logger.info("FC_ORDER_SUCCESS: {emial sent}");
 		email.setHtml(true);
 		/*email.getModel().put("tranxId", fcSaleDeliveryMarkDeliveredRequest.getDeliveryDetailSeqId());

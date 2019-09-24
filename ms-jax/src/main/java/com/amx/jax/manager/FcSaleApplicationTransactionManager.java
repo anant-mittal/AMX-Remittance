@@ -495,6 +495,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel {
 		BigDecimal companyId = metaData.getCompanyId();
 		BigDecimal deliveryCharges = BigDecimal.ZERO;
 		BigDecimal totalNetAmount = BigDecimal.ZERO;
+		BigDecimal totalAmount = BigDecimal.ZERO;
 		List<FxShoppingCartDetails> shoppingCartList = fcSaleExchangeRateDao
 				.getFcSaleShoppingCartDetails(applciationCountryid, companyId, customerId);
 		List<ParameterDetails> parameterList = fcSaleExchangeRateDao.getParameterDetails(ConstantDocument.FX_DC,
@@ -507,11 +508,13 @@ public class FcSaleApplicationTransactionManager extends AbstractModel {
 			cartListDto = convertShopingCartDto(shoppingCartList);
 			for (ShoppingCartDetailsDto dto : cartListDto) {
 				totalNetAmount = totalNetAmount.add(dto.getLocalTranxAmount());
+				totalAmount = totalNetAmount.add(dto.getLocalTranxAmount()); 
 			}
 		}
 		shoppingCartResponseModel.setShoppingCartList(cartListDto);
 		shoppingCartResponseModel.setDeliveryCharges(deliveryCharges);
 		shoppingCartResponseModel.setTotalNetAmount(totalNetAmount.add(deliveryCharges));
+		shoppingCartResponseModel.setTotalAmount(totalAmount);
 
 		return shoppingCartResponseModel;
 	}
