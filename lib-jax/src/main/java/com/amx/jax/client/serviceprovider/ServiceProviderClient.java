@@ -10,8 +10,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.exception.JaxSystemError;
 import com.amx.jax.model.request.serviceprovider.ServiceProviderCallRequestDto;
-import com.amx.jax.model.response.serviceprovider.Quotation_Call_Response;
-import com.amx.jax.model.response.serviceprovider.Remittance_Call_Response;
+import com.amx.jax.model.response.serviceprovider.ServiceProviderResponse;
 import com.amx.jax.rest.RestService;
 
 @Component
@@ -27,7 +26,7 @@ public class ServiceProviderClient implements IServiceProviderService
 	AppConfig appConfig;
 
 	@Override
-	public AmxApiResponse<Quotation_Call_Response, Object> getQuatation(
+	public AmxApiResponse<ServiceProviderResponse, Object> getQuatation(
 			ServiceProviderCallRequestDto quatationRequestDto)
 	{
 		try
@@ -36,7 +35,7 @@ public class ServiceProviderClient implements IServiceProviderService
 			LOGGER.debug("in get quataion :");
 			return restService.ajax(appConfig.getServiceProviderURL() + Path.GET_QUATATION).meta(new JaxMetaInfo())
 					.post(quatationRequestDto)
-					.as(new ParameterizedTypeReference<AmxApiResponse<Quotation_Call_Response, Object>>()
+					.as(new ParameterizedTypeReference<AmxApiResponse<ServiceProviderResponse, Object>>()
 					{
 					});
 		}

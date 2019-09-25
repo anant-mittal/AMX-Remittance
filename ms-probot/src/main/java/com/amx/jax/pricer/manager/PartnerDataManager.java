@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.serviceprovider.ServiceProviderClient;
+import com.amx.jax.client.serviceprovider.ServiceProviderClientWrapper;
 import com.amx.jax.dbmodel.partner.BankExternalReferenceDetail;
 import com.amx.jax.dbmodel.partner.BankExternalReferenceHead;
 import com.amx.jax.dbmodel.partner.PaymentModeLimitsView;
@@ -83,7 +84,7 @@ public class PartnerDataManager {
 	PartnerServiceDao partnerServiceDao;
 
 	@Autowired
-	ServiceProviderClient serviceProviderClient;
+	ServiceProviderClientWrapper serviceProviderClient;
 
 	@Autowired
 	ExchangeDataService exchangeDataService;
