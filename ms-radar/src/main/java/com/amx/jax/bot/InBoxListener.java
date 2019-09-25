@@ -103,7 +103,6 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 			if (matcher.isMatch(PING)) {
 				replyMessage = "PING";
 			} else if (matcher.isMatch(LINK_CIVIL_ID)) {
-
 				try {
 					String civilId = matcher.group(1);
 					Customer customer = CollectionUtil.getOne(customerRepository.findActiveCustomers(civilId));
@@ -129,7 +128,9 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 					LOGGER.error("SOME_ERROR", e);
 				}
 
-			} else if (esConfig.isEnabled()) {
+			}
+			/*
+			else if (esConfig.isEnabled()) {
 				OracleViewDocument doc = snapApiService.getCustomerByWhatsApp(swissISDProtoString,
 						swissNumberProtoString);
 				if (!ArgUtil.isEmpty(doc)) {
@@ -143,7 +144,7 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 				}
 			} else {
 				replyMessage = ANY_TEXT;
-			}
+			}*/
 
 			return event.replyWAMessage(replyMessage.replace("{companyName}", radarConfig.getCompanyName())
 					.replace("{companyWebSiteUrl}", radarConfig.getCompanyWebSiteUrl())
