@@ -252,4 +252,10 @@ public class RbaacServiceControllerTest implements IRbaacService {
 		return null;
 	}
 
+	@Override
+	public AmxApiResponse<DeviceDto, Object> getDevicesByTerminal(BigDecimal terminalId, String terminalIp) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
