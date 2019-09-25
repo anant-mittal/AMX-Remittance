@@ -526,6 +526,8 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 		TrnxRoutingDetails routingDetails = drDto.getTrnxRoutingPaths();
 		BigDecimal foreignAmont = drDto.getExRateBreakup().getConvertedFCAmount();
 		
+		if(JaxUtil.isNullZeroBigDecimalCheck(routingDetails.getSplitAmount())) {
+		
 		BigDecimal fcurrencyId = (BigDecimal) remitApplParametersMap.get("P_FOREIGN_CURRENCY_ID");
 		CurrencyMasterModel currMaster = currencyMasterDao.getCurrencyMasterById(fcurrencyId); 
 		String currQuoteName = currMaster!=null?(currMaster.getQuoteName()==null?"":currMaster.getQuoteName()):currMaster.getCurrencyCode(); 
@@ -544,7 +546,7 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 			}
 		    msg = "This single remittance will be reflected as {"+count.intValue()+"} transactions in your bank account.The {"+count.intValue()+"} transactions will be "+currQuoteName+" {"+joinedString+"} "+reminder +".";
 		}
-		
+		}
 		}catch(Exception e) {
 			e.printStackTrace();
 		}

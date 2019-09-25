@@ -240,7 +240,7 @@ public class BranchRemittanceApplManager {
 	
 	public BranchRemittanceApplResponseDto saveBranchRemittanceApplication(BranchRemittanceApplRequestModel requestApplModel) {
 		Map<String,Object> hashMap = new HashMap<>();
-		Map<BigDecimal,List<RemittanceApplicationSplitting>> applSplitMap = new HashMap<BigDecimal, List<RemittanceApplicationSplitting>>();
+		
 
 		validateSaveApplRequest(requestApplModel);
 
