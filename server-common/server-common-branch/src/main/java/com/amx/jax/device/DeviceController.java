@@ -1,5 +1,6 @@
 package com.amx.jax.device;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -50,6 +51,8 @@ import com.amx.jax.sso.server.ApiHeaderAnnotations.ApiDeviceHeaders;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.CryptoUtil;
+import com.amx.utils.MapBuilder;
+import com.amx.utils.MapBuilder.BuilderMap;
 
 import io.swagger.annotations.Api;
 
@@ -277,14 +280,19 @@ public class DeviceController {
 	}
 
 	@ApiOffisteStatus({ OffsiteServerCodes.CLIENT_UNKNOWN })
-	@RequestMapping(value = { DeviceConstants.Path.DEVICE_ACTIVATE }, method = { RequestMethod.POST })
+	@RequestMapping(value = { DeviceConstants.Path.DEVICE_STATUS }, method = { RequestMethod.GET })
 	@ResponseBody
-	public AmxApiResponse<BoolRespModel, Object> statusDevice(
-			@RequestParam(required = false) String secureKey,
-			@RequestParam Integer deviceRegId,
-			@RequestParam ClientType deviceType, @RequestParam(required = false) String mOtp) {
-		deviceRequestValidator.updateStamp(deviceRegId);
-		return rbaacServiceClient.activateDevice(deviceRegId, mOtp);
+	public AmxApiResponse<Object, Object> statusDevice() {
+		BuilderMap wrap = MapBuilder.map();
+
+		ssoUser.ssoTranxId();
+		// Adapter
+		BigDecimal terminlId = sSOTranx.get().getTerminalId();
+		BigDecimal branchRid = ArgUtil.parseAsBigDecimal(sSOTranx.get().getBranchAdapterId());
+		wrap.put("session.terminal.id", terminlId);
+		wrap.put("session.adapter.id", branchRid);
+
+		return AmxApiResponse.build(wrap.build());
 	}
 
 }
