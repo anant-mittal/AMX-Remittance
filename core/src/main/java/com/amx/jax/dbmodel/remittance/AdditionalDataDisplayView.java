@@ -34,6 +34,8 @@ public class AdditionalDataDisplayView implements Serializable{
 	private String fieldBehaviour;
 	private String validationsReq;
 	private String isActive;
+	private BigDecimal bankId;
+	private String storeIndicator;
 	
 	@Id
 	@Column(name = "SERVICE_ID")
@@ -170,6 +172,18 @@ public class AdditionalDataDisplayView implements Serializable{
 	}
 	public void setIsActive(String isActive) {
 		this.isActive = isActive;
+	}
+	public BigDecimal getBankId() {
+		return bankId;
+	}
+	public void setBankId(BigDecimal bankId) {
+		this.bankId = bankId;
+	}
+	public String getStoreIndicator() {
+		return storeIndicator;
+	}
+	public void setStoreIndicator(String storeIndicator) {
+		this.storeIndicator = storeIndicator;
 	}
 	
 }

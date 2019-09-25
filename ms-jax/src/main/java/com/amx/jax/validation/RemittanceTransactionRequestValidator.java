@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,10 +112,14 @@ public class RemittanceTransactionRequestValidator {
 		if (!JaxChannel.ONLINE.equals(metaData.getChannel())) {
 			flexiFieldIn.remove(ConstantDocument.INDIC1);
 		}
-
-		List<AdditionalDataDisplayView> additionalDataRequired = additionalDataDisplayDao
-				.getAdditionalDataFromServiceApplicability(applicationCountryId, routingCountryId, foreignCurrencyId,
-						remittanceModeId, deliveryModeId, flexiFieldIn.toArray(new String[flexiFieldIn.size()]));
+		List<AdditionalDataDisplayView> additionalDataRequired = additionalDataDisplayDao.getAdditionalDataFromServiceApplicabilityForBank(
+				applicationCountryId, routingCountryId, foreignCurrencyId, remittanceModeId, deliveryModeId,
+				flexiFieldIn.toArray(new String[flexiFieldIn.size()]), routingBankId);
+		if (CollectionUtils.isEmpty(additionalDataRequired)) {
+			additionalDataRequired = additionalDataDisplayDao.getAdditionalDataFromServiceApplicability(applicationCountryId, routingCountryId,
+					foreignCurrencyId, remittanceModeId, deliveryModeId, flexiFieldIn.toArray(new String[flexiFieldIn.size()]));
+		}
+		
 		List<JaxConditionalFieldDto> requiredFlexFields = new ArrayList<>();
 		for (AdditionalDataDisplayView flexField : additionalDataRequired) {
 			FlexFieldDto flexFieldValueInRequest = requestFlexFields.get(flexField.getFlexField());

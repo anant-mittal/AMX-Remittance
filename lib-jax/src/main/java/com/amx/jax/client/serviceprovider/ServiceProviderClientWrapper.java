@@ -8,6 +8,7 @@ import com.amx.jax.model.request.serviceprovider.ServiceProviderCallRequestDto;
 import com.amx.jax.model.response.serviceprovider.Quotation_Call_Response;
 import com.amx.jax.model.response.serviceprovider.Remittance_Call_Response;
 import com.amx.jax.model.response.serviceprovider.ServiceProviderResponse;
+import com.amx.jax.model.response.serviceprovider.Validate_Remittance_Inputs_Call_Response;
 
 @Component
 public class ServiceProviderClientWrapper {
@@ -27,10 +28,11 @@ public class ServiceProviderClientWrapper {
 		return AmxApiResponse.build(result);
 	}
 
-	public AmxApiResponse<ServiceProviderResponse, Object> validateRemittanceInputs(
+	public AmxApiResponse<Validate_Remittance_Inputs_Call_Response, Object> validateRemittanceInputs(
 			ServiceProviderCallRequestDto validateRemittanceInputsRequestDto) {
-		// TODO Auto-generated method stub
-		return null;
+		AmxApiResponse<ServiceProviderResponse, Object> response = serviceProviderClient.validateRemittanceInputs(validateRemittanceInputsRequestDto);
+		Validate_Remittance_Inputs_Call_Response result = (Validate_Remittance_Inputs_Call_Response) response.getResult();
+		return AmxApiResponse.build(result);
 	}
 
 	public AmxApiResponse<ServiceProviderResponse, Object> getRemittanceDetails(ServiceProviderCallRequestDto getRemittanceDetailsRequestDto) {
