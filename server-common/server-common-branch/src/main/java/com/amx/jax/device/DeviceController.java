@@ -295,7 +295,7 @@ public class DeviceController {
 		wrap.put("devices",
 				rbaacServiceClient.getDevicesByTerminal(terminlId, commonHttpRequest.getIPAddress()).getResults());
 
-		return AmxApiResponse.build(wrap.build());
+		return AmxApiResponse.buildData(wrap.build());
 	}
 
 }

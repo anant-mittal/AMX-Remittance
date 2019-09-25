@@ -49,13 +49,12 @@ window.CONST = {
 	<hr />
 	<br />
 	<br />
-	<table>
+	<table id="panelwrapper">
 		<tr>
 			<td>
 				<table class="device" width="100%">
 					<tr>
-						<th>Device</th>
-						<th id="otp">--</th>
+						<th colspan="2">Device</th>
 					</tr>
 					<tr>
 						<td>statusKey
@@ -97,6 +96,44 @@ window.CONST = {
 	</table>
 
 </body>
+<script type="text/template" id="sessiontemp">
+		<tr>
+			<td>
+				<table class="session" width="100%">
+					<tr>
+						<th colspan="2">Session</th>
+					</tr>
+					<tr>
+						<td>session.id</td><td>{session.id}</td>
+					</tr>
+					<tr>
+						<td>session.terminal.id</td><td>{session.terminal.id}</td>
+					</tr>
+					<tr>
+						<td>session.adapter.id</td><td>{session.adapter.id}</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+</script>
+<script type="text/template" id="devicetemp">
+		<tr>
+			<td>
+				<table class="session" width="100%">
+					<tr>
+						<th colspan="2">{deviceType}</th>
+					</tr>
+					<tr>
+						<td>registrationId</td><td>{registrationId}</td>
+					</tr>
+					<tr>
+						<td>termialId</td><td>{termialId}</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+</script>
+
 <script>
 	var serverUrl = window.CONST.remoteServerUrl;
 	var terminalIP = localStorage.getItem("terminalId")
@@ -180,7 +217,24 @@ window.CONST = {
 	function getStatus() {
 		return $.getJSON(serverUrl + "/pub/device/status", {
 		}).done(function(resp) {
+			var text = $("#devicetemp").text();
+			var $panelwrapper =  $("#panelwrapper");
 			console.log(resp);
+			
+			var textRow = $("#sessiontemp").text();
+			for(var key in resp.data){
+				textRow = textRow.replace("{"+key+"}",resp.data[key]);
+			}
+			$panelwrapper.append(textRow);
+			
+			for(var i in resp.data.devices){
+				var textRow = text;
+				for(var key in resp.data.devices[i]){
+					textRow = textRow.replace("{"+key+"}",resp.data.devices[i][key]);
+				}
+				$panelwrapper.append(textRow);
+			}
+			
 		}).always(function() {
 		});
 	}
