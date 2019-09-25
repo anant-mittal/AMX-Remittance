@@ -35,6 +35,9 @@ public class DeviceDao {
 	AppConfig appConfig;
 	@Autowired
 	RbaacDao rbaacDao;
+	
+	@Autowired
+	BranchDetailDao branchDetailDao;
 
 	/**
 	 * 
@@ -116,7 +119,7 @@ public class DeviceDao {
 
 		BigDecimal branchSystemInvId2 = null;
 		if (ArgUtil.is(branchSystemInvIp)) {
-			BranchSystemDetail branchSystem = branchDetailService.findBranchSystemByIp(branchSystemInvIp);
+			BranchSystemDetail branchSystem = branchDetailDao.getBranchSystemDetail(branchSystemInvIp);
 			branchSystemInvId2 = branchSystem.getCountryBranchSystemInventoryId();
 		}
 		return deviceRepository.findByBranchSystemInventoryIdAndStatus(branchSystemInvId,branchSystemInvId2,

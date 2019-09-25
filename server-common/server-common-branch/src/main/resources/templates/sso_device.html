@@ -176,9 +176,19 @@ window.CONST = {
 			hmacTimer = setTimeout(hmac, 10000);
 		}
 	}
+	
+	function getStatus() {
+		return $.getJSON(serverUrl + "/pub/device/status", {
+		}).done(function(resp) {
+			console.log(resp);
+		}).always(function() {
+		});
+	}
 
 	function poll() {
-		return pairDevice();
+		return pairDevice().then(function(){
+			return getStatus();
+		});
 	}
 	hmac();
 	poll();

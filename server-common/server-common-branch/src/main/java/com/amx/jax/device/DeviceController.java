@@ -285,10 +285,11 @@ public class DeviceController {
 	public AmxApiResponse<Object, Object> statusDevice() {
 		BuilderMap wrap = MapBuilder.map();
 
-		ssoUser.ssoTranxId();
+		String tranxId = ssoUser.ssoTranxId();
 		// Adapter
 		BigDecimal terminlId = sSOTranx.get().getTerminalId();
 		BigDecimal branchRid = ArgUtil.parseAsBigDecimal(sSOTranx.get().getBranchAdapterId());
+		wrap.put("session.id", tranxId);
 		wrap.put("session.terminal.id", terminlId);
 		wrap.put("session.adapter.id", branchRid);
 		wrap.put("devices",
