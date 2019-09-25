@@ -542,9 +542,9 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 			}
 			String joinedString = amountStrList.stream().collect(Collectors.joining(","));
 			if(splitCount[1]!=null && splitCount[1].compareTo(BigDecimal.ZERO)>0) { 
-				reminder ="and "+ currQuoteName+" {"+splitCount[1]+"}";
+				reminder ="and "+ currQuoteName+" "+splitCount[1]+"";
 			}
-		    msg = "This single remittance will be reflected as {"+count.intValue()+"} transactions in your bank account.The {"+count.intValue()+"} transactions will be "+currQuoteName+" {"+joinedString+"} "+reminder +" . Click Yes to continue, No to choose another rate.";
+		    msg = "This single remittance will be reflected as "+count.intValue()+" transactions in your bank account.The "+count.intValue()+" transactions will be "+currQuoteName+" "+joinedString+" "+reminder +" . Click Yes to continue, No to choose another rate.";
 		}
 		}
 		}catch(Exception e) {
