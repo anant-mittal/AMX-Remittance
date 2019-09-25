@@ -26,17 +26,16 @@ import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.FlexFieldBehaviour;
 import com.amx.jax.constants.JaxChannel;
 import com.amx.jax.dao.RemittanceApplicationDao;
-import com.amx.jax.dbmodel.BenificiaryListView;
-import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.PurposeTrnxAmicDesc;
 import com.amx.jax.dbmodel.remittance.AdditionalBankDetailsViewx;
-import com.amx.jax.dbmodel.remittance.AdditionalBankRuleAmiec;
 import com.amx.jax.dbmodel.remittance.AdditionalBankRuleMap;
 import com.amx.jax.dbmodel.remittance.AdditionalDataDisplayView;
 import com.amx.jax.dbmodel.remittance.FlexFiledView;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.manager.remittance.AdditionalBankDetailManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.remittance.AbstractRemittanceApplicationRequestModel;
+import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceAdditionalBeneFieldModel;
 import com.amx.jax.model.response.ExchangeRateBreakup;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
@@ -74,6 +73,8 @@ public class RemittanceTransactionRequestValidator {
 	BranchRemittanceManager branchRemitManager;
 	@Autowired
 	IPurposeTrnxAmicDescRepository purposeTrnxAmicDescRepository;
+	@Autowired
+	AdditionalBankDetailManager additionalBankDetailManager;
 
 	public void validateExchangeRate(AbstractRemittanceApplicationRequestModel request,
 			RemittanceTransactionResponsetModel response) {
@@ -202,10 +203,11 @@ public class RemittanceTransactionRequestValidator {
 			AdditionalFlexRequiredException exp = new AdditionalFlexRequiredException(
 					"Addtional flex fields are required", JaxError.ADDTIONAL_FLEX_FIELD_REQUIRED);
 			processFlexFields(requiredFlexFields);
+			additionalBankDetailManager.setDefaultValues(requiredFlexFields, request, remitApplParametersMap);
 			exp.setMeta(requiredFlexFields);
 			throw exp;
 		}
-
+		additionalBankDetailManager.validateAdditionalBankFields(request, remitApplParametersMap);
 	}
 
 	/**
@@ -347,6 +349,10 @@ public class RemittanceTransactionRequestValidator {
 			}
 		}
 		return amiecValue;
+	}
+
+	public void saveFlexFields(RemittanceAdditionalBeneFieldModel requestApplModel, Map<String, Object> remitApplParametersMap) {
+		additionalBankDetailManager.saveFlexFields(requestApplModel, remitApplParametersMap);		
 	}
 
 }

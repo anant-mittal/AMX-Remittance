@@ -1176,6 +1176,7 @@ public class RemittanceTransactionManager {
 		validateAdditionalCheck();
 		validateAdditionalBeneDetailsV2(model);
 		remittanceAdditionalFieldManager.processAdditionalFields(model);
+		remittanceTransactionRequestValidator.saveFlexFields(model, remitApplParametersMap);
 		RemittanceApplication remittanceApplication = remitAppManager.createRemittanceApplicationV2(model,validatedObjects, validationResults, remitApplParametersMap);
 		RemittanceAppBenificiary remittanceAppBeneficairy = remitAppBeneManager.createRemittanceAppBeneficiary(remittanceApplication);
 		List<AdditionalInstructionData> additionalInstrumentData;

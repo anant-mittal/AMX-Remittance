@@ -297,6 +297,7 @@ public class BranchRemittanceApplManager {
 		remittanceTransactionRequestValidator.validateFlexFields(requestApplModel, remitApplParametersMap);
 		remittanceAdditionalFieldManager.validateAdditionalFields(requestApplModel, remitApplParametersMap);
 		remittanceAdditionalFieldManager.processAdditionalFields(requestApplModel); 
+		remittanceTransactionRequestValidator.saveFlexFields(requestApplModel, remitApplParametersMap);
 
 		//logger.debug("branchExchangeRate :"+exchangeRateResposne);
 		/* get aml cehck   details **/
