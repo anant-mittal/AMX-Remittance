@@ -291,6 +291,8 @@ public class DeviceController {
 		BigDecimal branchRid = ArgUtil.parseAsBigDecimal(sSOTranx.get().getBranchAdapterId());
 		wrap.put("session.terminal.id", terminlId);
 		wrap.put("session.adapter.id", branchRid);
+		wrap.put("devices",
+				rbaacServiceClient.getDevicesByTerminal(terminlId, commonHttpRequest.getIPAddress()).getResults());
 
 		return AmxApiResponse.build(wrap.build());
 	}

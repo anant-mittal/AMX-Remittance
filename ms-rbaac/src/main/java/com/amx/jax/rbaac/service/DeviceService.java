@@ -30,6 +30,7 @@ import com.amx.jax.rbaac.dto.request.DeviceRegistrationRequest;
 import com.amx.jax.rbaac.error.RbaacServiceError;
 import com.amx.jax.rbaac.exception.AuthServiceException;
 import com.amx.jax.rbaac.manager.DeviceManager;
+import com.amx.jax.rbaac.repository.DeviceRepository;
 import com.amx.jax.rbaac.validation.DeviceValidation;
 import com.amx.jax.tunnel.ResourceUpdateEvent;
 import com.amx.jax.tunnel.TunnelService;
@@ -47,6 +48,10 @@ public class DeviceService extends AbstractService {
 
 	@Autowired
 	DeviceDao deviceDao;
+	
+	@Autowired
+	DeviceRepository deviceRepository;
+	
 	@Autowired
 	DeviceValidation deviceValidation;
 	@Autowired
@@ -253,7 +258,7 @@ public class DeviceService extends AbstractService {
 		}
 		return devices.get(0).getRegistrationId();
 	}
-
+	
 	/**
 	 * @param deviceClientType
 	 * @param employeeId
@@ -330,6 +335,15 @@ public class DeviceService extends AbstractService {
 					"Inactive Device Client : Contact Support");
 		}
 		return convert(device);
+	}
+	
+	public List<DeviceDto> getDevicesByTerminal(BigDecimal terminalId, String terminalIp) {
+		List<Device> devices = deviceDao.findAllActiveDevicesByTerminal(terminalId, terminalIp);
+		List<DeviceDto> devicesdtos = new ArrayList<DeviceDto>();
+		for (Device device : devices) {
+			devicesdtos.add(convert(device));
+		}
+		return devicesdtos;
 	}
 
 	public DeviceDto convert(Device device) {

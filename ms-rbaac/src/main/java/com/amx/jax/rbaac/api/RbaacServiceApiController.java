@@ -427,5 +427,13 @@ public class RbaacServiceApiController implements IRbaacService {
 		BoolRespModel response = deviceService.deleteDevice(deviceRegId);
 		return AmxApiResponse.build(response);
 	}
+	
+	@Override
+	@RequestMapping(value = ApiEndPoints.DEVICE_GET_DEVICE_BY_TERMINAL, method = RequestMethod.GET)
+	public AmxApiResponse<DeviceDto, Object> getDevicesByTerminal(
+			@RequestParam(name = Params.TERMINAL_ID, required=false) BigDecimal terminalId, 
+			@RequestParam(name = Params.TERMINAL_IP, required=false) String terminalIp) {
+		return AmxApiResponse.buildList(deviceService.getDevicesByTerminal(terminalId, terminalIp));
+	}
 
 }

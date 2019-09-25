@@ -81,6 +81,7 @@ public interface IRbaacService {
 		public static final String DEVICE_REG = DEVICE_PREFIX + "/register";
 		public static final String DEVICE_GET_DEVICE_REG_ID = DEVICE_PREFIX + "/get-deviceregid";
 		public static final String DEVICE_GET_DEVICE_BY_DEVICE_REG_ID = DEVICE_PREFIX + "/get-device";
+		public static final String DEVICE_GET_DEVICE_BY_TERMINAL = DEVICE_PREFIX + "/get-device-by-terminal";
 		public static final String NOTP_VERIFY = DEVICE_PREFIX + "/notp/verify";
 		public static final String DEVICE_DELETE = DEVICE_PREFIX + "/delete";
 
@@ -96,6 +97,7 @@ public interface IRbaacService {
 	public static class Params {
 
 		public static final String TERMINAL_ID = "countryBranchSystemInventoryId";
+		public static final String TERMINAL_IP = "countryBranchSystemInventoryIp";
 		public static final String EMPLOYEE_ID = "employeeId";
 		public static final String DEVICE_TYPE = "deviceType";
 		public static final String DEVICE_REG_ID = "deviceRegId";
@@ -292,6 +294,8 @@ public interface IRbaacService {
 	public AmxApiResponse<NotpDTO, Object> verifyOTP(NotpDTO notpDTO);
 
 	public AmxApiResponse<DeviceDto, Object> getDeviceByDeviceRegId(BigDecimal deviceRegId);
+	
+	public AmxApiResponse<DeviceDto, Object> getDevicesByTerminal(BigDecimal terminalId,String terminalIp);
 
 	AmxApiResponse<BoolRespModel, Object> deleteDevice(Integer deviceRegId);
 
