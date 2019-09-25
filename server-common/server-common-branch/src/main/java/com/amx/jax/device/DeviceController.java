@@ -276,4 +276,15 @@ public class DeviceController {
 		return rbaacServiceClient.deleteDevice(deviceRegId);
 	}
 
+	@ApiOffisteStatus({ OffsiteServerCodes.CLIENT_UNKNOWN })
+	@RequestMapping(value = { DeviceConstants.Path.DEVICE_ACTIVATE }, method = { RequestMethod.POST })
+	@ResponseBody
+	public AmxApiResponse<BoolRespModel, Object> statusDevice(
+			@RequestParam(required = false) String secureKey,
+			@RequestParam Integer deviceRegId,
+			@RequestParam ClientType deviceType, @RequestParam(required = false) String mOtp) {
+		deviceRequestValidator.updateStamp(deviceRegId);
+		return rbaacServiceClient.activateDevice(deviceRegId, mOtp);
+	}
+
 }
