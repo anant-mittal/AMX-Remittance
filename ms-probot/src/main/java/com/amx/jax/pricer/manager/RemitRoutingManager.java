@@ -27,8 +27,10 @@ import com.amx.jax.cache.TransientRoutingComputeDetails;
 import com.amx.jax.cache.WorkingHoursData;
 import com.amx.jax.dict.UserClient.Channel;
 import com.amx.jax.pricer.dao.CountryMasterDao;
+import com.amx.jax.pricer.dao.PartnerServiceDao;
 import com.amx.jax.pricer.dao.TimezoneDao;
 import com.amx.jax.pricer.dao.ViewExRoutingMatrixDao;
+import com.amx.jax.pricer.dbmodel.BenificiaryListView;
 import com.amx.jax.pricer.dbmodel.CountryMasterModel;
 import com.amx.jax.pricer.dbmodel.HolidayListMasterModel;
 import com.amx.jax.pricer.dbmodel.TimezoneMasterModel;
@@ -75,6 +77,9 @@ public class RemitRoutingManager {
 
 	@Resource
 	ExchRateAndRoutingTransientDataCache transientDataCache;
+	
+	@Autowired
+	PartnerServiceDao partnerServiceDao;
 
 	public boolean validateViewRoutingMatrixData(ViewExRoutingMatrix routingMatrix,
 			ExchangeRateAndRoutingRequest routingRequest) {
@@ -91,16 +96,30 @@ public class RemitRoutingManager {
 	public List<ViewExRoutingMatrix> getRoutingMatrixForRemittance(
 			ExchangeRateAndRoutingRequest exchangeRateAndRoutingRequest) {
 
-		List<ViewExRoutingMatrix> routingMatrix;
+		List<ViewExRoutingMatrix> routingMatrix = null;
 
 		if (SERVICE_GROUP.CASH.equals(exchangeRateAndRoutingRequest.getServiceGroup())) {
 
 			/**
 			 * Only For Cash : <br>
-			 * Hard Condition : RoutingBankId = BeneBankId And RoutingBankBranchId =
-			 * BeneBankBranchId
+			 * Hard Condition : RoutingBankId = BeneBankId And RoutingBankBranchId = BeneBankBranchId # wrong
+			 * cash logic to fetch routing bank Id and bank branch Id from beneficiary creation
 			 */
-			routingMatrix = viewExRoutingMatrixDao.getRoutingMatrixForCashService(
+			
+			BenificiaryListView beneficaryDetails = partnerServiceDao.getBeneficiaryDetails(exchangeRateAndRoutingRequest.getCustomerId(),exchangeRateAndRoutingRequest.getBeneficiaryId());
+			if(beneficaryDetails != null) {
+				routingMatrix = viewExRoutingMatrixDao.getRoutingMatrixForCashService(
+						exchangeRateAndRoutingRequest.getLocalCountryId(),
+						exchangeRateAndRoutingRequest.getForeignCountryId(),
+						exchangeRateAndRoutingRequest.getBeneficiaryBankId(),
+						exchangeRateAndRoutingRequest.getBeneficiaryBranchId(),
+						exchangeRateAndRoutingRequest.getForeignCurrencyId(),
+						exchangeRateAndRoutingRequest.getServiceGroup().getGroupCode(),
+						beneficaryDetails.getServiceProvider(), 
+						beneficaryDetails.getServiceProviderBranchId()); 
+			}
+			
+			/*routingMatrix = viewExRoutingMatrixDao.getRoutingMatrixForCashService(
 					exchangeRateAndRoutingRequest.getLocalCountryId(),
 					exchangeRateAndRoutingRequest.getForeignCountryId(),
 					exchangeRateAndRoutingRequest.getBeneficiaryBankId(),
@@ -108,8 +127,7 @@ public class RemitRoutingManager {
 					exchangeRateAndRoutingRequest.getForeignCurrencyId(),
 					exchangeRateAndRoutingRequest.getServiceGroup().getGroupCode(),
 					exchangeRateAndRoutingRequest.getBeneficiaryBankId(), // RoutingBankId = BeneBankId
-					exchangeRateAndRoutingRequest.getBeneficiaryBranchId()); // RoutingBankBranchId = BeneBankBranchId
-
+					exchangeRateAndRoutingRequest.getBeneficiaryBranchId()); // RoutingBankBranchId = BeneBankBranchId*/
 		} else {
 			// Else Bank
 			routingMatrix = viewExRoutingMatrixDao.getRoutingMatrixForBankService(
