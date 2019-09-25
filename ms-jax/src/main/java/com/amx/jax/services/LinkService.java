@@ -15,12 +15,15 @@ import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.AmxResponseSchemes;
 import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.constants.JaxChannel;
 import com.amx.jax.dbmodel.ContactLinkDetails;
+import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.LinkDetails;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.userservice.dao.LinkDetailsDao;
+import com.amx.jax.userservice.service.UserService;
 import com.amx.utils.MapBuilder;
 import com.amx.utils.MapBuilder.BuilderMap;
 
@@ -32,6 +35,9 @@ public class LinkService extends AbstractService{
 	
 	@Autowired
 	private PushNotifyClient pushNotifyClient;
+	
+	@Autowired
+	private UserService userService;
 	
 	
 	public AmxApiResponse<LinkResponseModel, Object> makeLink(LinkDTO dto) {		
@@ -80,12 +86,14 @@ public class LinkService extends AbstractService{
 		}
 	}
 
-	public BoolRespModel openLink(LinkDTO linkDto) {
+	public AmxApiResponse<LinkDTO, Object> openLink(LinkDTO linkDto,JaxChannel channel) {
 		LinkDetails linkDetails = linkDao.getLinkDetails(linkDto.getLinkId());
 		int openCounter = linkDetails.getOpenCounter();
 		linkDetails.setOpenCounter(openCounter+1);	
 		linkDao.updateLink(linkDetails);
-		if(linkDetails.getCustomerId() != null) {
+		Customer customer = userService.getCustById(linkDetails.getCustomerId());
+		
+		if(linkDetails.getCustomerId() != null && channel != JaxChannel.ONLINE) {			
 			PushMessage pushMessage = new PushMessage();
 			pushMessage.setSubject("Refer To Win!");
 			pushMessage.setMessage(
@@ -93,7 +101,19 @@ public class LinkService extends AbstractService{
 			pushMessage.addToUser(linkDetails.getCustomerId());
 			pushNotifyClient.send(pushMessage);
 		}
-		return new BoolRespModel(true);
+		String name = "";
+		if (customer.getFirstName() != null) {
+			name = name+customer.getFirstName();
+		}
+		if (customer.getMiddleName() != null) {
+			name = name+" "+customer.getMiddleName();
+		}
+		if(customer.getLastName() != null) {
+			name = name+" "+customer.getLastName();
+		}
+		
+		linkDto.setCustomerName(name);
+		return AmxApiResponse.build(linkDto);
 	}
 	
 }
