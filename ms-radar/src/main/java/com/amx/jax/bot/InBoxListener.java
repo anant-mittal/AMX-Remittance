@@ -34,7 +34,7 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 	private static final Logger LOGGER = LoggerFactory.getLogger(InBoxListener.class);
 	private static final PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
 
-	public static final Pattern LINK_CIVIL_ID = Pattern.compile("^LINK (.*)$");
+	public static final Pattern LINK_CIVIL_ID = Pattern.compile("^LINK([ ]*)(\\d{3,15})$");
 	public static final Pattern PING = Pattern.compile("^PING$");
 
 	@Autowired
@@ -104,7 +104,7 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 				replyMessage = "PING";
 			} else if (matcher.isMatch(LINK_CIVIL_ID)) {
 				try {
-					String civilId = matcher.group(1);
+					String civilId = matcher.group(2);
 					Customer customer = CollectionUtil.getOne(customerRepository.findActiveCustomers(civilId));
 
 					if (ArgUtil.isEmpty(customer)) { // Customer no Found
