@@ -3,6 +3,7 @@ package com.amx.jax.customer.task;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -14,8 +15,11 @@ import org.springframework.scheduling.annotation.Async;
 import com.amx.jax.async.ExecutorConfig;
 import com.amx.jax.client.JaxClientUtil;
 import com.amx.jax.customer.manager.CustomerContactVerificationManager;
+import com.amx.jax.customer.repository.RemittanceTransactionRepository;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerContactVerification;
+import com.amx.jax.dbmodel.ReferralDetails;
+import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.dict.Language;
 import com.amx.jax.event.AmxTunnelEvents;
@@ -32,6 +36,7 @@ import com.amx.jax.tunnel.DBEvent;
 import com.amx.jax.tunnel.ITunnelSubscriber;
 import com.amx.jax.tunnel.TunnelEventMapping;
 import com.amx.jax.tunnel.TunnelEventXchange;
+import com.amx.jax.userservice.dao.ReferralDetailsDao;
 import com.amx.jax.userservice.manager.CustomerFlagManager;
 import com.amx.jax.util.AmxDBConstants;
 import com.amx.utils.ArgUtil;
@@ -39,6 +44,7 @@ import com.amx.utils.JsonUtil;
 
 @TunnelEventMapping(topic = AmxTunnelEvents.Names.TRNX_BENE_CREDIT, scheme = TunnelEventXchange.TASK_WORKER)
 public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
+		
 
 	@Autowired
 	PostManService postManService;
@@ -54,6 +60,12 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 	
 	@Autowired
 	CustomerFlagManager customerFlagManager;
+	
+	@Autowired
+   	ReferralDetailsDao refDao;
+	
+	@Autowired
+	RemittanceTransactionRepository remittanceTransactionRepository;
 	
 
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
@@ -221,6 +233,35 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 			postManService.sendSMSAsync(sms);
 
 		}
+		
+		List<RemittanceTransaction> remittanceList = remittanceTransactionRepository.getTransactionMadeByOnline(String.valueOf(custId));
+		System.out.print("RemittanceCount : "+remittanceList.size());
+		
+		
+//		if(remittanceList.size() == 0) {
+			ReferralDetails referralDetails = refDao.getReferralByCustomerId(custId);
+			System.out.print("Referrer Customer Id"+referralDetails.getCustomerId());
+			System.out.print("Referree Customer Id"+referralDetails.getRefferedByCustomerId());
+			referralDetails.setIsConsumed("Y");
+			refDao.updateReferralCode(referralDetails);
+			if (referralDetails.getRefferedByCustomerId() != null) {
+				PushMessage pushMessage = new PushMessage();
+				pushMessage.setSubject("Refer To Win!");
+				pushMessage.setMessage(
+						"Congraturlations! Your reference has done the first transaction on AMIEC App! You will get a chance to win from our awesome Referral Program! Keep sharing the links to as many contacts you can and win exciting prices on referral success!");
+				pushMessage.addToUser(referralDetails.getRefferedByCustomerId());
+				pushNotifyClient.send(pushMessage);
+			}
+			
+			if(referralDetails.getCustomerId() != null) {
+				PushMessage pushMessage = new PushMessage();
+				pushMessage.setSubject("Refer To Win!");
+				pushMessage.setMessage(
+						"Welcome to Al Mulla family! Win a chance to get exciting offers at Al Mulla Exchange by sharing the links to as many contacts as you can.");
+				pushMessage.addToUser(referralDetails.getCustomerId());
+				pushNotifyClient.send(pushMessage);	
+			}
+//		}	
 
 		if (!ArgUtil.isEmpty(custId)) {
 			PushMessage pushMessage = new PushMessage();
