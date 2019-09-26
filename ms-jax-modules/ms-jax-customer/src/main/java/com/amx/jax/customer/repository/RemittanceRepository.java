@@ -11,7 +11,7 @@ import org.springframework.data.repository.CrudRepository;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 
 @Transactional
-public interface RemittanceTransactionRepository extends CrudRepository<RemittanceTransaction, BigDecimal> {
+public interface RemittanceRepository extends CrudRepository<RemittanceTransaction, BigDecimal> {
 
 	RemittanceTransaction findByapplicationDocumentNoAndApplicationFinanceYear(BigDecimal documentNo,BigDecimal documentFinanceYear);
 

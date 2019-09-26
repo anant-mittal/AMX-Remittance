@@ -15,7 +15,7 @@ import org.springframework.scheduling.annotation.Async;
 import com.amx.jax.async.ExecutorConfig;
 import com.amx.jax.client.JaxClientUtil;
 import com.amx.jax.customer.manager.CustomerContactVerificationManager;
-import com.amx.jax.customer.repository.RemittanceTransactionRepository;
+import com.amx.jax.customer.repository.RemittanceRepository;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerContactVerification;
 import com.amx.jax.dbmodel.ReferralDetails;
@@ -65,7 +65,7 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
    	ReferralDetailsDao refDao;
 	
 	@Autowired
-	RemittanceTransactionRepository remittanceTransactionRepository;
+	RemittanceRepository remittanceTransactionRepository;
 	
 
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
