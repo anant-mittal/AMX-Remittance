@@ -219,7 +219,7 @@ public class RemittanceController {
 		//Referral
 		List<RemittanceTransaction> remittanceList = remitAppDao.getOnlineRemittanceList(customerId);
 		logger.info("Remittance Count:" + remittanceList.size());
-		if(remittanceList.size() == 0) {
+//		if(remittanceList.size() == 0) {
 			ReferralDetails referralDetails = refDao.getReferralByCustomerId(customerId);
 			referralDetails.setIsConsumed("Y");
 			refDao.updateReferralCode(referralDetails);
@@ -240,7 +240,7 @@ public class RemittanceController {
 				pushMessage.addToUser(referralDetails.getCustomerId());
 				pushNotifyClient.send(pushMessage);	
 			}
-		}	
+//		}	
 
 		ApiResponse response = remittancePaymentManager.paymentCapture(paymentResponse);
 		return response;
