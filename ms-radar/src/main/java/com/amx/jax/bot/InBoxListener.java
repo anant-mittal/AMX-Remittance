@@ -1,21 +1,29 @@
 package com.amx.jax.bot;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 
 import com.amx.jax.client.CustomerProfileClient;
 import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.CustomerContactVerification;
 import com.amx.jax.dict.ContactType;
+import com.amx.jax.mcq.shedlock.SchedulerLock;
+import com.amx.jax.mcq.shedlock.SchedulerLock.LockContext;
 import com.amx.jax.postman.client.WhatsAppClient;
 import com.amx.jax.postman.events.UserInboxEvent;
 import com.amx.jax.postman.model.WAMessage;
 import com.amx.jax.radar.EsConfig;
 import com.amx.jax.radar.RadarConfig;
-import com.amx.jax.radar.jobs.customer.OracleViewDocument;
 import com.amx.jax.radar.service.SnapDocumentRepository;
+import com.amx.jax.rates.AmxCurConstants;
+import com.amx.jax.repository.CustomerContactVerificationRepository;
 import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.tunnel.ITunnelSubscriber;
 import com.amx.jax.tunnel.TunnelEventMapping;
@@ -24,6 +32,7 @@ import com.amx.jax.util.AmxDBConstants;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.CollectionUtil;
 import com.amx.utils.StringUtils.StringMatcher;
+import com.amx.utils.TimeUtils;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
@@ -45,6 +54,9 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 
 	@Autowired
 	private CustomerProfileClient customerProfileClient;
+
+	@Autowired
+	CustomerContactVerificationRepository customerContactVerificationRepository;
 
 	@Autowired
 	SnapDocumentRepository snapApiService;
@@ -70,6 +82,9 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 	public static final String SOME_ERROR = "There is some issue while verifying your WhatsApp number."
 			+ "Please recheck. In case the {companyIDType} is correct, please go to the branch and update your"
 			+ " WhatsApp number with any of our counter staff.";
+
+	public static final String RESEND_LINK = "There was a failure to verify your WhatsApp number. "
+			+ "Please resend the original message LINK {identity} once again. Apologies for the inconvenience.";
 
 	@Override
 	public void onMessage(String channel, UserInboxEvent event) {
@@ -130,21 +145,13 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 
 			}
 			/*
-			else if (esConfig.isEnabled()) {
-				OracleViewDocument doc = snapApiService.getCustomerByWhatsApp(swissISDProtoString,
-						swissNumberProtoString);
-				if (!ArgUtil.isEmpty(doc)) {
-					if (AmxDBConstants.Yes.equalsIgnoreCase(doc.getCustomer().getWhatsAppVerified())) {
-						replyMessage = NO_ACTION;
-					} else {
-						replyMessage = ANY_TEXT;
-					}
-				} else {
-					replyMessage = ANY_TEXT;
-				}
-			} else {
-				replyMessage = ANY_TEXT;
-			}*/
+			 * else if (esConfig.isEnabled()) { OracleViewDocument doc =
+			 * snapApiService.getCustomerByWhatsApp(swissISDProtoString,
+			 * swissNumberProtoString); if (!ArgUtil.isEmpty(doc)) { if
+			 * (AmxDBConstants.Yes.equalsIgnoreCase(doc.getCustomer().getWhatsAppVerified())
+			 * ) { replyMessage = NO_ACTION; } else { replyMessage = ANY_TEXT; } } else {
+			 * replyMessage = ANY_TEXT; } } else { replyMessage = ANY_TEXT; }
+			 */
 
 			return event.replyWAMessage(replyMessage.replace("{companyName}", radarConfig.getCompanyName())
 					.replace("{companyWebSiteUrl}", radarConfig.getCompanyWebSiteUrl())
@@ -153,6 +160,32 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 			);
 		} else {
 			return event.replyWAMessage(null);
+		}
+	}
+
+	@SchedulerLock(lockMaxAge = AmxCurConstants.INTERVAL_HRS * 13, context = LockContext.BY_METHOD)
+	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_HRS * 12)
+	public void doTaskModeDay() {
+		if (!TimeUtils.inHourSlot(4, 0)) {
+			Calendar cal = Calendar.getInstance();
+			cal.add(Calendar.DATE, -1);
+			java.util.Date oneDay = new java.util.Date(cal.getTimeInMillis());
+			List<CustomerContactVerification> links = customerContactVerificationRepository
+					.getActiveLink(ContactType.WHATSAPP, oneDay);
+
+			for (CustomerContactVerification link : links) {
+				Customer customer = customerRepository.getActiveCustomerDetailsByCustomerId(link.getCustomerId());
+				if (ArgUtil.is(customer) && !(AmxDBConstants.Status.Y.equals(customer.getWhatsAppVerified()))) {
+					link.setSendDate(new Date());
+					customerContactVerificationRepository.save(link);
+					WAMessage reply = new WAMessage();
+					reply.addTo(link.getContactValue());
+					reply.setMessage(RESEND_LINK.replace("{identity}", customer.getIdentityInt()));
+					whatsAppClient.send(reply);
+//					customerProfileClient.resendLink(customer.getIdentityInt(), link.getId(),
+//							link.getVerificationCode());
+				}
+			}
 		}
 	}
 
