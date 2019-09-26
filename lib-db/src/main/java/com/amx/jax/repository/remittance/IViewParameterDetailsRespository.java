@@ -14,4 +14,6 @@ import com.amx.jax.dbmodel.remittance.ViewParameterDetails;
 public interface IViewParameterDetailsRespository extends CrudRepository<ViewParameterDetails, Serializable>{
 
 	List<ViewParameterDetails> findByRecordIdAndCharField2AndNumericField1(String recordId,String bankCode,BigDecimal branchCode);
+	
+	List<ViewParameterDetails> findByCharField2AndNumericField1(String bankCode,BigDecimal branchCode);
 }

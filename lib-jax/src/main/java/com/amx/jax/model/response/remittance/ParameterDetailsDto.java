@@ -14,18 +14,18 @@ public class ParameterDetailsDto extends ResourceDTO {
 	private static final long serialVersionUID = -3369097385587671323L;
 	private BigDecimal parameterDetailsId;
 	private BigDecimal parameterMasterId;
-	private String recordId;
+	private String recordId;// gift
 	private String paramCodeDef;
 	private String fullDesc;
 	private String shortDesc;
 
-	private BigDecimal numericUdf1;
-	private BigDecimal numericUdf2;
-	private BigDecimal numericUdf3;
-	private BigDecimal numericUdf4;
+	private BigDecimal numericUdf1; // branch code
+	private BigDecimal numericUdf2; // amount
+	private BigDecimal numericUdf3;// min amount
+	private BigDecimal numericUdf4; // max amount
 	private BigDecimal numericUdf5;
 	private String charUdf1;
-	private String charUdf2;
+	private String charUdf2;// bank code
 	private String charUdf3;
 	private String charUdf4;
 	private String charUdf5;
@@ -222,4 +222,19 @@ public class ParameterDetailsDto extends ResourceDTO {
 		this.numericUdf2 = amount;
 	}
 
+	public BigDecimal getMinAmount() {
+		return numericUdf3;
+	}
+
+	public void setMinAmount(BigDecimal minAmount) {
+		this.numericUdf3 = minAmount;
+	}
+
+	public BigDecimal getMaxAmount() {
+		return numericUdf4;
+	}
+
+	public void setmaxAmount(BigDecimal amount) {
+		this.numericUdf4 = amount;
+	}
 }
