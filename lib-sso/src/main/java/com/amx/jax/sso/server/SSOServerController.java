@@ -6,6 +6,7 @@ import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
@@ -363,6 +364,45 @@ public class SSOServerController {
 			}
 		}
 		return JsonUtil.toJson(result);
+	}
+
+	@Autowired
+	OutlookService outlookService;
+
+	@ApiSSOStatus({ SSOServerCodes.AUTH_REQUIRED, SSOServerCodes.AUTH_DONE })
+	@RequestMapping(value = SSOConstants.SSO_LOGIN_URL_OUTLOOK, method = RequestMethod.GET)
+	public String authLoginViewOutLook(Model model,
+			@PathVariable(required = false, value = "htmlstep") @ApiParam(defaultValue = "REQUIRED") SSOAuthStep html,
+			@RequestParam(required = false) Long refresh, HttpServletResponse resp,
+			@RequestParam(required = false, value = AppConstants.TRANX_ID_XKEY) String trnxId)
+			throws MalformedURLException, URISyntaxException {
+
+		UUID state = UUID.randomUUID();
+		UUID nonce = UUID.randomUUID();
+		ssoUser.setOutlookNonce(state);
+		ssoUser.setOutlookNonce(nonce);
+
+		resp.setHeader("Location", outlookService.getLoginUrl(state, nonce));
+		resp.setStatus(302);
+		model.addAllAttributes(getModelMap());
+		return SSOConstants.SSO_INDEX_PAGE;
+	}
+
+	@ApiSSOStatus({ SSOServerCodes.AUTH_REQUIRED, SSOServerCodes.AUTH_DONE })
+	@RequestMapping(value = SSOConstants.SSO_LOGIN_URL_OUTLOOK, method = RequestMethod.POST)
+	public String authLoginViewOutLookCallback(Model model,
+			@RequestParam("code") String code,
+			@RequestParam("id_token") String idToken,
+			@RequestParam("state") UUID state)
+			throws MalformedURLException, URISyntaxException {
+		if (state.equals(ssoUser.getOutlookState())) {
+			ssoUser.setOutlookAuthCode(code);
+			ssoUser.setOutlookIdToken(idToken);
+		} else {
+			System.out.println("Unexpected state returned from authority.");
+		}
+		model.addAllAttributes(getModelMap());
+		return SSOConstants.SSO_INDEX_PAGE;
 	}
 
 	@ApiRequest(type = RequestType.POLL)

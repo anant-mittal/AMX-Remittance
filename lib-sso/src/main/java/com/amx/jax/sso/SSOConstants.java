@@ -27,6 +27,8 @@ public class SSOConstants {
 	public static final String SSO_LOGIN_URL_HTML = SSO_LOGIN_URL + "/{htmlstep}";
 
 	public static final String SSO_LOGIN_URL_REQUIRED = SSO_LOGIN_URL + "/REQUIRED";
+	public static final String SSO_LOGIN_URL_OUTLOOK = SSO_LOGIN_URL + "/OUTLOOK";
+	
 	public static final String SSO_LOGIN_URL_DO = SSO_LOGIN_URL + "/DO";
 
 	public static final String SSO_CARD_DETAILS = "/sso/card/details";

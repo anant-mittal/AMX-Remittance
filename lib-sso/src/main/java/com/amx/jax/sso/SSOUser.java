@@ -1,6 +1,7 @@
 package com.amx.jax.sso;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 import javax.servlet.http.Cookie;
 
@@ -40,6 +41,11 @@ public class SSOUser implements Serializable {
 	private EmployeeDetailsDTO userDetails = null;
 
 	private UserClientDto userClient;
+
+	UUID outlookState;
+	UUID outlookNonce;
+	String outlookAuthCode;
+	String outlookIdToken;
 
 	public String getUserId() {
 		if (userDetails == null) {
@@ -162,6 +168,38 @@ public class SSOUser implements Serializable {
 	 */
 	public void setTerminalId(String terminalId) {
 		this.terminalId = terminalId;
+	}
+
+	public UUID getOutlookState() {
+		return outlookState;
+	}
+
+	public void setOutlookState(UUID outlookState) {
+		this.outlookState = outlookState;
+	}
+
+	public UUID getOutlookNonce() {
+		return outlookNonce;
+	}
+
+	public void setOutlookNonce(UUID outlookNonce) {
+		this.outlookNonce = outlookNonce;
+	}
+
+	public String getOutlookAuthCode() {
+		return outlookAuthCode;
+	}
+
+	public void setOutlookAuthCode(String outlookAuthCode) {
+		this.outlookAuthCode = outlookAuthCode;
+	}
+
+	public String getOutlookIdToken() {
+		return outlookIdToken;
+	}
+
+	public void setOutlookIdToken(String outlookIdToken) {
+		this.outlookIdToken = outlookIdToken;
 	}
 
 }

@@ -39,6 +39,15 @@ public class SSOConfig {
 	@TenantValue("${app.sso.login.client.type}")
 	ClientType loginWithClientType;
 
+	@Value("${app.outlook.app.id}")
+	String outLookAppId;
+
+	@Value("${app.outlook.app.pass}")
+	String outLookAppPass;
+
+	@Value("${app.outlook.redirect.url}")
+	String outLookAppUrl;
+
 	public String getAdapterUrl() {
 		return adapterUrl;
 	}
@@ -73,6 +82,18 @@ public class SSOConfig {
 
 	public boolean isLoginWithDevice() {
 		return loginWithDevice;
+	}
+
+	public String getOutLookAppId() {
+		return outLookAppId;
+	}
+
+	public String getOutLookAppPass() {
+		return outLookAppPass;
+	}
+
+	public String getOutLookAppUrl() {
+		return outLookAppUrl;
 	}
 
 }
