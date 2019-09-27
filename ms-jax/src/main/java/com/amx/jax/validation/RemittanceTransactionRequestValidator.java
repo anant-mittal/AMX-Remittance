@@ -1,9 +1,11 @@
 package com.amx.jax.validation;
 
+import java.io.ObjectInputStream.GetField;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -156,7 +158,12 @@ public class RemittanceTransactionRequestValidator {
 				}
 				field.setPossibleValues(amiecValues);
 
-			} else {
+			}else if(FlexFieldBehaviour.SELECT_DATE.getFieldType().toString().equals(fieldBehaviour)) {
+				field.setType(FlexFieldBehaviour.SELECT_DATE.getFieldType().toString());
+				Map<String, Object> additionalValidations =new HashMap<String, Object>();
+				additionalValidations.put("format", ConstantDocument.DD_MM_YYYY_DATE_FORMAT);
+				field.setAdditionalValidations(additionalValidations);
+			}else {
 				field.setType(FlexFieldBehaviour.USER_ENTERABLE.getFieldType().toString());
 			}
 			dto.setField(field);
@@ -174,8 +181,7 @@ public class RemittanceTransactionRequestValidator {
 		jaxFieldService.updateDtoFromDb(jaxFieldDtos);
 		updateAdditionalValidations(jaxFieldDtos);
 
-		if (!JaxChannel.ONLINE.equals(metaData.getChannel())
-				&& !JaxUtil.isNullZeroBigDecimalCheck(request.getPurposeOfTrnxId())) {
+		if (!JaxChannel.ONLINE.equals(metaData.getChannel()) && !JaxUtil.isNullZeroBigDecimalCheck(request.getPurposeOfTrnxId())) {
 			JaxConditionalFieldDto dto = new JaxConditionalFieldDto();
 			dto.setEntityName(JaxFieldEntity.PURPOSE_OF_TRNX);
 			JaxFieldDto field = new JaxFieldDto();
@@ -194,8 +200,7 @@ public class RemittanceTransactionRequestValidator {
 
 		if (!requiredFlexFields.isEmpty()) {
 			LOGGER.error(requiredFlexFields.toString());
-			AdditionalFlexRequiredException exp = new AdditionalFlexRequiredException(
-					"Addtional flex fields are required", JaxError.ADDTIONAL_FLEX_FIELD_REQUIRED);
+			AdditionalFlexRequiredException exp = new AdditionalFlexRequiredException("Addtional flex fields are required", JaxError.ADDTIONAL_FLEX_FIELD_REQUIRED);
 			processFlexFields(requiredFlexFields);
 			exp.setMeta(requiredFlexFields);
 			throw exp;
@@ -239,6 +244,20 @@ public class RemittanceTransactionRequestValidator {
 						throw new GlobalException("Invalid to date");
 					}
 				}
+				
+				if ("INDIC14".equals(entry.getKey())) {
+					// to date
+					LocalDate indic14toDate = dateUtil.validateDate(entry.getValue().getAmieceDescription(),
+							ConstantDocument.DD_MM_YYYY_DATE_FORMAT);
+					if (indic14toDate == null) {
+						throw new GlobalException("Invalid date format .It must be dd/MM/yyyy");
+					}
+					if(indic14toDate!=null && indic14toDate.compareTo(today) <= 0) {
+						throw new GlobalException("The delivery date must be greater than today date.");
+					}
+				}
+				
+				
 			}
 			if (toDate != null && fromDate == null) {
 				throw new GlobalException("From date is not present");
@@ -259,8 +278,7 @@ public class RemittanceTransactionRequestValidator {
 				i.setAdditionalValidations(additionalValidations);
 			}
 
-			if ("PAYMENT PERIOD EXPIRY DATE".equalsIgnoreCase(i.getName())
-					|| "TO DATE MM/DD/YYYY".equalsIgnoreCase(i.getName())) {
+			if ("PAYMENT PERIOD EXPIRY DATE".equalsIgnoreCase(i.getName()) || "TO DATE MM/DD/YYYY".equalsIgnoreCase(i.getName())) {
 				Map<String, Object> additionalValidations = i.getAdditionalValidations();
 				additionalValidations.put("gt", dateUtil.format(LocalDate.now(), "MM/d/YYYY"));
 				additionalValidations.put("format", "MM/DD/YYYY");
