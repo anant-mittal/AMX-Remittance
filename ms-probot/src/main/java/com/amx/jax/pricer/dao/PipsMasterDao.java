@@ -12,7 +12,7 @@ import com.amx.jax.pricer.dbmodel.BankMasterModel;
 import com.amx.jax.pricer.dbmodel.CountryBranch;
 import com.amx.jax.pricer.dbmodel.CountryMasterModel;
 import com.amx.jax.pricer.dbmodel.CurrencyMasterModel;
-import com.amx.jax.pricer.dbmodel.ExchangeRateApprovalDetModelAlt;
+import com.amx.jax.pricer.dbmodel.ExchangeRateMasterApprovalDet;
 import com.amx.jax.pricer.dbmodel.PipsMaster;
 import com.amx.jax.pricer.repository.PipsMasterRepository;
 
@@ -31,7 +31,7 @@ public class PipsMasterDao {
 		return repo.getPipsMasterForBranch(onlineBranch, new CurrencyMasterModel(toCurrency));
 	}
 
-	public List<PipsMaster> getPipsMasterForBranch(ExchangeRateApprovalDetModelAlt exchangeRate, BigDecimal fcAmount,
+	public List<PipsMaster> getPipsMasterForBranch(ExchangeRateMasterApprovalDet exchangeRate, BigDecimal fcAmount,
 			BigDecimal countryBranchId) {
 		CountryBranch onlineBranch = new CountryBranch();
 		onlineBranch.setCountryBranchId(exchangeRate.getCountryBranchId());

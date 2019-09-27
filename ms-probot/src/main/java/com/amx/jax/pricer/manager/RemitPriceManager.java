@@ -42,7 +42,7 @@ import com.amx.jax.pricer.dbmodel.BankMasterModel;
 import com.amx.jax.pricer.dbmodel.CountryBranch;
 import com.amx.jax.pricer.dbmodel.CurrencyMasterModel;
 import com.amx.jax.pricer.dbmodel.ExchangeRateAPRDET;
-import com.amx.jax.pricer.dbmodel.ExchangeRateApprovalDetModelAlt;
+import com.amx.jax.pricer.dbmodel.ExchangeRateMasterApprovalDet;
 import com.amx.jax.pricer.dbmodel.OnlineMarginMarkup;
 import com.amx.jax.pricer.dbmodel.PipsMaster;
 import com.amx.jax.pricer.dbmodel.RoutingHeader;
@@ -247,7 +247,7 @@ public class RemitPriceManager {
 			
 			/************* Process Bank Exchange Rates ***********/
 
-			List<ExchangeRateApprovalDetModelAlt> bankExchangeRates;
+			List<ExchangeRateMasterApprovalDet> bankExchangeRates;
 
 			// Filter Bank Exchange rates for Required Service Indicator Ids
 			if (requestDto.getServiceIndicatorId() != null) {
@@ -271,7 +271,7 @@ public class RemitPriceManager {
 						"Missing Valid Exchange rates : None Found");
 			}
 
-			for (ExchangeRateApprovalDetModelAlt exchangeRate : bankExchangeRates) {
+			for (ExchangeRateMasterApprovalDet exchangeRate : bankExchangeRates) {
 
 				BankDetailsDTO bankDetailsDTO;
 
