@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import com.amx.jax.AmxConstants;
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppContextUtil;
+import com.amx.jax.config.RbaacTenantProperties;
 import com.amx.jax.dbmodel.Device;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.dict.UserClient.DeviceType;
@@ -72,6 +73,9 @@ public class UserAuthService {
 
 	@Autowired
 	private AppConfig appConfig;
+	
+	@Autowired
+	RbaacTenantProperties rbaacTenantProperties;
 
 	/**
 	 * Verify user details.
@@ -411,7 +415,18 @@ public class UserAuthService {
 		RoleResponseDTO roleResponseDTO = getRoleForUser(employee.getEmployeeId());
 
 		empDetail.setUserRole(roleResponseDTO);
-
+		
+		//Tenant base value set
+		if(rbaacTenantProperties.getTenant() != null) {
+			empDetail.setTenant(rbaacTenantProperties.getTenant());
+		}
+		if(rbaacTenantProperties.getCurrencyQuote() != null) {
+			empDetail.setCurrencyQuote(rbaacTenantProperties.getCurrencyQuote());
+		}
+		if(rbaacTenantProperties.getCurrencyId() != null) {
+			empDetail.setCurrencyId(rbaacTenantProperties.getCurrencyId());
+		}
+		
 		// Set Last Successful Login Date as Current Date
 		updateLastLogin(employee);
 

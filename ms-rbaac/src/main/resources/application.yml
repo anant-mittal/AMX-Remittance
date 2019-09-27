@@ -9,8 +9,8 @@ multitenancy:
       -
         tenantId: KWT
         url: jdbc:oracle:thin:@10.28.42.10:1521:TEMOS
-        username: QEMOS
-        password: QEMOS
+        username: TEMOS
+        password: TEMOS
         driverClassName: oracle.jdbc.OracleDriver
       -
         tenantId: KWT2
