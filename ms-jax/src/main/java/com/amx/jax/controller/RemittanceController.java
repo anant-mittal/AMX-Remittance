@@ -129,6 +129,7 @@ public class RemittanceController {
 	public ApiResponse getRemittanceDetailForReport(@RequestBody String jsonTransactionHistroyDTO,
 			@RequestParam("promotion") Boolean promotion) {
 		logger.info("getRemittanceDetailForReport Trnx Report:");
+		logger.debug("getRemittanceDetailForReport Trnx Report:");
 		logger.debug("Json tras history is "+jsonTransactionHistroyDTO);
 		logger.debug("promotion value is "+promotion);
 		TransactionHistroyDTO transactionHistroyDTO = (TransactionHistroyDTO) converterUtil
@@ -198,8 +199,9 @@ public class RemittanceController {
 	public ApiResponse saveRemittance(@RequestBody PaymentResponseDto paymentResponse) {
 		JaxContextUtil.setJaxEvent(JaxEvent.CREATE_REMITTANCE);
 		JaxContextUtil.setRequestModel(paymentResponse);
+		logger.info("save-Remittance Controller :" + paymentResponse.getCustomerId() + "\t country ID :");
 		logger.debug("Payment respone is "+paymentResponse.toString());
-		logger.info("save-Remittance Controller :" + paymentResponse.getCustomerId() + "\t country ID :"
+		logger.debug("save-Remittance Controller :" + paymentResponse.getCustomerId() + "\t country ID :"
 				+ paymentResponse.getApplicationCountryId() + "\t Compa Id:" + paymentResponse.getCompanyId());
 
 		BigDecimal customerId = metaData.getCustomerId();
@@ -218,24 +220,28 @@ public class RemittanceController {
 		//Referral
 		List<RemittanceTransaction> remittanceList = remitAppDao.getOnlineRemittanceList(customerId);
 		logger.info("Remittance Count:" + remittanceList.size());
-		if(remittanceList.size() == 0) {
-			ReferralDetails referralDetails = refDao.getReferralByCustomerId(customerId);
-			referralDetails.setIsConsumed("Y");
-			refDao.updateReferralCode(referralDetails);
-			if (referralDetails.getRefferedByCustomerId() != null) {
-				PushMessage pushMessage = new PushMessage();
-				pushMessage.setITemplate(TemplatesMX.FRIEND_REFERED);
-				pushMessage.addToUser(referralDetails.getRefferedByCustomerId());
-				pushNotifyClient.send(pushMessage);
-			}
-			
-			if(referralDetails.getCustomerId() != null) {
-				PushMessage pushMessage = new PushMessage();
-				pushMessage.setITemplate(TemplatesMX.FRIEND_REFER);
-				pushMessage.addToUser(referralDetails.getCustomerId());
-				pushNotifyClient.send(pushMessage);	
-			}
-		}	
+////		if(remittanceList.size() == 0) {
+//			ReferralDetails referralDetails = refDao.getReferralByCustomerId(customerId);
+//			referralDetails.setIsConsumed("Y");
+//			refDao.updateReferralCode(referralDetails);
+//			if (referralDetails.getRefferedByCustomerId() != null) {
+//				PushMessage pushMessage = new PushMessage();
+//				pushMessage.setSubject("Refer To Win!");
+//				pushMessage.setMessage(
+//						"Congraturlations! Your reference has done the first transaction on AMIEC App! You will get a chance to win from our awesome Referral Program! Keep sharing the links to as many contacts you can and win exciting prices on referral success!");
+//				pushMessage.addToUser(referralDetails.getRefferedByCustomerId());
+//				pushNotifyClient.send(pushMessage);
+//			}
+//			
+//			if(referralDetails.getCustomerId() != null) {
+//				PushMessage pushMessage = new PushMessage();
+//				pushMessage.setSubject("Refer To Win!");
+//				pushMessage.setMessage(
+//						"Welcome to Al Mulla family! Win a chance to get exciting offers at Al Mulla Exchange by sharing the links to as many contacts as you can.");
+//				pushMessage.addToUser(referralDetails.getCustomerId());
+//				pushNotifyClient.send(pushMessage);	
+//			}
+////		}	
 
 		ApiResponse response = remittancePaymentManager.paymentCapture(paymentResponse);
 		return response;

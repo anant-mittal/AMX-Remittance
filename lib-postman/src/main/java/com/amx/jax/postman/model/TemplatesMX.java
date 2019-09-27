@@ -85,6 +85,7 @@ public enum TemplatesMX implements ITemplate {
 	WU_PICKUP_REMINDER("WUPickupReminder"),
 	WU_CANCEL_REMINDER("WUCancelReminder"),
 	WU_TRNX_CANCELLED("WUTrnxCancelled"),
+	RESEND_VERIFICATION_LINK("resend-verification"),
 	
 	
 	FRIEND_REFER("friend-refer.json"),
