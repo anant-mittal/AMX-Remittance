@@ -203,7 +203,7 @@ public class RemittanceController {
 	public ApiResponse saveRemittance(@RequestBody PaymentResponseDto paymentResponse) {
 		JaxContextUtil.setJaxEvent(JaxEvent.CREATE_REMITTANCE);
 		JaxContextUtil.setRequestModel(paymentResponse);
-		logger.info("save-Remittance Controller :" + paymentResponse.getCustomerId() + "\t country ID :"
+		logger.info("save-Remittance Controller :" + paymentResponse.getCustomerId() + "\t country ID :");
 		logger.debug("Payment respone is "+paymentResponse.toString());
 		logger.debug("save-Remittance Controller :" + paymentResponse.getCustomerId() + "\t country ID :"
 				+ paymentResponse.getApplicationCountryId() + "\t Compa Id:" + paymentResponse.getCompanyId());
