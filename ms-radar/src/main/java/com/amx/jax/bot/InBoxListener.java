@@ -10,10 +10,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 
+import com.amx.jax.AppContext;
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.client.CustomerProfileClient;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerContactVerification;
 import com.amx.jax.dict.ContactType;
+import com.amx.jax.logger.AuditActor;
+import com.amx.jax.logger.AuditActor.ActorType;
 import com.amx.jax.mcq.shedlock.SchedulerLock;
 import com.amx.jax.mcq.shedlock.SchedulerLock.LockContext;
 import com.amx.jax.postman.client.WhatsAppClient;
@@ -108,7 +112,8 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 		if (!ArgUtil.isEmpty(event.getWaChannel())) {
 
 			PhoneNumber swissNumberProto = phoneUtil.parse("+" + event.getFrom(), "IN");
-			LOGGER.info("Recieved {} {} ", swissNumberProto.getNationalNumber(), event.getMessage());
+			LOGGER.info("Recieved +{} {} {} ", swissNumberProto.getCountryCode(), swissNumberProto.getNationalNumber(),
+					event.getMessage());
 			String replyMessage = "";
 			String swissNumberProtoString = ArgUtil.parseAsString(swissNumberProto.getNationalNumber());
 			String swissISDProtoString = ArgUtil.parseAsString(swissNumberProto.getCountryCode());
@@ -119,6 +124,8 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 				replyMessage = "PING";
 			} else if (matcher.isMatch(LINK_CIVIL_ID)) {
 				try {
+					AppContextUtil
+							.setActorId(new AuditActor(ActorType.W, swissISDProtoString + swissNumberProtoString));
 					String civilId = matcher.group(2);
 					Customer customer = CollectionUtil.getOne(customerRepository.findActiveCustomers(civilId));
 
@@ -163,8 +170,8 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 		}
 	}
 
-	@SchedulerLock(lockMaxAge = AmxCurConstants.INTERVAL_HRS * 13, context = LockContext.BY_METHOD)
-	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_HRS * 12)
+	//@SchedulerLock(lockMaxAge = AmxCurConstants.INTERVAL_HRS * 13, context = LockContext.BY_METHOD)
+	//@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_HRS * 12)
 	public void doTaskModeDay() {
 		if (!TimeUtils.inHourSlot(4, 0)) {
 			Calendar cal = Calendar.getInstance();

@@ -86,9 +86,7 @@ public class CustomerContactVerificationManager {
 
 	public List<CustomerContactVerification> getValidCustomerContactVerificationsByCustomerId(BigDecimal customerId,
 			ContactType contactType, String contact) {
-		Calendar cal = Calendar.getInstance();
 		if (ContactType.WHATSAPP.equals(contactType)) {
-			cal.add(Calendar.DATE, -1 * CustomerContactVerification.EXPIRY_DAY_WHATS_APP);
 			return this.getValidCustomerContactVerificationsByCustomerId(customerId, contactType, contact,
 					CustomerContactVerification.EXPIRY_DAY_WHATS_APP);
 		} else {
@@ -164,7 +162,7 @@ public class CustomerContactVerificationManager {
 
 			if (!ArgUtil.isEmpty(oldlinks) && oldlinks.size() > 3) {
 				throw new GlobalException(JaxError.SEND_OTP_LIMIT_EXCEEDED,
-						"Sending Verification Limit(4) has exceeded try again after 24 hours");
+						"Sending Verification Limit has exceeded try again after 24 hours");
 			}
 		} catch (GlobalException e) {
 			auditService.log(audit.result(Result.FAIL).message(e.getError()));
@@ -389,7 +387,8 @@ public class CustomerContactVerificationManager {
 				contact);
 
 		if (ArgUtil.isEmpty(link)) {
-			throw new GlobalException(JaxError.ENTITY_INVALID, "Verification link is Invalid : Type" + type);
+			throw new GlobalException(JaxError.ENTITY_INVALID,
+					String.format("Verification link is Invalid :C:%s T:%s", c.getCustomerId(), type));
 		}
 
 		verify(c, link, identity);

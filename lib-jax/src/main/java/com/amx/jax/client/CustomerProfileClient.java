@@ -121,7 +121,7 @@ public class CustomerProfileClient implements ICustomerProfileService {
 					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerContactVerificationDto, Object>>() {
 					});
 		} catch (Exception e) {
-			LOGGER.error("exception in verifyLinkByContact : ", e);
+			LOGGER.debug("exception in verifyLinkByContact : ", e);
 			return JaxSystemError.evaluate(e);
 		}
 	}
