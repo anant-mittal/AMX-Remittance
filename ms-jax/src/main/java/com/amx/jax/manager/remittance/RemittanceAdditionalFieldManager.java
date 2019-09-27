@@ -2,11 +2,13 @@ package com.amx.jax.manager.remittance;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
+import org.hamcrest.core.IsCollectionContaining;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +17,13 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.constant.JaxFieldEntity;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.model.GetJaxFieldRequest;
+import com.amx.amxlib.model.JaxConditionalFieldDto;
+import com.amx.amxlib.model.JaxFieldDto;
+import com.amx.amxlib.model.JaxFieldValueDto;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.branchremittance.manager.BranchRemittanceManager;
 import com.amx.jax.constant.ConstantDocument;
@@ -28,6 +34,7 @@ import com.amx.jax.dbmodel.CountryBranch;
 import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.SwiftMasterView;
 import com.amx.jax.dbmodel.bene.BeneficaryAccount;
+import com.amx.jax.dbmodel.bene.BeneficaryContact;
 import com.amx.jax.dbmodel.bene.BeneficaryMaster;
 import com.amx.jax.dbmodel.remittance.AdditionalDataDisplayView;
 import com.amx.jax.dbmodel.remittance.StaffAuthorizationView;
@@ -96,6 +103,8 @@ public class RemittanceAdditionalFieldManager {
 		ApiResponse<JaxConditionalFieldDto> interMediateBank2ApiResponse = jaxFieldService.getJaxFieldsForEntity(new GetJaxFieldRequest(JaxFieldEntity.BENEFICIARY_SWIFT_BANK2));
 		ApiResponse<JaxConditionalFieldDto> furtherInstruction = jaxFieldService.getJaxFieldsForEntity(new GetJaxFieldRequest(JaxFieldEntity.INSTRUCTION));
 		
+		ApiResponse<JaxConditionalFieldDto> beneTeleApiReponse = jaxFieldService.getJaxFieldsForEntity(new GetJaxFieldRequest(JaxFieldEntity.BNFTELLAB));
+		
 		
 		
 		List<JaxConditionalFieldDto> allJaxConditionalFields = apiResponse.getResults();
@@ -116,7 +125,9 @@ public class RemittanceAdditionalFieldManager {
 			allJaxConditionalFields.addAll(furtherInstruction.getResults());
 		}
 		
-		
+		if(beneTeleApiReponse!=null && beneTeleApiReponse.getResult()!=null) {
+			allJaxConditionalFields.addAll(beneTeleApiReponse.getResults());
+		}
 		
 		Map<String, AdditionalDataDisplayView> flexFieldMap = getAdditionalDataDisplayMap(remitApplParametersMap);
 		List<JaxConditionalFieldDto> missingJaxConditionalFields = new ArrayList<>();
@@ -151,6 +162,7 @@ public class RemittanceAdditionalFieldManager {
 		if (allJaxConditionalFields != null) {
 			BenificiaryListView beneficiaryDetail = beneficiaryService.getBeneByIdNo(model.getBeneId());
 			BeneficaryMaster beneficaryMaster = beneficiaryService.getBeneficiaryMasterBybeneficaryMasterSeqId(beneficiaryDetail.getBeneficaryMasterSeqId());
+			String beneTelePhone = beneficiaryService.getBeneficiaryContactNumber(beneficiaryDetail.getBeneficaryMasterSeqId());
 			
 			List<JaxFieldValueDto> swiftBeneListDto = getSwiftBankDetails(beneficiaryDetail.getBenificaryCountry());
 			
@@ -173,6 +185,9 @@ public class RemittanceAdditionalFieldManager {
 				case BENE_CITY_NAME:
 					jaxConditionalFieldDto.getField().setDefaultValue(beneficaryMaster.getCityName());
 					break;
+				case BENE_TELE_NO:
+						jaxConditionalFieldDto.getField().setDefaultValue(beneTelePhone);
+					break;
 				case BENEFICIARY_SWIFT_BANK1:
 					jaxConditionalFieldDto.getField().setPossibleValues(swiftBeneListDto);
 					break;
@@ -187,7 +202,7 @@ public class RemittanceAdditionalFieldManager {
 	}
 
 	private void addDataFromAdditionalDataDisplay(List<JaxConditionalFieldDto> allJaxConditionalFields, Map<String, AdditionalDataDisplayView> flexFieldMap) {
-		for (JaxConditionalFieldDto jaxConditionalField : allJaxConditionalFields) {
+	for (JaxConditionalFieldDto jaxConditionalField : allJaxConditionalFields) {
 			JaxDynamicField jaxDynamicField = JaxDynamicField.valueOf(jaxConditionalField.getField().getName());
 			if (jaxDynamicField != null && jaxDynamicField.getFlexField() != null) {
 				AdditionalDataDisplayView addlDataDisplay = flexFieldMap.get(jaxDynamicField.getFlexField());
@@ -195,10 +210,18 @@ public class RemittanceAdditionalFieldManager {
 					if (addlDataDisplay.getIsRequired() != null) {
 						jaxConditionalField.getField().setRequired(ConstantDocument.Yes.equalsIgnoreCase(addlDataDisplay.getIsRequired()) ? true : false);
 					}
+					if(jaxConditionalField.getField().getMinLength() == null) {
+						jaxConditionalField.getField().setMinLength(addlDataDisplay.getMinLength());
+					}
+					if(jaxConditionalField.getField().getMaxLength() == null) {
+						jaxConditionalField.getField().setMaxLength(addlDataDisplay.getMaxLength());
+					}
 				}
 			}
 		}
 	}
+	
+	
 
 	private Map<String, AdditionalDataDisplayView> getAdditionalDataDisplayMap(Map<String, Object> remitApplParametersMap) {
 		BigDecimal applicationCountryId = (BigDecimal) remitApplParametersMap.get("P_APPLICATION_COUNTRY_ID");
@@ -256,10 +279,20 @@ public class RemittanceAdditionalFieldManager {
 		
 		// service Provider details
 		ApiResponse<JaxConditionalFieldDto> spApiResponse = jaxFieldService.getJaxFieldsForEntity(new GetJaxFieldRequest(JaxFieldEntity.SERVICE_PROVIDER));
+		
+		//Bene telephone number.
+		
+		ApiResponse<JaxConditionalFieldDto> beneTeleApiReponse = jaxFieldService.getJaxFieldsForEntity(new GetJaxFieldRequest(JaxFieldEntity.BNFTELLAB));
+		
 		List<JaxConditionalFieldDto> allSPJaxConditionalFields = spApiResponse.getResults();
 		if(allSPJaxConditionalFields != null && allSPJaxConditionalFields.size() != 0) {
 			allJaxConditionalFields.addAll(allSPJaxConditionalFields);
 		}
+		if(beneTeleApiReponse!=null && beneTeleApiReponse.getResult()!=null) {
+			allJaxConditionalFields.addAll(beneTeleApiReponse.getResults());
+		}
+		
+		
 		
 		Map<String, Object> fieldValues = model.getAdditionalFields();
 		if (allJaxConditionalFields != null && fieldValues != null) {
@@ -302,6 +335,15 @@ public class RemittanceAdditionalFieldManager {
 					beneficaryMaster.setCityName(fieldValue.toString());
 					logger.info("setting city name for bene master seq id {} , : {} ", beneficiaryDetail.getBeneficaryMasterSeqId(), fieldValue);
 					beneficiaryService.saveBeneMaster(beneficaryMaster);
+				}
+				
+				if (JaxDynamicField.BENE_TELE_NO.name().equals(jaxConditionalField.getField().getName()) && fieldValue != null) {
+					BeneficaryContact beneContact = beneficiaryService.getBeneContact(beneficiaryDetail.getBeneficaryMasterSeqId());
+					beneContact.setTelephoneNumber(fieldValue.toString());
+					if(fieldValue!=null) {
+					beneContact.setMobileNumber(new BigDecimal(fieldValue.toString()));
+					}
+					beneficiaryService.saveBeneContact(beneContact);
 				}
 			}
 		}

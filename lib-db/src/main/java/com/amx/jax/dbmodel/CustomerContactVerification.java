@@ -13,8 +13,6 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Proxy;
-
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.logger.AuditActor.ActorType;
 import com.amx.jax.util.AmxDBConstants;
@@ -218,9 +216,10 @@ public class CustomerContactVerification implements java.io.Serializable {
 			intrval = intrval * EXPIRY_DAY_WHATS_APP;
 		}
 
-		return (ArgUtil.isEmpty(this.getSendDate())
-				&& TimeUtils.isExpired(this.getCreatedDate(), intrval))
-				|| TimeUtils.isExpired(this.getSendDate(), intrval);
+		if (ArgUtil.isEmpty(this.getSendDate())) {
+			return TimeUtils.isExpired(this.getCreatedDate(), intrval);
+		}
+		return TimeUtils.isExpired(this.getSendDate(), intrval);
 	}
 
 	public boolean hasVerified() {

@@ -36,10 +36,7 @@
                 "branchName": {
                   "top_hits": {
                     "docvalue_fields": [
-                      {
-                        "field": "logmap.actor.branchName.keyword",
-                        "format": "use_field_mapping"
-                      }
+                      "logmap.actor.branchName.keyword"
                     ],
                     "_source": "logmap.actor.branchName.keyword",
                     "size": 1,
@@ -55,10 +52,7 @@
                 "area": {
                   "top_hits": {
                     "docvalue_fields": [
-                      {
-                        "field": "logmap.actor.areaId",
-                        "format": "use_field_mapping"
-                      }
+                      "logmap.actor.areaId"
                     ],
                     "_source": "logmap.actor.areaId",
                     "size": 1,
@@ -74,10 +68,7 @@
                 "branchUser": {
                   "top_hits": {
                     "docvalue_fields": [
-                      {
-                        "field": "logmap.actor.username.keyword",
-                        "format": "use_field_mapping"
-                      }
+                      "logmap.actor.username.keyword"
                     ],
                     "_source": "logmap.actor.username.keyword",
                     "size": 1,
@@ -106,10 +97,7 @@
   ],
   "script_fields": {},
   "docvalue_fields": [
-    {
-      "field": "@timestamp",
-      "format": "date_time"
-    }
+    "@timestamp"
   ],
   "query": {
     "bool": {

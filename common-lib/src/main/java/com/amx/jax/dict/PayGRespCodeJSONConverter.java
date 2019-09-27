@@ -30,7 +30,7 @@ public class PayGRespCodeJSONConverter {
 					map.put(enumBHR.getResponseCode(), enumBHR.getResponseDesc());
 					responseCodeDetail.setClientResponse(map);
 
-					LOGGER.info("Response Code Details BHR JSON : " + responseCodeDetail);
+					LOGGER.debug("Response Code Details BHR JSON : " + responseCodeDetail.toString());
 				}
 
 				break;
@@ -47,7 +47,7 @@ public class PayGRespCodeJSONConverter {
 					map.put(enumOMN.getResponseCode(), enumOMN.getResponseDesc());
 					responseCodeDetail.setClientResponse(map);
 
-					LOGGER.info("Response Code Details OMN JSON : " + responseCodeDetail.toString());
+					LOGGER.debug("Response Code Details OMN JSON : " + responseCodeDetail.toString());
 				}
 
 				break;
@@ -64,7 +64,7 @@ public class PayGRespCodeJSONConverter {
 					map.put(enumKWT.getResponseCode(), enumKWT.getResponseDesc());
 					responseCodeDetail.setClientResponse(map);
 
-					LOGGER.info("Response Code Details KWT JSON : " + responseCodeDetail.toString());
+					LOGGER.debug("Response Code Details KWT JSON : " + responseCodeDetail.toString());
 				}
 
 				break;	

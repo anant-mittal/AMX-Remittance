@@ -335,7 +335,10 @@ public enum JaxError implements IExceptionEnum {
 	CUSTOMER_ACTIVE,
 	// Default in last, IMPORTANT:- It should be last
 	JAX_SYSTEM_ERROR,
-	BPI_SETUP_IS_MISSING;
+	BPI_SETUP_IS_MISSING,
+	
+	// Job In Progress Error Key
+	JAX_JOB_IN_PROGRESS;
 	
 	@Deprecated
 	public String getCode() {

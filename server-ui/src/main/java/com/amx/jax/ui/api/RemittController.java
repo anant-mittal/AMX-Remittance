@@ -51,6 +51,7 @@ import com.amx.jax.model.response.remittance.FlexFieldReponseDto;
 import com.amx.jax.model.response.remittance.ParameterDetailsDto;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.model.response.remittance.branch.DynamicRoutingPricingResponse;
+import com.amx.jax.model.response.remittance.branch.DynamicRoutingPricingResponse.SELECTION;
 import com.amx.jax.payg.PayGParams;
 import com.amx.jax.payg.PayGService;
 import com.amx.jax.postman.PostManException;
@@ -312,8 +313,12 @@ public class RemittController {
 
 	@RequestMapping(value = "/api/remitt/xrate/v2", method = { RequestMethod.POST })
 	public ResponseWrapper<DynamicRoutingPricingResponse> xrate(
-			@RequestBody RoutingPricingRequest routingPricingRequest) {
-		return ResponseWrapper.build(remittanceClient.getDynamicRoutingPricing(routingPricingRequest));
+			@RequestBody RoutingPricingRequest routingPricingRequest,
+			@RequestParam(required = false, defaultValue = "MIN_TIME") SELECTION selection) {
+		AmxApiResponse<DynamicRoutingPricingResponse, Object> x = remittanceClient
+				.getDynamicRoutingPricing(routingPricingRequest);
+		x.getResult().setSelection(selection);
+		return ResponseWrapper.build(x);
 	}
 
 	@RequestMapping(value = "/api/remitt/flex/v2", method = { RequestMethod.POST })
@@ -498,11 +503,12 @@ public class RemittController {
 
 	@RequestMapping(value = { "/api/remitt/tranx/rating", "/pub/remitt/tranx/rating" }, method = { RequestMethod.POST })
 	public ResponseWrapper<CustomerRatingDTO> appStatus(@RequestBody CustomerRatingDTO customerRatingDTO,
-			@RequestParam String veryCode,@PathVariable Products prodType) {
+			@RequestParam String veryCode, @PathVariable Products prodType) {
 
 		if (!JaxClientUtil.getTransactionVeryCode(customerRatingDTO.getRemittanceTransactionId()).equals(veryCode)) {
 			throw new UIServerError(OWAStatusStatusCodes.INVALID_LINK);
 		}
-		return ResponseWrapper.build(jaxService.setDefaults().getRemitClient().saveCustomerRating(customerRatingDTO,prodType));
+		return ResponseWrapper
+				.build(jaxService.setDefaults().getRemitClient().saveCustomerRating(customerRatingDTO, prodType));
 	}
 }

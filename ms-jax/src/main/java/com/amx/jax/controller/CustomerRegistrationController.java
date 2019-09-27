@@ -44,7 +44,7 @@ public class CustomerRegistrationController {
 	 * Sends otp to customers email and mobile initiating transaction
 	 */
 	@RequestMapping(value = "/send-otp/", method = RequestMethod.POST)
-	public ApiResponse sendOtp(@RequestBody CustomerPersonalDetail customerPersonalDetail) {
+	public ApiResponse sendOtp(@RequestBody @Valid CustomerPersonalDetail customerPersonalDetail) {
 		logger.info("send otp request: " + customerPersonalDetail);
 		ApiResponse response = customerRegistrationService.sendOtp(customerPersonalDetail);
 		return response;

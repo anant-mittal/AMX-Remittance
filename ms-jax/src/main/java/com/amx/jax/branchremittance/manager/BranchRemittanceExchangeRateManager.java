@@ -173,7 +173,6 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 		result.setCostRateLimitReached(exchangeRateResponseModel.getCostRateLimitReached());
 		// trnx fee
 		BigDecimal commission = getComission();
-		
 		VatDetailsDto vatDetails = remittanceTransactionManager.getVatAmount(commission);
 		if(vatDetails!=null && !StringUtils.isBlank(vatDetails.getVatApplicable()) && vatDetails.getVatApplicable().equalsIgnoreCase(ConstantDocument.Yes)) {
 			result.setVatAmount(vatDetails.getVatAmount()==null?BigDecimal.ZERO:vatDetails.getVatAmount());
@@ -227,6 +226,7 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 			commission =commission.subtract(corpDiscount);
 		}
 		return commission;
+		
 	}
 
 	
@@ -338,8 +338,9 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 			}
 			BigDecimal corpDiscount = corporateDiscountManager.corporateDiscount();
 			
-			if(JaxUtil.isNullZeroBigDecimalCheck(commission) && commission.compareTo(corpDiscount)>=0) {
+			if(JaxUtil.isNullZeroBigDecimalCheck(commission) &&  JaxUtil.isNullZeroBigDecimalCheck(corpDiscount) && commission.compareTo(corpDiscount)>=0) {
 				commission =commission.subtract(corpDiscount);
+				result.setDiscountOnComissionFlag(ConstantDocument.Yes);
 			}
 			
 			VatDetailsDto vatDetails = remittanceTransactionManager.getVatAmount(commission);

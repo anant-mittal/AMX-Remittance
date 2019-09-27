@@ -227,7 +227,7 @@ public class BranchRemittanceSaveManager {
 	@Autowired
 	PartnerTransactionDao partnerTransactionDao;
 	
-        @Autowired
+    @Autowired
 	RemittanceSignatureManager remittanceSignatureManager;
 	
 	
@@ -253,7 +253,7 @@ public class BranchRemittanceSaveManager {
 	
 
 	public RemittanceResponseDto saveRemittanceTrnx(BranchRemittanceRequestModel remittanceRequestModel) {
-		
+		logger.debug("saveRemittanceTrnx request model : {}", JsonUtil.toJson(remittanceRequestModel));
 		List<BranchApplicationDto> shoppingCartList = new ArrayList<>();
 		shoppingCartList = remittanceRequestModel.getRemittanceApplicationId();
 		//updateApplicationStatus(shoppingCartList);
@@ -815,7 +815,7 @@ public class BranchRemittanceSaveManager {
 					remitTrnx.setSourceofincome(appl.getSourceofincome());
 					remitTrnx.setLocalCommisionCurrencyId(appl.getExCurrencyMasterByLocalTranxCurrencyId());
 					TransferDto trnaferType = getTrasnferModeByBankServiceRule(remitTrnx);
-					remitTrnx.setFileCreation(trnaferType.getTrasnferMode());
+					remitTrnx.setFileCreation(trnaferType.getFileCreation());
 					remitTrnx.setTransferMode(trnaferType.getTrasnferMode());
 					remitTrnx.setTransferModeId(trnaferType.getTransferModeId());
 					remitTrnx.setUsdAmount(appl.getUsdAmt());
@@ -1176,9 +1176,9 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
 
  public TransferDto getTrasnferModeByBankServiceRule(RemittanceTransaction remitTrnx){
 	 Map<String,Object> mapBankServiceRule= routingProDao.checkBankServiceRule(remitTrnx);
-	 logger.debug("getTrasnferModeByBankServiceRule request json : {}", JsonUtil.toJson(remitTrnx));
 	 TransferDto dto = new TransferDto();
 	 String transferMode=null;
+	 String fileCreation=ConstantDocument.No;
 	 BigDecimal transferModeId=BigDecimal.ZERO;
 	 if(mapBankServiceRule!=null && !mapBankServiceRule.isEmpty()) {
 		 transferMode = mapBankServiceRule.get("P_TRANSFER_MODE")==null?"":mapBankServiceRule.get("P_TRANSFER_MODE").toString();
@@ -1189,9 +1189,9 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
 		 }
 		 
 		 if(!StringUtils.isBlank(transferMode) && (transferMode.equalsIgnoreCase(ConstantDocument.FILE_CREATION) || transferMode.equalsIgnoreCase(ConstantDocument.TELEX_TRANFER))) {
-			 transferMode=ConstantDocument.Yes;
+			 fileCreation=ConstantDocument.Yes;
 		 }else if(!StringUtils.isBlank(transferMode) && transferMode.equalsIgnoreCase(ConstantDocument.WEB_SERVICE)) {
-			 transferMode=ConstantDocument.No;
+			 fileCreation=ConstantDocument.No;
 		 }
 	 }else {		
 		 throw new GlobalException(JaxError.NO_RECORD_FOUND,"Transfer mode is not defined in bank service rule");
@@ -1199,6 +1199,7 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
 	
 	 dto.setTransferModeId(transferModeId);
 	 dto.setTrasnferMode(transferMode);
+	 dto.setFileCreation(fileCreation);
 	 return dto;
  }
  
