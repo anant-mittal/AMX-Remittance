@@ -238,12 +238,13 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 		System.out.print("RemittanceCount : "+remittanceList.size());
 		
 		
-//		if(remittanceList.size() == 0) {
+		if(remittanceList.size() == 0) {
 			ReferralDetails referralDetails = refDao.getReferralByCustomerId(custId);
 			System.out.print("Referrer Customer Id"+referralDetails.getCustomerId());
 			System.out.print("Referree Customer Id"+referralDetails.getRefferedByCustomerId());
 			referralDetails.setIsConsumed("Y");
 			refDao.updateReferralCode(referralDetails);
+			
 			if (referralDetails.getRefferedByCustomerId() != null) {
 				PushMessage pushMessage = new PushMessage();
 				pushMessage.setSubject("Refer To Win!");
@@ -261,7 +262,7 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 				pushMessage.addToUser(referralDetails.getCustomerId());
 				pushNotifyClient.send(pushMessage);	
 			}
-//		}	
+		}
 
 		if (!ArgUtil.isEmpty(custId)) {
 			PushMessage pushMessage = new PushMessage();
