@@ -215,5 +215,7 @@ public class AmxDBConstants {
 	public static final String WU_CANC_REM = "CANC_REMINDER";
 	public static final String WU_CANCELLED = "WU_CANC";
 	
+	public static final String JOB_IN_PROGRESS="P";
+	public static final String JOB_COMPLETED = "C";
 
 }
