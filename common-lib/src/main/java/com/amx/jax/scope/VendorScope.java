@@ -9,16 +9,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.config.Scope;
 
-public class TenantScope implements Scope {
+public class VendorScope implements Scope {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(TenantScope.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(VendorScope.class);
 
 	private Map<String, Object> scopedObjects = Collections.synchronizedMap(new HashMap<String, Object>());
 	private Map<String, Runnable> destructionCallbacks = Collections.synchronizedMap(new HashMap<String, Runnable>());
 
 	@Override
 	public Object get(String name, ObjectFactory<?> objectFactory) {
-		LOGGER.info("name for {}",name);
 		String nameKey = getNameKey(name);
 		if (!scopedObjects.containsKey(nameKey)) {
 			scopedObjects.put(nameKey, this.assignValues(objectFactory.getObject()));

@@ -10,5 +10,6 @@ public class TenantBeanFactoryPostProcessor implements BeanFactoryPostProcessor 
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory factory) throws BeansException {
 		factory.registerScope("tenant", new TenantScope());
 		factory.registerScope("thread", new ThreadScope());
+		factory.registerScope("vendor", new VendorScope());
 	}
 }
