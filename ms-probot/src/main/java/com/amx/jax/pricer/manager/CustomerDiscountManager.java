@@ -141,7 +141,7 @@ public class CustomerDiscountManager {
 
 			CustomerCategoryDiscount ccDiscount = customerExtended != null
 					? customerExtended.getCustomerCategoryDiscount()
-					: null;
+					: custCatDiscountDao.getDiscountByCustomerCategory(CUSTOMER_CATEGORY.BRONZE);
 
 			if (ccDiscount != null && ccDiscount.getId() != null && curGroup != null
 					&& DbValueUtil.isActive(ccDiscount.getIsActive())) {
@@ -153,8 +153,6 @@ public class CustomerDiscountManager {
 						? ccDiscountMaster.getDiscountPips()
 						: BigDecimal.ZERO);
 
-			}
-
 			// Customer Category Info
 			custCategoryInfo.setId(ccDiscount.getId());
 			custCategoryInfo.setDiscountType(DISCOUNT_TYPE.CUSTOMER_CATEGORY);
@@ -163,7 +161,7 @@ public class CustomerDiscountManager {
 
 			// Updated Customer Category
 			exchRateAndRoutingTransientDataCache.setCustomerCategory(ccDiscount.getCustomerCategory());
-
+			}
 		} else {
 			CustomerCategoryDiscount ccDiscount = custCatDiscountDao.getDiscountByCustomerCategory(customerCategory);
 
