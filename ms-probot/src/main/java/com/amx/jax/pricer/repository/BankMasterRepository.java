@@ -13,4 +13,6 @@ public interface BankMasterRepository extends CrudRepository<BankMasterModel, Bi
 	
 	public BankMasterModel findBybankIdAndRecordStatus(BigDecimal bankId, String isActive);
 	
+	public List<BankMasterModel> findByBankIdIn(List<BigDecimal> bankIds);
+	
 }

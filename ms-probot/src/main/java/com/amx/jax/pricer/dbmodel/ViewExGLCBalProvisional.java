@@ -9,14 +9,14 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 /**
- * The Class ViewExGLCBAL.
+ * The Class ViewExGLCBalProvisional.
  */
 @Entity
-@Table(name = "VW_EX_GLCBAL")
-public class ViewExGLCBAL implements Serializable {
+@Table(name = "VW_EX_GLCBAL_PROV")
+public class ViewExGLCBalProvisional implements Serializable {
 
 	/** The Constant serialVersionUID. */
-	private static final long serialVersionUID = 3930319333942164885L;
+	private static final long serialVersionUID = 9011910401678486001L;
 
 	/** The row id. */
 	@Id
@@ -38,10 +38,6 @@ public class ViewExGLCBAL implements Serializable {
 	/** The currency code. */
 	@Column(name = "CURRENCY_CODE")
 	private String currencyCode;
-	
-	/** The Bank Country Id. */
-	@Column(name = "BANK_COUNTRY_ID")
-	private BigDecimal bankCountryId;
 
 	/** The currency name. */
 	@Column(name = "CURRENCY_NAME")
@@ -58,10 +54,6 @@ public class ViewExGLCBAL implements Serializable {
 	/** The rate cur bal. */
 	@Column(name = "RATE_CURBAL")
 	private BigDecimal rateCurBal;
-
-	/** The rate avg rate. */
-	@Column(name = "RATE_AVGRATE")
-	private BigDecimal rateAvgRate;
 
 	/**
 	 * Gets the row id.
@@ -137,14 +129,6 @@ public class ViewExGLCBAL implements Serializable {
 	 */
 	public void setBankFullName(String bankFullName) {
 		this.bankFullName = bankFullName;
-	}
-
-	public BigDecimal getBankCountryId() {
-		return bankCountryId;
-	}
-
-	public void setBankCountryId(BigDecimal bankCountryId) {
-		this.bankCountryId = bankCountryId;
 	}
 
 	/**
@@ -240,33 +224,6 @@ public class ViewExGLCBAL implements Serializable {
 	 */
 	public void setRateCurBal(BigDecimal rateCurBal) {
 		this.rateCurBal = rateCurBal;
-	}
-
-	/**
-	 * Gets the rate avg rate.
-	 *
-	 * @return the rate avg rate
-	 */
-	public BigDecimal getRateAvgRate() {
-		return rateAvgRate;
-	}
-
-	/**
-	 * Sets the rate avg rate.
-	 *
-	 * @param rateAvgRate
-	 *            the new rate avg rate
-	 */
-	public void setRateAvgRate(BigDecimal rateAvgRate) {
-		this.rateAvgRate = rateAvgRate;
-	}
-
-	@Override
-	public String toString() {
-		return "ViewExGLCBAL [rowId=" + rowId + ", bankId=" + bankId + ", bankCode=" + bankCode + ", bankFullName="
-				+ bankFullName + ", currencyCode=" + currencyCode + ", currencyName=" + currencyName + ", SLNO=" + SLNO
-				+ ", rateFcCurBal=" + rateFcCurBal + ", rateCurBal=" + rateCurBal + ", rateAvgRate=" + rateAvgRate
-				+ "]";
 	}
 
 }
