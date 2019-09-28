@@ -16,14 +16,9 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
-
-import com.amx.amxlib.constant.JaxFieldEntity;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.model.GetJaxFieldRequest;
-import com.amx.amxlib.model.JaxConditionalFieldDto;
-import com.amx.amxlib.model.JaxFieldDto;
-import com.amx.amxlib.model.JaxFieldValueDto;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.branchremittance.manager.BranchRemittanceManager;
 import com.amx.jax.constant.ConstantDocument;

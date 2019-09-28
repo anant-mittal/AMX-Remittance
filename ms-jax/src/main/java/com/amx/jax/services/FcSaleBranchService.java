@@ -867,10 +867,31 @@ public class FcSaleBranchService extends AbstractService{
 
 		return AmxApiResponse.buildList(saleOrderManage);
 	}
+	public BoolRespModel saveFcDeliveryTiming(FxDeliveryTimeSlotDto fxDeliveryTimeSlotDto){
+		Boolean status = Boolean.FALSE;	
+		if(fxDeliveryTimeSlotDto.getCountryId() == null || fxDeliveryTimeSlotDto.getCountryId().compareTo(BigDecimal.ZERO)==0){
+			throw new GlobalException(JaxError.NULL_COUNTRY_ID,"Country id should not be blank");
+		}
+		if(fxDeliveryTimeSlotDto.getCompanyId() == null || fxDeliveryTimeSlotDto.getCompanyId().compareTo(BigDecimal.ZERO)==0){
+			throw new GlobalException(JaxError.NULL_COMPANY_ID,"CompanyId id should not be blank");
+		}
+		
+	try {	
+		
+		status=branchOrderManager.saveFcDeliveryTiming(fxDeliveryTimeSlotDto);
+		if(status) {
+			// success
+		}else {
+			throw new GlobalException(JaxError.SAVE_FAILED,"Release Order lock didn't updated");
+		}
+	}catch (GlobalException e) {
+		throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
+	}catch (Exception e) {
+		throw new GlobalException(e.getMessage());
+	}
 
 	return new BoolRespModel(status);
 }
-	
 	public  AmxApiResponse<FxDeliveryTimeSlotDto,Object> fetchFcDeliveryTiming() {
 		return fcSaleBranchOrderManager.fetchFcDeliveryTiming();
 		
