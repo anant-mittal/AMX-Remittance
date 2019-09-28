@@ -554,7 +554,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel {
 		return (BigDecimal) output.get("P_DOC_NO");
 	}
 
-	public List<TimeSlotDto> fetchTimeSlot(BigDecimal shippingAddressId) {
+	/*public List<TimeSlotDto> fetchTimeSlot(BigDecimal shippingAddressId) {
 		List<TimeSlotDto> timeSlotList = new ArrayList<>();
 		BigDecimal appCountryId = metaData.getCountryId() == null ? BigDecimal.ZERO : metaData.getCountryId();
 		BigDecimal companyId = metaData.getCompanyId() == null ? BigDecimal.ZERO : metaData.getCompanyId();
@@ -583,8 +583,45 @@ public class FcSaleApplicationTransactionManager extends AbstractModel {
 			throw new GlobalException(JaxError.FC_SALE_TIME_SLOT_SETUP_MISSING, "No data found in DB");
 		}
 		return timeSlotList;
-	}
+	}*/
 
+	
+	public List<TimeSlotDto> fetchTimeSlot(BigDecimal shippingAddressId) {
+		List<TimeSlotDto> timeSlotList = new ArrayList<>();
+		BigDecimal appCountryId = metaData.getCountryId() == null ? BigDecimal.ZERO : metaData.getCountryId();
+		BigDecimal companyId = metaData.getCompanyId() == null ? BigDecimal.ZERO : metaData.getCompanyId();
+		List<FxDeliveryTimeSlotMaster> list = fcSaleOrderTimeSlotDao
+				.findByCountryIdAndCompanyIdAndIsActive(appCountryId, companyId, ConstantDocument.Yes);
+
+		if (list != null && !list.isEmpty()) {
+			BigDecimal startTime = list.get(0).getStartTime() == null ? BigDecimal.ZERO : list.get(0).getStartTime();
+			BigDecimal endTime = list.get(0).getEndTime() == null ? BigDecimal.ZERO : list.get(0).getEndTime();
+			BigDecimal timeInterval = list.get(0).getTimeInterval() == null ? BigDecimal.ZERO
+					: list.get(0).getTimeInterval();
+			BigDecimal noOfDays = list.get(0).getNoOfDays() == null ? BigDecimal.ZERO : list.get(0).getNoOfDays();
+			BigDecimal officeendTime = list.get(0).getOfficeEndTime() == null ? BigDecimal.ZERO
+					: list.get(0).getOfficeEndTime();
+			BigDecimal officeStartTime = list.get(0).getOfficeStartTime() == null ? BigDecimal.ZERO
+					: list.get(0).getOfficeStartTime();
+			BigDecimal timeIntervalOffice = list.get(0).getTimeIntervalOffice() == null ? BigDecimal.ZERO
+					: list.get(0).getTimeIntervalOffice();
+			if (JaxUtil.isNullZeroBigDecimalCheck(shippingAddressId)) {
+				ShippingAddressDetail shipp = shippingAddressDao.findOne(shippingAddressId);
+				if (shipp != null && shipp.getAddressType() != null
+						&& shipp.getAddressType().equalsIgnoreCase(ConstantDocument.FX_LOA)) {
+					startTime = officeStartTime;
+					endTime = officeendTime;
+					timeInterval = timeIntervalOffice;
+				}
+			}
+
+			timeSlotList = DateUtil.getTimeSlotRange(startTime, endTime, timeInterval,
+					noOfDays.intValue());
+		} else {
+			throw new GlobalException(JaxError.FC_SALE_TIME_SLOT_SETUP_MISSING, "No data found in DB");
+		}
+		return timeSlotList;
+	}
 	public List<ShoppingCartDetailsDto> convertShopingCartDto(List<FxShoppingCartDetails> cartDetailList) {
 		List<ShoppingCartDetailsDto> cartListDto = new ArrayList<>();
 		cartDetailList.forEach(cartDetails -> cartListDto.add(convertCartDto(cartDetails)));
