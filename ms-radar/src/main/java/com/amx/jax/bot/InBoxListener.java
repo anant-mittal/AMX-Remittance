@@ -16,6 +16,8 @@ import com.amx.jax.client.CustomerProfileClient;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerContactVerification;
 import com.amx.jax.dict.ContactType;
+import com.amx.jax.exception.AmxApiException;
+import com.amx.jax.exception.AmxException;
 import com.amx.jax.logger.AuditActor;
 import com.amx.jax.logger.AuditActor.ActorType;
 import com.amx.jax.mcq.shedlock.SchedulerLock;
@@ -85,7 +87,7 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 			+ "do remittances and order Foreign Exchange to be delivered to you.";
 	public static final String SOME_ERROR = "There is some issue while verifying your WhatsApp number."
 			+ "Please recheck. In case the {companyIDType} is correct, please go to the branch and update your"
-			+ " WhatsApp number with any of our counter staff.";
+			+ " WhatsApp number with any of our counter staff. ReasonCode : {errorCode}";
 
 	public static final String RESEND_LINK = "There was a failure to verify your WhatsApp number. "
 			+ "Please resend the original message LINK {identity} once again. Apologies for the inconvenience.";
@@ -120,6 +122,8 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 
 			StringMatcher matcher = new StringMatcher(event.getMessage().toUpperCase());
 
+			String errorCode = "Technical Error";
+			
 			if (matcher.isMatch(PING)) {
 				replyMessage = "PING";
 			} else if (matcher.isMatch(LINK_CIVIL_ID)) {
@@ -134,7 +138,7 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 					} else if (!swissNumberProtoString.equalsIgnoreCase(customer.getWhatsapp())) { // Customer number
 																									// does
 						replyMessage = FOUND_MATCH_NOT;
-					} else if (AmxDBConstants.Status.Y.equals(customer.getWhatsAppVerified())) { // Already Verified so
+					} else if (customer.hasVerified(ContactType.WHATSAPP)) { // Already Verified so
 						replyMessage = NO_ACTION;
 					} else { // Found and matched
 								// customer.setWhatsAppVerified(AmxDBConstants.Status.Y);
@@ -144,10 +148,12 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 						replyMessage = FOUND_MATCHED;
 
 					}
-
+				} catch (AmxApiException e) {
+					errorCode = e.getErrorKey();
+					LOGGER.error("SOME_AmxApiException", e);
 				} catch (Exception e) {
 					replyMessage = SOME_ERROR;
-					LOGGER.error("SOME_ERROR", e);
+					LOGGER.error("SOME_Exception", e);
 				}
 
 			}
@@ -162,8 +168,7 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 
 			return event.replyWAMessage(replyMessage.replace("{companyName}", radarConfig.getCompanyName())
 					.replace("{companyWebSiteUrl}", radarConfig.getCompanyWebSiteUrl())
-					.replace("{companyIDType}", radarConfig.getCompanyIDType())
-
+					.replace("{companyIDType}", radarConfig.getCompanyIDType()).replace("{errorCode}", errorCode)
 			);
 		} else {
 			return event.replyWAMessage(null);

@@ -43,6 +43,7 @@ public class CustomerContactVerification implements java.io.Serializable {
 		return "CustomerContactVerification [id=" + id + ", appCountryId=" + appCountryId + ", contactType="
 				+ contactType + ", contactValue=" + contactValue + ", verificationCode=" + verificationCode
 				+ ", customerId=" + customerId + ", isActive=" + isActive + ", createdDate=" + createdDate
+				+ ", sendDate=" + sendDate
 				+ ", verifiedDate=" + verifiedDate + "]";
 	}
 

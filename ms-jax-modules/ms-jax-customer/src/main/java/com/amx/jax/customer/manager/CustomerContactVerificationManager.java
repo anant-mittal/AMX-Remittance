@@ -32,14 +32,11 @@ import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.userservice.repository.CustomerVerificationRepository;
 import com.amx.jax.userservice.repository.OnlineCustomerRepository;
 import com.amx.jax.userservice.service.CustomerVerificationService;
-import com.amx.jax.util.AmxDBConstants;
 import com.amx.jax.util.AmxDBConstants.Status;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.CollectionUtil;
-import com.amx.utils.Constants;
 import com.amx.utils.EntityDtoUtil;
 import com.amx.utils.Random;
-import com.amx.utils.TimeUtils;
 
 /**
  * 
@@ -382,6 +379,16 @@ public class CustomerContactVerificationManager {
 	public CustomerContactVerification verifyByContact(String identity, ContactType type, String contact) {
 
 		Customer c = CollectionUtil.getOne(customerRepository.findActiveCustomers(identity));
+
+		if (ArgUtil.isEmpty(c)) {
+			throw new GlobalException(JaxError.INVALID_CIVIL_ID,
+					"Invalid civil id, does not exists in our system");
+		}
+
+		if (c.hasVerified(type)) {
+			throw new GlobalException(JaxError.ALREADY_VERIFIED_CONTACT,
+					type + " contact is already Verified");
+		}
 
 		CustomerContactVerification link = getValidCustomerContactVerificationByCustomerId(c.getCustomerId(), type,
 				contact);
