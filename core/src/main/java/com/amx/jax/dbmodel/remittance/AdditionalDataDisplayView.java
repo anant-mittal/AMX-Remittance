@@ -34,8 +34,8 @@ public class AdditionalDataDisplayView implements Serializable{
 	private String fieldBehaviour;
 	private String validationsReq;
 	private String isActive;
-	private BigDecimal bankId;
-	private String storeIndicator;
+	private BigDecimal routingBankId;
+	private String isBeneTag;
 	
 	@Id
 	@Column(name = "SERVICE_ID")
@@ -173,17 +173,21 @@ public class AdditionalDataDisplayView implements Serializable{
 	public void setIsActive(String isActive) {
 		this.isActive = isActive;
 	}
-	public BigDecimal getBankId() {
-		return bankId;
+	
+	@Column(name = "ROUTING_BANK_ID")
+	public BigDecimal getRoutingBankId() {
+		return routingBankId;
 	}
-	public void setBankId(BigDecimal bankId) {
-		this.bankId = bankId;
+	public void setRoutingBankId(BigDecimal routingBankId) {
+		this.routingBankId = routingBankId;
 	}
-	public String getStoreIndicator() {
-		return storeIndicator;
+	
+	@Column(name = "IS_BENE_TAG")
+	public String getIsBeneTag() {
+		return isBeneTag;
 	}
-	public void setStoreIndicator(String storeIndicator) {
-		this.storeIndicator = storeIndicator;
+	public void setIsBeneTag(String isBeneTag) {
+		this.isBeneTag = isBeneTag;
 	}
 	
 }

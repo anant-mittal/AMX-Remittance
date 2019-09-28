@@ -13,6 +13,7 @@ import com.amx.jax.model.request.serviceprovider.ServiceProviderCallRequestDto;
 import com.amx.jax.model.response.serviceprovider.Quotation_Call_Response;
 import com.amx.jax.model.response.serviceprovider.Remittance_Call_Response;
 import com.amx.jax.model.response.serviceprovider.ServiceProviderResponse;
+import com.amx.jax.model.response.serviceprovider.Validate_Remittance_Inputs_Call_Response;
 import com.amx.jax.rest.RestService;
 
 @Component
@@ -58,7 +59,7 @@ public class ServiceProviderClient implements IServiceProviderService
 		try
 		{
 			LOGGER.debug("in send remittance :");
-			AmxApiResponse<Remittance_Call_Response, Object> response =  restService.ajax(appConfig.getJaxURL() + Path.SEND_REMITTANCE).meta(new JaxMetaInfo())
+			AmxApiResponse<Remittance_Call_Response, Object> response =  restService.ajax(appConfig.getServiceProviderURL() + Path.SEND_REMITTANCE).meta(new JaxMetaInfo())
 					.post(sendRemittanceRequestDto)
 					.as(new ParameterizedTypeReference<AmxApiResponse<Remittance_Call_Response, Object>>()
 					{
@@ -81,11 +82,14 @@ public class ServiceProviderClient implements IServiceProviderService
 		try
 		{
 			LOGGER.debug("in validateRemittanceInputs :");
-			return restService.ajax(appConfig.getJaxURL() + Path.VALIDATE_REMITTANCE_INPUTS).meta(new JaxMetaInfo())
+			AmxApiResponse<Validate_Remittance_Inputs_Call_Response, Object> response = restService.ajax(appConfig.getServiceProviderURL() + Path.VALIDATE_REMITTANCE_INPUTS).meta(new JaxMetaInfo())
 					.post(validateRemittanceInputsRequestDto)
-					.as(new ParameterizedTypeReference<AmxApiResponse<ServiceProviderResponse, Object>>()
+					.as(new ParameterizedTypeReference<AmxApiResponse<Validate_Remittance_Inputs_Call_Response, Object>>()
 					{
 					});
+			Validate_Remittance_Inputs_Call_Response result = response.getResult();
+			ServiceProviderResponse resp = result;
+			return AmxApiResponse.build(resp);
 		}
 		catch (Exception e)
 		{
@@ -101,7 +105,7 @@ public class ServiceProviderClient implements IServiceProviderService
 		try
 		{
 			LOGGER.debug("in getRemittanceDetails :");
-			return restService.ajax(appConfig.getJaxURL() + Path.GET_REMITTANCE_DETAILS).meta(new JaxMetaInfo())
+			return restService.ajax(appConfig.getServiceProviderURL() + Path.GET_REMITTANCE_DETAILS).meta(new JaxMetaInfo())
 					.post(getRemittanceDetailsRequestDto)
 					.as(new ParameterizedTypeReference<AmxApiResponse<ServiceProviderResponse, Object>>()
 					{
@@ -121,7 +125,7 @@ public class ServiceProviderClient implements IServiceProviderService
 		try
 		{
 			LOGGER.debug("in getRemittanceStatus :");
-			return restService.ajax(appConfig.getJaxURL() + Path.GET_REMITTANCE_STATUS).meta(new JaxMetaInfo())
+			return restService.ajax(appConfig.getServiceProviderURL() + Path.GET_REMITTANCE_STATUS).meta(new JaxMetaInfo())
 					.post(getRemittanceStatusRequestDto)
 					.as(new ParameterizedTypeReference<AmxApiResponse<ServiceProviderResponse, Object>>()
 					{

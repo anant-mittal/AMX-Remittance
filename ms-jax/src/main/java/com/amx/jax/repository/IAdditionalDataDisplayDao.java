@@ -34,7 +34,7 @@ public interface IAdditionalDataDisplayDao  extends JpaRepository<AdditionalData
 			+ " and av.routingCountryId=:countryId "
 			+ " and av.routingCurrencyId=:currencyId and av.remittanceModeId=:remittanceModeId "
 			+ " and av.deliveryModeId =:deliveryModeId and av.isActive='Y' and av.isRendered='Y' "
-			+ " and av.flexField  in :flexiFieldIn and av.bankId = :bankId")
+			+ " and av.flexField  in :flexiFieldIn and av.routingBankId = :bankId")
 	public List<AdditionalDataDisplayView> getAdditionalDataFromServiceApplicabilityForBank(
 			@Param("applicationCountryId") BigDecimal applicationCountryId, 
 			@Param("countryId") BigDecimal countryId, 

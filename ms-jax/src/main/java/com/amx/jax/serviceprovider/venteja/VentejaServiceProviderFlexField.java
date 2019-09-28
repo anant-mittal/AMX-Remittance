@@ -1,11 +1,11 @@
-package com.amx.jax.manager.remittance;
+package com.amx.jax.serviceprovider.venteja;
 
 import java.util.Map;
 
 import com.amx.jax.model.request.serviceprovider.ServiceProviderCallRequestDto;
 import com.amx.jax.model.response.remittance.FlexFieldDto;
 
-public enum ServiceProviderFlexField {
+public enum VentejaServiceProviderFlexField {
 
 	INDIC9 {
 		// prn
