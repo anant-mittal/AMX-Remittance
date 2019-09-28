@@ -36,11 +36,13 @@ public class AdditionalBankDetailManager {
 
 		List<AdditionalBankDetailData> additionalBeneData = additionalBankDetailDataRepository.findByBeneRelSeqId(request.getBeneId());
 		Map<Object, AdditionalBankDetailData> valueMap = additionalBeneData.stream().collect(Collectors.toMap(x -> x.getKey(), x -> x));
-
-		requiredFlexFields.forEach(i -> {
-			AdditionalBankDetailData data = valueMap.get(i.getField().getName());
-			i.getField().setDefaultValue(data.getValue());
-		});
+		
+		if(valueMap != null && valueMap.size() != 0) {
+			requiredFlexFields.forEach(i -> {
+				AdditionalBankDetailData data = valueMap.get(i.getField().getName());
+				i.getField().setDefaultValue(data.getValue());
+			});
+		}
 	}
 
 	public void validateAdditionalBankFields(RemittanceAdditionalBeneFieldModel request, Map<String, Object> remitApplParametersMap) {

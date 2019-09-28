@@ -10,6 +10,8 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.exception.JaxSystemError;
 import com.amx.jax.model.request.serviceprovider.ServiceProviderCallRequestDto;
+import com.amx.jax.model.response.serviceprovider.Quotation_Call_Response;
+import com.amx.jax.model.response.serviceprovider.Remittance_Call_Response;
 import com.amx.jax.model.response.serviceprovider.ServiceProviderResponse;
 import com.amx.jax.rest.RestService;
 
@@ -33,11 +35,14 @@ public class ServiceProviderClient implements IServiceProviderService
 		{
 
 			LOGGER.debug("in get quataion :");
-			return restService.ajax(appConfig.getServiceProviderURL() + Path.GET_QUATATION).meta(new JaxMetaInfo())
+			AmxApiResponse<Quotation_Call_Response, Object> response = restService.ajax(appConfig.getServiceProviderURL() + Path.GET_QUATATION).meta(new JaxMetaInfo())
 					.post(quatationRequestDto)
-					.as(new ParameterizedTypeReference<AmxApiResponse<ServiceProviderResponse, Object>>()
+					.as(new ParameterizedTypeReference<AmxApiResponse<Quotation_Call_Response, Object>>()
 					{
 					});
+			Quotation_Call_Response result = response.getResult();
+			ServiceProviderResponse resp = result;
+			return AmxApiResponse.build(resp);
 		}
 		catch (Exception e)
 		{
@@ -53,11 +58,14 @@ public class ServiceProviderClient implements IServiceProviderService
 		try
 		{
 			LOGGER.debug("in send remittance :");
-			return restService.ajax(appConfig.getJaxURL() + Path.SEND_REMITTANCE).meta(new JaxMetaInfo())
+			AmxApiResponse<Remittance_Call_Response, Object> response =  restService.ajax(appConfig.getJaxURL() + Path.SEND_REMITTANCE).meta(new JaxMetaInfo())
 					.post(sendRemittanceRequestDto)
-					.as(new ParameterizedTypeReference<AmxApiResponse<ServiceProviderResponse, Object>>()
+					.as(new ParameterizedTypeReference<AmxApiResponse<Remittance_Call_Response, Object>>()
 					{
 					});
+			Remittance_Call_Response result = response.getResult();
+			ServiceProviderResponse resp = result;
+			return AmxApiResponse.build(resp);
 		}
 		catch (Exception e)
 		{
