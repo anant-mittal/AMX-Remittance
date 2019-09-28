@@ -29,7 +29,7 @@ public class ServiceProviderApiManager {
 	@Autowired
 	protected ServiceProviderClientWrapper serviceProviderClientWrapper;
 
-	public ServiceProviderCallRequestDto createValidateInputRequest(RemittanceAdditionalBeneFieldModel remittanceAdditionalBeneFieldModel,
+	protected ServiceProviderCallRequestDto createValidateInputRequest(RemittanceAdditionalBeneFieldModel remittanceAdditionalBeneFieldModel,
 			Map<String, Object> remitApplParametersMap) {
 		ServiceProviderCallRequestDto serviceProviderCallRequestDto = new ServiceProviderCallRequestDto();
 
