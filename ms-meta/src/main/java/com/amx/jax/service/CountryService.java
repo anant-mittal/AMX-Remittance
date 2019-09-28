@@ -182,7 +182,7 @@ public class CountryService extends AbstractService {
 		CountryMaster countryMaster = countryMasterRepository.getCountryCodeValue(countryId);
 		logger.debug("countrycode:"+countryMaster.getCountryCode());
 		String countrycode = countryMaster.getCountryCode();
-		String [] codes = {"005", "051", "009", "001", "010", "022" , "004"};
+		String [] codes = {"005", "051", "009", "001", "010", "022"};
 		
 		if(Arrays.asList(codes).contains(countrycode)) {
 			isArabic = true;
