@@ -929,53 +929,48 @@ public class PartnerTransactionManager extends AbstractModel {
 			if (transctionDetail.isEmpty()) {
 				throw new GlobalException("Transaction details not avaliable");
 			} else {
-				if(transctionDetail.size() == 1) {
+				RemittanceTransactionView remittanceTransactionView = transctionDetail.get(0);
+				ServiceProviderResponse serviceProviderResponse = apiResponse.getResult();
 
-					RemittanceTransactionView remittanceTransactionView = transctionDetail.get(0);
-					ServiceProviderResponse serviceProviderResponse = apiResponse.getResult();
-
-					if(serviceProviderResponse != null && serviceProviderResponse.getAction_ind() != null) {
-						if(serviceProviderResponse.getAction_ind().equalsIgnoreCase(PricerServiceConstants.ACTION_IND_I) || serviceProviderResponse.getAction_ind().equalsIgnoreCase(PricerServiceConstants.ACTION_IND_P) ||
-								serviceProviderResponse.getAction_ind().equalsIgnoreCase(PricerServiceConstants.ACTION_IND_F)){
-							actionInd = serviceProviderResponse.getAction_ind();
-							responseDescription = serviceProviderResponse.getResponse_description();
-							//emailStatus = Boolean.TRUE; // testing
-						}else if(serviceProviderResponse.getAction_ind().equalsIgnoreCase(PricerServiceConstants.ACTION_IND_T)){
-							actionInd = PricerServiceConstants.ACTION_IND_U;
-							responseDescription = PricerServiceConstants.RESPONSE_UNKNOWN_ERROR;
-							emailStatus = Boolean.TRUE;
-						}else if(serviceProviderResponse.getAction_ind().equalsIgnoreCase(PricerServiceConstants.ACTION_IND_R)){
-							actionInd = serviceProviderResponse.getAction_ind();
-							responseDescription = serviceProviderResponse.getResponse_description();
-							emailStatus = Boolean.TRUE;
-						}else{
-							actionInd = serviceProviderResponse.getAction_ind();
-							responseDescription = serviceProviderResponse.getResponse_description();
-							emailStatus = Boolean.TRUE;
-						}
-
-						remitTrnxSPDTO = new RemitTrnxSPDTO();
-						remitTrnxSPDTO.setActionInd(actionInd);
-						remitTrnxSPDTO.setResponseDescription(responseDescription);
-						remitTrnxSPDTO.setTransactionId(partnerTransactionId);
-						logger.info("actionInd : " + actionInd + " responseDescription : "+ responseDescription + " transaction Id " + remittanceTransactionView.getRemittanceTransactionId() + " partner transaction id : "  + partnerTransactionId);
-						// save remit trnx
-						partnerTransactionDao.saveRemittanceRemarksDeliveryInd(actionInd, responseDescription, remittanceTransactionView.getRemittanceTransactionId());
-						//remittanceTransactionRepository.updateDeliveryIndRemarksBySP(remitTrnxSPDTO.getActionInd(), remitTrnxSPDTO.getResponseDescription(), remittanceTransactionView.getRemittanceTransactionId());
-						if(emailStatus) {
-							logger.error("Service provider api fail to execute : ColDocNo : ", responseDto.getCollectionDocumentNo() + " : ColDocCod : " +responseDto.getCollectionDocumentCode()+"  : ColDocYear : "+responseDto.getCollectionDocumentFYear());
-							auditService.log(new CActivityEvent(Type.TRANSACTION_CREATED,String.format("%s/%s", responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo())).field("STATUS").to(JaxTransactionStatus.PAYMENT_SUCCESS_SERVICE_PROVIDER_FAIL).result(Result.DONE));
-							sendSrvPrvTranxFailReport(remittanceTransactionView, remitTrnxSPDTO, partnerTransactionId);
-						}else {
-							auditService.log(new CActivityEvent(Type.TRANSACTION_CREATED,String.format("%s/%s", responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo())).field("STATUS").to(JaxTransactionStatus.PAYMENT_SUCCESS_SERVICE_PROVIDER_SUCCESS).result(Result.DONE));
-						}
-
-						logger.info(" Service provider result " +JsonUtil.toJson(serviceProviderResponse));
-					}else {
-						throw new GlobalException("Service Provider details not avaliable");
+				if(serviceProviderResponse != null && serviceProviderResponse.getAction_ind() != null) {
+					if(serviceProviderResponse.getAction_ind().equalsIgnoreCase(PricerServiceConstants.ACTION_IND_I) || serviceProviderResponse.getAction_ind().equalsIgnoreCase(PricerServiceConstants.ACTION_IND_P) ||
+							serviceProviderResponse.getAction_ind().equalsIgnoreCase(PricerServiceConstants.ACTION_IND_F)){
+						actionInd = serviceProviderResponse.getAction_ind();
+						responseDescription = serviceProviderResponse.getResponse_description();
+						//emailStatus = Boolean.TRUE; // testing
+					}else if(serviceProviderResponse.getAction_ind().equalsIgnoreCase(PricerServiceConstants.ACTION_IND_T)){
+						actionInd = PricerServiceConstants.ACTION_IND_U;
+						responseDescription = PricerServiceConstants.RESPONSE_UNKNOWN_ERROR;
+						emailStatus = Boolean.TRUE;
+					}else if(serviceProviderResponse.getAction_ind().equalsIgnoreCase(PricerServiceConstants.ACTION_IND_R)){
+						actionInd = serviceProviderResponse.getAction_ind();
+						responseDescription = serviceProviderResponse.getResponse_description();
+						emailStatus = Boolean.TRUE;
+					}else{
+						actionInd = serviceProviderResponse.getAction_ind();
+						responseDescription = serviceProviderResponse.getResponse_description();
+						emailStatus = Boolean.TRUE;
 					}
+
+					remitTrnxSPDTO = new RemitTrnxSPDTO();
+					remitTrnxSPDTO.setActionInd(actionInd);
+					remitTrnxSPDTO.setResponseDescription(responseDescription);
+					remitTrnxSPDTO.setTransactionId(partnerTransactionId);
+					logger.info("actionInd : " + actionInd + " responseDescription : "+ responseDescription + " transaction Id " + remittanceTransactionView.getRemittanceTransactionId() + " partner transaction id : "  + partnerTransactionId);
+					// save remit trnx
+					partnerTransactionDao.saveRemittanceRemarksDeliveryInd(actionInd, responseDescription, remittanceTransactionView.getRemittanceTransactionId());
+					//remittanceTransactionRepository.updateDeliveryIndRemarksBySP(remitTrnxSPDTO.getActionInd(), remitTrnxSPDTO.getResponseDescription(), remittanceTransactionView.getRemittanceTransactionId());
+					if(emailStatus) {
+						logger.error("Service provider api fail to execute : ColDocNo : ", responseDto.getCollectionDocumentNo() + " : ColDocCod : " +responseDto.getCollectionDocumentCode()+"  : ColDocYear : "+responseDto.getCollectionDocumentFYear());
+						auditService.log(new CActivityEvent(Type.TRANSACTION_CREATED,String.format("%s/%s", responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo())).field("STATUS").to(JaxTransactionStatus.PAYMENT_SUCCESS_SERVICE_PROVIDER_FAIL).result(Result.DONE));
+						sendSrvPrvTranxFailReport(remittanceTransactionView, remitTrnxSPDTO, partnerTransactionId);
+					}else {
+						auditService.log(new CActivityEvent(Type.TRANSACTION_CREATED,String.format("%s/%s", responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo())).field("STATUS").to(JaxTransactionStatus.PAYMENT_SUCCESS_SERVICE_PROVIDER_SUCCESS).result(Result.DONE));
+					}
+
+					logger.info(" Service provider result " +JsonUtil.toJson(serviceProviderResponse));
 				}else {
-					throw new GlobalException("Service Provider details multiple avaliable");
+					throw new GlobalException("Service Provider details not available");
 				}
 			}
 		}
@@ -1285,7 +1280,6 @@ public class PartnerTransactionManager extends AbstractModel {
 			}
 			model.setCustomerName(customerName.toString());
 		}
-		//model.setCustomerName(remittanceTransactionView.getFirstName().concat(" ").concat(remittanceTransactionView.getMiddleName()).concat(" ").concat(remittanceTransactionView.getLastName()));
 		model.setCustomerReference(remittanceTransactionView.getCustomerReference());
 		model.setCustomerContact(remittanceTransactionView.getContactNumber());
 		model.setExceptionMessage(remitTrnxSPDTO.getActionInd() + " : " + remitTrnxSPDTO.getResponseDescription() + " : " + remittanceTransactionView.getCountryBranchName() + " : " +remittanceTransactionView.getCreatedBy());

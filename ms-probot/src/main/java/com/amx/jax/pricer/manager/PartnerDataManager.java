@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.client.serviceprovider.ServiceProviderClient;
 import com.amx.jax.client.serviceprovider.ServiceProviderClientWrapper;
 import com.amx.jax.dbmodel.partner.BankExternalReferenceDetail;
 import com.amx.jax.dbmodel.partner.BankExternalReferenceHead;
