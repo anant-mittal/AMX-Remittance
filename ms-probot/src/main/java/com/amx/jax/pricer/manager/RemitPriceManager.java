@@ -59,6 +59,7 @@ import com.amx.jax.pricer.var.PricerServiceConstants;
 import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_BY;
 import com.amx.jax.pricer.var.PricerServiceConstants.SERVICE_GROUP;
 import com.amx.jax.pricer.var.PricerServiceConstants.TREASURY_FUND_STATUS;
+import com.amx.utils.JsonUtil;
 
 @Component
 public class RemitPriceManager {
@@ -244,7 +245,7 @@ public class RemitPriceManager {
 			 */
 			setMarkupForBanks(requestDto.getLocalCountryId(), validBankIds, requestDto.getForeignCurrencyId(),
 					requestDto.getChannel());
-			
+
 			/************* Process Bank Exchange Rates ***********/
 
 			List<ExchangeRateMasterApprovalDet> bankExchangeRates;
@@ -315,7 +316,7 @@ public class RemitPriceManager {
 				if (exRateDetails.getSellRateBase().getInverseRate().compareTo(adjustedSellRate) <= 0) {
 					exRateDetails.setCostRateLimitReached(true);
 				}
-				
+
 				// Check for Low GL Balance
 				if (maxFcCurBal.compareTo(exRateDetails.getSellRateBase().getConvertedFCAmount()) < 0) {
 					exRateDetails.setLowGLBalance(true);
@@ -343,6 +344,18 @@ public class RemitPriceManager {
 			BigDecimal foreignCountryId, BigDecimal applicationCountryId, List<BigDecimal> routingBankIds,
 			Channel channel) {
 
+		/**
+		 * POC Code Call - for predicates and custom query
+		 * 
+		 * List<BigDecimal> curIds = new ArrayList<BigDecimal>();
+		 * 
+		 * curIds.add(currencyId); curIds.add(new BigDecimal(2));
+		 * 
+		 * List<ExchangeRateMasterApprovalDet> aprList =
+		 * exchangeRateDao.getByCurIdIn(curIds);
+		 * 
+		 * System.out.println(" Entries ==>" + JsonUtil.toJson(aprList));
+		 */
 		/**
 		 * Get All Cost rates from GLCBAL
 		 */

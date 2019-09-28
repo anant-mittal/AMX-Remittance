@@ -9,12 +9,16 @@ import org.springframework.stereotype.Component;
 import com.amx.jax.pricer.dbmodel.ExchangeRateAPRDET;
 import com.amx.jax.pricer.dbmodel.ExchangeRateMasterApprovalDet;
 import com.amx.jax.pricer.repository.ExchangeRateApprovalDetRepository;
+import com.amx.jax.pricer.repository.custom.AprDetJpaRepo;
 
 @Component
 public class ExchangeRateDao {
 
 	@Autowired
 	private ExchangeRateApprovalDetRepository repo;
+
+	@Autowired
+	private AprDetJpaRepo customRepo;
 
 	public List<ExchangeRateMasterApprovalDet> getBranchExchangeRates(BigDecimal currencyId, BigDecimal countryBranchId,
 			BigDecimal countryId, List<BigDecimal> bankIds) {
@@ -76,6 +80,10 @@ public class ExchangeRateDao {
 			BigDecimal applicationCountryId, List<BigDecimal> routingBankIds, List<BigDecimal> serviceIds) {
 
 		return repo.getSellRatesForRoutingBanks(currencyId, applicationCountryId, routingBankIds, serviceIds);
+	}
+
+	public List<ExchangeRateMasterApprovalDet> getByCurIdIn(List<BigDecimal> curIds) {
+		return customRepo.findByPredicateIn(curIds);
 	}
 
 }

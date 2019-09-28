@@ -5,14 +5,16 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 
 import com.amx.jax.pricer.dbmodel.ExchangeRateAPRDET;
 import com.amx.jax.pricer.dbmodel.ExchangeRateMasterApprovalDet;
+import com.amx.jax.pricer.repository.custom.AprDetJpaRepoCustom;
 
 @Transactional
-public interface ExchangeRateApprovalDetRepository extends CrudRepository<ExchangeRateMasterApprovalDet, BigDecimal> {
+public interface ExchangeRateApprovalDetRepository
+		extends JpaRepository<ExchangeRateMasterApprovalDet, BigDecimal> {
 
 	@Query("select rate from ExchangeRateMasterApprovalDet rate where  rate.currencyId=?1 and rate.countryBranchId=?2 "
 			+ "and rate.bankMaster.recordStatus = 'Y' and rate.bankMaster.bankCode not in ('SCB','SCBUK', 'WU') and rate.bankMaster.bankId in (?3)")
@@ -21,8 +23,8 @@ public interface ExchangeRateApprovalDetRepository extends CrudRepository<Exchan
 
 	@Query("select rate from ExchangeRateMasterApprovalDet rate where rate.currencyId=?1 and rate.countryBranchId=?2 "
 			+ "and rate.countryId=?3 and rate.applicationCountryId=?4 and rate.bankMaster.bankId=?5 and rate.serviceId=?6")
-	List<ExchangeRateMasterApprovalDet> getExchangeRatesForRoutingBank(BigDecimal currencyId, BigDecimal countryBranchId,
-			BigDecimal countryId, BigDecimal applicationCountryId, BigDecimal routingBankId,
+	List<ExchangeRateMasterApprovalDet> getExchangeRatesForRoutingBank(BigDecimal currencyId,
+			BigDecimal countryBranchId, BigDecimal countryId, BigDecimal applicationCountryId, BigDecimal routingBankId,
 			BigDecimal serviceIndicatorId);
 
 	@Query("select rate from ExchangeRateMasterApprovalDet rate where rate.currencyId=?1 and rate.bankMaster.bankId=?2 ")
