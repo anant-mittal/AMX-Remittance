@@ -372,7 +372,7 @@ public class RemittanceTransactionManager {
 		}		*/
 		/** end here**/
 		
-		validateNumberOfTransactionLimits();
+		//validateNumberOfTransactionLimits();
 		validateBeneficiaryTransactionLimit(beneficiary);
 		setLoyalityPointIndicaters(responseModel);
 		setNetAmountAndLoyalityState(breakup, model, responseModel, commission,vatDetails.getVatApplicableAmount());
@@ -466,7 +466,7 @@ public class RemittanceTransactionManager {
 			throw new GlobalException(REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL,
 					"No exchange rate found for bank- " + routingBankId);
 		}
-		validateNumberOfTransactionLimits();
+		//validateNumberOfTransactionLimits();
 		validateBeneficiaryTransactionLimit(beneficiary);
 		setLoyalityPointIndicaters(responseModel);
 		BigDecimal commission = getCommissionAmount(routingBankId, rountingCountryId, currencyId, remittanceMode,

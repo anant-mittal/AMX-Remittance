@@ -11,22 +11,21 @@ import com.amx.jax.model.response.serviceprovider.Quotation_Call_Response;
 import com.amx.jax.model.response.serviceprovider.Remittance_Call_Response;
 import com.amx.jax.model.response.serviceprovider.ServiceProviderResponse;
 import com.amx.jax.model.response.serviceprovider.Validate_Remittance_Inputs_Call_Response;
+import com.amx.utils.JsonUtil;
 
 @Component
 public class ServiceProviderClientWrapper {
 
-	
 	private static final Logger log = LoggerFactory.getLogger(ServiceProviderClientWrapper.class);
 
-	
 	@Autowired
 	ServiceProviderClient serviceProviderClient;
 
 	public AmxApiResponse<Quotation_Call_Response, Object> getQuatation(ServiceProviderCallRequestDto quatationRequestDto) {
-		log.debug("getQuatation request {}", quatationRequestDto);
+		log.debug("getQuatation request {}", JsonUtil.toJson(quatationRequestDto));
 		AmxApiResponse<ServiceProviderResponse, Object> response = serviceProviderClient.getQuatation(quatationRequestDto);
 		Quotation_Call_Response result = (Quotation_Call_Response) response.getResult();
-		log.debug("getQuatation response {}", result);
+		log.debug("getQuatation response {}", JsonUtil.toJson(result));
 		return AmxApiResponse.build(result);
 	}
 
@@ -38,10 +37,10 @@ public class ServiceProviderClientWrapper {
 
 	public AmxApiResponse<Validate_Remittance_Inputs_Call_Response, Object> validateRemittanceInputs(
 			ServiceProviderCallRequestDto validateRemittanceInputsRequestDto) {
-		log.debug("validateRemittanceInputs request {}", validateRemittanceInputsRequestDto);
+		log.debug("validateRemittanceInputs request {}", JsonUtil.toJson(validateRemittanceInputsRequestDto));
 		AmxApiResponse<ServiceProviderResponse, Object> response = serviceProviderClient.validateRemittanceInputs(validateRemittanceInputsRequestDto);
 		Validate_Remittance_Inputs_Call_Response result = (Validate_Remittance_Inputs_Call_Response) response.getResult();
-		log.debug("validateRemittanceInputs response {}", result);
+		log.debug("validateRemittanceInputs response {}", JsonUtil.toJson(result));
 		return AmxApiResponse.build(result);
 	}
 

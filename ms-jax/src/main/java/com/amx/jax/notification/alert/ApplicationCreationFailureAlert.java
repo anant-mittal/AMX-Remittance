@@ -121,7 +121,7 @@ public class ApplicationCreationFailureAlert implements IAlert {
 	        }
 			remittanceTransactionFailure.setCustomerName(cusName.toString());
 
-			jaxNotificationService.sendErrorEmail(remittanceTransactionFailure, emailid);
+			//jaxNotificationService.sendErrorEmail(remittanceTransactionFailure, emailid);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
