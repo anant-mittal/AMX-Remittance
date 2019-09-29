@@ -41,7 +41,6 @@ public class ServiceProviderManger implements IServiceProvider
 	@Autowired
 	MSServiceProviderConfig msServiceProviderConfig;
 
-
 	private final String SEND_TXN_METHOD_IND = new String("2"), VALIDATE_SEND_TXN_INPUTS_METHOD_IND = new String("13"),
 			GET_REMITTANCE_DETAILS_METHOD_IND = new String("12"), STATUS_INQ_METHOD_IND = new String("3");
 
@@ -82,10 +81,18 @@ public class ServiceProviderManger implements IServiceProvider
 				com.amx.service_provider.dbmodel.webservice.ExOwsLoginCredentials owsLoginCredentialsObject = exOwsLoginCredentialsRepository
 						.findByApplicationCountryAndBankCode(txn_data.getApplication_country_3_digit_ISO(),
 								txn_data.getRoutting_bank_code());
+				
+				// Setting the Trust store details
+				owsLoginCredentialsObject.setTruststore_path(msServiceProviderConfig.getTrustStoreLocation());
+				owsLoginCredentialsObject.setTrusttore_pwd(msServiceProviderConfig.getTrustStorePassword()); 
 
 				// Selecting which service to call based on the routing bank code
 				if (txn_data.getRoutting_bank_code().equals("HOME")) // HomeSend
-				{
+				{					
+					// Setting the Key store details
+					owsLoginCredentialsObject.setKeystore_path(msServiceProviderConfig.getHomeSendKeyStoreLocation());
+					owsLoginCredentialsObject.setKeystore_pwd(msServiceProviderConfig.getHomeSendkeyStorePassword()); 
+					
 					HomesendGate homesend_service = new HomesendGate(owsLoginCredentialsObject, owsParamRespcodeRepository);
 
 					// Calling the quotation service
@@ -157,14 +164,26 @@ public class ServiceProviderManger implements IServiceProvider
 
 			if (validate_inputs_result.isEmpty() == true) // No validation issues in sendRemittance inputs
 			{
+				com.amx.service_provider.dbmodel.webservice.ExOwsLoginCredentials owsLoginCredentialsObject = exOwsLoginCredentialsRepository
+						.findByApplicationCountryAndBankCode(txn_data.getApplication_country_3_digit_ISO(),
+								txn_data.getRoutting_bank_code());				
+
+				// Setting the Trust store details
+				owsLoginCredentialsObject.setTruststore_path(msServiceProviderConfig.getTrustStoreLocation());
+				owsLoginCredentialsObject.setTrusttore_pwd(msServiceProviderConfig.getTrustStorePassword()); 
+				
 				// Selecting which service to call based on the routing bank code
 				if (txn_data.getRoutting_bank_code().equals("HOME")) // HomeSend
 				{
 				}
 				else if (txn_data.getRoutting_bank_code().equals("VINTJA"))
 				{
+					// Setting the Key store details
+					owsLoginCredentialsObject.setKeystore_path(msServiceProviderConfig.getVintjaKeyStoreLocation());
+					owsLoginCredentialsObject.setKeystore_pwd(msServiceProviderConfig.getVintjakeyStorePassword()); 
+					
 					response =
-							new VintajaGate(exOwsLoginCredentialsRepository, owsParamRespcodeRepository,
+							new VintajaGate(owsLoginCredentialsObject, owsParamRespcodeRepository,
 									owsTransferLogRep).send_api_call(txn_data,
 											customer_data,
 											bene_data,
@@ -230,11 +249,19 @@ public class ServiceProviderManger implements IServiceProvider
 				ExOwsLoginCredentials owsLoginCredentialsObject =
 						exOwsLoginCredentialsRepository.findByApplicationCountryAndBankCode(
 								txn_data.getApplication_country_3_digit_ISO(),
-								txn_data.getRoutting_bank_code());
+								txn_data.getRoutting_bank_code());				
+
+				// Setting the Trust store details
+				owsLoginCredentialsObject.setTruststore_path(msServiceProviderConfig.getTrustStoreLocation());
+				owsLoginCredentialsObject.setTrusttore_pwd(msServiceProviderConfig.getTrustStorePassword()); 
 
 				// Selecting which service to call based on the routing bank code
 				if (txn_data.getRoutting_bank_code().equals("HOME")) // HomeSend
 				{
+					// Setting the Key store details
+					owsLoginCredentialsObject.setKeystore_path(msServiceProviderConfig.getHomeSendKeyStoreLocation());
+					owsLoginCredentialsObject.setKeystore_pwd(msServiceProviderConfig.getHomeSendkeyStorePassword()); 
+					
 					HomesendGate homesend_service = new HomesendGate(owsLoginCredentialsObject, owsParamRespcodeRepository);
 
 					// Calling the quotation service
@@ -263,6 +290,10 @@ public class ServiceProviderManger implements IServiceProvider
 				}
 				else if (txn_data.getRoutting_bank_code().equals("VINTJA"))
 				{
+					// Setting the Key store details
+					owsLoginCredentialsObject.setKeystore_path(msServiceProviderConfig.getVintjaKeyStoreLocation());
+					owsLoginCredentialsObject.setKeystore_pwd(msServiceProviderConfig.getVintjakeyStorePassword()); 
+					
 					response =
 							new VintajaGate(owsLoginCredentialsObject, owsParamRespcodeRepository,
 									owsTransferLogRep)
@@ -324,11 +355,24 @@ public class ServiceProviderManger implements IServiceProvider
 
 			if (validate_inputs_result.isEmpty() == true) // No validation issues in sendRemittance inputs
 			{
+				ExOwsLoginCredentials owsLoginCredentialsObject =
+						exOwsLoginCredentialsRepository.findByApplicationCountryAndBankCode(
+								txn_data.getApplication_country_3_digit_ISO(),
+								txn_data.getRoutting_bank_code());				
+
+				// Setting the Trust store details
+				owsLoginCredentialsObject.setTruststore_path(msServiceProviderConfig.getTrustStoreLocation());
+				owsLoginCredentialsObject.setTrusttore_pwd(msServiceProviderConfig.getTrustStorePassword()); 
+				
 				// Selecting which service to call based on the routing bank code
 				if (txn_data.getRoutting_bank_code().equals("VINTJA"))
 				{
+					// Setting the Key store details
+					owsLoginCredentialsObject.setKeystore_path(msServiceProviderConfig.getVintjaKeyStoreLocation());
+					owsLoginCredentialsObject.setKeystore_pwd(msServiceProviderConfig.getVintjakeyStorePassword()); 
+					
 					response =
-							new VintajaGate(exOwsLoginCredentialsRepository, owsParamRespcodeRepository,
+							new VintajaGate(owsLoginCredentialsObject, owsParamRespcodeRepository,
 									owsTransferLogRep).send_api_call(txn_data,
 											customer_data,
 											bene_data,
@@ -389,11 +433,24 @@ public class ServiceProviderManger implements IServiceProvider
 
 			if (validate_inputs_result.isEmpty() == true) // No validation issues in sendRemittance inputs
 			{
+				ExOwsLoginCredentials owsLoginCredentialsObject =
+						exOwsLoginCredentialsRepository.findByApplicationCountryAndBankCode(
+								txn_data.getApplication_country_3_digit_ISO(),
+								txn_data.getRoutting_bank_code());				
+
+				// Setting the Trust store details
+				owsLoginCredentialsObject.setTruststore_path(msServiceProviderConfig.getTrustStoreLocation());
+				owsLoginCredentialsObject.setTrusttore_pwd(msServiceProviderConfig.getTrustStorePassword()); 
+				
 				// Selecting which service to call based on the routing bank code
 				if (txn_data.getRoutting_bank_code().equals("VINTJA"))
 				{
+					// Setting the Key store details
+					owsLoginCredentialsObject.setKeystore_path(msServiceProviderConfig.getVintjaKeyStoreLocation());
+					owsLoginCredentialsObject.setKeystore_pwd(msServiceProviderConfig.getVintjakeyStorePassword()); 
+					
 					response =
-							new VintajaGate(exOwsLoginCredentialsRepository, owsParamRespcodeRepository,
+							new VintajaGate(owsLoginCredentialsObject, owsParamRespcodeRepository,
 									owsTransferLogRep)
 											.send_api_call(txn_data, customer_data, bene_data, STATUS_INQ_METHOD_IND);
 				}

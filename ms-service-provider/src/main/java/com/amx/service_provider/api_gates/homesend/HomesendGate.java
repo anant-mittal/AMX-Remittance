@@ -67,7 +67,7 @@ public class HomesendGate
 			REMITTANCE_STATUS_INQ_IND = new String("3");
 
 	private String API_LOGIN = null, API_PASSWORD = null;
-	private final String PROPERTY_FILE_PATH = "com.amx.service_provider.config.Homesend_fileds_code_mapping";
+	private final String PROPERTY_FILE_PATH = "Homesend_fileds_code_mapping";
 	private final String CUSTOMER_ID_PREFIX = "ewallet:";
 
 	Logger logger = Logger.getLogger("WService.class");
@@ -88,7 +88,6 @@ public class HomesendGate
 
 			if (owsLoginCredentialsObject.getTruststore_path() != null)
 			{
-
 				System.setProperty("javax.net.ssl.trustStore", owsLoginCredentialsObject.getTruststore_path());
 				System.setProperty("javax.net.ssl.trustStorePassword", owsLoginCredentialsObject.getTrusttore_pwd()); // changeit
 			}

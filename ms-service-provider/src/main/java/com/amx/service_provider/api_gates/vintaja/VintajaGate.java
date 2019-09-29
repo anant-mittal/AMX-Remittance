@@ -40,12 +40,8 @@ public class VintajaGate
 			System.setProperty("javax.net.ssl.trustStore", owsLoginCredentialsObject.getTruststore_path());
 			System.setProperty("javax.net.ssl.trustStorePassword", owsLoginCredentialsObject.getTrusttore_pwd()); // changeit
 		}
-
-		if (owsLoginCredentialsObject.getKeystore_path() != null)
-		{
-			System.setProperty("javax.net.ssl.keyStore", owsLoginCredentialsObject.getKeystore_path());
-			System.setProperty("javax.net.ssl.keyStorePassword", owsLoginCredentialsObject.getKeystore_pwd());
-		}
+		
+		// No need for key store setup at this level
 	}
 
 	public ServiceProviderResponse send_api_call(TransactionData txn_data, Customer customer_data,
