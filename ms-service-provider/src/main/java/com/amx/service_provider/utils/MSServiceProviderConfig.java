@@ -8,11 +8,17 @@ import org.springframework.context.annotation.PropertySource;
 @PropertySource("classpath:application.properties")
 public class MSServiceProviderConfig {
 	
-	@Value("${key.store.location}")
-	String keyStoreLocation;
+	@Value("${home.key.store.location}")
+	String homeSendKeyStoreLocation;
 
-	@Value("${key.store.password}")
-	String keyStorePassword;
+	@Value("${home.key.store.password}")
+	String homeSendkeyStorePassword;
+	
+	@Value("${vintja.key.store.location}")
+	String vintjaKeyStoreLocation;
+
+	@Value("${vintja.key.store.password}")
+	String vintjakeyStorePassword;
 	
 	@Value("${trust.store.location}")
 	String trustStoreLocation;
@@ -20,20 +26,44 @@ public class MSServiceProviderConfig {
 	@Value("${trust.store.password}")
 	String trustStorePassword;
 
-	public String getKeyStoreLocation() {
-		return keyStoreLocation;
+	public String getHomeSendKeyStoreLocation()
+	{
+		return homeSendKeyStoreLocation;
 	}
 
-	public void setKeyStoreLocation(String keyStoreLocation) {
-		this.keyStoreLocation = keyStoreLocation;
+	public void setHomeSendKeyStoreLocation(String homeSendKeyStoreLocation)
+	{
+		this.homeSendKeyStoreLocation = homeSendKeyStoreLocation;
 	}
 
-	public String getKeyStorePassword() {
-		return keyStorePassword;
+	public String getHomeSendkeyStorePassword()
+	{
+		return homeSendkeyStorePassword;
 	}
 
-	public void setKeyStorePassword(String keyStorePassword) {
-		this.keyStorePassword = keyStorePassword;
+	public void setHomeSendkeyStorePassword(String homeSendkeyStorePassword)
+	{
+		this.homeSendkeyStorePassword = homeSendkeyStorePassword;
+	}
+
+	public String getVintjaKeyStoreLocation()
+	{
+		return vintjaKeyStoreLocation;
+	}
+
+	public void setVintjaKeyStoreLocation(String vintjaKeyStoreLocation)
+	{
+		this.vintjaKeyStoreLocation = vintjaKeyStoreLocation;
+	}
+
+	public String getVintjakeyStorePassword()
+	{
+		return vintjakeyStorePassword;
+	}
+
+	public void setVintjakeyStorePassword(String vintjakeyStorePassword)
+	{
+		this.vintjakeyStorePassword = vintjakeyStorePassword;
 	}
 
 	public String getTrustStoreLocation() {
