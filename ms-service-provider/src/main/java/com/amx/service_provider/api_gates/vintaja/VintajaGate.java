@@ -11,7 +11,7 @@ import com.amx.jax.model.response.serviceprovider.ServiceProviderResponse;
 import com.amx.jax.model.response.serviceprovider.Status_Call_Response;
 import com.amx.jax.model.response.serviceprovider.Validate_Remittance_Inputs_Call_Response;
 import com.amx.service_provider.api_gates.common.Common_API_Utils;
-import com.amx.service_provider.repository.webservice.ExOwsLoginCredentialsRepository;
+import com.amx.service_provider.dbmodel.webservice.ExOwsLoginCredentials;
 import com.amx.service_provider.repository.webservice.OwsParamRespcodeRepository;
 import com.amx.service_provider.repository.webservice.OwsTransferLogRepository;
 
@@ -21,26 +21,31 @@ public class VintajaGate
 			GET_REMITTANCE_DETAILS_METHOD_IND = new String("12"), STATUS_INQ_METHOD_IND = new String("3");
 	Logger logger = Logger.getLogger("VintajaGate.class");
 
-	private ExOwsLoginCredentialsRepository exOwsLoginCredentialsRepository;
+	// Direct DB object
+	private ExOwsLoginCredentials owsLoginCredentialsObject;
+	
+	// Repo
 	private OwsParamRespcodeRepository owsParamRespcodeRepository;
 	private OwsTransferLogRepository owsTransferLogRep;
 
-	public VintajaGate(ExOwsLoginCredentialsRepository exOwsLoginCredentialsRepository,
+	public VintajaGate(ExOwsLoginCredentials owsLoginCredentialsObject,
 			OwsParamRespcodeRepository owsParamRespcodeRepository, OwsTransferLogRepository owsTransferLogRep)
 	{
-		this.exOwsLoginCredentialsRepository = exOwsLoginCredentialsRepository;
+		this.owsLoginCredentialsObject = owsLoginCredentialsObject;
 		this.owsParamRespcodeRepository = owsParamRespcodeRepository;
 		this.owsTransferLogRep = owsTransferLogRep;
+		
+		if (owsLoginCredentialsObject.getTruststore_path() != null)
+		{
+			System.setProperty("javax.net.ssl.trustStore", owsLoginCredentialsObject.getTruststore_path());
+			System.setProperty("javax.net.ssl.trustStorePassword", owsLoginCredentialsObject.getTrusttore_pwd()); // changeit
+		}
 
-		// TODO: Remove after testing
-
-		System.setProperty("javax.net.ssl.trustStore",
-				"D:\\certificateSetup\\truststore.jks");
-		System.setProperty("javax.net.ssl.trustStorePassword", "changeit"); // changeit
-
-		System.setProperty("javax.net.ssl.keyStore",
-				"D:\\certificateSetup\\131011900001.jks");
-		System.setProperty("javax.net.ssl.keyStorePassword", "1234567890");
+		if (owsLoginCredentialsObject.getKeystore_path() != null)
+		{
+			System.setProperty("javax.net.ssl.keyStore", owsLoginCredentialsObject.getKeystore_path());
+			System.setProperty("javax.net.ssl.keyStorePassword", owsLoginCredentialsObject.getKeystore_pwd());
+		}
 	}
 
 	public ServiceProviderResponse send_api_call(TransactionData txn_data, Customer customer_data,
@@ -91,12 +96,6 @@ public class VintajaGate
 
 		try
 		{
-			// Get the credentials object
-			com.amx.service_provider.dbmodel.webservice.ExOwsLoginCredentials owsLoginCredentialsObject =
-					exOwsLoginCredentialsRepository.findByApplicationCountryAndBankCode(
-							txn_data.getApplication_country_3_digit_ISO(),
-							txn_data.getRoutting_bank_code());
-
 			if (ws_call_type.equals(VALIDATE_SEND_TXN_INPUTS_METHOD_IND) || ws_call_type.equals(SEND_TXN_METHOD_IND))
 			{
 				GovermantPaymentServices target_payment_service =

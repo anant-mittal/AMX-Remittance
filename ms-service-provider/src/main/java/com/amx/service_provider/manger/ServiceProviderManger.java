@@ -264,7 +264,7 @@ public class ServiceProviderManger implements IServiceProvider
 				else if (txn_data.getRoutting_bank_code().equals("VINTJA"))
 				{
 					response =
-							new VintajaGate(exOwsLoginCredentialsRepository, owsParamRespcodeRepository,
+							new VintajaGate(owsLoginCredentialsObject, owsParamRespcodeRepository,
 									owsTransferLogRep)
 											.send_api_call(txn_data, customer_data, bene_data, SEND_TXN_METHOD_IND);
 				}
