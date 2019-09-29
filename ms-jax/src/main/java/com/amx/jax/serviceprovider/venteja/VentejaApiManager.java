@@ -44,6 +44,7 @@ public class VentejaApiManager extends ServiceProviderApiManager {
 			Map<String, Object> remitApplParametersMap) {
 		ServiceProviderCallRequestDto serviceProviderCallRequestDto = super.createValidateInputRequest(remittanceAdditionalBeneFieldModel,
 				remitApplParametersMap);
+		//serviceProviderCallRequestDto.getBeneficiaryDto().setPartner_beneficiary_type(memberType);
 		VentejaServiceProviderFlexField[] allFlexFields = VentejaServiceProviderFlexField.values();
 		for (VentejaServiceProviderFlexField flexField : allFlexFields) {
 			Map<String, FlexFieldDto> requestFlexFields = remittanceAdditionalBeneFieldModel.getFlexFieldDtoMap();

@@ -58,11 +58,13 @@ public class ServiceProviderApiManager {
 		String routingBankCode = bankService.getBankById(routingBankId).getBankCode();
 		TransactionData transactionDto = serviceProviderCallRequestDto.getTransactionDto();
 		String appCountryIsoCode = countryService.getCountryMaster(applicationCountryId).getCountryAlpha3Code();
+		String appCountryIsoCode2 = countryService.getCountryMaster(applicationCountryId).getCountryAlpha2Code();
 		String beneCountryIsoCode = countryService.getCountryMaster(beneCountryId).getCountryIsoCode();
 		String fcCurrencyQuote = currencyMasterService.getCurrencyMasterById(foreignCurrencyId).getQuoteName();
 		transactionDto.setRemittance_mode(remittanceModeId.toString());
 		transactionDto.setDelivery_mode(deliveryModeId.toString());
 		transactionDto.setApplication_country_3_digit_ISO(appCountryIsoCode);
+		transactionDto.setApplication_country_2_digit_ISO(appCountryIsoCode2);
 		transactionDto.setDestination_country_3_digit_ISO(beneCountryIsoCode);
 		transactionDto.setRoutting_bank_code(routingBankCode);
 		transactionDto.setDestination_currency(fcCurrencyQuote);

@@ -22,13 +22,6 @@ public class ServiceProviderCustomerDataManager {
 	public void setCustomerDtoDbValues(RemittanceAdditionalBeneFieldModel request, Map<String, Object> remitApplParametersMap,
 			ServiceProviderCallRequestDto serviceProviderCallRequestDto) {
 
-		Customer customer = userService.getCustById(metaData.getCustomerId());
-		com.amx.jax.model.request.serviceprovider.Customer customerDto = serviceProviderCallRequestDto.getCustomerDto();
-		customerDto.setLast_name(customer.getLastName());
-		customerDto.setFirst_name(customer.getFirstName());
-		customerDto.setMiddle_name(customer.getMiddleName());
-		customerDto.setDate_of_birth(customer.getDateOfBirth());
-		customerDto.setEmail(customer.getEmail());
 
 	}
 

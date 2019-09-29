@@ -43,7 +43,7 @@ public enum VentejaServiceProviderFlexField {
 		}
 	},
 	INDIC11 {
-		// loan on
+		// mp2
 		@Override
 		public void setValue(ServiceProviderCallRequestDto dto, Map<String, FlexFieldDto> requestFlexFields) {
 			INDIC7.setValue(dto, requestFlexFields);
