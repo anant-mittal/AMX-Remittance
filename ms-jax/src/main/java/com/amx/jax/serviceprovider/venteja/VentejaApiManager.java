@@ -15,7 +15,7 @@ import com.amx.jax.model.response.remittance.FlexFieldDto;
 import com.amx.jax.model.response.serviceprovider.Validate_Remittance_Inputs_Call_Response;
 import com.amx.jax.serviceprovider.service.ServiceProviderApiManager;
 
-@Component("VENTAJ")
+@Component("VINTJA")
 public class VentejaApiManager extends ServiceProviderApiManager {
 
 	private static final Logger log = LoggerFactory.getLogger(VentejaApiManager.class);

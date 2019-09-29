@@ -164,7 +164,7 @@ public class ServiceProviderManger implements IServiceProvider
 				if (txn_data.getRoutting_bank_code().equals("HOME")) // HomeSend
 				{
 				}
-				else if (txn_data.getRoutting_bank_code().equals("VENTAJ"))
+				else if (txn_data.getRoutting_bank_code().equals("VINTJA"))
 				{
 					response =
 							new VintajaGate(exOwsLoginCredentialsRepository, owsParamRespcodeRepository,

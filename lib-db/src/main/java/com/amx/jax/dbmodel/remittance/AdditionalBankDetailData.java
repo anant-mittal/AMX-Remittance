@@ -25,25 +25,22 @@ public class AdditionalBankDetailData implements Serializable {
 	@Column(name = "JAX_ADDL_BENE_DETAIL_DATA_ID", unique = true, nullable = false, precision = 22, scale = 0)
 	BigDecimal id;
 
-	@Column(name = "BENEFICARY_RELATIONSHIP_SEQ_ID")
-	BigDecimal beneRelSeqId;
+	@Column(name = "BENEFICARY_ACCOUNT_SEQ_ID")
+	BigDecimal beneAccSeqId;
 
 	@Column(name = "KEY")
 	String key;
 
 	@Column(name = "VALUE")
 	String value;
-	
-	
 
 	public AdditionalBankDetailData() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
-	public AdditionalBankDetailData(BigDecimal beneRelSeqId, String key, String value) {
+	public AdditionalBankDetailData(BigDecimal beneAccSeqId, String key, String value) {
 		super();
-		this.beneRelSeqId = beneRelSeqId;
+		this.beneAccSeqId = beneAccSeqId;
 		this.key = key;
 		this.value = value;
 	}
@@ -54,14 +51,6 @@ public class AdditionalBankDetailData implements Serializable {
 
 	public void setId(BigDecimal id) {
 		this.id = id;
-	}
-
-	public BigDecimal getBeneRelSeqId() {
-		return beneRelSeqId;
-	}
-
-	public void setBeneRelSeqId(BigDecimal beneRelSeqId) {
-		this.beneRelSeqId = beneRelSeqId;
 	}
 
 	public String getKey() {
@@ -78,6 +67,14 @@ public class AdditionalBankDetailData implements Serializable {
 
 	public void setValue(String value) {
 		this.value = value;
+	}
+
+	public BigDecimal getBeneAccSeqId() {
+		return beneAccSeqId;
+	}
+
+	public void setBeneAccSeqId(BigDecimal beneAccSeqId) {
+		this.beneAccSeqId = beneAccSeqId;
 	}
 
 }

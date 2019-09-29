@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.amx.amxlib.constant.ApplicationProcedureParam;
 import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.RemittanceApplicationDao;
@@ -34,10 +35,11 @@ public class AdditionalBankDetailManager {
 	public void setDefaultValues(List<JaxConditionalFieldDto> requiredFlexFields, RemittanceAdditionalBeneFieldModel request,
 			Map<String, Object> remitApplParametersMap) {
 
-		List<AdditionalBankDetailData> additionalBeneData = additionalBankDetailDataRepository.findByBeneRelSeqId(request.getBeneId());
+		BigDecimal beneAccSeqId = ApplicationProcedureParam.P_BENEFICIARY_ACCOUNT_NO.getValue(remitApplParametersMap);
+		List<AdditionalBankDetailData> additionalBeneData = additionalBankDetailDataRepository.findByBeneAccSeqId(beneAccSeqId);
 		Map<Object, AdditionalBankDetailData> valueMap = additionalBeneData.stream().collect(Collectors.toMap(x -> x.getKey(), x -> x));
-		
-		if(valueMap != null && valueMap.size() != 0) {
+
+		if (valueMap != null && valueMap.size() != 0) {
 			requiredFlexFields.forEach(i -> {
 				AdditionalBankDetailData data = valueMap.get(i.getField().getName());
 				i.getField().setDefaultValue(data.getValue());
@@ -59,6 +61,7 @@ public class AdditionalBankDetailManager {
 		BigDecimal deliveryModeId = (BigDecimal) remitApplParametersMap.get("P_DELIVERY_MODE_ID");
 		BigDecimal foreignCurrencyId = (BigDecimal) remitApplParametersMap.get("P_FOREIGN_CURRENCY_ID");
 		BigDecimal routingBankId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_BANK_ID");
+		BigDecimal beneAccSeqId = ApplicationProcedureParam.P_BENEFICIARY_ACCOUNT_NO.getValue(remitApplParametersMap);
 
 		List<String> flexiFieldIn = allFlexFields.stream().map(i -> i.getFieldName()).collect(Collectors.toList());
 		List<AdditionalDataDisplayView> additionalDataRequired = additionalDataDisplayDao.getAdditionalDataFromServiceApplicabilityForBank(
@@ -67,7 +70,7 @@ public class AdditionalBankDetailManager {
 		Map<String, AdditionalDataDisplayView> additionalDataRequiredMap = additionalDataRequired.stream()
 				.collect(Collectors.toMap(i -> i.getFlexField(), i -> i));
 
-		List<AdditionalBankDetailData> additionalBeneData = additionalBankDetailDataRepository.findByBeneRelSeqId(requestApplModel.getBeneId());
+		List<AdditionalBankDetailData> additionalBeneData = additionalBankDetailDataRepository.findByBeneAccSeqId(beneAccSeqId);
 		Map<Object, AdditionalBankDetailData> valueMap = additionalBeneData.stream().collect(Collectors.toMap(x -> x.getKey(), x -> x));
 
 		additionalbankFields.forEach((k, v) -> {
@@ -75,7 +78,7 @@ public class AdditionalBankDetailManager {
 			if (ConstantDocument.Yes.equalsIgnoreCase(additionalDataDisplayView.getIsBeneTag())) {
 				AdditionalBankDetailData data = valueMap.get(k);
 				if (data == null) {
-					data = new AdditionalBankDetailData(requestApplModel.getBeneId(), k, v.getAmieceDescription());
+					data = new AdditionalBankDetailData(beneAccSeqId, k, v.getAmieceDescription());
 				} else {
 					data.setValue(v.getAmieceDescription());
 				}
