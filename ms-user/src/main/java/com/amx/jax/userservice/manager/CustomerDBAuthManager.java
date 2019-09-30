@@ -2,6 +2,9 @@ package com.amx.jax.userservice.manager;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 
@@ -77,10 +80,20 @@ public class CustomerDBAuthManager {
 		if(onlineCust != null) {
 			if (onlineCust.getLockCnt() != null) {
 				int lockCnt = onlineCust.getLockCnt().intValue();
+				Date midnightTomorrow = getMidnightToday();
 				final Integer MAX_OTP_ATTEMPTS = otpSettings.getMaxValidateOtpAttempts();
-				if (lockCnt >= MAX_OTP_ATTEMPTS) {
-					throw new GlobalException(JaxError.USER_LOGIN_ATTEMPT_EXCEEDED,
-							"Customer is locked. No of attempts:- " + lockCnt);
+				
+				if (lockCnt > 0 && onlineCust.getLockDt() != null) {
+					if (midnightTomorrow.compareTo(onlineCust.getLockDt()) > 0) {
+						onlineCust.setLockCnt(new BigDecimal(0));
+						onlineCust.setLockDt(null);
+						custDao.saveOnlineCustomer(onlineCust);
+						lockCnt = 0;
+					}
+					if (lockCnt >= MAX_OTP_ATTEMPTS) {
+						throw new GlobalException(JaxError.USER_LOGIN_ATTEMPT_EXCEEDED,
+								"Customer is locked. No of attempts:- " + lockCnt);
+					}
 				}
 			}
 		}
@@ -247,6 +260,16 @@ public class CustomerDBAuthManager {
 		// unlock method here
 		userService.unlockCustomer(onlineCust);
 		custDao.saveOnlineCustomer(onlineCust);
+	}
+	
+	public Date getMidnightToday() {
+		Calendar date = new GregorianCalendar();
+		date.set(Calendar.HOUR_OF_DAY, 0);
+		date.set(Calendar.MINUTE, 0);
+		date.set(Calendar.SECOND, 0);
+		date.set(Calendar.MILLISECOND, 0);
+
+		return date.getTime();
 	}
 
 }
