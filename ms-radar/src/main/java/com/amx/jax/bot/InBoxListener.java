@@ -123,7 +123,7 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 
 			StringMatcher matcher = new StringMatcher(event.getMessage().toUpperCase());
 
-			String errorCode = "Technical Error";
+			String errorCode = "TECHNICAL_ERROR";
 			
 			if (matcher.isMatch(PING)) {
 				replyMessage = "PING";
