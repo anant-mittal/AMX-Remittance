@@ -130,6 +130,7 @@
 		<module>ms-user</module>
 		<module>ms-exchangerate</module>
 		<module>ms-jax-modules/ms-jax-customer</module>
+		<module>ms-jax-modules/ms-jax-branch</module>
 
 		<module>ms-jax</module>
 		<module>ms-rbaac</module>

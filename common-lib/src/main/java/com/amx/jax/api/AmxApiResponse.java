@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.amx.jax.api.AmxResponseSchemes.ApiDataMetaResponse;
 import com.amx.jax.api.AmxResponseSchemes.ApiResultsMetaResponse;
+import com.amx.jax.exception.IExceptionEnum;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -137,7 +138,7 @@ public class AmxApiResponse<T, M> extends AResponse<M>
 	/**
 	 * Builds the list.
 	 *
-	 * @param            <TS> the generic type
+	 * @param <TS>       the generic type
 	 * @param resultList the result list
 	 * @return the amx api response
 	 */
@@ -148,8 +149,8 @@ public class AmxApiResponse<T, M> extends AResponse<M>
 	/**
 	 * Builds the list.
 	 *
-	 * @param            <TS> the generic type
-	 * @param            <MS> the generic type
+	 * @param <TS>       the generic type
+	 * @param <MS>       the generic type
 	 * @param resultList the result list
 	 * @param meta       the meta
 	 * @return the amx api response
@@ -166,6 +167,16 @@ public class AmxApiResponse<T, M> extends AResponse<M>
 	@JsonIgnore
 	public AmxApiResponse<T, M> redirectUrl(String redirectUrl) {
 		this.redirectUrl = redirectUrl;
+		return this;
+	}
+
+	public AmxApiResponse<T, M> statusKey(String status) {
+		this.setStatus(status);
+		return this;
+	}
+
+	public AmxApiResponse<T, M> statusEnum(IExceptionEnum statusEnum) {
+		this.setStatusEnum(statusEnum);
 		return this;
 	}
 

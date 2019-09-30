@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.branch.beans.BranchSession;
+import com.amx.jax.cache.box.CustomerOnCall;
 import com.amx.jax.client.OffsiteCustRegClient;
 import com.amx.jax.client.branch.BranchUserClient;
 import com.amx.jax.client.customer.CustomerManagementClient;
@@ -32,6 +33,7 @@ import com.amx.jax.sso.SSOUser;
 import com.amx.jax.terminal.TerminalService;
 import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
 import com.amx.libjax.model.jaxfield.JaxFieldDto;
+import com.amx.utils.ArgUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -65,7 +67,6 @@ public class CustomerBranchController {
 	private BranchUserClient branchUserClient;
 
 	@RequestMapping(value = "/api/customer/details", method = { RequestMethod.POST })
-
 	public AmxApiResponse<OffsiteCustomerDataDTO, Object> setCustomerDetails(
 			@RequestParam(value = "identity", required = false) String identity,
 			@RequestParam(value = "identityType", required = false) BigDecimal identityType,
@@ -80,6 +81,15 @@ public class CustomerBranchController {
 	@RequestMapping(value = "/api/customer/details", method = { RequestMethod.GET })
 	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getCustomerDetails() {
 		return AmxApiResponse.build(branchSession.getCustomerData());
+	}
+
+	@Autowired
+	CustomerOnCall customerOnCall;
+
+	@RequestMapping(value = "/api/customer/connected", method = { RequestMethod.GET })
+	public AmxApiResponse<BigDecimal, Object> getCustomerConnected() {
+		String employeeId = ArgUtil.parseAsString(ssoUser.getUserDetails().getEmployeeId());
+		return AmxApiResponse.build(customerOnCall.get(employeeId));
 	}
 
 	@RequestMapping(value = "/api/customer/details", method = { RequestMethod.DELETE })

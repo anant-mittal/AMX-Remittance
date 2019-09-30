@@ -2,11 +2,11 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>ms-jax-customer</artifactId>
+	<artifactId>ms-jax-branch</artifactId>
 	<packaging>jar</packaging>
-	<name>ms-jax-customer</name>
+	<name>ms-jax-branch</name>
 	<url>http://maven.apache.org</url>
-	<description>jax customer backend compoent</description>
+	<description>jax branch backend compoent</description>
 
 	<parent>
 		<groupId>com.amx.jax</groupId>

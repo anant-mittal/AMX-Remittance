@@ -39,6 +39,8 @@ public interface CustomerRepository extends CrudRepository<Customer, BigDecimal>
 			BigDecimal identityTypeId);
 
 	public Customer getCustomerByCustomerIdAndIsActive(BigDecimal customerId, String isActive);
+	
+	public Customer getCustomerByCustomerId(BigDecimal customerId);
 
 	/// GET CUSTOMER BY CONTACT -- START
 	@Query("select c from Customer c where mobile=?1 ")
