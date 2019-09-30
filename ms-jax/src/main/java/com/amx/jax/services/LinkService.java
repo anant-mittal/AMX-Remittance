@@ -92,7 +92,7 @@ public class LinkService extends AbstractService{
 		linkDetails.setOpenCounter(openCounter+1);	
 		linkDao.updateLink(linkDetails);
 		Customer customer = userService.getCustById(linkDetails.getCustomerId());
-		
+		System.out.println("Download push notification:"+linkDetails.getCustomerId()+"/"+channel);
 		if(linkDetails.getCustomerId() != null && channel != JaxChannel.ONLINE) {			
 			PushMessage pushMessage = new PushMessage();
 			pushMessage.setSubject("Refer To Win!");
