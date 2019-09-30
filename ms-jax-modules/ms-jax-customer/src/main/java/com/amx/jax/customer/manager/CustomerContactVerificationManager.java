@@ -76,8 +76,7 @@ public class CustomerContactVerificationManager {
 		cal.add(Calendar.DATE, -1 * validDays);
 		java.util.Date oneDay = new java.util.Date(cal.getTimeInMillis());
 		List<CustomerContactVerification> links = customerContactVerificationRepository.getByContact(customerId,
-				contactType,
-				contact, oneDay);
+				contactType, contact, oneDay);
 		return links;
 	}
 
@@ -153,9 +152,7 @@ public class CustomerContactVerificationManager {
 			}
 
 			List<CustomerContactVerification> oldlinks = getValidCustomerContactVerificationsByCustomerId(
-					c.getCustomerId(),
-					contactType,
-					link.getContactValue(), CustomerContactVerification.EXPIRY_DAY);
+					c.getCustomerId(), contactType, link.getContactValue(), CustomerContactVerification.EXPIRY_DAY);
 
 			if (!ArgUtil.isEmpty(oldlinks) && oldlinks.size() > 3) {
 				throw new GlobalException(JaxError.SEND_OTP_LIMIT_EXCEEDED,
@@ -292,8 +289,7 @@ public class CustomerContactVerificationManager {
 			}
 			c.setWhatsAppVerified(Status.Y);
 		} else {
-			throw new GlobalException(JaxError.ENTITY_INVALID,
-					"Verification linkType is Invalid : " + type);
+			throw new GlobalException(JaxError.ENTITY_INVALID, "Verification linkType is Invalid : " + type);
 		}
 
 		if (!ArgUtil.isEmpty(otherCustomers)) {
@@ -331,9 +327,7 @@ public class CustomerContactVerificationManager {
 			markCustomerContactVerified(c, link.getContactType(), link.getContactValue());
 
 			List<CustomerContactVerification> oldlinks = getValidCustomerContactVerificationsByCustomerId(
-					c.getCustomerId(),
-					link.getContactType(),
-					link.getContactValue());
+					c.getCustomerId(), link.getContactType(), link.getContactValue());
 			if (!ArgUtil.isEmpty(oldlinks)) {
 				for (CustomerContactVerification customerContactVerification : oldlinks) {
 					customerContactVerification.setIsActive(Status.D);
@@ -359,8 +353,7 @@ public class CustomerContactVerificationManager {
 		CustomerContactVerification link = getCustomerContactVerification(linkId);
 
 		if (ArgUtil.isEmpty(code) || !code.equals(link.getVerificationCode())) {
-			throw new GlobalException(JaxError.INVALID_OTP,
-					"Verification is Invalid, cannot complete.");
+			throw new GlobalException(JaxError.INVALID_OTP, "Verification is Invalid, cannot complete.");
 		}
 		Customer c = customerRepository.findOne(link.getCustomerId());
 		verify(c, link, identity);
@@ -381,23 +374,24 @@ public class CustomerContactVerificationManager {
 		Customer c = CollectionUtil.getOne(customerRepository.findActiveCustomers(identity));
 
 		if (ArgUtil.isEmpty(c)) {
-			throw new GlobalException(JaxError.INVALID_CIVIL_ID,
-					"Invalid civil id, does not exists in our system");
+			throw new GlobalException(JaxError.INVALID_CIVIL_ID, "Invalid civil id, does not exists in our system");
 		}
 
 		if (c.hasVerified(type)) {
-			throw new GlobalException(JaxError.ALREADY_VERIFIED_CONTACT,
-					type + " contact is already Verified");
+			throw new GlobalException(JaxError.ALREADY_VERIFIED_CONTACT, type + " contact is already Verified");
 		}
 
 		CustomerContactVerification link = getValidCustomerContactVerificationByCustomerId(c.getCustomerId(), type,
 				contact);
 
+		if (ArgUtil.isEmpty(link) && ContactType.WHATSAPP.equals(type)) {
+			link = create(c, type);
+		}
+
 		if (ArgUtil.isEmpty(link)) {
 			throw new GlobalException(JaxError.ENTITY_INVALID,
 					String.format("Verification link is Invalid :C:%s T:%s", c.getCustomerId(), type));
 		}
-
 		verify(c, link, identity);
 		return link;
 	}

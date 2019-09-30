@@ -49,7 +49,8 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 	private static final Logger LOGGER = LoggerFactory.getLogger(InBoxListener.class);
 	private static final PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
 
-	public static final Pattern LINK_CIVIL_ID = Pattern.compile("^LINK([ ]*)(\\d{3,15})$");
+	public static final Pattern LINK_CIVIL_ID = Pattern.compile("^LINK([ ]*)(\\d{3,20})([ ]*)$");
+	public static final Pattern JUST_CIVIL_ID = Pattern.compile("^([ ]*)(\\d{3,20})([ ]*)$");
 	public static final Pattern PING = Pattern.compile("^PING$");
 
 	@Autowired
@@ -126,7 +127,7 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 			
 			if (matcher.isMatch(PING)) {
 				replyMessage = "PING";
-			} else if (matcher.isMatch(LINK_CIVIL_ID)) {
+			} else if (matcher.isMatch(LINK_CIVIL_ID) || matcher.isMatch(JUST_CIVIL_ID)) {
 				try {
 					AppContextUtil
 							.setActorId(new AuditActor(ActorType.W, swissISDProtoString + swissNumberProtoString));
@@ -146,7 +147,6 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 								swissISDProtoString + swissNumberProtoString);
 						// customerRepository.save(customer);
 						replyMessage = FOUND_MATCHED;
-
 					}
 				} catch (AmxApiException e) {
 					errorCode = e.getErrorKey();
