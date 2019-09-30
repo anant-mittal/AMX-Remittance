@@ -9,12 +9,14 @@ import com.amx.jax.client.OffsiteCustRegClient;
 import com.amx.jax.client.branch.BranchUserClient;
 import com.amx.jax.client.customer.CustomerManagementClient;
 import com.amx.jax.model.customer.CreateCustomerInfoRequest;
+import com.amx.jax.model.customer.DuplicateCustomerDto;
 import com.amx.jax.model.customer.document.CustomerDocumentCategoryDto;
 import com.amx.jax.model.customer.document.CustomerDocumentTypeDto;
 import com.amx.jax.model.customer.document.UploadCustomerDocumentRequest;
 import com.amx.jax.model.customer.document.UploadCustomerDocumentResponse;
 import com.amx.jax.model.customer.document.UploadCustomerKycRequest;
 import com.amx.jax.model.customer.document.UploadCustomerKycResponse;
+import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.model.request.EmploymentDetailsRequest;
 import com.amx.jax.model.request.VerifyCustomerContactRequest;
 import com.amx.jax.model.request.customer.UpdateCustomerInfoRequest;
@@ -64,12 +66,14 @@ public class CustomerBranchController {
 
 	@RequestMapping(value = "/api/customer/details", method = { RequestMethod.POST })
 
-	public AmxApiResponse<OffsiteCustomerDataDTO, Object> setCustomerDetails(@RequestParam(value = "identity", required = false)  String identity,
-			@RequestParam(value = "identityType", required = false)  BigDecimal identityType,@RequestParam(value = "customerId", required = false) BigDecimal customerId,
+	public AmxApiResponse<OffsiteCustomerDataDTO, Object> setCustomerDetails(
+			@RequestParam(value = "identity", required = false) String identity,
+			@RequestParam(value = "identityType", required = false) BigDecimal identityType,
+			@RequestParam(value = "customerId", required = false) BigDecimal customerId,
 			@RequestParam boolean session) {
 		branchSession.getCustomerContext(session).refresh();
 		AmxApiResponse<OffsiteCustomerDataDTO, Object> customer = offsiteCustRegClient
-				.getOffsiteCustomerDetails(identity, identityType,customerId);
+				.getOffsiteCustomerDetails(identity, identityType, customerId);
 		return customer;
 	}
 
@@ -147,7 +151,8 @@ public class CustomerBranchController {
 	}
 
 	@RequestMapping(value = "/api/customer/doc/fields", method = { RequestMethod.GET })
-	public AmxApiResponse<JaxConditionalFieldDto, Object> getDocFields(@RequestParam(required = true) String documentCategory,
+	public AmxApiResponse<JaxConditionalFieldDto, Object> getDocFields(
+			@RequestParam(required = true) String documentCategory,
 			@RequestParam(required = true) String documentType) {
 		return customerManagementClient.getDocumentFields(documentCategory, documentType);
 	}
@@ -173,9 +178,14 @@ public class CustomerBranchController {
 	}
 
 	@RequestMapping(value = "/api/customer/contact/verify", method = { RequestMethod.POST })
-	public AmxApiResponse<BoolRespModel, Object> uploadCustomerKyc(
-			@RequestBody VerifyCustomerContactRequest request) {
+	public AmxApiResponse<BoolRespModel, Object> uploadCustomerKyc(@RequestBody VerifyCustomerContactRequest request) {
 		return customerManagementClient.verifyContact(request);
+	}
+
+	@RequestMapping(value = "/api/customer/duplicate/check", method = { RequestMethod.POST })
+	public AmxApiResponse<DuplicateCustomerDto, Object> checkForDuplicateCustomer(
+			@RequestBody CustomerPersonalDetail customerPersonalDetail) {
+		return customerManagementClient.checkForDuplicateCustomer(customerPersonalDetail);
 	}
 
 }
