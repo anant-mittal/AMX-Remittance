@@ -32,11 +32,13 @@ import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.userservice.repository.CustomerVerificationRepository;
 import com.amx.jax.userservice.repository.OnlineCustomerRepository;
 import com.amx.jax.userservice.service.CustomerVerificationService;
+import com.amx.jax.util.AmxDBConstants;
 import com.amx.jax.util.AmxDBConstants.Status;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.CollectionUtil;
 import com.amx.utils.EntityDtoUtil;
 import com.amx.utils.Random;
+import com.amx.utils.TimeUtils;
 
 /**
  * 
@@ -126,8 +128,8 @@ public class CustomerContactVerificationManager {
 		if (!ArgUtil.isEmpty(actor)) {
 			link.setCreatedById(actor.getActorIdAsBigDecimal());
 			link.setCreatedByType(actor.getActorType());
-			// link.setSendById(actor.getActorIdAsBigDecimal());
-			// link.setSendByType(actor.getActorType());
+			//link.setSendById(actor.getActorIdAsBigDecimal());
+			//link.setSendByType(actor.getActorType());
 		}
 
 		try {
@@ -392,6 +394,7 @@ public class CustomerContactVerificationManager {
 			throw new GlobalException(JaxError.ENTITY_INVALID,
 					String.format("Verification link is Invalid :C:%s T:%s", c.getCustomerId(), type));
 		}
+
 		verify(c, link, identity);
 		return link;
 	}
