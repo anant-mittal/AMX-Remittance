@@ -122,6 +122,8 @@ public class RemittanceTransactionRequestValidator {
 			FlexFieldDto flexFieldValueInRequest = requestFlexFields.get(flexField.getFlexField());
 
 			String fieldBehaviour = flexField.getFieldBehaviour();
+			LOGGER.info("Flex field value is "+flexField.getFlexField());
+			LOGGER.info("Routing country value is "+routingCountryId);
 			List<AdditionalBankRuleMap> addtionalBankRules = additionalBankRuleMapDao
 					.getDynamicLevelMatch(routingCountryId, flexField.getFlexField());
 			// bank rule for this flex field
