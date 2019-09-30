@@ -238,7 +238,7 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 		System.out.println("RemittanceCount : "+remittanceList.size());
 		
 		
-		if(remittanceList.size() == 0) {
+		if((remittanceList.size() == 0) || (remittanceList.size() == 1)) {
 			ReferralDetails referralDetails = refDao.getReferralByCustomerId(custId);
 			System.out.println("Referrer Customer Id"+referralDetails.getCustomerId());
 			System.out.println("Referree Customer Id"+referralDetails.getRefferedByCustomerId());
