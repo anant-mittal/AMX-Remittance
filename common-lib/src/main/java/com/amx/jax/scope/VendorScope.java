@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.config.Scope;
 
+import com.amx.jax.AppContextUtil;
+
 public class VendorScope implements Scope {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(VendorScope.class);
@@ -18,10 +20,11 @@ public class VendorScope implements Scope {
 
 	@Override
 	public Object get(String name, ObjectFactory<?> objectFactory) {
-		String nameKey = getNameKey(name);
+		String vendor = AppContextUtil.getVendor(name);
+		String nameKey = name + "=" + vendor;
 		if (!scopedObjects.containsKey(nameKey)) {
-			scopedObjects.put(nameKey, this.assignValues(objectFactory.getObject()));
-			LOGGER.info("Tenant bean registered {}", name);
+			scopedObjects.put(nameKey, this.assignValues(vendor, objectFactory.getObject()));
+			LOGGER.info("Vendor bean registered {}", name);
 		}
 		return scopedObjects.get(nameKey);
 	}
@@ -45,20 +48,16 @@ public class VendorScope implements Scope {
 	}
 
 	private String getNameKey(String name) {
-		return getConversationId() + name;
+		return name + "=" + AppContextUtil.getVendor(name);
 	}
 
 	@Override
 	public String getConversationId() {
-		if (TenantContextHolder.currentSite() == null) {
-			return null;
-		} else {
-			return TenantContextHolder.currentSite().toString().toLowerCase();
-		}
+		return null;
 	}
 
-	private Object assignValues(Object object) {
-		return TenantProperties.assignValues(getConversationId(), object);
+	private Object assignValues(String vendor, Object object) {
+		return VendorProperties.assignValues(vendor, object);
 	}
 
 }

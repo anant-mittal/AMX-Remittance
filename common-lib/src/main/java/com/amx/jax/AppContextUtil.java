@@ -21,6 +21,7 @@ import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.ContextUtil;
 import com.amx.utils.JsonUtil;
+import com.amx.utils.StringUtils;
 import com.amx.utils.UniqueID;
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -158,6 +159,14 @@ public class AppContextUtil {
 
 	public static void setTenant(Tenant tenant) {
 		TenantContextHolder.setCurrent(tenant);
+	}
+
+	public static void setVendor(Class<?> class1, String vendor) {
+		ContextUtil.map().put("scopedTarget." + StringUtils.decapitalize(class1.getSimpleName()), vendor);
+	}
+
+	public static String getVendor(String scopedTargetClassName) {
+		return (String) ContextUtil.map().get(scopedTargetClassName);
 	}
 
 	public static void setTranceId(String traceId) {

@@ -18,7 +18,6 @@ public class TenantScope implements Scope {
 
 	@Override
 	public Object get(String name, ObjectFactory<?> objectFactory) {
-		LOGGER.info("name for {}",name);
 		String nameKey = getNameKey(name);
 		if (!scopedObjects.containsKey(nameKey)) {
 			scopedObjects.put(nameKey, this.assignValues(objectFactory.getObject()));

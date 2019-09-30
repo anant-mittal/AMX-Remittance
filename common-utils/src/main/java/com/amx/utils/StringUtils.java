@@ -161,7 +161,7 @@ public final class StringUtils {
 		return Stream.of(matchers).anyMatch(val::equalsIgnoreCase);
 
 	}
-	
+
 	public static List<String> capitalize(List<String> input) {
 		List<String> output = new ArrayList<>();
 		input.forEach(i -> {
@@ -178,6 +178,15 @@ public final class StringUtils {
 			return input.substring(0, 1).toUpperCase();
 		}
 		return input.substring(0, 1).toUpperCase() + input.substring(1).toLowerCase();
+	}
+
+	public static String decapitalize(String string) {
+		if (string == null || string.length() == 0) {
+			return string;
+		}
+		char c[] = string.toCharArray();
+		c[0] = Character.toLowerCase(c[0]);
+		return new String(c);
 	}
 
 }

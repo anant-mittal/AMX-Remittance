@@ -23,6 +23,7 @@ import org.springframework.util.StringUtils;
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppConstants;
 import com.amx.jax.AppContextUtil;
+import com.amx.jax.VendorAuthConfig;
 import com.amx.jax.dict.Language;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.dict.UserClient.UserDeviceClient;
@@ -36,6 +37,7 @@ import com.amx.jax.rest.AppRequestContextInFilter;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.session.SessionContextService;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.Constants;
 import com.amx.utils.CryptoUtil;
 import com.amx.utils.JsonUtil;
 import com.amx.utils.Urly;
@@ -67,9 +69,13 @@ public class AppRequestFilter implements Filter {
 	@Autowired(required = false)
 	SessionContextService sessionContextService;
 
+	@Autowired(required = false)
+	VendorAuthConfig appVendorConfig;
+
 	private boolean doesTokenMatch(HttpServletRequest req, HttpServletResponse resp, String traceId,
 			boolean checkHMAC) {
 		String authToken = commonHttpRequest.get(AppConstants.AUTH_TOKEN_XKEY);
+
 		if (checkHMAC) {
 			if (StringUtils.isEmpty(authToken)
 					|| (CryptoUtil.validateHMAC(appConfig.getAppAuthKey(), traceId, authToken) == false)) {
@@ -88,6 +94,17 @@ public class AppRequestFilter implements Filter {
 	private boolean isRequestValid(
 			ApiRequestDetail apiRequest, HttpServletRequest req, HttpServletResponse resp,
 			String traceId) {
+		String authVendor = commonHttpRequest.get(AppConstants.AUTH_ID_XKEY);
+
+		if (ArgUtil.is(authVendor)) {
+			AppContextUtil.setVendor(VendorAuthConfig.class, authVendor);
+			String authToken = commonHttpRequest.get(AppConstants.AUTH_TOKEN_XKEY);
+			if (ArgUtil.is(authToken)) {
+				return appVendorConfig.isRequestValid(apiRequest, req, traceId, authToken);
+			}
+			return false;
+		}
+
 		if (apiRequest.isUseAuthKey() && appConfig.isAppAuthEnabled()
 				&& !doesTokenMatch(req, resp, traceId, true)) {
 			return false;
