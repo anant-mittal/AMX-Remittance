@@ -48,7 +48,7 @@
                         </datasetParameter>
                         
                         <dataSourceExpression>
-                            <![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{model}.getList("/results/[0]/pepDetails"))]]></dataSourceExpression>
+                            <![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{model}.getList("/results"))]]></dataSourceExpression>
                     </datasetRun>
                     <c:listContents height="822">
                     <!--##################HEADER START####################-->
