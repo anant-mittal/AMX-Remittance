@@ -124,7 +124,7 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 			StringMatcher matcher = new StringMatcher(event.getMessage().toUpperCase());
 
 			String errorCode = "TECHNICAL_ERROR";
-			
+
 			if (matcher.isMatch(PING)) {
 				replyMessage = "PING";
 			} else if (matcher.isMatch(LINK_CIVIL_ID) || matcher.isMatch(JUST_CIVIL_ID)) {
@@ -168,22 +168,21 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 
 			return event.replyWAMessage(replyMessage.replace("{companyName}", radarConfig.getCompanyName())
 					.replace("{companyWebSiteUrl}", radarConfig.getCompanyWebSiteUrl())
-					.replace("{companyIDType}", radarConfig.getCompanyIDType()).replace("{errorCode}", errorCode)
-			);
+					.replace("{companyIDType}", radarConfig.getCompanyIDType()).replace("{errorCode}", errorCode));
 		} else {
 			return event.replyWAMessage(null);
 		}
 	}
 
-	//@SchedulerLock(lockMaxAge = AmxCurConstants.INTERVAL_HRS * 13, context = LockContext.BY_METHOD)
-	//@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_HRS * 12)
+	@SchedulerLock(lockMaxAge = AmxCurConstants.INTERVAL_HRS * 13, context = LockContext.BY_METHOD)
+	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_HRS * 12)
 	public void doTaskModeDay() {
 		if (!TimeUtils.inHourSlot(4, 0)) {
 			Calendar cal = Calendar.getInstance();
 			cal.add(Calendar.DATE, -1);
 			java.util.Date oneDay = new java.util.Date(cal.getTimeInMillis());
 			List<CustomerContactVerification> links = customerContactVerificationRepository
-					.getActiveLink(ContactType.WHATSAPP, oneDay);
+					.getExpiredLinks(ContactType.WHATSAPP, oneDay);
 
 			for (CustomerContactVerification link : links) {
 				Customer customer = customerRepository.getActiveCustomerDetailsByCustomerId(link.getCustomerId());
@@ -196,6 +195,9 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 					whatsAppClient.send(reply);
 //					customerProfileClient.resendLink(customer.getIdentityInt(), link.getId(),
 //							link.getVerificationCode());
+				} else {
+					link.setIsActive(AmxDBConstants.Status.E);
+					customerContactVerificationRepository.save(link);
 				}
 			}
 		}
