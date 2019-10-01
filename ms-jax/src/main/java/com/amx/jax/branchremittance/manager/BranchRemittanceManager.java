@@ -62,12 +62,14 @@ import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.AmlCheckResponseDto;
 import com.amx.jax.model.response.remittance.BeneAdditionalDto;
 import com.amx.jax.model.response.remittance.BranchExchangeRateBreakup;
+import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;
 import com.amx.jax.model.response.remittance.FlexFieldDto;
 import com.amx.jax.model.response.remittance.ParameterDetailsDto;
 import com.amx.jax.model.response.remittance.ParameterDetailsResponseDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
 import com.amx.jax.payg.PaymentResponseDto;
+import com.amx.jax.pricer.dto.TrnxRoutingDetails;
 import com.amx.jax.repository.BankMasterRepository;
 import com.amx.jax.repository.IAccountTypeFromViewDao;
 import com.amx.jax.repository.IAdditionalBankRuleAmiecRepository;
@@ -860,7 +862,8 @@ if (commission == null) {
 }	
 
 /** EX_GET_ADDL_BENE_DETAILS **/
-public BeneAdditionalDto getAdditionalBeneDetailJax(BenificiaryListView beneficaryDetails,BranchRemittanceApplRequestModel requestApplModel){
+//public BeneAdditionalDto getAdditionalBeneDetailJax(BenificiaryListView beneficaryDetails,BranchRemittanceApplRequestModel requestApplModel){
+public BeneAdditionalDto getAdditionalBeneDetailJax(BenificiaryListView beneficaryDetails,DynamicRoutingPricingDto requestApplModel){
 	 BeneAdditionalDto beneAddDto = new BeneAdditionalDto();
 	 
 	 String langInd=null;
@@ -900,16 +903,19 @@ public BeneAdditionalDto getAdditionalBeneDetailJax(BenificiaryListView benefica
 	 String bankName = null;
 	 String bankBranchName = null;
 	
-	 
+	 TrnxRoutingDetails trnxRoutingPath = requestApplModel.getTrnxRoutingPaths();
+	 if(requestApplModel!=null && trnxRoutingPath!=null) {
+		 throw new GlobalException(JaxError.INVALID_ROUTING_BANK, "Routing details not found");
+	 }
 
 	
-	 BigDecimal routingCountryId = requestApplModel.getRoutingCountryId();
-	 BigDecimal routingBankId = requestApplModel.getRoutingBankId();
-	 BigDecimal routingBranchId = requestApplModel.getRoutingBankBranchId();
+	 BigDecimal routingCountryId = trnxRoutingPath.getRoutingCountryId();
+	 BigDecimal routingBankId = trnxRoutingPath.getRoutingBankId();
+	 BigDecimal routingBranchId = trnxRoutingPath.getBankBranchId();
 	 
 	 BigDecimal beneBankId = beneficaryDetails.getBankId();
 	 BigDecimal beneBranchId = beneficaryDetails.getBranchId();
-	 BigDecimal serviceMasterId = requestApplModel.getServiceMasterId();
+	 BigDecimal serviceMasterId = trnxRoutingPath.getServiceMasterId();
 	 
 	 
 	 BankMasterModel routingBankMasterModel = bankService.getBankById(routingBankId);
@@ -918,11 +924,11 @@ public BeneAdditionalDto getAdditionalBeneDetailJax(BenificiaryListView benefica
 	 BigDecimal beneCountry = beneficaryDetails.getBenificaryCountry();
 	 BigDecimal currencyId = beneficaryDetails.getCurrencyId();
 	
-	 BigDecimal remittanceModeId = requestApplModel.getRemittanceModeId();
-	 BigDecimal deliveryModeId = requestApplModel.getDeliveryModeId();
+	 BigDecimal remittanceModeId = trnxRoutingPath.getRemittanceModeId();
+	 BigDecimal deliveryModeId = trnxRoutingPath.getDeliveryModeId();
 	 
 	 boolean spStatus = Boolean.FALSE;
-	 if(requestApplModel.getDynamicRroutingPricingBreakup().getServiceProviderDto() != null) {
+	 if(requestApplModel.getServiceProviderDto() != null) {
 		 spStatus = Boolean.TRUE;
 	 }
 	 
@@ -1177,11 +1183,7 @@ public BeneAdditionalDto getAdditionalBeneDetailJax(BenificiaryListView benefica
 	
 	beneAddDto.setBeneBankName(bankName);
 	beneAddDto.setBeneBranchName(bankBranchName);
-	/*beneAddDto.setBeneFirstName(beneFirstName);
-	beneAddDto.setBeneSecondName(beneSecondName);
-	beneAddDto.setBeneThirdName(beneThirdName);
-	beneAddDto.setBeneFourthName(beneFourthName);
-	beneAddDto.setBeneFifthName(beneFifthName);*/
+	
 	
 	if(beneBankBranchView!=null && !beneBankBranchView.isEmpty()) {
 		if(beneBankBranchView.get(0)!=null && beneBankBranchView.get(0).getStateId()!=null) {

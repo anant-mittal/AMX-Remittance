@@ -42,6 +42,7 @@ import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.jax.api.ResponseCodeDetailDTO;
 import com.amx.jax.branchremittance.manager.BranchRemittanceApplManager;
+import com.amx.jax.branchremittance.manager.BranchRemittanceManager;
 import com.amx.jax.branchremittance.manager.BranchRemittancePaymentManager;
 import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.constant.ConstantDocument;
@@ -100,6 +101,7 @@ import com.amx.jax.model.request.remittance.AbstractRemittanceApplicationRequest
 import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.response.ExchangeRateBreakup;
+import com.amx.jax.model.response.remittance.BeneAdditionalDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.BsbApiResponse;
 import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;
@@ -295,6 +297,10 @@ public class RemittanceTransactionManager {
 	PaygDetailsRepository paygDetailsRepository;
 
 
+	@Autowired
+	BranchRemittanceManager branchRemitManager;
+	
+	
 	private static final String IOS = "IOS";
 	private static final String ANDROID = "ANDROID";
 	private static final String WEB = "WEB";
@@ -1271,6 +1277,12 @@ public class RemittanceTransactionManager {
 		//deactivatePreviousApplications();
 		validateAdditionalCheck();
 		validateAdditionalBeneDetailsV2(model);
+		/** To fetch additional bene details from JAX **/
+		BenificiaryListView beneficaryDetails = (BenificiaryListView)remitApplParametersMap.get("BENEFICIARY");
+		BeneAdditionalDto beneAddlDto  =branchRemitManager.getAdditionalBeneDetailJax(beneficaryDetails,model.getDynamicRroutingPricingBreakup());
+		remitApplParametersMap.put("BENE_ADDL_DTLS", beneAddlDto);
+		/** code end here **/
+		
 		remittanceAdditionalFieldManager.processAdditionalFields(model);
 		RemittanceApplication remittanceApplication = remitAppManager.createRemittanceApplicationV2(model,validatedObjects, validationResults, remitApplParametersMap);
 		RemittanceAppBenificiary remittanceAppBeneficairy = remitAppBeneManager.createRemittanceAppBeneficiary(remittanceApplication);
@@ -1385,6 +1397,8 @@ public class RemittanceTransactionManager {
 			}
 		}
 	}
+	
+	
 	
 	
 	private void validateAdditionalCheck() {
