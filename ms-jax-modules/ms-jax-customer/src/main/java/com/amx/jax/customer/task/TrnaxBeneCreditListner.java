@@ -249,7 +249,7 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 				PushMessage pushMessage = new PushMessage();
 				pushMessage.setSubject("Refer To Win!");
 				pushMessage.setMessage(
-						"Congraturlations! Your reference has done the first transaction on AMIEC App! You will get a chance to win from our awesome Referral Program! Keep sharing the links to as many contacts you can and win exciting prices on referral success!");
+						"Congratulations! Your reference has done the first transaction on AMIEC App! You will get a chance to win from our awesome Referral Program! Keep sharing the links to as many contacts you can and win exciting prices on referral success!");
 				pushMessage.addToUser(referralDetails.getRefferedByCustomerId());
 				pushNotifyClient.send(pushMessage);
 			}

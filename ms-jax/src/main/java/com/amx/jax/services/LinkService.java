@@ -96,7 +96,7 @@ public class LinkService extends AbstractService{
 			PushMessage pushMessage = new PushMessage();
 			pushMessage.setSubject("Refer To Win!");
 			pushMessage.setMessage(
-					"Congraturlations! Your reference has downloaded the app. Keep sharing the links to as many contacts you can and win exciting prices on referral success!");
+					"Congratulations! Your reference has downloaded the app. Keep sharing the links to as many contacts you can and win exciting prices on referral success!");
 			pushMessage.addToUser(linkDetails.getCustomerId());
 			pushNotifyClient.send(pushMessage);
 		}
