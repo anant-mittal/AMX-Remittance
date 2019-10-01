@@ -20,10 +20,10 @@ import com.amx.jax.logger.LoggerService;
 import com.amx.jax.rates.AmxCurConstants;
 import com.amx.utils.JsonUtil;
 
-//@Configuration
-//@EnableScheduling
-//@Component
-//@Service
+@Configuration
+@EnableScheduling
+@Component
+@Service
 //@ConditionalOnExpression(TestSizeApp.ENABLE_JOBS)
 //@ConditionalOnProperty("jax.jobs.trnx")
 //@ConditionalOnExpression(RadarConfig.CE_TRNX_SYNC_AND_ES)
@@ -50,8 +50,8 @@ public class TrnxViewTaskTest extends AbstractDBSyncTask {
 
 	public void doTask(int lastPage, String lastId) {
 
-		Long lastUpdateDateNow = 1471804200000L;
-		Long lastUpdateDateNowLimit = lastUpdateDateNow + (1 * AmxCurConstants.INTERVAL_DAYS);
+		Long lastUpdateDateNow = System.currentTimeMillis()- (5 * AmxCurConstants.INTERVAL_DAYS);
+		Long lastUpdateDateNowLimit = System.currentTimeMillis();
 
 		String dateString = GridConstants.GRID_TIME_FORMATTER_JAVA.format(new Date(lastUpdateDateNow));
 		String dateStringLimit = GridConstants.GRID_TIME_FORMATTER_JAVA
@@ -59,7 +59,7 @@ public class TrnxViewTaskTest extends AbstractDBSyncTask {
 
 		LOGGER.info("Pg:{},Tm:{} {}-{}", lastPage, lastUpdateDateNow, dateString, dateStringLimit);
 
-		GridQuery gridQuery = getForwardQuery(lastPage, 5, TIME_TRACK_KEY, dateString, dateStringLimit);
+		GridQuery gridQuery = getForwardQuery(lastPage, 200, TIME_TRACK_KEY, dateString, dateStringLimit);
 
 		GridViewBuilder<TranxViewRecord> y = gridService
 				.view(GridView.VW_KIBANA_TRNX, gridQuery);

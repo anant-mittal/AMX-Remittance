@@ -7,6 +7,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.amx.jax.es.ESDocFormat;
 import com.amx.jax.grid.GridViewRecord;
@@ -108,6 +109,8 @@ public class CustomerDetailViewRecord implements GridViewRecord {
 	
 	//Not a DB column
 	//@Column(name = "TRNX_CUSTOMER_CATEGORY")
+	@JsonInclude()
+	@Transient
 	private String trnxCustomerCategory;
 
 	public String getName() {
