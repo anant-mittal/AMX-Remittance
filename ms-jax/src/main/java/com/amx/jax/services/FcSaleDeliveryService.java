@@ -1,5 +1,7 @@
 package com.amx.jax.services;
 
+import static com.amx.amxlib.constant.NotificationConstants.RESP_DATA_KEY;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,10 +24,12 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.constant.NotificationConstants;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.client.JaxClientUtil;
 import com.amx.jax.client.JaxStompClient;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxDbConfig;
 import com.amx.jax.dao.FcSaleApplicationDao;
+import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ShippingAddressDetail;
 import com.amx.jax.dbmodel.fx.FxDeliveryDetailsModel;
 import com.amx.jax.dbmodel.fx.FxDeliveryRemark;
@@ -47,12 +51,17 @@ import com.amx.jax.model.response.fx.FxDeliveryDetailDto;
 import com.amx.jax.model.response.fx.FxDeliveryDetailNotificationDto;
 import com.amx.jax.model.response.fx.ShippingAddressDto;
 import com.amx.jax.notification.fx.FcSaleEventManager;
+import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.model.Email;
+import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.postman.model.TemplatesMX;
+import com.amx.jax.userservice.dao.CustomerDao;
+import com.amx.jax.userservice.manager.UserContactVerificationManager;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.utils.DateUtil;
 import com.amx.utils.Random;
+import static com.amx.amxlib.constant.NotificationConstants.RESP_DATA_KEY;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -82,6 +91,12 @@ public class FcSaleDeliveryService {
 	FcSaleBranchOrderManager fcSaleBranchOrderManager;
 	@Autowired
 	JaxConfigService jaxConfigService; 
+	@Autowired
+	CustomerDao custDao;
+	@Autowired
+	PushNotifyClient pushNotifyClient;
+	@Autowired
+	UserContactVerificationManager userContactVerificationManager;
 
 
 	/**
@@ -172,15 +187,29 @@ public class FcSaleDeliveryService {
 				deliveryDetail.getDriverEmployeeId());
 		fcSaleBranchOrderManager.saveFCStockTransferDetails(deliveryDetail.getDeleviryDelSeqId(),null,deliveryDetail.getDriverEmployeeId(), ConstantDocument.DVD);
 		PersonInfo pinfo = userService.getPersonInfo(vwdeliveryDetail.getCustomerId());
+		logger.info("FC_ORDER_SUCCESSStart: {emial sending}");
 		Email email = new Email();
 		email.setSubject("FC Order Successfully Delivered");
 		email.addTo(pinfo.getEmail());
+		logger.info("FC_ORDER_SUCCESS: {emial sending}");
 		email.setITemplate(TemplatesMX.FC_ORDER_SUCCESS);
+		logger.info("FC_ORDER_SUCCESS: {emial sent}");
 		email.setHtml(true);
+		/*email.getModel().put("tranxId", fcSaleDeliveryMarkDeliveredRequest.getDeliveryDetailSeqId());
+		email.getModel().put("verCode", JaxClientUtil.getTransactionVeryCode(fcSaleDeliveryMarkDeliveredRequest.getDeliveryDetailSeqId()).output());*/
 		FxDeliveryDetailDto ddDto = createFxDeliveryDetailDto(vwdeliveryDetail);
 		FxDeliveryDetailNotificationDto notificationModel = new FxDeliveryDetailNotificationDto(ddDto);
+		notificationModel.setTranxId(fcSaleDeliveryMarkDeliveredRequest.getDeliveryDetailSeqId());
+		notificationModel.setVerCode(JaxClientUtil.getTransactionVeryCode(fcSaleDeliveryMarkDeliveredRequest.getDeliveryDetailSeqId()).output());
 		email.getModel().put(NotificationConstants.RESP_DATA_KEY, notificationModel);
 		jaxNotificationService.sendEmail(email);
+		PushMessage pushMessage = new PushMessage();
+		pushMessage.setITemplate(TemplatesMX.FC_ORDER_SUCCESS);
+		pushMessage.addToUser(vwdeliveryDetail.getCustomerId());
+		logger.info("customer_id:"+vwdeliveryDetail.getCustomerId());
+		pushMessage.getModel().put(RESP_DATA_KEY, notificationModel);
+		pushNotifyClient.send(pushMessage);
+		
 		logStatusChangeAuditEvent(fcSaleDeliveryMarkDeliveredRequest.getDeliveryDetailSeqId(), oldStatus);
 		return new BoolRespModel(true);
 	}
@@ -308,7 +337,20 @@ public class FcSaleDeliveryService {
 		
 		fxDeliveryDetailsModel.setOtpValidated(ConstantDocument.Yes);
 		fcSaleApplicationDao.saveDeliveryDetail(fxDeliveryDetailsModel);
+		
+		// ------ Contact Verified ------
+		updateContactVerifyFx(deliveryDetailSeqId, mOtp);
+		
 		return new BoolRespModel(true);
+	}
+
+	private void updateContactVerifyFx(BigDecimal deliveryDetailSeqId, String mOtp) {
+		VwFxDeliveryDetailsModel deliveryDetailModel = validatetDeliveryDetailView(deliveryDetailSeqId);
+		BigDecimal custId = deliveryDetailModel.getCustomerId();
+		Customer customer = custDao.getCustById(custId);
+		if(customer != null) {
+			userContactVerificationManager.setContactVerified(customer, mOtp, null, null);
+		}
 	}
 
 	public List<ResourceDTO> listDeliveryRemark() {

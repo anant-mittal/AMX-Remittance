@@ -76,5 +76,25 @@ public class FBPushController implements IPushNotifyService {
 			throws PostManException {
 		return fBPushService.subscribe(token, topic);
 	}
+	
+	
+	/**
+	 * Fb push.
+	 *
+	 * @param token
+	 *            the token
+	 * @param topic
+	 *            the topic
+	 * @return the string
+	 * @throws PostManException
+	 *             the post man exception
+	 */
+	@Override
+	@RequestMapping(value = PostManUrls.SHORT_LINK, method = RequestMethod.POST)
+	public String shortLink(@RequestParam String relativeUrl)
+			throws PostManException {
+		return fBPushService.shortLink(relativeUrl);
+	}
+	
 
 }

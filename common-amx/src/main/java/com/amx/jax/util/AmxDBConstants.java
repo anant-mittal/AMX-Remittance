@@ -74,7 +74,11 @@ public class AmxDBConstants {
 
 	public static final BigDecimal DELIVERY_MODE_BANKING_CHANNEL = new BigDecimal(105);
 	public static final String MM_DD_YYYY_DATE_FORMAT = "MM/dd/yyyy";
-
+	
+	public static final String DD_MM_YYYY_DATE_FORMAT = "dd/MM/yyyy";
+	
+	public static final String DD_MMM_YY_DATE_FORMAT = "dd-MMM-yy";
+	
 	public static final BigDecimal SERVICE_MASTER_ID_EFT = new BigDecimal(101);
 	public static final BigDecimal SERVICE_MASTER_ID_TT = new BigDecimal(102);
 	public static final BigDecimal SERVICE_MASTER_ID_DD = new BigDecimal(104);
@@ -203,6 +207,10 @@ public class AmxDBConstants {
 	public static final String  COMM_INCLUDE= "I";
 	public static final String COMM_EXCLUDE="E";
 	
+
+	/** added by rabil  for corporate remittance**/
+	public static final String  CORPORATE= "C";
+
 	public static final String BPI_GIFT="GIFT";
 	
 	public static final String TELEX_TRANFER = "T";

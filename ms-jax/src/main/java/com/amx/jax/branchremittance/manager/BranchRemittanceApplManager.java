@@ -29,6 +29,7 @@ import com.amx.amxlib.util.JaxValidationUtil;
 import com.amx.jax.branchremittance.dao.BranchRemittanceDao;
 import com.amx.jax.branchremittance.service.BranchRemittanceExchangeRateService;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.constant.JaxDynamicField;
 import com.amx.jax.constants.JaxTransactionStatus;
 import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dal.ExchangeRateProcedureDao;
@@ -550,6 +551,19 @@ public class BranchRemittanceApplManager {
 			
 			if(!StringUtils.isBlank(dynamicRoutingPricingResponse.getDiscountOnComissionFlag()) 
 			&& dynamicRoutingPricingResponse.getDiscountOnComissionFlag().equalsIgnoreCase(ConstantDocument.Yes)) {
+			
+			remitApplManager.setFurtherInstruction(remittanceApplication,applRequestModel.getAdditionalFields());
+			
+			/*
+			 * if(applRequestModel.getAdditionalFields()!=null &&
+			 * applRequestModel.getAdditionalFields().get(JaxDynamicField.INSTRUCTION)!=
+			 * null) { //INSTRUCTION
+			 * remittanceApplication.setInstruction(applRequestModel.getAdditionalFields().
+			 * get(JaxDynamicField.INSTRUCTION).toString()); }else {
+			 * remittanceApplication.setInstruction("URGENT"); }
+			 */
+			
+			if(JaxUtil.isNullZeroBigDecimalCheck(remittanceApplication.getLocalCommisionAmount())) {
 				remittanceApplication.setDiscountOnCommission(corporateDiscountManager.corporateDiscount());
 			}
 
@@ -579,13 +593,13 @@ public class BranchRemittanceApplManager {
 
 
 
-			return remittanceApplication;
-
+			
+			}
 		}catch(GlobalException e){
 			logger.error("create application", e.getErrorMessage() + "" +e.getErrorKey());
 			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}
-
+		return remittanceApplication;
 
 	}
 
@@ -598,6 +612,8 @@ public class BranchRemittanceApplManager {
 		String telNumber = beneficiaryService.getBeneficiaryContactNumber(beneficiaryDT.getBeneficaryMasterSeqId());
 		//Map<String,Object> beneAddDeatisl = (HashMap)hashMap.get("ADD_BENE_DETAILS");
 		BeneAdditionalDto beneAddDeatisl = (BeneAdditionalDto)hashMap.get("ADD_BENE_DETAILS");
+		
+		BranchRemittanceApplRequestModel applRequestModel = (BranchRemittanceApplRequestModel)hashMap.get("APPL_REQ_MODEL");
 
 		remittanceAppBenificary = new RemittanceAppBenificiary();
 
@@ -665,7 +681,10 @@ public class BranchRemittanceApplManager {
 			remittanceAppBenificary.setBeneficiaryBankSwift(bankService.getBranchSwiftCode(beneficiaryDT.getBankId(),beneficiaryDT.getBranchId()));
 		}
 
-
+		if(applRequestModel!=null && !applRequestModel.getAdditionalFields().isEmpty()) {
+			remitApplManager.setIntermediateSwiftBank(remittanceAppBenificary,applRequestModel);
+		}
+		
 		remittanceAppBenificary.setCreatedBy(remittanceApplication.getCreatedBy());
 		remittanceAppBenificary.setCreatedDate(new Date());
 		remittanceAppBenificary.setIsactive(ConstantDocument.Yes);
@@ -937,6 +956,8 @@ public class BranchRemittanceApplManager {
 		JaxValidationUtil.validatePositiveNumber(request.getServiceMasterId(), "service indic id bank must be positive number");
 		JaxValidationUtil.validatePositiveNumber(request.getRemittanceModeId(),"Remittance mode id must be positive number");
 		JaxValidationUtil.validatePositiveNumber(request.getDeliveryModeId(),"Delivery mode id must be positive number");
+		JaxValidationUtil.validatePositiveNumber(request.getSourceOfFund(),"Source of id must be positive number");
+		JaxValidationUtil.validatePositiveNumber(request.getPurposeOfTrnxId(),"Purpose of id must be positive number");
 	}
 
 	public RemitApplSrvProv createRemitApplSrvProv(DynamicRoutingPricingDto dynamicRoutingPricingDto,String createdBy) {

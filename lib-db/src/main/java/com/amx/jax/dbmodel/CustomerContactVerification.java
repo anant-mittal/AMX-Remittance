@@ -13,8 +13,6 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Proxy;
-
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.logger.AuditActor.ActorType;
 import com.amx.jax.util.AmxDBConstants;

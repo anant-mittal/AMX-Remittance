@@ -3,6 +3,7 @@ package com.amx.jax.adapter;
 import java.awt.Desktop;
 import java.awt.EventQueue;
 import java.awt.Image;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
@@ -31,6 +32,8 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
+import com.amx.utils.JarUtil;
+import com.amx.utils.SysConfigUtil;
 import com.amx.utils.FileUtil;
 import com.amx.utils.IoUtils;
 
@@ -55,6 +58,7 @@ public class SWAdapterLauncher {
 
 	public static boolean ENABLE_CLI = false;
 	public static boolean ENABLE_GUI = false;
+	public static File ADAPTER_FOLDER = null;
 
 	public static int PORT;
 
@@ -62,13 +66,24 @@ public class SWAdapterLauncher {
 	private int port;
 
 	public static void main(String[] args) throws Exception {
+		SysConfigUtil.FILE_SEARCH_TARGET = false;
+
+		try {
+			ADAPTER_FOLDER = JarUtil.getPath(SWAdapterLauncher.class).getParentFile();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 		ENABLE_GUI = true;
 		System.out.println("Starting GUI");
+		SWAdapterGUI ex = new SWAdapterGUI();
+		ex.setVisible(true);
+		ex.initUI();
 		ConfigurableApplicationContext ctx = new SpringApplicationBuilder(SWAdapterLauncher.class).headless(false)
 				.run(args);
 		EventQueue.invokeLater(() -> {
-			SWAdapterGUI ex = ctx.getBean(SWAdapterGUI.class);
-			SWAdapterGUI.CONTEXT = ex;
+			// SWAdapterGUI ex = ctx.getBean(SWAdapterGUI.class);
+			// SWAdapterGUI.CONTEXT = ex;
 			URL ufile = FileUtil.getResource("logo.png", ex.getClass());
 			if (ufile != null) {
 				Image icon = null;
@@ -100,7 +115,10 @@ public class SWAdapterLauncher {
 			}
 
 			ex.setVisible(true);
+			// SWAdapterGUI ex = ctx.getBean(SWAdapterGUI.class);
+			SWAdapterGUI.CONTEXT = ex;
 			// opnePage();
+			SWAdapterGUI.ADAPTER_FOLDER = ADAPTER_FOLDER;
 		});
 	}
 

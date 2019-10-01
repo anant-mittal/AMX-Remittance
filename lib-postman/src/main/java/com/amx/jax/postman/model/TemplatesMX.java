@@ -86,6 +86,11 @@ public enum TemplatesMX implements ITemplate {
 	WU_CANCEL_REMINDER("WUCancelReminder"),
 	WU_TRNX_CANCELLED("WUTrnxCancelled"),
 	RESEND_VERIFICATION_LINK("resend-verification"),
+	
+	
+	FRIEND_REFER("friend-refer.json"),
+	
+	FRIEND_REFERED("friend-refered.json"),
 
 	// Default add enums above this
 	DEFAULT("default");
