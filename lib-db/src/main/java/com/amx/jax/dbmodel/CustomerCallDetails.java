@@ -36,8 +36,8 @@ public class CustomerCallDetails {
 	@Column(name = "EMPLOYEE_ID")
 	BigDecimal employeeId;
 
-	@Column(name = "COMMENT")
-	String comment;
+	@Column(name = "REMARK")
+	String remark;
 
 	@Column(name = "SESSION_ID")
 	String session;
@@ -82,12 +82,12 @@ public class CustomerCallDetails {
 		this.employeeId = employeeId;
 	}
 
-	public String getComment() {
-		return comment;
+	public String getRemark() {
+		return remark;
 	}
 
-	public void setComment(String comment) {
-		this.comment = comment;
+	public void setRemark(String remark) {
+		this.remark = remark;
 	}
 
 	public String getSession() {
