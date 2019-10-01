@@ -30,7 +30,7 @@ import com.amx.utils.ArgUtil;
 public class WhatsAppController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(WhatsAppController.class);
-	private static final long MESSAGE_TIMEOUT = 3 * 60 * 60 * 1000;
+	private static final long MESSAGE_TIMEOUT = 6 * 60 * 60 * 1000;
 
 	@Autowired
 	WhatsAppService whatsAppService;
