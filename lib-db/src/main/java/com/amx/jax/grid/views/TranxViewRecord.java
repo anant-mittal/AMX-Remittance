@@ -170,7 +170,7 @@ public class TranxViewRecord implements Serializable {
 	@Column(name = "CUSTCAT_DISCOUNT")
 	private BigDecimal custCatDiscount;
 
-	@Column(name = "PIPS _DISCOUNT")
+	@Column(name = "PIPS_DISCOUNT")
 	private BigDecimal pipsDiscount;
 
 	// Revenue

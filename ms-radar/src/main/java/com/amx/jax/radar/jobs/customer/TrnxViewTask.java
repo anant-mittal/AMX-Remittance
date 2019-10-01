@@ -141,7 +141,7 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 			return;
 		}
 
-		Long lastUpdateDateNowLimit = lastUpdateDateNow - (10 * AmxCurConstants.INTERVAL_DAYS);
+		Long lastUpdateDateNowLimit = lastUpdateDateNow - (5 * AmxCurConstants.INTERVAL_DAYS);
 
 		String dateString = GridConstants.GRID_TIME_FORMATTER_JAVA.format(new Date(lastUpdateDateNow));
 		String dateStringLimit = GridConstants.GRID_TIME_FORMATTER_JAVA
