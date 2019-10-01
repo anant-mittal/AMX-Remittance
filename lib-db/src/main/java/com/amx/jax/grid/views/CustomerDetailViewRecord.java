@@ -106,7 +106,8 @@ public class CustomerDetailViewRecord implements GridViewRecord {
 	@Column(name = "LAST_TRANSACTION_DATE")
 	private Date lastTransactionDate;
 	
-	@Column(name = "TRNX_CUSTOMER_CATEGORY")
+	//Not a DB column
+	//@Column(name = "TRNX_CUSTOMER_CATEGORY")
 	private String trnxCustomerCategory;
 
 	public String getName() {
