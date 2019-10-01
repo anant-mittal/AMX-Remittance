@@ -1,7 +1,11 @@
 package com.amx.jax.branch.controller;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.branch.beans.BranchSession;
@@ -10,6 +14,7 @@ import com.amx.jax.cache.box.CustomerOnCall.CustomerCall;
 import com.amx.jax.client.OffsiteCustRegClient;
 import com.amx.jax.client.branch.BranchUserClient;
 import com.amx.jax.client.customer.CustomerManagementClient;
+import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
 import com.amx.jax.model.customer.CreateCustomerInfoRequest;
 import com.amx.jax.model.customer.DuplicateCustomerDto;
 import com.amx.jax.model.customer.document.CustomerDocumentCategoryDto;
@@ -28,15 +33,21 @@ import com.amx.jax.model.response.ArticleMasterDescDto;
 import com.amx.jax.model.response.ComponentDataDto;
 import com.amx.jax.model.response.CustomerInfo;
 import com.amx.jax.model.response.IncomeRangeDto;
+import com.amx.jax.model.response.customer.CustomerPEPFormData;
 import com.amx.jax.model.response.customer.OffsiteCustomerDataDTO;
 import com.amx.jax.model.response.remittance.UserwiseTransactionDto;
+import com.amx.jax.postman.PostManException;
+import com.amx.jax.postman.PostManService;
+import com.amx.jax.postman.model.File;
+import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.sso.SSOUser;
 import com.amx.jax.terminal.TerminalService;
+import com.amx.jax.utils.PostManUtil;
 import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
-import com.amx.libjax.model.jaxfield.JaxFieldDto;
 import com.amx.utils.ArgUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -66,6 +77,9 @@ public class CustomerBranchController {
 
 	@Autowired
 	private BranchUserClient branchUserClient;
+
+	@Autowired
+	private PostManService postManService;
 
 	@RequestMapping(value = "/api/customer/details", method = { RequestMethod.POST })
 	public AmxApiResponse<OffsiteCustomerDataDTO, Object> setCustomerDetails(
@@ -197,6 +211,35 @@ public class CustomerBranchController {
 	public AmxApiResponse<DuplicateCustomerDto, Object> checkForDuplicateCustomer(
 			@RequestBody CustomerPersonalDetail customerPersonalDetail) {
 		return customerManagementClient.checkForDuplicateCustomer(customerPersonalDetail);
+	}
+
+	@RequestMapping(value = "/api/customer/pep/print", method = { RequestMethod.GET }, produces = {
+			CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE,
+			CommonMediaType.APPLICATION_PDF_VALUE, CommonMediaType.TEXT_HTML_VALUE })
+	public ResponseEntity<byte[]> customerPEPAppl(@RequestParam("ext") File.Type ext)
+			throws PostManException, IOException {
+
+		String pattern = "dd-MM-yyyy";
+		String dateInString = new SimpleDateFormat(pattern).format(new Date());
+		OffsiteCustomerDataDTO customer = branchSession.getCustomerData();
+		String expiryDateInString = new SimpleDateFormat(pattern)
+				.format(customer.getCustomerPersonalDetail().getExpiryDate());
+		CustomerPEPFormData customerPEPFormData = new CustomerPEPFormData();
+		customerPEPFormData.setDate(dateInString);
+		customerPEPFormData.setBranchName(ssoUser.getUserDetails().getBranchName());
+		customerPEPFormData.setFirstName(customer.getCustomerPersonalDetail().getFirstName());
+		customerPEPFormData.setLastName(customer.getCustomerPersonalDetail().getLastName());
+		customerPEPFormData.setIdentityInt(customer.getIdentityInt());
+		customerPEPFormData.setExpiryDate(expiryDateInString);
+
+		AmxApiResponse<CustomerPEPFormData, Object> wrapper = AmxApiResponse.build(customerPEPFormData);
+
+		File file = postManService
+				.processTemplate(new File(TemplatesMX.PEP_FORM_JASPER, wrapper, File.Type.PDF)
+						.lang(AppContextUtil.getTenant().defaultLang()))
+				.getResult();
+		return PostManUtil.download(file);
+
 	}
 
 }
