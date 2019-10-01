@@ -61,7 +61,7 @@ public class GeoNotifyTaskWorker implements ITunnelSubscriber<GeoNotifyTask> {
 
 		List<String> messages = new ArrayList<>();
 		List<MinMaxExRateDTO> rates = xRateClient.getMinMaxExchangeRate().getResults();
-		List<BeneficiaryListDTO> benes = beneClient.getBeneficiaryList(new BigDecimal(0)).getResults();
+		List<BeneficiaryListDTO> benes = beneClient.getBeneficiaryList(new BigDecimal(0), false).getResults(); // temporarily set to false after benelist flag changes.
 
 		PushMessage pushMessage = new PushMessage();
 		String customerNotificationTitle = String.format("Special rate @ %s", task.getAppTitle());

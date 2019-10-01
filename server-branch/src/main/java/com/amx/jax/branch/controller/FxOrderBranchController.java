@@ -1,15 +1,19 @@
 package com.amx.jax.branch.controller;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.fx.FxOrderBranchClient;
+import com.amx.jax.client.fx.IFxBranchOrderService.Path;
 import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
 import com.amx.jax.model.request.fx.FcDeliveryBranchOrderSearchRequest;
 import com.amx.jax.model.request.fx.FcSaleBranchDispatchRequest;
+import com.amx.jax.model.request.fx.FcSaleOrderManagementDatesRequest;
 import com.amx.jax.model.response.fx.FcEmployeeDetailsDto;
 import com.amx.jax.model.response.fx.FcSaleOrderManagementDTO;
 import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
@@ -103,7 +107,7 @@ public class FxOrderBranchController {
 		if (File.Type.PDF.equals(ext)) {
 			File file = postManService.processTemplate(
 					new File(duplicate ? TemplatesMX.FXO_RECEIPT_BRANCH : TemplatesMX.FXO_RECEIPT_BRANCH,
-							wrapper, File.Type.PDF))
+							wrapper, File.Type.PDF).lang(AppContextUtil.getTenant().defaultLang()))
 					.getResult();
 			// file.create(response, false);
 			// return null;
@@ -115,7 +119,7 @@ public class FxOrderBranchController {
 		} else if (File.Type.HTML.equals(ext)) {
 			File file = postManService.processTemplate(
 					new File(duplicate ? TemplatesMX.FXO_RECEIPT_BRANCH : TemplatesMX.FXO_RECEIPT_BRANCH,
-							wrapper, File.Type.HTML))
+							wrapper, File.Type.HTML).lang(AppContextUtil.getTenant().defaultLang()))
 					.getResult();
 			
 			file.setName(file.getITemplate().getFileName() + '_' +
@@ -177,5 +181,12 @@ public class FxOrderBranchController {
 	@RequestMapping(value = "/api/fxo/order/inquiry", method = { RequestMethod.POST })
 	public AmxApiResponse<FxOrderTransactionHistroyDto,Object> getPastOrdersList(@RequestBody FcDeliveryBranchOrderSearchRequest fcDeliveryBranchOrderSearchRequest){
 		return fxOrderBranchClient.searchOrder(fcDeliveryBranchOrderSearchRequest);
+	}
+	
+	@RequestMapping(value = "/api/fxo/order/search", method = RequestMethod.POST)
+	public AmxApiResponse<FcSaleOrderManagementDTO, Object> searchOrderByDates(
+			@RequestBody FcSaleOrderManagementDatesRequest fcSaleDates) {
+		return fxOrderBranchClient.searchOrderByDates(fcSaleDates);
+
 	}
 }

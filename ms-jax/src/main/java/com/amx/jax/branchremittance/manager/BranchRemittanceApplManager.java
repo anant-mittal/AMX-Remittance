@@ -546,7 +546,10 @@ public class BranchRemittanceApplManager {
 			remittanceApplication.setApplInd(ConstantDocument.COUNTER);
 			remittanceApplication.setWuIpAddress(metaData.getDeviceIp());
 			remittanceApplication.setInstruction("URGENT");
-			if(JaxUtil.isNullZeroBigDecimalCheck(remittanceApplication.getLocalCommisionAmount())) {
+			//if(JaxUtil.isNullZeroBigDecimalCheck(remittanceApplication.getLocalCommisionAmount())) {
+			
+			if(!StringUtils.isBlank(dynamicRoutingPricingResponse.getDiscountOnComissionFlag()) 
+			&& dynamicRoutingPricingResponse.getDiscountOnComissionFlag().equalsIgnoreCase(ConstantDocument.Yes)) {
 				remittanceApplication.setDiscountOnCommission(corporateDiscountManager.corporateDiscount());
 			}
 
@@ -790,7 +793,7 @@ public class BranchRemittanceApplManager {
 	}
 
 	public BenificiaryListView getBeneDetails(BranchRemittanceApplRequestModel requestApplModel) { 
-		BenificiaryListView beneficaryDetails =beneficiaryRepository.findByCustomerIdAndBeneficiaryRelationShipSeqId(metaData.getCustomerId(),requestApplModel.getBeneId());
+		BenificiaryListView beneficaryDetails =beneficiaryRepository.findByCustomerIdAndBeneficiaryRelationShipSeqIdAndIsActive(metaData.getCustomerId(),requestApplModel.getBeneId(),ConstantDocument.Yes);
 		if(beneficaryDetails==null) {
 			throw new GlobalException(JaxError.BENEFICIARY_LIST_NOT_FOUND,"Beneficairy not found "+metaData.getCustomerId()+"/"+requestApplModel.getBeneId());
 		}

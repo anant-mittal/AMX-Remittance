@@ -12,14 +12,14 @@ import javax.persistence.PrePersist;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import com.amx.jax.constant.UserType;
+import com.amx.jax.dict.UserType;
 
 
 @Entity
 @Table(name="FS_CUSTOMER_LOGIN")
-public class CustomerOnlineRegistration {
+public class CustomerOnlineRegistration implements java.io.Serializable  {
 	
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 308858036126716041L;
 	private BigDecimal custLoginId;
 	private BigDecimal languageId;
 	private BigDecimal countryId;

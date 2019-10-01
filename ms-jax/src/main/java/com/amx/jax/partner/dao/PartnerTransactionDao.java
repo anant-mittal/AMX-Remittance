@@ -3,9 +3,12 @@ package com.amx.jax.partner.dao;
 import java.math.BigDecimal;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.AccountTypeFromViewModel;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.CountryMaster;
@@ -23,6 +26,7 @@ import com.amx.jax.repository.CountryMasterRepository;
 import com.amx.jax.repository.IAccountTypeFromViewDao;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.ICustomerViewRepository;
+import com.amx.jax.repository.IRemittanceTransactionRepository;
 import com.amx.jax.repository.ParameterDetailsRespository;
 import com.amx.jax.repository.remittance.IUsdExchangeRateRepository;
 
@@ -59,8 +63,11 @@ public class PartnerTransactionDao {
 	@Autowired
 	IUsdExchangeRateRepository usdExchangeRateRepository;
 	
+	@Autowired
+	IRemittanceTransactionRepository remittanceTransactionRepository;
+	
 	public BenificiaryListView getBeneficiaryDetails(BigDecimal customerId,BigDecimal beneficiaryRelationShipSeqId) {
-		return beneficiaryViewRepository.findByCustomerIdAndBeneficiaryRelationShipSeqId(customerId, beneficiaryRelationShipSeqId);
+		return beneficiaryViewRepository.findByCustomerIdAndBeneficiaryRelationShipSeqIdAndIsActive(customerId, beneficiaryRelationShipSeqId,ConstantDocument.Yes);
 	}
 	
 	public CustomerDetailsView getCustomerDetails(BigDecimal customerId) {
@@ -105,6 +112,11 @@ public class PartnerTransactionDao {
 	
 	public BigDecimal fetchUsdExchangeRate() {
 		return usdExchangeRateRepository.fetchUsdExchangeRate();
+	}
+	
+	@Transactional
+	public void saveRemittanceRemarksDeliveryInd(String deliveryInd, String remarks, BigDecimal remittanceTransactionId) {
+		remittanceTransactionRepository.updateDeliveryIndRemarksBySP(deliveryInd, remarks, remittanceTransactionId);
 	}
 	
 }

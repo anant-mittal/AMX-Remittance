@@ -249,6 +249,7 @@ public enum JaxError implements IExceptionEnum {
 	REMITTANCE_MODE_NOT_FOUND,
 	REMITTANCE_ADDITIONAL_FIELD_REQUIRED, BANK_IBAN_EMPTY,
 	INVALID_NUMBER,
+	FC_SALE_SELECTED_DATES,
 
 	// for validate new Question
 	INVALIDATE_ANSWER,
@@ -285,6 +286,7 @@ public enum JaxError implements IExceptionEnum {
 	ENTITY_INVALID,
 	USER_ALREADY_ACTIVE,
 	MISSING_CONTACT,
+	ALREADY_VERIFIED_CONTACT,
 	MISSING_OTP_CONTACT,
 	
 	APPL_CREATION_ERROR,
@@ -322,7 +324,11 @@ public enum JaxError implements IExceptionEnum {
 	//HOME SEND
 	SINGLE_TRANSACTION_SERVICE_PROVIDER,
 	// Default in last, IMPORTANT:- It should be last
-	JAX_SYSTEM_ERROR;
+	JAX_SYSTEM_ERROR,
+	BPI_SETUP_IS_MISSING,
+	
+	// Job In Progress Error Key
+	JAX_JOB_IN_PROGRESS;
 	
 	@Deprecated
 	public String getCode() {

@@ -28,9 +28,12 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.FileUploadTempModel;
+import com.amx.jax.dbmodel.JobProgressModel;
 import com.amx.jax.dbmodel.ServiceProviderPartner;
 import com.amx.jax.dbmodel.ServiceProviderSummaryModel;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.repository.JobProgressRepository;
 import com.amx.jax.repository.ServiceProviderDefaultDateRepository;
 import com.amx.jax.repository.ServiceProviderTempUploadRepository;
 import com.amx.jax.response.serviceprovider.ServiceProviderDefaultDateDTO;
@@ -38,6 +41,8 @@ import com.amx.jax.response.serviceprovider.ServiceProviderPartnerDTO;
 import com.amx.jax.response.serviceprovider.ServiceProviderSummaryDTO;
 import com.amx.jax.serviceprovider.dao.ServiceProviderDao;
 import com.amx.jax.services.AbstractService;
+
+import oracle.jdbc.Const;
 
 
 @Component
@@ -54,6 +59,10 @@ public class ServiceProviderService extends AbstractService {
 	ServiceProviderDefaultDateRepository serviceProviderConfRepository;
 	@Autowired
 	ServiceProviderTempUploadRepository serviceProviderTempUploadRepository;
+	@Autowired
+	JobProgressRepository jobProgressRepository;
+	
+	
 	public List<ServiceProviderPartnerDTO> getServiceProviderPartner() {
 		List<ServiceProviderPartner> serviceProviderPartner = serviceProviderDao.getServiceProviderPartner();
 		if(serviceProviderPartner.isEmpty()) {
@@ -78,97 +87,116 @@ public class ServiceProviderService extends AbstractService {
 	
 	public List<ServiceProviderSummaryDTO> uploadServiceProviderFile(MultipartFile file,Date fileDate,String tpcCode) throws Exception {
 		summaryValidations(fileDate, tpcCode);
+		JobProgressModel jobProgressModel = jobProgressRepository.findOne(tpcCode);
+
+		if (!jobProgressModel.getUploadStatus().equalsIgnoreCase(ConstantDocument.JOB_COMPLETED)) {
+			throw new GlobalException(JaxError.JAX_JOB_IN_PROGRESS, "Please wait while upload is in progress");
+		}
+		if (jobProgressModel.getUploadStatus().equalsIgnoreCase(ConstantDocument.JOB_COMPLETED)) {
+			jobProgressModel.setUploadStatus("P");
+			jobProgressRepository.save(jobProgressModel);
+		}
+
+		if (!jobProgressModel.getConfirmStatus().equalsIgnoreCase(ConstantDocument.JOB_COMPLETED)) {
+			throw new GlobalException(JaxError.JAX_JOB_IN_PROGRESS, "Please wait while confirmation is in progress");
+
+		}
 		serviceProviderDao.deleteTemporaryData();
 		InputStream in = file.getInputStream();
 		File currDir = new File(".");
 		String path = currDir.getAbsolutePath();
-		logger.info("FUll path is "+path);
-	    String fileLocation = path.substring(0, path.length() - 1) + file.getOriginalFilename();
-	    logger.info("File path is "+fileLocation);
+		logger.info("FUll path is " + path);
+		String fileLocation = path.substring(0, path.length() - 1) + file.getOriginalFilename();
+		logger.info("File path is " + fileLocation);
 
-	    int i,j;
-	    Workbook workbook = WorkbookFactory.create(file.getInputStream());
-	    LocalDate today = fileDate.toLocalDate();
-	    int year = today.getYear();
-	    int month = today.getMonthValue();
-	    int day = today.getDayOfMonth();
-	    
-	    Sheet sheet = workbook.getSheetAt(0);
-	    if(sheet.getRow(1).getPhysicalNumberOfCells()!=12) {
-	    	throw new GlobalException("File format is not correct");
-	    }
-	    DataFormatter dataFormatter = new DataFormatter();
-	    for(i=1;i<=sheet.getLastRowNum();i++) {
-	    	Row r = sheet.getRow(i);
-	    	for(j=1;j<4;j++) {
-	    		Cell cell1 = r.getCell(j);
-	    		Cell cell2 = r.getCell(j+1);
-	    		Cell cell3 = r.getCell(j+2);
-	    		String cellValue1 = dataFormatter.formatCellValue(cell1);
-	    		String cellValue2 = dataFormatter.formatCellValue(cell2);
-	    		String cellValue3 = dataFormatter.formatCellValue(cell3);
-	    		if(!(cellValue1.equals(String.valueOf(year))&&cellValue2.equals(String.valueOf(month))&&cellValue3.equals(String.valueOf(day)))) {
-	    			throw new GlobalException("File Date is not matching with the date input");
-	    		}
-	    		j=4;
-	    	}
-	    }
-	    
-	    List<FileUploadTempModel> fileRowList = new ArrayList<FileUploadTempModel>();
-	    for(i=1;i<=sheet.getLastRowNum();i++) {
-	    	FileUploadTempModel fileUploadTempModel = new FileUploadTempModel();
-	    	Row row = sheet.getRow(i);
-	    	Cell cell0 = row.getCell(0);
-	    	String cellValue0 = dataFormatter.formatCellValue(cell0);
-	    	fileUploadTempModel.setLocalYear(new BigDecimal(cellValue0));
-	    	Cell cell1 = row.getCell(1);
-	    	String cellValue1 = dataFormatter.formatCellValue(cell1);
-	    	fileUploadTempModel.setReportingYear(new BigDecimal(cellValue1));
-	    	Cell cell2 = row.getCell(2);
-	    	String cellValue2 = dataFormatter.formatCellValue(cell2);
-	    	fileUploadTempModel.setReportingMonth(new BigDecimal(cellValue2));
-	    	Cell cell3 = row.getCell(3);
-	    	String cellValue3 = dataFormatter.formatCellValue(cell3);
-	    	fileUploadTempModel.setReportingDate(new BigDecimal(cellValue3));
-	    	Cell cell4 = row.getCell(4);
-	    	String cellValue4 = dataFormatter.formatCellValue(cell4);
-	    	fileUploadTempModel.setDirection(cellValue4);
-	    	Cell cell5 = row.getCell(5);
-	    	String cellValue5 = dataFormatter.formatCellValue(cell5);
-	    	fileUploadTempModel.setAccountNo(cellValue5);
-	    	Cell cell6 = row.getCell(6);
-	    	String cellValue6 = dataFormatter.formatCellValue(cell6);
-	    	fileUploadTempModel.setLocationName(cellValue6);
-	    	Cell cell7 = row.getCell(7);
-	    	String cellValue7 = dataFormatter.formatCellValue(cell7);
-	    	fileUploadTempModel.setLocalCurrencyCode(cellValue7);
-	    	Cell cell8 = row.getCell(8);
-	    	String cellValue8 = dataFormatter.formatCellValue(cell8);
-	    	fileUploadTempModel.setCompanyShareLocal(new BigDecimal(cellValue8));
-	    	Cell cell9 = row.getCell(9);
-	    	String cellValue9 = dataFormatter.formatCellValue(cell9);
-	    	fileUploadTempModel.setExchangeGainLocal(new BigDecimal(cellValue9));
-	    	Cell cell10 = row.getCell(10);
-	    	String cellValue10 = dataFormatter.formatCellValue(cell10);
-	    	fileUploadTempModel.setSendPayIndicator(cellValue10);
-            Cell cell11 = row.getCell(11);
-            String cellValue11 = dataFormatter.formatCellValue(cell11);
-            fileUploadTempModel.setMtcnNo(cellValue11);
-            fileUploadTempModel.setApplicationCountryId(metaData.getCountryId());
-            fileUploadTempModel.setUploadDate(fileDate);
-            fileUploadTempModel.setTpcCode(tpcCode);
-            fileRowList.add(fileUploadTempModel);
-            
-            
-        }
-	    
+		int i, j;
+		Workbook workbook = WorkbookFactory.create(file.getInputStream());
+		LocalDate today = fileDate.toLocalDate();
+		int year = today.getYear();
+		int month = today.getMonthValue();
+		int day = today.getDayOfMonth();
+
+		Sheet sheet = workbook.getSheetAt(0);
+		if (sheet.getRow(1).getPhysicalNumberOfCells() != 12) {
+			throw new GlobalException("File format is not correct");
+		}
+		DataFormatter dataFormatter = new DataFormatter();
+		for (i = 1; i <= sheet.getLastRowNum(); i++) {
+			Row r = sheet.getRow(i);
+			for (j = 1; j < 4; j++) {
+				Cell cell1 = r.getCell(j);
+				Cell cell2 = r.getCell(j + 1);
+				Cell cell3 = r.getCell(j + 2);
+				String cellValue1 = dataFormatter.formatCellValue(cell1);
+				String cellValue2 = dataFormatter.formatCellValue(cell2);
+				String cellValue3 = dataFormatter.formatCellValue(cell3);
+				if (!(cellValue1.equals(String.valueOf(year)) && cellValue2.equals(String.valueOf(month))
+						&& cellValue3.equals(String.valueOf(day)))) {
+					throw new GlobalException("File Date is not matching with the date input");
+				}
+				j = 4;
+			}
+		}
+
+		List<FileUploadTempModel> fileRowList = new ArrayList<FileUploadTempModel>();
+
+		for (i = 1; i <= sheet.getLastRowNum(); i++) {
+			FileUploadTempModel fileUploadTempModel = new FileUploadTempModel();
+			Row row = sheet.getRow(i);
+			Cell cell0 = row.getCell(0);
+			String cellValue0 = dataFormatter.formatCellValue(cell0);
+			fileUploadTempModel.setLocalYear(new BigDecimal(cellValue0));
+			Cell cell1 = row.getCell(1);
+			String cellValue1 = dataFormatter.formatCellValue(cell1);
+			fileUploadTempModel.setReportingYear(new BigDecimal(cellValue1));
+			Cell cell2 = row.getCell(2);
+			String cellValue2 = dataFormatter.formatCellValue(cell2);
+			fileUploadTempModel.setReportingMonth(new BigDecimal(cellValue2));
+			Cell cell3 = row.getCell(3);
+			String cellValue3 = dataFormatter.formatCellValue(cell3);
+			fileUploadTempModel.setReportingDate(new BigDecimal(cellValue3));
+			Cell cell4 = row.getCell(4);
+			String cellValue4 = dataFormatter.formatCellValue(cell4);
+			fileUploadTempModel.setDirection(cellValue4);
+			Cell cell5 = row.getCell(5);
+			String cellValue5 = dataFormatter.formatCellValue(cell5);
+			fileUploadTempModel.setAccountNo(cellValue5);
+			Cell cell6 = row.getCell(6);
+			String cellValue6 = dataFormatter.formatCellValue(cell6);
+			fileUploadTempModel.setLocationName(cellValue6);
+			Cell cell7 = row.getCell(7);
+			String cellValue7 = dataFormatter.formatCellValue(cell7);
+			fileUploadTempModel.setLocalCurrencyCode(cellValue7);
+			Cell cell8 = row.getCell(8);
+			String cellValue8 = dataFormatter.formatCellValue(cell8);
+			fileUploadTempModel.setCompanyShareLocal(new BigDecimal(cellValue8));
+			Cell cell9 = row.getCell(9);
+			String cellValue9 = dataFormatter.formatCellValue(cell9);
+			fileUploadTempModel.setExchangeGainLocal(new BigDecimal(cellValue9));
+			Cell cell10 = row.getCell(10);
+			String cellValue10 = dataFormatter.formatCellValue(cell10);
+			fileUploadTempModel.setSendPayIndicator(cellValue10);
+			Cell cell11 = row.getCell(11);
+			String cellValue11 = dataFormatter.formatCellValue(cell11);
+			fileUploadTempModel.setMtcnNo(cellValue11);
+			fileUploadTempModel.setApplicationCountryId(metaData.getCountryId());
+			fileUploadTempModel.setUploadDate(fileDate);
+			fileUploadTempModel.setTpcCode(tpcCode);
+			fileRowList.add(fileUploadTempModel);
+
+		}
+
 		serviceProviderTempUploadRepository.save(fileRowList);
-	    
-	    serviceProviderDao.saveDataByProcedure(fileDate,tpcCode);
-	    List<ServiceProviderSummaryModel> serviceProviderSummaryModelList=serviceProviderDao.getSummary();
-	   
-	    workbook.close();
-	    
+		if (!jobProgressModel.getUploadStatus().equalsIgnoreCase(ConstantDocument.JOB_COMPLETED)) {
+			jobProgressModel.setUploadStatus(ConstantDocument.JOB_COMPLETED);
+			jobProgressRepository.save(jobProgressModel);
+		}
+
+		serviceProviderDao.saveDataByProcedure(fileDate, tpcCode);
+		List<ServiceProviderSummaryModel> serviceProviderSummaryModelList = serviceProviderDao.getSummary();
+
+		workbook.close();
+
 		return (convertServiceProviderSummary(serviceProviderSummaryModelList));
 		
 	}
@@ -239,6 +267,12 @@ public class ServiceProviderService extends AbstractService {
 	}
 	
 	public BoolRespModel serviceProviderConfirmation(Date fileDate,String tpcCode) {
+		JobProgressModel jobProgressModel = jobProgressRepository.findOne(tpcCode);
+		if (!jobProgressModel.getConfirmStatus().equalsIgnoreCase(ConstantDocument.JOB_COMPLETED)) {
+			throw new GlobalException(JaxError.JAX_JOB_IN_PROGRESS, "Please wait while confirmation is in progress");
+
+		}
+		
 		Date serviceProviderConfirmDate =  serviceProviderConfRepository.getServiceProviderRevenueModel(metaData.getCountryId(),tpcCode);
 		if(serviceProviderConfirmDate!=null&&serviceProviderConfirmDate.compareTo(fileDate)==0) {
 			throw new GlobalException("You have already uploaded file once for this date");

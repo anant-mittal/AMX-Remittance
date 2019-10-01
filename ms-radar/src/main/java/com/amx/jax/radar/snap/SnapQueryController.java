@@ -1,6 +1,7 @@
 package com.amx.jax.radar.snap;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,8 @@ import com.amx.jax.tunnel.DBEvent;
 import com.amx.jax.tunnel.TunnelEvent;
 import com.amx.jax.tunnel.TunnelEventXchange;
 import com.amx.jax.tunnel.TunnelService;
+import com.amx.utils.ArgUtil;
+import com.axx.jax.table.PivotTable;
 
 @Controller
 public class SnapQueryController {
@@ -87,11 +90,53 @@ public class SnapQueryController {
 	@RequestMapping(value = "/snap/view/{snapView}", method = RequestMethod.POST)
 	public SnapModelWrapper snapView(@PathVariable(value = "snapView") SnapQueryTemplate snapView,
 			@RequestBody Map<String, Object> params,
-			@RequestParam(defaultValue = "now-1m") String gte, @RequestParam(defaultValue = "now") String lte)
+			@RequestParam(defaultValue = "now-1m", required = false) String gte,
+			@RequestParam(defaultValue = "now", required = false) String lte,
+			@RequestParam(defaultValue = "true", required = false) boolean bulk)
 			throws IOException {
-		// params.put("gte", gte);
-		// params.put("lte", lte);
-		return snapQueryTemplateService.execute(snapView, params);
+		if (!ArgUtil.isEmpty(gte) && !params.containsKey("gte")) {
+			params.put("gte", gte);
+		}
+		if (!ArgUtil.isEmpty(lte) && !params.containsKey("lte")) {
+			params.put("lte", lte);
+		}
+		SnapModelWrapper x = snapQueryTemplateService.execute(snapView, params);
+
+		if (bulk) {
+			List<Map<String, List<String>>> p = x.getPivot();
+			List<Map<String, Object>> inputBulk = x.getAggregations().toBulk();
+			for (Map<String, List<String>> pivot : p) {
+				PivotTable table = new PivotTable(
+						pivot.get("rows"),pivot.get("cols"),
+						pivot.get("vals"),pivot.get("aggs"),pivot.get("alias")
+						);
+				for (Map<String, Object> map : inputBulk) {
+					table.add(map);
+				}
+				table.calculate();
+				inputBulk = table.toBulk();
+				//break;
+			}
+			x.toMap().put("bulk", inputBulk);
+		}
+
+		return x;
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/snap/view/{snapView}/bulk", method = RequestMethod.POST)
+	public List<Map<String, Object>> snapBulkView(@PathVariable(value = "snapView") SnapQueryTemplate snapView,
+			@RequestBody Map<String, Object> params,
+			@RequestParam(defaultValue = "now-1m", required = false) String gte,
+			@RequestParam(defaultValue = "now", required = false) String lte)
+			throws IOException {
+		if (!ArgUtil.isEmpty(gte) && !params.containsKey("gte")) {
+			params.put("gte", gte);
+		}
+		if (!ArgUtil.isEmpty(lte) && !params.containsKey("lte")) {
+			params.put("lte", lte);
+		}
+		return snapQueryTemplateService.execute(snapView, params).getAggregations().toBulk();
 	}
 
 	@ResponseBody

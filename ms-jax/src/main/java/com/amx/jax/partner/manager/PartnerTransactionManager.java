@@ -160,9 +160,6 @@ public class PartnerTransactionManager extends AbstractModel {
 	BankMasterRepository bankMasterRepo;
 
 	@Autowired
-	IRemittanceTransactionRepository remittanceTransactionRepository;
-
-	@Autowired
 	CurrencyMasterService currencyMasterService;
 	
 	@Autowired
@@ -868,6 +865,8 @@ public class PartnerTransactionManager extends AbstractModel {
 				EmployeeDetailsView empDetails = employeeDetailsRepository.findByEmployeeId(metaData.getEmployeeId());
 				serviceProviderXmlLog.setForeignTerminalId(metaData.getEmployeeId().toPlainString());
 				serviceProviderXmlLog.setCreatedBy(empDetails.getUserName());
+			}else {
+				serviceProviderXmlLog.setCreatedBy("ON_LINE");
 			}
 
 			serviceProviderXmlLog.setIdentifier(PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name());
@@ -937,7 +936,7 @@ public class PartnerTransactionManager extends AbstractModel {
 								serviceProviderResponse.getAction_ind().equalsIgnoreCase(PricerServiceConstants.ACTION_IND_F)){
 							actionInd = serviceProviderResponse.getAction_ind();
 							responseDescription = serviceProviderResponse.getResponse_description();
-							emailStatus = Boolean.TRUE; // testing
+							//emailStatus = Boolean.TRUE; // testing
 						}else if(serviceProviderResponse.getAction_ind().equalsIgnoreCase(PricerServiceConstants.ACTION_IND_T)){
 							actionInd = PricerServiceConstants.ACTION_IND_U;
 							responseDescription = PricerServiceConstants.RESPONSE_UNKNOWN_ERROR;
@@ -958,7 +957,8 @@ public class PartnerTransactionManager extends AbstractModel {
 						remitTrnxSPDTO.setTransactionId(partnerTransactionId);
 						logger.info("actionInd : " + actionInd + " responseDescription : "+ responseDescription + " transaction Id " + remittanceTransactionView.getRemittanceTransactionId() + " partner transaction id : "  + partnerTransactionId);
 						// save remit trnx
-						remittanceTransactionRepository.updateDeliveryIndRemarksBySP(remitTrnxSPDTO.getActionInd(), remitTrnxSPDTO.getResponseDescription(), remittanceTransactionView.getRemittanceTransactionId());
+						partnerTransactionDao.saveRemittanceRemarksDeliveryInd(actionInd, responseDescription, remittanceTransactionView.getRemittanceTransactionId());
+						//remittanceTransactionRepository.updateDeliveryIndRemarksBySP(remitTrnxSPDTO.getActionInd(), remitTrnxSPDTO.getResponseDescription(), remittanceTransactionView.getRemittanceTransactionId());
 						if(emailStatus) {
 							logger.error("Service provider api fail to execute : ColDocNo : ", responseDto.getCollectionDocumentNo() + " : ColDocCod : " +responseDto.getCollectionDocumentCode()+"  : ColDocYear : "+responseDto.getCollectionDocumentFYear());
 							auditService.log(new CActivityEvent(Type.TRANSACTION_CREATED,String.format("%s/%s", responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo())).field("STATUS").to(JaxTransactionStatus.PAYMENT_SUCCESS_SERVICE_PROVIDER_FAIL).result(Result.DONE));
@@ -966,15 +966,6 @@ public class PartnerTransactionManager extends AbstractModel {
 						}else {
 							auditService.log(new CActivityEvent(Type.TRANSACTION_CREATED,String.format("%s/%s", responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo())).field("STATUS").to(JaxTransactionStatus.PAYMENT_SUCCESS_SERVICE_PROVIDER_SUCCESS).result(Result.DONE));
 						}
-						
-						/*RemittanceTransaction remittanceTransaction = remittanceTransactionRepository.findOne(remittanceTransactionView.getRemittanceTransactionId());
-						if(remittanceTransaction != null) {
-							remittanceTransaction.setDeliveryInd(remitTrnxSPDTO.getActionInd());
-							remittanceTransaction.setRemarks(remitTrnxSPDTO.getResponseDescription());
-							remittanceTransactionRepository.save(remittanceTransaction);
-						}else {
-							throw new GlobalException("Unable to get remittance trnx to update remarks and delivery indicator");
-						}*/
 
 						logger.info(" Service provider result " +JsonUtil.toJson(serviceProviderResponse));
 					}else {
@@ -1278,7 +1269,20 @@ public class PartnerTransactionManager extends AbstractModel {
 			}
 		}
 		model.setForeignCurrencyQuote(remittanceTransactionView.getCurrencyQuoteName());
-		model.setCustomerName(remittanceTransactionView.getFirstName().concat(" ").concat(remittanceTransactionView.getMiddleName()).concat(" ").concat(remittanceTransactionView.getLastName()));
+		StringBuffer customerName = new StringBuffer();
+		if(remittanceTransactionView.getFirstName() != null) {
+			customerName.append(remittanceTransactionView.getFirstName());
+			if(remittanceTransactionView.getMiddleName() != null) {
+				customerName.append(" ");
+				customerName.append(remittanceTransactionView.getMiddleName());
+			}
+			if(remittanceTransactionView.getLastName() != null) {
+				customerName.append(" ");
+				customerName.append(remittanceTransactionView.getLastName());
+			}
+			model.setCustomerName(customerName.toString());
+		}
+		//model.setCustomerName(remittanceTransactionView.getFirstName().concat(" ").concat(remittanceTransactionView.getMiddleName()).concat(" ").concat(remittanceTransactionView.getLastName()));
 		model.setCustomerReference(remittanceTransactionView.getCustomerReference());
 		model.setCustomerContact(remittanceTransactionView.getContactNumber());
 		model.setExceptionMessage(remitTrnxSPDTO.getActionInd() + " : " + remitTrnxSPDTO.getResponseDescription() + " : " + remittanceTransactionView.getCountryBranchName() + " : " +remittanceTransactionView.getCreatedBy());

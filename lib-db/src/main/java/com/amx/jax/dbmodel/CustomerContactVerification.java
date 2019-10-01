@@ -16,13 +16,20 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Proxy;
 
 import com.amx.jax.dict.ContactType;
+import com.amx.jax.logger.AuditActor.ActorType;
+import com.amx.jax.util.AmxDBConstants;
 import com.amx.jax.util.AmxDBConstants.Status;
+import com.amx.utils.ArgUtil;
+import com.amx.utils.Constants;
+import com.amx.utils.TimeUtils;
 
 @Entity
 @Table(name = "EX_CONTACT_VERIFICATION")
 public class CustomerContactVerification implements java.io.Serializable {
 
 	private static final long serialVersionUID = 1L;
+	public static final int EXPIRY_DAY = 1;
+	public static final int EXPIRY_DAY_WHATS_APP = 30;
 
 	public CustomerContactVerification() {
 	}
@@ -36,6 +43,7 @@ public class CustomerContactVerification implements java.io.Serializable {
 		return "CustomerContactVerification [id=" + id + ", appCountryId=" + appCountryId + ", contactType="
 				+ contactType + ", contactValue=" + contactValue + ", verificationCode=" + verificationCode
 				+ ", customerId=" + customerId + ", isActive=" + isActive + ", createdDate=" + createdDate
+				+ ", sendDate=" + sendDate
 				+ ", verifiedDate=" + verifiedDate + "]";
 	}
 
@@ -133,6 +141,63 @@ public class CustomerContactVerification implements java.io.Serializable {
 		this.createdDate = createdDate;
 	}
 
+	BigDecimal createdById;
+
+	@Column(name = "CREATED_BY_ID")
+	public BigDecimal getCreatedById() {
+		return this.createdById;
+	}
+
+	public void setCreatedById(BigDecimal createdById) {
+		this.createdById = createdById;
+	}
+
+	ActorType createdByType;
+
+	@Column(name = "CREATED_BY_TYPE", length = 1)
+	@Enumerated(value = EnumType.STRING)
+	public ActorType getCreatedByType() {
+		return createdByType;
+	}
+
+	public void setCreatedByType(ActorType createdByType) {
+		this.createdByType = createdByType;
+	}
+
+	Date sendDate;
+
+	@Column(name = "SEND_DATE")
+	public Date getSendDate() {
+		return this.sendDate;
+	}
+
+	public void setSendDate(Date sendDate) {
+		this.sendDate = sendDate;
+	}
+
+//	BigDecimal sendById;
+//
+//	@Column(name = "SEND_BY_ID")
+//	public BigDecimal getSendById() {
+//		return this.sendById;
+//	}
+//
+//	public void setSendById(BigDecimal sendById) {
+//		this.sendById = sendById;
+//	}
+//
+//	ActorType sendByType;
+//
+//	@Column(name = "Send_BY_TYPE", length = 1)
+//	@Enumerated(value = EnumType.STRING)
+//	public ActorType getSendByType() {
+//		return sendByType;
+//	}
+//
+//	public void setSendByType(ActorType sendByType) {
+//		this.sendByType = sendByType;
+//	}
+
 	Date verifiedDate;
 
 	@Column(name = "VERIFIED_DATE")
@@ -143,4 +208,25 @@ public class CustomerContactVerification implements java.io.Serializable {
 	public void setVerifiedDate(Date verifiedDate) {
 		this.verifiedDate = verifiedDate;
 	}
+
+	public boolean hasValidStatus() {
+		return AmxDBConstants.Status.Y.equals(this.getIsActive());
+	}
+
+	public boolean hasExpired() {
+		long intrval = Constants.TimeInterval.DAY;
+		if (ContactType.WHATSAPP.equals(contactType)) {
+			intrval = intrval * EXPIRY_DAY_WHATS_APP;
+		}
+
+		if (ArgUtil.isEmpty(this.getSendDate())) {
+			return TimeUtils.isExpired(this.getCreatedDate(), intrval);
+		}
+		return TimeUtils.isExpired(this.getSendDate(), intrval);
+	}
+
+	public boolean hasVerified() {
+		return AmxDBConstants.Status.N.equals(this.getIsActive());
+	}
+
 }

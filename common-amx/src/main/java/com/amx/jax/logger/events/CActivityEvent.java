@@ -42,7 +42,7 @@ public class CActivityEvent extends AuditEvent {
 	}
 
 	public static enum Step implements EnumType {
-		CREATE, SEND, INIT, COMPLETE, VERIFY
+		CREATE, SEND, RESEND, INIT, COMPLETE, VERIFY
 	}
 
 	public CActivityEvent(Type type, Object target) {

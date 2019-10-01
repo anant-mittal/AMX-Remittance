@@ -379,7 +379,7 @@ public class RemittanceApplicationManager {
 						: ConstantDocument.No);
 		Map<DISCOUNT_TYPE, ExchangeDiscountInfo> customerDiscoutDetails = remittanceTransactionResponsetModel
 				.getCustomerDiscountDetails();
-		if (customerDiscoutDetails != null) {
+		if (customerDiscoutDetails != null && !customerDiscoutDetails.isEmpty()) {
 			remittanceApplication
 					.setCusCatDiscountId(customerDiscoutDetails.get(DISCOUNT_TYPE.CUSTOMER_CATEGORY).getId());
 			remittanceApplication.setCusCatDiscount(
@@ -443,8 +443,8 @@ public class RemittanceApplicationManager {
 
 	public void validateAdditionalErrorMessages(RemittanceTransactionRequestModel requestModel) {
 		remitApplParametersMap.put("P_FURTHER_INSTR", "URGENT");
-		Map<String, Object> errorResponse = applicationProcedureDao.toFetchPurtherInstractionErrorMessaage(remitApplParametersMap);
-		String errorMessage = (String) errorResponse.get("P_ERRMSG");
+		//Map<String, Object> errorResponse = applicationProcedureDao.toFetchPurtherInstractionErrorMessaage(remitApplParametersMap);
+		String errorMessage =null;// (String) errorResponse.get("P_ERRMSG");
 		Map<String, Object> furtherSwiftAdditionalDetails = applicationProcedureDao.fetchAdditionalBankRuleIndicators(remitApplParametersMap);
 		remitApplParametersMap.putAll(furtherSwiftAdditionalDetails);
 		remitApplParametersMap.put("P_ADDITIONAL_BANK_RULE_ID_1", requestModel.getAdditionalBankRuleFiledId());
@@ -542,6 +542,11 @@ public class RemittanceApplicationManager {
 		if(JaxUtil.isNullZeroBigDecimalCheck(breakup.getBaseRate())) {
 			remittanceApplication.setOriginalExchangeRate(breakup.getBaseRate());
 		}
+		
+		if(!StringUtils.isBlank(validationResults.getDiscountOnComissionFlag()) 
+				&& validationResults.getDiscountOnComissionFlag().equalsIgnoreCase(ConstantDocument.Yes)) {
+					remittanceApplication.setDiscountOnCommission(validationResults.getDiscountOnComission());
+		}
 	}
 	
 	
@@ -563,6 +568,10 @@ public class RemittanceApplicationManager {
 		remittanceApplication.setLoyaltyPointsEncashed(loyalityPointsEncashed);
 		if(JaxUtil.isNullZeroBigDecimalCheck(breakup.getBaseRate())) {
 			remittanceApplication.setOriginalExchangeRate(breakup.getBaseRate());
+		}
+		if(!StringUtils.isBlank(validationResults.getDiscountOnComissionFlag()) 
+				&& validationResults.getDiscountOnComissionFlag().equalsIgnoreCase(ConstantDocument.Yes)) {
+					remittanceApplication.setDiscountOnCommission(validationResults.getDiscountOnComission());
 		}
 	}
 	

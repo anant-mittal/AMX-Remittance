@@ -131,9 +131,14 @@ public class PromotionDao {
 
 	public List<PromotionHeader> getPromotionHeader(BigDecimal docFinYear, List<PromotionLocationModel> promoLocations,
 			Date trnxDate) {
+		List<PromotionHeader> promotionHeaderaData = null;
 		List<PromotionHeaderPK> promotHeaderPks = promoLocations.stream()
 				.map(pl -> new PromotionHeaderPK(pl.getDocumentNo(), pl.getDocFinYear())).collect(Collectors.toList());
-		return promotionHeaderRepository.findPromotioHeader(promotHeaderPks, trnxDate);
+		if(promotHeaderPks != null && promotHeaderPks.size() != 0) {
+			promotionHeaderaData = promotionHeaderRepository.findPromotioHeader(promotHeaderPks, trnxDate);
+		}
+		
+		return promotionHeaderaData;
 	}
 
 	public List<PromotionDetailModel> getPromotionDetailModel(BigDecimal finYearRemit, BigDecimal docNoRemit) {

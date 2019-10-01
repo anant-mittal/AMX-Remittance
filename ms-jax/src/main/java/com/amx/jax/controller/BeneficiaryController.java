@@ -38,6 +38,7 @@ import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.trnx.BeneficiaryTrnxManager;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.ConverterUtil;
+import com.amx.utils.JsonUtil;
 
 /**
  * 
@@ -71,20 +72,14 @@ public class BeneficiaryController {
 	private UserService userService;
 
 	@RequestMapping(value = "/beneList/", method = RequestMethod.GET)
-	public ApiResponse getBeneficiaryListResponse(@RequestParam("beneCountryId") BigDecimal beneCountryId) {
+	public ApiResponse getBeneficiaryListResponse(@RequestParam("beneCountryId") BigDecimal beneCountryId,@RequestParam("excludePackage") Boolean excludePackage) {
 		BigDecimal customerId = metaData.getCustomerId();
 		BigDecimal applicationCountryId = metaData.getCountryId();
 		JaxChannel channel = metaData.getChannel();
-		/*
-		 * LOGGER.debug("userType :" + channel.name() + "\t customerId :" + customerId +
-		 * "\t applicationCountryId :" + applicationCountryId + "\t beneCountryId :" +
-		 * beneCountryId);
-		 */
-
 		if (channel != null && channel.equals(JaxChannel.BRANCH)) {
 			return beneService.getBeneficiaryListForBranch(customerId, applicationCountryId, beneCountryId);
 		} else {
-			return beneService.getBeneficiaryListForOnline(customerId, applicationCountryId, beneCountryId);
+			return beneService.getBeneficiaryListForOnline(customerId, applicationCountryId, beneCountryId,excludePackage);
 		}
 	}
 
@@ -92,7 +87,6 @@ public class BeneficiaryController {
 	public ApiResponse getBeneficiaryCountryListResponse() {
 		BigDecimal customerId = metaData.getCustomerId();
 		JaxChannel channel = metaData.getChannel();
-
 		LOGGER.debug("userType :" + channel + "\t customerId :" + customerId);
 
 		if (channel != null && channel.equals(JaxChannel.BRANCH)) {
@@ -139,9 +133,7 @@ public class BeneficiaryController {
 		BigDecimal applicationCountryId = metaData.getCountryId();
 		LOGGER.info("favouritebene customerId Id :" + customerId);
 		LOGGER.info("favouritebene applicationCountryId  :" + applicationCountryId);
-
 		response = beneService.getFavouriteBeneficiaryList(customerId, applicationCountryId);
-
 		return response;
 	}
 
@@ -214,7 +206,7 @@ public class BeneficiaryController {
 	@RequestMapping(value = "/trnx/bene/bene-details/", method = RequestMethod.POST)
 	public ApiResponse saveBenePersonalDetailInTrnx(
 			@RequestBody @Valid BenePersonalDetailModel benePersonalDetailModel) {
-		LOGGER.debug("saveBenePersonalDetailInTrnx request: " + benePersonalDetailModel.toString());
+		LOGGER.info("saveBenePersonalDetailInTrnx request: " + JsonUtil.toJson(benePersonalDetailModel));
 		return beneficiaryTrnxManager.savePersonalDetailTrnx(benePersonalDetailModel);
 	}
 

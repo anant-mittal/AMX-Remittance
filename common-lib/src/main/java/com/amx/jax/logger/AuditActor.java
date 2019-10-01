@@ -1,7 +1,10 @@
 package com.amx.jax.logger;
 
+import java.math.BigDecimal;
+
 import com.amx.utils.ArgUtil;
 import com.amx.utils.EnumType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -13,8 +16,15 @@ public class AuditActor {
 
 	public static enum ActorType implements EnumType {
 
-		G, C, E,
-		GUEST(G), CUSTOMER(C), EMP(E);
+		G, C, I, W, E, S,
+
+		// Not To be used
+		GUEST(G),
+		CUSTOMER(C),
+		IDENTITY(I),
+		WHATSAPP(W),
+		EMP(E),
+		SYSTEM(S);
 
 		ActorType shortName;
 
@@ -28,7 +38,7 @@ public class AuditActor {
 
 		@Override
 		public String toString() {
-			return this.name();
+			return this.shortName.name();
 		}
 
 		@Override
@@ -48,12 +58,12 @@ public class AuditActor {
 	String actorId;
 
 	public AuditActor(ActorType actorType, Object actorId) {
-		this.actorType = actorType;
+		this.actorType = actorType.enunValue();
 		this.actorId = ArgUtil.parseAsString(actorId);
 	}
 
 	public ActorType getActorType() {
-		return actorType.enunValue();
+		return actorType == null ? null : actorType.enunValue();
 	}
 
 	public void setActorType(ActorType actorType) {
@@ -64,11 +74,16 @@ public class AuditActor {
 		return actorId;
 	}
 
+	@JsonIgnore
+	public BigDecimal getActorIdAsBigDecimal() {
+		return ArgUtil.parseAsBigDecimal(actorId);
+	}
+
 	public void setActorId(String actorId) {
 		this.actorId = actorId;
 	}
 
 	public String toString() {
-		return String.format("%s:%s", this.actorType, this.actorId);
+		return String.format("%s:%s", this.getActorType(), this.actorId);
 	}
 }

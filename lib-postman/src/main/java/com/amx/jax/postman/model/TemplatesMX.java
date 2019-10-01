@@ -68,12 +68,24 @@ public enum TemplatesMX implements ITemplate {
 	POLICY_OPTOUT_SYSTEM("PolicyOptoutSystem"),
 	POLICY_EXPIRY_REMINDER("PolicyExpiryReminder"),
 	POLICY_EXPIRED("PolicyExpired"),
+	POLICY_PENDING_TRNX("PolicyPendingTrnx"),
 
 	HOMESEND_TRANSACTION_FAILAURE("HomeSendTransactionFailure"),
 
 	//Add Bene Templates
 	BENE_SUCC("BeneCreationSuccess"),
 	BENE_SUCC_SMS("bene-success-sms",Channel.NOTIPY),
+
+	// Online coupon template
+	ONLINE_COUPON("OnlineCoupon"),
+	
+	//WU Notifications Templates
+	
+	WU_TRNX_SUCCESS("WUTrnxSuccess"),
+	WU_PICKUP_REMINDER("WUPickupReminder"),
+	WU_CANCEL_REMINDER("WUCancelReminder"),
+	WU_TRNX_CANCELLED("WUTrnxCancelled"),
+	RESEND_VERIFICATION_LINK("resend-verification"),
 
 	// Default add enums above this
 	DEFAULT("default");

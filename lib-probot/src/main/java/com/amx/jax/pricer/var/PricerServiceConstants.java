@@ -49,7 +49,7 @@ public final class PricerServiceConstants {
 	
 	
 	// Def Pricing Scale
-	public static int DEF_DECIMAL_SCALE = 8;
+	public static int DEF_DECIMAL_SCALE = 9;
 
 	public static MathContext DEF_CONTEXT = new MathContext(DEF_DECIMAL_SCALE, RoundingMode.HALF_EVEN);
 	

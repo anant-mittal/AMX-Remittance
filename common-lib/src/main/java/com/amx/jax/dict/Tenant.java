@@ -13,15 +13,16 @@ import com.amx.utils.ArgUtil;
 public enum Tenant {
 
 	/** Dev Environments **/
-	KWT2("KW", 91, "Kuwait Alt", Currency.KWD), BRNDEV("BH", 104, "Bahrain dev", Currency.BHD),
-	OMNDEV("OM", 82, "oman dev", Currency.OMR),
+	KWT2("KW", 91, "Kuwait Alt", Currency.KWD, Language.AR),
+	BRNDEV("BH", 104, "Bahrain dev", Currency.BHD, Language.AR),
+	OMNDEV("OM", 82, "oman dev", Currency.OMR, Language.AR),
 
-	KWT("KW", 91, "Kuwait", Currency.KWD), BHR("BH", 104, "Bahrain", Currency.BHD),
-	OMN("OM", 82, "Oman", Currency.OMR),
-	
-	KWTV2("KW", 91, "Kuwait", Currency.KWD),
+	KWT("KW", 91, "Kuwait", Currency.KWD, Language.AR), BHR("BH", 104, "Bahrain", Currency.BHD, Language.AR),
+	OMN("OM", 82, "Oman", Currency.OMR, Language.AR),
 
-	NONE("none", 0, null);
+	KWTV2("KW", 91, "Kuwait", Currency.KWD, Language.AR),
+
+	NONE("none", 0, null, null, Language.EN);
 
 	public static Tenant DEFAULT = KWT;
 
@@ -46,33 +47,39 @@ public enum Tenant {
 	private boolean tenant;
 	private Currency currency;
 	public final Integer countryId;
+	public Language defaultLang;
 
 	public boolean isTenant() {
 		return tenant;
+	}
+
+	public Language defaultLang() {
+		return defaultLang;
 	}
 
 	public void setTenant(boolean tenant) {
 		this.tenant = tenant;
 	}
 
-	Tenant(String id, int code, String name, boolean isTenantApp, Currency currency) {
+	Tenant(String id, int code, String name, boolean isTenantApp, Currency currency, Language defaultLang) {
 		this.id = id;
 		this.countryId = code;
 		this.code = ArgUtil.parseAsString(code);
 		this.tenant = isTenantApp;
 		this.currency = currency;
+		this.defaultLang = defaultLang;
 	}
 
 	Tenant(String id, int code, String name) {
-		this(id, code, name, true, null);
+		this(id, code, name, true, null, Language.EN);
 	}
 
 	Tenant(String id, int code, String name, boolean isTenantApp) {
-		this(id, code, name, isTenantApp, null);
+		this(id, code, name, isTenantApp, null, Language.EN);
 	}
 
-	Tenant(String id, int code, String name, Currency currency) {
-		this(id, code, name, true, currency);
+	Tenant(String id, int code, String name, Currency currency, Language defaultLang) {
+		this(id, code, name, true, currency, defaultLang);
 	}
 
 	Tenant() {

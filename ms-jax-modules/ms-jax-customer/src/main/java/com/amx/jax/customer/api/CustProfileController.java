@@ -84,6 +84,44 @@ public class CustProfileController implements ICustomerProfileService {
 	}
 
 	@Override
+	@RequestMapping(value = ApiPath.CONTACT_LINK_RESEND, method = RequestMethod.POST)
+	public AmxApiResponse<CustomerContactVerificationDto, Object> resendLink(
+			@RequestParam(value = ApiParams.IDENTITY) String identity,
+			@RequestParam(value = ApiParams.LINK_ID) BigDecimal linkId,
+			@RequestParam(value = ApiParams.VERIFICATION_CODE) String code) {
+
+		Customer c;
+		if (!ArgUtil.isEmpty(identity)) {
+			c = customerRepository.getActiveCustomerDetails(identity);
+		} else {
+			throw new ApiHttpArgException(ApiStatusCodes.PARAM_MISSING, "CivilId Id is required");
+		}
+
+		CustomerContactVerification newLink = customerContactVerificationManager.resend(c, linkId, code);
+
+		if (ContactType.EMAIL.equals(newLink.getContactType())) {
+			Email email = new Email();
+			email.addTo(c.getEmail());
+			email.setITemplate(TemplatesMX.CONTACT_VERIFICATION_EMAIL);
+			email.getModel().put("customer", EntityDtoUtil.entityToDto(c, new CustomerDto()));
+			email.getModel().put("link", newLink);
+			postManService.sendEmailAsync(email);
+		} else if (ContactType.SMS.equals(newLink.getContactType())) {
+			SMS sms = new SMS();
+			sms.addTo(c.getMobile());
+			sms.setITemplate(TemplatesMX.CONTACT_VERIFICATION_SMS);
+
+			sms.getModel().put("customer", EntityDtoUtil.entityToDto(c, new CustomerDto()));
+			sms.getModel().put("link", newLink);
+			postManService.sendSMSAsync(sms);
+		} else if (ContactType.WHATSAPP.equals(newLink.getContactType())) {
+
+		}
+
+		return AmxApiResponse.build(customerContactVerificationManager.convertToDto(newLink));
+	}
+
+	@Override
 	@RequestMapping(value = ApiPath.CONTACT_LINK_VALIDATE, method = RequestMethod.POST)
 	public AmxApiResponse<CustomerContactVerificationDto, Object> validateVerificationLink(
 			@RequestParam(value = ApiParams.LINK_ID) BigDecimal id) {
