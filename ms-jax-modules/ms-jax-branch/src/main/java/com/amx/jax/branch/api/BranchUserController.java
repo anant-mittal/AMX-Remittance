@@ -91,7 +91,7 @@ public class BranchUserController {
 				customerCallDetail.setCustomerId(c.getCustomerId());
 				customerCallDetail.setMobile(mobile);
 				customerCallDetail.setStatus(status);
-				customerCallDetail.setComment(comment);
+				customerCallDetail.setRemark(comment);
 				customerCallDetailsRepository.save(customerCallDetail);
 				return AmxApiResponse.build(call).statusEnum(ApiStatusCodes.SUCCESS);
 			}
