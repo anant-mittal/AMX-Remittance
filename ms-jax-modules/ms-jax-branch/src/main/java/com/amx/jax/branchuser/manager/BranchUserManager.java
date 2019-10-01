@@ -32,7 +32,6 @@ import com.amx.jax.repository.fx.EmployeeDetailsRepository;
 import com.amx.jax.repository.remittance.BranchDayTransactionRepository;
 import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
-import com.amx.jax.validation.FxOrderValidation;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
@@ -63,9 +62,6 @@ public class BranchUserManager  extends AbstractModel {
 	
 	@Autowired
 	EmployeeDetailsRepository employeeDetailsRepository;
-	
-	@Autowired
-	FxOrderValidation validateHeaderInfo;
 	
 	@Autowired
 	RoutingProcedureDao routingProDao;

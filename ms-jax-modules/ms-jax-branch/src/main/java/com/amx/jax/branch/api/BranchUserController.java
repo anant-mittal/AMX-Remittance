@@ -12,13 +12,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.branchuser.service.BranchUserService;
 import com.amx.jax.cache.box.CustomerOnCall;
 import com.amx.jax.cache.box.CustomerOnCall.CustomerCall;
+import com.amx.jax.client.branch.IBranchService;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerCallDetails;
 import com.amx.jax.dbmodel.Employee;
 import com.amx.jax.exception.ApiHttpExceptions.ApiStatusCodes;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.response.remittance.UserwiseTransactionDto;
 import com.amx.jax.repository.CustomerCallDetailsRepository;
 import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.repository.EmployeeRespository;
@@ -27,7 +31,7 @@ import com.amx.utils.ArgUtil;
 import com.amx.utils.CollectionUtil;
 
 @RestController
-public class BranchUserController {
+public class BranchUserController implements IBranchService {
 
 	private static final Logger LOGGER = LoggerService.getLogger(BranchUserController.class);
 
@@ -98,6 +102,19 @@ public class BranchUserController {
 
 		}
 		return AmxApiResponse.build(call).statusEnum(ApiStatusCodes.FAIL);
+	}
+
+	@Autowired
+	MetaData metaData;
+
+	@Autowired
+	BranchUserService branchUserService;
+
+	@RequestMapping(value = Path.BR_REMITTANCE_USER_WISE_COUNT, method = RequestMethod.GET)
+	public AmxApiResponse<UserwiseTransactionDto, Object> getTotalCount(
+			@RequestParam(value = Params.TRNX_DATE, required = false) String transactiondate) {
+		LOGGER.info("user wise total getTotalCount " + transactiondate);
+		return branchUserService.getTotalCount(transactiondate);
 	}
 
 }

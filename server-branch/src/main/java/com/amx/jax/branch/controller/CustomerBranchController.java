@@ -6,6 +6,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.branch.beans.BranchSession;
 import com.amx.jax.cache.box.CustomerOnCall;
+import com.amx.jax.cache.box.CustomerOnCall.CustomerCall;
 import com.amx.jax.client.OffsiteCustRegClient;
 import com.amx.jax.client.branch.BranchUserClient;
 import com.amx.jax.client.customer.CustomerManagementClient;
@@ -87,7 +88,7 @@ public class CustomerBranchController {
 	CustomerOnCall customerOnCall;
 
 	@RequestMapping(value = "/api/customer/connected", method = { RequestMethod.GET })
-	public AmxApiResponse<BigDecimal, Object> getCustomerConnected() {
+	public AmxApiResponse<CustomerCall, Object> getCustomerConnected() {
 		String employeeId = ArgUtil.parseAsString(ssoUser.getUserDetails().getEmployeeId());
 		return AmxApiResponse.build(customerOnCall.get(employeeId));
 	}
