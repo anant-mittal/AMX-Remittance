@@ -208,6 +208,12 @@ public class CustomerDBAuthManager {
 		if(customer.getFirstName() != null) {
 			model.setFirstName(customer.getFirstName());
 		}
+		if(customer.getMiddleName() != null) {
+			model.setMiddleName(customer.getMiddleName());
+		}
+		if(customer.getLastName() != null) {
+			model.setLastName(customer.getLastName());
+		}
 
 		onlineCust.setEmailToken(model.getHashedeOtp());
 		custDao.saveOnlineCustomer(onlineCust);
