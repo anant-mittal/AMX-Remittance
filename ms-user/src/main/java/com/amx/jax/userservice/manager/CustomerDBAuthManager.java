@@ -205,6 +205,9 @@ public class CustomerDBAuthManager {
 		model.seteOtp(eOtp);
 		model.seteOtpPrefix(eOtpPrefix);
 		model.setHashedeOtp(hashedeOtp);
+		if(customer.getFirstName() != null) {
+			model.setFirstName(customer.getFirstName());
+		}
 
 		onlineCust.setEmailToken(model.getHashedeOtp());
 		custDao.saveOnlineCustomer(onlineCust);
