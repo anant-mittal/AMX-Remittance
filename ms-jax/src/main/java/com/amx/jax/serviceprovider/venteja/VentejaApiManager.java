@@ -1,5 +1,6 @@
 package com.amx.jax.serviceprovider.venteja;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -25,12 +26,15 @@ public class VentejaApiManager extends ServiceProviderApiManager {
 	@Override
 	public Validate_Remittance_Inputs_Call_Response validateApiInput(RemittanceAdditionalBeneFieldModel remittanceAdditionalBeneFieldModel,
 			Map<String, Object> remitApplParametersMap) {
-		ServiceProviderCallRequestDto serviceProviderCallRequestDto = createValidateInputRequest(remitApplParametersMap);
+		Map<String, Object> inputs = new HashMap<>();
+		inputs.putAll(remitApplParametersMap);
+		inputs.put("P_BENEFICIARY_RELASHIONSHIP_ID", remittanceAdditionalBeneFieldModel.getBeneId());
+		inputs.put("flexFieldDtoMap", remittanceAdditionalBeneFieldModel.getFlexFieldDtoMap());
+		ServiceProviderCallRequestDto serviceProviderCallRequestDto = createValidateInputRequest(inputs);
 		AmxApiResponse<Validate_Remittance_Inputs_Call_Response, Object> response = serviceProviderClientWrapper
 				.validateRemittanceInputs(serviceProviderCallRequestDto);
-		parseResponseForError(response.getResult());
+		parseValidateResponseForError(response.getResult());
 		return response.getResult();
-
 	}
 
 	public ServiceProviderCallRequestDto createValidateInputRequest(Map<String, Object> remitApplParametersMap) {

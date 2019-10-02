@@ -14,6 +14,7 @@ import com.amx.jax.client.serviceprovider.ServiceProviderClientWrapper;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.model.request.remittance.RemittanceAdditionalBeneFieldModel;
 import com.amx.jax.model.request.serviceprovider.ServiceProviderCallRequestDto;
+import com.amx.jax.model.response.serviceprovider.Remittance_Call_Response;
 import com.amx.jax.model.response.serviceprovider.ServiceProviderResponse;
 import com.amx.jax.model.response.serviceprovider.Validate_Remittance_Inputs_Call_Response;
 import com.amx.jax.serviceprovider.ServiceProviderBeneDataManager;
@@ -58,7 +59,18 @@ public class ServiceProviderApiManager {
 
 	}
 
-	protected void parseResponseForError(ServiceProviderResponse result) {
+	public Remittance_Call_Response sendRemittance(RemittanceAdditionalBeneFieldModel remittanceAdditionalBeneFieldModel,
+			Map<String, Object> remitApplParametersMap) {
+		Map<String, Object> inputs = new HashMap<>();
+		inputs.putAll(remitApplParametersMap);
+		inputs.put("P_BENEFICIARY_RELASHIONSHIP_ID", remittanceAdditionalBeneFieldModel.getBeneId());
+		inputs.put("flexFieldDtoMap", remittanceAdditionalBeneFieldModel.getFlexFieldDtoMap());
+		ServiceProviderCallRequestDto serviceProviderCallRequestDto = createValidateInputRequest(inputs);
+		AmxApiResponse<Remittance_Call_Response, Object> response = serviceProviderClientWrapper.sendRemittance(serviceProviderCallRequestDto);
+		return response.getResult();
+	}
+
+	protected void parseValidateResponseForError(ServiceProviderResponse result) {
 		if (result.getAction_ind() == null) {
 			throw new GlobalException(JaxError.TRANSACTION_VALIDATION_FAIL, "No action Indic returned by service provider api");
 		}
@@ -70,6 +82,5 @@ public class ServiceProviderApiManager {
 			throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE,
 					String.format("Api Validation failed. Action Ind %s Message: %s", result.getAction_ind(), result.getResponse_description()));
 		}
-
 	}
 }
