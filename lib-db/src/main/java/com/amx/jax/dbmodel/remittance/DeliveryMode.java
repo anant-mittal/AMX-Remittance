@@ -4,9 +4,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -38,7 +36,6 @@ public class DeliveryMode implements Serializable {
 	//private List<ServiceApplicabilityRule> serviceApplicabilityRule=new ArrayList<ServiceApplicabilityRule>();
 	//private List<BankServiceRule> bankServiceRule=new ArrayList<BankServiceRule>();
 	//private Set<Remittance> exRemittances = new HashSet<Remittance>(0);
-	private Set<RemittanceApplication> exRemittanceApplication = new HashSet<RemittanceApplication>(0);
 	private String appovedBy;
 	private Date approveDate;
 	private String remrks;
@@ -138,18 +135,6 @@ public class DeliveryMode implements Serializable {
 		this.deliveryModeList = deliveryModeList;
 	}
 	
-	
-	
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "exDeliveryMode")
-	public Set<RemittanceApplication> getExRemittanceApplication() {
-		return exRemittanceApplication;
-	}
-
-	public void setExRemittanceApplication(
-			Set<RemittanceApplication> exRemittanceApplication) {
-		this.exRemittanceApplication = exRemittanceApplication;
-	}
-
 	@Column(name="APPROVED_BY")
 	public String getAppovedBy() {
 		return appovedBy;

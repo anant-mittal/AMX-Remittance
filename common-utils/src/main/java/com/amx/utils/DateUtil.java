@@ -923,5 +923,38 @@ public final class DateUtil {
 		return getHrMinIntVal(hourOfDay, minOfHr);
 
 	}
+	
+	/**
+	 * validates date string according to the format passed
+	 * 
+	 * @param strDate
+	 * @param format
+	 * @return if date string is valid Date object is returned otherwise null
+	 * 
+	 */
+	public static LocalDate validateDate(String strDate, String format) {
 
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
+		try {
+			return LocalDate.parse(strDate, formatter);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	/**
+	 * parses the date object
+	 * 
+	 * @param localDate
+	 * @param format
+	 * @return parsed date
+	 * 
+	 */
+	public static String format(LocalDate localDate, String format) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
+		try {
+			return localDate.format(formatter);
+		} catch (Exception e) {
+			return null;
+		}
+	}
 }

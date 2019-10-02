@@ -20,6 +20,7 @@ import com.amx.jax.branchremittance.manager.BranchRemittanceSaveManager;
 import com.amx.jax.branchremittance.manager.BranchRoutingManager;
 import com.amx.jax.branchremittance.manager.ReportManager;
 import com.amx.jax.manager.FcSaleBranchOrderManager;
+import com.amx.jax.manager.remittance.AdditionalBankDetailManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
@@ -72,6 +73,8 @@ public class BranchRemittanceService extends AbstractService{
 	
 	@Autowired
 	ReportManager reportManager;
+	@Autowired
+	AdditionalBankDetailManager additionalBankDetailManager;
 	
 
 	
@@ -205,10 +208,10 @@ public class BranchRemittanceService extends AbstractService{
 		return new BoolRespModel(result);
 	}
 	
-	
-public  AmxApiResponse<ParameterDetailsResponseDto, Object> getGiftService(BigDecimal beneRelaId) {
-	ParameterDetailsResponseDto parameterDetailsResponseDto =branchRemitManager.getGiftService(beneRelaId);
-	return AmxApiResponse.build(parameterDetailsResponseDto);
-}
+	public AmxApiResponse<ParameterDetailsResponseDto, Object> getGiftService(BigDecimal beneRelaId) {
+		ParameterDetailsResponseDto parameterDetailsResponseDto = branchRemitManager.getGiftService(beneRelaId);
+		parameterDetailsResponseDto.getParameterDetailsDto().addAll(additionalBankDetailManager.fetchServiceProviderFcAmount(beneRelaId));
+		return AmxApiResponse.build(parameterDetailsResponseDto);
+	}
 	
 }

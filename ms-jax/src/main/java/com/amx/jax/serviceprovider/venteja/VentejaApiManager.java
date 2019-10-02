@@ -1,21 +1,23 @@
 package com.amx.jax.serviceprovider.venteja;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.amxlib.model.JaxFieldDto;
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.error.JaxError;
+import com.amx.jax.constant.BankConstants;
 import com.amx.jax.model.request.remittance.RemittanceAdditionalBeneFieldModel;
 import com.amx.jax.model.request.serviceprovider.ServiceProviderCallRequestDto;
 import com.amx.jax.model.response.remittance.FlexFieldDto;
 import com.amx.jax.model.response.serviceprovider.Validate_Remittance_Inputs_Call_Response;
 import com.amx.jax.serviceprovider.service.ServiceProviderApiManager;
 
-@Component("VINTJA")
+@Component(BankConstants.VINTJA_BANK_CODE)
 public class VentejaApiManager extends ServiceProviderApiManager {
 
 	private static final Logger log = LoggerFactory.getLogger(VentejaApiManager.class);
@@ -27,24 +29,20 @@ public class VentejaApiManager extends ServiceProviderApiManager {
 				remitApplParametersMap);
 		AmxApiResponse<Validate_Remittance_Inputs_Call_Response, Object> response = serviceProviderClientWrapper
 				.validateRemittanceInputs(serviceProviderCallRequestDto);
-		parseValidateRemittanceInputsResponse(response.getResult());
+		parseResponseForError(response.getResult());
 		return response.getResult();
 
 	}
 
-	private void parseValidateRemittanceInputsResponse(Validate_Remittance_Inputs_Call_Response result) {
-		if (result.getAction_ind() != null) {
-			throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE,
-					String.format("Api Validation failed. Action Ind %s Message: %s", result.getAction_ind(), result.getResponse_description()));
-		}
-	}
 
 	@Override
 	public ServiceProviderCallRequestDto createValidateInputRequest(RemittanceAdditionalBeneFieldModel remittanceAdditionalBeneFieldModel,
 			Map<String, Object> remitApplParametersMap) {
 		ServiceProviderCallRequestDto serviceProviderCallRequestDto = super.createValidateInputRequest(remittanceAdditionalBeneFieldModel,
 				remitApplParametersMap);
-		//serviceProviderCallRequestDto.getBeneficiaryDto().setPartner_beneficiary_type(memberType);
+		// TODO: hard coded 1 for testing purpse. modify and call Chiranjeevi;s method
+		// once done from his side b ypsasing bene rel seq id
+		serviceProviderCallRequestDto.getBeneficiaryDto().setPartner_beneficiary_type("1");
 		VentejaServiceProviderFlexField[] allFlexFields = VentejaServiceProviderFlexField.values();
 		for (VentejaServiceProviderFlexField flexField : allFlexFields) {
 			Map<String, FlexFieldDto> requestFlexFields = remittanceAdditionalBeneFieldModel.getFlexFieldDtoMap();
@@ -56,6 +54,29 @@ public class VentejaApiManager extends ServiceProviderApiManager {
 			}
 		}
 		return serviceProviderCallRequestDto;
+	}
+
+	@Override
+	public void setAdditionalFlexFieldParams(RemittanceAdditionalBeneFieldModel request, Map<String, Object> remitApplParametersMap,
+			List<JaxFieldDto> requiredFlexFields) {
+		if (requiredFlexFields != null) {
+			Map<String, JaxFieldDto> requiredFlexFieldsMap = requiredFlexFields.stream().map(i -> {
+				if (i.getName().equals("PAYMENT PERIOD FROM DATE")) {
+					i.setName("INDIC4");
+				}
+				if (i.getName().equals("PAYMENT PERIOD EXPIRY DATE")) {
+					i.setName("INDIC5");
+				}
+				return i;
+			}).collect(Collectors.toMap(i -> i.getName(), i -> i));
+			VentejaServiceProviderFlexField[] ventajaFlexFields = VentejaServiceProviderFlexField.values();
+			for (VentejaServiceProviderFlexField field : ventajaFlexFields) {
+				JaxFieldDto jaxFieldDto = requiredFlexFieldsMap.get(field.name());
+				if (jaxFieldDto != null) {
+					field.setAdditionalParams(jaxFieldDto);
+				}
+			}
+		}
 	}
 
 }

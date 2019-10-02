@@ -2,24 +2,24 @@ package com.amx.jax.dbmodel.remittance;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
-//import com.amg.exchange.remittance.model.Remittance;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 @Entity
 @Table(name="EX_REMITTANCE_MODE", uniqueConstraints = @UniqueConstraint(columnNames = {"REMITTANCE_CODE" }))
+@Cacheable
+@Cache(usage=CacheConcurrencyStrategy.READ_WRITE)
 public class RemittanceModeMaster {
 	
 	private  BigDecimal remittanceModeId;
@@ -34,11 +34,6 @@ public class RemittanceModeMaster {
 	private String approvedBy;
 	private Date approvedDate;
 	private String remarks;
-	//private List<ServiceApplicabilityRule> serviceApplicabilityRule=new ArrayList<ServiceApplicabilityRule>();
-	//private List<BankServiceRule> bankServiceRule=new ArrayList<BankServiceRule>();
-	//private Set<Remittance> exRemittance = new HashSet<Remittance>(0);
-	private Set<RemittanceApplication> exRemittanceApplication = new HashSet<RemittanceApplication>(0);
-	
 	
 	
 	public RemittanceModeMaster(BigDecimal remittanceModeId) {
@@ -149,14 +144,6 @@ public class RemittanceModeMaster {
 		this.exRemittance = exRemittance;
 	}
 	*/
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "exRemittanceMode")
-	public Set<RemittanceApplication> getExRemittanceApplication() {
-		return exRemittanceApplication;
-	}
-	public void setExRemittanceApplication(
-			Set<RemittanceApplication> exRemittanceApplication) {
-		this.exRemittanceApplication = exRemittanceApplication;
-	}
 	
 	@Column(name= "APPROVED_BY")
 	public String getApprovedBy() {

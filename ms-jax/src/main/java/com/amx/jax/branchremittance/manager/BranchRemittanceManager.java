@@ -1204,8 +1204,8 @@ public ParameterDetailsResponseDto getGiftService(BigDecimal beneId) {
 	try {
 		BenificiaryListView beneficaryDetails =beneficiaryRepository.findByCustomerIdAndBeneficiaryRelationShipSeqIdAndIsActive(metaData.getCustomerId(),beneId,ConstantDocument.Yes);
 		if(beneficaryDetails!=null && !StringUtils.isBlank(beneficaryDetails.getBankCode()) && beneficaryDetails.getBranchCode()!=null){
-			List<ViewParameterDetails> vwParamDetailsList = viewParameterDetailsRespository
-						.findByCharField2AndNumericField1(beneficaryDetails.getBankCode(), beneficaryDetails.getBranchCode());
+				List<ViewParameterDetails> vwParamDetailsList = viewParameterDetailsRespository.findByRecordIdAndCharField2AndNumericField1(
+						ConstantDocument.BPI_GIFT, beneficaryDetails.getBankCode(), beneficaryDetails.getBranchCode());
 		
 			if(vwParamDetailsList!=null && !vwParamDetailsList.isEmpty()) {
 				List<ParameterDetailsDto> dtoList = new ArrayList<ParameterDetailsDto>();
