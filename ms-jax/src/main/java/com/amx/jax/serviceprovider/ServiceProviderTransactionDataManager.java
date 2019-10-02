@@ -31,8 +31,7 @@ public class ServiceProviderTransactionDataManager {
 	@Autowired
 	protected BankService bankService;
 
-	public void setTransactionDtoDbValues(RemittanceAdditionalBeneFieldModel request, Map<String, Object> remitApplParametersMap,
-			ServiceProviderCallRequestDto serviceProviderCallRequestDto) {
+	public void setTransactionDtoDbValues(Map<String, Object> remitApplParametersMap, ServiceProviderCallRequestDto serviceProviderCallRequestDto) {
 		BigDecimal applicationCountryId = (BigDecimal) remitApplParametersMap.get("P_APPLICATION_COUNTRY_ID");
 		BigDecimal routingCountryId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_COUNTRY_ID");
 		BigDecimal remittanceModeId = (BigDecimal) remitApplParametersMap.get("P_REMITTANCE_MODE_ID");

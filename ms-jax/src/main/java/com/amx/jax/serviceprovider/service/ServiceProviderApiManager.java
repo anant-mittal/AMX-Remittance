@@ -1,5 +1,6 @@
 package com.amx.jax.serviceprovider.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,23 +32,22 @@ public class ServiceProviderApiManager {
 	@Autowired
 	protected ServiceProviderClientWrapper serviceProviderClientWrapper;
 
-	protected ServiceProviderCallRequestDto createValidateInputRequest(RemittanceAdditionalBeneFieldModel remittanceAdditionalBeneFieldModel,
-			Map<String, Object> remitApplParametersMap) {
+	protected ServiceProviderCallRequestDto createValidateInputRequest(Map<String, Object> remitParametersMap) {
 		ServiceProviderCallRequestDto serviceProviderCallRequestDto = new ServiceProviderCallRequestDto();
 
-		serviceProviderBeneDataManager.setBeneficiaryDtoDbValues(remittanceAdditionalBeneFieldModel, remitApplParametersMap,
-				serviceProviderCallRequestDto);
-		serviceProviderCustomerDataManager.setCustomerDtoDbValues(remittanceAdditionalBeneFieldModel, remitApplParametersMap,
-				serviceProviderCallRequestDto);
-		serviceProviderTransactionDataManager.setTransactionDtoDbValues(remittanceAdditionalBeneFieldModel, remitApplParametersMap,
-				serviceProviderCallRequestDto);
+		serviceProviderBeneDataManager.setBeneficiaryDtoDbValues(remitParametersMap, serviceProviderCallRequestDto);
+		serviceProviderCustomerDataManager.setCustomerDtoDbValues(remitParametersMap, serviceProviderCallRequestDto);
+		serviceProviderTransactionDataManager.setTransactionDtoDbValues(remitParametersMap, serviceProviderCallRequestDto);
 		return serviceProviderCallRequestDto;
 	}
 
 	public Validate_Remittance_Inputs_Call_Response validateApiInput(RemittanceAdditionalBeneFieldModel remittanceAdditionalBeneFieldModel,
 			Map<String, Object> remitApplParametersMap) {
-		ServiceProviderCallRequestDto serviceProviderCallRequestDto = createValidateInputRequest(remittanceAdditionalBeneFieldModel,
-				remitApplParametersMap);
+		Map<String, Object> inputs = new HashMap<>();
+		inputs.putAll(remitApplParametersMap);
+		inputs.put("P_BENEFICIARY_RELASHIONSHIP_ID", remittanceAdditionalBeneFieldModel.getBeneId());
+		inputs.put("flexFieldDtoMap", remittanceAdditionalBeneFieldModel.getFlexFieldDtoMap());
+		ServiceProviderCallRequestDto serviceProviderCallRequestDto = createValidateInputRequest(inputs);
 		AmxApiResponse<Validate_Remittance_Inputs_Call_Response, Object> response = serviceProviderClientWrapper
 				.validateRemittanceInputs(serviceProviderCallRequestDto);
 		return response.getResult();

@@ -25,8 +25,7 @@ public class VentejaApiManager extends ServiceProviderApiManager {
 	@Override
 	public Validate_Remittance_Inputs_Call_Response validateApiInput(RemittanceAdditionalBeneFieldModel remittanceAdditionalBeneFieldModel,
 			Map<String, Object> remitApplParametersMap) {
-		ServiceProviderCallRequestDto serviceProviderCallRequestDto = createValidateInputRequest(remittanceAdditionalBeneFieldModel,
-				remitApplParametersMap);
+		ServiceProviderCallRequestDto serviceProviderCallRequestDto = createValidateInputRequest(remitApplParametersMap);
 		AmxApiResponse<Validate_Remittance_Inputs_Call_Response, Object> response = serviceProviderClientWrapper
 				.validateRemittanceInputs(serviceProviderCallRequestDto);
 		parseResponseForError(response.getResult());
@@ -34,18 +33,14 @@ public class VentejaApiManager extends ServiceProviderApiManager {
 
 	}
 
-
-	@Override
-	public ServiceProviderCallRequestDto createValidateInputRequest(RemittanceAdditionalBeneFieldModel remittanceAdditionalBeneFieldModel,
-			Map<String, Object> remitApplParametersMap) {
-		ServiceProviderCallRequestDto serviceProviderCallRequestDto = super.createValidateInputRequest(remittanceAdditionalBeneFieldModel,
-				remitApplParametersMap);
+	public ServiceProviderCallRequestDto createValidateInputRequest(Map<String, Object> remitApplParametersMap) {
+		ServiceProviderCallRequestDto serviceProviderCallRequestDto = super.createValidateInputRequest(remitApplParametersMap);
 		// TODO: hard coded 1 for testing purpse. modify and call Chiranjeevi;s method
 		// once done from his side b ypsasing bene rel seq id
 		serviceProviderCallRequestDto.getBeneficiaryDto().setPartner_beneficiary_type("1");
 		VentejaServiceProviderFlexField[] allFlexFields = VentejaServiceProviderFlexField.values();
 		for (VentejaServiceProviderFlexField flexField : allFlexFields) {
-			Map<String, FlexFieldDto> requestFlexFields = remittanceAdditionalBeneFieldModel.getFlexFieldDtoMap();
+			Map<String, FlexFieldDto> requestFlexFields = (Map<String, FlexFieldDto>) remitApplParametersMap.get("flexFieldDtoMap");
 			FlexFieldDto value = requestFlexFields.get(flexField.name());
 			if (value != null) {
 				flexField.setValue(serviceProviderCallRequestDto, requestFlexFields);

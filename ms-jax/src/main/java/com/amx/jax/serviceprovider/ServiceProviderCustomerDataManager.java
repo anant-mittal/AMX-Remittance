@@ -18,9 +18,7 @@ public class ServiceProviderCustomerDataManager {
 	@Autowired
 	UserService userService;
 
-	public void setCustomerDtoDbValues(RemittanceAdditionalBeneFieldModel request, Map<String, Object> remitApplParametersMap,
-			ServiceProviderCallRequestDto serviceProviderCallRequestDto) {
-
+	public void setCustomerDtoDbValues(Map<String, Object> remitApplParametersMap, ServiceProviderCallRequestDto serviceProviderCallRequestDto) {
 
 	}
 

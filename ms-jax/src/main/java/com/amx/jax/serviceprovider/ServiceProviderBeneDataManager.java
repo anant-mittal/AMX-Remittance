@@ -1,5 +1,6 @@
 package com.amx.jax.serviceprovider;
 
+import java.math.BigDecimal;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +9,6 @@ import org.springframework.stereotype.Component;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.meta.MetaData;
-import com.amx.jax.model.request.remittance.RemittanceAdditionalBeneFieldModel;
 import com.amx.jax.model.request.serviceprovider.Benificiary;
 import com.amx.jax.model.request.serviceprovider.ServiceProviderCallRequestDto;
 import com.amx.jax.services.BeneficiaryService;
@@ -24,10 +24,10 @@ public class ServiceProviderBeneDataManager {
 	@Autowired
 	UserService userService;
 
-	public void setBeneficiaryDtoDbValues(RemittanceAdditionalBeneFieldModel request, Map<String, Object> remitApplParametersMap,
-			ServiceProviderCallRequestDto serviceProviderCallRequestDto) {
+	public void setBeneficiaryDtoDbValues(Map<String, Object> remitApplParametersMap, ServiceProviderCallRequestDto serviceProviderCallRequestDto) {
+		BigDecimal beneIdNo = (BigDecimal) remitApplParametersMap.get("P_BENEFICIARY_RELASHIONSHIP_ID");
 		Customer customer = userService.getCustById(metaData.getCustomerId());
-		BenificiaryListView beneficiary = beneficiaryService.getBeneByIdNo(request.getBeneId());
+		BenificiaryListView beneficiary = beneficiaryService.getBeneByIdNo(beneIdNo);
 		Benificiary beneDto = serviceProviderCallRequestDto.getBeneficiaryDto();
 		beneDto.setLast_name(beneficiary.getThirdName());
 		beneDto.setFirst_name(beneficiary.getFirstName());
