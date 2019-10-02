@@ -2,7 +2,6 @@ package com.amx.jax.manager.remittance;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,12 +15,12 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.jax.constants.JaxChannel;
 import com.amx.jax.dbmodel.TransactionLimitCheckView;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.manager.DailyPromotionManager;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.customer.CivilIdOtpModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
 import com.amx.jax.partner.manager.PartnerTransactionManager;
 import com.amx.jax.repository.CustomerRepository;
