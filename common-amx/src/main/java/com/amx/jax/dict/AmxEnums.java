@@ -20,10 +20,10 @@ public class AmxEnums {
 	}
 
 	public static enum Products implements EnumType {
-		REMIT, FXORDER;
+		REMIT, FXORDER, WT;
 	}
 
-	public static enum FxOrderStatus implements EnumType {
+	public static enum FxOrderStatus implements EnumType{
 		ORD, ACP, PCK, DVD, OFD_ACK, OFD_CNF, OFD, CND_ACK, CND, RTD_ACK, RTD
 	}
 

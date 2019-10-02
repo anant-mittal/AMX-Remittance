@@ -157,10 +157,20 @@ public class RemittanceTransaction implements Serializable {
 	private String remarks;
 	private BigDecimal usdAmt;
 	private String wuPurposeOfTransaction;
+	private String paymentType;
 	
 	private BigDecimal paygTrnxDetailId;
 	
 	
+	@Column(name="PAYMENT_TYPE")
+	public String getPaymentType() {
+		return paymentType;
+	}
+
+	public void setPaymentType(String paymentType) {
+		this.paymentType = paymentType;
+	}
+
 	public RemittanceTransaction() {
 	}
 		

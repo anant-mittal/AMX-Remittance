@@ -208,6 +208,7 @@ public class BranchRemittanceSaveManager {
 	
     @Autowired
     IPlaceOrderDao placeOrderdao;
+    
 	@Autowired
 	RemittanceManager remittanceManager;
 	
@@ -229,6 +230,8 @@ public class BranchRemittanceSaveManager {
 	@Autowired
 	PartnerTransactionDao partnerTransactionDao;
 	
+	@Autowired
+	RemittanceApplicationDao remittanceApplicationDao;
         @Autowired
 	RemittanceSignatureManager remittanceSignatureManager;
 	
@@ -324,6 +327,17 @@ public class BranchRemittanceSaveManager {
 			responseDto.setPromotionMessage(promotionMsg);
 		}else {
 			logger.error("NOT moved to old emos ", responseDto.getCollectionDocumentNo() + "" +responseDto.getCollectionDocumentCode()+" "+responseDto.getCollectionDocumentFYear());
+		}
+		
+		int i;
+		for(i=0;i<shoppingCartList.size();i++) {
+			
+			RemittanceApplication remittanceApplication = remittanceApplicationDao.getApplication(shoppingCartList.get(i).getApplicationId());
+			if(remittanceApplication!=null && ConstantDocument.PB_PAYMENT.equalsIgnoreCase(remittanceApplication.getPaymentType())&& ConstantDocument.PB_STATUS_NEW.equalsIgnoreCase(remittanceApplication.getWtStatus())) {
+				remittanceApplication.setWtStatus(ConstantDocument.WT_STATUS_PAID);
+				remittanceApplicationRepository.save(remittanceApplication);
+				
+			}
 		}
 		return responseDto;
 	}
@@ -1378,6 +1392,7 @@ public void validateSaveTrnxDetails(HashMap<String, Object> mapAllDetailRemitSav
 		if (applSrvProv != null) {
 			mapRemitTrnxSrvProv = new HashMap<>();
 			remitTrnxSrvProv = new RemitTrnxSrvProv();
+			
 			remitTrnxSrvProv.setAmgSessionId(applSrvProv.getAmgSessionId());
 			remitTrnxSrvProv.setBankId(applSrvProv.getBankId());
 			remitTrnxSrvProv.setFixedCommInSettlCurr(applSrvProv.getFixedCommInSettlCurr());

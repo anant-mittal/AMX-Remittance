@@ -23,6 +23,16 @@ public class RemittanceTransactionStatusResponseModel extends AbstractModel {
 	String errorCategory;
 	PromotionDto promotionDto;
 	ResponseCodeDetailDTO responseCodeDetail;
+	// Adding this field for pay at branch
+	String beneName;
+
+	public String getBeneName() {
+		return beneName;
+	}
+
+	public void setBeneName(String beneName) {
+		this.beneName = beneName;
+	}
 
 	public JaxTransactionStatus getStatus() {
 		return status;

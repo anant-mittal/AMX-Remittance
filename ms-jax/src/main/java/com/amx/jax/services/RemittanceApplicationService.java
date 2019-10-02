@@ -95,7 +95,7 @@ public class RemittanceApplicationService {
 
 
 public void updatePayTokenNull(List<RemittanceApplication> lstPayIdDetails,PaymentResponseDto paymentResponse) {
-	
+	logger.debug("In update payment token method");
 	for(RemittanceApplication shopAppl : lstPayIdDetails) {
 		RemittanceApplication appl = remittanceApplicationRepository.findOne(shopAppl.getRemittanceApplicationId());
 		if(appl!=null) {
@@ -138,6 +138,19 @@ public void updatePayTokenNull(List<RemittanceApplication> lstPayIdDetails,Payme
 		}
 	}
 	
+	public void deActivateLatestPbApplication(Customer customerId , String paymentType) {
+		try {
+
+			// deactivate all the application
+			List<RemittanceApplication> remittanceApplicationList = remittanceApplicationRepository.getLatestPbApplication(customerId, paymentType);
+			
+			remittanceApplicationRepository.deActivateLatestPbApplication(remittanceApplicationList.get(0).getRemittanceApplicationId());
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new GlobalException("De-Activate Application failed for customer:"+customerId);
+		}
+	}
 	/**
 	 * EX_INSERT_REMITTANCE_ONLINE 
 	 * 

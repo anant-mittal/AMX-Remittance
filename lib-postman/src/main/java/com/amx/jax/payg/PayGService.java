@@ -66,14 +66,15 @@ public class PayGService {
 				+ "&docId=" + payment.getDocId()
 				+ "&trckid=" + payment.getTrackId();
 
-		if (PayGServiceCode.WT.equals(payment.getServiceCode())) {
+		if (PayGServiceCode.WT.equals(payment.getServiceCode())
+				|| PayGServiceCode.PB.equals(payment.getServiceCode())) {
 			return callbackUrl;
 		}
 
 		String callbackd = Base64.getEncoder().encodeToString(callbackUrl.getBytes());
 
 		builder.path("app/payment").queryParam("amount", payment.getAmount())
-				.queryParam("trckid", payment.getTrackId()).queryParam("pg", payment.getServiceCode())
+				.queryParam("trckid", payment.getTrackId()).queryParam("pg", payment.getServiceCode().longEnum())
 				.queryParam("docFy", payment.getDocFy()).queryParam("docNo", payment.getDocNo())
 				.queryParam("docId", payment.getDocId())
 				.queryParam("tnt", context.getTenant()).queryParam("callbackd", callbackd)

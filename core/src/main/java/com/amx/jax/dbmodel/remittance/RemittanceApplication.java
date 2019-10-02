@@ -142,10 +142,27 @@ public class RemittanceApplication implements Serializable {
 	/** added by rabil **/
 	private String beneDeductFlag;
 	private String wuPurposeOfTransaction;
+	private String paymentType;
+	private String wtStatus;
 	
 	private BigDecimal paygTrnxDetailId;
 
+	@Column(name="PAYMENT_TYPE")
+	public String getPaymentType() {
+		return paymentType;
+	}
 
+	public void setPaymentType(String paymentType) {
+		this.paymentType = paymentType;
+	}
+	@Column(name="WT_STATUS")
+	public String getWtStatus() {
+		return wtStatus;
+	}
+
+	public void setWtStatus(String wtStatus) {
+		this.wtStatus = wtStatus;
+	}
 	private List<RemittanceAppBenificiary> exRemittanceAppBenificiary = new ArrayList<RemittanceAppBenificiary>(0);
 	
 	public RemittanceApplication() {

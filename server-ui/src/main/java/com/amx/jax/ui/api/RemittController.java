@@ -38,10 +38,12 @@ import com.amx.jax.AppContextUtil;
 import com.amx.jax.JaxAuthContext;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.JaxClientUtil;
+import com.amx.jax.client.PayAtBranchClient;
 import com.amx.jax.client.fx.IFxOrderService.Params;
 import com.amx.jax.client.remittance.RemittanceClient;
 import com.amx.jax.dict.Language;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.request.remittance.BranchRemittanceGetExchangeRateRequest;
 import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
@@ -60,6 +62,7 @@ import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.TemplatesMX;
+import com.amx.jax.response.payatbranch.PayAtBranchTrnxListDTO;
 import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 import com.amx.jax.ui.config.UIServerError;
@@ -178,9 +181,7 @@ public class RemittController {
 	@RequestMapping(value = "/api/user/tranx/print_history", method = { RequestMethod.POST })
 	public ResponseWrapper<List<Map<String, Object>>> printHistory(
 			@RequestBody ResponseWrapper<List<Map<String, Object>>> wrapper) throws IOException, PostManException {
-		File file = postManService
-				.processTemplate(new File(TemplatesMX.REMIT_STATMENT, wrapper, File.Type.PDF)
-						.lang(AppContextUtil.getTenant().defaultLang()))
+		File file = postManService.processTemplate(new File(TemplatesMX.REMIT_STATMENT, wrapper, File.Type.PDF).lang(AppContextUtil.getTenant().defaultLang()))
 				.getResult();
 		file.create(response, true);
 		return wrapper;
@@ -314,6 +315,9 @@ public class RemittController {
 		return wrapper;
 	}
 
+	@Autowired
+	private PayAtBranchClient wireTransferClient;
+
 	@RequestMapping(value = "/api/remitt/xrate/v2", method = { RequestMethod.POST })
 	public ResponseWrapper<DynamicRoutingPricingResponse> xrate(
 			@RequestBody RoutingPricingRequest routingPricingRequest) {
@@ -324,6 +328,12 @@ public class RemittController {
 	public ResponseWrapper<List<FlexFieldReponseDto>> flex(
 			@RequestBody BranchRemittanceGetExchangeRateRequest routingPricingRequest) {
 		return ResponseWrapper.buildList(remittanceClient.getFlexField(routingPricingRequest));
+	}
+
+	@ApiOperation(value = "Returns pending transactions list")
+	@RequestMapping(value = "/api/user/tranx/pending/list", method = { RequestMethod.POST })
+	public ResponseWrapper<List<PayAtBranchTrnxListDTO>> getPbTrnxList() {
+		return ResponseWrapper.buildList(wireTransferClient.getPbTrnxList());
 	}
 
 	/**
@@ -377,6 +387,11 @@ public class RemittController {
 		ResponseWrapper<List<PurposeOfTransactionModel>> wrapper = new ResponseWrapper<List<PurposeOfTransactionModel>>();
 		wrapper.setData(jaxService.setDefaults().getRemitClient().getPurposeOfTransactions(beneId).getResults());
 		return wrapper;
+	}
+
+	@RequestMapping(value = "/api/remitt/payment_mode/list", method = { RequestMethod.POST })
+	public ResponseWrapper<List<ResourceDTO>> getPaymentModes() {
+		return ResponseWrapper.buildList(wireTransferClient.getPaymentModes());
 	}
 
 	@RequestMapping(value = "/api/remitt/package/list", method = { RequestMethod.POST })

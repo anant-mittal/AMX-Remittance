@@ -347,6 +347,14 @@ public class RemittanceApplicationManager {
 		remittanceApplication.setDocumentNo(generateDocumentNumber(remittanceApplication.getExCountryBranch(), ConstantDocument.Update));
 		remittanceApplication.setPaymentId(remittanceApplication.getDocumentNo().toString());
 		remittanceApplication.setWuIpAddress(metaData.getDeviceIp());
+		remittanceApplication.setPaymentType(requestModel.getPaymentType());
+		if (ConstantDocument.PB_PAYMENT.equalsIgnoreCase(requestModel.getPaymentType())) {
+
+			remittanceApplication.setWtStatus(ConstantDocument.PB_STATUS_NEW);
+		}
+		
+		
+		
 		
 		DynamicRoutingPricingDto dynamicRoutingPricingResponse = requestModel.getDynamicRroutingPricingBreakup();
 		if(dynamicRoutingPricingResponse.getServiceProviderDto() != null && dynamicRoutingPricingResponse.getServiceProviderDto().getIntialAmountInSettlCurr() != null) {
@@ -362,7 +370,10 @@ public class RemittanceApplicationManager {
 		
 		validateAdditionalErrorMessagesV2(requestModel);
 		validateBannedBank();
-		validateDailyBeneficiaryTransactionLimit(beneDetails);
+		
+		//validateDailyBeneficiaryTransactionLimit(beneDetails);
+		
+		
 		remittanceApplication.setInstruction("URGENT");
 		setCustomerDiscountColumns(remittanceApplication, validationResults);
 		setVatDetails(remittanceApplication, validationResults);

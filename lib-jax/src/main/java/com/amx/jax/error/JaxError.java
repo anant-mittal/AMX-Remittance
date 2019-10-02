@@ -324,6 +324,10 @@ public enum JaxError implements IExceptionEnum {
 	SINGLE_TRANSACTION_SERVICE_PROVIDER,
 	// Default in last, IMPORTANT:- It should be last
 	JAX_SYSTEM_ERROR,
+	
+	
+	//Pay at Branch
+	PAYAT_BRANCH_TRNX_NOT_FOUND,
 	BPI_SETUP_IS_MISSING;
 	
 	@Deprecated

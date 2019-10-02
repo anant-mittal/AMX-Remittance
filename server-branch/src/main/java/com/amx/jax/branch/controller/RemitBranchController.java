@@ -5,6 +5,15 @@ import java.math.BigDecimal;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
@@ -12,8 +21,10 @@ import com.amx.amxlib.model.BeneRelationsDescriptionDto;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.api.ListRequestModel;
 import com.amx.jax.branch.BranchMetaOutFilter;
 import com.amx.jax.client.BeneClient;
+import com.amx.jax.client.PayAtBranchClient;
 import com.amx.jax.client.RemitClient;
 import com.amx.jax.client.remittance.RemittanceClient;
 import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
@@ -43,6 +54,7 @@ import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.rbaac.IRbaacService;
+import com.amx.jax.response.payatbranch.PayAtBranchTrnxListDTO;
 import com.amx.jax.sso.SSOUser;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
 import com.amx.jax.terminal.TerminalService;
@@ -72,6 +84,9 @@ public class RemitBranchController {
 
 	@Autowired
 	private RemittanceClient branchRemittanceClient;
+
+	@Autowired
+	private PayAtBranchClient payAtBranchClient;
 
 	@Autowired
 	private BeneClient beneClient;
@@ -323,6 +338,11 @@ public class RemitBranchController {
 	public AmxApiResponse<DynamicRoutingPricingResponse, Object> getDynamicRoutingPricingRoutes(
 			@RequestBody RoutingPricingRequest routingPricingRequest) {
 		return branchRemittanceClient.getDynamicRoutingPricing(routingPricingRequest);
+	}
+
+	@RequestMapping(value = "/api/remitt/pb_trnx/list", method = { RequestMethod.POST })
+	public AmxApiResponse<PayAtBranchTrnxListDTO, Object> getPayAtBranchApplList() {
+		return payAtBranchClient.getPbTrnxListBranch();
 	}
 
 	@RequestMapping(value = "/api/remitt/package/list", method = { RequestMethod.POST })
