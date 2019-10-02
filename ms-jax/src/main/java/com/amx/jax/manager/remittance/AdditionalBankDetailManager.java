@@ -173,19 +173,8 @@ public class AdditionalBankDetailManager {
 
 						AdditionalBankRuleMap addlMap = additionalBankRuleMapRepos.findByFlexFieldAndIsActive(viewParameterDetails.getCharField3(),
 								ConstantDocument.Yes);
-						BankMasterModel bankMasterModel = bankService.getByBankCode(viewParameterDetails.getCharField2());
-						List<CurrencyMasterModel> currLsit = currencyDao.getCurrencyListByCountryId(bankMasterModel.getBankCountryId());
-						ViewRemittanceMode remitMode = viewRemittanceMode.findByRemittancCode(viewParameterDetails.getCharField4());
-						ViewDeliveryMode delMode = viewDeliveryMode.findByDeliveryCode(viewParameterDetails.getCharField5());
-
-						BigDecimal currencyId = BigDecimal.ZERO;
-						if (!currLsit.isEmpty()) {
-							currencyId = currLsit.get(0).getCurrencyId();
-						}
-
 						// Set default properties
 						pdto.importFrom(viewParameterDetails);
-
 						pdto.setResourceValue(new FlexFieldDto(addlMap.getAdditionalBankRuleId(), null, viewParameterDetails.getCharField1(),
 								viewParameterDetails.getParamCodeDef(), viewParameterDetails.getCharField3()));
 
@@ -206,7 +195,7 @@ public class AdditionalBankDetailManager {
 						pdto.setNumericUdf4(viewParameterDetails.getNumericField4());
 						pdto.setNumericUdf5(viewParameterDetails.getNumericField5());
 						pdto.setAmount(viewParameterDetails.getNumericField2());
-
+						pdto.setResourceName(pdto.getAmount());
 						dtoList.add(pdto);
 					}
 				}
