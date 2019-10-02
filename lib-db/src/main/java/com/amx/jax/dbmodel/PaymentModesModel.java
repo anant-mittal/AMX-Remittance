@@ -55,5 +55,11 @@ private static final long serialVersionUID = 7309549091432024935L;
 		return paymentType;
 	}
 
+	@Override
+	public String resourceLocalName() {
+		
+		return null;
+	}
+
 	
 }
