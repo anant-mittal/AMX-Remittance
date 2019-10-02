@@ -19,13 +19,13 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.model.BranchSearchNotificationModel;
-import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.notification.RemittanceTransactionFailureAlertModel;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.dbmodel.ApplicationSetup;
 import com.amx.jax.dbmodel.ExEmailNotification;
 import com.amx.jax.dict.Tenant;
+import com.amx.jax.model.customer.CivilIdOtpModel;
 import com.amx.jax.model.request.partner.TransactionFailReportDTO;
 import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.model.response.fx.FxDeliveryDetailNotificationDto;

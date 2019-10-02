@@ -20,7 +20,6 @@ import com.amx.amxlib.exception.CustomerValidationException;
 import com.amx.amxlib.exception.IncorrectInputException;
 import com.amx.amxlib.exception.InvalidInputException;
 import com.amx.amxlib.exception.LimitExeededException;
-import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.api.AmxApiResponse;
@@ -28,6 +27,7 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.config.JaxConfig;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.client.util.ConverterUtility;
+import com.amx.jax.model.customer.CivilIdOtpModel;
 import com.amx.jax.model.customer.SecurityQuestionModel;
 
 @RunWith(SpringRunner.class)

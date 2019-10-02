@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.JaxAuthCache;
 import com.amx.jax.JaxAuthContext;
@@ -20,6 +19,7 @@ import com.amx.jax.JaxAuthMetaResp;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.customer.CivilIdOtpModel;
 import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.CryptoUtil;

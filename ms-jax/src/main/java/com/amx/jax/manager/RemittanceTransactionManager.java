@@ -34,7 +34,6 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.constant.AuthType;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
-import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.PromotionDto;
 import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
@@ -97,6 +96,7 @@ import com.amx.jax.manager.remittance.CorporateDiscountManager;
 import com.amx.jax.manager.remittance.RemittanceAdditionalFieldManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.BeneficiaryListDTO;
+import com.amx.jax.model.customer.CivilIdOtpModel;
 import com.amx.jax.model.request.remittance.AbstractRemittanceApplicationRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
@@ -1192,7 +1192,14 @@ public class RemittanceTransactionManager {
 		RemittanceApplicationResponseModel remiteAppModel = new RemittanceApplicationResponseModel();
 		//deactivatePreviousApplications();
 		validateAdditionalCheck();
-		validateAdditionalBeneDetailsV2(model);
+		//validateAdditionalBeneDetailsV2(model);
+		
+		/** To fetch additional bene details from JAX **/
+		BenificiaryListView beneficaryDetails = (BenificiaryListView)remitApplParametersMap.get("BENEFICIARY");
+		BeneAdditionalDto beneAddlDto  =branchRemitManager.getAdditionalBeneDetailJax(beneficaryDetails,model.getDynamicRroutingPricingBreakup());
+		remitApplParametersMap.put("BENE_ADDL_DTLS", beneAddlDto);
+		/** code end here **/
+		
 		remittanceAdditionalFieldManager.processAdditionalFields(model);
 		RemittanceApplication remittanceApplication = remitAppManager.createRemittanceApplicationV2(model,validatedObjects, validationResults, remitApplParametersMap);
 		RemittanceAppBenificiary remittanceAppBeneficairy = remitAppBeneManager.createRemittanceAppBeneficiary(remittanceApplication);
@@ -1276,7 +1283,7 @@ public class RemittanceTransactionManager {
 		RemittanceApplicationResponseModel remiteAppModel = new RemittanceApplicationResponseModel();
 		//deactivatePreviousApplications();
 		validateAdditionalCheck();
-		validateAdditionalBeneDetailsV2(model);
+		//validateAdditionalBeneDetailsV2(model);
 		/** To fetch additional bene details from JAX **/
 		BenificiaryListView beneficaryDetails = (BenificiaryListView)remitApplParametersMap.get("BENEFICIARY");
 		BeneAdditionalDto beneAddlDto  =branchRemitManager.getAdditionalBeneDetailJax(beneficaryDetails,model.getDynamicRroutingPricingBreakup());
@@ -1314,13 +1321,17 @@ public class RemittanceTransactionManager {
 		
 		remitAppDao.saveAllApplicationData(remittanceApplication, remittanceAppBeneficairy, additionalInstrumentData,remitApplSrvProv,remitApplAml);
 		remitAppDao.updatePlaceOrderV2(model, remittanceApplication);
-		remiteAppModel.setRemittanceAppId(remittanceApplication.getRemittanceApplicationId());
-		remiteAppModel.setNetPayableAmount(netAmountPayable);
-		remiteAppModel.setDocumentIdForPayment(remittanceApplication.getPaymentId());
-		remiteAppModel.setDocumentFinancialYear(remittanceApplication.getDocumentFinancialyear());
-		remiteAppModel.setMerchantTrackId(meta.getCustomerId());
-		remiteAppModel.setDocumentIdForPayment(remittanceApplication.getDocumentNo().toString());
-
+		
+		  remiteAppModel.setRemittanceAppId(remittanceApplication.
+		  getRemittanceApplicationId());
+		  remiteAppModel.setNetPayableAmount(netAmountPayable);
+		  remiteAppModel.setDocumentIdForPayment(remittanceApplication.getPaymentId());
+		  remiteAppModel.setDocumentFinancialYear(remittanceApplication.
+		  getDocumentFinancialyear());
+		  remiteAppModel.setMerchantTrackId(meta.getCustomerId());
+		  remiteAppModel.setDocumentIdForPayment(remittanceApplication.getDocumentNo().
+		  toString());
+		 
 		CivilIdOtpModel civilIdOtpModel = null;
 		if (model.getmOtp() == null) {
 			// this flow is for send OTP
@@ -1329,25 +1340,25 @@ public class RemittanceTransactionManager {
 			// this flow is for validate OTP
 			userService.validateOtp(null, model.getmOtp(), null);
 		}
-		remiteAppModel.setCivilIdOtpModel(civilIdOtpModel);
+		//remiteAppModel.setCivilIdOtpModel(civilIdOtpModel);
+		
 
 		logger.info("Application saved successfully, response: " + remiteAppModel.toString());
 
 		
 		BranchRemittanceApplResponseDto custShpCart = branchRemittancePaymentManager.fetchCustomerShoppingCart(meta.getCustomerId(),meta.getDefaultCurrencyId());
-		
+		custShpCart.setCivilIdOtpModel(civilIdOtpModel);
 		
 		auditService.log(new CActivityEvent(Type.APPLICATION_CREATED,
-				String.format("%s/%s", remiteAppModel.getDocumentFinancialYear(),
-						remiteAppModel.getDocumentIdForPayment()))
+				String.format("%s/%s", remittanceApplication.getDocumentFinancialyear(),
+						remittanceApplication.getDocumentNo()))
 				.field("STATUS").to(JaxTransactionStatus.APPLICATION_CREATED)
 				.set(new RemitInfo(remittanceApplication.getRemittanceApplicationId(), remittanceApplication.getLocalTranxAmount()))
 				.result(Result.DONE));
 		
 		
 		return custShpCart;
-		//return remiteAppModel;
-
+		
 	}
 
 	

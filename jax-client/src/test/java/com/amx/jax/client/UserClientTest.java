@@ -25,7 +25,6 @@ import com.amx.amxlib.exception.ResourceNotFoundException;
 import com.amx.amxlib.meta.model.AnnualIncomeRangeDTO;
 import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.meta.model.IncomeDto;
-import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.UserFingerprintResponseModel;
 import com.amx.amxlib.model.response.ApiResponse;
@@ -38,6 +37,7 @@ import com.amx.jax.dict.Tenant;
 
 import com.amx.jax.model.UserDevice;
 import com.amx.jax.model.auth.QuestModelDTO;
+import com.amx.jax.model.customer.CivilIdOtpModel;
 import com.amx.jax.model.customer.SecurityQuestionModel;
 import com.amx.jax.model.response.customer.CustomerModelResponse;
 import com.amx.jax.model.response.customer.CustomerModelSignupResponse;

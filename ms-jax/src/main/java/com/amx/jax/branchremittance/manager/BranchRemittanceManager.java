@@ -904,7 +904,7 @@ public BeneAdditionalDto getAdditionalBeneDetailJax(BenificiaryListView benefica
 	 String bankBranchName = null;
 	
 	 TrnxRoutingDetails trnxRoutingPath = requestApplModel.getTrnxRoutingPaths();
-	 if(requestApplModel!=null && trnxRoutingPath!=null) {
+	 if(requestApplModel==null && trnxRoutingPath==null) {
 		 throw new GlobalException(JaxError.INVALID_ROUTING_BANK, "Routing details not found");
 	 }
 

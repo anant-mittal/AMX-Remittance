@@ -38,7 +38,6 @@ import com.amx.amxlib.model.AbstractUserModel;
 import com.amx.amxlib.model.BeneAccountModel;
 import com.amx.amxlib.model.BenePersonalDetailModel;
 import com.amx.amxlib.model.BeneRelationsDescriptionDto;
-import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.JaxTransactionResponse;
@@ -49,6 +48,7 @@ import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterServiceP
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.client.util.ConverterUtility;
 import com.amx.jax.model.BeneficiaryListDTO;
+import com.amx.jax.model.customer.CivilIdOtpModel;
 import com.amx.jax.rest.RestService;
 
 @Component
