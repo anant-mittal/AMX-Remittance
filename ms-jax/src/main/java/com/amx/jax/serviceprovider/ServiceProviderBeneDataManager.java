@@ -29,9 +29,16 @@ public class ServiceProviderBeneDataManager {
 		Customer customer = userService.getCustById(metaData.getCustomerId());
 		BenificiaryListView beneficiary = beneficiaryService.getBeneByIdNo(beneIdNo);
 		Benificiary beneDto = serviceProviderCallRequestDto.getBeneficiaryDto();
-		beneDto.setLast_name(beneficiary.getThirdName());
+		String lastName = beneficiary.getSecondName();
+		String middleName = null;
+		if (beneficiary.getThirdName() != null) {
+			lastName = beneficiary.getThirdName();
+			middleName = beneficiary.getSecondName();
+			;
+		}
+		beneDto.setLast_name(lastName);
 		beneDto.setFirst_name(beneficiary.getFirstName());
-		beneDto.setMiddle_name(beneficiary.getSecondName());
+		beneDto.setMiddle_name(middleName);
 		beneDto.setDate_of_birth(beneficiary.getDateOfBirth());
 		beneDto.setEmail(customer.getEmail());
 		beneDto.setContact_no(beneficiaryService.getBeneficiaryContactNumber(beneficiary.getBeneficaryMasterSeqId()));
