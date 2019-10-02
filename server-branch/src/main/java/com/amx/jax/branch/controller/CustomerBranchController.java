@@ -216,28 +216,43 @@ public class CustomerBranchController {
 	@RequestMapping(value = "/api/customer/pep/print", method = { RequestMethod.GET }, produces = {
 			CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE,
 			CommonMediaType.APPLICATION_PDF_VALUE, CommonMediaType.TEXT_HTML_VALUE })
-	public ResponseEntity<byte[]> customerPEPAppl(@RequestParam("ext") File.Type ext)
+	public ResponseEntity<byte[]> customerPEPAppl(@RequestParam("ext") File.Type ext,
+			@RequestParam(value = "identity", required = false) String identity,
+			@RequestParam(value = "firstName", required = false) String firstName,
+			@RequestParam(value = "lastName", required = false) String lastName,
+			@RequestParam(value = "expiryDateInString", required = false) String expiryDateInString)
 			throws PostManException, IOException {
 
 		String pattern = "dd-MM-yyyy";
 		String dateInString = new SimpleDateFormat(pattern).format(new Date());
-		OffsiteCustomerDataDTO customer = branchSession.getCustomerData();
-		String expiryDateInString = new SimpleDateFormat(pattern)
-				.format(customer.getCustomerPersonalDetail().getExpiryDate());
+		OffsiteCustomerDataDTO customer = branchSession.getCustomer() != null ? branchSession.getCustomerData() : null;
 		CustomerPEPFormData customerPEPFormData = new CustomerPEPFormData();
 		customerPEPFormData.setDate(dateInString);
+		identity = !ArgUtil.isEmpty(identity) ? identity : customer != null ? customer.getIdentityInt() : "";
+		firstName = !ArgUtil.isEmpty(firstName) ? firstName
+				: customer != null ? customer.getCustomerPersonalDetail().getFirstName() : "";
+		lastName = !ArgUtil.isEmpty(lastName) ? lastName
+				: customer != null ? customer.getCustomerPersonalDetail().getLastName() : "";
+		expiryDateInString = !ArgUtil.isEmpty(expiryDateInString) ? expiryDateInString
+				: customer != null
+				? new SimpleDateFormat(pattern).format(customer.getCustomerPersonalDetail().getExpiryDate())
+				: "";
+		// if(ArgUtil.isEmpty(identity) || ArgUtil.isEmpty(firstName) ||
+		// ArgUtil.isEmpty(lastName)){ // TODO: Whole model creation shouldn't be done
+		// here. Gonna confirm where and put it there.
+		// throw new GlobalException(JaxError.VALIDATION_NOT_NULL, "Civil ID,Customer
+		// ID,Type should not be null");
+		// }
 		customerPEPFormData.setBranchName(ssoUser.getUserDetails().getBranchName());
-		customerPEPFormData.setFirstName(customer.getCustomerPersonalDetail().getFirstName());
-		customerPEPFormData.setLastName(customer.getCustomerPersonalDetail().getLastName());
-		customerPEPFormData.setIdentityInt(customer.getIdentityInt());
+		customerPEPFormData.setFirstName(firstName);
+		customerPEPFormData.setLastName(lastName);
+		customerPEPFormData.setIdentityInt(identity);
 		customerPEPFormData.setExpiryDate(expiryDateInString);
 
 		AmxApiResponse<CustomerPEPFormData, Object> wrapper = AmxApiResponse.build(customerPEPFormData);
 
-		File file = postManService
-				.processTemplate(new File(TemplatesMX.PEP_FORM_JASPER, wrapper, File.Type.PDF)
-						.lang(AppContextUtil.getTenant().defaultLang()))
-				.getResult();
+		File file = postManService.processTemplate(new File(TemplatesMX.PEP_FORM_JASPER, wrapper, File.Type.PDF)
+				.lang(AppContextUtil.getTenant().defaultLang())).getResult();
 		return PostManUtil.download(file);
 
 	}
