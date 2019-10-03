@@ -455,7 +455,7 @@ public class RemittController {
 				payment.setDocFyObject(respTxMdl.getDocumentFinancialYear());
 				payment.setDocNo(respTxMdl.getDocumentIdForPayment());
 				payment.setTrackIdObject(respTxMdl.getMerchantTrackId());
-				logger.info("amount in remittancapplication: in remittcontroller:" + respTxMdl.getNetPayableAmount());
+				logger.debug("amount in remittancapplication: in remittcontroller:" + respTxMdl.getNetPayableAmount());
 				payment.setAmountObject(respTxMdl.getNetPayableAmount());
 				payment.setServiceCode(respTxMdl.getPgCode());
 
@@ -494,7 +494,7 @@ public class RemittController {
 				payment.setDocFyObject(respTxMdl.getDocumentFinancialYear());
 				payment.setDocNo(respTxMdl.getDocumentIdForPayment());
 				payment.setTrackIdObject(respTxMdl.getMerchantTrackId());
-				logger.info("amount in remittancapplication: in remittcontroller:" + respTxMdl.getNetPayableAmount());
+				logger.debug("amount in remittancapplication: in remittcontroller:" + respTxMdl.getNetPayableAmount());
 				payment.setAmountObject(respTxMdl.getNetPayableAmount());
 				payment.setServiceCode(respTxMdl.getPgCode());
 
@@ -565,7 +565,7 @@ public class RemittController {
 		payment.setDocFyObject(respTxMdl.getDocumentFinancialYear());
 		payment.setDocNo(respTxMdl.getDocumentIdForPayment());
 		payment.setTrackIdObject(respTxMdl.getMerchantTrackId());
-		logger.info("amount in remittancapplication: in remittcontroller:" + respTxMdl.getNetPayableAmount());
+		logger.debug("amount in remittancapplication: in remittcontroller:" + respTxMdl.getNetPayableAmount());
 		payment.setAmountObject(respTxMdl.getNetPayableAmount());
 		payment.setServiceCode(respTxMdl.getPgCode());
 
