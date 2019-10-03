@@ -80,6 +80,10 @@ public class CustomerBranchController {
 
 	@Autowired
 	private PostManService postManService;
+	
+
+	@Autowired
+	CustomerOnCall customerOnCall;
 
 	@RequestMapping(value = "/api/customer/details", method = { RequestMethod.POST })
 	public AmxApiResponse<OffsiteCustomerDataDTO, Object> setCustomerDetails(
@@ -98,8 +102,6 @@ public class CustomerBranchController {
 		return AmxApiResponse.build(branchSession.getCustomerData());
 	}
 
-	@Autowired
-	CustomerOnCall customerOnCall;
 
 	@RequestMapping(value = "/api/customer/connected", method = { RequestMethod.GET })
 	public AmxApiResponse<CustomerCall, Object> getCustomerConnected() {
