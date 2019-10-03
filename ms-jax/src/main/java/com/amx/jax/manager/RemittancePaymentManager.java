@@ -498,7 +498,7 @@ public class RemittancePaymentManager extends AbstractService{
 	
 	
 	public RemittanceApplicationResponseModel payShoppingCart(BranchRemittanceRequestModel remittanceRequestModel){
-		RemittanceApplicationResponseModel responseModel = null;
+			RemittanceApplicationResponseModel responseModel = null;
 		
 		
 			HashMap<String, Object> mapAllDetailApplSave =new HashMap<String, Object>();
@@ -508,19 +508,10 @@ public class RemittancePaymentManager extends AbstractService{
 			}
 			mapAllDetailApplSave.put("PG_DETAILS",pgDetails);
 			mapAllDetailApplSave.put("APPL", remittanceRequestModel.getRemittanceApplicationId());
-			if(remittanceRequestModel.getRemittanceApplicationId().get(0).getPaymentType().equalsIgnoreCase(ConstantDocument.PB_PAYMENT)) {
-				responseModel = remittanceTransactionService.savePayAtBranchAppl(mapAllDetailApplSave);
-				responseModel.setPgCode(PayGServiceCode.PB);
-			}else {
-				responseModel = branchRemittanceDao.saveAndUpdateAll(mapAllDetailApplSave);
-			}
-			
+			responseModel = branchRemittanceDao.saveAndUpdateAll(mapAllDetailApplSave);
 			responseModel.setMerchantTrackId(meta.getCustomerId());
 			responseModel.setNetPayableAmount(remittanceRequestModel.getTotalTrnxAmount());
-		
-			
-		
-		return responseModel;
+			return responseModel;
 	}
 	
 	

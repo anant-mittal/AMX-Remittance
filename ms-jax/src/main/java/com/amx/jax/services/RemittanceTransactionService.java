@@ -312,35 +312,24 @@ public class RemittanceTransactionService extends AbstractService {
 	
 	@Transactional
 	@SuppressWarnings("unchecked")
-	public RemittanceApplicationResponseModel savePayAtBranchAppl(HashMap<String, Object> mapAllDetailApplSave) {
+	public RemittanceApplicationResponseModel savePayAtBranchAppl(List<BranchApplicationDto> branchApplDto) {
 		RemittanceApplicationResponseModel remiteAppModel = new RemittanceApplicationResponseModel();
-		if (mapAllDetailApplSave != null) {
-			PaygDetailsModel pgModel = (PaygDetailsModel) mapAllDetailApplSave.get("PG_DETAILS");
-			List<BranchApplicationDto> branchApplDto = (List<BranchApplicationDto>) mapAllDetailApplSave.get("APPL");
+		for (BranchApplicationDto branchApplicationDto : branchApplDto) {
+			if (ConstantDocument.PB_PAYMENT.equalsIgnoreCase(branchApplicationDto.getPaymentType())) {
+				Customer customer = customerRepository.getActiveCustomerDetailsByCustomerId(metaData.getCustomerId());
+				RemittanceApplication remittanceApplication = remittanceApplicationRepository
+						.getApplicationForRemittance(customer, branchApplicationDto.getApplicationId());
+				if (!ArgUtil.isEmpty(remittanceApplication)) {
+					remittanceApplication.setPaymentType(ConstantDocument.PB_PAYMENT);
+					remittanceApplication.setWtStatus(ConstantDocument.PB_STATUS_NEW);
+					remittanceApplicationRepository.save(remittanceApplication);
 
-			if (pgModel != null) {
-				PaygDetailsModel pgDetails = pgRepository.save(pgModel);
-				remiteAppModel.setDocumentIdForPayment(pgDetails.getPaygTrnxSeqId().toString());
-				remiteAppModel.setRemittanceAppId(pgDetails.getPaygTrnxSeqId());
-			}
-			
-			for (BranchApplicationDto branchApplicationDto : branchApplDto) {
-				if (ConstantDocument.PB_PAYMENT.equalsIgnoreCase(branchApplicationDto.getPaymentType())) {
-					Customer customer = customerRepository
-							.getActiveCustomerDetailsByCustomerId(metaData.getCustomerId());
-					RemittanceApplication remittanceApplication = remittanceApplicationRepository
-							.getApplicationForRemittance(customer, branchApplicationDto.getApplicationId());
-					if (!ArgUtil.isEmpty(remittanceApplication)) {
-						remittanceApplication.setPaymentType(ConstantDocument.PB_PAYMENT);
-						remittanceApplication.setWtStatus(ConstantDocument.PB_STATUS_NEW);
-						remittanceApplicationRepository.save(remittanceApplication);
+					remiteAppModel.setDocumentFinancialYear(remittanceApplication.getDocumentFinancialyear());
 
-						remiteAppModel.setDocumentFinancialYear(remittanceApplication.getDocumentFinancialyear());
-
-					}
 				}
 			}
 		}
+
 		return remiteAppModel;
 
 	}

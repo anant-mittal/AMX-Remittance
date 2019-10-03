@@ -41,6 +41,7 @@ import com.amx.jax.dbmodel.remittance.RemittanceAppBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
+import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.remittance.BranchApplicationDto;
@@ -63,6 +64,7 @@ import com.amx.jax.repository.PaygDetailsRepository;
 import com.amx.jax.repository.RemittanceApplicationBeneRepository;
 import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.repository.remittance.ILoyaltyPointRepository;
+import com.amx.jax.services.RemittanceTransactionService;
 import com.amx.jax.util.JaxUtil;
 
 @Component
@@ -133,6 +135,9 @@ public class BranchRemittanceDao {
 	PaygDetailsRepository pgRepository;
 	@Autowired
 	RemittanceApplicationDao remittanceApplicationDao;
+	
+	@Autowired
+	RemittanceTransactionService remittanceTransactionService;
 
 	@Transactional
 	@SuppressWarnings("unchecked")
@@ -376,27 +381,35 @@ public class BranchRemittanceDao {
 	@SuppressWarnings("unchecked")
 	public RemittanceApplicationResponseModel saveAndUpdateAll(HashMap<String, Object> mapAllDetailApplSave) {
 		RemittanceApplicationResponseModel responseModel = new RemittanceApplicationResponseModel();
-	if(mapAllDetailApplSave!=null) {
-	   PaygDetailsModel 			pgModel = (PaygDetailsModel)mapAllDetailApplSave.get("PG_DETAILS");
-	   List<BranchApplicationDto>   applList =(List<BranchApplicationDto>)mapAllDetailApplSave.get("APPL");
-	   
-	    if(pgModel!=null) {
-	    	PaygDetailsModel pgDetails = pgRepository.save(pgModel);
-	    	responseModel.setDocumentIdForPayment(pgDetails.getPaygTrnxSeqId().toString());
-	    	responseModel.setRemittanceAppId(pgDetails.getPaygTrnxSeqId());
-	    }
-	    for(BranchApplicationDto applIdDto : applList) {
-	    	RemittanceApplication appl = appRepo.findOne(applIdDto.getApplicationId());
-	    	responseModel.setDocumentFinancialYear(appl.getDocumentFinancialyear());
-	    	if(appl!=null && appl.getIsactive().equalsIgnoreCase(ConstantDocument.Yes)) {
-	    		appl.setPaygTrnxDetailId(responseModel.getRemittanceAppId());
-	    		appl.setPaymentId(responseModel.getRemittanceAppId()==null?appl.getPaymentId():responseModel.getRemittanceAppId().toString());
-	    		appRepo.save(appl);
-	    	}
-	    }
-	}
-	
-	return responseModel;
+		if (mapAllDetailApplSave != null) {
+			PaygDetailsModel pgModel = (PaygDetailsModel) mapAllDetailApplSave.get("PG_DETAILS");
+			List<BranchApplicationDto> applList = (List<BranchApplicationDto>) mapAllDetailApplSave.get("APPL");
+
+			if (pgModel != null) {
+				PaygDetailsModel pgDetails = pgRepository.save(pgModel);
+				responseModel.setDocumentIdForPayment(pgDetails.getPaygTrnxSeqId().toString());
+				responseModel.setRemittanceAppId(pgDetails.getPaygTrnxSeqId());
+			}
+			
+			if(applList.get(0).getPaymentType().equalsIgnoreCase(ConstantDocument.PB_PAYMENT)) {
+				responseModel = remittanceTransactionService.savePayAtBranchAppl(applList);
+				responseModel.setPgCode(PayGServiceCode.PB);
+			}else {
+				for (BranchApplicationDto applIdDto : applList) {
+					RemittanceApplication appl = appRepo.findOne(applIdDto.getApplicationId());
+					responseModel.setDocumentFinancialYear(appl.getDocumentFinancialyear());
+					if (appl != null && appl.getIsactive().equalsIgnoreCase(ConstantDocument.Yes)) {
+						appl.setPaygTrnxDetailId(responseModel.getRemittanceAppId());
+						appl.setPaymentId(responseModel.getRemittanceAppId() == null ? appl.getPaymentId()
+								: responseModel.getRemittanceAppId().toString());
+						appRepo.save(appl);
+					}
+				}
+			}
+			
+		}
+
+		return responseModel;
 	}
 	
 	

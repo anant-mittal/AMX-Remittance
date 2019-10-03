@@ -1246,7 +1246,7 @@ public class RemittanceTransactionManager {
 		remiteAppModel.setDocumentFinancialYear(remittanceApplication.getDocumentFinancialyear());
 		remiteAppModel.setMerchantTrackId(meta.getCustomerId());
 		remiteAppModel.setDocumentIdForPayment(remittanceApplication.getDocumentNo().toString());
-		if(model.getPaymentType().equalsIgnoreCase(ConstantDocument.PB_PAYMENT)) {
+		if(ConstantDocument.PB_PAYMENT.equalsIgnoreCase(model.getPaymentType())) {
 			remiteAppModel.setPgCode(PayGServiceCode.PB);
 		}
 		CivilIdOtpModel civilIdOtpModel = null;
