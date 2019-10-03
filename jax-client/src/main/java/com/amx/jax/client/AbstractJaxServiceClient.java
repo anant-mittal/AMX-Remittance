@@ -38,10 +38,12 @@ public abstract class AbstractJaxServiceClient {
 		return jaxConfig.getSpServiceUrl();
 	}
 
+	@Deprecated
 	protected HttpHeaders getHeader() {
 		return getHeader(jaxMetaInfo);
 	}
 
+	@Deprecated
 	protected HttpHeaders getHeader(JaxMetaInfo jaxMetaInfoLocal) {
 
 		HttpHeaders headers = new HttpHeaders();
