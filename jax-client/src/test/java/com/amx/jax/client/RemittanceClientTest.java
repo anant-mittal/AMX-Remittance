@@ -232,19 +232,5 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult());
 
 	}
-	@Test
-	public void testPbSaveAppl() {
-		AmxApiResponse<BoolRespModel, Object> response = null;
-		BranchRemittanceRequestModel branchRemittanceRequestModel = new BranchRemittanceRequestModel();
-		BranchApplicationDto branchApplicationDto = new BranchApplicationDto();
-		branchApplicationDto.setApplicationId(new BigDecimal(2951879));
-		branchApplicationDto.setPaymentType("PB");
-		List<BranchApplicationDto> branchApplDtoList =null;
-		branchApplDtoList.add(branchApplicationDto);
-		branchRemittanceRequestModel.setRemittanceApplicationId(branchApplDtoList);
-		response= client.savePayAtBranchAppl(branchRemittanceRequestModel);
-		assertNotNull("Response is null", response);
-		assertNotNull(response.getResult());
-		
-	}
+	
 }

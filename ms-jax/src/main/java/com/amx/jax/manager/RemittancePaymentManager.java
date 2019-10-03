@@ -45,6 +45,7 @@ import com.amx.jax.dbmodel.partner.TransactionDetailsView;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.dbmodel.remittance.ShoppingCartDetails;
+import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
@@ -73,6 +74,7 @@ import com.amx.jax.services.AbstractService;
 import com.amx.jax.services.JaxEmailNotificationService;
 import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.services.RemittanceApplicationService;
+import com.amx.jax.services.RemittanceTransactionService;
 import com.amx.jax.services.ReportManagerService;
 import com.amx.jax.services.TransactionHistroyService;
 import com.amx.jax.userservice.dao.CustomerDao;
@@ -164,6 +166,9 @@ public class RemittancePaymentManager extends AbstractService{
 	
 	@Autowired
 	BranchRemittanceSaveManager branchRemittanceSaveManager;
+	
+	@Autowired
+	RemittanceTransactionService remittanceTransactionService;
 	
 	
 	
@@ -493,17 +498,28 @@ public class RemittancePaymentManager extends AbstractService{
 	
 	
 	public RemittanceApplicationResponseModel payShoppingCart(BranchRemittanceRequestModel remittanceRequestModel){
-	
-		HashMap<String, Object> mapAllDetailApplSave =new HashMap<String, Object>();
-		PaygDetailsModel pgDetails = null;
-		if(remittanceRequestModel!=null) {
-			 pgDetails = createPgDetails(remittanceRequestModel);
-		}
-		mapAllDetailApplSave.put("PG_DETAILS",pgDetails);
-		mapAllDetailApplSave.put("APPL", remittanceRequestModel.getRemittanceApplicationId());
-		RemittanceApplicationResponseModel responseModel = branchRemittanceDao.saveAndUpdateAll(mapAllDetailApplSave);
-		responseModel.setMerchantTrackId(meta.getCustomerId());
-		responseModel.setNetPayableAmount(remittanceRequestModel.getTotalTrnxAmount());
+		RemittanceApplicationResponseModel responseModel = null;
+		
+		
+			HashMap<String, Object> mapAllDetailApplSave =new HashMap<String, Object>();
+			PaygDetailsModel pgDetails = null;
+			if(remittanceRequestModel!=null) {
+				 pgDetails = createPgDetails(remittanceRequestModel);
+			}
+			mapAllDetailApplSave.put("PG_DETAILS",pgDetails);
+			mapAllDetailApplSave.put("APPL", remittanceRequestModel.getRemittanceApplicationId());
+			if(remittanceRequestModel.getRemittanceApplicationId().get(0).getPaymentType().equalsIgnoreCase(ConstantDocument.PB_PAYMENT)) {
+				responseModel = remittanceTransactionService.savePayAtBranchAppl(mapAllDetailApplSave);
+				responseModel.setPgCode(PayGServiceCode.PB);
+			}else {
+				responseModel = branchRemittanceDao.saveAndUpdateAll(mapAllDetailApplSave);
+			}
+			
+			responseModel.setMerchantTrackId(meta.getCustomerId());
+			responseModel.setNetPayableAmount(remittanceRequestModel.getTotalTrnxAmount());
+		
+			
+		
 		return responseModel;
 	}
 	

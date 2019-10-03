@@ -2,6 +2,7 @@ package com.amx.jax.services;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -25,13 +26,16 @@ import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.PaygDetailsModel;
 import com.amx.jax.dbmodel.RemittanceTransactionView;
 import com.amx.jax.dbmodel.SourceOfIncomeView;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
+import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.exrateservice.service.NewExchangeRateService;
 import com.amx.jax.manager.RemittanceTransactionManager;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.customer.CivilIdOtpModel;
 import com.amx.jax.model.request.remittance.BranchApplicationDto;
 import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
@@ -44,6 +48,7 @@ import com.amx.jax.payg.PayGModel;
 import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.repository.IRemittanceTransactionDao;
 import com.amx.jax.repository.ISourceOfIncomeDao;
+import com.amx.jax.repository.PaygDetailsRepository;
 import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.service.CountryService;
 import com.amx.jax.service.CurrencyMasterService;
@@ -84,6 +89,8 @@ public class RemittanceTransactionService extends AbstractService {
 	CustomerRepository customerRepository;
 	@Autowired
 	MetaData metaData;
+	@Autowired
+	PaygDetailsRepository pgRepository;
 	
 	public ApiResponse getRemittanceTransactionDetails(BigDecimal collectionDocumentNo, BigDecimal fYear,
 			BigDecimal collectionDocumentCode) {
@@ -303,25 +310,39 @@ public class RemittanceTransactionService extends AbstractService {
 		return responseModel;
 	}
 	
-	public BoolRespModel savePayAtBranchAppl(BranchRemittanceRequestModel branchRemittanceRequestModel) {
-		BoolRespModel boolRespModel = new BoolRespModel();
-		boolRespModel.setSuccess(Boolean.FALSE);
-		List<BranchApplicationDto> branchApplDto = branchRemittanceRequestModel.getRemittanceApplicationId();
-		for(BranchApplicationDto branchApplicationDto: branchApplDto) {
-			if(ConstantDocument.PB_PAYMENT.equalsIgnoreCase(branchApplicationDto.getPaymentType())) {
-				Customer customer = customerRepository.getActiveCustomerDetailsByCustomerId(metaData.getCustomerId());
-				RemittanceApplication remittanceApplication =remittanceApplicationRepository.getApplicationForRemittance(customer, branchApplicationDto.getApplicationId());
-				if(!ArgUtil.isEmpty(remittanceApplication)) {
-					remittanceApplication.setPaymentType(ConstantDocument.PB_PAYMENT);
-					remittanceApplication.setWtStatus(ConstantDocument.PB_STATUS_NEW);
-					remittanceApplicationRepository.save(remittanceApplication);
-					boolRespModel.setSuccess(Boolean.TRUE);
+	@Transactional
+	@SuppressWarnings("unchecked")
+	public RemittanceApplicationResponseModel savePayAtBranchAppl(HashMap<String, Object> mapAllDetailApplSave) {
+		RemittanceApplicationResponseModel remiteAppModel = new RemittanceApplicationResponseModel();
+		if (mapAllDetailApplSave != null) {
+			PaygDetailsModel pgModel = (PaygDetailsModel) mapAllDetailApplSave.get("PG_DETAILS");
+			List<BranchApplicationDto> branchApplDto = (List<BranchApplicationDto>) mapAllDetailApplSave.get("APPL");
+
+			if (pgModel != null) {
+				PaygDetailsModel pgDetails = pgRepository.save(pgModel);
+				remiteAppModel.setDocumentIdForPayment(pgDetails.getPaygTrnxSeqId().toString());
+				remiteAppModel.setRemittanceAppId(pgDetails.getPaygTrnxSeqId());
+			}
+			
+			for (BranchApplicationDto branchApplicationDto : branchApplDto) {
+				if (ConstantDocument.PB_PAYMENT.equalsIgnoreCase(branchApplicationDto.getPaymentType())) {
+					Customer customer = customerRepository
+							.getActiveCustomerDetailsByCustomerId(metaData.getCustomerId());
+					RemittanceApplication remittanceApplication = remittanceApplicationRepository
+							.getApplicationForRemittance(customer, branchApplicationDto.getApplicationId());
+					if (!ArgUtil.isEmpty(remittanceApplication)) {
+						remittanceApplication.setPaymentType(ConstantDocument.PB_PAYMENT);
+						remittanceApplication.setWtStatus(ConstantDocument.PB_STATUS_NEW);
+						remittanceApplicationRepository.save(remittanceApplication);
+
+						remiteAppModel.setDocumentFinancialYear(remittanceApplication.getDocumentFinancialyear());
+
+					}
 				}
 			}
 		}
-		return boolRespModel;
-		
-		
+		return remiteAppModel;
+
 	}
 	
 }
