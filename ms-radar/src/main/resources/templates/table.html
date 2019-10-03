@@ -327,6 +327,7 @@ function dropdown(classname) {
 
 	<div class="form padbox">
 		<form>
+			<input name="level" type="number" th:value="${level}">
 			<label> From : <input name="gte" th:value="${gte}">
 			</label> <label> To : <input name="lte" th:value="${lte}">
 			</label>
@@ -438,6 +439,7 @@ function dropdown(classname) {
 	  executeQuery("/radar/snap/view/[[${snapView}]]",{
 		  "lte" : "[[${lte}]]",
 		  "gte" : "[[${gte}]]",
+		  "level" : "[[${level}]]",
 		  "bulk" : true
 	  });
 	  

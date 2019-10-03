@@ -268,7 +268,7 @@ public class CustomerContactVerificationManager {
 				customerOnlineRegistration.setStatus(ConstantDocument.Yes);
 			}
 
-		} else if (ContactType.SMS.equals(type)) {
+		} else if (ContactType.SMS.equals(type) || ContactType.MOBILE.equals(type)) {
 			String mobile = c.getPrefixCodeMobile() + c.getMobile();
 			if (!contact.equals(mobile)) {
 				throw new GlobalException(JaxError.ENTITY_INVALID,
