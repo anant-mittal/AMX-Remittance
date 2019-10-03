@@ -164,11 +164,14 @@ public class CustomerContactVerificationManager {
 			auditService.log(audit.result(Result.FAIL).message(e.getError()));
 			throw e;
 		}
+		
+		CustomerContactVerification link2 = customerContactVerificationRepository.save(link);
 
 		// Audit Info
+		audit.setTargetId(link2.getId());
 		auditService.log(audit.result(Result.DONE));
 
-		return customerContactVerificationRepository.save(link);
+		return link2;
 	}
 
 	public CustomerContactVerification resend(Customer c, BigDecimal linkId, String code) {
@@ -207,6 +210,7 @@ public class CustomerContactVerificationManager {
 		}
 
 		// Audit Info
+		audit.setTargetId(oldLink.getId());
 		auditService.log(audit.result(Result.DONE));
 
 		return customerContactVerificationRepository.save(oldLink);
@@ -346,6 +350,7 @@ public class CustomerContactVerificationManager {
 			throw e;
 		}
 
+		audit.setTargetId(link.getId());
 		auditService.log(audit.result(Result.DONE));
 
 		return link;
