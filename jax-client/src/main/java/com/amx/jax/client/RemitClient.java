@@ -424,11 +424,9 @@ public class RemitClient extends AbstractJaxServiceClient {
 			RemittanceTransactionStatusRequestModel request, Boolean promotion)
 			throws RemittanceTransactionValidationException, LimitExeededException {
 		try {
-			HttpEntity<RemittanceTransactionStatusRequestModel> requestEntity = new HttpEntity<RemittanceTransactionStatusRequestModel>(
-					request, getHeader());
 			String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/status/v2/";
 			return restService.ajax(url).queryParam("promotion", promotion)
-					.meta(new JaxMetaInfo()).post(requestEntity)
+					.meta(new JaxMetaInfo()).post(request)
 					.as(new ParameterizedTypeReference<ApiResponse<RemittanceTransactionStatusResponseModel>>() {
 					});
 		} catch (AbstractJaxException ae) {
