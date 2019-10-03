@@ -181,7 +181,9 @@ public class RemittController {
 	@RequestMapping(value = "/api/user/tranx/print_history", method = { RequestMethod.POST })
 	public ResponseWrapper<List<Map<String, Object>>> printHistory(
 			@RequestBody ResponseWrapper<List<Map<String, Object>>> wrapper) throws IOException, PostManException {
-		File file = postManService.processTemplate(new File(TemplatesMX.REMIT_STATMENT, wrapper, File.Type.PDF).lang(AppContextUtil.getTenant().defaultLang()))
+		File file = postManService
+				.processTemplate(new File(TemplatesMX.REMIT_STATMENT, wrapper, File.Type.PDF)
+						.lang(AppContextUtil.getTenant().defaultLang()))
 				.getResult();
 		file.create(response, true);
 		return wrapper;
@@ -547,13 +549,29 @@ public class RemittController {
 
 	@RequestMapping(value = "/api/remitt/cart/pay", method = { RequestMethod.POST })
 	public ResponseWrapperM<RemittanceApplicationResponseModel, Object> saveToCart(
-			@RequestHeader(value = "mOtp", required = false) String mOtpHeader,
-			@RequestParam(required = false) String mOtp,
-			@RequestBody BranchRemittanceRequestModel remittanceRequestModel, HttpServletRequest request) {
+			@RequestBody BranchRemittanceRequestModel remittanceRequestModel, HttpServletRequest request)
+			throws MalformedURLException, URISyntaxException {
+
 		ResponseWrapperM<RemittanceApplicationResponseModel, Object> wrapper = new ResponseWrapperM<RemittanceApplicationResponseModel, Object>();
-		mOtp = JaxAuthContext.mOtp(ArgUtil.ifNotEmpty(mOtp, mOtpHeader));
+
+		RemittanceApplicationResponseModel respTxMdl = jaxService.setDefaults().getRemitClient()
+				.payShoppingCart(remittanceRequestModel)
+				.getResult();
+
 		wrapper.setData(jaxService.setDefaults().getRemitClient().payShoppingCart(remittanceRequestModel)
 				.getResult());
+
+		PayGParams payment = new PayGParams();
+		payment.setDocFyObject(respTxMdl.getDocumentFinancialYear());
+		payment.setDocNo(respTxMdl.getDocumentIdForPayment());
+		payment.setTrackIdObject(respTxMdl.getMerchantTrackId());
+		logger.info("amount in remittancapplication: in remittcontroller:" + respTxMdl.getNetPayableAmount());
+		payment.setAmountObject(respTxMdl.getNetPayableAmount());
+		payment.setServiceCode(respTxMdl.getPgCode());
+
+		wrapper.setRedirectUrl(payGService.getPaymentUrl(payment,
+				HttpUtils.getServerName(request) + "/app/landing/remittance"));
+
 		return wrapper;
 	}
 
