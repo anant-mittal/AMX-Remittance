@@ -558,8 +558,7 @@ public class RemittController {
 				.payShoppingCart(remittanceRequestModel)
 				.getResult();
 
-		wrapper.setData(jaxService.setDefaults().getRemitClient().payShoppingCart(remittanceRequestModel)
-				.getResult());
+		wrapper.setData(respTxMdl);
 
 		PayGParams payment = new PayGParams();
 		payment.setDocFyObject(respTxMdl.getDocumentFinancialYear());

@@ -382,10 +382,11 @@ public class RemitClient extends AbstractJaxServiceClient {
 	@ApiOperation("API for Online shopping cart")
 	public AmxApiResponse<RemittanceApplicationResponseModel,Object> payShoppingCart(BranchRemittanceRequestModel remittanceRequestModel) throws RemittanceTransactionValidationException, LimitExeededException {
 		try {
-			HttpEntity<BranchRemittanceRequestModel> requestEntity = new HttpEntity<BranchRemittanceRequestModel>(remittanceRequestModel,getHeader());
 			String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/pay-shopping-cart/";
 			LOGGER.info(" Calling customer rating :" + remittanceRequestModel.toString());
-			return restService.ajax(url).post(requestEntity).asApiResponse(RemittanceApplicationResponseModel.class);
+			return restService.ajax(url).meta(new JaxMetaInfo()).post(remittanceRequestModel).as(
+					new ParameterizedTypeReference<AmxApiResponse<RemittanceApplicationResponseModel,Object>>() {
+				});
 		
 		} catch (AbstractJaxException ae) {
 			throw ae;
@@ -401,9 +402,10 @@ public class RemitClient extends AbstractJaxServiceClient {
 	public AmxApiResponse<BranchRemittanceApplResponseDto,Object> addToCart(RemittanceTransactionDrRequestModel transactionRequestModel)
 			throws RemittanceTransactionValidationException, LimitExeededException {
 		try {
-			HttpEntity<RemittanceTransactionDrRequestModel> requestEntity = new HttpEntity<RemittanceTransactionDrRequestModel>(transactionRequestModel, getHeader());
 			String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/add-to-cart/";
-			return restService.ajax(url).post(requestEntity).asApiResponse(BranchRemittanceApplResponseDto.class);
+			return restService.ajax(url).meta(new JaxMetaInfo()).post(transactionRequestModel).as(
+					new ParameterizedTypeReference<AmxApiResponse<BranchRemittanceApplResponseDto,Object>>() {
+					});
 		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
@@ -425,7 +427,8 @@ public class RemitClient extends AbstractJaxServiceClient {
 			HttpEntity<RemittanceTransactionStatusRequestModel> requestEntity = new HttpEntity<RemittanceTransactionStatusRequestModel>(
 					request, getHeader());
 			String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/status/v2/";
-			return restService.ajax(url).queryParam("promotion", promotion).post(requestEntity)
+			return restService.ajax(url).queryParam("promotion", promotion)
+					.meta(new JaxMetaInfo()).post(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<RemittanceTransactionStatusResponseModel>>() {
 					});
 		} catch (AbstractJaxException ae) {
