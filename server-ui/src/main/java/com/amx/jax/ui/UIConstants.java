@@ -64,7 +64,7 @@ public final class UIConstants extends Constants {
 		}
 
 	}
-
+	
 	/**
 	 * IMPORTANT:- All the milestones MUST be in order. between ZERO and INFINITY
 	 * 
@@ -76,6 +76,8 @@ public final class UIConstants extends Constants {
 		// Add MileStones after this;
 
 		DPR, GIG, HOMESEND,
+		
+		REFREND,
 
 		// Add MileStones before this;
 		FUTRUE;

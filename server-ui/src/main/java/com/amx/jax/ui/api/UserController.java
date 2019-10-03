@@ -1,7 +1,6 @@
 package com.amx.jax.ui.api;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.http.Cookie;
@@ -37,7 +36,9 @@ import com.amx.jax.dict.Language;
 import com.amx.jax.dict.UserClient.AppType;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.logger.AuditActor;
+import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.logger.events.CActivityEvent;
 import com.amx.jax.model.response.customer.CustomerFlags;
 import com.amx.jax.model.response.customer.CustomerModelSignupResponse;
 import com.amx.jax.postman.PostManException;
@@ -122,6 +123,9 @@ public class UserController {
 	@Autowired
 	AuthLibContext authLibContext;
 
+	@Autowired
+	AuditService auditService;
+
 	@ApiOWAStatus(OWAStatusStatusCodes.INCOME_UPDATE_REQUIRED)
 	@RequestMapping(value = "/pub/user/meta", method = { RequestMethod.POST, RequestMethod.GET })
 	public ResponseWrapper<UserMetaData> getMeta(HttpServletResponse response,
@@ -183,6 +187,10 @@ public class UserController {
 
 		lang = httpService.getLanguage();
 		httpService.setCookie("lang", lang.toString(), 60 * 60 * 2);
+		
+		if (ArgUtil.is(lang) && !lang.equals(sessionService.getGuestSession().getLanguage())) {
+			auditService.log(new CActivityEvent(CActivityEvent.Type.LANG_CHNG));
+		}
 		sessionService.getGuestSession().setLanguage(lang);
 
 		wrapper.getData().setTenant(AppContextUtil.getTenant());
