@@ -226,5 +226,10 @@ public class ApiEndpoint {
 		public static final String PB_TRNX_LIST = "/pb-trnx-list";
 		public static final String PB_TRNX_LIST_BRANCH = "/pb-trnx-list-branch";
 	}
+	
+	public final class RemittanceApplEndPoint{
+		public static final String PREFIX = REMIT_API_ENDPOINT;
+		public static final String PB_SAVE_APPL = "/payat-branch/" ;
+	}
 
 }

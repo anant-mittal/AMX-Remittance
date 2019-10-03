@@ -16,46 +16,53 @@ public class BranchRemittanceRequestModel {
 	BigDecimal totalTrnxAmount = BigDecimal.ZERO;
 	BigDecimal totalLoyaltyAmount = BigDecimal.ZERO;
 	
-	
-	
-	
 
-	
-		public List<UserStockDto> getCurrencyRefundDenomination() {
-			return currencyRefundDenomination;
-		}
-		public void setCurrencyRefundDenomination(List<UserStockDto> currencyRefundDenomination) {
-			this.currencyRefundDenomination = currencyRefundDenomination;
-		}
-		public List<RemittanceCollectionDto> getCollctionModeDto() {
-			return collctionModeDto;
-		}
-		public void setCollctionModeDto(List<RemittanceCollectionDto> collctionModeDto) {
-			this.collctionModeDto = collctionModeDto;
-		}
-		public List<BranchApplicationDto> getRemittanceApplicationId() {
-			return remittanceApplicationId;
-		}
-		public void setRemittanceApplicationId(List<BranchApplicationDto> remittanceApplicationId) {
-			this.remittanceApplicationId = remittanceApplicationId;
-		}
-		public BigDecimal getPaidAmount() {
-			return paidAmount;
-		}
-		public BigDecimal getTotalTrnxAmount() {
-			return totalTrnxAmount;
-		}
-		public void setTotalTrnxAmount(BigDecimal totalTrnxAmount) {
-			this.totalTrnxAmount = totalTrnxAmount;
-		}
-		public BigDecimal getTotalLoyaltyAmount() {
-			return totalLoyaltyAmount;
-		}
-		public void setTotalLoyaltyAmount(BigDecimal totalLoyaltyAmount) {
-			this.totalLoyaltyAmount = totalLoyaltyAmount;
-		}
-		public void setPaidAmount(BigDecimal paidAmount) {
-			this.paidAmount = paidAmount;
+	public List<UserStockDto> getCurrencyRefundDenomination() {
+		return currencyRefundDenomination;
+	}
+
+	public void setCurrencyRefundDenomination(List<UserStockDto> currencyRefundDenomination) {
+		this.currencyRefundDenomination = currencyRefundDenomination;
+	}
+
+	public List<RemittanceCollectionDto> getCollctionModeDto() {
+		return collctionModeDto;
+	}
+
+	public void setCollctionModeDto(List<RemittanceCollectionDto> collctionModeDto) {
+		this.collctionModeDto = collctionModeDto;
+	}
+
+	public List<BranchApplicationDto> getRemittanceApplicationId() {
+		return remittanceApplicationId;
+	}
+
+	public void setRemittanceApplicationId(List<BranchApplicationDto> remittanceApplicationId) {
+		this.remittanceApplicationId = remittanceApplicationId;
+	}
+
+	public BigDecimal getPaidAmount() {
+		return paidAmount;
+	}
+
+	public BigDecimal getTotalTrnxAmount() {
+		return totalTrnxAmount;
+	}
+
+	public void setTotalTrnxAmount(BigDecimal totalTrnxAmount) {
+		this.totalTrnxAmount = totalTrnxAmount;
+	}
+
+	public BigDecimal getTotalLoyaltyAmount() {
+		return totalLoyaltyAmount;
+	}
+
+	public void setTotalLoyaltyAmount(BigDecimal totalLoyaltyAmount) {
+		this.totalLoyaltyAmount = totalLoyaltyAmount;
+	}
+
+	public void setPaidAmount(BigDecimal paidAmount) {
+		this.paidAmount = paidAmount;
 		}
 	
 		

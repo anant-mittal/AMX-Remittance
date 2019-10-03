@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.constant.ApiEndpoint.RemittanceApplEndPoint;
 import com.amx.amxlib.meta.model.CustomerRatingDTO;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
@@ -307,6 +308,12 @@ public class RemittanceController {
 		return response;
 	}
 	
+	@RequestMapping(value = RemittanceApplEndPoint.PB_SAVE_APPL, method = RequestMethod.POST)
+	public AmxApiResponse<BoolRespModel, Object> savePayAtBranchAppl(@RequestBody BranchRemittanceRequestModel branchRemittanceRequestModel){
+		logger.info("In Request model is "+ branchRemittanceRequestModel.toString());
+		BoolRespModel boolRespModel = remittanceTransactionService.savePayAtBranchAppl(branchRemittanceRequestModel);
+		return AmxApiResponse.build(boolRespModel);
+	}
 	
 	
 	

@@ -13,6 +13,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import com.amx.amxlib.constant.ApiEndpoint.RemittanceApplEndPoint;
 import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.exception.LimitExeededException;
@@ -26,6 +27,7 @@ import com.amx.amxlib.model.response.PurposeOfTransactionModel;
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.client.util.ConverterUtility;
 import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
@@ -36,6 +38,7 @@ import com.amx.jax.model.response.SourceOfIncomeDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.payg.PaymentResponseDto;
+
 import com.amx.jax.rest.RestService;
 
 import io.swagger.annotations.ApiOperation;
@@ -438,5 +441,14 @@ public class RemitClient extends AbstractJaxServiceClient {
 
 	}
 	
+	@ApiOperation("API for payatbranch integration")
+	
+	public AmxApiResponse<BoolRespModel, Object> savePayAtBranchAppl(BranchRemittanceRequestModel branchRemittanceRequestModel){
+		LOGGER.debug("in registerNewDevice");
+		String url = this.getBaseUrl() + RemittanceApplEndPoint.PB_SAVE_APPL;
+		return restService.ajax(url).meta(new JaxMetaInfo()).post(branchRemittanceRequestModel)
+				.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
+				});
+	}
 	
 }

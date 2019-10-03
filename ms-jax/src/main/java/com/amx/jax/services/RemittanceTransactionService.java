@@ -20,6 +20,8 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.Customer;
@@ -29,6 +31,9 @@ import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.exrateservice.service.NewExchangeRateService;
 import com.amx.jax.manager.RemittanceTransactionManager;
+import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.request.remittance.BranchApplicationDto;
+import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.response.ExchangeRateBreakup;
@@ -36,12 +41,15 @@ import com.amx.jax.model.response.SourceOfIncomeDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.payg.PayGModel;
+import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.repository.IRemittanceTransactionDao;
 import com.amx.jax.repository.ISourceOfIncomeDao;
+import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.service.CountryService;
 import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.libjax.model.postman.SuspiciousTransactionPaymentDto;
+import com.amx.utils.ArgUtil;
 
 @Service
 @SuppressWarnings("rawtypes")
@@ -70,6 +78,12 @@ public class RemittanceTransactionService extends AbstractService {
 	UserService userSerivce;
 	@Autowired
 	CountryService countryService;
+	@Autowired
+	RemittanceApplicationRepository remittanceApplicationRepository;
+	@Autowired
+	CustomerRepository customerRepository;
+	@Autowired
+	MetaData metaData;
 	
 	public ApiResponse getRemittanceTransactionDetails(BigDecimal collectionDocumentNo, BigDecimal fYear,
 			BigDecimal collectionDocumentCode) {
@@ -289,5 +303,25 @@ public class RemittanceTransactionService extends AbstractService {
 		return responseModel;
 	}
 	
+	public BoolRespModel savePayAtBranchAppl(BranchRemittanceRequestModel branchRemittanceRequestModel) {
+		BoolRespModel boolRespModel = new BoolRespModel();
+		boolRespModel.setSuccess(Boolean.FALSE);
+		List<BranchApplicationDto> branchApplDto = branchRemittanceRequestModel.getRemittanceApplicationId();
+		for(BranchApplicationDto branchApplicationDto: branchApplDto) {
+			if(ConstantDocument.PB_PAYMENT.equalsIgnoreCase(branchApplicationDto.getPaymentType())) {
+				Customer customer = customerRepository.getActiveCustomerDetailsByCustomerId(metaData.getCustomerId());
+				RemittanceApplication remittanceApplication =remittanceApplicationRepository.getApplicationForRemittance(customer, branchApplicationDto.getApplicationId());
+				if(!ArgUtil.isEmpty(remittanceApplication)) {
+					remittanceApplication.setPaymentType(ConstantDocument.PB_PAYMENT);
+					remittanceApplication.setWtStatus(ConstantDocument.PB_STATUS_NEW);
+					remittanceApplicationRepository.save(remittanceApplication);
+					boolRespModel.setSuccess(Boolean.TRUE);
+				}
+			}
+		}
+		return boolRespModel;
+		
+		
+	}
 	
 }
