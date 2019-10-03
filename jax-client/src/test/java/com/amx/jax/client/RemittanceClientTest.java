@@ -26,8 +26,13 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.PurposeOfTransactionModel;
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
+import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.dict.Tenant;
+import com.amx.jax.model.request.remittance.BranchApplicationDto;
+import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
+import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.response.ExchangeRateBreakup;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
@@ -48,7 +53,7 @@ public class RemittanceClientTest {
 	@Autowired
 	private JaxMetaInfo jaxMetaInfo;
 
-	// @Test
+	@Test
 	public void getPurposeOfTransactions() throws IOException, ResourceNotFoundException, InvalidInputException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
@@ -65,7 +70,7 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult().getModelType());
 	}
 
-	// @Test
+	@Test
 	public void getOldPurposeOfTransactions() throws IOException, ResourceNotFoundException, InvalidInputException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
@@ -128,7 +133,7 @@ public class RemittanceClientTest {
 
 	}
 
-	// @Test
+	@Test
 	public void testvalidateTransactionForNEFTRTGS() throws IOException, ResourceNotFoundException,
 			InvalidInputException, RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
@@ -148,7 +153,7 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult().getModelType());
 	}
 
-	// @Test
+	@Test
 	public void testvalidateTransaction() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
@@ -214,7 +219,7 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult().getModelType());
 	}
 
-	// @Test
+	@Test
 	public void testTransactionHistroy() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
 		ApiResponse<TransactionHistroyDTO> response = null;
@@ -226,5 +231,20 @@ public class RemittanceClientTest {
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
 
+	}
+	@Test
+	public void testPbSaveAppl() {
+		AmxApiResponse<BoolRespModel, Object> response = null;
+		BranchRemittanceRequestModel branchRemittanceRequestModel = new BranchRemittanceRequestModel();
+		BranchApplicationDto branchApplicationDto = new BranchApplicationDto();
+		branchApplicationDto.setApplicationId(new BigDecimal(2951879));
+		branchApplicationDto.setPaymentType("PB");
+		List<BranchApplicationDto> branchApplDtoList =null;
+		branchApplDtoList.add(branchApplicationDto);
+		branchRemittanceRequestModel.setRemittanceApplicationId(branchApplDtoList);
+		response= client.savePayAtBranchAppl(branchRemittanceRequestModel);
+		assertNotNull("Response is null", response);
+		assertNotNull(response.getResult());
+		
 	}
 }
