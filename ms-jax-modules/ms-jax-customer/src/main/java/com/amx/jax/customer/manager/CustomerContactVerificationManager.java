@@ -128,8 +128,8 @@ public class CustomerContactVerificationManager {
 		if (!ArgUtil.isEmpty(actor)) {
 			link.setCreatedById(actor.getActorIdAsBigDecimal());
 			link.setCreatedByType(actor.getActorType());
-			//link.setSendById(actor.getActorIdAsBigDecimal());
-			//link.setSendByType(actor.getActorType());
+			// link.setSendById(actor.getActorIdAsBigDecimal());
+			// link.setSendByType(actor.getActorType());
 		}
 
 		try {
@@ -355,9 +355,20 @@ public class CustomerContactVerificationManager {
 		CustomerContactVerification link = getCustomerContactVerification(linkId);
 
 		if (ArgUtil.isEmpty(code) || !code.equals(link.getVerificationCode())) {
-			throw new GlobalException(JaxError.INVALID_OTP, "Verification is Invalid, cannot complete.");
+			throw new GlobalException(JaxError.INVALID_OTP, "Verification is Invalid, cannot complete L:" + linkId);
 		}
 		Customer c = customerRepository.findOne(link.getCustomerId());
+
+		if (ArgUtil.isEmpty(c)) {
+			throw new GlobalException(JaxError.INVALID_CIVIL_ID,
+					"Invalid civil id, does not exists in our system L:" + linkId);
+		}
+
+		if (c.hasVerified(link.getContactType())) {
+			throw new GlobalException(JaxError.ALREADY_VERIFIED_CONTACT,
+					link.getContactType() + " contact is already Verified L:" + linkId);
+		}
+
 		verify(c, link, identity);
 		return link;
 	}
@@ -376,11 +387,13 @@ public class CustomerContactVerificationManager {
 		Customer c = CollectionUtil.getOne(customerRepository.findActiveCustomers(identity));
 
 		if (ArgUtil.isEmpty(c)) {
-			throw new GlobalException(JaxError.INVALID_CIVIL_ID, "Invalid civil id, does not exists in our system");
+			throw new GlobalException(JaxError.INVALID_CIVIL_ID,
+					"Invalid civil id, does not exists in our system I:" + identity);
 		}
 
 		if (c.hasVerified(type)) {
-			throw new GlobalException(JaxError.ALREADY_VERIFIED_CONTACT, type + " contact is already Verified");
+			throw new GlobalException(JaxError.ALREADY_VERIFIED_CONTACT,
+					type + " contact is already Verified C:" + c.getCustomerId());
 		}
 
 		CustomerContactVerification link = getValidCustomerContactVerificationByCustomerId(c.getCustomerId(), type,
