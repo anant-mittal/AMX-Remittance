@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.constant.ApplicationProcedureParam;
 import com.amx.jax.AppContextUtil;
-import com.amx.jax.model.request.remittance.RemittanceAdditionalBeneFieldModel;
 import com.amx.jax.model.request.serviceprovider.ServiceProviderCallRequestDto;
 import com.amx.jax.model.request.serviceprovider.TransactionData;
 import com.amx.jax.repository.remittance.DeliveryModeRepository;
@@ -38,10 +37,7 @@ public class ServiceProviderTransactionDataManager {
 		BigDecimal deliveryModeId = (BigDecimal) remitApplParametersMap.get("P_DELIVERY_MODE_ID");
 		BigDecimal foreignCurrencyId = (BigDecimal) remitApplParametersMap.get("P_FOREIGN_CURRENCY_ID");
 		BigDecimal routingBankId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_BANK_ID");
-		BigDecimal beneCountryId = (BigDecimal) remitApplParametersMap.get("P_BENE_BANK_COUNTRY_ID");
-		if (beneCountryId == null) {
-			beneCountryId = (BigDecimal) remitApplParametersMap.get("P_BENEFICIARY_COUNTRY_ID");
-		}
+		BigDecimal beneCountryId = ApplicationProcedureParam.P_BENEFICIARY_BANK_COUNTRY_ID.getValue(remitApplParametersMap);
 
 		String routingBankCode = bankService.getBankById(routingBankId).getBankCode();
 		TransactionData transactionDto = serviceProviderCallRequestDto.getTransactionDto();

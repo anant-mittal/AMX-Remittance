@@ -1017,6 +1017,7 @@ public class RemittanceTransactionManager {
 		beneBankDetails.put("P_APPLICATION_COUNTRY_ID", meta.getCountryId());
 		beneBankDetails.put("P_USER_TYPE", "ONLINE");
 		beneBankDetails.put("P_BENEFICIARY_COUNTRY_ID", beneficiary.getBenificaryCountry());
+		beneBankDetails.put("P_BENEFICIARY_BANK_COUNTRY_ID", beneficiary.getBenificaryCountry());
 		beneBankDetails.put("P_BENEFICIARY_BANK_ID", beneficiary.getBankId());
 		beneBankDetails.put("P_BENEFICIARY_BRANCH_ID", beneficiary.getBranchId());
 		beneBankDetails.put("P_BENEFICIARY_BANK_ACCOUNT", beneficiary.getBankAccountNumber());
