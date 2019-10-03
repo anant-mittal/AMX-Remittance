@@ -336,7 +336,7 @@ public class SnapModels {
 								space + afIndex + bucketItemIndex);
 						for (Map<String, Object> bulkItem : bulk) {
 							if (bulkItem.containsKey("_id")) {
-								bulkItem.put("*", bucketItem.getDocCount());
+								bulkItem.put("_docs", bucketItem.getDocCount());
 								list.add(bulkItem);
 							}
 							// System.out.println("bulkItem " + JsonUtil.toJson(bulkItem));
