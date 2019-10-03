@@ -188,14 +188,12 @@ public class PartnerTransactionManager extends AbstractModel {
 
 	public AmxApiResponse<Remittance_Call_Response, Object> callingPartnerApi(RemittanceResponseDto responseDto) {
 		BigDecimal customerId = metaData.getCustomerId();
-		BigDecimal collectionDocYear = responseDto.getCollectionDocumentFYear();
-		BigDecimal collectionDocNumber = responseDto.getCollectionDocumentNo();
-
-		AmxApiResponse<Remittance_Call_Response, Object> srvPrvResp = convertingTransactionPartnerDetails(customerId, collectionDocYear, collectionDocNumber);
+		
+		AmxApiResponse<Remittance_Call_Response, Object> srvPrvResp = convertingTransactionPartnerDetails(customerId, responseDto);
 		return srvPrvResp;
 	}
 
-	public AmxApiResponse<Remittance_Call_Response, Object> convertingTransactionPartnerDetails(BigDecimal customerId,BigDecimal collectionDocYear,BigDecimal collectionDocNumber) {
+	public AmxApiResponse<Remittance_Call_Response, Object> convertingTransactionPartnerDetails(BigDecimal customerId, RemittanceResponseDto responseDto) {
 		String destinationCountryAlpha3 = null;
 		String destinationCountryAlpha2 = null;
 		AmxApiResponse<Remittance_Call_Response, Object> srvPrvResp = null;
@@ -205,7 +203,7 @@ public class PartnerTransactionManager extends AbstractModel {
 		CustomerDetailsDTO customerDetailsDTO = fetchCustomerDetails(customerId);
 		Customer customerDto = fetchSPCustomerDto(customerDetailsDTO);
 
-		Map<BigDecimal,SrvProvBeneficiaryTransactionDTO> trnxPartnerData = fetchTransactionDetails(collectionDocYear, collectionDocNumber, customerId);
+		Map<BigDecimal,SrvProvBeneficiaryTransactionDTO> trnxPartnerData = fetchTransactionDetails(customerId, responseDto);
 
 		BigDecimal applicationCountryId = metaData.getCountryId();
 		String applicationCountryAlpha3 = null;
@@ -653,7 +651,7 @@ public class PartnerTransactionManager extends AbstractModel {
 		return status;
 	}
 
-	public Map<BigDecimal,SrvProvBeneficiaryTransactionDTO> fetchTransactionDetails(BigDecimal collectionDocYear,BigDecimal collectionDocNumber,BigDecimal customerId) {
+	public Map<BigDecimal,SrvProvBeneficiaryTransactionDTO> fetchTransactionDetails(BigDecimal customerId, RemittanceResponseDto responseDto) {
 		List<String> dupcheck = new ArrayList<>();
 		BigDecimal docFinanceYear = null;
 		BigDecimal docNo = null;
@@ -662,7 +660,7 @@ public class PartnerTransactionManager extends AbstractModel {
 
 		Map<BigDecimal,SrvProvBeneficiaryTransactionDTO> mapTrnxPartnerData = new HashMap<BigDecimal,SrvProvBeneficiaryTransactionDTO>();
 
-		List<TransactionDetailsView> lstTrnxDetails = partnerTransactionDao.fetchTrnxSPDetails(customerId,collectionDocYear,collectionDocNumber);
+		List<TransactionDetailsView> lstTrnxDetails = partnerTransactionDao.fetchTrnxSPDetails(customerId, responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo(),responseDto.getCollectionDocumentCode());
 
 		for (TransactionDetailsView transactionDetailsView : lstTrnxDetails) {
 			if(transactionDetailsView.getBankCode().equalsIgnoreCase(SERVICE_PROVIDER_BANK_CODE.HOME.name())) {
@@ -674,8 +672,8 @@ public class PartnerTransactionManager extends AbstractModel {
 					beneficiaryRelationShipId = transactionDetailsView.getBeneficiaryRelationShipId();
 					remitTrnxId = transactionDetailsView.getRemittanceTransactionId();
 
-					List<TransactionDetailsView> lstTrnxWiseDetails = partnerTransactionDao.fetchTrnxWiseDetails(customerId,docFinanceYear,docNo);
-					RemittanceTransactionPartnerDTO trnxWiseData = fetchTransactionWiseDetails(lstTrnxWiseDetails,collectionDocYear,collectionDocNumber);
+					List<TransactionDetailsView> lstTrnxWiseDetails = partnerTransactionDao.fetchTrnxWiseDetailsForCustomer(customerId, docFinanceYear, docNo, responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo(),responseDto.getCollectionDocumentCode());
+					RemittanceTransactionPartnerDTO trnxWiseData = fetchTransactionWiseDetails(lstTrnxWiseDetails,responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo());
 
 					BeneficiaryDetailsDTO beneficiaryDetailsDTO = fetchBeneficiaryDetails(customerId, beneficiaryRelationShipId);
 
@@ -909,7 +907,8 @@ public class PartnerTransactionManager extends AbstractModel {
 	}
 
 	// saving the remarks and delivery indicator to remit trnx
-	public RemitTrnxSPDTO saveRemitTransactionDetails(AmxApiResponse<Remittance_Call_Response, Object> apiResponse,RemittanceResponseDto responseDto,String partnerTransactionId) {
+	public RemitTrnxSPDTO saveRemitTransactionDetails(AmxApiResponse<Remittance_Call_Response, Object> apiResponse,RemittanceResponseDto responseDto,String partnerTransactionId,
+			BigDecimal documentNo,BigDecimal documentYear) {
 		String actionInd = null; 
 		String responseDescription = null;
 		RemitTrnxSPDTO remitTrnxSPDTO = null;
@@ -918,13 +917,17 @@ public class PartnerTransactionManager extends AbstractModel {
 		if(responseDto != null && responseDto.getCollectionDocumentFYear() != null && responseDto.getCollectionDocumentNo() != null) {
 
 			// checking home send transaction
-			BankMasterModel bankMaster = bankMasterRepo.findByBankCodeAndRecordStatus(PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name(), PricerServiceConstants.Yes);
+			/*BankMasterModel bankMaster = bankMasterRepo.findByBankCodeAndRecordStatus(PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name(), PricerServiceConstants.Yes);
 			if(bankMaster == null) {
 				throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record not found for bank code :"+PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name());
-			}
+			}*/
 
-			List<RemittanceTransactionView> transctionDetail = remittanceTransactionDao.getRemittanceTransactionByRoutingBank(responseDto.getCollectionDocumentNo(), 
-					responseDto.getCollectionDocumentFYear(), responseDto.getCollectionDocumentCode(),bankMaster.getBankId());
+			/*List<RemittanceTransactionView> transctionDetail = remittanceTransactionDao.getRemittanceTransactionByRoutingBank(responseDto.getCollectionDocumentNo(), 
+					responseDto.getCollectionDocumentFYear(), responseDto.getCollectionDocumentCode(),bankMaster.getBankId());*/
+			
+			List<RemittanceTransactionView> transctionDetail = remittanceTransactionDao.getRemittanceTransactionDetails(responseDto.getCollectionDocumentNo(), responseDto.getCollectionDocumentFYear(), 
+					responseDto.getCollectionDocumentCode(), documentNo, documentYear, metaData.getCustomerId());
+			
 
 			if (transctionDetail.isEmpty()) {
 				throw new GlobalException("Transaction details not avaliable");
@@ -956,6 +959,7 @@ public class PartnerTransactionManager extends AbstractModel {
 					remitTrnxSPDTO.setActionInd(actionInd);
 					remitTrnxSPDTO.setResponseDescription(responseDescription);
 					remitTrnxSPDTO.setTransactionId(partnerTransactionId);
+					
 					logger.info("actionInd : " + actionInd + " responseDescription : "+ responseDescription + " transaction Id " + remittanceTransactionView.getRemittanceTransactionId() + " partner transaction id : "  + partnerTransactionId);
 					// save remit trnx
 					partnerTransactionDao.saveRemittanceRemarksDeliveryInd(actionInd, responseDescription, remittanceTransactionView.getRemittanceTransactionId());

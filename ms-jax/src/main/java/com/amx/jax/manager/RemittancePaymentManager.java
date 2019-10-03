@@ -42,6 +42,7 @@ import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.events.CActivityEvent;
 import com.amx.jax.logger.events.CActivityEvent.Type;
+import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.serviceprovider.Remittance_Call_Response;
@@ -144,6 +145,9 @@ public class RemittancePaymentManager extends AbstractService{
 	
 	@Autowired
     AuditService auditService;
+	
+	@Autowired
+	MetaData metaData;
 	
 	public ApiResponse<PaymentResponseDto> paymentCapture(PaymentResponseDto paymentResponse) {
 		ApiResponse response = null;
@@ -423,7 +427,7 @@ public class RemittancePaymentManager extends AbstractService{
 		
 		if(responseDto!=null && JaxUtil.isNullZeroBigDecimalCheck(responseDto.getCollectionDocumentNo())) {
 			Boolean spCheckStatus = Boolean.FALSE;
-			List<TransactionDetailsView> lstTrnxDetails = partnerTransactionDao.fetchTrnxSPDetails(customerId,responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo());
+			List<TransactionDetailsView> lstTrnxDetails = partnerTransactionDao.fetchTrnxSPDetails(metaData.getCustomerId(),responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo(),responseDto.getCollectionDocumentCode());
 			for (TransactionDetailsView transactionDetailsView : lstTrnxDetails) {
 				if(transactionDetailsView.getBankCode().equalsIgnoreCase(SERVICE_PROVIDER_BANK_CODE.HOME.name())) {
 					spCheckStatus = Boolean.TRUE;
@@ -438,7 +442,7 @@ public class RemittancePaymentManager extends AbstractService{
 					if(serviceProviderView != null && serviceProviderView.getPartnerSessionId() != null) {
 						partnerTransactionId = serviceProviderView.getPartnerSessionId();
 					}
-					RemitTrnxSPDTO remitTrnxSPDTO = partnerTransactionManager.saveRemitTransactionDetails(apiResponse,responseDto,partnerTransactionId);
+					RemitTrnxSPDTO remitTrnxSPDTO = partnerTransactionManager.saveRemitTransactionDetails(apiResponse,responseDto,partnerTransactionId,serviceProviderView.getDocumentNo(),serviceProviderView.getDocumentFinanceYear());
 					if(remitTrnxSPDTO != null && remitTrnxSPDTO.getActionInd() != null && remitTrnxSPDTO.getResponseDescription() != null) {
 						// got success to fetch response from API
 						logger.info(" Service provider result Action Ind " +remitTrnxSPDTO.getActionInd() + " Description : " + remitTrnxSPDTO.getResponseDescription());

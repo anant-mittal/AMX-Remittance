@@ -36,5 +36,11 @@ public interface IRemittanceTransactionDao extends JpaRepository<RemittanceTrans
 			@Param("fYear") BigDecimal fYear,@Param("documentCode") BigDecimal documentCode,@Param("bankId") BigDecimal bankId);
 
 	public List<RemittanceTransactionView> findByCustomerIdAndCollectionDocumentNoAndCollectionDocFinanceYearAndCollectionDocCode(BigDecimal customerId,BigDecimal collDocNo,BigDecimal collDocFYear,BigDecimal collDocCode);
+	
+	@Query("select rtv from RemittanceTransactionView rtv where rtv.collectionDocumentNo=:collDocNo and rtv.collectionDocFinanceYear=:collDocYear and rtv.collectionDocCode=:collDocCode and "
+			+ " rtv.documentNo=:documentNo and rtv.documentFinancialYear=:documentYear and rtv.customerId=:customerId")
+	public List<RemittanceTransactionView> getRemittanceTransactionDetails(@Param("collDocNo") BigDecimal collDocNo,
+			@Param("collDocYear") BigDecimal collDocYear,@Param("collDocCode") BigDecimal collDocCode,@Param("documentNo") BigDecimal documentNo,
+			@Param("documentYear") BigDecimal documentYear,@Param("customerId") BigDecimal customerId);
 
 }

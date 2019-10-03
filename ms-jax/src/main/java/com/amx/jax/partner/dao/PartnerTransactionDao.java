@@ -90,8 +90,8 @@ public class PartnerTransactionDao {
 		return parameterDetailsRespository.fetchBeneCountryBeneAddressNotReq(recordId, beneCountryCode);
 	}
 	
-	public List<TransactionDetailsView> fetchTrnxSPDetails(BigDecimal customerId,BigDecimal collectionDocYear,BigDecimal collectionDocNumber){
-		return transactionSPDetailsRepository.fetchTrnxSPDetails(customerId,collectionDocYear,collectionDocNumber);
+	public List<TransactionDetailsView> fetchTrnxSPDetails(BigDecimal customerId,BigDecimal collectionDocYear,BigDecimal collectionDocNumber,BigDecimal collectionDocCode){
+		return transactionSPDetailsRepository.fetchTrnxSPDetails(customerId,collectionDocYear,collectionDocNumber,collectionDocCode);
 	}
 	
 	public List<TransactionDetailsView> fetchTrnxWiseDetails(BigDecimal customerId,BigDecimal docYear,BigDecimal docNumber){
@@ -117,6 +117,10 @@ public class PartnerTransactionDao {
 	@Transactional
 	public void saveRemittanceRemarksDeliveryInd(String deliveryInd, String remarks, BigDecimal remittanceTransactionId) {
 		remittanceTransactionRepository.updateDeliveryIndRemarksBySP(deliveryInd, remarks, remittanceTransactionId);
+	}
+	
+	public List<TransactionDetailsView> fetchTrnxWiseDetailsForCustomer(BigDecimal customerId,BigDecimal documentFinanceYear,BigDecimal documentNo,BigDecimal colDocumentFinanceYear,BigDecimal colDocumentNo,BigDecimal colDocumentCode){
+		return transactionSPDetailsRepository.fetchTrnxWiseDetailsForCustomer(customerId, documentFinanceYear, documentNo, colDocumentFinanceYear, colDocumentNo, colDocumentCode);
 	}
 	
 }

@@ -11,4 +11,6 @@ import com.amx.jax.dbmodel.bene.RelationsDescription;
 public interface RelationsRepository extends JpaRepository<RelationsDescription, Serializable> {
 
 	List<RelationsDescription> findBylangId(BigDecimal langId);
+	
+	List<RelationsDescription> findByRelationsCodeAndLangId(String relationCode,BigDecimal langId);
 }

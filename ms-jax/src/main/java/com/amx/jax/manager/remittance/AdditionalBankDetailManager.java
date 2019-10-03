@@ -123,20 +123,21 @@ public class AdditionalBankDetailManager {
 
 		List<AdditionalBankDetailData> additionalBeneData = additionalBankDetailDataRepository.findByBeneAccSeqId(beneAccSeqId);
 		Map<Object, AdditionalBankDetailData> valueMap = additionalBeneData.stream().collect(Collectors.toMap(x -> x.getKey(), x -> x));
-
-		additionalbankFields.forEach((k, v) -> {
-			AdditionalDataDisplayView additionalDataDisplayView = additionalDataRequiredMap.get(k);
-			if (ConstantDocument.Yes.equalsIgnoreCase(additionalDataDisplayView.getIsBeneTag())) {
-				AdditionalBankDetailData data = valueMap.get(k);
-				if (data == null) {
-					data = new AdditionalBankDetailData(beneAccSeqId, k, v.getAmieceDescription());
-				} else {
-					data.setValue(v.getAmieceDescription());
+		
+		if(additionalbankFields != null) {
+			additionalbankFields.forEach((k, v) -> {
+				AdditionalDataDisplayView additionalDataDisplayView = additionalDataRequiredMap.get(k);
+				if (ConstantDocument.Yes.equalsIgnoreCase(additionalDataDisplayView.getIsBeneTag())) {
+					AdditionalBankDetailData data = valueMap.get(k);
+					if (data == null) {
+						data = new AdditionalBankDetailData(requestApplModel.getBeneId(), k, v.getAmieceDescription());
+					} else {
+						data.setValue(v.getAmieceDescription());
+					}
+					additionalBankDetailDataRepository.save(data);
 				}
-				additionalBankDetailDataRepository.save(data);
-			}
-		});
-
+			});
+		}
 	}
 
 	public void processMissingFlexFields(RemittanceAdditionalBeneFieldModel request, Map<String, Object> remitApplParametersMap,

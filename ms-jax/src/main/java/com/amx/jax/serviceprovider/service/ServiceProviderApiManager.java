@@ -53,18 +53,22 @@ public class ServiceProviderApiManager {
 				.validateRemittanceInputs(serviceProviderCallRequestDto);
 		return response.getResult();
 	}
+	
+	protected ServiceProviderCallRequestDto createSaveInputRequest(Map<String, Object> remitRemitParametersMap) {
+		ServiceProviderCallRequestDto serviceProviderCallRequestDto = new ServiceProviderCallRequestDto();
+
+		
+		return serviceProviderCallRequestDto;
+	}
 
 	public void setAdditionalFlexFieldParams(RemittanceAdditionalBeneFieldModel request, Map<String, Object> remitApplParametersMap,
 			List<JaxFieldDto> requiredFlexFields) {
 
 	}
 
-	public Remittance_Call_Response sendRemittance(RemittanceAdditionalBeneFieldModel remittanceAdditionalBeneFieldModel,
-			Map<String, Object> remitApplParametersMap) {
+	public Remittance_Call_Response sendRemittance(Map<String, Object> remitApplParametersMap) {
 		Map<String, Object> inputs = new HashMap<>();
 		inputs.putAll(remitApplParametersMap);
-		inputs.put("P_BENEFICIARY_RELASHIONSHIP_ID", remittanceAdditionalBeneFieldModel.getBeneId());
-		inputs.put("flexFieldDtoMap", remittanceAdditionalBeneFieldModel.getFlexFieldDtoMap());
 		ServiceProviderCallRequestDto serviceProviderCallRequestDto = createValidateInputRequest(inputs);
 		AmxApiResponse<Remittance_Call_Response, Object> response = serviceProviderClientWrapper.sendRemittance(serviceProviderCallRequestDto);
 		return response.getResult();
