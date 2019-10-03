@@ -151,24 +151,27 @@ public class RemittanceTransactionRequestValidator {
 			}
 			field.setDtoPath("flexFields." + bankRule.getFlexField());
 			dto.setId(bankRule.getAdditionalBankRuleId());
-			if (FlexFieldBehaviour.PRE_DEFINED.toString().equals(fieldBehaviour)) {
-				field.setType(FlexFieldBehaviour.PRE_DEFINED.getFieldType().toString());
-				List<JaxFieldValueDto> amiecValues = getAmiecValues(bankRule.getFlexField(), routingCountryId,
-						deliveryModeId, remittanceModeId, routingBankId, foreignCurrencyId,
-						bankRule.getAdditionalBankRuleId());
+			FlexFieldBehaviour flexFieldBehaviourEnum = FlexFieldBehaviour.valueOf(fieldBehaviour);
+			field.setType(flexFieldBehaviourEnum.getFieldType().toString());
+			switch (flexFieldBehaviourEnum) {
+			case PRE_DEFINED:
+				List<JaxFieldValueDto> amiecValues = getAmiecValues(bankRule.getFlexField(), routingCountryId, deliveryModeId, remittanceModeId,
+						routingBankId, foreignCurrencyId, bankRule.getAdditionalBankRuleId());
 				// To set default value for bpi gift service provider
-				if (request != null && request.getServicePackage() != null
-						&& request.getServicePackage().getIndic() != null
+				if (request != null && request.getServicePackage() != null && request.getServicePackage().getIndic() != null
 						&& request.getServicePackage().getAmieceCode() != null
 						&& request.getServicePackage().getIndic().equalsIgnoreCase(field.getName())) {
-					amiecValues = getDefaultForServicePackage(request, amiecValues); 
+					amiecValues = getDefaultForServicePackage(request, amiecValues);
 					if (amiecValues != null && !amiecValues.isEmpty())
 						field.setDefaultValue(amiecValues.get(0).getId().toString());
 				}
 				field.setPossibleValues(amiecValues);
-
-			} else {
-				field.setType(FlexFieldBehaviour.USER_ENTERABLE.getFieldType().toString());
+				break;
+			case DATE:
+				field.getAdditionalValidations().put("format", ConstantDocument.MM_DD_YYYY_DATE_FORMAT.toUpperCase());
+				break;
+			default:
+				break;
 			}
 			dto.setField(field);
 			if (flexFieldValueInRequest == null) {

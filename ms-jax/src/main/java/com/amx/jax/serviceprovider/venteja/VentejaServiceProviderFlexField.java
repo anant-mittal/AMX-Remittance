@@ -14,11 +14,10 @@ import com.amx.utils.DateUtil;
 public enum VentejaServiceProviderFlexField {
 
 	INDIC9 {
-		// prn
+		// account number
 		@Override
 		public void setValue(ServiceProviderCallRequestDto dto, Map<String, FlexFieldDto> requestFlexFields) {
-			FlexFieldDto value = requestFlexFields.get(this.name());
-			dto.getTransactionDto().setPartner_transaction_reference(value.getAmieceDescription());
+			INDIC10.setValue(dto, requestFlexFields);
 
 		}
 	},
@@ -31,23 +30,6 @@ public enum VentejaServiceProviderFlexField {
 
 		}
 	},
-	INDIC13 {
-		// payment type
-		@Override
-		public void setValue(ServiceProviderCallRequestDto dto, Map<String, FlexFieldDto> requestFlexFields) {
-			FlexFieldDto value = requestFlexFields.get(this.name());
-			dto.getTransactionDto().setPartner_transaction_reference(value.getAmieceDescription());
-
-		}
-	},
-	INDIC12 {
-		// prn
-		@Override
-		public void setValue(ServiceProviderCallRequestDto dto, Map<String, FlexFieldDto> requestFlexFields) {
-			INDIC9.setValue(dto, requestFlexFields);
-
-		}
-	},
 	INDIC11 {
 		// mp2
 		@Override
@@ -56,16 +38,7 @@ public enum VentejaServiceProviderFlexField {
 
 		}
 	},
-	INDIC8 {
-		// member type
-		@Override
-		public void setValue(ServiceProviderCallRequestDto dto, Map<String, FlexFieldDto> requestFlexFields) {
-			FlexFieldDto value = requestFlexFields.get(this.name());
-			dto.getCustomerDto().setCustomer_type(value.getAmieceDescription());
-
-		}
-	},
-	INDIC4 {
+	INDIC12 {
 		// start date
 		@Override
 		public void setValue(ServiceProviderCallRequestDto dto, Map<String, FlexFieldDto> requestFlexFields) {
@@ -83,7 +56,7 @@ public enum VentejaServiceProviderFlexField {
 		}
 
 	},
-	INDIC5 {
+	INDIC13 {
 		// end date
 		@Override
 		public void setValue(ServiceProviderCallRequestDto dto, Map<String, FlexFieldDto> requestFlexFields) {
@@ -100,13 +73,21 @@ public enum VentejaServiceProviderFlexField {
 			additionalValidations.remove("gt");
 		}
 	},
-	INDIC3 {
+	INDIC8 {
 		// member id
 		@Override
 		public void setValue(ServiceProviderCallRequestDto dto, Map<String, FlexFieldDto> requestFlexFields) {
 			FlexFieldDto value = requestFlexFields.get(this.name());
 			dto.getBeneficiaryDto().setPartner_beneficiary_id(value.getAmieceDescription());
 
+		}
+	},
+	INDIC10 {
+		// biller code
+		@Override
+		public void setValue(ServiceProviderCallRequestDto dto, Map<String, FlexFieldDto> requestFlexFields) {
+			FlexFieldDto value = requestFlexFields.get(this.name());
+			dto.getBeneficiaryDto().setBeneficiary_bank_code(value.getAmieceDescription());
 		}
 	};
 

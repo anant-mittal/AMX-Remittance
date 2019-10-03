@@ -39,6 +39,9 @@ public class ServiceProviderTransactionDataManager {
 		BigDecimal foreignCurrencyId = (BigDecimal) remitApplParametersMap.get("P_FOREIGN_CURRENCY_ID");
 		BigDecimal routingBankId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_BANK_ID");
 		BigDecimal beneCountryId = (BigDecimal) remitApplParametersMap.get("P_BENE_BANK_COUNTRY_ID");
+		if (beneCountryId == null) {
+			beneCountryId = (BigDecimal) remitApplParametersMap.get("P_BENEFICIARY_COUNTRY_ID");
+		}
 
 		String routingBankCode = bankService.getBankById(routingBankId).getBankCode();
 		TransactionData transactionDto = serviceProviderCallRequestDto.getTransactionDto();
