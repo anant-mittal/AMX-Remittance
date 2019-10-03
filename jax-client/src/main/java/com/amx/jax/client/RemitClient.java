@@ -444,7 +444,7 @@ public class RemitClient extends AbstractJaxServiceClient {
 	@ApiOperation("API for payatbranch integration")
 	
 	public AmxApiResponse<BoolRespModel, Object> savePayAtBranchAppl(BranchRemittanceRequestModel branchRemittanceRequestModel){
-		LOGGER.debug("in registerNewDevice");
+		LOGGER.debug("in Pay at branch Save Appl");
 		String url = this.getBaseUrl() + RemittanceApplEndPoint.PB_SAVE_APPL;
 		return restService.ajax(url).meta(new JaxMetaInfo()).post(branchRemittanceRequestModel)
 				.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
