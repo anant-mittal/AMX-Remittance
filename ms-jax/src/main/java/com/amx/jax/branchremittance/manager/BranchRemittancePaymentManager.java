@@ -271,7 +271,7 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 				shoppingCartDataTableBean.setTrnxStartDate(remitApplSrvProv.getOfferStartingDate().getTime());
 			}
 		}
-		
+		shoppingCartDataTableBean.setApplPaymentType(shoppingCartDetails.getApplicationPaymentType());
 		return shoppingCartDataTableBean;
 	}
 
