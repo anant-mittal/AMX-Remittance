@@ -32,13 +32,11 @@ import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.userservice.repository.CustomerVerificationRepository;
 import com.amx.jax.userservice.repository.OnlineCustomerRepository;
 import com.amx.jax.userservice.service.CustomerVerificationService;
-import com.amx.jax.util.AmxDBConstants;
 import com.amx.jax.util.AmxDBConstants.Status;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.CollectionUtil;
 import com.amx.utils.EntityDtoUtil;
 import com.amx.utils.Random;
-import com.amx.utils.TimeUtils;
 
 /**
  * 
@@ -128,8 +126,8 @@ public class CustomerContactVerificationManager {
 		if (!ArgUtil.isEmpty(actor)) {
 			link.setCreatedById(actor.getActorIdAsBigDecimal());
 			link.setCreatedByType(actor.getActorType());
-			//link.setSendById(actor.getActorIdAsBigDecimal());
-			//link.setSendByType(actor.getActorType());
+			// link.setSendById(actor.getActorIdAsBigDecimal());
+			// link.setSendByType(actor.getActorType());
 		}
 
 		try {
@@ -164,11 +162,14 @@ public class CustomerContactVerificationManager {
 			auditService.log(audit.result(Result.FAIL).message(e.getError()));
 			throw e;
 		}
+		
+		CustomerContactVerification link2 = customerContactVerificationRepository.save(link);
 
 		// Audit Info
+		audit.setTargetId(link2.getId());
 		auditService.log(audit.result(Result.DONE));
 
-		return customerContactVerificationRepository.save(link);
+		return link2;
 	}
 
 	public CustomerContactVerification resend(Customer c, BigDecimal linkId, String code) {
@@ -207,6 +208,7 @@ public class CustomerContactVerificationManager {
 		}
 
 		// Audit Info
+		audit.setTargetId(oldLink.getId());
 		auditService.log(audit.result(Result.DONE));
 
 		return customerContactVerificationRepository.save(oldLink);
@@ -268,7 +270,7 @@ public class CustomerContactVerificationManager {
 				customerOnlineRegistration.setStatus(ConstantDocument.Yes);
 			}
 
-		} else if (ContactType.SMS.equals(type)) {
+		} else if (ContactType.SMS.equals(type) || ContactType.MOBILE.equals(type)) {
 			String mobile = c.getPrefixCodeMobile() + c.getMobile();
 			if (!contact.equals(mobile)) {
 				throw new GlobalException(JaxError.ENTITY_INVALID,
@@ -346,6 +348,7 @@ public class CustomerContactVerificationManager {
 			throw e;
 		}
 
+		audit.setTargetId(link.getId());
 		auditService.log(audit.result(Result.DONE));
 
 		return link;
@@ -355,9 +358,20 @@ public class CustomerContactVerificationManager {
 		CustomerContactVerification link = getCustomerContactVerification(linkId);
 
 		if (ArgUtil.isEmpty(code) || !code.equals(link.getVerificationCode())) {
-			throw new GlobalException(JaxError.INVALID_OTP, "Verification is Invalid, cannot complete.");
+			throw new GlobalException(JaxError.INVALID_OTP, "Verification is Invalid, cannot complete L:" + linkId);
 		}
 		Customer c = customerRepository.findOne(link.getCustomerId());
+
+		if (ArgUtil.isEmpty(c)) {
+			throw new GlobalException(JaxError.INVALID_CIVIL_ID,
+					"Invalid civil id, does not exists in our system L:" + linkId);
+		}
+
+		if (c.hasVerified(link.getContactType())) {
+			throw new GlobalException(JaxError.ALREADY_VERIFIED_CONTACT,
+					link.getContactType() + " contact is already Verified L:" + linkId);
+		}
+
 		verify(c, link, identity);
 		return link;
 	}
@@ -376,11 +390,13 @@ public class CustomerContactVerificationManager {
 		Customer c = CollectionUtil.getOne(customerRepository.findActiveCustomers(identity));
 
 		if (ArgUtil.isEmpty(c)) {
-			throw new GlobalException(JaxError.INVALID_CIVIL_ID, "Invalid civil id, does not exists in our system");
+			throw new GlobalException(JaxError.INVALID_CIVIL_ID,
+					"Invalid civil id, does not exists in our system I:" + identity);
 		}
 
 		if (c.hasVerified(type)) {
-			throw new GlobalException(JaxError.ALREADY_VERIFIED_CONTACT, type + " contact is already Verified");
+			throw new GlobalException(JaxError.ALREADY_VERIFIED_CONTACT,
+					type + " contact is already Verified C:" + c.getCustomerId());
 		}
 
 		CustomerContactVerification link = getValidCustomerContactVerificationByCustomerId(c.getCustomerId(), type,
