@@ -391,7 +391,7 @@ public class BranchRemittanceDao {
 				responseModel.setRemittanceAppId(pgDetails.getPaygTrnxSeqId());
 			}
 			
-			if(applList.get(0).getPaymentType().equalsIgnoreCase(ConstantDocument.PB_PAYMENT)) {
+			if(ConstantDocument.PB_PAYMENT.equalsIgnoreCase(applList.get(0).getPaymentType())) {
 				responseModel = remittanceTransactionService.savePayAtBranchAppl(applList);
 				responseModel.setPgCode(PayGServiceCode.PB);
 			}else {
