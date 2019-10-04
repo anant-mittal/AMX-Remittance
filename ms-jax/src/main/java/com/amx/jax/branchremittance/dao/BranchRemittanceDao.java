@@ -402,6 +402,7 @@ public class BranchRemittanceDao {
 						appl.setPaygTrnxDetailId(responseModel.getRemittanceAppId());
 						appl.setPaymentId(responseModel.getRemittanceAppId() == null ? appl.getPaymentId()
 								: responseModel.getRemittanceAppId().toString());
+						appl.setPaymentType(applIdDto.getPaymentType());
 						appRepo.save(appl);
 					}
 				}

@@ -320,7 +320,7 @@ public class RemittanceTransactionService extends AbstractService {
 				RemittanceApplication remittanceApplication = remittanceApplicationRepository
 						.getApplicationForRemittance(customer, branchApplicationDto.getApplicationId());
 				if (!ArgUtil.isEmpty(remittanceApplication)) {
-					remittanceApplication.setPaymentType(ConstantDocument.PB_PAYMENT);
+					remittanceApplication.setPaymentType(branchApplicationDto.getPaymentType());
 					remittanceApplication.setWtStatus(ConstantDocument.PB_STATUS_NEW);
 					remittanceApplicationRepository.save(remittanceApplication);
 
