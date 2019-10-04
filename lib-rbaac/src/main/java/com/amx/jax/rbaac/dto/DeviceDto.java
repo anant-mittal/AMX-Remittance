@@ -22,7 +22,6 @@ public class DeviceDto {
 
 	String pairToken;
 
-	@JsonIgnore
 	String status;
 	
 	DeviceState state;
@@ -71,7 +70,6 @@ public class DeviceDto {
 		return status;
 	}
 
-	@JsonIgnore
 	public void setStatus(String status) {
 		this.status = status;
 	}
