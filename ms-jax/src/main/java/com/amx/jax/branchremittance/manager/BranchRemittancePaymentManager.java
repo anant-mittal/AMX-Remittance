@@ -164,7 +164,10 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 					currencyMaster = currencyMasterService.getCurrencyMasterById(fcCurrencyId);
 					if(currencyMaster != null) {
 						breakup.setFcDecimalNumber(currencyMaster.getDecinalNumber() == null ? decimalNumber : currencyMaster.getDecinalNumber());
-						lstCustShpcrt.add(createCustomerShoppingCartDto(customerApplDto,localCurrencyId,fcCurrencyId,breakup));
+						if(!ConstantDocument.PB_PAYMENT.equalsIgnoreCase(customerApplDto.getApplicationPaymentType())) {
+							lstCustShpcrt.add(createCustomerShoppingCartDto(customerApplDto,localCurrencyId,fcCurrencyId,breakup));
+						}
+						
 						cartList.setShoppingCartDetails(lstCustShpcrt);
 						
 					}else {
