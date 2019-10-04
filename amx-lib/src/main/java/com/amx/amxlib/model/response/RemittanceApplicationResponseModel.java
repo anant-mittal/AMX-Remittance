@@ -84,11 +84,12 @@ public class RemittanceApplicationResponseModel extends AbstractModel {
 
 	public String toString() {
 		String str = null;
-		if (civilIdOtpModel != null)
+		if (civilIdOtpModel != null) {
 			str = "RemittanceApplicationResponseModel [remittanceAppId=" + remittanceAppId + ", documentIdForPayment="
 					+ documentIdForPayment + ", documentFinancialYear=" + documentFinancialYear + ", netPayableAmount="
 					+ netPayableAmount + ", merchantTrackId=" + merchantTrackId + ", pgCode=" + pgCode
 					+ ", civilIdOtpModel=" + civilIdOtpModel.toString() + "]";
+		}
 		else {
 			str = "RemittanceApplicationResponseModel [remittanceAppId=" + remittanceAppId + ", documentIdForPayment="
 					+ documentIdForPayment + ", documentFinancialYear=" + documentFinancialYear + ", netPayableAmount="

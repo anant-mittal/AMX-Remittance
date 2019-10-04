@@ -394,6 +394,7 @@ public class BranchRemittanceDao {
 			if(ConstantDocument.PB_PAYMENT.equalsIgnoreCase(applList.get(0).getPaymentType())) {
 				responseModel = remittanceTransactionService.savePayAtBranchAppl(applList);
 				responseModel.setPgCode(PayGServiceCode.PB);
+				logger.info("Response of status api is "+responseModel.toString());
 			}else {
 				for (BranchApplicationDto applIdDto : applList) {
 					RemittanceApplication appl = appRepo.findOne(applIdDto.getApplicationId());
@@ -407,6 +408,7 @@ public class BranchRemittanceDao {
 					}
 				}
 				responseModel.setPgCode(PayGServiceCode.KNET);
+				logger.info("Response of KNET status api is "+responseModel.toString());
 			}
 			
 		}
