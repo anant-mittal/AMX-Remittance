@@ -261,6 +261,7 @@ public class BranchRemittanceSaveManager {
 		TransactionDetailsView serviceProviderView = null;
 		String partnerTransactionId = null;
 		
+		try {
 		// service Provider api
 		if(responseDto!=null && JaxUtil.isNullZeroBigDecimalCheck(responseDto.getCollectionDocumentNo())) {
 			Boolean spCheckStatus = Boolean.FALSE;
@@ -297,6 +298,7 @@ public class BranchRemittanceSaveManager {
 		}else {
 			logger.error("Service provider api fail to execute : ColDocNo : ", responseDto.getCollectionDocumentNo() + " : ColDocCod : " +responseDto.getCollectionDocumentCode()+"  : ColDocYear : "+responseDto.getCollectionDocumentFYear());
 		}
+		logger.info("MRU --BEFORE appliation move to EMOS -->"+responseDto.getCollectionDocumentNo());
 		
 		if(responseDto!=null && JaxUtil.isNullZeroBigDecimalCheck(responseDto.getCollectionDocumentNo())) {
 			brRemittanceDao.updateApplicationToMoveEmos(responseDto);
@@ -310,11 +312,25 @@ public class BranchRemittanceSaveManager {
 			if(jaxTenantProperties.getHashSigEnable()==true) {
 				remittanceSignatureManager.updateSignatureHash(paymentResponse);
 			}
-			remittanceApplicationService.saveRemittancetoOldEmos(paymentResponse);
+			logger.info("MRU --BEFORE saveRemittancetoOldEmos  EMOS -->"+JsonUtil.toJson(paymentResponse));
+			Map<String, Object> outpuMap = remittanceApplicationService.saveRemittancetoOldEmos(paymentResponse);
+			logger.info("MRU procedure OUTPUT --->"+outpuMap==null?"TRNX MOVED SUCCESS":outpuMap.toString());
+			if(outpuMap!=null && outpuMap.get("P_ERROR_MESSAGE")!=null) {
+				String errrMsg = outpuMap.get("P_ERROR_MESSAGE").toString();
+				logger.info("MRU Procedure Error Msg :"+errrMsg);
+				if(!StringUtils.isBlank(errrMsg)) {
+					notificationService.sendTransactionErrorAlertEmail(errrMsg,"TRNX NOT MOVED TO EMOS",paymentResponse);
+				}
+			}
 			String promotionMsg = promotionManager.getPromotionPrizeForBranch(responseDto);
 			responseDto.setPromotionMessage(promotionMsg);
 		}else {
-			logger.error("NOT moved to old emos ", responseDto.getCollectionDocumentNo() + "" +responseDto.getCollectionDocumentCode()+" "+responseDto.getCollectionDocumentFYear());
+			logger.info("NOT moved to old emos ", responseDto.getCollectionDocumentNo() + "" +responseDto.getCollectionDocumentCode()+" "+responseDto.getCollectionDocumentFYear());
+		}
+		
+		}catch(Exception e) {
+			e.printStackTrace();
+			logger.info("MRU saveRemittanceTrnx catch block -->"+e.getMessage());
 		}
 		return responseDto;
 	}

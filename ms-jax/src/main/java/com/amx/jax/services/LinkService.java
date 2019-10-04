@@ -86,18 +86,17 @@ public class LinkService extends AbstractService{
 		}
 	}
 
-	public AmxApiResponse<LinkDTO, Object> openLink(LinkDTO linkDto,JaxChannel channel) {
-		LinkDetails linkDetails = linkDao.getLinkDetails(linkDto.getLinkId());
+	public AmxApiResponse<LinkDTO, Object> openLink(LinkDTO linkDto,JaxChannel channel) {		
+		LinkDetails linkDetails = linkDao.getLinkDetails(linkDto.getLinkId());				
 		int openCounter = linkDetails.getOpenCounter();
 		linkDetails.setOpenCounter(openCounter+1);	
 		linkDao.updateLink(linkDetails);
 		Customer customer = userService.getCustById(linkDetails.getCustomerId());
-		
-		if(linkDetails.getCustomerId() != null && channel != JaxChannel.ONLINE) {			
+		if(linkDetails.getCustomerId() != null) {			
 			PushMessage pushMessage = new PushMessage();
 			pushMessage.setSubject("Refer To Win!");
 			pushMessage.setMessage(
-					"Congraturlations! Your reference has downloaded the app. Keep sharing the links to as many contacts you can and win exciting prices on referral success!");
+					"Congratulations! Your reference has downloaded the app. Keep sharing the links to as many contacts you can and win exciting prices on referral success!");
 			pushMessage.addToUser(linkDetails.getCustomerId());
 			pushNotifyClient.send(pushMessage);
 		}

@@ -238,7 +238,7 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 		System.out.println("RemittanceCount : "+remittanceList.size());
 		
 		
-		if(remittanceList.size() == 0) {
+		if((remittanceList.size() == 0) || (remittanceList.size() == 1)) {
 			ReferralDetails referralDetails = refDao.getReferralByCustomerId(custId);
 			System.out.println("Referrer Customer Id"+referralDetails.getCustomerId());
 			System.out.println("Referree Customer Id"+referralDetails.getRefferedByCustomerId());
@@ -249,7 +249,7 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 				PushMessage pushMessage = new PushMessage();
 				pushMessage.setSubject("Refer To Win!");
 				pushMessage.setMessage(
-						"Congraturlations! Your reference has done the first transaction on AMIEC App! You will get a chance to win from our awesome Referral Program! Keep sharing the links to as many contacts you can and win exciting prices on referral success!");
+						"Congratulations! Your reference has done the first transaction on AMIEC App! You will get a chance to win from our awesome Referral Program! Keep sharing the links to as many contacts you can and win exciting prices on referral success!");
 				pushMessage.addToUser(referralDetails.getRefferedByCustomerId());
 				pushNotifyClient.send(pushMessage);
 			}
