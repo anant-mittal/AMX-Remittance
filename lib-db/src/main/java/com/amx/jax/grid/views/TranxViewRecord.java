@@ -57,7 +57,13 @@ public class TranxViewRecord implements Serializable {
 
 	@Column(name = "BENE_COUNTRY_CODE")
 	private String beneCountryCode;
-
+	
+	@Column(name = "BENE_NAME")
+	private String beneName;
+	
+	@Column(name = "BENE_ID")
+	private BigDecimal beneId;
+    
 	// Branch
 	@Column(name = "COUNTRY_BRANCH_ID")
 	private BigDecimal countryBranchId;
@@ -120,6 +126,9 @@ public class TranxViewRecord implements Serializable {
 
 	@Column(name = "SERVICE_TYPE")
 	private String serviceType;
+	
+	@Column(name = "CHANNEL_DISCOUNT")
+	private BigDecimal channelDiscount;
 
 	// Tranx
 	@Column(name = "TRNX_ID")
@@ -145,6 +154,25 @@ public class TranxViewRecord implements Serializable {
 	@Column(name = "TRNX_STATUS")
 	private String trnxStatus;
 
+	@ESDocFormat(ESDocFormat.Type.DATE)
+	@Column(name = "TRNX_SEND_DATETIME")
+	private Date trnxSendDatetime;
+	
+	@Column(name = "IS_DISCOUNT_AVAILED")
+	private String isDiscountAvailed;
+	
+	@Column(name = "TRNX_PAID_DATE_SOURCE")
+	private String trnxPaidDateSource;
+	
+	@Column(name = "TPC_COMM_SHARE")
+	private BigDecimal tpcCommShare;
+
+	@Column(name = "CUSTCAT_DISCOUNT")
+	private BigDecimal custCatDiscount;
+
+	@Column(name = "PIPS _DISCOUNT")
+	private BigDecimal pipsDiscount;
+
 	// Revenue
 	@Column(name = "TRNX_ACCOUNT_MMYYYY")
 	private String trnxAccountMonth;
@@ -160,6 +188,12 @@ public class TranxViewRecord implements Serializable {
 
 	@Column(name = "LOCAL_COMMISION_AMOUNT")
 	private BigDecimal localCommRecv;
+	
+	@Column(name = "ORIGINAL_EXCHANGE_RATE")
+	private BigDecimal originalExchangeRate;
+
+	@Column(name = "EXCHANGE_RATE_APPLIED")
+	private BigDecimal exchangeRateApplied;
 
 	// Customer
 	@Column(name = "IDENTITY_INT")
@@ -176,6 +210,9 @@ public class TranxViewRecord implements Serializable {
 
 	@Column(name = "NATIONALITY_CODE")
 	private String custmerNationCode;
+	
+	@Column(name = "TRNX_CUSTOMER_CATEGORY")
+	private String trnxCustomerCategory;
 
 	// DeviceClient Info
 	@Column(name = "CLIENT_TYPE")
@@ -595,4 +632,99 @@ public class TranxViewRecord implements Serializable {
 		this.localCommRecv = localCommRecv;
 	}
 
+	public String getBeneName() {
+		return beneName;
+	}
+
+	public void setBeneName(String beneName) {
+		this.beneName = beneName;
+	}
+
+	public BigDecimal getBeneId() {
+		return beneId;
+	}
+
+	public void setBeneId(BigDecimal beneId) {
+		this.beneId = beneId;
+	}
+
+	public Date getTrnxSendDatetime() {
+		return trnxSendDatetime;
+	}
+
+	public void setTrnxSendDatetime(Date trnxSendDatetime) {
+		this.trnxSendDatetime = trnxSendDatetime;
+	}
+
+	public BigDecimal getChannelDiscount() {
+		return channelDiscount;
+	}
+
+	public void setChannelDiscount(BigDecimal channelDiscount) {
+		this.channelDiscount = channelDiscount;
+	}
+
+	public String getIsDiscountAvailed() {
+		return isDiscountAvailed;
+	}
+
+	public void setIsDiscountAvailed(String isDiscountAvailed) {
+		this.isDiscountAvailed = isDiscountAvailed;
+	}
+
+	public String getTrnxPaidDateSource() {
+		return trnxPaidDateSource;
+	}
+
+	public void setTrnxPaidDateSource(String trnxPaidDateSource) {
+		this.trnxPaidDateSource = trnxPaidDateSource;
+	}
+
+	public BigDecimal getOriginalExchangeRate() {
+		return originalExchangeRate;
+	}
+
+	public void setOriginalExchangeRate(BigDecimal originalExchangeRate) {
+		this.originalExchangeRate = originalExchangeRate;
+	}
+
+	public BigDecimal getExchangeRateApplied() {
+		return exchangeRateApplied;
+	}
+
+	public void setExchangeRateApplied(BigDecimal exchangeRateApplied) {
+		this.exchangeRateApplied = exchangeRateApplied;
+	}
+
+	public BigDecimal getTpcCommShare() {
+		return tpcCommShare;
+	}
+
+	public void setTpcCommShare(BigDecimal tpcCommShare) {
+		this.tpcCommShare = tpcCommShare;
+	}
+
+	public BigDecimal getCustCatDiscount() {
+		return custCatDiscount;
+	}
+
+	public void setCustCatDiscount(BigDecimal custCatDiscount) {
+		this.custCatDiscount = custCatDiscount;
+	}
+
+	public BigDecimal getPipsDiscount() {
+		return pipsDiscount;
+	}
+
+	public void setPipsDiscount(BigDecimal pipsDiscount) {
+		this.pipsDiscount = pipsDiscount;
+	}
+
+	public String getTrnxCustomerCategory() {
+		return trnxCustomerCategory;
+	}
+
+	public void setTrnxCustomerCategory(String trnxCustomerCategory) {
+		this.trnxCustomerCategory = trnxCustomerCategory;
+	}
 }

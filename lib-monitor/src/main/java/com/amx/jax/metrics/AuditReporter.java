@@ -30,8 +30,7 @@ public class AuditReporter extends ScheduledReporter {
 	/**
 	 * Returns a new {@link Builder} for {@link ConsoleReporter}.
 	 *
-	 * @param registry
-	 *            the registry to report
+	 * @param registry the registry to report
 	 * @return a {@link Builder} instance for a {@link ConsoleReporter}
 	 */
 	public static Builder forRegistry(MetricRegistry registry) {
@@ -60,8 +59,7 @@ public class AuditReporter extends ScheduledReporter {
 		/**
 		 * Convert rates to the given time unit.
 		 *
-		 * @param rateUnit
-		 *            a unit of time
+		 * @param rateUnit a unit of time
 		 * @return {@code this}
 		 */
 		public Builder convertRatesTo(TimeUnit rateUnit) {
@@ -72,8 +70,7 @@ public class AuditReporter extends ScheduledReporter {
 		/**
 		 * Convert durations to the given time unit.
 		 *
-		 * @param durationUnit
-		 *            a unit of time
+		 * @param durationUnit a unit of time
 		 * @return {@code this}
 		 */
 		public Builder convertDurationsTo(TimeUnit durationUnit) {
@@ -84,8 +81,7 @@ public class AuditReporter extends ScheduledReporter {
 		/**
 		 * Only report metrics which match the given filter.
 		 *
-		 * @param filter
-		 *            a {@link MetricFilter}
+		 * @param filter a {@link MetricFilter}
 		 * @return {@code this}
 		 */
 		public Builder filter(MetricFilter filter) {

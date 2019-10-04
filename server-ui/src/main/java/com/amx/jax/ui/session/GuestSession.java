@@ -48,7 +48,7 @@ public class GuestSession implements Serializable {
 	@Autowired
 	transient AuditService auditService;
 
-	Language language = Language.DEFAULT;
+	Language language;
 
 	/**
 	 * Gets the lang.

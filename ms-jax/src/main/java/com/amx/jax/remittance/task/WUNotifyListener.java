@@ -22,10 +22,12 @@ import com.amx.jax.event.AmxTunnelEvents;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.client.PushNotifyClient;
+import com.amx.jax.postman.client.WhatsAppClient;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.TemplatesMX;
+import com.amx.jax.postman.model.WAMessage;
 import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.repository.RemittanceTransactionRepository;
 import com.amx.jax.service.CurrencyMasterService;
@@ -47,6 +49,8 @@ public class WUNotifyListener implements ITunnelSubscriber<DBEvent> {
 	@Autowired
 	private PushNotifyClient pushNotifyClient;
 
+	@Autowired
+	private WhatsAppClient whatsAppClient;
 
 	@Autowired
 	CustomerRepository customerRepository;
@@ -166,6 +170,25 @@ public class WUNotifyListener implements ITunnelSubscriber<DBEvent> {
 			sendEmail(email);
 	}	
 
+		if (x.isWhatsApp()) {
+			WAMessage waMessage = new WAMessage();
+			if(notifyType.equalsIgnoreCase(ConstantDocument.WU_PAID)) {
+				waMessage.setITemplate(TemplatesMX.WU_TRNX_SUCCESS);
+			}
+			else if(notifyType.equalsIgnoreCase(ConstantDocument.WU_PICK)) {
+				waMessage.setITemplate(TemplatesMX.WU_PICKUP_REMINDER);
+			}else if(notifyType.equalsIgnoreCase(ConstantDocument.WU_CANC_REM)) {
+				waMessage.setITemplate(TemplatesMX.WU_CANCEL_REMINDER);
+			}else {
+				waMessage.setITemplate(TemplatesMX.WU_TRNX_CANCELLED);
+			}
+			LOGGER.debug("Json value of wrapper is "+JsonUtil.toJson(wrapper));
+			LOGGER.debug("Wrapper data is {}", wrapper.get("data"));
+			waMessage.setModel(wrapper);
+			waMessage.addTo(c.getWhatsappPrefix() + c.getWhatsapp());
+			whatsAppClient.send(waMessage);
+			
+		}
 		
 
 		if (x.isPushNotify()) {

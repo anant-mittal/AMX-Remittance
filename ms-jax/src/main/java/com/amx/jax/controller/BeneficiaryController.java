@@ -38,6 +38,7 @@ import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.trnx.BeneficiaryTrnxManager;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.ConverterUtil;
+import com.amx.utils.JsonUtil;
 
 /**
  * 
@@ -205,7 +206,7 @@ public class BeneficiaryController {
 	@RequestMapping(value = "/trnx/bene/bene-details/", method = RequestMethod.POST)
 	public ApiResponse saveBenePersonalDetailInTrnx(
 			@RequestBody @Valid BenePersonalDetailModel benePersonalDetailModel) {
-		LOGGER.debug("saveBenePersonalDetailInTrnx request: " + benePersonalDetailModel.toString());
+		LOGGER.info("saveBenePersonalDetailInTrnx request: " + JsonUtil.toJson(benePersonalDetailModel));
 		return beneficiaryTrnxManager.savePersonalDetailTrnx(benePersonalDetailModel);
 	}
 
