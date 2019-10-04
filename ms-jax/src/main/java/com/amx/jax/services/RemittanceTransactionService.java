@@ -308,8 +308,8 @@ public class RemittanceTransactionService extends AbstractService {
 	
 	@Transactional
 	@SuppressWarnings("unchecked")
-	public RemittanceApplicationResponseModel savePayAtBranchAppl(List<BranchApplicationDto> branchApplDto) {
-		RemittanceApplicationResponseModel remiteAppModel = new RemittanceApplicationResponseModel();
+	public RemittanceApplicationResponseModel savePayAtBranchAppl(List<BranchApplicationDto> branchApplDto, RemittanceApplicationResponseModel remiteAppModel) {
+		
 		for (BranchApplicationDto branchApplicationDto : branchApplDto) {
 			if (ConstantDocument.PB_PAYMENT.equalsIgnoreCase(branchApplicationDto.getPaymentType())) {
 				Customer customer = customerRepository.getActiveCustomerDetailsByCustomerId(metaData.getCustomerId());

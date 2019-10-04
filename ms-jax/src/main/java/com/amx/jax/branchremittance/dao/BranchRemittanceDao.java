@@ -392,7 +392,7 @@ public class BranchRemittanceDao {
 			}
 			
 			if(ConstantDocument.PB_PAYMENT.equalsIgnoreCase(applList.get(0).getPaymentType())) {
-				responseModel = remittanceTransactionService.savePayAtBranchAppl(applList);
+				responseModel = remittanceTransactionService.savePayAtBranchAppl(applList,responseModel);
 				responseModel.setPgCode(PayGServiceCode.PB);
 				logger.info("Response of status api is "+responseModel.toString());
 			}else {
