@@ -54,92 +54,101 @@ public class WUNotifyListener implements ITunnelSubscriber<DBEvent> {
 
 	@Autowired
 	CustomerRepository customerRepository;
-	
+
 	@Autowired
 	CustomerFlagManager customerFlagManager;
-	
+
 	@Autowired
 	RemittanceTransactionRepository remittanceTransactionRepository;
-	
+
 	@Autowired
 	CurrencyMasterService currencyMasterService;
-	
+
 	@Autowired
 	CommunicationPrefsUtil communicationPrefsUtil;
 
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 	private static final String CUST_ID = "CUST_ID";
 	private static final String TRANX_ID = "TRANX_ID";
-	
+
 	private static final String TRNREF = "TRNREF";
-	
+
 	private static final String LANG_ID = "LANG_ID";
 	private static final String PARTNER = "PARTNER";
 	private static final String NOTIF_TYPE = "NOTIF_TYPE";
-	
+
 	@Override
 	public void onMessage(String channel, DBEvent event) {
 		LOGGER.info("======onMessage1==={} ====  {}", channel, JsonUtil.toJson(event));
-		
+
 		BigDecimal custId = ArgUtil.parseAsBigDecimal(event.getData().get(CUST_ID));
-		
+
 		String trnxRef = ArgUtil.parseAsString(event.getData().get(TRNREF));
 		String partner = ArgUtil.parseAsString(event.getData().get(PARTNER));
 		String langId = ArgUtil.parseAsString(event.getData().get(LANG_ID));
 		String notifyType = ArgUtil.parseAsString(event.getData().get(NOTIF_TYPE));
-		
-		
+
 		BigDecimal tranxId = ArgUtil.parseAsBigDecimal(event.getData().get(TRANX_ID), new BigDecimal(0));
-		LOGGER.info("Customer id is "+custId);
+		LOGGER.info("Customer id is " + custId);
 		Customer c = customerRepository.getNationalityValue(custId);
-		
-		LOGGER.info("Customer object is "+c.toString());
+
+		LOGGER.info("Customer object is " + c.toString());
 		String emailId = c.getEmail();
 		String smsNo = c.getMobile();
 		String custName;
-		if(StringUtils.isEmpty(c.getMiddleName())) {
+		if (StringUtils.isEmpty(c.getMiddleName())) {
 			c.setMiddleName("");
-			custName=c.getFirstName()+c.getMiddleName() + ' '+c.getLastName();
-		}else {
-			custName=c.getFirstName()+' '+c.getMiddleName() + ' '+c.getLastName();
+			custName = c.getFirstName() + c.getMiddleName() + ' ' + c.getLastName();
+		} else {
+			custName = c.getFirstName() + ' ' + c.getMiddleName() + ' ' + c.getLastName();
 		}
-		
-		 
-		LOGGER.info("transaction id is  "+tranxId);
+
+		LOGGER.info("transaction id is  " + tranxId);
 		RemittanceTransaction remittanceTransaction = remittanceTransactionRepository.findOne(tranxId);
-		
-		CurrencyMasterModel currencyMasterModelLocal=currencyMasterService.getCurrencyMasterById(remittanceTransaction.getLocalTranxCurrencyId().getCurrencyId());
-		CurrencyMasterModel currencyMasterModelForeign = currencyMasterService.getCurrencyMasterById(remittanceTransaction.getForeignCurrencyId().getCurrencyId());
-		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy"); 
-		String trnxDate = formatter.format(remittanceTransaction.getCreatedDate()) ;
+
+		CurrencyMasterModel currencyMasterModelLocal = currencyMasterService
+				.getCurrencyMasterById(remittanceTransaction.getLocalTranxCurrencyId().getCurrencyId());
+		CurrencyMasterModel currencyMasterModelForeign = currencyMasterService
+				.getCurrencyMasterById(remittanceTransaction.getForeignCurrencyId().getCurrencyId());
+		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+		String trnxDate = formatter.format(remittanceTransaction.getCreatedDate());
 		Map<String, Object> wrapper = new HashMap<String, Object>();
 		Map<String, Object> modeldata = new HashMap<String, Object>();
 		modeldata.put("to", emailId);
 		modeldata.put("customer", custName);
 		modeldata.put("refno", trnxRef);
-		
+
 		modeldata.put("date", trnxDate);
-		
+
 		modeldata.put("localcurcode", currencyMasterModelLocal.getQuoteName());
 		modeldata.put("localamount", remittanceTransaction.getLocalTranxAmount());
-		modeldata.put("foreigncurcode",currencyMasterModelForeign.getQuoteName());
+		modeldata.put("foreigncurcode", currencyMasterModelForeign.getQuoteName());
 		modeldata.put("foreignamount", remittanceTransaction.getForeignTranxAmount());
-		
-		
+
 		for (Map.Entry<String, Object> entry : modeldata.entrySet()) {
 			LOGGER.info("KeyModel = " + entry.getKey() + ", ValueModel = " + entry.getValue());
 		}
 		wrapper.put("data", modeldata);
 		CommunicationPrefsResult x = communicationPrefsUtil.forCustomer(CommunicationEvents.CASH_PICKUP_WU, c);
-		
-		
-		
-		if(x.isEmail()) {
-			
 
-			
-			LOGGER.info("email is  "+emailId);
-		
+		TemplatesMX thisTemplate = null;
+		if (notifyType.equalsIgnoreCase(ConstantDocument.WU_PAID)) {
+			thisTemplate = TemplatesMX.WU_TRNX_SUCCESS;
+		} else if (notifyType.equalsIgnoreCase(ConstantDocument.WU_PICK)) {
+			thisTemplate = TemplatesMX.WU_PICKUP_REMINDER;
+		} else if (notifyType.equalsIgnoreCase(ConstantDocument.WU_CANC_REM)) {
+			thisTemplate = TemplatesMX.WU_CANCEL_REMINDER;
+		} else {
+			thisTemplate = TemplatesMX.WU_TRNX_CANCELLED;
+		}
+
+		LOGGER.debug("Json value of wrapper is " + JsonUtil.toJson(wrapper));
+		LOGGER.debug("Wrapper data is {}", wrapper.get("data"));
+
+		if (x.isEmail()) {
+
+			LOGGER.debug("email is  " + emailId);
+
 			Email email = new Email();
 			if ("2".equals(langId)) {
 				email.setLang(Language.AR);
@@ -148,70 +157,38 @@ public class WUNotifyListener implements ITunnelSubscriber<DBEvent> {
 				email.setLang(Language.EN);
 				modeldata.put("languageid", Language.EN);
 			}
-			
-			for (Map.Entry<String, Object> entry : wrapper.entrySet()) {
-				LOGGER.info("KeyModelWrap = " + entry.getKey() + ", ValueModelWrap = " + entry.getValue());
-			}
-			LOGGER.info("Json value of wrapper is "+JsonUtil.toJson(wrapper));
-			LOGGER.info("Wrapper data is {}", wrapper.get("data"));
 			email.setModel(wrapper);
 			email.addTo(emailId);
 			email.setHtml(true);
-			if(notifyType.equalsIgnoreCase(ConstantDocument.WU_PAID)) {
-				email.setITemplate(TemplatesMX.WU_TRNX_SUCCESS);
-			}else if(notifyType.equalsIgnoreCase(ConstantDocument.WU_PICK)) {
-				email.setITemplate(TemplatesMX.WU_PICKUP_REMINDER);
-			}else if(notifyType.equalsIgnoreCase(ConstantDocument.WU_CANC_REM)) {
-				email.setITemplate(TemplatesMX.WU_CANCEL_REMINDER);
-			}else {
-				email.setITemplate(TemplatesMX.WU_TRNX_CANCELLED);
-			}
-			
+			email.setITemplate(thisTemplate);
+
 			sendEmail(email);
-	}	
+		}
 
 		if (x.isWhatsApp()) {
 			WAMessage waMessage = new WAMessage();
-			if(notifyType.equalsIgnoreCase(ConstantDocument.WU_PAID)) {
-				waMessage.setITemplate(TemplatesMX.WU_TRNX_SUCCESS);
-			}
-			else if(notifyType.equalsIgnoreCase(ConstantDocument.WU_PICK)) {
-				waMessage.setITemplate(TemplatesMX.WU_PICKUP_REMINDER);
-			}else if(notifyType.equalsIgnoreCase(ConstantDocument.WU_CANC_REM)) {
-				waMessage.setITemplate(TemplatesMX.WU_CANCEL_REMINDER);
-			}else {
-				waMessage.setITemplate(TemplatesMX.WU_TRNX_CANCELLED);
-			}
-			LOGGER.debug("Json value of wrapper is "+JsonUtil.toJson(wrapper));
-			LOGGER.debug("Wrapper data is {}", wrapper.get("data"));
+			waMessage.setITemplate(thisTemplate);
 			waMessage.setModel(wrapper);
 			waMessage.addTo(c.getWhatsappPrefix() + c.getWhatsapp());
 			whatsAppClient.send(waMessage);
-			
 		}
-		
+
+		if (x.isSms()) {
+			SMS smsMessage = new SMS();
+			smsMessage.setITemplate(thisTemplate);
+			smsMessage.setModel(wrapper);
+			smsMessage.addTo(c.getWhatsappPrefix() + c.getWhatsapp());
+			postManService.sendSMSAsync(smsMessage);
+		}
 
 		if (x.isPushNotify()) {
 			PushMessage pushMessage = new PushMessage();
-			if(notifyType.equalsIgnoreCase(ConstantDocument.WU_PAID)) {
-				pushMessage.setITemplate(TemplatesMX.WU_TRNX_SUCCESS);
-			}
-			
-			else if(notifyType.equalsIgnoreCase(ConstantDocument.WU_PICK)) {
-				pushMessage.setITemplate(TemplatesMX.WU_PICKUP_REMINDER);
-			}else if(notifyType.equalsIgnoreCase(ConstantDocument.WU_CANC_REM)) {
-				pushMessage.setITemplate(TemplatesMX.WU_CANCEL_REMINDER);
-			}else {
-				pushMessage.setITemplate(TemplatesMX.WU_TRNX_CANCELLED);
-			}
-			LOGGER.info("Json value of wrapper is "+JsonUtil.toJson(wrapper));
-			LOGGER.info("Wrapper data is {}", wrapper.get("data"));
+			pushMessage.setITemplate(thisTemplate);
 			pushMessage.setModel(wrapper);
 			pushMessage.addToUser(custId);
-			
 			pushNotifyClient.send(pushMessage);
 		}
-		
+
 	}
 
 	@Async(ExecutorConfig.DEFAULT)
@@ -221,9 +198,8 @@ public class WUNotifyListener implements ITunnelSubscriber<DBEvent> {
 			postManService.sendEmailAsync(email);
 		} catch (PostManException e) {
 			LOGGER.info("email exception");
-			
+
 		}
 	}
-	
 
 }
