@@ -1441,9 +1441,12 @@ public class RemittanceTransactionManager {
 		RemittanceTransactionStatusResponseModel model = new RemittanceTransactionStatusResponseModel();
 		RemittanceTransaction remittanceTransaction = remitAppDao
 				.getRemittanceTransaction(request.getApplicationDocumentNumber(), request.getDocumentFinancialYear());
+		logger.info("Request is "+request.toString());
 		RemittanceApplication application = remitAppDao.getApplication(request.getApplicationDocumentNumber(),
 				request.getDocumentFinancialYear());
+		logger.info("Application is "+application.toString());
 		RemittanceAppBenificiary remittanceBenificiary = remittanceApplicationBeneRepository.findByExRemittanceAppfromBenfi(application);
+		logger.info("Remit appl id is "+application.getRemittanceApplicationId());
 		remittanceApplicationService.checkForSuspiciousPaymentAttempts(application.getRemittanceApplicationId());
 		if(ConstantDocument.PB_PAYMENT.equalsIgnoreCase(application.getPaymentType())) {
 			model.setBeneName(remittanceBenificiary.getBeneficiaryName());
