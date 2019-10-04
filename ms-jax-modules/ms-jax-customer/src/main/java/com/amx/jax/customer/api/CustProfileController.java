@@ -10,10 +10,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.jax.ICustomerProfileService;
-import com.amx.jax.ICustomerProfileService;
-import com.amx.jax.ICustomerProfileService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.customer.ICustomerProfileService;
 import com.amx.jax.customer.manager.CustomerContactVerificationManager;
@@ -21,19 +17,13 @@ import com.amx.jax.customer.service.JaxCustomerContactVerificationService;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerContactVerification;
 import com.amx.jax.dict.ContactType;
-import com.amx.jax.error.JaxError;
 import com.amx.jax.exception.ApiHttpExceptions.ApiHttpArgException;
 import com.amx.jax.exception.ApiHttpExceptions.ApiStatusCodes;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.customer.CustomerContactVerificationDto;
-import com.amx.jax.model.response.customer.CustomerDto;
 import com.amx.jax.postman.PostManService;
-import com.amx.jax.postman.model.Email;
-import com.amx.jax.postman.model.SMS;
-import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.repository.CustomerRepository;
 import com.amx.utils.ArgUtil;
-import com.amx.utils.EntityDtoUtil;
 
 
 
@@ -117,28 +107,8 @@ public class CustProfileController implements ICustomerProfileService {
 		} else {
 			throw new ApiHttpArgException(ApiStatusCodes.PARAM_MISSING, "CivilId Id is required");
 		}
-
 		CustomerContactVerification newLink = customerContactVerificationManager.resend(c, linkId, code);
-
-		if (ContactType.EMAIL.equals(newLink.getContactType())) {
-			Email email = new Email();
-			email.addTo(c.getEmail());
-			email.setITemplate(TemplatesMX.CONTACT_VERIFICATION_EMAIL);
-			email.getModel().put("customer", EntityDtoUtil.entityToDto(c, new CustomerDto()));
-			email.getModel().put("link", newLink);
-			postManService.sendEmailAsync(email);
-		} else if (ContactType.SMS.equals(newLink.getContactType())) {
-			SMS sms = new SMS();
-			sms.addTo(c.getMobile());
-			sms.setITemplate(TemplatesMX.CONTACT_VERIFICATION_SMS);
-
-			sms.getModel().put("customer", EntityDtoUtil.entityToDto(c, new CustomerDto()));
-			sms.getModel().put("link", newLink);
-			postManService.sendSMSAsync(sms);
-		} else if (ContactType.WHATSAPP.equals(newLink.getContactType())) {
-
-		}
-
+		jaxCustomerContactVerificationService.sendVerificationLink(c, newLink);
 		return AmxApiResponse.build(customerContactVerificationManager.convertToDto(newLink));
 	}
 

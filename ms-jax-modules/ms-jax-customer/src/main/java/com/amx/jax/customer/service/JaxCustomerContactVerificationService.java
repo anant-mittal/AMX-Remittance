@@ -41,8 +41,7 @@ public class JaxCustomerContactVerificationService extends AbstractService {
 	MetaData metaData;
 	@Autowired
 	PostManService postManService;
-	@Autowired
-	private CustomerVerificationService customerVerificationService;
+	
 	@Autowired
 	private UserValidationService userValidationService;
 
