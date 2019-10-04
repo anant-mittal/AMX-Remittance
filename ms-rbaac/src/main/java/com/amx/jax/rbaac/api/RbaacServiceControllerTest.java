@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.api.AmxApiResponse;
@@ -28,6 +29,7 @@ import com.amx.jax.rbaac.dto.response.RoleResponseDTO;
 import com.amx.jax.rbaac.dto.response.UserAuthInitResponseDTO;
 import com.amx.jax.rbaac.dto.response.UserRoleMappingDTO;
 import com.amx.jax.rbaac.dto.response.UserRoleMappingsResponseDTO;
+import com.amx.jax.rbaac.service.DeviceService;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -44,7 +46,7 @@ public class RbaacServiceControllerTest implements IRbaacService {
 	/** The rbaac service client. */
 	@Autowired
 	RbaacServiceClient rbaacServiceClient;
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -256,6 +258,14 @@ public class RbaacServiceControllerTest implements IRbaacService {
 	public AmxApiResponse<DeviceDto, Object> getDevicesByTerminal(BigDecimal terminalId, String terminalIp) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.FIND_DEVICES_BY_ID, method = RequestMethod.GET)
+	public AmxApiResponse<DeviceDto, Object> getDevicesByRegId(
+			@RequestParam(name = Params.DEVICE_REG_ID, required=false) BigDecimal deviceRegId, 
+			@RequestParam(name = Params.DEVICE_CLIENT_ID, required=false) String deviceId) {
+		return rbaacServiceClient.getDevicesByRegId( deviceRegId, deviceId);
 	}
 
 }
