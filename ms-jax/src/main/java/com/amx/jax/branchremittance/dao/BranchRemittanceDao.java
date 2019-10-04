@@ -407,7 +407,7 @@ public class BranchRemittanceDao {
 						appRepo.save(appl);
 					}
 				}
-				responseModel.setPgCode(PayGServiceCode.KNET);
+				
 				logger.info("Response of KNET status api is "+responseModel.toString());
 			}
 			

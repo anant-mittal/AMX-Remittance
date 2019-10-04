@@ -19,7 +19,7 @@ public class RemittanceApplicationResponseModel extends AbstractModel {
 	private BigDecimal merchantTrackId;
 	private CivilIdOtpModel civilIdOtpModel;
 
-	private PayGServiceCode pgCode;
+	private PayGServiceCode pgCode = PayGServiceCode.DEFAULT;
 
 	public PayGServiceCode getPgCode() {
 		return pgCode;
