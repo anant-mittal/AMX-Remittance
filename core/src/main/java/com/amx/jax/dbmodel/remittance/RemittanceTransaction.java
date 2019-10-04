@@ -792,7 +792,7 @@ public class RemittanceTransaction implements Serializable {
 		this.highValueAuthDate = highValueAuthDate;
 	}
 
-	@Lob
+	
 	@Column(name = "SIGNATURE_SPECIMEN")
 	public String getCustomerSignature() {
 		return customerSignature;
