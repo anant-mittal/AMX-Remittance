@@ -569,7 +569,7 @@ public class RemittController {
 		payment.setServiceCode(respTxMdl.getPgCode());
 
 		wrapper.setRedirectUrl(payGService.getPaymentUrl(payment,
-				HttpUtils.getServerName(request) + "/app/landing/remittance"));
+				HttpUtils.getServerName(request) + "/app/landing/cart/remit"));
 
 		return wrapper;
 	}
@@ -584,5 +584,11 @@ public class RemittController {
 	public ResponseWrapperM<BranchRemittanceApplResponseDto, Object> removeitemCart(HttpServletRequest request,
 			@RequestParam BigDecimal appId) {
 		return ResponseWrapperM.from(remittanceClient.deleteFromShoppingCart(appId));
+	}
+
+	@RequestMapping(value = "/api/remitt/cart/status", method = { RequestMethod.POST })
+	public ResponseWrapperM<RemittanceTransactionStatusResponseModel, Object> statusCart(
+			@RequestBody RemittanceTransactionStatusRequestModel request) {
+		return ResponseWrapperM.from(jaxService.getRemitClient().fetchTransactionDetailsV2(request, true));
 	}
 }

@@ -423,14 +423,14 @@ public class RemitClient extends AbstractJaxServiceClient {
 	 * Fetches the transaction details of given document number and document fin
 	 * year
 	 */
-	public ApiResponse<RemittanceTransactionStatusResponseModel> fetchTransactionDetailsV2(
+	public AmxApiResponse<RemittanceTransactionStatusResponseModel,Object> fetchTransactionDetailsV2(
 			RemittanceTransactionStatusRequestModel request, Boolean promotion)
 			throws RemittanceTransactionValidationException, LimitExeededException {
 		try {
 			String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/status/v2/";
 			return restService.ajax(url).queryParam("promotion", promotion)
 					.meta(new JaxMetaInfo()).post(request)
-					.as(new ParameterizedTypeReference<ApiResponse<RemittanceTransactionStatusResponseModel>>() {
+					.as(new ParameterizedTypeReference<AmxApiResponse<RemittanceTransactionStatusResponseModel,Object>>() {
 					});
 		} catch (AbstractJaxException ae) {
 			throw ae;
