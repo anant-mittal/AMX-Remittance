@@ -290,6 +290,7 @@ public enum JaxError implements IExceptionEnum {
 	ENTITY_INVALID,
 	USER_ALREADY_ACTIVE,
 	MISSING_CONTACT,
+	ALREADY_VERIFIED_CONTACT,
 	MISSING_OTP_CONTACT,
 	
 	// Default for code symettry

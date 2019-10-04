@@ -33,11 +33,23 @@ public class CActivityEvent extends AuditEvent {
 
 		CONTACT_VERF,
 
+		LANG_CHNG(EventMarker.NOTICE),
+
 		TP_REDIRECT;
+
+		EventMarker marker;
 
 		@Override
 		public EventMarker marker() {
-			return EventMarker.AUDIT;
+			return this.marker;
+		}
+
+		Type() {
+			this.marker = EventMarker.AUDIT;
+		}
+
+		Type(EventMarker marker) {
+			this.marker = marker;
 		}
 	}
 

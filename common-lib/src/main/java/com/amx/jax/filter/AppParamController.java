@@ -21,9 +21,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.AppParam;
+import com.amx.jax.AppSharedConfig;
 import com.amx.jax.AppTenantConfig;
 import com.amx.jax.VendorAuthConfig;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.def.IndicatorListner;
 import com.amx.jax.def.IndicatorListner.GaugeIndicator;
 import com.amx.jax.exception.AmxApiError;
@@ -101,12 +103,23 @@ public class AppParamController {
 	}
 
 	@Autowired(required = false)
+	private List<AppSharedConfig> listAppSharedConfig;
+
+	@RequestMapping(value = "/pub/amx/config/shared/clear", method = RequestMethod.GET)
+	public AmxApiResponse<BoolRespModel, Object> clearSharedConfig() {
+		if (ArgUtil.is(listAppSharedConfig)) {
+			for (AppSharedConfig appSharedConfig : listAppSharedConfig) {
+				appSharedConfig.clear();
+			}
+		}
+		return AmxApiResponse.build(new BoolRespModel(true));
+	}
+
+	@Autowired(required = false)
 	VendorAuthConfig appVendorConfigForAuth;
 
 	@RequestMapping(value = "/pub/amx/device", method = RequestMethod.GET)
-	public AmxApiResponse<UserDevice, Map<String, Object>> userDevice(@RequestParam(required = false) String key,
-
-			@RequestParam(required = false) String vendor) {
+	public AmxApiResponse<UserDevice, Map<String, Object>> userDevice(@RequestParam(required = false) String key) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("getAppSpecifcDecryptedProp", appConfig.getAppSpecifcDecryptedProp());
 		map.put("getTenantSpecifcDecryptedProp2", appTenantConfig.getTenantSpecifcDecryptedProp2());

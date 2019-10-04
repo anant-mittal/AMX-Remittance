@@ -92,7 +92,7 @@ public class SnapQueryController {
 			@RequestBody Map<String, Object> params,
 			@RequestParam(defaultValue = "now-1m", required = false) String gte,
 			@RequestParam(defaultValue = "now", required = false) String lte,
-			@RequestParam(defaultValue = "true", required = false) boolean bulk)
+			@RequestParam(defaultValue = "100", required = false) Integer level)
 			throws IOException {
 		if (!ArgUtil.isEmpty(gte) && !params.containsKey("gte")) {
 			params.put("gte", gte);
@@ -100,22 +100,26 @@ public class SnapQueryController {
 		if (!ArgUtil.isEmpty(lte) && !params.containsKey("lte")) {
 			params.put("lte", lte);
 		}
+		level = ArgUtil.parseAsInteger(params.getOrDefault("level", level));
+		
 		SnapModelWrapper x = snapQueryTemplateService.execute(snapView, params);
 
-		if (bulk) {
+		if (level >= 0) {
 			List<Map<String, List<String>>> p = x.getPivot();
 			List<Map<String, Object>> inputBulk = x.getAggregations().toBulk();
+			
 			for (Map<String, List<String>> pivot : p) {
+				level--;
+				if (level < 0)
+					break;
 				PivotTable table = new PivotTable(
-						pivot.get("rows"),pivot.get("cols"),
-						pivot.get("vals"),pivot.get("aggs"),pivot.get("alias")
-						);
+						pivot.get("rows"), pivot.get("cols"),
+						pivot.get("vals"), pivot.get("aggs"), pivot.get("alias"));
 				for (Map<String, Object> map : inputBulk) {
 					table.add(map);
 				}
 				table.calculate();
 				inputBulk = table.toBulk();
-				//break;
 			}
 			x.toMap().put("bulk", inputBulk);
 		}
@@ -128,7 +132,8 @@ public class SnapQueryController {
 	public List<Map<String, Object>> snapBulkView(@PathVariable(value = "snapView") SnapQueryTemplate snapView,
 			@RequestBody Map<String, Object> params,
 			@RequestParam(defaultValue = "now-1m", required = false) String gte,
-			@RequestParam(defaultValue = "now", required = false) String lte)
+			@RequestParam(defaultValue = "now", required = false) String lte,
+			@RequestParam(defaultValue = "100", required = false) int level)
 			throws IOException {
 		if (!ArgUtil.isEmpty(gte) && !params.containsKey("gte")) {
 			params.put("gte", gte);
@@ -164,9 +169,11 @@ public class SnapQueryController {
 	@RequestMapping(value = "/snap/table/{snapView}", method = RequestMethod.GET)
 	public String table(@PathVariable(value = "snapView") SnapQueryTemplate snapView,
 			@RequestParam(defaultValue = "now-1m") String gte, @RequestParam(defaultValue = "now") String lte,
+			@RequestParam(defaultValue = "100", required = false) int level,
 			Model model) throws IOException {
 		model.addAttribute("gte", gte);
 		model.addAttribute("lte", lte);
+		model.addAttribute("level", level);
 		model.addAttribute("snapView", snapView.toString());
 		model.addAttribute("snapViews", SnapQueryTemplate.values());
 		return "table";

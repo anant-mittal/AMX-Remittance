@@ -14,7 +14,15 @@ public class AmxDBConstants {
 	public static final String Processing = "P";
 
 	public static enum Status {
-		Y, N, D, U, B, C, V
+		Y, N, 
+		/**
+		 * DELETED or DEACTIVATED
+		 */
+		D, U, B, C, V, 
+		/**
+		 * EXPIRED
+		 */
+		E
 	}
 
 	// document id

@@ -28,6 +28,7 @@ public class AmxSharedConfigClient implements AmxSharedConfig {
 		return communicationPrefs;
 	}
 
+	@Override
 	public void clear() {
 		this.communicationPrefs = null;
 	}

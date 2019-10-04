@@ -30,6 +30,7 @@ import com.amx.jax.constants.CustomerRegistrationType;
 import com.amx.jax.dbmodel.compliance.ComplianceBlockedCustomerDocMap;
 import com.amx.jax.dbmodel.customer.CustomerDocumentTypeMaster;
 import com.amx.jax.dict.Communicatable;
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.util.AmxDBConstants.Status;
 import com.amx.utils.ArgUtil;
 
@@ -1126,6 +1127,21 @@ public class Customer implements java.io.Serializable, Communicatable {
 
 	public boolean canSendMobile() {
 		return !(Status.D.equals(this.mobileVerified) || Status.N.equals(this.mobileVerified));
+	}
+	
+	public boolean hasVerified(ContactType contactType) {
+		switch (contactType) {
+		case SMS:
+		case MOBILE:
+			return Status.Y.equals(this.mobileVerified);
+		case EMAIL:
+			return Status.Y.equals(this.emailVerified);
+		case WHATSAPP:
+			return Status.Y.equals(this.whatsAppVerified);
+		default:
+			break;
+		}
+		return false;
 	}
 
 	@Column(name = "VAT_NUMBER")

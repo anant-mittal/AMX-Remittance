@@ -10,6 +10,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.jax.ICustomerProfileService;
+import com.amx.jax.ICustomerProfileService;
+import com.amx.jax.ICustomerProfileService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.customer.ICustomerProfileService;
 import com.amx.jax.customer.manager.CustomerContactVerificationManager;
@@ -17,6 +21,7 @@ import com.amx.jax.customer.service.JaxCustomerContactVerificationService;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerContactVerification;
 import com.amx.jax.dict.ContactType;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.exception.ApiHttpExceptions.ApiHttpArgException;
 import com.amx.jax.exception.ApiHttpExceptions.ApiStatusCodes;
 import com.amx.jax.logger.LoggerService;
@@ -89,7 +94,7 @@ public class CustProfileController implements ICustomerProfileService {
 			@RequestParam(value = ApiParams.VERIFICATION_CODE) String code) {
 		CustomerContactVerification x = customerContactVerificationManager.verifyByCode(identity, linkId, code);
 		return AmxApiResponse.build(customerContactVerificationManager.convertToDto(x));
-	}
+		}
 
 	@Override
 	@RequestMapping(value = ApiPath.CONTACT_LINK_VERIFY_BY_CONTACT, method = RequestMethod.POST)
@@ -98,7 +103,7 @@ public class CustProfileController implements ICustomerProfileService {
 		CustomerContactVerification x = customerContactVerificationManager.verifyByContact(identity, type, contact);
 		return AmxApiResponse.build(customerContactVerificationManager.convertToDto(x));
 	}
-	
+
 	@Override
 	@RequestMapping(value = ApiPath.CONTACT_LINK_RESEND, method = RequestMethod.POST)
 	public AmxApiResponse<CustomerContactVerificationDto, Object> resendLink(
