@@ -406,6 +406,7 @@ public class BranchRemittanceDao {
 						appRepo.save(appl);
 					}
 				}
+				responseModel.setPgCode(PayGServiceCode.KNET);
 			}
 			
 		}
