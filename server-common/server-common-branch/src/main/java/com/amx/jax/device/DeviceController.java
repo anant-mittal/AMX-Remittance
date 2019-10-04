@@ -280,12 +280,13 @@ public class DeviceController {
 	}
 
 	@ApiOffisteStatus({ OffsiteServerCodes.CLIENT_UNKNOWN })
-	@RequestMapping(value = { DeviceConstants.Path.DEVICE_STATUS }, method = { RequestMethod.GET })
+	@RequestMapping(value = { DeviceConstants.Path.DEVICE_STATUS }, method = { RequestMethod.POST })
 	@ResponseBody
-	public AmxApiResponse<Object, Object> statusDevice() {
+	public AmxApiResponse<Object, Object> statusDevice(@RequestParam(required = false) BigDecimal deviceRegId) {
 		BuilderMap wrap = MapBuilder.map();
 
 		String tranxId = ssoUser.ssoTranxId();
+
 		// Adapter
 		BigDecimal terminlId = sSOTranx.get().getTerminalId();
 		BigDecimal branchRid = ArgUtil.parseAsBigDecimal(sSOTranx.get().getBranchAdapterId());
@@ -294,6 +295,11 @@ public class DeviceController {
 		wrap.put("session.adapter.id", branchRid);
 		wrap.put("devices",
 				rbaacServiceClient.getDevicesByTerminal(terminlId, commonHttpRequest.getIPAddress()).getResults());
+
+		if (ArgUtil.is(deviceRegId)) {
+			wrap.put("browser", rbaacServiceClient.getDevicesByRegId(deviceRegId,
+					commonHttpRequest.getDeviceId()).getResult());
+		}
 
 		return AmxApiResponse.buildData(wrap.build());
 	}

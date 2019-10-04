@@ -29,6 +29,11 @@ public interface DeviceRepository extends CrudRepository<Device, Serializable> {
 			BigDecimal brachSystemInvId,
 			BigDecimal brachSystemInvId2,
 			String status);
+	
+	@Query("select d from Device d where (d.registrationId=?1) or (d.deviceId=?2 and d.status='Y')")
+	public List<Device> findByDeviceRegIdAndActiveDevicesByDeviceId(
+			BigDecimal registrationId,
+			String deviceId);
 
 	public List<Device> findByEmployeeIdAndDeviceTypeAndStatus(BigDecimal employeeId, ClientType deviceType,
 			String status);

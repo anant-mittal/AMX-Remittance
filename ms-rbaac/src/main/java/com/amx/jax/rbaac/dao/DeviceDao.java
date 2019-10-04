@@ -116,7 +116,6 @@ public class DeviceDao {
 	}
 	
 	public List<Device> findAllActiveDevicesByTerminal(BigDecimal branchSystemInvId, String branchSystemInvIp) {
-
 		BigDecimal branchSystemInvId2 = null;
 		if (ArgUtil.is(branchSystemInvIp)) {
 			BranchSystemDetail branchSystem = branchDetailDao.getBranchSystemDetail(branchSystemInvIp);
@@ -126,6 +125,10 @@ public class DeviceDao {
 		}
 		return deviceRepository.findByBranchSystemInventoryIdAndStatus(branchSystemInvId,branchSystemInvId2,
 				 Constants.YES);
+	}
+	
+	public List<Device> findAllActiveDevicesByDevice(BigDecimal deviceRegId, String deviceId) {
+		return deviceRepository.findByDeviceRegIdAndActiveDevicesByDeviceId(deviceRegId, deviceId);
 	}
 
 	public List<Device> findAllActiveDevicesForEmployee(BigDecimal employeeId, ClientType deviceType) {

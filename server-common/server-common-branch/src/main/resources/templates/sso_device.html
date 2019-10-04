@@ -84,11 +84,11 @@ window.CONST = {
 						<th colspan="2">Device Pairing</th>
 					</tr>
 					<tr class="paired dn">
-						<td colspan="2"><center><button>UnPair</button></center></td>
+						<td colspan="2"><center><button id="unpairdevice_button" >UnPair</button></center></td>
 					</tr>
-					<tr class="unpaired dn" >
-						<td><input placeholder="Enter Civil ID" size="50"></td>
-						<td id="sessionOTP"><button>Pair</button></td>
+					<tr class="unpaired" >
+						<td><input id="pairdevice_id" placeholder="Enter Civil ID" size="50"></td>
+						<td id="sessionOTP"><button id="pairdevice_button">Pair</button></td>
 					</tr>
 				</table>
 			</td>
@@ -153,7 +153,7 @@ window.CONST = {
 				+ s4() + s4();
 	}
 
-	function pairDevice() {
+	function pairDevice(identity) {
 		var dfd = jQuery.Deferred();
 		if (deviceRegToken && deviceRegId) {
 			setTimeout(function() {
@@ -174,6 +174,7 @@ window.CONST = {
 				'x-did' : did
 			},
 			data : JSON.stringify({
+				identity : identity,
 				deivceClientType : "OFFSITE_WEB"
 			})
 		}).then(function(resp) {
@@ -214,8 +215,19 @@ window.CONST = {
 		}
 	}
 	
-	function getStatus() {
-		return $.getJSON(serverUrl + "/pub/device/status", {
+	function getStatus(deviceRegId) {
+		
+		return $.ajax({
+			url : serverUrl + "/pub/device/status",
+			method : 'POST',
+			//dataType : 'json',
+			//contentType : "application/json",
+			headers : {
+				'x-did' : did
+			},
+			data : ({
+				deviceRegId : deviceRegId
+			})
 		}).done(function(resp) {
 			var text = $("#devicetemp").text();
 			var $panelwrapper =  $("#panelwrapper");
@@ -234,17 +246,36 @@ window.CONST = {
 				}
 				$panelwrapper.append(textRow);
 			}
-			
 		}).always(function() {
 		});
 	}
 
 	function poll() {
 		return pairDevice().then(function(){
-			return getStatus();
+			return getStatus(deviceRegId);
 		});
 	}
 	hmac();
 	poll();
+	
+	$(function() {
+		if(deviceRegToken && deviceRegId){
+			$(".unpaired").addClass("dn")
+			$(".paired").removeClass("dn")
+		} else {
+			$(".paired").addClass("dn")
+			$(".unpaired").removeClass("dn")
+		}
+		
+		$("#pairdevice_button").click(function(){
+			pairDevice($("#pairdevice_id").val())
+		});
+		$("#unpairdevice_button").click(function(){
+			localStorage.removeItem("deviceRegId");
+			localStorage.removeItem("deviceRegToken");
+			deviceRegId = null;
+			deviceRegToken = null;
+		});
+	});
 </script>
 </html>

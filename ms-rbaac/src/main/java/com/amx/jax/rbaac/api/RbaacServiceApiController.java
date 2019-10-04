@@ -429,11 +429,19 @@ public class RbaacServiceApiController implements IRbaacService {
 	}
 	
 	@Override
-	@RequestMapping(value = ApiEndPoints.DEVICE_GET_DEVICE_BY_TERMINAL, method = RequestMethod.GET)
+	@RequestMapping(value = ApiEndPoints.FIND_DEVICES_BY_TERMINAL, method = RequestMethod.GET)
 	public AmxApiResponse<DeviceDto, Object> getDevicesByTerminal(
 			@RequestParam(name = Params.TERMINAL_ID, required=false) BigDecimal terminalId, 
 			@RequestParam(name = Params.TERMINAL_IP, required=false) String terminalIp) {
 		return AmxApiResponse.buildList(deviceService.getDevicesByTerminal(terminalId, terminalIp));
+	}
+	
+	@Override
+	@RequestMapping(value = ApiEndPoints.FIND_DEVICES_BY_ID, method = RequestMethod.GET)
+	public AmxApiResponse<DeviceDto, Object> getDevicesByRegId(
+			@RequestParam(name = Params.DEVICE_REG_ID, required=false) BigDecimal deviceRegId, 
+			@RequestParam(name = Params.DEVICE_CLIENT_ID, required=false) String deviceId) {
+		return AmxApiResponse.buildList(deviceService.getDevicesByDeviceRegId( deviceRegId, deviceId));
 	}
 
 }

@@ -81,7 +81,8 @@ public interface IRbaacService {
 		public static final String DEVICE_REG = DEVICE_PREFIX + "/register";
 		public static final String DEVICE_GET_DEVICE_REG_ID = DEVICE_PREFIX + "/get-deviceregid";
 		public static final String DEVICE_GET_DEVICE_BY_DEVICE_REG_ID = DEVICE_PREFIX + "/get-device";
-		public static final String DEVICE_GET_DEVICE_BY_TERMINAL = DEVICE_PREFIX + "/get-device-by-terminal";
+		public static final String FIND_DEVICES_BY_TERMINAL = DEVICE_PREFIX + "/find-devices-by-terminal";
+		public static final String FIND_DEVICES_BY_ID = DEVICE_PREFIX + "/find-devices-by-id";
 		public static final String NOTP_VERIFY = DEVICE_PREFIX + "/notp/verify";
 		public static final String DEVICE_DELETE = DEVICE_PREFIX + "/delete";
 
@@ -101,6 +102,7 @@ public interface IRbaacService {
 		public static final String EMPLOYEE_ID = "employeeId";
 		public static final String DEVICE_TYPE = "deviceType";
 		public static final String DEVICE_REG_ID = "deviceRegId";
+		public static final String DEVICE_CLIENT_ID = "deviceId";
 		public static final String SESSION_TOKEN = "sessionToken";
 		public static final String PAIRE_TOKEN = "paireToken";
 		public static final String DEVICE_CLIENT_TYPE = "deviceClientType";
@@ -297,6 +299,8 @@ public interface IRbaacService {
 	
 	public AmxApiResponse<DeviceDto, Object> getDevicesByTerminal(BigDecimal terminalId,String terminalIp);
 
-	AmxApiResponse<BoolRespModel, Object> deleteDevice(Integer deviceRegId);
+	public AmxApiResponse<DeviceDto, Object> getDevicesByRegId(BigDecimal deviceRegId, String deviceId);
+
+	public AmxApiResponse<BoolRespModel, Object> deleteDevice(Integer deviceRegId);
 
 }

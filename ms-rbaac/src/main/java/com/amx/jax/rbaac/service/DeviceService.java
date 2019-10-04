@@ -345,6 +345,15 @@ public class DeviceService extends AbstractService {
 		}
 		return devicesdtos;
 	}
+	
+	public List<DeviceDto> getDevicesByDeviceRegId(BigDecimal deviceRegId, String deviceId) {
+		List<Device> devices = deviceDao.findAllActiveDevicesByDevice(deviceRegId, deviceId);
+		List<DeviceDto> devicesdtos = new ArrayList<DeviceDto>();
+		for (Device device : devices) {
+			devicesdtos.add(convert(device));
+		}
+		return devicesdtos;
+	}
 
 	public DeviceDto convert(Device device) {
 
