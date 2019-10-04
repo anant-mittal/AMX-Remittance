@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.stomp.StompSessionCache.StompSession;
@@ -22,6 +23,7 @@ public class StompTunnelService {
 	@Autowired
 	TunnelService tunnelService;
 
+	@Autowired
 	StompTunnelSessionManager stompTunnelSessionManager;
 
 	@Async
@@ -41,19 +43,19 @@ public class StompTunnelService {
 
 	/**
 	 * This method will work only if
-	 * {@link StompTunnelSessionManager#mapHTTPSession(stompSessionId, String)} has
+	 * {@link StompTunnelSessionManager#mapHTTPSession(stompUID, String)} has
 	 * been called already for the session
 	 * 
-	 * @param stompSessionId
+	 * @param stompUID - UNIQUE ID to Identify End User
 	 * @param topic
 	 * @param message
 	 */
 	@Async
-	public void sendTo(String stompSessionId, String topic, Object message) {
+	public void sendTo(String stompUID, String topic, Object message) {
 		try {
 			StompTunnelEvent event = new StompTunnelEvent();
 			event.setTopic(topic);
-			StompSession stompSession = stompTunnelSessionManager.getStompSession(stompSessionId);
+			StompSession stompSession = stompTunnelSessionManager.getStompSession(stompUID);
 			if (!ArgUtil.isEmpty(stompSession)) {
 				event.setHttpSessionId(stompSession.getHttpSessionId());
 				Map<String, Object> messageData = new HashMap<String, Object>();
@@ -64,6 +66,5 @@ public class StompTunnelService {
 		} catch (Exception e) {
 			LOGGER.error("Error While Sending StompMessage", e);
 		}
-
 	}
 }

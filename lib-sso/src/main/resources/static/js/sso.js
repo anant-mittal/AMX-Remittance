@@ -267,6 +267,13 @@ $(function() {
 				dummyData)
 		$(document.body).append(dummyBtn)
 	}
+	
+	console.log("SUB:/branch-user/customer-call-session");
+	tunnelClient.config({
+		user : "0"
+	}).instance().on("/branch-user/customer-call-session", function(testresponse){
+		console.log("===testresponse",testresponse)
+	});
 })
 if(window.location.hash === "#test" && !localStorage.getItem('test')){
 	localStorage.setItem('test','');

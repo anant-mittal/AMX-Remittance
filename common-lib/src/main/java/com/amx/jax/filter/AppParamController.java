@@ -119,7 +119,8 @@ public class AppParamController {
 	VendorAuthConfig appVendorConfigForAuth;
 
 	@RequestMapping(value = "/pub/amx/device", method = RequestMethod.GET)
-	public AmxApiResponse<UserDevice, Map<String, Object>> userDevice(@RequestParam(required = false) String key) {
+	public AmxApiResponse<UserDevice, Map<String, Object>> userDevice(@RequestParam(required = false) String key,
+			@RequestParam(required = false) String vendor) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("getAppSpecifcDecryptedProp", appConfig.getAppSpecifcDecryptedProp());
 		map.put("getTenantSpecifcDecryptedProp2", appTenantConfig.getTenantSpecifcDecryptedProp2());
@@ -127,8 +128,8 @@ public class AppParamController {
 		map.put("defaultTenant", appConfig.getDefaultTenant());
 		map.put(TenantContextHolder.TENANT, TenantContextHolder.currentSite(false));
 
-		AppContextUtil.setVendor(VendorAuthConfig.class,vendor);
-		
+		AppContextUtil.setVendor(VendorAuthConfig.class, vendor);
+
 		map.put("getBasicAuthPassword", appVendorConfigForAuth.getBasicAuthPassword());
 		map.put("getBasicAuthUser", appVendorConfigForAuth.getBasicAuthUser());
 

@@ -89,6 +89,7 @@ var tunnelClient = (function(win) {
 			for(var key in _config){
 				config[key] = _config[key]
 			}
+			return this;
 		},
 		connect : function() {
 			onConnect();

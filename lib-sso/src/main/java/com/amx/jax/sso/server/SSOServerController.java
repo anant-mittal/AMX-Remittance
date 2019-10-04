@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,6 +38,7 @@ import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
 import com.amx.jax.http.RequestType;
 import com.amx.jax.logger.AuditActor;
+import com.amx.jax.logger.AuditActor.ActorType;
 import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.LoggerService;
@@ -61,8 +61,8 @@ import com.amx.jax.sso.SSOTranx;
 import com.amx.jax.sso.SSOTranx.SSOModel;
 import com.amx.jax.sso.SSOUser;
 import com.amx.jax.sso.server.ApiHeaderAnnotations.ApiDeviceHeaders;
+import com.amx.jax.stomp.StompTunnelSessionManager;
 import com.amx.utils.ArgUtil;
-import com.amx.utils.HttpUtils;
 import com.amx.utils.JsonUtil;
 import com.amx.utils.TimeUtils;
 import com.amx.utils.URLBuilder;
@@ -104,6 +104,9 @@ public class SSOServerController {
 
 	@Autowired
 	private SessionContextService sessionContextService;
+
+	@Autowired
+	StompTunnelSessionManager stompTunnelSessionManager;
 
 	private Map<String, Object> getModelMap() {
 		ssoUser.ssoTranxId();
@@ -159,6 +162,7 @@ public class SSOServerController {
 		}
 		ssoUser.generateSAC();
 		model.addAllAttributes(getModelMap());
+		stompTunnelSessionManager.registerUser(ActorType.E.getId(0));
 		return SSOConstants.SSO_INDEX_PAGE;
 	}
 

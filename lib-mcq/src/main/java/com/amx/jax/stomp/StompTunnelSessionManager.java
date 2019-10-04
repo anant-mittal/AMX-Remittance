@@ -7,23 +7,27 @@ import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.stomp.StompSessionCache.StompSession;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.UniqueID;
 
 @Component
+@Service
 public class StompTunnelSessionManager {
 
 	/*
 	 * Map for <httpSessionId, stompUID>
 	 */
-	public Map<String, String> http2stompUIdMap = Collections.synchronizedMap(new HashMap<String, String>());
+	public static final Map<String, String> http2stompUIdMap = Collections
+			.synchronizedMap(new HashMap<String, String>());
 
 	/*
 	 * Map for <wsSessionID, httpSessionId>
 	 */
-	public Map<String, String> ws2httpMap = Collections.synchronizedMap(new HashMap<String, String>());
+	public static final Map<String, String> ws2httpMap = Collections.synchronizedMap(new HashMap<String, String>());
 
 	/*
 	 * Map for <stompUID, stompSession>
@@ -35,16 +39,16 @@ public class StompTunnelSessionManager {
 		return UniqueID.PREF;
 	}
 
-	public String createSessionMapping(String wsSessionID, String httpSessionId, String stompUID) {
-		if (ArgUtil.isEmpty(stompUID)) {
-			stompUID = http2stompUIdMap.get(httpSessionId);
-			if (ArgUtil.isEmpty(stompUID)) {
-				stompUID = String.format("%s-%s-%s", getSystemPrefix(), httpSessionId, wsSessionID);
-				http2stompUIdMap.put(httpSessionId, stompUID);
+	public String createSessionMapping(String wsSessionID, String httpSessionId, String sessionUID) {
+		if (ArgUtil.isEmpty(sessionUID)) {
+			sessionUID = http2stompUIdMap.get(httpSessionId);
+			if (ArgUtil.isEmpty(sessionUID)) {
+				sessionUID = String.format("%s-%s-%s", getSystemPrefix(), httpSessionId, wsSessionID);
+				http2stompUIdMap.put(httpSessionId, sessionUID);
 			}
 		}
 		ws2httpMap.put(wsSessionID, httpSessionId);
-		return stompUID;
+		return sessionUID;
 	}
 
 	/**
@@ -83,7 +87,17 @@ public class StompTunnelSessionManager {
 		stompSessionCache.put(stompUID, stompSession);
 	}
 
+	/**
+	 * Create Stomp Session for User, Prefer with prefix E:21,C:1212,T:3435
+	 * 
+	 * @param stompUID
+	 */
+	public void registerUser(String stompUID) {
+		mapHTTPSession(stompUID, AppContextUtil.getSessionId(true));
+	}
+
 	public StompSession getStompSession(String stompUID) {
 		return stompSessionCache.get(stompUID);
 	}
+
 }

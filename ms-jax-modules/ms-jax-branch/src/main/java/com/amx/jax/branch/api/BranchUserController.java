@@ -15,6 +15,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.branchuser.service.BranchUserService;
 import com.amx.jax.cache.box.CustomerOnCall;
 import com.amx.jax.cache.box.CustomerOnCall.CustomerCall;
+import com.amx.jax.client.JaxStompClient;
 import com.amx.jax.client.branch.IBranchService;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerCallDetails;
@@ -45,6 +46,9 @@ public class BranchUserController implements IBranchService {
 	CustomerOnCall customerOnCall;
 
 	@Autowired
+	JaxStompClient jaxStompClient;
+
+	@Autowired
 	CustomerCallDetailsRepository customerCallDetailsRepository;
 
 	@ApiVendorHeaders
@@ -61,6 +65,7 @@ public class BranchUserController implements IBranchService {
 				customerCall.setSessionId(AppContextUtil.getTraceId());
 				customerCall.setMobile(mobile);
 				customerOnCall.put(employeeId, customerCall);
+				jaxStompClient.publishOnCallCustomerStatus(e.getEmployeeId(), c.getCustomerId());
 				return AmxApiResponse.build(customerCall);
 			} else {
 				customerOnCall.remove(employeeId);
