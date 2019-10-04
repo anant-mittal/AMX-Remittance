@@ -298,7 +298,7 @@ public class DeviceController {
 
 		if (ArgUtil.is(deviceRegId)) {
 			wrap.put("browser", rbaacServiceClient.getDevicesByRegId(deviceRegId,
-					commonHttpRequest.getDeviceId()).getResult());
+					commonHttpRequest.getDeviceId()).getResults());
 		}
 
 		return AmxApiResponse.buildData(wrap.build());
