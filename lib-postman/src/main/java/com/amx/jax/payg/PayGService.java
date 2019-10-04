@@ -14,19 +14,16 @@ import com.amx.jax.AppConstants;
 import com.amx.jax.AppContext;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.dict.PayGServiceCode;
-import com.amx.jax.rest.RestService;
 import com.amx.utils.CryptoUtil;
 import com.amx.utils.JsonUtil;
 import com.amx.utils.URLBuilder;
+import com.amx.utils.Urly;
 
 @Component
 public class PayGService {
 
 	@Autowired
 	private AppConfig appConfig;
-
-	@Autowired
-	private RestService restService;
 
 	private static BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
 	{
@@ -60,11 +57,12 @@ public class PayGService {
 
 		URLBuilder builder = new URLBuilder(appConfig.getPaygURL());
 
-		String callbackUrl = callback
-				+ "?docNo=" + payment.getDocNo()
-				+ "&docFy=" + payment.getDocFy()
-				+ "&docId=" + payment.getDocId()
-				+ "&trckid=" + payment.getTrackId();
+		String callbackUrl = Urly.parse(callback)
+				.queryParam("docNo", payment.getDocNo())
+				.queryParam("docFy", payment.getDocFy())
+				.queryParam("docId", payment.getDocId())
+				.queryParam("trckid", payment.getTrackId())
+				.queryParam("payId", payment.getPayId()).getURL();
 
 		if (PayGServiceCode.WT.equals(payment.getServiceCode())
 				|| PayGServiceCode.PB.equals(payment.getServiceCode())) {
@@ -74,20 +72,35 @@ public class PayGService {
 		String callbackd = Base64.getEncoder().encodeToString(callbackUrl.getBytes());
 
 		builder.path("app/payment").queryParam("amount", payment.getAmount())
-				.queryParam("trckid", payment.getTrackId()).queryParam("pg", payment.getServiceCode().longEnum())
+				.queryParam("trckid", payment.getTrackId()).queryParam("pg", payment.getServiceCode())
 				.queryParam("docFy", payment.getDocFy()).queryParam("docNo", payment.getDocNo())
 				.queryParam("docId", payment.getDocId())
 				.queryParam("tnt", context.getTenant()).queryParam("callbackd", callbackd)
 				.queryParam("prod", payment.getProduct())
+				.queryParam("payId", payment.getPayId())
 				.queryParam(AppConstants.TRACE_ID_XKEY, context.getTraceId())
 				.queryParam("detail", getEnCryptedDetails(payment.getTrackId(), payment.getAmount(),
-						payment.getDocId(), payment.getDocNo(), payment.getDocFy()))
+						payment.getDocId(), payment.getDocNo(), payment.getDocFy(), payment.getPayId()))
 				.queryParam("verify", getVerifyHash(payment.getTrackId(), payment.getAmount(),
-						payment.getDocId(), payment.getDocNo(), payment.getDocFy()).getVerification());
+						payment.getDocId(), payment.getDocNo(), payment.getDocFy(), payment.getPayId())
+								.getVerification());
 
 		return builder.getURL();
 	}
 
+	public String getEnCryptedDetails(String trckid, String amount, String docId, String docNo,
+			String docFy, String payId) {
+		PayGParams payGParams = new PayGParams();
+		payGParams.setAmount(amount);
+		payGParams.setDocId(docId);
+		payGParams.setDocNo(docNo);
+		payGParams.setDocFy(docFy);
+		payGParams.setTrackId(trckid);
+		payGParams.setPayId(payId);
+		return getEnCryptedDetails(payGParams);
+	}
+
+	@Deprecated
 	public String getEnCryptedDetails(String trckid, String amount, String docId, String docNo,
 			String docFy) {
 		PayGParams payGParams = new PayGParams();
@@ -110,6 +123,7 @@ public class PayGService {
 		return JsonUtil.fromJson(jsonDetails, PayGParams.class);
 	}
 
+	@Deprecated
 	public PayGParams getVerifyHash(String trckid, String amount, String docId, String docNo,
 			String docFy) {
 		PayGParams payGParams = new PayGParams();
@@ -118,6 +132,23 @@ public class PayGService {
 		payGParams.setDocNo(docNo);
 		payGParams.setDocFy(docFy);
 		payGParams.setTrackId(trckid);
+		try {
+			payGParams.setVerification(CryptoUtil.getMD5Hash((JsonUtil.toJson(payGParams))));
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+		return payGParams;
+	}
+
+	public PayGParams getVerifyHash(String trckid, String amount, String docId, String docNo,
+			String docFy, String payId) {
+		PayGParams payGParams = new PayGParams();
+		payGParams.setAmount(amount);
+		payGParams.setDocId(docId);
+		payGParams.setDocNo(docNo);
+		payGParams.setDocFy(docFy);
+		payGParams.setTrackId(trckid);
+		payGParams.setPayId(payId);
 		try {
 			payGParams.setVerification(CryptoUtil.getMD5Hash((JsonUtil.toJson(payGParams))));
 		} catch (NoSuchAlgorithmException e) {

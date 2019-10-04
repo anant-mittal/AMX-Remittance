@@ -21,6 +21,7 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.RemittanceApplicationDao;
@@ -243,13 +244,8 @@ public class RemittanceTransactionService extends AbstractService {
 		return response;
 	}
 	
-	public ApiResponse getTransactionStatusV2(RemittanceTransactionStatusRequestModel request) {
-		ApiResponse response = getBlackApiResponse();
-		RemittanceTransactionStatusResponseModel responseModel = remittanceTxnManger.getTransactionStatusV2(request);
-		response.getData().getValues().add(responseModel);
-		response.setResponseStatus(ResponseStatus.OK);
-		response.getData().setType(responseModel.getModelType());
-		return response;
+	public AmxApiResponse<RemittanceTransactionStatusResponseModel, Object> getTransactionStatusV2(RemittanceTransactionStatusRequestModel request) {
+		return AmxApiResponse.build(remittanceTxnManger.getTransactionStatusV2(request));
 	}
 	
 	

@@ -22,6 +22,7 @@ import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
+import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.jax.AmxMeta;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
@@ -301,10 +302,9 @@ public class RemittanceController {
 	
 	/** added by Rabil **/ 
 	@RequestMapping(value = "/status/v2/", method = RequestMethod.POST)
-	public ApiResponse getTransactionStatusV2(@RequestBody RemittanceTransactionStatusRequestModel request,@RequestParam("promotion") Boolean promotion) {
+	public AmxApiResponse<RemittanceTransactionStatusResponseModel, Object> getTransactionStatusV2(@RequestBody RemittanceTransactionStatusRequestModel request,@RequestParam("promotion") Boolean promotion) {
 		logger.info("In getTransactionStatus with param, :  " + request.toString());
 		request.setPromotion(promotion);
-		ApiResponse response = remittanceTransactionService.getTransactionStatusV2(request);
-		return response;
+		return remittanceTransactionService.getTransactionStatusV2(request);
 	}
 }
