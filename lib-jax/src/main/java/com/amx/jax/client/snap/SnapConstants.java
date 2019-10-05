@@ -33,7 +33,9 @@ public class SnapConstants {
 		CUSTOMER_VERIFICATION_REPORT("customer-verification-report", SnapIndexName.LOGS, "auditlogs"),
 		CUSTOMER_VERIFICATION_REPORT_TOTAL("customer-verification-report-total", SnapIndexName.LOGS, "auditlogs"),
 		BUGZ_STORIES("bugz-stories", SnapIndexName.ALL),
-		SIGNATURE_PADS_REPORT("sgnature-pads", SnapIndexName.ALL);
+		ACTIVE_DEVICE_REPORT("active-device", SnapIndexName.ALL),
+		ACTIVE_SIGNPAD_REPORT("active-signpad", SnapIndexName.ALL),
+		ACTIVE_TERMINAL_REPORT("active-terminal", SnapIndexName.ALL);
 
 		String file;
 		String index;

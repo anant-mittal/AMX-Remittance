@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.bytedeco.javacpp.opencv_videostab.RansacParams;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,12 +14,16 @@ import com.amx.jax.client.snap.SnapConstants.SnapQueryTemplate;
 import com.amx.jax.def.AbstarctQueryFactory.QueryProcessor;
 import com.amx.jax.device.DeviceBox;
 import com.amx.jax.device.DeviceData;
+import com.amx.jax.logger.LoggerService;
+import com.amx.jax.radar.service.CivilIdValidationService;
 import com.amx.jax.radar.service.SnapQueryFactory.SnapQuery;
 import com.amx.utils.Random;
 
 @Component
-@SnapQuery(SnapQueryTemplate.SIGNATURE_PADS_REPORT)
-public class SnapQuerySignPadProcessor implements QueryProcessor<DeviceData> {
+@SnapQuery(SnapQueryTemplate.ACTIVE_DEVICE_REPORT)
+public class SnapQueryProcessorActiveDevice implements QueryProcessor<DeviceData> {
+
+	public static final Logger LOGGER = LoggerService.getLogger(SnapQueryProcessorActiveDevice.class);
 
 	@Autowired
 	DeviceBox deviceBox;
@@ -27,27 +32,6 @@ public class SnapQuerySignPadProcessor implements QueryProcessor<DeviceData> {
 	public List<DeviceData> process() {
 
 		List<DeviceData> devices = new ArrayList<DeviceData>();
-		/*
-		Set<String> y = deviceBox.map().keySet();
-		try {
-			for (String string : y) {
-				try {
-					DeviceData d = new DeviceData();
-					d.setRegId(string);
-					devices.add(d);
-					deviceBox.fastRemove(string);
-				} catch (Exception e) {
-					System.out.println("LOCAL===   " + e.getMessage());
-				}
-			}
-		} catch (Exception e2) {
-			System.out.println("GLOBAL===   " + e2.getMessage());
-		}
-		DeviceData d = new DeviceData();
-		d.setRegId("ddddddddd");
-		deviceBox.put("ddd", d);
-		return devices;
-		*/
 
 		Set<Entry<String, DeviceData>> x = deviceBox.map().entrySet();
 		try {
@@ -56,17 +40,13 @@ public class SnapQuerySignPadProcessor implements QueryProcessor<DeviceData> {
 				try {
 					devices.add(entry.getValue());
 				} catch (Exception e) {
-					System.out.println("LOCAL===   " + e.getMessage());
+					LOGGER.error("LOCAL===   {}" + e.getMessage());
 				}
 			}
 		} catch (Exception e2) {
-			System.out.println("GLOBAL===   " + e2.getMessage());
+			LOGGER.error("GLOBAL===   {}" + e2.getMessage());
 		}
-		
-		DeviceData d = new DeviceData();
-		d.setRegId("ddddddddd");
-		deviceBox.put(Random.randomNumeric(3), d);
-		
+
 		return devices;
 
 	}

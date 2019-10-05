@@ -30,6 +30,9 @@
 <link rel="stylesheet"
 	href="//cdn.datatables.net/buttons/1.5.6/css/buttons.dataTables.min.css">	
 
+<script type="text/javascript" src="//cdn.datatables.net/plug-ins/1.10.20/dataRender/datetime.js"></script>
+
+
 <script src='//cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.js'
 	type='text/javascript'></script>	
 	
@@ -365,6 +368,23 @@ function dropdown(classname) {
 
 <script>
   var SQL_DATA;
+  
+  $.fn.dataTable.ext.type.detect.unshift(
+	    function ( d ) {
+	        return !isNaN(d) && d>120000000000 ?
+	            'time-stamp' :
+	            null;
+	    }
+	);
+	$.fn.dataTable.ext.type.order['time-stamp'] = function ( d ) {
+	    switch ( d ) {
+	        case 'Low':    return 1;
+	        case 'Medium': return 2;
+	        case 'High':   return 3;
+	    }
+	    return 0;
+	};
+
 
   function executeQuery(url,map){
 	   $.ajax({
@@ -411,7 +431,21 @@ function dropdown(classname) {
 			SQL_DATA = bulk;
 			if(_bulkItem){
 				columns = Object.keys(_bulkItem).map(function(key){
-					return { data: key, title : key.toUpperCase()  };
+					var KEY = key.toUpperCase();
+					var ret = { data: key, title : KEY  };
+					if(KEY.indexOf("STAMP")>-1){
+						ret.render = function(data, type, row){
+							if(data){
+								if(type == 'display' || type == 'filter'){
+									return moment.unix(parseInt(data)/1000).format('DD-MM-YY HH:MM:SS');
+								} else {
+									return data
+								}
+							}
+							return null;
+						};
+					}
+					return ret;
 				});
 				console.log(columns,bulk);
 				$('#tablediv').DataTable({
