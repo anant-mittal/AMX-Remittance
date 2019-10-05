@@ -1246,7 +1246,7 @@ public class RemittanceTransactionManager {
 		remiteAppModel.setDocumentFinancialYear(remittanceApplication.getDocumentFinancialyear());
 		remiteAppModel.setMerchantTrackId(meta.getCustomerId());
 		remiteAppModel.setDocumentIdForPayment(remittanceApplication.getDocumentNo().toString());
-		if(ConstantDocument.PB_PAYMENT.equalsIgnoreCase(model.getPaymentType())) {
+		if(StringUtils.isNotBlank(model.getPaymentType()) && ConstantDocument.PB_PAYMENT.equalsIgnoreCase(model.getPaymentType())) {
 			remiteAppModel.setPgCode(PayGServiceCode.PB);
 		}
 		CivilIdOtpModel civilIdOtpModel = null;
@@ -1390,8 +1390,7 @@ public class RemittanceTransactionManager {
 	}
 
 	private void validateAdditionalBeneDetails(RemittanceTransactionRequestModel model) {
-		Map<String, Object> output = applicationProcedureDao
-				.toFetchDetilaFromAddtionalBenficiaryDetails(remitApplParametersMap);
+		Map<String, Object> output = applicationProcedureDao.toFetchDetilaFromAddtionalBenficiaryDetails(remitApplParametersMap);
 		remitApplParametersMap.putAll(output);
 		if (isSaveRemittanceFlow) {
 			BenificiaryListView beneficiary = beneficiaryOnlineDao.findOne(model.getBeneId());
@@ -1400,8 +1399,7 @@ public class RemittanceTransactionManager {
 			}
 
 			// Beneficiary not allow to remit if any data missing
-			BeneficiaryListDTO beneDtoCheck = beneCheckService
-					.beneCheck(transactionHistroyService.convertBeneModelToDto(beneficiary));
+			BeneficiaryListDTO beneDtoCheck = beneCheckService.beneCheck(transactionHistroyService.convertBeneModelToDto(beneficiary));
 
 			if (CollectionUtils.isNotEmpty(beneDtoCheck.getBeneficiaryErrorStatus())) {
 				throw new GlobalException(beneDtoCheck.getBeneficiaryErrorStatus().get(0).getErrorDesc());

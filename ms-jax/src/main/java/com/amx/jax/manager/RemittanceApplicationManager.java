@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.jax.branchremittance.manager.BranchRemittanceManager;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dbmodel.BankMasterModel;
@@ -102,6 +103,9 @@ public class RemittanceApplicationManager {
 	
 	@Autowired
 	ICurrencyDao currencyDao;
+	
+	@Autowired
+	BranchRemittanceManager branchRemittanceManager;
 	
 	/**
 	 * @param remitApplParametersMap2
@@ -225,7 +229,7 @@ public class RemittanceApplicationManager {
 		remittanceApplication.setWuIpAddress(metaData.getDeviceIp());
 		
 		validateAdditionalErrorMessages(requestModel);
-		validateBannedBank();
+		validateBannedBank(requestModel.getBeneId());
 		validateDailyBeneficiaryTransactionLimit(beneDetails);
 		remittanceApplication.setInstruction("URGENT");
 		setCustomerDiscountColumns(remittanceApplication, validationResults);
@@ -369,7 +373,7 @@ public class RemittanceApplicationManager {
 		}
 		
 		validateAdditionalErrorMessagesV2(requestModel);
-		validateBannedBank();
+		validateBannedBank(requestModel.getBeneId());
 		
 		//validateDailyBeneficiaryTransactionLimit(beneDetails);
 		
@@ -444,20 +448,26 @@ public class RemittanceApplicationManager {
 		}
 	}
 
-	private void validateBannedBank() {
-		Map<String, Object> output = applicationProcedureDao.getBannedBankCheckProcedure(remitApplParametersMap);
-		String errorMessage = (String) output.get("P_ERROR_MESSAGE");
-		if (errorMessage != null) {
-			throw new GlobalException(JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL, errorMessage);
-		}
+	private void validateBannedBank(BigDecimal beneRelaId) {
+		
+		branchRemittanceManager.bannedBankCheck(beneRelaId);
+		
+		/*
+		 * Map<String, Object> output =
+		 * applicationProcedureDao.getBannedBankCheckProcedure(remitApplParametersMap);
+		 * String errorMessage = (String) output.get("P_ERROR_MESSAGE"); if
+		 * (errorMessage != null) { throw new
+		 * GlobalException(JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL,
+		 * errorMessage); }
+		 */
 	}
 
 	public void validateAdditionalErrorMessages(RemittanceTransactionRequestModel requestModel) {
 		remitApplParametersMap.put("P_FURTHER_INSTR", "URGENT");
-		Map<String, Object> errorResponse = applicationProcedureDao.toFetchPurtherInstractionErrorMessaage(remitApplParametersMap);
-		String errorMessage = (String) errorResponse.get("P_ERRMSG");
-		Map<String, Object> furtherSwiftAdditionalDetails = applicationProcedureDao.fetchAdditionalBankRuleIndicators(remitApplParametersMap);
-		remitApplParametersMap.putAll(furtherSwiftAdditionalDetails);
+		//Map<String, Object> errorResponse = applicationProcedureDao.toFetchPurtherInstractionErrorMessaage(remitApplParametersMap);
+		String errorMessage = null;//(String) errorResponse.get("P_ERRMSG");
+		//Map<String, Object> furtherSwiftAdditionalDetails = applicationProcedureDao.fetchAdditionalBankRuleIndicators(remitApplParametersMap);
+		//remitApplParametersMap.putAll(furtherSwiftAdditionalDetails);
 		remitApplParametersMap.put("P_ADDITIONAL_BANK_RULE_ID_1", requestModel.getAdditionalBankRuleFiledId());
 		if (requestModel.getSrlId() != null) {
 			BigDecimal srlId = requestModel.getSrlId();
@@ -487,10 +497,10 @@ public class RemittanceApplicationManager {
 	
 	public void validateAdditionalErrorMessagesV2(RemittanceTransactionDrRequestModel requestModel) {
 		remitApplParametersMap.put("P_FURTHER_INSTR", "URGENT");
-		Map<String, Object> errorResponse = applicationProcedureDao.toFetchPurtherInstractionErrorMessaage(remitApplParametersMap);
-		String errorMessage = (String) errorResponse.get("P_ERRMSG");
-		Map<String, Object> furtherSwiftAdditionalDetails = applicationProcedureDao.fetchAdditionalBankRuleIndicators(remitApplParametersMap);
-		remitApplParametersMap.putAll(furtherSwiftAdditionalDetails);
+		//Map<String, Object> errorResponse = applicationProcedureDao.toFetchPurtherInstractionErrorMessaage(remitApplParametersMap);
+		String errorMessage = null;//(String) errorResponse.get("P_ERRMSG");
+		//Map<String, Object> furtherSwiftAdditionalDetails = applicationProcedureDao.fetchAdditionalBankRuleIndicators(remitApplParametersMap);
+		//remitApplParametersMap.putAll(furtherSwiftAdditionalDetails);
 		remitApplParametersMap.put("P_ADDITIONAL_BANK_RULE_ID_1", requestModel.getAdditionalBankRuleFiledId());
 		if (requestModel.getSrlId() != null) {
 			BigDecimal srlId = requestModel.getSrlId();

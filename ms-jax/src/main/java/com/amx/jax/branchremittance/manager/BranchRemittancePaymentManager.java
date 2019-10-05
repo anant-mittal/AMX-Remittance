@@ -29,8 +29,10 @@ import com.amx.jax.dbmodel.CurrencyWiseDenomination;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ParameterDetails;
 import com.amx.jax.dbmodel.partner.RemitApplSrvProv;
+import com.amx.jax.dbmodel.remittance.AdditionalInstructionData;
 import com.amx.jax.dbmodel.remittance.CustomerBank;
 import com.amx.jax.dbmodel.remittance.LocalBankDetailsView;
+import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.ShoppingCartDetails;
 import com.amx.jax.dbmodel.remittance.StaffAuthorizationView;
 import com.amx.jax.error.JaxError;
@@ -52,6 +54,7 @@ import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
 import com.amx.jax.model.response.remittance.PaymentModeDto;
 import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
 import com.amx.jax.partner.manager.PartnerTransactionManager;
+import com.amx.jax.repository.AdditionalInstructionDataRepository;
 import com.amx.jax.repository.IBankMasterFromViewDao;
 import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.ICustomerRepository;
@@ -101,6 +104,9 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 	
 	@Autowired
 	PartnerTransactionManager partnerTransactionManager;
+	
+	@Autowired
+	AdditionalInstructionDataRepository addlInstDataRepo;
 
 
 	/* 
@@ -275,6 +281,8 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 			}
 		}
 		shoppingCartDataTableBean.setApplPaymentType(shoppingCartDetails.getApplicationPaymentType());
+		shoppingCartDataTableBean.setPurposeOfTrnx(getPurposeOfTrnx(shoppingCartDetails.getRemittanceApplicationId()));
+		
 		return shoppingCartDataTableBean;
 	}
 
@@ -575,6 +583,17 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		*/
 		config.setTodayTrnxAmount(todayTrnxLimit);
 		return config;
-		
+	}
+	
+	/** added by Rabil on 5th Oct 2019**/
+	private String getPurposeOfTrnx(BigDecimal remitApplId) {
+		String purTrnx = null;
+		RemittanceApplication remitAppl = new RemittanceApplication();
+		remitAppl.setRemittanceApplicationId(remitApplId);
+		AdditionalInstructionData addlInsData = addlInstDataRepo.findByExRemittanceApplicationAndFlexField(remitAppl, ConstantDocument.INDIC1);
+		if(addlInsData!=null) {
+			purTrnx = addlInsData.getFlexFieldValue();
+		}
+		return purTrnx;
 	}
 }

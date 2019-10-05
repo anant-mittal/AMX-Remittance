@@ -87,6 +87,6 @@ public interface RemittanceApplicationRepository extends CrudRepository<Remittan
 	 
     
    
-	public List<RemittanceApplication> findByFsCustomerAndPaygTrnxDetailIdAndIsactive(Customer fsCustomer, BigDecimal paygTrnxDetailId,String isactive);
+	public List<RemittanceApplication> findByFsCustomerAndPaygTrnxDetailId(Customer fsCustomer, BigDecimal paygTrnxDetailId);
     
 }

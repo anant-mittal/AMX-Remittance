@@ -37,6 +37,7 @@ import com.amx.jax.dbmodel.ParameterDetails;
 import com.amx.jax.dbmodel.RemittanceTransactionView;
 import com.amx.jax.dbmodel.ServiceApplicabilityRule;
 import com.amx.jax.dbmodel.ViewCity;
+import com.amx.jax.dbmodel.bene.BankBlWorld;
 import com.amx.jax.dbmodel.fx.EmployeeDetailsView;
 import com.amx.jax.dbmodel.remittance.AdditionalBankDetailsViewx;
 import com.amx.jax.dbmodel.remittance.AdditionalBankRuleAmiec;
@@ -75,6 +76,7 @@ import com.amx.jax.repository.IAccountTypeFromViewDao;
 import com.amx.jax.repository.IAdditionalBankRuleAmiecRepository;
 import com.amx.jax.repository.IAdditionalBankRuleMapRepos;
 import com.amx.jax.repository.IBankBranchView;
+import com.amx.jax.repository.IBeneBankBlackCheckDao;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.ICollectionDetailRepository;
 import com.amx.jax.repository.ICurrencyDao;
@@ -224,11 +226,11 @@ public class BranchRemittanceManager extends AbstractModel {
 	
 	@Autowired
 	IViewParameterDetailsRespository viewParameterDetailsRespository;
-	
-	
 
 	@Autowired
 	IAdditionalBankRuleMapRepos additionalBankRuleMapRepos;
+	@Autowired
+	IBeneBankBlackCheckDao beneBankBlackCheckDao;
 	
 	
 	public void checkingStaffIdNumberWithCustomer() {
@@ -328,24 +330,56 @@ public class BranchRemittanceManager extends AbstractModel {
 		
 		
 	}
-	
+	/** added by Rabil to remoe SP EX_P_BANNED_BANK_CHECK **/
 	public String bannedBankCheck(BigDecimal beneRelationId) {
 		
 		BenificiaryListView beneficaryDetails =beneficiaryRepository.findBybeneficiaryRelationShipSeqId(beneRelationId);
 		Map<String, Object> inputValues = new HashMap<>();
 		String alertMessage =null;
-		inputValues.put("P_APPLICATION_COUNTRY_ID", beneficaryDetails.getApplicationCountryId());
-		inputValues.put("P_BENEFICIARY_BANK_ID", beneficaryDetails.getBankId());
-		inputValues.put("P_BENEFICIARY_MASTER_ID", beneficaryDetails.getBeneficaryMasterSeqId());
-		Map<String, Object> output = applProcedureDao.getBannedBankCheckProcedure(inputValues);
-		if(output!=null) {
-			String errorMessage = (String)output.get("P_ERROR_MESSAGE");
-			 alertMessage = (String)output.get("P_ALERT_MESSAGE");
-			
-			if (errorMessage != null) {
-				throw new GlobalException(JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL, errorMessage);
+		String checkBank =null;
+		List<BankBlWorld> bnkWorldcheck = beneBankBlackCheckDao.getbnkWordList(beneficaryDetails.getBankCode());
+		String allBankcheck =null;
+		Boolean booBlakCheck = false;
+		String blakListIndicator=null;
+		
+		if(StringUtils.isBlank(beneficaryDetails.getBenificaryName())) {
+			throw new GlobalException(JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL, "Bene name is not valid");
+		}
+		
+		if(bnkWorldcheck.isEmpty()) {
+			checkBank="ALL";
+			bnkWorldcheck = beneBankBlackCheckDao.getbnkWordList(checkBank);
+			checkBank =allBankcheck; 
+		}
+		
+		
+		
+		if(!bnkWorldcheck.isEmpty()) {
+			for(BankBlWorld blworld :bnkWorldcheck) {
+			if(beneficaryDetails.getBenificaryName().contains(blworld.getBankWorldEmded().getBlWord())) {
+			booBlakCheck =true;
+			alertMessage = "Beneficiary name is matching with Charitable Institutions /Religious Organizations . Please verify the details with the remitter first and then proceed for carrying out the transaction";
+			blakListIndicator="BY";
+			 break;
+			}
 			}
 		}
+		
+		
+		/*
+		 * inputValues.put("P_APPLICATION_COUNTRY_ID",
+		 * beneficaryDetails.getApplicationCountryId());
+		 * inputValues.put("P_BENEFICIARY_BANK_ID", beneficaryDetails.getBankId());
+		 * inputValues.put("P_BENEFICIARY_MASTER_ID",
+		 * beneficaryDetails.getBeneficaryMasterSeqId()); Map<String, Object> output =
+		 * applProcedureDao.getBannedBankCheckProcedure(inputValues); if(output!=null) {
+		 * String errorMessage = (String)output.get("P_ERROR_MESSAGE"); alertMessage =
+		 * (String)output.get("P_ALERT_MESSAGE");
+		 * 
+		 * if (errorMessage != null) { throw new
+		 * GlobalException(JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL,
+		 * errorMessage); } }
+		 */
 		return alertMessage;
 	}
 	
@@ -684,10 +718,8 @@ public class BranchRemittanceManager extends AbstractModel {
 	 @SuppressWarnings("unchecked")
 	 public void validateAdditionalErrorMessages(Map<String ,Object> hashMap) {
 		 	BranchRemittanceApplRequestModel applRequestModel = (BranchRemittanceApplRequestModel)hashMap.get("APPL_REQ_MODEL");
-			
-			
 			BenificiaryListView beneDetails  =(BenificiaryListView) hashMap.get("BENEFICIARY_DETAILS");
-			//RoutingResponseDto branchRoutingDto = (RoutingResponseDto)hashMap.get("ROUTING_DETAILS_DTO");
+			
 			RemittanceTransactionRequestModel requestModel = new RemittanceTransactionRequestModel();
 			requestModel.setAdditionalBankRuleFiledId(applRequestModel.getAdditionalBankRuleFiledId());
 			
@@ -712,10 +744,10 @@ public class BranchRemittanceManager extends AbstractModel {
 	
 	public void validateAdditionalErrorMessages(BranchRemittanceApplRequestModel requestModel) {
 		remitApplParametersMap.put("P_FURTHER_INSTR", "URGENT");
-		Map<String, Object> errorResponse = applProcedureDao.toFetchPurtherInstractionErrorMessaage(remitApplParametersMap);
-		String errorMessage = (String) errorResponse.get("P_ERRMSG");
-		Map<String, Object> furtherSwiftAdditionalDetails = applProcedureDao.fetchAdditionalBankRuleIndicators(remitApplParametersMap);
-		remitApplParametersMap.putAll(furtherSwiftAdditionalDetails);
+		//Map<String, Object> errorResponse = applProcedureDao.toFetchPurtherInstractionErrorMessaage(remitApplParametersMap);
+		String errorMessage =null;// (String) errorResponse.get("P_ERRMSG");
+		//Map<String, Object> furtherSwiftAdditionalDetails = applProcedureDao.fetchAdditionalBankRuleIndicators(remitApplParametersMap);
+		//remitApplParametersMap.putAll(furtherSwiftAdditionalDetails);
 		remitApplParametersMap.put("P_ADDITIONAL_BANK_RULE_ID_1", requestModel.getAdditionalBankRuleFiledId());
 		
 		if (requestModel.getPurposeOfTrnxId() != null) {

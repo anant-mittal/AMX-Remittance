@@ -175,7 +175,7 @@ public class RemittanceApplicationDao {
 	}
 	
 	public List<RemittanceApplication> getApplicationDeatilsByPaygId(Customer custoemrId,BigDecimal paygTrnxDetailId){
-		return appRepo.findByFsCustomerAndPaygTrnxDetailIdAndIsactive(custoemrId, paygTrnxDetailId, ConstantDocument.Yes);
+		return appRepo.findByFsCustomerAndPaygTrnxDetailId(custoemrId, paygTrnxDetailId);
 	}
 	
 	public List<RemittanceTransaction> getRemittanceTrnxByPaygId(Customer customerId,BigDecimal payTrnxId){
