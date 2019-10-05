@@ -2,6 +2,7 @@ package com.amx.jax.dict;
 
 import java.io.Serializable;
 
+import com.amx.utils.ArgUtil;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -77,6 +78,7 @@ public class UserClient {
 	 */
 	public enum AppType {
 		WEB, IOS(Channel.MOBILE), ANDROID(Channel.MOBILE), UNKNOWN;
+
 		Channel channel;
 
 		AppType(Channel channel) {
@@ -96,6 +98,19 @@ public class UserClient {
 		}
 	}
 
+	public enum AuthSystem {
+		TERMINAL, DEVICE;
+
+		public static AuthSystem byDeviceType(DeviceType deviceType) {
+			if (DeviceType.COMPUTER.isParentOf(deviceType)) {
+				return TERMINAL;
+			} else if (DeviceType.MOBILE.isParentOf(deviceType)) {
+				return DEVICE;
+			}
+			return null;
+		}
+	}
+
 	public enum ClientType {
 		// Auth Apps
 		NOTP_APP(DeviceType.MOBILE, Channel.MOBILE),
@@ -108,7 +123,8 @@ public class UserClient {
 
 		// Other Channels
 		OFFSITE_PAD(DeviceType.TABLET, Channel.BRANCH), KIOSK(DeviceType.COMPUTER, Channel.KIOSK),
-		DELIVERY_APP(DeviceType.MOBILE, Channel.BRANCH), OFFSITE_WEB(DeviceType.COMPUTER, Channel.OFFSITE),
+		DELIVERY_APP(DeviceType.MOBILE, Channel.BRANCH),
+		OFFSITE_WEB(DeviceType.COMPUTER, Channel.OFFSITE, AuthSystem.DEVICE),
 
 		// Customer Facing interfaces
 		ONLINE_WEB(DeviceType.COMPUTER, Channel.ONLINE), ONLINE_AND(DeviceType.MOBILE, Channel.MOBILE),
@@ -120,18 +136,31 @@ public class UserClient {
 		DeviceType deviceType;
 
 		Channel channel = Channel.ONLINE;
+		AuthSystem authSystem = AuthSystem.TERMINAL;
 
-		ClientType(DeviceType deviceType) {
+		ClientType(DeviceType deviceType, Channel channel, AuthSystem authSystem) {
 			this.deviceType = deviceType;
+			this.channel = channel;
+			this.authSystem = authSystem;
+			if (ArgUtil.isEmpty(this.authSystem)) {
+				this.authSystem = AuthSystem.byDeviceType(this.deviceType);
+			}
 		}
 
 		ClientType(DeviceType deviceType, Channel channel) {
-			this.deviceType = deviceType;
-			this.channel = channel;
+			this(deviceType, channel, null);
+		}
+
+		ClientType(DeviceType deviceType) {
+			this(deviceType, null, null);
 		}
 
 		ClientType() {
-			this.deviceType = DeviceType.COMPUTER;
+			this(DeviceType.COMPUTER, null, null);
+		}
+
+		public AuthSystem getAuthSystem() {
+			return authSystem;
 		}
 
 		/**
@@ -259,7 +288,17 @@ public class UserClient {
 		public void setLang(Language lang) {
 			this.lang = lang;
 		}
+	}
 
+	public static boolean isAuthSystem(ClientType clientType, AuthSystem authSystem) {
+		if (ArgUtil.isEmpty(clientType) || ArgUtil.isEmpty(authSystem)) {
+			return false;
+		}
+		if (ArgUtil.is(clientType.getAuthSystem())) {
+			return clientType.getAuthSystem().equals(authSystem);
+		} else {
+			return authSystem.equals(AuthSystem.byDeviceType(clientType.getDeviceType()));
+		}
 	}
 
 }
