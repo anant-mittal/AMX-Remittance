@@ -91,6 +91,8 @@ public enum TemplatesMX implements ITemplate {
 	FRIEND_REFER("friend-refer.json"),
 	
 	FRIEND_REFERED("friend-refered.json"),
+	WIRE_TRANSFER_PAYMENT_SUCCESS("WireTransferPaymentSuccess"),
+	WIRE_TRANSFER_CANCEL_BRANCH("WireTransferCancelBranch"),
 
 	// Default add enums above this
 	DEFAULT("default");

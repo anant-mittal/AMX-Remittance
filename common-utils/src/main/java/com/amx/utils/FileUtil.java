@@ -382,4 +382,45 @@ public final class FileUtil {
 		}
 		return in;
 	}
+
+	public static InputStream getInternalOrExternalResourceAsStream(String filePath) {
+		return getInternalOrExternalResourceAsStream(filePath, FileUtil.class);
+	}
+
+	public static InputStream getInternalOrExternalResourceAsStream(String filePath, Class<?> clazz) {
+		String propertyFile = filePath;
+		InputStream inSideInputStream = null;
+		InputStream outSideInputStream = null;
+		try {
+			URL ufile = FileUtil.getResource(propertyFile, clazz);
+			if (ufile != null) {
+				inSideInputStream = ufile.openStream();
+				// tenantProperties.load(inSideInputStream);
+				if (inSideInputStream != null) {
+					LOG.info("Loaded from classpath: {}", ufile.getPath());
+					return inSideInputStream;
+				} else {
+					LOG.info("Stream is EMPTY from classpath: {}", ufile.getPath());
+				}
+			} else {
+				LOG.info("URL is EMPTY from classpath: {}", propertyFile);
+			}
+		} catch (IllegalArgumentException | IOException e) {
+			LOG.error("Fail:inSideInputStream:getResource", e);
+		}
+
+		try {
+			outSideInputStream = FileUtil.getExternalResourceAsStream(propertyFile, clazz);
+			if (outSideInputStream != null) {
+				LOG.info("Loaded from jarpath: {}", propertyFile);
+				return outSideInputStream;
+			} else {
+				LOG.info("Stream is EMPTY from jarpath: {}", propertyFile);
+			}
+
+		} catch (IllegalArgumentException | IOException e) {
+			LOG.error("Fail:outSideInputStream:getExternalResourceAsStream", e);
+		}
+		return null;
+	}
 }

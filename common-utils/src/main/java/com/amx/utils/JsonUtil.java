@@ -150,7 +150,17 @@ public final class JsonUtil {
 	/** The Constant instance. */
 	public static final JsonUtil.JsonUtilConfigurable instance;
 
-	public static ObjectMapper createNewMapper(String modeulName) {
+	public static ObjectMapper createRawMapper(String modeulName) {
+		ObjectMapper mapper = new ObjectMapper();
+		SimpleModule module = new SimpleModule(modeulName, new Version(1, 0, 0, null, null, null));
+		mapper.setSerializationInclusion(Include.NON_NULL);
+		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		mapper.configure(Feature.AUTO_CLOSE_SOURCE, true);
+		mapper.registerModule(module);
+		return mapper;
+	}
+
+	public static ObjectMapper createMapper(String modeulName) {
 		ObjectMapper mapper = new ObjectMapper();
 		SimpleModule module = new SimpleModule(modeulName, new Version(1, 0, 0, null, null, null));
 		
@@ -169,7 +179,7 @@ public final class JsonUtil {
 	}
 
 	static {
-		ObjectMapper mapper = createNewMapper("MyModule");
+		ObjectMapper mapper = createMapper("MyModule");
 		instance = new JsonUtil.JsonUtilConfigurable(mapper);
 	}
 

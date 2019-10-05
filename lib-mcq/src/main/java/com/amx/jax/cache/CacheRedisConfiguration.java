@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.nustaq.serialization.FSTConfiguration;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
@@ -22,11 +21,12 @@ import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.amx.jax.cache.SerializerDelegateTest.MyFSTSerializerRegistryDelegate;
 import com.amx.jax.def.CacheForSessionKey;
 import com.amx.jax.def.CacheForTenantKey;
 import com.amx.jax.def.CacheForThisKey;
 import com.amx.jax.def.CacheForUserKey;
+import com.amx.utils.ArgUtil;
+import com.amx.utils.JsonUtil;
 
 @Configuration
 // @EnableRedissonHttpSession
@@ -49,7 +49,12 @@ public class CacheRedisConfiguration
 	@Value("${spring.redis.port}")
 	private String port;
 
-	public static final String CODEC_VERSION = "1";
+	public static enum CODEC {
+		FST, JACKSON
+	}
+
+	public static final CODEC CODEC_SELECTED = CODEC.FST;
+	public static final String CODEC_VERSION = ArgUtil.parseAsString(CODEC_SELECTED.ordinal() + 1);
 
 	@Bean(destroyMethod = "shutdown")
 	public RedissonClient redisson() throws IOException {
@@ -82,15 +87,17 @@ public class CacheRedisConfiguration
 			singleServerConfig.setReconnectionTimeout(3000);
 
 		}
-		// Commenting this as we dont want to use session sharing across applications
-		// org.redisson.codec.JsonJacksonCodec codec = new
-		// org.redisson.codec.JsonJacksonCodec(JsonUtil.getMapper());
+		if (CODEC_SELECTED.equals(CODEC.JACKSON)) {
+			org.redisson.codec.JsonJacksonCodec codec = new org.redisson.codec.JsonJacksonCodec(
+					JsonUtil.createRawMapper("forRedis"));
+			config.setCodec(codec);
+		} else {
+			//x.setSerializerRegistryDelegate(new MyFSTSerializerRegistryDelegate());
+			org.redisson.codec.FstCodec codec = new org.redisson.codec.FstCodec();
+			//org.redisson.codec.FstCodec codec = new org.redisson.codec.FstCodec(x);
+			config.setCodec(codec);
+		}
 
-		FSTConfiguration x = FSTConfiguration.createDefaultConfiguration();
-		//x.setSerializerRegistryDelegate(new MyFSTSerializerRegistryDelegate());
-		//org.redisson.codec.FstCodec codec = new org.redisson.codec.FstCodec(x);
-		org.redisson.codec.FstCodec codec = new org.redisson.codec.FstCodec();
-		config.setCodec(codec);
 		return Redisson.create(config);
 	}
 

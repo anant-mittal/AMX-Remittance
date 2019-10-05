@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -63,6 +64,7 @@ import com.amx.jax.sso.SSOTranx.SSOModel;
 import com.amx.jax.sso.SSOUser;
 import com.amx.jax.sso.server.ApiHeaderAnnotations.ApiDeviceHeaders;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.HttpUtils;
 import com.amx.utils.JsonUtil;
 import com.amx.utils.TimeUtils;
 import com.amx.utils.URLBuilder;
@@ -145,17 +147,17 @@ public class SSOServerController {
 			if ((ArgUtil.isEmpty(refresh) || TimeUtils.isExpired(refresh, 10 * 1000))) {
 				String newTranxId = AppContextUtil.getTraceId(true, true);
 				ssoUser.setTranxId(newTranxId);
-
+				
 				URLBuilder builder = Urly.parse(
-						ArgUtil.ifNotEmpty(sSOTranx.get().getAppUrl(),
-								appConfig.getAppPrefix() + SSOConstants.APP_LOGIN_URL_DONE))
-						.queryParam(AppConstants.TRANX_ID_XKEY, newTranxId)
-						.queryParam(SSOConstants.PARAM_STEP, SSOAuthStep.DONE)
+							ArgUtil.ifNotEmpty(sSOTranx.get().getAppUrl(),
+									appConfig.getAppPrefix() + SSOConstants.APP_LOGIN_URL_DONE))
+							.queryParam(AppConstants.TRANX_ID_XKEY, newTranxId)
+							.queryParam(SSOConstants.PARAM_STEP, SSOAuthStep.DONE)
 						.queryParam(SSOConstants.PARAM_SOTP, sSOTranx.get().getAppToken());
-
-				/// builder.path(appConfig.getAppPrefix() + SSOConstants.SSO_LOGIN_URL)
-				// .queryParam("refresh", System.currentTimeMillis())
-				;
+				
+				///builder.path(appConfig.getAppPrefix() + SSOConstants.SSO_LOGIN_URL)
+						//.queryParam("refresh", System.currentTimeMillis())
+						;
 				resp.setHeader("Location", builder.getURL());
 				resp.setStatus(302);
 			} else {

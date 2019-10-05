@@ -169,4 +169,9 @@ public class AmxApiResponse<T, M> extends AResponse<M>
 		return this;
 	}
 
+	public AmxApiResponse<T, M> message(String message) {
+		this.message = message;
+		return this;
+	}
+
 }

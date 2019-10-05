@@ -1,6 +1,7 @@
 package com.amx.utils;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FilterOutputStream;
 import java.io.IOException;
@@ -13,12 +14,13 @@ import java.sql.SQLException;
 
 import javax.sql.rowset.serial.SerialException;
 
+import org.springframework.util.StreamUtils;
 
 /**
  * The Class IoUtils.
  */
 public class IoUtils {
-	
+
 	/** The Constant BUFFER_SIZE. */
 	private static final int BUFFER_SIZE = 1024;
 
@@ -65,11 +67,27 @@ public class IoUtils {
 		return writer.toString();
 	}
 
+	public static class StreamWrapper {
+		InputStream in;
+		private byte[] body;
+
+		public StreamWrapper(InputStream in) {
+			this.in = in;
+		}
+
+		public InputStream toStream() throws IOException {
+			if (this.body == null) {
+				this.body = StreamUtils.copyToByteArray(in);
+			}
+			return new ByteArrayInputStream(this.body);
+		}
+	}
+
 	/**
 	 * The Class DrainableOutputStream.
 	 */
 	public class DrainableOutputStream extends FilterOutputStream {
-		
+
 		/** The buffer. */
 		private final ByteArrayOutputStream buffer;
 
@@ -83,7 +101,9 @@ public class IoUtils {
 			this.buffer = new ByteArrayOutputStream();
 		}
 
-		/* (non-Javadoc)
+		/*
+		 * (non-Javadoc)
+		 * 
 		 * @see java.io.FilterOutputStream#write(byte[])
 		 */
 		@Override
@@ -92,7 +112,9 @@ public class IoUtils {
 			super.write(b);
 		}
 
-		/* (non-Javadoc)
+		/*
+		 * (non-Javadoc)
+		 * 
 		 * @see java.io.FilterOutputStream#write(byte[], int, int)
 		 */
 		@Override
@@ -101,7 +123,9 @@ public class IoUtils {
 			super.write(b, off, len);
 		}
 
-		/* (non-Javadoc)
+		/*
+		 * (non-Javadoc)
+		 * 
 		 * @see java.io.FilterOutputStream#write(int)
 		 */
 		@Override
@@ -119,7 +143,7 @@ public class IoUtils {
 			return this.buffer.toByteArray();
 		}
 	}
-	
+
 	public static java.sql.Clob stringToClob(String source) throws SerialException, SQLException {
 		return new javax.sql.rowset.serial.SerialClob(source.toCharArray());
 	}

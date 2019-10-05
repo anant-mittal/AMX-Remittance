@@ -70,7 +70,7 @@ public class App { // Noncompliant
 		FSTConfiguration conf = FSTConfiguration.createJsonConfiguration();
 		byte[] bytes = conf.asByteArray(message);
 		String messageJson2 = new String(bytes, "UTF-8");
-		LOGGER.info("F====== {}", JsonUtil.toJson(messageJson2));
+		LOGGER.info("F====== {}", messageJson2);
 		TunnelMessage<DBEvent> message3 = (TunnelMessage<DBEvent>) conf.asObject(bytes);
 
 		LOGGER.info("F====== {}", JsonUtil.toJson(message3));

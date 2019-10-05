@@ -123,6 +123,11 @@ public class RestService {
 		return IN_FILTERS_MAP;
 	}
 
+	public RestTemplate getLocalRestTemplate(RestTemplate restTemplateLocal) {
+		restTemplateLocal.setInterceptors(Collections.singletonList(appClientInterceptor));
+		return restTemplateLocal;
+	}
+
 	public RestTemplate getRestTemplate() {
 		if (staticRestTemplate == null) {
 			if (restTemplate != null) {
@@ -143,6 +148,11 @@ public class RestService {
 	public Ajax ajax(URI uri) {
 		this.getOutFilters();
 		return new Ajax(getRestTemplate(), uri).header(AppConstants.APP_VERSION_XKEY, appConfig.getAppVersion());
+	}
+
+	public Ajax ajax(RestTemplate restTemplate, String url) {
+		this.getOutFilters();
+		return new Ajax(restTemplate, url);
 	}
 
 	public static class Ajax {

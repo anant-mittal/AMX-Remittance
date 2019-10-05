@@ -2,6 +2,7 @@ package com.amx.jax.json;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import org.springframework.boot.jackson.JsonComponent;
 
@@ -9,9 +10,14 @@ import com.amx.utils.ArgUtil;
 import com.amx.utils.ArgUtil.EnumById;
 import com.amx.utils.EnumType;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.deser.std.NumberDeserializers;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 
 public class CommonSerilizers {
 	@JsonComponent
@@ -48,6 +54,36 @@ public class CommonSerilizers {
 				// gen.writeNumber(value.doubleValue());
 				gen.writeNumber(value.toPlainString());
 			}
+		}
+
+		@Override
+		public void serializeWithType(BigDecimal value, JsonGenerator gen, SerializerProvider provider,
+				TypeSerializer typeSer) throws IOException {
+			// typeSer.writeTypePrefixForObject(value, gen);
+			serialize(value, gen, provider); // call your customized serialize method
+			// typeSer.writeTypeSuffixForObject(value, gen);
+			// super.serializeWithType(value, gen, provider, typeSer);
+		}
+	}
+
+	/**
+	 * Not Used Yet
+	 * 
+	 * @author lalittanwar
+	 *
+	 */
+	public class BigDecimalDeSerializer extends JsonDeserializer<BigDecimal> {
+
+		private NumberDeserializers.BigDecimalDeserializer delegate = NumberDeserializers.BigDecimalDeserializer.instance;
+
+		@Override
+		public BigDecimal deserialize(JsonParser jp, DeserializationContext ctxt)
+				throws IOException, JsonProcessingException {
+			// return ArgUtil.parseAsBigDecimal(jp.getDecimalValue());
+
+			BigDecimal bd = delegate.deserialize(jp, ctxt);
+			bd = bd.setScale(2, RoundingMode.HALF_UP);
+			return bd;
 		}
 	}
 }

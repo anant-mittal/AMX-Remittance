@@ -62,6 +62,7 @@ public class CardData implements Serializable {
 	private String localUnitType;
 	private String fullName;
 	private int photoLength = 0;
+	private String info;
 
 	public CardData() {
 		this.timestamp = System.currentTimeMillis();
@@ -434,5 +435,13 @@ public class CardData implements Serializable {
 
 	public void setExpired(boolean expired) {
 		this.expired = expired;
+	}
+
+	public String getInfo() {
+		return info;
+	}
+
+	public void setInfo(String info) {
+		this.info = info;
 	}
 }
