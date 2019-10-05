@@ -10,6 +10,20 @@ var WITHOUT_SMART_CARD = "ASSISTED";
 
 var $selfContainer, $assistedContainer;
 
+var deviceRegId = localStorage.getItem("deviceRegId");
+var deviceRegToken = localStorage.getItem("deviceRegToken");
+var did = localStorage.getItem("did") || guid();
+localStorage.setItem("did", did);
+
+function guid() {
+	function s4() {
+		return Math.floor((1 + Math.random()) * 0x10000).toString(16)
+				.substring(1);
+	}
+	return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4()
+			+ s4() + s4();
+}
+
 function explicitFieldErrors(step) {
 	if (selectedMode === WITH_SMART_CARD) {
 		var errorFields = 0;
@@ -71,8 +85,10 @@ function sendData(step) {
 		dataType : "json",
 		url : SSO_LOGIN_URL + '?redirect=false&loginType=' + selectedMode,
 		headers : {
-			"x-did" : "64a098c4c08d9ec2",
-			"x-ip" : "124.124.15.25"
+			"x-did" : did,
+			"x-ip" : "124.124.15.25",
+			"x-device-reg-id" : deviceRegId,
+			"x-device-reg-token" : deviceRegToken
 		},
 		data : JSON.stringify(reqObj)
 	}).done(

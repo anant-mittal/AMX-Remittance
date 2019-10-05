@@ -50,6 +50,7 @@ import com.amx.jax.sso.SSOUser;
 import com.amx.jax.sso.server.ApiHeaderAnnotations.ApiDeviceHeaders;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.Constants;
 import com.amx.utils.CryptoUtil;
 import com.amx.utils.MapBuilder;
 import com.amx.utils.MapBuilder.BuilderMap;
@@ -287,20 +288,33 @@ public class DeviceController {
 
 		String tranxId = ssoUser.ssoTranxId();
 
+		wrap.put("by_terminal.error", Constants.BLANK);
+		wrap.put("by_device.error", Constants.BLANK);
+		
 		// Adapter
 		BigDecimal terminlId = sSOTranx.get().getTerminalId();
 		BigDecimal branchRid = ArgUtil.parseAsBigDecimal(sSOTranx.get().getBranchAdapterId());
+		
 		wrap.put("session.id", tranxId);
 		wrap.put("session.terminal.id", terminlId);
 		wrap.put("session.adapter.id", branchRid);
-		wrap.put("by_terminal",
-				rbaacServiceClient.getDevicesByTerminal(terminlId, commonHttpRequest.getIPAddress()).getResults());
-
-		if (ArgUtil.is(deviceRegId)) {
-			wrap.put("by_device", rbaacServiceClient.getDevicesByRegId(deviceRegId,
-					commonHttpRequest.getDeviceId()).getResults());
+		wrap.put("session.device.regid", deviceRegId);
+		
+		try {
+			wrap.put("by_terminal",
+					rbaacServiceClient.getDevicesByTerminal(terminlId, commonHttpRequest.getIPAddress()).getResults());
+		} catch (Exception e) {
+			wrap.put("by_terminal.error", e.getMessage());
 		}
 
+		try {
+			if (ArgUtil.is(deviceRegId)) {
+				wrap.put("by_device", rbaacServiceClient.getDevicesByRegId(deviceRegId,
+						commonHttpRequest.getDeviceId()).getResults());
+			}
+		} catch (Exception e) {
+			wrap.put("by_device.error", e.getMessage());
+		}
 		return AmxApiResponse.buildData(wrap.build());
 	}
 
