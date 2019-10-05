@@ -45,38 +45,11 @@ window.CONST = {
 </script>
 </head>
 <body>
-	<h1 align="center">Device Registration Panel</h1>
+	<h1 align="center">Device Registration Info</h1>
 	<hr />
 	<br />
 	<br />
 	<table id="panelwrapper">
-		<tr>
-			<td>
-				<table class="device" width="100%">
-					<tr>
-						<th colspan="2">Device</th>
-					</tr>
-					<tr>
-						<td>statusKey
-						</th>
-						<td id="statusKey">--</td>
-					</tr>
-					<tr>
-						<td>deviceRegId</td>
-						<td id="deviceRegId">--</td>
-					</tr>
-					<tr>
-						<td>deviceRegToken
-						</th>
-						<td id="deviceRegToken">--</td>
-					</tr>
-					<tr>
-						<td>deviceActivationStatus</td>
-						<td id="deviceActivationStatus">--</td>
-					</tr>
-				</table>
-			</td>
-		</tr>
 		<tr>
 			<td>
 				<table class="session" width="100%">
@@ -128,6 +101,9 @@ window.CONST = {
 					</tr>
 					<tr>
 						<td>termialId</td><td>{termialId}</td>
+					</tr>
+					<tr>
+						<td>status</td><td>{status} : {state}</td>
 					</tr>
 				</table>
 			</td>
@@ -239,10 +215,17 @@ window.CONST = {
 			}
 			$panelwrapper.append(textRow);
 			
-			for(var i in resp.data.devices){
+			for(var i in resp.data.by_device){
 				var textRow = text;
-				for(var key in resp.data.devices[i]){
-					textRow = textRow.replace("{"+key+"}",resp.data.devices[i][key]);
+				for(var key in resp.data.by_device[i]){
+					textRow = textRow.replace("{"+key+"}",resp.data.by_device[i][key]);
+				}
+				$panelwrapper.append(textRow);
+			}
+			for(var i in resp.data.by_terminal){
+				var textRow = text;
+				for(var key in resp.data.by_terminal[i]){
+					textRow = textRow.replace("{"+key+"}",resp.data.by_terminal[i][key]);
 				}
 				$panelwrapper.append(textRow);
 			}

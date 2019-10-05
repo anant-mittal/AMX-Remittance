@@ -293,11 +293,11 @@ public class DeviceController {
 		wrap.put("session.id", tranxId);
 		wrap.put("session.terminal.id", terminlId);
 		wrap.put("session.adapter.id", branchRid);
-		wrap.put("devices",
+		wrap.put("by_terminal",
 				rbaacServiceClient.getDevicesByTerminal(terminlId, commonHttpRequest.getIPAddress()).getResults());
 
 		if (ArgUtil.is(deviceRegId)) {
-			wrap.put("browser", rbaacServiceClient.getDevicesByRegId(deviceRegId,
+			wrap.put("by_device", rbaacServiceClient.getDevicesByRegId(deviceRegId,
 					commonHttpRequest.getDeviceId()).getResults());
 		}
 
