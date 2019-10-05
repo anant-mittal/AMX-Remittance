@@ -17,8 +17,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.snap.SnapConstants.SnapQueryTemplate;
 import com.amx.jax.client.snap.SnapModels.SnapModelWrapper;
+import com.amx.jax.def.AbstarctQueryFactory.QueryProcessor;
 import com.amx.jax.radar.jobs.customer.OracleVarsCache;
 import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncJobs;
+import com.amx.jax.radar.service.SnapQueryFactory;
 import com.amx.jax.rest.RestService;
 import com.amx.jax.tunnel.DBEvent;
 import com.amx.jax.tunnel.TunnelEvent;
@@ -32,6 +34,9 @@ public class SnapQueryController {
 
 	@Autowired
 	private SnapQueryService snapQueryTemplateService;
+
+	@Autowired
+	SnapQueryFactory snapQueryFactory;
 
 	@Autowired
 	RestService restService;
@@ -101,13 +106,23 @@ public class SnapQueryController {
 			params.put("lte", lte);
 		}
 		level = ArgUtil.parseAsInteger(params.getOrDefault("level", level));
-		
-		SnapModelWrapper x = snapQueryTemplateService.execute(snapView, params);
+
+		QueryProcessor<?> qp = snapQueryFactory.get(snapView);
+
+		SnapModelWrapper x;
+
+		if (ArgUtil.is(qp)) {
+			x = new SnapModelWrapper("{}");
+			x.toMap().put("bulk", qp.process());
+			return x;
+		}
+
+		x = snapQueryTemplateService.execute(snapView, params);
 
 		if (level >= 0) {
 			List<Map<String, List<String>>> p = x.getPivot();
 			List<Map<String, Object>> inputBulk = x.getAggregations().toBulk();
-			
+
 			for (Map<String, List<String>> pivot : p) {
 				level--;
 				if (level < 0)

@@ -33,7 +33,6 @@ public class GridViewFactory {
 		map.put(GridView.EX_V_RATE_PATTERN, new GridInfo<XRateViewRecord>(XRateViewRecord.class));
 		map.put(GridView.VW_TRNX_FEEDBACK, new GridInfo<FeedbackStarRating>(FeedbackStarRating.class));
 
-
 	}
 
 	public static GridInfo<?> get(GridView gridView) {

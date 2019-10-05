@@ -7,7 +7,9 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import com.amx.utils.ArgUtil;
 import com.amx.utils.ContextUtil;
 
 /**
@@ -15,7 +17,7 @@ import com.amx.utils.ContextUtil;
  *
  * @author lalittanwar
  * @param <E> Must have toString() function which returns unique id for each
- *        member;
+ *            member;
  * @param <T> the generic type
  */
 public abstract class ScopedBeanFactory<E, T> implements Serializable {
@@ -35,11 +37,13 @@ public abstract class ScopedBeanFactory<E, T> implements Serializable {
 	 * @param beans the beans
 	 */
 	public ScopedBeanFactory(List<T> beans) {
-		for (T bean : beans) {
-			E[] keys = getKeys(bean);
-			for (E key : keys) {
-				if (key != null) {
-					register(key, bean);
+		if (ArgUtil.is(beans)) {
+			for (T bean : beans) {
+				E[] keys = getKeys(bean);
+				for (E key : keys) {
+					if (key != null) {
+						register(key, bean);
+					}
 				}
 			}
 		}
