@@ -78,6 +78,8 @@ public class SignPadController {
 
 		TerminalData terminalData = terminalBox.getOrDefault(deviceData.getTerminalId());
 		SignPadData signPadData = signPadBox.getOrDefault(deviceData.getTerminalId());
+		signPadData.setTerminalId(deviceData.getTerminalId());
+		signPadData.setRegId(deviceData.getRegId());
 
 		boolean isTerminalUpdated = signPadData.getUpdatestamp() < terminalData.getUpdatestamp();
 		boolean isSignPadDataStaled = signPadData.getChangeStamp() < terminalData.getStartStamp();

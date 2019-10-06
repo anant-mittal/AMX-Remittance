@@ -11,8 +11,6 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.client.snap.SnapConstants.SnapQueryTemplate;
 import com.amx.jax.def.AbstarctQueryFactory.QueryProcessor;
-import com.amx.jax.device.DeviceBox;
-import com.amx.jax.device.DeviceData;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.radar.service.SnapQueryFactory.SnapQuery;
 import com.amx.jax.signpad.SignPadBox;

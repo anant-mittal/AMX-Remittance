@@ -3,12 +3,12 @@ package com.amx.jax.cache;
 import java.io.IOException;
 import java.io.Serializable;
 
-import org.nustaq.serialization.FSTBasicObjectSerializer;
 import org.nustaq.serialization.FSTClazzInfo;
 import org.nustaq.serialization.FSTObjectInput;
 import org.nustaq.serialization.FSTObjectOutput;
 import org.nustaq.serialization.FSTObjectSerializer;
 import org.nustaq.serialization.FSTSerializerRegistryDelegate;
+import org.nustaq.serialization.serializers.FSTClassSerializer;
 
 public class SerializerDelegateTest {
 
@@ -30,12 +30,12 @@ public class SerializerDelegateTest {
 		}
 	}
 
-	static class MySkippingSerializer extends FSTBasicObjectSerializer {
+	static class MySkippingSerializer extends FSTClassSerializer {
 
 		@Override
 		public void writeObject(FSTObjectOutput out, Object toWrite, FSTClazzInfo clzInfo,
 				FSTClazzInfo.FSTFieldInfo referencedBy, int streamPosition) throws IOException {
-			out.writeObject(toWrite);
+			super.writeObject(out, toWrite, clzInfo, referencedBy, streamPosition);
 		}
 
 		@Override
@@ -43,12 +43,12 @@ public class SerializerDelegateTest {
 				FSTClazzInfo.FSTFieldInfo referencee, int streamPosition) throws Exception {
 			//in.readObject(); // ensure everything read and registered same order as on write time
 			try {
-				in.registerObject( in.readObject() , streamPosition, serializationInfo, referencee);				
+				return super.instantiate(objectClass, in, serializationInfo, referencee, streamPosition);	
 			} catch (Exception e) {
 				System.out.println("ERRRRRRRRRRRRRRRRRRRR"+e.getMessage());
+				return REALLY_NULL;
 			}
-
-			return REALLY_NULL; // but just don't use/return it.
+			//return null; // but just don't use/return it.
 			// Note: returning 'null' will result in fst attempting to construct an instance
 			// and call readObject on the serializer
 		}
@@ -61,9 +61,9 @@ public class SerializerDelegateTest {
 		@Override
 		public FSTObjectSerializer getSerializer(Class cl) {
 			//if (WrapperInterface.class.isAssignableFrom(cl)) {
-			//	return skippingSer;
+				return skippingSer;
 			//}
-			return null;
+			//return null;
 		}
 	}
 

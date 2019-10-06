@@ -14,6 +14,15 @@ public class TerminalData implements Serializable {
 	long updatestamp;
 	long pagestamp;
 	long startStamp;
+	String terminalId;
+
+	public String getTerminalId() {
+		return terminalId;
+	}
+
+	public void setTerminalId(String terminalId) {
+		this.terminalId = terminalId;
+	}
 
 	public long getStartStamp() {
 		return startStamp;
