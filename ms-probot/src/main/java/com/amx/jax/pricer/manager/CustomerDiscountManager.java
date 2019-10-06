@@ -86,7 +86,7 @@ public class CustomerDiscountManager {
 	// private static BigDecimal PIPS_BANK_ID = new BigDecimal(78);
 	private static BigDecimal OnlineCountryBranchId;
 
-	private static BigDecimal BIGD_ZERO = new BigDecimal(0);
+	private static BigDecimal BIGD_ZERO = BigDecimal.ZERO;
 
 	public void getDiscountedRates(PricingRequestDTO pricingRequestDTO, Customer customer,
 			CUSTOMER_CATEGORY customerCategory) {
@@ -153,14 +153,14 @@ public class CustomerDiscountManager {
 						? ccDiscountMaster.getDiscountPips()
 						: BigDecimal.ZERO);
 
-			// Customer Category Info
-			custCategoryInfo.setId(ccDiscount.getId());
-			custCategoryInfo.setDiscountType(DISCOUNT_TYPE.CUSTOMER_CATEGORY);
-			custCategoryInfo.setDiscountTypeValue(ccDiscount.getCustomerCategory().toString());
-			custCategoryInfo.setDiscountPipsValue(ccDiscountPips);
+				// Customer Category Info
+				custCategoryInfo.setId(ccDiscount.getId());
+				custCategoryInfo.setDiscountType(DISCOUNT_TYPE.CUSTOMER_CATEGORY);
+				custCategoryInfo.setDiscountTypeValue(ccDiscount.getCustomerCategory().toString());
+				custCategoryInfo.setDiscountPipsValue(ccDiscountPips);
 
-			// Updated Customer Category
-			exchRateAndRoutingTransientDataCache.setCustomerCategory(ccDiscount.getCustomerCategory());
+				// Updated Customer Category
+				exchRateAndRoutingTransientDataCache.setCustomerCategory(ccDiscount.getCustomerCategory());
 			}
 		} else {
 			CustomerCategoryDiscount ccDiscount = custCatDiscountDao.getDiscountByCustomerCategory(customerCategory);
@@ -294,8 +294,17 @@ public class CustomerDiscountManager {
 						BigDecimal diffAmt = bankExRateDetail.getBetterRateAmountSlab()
 								.subtract(bankExRateDetail.getSellRateNet().getConvertedFCAmount())
 								.setScale(0, RoundingMode.UP);
-						if(diffAmt!=null && diffAmt.compareTo(BIGD_ZERO)>0) {
-						bankExRateDetail.setDiffInBetterRateFcAmount(diffAmt);
+
+						// TODO: Check for Corner case : where base FCamount is lower than the required
+						// slab
+						// amount and Net FC-Amount is higher than the Required Amount. The difference
+						// is shown negative.
+
+						if (diffAmt != null && diffAmt.compareTo(BIGD_ZERO) > 0) {
+							bankExRateDetail.setDiffInBetterRateFcAmount(diffAmt);
+						} else {
+							bankExRateDetail.setBetterRateAvailable(false);
+							bankExRateDetail.setBetterRateAmountSlab(null);
 						}
 
 					} else {
@@ -303,8 +312,11 @@ public class CustomerDiscountManager {
 						BigDecimal diffAmt = bankExRateDetail.getBetterRateAmountSlab()
 								.subtract(bankExRateDetail.getSellRateBase().getConvertedFCAmount())
 								.setScale(0, RoundingMode.UP);
-						if(diffAmt!=null && diffAmt.compareTo(BIGD_ZERO)>0) {
-						bankExRateDetail.setDiffInBetterRateFcAmount(diffAmt);
+						if (diffAmt != null && diffAmt.compareTo(BIGD_ZERO) > 0) {
+							bankExRateDetail.setDiffInBetterRateFcAmount(diffAmt);
+						} else {
+							bankExRateDetail.setBetterRateAvailable(false);
+							bankExRateDetail.setBetterRateAmountSlab(null);
 						}
 					}
 				}
@@ -322,6 +334,7 @@ public class CustomerDiscountManager {
 				// Set Better Rate Availability to false
 				bankExRateDetail.setBetterRateAvailable(false);
 				bankExRateDetail.setBetterRateAmountSlab(null);
+				bankExRateDetail.setDiffInBetterRateFcAmount(null);
 
 			} else {
 
@@ -357,6 +370,7 @@ public class CustomerDiscountManager {
 					// Set Better Rate Availability to false
 					bankExRateDetail.setBetterRateAvailable(false);
 					bankExRateDetail.setBetterRateAmountSlab(null);
+					bankExRateDetail.setDiffInBetterRateFcAmount(null);
 
 				}
 
@@ -388,8 +402,11 @@ public class CustomerDiscountManager {
 				BigDecimal diffAmt = bankExRateDetail.getBetterRateAmountSlab()
 						.subtract(bankExRateDetail.getSellRateNet().getConvertedFCAmount())
 						.setScale(0, RoundingMode.UP);
-				if(diffAmt!=null && diffAmt.compareTo(BIGD_ZERO)>0) {
-				bankExRateDetail.setDiffInBetterRateFcAmount(diffAmt);
+				if (diffAmt != null && diffAmt.compareTo(BIGD_ZERO) > 0) {
+					bankExRateDetail.setDiffInBetterRateFcAmount(diffAmt);
+				} else {
+					bankExRateDetail.setBetterRateAvailable(false);
+					bankExRateDetail.setBetterRateAmountSlab(null);
 				}
 			}
 
