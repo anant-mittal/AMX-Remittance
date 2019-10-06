@@ -11,6 +11,7 @@ import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.serviceprovider.Benificiary;
 import com.amx.jax.model.request.serviceprovider.ServiceProviderCallRequestDto;
+import com.amx.jax.serviceprovider.venteja.VentajaManager;
 import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.userservice.service.UserService;
 
@@ -23,10 +24,13 @@ public class ServiceProviderBeneDataManager {
 	MetaData metaData;
 	@Autowired
 	UserService userService;
+	@Autowired
+	VentajaManager ventajaManager;
 
 	public void setBeneficiaryDtoDbValues(Map<String, Object> remitApplParametersMap, ServiceProviderCallRequestDto serviceProviderCallRequestDto) {
 		BigDecimal beneIdNo = (BigDecimal) remitApplParametersMap.get("P_BENEFICIARY_RELASHIONSHIP_ID");
-		Customer customer = userService.getCustById(metaData.getCustomerId());
+		BigDecimal customerId = metaData.getCustomerId();
+		Customer customer = userService.getCustById(customerId);
 		BenificiaryListView beneficiary = beneficiaryService.getBeneByIdNo(beneIdNo);
 		Benificiary beneDto = serviceProviderCallRequestDto.getBeneficiaryDto();
 		String lastName = beneficiary.getSecondName();
@@ -34,7 +38,6 @@ public class ServiceProviderBeneDataManager {
 		if (beneficiary.getThirdName() != null) {
 			lastName = beneficiary.getThirdName();
 			middleName = beneficiary.getSecondName();
-			;
 		}
 		beneDto.setLast_name(lastName);
 		beneDto.setFirst_name(beneficiary.getFirstName());
@@ -42,6 +45,10 @@ public class ServiceProviderBeneDataManager {
 		beneDto.setDate_of_birth(beneficiary.getDateOfBirth());
 		beneDto.setEmail(customer.getEmail());
 		beneDto.setContact_no(beneficiaryService.getBeneficiaryContactNumber(beneficiary.getBeneficaryMasterSeqId()));
+		
+		String memberType = ventajaManager.fetchMemberType(customerId, beneIdNo);
+		beneDto.setPartner_beneficiary_type(memberType);
+		
 	}
 
 }

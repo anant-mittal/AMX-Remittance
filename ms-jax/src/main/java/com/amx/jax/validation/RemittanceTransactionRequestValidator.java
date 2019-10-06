@@ -216,7 +216,9 @@ public class RemittanceTransactionRequestValidator {
 			exp.setMeta(requiredFlexFields);
 			throw exp;
 		}
-		additionalBankDetailManager.validateAdditionalBankFields(request, remitApplParametersMap);
+		
+		// ventaja api validation
+		//additionalBankDetailManager.validateAdditionalBankFields(request, remitApplParametersMap);
 	}
 
 	/**

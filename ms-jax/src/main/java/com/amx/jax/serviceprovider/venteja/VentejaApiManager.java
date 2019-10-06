@@ -14,6 +14,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.constant.BankConstants;
 import com.amx.jax.model.request.remittance.RemittanceAdditionalBeneFieldModel;
 import com.amx.jax.model.request.serviceprovider.ServiceProviderCallRequestDto;
+import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;
 import com.amx.jax.model.response.remittance.FlexFieldDto;
 import com.amx.jax.model.response.serviceprovider.Validate_Remittance_Inputs_Call_Response;
 import com.amx.jax.serviceprovider.service.ServiceProviderApiManager;
@@ -33,15 +34,24 @@ public class VentejaApiManager extends ServiceProviderApiManager {
 		ServiceProviderCallRequestDto serviceProviderCallRequestDto = createValidateInputRequest(inputs);
 		AmxApiResponse<Validate_Remittance_Inputs_Call_Response, Object> response = serviceProviderClientWrapper
 				.validateRemittanceInputs(serviceProviderCallRequestDto);
+		fetchServiceProviderLogs(response.getResult(), serviceProviderCallRequestDto);
+		parseValidateResponseForError(response.getResult());
+		return response.getResult();
+	}
+	
+	@Override
+	public Validate_Remittance_Inputs_Call_Response validateApiVentajaInput(DynamicRoutingPricingDto dynamicRoutingPricingDto,Map<String, Object> remitApplParametersMap) {
+		ServiceProviderCallRequestDto serviceProviderCallRequestDto = createValidateInputRequest(remitApplParametersMap);
+		AmxApiResponse<Validate_Remittance_Inputs_Call_Response, Object> response = serviceProviderClientWrapper
+				.validateRemittanceInputs(serviceProviderCallRequestDto);
+		fetchServiceProviderLogs(response.getResult(), serviceProviderCallRequestDto);
+		fetchServiceProviderData(dynamicRoutingPricingDto, serviceProviderCallRequestDto);
 		parseValidateResponseForError(response.getResult());
 		return response.getResult();
 	}
 
 	public ServiceProviderCallRequestDto createValidateInputRequest(Map<String, Object> remitApplParametersMap) {
 		ServiceProviderCallRequestDto serviceProviderCallRequestDto = super.createValidateInputRequest(remitApplParametersMap);
-		// TODO: hard coded 1 for testing purpse. modify and call Chiranjeevi;s method
-		// once done from his side b ypsasing bene rel seq id
-		serviceProviderCallRequestDto.getBeneficiaryDto().setPartner_beneficiary_type("1");
 		VentejaServiceProviderFlexField[] allFlexFields = VentejaServiceProviderFlexField.values();
 		for (VentejaServiceProviderFlexField flexField : allFlexFields) {
 			Map<String, FlexFieldDto> requestFlexFields = (Map<String, FlexFieldDto>) remitApplParametersMap.get("flexFieldDtoMap");

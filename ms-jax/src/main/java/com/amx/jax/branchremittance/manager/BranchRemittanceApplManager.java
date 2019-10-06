@@ -99,6 +99,7 @@ import com.amx.jax.repository.fx.EmployeeDetailsRepository;
 import com.amx.jax.service.BankMetaService;
 import com.amx.jax.service.CompanyService;
 import com.amx.jax.service.FinancialService;
+import com.amx.jax.serviceprovider.venteja.VentajaManager;
 import com.amx.jax.services.BankService;
 import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.services.BeneficiaryValidationService;
@@ -233,6 +234,9 @@ public class BranchRemittanceApplManager {
 	@Autowired
 	PartnerTransactionManager partnerTransactionManager;
 	
+	@Autowired
+	VentajaManager ventajaManager;
+	
 	
 	public BranchRemittanceApplResponseDto saveBranchRemittanceApplication(BranchRemittanceApplRequestModel requestApplModel) {
 		Map<String,Object> hashMap = new HashMap<>();
@@ -331,6 +335,8 @@ public class BranchRemittanceApplManager {
 		//RemittanceTransactionRequestModel
 		List<RemitApplAmlModel> amlData = this.saveRemittanceAppAML(remittanceApplication,hashMap);
 
+		ventajaManager.validateApiforVentaja(requestApplModel, remitApplParametersMap);
+		
 		// Remittance srv prov details
 		RemitApplSrvProv remitApplSrvProv = createRemitApplSrvProv(requestApplModel.getDynamicRroutingPricingBreakup(),remittanceApplication.getCreatedBy());
 		if(remitApplSrvProv != null) {

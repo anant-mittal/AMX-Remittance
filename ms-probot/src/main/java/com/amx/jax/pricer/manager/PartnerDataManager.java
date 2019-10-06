@@ -567,7 +567,7 @@ public class PartnerDataManager {
 
 			LOGGER.info("Inputs passed to Service Provider Home Send : " + JsonUtil.toJson(quatationRequestDto));
 			srvPrvResp = serviceProviderClient.getQuatation(quatationRequestDto);
-			fetchServiceProviderData(srvPrvResp,srvPrvFeeInqReqDTO,customerDetailsDTO);
+			fetchServiceProviderData(srvPrvResp,srvPrvFeeInqReqDTO,quatationRequestDto);
 			LOGGER.info("Output from Service Provider Home Send : " + JsonUtil.toJson(srvPrvResp));
 
 		}catch (Exception e) {
@@ -923,35 +923,41 @@ public class PartnerDataManager {
 	}
 
 	// iterate the response and insert the log table
-	public void fetchServiceProviderData(AmxApiResponse<Quotation_Call_Response, Object> srvPrvResp,SrvPrvFeeInqReqDTO srvPrvFeeInqReqDTO,CustomerDetailsDTO customerDto) {
+	public void fetchServiceProviderData(AmxApiResponse<Quotation_Call_Response, Object> srvPrvResp,SrvPrvFeeInqReqDTO srvPrvFeeInqReqDTO,ServiceProviderCallRequestDto serviceProviderCallRequestDto) {
 		String requestXml = null;
 		String responseXml = null;
 		String referenceNo = null;
 		BigDecimal customerReference = null;
 		String partnerReference = null;
+		String bankCode = null;
 		String trnxType = PricerServiceConstants.SEND_TRNX;
 		BigDecimal reqSeq = new BigDecimal(1);
 		BigDecimal resSeq = new BigDecimal(2);
-		if(srvPrvResp != null && srvPrvResp.getResult() != null) {
-			if(customerDto != null) {
-				customerReference = customerDto.getCustomerReference();
+		if(srvPrvResp != null && srvPrvResp.getResult() != null && serviceProviderCallRequestDto != null) {
+			if(serviceProviderCallRequestDto.getCustomerDto() != null && serviceProviderCallRequestDto.getCustomerDto().getCustomer_reference() != null) {
+				customerReference = new BigDecimal(serviceProviderCallRequestDto.getCustomerDto().getCustomer_reference());
 			}
 			if(srvPrvResp.getResult().getOut_going_transaction_reference() != null) {
 				referenceNo = srvPrvResp.getResult().getOut_going_transaction_reference();
 			}
-			if(srvPrvResp.getResult() != null && srvPrvResp.getResult().getPartner_transaction_reference() != null) {
-				partnerReference = srvPrvResp.getResult().getPartner_transaction_reference();
+			if(serviceProviderCallRequestDto.getTransactionDto() != null) {
+				if(serviceProviderCallRequestDto.getTransactionDto().getPartner_transaction_reference() != null) {
+					partnerReference = serviceProviderCallRequestDto.getTransactionDto().getPartner_transaction_reference();
+				}
+				if(serviceProviderCallRequestDto.getTransactionDto().getRoutting_bank_code() != null) {
+					bankCode = serviceProviderCallRequestDto.getTransactionDto().getRoutting_bank_code();
+				}
 			}
 			if(srvPrvResp.getResult().getRequest_XML() != null) {
 				requestXml = srvPrvResp.getResult().getRequest_XML();
-				ServiceProviderLogDTO serviceProviderXmlLog = saveServiceProviderXMLlogData(PricerServiceConstants.FEE_REQUEST, requestXml, referenceNo, reqSeq, PricerServiceConstants.REQUEST, trnxType, partnerReference,srvPrvFeeInqReqDTO,customerReference);
+				ServiceProviderLogDTO serviceProviderXmlLog = saveServiceProviderXMLlogData(PricerServiceConstants.FEE_REQUEST, requestXml, referenceNo, reqSeq, PricerServiceConstants.REQUEST, trnxType, partnerReference,srvPrvFeeInqReqDTO,customerReference,bankCode);
 				if(serviceProviderXmlLog != null) {
 					saveServiceProviderXml(serviceProviderXmlLog);
 				}
 			}
 			if(srvPrvResp.getResult().getResponse_XML() != null) {
 				responseXml = srvPrvResp.getResult().getResponse_XML();
-				ServiceProviderLogDTO serviceProviderXmlLog = saveServiceProviderXMLlogData(PricerServiceConstants.FEE_RESPONSE, responseXml, referenceNo, resSeq, PricerServiceConstants.RESPONSE, trnxType, partnerReference,srvPrvFeeInqReqDTO,customerReference);
+				ServiceProviderLogDTO serviceProviderXmlLog = saveServiceProviderXMLlogData(PricerServiceConstants.FEE_RESPONSE, responseXml, referenceNo, resSeq, PricerServiceConstants.RESPONSE, trnxType, partnerReference,srvPrvFeeInqReqDTO,customerReference,bankCode);
 				if(serviceProviderXmlLog != null) {
 					saveServiceProviderXml(serviceProviderXmlLog);
 				}
@@ -959,7 +965,7 @@ public class PartnerDataManager {
 		}
 	}
 
-	public ServiceProviderLogDTO saveServiceProviderXMLlogData(String filename,String content,String referenceNo,BigDecimal seq,String xmlType,String trnxType,String bene_Bank_Txn_Ref,SrvPrvFeeInqReqDTO srvPrvFeeInqReqDTO,BigDecimal customerReference) {
+	public ServiceProviderLogDTO saveServiceProviderXMLlogData(String filename,String content,String referenceNo,BigDecimal seq,String xmlType,String trnxType,String bene_Bank_Txn_Ref,SrvPrvFeeInqReqDTO srvPrvFeeInqReqDTO,BigDecimal customerReference,String bankCode) {
 		ServiceProviderLogDTO serviceProviderXmlLog = new ServiceProviderLogDTO();
 		try {
 			serviceProviderXmlLog.setApplicationCountryId(srvPrvFeeInqReqDTO.getApplicationCountryId());
@@ -983,7 +989,7 @@ public class PartnerDataManager {
 			}else {
 				serviceProviderXmlLog.setCreatedBy("ON_LINE");
 			}
-			serviceProviderXmlLog.setIdentifier(PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name());
+			serviceProviderXmlLog.setIdentifier(bankCode);
 			serviceProviderXmlLog.setMtcNo(bene_Bank_Txn_Ref);
 			if(referenceNo != null) {
 				serviceProviderXmlLog.setRefernceNo(new BigDecimal(referenceNo));

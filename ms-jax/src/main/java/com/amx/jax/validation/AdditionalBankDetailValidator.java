@@ -30,7 +30,7 @@ public class AdditionalBankDetailValidator {
 			ServiceProviderApiManager serviceProviderApiManager = (ServiceProviderApiManager) appContext.getBean(bankCode);
 			serviceProviderApiManager.validateApiInput(remittanceAdditionalBeneFieldModel, remitApplParametersMap);
 		} catch (NoSuchBeanDefinitionException ex) {
-
+			
 		}
 
 	}

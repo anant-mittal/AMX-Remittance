@@ -16,17 +16,16 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.dbmodel.RemittanceTransactionView;
+import com.amx.jax.dbmodel.BankMasterModel;
 import com.amx.jax.dbmodel.bene.RelationsDescription;
 import com.amx.jax.dbmodel.partner.TransactionDetailsView;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.AbstractModel;
-import com.amx.jax.model.request.partner.RemittanceTransactionPartnerDTO;
-import com.amx.jax.model.request.partner.SrvProvBeneficiaryTransactionDTO;
+import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.response.remittance.FlexFieldDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.serviceprovider.Remittance_Call_Response;
+import com.amx.jax.model.response.serviceprovider.Validate_Remittance_Inputs_Call_Response;
 import com.amx.jax.partner.dao.PartnerTransactionDao;
 import com.amx.jax.partner.dto.BeneficiaryDetailsDTO;
 import com.amx.jax.partner.manager.PartnerTransactionManager;
@@ -34,6 +33,7 @@ import com.amx.jax.pricer.var.PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE;
 import com.amx.jax.repository.IRemittanceTransactionDao;
 import com.amx.jax.repository.ParameterDetailsRespository;
 import com.amx.jax.serviceprovider.service.ServiceProviderApiManager;
+import com.amx.jax.services.BankService;
 import com.amx.jax.userservice.repository.RelationsRepository;
 import com.amx.jax.util.AmxDBConstants;
 
@@ -67,6 +67,9 @@ public class VentajaManager extends AbstractModel {
 	
 	@Autowired
 	ApplicationContext appContext;
+	
+	@Autowired
+	BankService bankService;
 	
 	// fetch member type // 0 – OFW  //  1 – Self-employed // 2 – Voluntary
 	public String fetchMemberType(BigDecimal customerId,BigDecimal beneficiaryRelationShipId) {
@@ -123,6 +126,8 @@ public class VentajaManager extends AbstractModel {
 					remitParametersMap.put("P_ROUTING_BANK_ID", transactionDetailsView.getBankId());
 					remitParametersMap.put("P_BENE_BANK_COUNTRY_ID", transactionDetailsView.getBeneficiaryCountryId());
 					remitParametersMap.put("P_BENEFICIARY_RELASHIONSHIP_ID", transactionDetailsView.getBeneficiaryRelationShipId());
+					remitParametersMap.put("P_CALCULATED_FC_AMOUNT", transactionDetailsView.getForeignTrnxAmount());
+					remitParametersMap.put("P_REQUEST_SEQUENCE_ID", transactionDetailsView.getAmgSessionId());
 					
 					Map<String, FlexFieldDto> flexFieldDtoMap = fetchTransactionWiseRecords(transactionDetailsView);
 					remitParametersMap.put("flexFieldDtoMap", flexFieldDtoMap);
@@ -152,6 +157,45 @@ public class VentajaManager extends AbstractModel {
 		}
 		
 		return flexFieldDtoMap;
+	}
+	
+	// validate api to ventaja
+	public void validateApiforVentaja(BranchRemittanceApplRequestModel requestApplModel,Map<String, Object> remitApplParametersMap) {
+		
+		Map<String, Object> remitParametersMap = new HashMap<>();
+		
+		BigDecimal applicationCountryId = (BigDecimal)remitApplParametersMap.get("P_APPLICATION_COUNTRY_ID");
+		BigDecimal routingCountryId = (BigDecimal)remitApplParametersMap.get("P_ROUTING_COUNTRY_ID");
+		BigDecimal remittanceModeId = (BigDecimal)remitApplParametersMap.get("P_REMITTANCE_MODE_ID");
+		BigDecimal deliveryModeId = (BigDecimal)remitApplParametersMap.get("P_DELIVERY_MODE_ID");
+		BigDecimal foreignCurrencyId = (BigDecimal)remitApplParametersMap.get("P_FOREIGN_CURRENCY_ID");
+		BigDecimal routingBankId = (BigDecimal)remitApplParametersMap.get("P_ROUTING_BANK_ID");
+		BigDecimal beneficiaryBankCountryId = (BigDecimal)remitApplParametersMap.get("P_BENEFICIARY_BANK_COUNTRY_ID");
+		BigDecimal beneficiaryRelationShipId = requestApplModel.getBeneId();
+		BigDecimal calculatedFcAmount = (BigDecimal)remitApplParametersMap.get("P_CALCULATED_FC_AMOUNT");
+		
+		remitParametersMap.put("P_APPLICATION_COUNTRY_ID", applicationCountryId);
+		remitParametersMap.put("P_ROUTING_COUNTRY_ID", routingCountryId);
+		remitParametersMap.put("P_REMITTANCE_MODE_ID", remittanceModeId);
+		remitParametersMap.put("P_DELIVERY_MODE_ID", deliveryModeId);
+		remitParametersMap.put("P_FOREIGN_CURRENCY_ID", foreignCurrencyId);
+		remitParametersMap.put("P_ROUTING_BANK_ID", routingBankId);
+		remitParametersMap.put("P_BENE_BANK_COUNTRY_ID", beneficiaryBankCountryId);
+		remitParametersMap.put("P_BENEFICIARY_RELASHIONSHIP_ID", beneficiaryRelationShipId);
+		remitParametersMap.put("P_CALCULATED_FC_AMOUNT", calculatedFcAmount);
+		
+		Map<String, FlexFieldDto> flexFieldDtoMap = requestApplModel.getFlexFieldDtoMap();
+		remitParametersMap.put("flexFieldDtoMap", flexFieldDtoMap);
+		
+		try {
+			BankMasterModel routintBankMaster = bankService.getBankById(routingBankId);
+			ServiceProviderApiManager serviceProviderApiManager = (ServiceProviderApiManager) appContext.getBean(routintBankMaster.getBankCode());
+			serviceProviderApiManager.validateApiVentajaInput(requestApplModel.getDynamicRroutingPricingBreakup(),remitParametersMap);
+		} catch (NoSuchBeanDefinitionException ex) {
+			// exception
+		}
+		
+		
 	}
 
 }

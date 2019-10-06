@@ -357,7 +357,8 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 			result.setTxnFee(commission);
 			result.setDiscountOnComission(corpDiscount);
 			
-			if(trnxRoutingDetails != null && trnxRoutingDetails.getBankIndicator() != null && !trnxRoutingDetails.getBankIndicator().equalsIgnoreCase(ConstantDocument.BANK_INDICATOR_SERVICE_PROVIDER_BANK)) {
+			//if(trnxRoutingDetails != null && trnxRoutingDetails.getBankIndicator() != null && !trnxRoutingDetails.getBankIndicator().equalsIgnoreCase(ConstantDocument.BANK_INDICATOR_SERVICE_PROVIDER_BANK)) {
+			if(trnxRoutingDetails != null && trnxRoutingDetails.getIsFcRoundingAllowed() !=null && trnxRoutingDetails.getIsFcRoundingAllowed().equalsIgnoreCase(ConstantDocument.Yes)) { 
 				if (routingPricingRequest.getForeignAmount() != null) {
 					result.setExRateBreakup(exchangeRateService.createBreakUpFromForeignCurrency(sellRateDetail.getSellRateNet().getInverseRate(), routingPricingRequest.getForeignAmount()));
 				} else {
