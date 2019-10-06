@@ -294,16 +294,18 @@ public class CustomerDiscountManager {
 						BigDecimal diffAmt = bankExRateDetail.getBetterRateAmountSlab()
 								.subtract(bankExRateDetail.getSellRateNet().getConvertedFCAmount())
 								.setScale(0, RoundingMode.UP);
-
+						if(diffAmt!=null && diffAmt.compareTo(BIGD_ZERO)>0) {
 						bankExRateDetail.setDiffInBetterRateFcAmount(diffAmt);
+						}
 
 					} else {
 
 						BigDecimal diffAmt = bankExRateDetail.getBetterRateAmountSlab()
 								.subtract(bankExRateDetail.getSellRateBase().getConvertedFCAmount())
 								.setScale(0, RoundingMode.UP);
-
+						if(diffAmt!=null && diffAmt.compareTo(BIGD_ZERO)>0) {
 						bankExRateDetail.setDiffInBetterRateFcAmount(diffAmt);
+						}
 					}
 				}
 				continue;
@@ -386,8 +388,9 @@ public class CustomerDiscountManager {
 				BigDecimal diffAmt = bankExRateDetail.getBetterRateAmountSlab()
 						.subtract(bankExRateDetail.getSellRateNet().getConvertedFCAmount())
 						.setScale(0, RoundingMode.UP);
-
+				if(diffAmt!=null && diffAmt.compareTo(BIGD_ZERO)>0) {
 				bankExRateDetail.setDiffInBetterRateFcAmount(diffAmt);
+				}
 			}
 
 			// discountedRatesNPrices.add(discountedRateDetail);
