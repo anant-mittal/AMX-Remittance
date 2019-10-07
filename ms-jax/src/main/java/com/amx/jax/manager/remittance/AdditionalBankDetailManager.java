@@ -17,17 +17,12 @@ import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.JaxFieldDto;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.RemittanceApplicationDao;
-import com.amx.jax.dbmodel.BankMasterModel;
 import com.amx.jax.dbmodel.BenificiaryListView;
-import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.remittance.AdditionalBankDetailData;
-import com.amx.jax.dbmodel.remittance.AdditionalBankDetailsViewx;
 import com.amx.jax.dbmodel.remittance.AdditionalBankRuleMap;
 import com.amx.jax.dbmodel.remittance.AdditionalDataDisplayView;
 import com.amx.jax.dbmodel.remittance.FlexFiledView;
-import com.amx.jax.dbmodel.remittance.ViewDeliveryMode;
 import com.amx.jax.dbmodel.remittance.ViewParameterDetails;
-import com.amx.jax.dbmodel.remittance.ViewRemittanceMode;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.remittance.RemittanceAdditionalBeneFieldModel;
 import com.amx.jax.model.response.remittance.FlexFieldDto;
@@ -166,7 +161,7 @@ public class AdditionalBankDetailManager {
 			String serviceProviderCode = bankService.getBankById(beneficaryDetails.getServiceProvider()).getBankCode();
 			if (beneficaryDetails != null && !StringUtils.isBlank(beneficaryDetails.getBankCode()) && beneficaryDetails.getBranchCode() != null) {
 				List<ViewParameterDetails> vwParamDetailsList = viewParameterDetailsRespository.findByRecordIdAndCharField2AndNumericField1(
-						serviceProviderCode, beneficaryDetails.getBankCode(), beneficaryDetails.getBranchCode());
+						serviceProviderCode.substring(0, 4), beneficaryDetails.getBankCode(), beneficaryDetails.getBranchCode());
 
 				if (vwParamDetailsList != null && !vwParamDetailsList.isEmpty()) {
 					for (ViewParameterDetails viewParameterDetails : vwParamDetailsList) {
