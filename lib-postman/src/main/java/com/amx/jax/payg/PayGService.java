@@ -52,10 +52,16 @@ public class PayGService {
 		return builder.getURL();
 	}
 
-	public String getPaymentUrl(PayGParams payment, String callback) throws MalformedURLException, URISyntaxException {
+	public String getPaymentUrl(PayGParams payment, String callback, String fallbackUrl)
+			throws MalformedURLException, URISyntaxException {
 		AppContext context = AppContextUtil.getContext();
 
 		URLBuilder builder = new URLBuilder(appConfig.getPaygURL());
+
+		if (PayGServiceCode.WT.equals(payment.getServiceCode())
+				|| PayGServiceCode.PB.equals(payment.getServiceCode())) {
+			return fallbackUrl;
+		}
 
 		String callbackUrl = Urly.parse(callback)
 				.queryParam("docNo", payment.getDocNo())
@@ -63,11 +69,6 @@ public class PayGService {
 				.queryParam("docId", payment.getDocId())
 				.queryParam("trckid", payment.getTrackId())
 				.queryParam("payId", payment.getPayId()).getURL();
-
-		if (PayGServiceCode.WT.equals(payment.getServiceCode())
-				|| PayGServiceCode.PB.equals(payment.getServiceCode())) {
-			return callbackUrl;
-		}
 
 		String callbackd = Base64.getEncoder().encodeToString(callbackUrl.getBytes());
 

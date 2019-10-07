@@ -459,8 +459,9 @@ public class RemittController {
 				payment.setAmountObject(respTxMdl.getNetPayableAmount());
 				payment.setServiceCode(respTxMdl.getPgCode());
 
-				wrapper.setRedirectUrl(payGService.getPaymentUrl(payment,
-						HttpUtils.getServerName(request) + "/app/landing/remittance"));
+				String callbackUrl = HttpUtils.getServerName(request) + "/app/landing/remittance";
+				wrapper.setRedirectUrl(payGService.getPaymentUrl(payment, callbackUrl,
+						callbackUrl));
 			}
 
 		} catch (RemittanceTransactionValidationException | LimitExeededException | MalformedURLException
@@ -498,8 +499,10 @@ public class RemittController {
 				payment.setAmountObject(respTxMdl.getNetPayableAmount());
 				payment.setServiceCode(respTxMdl.getPgCode());
 
-				wrapper.setRedirectUrl(payGService.getPaymentUrl(payment,
-						HttpUtils.getServerName(request) + "/app/landing/remittance"));
+				String callbackUrl = HttpUtils.getServerName(request) + "/app/landing/remittance";
+				
+				wrapper.setRedirectUrl(payGService.getPaymentUrl(payment,callbackUrl,
+						callbackUrl));
 			}
 
 		} catch (RemittanceTransactionValidationException | LimitExeededException | MalformedURLException
@@ -569,7 +572,7 @@ public class RemittController {
 		payment.setServiceCode(respTxMdl.getPgCode());
 
 		wrapper.setRedirectUrl(payGService.getPaymentUrl(payment,
-				HttpUtils.getServerName(request) + "/app/landing/cart/remit"));
+				HttpUtils.getServerName(request) + "/app/landing/cart/remit", null));
 
 		return wrapper;
 	}
