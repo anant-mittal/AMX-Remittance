@@ -17,7 +17,8 @@ public enum VentejaServiceProviderFlexField {
 		// account number
 		@Override
 		public void setValue(ServiceProviderCallRequestDto dto, Map<String, FlexFieldDto> requestFlexFields) {
-			INDIC10.setValue(dto, requestFlexFields);
+			FlexFieldDto value = requestFlexFields.get(this.name());
+			dto.getBeneficiaryDto().setBeneficiary_bank_code(value.getAmieceDescription());
 
 		}
 	},
@@ -34,8 +35,8 @@ public enum VentejaServiceProviderFlexField {
 		// mp2
 		@Override
 		public void setValue(ServiceProviderCallRequestDto dto, Map<String, FlexFieldDto> requestFlexFields) {
-			INDIC7.setValue(dto, requestFlexFields);
-
+			FlexFieldDto value = requestFlexFields.get(this.name());
+			dto.getBeneficiaryDto().setBeneficiary_account_number(value.getAmieceDescription());
 		}
 	},
 	INDIC12 {
