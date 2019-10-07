@@ -1,5 +1,4 @@
-package com.amx.jax.dbmodel;
-
+package com.amx.jax.grid.views;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -59,8 +58,8 @@ public class FeedbackStarRating implements GridViewRecord {
 
 	@Column(name = "TRNX_CREDIT_DATE")
 	private Date trnxCreditDate;
-	
-	@Column(name="RATING_DATE")
+
+	@Column(name = "RATING_DATE")
 	private Timestamp ratingDate;
 
 	private Integer totalRecords;
@@ -203,7 +202,4 @@ public class FeedbackStarRating implements GridViewRecord {
 		this.ratingDate = ratingDate;
 	}
 
-	
-	
-	
 }

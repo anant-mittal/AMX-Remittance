@@ -8,6 +8,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.amx.jax.es.ESDocFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -170,7 +171,7 @@ public class TranxViewRecord implements Serializable {
 	@Column(name = "CUSTCAT_DISCOUNT")
 	private BigDecimal custCatDiscount;
 
-	@Column(name = "PIPS _DISCOUNT")
+	@Column(name = "PIPS_DISCOUNT")
 	private BigDecimal pipsDiscount;
 
 	// Revenue
@@ -223,7 +224,7 @@ public class TranxViewRecord implements Serializable {
 
 	@Column(name = "CLIENT_IP")
 	private String clientIp;
-
+	
 	public BigDecimal getId() {
 		return id;
 	}
