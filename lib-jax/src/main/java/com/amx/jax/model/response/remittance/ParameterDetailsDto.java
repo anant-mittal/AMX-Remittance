@@ -223,18 +223,22 @@ public class ParameterDetailsDto extends ResourceDTO {
 	}
 
 	public BigDecimal getMinAmount() {
-		return numericUdf3;
-	}
-
-	public void setMinAmount(BigDecimal minAmount) {
-		this.numericUdf3 = minAmount;
+		double minAmount = (numericUdf3 == null) ? 0 : numericUdf3.doubleValue();
+		double amount = (numericUdf2 == null) ? 0 : numericUdf2.doubleValue();
+		if (minAmount > 0 && amount > 0) {
+			minAmount += amount;
+		}
+		return BigDecimal.valueOf(minAmount);
 	}
 
 	public BigDecimal getMaxAmount() {
-		return numericUdf4;
-	}
 
-	public void setmaxAmount(BigDecimal amount) {
-		this.numericUdf4 = amount;
+		double maxAmount = (numericUdf4 == null) ? 0 : numericUdf4.doubleValue();
+		double amount = (numericUdf2 == null) ? 0 : numericUdf2.doubleValue();
+		if (maxAmount > 0 && amount > 0) {
+			maxAmount += amount;
+		}
+		return BigDecimal.valueOf(maxAmount);
+
 	}
 }

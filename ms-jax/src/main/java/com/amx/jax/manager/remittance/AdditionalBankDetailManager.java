@@ -118,8 +118,8 @@ public class AdditionalBankDetailManager {
 
 		List<AdditionalBankDetailData> additionalBeneData = additionalBankDetailDataRepository.findByBeneAccSeqId(beneAccSeqId);
 		Map<Object, AdditionalBankDetailData> valueMap = additionalBeneData.stream().collect(Collectors.toMap(x -> x.getKey(), x -> x));
-		
-		if(additionalbankFields != null) {
+
+		if (additionalbankFields != null) {
 			additionalbankFields.forEach((k, v) -> {
 				AdditionalDataDisplayView additionalDataDisplayView = additionalDataRequiredMap.get(k);
 				if (ConstantDocument.Yes.equalsIgnoreCase(additionalDataDisplayView.getIsBeneTag())) {
@@ -161,7 +161,7 @@ public class AdditionalBankDetailManager {
 			String serviceProviderCode = bankService.getBankById(beneficaryDetails.getServiceProvider()).getBankCode();
 			if (beneficaryDetails != null && !StringUtils.isBlank(beneficaryDetails.getBankCode()) && beneficaryDetails.getBranchCode() != null) {
 				List<ViewParameterDetails> vwParamDetailsList = viewParameterDetailsRespository.findByRecordIdAndCharField2AndNumericField1(
-						serviceProviderCode.substring(0, 4), beneficaryDetails.getBankCode(), beneficaryDetails.getBranchCode());
+						StringUtils.substring(serviceProviderCode, 0, 4), beneficaryDetails.getBankCode(), beneficaryDetails.getBranchCode());
 
 				if (vwParamDetailsList != null && !vwParamDetailsList.isEmpty()) {
 					for (ViewParameterDetails viewParameterDetails : vwParamDetailsList) {
@@ -191,7 +191,7 @@ public class AdditionalBankDetailManager {
 						pdto.setNumericUdf4(viewParameterDetails.getNumericField4());
 						pdto.setNumericUdf5(viewParameterDetails.getNumericField5());
 						pdto.setAmount(viewParameterDetails.getNumericField2());
-						pdto.setResourceName(pdto.getAmount());
+						pdto.setResourceName(getAmount(pdto));
 						dtoList.add(pdto);
 					}
 				}
@@ -200,5 +200,15 @@ public class AdditionalBankDetailManager {
 
 		}
 		return dtoList;
+	}
+
+	private String getAmount(ParameterDetailsDto pdto) {
+		double amount = (pdto.getAmount() == null) ? 0 : pdto.getAmount().doubleValue();
+		double minAmount = pdto.getMinAmount().doubleValue();
+		double maxAmount = pdto.getMaxAmount().doubleValue();
+		if (minAmount > 0 && maxAmount > 0 && amount > 0) {
+			return ">" + pdto.getAmount().toString();
+		}
+		return pdto.getAmount().toString();
 	}
 }
