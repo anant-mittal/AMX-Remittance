@@ -12,6 +12,7 @@ import com.amx.jax.grid.views.CustomerLogViewRecord;
 import com.amx.jax.grid.views.EmployeeDetailViewRecord;
 import com.amx.jax.grid.views.OneViewTrnx;
 import com.amx.jax.grid.views.OneViewTrnxRecordByBene;
+import com.amx.jax.grid.views.FeedbackStarRating;
 import com.amx.jax.grid.views.TranxViewRecord;
 import com.amx.jax.grid.views.TranxViewRecordByBene;
 import com.amx.jax.grid.views.UserSessionRecord;
