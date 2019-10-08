@@ -1,5 +1,7 @@
 package com.amx.jax.radar.logger;
 
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +17,7 @@ import com.amx.jax.tunnel.TunnelEventXchange;
  * The Class LoggerSubscriber.
  */
 @TunnelEventMapping(topic = AuditService.AUDIT_EVENT_TOPIC, scheme = TunnelEventXchange.AUDIT)
-public class LoggerSubscriber implements ITunnelSubscriber<Object> {
+public class LoggerSubscriber implements ITunnelSubscriber<Map<String, Object>> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(LoggerSubscriber.class);
 
@@ -32,11 +34,12 @@ public class LoggerSubscriber implements ITunnelSubscriber<Object> {
 	 * java.lang.Object)
 	 */
 	@Override
-	public void onMessage(String channel, Object event) {
+	public void onMessage(String channel, Map<String, Object> event) {
 		LOGGER.debug("onMessage {}", channel);
 		if (jobAudit) {
 			mongoTemplate.save(event, "AuditEvent");
 		}
+		// LoggerMapModel eventModel = new LoggerMapModel(event);
 	}
 
 }
