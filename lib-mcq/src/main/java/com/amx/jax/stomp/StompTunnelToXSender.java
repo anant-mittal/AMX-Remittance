@@ -21,8 +21,8 @@ public class StompTunnelToXSender implements ITunnelSubscriber<StompTunnelEvent>
 		return prefix + "_STOMP_TO";
 	}
 
-	@Autowired
-	StompTunnelSessionManager stompTunnelSessionManager;
+	@Autowired(required = false)
+	private StompTunnelSessionManager stompTunnelSessionManager;
 
 	@Autowired(required = false)
 	private MessageSendingOperations<String> messagingTemplate;

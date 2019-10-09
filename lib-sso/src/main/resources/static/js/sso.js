@@ -276,6 +276,7 @@ $(function() {
 	}).on("/branch-user/customer-call-session/0", function(testresponse){
 		console.log("===testresponse0",testresponse)
 	});
+});
 
 if(window.location.hash === "#test" && !localStorage.getItem('test')){
 	localStorage.setItem('test','');

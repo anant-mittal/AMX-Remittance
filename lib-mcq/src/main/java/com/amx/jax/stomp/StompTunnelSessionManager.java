@@ -32,7 +32,7 @@ public class StompTunnelSessionManager {
 	/*
 	 * Map for <stompUID, stompSession>
 	 */
-	@Autowired
+	@Autowired(required = false)
 	StompSessionCache stompSessionCache;
 
 	public static String getSystemPrefix() {
