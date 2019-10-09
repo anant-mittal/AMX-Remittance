@@ -18,7 +18,6 @@ import com.amx.amxlib.constant.NotificationConstants;
 import com.amx.amxlib.model.BeneCreateDetailsDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.constant.ConstantDocument;
-import com.amx.jax.constants.JaxChannel;
 import com.amx.jax.dao.BeneficiaryDao;
 import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
 import com.amx.jax.dbmodel.BenificiaryListView;
@@ -368,7 +367,7 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 			logger.info("creating new bene maseter");
 			beneMaster = new BeneficaryMaster();
 			beneMaster.setApplicationCountryId(metaData.getCountryId());
-			BeneficaryStatus beneStatus = getbeneStatus();
+			BeneficaryStatus beneStatus = getbeneStatus(benePersonalDetails.getBeneficaryTypeId());
 			beneMaster.setBeneficaryStatus(beneStatus.getBeneficaryStatusId());
 			beneMaster.setBeneficaryStatusName(beneStatus.getBeneficaryStatusName());
 			beneMaster.setCreatedBy(getCreatedBy());
@@ -415,15 +414,15 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 	}
 
 	/**
+	 * @param bigDecimal 
 	 * @return status of bene
 	 * 
 	 */
-	private BeneficaryStatus getbeneStatus() {
-		if (JaxChannel.ONLINE.equals(metaData.getChannel())) {
+	private BeneficaryStatus getbeneStatus(BigDecimal beneStatusId) {
+		if (beneStatusId == null) {
 			return beneficaryStatusRepository.findByBeneficaryStatusName(ConstantDocument.INDIVIDUAL_STRING);
-		} else {
-			return beneficaryStatusRepository.findByBeneficaryStatusName(ConstantDocument.NON_INDIVIDUAL_STRING);
 		}
+		return beneficaryStatusRepository.findOne(beneStatusId);
 	}
 
 	/**
