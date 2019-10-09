@@ -76,23 +76,23 @@ public class ResponseWrapperM<T, M> extends AmxApiResponse<T, M> {
 		this.traceId = traceId;
 	}
 
-	/**
-	 * Gets the message key.
-	 *
-	 * @return the message key
-	 */
-	public String getMessageKey() {
-		return messageKey;
-	}
-
-	/**
-	 * Sets the message key.
-	 *
-	 * @param messageKey the new message key
-	 */
-	public void setMessageKey(String messageKey) {
-		this.messageKey = messageKey;
-	}
+//	/**
+//	 * Gets the message key.
+//	 *
+//	 * @return the message key
+//	 */
+//	public String getMessageKey() {
+//		return messageKey;
+//	}
+//
+//	/**
+//	 * Sets the message key.
+//	 *
+//	 * @param messageKey the new message key
+//	 */
+//	public void setMessageKey(String messageKey) {
+//		this.messageKey = messageKey;
+//	}
 
 	/**
 	 * Update data.
@@ -238,10 +238,11 @@ public class ResponseWrapperM<T, M> extends AmxApiResponse<T, M> {
 		return wrapper;
 	}
 
-	public static <FT, FM> ResponseWrapperM<List<FT>, FM> fromList(AmxApiResponse<FT, FM> fromResponse) {
+	public static <FT, FM> ResponseWrapperM<List<FT>, FM> fromAsList(AmxApiResponse<FT, FM> fromResponse) {
 		ResponseWrapperM<List<FT>, FM> wrapper = new ResponseWrapperM<List<FT>, FM>();
 		wrapper.setData(fromResponse.getResults());
 		wrapper.setMeta(fromResponse.getMeta());
 		return wrapper;
 	}
+
 }

@@ -36,10 +36,8 @@ import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.JaxAuthContext;
-import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.JaxClientUtil;
 import com.amx.jax.client.PayAtBranchClient;
-import com.amx.jax.client.fx.IFxOrderService.Params;
 import com.amx.jax.client.remittance.RemittanceClient;
 import com.amx.jax.dict.Language;
 import com.amx.jax.logger.LoggerService;
@@ -500,8 +498,8 @@ public class RemittController {
 				payment.setServiceCode(respTxMdl.getPgCode());
 
 				String callbackUrl = HttpUtils.getServerName(request) + "/app/landing/remittance";
-				
-				wrapper.setRedirectUrl(payGService.getPaymentUrl(payment,callbackUrl,
+
+				wrapper.setRedirectUrl(payGService.getPaymentUrl(payment, callbackUrl,
 						callbackUrl));
 			}
 
