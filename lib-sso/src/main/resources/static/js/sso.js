@@ -273,8 +273,10 @@ $(function() {
 		user : "0"
 	}).instance().on("/branch-user/customer-call-session", function(testresponse){
 		console.log("===testresponse",testresponse)
+	}).on("/branch-user/customer-call-session/0", function(testresponse){
+		console.log("===testresponse0",testresponse)
 	});
-})
+
 if(window.location.hash === "#test" && !localStorage.getItem('test')){
 	localStorage.setItem('test','');
 }

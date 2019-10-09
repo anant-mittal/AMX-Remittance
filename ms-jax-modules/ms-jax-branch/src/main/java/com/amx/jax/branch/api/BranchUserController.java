@@ -65,7 +65,7 @@ public class BranchUserController implements IBranchService {
 				customerCall.setSessionId(AppContextUtil.getTraceId());
 				customerCall.setMobile(mobile);
 				customerOnCall.put(employeeId, customerCall);
-				jaxStompClient.publishOnCallCustomerStatus(e.getEmployeeId(), c.getCustomerId());
+				jaxStompClient.publishOnCallCustomerStatus(BigDecimal.ZERO, c.getCustomerId());
 				return AmxApiResponse.build(customerCall);
 			} else {
 				customerOnCall.remove(employeeId);

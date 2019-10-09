@@ -347,6 +347,9 @@ public class SSOServerController {
 					model.put(SSOConstants.PARAM_REDIRECT, redirectUrl);
 					result.setRedirectUrl(redirectUrl);
 					result.setStatusEnum(SSOServerCodes.AUTH_DONE);
+					
+					stompTunnelSessionManager.registerUser(ActorType.E.getId(empDto.getEmployeeId()));
+					
 					if (redirect) {
 						resp.setHeader("Location", redirectUrl);
 						resp.setStatus(302);

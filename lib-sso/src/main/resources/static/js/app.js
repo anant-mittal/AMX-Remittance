@@ -1,6 +1,6 @@
 var tunnelClient = (function(win) {
 	var config = {
-		context : "/offsite",
+		context : "/branch",
 		user : "guest",
 		token : guid()
 	};
@@ -8,6 +8,7 @@ var tunnelClient = (function(win) {
 	var sessionToken = null;
 	var stompClient = null;
 	var pong = false;
+	console.log("connecting====");
 	function connect() {
 		$dfd = $dfd || jQuery.Deferred();
 		var socket = new SockJS(config.context + '/stomp-tunnel');
