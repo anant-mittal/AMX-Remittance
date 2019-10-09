@@ -19,6 +19,7 @@ public interface ICustomerProfileService {
 		public static final String CONTACT_LINK_VALIDATE = PREFIX + "/contact-link-validate";
 		public static final String CONTACT_LINK_VERIFY_BY_CODE = PREFIX + "/contact-link-verify-by-code";
 		public static final String CONTACT_LINK_VERIFY_BY_CONTACT = PREFIX + "/contact-link-verify-by-contact";
+		public static final String CUSTOMER_ONLINE_APP_LANGUAGE = PREFIX + "/customer-language-save";
 	}
 
 	public static class ApiParams {
@@ -28,8 +29,11 @@ public interface ICustomerProfileService {
 		public static final String VERIFICATION_CODE = "code";
 		public static final String LINK_ID = "linkId";
 		public static final String CONTACT = "contact";
+		public static final String LANGUAGE_ID = "languageId";
+		
 	}
 
+	
 	/**
 	 * 
 	 * 
@@ -58,5 +62,10 @@ public interface ICustomerProfileService {
 	@ApiJaxStatus({ JaxError.CUSTOMER_NOT_FOUND, JaxError.MISSING_CONTACT })
 	@ApiStatus({ ApiStatusCodes.PARAM_MISSING })
 	AmxApiResponse<CustomerContactVerificationDto, Object> resendLink(String identity, BigDecimal linkId, String code);
+	
+	@ApiJaxStatus({ JaxError.CUSTOMER_NOT_FOUND, JaxError.MISSING_CONTACT })
+	@ApiStatus({ ApiStatusCodes.PARAM_MISSING })
+	AmxApiResponse<String,Object> saveLanguage(BigDecimal customerId,BigDecimal languageId);
+	
 
 }

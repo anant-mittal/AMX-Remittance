@@ -150,4 +150,15 @@ public class CustProfileController implements ICustomerProfileService {
 		return AmxApiResponse.build(customerContactVerificationManager.convertToDto(x));
 	}
 
+	@Override
+	@RequestMapping(value = ApiPath.CUSTOMER_ONLINE_APP_LANGUAGE, method = RequestMethod.POST)
+	public AmxApiResponse<String, Object> saveLanguage(@RequestParam(value = ApiParams.CUSTOMER_ID) BigDecimal customerId, 
+			@RequestParam(value = ApiParams.LANGUAGE_ID)BigDecimal languageId) {
+		String status = customerContactVerificationManager.saveLanguage(customerId, languageId);
+		return AmxApiResponse.build(status);
+	}
+
+	
+	
+	
 }

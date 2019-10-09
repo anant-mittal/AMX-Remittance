@@ -35,7 +35,8 @@ public class CActivityEvent extends AuditEvent {
 
 		LANG_CHNG(EventMarker.NOTICE),
 
-		TP_REDIRECT;
+		TP_REDIRECT,
+		LANG_UPDATE;
 
 		EventMarker marker;
 
@@ -89,6 +90,7 @@ public class CActivityEvent extends AuditEvent {
 	private RemitInfo trxn = null;
 	private CustInfo cust = null;
 	private ContactType contactType;
+	private BigDecimal languageId =null;
 
 	private CustInfo cust() {
 		if (this.cust == null) {
@@ -246,6 +248,14 @@ public class CActivityEvent extends AuditEvent {
 
 	public void setContactType(ContactType contactType) {
 		this.contactType = contactType;
+	}
+
+	public BigDecimal getLanguageId() {
+		return languageId;
+	}
+
+	public void setLanguageId(BigDecimal languageId) {
+		this.languageId = languageId;
 	}
 
 }

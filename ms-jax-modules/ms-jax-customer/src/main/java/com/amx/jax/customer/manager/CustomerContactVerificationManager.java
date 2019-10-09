@@ -420,4 +420,26 @@ public class CustomerContactVerificationManager {
 		return EntityDtoUtil.entityToDto(entity, dto);
 	}
 
+	/** added by Rabil to update language by customer**/
+	public String saveLanguage(BigDecimal customerId,BigDecimal languageId) {
+		String status =null;
+		// Audit Info
+		CActivityEvent audit = new CActivityEvent(Type.LANG_UPDATE);
+		audit.setCustomerId(customerId);
+		audit.setLanguageId(languageId);
+		Customer c = customerRepository.getActiveCustomerDetailsByCustomerId(customerId);
+		if(c!=null) {
+			BigDecimal lanChanCount = c.getOnlineLanguageChangeCount()==null?BigDecimal.ZERO:c.getOnlineLanguageChangeCount();
+			c.setLanguageId(languageId);
+			c.setOnlineLanguageChangeCount(lanChanCount.add(BigDecimal.ONE));
+			customerRepository.save(c);
+			status ="SUCCESS";
+			auditService.log(audit.result(Result.DONE));
+		}else {
+			auditService.log(audit.result(Result.FAIL).message("Customer detail not found"));
+		}
+		
+		return status;
+	}
+	
 }

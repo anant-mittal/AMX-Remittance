@@ -156,6 +156,13 @@ public class Customer implements java.io.Serializable, Communicatable {
 	private BigDecimal annualTransactionLimitFrom;
 	private BigDecimal annualTransactionLimitTo;
 	private Date annualTransactionUpdatedDate;
+	
+	
+	
+	/** added by rabil on 09 Oc 2019 **/
+	
+	private BigDecimal onlineLanguageChangeCount;
+	
 
 	@Column(name = "ANNUAL_TRNXLIMIT_FROM")
 	public BigDecimal getAnnualTransactionLimitFrom() {
@@ -1159,6 +1166,17 @@ public class Customer implements java.io.Serializable, Communicatable {
 
 	public void setCustomerVatNumber(String customerVatNumber) {
 		this.customerVatNumber = customerVatNumber;
+	}
+
+	
+	
+	@Column(name="LANGUAGE_CHANGE_COUNT")
+	public BigDecimal getOnlineLanguageChangeCount() {
+		return onlineLanguageChangeCount;
+	}
+
+	public void setOnlineLanguageChangeCount(BigDecimal onlineLanguageChangeCount) {
+		this.onlineLanguageChangeCount = onlineLanguageChangeCount;
 	}
 
 }
