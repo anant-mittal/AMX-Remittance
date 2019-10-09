@@ -24,6 +24,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.customer.repository.EmployeeRepository;
 import com.amx.jax.customer.service.CustomerService;
@@ -49,10 +50,12 @@ import com.amx.jax.dbmodel.fx.EmployeeDetailsView;
 import com.amx.jax.dbmodel.fx.ForeignCurrencyOldModel;
 import com.amx.jax.dbmodel.fx.ForeignCurrencyStockTransfer;
 import com.amx.jax.dbmodel.fx.FxDeliveryDetailsModel;
+import com.amx.jax.dbmodel.fx.FxDeliveryTimeSlotMaster;
 import com.amx.jax.dbmodel.fx.OrderManagementView;
 import com.amx.jax.dbmodel.fx.UserFcStockView;
 import com.amx.jax.dbmodel.fx.UserStockView;
 import com.amx.jax.dbmodel.remittance.Document;
+import com.amx.jax.dict.AmxEnums;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.AuditService;
@@ -60,6 +63,7 @@ import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.fx.FcSaleBranchDispatchModel;
 import com.amx.jax.model.request.fx.FcSaleBranchDispatchRequest;
 import com.amx.jax.model.response.fx.FcEmployeeDetailsDto;
+import com.amx.jax.model.response.fx.FxDeliveryTimeSlotDto;
 import com.amx.jax.model.response.fx.FxEmployeeDetailsDto;
 import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
 import com.amx.jax.model.response.fx.UserStockDto;
@@ -69,11 +73,14 @@ import com.amx.jax.repository.ICustomerRepository;
 import com.amx.jax.repository.IDocumentDao;
 import com.amx.jax.repository.JaxConfigRepository;
 import com.amx.jax.repository.fx.FxDeliveryDetailsRepository;
+import com.amx.jax.repository.fx.FxOrderDeliveryTimeSlotRepository;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.service.CompanyService;
 import com.amx.jax.services.FcSaleDeliveryService;
 import com.amx.jax.util.ConverterUtil;
 import com.amx.jax.util.DateUtil;
+
+import jodd.typeconverter.Convert;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
@@ -140,6 +147,9 @@ public class FcSaleBranchOrderManager {
 	
 	@Autowired
 	CustomerService customerService;
+	
+	@Autowired
+	FxOrderDeliveryTimeSlotRepository fcSaleOrderTimeSlotDao;
 
 	public HashMap<String, Object> fetchFcSaleOrderManagement(BigDecimal applicationCountryId,BigDecimal employeeId,Date fromDate,Date toDate){
 		HashMap<String, Object> fetchOrder = new HashMap<>();
@@ -1934,6 +1944,126 @@ public class FcSaleBranchOrderManager {
 		}
 
 		return stockStatus;
+	}
+
+	public AmxApiResponse<FxDeliveryTimeSlotDto,Object> fetchFcDeliveryTiming() {
+		FxDeliveryTimeSlotMaster fxDeliveryTimeSlotMaster = new FxDeliveryTimeSlotMaster();
+		FxDeliveryTimeSlotDto fxDeliveryTimeSlotDto = new FxDeliveryTimeSlotDto();
+		BigDecimal countryId = metaData.getCountryId();
+		BigDecimal companyId = metaData.getCompanyId();
+
+		fxDeliveryTimeSlotMaster = fcSaleOrderTimeSlotDao.fetchDeliveryTimeSlot(countryId, companyId);
+
+		fxDeliveryTimeSlotDto.setStartTime(fxDeliveryTimeSlotMaster.getStartTime());
+		fxDeliveryTimeSlotDto.setEndTime(fxDeliveryTimeSlotMaster.getEndTime());
+		fxDeliveryTimeSlotDto.setOfficeStartTime(fxDeliveryTimeSlotMaster.getOfficeStartTime());
+		fxDeliveryTimeSlotDto.setOfficeEndTime(fxDeliveryTimeSlotMaster.getEndTime());
+		fxDeliveryTimeSlotDto.setTimeInterval(fxDeliveryTimeSlotMaster.getTimeInterval());
+		fxDeliveryTimeSlotDto.setTimeIntervalOffice(fxDeliveryTimeSlotMaster.getTimeIntervalOffice());
+
+		return AmxApiResponse.build(fxDeliveryTimeSlotDto);
+
+	}
+	
+	public Boolean saveFcDeliveryTiming(FxDeliveryTimeSlotDto fxDeliveryTimeSlotDto) {
+		Boolean status = Boolean.FALSE;
+		FxDeliveryTimeSlotMaster fxDeliveryTimeSlotMaster = new FxDeliveryTimeSlotMaster();
+		validateTimeSlot(fxDeliveryTimeSlotDto);
+		try {
+
+			fxDeliveryTimeSlotMaster = fcSaleOrderTimeSlotDao.saveDeliveryTimeSlot(fxDeliveryTimeSlotDto.getCountryId(),
+					fxDeliveryTimeSlotDto.getCompanyId(), ConstantDocument.Yes);
+
+			fxDeliveryTimeSlotMaster.setStartTime(fxDeliveryTimeSlotDto.getStartTime());
+			fxDeliveryTimeSlotMaster.setEndTime(fxDeliveryTimeSlotDto.getEndTime());
+			fxDeliveryTimeSlotMaster.setOfficeStartTime(fxDeliveryTimeSlotDto.getOfficeStartTime());
+			fxDeliveryTimeSlotMaster.setOfficeEndTime(fxDeliveryTimeSlotDto.getOfficeEndTime());
+			fxDeliveryTimeSlotMaster.setTimeInterval(fxDeliveryTimeSlotDto.getTimeInterval());
+			fxDeliveryTimeSlotMaster.setTimeIntervalOffice(fxDeliveryTimeSlotDto.getTimeIntervalOffice());
+			fcSaleOrderTimeSlotDao.save(fxDeliveryTimeSlotMaster);
+
+			status = Boolean.TRUE;
+
+		} catch (GlobalException e) {
+			e.printStackTrace();
+			logger.error("Error in setFcDeliveryTiming", e.getMessage() + " countryId :"
+					+ fxDeliveryTimeSlotDto.getCountryId() + " companyId :" + fxDeliveryTimeSlotDto.getCompanyId());
+			throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error in setFcDeliveryTiming", e.getMessage() + " countryId :"
+					+ fxDeliveryTimeSlotDto.getCountryId() + " companyId :" + fxDeliveryTimeSlotDto.getCompanyId());
+			throw new GlobalException(e.getMessage());
+		}
+		return status;
+	}
+	
+	public void validateTimeSlot(FxDeliveryTimeSlotDto fxDeliveryTimeSlotDto) {
+		if (fxDeliveryTimeSlotDto != null) {
+			if (fxDeliveryTimeSlotDto.getStartTime() != null) {
+
+				double doubleNumber = Convert.toDouble(fxDeliveryTimeSlotDto.getStartTime());
+				String doubleAsString = String.valueOf(doubleNumber);
+				int indexOfDecimal = doubleAsString.indexOf(".");
+				Double minutes = Double.parseDouble(doubleAsString.substring(indexOfDecimal));
+				if (minutes != null && minutes != 0) {
+					minutes = (minutes * 60);
+					if (new BigDecimal(minutes).compareTo(new BigDecimal(30)) == 0) {
+						// continue
+					} else {
+						logger.info("Please enter start time in multiples of 30 minutes");
+						throw new GlobalException("Please enter start time in multiples of 30 minutes");
+					}
+				}
+			}
+			if (fxDeliveryTimeSlotDto.getEndTime() != null) {
+				double doubleNumber = Convert.toDouble(fxDeliveryTimeSlotDto.getEndTime());
+				String doubleAsString = String.valueOf(doubleNumber);
+				int indexOfDecimal = doubleAsString.indexOf(".");
+				Double minutes = Double.parseDouble(doubleAsString.substring(indexOfDecimal));
+				if (minutes != null && minutes != 0) {
+					minutes = (minutes * 60);
+					if (new BigDecimal(minutes).compareTo(new BigDecimal(30)) == 0) {
+						// continue
+					} else {
+						logger.info("Please enter EndTime in multiples of 30 minutes");
+						throw new GlobalException("Please enter EndTime in multiples of 30 minutes");
+					}
+				}
+			}
+		}
+		if (fxDeliveryTimeSlotDto.getOfficeStartTime() != null) {
+			double doubleNumber = Convert.toDouble(fxDeliveryTimeSlotDto.getOfficeStartTime());
+			String doubleAsString = String.valueOf(doubleNumber);
+			int indexOfDecimal = doubleAsString.indexOf(".");
+			Double minutes = Double.parseDouble(doubleAsString.substring(indexOfDecimal));
+			if (minutes != null && minutes != 0) {
+				minutes = (minutes * 60);
+				if (new BigDecimal(minutes).compareTo(new BigDecimal(30)) == 0) {
+					// continue
+				} else {
+					logger.info("Please enter Office StartTime in multiples of 30 minutes");
+					throw new GlobalException("Please enter Office StartTime in multiples of 30 minutes");
+				}
+			}
+		}
+
+		if (fxDeliveryTimeSlotDto.getOfficeEndTime() != null) {
+			double doubleNumber = Convert.toDouble(fxDeliveryTimeSlotDto.getOfficeEndTime());
+			String doubleAsString = String.valueOf(doubleNumber);
+			int indexOfDecimal = doubleAsString.indexOf(".");
+			Double minutes = Double.parseDouble(doubleAsString.substring(indexOfDecimal));
+			if (minutes != null && minutes != 0) {
+				minutes = (minutes * 60);
+				if (new BigDecimal(minutes).compareTo(new BigDecimal(30)) == 0) {
+					// continue
+				} else {
+					logger.info("Please enter Office EndTime in multiples of 30 minutes");
+					throw new GlobalException("Please enter Office EndTime in multiples of 30 minutes");
+				}
+			}
+		}
+
 	}
 
 }

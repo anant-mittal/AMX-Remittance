@@ -21,8 +21,8 @@ public class StompTunnelToXSender implements ITunnelSubscriber<StompTunnelEvent>
 		return prefix + "_STOMP_TO";
 	}
 
-	@Autowired
-	StompTunnelSessionManager stompTunnelSessionManager;
+	@Autowired(required = false)
+	private StompTunnelSessionManager stompTunnelSessionManager;
 
 	@Autowired(required = false)
 	private MessageSendingOperations<String> messagingTemplate;
@@ -35,9 +35,9 @@ public class StompTunnelToXSender implements ITunnelSubscriber<StompTunnelEvent>
 	@Override
 	public void onMessage(String channel, StompTunnelEvent msg) {
 		if (!ArgUtil.isEmpty(msg.getHttpSessionId())) {
-			String sessionId = stompTunnelSessionManager.getSessionUId(msg.getHttpSessionId());
-			if (!ArgUtil.isEmpty(sessionId)) {
-				messagingTemplate.convertAndSend("/queue/" + sessionId + msg.getTopic(), msg.getData());
+			String sessionUId = stompTunnelSessionManager.getSessionUId(msg.getHttpSessionId());
+			if (!ArgUtil.isEmpty(sessionUId)) {
+				messagingTemplate.convertAndSend("/queue/" + sessionUId + msg.getTopic(), msg.getData());
 			}
 		}
 	}

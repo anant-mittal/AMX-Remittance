@@ -13,8 +13,11 @@ import com.amx.jax.pricer.dbmodel.CountryMasterModel;
 import com.amx.jax.pricer.dbmodel.HolidayListMasterModel;
 import com.amx.jax.pricer.dbmodel.OnlineMarginMarkup;
 import com.amx.jax.pricer.dbmodel.TimezoneMasterModel;
+import com.amx.jax.pricer.dbmodel.TreasuryFundTimeImpact;
 import com.amx.jax.pricer.dbmodel.ViewExGLCBAL;
+import com.amx.jax.pricer.dbmodel.ViewExGLCBalProvisional;
 import com.amx.jax.pricer.dto.BankDetailsDTO;
+import com.amx.jax.pricer.dto.EstimatedDeliveryDetails;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
 import com.amx.jax.pricer.var.PricerServiceConstants.CUSTOMER_CATEGORY;
 import com.amx.jax.pricer.var.PricerServiceConstants.SERVICE_GROUP;
@@ -258,7 +261,7 @@ public class ExchRateAndRoutingTransientDataCache {
 
 	}
 
-	public BigDecimal getMaxGLLcBalForBank(BigDecimal bankId, boolean isFc) {
+	public BigDecimal getMaxGLCBalForBank(BigDecimal bankId, boolean isFc) {
 
 		BankGLCData bankGLCData = this.bankGlcBalMap.get(bankId);
 
@@ -296,6 +299,18 @@ public class ExchRateAndRoutingTransientDataCache {
 					rateFcCurBal = glcBalList.get(0).getRateFcCurBal();
 				}
 
+				//// @formatter:off
+
+				// Adjust the FC and LC Amount for the Pending Provisional Adjustments.
+				/*ViewExGLCBalProvisional provision = bankGLCData.getProvisionalBalDetails();
+
+				if (provision != null && provision.getRateCurBal() != null && provision.getRateFcCurBal() != null) {
+					rateLcCurBal = rateLcCurBal.add(provision.getRateCurBal());
+					rateFcCurBal = rateFcCurBal.add(provision.getRateFcCurBal());
+				}*/
+				
+				// @formatter:on
+
 			}
 
 			bankGLCData.setMaxLcCurBalAmount(rateLcCurBal);
@@ -309,6 +324,99 @@ public class ExchRateAndRoutingTransientDataCache {
 			return bankGLCData.getMaxLcCurBalAmount();
 		}
 
+	}
+
+	public BigDecimal getAdjustedGLCBalForBank(BigDecimal bankId, boolean isFc) {
+
+		BankGLCData bankGLCData = this.bankGlcBalMap.get(bankId);
+
+		if (null == bankGLCData || null == bankGLCData.getGlAccountsDetails()
+				|| bankGLCData.getGlAccountsDetails().isEmpty()) {
+			return null;
+		}
+
+		if (bankGLCData.getAdjustedLcCurBal() == null || bankGLCData.getAdjustedFcCurBal() == null) {
+
+			BigDecimal maxFcCurBal = getMaxGLCBalForBank(bankId, true);
+			BigDecimal maxLcCurBal = getMaxGLCBalForBank(bankId, false);
+
+			BigDecimal avgGlcCostRate = getAvgRateGLCForBank(bankId);
+
+			BigDecimal adjustedFcCurBal, adjustedLcCurBal;
+
+			if (bankGLCData.getFundingGlAcDetails() != null && !bankGLCData.getFundingGlAcDetails().isEmpty()) {
+				BigDecimal fundingLcBal = BigDecimal.ZERO;
+
+				for (ViewExGLCBAL fundingBal : bankGLCData.getFundingGlAcDetails()) {
+					if (fundingBal != null && fundingBal.getRateCurBal() != null) {
+						fundingLcBal = fundingLcBal.add(fundingBal.getRateCurBal());
+					}
+				}
+
+				adjustedLcCurBal = fundingLcBal.add(maxLcCurBal);
+				adjustedFcCurBal = adjustedLcCurBal.divide(avgGlcCostRate, 3, RoundingMode.HALF_DOWN);
+
+				// adjustedFcCurBal = maxFcCurBal.add( fundingLcBal.divide(avgGlcCostRate, 3,
+				// RoundingMode.HALF_DOWN));
+
+			} else {
+				adjustedFcCurBal = maxFcCurBal;
+				adjustedLcCurBal = maxLcCurBal;
+			}
+
+			bankGLCData.setAdjustedLcCurBal(adjustedLcCurBal);
+			bankGLCData.setAdjustedFcCurBal(adjustedFcCurBal);
+
+			// System.out.println("\\n From ExchRateAndRouting Cache");
+			// System.out.println(" Max Lc Bal ==> " + maxLcCurBal);
+			// System.out.println(" Max Fc Bal ==> " + maxFcCurBal);
+
+			// System.out.println(" Adjusted Lc Bal ==> " +
+			// bankGLCData.getAdjustedLcCurBal());
+			// System.out.println(" Adjusted Fc Bal ==> " +
+			// bankGLCData.getAdjustedFcCurBal());
+			// System.out.println(" Exchange Rate ====> " + avgGlcCostRate);
+		}
+
+		if (isFc) {
+			return bankGLCData.getAdjustedFcCurBal();
+		} else {
+			return bankGLCData.getAdjustedLcCurBal();
+		}
+
+	}
+
+	public TreasuryFundTimeImpact getTreasuryFundTimeImpact(BigDecimal bankId, boolean isFunded) {
+		BankGLCData bankGLCData = this.bankGlcBalMap.get(bankId);
+
+		if (null == bankGLCData || null == bankGLCData.getGlAccountsDetails()
+				|| bankGLCData.getGlAccountsDetails().isEmpty()) {
+			return null;
+		}
+
+		if (isFunded) {
+			return bankGLCData.getFundedTimeImpact();
+		} else {
+			return bankGLCData.getOutOfFundTimeImpact();
+		}
+	}
+
+	public EstimatedDeliveryDetails getTreasuryFTDelay(BigDecimal bankId) {
+		BankGLCData bankGLCData = this.bankGlcBalMap.get(bankId);
+
+		if (null != bankGLCData) {
+			return bankGLCData.getEstmdFundTimeDelay();
+		}
+
+		return null;
+	}
+
+	public void setTreasuryFTDelay(BigDecimal bankId, EstimatedDeliveryDetails treasuryFTDelay) {
+		BankGLCData bankGLCData = this.bankGlcBalMap.get(bankId);
+
+		if (null != bankGLCData) {
+			bankGLCData.setEstmdFundTimeDelay(treasuryFTDelay);
+		}
 	}
 
 	public void setTimezoneForCountry(BigDecimal countryId, TimezoneMasterModel tz) {

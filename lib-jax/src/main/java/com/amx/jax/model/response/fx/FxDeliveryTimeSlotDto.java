@@ -9,7 +9,10 @@ public class FxDeliveryTimeSlotDto {
 	private BigDecimal companyId;
 	private BigDecimal startTime;
 	private BigDecimal endTime;
+	private BigDecimal officeStartTime;
+	private BigDecimal officeEndTime;
 	private BigDecimal timeInterval;
+	private BigDecimal timeIntervalOffice;
 	private String isActive;
 	private String remarks;
 	public BigDecimal getDeliveryTimeSlotId() {
@@ -60,5 +63,24 @@ public class FxDeliveryTimeSlotDto {
 	public void setRemarks(String remarks) {
 		this.remarks = remarks;
 	}
+	public BigDecimal getOfficeStartTime() {
+		return officeStartTime;
+	}
+	public void setOfficeStartTime(BigDecimal officeStartTime) {
+		this.officeStartTime = officeStartTime;
+	}
+	public BigDecimal getOfficeEndTime() {
+		return officeEndTime;
+	}
+	public void setOfficeEndTime(BigDecimal officeEndTime) {
+		this.officeEndTime = officeEndTime;
+	}
+	public BigDecimal getTimeIntervalOffice() {
+		return timeIntervalOffice;
+	}
+	public void setTimeIntervalOffice(BigDecimal timeIntervalOffice) {
+		this.timeIntervalOffice = timeIntervalOffice;
+	}
+	
 	
 }

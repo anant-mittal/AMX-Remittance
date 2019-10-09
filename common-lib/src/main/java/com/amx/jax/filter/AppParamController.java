@@ -9,6 +9,8 @@ import org.jasypt.util.text.BasicTextEncryptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +23,7 @@ import com.amx.jax.AppContextUtil;
 import com.amx.jax.AppParam;
 import com.amx.jax.AppSharedConfig;
 import com.amx.jax.AppTenantConfig;
+import com.amx.jax.VendorAuthConfig;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.def.IndicatorListner;
@@ -112,14 +115,23 @@ public class AppParamController {
 		return AmxApiResponse.build(new BoolRespModel(true));
 	}
 
+	@Autowired(required = false)
+	VendorAuthConfig appVendorConfigForAuth;
+
 	@RequestMapping(value = "/pub/amx/device", method = RequestMethod.GET)
-	public AmxApiResponse<UserDevice, Map<String, Object>> userDevice(@RequestParam(required = false) String key) {
+	public AmxApiResponse<UserDevice, Map<String, Object>> userDevice(@RequestParam(required = false) String key,
+			@RequestParam(required = false) String vendor) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("getAppSpecifcDecryptedProp", appConfig.getAppSpecifcDecryptedProp());
 		map.put("getTenantSpecifcDecryptedProp2", appTenantConfig.getTenantSpecifcDecryptedProp2());
 		map.put("getTenantSpecifcDecryptedProp", appTenantConfig.getTenantSpecifcDecryptedProp());
 		map.put("defaultTenant", appConfig.getDefaultTenant());
 		map.put(TenantContextHolder.TENANT, TenantContextHolder.currentSite(false));
+
+		AppContextUtil.setVendor(VendorAuthConfig.class, vendor);
+
+		map.put("getBasicAuthPassword", appVendorConfigForAuth.getBasicAuthPassword());
+		map.put("getBasicAuthUser", appVendorConfigForAuth.getBasicAuthUser());
 
 		if (!ArgUtil.isEmpty(key)) {
 			map.put(key, prop(key));

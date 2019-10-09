@@ -1,6 +1,7 @@
 package com.amx.jax.logger.client;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -304,6 +305,28 @@ public class AuditServiceClient implements AuditService {
 	@Override
 	public <T extends AuditActor> T getActor(Class<T> class1) {
 		return sessionContextService.getContext(class1);
+	}
+
+	@Override
+	public List<AuditEvent> queue(AuditEvent event) {
+		@SuppressWarnings("unchecked")
+		List<AuditEvent> list = (List<AuditEvent>) ContextUtil.map().getOrDefault("auditq",
+				new LinkedList<AuditEvent>());
+		list.add(event);
+		ContextUtil.map().put("auditq", list);
+		return list;
+	}
+
+	@Override
+	public List<AuditEvent> commit() {
+		@SuppressWarnings("unchecked")
+		LinkedList<AuditEvent> list = (LinkedList<AuditEvent>) ContextUtil.map().getOrDefault("auditq",
+				new LinkedList<AuditEvent>());
+		for (AuditEvent auditEvent : list) {
+			this.log(auditEvent);
+		}
+		ContextUtil.map().remove("auditq");
+		return list;
 	}
 
 }

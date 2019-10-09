@@ -19,8 +19,10 @@ public class AppConstants extends Constants {
 		public static final String SESSION = "session";
 		public static final String TENANT = "tenant";
 		public static final String THREAD = "thread";
+		public static final String VENDOR = "vendor";
 	}
 
+	public static final String AUTH_ID_XKEY = "x-app-auth-id";
 	public static final String AUTH_KEY_XKEY = "x-app-auth-key";
 	public static final String AUTH_TOKEN_XKEY = "x-app-auth-token";
 	public static final String AUTH_CLIENT_KEY_XKEY = "x-client-auth-key";

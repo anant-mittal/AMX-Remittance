@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +13,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
-
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
@@ -37,17 +35,20 @@ import com.amx.jax.model.request.fx.FcSaleOrderManagementDatesRequest;
 import com.amx.jax.model.response.fx.FcEmployeeDetailsDto;
 import com.amx.jax.model.response.fx.FcSaleCurrencyAmountModel;
 import com.amx.jax.model.response.fx.FcSaleOrderManagementDTO;
+import com.amx.jax.model.response.fx.FxDeliveryTimeSlotDto;
 import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
 import com.amx.jax.model.response.fx.FxOrderTransactionHistroyDto;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.repository.fx.FxDeliveryDetailsRepository;
+import com.amx.jax.repository.fx.FxOrderDeliveryTimeSlotRepository;
 import com.amx.jax.repository.fx.FxOrderTransactionRespository;
 import com.amx.jax.repository.fx.VwFxDeliveryDetailsRepository;
 import com.amx.jax.service.CountryBranchService;
 import com.amx.jax.userservice.service.UserValidationService;
 import com.amx.jax.util.RoundUtil;
 import com.amx.jax.validation.FcDeliveryBranchOrderSearchRequestValidation;
+
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -91,6 +92,13 @@ public class FcSaleBranchService extends AbstractService{
 	
 	@Autowired
 	FxOrderTransactionRespository fxOrderTransactionRespository;
+	
+	@Autowired
+	FxOrderDeliveryTimeSlotRepository fcSaleOrderTimeSlotDao;
+	
+	@Autowired
+	FcSaleBranchOrderManager fcSaleBranchOrderManager;
+
 
 
 	/* 
@@ -859,6 +867,34 @@ public class FcSaleBranchService extends AbstractService{
 
 		return AmxApiResponse.buildList(saleOrderManage);
 	}
-	
+	public BoolRespModel saveFcDeliveryTiming(FxDeliveryTimeSlotDto fxDeliveryTimeSlotDto){
+		Boolean status = Boolean.FALSE;	
+		if(fxDeliveryTimeSlotDto.getCountryId() == null || fxDeliveryTimeSlotDto.getCountryId().compareTo(BigDecimal.ZERO)==0){
+			throw new GlobalException(JaxError.NULL_COUNTRY_ID,"Country id should not be blank");
+		}
+		if(fxDeliveryTimeSlotDto.getCompanyId() == null || fxDeliveryTimeSlotDto.getCompanyId().compareTo(BigDecimal.ZERO)==0){
+			throw new GlobalException(JaxError.NULL_COMPANY_ID,"CompanyId id should not be blank");
+		}
+		
+	try {	
+		
+		status=branchOrderManager.saveFcDeliveryTiming(fxDeliveryTimeSlotDto);
+		if(status) {
+			// success
+		}else {
+			throw new GlobalException(JaxError.SAVE_FAILED,"Release Order lock didn't updated");
+		}
+	}catch (GlobalException e) {
+		throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
+	}catch (Exception e) {
+		throw new GlobalException(e.getMessage());
+	}
+
+	return new BoolRespModel(status);
+}
+	public  AmxApiResponse<FxDeliveryTimeSlotDto,Object> fetchFcDeliveryTiming() {
+		return fcSaleBranchOrderManager.fetchFcDeliveryTiming();
+		
+	}
 	
 }

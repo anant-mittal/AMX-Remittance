@@ -49,6 +49,10 @@ public class AuditActor {
 		public ActorType enunValue() {
 			return this.shortName;
 		}
+
+		public String getId(Object id) {
+			return this.shortName + ":" + ArgUtil.parseAsString(id);
+		}
 	}
 
 	@JsonProperty("type")

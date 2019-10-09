@@ -30,6 +30,8 @@ public class PersonInfo extends AbstractModel implements Cloneable {
 	private String whatsappPrefixCode;
 	private String referallId;
 	private String emailVerified;
+	private BigDecimal identityTypeId;
+	
 	public String getWhatsappPrefixCode() {
 		return whatsappPrefixCode;
 	}
@@ -223,7 +225,14 @@ public class PersonInfo extends AbstractModel implements Cloneable {
 	public void setEmailVerified(String emailVerified) {
 		this.emailVerified = emailVerified;
 	}
-	
-	
 
+	public BigDecimal getIdentityTypeId() {
+		return identityTypeId;
+	}
+
+	public void setIdentityTypeId(BigDecimal identityTypeId) {
+		this.identityTypeId = identityTypeId;
+	}
+
+	
 }

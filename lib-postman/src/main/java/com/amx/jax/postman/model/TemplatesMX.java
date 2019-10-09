@@ -87,10 +87,13 @@ public enum TemplatesMX implements ITemplate {
 	WU_TRNX_CANCELLED("WUTrnxCancelled"),
 	RESEND_VERIFICATION_LINK("resend-verification"),
 	
-	
+	//Refer friend
 	FRIEND_REFER("friend-refer.json"),
-	
 	FRIEND_REFERED("friend-refered.json"),
+	
+	//PEP_FORM("PepForm"),
+	PEP_FORM_JASPER("PepForm_jasper", PDFConverter.JASPER, "PepForm.json"),
+
 
 	// Default add enums above this
 	DEFAULT("default");

@@ -15,7 +15,7 @@ import com.amx.jax.rbaac.dbmodel.Employee;
  *
  * @author abhijeet
  */
-public final class UserOtpData implements Serializable {
+public class UserOtpData implements Serializable {
 
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 7221219115941595018L;

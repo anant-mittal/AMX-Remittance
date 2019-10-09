@@ -152,6 +152,7 @@ public class RemittanceTransaction implements Serializable {
 	
 
 	private String beneDeductFlag;
+	private String suspicousTransaction;
 	
 	private String deliveryInd;
 	private String remarks;
@@ -1150,6 +1151,15 @@ public class RemittanceTransaction implements Serializable {
 
 	public void setBeneDeductFlag(String beneDeductFlag) {
 		this.beneDeductFlag = beneDeductFlag;
+	}
+
+	@Column(name="SUSPICIOUS_TRNX")
+	public String getSuspicousTransaction() {
+		return suspicousTransaction;
+	}
+
+	public void setSuspicousTransaction(String suspicousTransaction) {
+		this.suspicousTransaction = suspicousTransaction;
 	}
 	
 	@Column(name="DELIVERY_IND")

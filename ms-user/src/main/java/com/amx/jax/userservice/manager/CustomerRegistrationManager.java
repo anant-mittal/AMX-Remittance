@@ -90,7 +90,7 @@ public class CustomerRegistrationManager extends TransactionModel<CustomerRegist
 	@Autowired
 	CustomerIdProofRepository customerIdProofRepository;
 	@Autowired
-	BizcomponentDao bizcomponentDao; 
+	BizcomponentDao bizcomponentDao;
 	@Autowired
 	UserService userService;
 	
@@ -496,7 +496,7 @@ public class CustomerRegistrationManager extends TransactionModel<CustomerRegist
 				if(null != homeData.getFsCityMaster()) {
 					homeAddress.setCityId(homeData.getFsCityMaster().getCityId());		
 				}
-				offsiteCustomer.setHomeAddressDestails(homeAddress);
+				offsiteCustomer.setHomeAddressDetails(homeAddress);
 			}
 		}else {
 			throw new GlobalException(JaxError.NO_RECORD_FOUND,"The customer does not exist in the system :"+identityInt);

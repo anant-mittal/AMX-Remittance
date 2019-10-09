@@ -3,15 +3,33 @@ package com.amx.jax.cache;
 import java.math.BigDecimal;
 import java.util.List;
 
+import com.amx.jax.pricer.dbmodel.TreasuryFundTimeImpact;
 import com.amx.jax.pricer.dbmodel.ViewExGLCBAL;
+import com.amx.jax.pricer.dbmodel.ViewExGLCBalProvisional;
+import com.amx.jax.pricer.dto.EstimatedDeliveryDetails;
 
 public class BankGLCData {
 
 	private List<ViewExGLCBAL> glAccountsDetails;
+	
 	private BigDecimal avgLcRate;
 	private BigDecimal avgFcRate;
+	
 	private BigDecimal maxLcCurBalAmount;
 	private BigDecimal maxFcCurBalAmount;
+	
+	private BigDecimal adjustedLcCurBal;
+	private BigDecimal adjustedFcCurBal;
+
+	private ViewExGLCBalProvisional provisionalBalDetails;
+
+	private List<ViewExGLCBAL> FundingGlAcDetails;
+
+	private TreasuryFundTimeImpact fundedTimeImpact;
+
+	private TreasuryFundTimeImpact outOfFundTimeImpact;
+	
+	private EstimatedDeliveryDetails estmdFundTimeDelay;
 
 	public List<ViewExGLCBAL> getGlAccountsDetails() {
 		return glAccountsDetails;
@@ -52,5 +70,64 @@ public class BankGLCData {
 	public void setMaxFcCurBalAmount(BigDecimal maxFcCurBalAmount) {
 		this.maxFcCurBalAmount = maxFcCurBalAmount;
 	}
+
+	public BigDecimal getAdjustedLcCurBal() {
+		return adjustedLcCurBal;
+	}
+
+	public void setAdjustedLcCurBal(BigDecimal adjustedLcCurBal) {
+		this.adjustedLcCurBal = adjustedLcCurBal;
+	}
+
+	public BigDecimal getAdjustedFcCurBal() {
+		return adjustedFcCurBal;
+	}
+
+	public void setAdjustedFcCurBal(BigDecimal adjustedFcCurBal) {
+		this.adjustedFcCurBal = adjustedFcCurBal;
+	}
+
+	public ViewExGLCBalProvisional getProvisionalBalDetails() {
+		return provisionalBalDetails;
+	}
+
+	public void setProvisionalBalDetails(ViewExGLCBalProvisional provisionalBalDetails) {
+		this.provisionalBalDetails = provisionalBalDetails;
+	}
+
+	public List<ViewExGLCBAL> getFundingGlAcDetails() {
+		return FundingGlAcDetails;
+	}
+
+	public void setFundingGlAcDetails(List<ViewExGLCBAL> fundingGlAcDetails) {
+		FundingGlAcDetails = fundingGlAcDetails;
+	}
+
+	public TreasuryFundTimeImpact getFundedTimeImpact() {
+		return fundedTimeImpact;
+	}
+
+	public void setFundedTimeImpact(TreasuryFundTimeImpact fundedTimeImpact) {
+		this.fundedTimeImpact = fundedTimeImpact;
+	}
+
+	public TreasuryFundTimeImpact getOutOfFundTimeImpact() {
+		return outOfFundTimeImpact;
+	}
+
+	public void setOutOfFundTimeImpact(TreasuryFundTimeImpact outOfFundTimeImpact) {
+		this.outOfFundTimeImpact = outOfFundTimeImpact;
+	}
+
+	public EstimatedDeliveryDetails getEstmdFundTimeDelay() {
+		return estmdFundTimeDelay;
+	}
+
+	public void setEstmdFundTimeDelay(EstimatedDeliveryDetails estmdFundTimeDelay) {
+		this.estmdFundTimeDelay = estmdFundTimeDelay;
+	}
+	
+	
+	
 
 }

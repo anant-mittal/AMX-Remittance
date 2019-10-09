@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.CustomerCredential;
-import com.amx.jax.ICustRegService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.api.ListRequestModel;
@@ -22,6 +21,7 @@ import com.amx.jax.branch.common.OffsiteStatus.ApiOffisteStatus;
 import com.amx.jax.branch.common.OffsiteStatus.OffsiteServerCodes;
 import com.amx.jax.client.CustomerRegistrationClient;
 import com.amx.jax.client.MetaClient;
+import com.amx.jax.customer.ICustRegService;
 import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.http.CommonHttpRequest.CommonMediaType;

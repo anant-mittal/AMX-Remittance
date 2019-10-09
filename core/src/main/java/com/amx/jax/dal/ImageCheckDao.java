@@ -45,11 +45,8 @@ public class ImageCheckDao {
 				+ "\t identityExpDate :" + identityExpDate);
 
 		List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.INTEGER),
-				new SqlParameter(Types.VARCHAR),
-				new SqlParameter(Types.VARCHAR),
-				new SqlParameter(Types.VARCHAR),
-				new SqlParameter(Types.DATE),
-				new SqlOutParameter("docBlobId", Types.INTEGER),
+				new SqlParameter(Types.VARCHAR), new SqlParameter(Types.VARCHAR), new SqlParameter(Types.VARCHAR),
+				new SqlParameter(Types.DATE), new SqlOutParameter("docBlobId", Types.INTEGER),
 				new SqlOutParameter("docFinYr", Types.INTEGER));
 		/**
 		 * DMS_P_GET_LST_BLOB@AGDMSLNK(1, 'CMAP', W_IMG_ID, C0.IDENTITY_INT,
@@ -99,29 +96,25 @@ public class ImageCheckDao {
 	/**
 	 * Test ID : 841303185 // 12/03/2019 Blob ID : 861036433 // 21/06/2017
 	 */
-	
-	public BigDecimal callTogenerateBlobID(BigDecimal docFinYear)
-			{
-		List<SqlParameter> declareInAndOutputParameters = Arrays.asList(				
-				new SqlParameter(Types.VARCHAR),
-				new SqlParameter(Types.INTEGER),				
-				new SqlOutParameter("docBlobId", Types.INTEGER));
-		
+
+	public BigDecimal callTogenerateBlobID(BigDecimal docFinYear) {
+		List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.VARCHAR),
+				new SqlParameter(Types.INTEGER), new SqlOutParameter("docBlobId", Types.INTEGER));
+
 		Map<String, Object> output = jdbcTemplate.call(new CallableStatementCreator() {
 			@Override
 			public CallableStatement createCallableStatement(Connection con) throws SQLException {
 
 				String proc = " { call NEXT_AMG_DOC_SRNO_LCK@AGDMSLNK (?,?,?) } ";
-				CallableStatement cs = con.prepareCall(proc);			
+				CallableStatement cs = con.prepareCall(proc);
 				cs.setString(1, "BLID");
 				cs.setBigDecimal(2, docFinYear);
 				cs.registerOutParameter(3, Types.INTEGER);
-				cs.execute();				
+				cs.execute();
 				return cs;
 			}
-		}, declareInAndOutputParameters);	
-		System.out.println(output);
+		}, declareInAndOutputParameters);
 		return new BigDecimal(output.get("docBlobId").toString());
-}
-	
+	}
+
 }

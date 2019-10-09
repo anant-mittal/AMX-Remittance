@@ -22,6 +22,7 @@ import com.amx.jax.model.request.fx.FcSaleBranchDispatchRequest;
 import com.amx.jax.model.request.fx.FcSaleOrderManagementDatesRequest;
 import com.amx.jax.model.response.fx.FcEmployeeDetailsDto;
 import com.amx.jax.model.response.fx.FcSaleOrderManagementDTO;
+import com.amx.jax.model.response.fx.FxDeliveryTimeSlotDto;
 import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
 import com.amx.jax.model.response.fx.FxOrderTransactionHistroyDto;
 import com.amx.jax.model.response.fx.UserStockDto;
@@ -321,6 +322,35 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 			LOGGER.error("exception in SearchOrder : ", e);
 			return JaxSystemError.evaluate(e);
 		}
+	}
+	
+	
+	@Override
+	public AmxApiResponse<BoolRespModel,Object> saveFcDeliveryTimeSlot(FxDeliveryTimeSlotDto fxDeliveryTimeSlotDto) {
+		try {
+			LOGGER.debug("in saveFcDeliveryTimeSlot :"+fxDeliveryTimeSlotDto);
+			return restService.ajax(appConfig.getJaxURL() + Path.FC_ORDER_DELIVERY_TIME_SETUP).meta(new JaxMetaInfo())
+					.post(fxDeliveryTimeSlotDto)
+					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel,Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in acceptOrderLock : ", e);
+			return JaxSystemError.evaluate(e);
+		} // end of try-catch
+	}
+
+	@Override
+	public AmxApiResponse<FxDeliveryTimeSlotDto,Object> fetchFcDeliveryTiming() {
+		try {
+			LOGGER.debug("in saveFcDeliveryTimeSlot :");
+			return restService.ajax(appConfig.getJaxURL() + Path.FC_ORDER_DELIVERY_TIME_SETUP_FETCH).meta(new JaxMetaInfo())
+					.get()
+					.as(new ParameterizedTypeReference<AmxApiResponse<FxDeliveryTimeSlotDto,Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in acceptOrderLock : ", e);
+			return JaxSystemError.evaluate(e);
+		} // end of try-catch
 	}
 
 

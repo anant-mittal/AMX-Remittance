@@ -34,12 +34,14 @@ import com.amx.amxlib.constant.PrefixEnum;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.CustomerCredential;
-import com.amx.jax.ICustRegService;
 import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constants.CustomerRegistrationType;
+import com.amx.jax.customer.ICustRegService;
+import com.amx.jax.customer.document.manager.CustomerKycManager;
+import com.amx.jax.customer.manager.CustomerEmployementManager;
 import com.amx.jax.customer.manager.OffsiteCustomerRegManager;
 import com.amx.jax.customer.manager.OffsiteCustomerRegValidator;
 import com.amx.jax.dal.ArticleDao;
@@ -268,6 +270,11 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 	
 	@Autowired
 	IDocumentUploadMapRepository iDocumentUploadMapRepository;
+	@Autowired
+	CustomerEmployementManager customerEmployementManager;
+	@Autowired
+	CustomerKycManager customerKycManager;
+
 
 	public AmxApiResponse<ComponentDataDto, Object> getIdTypes() {
 		List<Map<String, Object>> tempList = bizcomponentDao
@@ -592,16 +599,14 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 	@Transactional
 	public AmxApiResponse<CustomerInfo, Object> saveCustomerInfo(CustomerInfoRequest model) {
 		offsiteCustomerRegValidator.validateLocalContact(model.getLocalAddressDetails());
-		offsiteCustomerRegValidator.validateHomeContact(model.getHomeAddressDestails());
-		LOGGER.debug("hello");
+		offsiteCustomerRegValidator.validateHomeContact(model.getHomeAddressDetails());
 		LOGGER.debug("in saveCustomerInfo with request model: {}", JsonUtil.toJson(model));
 		CustomerPersonalDetail customerDetails = new CustomerPersonalDetail();
 		jaxUtil.convert(model.getCustomerPersonalDetail(), customerDetails);
 		Customer customer = commitCustomer(customerDetails, model.getCustomerEmploymentDetails());
 		
 		commitCustomerLocalContact(model.getLocalAddressDetails(), customer, customerDetails);
-		
-		commitCustomerHomeContact(model.getHomeAddressDestails(), customer, customerDetails);
+		commitCustomerHomeContact(model.getHomeAddressDetails(), customer, customerDetails);
 		customerIdProofManager.commitOnlineCustomerIdProof(customer);
 		commitEmploymentDetails(model.getCustomerEmploymentDetails(), customer, model.getLocalAddressDetails());
 		auditService.log(new CActivityEvent(CActivityEvent.Type.PROFILE_UPDATE).result(Result.DONE));
@@ -689,31 +694,31 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		}
 	}
 
-	private void commitCustomerHomeContact(HomeAddressDetails homeAddressDestails, Customer customer,
+	private void commitCustomerHomeContact(HomeAddressDetails homeAddressDetails, Customer customer,
 			com.amx.jax.model.request.CustomerPersonalDetail customerDetails) {
-		if (homeAddressDestails != null) {
+		if (homeAddressDetails != null) {
 			ContactDetail contactDetail = contactDetailService.getContactsForHome(customer);
 
 			if (contactDetail == null) {
 				contactDetail = new ContactDetail();
 			}
-			
-			contactDetail.setFsCountryMaster(new CountryMaster(homeAddressDestails.getCountryId()));
-			if(null != homeAddressDestails.getDistrictId()) {
-				contactDetail.setFsDistrictMaster(new DistrictMaster(homeAddressDestails.getDistrictId()));
+
+			contactDetail.setFsCountryMaster(new CountryMaster(homeAddressDetails.getCountryId()));
+			if(null != homeAddressDetails.getDistrictId()) {
+				contactDetail.setFsDistrictMaster(new DistrictMaster(homeAddressDetails.getDistrictId()));
 			}
-			if(null != homeAddressDestails.getStateId()) {
-				contactDetail.setFsStateMaster(new StateMaster(homeAddressDestails.getStateId()));
+			if(null != homeAddressDetails.getStateId()) {
+				contactDetail.setFsStateMaster(new StateMaster(homeAddressDetails.getStateId()));
 			}
 			
 			
-			if(null != homeAddressDestails.getCityId()) {
-				contactDetail.setFsCityMaster(new CityMaster(homeAddressDestails.getCityId()));
+			if(null != homeAddressDetails.getCityId()) {
+				contactDetail.setFsCityMaster(new CityMaster(homeAddressDetails.getCityId()));
 			}
-			contactDetail.setBuildingNo(homeAddressDestails.getHouse());
-			contactDetail.setFlat(homeAddressDestails.getFlat());
-			contactDetail.setStreet(homeAddressDestails.getStreet());
-			contactDetail.setBlock(homeAddressDestails.getBlock());
+			contactDetail.setBuildingNo(homeAddressDetails.getHouse());
+			contactDetail.setFlat(homeAddressDetails.getFlat());
+			contactDetail.setStreet(homeAddressDetails.getStreet());
+			contactDetail.setBlock(homeAddressDetails.getBlock());
 			contactDetail.setFsCustomer(customer);
 			contactDetail.setActiveStatus(ConstantDocument.Yes);
 			contactDetail.setLanguageId(customer.getLanguageId());
@@ -820,6 +825,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		customer.setShortName(customerDetails.getFirstName() + customerDetails.getLastName());
 
 		customer.setCustomerRegistrationType(CustomerRegistrationType.OFF_CUSTOMER);
+		customer.setSignatureSpecimenClob(customerDetails.getCustomerSignature());
 		if (customerEmploymentDetails != null) {
 			customer.setFsArticleDetails(
 					articleDao.getArticleDetailsByArticleDetailId(ConstantDocument.ARTICLE_DETAIL_ID_OTHERS));
@@ -828,7 +834,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		}
 		userValidationService.validateBlackListedCustomerForLogin(customer);
 		LOGGER.info("Createing new customer record, civil id- {}", customerDetails.getIdentityInt());
-		customerRepository.save(customer);
+		customer = customerRepository.save(customer);
 		return customer;
 	}
 
@@ -906,7 +912,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			}
 			for (String image : model.getImage()) {
 				DmsApplMapping mappingData = new DmsApplMapping();
-				mappingData = getDmsApplMappingData(customer, model);
+				mappingData = customerKycManager.getDmsApplMappingData(customer, model);
 				idmsAppMappingRepository.save(mappingData);
 				DocBlobUpload documentDetails = new DocBlobUpload();
 				documentDetails = getDocumentUploadDetails(image, mappingData);
@@ -1075,7 +1081,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		validateOtpSendCount(beneficiaryTrnxModel.getOtpData());
 	}
 
-	private void validateCustomerBlackList(CustomerPersonalDetail customerPersonalDetail) {
+	public void validateCustomerBlackList(CustomerPersonalDetail customerPersonalDetail) {
 		StringBuilder customerName = new StringBuilder();
 		if (StringUtils.isNotBlank(customerPersonalDetail.getFirstName())) {
 			customerName.append(customerPersonalDetail.getFirstName().trim().toUpperCase());
@@ -1216,26 +1222,10 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 				if (null != homeData.getFsCityMaster()) {
 					homeAddress.setCityId(homeData.getFsCityMaster().getCityId());
 				}
-				offsiteCustomer.setHomeAddressDestails(homeAddress);
+				offsiteCustomer.setHomeAddressDetails(homeAddress);
 			}
-			// --- Customer Employment Data
-			CustomerEmploymentDetails employmentDetails = new CustomerEmploymentDetails();
-			EmployeeDetails employmentData = customerEmployeeDetailsRepository.getCustomerEmploymentData(customer);
-			if (employmentData != null) {
-				employmentDetails.setEmployer(employmentData.getEmployerName());
-				employmentDetails.setEmploymentTypeId(
-						employmentData.getFsBizComponentDataByEmploymentTypeId().getComponentDataId());
-				employmentDetails
-						.setProfessionId(employmentData.getFsBizComponentDataByOccupationId().getComponentDataId());
-				employmentDetails.setStateId(employmentData.getFsStateMaster());
-				employmentDetails.setDistrictId(employmentData.getFsDistrictMaster());
-				employmentDetails.setCountryId(employmentData.getFsCountryMaster().getCountryId());
-				employmentDetails.setArticleDetailsId(customer.getFsArticleDetails().getArticleDetailId());
-				employmentDetails.setArticleId(customer.getFsArticleDetails().getFsArticleMaster().getArticleId());
-				employmentDetails.setIncomeRangeId(customer.getFsIncomeRangeMaster().getIncomeRangeId());
-
-				offsiteCustomer.setCustomerEmploymentDetails(employmentDetails);
-			}
+			offsiteCustomer.setCustomerEmploymentDetails(customerEmployementManager.createCustomerEmploymentDetail(customer));
+			
 		} else {
 			throw new GlobalException(ResponseStatus.NOT_FOUND.toString());
 		}
@@ -1249,13 +1239,10 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 	 * purpose : to fethc custoemr deatails 
 	 */
 	
-	@Override
-	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerDetails(String identityInt,
-			BigDecimal identityTypeId) {
+	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerDetails(String identityInt,BigDecimal identityTypeId,BigDecimal customerId) {
 		LOGGER.debug("in getOffsiteCustomerData: identityInt {}, identityTypeId {}", identityInt, identityTypeId);
-		OffsiteCustomerDataDTO offsiteCustomer = customerRegistrationManager.getCustomerDeatils(identityInt,
-				identityTypeId);
-		return AmxApiResponse.build(offsiteCustomer);
+		OffsiteCustomerDataDTO offsiteCustomer =customerRegistrationManager.getCustomerDeatils(identityInt, identityTypeId);
+		return AmxApiResponse.build(offsiteCustomer); 
 	}
 
 	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerData(

@@ -12,6 +12,7 @@ import com.amx.jax.model.request.fx.FcSaleBranchDispatchRequest;
 import com.amx.jax.model.request.fx.FcSaleOrderManagementDatesRequest;
 import com.amx.jax.model.response.fx.FcEmployeeDetailsDto;
 import com.amx.jax.model.response.fx.FcSaleOrderManagementDTO;
+import com.amx.jax.model.response.fx.FxDeliveryTimeSlotDto;
 import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
 import com.amx.jax.model.response.fx.FxOrderTransactionHistroyDto;
 import com.amx.jax.model.response.fx.UserStockDto;
@@ -37,6 +38,9 @@ public interface IFxBranchOrderService extends IJaxService {
 		public static final String FC_SEARCH_ORDER = PREFIX + "/search-order/";
 		public static final String FC_CUSTOMER_RATING = PREFIX + "/fc-customer-rating/";
 		public static final String FC_SEARCH_ORDER_BY_DATES = PREFIX + "/search-order-by-dates/";
+		public static final String FC_ORDER_DELIVERY_TIME_SETUP = PREFIX + "/delivery-time-setup/";
+		public static final String FC_ORDER_DELIVERY_TIME_SETUP_FETCH = PREFIX + "/fetching-delivery-time-setup/";
+		
 		
 	}
 
@@ -107,6 +111,10 @@ public interface IFxBranchOrderService extends IJaxService {
 	
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND })
 	AmxApiResponse<FxOrderTransactionHistroyDto, Object> searchOrder(FcDeliveryBranchOrderSearchRequest fcDeliveryBranchOrderSearchRequest);
+
+	AmxApiResponse<BoolRespModel, Object> saveFcDeliveryTimeSlot(FxDeliveryTimeSlotDto fxDeliveryTimeSlotDto);
+
+	AmxApiResponse<FxDeliveryTimeSlotDto, Object> fetchFcDeliveryTiming();
 	
 
 /*	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND })
