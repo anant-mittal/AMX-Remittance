@@ -16,11 +16,14 @@ import com.amx.amxlib.meta.model.BeneCountryDTO;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.response.JaxTransactionResponse;
 import com.amx.jax.JaxAuthContext;
+import com.amx.jax.client.bene.BeneBranchClient;
 import com.amx.jax.client.bene.BeneficiaryConstant.BeneStatus;
+import com.amx.jax.client.branch.IBranchBeneService;
 import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.model.request.benebranch.BeneAccountModel;
 import com.amx.jax.model.request.benebranch.BenePersonalDetailModel;
 import com.amx.jax.model.request.benebranch.BeneficiaryTrnxModel;
+import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
 import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 import com.amx.jax.ui.model.AuthData;
 import com.amx.jax.ui.model.AuthDataInterface.AuthRequestOTP;
@@ -39,6 +42,7 @@ import io.swagger.annotations.ApiOperation;
  */
 @RestController
 @Api(value = "Beneficiary APIs")
+@ApiStatusService({ IBranchBeneService.class })
 public class BeneController {
 
 	/** The jax service. */
@@ -211,5 +215,15 @@ public class BeneController {
 		return new ResponseWrapper<>(
 				jaxService.setDefaults().getBeneClient().commitAddBeneTrnx(req.getmOtp(), req.geteOtp()).getResult());
 	}
+
+	@Autowired
+	BeneBranchClient beneBranchClient;
+
+//	@ApiOperation(value = "Save the current beneficary in progress")
+//	@RequestMapping(value = "/api/user/bnfcry/commit", method = { RequestMethod.POST })
+//	public ResponseWrapper<BeneficiaryTrnxModel> getBeneListStatuses() {
+//		return new ResponseWrapper<>(
+//				beneBranchClient.getBeneListStatuses().getResult());
+//	}
 
 }

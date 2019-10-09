@@ -3,6 +3,7 @@ package com.amx.jax.client.bene;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppConfig;
 import com.amx.jax.api.AmxApiResponse;
@@ -26,6 +27,7 @@ import com.amx.jax.model.response.benebranch.BankBranchDto;
 import com.amx.jax.model.response.benebranch.BeneStatusDto;
 import com.amx.jax.rest.RestService;
 
+@Component
 public class BeneBranchClient implements IBranchBeneService {
 
 	private static final Logger LOGGER = Logger.getLogger(BeneBranchClient.class);
