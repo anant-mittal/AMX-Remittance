@@ -1,5 +1,7 @@
 package com.amx.jax.ui.response;
 
+import java.util.List;
+
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.exception.AmxApiException;
@@ -227,6 +229,20 @@ public class ResponseWrapperM<T, M> extends AmxApiResponse<T, M> {
 		if (!ArgUtil.isEmpty(responseWrapper.getMeta())) {
 			this.meta = (M) responseWrapper.getMeta();
 		}
+	}
+
+	public static <FT, FM> ResponseWrapperM<FT, FM> from(AmxApiResponse<FT, FM> fromResponse) {
+		ResponseWrapperM<FT, FM> wrapper = new ResponseWrapperM<FT, FM>();
+		wrapper.setData(fromResponse.getResult());
+		wrapper.setMeta(fromResponse.getMeta());
+		return wrapper;
+	}
+
+	public static <FT, FM> ResponseWrapperM<List<FT>, FM> fromAsList(AmxApiResponse<FT, FM> fromResponse) {
+		ResponseWrapperM<List<FT>, FM> wrapper = new ResponseWrapperM<List<FT>, FM>();
+		wrapper.setData(fromResponse.getResults());
+		wrapper.setMeta(fromResponse.getMeta());
+		return wrapper;
 	}
 
 }

@@ -16,7 +16,7 @@ import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.model.request.benebranch.AddBeneBankRequest;
 import com.amx.jax.model.request.benebranch.AddBeneCashRequest;
 import com.amx.jax.model.request.benebranch.AddNewBankBranchRequest;
-import com.amx.jax.model.request.benebranch.ListBankBranchRequest;
+import com.amx.jax.model.request.benebranch.BankBranchListRequest;
 import com.amx.jax.model.request.benebranch.ListBeneBankOrCashRequest;
 import com.amx.jax.model.request.benebranch.ListBeneRequest;
 import com.amx.jax.model.request.benebranch.UpdateBeneBankRequest;
@@ -65,7 +65,7 @@ public class BeneBranchClient implements IBranchBeneService {
 	}
 
 	@Override
-	public AmxApiResponse<BankBranchDto, Object> listBankBranch(ListBankBranchRequest request) {
+	public AmxApiResponse<BankBranchDto, Object> listBankBranch(BankBranchListRequest request) {
 		try {
 			LOGGER.debug("in listBankBranch :");
 			return restService.ajax(appConfig.getJaxURL() + Path.LIST_BANK_BRANCH).meta(new JaxMetaInfo()).post(request)

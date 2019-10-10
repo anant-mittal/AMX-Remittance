@@ -12,7 +12,7 @@ import com.amx.jax.swagger.ApiMockModelProperty;
  * @author prashant
  *
  */
-public class ListBankBranchRequest {
+public class BankBranchListRequest {
 
 	@NotNull
 	@ApiMockModelProperty(example = "1527")
