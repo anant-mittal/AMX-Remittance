@@ -23,9 +23,6 @@ public class ResponseWrapperM<T, M> extends AmxApiResponse<T, M> {
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 7545829974699803746L;
 
-	/** The message key. */
-	private String messageKey = UIConstants.EMPTY;
-
 	/**
 	 * Instantiates a new response wrapper M.
 	 */
