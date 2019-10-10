@@ -245,13 +245,6 @@ public class RemittanceApplicationManager {
 
 		setFurtherInstruction(remittanceApplication, requestModel.getAdditionalFields());
 
-		/*
-		 * if(requestModel.getAdditionalFields()!=null &&
-		 * requestModel.getAdditionalFields().get("INSTRUCTION")!=null) { //INSTRUCTION
-		 * remittanceApplication.setInstruction(requestModel.getAdditionalFields().get(
-		 * "INSTRUCTION").toString()); }else {
-		 * remittanceApplication.setInstruction("URGENT"); }
-		 */
 		setCustomerDiscountColumns(remittanceApplication, validationResults);
 		setVatDetails(remittanceApplication, validationResults);
 		return remittanceApplication;
@@ -473,7 +466,7 @@ public class RemittanceApplicationManager {
 		remitApplParametersMap.put("P_FURTHER_INSTR", "URGENT");
 		//Map<String, Object> errorResponse = applicationProcedureDao.toFetchPurtherInstractionErrorMessaage(remitApplParametersMap);
 		String errorMessage =null;// (String) errorResponse.get("P_ERRMSG");
-		Map<String, Object> furtherSwiftAdditionalDetails = applicationProcedureDao.fetchAdditionalBankRuleIndicators(remitApplParametersMap);
+		//Map<String, Object> furtherSwiftAdditionalDetails = applicationProcedureDao.fetchAdditionalBankRuleIndicators(remitApplParametersMap);
 		remitApplParametersMap.putAll(furtherSwiftAdditionalDetails);
 		remitApplParametersMap.put("P_ADDITIONAL_BANK_RULE_ID_1", requestModel.getAdditionalBankRuleFiledId());
 		if (requestModel.getSrlId() != null) {
@@ -506,11 +499,9 @@ public class RemittanceApplicationManager {
 	
 	public void validateAdditionalErrorMessagesV2(RemittanceTransactionDrRequestModel requestModel) {
 		remitApplParametersMap.put("P_FURTHER_INSTR", "URGENT");
-		Map<String, Object> errorResponse = applicationProcedureDao
-				.toFetchPurtherInstractionErrorMessaage(remitApplParametersMap);
-		String errorMessage = (String) errorResponse.get("P_ERRMSG");
-		Map<String, Object> furtherSwiftAdditionalDetails = applicationProcedureDao
-				.fetchAdditionalBankRuleIndicators(remitApplParametersMap);
+		//Map<String, Object> errorResponse = applicationProcedureDao.toFetchPurtherInstractionErrorMessaage(remitApplParametersMap);
+		String errorMessage =null;// (String) errorResponse.get("P_ERRMSG");
+		//Map<String, Object> furtherSwiftAdditionalDetails = applicationProcedureDao.fetchAdditionalBankRuleIndicators(remitApplParametersMap);
 		remitApplParametersMap.putAll(furtherSwiftAdditionalDetails);
 		remitApplParametersMap.put("P_ADDITIONAL_BANK_RULE_ID_1", requestModel.getAdditionalBankRuleFiledId());
 		if (requestModel.getSrlId() != null) {
@@ -583,7 +574,6 @@ public class RemittanceApplicationManager {
 					remittanceApplication.setDiscountOnCommission(validationResults.getDiscountOnComission());
 		}
 	}
-
 	private void setApplicableRatesV2(RemittanceApplication remittanceApplication,
 			RemittanceTransactionDrRequestModel requestModel, RemittanceTransactionResponsetModel validationResults) {
 		ExchangeRateBreakup breakup = validationResults.getExRateBreakup();
