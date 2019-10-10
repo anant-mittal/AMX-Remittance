@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.rbaac.dao.RbaacDao;
-import com.amx.jax.rbaac.dbmodel.Employee;
+import com.amx.jax.rbaac.dbmodel.FSEmployee;
 import com.amx.jax.rbaac.dbmodel.Permission;
 import com.amx.jax.rbaac.dbmodel.Role;
 import com.amx.jax.rbaac.dbmodel.UserRoleMapping;
@@ -211,7 +211,7 @@ public class UserRoleService {
 
 		UserRoleMappingsResponseDTO urmResponseDTO = new UserRoleMappingsResponseDTO();
 
-		List<Employee> employeeList = rbaacDao.getEmployeesByCountryBranchId(countryBranchId);
+		List<FSEmployee> employeeList = rbaacDao.getEmployeesByCountryBranchId(countryBranchId);
 
 		if (employeeList == null || employeeList.isEmpty()) {
 			return urmResponseDTO;
@@ -221,7 +221,7 @@ public class UserRoleService {
 
 		List<BigDecimal> empIdList = new ArrayList<BigDecimal>();
 
-		for (Employee employee : employeeList) {
+		for (FSEmployee employee : employeeList) {
 			empIdList.add(employee.getEmployeeId());
 
 			/**
@@ -429,7 +429,7 @@ public class UserRoleService {
 	 */
 	private boolean validateUserRoleMapping(UserRoleMappingDTO urm) {
 
-		Employee employee = rbaacDao.getEmployeeByEmployeeId(urm.getEmployeeId());
+		FSEmployee employee = rbaacDao.getEmployeeByEmployeeId(urm.getEmployeeId());
 		Role role = rbaacDao.getRoleById(urm.getRoleId());
 
 		if (employee == null || role == null) {
@@ -451,7 +451,7 @@ public class UserRoleService {
 		RoleMappingForEmployee rmForEmployee = new RoleMappingForEmployee();
 
 		// put Employee Info by Employee Id
-		Employee employee = rbaacDao.getEmployeeByEmployeeId(employeeId);
+		FSEmployee employee = rbaacDao.getEmployeeByEmployeeId(employeeId);
 		Map<BigDecimal, EmployeeDetailsDTO> employeeInfoMap = new HashMap<BigDecimal, EmployeeDetailsDTO>();
 		if (employee != null) {
 			List<BigDecimal> empIdList = new ArrayList<BigDecimal>();

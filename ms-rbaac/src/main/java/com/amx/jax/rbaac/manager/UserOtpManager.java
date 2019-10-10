@@ -18,7 +18,7 @@ import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.Notipy.Channel;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.TemplatesMX;
-import com.amx.jax.rbaac.dbmodel.Employee;
+import com.amx.jax.rbaac.dbmodel.FSEmployee;
 import com.amx.jax.rbaac.exception.AuthServiceException;
 import com.amx.utils.CryptoUtil;
 import com.amx.utils.CryptoUtil.HashBuilder;
@@ -97,7 +97,7 @@ public class UserOtpManager {
 	 *            the model
 	 */
 	// Employee otp to login: passing Employee for including any personal Msg
-	public void sendOtpSms(Employee einfo, OtpData model, String slackMsg) {
+	public void sendOtpSms(FSEmployee einfo, OtpData model, String slackMsg) {
 
 		LOGGER.info(String.format("Sending OTP SMS to customer :%s on mobile_no :%s  ", einfo.getEmployeeName(),
 				einfo.getTelephoneNumber()));
