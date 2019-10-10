@@ -19,7 +19,7 @@ import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.rbaac.AuthService;
 import com.amx.jax.rbaac.dao.RbaacDao;
-import com.amx.jax.rbaac.dbmodel.Employee;
+import com.amx.jax.rbaac.dbmodel.FSEmployee;
 import com.amx.jax.rbaac.dbmodel.FunctionalityTypeMaster;
 import com.amx.jax.rbaac.dbmodel.ModuleMaster;
 import com.amx.jax.rbaac.dbmodel.PermissionMaster;
@@ -63,18 +63,18 @@ public class AuthServiceImpl implements AuthService {
 	@Autowired
 	UserOtpCache userOtpCache;
 
-	public Employee validateEmployeeData(String empcode, String identity, String ipAddress) {
-		Employee emp = rbaacDao.fetchEmpDetails(empcode, identity, ipAddress);
+	public FSEmployee validateEmployeeData(String empcode, String identity, String ipAddress) {
+		FSEmployee emp = rbaacDao.fetchEmpDetails(empcode, identity, ipAddress);
 		return emp;
 	}
 
-	public Employee fetchEmployeeDetails(String user, String pass) {
-		Employee emp = rbaacDao.fetchEmpDetails(user, pass);
+	public FSEmployee fetchEmployeeDetails(String user, String pass) {
+		FSEmployee emp = rbaacDao.fetchEmpDetails(user, pass);
 		return emp;
 	}
 
-	public Employee fetchEmployeeDetailsByECNO(String empNo) {
-		Employee emp = rbaacDao.fetchEmpDetailsByECNO(empNo);
+	public FSEmployee fetchEmployeeDetailsByECNO(String empNo) {
+		FSEmployee emp = rbaacDao.fetchEmpDetailsByECNO(empNo);
 		return emp;
 	}
 
@@ -526,7 +526,7 @@ public class AuthServiceImpl implements AuthService {
 	/**
 	 * Sends otp initiating trnx
 	 */
-	public AmxApiResponse<SendOtpModel, Object> sendOtp(Employee emp) {
+	public AmxApiResponse<SendOtpModel, Object> sendOtp(FSEmployee emp) {
 		try {
 			BeanPropertyBindingResult errors = new BeanPropertyBindingResult(emp, "emp");
 			// initiate transaction
@@ -559,7 +559,7 @@ public class AuthServiceImpl implements AuthService {
 	/**
 	 * validates otp
 	 */
-	public AmxApiResponse<EmployeeDetailsDTO, Object> validateOtp(Employee emp, String mOtp) {
+	public AmxApiResponse<EmployeeDetailsDTO, Object> validateOtp(FSEmployee emp, String mOtp) {
 		// AuthLoginTrnxModel authLoginTrnxModel =
 		// authLoginOTPManager.validateOtpStaff(emp, mOtp);
 
@@ -614,7 +614,7 @@ public class AuthServiceImpl implements AuthService {
 	public AmxApiResponse<SendOtpModel, Object> verifyUserDetails(String empCode, String identity, String ipAddress) {
 		try {
 			if (empCode != null && identity != null) {
-				Employee emp = validateEmployeeData(empCode, identity, ipAddress);
+				FSEmployee emp = validateEmployeeData(empCode, identity, ipAddress);
 				if (emp != null) {
 
 					return sendOtp(emp);
@@ -636,7 +636,7 @@ public class AuthServiceImpl implements AuthService {
 	public AmxApiResponse<EmployeeDetailsDTO, Object> verifyUserOTPDetails(String empCode, String identity, String mOtp,
 			String ipAddress) {
 		if (empCode != null && identity != null) {
-			Employee emp = validateEmployeeData(empCode, identity, ipAddress);
+			FSEmployee emp = validateEmployeeData(empCode, identity, ipAddress);
 			if (emp != null) {
 				return validateOtp(emp, mOtp);
 			} else {

@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import com.amx.jax.model.OtpData;
-import com.amx.jax.rbaac.dbmodel.Employee;
+import com.amx.jax.rbaac.dbmodel.FSEmployee;
 import com.amx.jax.rbaac.dbmodel.RoleDefinition;
 import com.amx.jax.rbaac.dbmodel.UserRoleMaster;
 
@@ -16,7 +16,7 @@ public class AuthLoginTrnxModel implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	OtpData otpData;
-	Employee empDetails;
+	FSEmployee empDetails;
 	List<RoleDefinition> roleDefinition;
 	UserRoleMaster userMaster;
 	
@@ -27,10 +27,10 @@ public class AuthLoginTrnxModel implements Serializable {
 		this.otpData = otpData;
 	}
 	
-	public Employee getEmpDetails() {
+	public FSEmployee getEmpDetails() {
 		return empDetails;
 	}
-	public void setEmpDetails(Employee empDetails) {
+	public void setEmpDetails(FSEmployee empDetails) {
 		this.empDetails = empDetails;
 	}
 	
