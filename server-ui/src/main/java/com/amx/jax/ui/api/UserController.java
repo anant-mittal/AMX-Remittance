@@ -188,7 +188,10 @@ public class UserController {
 		lang = httpService.getLanguage();
 		httpService.setCookie("lang", lang.toString(), 60 * 60 * 2);
 		
+		boolean isLangChange = false;
+		
 		if (ArgUtil.is(lang) && !lang.equals(sessionService.getGuestSession().getLanguage())) {
+			isLangChange = true;
 			auditService.log(new CActivityEvent(CActivityEvent.Type.LANG_CHNG));
 		}
 		sessionService.getGuestSession().setLanguage(lang);

@@ -129,7 +129,7 @@ public class CustomerProfileClient implements ICustomerProfileService {
 	@Override
 	public AmxApiResponse<String, Object> saveLanguage(BigDecimal customerId, BigDecimal languageId) {
 		try {
-			LOGGER.debug("in save language id : {} {} {}", customerId,languageId);
+			LOGGER.debug("in save language id : {} {}", customerId,languageId);
 			String url = appConfig.getJaxURL() + ApiPath.CUSTOMER_ONLINE_APP_LANGUAGE;
 			return restService.ajax(url).meta(new JaxMetaInfo())
 					.field(ApiParams.CUSTOMER_ID, customerId)
