@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.jax.ICustomerProfileService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.customer.manager.CustomerContactVerificationManager;
+import com.amx.jax.customer.manager.CustomerPreferenceManager;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerContactVerification;
 import com.amx.jax.dict.ContactType;
@@ -35,6 +36,9 @@ public class CustProfileController implements ICustomerProfileService {
 
 	@Autowired
 	private CustomerContactVerificationManager customerContactVerificationManager;
+	
+	@Autowired
+	private CustomerPreferenceManager customerPreferenceManager;
 
 	@Autowired
 	CustomerRepository customerRepository;
@@ -154,11 +158,9 @@ public class CustProfileController implements ICustomerProfileService {
 	@RequestMapping(value = ApiPath.CUSTOMER_ONLINE_APP_LANGUAGE, method = RequestMethod.POST)
 	public AmxApiResponse<String, Object> saveLanguage(@RequestParam(value = ApiParams.CUSTOMER_ID) BigDecimal customerId, 
 			@RequestParam(value = ApiParams.LANGUAGE_ID)BigDecimal languageId) {
-		String status = customerContactVerificationManager.saveLanguage(customerId, languageId);
+		String status = customerPreferenceManager.saveLanguage(customerId, languageId);
 		return AmxApiResponse.build(status);
 	}
-
-	
 	
 	
 }
