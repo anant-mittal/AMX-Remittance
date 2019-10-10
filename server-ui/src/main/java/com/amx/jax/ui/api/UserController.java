@@ -190,8 +190,8 @@ public class UserController {
 		}
 
 		lang = httpService.getLanguage();
-		boolean isLangChange = ArgUtil.is(lang) && !lang.equals(sessionService.getGuestSession().getLanguage());
-		sessionService.getGuestSession().setLanguage(lang);
+		Language sessionLang = sessionService.getGuestSession().getLanguage();
+		boolean isLangChange = ArgUtil.is(lang) && !lang.equals(sessionLang);
 
 		wrapper.getData().setTenant(AppContextUtil.getTenant());
 		wrapper.getData().setTenantCode(AppContextUtil.getTenant().getCode());
@@ -222,10 +222,13 @@ public class UserController {
 					/**
 					 * 
 					 */
-					|| !Language.EN.equals(lang)
+					|| (!Language.EN.equals(lang) && !lang.equals(profileLang))
 
 			) {
 				customerProfileClient.saveLanguage(customer.getCustomerId(), lang.getBDCode());
+				refresh = true;
+			} else {
+				lang = profileLang;
 			}
 
 			if (refresh) {
@@ -256,6 +259,10 @@ public class UserController {
 			wrapper.getData().setFeatures(webAppConfig.getFeaturesList());
 		}
 
+		/**
+		 * Language Changed
+		 */
+		sessionService.getGuestSession().setLanguage(lang);
 		wrapper.getData().setLang(sessionService.getGuestSession().getLanguage());
 		httpService.setCookie("lang", lang.toString(), 30 * 60 * 60 * 2);
 
