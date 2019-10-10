@@ -328,6 +328,9 @@ public class RemittancePaymentManager extends AbstractService{
 				lstPayIdDetails =applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(paymentResponse.getUdf3(),new Customer(paymentResponse.getCustomerId()));
 				if(!lstPayIdDetails.isEmpty()) {
 					remittanceApplicationService.updatePayTokenNull(lstPayIdDetails, paymentResponse);
+					logger.info("PAYMENT RESPONSE VALUES : {}", JsonUtil.toJson(paymentResponse));
+					fcSaleApplicationDao.updatePaygDetails(null, paymentResponse);
+					
 				}
 				response.setResponseStatus(ResponseStatus.INTERNAL_ERROR);
 			}
