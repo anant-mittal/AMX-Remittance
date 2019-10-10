@@ -17,9 +17,16 @@ import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+/**
+ * 
+ * This class is to be specifically used for Rbaac functionalities
+ * 
+ * @author abhijeet
+ *
+ */
 @Entity
 @Table(name = "FS_EMPLOYEE")
-public class Employee implements java.io.Serializable {
+public class FSEmployee implements java.io.Serializable {
 
 	private static final long serialVersionUID = 1L;
 
