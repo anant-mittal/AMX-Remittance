@@ -213,6 +213,7 @@ public class RemittancePaymentManager extends AbstractService{
 				 */
 				remittanceApplicationService.updatePaymentDetails(lstPayIdDetails, paymentResponse);
 				applMap.put("APPL_TRNX", lstPayIdDetails);
+				logger.info("PAYMENT RESPONSE VALUES : {}", JsonUtil.toJson(paymentResponse));
 				fcSaleApplicationDao.updatePaygDetails(null, paymentResponse);
 				/** for Online save in JAX **/
 				BranchRemittanceRequestModel remitRequestModel =createRequestModelForOnline(lstPayIdDetails,paymentResponse);
