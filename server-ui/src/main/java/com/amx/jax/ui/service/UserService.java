@@ -133,6 +133,7 @@ public class UserService {
 		sessionService.getUserSession().getCustomerModel().setFlags(x.getResult().getCustomerFlags());
 		sessionService.getUserSession().getCustomerModel().setPersoninfo(x.getResult().getPersonInfo());
 		sessionService.getUserSession().getCustomerModel().setSecurityquestions(x.getResult().getSecurityquestions());
+		sessionService.getGuestSession().setLanguage(x.getResult().getPersonInfo().getLang());
 	}
 
 	/**

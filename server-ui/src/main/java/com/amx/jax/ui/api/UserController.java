@@ -31,6 +31,7 @@ import com.amx.jax.AppContextUtil;
 import com.amx.jax.JaxAuthContext;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.client.CustomerProfileClient;
 import com.amx.jax.client.JaxPushNotificationClient;
 import com.amx.jax.dict.Language;
 import com.amx.jax.dict.UserClient.AppType;
@@ -124,6 +125,9 @@ public class UserController {
 	AuthLibContext authLibContext;
 
 	@Autowired
+	private CustomerProfileClient customerProfileClient;
+
+	@Autowired
 	AuditService auditService;
 
 	@ApiOWAStatus(OWAStatusStatusCodes.INCOME_UPDATE_REQUIRED)
@@ -186,29 +190,43 @@ public class UserController {
 		}
 
 		lang = httpService.getLanguage();
-		httpService.setCookie("lang", lang.toString(), 60 * 60 * 2);
-		
-		boolean isLangChange = false;
-		
-		if (ArgUtil.is(lang) && !lang.equals(sessionService.getGuestSession().getLanguage())) {
-			isLangChange = true;
-			auditService.log(new CActivityEvent(CActivityEvent.Type.LANG_CHNG));
-		}
+		boolean isLangChange = ArgUtil.is(lang) && !lang.equals(sessionService.getGuestSession().getLanguage());
 		sessionService.getGuestSession().setLanguage(lang);
 
 		wrapper.getData().setTenant(AppContextUtil.getTenant());
 		wrapper.getData().setTenantCode(AppContextUtil.getTenant().getCode());
-		wrapper.getData().setLang(lang);
 		wrapper.getData().setCdnUrl(appConfig.getCdnURL());
 
 		wrapper.getData().setDevice(sessionService.getAppDevice().getUserDevice().toSanitized());
 		wrapper.getData().setState(sessionService.getGuestSession().getState());
 		wrapper.getData().setValidSession(sessionService.getUserSession().isValid());
 
-		if (sessionService.getUserSession().getCustomerModel() != null) {
+		CustomerModel customer = sessionService.getUserSession().getCustomerModel();
+
+		if (customer != null) {
 			wrapper.getData().setActive(true);
 			wrapper.getData().setCustomerId(sessionService.getUserSession().getCustomerModel().getCustomerId());
 			wrapper.getData().setInfo(sessionService.getUserSession().getCustomerModel().getPersoninfo());
+
+			Language profileLang = customer.getPersoninfo().getLang();
+
+			if (false
+					/**
+					 * This is language Change request after Login
+					 */
+					|| isLangChange
+					/**
+					 * Or profile language is empty
+					 */
+					|| (ArgUtil.isEmpty(profileLang) && !Language.EN.equals(lang))
+					/**
+					 * 
+					 */
+					|| !Language.EN.equals(lang)
+
+			) {
+				customerProfileClient.saveLanguage(customer.getCustomerId(), lang.getBDCode());
+			}
 
 			if (refresh) {
 				userService.updateCustoemrModel();
@@ -237,6 +255,9 @@ public class UserController {
 		} else {
 			wrapper.getData().setFeatures(webAppConfig.getFeaturesList());
 		}
+
+		wrapper.getData().setLang(sessionService.getGuestSession().getLanguage());
+		httpService.setCookie("lang", lang.toString(), 30 * 60 * 60 * 2);
 
 		wrapper.getData().setMileStones(MileStone.LIST);
 		wrapper.getData().setNotifyRangeShort(webAppConfig.getNotifyRangeShort());
