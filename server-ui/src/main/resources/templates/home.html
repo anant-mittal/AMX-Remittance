@@ -32,17 +32,16 @@
     window.CONST.dummyApi = config.dummyApi || false;
     window.CONST.remoteServerUrl = config.remoteServerUrl || '';
     window.CONST.remoteJsUrl = config.remoteJsUrl || '';
-    window.CONST.remoteJsVersion = 'dev';
   }
 
   // add css and js
   var head = document.getElementsByTagName('head')[0];
   var js = document.createElement('script');
   js.type = 'text/javascript';
-  js.src = window.CONST.remoteJsUrl + '/dist/main.bundle.'+ window.CONST.remoteJsVersion +'.js';
+  js.src = window.CONST.remoteJsUrl + '/dist/main.bundle.js';
   var css = document.createElement('link');
   css.rel = 'stylesheet';
-  css.href = window.CONST.remoteJsUrl + '/dist/main.'+ window.CONST.remoteJsVersion +'.css';
+  css.href = window.CONST.remoteJsUrl + '/dist/main.css';
   head.appendChild(css);
   head.appendChild(js);
 
