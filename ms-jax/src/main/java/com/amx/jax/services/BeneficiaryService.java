@@ -183,6 +183,9 @@ public class BeneficiaryService extends AbstractService {
 	@Autowired
 	IBeneficaryContactDao beneficaryContactDao;
 	
+	@Autowired
+	LoyalityPointService loyalityPointService;
+	
 	
 	public ApiResponse getBeneficiaryListForOnline(BigDecimal customerId, BigDecimal applicationCountryId,BigDecimal beneCountryId,Boolean excludePackage) {
 		List<BenificiaryListView> beneList = null;
@@ -435,6 +438,13 @@ public class BeneficiaryService extends AbstractService {
 			if (trnxView != null) {
 				remitPageDto.setTrnxHistDto(convertTranHistDto(trnxView));
 			}
+			
+			//------ Loyalty Point Status check ------
+			LoyalityPointState loyalityState = loyalityPointService.getLoyalityState(metaData.getCustomerId());
+			if(null != loyalityState) {
+				remitPageDto.setLoyalityPointState(loyalityState);
+			}
+			
 			response.getData().getValues().add(remitPageDto);
 			response.getData().setType(remitPageDto.getModelType());
 			response.setResponseStatus(ResponseStatus.OK);
@@ -1083,12 +1093,12 @@ public class BeneficiaryService extends AbstractService {
 
 	private CurrencyMasterDTO getCurrencyDTO(BigDecimal currencyId) {
 		CurrencyMasterDTO dto = new CurrencyMasterDTO();
-		List<CurrencyMasterMdlv1> currencyList = currencyDao.getCurrencyList(currencyId);
+		List<CurrencyMasterModel> currencyList = currencyDao.getCurrencyList(currencyId);
 		/*
 		 * if (currencyList.isEmpty()) { throw new
 		 * GlobalException("Currency details not avaliable"); }
 		 */if(currencyList!=null && !currencyList.isEmpty()) {
-			CurrencyMasterMdlv1 curModel = currencyList.get(0);
+			CurrencyMasterModel curModel = currencyList.get(0);
 			dto.setCountryId(curModel.getCountryId());
 			dto.setCurrencyCode(curModel.getCurrencyCode());
 			dto.setQuoteName(curModel.getQuoteName());
