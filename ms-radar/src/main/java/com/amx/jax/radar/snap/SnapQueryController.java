@@ -114,7 +114,8 @@ public class SnapQueryController {
 					break;
 				PivotTable table = new PivotTable(
 						pivot.get("rows"), pivot.get("cols"),
-						pivot.get("vals"), pivot.get("aggs"), pivot.get("alias"));
+						pivot.get("vals"), pivot.get("aggs"), pivot.get("alias"),
+						pivot.get("computed"),pivot.get("noncomputed"));
 				for (Map<String, Object> map : inputBulk) {
 					table.add(map);
 				}

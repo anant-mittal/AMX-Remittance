@@ -19,6 +19,8 @@ public class PivotTable {
 	public static final Pattern ROW_AS_ALIAS_DEFAULT = Pattern.compile("^(.+) (AS|as|As|aS) (.+) DEFAULT (.+)$");
 	public static final Pattern ROW_AS_ALIAS = Pattern.compile("^(.+) (AS|as|As|aS) (.+)$");
 	public static final Pattern FUN_COLS = Pattern.compile("^(sum|any|count|ucount) (.+)$");
+	public static final Pattern COMPUTED = Pattern.compile("^(.+)=(.+)$");
+	public static final Pattern NONCOMPUTED = Pattern.compile("^(.+)=(.+)$");
 
 	List<String> rows = CollectionUtil.getList("*");
 	List<String> rows_alias = CollectionUtil.getList("*");
@@ -27,6 +29,10 @@ public class PivotTable {
 	List<String> vals = CollectionUtil.getList("*");
 	List<String> aggs = CollectionUtil.getList("*");
 	List<String> alias = CollectionUtil.getList("*");
+	List<String> computedCols = CollectionUtil.getList();
+	List<String> computedVals = CollectionUtil.getList();
+	List<String> noncomputedCols = CollectionUtil.getList();
+	List<String> noncomputedVals = CollectionUtil.getList();
 
 	public Map<String, PivotBucket> pivotrows;
 
@@ -34,17 +40,22 @@ public class PivotTable {
 		this.pivotrows = new HashMap<String, PivotBucket>();
 	}
 
-	public PivotTable(List<String> rows, List<String> cols, List<String> vals, List<String> aggs, List<String> alias) {
+	public PivotTable(List<String> rows, List<String> cols, List<String> vals, List<String> aggs, List<String> alias,
+			List<String> computedCols, List<String> noncomputedVals) {
 		this();
 		this.rows = rows;
 		this.cols = cols;
 		this.vals = vals;
 		this.aggs = aggs != null ? aggs : this.aggs;
 		this.alias = alias != null ? alias : this.alias;
+		this.computedCols = computedCols != null ? computedCols : this.aggs;
+		this.noncomputedVals = noncomputedVals != null ? noncomputedVals : this.aggs;
 
 		int rowCount = rows.size();
 		int valCount = vals.size();
 		int colCount = cols.size();
+		int computedCount = computedCols.size();
+		int noncomputedCount = noncomputedCols.size();
 
 		for (int r = 0; r < rowCount; r++) {
 			StringMatcher funkey = new StringMatcher(rows.get(r));
@@ -86,6 +97,22 @@ public class PivotTable {
 			}
 		}
 
+		for (int cp = 0; cp < computedCount; cp++) {
+			StringMatcher funkey = new StringMatcher(computedCols.get(cp));
+			if (funkey.isMatch(COMPUTED)) {
+				CollectionUtil.set(this.computedCols, cp, funkey.group(1));
+				CollectionUtil.set(this.computedVals, cp, funkey.group(2));
+			}
+		}
+
+		for (int ncp = 0; ncp < noncomputedCount; ncp++) {
+			StringMatcher funkey = new StringMatcher(noncomputedCols.get(ncp));
+			if (funkey.isMatch(NONCOMPUTED)) {
+				CollectionUtil.set(this.noncomputedCols, ncp, funkey.group(1));
+				CollectionUtil.set(this.noncomputedVals, ncp, funkey.group(2));
+			}
+		}
+
 	}
 
 	public PivotBucket getRow(String rowId) {
@@ -116,6 +143,9 @@ public class PivotTable {
 			int rowCount = rows.size();
 			int valCount = vals.size();
 			int colCount = cols.size();
+
+			int noncomputedColsCount = noncomputedCols.size();
+
 			if (colCount > 0) {
 				for (Entry<String, PivotBucket> colEntrySet : row.pivotcols.entrySet()) {
 					PivotBucket col = colEntrySet.getValue();
@@ -137,6 +167,15 @@ public class PivotTable {
 						String funkeyAlias = alias.get(i);
 						this.calculate(row, funkeyAlias + "_" + rowKey.toString(), fun, funkey, col, Constants.BLANK);
 					}
+
+					row.exp(computedCols, computedVals);
+
+					for (int i = 0; i < noncomputedColsCount; i++) {
+						String fun = noncomputedVals.get(i);
+						String funkey = noncomputedCols.get(i);
+						row.result.put(funkey, fun);
+					}
+
 				}
 			} else {
 				for (int r = 0; r < rowCount; r++) {

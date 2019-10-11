@@ -2,21 +2,13 @@ package com.amx.test;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.hibernate.mapping.Map;
 import org.slf4j.Logger;
 
-import com.amx.jax.client.snap.SnapModels.AggregationField;
-import com.amx.jax.client.snap.SnapModels.Aggregations;
 import com.amx.jax.client.snap.SnapModels.SnapModelWrapper;
-import com.amx.jax.grid.GridConstants;
-import com.amx.jax.grid.views.CustomerDetailViewRecord;
 import com.amx.jax.logger.LoggerService;
-import com.amx.jax.radar.ESDocumentParser;
-import com.amx.jax.rates.AmxCurConstants;
 import com.amx.utils.FileUtil;
 import com.amx.utils.JsonUtil;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;

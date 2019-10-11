@@ -180,7 +180,7 @@
 			<artifactId>tesseract-platform</artifactId>
 			<version>${tesseract-platform.version}</version>
 		</dependency>
-
+	
 	</dependencies>
 
 
