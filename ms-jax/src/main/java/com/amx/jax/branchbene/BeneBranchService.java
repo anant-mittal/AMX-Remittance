@@ -36,10 +36,10 @@ import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.model.request.AbstractBeneDetailDto;
 import com.amx.jax.model.request.AbtractUpdateBeneDetailDto;
 import com.amx.jax.model.request.benebranch.AddNewBankBranchRequest;
+import com.amx.jax.model.request.benebranch.BankBranchListRequest;
 import com.amx.jax.model.request.benebranch.BeneAccountModel;
 import com.amx.jax.model.request.benebranch.BenePersonalDetailModel;
 import com.amx.jax.model.request.benebranch.BeneficiaryTrnxModel;
-import com.amx.jax.model.request.benebranch.ListBankBranchRequest;
 import com.amx.jax.model.request.benebranch.ListBeneBankOrCashRequest;
 import com.amx.jax.model.request.benebranch.ListBeneRequest;
 import com.amx.jax.model.request.benebranch.UpdateBeneStatusRequest;
@@ -115,7 +115,7 @@ public class BeneBranchService {
 		return serviceProviderList;
 	}
 
-	public List<BankBranchDto> listBankBranch(ListBankBranchRequest request) {
+	public List<BankBranchDto> listBankBranch(BankBranchListRequest request) {
 		return bankMetaService.getBankBranches(request);
 	}
 

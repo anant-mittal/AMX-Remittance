@@ -26,7 +26,7 @@ import com.amx.jax.dbmodel.BankMasterModel;
 import com.amx.jax.dbmodel.CountryBranch;
 import com.amx.jax.dbmodel.treasury.BankApplicability;
 import com.amx.jax.error.JaxError;
-import com.amx.jax.model.request.benebranch.ListBankBranchRequest;
+import com.amx.jax.model.request.benebranch.BankBranchListRequest;
 import com.amx.jax.model.response.BankMasterDTO;
 import com.amx.jax.model.response.benebranch.BankBranchDto;
 import com.amx.jax.repository.BankMasterRepository;
@@ -180,7 +180,7 @@ public class BankMetaService extends AbstractService {
 		return null;
 	}
 
-	public List<BankBranchDto> getBankBranches(ListBankBranchRequest request) {
+	public List<BankBranchDto> getBankBranches(BankBranchListRequest request) {
 
 		BigDecimal bankId = request.getBankId();
 		validateListBankBrancheRequest(request);
@@ -212,7 +212,7 @@ public class BankMetaService extends AbstractService {
 		return convertBranchView(branchesList);
 	}
 
-	private void validateListBankBrancheRequest(ListBankBranchRequest request) {
+	private void validateListBankBrancheRequest(BankBranchListRequest request) {
 		if (StringUtils.isBlank(request.getIfscCode()) && StringUtils.isBlank(request.getSwift())) {
 			throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Either swift or ifsc is mandatory");
 		}
