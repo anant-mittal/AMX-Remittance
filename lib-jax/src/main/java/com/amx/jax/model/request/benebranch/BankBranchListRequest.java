@@ -16,18 +16,18 @@ public class BankBranchListRequest {
 
 	@NotNull
 	@ApiMockModelProperty(example = "1527")
-	BigDecimal bankId;
+	protected BigDecimal bankId;
 
 	@NotNull
 	@ApiMockModelProperty(example = "94")
-	BigDecimal countryId;
+	protected BigDecimal countryId;
 
 	@ApiMockModelProperty(example = "IDIB000A001")
-	String ifscCode;
+	protected String ifscCode;
 
-	String swift;
+	protected String swift;
 	
-	String branchName;
+	protected String branchName;
 
 	public BigDecimal getBankId() {
 		return bankId;
