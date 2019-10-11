@@ -35,15 +35,15 @@ public class ReceiptPayment implements Serializable {
 
 	private BigDecimal receiptId;
 	private CountryMaster fsCountryMaster;
-	private CurrencyMasterModel localFsCountryMaster;
-	private CurrencyMasterModel foreignFsCountryMaster;
+	private CurrencyMasterMdlv1 localFsCountryMaster;
+	private CurrencyMasterMdlv1 foreignFsCountryMaster;
 	private CompanyMaster fsCompanyMaster;
 	private Customer fsCustomer;
 	private BigDecimal documentCode;
 	private BigDecimal documentFinanceYear;
 	private BigDecimal documentFinanceYearId;
 	private BigDecimal documentNo;
-	private CountryBranch countryBranch;
+	private CountryBranchMdlv1 countryBranch;
 	private PurposeOfTransaction purposeOfTransaction;
 	private SourceOfIncome sourceOfIncome;
 	private BigDecimal sourceofIncomeId;
@@ -131,7 +131,7 @@ public class ReceiptPayment implements Serializable {
 	private BigDecimal vatPercentage;
 	private BigDecimal vatAmount;
 
-	private CurrencyWiseDenomination exCurrencyWiseDenomination;
+	private CurrencyWiseDenominationMdlv1 exCurrencyWiseDenomination;
 	private List<PurposeOfTransaction> exPurposeOfTransaction= new ArrayList<PurposeOfTransaction>();
 	private List<SourceOfIncome> exSourceOfIncome = new ArrayList<SourceOfIncome>();
 
@@ -157,19 +157,19 @@ public class ReceiptPayment implements Serializable {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "LOCAL_CURRENCY_ID")
-	public CurrencyMasterModel getLocalFsCountryMaster() {
+	public CurrencyMasterMdlv1 getLocalFsCountryMaster() {
 		return localFsCountryMaster;
 	}
-	public void setLocalFsCountryMaster(CurrencyMasterModel localFsCountryMaster) {
+	public void setLocalFsCountryMaster(CurrencyMasterMdlv1 localFsCountryMaster) {
 		this.localFsCountryMaster = localFsCountryMaster;
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "FOREIGN_CURRENCY_ID")
-	public CurrencyMasterModel getForeignFsCountryMaster() {
+	public CurrencyMasterMdlv1 getForeignFsCountryMaster() {
 		return foreignFsCountryMaster;
 	}
-	public void setForeignFsCountryMaster(CurrencyMasterModel foreignFsCountryMaster) {
+	public void setForeignFsCountryMaster(CurrencyMasterMdlv1 foreignFsCountryMaster) {
 		this.foreignFsCountryMaster = foreignFsCountryMaster;
 	}
 
@@ -229,10 +229,10 @@ public class ReceiptPayment implements Serializable {
 	@ManyToOne(fetch = FetchType.LAZY)
 	/*@JoinColumn(name = "BANK_BRANCH_ID")*/
 	@JoinColumn(name = "COUNTRY_BRANCH_ID")
-	public CountryBranch getCountryBranch() {
+	public CountryBranchMdlv1 getCountryBranch() {
 		return countryBranch;
 	}
-	public void setCountryBranch(CountryBranch countryBranch) {
+	public void setCountryBranch(CountryBranchMdlv1 countryBranch) {
 		this.countryBranch = countryBranch;
 	}
 

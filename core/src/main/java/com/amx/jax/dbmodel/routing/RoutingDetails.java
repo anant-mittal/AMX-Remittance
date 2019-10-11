@@ -16,9 +16,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import com.amx.jax.dbmodel.BankMasterModel;
+import com.amx.jax.dbmodel.BankMasterMdlv1;
 import com.amx.jax.dbmodel.CountryMaster;
-import com.amx.jax.dbmodel.CurrencyMasterModel;
+import com.amx.jax.dbmodel.CurrencyMasterMdlv1;
 import com.amx.jax.dbmodel.meta.ServiceMaster;
 
 
@@ -33,8 +33,8 @@ public class RoutingDetails implements java.io.Serializable{
 	private CountryMaster exApplicationCountry;
 	private CountryMaster exCountryId;
 	private CountryMaster exRoutingCountryId;
-	private BankMasterModel exRoutingBankId;
-	private CurrencyMasterModel exCurrenyId;
+	private BankMasterMdlv1 exRoutingBankId;
+	private CurrencyMasterMdlv1 exCurrenyId;
 	private ServiceMaster exServiceId;
 	private String branchApplicability;
 	private String isActive;
@@ -107,21 +107,21 @@ public class RoutingDetails implements java.io.Serializable{
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "ROUTING_BANK_ID")
-	public BankMasterModel getExRoutingBankId() {
+	public BankMasterMdlv1 getExRoutingBankId() {
 		return exRoutingBankId;
 	}
 
-	public void setExRoutingBankId(BankMasterModel exRoutingBankId) {
+	public void setExRoutingBankId(BankMasterMdlv1 exRoutingBankId) {
 		this.exRoutingBankId = exRoutingBankId;
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "CURRENCY_ID")
-	public CurrencyMasterModel getExCurrenyId() {
+	public CurrencyMasterMdlv1 getExCurrenyId() {
 		return exCurrenyId;
 	}
 
-	public void setExCurrenyId(CurrencyMasterModel exCurrenyId) {
+	public void setExCurrenyId(CurrencyMasterMdlv1 exCurrenyId) {
 		this.exCurrenyId = exCurrenyId;
 	}
 	

@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
-import com.amx.jax.dbmodel.CurrencyMasterModel;
+import com.amx.jax.dbmodel.CurrencyMasterMdlv1;
 import com.amx.jax.repository.CurrencyRepository;
 
 @Component
@@ -23,17 +23,17 @@ public class CurrencyMasterDao {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
-	public CurrencyMasterModel getCurrencyMasterById(BigDecimal id) {
+	public CurrencyMasterMdlv1 getCurrencyMasterById(BigDecimal id) {
 		return repo.findOne(id);
 	}
 
-	public CurrencyMasterModel getCurrencyMasterByQuote(String quoteName) {
+	public CurrencyMasterMdlv1 getCurrencyMasterByQuote(String quoteName) {
 		return repo.findByquoteName(quoteName).get(0);
 	}
 
-	public Map<BigDecimal, CurrencyMasterModel> getAllCurrencyMap() {
-		List<CurrencyMasterModel> list = repo.findAll();
-		return list.stream().collect(Collectors.toMap(CurrencyMasterModel::getCurrencyId, c -> c));
+	public Map<BigDecimal, CurrencyMasterMdlv1> getAllCurrencyMap() {
+		List<CurrencyMasterMdlv1> list = repo.findAll();
+		return list.stream().collect(Collectors.toMap(CurrencyMasterMdlv1::getCurrencyId, c -> c));
 	}
 	
 	/**
@@ -54,9 +54,9 @@ public class CurrencyMasterDao {
 		return outputList;
 	}
 	
-	public Map<BigDecimal, CurrencyMasterModel> getSelectedCurrencyMap(List<String> currencyId) {
-		List<CurrencyMasterModel> list = repo.fetchCurrencyMaster(currencyId);
-		return list.stream().collect(Collectors.toMap(CurrencyMasterModel::getCurrencyId, c -> c));
+	public Map<BigDecimal, CurrencyMasterMdlv1> getSelectedCurrencyMap(List<String> currencyId) {
+		List<CurrencyMasterMdlv1> list = repo.fetchCurrencyMaster(currencyId);
+		return list.stream().collect(Collectors.toMap(CurrencyMasterMdlv1::getCurrencyId, c -> c));
 	}
 
 }

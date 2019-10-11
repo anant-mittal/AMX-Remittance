@@ -13,7 +13,7 @@ import org.springframework.scheduling.annotation.Async;
 
 import com.amx.jax.async.ExecutorConfig;
 import com.amx.jax.constant.ConstantDocument;
-import com.amx.jax.dbmodel.CurrencyMasterModel;
+import com.amx.jax.dbmodel.CurrencyMasterMdlv1;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.dict.AmxEnums.CommunicationEvents;
@@ -106,9 +106,9 @@ public class WUNotifyListener implements ITunnelSubscriber<DBEvent> {
 		LOGGER.info("transaction id is  " + tranxId);
 		RemittanceTransaction remittanceTransaction = remittanceTransactionRepository.findOne(tranxId);
 
-		CurrencyMasterModel currencyMasterModelLocal = currencyMasterService
+		CurrencyMasterMdlv1 currencyMasterModelLocal = currencyMasterService
 				.getCurrencyMasterById(remittanceTransaction.getLocalTranxCurrencyId().getCurrencyId());
-		CurrencyMasterModel currencyMasterModelForeign = currencyMasterService
+		CurrencyMasterMdlv1 currencyMasterModelForeign = currencyMasterService
 				.getCurrencyMasterById(remittanceTransaction.getForeignCurrencyId().getCurrencyId());
 		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 		String trnxDate = formatter.format(remittanceTransaction.getCreatedDate());

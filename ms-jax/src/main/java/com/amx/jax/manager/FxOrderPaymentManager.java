@@ -27,12 +27,12 @@ import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dao.FcSaleApplicationDao;
 import com.amx.jax.dao.FcSaleExchangeRateDao;
-import com.amx.jax.dbmodel.CollectDetailModel;
-import com.amx.jax.dbmodel.CollectionModel;
+import com.amx.jax.dbmodel.CollectDetailMdlv1;
+import com.amx.jax.dbmodel.CollectionMdlv1;
 import com.amx.jax.dbmodel.CompanyMaster;
-import com.amx.jax.dbmodel.CountryBranch;
+import com.amx.jax.dbmodel.CountryBranchMdlv1;
 import com.amx.jax.dbmodel.CountryMaster;
-import com.amx.jax.dbmodel.CurrencyMasterModel;
+import com.amx.jax.dbmodel.CurrencyMasterMdlv1;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.PaymentModeModel;
 import com.amx.jax.dbmodel.PurposeOfTransaction;
@@ -159,8 +159,8 @@ public class FxOrderPaymentManager {
 				/** end **/		
 				 
 				List<ReceiptPayment> receiptPayment = saveReceiptPayment(listOfRecAppl, paymentResponse);
-				CollectionModel collection = saveCollection(listOfRecAppl, paymentResponse);
-				CollectDetailModel collectDetail = saveCollectDetail(listOfRecAppl, paymentResponse, collection);
+				CollectionMdlv1 collection = saveCollection(listOfRecAppl, paymentResponse);
+				CollectDetailMdlv1 collectDetail = saveCollectDetail(listOfRecAppl, paymentResponse, collection);
 				// adding into map
 				mapAllDetailApplSave.put("RCPT_PAY", receiptPayment);
 				mapAllDetailApplSave.put("COLLECTION", collection);
@@ -230,11 +230,11 @@ public class FxOrderPaymentManager {
 				countryMas.setCountryId(applreceipt.getCountryId());
 				receiptPayment.setFsCountryMaster(countryMas);
 
-				CurrencyMasterModel localCurrency = new CurrencyMasterModel();
+				CurrencyMasterMdlv1 localCurrency = new CurrencyMasterMdlv1();
 				localCurrency.setCurrencyId(applreceipt.getLocalCurrencyId());
 				receiptPayment.setLocalFsCountryMaster(localCurrency);
 
-				CurrencyMasterModel foreignCurrency = new CurrencyMasterModel();
+				CurrencyMasterMdlv1 foreignCurrency = new CurrencyMasterMdlv1();
 				foreignCurrency.setCurrencyId(applreceipt.getForeignCurrencyId());
 				receiptPayment.setForeignFsCountryMaster(foreignCurrency);
 
@@ -249,7 +249,7 @@ public class FxOrderPaymentManager {
 				receiptPayment
 						.setCustomerReference(custRepo.findOne(applreceipt.getCustomerId()).getCustomerReference());
 
-				CountryBranch countryBranch = countryBranchRepository.findByCountryBranchId(applreceipt.getBranchId());
+				CountryBranchMdlv1 countryBranch = countryBranchRepository.findByCountryBranchId(applreceipt.getBranchId());
 				if (countryBranch != null) {
 					receiptPayment.setCountryBranch(countryBranch);
 					receiptPayment.setLocCode(countryBranch.getBranchId());
@@ -320,8 +320,8 @@ public class FxOrderPaymentManager {
 	}
 
 	/** Save collection **/
-	public CollectionModel saveCollection(List<ReceiptPaymentApp> listOfRecAppl, PayGModel paymentResponse) {
-		CollectionModel collection = new CollectionModel();
+	public CollectionMdlv1 saveCollection(List<ReceiptPaymentApp> listOfRecAppl, PayGModel paymentResponse) {
+		CollectionMdlv1 collection = new CollectionMdlv1();
 		BigDecimal totalcollectiontAmount = BigDecimal.ZERO;
 		BigDecimal deliveryCharges = BigDecimal.ZERO;
 		try {
@@ -357,14 +357,14 @@ public class FxOrderPaymentManager {
 					throw new GlobalException(JaxError.INVALID_COMPANY_ID, "Invalid company code.");
 				}
 				collection.setFsCompanyMaster(new CompanyMaster(appl.getCompanyId()));
-				CountryBranch countryBranch = countryBranchRepository.findByCountryBranchId(appl.getBranchId());
+				CountryBranchMdlv1 countryBranch = countryBranchRepository.findByCountryBranchId(appl.getBranchId());
 				if (countryBranch != null) {
 					collection.setExBankBranch(countryBranch);
 					collection.setLocCode(countryBranch.getBranchId());
 				}
 
 				collection.setCreatedDate(new Date());
-				CurrencyMasterModel localCurrency = new CurrencyMasterModel();
+				CurrencyMasterMdlv1 localCurrency = new CurrencyMasterMdlv1();
 				localCurrency.setCurrencyId(appl.getLocalCurrencyId());
 				collection.setExCurrencyMaster(localCurrency);
 				collection.setIsActive(ConstantDocument.Yes);
@@ -417,9 +417,9 @@ public class FxOrderPaymentManager {
 	}
 
 	/** Save CollectDetailModel **/
-	public CollectDetailModel saveCollectDetail(List<ReceiptPaymentApp> listOfRecAppl,
-			PaymentResponseDto paymentResponse, CollectionModel collection) {
-		CollectDetailModel collectDetail = new CollectDetailModel();
+	public CollectDetailMdlv1 saveCollectDetail(List<ReceiptPaymentApp> listOfRecAppl,
+			PaymentResponseDto paymentResponse, CollectionMdlv1 collection) {
+		CollectDetailMdlv1 collectDetail = new CollectDetailMdlv1();
 		try {
 
 			collectDetail.setFsCompanyMaster(collection.getFsCompanyMaster());
@@ -479,7 +479,7 @@ public class FxOrderPaymentManager {
 		return collectDetail;
 	}
 
-	public BigDecimal generateDocumentNumber(CountryBranch countryBranch, BigDecimal appCountryId, BigDecimal companyId,
+	public BigDecimal generateDocumentNumber(CountryBranchMdlv1 countryBranch, BigDecimal appCountryId, BigDecimal companyId,
 			String processInd, BigDecimal finYear, BigDecimal documentId) {
 		BigDecimal branchId = countryBranch.getBranchId() == null ? ConstantDocument.ONLINE_BRANCH_LOC_CODE
 				: countryBranch.getBranchId();

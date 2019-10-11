@@ -32,8 +32,8 @@ public class BankServiceRule implements Serializable{
 	
 	private BigDecimal bankServiceRuleId;
 	private CountryMaster countryId;	
-	private CurrencyMasterModel currencyId;
-	private BankMasterModel bankId;
+	private CurrencyMasterMdlv1 currencyId;
+	private BankMasterMdlv1 bankId;
 	private String fullname;
 	private BigDecimal deliveryDays;
 	//private CurrencyMaster comissionCurrency;
@@ -93,21 +93,21 @@ public class BankServiceRule implements Serializable{
 
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="CURRENCY_ID")
-	public CurrencyMasterModel getCurrencyId() {
+	public CurrencyMasterMdlv1 getCurrencyId() {
 		return currencyId;
 	}
 
-	public void setCurrencyId(CurrencyMasterModel currencyId) {
+	public void setCurrencyId(CurrencyMasterMdlv1 currencyId) {
 		this.currencyId = currencyId;
 	}
 
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="BANK_ID")
-	public BankMasterModel getBankId() {
+	public BankMasterMdlv1 getBankId() {
 		return bankId;
 	}
 
-	public void setBankId(BankMasterModel bankId) {
+	public void setBankId(BankMasterMdlv1 bankId) {
 		this.bankId = bankId;
 	}
 

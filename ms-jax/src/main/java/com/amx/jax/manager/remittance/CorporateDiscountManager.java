@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.jax.constant.ConstantDocument;
-import com.amx.jax.dbmodel.CountryBranch;
+import com.amx.jax.dbmodel.CountryBranchMdlv1;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerCoreDetailsView;
 import com.amx.jax.meta.MetaData;
@@ -34,7 +34,7 @@ public class CorporateDiscountManager {
 		BigDecimal corpDiscount = BigDecimal.ZERO;
 		Customer customer = new Customer();
 		customer.setCustomerId(metaData.getCustomerId());
-        CountryBranch countryBranch = null;
+        CountryBranchMdlv1 countryBranch = null;
 		BigDecimal countryBranchId = metaData.getCountryBranchId();
 		if(JaxUtil.isNullZeroBigDecimalCheck(countryBranchId)) {
 			countryBranch = countryBranchRepository.findByCountryBranchId(countryBranchId);

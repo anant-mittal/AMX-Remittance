@@ -32,7 +32,7 @@ import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dao.FcSaleApplicationDao;
 import com.amx.jax.dao.FcSaleExchangeRateDao;
 import com.amx.jax.dbmodel.ApplicationSetup;
-import com.amx.jax.dbmodel.CountryBranch;
+import com.amx.jax.dbmodel.CountryBranchMdlv1;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.FxShoppingCartDetails;
 import com.amx.jax.dbmodel.ParameterDetails;
@@ -290,7 +290,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel {
 				throw new GlobalException(JaxError.CUSTOMER_NOT_REGISTERED_ONLINE, "Customer is not registered");
 			}
 
-			CountryBranch countryBranch = countryBranchRepository
+			CountryBranchMdlv1 countryBranch = countryBranchRepository
 					.findByBranchId(ConstantDocument.ONLINE_BRANCH_LOC_CODE);
 			if (countryBranch != null) {
 				locCode = countryBranch.getBranchId();
@@ -544,7 +544,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel {
 		return list;
 	}
 
-	public BigDecimal generateDocumentNumber(CountryBranch countryBranch, String processInd, BigDecimal finYear) {
+	public BigDecimal generateDocumentNumber(CountryBranchMdlv1 countryBranch, String processInd, BigDecimal finYear) {
 		BigDecimal appCountryId = metaData.getCountryId() == null ? BigDecimal.ZERO : metaData.getCountryId();
 		BigDecimal companyId = metaData.getCompanyId() == null ? BigDecimal.ZERO : metaData.getCompanyId();
 		BigDecimal documentId = ConstantDocument.DOCUMENT_CODE_FOR_FCSALE;

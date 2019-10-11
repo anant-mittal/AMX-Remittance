@@ -36,12 +36,12 @@ import com.amx.jax.dal.ExchangeRateProcedureDao;
 import com.amx.jax.dao.BranchRemittancePaymentDao;
 import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.ApplicationSetup;
-import com.amx.jax.dbmodel.BankMasterModel;
+import com.amx.jax.dbmodel.BankMasterMdlv1;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.CompanyMaster;
-import com.amx.jax.dbmodel.CountryBranch;
+import com.amx.jax.dbmodel.CountryBranchMdlv1;
 import com.amx.jax.dbmodel.CountryMaster;
-import com.amx.jax.dbmodel.CurrencyMasterModel;
+import com.amx.jax.dbmodel.CurrencyMasterMdlv1;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.Device;
 import com.amx.jax.dbmodel.DeviceStateInfo;
@@ -415,13 +415,13 @@ public class BranchRemittanceApplManager {
 			CountryMaster appCountryId = new CountryMaster();
 
 			ApplicationSetup applSetup = getApplicationSetup();
-			CurrencyMasterModel LocalCurrencyModel = getCurrencyByCountryId(applSetup.getApplicationCountryId());
+			CurrencyMasterMdlv1 LocalCurrencyModel = getCurrencyByCountryId(applSetup.getApplicationCountryId());
 
 
 			appCountryId.setCountryId(applSetup.getApplicationCountryId());
 			remittanceApplication.setFsCountryMasterByApplicationCountryId(appCountryId);
-			CurrencyMasterModel localCurrency = new CurrencyMasterModel();
-			CurrencyMasterModel foreignCurrency = new CurrencyMasterModel();
+			CurrencyMasterMdlv1 localCurrency = new CurrencyMasterMdlv1();
+			CurrencyMasterMdlv1 foreignCurrency = new CurrencyMasterMdlv1();
 			foreignCurrency.setCurrencyId(foreignCurrencyId);
 			localCurrency.setCurrencyId(LocalCurrencyModel.getCurrencyId());
 			remittanceApplication.setSourceofincome(applRequestModel.getSourceOfFund());
@@ -443,7 +443,7 @@ public class BranchRemittanceApplManager {
 			ViewCompanyDetails companyDetails = companyService.getCompanyDetailsById(applSetup.getCompanyId());
 			remittanceApplication.setCompanyCode(companyDetails.getCompanyCode());
 			// branch id
-			CountryBranch countryBranch = bankMetaService.getCountryBranchById(getEmployeeDetails().getCountryBranchId()); //user branch not customer branch
+			CountryBranchMdlv1 countryBranch = bankMetaService.getCountryBranchById(getEmployeeDetails().getCountryBranchId()); //user branch not customer branch
 			remittanceApplication.setLoccod(countryBranch.getBranchId());
 			remittanceApplication.setExCountryBranch(countryBranch);
 			// fin year
@@ -478,7 +478,7 @@ public class BranchRemittanceApplManager {
 			remittanceApplication.setCustomerName(getCustomerFullName(customer));
 
 			// Routing Bank
-			BankMasterModel bankmaster = new BankMasterModel();
+			BankMasterMdlv1 bankmaster = new BankMasterMdlv1();
 			bankmaster.setBankId(routingBankId);
 			remittanceApplication.setExBankMaster(bankmaster);
 
@@ -789,9 +789,9 @@ public class BranchRemittanceApplManager {
 		return appl;
 	}
 
-	public CurrencyMasterModel getCurrencyByCountryId(BigDecimal applCountryId) {
+	public CurrencyMasterMdlv1 getCurrencyByCountryId(BigDecimal applCountryId) {
 
-		List<CurrencyMasterModel> currencyMaster = currDao.getCurrencyListByCountryId(applCountryId);
+		List<CurrencyMasterMdlv1> currencyMaster = currDao.getCurrencyListByCountryId(applCountryId);
 		if(currencyMaster!=null && !currencyMaster.isEmpty()) {
 			return currencyMaster.get(0);
 		}else {
@@ -993,7 +993,7 @@ public class BranchRemittanceApplManager {
 			List<ShoppingCartDetails> lstCustomerShopping = branchRemittancePaymentDao.fetchCustomerShoppingCart(metaData.getCustomerId());
 			if(lstCustomerShopping != null && lstCustomerShopping.size() != 0) {
 				// checking home send transaction
-				BankMasterModel bankMaster = bankMasterRepo.findByBankCodeAndRecordStatus(PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name(), PricerServiceConstants.Yes);
+				BankMasterMdlv1 bankMaster = bankMasterRepo.findByBankCodeAndRecordStatus(PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name(), PricerServiceConstants.Yes);
 				if(bankMaster == null) {
 					//throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record not found for bank code :"+PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name());
 					// not required to send error
@@ -1022,7 +1022,7 @@ public class BranchRemittanceApplManager {
 			}
 			
 			if(requestApplModel.getDynamicRroutingPricingBreakup() != null && requestApplModel.getDynamicRroutingPricingBreakup().getServiceProviderDto() != null) {
-				BankMasterModel bankMaster = bankMasterRepo.findByBankCodeAndRecordStatus(PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name(), PricerServiceConstants.Yes);
+				BankMasterMdlv1 bankMaster = bankMasterRepo.findByBankCodeAndRecordStatus(PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name(), PricerServiceConstants.Yes);
 				// home send related validation check
 				if(bankMaster != null && requestApplModel.getRoutingBankId().compareTo(bankMaster.getBankId()) == 0) {
 					partnerTransactionManager.validateServiceProvider(requestApplModel.getAdditionalFields(),requestApplModel.getBeneId());

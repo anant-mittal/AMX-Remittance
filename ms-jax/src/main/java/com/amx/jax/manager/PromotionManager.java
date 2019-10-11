@@ -20,7 +20,7 @@ import com.amx.amxlib.model.PromotionDto;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.PromotionDao;
 import com.amx.jax.dao.RemittanceApplicationDao;
-import com.amx.jax.dbmodel.CountryBranch;
+import com.amx.jax.dbmodel.CountryBranchMdlv1;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.promotion.PromotionDetailModel;
 import com.amx.jax.dbmodel.promotion.PromotionHeader;
@@ -207,7 +207,7 @@ public class PromotionManager {
 			String promotionMessage = null;	
 			//promotionMessage = promotionDao.callGetPromotionMessage(documentNoRemit, documentFinYearRemit, branchId);
 			PromotionDto dto = new PromotionDto();
-			CountryBranch countryBranch = countryBranchRepository.findByCountryBranchId(branchId);
+			CountryBranchMdlv1 countryBranch = countryBranchRepository.findByCountryBranchId(branchId);
 			BigDecimal locationcode = countryBranch.getBranchId();
 			//RemittanceTransaction remittanceTransaction = remittanceApplicationDao.getRemittanceTransactionByRemitDocNo(documentNoRemit, documentFinYearRemit);
 			List<PromotionDetailModel> models = promotionDao.getPromotionDetailModel(documentFinYearRemit, documentNoRemit);

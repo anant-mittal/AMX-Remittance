@@ -18,7 +18,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name ="EX_COLLECT_DETAIL")
-public class CollectDetailModel implements Serializable{
+public class CollectDetailMdlv1 implements Serializable{
 
 	/**
 	 * 
@@ -27,7 +27,7 @@ public class CollectDetailModel implements Serializable{
 
 
 	private BigDecimal cashCollectionDetailId;
-	private CollectionModel cashCollectionId;
+	private CollectionMdlv1 cashCollectionId;
 	private Customer fsCustomer;
 	private CountryMaster fsCountryMaster;
 	private CompanyMaster fsCompanyMaster;
@@ -35,7 +35,7 @@ public class CollectDetailModel implements Serializable{
 	private BigDecimal documentFinanceYear;
 	private BigDecimal documentNo;
 	private BigDecimal documentId;
-	private CountryBranch exBankBranch;
+	private CountryBranchMdlv1 exBankBranch;
 	private Date documentDate;
 	private BigDecimal documentLineNo;
 	private String collectionMode;
@@ -43,7 +43,7 @@ public class CollectDetailModel implements Serializable{
 	private String chequeRef;
 	private Date chequeDate;
 	private String approvalNo;
-	private CurrencyMasterModel exCurrencyMaster;
+	private CurrencyMasterMdlv1 exCurrencyMaster;
 	private BigDecimal collAmt;
 	private String isCashDeposit;
 	private BigDecimal cdepDocCode;
@@ -116,14 +116,14 @@ public class CollectDetailModel implements Serializable{
 	 * @param modifiedBy
 	 * @param modifiedDate
 	 */
-	public CollectDetailModel(BigDecimal cashCollectionDetailId,
-			CollectionModel cashCollectionId, Customer fsCustomer,
+	public CollectDetailMdlv1(BigDecimal cashCollectionDetailId,
+			CollectionMdlv1 cashCollectionId, Customer fsCustomer,
 			CountryMaster fsCountryMaster, CompanyMaster fsCompanyMaster,
 			BigDecimal documentCode, BigDecimal documentFinanceYear,
-			BigDecimal documentNo, CountryBranch exBankBranch, Date documentDate,
+			BigDecimal documentNo, CountryBranchMdlv1 exBankBranch, Date documentDate,
 			BigDecimal documentLineNo, String collectionMode,
 			String chequeBankRef, String chequeRef, Date chequeDate,
-			String approvalNo, CurrencyMasterModel exCurrencyMaster,
+			String approvalNo, CurrencyMasterMdlv1 exCurrencyMaster,
 			BigDecimal collAmt, String isCashDeposit, BigDecimal cdepDocCode,
 			BigDecimal cdepDocFyr, BigDecimal cdepDocNo, Date cdepDocDate,
 			String isActive, BigDecimal voucherYear, BigDecimal voucherNo,
@@ -176,7 +176,7 @@ public class CollectDetailModel implements Serializable{
 	/**
 	 * 
 	 */
-	public CollectDetailModel() {
+	public CollectDetailMdlv1() {
 
 	}
 	
@@ -193,10 +193,10 @@ public class CollectDetailModel implements Serializable{
 	
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name = "CASH_COLLECTION_ID")
-	public CollectionModel getCashCollectionId() {
+	public CollectionMdlv1 getCashCollectionId() {
 		return cashCollectionId;
 	}
-	public void setCashCollectionId(CollectionModel cashCollectionId) {
+	public void setCashCollectionId(CollectionMdlv1 cashCollectionId) {
 		this.cashCollectionId = cashCollectionId;
 	}
 	
@@ -254,10 +254,10 @@ public class CollectDetailModel implements Serializable{
 	@ManyToOne(fetch=FetchType.LAZY)
 	/*@JoinColumn(name = "BANK_BRANCH_ID")*/
 	@JoinColumn(name = "COUNTRY_BRANCH_ID")
-	public CountryBranch getExBankBranch() {
+	public CountryBranchMdlv1 getExBankBranch() {
 		return exBankBranch;
 	}
-	public void setExBankBranch(CountryBranch exBankBranch) {
+	public void setExBankBranch(CountryBranchMdlv1 exBankBranch) {
 		this.exBankBranch = exBankBranch;
 	}
 	
@@ -319,10 +319,10 @@ public class CollectDetailModel implements Serializable{
 	
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name ="CURRENCY_ID")
-	public CurrencyMasterModel getExCurrencyMaster() {
+	public CurrencyMasterMdlv1 getExCurrencyMaster() {
 		return exCurrencyMaster;
 	}
-	public void setExCurrencyMaster(CurrencyMasterModel exCurrencyMaster) {
+	public void setExCurrencyMaster(CurrencyMasterMdlv1 exCurrencyMaster) {
 		this.exCurrencyMaster = exCurrencyMaster;
 	}
 	

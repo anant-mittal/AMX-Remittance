@@ -24,12 +24,12 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxDynamicField;
 import com.amx.jax.dao.ApplicationProcedureDao;
-import com.amx.jax.dbmodel.BankMasterModel;
+import com.amx.jax.dbmodel.BankMasterMdlv1;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.CompanyMaster;
-import com.amx.jax.dbmodel.CountryBranch;
+import com.amx.jax.dbmodel.CountryBranchMdlv1;
 import com.amx.jax.dbmodel.CountryMaster;
-import com.amx.jax.dbmodel.CurrencyMasterModel;
+import com.amx.jax.dbmodel.CurrencyMasterMdlv1;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.ViewCompanyDetails;
@@ -144,8 +144,8 @@ public class RemittanceApplicationManager {
 		CountryMaster appCountryId = new CountryMaster();
 		appCountryId.setCountryId(metaData.getCountryId());
 		remittanceApplication.setFsCountryMasterByApplicationCountryId(appCountryId);
-		CurrencyMasterModel localCurrency = new CurrencyMasterModel();
-		CurrencyMasterModel foreignCurrency = new CurrencyMasterModel();
+		CurrencyMasterMdlv1 localCurrency = new CurrencyMasterMdlv1();
+		CurrencyMasterMdlv1 foreignCurrency = new CurrencyMasterMdlv1();
 		foreignCurrency.setCurrencyId(foreignCurrencyId);
 		localCurrency.setCurrencyId(localCurrencyId);
 		remittanceApplication.setSourceofincome(requestModel.getSourceOfFund());
@@ -168,7 +168,7 @@ public class RemittanceApplicationManager {
 		ViewCompanyDetails companyDetails = companyService.getCompanyDetailsById(metaData.getCompanyId());
 		remittanceApplication.setCompanyCode(companyDetails.getCompanyCode());
 		// branch id
-		CountryBranch countryBranch = bankMetaService.getCountryBranchById((metaData.getCountryBranchId()));
+		CountryBranchMdlv1 countryBranch = bankMetaService.getCountryBranchById((metaData.getCountryBranchId()));
 		remittanceApplication.setLoccod(metaData.getCountryBranchId());
 		remittanceApplication.setExCountryBranch(countryBranch);
 		// fin year
@@ -198,7 +198,7 @@ public class RemittanceApplicationManager {
 		remittanceApplication.setCustomerRef(customer.getCustomerReference());
 
 		// Routing Bank
-		BankMasterModel bankmaster = new BankMasterModel();
+		BankMasterMdlv1 bankmaster = new BankMasterMdlv1();
 		bankmaster.setBankId(routingBankId);
 		remittanceApplication.setExBankMaster(bankmaster);
 
@@ -282,8 +282,8 @@ public class RemittanceApplicationManager {
 		CountryMaster appCountryId = new CountryMaster();
 		appCountryId.setCountryId(metaData.getCountryId());
 		remittanceApplication.setFsCountryMasterByApplicationCountryId(appCountryId);
-		CurrencyMasterModel localCurrency = new CurrencyMasterModel();
-		CurrencyMasterModel foreignCurrency = new CurrencyMasterModel();
+		CurrencyMasterMdlv1 localCurrency = new CurrencyMasterMdlv1();
+		CurrencyMasterMdlv1 foreignCurrency = new CurrencyMasterMdlv1();
 		foreignCurrency.setCurrencyId(foreignCurrencyId);
 		localCurrency.setCurrencyId(localCurrencyId);
 		remittanceApplication.setSourceofincome(requestModel.getSourceOfFund());
@@ -305,7 +305,7 @@ public class RemittanceApplicationManager {
 		ViewCompanyDetails companyDetails = companyService.getCompanyDetailsById(metaData.getCompanyId());
 		remittanceApplication.setCompanyCode(companyDetails.getCompanyCode());
 		// branch id
-		CountryBranch countryBranch = bankMetaService.getCountryBranchById((metaData.getCountryBranchId()));
+		CountryBranchMdlv1 countryBranch = bankMetaService.getCountryBranchById((metaData.getCountryBranchId()));
 		remittanceApplication.setLoccod(metaData.getCountryBranchId());
 		remittanceApplication.setExCountryBranch(countryBranch);
 		// fin year
@@ -335,7 +335,7 @@ public class RemittanceApplicationManager {
 		remittanceApplication.setCustomerRef(customer.getCustomerReference());
 
 		// Routing Bank
-		BankMasterModel bankmaster = new BankMasterModel();
+		BankMasterMdlv1 bankmaster = new BankMasterMdlv1();
 		bankmaster.setBankId(routingBankId);
 		remittanceApplication.setExBankMaster(bankmaster);
 
@@ -541,7 +541,7 @@ public class RemittanceApplicationManager {
 	}
 	
 
-	public BigDecimal generateDocumentNumber(CountryBranch countryBranch, String processInd) {
+	public BigDecimal generateDocumentNumber(CountryBranchMdlv1 countryBranch, String processInd) {
 		BigDecimal appCountryId = metaData.getCountryId();
 		BigDecimal companyId = metaData.getCompanyId();
 		BigDecimal documentId = (BigDecimal) remitApplParametersMap.get("P_DOCUMENT_ID");

@@ -34,15 +34,15 @@ import com.amx.jax.dao.CurrencyMasterDao;
 import com.amx.jax.dao.FcSaleApplicationDao;
 import com.amx.jax.dao.FcSaleBranchDao;
 import com.amx.jax.dao.RemittanceProcedureDao;
-import com.amx.jax.dbmodel.CollectionModel;
+import com.amx.jax.dbmodel.CollectionMdlv1;
 import com.amx.jax.dbmodel.CompanyMaster;
-import com.amx.jax.dbmodel.CountryBranch;
+import com.amx.jax.dbmodel.CountryBranchMdlv1;
 import com.amx.jax.dbmodel.CountryMaster;
-import com.amx.jax.dbmodel.CurrencyMasterModel;
-import com.amx.jax.dbmodel.CurrencyWiseDenomination;
+import com.amx.jax.dbmodel.CurrencyMasterMdlv1;
+import com.amx.jax.dbmodel.CurrencyWiseDenominationMdlv1;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.Employee;
-import com.amx.jax.dbmodel.ForeignCurrencyAdjust;
+import com.amx.jax.dbmodel.ForeignCurrencyAdjustMdlv1;
 import com.amx.jax.dbmodel.JaxConfig;
 import com.amx.jax.dbmodel.ReceiptPayment;
 import com.amx.jax.dbmodel.ViewCompanyDetails;
@@ -610,12 +610,12 @@ public class FcSaleBranchOrderManager {
 		String oldOrderStatus = null;
 		List<BigDecimal> dupdocumentNumbers = new ArrayList<>();
 		List<String> dupInventory = new ArrayList<>();
-		List<ForeignCurrencyAdjust> foreignCurrencyAdjusts = new ArrayList<>();
+		List<ForeignCurrencyAdjustMdlv1> foreignCurrencyAdjusts = new ArrayList<>();
 		List<ReceiptPayment> updateRecPay = new ArrayList<>();
 		HashMap<BigDecimal, String> mapInventory = new HashMap<>();
 		HashMap<BigDecimal, String> mapInventoryReceiptPayment = new HashMap<>();
 		HashMap<BigDecimal, BigDecimal> mapDocAmount = new HashMap<>();
-		HashMap<BigDecimal, List<CurrencyWiseDenomination>> mapCurrencyDenom = new HashMap<>();
+		HashMap<BigDecimal, List<CurrencyWiseDenominationMdlv1>> mapCurrencyDenom = new HashMap<>();
 		FxOrderReportResponseDto fxOrderReportResponseDto = null;
 
 		try {
@@ -642,9 +642,9 @@ public class FcSaleBranchOrderManager {
 				}
 
 				// fetch collection details
-				List<CollectionModel> collection = fcSaleBranchDao.fetchCollectionData(collectionDocNumber, collectionDocYear);
+				List<CollectionMdlv1> collection = fcSaleBranchDao.fetchCollectionData(collectionDocNumber, collectionDocYear);
 				if(collection != null && collection.size() != 0) {
-					CollectionModel collectionModel = collection.get(0);
+					CollectionMdlv1 collectionModel = collection.get(0);
 					collectionId = collectionModel.getCollectionId();
 					companyCode = collectionModel.getCompanyCode();
 					customerId = collectionModel.getFsCustomer().getCustomerId();
@@ -682,7 +682,7 @@ public class FcSaleBranchOrderManager {
 				if(lstOrderManagement != null && lstOrderManagement.size() != 0) {
 					for (OrderManagementView orderManagementView : lstOrderManagement) {
 						mapOrderManagement.put(orderManagementView.getDocumentNo(), orderManagementView);
-						List<CurrencyWiseDenomination> lstCurrencyDenomination = fetchCurrencyDenominationByCurrencyId(orderManagementView.getForeignCurrencyId());
+						List<CurrencyWiseDenominationMdlv1> lstCurrencyDenomination = fetchCurrencyDenominationByCurrencyId(orderManagementView.getForeignCurrencyId());
 						mapCurrencyDenom.put(orderManagementView.getForeignCurrencyId(), lstCurrencyDenomination);
 						if(deliveryDetailsId == null) {
 							deliveryDetailsId = orderManagementView.getDeliveryDetailsId();
@@ -726,13 +726,13 @@ public class FcSaleBranchOrderManager {
 										// checking denomination details passing correctly
 										Boolean denominationStatus = checkingDenominationDetails(fcSaleBranchDispatch, mapCurrencyDenom.get(mapOrderManagement.get(fcSaleBranchDispatch.getDocumentNumber()).getForeignCurrencyId()),userCurrenctStock);
 										if(denominationStatus != null) {
-											ForeignCurrencyAdjust foreignCurrencyAdj = new ForeignCurrencyAdjust();
+											ForeignCurrencyAdjustMdlv1 foreignCurrencyAdj = new ForeignCurrencyAdjustMdlv1();
 
 											foreignCurrencyAdj.setDocumentLineNumber(new BigDecimal(++i));
 
 											foreignCurrencyAdj.setAccountmmyyyy(new SimpleDateFormat("dd/MM/yyyy").parse(DateUtil.getCurrentAccMMYear()));
 
-											CollectionModel collectionModel = new CollectionModel();
+											CollectionMdlv1 collectionModel = new CollectionMdlv1();
 											collectionModel.setCollectionId(collectionId);
 											foreignCurrencyAdj.setCollect(collectionModel);
 
@@ -740,7 +740,7 @@ public class FcSaleBranchOrderManager {
 											countryMaster.setCountryId(countryId);
 											foreignCurrencyAdj.setFsCountryMaster(countryMaster);
 
-											CountryBranch countryBranch = new CountryBranch();
+											CountryBranchMdlv1 countryBranch = new CountryBranchMdlv1();
 											countryBranch.setCountryBranchId(countryBranchId);
 											foreignCurrencyAdj.setCountryBranch(countryBranch);
 
@@ -750,7 +750,7 @@ public class FcSaleBranchOrderManager {
 
 											foreignCurrencyAdj.setCompanyCode(companyCode);
 
-											CurrencyMasterModel currencyMasterModel = new CurrencyMasterModel();
+											CurrencyMasterMdlv1 currencyMasterModel = new CurrencyMasterMdlv1();
 											currencyMasterModel.setCurrencyId(mapOrderManagement.get(fcSaleBranchDispatch.getDocumentNumber()).getForeignCurrencyId());
 											foreignCurrencyAdj.setFsCurrencyMaster(currencyMasterModel);
 
@@ -758,7 +758,7 @@ public class FcSaleBranchOrderManager {
 											customer.setCustomerId(customerId);
 											foreignCurrencyAdj.setFsCustomer(customer);
 
-											CurrencyWiseDenomination currencyWiseDenomination = new CurrencyWiseDenomination();
+											CurrencyWiseDenominationMdlv1 currencyWiseDenomination = new CurrencyWiseDenominationMdlv1();
 											currencyWiseDenomination.setDenominationId(fcSaleBranchDispatch.getDenominationId());
 											foreignCurrencyAdj.setFsDenominationId(currencyWiseDenomination);
 
@@ -844,7 +844,7 @@ public class FcSaleBranchOrderManager {
 							
 							receiptPayment.setDocumentNo(receiptPayment.getDocumentNo());
 
-							CountryBranch countryBranch = new CountryBranch();
+							CountryBranchMdlv1 countryBranch = new CountryBranchMdlv1();
 							countryBranch.setCountryBranchId(countryBranchId);
 							receiptPayment.setCountryBranch(countryBranch);
 
@@ -905,7 +905,7 @@ public class FcSaleBranchOrderManager {
 	}
 
 	// check the denomination details send correctly
-	public Boolean checkingDenominationDetails(FcSaleBranchDispatchModel currencyAdj,List<CurrencyWiseDenomination> currencyDenomination,List<UserStockDto> currentStock) {
+	public Boolean checkingDenominationDetails(FcSaleBranchDispatchModel currencyAdj,List<CurrencyWiseDenominationMdlv1> currencyDenomination,List<UserStockDto> currentStock) {
 		Boolean currencyStatus = Boolean.FALSE;
 		Boolean currentStockStatus = Boolean.FALSE;
 		try {
@@ -913,7 +913,7 @@ public class FcSaleBranchOrderManager {
 				if(currencyAdj.getDenominationPrice() != null && currencyAdj.getDenominationAmount() != null 
 						&& currencyAdj.getDenominationQuatity() != null && currencyAdj.getCurrencyId() != null
 						&& currencyAdj.getDenominationId() != null) {
-					for (CurrencyWiseDenomination currencyWiseDenomination : currencyDenomination) {
+					for (CurrencyWiseDenominationMdlv1 currencyWiseDenomination : currencyDenomination) {
 						if(currencyWiseDenomination.getDenominationId().compareTo(currencyAdj.getDenominationId()) == 0) {
 							if(currencyWiseDenomination.getDenominationAmount().compareTo(currencyAdj.getDenominationAmount()) == 0) {
 								currencyStatus = Boolean.TRUE;
@@ -964,8 +964,8 @@ public class FcSaleBranchOrderManager {
 		return currencyStatus;
 	}
 
-	public List<CurrencyWiseDenomination> fetchCurrencyDenominationByCurrencyId(BigDecimal currencyId) {
-		List<CurrencyWiseDenomination> lstCurrencyDenomination = new ArrayList<>();
+	public List<CurrencyWiseDenominationMdlv1> fetchCurrencyDenominationByCurrencyId(BigDecimal currencyId) {
+		List<CurrencyWiseDenominationMdlv1> lstCurrencyDenomination = new ArrayList<>();
 
 		try {
 			lstCurrencyDenomination = fcSaleBranchDao.fetchCurrencyDenomination(currencyId, ConstantDocument.Yes);
@@ -1116,7 +1116,7 @@ public class FcSaleBranchOrderManager {
 	}
 
 	public BigDecimal fetchCurrencyMasterDetails(BigDecimal currencyId) {
-		CurrencyMasterModel currencyMasterModel = currencyMasterDao.getCurrencyMasterById(currencyId);
+		CurrencyMasterMdlv1 currencyMasterModel = currencyMasterDao.getCurrencyMasterById(currencyId);
 		BigDecimal decimalValue = new BigDecimal(3);
 		if(currencyMasterModel != null) {
 			decimalValue = currencyMasterModel.getDecinalNumber();
@@ -1178,10 +1178,10 @@ public class FcSaleBranchOrderManager {
 	public List<UserStockDto> fetchCurrencyAdjustDetails(BigDecimal documentNo,BigDecimal documentYear,BigDecimal companyId,BigDecimal documentCode){
 		List<UserStockDto> currencyAdjust = new ArrayList<>();
 
-		List<ForeignCurrencyAdjust> foreignCurrencyAdjust = fcSaleBranchDao.fetchByCollectionDetails(documentNo, documentYear, companyId, documentCode,ConstantDocument.Yes);
+		List<ForeignCurrencyAdjustMdlv1> foreignCurrencyAdjust = fcSaleBranchDao.fetchByCollectionDetails(documentNo, documentYear, companyId, documentCode,ConstantDocument.Yes);
 		if(foreignCurrencyAdjust != null && foreignCurrencyAdjust.size() != 0) {
 
-			for (ForeignCurrencyAdjust foreignCurrencyAdj : foreignCurrencyAdjust) {
+			for (ForeignCurrencyAdjustMdlv1 foreignCurrencyAdj : foreignCurrencyAdjust) {
 
 				UserStockDto userStockDto = new UserStockDto();
 
@@ -1369,9 +1369,9 @@ public class FcSaleBranchOrderManager {
 		FxOrderReportResponseDto fxOrderReportResponseDto = null;
 		BigDecimal customerId = null;
 		// fetch collection details
-		List<CollectionModel> collection = fcSaleBranchDao.fetchCollectionData(orderNumber, orderYear);
+		List<CollectionMdlv1> collection = fcSaleBranchDao.fetchCollectionData(orderNumber, orderYear);
 		if(collection != null && !collection.isEmpty()) {
-			CollectionModel collectionModel = collection.get(0);
+			CollectionMdlv1 collectionModel = collection.get(0);
 			customerId = collectionModel.getFsCustomer().getCustomerId();
 
 			fxOrderReportResponseDto = fetchTransactionReport(customerId,orderYear, orderNumber);
@@ -1401,9 +1401,9 @@ public class FcSaleBranchOrderManager {
 		BigDecimal collectionDocumentYear = null;
 		Boolean oldEmosProdStatus = Boolean.FALSE;
 		int count = 0;
-		List<ForeignCurrencyAdjust> lstTotalStock = new ArrayList<>();
-		List<ForeignCurrencyAdjust> lstToStock = new ArrayList<>();
-		List<ForeignCurrencyAdjust> lstFromStock = new ArrayList<>();
+		List<ForeignCurrencyAdjustMdlv1> lstTotalStock = new ArrayList<>();
+		List<ForeignCurrencyAdjustMdlv1> lstToStock = new ArrayList<>();
+		List<ForeignCurrencyAdjustMdlv1> lstFromStock = new ArrayList<>();
 		List<ForeignCurrencyOldModel> lstOldToStock = new ArrayList<>();
 		List<ForeignCurrencyOldModel> lstOldFromStock = new ArrayList<>();
 
@@ -1435,7 +1435,7 @@ public class FcSaleBranchOrderManager {
 				collectionDocumentNo = ordManager.getCollectionDocumentNo();
 				for (OrderManagementView orderManagementView : lstOrderManager) {
 					if(orderManagementView.getDocumentNo() != null && orderManagementView.getCollectionDocFinanceYear() != null) {
-						List<ForeignCurrencyAdjust> lstFcAdj = fcSaleBranchDao.fetchByCollectionDetails(orderManagementView.getDocumentNo(), orderManagementView.getCollectionDocFinanceYear(), metaData.getCompanyId(), ConstantDocument.DOCUMENT_CODE_FOR_FCSALE,ConstantDocument.Yes);
+						List<ForeignCurrencyAdjustMdlv1> lstFcAdj = fcSaleBranchDao.fetchByCollectionDetails(orderManagementView.getDocumentNo(), orderManagementView.getCollectionDocFinanceYear(), metaData.getCompanyId(), ConstantDocument.DOCUMENT_CODE_FOR_FCSALE,ConstantDocument.Yes);
 						if(lstFcAdj != null && lstFcAdj.size() != 0) {
 							lstTotalStock.addAll(lstFcAdj);
 						}
@@ -1447,14 +1447,14 @@ public class FcSaleBranchOrderManager {
 				HashMap<String, Object> saveFcAdjPurchase = saveFcAdjJava(lstTotalStock,toUserName,toUserName,ConstantDocument.P,toCountryBranchId);
 
 				if(saveFcAdjPurchase != null && !saveFcAdjPurchase.isEmpty()) {
-					lstToStock = (List<ForeignCurrencyAdjust>) saveFcAdjPurchase.get("FC_ADJ");
+					lstToStock = (List<ForeignCurrencyAdjustMdlv1>) saveFcAdjPurchase.get("FC_ADJ");
 					countryId = (BigDecimal) saveFcAdjPurchase.get("COUNTRY_ID");
 					companyId = (BigDecimal) saveFcAdjPurchase.get("COMPANY_ID");
 				}
 
 				lstOldToStock = saveFcAdjOldEmos(lstTotalStock,toUserName,toUserName,toBranchId,ConstantDocument.P);
 
-				ForeignCurrencyAdjust foreignCurAdj = lstTotalStock.get(0);
+				ForeignCurrencyAdjustMdlv1 foreignCurAdj = lstTotalStock.get(0);
 				if(foreignCurAdj.getDocumentStatus() != null && foreignCurAdj.getDocumentStatus().equalsIgnoreCase(ConstantDocument.P)) {
 					oldEmosProdStatus = Boolean.TRUE;
 				}
@@ -1463,12 +1463,12 @@ public class FcSaleBranchOrderManager {
 					HashMap<String, Object> saveFcAdjSale = saveFcAdjJava(lstTotalStock,fromUserName,toUserName,ConstantDocument.S,fromCountryBranchId);
 
 					if(saveFcAdjSale != null && !saveFcAdjSale.isEmpty()) {
-						lstFromStock = (List<ForeignCurrencyAdjust>) saveFcAdjSale.get("FC_ADJ");
+						lstFromStock = (List<ForeignCurrencyAdjustMdlv1>) saveFcAdjSale.get("FC_ADJ");
 					}
 				}
 
 				if(oldEmosProdStatus) {
-					for (ForeignCurrencyAdjust foreignCurrencyAdjust : lstTotalStock) {
+					for (ForeignCurrencyAdjustMdlv1 foreignCurrencyAdjust : lstTotalStock) {
 						// old record - from branch
 						foreignCurrencyAdjust.setModifiedBy(toUserName);
 						foreignCurrencyAdjust.setModifiedDate(new Date());
@@ -1480,7 +1480,7 @@ public class FcSaleBranchOrderManager {
 					HashMap<String, Object> saveFcAdjSale = saveFcAdjJava(lstTotalStock,fromUserName,toUserName,ConstantDocument.S,fromCountryBranchId);
 
 					if(saveFcAdjSale != null && !saveFcAdjSale.isEmpty()) {
-						lstFromStock = (List<ForeignCurrencyAdjust>) saveFcAdjSale.get("FC_ADJ");
+						lstFromStock = (List<ForeignCurrencyAdjustMdlv1>) saveFcAdjSale.get("FC_ADJ");
 					}
 					
 					lstOldFromStock = saveFcAdjOldEmos(lstTotalStock,toUserName,fromUserName,fromBranchId, ConstantDocument.S);
@@ -1494,7 +1494,7 @@ public class FcSaleBranchOrderManager {
 					// transfer to emos
 					if(oldEmosProdStatus) {
 						// check whether procedure moved or not
-						ForeignCurrencyAdjust fcCurrencyAdjust = lstFromStock.get(0);
+						ForeignCurrencyAdjustMdlv1 fcCurrencyAdjust = lstFromStock.get(0);
 						BigDecimal companyCode = fcCurrencyAdjust.getCompanyCode();
 						Boolean recPayStatus = fcSaleBranchDao.fetchRecPayTrnxDetails(companyCode, ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION, collectionDocumentYear, collectionDocumentNo,count);
 						
@@ -1536,15 +1536,15 @@ public class FcSaleBranchOrderManager {
 		return status;
 	}
 
-	public HashMap<String, Object> saveFcAdjJava(List<ForeignCurrencyAdjust> lstTotalStock,String oracleUser,String userName,String trnxType,BigDecimal countryBranchId){
+	public HashMap<String, Object> saveFcAdjJava(List<ForeignCurrencyAdjustMdlv1> lstTotalStock,String oracleUser,String userName,String trnxType,BigDecimal countryBranchId){
 		HashMap<String, Object> saveFcAdj = new HashMap<>();
-		List<ForeignCurrencyAdjust> lstToStock = new ArrayList<>();
+		List<ForeignCurrencyAdjustMdlv1> lstToStock = new ArrayList<>();
 		BigDecimal countryId = null;
 		BigDecimal companyId = null;
 
-		for (ForeignCurrencyAdjust foreignCurrencyAdjust : lstTotalStock) {
+		for (ForeignCurrencyAdjustMdlv1 foreignCurrencyAdjust : lstTotalStock) {
 			// new record - to branch
-			ForeignCurrencyAdjust foreignCurrencyAdj = new ForeignCurrencyAdjust();
+			ForeignCurrencyAdjustMdlv1 foreignCurrencyAdj = new ForeignCurrencyAdjustMdlv1();
 
 			foreignCurrencyAdj.setDocumentLineNumber(foreignCurrencyAdjust.getDocumentLineNumber());
 			foreignCurrencyAdj.setAccountmmyyyy(foreignCurrencyAdjust.getAccountmmyyyy());
@@ -1555,7 +1555,7 @@ public class FcSaleBranchOrderManager {
 			}
 
 			if(countryBranchId != null) {
-				CountryBranch countryBranch = new CountryBranch();
+				CountryBranchMdlv1 countryBranch = new CountryBranchMdlv1();
 				countryBranch.setCountryBranchId(countryBranchId);
 				foreignCurrencyAdj.setCountryBranch(countryBranch);
 			}else if(foreignCurrencyAdjust.getCountryBranch() != null){
@@ -1600,10 +1600,10 @@ public class FcSaleBranchOrderManager {
 		return saveFcAdj;
 	}
 
-	public List<ForeignCurrencyOldModel> saveFcAdjOldEmos(List<ForeignCurrencyAdjust> lstTotalStock,String userName,String oracleUser,BigDecimal branchId,String trnxType){
+	public List<ForeignCurrencyOldModel> saveFcAdjOldEmos(List<ForeignCurrencyAdjustMdlv1> lstTotalStock,String userName,String oracleUser,BigDecimal branchId,String trnxType){
 		List<ForeignCurrencyOldModel> lstOldToStock = new ArrayList<>();
 
-		for (ForeignCurrencyAdjust foreignCurrencyAdjust : lstTotalStock) {
+		for (ForeignCurrencyAdjustMdlv1 foreignCurrencyAdjust : lstTotalStock) {
 			// old emos table
 			ForeignCurrencyOldModel foreignCurrencyOldModel = new ForeignCurrencyOldModel();
 
@@ -1647,8 +1647,8 @@ public class FcSaleBranchOrderManager {
 		String userName = null;
 		String oracleUser = null;
 		BigDecimal branchId = null;
-		List<ForeignCurrencyAdjust> lstTotalStock = new ArrayList<>();
-		List<ForeignCurrencyAdjust> lstFromStock = new ArrayList<>();
+		List<ForeignCurrencyAdjustMdlv1> lstTotalStock = new ArrayList<>();
+		List<ForeignCurrencyAdjustMdlv1> lstFromStock = new ArrayList<>();
 		List<ForeignCurrencyOldModel> lstOldToStock = new ArrayList<>();
 
 		FxEmployeeDetailsDto employeeDt = fetchEmployee(driverEmployeeId);
@@ -1663,7 +1663,7 @@ public class FcSaleBranchOrderManager {
 		if(lstOrderManager != null && lstOrderManager.size() != 0){
 			for (OrderManagementView orderManagementView : lstOrderManager) {
 				if(orderManagementView.getDocumentNo() != null && orderManagementView.getCollectionDocFinanceYear() != null) {
-					List<ForeignCurrencyAdjust> lstFcAdj = fcSaleBranchDao.fetchByCollectionDetailsByTrnxType(orderManagementView.getDocumentNo(), orderManagementView.getCollectionDocFinanceYear(), metaData.getCompanyId(), ConstantDocument.DOCUMENT_CODE_FOR_FCSALE,ConstantDocument.P,ConstantDocument.Yes,ConstantDocument.P);
+					List<ForeignCurrencyAdjustMdlv1> lstFcAdj = fcSaleBranchDao.fetchByCollectionDetailsByTrnxType(orderManagementView.getDocumentNo(), orderManagementView.getCollectionDocFinanceYear(), metaData.getCompanyId(), ConstantDocument.DOCUMENT_CODE_FOR_FCSALE,ConstantDocument.P,ConstantDocument.Yes,ConstantDocument.P);
 					if(lstFcAdj != null && lstFcAdj.size() != 0) {
 						lstTotalStock.addAll(lstFcAdj);
 					}
@@ -1675,7 +1675,7 @@ public class FcSaleBranchOrderManager {
 			HashMap<String, Object> saveFcAdj = saveFcAdjJava(lstTotalStock, oracleUser,userName, ConstantDocument.S,null);
 
 			if(saveFcAdj != null && !saveFcAdj.isEmpty()) {
-				lstFromStock = (List<ForeignCurrencyAdjust>) saveFcAdj.get("FC_ADJ");
+				lstFromStock = (List<ForeignCurrencyAdjustMdlv1>) saveFcAdj.get("FC_ADJ");
 				lstOldToStock = saveFcAdjOldEmos(lstTotalStock,oracleUser,userName,branchId,ConstantDocument.S);
 			}
 		}
@@ -1697,9 +1697,9 @@ public class FcSaleBranchOrderManager {
 		BigDecimal toCountryBranchId = null;
 		BigDecimal toBranchId = null;
 		BigDecimal fromBranchId = null;
-		List<ForeignCurrencyAdjust> lstTotalStock = new ArrayList<>();
-		List<ForeignCurrencyAdjust> lstToStock = new ArrayList<>();
-		List<ForeignCurrencyAdjust> lstFromStock = new ArrayList<>();
+		List<ForeignCurrencyAdjustMdlv1> lstTotalStock = new ArrayList<>();
+		List<ForeignCurrencyAdjustMdlv1> lstToStock = new ArrayList<>();
+		List<ForeignCurrencyAdjustMdlv1> lstFromStock = new ArrayList<>();
 		List<ForeignCurrencyOldModel> lstOldToStock = new ArrayList<>();
 		List<ForeignCurrencyOldModel> lstOldFromStock = new ArrayList<>();
 
@@ -1720,7 +1720,7 @@ public class FcSaleBranchOrderManager {
 			if(lstOrderManagement != null && lstOrderManagement.size() != 0){
 				for (OrderManagementView orderManagementView : lstOrderManagement) {
 					if(orderManagementView.getDocumentNo() != null && orderManagementView.getCollectionDocFinanceYear() != null) {
-						List<ForeignCurrencyAdjust> lstFcAdj = fcSaleBranchDao.fetchByCollectionDetailsByTrnxType(orderManagementView.getDocumentNo(), orderManagementView.getCollectionDocFinanceYear(), metaData.getCompanyId(), ConstantDocument.DOCUMENT_CODE_FOR_FCSALE,ConstantDocument.P,ConstantDocument.Yes,ConstantDocument.P);
+						List<ForeignCurrencyAdjustMdlv1> lstFcAdj = fcSaleBranchDao.fetchByCollectionDetailsByTrnxType(orderManagementView.getDocumentNo(), orderManagementView.getCollectionDocFinanceYear(), metaData.getCompanyId(), ConstantDocument.DOCUMENT_CODE_FOR_FCSALE,ConstantDocument.P,ConstantDocument.Yes,ConstantDocument.P);
 						if(lstFcAdj != null && lstFcAdj.size() != 0) {
 							lstTotalStock.addAll(lstFcAdj);
 						}
@@ -1733,7 +1733,7 @@ public class FcSaleBranchOrderManager {
 			HashMap<String, Object> saveFcAdjP = saveFcAdjJava(lstTotalStock,userName, userName, ConstantDocument.P, toCountryBranchId);
 
 			if(saveFcAdjP != null && !saveFcAdjP.isEmpty()) {
-				lstToStock = (List<ForeignCurrencyAdjust>) saveFcAdjP.get("FC_ADJ");
+				lstToStock = (List<ForeignCurrencyAdjustMdlv1>) saveFcAdjP.get("FC_ADJ");
 			}
 
 			lstOldToStock = saveFcAdjOldEmos(lstTotalStock,userName,userName,toBranchId,ConstantDocument.P);
@@ -1742,7 +1742,7 @@ public class FcSaleBranchOrderManager {
 			HashMap<String, Object> saveFcAdjS = saveFcAdjJava(lstTotalStock,oracleUser, userName, ConstantDocument.S,null);
 
 			if(saveFcAdjS != null && !saveFcAdjS.isEmpty()) {
-				lstFromStock = (List<ForeignCurrencyAdjust>) saveFcAdjS.get("FC_ADJ");
+				lstFromStock = (List<ForeignCurrencyAdjustMdlv1>) saveFcAdjS.get("FC_ADJ");
 			}
 		}
 
@@ -1820,7 +1820,7 @@ public class FcSaleBranchOrderManager {
 				}
 
 				// fetch currency code
-				Map<BigDecimal, CurrencyMasterModel> currencyMasterModel = currencyMasterDao.getSelectedCurrencyMap(currencyId);
+				Map<BigDecimal, CurrencyMasterMdlv1> currencyMasterModel = currencyMasterDao.getSelectedCurrencyMap(currencyId);
 
 				for (OrderManagementView orderManagementView : lstOrderManager) {
 					if(orderManagementView.getDocumentNo() != null && orderManagementView.getCollectionDocFinanceYear() != null) {
@@ -1893,7 +1893,7 @@ public class FcSaleBranchOrderManager {
 		BigDecimal fromBranchId = null;
 		Map<BigDecimal, BigDecimal> currencyStock = new HashMap<>();
 		List<BigDecimal> foreignCurrencyId = new ArrayList<>();
-		List<ForeignCurrencyAdjust> lstTotalStock = new ArrayList<ForeignCurrencyAdjust>();
+		List<ForeignCurrencyAdjustMdlv1> lstTotalStock = new ArrayList<ForeignCurrencyAdjustMdlv1>();
 		
 		FxEmployeeDetailsDto reqEmployeeDt = fetchEmployee(fromEmployeeId);
 		if(reqEmployeeDt != null && reqEmployeeDt.getEmployeeId() != null){
@@ -1910,7 +1910,7 @@ public class FcSaleBranchOrderManager {
 					foreignCurrencyId.add(orderManagementView.getForeignCurrencyId());
 				}
 				if(orderManagementView.getDocumentNo() != null && orderManagementView.getCollectionDocFinanceYear() != null) {
-					List<ForeignCurrencyAdjust> lstFcAdj = fcSaleBranchDao.fetchByCollectionDetails(orderManagementView.getDocumentNo(), orderManagementView.getCollectionDocFinanceYear(), metaData.getCompanyId(), ConstantDocument.DOCUMENT_CODE_FOR_FCSALE,ConstantDocument.Yes);
+					List<ForeignCurrencyAdjustMdlv1> lstFcAdj = fcSaleBranchDao.fetchByCollectionDetails(orderManagementView.getDocumentNo(), orderManagementView.getCollectionDocFinanceYear(), metaData.getCompanyId(), ConstantDocument.DOCUMENT_CODE_FOR_FCSALE,ConstantDocument.Yes);
 					if(lstFcAdj != null && lstFcAdj.size() != 0) {
 						lstTotalStock.addAll(lstFcAdj);
 					}
@@ -1929,7 +1929,7 @@ public class FcSaleBranchOrderManager {
 			
 			// compare currency stock which is need to moved
 			if(currencyStock != null && currencyStock.size() != 0) {
-				for (ForeignCurrencyAdjust orderManagementView : lstTotalStock) {
+				for (ForeignCurrencyAdjustMdlv1 orderManagementView : lstTotalStock) {
 					if(orderManagementView.getNotesQuantity().compareTo(currencyStock.get(orderManagementView.getFsDenominationId().getDenominationId())) <= 0) {
 						// continue
 						stockStatus = Boolean.TRUE;

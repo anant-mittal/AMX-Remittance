@@ -8,7 +8,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.jax.dbmodel.CurrencyMasterModel;
+import com.amx.jax.dbmodel.CurrencyMasterMdlv1;
 
 /**
  * @author Prashant
@@ -28,7 +28,7 @@ public class TenantService {
 	 * @return default currency master for current tenant
 	 * 
 	 */
-	public CurrencyMasterModel getDefaultCurrencyMaster() {
+	public CurrencyMasterMdlv1 getDefaultCurrencyMaster() {
 		BigDecimal defaultCurrencyId = companyService.getCompanyDetail().getCurrencyId();
 		return currencyMasterService.getCurrencyMasterById(defaultCurrencyId);
 	}

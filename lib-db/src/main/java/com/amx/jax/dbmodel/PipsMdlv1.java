@@ -17,16 +17,16 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "EX_PIPS_MASTER")
-public class PipsMaster implements Serializable {
+public class PipsMdlv1 implements Serializable {
 	/**
      * 
      */
     private static final long serialVersionUID = 1L;
     private BigDecimal pipsMasterId;
-	private CountryBranch countryBranch;
+	private CountryBranchMdlv1 countryBranch;
 	private CountryMaster countryMaster;
-	private BankMasterModel bankMaster;
-	private CurrencyMasterModel currencyMaster;
+	private BankMasterMdlv1 bankMaster;
+	private CurrencyMasterMdlv1 currencyMaster;
 	/* private ServiceIndicator serviceIndicator; */
 	private BigDecimal pipsNo;
 	private String isActive;
@@ -42,10 +42,10 @@ public class PipsMaster implements Serializable {
 
 	//private String pipsTypeCode;
 
-	public PipsMaster() {
+	public PipsMdlv1() {
 	}
 
-	public PipsMaster(BigDecimal pipsMasterId) {
+	public PipsMdlv1(BigDecimal pipsMasterId) {
 		this.pipsMasterId = pipsMasterId;
 	}
 
@@ -63,11 +63,11 @@ public class PipsMaster implements Serializable {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "COUNTRY_BRANCH_ID")
-	public CountryBranch getCountryBranch() {
+	public CountryBranchMdlv1 getCountryBranch() {
 		return countryBranch;
 	}
 
-	public void setCountryBranch(CountryBranch countryBranch) {
+	public void setCountryBranch(CountryBranchMdlv1 countryBranch) {
 		this.countryBranch = countryBranch;
 	}
 
@@ -83,21 +83,21 @@ public class PipsMaster implements Serializable {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "BANK_ID")
-	public BankMasterModel getBankMaster() {
+	public BankMasterMdlv1 getBankMaster() {
 		return bankMaster;
 	}
 
-	public void setBankMaster(BankMasterModel bankMaster) {
+	public void setBankMaster(BankMasterMdlv1 bankMaster) {
 		this.bankMaster = bankMaster;
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "CURRENCY_ID")
-	public CurrencyMasterModel getCurrencyMaster() {
+	public CurrencyMasterMdlv1 getCurrencyMaster() {
 		return currencyMaster;
 	}
 
-	public void setCurrencyMaster(CurrencyMasterModel currencyMaster) {
+	public void setCurrencyMaster(CurrencyMasterMdlv1 currencyMaster) {
 		this.currencyMaster = currencyMaster;
 	}
 

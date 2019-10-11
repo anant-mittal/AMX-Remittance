@@ -14,7 +14,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "EX_BANK_MASTER")
-public class BankMasterModel implements java.io.Serializable {
+public class BankMasterMdlv1 implements java.io.Serializable {
 
 	/**
 	 * Generated Serial UID 
@@ -55,10 +55,10 @@ public class BankMasterModel implements java.io.Serializable {
 	private String ibanFlag;
 	private String localName;
 	
-	public BankMasterModel() {
+	public BankMasterMdlv1() {
 	}
 
-	public BankMasterModel(BigDecimal bankId) {
+	public BankMasterMdlv1(BigDecimal bankId) {
 		this.bankId = bankId;
 	}
 	
@@ -404,7 +404,7 @@ public class BankMasterModel implements java.io.Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		BankMasterModel other = (BankMasterModel) obj;
+		BankMasterMdlv1 other = (BankMasterMdlv1) obj;
 		if (address1 == null) {
 			if (other.address1 != null)
 				return false;

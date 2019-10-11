@@ -8,16 +8,16 @@ import javax.transaction.Transactional;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
-import com.amx.jax.dbmodel.CurrencyMasterModel;
+import com.amx.jax.dbmodel.CurrencyMasterMdlv1;
 
 @Transactional
-public interface CurrencyRepository extends CrudRepository<CurrencyMasterModel, BigDecimal> {
+public interface CurrencyRepository extends CrudRepository<CurrencyMasterMdlv1, BigDecimal> {
 
-	List<CurrencyMasterModel> findByquoteName(String quoteName);
+	List<CurrencyMasterMdlv1> findByquoteName(String quoteName);
 
-	List<CurrencyMasterModel> findAll();
+	List<CurrencyMasterMdlv1> findAll();
 	
 	@Query(value = "SELECT * FROM EX_CURRENCY_MASTER WHERE CURRENCY_ID in ?1 ", nativeQuery = true)
-	List<CurrencyMasterModel> fetchCurrencyMaster(List<String>  currencyId);
+	List<CurrencyMasterMdlv1> fetchCurrencyMaster(List<String>  currencyId);
 
 }

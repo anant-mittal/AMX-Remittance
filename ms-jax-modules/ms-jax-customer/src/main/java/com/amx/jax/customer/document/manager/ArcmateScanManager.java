@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.jax.constant.ConstantDocument;
-import com.amx.jax.dbmodel.CountryBranch;
+import com.amx.jax.dbmodel.CountryBranchMdlv1;
 import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.dbmodel.DmsApplMapping;
 import com.amx.jax.dbmodel.customer.ArcmateScanMaster;
@@ -48,7 +48,7 @@ public class ArcmateScanManager implements DocumentScanManager {
 	@Override
 	public CustomerDocumentInfo fetchKycImageInfo(CustomerIdProof customerIdProof) {
 		CustomerDocumentInfo customerDocumentImage = new CustomerDocumentInfo();
-		CountryBranch countryBranch = countryBranchService.getCountryBranchByCountryBranchId(metaData.getCountryBranchId());
+		CountryBranchMdlv1 countryBranch = countryBranchService.getCountryBranchByCountryBranchId(metaData.getCountryBranchId());
 		StringBuffer urlBuffer = new StringBuffer();
 		List<ArcmateScanMaster> arcmateList = arcmateScanMasterRepository.findByModeOfOperationAndScanTypeAndIsActive(ConstantDocument.VIEW,
 				ConstantDocument.BOTH_VIEW, ConstantDocument.Yes);

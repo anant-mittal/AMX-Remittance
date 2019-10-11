@@ -26,11 +26,11 @@ import com.amx.jax.dal.RoutingProcedureDao;
 import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dbmodel.AccountTypeFromViewModel;
 import com.amx.jax.dbmodel.BankBranchView;
-import com.amx.jax.dbmodel.BankMasterModel;
+import com.amx.jax.dbmodel.BankMasterMdlv1;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.BizComponentData;
 import com.amx.jax.dbmodel.CountryMaster;
-import com.amx.jax.dbmodel.CurrencyMasterModel;
+import com.amx.jax.dbmodel.CurrencyMasterMdlv1;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.dbmodel.ParameterDetails;
@@ -315,7 +315,7 @@ public class BranchRemittanceManager extends AbstractModel {
 			}
 		}
 		
-		BankMasterModel bankMaster = bankService.getBankById(beneficaryDetails.getBankId());
+		BankMasterMdlv1 bankMaster = bankService.getBankById(beneficaryDetails.getBankId());
 		if(bankMaster!=null) {
 			iBanFlag = bankMaster.getIbanFlag();
 		}
@@ -591,7 +591,7 @@ public class BranchRemittanceManager extends AbstractModel {
 			 throw new GlobalException(JaxError.NULL_CUSTOMER_ID, "customer Id should not be blank");
 		 }
 		 
-		 BankMasterModel bankDetails = bankService.getBankById(routingBankId);
+		 BankMasterMdlv1 bankDetails = bankService.getBankById(routingBankId);
 		 if(bankDetails!=null && bankDetails.getRecordStatus()!=null && bankDetails.getRecordStatus().equalsIgnoreCase(ConstantDocument.Yes)) {
 			 allowNoBank = bankDetails.getAllowNoBank();
 		 }else {
@@ -830,7 +830,7 @@ public class BranchRemittanceManager extends AbstractModel {
   
 	 
 public void validateTrnxLimitCheck(ExchangeRateBreakup breakup,BigDecimal commission,BenificiaryListView beneficaryDetails) {
- CurrencyMasterModel beneCurrencyMaster = currencyDao.findOne(beneficaryDetails.getCurrencyId()); 
+ CurrencyMasterMdlv1 beneCurrencyMaster = currencyDao.findOne(beneficaryDetails.getCurrencyId()); 
 	BigDecimal decimalCurrencyValue = beneCurrencyMaster.getDecinalNumber();
 	String currencyQuoteName = beneficaryDetails.getCurrencyQuoteName();
 if (commission == null) {
@@ -910,8 +910,8 @@ public BeneAdditionalDto getAdditionalBeneDetailJax(BenificiaryListView benefica
 	 BigDecimal serviceMasterId = requestApplModel.getServiceMasterId();
 	 
 	 
-	 BankMasterModel routingBankMasterModel = bankService.getBankById(routingBankId);
-	 BankMasterModel beneBankMasterModel = bankService.getBankById(beneBankId);
+	 BankMasterMdlv1 routingBankMasterModel = bankService.getBankById(routingBankId);
+	 BankMasterMdlv1 beneBankMasterModel = bankService.getBankById(beneBankId);
 	 BigDecimal applicationCountry = beneficaryDetails.getApplicationCountryId();
 	 BigDecimal beneCountry = beneficaryDetails.getBenificaryCountry();
 	 BigDecimal currencyId = beneficaryDetails.getCurrencyId();
@@ -1224,8 +1224,8 @@ public ParameterDetailsResponseDto getGiftService(BigDecimal beneId) {
 						
 					
 					AdditionalBankRuleMap addlMap = additionalBankRuleMapRepos.findByFlexFieldAndIsActive(viewParameterDetails.getCharField3(), ConstantDocument.Yes);
-					BankMasterModel bankMasterModel = bankService.getByBankCode(viewParameterDetails.getCharField2());
-					List<CurrencyMasterModel> currLsit = currencyDao.getCurrencyListByCountryId(bankMasterModel.getBankCountryId());
+					BankMasterMdlv1 bankMasterModel = bankService.getByBankCode(viewParameterDetails.getCharField2());
+					List<CurrencyMasterMdlv1> currLsit = currencyDao.getCurrencyListByCountryId(bankMasterModel.getBankCountryId());
 					ViewRemittanceMode remitMode = viewRemittanceMode.findByRemittancCode(viewParameterDetails.getCharField4());
 					ViewDeliveryMode   delMode   =viewDeliveryMode.findByDeliveryCode(viewParameterDetails.getCharField5());
 					

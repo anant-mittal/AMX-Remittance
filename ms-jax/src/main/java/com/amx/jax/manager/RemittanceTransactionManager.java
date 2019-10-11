@@ -56,12 +56,12 @@ import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
 import com.amx.jax.dbmodel.AuthenticationView;
 import com.amx.jax.dbmodel.BankCharges;
-import com.amx.jax.dbmodel.BankMasterModel;
+import com.amx.jax.dbmodel.BankMasterMdlv1;
 import com.amx.jax.dbmodel.BankServiceRule;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.BizComponentData;
 import com.amx.jax.dbmodel.BlackListModel;
-import com.amx.jax.dbmodel.CurrencyMasterModel;
+import com.amx.jax.dbmodel.CurrencyMasterMdlv1;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ExchangeRateApprovalDetModel;
 import com.amx.jax.dbmodel.ReferralDetails;
@@ -326,7 +326,7 @@ public class RemittanceTransactionManager {
 		// validation for Home Send SP
 		boolean spStatus = Boolean.FALSE;
 		if(dynamicRoutingPricing != null && dynamicRoutingPricing.getServiceProviderDto() != null) {
-			BankMasterModel bankMaster = bankMasterRepo.findByBankCodeAndRecordStatus(PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name(), PricerServiceConstants.Yes);
+			BankMasterMdlv1 bankMaster = bankMasterRepo.findByBankCodeAndRecordStatus(PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name(), PricerServiceConstants.Yes);
 			// home send related validation check
 			if(bankMaster != null && trnxRoutingDetails.getRoutingBankId().compareTo(bankMaster.getBankId()) == 0) {
 				partnerTransactionManager.validateServiceProvider(model.getAdditionalFields(),model.getBeneId());
@@ -907,7 +907,7 @@ public class RemittanceTransactionManager {
 			throw new GlobalException(TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED, errorMessage.toString());
 		}
 		
-		CurrencyMasterModel beneCurrencyMaster = currencyMasterService.getCurrencyMasterById(currencyId);
+		CurrencyMasterMdlv1 beneCurrencyMaster = currencyMasterService.getCurrencyMasterById(currencyId);
 		BigDecimal decimalCurrencyValue = beneCurrencyMaster.getDecinalNumber();
 		String currencyQuoteName = beneCurrencyMaster.getQuoteName();
 		if (newCommission == null) {
@@ -1458,7 +1458,7 @@ public class RemittanceTransactionManager {
 		String errorMsg = null;
 
 		if(beneficiary != null && beneficiary.getBankId() != null) {
-			BankMasterModel bankMaster = bankService.getBankById(beneficiary.getBankId());
+			BankMasterMdlv1 bankMaster = bankService.getBankById(beneficiary.getBankId());
 			OWSScheduleModel oWSScheduleModel = iOWSScheduleModelRepository.findByCorBank(bankMaster.getBankCode());
 			if(oWSScheduleModel!=null && oWSScheduleModel.getBeneAccountCheckInd()!=null && !StringUtils.isBlank(oWSScheduleModel.getBeneAccountCheckInd()) && oWSScheduleModel.getBeneAccountCheckInd().equalsIgnoreCase("1")) {
 				Boolean ibankCheck = checkIbanNumber(bankMaster);
@@ -1474,7 +1474,7 @@ public class RemittanceTransactionManager {
 		}
 		
 		if(routingBankId != null) {
-			BankMasterModel routingBankMaster = bankService.getBankById(routingBankId);
+			BankMasterMdlv1 routingBankMaster = bankService.getBankById(routingBankId);
 			OWSScheduleModel oWSScheduleModelTT = iOWSScheduleModelRepository.findByCorBank(routingBankMaster.getBankCode());
 			
 			if(oWSScheduleModelTT!=null && oWSScheduleModelTT.getTtbeneAccountCheckInd()!=null && !StringUtils.isBlank(oWSScheduleModelTT.getTtbeneAccountCheckInd()) && oWSScheduleModelTT.getTtbeneAccountCheckInd().equals("1")) {
@@ -1496,7 +1496,7 @@ public class RemittanceTransactionManager {
 	}
 	
 	/** added by Rabil on 28 May 2019 **/
-	private Boolean checkIbanNumber(BankMasterModel bankMaster) {
+	private Boolean checkIbanNumber(BankMasterMdlv1 bankMaster) {
 		Boolean isIban =false;
 		if(bankMaster!=null && !StringUtils.isBlank(bankMaster.getIbanFlag()) && bankMaster.getIbanFlag().equals(ConstantDocument.Yes)) {
 			isIban =true;

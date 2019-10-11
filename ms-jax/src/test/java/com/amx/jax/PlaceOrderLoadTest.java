@@ -20,7 +20,7 @@ import com.amx.amxlib.model.PlaceOrderDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.controller.PlaceOrderController;
 import com.amx.jax.dbmodel.BenificiaryListView;
-import com.amx.jax.dbmodel.PipsMaster;
+import com.amx.jax.dbmodel.PipsMdlv1;
 import com.amx.jax.dbmodel.PlaceOrder;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.exrateservice.dao.PipsMasterDao;
@@ -99,7 +99,7 @@ public class PlaceOrderLoadTest {
 		});
 		placeOrderService.savePlaceOrder(placeOrders);
 		// fetch pips master id
-		List<PipsMaster> pips = pipsMasterDao.getPipsMasterForForeignAmount(placeOrderProperties.getCurrencyId(),
+		List<PipsMdlv1> pips = pipsMasterDao.getPipsMasterForForeignAmount(placeOrderProperties.getCurrencyId(),
 				new BigDecimal(2260), new BigDecimal(78), placeOrderProperties.getRoutingBankId());
 		BigDecimal pipsMasterId = pips.get(0).getPipsMasterId();
 		logger.info("pips masterid: " + pipsMasterId);

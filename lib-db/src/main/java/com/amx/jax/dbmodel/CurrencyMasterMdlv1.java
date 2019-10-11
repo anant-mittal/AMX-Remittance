@@ -23,7 +23,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "EX_CURRENCY_MASTER")
-public class CurrencyMasterModel implements java.io.Serializable {
+public class CurrencyMasterMdlv1 implements java.io.Serializable {
 
 	/**
 	 * 
@@ -61,10 +61,10 @@ public class CurrencyMasterModel implements java.io.Serializable {
 	
 
 
-	public CurrencyMasterModel() {
+	public CurrencyMasterMdlv1() {
 	}
 
-	public CurrencyMasterModel(BigDecimal currencyId) {
+	public CurrencyMasterMdlv1(BigDecimal currencyId) {
 		this.currencyId = currencyId;
 	}
 

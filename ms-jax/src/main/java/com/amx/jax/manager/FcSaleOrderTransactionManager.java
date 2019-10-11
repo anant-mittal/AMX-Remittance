@@ -20,8 +20,8 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.FcSaleExchangeRateDao;
 import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
-import com.amx.jax.dbmodel.CurrencyMasterModel;
-import com.amx.jax.dbmodel.CurrencyWiseDenomination;
+import com.amx.jax.dbmodel.CurrencyMasterMdlv1;
+import com.amx.jax.dbmodel.CurrencyWiseDenominationMdlv1;
 import com.amx.jax.dbmodel.ParameterDetails;
 import com.amx.jax.dbmodel.fx.FxExchangeRateView;
 import com.amx.jax.dbmodel.fx.FxOrderTranxLimitView;
@@ -77,7 +77,7 @@ public class FcSaleOrderTransactionManager extends AbstractModel{
 		logger.debug("calculateTrnxRate fc currencyId :"+fcCurrencyId+"\t fcAmount :"+fcAmount+"\t countryId :"+countryId+"\t countryBracnhId :"+countryBracnhId);
 		FcSaleOrderApplicationResponseModel responseModel = new FcSaleOrderApplicationResponseModel();
 		
-		List<CurrencyMasterModel> curr =currencyDao.getCurrencyList(fcCurrencyId);
+		List<CurrencyMasterMdlv1> curr =currencyDao.getCurrencyList(fcCurrencyId);
 		
 		if(JaxUtil.isNullZeroBigDecimalCheck(fcAmount) && fcAmount.compareTo(BigDecimal.ZERO)<0){
 			throw new GlobalException(JaxError.INVALID_EXCHANGE_AMOUNT, "Negative not allowed");
@@ -163,7 +163,7 @@ public class FcSaleOrderTransactionManager extends AbstractModel{
 		if(fcAmount.compareTo(BigDecimal.ZERO)<=0){
 			throw new GlobalException(JaxError.ZERO_NOT_ALLOWED,"Enter valid amount ");
 		}
-		CurrencyMasterModel curr = currencyMasterService.getCurrencyMasterById(localCurrencyId);
+		CurrencyMasterMdlv1 curr = currencyMasterService.getCurrencyMasterById(localCurrencyId);
 		if(curr!=null){
 			quoteName = curr.getQuoteName();
 			localDecimal = curr.getDecinalNumber()==null?0:curr.getDecinalNumber().intValue();
@@ -191,12 +191,12 @@ public class FcSaleOrderTransactionManager extends AbstractModel{
 
 	public void checkMinDenomination(BigDecimal fcCurrencyId,BigDecimal fcAmount) {
 		BigDecimal denominationId = null;
-		List<CurrencyMasterModel> curr =currencyDao.getCurrencyList(fcCurrencyId);
+		List<CurrencyMasterMdlv1> curr =currencyDao.getCurrencyList(fcCurrencyId);
 		if(curr!=null && !curr.isEmpty()) {
 			denominationId = curr.get(0).getMinDenominationId();
 		}
 		if(JaxUtil.isNullZeroBigDecimalCheck(denominationId)) {
-			CurrencyWiseDenomination currDenomination = currenDenominationRepository.getMinimumCurrencyDenominationValue(meta.getCountryId(),fcCurrencyId,denominationId, ConstantDocument.Yes);
+			CurrencyWiseDenominationMdlv1 currDenomination = currenDenominationRepository.getMinimumCurrencyDenominationValue(meta.getCountryId(),fcCurrencyId,denominationId, ConstantDocument.Yes);
 		  if(currDenomination!=null && JaxUtil.isNullZeroBigDecimalCheck(currDenomination.getDenominationAmount())) {
 			double minDenoAmount = currDenomination.getDenominationAmount().doubleValue();
 			double fcAmountDouble  =fcAmount.doubleValue(); 

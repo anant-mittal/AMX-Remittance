@@ -26,7 +26,7 @@ import com.amx.jax.config.JaxProperties;
 import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.constants.JaxChannel;
 import com.amx.jax.dbmodel.ExchangeRateApprovalDetModel;
-import com.amx.jax.dbmodel.PipsMaster;
+import com.amx.jax.dbmodel.PipsMdlv1;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.pricer.PricerServiceClient;
@@ -136,7 +136,7 @@ public class NewExchangeRateService extends ExchangeRateService {
 		logger.info("In getExchangeRatesForOnline, parames- " + fromCurrency + " toCurrency " + toCurrency + " amount "
 				+ lcAmount + " bankId: " + routingBankId);
 		if (fromCurrency.equals(meta.getDefaultCurrencyId())) {
-			List<PipsMaster> pips = pipsDao.getPipsForOnline(toCurrency);
+			List<PipsMdlv1> pips = pipsDao.getPipsForOnline(toCurrency);
 			if (pips == null || pips.isEmpty()) {
 				throw new GlobalException(JaxError.EXCHANGE_RATE_NOT_FOUND, "No exchange data found");
 			}
@@ -178,7 +178,7 @@ public class NewExchangeRateService extends ExchangeRateService {
 	 */
 	public ExchangeRateBreakup getExchangeRateBreakUpUsingBestRate(BigDecimal toCurrency, BigDecimal lcAmount,
 			BigDecimal fcAmount, BigDecimal bankId) {
-		List<PipsMaster> pips = null;
+		List<PipsMdlv1> pips = null;
 		if (lcAmount != null) {
 			pips = pipsDao.getPipsMasterForLocalAmount(toCurrency, lcAmount, meta.getCountryBranchId(), bankId);
 		}
@@ -251,7 +251,7 @@ public class NewExchangeRateService extends ExchangeRateService {
 			BigDecimal countryBranchId, List<BigDecimal> validBankIds) {
 		List<BankMasterDTO> bankMasterDto = new ArrayList<>();
 
-		List<PipsMaster> pips = pipsDao.getPipsMaster(toCurrency, lcAmount, countryBranchId, validBankIds);
+		List<PipsMdlv1> pips = pipsDao.getPipsMaster(toCurrency, lcAmount, countryBranchId, validBankIds);
 		pips.forEach(i -> {
 			BankMasterDTO dto = bankMasterService.convert(i.getBankMaster());
 			bankMasterDto.add(dto);
@@ -364,7 +364,7 @@ public class NewExchangeRateService extends ExchangeRateService {
 			breakup.setConvertedFCAmount(breakup.getRate().multiply(lcAmount));
 			breakup.setConvertedLCAmount(lcAmount);
 		}
-		List<PipsMaster> pips = null;
+		List<PipsMdlv1> pips = null;
 
 		if (fcAmount != null && fcAmount.compareTo(BigDecimal.ZERO) > 0) {
 			pips = pipsDao.getPipsMasterForBranch(exchangeRate, fcAmount);
@@ -373,7 +373,7 @@ public class NewExchangeRateService extends ExchangeRateService {
 		}
 		// apply discounts
 		if (pips != null && !pips.isEmpty()) {
-			PipsMaster pip = pips.get(0);
+			PipsMdlv1 pip = pips.get(0);
 			inverseExchangeRate = inverseExchangeRate.subtract(pip.getPipsNo());
 			breakup.setInverseRate(inverseExchangeRate);
 			breakup.setRate(new BigDecimal(1).divide(inverseExchangeRate, 10, RoundingMode.HALF_UP));

@@ -21,7 +21,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "EX_COLLECTION")
-public class CollectionModel implements Serializable {
+public class CollectionMdlv1 implements Serializable {
 
 	/**
 	 * 
@@ -31,7 +31,7 @@ public class CollectionModel implements Serializable {
 	/**
 	 * 
 	 */
-	public CollectionModel() {
+	public CollectionMdlv1() {
 	}
 
 	private BigDecimal collectionId;
@@ -43,7 +43,7 @@ public class CollectionModel implements Serializable {
 	private BigDecimal documentNo;
 	private BigDecimal documentId;
 	private Date collectDate;
-	private CurrencyMasterModel exCurrencyMaster;
+	private CurrencyMasterMdlv1 exCurrencyMaster;
 	private BigDecimal paidAmount;
 	private BigDecimal refoundAmount;
 	private BigDecimal netAmount;
@@ -54,12 +54,12 @@ public class CollectionModel implements Serializable {
 	private Date createdDate;
 	private String modifiedBy;
 	private Date modifiedDate;
-	private CountryBranch exBankBranch;
+	private CountryBranchMdlv1 exBankBranch;
 	private String receiptType;
 	private BigDecimal companyCode;
 	private BigDecimal locCode;
 	
-	private List<ForeignCurrencyAdjust> foreinCurrenecyAdjust;
+	private List<ForeignCurrencyAdjustMdlv1> foreinCurrenecyAdjust;
 	private String cashDeclarationIndicator;
 	private String totalAmountDeclarationIndicator;
     private BigDecimal deliveryCharges;
@@ -89,16 +89,16 @@ public class CollectionModel implements Serializable {
 	 * @param modifiedDate
 	 * @param foreinCurrenecyAdjust
 	 */
-	public CollectionModel(BigDecimal collectionId, CompanyMaster fsCompanyMaster,
+	public CollectionMdlv1(BigDecimal collectionId, CompanyMaster fsCompanyMaster,
 			BigDecimal applicationCountryId, Customer fsCustomer,
 			BigDecimal documentCode, BigDecimal documentFinanceYear,
 			BigDecimal documentNo, Date collectDate,
-			CurrencyMasterModel exCurrencyMaster, BigDecimal paidAmount,
+			CurrencyMasterMdlv1 exCurrencyMaster, BigDecimal paidAmount,
 			BigDecimal refoundAmount, BigDecimal netAmount, String isActive,
 			Date accountMMYYYY, Date generalLegerDate, String createdBy,
 			Date createdDate, String modifiedBy, Date modifiedDate,
-			CountryBranch exBankBranch,
-			List<ForeignCurrencyAdjust> foreinCurrenecyAdjust,BigDecimal locCode) {
+			CountryBranchMdlv1 exBankBranch,
+			List<ForeignCurrencyAdjustMdlv1> foreinCurrenecyAdjust,BigDecimal locCode) {
 		super();
 		this.collectionId = collectionId;
 		this.fsCompanyMaster = fsCompanyMaster;
@@ -196,10 +196,10 @@ public class CollectionModel implements Serializable {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "CURRENCY_ID")
-	public CurrencyMasterModel getExCurrencyMaster() {
+	public CurrencyMasterMdlv1 getExCurrencyMaster() {
 		return exCurrencyMaster;
 	}
-	public void setExCurrencyMaster(CurrencyMasterModel exCurrencyMaster) {
+	public void setExCurrencyMaster(CurrencyMasterMdlv1 exCurrencyMaster) {
 		this.exCurrencyMaster = exCurrencyMaster;
 	}
 
@@ -302,19 +302,19 @@ public class CollectionModel implements Serializable {
 	}
 
 	@OneToMany(fetch = FetchType.LAZY,mappedBy="collect")
-	public List<ForeignCurrencyAdjust> getForeinCurrenecyAdjust() {
+	public List<ForeignCurrencyAdjustMdlv1> getForeinCurrenecyAdjust() {
 		return foreinCurrenecyAdjust;
 	}
-	public void setForeinCurrenecyAdjust(List<ForeignCurrencyAdjust> foreinCurrenecyAdjust) {
+	public void setForeinCurrenecyAdjust(List<ForeignCurrencyAdjustMdlv1> foreinCurrenecyAdjust) {
 		this.foreinCurrenecyAdjust = foreinCurrenecyAdjust;
 	}
 	
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name = "COUNTRY_BRANCH_ID")
-	public CountryBranch getExBankBranch() {
+	public CountryBranchMdlv1 getExBankBranch() {
 		return exBankBranch;
 	}
-	public void setExBankBranch(CountryBranch exBankBranch) {
+	public void setExBankBranch(CountryBranchMdlv1 exBankBranch) {
 		this.exBankBranch = exBankBranch;
 	}
 

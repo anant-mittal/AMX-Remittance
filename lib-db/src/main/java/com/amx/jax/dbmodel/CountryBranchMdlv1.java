@@ -25,7 +25,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Table(name = "EX_COUNTRY_BRANCH")
 @Cacheable  
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class CountryBranch implements Serializable {
+public class CountryBranchMdlv1 implements Serializable {
 
 	/**
 	 * 
@@ -55,18 +55,18 @@ public class CountryBranch implements Serializable {
 	private String scanInd;
 	private String digitalSignInd;
 
-	private Set<PipsMaster> pipsMaster;
+	private Set<PipsMdlv1> pipsMaster;
 	private String wuAccountCode;
 	// private Set<ExchangeRate> exchangeRate;
 	// private Set<Remittance> exRemittance = new HashSet<Remittance>(0);
 	// private Set<Employee> fsEmployee;
 	// private Set<Stock> fsStock;
 
-	public CountryBranch(BigDecimal countryBranchId) {
+	public CountryBranchMdlv1(BigDecimal countryBranchId) {
 		this.countryBranchId = countryBranchId;
 	}
 
-	public CountryBranch() {
+	public CountryBranchMdlv1() {
 		super();
 	}
 
@@ -109,11 +109,11 @@ public class CountryBranch implements Serializable {
 	}
 
 	@OneToMany(mappedBy = "countryBranch")
-	public Set<PipsMaster> getPipsMaster() {
+	public Set<PipsMdlv1> getPipsMaster() {
 		return pipsMaster;
 	}
 
-	public void setPipsMaster(Set<PipsMaster> pipsMaster) {
+	public void setPipsMaster(Set<PipsMdlv1> pipsMaster) {
 		this.pipsMaster = pipsMaster;
 	}
 

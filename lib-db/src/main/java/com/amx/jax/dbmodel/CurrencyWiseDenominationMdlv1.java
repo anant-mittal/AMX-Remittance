@@ -20,14 +20,14 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "EX_CURRENCY_DENOMINATION")
-public class CurrencyWiseDenomination implements Serializable {
+public class CurrencyWiseDenominationMdlv1 implements Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	private BigDecimal denominationId;
-	private CurrencyMasterModel exCurrencyMaster;
+	private CurrencyMasterMdlv1 exCurrencyMaster;
 	private CountryMaster fsCountryMaster;
 	private String denominationDesc;
 	private BigDecimal denominationAmount;
@@ -41,13 +41,13 @@ public class CurrencyWiseDenomination implements Serializable {
 	private String isActive;
 	private BigDecimal denominationCode;
 	
-	public CurrencyWiseDenomination() {
+	public CurrencyWiseDenominationMdlv1() {
 		super();
 	}
 
 	
-	public CurrencyWiseDenomination(BigDecimal denominationId,
-			CurrencyMasterModel exCurrencyMaster, CountryMaster fsCountryMaster,
+	public CurrencyWiseDenominationMdlv1(BigDecimal denominationId,
+			CurrencyMasterMdlv1 exCurrencyMaster, CountryMaster fsCountryMaster,
 			String denominationDesc, BigDecimal denominationAmount,
 			String createdBy, Date createdDate, String modifiedBy,
 			Date modifiedDate, String approvedBy, Date approvedDate,
@@ -84,10 +84,10 @@ public class CurrencyWiseDenomination implements Serializable {
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "CURRENCY_ID")
-	public CurrencyMasterModel getExCurrencyMaster() {
+	public CurrencyMasterMdlv1 getExCurrencyMaster() {
 		return exCurrencyMaster;
 	}
-	public void setExCurrencyMaster(CurrencyMasterModel exCurrencyMaster) {
+	public void setExCurrencyMaster(CurrencyMasterMdlv1 exCurrencyMaster) {
 		this.exCurrencyMaster = exCurrencyMaster;
 	}
 	

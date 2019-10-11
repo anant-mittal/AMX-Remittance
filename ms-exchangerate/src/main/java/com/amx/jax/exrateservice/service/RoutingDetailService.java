@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.amx.jax.dbmodel.CountryMaster;
-import com.amx.jax.dbmodel.CurrencyMasterModel;
+import com.amx.jax.dbmodel.CurrencyMasterMdlv1;
 import com.amx.jax.repository.routing.RoutingDetailRepository;
 
 @Service
@@ -22,7 +22,7 @@ public class RoutingDetailService {
 	 * @return list of routing banks for cash channel
 	 */
 	public List<BigDecimal> getCashRoutingBanks(BigDecimal currencyId, BigDecimal beneCountryId) {
-		return routingDetailRepository.getCashRoutingBanks(new CurrencyMasterModel(currencyId),
+		return routingDetailRepository.getCashRoutingBanks(new CurrencyMasterMdlv1(currencyId),
 				new CountryMaster(beneCountryId));
 	}
 }

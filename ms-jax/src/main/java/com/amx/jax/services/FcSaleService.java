@@ -25,8 +25,8 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.FcSaleExchangeRateDao;
-import com.amx.jax.dbmodel.CollectionModel;
-import com.amx.jax.dbmodel.CurrencyMasterModel;
+import com.amx.jax.dbmodel.CollectionMdlv1;
+import com.amx.jax.dbmodel.CurrencyMasterMdlv1;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ParameterDetails;
 import com.amx.jax.dbmodel.PurposeOfTransaction;
@@ -142,7 +142,7 @@ public class FcSaleService extends AbstractService {
 	public AmxApiResponse<CurrencyMasterDTO, Object> getFcSalecurrencyList(BigDecimal countryId) {
 		validation.fcsalecurrencyList(countryId);
 		validation.validateHeaderInfo();
-		List<CurrencyMasterModel> currencyList = currencyDao.getfcCurrencyList(countryId);
+		List<CurrencyMasterMdlv1> currencyList = currencyDao.getfcCurrencyList(countryId);
 		if (currencyList.isEmpty()) {
 			throw new GlobalException(JaxError.NO_RECORD_FOUND, "No data found");
 		}
@@ -188,7 +188,7 @@ public class FcSaleService extends AbstractService {
 		validation.validateHeaderInfo();
 		FcSaleOrderDefaultResponseModel responseModel = new FcSaleOrderDefaultResponseModel();
 		List<PurposeOfTransaction> purposeofTrnxList = purposetrnxDao.getPurposeOfTrnx();
-		List<CurrencyMasterModel> currencyList = currencyDao.getfcCurrencyList(applicationCountryId);
+		List<CurrencyMasterMdlv1> currencyList = currencyDao.getfcCurrencyList(applicationCountryId);
 		List<ParameterDetails> denominationTypeList = fcSaleExchangeRateDao.getParameterDetails(ConstantDocument.FX_CD,
 				ConstantDocument.Yes);
 		List<SourceOfIncomeView> sourceOfIncomeList = sourceOfIncomeDao.getSourceofIncome(languageId);
@@ -372,13 +372,13 @@ public class FcSaleService extends AbstractService {
 		return dtoList;
 	}
 
-	private List<CurrencyMasterDTO> convertToModelDto(List<CurrencyMasterModel> currencyList) {
+	private List<CurrencyMasterDTO> convertToModelDto(List<CurrencyMasterMdlv1> currencyList) {
 		List<CurrencyMasterDTO> output = new ArrayList<>();
 		currencyList.forEach(currency -> output.add(convertModel(currency)));
 		return output;
 	}
 
-	public CurrencyMasterDTO convertModel(CurrencyMasterModel currency) {
+	public CurrencyMasterDTO convertModel(CurrencyMasterMdlv1 currency) {
 		CurrencyMasterDTO dto = new CurrencyMasterDTO();
 		try {
 			BeanUtils.copyProperties(dto, currency);
@@ -449,7 +449,7 @@ public class FcSaleService extends AbstractService {
 					orderNotificationModel.setEmail(customerList.get(0).getEmail());
 					orderNotificationModel.setMobileNo(customerList.get(0).getMobile()==null?"":customerList.get(0).getMobile());
 					orderNotificationModel.setLoyaltyPoints(customerList.get(0).getLoyaltyPoints()==null?BigDecimal.ZERO:customerList.get(0).getLoyaltyPoints());
-				CollectionModel collModel =collRepos.getCollectionDetails(payDto.getCollectionDocumentNumber(),payDto.getCollectionFinanceYear(),ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION);
+				CollectionMdlv1 collModel =collRepos.getCollectionDetails(payDto.getCollectionDocumentNumber(),payDto.getCollectionFinanceYear(),ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION);
 				if(!StringUtils.isBlank(orderNotificationModel.getEmail()) && collModel!=null){
 				orderNotificationModel.setDate(DateUtil.todaysDateWithDDMMYY(collModel.getCreatedDate(),"0"));
 				orderNotificationModel.setLocalQurrencyQuote(currencyDao.getCurrencyList(collModel.getExCurrencyMaster().getCurrencyId()).get(0).getQuoteName());

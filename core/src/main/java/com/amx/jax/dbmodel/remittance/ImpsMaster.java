@@ -15,7 +15,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import com.amx.jax.dbmodel.BankMasterModel;
+import com.amx.jax.dbmodel.BankMasterMdlv1;
 import com.amx.jax.dbmodel.CountryMaster;
 
 @Entity
@@ -27,8 +27,8 @@ public class ImpsMaster implements Serializable {
 	private BigDecimal impsId;
 	private CountryMaster applicationCountryId;
 	private CountryMaster fsCountryMaster;
-	private BankMasterModel routingBankId;
-	private BankMasterModel beneBankId;
+	private BankMasterMdlv1 routingBankId;
+	private BankMasterMdlv1 beneBankId;
 	private String createdBy;
 	private String approvedBy;
 	private Date createdDate;
@@ -49,21 +49,21 @@ public class ImpsMaster implements Serializable {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "ROUTING_BANK_ID")
-	public BankMasterModel getRoutingBankId() {
+	public BankMasterMdlv1 getRoutingBankId() {
 		return routingBankId;
 	}
 
-	public void setRoutingBankId(BankMasterModel routingBankId) {
+	public void setRoutingBankId(BankMasterMdlv1 routingBankId) {
 		this.routingBankId = routingBankId;
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "BENEFICARY_BANK_ID")
-	public BankMasterModel getBeneBankId() {
+	public BankMasterMdlv1 getBeneBankId() {
 		return beneBankId;
 	}
 
-	public void setBeneBankId(BankMasterModel beneBankId) {
+	public void setBeneBankId(BankMasterMdlv1 beneBankId) {
 		this.beneBankId = beneBankId;
 	}
 
