@@ -74,6 +74,7 @@ import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.model.response.CurrencyMasterDTO;
 import com.amx.jax.model.response.customer.PersonInfo;
+import com.amx.jax.model.response.remittance.LoyalityPointState;
 import com.amx.jax.repository.BeneficaryAccountRepository;
 import com.amx.jax.repository.CountryRepository;
 import com.amx.jax.repository.IBeneficaryContactDao;
@@ -1093,12 +1094,12 @@ public class BeneficiaryService extends AbstractService {
 
 	private CurrencyMasterDTO getCurrencyDTO(BigDecimal currencyId) {
 		CurrencyMasterDTO dto = new CurrencyMasterDTO();
-		List<CurrencyMasterModel> currencyList = currencyDao.getCurrencyList(currencyId);
+		List<CurrencyMasterMdlv1> currencyList = currencyDao.getCurrencyList(currencyId);
 		/*
 		 * if (currencyList.isEmpty()) { throw new
 		 * GlobalException("Currency details not avaliable"); }
 		 */if(currencyList!=null && !currencyList.isEmpty()) {
-			CurrencyMasterModel curModel = currencyList.get(0);
+			 CurrencyMasterMdlv1 curModel = currencyList.get(0);
 			dto.setCountryId(curModel.getCountryId());
 			dto.setCurrencyCode(curModel.getCurrencyCode());
 			dto.setQuoteName(curModel.getQuoteName());
