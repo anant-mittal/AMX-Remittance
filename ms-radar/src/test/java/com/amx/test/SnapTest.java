@@ -42,15 +42,15 @@ public class SnapTest { // Noncompliant
 				.readFile(FileUtil.normalize(
 						"file://" + System.getProperty("user.dir") + "/src/test/java/com/amx/test/sample.json"));
 		SnapModelWrapper wrapper = new SnapModelWrapper(json);
-		AggregationField x = wrapper.getAggregations().field("tranx");
+		List<java.util.Map<String, Object>> x = wrapper.getAggregations().toBulk();
 		System.out.println("x=====" + JsonUtil.toJson(x));
-		List<Aggregations> xl = x.getBuckets();
-		System.out.println("[x1]=====" + JsonUtil.toJson(xl));
-		Aggregations x1 = x.getBuckets().get(0);
-		System.out.println("x1=====" + JsonUtil.toJson(x1));
-		AggregationField x2 = x1.field("channel");
-		System.out.println("x2=====" + JsonUtil.toJson(x2));
-		System.out.println("x2.key=====" + x2.getBuckets().get(0).getKey());
+		//List<Aggregations> xl = x.getBuckets();
+		///System.out.println("[x1]=====" + JsonUtil.toJson(xl));
+		//Aggregations x1 = x.getBuckets().get(0);
+		//System.out.println("x1=====" + JsonUtil.toJson(x1));
+		//AggregationField x2 = x1.field("channel");
+		//System.out.println("x2=====" + JsonUtil.toJson(x2));
+		//System.out.println("x2.key=====" + x2.getBuckets().get(0).getKey());
 	}
 
 }

@@ -34,6 +34,10 @@ public class SnapModels {
 		KEYS.put("doc_count_error_upper_bound", true);
 		KEYS.put("sum_other_doc_count", true);
 		KEYS.put("doc_count", true);
+		KEYS.put("to_as_string", true);
+		KEYS.put("from_as_string", true);
+		KEYS.put("from", true);
+		KEYS.put("to", true);
 	}
 
 	public static class ASnapModel extends MapModel {
