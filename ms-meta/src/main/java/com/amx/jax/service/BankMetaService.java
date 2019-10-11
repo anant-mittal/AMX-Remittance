@@ -26,8 +26,8 @@ import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.BankBranchView;
-import com.amx.jax.dbmodel.BankMasterModel;
-import com.amx.jax.dbmodel.CountryBranch;
+import com.amx.jax.dbmodel.BankMasterMdlv1;
+import com.amx.jax.dbmodel.CountryBranchMdlv1;
 import com.amx.jax.dbmodel.SourceOfIncomeView;
 import com.amx.jax.dbmodel.treasury.BankApplicability;
 import com.amx.jax.error.JaxError;
@@ -56,7 +56,7 @@ public class BankMetaService extends AbstractService {
 	@Autowired
 	MetaData metaData;
 	
-	public List<BankMasterModel> getBanksByCountryId(BigDecimal countryId) {
+	public List<BankMasterMdlv1> getBanksByCountryId(BigDecimal countryId) {
 	
 		return repo.findBybankCountryIdAndRecordStatusOrderByBankShortNameAsc(countryId, ConstantDocument.Yes);
 	}
@@ -64,7 +64,7 @@ public class BankMetaService extends AbstractService {
 	public AmxApiResponse<BankMasterDTO, Object> getBanksApiResponseByCountryId(BigDecimal countryId) {
 		
 		BigDecimal languageId = metaData.getLanguageId();
-		List<BankMasterModel> banks = new ArrayList<>();
+		List<BankMasterMdlv1> banks = new ArrayList<>();
 		
 		banks =this.getBanksByCountryId(countryId);
 		
@@ -73,14 +73,14 @@ public class BankMetaService extends AbstractService {
 		}
 		else if(languageId.equals(new BigDecimal(2))) {
 			
-			List<BankMasterModel> bankArabicName = repo.findBybankCountryIdAndLanguageInd(countryId, languageId.toString());
+			List<BankMasterMdlv1> bankArabicName = repo.findBybankCountryIdAndLanguageInd(countryId, languageId.toString());
 			banks.addAll(bankArabicName);
 						
 		}
 		return AmxApiResponse.buildList(convert(banks));
 	}
 
-	private List<BankMasterDTO> convert(List<BankMasterModel> banks) {
+	private List<BankMasterDTO> convert(List<BankMasterMdlv1> banks) {
 
 		List<BankMasterDTO> bankdtos = new ArrayList<>();
 		
@@ -104,7 +104,7 @@ public class BankMetaService extends AbstractService {
 		return bankdtos;
 	}
 
-	public BankMasterDTO convert(BankMasterModel dbmodel) {
+	public BankMasterDTO convert(BankMasterMdlv1 dbmodel) {
 		BankMasterDTO dto = new BankMasterDTO();
 		try {
 			BeanUtils.copyProperties(dto, dbmodel);
@@ -115,19 +115,19 @@ public class BankMetaService extends AbstractService {
 	}
 
 	public BankMasterDTO getBankMasterDTObyId(BigDecimal bankId) {
-		BankMasterModel dbModel = repo.findOne(bankId);
+		BankMasterMdlv1 dbModel = repo.findOne(bankId);
 		if (dbModel != null) {
 			return convert(dbModel);
 		}
 		return null;
 	}
 
-	public BankMasterModel getBankMasterbyId(BigDecimal bankId) {
-		BankMasterModel dbModel = repo.findOne(bankId);
+	public BankMasterMdlv1 getBankMasterbyId(BigDecimal bankId) {
+		BankMasterMdlv1 dbModel = repo.findOne(bankId);
 		return dbModel;
 	}
 
-	public CountryBranch getCountryBranchById(BigDecimal id) {
+	public CountryBranchMdlv1 getCountryBranchById(BigDecimal id) {
 		return countryBranchRepository.findOne(id);
 	}
 
@@ -198,7 +198,7 @@ public class BankMetaService extends AbstractService {
 	}
 
 	public BankApplicability getBankApplicability(BigDecimal bankId) {
-		return bankApplicabilityRepository.findByBankMaster(new BankMasterModel(bankId));
+		return bankApplicabilityRepository.findByBankMaster(new BankMasterMdlv1(bankId));
 	}
 
 	@Override

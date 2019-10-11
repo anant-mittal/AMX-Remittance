@@ -20,10 +20,10 @@ import org.springframework.stereotype.Component;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.ApplicationProcedureDao;
-import com.amx.jax.dbmodel.CollectDetailModel;
-import com.amx.jax.dbmodel.CollectionModel;
+import com.amx.jax.dbmodel.CollectDetailMdlv1;
+import com.amx.jax.dbmodel.CollectionMdlv1;
 import com.amx.jax.dbmodel.Customer;
-import com.amx.jax.dbmodel.ForeignCurrencyAdjust;
+import com.amx.jax.dbmodel.ForeignCurrencyAdjustMdlv1;
 import com.amx.jax.dbmodel.RemittanceTransactionView;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.partner.RemitApplSrvProv;
@@ -170,9 +170,9 @@ public class BranchRemittanceDao {
 		try {
 			RemittanceResponseDto responseDto = new RemittanceResponseDto();
 
-			CollectionModel collectModel = (CollectionModel) mapAllDetailRemitSave.get("EX_COLLECT");
-			List<CollectDetailModel> collectDetailsModel = (List<CollectDetailModel>) mapAllDetailRemitSave.get("EX_COLLECT_DET");
-			List<ForeignCurrencyAdjust> foreignCurrencyAdjust = (List<ForeignCurrencyAdjust>) mapAllDetailRemitSave.get("EX_CURR_ADJUST");
+			CollectionMdlv1 collectModel = (CollectionMdlv1) mapAllDetailRemitSave.get("EX_COLLECT");
+			List<CollectDetailMdlv1> collectDetailsModel = (List<CollectDetailMdlv1>) mapAllDetailRemitSave.get("EX_COLLECT_DET");
+			List<ForeignCurrencyAdjustMdlv1> foreignCurrencyAdjust = (List<ForeignCurrencyAdjustMdlv1>) mapAllDetailRemitSave.get("EX_CURR_ADJUST");
 			Map<BigDecimal, RemittanceTransaction> remitTrnxList = (Map<BigDecimal, RemittanceTransaction>) mapAllDetailRemitSave.get("EX_REMIT_TRNX");
 			Map<BigDecimal, RemittanceBenificiary> remitBeneList = (Map<BigDecimal, RemittanceBenificiary>) mapAllDetailRemitSave.get("EX_REMIT_BENE");
 			Map<BigDecimal, List<RemittanceAdditionalInstructionData>> addlTrnxList = (Map<BigDecimal, List<RemittanceAdditionalInstructionData>>) mapAllDetailRemitSave.get("EX_REMIT_ADDL");
@@ -202,7 +202,7 @@ public class BranchRemittanceDao {
 			}
 
 			if (collectDetailsModel != null && !collectDetailsModel.isEmpty() && JaxUtil.isNullZeroBigDecimalCheck(collectModel.getDocumentNo())) {
-				for(CollectDetailModel collectDetModel : collectDetailsModel) {
+				for(CollectDetailMdlv1 collectDetModel : collectDetailsModel) {
 					collectDetModel.setDocumentNo(collectModel.getDocumentNo());
 					collectDetailRepository.save(collectDetModel);
 				}
@@ -213,7 +213,7 @@ public class BranchRemittanceDao {
 			}
 
 			if (foreignCurrencyAdjust != null && !foreignCurrencyAdjust.isEmpty()) {
-				for(ForeignCurrencyAdjust foreignCurrAdju:foreignCurrencyAdjust) {
+				for(ForeignCurrencyAdjustMdlv1 foreignCurrAdju:foreignCurrencyAdjust) {
 					foreignCurrAdju.setDocumentNo(collectModel.getDocumentNo());
 					foreignCurrAdjustRepository.save(foreignCurrAdju);
 				}

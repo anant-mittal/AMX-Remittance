@@ -17,7 +17,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "EX_CURRENCY_ADJUST")
-public class ForeignCurrencyAdjust implements Serializable {
+public class ForeignCurrencyAdjustMdlv1 implements Serializable {
 	/**
 	 * 
 	 */
@@ -26,9 +26,9 @@ public class ForeignCurrencyAdjust implements Serializable {
 	private Customer fsCustomer;
 	private CountryMaster fsCountryMaster;
 	private CompanyMaster fsCompanyMaster;
-	private CountryBranch countryBranch;// Nedd to check with tables
-	private CurrencyMasterModel fsCurrencyMaster;
-	private CurrencyWiseDenomination fsDenominationId; // need to check
+	private CountryBranchMdlv1 countryBranch;// Nedd to check with tables
+	private CurrencyMasterMdlv1 fsCurrencyMaster;
+	private CurrencyWiseDenominationMdlv1 fsDenominationId; // need to check
 	private String oracleUser;
 	private BigDecimal documentCode;
 	private BigDecimal documentFinanceYear;
@@ -50,7 +50,7 @@ public class ForeignCurrencyAdjust implements Serializable {
 	private Date createdDate;
 	private String modifiedBy;
 	private Date modifiedDate;
-	private CollectionModel collect;
+	private CollectionMdlv1 collect;
 	private BigDecimal documentId;
 	private BigDecimal companyCode;
 	private String status;
@@ -88,11 +88,11 @@ public class ForeignCurrencyAdjust implements Serializable {
 	 * @param collect
 	 */
 	
-	public ForeignCurrencyAdjust(BigDecimal foreignCurrencyAdjustId,
+	public ForeignCurrencyAdjustMdlv1(BigDecimal foreignCurrencyAdjustId,
 			Customer fsCustomer, CountryMaster fsCountryMaster,
-			CompanyMaster fsCompanyMaster, CountryBranch countryBranch,
-			CurrencyMasterModel fsCurrencyMaster,
-			CurrencyWiseDenomination fsDenominationId, String oracleUser,
+			CompanyMaster fsCompanyMaster, CountryBranchMdlv1 countryBranch,
+			CurrencyMasterMdlv1 fsCurrencyMaster,
+			CurrencyWiseDenominationMdlv1 fsDenominationId, String oracleUser,
 			BigDecimal documentCode, BigDecimal documentFinanceYear, BigDecimal documentNo,
 			BigDecimal documentLineNumber, Date documentDate, Date accountmmyyyy,
 			BigDecimal adjustmentAmount, BigDecimal notesQuantity, BigDecimal exchangeRate,
@@ -100,7 +100,7 @@ public class ForeignCurrencyAdjust implements Serializable {
 			String documentStatus, String stockUpdated, String transactionType,
 			Date approvalDate, String approvalBy, String createdBy,
 			Date createdDate, String modifiedBy, Date modifiedDate,
-			CollectionModel collect) {
+			CollectionMdlv1 collect) {
 
 		this.foreignCurrencyAdjustId = foreignCurrencyAdjustId;
 		this.fsCustomer = fsCustomer;
@@ -133,7 +133,7 @@ public class ForeignCurrencyAdjust implements Serializable {
 		this.collect = collect;
 	}
 
-	public ForeignCurrencyAdjust() {
+	public ForeignCurrencyAdjustMdlv1() {
 
 	}
 
@@ -188,19 +188,19 @@ public class ForeignCurrencyAdjust implements Serializable {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "CURRENCY_ID")
-	public CurrencyMasterModel getFsCurrencyMaster() {
+	public CurrencyMasterMdlv1 getFsCurrencyMaster() {
 		return fsCurrencyMaster;
 	}
-	public void setFsCurrencyMaster(CurrencyMasterModel fsCurrencyMaster) {
+	public void setFsCurrencyMaster(CurrencyMasterMdlv1 fsCurrencyMaster) {
 		this.fsCurrencyMaster = fsCurrencyMaster;
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "DENOMINATION_ID")
-	public CurrencyWiseDenomination getFsDenominationId() {
+	public CurrencyWiseDenominationMdlv1 getFsDenominationId() {
 		return fsDenominationId;
 	}
-	public void setFsDenominationId(CurrencyWiseDenomination fsDenominationId) {
+	public void setFsDenominationId(CurrencyWiseDenominationMdlv1 fsDenominationId) {
 		this.fsDenominationId = fsDenominationId;
 	}
 
@@ -375,19 +375,19 @@ public class ForeignCurrencyAdjust implements Serializable {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "CASH_COLLECTION_ID")
-	public CollectionModel getCollect() {
+	public CollectionMdlv1 getCollect() {
 		return collect;
 	}
-	public void setCollect(CollectionModel collect) {
+	public void setCollect(CollectionMdlv1 collect) {
 		this.collect = collect;
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "COUNTRY_BRANCH_ID")
-	public CountryBranch getCountryBranch() {
+	public CountryBranchMdlv1 getCountryBranch() {
 		return countryBranch;
 	}
-	public void setCountryBranch(CountryBranch countryBranch) {
+	public void setCountryBranch(CountryBranchMdlv1 countryBranch) {
 		this.countryBranch = countryBranch;
 	}
    

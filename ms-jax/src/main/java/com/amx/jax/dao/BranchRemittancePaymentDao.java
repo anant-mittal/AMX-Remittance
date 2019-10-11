@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.amx.jax.dbmodel.CurrencyWiseDenomination;
+import com.amx.jax.dbmodel.CurrencyWiseDenominationMdlv1;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ParameterDetails;
 import com.amx.jax.dbmodel.remittance.CustomerBank;
@@ -69,7 +69,7 @@ public class BranchRemittancePaymentDao {
 		return parameterDetailsRespository.findByRecordIdAndIsActive(recordId, isactive);
 	}
 	
-	public List<CurrencyWiseDenomination> fetchCurrencyDenomination(BigDecimal currencyId,String isActive){
+	public List<CurrencyWiseDenominationMdlv1> fetchCurrencyDenomination(BigDecimal currencyId,String isActive){
 		return currencyWiseDenominationRepository.fetchCurrencyDenomination(currencyId, isActive);
 	}
 	

@@ -16,7 +16,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 //import com.amg.exchange.treasury.model.BankMaster;
-import com.amx.jax.dbmodel.BankMasterModel;
+import com.amx.jax.dbmodel.BankMasterMdlv1;
 import com.amx.jax.dbmodel.CountryMaster;
 
 @Entity
@@ -29,7 +29,7 @@ public class AdditionalBankRuleAddData implements Serializable {
 
 	private BigDecimal additionalBankRuleDataId;
 	private CountryMaster countryId;
-	private BankMasterModel bankId;
+	private BankMasterMdlv1 bankId;
 	private String flexField;
 	private String additionalData;
 	private String additionalDescription;
@@ -58,7 +58,7 @@ public class AdditionalBankRuleAddData implements Serializable {
 
 	public AdditionalBankRuleAddData(BigDecimal additionalBankRuleDataId,
 			CountryMaster countryId,
-			BankMasterModel bankId,
+			BankMasterMdlv1 bankId,
 			String flexField,
 			String additionalData, String additionalDescription,
 			String createdBy, Date createdDate, String modifiedBy,
@@ -106,11 +106,11 @@ public class AdditionalBankRuleAddData implements Serializable {
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "BANK_ID")
-	public BankMasterModel getBankId() {
+	public BankMasterMdlv1 getBankId() {
 		return bankId;
 	}
 
-	public void setBankId(BankMasterModel bankId) {
+	public void setBankId(BankMasterMdlv1 bankId) {
 		this.bankId = bankId;
 	}
 	

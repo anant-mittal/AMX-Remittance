@@ -19,7 +19,7 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxApiFlow;
 import com.amx.jax.dao.FcSaleBranchDao;
-import com.amx.jax.dbmodel.CountryBranch;
+import com.amx.jax.dbmodel.CountryBranchMdlv1;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.fx.FxOrderTransactionModel;
 import com.amx.jax.dbmodel.fx.OrderManagementView;
@@ -775,7 +775,7 @@ public class FcSaleBranchService extends AbstractService{
 
 		}
 		if(fcDeliveryBranchOrderSearchRequest.getCountryBranchId() != null) {
-			CountryBranch countryBranch = countryBranchService
+			CountryBranchMdlv1 countryBranch = countryBranchService
 					.getCountryBranchByCountryBranchId(fcDeliveryBranchOrderSearchRequest.getCountryBranchId());
 			fcDeliveryBranchOrderSearchRequest.setCountryBranchName(countryBranch.getBranchName());
 					

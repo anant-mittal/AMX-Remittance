@@ -24,7 +24,7 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dao.BankDao;
-import com.amx.jax.dbmodel.BankMasterModel;
+import com.amx.jax.dbmodel.BankMasterMdlv1;
 import com.amx.jax.dbmodel.BankServiceRule;
 import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.remittance.ImpsMaster;
@@ -71,8 +71,8 @@ public class ImpsRoutingLogic implements IRoutingLogic {
 			inputTemp.put("P_FOREIGN_AMT", fcAmount);
 			findRoutingBankAndBranchId(inputTemp);
 			BigDecimal rouringBankIdIMPS = (BigDecimal) inputTemp.get("P_ROUTING_BANK_ID_IMPS");
-			List<ImpsMaster> impsMasters = impsMasterService.getImpsMaster(new BankMasterModel(rouringBankIdIMPS),
-					new BankMasterModel(beneBankId), Yes, new CountryMaster(routingCountryId));
+			List<ImpsMaster> impsMasters = impsMasterService.getImpsMaster(new BankMasterMdlv1(rouringBankIdIMPS),
+					new BankMasterMdlv1(beneBankId), Yes, new CountryMaster(routingCountryId));
 
 			if (impsMasters != null && !impsMasters.isEmpty()) {
 				if (routingCountryId.intValue() == 94) {

@@ -36,12 +36,12 @@ import com.amx.jax.dao.BranchRemittancePaymentDao;
 import com.amx.jax.dbmodel.AccountTypeFromViewModel;
 import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
 import com.amx.jax.dbmodel.BankBranchView;
-import com.amx.jax.dbmodel.BankMasterModel;
+import com.amx.jax.dbmodel.BankMasterMdlv1;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.CollectionDetailViewModel;
-import com.amx.jax.dbmodel.CountryBranch;
+import com.amx.jax.dbmodel.CountryBranchMdlv1;
 import com.amx.jax.dbmodel.CountryMaster;
-import com.amx.jax.dbmodel.CurrencyMasterModel;
+import com.amx.jax.dbmodel.CurrencyMasterMdlv1;
 import com.amx.jax.dbmodel.CustomerDetailsView;
 import com.amx.jax.dbmodel.ExEmailNotification;
 import com.amx.jax.dbmodel.ParameterDetails;
@@ -855,7 +855,7 @@ public class PartnerTransactionManager extends AbstractModel {
 			serviceProviderXmlLog.setCustomerId(metaData.getCustomerId());
 			serviceProviderXmlLog.setCustomerReference(customerReference);
 			if(metaData.getCountryBranchId() != null) {
-				CountryBranch countryBranch = countryBranchRepository.findByCountryBranchId(metaData.getCountryBranchId());
+				CountryBranchMdlv1 countryBranch = countryBranchRepository.findByCountryBranchId(metaData.getCountryBranchId());
 				if(countryBranch != null) {
 					serviceProviderXmlLog.setEmosBranchCode(countryBranch.getBranchId());
 				}
@@ -915,7 +915,7 @@ public class PartnerTransactionManager extends AbstractModel {
 		if(responseDto != null && responseDto.getCollectionDocumentFYear() != null && responseDto.getCollectionDocumentNo() != null) {
 
 			// checking home send transaction
-			BankMasterModel bankMaster = bankMasterRepo.findByBankCodeAndRecordStatus(PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name(), PricerServiceConstants.Yes);
+			BankMasterMdlv1 bankMaster = bankMasterRepo.findByBankCodeAndRecordStatus(PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name(), PricerServiceConstants.Yes);
 			if(bankMaster == null) {
 				throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record not found for bank code :"+PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name());
 			}
@@ -1058,7 +1058,7 @@ public class PartnerTransactionManager extends AbstractModel {
 		}
 
 		// settlement currency data
-		CurrencyMasterModel settlementCurrencyModel = currencyMasterService.getCurrencyMasterById(paymentLimitDTO.getCurrencyQuote());
+		CurrencyMasterMdlv1 settlementCurrencyModel = currencyMasterService.getCurrencyMasterById(paymentLimitDTO.getCurrencyQuote());
 		if(settlementCurrencyModel != null) {
 			currencyId = settlementCurrencyModel.getCurrencyId();
 		}
@@ -1074,7 +1074,7 @@ public class PartnerTransactionManager extends AbstractModel {
 		}
 
 		// local currency decimal
-		CurrencyMasterModel currencyMaster = currencyMasterService.getCurrencyMasterById(metaData.getDefaultCurrencyId());
+		CurrencyMasterMdlv1 currencyMaster = currencyMasterService.getCurrencyMasterById(metaData.getDefaultCurrencyId());
 
 		// usd rate fetch
 		BigDecimal settlementExchangeRate = partnerTransactionDao.fetchUsdExchangeRate();
@@ -1109,7 +1109,7 @@ public class PartnerTransactionManager extends AbstractModel {
 		Boolean multipleTrnx = Boolean.FALSE;
 		BigDecimal cashlimit = BigDecimal.ZERO;
 		
-		BankMasterModel bankMaster = bankMasterRepo.findByBankCodeAndRecordStatus(PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name(), PricerServiceConstants.Yes);
+		BankMasterMdlv1 bankMaster = bankMasterRepo.findByBankCodeAndRecordStatus(PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name(), PricerServiceConstants.Yes);
 		if(bankMaster == null) {
 			// no need error
 		}else {
@@ -1216,7 +1216,7 @@ public class PartnerTransactionManager extends AbstractModel {
 		boolean includeSPlimits = Boolean.FALSE;
 		ShoppingCartDetails shoppingCartSPData = null;
 		
-		BankMasterModel bankMaster = bankMasterRepo.findByBankCodeAndRecordStatus(PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name(), PricerServiceConstants.Yes);
+		BankMasterMdlv1 bankMaster = bankMasterRepo.findByBankCodeAndRecordStatus(PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name(), PricerServiceConstants.Yes);
 		if(bankMaster == null) {
 			// no need error
 		}else {
@@ -1263,7 +1263,7 @@ public class PartnerTransactionManager extends AbstractModel {
 		model.setBeneficiaryName(remittanceTransactionView.getBeneficiaryName());
 		if(remittanceTransactionView.getLocalTransactionCurrencyId() != null) {
 			// settlement currency data
-			CurrencyMasterModel settlementCurrencyModel = currencyMasterService.getCurrencyMasterById(remittanceTransactionView.getLocalTransactionCurrencyId());
+			CurrencyMasterMdlv1 settlementCurrencyModel = currencyMasterService.getCurrencyMasterById(remittanceTransactionView.getLocalTransactionCurrencyId());
 			if(settlementCurrencyModel != null) {
 				model.setLocalCurrencyQuote(settlementCurrencyModel.getQuoteName());
 			}

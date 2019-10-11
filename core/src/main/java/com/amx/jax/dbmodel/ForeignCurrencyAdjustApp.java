@@ -30,9 +30,9 @@ public class ForeignCurrencyAdjustApp implements Serializable{
 	private Customer fsCustomer;
 	private CountryMaster fsCountryMaster;
 	private CompanyMaster fsCompanyMaster;
-	private CountryBranch fsCountryBranchMaster;// Need to check with tables
-	private CurrencyMasterModel fsCurrencyMaster;
-	private CurrencyWiseDenomination fsDenominationId; // need to check
+	private CountryBranchMdlv1 fsCountryBranchMaster;// Need to check with tables
+	private CurrencyMasterMdlv1 fsCurrencyMaster;
+	private CurrencyWiseDenominationMdlv1 fsDenominationId; // need to check
 	private String oracleUser;
 	private int documentCode;
 	private int documentFinanceYear;
@@ -62,9 +62,9 @@ public class ForeignCurrencyAdjustApp implements Serializable{
 	
 	public ForeignCurrencyAdjustApp(BigDecimal foreignCurrencyAdjustId,
 			Customer fsCustomer, CountryMaster fsCountryMaster,
-			CompanyMaster fsCompanyMaster, CountryBranch fsCountryBranchMaster,
-			CurrencyMasterModel fsCurrencyMaster,
-			CurrencyWiseDenomination fsDenominationId, String oracleUser,
+			CompanyMaster fsCompanyMaster, CountryBranchMdlv1 fsCountryBranchMaster,
+			CurrencyMasterMdlv1 fsCurrencyMaster,
+			CurrencyWiseDenominationMdlv1 fsDenominationId, String oracleUser,
 			int documentCode, int documentFinanceYear, int documentNo,
 			int documentLineNumber, Date documentDate, Date accountmmyyyy,
 			int adjustmentAmount, int notesQuantity, BigDecimal exchangeRate,
@@ -154,28 +154,28 @@ public class ForeignCurrencyAdjustApp implements Serializable{
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "COUNTRY_BRANCH_ID")
-	public CountryBranch getFsCountryBranchMaster() {
+	public CountryBranchMdlv1 getFsCountryBranchMaster() {
 		return fsCountryBranchMaster;
 	}
-	public void setFsCountryBranchMaster(CountryBranch fsCountryBranchMaster) {
+	public void setFsCountryBranchMaster(CountryBranchMdlv1 fsCountryBranchMaster) {
 		this.fsCountryBranchMaster = fsCountryBranchMaster;
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "CURRENCY_ID")
-	public CurrencyMasterModel getFsCurrencyMaster() {
+	public CurrencyMasterMdlv1 getFsCurrencyMaster() {
 		return fsCurrencyMaster;
 	}
-	public void setFsCurrencyMaster(CurrencyMasterModel fsCurrencyMaster) {
+	public void setFsCurrencyMaster(CurrencyMasterMdlv1 fsCurrencyMaster) {
 		this.fsCurrencyMaster = fsCurrencyMaster;
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "DENOMINATION_ID")
-	public CurrencyWiseDenomination getFsDenominationId() {
+	public CurrencyWiseDenominationMdlv1 getFsDenominationId() {
 		return fsDenominationId;
 	}
-	public void setFsDenominationId(CurrencyWiseDenomination fsDenominationId) {
+	public void setFsDenominationId(CurrencyWiseDenominationMdlv1 fsDenominationId) {
 		this.fsDenominationId = fsDenominationId;
 	}
 

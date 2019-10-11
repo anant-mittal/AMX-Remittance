@@ -24,8 +24,8 @@ import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.RoutingProcedureDao;
 import com.amx.jax.dao.BranchRemittancePaymentDao;
 import com.amx.jax.dbmodel.BanksView;
-import com.amx.jax.dbmodel.CurrencyMasterModel;
-import com.amx.jax.dbmodel.CurrencyWiseDenomination;
+import com.amx.jax.dbmodel.CurrencyMasterMdlv1;
+import com.amx.jax.dbmodel.CurrencyWiseDenominationMdlv1;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ParameterDetails;
 import com.amx.jax.dbmodel.partner.RemitApplSrvProv;
@@ -121,7 +121,7 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		List<CustomerShoppingCartDto> lstCustShpcrt = new ArrayList<>();
 		FxExchangeRateBreakup breakup = new FxExchangeRateBreakup();
 		BigDecimal decimalNumber = BigDecimal.ZERO;
-		CurrencyMasterModel currencyMaster = currencyMasterService.getCurrencyMasterById(localCurrencyId);
+		CurrencyMasterMdlv1 currencyMaster = currencyMasterService.getCurrencyMasterById(localCurrencyId);
 		if(currencyMaster != null) {
 			breakup.setLcDecimalNumber(currencyMaster.getDecinalNumber() == null ? decimalNumber : currencyMaster.getDecinalNumber());
 			Customer customer = customerRepos.getCustomerByCountryAndCompAndCustoemrId(metaData.getCountryId(),metaData.getCompanyId(),customerId);
@@ -252,12 +252,12 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		shoppingCartDataTableBean.setDomXRate(RoundUtil.roundBigDecimal(BigDecimal.ONE.divide(shoppingCartDetails.getExchangeRateApplied(),10,RoundingMode.HALF_UP),breakup.getFcDecimalNumber().intValue()));
 		shoppingCartDataTableBean.setCustomerSignatureString(shoppingCartDetails.getCustomerSignatureClob());
 		if(JaxUtil.isNullZeroBigDecimalCheck(shoppingCartDetails.getLocalCurrency())){
-			CurrencyMasterModel localCurr = currDao.getOne(shoppingCartDetails.getLocalCurrency());
+			CurrencyMasterMdlv1 localCurr = currDao.getOne(shoppingCartDetails.getLocalCurrency());
 			shoppingCartDataTableBean.setLocalCurrencyCode(localCurr.getQuoteName()==null?"":localCurr.getQuoteName());
 		}
 
 		if(JaxUtil.isNullZeroBigDecimalCheck(shoppingCartDetails.getForeignCurrency())){
-			CurrencyMasterModel fcCurr = currDao.getOne(shoppingCartDetails.getForeignCurrency());
+			CurrencyMasterMdlv1 fcCurr = currDao.getOne(shoppingCartDetails.getForeignCurrency());
 			shoppingCartDataTableBean.setForeignCurrencyCode(fcCurr.getQuoteName()==null?"":fcCurr.getQuoteName());
 		}
 		
@@ -432,9 +432,9 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 	 */
 	public List<UserStockDto> fetchLocalCurrencyDenomination(BigDecimal currencyId){
 		List<UserStockDto> lstUserStockDto = new ArrayList<>();
-		List<CurrencyWiseDenomination> lstCurrencyDenomination = branchRemittancePaymentDao.fetchCurrencyDenomination(currencyId, ConstantDocument.Yes);
+		List<CurrencyWiseDenominationMdlv1> lstCurrencyDenomination = branchRemittancePaymentDao.fetchCurrencyDenomination(currencyId, ConstantDocument.Yes);
 		if(lstCurrencyDenomination != null && lstCurrencyDenomination.size() != 0) {
-			for (CurrencyWiseDenomination currencyWiseDenomination : lstCurrencyDenomination) {
+			for (CurrencyWiseDenominationMdlv1 currencyWiseDenomination : lstCurrencyDenomination) {
 				UserStockDto userStockDto = new UserStockDto();
 				userStockDto.setCurrencyId(currencyWiseDenomination.getExCurrencyMaster().getCurrencyId());
 				userStockDto.setCurrentStock(null);
