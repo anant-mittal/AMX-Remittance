@@ -40,7 +40,7 @@ public class CustomerRegistrationClient extends AbstractJaxServiceClient {
 	 * @return SendOtpModel - contains otp prefix for both e & m otp
 	 */
 	public ApiResponse<SendOtpModel> sendOtp(CustomerPersonalDetail personalDetail) {
-		try {
+		
 			LOGGER.info("calling sendOtp api: ");
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(personalDetail, getHeader());
 			String url = this.getBaseUrl() + CUSTOMER_REG_ENDPOINT + "/send-otp/";
@@ -48,12 +48,7 @@ public class CustomerRegistrationClient extends AbstractJaxServiceClient {
 			return restService.ajax(builder.build().encode().toUri()).post(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<SendOtpModel>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in sendOtp : ", e);
-			throw new JaxSystemError();
-		}
+		
 	}
 
 	/**
@@ -148,14 +143,10 @@ public class CustomerRegistrationClient extends AbstractJaxServiceClient {
 	 * @return BooleanResponse - return success or failure
 	 */
 	public ApiResponse<BooleanResponse> saveLoginDetail(CustomerCredential customerCredential, Boolean isPartialReg) {
-		try {
+		
 			return restService.ajax(appConfig.getJaxURL()).meta(new JaxMetaInfo())
 					.path(CUSTOMER_REG_ENDPOINT + "/save-login-detail/").queryParam("isPartialReg", isPartialReg)
 					.post(customerCredential).as(new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.error("exception in saveLoginDetail : ", e);
-			return JaxSystemError.evaluate(e);
-		}
 	}
 }

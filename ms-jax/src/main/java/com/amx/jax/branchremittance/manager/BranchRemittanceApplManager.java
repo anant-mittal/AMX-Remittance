@@ -585,7 +585,7 @@ public class BranchRemittanceApplManager {
 			
 		
 		}catch(GlobalException e){
-			logger.error("create application", e.getErrorMessage() + "" +e.getErrorKey());
+			logger.debug("create application", e.getErrorMessage() + "" +e.getErrorKey());
 			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}
 		return remittanceApplication;

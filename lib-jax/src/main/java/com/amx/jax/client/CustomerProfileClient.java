@@ -37,7 +37,7 @@ public class CustomerProfileClient implements ICustomerProfileService {
 	@Override
 	public AmxApiResponse<CustomerContactVerificationDto, Object> createVerificationLink(BigDecimal customerId,
 			ContactType type, String identity) {
-		try {
+	
 			LOGGER.debug("in createVerificationLink : {} {} ", customerId, type);
 			String url = appConfig.getJaxURL() + ApiPath.CONTACT_LINK_CREATE;
 			return restService.ajax(url).meta(new JaxMetaInfo())
@@ -47,15 +47,12 @@ public class CustomerProfileClient implements ICustomerProfileService {
 					.postForm()
 					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerContactVerificationDto, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.debug("exception in createVerificationLink : ", e);
-			return JaxSystemError.evaluate(e);
-		}
+		
 	}
 
 	@Override
 	public AmxApiResponse<CustomerContactVerificationDto, Object> validateVerificationLink(BigDecimal linkId) {
-		try {
+		
 			LOGGER.debug("in validateVerificationLink : {} ", linkId);
 			String url = appConfig.getJaxURL() + ApiPath.CONTACT_LINK_VALIDATE;
 			return restService.ajax(url).meta(new JaxMetaInfo())
@@ -63,16 +60,13 @@ public class CustomerProfileClient implements ICustomerProfileService {
 					.postForm()
 					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerContactVerificationDto, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.debug("exception in validateVerificationLink : ", e);
-			return JaxSystemError.evaluate(e);
-		}
+		
 	};
 
 	@Override
 	public AmxApiResponse<CustomerContactVerificationDto, Object> resendLink(String identity, BigDecimal linkId,
 			String code) {
-		try {
+		
 			LOGGER.debug("in resendLink : {} {} ", linkId, code);
 			String url = appConfig.getJaxURL() + ApiPath.CONTACT_LINK_RESEND;
 			return restService.ajax(url).meta(new JaxMetaInfo())
@@ -82,16 +76,13 @@ public class CustomerProfileClient implements ICustomerProfileService {
 					.postForm()
 					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerContactVerificationDto, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.debug("exception in resendLink : ", e);
-			return JaxSystemError.evaluate(e);
-		}
+		
 	}
 
 	@Override
 	public AmxApiResponse<CustomerContactVerificationDto, Object> verifyLinkByCode(String identity, BigDecimal linkId,
 			String code) {
-		try {
+		
 			LOGGER.debug("in verifyLinkByCode : {} {} ", linkId, code);
 			String url = appConfig.getJaxURL() + ApiPath.CONTACT_LINK_VERIFY_BY_CODE;
 			return restService.ajax(url).meta(new JaxMetaInfo())
@@ -101,16 +92,13 @@ public class CustomerProfileClient implements ICustomerProfileService {
 					.postForm()
 					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerContactVerificationDto, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.debug("exception in verifyLinkByCode : ", e);
-			return JaxSystemError.evaluate(e);
-		}
+		
 	}
 
 	@Override
 	public AmxApiResponse<CustomerContactVerificationDto, Object> verifyLinkByContact(String identity, ContactType type,
 			String contact) {
-		try {
+		
 			LOGGER.debug("in verifyLinkByContact : {} {} {}", identity, type, contact);
 			String url = appConfig.getJaxURL() + ApiPath.CONTACT_LINK_VERIFY_BY_CONTACT;
 			return restService.ajax(url).meta(new JaxMetaInfo())
@@ -120,10 +108,7 @@ public class CustomerProfileClient implements ICustomerProfileService {
 					.postForm()
 					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerContactVerificationDto, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.debug("exception in verifyLinkByContact : ", e);
-			return JaxSystemError.evaluate(e);
-		}
+		
 	}
 
 }

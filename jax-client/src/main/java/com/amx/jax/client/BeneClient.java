@@ -70,17 +70,14 @@ public class BeneClient extends AbstractJaxServiceClient {
 	 * @return
 	 */
 	public ApiResponse<BeneficiaryListDTO> getBeneficiaryList(BigDecimal beneCountryId,Boolean excludePackage) {
-		try {
+		
 			return restService.ajax(appConfig.getJaxURL() + BENE_API_ENDPOINT + "/beneList/")
 					.queryParam("beneCountryId", beneCountryId)
 					.queryParam("excludePackage", excludePackage)
 					.meta(new JaxMetaInfo()).get()
 					.as(new ParameterizedTypeReference<ApiResponse<BeneficiaryListDTO>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.error("exception in getBeneficiaryList : ", e);
-			return JaxSystemError.evaluate(e);
-		} // end of try-catch
+		
 	}
 
 	public ApiResponse<CountryMasterDTO> getBeneficiaryCountryList(BigDecimal beneCountryId) {
@@ -261,18 +258,13 @@ public class BeneClient extends AbstractJaxServiceClient {
 
 	public ApiResponse<CivilIdOtpModel> sendOtp()
 			throws InvalidInputException, CustomerValidationException, LimitExeededException {
-		try {
+		
 			HttpEntity<AbstractUserModel> requestEntity = new HttpEntity<AbstractUserModel>(getHeader());
 			String sendOtpUrl = this.getBaseUrl() + BENE_API_ENDPOINT + SEND_OTP_ENDPOINT;
 			return restService.ajax(sendOtpUrl).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<CivilIdOtpModel>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in sendOtp : ", e);
-			throw new JaxSystemError();
-		} // end of try-catch
+		
 	}
 
 	public ApiResponse<CustomerModel> validateOtp(String mOtp, String eOtp)

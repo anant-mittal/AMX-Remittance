@@ -144,17 +144,13 @@ public class FcSaleOrderClient implements IFxOrderService {
 	@Override
 	public AmxApiResponse<FcSaleOrderApplicationResponseModel, Object> getSaveApplication(
 			FcSaleOrderTransactionRequestModel requestModel) {
-		try {
+		
 			LOGGER.debug(" Fc Sale create application :" + requestModel.toString());
 			return restService.ajax(appConfig.getJaxURL() + Path.FCSALE_SAVE_APPLICATION).meta(new JaxMetaInfo())
 					.post(requestModel)
 					.as(new ParameterizedTypeReference<AmxApiResponse<FcSaleOrderApplicationResponseModel, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.error("exception in getCurrencyByCountryId : ", e);
-			return JaxSystemError.evaluate(e);
-		} // end of try-catch
-
+		
 	}
 
 	@Override

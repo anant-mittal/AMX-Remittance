@@ -68,7 +68,7 @@ public class FingerPrintLoginIncorrectAttempt implements IAlert {
 			postManService.sendEmailAsync(email);
 		} catch (PostManException e) {
 			logger.info("email exception");
-			logger.error("error in incorrect attempts to link fingerprint", e);
+			logger.debug("error in incorrect attempts to link fingerprint", e);
 		}
 	}
 

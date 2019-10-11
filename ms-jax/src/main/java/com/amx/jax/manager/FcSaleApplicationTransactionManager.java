@@ -183,11 +183,11 @@ public class FcSaleApplicationTransactionManager extends AbstractModel {
 			responeModel.setDeliveryCharges(getDeliveryChargesFromParameter());
 			return responeModel;
 		} catch (GlobalException e) {
-			logger.error("createFcSaleReceiptApplication", e.getErrorMessage() + "" + e.getErrorKey());
+			logger.debug("createFcSaleReceiptApplication", e.getErrorMessage() + "" + e.getErrorKey());
 			throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.error("saveApplication", e.getMessage());
+			logger.debug("saveApplication", e.getMessage());
 			throw new GlobalException("FC Sale application creation failed");
 		}
 	}
@@ -286,7 +286,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel {
 
 				receiptPaymentAppl.setCustomerName(customerName);
 			} else {
-				logger.error("Customer is not registered" + customerId);
+				logger.debug("Customer is not registered" + customerId);
 				throw new GlobalException(JaxError.CUSTOMER_NOT_REGISTERED_ONLINE, "Customer is not registered");
 			}
 
@@ -378,14 +378,14 @@ public class FcSaleApplicationTransactionManager extends AbstractModel {
 			try {
 				receiptPaymentAppl.setAccountMMYYYY(new SimpleDateFormat("dd/MM/yyyy").parse(DateUtil.getCurrentAccMMYear()));
 			} catch (ParseException e) {
-				logger.error("Error in saving application", e);
+				logger.debug("Error in saving application", e);
 			}
 
 		} catch (GlobalException e) {
-			logger.error("createFcSaleReceiptApplication", e.getErrorMessage() + "" + e.getErrorKey());
+			logger.debug("createFcSaleReceiptApplication", e.getErrorMessage() + "" + e.getErrorKey());
 			throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
 		} catch (Exception e) {
-			logger.error("createFcSaleReceiptApplication", e.getMessage());
+			logger.debug("createFcSaleReceiptApplication", e.getMessage());
 		}
 
 		return receiptPaymentAppl;
@@ -445,11 +445,11 @@ public class FcSaleApplicationTransactionManager extends AbstractModel {
 
 			return breakup;
 		} catch (GlobalException e) {
-			logger.error("createFcSaleReceiptApplication", e.getErrorMessage() + "" + e.getErrorKey());
+			logger.debug("createFcSaleReceiptApplication", e.getErrorMessage() + "" + e.getErrorKey());
 			throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.error("getExchangeRateFcSaleOrder", e.getMessage());
+			logger.debug("getExchangeRateFcSaleOrder", e.getMessage());
 			throw new GlobalException(JaxError.FS_APPLIATION_CREATION_FAILED, "FC Sale application exchange");
 		}
 	}
@@ -480,7 +480,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel {
 			responeModel.setCartDetails(cartListDto);
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.error("removeitemFromCart ", e.getMessage() + "applId :" + applId);
+			logger.debug("removeitemFromCart ", e.getMessage() + "applId :" + applId);
 		}
 		return responeModel;
 
@@ -596,7 +596,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel {
 		try {
 			BeanUtils.copyProperties(dto, cartDetails);
 		} catch (IllegalAccessException | InvocationTargetException e) {
-			logger.error("convertModel  to convert currency", e);
+			logger.debug("convertModel  to convert currency", e);
 		}
 		return dto;
 	}
@@ -697,7 +697,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel {
 		try {
 			BeanUtils.copyProperties(dto, trnxDetails);
 		} catch (IllegalAccessException | InvocationTargetException e) {
-			logger.error("convertModel  to convert currency", e);
+			logger.debug("convertModel  to convert currency", e);
 		}
 		return dto;
 	}

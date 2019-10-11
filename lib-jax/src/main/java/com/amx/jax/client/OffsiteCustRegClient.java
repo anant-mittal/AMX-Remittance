@@ -239,16 +239,13 @@ public class OffsiteCustRegClient implements ICustRegService {
 
 	@Override
 	public AmxApiResponse<CustomerCredential, Object> saveLoginDetailOffsite(CustomerCredential customerCredential) {
-		try {
+		
 			return restService.ajax(appConfig.getJaxURL()).meta(new JaxMetaInfo())
 					.path(CustRegApiEndPoints.SAVE_OFFSITE_LOGIN)
 					.post(customerCredential)
 					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerCredential, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.debug("exception in saveLoginDetailOffsite : ", e);
-			return JaxSystemError.evaluate(e);
-		} // end of try-catch}
+		
 	}
 
 	@Override

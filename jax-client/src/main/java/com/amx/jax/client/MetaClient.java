@@ -314,19 +314,14 @@ public class MetaClient extends AbstractJaxServiceClient {
 	}
 
 	public AmxApiResponse<CurrencyMasterDTO, Object> getCurrencyByCountryId(BigDecimal countryId) {
-		try {
+		
 			LOGGER.info("in getAllOnlineCurrency");
 			String url = this.getBaseUrl() + MetaApi.PREFIX + "/currency/bycountry/" + countryId;
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			return restService.ajax(url).get(requestEntity)
 					.as(new ParameterizedTypeReference<AmxApiResponse<CurrencyMasterDTO, Object>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in getCurrencyByCountryId : ", e);
-			throw new JaxSystemError();
-		} // end of try-catch
+		
 
 	}
 
@@ -459,20 +454,13 @@ public class MetaClient extends AbstractJaxServiceClient {
 	 * @param object of type {@code GetBankBranchRequest}
 	 */
 	public AmxApiResponse<BankBranchDto, Object> getBankBranchList(GetBankBranchRequest request) {
-		try {
-
+		
 			LOGGER.info("In getBankBranchList :");
 			String url = this.getBaseUrl() + MetaApi.PREFIX + "/bankbranch/get/";
 			HttpEntity<GetBankBranchRequest> requestEntity = new HttpEntity<GetBankBranchRequest>(request, getHeader());
 			return restService.ajax(url).post(requestEntity)
 					.as(new ParameterizedTypeReference<AmxApiResponse<BankBranchDto, Object>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in getBankBranchList : ", e);
-			throw new JaxSystemError();
-		} // end of try-catc
 
 	}
 

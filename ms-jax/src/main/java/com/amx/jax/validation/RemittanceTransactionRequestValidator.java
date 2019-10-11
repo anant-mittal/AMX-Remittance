@@ -201,7 +201,7 @@ public class RemittanceTransactionRequestValidator {
 		}
 
 		if (!requiredFlexFields.isEmpty()) {
-			LOGGER.error(requiredFlexFields.toString());
+			LOGGER.debug(requiredFlexFields.toString());
 			AdditionalFlexRequiredException exp = new AdditionalFlexRequiredException("Addtional flex fields are required", JaxError.ADDTIONAL_FLEX_FIELD_REQUIRED);
 			processFlexFields(requiredFlexFields);
 			exp.setMeta(requiredFlexFields);

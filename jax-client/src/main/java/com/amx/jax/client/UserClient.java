@@ -176,19 +176,13 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 
 	public ApiResponse<CustomerModel> saveCustomer(String json)
 			throws CustomerValidationException, LimitExeededException {
-		try {
+		
 			HttpEntity<String> requestEntity = new HttpEntity<String>(json, getHeader());
 			String sendOtpUrl = this.getBaseUrl() + CUSTOMER_ENDPOINT;
 			LOGGER.info("calling saveCustomer api: " + sendOtpUrl);
 			return restService.ajax(sendOtpUrl).post(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in saveCustomer : ", e);
-			throw new JaxSystemError();
-		} // end of try-catch
 
 	}
 
@@ -293,8 +287,7 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 
 	public ApiResponse<CustomerModel> login(String loginId, String password)
 			throws IncorrectInputException, CustomerValidationException, LimitExeededException {
-		try {
-
+		
 			CustomerModel cmodel = new CustomerModel();
 			cmodel.setLoginId(loginId);
 			cmodel.setPassword(password);
@@ -303,18 +296,12 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 					.as(new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
 					});
 
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in login : ", e);
-			throw new JaxSystemError();
-		} // end of try-catch
 
 	}
 
 	public ApiResponse<CustomerModel> login_temp(String loginId, String password)
 			throws IncorrectInputException, CustomerValidationException, LimitExeededException {
-		try {
+		
 			CustomerModel cmodel = new CustomerModel();
 			cmodel.setLoginId(loginId);
 			cmodel.setPassword(password);
@@ -325,12 +312,7 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 			return restService.ajax(loginCustUrl).post(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in login : ", e);
-			throw new JaxSystemError();
-		} // end of try-catch
+		
 
 	}
 
@@ -659,18 +641,13 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 	}
 
 	public AmxApiResponse<CustomerModel, Object> loginUserByFingerprint(String civilId, String password) {
-		try {
-
+		
 			return restService.ajax(appConfig.getJaxURL())
 					.path(UserApi.PREFIX + UserApi.LOGIN_CUSTOMER_BY_FINGERPRINT).meta(new JaxMetaInfo())
 					.field(UserApi.IDENTITYINT, civilId).field(UserApi.PASSWORD, password).postForm()
 					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerModel, Object>>() {
 					});
-		} catch (Exception ae) {
-
-			LOGGER.error("exception in loginUserByFingerprint : ", ae);
-			return JaxSystemError.evaluate(ae);
-		}
+		
 	}
 
 	public BoolRespModel delinkFingerprint() {
@@ -793,8 +770,7 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 
 	@Override
 	public AmxApiResponse<CustomerModelSignupResponse, Object> getCustomerModelSignupResponse(String identityInt) {
-		try {
-
+		
 			return restService.ajax(appConfig.getJaxURL())
 					.path(ApiEndpoint.CUSTOMER_ENDPOINT + Path.CUSTOMER_MODEL_SIGNUP_RESPONSE_GET)
 					.meta(new JaxMetaInfo())
@@ -802,11 +778,7 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 					.get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerModelSignupResponse, Object>>() {
 					});
-		} catch (Exception ae) {
-
-			LOGGER.error("exception in get customer signup response : ", ae);
-			return JaxSystemError.evaluate(ae);
-		}
+		
 	}
 
 	@Override
@@ -885,16 +857,12 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 	 */
 	@Override
 	public AmxApiResponse<CustomerModel, Object> validateCustomerLoginOtp(String identityInt) {
-		try {
+		
 			return restService.ajax(appConfig.getJaxURL()).meta(new JaxMetaInfo())
 					.path(UserApi.PREFIX + UserApi.VALIDATE_CUSTOMER_LOGIN_OTP)
 					.queryParam("identityInt", identityInt)
 					.post()
 					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerModel, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.error("exception in Validate Customer flow : ", e);
-			return JaxSystemError.evaluate(e);
-		}
 	}
 }

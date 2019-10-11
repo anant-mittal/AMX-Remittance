@@ -51,16 +51,13 @@ public class RemittanceClient implements IRemittanceService {
 	@Override
 	public AmxApiResponse<BranchRemittanceApplResponseDto, Object> saveBranchRemittanceApplication(
 			BranchRemittanceApplRequestModel requestModel) {
-		try {
+		
 			LOGGER.debug("in saveBranchRemittanceApplication :" + requestModel);
 			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_SAVE_APPL).meta(new JaxMetaInfo())
 					.post(requestModel)
 					.as(new ParameterizedTypeReference<AmxApiResponse<BranchRemittanceApplResponseDto, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.error("exception in saveCustomerBankDetails : ", e);
-			return JaxSystemError.evaluate(e);
-		} // end of try-catch
+		
 	}
 
 	/**
@@ -215,17 +212,14 @@ public class RemittanceClient implements IRemittanceService {
 	@Override
 	//public AmxApiResponse<BoolRespModel, Object> saveCustomerBankDetails(List<CustomerBankRequest> customerBank) {
 	public AmxApiResponse<BoolRespModel, Object> saveCustomerBankDetails(CustomerBankRequest customerBank) {
-		try {
+		
 			LOGGER.debug("in saveCustomerBankDetails :" + customerBank);
 			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_SAVE_CUSTOMER_BANKS)
 					.meta(new JaxMetaInfo())
 					.post(customerBank)
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.error("exception in saveCustomerBankDetails : ", e);
-			return JaxSystemError.evaluate(e);
-		} // end of try-catch
+		
 	}
 
 	@Override
@@ -329,7 +323,7 @@ public class RemittanceClient implements IRemittanceService {
 	@Override
 	public AmxApiResponse<BranchRemittanceApplResponseDto, Object> deleteFromShoppingCart(
 			BigDecimal remittanceApplicationId) {
-		try {
+		
 			LOGGER.debug("in deleteFromShoppingCart :" + remittanceApplicationId);
 			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_DELETE_APPLICATION)
 					.meta(new JaxMetaInfo())
@@ -337,18 +331,14 @@ public class RemittanceClient implements IRemittanceService {
 					.post()
 					.as(new ParameterizedTypeReference<AmxApiResponse<BranchRemittanceApplResponseDto, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.error("exception in deleteFromShoppingCart : ", e);
-			return JaxSystemError.evaluate(e);
-		} // end of try-cat
-
+		
 	}
 
 	@Override
 	public AmxApiResponse<RemittanceDeclarationReportDto, Object> fetchCustomerDeclarationReport(
 			BigDecimal collectionDocNo, BigDecimal collectionDocYear,
 			BigDecimal collectionDocCode) {
-		try {
+		
 			LOGGER.debug("in fetchCustomerDeclarationReport :" + collectionDocNo);
 			return restService.ajax(appConfig.getJaxURL() + Path.BR_DECLARATION_REPORT).meta(new JaxMetaInfo())
 					.queryParam(Params.COLLECTION_DOC_NO, collectionDocNo).meta(new JaxMetaInfo())
@@ -357,16 +347,12 @@ public class RemittanceClient implements IRemittanceService {
 					.post()
 					.as(new ParameterizedTypeReference<AmxApiResponse<RemittanceDeclarationReportDto, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.error("exception in deleteFromShoppingCart : ", e);
-			return JaxSystemError.evaluate(e);
-		} // end of try-cat
 	}
 
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> sendReceiptOnEmail(BigDecimal collectionDocNo,
 			BigDecimal collectionDocYear, BigDecimal collectionDocCode) {
-		try {
+		
 			LOGGER.debug("in fetchCustomerDeclarationReport :" + collectionDocNo);
 			return restService.ajax(appConfig.getJaxURL() + Path.BR_RECEIPT_ON_EMAIL).meta(new JaxMetaInfo())
 					.queryParam(Params.COLLECTION_DOC_NO, collectionDocNo).meta(new JaxMetaInfo())
@@ -375,10 +361,7 @@ public class RemittanceClient implements IRemittanceService {
 					.post()
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.error("exception in deleteFromShoppingCart : ", e);
-			return JaxSystemError.evaluate(e);
-		} // end of try-cat
+		
 	}
 
 
@@ -386,16 +369,13 @@ public class RemittanceClient implements IRemittanceService {
 //getDynamicRoutingPricing
 	@Override
 	public AmxApiResponse<DynamicRoutingPricingResponse, Object> getDynamicRoutingPricing(RoutingPricingRequest routingPricingRequest) {
-		try {
-			LOGGER.debug("in fetchCustomerDeclarationReport :"+routingPricingRequest);
+		
+		LOGGER.debug("in fetchCustomerDeclarationReport :"+routingPricingRequest);
 			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_GET_ROUTING_PRICING_RATE).meta(new JaxMetaInfo())
 					.post(routingPricingRequest)
 					.as(new ParameterizedTypeReference<AmxApiResponse<DynamicRoutingPricingResponse, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.error("exception in deleteFromShoppingCart : ", e);
-			return JaxSystemError.evaluate(e);
-		} // end of try-cat
+		
 	}
 
 

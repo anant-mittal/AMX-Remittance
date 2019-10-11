@@ -49,7 +49,7 @@ public class RemitClient extends AbstractJaxServiceClient {
 
 	public ApiResponse<TransactionHistroyDTO> getTransactionHistroy(String docfyr, String docNumber, String fromDate,
 			String toDate) {
-		try {
+		
 			LOGGER.info("Transaction Histroy");
 			StringBuilder sb = new StringBuilder();
 			sb.append("?docNumber=").append(docNumber).append("&fromDate=").append(fromDate).append("&toDate=")
@@ -63,12 +63,7 @@ public class RemitClient extends AbstractJaxServiceClient {
 			return restService.ajax(url).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<TransactionHistroyDTO>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in getTransactionHistroy : ", e);
-			throw new JaxSystemError();
-		} // end of try-catch
+		
 
 	}
 
@@ -79,7 +74,7 @@ public class RemitClient extends AbstractJaxServiceClient {
 
 	public ApiResponse<RemittanceReceiptSubreport> report(TransactionHistroyDTO transactionHistroyDTO,
 			Boolean promotion, JaxMetaInfo jaxMetaInfo) {
-		try {
+		
 			BigDecimal countryId = jaxMetaInfo.getCountryId();
 			BigDecimal companyId = jaxMetaInfo.getCompanyId();
 			BigDecimal customerId = jaxMetaInfo.getCustomerId();
@@ -95,12 +90,7 @@ public class RemitClient extends AbstractJaxServiceClient {
 			return restService.ajax(sendOtpUrl).queryParam("promotion", promotion).meta(new JaxMetaInfo())
 					.post(requestEntity).as(new ParameterizedTypeReference<ApiResponse<RemittanceReceiptSubreport>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in report : ", e);
-			throw new JaxSystemError();
-		} // end of try-catch
+		
 	}
 
 	public ApiResponse<RemittanceReceiptSubreport> report(TransactionHistroyDTO transactionHistroyDTO,
