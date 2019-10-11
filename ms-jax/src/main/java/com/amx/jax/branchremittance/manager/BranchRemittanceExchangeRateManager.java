@@ -526,7 +526,7 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 		TrnxRoutingDetails routingDetails = drDto.getTrnxRoutingPaths();
 		BigDecimal foreignAmont = drDto.getExRateBreakup().getConvertedFCAmount();
 		
-		if(JaxUtil.isNullZeroBigDecimalCheck(routingDetails.getSplitAmount())) {
+		if(JaxUtil.isNullZeroBigDecimalCheck(routingDetails.getSplitAmount()) && foreignAmont.compareTo(routingDetails.getSplitAmount())>0) {
 		
 		BigDecimal fcurrencyId = (BigDecimal) remitApplParametersMap.get("P_FOREIGN_CURRENCY_ID");
 		CurrencyMasterModel currMaster = currencyMasterDao.getCurrencyMasterById(fcurrencyId); 
