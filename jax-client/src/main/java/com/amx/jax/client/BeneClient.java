@@ -128,7 +128,7 @@ public class BeneClient extends AbstractJaxServiceClient {
 	}
 
 	public ApiResponse<RemittancePageDto> defaultBeneficiary(BigDecimal beneRealtionId, BigDecimal transactionId) {
-		try {
+		
 			ResponseEntity<ApiResponse<RemittancePageDto>> response;
 			return restService.ajax(appConfig.getJaxURL()).path(BENE_API_ENDPOINT + "/defaultbene/")
 					.queryParam("beneRelationId", beneRealtionId)
@@ -136,10 +136,6 @@ public class BeneClient extends AbstractJaxServiceClient {
 					.meta(new JaxMetaInfo()).post()
 					.as(new ParameterizedTypeReference<ApiResponse<RemittancePageDto>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.error("exception in defaultBeneficiary : ", e);
-			return JaxSystemError.evaluate(e);
-		} // end of try-catch
 	}
 
 	@Deprecated
@@ -337,7 +333,7 @@ public class BeneClient extends AbstractJaxServiceClient {
 	 */
 	public ApiResponse<JaxTransactionResponse> saveBenePersonalDetailInTrnx(
 			BenePersonalDetailModel benePersonalDetailModel) {
-		try {
+		
 			HttpEntity<BenePersonalDetailModel> requestEntity = new HttpEntity<BenePersonalDetailModel>(
 					benePersonalDetailModel, getHeader());
 			LOGGER.info("Model is "+JsonUtil.toJson(benePersonalDetailModel));
@@ -345,12 +341,7 @@ public class BeneClient extends AbstractJaxServiceClient {
 			return restService.ajax(url).post(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<JaxTransactionResponse>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in saveBenePersonalDetailInTrnx : ", e);
-			throw new JaxSystemError();
-		} // end of try-catch
+		
 	}
 
 	/**

@@ -47,7 +47,7 @@ public class JaxServiceStartUpInit {
 				OtpSettings setting = converterutil.readValue(jaxConfig.getValue(), OtpSettings.class);
 				BeanUtils.copyProperties(otpSettings, setting);
 			} catch (Exception e) {
-				logger.error("error in initializeConfigs", e);
+				logger.debug("error in initializeConfigs", e);
 			}
 		} else {
 			// default config

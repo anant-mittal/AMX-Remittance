@@ -376,7 +376,7 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		try {
 			BeanUtils.copyProperties(dto, lstlocalBanksView);
 		} catch (IllegalAccessException | InvocationTargetException e) {
-			logger.error("local banks convertion fail", e);
+			logger.debug("local banks convertion fail", e);
 		}
 		return dto;
 	}

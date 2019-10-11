@@ -259,7 +259,7 @@ public class PurposeOfTransactionService extends AbstractService {
 		try {
 			BeanUtils.copyProperties(dto, viewModel);
 		} catch (IllegalAccessException | InvocationTargetException e) {
-			logger.error("bene list display", e);
+			logger.debug("bene list display", e);
 		}
 		return dto;
 	}

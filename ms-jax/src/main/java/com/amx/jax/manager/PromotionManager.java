@@ -158,12 +158,12 @@ public class PromotionManager {
 					email.getModel().put("promotDto", promotDto);
 					postManService.sendEmailAsync(email);
 				} catch (Exception e) {
-					logger.error("error in promotionWinnerCheck", e);
+					logger.debug("error in promotionWinnerCheck", e);
 				}
 			}
 			return promotDto;
 		} catch (Exception e) {
-			logger.error("error in promotionWinnerCheck", e);
+			logger.debug("error in promotionWinnerCheck", e);
 			return null;
 		}
 	}

@@ -188,7 +188,7 @@ public class ConverterJasper implements FileConverter {
 			file.setType(Type.PDF);
 
 		} catch (JRException e) {
-			LOGGER.error("Some Error", e);
+			LOGGER.debug("Some Error", e);
 		} finally {
 			if (outputStream != null) {
 				try {

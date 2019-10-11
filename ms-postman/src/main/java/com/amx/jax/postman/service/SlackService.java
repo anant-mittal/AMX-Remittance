@@ -140,7 +140,7 @@ public class SlackService {
 	public ExceptionReport sendException(String appname, String title, String exception, ExceptionReport e) {
 
 		if (appConfig.isDebug()) {
-			LOGGER.error("Slack-Notify-Exception ", e);
+			LOGGER.debug("Slack-Notify-Exception ", e);
 			return e;
 		}
 
@@ -200,7 +200,7 @@ public class SlackService {
 			send(message, Channel.DEFAULT);
 
 		} catch (Exception e1) {
-			LOGGER.error("NestedException ", e1);
+			LOGGER.debug("NestedException ", e1);
 		}
 		return e;
 	}

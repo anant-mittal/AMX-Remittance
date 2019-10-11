@@ -520,7 +520,7 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 			pushNotifyClient.send(pushMessage);
 
 		} catch (Exception e) {
-			logger.error("Error while sending mail beneCreationEmail : " , e);
+			logger.debug("Error while sending mail beneCreationEmail : " , e);
 		}
 	}
 

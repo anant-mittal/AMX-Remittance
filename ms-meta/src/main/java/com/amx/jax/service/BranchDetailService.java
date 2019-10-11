@@ -102,7 +102,7 @@ public class BranchDetailService extends AbstractService {
 			try {
 				BeanUtils.copyProperties(dto, i);
 			} catch (Exception e) {
-				logger.error("error in copy branchsystem detail dto , " + e.getMessage());
+				logger.debug("error in copy branchsystem detail dto , " + e.getMessage());
 			}
 			return dto;
 		}).collect(Collectors.toList());

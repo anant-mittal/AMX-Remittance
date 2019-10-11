@@ -79,7 +79,7 @@ public class GeoLocationServiceImpl implements GeoLocationService {
 			loc.setTenant(Tenant.fromString(response.getCountry().getIsoCode(), defaultTennatId, true));
 		} catch (Exception e) {
 			loc.setTenant(defaultTennatId);
-			LOGGER.error("No location or IP " + ip, e);
+			LOGGER.debug("No location or IP " + ip, e);
 		}
 		return loc;// new GeoLocation(ip);
 	}

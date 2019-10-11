@@ -183,7 +183,7 @@ public class CustomerService extends AbstractService {
 				titleDescription = bizcomponentDao.getBizComponentDataDescByComponmentId(titleBizComponentId)
 						.getDataDesc();
 			} catch (NumberFormatException e) {
-				LOGGER.error("Invalid title in fs_customer table value: {}", titleBizComponentId);
+				LOGGER.debug("Invalid title in fs_customer table value: {}", titleBizComponentId);
 			}
 		}
 		return titleDescription;

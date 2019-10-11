@@ -133,7 +133,7 @@ public class RemittanceManager {
 			pushMessage.getModel().put(RESP_DATA_KEY, model);
 			pushNotifyClient.send(pushMessage);
 		} catch (Exception e) {
-			logger.error("error in sendPaceorderNotification", e);
+			logger.debug("error in sendPaceorderNotification", e);
 		}
 	}
 

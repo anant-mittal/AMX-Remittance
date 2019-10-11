@@ -383,7 +383,7 @@ public class FcSaleService extends AbstractService {
 		try {
 			BeanUtils.copyProperties(dto, currency);
 		} catch (IllegalAccessException | InvocationTargetException e) {
-			logger.error("convertModel  to convert currency", e);
+			logger.debug("convertModel  to convert currency", e);
 		}
 		return dto;
 	}
@@ -399,7 +399,7 @@ public class FcSaleService extends AbstractService {
 		try {
 			BeanUtils.copyProperties(dto, exchnage);
 		} catch (IllegalAccessException | InvocationTargetException e) {
-			logger.error("convertExchangeModel  to convert currency", e);
+			logger.debug("convertExchangeModel  to convert currency", e);
 		}
 		return dto;
 	}

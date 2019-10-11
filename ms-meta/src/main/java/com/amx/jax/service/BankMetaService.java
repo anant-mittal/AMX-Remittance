@@ -109,7 +109,7 @@ public class BankMetaService extends AbstractService {
 		try {
 			BeanUtils.copyProperties(dto, dbmodel);
 		} catch (IllegalAccessException | InvocationTargetException e) {
-			logger.error("error in convert of bankmaster", e);
+			logger.debug("error in convert of bankmaster", e);
 		}
 		return dto;
 	}

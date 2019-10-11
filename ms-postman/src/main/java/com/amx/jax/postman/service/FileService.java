@@ -72,7 +72,7 @@ public class FileService {
 			try {
 				templateService.process(file, contactType);
 			} catch (TemplateInputException e) {
-				LOGGER.error("Template Process Exception", e);
+				LOGGER.debug("Template Process Exception", e);
 			}
 
 			if (ArgUtil.isEmptyString(file.getTitle())) {

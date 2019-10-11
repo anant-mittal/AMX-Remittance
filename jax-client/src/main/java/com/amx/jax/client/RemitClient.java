@@ -195,19 +195,13 @@ public class RemitClient extends AbstractJaxServiceClient {
 	public ApiResponse<RemittanceApplicationResponseModel> saveTransactionV2(
 			RemittanceTransactionDrRequestModel transactionRequestModel)
 			throws RemittanceTransactionValidationException, LimitExeededException {
-		try {
+		
 			HttpEntity<RemittanceTransactionDrRequestModel> requestEntity = new HttpEntity<RemittanceTransactionDrRequestModel>(
 					transactionRequestModel, getHeader());
 			String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/save-application/v2/";
 			return restService.ajax(url).post(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<RemittanceApplicationResponseModel>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in saveTransaction : ", e);
-			throw new JaxSystemError();
-		} // end of try-catch
 
 	}
 	

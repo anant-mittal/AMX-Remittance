@@ -77,11 +77,11 @@ public class PromotionDao {
 
 			}
 			if (errorMessage != null) {
-				LOGGER.error("Error occured calling GET_PROMOTION_PRIZE, error message: {}", errorMessage);
+				LOGGER.debug("Error occured calling GET_PROMOTION_PRIZE, error message: {}", errorMessage);
 			}
 
 		} catch (Exception e) {
-			LOGGER.error("Error occured in  calling procedure GET_PROMOTION_PRIZE", e);
+			LOGGER.debug("Error occured in  calling procedure GET_PROMOTION_PRIZE", e);
 		}
 		return prizeMessage;
 	}
@@ -110,7 +110,7 @@ public class PromotionDao {
 			prizeMessage = (String) output.get("output_str");
 
 		} catch (Exception e) {
-			LOGGER.error("Error occured in  calling procedure EX_PROMOTION_MESSAGE", e);
+			LOGGER.debug("Error occured in  calling procedure EX_PROMOTION_MESSAGE", e);
 		}
 		return prizeMessage;
 	}

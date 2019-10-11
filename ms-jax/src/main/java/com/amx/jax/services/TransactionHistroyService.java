@@ -433,7 +433,7 @@ public class TransactionHistroyService extends AbstractService {
 		try {
 			BeanUtils.copyProperties(dto, beneModel);
 		} catch (IllegalAccessException | InvocationTargetException e) {
-			logger.error("error occured in convertBeneModelToDto", e);
+			logger.debug("error occured in convertBeneModelToDto", e);
 		}
 		return dto;
 	}

@@ -425,7 +425,7 @@ public class BranchRemittanceManager extends AbstractModel {
 			}
 			
 		}catch(GlobalException e){
-			logger.error("exchange rate procedure", e.getErrorMessage() + "" +e.getErrorKey());
+			logger.debug("exchange rate procedure", e.getErrorMessage() + "" +e.getErrorKey());
 			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}
 		return outPut; 
@@ -565,7 +565,7 @@ public class BranchRemittanceManager extends AbstractModel {
 		}
 			
 		}catch(GlobalException e){
-			logger.error("aml procedure", e.getErrorMessage() + "" +e.getErrorKey());
+			logger.debug("aml procedure", e.getErrorMessage() + "" +e.getErrorKey());
 			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}
 		return listAmlMessage; 
@@ -780,7 +780,7 @@ public class BranchRemittanceManager extends AbstractModel {
 		try {
 			BeanUtils.copyProperties(dto, beneModel);
 		} catch (IllegalAccessException | InvocationTargetException e) {
-			logger.error("bene list display", e);
+			logger.debug("bene list display", e);
 		}
 		return dto;
 	}

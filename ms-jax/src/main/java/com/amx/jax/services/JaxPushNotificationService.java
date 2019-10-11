@@ -55,7 +55,7 @@ public class JaxPushNotificationService extends AbstractService {
 				logger.info("In GET Jax Push Notification Service ------ ");
 			}
 		} catch (Exception e) {
-			logger.error("Error while fetching Notification List ", e);
+			logger.debug("Error while fetching Notification List ", e);
 		}
 		return AmxApiResponse.buildList(notificationDtoList);
 	}
@@ -69,7 +69,7 @@ public class JaxPushNotificationService extends AbstractService {
 			}
 			logger.info("In SAVE Push Notification Service Data Added ------ ");
 		} catch (Exception e) {
-			logger.error("Error while saving Push Notification.", e);
+			logger.debug("Error while saving Push Notification.", e);
 		}
 		return AmxApiResponse.build();
 	}

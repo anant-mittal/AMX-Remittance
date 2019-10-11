@@ -439,7 +439,7 @@ public class BeneficiaryService extends AbstractService {
 			response.getData().setType(remitPageDto.getModelType());
 			response.setResponseStatus(ResponseStatus.OK);
 		} catch (Exception e) {
-			logger.error("Error occured in getDefaultBeneficiary method", e);
+			logger.debug("Error occured in getDefaultBeneficiary method", e);
 			throw new GlobalException("Default bene not found" + e.getMessage());
 		}
 		return response;
@@ -521,7 +521,7 @@ public class BeneficiaryService extends AbstractService {
 		try {
 			BeanUtils.copyProperties(dto, beneModel);
 		} catch (IllegalAccessException | InvocationTargetException e) {
-			logger.error("bene list display", e);
+			logger.debug("bene list display", e);
 		}
 		beneCheck.setCanTransact(dto);
 		if (isCashBene(beneModel)) {
@@ -540,7 +540,7 @@ public class BeneficiaryService extends AbstractService {
 		try {
 			BeanUtils.copyProperties(tranDto, tranView);
 		} catch (IllegalAccessException | InvocationTargetException e) {
-			logger.error("bene list display", e);
+			logger.debug("bene list display", e);
 		}
 		return tranDto;
 

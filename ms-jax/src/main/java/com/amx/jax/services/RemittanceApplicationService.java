@@ -179,7 +179,7 @@ public void updatePayTokenNull(List<RemittanceApplication> lstPayIdDetails,Payme
 			//resultMap = applRemitDao.insertRemittanceOnlineProcedure(inputValues);
 			resultMap = remitDao.insertRemittanceForOnline(inputValues);
 		} catch (Exception e) {
-			logger.error("error occured in save remittance", e);
+			logger.debug("error occured in save remittance", e);
 		}
 		return resultMap;
 	}

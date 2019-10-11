@@ -217,7 +217,7 @@ public class RemittanceApplicationManager {
 			remittanceApplication
 					.setAccountMmyyyy(new SimpleDateFormat("dd/MM/yyyy").parse(DateUtil.getCurrentAccMMYear()));
 		} catch (ParseException e) {
-			logger.error("Error in saving application", e);
+			logger.debug("Error in saving application", e);
 		}
 		logger.info("Created by Refereal :" + metaData.getReferrer() + "\t Device ID :" + metaData.getDeviceId()
 				+ "\t Device Type :" + metaData.getDeviceType() + "\t App type :" + metaData.getAppType());
@@ -353,7 +353,7 @@ public class RemittanceApplicationManager {
 		try {
 			remittanceApplication.setAccountMmyyyy(new SimpleDateFormat("dd/MM/yyyy").parse(DateUtil.getCurrentAccMMYear()));
 		} catch (ParseException e) {
-			logger.error("Error in saving application", e);
+			logger.debug("Error in saving application", e);
 		}
 		logger.info("Created by Refereal :"+metaData.getReferrer()+"\t Device ID :"+metaData.getDeviceId()+"\t Device Type :"+metaData.getDeviceType()+"\t App type :"+metaData.getAppType());
 		if(!StringUtils.isBlank(metaData.getReferrer())){

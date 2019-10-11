@@ -124,19 +124,14 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 
 	public ApiResponse<CivilIdOtpModel> sendOtpForCivilId(String identityId)
 			throws InvalidInputException, CustomerValidationException, LimitExeededException {
-		try {
+		
 			HttpEntity<AbstractUserModel> requestEntity = new HttpEntity<AbstractUserModel>(getHeader());
 			String sendOtpUrl = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/" + identityId + "/send-otp/";
 			LOGGER.info("calling sendOtpForCivilId api: " + sendOtpUrl);
 			return restService.ajax(sendOtpUrl).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<CivilIdOtpModel>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in sendOtpForCivilId : ", e);
-			throw new JaxSystemError();
-		} // end of try-catch
+		
 	}
 
 	public ApiResponse<CivilIdOtpModel> sendResetOtpForCivilId(String identityId)
@@ -158,19 +153,14 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 
 	public ApiResponse<CivilIdOtpModel> sendOtpForCivilId()
 			throws InvalidInputException, CustomerValidationException, LimitExeededException {
-		try {
+	
 			HttpEntity<AbstractUserModel> requestEntity = new HttpEntity<AbstractUserModel>(getHeader());
 			String sendOtpUrl = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/send-otp/";
 			LOGGER.info("calling sendOtpForCivilId api: " + sendOtpUrl);
 			return restService.ajax(sendOtpUrl).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<CivilIdOtpModel>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in sendOtpForCivilId : ", e);
-			throw new JaxSystemError();
-		} // end of try-catch
+		
 
 	}
 
@@ -318,7 +308,7 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 
 	public ApiResponse<CustomerModel> validateSecurityQuestions(List<SecurityQuestionModel> securityquestions)
 			throws IncorrectInputException, CustomerValidationException, LimitExeededException {
-		try {
+		
 			CustomerModel custModel = new CustomerModel();
 			LOGGER.info("validateSecurityQuestions for customer id " + jaxMetaInfo.getCustomerId());
 
@@ -331,12 +321,6 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 			return restService.ajax(validatSecurityQuestionstUrl).post(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in validateSecurityQuestions : ", e);
-			throw new JaxSystemError();
-		} // end of try-catch
 
 	}
 
@@ -417,7 +401,7 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 
 	public ApiResponse<CivilIdOtpModel> sendOtpForEmailUpdate(String email)
 			throws InvalidInputException, CustomerValidationException, LimitExeededException {
-		try {
+		
 			CustomerModel custModel = new CustomerModel();
 			custModel.setCustomerId(jaxMetaInfo.getCustomerId());
 			custModel.setEmail(email);
@@ -428,18 +412,13 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 			return restService.ajax(sendOtpUrl).post(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<CivilIdOtpModel>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in sendOtpForEmailUpdate : ", e);
-			throw new JaxSystemError();
-		} // end of try-catch
+		
 
 	}
 
 	public ApiResponse<CivilIdOtpModel> sendOtpForMobileUpdate(String mobile)
 			throws InvalidInputException, CustomerValidationException, LimitExeededException {
-		try {
+		
 			CustomerModel custModel = new CustomerModel();
 			custModel.setCustomerId(jaxMetaInfo.getCustomerId());
 			custModel.setMobile(mobile);
@@ -450,12 +429,7 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 			return restService.ajax(sendOtpUrl).post(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<CivilIdOtpModel>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in sendOtpForMobileUpdate : ", e);
-			throw new JaxSystemError();
-		} // end of try-catch
+		
 
 	}
 
@@ -537,7 +511,7 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 
 	public ApiResponse<CivilIdOtpModel> initRegistration(String identityId, ContactType contactType)
 			throws InvalidInputException, CustomerValidationException, LimitExeededException {
-		try {
+		
 			Boolean initRegistration = new Boolean(true);
 			HttpEntity<AbstractUserModel> requestEntity = new HttpEntity<AbstractUserModel>(getHeader());
 			String sendOtpUrl = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/" + identityId + "/" + initRegistration
@@ -547,12 +521,7 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 					.queryParam("contactType", contactType)
 					.as(new ParameterizedTypeReference<ApiResponse<CivilIdOtpModel>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in initRegistration : ", e);
-			throw new JaxSystemError();
-		} // end of try-catch
+		
 	}
 
 	public ApiResponse<QuestModelDTO> getDataVerificationQuestions() {

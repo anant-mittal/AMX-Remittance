@@ -108,17 +108,13 @@ public class FcSaleOrderClient implements IFxOrderService {
 	@Override
 	public AmxApiResponse<FcSaleOrderApplicationResponseModel, Object> calculateXRate(BigDecimal fxCurrencyId,
 			BigDecimal fcAmount) {
-		try {
+		
 			LOGGER.debug("in getFcXRate :" + fxCurrencyId + "\t fcAmount :" + fcAmount);
 			return restService.ajax(appConfig.getJaxURL() + Path.FC_SALE_CAL_XRATE).meta(new JaxMetaInfo())
 					.queryParam(Params.FX_CURRENCY_ID, fxCurrencyId)
 					.queryParam(Params.FC_AMOUNT, fcAmount).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<FcSaleOrderApplicationResponseModel, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.error("exception in getCurrencyByCountryId : ", e);
-			return JaxSystemError.evaluate(e);
-		} // end of try-catch
 
 	}
 

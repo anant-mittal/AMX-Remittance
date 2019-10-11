@@ -75,7 +75,7 @@ public class DailyPromotionManager {
 			}
 			
 		} catch (Exception e) {
-			logger.error("Error in WantIT BuyIT Coupon " + e.getMessage());
+			logger.debug("Error in WantIT BuyIT Coupon " + e.getMessage());
 		}
 	}
 
@@ -132,7 +132,7 @@ public class DailyPromotionManager {
 			}
 			
 		} catch (Exception e) {
-			logger.error("Error while sending mail WantIT BuyIT : " + e.getMessage());
+			logger.debug("Error while sending mail WantIT BuyIT : " + e.getMessage());
 		}
 	}
 

@@ -343,16 +343,13 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 
 	@Override
 	public AmxApiResponse<FcSaleOrderManagementDTO, Object> searchOrderByDates(FcSaleOrderManagementDatesRequest fcSaleDates) {
-		try {
+		
 			LOGGER.debug("in searchOrderByDates :");
 			return restService.ajax(appConfig.getJaxURL() + Path.FC_SEARCH_ORDER_BY_DATES).meta(new JaxMetaInfo())
 					.post(fcSaleDates)
 					.as(new ParameterizedTypeReference<AmxApiResponse<FcSaleOrderManagementDTO, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.error("exception in searchOrderByDates : ", e);
-			return JaxSystemError.evaluate(e);
-		} // end of try-catch
+		
 	}
 
 }

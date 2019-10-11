@@ -532,7 +532,7 @@ public class PartnerTransactionManager extends AbstractModel {
 			try {
 				BeanUtils.copyProperties(customerdto, customerDetails);
 			} catch (IllegalAccessException | InvocationTargetException e) {
-				logger.error("Unable to convert Customer Details : None Found : " + customerId + " Exception " +e);
+				logger.debug("Unable to convert Customer Details : None Found : " + customerId + " Exception " +e);
 				throw new PricerServiceException(PricerServiceError.INVALID_CUSTOMER,
 						"Unable to convert Customer Details : None Found : " + customerId);
 			}
@@ -554,7 +554,7 @@ public class PartnerTransactionManager extends AbstractModel {
 			try {
 				BeanUtils.copyProperties(beneficiaryDto, beneficaryDetails);
 			} catch (IllegalAccessException | InvocationTargetException e) {
-				logger.error("Unable to convert Beneficiary Details : None Found : Customer Id " + customerId + " Beneficiary Relation Ship Id " + beneficiaryRelationShipId + " Exception " +e);
+				logger.debug("Unable to convert Beneficiary Details : None Found : Customer Id " + customerId + " Beneficiary Relation Ship Id " + beneficiaryRelationShipId + " Exception " +e);
 				throw new PricerServiceException(PricerServiceError.INVALID_BENEFICIARY,
 						"Unable to convert Beneficiary Details : None Found : Customer Id " + customerId + " Beneficiary Relation Ship Id " + beneficiaryRelationShipId);
 			}
@@ -896,12 +896,12 @@ public class PartnerTransactionManager extends AbstractModel {
 				BeanUtils.copyProperties(serviceProviderXmlLog, serviceProviderLogDTO);
 				serviceProviderXMLRepository.save(serviceProviderXmlLog);
 			} catch (IllegalAccessException | InvocationTargetException e) {
-				logger.error("Unable to convert Customer Details Exception " +e);
+				logger.debug("Unable to convert Customer Details Exception " +e);
 				throw new PricerServiceException(PricerServiceError.UNKNOWN_EXCEPTION,
 						"Unable to convert Customer Details");
 			}
 		}  catch (Exception e) {
-			logger.error("Unable to saveServiceProviderXml Exception " +e);
+			logger.debug("Unable to saveServiceProviderXml Exception " +e);
 		}
 	}
 
@@ -960,7 +960,7 @@ public class PartnerTransactionManager extends AbstractModel {
 						partnerTransactionDao.saveRemittanceRemarksDeliveryInd(actionInd, responseDescription, remittanceTransactionView.getRemittanceTransactionId());
 						//remittanceTransactionRepository.updateDeliveryIndRemarksBySP(remitTrnxSPDTO.getActionInd(), remitTrnxSPDTO.getResponseDescription(), remittanceTransactionView.getRemittanceTransactionId());
 						if(emailStatus) {
-							logger.error("Service provider api fail to execute : ColDocNo : ", responseDto.getCollectionDocumentNo() + " : ColDocCod : " +responseDto.getCollectionDocumentCode()+"  : ColDocYear : "+responseDto.getCollectionDocumentFYear());
+							logger.debug("Service provider api fail to execute : ColDocNo : ", responseDto.getCollectionDocumentNo() + " : ColDocCod : " +responseDto.getCollectionDocumentCode()+"  : ColDocYear : "+responseDto.getCollectionDocumentFYear());
 							auditService.log(new CActivityEvent(Type.TRANSACTION_CREATED,String.format("%s/%s", responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo())).field("STATUS").to(JaxTransactionStatus.PAYMENT_SUCCESS_SERVICE_PROVIDER_FAIL).result(Result.DONE));
 							sendSrvPrvTranxFailReport(remittanceTransactionView, remitTrnxSPDTO, partnerTransactionId);
 						}else {
