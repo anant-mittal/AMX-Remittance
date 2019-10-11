@@ -1,0 +1,112 @@
+{
+  "aggs": {
+    "2": {
+      "terms": {
+        "field": "branch.areaName.keyword",
+        "size": 5,
+        "order": {
+          "_count": "desc"
+        }
+      },
+      "aggs": {
+        "7": {
+          "date_range": {
+            "field": "trnx.trnxDate",
+            "ranges": [
+              {
+                "from": "now-1M/M",
+                "to": "now-1M"
+              },
+              {
+                "from": "now-0M/M",
+                "to": "now-0M"
+              }
+            ]
+          },
+          "aggs": {
+            "3": {
+              "sum": {
+                "field": "trnx.localCommRecv"
+              }
+            },
+            "4": {
+              "sum": {
+                "field": "trnx.commRecv"
+              }
+            },
+            "5": {
+              "sum": {
+                "field": "trnx.exchangeGain"
+              }
+            },
+            "6": {
+              "sum": {
+                "field": "trnx.coBankCharges"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "size": 0,
+  "_source": {
+    "excludes": []
+  },
+  "stored_fields": [
+    "*"
+  ],
+  "script_fields": {},
+  "docvalue_fields": [
+    "@timestamp",
+    "customer.creationDate",
+    "customer.creationDateOnline",
+    "customer.dateOfBirth",
+    "customer.lastTransactionDate",
+    "customer.lastUpdateDate",
+    "customer.updateDate",
+    "trnx.creationDate",
+    "trnx.lastUpdateDate",
+    "trnx.trnxDate",
+    "trnx.trnxPaidDate",
+    "xrate.timestamp"
+  ],
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "match_all": {}
+        },
+        {
+          "range": {
+            "@timestamp": {
+              "gte": 1562999505752,
+              "lte": 1570775505753,
+              "format": "epoch_millis"
+            }
+          }
+        },
+        {
+          "bool": {
+            "should": [
+              {
+                "match_phrase": {
+                  "trnx.trnxStatus.keyword": "PAID"
+                }
+              },
+              {
+                "match_phrase": {
+                  "trnx.trnxStatus.keyword": "DONE"
+                }
+              }
+            ],
+            "minimum_should_match": 1
+          }
+        }
+      ],
+      "filter": [],
+      "should": [],
+      "must_not": []
+    }
+  }
+}

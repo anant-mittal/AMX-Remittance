@@ -293,10 +293,15 @@ public class SnapModels {
 			if (fieldObject instanceof AggregationField) {
 				return (AggregationField) fieldObject;
 			} else {
-				HashMap<String, Object> fieldMap = new JsonPath(field).load(map, new HashMap<String, Object>());
-				AggregationField aggregationField = new AggregationField(fieldMap, field);
-				this.map.put(field, aggregationField);
-				return aggregationField;
+				try {
+					HashMap<String, Object> fieldMap = new JsonPath(field).load(map, new HashMap<String, Object>());
+					AggregationField aggregationField = new AggregationField(fieldMap, field);
+					this.map.put(field, aggregationField);
+					return aggregationField;
+				} catch (Exception e) {
+					System.out.println(map + "=== " + field);
+					return new AggregationField(new HashMap<String,Object>(),field);
+				}
 			}
 		}
 
