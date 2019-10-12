@@ -40,7 +40,7 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 @Api(value = "Beneficiary APIs")
-public class AddBeneBranchController {
+public class BeneficiaryBranchController {
 
 	@Autowired
 	private BeneBranchClient beneBranchClient;
@@ -50,14 +50,6 @@ public class AddBeneBranchController {
 	
 	@Autowired
 	MetaClient metaClient;
-
-	/*
-	 * beneList: "api/bene/list", beneStatusList: "api/bene/status/list",
-	 * beneServiceProviderList: "api/bene/service-provider/list", agentBranchList:
-	 * "api/bene/agent_branch/list", getBeneCountryList: "api/bene/country/list",
-	 * getServiceList: "api/bene/service/list", getRelationList:
-	 * "api/bene/relation/list", accountTypeList:"api/bene/account_type/list"
-	 */
 
 	@RequestMapping(value = "/api/bene/bank/list", method = RequestMethod.POST)
 	@ApiOperation("List bank by country and currency")
@@ -112,7 +104,7 @@ public class AddBeneBranchController {
 	public AmxApiResponse<BoolRespModel, Object> updateBeneCash(@RequestBody @Valid UpdateBeneCashRequest request) {
 		return beneBranchClient.updateBeneCash(request);
 	}
-
+//1
 	@RequestMapping(value = "/api/bene/country/list", method = RequestMethod.GET)
 	public ApiResponse<CountryMasterDTO> getBeneficiaryCountryList() {
 		return beneClient.getBeneficiaryCountryList();
@@ -142,5 +134,6 @@ public class AddBeneBranchController {
 		return metaClient.getBeneficiaryCurrency(countryId, serviceGroupId, routingBankId);
 	}
 	
+	//service group api needs to be added
 
 }
