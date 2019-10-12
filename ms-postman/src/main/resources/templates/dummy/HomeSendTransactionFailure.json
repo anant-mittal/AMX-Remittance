@@ -15,6 +15,10 @@
 	"customerContact" : "985634",
 	"transactionForeignAmount"  : 28.108,
 	"foreignCurrencyQuote" : "GBP",
-	"localCurrencyQuote" : "KD"
+  "localCurrencyQuote" : "KD",
+  "serviceProvider":"HOME SEND",
+  "partnerReference":"3215457896",
+  "beneBankReference":"192520062659030",
+  "amxReference":"48545454"
   }
 }
