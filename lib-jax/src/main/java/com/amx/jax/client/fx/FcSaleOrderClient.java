@@ -208,16 +208,12 @@ public class FcSaleOrderClient implements IFxOrderService {
 	/** @ To fetch the time slot **/
 	@Override
 	public AmxApiResponse<TimeSlotDto, Object> getTimeSlot(BigDecimal addressId) {
-		try {
+		
 			LOGGER.debug("in getTime slot client :" + addressId);
 			return restService.ajax(appConfig.getJaxURL() + Path.FC_SALE_TIME_SLOT)
 					.meta(new JaxMetaInfo()).queryParam(Params.FX_SHIPPING_ADD_ID, addressId)
 					.get().as(new ParameterizedTypeReference<AmxApiResponse<TimeSlotDto, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.error("exception in getCurrencyByCountryId : ", e);
-			return JaxSystemError.evaluate(e);
-		} // end of try-catch
 
 	}
 
