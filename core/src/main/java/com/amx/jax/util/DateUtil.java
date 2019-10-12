@@ -252,12 +252,16 @@ public class DateUtil {
 
 		BigDecimal j = BigDecimal.ZERO;
 		String startHour = null;
+		String endHour =null;
 		String startMinutes = null;
+		String endMinutes = null;
 		String timeIntHour = null;
 		String timeIntMin = null;
 		String estTimeInterval = null;
 		BigDecimal startTimeHour = BigDecimal.ZERO;
+		BigDecimal endTimeHour = BigDecimal.ZERO;
 		BigDecimal startTimeMinutes = BigDecimal.ZERO;
+		BigDecimal endTimeMinutes = BigDecimal.ZERO;
 		BigDecimal timeIntervalHour = BigDecimal.ZERO;
 		BigDecimal timeIntervalMin = BigDecimal.ZERO;
 		
@@ -313,6 +317,35 @@ public class DateUtil {
 				}
 			}
 		}
+		
+		endTime = RoundUtil.roundBigDecimal(endTime, 2);
+		String[] splitEndTime = endTime.toString().split("\\.");
+		
+				
+		if (splitEndTime != null) {
+			if (splitEndTime.length >= 1 && splitEndTime[0] != null) {
+				endHour = splitEndTime[0];
+			}
+			if (splitEndTime.length >= 2 && splitEndTime[1] != null) {
+				endMinutes = splitEndTime[1];
+			}
+			if (endHour != null) {
+				endTimeHour = new BigDecimal(endHour);
+			}
+			if (endMinutes != null) {
+				endTimeMinutes = new BigDecimal(endMinutes);
+				if(endTimeMinutes != null && endTimeMinutes.compareTo(new BigDecimal(50)) == 0) {
+					endTimeMinutes = new BigDecimal(30);
+				}
+			}
+		}
+
+		
+		if (endTimeMinutes.compareTo(BigDecimal.ZERO) != 0 && minutes.compareTo(BigDecimal.ZERO) != 0) {
+			String estEndTime = endTimeHour.toString().concat(".").concat(endTimeMinutes.toString());
+			endTime = new BigDecimal(estEndTime);
+		
+		}
 
 		BigDecimal startTimeNToday = startTimeHour;
 
@@ -341,8 +374,8 @@ public class DateUtil {
 			TimeSlotDto dto = new TimeSlotDto();
 			timeSlotList = new ArrayList<>();
 			for (BigDecimal i = startTime; i.compareTo(endTime) < 0; i = i) {
-				BigDecimal convertI = convertMinuteTohours(i,BigDecimal.ZERO);
-				BigDecimal convertJ = convertMinuteTohours(convertI,new BigDecimal(estTimeInterval));
+				BigDecimal convertI = convertMinuteTohours(i,BigDecimal.ZERO,endTime);
+				BigDecimal convertJ = convertMinuteTohours(convertI,new BigDecimal(estTimeInterval),endTime);
 				i = convertJ;
 				String str = "";
 				if (j.compareTo(endTime) <= 0) {
@@ -363,7 +396,7 @@ public class DateUtil {
 		return timeSlotDto;
 	}
 	
-	public static BigDecimal convertMinuteTohours(BigDecimal value,BigDecimal estTimeInterval) {
+	public static BigDecimal convertMinuteTohours(BigDecimal value,BigDecimal estTimeInterval,BigDecimal endTime) {
 		BigDecimal convertValue = value.add(estTimeInterval);
 		BigDecimal hoursCal = RoundUtil.roundBigDecimal(convertValue, 2);
 		String[] splithoursCal = hoursCal.toString().split("\\.");
@@ -402,6 +435,17 @@ public class DateUtil {
 				}else {
 					String estEndTime = Integer.toString(hoursval).concat(".").concat("00");
 					convertValue = new BigDecimal(estEndTime);
+											
+						if (convertValue.compareTo(endTime) == 0)  { 
+							convertValue =endTime;
+				        } 
+				        else if (convertValue.compareTo(endTime) == 1) { 
+				        	convertValue =endTime;
+				        } 
+				        else { 
+				        	convertValue = new BigDecimal(estEndTime);
+				        } 
+						
 				}
 			}
 		}

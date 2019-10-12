@@ -74,6 +74,7 @@ import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.model.response.CurrencyMasterDTO;
 import com.amx.jax.model.response.customer.PersonInfo;
+import com.amx.jax.model.response.remittance.LoyalityPointState;
 import com.amx.jax.repository.BeneficaryAccountRepository;
 import com.amx.jax.repository.CountryRepository;
 import com.amx.jax.repository.IBeneficaryContactDao;
@@ -182,6 +183,9 @@ public class BeneficiaryService extends AbstractService {
 	
 	@Autowired
 	IBeneficaryContactDao beneficaryContactDao;
+	
+	@Autowired
+	LoyalityPointService loyalityPointService;
 	
 	
 	public ApiResponse getBeneficiaryListForOnline(BigDecimal customerId, BigDecimal applicationCountryId,BigDecimal beneCountryId,Boolean excludePackage) {
@@ -435,6 +439,13 @@ public class BeneficiaryService extends AbstractService {
 			if (trnxView != null) {
 				remitPageDto.setTrnxHistDto(convertTranHistDto(trnxView));
 			}
+			
+			//------ Loyalty Point Status check ------
+			LoyalityPointState loyalityState = loyalityPointService.getLoyalityState(metaData.getCustomerId());
+			if(null != loyalityState) {
+				remitPageDto.setLoyalityPointState(loyalityState);
+			}
+			
 			response.getData().getValues().add(remitPageDto);
 			response.getData().setType(remitPageDto.getModelType());
 			response.setResponseStatus(ResponseStatus.OK);
@@ -1088,7 +1099,7 @@ public class BeneficiaryService extends AbstractService {
 		 * if (currencyList.isEmpty()) { throw new
 		 * GlobalException("Currency details not avaliable"); }
 		 */if(currencyList!=null && !currencyList.isEmpty()) {
-			CurrencyMasterMdlv1 curModel = currencyList.get(0);
+			 CurrencyMasterMdlv1 curModel = currencyList.get(0);
 			dto.setCountryId(curModel.getCountryId());
 			dto.setCurrencyCode(curModel.getCurrencyCode());
 			dto.setQuoteName(curModel.getQuoteName());

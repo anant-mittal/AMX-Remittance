@@ -6,6 +6,7 @@ import com.amx.amxlib.model.PlaceOrderDTO;
 import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.model.response.CurrencyMasterDTO;
+import com.amx.jax.model.response.remittance.LoyalityPointState;
 import com.amx.jax.model.response.remittance.ParameterDetailsDto;
 
 public class RemittancePageDto extends AbstractModel {
@@ -20,6 +21,8 @@ public class RemittancePageDto extends AbstractModel {
 
 	CurrencyMasterDTO forCur = null;
 	private PlaceOrderDTO placeOrderDTO = null;
+	
+	private LoyalityPointState loyalityPointState;
 
 	public CurrencyMasterDTO getForCur() {
 		return forCur;
@@ -76,6 +79,14 @@ public class RemittancePageDto extends AbstractModel {
 
 	public List<ParameterDetailsDto> getPackages() {
 		return packages;
+	}
+
+	public LoyalityPointState getLoyalityPointState() {
+		return loyalityPointState;
+	}
+
+	public void setLoyalityPointState(LoyalityPointState loyalityPointState) {
+		this.loyalityPointState = loyalityPointState;
 	}
 
 }

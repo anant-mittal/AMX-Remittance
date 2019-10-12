@@ -1957,7 +1957,7 @@ public class FcSaleBranchOrderManager {
 		fxDeliveryTimeSlotDto.setStartTime(fxDeliveryTimeSlotMaster.getStartTime());
 		fxDeliveryTimeSlotDto.setEndTime(fxDeliveryTimeSlotMaster.getEndTime());
 		fxDeliveryTimeSlotDto.setOfficeStartTime(fxDeliveryTimeSlotMaster.getOfficeStartTime());
-		fxDeliveryTimeSlotDto.setOfficeEndTime(fxDeliveryTimeSlotMaster.getEndTime());
+		fxDeliveryTimeSlotDto.setOfficeEndTime(fxDeliveryTimeSlotMaster.getOfficeEndTime());
 		fxDeliveryTimeSlotDto.setTimeInterval(fxDeliveryTimeSlotMaster.getTimeInterval());
 		fxDeliveryTimeSlotDto.setTimeIntervalOffice(fxDeliveryTimeSlotMaster.getTimeIntervalOffice());
 

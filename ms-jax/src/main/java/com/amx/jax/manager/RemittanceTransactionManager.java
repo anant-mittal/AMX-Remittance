@@ -765,6 +765,11 @@ public class RemittanceTransactionManager {
 			} else {
 				responseModel.setCanRedeemLoyalityPoints(true);
 			}
+			BigDecimal loyaltyPointCount = jaxTenantProperties.getLoyaltyCount();
+			if (loyalityPointsAvailable == null
+					|| (loyalityPointsAvailable.longValue() < loyaltyPointCount.longValue())) {
+				responseModel.setLoyalityPointState(LoyalityPointState.LOYALTY_POINT_NOT_AVAILABLE);
+			}
 		}
 	}
 
