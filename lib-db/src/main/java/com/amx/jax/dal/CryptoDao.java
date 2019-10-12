@@ -94,7 +94,7 @@ public class CryptoDao {
 			encStr = output.get("output_str").toString();
 			logger.debug("Done encrypt=" + encStr);
 		} catch (Exception e) {
-			logger.error("error in ecnrypt", e);
+			logger.debug("error in ecnrypt", e);
 		}
 		return encStr;
 	}
