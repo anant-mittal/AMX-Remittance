@@ -54,11 +54,13 @@ public class BranchUserController implements IBranchService {
 	@ApiVendorHeaders
 	@RequestMapping(value = "/branch-user/customer-call-session", method = RequestMethod.POST)
 	public AmxApiResponse<CustomerCall, Object> customerConnnected(@RequestParam BigDecimal agentId,
-			@RequestParam String mobile) {
+			@RequestParam BigDecimal customerId,
+			@RequestParam(required = false) String mobile,
+			@RequestParam(required = false) String leadId) {
 		Employee e = employeeRespository.findEmployeeById(agentId);
 		if (ArgUtil.is(e)) {
 			String employeeId = ArgUtil.parseAsString(e.getEmployeeId());
-			Customer c = CollectionUtil.getOne(customerRepository.getCustomerByMobile(mobile));
+			Customer c = customerRepository.getCustomerByCustomerId(customerId);
 			if (ArgUtil.is(c)) {
 				CustomerCall customerCall = new CustomerCall();
 				customerCall.setCustomerid(c.getCustomerId());
@@ -78,14 +80,18 @@ public class BranchUserController implements IBranchService {
 	@RequestMapping(value = "/branch-user/customer-call-status", method = RequestMethod.POST)
 	public AmxApiResponse<CustomerCall, Object> customerConnnectedStatus(@RequestParam BigDecimal agentId,
 			@RequestParam(required = false) String mobile, @RequestParam(required = false) String sessionId,
-			@RequestParam String status, @RequestParam String comment) {
+			@RequestParam(required = false) String leadId,
+			@RequestParam String status, @RequestParam String comment,
+			@RequestParam BigDecimal customerId) {
 		Employee e = employeeRespository.findEmployeeById(agentId);
 		CustomerCall call = null;
 		if (ArgUtil.is(e)) {
 			String employeeId = ArgUtil.parseAsString(e.getEmployeeId());
 			call = customerOnCall.get(employeeId);
 			Customer c = null;
-			if (ArgUtil.is(sessionId) && ArgUtil.is(call) && call.getSessionId().equals(sessionId)) {
+			if (ArgUtil.is(customerId)) {
+				c = customerRepository.getCustomerByCustomerId(customerId);
+			} else if (ArgUtil.is(sessionId) && ArgUtil.is(call) && call.getSessionId().equals(sessionId)) {
 				c = customerRepository.getCustomerByCustomerId(call.getCustomerid());
 			} else if (ArgUtil.is(mobile) && ArgUtil.is(call) && call.getMobile().equals(mobile)) {
 				c = customerRepository.getCustomerByCustomerId(call.getCustomerid());
@@ -94,7 +100,7 @@ public class BranchUserController implements IBranchService {
 			}
 			if (ArgUtil.is(c)) {
 				CustomerCallDetails customerCallDetail = new CustomerCallDetails();
-				customerCallDetail.setSession(sessionId);
+				customerCallDetail.setSession(sessionId + ":" + leadId);
 				customerCallDetail.setCreatedDate(new Date());
 				customerCallDetail.setEmployeeId(e.getEmployeeId());
 				customerCallDetail.setCustomerId(c.getCustomerId());
