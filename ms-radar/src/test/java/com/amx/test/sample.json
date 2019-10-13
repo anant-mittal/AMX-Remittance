@@ -1,99 +1,324 @@
 {
-  "took" : 14867,
-  "timed_out" : false,
-  "_shards" : {
-    "total" : 10,
-    "successful" : 10,
-    "skipped" : 0,
-    "failed" : 0
+  "took": 53,
+  "timed_out": false,
+  "_shards": {
+    "total": 15,
+    "successful": 15,
+    "skipped": 0,
+    "failed": 0
   },
-  "hits" : {
-    "total" : 1565365,
-    "max_score" : 0.0,
-    "hits" : [ ]
+  "hits": {
+    "total": 1482423,
+    "max_score": 0,
+    "hits": []
   },
-  "aggregations" : {
-    "tranx" : {
-      "buckets" : [
+  "aggregations": {
+    "2": {
+      "doc_count_error_upper_bound": 0,
+      "sum_other_doc_count": 93221,
+      "buckets": [
         {
-          "key" : "last_year",
-          "from" : 1.518672678172E12,
-          "from_as_string" : "2018-02-15T05:31:18.172Z",
-          "doc_count" : 1193,
-          "channel" : {
-            "doc_count_error_upper_bound" : 0,
-            "sum_other_doc_count" : 0,
-            "buckets" : [
+          "7": {
+            "buckets": [
               {
-                "key" : "ONLINE",
-                "doc_count" : 882
+                "3": {
+                  "value": 0
+                },
+                "4": {
+                  "value": 0
+                },
+                "5": {
+                  "value": 0
+                },
+                "6": {
+                  "value": 0
+                },
+                "8": {
+                  "value": null
+                },
+                "key": "2019-09-01T00:00:00.000Z-2019-09-10T12:13:51.599Z",
+                "from": 1567296000000,
+                "from_as_string": "2019-09-01T00:00:00.000Z",
+                "to": 1568117631599,
+                "to_as_string": "2019-09-10T12:13:51.599Z",
+                "doc_count": 0,
+                "8-bucket": {
+                  "buckets": []
+                }
               },
               {
-                "key" : "ANDROID",
-                "doc_count" : 216
-              },
-              {
-                "key" : "IOS",
-                "doc_count" : 53
-              },
-              {
-                "key" : "KIOSK",
-                "doc_count" : 23
-              },
-              {
-                "key" : "BRANCH",
-                "doc_count" : 19
+                "3": {
+                  "value": 0
+                },
+                "4": {
+                  "value": 0
+                },
+                "5": {
+                  "value": 0
+                },
+                "6": {
+                  "value": 0
+                },
+                "8": {
+                  "value": null
+                },
+                "key": "2019-10-01T00:00:00.000Z-2019-10-10T12:13:51.599Z",
+                "from": 1569888000000,
+                "from_as_string": "2019-10-01T00:00:00.000Z",
+                "to": 1570709631599,
+                "to_as_string": "2019-10-10T12:13:51.599Z",
+                "doc_count": 0,
+                "8-bucket": {
+                  "buckets": []
+                }
               }
             ]
-          }
+          },
+          "key": "FARWANIYA AREA",
+          "doc_count": 308412
         },
         {
-          "key" : "last_month",
-          "from" : 1.547530278172E12,
-          "from_as_string" : "2019-01-15T05:31:18.172Z",
-          "doc_count" : 78,
-          "channel" : {
-            "doc_count_error_upper_bound" : 0,
-            "sum_other_doc_count" : 0,
-            "buckets" : [
+          "7": {
+            "buckets": [
               {
-                "key" : "ONLINE",
-                "doc_count" : 65
+                "3": {
+                  "value": 0
+                },
+                "4": {
+                  "value": 0
+                },
+                "5": {
+                  "value": 0
+                },
+                "6": {
+                  "value": 0
+                },
+                "8": {
+                  "value": null
+                },
+                "key": "2019-09-01T00:00:00.000Z-2019-09-10T12:13:51.599Z",
+                "from": 1567296000000,
+                "from_as_string": "2019-09-01T00:00:00.000Z",
+                "to": 1568117631599,
+                "to_as_string": "2019-09-10T12:13:51.599Z",
+                "doc_count": 0,
+                "8-bucket": {
+                  "buckets": []
+                }
               },
               {
-                "key" : "ANDROID",
-                "doc_count" : 10
-              },
-              {
-                "key" : "IOS",
-                "doc_count" : 3
+                "3": {
+                  "value": 0
+                },
+                "4": {
+                  "value": 0
+                },
+                "5": {
+                  "value": 0
+                },
+                "6": {
+                  "value": 0
+                },
+                "8": {
+                  "value": null
+                },
+                "key": "2019-10-01T00:00:00.000Z-2019-10-10T12:13:51.599Z",
+                "from": 1569888000000,
+                "from_as_string": "2019-10-01T00:00:00.000Z",
+                "to": 1570709631599,
+                "to_as_string": "2019-10-10T12:13:51.599Z",
+                "doc_count": 0,
+                "8-bucket": {
+                  "buckets": []
+                }
               }
             ]
-          }
+          },
+          "key": "FAHAHEEL AREA",
+          "doc_count": 302683
         },
         {
-          "key" : "last_week",
-          "from" : 1.549603878172E12,
-          "from_as_string" : "2019-02-08T05:31:18.172Z",
-          "doc_count" : 0,
-          "channel" : {
-            "doc_count_error_upper_bound" : 0,
-            "sum_other_doc_count" : 0,
-            "buckets" : [ ]
-          }
+          "7": {
+            "buckets": [
+              {
+                "3": {
+                  "value": 0
+                },
+                "4": {
+                  "value": 0
+                },
+                "5": {
+                  "value": 0
+                },
+                "6": {
+                  "value": 0
+                },
+                "8": {
+                  "value": null
+                },
+                "key": "2019-09-01T00:00:00.000Z-2019-09-10T12:13:51.599Z",
+                "from": 1567296000000,
+                "from_as_string": "2019-09-01T00:00:00.000Z",
+                "to": 1568117631599,
+                "to_as_string": "2019-09-10T12:13:51.599Z",
+                "doc_count": 0,
+                "8-bucket": {
+                  "buckets": []
+                }
+              },
+              {
+                "3": {
+                  "value": 0
+                },
+                "4": {
+                  "value": 0
+                },
+                "5": {
+                  "value": 0
+                },
+                "6": {
+                  "value": 0
+                },
+                "8": {
+                  "value": null
+                },
+                "key": "2019-10-01T00:00:00.000Z-2019-10-10T12:13:51.599Z",
+                "from": 1569888000000,
+                "from_as_string": "2019-10-01T00:00:00.000Z",
+                "to": 1570709631599,
+                "to_as_string": "2019-10-10T12:13:51.599Z",
+                "doc_count": 0,
+                "8-bucket": {
+                  "buckets": []
+                }
+              }
+            ]
+          },
+          "key": "MURGAB AREA",
+          "doc_count": 259791
         },
         {
-          "key" : "last_day",
-          "from" : 1.550122278172E12,
-          "from_as_string" : "2019-02-14T05:31:18.172Z",
-          "doc_count" : 0,
-          "channel" : {
-            "doc_count_error_upper_bound" : 0,
-            "sum_other_doc_count" : 0,
-            "buckets" : [ ]
-          }
+          "7": {
+            "buckets": [
+              {
+                "3": {
+                  "value": 0
+                },
+                "4": {
+                  "value": 0
+                },
+                "5": {
+                  "value": 0
+                },
+                "6": {
+                  "value": 0
+                },
+                "8": {
+                  "value": null
+                },
+                "key": "2019-09-01T00:00:00.000Z-2019-09-10T12:13:51.599Z",
+                "from": 1567296000000,
+                "from_as_string": "2019-09-01T00:00:00.000Z",
+                "to": 1568117631599,
+                "to_as_string": "2019-09-10T12:13:51.599Z",
+                "doc_count": 0,
+                "8-bucket": {
+                  "buckets": []
+                }
+              },
+              {
+                "3": {
+                  "value": 0
+                },
+                "4": {
+                  "value": 0
+                },
+                "5": {
+                  "value": 0
+                },
+                "6": {
+                  "value": 0
+                },
+                "8": {
+                  "value": null
+                },
+                "key": "2019-10-01T00:00:00.000Z-2019-10-10T12:13:51.599Z",
+                "from": 1569888000000,
+                "from_as_string": "2019-10-01T00:00:00.000Z",
+                "to": 1570709631599,
+                "to_as_string": "2019-10-10T12:13:51.599Z",
+                "doc_count": 0,
+                "8-bucket": {
+                  "buckets": []
+                }
+              }
+            ]
+          },
+          "key": "ABBASSIYA AREA",
+          "doc_count": 259717
+        },
+        {
+          "7": {
+            "buckets": [
+              {
+                "3": {
+                  "value": 0
+                },
+                "4": {
+                  "value": 0
+                },
+                "5": {
+                  "value": 0
+                },
+                "6": {
+                  "value": 0
+                },
+                "8": {
+                  "value": null
+                },
+                "key": "2019-09-01T00:00:00.000Z-2019-09-10T12:13:51.599Z",
+                "from": 1567296000000,
+                "from_as_string": "2019-09-01T00:00:00.000Z",
+                "to": 1568117631599,
+                "to_as_string": "2019-09-10T12:13:51.599Z",
+                "doc_count": 0,
+                "8-bucket": {
+                  "buckets": []
+                }
+              },
+              {
+                "3": {
+                  "value": 0
+                },
+                "4": {
+                  "value": 0
+                },
+                "5": {
+                  "value": 0
+                },
+                "6": {
+                  "value": 0
+                },
+                "8": {
+                  "value": null
+                },
+                "key": "2019-10-01T00:00:00.000Z-2019-10-10T12:13:51.599Z",
+                "from": 1569888000000,
+                "from_as_string": "2019-10-01T00:00:00.000Z",
+                "to": 1570709631599,
+                "to_as_string": "2019-10-10T12:13:51.599Z",
+                "doc_count": 0,
+                "8-bucket": {
+                  "buckets": []
+                }
+              }
+            ]
+          },
+          "key": "SALMIYA AREA",
+          "doc_count": 258599
         }
       ]
     }
-  }
+  },
+  "status": 200
 }

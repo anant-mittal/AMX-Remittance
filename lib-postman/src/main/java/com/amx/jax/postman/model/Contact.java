@@ -6,6 +6,33 @@ public class Contact {
 	Tenant tenant;
 	String country;
 	String userid;
+	String prefix;
+	String mobile;
+	String email;
+
+	public String getPrefix() {
+		return prefix;
+	}
+
+	public void setPrefix(String prefix) {
+		this.prefix = prefix;
+	}
+
+	public String getMobile() {
+		return mobile;
+	}
+
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
 
 	public Tenant getTenant() {
 		return tenant;
@@ -29,5 +56,20 @@ public class Contact {
 
 	public void setUserid(String userid) {
 		this.userid = userid;
+	}
+
+	public Contact prefix(String prefix) {
+		this.prefix = prefix;
+		return this;
+	}
+
+	public Contact mobile(String mobile) {
+		this.mobile = mobile;
+		return this;
+	}
+
+	public Contact email(String email) {
+		this.email = email;
+		return this;
 	}
 }
