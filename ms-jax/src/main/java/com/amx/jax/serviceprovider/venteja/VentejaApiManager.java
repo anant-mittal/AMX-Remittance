@@ -1,5 +1,6 @@
 package com.amx.jax.serviceprovider.venteja;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import com.amx.jax.model.request.remittance.RemittanceAdditionalBeneFieldModel;
 import com.amx.jax.model.request.serviceprovider.ServiceProviderCallRequestDto;
 import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;
 import com.amx.jax.model.response.remittance.FlexFieldDto;
+import com.amx.jax.model.response.serviceprovider.Remittance_Call_Response;
 import com.amx.jax.model.response.serviceprovider.Validate_Remittance_Inputs_Call_Response;
 import com.amx.jax.serviceprovider.service.ServiceProviderApiManager;
 
@@ -86,6 +88,18 @@ public class VentejaApiManager extends ServiceProviderApiManager {
 				}
 			}
 		}
+	}
+	
+	@Override
+	public Remittance_Call_Response sendRemittance(Map<String, Object> remitApplParametersMap) {
+		Map<String, Object> inputs = new HashMap<>();
+		inputs.putAll(remitApplParametersMap);
+		ServiceProviderCallRequestDto serviceProviderCallRequestDto = createValidateInputRequest(inputs);
+		AmxApiResponse<Remittance_Call_Response, Object> response = serviceProviderClientWrapper.sendRemittance(serviceProviderCallRequestDto);
+		fetchServiceProviderCommitLogs(response.getResult(), serviceProviderCallRequestDto);
+		BigDecimal remittanceTransactionId = (BigDecimal) inputs.get("P_REMITTANCE_TRANSACTION_ID");
+		updateServiceProviderDetails(response.getResult(), remittanceTransactionId);
+		return response.getResult();
 	}
 
 }

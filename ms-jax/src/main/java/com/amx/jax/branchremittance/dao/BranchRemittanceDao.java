@@ -121,7 +121,7 @@ public class BranchRemittanceDao {
 	@Autowired
 	IRemitTrnxSrvProvRepository remitTrnxSrvProvRepository;
 	
-       @Autowired
+    @Autowired
 	IRemittanceTransactionDao remittanceTransactionDao;
 
 

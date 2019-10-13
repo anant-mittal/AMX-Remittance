@@ -186,7 +186,7 @@ public class PartnerTransactionManager extends AbstractModel {
 	@Autowired
 	CountryBranchRepository countryBranchRepository;
 
-	public AmxApiResponse<Remittance_Call_Response, Object> callingPartnerApi(RemittanceResponseDto responseDto) {
+	public AmxApiResponse<Remittance_Call_Response, Object> callingHomeSendPartnerApi(RemittanceResponseDto responseDto) {
 		BigDecimal customerId = metaData.getCustomerId();
 		
 		AmxApiResponse<Remittance_Call_Response, Object> srvPrvResp = convertingTransactionPartnerDetails(customerId, responseDto);
@@ -919,6 +919,7 @@ public class PartnerTransactionManager extends AbstractModel {
 		String responseDescription = null;
 		RemitTrnxSPDTO remitTrnxSPDTO = null;
 		boolean emailStatus = Boolean.FALSE;
+		String bankReference = null;
 
 		if(responseDto != null && responseDto.getCollectionDocumentFYear() != null && responseDto.getCollectionDocumentNo() != null) {
 
@@ -960,6 +961,11 @@ public class PartnerTransactionManager extends AbstractModel {
 						responseDescription = serviceProviderResponse.getResponse_description();
 						emailStatus = Boolean.TRUE;
 					}
+					
+					Remittance_Call_Response remittance_Call_Response = (Remittance_Call_Response) serviceProviderResponse;
+					if(remittance_Call_Response != null && remittance_Call_Response.getBene_bank_remittance_reference() != null) {
+						bankReference = remittance_Call_Response.getBene_bank_remittance_reference();
+					}
 
 					remitTrnxSPDTO = new RemitTrnxSPDTO();
 					remitTrnxSPDTO.setActionInd(actionInd);
@@ -968,7 +974,7 @@ public class PartnerTransactionManager extends AbstractModel {
 					
 					logger.info("actionInd : " + actionInd + " responseDescription : "+ responseDescription + " transaction Id " + remittanceTransactionView.getRemittanceTransactionId() + " partner transaction id : "  + partnerTransactionId);
 					// save remit trnx
-					partnerTransactionDao.saveRemittanceRemarksDeliveryInd(actionInd, responseDescription, remittanceTransactionView.getRemittanceTransactionId());
+					partnerTransactionDao.saveRemittanceRemarksDeliveryInd(actionInd, responseDescription, remittanceTransactionView.getRemittanceTransactionId(),bankReference);
 					//remittanceTransactionRepository.updateDeliveryIndRemarksBySP(remitTrnxSPDTO.getActionInd(), remitTrnxSPDTO.getResponseDescription(), remittanceTransactionView.getRemittanceTransactionId());
 					if(emailStatus) {
 						logger.error("Service provider api fail to execute : ColDocNo : ", responseDto.getCollectionDocumentNo() + " : ColDocCod : " +responseDto.getCollectionDocumentCode()+"  : ColDocYear : "+responseDto.getCollectionDocumentFYear());

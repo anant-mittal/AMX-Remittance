@@ -54,6 +54,7 @@ public class TransactionDetailsView implements Serializable {
 	private BigDecimal beneficiaryCountryId;
 	private BigDecimal foreignCurrencyId;
 	private BigDecimal localCurrencyId;
+	private String bankReference;
 	
 	public TransactionDetailsView() {
 		super();
@@ -354,6 +355,14 @@ public class TransactionDetailsView implements Serializable {
 	}
 	public void setLocalCurrencyId(BigDecimal localCurrencyId) {
 		this.localCurrencyId = localCurrencyId;
+	}
+
+	@Column(name = "BANK_REFERENCE")
+	public String getBankReference() {
+		return bankReference;
+	}
+	public void setBankReference(String bankReference) {
+		this.bankReference = bankReference;
 	}
 	
 }

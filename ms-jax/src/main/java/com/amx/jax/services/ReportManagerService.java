@@ -41,10 +41,12 @@ import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.PurposeOfRemittanceViewModel;
 import com.amx.jax.dbmodel.RemittanceTransactionView;
 import com.amx.jax.dbmodel.ViewCompanyDetails;
+import com.amx.jax.dbmodel.partner.TransactionDetailsView;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.manager.PromotionManager;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.partner.dao.PartnerTransactionDao;
 import com.amx.jax.repository.CountryMasterRepository;
 import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.repository.ICollectionDetailViewDao;
@@ -95,10 +97,11 @@ public class ReportManagerService extends AbstractService{
 	@Autowired
 	RemittanceApplicationDao remittanceApplicationDao;
 	
-	
 	private List<RemittanceReceiptSubreport> remittanceReceiptSubreportList;
+	
 	@Autowired
 	PromotionManager promotionManager;
+	
 	@Autowired
 	UserService userService;
 	
@@ -111,7 +114,8 @@ public class ReportManagerService extends AbstractService{
 	@Autowired
 	MetaData meta;
 	
-	
+	@Autowired
+	PartnerTransactionDao partnerTransactionDao;
 
 	
 	
@@ -263,7 +267,21 @@ public class ReportManagerService extends AbstractService{
 				obj.setNoOfTransaction(new BigDecimal(noOfTransactions));
 				obj.setPhoneNumber(view.getPhoneNumber()); 
 				obj.setUserName(view.getCreatedBy());
-				obj.setPinNo(view.getPinNo() );
+				
+				if(view.getPinNo() != null) {
+					obj.setPinNo(view.getPinNo());
+				}else {
+					// fetch the vintaja reference
+					List<TransactionDetailsView> lstTrnxDetails = partnerTransactionDao.fetchTrnxWiseDetailsForCustomer(view.getCustomerId(), view.getDocumentFinancialYear(),
+							view.getDocumentNo(), view.getCollectionDocFinanceYear(), view.getCollectionDocumentNo(), view.getCollectionDocCode());
+					if(lstTrnxDetails != null && lstTrnxDetails.size() != 0) {
+						TransactionDetailsView trnxDetails = lstTrnxDetails.get(0);
+						if(trnxDetails != null && trnxDetails.getPartnerSessionId() != null && trnxDetails.getBankReference() != null) {
+							obj.setPinNo(trnxDetails.getPartnerSessionId() + " / " + trnxDetails.getBankReference());
+						}
+					}
+				}
+				
 			
 				logger.debug("metaDetails:"+meta.getCustomerId());
 				

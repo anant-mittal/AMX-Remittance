@@ -128,6 +128,7 @@ public class VentajaManager extends AbstractModel {
 					remitParametersMap.put("P_BENEFICIARY_RELASHIONSHIP_ID", transactionDetailsView.getBeneficiaryRelationShipId());
 					remitParametersMap.put("P_CALCULATED_FC_AMOUNT", transactionDetailsView.getForeignTrnxAmount());
 					remitParametersMap.put("P_REQUEST_SEQUENCE_ID", transactionDetailsView.getAmgSessionId());
+					remitParametersMap.put("P_REMITTANCE_TRANSACTION_ID", transactionDetailsView.getRemittanceTransactionId());
 					
 					Map<String, FlexFieldDto> flexFieldDtoMap = fetchTransactionWiseRecords(transactionDetailsView);
 					remitParametersMap.put("flexFieldDtoMap", flexFieldDtoMap);

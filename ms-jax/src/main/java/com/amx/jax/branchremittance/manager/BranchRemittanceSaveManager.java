@@ -817,7 +817,8 @@ public class BranchRemittanceSaveManager {
 					saveRemitnaceinstructionData(appl,remitTrnx);
 					saveRemittanceAml(appl, remitTrnx);
 					saveLoyaltyPoints(remitTrnx);
-					mapRemitTrnxSrvProv = saveRemitTrnxSrvProv(appl.getRemittanceApplicationId(), remitTrnx.getCreatedBy());
+					RemitTrnxSrvProv remitTrnxSrvProv = saveRemitTrnxSrvProv(appl.getRemittanceApplicationId(), remitTrnx.getCreatedBy());
+					mapRemitTrnxSrvProv.put(appl.getRemittanceApplicationId(), remitTrnxSrvProv);
 				}
 			}
 			
@@ -1294,14 +1295,12 @@ public void validateSaveTrnxDetails(HashMap<String, Object> mapAllDetailRemitSav
 	}
 }
 	
-	public Map<BigDecimal,RemitTrnxSrvProv> saveRemitTrnxSrvProv(BigDecimal remittanceApplicationId,String createdBy) {
-		Map<BigDecimal,RemitTrnxSrvProv> mapRemitTrnxSrvProv = null;
+	public RemitTrnxSrvProv saveRemitTrnxSrvProv(BigDecimal remittanceApplicationId,String createdBy) {
 		RemitTrnxSrvProv remitTrnxSrvProv = null;
 		
 		RemitApplSrvProv applSrvProv = remitApplSrvProvRepository.findByRemittanceApplicationId(remittanceApplicationId);
 
 		if (applSrvProv != null) {
-			mapRemitTrnxSrvProv = new HashMap<>();
 			remitTrnxSrvProv = new RemitTrnxSrvProv();
 			remitTrnxSrvProv.setAmgSessionId(applSrvProv.getAmgSessionId());
 			remitTrnxSrvProv.setBankId(applSrvProv.getBankId());
@@ -1316,11 +1315,9 @@ public void validateSaveTrnxDetails(HashMap<String, Object> mapAllDetailRemitSav
 			remitTrnxSrvProv.setCreatedDate(new Date());
 			remitTrnxSrvProv.setOfferExpirationDate(applSrvProv.getOfferExpirationDate());
 			remitTrnxSrvProv.setOfferStartingDate(applSrvProv.getOfferStartingDate());
-			
-			mapRemitTrnxSrvProv.put(remittanceApplicationId, remitTrnxSrvProv);
 		}
 		
-		return mapRemitTrnxSrvProv;
+		return remitTrnxSrvProv;
 	}
 	
 	// calling third party services
@@ -1352,7 +1349,7 @@ public void validateSaveTrnxDetails(HashMap<String, Object> mapAllDetailRemitSav
 			
 			if(homeSendCheckStatus) {
 				partnerTransactionId = null;
-				AmxApiResponse<Remittance_Call_Response, Object> apiResponse = partnerTransactionManager.callingPartnerApi(responseDto);
+				AmxApiResponse<Remittance_Call_Response, Object> apiResponse = partnerTransactionManager.callingHomeSendPartnerApi(responseDto);
 				if(apiResponse != null) {
 					if(serviceProviderView != null && serviceProviderView.getPartnerSessionId() != null) {
 						partnerTransactionId = serviceProviderView.getPartnerSessionId();

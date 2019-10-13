@@ -453,7 +453,7 @@ public class RemittancePaymentManager extends AbstractService{
 			
 			if(homeSendCheckStatus) {
 				partnerTransactionId = null;
-				AmxApiResponse<Remittance_Call_Response, Object> apiResponse = partnerTransactionManager.callingPartnerApi(responseDto);
+				AmxApiResponse<Remittance_Call_Response, Object> apiResponse = partnerTransactionManager.callingHomeSendPartnerApi(responseDto);
 				if(apiResponse != null) {
 					if(serviceProviderView != null && serviceProviderView.getPartnerSessionId() != null) {
 						partnerTransactionId = serviceProviderView.getPartnerSessionId();
