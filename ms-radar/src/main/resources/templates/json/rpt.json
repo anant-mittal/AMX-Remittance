@@ -1,6 +1,6 @@
 {
   "aggs": {
-    "2": {
+    "c2": {
       "terms": {
         "field": "branch.areaName.keyword",
         "size": 5,
@@ -9,37 +9,39 @@
         }
       },
       "aggs": {
-        "7": {
+        "c7": {
           "date_range": {
             "field": "trnx.trnxDate",
             "ranges": [
               {
+                "key" : "PrevMonth",
                 "from": "now-1M/M",
                 "to": "now-1M"
               },
               {
+               "key" : "ThisMonth",
                 "from": "now-0M/M",
                 "to": "now-0M"
               }
             ]
           },
           "aggs": {
-            "3": {
+            "c3": {
               "sum": {
                 "field": "trnx.localCommRecv"
               }
             },
-            "4": {
+            "c4": {
               "sum": {
                 "field": "trnx.commRecv"
               }
             },
-            "5": {
+            "c5": {
               "sum": {
                 "field": "trnx.exchangeGain"
               }
             },
-            "6": {
+            "c6": {
               "sum": {
                 "field": "trnx.coBankCharges"
               }
@@ -108,5 +110,13 @@
       "should": [],
       "must_not": []
     }
-  }
+  },
+  "pivot" : [
+  	{
+	 "rows" : ["c2"],
+	 "cols" : ["c7"],
+	 "vals" : ["sum c3", "count * AS total"],
+	 "computed" : ["half=c3_ThisMonth/2"]
+  	}
+  ]
 }

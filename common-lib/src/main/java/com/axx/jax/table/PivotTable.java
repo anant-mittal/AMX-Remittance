@@ -167,15 +167,6 @@ public class PivotTable {
 						String funkeyAlias = alias.get(i);
 						this.calculate(row, funkeyAlias + "_" + rowKey.toString(), fun, funkey, col, Constants.BLANK);
 					}
-
-					row.exp(computedCols, computedVals);
-
-					for (int i = 0; i < noncomputedColsCount; i++) {
-						String fun = noncomputedVals.get(i);
-						String funkey = noncomputedCols.get(i);
-						row.result.put(funkey, fun);
-					}
-
 				}
 			} else {
 				for (int r = 0; r < rowCount; r++) {
@@ -189,6 +180,13 @@ public class PivotTable {
 				}
 			}
 
+			row.exp(computedCols, computedVals);
+
+			for (int i = 0; i < noncomputedColsCount; i++) {
+				String fun = noncomputedVals.get(i);
+				String funkey = noncomputedCols.get(i);
+				row.result.put(funkey, fun);
+			}
 		}
 	}
 
