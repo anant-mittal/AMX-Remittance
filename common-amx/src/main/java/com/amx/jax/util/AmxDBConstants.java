@@ -3,8 +3,15 @@ package com.amx.jax.util;
 import java.math.BigDecimal;
 
 public class AmxDBConstants {
+	
+	/**
+	 * Maximum value possible for language id, in according to DB;
+	 */
+	public static final BigDecimal MAX_LANG_ID = new BigDecimal(2);
+	
 	public static final BigDecimal DOCUMENT_CODE_FOR_COLLECT_TRANSACTION = new BigDecimal(2);
 	public static final BigDecimal DOCUMENT_CODE_FOR_REMITTANCE_APPLICATION = new BigDecimal(1);
+	
 	public static final String No = "N";
 	public static final String Yes = "Y";
 	public static final String Deleted = "D";
@@ -225,5 +232,5 @@ public class AmxDBConstants {
 	
 	public static final String JOB_IN_PROGRESS="P";
 	public static final String JOB_COMPLETED = "C";
-
+	
 }

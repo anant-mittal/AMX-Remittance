@@ -11,14 +11,13 @@ import com.amx.jax.constants.JaxChannel;
 import com.amx.jax.dict.Country;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.services.AbstractServiceFactory;
+import com.amx.jax.util.JaxUtil;
 import com.amx.utils.ArgUtil;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class MetaData implements IMetaData {
 	
-	private static final BigDecimal MAX_LANG_ID = new BigDecimal(2);
-
 	private BigDecimal countryId;
 
 	private BigDecimal languageId;
@@ -90,10 +89,7 @@ public class MetaData implements IMetaData {
 	}
 
 	public BigDecimal getLanguageId() {
-		if(ArgUtil.isEmpty(languageId) || (MAX_LANG_ID.compareTo(languageId) < 0)) {
-			return BigDecimal.ONE;
-		}
-		return languageId;
+		return JaxUtil.languageScale(this.languageId);
 	}
 
 	public void setLanguageId(BigDecimal languageId) {

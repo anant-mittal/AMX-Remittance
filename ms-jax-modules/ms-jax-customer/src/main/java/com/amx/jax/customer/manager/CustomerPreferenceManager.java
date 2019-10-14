@@ -9,11 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.events.CActivityEvent;
 import com.amx.jax.logger.events.CActivityEvent.Type;
 import com.amx.jax.repository.CustomerRepository;
+import com.amx.jax.util.JaxUtil;
+import com.amx.amxlib.exception.jax.GlobalException;
 
 /**
  * 
@@ -43,18 +46,20 @@ public class CustomerPreferenceManager {
 		audit.setCustomerId(customerId);
 		audit.setLanguageId(languageId);
 		Customer c = customerRepository.getActiveCustomerDetailsByCustomerId(customerId);
-		if (c != null) {
+		try {
+			if (c == null) {
+				throw new GlobalException(JaxError.CUSTOMER_NOT_FOUND, "Customer detail not found");
+			}
 			BigDecimal lanChanCount = c.getOnlineLanguageChangeCount() == null ? BigDecimal.ZERO
 					: c.getOnlineLanguageChangeCount();
-			c.setLanguageId(languageId);
+			c.setLanguageId(JaxUtil.languageScale(languageId));
 			c.setOnlineLanguageChangeCount(lanChanCount.add(BigDecimal.ONE));
 			customerRepository.save(c);
 			status = "SUCCESS";
 			auditService.log(audit.result(Result.DONE));
-		} else {
-			auditService.log(audit.result(Result.FAIL).message("Customer detail not found"));
+		} catch (GlobalException e) {
+			auditService.log(audit.result(Result.FAIL, e));
 		}
-
 		return status;
 	}
 
