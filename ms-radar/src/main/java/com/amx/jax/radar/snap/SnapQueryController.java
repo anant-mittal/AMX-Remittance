@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.snap.SnapConstants.SnapQueryTemplate;
+import com.amx.jax.client.snap.SnapModels;
 import com.amx.jax.client.snap.SnapModels.SnapModelWrapper;
 import com.amx.jax.radar.jobs.customer.OracleVarsCache;
 import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncJobs;
@@ -101,13 +102,13 @@ public class SnapQueryController {
 			params.put("lte", lte);
 		}
 		level = ArgUtil.parseAsInteger(params.getOrDefault("level", level));
-		
+
 		SnapModelWrapper x = snapQueryTemplateService.execute(snapView, params);
 
 		if (level >= 0) {
 			List<Map<String, List<String>>> p = x.getPivot();
 			List<Map<String, Object>> inputBulk = x.getAggregations().toBulk();
-			
+
 			for (Map<String, List<String>> pivot : p) {
 				level--;
 				if (level < 0)
@@ -115,7 +116,7 @@ public class SnapQueryController {
 				PivotTable table = new PivotTable(
 						pivot.get("rows"), pivot.get("cols"),
 						pivot.get("vals"), pivot.get("aggs"), pivot.get("alias"),
-						pivot.get("computed"),pivot.get("noncomputed"));
+						pivot.get("computed"), pivot.get("noncomputed"));
 				for (Map<String, Object> map : inputBulk) {
 					table.add(map);
 				}
@@ -123,6 +124,7 @@ public class SnapQueryController {
 				inputBulk = table.toBulk();
 			}
 			x.toMap().put("bulk", inputBulk);
+			x.removeAggregations();
 		}
 
 		return x;

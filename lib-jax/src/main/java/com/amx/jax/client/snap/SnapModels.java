@@ -17,7 +17,7 @@ public class SnapModels {
 
 	private static final String BUCKETS = "buckets";
 	private static final JsonPath BUCKETS_LIST = new JsonPath(BUCKETS);
-	private static final String AGGREGATIONS_KEY = "aggregations";
+	public static final String AGGREGATIONS_KEY = "aggregations";
 	private static final JsonPath AGGREGATIONS = new JsonPath(AGGREGATIONS_KEY);
 	private static final String HITS_KEY = "hits";
 	private static final JsonPath HITS = new JsonPath(HITS_KEY);
@@ -107,6 +107,11 @@ public class SnapModels {
 				}
 			}
 			return pivot;
+		}
+
+		public SnapModelWrapper removeAggregations() {
+			map.remove(AGGREGATIONS_KEY);
+			return this;
 		}
 	}
 
@@ -304,7 +309,7 @@ public class SnapModels {
 					return aggregationField;
 				} catch (Exception e) {
 					System.out.println(map + "=== " + field);
-					return new AggregationField(new HashMap<String,Object>(),field);
+					return new AggregationField(new HashMap<String, Object>(), field);
 				}
 			}
 		}
