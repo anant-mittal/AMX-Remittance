@@ -73,8 +73,10 @@ public class CustomerUpdateManager {
 		BigDecimal appCountry = companyDetail.getApplicationCountryId();
 		String countryName = countryService.getCountryMaster(appCountry).getFsCountryMasterDescs().get(0).getCountryName();
 
-		if (!appCountry.equals(req.getLocalAddressDetail().getCountryId())) {
-			throw new GlobalException("Local country should be " + countryName);
+		if (req.getLocalAddressDetail().getCountryId() != null) {
+			if (!appCountry.equals(req.getLocalAddressDetail().getCountryId())) {
+				throw new GlobalException("Local country should be " + countryName);
+			}
 		}
 	}
 
