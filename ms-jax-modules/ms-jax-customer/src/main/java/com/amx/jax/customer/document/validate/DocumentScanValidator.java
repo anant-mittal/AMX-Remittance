@@ -35,10 +35,12 @@ public class DocumentScanValidator {
 		}
 		if (metaData.getCustomerId() != null) {
 			Customer customer = userService.getCustById(metaData.getCustomerId());
-			boolean isIdExpired = Calendar.getInstance().getTime().after(customer.getIdentityExpiredDate());
-			if (ConstantDocument.Yes.equals(customer.getIsActive())
-					&& customer.getIdentityTypeId().equals(uploadCustomerKycRequest.getIdentityTypeId()) && !isIdExpired) {
-				throw new GlobalException("customer already active and uploaded kyc document");
+			if (customer.getIdentityExpiredDate() != null) {
+				boolean isIdExpired = Calendar.getInstance().getTime().after(customer.getIdentityExpiredDate());
+				if (ConstantDocument.Yes.equals(customer.getIsActive())
+						&& customer.getIdentityTypeId().equals(uploadCustomerKycRequest.getIdentityTypeId()) && !isIdExpired) {
+					throw new GlobalException("customer already active and uploaded kyc document");
+				}
 			}
 			uploadCustomerKycRequest.setIdentityInt(customer.getIdentityInt());
 			uploadCustomerKycRequest.setIdentityTypeId(customer.getIdentityTypeId());

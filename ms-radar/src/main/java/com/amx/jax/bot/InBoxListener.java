@@ -10,14 +10,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import com.amx.jax.AppContext;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.client.CustomerProfileClient;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerContactVerification;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.exception.AmxApiException;
-import com.amx.jax.exception.AmxException;
 import com.amx.jax.logger.AuditActor;
 import com.amx.jax.logger.AuditActor.ActorType;
 import com.amx.jax.mcq.shedlock.SchedulerLock;
@@ -156,6 +154,8 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 					LOGGER.error("SOME_Exception", e);
 				}
 
+			} else {
+				replyMessage = "NO_RESPONSE";
 			}
 			/*
 			 * else if (esConfig.isEnabled()) { OracleViewDocument doc =

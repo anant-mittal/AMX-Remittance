@@ -34,6 +34,10 @@ public class SnapModels {
 		KEYS.put("doc_count_error_upper_bound", true);
 		KEYS.put("sum_other_doc_count", true);
 		KEYS.put("doc_count", true);
+		KEYS.put("to_as_string", true);
+		KEYS.put("from_as_string", true);
+		KEYS.put("from", true);
+		KEYS.put("to", true);
 	}
 
 	public static class ASnapModel extends MapModel {
@@ -293,10 +297,15 @@ public class SnapModels {
 			if (fieldObject instanceof AggregationField) {
 				return (AggregationField) fieldObject;
 			} else {
-				HashMap<String, Object> fieldMap = new JsonPath(field).load(map, new HashMap<String, Object>());
-				AggregationField aggregationField = new AggregationField(fieldMap, field);
-				this.map.put(field, aggregationField);
-				return aggregationField;
+				try {
+					HashMap<String, Object> fieldMap = new JsonPath(field).load(map, new HashMap<String, Object>());
+					AggregationField aggregationField = new AggregationField(fieldMap, field);
+					this.map.put(field, aggregationField);
+					return aggregationField;
+				} catch (Exception e) {
+					System.out.println(map + "=== " + field);
+					return new AggregationField(new HashMap<String,Object>(),field);
+				}
 			}
 		}
 

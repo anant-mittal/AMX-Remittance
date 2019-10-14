@@ -397,7 +397,7 @@ function dropdown(classname) {
 				var bulkItem = bulk[i];
 				var tableItem = [];
 				for(var key in _bulkItem){
-					if(bulkItem[key]){
+					if(bulkItem[key] !==undefined){
 						if(typeof bulkItem[key] == "object")
 						bulkItem[key] = JSON.stringify(bulkItem[key]);
 					} else {

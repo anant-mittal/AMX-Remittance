@@ -31,6 +31,9 @@ public class SnapConstants {
 		CUSTOMER_VERIFICATION_REPORT("customer-verification-report", SnapIndexName.LOGS, "auditlogs"),
 		CUSTOMER_VERIFICATION_REPORT_TOTAL("customer-verification-report-total", SnapIndexName.LOGS, "auditlogs"),
 		BUGZ_STORIES("bugz-stories", SnapIndexName.ALL),
+		
+		
+		RPT("rpt", SnapIndexName.TRANX),
 		;
 
 		String file;
