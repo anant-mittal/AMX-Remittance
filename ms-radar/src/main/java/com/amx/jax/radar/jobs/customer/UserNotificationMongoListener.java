@@ -71,11 +71,13 @@ public class UserNotificationMongoListener implements ITunnelSubscriber<UserMess
 				customerNotification.setTitle(task.getSubject());
 				customerNotification.setMessage(task.getMessage());
 				customerNotificationList.add(customerNotification);
+				customerNotification.setTemplate(task.getTemplate());
+				customerNotification.setTnt(tnt);
 			}
 		}
 
 		for (CustomerNotificationDTO customerNotification : customerNotificationList) {
-			mongoTemplate.save(customerNotification, "notifications_" + tnt.name());
+			mongoTemplate.save(customerNotification, "notifications");
 		}
 
 	}
