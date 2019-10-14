@@ -30,7 +30,7 @@ import com.amx.utils.TimeUtils;
 public class TunnelSubscriberFactory {
 
 	private Logger LOGGER = LoggerFactory.getLogger(TunnelSubscriberFactory.class);
-	public static long TIME_TO_EXPIRE = 60;
+	public static long TIME_TO_EXPIRE = 60L;
 	public static TimeUnit UNIT_OF_TIME = TimeUnit.MINUTES;
 
 	public static final String STATUS_WORKING = "W";
@@ -76,7 +76,7 @@ public class TunnelSubscriberFactory {
 				if (scheme == TunnelEventXchange.TASK_WORKER) {
 					this.addTaskWorker(eventTopic, redisson, listener, integrity, c.getClass().getName());
 				} else if (scheme == TunnelEventXchange.TASK_LISTNER) {
-					this.addTaskListner(eventTopic, redisson, listener, TunnelEventXchange.TASK_LISTNER,
+					this.addTaskListner(eventTopic, redisson, listener, TunnelEventXchange.TASK_LISTNER, integrity,
 							c.getClass().getName());
 				} else if (scheme == TunnelEventXchange.AUDIT) {
 					this.addAuditListener(eventTopic, redisson, listener, integrity, c.getClass().getName());
@@ -106,6 +106,13 @@ public class TunnelSubscriberFactory {
 			super();
 			this.subscriber = subscriber;
 			this.exchange = exchange;
+		}
+
+		public WrapperML(ITunnelSubscriber<M> subscriber, TunnelEventXchange exchange, boolean integrity) {
+			super();
+			this.subscriber = subscriber;
+			this.exchange = exchange;
+			this.integrity = integrity;
 		}
 
 		@Override
@@ -220,11 +227,11 @@ public class TunnelSubscriberFactory {
 	}
 
 	public <M> void addTaskListner(String topic, RedissonClient redisson, ITunnelSubscriber<M> listener,
-			TunnelEventXchange exchange, String listentName) {
-		RTopic<TunnelMessage<M>> topicQueue = redisson.getTopic(TunnelEventXchange.TASK_LISTNER.getTopic(topic));
+			TunnelEventXchange exchange, boolean integrity, String listentName) {
+		RTopic<TunnelMessage<M>> taskListnerTopic = redisson.getTopic(TunnelEventXchange.TASK_LISTNER.getTopic(topic));
 		LOGGER.info("Subscription on Topic : {}",
 				MCQIndicator.messageSubscribed(TunnelEventXchange.TASK_LISTNER.getTopic(topic)));
-		topicQueue.addListener(new WrapperML<M>(listener, exchange) {
+		taskListnerTopic.addListener(new WrapperML<M>(listener, exchange, integrity) {
 			@Override
 			public void onMessage(String channel, TunnelMessage<M> msg) {
 				MCQIndicator.messageRcvd(channel);
@@ -233,16 +240,34 @@ public class TunnelSubscriberFactory {
 				}
 
 				if (TunnelEventXchange.TASK_WORKER.equals(this.exchange)) {
-					RQueue<TunnelMessage<M>> topicMessageQueue = redisson
+					RQueue<TunnelMessage<M>> taskWorkerQueue = redisson
 							.getQueue(TunnelEventXchange.TASK_WORKER.getQueue(topic));
-					onTaskWorkerEvent(channel, topicMessageQueue, msg.getId());
+					onTaskWorkerEvent(channel, taskWorkerQueue, msg.getId());
 				} else {
-					doTask(channel, msg);
+					if (this.integrity) {
+						RMapCache<String, String> map = redisson
+								.getMapCache(TunnelEventXchange.TASK_LISTNER.getStatusMap(topic));
+						String integrityKey = appConfig.getAppName() + "#" + listentName + "#" + msg.getId();
+						String prevObject = map.put(integrityKey, msg.getId(), TIME_TO_EXPIRE, UNIT_OF_TIME);
+						if (prevObject == null) { // Hey I got it first :) OR it doesn't matter
+							this.doTask(channel, msg);
+							map.put(integrityKey, "DONE", TIME_TO_EXPIRE, UNIT_OF_TIME);
+						} else { // I hope, other guy (The Lucky Bugger) is doing his job, right.
+							LOGGER.debug("IGNORED EVENT : {} : {}", channel, msg.getId());
+							MCQIndicator.messageIgnored(channel);
+						}
+					} else {
+						this.doTask(channel, msg);
+					}
+
 				}
 			}
 
 			private void onTaskWorkerEvent(String channel, RQueue<TunnelMessage<M>> topicMessageQueue, String msgId) {
 				TunnelMessage<M> msg = pollSafely(channel, topicMessageQueue, msgId);
+				if (msg == null) {
+					return;
+				}
 				doTask(channel, msg);
 				onTaskWorkerEvent(channel, topicMessageQueue, msgId);
 			}

@@ -78,11 +78,4 @@ public class CustomerNotificationDTO {
 		this.countryId = countryId;
 	}
 
-	@Override
-	public String toString() {
-		return "JaxPushNotificationDTO [customerId=" + customerId + ", nationalityId=" + nationalityId + ", currencyId="
-				+ currencyId + ", title=" + title + ", message=" + message + ", notificationDate=" + notificationDate
-				+ "]";
-	}
-
 }
