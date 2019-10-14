@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import com.amx.jax.dal.ArticleDao;
 import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.CustomerCoreDetailsView;
 import com.amx.jax.dbmodel.EmployeeDetails;
 import com.amx.jax.model.request.CustomerEmploymentDetails;
 import com.amx.jax.model.request.UpdateCustomerEmploymentDetailsReq;
@@ -43,7 +44,7 @@ public class CustomerEmployementManager {
 				articleDesc = articleDao.getArticleDesc(customer);
 			}
 		}
-
+		CustomerCoreDetailsView customercoreView = customerCoreDetailsRepositroy.findByCustomerID(customer.getCustomerId());
 		if (employmentData != null) {
 			employmentDetails.setEmployer(employmentData.getEmployerName());
 			if (employmentData.getFsBizComponentDataByEmploymentTypeId() != null) {
@@ -60,8 +61,11 @@ public class CustomerEmployementManager {
 			employmentDetails.setArticleDetailsId(customer.getFsArticleDetails().getArticleDetailId());
 			employmentDetails.setArticleId(customer.getFsArticleDetails().getFsArticleMaster().getArticleId());
 			employmentDetails.setIncomeRangeId(customer.getFsIncomeRangeMaster().getIncomeRangeId());
-			employmentDetails.setDesignation(articleDesc);
-			employmentDetails.setArticleDesc(articleDesc);
+			employmentDetails.setDesignation(customercoreView.getDesignation());
+			if(articleDesc != null)
+			{
+				employmentDetails.setArticleDesc(articleDesc);
+			}
 		}
 		return employmentDetails;
 	}
