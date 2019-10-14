@@ -334,13 +334,16 @@ function dropdown(classname) {
 			<label> From : <input name="gte" th:value="${gte}" placeholder="2019-10-01 00:00:00">
 			</label> <label> To : <input name="lte" th:value="${lte}" placeholder="2019-10-02 00:00:00">
 			</label>
+			<input name="hash" type="text" size=50 th:value="${hash}" placeholder="params">
 			<button type="submit" value="submit" class="dropbtn">Submit</button>
 		</form>
 	</div>
 	<div class="padbox" style="float: left">
 		<button onclick="dropdown('querybox')" class="dropbtn">Query</button>
 	</div>
-
+	<div class="padbox" style="float: left">
+		
+	</div>
 </div>
 
 <hr />
@@ -448,14 +451,23 @@ function dropdown(classname) {
      	if(DATE_REG.test(gte)){
      		gte = new Date(gte).getTime();
      	} 
+     	
+     var paramsHash = "[[${hash}]]" || document.location.hash.replace("#","");
+     var params = paramsHash.split(";").reduce(function(map,a){
+         var _ = a.split(":");
+         if(_[0]){
+            map[_[0]] = _[1];
+         }
+         return map;
+     },{});
 		  
 	  
-	  executeQuery("/radar/snap/view/[[${snapView}]]",{
+	  executeQuery("/radar/snap/view/[[${snapView}]]",Object.assign(params,{
 		  "lte" : lte,
 		  "gte" : gte,
 		  "level" : "[[${level}]]",
 		  "bulk" : true
-	  });
+	  }));
 	  
 	  $("#querybutton").click(function(){
 		  $("#tabledivWrapper").html(_html);

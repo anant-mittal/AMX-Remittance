@@ -173,10 +173,12 @@ public class SnapQueryController {
 	public String table(@PathVariable(value = "snapView") SnapQueryTemplate snapView,
 			@RequestParam(defaultValue = "now-1m") String gte, @RequestParam(defaultValue = "now") String lte,
 			@RequestParam(defaultValue = "100", required = false) int level,
+			@RequestParam(defaultValue = "", required = false) String hash,
 			Model model) throws IOException {
 		model.addAttribute("gte", gte);
 		model.addAttribute("lte", lte);
 		model.addAttribute("level", level);
+		model.addAttribute("hash", ArgUtil.isEmpty(hash) ? snapView.getQueryParams() : hash);
 		model.addAttribute("snapView", snapView.toString());
 		model.addAttribute("snapViews", SnapQueryTemplate.values());
 		return "table";
