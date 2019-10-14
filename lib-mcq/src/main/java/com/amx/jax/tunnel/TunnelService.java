@@ -113,16 +113,16 @@ public class TunnelService implements ITunnelService {
 	 * : TASK_WORKER & TASK_LISTNER
 	 * 
 	 * 
-	 * Multiple TASK_LISTNER can listner to event and act upon, but only one of the
-	 * workeres will recieve event
+	 * Multiple TASK_LISTNER can listen to event and act upon, but only one of the
+	 * workers will receive the event
 	 * 
 	 * 
 	 * @param topic          - name of task
 	 * @param messagePayload - data to be used for task
 	 * @return - unique message id
 	 * 
-	 * @reliable true
-	 * @uniqueness only one WORKER and multple LISTNERS will execute per event
+	 * @reliable true for workers
+	 * @uniqueness only one WORKER and multiple LISTNERS will execute per event
 	 */
 	@Override
 	public <T> long task(String topic, T messagePayload) {
@@ -134,7 +134,7 @@ public class TunnelService implements ITunnelService {
 		message.setTopic(topic);
 
 		RQueue<TunnelMessage<T>> queue = redisson.getQueue(TunnelEventXchange.TASK_WORKER.getQueue(topic));
-		RTopic<String> topicQueue = redisson.getTopic(TunnelEventXchange.TASK_WORKER.getTopic(topic));
+		RTopic<String> taskWorkerTopic = redisson.getTopic(TunnelEventXchange.TASK_WORKER.getTopic(topic));
 		RTopic<TunnelMessage<T>> taskListnerPublisher = redisson
 				.getTopic(TunnelEventXchange.TASK_LISTNER.getTopic(topic));
 
@@ -143,7 +143,7 @@ public class TunnelService implements ITunnelService {
 		debugEvent(message);
 		queue.add(message);
 		taskListnerPublisher.publish(message);
-		return topicQueue.publish(message.getId());
+		return taskWorkerTopic.publish(message.getId());
 	}
 
 	public static <T> void debugEvent(TunnelMessage<T> message) {

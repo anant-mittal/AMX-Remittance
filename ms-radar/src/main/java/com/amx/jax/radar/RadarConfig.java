@@ -25,7 +25,7 @@ public class RadarConfig {
 
 	public static final String CE_RATE_SCRAPPER_AND_ES_AND_ANY_TNT = "${jax.jobs.scrapper.rate:true} " +
 			"&& ${elasticsearch.enabled:true} ";
-	
+
 	public static final String CE_RATE_SYNC_AND_ES = "${jax.jobs.rate:true} " +
 			"&& ${elasticsearch.enabled:true} ";
 
@@ -52,6 +52,20 @@ public class RadarConfig {
 
 	@Value("${jax.jobs.rate.counter}")
 	private String jobsRateVersion;
+
+	@Value("${jax.jobs.trnx.day}")
+	boolean jobTranxDayEnabled;
+
+	public boolean isJobTranxDayEnabled() {
+		return jobTranxDayEnabled;
+	}
+
+	public boolean isJobTranxNightEnabled() {
+		return jobTranxNightEnabled;
+	}
+
+	@Value("${jax.jobs.trnx.night}")
+	boolean jobTranxNightEnabled;
 
 	public String getCompanyName() {
 		return companyName;
