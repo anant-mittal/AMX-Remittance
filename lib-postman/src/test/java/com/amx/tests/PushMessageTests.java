@@ -13,7 +13,7 @@ public class PushMessageTests { // Noncompliant
 	static BigDecimal country = new BigDecimal(30);
 	static BigDecimal customer = new BigDecimal(30333);
 	static Tenant tnt = Tenant.KWT;
-	static String FORMAT = "%10s : %10s : %-10s";
+	static String FORMAT = "%10s : %-10s : %10s";
 
 	/**
 	 * This is just a test method
@@ -25,11 +25,12 @@ public class PushMessageTests { // Noncompliant
 		test1();
 		test2();
 		everyOne();
+		everyOne(Language.AR);
 		customer();
 	}
 
 	private static void print(String type, Object expected, Object actual) {
-		System.out.println(String.format(FORMAT, type, expected, actual));
+		System.out.println(String.format(FORMAT, type, actual, expected));
 	}
 
 	private static void print(String testname, Contact c) {
@@ -58,6 +59,14 @@ public class PushMessageTests { // Noncompliant
 		PushMessage msg = new PushMessage();
 		msg.setLang(Language.HI);
 		msg.addToEveryone();
+		Contact c = PushMessage.toContact(msg.getTo().get(0));
+		print("everyOne", c);
+	}
+
+	private static void everyOne(Language lang) {
+		PushMessage msg = new PushMessage();
+		msg.setLang(lang);
+		msg.addToTenant(tnt, lang);
 		Contact c = PushMessage.toContact(msg.getTo().get(0));
 		print("everyOne", c);
 	}

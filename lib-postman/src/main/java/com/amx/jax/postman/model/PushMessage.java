@@ -8,7 +8,6 @@ import com.amx.jax.AppParam;
 import com.amx.jax.dict.Language;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.scope.TenantContextHolder;
-import com.amx.utils.ArgUtil;
 
 public class PushMessage extends Message {
 
@@ -133,20 +132,20 @@ public class PushMessage extends Message {
 			c.setUserid(m.group(3));
 			Tenant tenant = Tenant.fromString(m.group(2), Tenant.DEFAULT);
 			c.setTenant(tenant);
-			c.setLang(Language.fromString(m.group(4)));
+			c.setLang(Language.fromString(m.group(4), null));
 		} else {
 			m = PushMessage.FORMAT_TO_NATIONALITY_PATTERN_V3.matcher(topic);
 			if (m.find()) {
 				c.setCountry(m.group(3));
 				Tenant tenant = Tenant.fromString(m.group(2), Tenant.DEFAULT);
 				c.setTenant(tenant);
-				c.setLang(Language.fromString(m.group(4)));
+				c.setLang(Language.fromString(m.group(4), null));
 			} else {
 				m = PushMessage.FORMAT_TO_ALL_PATTERN_V3.matcher(topic);
 				if (m.find()) {
 					Tenant tenant = Tenant.fromString(m.group(2), Tenant.DEFAULT);
 					c.setTenant(tenant);
-					c.setLang(Language.fromString(m.group(3)));
+					c.setLang(Language.fromString(m.group(3), null));
 				} else {
 					return toContactV2(topic);
 				}

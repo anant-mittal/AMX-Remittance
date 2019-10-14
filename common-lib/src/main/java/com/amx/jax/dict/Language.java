@@ -292,8 +292,12 @@ public enum Language {
 		return defString;
 	}
 
+	public static Language fromString(String lang, Language defLang) {
+		return (Language) ArgUtil.parseAsEnum(lang, defLang, Language.class);
+	}
+
 	public static Language fromString(String lang) {
-		return (Language) ArgUtil.parseAsEnum(lang, Language.EN, Language.class);
+		return fromString(lang, Language.EN);
 	}
 
 	static {
