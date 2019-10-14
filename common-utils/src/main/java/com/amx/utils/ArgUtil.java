@@ -528,7 +528,7 @@ public final class ArgUtil {
 			return defaultValue;
 		}
 		String enumStringCaps = enumString.toUpperCase();
-		if (defaultValue instanceof EnumType) {
+		if (EnumType.class.isAssignableFrom(enumType) || defaultValue instanceof EnumType) {
 			for (Object enumValue : enumType.getEnumConstants()) {
 				if (enumString.equals(((EnumType) enumValue).name())
 						|| enumStringCaps.equals(((EnumType) enumValue).name())) {
@@ -536,7 +536,7 @@ public final class ArgUtil {
 				}
 			}
 			return defaultValue;
-		} else if (defaultValue instanceof EnumById) {
+		} else if (EnumById.class.isAssignableFrom(enumType) || defaultValue instanceof EnumById) {
 			for (Object enumValue : enumType.getEnumConstants()) {
 				if (enumString.equals(((EnumById) enumValue).getId())
 						|| enumStringCaps.equals(((EnumById) enumValue).getId())) {

@@ -249,7 +249,7 @@ public class UserController {
 
 			wrapper.getData().setDomCurrency(tenantContext.getDomCurrency());
 			wrapper.getData().setConfig(jaxService.setDefaults().getMetaClient().getJaxMetaParameter().getResult());
-			wrapper.getData().getSubscriptions().addAll(userService.getNotifyTopics("/topics/"));
+			wrapper.getData().getSubscriptions().addAll(userService.getNotifyTopics("/topics/",lang));
 			wrapper.getData().setReturnUrl(sessionService.getGuestSession().getReturnUrl());
 
 			wrapper.getData().setFeatures(

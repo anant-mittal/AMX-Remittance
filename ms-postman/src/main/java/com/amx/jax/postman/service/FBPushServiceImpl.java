@@ -48,20 +48,20 @@ public class FBPushServiceImpl implements IPushNotifyService {
 	/** The server key. */
 	@Value("${fcm.server.key}")
 	String serverKey;
-	
+
 	/** The server key. */
 	@Value("${fcm.api.key}")
 	String apiKey;
-	
+
 	@Value("${android.app.domain}")
 	String androidPackageName;
-	
+
 	@Value("${ios.app.domain}")
 	String iosPackageName;
-	
+
 	@Value("${domain.uri.prefix}")
 	String domainUriPrefix;
-	
+
 	@Value("${company.app.url}")
 	String companyAppUrl;
 
@@ -370,7 +370,7 @@ public class FBPushServiceImpl implements IPushNotifyService {
 		}
 		return AmxApiResponse.build(token);
 	}
-	
+
 	@Override
 	public String shortLink(String relativeUrl) {
 		PMGaugeEvent pMGaugeEvent = new PMGaugeEvent();
@@ -384,7 +384,7 @@ public class FBPushServiceImpl implements IPushNotifyService {
 
 			Map<String, Object> dynamicLinkInfo = new HashMap<String, Object>();
 			dynamicLinkInfo.put("domainUriPrefix", domainUriPrefix);
-			dynamicLinkInfo.put("link", companyAppUrl+relativeUrl);
+			dynamicLinkInfo.put("link", companyAppUrl + relativeUrl);
 			dynamicLinkInfo.put("androidInfo", androidInfo);
 			dynamicLinkInfo.put("iosInfo", iosInfo);
 
@@ -396,28 +396,28 @@ public class FBPushServiceImpl implements IPushNotifyService {
 
 			fields.put("dynamicLinkInfo", dynamicLinkInfo);
 			fields.put("suffix", suffix);
-			 response = restService.ajax("https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key="+apiKey)
+			response = restService.ajax("https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key=" + apiKey)
 					.header("Content-Type", "application/json").post(fields)
 					.asString();
 			pMGaugeEvent.setResponseText(response);
 			auditServiceClient.gauge(pMGaugeEvent);
 		} catch (Exception e) {
-			auditServiceClient.excep(pMGaugeEvent, LOGGER, e);			
+			auditServiceClient.excep(pMGaugeEvent, LOGGER, e);
 		}
 		Map<String, Object> responseMap;
 		try {
 			responseMap = jsonToMap(new JSONObject(response));
-			if (responseMap.containsKey("shortLink")) {			
+			if (responseMap.containsKey("shortLink")) {
 				return responseMap.get("shortLink").toString();
 			}
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		return "";
 	}
-	
+
 	public Map<String, Object> jsonToMap(JSONObject json) throws JSONException {
 		Map<String, Object> retMap = new HashMap<String, Object>();
 

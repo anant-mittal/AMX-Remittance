@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.amx.utils.ArgUtil;
+
 public enum Language {
 
 	AB("abk", 100, "Abkhazian"),
@@ -272,6 +274,26 @@ public enum Language {
 			return null;
 		}
 		return MAP.get(id.intValue());
+	}
+
+	public static String toString(Language lang, Language deflang) {
+		if (lang != null) {
+			return lang.toString();
+		} else if (deflang != null) {
+			return deflang.toString();
+		}
+		return null;
+	}
+
+	public static String toString(Language lang, String defString) {
+		if (lang != null) {
+			return lang.toString();
+		}
+		return defString;
+	}
+
+	public static Language fromString(String lang) {
+		return (Language) ArgUtil.parseAsEnum(lang, Language.EN, Language.class);
 	}
 
 	static {
