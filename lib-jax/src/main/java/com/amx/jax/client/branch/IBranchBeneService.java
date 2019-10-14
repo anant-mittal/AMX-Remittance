@@ -32,10 +32,12 @@ public interface IBranchBeneService {
 		public static final String UPDATE_BENE_STATUS = PREFIX + "/update-bene-status/";
 		public static final String UPDATE_BENE_BANK = PREFIX + "/update-bene-bank/";
 		public static final String UPDATE_BENE_CASH = PREFIX + "/update-bene-cash/";
+		public static final String GET_BENE_BY_IDNO = PREFIX + "/get-bene-by-idno/";
 	}
 
 	public static class Params {
 		public static final String TRNX_DATE = "transactiondate";
+		public static final String ID_NO = "idNo";
 	}
 
 	AmxApiResponse<BankMasterDTO, Object> listBeneBank(ListBeneBankOrCashRequest request);
@@ -59,5 +61,7 @@ public interface IBranchBeneService {
 	AmxApiResponse<BoolRespModel, Object> updateBeneBank(UpdateBeneBankRequest request);
 
 	AmxApiResponse<BoolRespModel, Object> updateBeneCash(UpdateBeneCashRequest request);
+
+	AmxApiResponse<BeneficiaryListDTO, Object> getBeneByIdNo(Integer idNo);
 
 }

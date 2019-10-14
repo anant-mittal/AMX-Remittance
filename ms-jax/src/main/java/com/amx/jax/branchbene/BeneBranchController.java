@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.api.AmxApiResponse;
@@ -146,5 +147,13 @@ public class BeneBranchController implements IBranchBeneService {
 		beneBranchValidation.validateUpdateBeneCash(request);
 		beneBranchService.updateBeneBankorCash(request);
 		return AmxApiResponse.build(new BoolRespModel(true));
+	}
+	
+	@RequestMapping(value = Path.GET_BENE_BY_IDNO, method = RequestMethod.GET)
+	@Override
+	@ApiOperation("get bene by id")
+	public AmxApiResponse<BeneficiaryListDTO, Object> getBeneByIdNo(@RequestParam(name = Params.ID_NO) Integer idNo) {
+		List<BeneficiaryListDTO> list = beneBranchService.getBeneByIdNo(idNo);
+		return AmxApiResponse.buildList(list);
 	}
 }

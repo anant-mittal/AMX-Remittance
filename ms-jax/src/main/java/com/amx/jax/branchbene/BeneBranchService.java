@@ -234,4 +234,17 @@ public class BeneBranchService {
 		beneBranchManager.updateBeneAccount(beneRelationship, beneAccountDetail);
 	}
 
+	public List<BeneficiaryListDTO> getBeneByIdNo(Integer idNo) {
+		BeneficiaryListDTO beneView = beneService.getBeneDtoByIdNo(BigDecimal.valueOf(idNo));
+		List<BeneficiaryListDTO> beneListDto = Arrays.asList(beneView);
+		beneListDto.forEach(i -> {
+			String dbFlag = i.getIsActive();
+			BeneStatus beneStatus = BeneficiaryConstant.BeneStatus.findBeneStatusBydbFlag(dbFlag);
+			BeneStatusDto dto = new BeneStatusDto(beneStatus.getDescription(), beneStatus.name());
+			i.setBeneStatusDto(dto);
+		});
+		addBeneUpdateFlag(beneListDto);
+		return beneListDto;
+	}
+
 }

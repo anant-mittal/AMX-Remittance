@@ -180,4 +180,12 @@ public class BeneBranchClient implements IBranchBeneService {
 			return JaxSystemError.evaluate(e);
 		}
 	}
+
+	@Override
+	public AmxApiResponse<BeneficiaryListDTO, Object> getBeneByIdNo(Integer idNo) {
+		LOGGER.debug("in getBeneByIdNo :");
+		return restService.ajax(appConfig.getJaxURL() + Path.GET_BENE_BY_IDNO).meta(new JaxMetaInfo()).queryParam(Params.ID_NO, idNo).get()
+				.as(new ParameterizedTypeReference<AmxApiResponse<BeneficiaryListDTO, Object>>() {
+				});
+	}
 }
