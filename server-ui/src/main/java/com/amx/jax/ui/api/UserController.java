@@ -216,11 +216,11 @@ public class UserController {
 					 */
 					|| isLangChange
 					/**
-					 * Or profile language is empty
+					 * profile language is empty
 					 */
 					|| (ArgUtil.isEmpty(profileLang) && !Language.EN.equals(lang))
 					/**
-					 * 
+					 * Client language is NON-English and different than profile Language
 					 */
 					|| (!Language.EN.equals(lang) && !lang.equals(profileLang))
 
@@ -260,7 +260,7 @@ public class UserController {
 		}
 
 		/**
-		 * Language Changed
+		 * Language Changed - Change it in session, cookie and meta
 		 */
 		sessionService.getGuestSession().setLanguage(lang);
 		wrapper.getData().setLang(sessionService.getGuestSession().getLanguage());
