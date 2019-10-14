@@ -162,7 +162,7 @@ public class CustomerManagementManager {
 		customerDetails.setDateOfBirth(customer.getDateOfBirth());
 		customerDetails.setIdentityTypeId(customer.getIdentityTypeId());
 		customerDetails.setInsurance(customer.getMedicalInsuranceInd());
-		customerDetails.setWatsAppMobileNo(customer.getMobileOther());
+		customerDetails.setWatsAppMobileNo(new BigDecimal(customer.getWhatsapp()));
 		customerDetails.setWatsAppTelePrefix(customer.getPrefixCodeMobileOther());
 		customerDetails.setIsWatsApp(customer.getIsMobileWhatsApp());
 		customerDetails.setRegistrationType(customer.getCustomerRegistrationType());
