@@ -67,9 +67,10 @@ public class CustomerManagementService {
 		}
 		if (!ArgUtil.isEmpty(customerId)) {
 			Customer customer = customerRepository.findOne(customerId);
-			throw new GlobalException(JaxError.CUSTOMER_NOT_FOUND, "Customer ID not found");
+			if (null == customer) {
+				throw new GlobalException(JaxError.CUSTOMER_NOT_FOUND, "Customer ID not found");
 
+			}
 		}
-
 	}
 }
