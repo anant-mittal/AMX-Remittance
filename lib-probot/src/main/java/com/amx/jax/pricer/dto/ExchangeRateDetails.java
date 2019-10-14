@@ -23,6 +23,8 @@ public class ExchangeRateDetails implements Serializable, Cloneable, Comparable<
 
 	private ExchangeRateBreakup sellRateBase;
 
+	private BigDecimal rackExchangeRate;
+
 	private Map<DISCOUNT_TYPE, ExchangeDiscountInfo> customerDiscountDetails;
 
 	private boolean isDiscountAvailed = false;
@@ -123,6 +125,14 @@ public class ExchangeRateDetails implements Serializable, Cloneable, Comparable<
 
 	public void setDiffInBetterRateFcAmount(BigDecimal diffInBetterRateFcAmount) {
 		this.diffInBetterRateFcAmount = diffInBetterRateFcAmount;
+	}
+
+	public BigDecimal getRackExchangeRate() {
+		return rackExchangeRate;
+	}
+
+	public void setRackExchangeRate(BigDecimal rackExchangeRate) {
+		this.rackExchangeRate = rackExchangeRate;
 	}
 
 	@Override
