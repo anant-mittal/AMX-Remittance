@@ -23,16 +23,19 @@ import com.amx.jax.client.bene.BeneficaryStatusDto;
 import com.amx.jax.client.bene.BeneficiaryConstant.BeneStatus;
 import com.amx.jax.client.bene.IBeneficiaryService;
 import com.amx.jax.client.branch.IBranchBeneService;
+import com.amx.jax.client.remittance.RemittanceClient;
 import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.model.request.benebranch.AddNewBankBranchRequest;
+import com.amx.jax.model.request.benebranch.BankBranchListRequest;
 import com.amx.jax.model.request.benebranch.BeneAccountModel;
 import com.amx.jax.model.request.benebranch.BenePersonalDetailModel;
 import com.amx.jax.model.request.benebranch.BeneficiaryTrnxModel;
-import com.amx.jax.model.request.benebranch.BankBranchListRequest;
 import com.amx.jax.model.request.benebranch.ListBeneBankOrCashRequest;
+import com.amx.jax.model.request.remittance.GetServiceApplicabilityRequest;
 import com.amx.jax.model.response.BankMasterDTO;
 import com.amx.jax.model.response.benebranch.BankBranchDto;
 import com.amx.jax.model.response.benebranch.BeneStatusDto;
+import com.amx.jax.model.response.remittance.GetServiceApplicabilityResponse;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
 import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 import com.amx.jax.ui.model.AuthData;
@@ -263,5 +266,15 @@ public class BeneController {
 	public ResponseWrapperM<List<BankBranchDto>, Object> addNewBankBranchRequest(
 			@RequestBody BankBranchListRequest request) {
 		return ResponseWrapperM.fromAsList(beneBranchClient.listBankBranch(request));
+	}
+
+	@Autowired
+	RemittanceClient remittanceClient;
+
+	@ApiOperation(value = "List of get-service-applicability")
+	@RequestMapping(value = "/api/bnfcry/meta/fields/list", method = { RequestMethod.POST })
+	public ResponseWrapperM<List<GetServiceApplicabilityResponse>, Object> getServiceApplicability(
+			@RequestBody GetServiceApplicabilityRequest request) {
+		return ResponseWrapperM.fromAsList(remittanceClient.getServiceApplicability(request));
 	}
 }
