@@ -208,7 +208,7 @@ public class BeneBranchService {
 			if (beneTrnxCounts.contains(i.getBeneficiaryRelationShipSeqId())) {
 				i.setUpdateBeneStatus(UpdateBeneStatus.OLD_BENE_TRASACT);
 			} else {
-				if (i.getBeneficiaryErrorStatus().isEmpty()) {
+				if (i.getBeneficiaryErrorStatus() == null || i.getBeneficiaryErrorStatus().isEmpty()) {
 					i.setUpdateBeneStatus(UpdateBeneStatus.NEW_BENE_NON_TRANSACT);
 				} else {
 					i.setUpdateBeneStatus(UpdateBeneStatus.OLD_BENE_NON_TRANSACT);
