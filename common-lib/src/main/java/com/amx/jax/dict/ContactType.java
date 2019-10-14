@@ -4,6 +4,7 @@ public enum ContactType {
 	SMS("sms"), EMAIL("email"), WHATSAPP("wa"), SMS_EMAIL("esms"),
 	FBPUSH("push"),
 	// Deprecated
+	@Deprecated
 	MOBILE(SMS),
 	// Default Null Value
 	EMPTY("");

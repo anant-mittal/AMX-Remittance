@@ -9,7 +9,7 @@ public class UserMessageEvent extends Message implements ITunnelEvent {
 
 	String image = null;
 	String link = null;
-
+	
 	public UserMessageEvent() {
 		super();
 	}
