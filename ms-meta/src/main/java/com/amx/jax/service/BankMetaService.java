@@ -213,8 +213,6 @@ public class BankMetaService extends AbstractService {
 	}
 
 	private void validateListBankBrancheRequest(BankBranchListRequest request) {
-		if (StringUtils.isBlank(request.getIfscCode()) && StringUtils.isBlank(request.getSwift())) {
-			throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Either swift or ifsc is mandatory");
-		}
+		
 	}
 }
