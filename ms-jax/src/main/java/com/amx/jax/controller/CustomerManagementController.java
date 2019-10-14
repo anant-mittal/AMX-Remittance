@@ -40,6 +40,7 @@ import com.amx.jax.customer.document.manager.CustomerDocumentManager;
 import com.amx.jax.customer.document.manager.CustomerDocumentUploadManager;
 import com.amx.jax.customer.manager.CustomerManagementManager;
 import com.amx.jax.customer.manager.CustomerPersonalDetailManager;
+import com.amx.jax.customer.service.CustomerManagementService;
 import com.amx.jax.customer.service.CustomerService;
 import com.amx.jax.dbmodel.customer.CustomerDocumentTypeMaster;
 import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReferenceTemp;
@@ -93,6 +94,8 @@ public class CustomerManagementController implements ICustomerManagementControll
 	CustomerDocumentUploadManager customerDocumentUploadManager;
 	@Autowired
 	UserService userService;
+	@Autowired
+	CustomerManagementService customerManagementService;
 
 	private static final Logger log = LoggerFactory.getLogger(CustomerManagementController.class);
 
@@ -207,22 +210,8 @@ public class CustomerManagementController implements ICustomerManagementControll
 			@RequestParam(value = ApiParams.IDENTITY_TYPE_ID,required = false) BigDecimal identityType,
 			@RequestParam(value = ApiParams.CUSTOMER_ID,required = false) BigDecimal customerId) {
 		
-		if((ArgUtil.isEmpty(identityInt)  && ArgUtil.isEmpty(identityType) &&  ArgUtil.isEmpty(customerId)))
-		{
-			throw new GlobalException(JaxError.VALIDATION_NOT_NULL, "Civil ID,Customer ID,Type should not be null");
-		}
+		customerManagementService.validateCustomerField(identityInt, identityType, customerId);
 
-    	if(ArgUtil.isEmpty(identityType) && !ArgUtil.isEmpty(identityInt))
-		{
-			throw new GlobalException(JaxError.VALIDATION_NOT_NULL, "Civil ID should not be null");
-
-		}
-    	if((ArgUtil.isEmpty(identityInt) && !ArgUtil.isEmpty(identityType)))
-		{
-			throw new GlobalException(JaxError.VALIDATION_NOT_NULL, "Customer ID should not be null");
-
-		}
-		
     	CustomerShortInfo customerShortDetail=null;
 		if(!ArgUtil.isEmpty(customerId))
 		{
