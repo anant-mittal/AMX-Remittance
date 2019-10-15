@@ -16,6 +16,7 @@ public class RoutingResponseDto {
 	List<RoutingBranchDto> routingBankBranchDto = new ArrayList<>();
 	List<RemittanceModeDto> remittanceModeList = new ArrayList<>();
 	List<DeliveryModeDto> deliveryModeList = new ArrayList<>();
+	String warnigMsg;
 
 	public List<RoutingServiceDto> getServiceList() {
 		return serviceList;
@@ -63,6 +64,14 @@ public class RoutingResponseDto {
 
 	public void setDeliveryModeList(List<DeliveryModeDto> deliveryModeList) {
 		this.deliveryModeList = deliveryModeList;
+	}
+
+	public String getWarnigMsg() {
+		return warnigMsg;
+	}
+
+	public void setWarnigMsg(String warnigMsg) {
+		this.warnigMsg = warnigMsg;
 	}
 
 }

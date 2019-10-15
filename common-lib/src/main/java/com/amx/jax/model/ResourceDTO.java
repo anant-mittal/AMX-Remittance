@@ -35,11 +35,17 @@ public class ResourceDTO implements IResourceEntity, Serializable {
 	@JsonProperty("_name")
 	protected String resourceName;
 
+	@JsonProperty("_local_name")
+	protected String resourceLocalName;
+
 	/**
 	 * A short name for resource, eg:- ISO3 codes for Countries
 	 */
 	@JsonProperty("_code")
 	protected String resourceCode;
+
+	@JsonProperty("_value")
+	protected Object resourceValue;
 
 	public ResourceDTO() {
 
@@ -49,6 +55,7 @@ public class ResourceDTO implements IResourceEntity, Serializable {
 		this.resourceId = resource.resourceId();
 		this.resourceName = resource.resourceName();
 		this.resourceCode = resource.resourceCode();
+		this.resourceLocalName = resource.resourceLocalName();
 	}
 
 	public ResourceDTO(BigDecimal resourceId, String resourceName, String resourceCode) {
@@ -62,6 +69,7 @@ public class ResourceDTO implements IResourceEntity, Serializable {
 		this.resourceName = resourceName;
 	}
 
+	@Override
 	public BigDecimal resourceId() {
 		return resourceId;
 	}
@@ -70,6 +78,11 @@ public class ResourceDTO implements IResourceEntity, Serializable {
 		this.resourceId = resourceId;
 	}
 
+	public BigDecimal getResourceId() {
+		return resourceId;
+	}
+
+	@Override
 	public String resourceName() {
 		return resourceName;
 	}
@@ -78,10 +91,15 @@ public class ResourceDTO implements IResourceEntity, Serializable {
 		this.resourceName = resourceName;
 	}
 
+	public String getResourceName() {
+		return resourceName;
+	}
+
 	public void setResourceName(Object resourceName) {
 		this.resourceName = ArgUtil.parseAsString(resourceName);
 	}
 
+	@Override
 	public String resourceCode() {
 		return resourceCode;
 	}
@@ -94,10 +112,23 @@ public class ResourceDTO implements IResourceEntity, Serializable {
 		this.resourceCode = ArgUtil.parseAsString(resourceCode);
 	}
 
+	public String getResourceCode() {
+		return resourceCode;
+	}
+
+	public Object getResourceValue() {
+		return resourceValue;
+	}
+
+	public void setResourceValue(Object resourceValue) {
+		this.resourceValue = resourceValue;
+	}
+
 	public void importFrom(IResourceEntity entity) {
 		this.resourceId = entity.resourceId();
 		this.resourceCode = entity.resourceCode();
 		this.resourceName = entity.resourceName();
+		this.resourceLocalName = entity.resourceLocalName();
 	}
 
 	public static ResourceDTO create(IResourceEntity entity) {
@@ -114,7 +145,7 @@ public class ResourceDTO implements IResourceEntity, Serializable {
 		}
 		return list;
 	}
-	
+
 	public static List<ResourceDTO> createList(List<IResourceEntity> entityList) {
 		List<ResourceDTO> list = new ArrayList<ResourceDTO>();
 		for (IResourceEntity entity : entityList) {
@@ -124,17 +155,17 @@ public class ResourceDTO implements IResourceEntity, Serializable {
 		return list;
 	}
 
-
-	public BigDecimal getResourceId() {
-		return resourceId;
+	public String getResourceLocalName() {
+		return resourceLocalName;
 	}
 
-	public String getResourceName() {
-		return resourceName;
+	public void setResourceLocalName(String resourceLocalName) {
+		this.resourceLocalName = resourceLocalName;
 	}
 
-	public String getResourceCode() {
-		return resourceCode;
+	@Override
+	public String resourceLocalName() {
+		return resourceLocalName;
 	}
 
 }

@@ -32,6 +32,8 @@ public class SSOUser implements Serializable {
 	@Autowired
 	SSOConfig ssoConfig;
 
+	private String terminalId;
+
 	private boolean authDone = false;
 	private String tranxId;
 	private Long loginTime;
@@ -142,6 +144,24 @@ public class SSOUser implements Serializable {
 
 	public void setLoginTime(Long loginTime) {
 		this.loginTime = loginTime;
+	}
+
+	/**
+	 * Logged In terminal
+	 * 
+	 * @return
+	 */
+	public String getTerminalId() {
+		return terminalId;
+	}
+
+	/**
+	 * Logged In terminal
+	 * 
+	 * @param terminalId
+	 */
+	public void setTerminalId(String terminalId) {
+		this.terminalId = terminalId;
 	}
 
 }

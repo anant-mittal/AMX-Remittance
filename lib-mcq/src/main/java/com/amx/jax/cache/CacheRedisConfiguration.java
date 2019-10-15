@@ -25,6 +25,7 @@ import com.amx.jax.def.CacheForSessionKey;
 import com.amx.jax.def.CacheForTenantKey;
 import com.amx.jax.def.CacheForThisKey;
 import com.amx.jax.def.CacheForUserKey;
+import com.amx.utils.JsonUtil;
 
 @Configuration
 // @EnableRedissonHttpSession
@@ -46,6 +47,8 @@ public class CacheRedisConfiguration
 
 	@Value("${spring.redis.port}")
 	private String port;
+
+	public static final String CODEC_VERSION = "1";
 
 	@Bean(destroyMethod = "shutdown")
 	public RedissonClient redisson() throws IOException {
@@ -74,10 +77,15 @@ public class CacheRedisConfiguration
 			if (redisProperties.getPassword() != null) {
 				singleServerConfig.setPassword(redisProperties.getPassword());
 			}
-			singleServerConfig.setIdleConnectionTimeout(2 * 60 * 1000);
+			singleServerConfig.setIdleConnectionTimeout(10 * 1000);
+			singleServerConfig.setReconnectionTimeout(3000);
+
 		}
 		// Commenting this as we dont want to use session sharing across applications
-		config.setCodec(new org.redisson.codec.FstCodec());
+		// org.redisson.codec.JsonJacksonCodec codec = new
+		// org.redisson.codec.JsonJacksonCodec(JsonUtil.getMapper());
+		org.redisson.codec.FstCodec codec = new org.redisson.codec.FstCodec();
+		config.setCodec(codec);
 		return Redisson.create(config);
 	}
 

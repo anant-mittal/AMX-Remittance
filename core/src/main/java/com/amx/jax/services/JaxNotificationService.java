@@ -3,9 +3,11 @@ package com.amx.jax.services;
 import static com.amx.amxlib.constant.NotificationConstants.BRANCH_SEARCH;
 import static com.amx.amxlib.constant.NotificationConstants.REG_SUC;
 import static com.amx.amxlib.constant.NotificationConstants.RESP_DATA_KEY;
+import static com.amx.amxlib.constant.NotificationConstants.SERVICE_PROVIDER_RESPONSE;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,28 +17,37 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.constant.NotificationConstants;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.model.BranchSearchNotificationModel;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
-import com.amx.amxlib.model.EmployeeInfo;
-import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.notification.RemittanceTransactionFailureAlertModel;
-import com.amx.jax.async.ExecutorConfig;
+import com.amx.jax.db.utils.EntityDtoUtil;
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.dbmodel.ApplicationSetup;
+import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.CustomerContactVerification;
 import com.amx.jax.dbmodel.ExEmailNotification;
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.dict.Tenant;
+import com.amx.jax.model.request.partner.TransactionFailReportDTO;
+import com.amx.jax.model.response.customer.CustomerDto;
+import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.model.response.fx.FxDeliveryDetailNotificationDto;
 import com.amx.jax.model.response.fx.FxOrderDetailNotificationDto;
 import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
+import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
+import com.amx.jax.postman.client.WhatsAppClient;
 import com.amx.jax.postman.model.ChangeType;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.Message;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.TemplatesMX;
+import com.amx.jax.postman.model.WAMessage;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.CollectionUtil;
 
@@ -46,9 +57,14 @@ public class JaxNotificationService {
 
 	@Autowired
 	private PostManService postManService;
-	
+
+	@Autowired
+	private WhatsAppClient whatsAppClient;
+
 	@Autowired
 	JaxNotificationService jaxNotificationService;
+	@Autowired
+	JaxEmailNotificationService jaxEmailNotificationService;
 
 	Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -63,24 +79,26 @@ public class JaxNotificationService {
 			email.setSubject("Your transaction on AMX is successful");
 		} else if (TenantContextHolder.currentSite().equals(Tenant.BHR)) {
 			email.setSubject("Your transaction on MEC is successful");
-		}else if (TenantContextHolder.currentSite().equals(Tenant.OMN)) {
-		    email.setSubject("Your transaction on Modern Exchange - Oman is successful");
+		} else if (TenantContextHolder.currentSite().equals(Tenant.OMN)) {
+			email.setSubject("Your transaction on Modern Exchange - Oman is successful");
 		}
 
-		email.addTo(pinfo.getEmail());
-		email.setITemplate(TemplatesMX.TXN_CRT_SUCC);
-		email.setHtml(true);
-		email.getModel().put(RESP_DATA_KEY, pinfo);
 
-		File file = new File();
-		file.setITemplate(TemplatesMX.REMIT_RECEIPT_JASPER);
-		file.setName("TransactionReceipt");
-		file.setType(File.Type.PDF);
-		file.getModel().put(RESP_DATA_KEY, remittanceReceiptSubreport);
+			email.addTo(pinfo.getEmail());
+			email.setITemplate(TemplatesMX.TXN_CRT_SUCC);
+			email.setHtml(true);
+			email.getModel().put(RESP_DATA_KEY, pinfo);
 
-		email.addFile(file);
-		logger.debug("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getFirstName());
-		sendEmail(email);
+			File file = new File();
+			file.setITemplate(TemplatesMX.REMIT_RECEIPT_JASPER);
+			file.setName("TransactionReceipt");
+			file.setType(File.Type.PDF);
+			file.getModel().put(RESP_DATA_KEY, remittanceReceiptSubreport);
+
+			email.addFile(file);
+			logger.debug("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getFirstName());
+			sendEmail(email);
+		
 	}
 
 	public void sendTransactionNotification(FxOrderReportResponseDto remittanceReceiptSubreport,
@@ -126,15 +144,17 @@ public class JaxNotificationService {
 			email.getModel().put("change_type", ChangeType.IMAGE_CHANGE);
 
 		} else if (customerModel.getMobile() != null) {
-			
+
 			email.getModel().put("change_type", ChangeType.MOBILE_CHANGE);
 
-		}  else if (customerModel.getEmail() != null) {
-			
+		} else if (customerModel.getEmail() != null) {
+			// Customer model has old email and Person info has new email
+			if(!customerModel.getEmail().equals(pinfo.getEmail())) {
+
 			email.getModel().put("change_type", ChangeType.EMAIL_CHANGE);
 
 			emailToOld = new Email();
-			
+
 			emailToOld.getModel().put("change_type", ChangeType.EMAIL_CHANGE);
 			emailToOld.addTo(customerModel.getEmail());
 			emailToOld.setITemplate(TemplatesMX.EMAIL_CHANGE_OLD_EMAIL);
@@ -152,7 +172,9 @@ public class JaxNotificationService {
 					+ oldPinfo.getEmail());
 			sendEmail(emailToOld);
 		}
-
+			email.getModel().put("change_type", ChangeType.EMAIL_CHANGE);
+		}
+		
 		email.addTo(pinfo.getEmail());
 		email.setITemplate(TemplatesMX.PROFILE_CHANGE);
 		email.setHtml(true);
@@ -160,8 +182,9 @@ public class JaxNotificationService {
 		logger.info("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getFirstName());
 		sendEmail(email);
 	} // end of sendProfileChangeNotificationEmail
-	
-	public void sendProfileChangeNotificationMobile(CustomerModel customerModel, PersonInfo personinfo, String oldMobile) {
+
+	public void sendProfileChangeNotificationMobile(CustomerModel customerModel, PersonInfo personinfo,
+			String oldMobile) {
 		if (customerModel.getMobile() != null) {
 			SMS smsOld = new SMS();
 			// to new and old
@@ -193,9 +216,30 @@ public class JaxNotificationService {
 		sendOtpSms(pinfo, model, TemplatesMX.RESET_OTP_SMS);
 	}
 
+	public void sendOtpWhatsApp(PersonInfo pinfo, CivilIdOtpModel model) {
+		sendOtpWhatsApp(pinfo, model, TemplatesMX.RESET_OTP_SMS);
+	}
+
+	public void sendOtpWhatsApp(PersonInfo pinfo, CivilIdOtpModel model, TemplatesMX templateMX) {
+
+		logger.debug(String.format("Sending wOTP to customer :%s on whatsapp_no :%s  ", pinfo.getFirstName(),
+				pinfo.getWhatsappPrefixCode() + pinfo.getWhatsAppNumber()));
+
+		WAMessage sms = new WAMessage();
+		sms.addTo(pinfo.getWhatsappPrefixCode() + pinfo.getWhatsAppNumber());
+		sms.getModel().put(RESP_DATA_KEY, model);
+		sms.setITemplate(templateMX);
+
+		try {
+			whatsAppClient.send(sms);
+		} catch (PostManException e) {
+			logger.error("error in sendOtpSms", e);
+		}
+	} // end of sendOtpSms
+
 	public void sendOtpSms(PersonInfo pinfo, CivilIdOtpModel model, TemplatesMX templateMX) {
 
-		logger.info(String.format("Sending OTP SMS to customer :%s on mobile_no :%s  ", pinfo.getFirstName(),
+		logger.info(String.format("Sending mOTP SMS to customer :%s on mobile_no :%s  ", pinfo.getFirstName(),
 				pinfo.getMobile()));
 
 		SMS sms = new SMS();
@@ -250,7 +294,7 @@ public class JaxNotificationService {
 		logger.info("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getFirstName());
 		sendEmail(email);
 	}
-	
+
 	@Async
 	public void sendEmail(Email email) {
 		try {
@@ -307,25 +351,6 @@ public class JaxNotificationService {
 
 	}
 
-	// employee otp to login
-	public void sendOtpSms(EmployeeInfo einfo, CivilIdOtpModel model) {
-
-		logger.info(String.format("Sending OTP SMS to customer :%s on mobile_no :%s  ", einfo.getEmployeeName(),
-				einfo.getTelephoneNumber()));
-
-		SMS sms = new SMS();
-		sms.addTo(einfo.getTelephoneNumber());
-		sms.getModel().put(RESP_DATA_KEY, model);
-		sms.setITemplate(TemplatesMX.RESET_OTP_SMS);
-
-		try {
-			postManService.sendSMSAsync(sms);
-		} catch (PostManException e) {
-			logger.error("error in sendOtpSms", e);
-		}
-	} // end of sendOtpSms
-	
-	
 	public String sendEmailChangeSubject() {
 
 		if (TenantContextHolder.currentSite().equals(Tenant.KWT)) {
@@ -350,4 +375,60 @@ public class JaxNotificationService {
 		return "Almulla Exchange Account - Phone number Change";
 	}
 
+	public void sendTransactionErrorAlertEmail(String errorMsg, String subject, PaymentResponseDto paymentResponse) {
+		String[] receiverList = jaxEmailNotificationService.getBeneCreationErrorEmailList();
+		if (StringUtils.isNotBlank(errorMsg) && receiverList != null && receiverList.length > 0) {
+			StringBuffer message = new StringBuffer();
+			message.append("errorMsg: ").append(errorMsg);
+			message.append("paymentResponse: ").append(paymentResponse);
+			Email email = new Email();
+			email.setSubject(subject);
+			email.addTo(receiverList);
+			email.setMessage(message.toString());
+			sendEmail(email);
+		}
+	}
+	
+	public void sendCustomerVerificationNotification(List<CustomerContactVerification> cvs, Customer c) {
+
+		cvs.forEach(i -> {
+			if (ContactType.EMAIL.equals(i.getContactType())) {
+				Email email = new Email();
+				email.addTo(c.getEmail());
+				email.setITemplate(TemplatesMX.CONTACT_VERIFICATION_EMAIL);
+				email.getModel().put("customer", EntityDtoUtil.entityToDto(c, new CustomerDto()));
+				email.getModel().put("link", i);
+				postManService.sendEmailAsync(email);
+			} else if (ContactType.SMS.equals(i.getContactType())) {
+				SMS sms = new SMS();
+				sms.addTo(c.getMobile());
+				sms.setITemplate(TemplatesMX.CONTACT_VERIFICATION_SMS);
+
+				sms.getModel().put("customer", EntityDtoUtil.entityToDto(c, new CustomerDto()));
+				sms.getModel().put("link", i);
+				postManService.sendSMSAsync(sms);
+			} else if (ContactType.WHATSAPP.equals(i.getContactType())) {
+
+			}
+		});
+
+	}
+
+public void sendSPErrorEmail(TransactionFailReportDTO model,
+			List<ExEmailNotification> emailNotification) {
+		try {
+			for (ExEmailNotification emailNot : emailNotification) {
+				String emailid = emailNot.getEmailId();
+				Email email = new Email();
+				email.setSubject(SERVICE_PROVIDER_RESPONSE);
+				email.addTo(emailid);
+				email.setITemplate(TemplatesMX.HOMESEND_TRANSACTION_FAILAURE);
+				email.setHtml(true);
+				email.getModel().put(RESP_DATA_KEY, model);
+				sendEmail(email);
+			}
+		} catch (Exception e) {
+			logger.error("error in sendErrormail", e);
+		}
+	}
 }

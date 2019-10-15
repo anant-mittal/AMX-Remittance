@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Writer;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 import org.slf4j.Logger;
@@ -32,6 +34,8 @@ public final class FileUtil {
 
 	/** The Constant FILE_PREFIX2. */
 	public static final String FILE_PREFIX2 = "file:/";
+	public static final String FILE_TRAVER_BACK = "..";
+	public static final String FILE_TRAVER_HOME = "./";
 
 	/** The Constant CLASSPATH_PREFIX. */
 	public static final String CLASSPATH_PREFIX = "classpath:";
@@ -41,6 +45,24 @@ public final class FileUtil {
 	 */
 	private FileUtil() {
 		throw new IllegalStateException("This is a class with static methods and should not be instantiated");
+	}
+
+	public static String normalize(String path) {
+		String resolvedPath = null;
+		try {
+			String forwrdPath = path.replace("\\", "/");
+			// URI uri = new File(path).toURI();
+			URI uri = new URI(forwrdPath);
+
+			resolvedPath = uri.normalize().toString();
+			if (resolvedPath.contains(FILE_TRAVER_BACK) || resolvedPath.contains(FILE_TRAVER_HOME)) {
+				throw new Exception();
+			}
+		} catch (Exception e) {
+			LOG.error("Path normalize {}  to {} ", path, resolvedPath);
+			throw new RuntimeException("FILE_TRAVERSAL FOUND");
+		}
+		return path;
 	}
 
 	/**
@@ -58,9 +80,9 @@ public final class FileUtil {
 		BufferedReader reader = null;
 		try {
 			if (isFilesystem) {
-				in = new FileInputStream(new File(filename));
+				in = new FileInputStream(new File(normalize(filename)));
 			} else {
-				in = FileUtil.class.getResourceAsStream(filename);
+				in = FileUtil.class.getResourceAsStream(normalize(filename));
 			}
 			if (in == null) {
 				return null;
@@ -85,10 +107,12 @@ public final class FileUtil {
 	 *
 	 * @param fileLocation Path of file
 	 * @param content      Content
-	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws IOException        Signals that an I/O exception has occurred.
+	 * @throws URISyntaxException
 	 */
-	public static void saveToFile(String fileLocation, String content) throws IOException {
+	public static void saveToFile(String fileLocation, String content) throws IOException, URISyntaxException {
 		Writer output = null;
+		fileLocation = normalize(fileLocation);
 		File file = new File(fileLocation);
 
 		try {
@@ -109,11 +133,13 @@ public final class FileUtil {
 	 *
 	 * @param fileLocation the file location
 	 * @param content      the content
-	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @throws IOException        Signals that an I/O exception has occurred.
+	 * @throws URISyntaxException
 	 */
-	public static void saveToFile(String fileLocation, byte[] content) throws IOException {
+	public static void saveToFile(String fileLocation, byte[] content) throws IOException, URISyntaxException {
 		BufferedOutputStream bos = null;
 		FileOutputStream fos = null;
+		fileLocation = normalize(fileLocation);
 
 		try {
 			fos = new FileOutputStream(new File(fileLocation));
@@ -134,6 +160,7 @@ public final class FileUtil {
 	}
 
 	public static String read(URL url) {
+		LOG.debug("read:{}", url);
 		StringBuilder sb = new StringBuilder();
 		InputStream in = null;
 		BufferedReader reader = null;
@@ -166,6 +193,7 @@ public final class FileUtil {
 	 * @return the resource
 	 */
 	public static URL getResource(String filePath, Class<?> clazz) {
+		LOG.debug("getResource:{}", filePath);
 		boolean isClassPath = filePath.startsWith(CLASSPATH_PREFIX);
 		if (isClassPath) {
 			return getResource(filePath.substring(CLASSPATH_PREFIX.length()), clazz);
@@ -223,6 +251,7 @@ public final class FileUtil {
 	 * @return the external resource
 	 */
 	public static URL getExternalResource(String filePath, Class<?> clazz) {
+		LOG.debug("getExternalResource:{}", filePath);
 		if (clazz == null) {
 			return getExternalResource(filePath);
 		}
@@ -237,16 +266,31 @@ public final class FileUtil {
 
 		// Search working folder
 		propertiesPath = System.getProperty("user.dir");
-		u = clazz.getClassLoader().getResource(propertiesPath + "/" + filePath);
+		try {
+			u = clazz.getClassLoader().getResource(propertiesPath + "/" + filePath);
+		} catch (Exception e) {
+			LOG.error("clazz.getClassLoader().getResource({}) : {}", propertiesPath + "/" + filePath, e.getMessage());
+		}
+
 		if (u != null) {
 			return u;
 		}
 
-		// Search in target folder
-		u = clazz.getClassLoader().getResource(FILE_PREFIX2 + propertiesPath + "/target/" + filePath);
-		if (u != null) {
-			LOG.info("Step 5 URL:{}", u.getPath());
-			return u;
+		if (SysConfigUtil.FILE_SEARCH_TARGET) {
+			// Search in target folder
+			String targetFilePath = propertiesPath + "/target/" + filePath;
+			u = clazz.getClassLoader().getResource(targetFilePath);
+			LOG.warn("SLOW getExternalResource {}", targetFilePath);
+			if (u != null) {
+				return u;
+			}
+
+			targetFilePath = FILE_PREFIX2 + propertiesPath + "/target/" + filePath;
+			u = clazz.getClassLoader().getResource(targetFilePath);
+			LOG.warn("SLOW getExternalResource {}", targetFilePath);
+			if (u != null) {
+				return u;
+			}
 		}
 
 		// Return default
@@ -259,15 +303,18 @@ public final class FileUtil {
 	 * @param filePath the file path
 	 * @param clazz    the clazz
 	 * @return the external file
+	 * @throws URISyntaxException
 	 */
 	public static File getExternalFile(String filePath, Class<?> clazz) {
-
+		LOG.debug("getExternalFile:{}", filePath);
 		if (clazz == null) {
 			return getExternalFile(filePath);
 		}
 
 		// Search in jar folder
-		File jarPath = new File(clazz.getProtectionDomain().getCodeSource().getLocation().getPath().split("!")[0]);
+		String jarPathString = clazz.getProtectionDomain().getCodeSource().getLocation().getPath().split("!")[0];
+
+		File jarPath = new File(normalize(jarPathString));
 		String propertiesPath = jarPath.getParentFile().getPath();
 
 		propertiesPath = propertiesPath.startsWith(FILE_PREFIX2) ? propertiesPath.substring(FILE_PREFIX2.length())
@@ -276,26 +323,28 @@ public final class FileUtil {
 				: propertiesPath;
 		propertiesPath = "/" + propertiesPath;
 
-		File file = new File(propertiesPath + "/" + filePath);
+		File file = new File(normalize(propertiesPath + "/" + filePath));
 		if (file.exists()) {
 			return file;
 		}
 
 		// Search working folder
 		propertiesPath = System.getProperty("user.dir");
-		file = new File(propertiesPath + "/" + filePath);
+		file = new File(normalize(propertiesPath + "/" + filePath));
 		if (file.exists()) {
 			return file;
 		}
 
-		// Search in target folder
-		file = new File(propertiesPath + "/target/" + filePath);
-		if (file.exists()) {
-			return file;
+		if (SysConfigUtil.FILE_SEARCH_TARGET) {
+			// Search in target folder
+			file = new File(normalize(propertiesPath + "/target/" + filePath));
+			if (file.exists()) {
+				return file;
+			}
 		}
 
 		// Return default
-		return new File(filePath);
+		return new File(normalize(filePath));
 	}
 
 	/**
@@ -318,6 +367,7 @@ public final class FileUtil {
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public static InputStream getExternalResourceAsStream(String filePath, Class<?> clazz) throws IOException {
+		LOG.debug("getExternalResourceAsStream:{}", filePath);
 		if (clazz == null) {
 			return getExternalResourceAsStream(filePath);
 		}

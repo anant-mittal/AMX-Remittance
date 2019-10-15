@@ -11,6 +11,7 @@ import com.codahale.metrics.Histogram;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.Timer;
 
+@SuppressWarnings("rawtypes")
 public class ActuatorEvent extends AbstractEvent {
 
 	private static final long serialVersionUID = -6503726300332663101L;
@@ -33,8 +34,8 @@ public class ActuatorEvent extends AbstractEvent {
 		return gauges;
 	}
 
-	public void setGauges(SortedMap<String, Gauge> gauges) {
-		this.gauges = gauges;
+	public void setGauges(SortedMap<String, Gauge> gauges2) {
+		this.gauges = gauges2;
 	}
 
 	public SortedMap<String, Counter> getCounters() {

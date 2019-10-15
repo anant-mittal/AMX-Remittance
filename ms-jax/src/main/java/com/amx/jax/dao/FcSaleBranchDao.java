@@ -23,7 +23,9 @@ import com.amx.jax.dbmodel.fx.EmployeeDetailsView;
 import com.amx.jax.dbmodel.fx.ForeignCurrencyOldModel;
 import com.amx.jax.dbmodel.fx.ForeignCurrencyStockTransfer;
 import com.amx.jax.dbmodel.fx.FxDeliveryDetailsModel;
+import com.amx.jax.dbmodel.fx.FxOrderTransactionModel;
 import com.amx.jax.dbmodel.fx.OrderManagementView;
+import com.amx.jax.dbmodel.fx.UserFcStockView;
 import com.amx.jax.dbmodel.fx.UserStockView;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.repository.CurrencyWiseDenominationRepository;
@@ -37,13 +39,21 @@ import com.amx.jax.repository.ReceiptPaymentRespository;
 import com.amx.jax.repository.fx.EmployeeDetailsRepository;
 import com.amx.jax.repository.fx.FcSaleOrderManagementRepository;
 import com.amx.jax.repository.fx.FxDeliveryDetailsRepository;
+import com.amx.jax.repository.fx.FxOrderTransactionRespository;
+import com.amx.jax.repository.fx.UserFcStockRepository;
 import com.amx.jax.repository.fx.UserStockRepository;
+import com.amx.jax.repository.fx.VwFxDeliveryDetailsRepository;
+import com.google.common.collect.Lists;
+import com.querydsl.core.types.Predicate;
 
 @Component
 public class FcSaleBranchDao {
 	
 	@Autowired
 	FcSaleOrderManagementRepository fcSaleOrderManagementRepository;
+	
+	@Autowired
+	VwFxDeliveryDetailsRepository vwFxDeliveryDetailsRepository;
 	
 	@Autowired
 	UserStockRepository userStockRepository;
@@ -81,6 +91,12 @@ public class FcSaleBranchDao {
 	@Autowired
 	ReceiptPaymentAppRepository receiptPaymentAppRepository;
 	
+	@Autowired
+	FxOrderTransactionRespository fxOrderTransactionRespository;
+	
+	@Autowired
+	UserFcStockRepository userFcStockRepository;
+	
 	public List<OrderManagementView> fetchFcSaleOrderManagement(BigDecimal applicationcountryId,BigDecimal areaCode){
 		return fcSaleOrderManagementRepository.findByApplicationCountryIdAndAreaCode(applicationcountryId,areaCode);
 	}
@@ -98,15 +114,15 @@ public class FcSaleBranchDao {
 	}
 	
 	public List<UserStockView> fetchUserStockCurrencyCurrentDate(BigDecimal countryId,String userName,BigDecimal countryBranchId,BigDecimal foreignCurrencyId){
-		return userStockRepository.fetchUserStockByCurrencyDate(countryId, userName, countryBranchId, foreignCurrencyId);
+		return userStockRepository.fetchUserStockByCurrencyDate(userName, countryBranchId, foreignCurrencyId);
 	}
 	
 	public List<Object[]> fetchUserStockCurrentDateSum(BigDecimal countryId,String userName,BigDecimal countryBranchId){
-		return userStockRepository.fetchUserStockByDateSum(countryId, userName, countryBranchId);
+		return userStockRepository.fetchUserStockByDateSum(userName, countryBranchId);
 	}
 	
 	public List<UserStockView> fetchUserStockCurrentDate(BigDecimal countryId,String userName,BigDecimal countryBranchId){
-		return userStockRepository.fetchUserStockByDate(countryId, userName, countryBranchId);
+		return userStockRepository.fetchUserStockByDate(userName, countryBranchId);
 	}
 	
 	public List<Employee> fetchEmpDriverDetails(String userType,String isActive){
@@ -190,6 +206,7 @@ public class FcSaleBranchDao {
 	public List<CollectionModel> fetchCollectionData(BigDecimal collectDocNo,BigDecimal collectDocYear){
 		return collectionRepository.findByDocumentNoAndDocumentFinanceYear(collectDocNo, collectDocYear);
 	}
+	
 	
 	@Transactional
 	public void printOrderSave(List<ForeignCurrencyAdjust> foreignCurrencyAdjusts,List<ReceiptPayment> updateRecPay,String userName,Date currenctDate,BigDecimal deliveryDetailsId,String orderStatus){
@@ -447,9 +464,28 @@ public class FcSaleBranchDao {
 		if(recordCount != 0 && recordCount == count) {
 			status = Boolean.FALSE;
 		}
-		
 		return status;
 	}
+
+	public List<FxOrderTransactionModel> searchOrder(Predicate predicate) {
+		Iterable<FxOrderTransactionModel> fxOrdersItr = fxOrderTransactionRespository.findAll(predicate);
+		return Lists.newArrayList(fxOrdersItr);
+	}
 	
+	public List<UserStockView> fetchUserStockAllCurrencyCurrentDate(String userName,BigDecimal countryBranchId,List<BigDecimal> foreignCurrencyId){
+		return userStockRepository.fetchUserStockByAllCurrencyDate(userName, countryBranchId, foreignCurrencyId);
+	}
+	
+	public List<OrderManagementView> fetchFcSaleOrderManagementForHeadOfficeLastOneWeek(BigDecimal applicationCountryId,Date fromDate,Date toDate){
+		return fcSaleOrderManagementRepository.fetchLastOneWeekRecords(applicationCountryId,fromDate,toDate);
+	}
+	
+	public List<OrderManagementView> fetchFcSaleOrderManagementByGovernateLastOneWeek(BigDecimal applicationcountryId,BigDecimal governate,Date fromDate,Date toDate){
+		return fcSaleOrderManagementRepository.fetchLastOneWeekRecordsByGovernateId(applicationcountryId,governate,fromDate,toDate);
+	}
+	
+	public List<UserFcStockView> fetchUserFCStockAllCurrencyCurrentDate(String userName,BigDecimal countryBranchId,List<BigDecimal> foreignCurrencyId){
+		return userFcStockRepository.fetchUserStockByAllCurrencyDate(userName, countryBranchId, foreignCurrencyId);
+	}
 	
 }

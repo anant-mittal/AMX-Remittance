@@ -1,0 +1,470 @@
+<jasperReport name="yes"
+              xmlns="http://jasperreports.sourceforge.net/jasperreports"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+              leftMargin="0" rightMargin="0"
+              topMargin="0" bottomMargin="0">
+    <subDataset name="tranxs">
+        <parameter name="TU" class="com.amx.jax.postman.service.TemplateUtils"/>
+        <parameter name="model" class="com.amx.utils.FlatMap"/>
+        <field name="tranx" class="com.amx.utils.FlatMap">
+            <fieldDescription><![CDATA[_THIS]]></fieldDescription>
+        </field>
+    </subDataset>
+
+
+    <subDataset name="tranxtypes">
+        <parameter name="TU" class="com.amx.jax.postman.service.TemplateUtils"/>
+        <parameter name="model" class="com.amx.utils.FlatMap"/>
+        <field name="tranxtype" class="com.amx.utils.FlatMap">
+            <fieldDescription><![CDATA[_THIS]]></fieldDescription>
+        </field>
+    </subDataset>
+
+    <parameter name="title" class="java.lang.String"/>
+    <parameter name="condition" class="java.lang.String"/>
+    <parameter name="minSalary" class="java.lang.Double"/>
+    <parameter name="model" class="com.amx.utils.FlatMap"/>
+    <parameter name="promos" class="com.amx.utils.FlatMap"/>
+    <parameter name="TU" class="com.amx.jax.postman.service.TemplateUtils"/>
+     
+    <detail>
+        <band height="822">
+            <componentElement>
+                <reportElement x="0" y="0" width="595" height="822"/>
+                <c:list xmlns:c="http://jasperreports.sourceforge.net/jasperreports/components"
+                        xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd"
+                        printOrder="Vertical">
+                    <datasetRun subDataset="tranxs" uuid="b8180534-701e-4f9a-ad5f-785d1a5fb74b">
+                        <datasetParameter name="REPORT_RESOURCE_BUNDLE">
+                            <datasetParameterExpression>
+                                <![CDATA[$P{REPORT_RESOURCE_BUNDLE}]]></datasetParameterExpression>
+                        </datasetParameter>
+                        <datasetParameter name="TU">
+                            <datasetParameterExpression><![CDATA[$P{TU}]]></datasetParameterExpression>
+                        </datasetParameter>
+                          <datasetParameter name="model">
+                            <datasetParameterExpression><![CDATA[$P{model}]]></datasetParameterExpression>
+                        </datasetParameter>
+                        
+                        <dataSourceExpression>
+                            <![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{model}.getList("/results"))]]></dataSourceExpression>
+                    </datasetRun>
+                    <c:listContents height="822">
+                    <!--##################HEADER START####################-->
+                        <frame>
+                            <reportElement x="0" y="0" width="595" height="80"
+                                           forecolor="blue"/>
+                            <rectangle>
+                                <reportElement x="0" y="0" width="595" height="80" backcolor="#000000"/>
+                            </rectangle>
+                            <image evaluationTime="Now" hyperlinkType="None" hyperlinkTarget="Self">
+                                <reportElement
+                                        x="220"
+                                        y="5"
+                                        width="150"
+                                        height="60"
+                                        key="image-1"
+                                        stretchType="NoStretch"/>
+                                <graphicElement/>
+                                <imageExpression class="java.lang.String">
+                                    <![CDATA[$P{TU}.prop("company.logo.path")]]>
+                                </imageExpression>
+                            </image>
+                          
+                                
+                        </frame>
+                        <!--##################HEADER END####################-->
+
+                        <!--##################Date START####################-->
+                        <frame>
+                            <reportElement x="5" y="80" width="585" height="45"/>
+                            <staticText>
+                                <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
+                                <textElement />
+                                <text><![CDATA[]]></text>
+                            </staticText>
+                         
+                            <textField isStretchWithOverflow="true">
+                                <reportElement x="465" y="4" width="100" height="15"
+                                               forecolor="#000000"
+                                               isPrintWhenDetailOverflows="true"/>
+                                <textElement textAlignment="Right">
+                                    <font fontName="Arial" size="10" isItalic="true"
+                                          pdfFontName="fonts/all/arial.ttf"/>
+                                </textElement>
+                                <textFieldExpression class="java.lang.String">
+                                   <![CDATA["Date:"+"   "+$F{tranx}.get("date")]]>
+                                </textFieldExpression>
+                            </textField>
+                           </frame>
+                        <!--##################Date END####################-->
+                      <!--##################To START####################-->
+                        <frame>
+                            <reportElement x="5" y="95" width="585" height="30"/>
+                            <staticText>
+                                <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
+                                <textElement />
+                                <text><![CDATA[]]></text>
+                            </staticText>
+                            <staticText>
+                                <reportElement x="15" y="3" width="300" height="30" isPrintWhenDetailOverflows="true"/>
+
+                                <textElement>
+                                    <font fontName="Arial" size="10" isItalic="true"
+                                          pdfFontName="fonts/all/arial.ttf"/>
+                                </textElement>
+                                <text><![CDATA[To,]]></text>
+                            </staticText>
+                            
+                               </frame>
+                        <!--################## To END####################-->
+                         <!--##################branch manager START####################-->
+                        <frame>
+                            <reportElement x="5" y="107" width="585" height="30"/>
+                            <staticText>
+                                <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
+                                <textElement />
+                                <text><![CDATA[]]></text>
+                            </staticText>
+                            <staticText>
+                                <reportElement x="30" y="3" width="300" height="30" isPrintWhenDetailOverflows="true"/>
+
+                                <textElement>
+                                    <font fontName="Arial" size="10" isItalic="true"
+                                          pdfFontName="fonts/all/arial.ttf"/>
+                                </textElement>
+                                <text><![CDATA[The Branch Manager, ]]></text>
+                            </staticText>
+                            
+                               </frame>
+                        <!--##################branch manager END####################-->
+                        
+                         <!--##################company name START####################-->
+                        <frame>
+                            <reportElement x="5" y="118" width="585" height="30"/>
+                            <staticText>
+                                <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
+                                <textElement />
+                                <text><![CDATA[]]></text>
+                            </staticText>
+                             <textField isStretchWithOverflow="true">
+                                <reportElement x="30" y="4" width="405" height="15"
+                                               forecolor="#000000"
+                                               isPrintWhenDetailOverflows="true"/>
+                                <textElement textAlignment="Left">
+                                    <font fontName="Arial" size="10" isItalic="true"
+                                          pdfFontName="fonts/all/arial.ttf"/>
+                                </textElement>
+                                <textFieldExpression class="java.lang.String">
+                                    <![CDATA[$P{TU}.prop("company.fullname")]]>
+                                </textFieldExpression>
+                            </textField>
+                               </frame>
+                        <!--##################company name END####################-->
+                        <!--##################branch name START####################-->
+                        <frame>
+                            <reportElement x="5" y="131" width="585" height="30"/>
+                            <staticText>
+                                <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
+                                <textElement />
+                                <text><![CDATA[]]></text>
+                            </staticText>
+                             <textField isStretchWithOverflow="true">
+                                <reportElement x="30" y="4" width="405" height="15"
+                                               forecolor="#000000"
+                                               isPrintWhenDetailOverflows="true"/>
+                                <textElement textAlignment="Left">
+                                    <font fontName="Arial" size="10" isItalic="true"
+                                          pdfFontName="fonts/all/arial.ttf"/>
+                                </textElement>
+                                <textFieldExpression class="java.lang.String">
+                                    <![CDATA[$F{tranx}.get("branchName") + " Branch "]]>
+                                </textFieldExpression>
+                            </textField>
+                            </frame>
+                        <!--##################branch name END####################-->
+                         <!--##################Place  START####################-->
+                        <frame>
+                            <reportElement x="5" y="143" width="585" height="30"/>
+                            <staticText>
+                                <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
+                                <textElement />
+                                <text><![CDATA[]]></text>
+                            </staticText>
+                             <textField isStretchWithOverflow="true">
+                                <reportElement x="30" y="4" width="405" height="15"
+                                               forecolor="#000000"
+                                               isPrintWhenDetailOverflows="true"/>
+                                <textElement textAlignment="Left">
+                                    <font fontName="Arial" size="10" isItalic="true"
+                                          pdfFontName="fonts/all/arial.ttf"/>
+                                </textElement>
+                                <textFieldExpression class="java.lang.String">
+                                    <![CDATA[$P{TU}.prop("company.country")]]>
+                                </textFieldExpression>
+                            </textField>
+                            </frame>
+                        <!--##################Place END####################-->
+                        
+                          <!--##################Dear sir/madam START####################-->
+                         <frame>
+                            <reportElement x="5" y="180" width="585" height="30"/>
+                            <staticText>
+                                <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
+                                <textElement />
+                                <text><![CDATA[]]></text>
+                            </staticText>
+                            <staticText>
+                                <reportElement x="15" y="3" width="300" height="30" isPrintWhenDetailOverflows="true"/>
+
+                                <textElement>
+                                    <font fontName="Arial" size="10" isItalic="true"
+                                          pdfFontName="fonts/all/arial.ttf"/>
+                                </textElement>
+                                <text><![CDATA[Dear Sir/Madam,]]></text>
+                            </staticText>
+                            </frame>
+                        <!--##################Dear sir/madam END####################-->
+                         <!--##################Sub START####################-->
+                         <frame>
+                            <reportElement x="5" y="200" width="585" height="30"/>
+                            <staticText>
+                                <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
+                                <textElement />
+                                <text><![CDATA[]]></text>
+                            </staticText>
+                            <staticText>
+                                <reportElement x="15" y="3" width="300" height="30" isPrintWhenDetailOverflows="true"/>
+
+                                <textElement>
+                                    <font fontName="Arial" size="10" isItalic="true"
+                                          pdfFontName="fonts/all/arial.ttf"/>
+                                </textElement>
+                                <text><![CDATA[Sub: Politically Exposed Person (PEP) Declaration]]></text>
+                            </staticText>
+                            </frame>
+                        <!--##################Sub END####################-->
+                       
+                        <!--##################customer details START####################-->
+                        <frame>
+                            <reportElement x="5" y="225" width="585" height="30"/>
+                            <staticText>
+                                <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
+                                <textElement />
+                                <text><![CDATA[]]></text>
+                            </staticText>
+                             <textField isStretchWithOverflow="true">
+                                <reportElement x="15" y="4" width="550" height="15"
+                                               forecolor="#000000"
+                                               isPrintWhenDetailOverflows="true"/>
+                                <textElement textAlignment="Left" markup="styled">
+                                    <font fontName="Arial" size="10" isItalic="true"
+                                          pdfFontName="fonts/all/arial.ttf"/>
+                                </textElement>
+                                <textFieldExpression class="java.lang.String">
+                                    <![CDATA["I "+"<style  pdfFontName='fonts/all/arialbd.ttf' isUnderline='true'>"+ $F{tranx}.get("firstName") +" "+$F{tranx}.get("lastName")  + "</style>"+ " holding Civil ID number/Passport Number "+"<style  pdfFontName='fonts/all/arialbd.ttf' isUnderline='true'>"+ $F{tranx}.get("identityInt")  + "</style>"  +" valid upto " +
+ 									"<style  pdfFontName='fonts/all/arialbd.ttf' isUnderline='true'>"+ $F{tranx}.get("expiryDate")  + "</style>" +", hereby declare that I am holding the position of "+"<style  pdfFontName='fonts/all/arialbd.ttf' >"+ 
+ 									"PEP (Politically Exposed Person)/FPEP (Foreign Politically Exposed Person) " + "</style>"                                      
+ 									 ]]>
+                                </textFieldExpression>
+                            </textField>
+                            </frame>
+                        <!--##################customer details  END####################-->
+                                       
+                         <!--##################declaration text1  details START####################-->
+                        <frame>
+                            <reportElement x="5" y="270" width="585" height="30"/>
+                            <staticText>
+                                <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
+                                <textElement />
+                                <text><![CDATA[]]></text>
+                            </staticText>
+                             <staticText>
+                                <reportElement x="15" y="3" width="550" height="30" isPrintWhenDetailOverflows="true"/>
+
+                                <textElement>
+                                    <font fontName="Arial" size="10" isItalic="true"
+                                          pdfFontName="fonts/all/arial.ttf"/>
+                                </textElement>
+                                <text><![CDATA[Further, I hereby declare that the funds are not being used for any illegal activities or Terrorism financing.]]></text>
+                            </staticText>
+                            </frame>
+                        <!--##################declaration text1  END####################--> 
+                         
+                          <!--##################declaration text2  details START####################-->
+                        <frame>
+                            <reportElement x="5" y="290" width="585" height="30"/>
+                            <staticText>
+                                <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
+                                <textElement />
+                                <text><![CDATA[]]></text>
+                            </staticText>
+                             <staticText>
+                                <reportElement x="15" y="3" width="550" height="30" isPrintWhenDetailOverflows="true"/>
+
+                                <textElement>
+                                    <font fontName="Arial" size="10" isItalic="true"
+                                          pdfFontName="fonts/all/arial.ttf"/>
+                                </textElement>
+                                <text><![CDATA[I also hereby submit my valid Civil ID and also declare that upon request from Law enforcement authorities to further substantiate the source of funds I will furnish the relevant documents accordingly.]]></text>
+                            </staticText>
+                            </frame>
+                        <!--##################declaration text2  END####################-->
+                   
+                             <!--##################Thanking you START####################-->
+                        <frame>
+                            <reportElement x="5" y="430" width="585" height="30"/>
+                            <staticText>
+                                <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
+                                <textElement />
+                                <text><![CDATA[]]></text>
+                            </staticText>
+                             <staticText>
+                                <reportElement x="15" y="3" width="550" height="30" isPrintWhenDetailOverflows="true"/>
+
+                                <textElement>
+                                    <font fontName="Arial" size="10" isItalic="true"
+                                          pdfFontName="fonts/all/arial.ttf"/>
+                                </textElement>
+                                <text><![CDATA[Thanking you, ]]></text>
+                            </staticText>
+                            </frame>
+                        <!--##################Thanking you  END####################-->
+                          <!--##################Yours truly, START####################-->
+                        <frame>
+                            <reportElement x="5" y="450" width="585" height="30"/>
+                            <staticText>
+                                <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
+                                <textElement />
+                                <text><![CDATA[]]></text>
+                            </staticText>
+                             <staticText>
+                                <reportElement x="15" y="3" width="550" height="30" isPrintWhenDetailOverflows="true"/>
+
+                                <textElement>
+                                    <font fontName="Arial" size="10" isItalic="true"
+                                          pdfFontName="fonts/all/arial.ttf"/>
+                                </textElement>
+                                <text><![CDATA[Yours truly, ]]></text>
+                            </staticText>
+                            </frame>
+                        <!--##################Yours truly, END####################-->
+                        
+                          <!--##################Signature START####################-->
+                        <frame>
+                            <reportElement x="5" y="470" width="585" height="30"/>
+                            <staticText>
+                                <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
+                                <textElement />
+                                <text><![CDATA[]]></text>
+                            </staticText>
+                             <staticText>
+                                <reportElement x="15" y="3" width="550" height="30" isPrintWhenDetailOverflows="true"/>
+
+                                <textElement>
+                                    <font fontName="Arial" size="10" isItalic="true"
+                                          pdfFontName="fonts/all/arial.ttf"/>
+                                </textElement>
+                                <text><![CDATA[Signature                __________________________________]]></text>
+                            </staticText>
+                            </frame>
+                        <!--##################Signature END####################-->
+                        
+                          <!--##################Customer’s Name START####################-->
+                        <frame>
+                            <reportElement x="5" y="490" width="585" height="30"/>
+                            <staticText>
+                                <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
+                                <textElement />
+                                <text><![CDATA[]]></text>
+                            </staticText>
+                              <textField isStretchWithOverflow="true">
+                                <reportElement x="15" y="4" width="405" height="15"
+                                               forecolor="#000000"
+                                               isPrintWhenDetailOverflows="true"/>
+                                <textElement textAlignment="Left" markup="styled">
+                                    <font fontName="Arial" size="10" isItalic="true"
+                                          pdfFontName="fonts/all/arial.ttf"/>
+                                </textElement>
+                                <textFieldExpression class="java.lang.String">
+                                   <![CDATA[ "Customer’s Name    " +"<style  pdfFontName='fonts/all/arialbd.ttf' isUnderline='true'>"+ $F{tranx}.get("firstName") +" "+$F{tranx}.get("lastName")  + "</style>" ]]>
+                                
+                                </textFieldExpression>
+                            </textField>
+                            </frame>
+                        <!--##################Customer’s Name  END####################-->
+                          <!--##################Identity int  START####################-->
+                        <frame>
+                            <reportElement x="5" y="510" width="585" height="30"/>
+                            <staticText>
+                                <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
+                                <textElement />
+                                <text><![CDATA[]]></text>
+                            </staticText>
+                              <textField isStretchWithOverflow="true" >
+                                <reportElement x="15" y="4" width="405" height="15"
+                                               forecolor="#000000"
+                                               isPrintWhenDetailOverflows="true"/>
+                                <textElement textAlignment="Left" markup="styled"> 
+                                    <font fontName="Arial" size="10" 
+                                          pdfFontName="fonts/all/arial.ttf"/>
+                                </textElement>
+                                <textFieldExpression class="java.lang.String" >
+                                    <![CDATA[ "Civil ID                    " +"<style  pdfFontName='fonts/all/arialbd.ttf' isUnderline='true'>"+ $F{tranx}.get("identityInt")  + "</style>" ]]>
+                                </textFieldExpression>
+                            </textField>
+                            </frame>
+                        <!--##################Identity int   END####################-->
+                        
+                        <!--##################Note START####################-->
+                        <frame>
+                            <reportElement x="5" y="530" width="585" height="30"/>
+                            <staticText>
+                                <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
+                                <textElement />
+                                <text><![CDATA[]]></text>
+                            </staticText>
+                             <staticText>
+                                <reportElement x="15" y="3" width="550" height="30" isPrintWhenDetailOverflows="true"/>
+
+                                <textElement>
+                                    <font fontName="Arial" size="10" isItalic="true"
+                                          pdfFontName="fonts/all/arial.ttf"/>
+                                </textElement>
+                                <text><![CDATA[Note:- ]]></text>
+                            </staticText>
+                            </frame>
+                        <!--##################Note END####################-->
+                        
+                       
+                          <!--##################Note text START####################-->
+                        <frame>
+                            <reportElement x="5" y="550" width="585" height="50"/>
+                            <staticText>
+                                <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
+                                <textElement />
+                                <text><![CDATA[]]></text>
+                            </staticText>
+                             <staticText>
+                                <reportElement x="15" y="3" width="550" height="50" isPrintWhenDetailOverflows="true"/>
+
+                                <textElement>
+                                    <font fontName="Arial" size="10" isItalic="true"
+                                          pdfFontName="fonts/all/arial.ttf"/>
+                                </textElement>
+                                <text><![CDATA[Politically Exposed Persons (PEPs) are individuals who are or have been entrusted withprominent public functions, for example: Head of State or government, SeniorPoliticians, Senior Government, Judicial or Military Officials, Senior Executives ofstate-owned corporations, important political party officials, or their family membersor close associates. The definition is not intended to cover middle ranking or morejunior individuals in the foregoing categories. ]]></text>
+                            </staticText>
+                            </frame>
+                        <!--##################Note text END####################-->
+                        
+                        
+                 
+                    <!--##################FOOTER END####################-->
+                    </c:listContents>
+                </c:list>
+            </componentElement>
+
+        </band>
+    </detail>
+</jasperReport>

@@ -2,7 +2,11 @@ package com.amx.jax.services;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -17,7 +21,10 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.client.compliance.ComplianceBlockedTrnxType;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.RemittanceApplicationDao;
+import com.amx.jax.dao.RemittanceProcedureDao;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.RemittanceTransactionView;
@@ -26,6 +33,7 @@ import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.exrateservice.service.NewExchangeRateService;
 import com.amx.jax.manager.RemittanceTransactionManager;
+import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.response.ExchangeRateBreakup;
 import com.amx.jax.model.response.SourceOfIncomeDto;
@@ -33,6 +41,7 @@ import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel
 import com.amx.jax.payg.PayGModel;
 import com.amx.jax.repository.IRemittanceTransactionDao;
 import com.amx.jax.repository.ISourceOfIncomeDao;
+import com.amx.jax.repository.RemittanceTransactionRepository;
 import com.amx.jax.service.CountryService;
 import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.userservice.service.UserService;
@@ -65,6 +74,10 @@ public class RemittanceTransactionService extends AbstractService {
 	UserService userSerivce;
 	@Autowired
 	CountryService countryService;
+	@Autowired
+	RemittanceProcedureDao  remittanceProcedureDao;
+	@Autowired
+	RemittanceTransactionRepository remittanceTransactionRepository;
 	
 	public ApiResponse getRemittanceTransactionDetails(BigDecimal collectionDocumentNo, BigDecimal fYear,
 			BigDecimal collectionDocumentCode) {
@@ -84,15 +97,28 @@ public class RemittanceTransactionService extends AbstractService {
 	}
 
 	public ApiResponse getSourceOfIncome(BigDecimal languageId) {
-
-		List<SourceOfIncomeView> sourceOfIncomeList = sourceOfIncomeDao.getSourceofIncome(languageId);
+		List<SourceOfIncomeView> sourceOfIncomeList;
+		List<SourceOfIncomeView> sourceOfIncomeListArabic;
 		ApiResponse response = getBlackApiResponse();
-		if (sourceOfIncomeList.isEmpty()) {
-			throw new GlobalException("No data found");
-		} else {
+		if((languageId==null) || languageId.equals(new BigDecimal(1)))
+		{
+		sourceOfIncomeList = sourceOfIncomeDao.getSourceofIncome(languageId);
+		response.getData().getValues().addAll(convertSourceOfIncomeForEnglish(sourceOfIncomeList));
+		response.setResponseStatus(ResponseStatus.OK);
+		}
+		else {
+			sourceOfIncomeList = sourceOfIncomeDao.getSourceofIncome(new BigDecimal(2));
+			
+			sourceOfIncomeListArabic= sourceOfIncomeDao.getSourceofIncome(languageId);
+			sourceOfIncomeList.get(0).setLocalName(sourceOfIncomeListArabic.get(0).getLocalName());
 			response.getData().getValues().addAll(convertSourceOfIncome(sourceOfIncomeList));
 			response.setResponseStatus(ResponseStatus.OK);
 		}
+		
+		
+		if (sourceOfIncomeList.isEmpty()) {
+			throw new GlobalException("No data found");
+		} 
 		response.getData().setType("sourceofincome");
 		return response;
 	}
@@ -111,13 +137,26 @@ public class RemittanceTransactionService extends AbstractService {
 
 	public ApiResponse validateRemittanceTransaction(RemittanceTransactionRequestModel model) {
 		ApiResponse response = getBlackApiResponse();
-		RemittanceTransactionResponsetModel responseModel = remittanceTxnManger.validateTransactionData(model);
+		RemittanceTransactionResponsetModel responseModel  = remittanceTxnManger.validateTransactionData(model);
 		response.getData().getValues().add(responseModel);
 		response.setResponseStatus(ResponseStatus.OK);
 		response.getData().setType(model.getModelType());
 		return response;
 
 	}
+	
+	
+	
+	public ApiResponse validateRemittanceTransactionV2(RemittanceTransactionDrRequestModel model) {
+		ApiResponse response = getBlackApiResponse();
+		RemittanceTransactionResponsetModel responseModel  = remittanceTxnManger.validateTransactionDataV2(model);
+		response.getData().getValues().add(responseModel);
+		response.setResponseStatus(ResponseStatus.OK);
+		response.getData().setType(model.getModelType());
+		return response;
+
+	}
+	
 
 	public List<SourceOfIncomeDto> convertSourceOfIncome(List<SourceOfIncomeView> sourceOfIncomeList) {
 		List<SourceOfIncomeDto> list = new ArrayList<>();
@@ -127,6 +166,24 @@ public class RemittanceTransactionService extends AbstractService {
 			dto.setShortDesc(model.getShortDesc());
 			dto.setLanguageId(model.getLanguageId());
 			dto.setDescription(model.getDescription());
+			dto.setLocalName(model.getLocalName());
+
+			list.add(dto);
+		}
+		return list;
+
+	}
+	
+	public List<SourceOfIncomeDto> convertSourceOfIncomeForEnglish(List<SourceOfIncomeView> sourceOfIncomeList) {
+		List<SourceOfIncomeDto> list = new ArrayList<>();
+		for (SourceOfIncomeView model : sourceOfIncomeList) {
+			SourceOfIncomeDto dto = new SourceOfIncomeDto();
+			dto.setSourceofIncomeId(model.getSourceofIncomeId());
+			//dto.setShortDesc(model.getShortDesc());
+			dto.setLanguageId(model.getLanguageId());
+			dto.setDescription(model.getDescription());
+			dto.setLocalName(model.getDescription());
+
 			list.add(dto);
 		}
 		return list;
@@ -142,6 +199,16 @@ public class RemittanceTransactionService extends AbstractService {
 		return response;
 	}
 
+	
+	public ApiResponse saveApplicationV2(RemittanceTransactionDrRequestModel model) {
+		ApiResponse response = getBlackApiResponse();
+		RemittanceApplicationResponseModel responseModel = remittanceTxnManger.saveApplicationV2(model);
+		response.getData().getValues().add(responseModel);
+		response.setResponseStatus(ResponseStatus.OK);
+		response.getData().setType(responseModel.getModelType());
+		return response;
+	}
+	
 	public ApiResponse saveRemittance(PayGModel paymentResponseDto) {
 		ApiResponse response = getBlackApiResponse();
 		return response;
@@ -159,7 +226,7 @@ public class RemittanceTransactionService extends AbstractService {
 	
 	@SuppressWarnings("unchecked")
 	public ApiResponse<RemittanceTransactionResponsetModel> calcEquivalentAmount(
-			@RequestBody RemittanceTransactionRequestModel model) {
+@RequestBody RemittanceTransactionRequestModel model) {
 		ApiResponse<RemittanceTransactionResponsetModel> response = getBlackApiResponse();
 		RemittanceTransactionResponsetModel respModel = remittanceTxnManger.validateTransactionData(model);
 		BigDecimal fcCurrencyId = beneficiaryService.getBeneByIdNo(model.getBeneId()).getCurrencyId();
@@ -177,8 +244,7 @@ public class RemittanceTransactionService extends AbstractService {
 		return response;
 	}
 
-	public SuspiciousTransactionPaymentDto getSuspiciousTransactionPaymentDto(BigDecimal remittanceApplicationId,
-			Long noOfAttempts) {
+	public SuspiciousTransactionPaymentDto getSuspiciousTransactionPaymentDto(BigDecimal remittanceApplicationId,Long noOfAttempts) {
 		SuspiciousTransactionPaymentDto dto = new SuspiciousTransactionPaymentDto();
 		BenificiaryListView beneView = getBeneBybeneficiaryView(remittanceApplicationId);
 		dto.setBankName(beneView.getBankName());
@@ -208,5 +274,26 @@ public class RemittanceTransactionService extends AbstractService {
 		BigDecimal beneficiaryRelationShipSeqId = remittanceApplication.getExRemittanceAppBenificiary().get(0)
 				.getBeneficiaryRelationShipSeqId();
 		return beneficiaryService.getBeneBybeneficiaryRelationShipSeqId(beneficiaryRelationShipSeqId);
+	}
+	
+	@Transactional
+	public void clearHighValueTransaction(BigDecimal remittanceTransactionId, ComplianceBlockedTrnxType trnxType) {
+		RemittanceTransaction trnx = getRemittanceTransactionById(remittanceTransactionId);
+		Map<String, Object> inputValues = new HashMap<>();
+		inputValues.put("P_REMITTANCE_TRANSACTION_ID", remittanceTransactionId);
+		inputValues.put("P_REMARKS", "");
+		inputValues.put("P_AUTHORIZED_BY", remittanceTransactionId);
+		inputValues.put("P_HIGH_VALUE_TRANX", trnxType.equals(ComplianceBlockedTrnxType.HVT_LOCAL) ? "Y" : "N");
+		inputValues.put("P_FC_HIGH_VALUE_TRANX", trnxType.equals(ComplianceBlockedTrnxType.HVT_FC) ? "Y" : "N");
+		switch (trnxType) {
+		case HVT_FC:
+		case HVT_LOCAL:
+			remittanceProcedureDao.updateAmlAuth(inputValues);
+			break;
+		case SUSPICIOUS:
+			trnx.setSuspicousTransaction(ConstantDocument.No);
+			remittanceTransactionRepository.save(trnx);
+			break;
+		}
 	}
 }

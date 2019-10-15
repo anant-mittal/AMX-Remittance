@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.pricer.dbmodel.ExchangeRateAPRDET;
-import com.amx.jax.pricer.dbmodel.ExchangeRateApprovalDetModel;
+import com.amx.jax.pricer.dbmodel.ExchangeRateApprovalDetModelAlt;
 import com.amx.jax.pricer.repository.ExchangeRateApprovalDetRepository;
 
 @Component
@@ -16,61 +16,60 @@ public class ExchangeRateDao {
 	@Autowired
 	private ExchangeRateApprovalDetRepository repo;
 
-	public List<ExchangeRateApprovalDetModel> getBranchExchangeRates(BigDecimal currencyId, BigDecimal countryBranchId,
+	public List<ExchangeRateApprovalDetModelAlt> getBranchExchangeRates(BigDecimal currencyId, BigDecimal countryBranchId,
 			BigDecimal countryId, List<BigDecimal> bankIds) {
 
-		List<ExchangeRateApprovalDetModel> exchangeRates = repo.getExchangeRates(currencyId, countryBranchId, bankIds);
+		List<ExchangeRateApprovalDetModelAlt> exchangeRates = repo.getExchangeRates(currencyId, countryBranchId, bankIds);
 		return exchangeRates;
 	}
 
-	public List<ExchangeRateApprovalDetModel> getBranchExchangeRatesForRoutingBank(BigDecimal currencyId,
+	public List<ExchangeRateApprovalDetModelAlt> getBranchExchangeRatesForRoutingBank(BigDecimal currencyId,
 			BigDecimal countryBranchId, BigDecimal countryId, BigDecimal applicationCountryId, BigDecimal routingBankId,
 			BigDecimal serviceIndicatorId) {
 
-		List<ExchangeRateApprovalDetModel> exchangeRates = repo.getExchangeRatesForRoutingBank(currencyId,
+		List<ExchangeRateApprovalDetModelAlt> exchangeRates = repo.getExchangeRatesForRoutingBank(currencyId,
 				countryBranchId, countryId, applicationCountryId, routingBankId, serviceIndicatorId);
 		return exchangeRates;
 	}
 
-	public ExchangeRateApprovalDetModel getExchangeRateApprovalDetModelById(BigDecimal id) {
+	public ExchangeRateApprovalDetModelAlt getExchangeRateApprovalDetModelById(BigDecimal id) {
 		return repo.findOne(id);
 	}
 
-	public void saveOrUpdate(ExchangeRateApprovalDetModel exchangeRateApprovalDetModel) {
-		repo.save(exchangeRateApprovalDetModel);
+	public void saveOrUpdate(ExchangeRateApprovalDetModelAlt exchangeRateApprovalDetModelAlt) {
+		repo.save(exchangeRateApprovalDetModelAlt);
 	}
 
-	public List<ExchangeRateApprovalDetModel> getExchangeRatesPlaceorder(BigDecimal currency, BigDecimal bankId) {
-		List<ExchangeRateApprovalDetModel> exchangeRates = repo.getExchangeRatesPlaceorder(currency, bankId);
+	public List<ExchangeRateApprovalDetModelAlt> getExchangeRatesPlaceorder(BigDecimal currency, BigDecimal bankId) {
+		List<ExchangeRateApprovalDetModelAlt> exchangeRates = repo.getExchangeRatesPlaceorder(currency, bankId);
 		return exchangeRates;
 	}
 
-	public List<ExchangeRateApprovalDetModel> getBranchExchangeRatesForRoutingBanks(BigDecimal currencyId,
-			BigDecimal countryBranchId, BigDecimal countryId, BigDecimal applicationCountryId,
-			List<BigDecimal> routingBankIds) {
+	public List<ExchangeRateApprovalDetModelAlt> getBranchExchangeRatesForRoutingBanks(BigDecimal currencyId,
+			BigDecimal countryBranchId, BigDecimal applicationCountryId, List<BigDecimal> routingBankIds) {
 
-		return repo.getBranchExchangeRatesForRoutingBanks(currencyId, countryBranchId, countryId, applicationCountryId,
+		return repo.getBranchExchangeRatesForRoutingBanks(currencyId, countryBranchId, applicationCountryId,
 				routingBankIds);
 	}
 
-	public List<ExchangeRateApprovalDetModel> getBranchExchangeRatesForRoutingBanksAndServiceIds(BigDecimal currencyId,
-			BigDecimal countryBranchId, BigDecimal countryId, BigDecimal applicationCountryId,
-			List<BigDecimal> routingBankIds, List<BigDecimal> serviceIds) {
+	public List<ExchangeRateApprovalDetModelAlt> getBranchExchangeRatesForRoutingBanksAndServiceIds(BigDecimal currencyId,
+			BigDecimal countryBranchId, BigDecimal applicationCountryId, List<BigDecimal> routingBankIds,
+			List<BigDecimal> serviceIds) {
 
-		return repo.getBranchExchangeRatesForRoutingBankAndServiceIds(currencyId, countryBranchId, countryId,
-				applicationCountryId, routingBankIds, serviceIds);
+		return repo.getBranchExchangeRatesForRoutingBankAndServiceIds(currencyId, countryBranchId, applicationCountryId,
+				routingBankIds, serviceIds);
 	}
 
-	public List<ExchangeRateApprovalDetModel> getExchangeRatesForRoutingBanks(BigDecimal currencyId,
+	public List<ExchangeRateApprovalDetModelAlt> getExchangeRatesForRoutingBanks(BigDecimal currencyId,
 			BigDecimal countryId, BigDecimal applicationCountryId, List<BigDecimal> routingBankIds) {
 
-		return repo.getExchangeRatesForRoutingBanks(currencyId, countryId, applicationCountryId, routingBankIds);
+		return repo.getExchangeRatesForRoutingBanks(currencyId, applicationCountryId, routingBankIds);
 	}
 
 	public List<BigDecimal> getSellRateMinForRoutingBanks(BigDecimal currencyId, BigDecimal countryId,
 			BigDecimal applicationCountryId, BigDecimal routingBankId) {
 
-		return repo.getUniqueSellRatesMinForRoutingBank(currencyId, countryId, applicationCountryId, routingBankId);
+		return repo.getUniqueSellRatesMinForRoutingBank(currencyId, applicationCountryId, routingBankId);
 	}
 
 	public List<ExchangeRateAPRDET> getUniqueSellRatesForRoutingBanks(BigDecimal currencyId, BigDecimal countryId,

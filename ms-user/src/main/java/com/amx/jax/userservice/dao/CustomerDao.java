@@ -1,18 +1,28 @@
 package com.amx.jax.userservice.dao;
 
 import java.math.BigDecimal;
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import javax.transaction.Transactional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.CallableStatementCreator;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.SqlOutParameter;
+import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import com.amx.amxlib.model.CustomerModel;
-import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.placeorder.PlaceOrderCustomer;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.ApplicationCoreProcedureDao;
@@ -21,15 +31,19 @@ import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.UserVerificationCheckListModel;
 import com.amx.jax.dbmodel.ViewCompanyDetails;
 import com.amx.jax.dbmodel.ViewOnlineCustomerCheck;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.customer.SecurityQuestionModel;
+import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.service.CompanyService;
-import com.amx.jax.userservice.repository.CustomerRepository;
 import com.amx.jax.userservice.repository.LoyaltyPointRepository;
 import com.amx.jax.userservice.repository.OnlineCustomerRepository;
 import com.amx.jax.userservice.repository.UserVerificationCheckListModelRepository;
 import com.amx.jax.userservice.repository.ViewOnlineCustomerCheckRepository;
+import com.amx.jax.util.AmxDBConstants;
 import com.amx.jax.util.CryptoUtil;
 import com.google.common.collect.Lists;
+import com.jax.amxlib.exception.jax.GlobaLException;
 
 @Component
 public class CustomerDao {
@@ -54,7 +68,11 @@ public class CustomerDao {
 	private ApplicationCoreProcedureDao applicationCoreProcedureDao;
 	@Autowired
 	private CompanyService companyService;
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
+
 	
+	Logger LOGGER = LoggerFactory.getLogger(CustomerDao.class);
 
 	public Customer getCustomerByCivilId(String civilId) {
 		Customer cust = null;
@@ -292,5 +310,41 @@ public class CustomerDao {
 	public List<Customer> getActiveCustomerByIndentityIntAndTypeAndIsActive(String identityInt, BigDecimal identityType, List<String> status){
 		return repo.getCustomerByIndentityIntAndTypeAndIsactive(identityInt, identityType, status);
 	}
-	
+
+	/**
+	 * moves customer data to cusmas table from fs_customer table
+	 * @param customerId
+	 * @return
+	 */
+	public Map<String, Object> callProcedurePopulateCusmas(BigDecimal customerId) {
+
+		LOGGER.info("callProcedurePopulateCusmas customerid: " + customerId);
+		Map<String, Object> output = null;
+		List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.NUMERIC), // 1
+				new SqlOutParameter("P_ERROR_IND", Types.VARCHAR), // 2
+				new SqlOutParameter("P_ERROR_MSG", Types.VARCHAR) // 3
+		);
+		CallableStatementCreator callableStatement = (Connection con) -> {
+			String proc = " { call EX_POPULATE_CUSMAS (?, ?, ?) } ";
+			CallableStatement cs = con.prepareCall(proc);
+			cs.setBigDecimal(1, customerId);
+			cs.registerOutParameter(2, java.sql.Types.VARCHAR);
+			cs.registerOutParameter(3, java.sql.Types.VARCHAR);
+			return cs;
+
+		};
+		output = jdbcTemplate.call(callableStatement, declareInAndOutputParameters);
+		if (!AmxDBConstants.No.equals(output.get("P_ERROR_IND")) || output.get("P_ERROR_MSG") != null) {
+			String errorText = "Error in callProcedurePopulateCusmas, P_ERROR_IND: " + output.get("P_ERROR_IND")
+					+ " P_ERROR_MSG: " + output.get("P_ERROR_MSG");
+			LOGGER.error(errorText);
+			throw new GlobaLException(JaxError.JAX_FIELD_VALIDATION_FAILURE, errorText);
+		}
+		return output;
+	}
+
+	public List<Customer> findDuplicateCustomerRecords(BigDecimal nationality, String mobile, String email,
+			String firstName) {
+		return repo.getCustomerForDuplicateCheck(nationality, mobile, email, firstName);
+	}
 }

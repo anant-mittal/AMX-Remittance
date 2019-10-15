@@ -1,0 +1,12 @@
+{
+	"link": {
+		"id": "123",
+		"verificationCode": "ASADAS"
+	},
+	"customer": {
+		"firstName": "Riddhi",
+		"lastName": "Madhu",
+		"middleName" : "Pata nhi",
+		"email" : "xxxxxadhu@gmail.com"
+	}
+}

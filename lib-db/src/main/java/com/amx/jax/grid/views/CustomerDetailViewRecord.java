@@ -7,6 +7,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.amx.jax.es.ESDocFormat;
 import com.amx.jax.grid.GridViewRecord;
@@ -105,6 +106,12 @@ public class CustomerDetailViewRecord implements GridViewRecord {
 	@ESDocFormat(ESDocFormat.Type.DATE)
 	@Column(name = "LAST_TRANSACTION_DATE")
 	private Date lastTransactionDate;
+	
+	//Not a DB column
+	//@Column(name = "TRNX_CUSTOMER_CATEGORY")
+	@JsonInclude()
+	@Transient
+	private String trnxCustomerCategory;
 
 	public String getName() {
 		return name;
@@ -335,5 +342,13 @@ public class CustomerDetailViewRecord implements GridViewRecord {
 
 	public void setWhatsAppVerified(String whatsAppVerified) {
 		this.whatsAppVerified = whatsAppVerified;
+	}
+
+	public String getTrnxCustomerCategory() {
+		return trnxCustomerCategory;
+	}
+
+	public void setTrnxCustomerCategory(String trnxCustomerCategory) {
+		this.trnxCustomerCategory = trnxCustomerCategory;
 	}
 }

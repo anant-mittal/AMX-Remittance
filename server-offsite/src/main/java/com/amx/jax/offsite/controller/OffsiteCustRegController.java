@@ -13,9 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.CustomerCredential;
-import com.amx.jax.ICustRegService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.api.ListRequestModel;
@@ -23,11 +21,13 @@ import com.amx.jax.branch.common.OffsiteStatus.ApiOffisteStatus;
 import com.amx.jax.branch.common.OffsiteStatus.OffsiteServerCodes;
 import com.amx.jax.client.CustomerRegistrationClient;
 import com.amx.jax.client.MetaClient;
+import com.amx.jax.customer.ICustRegService;
 import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
 import com.amx.jax.model.CardDetail;
 import com.amx.jax.model.auth.QuestModelDTO;
+import com.amx.jax.model.customer.SecurityQuestionModel;
 import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.model.request.CustomerInfoRequest;
 import com.amx.jax.model.request.CustomerPersonalDetail;
@@ -41,6 +41,7 @@ import com.amx.jax.model.response.ComponentDataDto;
 import com.amx.jax.model.response.CustomerInfo;
 import com.amx.jax.model.response.FieldListDto;
 import com.amx.jax.model.response.IncomeRangeDto;
+import com.amx.jax.model.response.customer.AddressProofDTO;
 import com.amx.jax.model.response.customer.OffsiteCustomerDataDTO;
 import com.amx.jax.offsite.service.CustomerSession;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
@@ -106,6 +107,11 @@ public class OffsiteCustRegController {
 	@RequestMapping(value = "/employment_type/list", method = { RequestMethod.POST })
 	public AmxApiResponse<ComponentDataDto, Object> sendEmploymentTypeList() {
 		return offsiteCustRegClient.sendEmploymentTypeList();
+	}
+
+	@RequestMapping(value = "/document_type/lis/address_prooft", method = { RequestMethod.GET })
+	public AmxApiResponse<AddressProofDTO, Object> getAddressProof() {
+		return offsiteCustRegClient.getAddressProof();
 	}
 
 	@RequestMapping(value = "/card/read", method = { RequestMethod.POST })
@@ -198,6 +204,12 @@ public class OffsiteCustRegController {
 			offsiteCustRegClient.validateOtpForEmailAndMobile(offsiteCustRegModel);
 		}
 		return resp;
+	}
+
+	@RequestMapping(value = "/document/upload", method = { RequestMethod.POST })
+	public AmxApiResponse<BoolRespModel, Object> saveDocumentUploadReference(
+			@RequestBody ImageSubmissionRequest imageSubmissionRequest) throws ParseException, Exception {
+		return offsiteCustRegClient.saveDocumentUploadReference(imageSubmissionRequest);
 	}
 
 }

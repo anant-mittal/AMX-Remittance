@@ -77,7 +77,7 @@ public final class ContextUtil {
 	}
 
 	public static void setFlowfix(String flowfix) {
-		context.get().put(FLOW_FIX_KEY, flowfix);
+		context.get().put(FLOW_FIX_KEY, StringUtils.removeSpecialCharacter(flowfix));
 	}
 
 	/**
@@ -114,20 +114,20 @@ public final class ContextUtil {
 	 * @param midfix   the midfix
 	 * @return the trace id
 	 */
-	public static String getTraceId(boolean generate, String midfix) {
+	public static String getTraceId(boolean generate, String sessionId) {
 		String traceId = (String) context.get().get(TRACE_ID);
 		if (traceId == null) {
 			if (!generate) {
 				return "";
 			}
-			traceId = UniqueID.generateSystemString(midfix, getFlowfix());
+			traceId = UniqueID.generateRequestId(sessionId, getFlowfix());
 			context.get().put(TRACE_ID, traceId);
 		}
 		return traceId;
 	}
 
-	public static String generateTraceId(String midfix) {
-		String traceId = UniqueID.generateSystemString(midfix, getFlowfix());
+	public static String generateTraceId(String sessionId) {
+		String traceId = UniqueID.generateRequestId(sessionId, getFlowfix());
 		context.get().put(TRACE_ID, traceId);
 		return traceId;
 	}

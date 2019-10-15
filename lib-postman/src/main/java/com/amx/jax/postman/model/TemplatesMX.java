@@ -10,11 +10,17 @@ public enum TemplatesMX implements ITemplate {
 	RESET_OTP("reset-otp", Channel.NOTIPY),
 	RESET_OTP_SMS("reset-otp-sms", Channel.NOTIPY),
 
+	// Contact Verification
+	CONTACT_VERIFICATION_SMS("contact-verifiy-sms", Channel.NOTIPY),
+	CONTACT_VERIFICATION_EMAIL("contact-verifiy-email", Channel.NOTIPY),
+
 	SERVER_UP("health-server-up"),
 
 	REMIT_RECEIPT("TransactionReceipt"), REMIT_RECEIPT2("TransactionReceipt2"),
 	REMIT_RECEIPT_JASPER("TransactionReceipt_jasper", PDFConverter.JASPER, "TransactionReceipt.json"),
 	REMIT_RECEIPT_COPY_JASPER("TransactionReceiptCopy_jasper", PDFConverter.JASPER, "TransactionReceipt.json"),
+	REMIT_RECEIPT_JASPER_NO_HEADER("TransactionReceiptNoHeader_jasper", PDFConverter.JASPER, "TransactionReceipt.json"),
+	REMIT_APPLICATION_RECEIPT_JASPER("ApplicationReceipt_jasper", PDFConverter.JASPER, "ApplicationReceipt.json"),
 
 	REMIT_RECEIPT_COPY("TransactionReceiptCopy"), REMIT_STATMENT("TransactionList"),
 	REMIT_STATMENT_EMAIL("RemittanceStatmentEmail"),
@@ -28,14 +34,15 @@ public enum TemplatesMX implements ITemplate {
 	// Rate Alert, PlaceOrder
 	RATE_ALERT("place-order"), RATE_ALERT_COMPLETION("place-order-executed"),
 
-	BRANCH_SEARCH_EMPTY("BranchSearchEmpty"), TEST("test"), BRANCH_FEEDBACK("trnx-feedback"), TT("tt"), EFT("eft"),
-	CASH("cash"),
+	BRANCH_SEARCH_EMPTY("BranchSearchEmpty"), TEST("test"), BRANCH_FEEDBACK("trnx-feedback", Channel.FEED), TT("tt", Channel.FEED), EFT("eft", Channel.FEED),
+	CASH("cash", Channel.FEED),
 
 	CIVILID_EXPIRY("civilexpiry"), CIVILID_EXPIRED("civilexpired"),
 
 	PARTIAL_REGISTRATION_EMAIL("PartialRegistrationCompletionEMail"), TRANSACTION_FAILURE("TransactionFailure"),
 
 	PROMOTION_WINNER("PromotionWinner"), PROMOTION_COUPON("PromotionCoupon"),
+	WANTIT_BUYIT_PROMOTION("WantITBuyItPromotionCoupon"),
 
 	SERVER_PING("server-ping"),
 
@@ -52,7 +59,44 @@ public enum TemplatesMX implements ITemplate {
 	EMAIL_CHANGE_OLD_EMAIL("EmailChangeOldEmail"),
 	FINGERPRINT_LINKED_SUCCESS("FingerprintLinkedSuccess"),
 	FINGERPRINT_DELINKED_SUCCESS("FingerprintDelinkedSuccess"),
-	FINGERPRINT_DELINKED_ATTEMP_SUCCESS("FingerprintDelinkInCorrectAttem");
+	FINGERPRINT_DELINKED_ATTEMP_SUCCESS("FingerprintDelinkInCorrectAttem"),
+	
+	
+	// GIG Policy Event Notification Templates
+	POLICY_CONFIRMATION("PolicyConfirmation"),
+	POLICY_OPTOUT_CUSTOMER("PolicyOptoutCustomer"),
+	POLICY_OPTOUT_SYSTEM("PolicyOptoutSystem"),
+	POLICY_EXPIRY_REMINDER("PolicyExpiryReminder"),
+	POLICY_EXPIRED("PolicyExpired"),
+	POLICY_PENDING_TRNX("PolicyPendingTrnx"),
+
+	HOMESEND_TRANSACTION_FAILAURE("HomeSendTransactionFailure"),
+
+	//Add Bene Templates
+	BENE_SUCC("BeneCreationSuccess"),
+	BENE_SUCC_SMS("bene-success-sms",Channel.NOTIPY),
+
+	// Online coupon template
+	ONLINE_COUPON("OnlineCoupon"),
+	
+	//WU Notifications Templates
+	
+	WU_TRNX_SUCCESS("WUTrnxSuccess"),
+	WU_PICKUP_REMINDER("WUPickupReminder"),
+	WU_CANCEL_REMINDER("WUCancelReminder"),
+	WU_TRNX_CANCELLED("WUTrnxCancelled"),
+	RESEND_VERIFICATION_LINK("resend-verification"),
+	
+	//Refer friend
+	FRIEND_REFER("friend-refer.json"),
+	FRIEND_REFERED("friend-refered.json"),
+	
+	//PEP_FORM("PepForm"),
+	PEP_FORM_JASPER("PepForm_jasper", PDFConverter.JASPER, "PepForm.json"),
+
+
+	// Default add enums above this
+	DEFAULT("default");
 
 	String fileName;
 	PDFConverter converter;
@@ -68,6 +112,11 @@ public enum TemplatesMX implements ITemplate {
 	@Override
 	public String getHtmlFile() {
 		return "html/" + getFileName();
+	}
+
+	@Override
+	public String getSMSFile() {
+		return "html/sms/" + getFileName();
 	}
 
 	@Override

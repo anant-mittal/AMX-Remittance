@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import com.amx.jax.AmxConstants;
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppContextUtil;
+import com.amx.jax.config.RbaacTenantProperties;
 import com.amx.jax.dbmodel.Device;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.dict.UserClient.DeviceType;
@@ -24,7 +25,7 @@ import com.amx.jax.model.OtpData;
 import com.amx.jax.rbaac.constants.RbaacServiceConstants;
 import com.amx.jax.rbaac.constants.RbaacServiceConstants.LOGIN_TYPE;
 import com.amx.jax.rbaac.dao.RbaacDao;
-import com.amx.jax.rbaac.dbmodel.Employee;
+import com.amx.jax.rbaac.dbmodel.FSEmployee;
 import com.amx.jax.rbaac.dbmodel.Role;
 import com.amx.jax.rbaac.dbmodel.UserRoleMapping;
 import com.amx.jax.rbaac.dbmodel.ViewExEmpBranchSysDetails;
@@ -72,13 +73,19 @@ public class UserAuthService {
 
 	@Autowired
 	private AppConfig appConfig;
+	
+	@Autowired
+	RbaacTenantProperties rbaacTenantProperties;
 
 	/**
 	 * Verify user details.
 	 * 
-	 * @param employeeNo the emp code
-	 * @param identity   the identity
-	 * @param ipAddress  the ip address
+	 * @param employeeNo
+	 *            the emp code
+	 * @param identity
+	 *            the identity
+	 * @param ipAddress
+	 *            the ip address
 	 * @return the user auth init response DTO
 	 * 
 	 * @flow: -> Get Employee ||->-> Multiple Employees -> Error ||->-> Employee Not
@@ -126,9 +133,9 @@ public class UserAuthService {
 			}
 		}
 
-		List<Employee> employees = rbaacDao.getEmployees(employeeNo, identity);
+		List<FSEmployee> employees = rbaacDao.getEmployees(employeeNo, identity);
 
-		Employee selfEmployee = getValidEmployee(employees, "Self");
+		FSEmployee selfEmployee = getValidEmployee(employees, "Self");
 
 		// Validate Employee Device/Terminal Assignment
 
@@ -142,7 +149,11 @@ public class UserAuthService {
 
 		OtpData selfOtpData = userOtpManager.generateOtpTokens(selfOtpSecret, userAuthInitReqDTO.getSelfSAC());
 
-		userOtpManager.sendOtpSms(selfEmployee, selfOtpData, "Self OTP Details");
+		if (("Y").equalsIgnoreCase(selfEmployee.getOtpNotifySms())) {
+
+			userOtpManager.sendOtpSms(selfEmployee, selfOtpData, "Self OTP Details");
+
+		}
 
 		String transactionId = AppContextUtil.getTranxId();
 
@@ -162,10 +173,10 @@ public class UserAuthService {
 		/**
 		 * For Assisted Login;
 		 */
-		Employee partnerEmployee = new Employee();
+		FSEmployee partnerEmployee = new FSEmployee();
 
 		if (isAssisted) {
-			List<Employee> possiblePartners = rbaacDao.getEmployeesByCivilId(partnerIdentity);
+			List<FSEmployee> possiblePartners = rbaacDao.getEmployeesByCivilId(partnerIdentity);
 
 			partnerEmployee = getValidEmployee(possiblePartners, "Partner");
 
@@ -182,9 +193,12 @@ public class UserAuthService {
 			 * if (!ArgUtil.isEmpty(partnerOTPDevice)) { partnerOTPDeviceSecret =
 			 * partnerOTPDevice.getClientSecreteKey(); }
 			 */
+
 			OtpData partnerOtpData = userOtpManager.generateOtpTokens(partnerOTPSecret,
 					userAuthInitReqDTO.getPartnerSAC());
-			userOtpManager.sendOtpSms(partnerEmployee, partnerOtpData, "Partner OTP Details");
+			if (("Y").equalsIgnoreCase(partnerEmployee.getOtpNotifySms())) {
+				userOtpManager.sendOtpSms(partnerEmployee, partnerOtpData, "Partner OTP Details");
+			}
 			userOtpData.setPartnerOtpData(partnerOtpData);
 		}
 
@@ -303,7 +317,10 @@ public class UserAuthService {
 			throw new AuthServiceException(RbaacServiceError.OTP_TIMED_OUT, "Invalid OTP: OTP is timedOut");
 		}
 
-		Employee employee = userOtpData.getEmployee();
+		FSEmployee cachedEmployee = userOtpData.getEmployee();
+
+		// Get Fresh Employee
+		FSEmployee employee = rbaacDao.getEmployeeByEmployeeId(cachedEmployee.getEmployeeId());
 
 		String mOtpHash = UserOtpManager.getOtpHash(mOtp);
 		String partnerOtpHash = "";
@@ -398,7 +415,18 @@ public class UserAuthService {
 		RoleResponseDTO roleResponseDTO = getRoleForUser(employee.getEmployeeId());
 
 		empDetail.setUserRole(roleResponseDTO);
-
+		
+		//Tenant base value set
+		if(rbaacTenantProperties.getTenant() != null) {
+			empDetail.setTenant(rbaacTenantProperties.getTenant());
+		}
+		if(rbaacTenantProperties.getCurrencyQuote() != null) {
+			empDetail.setCurrencyQuote(rbaacTenantProperties.getCurrencyQuote());
+		}
+		if(rbaacTenantProperties.getCurrencyId() != null) {
+			empDetail.setCurrencyId(rbaacTenantProperties.getCurrencyId());
+		}
+		
 		// Set Last Successful Login Date as Current Date
 		updateLastLogin(employee);
 
@@ -436,7 +464,7 @@ public class UserAuthService {
 
 	}
 
-	private Employee getValidEmployee(List<Employee> employees, String userType) {
+	private FSEmployee getValidEmployee(List<FSEmployee> employees, String userType) {
 
 		// LOGIN_TYPE userType = userAuthInitReqDTO.getLoginType();
 
@@ -448,7 +476,7 @@ public class UserAuthService {
 					"Employee Details not available : " + userType);
 		}
 
-		List<Employee> activeEmployees = new ArrayList<Employee>();
+		List<FSEmployee> activeEmployees = new ArrayList<FSEmployee>();
 		/**
 		 * Filter Out InActive Employees
 		 */
@@ -471,7 +499,7 @@ public class UserAuthService {
 					"Multiple Users Corresponding to the same Info: Pls contact Support : " + userType);
 		}
 
-		Employee validEmployee = activeEmployees.get(0);
+		FSEmployee validEmployee = activeEmployees.get(0);
 
 		/**
 		 * Check if user A/C is Locked. lockcnt >= 3
@@ -497,7 +525,7 @@ public class UserAuthService {
 		return validEmployee;
 	}
 
-	private boolean validateLoginClient(Employee employee, UserAuthInitReqDTO userAuthInitReqDTO) {
+	private boolean validateLoginClient(FSEmployee employee, UserAuthInitReqDTO userAuthInitReqDTO) {
 
 		UserClientDto userClientDto = userAuthInitReqDTO.getUserClientDto();
 
@@ -511,27 +539,29 @@ public class UserAuthService {
 		if (DeviceType.COMPUTER.isParentOf(deviceType)) {
 
 			if (null == userClientDto.getTerminalId()) {
-
 				throw new AuthServiceException(RbaacServiceError.INVALID_OR_MISSING_TERMINAL_ID,
 						"Terminal Id is Mandatory for Computer Terminals");
 			}
 
 			List<ViewExEmpBranchSysDetails> empBranchSysDetails = rbaacDao
-					.getEmpBranchSysDetailsByEmpIdAndBranchSysInventoryId(employee.getEmployeeId(),
-							userAuthInitReqDTO.getUserClientDto().getTerminalId());
+					.getEmpBranchSysByEmpIdAndBranchSysInvIdAndBranchId(employee.getEmployeeId(),
+							userAuthInitReqDTO.getUserClientDto().getTerminalId(),
+							employee.getCountryBranch().getCountryBranchId());
+
+			/**
+			 * An Employee is Allowed to login only from One System at a time - only from
+			 * one branch. Employee Branch System and Branch System in SysInventory should
+			 * match.
+			 */
 
 			if (null == empBranchSysDetails || empBranchSysDetails.isEmpty()) {
-
 				throw new AuthServiceException(RbaacServiceError.BRANCH_SYSTEM_NOT_FOUND,
-						"Branch System/Terminal is Invalid, NONE found to be assigned.");
-
+						"Employee - Branch System/TerminalId and BranchId Assignment is Invalid or NONE found to be assigned.");
 			}
 			if (empBranchSysDetails.size() > 1) {
-
 				LOGGER.warn("Multiple Active Terminals with Same Terminal Id: "
 						+ userAuthInitReqDTO.getUserClientDto().getTerminalId() + " exist for Employee Id : "
 						+ employee.getEmployeeId());
-
 			}
 
 			return Boolean.TRUE;
@@ -578,9 +608,9 @@ public class UserAuthService {
 	/**
 	 * Lock user Account
 	 */
-	private boolean lockUserAccount(Employee srcEmp) {
+	private boolean lockUserAccount(FSEmployee srcEmp) {
 
-		Employee destEmp = rbaacDao.getEmployeeByEmployeeId(srcEmp.getEmployeeId());
+		FSEmployee destEmp = rbaacDao.getEmployeeByEmployeeId(srcEmp.getEmployeeId());
 		destEmp.setLockCount(new BigDecimal(3));
 		destEmp.setLockDate(new Date());
 
@@ -589,9 +619,9 @@ public class UserAuthService {
 		return true;
 	}
 
-	private boolean updateLastLogin(Employee srcEmp) {
+	private boolean updateLastLogin(FSEmployee srcEmp) {
 
-		Employee destEmp = rbaacDao.getEmployeeByEmployeeId(srcEmp.getEmployeeId());
+		FSEmployee destEmp = rbaacDao.getEmployeeByEmployeeId(srcEmp.getEmployeeId());
 		destEmp.setLastLogin(new Date());
 
 		rbaacDao.saveEmployee(destEmp);

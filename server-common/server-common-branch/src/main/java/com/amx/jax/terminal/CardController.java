@@ -17,6 +17,8 @@ import com.amx.jax.device.DeviceConstants;
 import com.amx.jax.device.DeviceData;
 import com.amx.jax.device.DeviceRequest;
 import com.amx.jax.dict.UserClient.ClientType;
+import com.amx.jax.http.ApiRequest;
+import com.amx.jax.http.RequestType;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.sso.SSOAuditEvent;
@@ -59,7 +61,7 @@ public class CardController {
 				cardData);
 
 		// Audit
-		if (!ArgUtil.isEmpty(reader.getData())) {
+		if (reader.hasCard()) {
 			auditService.log(new SSOAuditEvent(SSOAuditEvent.Type.CARD_SCANNED)
 					.terminalId(deviceData.getTerminalId())
 					.clientType(ClientType.BRANCH_ADAPTER)
@@ -70,6 +72,7 @@ public class CardController {
 		return AmxApiResponse.build(reader.getData());
 	}
 
+	@ApiRequest(type = RequestType.POLL)
 	@RequestMapping(value = { DeviceConstants.Path.DEVICE_STATUS_CARD }, method = { RequestMethod.GET })
 	public AmxApiResponse<CardData, Object> getCardDetails(
 			@RequestParam(value = DeviceConstants.Params.PARAM_SYSTEM_ID) String systemid,

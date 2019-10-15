@@ -2,13 +2,17 @@ package com.amx.jax.tunnel;
 
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class DBEvent extends TunnelEvent {
 	private static final long serialVersionUID = 1426912782817649062L;
 
 	private String priority;
 	private String description;
+	private String text;
 
-	protected Map<String, String> data;
+	private Map<String, String> data;
 
 	public Map<String, String> getData() {
 		return data;
@@ -38,6 +42,14 @@ public class DBEvent extends TunnelEvent {
 	public String toString() {
 		return "Event [event_code=" + eventCode + ", priority=" + priority + ", description=" + description + ", data="
 				+ data + "]";
+	}
+
+	public String getText() {
+		return text;
+	}
+
+	public void setText(String text) {
+		this.text = text;
 	}
 
 }

@@ -4,10 +4,11 @@ import java.util.List;
 
 import javax.validation.constraints.Pattern;
 
-import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.AppConstants;
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.model.AuthState;
 import com.amx.jax.model.auth.QuestModelDTO;
+import com.amx.jax.model.customer.SecurityQuestionModel;
 import com.amx.jax.ui.model.AuthDataInterface.UserUpdateRequest;
 import com.amx.jax.ui.model.AuthDataInterface.UserUpdateResponse;
 
@@ -23,6 +24,13 @@ public class UserUpdateData implements UserUpdateRequest, UserUpdateResponse {
 	/** The e otp. */
 	@Pattern(regexp = AppConstants.Validator.OTP)
 	private String eOtp = null;
+
+	/** The e otp. */
+	@Pattern(regexp = AppConstants.Validator.OTP)
+	private String wOtp = null;
+
+	@Pattern(regexp = AppConstants.Validator.OTP)
+	private String otp = null;
 
 	/** The password. */
 	private String password = null;
@@ -46,6 +54,10 @@ public class UserUpdateData implements UserUpdateRequest, UserUpdateResponse {
 
 	/** The e otp prefix. */
 	private String eOtpPrefix = null;
+
+	private String wOtpPrefix = null;
+
+	private ContactType contactType = null;
 
 	/** The sec ques meta. */
 	private List<QuestModelDTO> secQuesMeta = null;
@@ -109,8 +121,7 @@ public class UserUpdateData implements UserUpdateRequest, UserUpdateResponse {
 	/**
 	 * Sets the state.
 	 *
-	 * @param state
-	 *            the new state
+	 * @param state the new state
 	 */
 	public void setState(AuthState state) {
 		this.state = state;
@@ -212,8 +223,7 @@ public class UserUpdateData implements UserUpdateRequest, UserUpdateResponse {
 	/**
 	 * Sets the sec ques meta.
 	 *
-	 * @param secQuesMeta
-	 *            the new sec ques meta
+	 * @param secQuesMeta the new sec ques meta
 	 */
 	public void setSecQuesMeta(List<QuestModelDTO> secQuesMeta) {
 		this.secQuesMeta = secQuesMeta;
@@ -304,6 +314,52 @@ public class UserUpdateData implements UserUpdateRequest, UserUpdateResponse {
 	 */
 	public void setCaption(String caption) {
 		this.caption = caption;
+	}
+
+	public ContactType getContactType() {
+		return contactType;
+	}
+
+	public void setContactType(ContactType contactType) {
+		this.contactType = contactType;
+	}
+
+	@Override
+	public String getwOtpPrefix() {
+		return wOtpPrefix;
+	}
+
+	@Override
+	public void setwOtpPrefix(String wOtpPrefix) {
+		this.wOtpPrefix = wOtpPrefix;
+	}
+
+	@Override
+	public String getwOtp() {
+		return this.wOtp;
+	}
+
+	@Override
+	public void setwOtp(String wOtp) {
+		this.wOtp = wOtp;
+	}
+
+	@Override
+	public String getOtpPrefix() {
+		return this.otp;
+	}
+
+	@Override
+	public void setOtpPrefix(String otp) {
+		this.otp = otp;
+	}
+
+	public String getOtp() {
+		return otp;
+	}
+
+	public void setOtp(String otp) {
+		this.otp = otp;
 	}
 
 }

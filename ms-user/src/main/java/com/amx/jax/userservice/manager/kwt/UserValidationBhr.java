@@ -15,11 +15,10 @@ import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.scope.TenantSpecific;
 import com.amx.jax.userservice.dao.CustomerIdProofDao;
-import com.amx.jax.userservice.repository.CustomerRepository;
 import com.amx.jax.userservice.service.CustomerValidationContext.CustomerValidation;
-import com.amx.utils.Constants;
 
 @Component
 @TenantSpecific(value = { Tenant.BHR, Tenant.BRNDEV })
@@ -40,11 +39,11 @@ public class UserValidationBhr implements CustomerValidation {
 
 		for (CustomerIdProof idProof : idProofs) {
 			boolean isCivilId = ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID.equals(idProof.getIdentityTypeId());
-			if (!idProof.getIdentityExpiryDate().after(new Date())) {
+			if (idProof.getIdentityExpiryDate() != null&&!idProof.getIdentityExpiryDate().after(new Date())) {
 				if (isCivilId) {
-					throw new GlobalException("CPR Id is expired", JaxError.CIVIL_ID_EXPIRED);
+					throw new GlobalException(JaxError.ID_PROOF_EXPIRED, "Id Proof is expired");
 				} else {
-					throw new GlobalException("Identity proof are expired", JaxError.ID_PROOF_EXPIRED);
+					throw new GlobalException(JaxError.CIVIL_ID_EXPIRED, "Civil id is expired");
 				}
 			}
 		}

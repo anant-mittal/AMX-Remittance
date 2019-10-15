@@ -120,7 +120,13 @@ $("body").on("click", "[on-click]:not([disabled])", function(e, b, c) {
 	} else {
 		sendData(step);
 	}
+})
 
+
+$("body").on("keyup", function(e) {
+	if(e.which === 13){
+		$("[on-click='OTP']:not([disabled])").trigger("click");
+	}
 })
 
 $("body").on(
@@ -217,11 +223,33 @@ function repeaetCall(_gap) {
 	clearTimeout(fetchTimer);
 	fetchTimer = setTimeout(fetchCardDetails, gap*2);
 }
+var iQ = [];
+function indic(_STATUS){
+	iQ.push(_STATUS+"");
+}
+setInterval(function(){
+	if(iQ.length==0) return;
+	var STATUS = iQ.shift();
+	if(STATUS == "UP"){
+		$("#adapter_indicator").removeClass("down").addClass("up");
+		//console.log("+up-down")
+	} else if(STATUS === "DOWN"){
+		$("#adapter_indicator").removeClass("up").addClass("down");
+		//console.log("-up+down")
+	} else {
+		$("#adapter_indicator").removeClass("up").removeClass("down");
+		//console.log("-up-down")
+	}
+},700);
 
 function fetchCardDetails() {
 	var localScriptSrc = $("#terminal_session").attr("src");
+	indic();
 	if (!window._tid_ && !window._rid_) {
 		return $.getScript(localScriptSrc, function(data, textStatus, jqxhr) {
+			indic("UP");
+		}).fail(function(){
+			indic("DOWN");
 		}).always(function() {
 			repeaetCall();
 		});
@@ -230,22 +258,32 @@ function fetchCardDetails() {
 			populateCardDetails(cardDetails);
 		});
 	}
+	indic("UP");
 	$.get(window.CONST.CONTEXT + "/sso/card/details").done(function(resp) {
 		console.log("resp==", resp);
 		if (resp) {
+			$("#adapter_indicator").attr("title",resp.statusKey)
 			if (resp.statusKey == "NO_TERMINAL_SESSION") {
+				window._tid_=''; window._rid_='';
+				indic();
 				return repeaetCall(3000);
 			}
 			if (resp.statusKey == "NO_TERMINAL_CARD") {
+				indic();
 				return repeaetCall(2000);
 			}
 			if (resp.results && resp.results[0] && resp.results[0].identity) {
+				indic("UP");
 				populateCardDetails(resp.results[0]);
 				return repeaetCall(2000);
 			} else {
+				indic();
 				return repeaetCall(1000);
 			}
 		}
+	}).fail(function(){
+		window._tid_=''; window._rid_='';
+		indic("DOWN");
 	}).always(function() {
 		repeaetCall();
 	});
@@ -261,7 +299,17 @@ $(function() {
 				dummyData)
 		$(document.body).append(dummyBtn)
 	}
-})
+	
+	console.log("SUB:/branch-user/customer-call-session");
+	tunnelClient.config({
+		user : "0"
+	}).instance().on("/branch-user/customer-call-session", function(testresponse){
+		console.log("===testresponse",testresponse)
+	}).on("/branch-user/customer-call-session/0", function(testresponse){
+		console.log("===testresponse0",testresponse)
+	});
+});
+
 if(window.location.hash === "#test" && !localStorage.getItem('test')){
 	localStorage.setItem('test','');
 }

@@ -60,6 +60,20 @@ public class FlatMap {
 		return jsonPath.load(this.map, defaultValue);
 	}
 
+	public String getNumber(String key, String format) {
+		JsonPath jsonPath = getJsonPath(key);
+		return String.format (format, jsonPath.load(this.map,0.0));
+	}
+	
+	public String getNumber(String key) {
+		return this.getNumber(key, "%.2f");
+	}
+
+	public String getValue(String key, String defaultValue) {
+		JsonPath jsonPath = getJsonPath(key);
+		String s = jsonPath.load(this.map, Constants.BLANK);
+		return s.equals("") ? "" : defaultValue;
+	}
 	/**
 	 * Gets the integer.
 	 *

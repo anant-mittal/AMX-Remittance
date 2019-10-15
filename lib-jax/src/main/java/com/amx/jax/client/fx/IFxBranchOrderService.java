@@ -7,10 +7,14 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.model.request.fx.FcDeliveryBranchOrderSearchRequest;
 import com.amx.jax.model.request.fx.FcSaleBranchDispatchRequest;
+import com.amx.jax.model.request.fx.FcSaleOrderManagementDatesRequest;
 import com.amx.jax.model.response.fx.FcEmployeeDetailsDto;
 import com.amx.jax.model.response.fx.FcSaleOrderManagementDTO;
+import com.amx.jax.model.response.fx.FxDeliveryTimeSlotDto;
 import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
+import com.amx.jax.model.response.fx.FxOrderTransactionHistroyDto;
 import com.amx.jax.model.response.fx.UserStockDto;
 
 public interface IFxBranchOrderService extends IJaxService {
@@ -31,6 +35,13 @@ public interface IFxBranchOrderService extends IJaxService {
 		public static final String FC_RETURN_ACKNOWLEDGE = PREFIX + "/return-acknowledge/";
 		public static final String FC_ACCEPT_CANCELLATION = PREFIX + "/accept-cancellation/";
 		public static final String FC_REPRINT_ORDER = PREFIX + "/reprint-order/";
+		public static final String FC_SEARCH_ORDER = PREFIX + "/search-order/";
+		public static final String FC_CUSTOMER_RATING = PREFIX + "/fc-customer-rating/";
+		public static final String FC_SEARCH_ORDER_BY_DATES = PREFIX + "/search-order-by-dates/";
+		public static final String FC_ORDER_DELIVERY_TIME_SETUP = PREFIX + "/delivery-time-setup/";
+		public static final String FC_ORDER_DELIVERY_TIME_SETUP_FETCH = PREFIX + "/fetching-delivery-time-setup/";
+		
+		
 	}
 
 	public static class Params {
@@ -38,6 +49,11 @@ public interface IFxBranchOrderService extends IJaxService {
 		public static final String FX_ORDER_YEAR = "orderYear";
 		public static final String FX_CURRENCY_ID = "foreignCurrencyId";
 		public static final String FX_DRIVER_ID = "driverId";
+		public static final String FX_DELIVERY_SEQ_ID = "deliveryDetailSeqId";
+		public static final String FX_PRODUCT = "product";
+		public static final String FX_ORDER_FROM_DATE = "fromDate";
+		public static final String FX_ORDER_TO_DATE = "toDate";
+
 	}
 
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND,JaxError.NULL_APPLICATION_COUNTRY_ID,JaxError.NULL_EMPLOYEE_ID,JaxError.NULL_AREA_CODE,JaxError.INVALID_EMPLOYEE,JaxError.UNABLE_CONVERT_PENDING_RECORDS,JaxError.EMPTY_STOCK_EMPLOYEE })
@@ -92,4 +108,18 @@ public interface IFxBranchOrderService extends IJaxService {
 	@ApiJaxStatus({ JaxError.NULL_APPLICATION_COUNTRY_ID,JaxError.NULL_ORDER_NUBMER,JaxError.NULL_ORDER_YEAR,JaxError.NULL_EMPLOYEE_ID,JaxError.UNABLE_TO_PRINT_ORDER,JaxError.INVALID_CUSTOMER
 		,JaxError.INVALID_COLLECTION_DOCUMENT_NO,JaxError.NO_RECORD_FOUND,JaxError.INVALID_COMPANY_ID,JaxError.PAYMENT_DETAILS_NOT_FOUND})
 	AmxApiResponse<FxOrderReportResponseDto,Object> reprintOrder(BigDecimal orderNumber,BigDecimal orderYear);
+	
+	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND })
+	AmxApiResponse<FxOrderTransactionHistroyDto, Object> searchOrder(FcDeliveryBranchOrderSearchRequest fcDeliveryBranchOrderSearchRequest);
+
+	AmxApiResponse<BoolRespModel, Object> saveFcDeliveryTimeSlot(FxDeliveryTimeSlotDto fxDeliveryTimeSlotDto);
+
+	AmxApiResponse<FxDeliveryTimeSlotDto, Object> fetchFcDeliveryTiming();
+	
+
+/*	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND })
+	AmxApiResponse<CustomerRatingDTO, ?> inquirefxOrderCustomerRating(BigDecimal deliveryDetailSeqId, String product);*/
+	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND })
+	AmxApiResponse<FcSaleOrderManagementDTO, Object> searchOrderByDates(FcSaleOrderManagementDatesRequest fcSaleDates);
+
 }

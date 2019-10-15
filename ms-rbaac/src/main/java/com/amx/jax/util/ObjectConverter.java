@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.Map;
 
 import com.amx.jax.rbaac.constants.RbaacServiceConstants;
-import com.amx.jax.rbaac.dbmodel.Employee;
+import com.amx.jax.rbaac.dbmodel.FSEmployee;
 import com.amx.jax.rbaac.dbmodel.Role;
 import com.amx.jax.rbaac.dbmodel.UserRoleMapping;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
@@ -30,20 +30,13 @@ public final class ObjectConverter {
 	 *            the employee
 	 * @return the employee details DTO
 	 */
-	public static EmployeeDetailsDTO convertEmployeeToEmpDetailsDTO(Employee employee) {
+	public static EmployeeDetailsDTO convertEmployeeToEmpDetailsDTO(FSEmployee employee) {
 
 		EmployeeDetailsDTO empDetail = new EmployeeDetailsDTO();
 
-		/*try {
-			BeanUtils.copyProperties(empDetail, employee);
-		} catch (IllegalAccessException | InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
-
 		empDetail.setCivilId(employee.getCivilId());
 		empDetail.setCountryId(employee.getCountryId());
-		empDetail.setCountryBranchId(employee.getFsCountryBranch());
+
 		empDetail.setDesignation(employee.getDesignation());
 		empDetail.setEmail(employee.getEmail());
 		empDetail.setEmployeeId(employee.getEmployeeId());
@@ -73,6 +66,13 @@ public final class ObjectConverter {
 		} else {
 			empDetail.setLastLoginDate(employee.getLastLogin());
 		}
+
+		// Country Branch Details
+		empDetail.setCountryBranchId(employee.getCountryBranch().getCountryBranchId());
+		empDetail.setBranchId(employee.getCountryBranch().getBranchId());
+		empDetail.setBranchName(employee.getCountryBranch().getBranchName());
+		empDetail.setAreaCode(employee.getCountryBranch().getAreaCode());
+		empDetail.setArea(employee.getCountryBranch().getArea());
 
 		return empDetail;
 	}

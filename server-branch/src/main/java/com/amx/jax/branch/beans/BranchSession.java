@@ -2,32 +2,59 @@ package com.amx.jax.branch.beans;
 
 import java.math.BigDecimal;
 
+import com.amx.jax.http.CommonHttpRequest;
+import com.amx.jax.model.response.customer.CustomerShortInfo;
+import com.amx.jax.model.response.customer.OffsiteCustomerDataDTO;
+import com.amx.utils.ArgUtil;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.jax.model.response.customer.OffsiteCustomerDataDTO;
-
 @Component
 @Scope(value = WebApplicationContext.SCOPE_SESSION, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class BranchSession {
 
-	private OffsiteCustomerDataDTO customer;
+	@Autowired
+	CustomerContext customerRequest;
+
+	@Autowired
+	CustomerContext customerSession;
+
+	@Autowired
+	CommonHttpRequest commonHttpRequest;
+
+	public CustomerContext getCustomerContext(boolean session) {
+		if (session) {
+			return customerSession;
+		} else {
+			return customerRequest;
+		}
+	}
+
+	public CustomerContext getCustomerContext() {
+		if (!ArgUtil.isEmpty(customerRequest.getCustomer()) || !ArgUtil.isEmpty(commonHttpRequest.get("identity"))) {
+			return customerRequest;
+		}
+		return customerSession;
+	}
 
 	public BigDecimal getCustomerId() {
-		if (customer != null && customer.getCustomerPersonalDetail() != null) {
-			return customer.getCustomerPersonalDetail().getCustomerId();
-		}
-		return null;
+		return getCustomerContext().getCustomerId();
 	}
 
-	public void setCustomer(OffsiteCustomerDataDTO customer) {
-		this.customer = customer;
+	public void setCustomer(CustomerShortInfo customer) {
+		getCustomerContext().setCustomer(customer);
 	}
 
-	public OffsiteCustomerDataDTO getCustomer() {
-		return customer;
+	public CustomerShortInfo getCustomer() {
+		return getCustomerContext().getCustomer();
+	}
+
+	public OffsiteCustomerDataDTO getCustomerData() {
+		return getCustomerContext().getCustomerData();
 	}
 
 }

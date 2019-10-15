@@ -1,17 +1,28 @@
 package com.amx.jax.radar.jobs.customer;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.amx.jax.cache.CacheBox;
 import com.amx.jax.client.snap.SnapConstants;
+import com.amx.jax.radar.AMXSharedValues;
 import com.amx.jax.radar.EsConfig;
+import com.amx.jax.radar.RadarConfig;
+import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncJobs;
 import com.amx.utils.ArgUtil;
 
 /**
  * The Class LoggedInUsers.
  */
 @Component
-public class OracleVarsCache extends CacheBox<String> {
+public class OracleVarsCache {
+
+	private Map<String, String> fallback = Collections.synchronizedMap(new HashMap<String, String>());
 
 	public static final Long START_TIME = 978287400000L;
 	private static final String ASC_SEPERATOR = "-";
@@ -21,8 +32,8 @@ public class OracleVarsCache extends CacheBox<String> {
 
 	public static enum DBSyncJobs {
 		CUSTOMER_JOB(SnapConstants.SnapIndexName.CUSTOMER, "v5", 20),
-		TRANSACTION_JOB(SnapConstants.SnapIndexName.TRANX, "v8", 21),
-		XRATE_JOB(SnapConstants.SnapIndexName.XRATE, "v5", 20);
+		TRANSACTION_JOB(SnapConstants.SnapIndexName.TRANX, "v8", 22),
+		XRATE_JOB(SnapConstants.SnapIndexName.XRATE, "v5", 21);
 
 		String indexName;
 		int resetCounter;
@@ -47,13 +58,23 @@ public class OracleVarsCache extends CacheBox<String> {
 		public int getResetCounter() {
 			return resetCounter;
 		}
+
+		public void setResetCounter(int resetCounter) {
+			this.resetCounter = resetCounter;
+		}
 	}
+
+	@Autowired
+	AMXSharedValues amxSharedValues;
+
+	@Autowired
+	RadarConfig radarConfig;
 
 	/**
 	 * Instantiates a new logged in users.
 	 */
 	public OracleVarsCache() {
-		super("OracleVarsCache");
+		// super("OracleVarsCache");
 	}
 
 	public String getTranxIndex() {
@@ -62,6 +83,14 @@ public class OracleVarsCache extends CacheBox<String> {
 
 	public String getCustomerIndex() {
 		return EsConfig.indexName(DBSyncJobs.CUSTOMER_JOB.getIndexName());
+	}
+
+	public String get(String key) {
+		return amxSharedValues.getValue(key);
+	}
+
+	private void put(String key, String value) {
+		amxSharedValues.putValue(key, value);
 	}
 
 	/**
@@ -101,11 +130,26 @@ public class OracleVarsCache extends CacheBox<String> {
 	}
 
 	public void clearStampStart(DBSyncJobs job) {
-		this.fastRemove(getIndex(job) + ASC_SEPERATOR + job.getResetCounter());
+		amxSharedValues.removeValue(getIndex(job) + ASC_SEPERATOR + job.getResetCounter());
 	}
 
 	public void clearStampEnd(DBSyncJobs job) {
-		this.fastRemove(getIndex(job) + DESC_SEPERATOR + job.getResetCounter());
+		amxSharedValues.removeValue(getIndex(job) + DESC_SEPERATOR + job.getResetCounter());
+	}
+
+	@PostConstruct
+	public void init() {
+		try {
+			DBSyncJobs.CUSTOMER_JOB.setResetCounter(Math.max(DBSyncJobs.CUSTOMER_JOB.getResetCounter(),
+					ArgUtil.parseAsInteger(radarConfig.getJobsCustomerVersion())));
+			DBSyncJobs.TRANSACTION_JOB.setResetCounter(Math.max(DBSyncJobs.TRANSACTION_JOB.getResetCounter(),
+					ArgUtil.parseAsInteger(radarConfig.getJobsTrnxVersion())));
+			DBSyncJobs.XRATE_JOB.setResetCounter(Math.max(DBSyncJobs.XRATE_JOB.getResetCounter(),
+					ArgUtil.parseAsInteger(radarConfig.getJobsRateVersion())));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 	}
 
 }

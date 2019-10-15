@@ -1,6 +1,7 @@
 package com.amx.jax.notification.alert;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,13 +10,13 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxlib.constant.CommunicationChannel;
 import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.amxlib.model.BranchSearchNotificationModel;
-import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.request.GetBankBranchRequest;
-import com.amx.jax.config.JaxProperties;
+import com.amx.jax.config.JaxTenantProperties;
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.service.CompanyService;
 import com.amx.jax.services.BankService;
 import com.amx.jax.services.JaxNotificationService;
@@ -37,7 +38,7 @@ public class BankBranchSearchFailureAlert implements IAlert {
 	@Autowired
 	CompanyService companySerivce;
 	@Autowired
-	JaxProperties jaxProperties;
+	JaxTenantProperties jaxTenantProperties;
 
 	@Override
 	public void sendAlert(AbstractJaxException ex) {
@@ -49,19 +50,18 @@ public class BankBranchSearchFailureAlert implements IAlert {
 		model.setIdentityId(pinfo.getIdentityInt());
 		model.setCustomerQuery(request);
 		model.setBankFullName(bankFullName);
-		getAlertContacts(CommunicationChannel.EMAIL)
-				.forEach(i -> jaxNotificationService.sendBranchSearchEmailNotification(model, i));
+		getAlertContacts(ContactType.EMAIL).forEach(i -> jaxNotificationService.sendBranchSearchEmailNotification(model, i));
 	}
 
 	@Override
-	public List<String> getAlertContacts(CommunicationChannel notificationType) {
-		return jaxProperties.getSupportSoaEmail();
+	public List<String> getAlertContacts(ContactType notificationType) {
+		return Arrays.asList(jaxTenantProperties.getAppSupportEmail());
 	}
 
 	@Override
-	public List<CommunicationChannel> getCommucationChannels() {
-		List<CommunicationChannel> channels = new ArrayList<>();
-		channels.add(CommunicationChannel.EMAIL);
+	public List<ContactType> getCommucationChannels() {
+		List<ContactType> channels = new ArrayList<>();
+		channels.add(ContactType.EMAIL);
 		return channels;
 	}
 

@@ -1,0 +1,27 @@
+{
+	"timestamp": 1556625152141,
+	"status": "200",
+	"error": null,
+	"exception": null,
+	"message": null,
+	"warningKey": null,
+	"path": null,
+	"redirectUrl": null,
+	"messageKey": null,
+	"statusKey": "SUCCESS",
+	"meta": null,
+	"errors": null,
+	"data": null,
+	"results": [
+		{
+			
+					"date": "23/01/2013",
+					"branchName": "MURGAB",
+					"firstName": "KANMANI",
+					"lastName": "SUBRAMANIAN PALANIYAPPAN",
+					"identityInt": "270062401985",
+					"expiryDate": "23/01/2013"
+				
+		}
+	]
+}

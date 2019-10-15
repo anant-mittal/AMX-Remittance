@@ -1,5 +1,5 @@
 /**
- * 
+ * @author Prashant
  */
 package com.amx.jax.model.request.remittance;
 
@@ -8,11 +8,11 @@ import java.math.BigDecimal;
 import javax.validation.constraints.NotNull;
 
 import com.amx.jax.model.response.ExchangeRateBreakup;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-/**
- * @author Prashant
- *
- */
+/*@JsonDeserialize(as = RemittanceTransactionDrRequestModel.class)
+@JsonIgnoreProperties(ignoreUnknown = true)*/
 public class RemittanceTransactionRequestModel extends RemittanceAdditionalBeneFieldModel implements IRemitTransReqPurpose {
 
 	/**
@@ -84,4 +84,6 @@ public class RemittanceTransactionRequestModel extends RemittanceAdditionalBeneF
 		return this.exRateBreakup;
 	}
 
+
 }
+

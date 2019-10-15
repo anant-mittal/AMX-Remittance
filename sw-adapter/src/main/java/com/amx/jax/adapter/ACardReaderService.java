@@ -34,6 +34,7 @@ import com.amx.jax.logger.LoggerService;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.scope.TenantProperties;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.JsonUtil;
 import com.amx.utils.NetworkAdapter;
 import com.amx.utils.NetworkAdapter.NetAddress;
 import com.amx.utils.TimeUtils;
@@ -83,6 +84,9 @@ public abstract class ACardReaderService {
 	@Value("${app.profile.tnt}")
 	String tnt;
 
+	@Value("${app.profile.lane}")
+	String lane;
+
 	@Value("${app.profile.env}")
 	String env;
 
@@ -100,6 +104,7 @@ public abstract class ACardReaderService {
 	String serverUrl;
 
 	boolean isLocal = false;
+	boolean initiated = false;
 
 	String localIdentity;
 
@@ -120,6 +125,7 @@ public abstract class ACardReaderService {
 				adapterServiceClient.setOffSiteUrl(serverUrl);
 				String winTitle = tntProp.getProperty("adapter.title");
 				SWAdapterGUI.updateTitle(String.format("%s - %s", winTitle, version));
+				SWAdapterGUI.updateAbout(String.format("%s \nVersion :  %s", winTitle, version));
 			}
 		}
 		return serverUrl;
@@ -267,6 +273,9 @@ public abstract class ACardReaderService {
 		return devicePairingCreds;
 	}
 
+	long sessionCheckInterval = 0L;
+	long sessionCheckStamp = 0L;
+
 	public SessionPairingCreds getSessionPairingCreds() {
 		if (sessionPairingCreds != null) {
 			return sessionPairingCreds;
@@ -275,10 +284,16 @@ public abstract class ACardReaderService {
 			return null;
 		}
 
+		if (!TimeUtils.isExpired(sessionCheckStamp, sessionCheckInterval)) {
+			return null;
+		}
+
 		synchronized (lock) {
 			try {
+				sessionCheckStamp = System.currentTimeMillis();
 				sessionPairingCreds = adapterServiceClient.createSession(address, devicePairingCreds).getResult();
 				status(DeviceStatus.SESSION_CREATED);
+				sessionCheckInterval = 0L;
 			} catch (AmxApiException e) {
 				status(DeviceStatus.SESSION_ERROR);
 				SWAdapterGUI.CONTEXT.log(e.getErrorKey() + " - REGID : " + devicePairingCreds.getDeviceRegId(),
@@ -288,6 +303,8 @@ public abstract class ACardReaderService {
 				} else if ("CLIENT_NOT_FOUND".equals(e.getErrorKey())) {
 					devicePairingCredsValid = false;
 					terminalId = null;
+				} else if ("CLIENT_NOT_ACTIVE".equals(e.getErrorKey())) {
+					sessionCheckInterval = sessionCheckInterval + 10000;
 				}
 				LOGGER.error("getSessionPairingCreds" + e);
 			} catch (AmxException e) {
@@ -323,14 +340,14 @@ public abstract class ACardReaderService {
 	@Scheduled(fixedDelay = 1000, initialDelay = 4000)
 	public void readTask() {
 
+		if (SWAdapterGUI.CONTEXT == null) {
+			return;
+		}
+
 		AppContextUtil.init();
 		getServerUrl();
 
 		LOGGER.debug("ACardReaderService:readTask");
-
-		if (SWAdapterGUI.CONTEXT == null) {
-			return;
-		}
 
 		if (getSessionPairingCreds() == null) {
 			return;
@@ -343,6 +360,7 @@ public abstract class ACardReaderService {
 				LOGGER.debug("ACardReaderService:readTask:TIME");
 				lastreadtime = reader.getCardActiveTime();
 				status(DataStatus.SYNCING);
+				// System.out.println(JsonUtil.toJson(reader));
 				adapterServiceClient.saveCardDetailsByTerminal(terminalId, reader, address, devicePairingCreds,
 						sessionPairingCreds);
 				status(DataStatus.SYNCED);
@@ -367,10 +385,14 @@ public abstract class ACardReaderService {
 	@Scheduled(fixedDelay = 2000, initialDelay = 5000)
 	public void pingTask() {
 
+		if (SWAdapterGUI.CONTEXT == null) {
+			return;
+		}
+
 		AppContextUtil.init();
 
 		LOGGER.debug("ACardReaderService:pingTask {} {}", tnt, env);
-		if (SWAdapterGUI.CONTEXT == null || CONTEXT == null) {
+		if (CONTEXT == null) {
 			CONTEXT = this;
 			status(DeviceStatus.DISCONNECTED);
 			SWAdapterGUI.CONTEXT.updateDeviceHealthStatus(0);// PING COUNT
@@ -424,7 +446,8 @@ public abstract class ACardReaderService {
 	public void push(CardData cardData) {
 		if (cardData != null && cardData.getTimestamp() >= READER.getCardActiveTime()) {
 			LOGGER.debug("ACardReaderService:push");
-			READER.setData(cardData.isValid() ? cardData : null);
+			// READER.setData(cardData.isValid() ? cardData : null);
+			READER.setData(cardData);
 			READER.setCardActiveTime(cardData.getTimestamp());
 			READER.setDeviceActiveTime(Math.max(READER.getDeviceActiveTime(), cardData.getTimestamp()));
 			status(getDataStatus(cardData));
@@ -463,8 +486,10 @@ public abstract class ACardReaderService {
 
 	public void reset() {
 		LOGGER.debug("KWTCardReader:reset");
+		sessionPairingCreds = null;
 		deviceStatus = DeviceStatus.DISCONNECTED;
-		if (this.isLocal) {
+		sessionCheckInterval = 0L;
+		if (this.isLocal && !ArgUtil.isEmpty(sessionPairingCreds)) {
 			try {
 				CardReader reader = new CardReader();
 				reader.setData(new CardData());
@@ -555,4 +580,17 @@ public abstract class ACardReaderService {
 	public String getVersion() {
 		return version;
 	}
+
+	public String getTnt() {
+		return tnt;
+	}
+
+	public String getEnv() {
+		return env;
+	}
+
+	public String getLane() {
+		return lane;
+	}
+
 }

@@ -3,7 +3,7 @@ package com.amx.jax.radar.jobs.customer;
 import java.util.Date;
 
 import org.slf4j.Logger;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -21,6 +21,7 @@ import com.amx.jax.logger.LoggerService;
 import com.amx.jax.mcq.shedlock.SchedulerLock;
 import com.amx.jax.mcq.shedlock.SchedulerLock.LockContext;
 import com.amx.jax.radar.AESRepository.BulkRequestBuilder;
+import com.amx.jax.radar.RadarConfig;
 import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncJobs;
 import com.amx.jax.rates.AmxCurConstants;
 import com.amx.utils.ArgUtil;
@@ -32,12 +33,13 @@ import com.amx.utils.TimeUtils;
 @Component
 @Service
 //@ConditionalOnExpression(TestSizeApp.ENABLE_JOBS)
-@ConditionalOnProperty("jax.jobs.trnx")
+//@ConditionalOnProperty("jax.jobs.trnx")
+@ConditionalOnExpression(RadarConfig.CE_TRNX_SYNC_AND_ES)
 public class TrnxViewTask extends AbstractDBSyncTask {
 
 	private static final Logger LOGGER = LoggerService.getLogger(TrnxViewTask.class);
 	private static final String TIME_TRACK_KEY = "lastUpdateDate";
-	private static final int PAGE_SIZE = 3000;
+	private static final int PAGE_SIZE = 5000;
 
 	long intervalDays = 20;
 
@@ -72,7 +74,7 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 		String dateStringLimit = GridConstants.GRID_TIME_FORMATTER_JAVA
 				.format(new Date(lastUpdateDateNowLimit));
 
-		LOGGER.info("Pg:{},Tm:{} {}-{}", lastPage, lastUpdateDateNow, dateString, dateStringLimit);
+		LOGGER.info("+{} T:{} {}-{}", lastPage, lastUpdateDateNow, dateString, dateStringLimit);
 
 		GridQuery gridQuery = getForwardQuery(lastPage, PAGE_SIZE, TIME_TRACK_KEY, dateString, dateStringLimit);
 
@@ -101,7 +103,7 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 			}
 		}
 
-		LOGGER.info("Pg:{}, Rcds:{},{}, Nxt:{}", lastPage, x.getResults().size(), lastIdNow, lastUpdateDateNow);
+		LOGGER.info("+{} *{} #{} N:{}", lastPage, x.getResults().size(), lastIdNow, lastUpdateDateNow);
 
 		if (lastIdNow.equalsIgnoreCase(lastId) && x.getResults().size() > 0) {
 			// Same data records case, nothing to do
@@ -139,13 +141,13 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 			return;
 		}
 
-		Long lastUpdateDateNowLimit = lastUpdateDateNow - (10 * AmxCurConstants.INTERVAL_DAYS);
+		Long lastUpdateDateNowLimit = lastUpdateDateNow - (5 * AmxCurConstants.INTERVAL_DAYS);
 
 		String dateString = GridConstants.GRID_TIME_FORMATTER_JAVA.format(new Date(lastUpdateDateNow));
 		String dateStringLimit = GridConstants.GRID_TIME_FORMATTER_JAVA
 				.format(new Date(lastUpdateDateNowLimit));
 
-		LOGGER.info("Pg:{},Tm:{} {}-{}", lastPage, lastUpdateDateNow, dateString, dateStringLimit);
+		LOGGER.info("-{} T:{} {}-{}", lastPage, lastUpdateDateNow, dateString, dateStringLimit);
 
 		GridQuery gridQuery = getReverseQuery(lastPage, PAGE_SIZE, TIME_TRACK_KEY, dateString, dateStringLimit);
 
@@ -175,7 +177,7 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 			}
 		}
 
-		LOGGER.info("Pg:{}, Rcds:{},{}, Nxt:{}", lastPage, x.getResults().size(), lastIdNow, lastUpdateDateNow);
+		LOGGER.info("-{} *{} #{} N:{}", lastPage, x.getResults().size(), lastIdNow, lastUpdateDateNow);
 
 		if (lastIdNow.equalsIgnoreCase(lastId) && x.getResults().size() > 0) {
 			// Same data records case, nothing to do

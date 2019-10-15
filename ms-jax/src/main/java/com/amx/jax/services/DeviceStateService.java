@@ -26,6 +26,7 @@ import com.amx.jax.model.request.device.SignaturePadFCPurchaseSaleInfo;
 import com.amx.jax.model.request.device.SignaturePadRemittanceInfo;
 import com.amx.jax.model.response.DeviceStatusInfoDto;
 import com.amx.jax.model.response.IDeviceStateData;
+import com.amx.jax.model.response.customer.CustomerIdProofDto;
 import com.amx.jax.rbaac.RbaacServiceClient;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.validation.DeviceStateDetailsValidation;
@@ -66,7 +67,7 @@ public class DeviceStateService extends AbstractService {
 		if (registrationId == null) {
 			throw new GlobalException("Device registration id can not be blank");
 		}
-		DeviceStateInfo deviceStateInfo = deviceDao.getDeviceStateInfo(new BigDecimal(registrationId));
+		DeviceStateInfo deviceStateInfo = deviceDao.getOrCreateDeviceStateInfo(new BigDecimal(registrationId));
 		DeviceStatusInfoDto dto = new DeviceStatusInfoDto();
 		dto.setStateDataType(deviceStateInfo.getStateDataType());
 		if (deviceStateInfo.getStateDataType() != null) {
@@ -113,13 +114,17 @@ public class DeviceStateService extends AbstractService {
 	}
 
 	public SignaturePadCustomerRegStateInfo getCustomerRegData(Integer customerId) {
-
 		SignaturePadCustomerRegStateInfo info = new SignaturePadCustomerRegStateInfo();
 		BigDecimal customerIdBd = new BigDecimal(customerId);
 		info.setCustomerContactDto(customerService.getCustomerContactDto(customerIdBd));
 		info.setCustomerDto(customerService.getCustomerDto(customerIdBd));
-		info.setCustomerIdProofDto(
-				customerService.getCustomerIdProofDto(customerIdBd, ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID));
+		CustomerIdProofDto customerIdProofDto = customerService.getCustomerIdProofDto(customerIdBd,
+				ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID);
+		if (customerIdProofDto == null) {
+			customerIdProofDto = customerService.getCustomerIdProofDto(customerIdBd,
+					ConstantDocument.BIZ_COMPONENT_ID_NEW_CIVIL_ID);
+		}
+		info.setCustomerIdProofDto(customerIdProofDto);
 		info.setCustomerIncomeRangeDto(customerService.getCustomerIncomeRangeDto(customerIdBd));
 		return info;
 	}
@@ -143,7 +148,7 @@ public class DeviceStateService extends AbstractService {
 
 	public BoolRespModel updateSignatureStateData(Integer deviceRegId, String imageUrlStr) {
 		//
-		validateDeviceRegId(deviceRegId);
+		//validateDeviceRegId(deviceRegId);
 		devicestateValidation.validateDeviceRegIdndImageURL(deviceRegId, imageUrlStr);
 		DeviceStateInfo deviceStateInfo = deviceDao.getDeviceStateInfo(new BigDecimal(deviceRegId));
 		deviceStateInfo.setSignature(imageUrlStr);

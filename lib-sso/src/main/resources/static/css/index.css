@@ -72,6 +72,19 @@ input.invalid {
 	transform: scale(0);
 	background: #33bb55;
 }
+.adapter_indicator.radio span:after {
+  -webkit-transition: background-color .5s ease-out;
+  -moz-transition: background-color .5s ease-out;
+  -o-transition: background-color .5s ease-out;
+  transition: background-color .5s ease-out;
+	background-color: #a8a5b0;
+}
+.adapter_indicator.radio.up span:after {
+	background-color: #33bb55;
+}
+.adapter_indicator.radio.down span:after {
+	background-color: #bb0814;
+}
 
 .radio [type=radio] {
 	visibility: hidden;
@@ -128,6 +141,15 @@ header {
 	background: #FFFFFF;
 	box-shadow: 8px 0 7px -3px rgba(0, 0, 0, 0.50);
 	padding: 9px 11px;
+}
+
+.logo-img {
+	float: left;
+    background: black;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    padding: 10px 11px;
 }
 
 .login-form {

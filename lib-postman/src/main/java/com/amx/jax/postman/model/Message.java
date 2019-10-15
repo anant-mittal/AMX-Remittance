@@ -21,7 +21,7 @@ public class Message implements Serializable {
 	public static final String RESULTS_KEY = "results";
 
 	public static enum Status {
-		INIT, SENT, DELIVERED, READ, NOT_SENT, FAILED
+		INIT, SENT, DELIVERED, READ, NOT_SENT, BLOCKED, FAILED
 	}
 
 	public static interface IChannel {

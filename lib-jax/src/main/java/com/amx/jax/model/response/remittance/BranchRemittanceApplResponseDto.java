@@ -13,9 +13,18 @@ public class BranchRemittanceApplResponseDto {
 	BigDecimal totalLyltyPointAmt =BigDecimal.ZERO;
 	BigDecimal totalLoyaltyPointAvaliable =BigDecimal.ZERO;
 	BigDecimal totalNetCollectionAmount =BigDecimal.ZERO;
+	String warnigMsg;
+	ConfigDto configDto = new ConfigDto();
 	
-	
+	public ConfigDto getConfigDto() {
+		return configDto;
+	}
+	public void setConfigDto(ConfigDto configDto) {
+		this.configDto = configDto;
+	}
+	/* application records */
 	List<CustomerShoppingCartDto> shoppingCartDetails;
+	
 	public BigDecimal getTotalLocalAmount() {
 		return totalLocalAmount;
 	}
@@ -57,5 +66,11 @@ public class BranchRemittanceApplResponseDto {
 	}
 	public void setTotalNetCollectionAmount(BigDecimal totalNetCollectionAmount) {
 		this.totalNetCollectionAmount = totalNetCollectionAmount;
+	}
+	public String getWarnigMsg() {
+		return warnigMsg;
+	}
+	public void setWarnigMsg(String warnigMsg) {
+		this.warnigMsg = warnigMsg;
 	}
 }

@@ -39,21 +39,25 @@ public abstract class AbstractJaxServiceClient {
 	}
 
 	protected HttpHeaders getHeader() {
+		return getHeader(jaxMetaInfo);
+	}
+
+	protected HttpHeaders getHeader(JaxMetaInfo jaxMetaInfoLocal) {
 
 		HttpHeaders headers = new HttpHeaders();
 		try {
-			setMetaInfo();
-			headers.add("meta-info", new ObjectMapper().writeValueAsString(jaxMetaInfo.copy()));
+			setMetaInfo(jaxMetaInfoLocal);
+			headers.add("meta-info", new ObjectMapper().writeValueAsString(jaxMetaInfoLocal.copy()));
 		} catch (JsonProcessingException e) {
 			LOGGER.error("error in getheader of jaxclient", e);
 		}
 		return headers;
 	}
 
-	private void setMetaInfo() {
+	private void setMetaInfo(JaxMetaInfo jaxMetaInfoLocal) {
 
-		jaxMetaInfo.setCountryId(TenantContextHolder.currentSite().getBDCode());
-		jaxMetaInfo.setTenant(TenantContextHolder.currentSite());
+		jaxMetaInfoLocal.setCountryId(TenantContextHolder.currentSite().getBDCode());
+		jaxMetaInfoLocal.setTenant(TenantContextHolder.currentSite());
 	}
 
 }

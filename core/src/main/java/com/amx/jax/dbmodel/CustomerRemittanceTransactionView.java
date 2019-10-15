@@ -100,9 +100,10 @@ public class CustomerRemittanceTransactionView implements Serializable {
 	@Column(name="CREATED_BY")
 	private String createdBy;
 	
+	@Column(name = "EXCHANGE_RATE_APPLIED")
+	private BigDecimal exRateApplied;
 	
-	
-
+		
 	public CustomerRemittanceTransactionView() {
 	}
 
@@ -325,5 +326,13 @@ public class CustomerRemittanceTransactionView implements Serializable {
 
 	public void setCreatedBy(String createdBy) {
 		this.createdBy = createdBy;
+	}
+	
+	public BigDecimal getExRateApplied() {
+		return exRateApplied;
+	}
+
+	public void setExRateApplied(BigDecimal exRateApplied) {
+		this.exRateApplied = exRateApplied;
 	}
 }

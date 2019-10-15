@@ -1,5 +1,8 @@
 package com.amx.jax.tunnel;
 
+import java.io.UnsupportedEncodingException;
+
+import org.nustaq.serialization.FSTConfiguration;
 import org.redisson.api.RQueue;
 import org.redisson.api.RTopic;
 import org.redisson.api.RedissonClient;
@@ -13,11 +16,13 @@ import com.amx.jax.AppContextUtil;
 import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.logger.events.RequestTrackEvent;
 import com.amx.jax.tunnel.sample.SampleTunnelEventsDict;
+import com.amx.utils.JsonUtil;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 @Service
 public class TunnelService implements ITunnelService {
 
-	private Logger LOGGER = LoggerFactory.getLogger(TunnelService.class);
+	private static Logger LOGGER = LoggerFactory.getLogger(TunnelService.class);
 
 	@Autowired(required = false)
 	RedissonClient redisson;
@@ -52,6 +57,11 @@ public class TunnelService implements ITunnelService {
 		AuditServiceClient.trackStatic(
 				new RequestTrackEvent(RequestTrackEvent.Type.PUB_OUT, TunnelEventXchange.SHOUT_LISTNER, message));
 		return topicQueue.publish(message);
+	}
+
+	@Override
+	public <T> long shout(ITunnelEventsDict topic, T messagePayload) {
+		return this.shout(topic.name(), messagePayload);
 	}
 
 	/**
@@ -99,14 +109,20 @@ public class TunnelService implements ITunnelService {
 	}
 
 	/**
-	 * To assign a job to one of the worker
+	 * To assign a job to one of the worker, subscriber to this can be of two types
+	 * : TASK_WORKER & TASK_LISTNER
+	 * 
+	 * 
+	 * Multiple TASK_LISTNER can listner to event and act upon, but only one of the
+	 * workeres will recieve event
+	 * 
 	 * 
 	 * @param topic          - name of task
 	 * @param messagePayload - data to be used for task
-	 * @return
+	 * @return - unique message id
 	 * 
 	 * @reliable true
-	 * @uniqueness only one task will execute per event
+	 * @uniqueness only one WORKER and multple LISTNERS will execute per event
 	 */
 	@Override
 	public <T> long task(String topic, T messagePayload) {
@@ -119,11 +135,37 @@ public class TunnelService implements ITunnelService {
 
 		RQueue<TunnelMessage<T>> queue = redisson.getQueue(TunnelEventXchange.TASK_WORKER.getQueue(topic));
 		RTopic<String> topicQueue = redisson.getTopic(TunnelEventXchange.TASK_WORKER.getTopic(topic));
+		RTopic<TunnelMessage<T>> taskListnerPublisher = redisson
+				.getTopic(TunnelEventXchange.TASK_LISTNER.getTopic(topic));
 
 		AuditServiceClient.trackStatic(
 				new RequestTrackEvent(RequestTrackEvent.Type.PUB_OUT, TunnelEventXchange.TASK_WORKER, message));
+		debugEvent(message);
 		queue.add(message);
+		taskListnerPublisher.publish(message);
 		return topicQueue.publish(message.getId());
+	}
+
+	public static <T> void debugEvent(TunnelMessage<T> message) {
+		if (LOGGER.isDebugEnabled()) {
+			String messageJson = JsonUtil.toJson(message);
+			LOGGER.info("====== {}", messageJson);
+			TunnelMessage<T> message2 = JsonUtil.fromJson(messageJson, new TypeReference<TunnelMessage<T>>() {
+			});
+			LOGGER.info("====== {}", JsonUtil.toJson(message2));
+
+			try {
+				FSTConfiguration conf = FSTConfiguration.createJsonConfiguration();
+				byte[] bytes = conf.asByteArray(message);
+				String messageJson2 = new String(bytes, "UTF-8");
+				LOGGER.info("F====== {}", JsonUtil.toJson(messageJson2));
+				TunnelMessage<T> message3 = (TunnelMessage<T>) conf.asObject(bytes);
+				LOGGER.info("F====== {}", JsonUtil.toJson(message3));
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+		}
+
 	}
 
 	/**
@@ -161,6 +203,15 @@ public class TunnelService implements ITunnelService {
 
 	public void sayHello() {
 		this.shout(SampleTunnelEventsDict.Names.TEST_TOPIC, "Hey There");
+	}
+
+	@Override
+	public <T> TunnelQueue<T> getQueue(String queueName) {
+		if (redisson == null) {
+			LOGGER.error("No Redissson Client Instance Available");
+			return null;
+		}
+		return new TunnelQueueImpl<T>(redisson.getQueue(queueName));
 	}
 
 }

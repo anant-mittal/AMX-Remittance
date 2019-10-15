@@ -6,11 +6,15 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+
+import com.amx.jax.pricer.var.PricerServiceConstants.CUSTOMER_CATEGORY;
 
 @Entity
 @Table(name = "JAX_PR_CUST_CAT_DISCOUNT")
@@ -25,10 +29,8 @@ public class CustomerCategoryDiscount implements Serializable {
 	private BigDecimal id;
 
 	@Column(name = "CUSTOMER_CATEGORY")
-	private String customerCategory;
-
-	@Column(name = "DISCOUNT_PIPS")
-	private BigDecimal discountPips;
+	@Enumerated(value = EnumType.STRING)
+	private CUSTOMER_CATEGORY customerCategory;
 
 	@Column(name = "ISACTIVE")
 	private String isActive;
@@ -57,11 +59,11 @@ public class CustomerCategoryDiscount implements Serializable {
 	@Column(name = "APPROVED_DATE")
 	private Date approvedDate;
 
-	@Column(name = "MIN_DISCOUNT_PIPS")
-	private BigDecimal minDiscountPips;
+	//@Column(name = "MIN_DISCOUNT_PIPS")
+	//private BigDecimal minDiscountPips;
 
-	@Column(name = "MAX_DISCOUNT_PIPS")
-	private BigDecimal maxDiscountPips;
+	//@Column(name = "MAX_DISCOUNT_PIPS")
+	//private BigDecimal maxDiscountPips;
 
 	public BigDecimal getId() {
 		return id;
@@ -71,21 +73,21 @@ public class CustomerCategoryDiscount implements Serializable {
 		this.id = id;
 	}
 
-	public String getCustomerCategory() {
+	public CUSTOMER_CATEGORY getCustomerCategory() {
 		return customerCategory;
 	}
 
-	public void setCustomerCategory(String customerCategory) {
+	public void setCustomerCategory(CUSTOMER_CATEGORY customerCategory) {
 		this.customerCategory = customerCategory;
 	}
-
+/*
 	public BigDecimal getDiscountPips() {
 		return discountPips;
 	}
 
 	public void setDiscountPips(BigDecimal discountPips) {
 		this.discountPips = discountPips;
-	}
+	}*/
 
 	public String getIsActive() {
 		return isActive;
@@ -159,7 +161,7 @@ public class CustomerCategoryDiscount implements Serializable {
 		this.approvedDate = approvedDate;
 	}
 
-	public BigDecimal getMinDiscountPips() {
+	/*public BigDecimal getMinDiscountPips() {
 		return minDiscountPips;
 	}
 
@@ -173,6 +175,6 @@ public class CustomerCategoryDiscount implements Serializable {
 
 	public void setMaxDiscountPips(BigDecimal maxDiscountPips) {
 		this.maxDiscountPips = maxDiscountPips;
-	}
+	}*/
 
 }

@@ -3,10 +3,12 @@ package com.amx.jax.ui.response;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.exception.AmxApiException;
+import com.amx.jax.exception.IExceptionEnum;
 import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.ContextUtil;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * The Class ResponseWrapperM.
@@ -117,9 +119,16 @@ public class ResponseWrapperM<T, M> extends AmxApiResponse<T, M> {
 	 *
 	 * @param status the new status
 	 */
-	public void setStatus(OWAStatusStatusCodes status) {
+	@JsonIgnore
+	public void setStatusEnum(OWAStatusStatusCodes status) {
 		this.statusKey = status.name();
 		this.status = status.getCode();
+	}
+
+	@JsonIgnore
+	public void setStatusEnum(IExceptionEnum status) {
+		this.statusKey = status.getStatusKey();
+		this.status = ArgUtil.parseAsString(status.getStatusCode());
 	}
 
 	public void setStatusKey(OWAStatusStatusCodes error) {
@@ -132,7 +141,7 @@ public class ResponseWrapperM<T, M> extends AmxApiResponse<T, M> {
 	 * @param status the new message
 	 */
 	public void setMessage(OWAStatusStatusCodes status) {
-		this.setStatus(status);
+		this.setStatusEnum(status);
 	}
 
 	/**
@@ -142,7 +151,7 @@ public class ResponseWrapperM<T, M> extends AmxApiResponse<T, M> {
 	 * @param message the message
 	 */
 	public void setMessage(OWAStatusStatusCodes status, String message) {
-		this.setStatus(status);
+		this.setStatusEnum(status);
 		this.message = message;
 	}
 
@@ -153,7 +162,7 @@ public class ResponseWrapperM<T, M> extends AmxApiResponse<T, M> {
 	 * @param responseMessage the response message
 	 */
 	public void setMessage(OWAStatusStatusCodes status, ResponseMessage responseMessage) {
-		this.setStatus(status);
+		this.setStatusEnum(status);
 		this.messageKey = responseMessage.toString();
 		this.message = responseMessage.getMessage();
 	}
@@ -166,7 +175,7 @@ public class ResponseWrapperM<T, M> extends AmxApiResponse<T, M> {
 	 * @param message    the message
 	 */
 	public void setMessage(OWAStatusStatusCodes status, String messageKey, String message) {
-		this.setStatus(status);
+		this.setStatusEnum(status);
 		this.messageKey = messageKey;
 		this.message = message;
 	}
@@ -179,7 +188,7 @@ public class ResponseWrapperM<T, M> extends AmxApiResponse<T, M> {
 	 * @param message  the message
 	 */
 	public void setMessage(OWAStatusStatusCodes status, JaxError jaxError, String message) {
-		this.setStatus(status);
+		this.setStatusEnum(status);
 		this.messageKey = jaxError.toString();
 		this.message = message;
 	}
@@ -206,7 +215,7 @@ public class ResponseWrapperM<T, M> extends AmxApiResponse<T, M> {
 	 * @param excep  the excep
 	 */
 	public void setMessage(OWAStatusStatusCodes status, Exception excep) {
-		this.setStatus(status);
+		this.setStatusEnum(status);
 		this.message = excep.getMessage();
 		this.exception = excep.getClass().getName();
 	}

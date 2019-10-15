@@ -1,5 +1,10 @@
 package com.amx.amxlib.constant;
 
+import java.util.Date;
+import java.util.List;
+
+import com.amx.jax.model.customer.SecurityQuestionModel;
+
 public class ApiEndpoint {
 
 	private ApiEndpoint() {
@@ -9,12 +14,16 @@ public class ApiEndpoint {
 	public static final String USER_API_ENDPOINT = "/user";
 
 	public static final String CUSTOMER_ENDPOINT = "/customer";
+	
+	public static final String EKYC_ENDPOINT = "/eKyc";
 
 	public static final String CUSTOMER_REG_ENDPOINT = "/customer-reg";
 
 	public static final String EXCHANGE_RATE_ENDPOINT = "/exchange-rate";
 
 	public static final String ONLINE_CUSTOMER_VALIDATE_URL = "/nationality-id/{nationality-id}/validate";
+	
+	public static final String REVENUE_REPORT_ENDPOINT = "/revenue-report";
 
 	public final class MetaApi {
 		// Prefix
@@ -70,7 +79,10 @@ public class ApiEndpoint {
 		public static final String API_AREA_LIST = "/arealist/";
 		public static final String API_GOVERNATE_LIST = "/governatelist/";
 		public static final String API_GOVERNATE_AREA_LIST = "/governatearealist/";
-
+		public static final String API_STATUS_LIST = "/statuslist/";
+		public static final String API_COUNTRY_BRANCH_LIST = "/countrybranchlist/";
+		public static final String API_DESIGNATION = "/designationslist/";
+		public static final String API_DECLARATION = "/declaration/";
 	}
 
 	public static final String UPDATE_CUSTOMER_PASSWORD_ENDPOINT = "/password/";
@@ -78,6 +90,11 @@ public class ApiEndpoint {
 	public static final String BENE_API_ENDPOINT = "/bene";
 
 	public static final String REMIT_API_ENDPOINT = "/remit";
+	
+	
+	public static final String FX_ORDER_ENDPOINT = "/fxorder";
+	
+	public static final String REFER_API_ENDPOINT = "/refer";
 
 	public static final String BANK_MASTER_BY_COUNTRY_API_ENDPOINT = "/bank/{country-id}";
 
@@ -128,6 +145,21 @@ public class ApiEndpoint {
 	public static final String SAVE_USER_ROLE_ENDPOINT = "/api/user/role/";
 
 	public static final String SAVE_USER_PERM_ENDPOINT = "/api/user/perms/";
+	
+	public final class CustomerApi{
+		//Prefix
+		public static final String PREFIX = CUSTOMER_ENDPOINT;
+		
+		//Paths
+		public static final String GET_ANNUAL_INCOME_RANGE = "/getAnnualIncome/";
+		public static final String SAVE_ANNUAL_INCOME = "/saveAnnualIncome/";
+		public static final String GET_ANNUAL_INCOME_DETAILS = "/getAnnualIncomeDetails/";
+		public static final String SAVE_SECURITY_QUESTIONS = "/save-security-questions/";
+		public static final String UPDATE_PASSWORD_CUSTOMER = "/update-password-customer/";
+		//params
+		public static final String PARAM_INCOMEDTO = "incomeDto";
+		
+	}
 
 	public static final String LINK_DEVICEID = "/link-deviceid/";
 
@@ -146,6 +178,8 @@ public class ApiEndpoint {
 		public static final String PASSWORD = "password";
 
 		public static final String FINGERPRINTDEVICEID = "fingerprintDeviceId";
+		
+	
 
 		// Paths
 		public static final String LINK_DEVICE_LOGGEDIN_USER = "/link-device-loggedin-user/";
@@ -154,7 +188,35 @@ public class ApiEndpoint {
 
 		public static final String DELINK_FINGERPRINT = "/delink-fingerprint";
 		public static final String RESET_FINGERPRINT = "/reset-fingerprint";
+		
+		//validate login otp
+		public static final String VALIDATE_CUSTOMER_LOGIN_OTP = "/validate-customer-login-otp/";
 
+	}
+	
+	public final class EKyc{
+		
+		
+		public static final String PREFIX = EKYC_ENDPOINT;
+		
+
+		// Paths
+		public static final String EKYC_SAVE_CUSTOMER = "/ekyc-save-customer/";
+		
+	}
+	
+	public final class ServiceProvider{
+		public static final String PREFIX = REVENUE_REPORT_ENDPOINT;
+		
+		//Paths
+		
+		public static final String REVENUE_REPORT_PARTNER = "/revenue-report-partner";
+		
+		public static final String REVENUE_REPORT_UPLOAD_FILE="/revenue-report-upload-file";
+		
+		public static final String REVENUE_REPORT_CONFIRMATION="/revenue-report-confirmation";
+		
+		public static final String REVENUE_REPORT_DEFAULT_DATE = "/revenue-report-default-date";
 	}
 
 }

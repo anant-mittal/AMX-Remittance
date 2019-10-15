@@ -2,10 +2,17 @@ package com.amx.jax.logger.events;
 
 import java.math.BigDecimal;
 
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.logger.AuditEvent;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
+import com.amx.utils.EnumType;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+@JsonInclude(Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CActivityEvent extends AuditEvent {
 
 	private static final long serialVersionUID = -3189696554945071766L;
@@ -16,20 +23,38 @@ public class CActivityEvent extends AuditEvent {
 
 		VALIDATION,
 
-		PROFILE_UPDATE,
+		PROFILE_UPDATE, ACCOUNT_LOCKED, ACCOUNT_UNLOCKED,
 
 		BENE_ADD, BENE_UPDATE,
 
 		APPLICATION_CREATED, APPLICATION_UPDATE,
 
-		FC_UPDATE,
-//
-		;
+		FC_UPDATE, TRANSACTION_CREATED,
+
+		CONTACT_VERF,
+
+		LANG_CHNG(EventMarker.NOTICE),
+
+		TP_REDIRECT;
+
+		EventMarker marker;
 
 		@Override
 		public EventMarker marker() {
-			return EventMarker.AUDIT;
+			return this.marker;
 		}
+
+		Type() {
+			this.marker = EventMarker.AUDIT;
+		}
+
+		Type(EventMarker marker) {
+			this.marker = marker;
+		}
+	}
+
+	public static enum Step implements EnumType {
+		CREATE, SEND, RESEND, INIT, COMPLETE, VERIFY
 	}
 
 	public CActivityEvent(Type type, Object target) {
@@ -52,18 +77,29 @@ public class CActivityEvent extends AuditEvent {
 		super(type);
 	}
 
+	private Step step;
 	private String target = null;
 	private BigDecimal targetId = null;
 	private String field = null;
 	private String fromValue = null;
 	private String toValue = null;
-	private String actor = null;
 	private BigDecimal customerId = null;
 	private String customer = null;
+	private AuditActorInfo actor;
+	private RemitInfo trxn = null;
+	private CustInfo cust = null;
+	private ContactType contactType;
+
+	private CustInfo cust() {
+		if (this.cust == null) {
+			this.cust = new CustInfo();
+		}
+		return this.cust;
+	}
 
 	@Override
 	public String getDescription() {
-		return this.type + ":" + this.result;
+		return this.type + (ArgUtil.isEmpty(step) ? Constants.BLANK : ("_" + step)) + ":" + this.result;
 	}
 
 	public String getFromValue() {
@@ -82,11 +118,11 @@ public class CActivityEvent extends AuditEvent {
 		this.toValue = toValue;
 	}
 
-	public String getActor() {
+	public AuditActorInfo getActor() {
 		return actor;
 	}
 
-	public void setActor(String actor) {
+	public void setActor(AuditActorInfo actor) {
 		this.actor = actor;
 	}
 
@@ -96,6 +132,7 @@ public class CActivityEvent extends AuditEvent {
 
 	public void setCustomerId(BigDecimal customerId) {
 		this.customerId = customerId;
+		this.cust().setId(customerId);
 	}
 
 	public String getField() {
@@ -104,6 +141,11 @@ public class CActivityEvent extends AuditEvent {
 
 	public void setField(String field) {
 		this.field = field;
+	}
+
+	public CActivityEvent step(Step step) {
+		this.setStep(step);
+		return this;
 	}
 
 	public CActivityEvent field(Object field) {
@@ -136,6 +178,11 @@ public class CActivityEvent extends AuditEvent {
 		return this;
 	}
 
+	public CActivityEvent set(RemitInfo remit) {
+		this.trxn = remit;
+		return this;
+	}
+
 	public String getTarget() {
 		return target;
 	}
@@ -158,6 +205,7 @@ public class CActivityEvent extends AuditEvent {
 
 	public void setCustomer(String customer) {
 		this.customer = customer;
+		this.cust().setIdentity(customer);
 	}
 
 	public static String getMergedString(String oldStr, String newStr) {
@@ -166,6 +214,38 @@ public class CActivityEvent extends AuditEvent {
 					: String.format("%s;%s", oldStr, newStr);
 		}
 		return oldStr;
+	}
+
+	public RemitInfo getTrxn() {
+		return trxn;
+	}
+
+	public void setTrxn(RemitInfo trxn) {
+		this.trxn = trxn;
+	}
+
+	public CustInfo getCust() {
+		return cust;
+	}
+
+	public void setCust(CustInfo cust) {
+		this.cust = cust;
+	}
+
+	public Step getStep() {
+		return step;
+	}
+
+	public void setStep(Step step) {
+		this.step = step;
+	}
+
+	public ContactType getContactType() {
+		return contactType;
+	}
+
+	public void setContactType(ContactType contactType) {
+		this.contactType = contactType;
 	}
 
 }

@@ -3,35 +3,43 @@ package com.amx.jax.pricer.dto;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-public class CustomerCategoryDetails implements Serializable {
+import com.amx.jax.pricer.var.PricerServiceConstants.CUSTOMER_CATEGORY;
+
+public class CustomerCategoryDetails implements Serializable,Comparable<CustomerCategoryDetails>{
 
 	private static final long serialVersionUID = 1L;
 
-	private BigDecimal id;
+	private CUSTOMER_CATEGORY customerCategory;
+	
+	private BigDecimal custCatId;
+	
+	private BigDecimal discountId;
 
-	private String customerCategory;
+	private BigDecimal groupId;
 
-	private BigDecimal discountPips;
+	private BigDecimal discountTypeId;
 
 	private String isActive;
+	
+	private BigDecimal discountPips;
 
 	private BigDecimal minDiscountPips;
 
 	private BigDecimal maxDiscountPips;
-
-	public BigDecimal getId() {
-		return id;
+	
+	public BigDecimal getCustCatId() {
+		return custCatId;
 	}
 
-	public void setId(BigDecimal id) {
-		this.id = id;
+	public void setCustCatId(BigDecimal custCatId) {
+		this.custCatId = custCatId;
 	}
 
-	public String getCustomerCategory() {
+	public CUSTOMER_CATEGORY getCustomerCategory() {
 		return customerCategory;
 	}
 
-	public void setCustomerCategory(String customerCategory) {
+	public void setCustomerCategory(CUSTOMER_CATEGORY customerCategory) {
 		this.customerCategory = customerCategory;
 	}
 
@@ -79,4 +87,34 @@ public class CustomerCategoryDetails implements Serializable {
 		this.maxDiscountPips = maxDiscountPips;
 	}
 
+	@Override
+	public int compareTo(CustomerCategoryDetails o) {
+			
+		return this.customerCategory.compareTo(o.customerCategory);
+	}
+
+	public BigDecimal getDiscountId() {
+		return discountId;
+	}
+
+	public void setDiscountId(BigDecimal discountId) {
+		this.discountId = discountId;
+	}
+
+	public BigDecimal getGroupId() {
+		return groupId;
+	}
+
+	public void setGroupId(BigDecimal groupId) {
+		this.groupId = groupId;
+	}
+
+	public BigDecimal getDiscountTypeId() {
+		return discountTypeId;
+	}
+
+	public void setDiscountTypeId(BigDecimal discountTypeId) {
+		this.discountTypeId = discountTypeId;
+	}
+	
 }

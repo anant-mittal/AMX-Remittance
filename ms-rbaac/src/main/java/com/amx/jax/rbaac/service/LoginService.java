@@ -18,7 +18,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.rbaac.dao.RbaacDao;
-import com.amx.jax.rbaac.dbmodel.Employee;
+import com.amx.jax.rbaac.dbmodel.FSEmployee;
 import com.amx.jax.rbaac.dbmodel.FunctionalityTypeMaster;
 import com.amx.jax.rbaac.dbmodel.ModuleMaster;
 import com.amx.jax.rbaac.dbmodel.PermissionMaster;
@@ -87,8 +87,8 @@ public class LoginService extends AbstractService {
 	 *            the ip address
 	 * @return the employee
 	 */
-	public Employee validateEmployeeData(String empcode, String identity, String ipAddress) {
-		Employee emp = rbaacDao.fetchEmpDetails(empcode, identity, ipAddress);
+	public FSEmployee validateEmployeeData(String empcode, String identity, String ipAddress) {
+		FSEmployee emp = rbaacDao.fetchEmpDetails(empcode, identity, ipAddress);
 		return emp;
 	}
 
@@ -101,8 +101,8 @@ public class LoginService extends AbstractService {
 	 *            the pass
 	 * @return the employee
 	 */
-	public Employee fetchEmployeeDetails(String user, String pass) {
-		Employee emp = rbaacDao.fetchEmpDetails(user, pass);
+	public FSEmployee fetchEmployeeDetails(String user, String pass) {
+		FSEmployee emp = rbaacDao.fetchEmpDetails(user, pass);
 		return emp;
 	}
 
@@ -113,8 +113,8 @@ public class LoginService extends AbstractService {
 	 *            the emp no
 	 * @return the employee
 	 */
-	public Employee fetchEmployeeDetailsByECNO(String empNo) {
-		Employee emp = rbaacDao.fetchEmpDetailsByECNO(empNo);
+	public FSEmployee fetchEmployeeDetailsByECNO(String empNo) {
+		FSEmployee emp = rbaacDao.fetchEmpDetailsByECNO(empNo);
 		return emp;
 	}
 
@@ -695,7 +695,7 @@ public class LoginService extends AbstractService {
 	 *            the emp
 	 * @return the api response
 	 */
-	public ApiResponse sendOtp(Employee emp) {
+	public ApiResponse sendOtp(FSEmployee emp) {
 		ApiResponse apiResponse = null;
 
 		try {
@@ -724,7 +724,7 @@ public class LoginService extends AbstractService {
 	 *            the m otp
 	 * @return the api response
 	 */
-	public ApiResponse validateOtp(Employee emp, String mOtp) {
+	public ApiResponse validateOtp(FSEmployee emp, String mOtp) {
 		AuthLoginTrnxModel authLoginTrnxModel = authLoginOTPManager.validateOtpStaff(emp, mOtp);
 		ApiResponse apiResponse = getBlackApiResponse();
 
@@ -775,7 +775,7 @@ public class LoginService extends AbstractService {
 		ApiResponse apiResponse = null;
 		try {
 			if (empCode != null && identity != null) {
-				Employee emp = validateEmployeeData(empCode, identity, ipAddress);
+				FSEmployee emp = validateEmployeeData(empCode, identity, ipAddress);
 				if (emp != null) {
 					apiResponse = sendOtp(emp);
 				} else {
@@ -812,7 +812,7 @@ public class LoginService extends AbstractService {
 		ApiResponse apiResponse = null;
 		try {
 			if (empCode != null && identity != null) {
-				Employee emp = validateEmployeeData(empCode, identity, ipAddress);
+				FSEmployee emp = validateEmployeeData(empCode, identity, ipAddress);
 				if (emp != null) {
 					apiResponse = validateOtp(emp, mOtp);
 				} else {

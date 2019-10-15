@@ -1,9 +1,13 @@
 package com.amx.jax.services;
 
+/**
+ * @author rabil
+ */
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.h2.util.New;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -28,19 +33,30 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.LoyaltyInsuranceProDao;
+import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.CollectionDetailViewModel;
 import com.amx.jax.dbmodel.CollectionPaymentDetailsViewModel;
+import com.amx.jax.dbmodel.CountryMaster;
+import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.PurposeOfRemittanceViewModel;
 import com.amx.jax.dbmodel.RemittanceTransactionView;
 import com.amx.jax.dbmodel.ViewCompanyDetails;
+import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.manager.PromotionManager;
+import com.amx.jax.meta.MetaData;
+import com.amx.jax.repository.CountryMasterRepository;
+import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.repository.ICollectionDetailViewDao;
 import com.amx.jax.repository.ICollectionPaymentDetailsViewDao;
 import com.amx.jax.repository.ICompanyDAO;
 import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.IPurposeOfRemittance;
 import com.amx.jax.repository.IRemittanceTransactionDao;
+import com.amx.jax.service.CountryService;
+import com.amx.jax.userservice.dao.CustomerDao;
+import com.amx.jax.userservice.service.UserService;
+import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.RoundUtil;
 
 @Component
@@ -73,10 +89,29 @@ public class ReportManagerService extends AbstractService{
 	@Autowired
 	ICurrencyDao currencyDao;
 	
+	@Autowired
+	CustomerRepository customerRepository;
+	
+	@Autowired
+	RemittanceApplicationDao remittanceApplicationDao;
+	
 	
 	private List<RemittanceReceiptSubreport> remittanceReceiptSubreportList;
 	@Autowired
-	PromotionManager promotionManager; 
+	PromotionManager promotionManager;
+	@Autowired
+	UserService userService;
+	
+	@Autowired
+	CountryMasterRepository countryMasterRepository;
+	
+	@Autowired
+	CountryService countryService;
+	
+	@Autowired
+	MetaData meta;
+	
+	
 
 	
 	
@@ -103,10 +138,11 @@ public class ReportManagerService extends AbstractService{
 			Boolean promotion){
 		
 		ApiResponse response = null;
+		Boolean isArabic = false;
 		try {
 		remittanceReceiptSubreportList = new ArrayList<RemittanceReceiptSubreport>();
 		 response = getBlackApiResponse();
-		customerId = transactionHistroyDTO.getCustomerId();
+		customerId = transactionHistroyDTO.getCustomerId()==null?meta.getCustomerId():transactionHistroyDTO.getCustomerId();
 		companyId = transactionHistroyDTO.getCompanyId();
 		languageId = transactionHistroyDTO.getLanguageId();
 		applicationCountryId = transactionHistroyDTO.getApplicationCountryId();
@@ -134,7 +170,7 @@ public class ReportManagerService extends AbstractService{
 		
 		logger.info("Document Number=="+collectionDocNo+"\t docCode :"+collectionDocumentCode+"\t docYear :"+financeYear);
 	
-		
+		Customer customer = userService.getCustById(customerId);
 		
 		 
 		remittanceReceiptSubreportList = new ArrayList<RemittanceReceiptSubreport>();
@@ -153,7 +189,9 @@ public class ReportManagerService extends AbstractService{
 	
 		String currencyQuoteName = currencyDao.getCurrencyList(currencyId).get(0).getQuoteName();
 		
-		List<RemittanceTransactionView> remittanceViewlist = remittanceTransactionDao.getRemittanceTransaction(collectionDocNo, financeYear, collectionDocumentCode);
+			List<RemittanceTransactionView> remittanceViewlist = remittanceTransactionDao
+					.getRemittanceTransactionForReport(collectionDocNo, financeYear, collectionDocumentCode,
+							customer.getIdentityTypeId());
 				
 				
 		logger.info("Remittance View List Size is======"+remittanceViewlist.size());
@@ -185,6 +223,8 @@ public class ReportManagerService extends AbstractService{
 					obj.setFirstName(view.getCustomerReference().toString());
 				} else if (view.getCustomerReference() != null && view.getFirstName() != null && view.getMiddleName() == null && view.getLastName()!=null) {
 					obj.setFirstName(view.getCustomerReference().toString() + " " + view.getFirstName()+" "+view.getLastName());
+				} else if (view.getCustomerReference()!=null && view.getFirstName() != null && view.getMiddleName()!=null && view.getLastName()==null) {
+					obj.setFirstName(view.getCustomerReference().toString() + " / " + view.getFirstName()+" "+view.getMiddleName());
 				}
 				if (StringUtils.isNotBlank(view.getContactNumber())) {
 					obj.setMobileNo(new BigDecimal(view.getContactNumber()));
@@ -212,7 +252,8 @@ public class ReportManagerService extends AbstractService{
 
 				Date docDate = view.getDocumentDate();
 				if(docDate != null){
-					obj.setDate(new SimpleDateFormat("dd/MM/yyy HH:mm").format(docDate));
+					//obj.setDate(new SimpleDateFormat("dd/MM/yyy HH:mm").format(docDate));
+					obj.setDate(new SimpleDateFormat("dd MMM yyyy HH:mm:ss").format(docDate));
 				}
 				
 				obj.setBeneficiaryName(view.getBeneficiaryName());
@@ -223,11 +264,20 @@ public class ReportManagerService extends AbstractService{
 				obj.setPhoneNumber(view.getPhoneNumber()); 
 				obj.setUserName(view.getCreatedBy());
 				obj.setPinNo(view.getPinNo() );
+			
+				logger.debug("metaDetails:"+meta.getCustomerId());
 				
+				Customer customerNationalityDetails = customerRepository.getNationalityValue(customerId);
 				
-
-	
-				Map<String, Object> loyaltiPoints = loyaltyInsuranceProDao.loyaltyInsuranceProcedure(view.getCustomerReference(), obj.getDate());
+				logger.debug("countryId:"+customerNationalityDetails.getNationalityId());
+				if(customerNationalityDetails!=null) {
+					isArabic = countryService.getIsArabicCountry(customerNationalityDetails.getNationalityId());
+				}
+				logger.debug("isArabicValue:"+isArabic);
+				
+				obj.setIsArabic(isArabic);
+					
+				Map<String, Object> loyaltiPoints = loyaltyInsuranceProDao.loyaltyInsuranceProcedure(view.getCustomerReference(), new SimpleDateFormat("dd/MM/yyy HH:mm").format(docDate));
 				
 				String prLtyStr1 =loyaltiPoints.get("P_LTY_STR1")==null?"":loyaltiPoints.get("P_LTY_STR1").toString();
 				String prLtyStr2 =loyaltiPoints.get("P_LTY_STR2")==null?"":loyaltiPoints.get("P_LTY_STR2").toString();
@@ -266,10 +316,7 @@ public class ReportManagerService extends AbstractService{
 					obj.setInsurence2(prInsStrAr2);
 				}
 
-
-
-
-
+			
 				if (view.getBeneCityName() != null && view.getBeneDistrictName() != null && view.getBeneStateName() != null) {
 					obj.setAddress(view.getBeneCityName() + ", " + view.getBeneDistrictName() + ", " + view.getBeneStateName());
 				} else if (view.getBeneCityName() == null && view.getBeneDistrictName() != null && view.getBeneStateName() != null) {
@@ -346,10 +393,13 @@ public class ReportManagerService extends AbstractService{
 					obj.setTotalAmount(currencyQuoteName+"     "+netAmount.toString()); 
 				}
 
+				getSpecialRateData(view, obj, currencyQuoteName, decimalPerCurrency);
+				
 				obj.setFutherInstructions(view.getInstructions());
 				obj.setSourceOfIncome(view.getSourceOfIncomeDesc());
 				obj.setIntermediataryBank(view.getBenefeciaryInterBank1());
-
+				
+				getParamsFromPayg(view, obj);
 
 				List<CollectionDetailViewModel> collectionDetailList1= collectionDetailViewDao.getCollectionDetailView(view.getCompanyId(),view.getCollectionDocumentNo(),view.getCollectionDocFinanceYear(),view.getCollectionDocCode());
 						
@@ -426,7 +476,7 @@ public class ReportManagerService extends AbstractService{
 						if (companyMaster.get(0).getRegistrationNumber() != null && companyMaster.get(0).getRegistrationNumber().length() > 0) {
 							engCompanyInfo = engCompanyInfo.append("C.R. " + companyMaster.get(0).getRegistrationNumber() + ",");
 						}
-						if (companyMaster.get(0).getCapitalAmount() != null && companyMaster.get(0).getCapitalAmount().length() > 0) {
+						if (companyMaster.get(0).getCapitalAmount() != null && !companyMaster.get(0).getCapitalAmount().equals("0") && companyMaster.get(0).getCapitalAmount().length() > 0) {
 							engCompanyInfo = engCompanyInfo.append("Share Capital-" + companyMaster.get(0).getCapitalAmount());
 						}
 						obj.setEngCompanyInfo(engCompanyInfo.toString());
@@ -445,13 +495,63 @@ public class ReportManagerService extends AbstractService{
 						if (companyMaster.get(0).getRegistrationNumber() != null && companyMaster.get(0).getRegistrationNumber().length() > 0) {
 							arabicCompanyInfo = arabicCompanyInfo.append(ConstantDocument.CR + " " + companyMaster.get(0).getRegistrationNumber() + ",");
 						}
-						if (companyMaster.get(0).getCapitalAmount() != null && companyMaster.get(0).getCapitalAmount().length() > 0) {
+						if (companyMaster.get(0).getCapitalAmount() != null && !companyMaster.get(0).getCapitalAmount().equals("0") && companyMaster.get(0).getCapitalAmount().length() > 0) {
 							arabicCompanyInfo = arabicCompanyInfo.append(ConstantDocument.Share_Capital + " " + companyMaster.get(0).getCapitalAmount());
 						}
 						obj.setArabicCompanyInfo(arabicCompanyInfo.toString());
 					}
 					// 
 					
+					if(JaxUtil.isNullZeroBigDecimalCheck(view.getVatAmount())) {
+					BigDecimal vatAmount=RoundUtil.roundBigDecimal((view.getVatAmount()),decimalPerCurrency);
+					 obj.setVatAmount(currencyQuoteName+"     "+vatAmount.toString());
+					}
+					obj.setVatPercentage(view.getVatPercentage()==null?BigDecimal.ZERO:view.getVatPercentage());
+					obj.setVatType(view.getVatType()==null?"":view.getVatType());
+					obj.setCustomerVatNumber(view.getCustomerVatNumber()==null?"":view.getCustomerVatNumber());
+					/** end **/
+					
+					/** added by rabil  It should be print conditionally.if IS_DISCOUNT_AVAILED = 'Y' and KD_SAVED > 0 **/
+					 if(!StringUtils.isBlank(view.getIsDiscAvail()) && view.getIsDiscAvail().equalsIgnoreCase(ConstantDocument.Yes) && JaxUtil.isNullZeroBigDecimalCheck(view.getAmountSaved()) && view.getAmountSaved().compareTo(BigDecimal.ZERO)>0) {
+						 BigDecimal KdSaved=RoundUtil.roundBigDecimal((view.getAmountSaved()),decimalPerCurrency);
+						 obj.setAmountSaved(currencyQuoteName +"     "+KdSaved.toString());
+					 }
+					 
+					 
+					 if(JaxUtil.isNullZeroBigDecimalCheck(view.getTotalAmountSaved())) {
+						 BigDecimal totalKdSavedAmount=RoundUtil.roundBigDecimal((view.getTotalAmountSaved()),decimalPerCurrency);
+						 obj.setTotalAmountSavedStr(currencyQuoteName+"     "+totalKdSavedAmount.toString());
+					 }
+				
+					 
+					/** end **/
+					
+					 PromotionDto prmoDto  = promotionManager.getPromotionMessage(view.getDocumentNo(),view.getDocumentFinancialYear(),view.getCountryBranchId(),currencyQuoteName);
+					 if(prmoDto!=null && !StringUtils.isBlank(prmoDto.getPrizeMessage())) {
+						 obj.setPromotionMessage(prmoDto.getPrizeMessage());
+					 }
+					
+					if(JaxUtil.isNullZeroBigDecimalCheck(view.getVatAmount())) {
+						BigDecimal vatAmount=RoundUtil.roundBigDecimal((view.getVatAmount()),decimalPerCurrency);
+						 obj.setVatAmount(currencyQuoteName+"     "+vatAmount.toString());
+						}
+					obj.setVatPercentage(view.getVatPercentage()==null?BigDecimal.ZERO:view.getVatPercentage());
+					obj.setVatType(view.getVatType()==null?"":view.getVatType());
+			    	obj.setCustomerVatNumber(view.getCustomerVatNumber()==null?"":view.getCustomerVatNumber());
+
+						
+						logger.info("vat amount======"+currencyQuoteName+ "     " +view.getVatAmount()==null?BigDecimal.ZERO:view.getVatAmount());
+						logger.info("VatPercentage======"+view.getVatPercentage()==null?BigDecimal.ZERO:view.getVatPercentage());
+						logger.info("Vattype======"+view.getVatType()==null?"":view.getVatType());
+
+					
+						/** added by Radhika  It should be print conditionally.if IS_DISCOUNT_AVAILED = 'Y' and KD_SAVED > 0 **/
+						 if(!StringUtils.isBlank(view.getIsDiscAvail()) && view.getIsDiscAvail().equalsIgnoreCase(ConstantDocument.Yes) && JaxUtil.isNullZeroBigDecimalCheck(view.getAmountSaved()) && view.getAmountSaved().compareTo(BigDecimal.ZERO)>0) {
+							 BigDecimal KdSaved=RoundUtil.roundBigDecimal((view.getAmountSaved()),decimalPerCurrency);
+							 obj.setAmountSaved(currencyQuoteName +"     "+KdSaved.toString());
+						 }
+						/** end **/
+										
 					
 					
 				} catch (Exception e) {
@@ -508,6 +608,74 @@ public class ReportManagerService extends AbstractService{
 	
 	}
 		
+	
+
+	// ----------------- Params Getting from PAYG -------------------
+	private void getParamsFromPayg(RemittanceTransactionView view, RemittanceReportBean obj) {
+		RemittanceApplication remittanceApplication = remittanceApplicationDao.getApplication(view.getApplicationDocumentNo(), view.getAppFinancialYear());  
+		if(remittanceApplication != null) {
+			obj.setPgPaymentId(remittanceApplication.getPaymentId());
+			obj.setPgReferenceId(remittanceApplication.getPgReferenceId());
+			obj.setPgTransId(remittanceApplication.getPgTransactionId());
+			obj.setPgAuth(remittanceApplication.getPgAuthCode());
+		}
+	}
+	
+	// ----------------- SPECIAL RATE RECEIPT DATA -------------------
+	private void getSpecialRateData(RemittanceTransactionView view, RemittanceReportBean obj, String currencyQuoteName,
+			int decimalPerCurrency) {
+		// Special Exchange Rate
+		if (view.getCurrencyQuoteName() != null && currencyQuoteName != null && view.getExchangeRateApplied() != null) {
+			obj.setSpecialExchangeRate(view.getCurrencyQuoteName() + " / " + currencyQuoteName + "     "
+					+ view.getExchangeRateApplied().toString());
+		}
+
+		// Equivalent kwd Amount
+		if (view.getLocalTransactionAmount() != null && view.getLocalTransactionCurrencyId() != null) {
+			BigDecimal transationAmount = RoundUtil.roundBigDecimal((view.getLocalTransactionAmount()),
+					decimalPerCurrency);
+			obj.setSpecialKwdAmount(currencyQuoteName + "     " + transationAmount.toString());
+		}
+
+		// Branch Exchange Rate and kwd Amount
+		if (null != view.getIsDiscAvail() && view.getIsDiscAvail().equals("Y")) {
+			if (view.getCurrencyQuoteName() != null && currencyQuoteName != null
+					&& view.getOriginalExchangeRate() != null) {
+				if (view.getOriginalExchangeRate().compareTo(view.getExchangeRateApplied()) != 1) {
+					obj.setBranchExchangeRate(view.getCurrencyQuoteName() + " / " + currencyQuoteName + "     "
+							+ view.getExchangeRateApplied().toString());
+					if (view.getLocalTransactionAmount() != null && view.getLocalTransactionCurrencyId() != null) {
+						BigDecimal transationAmount = RoundUtil.roundBigDecimal((view.getLocalTransactionAmount()),
+								decimalPerCurrency);
+						obj.setKwdAmount(currencyQuoteName + "     " + transationAmount.toString());
+					}
+				} else {
+					obj.setBranchExchangeRate(view.getCurrencyQuoteName() + " / " + currencyQuoteName + "     "
+							+ view.getOriginalExchangeRate().toString());
+					if (view.getOriginalExchangeRate() != null && view.getForeignTransactionAmount() != null
+							&& view.getLocalTransactionCurrencyId() != null) {
+						BigDecimal calKwtAmt = view.getOriginalExchangeRate().multiply(view.getForeignTransactionAmount());
+						BigDecimal transationAmount = RoundUtil.roundBigDecimal((calKwtAmt), decimalPerCurrency);
+						obj.setKwdAmount(currencyQuoteName + "     " + transationAmount.toString());
+					}
+				}
+
+			}
+			
+		} else {
+			if (view.getCurrencyQuoteName() != null && currencyQuoteName != null
+					&& view.getExchangeRateApplied() != null) {
+				obj.setBranchExchangeRate(view.getCurrencyQuoteName() + " / " + currencyQuoteName + "     "
+						+ view.getExchangeRateApplied().toString());
+			}
+			if (view.getLocalTransactionAmount() != null && view.getLocalTransactionCurrencyId() != null) {
+				BigDecimal transationAmount = RoundUtil.roundBigDecimal((view.getLocalTransactionAmount()),
+						decimalPerCurrency);
+				obj.setKwdAmount(currencyQuoteName + "     " + transationAmount.toString());
+			}
+		}
+	}
+
 public List<RemittanceReportBean> calculateCollectionMode(RemittanceTransactionView viewCollectionObj){	
 			List<RemittanceReportBean> collectionDetailList = new ArrayList<RemittanceReportBean>();
 			List<CollectionPaymentDetailsViewModel> collectionPaymentDetailList= collectionPaymentDetailsViewDao.getCollectedPaymentDetails(viewCollectionObj.getCompanyId(),viewCollectionObj.getCollectionDocumentNo(),viewCollectionObj.getCollectionDocFinanceYear(),viewCollectionObj.getCollectionDocCode());
@@ -523,14 +691,18 @@ public List<RemittanceReportBean> calculateCollectionMode(RemittanceTransactionV
 					obj.setKnetBooleanCheck(true);
 					if(viewObj.getCollectAmount()!=null && viewCollectionObj.getLocalTransactionCurrencyId()!=null){
 						BigDecimal collectAmount=RoundUtil.roundBigDecimal((viewObj.getCollectAmount()),currencyDao.getCurrencyList(viewCollectionObj.getLocalTransactionCurrencyId()).get(0).getDecinalNumber().intValue());
-						obj.setCollectAmount(collectAmount);
+						if(JaxUtil.isNullZeroBigDecimalCheck(collectAmount)) {
+						obj.setCollectAmount(collectAmount.toString());
+						}
 					}
 				}else{
 					obj.setCollectionMode(viewObj.getCollectionModeDesc());
 					obj.setKnetBooleanCheck(false);
 					if(viewObj.getCollectAmount()!=null && viewCollectionObj.getLocalTransactionCurrencyId()!=null){
 						BigDecimal collectAmount=RoundUtil.roundBigDecimal((viewObj.getCollectAmount()),currencyDao.getCurrencyList(viewCollectionObj.getLocalTransactionCurrencyId()).get(0).getDecinalNumber().intValue());
-						obj.setCollectAmount(collectAmount);
+						if(JaxUtil.isNullZeroBigDecimalCheck(collectAmount)) {
+						obj.setCollectAmount(collectAmount.toString());
+						}
 					}
 				}
 				if(size>1){

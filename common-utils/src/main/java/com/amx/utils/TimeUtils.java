@@ -1,6 +1,7 @@
 package com.amx.utils;
 
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * The Class TimeUtils.
@@ -31,6 +32,14 @@ public class TimeUtils {
 		return (System.currentTimeMillis() - timeThen) > maxAge;
 	}
 
+	public static boolean isExpired(long timeThen, long maxAge) {
+		return isDead(timeThen, maxAge);
+	}
+
+	public static boolean isExpired(Date dateThen, long maxAge) {
+		return isDead(dateThen.getTime(), maxAge);
+	}
+
 	public static long getRotationNumber(long millis, int i) {
 		return (System.currentTimeMillis() / (millis)) & i;
 	}
@@ -49,7 +58,12 @@ public class TimeUtils {
 		Calendar calendar = Calendar.getInstance();
 		int currentIndex = calendar.get(Calendar.HOUR_OF_DAY) / (24 / totalSlots);
 		return currentIndex == indexOfSlot;
+	}
 
+	public static boolean inHours(int startHours, int endHours) {
+		Calendar calendar = Calendar.getInstance();
+		int currentIndex = calendar.get(Calendar.HOUR_OF_DAY);
+		return (startHours <= currentIndex) && (currentIndex < endHours);
 	}
 
 }

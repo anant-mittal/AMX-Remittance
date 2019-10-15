@@ -8,8 +8,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-
-
 /**
  * The Class CollectionUtil.
  */
@@ -25,12 +23,9 @@ public final class CollectionUtil {
 	/**
 	 * Gets the array.
 	 *
-	 * @param <T>
-	 *            the generic type
-	 * @param list
-	 *            the list
-	 * @param index
-	 *            the index
+	 * @param       <T> the generic type
+	 * @param list  the list
+	 * @param index the index
 	 * @return the array
 	 */
 	public static <T> T getArray(List<T> list, int index) {
@@ -43,12 +38,9 @@ public final class CollectionUtil {
 	/**
 	 * Gets the array.
 	 *
-	 * @param <T>
-	 *            the generic type
-	 * @param array
-	 *            the array
-	 * @param index
-	 *            the index
+	 * @param       <T> the generic type
+	 * @param array the array
+	 * @param index the index
 	 * @return the array
 	 */
 	public static <T> T getArray(T[] array, int index) {
@@ -61,14 +53,10 @@ public final class CollectionUtil {
 	/**
 	 * Gets the array.
 	 *
-	 * @param <T>
-	 *            the generic type
-	 * @param list
-	 *            the list
-	 * @param index
-	 *            the index
-	 * @param defaultValue
-	 *            the default value
+	 * @param              <T> the generic type
+	 * @param list         the list
+	 * @param index        the index
+	 * @param defaultValue the default value
 	 * @return the array
 	 */
 	public static <T> T getArray(List<T> list, int index, T defaultValue) {
@@ -79,14 +67,10 @@ public final class CollectionUtil {
 	/**
 	 * Gets the array.
 	 *
-	 * @param <T>
-	 *            the generic type
-	 * @param array
-	 *            the array
-	 * @param index
-	 *            the index
-	 * @param defaultValue
-	 *            the default value
+	 * @param              <T> the generic type
+	 * @param array        the array
+	 * @param index        the index
+	 * @param defaultValue the default value
 	 * @return the array
 	 */
 	public static <T> T getArray(T[] array, int index, T defaultValue) {
@@ -97,14 +81,10 @@ public final class CollectionUtil {
 	/**
 	 * Gets the array.
 	 *
-	 * @param <T>
-	 *            the generic type
-	 * @param list
-	 *            the list
-	 * @param index1
-	 *            the index1
-	 * @param index2
-	 *            the index2
+	 * @param        <T> the generic type
+	 * @param list   the list
+	 * @param index1 the index1
+	 * @param index2 the index2
 	 * @return the array
 	 */
 	public static <T> T getArray(List<List<T>> list, int index1, int index2) {
@@ -120,10 +100,8 @@ public final class CollectionUtil {
 	/**
 	 * As sorted list.
 	 *
-	 * @param <T>
-	 *            the generic type
-	 * @param c
-	 *            the c
+	 * @param   <T> the generic type
+	 * @param c the c
 	 * @return the list
 	 */
 	public static <T extends Comparable<? super T>> List<T> asSortedList(Collection<T> c) {
@@ -135,10 +113,8 @@ public final class CollectionUtil {
 	/**
 	 * As sorted set.
 	 *
-	 * @param <T>
-	 *            the generic type
-	 * @param c
-	 *            the c
+	 * @param   <T> the generic type
+	 * @param c the c
 	 * @return the sets the
 	 */
 	public static <T extends Comparable<? super T>> Set<T> asSortedSet(Collection<T> c) {
@@ -151,14 +127,10 @@ public final class CollectionUtil {
 	/**
 	 * Put array.
 	 *
-	 * @param <E>
-	 *            the element type
-	 * @param list
-	 *            the list
-	 * @param index
-	 *            the index
-	 * @param value
-	 *            the value
+	 * @param       <E> the element type
+	 * @param list  the list
+	 * @param index the index
+	 * @param value the value
 	 */
 	public static <E> void putArray(List<E> list, int index, E value) {
 		if (list.size() <= index) {
@@ -172,10 +144,8 @@ public final class CollectionUtil {
 	/**
 	 * Exists.
 	 *
-	 * @param value
-	 *            the value
-	 * @param collection
-	 *            the collection
+	 * @param value      the value
+	 * @param collection the collection
 	 * @return true, if successful
 	 */
 	public static boolean exists(String value, String[] collection) {
@@ -193,12 +163,9 @@ public final class CollectionUtil {
 	/**
 	 * Exists.
 	 *
-	 * @param <T>
-	 *            the generic type
-	 * @param value
-	 *            the value
-	 * @param collection
-	 *            the collection
+	 * @param            <T> the generic type
+	 * @param value      the value
+	 * @param collection the collection
 	 * @return true, if successful
 	 */
 	public static <T> boolean exists(T value, Collection<T> collection) {
@@ -216,10 +183,8 @@ public final class CollectionUtil {
 	/**
 	 * Adds the all.
 	 *
-	 * @param collection
-	 *            the collection
-	 * @param value
-	 *            the value
+	 * @param collection the collection
+	 * @param value      the value
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static void addAll(Collection collection, Object value) {
@@ -235,10 +200,8 @@ public final class CollectionUtil {
 	/**
 	 * Gets the list.
 	 *
-	 * @param <T>
-	 *            the generic type
-	 * @param elements
-	 *            the elements
+	 * @param          <T> the generic type
+	 * @param elements the elements
 	 * @return the list
 	 */
 	@SafeVarargs
@@ -253,10 +216,8 @@ public final class CollectionUtil {
 	/**
 	 * Gets the sets the.
 	 *
-	 * @param <T>
-	 *            the generic type
-	 * @param elements
-	 *            the elements
+	 * @param          <T> the generic type
+	 * @param elements the elements
 	 * @return the sets the
 	 */
 	@SafeVarargs
@@ -271,11 +232,36 @@ public final class CollectionUtil {
 	/**
 	 * Gets the list.
 	 *
-	 * @param arrylist
-	 *            the arrylist
+	 * @param arrylist the arrylist
 	 * @return the list
 	 */
 	public static List<String> getList(String[] arrylist) {
 		return new ArrayList<String>(Arrays.asList(arrylist));
+	}
+
+	public static <T> T getOne(List<T> list) {
+		if (ArgUtil.isEmpty(list)) {
+			return null;
+		}
+		return list.get(0);
+	}
+
+	public static <T> T set(List<T> list, int index, T e) {
+		return set(list, index, e, null);
+	}
+
+	public static <T> T set(List<T> list, int index, T e, T emptyValue) {
+		int len = list.size();
+		if (len == index) {
+			list.add(e);
+		} else if (len > index) {
+			return list.set(index, e);
+		} else {
+			for (int i = len; i < index; i++) {
+				list.add(emptyValue);
+			}
+			list.add(e);
+		}
+		return null;
 	}
 }

@@ -1,15 +1,17 @@
-
 package com.amx.jax.ui.api;
 
 import java.math.BigDecimal;
 import java.util.List;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,7 +19,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.meta.model.AnnualIncomeRangeDTO;
 import com.amx.amxlib.meta.model.CustomerDto;
+import com.amx.amxlib.meta.model.IncomeDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.CustomerNotificationDTO;
@@ -28,13 +32,22 @@ import com.amx.jax.JaxAuthContext;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.JaxPushNotificationClient;
+import com.amx.jax.dict.Language;
 import com.amx.jax.dict.UserClient.AppType;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.logger.AuditActor;
+import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.logger.events.CActivityEvent;
+import com.amx.jax.model.response.customer.CustomerFlags;
+import com.amx.jax.model.response.customer.CustomerModelSignupResponse;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.client.PushNotifyClient;
+import com.amx.jax.ui.UIConstants.Features;
+import com.amx.jax.ui.UIConstants.MileStone;
 import com.amx.jax.ui.WebAppConfig;
+import com.amx.jax.ui.auth.AuthLibContext;
+import com.amx.jax.ui.config.OWAStatus.ApiOWAStatus;
 import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 import com.amx.jax.ui.model.AuthData;
 import com.amx.jax.ui.model.AuthDataInterface.AuthRequestFingerprint;
@@ -43,6 +56,7 @@ import com.amx.jax.ui.model.AuthDataInterface.AuthResponseOTPprefix;
 import com.amx.jax.ui.model.AuthDataInterface.UserUpdateRequest;
 import com.amx.jax.ui.model.AuthDataInterface.UserUpdateResponse;
 import com.amx.jax.ui.model.UserMetaData;
+import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.response.ResponseWrapperM;
 import com.amx.jax.ui.service.GeoHotPoints;
@@ -106,6 +120,21 @@ public class UserController {
 	@Autowired
 	private HotPointService hotPointService;
 
+	@Autowired
+	AuthLibContext authLibContext;
+
+	@Autowired
+	AuditService auditService;
+
+	@ApiOWAStatus(OWAStatusStatusCodes.INCOME_UPDATE_REQUIRED)
+	@RequestMapping(value = "/pub/user/meta", method = { RequestMethod.POST, RequestMethod.GET })
+	public ResponseWrapper<UserMetaData> getMeta(HttpServletResponse response,
+			@RequestParam(required = false) AppType appType,
+			@RequestParam(required = false) String appVersion, @RequestParam(required = false) String milestone,
+			@RequestParam(required = false) Language lang) {
+		return this.getMetaV2(response, appType, appVersion, milestone, lang, false, false);
+	}
+
 	/**
 	 * Gets the meta.
 	 *
@@ -113,9 +142,15 @@ public class UserController {
 	 * @param appVersion the app version
 	 * @return the meta
 	 */
-	@RequestMapping(value = "/pub/user/meta", method = { RequestMethod.POST, RequestMethod.GET })
-	public ResponseWrapper<UserMetaData> getMeta(@RequestParam(required = false) AppType appType,
-			@RequestParam(required = false) String appVersion) {
+	@ApiOWAStatus(OWAStatusStatusCodes.INCOME_UPDATE_REQUIRED)
+	@RequestMapping(value = "/pub/v2/user/meta", method = { RequestMethod.POST, RequestMethod.GET })
+	public ResponseWrapper<UserMetaData> getMetaV2(HttpServletResponse response,
+			@RequestParam(required = false) AppType appType,
+			@RequestParam(required = false) String appVersion,
+			@RequestParam(required = false) String milestone,
+			@RequestParam(required = false) Language lang,
+			@RequestParam(required = false, defaultValue = "false") boolean refresh,
+			@RequestParam(required = false, defaultValue = "false") boolean validate) {
 		ResponseWrapper<UserMetaData> wrapper = new ResponseWrapper<UserMetaData>(new UserMetaData());
 
 		sessionService.getAppDevice().resolve();
@@ -127,13 +162,43 @@ public class UserController {
 			sessionService.getAppDevice().getUserDevice().setAppVersion(appVersion);
 		}
 
+		Cookie kooky = httpService.getCookie("S");
+
+		if (ArgUtil.isEmpty(kooky) || ArgUtil.isEmpty(kooky.getValue())) {
+			String serverVersion = null;
+
+			MileStone milestoneEnum = (MileStone) ArgUtil.parseAsEnum(milestone, MileStone.ZERO, MileStone.FUTRUE);
+
+			if (milestoneEnum == MileStone.ZERO || milestoneEnum.isLegacy()) {
+				serverVersion = "O";
+			} else {
+				serverVersion = "N";
+			}
+
+			httpService.setCookie("S", serverVersion, 60 * 60 * 2);
+
+			String s = httpService.getRequestParam("S");
+			if (ArgUtil.isEmpty(s)) {
+				response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
+				response.setHeader("Location", "/pub/v2/user/meta?S=" + serverVersion + "&milestone=" + milestoneEnum);
+				return wrapper;
+			}
+		}
+
+		lang = httpService.getLanguage();
+		httpService.setCookie("lang", lang.toString(), 60 * 60 * 2);
+		
+		if (ArgUtil.is(lang) && !lang.equals(sessionService.getGuestSession().getLanguage())) {
+			auditService.log(new CActivityEvent(CActivityEvent.Type.LANG_CHNG));
+		}
+		sessionService.getGuestSession().setLanguage(lang);
+
 		wrapper.getData().setTenant(AppContextUtil.getTenant());
 		wrapper.getData().setTenantCode(AppContextUtil.getTenant().getCode());
-		wrapper.getData().setLang(httpService.getLanguage());
+		wrapper.getData().setLang(lang);
 		wrapper.getData().setCdnUrl(appConfig.getCdnURL());
-		wrapper.getData().setFeatures(webAppConfig.getFeatures());
 
-		wrapper.getData().setDevice(sessionService.getAppDevice().getUserDevice());
+		wrapper.getData().setDevice(sessionService.getAppDevice().getUserDevice().toSanitized());
 		wrapper.getData().setState(sessionService.getGuestSession().getState());
 		wrapper.getData().setValidSession(sessionService.getUserSession().isValid());
 
@@ -141,12 +206,36 @@ public class UserController {
 			wrapper.getData().setActive(true);
 			wrapper.getData().setCustomerId(sessionService.getUserSession().getCustomerModel().getCustomerId());
 			wrapper.getData().setInfo(sessionService.getUserSession().getCustomerModel().getPersoninfo());
+
+			if (refresh) {
+				userService.updateCustoemrModel();
+			}
+			CustomerFlags customerFlags = sessionService.getUserSession().getCustomerModel().getFlags();
+
+			if (validate) {
+				customerFlags = authLibContext.get().checkUserMeta(sessionService.getGuestSession().getState(),
+						customerFlags);
+			}
+
+			wrapper.getData().setFlags(customerFlags);
+
+			if (!ArgUtil.isEmpty(customerFlags) && customerFlags.getAnnualIncomeExpired()) {
+				wrapper.setStatusEnum(OWAStatusStatusCodes.INCOME_UPDATE_REQUIRED);
+			}
+
 			wrapper.getData().setDomCurrency(tenantContext.getDomCurrency());
 			wrapper.getData().setConfig(jaxService.setDefaults().getMetaClient().getJaxMetaParameter().getResult());
 			wrapper.getData().getSubscriptions().addAll(userService.getNotifyTopics("/topics/"));
 			wrapper.getData().setReturnUrl(sessionService.getGuestSession().getReturnUrl());
+
+			wrapper.getData().setFeatures(
+					authLibContext.get().filterFeatures(sessionService.getGuestSession().getState(), customerFlags,
+							webAppConfig.getFeaturesList()));
+		} else {
+			wrapper.getData().setFeatures(webAppConfig.getFeaturesList());
 		}
 
+		wrapper.getData().setMileStones(MileStone.LIST);
 		wrapper.getData().setNotifyRangeShort(webAppConfig.getNotifyRangeShort());
 		wrapper.getData().setNotifyRangeLong(webAppConfig.getNotifyRangeLong());
 		wrapper.getData().setNotificationGap(webAppConfig.getNotificationGap());
@@ -166,8 +255,7 @@ public class UserController {
 	@RequestMapping(value = "/pub/user/notify/hotpoint", method = { RequestMethod.POST })
 	public ResponseWrapper<Object> meNotify(@RequestParam(required = false) String token,
 			@RequestParam(required = false) GeoHotPoints hotpoint, @RequestParam BigDecimal customerId,
-			HttpServletRequest request)
-			throws PostManException {
+			HttpServletRequest request) throws PostManException {
 		AppContextUtil.setActorId(new AuditActor(AuditActor.ActorType.GUEST, customerId));
 		if (ArgUtil.isEmpty(hotpoint)) {
 			LOGGER.error("HOTPOINT:{} not defined for customer {} ", request.getParameter("hotpoint"), customerId);
@@ -210,6 +298,11 @@ public class UserController {
 		return new ResponseWrapper<Object>();
 	}
 
+	@RequestMapping(value = "/api/user/perms/{feature}", method = { RequestMethod.GET })
+	public AmxApiResponse<CustomerFlags, Object> perms(@PathVariable Features feature) {
+		return userService.checkModule(feature);
+	}
+
 	/**
 	 * Profile.
 	 *
@@ -234,8 +327,7 @@ public class UserController {
 	@RequestMapping(value = "/api/user/password", method = {
 			RequestMethod.POST }, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 	public ResponseWrapper<UserUpdateResponse> changePassword(@RequestParam(required = false) String oldPassword,
-			@RequestParam String password,
-			@Deprecated @RequestParam String mOtp,
+			@RequestParam String password, @Deprecated @RequestParam String mOtp,
 			@Deprecated @RequestParam(required = false) String eOtp) {
 		JaxAuthContext.mOtp(mOtp);
 		JaxAuthContext.eOtp(eOtp);
@@ -252,8 +344,7 @@ public class UserController {
 	@RequestMapping(value = "/api/user/password/**", method = { RequestMethod.POST })
 	public ResponseWrapperM<Object, AuthResponseOTPprefix> changePasswordJSON(
 			@Deprecated @RequestHeader(value = "mOtp", required = false) String mOtpHeader,
-			@Deprecated @RequestParam(required = false) String mOtp,
-			@RequestBody UserUpdateRequest userUpdateRequest) {
+			@Deprecated @RequestParam(required = false) String mOtp, @RequestBody UserUpdateRequest userUpdateRequest) {
 		ResponseWrapperM<Object, AuthResponseOTPprefix> wrapper = new ResponseWrapperM<>();
 
 		mOtp = JaxAuthContext.mOtp(ArgUtil.ifNotEmpty(userUpdateRequest.getmOtp(), mOtp, mOtpHeader));
@@ -264,10 +355,10 @@ public class UserController {
 		if (mOtp == null) {
 			wrapper.setMeta(new AuthData());
 			wrapper.getMeta().setmOtpPrefix(loginService.sendOTP(null, null).getData().getmOtpPrefix());
-			wrapper.setStatus(OWAStatusStatusCodes.MOTP_REQUIRED);
+			wrapper.setStatusEnum(OWAStatusStatusCodes.MOTP_REQUIRED);
 		} else {
 			wrapper.setData(userService.updatepwd(userUpdateRequest.getPassword(), mOtp, null));
-			wrapper.setStatus(OWAStatusStatusCodes.USER_UPDATE_SUCCESS);
+			wrapper.setStatusEnum(OWAStatusStatusCodes.USER_UPDATE_SUCCESS);
 		}
 		return wrapper;
 //		return userService.updatepwd(userUpdateRequest.getPassword(), userUpdateRequest.getmOtp(),
@@ -304,8 +395,7 @@ public class UserController {
 			@Deprecated @RequestHeader(value = "mOtp", required = false) String mOtpHeader,
 			@Deprecated @RequestHeader(value = "eOtp", required = false) String eOtpHeader,
 			@Deprecated @RequestParam(required = false) String mOtp,
-			@Deprecated @RequestParam(required = false) String eOtp,
-			@RequestBody UserUpdateRequest userUpdateRequest) {
+			@Deprecated @RequestParam(required = false) String eOtp, @RequestBody UserUpdateRequest userUpdateRequest) {
 
 		mOtp = JaxAuthContext.mOtp(ArgUtil.ifNotEmpty(userUpdateRequest.getmOtp(), mOtp, mOtpHeader));
 		eOtp = JaxAuthContext.eOtp(ArgUtil.ifNotEmpty(userUpdateRequest.geteOtp(), eOtp, eOtpHeader));
@@ -320,13 +410,14 @@ public class UserController {
 			wrapper.setMeta(new AuthData());
 			wrapper.getMeta().setmOtpPrefix(model.getmOtpPrefix());
 			wrapper.getMeta().seteOtpPrefix(model.geteOtpPrefix());
-			wrapper.setStatus(OWAStatusStatusCodes.DOTP_REQUIRED);
+			wrapper.setStatusEnum(OWAStatusStatusCodes.DOTP_REQUIRED);
 		} else {
 			CustomerModel model = jaxService.setDefaults().getUserclient()
 					.saveEmail(userUpdateRequest.getEmail(), mOtp, eOtp).getResult();
 			sessionService.getUserSession().getCustomerModel().setEmail(model.getEmail());
 			sessionService.getUserSession().getCustomerModel().getPersoninfo().setEmail(model.getEmail());
-			wrapper.setStatus(OWAStatusStatusCodes.USER_UPDATE_SUCCESS);
+			wrapper.setStatusEnum(OWAStatusStatusCodes.USER_UPDATE_SUCCESS);
+			userService.updateCustoemrModel();
 		}
 		return wrapper;
 	}
@@ -362,8 +453,7 @@ public class UserController {
 			@Deprecated @RequestHeader(value = "mOtp", required = false) String mOtpHeader,
 			@Deprecated @RequestHeader(value = "eOtp", required = false) String eOtpHeader,
 			@Deprecated @RequestParam(required = false) String mOtp,
-			@Deprecated @RequestParam(required = false) String eOtp,
-			@RequestBody UserUpdateRequest userUpdateRequest) {
+			@Deprecated @RequestParam(required = false) String eOtp, @RequestBody UserUpdateRequest userUpdateRequest) {
 
 		mOtp = JaxAuthContext.mOtp(ArgUtil.ifNotEmpty(userUpdateRequest.getmOtp(), mOtp, mOtpHeader));
 		eOtp = JaxAuthContext.eOtp(ArgUtil.ifNotEmpty(userUpdateRequest.geteOtp(), eOtp, eOtpHeader));
@@ -381,15 +471,20 @@ public class UserController {
 			wrapper.setMeta(new AuthData());
 			wrapper.getMeta().setmOtpPrefix(model.getmOtpPrefix());
 			wrapper.getMeta().seteOtpPrefix(model.geteOtpPrefix());
-			wrapper.setStatus(OWAStatusStatusCodes.DOTP_REQUIRED);
+			wrapper.setStatusEnum(OWAStatusStatusCodes.DOTP_REQUIRED);
 		} else {
 			CustomerModel model = jaxService.setDefaults().getUserclient()
 					.saveMobile(userUpdateRequest.getPhone(), mOtp, eOtp).getResult();
 			sessionService.getUserSession().getCustomerModel().setMobile(model.getMobile());
 			sessionService.getUserSession().getCustomerModel().getPersoninfo().setMobile(model.getMobile());
-			wrapper.setStatus(OWAStatusStatusCodes.USER_UPDATE_SUCCESS);
+			wrapper.setStatusEnum(OWAStatusStatusCodes.USER_UPDATE_SUCCESS);
 		}
 		return wrapper;
+	}
+
+	@RequestMapping(value = "/api/secques/get/v2", method = { RequestMethod.GET })
+	public ResponseWrapper<UserUpdateData> getSecQues(HttpServletRequest request) {
+		return userService.getSecQues();
 	}
 
 	/**
@@ -401,20 +496,30 @@ public class UserController {
 	@RequestMapping(value = "/api/user/secques", method = { RequestMethod.POST })
 	public ResponseWrapperM<Object, AuthResponseOTPprefix> regSecQues(
 			@Deprecated @RequestHeader(value = "mOtp", required = false) String mOtpHeader,
-			@Deprecated @RequestParam(required = false) String mOtp,
-			@RequestBody UserUpdateRequest userUpdateData) {
+			@Deprecated @RequestParam(required = false) String mOtp, @RequestBody UserUpdateRequest userUpdateData) {
 		ResponseWrapperM<Object, AuthResponseOTPprefix> wrapper = new ResponseWrapperM<>();
 		mOtp = JaxAuthContext.mOtp(ArgUtil.ifNotEmpty(userUpdateData.getmOtp(), mOtp, mOtpHeader));
 //		mOtp = (mOtp == null) ? (mOtpHeader == null ? userUpdateData.getmOtp() : mOtpHeader) : mOtp;
 		if (mOtp == null) {
 			wrapper.setMeta(new AuthData());
 			wrapper.getMeta().setmOtpPrefix(loginService.sendOTP(null, null).getData().getmOtpPrefix());
-			wrapper.setStatus(OWAStatusStatusCodes.MOTP_REQUIRED);
+			wrapper.setStatusEnum(OWAStatusStatusCodes.MOTP_REQUIRED);
 		} else {
 			wrapper.setData(userService.updateSecQues(userUpdateData.getSecQuesAns(), mOtp, null));
-			wrapper.setStatus(OWAStatusStatusCodes.USER_UPDATE_SUCCESS);
+			wrapper.setStatusEnum(OWAStatusStatusCodes.USER_UPDATE_SUCCESS);
 		}
 		return wrapper;
+	}
+
+	/**
+	 * Reg sec ques.
+	 *
+	 * @param userUpdateData the user update data
+	 * @return the response wrapper
+	 */
+	@RequestMapping(value = "/api/user/secques/v2", method = { RequestMethod.POST })
+	public AmxApiResponse<BoolRespModel, Object> regSecQuesV2(@RequestBody UserUpdateRequest userUpdateData) {
+		return userService.updateSecQues(userUpdateData.getSecQuesAns());
 	}
 
 	/**
@@ -426,8 +531,7 @@ public class UserController {
 	@RequestMapping(value = "/api/user/phising", method = { RequestMethod.POST })
 	public ResponseWrapperM<Object, AuthResponseOTPprefix> updatePhising(
 			@Deprecated @RequestHeader(value = "mOtp", required = false) String mOtpHeader,
-			@Deprecated @RequestParam(required = false) String mOtp,
-			@RequestBody UserUpdateRequest userUpdateData) {
+			@Deprecated @RequestParam(required = false) String mOtp, @RequestBody UserUpdateRequest userUpdateData) {
 		ResponseWrapperM<Object, AuthResponseOTPprefix> wrapper = new ResponseWrapperM<>();
 		mOtp = JaxAuthContext.mOtp(ArgUtil.ifNotEmpty(userUpdateData.getmOtp(), mOtp, mOtpHeader));
 		// mOtp = (mOtp == null) ? (mOtpHeader == null ? userUpdateData.getmOtp() :
@@ -435,11 +539,11 @@ public class UserController {
 		if (mOtp == null) {
 			wrapper.setMeta(new AuthData());
 			wrapper.getMeta().setmOtpPrefix(loginService.sendOTP(null, null).getData().getmOtpPrefix());
-			wrapper.setStatus(OWAStatusStatusCodes.MOTP_REQUIRED);
+			wrapper.setStatusEnum(OWAStatusStatusCodes.MOTP_REQUIRED);
 		} else {
-			wrapper.setData(userService.updatePhising(userUpdateData.getImageUrl(), userUpdateData.getCaption(),
-					mOtp, null));
-			wrapper.setStatus(OWAStatusStatusCodes.USER_UPDATE_SUCCESS);
+			wrapper.setData(
+					userService.updatePhising(userUpdateData.getImageUrl(), userUpdateData.getCaption(), mOtp, null));
+			wrapper.setStatusEnum(OWAStatusStatusCodes.USER_UPDATE_SUCCESS);
 		}
 		return wrapper;
 	}
@@ -464,6 +568,36 @@ public class UserController {
 		}
 	}
 
+	@RequestMapping(value = "/api/user/income", method = { RequestMethod.POST })
+	public ResponseWrapper<IncomeDto> saveAnnualIncome(@RequestBody IncomeDto incomeDto) {
+		try {
+			return ResponseWrapper.build(jaxService.setDefaults().getUserclient().saveAnnualIncome(incomeDto));
+		} finally {
+			userService.updateCustoemrModel();
+		}
+	}
+
+	@RequestMapping(value = "/api/user/income", method = { RequestMethod.GET })
+	public ResponseWrapper<IncomeDto> getAnnualIncomeDetais() {
+		return ResponseWrapper.build(jaxService.setDefaults().getUserclient().getAnnualIncomeDetais());
+	}
+
+	@RequestMapping(value = "/api/user/trnx_limit", method = { RequestMethod.POST })
+	public ResponseWrapper<BoolRespModel> saveAnnualTransactionLimit(
+			@RequestBody IncomeDto incomeDto) {
+		try {
+			return ResponseWrapper
+					.build(jaxService.setDefaults().getUserclient().saveAnnualTransactionLimit(incomeDto));
+		} finally {
+			userService.updateCustoemrModel();
+		}
+	}
+
+	@RequestMapping(value = "/api/user/trnx_limit", method = { RequestMethod.GET })
+	public ResponseWrapper<AnnualIncomeRangeDTO> getAnnualTransactionLimit() {
+		return ResponseWrapper.build(jaxService.setDefaults().getUserclient().getAnnualTransactionLimit());
+	}
+
 	@RequestMapping(value = "/api/user/device/link", method = { RequestMethod.POST })
 	public ResponseWrapper<UserFingerprintResponseModel> linkDevice() {
 		return ResponseWrapper.build(jaxService.getUserclient().linkDeviceIdLoggedinUser());
@@ -478,4 +612,11 @@ public class UserController {
 	public AmxApiResponse<BoolRespModel, Object> resetDevice(@Valid @RequestBody AuthRequestFingerprint authData) {
 		return ResponseWrapper.build(jaxService.getUserclient().resetFingerprint(authData.getLockId()));
 	}
+
+	@Deprecated
+	@RequestMapping(value = { "/pub/user/otpflags" }, method = { RequestMethod.GET })
+	public AmxApiResponse<CustomerModelSignupResponse, Object> getOtpFlags(@RequestParam String identity) {
+		return ResponseWrapper.build(jaxService.setDefaults().getUserclient().getCustomerModelSignupResponse(identity));
+	}
+
 }

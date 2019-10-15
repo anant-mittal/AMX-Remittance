@@ -2,10 +2,12 @@ package com.amx.jax.ui.model;
 
 import java.util.List;
 
-import com.amx.amxlib.model.SecurityQuestionModel;
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.model.AuthState;
 import com.amx.jax.model.auth.QuestModelDTO;
+import com.amx.jax.model.customer.SecurityQuestionModel;
 import com.amx.jax.swagger.ApiMockModelProperty;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 /**
@@ -80,7 +82,12 @@ public final class AuthDataInterface {
 	 * The Interface AuthRequestOTP.
 	 */
 	@JsonDeserialize(as = AuthData.class)
+	@JsonIgnoreProperties(ignoreUnknown = true)
 	public interface AuthRequestOTP {
+
+		ContactType getContactType();
+
+		void setContactType(ContactType contactType);
 
 		/**
 		 * Gets the m otp.
@@ -115,6 +122,19 @@ public final class AuthDataInterface {
 		 */
 		@Deprecated
 		void seteOtp(String eOtp);
+
+		@Deprecated
+		@ApiMockModelProperty(example = "654321")
+		String getwOtp();
+
+		@Deprecated
+		void setwOtp(String wOtp);
+
+		@Deprecated
+		String getOtp();
+
+		@Deprecated
+		void setOtp(String otp);
 	}
 
 	/**
@@ -149,9 +169,18 @@ public final class AuthDataInterface {
 		 * @param geteOtpPrefix the new e otp prefix
 		 */
 		public void seteOtpPrefix(String geteOtpPrefix);
+
+		String getwOtpPrefix();
+
+		void setwOtpPrefix(String wOtpPrefix);
+
+		String getOtpPrefix();
+
+		void setOtpPrefix(String wOtpPrefix);
 	}
 
 	@JsonDeserialize(as = AuthData.class)
+	@JsonIgnoreProperties(ignoreUnknown = true)
 	public interface AuthRequestFingerprint {
 
 		public void setDeviceToken(String deviceToken);
@@ -164,18 +193,31 @@ public final class AuthDataInterface {
 
 	}
 
+	@JsonDeserialize(as = AuthData.class)
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	public interface AuthRequestCaptcha {
+
+		public String getCaptachKey();
+
+		public void setCaptachKey(String captachKey);
+
+	}
+
 	/**
 	 * The Interface AuthRequest.
 	 */
 	@JsonDeserialize(as = AuthData.class)
+	@JsonIgnoreProperties(ignoreUnknown = true)
 	public interface AuthRequest extends AuthRequestIdentity, AuthRequestPassword, AuthRequestSecAns, AuthRequestOTP,
-			AuthRequestFingerprint {
+			AuthRequestFingerprint, AuthRequestCaptcha {
 
 	}
 
 	/**
 	 * The Interface AuthResponse.
 	 */
+	@JsonDeserialize(as = AuthData.class)
+	@JsonIgnoreProperties(ignoreUnknown = true)
 	public interface AuthResponse extends AuthResponseOTPprefix {
 
 		/**
@@ -230,6 +272,7 @@ public final class AuthDataInterface {
 	 * The Interface UserUpdateRequest.
 	 */
 	@JsonDeserialize(as = UserUpdateData.class)
+	@JsonIgnoreProperties(ignoreUnknown = true)
 	public interface UserUpdateRequest extends AuthRequestPassword, AuthRequestOTP {
 
 		/**

@@ -55,11 +55,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.amx.jax</groupId>
-			<artifactId>lib-monitor</artifactId>
-		</dependency>
-
-		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 		</dependency>
@@ -75,12 +70,51 @@
 			<version>4.1.0.Final</version>
 		</dependency>
 
+		<!-- New KNET Integration -->
+		<dependency>
+			<groupId>com.knet2</groupId>
+			<artifactId>kwt-knet2</artifactId>
+			<version>1.0.shaded</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.knet2</groupId>
+			<artifactId>commons-codec-1.5</artifactId>
+			<version>1.0</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.knet2</groupId>
+			<artifactId>standard</artifactId>
+			<version>1.0</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.knet2</groupId>
+			<artifactId>bcprov-jdk15-145-v2</artifactId>
+			<version>1.0</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.knet2</groupId>
+			<artifactId>bouncycastle-1.20-v2</artifactId>
+			<version>1.0</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.knet2</groupId>
+			<artifactId>cryptix32-v2</artifactId>
+			<version>1.0</version>
+		</dependency>
+		
+		<!-- BHR Benefit -->
 		<dependency>
 			<groupId>bhr.com.benefit</groupId>
 			<artifactId>bhr-benefit</artifactId>
 			<version>1.0.shaded</version>
 		</dependency>
 
+		<!-- 	
 		<dependency>
 			<groupId>bouncycastle-1.20</groupId>
 			<artifactId>bouncycastle-1.20</artifactId>
@@ -90,7 +124,9 @@
 			<groupId>bcprov-jdk15-145</groupId>
 			<artifactId>bcprov-jdk15-145</artifactId>
 			<version>1.0</version>
-		</dependency>
+		</dependency> 
+		-->
+		
 		<dependency>
 			<groupId>com.e24Pipe</groupId>
 			<artifactId>e24Pipe</artifactId>
@@ -103,11 +139,12 @@
 			<version>1.0</version>
 		</dependency>
 
+		<!-- 		
 		<dependency>
 			<groupId>cryptix32</groupId>
 			<artifactId>cryptix32</artifactId>
 			<version>1.0</version>
-		</dependency>
+		</dependency> -->
 
 		<!-- https://mvnrepository.com/artifact/org.jdom/jdom -->
 		<dependency>
@@ -120,8 +157,7 @@
 			<groupId>com.amx.jax</groupId>
 			<artifactId>lib-monitor</artifactId>
 		</dependency>
-
-
+		
 	</dependencies>
 
 	<profiles>
@@ -164,6 +200,18 @@
 				<configuration>
 					<executable>true</executable>
 				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>build-info</goal>
+						</goals>
+						<configuration>
+							<additionalProperties>
+								<version>${vzn}</version>
+							</additionalProperties>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

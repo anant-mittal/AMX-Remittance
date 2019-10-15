@@ -48,6 +48,9 @@ public class BranchController {
 	public String defaultPage(Model model, HttpServletRequest request) {
 		model.addAttribute("cdnUrl", webAppConfig.getCleanCDNUrl());
 		model.addAttribute("oldBranchUrl", webAppConfig.getOldBranchUrl());
+		model.addAttribute("wuLoginUrl", webAppConfig.getWuLoginUrl());
+		model.addAttribute("mgLoginUrl", webAppConfig.getMgLoginUrl());
+		model.addAttribute("hsLoginUrl", webAppConfig.getHsLoginUrl());
 		model.addAttribute("cdnVersion", getVersion());
 		model.addAttribute("applicationTitle", webAppConfig.getAppTitle());
 

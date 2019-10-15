@@ -60,6 +60,15 @@ public Date getMidnightToday() {
 	return date.getTime();
 }
 
+public Employee getEmployeeName(BigDecimal employeeId) {
+	
+	Employee employeName = repo.getEmployeeName(employeeId);
+	
+	return employeName;
+	
+	
+}
+
 public void validateTokenDate(Employee employeeDetails) {/*
 
 	long otpValidTimeInMins = otpSettings.getOtpValidityTime().longValue();

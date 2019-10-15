@@ -1,7 +1,7 @@
 package com.amx.jax.sso.server;
 
 import java.io.IOException;
-import java.math.BigDecimal;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -37,15 +37,20 @@ import com.amx.jax.http.ApiRequest;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
 import com.amx.jax.http.RequestType;
+import com.amx.jax.logger.AuditActor;
+import com.amx.jax.logger.AuditActor.ActorType;
 import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.logger.events.AuditActorInfo;
 import com.amx.jax.rbaac.RbaacServiceClient;
 import com.amx.jax.rbaac.constants.RbaacServiceConstants.LOGIN_TYPE;
+import com.amx.jax.rbaac.dto.UserClientDto;
 import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
 import com.amx.jax.rbaac.dto.response.UserAuthInitResponseDTO;
+import com.amx.jax.session.SessionContextService;
 import com.amx.jax.sso.SSOAuditEvent;
 import com.amx.jax.sso.SSOConfig;
 import com.amx.jax.sso.SSOConstants;
@@ -56,8 +61,11 @@ import com.amx.jax.sso.SSOTranx;
 import com.amx.jax.sso.SSOTranx.SSOModel;
 import com.amx.jax.sso.SSOUser;
 import com.amx.jax.sso.server.ApiHeaderAnnotations.ApiDeviceHeaders;
+import com.amx.jax.stomp.StompTunnelSessionManager;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
+import com.amx.utils.TimeUtils;
+import com.amx.utils.URLBuilder;
 import com.amx.utils.Urly;
 
 import io.swagger.annotations.ApiParam;
@@ -94,6 +102,12 @@ public class SSOServerController {
 	@Autowired
 	private AuditService auditService;
 
+	@Autowired
+	private SessionContextService sessionContextService;
+
+	@Autowired
+	StompTunnelSessionManager stompTunnelSessionManager;
+
 	private Map<String, Object> getModelMap() {
 		ssoUser.ssoTranxId();
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -102,6 +116,7 @@ public class SSOServerController {
 		map.put(SSOConstants.PARAM_SSO_LOGIN_PREFIX, appConfig.getAppPrefix());
 		map.put(SSOConstants.SECURITY_CODE_KEY, ssoUser.getSelfSAC());
 		map.put(SSOConstants.PARTNER_SECURITY_CODE_KEY, ssoUser.getPartnerSAC());
+		map.put(SSOConstants.SSO_TENANT_KEY, AppContextUtil.getTenant());
 
 		String adapterUrl = sSOConfig.getAdapterUrl();
 		Cookie kooky = commonHttpRequest.getCookie("adapter.url");
@@ -116,9 +131,38 @@ public class SSOServerController {
 	@ApiSSOStatus({ SSOServerCodes.AUTH_REQUIRED, SSOServerCodes.AUTH_DONE })
 	@RequestMapping(value = SSOConstants.SSO_LOGIN_URL_HTML, method = RequestMethod.GET)
 	public String authLoginView(Model model,
-			@PathVariable(required = false, value = "htmlstep") @ApiParam(defaultValue = "REQUIRED") SSOAuthStep html) {
+			@PathVariable(required = false, value = "htmlstep") @ApiParam(defaultValue = "REQUIRED") SSOAuthStep html,
+			@RequestParam(required = false) Long refresh, HttpServletResponse resp,
+			@RequestParam(required = false, value = AppConstants.TRANX_ID_XKEY) String trnxId)
+			throws MalformedURLException, URISyntaxException {
+		if (sSOTranx.get() != null) {
+			SSOModel x = sSOTranx.get();
+			refresh = x.getCreatedStamp();
+			// System.out.println("=="+refresh+"===="+System.currentTimeMillis()+"trnx
+			// "+AppContextUtil.getTranxId());
+			if ((ArgUtil.isEmpty(refresh) || TimeUtils.isExpired(refresh, 10 * 1000))) {
+				String newTranxId = AppContextUtil.getTraceId(true, true);
+				ssoUser.setTranxId(newTranxId);
+
+				URLBuilder builder = Urly.parse(
+						ArgUtil.ifNotEmpty(sSOTranx.get().getAppUrl(),
+								appConfig.getAppPrefix() + SSOConstants.APP_LOGIN_URL_DONE))
+						.queryParam(AppConstants.TRANX_ID_XKEY, newTranxId)
+						.queryParam(SSOConstants.PARAM_STEP, SSOAuthStep.DONE)
+						.queryParam(SSOConstants.PARAM_SOTP, sSOTranx.get().getAppToken());
+
+				/// builder.path(appConfig.getAppPrefix() + SSOConstants.SSO_LOGIN_URL)
+				// .queryParam("refresh", System.currentTimeMillis())
+				;
+				resp.setHeader("Location", builder.getURL());
+				resp.setStatus(302);
+			} else {
+				sSOTranx.fastPut(x);
+			}
+		}
 		ssoUser.generateSAC();
 		model.addAllAttributes(getModelMap());
+		stompTunnelSessionManager.registerUser(ActorType.E.getId(0));
 		return SSOConstants.SSO_INDEX_PAGE;
 	}
 
@@ -160,7 +204,7 @@ public class SSOServerController {
 
 		Map<String, Object> model = getModelMap();
 		if (sSOTranx.get() == null) {
-			sSOTranx.init();
+			sSOTranx.put(new SSOModel());
 		}
 		AmxApiResponse<Object, Map<String, Object>> result = AmxApiResponse.buildMeta(model);
 		result.setStatusEnum(SSOServerCodes.AUTH_REQUIRED);
@@ -180,49 +224,48 @@ public class SSOServerController {
 				ssoUser.generateSAC();
 
 				SSOModel ssomodel = sSOTranx.get();
-				ssomodel.getUserClient().setDeviceType(userDeviceClient.getDeviceType());
-				ssomodel.getUserClient().setClientType(clientType);
-				ssomodel.getUserClient().setGlobalIpAddress(userDeviceClient.getIp());
+				UserClientDto userClientDto = new UserClientDto();
+				userClientDto.setDeviceType(userDeviceClient.getDeviceType());
+				userClientDto.setClientType(clientType);
+				userClientDto.setGlobalIpAddress(userDeviceClient.getIp());
+				userClientDto.setTerminalId(ssomodel.getTerminalId());
 
 				if (appConfig.isSwaggerEnabled() && !ArgUtil.isEmpty(deviceType)) {
-					ssomodel.getUserClient().setDeviceType(deviceType);
+					userClientDto.setDeviceType(deviceType);
 				}
 
 				if (!ArgUtil.isEmpty(sSOTranx.get().getBranchAdapterId())) {
 					// Terminal Login
 					DeviceData branchDeviceData = deviceBox.get(sSOTranx.get().getBranchAdapterId());
-					ssomodel.getUserClient().setLocalIpAddress(branchDeviceData.getLocalIp());
-					ssomodel.getUserClient().setTerminalId(ArgUtil.parseAsBigDecimal(branchDeviceData.getTerminalId()));
+					userClientDto.setLocalIpAddress(branchDeviceData.getLocalIp());
+					userClientDto.setTerminalId(ArgUtil.parseAsBigDecimal(branchDeviceData.getTerminalId()));
 					LOGGER.info("Gloabal IPs THIS: {} ADAPTER: {}", userDeviceClient.getIp(),
 							branchDeviceData.getGlobalIp());
 
 					// Audit
-					auditEvent.terminalId(sSOTranx.get().getUserClient().getTerminalId())
+					auditEvent.terminalId(userClientDto.getTerminalId())
 							// .clientType(ClientType.BRANCH_ADAPTER)
 							.deviceRegId(sSOTranx.get().getBranchAdapterId());
 				} else {
 					// Device LOGIN
 					String deviceRegId = commonHttpRequest.get(DeviceConstants.Keys.CLIENT_REG_KEY_XKEY);
-					ssomodel.getUserClient().setLocalIpAddress(userDeviceClient.getIp());
-					ssomodel.getUserClient().setDeviceId(userDeviceClient.getFingerprint());
-					ssomodel.getUserClient()
-							.setDeviceRegId(ArgUtil.parseAsBigDecimal(deviceRegId));
-					ssomodel.getUserClient()
-							.setDeviceRegToken(
-									commonHttpRequest.get(DeviceConstants.Keys.CLIENT_REG_TOKEN_XKEY));
-					ssomodel.getUserClient()
-							.setDeviceSessionToken(
-									commonHttpRequest.get(DeviceConstants.Keys.CLIENT_SESSION_TOKEN_XKEY));
+					userClientDto.setLocalIpAddress(userDeviceClient.getIp());
+					userClientDto.setDeviceId(userDeviceClient.getFingerprint());
+					userClientDto.setDeviceRegId(ArgUtil.parseAsBigDecimal(deviceRegId));
+					userClientDto.setDeviceRegToken(
+							commonHttpRequest.get(DeviceConstants.Keys.CLIENT_REG_TOKEN_XKEY));
+					userClientDto.setDeviceSessionToken(
+							commonHttpRequest.get(DeviceConstants.Keys.CLIENT_SESSION_TOKEN_XKEY));
 					// Audit
 					auditEvent.deviceRegId(deviceRegId);
 				}
 
-				ssoUser.setUserClient(ssomodel.getUserClient());
+				ssoUser.setUserClient(userClientDto);
 				UserAuthInitReqDTO init = new UserAuthInitReqDTO();
 				init.setEmployeeNo(formdata.getEcnumber());
 				init.setIdentity(formdata.getIdentity());
 
-				init.setUserClientDto(ssomodel.getUserClient());
+				init.setUserClientDto(userClientDto);
 
 				init.setLoginType(loginType);
 				init.setSelfSAC(ssoUser.getSelfSAC());
@@ -232,7 +275,7 @@ public class SSOServerController {
 					init.setPartnerSAC(ssoUser.getPartnerSAC());
 				}
 				try {
-					//init.getUserClientDto().setTerminalId(new BigDecimal(1068));
+					// init.getUserClientDto().setTerminalId(new BigDecimal(1068));
 					UserAuthInitResponseDTO initResp = rbaacServiceClient.initAuthForUser(init).getResult();
 
 					model.put("mOtpPrefix", ssoUser.getSelfSAC());
@@ -256,7 +299,7 @@ public class SSOServerController {
 				SSOAuditEvent auditEvent = new SSOAuditEvent(SSOAuditEvent.Type.LOGIN_OTP, Result.FAIL)
 						.clientType(clientType);
 				try {
-					String terminalId = ArgUtil.parseAsString(sSOTranx.get().getUserClient().getTerminalId());
+					String terminalId = ArgUtil.parseAsString(sSOTranx.get().getTerminalId());
 
 					UserAuthorisationReqDTO auth = new UserAuthorisationReqDTO();
 					auth.setEmployeeNo(formdata.getEcnumber());
@@ -264,6 +307,8 @@ public class SSOServerController {
 					if (ArgUtil.isEmpty(terminalId)) {
 						auth.setIpAddress(userDeviceClient.getIp());
 					} else {
+						ssoUser.setTerminalId(terminalId);
+						// TODO:-- TO validate
 						auth.setIpAddress(terminalId);
 					}
 
@@ -279,6 +324,18 @@ public class SSOServerController {
 					EmployeeDetailsDTO empDto = rbaacServiceClient.authoriseUser(auth).getResult();
 					sSOTranx.setUserDetails(empDto);
 
+					/** <Save Session Info on Shared Context across microservices */
+					AuditActorInfo actor = new AuditActorInfo(AuditActor.ActorType.EMP,
+							empDto.getEmployeeId());
+					actor.setBranchId(empDto.getCountryBranchId());
+					actor.setBranchName(empDto.getBranchName());
+					actor.setAreaName(empDto.getArea());
+					actor.setAreaId(empDto.getAreaCode());
+					actor.setUsername(empDto.getUserName());
+					actor.setEmpno(empDto.getEmployeeNumber());
+					sessionContextService.setContext(actor);
+					/*** ends> */
+
 					String redirectUrl = Urly.parse(
 							ArgUtil.ifNotEmpty(sSOTranx.get().getAppUrl(),
 									appConfig.getAppPrefix() + SSOConstants.APP_LOGIN_URL_DONE))
@@ -290,6 +347,9 @@ public class SSOServerController {
 					model.put(SSOConstants.PARAM_REDIRECT, redirectUrl);
 					result.setRedirectUrl(redirectUrl);
 					result.setStatusEnum(SSOServerCodes.AUTH_DONE);
+					
+					stompTunnelSessionManager.registerUser(ActorType.E.getId(empDto.getEmployeeId()));
+					
 					if (redirect) {
 						resp.setHeader("Location", redirectUrl);
 						resp.setStatus(302);
@@ -311,9 +371,11 @@ public class SSOServerController {
 			CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE })
 	@ResponseBody
 	public String getCardDetails() throws InterruptedException {
-		AmxApiResponse<CardData, Object> resp = AmxApiResponse.build(new CardData());
+		AmxApiResponse<CardData, Map<String, Object>> resp = AmxApiResponse.build(new CardData(),
+				new HashMap<String, Object>());
 		ssoUser.ssoTranxId();
-		String terminlId = ArgUtil.parseAsString(sSOTranx.get().getUserClient().getTerminalId());
+		String terminlId = ArgUtil.parseAsString(sSOTranx.get().getTerminalId());
+		resp.getMeta().put("tid", terminlId);
 		if (terminlId != null) {
 			CardData card = adapterServiceClient.pollCardDetailsByTerminal(terminlId).getResult();
 			if (card != null) {

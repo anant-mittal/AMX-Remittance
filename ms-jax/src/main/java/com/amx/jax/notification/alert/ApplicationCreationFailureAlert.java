@@ -12,13 +12,14 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxlib.constant.CommunicationChannel;
 import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.amxlib.model.notification.RemittanceTransactionFailureAlertModel;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ExEmailNotification;
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.IExEmailNotificationDao;
@@ -49,7 +50,7 @@ public class ApplicationCreationFailureAlert implements IAlert {
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Override
-	public List<String> getAlertContacts(CommunicationChannel notificationType) {
+	public List<String> getAlertContacts(ContactType notificationType) {
 		// TODO fetch alert contacts
 		return null;
 	}
@@ -59,14 +60,33 @@ public class ApplicationCreationFailureAlert implements IAlert {
 		if(!isApplicable(ex)) {
 			return;
 		}
-		RemittanceTransactionRequestModel model = (RemittanceTransactionRequestModel) JaxContextUtil.getRequestModel();
+		
+		RemittanceTransactionRequestModel model = null;
+		RemittanceTransactionDrRequestModel modelDr = null;
+		
+		
+		//RemittanceTransactionRequestModel model = (RemittanceTransactionRequestModel) JaxContextUtil.getRequestModel();
+		
+		Object Object = (Object)JaxContextUtil.getRequestModel();
+		
+		if(Object instanceof RemittanceTransactionRequestModel) {
+			model = (RemittanceTransactionRequestModel) JaxContextUtil.getRequestModel();
+		}else if(Object instanceof RemittanceTransactionDrRequestModel) {
+			modelDr = (RemittanceTransactionDrRequestModel) JaxContextUtil.getRequestModel();
+		}
+		
+		
 		BenificiaryListView benificiaryListView = null;
 		List<ExEmailNotification> emailid =null;
 		String product = "Product could not be derived";
 		StringBuilder cusName = new StringBuilder();
 		
 		try {
+			if(model!=null) {
 			benificiaryListView = beneficiaryOnlineDao.findOne(model.getBeneId());
+			}else {
+				benificiaryListView = beneficiaryOnlineDao.findOne(modelDr.getBeneId());
+			}
 			BigDecimal customerId = benificiaryListView.getCustomerId();
 			Customer customer = custDao.getCustById(customerId);
 		    emailid = emailNotificationDao.getEmailNotification();
@@ -80,7 +100,11 @@ public class ApplicationCreationFailureAlert implements IAlert {
 			remittanceTransactionFailure.setCurrencyQuoteName(benificiaryListView.getCurrencyQuoteName());
 			remittanceTransactionFailure.setService(product);
 			remittanceTransactionFailure.setCustomerContact(customer.getMobile());
+			if(model!=null) {
 			remittanceTransactionFailure.setTransactionAmount(model.getLocalAmount());
+			}else if(modelDr!=null) {
+				remittanceTransactionFailure.setTransactionAmount(modelDr.getLocalAmount());
+			}
 			remittanceTransactionFailure.setExceptionMessage(ex.getErrorMessage());
 			String currencyQuoteName = tenantService.getDefaultCurrencyMaster().getQuoteName();
 			remittanceTransactionFailure.setCurrencyQuoteName(currencyQuoteName);
@@ -104,7 +128,7 @@ public class ApplicationCreationFailureAlert implements IAlert {
 		}
 
 	}
-
+	
 	private boolean isApplicable(AbstractJaxException ex) {
 		if (ex.getErrorKey().equals(JaxError.ADDTIONAL_FLEX_FIELD_REQUIRED.toString())) {
 			return false;
@@ -118,9 +142,9 @@ public class ApplicationCreationFailureAlert implements IAlert {
 	}
 
 	@Override
-	public List<CommunicationChannel> getCommucationChannels() {
-		List<CommunicationChannel> channels = new ArrayList<>();
-		channels.add(CommunicationChannel.EMAIL);
+	public List<ContactType> getCommucationChannels() {
+		List<ContactType> channels = new ArrayList<>();
+		channels.add(ContactType.EMAIL);
 		return channels;
 	}
 

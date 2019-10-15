@@ -2,6 +2,8 @@ package com.amx.jax.logger.events;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -9,18 +11,22 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
 
+import com.amx.jax.AppConstants;
 import com.amx.jax.AppContext;
 import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.tunnel.TunnelEventXchange;
 import com.amx.jax.tunnel.TunnelMessage;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.ContextUtil;
 import com.amx.utils.HttpUtils;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonInclude(Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -38,10 +44,15 @@ public class RequestTrackEvent extends AuditEvent {
 		}
 	}
 
+	@JsonIgnore
 	private AppContext context;
+
 	@JsonProperty("rspTym")
 	private long responseTime;
+
 	private String ip;
+
+	private Map<String, String> topic;
 
 	public RequestTrackEvent(Type type) {
 		super(type);
@@ -49,7 +60,10 @@ public class RequestTrackEvent extends AuditEvent {
 
 	public <T> RequestTrackEvent(Type type, TunnelEventXchange xchange, TunnelMessage<T> message) {
 		super(type);
-		this.description = String.format("%s %s=%s", this.type, xchange, message.getTopic());
+		this.topic = new HashMap<String, String>();
+		this.description = String.format("%s %s", this.type, xchange.getTopic(message.getTopic()));
+		topic.put("id", message.getId());
+		topic.put("name", message.getTopic());
 		this.context = message.getContext();
 	}
 
@@ -80,6 +94,16 @@ public class RequestTrackEvent extends AuditEvent {
 
 	public RequestTrackEvent track(HttpServletResponse response, HttpServletRequest request) {
 		this.description = String.format("%s %s=%s", this.type, response.getStatus(), request.getRequestURI());
+
+		ApiAuditEvent apiEventObject = (ApiAuditEvent) ContextUtil.map().getOrDefault("api_event", null);
+
+		if (!ArgUtil.isEmpty(apiEventObject)) {
+			this.result = apiEventObject.getResult();
+			this.message = apiEventObject.getMessage();
+			this.details = apiEventObject.getDetails();
+			this.errorCode = apiEventObject.getErrorCode();
+		}
+
 		return this;
 	}
 
@@ -96,12 +120,37 @@ public class RequestTrackEvent extends AuditEvent {
 
 	public RequestTrackEvent track(ClientHttpResponse response, URI uri) {
 		String statusCode = "000";
+
 		try {
-			statusCode = ArgUtil.parseAsString(response.getStatusCode());
+			String exceptionType = response.getHeaders().getFirst(AppConstants.EXCEPTION_HEADER_KEY);
+			String errorCode = response.getHeaders().getFirst(AppConstants.EXCEPTION_HEADER_CODE_KEY);
+
+			if (!ArgUtil.isEmpty(exceptionType)) {
+				this.result = Result.ERROR;
+				if (ArgUtil.is(errorCode)) {
+					this.errorCode = errorCode;
+				} else {
+					this.exceptionType = exceptionType;
+				}
+			}
+
+		} catch (Exception e) {
+			LOGGER.error("RequestTrackEvent.track while fetching header in", e);
+		}
+
+		try {
+			HttpStatus status = response.getStatusCode();
+			statusCode = ArgUtil.parseAsString(status);
+			if (ArgUtil.is(status) && (status.is5xxServerError() ||
+					status.is4xxClientError())) {
+				this.result = Result.ERROR;
+			}
+
 		} catch (IOException e) {
 			LOGGER.error("RequestTrackEvent.track while logging response in", e);
 			this.description = String.format("%s %s=%s", this.type, "EXCEPTION", uri);
 		}
+
 		this.description = String.format("%s %s=%s", this.type, statusCode, uri);
 		return this;
 	}
@@ -130,7 +179,20 @@ public class RequestTrackEvent extends AuditEvent {
 		this.ip = ip;
 	}
 
+	public RequestTrackEvent debug(boolean isDebugOnly) {
+		this.debugEvent = isDebugOnly;
+		return this;
+	}
+
 	public void clean() {
+	}
+
+	public Map<String, String> getTopic() {
+		return topic;
+	}
+
+	public void setTopic(Map<String, String> topic) {
+		this.topic = topic;
 	}
 
 }

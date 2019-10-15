@@ -3,9 +3,9 @@ package com.amx.jax.services;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,35 +13,93 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
-
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.constant.JaxApiFlow;
+import com.amx.jax.dao.FcSaleBranchDao;
+import com.amx.jax.dbmodel.CountryBranch;
+import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.fx.FxOrderTransactionModel;
 import com.amx.jax.dbmodel.fx.OrderManagementView;
+import com.amx.jax.dbmodel.fx.StatusMaster;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.manager.FcDeliveryOrdersearchManager;
 import com.amx.jax.manager.FcSaleApplicationTransactionManager;
 import com.amx.jax.manager.FcSaleBranchOrderManager;
+import com.amx.jax.manager.StatusMasterManager;
+import com.amx.jax.model.request.fx.FcDeliveryBranchOrderSearchRequest;
 import com.amx.jax.model.request.fx.FcSaleBranchDispatchRequest;
+import com.amx.jax.model.request.fx.FcSaleOrderManagementDatesRequest;
 import com.amx.jax.model.response.fx.FcEmployeeDetailsDto;
 import com.amx.jax.model.response.fx.FcSaleCurrencyAmountModel;
 import com.amx.jax.model.response.fx.FcSaleOrderManagementDTO;
+import com.amx.jax.model.response.fx.FxDeliveryTimeSlotDto;
 import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
+import com.amx.jax.model.response.fx.FxOrderTransactionHistroyDto;
 import com.amx.jax.model.response.fx.UserStockDto;
+import com.amx.jax.repository.CustomerRepository;
+import com.amx.jax.repository.fx.FxDeliveryDetailsRepository;
+import com.amx.jax.repository.fx.FxOrderDeliveryTimeSlotRepository;
+import com.amx.jax.repository.fx.FxOrderTransactionRespository;
+import com.amx.jax.repository.fx.VwFxDeliveryDetailsRepository;
+import com.amx.jax.service.CountryBranchService;
+import com.amx.jax.userservice.service.UserValidationService;
 import com.amx.jax.util.RoundUtil;
+import com.amx.jax.validation.FcDeliveryBranchOrderSearchRequestValidation;
+
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @SuppressWarnings("rawtypes")
 public class FcSaleBranchService extends AbstractService{
 
-	Logger logger = LoggerFactory.getLogger(getClass());
+	public static final Logger logger = LoggerFactory.getLogger(FcSaleBranchService.class);
 
 	@Autowired
 	FcSaleBranchOrderManager branchOrderManager;
 
 	@Autowired
 	FcSaleApplicationTransactionManager fcSaleApplicationTransactionManager;
+	
+	@Autowired
+	VwFxDeliveryDetailsRepository vwFxDeliveryDetailsRepository;
+	
+	@Autowired
+	CustomerRepository customerRepo;
+	
+	@Autowired
+	CountryBranchService countryBranchService;
+	
+	@Autowired
+	FcSaleBranchDao fcSaleBranchDao;
+	
+	@Autowired
+	FcDeliveryOrdersearchManager fcDeliveryOrdersearchManager;
+	
+	@Autowired
+	UserValidationService userValidationService;
+	
+	@Autowired
+	FcDeliveryBranchOrderSearchRequestValidation fcDeliveryBranchOrderSearchRequestValidation;
+	
+	@Autowired
+	FxDeliveryDetailsRepository fxDeliveryDetailsRepository;
+	
+	@Autowired
+	StatusMasterManager statusMasterManager;
+	
+	@Autowired
+	FxOrderTransactionRespository fxOrderTransactionRespository;
+	
+	@Autowired
+	FxOrderDeliveryTimeSlotRepository fcSaleOrderTimeSlotDao;
+	
+	@Autowired
+	FcSaleBranchOrderManager fcSaleBranchOrderManager;
+
+
 
 	/* 
 	 * @param   :fetch List of Pending Orders
@@ -58,7 +116,7 @@ public class FcSaleBranchService extends AbstractService{
 		}
 		
 		try {
-			HashMap<String, Object> orderDetails = branchOrderManager.fetchFcSaleOrderManagement(applicationCountryId,employeeId);
+			HashMap<String, Object> orderDetails = branchOrderManager.fetchFcSaleOrderManagement(applicationCountryId,employeeId,null,null);
 			if(orderDetails != null) {
 				if(orderDetails.get("ORDERS") != null && orderDetails.get("AREA") != null) {
 					List<OrderManagementView> orderManagement = (List<OrderManagementView>) orderDetails.get("ORDERS");
@@ -90,13 +148,19 @@ public class FcSaleBranchService extends AbstractService{
 
 	public List<FcSaleOrderManagementDTO> convertFcSaleOrderManagementDTO(List<OrderManagementView> orderManagementView,BigDecimal applicationCountryId,BigDecimal employeeId,Boolean areaCodeCheck,BigDecimal branchId){
 		List<FcSaleOrderManagementDTO> lstFcSaleOrder = new ArrayList<>();
-		List<BigDecimal> duplicate = new ArrayList<>();
+		List<String> duplicate = new ArrayList<>();
+		HashMap<BigDecimal, BigDecimal> foreignCurrencySumAmt = new HashMap<>();
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 		try {
 			if(orderManagementView != null && orderManagementView.size() != 0) {
+				
+				if(!areaCodeCheck) {
+					foreignCurrencySumAmt = fetchUserAccumulateStock(applicationCountryId, employeeId);
+				}
+				
 				for (OrderManagementView orderManagement : orderManagementView) {
-					if(!duplicate.contains(orderManagement.getCollectionDocumentNo())) {
-						duplicate.add(orderManagement.getCollectionDocumentNo());
+					if(!duplicate.contains(orderManagement.getCollectionDocFinanceYear()+""+orderManagement.getCollectionDocumentNo())) {
+						duplicate.add(orderManagement.getCollectionDocFinanceYear()+""+orderManagement.getCollectionDocumentNo());
 						FcSaleOrderManagementDTO fcSaleOrder = new FcSaleOrderManagementDTO();
 						fcSaleOrder.setApplicationCountryId(orderManagement.getApplicationCountryId());
 						fcSaleOrder.setCollectionDocFinanceYear(orderManagement.getCollectionDocFinanceYear());
@@ -115,12 +179,13 @@ public class FcSaleBranchService extends AbstractService{
 						fcSaleOrder.setRecPayBranchId(orderManagement.getRecPayBranchId());
 						fcSaleOrder.setRecPayCountryBranchId(orderManagement.getRecPayCountryBranchId());
 						fcSaleOrder.setGovernateId(orderManagement.getGovernateId());
+						fcSaleOrder.setCustomerName(orderManagement.getCustomerName());
 
 						HashMap<BigDecimal, BigDecimal> foreignCurrencyAmt = new HashMap<>();
 						List<FcSaleCurrencyAmountModel> lstCurrencyAmt = new ArrayList<>();
 						String mutipleInventoryId = null;
 						for (OrderManagementView fcSaleOrderManagement : orderManagementView) {
-							if(fcSaleOrderManagement.getCollectionDocumentNo().compareTo(orderManagement.getCollectionDocumentNo()) == 0) {
+							if(fcSaleOrderManagement.getCollectionDocFinanceYear().compareTo(orderManagement.getCollectionDocFinanceYear()) == 0 && fcSaleOrderManagement.getCollectionDocumentNo().compareTo(orderManagement.getCollectionDocumentNo()) == 0) {
 
 								FcSaleCurrencyAmountModel fcSaleCurrencyAmountModel = new FcSaleCurrencyAmountModel();
 								fcSaleCurrencyAmountModel.setAmount(fcSaleOrderManagement.getForeignTrnxAmount());
@@ -147,7 +212,11 @@ public class FcSaleBranchService extends AbstractService{
 							if(orderManagement.getRecPayBranchId() != null && branchId != null && branchId.compareTo(orderManagement.getRecPayBranchId()) == 0) {
 								status = Boolean.TRUE;
 							}else {
-								status = checkFcSaleStockAvailable(foreignCurrencyAmt,applicationCountryId,employeeId);
+								if(foreignCurrencySumAmt != null && foreignCurrencySumAmt.size() != 0) {
+									status = checkFcSaleStockAvailable(foreignCurrencyAmt,applicationCountryId,employeeId,foreignCurrencySumAmt);
+								}else {
+									throw new GlobalException(JaxError.EMPTY_STOCK_EMPLOYEE,"Employee stock not available");
+								}
 							}
 							
 							if(status) {
@@ -165,11 +234,10 @@ public class FcSaleBranchService extends AbstractService{
 
 		return lstFcSaleOrder;
 	}
-
-	// checking stock available for fc sale
-	public Boolean checkFcSaleStockAvailable(HashMap<BigDecimal, BigDecimal> foreignCurrencyAmt,BigDecimal applicationCountryId,BigDecimal employeeId) {
+	
+	// fetch sum of stock add to map
+	public HashMap<BigDecimal, BigDecimal> fetchUserAccumulateStock(BigDecimal applicationCountryId,BigDecimal employeeId){
 		HashMap<BigDecimal, BigDecimal> foreignCurrencySumAmt = new HashMap<>();
-		Boolean status = Boolean.TRUE;
 		List<Object[]> orderManagement = fetchFcSaleUserStockSum(applicationCountryId,employeeId);
 		if(orderManagement != null && orderManagement.size() != 0) {
 			for (Object object : orderManagement) {
@@ -178,24 +246,28 @@ public class FcSaleBranchService extends AbstractService{
 					foreignCurrencySumAmt.put(new BigDecimal(currencyAmt[0].toString()),new BigDecimal(currencyAmt[1].toString()));
 				}
 			}
+		}
+		
+		return foreignCurrencySumAmt;
+	}
+	
 
-			for (HashMap.Entry<BigDecimal, BigDecimal> currencyAmt : foreignCurrencyAmt.entrySet()) {
-				BigDecimal currency = currencyAmt.getKey();
-				BigDecimal amount = currencyAmt.getValue();
-				if(currency != null && foreignCurrencySumAmt.get(currency) != null) {
-					if(amount.compareTo(foreignCurrencySumAmt.get(currency)) > 0) {
-						status = Boolean.FALSE;
-						break;
-					}
-				}else {
+	// checking stock available for fc sale
+	public Boolean checkFcSaleStockAvailable(HashMap<BigDecimal, BigDecimal> foreignCurrencyAmt,BigDecimal applicationCountryId,BigDecimal employeeId,HashMap<BigDecimal, BigDecimal> foreignCurrencySumAmt) {
+		Boolean status = Boolean.TRUE;
+		for (HashMap.Entry<BigDecimal, BigDecimal> currencyAmt : foreignCurrencyAmt.entrySet()) {
+			BigDecimal currency = currencyAmt.getKey();
+			BigDecimal amount = currencyAmt.getValue();
+			if(currency != null && foreignCurrencySumAmt.get(currency) != null) {
+				if(amount.compareTo(foreignCurrencySumAmt.get(currency)) > 0) {
 					status = Boolean.FALSE;
 					break;
 				}
+			}else {
+				status = Boolean.FALSE;
+				break;
 			}
-		}else {
-			throw new GlobalException(JaxError.EMPTY_STOCK_EMPLOYEE,"Employee stock not available");
 		}
-
 		return status;
 	}
 
@@ -674,6 +746,51 @@ public class FcSaleBranchService extends AbstractService{
 
 		return new BoolRespModel(status);
 	}
+	
+	//Validation for OrderId
+	public void validateOrderId(FcDeliveryBranchOrderSearchRequest fcDeliveryBranchOrderSearchRequest) {
+		List<FxOrderTransactionModel> countryBranch = new ArrayList<>();
+		if(fcDeliveryBranchOrderSearchRequest.getOrderId().indexOf("/") > -1) {
+			countryBranch=	fxOrderTransactionRespository.searchTransactionRefNo(fcDeliveryBranchOrderSearchRequest.getOrderId());
+			if(countryBranch.isEmpty()) {
+				throw new GlobalException("Order Id is not found!");
+		}
+		}else {
+			throw new GlobalException("Invalid OrderId");
+	
+		}
+	}
+	
+	public AmxApiResponse<FxOrderTransactionHistroyDto, Object> searchOrder(
+			FcDeliveryBranchOrderSearchRequest fcDeliveryBranchOrderSearchRequest){
+		List<FxOrderTransactionHistroyDto> fxOrderTransactionHistroyDto = new ArrayList<>();
+		logger.debug("FcDeliveryBranchOrderSearchRequest:"+fcDeliveryBranchOrderSearchRequest.toString());
+		AmxApiResponse<FxOrderTransactionHistroyDto, Object> result = null;
+		
+		fcDeliveryBranchOrderSearchRequestValidation.validatingAllValues(fcDeliveryBranchOrderSearchRequest);
+		if (fcDeliveryBranchOrderSearchRequest.getCivilId() != null) {
+			Customer customerDetails = userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(
+					fcDeliveryBranchOrderSearchRequest.getCivilId(), JaxApiFlow.SIGNUP_ONLINE).get(0);
+			fcDeliveryBranchOrderSearchRequest.setCustomerId(customerDetails.getCustomerId());
+
+		}
+		if(fcDeliveryBranchOrderSearchRequest.getCountryBranchId() != null) {
+			CountryBranch countryBranch = countryBranchService
+					.getCountryBranchByCountryBranchId(fcDeliveryBranchOrderSearchRequest.getCountryBranchId());
+			fcDeliveryBranchOrderSearchRequest.setCountryBranchName(countryBranch.getBranchName());
+					
+		}
+		if(fcDeliveryBranchOrderSearchRequest.getOrderStatus() != null) {
+			
+			StatusMaster orderStatusDetails = statusMasterManager
+					.getOrderStatusValue(fcDeliveryBranchOrderSearchRequest.getOrderStatus());
+			fcDeliveryBranchOrderSearchRequest.setOrderStatusCode(orderStatusDetails.getStatusCode());	
+		}
+		fxOrderTransactionHistroyDto =fcDeliveryOrdersearchManager.searchOrder(fcDeliveryBranchOrderSearchRequest);
+	
+		result = AmxApiResponse.buildList(fxOrderTransactionHistroyDto);
+		return result;
+	}
 
 	public AmxApiResponse<FxOrderReportResponseDto,Object> reprintOrder(BigDecimal applicationCountryId,BigDecimal orderNumber,BigDecimal orderYear,BigDecimal employeeId) {
 		FxOrderReportResponseDto fxOrderReportResponseDto = null;
@@ -706,4 +823,78 @@ public class FcSaleBranchService extends AbstractService{
 
 		return AmxApiResponse.build(fxOrderReportResponseDto);
 	}
+	
+	public AmxApiResponse<FcSaleOrderManagementDTO,Object> searchOrderByDates(BigDecimal applicationCountryId,BigDecimal employeeId,FcSaleOrderManagementDatesRequest fcSaleDates){
+		List<FcSaleOrderManagementDTO> saleOrderManage = null;
+
+		if(applicationCountryId == null || applicationCountryId.compareTo(BigDecimal.ZERO) == 0){
+			throw new GlobalException(JaxError.NULL_APPLICATION_COUNTRY_ID,"Application country id should not be blank");
+		}
+		if(employeeId == null || employeeId.compareTo(BigDecimal.ZERO) == 0){
+			throw new GlobalException(JaxError.NULL_EMPLOYEE_ID,"Employee Id should not be blank");
+		}
+		if(fcSaleDates == null) {
+			throw new GlobalException(JaxError.FC_SALE_SELECTED_DATES,"Dates should not blank");
+		}
+		
+		try {
+			HashMap<String, Object> orderDetails = branchOrderManager.fetchFcSaleOrderManagement(applicationCountryId,employeeId,fcSaleDates.getFromDate(),fcSaleDates.getToDate());
+			if(orderDetails != null) {
+				if(orderDetails.get("ORDERS") != null && orderDetails.get("AREA") != null) {
+					List<OrderManagementView> orderManagement = (List<OrderManagementView>) orderDetails.get("ORDERS");
+					Boolean areaCodeCheck = (Boolean) orderDetails.get("AREA");
+					BigDecimal branchId = (BigDecimal) orderDetails.get("BRANCH");
+
+					if(orderManagement != null && orderManagement.size() != 0) {
+						saleOrderManage  = convertFcSaleOrderManagementDTO(orderManagement,applicationCountryId,employeeId,areaCodeCheck,branchId);
+						if(saleOrderManage != null && saleOrderManage.size() != 0) {
+							// continue
+						}else {
+							// error
+							throw new GlobalException(JaxError.NO_RECORD_FOUND,"Order Management records not found");
+						}
+					}else {
+						// error
+						throw new GlobalException(JaxError.NO_RECORD_FOUND,"Order Management records not found");
+					}
+				}
+			}
+		}catch (GlobalException e) {
+			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
+		}catch (Exception e) {
+			throw new GlobalException(e.getMessage());
+		}
+
+		return AmxApiResponse.buildList(saleOrderManage);
+	}
+	public BoolRespModel saveFcDeliveryTiming(FxDeliveryTimeSlotDto fxDeliveryTimeSlotDto){
+		Boolean status = Boolean.FALSE;	
+		if(fxDeliveryTimeSlotDto.getCountryId() == null || fxDeliveryTimeSlotDto.getCountryId().compareTo(BigDecimal.ZERO)==0){
+			throw new GlobalException(JaxError.NULL_COUNTRY_ID,"Country id should not be blank");
+		}
+		if(fxDeliveryTimeSlotDto.getCompanyId() == null || fxDeliveryTimeSlotDto.getCompanyId().compareTo(BigDecimal.ZERO)==0){
+			throw new GlobalException(JaxError.NULL_COMPANY_ID,"CompanyId id should not be blank");
+		}
+		
+	try {	
+		
+		status=branchOrderManager.saveFcDeliveryTiming(fxDeliveryTimeSlotDto);
+		if(status) {
+			// success
+		}else {
+			throw new GlobalException(JaxError.SAVE_FAILED,"Release Order lock didn't updated");
+		}
+	}catch (GlobalException e) {
+		throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
+	}catch (Exception e) {
+		throw new GlobalException(e.getMessage());
+	}
+
+	return new BoolRespModel(status);
+}
+	public  AmxApiResponse<FxDeliveryTimeSlotDto,Object> fetchFcDeliveryTiming() {
+		return fcSaleBranchOrderManager.fetchFcDeliveryTiming();
+		
+	}
+	
 }

@@ -22,6 +22,7 @@ import com.amx.amxlib.meta.model.BankBranchDto;
 import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.meta.model.BranchDetailDTO;
 import com.amx.amxlib.meta.model.CountryMasterDTO;
+import com.amx.amxlib.meta.model.DeclarationDTO;
 import com.amx.amxlib.meta.model.JaxMetaParameter;
 import com.amx.amxlib.meta.model.MultiCountryDTO;
 import com.amx.amxlib.meta.model.PrefixDTO;
@@ -34,7 +35,9 @@ import com.amx.amxlib.meta.model.ViewDistrictDto;
 import com.amx.amxlib.meta.model.ViewGovernateAreaDto;
 import com.amx.amxlib.meta.model.ViewGovernateDto;
 import com.amx.amxlib.meta.model.ViewStateDto;
+import com.amx.amxlib.meta.model.ViewStatusDto;
 import com.amx.amxlib.meta.model.WhyDoAskInformationDTO;
+import com.amx.amxlib.model.CountryBranchDTO;
 import com.amx.amxlib.model.OnlineConfigurationDto;
 import com.amx.amxlib.model.request.GetBankBranchRequest;
 import com.amx.jax.api.AmxApiResponse;
@@ -587,7 +590,29 @@ public class MetaClient extends AbstractJaxServiceClient {
 	}
 	
 	
+	public AmxApiResponse<ViewStatusDto, Object> getStatusList() {
+		try {
+			return restService.ajax(appConfig.getJaxURL())
+					.path(MetaApi.PREFIX + MetaApi.API_STATUS_LIST).meta(new JaxMetaInfo()).get()
+					.as(new ParameterizedTypeReference<AmxApiResponse<ViewStatusDto, Object>>() {
+					});
+		} catch (Exception ae) {
+			LOGGER.error("exception in Status list : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}
+	}
 	
+	public AmxApiResponse<CountryBranchDTO, Object> getCountryBranchList() {
+		try {
+			return restService.ajax(appConfig.getJaxURL())
+					.path(MetaApi.PREFIX + MetaApi.API_COUNTRY_BRANCH_LIST).meta(new JaxMetaInfo()).get()
+					.as(new ParameterizedTypeReference<AmxApiResponse<CountryBranchDTO, Object>>() {
+					});
+		} catch (Exception ae) {
+			LOGGER.error("exception in Country Branch list : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}
+	}
 	
 	
 	public AmxApiResponse<ViewGovernateDto, Object> getGovernateList() {
@@ -617,6 +642,19 @@ public class MetaClient extends AbstractJaxServiceClient {
 		}
 	}
 	
+	
+	public AmxApiResponse<DeclarationDTO, Object> getDeclaration() {
+		try {
+
+			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.API_DECLARATION)
+					.meta(new JaxMetaInfo()).post()
+					.as(new ParameterizedTypeReference<AmxApiResponse<DeclarationDTO, Object>>() {
+					});
+		} catch (Exception ae) {
+			LOGGER.error("exception in Declaration : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}
+	}
 	
 	
 }

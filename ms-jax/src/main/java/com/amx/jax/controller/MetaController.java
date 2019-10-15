@@ -17,6 +17,7 @@ import com.amx.amxlib.meta.model.ApplicationSetupDTO;
 import com.amx.amxlib.meta.model.AuthenticationLimitCheckDTO;
 import com.amx.amxlib.meta.model.BankBranchDto;
 import com.amx.amxlib.meta.model.BankMasterDTO;
+import com.amx.amxlib.meta.model.DeclarationDTO;
 import com.amx.amxlib.meta.model.JaxMetaParameter;
 import com.amx.amxlib.meta.model.MultiCountryDTO;
 import com.amx.amxlib.meta.model.ServiceGroupMasterDescDto;
@@ -28,7 +29,9 @@ import com.amx.amxlib.meta.model.ViewDistrictDto;
 import com.amx.amxlib.meta.model.ViewGovernateAreaDto;
 import com.amx.amxlib.meta.model.ViewGovernateDto;
 import com.amx.amxlib.meta.model.ViewStateDto;
+import com.amx.amxlib.meta.model.ViewStatusDto;
 import com.amx.amxlib.meta.model.WhyDoAskInformationDTO;
+import com.amx.amxlib.model.CountryBranchDTO;
 import com.amx.amxlib.model.OnlineConfigurationDto;
 import com.amx.amxlib.model.request.GetBankBranchRequest;
 import com.amx.jax.api.AmxApiResponse;
@@ -56,6 +59,7 @@ import com.amx.jax.service.BranchDetailService;
 import com.amx.jax.service.CollectionDetailViewService;
 import com.amx.jax.service.CollectionPaymentDetailsViewService;
 import com.amx.jax.service.CompanyService;
+import com.amx.jax.service.CountryBranchService;
 import com.amx.jax.service.CountryService;
 import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.service.EmailMobileCheckService;
@@ -156,6 +160,10 @@ public class MetaController {
 
 	@Autowired
 	BranchDetailService branchDetailService;
+	
+	@Autowired
+	CountryBranchService countryBranchService;
+	
 
 	@RequestMapping(value = MetaApi.API_COUNTRY, method = RequestMethod.GET)
 	public AmxApiResponse<CountryMasterView, Object> getCountryListResponse() {
@@ -439,5 +447,20 @@ public class MetaController {
 		return metaService.getGovernateAreaList(governateId);
 	}
 	
+	@RequestMapping(value = MetaApi.API_STATUS_LIST, method = RequestMethod.GET)
+	public AmxApiResponse<ViewStatusDto, Object> getStatusList() {
+		return metaService.getStatusList();
+	}
 	
+	@RequestMapping(value = MetaApi.API_COUNTRY_BRANCH_LIST, method = RequestMethod.GET)
+	public AmxApiResponse<CountryBranchDTO, Object> getCountryBranchList() {
+		return countryBranchService.getCountryBranchList();
+	}
+	
+	
+	
+	@RequestMapping(value = MetaApi.API_DECLARATION, method = RequestMethod.POST)
+	public AmxApiResponse<DeclarationDTO, Object> getDeclaration() {
+		return metaService.getDeclaration(metaData.getLanguageId());
+	}
 }

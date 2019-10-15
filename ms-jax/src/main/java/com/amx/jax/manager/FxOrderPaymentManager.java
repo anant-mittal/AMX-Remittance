@@ -51,15 +51,18 @@ import com.amx.jax.model.response.fx.ShoppingCartDetailsDto;
 import com.amx.jax.payg.PayGModel;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.repository.CountryBranchRepository;
+import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.repository.IDocumentDao;
 import com.amx.jax.repository.PaymentModeRepository;
 import com.amx.jax.repository.ReceiptPaymentAppRepository;
 import com.amx.jax.repository.fx.FxDeliveryDetailsRepository;
 import com.amx.jax.service.CompanyService;
+import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.service.FinancialService;
+import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.userservice.dao.CustomerDao;
-import com.amx.jax.userservice.repository.CustomerRepository;
 import com.amx.jax.util.JaxUtil;
+import com.amx.jax.util.RoundUtil;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
@@ -113,7 +116,13 @@ public class FxOrderPaymentManager {
 	@Autowired
 	AuditService auditService;
 	
-
+	@Autowired
+	FcSaleApplicationTransactionManager fcSaleApplicationTransactionManager;
+	@Autowired
+	JaxNotificationService notificationService;
+	@Autowired
+	CurrencyMasterService currencyMasterService;
+	
 	
 	public PaymentResponseDto paymentCapture(PaymentResponseDto paymentResponse) {
 		logger.debug("paymment capture :" + paymentResponse.toString());
@@ -144,9 +153,11 @@ public class FxOrderPaymentManager {
 					customerId = customerId;
 				}
 
-				listOfRecAppl = receiptAppRepository.fetchreceiptPaymentAppl(customerId,
-						new BigDecimal(paymentResponse.getUdf3()));
-
+				listOfRecAppl = receiptAppRepository.fetchreceiptPaymentAppl(customerId,new BigDecimal(paymentResponse.getUdf3()));
+				/** aded new code for appl amount and knet amount cehck  on 30 may 2019 by rabil**/
+				validateAmountMismatch(listOfRecAppl, paymentResponse);
+				/** end **/		
+				 
 				List<ReceiptPayment> receiptPayment = saveReceiptPayment(listOfRecAppl, paymentResponse);
 				CollectionModel collection = saveCollection(listOfRecAppl, paymentResponse);
 				CollectDetailModel collectDetail = saveCollectDetail(listOfRecAppl, paymentResponse, collection);
@@ -363,7 +374,7 @@ public class FxOrderPaymentManager {
 						documentDao.getDocumnetByCode(ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION).get(0)
 								.getDocumentID());
 				BigDecimal documentNo = generateDocumentNumber(countryBranch, appl.getCountryId(),
-						companyDetails.getCompanyId(), ConstantDocument.Update, appl.getDocumentFinanceYear(),
+						companyDetails.getCompanyId(), ConstantDocument.A, appl.getDocumentFinanceYear(),
 						ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION);
 				if (documentNo != null && documentNo.compareTo(BigDecimal.ZERO) != 0) {
 					collection.setDocumentNo(documentNo);
@@ -484,4 +495,24 @@ public class FxOrderPaymentManager {
 		auditService.log(audit);
 	}
 
+	private void validateAmountMismatch(List<ReceiptPaymentApp> listOfRecAppl, PaymentResponseDto paymentResponse) {
+		BigDecimal localCurrencyId = listOfRecAppl.get(0).getLocalCurrencyId();
+		BigDecimal decimalNumber = currencyMasterService.getCurrencyMasterById(localCurrencyId).getDecinalNumber();
+		BigDecimal totalApplAmount = listOfRecAppl.stream().map(ReceiptPaymentApp::getLocalNetAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+		BigDecimal delCharges = fcSaleApplicationTransactionManager.getDeliveryChargesFromParameter();
+		BigDecimal totalAmountWithCharges =totalApplAmount.add(delCharges); 
+		BigDecimal paidAmount = new BigDecimal(paymentResponse.getAmount());
+		totalAmountWithCharges = RoundUtil.roundBigDecimal(totalAmountWithCharges, decimalNumber.intValue());
+		paidAmount = RoundUtil.roundBigDecimal(paidAmount, decimalNumber.intValue());
+		if(JaxUtil.isNullZeroBigDecimalCheck(totalAmountWithCharges) && JaxUtil.isNullZeroBigDecimalCheck(paidAmount)) {
+			if (!totalAmountWithCharges.equals(paidAmount)) {
+				String errorMessage = String.format("paidAmount: %s and payableAmount: %s mismatch for customerId: %s", paidAmount,
+						totalAmountWithCharges, metaData.getCustomerId());
+				logger.info(errorMessage);
+				notificationService.sendTransactionErrorAlertEmail(errorMessage, "Fxorder Amount mismatch", paymentResponse);
+				throw new GlobalException("paid and payable amount mismatch");
+			}
+		}
+	}
+	
 }

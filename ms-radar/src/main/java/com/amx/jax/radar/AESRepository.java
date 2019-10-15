@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.amx.jax.logger.LoggerService;
+import com.amx.utils.ArgUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 public class AESRepository {
@@ -60,7 +61,11 @@ public class AESRepository {
 	}
 
 	public Map<String, Object> update(String index, String type, AESDocument vote) {
-		return this.updateById(index, type, vote.getId(), vote);
+		if (ArgUtil.isEmpty(vote.getId())) {
+			return this.insert(index, type, vote);
+		} else {
+			return this.updateById(index, type, vote.getId(), vote);
+		}
 	}
 
 	public Map<String, Object> updateById(String index, String type, String id, AESDocument vote) {

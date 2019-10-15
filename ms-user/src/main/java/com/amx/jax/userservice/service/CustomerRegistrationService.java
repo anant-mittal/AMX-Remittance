@@ -1,6 +1,9 @@
 package com.amx.jax.userservice.service;
 
+import java.util.Base64;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
@@ -13,20 +16,23 @@ import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.model.CustomerHomeAddress;
-import com.amx.amxlib.model.PersonInfo;
-import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.CustomerCredential;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.ApplicationSetup;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
+import com.amx.jax.dbmodel.ReferralDetails;
+import com.amx.jax.model.customer.SecurityQuestionModel;
 import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.model.request.CustomerPersonalDetail;
+import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.repository.IApplicationCountryRepository;
 import com.amx.jax.services.AbstractService;
 import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.trnx.CustomerRegistrationTrnxModel;
 import com.amx.jax.userservice.dao.CustomerDao;
+import com.amx.jax.userservice.dao.ReferralDetailsDao;
 import com.amx.jax.userservice.manager.CustomerRegistrationManager;
 import com.amx.jax.userservice.manager.CustomerRegistrationOtpManager;
 import com.amx.jax.userservice.repository.OnlineCustomerRepository;
@@ -36,6 +42,8 @@ import com.amx.jax.userservice.validation.CustomerPhishigImageValidator;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.validation.CountryMetaValidation;
+
+import io.swagger.models.refs.RefFormat;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -51,6 +59,8 @@ public class CustomerRegistrationService extends AbstractService {
 	
 	@Autowired
 	private CustomerDao custDao;
+	
+	@Autowired ReferralDetailsDao referralDao;
 
 	@Autowired
 	JaxUtil util;
@@ -150,7 +160,16 @@ public class CustomerRegistrationService extends AbstractService {
 		
 		CustomerOnlineRegistration custIdd = custDao.getCustomerIDByuserId(customerCredential.getLoginId());
 		Customer customerDet = userService.getCustomerDetailsByCustomerId(custIdd.getCustomerId());
-				
+		if(customerCredential.getReferralId() != null) {
+			ReferralDetails refferrerDetail = referralDao.getReferralByCustomerReferralCode(customerCredential.getReferralId());
+			ReferralDetails newReferralDetail = new ReferralDetails();
+			UUID uuid = UUID.randomUUID();
+			newReferralDetail.setCustomerReferralCode(String.valueOf(uuid));
+			newReferralDetail.setRefferedByCustomerId(refferrerDetail.getCustomerId());
+			newReferralDetail.setIsConsumed(ConstantDocument.No);
+			newReferralDetail.setCustomerId(customerDet.getCustomerId());
+			referralDao.saveReferralCode(newReferralDetail);			
+		}
 		ApplicationSetup applicationSetupData = applicationSetup.getApplicationSetupDetails();
 		PersonInfo personinfo = new PersonInfo();
 		try {

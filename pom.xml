@@ -21,6 +21,9 @@
 		<jax.version>0.0.1-SNAPSHOT</jax.version>
 		<amx.version>0.0.1-SNAPSHOT</amx.version>
 		<java.version>1.8</java.version>
+		<vzn>0.0.1-SNAPSHOT</vzn>
+		<sonar.issuesReport.html.enable>true</sonar.issuesReport.html.enable>
+		<!-- <sonar.analysis.mode>preview</sonar.analysis.mode> <sonar.host.url>http://10.28.42.5:9000</sonar.host.url> -->
 	</properties>
 
 	<dependencyManagement>
@@ -88,6 +91,15 @@
 				<version>3.3.0.603</version>
 			</plugin>
 		</plugins>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>net.ju-n.maven.plugins</groupId>
+					<artifactId>checksum-maven-plugin</artifactId>
+					<version>1.2</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
 
 	<pluginRepositories>
@@ -118,22 +130,24 @@
 		<module>ms-user</module>
 		<module>ms-exchangerate</module>
 		<module>ms-jax-modules/ms-jax-customer</module>
+		<module>ms-jax-modules/ms-jax-branch</module>
 
 		<module>ms-jax</module>
 		<module>ms-rbaac</module>
 		<module>ms-worker</module>
 		<module>ms-radar</module>
 		<module>ms-probot</module>
-		
+
 
 		<module>server-ui</module>
-		
+
 		<module>server-common/server-common-branch</module>
 		<module>server-branch</module>
 		<module>server-offsite</module>
 		<!-- <module>server-stomp</module> -->
 
 		<module>sw-adapter</module>
+		<module>sw-updater</module>
 		<module>server-regex</module>
 		<module>sw-adapter-omn</module>
 		<!-- <module>server-kiosk</module> -->

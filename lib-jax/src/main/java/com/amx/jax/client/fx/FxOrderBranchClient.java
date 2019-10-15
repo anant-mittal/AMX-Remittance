@@ -1,21 +1,30 @@
 package com.amx.jax.client.fx;
 
+
+
 import java.math.BigDecimal;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppConfig;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.configs.JaxMetaInfo;
+import com.amx.jax.exception.AbstractJaxException;
 import com.amx.jax.exception.JaxSystemError;
+import com.amx.jax.model.customer.CustomerRatingDTO;
+import com.amx.jax.model.request.fx.FcDeliveryBranchOrderSearchRequest;
 import com.amx.jax.model.request.fx.FcSaleBranchDispatchRequest;
+import com.amx.jax.model.request.fx.FcSaleOrderManagementDatesRequest;
 import com.amx.jax.model.response.fx.FcEmployeeDetailsDto;
 import com.amx.jax.model.response.fx.FcSaleOrderManagementDTO;
+import com.amx.jax.model.response.fx.FxDeliveryTimeSlotDto;
 import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
+import com.amx.jax.model.response.fx.FxOrderTransactionHistroyDto;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.rest.RestService;
 
@@ -29,6 +38,8 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 
 	@Autowired
 	AppConfig appConfig;
+	
+	
 	
 	/**
 	 * 
@@ -299,4 +310,80 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 		} // end of try-catch
 	}
 
+	@Override
+	public AmxApiResponse<FxOrderTransactionHistroyDto, Object> searchOrder(FcDeliveryBranchOrderSearchRequest fcDeliveryBranchOrderSearchRequest) {
+		try {
+			LOGGER.debug("in searchOrder :"+fcDeliveryBranchOrderSearchRequest);
+			return restService.ajax(appConfig.getJaxURL() + Path.FC_SEARCH_ORDER).meta(new JaxMetaInfo())
+					.post(fcDeliveryBranchOrderSearchRequest)
+					.as(new ParameterizedTypeReference<AmxApiResponse<FxOrderTransactionHistroyDto,Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in SearchOrder : ", e);
+			return JaxSystemError.evaluate(e);
+		}
+	}
+	
+	
+	@Override
+	public AmxApiResponse<BoolRespModel,Object> saveFcDeliveryTimeSlot(FxDeliveryTimeSlotDto fxDeliveryTimeSlotDto) {
+		try {
+			LOGGER.debug("in saveFcDeliveryTimeSlot :"+fxDeliveryTimeSlotDto);
+			return restService.ajax(appConfig.getJaxURL() + Path.FC_ORDER_DELIVERY_TIME_SETUP).meta(new JaxMetaInfo())
+					.post(fxDeliveryTimeSlotDto)
+					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel,Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in acceptOrderLock : ", e);
+			return JaxSystemError.evaluate(e);
+		} // end of try-catch
+	}
+
+	@Override
+	public AmxApiResponse<FxDeliveryTimeSlotDto,Object> fetchFcDeliveryTiming() {
+		try {
+			LOGGER.debug("in saveFcDeliveryTimeSlot :");
+			return restService.ajax(appConfig.getJaxURL() + Path.FC_ORDER_DELIVERY_TIME_SETUP_FETCH).meta(new JaxMetaInfo())
+					.get()
+					.as(new ParameterizedTypeReference<AmxApiResponse<FxDeliveryTimeSlotDto,Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in acceptOrderLock : ", e);
+			return JaxSystemError.evaluate(e);
+		} // end of try-catch
+	}
+
+
+	
+	public AmxApiResponse<CustomerRatingDTO, ?> inquirefxOrderCustomerRating(BigDecimal deliveryDetailSeqId, String product) 
+	{
+		try {
+
+			return restService.ajax(appConfig.getJaxURL()).path(Path.FC_CUSTOMER_RATING).meta(new JaxMetaInfo()).post()
+					.queryParam(Params.FX_DELIVERY_SEQ_ID, deliveryDetailSeqId).queryParam(Params.FX_PRODUCT, product)
+					.post().as(new ParameterizedTypeReference<AmxApiResponse<CustomerRatingDTO, ?>>() {
+					});
+		} catch (Exception ae) {
+
+			LOGGER.error("exception in Inquire customer rating : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}
+	}
+	
+
+	@Override
+	public AmxApiResponse<FcSaleOrderManagementDTO, Object> searchOrderByDates(FcSaleOrderManagementDatesRequest fcSaleDates) {
+		try {
+			LOGGER.debug("in searchOrderByDates :");
+			return restService.ajax(appConfig.getJaxURL() + Path.FC_SEARCH_ORDER_BY_DATES).meta(new JaxMetaInfo())
+					.post(fcSaleDates)
+					.as(new ParameterizedTypeReference<AmxApiResponse<FcSaleOrderManagementDTO, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in searchOrderByDates : ", e);
+			return JaxSystemError.evaluate(e);
+		} // end of try-catch
+	}
+
 }
+

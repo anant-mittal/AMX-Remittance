@@ -12,7 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.jax.rbaac.dbmodel.AccessType;
-import com.amx.jax.rbaac.dbmodel.Employee;
+import com.amx.jax.rbaac.dbmodel.CountryBranch;
+import com.amx.jax.rbaac.dbmodel.FSEmployee;
 import com.amx.jax.rbaac.dbmodel.FunctionalityTypeMaster;
 import com.amx.jax.rbaac.dbmodel.ModuleMaster;
 import com.amx.jax.rbaac.dbmodel.PermScope;
@@ -169,13 +170,14 @@ public class RbaacDao {
 		return vwEmpBranchSysDetailsRepository.findByEmployeeIdAndIpAddress(empId, ipAddress);
 	}
 
-	public List<ViewExEmpBranchSysDetails> getEmpBranchSysDetailsByEmpIdAndBranchSysInventoryId(BigDecimal empId,
-			BigDecimal sysInventoryId) {
-		return vwEmpBranchSysDetailsRepository.findByEmployeeIdAndBranchSysInventoryId(empId, sysInventoryId);
+	public List<ViewExEmpBranchSysDetails> getEmpBranchSysByEmpIdAndBranchSysInvIdAndBranchId(BigDecimal empId,
+			BigDecimal sysInventoryId, BigDecimal branchId) {
+		return vwEmpBranchSysDetailsRepository.findByEmployeeIdAndBranchSysInventoryIdAndBranchId(empId, sysInventoryId,
+				branchId);
 	}
 
-	public Employee fetchEmpDetails(String empcode, String identity, String ipAddress) {
-		List<Employee> empList = employeeRepository.findByEmployeeNumberAndCivilId(empcode, identity);
+	public FSEmployee fetchEmpDetails(String empcode, String identity, String ipAddress) {
+		List<FSEmployee> empList = employeeRepository.findByEmployeeNumberAndCivilId(empcode, identity);
 		if (null != empList && !empList.isEmpty()) {
 			return empList.get(0);
 		}
@@ -183,8 +185,8 @@ public class RbaacDao {
 		return null;
 	}
 
-	public Employee fetchEmpDetails(String identity) {
-		List<Employee> empList = employeeRepository.findByCivilId(identity);
+	public FSEmployee fetchEmpDetails(String identity) {
+		List<FSEmployee> empList = employeeRepository.findByCivilId(identity);
 		if (null != empList && !empList.isEmpty()) {
 			return empList.get(0);
 		}
@@ -192,27 +194,29 @@ public class RbaacDao {
 		return null;
 	}
 
-	public List<Employee> getEmployees(String empcode, String identity) {
+	public List<FSEmployee> getEmployees(String empcode, String identity) {
 		return employeeRepository.findByEmployeeNumberAndCivilId(empcode, identity);
 	}
 
-	public List<Employee> getEmployeesByCivilId(String identity) {
+	public List<FSEmployee> getEmployeesByCivilId(String identity) {
 		return employeeRepository.findByCivilId(identity);
 	}
 
-	public List<Employee> getEmployeesByCountryBranchId(BigDecimal countryBranchId) {
-		return employeeRepository.findByFsCountryBranch(countryBranchId);
+	public List<FSEmployee> getEmployeesByCountryBranchId(BigDecimal countryBranchId) {
+		CountryBranch countryBranch = new CountryBranch();
+		countryBranch.setCountryBranchId(countryBranchId);
+		return employeeRepository.findByCountryBranch(countryBranch);
 	}
 
-	public Employee getEmployeeByEmployeeId(BigDecimal empId) {
+	public FSEmployee getEmployeeByEmployeeId(BigDecimal empId) {
 		return employeeRepository.findByEmployeeId(empId);
 	}
 
-	public Employee fetchEmpDetails(String user, String pass) {
+	public FSEmployee fetchEmpDetails(String user, String pass) {
 		return employeeRepository.findByUserNameAndPassword(user, pass);
 	}
 
-	public Employee fetchEmpDetailsByECNO(String empNo) {
+	public FSEmployee fetchEmpDetailsByECNO(String empNo) {
 		return employeeRepository.findByEmployeeNumber(empNo);
 	}
 
@@ -224,13 +228,13 @@ public class RbaacDao {
 	 */
 	@Modifying
 	@Transactional
-	public Employee saveEmployee(Employee employee) {
+	public FSEmployee saveEmployee(FSEmployee employee) {
 		return employeeRepository.saveAndFlush(employee);
 	}
 
 	@Modifying
 	@Transactional
-	public List<Employee> saveEmployees(Iterable<Employee> employeeList) {
+	public List<FSEmployee> saveEmployees(Iterable<FSEmployee> employeeList) {
 		return employeeRepository.save(employeeList);
 	}
 

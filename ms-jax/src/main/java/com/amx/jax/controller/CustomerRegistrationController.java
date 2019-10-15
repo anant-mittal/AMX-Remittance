@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.CustomerHomeAddress;
-import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.CustomerCredential;
+import com.amx.jax.model.customer.SecurityQuestionModel;
 import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.userservice.service.CustomerRegistrationService;
 import com.amx.jax.userservice.validation.CustomerCredentialValidator;
@@ -44,7 +44,7 @@ public class CustomerRegistrationController {
 	 * Sends otp to customers email and mobile initiating transaction
 	 */
 	@RequestMapping(value = "/send-otp/", method = RequestMethod.POST)
-	public ApiResponse sendOtp(@RequestBody CustomerPersonalDetail customerPersonalDetail) {
+	public ApiResponse sendOtp(@RequestBody @Valid CustomerPersonalDetail customerPersonalDetail) {
 		logger.info("send otp request: " + customerPersonalDetail);
 		ApiResponse response = customerRegistrationService.sendOtp(customerPersonalDetail);
 		return response;

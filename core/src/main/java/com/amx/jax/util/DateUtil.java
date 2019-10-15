@@ -1,5 +1,7 @@
 package com.amx.jax.util;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -11,12 +13,14 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.model.response.fx.TimeSlotDto;
+
+import jodd.typeconverter.Convert;
 
 
 
@@ -148,54 +152,261 @@ public class DateUtil {
 	}
 	
 
-	
-	public static List<TimeSlotDto> getTimeSlotRange(int startTime,int endTime,int timeIntVal,int noofDay){
-	logger.info("getTimeRange for Fx Order date :\t startTime :"+startTime+"\t endTime:"+endTime+"\t timeIntVal :"+timeIntVal+"\t noofDay :"+noofDay);
-	List<String> timeSlotList = new ArrayList<>();
-	List<TimeSlotDto> timeSlotDto = new ArrayList<>();
-	Date d = new Date();
-	
-	SimpleDateFormat dateStr = new SimpleDateFormat("dd/MM/yyyy");
-    SimpleDateFormat sdf = new SimpleDateFormat("H");
-    String todayDate = dateStr.format(d);
-    int hour = Integer.parseInt(sdf.format(d));
-    int j =0;
-    String defaultZero =":00";
-    GregorianCalendar calendar = new GregorianCalendar();
-    Date now = calendar.getTime();
-    int startTimeNToday = startTime;
-   
-    	for(int n=0;n<=noofDay;n++){
-    		if(n==0){
-    			if (hour>=startTime){
-    		    	startTime =hour+timeIntVal; 
-    		    }
-    		}else{
-    			startTime=startTimeNToday;
-    		}
-    		
-	    	TimeSlotDto dto = new TimeSlotDto();
-	    	 timeSlotList = new ArrayList<>();
-	    	for (int i =startTime;i<endTime;  i = i+timeIntVal){
-	   		 j = i+timeIntVal;
-	   		 String str = "";
-	   		 if(j<=endTime){
-	   		 	str = String.valueOf(i)+defaultZero+ "-"+String.valueOf(j)+defaultZero;
-	   		  timeSlotList.add(str);
-	   		 }
-	   		
-	   		 dto.setTimeSlot(timeSlotList);
-	    	}
-	    	 calendar.add(calendar.DAY_OF_MONTH, n);
-	    	 Date dateD = calendar.getTime();
-	    	 dto.setDate(dateStr.format(dateD));
-	    	 timeSlotDto.add(dto);
+/*	
+	public static List<TimeSlotDto> getTimeSlotRange(BigDecimal startTime, BigDecimal endTime, BigDecimal timeIntVal,
+			int noofDay) {
+		logger.info("getTimeRange for Fx Order date :\t startTime :" + startTime + "\t endTime:" + endTime
+				+ "\t timeIntVal :" + timeIntVal + "\t noofDay :" + noofDay);
+		List<String> timeSlotList = new ArrayList<>();
+		List<TimeSlotDto> timeSlotDto = new ArrayList<>();
 
-    }
-    
-   
-    return timeSlotDto;
-}
+		BigDecimal j = BigDecimal.ZERO;
+		String startHour = null;
+		String startMinutes = null;
+		BigDecimal startTimeHour = BigDecimal.ZERO;
+		BigDecimal startTimeMinutes = BigDecimal.ZERO;
+		GregorianCalendar calendar = new GregorianCalendar();
+
+		Date d = new Date();
+		SimpleDateFormat sdfhours = new SimpleDateFormat("H");
+		BigDecimal hour = new BigDecimal(sdfhours.format(d));
+
+		SimpleDateFormat sdfmin = new SimpleDateFormat("m");
+		BigDecimal minutes = new BigDecimal(sdfmin.format(d));
+
+		startTime = RoundUtil.roundBigDecimal(startTime, 2);
+		String[] splitStartTime = startTime.toString().split("\\.");
+		
+				
+		if (splitStartTime != null) {
+			if (splitStartTime.length >= 1 && splitStartTime[0] != null) {
+				startHour = splitStartTime[0];
+			}
+			if (splitStartTime.length >= 2 && splitStartTime[1] != null) {
+				startMinutes = splitStartTime[1];
+			}
+			if (startHour != null) {
+				startTimeHour = new BigDecimal(startHour);
+			}
+			if (startMinutes != null) {
+				startTimeMinutes = new BigDecimal(startMinutes);
+				if(startTimeMinutes != null && startTimeMinutes.compareTo(new BigDecimal(50)) == 0) {
+					startTimeMinutes = new BigDecimal(30);
+				}
+			}
+		}
+
+		BigDecimal startTimeNToday = startTimeHour;
+
+		for (int n = 0; n <= noofDay; n++) {
+			if (n == 0) {
+				if (hour.compareTo(startTimeHour) >= 0) {
+					if (startTimeMinutes.compareTo(BigDecimal.ZERO) != 0 && minutes.compareTo(BigDecimal.ZERO) != 0) {
+						String estStartTime = hour.toString().concat(".").concat(startTimeMinutes.toString());
+						startTime = new BigDecimal(estStartTime).add(timeIntVal);
+					} else {
+						String estStartTime = hour.toString().concat(".").concat("00");
+						startTime = new BigDecimal(estStartTime).add(timeIntVal);
+					}
+				}
+			} else {
+				if (startTimeMinutes.compareTo(BigDecimal.ZERO) != 0 && minutes.compareTo(BigDecimal.ZERO) != 0) {
+					String estStartTime = startTimeNToday.toString().concat(".").concat(startTimeMinutes.toString());
+					startTime = new BigDecimal(estStartTime);
+				} else {
+					String estStartTime = startTimeNToday.toString().concat(".").concat("00");
+					startTime = new BigDecimal(estStartTime);
+				}
+
+			}
+
+			TimeSlotDto dto = new TimeSlotDto();
+			timeSlotList = new ArrayList<>();
+			for (BigDecimal i = startTime; i.compareTo(endTime) < 0; i = i.add(timeIntVal)) {
+				j = i.add(timeIntVal);
+				String str = "";
+				if (j.compareTo(endTime) <= 0) {
+					str = String.valueOf(i).replace(".", ":") + "-" + String.valueOf(j).replace(".", ":");
+					timeSlotList.add(str);
+				}
+
+				dto.setTimeSlot(timeSlotList);
+			}
+
+			SimpleDateFormat dateStr = new SimpleDateFormat("dd/MM/yyyy");
+			calendar.add(calendar.DAY_OF_MONTH, n);
+			Date dateD = calendar.getTime();
+			dto.setDate(dateStr.format(dateD));
+			timeSlotDto.add(dto);
+		}
+
+		return timeSlotDto;
+	}*/
+	
+	public static List<TimeSlotDto> getTimeSlotRange(BigDecimal startTime, BigDecimal endTime, BigDecimal timeIntVal,
+			int noofDay) {
+		logger.info("getTimeRange for Fx Order date :\t startTime :" + startTime + "\t endTime:" + endTime
+				+ "\t timeIntVal :" + timeIntVal + "\t noofDay :" + noofDay);
+		List<String> timeSlotList = new ArrayList<>();
+		List<TimeSlotDto> timeSlotDto = new ArrayList<>();
+
+		BigDecimal j = BigDecimal.ZERO;
+		String startHour = null;
+		String startMinutes = null;
+		String timeIntHour = null;
+		String timeIntMin = null;
+		String estTimeInterval = null;
+		BigDecimal startTimeHour = BigDecimal.ZERO;
+		BigDecimal startTimeMinutes = BigDecimal.ZERO;
+		BigDecimal timeIntervalHour = BigDecimal.ZERO;
+		BigDecimal timeIntervalMin = BigDecimal.ZERO;
+		
+		GregorianCalendar calendar = new GregorianCalendar();
+
+		Date d = new Date();
+		SimpleDateFormat sdfhours = new SimpleDateFormat("H");
+		BigDecimal hour = new BigDecimal(sdfhours.format(d));
+
+		SimpleDateFormat sdfmin = new SimpleDateFormat("m");
+		BigDecimal minutes = new BigDecimal(sdfmin.format(d));
+		
+		timeIntVal = RoundUtil.roundBigDecimal(timeIntVal, 2);
+		String[] splitTimeInterval = timeIntVal.toString().split("\\.");
+		
+		if(splitTimeInterval!=null) {
+			if (splitTimeInterval.length >= 1 && splitTimeInterval[0] != null) {
+				timeIntHour = splitTimeInterval[0];
+			}
+			if (splitTimeInterval.length >= 2 && splitTimeInterval[1] != null) {
+				timeIntMin = splitTimeInterval[1];
+			}
+			if (timeIntHour != null) {
+				timeIntervalHour = new BigDecimal(timeIntHour);
+			}
+			if (timeIntMin != null) {
+				timeIntervalMin = new BigDecimal(timeIntMin);
+				if(timeIntervalMin != null && timeIntervalMin.compareTo(new BigDecimal(50)) == 0) {
+					timeIntervalMin = new BigDecimal(30);
+				}
+			}
+			estTimeInterval = timeIntervalHour.toString().concat(".").concat(timeIntervalMin.toString());
+		}
+
+		startTime = RoundUtil.roundBigDecimal(startTime, 2);
+		String[] splitStartTime = startTime.toString().split("\\.");
+		
+				
+		if (splitStartTime != null) {
+			if (splitStartTime.length >= 1 && splitStartTime[0] != null) {
+				startHour = splitStartTime[0];
+			}
+			if (splitStartTime.length >= 2 && splitStartTime[1] != null) {
+				startMinutes = splitStartTime[1];
+			}
+			if (startHour != null) {
+				startTimeHour = new BigDecimal(startHour);
+			}
+			if (startMinutes != null) {
+				startTimeMinutes = new BigDecimal(startMinutes);
+				if(startTimeMinutes != null && startTimeMinutes.compareTo(new BigDecimal(50)) == 0) {
+					startTimeMinutes = new BigDecimal(30);
+				}
+			}
+		}
+
+		BigDecimal startTimeNToday = startTimeHour;
+
+		for (int n = 0; n <= noofDay; n++) {
+			if (n == 0) {
+				if (hour.compareTo(startTimeHour) >= 0) {
+					if (startTimeMinutes.compareTo(BigDecimal.ZERO) != 0 && minutes.compareTo(BigDecimal.ZERO) != 0) {
+						String estStartTime = hour.toString().concat(".").concat(startTimeMinutes.toString());
+						startTime = new BigDecimal(estStartTime).add(new BigDecimal(estTimeInterval));
+					} else {
+						String estStartTime = hour.toString().concat(".").concat("00");
+						startTime = new BigDecimal(estStartTime).add(new BigDecimal(estTimeInterval));
+					}
+				}
+			} else {
+				if (startTimeMinutes.compareTo(BigDecimal.ZERO) != 0 && minutes.compareTo(BigDecimal.ZERO) != 0) {
+					String estStartTime = startTimeNToday.toString().concat(".").concat(startTimeMinutes.toString());
+					startTime = new BigDecimal(estStartTime);
+				} else {
+					String estStartTime = startTimeNToday.toString().concat(".").concat("00");
+					startTime = new BigDecimal(estStartTime);
+				}
+
+			}
+
+			TimeSlotDto dto = new TimeSlotDto();
+			timeSlotList = new ArrayList<>();
+			for (BigDecimal i = startTime; i.compareTo(endTime) < 0; i = i) {
+				BigDecimal convertI = convertMinuteTohours(i,BigDecimal.ZERO);
+				BigDecimal convertJ = convertMinuteTohours(convertI,new BigDecimal(estTimeInterval));
+				i = convertJ;
+				String str = "";
+				if (j.compareTo(endTime) <= 0) {
+					str = String.valueOf(convertI).replace(".", ":") + "-" + String.valueOf(convertJ).replace(".", ":");
+					timeSlotList.add(str);
+				}
+
+				dto.setTimeSlot(timeSlotList);
+			}
+
+			SimpleDateFormat dateStr = new SimpleDateFormat("dd/MM/yyyy");
+			calendar.add(calendar.DAY_OF_MONTH, n);
+			Date dateD = calendar.getTime();
+			dto.setDate(dateStr.format(dateD));
+			timeSlotDto.add(dto);
+		}
+
+		return timeSlotDto;
+	}
+	
+	public static BigDecimal convertMinuteTohours(BigDecimal value,BigDecimal estTimeInterval) {
+		BigDecimal convertValue = value.add(estTimeInterval);
+		BigDecimal hoursCal = RoundUtil.roundBigDecimal(convertValue, 2);
+		String[] splithoursCal = hoursCal.toString().split("\\.");
+		String startHourCal = null;
+		String startMinutesCal = null;
+		BigDecimal startTimeHourCal = BigDecimal.ZERO;
+		BigDecimal startTimeMinutesCal = BigDecimal.ZERO;
+				
+		if (splithoursCal != null) {
+			if (splithoursCal.length >= 1 && splithoursCal[0] != null) {
+				startHourCal = splithoursCal[0];
+			}
+			if (splithoursCal.length >= 2 && splithoursCal[1] != null) {
+				startMinutesCal = splithoursCal[1];
+			}
+			if (startHourCal != null) {
+				startTimeHourCal = new BigDecimal(startHourCal);
+			}
+			if (startMinutesCal != null) {
+				startTimeMinutesCal = new BigDecimal(startMinutesCal);
+				startTimeHourCal = (startTimeHourCal.multiply(new BigDecimal(60))).multiply(new BigDecimal(60));
+				startTimeHourCal = startTimeHourCal.add(startTimeMinutesCal.multiply(new BigDecimal(60)));
+				startTimeHourCal = (startTimeHourCal.divide(new BigDecimal(60), 2, RoundingMode.FLOOR)).divide(new BigDecimal(60), 2, RoundingMode.FLOOR);
+				convertValue = startTimeHourCal;
+				double doubleNumber = Convert.toDouble(convertValue);
+				int hoursval = (int) doubleNumber;
+				String doubleAsString = String.valueOf(doubleNumber);
+				int indexOfDecimal = doubleAsString.indexOf(".");
+				Double minutes = Double.parseDouble(doubleAsString.substring(indexOfDecimal));
+				if (minutes != null && minutes != 0) {
+					BigDecimal minuteVal = new BigDecimal(minutes * 60);
+					if (minuteVal.compareTo(new BigDecimal(30)) == 0) {
+						// continue
+						convertValue = new BigDecimal(Integer.toString(hoursval).concat(".").concat(minuteVal.toString()));
+					}
+				}else {
+					String estEndTime = Integer.toString(hoursval).concat(".").concat("00");
+					convertValue = new BigDecimal(estEndTime);
+				}
+			}
+		}
+		return convertValue;
+	}
 	
 	public static  Date daysAddInCurrentDate(int noOfDays) {
 		GregorianCalendar calendar = new GregorianCalendar();
@@ -234,4 +445,29 @@ public class DateUtil {
 		}
 		   return accountingMonthYear;
 	   }
+	 
+	 /** added by Rabil 30 07 2019 **/
+	 public static String convertDatetostringWithddMmYyyywithHMinute(Date date) {
+		 String dateString = null;
+		 try {
+			 SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss a");
+				 //Date date = new Date();
+				 dateString = format.format(date);
+		 }catch (Exception e) {
+			 e.printStackTrace();
+			}
+		 return dateString;
+	 }
+	 
+	 public static Date convertStringToDatewithddMmYyyywithHMinute(String dateString) {
+		 SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss a");
+			Date date = new Date();
+			try {
+				date = formatter.parse(dateString);
+			} catch (ParseException e) {
+
+			}
+			return date;
+		}
+	 
 }

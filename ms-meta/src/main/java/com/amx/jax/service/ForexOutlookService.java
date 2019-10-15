@@ -45,7 +45,7 @@ public class ForexOutlookService extends AbstractService {
 		LOGGER.debug("currencyPairList Size" + currencyPairList.size());
 
 		if (currencyPairList.isEmpty()) {
-			throw new GlobalException(JaxError.DATA_NOT_FOUND, "currencyPairList list is not abaliable");
+			throw new GlobalException(JaxError.DATA_NOT_FOUND, "currencyPairList list is not available");
 		}
 
 		List<CurrencyPairDTO> dtoList = new ArrayList<CurrencyPairDTO>();
@@ -65,7 +65,7 @@ public class ForexOutlookService extends AbstractService {
 		LOGGER.debug("getCurpairHistory Size" + curPairHistoryList.size());
 
 		if (curPairHistoryList.isEmpty()) {
-			throw new GlobalException(JaxError.NO_RECORD_FOUND, "currencyPairList list is not abaliable");
+			throw new GlobalException(JaxError.NO_RECORD_FOUND, "currencyPairList History list is not available");
 		}
 
 		List<ForexOutLookResponseDTO> dtoList = new ArrayList<ForexOutLookResponseDTO>();

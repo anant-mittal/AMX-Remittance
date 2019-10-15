@@ -1,5 +1,7 @@
 package com.amx.jax.logger;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 
 public interface AuditService {
@@ -13,6 +15,16 @@ public interface AuditService {
 	 * @return
 	 */
 	public AuditLoggerResponse log(AuditEvent event);
+
+	/**
+	 * 
+	 * @param event
+	 * @param e
+	 * @return
+	 */
+	public List<AuditEvent> queue(AuditEvent event);
+
+	public List<AuditEvent> commit();
 
 	/**
 	 * Audit from request tracking purpose
@@ -57,5 +69,9 @@ public interface AuditService {
 	 * @return
 	 */
 	public AuditLoggerResponse log(AuditEvent event, Exception e);
+
+	public AuditActor getActor();
+
+	public <T extends AuditActor> T getActor(Class<T> class1);
 
 }

@@ -15,8 +15,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.AuthType;
-import com.amx.amxlib.meta.model.BeneficiaryErrorStatusDto;
-import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.dao.BlackListDao;
 import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
@@ -33,6 +31,10 @@ import com.amx.jax.dbmodel.bene.BeneficaryContact;
 import com.amx.jax.dbmodel.bene.BeneficaryMaster;
 import com.amx.jax.dbmodel.bene.BeneficaryRelationship;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.BeneficiaryErrorStatusDto;
+import com.amx.jax.model.BeneficiaryListDTO;
+import com.amx.jax.pricer.var.PricerServiceConstants;
 import com.amx.jax.repository.CountryRepository;
 import com.amx.jax.repository.IBankAccountLengthDao;
 import com.amx.jax.repository.IBankMasterFromViewDao;
@@ -98,6 +100,9 @@ public class BeneficiaryCheckService extends AbstractService {
 
 	@Autowired
 	ParameterService parameterService;
+	
+	@Autowired
+	MetaData metaData;
 
 	public BeneficiaryListDTO beneCheck(BeneficiaryListDTO beneDto) {
 		boolean isUpdateNeeded = false;
@@ -237,8 +242,9 @@ public class BeneficiaryCheckService extends AbstractService {
 
 		}
 
+		List<BanksView> bankList = null;
 		if (JaxUtil.isNullZeroBigDecimalCheck(beneDto.getBankId())) {
-			List<BanksView> bankList = bankMasterDao.getBankListByBankId(beneDto.getBankId());
+			bankList = bankMasterDao.getBankListByBankId(beneDto.getBankId());
 			if (bankList.isEmpty()) {
 				errorDesc = "Invalid beneficiary bank";
 				errorStatusDto = this.setBeneError(JaxError.INVALID_BENE_BANK.toString(), errorDesc);
@@ -263,23 +269,34 @@ public class BeneficiaryCheckService extends AbstractService {
 			}
 		}*/
 
-		if (JaxUtil.isNullZeroBigDecimalCheck(beneDto.getBankId())
-				&& JaxUtil.isNullZeroBigDecimalCheck(beneDto.getBenificaryCountry())) {
-			List<BanksView> bankList = bankMasterDao.getBankListByBeneBankIdAndCountry(beneDto.getBankId(),
-					beneDto.getBenificaryCountry());
-			if (bankList.isEmpty()) {
-
-				errorDesc = "Invalid beneficiary bank country";
-				errorStatusDto = this.setBeneError(JaxError.INVALID_BENE_BANK_CNTRY.toString(), errorDesc);
-				errorListDto.add(errorStatusDto);
+		if(beneDto.getBankId() != null && bankList != null && !bankList.isEmpty()) {
+			BanksView banksView = bankList.get(0);
+			if(banksView.getBankInd() != null && banksView.getBankInd().equalsIgnoreCase(PricerServiceConstants.SERVICE_PROVIDER_INDICATOR)) {
+				if(JaxUtil.isNullZeroBigDecimalCheck(metaData.getCountryId()) && JaxUtil.isNullZeroBigDecimalCheck(banksView.getBankCountryId())) {
+					if(metaData.getCountryId().compareTo(banksView.getBankCountryId()) != 0) {
+						errorDesc = "Invalid beneficiary bank country";
+						errorStatusDto = this.setBeneError(JaxError.INVALID_BENE_BANK_CNTRY.toString(), errorDesc);
+						errorListDto.add(errorStatusDto);
+					}
+				}else {
+					errorDesc = "Invalid beneficiary bank country";
+					errorStatusDto = this.setBeneError(JaxError.INVALID_BENE_BANK_CNTRY.toString(), errorDesc);
+					errorListDto.add(errorStatusDto);
+				}
+			}else {
+				if (JaxUtil.isNullZeroBigDecimalCheck(beneDto.getBankId()) && JaxUtil.isNullZeroBigDecimalCheck(beneDto.getBenificaryCountry())) {
+					bankList = bankMasterDao.getBankListByBeneBankIdAndCountry(beneDto.getBankId(), beneDto.getBenificaryCountry());
+					if (bankList.isEmpty()) {
+						errorDesc = "Invalid beneficiary bank country";
+						errorStatusDto = this.setBeneError(JaxError.INVALID_BENE_BANK_CNTRY.toString(), errorDesc);
+						errorListDto.add(errorStatusDto);
+					}
+				} else {
+					errorDesc = "Invalid beneficiary bank country";
+					errorStatusDto = this.setBeneError(JaxError.INVALID_BENE_BANK_CNTRY.toString(), errorDesc);
+					errorListDto.add(errorStatusDto);
+				}
 			}
-		} else {
-
-			errorDesc = "Invalid beneficiary bank country";
-			errorStatusDto = this.setBeneError(JaxError.INVALID_BENE_BANK_CNTRY.toString(), errorDesc);
-
-			errorListDto.add(errorStatusDto);
-
 		}
 
 		if (JaxUtil.isNullZeroBigDecimalCheck(beneDto.getCountryId())) {
@@ -431,6 +448,7 @@ public class BeneficiaryCheckService extends AbstractService {
 				}
 			}
 		}
+		
 		beneDto.setBeneficiaryErrorStatus(errorListDto);
 		return beneDto;
 	}

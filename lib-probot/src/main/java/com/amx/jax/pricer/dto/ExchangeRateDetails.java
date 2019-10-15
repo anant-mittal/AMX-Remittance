@@ -2,8 +2,9 @@ package com.amx.jax.pricer.dto;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Map.Entry;
 
 import javax.validation.constraints.NotNull;
 
@@ -22,7 +23,21 @@ public class ExchangeRateDetails implements Serializable, Cloneable, Comparable<
 
 	private ExchangeRateBreakup sellRateBase;
 
-	private Map<DISCOUNT_TYPE, String> discountPipsDetails;
+	private Map<DISCOUNT_TYPE, ExchangeDiscountInfo> customerDiscountDetails;
+
+	private boolean isDiscountAvailed = false;
+
+	private boolean isCostRateLimitReached = false;
+
+	private boolean isLowGLBalance = false;
+
+	private boolean isFundedIntermediary = false;
+	
+	private boolean isBetterRateAvailable = false;
+
+	private BigDecimal betterRateAmountSlab;
+
+	private BigDecimal diffInBetterRateFcAmount;
 
 	public BigDecimal getBankId() {
 		return bankId;
@@ -56,12 +71,68 @@ public class ExchangeRateDetails implements Serializable, Cloneable, Comparable<
 		this.sellRateBase = sellRateBase;
 	}
 
-	public Map<DISCOUNT_TYPE, String> getDiscountPipsDetails() {
-		return discountPipsDetails;
+	public Map<DISCOUNT_TYPE, ExchangeDiscountInfo> getCustomerDiscountDetails() {
+		return customerDiscountDetails;
 	}
 
-	public void setDiscountPipsDetails(Map<DISCOUNT_TYPE, String> discountPipsDetails) {
-		this.discountPipsDetails = discountPipsDetails;
+	public void setCustomerDiscountDetails(Map<DISCOUNT_TYPE, ExchangeDiscountInfo> discountPipsDetails) {
+		this.customerDiscountDetails = discountPipsDetails;
+	}
+
+	public boolean isDiscountAvailed() {
+		return isDiscountAvailed;
+	}
+
+	public void setDiscountAvailed(boolean isDiscountAvailed) {
+		this.isDiscountAvailed = isDiscountAvailed;
+	}
+
+	public boolean isCostRateLimitReached() {
+		return isCostRateLimitReached;
+	}
+
+	public void setCostRateLimitReached(boolean isCostRateLimitReached) {
+		this.isCostRateLimitReached = isCostRateLimitReached;
+	}
+
+	public boolean isLowGLBalance() {
+		return isLowGLBalance;
+	}
+
+	public void setLowGLBalance(boolean isLowGLBalance) {
+		this.isLowGLBalance = isLowGLBalance;
+	}
+
+	public boolean isFundedIntermediary() {
+		return isFundedIntermediary;
+	}
+
+	public void setFundedIntermediary(boolean isFunded) {
+		this.isFundedIntermediary = isFunded;
+	}
+
+	public boolean isBetterRateAvailable() {
+		return isBetterRateAvailable;
+	}
+
+	public void setBetterRateAvailable(boolean isBetterRateAvailable) {
+		this.isBetterRateAvailable = isBetterRateAvailable;
+	}
+
+	public BigDecimal getBetterRateAmountSlab() {
+		return betterRateAmountSlab;
+	}
+
+	public void setBetterRateAmountSlab(BigDecimal betterRateAmountSlab) {
+		this.betterRateAmountSlab = betterRateAmountSlab;
+	}
+
+	public BigDecimal getDiffInBetterRateFcAmount() {
+		return diffInBetterRateFcAmount;
+	}
+
+	public void setDiffInBetterRateFcAmount(BigDecimal diffInBetterRateFcAmount) {
+		this.diffInBetterRateFcAmount = diffInBetterRateFcAmount;
 	}
 
 	@Override
@@ -82,8 +153,18 @@ public class ExchangeRateDetails implements Serializable, Cloneable, Comparable<
 		try {
 
 			ExchangeRateDetails cloned = (ExchangeRateDetails) super.clone();
-			cloned.discountPipsDetails = this.discountPipsDetails.entrySet().stream()
-					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+			// cloned.customerDiscountDetails =
+			// this.customerDiscountDetails.entrySet().stream()
+			// .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+			if (this.customerDiscountDetails != null) {
+				cloned.customerDiscountDetails = new HashMap<DISCOUNT_TYPE, ExchangeDiscountInfo>();
+
+				for (Entry<DISCOUNT_TYPE, ExchangeDiscountInfo> entry : this.customerDiscountDetails.entrySet()) {
+					cloned.customerDiscountDetails.put(entry.getKey(), entry.getValue().clone());
+				}
+			}
 
 			return cloned;
 
@@ -94,9 +175,23 @@ public class ExchangeRateDetails implements Serializable, Cloneable, Comparable<
 			cloned.serviceIndicatorId = this.serviceIndicatorId;
 			cloned.sellRateBase = this.sellRateBase.clone();
 			cloned.sellRateNet = this.sellRateNet.clone();
+			cloned.isDiscountAvailed = this.isDiscountAvailed;
+			cloned.isCostRateLimitReached = this.isCostRateLimitReached;
+			cloned.isBetterRateAvailable = this.isBetterRateAvailable;
+			cloned.betterRateAmountSlab = this.betterRateAmountSlab;
+			cloned.diffInBetterRateFcAmount = this.diffInBetterRateFcAmount;
 
-			cloned.discountPipsDetails = this.discountPipsDetails.entrySet().stream()
-					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+			// cloned.customerDiscountDetails =
+			// this.customerDiscountDetails.entrySet().stream()
+			// .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+			if (this.customerDiscountDetails != null) {
+				cloned.customerDiscountDetails = new HashMap<DISCOUNT_TYPE, ExchangeDiscountInfo>();
+
+				for (Entry<DISCOUNT_TYPE, ExchangeDiscountInfo> entry : this.customerDiscountDetails.entrySet()) {
+					cloned.customerDiscountDetails.put(entry.getKey(), entry.getValue().clone());
+				}
+			}
 
 			return cloned;
 

@@ -4,6 +4,8 @@ package com.amx.jax.ui.api;
 import java.math.BigDecimal;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -14,13 +16,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.constant.BeneficiaryConstant.BeneStatus;
 import com.amx.amxlib.meta.model.BeneCountryDTO;
-import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.model.BeneAccountModel;
 import com.amx.amxlib.model.BenePersonalDetailModel;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.response.JaxTransactionResponse;
 import com.amx.amxlib.model.trnx.BeneficiaryTrnxModel;
 import com.amx.jax.JaxAuthContext;
+
+import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 import com.amx.jax.ui.model.AuthData;
 import com.amx.jax.ui.model.AuthDataInterface.AuthRequestOTP;
@@ -30,6 +33,7 @@ import com.amx.jax.ui.response.ResponseWrapperM;
 import com.amx.jax.ui.service.JaxService;
 import com.amx.jax.ui.session.Transactions;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.JsonUtil;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -40,7 +44,7 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 @Api(value = "Beneficiary APIs")
 public class BeneController {
-
+	private static final Logger LOGGER = LoggerFactory.getLogger(BeneController.class);
 	/** The jax service. */
 	@Autowired
 	private JaxService jaxService;
@@ -56,9 +60,11 @@ public class BeneController {
 	 */
 	@ApiOperation(value = "List of All bnfcry")
 	@RequestMapping(value = "/api/user/bnfcry/list", method = { RequestMethod.POST })
-	public ResponseWrapper<List<BeneficiaryListDTO>> beneList() {
+	public ResponseWrapper<List<BeneficiaryListDTO>> beneList(
+			@RequestParam(required = false, defaultValue = "false") boolean excludePackages) {
 		ResponseWrapper<List<BeneficiaryListDTO>> wrapper = new ResponseWrapper<>();
-		wrapper.setData(jaxService.setDefaults().getBeneClient().getBeneficiaryList(new BigDecimal(0)).getResults());
+		wrapper.setData(jaxService.setDefaults().getBeneClient().getBeneficiaryList(new BigDecimal(0), excludePackages)
+				.getResults());
 		return wrapper;
 	}
 
@@ -111,18 +117,18 @@ public class BeneController {
 		ResponseWrapperM<Object, AuthResponseOTPprefix> wrapper = new ResponseWrapperM<>();
 		// Disable Beneficiary
 		mOtp = JaxAuthContext.mOtp(ArgUtil.ifNotEmpty(mOtp, mOtpHeader));
-		eOtp = JaxAuthContext.mOtp(ArgUtil.ifNotEmpty(eOtp, eOtpHeader));
+		eOtp = JaxAuthContext.eOtp(ArgUtil.ifNotEmpty(eOtp, eOtpHeader));
 
 		if (mOtp == null && eOtp == null) {
 			wrapper.setMeta(new AuthData());
 			CivilIdOtpModel model = jaxService.setDefaults().getBeneClient().sendOtp().getResult();
 			wrapper.getMeta().setmOtpPrefix(model.getmOtpPrefix());
 			wrapper.getMeta().seteOtpPrefix(model.geteOtpPrefix());
-			wrapper.setStatus(OWAStatusStatusCodes.DOTP_REQUIRED);
+			wrapper.setStatusEnum(OWAStatusStatusCodes.DOTP_REQUIRED);
 		} else {
 			wrapper.setData(jaxService.setDefaults().getBeneClient()
 					.updateStatus(beneficaryMasterSeqId, remarks, status, mOtp, eOtp).getResult());
-			wrapper.setStatus(OWAStatusStatusCodes.VERIFY_SUCCESS);
+			wrapper.setStatusEnum(OWAStatusStatusCodes.VERIFY_SUCCESS);
 		}
 
 		return wrapper;
@@ -177,6 +183,7 @@ public class BeneController {
 	@RequestMapping(value = "/api/user/bnfcry/personal", method = { RequestMethod.POST })
 	public ResponseWrapper<JaxTransactionResponse> saveBenePersonalDetailInTrnx(
 			@RequestBody BenePersonalDetailModel benePersonalDetailModel) {
+		LOGGER.info("saveBenePersonalDetailInTrnx request: " + JsonUtil.toJson(benePersonalDetailModel));
 		transactions.track();
 		return new ResponseWrapper<>(jaxService.setDefaults().getBeneClient()
 				.saveBenePersonalDetailInTrnx(benePersonalDetailModel).getResult());

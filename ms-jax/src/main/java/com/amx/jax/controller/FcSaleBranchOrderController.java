@@ -3,6 +3,8 @@ package com.amx.jax.controller;
 
 import java.math.BigDecimal;
 
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,16 +13,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.fx.IFxBranchOrderService;
+import com.amx.jax.dbmodel.CustomerRating;
+import com.amx.jax.manager.FcSaleBranchOrderManager;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.request.fx.FcDeliveryBranchOrderSearchRequest;
 import com.amx.jax.model.request.fx.FcSaleBranchDispatchRequest;
+import com.amx.jax.model.request.fx.FcSaleOrderManagementDatesRequest;
 import com.amx.jax.model.response.fx.FcEmployeeDetailsDto;
 import com.amx.jax.model.response.fx.FcSaleOrderManagementDTO;
+import com.amx.jax.model.response.fx.FxDeliveryTimeSlotDto;
 import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
+import com.amx.jax.model.response.fx.FxOrderTransactionHistroyDto;
 import com.amx.jax.model.response.fx.UserStockDto;
+import com.amx.jax.services.CustomerRatingService;
 import com.amx.jax.services.FcSaleBranchService;
 
 /**
@@ -39,6 +47,12 @@ public class FcSaleBranchOrderController implements IFxBranchOrderService {
 
 	@Autowired
 	MetaData metaData;
+@Autowired
+	FcSaleBranchOrderManager fcSaleBranchOrderManager;	
+	
+	@Autowired
+	CustomerRatingService customerRatingService;
+	
 
 	/**
 	 * To get the fx pending order management list
@@ -216,5 +230,63 @@ public class FcSaleBranchOrderController implements IFxBranchOrderService {
 		BigDecimal employeeId = metaData.getEmployeeId();
 		return fcSaleBranch.reprintOrder(countryId, orderNumber, orderYear, employeeId);
 	}
+	
+	
+	/**
+	 * To get the FC-delivery Enquiry order search 
+	* @author : Radhika
+    * @date : 12/03/2019
+	*/
+	@RequestMapping(value = Path.FC_SEARCH_ORDER, method = RequestMethod.POST)
+	public AmxApiResponse<FxOrderTransactionHistroyDto, Object> searchOrder(@RequestBody FcDeliveryBranchOrderSearchRequest fcDeliveryBranchOrderSearchRequest) {
+		return fcSaleBranch.searchOrder(fcDeliveryBranchOrderSearchRequest);
+	}
+	
+	/**
+	 * To get the FC-delivery Time setup 
+	* @author : Radhika
+    * @date : 21/08/2019
+	*/
+	@RequestMapping(value = Path.FC_ORDER_DELIVERY_TIME_SETUP , method = RequestMethod.POST)
+	public AmxApiResponse<BoolRespModel,Object> saveFcDeliveryTimeSlot(@RequestBody FxDeliveryTimeSlotDto fxDeliveryTimeSlotDto) {
+		fxDeliveryTimeSlotDto.setCountryId(metaData.getCountryId());
+		fxDeliveryTimeSlotDto.setCompanyId(metaData.getCompanyId());
+		BoolRespModel result =fcSaleBranch.saveFcDeliveryTiming(fxDeliveryTimeSlotDto);
+		return AmxApiResponse.build(result);
+	}
+	
+	@RequestMapping(value = Path.FC_ORDER_DELIVERY_TIME_SETUP_FETCH , method = RequestMethod.GET)
+	public AmxApiResponse<FxDeliveryTimeSlotDto,Object> fetchFcDeliveryTiming() {
+		
+		return fcSaleBranch.fetchFcDeliveryTiming();
+		
+	}
 
+	
+	/**
+	 * To get the FC-delivery Enquiry order search 
+	* @author : Radhika
+    * @date : 19/08/2019
+	*/
+	@RequestMapping(value = Path.FC_CUSTOMER_RATING , method = RequestMethod.POST)
+	public AmxApiResponse<CustomerRating, ?> inquireFxOrderCustomerRating(@RequestParam(value = Params.FX_DELIVERY_SEQ_ID) BigDecimal deliveryDetailSeqId,@RequestParam(value=Params.FX_PRODUCT) String product) {
+		return customerRatingService.fxOrderinquireCustomerRating(deliveryDetailSeqId, product);
+
+	}
+
+    /**
+	 * To get the order to based on date selection
+	 * 
+	 */
+	@RequestMapping(value = Path.FC_SEARCH_ORDER_BY_DATES , method = RequestMethod.POST)
+	@Override
+	public AmxApiResponse<FcSaleOrderManagementDTO,Object> searchOrderByDates(@RequestBody FcSaleOrderManagementDatesRequest fcSaleDates){
+		BigDecimal countryId = metaData.getCountryId();
+		BigDecimal employeeId = metaData.getEmployeeId();
+		return fcSaleBranch.searchOrderByDates(countryId,employeeId,fcSaleDates);
+	}
+	
+
+
+	
 }

@@ -7,6 +7,8 @@ import java.util.regex.Pattern;
 
 import javax.annotation.PostConstruct;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -21,9 +23,9 @@ import com.amx.jax.dict.Project;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.filter.AppClientErrorHanlder;
 import com.amx.jax.filter.AppClientInterceptor;
-import com.amx.jax.scope.TenantContext;
 import com.amx.jax.scope.TenantProperties;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.Constants;
 import com.amx.utils.JsonUtil.JsonUtilConfigurable;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,19 +36,22 @@ import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties
 @EnableEncryptableProperties
 public class AppConfig {
 
-	private static final String PROP_SUFFIX = "}";
+	private Logger LOGGER = LoggerFactory.getLogger(AppConfig.class);
+
 	private static final String PROP_PREFIX = "${";
+	private static final String PROP_SUFFIX = "}";
 	public static final Pattern pattern = Pattern.compile("^\\$\\{(.*)\\}$");
 	public static final String APP_ENV = "${app.env}";
 	public static final String APP_GROUP = "${app.group}";
 	public static final String APP_NAME = "${app.name}";
 	public static final String APP_ID = "${app.id}";
+	public static final String APP_VERSION = "${app.version}";
 
 	public static final String APP_PROD = "${app.prod}";
 	public static final String APP_SWAGGER = "${app.swagger}";
 	public static final String APP_DEBUG = "${app.debug}";
 	public static final String APP_CACHE = "${app.cache}";
-	public static final String APP_LOGGER = "${app.logger}";
+	public static final String APP_LOGGER = "${app.audit}";
 	public static final String APP_MONITOR = "${app.monitor}";
 
 	public static final String APP_CONTEXT_PREFIX = "${server.contextPath}";
@@ -59,7 +64,9 @@ public class AppConfig {
 	public static final String APP_AUTH_TOKEN = "${app.auth.token}";
 	public static final String APP_AUTH_ENABLED = "${app.auth.enabled}";
 
-	public static final String DEFAULT_TENANT = "${default.tenant}";
+	public static final String DEFAULT_TENANT_KEY = "default.tenant";
+
+	public static final String DEFAULT_TENANT_EXP = PROP_PREFIX + DEFAULT_TENANT_KEY + PROP_SUFFIX;
 
 	public static final String JAX_CDN_URL = "${jax.cdn.url}";
 	public static final String JAX_APP_URL = "${jax.app.url}";
@@ -75,6 +82,7 @@ public class AppConfig {
 	public static final String SPRING_REDIS_HOST = "${spring.redis.host}";
 	public static final String SPRING_REDIS_PORT = "${spring.redis.port}";
 	public static final String JAX_PRICER_URL = "${jax.pricer.url}";
+	public static final String JAX_SERVICE_PROVIDER_URL = "${jax.service-provider.url}";
 
 	@Value(APP_ENV)
 	@AppParamKey(AppParam.APP_ENV)
@@ -95,6 +103,10 @@ public class AppConfig {
 	@Value(APP_ID)
 	@AppParamKey(AppParam.APP_ID)
 	private String appId;
+
+	@Value(APP_VERSION)
+	@AppParamKey(AppParam.APP_VERSION)
+	private String appVersion;
 
 	@Value(APP_CLASS)
 	@AppParamKey(AppParam.APP_CLASS)
@@ -134,7 +146,7 @@ public class AppConfig {
 	@AppParamKey(AppParam.APP_CACHE)
 	private Boolean cache;
 
-	@Value(DEFAULT_TENANT)
+	@Value(DEFAULT_TENANT_EXP)
 	@AppParamKey(AppParam.DEFAULT_TENANT)
 	private Tenant defaultTenant;
 
@@ -189,6 +201,13 @@ public class AppConfig {
 	@Value(APP_CONTEXT_PREFIX)
 	@AppParamKey(AppParam.APP_CONTEXT_PREFIX)
 	private String appPrefix;
+
+	@Value(JAX_SERVICE_PROVIDER_URL)
+	@AppParamKey(AppParam.JAX_SERVICE_PROVIDER_URL)
+	private String serviceProviderURL;
+
+	@Value("${app.response.ok}")
+	private boolean appResponseOK;
 
 	@Value("${server.session.cookie.http-only}")
 	private boolean cookieHttpOnly;
@@ -263,6 +282,8 @@ public class AppConfig {
 	@Bean
 	public AppParam loadAppParams() {
 
+		LOGGER.info("Loading loadAppParams");
+
 		for (Field field : AppConfig.class.getDeclaredFields()) {
 			AppParamKey s = field.getAnnotation(AppParamKey.class);
 			Value v = field.getAnnotation(Value.class);
@@ -283,7 +304,7 @@ public class AppConfig {
 				}
 
 				if ("java.lang.String".equals(typeName)) {
-					s.value().setValue(ArgUtil.parseAsString(value));
+					s.value().setValue(ArgUtil.parseAsString(value, Constants.BLANK).trim());
 				} else if ("boolean".equals(typeName) || "java.lang.Boolean".equals(typeName)) {
 					s.value().setEnabled(ArgUtil.parseAsBoolean(value));
 				}
@@ -369,7 +390,7 @@ public class AppConfig {
 		return skipAuditMarkers;
 	}
 
-	public boolean isLogger() {
+	public boolean isAudit() {
 		return logger;
 	}
 
@@ -379,6 +400,17 @@ public class AppConfig {
 
 	@Autowired
 	private Environment environment;
+
+	@Autowired
+	TenantProperties tenantProperties;
+
+	public String prop(String key) {
+		String value = tenantProperties.getProperties().getProperty(key);
+		if (ArgUtil.isEmpty(value)) {
+			value = environment.getProperty(key);
+		}
+		return ArgUtil.parseAsString(value);
+	}
 
 	@PostConstruct
 	public void init() {
@@ -410,6 +442,26 @@ public class AppConfig {
 
 	public String getAppAuthToken() {
 		return appAuthToken;
+	}
+
+	public String getAppVersion() {
+		return appVersion;
+	}
+
+	public void setAppVersion(String appVersion) {
+		this.appVersion = appVersion;
+	}
+
+	public boolean isAppResponseOK() {
+		return appResponseOK;
+	}
+
+	public String getServiceProviderURL() {
+		return serviceProviderURL;
+	}
+
+	public void setServiceProviderURL(String serviceProviderURL) {
+		this.serviceProviderURL = serviceProviderURL;
 	}
 
 }

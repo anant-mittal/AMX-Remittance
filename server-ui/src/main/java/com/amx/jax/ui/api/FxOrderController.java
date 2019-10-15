@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.fx.FcSaleOrderClient;
 import com.amx.jax.client.fx.IFxOrderService;
@@ -75,7 +76,7 @@ public class FxOrderController {
 
 	@Autowired
 	private PostManService postManService;
-	
+
 	/** The response. */
 	@Autowired
 	private HttpServletResponse response;
@@ -127,7 +128,7 @@ public class FxOrderController {
 	public ResponseWrapper<List<ShippingAddressDto>> getFcSaleAddress() {
 		return ResponseWrapper.buildList(fcSaleOrderClient.getFcSaleAddress());
 	}
-	
+
 	@RequestMapping(value = "/api/fxo/address-new/list", method = { RequestMethod.GET })
 	public ResponseWrapper<List<ShippingAddressDto>> getFcSaleAddressNew() {
 		return ResponseWrapper.buildList(fcSaleOrderClient.getFcSaleAddressNew());
@@ -170,11 +171,11 @@ public class FxOrderController {
 				.build(fcSaleOrderClient.getSavePayNowApplication(requestModel));
 
 		PayGParams payment = new PayGParams();
-		payment.setDocFy(wrapper.getData().getDocumentFinancialYear());
+		payment.setDocFyObject(wrapper.getData().getDocumentFinancialYear());
 		payment.setDocNo(wrapper.getData().getDocumentIdForPayment());
 		payment.setDocId(wrapper.getData().getDocumentIdForPayment());
-		payment.setTrackId(wrapper.getData().getMerchantTrackId());
-		payment.setAmount(wrapper.getData().getNetPayableAmount());
+		payment.setTrackIdObject(wrapper.getData().getMerchantTrackId());
+		payment.setAmountObject(wrapper.getData().getNetPayableAmount());
 		payment.setServiceCode(wrapper.getData().getPgCode());
 		payment.setProduct(AmxEnums.Products.FXORDER);
 
@@ -208,7 +209,7 @@ public class FxOrderController {
 		if (File.Type.PDF.equals(ext)) {
 			File file = postManService.processTemplate(
 					new File(duplicate ? TemplatesMX.FXO_RECEIPT : TemplatesMX.FXO_RECEIPT,
-							wrapper, File.Type.PDF))
+							wrapper, File.Type.PDF).lang(AppContextUtil.getTenant().defaultLang()))
 					.getResult();
 			// file.create(response, false);
 			// return null;
@@ -217,7 +218,7 @@ public class FxOrderController {
 		} else if (File.Type.HTML.equals(ext)) {
 			File file = postManService.processTemplate(
 					new File(duplicate ? TemplatesMX.FXO_RECEIPT : TemplatesMX.FXO_RECEIPT,
-							wrapper, File.Type.HTML))
+							wrapper, File.Type.HTML).lang(AppContextUtil.getTenant().defaultLang()))
 					.getResult();
 			// return file.getContent();
 			return PostManUtil.download(file);
@@ -237,7 +238,6 @@ public class FxOrderController {
 		return ResponseWrapper
 				.build(fcSaleOrderClient.getFxOrderTransactionStatus(docNo));
 	}
-	
 
 	/**
 	 * Prints the fx order history.

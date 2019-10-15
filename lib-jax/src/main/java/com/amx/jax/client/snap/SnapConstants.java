@@ -10,6 +10,8 @@ public class SnapConstants {
 		public static final String TRANX = "trnx";
 		public static final String CUSTOMER = "customer";
 		public static final String XRATE = "xrate";
+		public static final String VERIFY = "verifiy";
+		public static final String LOGS = "logs";
 		public static final String ALL = "*";
 
 	}
@@ -19,25 +21,36 @@ public class SnapConstants {
 	}
 
 	public static enum SnapQueryTemplate {
+		FIND_DOC_BY_ID("find-doc-by-id", SnapIndexName.ALL),
 		CUSTOMER_LIMIT("customer-limit", SnapIndexName.ALL),
 		CUSTOMERS_JOINED("customer-joined", SnapIndexName.CUSTOMER),
 		CUSTOMERS_PROFILE("customer-profile", SnapIndexName.CUSTOMER),
 		TRANX_DONE("tranx-done", SnapIndexName.TRANX),
+		TRANX_ANOMALY("tranx-anomaly", SnapIndexName.TRANX),
 		XRATE_SELL_TRANSFER("xrate-sell-transfer", SnapIndexName.XRATE),
+		CUSTOMER_VERIFICATION_REPORT("customer-verification-report", SnapIndexName.LOGS, "auditlogs"),
+		CUSTOMER_VERIFICATION_REPORT_TOTAL("customer-verification-report-total", SnapIndexName.LOGS, "auditlogs"),
+		BUGZ_STORIES("bugz-stories", SnapIndexName.ALL),
 		;
 
 		String file;
 		String index;
-		String indexName;
+		String indexType;
 
 		SnapQueryTemplate(String file) {
 			this.file = file;
 		}
 
-		SnapQueryTemplate(String file, String indexName) {
+		SnapQueryTemplate(String file, String indexType) {
 			this.file = file;
-			this.indexName = indexName;
-			this.index = esindex(indexName);
+			this.indexType = indexType;
+			this.index = esindex(indexType);
+		}
+
+		SnapQueryTemplate(String file, String indexType, String index) {
+			this.file = file;
+			this.indexType = indexType;
+			this.index = index;
 		}
 
 		public String getFile() {
@@ -48,12 +61,12 @@ public class SnapConstants {
 			return index;
 		}
 
-		public String getIndexName() {
-			return indexName;
+		public String getIndexType() {
+			return indexType;
 		}
 
-		public void setIndexName(String indexName) {
-			this.indexName = indexName;
+		public void setIndexType(String indexType) {
+			this.indexType = indexType;
 		}
 	}
 }

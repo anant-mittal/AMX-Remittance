@@ -3,7 +3,7 @@ package com.amx.jax.radar.jobs.customer;
 import java.util.Date;
 
 import org.slf4j.Logger;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -21,6 +21,7 @@ import com.amx.jax.logger.LoggerService;
 import com.amx.jax.mcq.shedlock.SchedulerLock;
 import com.amx.jax.mcq.shedlock.SchedulerLock.LockContext;
 import com.amx.jax.radar.AESRepository.BulkRequestBuilder;
+import com.amx.jax.radar.RadarConfig;
 import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncJobs;
 import com.amx.jax.rates.AmxCurConstants;
 import com.amx.utils.ArgUtil;
@@ -32,7 +33,8 @@ import com.amx.utils.TimeUtils;
 @Component
 @Service
 //@ConditionalOnExpression(TestSizeApp.ENABLE_JOBS)
-@ConditionalOnProperty("jax.jobs.customer")
+//@ConditionalOnProperty("jax.jobs.customer")
+@ConditionalOnExpression(RadarConfig.CE_CUSTOMER_SYNC_AND_ES)
 public class CustomerViewTask extends AbstractDBSyncTask {
 
 	private static final Logger LOGGER = LoggerService.getLogger(CustomerViewTask.class);

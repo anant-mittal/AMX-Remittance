@@ -12,11 +12,8 @@ import com.amx.jax.model.IResourceEntity;
 
 @Entity
 @Table(name = "VW_GOVERNORATES_AREA")
-public class VwGovernateAreaModel implements IResourceEntity{
+public class VwGovernateAreaModel implements IResourceEntity, Serializable{
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 2523252921630492806L;
 	@Id
 	@Column(name="GOVERNORATES_AREA_ID")
@@ -72,6 +69,11 @@ public class VwGovernateAreaModel implements IResourceEntity{
 	@Override
 	public String resourceCode() {
 		return this.arFullName;
+	}
+	@Override
+	public String resourceLocalName() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
 

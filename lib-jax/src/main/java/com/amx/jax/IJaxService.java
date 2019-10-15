@@ -1,5 +1,7 @@
 package com.amx.jax;
 
+import java.math.BigDecimal;
+
 import org.apache.log4j.Logger;
 import org.springframework.http.HttpHeaders;
 
@@ -26,4 +28,5 @@ public interface IJaxService {
 		}
 		return headers;
 	}
+
 }

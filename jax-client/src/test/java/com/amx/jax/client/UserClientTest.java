@@ -4,6 +4,8 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.Date;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -20,10 +22,11 @@ import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.exception.RemittanceTransactionValidationException;
 import com.amx.amxlib.exception.ResourceNotFoundException;
+import com.amx.amxlib.meta.model.AnnualIncomeRangeDTO;
 import com.amx.amxlib.meta.model.CustomerDto;
+import com.amx.amxlib.meta.model.IncomeDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
-import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.UserFingerprintResponseModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
@@ -32,8 +35,12 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.constants.JaxChannel;
 import com.amx.jax.dict.Tenant;
+
 import com.amx.jax.model.UserDevice;
 import com.amx.jax.model.auth.QuestModelDTO;
+import com.amx.jax.model.customer.SecurityQuestionModel;
+import com.amx.jax.model.response.customer.CustomerModelResponse;
+import com.amx.jax.model.response.customer.CustomerModelSignupResponse;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -96,7 +103,7 @@ public class UserClientTest extends AbstractTestClient {
 		setBahrainDefaults();
 		ApiResponse<CustomerModel> response = null;
 		ApiResponse<CivilIdOtpModel> otpResp = client.sendResetOtpForCivilId("450501485");
-		
+
 		String mobile = "1234567890";
 		String mOtp = otpResp.getResult().getmOtp();
 		String eOtp = otpResp.getResult().geteOtp();
@@ -120,7 +127,7 @@ public class UserClientTest extends AbstractTestClient {
 		assertNotNull(response.getResult());
 	}
 
-	// @Test
+	@Test
 	public void testLoginSuccess() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
@@ -129,7 +136,8 @@ public class UserClientTest extends AbstractTestClient {
 		jaxMetaInfo.setCustomerId(new BigDecimal(5128));
 		ApiResponse<CustomerModel> response = null;
 		try {
-			response = client.login("2810502076280", "Amx@12345");
+			response = client.login("284052306594", "Amx@1234");
+			LOGGER.info("Flags are "+response.getResults());
 		} catch (AbstractJaxException e) {
 			e.printStackTrace();
 		}
@@ -216,7 +224,7 @@ public class UserClientTest extends AbstractTestClient {
 		assertNotNull(response.getResult());
 	}
 
-	//@Test
+	// @Test
 	public void sendResetOtp() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
 		setDefaults();
@@ -235,42 +243,12 @@ public class UserClientTest extends AbstractTestClient {
 		jaxMetaInfo.setCustomerId(null);
 		jaxMetaInfo.setTenant(Tenant.KWT2);
 		ApiResponse<CivilIdOtpModel> response = null;
-		response = client.initRegistration("123");
+		response = client.initRegistration("123", null);
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
 	}
-	
-	//@Test
-	public void saveEmailNew() throws IOException, ResourceNotFoundException, InvalidInputException,
-	RemittanceTransactionValidationException, LimitExeededException {
-		jaxMetaInfo.setCountryId(new BigDecimal(91));
-		jaxMetaInfo.setCompanyId(new BigDecimal(1));
-		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
-		jaxMetaInfo.setCustomerId(new BigDecimal(931428));
-		ApiResponse<CustomerModel> response = null;
-		String email = "viki.sangani@almullagroup.com";
-		
-		response = client.saveEmailNew(email);
-		assertNotNull("Response is null", response);
-		assertNotNull(response.getResult());
-	}
-	
-	//@Test
-	public void saveMobileNew() throws IOException, ResourceNotFoundException, InvalidInputException,
-	RemittanceTransactionValidationException, LimitExeededException {
-		jaxMetaInfo.setCountryId(new BigDecimal(91));
-		jaxMetaInfo.setCompanyId(new BigDecimal(1));
-		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
-		jaxMetaInfo.setCustomerId(new BigDecimal(931428));
-		ApiResponse<CustomerModel> response = null;
-		String mobile = "5456421";
-		
-		response = client.saveEmailNew(mobile);
-		assertNotNull("Response is null", response);
-		assertNotNull(response.getResult());
-	}
-	
-	//@Test
+
+	// @Test
 	public void positivetestLinkDeviceId() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setDeviceId("301019967");
@@ -290,7 +268,7 @@ public class UserClientTest extends AbstractTestClient {
 
 	}
 
-	//@Test
+	// @Test
 	public void negativetestLinkDeviceId() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setDeviceId("301019967");
@@ -309,7 +287,7 @@ public class UserClientTest extends AbstractTestClient {
 
 	}
 
-	//@Test
+	// @Test
 	public void positivetestLinkDeviceIdLoggedInUser() throws IOException, ResourceNotFoundException,
 			InvalidInputException, RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setDeviceId("301019967");
@@ -328,7 +306,7 @@ public class UserClientTest extends AbstractTestClient {
 
 	}
 
-	//@Test
+	// @Test
 	public void negativetestLinkDeviceIdLoggedInUser() throws IOException, ResourceNotFoundException,
 			InvalidInputException, RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setDeviceId("301019967");
@@ -346,30 +324,11 @@ public class UserClientTest extends AbstractTestClient {
 		assertNotNull(response.getResult());
 
 	}
-	
-	//@Test
+
+	// @Test
 	public void positivetestLoginCustomerByFingerprint() throws IOException, ResourceNotFoundException,
 			InvalidInputException, RemittanceTransactionValidationException, LimitExeededException {
-		
-		jaxMetaInfo.setCountryId(new BigDecimal(91));
-		jaxMetaInfo.setCompanyId(new BigDecimal(1));
-		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
-		jaxMetaInfo.setCustomerId(new BigDecimal(573));
-		jaxMetaInfo.setChannel(JaxChannel.ONLINE);
-		jaxMetaInfo.setTenant(Tenant.KWT);
-		jaxMetaInfo.setLanguageId(new BigDecimal(1));
-		jaxMetaInfo.setEmployeeId(new BigDecimal(265));
-		AmxApiResponse<CustomerModel, Object> response = null;
-		response = client.loginUserByFingerprint("281050207628", "<)B_.J" );
-		assertNotNull("Response is null", response);
-		assertNotNull(response.getResult());
 
-	}
-	
-	//@Test
-	public void negativetestLoginCustomerByFingerprint() throws IOException, ResourceNotFoundException,
-			InvalidInputException, RemittanceTransactionValidationException, LimitExeededException {
-		
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
 		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
@@ -384,10 +343,29 @@ public class UserClientTest extends AbstractTestClient {
 		assertNotNull(response.getResult());
 
 	}
-	
-	//@Test
-	public void delinkFingerprint() throws IOException, ResourceNotFoundException,
-	InvalidInputException, RemittanceTransactionValidationException, LimitExeededException {
+
+	// @Test
+	public void negativetestLoginCustomerByFingerprint() throws IOException, ResourceNotFoundException,
+			InvalidInputException, RemittanceTransactionValidationException, LimitExeededException {
+
+		jaxMetaInfo.setCountryId(new BigDecimal(91));
+		jaxMetaInfo.setCompanyId(new BigDecimal(1));
+		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
+		jaxMetaInfo.setCustomerId(new BigDecimal(573));
+		jaxMetaInfo.setChannel(JaxChannel.ONLINE);
+		jaxMetaInfo.setTenant(Tenant.KWT);
+		jaxMetaInfo.setLanguageId(new BigDecimal(1));
+		jaxMetaInfo.setEmployeeId(new BigDecimal(265));
+		AmxApiResponse<CustomerModel, Object> response = null;
+		response = client.loginUserByFingerprint("281050207628", "<)B_.J");
+		assertNotNull("Response is null", response);
+		assertNotNull(response.getResult());
+
+	}
+
+	// @Test
+	public void delinkFingerprint() throws IOException, ResourceNotFoundException, InvalidInputException,
+			RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setDeviceId("301019967");
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
@@ -402,7 +380,7 @@ public class UserClientTest extends AbstractTestClient {
 		assertNotNull("Response is null", response);
 		assertNotNull(response);
 	}
-	@Test
+	//@Test
 	public void resetFingerprint() throws IOException, ResourceNotFoundException,
 	InvalidInputException, RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setDeviceId("301019967");
@@ -417,6 +395,180 @@ public class UserClientTest extends AbstractTestClient {
 		BoolRespModel response = null;
 
 		response = client.resetFingerprint("284052306594");
+		assertNotNull("Response is null", response);
+		assertNotNull(response);
+	}
+	
+	//@Test
+	public void getCustomerModelResponse() throws IOException, ResourceNotFoundException,
+	InvalidInputException, RemittanceTransactionValidationException, LimitExeededException {
+		jaxMetaInfo.setDeviceId("301019967");
+		jaxMetaInfo.setCountryId(new BigDecimal(91));
+		jaxMetaInfo.setCompanyId(new BigDecimal(1));
+		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
+		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
+		jaxMetaInfo.setChannel(JaxChannel.ONLINE);
+		jaxMetaInfo.setTenant(Tenant.KWT);
+		jaxMetaInfo.setLanguageId(new BigDecimal(1));
+		jaxMetaInfo.setEmployeeId(new BigDecimal(265));
+		AmxApiResponse<CustomerModelResponse, Object> response = null;
+
+		response = client.getCustomerModelResponse("281050207628");
+		LOGGER.debug("response result is "+response.getResults());
+		assertNotNull("Response is null", response);
+		assertNotNull(response);
+	}
+	
+	@SuppressWarnings("null")
+	//@Test
+	public void saveCustomerSecQuestions() throws IOException, ResourceNotFoundException,
+	InvalidInputException, RemittanceTransactionValidationException, LimitExeededException {
+		jaxMetaInfo.setDeviceId("301019967");
+		jaxMetaInfo.setCountryId(new BigDecimal(91));
+		jaxMetaInfo.setCompanyId(new BigDecimal(1));
+		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
+		jaxMetaInfo.setCustomerId(new BigDecimal(573));
+		jaxMetaInfo.setChannel(JaxChannel.ONLINE);
+		jaxMetaInfo.setTenant(Tenant.KWT);
+		jaxMetaInfo.setLanguageId(new BigDecimal(1));
+		jaxMetaInfo.setEmployeeId(new BigDecimal(265));
+		AmxApiResponse<BoolRespModel, Object> response = null;
+		List<SecurityQuestionModel> securityquestion = new ArrayList<SecurityQuestionModel>();
+		int i;
+		for(i=0;i<5;i++) {
+			SecurityQuestionModel securityQuestionModel = new SecurityQuestionModel();
+			securityQuestionModel.setQuestionSrNo(new BigDecimal(i+1));
+			securityQuestionModel.setAnswerKey(null);
+			securityQuestionModel.setAnswer("Hello Anant");
+			securityquestion.add(securityQuestionModel);
+		}
+		
+		
+		response = client.saveCustomerSecQuestions(securityquestion);
+		LOGGER.debug("response result is "+response.getResults());
+		assertNotNull("Response is null", response);
+		assertNotNull(response);
+	}
+	
+	//@Test
+	public void getCustomerModelSignupResponse() throws IOException, ResourceNotFoundException,
+	InvalidInputException, RemittanceTransactionValidationException, LimitExeededException {
+		jaxMetaInfo.setDeviceId("301019967");
+		jaxMetaInfo.setCountryId(new BigDecimal(91));
+		jaxMetaInfo.setCompanyId(new BigDecimal(1));
+		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
+		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
+		jaxMetaInfo.setChannel(JaxChannel.ONLINE);
+		jaxMetaInfo.setTenant(Tenant.KWT);
+		jaxMetaInfo.setLanguageId(new BigDecimal(1));
+		jaxMetaInfo.setEmployeeId(new BigDecimal(265));
+		AmxApiResponse<CustomerModelSignupResponse, Object> response = null;
+		
+		response = client.getCustomerModelSignupResponse("285061506787");
+		LOGGER.debug("response result is "+response.getResults());
+		assertNotNull("Response is null", response);
+		assertNotNull(response);
+	}
+	
+
+	//@Test
+	public void validateOtpTest() {
+		jaxMetaInfo.setDeviceId("301019967");
+		jaxMetaInfo.setCountryId(new BigDecimal(91));
+		jaxMetaInfo.setCompanyId(new BigDecimal(1));
+		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
+		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
+		jaxMetaInfo.setChannel(JaxChannel.ONLINE);
+		jaxMetaInfo.setTenant(Tenant.KWT);
+		jaxMetaInfo.setLanguageId(new BigDecimal(1));
+		jaxMetaInfo.setEmployeeId(new BigDecimal(265));
+		ApiResponse<CustomerModel> response = null;
+		
+		response = client.validateOtp("284052306594", "415752", null, null);
+		LOGGER.debug("response result is "+response.getResults());
+		assertNotNull("Response is null", response);
+		assertNotNull(response);
+	}
+	
+	//@Test
+	public void getAnnualTransactionLimitRange() {
+		jaxMetaInfo.setDeviceId("301019967");
+		jaxMetaInfo.setCountryId(new BigDecimal(91));
+		jaxMetaInfo.setCompanyId(new BigDecimal(1));
+		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
+		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
+		jaxMetaInfo.setChannel(JaxChannel.ONLINE);
+		jaxMetaInfo.setTenant(Tenant.KWT);
+		jaxMetaInfo.setLanguageId(new BigDecimal(1));
+		jaxMetaInfo.setEmployeeId(new BigDecimal(265));
+		
+		AmxApiResponse<AnnualIncomeRangeDTO,Object> response = null;
+		
+		response = client.getAnnualTransactionLimitRange();
+		LOGGER.debug("response result is "+response.getResults());
+		assertNotNull("Response is null", response);
+		assertNotNull(response);
+	}
+	
+	//@Test
+	public void saveAnnualTransactionLimit() {
+		jaxMetaInfo.setDeviceId("301019967");
+		jaxMetaInfo.setCountryId(new BigDecimal(91));
+		jaxMetaInfo.setCompanyId(new BigDecimal(1));
+		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
+		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
+		jaxMetaInfo.setChannel(JaxChannel.ONLINE);
+		jaxMetaInfo.setTenant(Tenant.KWT);
+		jaxMetaInfo.setLanguageId(new BigDecimal(1));
+		jaxMetaInfo.setEmployeeId(new BigDecimal(265));
+		IncomeDto incomeDto = new IncomeDto();
+		incomeDto.setIncomeRangeFrom(new BigDecimal(1));
+		incomeDto.setIncomeRangeTo(new BigDecimal(100));
+		AmxApiResponse<BoolRespModel,Object> response = null;
+		
+		response = client.saveAnnualTransactionLimit(incomeDto);
+		LOGGER.debug("response result is "+response.getResults());
+		assertNotNull("Response is null", response);
+		assertNotNull(response);
+	}
+	//@Test
+	public void getAnnualTransactionLimit() {
+		jaxMetaInfo.setDeviceId("301019967");
+		jaxMetaInfo.setCountryId(new BigDecimal(91));
+		jaxMetaInfo.setCompanyId(new BigDecimal(1));
+		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
+		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
+		jaxMetaInfo.setChannel(JaxChannel.ONLINE);
+		jaxMetaInfo.setTenant(Tenant.KWT);
+		jaxMetaInfo.setLanguageId(new BigDecimal(1));
+		jaxMetaInfo.setEmployeeId(new BigDecimal(265));
+		
+		AmxApiResponse<AnnualIncomeRangeDTO,Object> response = null;
+		
+		response = client.getAnnualTransactionLimit();
+		LOGGER.debug("response result is "+response.getResults());
+		assertNotNull("Response is null", response);
+		assertNotNull(response);
+	}
+
+	//@Test
+	public void sendEmailVeificationLink() {
+		jaxMetaInfo.setDeviceId("301019967");
+		jaxMetaInfo.setCountryId(new BigDecimal(91));
+		jaxMetaInfo.setCompanyId(new BigDecimal(1));
+		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
+		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
+		jaxMetaInfo.setChannel(JaxChannel.ONLINE);
+		jaxMetaInfo.setTenant(Tenant.KWT);
+		jaxMetaInfo.setLanguageId(new BigDecimal(1));
+		jaxMetaInfo.setEmployeeId(new BigDecimal(265));
+		AmxApiResponse<BoolRespModel,Object> response = null;
+		CustomerModel customerModel = new CustomerModel();
+		customerModel.setEmail("anantmittal1996@gmail.com");
+		customerModel.setLoginId("272112700895");
+		customerModel.setPassword("Amx@1234");;
+		response = client.sendEmailOnLogin(customerModel);
+		LOGGER.debug("response result is "+response.getResults());
 		assertNotNull("Response is null", response);
 		assertNotNull(response);
 	}

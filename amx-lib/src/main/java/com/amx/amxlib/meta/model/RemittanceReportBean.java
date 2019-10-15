@@ -5,8 +5,6 @@ import java.util.List;
 
 import com.amx.amxlib.model.PromotionDto;
 
-
-
 public class RemittanceReportBean {
 
 	// for remittance Application
@@ -69,9 +67,9 @@ public class RemittanceReportBean {
 	private String instruction;
 	private String loyalityPointExpiring;
 	private BigDecimal noOfTransaction;
-	private  String pinNo;
+	private String pinNo;
 	private String logoPath;
-	
+
 	private String purchageAmount;
 
 	private String subReport;
@@ -80,29 +78,60 @@ public class RemittanceReportBean {
 
 	private List<CollectionDetailBean> collectionViewList;
 
-
 	private String engCompanyInfo;
 	private String arabicCompanyInfo;
-	
-	//for collect mode
+
+	// for collect mode
 	private String collectionMode;
 	private String approvalNo;
 	private String transactionId;
 	private String knetreceiptDateTime;
-	private Boolean knetBooleanCheck=false;
-	private Boolean drawLine=false;
+	private Boolean knetBooleanCheck = false;
+	private Boolean drawLine = false;
 
 	private String netAmount;
 	private String paidAmount;
 	private String refundedAmount;
-	private BigDecimal collectAmount;
+	// private BigDecimal collectAmount;
+	private String collectAmount;
 	private List<PurposeOfRemittanceReportBean> purposeOfRemitTrList;
-	
+
 	private String lessLoyaltyEncasement;
 	private String amountPayable;
 	private PromotionDto promotionDto;
+
+	// Receipt new fields
+	private String branchExchangeRate;
+	private String kwdAmount;
+	private String specialExchangeRate;
+	private String specialKwdAmount;
+	private String vatNumber;
+	private String vatDate;
+	private String vatType;
+	private BigDecimal vatPercentage;
+	private String vatAmount;
+
+	private String customerVatNumber;
+
+	private String amountSaved;
+	private String promotionMessage;
+	private Boolean isArabic;
+	private String totalAmountSavedStr;
 	
-	
+	//Fields getting from KNET
+	private String pgPaymentId;
+	private String pgReferenceId;
+	private String pgAuth;
+	private String pgTransId;
+
+	public String getTotalAmountSavedStr() {
+		return totalAmountSavedStr;
+	}
+
+	public void setTotalAmountSavedStr(String totalAmountSavedStr) {
+		this.totalAmountSavedStr = totalAmountSavedStr;
+	}
+
 	public Boolean getDrawLine() {
 		return drawLine;
 	}
@@ -151,7 +180,6 @@ public class RemittanceReportBean {
 		this.purchageAmount = purchageAmount;
 	}
 
-
 	public String getCashierSignature() {
 		return cashierSignature;
 	}
@@ -168,11 +196,11 @@ public class RemittanceReportBean {
 		this.userName = userName;
 	}
 
-	public BigDecimal getCollectAmount() {
+	public String getCollectAmount() {
 		return collectAmount;
 	}
 
-	public void setCollectAmount(BigDecimal collectAmount) {
+	public void setCollectAmount(String collectAmount) {
 		this.collectAmount = collectAmount;
 	}
 
@@ -271,8 +299,6 @@ public class RemittanceReportBean {
 	public void setDate(String date) {
 		this.date = date;
 	}
-
-
 
 	public String getProposedCurrencyAndAmount() {
 		return proposedCurrencyAndAmount;
@@ -634,13 +660,13 @@ public class RemittanceReportBean {
 		this.collectionDetailList = collectionDetailList;
 	}
 
-/*	public List<RemittanceCollectionBean> getCollectionAppList() {
-		return collectionAppList;
-	}
-
-	public void setCollectionAppList(List<RemittanceCollectionBean> collectionAppList) {
-		this.collectionAppList = collectionAppList;
-	}*/
+	/*
+	 * public List<RemittanceCollectionBean> getCollectionAppList() { return
+	 * collectionAppList; }
+	 * 
+	 * public void setCollectionAppList(List<RemittanceCollectionBean>
+	 * collectionAppList) { this.collectionAppList = collectionAppList; }
+	 */
 
 	public List<CollectionDetailBean> getCollectionViewList() {
 		return collectionViewList;
@@ -649,7 +675,7 @@ public class RemittanceReportBean {
 	public void setCollectionViewList(List<CollectionDetailBean> collectionViewList) {
 		this.collectionViewList = collectionViewList;
 	}
-	
+
 	public String getBeneSwiftBank1() {
 		return beneSwiftBank1;
 	}
@@ -698,7 +724,6 @@ public class RemittanceReportBean {
 		this.purposeOfRemitTrList = purposeOfRemitTrList;
 	}
 
-	
 	public String getAmountPayable() {
 		return amountPayable;
 	}
@@ -747,5 +772,140 @@ public class RemittanceReportBean {
 		return promotionDto;
 	}
 
-}
+	public String getBranchExchangeRate() {
+		return branchExchangeRate;
+	}
 
+	public void setBranchExchangeRate(String branchExchangeRate) {
+		this.branchExchangeRate = branchExchangeRate;
+	}
+
+	public String getKwdAmount() {
+		return kwdAmount;
+	}
+
+	public void setKwdAmount(String kwdAmount) {
+		this.kwdAmount = kwdAmount;
+	}
+
+	public String getSpecialExchangeRate() {
+		return specialExchangeRate;
+	}
+
+	public void setSpecialExchangeRate(String specialExchangeRate) {
+		this.specialExchangeRate = specialExchangeRate;
+	}
+
+	public String getSpecialKwdAmount() {
+		return specialKwdAmount;
+	}
+
+	public void setSpecialKwdAmount(String specialKwdAmount) {
+		this.specialKwdAmount = specialKwdAmount;
+	}
+
+	public String getVatNumber() {
+		return vatNumber;
+	}
+
+	public void setVatNumber(String vatNumber) {
+		this.vatNumber = vatNumber;
+	}
+
+	public String getVatDate() {
+		return vatDate;
+	}
+
+	public String getVatType() {
+		return vatType;
+	}
+
+	public void setVatType(String vatType) {
+		this.vatType = vatType;
+	}
+
+	public BigDecimal getVatPercentage() {
+		return vatPercentage;
+	}
+
+	public void setVatPercentage(BigDecimal vatPercentage) {
+		this.vatPercentage = vatPercentage;
+	}
+
+	public String getVatAmount() {
+		return vatAmount;
+	}
+
+	public void setVatAmount(String vatAmount) {
+		this.vatAmount = vatAmount;
+	}
+
+	public String getCustomerVatNumber() {
+		return customerVatNumber;
+	}
+
+	public void setCustomerVatNumber(String customerVatNumber) {
+		this.customerVatNumber = customerVatNumber;
+	}
+
+	public void setVatDate(String vatDate) {
+		this.vatDate = vatDate;
+	}
+
+	public String getAmountSaved() {
+		return amountSaved;
+	}
+
+	public Boolean getIsArabic() {
+		return isArabic;
+	}
+
+	public void setAmountSaved(String amountSaved) {
+		this.amountSaved = amountSaved;
+	}
+
+	public String getPromotionMessage() {
+		return promotionMessage;
+	}
+
+	public void setPromotionMessage(String promotionMessage) {
+		this.promotionMessage = promotionMessage;
+	}
+
+	public void setIsArabic(Boolean isArabic) {
+		this.isArabic = isArabic;
+	}
+
+	public String getPgPaymentId() {
+		return pgPaymentId;
+	}
+
+	public void setPgPaymentId(String pgPaymentId) {
+		this.pgPaymentId = pgPaymentId;
+	}
+
+	public String getPgReferenceId() {
+		return pgReferenceId;
+	}
+
+	public void setPgReferenceId(String pgReferenceId) {
+		this.pgReferenceId = pgReferenceId;
+	}
+
+	public String getPgAuth() {
+		return pgAuth;
+	}
+
+	public void setPgAuth(String pgAuth) {
+		this.pgAuth = pgAuth;
+	}
+
+	public String getPgTransId() {
+		return pgTransId;
+	}
+
+	public void setPgTransId(String pgTransId) {
+		this.pgTransId = pgTransId;
+	}
+
+}

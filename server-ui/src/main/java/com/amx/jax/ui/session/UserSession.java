@@ -30,8 +30,7 @@ public class UserSession implements Serializable {
 	/**
 	 * Sets the referrer.
 	 *
-	 * @param referrer
-	 *            the new referrer
+	 * @param referrer the new referrer
 	 */
 	public void setReferrer(String referrer) {
 		this.referrer = referrer;
@@ -58,8 +57,7 @@ public class UserSession implements Serializable {
 	/**
 	 * Sets the uuid token.
 	 *
-	 * @param uuidToken
-	 *            the new uuid token
+	 * @param uuidToken the new uuid token
 	 */
 	public void setUuidToken(String uuidToken) {
 		this.uuidToken = uuidToken;
@@ -79,13 +77,12 @@ public class UserSession implements Serializable {
 	/**
 	 * Sets the customer model.
 	 *
-	 * @param customerModel
-	 *            the new customer model
+	 * @param customerModel the new customer model
 	 */
 	public void setCustomerModel(CustomerModel customerModel) {
 		this.customerModel = customerModel;
 		if (customerModel != null) {
-			AppContextUtil.setActorId(new AuditActor(AuditActor.ActorType.CUSTOMER, customerModel.getCustomerId()));
+			AppContextUtil.setActorId(new AuditActor(AuditActor.ActorType.C, customerModel.getCustomerId()));
 		}
 	}
 
@@ -113,8 +110,7 @@ public class UserSession implements Serializable {
 	/**
 	 * Sets the valid.
 	 *
-	 * @param valid
-	 *            the new valid
+	 * @param valid the new valid
 	 */
 	public void setValid(boolean valid) {
 		this.valid = valid;

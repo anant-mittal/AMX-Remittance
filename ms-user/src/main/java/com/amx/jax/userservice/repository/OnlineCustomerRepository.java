@@ -4,8 +4,6 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
-import javax.transaction.Transactional;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -34,6 +32,10 @@ public interface OnlineCustomerRepository extends JpaRepository<CustomerOnlineRe
 	//
 	@Query("select c from CustomerOnlineRegistration c where loginId=?1")
 	public CustomerOnlineRegistration getCustomerIDByuserId(String userName);
+	
+	
+	@Query("select c from CustomerOnlineRegistration c where userName=?1")
+	public CustomerOnlineRegistration getLoginCustomersDeatilsById(String userName);
 	
 
 }

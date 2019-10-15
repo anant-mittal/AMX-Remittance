@@ -4,13 +4,15 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import org.slf4j.Logger;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import com.amx.jax.AppConfig;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.snap.ISnapService.RateSource;
 import com.amx.jax.client.snap.ISnapService.RateType;
@@ -25,6 +27,7 @@ import com.amx.jax.logger.LoggerService;
 import com.amx.jax.mcq.shedlock.SchedulerLock;
 import com.amx.jax.mcq.shedlock.SchedulerLock.LockContext;
 import com.amx.jax.radar.AESRepository.BulkRequestBuilder;
+import com.amx.jax.radar.RadarConfig;
 import com.amx.jax.radar.jobs.customer.AbstractDBSyncTask;
 import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncJobs;
 import com.amx.jax.radar.jobs.customer.OracleViewDocument;
@@ -39,7 +42,8 @@ import com.amx.utils.TimeUtils;
 @Component
 @Service
 //@ConditionalOnExpression(TestSizeApp.ENABLE_JOBS)
-@ConditionalOnProperty("jax.jobs.rate")
+//@ConditionalOnProperty({ "jax.jobs.rate", "elasticsearch.enabled" })
+@ConditionalOnExpression(RadarConfig.CE_RATE_SYNC_AND_ES)
 public class AMXKWTRatesService extends AbstractDBSyncTask {
 
 	public static final Logger LOGGER = LoggerService.getLogger(AMXKWTRatesService.class);
@@ -54,9 +58,12 @@ public class AMXKWTRatesService extends AbstractDBSyncTask {
 		}
 	}
 
+	@Autowired
+	AppConfig appConfig;
+
 	@Override
 	public void doTask(int lastPage, String lastId) {
-		LOGGER.info("Scrapper Task");
+		LOGGER.debug("Scrapper Task");
 
 		Long lastUpdateDateNow = oracleVarsCache.getStampStartTime(DBSyncJobs.XRATE_JOB);
 		Long lastUpdateDateNowLimit = System.currentTimeMillis(); // lastUpdateDateNow + (20 * 365 *
@@ -74,6 +81,8 @@ public class AMXKWTRatesService extends AbstractDBSyncTask {
 				.view(GridView.EX_V_RATE_PATTERN, gridQuery);
 
 		AmxApiResponse<XRateViewRecord, GridMeta> x = y.get();
+
+		Currency domCur = (Currency) ArgUtil.parseAsEnum(appConfig.getDefaultTenant().getCurrency(), Currency.UNKNOWN);
 
 		////
 		BulkRequestBuilder builder = new BulkRequestBuilder();
@@ -95,8 +104,8 @@ public class AMXKWTRatesService extends AbstractDBSyncTask {
 					if (!ArgUtil.isEmpty(rate)) {
 						AmxCurRate trnsfrRate = new AmxCurRate();
 						trnsfrRate.setrSrc(RateSource.AMX);
-						trnsfrRate.setrDomCur(Currency.KWD);
-						trnsfrRate.setrForCur(cur);
+						trnsfrRate.setrDomCur(domCur);
+						trnsfrRate.setrForCur(cur.toISO3());
 						trnsfrRate.setrType(RateType.SELL_TRNSFR);
 						trnsfrRate.setrRate(rate);
 						trnsfrRate.setTimestamp(ArgUtil.parseAsSimpleDate(xrate.getProcessDate()));

@@ -20,15 +20,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.amxlib.exception.jax.InvalidCivilIdException;
+import com.amx.amxlib.meta.model.DeclarationDTO;
 import com.amx.amxlib.meta.model.ServiceGroupMasterDescDto;
 import com.amx.amxlib.meta.model.ViewAreaDto;
 import com.amx.amxlib.meta.model.ViewCityDto;
 import com.amx.amxlib.meta.model.ViewGovernateAreaDto;
 import com.amx.amxlib.meta.model.ViewGovernateDto;
+import com.amx.amxlib.meta.model.ViewStatusDto;
 import com.amx.amxlib.model.OnlineConfigurationDto;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.dbmodel.CountryBranch;
+import com.amx.jax.dbmodel.DeclarationModel;
 import com.amx.jax.dbmodel.OnlineConfiguration;
 import com.amx.jax.dbmodel.ViewAreaModel;
 import com.amx.jax.dbmodel.ViewCity;
@@ -36,12 +41,17 @@ import com.amx.jax.dbmodel.ViewDistrict;
 import com.amx.jax.dbmodel.ViewState;
 import com.amx.jax.dbmodel.VwGovernateAreaModel;
 import com.amx.jax.dbmodel.VwGovernateModel;
+import com.amx.jax.dbmodel.fx.StatusMaster;
 import com.amx.jax.dbmodel.meta.ServiceGroupMaster;
 import com.amx.jax.dbmodel.meta.ServiceGroupMasterDesc;
 import com.amx.jax.dbmodel.meta.ServiceMaster;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.manager.StatusMasterManager;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.request.fx.FcDeliveryBranchOrderSearchRequest;
+import com.amx.jax.repository.CountryBranchRepository;
 import com.amx.jax.repository.CountryRepository;
+import com.amx.jax.repository.DeclarationDao;
 import com.amx.jax.repository.IContactDetailDao;
 import com.amx.jax.repository.ICustomerRepository;
 import com.amx.jax.repository.IGovernateAreaDao;
@@ -50,6 +60,7 @@ import com.amx.jax.repository.IViewCityDao;
 import com.amx.jax.repository.IViewDistrictDAO;
 import com.amx.jax.repository.IViewGovernateDao;
 import com.amx.jax.repository.IViewStateDao;
+import com.amx.jax.repository.IViewStatus;
 import com.amx.jax.repository.OnlineConfigurationRepository;
 import com.amx.jax.repository.ServiceGroupMasterDescRepository;
 import com.amx.jax.repository.ServiceGroupMasterRepository;
@@ -81,6 +92,9 @@ public class MetaService extends AbstractService {
 	IViewDistrictDAO districtDao;
 	@Autowired
 	IViewArea areaDao;
+	
+	@Autowired
+	IViewStatus statusDao;
 
 	@Autowired
 	IViewGovernateDao govermentDao;
@@ -89,7 +103,13 @@ public class MetaService extends AbstractService {
 	IGovernateAreaDao govermentAreaDao;
 
 	@Autowired
+	DeclarationDao declarationDao;
+
+	@Autowired
 	OnlineConfigurationRepository onlineConfigurationRepository;
+	
+	@Autowired
+	CountryBranchRepository countryBranchRepository;
 
 	@Autowired
 	ServiceGroupMasterDescRepository serviceGroupMasterDescRepository;
@@ -104,6 +124,9 @@ public class MetaService extends AbstractService {
 	JaxUtil jaxUtil;
 	@Autowired
 	JaxTenantProperties jaxTenantProperties;
+	
+	@Autowired
+	StatusMasterManager statusMasterManager;
 
 	public AmxApiResponse<ViewCityDto, Object> getDistrictCity(BigDecimal districtId, BigDecimal languageId) {
 		List<ViewCity> cityList = cityDao.getCityByDistrictId(districtId, languageId);
@@ -136,6 +159,31 @@ public class MetaService extends AbstractService {
 		return AmxApiResponse.buildList(convertAreaDto(viewAreaList));
 	}
 
+	public AmxApiResponse<ViewStatusDto, Object> getStatusList() {
+		List<ViewStatusDto> viewStatusList = new ArrayList<>();
+			viewStatusList=	statusMasterManager.getsearchOrder();
+			logger.info("StatusList : " +viewStatusList);
+			
+		return AmxApiResponse.buildList(viewStatusList);
+	}
+	
+	
+	//Validation for OrderStatus
+	public void validateOrderStatus(FcDeliveryBranchOrderSearchRequest fcDeliveryBranchOrderSearchRequest) {
+		List<StatusMaster> statusMaster = statusDao.getOrderStatusList(fcDeliveryBranchOrderSearchRequest.getOrderStatus());
+		if(statusMaster.isEmpty()) {
+			throw new GlobalException(JaxError.INVALID_ORDER_STATUS,"Order Status is not valid!");
+		}
+	}
+	//Validation for CountryBranchId
+	public void validateCountryBranchId(FcDeliveryBranchOrderSearchRequest fcDeliveryBranchOrderSearchRequest) {
+		List<CountryBranch> countryBranch = countryBranchRepository.getCountryBranchIdList(fcDeliveryBranchOrderSearchRequest.getCountryBranchId());
+		if(countryBranch.isEmpty()) {
+			throw new GlobalException(JaxError.INVALID_COUNTRY_BRANCH_ID,"Country Branch Id is not valid!");
+		}
+	}
+
+	  
 	/** For Governate list **/
 	public AmxApiResponse<ViewGovernateDto, Object> getGovernateList(BigDecimal applicationCountryId) {
 		List<VwGovernateModel> goveList = govermentDao.getGovermentList(applicationCountryId);
@@ -154,6 +202,29 @@ public class MetaService extends AbstractService {
 		}
 		return AmxApiResponse.buildList(convertGovtAreaDto(goveAreaList));
 
+	}
+
+	public AmxApiResponse<DeclarationDTO, Object> getDeclaration(BigDecimal languageId) {
+		List<DeclarationModel> declarationList = declarationDao.getDeclarsList(languageId);
+		if (declarationList.isEmpty()) {
+			throw new GlobalException("declaration list is not available");
+		}
+		return AmxApiResponse.buildList(convertDeclarationDTO(declarationList));
+
+	}
+
+	public List<DeclarationDTO> convertDeclarationDTO(List<DeclarationModel> declarationList) {
+
+		List<DeclarationDTO> output = new ArrayList<>();
+		for (DeclarationModel model : declarationList) {
+			DeclarationDTO dto = new DeclarationDTO();
+			dto.setDescription(model.getDescription());
+			dto.setText_id(model.getTextId());
+			dto.setText_remark(model.getTextRemark());
+			dto.setText_type(model.getTextType());
+			output.add(dto);
+		}
+		return output;
 	}
 
 	public List<ViewGovernateAreaDto> convertGovtAreaDto(List<VwGovernateAreaModel> goveAreaList) {
@@ -193,7 +264,7 @@ public class MetaService extends AbstractService {
 		}
 		return output;
 	}
-
+		
 	private ViewCityDto convertCityModelToDto(ViewCity cityModel) {
 		ViewCityDto dto = new ViewCityDto();
 		try {
@@ -217,32 +288,30 @@ public class MetaService extends AbstractService {
 
 	public AmxApiResponse<ServiceGroupMasterDescDto, Object> getServiceGroups() {
 		List<ServiceGroupMasterDescDto> outputDto = getServiceGroupDto();
-				
+
 		return AmxApiResponse.buildList(outputDto);
 	}
 
 	private List<ServiceGroupMasterDescDto> getServiceGroupDto() {
 		List<ServiceGroupMasterDesc> output = serviceGroupMasterDescRepository
 				.findActiveByLanguageId(metaData.getLanguageId());
-		
-		
+
 		final List<ServiceGroupMasterDescDto> outputDto = new ArrayList<>();
-	
+
 		output.forEach(i -> {
 			boolean isCash = i.getServiceGroupMasterId().getServiceGroupId().equals(BigDecimal.ONE);
 			if (isCash && jaxTenantProperties.getCashDisable()) {
 				return;
 			}
-			ServiceGroupMasterDescDto dto = new ServiceGroupMasterDescDto();	
-			
+			ServiceGroupMasterDescDto dto = new ServiceGroupMasterDescDto();
+
 			dto.setServiceGroupMasterId(i.getServiceGroupMasterId().getServiceGroupId());
 			dto.setServiceGroupDesc(i.getServiceGroupDesc());
 			dto.setServiceGroupShortDesc(i.getServiceGroupShortDesc());
-			
+
 			outputDto.add(dto);
-		
-		}
-		        );
+
+		});
 		return outputDto;
 	}
 

@@ -4,7 +4,9 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import com.amx.jax.model.AbstractModel;
+import com.amx.jax.model.customer.SecurityQuestionModel;
 import com.amx.jax.model.response.customer.CustomerFlags;
+import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.libjax.model.CustomerModelInterface.ICustomerModel;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -13,6 +15,11 @@ public class CustomerModel extends AbstractModel implements ICustomerModel {
 
 	private static final long serialVersionUID = -8190742045911263443L;
 
+	/**
+	 * @deprecated contact Prashant T. to add identity id in this model
+	 * 
+	 */
+	@Deprecated
 	private String identityId;
 
 	private String email;
@@ -42,17 +49,10 @@ public class CustomerModel extends AbstractModel implements ICustomerModel {
 	private List<SecurityQuestionModel> verificationAnswers;
 
 	private boolean isRegistrationFlow;
-	
-	private CustomerFlags customerFlags;
-	
 
-	public CustomerFlags getCustomerFlags() {
-		return customerFlags;
-	}
-
-	public void setCustomerFlags(CustomerFlags customerFlags) {
-		this.customerFlags = customerFlags;
-	}
+	private CustomerFlags flags;
+	
+	private String referralId;
 
 	public boolean isRegistrationFlow() {
 		return isRegistrationFlow;
@@ -197,4 +197,30 @@ public class CustomerModel extends AbstractModel implements ICustomerModel {
 		this.verificationAnswers = verificationAnswers;
 	}
 
+	public CustomerFlags getFlags() {
+		return flags;
+	}
+
+	public void setFlags(CustomerFlags flags) {
+		this.flags = flags;
+	}
+	
+	public String getReferralId() {
+		return referralId;
+	}
+
+	public void setReferralId(String referralId) {
+		this.referralId = referralId;
+	}
+
+	@Override
+	public String getReferralCode() {	
+		return referralId;
+	}
+
+	@Override
+	public void setReferralCode(String referralCode) {
+		this.referralId = referralCode;	
+	}
+	
 }

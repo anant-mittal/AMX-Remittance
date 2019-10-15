@@ -9,17 +9,19 @@ import org.springframework.stereotype.Service;
 
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
-import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.model.AuthState;
 import com.amx.jax.model.AuthState.AuthStep;
 import com.amx.jax.model.auth.QuestModelDTO;
+import com.amx.jax.model.customer.SecurityQuestionModel;
 import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 import com.amx.jax.ui.model.AuthData;
 import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseMessage;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.session.UserSession;
+import com.amx.utils.ArgUtil;
 
 /**
  * The Class RegistrationService.
@@ -42,11 +44,13 @@ public class RegistrationService {
 	@Autowired
 	private JaxService jaxClient;
 
+	@Autowired
+	private UserService userService;
+
 	/**
 	 * Validate customer.
 	 *
-	 * @param identity
-	 *            the identity
+	 * @param identity the identity
 	 * @return the response wrapper
 	 */
 	public ResponseWrapper<AuthData> validateCustomer(String identity) {
@@ -62,7 +66,7 @@ public class RegistrationService {
 
 		ResponseWrapper<AuthData> wrapper = new ResponseWrapper<AuthData>(new AuthData());
 
-		CivilIdOtpModel model = jaxClient.setDefaults().getUserclient().initRegistration(identity).getResult();
+		CivilIdOtpModel model = jaxClient.setDefaults().getUserclient().initRegistration(identity, null).getResult();
 		// Check if response was successful
 		if (model.getIsActiveCustomer()) {
 			wrapper.setMessage(OWAStatusStatusCodes.ALREADY_ACTIVE, ResponseMessage.USER_ALREADY_ACTIVE);
@@ -79,13 +83,57 @@ public class RegistrationService {
 		return wrapper;
 	}
 
+	public ResponseWrapper<AuthData> validateCustomerInit(String identity, ContactType contactType) {
+
+		/**
+		 * Clearing old session before proceeding
+		 */
+		sessionService.clear();
+		sessionService.invalidate();
+
+		sessionService.getGuestSession().setIdentity(identity);
+		sessionService.getGuestSession().initFlow(AuthState.AuthFlow.ACTIVATION);
+
+		ResponseWrapper<AuthData> wrapper = new ResponseWrapper<AuthData>(new AuthData());
+
+		CivilIdOtpModel model = jaxClient.setDefaults().getUserclient().initRegistration(identity, contactType)
+				.getResult();
+		// Check if response was successful
+		if (model.getIsActiveCustomer()) {
+			wrapper.setMessage(OWAStatusStatusCodes.ALREADY_ACTIVE, ResponseMessage.USER_ALREADY_ACTIVE);
+		} else {
+			sessionService.getGuestSession().getState().setValidId(true);
+			switch (contactType) {
+			case SMS:
+				wrapper.getData().setOtpPrefix((model.getmOtpPrefix()));
+				break;
+			case EMAIL:
+				wrapper.getData().setOtpPrefix((model.geteOtpPrefix()));
+				break;
+			case WHATSAPP:
+				wrapper.getData().setOtpPrefix((model.getwOtpPrefix()));
+				break;
+			default:
+				wrapper.getData().setOtpPrefix((model.getmOtpPrefix()));
+				break;
+			}
+			wrapper.getData().setmOtpPrefix((model.getmOtpPrefix()));
+			wrapper.getData().seteOtpPrefix((model.geteOtpPrefix()));
+			wrapper.getData().setwOtpPrefix((model.getwOtpPrefix()));
+
+			wrapper.setMessage(OWAStatusStatusCodes.OTP_SENT);
+
+			sessionService.getGuestSession().endStep(AuthStep.IDVALID);
+			wrapper.getData().setState(sessionService.getGuestSession().getState());
+		}
+		return wrapper;
+	}
+
 	/**
 	 * Login with otp.
 	 *
-	 * @param idnetity
-	 *            the idnetity
-	 * @param mOtp
-	 *            the m otp
+	 * @param idnetity the idnetity
+	 * @param mOtp     the m otp
 	 * @return the response wrapper
 	 */
 	@Deprecated
@@ -104,15 +152,13 @@ public class RegistrationService {
 	/**
 	 * Validate customer.
 	 *
-	 * @param idnetity
-	 *            the idnetity
-	 * @param mOtp
-	 *            the m otp
+	 * @param idnetity the idnetity
+	 * @param mOtp     the m otp
 	 * @return the response wrapper
 	 */
 	public ResponseWrapper<AuthData> validateCustomer(String idnetity, String mOtp) {
 		if (mOtp == null) {
-			return validateCustomer(idnetity);
+			return validateCustomer(idnetity, null);
 		}
 		sessionService.getGuestSession().initStep(AuthStep.MOTPVFY);
 		ResponseWrapper<AuthData> wrapper = new ResponseWrapper<AuthData>(new AuthData());
@@ -124,7 +170,7 @@ public class RegistrationService {
 		sessionService.authorize(model, false); // TODO:- validate this
 		sessionService.getGuestSession().getState().setValidMotp(true);
 
-		if (model.getEmail() != null) {
+		if (ArgUtil.isEmpty(model.getEmail())) {
 			sessionService.getGuestSession().getState().setPresentEmail(true);
 		} else {
 			ApiResponse<QuestModelDTO> response2 = jaxClient.setDefaults().getUserclient()
@@ -143,12 +189,51 @@ public class RegistrationService {
 	/**
 	 * Validate customer.
 	 *
-	 * @param idnetity
-	 *            the idnetity
-	 * @param mOtp
-	 *            the m otp
-	 * @param answer
-	 *            the answer
+	 * @param idnetity the idnetity
+	 * @param otp      the otp: can be mobile/email/whatsapp
+	 * @return the response wrapper
+	 */
+	public ResponseWrapper<AuthData> validateCustomer(String idnetity, String otp,
+			ContactType contactType) {
+		if (otp == null) {
+			return validateCustomer(idnetity, null);
+		}
+		sessionService.getGuestSession().initStep(AuthStep.MOTPVFY);
+		ResponseWrapper<AuthData> wrapper = new ResponseWrapper<AuthData>(new AuthData());
+		String mOtp = contactType == ContactType.SMS ? otp : null;
+		String eOtp = contactType == ContactType.EMAIL ? otp : null;
+		String wOtp = contactType == ContactType.WHATSAPP ? otp : null;
+		ApiResponse<CustomerModel> response = jaxClient.setDefaults().getUserclient().validateOtp(idnetity, mOtp, eOtp,
+				wOtp);
+
+		CustomerModel model = response.getResult();
+
+		sessionService.getGuestSession().setCustomerModel(model);
+		sessionService.authorize(model, false); // TODO:- validate this
+		sessionService.getGuestSession().getState().setValidMotp(true);
+
+		if (!ArgUtil.isEmpty(model.getEmail())) {
+			sessionService.getGuestSession().getState().setPresentEmail(true);
+		} else {
+			ApiResponse<QuestModelDTO> response2 = jaxClient.setDefaults().getUserclient()
+					.getDataVerificationQuestions();
+			QuestModelDTO ques = response2.getResult();
+			wrapper.getData().setQues(ques);
+		}
+
+		wrapper.setMessage(OWAStatusStatusCodes.VERIFY_SUCCESS, ResponseMessage.AUTH_SUCCESS);
+		sessionService.getGuestSession().endStep(AuthStep.MOTPVFY);
+		wrapper.getData().setState(sessionService.getGuestSession().getState());
+
+		return wrapper;
+	}
+
+	/**
+	 * Validate customer.
+	 *
+	 * @param idnetity the idnetity
+	 * @param mOtp     the m otp
+	 * @param answer   the answer
 	 * @return the response wrapper
 	 */
 	public ResponseWrapper<AuthData> validateCustomer(String idnetity, String mOtp, SecurityQuestionModel answer) {
@@ -172,8 +257,7 @@ public class RegistrationService {
 	/**
 	 * Inits the activation.
 	 *
-	 * @param wrapper
-	 *            the wrapper
+	 * @param wrapper the wrapper
 	 */
 	private void initActivation(ResponseWrapper<UserUpdateData> wrapper) {
 		List<QuestModelDTO> questModel = jaxClient.setDefaults().getMetaClient().getSequrityQuestion().getResults();
@@ -188,8 +272,7 @@ public class RegistrationService {
 	/**
 	 * Gets the sec ques.
 	 *
-	 * @param validate
-	 *            the validate
+	 * @param validate the validate
 	 * @return the sec ques
 	 */
 	public ResponseWrapper<UserUpdateData> getSecQues(boolean validate) {
@@ -204,12 +287,9 @@ public class RegistrationService {
 	/**
 	 * Update sec ques.
 	 *
-	 * @param securityquestions
-	 *            the securityquestions
-	 * @param mOtp
-	 *            the m otp
-	 * @param eOtp
-	 *            the e otp
+	 * @param securityquestions the securityquestions
+	 * @param mOtp              the m otp
+	 * @param eOtp              the e otp
 	 * @return the response wrapper
 	 */
 	public ResponseWrapper<UserUpdateData> updateSecQues(List<SecurityQuestionModel> securityquestions, String mOtp,
@@ -230,14 +310,10 @@ public class RegistrationService {
 	/**
 	 * Update phising.
 	 *
-	 * @param imageUrl
-	 *            the image url
-	 * @param caption
-	 *            the caption
-	 * @param mOtp
-	 *            the m otp
-	 * @param eOtp
-	 *            the e otp
+	 * @param imageUrl the image url
+	 * @param caption  the caption
+	 * @param mOtp     the m otp
+	 * @param eOtp     the e otp
 	 * @return the response wrapper
 	 */
 	public ResponseWrapper<UserUpdateData> updatePhising(String imageUrl, String caption, String mOtp, String eOtp) {
@@ -255,26 +331,22 @@ public class RegistrationService {
 	/**
 	 * Sets the credentials.
 	 *
-	 * @param loginId
-	 *            the login id
-	 * @param password
-	 *            the password
-	 * @param mOtp
-	 *            the m otp
-	 * @param eOtp
-	 *            the e otp
-	 * @param email
-	 *            the email
-	 * @param doLogin
-	 *            the do login
+	 * @param loginId  the login id
+	 * @param password the password
+	 * @param mOtp     the m otp
+	 * @param eOtp     the e otp
+	 * @param email    the email
+	 * @param doLogin  the do login
 	 * @return the response wrapper
 	 */
 	public ResponseWrapper<UserUpdateData> setCredentials(String loginId, String password, String mOtp, String eOtp,
-			String email, boolean doLogin) {
+			String email, String referralCode, boolean doLogin) {
 		sessionService.getGuestSession().initStep(AuthStep.CREDS_SET);
 		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
 
-		jaxClient.setDefaults().getUserclient().saveCredentials(loginId, password, mOtp, eOtp, email).getResult();
+		jaxClient.setDefaults().getUserclient().saveCredentials(loginId, password, mOtp, eOtp, email,referralCode).getResult();
+
+		userService.updateCustoemrModel();
 
 		if (doLogin) {
 			sessionService.authorize(sessionService.getGuestSession().getCustomerModel(), true);

@@ -8,14 +8,14 @@ import java.math.BigDecimal;
 
 import com.amx.jax.model.OtpData;
 import com.amx.jax.rbaac.constants.RbaacServiceConstants.LOGIN_TYPE;
-import com.amx.jax.rbaac.dbmodel.Employee;
+import com.amx.jax.rbaac.dbmodel.FSEmployee;
 
 /**
  * The Class UserOtpData.
  *
  * @author abhijeet
  */
-public final class UserOtpData implements Serializable {
+public class UserOtpData implements Serializable {
 
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 7221219115941595018L;
@@ -24,7 +24,7 @@ public final class UserOtpData implements Serializable {
 	private String authTransactionId;
 
 	/** The employee. */
-	private Employee employee;
+	private FSEmployee employee;
 
 	private BigDecimal partnerEmployeeId;
 
@@ -65,7 +65,7 @@ public final class UserOtpData implements Serializable {
 	 *
 	 * @return the employee
 	 */
-	public Employee getEmployee() {
+	public FSEmployee getEmployee() {
 		return employee;
 	}
 
@@ -75,7 +75,7 @@ public final class UserOtpData implements Serializable {
 	 * @param employee
 	 *            the new employee
 	 */
-	public void setEmployee(Employee employee) {
+	public void setEmployee(FSEmployee employee) {
 		this.employee = employee;
 	}
 

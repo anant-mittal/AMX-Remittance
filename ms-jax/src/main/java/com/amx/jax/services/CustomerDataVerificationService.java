@@ -1,7 +1,6 @@
 package com.amx.jax.services;
 
 import java.math.BigDecimal;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -15,14 +14,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
-import com.amx.amxlib.model.PersonInfo;
-import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
-import com.amx.jax.JaxAuthCache;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.ContactDetail;
 import com.amx.jax.dbmodel.Customer;
@@ -31,6 +26,8 @@ import com.amx.jax.dbmodel.CustomerVerification;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.auth.QuestModelDTO;
+import com.amx.jax.model.customer.SecurityQuestionModel;
+import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.repository.IContactDetailDao;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.repository.CustomerVerificationRepository;
@@ -67,9 +64,6 @@ public class CustomerDataVerificationService extends AbstractService {
 
 	@Autowired
 	JaxNotificationService jaxNotificationService;
-
-	@Autowired
-	JaxAuthCache jaxAuthCache;
 	
 	@Autowired
 	IContactDetailDao contactDetailDao;
@@ -135,6 +129,7 @@ public class CustomerDataVerificationService extends AbstractService {
 			// sendTpinTocustomer(cv);
 		}
 	}
+	
 
 	private void sendTpinTocustomer(CustomerVerification cv) {
 		String tpin = Random.randomNumeric(6);

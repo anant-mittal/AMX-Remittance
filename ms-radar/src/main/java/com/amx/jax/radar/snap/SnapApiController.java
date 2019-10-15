@@ -15,6 +15,8 @@ import com.amx.jax.client.snap.SnapConstants.SnapIndexName;
 import com.amx.jax.client.snap.SnapConstants.SnapQueryTemplate;
 import com.amx.jax.client.snap.SnapModels.SnapModelWrapper;
 import com.amx.jax.dict.Currency;
+import com.amx.jax.radar.jobs.customer.OracleVarsCache;
+import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncJobs;
 import com.amx.jax.rest.RestService;
 import com.amx.utils.ArgUtil;
 
@@ -26,6 +28,9 @@ public class SnapApiController implements ISnapService {
 
 	@Autowired
 	RestService restService;
+
+	@Autowired
+	OracleVarsCache oracleVarsCache;
 
 	@Override
 	@ResponseBody
@@ -77,18 +82,22 @@ public class SnapApiController implements ISnapService {
 		switch (graph) {
 		case YEAR5:
 			params.put("gte", "now-5y");
-			params.put("interval", "1M");
+			params.put("interval", "1d");
 			break;
 		case YEAR2:
 			params.put("gte", "now-2y");
-			params.put("interval", "1M");
+			params.put("interval", "1d");
 			break;
 		case YEAR1:
 			params.put("gte", "now-1y");
-			params.put("interval", "1M");
+			params.put("interval", "1d");
 			break;
 		case MONTH1:
 			params.put("gte", "now-1M");
+			params.put("interval", "1d");
+			break;
+		case WEEK1:
+			params.put("gte", "now-1w");
 			params.put("interval", "1d");
 			break;
 		default:

@@ -125,12 +125,40 @@ public class RemittanceTransaction implements Serializable {
 	private BigDecimal srvProviderSettleRate;
 	private String agentCode;
 	private String modeOfTransfer;
+	private BigDecimal discountOnCommission;
 	
 	
 	private List<RemittanceAdditionalInstructionData> exAdditionalInstructionDatas = new ArrayList<RemittanceAdditionalInstructionData>(0);
 	private List<RemittanceAml> exRemitAmls = new ArrayList<RemittanceAml>(0);
 	private List<RemittanceBenificiary> exRemittanceBenificiary = new ArrayList<RemittanceBenificiary>(0);
 
+
+	
+	/** added by rabil on 10 apr 2019 for customer category dis analysis**/
+	private String isDiscountAvailed;
+	private BigDecimal cusCatDiscountId;
+	private BigDecimal cusCatDiscount;
+	private BigDecimal channelDiscountId;
+	private BigDecimal channelDiscount;
+	private BigDecimal pipsFromAmt;
+	private BigDecimal pipsToAmt;
+	private BigDecimal pipsDiscount;	
+	private String  reachedCostRateLimit;
+	
+	
+	private String vatType;
+	private BigDecimal vatPercentage;
+	private BigDecimal vatAmount;
+	
+
+	private String beneDeductFlag;
+	private String suspicousTransaction;
+	
+	private String deliveryInd;
+	private String remarks;
+	private BigDecimal usdAmt;
+	private String wuPurposeOfTransaction;
+	
 	
 	public RemittanceTransaction() {
 	}
@@ -996,6 +1024,176 @@ public class RemittanceTransaction implements Serializable {
 	public void setExRemittanceBenificiary(List<RemittanceBenificiary> exRemittanceBenificiary) {
 		this.exRemittanceBenificiary = exRemittanceBenificiary;
 	}
+	@Column(name="DISCOUNT_ON_COMM")
+	public BigDecimal getDiscountOnCommission() {
+		return discountOnCommission;
+	}
+
+	public void setDiscountOnCommission(BigDecimal discountOnCommission) {
+		this.discountOnCommission = discountOnCommission;
+	}
+
+
+	@Column(name="IS_DISCOUNT_AVAILED")
+	public String getIsDiscountAvailed() {
+		return isDiscountAvailed;
+	}
+
+	public void setIsDiscountAvailed(String isDiscountAvailed) {
+		this.isDiscountAvailed = isDiscountAvailed;
+	}
+
+	@Column(name="CUSTCAT_DISCOUNT_ID")
+	public BigDecimal getCusCatDiscountId() {
+		return cusCatDiscountId;
+	}
+
+	public void setCusCatDiscountId(BigDecimal cusCatDiscountId) {
+		this.cusCatDiscountId = cusCatDiscountId;
+	}
+
+	@Column(name="CUSTCAT_DISCOUNT")
+	public BigDecimal getCusCatDiscount() {
+		return cusCatDiscount;
+	}
+
+	public void setCusCatDiscount(BigDecimal cusCatDiscount) {
+		this.cusCatDiscount = cusCatDiscount;
+	}
+
+	@Column(name="CHANNEL_DISCOUNT_ID")
+	public BigDecimal getChannelDiscountId() {
+		return channelDiscountId;
+	}
+
+	public void setChannelDiscountId(BigDecimal channelDiscountId) {
+		this.channelDiscountId = channelDiscountId;
+	}
+
+	@Column(name="CHANNEL_DISCOUNT")
+	public BigDecimal getChannelDiscount() {
+		return channelDiscount;
+	}
+
+	public void setChannelDiscount(BigDecimal channelDiscount) {
+		this.channelDiscount = channelDiscount;
+	}
+
+	@Column(name="PIPS_FROMAMT")
+	public BigDecimal getPipsFromAmt() {
+		return pipsFromAmt;
+	}
+
+	public void setPipsFromAmt(BigDecimal pipsFromAmt) {
+		this.pipsFromAmt = pipsFromAmt;
+	}
+
+	@Column(name="PIPS_TOAMT")
+	public BigDecimal getPipsToAmt() {
+		return pipsToAmt;
+	}
+
+	public void setPipsToAmt(BigDecimal pipsToAmt) {
+		this.pipsToAmt = pipsToAmt;
+	}
+
+	@Column(name="PIPS_DISCOUNT")
+	public BigDecimal getPipsDiscount() {
+		return pipsDiscount;
+	}
+
+	public void setPipsDiscount(BigDecimal pipsDiscount) {
+		this.pipsDiscount = pipsDiscount;
+	}
 	
+	@Column(name="REACHED_COST_RATE_LIMIT")
+	public String getReachedCostRateLimit() {
+		return reachedCostRateLimit;
+	}
+
+	public void setReachedCostRateLimit(String reachedCostRateLimit) {
+		this.reachedCostRateLimit = reachedCostRateLimit;
+	}
+
+	@Column(name="VAT_TYPE")
+	public String getVatType() {
+		return vatType;
+	}
+
+	public void setVatType(String vatType) {
+		this.vatType = vatType;
+	}
+
+	@Column(name="VAT_PERCENTAGE")
+	public BigDecimal getVatPercentage() {
+		return vatPercentage;
+	}
+
+	public void setVatPercentage(BigDecimal vatPercentage) {
+		this.vatPercentage = vatPercentage;
+	}
+
+	@Column(name="VAT_AMOUNT")
+	public BigDecimal getVatAmount() {
+		return vatAmount;
+	}
+
+	public void setVatAmount(BigDecimal vatAmount) {
+		this.vatAmount = vatAmount;
+	}
+
+
+
+	@Column(name="BENE_DEDUCT_FLAG")
+	public String getBeneDeductFlag() {
+		return beneDeductFlag;
+	}
+
+	public void setBeneDeductFlag(String beneDeductFlag) {
+		this.beneDeductFlag = beneDeductFlag;
+	}
+
+	@Column(name="SUSPICIOUS_TRNX")
+	public String getSuspicousTransaction() {
+		return suspicousTransaction;
+	}
+
+	public void setSuspicousTransaction(String suspicousTransaction) {
+		this.suspicousTransaction = suspicousTransaction;
+	}
+	
+	@Column(name="DELIVERY_IND")
+	public String getDeliveryInd() {
+		return deliveryInd;
+	}
+	public void setDeliveryInd(String deliveryInd) {
+		this.deliveryInd = deliveryInd;
+	}
+
+	@Column(name="REMARKS")
+	public String getRemarks() {
+		return remarks;
+	}
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
+	}
+
+	@Column(name="USD_AMT")
+	public BigDecimal getUsdAmt() {
+		return usdAmt;
+	}
+	public void setUsdAmt(BigDecimal usdAmt) {
+		this.usdAmt = usdAmt;
+	}
+	
+	@Column(name="WU_PURPOSE_OF_TRANSACTION")
+	public String getWuPurposeOfTransaction() {
+		return wuPurposeOfTransaction;
+	}
+	public void setWuPurposeOfTransaction(String wuPurposeOfTransaction) {
+		this.wuPurposeOfTransaction = wuPurposeOfTransaction;
+	}
+	
+
 }
  

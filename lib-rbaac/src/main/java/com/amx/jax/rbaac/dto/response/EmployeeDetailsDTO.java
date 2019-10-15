@@ -15,7 +15,6 @@ public class EmployeeDetailsDTO implements Serializable {
 	private String location;
 	private String telephoneNumber;
 	private BigDecimal countryId;
-	private BigDecimal countryBranchId;
 	private String email;
 	private String designation;
 	private String civilId;
@@ -24,7 +23,17 @@ public class EmployeeDetailsDTO implements Serializable {
 	private Boolean isLocked;
 	private Date lastLoginDate;
 
+	private BigDecimal countryBranchId;
+	private String branchName;
+	private BigDecimal areaCode;
+	private String area;
+	private BigDecimal branchId;
+
 	private RoleResponseDTO userRole;
+	
+	private String tenant;
+	private String currencyQuote;
+	private BigDecimal currencyId;
 
 	public BigDecimal getEmployeeId() {
 		return employeeId;
@@ -80,14 +89,6 @@ public class EmployeeDetailsDTO implements Serializable {
 
 	public void setCountryId(BigDecimal countryId) {
 		this.countryId = countryId;
-	}
-
-	public BigDecimal getCountryBranchId() {
-		return countryBranchId;
-	}
-
-	public void setCountryBranchId(BigDecimal countryBranchId) {
-		this.countryBranchId = countryBranchId;
 	}
 
 	public String getEmail() {
@@ -152,6 +153,70 @@ public class EmployeeDetailsDTO implements Serializable {
 
 	public void setLastLoginDate(Date lastLoginDate) {
 		this.lastLoginDate = lastLoginDate;
+	}
+
+	public BigDecimal getCountryBranchId() {
+		return countryBranchId;
+	}
+
+	public void setCountryBranchId(BigDecimal countryBranchId) {
+		this.countryBranchId = countryBranchId;
+	}
+
+	public String getBranchName() {
+		return branchName;
+	}
+
+	public void setBranchName(String branchName) {
+		this.branchName = branchName;
+	}
+
+	public BigDecimal getAreaCode() {
+		return areaCode;
+	}
+
+	public void setAreaCode(BigDecimal areaCode) {
+		this.areaCode = areaCode;
+	}
+
+	public String getArea() {
+		return area;
+	}
+
+	public void setArea(String area) {
+		this.area = area;
+	}
+
+	public BigDecimal getBranchId() {
+		return branchId;
+	}
+
+	public void setBranchId(BigDecimal branchId) {
+		this.branchId = branchId;
+	}
+
+	public String getTenant() {
+		return tenant;
+	}
+
+	public void setTenant(String tenant) {
+		this.tenant = tenant;
+	}
+
+	public String getCurrencyQuote() {
+		return currencyQuote;
+	}
+
+	public void setCurrencyQuote(String currencyQuote) {
+		this.currencyQuote = currencyQuote;
+	}
+
+	public BigDecimal getCurrencyId() {
+		return currencyId;
+	}
+
+	public void setCurrencyId(BigDecimal currencyId) {
+		this.currencyId = currencyId;
 	}
 
 }

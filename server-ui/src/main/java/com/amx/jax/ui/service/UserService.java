@@ -1,26 +1,32 @@
 package com.amx.jax.ui.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
-import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.AppContextUtil;
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.model.auth.QuestModelDTO;
+import com.amx.jax.model.customer.SecurityQuestionModel;
+import com.amx.jax.model.response.customer.CustomerFlags;
+import com.amx.jax.model.response.customer.CustomerModelResponse;
 import com.amx.jax.postman.model.PushMessage;
+import com.amx.jax.ui.UIConstants.Features;
+import com.amx.jax.ui.auth.AuthLibContext;
 import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
+import com.amx.jax.ui.model.AuthData;
 import com.amx.jax.ui.model.AuthDataInterface.UserUpdateResponse;
 import com.amx.jax.ui.model.UserBean;
 import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseWrapper;
-import com.amx.utils.ArgUtil;
-import com.amx.utils.Constants;
+import com.amx.utils.ListManager;
 
 /**
  * The Class UserService.
@@ -52,6 +58,37 @@ public class UserService {
 	@Autowired
 	private JaxService jaxService;
 
+	@Autowired
+	AuthLibContext authLibContext;
+
+	/**
+	 * Gets the random security question.
+	 *
+	 * @param customerModel the customer model
+	 * @return the random security question
+	 */
+	public AuthData getRandomSecurityQuestion(CustomerModel customerModel) {
+		AuthData loginData = new AuthData();
+		ListManager<SecurityQuestionModel> listmgr = new ListManager<SecurityQuestionModel>(
+				customerModel.getSecurityquestions());
+
+		SecurityQuestionModel answer = listmgr.pickRandom();
+		sessionService.getGuestSession().setQuesIndex(listmgr.getIndex());
+
+		List<QuestModelDTO> questModel = jaxService.getMetaClient().getSequrityQuestion().getResults();
+
+		for (QuestModelDTO questModelDTO : questModel) {
+			if (questModelDTO.getQuestNumber().equals(answer.getQuestionSrNo())) {
+				loginData.setQuestion(questModelDTO.getDescription()); // TODO:- TO be removed
+				loginData.setQues(questModelDTO);
+			}
+		}
+
+		loginData.setImageId(customerModel.getImageUrl());
+		loginData.setImageCaption(customerModel.getCaption());
+		return loginData;
+	}
+
 	/**
 	 * Gets the notify topics.
 	 *
@@ -60,15 +97,23 @@ public class UserService {
 	 */
 	public List<String> getNotifyTopics(String prefix) {
 		CustomerModel customerModel = sessionService.getUserSession().getCustomerModel();
-		List<String> topics = new ArrayList<String>();
-		topics.add((prefix + String.format(PushMessage.FORMAT_TO_ALL, AppContextUtil.getTenant(),
-				customerModel.getPersoninfo().getNationalityId())).toLowerCase());
-		topics.add((prefix + String.format(PushMessage.FORMAT_TO_NATIONALITY, AppContextUtil.getTenant(),
-				customerModel.getPersoninfo().getNationalityId())).toLowerCase());
-		topics.add((prefix + String.format(PushMessage.FORMAT_TO_USER, AppContextUtil.getTenant(),
-				ArgUtil.parseAsString(customerModel.getCustomerId(), Constants.BLANK).replaceAll("\\s+", "")))
-						.toLowerCase());
-		return topics;
+		PushMessage msg = new PushMessage();
+		msg.addToTenant(AppContextUtil.getTenant());
+		msg.addToCountry(customerModel.getPersoninfo().getNationalityId());
+		msg.addToUser(customerModel.getCustomerId());
+		return msg.getTo();
+	}
+
+	public AmxApiResponse<CustomerFlags, Object> checkModule(Features feature) {
+		try {
+			return ResponseWrapper.buildData(authLibContext.get()
+					.checkModule(sessionService.getGuestSession().getState(),
+							sessionService.getUserSession().getCustomerModel().getFlags(), feature));
+		} catch (GlobalException ex) {
+			AuthData authData = getRandomSecurityQuestion(sessionService.getUserSession().getCustomerModel());
+			ex.setMeta(authData.toJaxAuthMetaResp());
+			throw ex;
+		}
 	}
 
 	/**
@@ -79,6 +124,15 @@ public class UserService {
 	public ResponseWrapper<CustomerDto> getProfileDetails() {
 		return new ResponseWrapper<CustomerDto>(
 				jaxService.setDefaults().getUserclient().getMyProfileInfo().getResult());
+	}
+
+	public void updateCustoemrModel() {
+		String identity = sessionService.getUserSession().getCustomerModel().getIdentityId();
+		AmxApiResponse<CustomerModelResponse, Object> x = jaxService.setDefaults().getUserclient()
+				.getCustomerModelResponse(identity);
+		sessionService.getUserSession().getCustomerModel().setFlags(x.getResult().getCustomerFlags());
+		sessionService.getUserSession().getCustomerModel().setPersoninfo(x.getResult().getPersonInfo());
+		sessionService.getUserSession().getCustomerModel().setSecurityquestions(x.getResult().getSecurityquestions());
 	}
 
 	/**
@@ -101,6 +155,7 @@ public class UserService {
 			sessionService.getUserSession().getCustomerModel().setEmail(model.getEmail());
 			sessionService.getUserSession().getCustomerModel().getPersoninfo().setEmail(model.getEmail());
 			wrapper.setMessage(OWAStatusStatusCodes.USER_UPDATE_SUCCESS, "Email Updated");
+			updateCustoemrModel();
 		}
 		return wrapper;
 	}
@@ -145,6 +200,14 @@ public class UserService {
 		return wrapper;
 	}
 
+	public AmxApiResponse<BoolRespModel, Object> updateSecQues(List<SecurityQuestionModel> securityquestions) {
+		AmxApiResponse<BoolRespModel, Object> x = jaxService.getUserclient()
+				.saveCustomerSecQuestions(securityquestions);
+		sessionService.getGuestSession().getState().setValidSecQues(true);
+		updateCustoemrModel();
+		return x;
+	}
+
 	/**
 	 * Update phising.
 	 *
@@ -174,6 +237,18 @@ public class UserService {
 		BoolRespModel model = jaxService.setDefaults().getUserclient().updatePassword(password, mOtp, eOtp).getResult();
 		if (model.isSuccess()) {
 			wrapper.setMessage(OWAStatusStatusCodes.USER_UPDATE_SUCCESS, "Password Updated Succesfully");
+		}
+		return wrapper;
+	}
+
+	public ResponseWrapper<UserUpdateData> getSecQues() {
+		List<QuestModelDTO> questModel = jaxService.setDefaults().getMetaClient().getSequrityQuestion().getResults();
+		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
+		wrapper.getData().setSecQuesMeta(questModel);
+		if (sessionService.getUserSession().getCustomerModel() != null) {
+			wrapper.getData().setSecQuesAns(sessionService.getUserSession().getCustomerModel().getSecurityquestions());
+		} else if (sessionService.getGuestSession().getCustomerModel() != null) {
+			wrapper.getData().setSecQuesAns(sessionService.getGuestSession().getCustomerModel().getSecurityquestions());
 		}
 		return wrapper;
 	}

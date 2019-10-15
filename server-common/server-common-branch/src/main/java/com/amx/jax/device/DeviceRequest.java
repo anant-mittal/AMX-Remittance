@@ -9,12 +9,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppConstants;
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.branch.common.OffsiteStatus.OffsiteServerCodes;
 import com.amx.jax.branch.common.OffsiteStatus.OffsiteServerError;
 import com.amx.jax.device.DeviceRestModels.DevicePairingCreds;
 import com.amx.jax.device.DeviceRestModels.SessionPairingCreds;
+import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.sso.SSOUserSessions;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Random;
 
@@ -32,6 +35,9 @@ public class DeviceRequest {
 	@Autowired(required = false)
 	private HttpServletResponse response;
 
+	@Autowired
+	SSOUserSessions ssoUserSessions;
+
 	public String getDeviceRegId() {
 		return commonHttpRequest.get(DeviceConstants.Keys.CLIENT_REG_KEY_XKEY);
 	}
@@ -46,6 +52,10 @@ public class DeviceRequest {
 
 	public String getDeviceRequestToken() {
 		return commonHttpRequest.get(DeviceConstants.Keys.CLIENT_REQ_TOKEN_XKEY);
+	}
+
+	public String getDeviceClientVersion() {
+		return commonHttpRequest.get(AppConstants.APP_VERSION_XKEY);
 	}
 
 	public long getDeviceRequestTime() {
@@ -68,6 +78,7 @@ public class DeviceRequest {
 	public DevicePairingCreds validateDevice() {
 		String deviceRegId = getDeviceRegId();
 		String deviceRegToken = getDeviceRegToken();
+		AppContextUtil.getUserClient().setClientVersion(getDeviceClientVersion());
 		if (ArgUtil.isEmpty(deviceRegId) || ArgUtil.isEmpty(deviceRegToken)) {
 			throw new OffsiteServerError(OffsiteServerCodes.CLIENT_CREDS_MISSING)
 					.put(DeviceConstants.Keys.CLIENT_REG_KEY_XKEY, deviceRegId);
@@ -93,6 +104,7 @@ public class DeviceRequest {
 			DeviceData deviceData = deviceBox.get(deviceRegIdStr);
 			if (deviceData != null) {
 				deviceData.setDeviceReqKey(null);
+				ssoUserSessions.invalidateTerminal(deviceData.getTerminalId());
 				deviceBox.put(deviceRegIdStr, deviceData);
 			}
 		}
@@ -147,7 +159,7 @@ public class DeviceRequest {
 	}
 
 	public SessionPairingCreds createSession(String sessionPairToken, String sessionOtp, String terminalId,
-			String empId) {
+			String empId, ClientType clientType) {
 
 		String deviceRegKey = getDeviceRegId();
 		DeviceData deviceData = new DeviceData();
@@ -164,6 +176,7 @@ public class DeviceRequest {
 		deviceData.setLocalIp(commonHttpRequest.get(AppConstants.DEVICE_IP_LOCAL_XKEY));
 		deviceData.setGlobalIp(commonHttpRequest.getIPAddress());
 		deviceData.setRegId(deviceRegKey);
+		deviceData.setClientType(clientType);
 		LOGGER.debug("createSession RID:{} C:{}", deviceRegKey, DeviceData.class.getName());
 		deviceBox.put(deviceRegKey, deviceData);
 		response.setHeader(DeviceConstants.Keys.DEVICE_REQ_KEY_XKEY, deviceData.getDeviceReqKey());

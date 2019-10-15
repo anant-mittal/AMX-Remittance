@@ -1,0 +1,4 @@
+{
+  "_subject": "AMIEC Group Life Insurance has been Expired",
+  "_message": "Greetings from Al Mulla Exchange! your Group Life Insurance offered by Al Mulla Exchange has expired as on [[${data.policyenddate}]].  Do [[${data.trnxleft}]] more online/mobile transactions to auto-renew the policy."
+}

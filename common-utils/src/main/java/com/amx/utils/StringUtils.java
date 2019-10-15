@@ -1,9 +1,12 @@
 package com.amx.utils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 public final class StringUtils {
 
@@ -24,8 +27,16 @@ public final class StringUtils {
 			return this.m != null && this.m.find();
 		}
 
+		public boolean isMatch(Pattern pattern) {
+			return this.match(pattern) && find();
+		}
+
 		public String group(int index) {
 			return this.m.group(index);
+		}
+
+		public String toString() {
+			return this.str;
 		}
 
 	}
@@ -34,10 +45,22 @@ public final class StringUtils {
 		return !ArgUtil.isEmptyString(str);
 	}
 
-//	public static Map<String, String> getMapFromString(String splitter_char, String key_value_separator_char,
-//			String data) {
-//		return Splitter.on(splitter_char).withKeyValueSeparator(key_value_separator_char).split(data);
-//	}
+	/**
+	 * Remove all characters which are not Alpha or Numeric
+	 * 
+	 * @param inputString
+	 * @return
+	 */
+	public static String removeSpecialCharacter(String inputString) {
+		return inputString.replaceAll("[^a-zA-Z0-9]+", "");
+	}
+
+	// public static Map<String, String> getMapFromString(String splitter_char,
+	// String key_value_separator_char,
+	// String data) {
+	// return
+	// Splitter.on(splitter_char).withKeyValueSeparator(key_value_separator_char).split(data);
+	// }
 
 	public static Map<String, String> getMapFromString(String splitter_char, String key_value_separator_char,
 			String data) {
@@ -80,4 +103,90 @@ public final class StringUtils {
 		}
 
 	}
+
+	public static String substring(String str, int length) {
+		if (str == null || str.length() <= 0) {
+			return Constants.BLANK;
+		} else if (str.length() <= length) {
+			return str;
+		} else {
+			return str.substring(0, length);
+		}
+	}
+
+	private static String mask(String strText, int start, int end, char maskChar) {
+
+		if (strText == null || strText.equals(""))
+			return "";
+
+		if (start < 0)
+			start = 0;
+
+		if (end > strText.length())
+			end = strText.length();
+
+		if (start > end) {
+			start = end;
+		}
+
+		int maskLength = end - start;
+
+		if (maskLength == 0)
+			return strText;
+
+		StringBuilder sbMaskString = new StringBuilder(maskLength);
+
+		for (int i = 0; i < maskLength; i++) {
+			sbMaskString.append(maskChar);
+		}
+
+		return strText.substring(0, start)
+				+ sbMaskString.toString()
+				+ strText.substring(start + maskLength);
+	}
+
+	public static String mask(String strText) {
+		if (ArgUtil.isEmpty(strText)) {
+			return strText;
+		}
+		int len = strText.length();
+		return mask(strText, len / 10 * 2, len / 10 * 7, '*');
+	}
+
+	public static boolean anyMatch(String val, String... matchers) {
+
+		if (val == null)
+			return false;
+
+		return Stream.of(matchers).anyMatch(val::equalsIgnoreCase);
+
+	}
+
+	public static List<String> capitalize(List<String> input) {
+		List<String> output = new ArrayList<>();
+		input.forEach(i -> {
+			output.add(capitalize(i));
+		});
+		return output;
+	}
+
+	public static String capitalize(String input) {
+		if (!StringUtils.isNotBlank(input)) {
+			return input;
+		}
+		if (input.length() == 1) {
+			return input.substring(0, 1).toUpperCase();
+		}
+		return input.substring(0, 1).toUpperCase() + input.substring(1).toLowerCase();
+	}
+
+	public static String decapitalize(String string) {
+		if (string == null || string.length() == 0) {
+			return string;
+		}
+		char c[] = string.toCharArray();
+		c[0] = Character.toLowerCase(c[0]);
+		return new String(c);
+	}
+
 }

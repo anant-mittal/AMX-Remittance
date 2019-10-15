@@ -12,13 +12,17 @@ import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
-import com.amx.amxlib.model.SecurityQuestionModel;
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.logger.AuditActor;
 import com.amx.jax.logger.AuditService;
+import com.amx.jax.logger.events.AuditActorInfo;
 import com.amx.jax.model.AuthState;
 import com.amx.jax.model.AuthState.AuthStep;
 import com.amx.jax.model.auth.QuestModelDTO;
+import com.amx.jax.model.customer.SecurityQuestionModel;
+import com.amx.jax.session.SessionContextService;
 import com.amx.jax.ui.audit.CAuthEvent;
 import com.amx.jax.ui.config.HttpUnauthorizedException;
 import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
@@ -56,41 +60,22 @@ public class LoginService {
 	@Autowired
 	private AuditService auditService;
 
-	/**
-	 * Gets the random security question.
-	 *
-	 * @param customerModel the customer model
-	 * @return the random security question
-	 */
-	private AuthData getRandomSecurityQuestion(CustomerModel customerModel) {
-		AuthData loginData = new AuthData();
-		ListManager<SecurityQuestionModel> listmgr = new ListManager<SecurityQuestionModel>(
-				customerModel.getSecurityquestions());
+	@Autowired
+	private UserService userService;
 
-		SecurityQuestionModel answer = listmgr.pickRandom();
-		sessionService.getGuestSession().setQuesIndex(listmgr.getIndex());
-
-		List<QuestModelDTO> questModel = jaxService.getMetaClient().getSequrityQuestion().getResults();
-
-		for (QuestModelDTO questModelDTO : questModel) {
-			if (questModelDTO.getQuestNumber().equals(answer.getQuestionSrNo())) {
-				loginData.setQuestion(questModelDTO.getDescription()); // TODO:- TO be removed
-				loginData.setQues(questModelDTO);
-			}
-		}
-
-		loginData.setImageId(customerModel.getImageUrl());
-		loginData.setImageCaption(customerModel.getCaption());
-		return loginData;
-	}
+	@Autowired
+	SessionContextService sessionContextService;
 
 	/**
 	 * Login.
+	 * 
+	 * @deprecated use {@link #loginUserPass(String, String)}
 	 *
 	 * @param identity the identity
 	 * @param password the password
 	 * @return the response wrapper
 	 */
+	@Deprecated
 	public ResponseWrapper<AuthResponse> login(String identity, String password) {
 		ResponseWrapper<AuthResponse> wrapper = new ResponseWrapper<AuthResponse>(null);
 		sessionService.clear();
@@ -102,9 +87,28 @@ public class LoginService {
 			throw new JaxSystemError();
 		}
 		sessionService.getGuestSession().setCustomerModel(customerModel);
-		wrapper.setData(getRandomSecurityQuestion(customerModel));
+		wrapper.setData(userService.getRandomSecurityQuestion(customerModel));
 		wrapper.setMessage(OWAStatusStatusCodes.AUTH_OK, "Password is Correct");
 		sessionService.getGuestSession().endStep(AuthStep.USERPASS);
+		wrapper.getData().setState(sessionService.getGuestSession().getState());
+		return wrapper;
+	}
+
+	public ResponseWrapper<AuthResponse> loginUserPass(String identity, String password) {
+		ResponseWrapper<AuthResponse> wrapper = new ResponseWrapper<AuthResponse>(null);
+		sessionService.clear();
+		sessionService.getGuestSession().initFlow(AuthState.AuthFlow.LOGIN);
+		CustomerModel customerModel;
+		sessionService.getGuestSession().setIdentity(identity);
+		customerModel = jaxService.setDefaults().getUserclient().login(identity, password).getResult();
+		if (customerModel == null) {
+			throw new JaxSystemError();
+		}
+		sessionService.getGuestSession().setCustomerModel(customerModel);
+		AuthData loginData = new AuthData();
+		wrapper.setData(loginData);
+		wrapper.setMessage(OWAStatusStatusCodes.AUTH_OK, "Password is Correct");
+		loginSuccess(wrapper, AuthStep.USERPASS_SINGLE, customerModel);
 		wrapper.getData().setState(sessionService.getGuestSession().getState());
 		return wrapper;
 	}
@@ -153,6 +157,8 @@ public class LoginService {
 				throw new JaxSystemError();
 			}
 
+			sessionService.getGuestSession().getState().setValidSecQues(true);
+
 			loginSuccess(wrapper, AuthStep.SECQUES, customerModel);
 
 		} catch (GlobalException e) {
@@ -186,24 +192,28 @@ public class LoginService {
 		return wrapper;
 	}
 
-	public ResponseWrapper<AuthResponse> loginSuccess(ResponseWrapper<AuthResponse> wrapper, AuthStep secques,
+	public ResponseWrapper<AuthResponse> loginSuccess(ResponseWrapper<AuthResponse> wrapper, AuthStep authStep,
 			CustomerModel customerModel) {
 		/*
 		 * TODO:- need to evaluate this condition it has some backward compatibility
 		 * consideration
 		 */
 		sessionService.authorize(customerModel,
-				sessionService.getGuestSession().getState().isFlow(AuthState.AuthFlow.LOGIN));
+				sessionService.getGuestSession().getState().isFlow(AuthState.AuthFlow.LOGIN)
+						|| sessionService.getUserSession().isValid());
+
+		AuditActorInfo actor = new AuditActorInfo(AuditActor.ActorType.C, customerModel.getCustomerId());
+		sessionContextService.setContext(actor);
 
 		if (sessionService.getGuestSession().getState().isFlow(AuthState.AuthFlow.LOGIN)) {
 			jaxService.setDefaults().getUserclient().customerLoggedIn(sessionService.getAppDevice().getUserDevice());
-
 			wrapper.setRedirectUrl(sessionService.getGuestSession().getReturnUrl());
 			sessionService.getGuestSession().setReturnUrl(null);
 		}
+		userService.updateCustoemrModel();
 
 		wrapper.setMessage(OWAStatusStatusCodes.AUTH_DONE, ResponseMessage.AUTH_SUCCESS);
-		sessionService.getGuestSession().endStep(secques);
+		sessionService.getGuestSession().endStep(authStep);
 		wrapper.getData().setState(sessionService.getGuestSession().getState());
 		return wrapper;
 	}
@@ -270,7 +280,7 @@ public class LoginService {
 			throw new JaxSystemError();
 		}
 		sessionService.getGuestSession().setCustomerModel(model);
-		wrapper.setData(getRandomSecurityQuestion(model));
+		wrapper.setData(userService.getRandomSecurityQuestion(model));
 
 		wrapper.setMessage(OWAStatusStatusCodes.VERIFY_SUCCESS, ResponseMessage.AUTH_SUCCESS);
 		sessionService.getGuestSession().endStep(AuthStep.MOTPVFY);
@@ -297,6 +307,34 @@ public class LoginService {
 			// throw new HttpUnauthorizedException(HttpUnauthorizedException.UN_AUTHORIZED);
 		}
 		BoolRespModel model = jaxService.setDefaults().getUserclient().updatePassword(password, mOtp, eOtp).getResult();
+		if (model.isSuccess()) {
+			wrapper.setMessage(OWAStatusStatusCodes.USER_UPDATE_SUCCESS, "Password Updated Succesfully");
+			sessionService.getGuestSession().endStep(AuthStep.CREDS_SET);
+			wrapper.getData().setState(sessionService.getGuestSession().getState());
+		}
+		return wrapper;
+	}
+
+	public ResponseWrapper<AuthResponse> initResetPassword2(String identity, String password) {
+		ResponseWrapper<AuthResponse> wrapper = new ResponseWrapper<AuthResponse>(new AuthData());
+		
+		AmxApiResponse<CustomerModel, Object> x = jaxService.getUserclient().validateCustomerLoginOtp(identity);
+		sessionService.getGuestSession().setCustomerModel(x.getResult());
+		return wrapper;
+	}
+
+	/**
+	 * 
+	 * @param password
+	 * @param mOtp
+	 * @param eOtp
+	 * @return
+	 */
+	public ResponseWrapper<UserUpdateData> updatepwdV2(String password) {
+		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
+		BoolRespModel model = jaxService.setDefaults().getUserclient().updatePasswordCustomer(
+				sessionService.getGuestSession().getCustomerModel().getIdentityId(),
+				password).getResult();
 		if (model.isSuccess()) {
 			wrapper.setMessage(OWAStatusStatusCodes.USER_UPDATE_SUCCESS, "Password Updated Succesfully");
 			sessionService.getGuestSession().endStep(AuthStep.CREDS_SET);

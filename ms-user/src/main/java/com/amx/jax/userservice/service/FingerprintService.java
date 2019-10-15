@@ -20,24 +20,26 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.CustomerModel;
-import com.amx.amxlib.model.PersonInfo;
-import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.UserFingerprintResponseModel;
-import com.amx.jax.JaxAuthCache;
+import com.amx.jax.JaxAuthContext;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.async.ExecutorConfig;
+import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.constant.JaxApiFlow;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.LoginLogoutHistory;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.meta.MetaData;
-import com.amx.jax.model.response.customer.CustomerFlags;
+import com.amx.jax.model.customer.SecurityQuestionModel;
+import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.repository.CountryRepository;
+import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.IContactDetailDao;
 import com.amx.jax.repository.ICustomerRepository;
@@ -49,8 +51,6 @@ import com.amx.jax.scope.TenantContext;
 import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.dao.CustomerIdProofDao;
-import com.amx.jax.userservice.manager.CustomerFlagManager;
-import com.amx.jax.userservice.repository.CustomerRepository;
 import com.amx.jax.userservice.repository.LoginLogoutHistoryRepository;
 import com.amx.jax.userservice.service.CustomerValidationContext.CustomerValidation;
 import com.amx.jax.util.CryptoUtil;
@@ -118,15 +118,13 @@ public class FingerprintService {
 	CustomerIdProofDao customerIdProofDao;
 
 	@Autowired
-	JaxAuthCache jaxAuthCache;
-	
-	@Autowired
 	UserService userService;
 	
 	@Autowired
 	private PostManService postManService;
 	
-	
+	@Autowired
+	JaxTenantProperties jaxTenantProperties;
 	
 	protected LoginLogoutHistory getLoginLogoutHistoryByUserName(String userName) {
 
@@ -143,7 +141,6 @@ public class FingerprintService {
 	
 	public CustomerModel convert(CustomerOnlineRegistration cust) {
 		CustomerModel model = new CustomerModel();
-		model.setIdentityId(cust.getUserName());
 		if (cust.getCaption() != null) {
 			model.setCaption(cryptoUtil.decrypt(cust.getUserName(), cust.getCaption()));
 		}
@@ -171,6 +168,7 @@ public class FingerprintService {
 			personinfo.setEmail(customer.getEmail());
 			personinfo.setMobile(customer.getMobile());
 			model.setPersoninfo(personinfo);
+			model.setIdentityId(customer.getIdentityInt());
 		} catch (Exception e) {
 			logger.error("Exception while populating PersonInfo : ", e);
 		}
@@ -240,17 +238,40 @@ public class FingerprintService {
 
 	public CustomerModel loginCustomerByFingerprint(String civilId, String identityTypeStr, String password, String fingerprintDeviceId) {
 		userValidationService.validateIdentityInt(civilId, identityTypeStr);
-		if(metaData.getDeviceId()==null) {
+		userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(civilId, JaxApiFlow.LOGIN);
+		if (metaData.getDeviceId() == null) {
 			logger.error("device id null exception");
 			throw new GlobalException("Device id cannot be null");
 		}
-		BigDecimal identityType = new BigDecimal(identityTypeStr);
-		CustomerOnlineRegistration customerOnlineRegistration = userValidationService
-				.validateOnlineCustomerByIdentityId(civilId, identityType);
-		logger.info("Customer id is "+metaData.getCustomerId());
-		userValidationService.validateCustomerLockCount(customerOnlineRegistration);
-		userValidationService.validateFingerprintDeviceId(customerOnlineRegistration,fingerprintDeviceId);
-		userValidationService.validateDevicePassword(customerOnlineRegistration, password);
+		
+		Boolean captchaEnable = jaxTenantProperties.getCaptchaEnable();
+		
+		CustomerOnlineRegistration customerOnlineRegistration = null;
+		if (identityTypeStr == null) {
+			try {
+				customerOnlineRegistration = userValidationService.validateOnlineCustomerByIdentityId(civilId,
+						ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID);
+			} catch (GlobalException e) {
+			}
+			if (customerOnlineRegistration == null) {
+				customerOnlineRegistration = userValidationService.validateOnlineCustomerByIdentityId(civilId,
+						ConstantDocument.BIZ_COMPONENT_ID_NEW_CIVIL_ID);
+			}
+		} else {
+			BigDecimal identityType = new BigDecimal(identityTypeStr);
+			customerOnlineRegistration = userValidationService.validateOnlineCustomerByIdentityId(civilId,
+					identityType);
+		}
+		Customer customer = custDao.getCustById(customerOnlineRegistration.getCustomerId());
+		logger.info("Customer id is " + metaData.getCustomerId());
+		
+		userValidationService.validateCustomerLockCount(customerOnlineRegistration,captchaEnable);
+		userValidationService.validateCustIdProofs(customerOnlineRegistration.getCustomerId());
+		userValidationService.validateCustomerData(customerOnlineRegistration, customer);
+		userValidationService.validateBlackListedCustomerForLogin(customer);
+		userValidationService.validateFingerprintDeviceId(customerOnlineRegistration, fingerprintDeviceId);
+		userValidationService.validateDevicePassword(customerOnlineRegistration, password,  captchaEnable && JaxAuthContext.isCaptchaCheck());
+		userService.afterLoginSteps(customerOnlineRegistration);
 		CustomerModel customerModel = convert(customerOnlineRegistration);
 		return customerModel;
 	}
@@ -267,12 +288,13 @@ public class FingerprintService {
 		personinfo.setFirstName(customer.getFirstName());
 		personinfo.setMiddleName(customer.getMiddleName());
 		personinfo.setLastName(customer.getLastName());
+		logger.info("Checking wether delink has been called or not");
 		Email email = new Email();
 		email.addTo(customerOnlineRegistration.getEmail());
 		email.setITemplate(TemplatesMX.FINGERPRINT_DELINKED_SUCCESS);
 		email.setHtml(true);
 		email.getModel().put(RESP_DATA_KEY, personinfo);
-		logger.debug("Email to - " + customerOnlineRegistration.getEmail());
+		logger.info("Email to delink fingerprint- " + customerOnlineRegistration.getEmail());
 		sendEmail(email);
 		return boolRespModel;
 	}
@@ -291,14 +313,15 @@ public class FingerprintService {
 		personinfo.setFirstName(customer.getFirstName());
 		personinfo.setMiddleName(customer.getMiddleName());
 		personinfo.setLastName(customer.getLastName());
+		logger.info("checking wether reset has been called or not");
 		Email email = new Email();
 		email.addTo(customerOnlineRegistration.getEmail());
 		email.setITemplate(TemplatesMX.FINGERPRINT_DELINKED_ATTEMP_SUCCESS);
 		email.setHtml(true);
 		email.getModel().put(RESP_DATA_KEY, personinfo);
-		logger.debug("Email to - " + customerOnlineRegistration.getEmail());
+		logger.info("Email to reset fingerprint- " + customerOnlineRegistration.getEmail());
 		sendEmail(email);
 		return boolRespModel;
-		
+	
 	}
 }

@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +24,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.customer.repository.EmployeeRepository;
+import com.amx.jax.customer.service.CustomerService;
+import com.amx.jax.customer.service.EmployeeValidationService;
 import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dao.CurrencyMasterDao;
 import com.amx.jax.dao.FcSaleApplicationDao;
@@ -45,26 +50,37 @@ import com.amx.jax.dbmodel.fx.EmployeeDetailsView;
 import com.amx.jax.dbmodel.fx.ForeignCurrencyOldModel;
 import com.amx.jax.dbmodel.fx.ForeignCurrencyStockTransfer;
 import com.amx.jax.dbmodel.fx.FxDeliveryDetailsModel;
+import com.amx.jax.dbmodel.fx.FxDeliveryTimeSlotMaster;
 import com.amx.jax.dbmodel.fx.OrderManagementView;
+import com.amx.jax.dbmodel.fx.UserFcStockView;
 import com.amx.jax.dbmodel.fx.UserStockView;
 import com.amx.jax.dbmodel.remittance.Document;
+import com.amx.jax.dict.AmxEnums;
+import com.amx.jax.dict.Tenant;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.fx.FcSaleBranchDispatchModel;
 import com.amx.jax.model.request.fx.FcSaleBranchDispatchRequest;
 import com.amx.jax.model.response.fx.FcEmployeeDetailsDto;
+import com.amx.jax.model.response.fx.FxDeliveryTimeSlotDto;
 import com.amx.jax.model.response.fx.FxEmployeeDetailsDto;
 import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.notification.fx.FcSaleEventManager;
 import com.amx.jax.repository.ICompanyDAO;
+import com.amx.jax.repository.ICustomerRepository;
 import com.amx.jax.repository.IDocumentDao;
 import com.amx.jax.repository.JaxConfigRepository;
+import com.amx.jax.repository.fx.FxDeliveryDetailsRepository;
+import com.amx.jax.repository.fx.FxOrderDeliveryTimeSlotRepository;
+import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.service.CompanyService;
 import com.amx.jax.services.FcSaleDeliveryService;
 import com.amx.jax.util.ConverterUtil;
 import com.amx.jax.util.DateUtil;
+
+import jodd.typeconverter.Convert;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
@@ -116,8 +132,26 @@ public class FcSaleBranchOrderManager {
 	
 	@Autowired
 	ApplicationProcedureDao applicationProcedureDao;
+	
+	@Autowired
+	EmployeeRepository employeeRepository;
+	
+	@Autowired
+	FxDeliveryDetailsRepository fxDeliveryDetailsRepository;
+	
+	@Autowired
+	ICustomerRepository customerRepository;
+	
+	@Autowired
+	EmployeeValidationService employeeValidationService;
+	
+	@Autowired
+	CustomerService customerService;
+	
+	@Autowired
+	FxOrderDeliveryTimeSlotRepository fcSaleOrderTimeSlotDao;
 
-	public HashMap<String, Object> fetchFcSaleOrderManagement(BigDecimal applicationCountryId,BigDecimal employeeId){
+	public HashMap<String, Object> fetchFcSaleOrderManagement(BigDecimal applicationCountryId,BigDecimal employeeId,Date fromDate,Date toDate){
 		HashMap<String, Object> fetchOrder = new HashMap<>();
 		List<OrderManagementView> ordermanage = new ArrayList<>();
 		try{
@@ -127,15 +161,49 @@ public class FcSaleBranchOrderManager {
 				BigDecimal branchId = employeeDt.getBranchId();
 				BigDecimal governorate = employeeDt.getGovernorates();
 				if(areaCode != null && branchId != null) {
-					if(branchId.compareTo(ConstantDocument.MURQAB_FOREIGNCURRENCY) == 0) {
-						ordermanage = fcSaleBranchDao.fetchFcSaleOrderManagementForHeadOffice(applicationCountryId);
+					BigDecimal branchCode = null;
+					if (TenantContextHolder.currentSite().equals(Tenant.KWT)) {
+						branchCode = ConstantDocument.KUWAIT_FOREIGNCURRENCY;
+					} else if (TenantContextHolder.currentSite().equals(Tenant.BHR)) {
+						branchCode = ConstantDocument.BAHRAIN_FOREIGNCURRENCY;
+					} else if (TenantContextHolder.currentSite().equals(Tenant.OMN)) {
+						branchCode = ConstantDocument.OMAN_FOREIGNCURRENCY;
+					}
+					
+					if(fromDate != null) {
+						// continue
+					}else {
+						// one week calculation for calendar
+						Calendar cal = Calendar.getInstance();
+						cal.add(Calendar.DAY_OF_YEAR, -7);
+						fromDate = cal.getTime();
+					}
+					
+					if(toDate != null) {
+						// continue
+					}else {
+						toDate = new Date();
+					}
+					
+					if(branchCode != null) {
+						if(branchId.compareTo(branchCode) == 0) {
+							//ordermanage = fcSaleBranchDao.fetchFcSaleOrderManagementForHeadOffice(applicationCountryId);
+							ordermanage = fcSaleBranchDao.fetchFcSaleOrderManagementForHeadOfficeLastOneWeek(applicationCountryId,fromDate,toDate);
 
-						fetchOrder.put("ORDERS", ordermanage);
-						fetchOrder.put("AREA", Boolean.TRUE);
-						fetchOrder.put("BranchId", branchId);
+							fetchOrder.put("ORDERS", ordermanage);
+							fetchOrder.put("AREA", Boolean.TRUE);
+							fetchOrder.put("BranchId", branchId);
+						}else {
+							//ordermanage = fcSaleBranchDao.fetchFcSaleOrderManagement(applicationCountryId,areaCode);
+							ordermanage = fcSaleBranchDao.fetchFcSaleOrderManagementByGovernateLastOneWeek(applicationCountryId,governorate,fromDate,toDate);
+
+							fetchOrder.put("ORDERS", ordermanage);
+							fetchOrder.put("AREA", Boolean.FALSE);
+							fetchOrder.put("BRANCH", branchId);
+						}
 					}else {
 						//ordermanage = fcSaleBranchDao.fetchFcSaleOrderManagement(applicationCountryId,areaCode);
-						ordermanage = fcSaleBranchDao.fetchFcSaleOrderManagementByGovernate(applicationCountryId,governorate);
+						ordermanage = fcSaleBranchDao.fetchFcSaleOrderManagementByGovernateLastOneWeek(applicationCountryId,governorate,fromDate,toDate);
 
 						fetchOrder.put("ORDERS", ordermanage);
 						fetchOrder.put("AREA", Boolean.FALSE);
@@ -175,6 +243,8 @@ public class FcSaleBranchOrderManager {
 		}
 		return ordermanage;
 	}
+	
+
 
 	public List<UserStockDto> fetchUserStockViewByCurrency(BigDecimal countryId,BigDecimal employeeId,BigDecimal foreignCurrencyId){
 		List<UserStockDto> userStock = new ArrayList<>();
@@ -1315,7 +1385,7 @@ public class FcSaleBranchOrderManager {
 	private void logStatusChangeAuditEvent(BigDecimal deliveryDetailSeqId, String oldOrderStatus) {
 		fcSaleEventManager.logStatusChangeAuditEvent(deliveryDetailSeqId, oldOrderStatus);
 	}
-
+	
 	// stock move from branch staff to driver and vice versa
 	public Boolean currentStockMigration(BigDecimal deliveryDetailSeqId,BigDecimal driverEmployeeId,BigDecimal reqEmployeeId) {
 		Boolean status = Boolean.FALSE;
@@ -1372,7 +1442,7 @@ public class FcSaleBranchOrderManager {
 					}
 				}
 			}
-
+			
 			if(lstTotalStock != null && lstTotalStock.size() != 0) {
 				HashMap<String, Object> saveFcAdjPurchase = saveFcAdjJava(lstTotalStock,toUserName,toUserName,ConstantDocument.P,toCountryBranchId);
 
@@ -1814,6 +1884,186 @@ public class FcSaleBranchOrderManager {
 	public Map<String, Object> generateDocumentNumber(BigDecimal branchId, BigDecimal appCountryId,BigDecimal companyId,String processInd,BigDecimal finYear,BigDecimal documentId) {
 		Map<String, Object> output = applicationProcedureDao.getDocumentSeriality(appCountryId, companyId, documentId,finYear, processInd, branchId);
 		return output;
+	}
+	
+	public boolean validateUserStock(BigDecimal deliveryDetailSeqId,BigDecimal fromEmployeeId) {
+		boolean stockStatus = Boolean.FALSE;
+		String fromUserName = null;
+		BigDecimal fromCountryBranchId = null;
+		BigDecimal fromBranchId = null;
+		Map<BigDecimal, BigDecimal> currencyStock = new HashMap<>();
+		List<BigDecimal> foreignCurrencyId = new ArrayList<>();
+		List<ForeignCurrencyAdjust> lstTotalStock = new ArrayList<ForeignCurrencyAdjust>();
+		
+		FxEmployeeDetailsDto reqEmployeeDt = fetchEmployee(fromEmployeeId);
+		if(reqEmployeeDt != null && reqEmployeeDt.getEmployeeId() != null){
+			fromUserName = reqEmployeeDt.getUserName();
+			fromCountryBranchId = reqEmployeeDt.getCountryBranchId();
+			fromBranchId = reqEmployeeDt.getBranchId();
+		}
+		
+		// fetch records customer records
+		List<OrderManagementView> lstOrderManager = fcSaleBranchDao.fetchOrdersByDeliveryDetailId(deliveryDetailSeqId);
+		if(lstOrderManager != null && lstOrderManager.size() != 0){
+			for (OrderManagementView orderManagementView : lstOrderManager) {
+				if(!foreignCurrencyId.contains(orderManagementView.getForeignCurrencyId())) {
+					foreignCurrencyId.add(orderManagementView.getForeignCurrencyId());
+				}
+				if(orderManagementView.getDocumentNo() != null && orderManagementView.getCollectionDocFinanceYear() != null) {
+					List<ForeignCurrencyAdjust> lstFcAdj = fcSaleBranchDao.fetchByCollectionDetails(orderManagementView.getDocumentNo(), orderManagementView.getCollectionDocFinanceYear(), metaData.getCompanyId(), ConstantDocument.DOCUMENT_CODE_FOR_FCSALE,ConstantDocument.Yes);
+					if(lstFcAdj != null && lstFcAdj.size() != 0) {
+						lstTotalStock.addAll(lstFcAdj);
+					}
+				}
+			}
+		}
+		
+		if(lstTotalStock != null && lstTotalStock.size() != 0) {
+			if(foreignCurrencyId != null && foreignCurrencyId.size() != 0) {
+				// fetch staff currency stock
+				List<UserFcStockView> userStockData = fcSaleBranchDao.fetchUserFCStockAllCurrencyCurrentDate(fromUserName,fromCountryBranchId,foreignCurrencyId);
+				for (UserFcStockView userStockView : userStockData) {
+					currencyStock.put(userStockView.getDenominationId(), userStockView.getCurrentStock());
+				}
+			}
+			
+			// compare currency stock which is need to moved
+			if(currencyStock != null && currencyStock.size() != 0) {
+				for (ForeignCurrencyAdjust orderManagementView : lstTotalStock) {
+					if(orderManagementView.getNotesQuantity().compareTo(currencyStock.get(orderManagementView.getFsDenominationId().getDenominationId())) <= 0) {
+						// continue
+						stockStatus = Boolean.TRUE;
+					}else {
+						// break
+						logger.error("Error in Stock Mismatch deliveryDetailSeqId : "+deliveryDetailSeqId+" fromEmployeeId : "+fromEmployeeId+" denomination Id : "+orderManagementView.getFsDenominationId().getDenominationId());
+						stockStatus = Boolean.FALSE;
+						break;
+					}
+				}
+			}
+		}
+
+		return stockStatus;
+	}
+
+	public AmxApiResponse<FxDeliveryTimeSlotDto,Object> fetchFcDeliveryTiming() {
+		FxDeliveryTimeSlotMaster fxDeliveryTimeSlotMaster = new FxDeliveryTimeSlotMaster();
+		FxDeliveryTimeSlotDto fxDeliveryTimeSlotDto = new FxDeliveryTimeSlotDto();
+		BigDecimal countryId = metaData.getCountryId();
+		BigDecimal companyId = metaData.getCompanyId();
+
+		fxDeliveryTimeSlotMaster = fcSaleOrderTimeSlotDao.fetchDeliveryTimeSlot(countryId, companyId);
+
+		fxDeliveryTimeSlotDto.setStartTime(fxDeliveryTimeSlotMaster.getStartTime());
+		fxDeliveryTimeSlotDto.setEndTime(fxDeliveryTimeSlotMaster.getEndTime());
+		fxDeliveryTimeSlotDto.setOfficeStartTime(fxDeliveryTimeSlotMaster.getOfficeStartTime());
+		fxDeliveryTimeSlotDto.setOfficeEndTime(fxDeliveryTimeSlotMaster.getEndTime());
+		fxDeliveryTimeSlotDto.setTimeInterval(fxDeliveryTimeSlotMaster.getTimeInterval());
+		fxDeliveryTimeSlotDto.setTimeIntervalOffice(fxDeliveryTimeSlotMaster.getTimeIntervalOffice());
+
+		return AmxApiResponse.build(fxDeliveryTimeSlotDto);
+
+	}
+	
+	public Boolean saveFcDeliveryTiming(FxDeliveryTimeSlotDto fxDeliveryTimeSlotDto) {
+		Boolean status = Boolean.FALSE;
+		FxDeliveryTimeSlotMaster fxDeliveryTimeSlotMaster = new FxDeliveryTimeSlotMaster();
+		validateTimeSlot(fxDeliveryTimeSlotDto);
+		try {
+
+			fxDeliveryTimeSlotMaster = fcSaleOrderTimeSlotDao.saveDeliveryTimeSlot(fxDeliveryTimeSlotDto.getCountryId(),
+					fxDeliveryTimeSlotDto.getCompanyId(), ConstantDocument.Yes);
+
+			fxDeliveryTimeSlotMaster.setStartTime(fxDeliveryTimeSlotDto.getStartTime());
+			fxDeliveryTimeSlotMaster.setEndTime(fxDeliveryTimeSlotDto.getEndTime());
+			fxDeliveryTimeSlotMaster.setOfficeStartTime(fxDeliveryTimeSlotDto.getOfficeStartTime());
+			fxDeliveryTimeSlotMaster.setOfficeEndTime(fxDeliveryTimeSlotDto.getOfficeEndTime());
+			fxDeliveryTimeSlotMaster.setTimeInterval(fxDeliveryTimeSlotDto.getTimeInterval());
+			fxDeliveryTimeSlotMaster.setTimeIntervalOffice(fxDeliveryTimeSlotDto.getTimeIntervalOffice());
+			fcSaleOrderTimeSlotDao.save(fxDeliveryTimeSlotMaster);
+
+			status = Boolean.TRUE;
+
+		} catch (GlobalException e) {
+			e.printStackTrace();
+			logger.error("Error in setFcDeliveryTiming", e.getMessage() + " countryId :"
+					+ fxDeliveryTimeSlotDto.getCountryId() + " companyId :" + fxDeliveryTimeSlotDto.getCompanyId());
+			throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error in setFcDeliveryTiming", e.getMessage() + " countryId :"
+					+ fxDeliveryTimeSlotDto.getCountryId() + " companyId :" + fxDeliveryTimeSlotDto.getCompanyId());
+			throw new GlobalException(e.getMessage());
+		}
+		return status;
+	}
+	
+	public void validateTimeSlot(FxDeliveryTimeSlotDto fxDeliveryTimeSlotDto) {
+		if (fxDeliveryTimeSlotDto != null) {
+			if (fxDeliveryTimeSlotDto.getStartTime() != null) {
+
+				double doubleNumber = Convert.toDouble(fxDeliveryTimeSlotDto.getStartTime());
+				String doubleAsString = String.valueOf(doubleNumber);
+				int indexOfDecimal = doubleAsString.indexOf(".");
+				Double minutes = Double.parseDouble(doubleAsString.substring(indexOfDecimal));
+				if (minutes != null && minutes != 0) {
+					minutes = (minutes * 60);
+					if (new BigDecimal(minutes).compareTo(new BigDecimal(30)) == 0) {
+						// continue
+					} else {
+						logger.info("Please enter start time in multiples of 30 minutes");
+						throw new GlobalException("Please enter start time in multiples of 30 minutes");
+					}
+				}
+			}
+			if (fxDeliveryTimeSlotDto.getEndTime() != null) {
+				double doubleNumber = Convert.toDouble(fxDeliveryTimeSlotDto.getEndTime());
+				String doubleAsString = String.valueOf(doubleNumber);
+				int indexOfDecimal = doubleAsString.indexOf(".");
+				Double minutes = Double.parseDouble(doubleAsString.substring(indexOfDecimal));
+				if (minutes != null && minutes != 0) {
+					minutes = (minutes * 60);
+					if (new BigDecimal(minutes).compareTo(new BigDecimal(30)) == 0) {
+						// continue
+					} else {
+						logger.info("Please enter EndTime in multiples of 30 minutes");
+						throw new GlobalException("Please enter EndTime in multiples of 30 minutes");
+					}
+				}
+			}
+		}
+		if (fxDeliveryTimeSlotDto.getOfficeStartTime() != null) {
+			double doubleNumber = Convert.toDouble(fxDeliveryTimeSlotDto.getOfficeStartTime());
+			String doubleAsString = String.valueOf(doubleNumber);
+			int indexOfDecimal = doubleAsString.indexOf(".");
+			Double minutes = Double.parseDouble(doubleAsString.substring(indexOfDecimal));
+			if (minutes != null && minutes != 0) {
+				minutes = (minutes * 60);
+				if (new BigDecimal(minutes).compareTo(new BigDecimal(30)) == 0) {
+					// continue
+				} else {
+					logger.info("Please enter Office StartTime in multiples of 30 minutes");
+					throw new GlobalException("Please enter Office StartTime in multiples of 30 minutes");
+				}
+			}
+		}
+
+		if (fxDeliveryTimeSlotDto.getOfficeEndTime() != null) {
+			double doubleNumber = Convert.toDouble(fxDeliveryTimeSlotDto.getOfficeEndTime());
+			String doubleAsString = String.valueOf(doubleNumber);
+			int indexOfDecimal = doubleAsString.indexOf(".");
+			Double minutes = Double.parseDouble(doubleAsString.substring(indexOfDecimal));
+			if (minutes != null && minutes != 0) {
+				minutes = (minutes * 60);
+				if (new BigDecimal(minutes).compareTo(new BigDecimal(30)) == 0) {
+					// continue
+				} else {
+					logger.info("Please enter Office EndTime in multiples of 30 minutes");
+					throw new GlobalException("Please enter Office EndTime in multiples of 30 minutes");
+				}
+			}
+		}
+
 	}
 
 }
