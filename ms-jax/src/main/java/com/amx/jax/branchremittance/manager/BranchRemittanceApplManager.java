@@ -29,7 +29,6 @@ import com.amx.amxlib.util.JaxValidationUtil;
 import com.amx.jax.branchremittance.dao.BranchRemittanceDao;
 import com.amx.jax.branchremittance.service.BranchRemittanceExchangeRateService;
 import com.amx.jax.constant.ConstantDocument;
-import com.amx.jax.constant.JaxDynamicField;
 import com.amx.jax.constants.JaxTransactionStatus;
 import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dal.ExchangeRateProcedureDao;
