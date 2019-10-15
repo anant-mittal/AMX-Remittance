@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppConfig;
 import com.amx.jax.CustomerCredential;
+import com.amx.jax.ICustRegService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.configs.JaxMetaInfo;
@@ -69,258 +70,200 @@ public class OffsiteCustRegClient implements ICustRegService {
 	public static final String OFFSITE_CUSTOMER_REG = "/offsite-cust-reg";
 
 	public AmxApiResponse<Map<String, FieldListDto>, Object> getFieldList(DynamicFieldRequest model) {
-		try {
+		
 			return restService.ajax(appConfig.getJaxURL()).path(CustRegApiEndPoints.GET_DYNAMIC_FIELDS).post(model)
 					.as(new ParameterizedTypeReference<AmxApiResponse<Map<String, FieldListDto>, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.debug("exception in getFieldList : ", e);
-			return JaxSystemError.evaluate(e);
-		}
+		
 	}
 
 	@Override
 	public AmxApiResponse<IncomeRangeDto, Object> getIncomeRangeResponse(EmploymentDetailsRequest model) {
-		try {
+		
 			return restService.ajax(appConfig.getJaxURL()).path(CustRegApiEndPoints.GET_INCOME_RANGE_LIST)
 					.meta(new JaxMetaInfo()).post(model)
 					.as(new ParameterizedTypeReference<AmxApiResponse<IncomeRangeDto, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.debug("exception in getIncomeRangeResponse : ", e);
-			return JaxSystemError.evaluate(e);
-		} // end of try-catch
+		
 	}
 
 	@Override
 	public AmxApiResponse<ArticleDetailsDescDto, Object> getDesignationListResponse(EmploymentDetailsRequest model) {
-		try {
+		
 			return restService.ajax(appConfig.getJaxURL()).meta(new JaxMetaInfo())
 					.path(CustRegApiEndPoints.GET_DESIGNATION_LIST).post(model)
 					.as(new ParameterizedTypeReference<AmxApiResponse<ArticleDetailsDescDto, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.debug("exception in getDesignationListResponse : ", e);
-			return JaxSystemError.evaluate(e);
-		} // end of try-catch
+		
 	}
 
 	@Override
 	public AmxApiResponse<ArticleMasterDescDto, Object> getArticleListResponse() {
-		try {
+		
 			return restService.ajax(appConfig.getJaxURL()).meta(new JaxMetaInfo())
 					.path(CustRegApiEndPoints.GET_ARTICLE_LIST)
 					.post().as(new ParameterizedTypeReference<AmxApiResponse<ArticleMasterDescDto, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.debug("exception in getArticleListResponse : ", e);
-			return JaxSystemError.evaluate(e);
-		} // end of try-catch
+		
 	}
 
 	@Override
 	public AmxApiResponse<String, Object> validateOtpForEmailAndMobile(
 			OffsiteCustomerRegistrationRequest offsiteCustRegModel) {
-		try {
+		
 			return restService.ajax(appConfig.getJaxURL()).meta(new JaxMetaInfo())
 					.path(CustRegApiEndPoints.VALIDATE_OTP)
 					.post(offsiteCustRegModel).as(new ParameterizedTypeReference<AmxApiResponse<String, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.debug("exception in validateOtpForEmailAndMobile : ", e);
-			return JaxSystemError.evaluate(e);
-		} // end of try-catch
+		
 	}
 
 	@Override
 	public AmxApiResponse<ComponentDataDto, Object> sendEmploymentTypeList() {
-		try {
+		
 			return restService.ajax(appConfig.getJaxURL()).meta(new JaxMetaInfo())
 					.path(CustRegApiEndPoints.GET_EMPLOYMENT_TYPE_LIST).post()
 					.as(new ParameterizedTypeReference<AmxApiResponse<ComponentDataDto, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.debug("exception in sendEmploymentTypeList : ", e);
-			return JaxSystemError.evaluate(e);
-		} // end of try-catch
+		
 	}
 
 	@Override
 	public AmxApiResponse<ComponentDataDto, Object> sendProfessionList() {
-		try {
+		
 			return restService.ajax(appConfig.getJaxURL()).meta(new JaxMetaInfo())
 					.path(CustRegApiEndPoints.GET_PROFESSION_LIST).post()
 					.as(new ParameterizedTypeReference<AmxApiResponse<ComponentDataDto, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.debug("exception in sendProfessionList : ", e);
-			return JaxSystemError.evaluate(e);
-		} // end of try-catch
+		
 	}
 
 	@Override
 	public AmxApiResponse<ComponentDataDto, Object> getIdTypes() {
-		try {
+		
 			return restService.ajax(appConfig.getJaxURL()).meta(new JaxMetaInfo())
 					.path(CustRegApiEndPoints.GET_ID_TYPES)
 					.post().as(new ParameterizedTypeReference<AmxApiResponse<ComponentDataDto, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.debug("exception in sendIdTypes : ", e);
-			return JaxSystemError.evaluate(e);
-		} // end of try-catch
+		
 	}
 
 	@Override
 	public AmxApiResponse<SendOtpModel, Object> sendOtp(CustomerPersonalDetail customerPersonalDetail) {
-		try {
+		
 			return restService.ajax(appConfig.getJaxURL()).meta(new JaxMetaInfo())
 					.path(CustRegApiEndPoints.GET_CUSTOMER_OTP)
 					.post(customerPersonalDetail)
 					.as(new ParameterizedTypeReference<AmxApiResponse<SendOtpModel, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.debug("exception in sendOtp : ", e);
-			return JaxSystemError.evaluate(e);
-		} // end of try-catch
+		
 	}
 
 	@Override
 	public AmxApiResponse<CustomerInfo, Object> saveCustomerInfo(CustomerInfoRequest model) {
-		try {
+		
 			return restService.ajax(appConfig.getJaxURL()).meta(new JaxMetaInfo())
 					.path(CustRegApiEndPoints.SAVE_CUST_INFO)
 					.post(model).as(new ParameterizedTypeReference<AmxApiResponse<CustomerInfo, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.debug("exception in saveCustomerInfo : ", e);
-			return JaxSystemError.evaluate(e);
-		} // end of try-catch
+		
 	}
 
 	@Override
 	public AmxApiResponse<String, Object> saveCustomeKycDocument(ImageSubmissionRequest modelData)
 			throws ParseException {
-		try {
+		
 			return restService.ajax(appConfig.getJaxURL()).path(CustRegApiEndPoints.SAVE_KYC_DOC)
 					.meta(new JaxMetaInfo())
 					.post(modelData).as(new ParameterizedTypeReference<AmxApiResponse<String, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.debug("exception in saveCustomerInfo : ", e);
-			return JaxSystemError.evaluate(e);
-		} // end of try-catch}
+		
 	}
 
 	@Override
 	public AmxApiResponse<String, Object> saveCustomerSignature(ImageSubmissionRequest model) {
-		try {
+		
 			return restService.ajax(appConfig.getJaxURL()).meta(new JaxMetaInfo())
 					.path(CustRegApiEndPoints.SAVE_SIGNATURE)
 					.post(model).as(new ParameterizedTypeReference<AmxApiResponse<String, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.debug("exception in saveCustomerInfo : ", e);
-			return JaxSystemError.evaluate(e);
-		} // end of try-catch}
+		
 	}
 
 	@Override
 	public AmxApiResponse<CardDetail, Object> cardScan(CardDetail cardDetail) {
-		try {
+		
 			return restService.ajax(appConfig.getJaxURL()).meta(new JaxMetaInfo()).path(CustRegApiEndPoints.SCAN_CARD)
 					.post(cardDetail).as(new ParameterizedTypeReference<AmxApiResponse<CardDetail, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.debug("exception in cardScan : ", e);
-			return JaxSystemError.evaluate(e);
-		} // end of try-catch}
+		
 	}
 
 	@Override
 	public AmxApiResponse<CustomerCredential, Object> saveLoginDetailOffsite(CustomerCredential customerCredential) {
-		try {
+		
 			return restService.ajax(appConfig.getJaxURL()).meta(new JaxMetaInfo())
 					.path(CustRegApiEndPoints.SAVE_OFFSITE_LOGIN)
 					.post(customerCredential)
 					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerCredential, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.debug("exception in saveLoginDetailOffsite : ", e);
-			return JaxSystemError.evaluate(e);
-		} // end of try-catch}
+		
 	}
 
 	@Override
 	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerData(String identityInt,
 			BigDecimal identityType) {
-		try {
+		
 			return restService.ajax(appConfig.getJaxURL()).meta(new JaxMetaInfo())
 					.path(CustRegApiEndPoints.GET_OFFSITE_CUSTOMER_DATA).queryParam(Params.IDENTITY_INT, identityInt)
 					.queryParam(Params.IDENTITY_TYPE, identityType).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<OffsiteCustomerDataDTO, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.debug("exception in saveLoginDetailOffsite : ", e);
-			return JaxSystemError.evaluate(e);
-		} // end of try-catch}
+		
 	}
 
 	@Override
 	public AmxApiResponse<ResourceDTO, Object> getDesignationList() {
-		try {
+		
 			return restService.ajax(appConfig.getJaxURL()).meta(new JaxMetaInfo())
 					.path(CustRegApiEndPoints.DESIGNATION_LIST).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<ResourceDTO, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.debug("exception in getDesignationListResponse : ", e);
-			return JaxSystemError.evaluate(e);
-		} // end of try-catch
+		
 	}
 
 	@Override
 	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getOffsiteCustomerDetails(String identityInt,
 			BigDecimal identityType,BigDecimal customerId) {
-		try {
 			return restService.ajax(appConfig.getJaxURL()).meta(new JaxMetaInfo())
 					.path(CustRegApiEndPoints.GET_CUSTOMER_DEATILS).queryParam(Params.IDENTITY_INT, identityInt)
 					.queryParam(Params.IDENTITY_TYPE, identityType).get()
 					.queryParam(Params.CUSTOMER_ID, customerId).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<OffsiteCustomerDataDTO, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.debug("exception in saveLoginDetailOffsite : ", e);
-			return JaxSystemError.evaluate(e);
-		} // end of try-c
+		
 	}
 
 	@Override
 	public AmxApiResponse<AddressProofDTO, Object> getAddressProof() {
-		try {
+		
 			return restService.ajax(appConfig.getJaxURL()).meta(new JaxMetaInfo())
 					.path(CustRegApiEndPoints.ADDRESS_PROOF).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<AddressProofDTO, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.debug("exception in get address proof");
-			return JaxSystemError.evaluate(e);
-		}
+		
 	}
 
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> saveDocumentUploadReference(
 			ImageSubmissionRequest imageSubmissionRequest) {
-		try {
+		
 			return restService.ajax(appConfig.getJaxURL()).meta(new JaxMetaInfo())
 					.path(CustRegApiEndPoints.DOCUMENT_UPLOAD_REFERENCE)
 					.post(imageSubmissionRequest)
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.debug("exception in saveDocumentUploadReference : ", e);
-			return JaxSystemError.evaluate(e);
-		} // end of try-catch}
+		
 	}
 
 }

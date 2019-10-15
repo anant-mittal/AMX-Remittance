@@ -47,15 +47,12 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 	 */
 	@Override
 	public AmxApiResponse<FcSaleOrderManagementDTO,Object> fetchBranchOrderManagement() {
-		try {
+		
 			LOGGER.debug("in fetchBranchOrderManagement :");
 			return restService.ajax(appConfig.getJaxURL() + Path.FC_PENDING_ORDER_MANAGEMENT).meta(new JaxMetaInfo()).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<FcSaleOrderManagementDTO, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.error("exception in fetchBranchOrderManagement : ", e);
-			return JaxSystemError.evaluate(e);
-		} // end of try-catch
+		
 	}
 	
 	/**
@@ -64,7 +61,7 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 	 */
 	@Override
 	public AmxApiResponse<FcSaleOrderManagementDTO,Object> fetchBranchOrderDetails(BigDecimal orderNumber,BigDecimal orderYear) {
-		try {
+		
 			LOGGER.debug("in fetchBranchOrderDetails :"+orderNumber+ " "+orderYear);
 			return restService.ajax(appConfig.getJaxURL() + Path.FC_FETCH_ORDER_MANAGEMENT).meta(new JaxMetaInfo())
 					.queryParam(Params.FX_ORDER_NUMBER, orderNumber).meta(new JaxMetaInfo())
@@ -72,10 +69,7 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 					.get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<FcSaleOrderManagementDTO, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.error("exception in fetchBranchOrderDetails : ", e);
-			return JaxSystemError.evaluate(e);
-		} // end of try-catch
+		
 	}
 	
 	/**
@@ -84,17 +78,14 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 	 */
 	@Override
 	public AmxApiResponse<UserStockDto,Object> fetchBranchStockDetailsByCurrency(BigDecimal foreignCurrencyId) {
-		try {
+		
 			LOGGER.debug("in fetchBranchStockDetailsByCurrency :"+foreignCurrencyId);
 			return restService.ajax(appConfig.getJaxURL() + Path.FC_FETCH_STOCK_CURRENCY).meta(new JaxMetaInfo())
 					.queryParam(Params.FX_CURRENCY_ID, foreignCurrencyId)
 					.get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<UserStockDto, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.error("exception in fetchBranchStockDetailsByCurrency : ", e);
-			return JaxSystemError.evaluate(e);
-		} // end of try-catch
+		
 	}
 	
 	/**
@@ -103,15 +94,12 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 	 */
 	@Override
 	public AmxApiResponse<UserStockDto,Object> fetchBranchStockDetails() {
-		try {
+		
 			LOGGER.debug("in fetchBranchStockDetails :");
 			return restService.ajax(appConfig.getJaxURL() + Path.FC_FETCH_STOCK).meta(new JaxMetaInfo()).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<UserStockDto,Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.error("exception in fetchBranchStockDetails : ", e);
-			return JaxSystemError.evaluate(e);
-		} // end of try-catch
+		
 	}
 	
 	/**
@@ -120,15 +108,12 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 	 */
 	@Override
 	public AmxApiResponse<FcEmployeeDetailsDto,Object> fetchBranchEmployee() {
-		try {
+		
 			LOGGER.debug("in fetchBranchEmployee :");
 			return restService.ajax(appConfig.getJaxURL() + Path.FC_EMLOYEE_DRIVERS).meta(new JaxMetaInfo()).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<FcEmployeeDetailsDto,Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.error("exception in fetchBranchEmployee : ", e);
-			return JaxSystemError.evaluate(e);
-		} // end of try-catch
+		
 	}
 	
 	/**
@@ -137,7 +122,7 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 	 */
 	@Override
 	public AmxApiResponse<BoolRespModel,Object> assignDriver(BigDecimal orderNumber,BigDecimal orderYear,BigDecimal driverId) {
-		try {
+		
 			LOGGER.debug("in assignDriver :"+orderNumber +" "+driverId);
 			return restService.ajax(appConfig.getJaxURL() + Path.FC_ASSIGN_DRIVER).meta(new JaxMetaInfo())
 					.queryParam(Params.FX_ORDER_NUMBER, orderNumber).meta(new JaxMetaInfo())
@@ -146,10 +131,7 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 					.post()
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel,Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.error("exception in assignDriver : ", e);
-			return JaxSystemError.evaluate(e);
-		} // end of try-catch
+		
 	}
 	
 	/**
@@ -158,16 +140,13 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 	 */
 	@Override
 	public AmxApiResponse<FxOrderReportResponseDto,Object> printOrderSave(FcSaleBranchDispatchRequest fcSaleBranchDispatchRequest) {
-		try {
+		
 			LOGGER.debug("in printOrderSave :"+fcSaleBranchDispatchRequest);
 			return restService.ajax(appConfig.getJaxURL() + Path.FC_PRINT_ORDER_SAVE).meta(new JaxMetaInfo())
 					.post(fcSaleBranchDispatchRequest)
 					.as(new ParameterizedTypeReference<AmxApiResponse<FxOrderReportResponseDto,Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.error("exception in printOrderSave : ", e);
-			return JaxSystemError.evaluate(e);
-		} // end of try-catch
+		
 	}
 	
 	/**
@@ -176,7 +155,7 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 	 */
 	@Override
 	public AmxApiResponse<BoolRespModel,Object> acceptOrderLock(BigDecimal orderNumber,BigDecimal orderYear) {
-		try {
+		
 			LOGGER.debug("in acceptOrderLock :"+orderNumber +" "+orderYear);
 			return restService.ajax(appConfig.getJaxURL() + Path.FC_ACCEPT_ORDER_LOCK).meta(new JaxMetaInfo())
 					.queryParam(Params.FX_ORDER_NUMBER, orderNumber).meta(new JaxMetaInfo())
@@ -184,10 +163,7 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 					.post()
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel,Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.error("exception in acceptOrderLock : ", e);
-			return JaxSystemError.evaluate(e);
-		} // end of try-catch
+		
 	}
 	
 	/**
@@ -196,7 +172,7 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 	 */
 	@Override
 	public AmxApiResponse<BoolRespModel,Object> releaseOrderLock(BigDecimal orderNumber,BigDecimal orderYear) {
-		try {
+		
 			LOGGER.debug("in releaseOrderLock :"+orderNumber +" "+orderYear);
 			return restService.ajax(appConfig.getJaxURL() + Path.FC_RELEASE_ORDER_LOCK).meta(new JaxMetaInfo())
 					.queryParam(Params.FX_ORDER_NUMBER, orderNumber).meta(new JaxMetaInfo())
@@ -204,10 +180,7 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 					.post()
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel,Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.error("exception in releaseOrderLock : ", e);
-			return JaxSystemError.evaluate(e);
-		} // end of try-catch
+		
 	}
 	
 	/**
@@ -216,7 +189,7 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 	 */
 	@Override
 	public AmxApiResponse<BoolRespModel,Object> dispatchOrder(BigDecimal orderNumber,BigDecimal orderYear) {
-		try {
+		
 			LOGGER.debug("in dispatchOrder :"+orderNumber +" "+orderYear);
 			return restService.ajax(appConfig.getJaxURL() + Path.FC_DISPATCH_ORDER).meta(new JaxMetaInfo())
 					.queryParam(Params.FX_ORDER_NUMBER, orderNumber).meta(new JaxMetaInfo())
@@ -224,10 +197,7 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 					.post()
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel,Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.error("exception in dispatchOrder : ", e);
-			return JaxSystemError.evaluate(e);
-		} // end of try-catch
+		
 	}
 	
 	/**
@@ -236,7 +206,7 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 	 */
 	@Override
 	public AmxApiResponse<BoolRespModel,Object> acknowledgeDrive(BigDecimal orderNumber,BigDecimal orderYear) {
-		try {
+		
 			LOGGER.debug("in acknowledgeDrive :"+orderNumber +" "+orderYear);
 			return restService.ajax(appConfig.getJaxURL() + Path.FC_ACKNOWLEDGE_DRIVE).meta(new JaxMetaInfo())
 					.queryParam(Params.FX_ORDER_NUMBER, orderNumber).meta(new JaxMetaInfo())
@@ -244,10 +214,7 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 					.post()
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel,Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.error("exception in acknowledgeDrive : ", e);
-			return JaxSystemError.evaluate(e);
-		} // end of try-catch
+		
 	}
 	
 	/**
@@ -256,7 +223,7 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 	 */
 	@Override
 	public AmxApiResponse<BoolRespModel,Object> returnAcknowledge(BigDecimal orderNumber,BigDecimal orderYear) {
-		try {
+		
 			LOGGER.debug("in returnAcknowledge :"+orderNumber +" "+orderYear);
 			return restService.ajax(appConfig.getJaxURL() + Path.FC_RETURN_ACKNOWLEDGE).meta(new JaxMetaInfo())
 					.queryParam(Params.FX_ORDER_NUMBER, orderNumber).meta(new JaxMetaInfo())
@@ -264,10 +231,7 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 					.post()
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel,Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.error("exception in returnAcknowledge : ", e);
-			return JaxSystemError.evaluate(e);
-		} // end of try-catch
+		
 	}
 	
 	/**
@@ -276,7 +240,7 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 	 */
 	@Override
 	public AmxApiResponse<BoolRespModel,Object> acceptCancellation(BigDecimal orderNumber,BigDecimal orderYear) {
-		try {
+		
 			LOGGER.debug("in acceptCancellation :"+orderNumber +" "+orderYear);
 			return restService.ajax(appConfig.getJaxURL() + Path.FC_ACCEPT_CANCELLATION).meta(new JaxMetaInfo())
 					.queryParam(Params.FX_ORDER_NUMBER, orderNumber).meta(new JaxMetaInfo())
@@ -284,10 +248,7 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 					.post()
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel,Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.error("exception in acceptCancellation : ", e);
-			return JaxSystemError.evaluate(e);
-		} // end of try-catch
+		
 	}
 	
 	/**
@@ -296,7 +257,7 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 	 */
 	@Override
 	public AmxApiResponse<FxOrderReportResponseDto,Object> reprintOrder(BigDecimal orderNumber,BigDecimal orderYear) {
-		try {
+		
 			LOGGER.debug("in reprintOrder :"+orderNumber +" "+orderYear);
 			return restService.ajax(appConfig.getJaxURL() + Path.FC_REPRINT_ORDER).meta(new JaxMetaInfo())
 					.queryParam(Params.FX_ORDER_NUMBER, orderNumber).meta(new JaxMetaInfo())
@@ -304,24 +265,18 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 					.get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<FxOrderReportResponseDto,Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.error("exception in reprintOrder : ", e);
-			return JaxSystemError.evaluate(e);
-		} // end of try-catch
+		
 	}
 
 	@Override
 	public AmxApiResponse<FxOrderTransactionHistroyDto, Object> searchOrder(FcDeliveryBranchOrderSearchRequest fcDeliveryBranchOrderSearchRequest) {
-		try {
+		
 			LOGGER.debug("in searchOrder :"+fcDeliveryBranchOrderSearchRequest);
 			return restService.ajax(appConfig.getJaxURL() + Path.FC_SEARCH_ORDER).meta(new JaxMetaInfo())
 					.post(fcDeliveryBranchOrderSearchRequest)
 					.as(new ParameterizedTypeReference<AmxApiResponse<FxOrderTransactionHistroyDto,Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.error("exception in SearchOrder : ", e);
-			return JaxSystemError.evaluate(e);
-		}
+		
 	}
 	
 	
@@ -357,32 +312,24 @@ public class FxOrderBranchClient implements IFxBranchOrderService {
 	
 	public AmxApiResponse<CustomerRatingDTO, ?> inquirefxOrderCustomerRating(BigDecimal deliveryDetailSeqId, String product) 
 	{
-		try {
-
+	
 			return restService.ajax(appConfig.getJaxURL()).path(Path.FC_CUSTOMER_RATING).meta(new JaxMetaInfo()).post()
 					.queryParam(Params.FX_DELIVERY_SEQ_ID, deliveryDetailSeqId).queryParam(Params.FX_PRODUCT, product)
 					.post().as(new ParameterizedTypeReference<AmxApiResponse<CustomerRatingDTO, ?>>() {
 					});
-		} catch (Exception ae) {
-
-			LOGGER.error("exception in Inquire customer rating : ", ae);
-			return JaxSystemError.evaluate(ae);
-		}
+		
 	}
 	
 
 	@Override
 	public AmxApiResponse<FcSaleOrderManagementDTO, Object> searchOrderByDates(FcSaleOrderManagementDatesRequest fcSaleDates) {
-		try {
+		
 			LOGGER.debug("in searchOrderByDates :");
 			return restService.ajax(appConfig.getJaxURL() + Path.FC_SEARCH_ORDER_BY_DATES).meta(new JaxMetaInfo())
 					.post(fcSaleDates)
 					.as(new ParameterizedTypeReference<AmxApiResponse<FcSaleOrderManagementDTO, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.error("exception in searchOrderByDates : ", e);
-			return JaxSystemError.evaluate(e);
-		} // end of try-catch
+		
 	}
 
 }

@@ -182,7 +182,7 @@ public class FxOrderPaymentManager {
 					}
 
 				} else {
-					logger.error("paymentCapture final save  finalSaveAll method :" + mapResopnseObject.toString());
+					logger.debug("paymentCapture final save  finalSaveAll method :" + mapResopnseObject.toString());
 					throw new GlobalException(JaxError.PAYMENT_UPDATION_FAILED,
 							"Invalid collection document number /year");
 				}
@@ -196,10 +196,10 @@ public class FxOrderPaymentManager {
 
 			}
 		} catch (GlobalException e) {
-			logger.error("createFcSaleReceiptApplication", e.getErrorMessage() + "" + e.getErrorKey());
+			logger.debug("createFcSaleReceiptApplication", e.getErrorMessage() + "" + e.getErrorKey());
 			throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
 		} catch (Exception e) {
-			logger.error("try--catch block paymentCapture :" + e.getMessage());
+			logger.debug("try--catch block paymentCapture :" + e.getMessage());
 			throw new GlobalException(JaxError.PAYMENT_UPDATION_FAILED, "catch Payment capture failed");
 		}
 		return paymentResponse;
@@ -401,11 +401,11 @@ public class FxOrderPaymentManager {
 				}
 
 			} else {
-				logger.error("save saveCollection listOfRecAppl is empty :");
+				logger.debug("save saveCollection listOfRecAppl is empty :");
 				throw new GlobalException(JaxError.NO_RECORD_FOUND, "NO record found");
 			}
 		} catch (GlobalException e) {
-			logger.error("createFcSaleReceiptApplication", e.getErrorMessage() + "" + e.getErrorKey());
+			logger.debug("createFcSaleReceiptApplication", e.getErrorMessage() + "" + e.getErrorKey());
 			throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -470,7 +470,7 @@ public class FxOrderPaymentManager {
 			collectDetail.setPayId(paymentResponse.getPaymentId());
 			collectDetail.setKnetReceiptDateTime(new SimpleDateFormat("dd/MM/YYYY hh:mm").format(new Date()));
 		} catch (GlobalException e) {
-			logger.error("createFcSaleReceiptApplication", e.getErrorMessage() + "" + e.getErrorKey());
+			logger.debug("createFcSaleReceiptApplication", e.getErrorMessage() + "" + e.getErrorKey());
 			throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
 		} catch (Exception e) {
 			e.printStackTrace();

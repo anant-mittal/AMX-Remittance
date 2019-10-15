@@ -217,11 +217,11 @@ public class FcSaleBranchOrderManager {
 			}
 		}catch (GlobalException e) {
 			e.printStackTrace();
-			logger.error("fetchFcSaleOrderManagement ", e.getMessage()+"applId :"+applicationCountryId+" employeeId :"+employeeId);
+			logger.debug("fetchFcSaleOrderManagement ", e.getMessage()+"applId :"+applicationCountryId+" employeeId :"+employeeId);
 			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch (Exception e) {
 			e.printStackTrace();
-			logger.error("fetchFcSaleOrderManagement ", e.getMessage()+"applId :"+applicationCountryId+" employeeId :"+employeeId);
+			logger.debug("fetchFcSaleOrderManagement ", e.getMessage()+"applId :"+applicationCountryId+" employeeId :"+employeeId);
 			throw new GlobalException(e.getMessage());
 		}
 
@@ -234,11 +234,11 @@ public class FcSaleBranchOrderManager {
 			ordermanage = fcSaleBranchDao.checkPendingOrders(applicationCountryId,orderNumber,orderYear);
 		}catch (GlobalException e) {
 			e.printStackTrace();
-			logger.error("fetchFcSaleOrderDetails ", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear);
+			logger.debug("fetchFcSaleOrderDetails ", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear);
 			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch (Exception e) {
 			e.printStackTrace();
-			logger.error("fetchFcSaleOrderDetails ", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear);
+			logger.debug("fetchFcSaleOrderDetails ", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear);
 			throw new GlobalException(e.getMessage());
 		}
 		return ordermanage;
@@ -279,11 +279,11 @@ public class FcSaleBranchOrderManager {
 			}
 		}catch (GlobalException e) {
 			e.printStackTrace();
-			logger.error("fetchUserStockViewByCurrency ", e.getMessage()+" countryId :"+countryId+" userName :"+userName+" countryBranchId :"+countryBranchId+" foreignCurrencyId :"+foreignCurrencyId);
+			logger.debug("fetchUserStockViewByCurrency ", e.getMessage()+" countryId :"+countryId+" userName :"+userName+" countryBranchId :"+countryBranchId+" foreignCurrencyId :"+foreignCurrencyId);
 			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch (Exception e) {
 			e.printStackTrace();
-			logger.error("fetchUserStockViewByCurrency ", e.getMessage()+" countryId :"+countryId+" userName :"+userName+" countryBranchId :"+countryBranchId+" foreignCurrencyId :"+foreignCurrencyId);
+			logger.debug("fetchUserStockViewByCurrency ", e.getMessage()+" countryId :"+countryId+" userName :"+userName+" countryBranchId :"+countryBranchId+" foreignCurrencyId :"+foreignCurrencyId);
 			throw new GlobalException(e.getMessage());
 		}
 
@@ -314,11 +314,11 @@ public class FcSaleBranchOrderManager {
 			}
 		}catch (GlobalException e) {
 			e.printStackTrace();
-			logger.error("fetchUserStockView ", e.getMessage()+" countryId :"+countryId+" userName :"+userName+" countryBranchId :"+countryBranchId);
+			logger.debug("fetchUserStockView ", e.getMessage()+" countryId :"+countryId+" userName :"+userName+" countryBranchId :"+countryBranchId);
 			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch (Exception e) {
 			e.printStackTrace();
-			logger.error("fetchUserStockView ", e.getMessage()+" countryId :"+countryId+" userName :"+userName+" countryBranchId :"+countryBranchId);
+			logger.debug("fetchUserStockView ", e.getMessage()+" countryId :"+countryId+" userName :"+userName+" countryBranchId :"+countryBranchId);
 			throw new GlobalException(e.getMessage());
 		}
 
@@ -357,11 +357,11 @@ public class FcSaleBranchOrderManager {
 			}
 		}catch (GlobalException e) {
 			e.printStackTrace();
-			logger.error("fetchUserStockView ", e.getMessage()+" countryId :"+countryId+" userName :"+userName+" countryBranchId :"+countryBranchId);
+			logger.debug("fetchUserStockView ", e.getMessage()+" countryId :"+countryId+" userName :"+userName+" countryBranchId :"+countryBranchId);
 			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch (Exception e) {
 			e.printStackTrace();
-			logger.error("fetchUserStockView ", e.getMessage()+" countryId :"+countryId+" userName :"+userName+" countryBranchId :"+countryBranchId);
+			logger.debug("fetchUserStockView ", e.getMessage()+" countryId :"+countryId+" userName :"+userName+" countryBranchId :"+countryBranchId);
 			throw new GlobalException(e.getMessage());
 		}
 
@@ -390,11 +390,11 @@ public class FcSaleBranchOrderManager {
 			}
 		}catch (GlobalException e) {
 			e.printStackTrace();
-			logger.error("fetchEmpDriverDetails ", e.getMessage());
+			logger.debug("fetchEmpDriverDetails ", e.getMessage());
 			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch (Exception e) {
 			e.printStackTrace();
-			logger.error("fetchEmpDriverDetails ", e.getMessage());
+			logger.debug("fetchEmpDriverDetails ", e.getMessage());
 			throw new GlobalException(e.getMessage());
 		}
 
@@ -559,11 +559,11 @@ public class FcSaleBranchOrderManager {
 			}
 		}catch (GlobalException e) {
 			e.printStackTrace();
-			logger.error("Error in Exception saving Assign Driver", e.getMessage()+" countryId :"+countryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" driverId :"+driverId);
+			logger.debug("Error in Exception saving Assign Driver", e.getMessage()+" countryId :"+countryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" driverId :"+driverId);
 			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch (Exception e) {
 			e.printStackTrace();
-			logger.error("Error in Exception saving Assign Driver", e.getMessage()+" countryId :"+countryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" driverId :"+driverId);
+			logger.debug("Error in Exception saving Assign Driver", e.getMessage()+" countryId :"+countryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" driverId :"+driverId);
 			throw new GlobalException(e.getMessage());
 		}
 
@@ -584,11 +584,11 @@ public class FcSaleBranchOrderManager {
 			}
 		}catch (GlobalException e) {
 			e.printStackTrace();
-			logger.error("fetchEmployee ", e.getMessage()+" employeeId :"+employeeId);
+			logger.debug("fetchEmployee ", e.getMessage()+" employeeId :"+employeeId);
 			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch (Exception e) {
 			e.printStackTrace();
-			logger.error("fetchEmployee ", e.getMessage()+" employeeId :"+employeeId);
+			logger.debug("fetchEmployee ", e.getMessage()+" employeeId :"+employeeId);
 			throw new GlobalException(e.getMessage());
 		}
 
@@ -870,15 +870,15 @@ public class FcSaleBranchOrderManager {
 			}
 		}catch (GlobalException e) {
 			e.printStackTrace();
-			logger.error("Error in Exception saving print receipt denomination", e.getMessage()+" employeeId :"+employeeId+" countryId :"+countryId+" companyId :"+companyId+" fcSaleBranchDispatchRequest :"+fcSaleBranchDispatchRequest);
+			logger.debug("Error in Exception saving print receipt denomination", e.getMessage()+" employeeId :"+employeeId+" countryId :"+countryId+" companyId :"+companyId+" fcSaleBranchDispatchRequest :"+fcSaleBranchDispatchRequest);
 			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch (ParseException e) {
 			e.printStackTrace();
-			logger.error("Error in ParseException saving print receipt denomination", e.getMessage()+" employeeId :"+employeeId+" countryId :"+countryId+" companyId :"+companyId+" fcSaleBranchDispatchRequest :"+fcSaleBranchDispatchRequest);
+			logger.debug("Error in ParseException saving print receipt denomination", e.getMessage()+" employeeId :"+employeeId+" countryId :"+countryId+" companyId :"+companyId+" fcSaleBranchDispatchRequest :"+fcSaleBranchDispatchRequest);
 			throw new GlobalException(e.getMessage());
 		}catch (Exception e) {
 			e.printStackTrace();
-			logger.error("Error in Exception saving print receipt denomination", e.getMessage()+" employeeId :"+employeeId+" countryId :"+countryId+" companyId :"+companyId+" fcSaleBranchDispatchRequest :"+fcSaleBranchDispatchRequest);
+			logger.debug("Error in Exception saving print receipt denomination", e.getMessage()+" employeeId :"+employeeId+" countryId :"+countryId+" companyId :"+companyId+" fcSaleBranchDispatchRequest :"+fcSaleBranchDispatchRequest);
 			throw new GlobalException(e.getMessage());
 		}
 
@@ -953,11 +953,11 @@ public class FcSaleBranchOrderManager {
 			}
 		}catch (GlobalException e) {
 			e.printStackTrace();
-			logger.error("Error in checkingDenominationDetails", e.getMessage()+" FcSaleBranchDispatchModel :"+currencyAdj+" List<CurrencyWiseDenomination> :"+currencyDenomination.toString());
+			logger.debug("Error in checkingDenominationDetails", e.getMessage()+" FcSaleBranchDispatchModel :"+currencyAdj+" List<CurrencyWiseDenomination> :"+currencyDenomination.toString());
 			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch (Exception e) {
 			e.printStackTrace();
-			logger.error("Error in checkingDenominationDetails", e.getMessage()+" FcSaleBranchDispatchModel :"+currencyAdj+" List<CurrencyWiseDenomination> :"+currencyDenomination.toString());
+			logger.debug("Error in checkingDenominationDetails", e.getMessage()+" FcSaleBranchDispatchModel :"+currencyAdj+" List<CurrencyWiseDenomination> :"+currencyDenomination.toString());
 			throw new GlobalException(e.getMessage());
 		}
 
@@ -971,11 +971,11 @@ public class FcSaleBranchOrderManager {
 			lstCurrencyDenomination = fcSaleBranchDao.fetchCurrencyDenomination(currencyId, ConstantDocument.Yes);
 		}catch (GlobalException e) {
 			e.printStackTrace();
-			logger.error("Error in fetchCurrencyDenominationByCurrencyId", e.getMessage()+" currencyId :"+currencyId);
+			logger.debug("Error in fetchCurrencyDenominationByCurrencyId", e.getMessage()+" currencyId :"+currencyId);
 			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch (Exception e) {
 			e.printStackTrace();
-			logger.error("Error in fetchCurrencyDenominationByCurrencyId", e.getMessage()+" currencyId :"+currencyId);
+			logger.debug("Error in fetchCurrencyDenominationByCurrencyId", e.getMessage()+" currencyId :"+currencyId);
 			throw new GlobalException(e.getMessage());
 		}
 
@@ -1041,11 +1041,11 @@ public class FcSaleBranchOrderManager {
 			}
 		}catch (GlobalException e) {
 			e.printStackTrace();
-			logger.error("Error in acceptOrderLock", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" employeeId :"+employeeId);
+			logger.debug("Error in acceptOrderLock", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" employeeId :"+employeeId);
 			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch (Exception e) {
 			e.printStackTrace();
-			logger.error("Error in acceptOrderLock", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" employeeId :"+employeeId);
+			logger.debug("Error in acceptOrderLock", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" employeeId :"+employeeId);
 			throw new GlobalException(e.getMessage());
 		}
 
@@ -1104,11 +1104,11 @@ public class FcSaleBranchOrderManager {
 			}
 		}catch (GlobalException e) {
 			e.printStackTrace();
-			logger.error("Error in releaseOrderLock", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" employeeId :"+employeeId);
+			logger.debug("Error in releaseOrderLock", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" employeeId :"+employeeId);
 			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch (Exception e) {
 			e.printStackTrace();
-			logger.error("Error in releaseOrderLock", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" employeeId :"+employeeId);
+			logger.debug("Error in releaseOrderLock", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" employeeId :"+employeeId);
 			throw new GlobalException(e.getMessage());
 		}
 
@@ -1163,11 +1163,11 @@ public class FcSaleBranchOrderManager {
 			}
 		}catch (GlobalException e) {
 			e.printStackTrace();
-			logger.error("Error in dispatchOrder", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" employeeId :"+employeeId);
+			logger.debug("Error in dispatchOrder", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" employeeId :"+employeeId);
 			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch (Exception e) {
 			e.printStackTrace();
-			logger.error("Error in dispatchOrder", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" employeeId :"+employeeId);
+			logger.debug("Error in dispatchOrder", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" employeeId :"+employeeId);
 			throw new GlobalException(e.getMessage());
 		}
 
@@ -1242,11 +1242,11 @@ public class FcSaleBranchOrderManager {
 			}
 		}catch (GlobalException e) {
 			e.printStackTrace();
-			logger.error("Error in acknowledgeDriver", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" employeeId :"+employeeId);
+			logger.debug("Error in acknowledgeDriver", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" employeeId :"+employeeId);
 			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch (Exception e) {
 			e.printStackTrace();
-			logger.error("Error in acknowledgeDriver", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" employeeId :"+employeeId);
+			logger.debug("Error in acknowledgeDriver", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" employeeId :"+employeeId);
 			throw new GlobalException(e.getMessage());
 		}
 
@@ -1298,11 +1298,11 @@ public class FcSaleBranchOrderManager {
 			}
 		}catch (GlobalException e) {
 			e.printStackTrace();
-			logger.error("Error in returnAcknowledge", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" employeeId :"+employeeId);
+			logger.debug("Error in returnAcknowledge", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" employeeId :"+employeeId);
 			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch (Exception e) {
 			e.printStackTrace();
-			logger.error("Error in returnAcknowledge", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" employeeId :"+employeeId);
+			logger.debug("Error in returnAcknowledge", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" employeeId :"+employeeId);
 			throw new GlobalException(e.getMessage());
 		}
 
@@ -1354,11 +1354,11 @@ public class FcSaleBranchOrderManager {
 			}
 		}catch (GlobalException e) {
 			e.printStackTrace();
-			logger.error("Error in acceptCancellation", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" employeeId :"+employeeId);
+			logger.debug("Error in acceptCancellation", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" employeeId :"+employeeId);
 			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch (Exception e) {
 			e.printStackTrace();
-			logger.error("Error in acceptCancellation", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" employeeId :"+employeeId);
+			logger.debug("Error in acceptCancellation", e.getMessage()+" applicationCountryId :"+applicationCountryId+" orderNumber :"+orderNumber+" orderYear :"+orderYear+" employeeId :"+employeeId);
 			throw new GlobalException(e.getMessage());
 		}
 
@@ -1870,11 +1870,11 @@ public class FcSaleBranchOrderManager {
 			}
 		}catch (GlobalException e) {
 			e.printStackTrace();
-			logger.error("Error in saveFCStockTransferDetails", e.getMessage()+" deliveryDetailSeqId :"+deliveryDetailSeqId+" driverEmployeeId :"+toEmployeeId+" fromEmployeeId :"+fromEmployeeId);
+			logger.debug("Error in saveFCStockTransferDetails", e.getMessage()+" deliveryDetailSeqId :"+deliveryDetailSeqId+" driverEmployeeId :"+toEmployeeId+" fromEmployeeId :"+fromEmployeeId);
 			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch (Exception e) {
 			e.printStackTrace();
-			logger.error("Error in saveFCStockTransferDetails", e.getMessage()+" deliveryDetailSeqId :"+deliveryDetailSeqId+" driverEmployeeId :"+toEmployeeId+" fromEmployeeId :"+fromEmployeeId);
+			logger.debug("Error in saveFCStockTransferDetails", e.getMessage()+" deliveryDetailSeqId :"+deliveryDetailSeqId+" driverEmployeeId :"+toEmployeeId+" fromEmployeeId :"+fromEmployeeId);
 			throw new GlobalException(e.getMessage());
 		}
 

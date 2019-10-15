@@ -183,11 +183,11 @@ public class FcSaleApplicationTransactionManager extends AbstractModel {
 			responeModel.setDeliveryCharges(getDeliveryChargesFromParameter());
 			return responeModel;
 		} catch (GlobalException e) {
-			logger.error("createFcSaleReceiptApplication", e.getErrorMessage() + "" + e.getErrorKey());
+			logger.debug("createFcSaleReceiptApplication", e.getErrorMessage() + "" + e.getErrorKey());
 			throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.error("saveApplication", e.getMessage());
+			logger.debug("saveApplication", e.getMessage());
 			throw new GlobalException("FC Sale application creation failed");
 		}
 	}
@@ -286,7 +286,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel {
 
 				receiptPaymentAppl.setCustomerName(customerName);
 			} else {
-				logger.error("Customer is not registered" + customerId);
+				logger.debug("Customer is not registered" + customerId);
 				throw new GlobalException(JaxError.CUSTOMER_NOT_REGISTERED_ONLINE, "Customer is not registered");
 			}
 
@@ -382,7 +382,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel {
 			}
 
 		} catch (GlobalException e) {
-			logger.error("createFcSaleReceiptApplication", e.getErrorMessage() + "" + e.getErrorKey());
+			logger.debug("createFcSaleReceiptApplication", e.getErrorMessage() + "" + e.getErrorKey());
 			throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
 		} catch (Exception e) {
 			logger.error("createFcSaleReceiptApplication", e.getMessage());
@@ -445,11 +445,11 @@ public class FcSaleApplicationTransactionManager extends AbstractModel {
 
 			return breakup;
 		} catch (GlobalException e) {
-			logger.error("createFcSaleReceiptApplication", e.getErrorMessage() + "" + e.getErrorKey());
+			logger.debug("createFcSaleReceiptApplication", e.getErrorMessage() + "" + e.getErrorKey());
 			throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.error("getExchangeRateFcSaleOrder", e.getMessage());
+			logger.debug("getExchangeRateFcSaleOrder", e.getMessage());
 			throw new GlobalException(JaxError.FS_APPLIATION_CREATION_FAILED, "FC Sale application exchange");
 		}
 	}

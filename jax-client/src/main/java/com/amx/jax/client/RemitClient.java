@@ -49,7 +49,7 @@ public class RemitClient extends AbstractJaxServiceClient {
 
 	public ApiResponse<TransactionHistroyDTO> getTransactionHistroy(String docfyr, String docNumber, String fromDate,
 			String toDate) {
-		try {
+		
 			LOGGER.info("Transaction Histroy");
 			StringBuilder sb = new StringBuilder();
 			sb.append("?docNumber=").append(docNumber).append("&fromDate=").append(fromDate).append("&toDate=")
@@ -63,12 +63,7 @@ public class RemitClient extends AbstractJaxServiceClient {
 			return restService.ajax(url).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<TransactionHistroyDTO>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in getTransactionHistroy : ", e);
-			throw new JaxSystemError();
-		} // end of try-catch
+		
 
 	}
 
@@ -79,7 +74,7 @@ public class RemitClient extends AbstractJaxServiceClient {
 
 	public ApiResponse<RemittanceReceiptSubreport> report(TransactionHistroyDTO transactionHistroyDTO,
 			Boolean promotion, JaxMetaInfo jaxMetaInfo) {
-		try {
+		
 			BigDecimal countryId = jaxMetaInfo.getCountryId();
 			BigDecimal companyId = jaxMetaInfo.getCompanyId();
 			BigDecimal customerId = jaxMetaInfo.getCustomerId();
@@ -95,12 +90,7 @@ public class RemitClient extends AbstractJaxServiceClient {
 			return restService.ajax(sendOtpUrl).queryParam("promotion", promotion).meta(new JaxMetaInfo())
 					.post(requestEntity).as(new ParameterizedTypeReference<ApiResponse<RemittanceReceiptSubreport>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in report : ", e);
-			throw new JaxSystemError();
-		} // end of try-catch
+		
 	}
 
 	public ApiResponse<RemittanceReceiptSubreport> report(TransactionHistroyDTO transactionHistroyDTO,
@@ -111,7 +101,7 @@ public class RemitClient extends AbstractJaxServiceClient {
 	public ApiResponse<RemittanceTransactionResponsetModel> validateTransaction(
 			RemittanceTransactionRequestModel request)
 			throws RemittanceTransactionValidationException, LimitExeededException {
-		try {
+	
 			BigDecimal countryId = jaxMetaInfo.getCountryId();
 			BigDecimal companyId = jaxMetaInfo.getCompanyId();
 			BigDecimal customerId = jaxMetaInfo.getCustomerId();
@@ -123,49 +113,34 @@ public class RemitClient extends AbstractJaxServiceClient {
 			return restService.ajax(sendOtpUrl).post(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<RemittanceTransactionResponsetModel>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in validateTransaction : ", e);
-			throw new JaxSystemError();
-		} // end of try-catch
+		
 	}
 
 	public ApiResponse<SourceOfIncomeDto> getSourceOfIncome() {
-		try {
+		
 			HttpEntity<SourceOfIncomeDto> requestEntity = new HttpEntity<SourceOfIncomeDto>(getHeader());
 			String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/sourceofincome/";
 			return restService.ajax(url).post(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<SourceOfIncomeDto>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in getSourceOfIncome : ", e);
-			throw new JaxSystemError();
-		} // end of try-catch
+		
 	}
 
 	public ApiResponse<PurposeOfTransactionModel> getPurposeOfTransactions(
 			IRemitTransReqPurpose remittanceTransactionRequestModel) {
-		try {
+	
 			HttpEntity<IRemitTransReqPurpose> requestEntity = new HttpEntity<IRemitTransReqPurpose>(
 					remittanceTransactionRequestModel, getHeader());
 			String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/purpose-of-txn/list/";
 			return restService.ajax(url).post(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<PurposeOfTransactionModel>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in getPurposeOfTransactions : ", e);
-			throw new JaxSystemError();
-		} // end of try-catch
+		
 
 	}
 
 	public ApiResponse<PurposeOfTransactionModel> getPurposeOfTransactions(BigDecimal beneId) {
-		try {
+	
 			RemittanceTransactionRequestModel request = new RemittanceTransactionRequestModel();
 			request.setBeneId(beneId);
 			HttpEntity<RemittanceTransactionRequestModel> requestEntity = new HttpEntity<RemittanceTransactionRequestModel>(
@@ -174,50 +149,33 @@ public class RemitClient extends AbstractJaxServiceClient {
 			return restService.ajax(url).post(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<PurposeOfTransactionModel>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in getPurposeOfTransactions : ", e);
-			throw new JaxSystemError();
-		} // end of try-catch
+		
 
 	}
 
 	public ApiResponse<RemittanceApplicationResponseModel> saveTransaction(
 			RemittanceTransactionRequestModel transactionRequestModel)
 			throws RemittanceTransactionValidationException, LimitExeededException {
-		try {
+		
 			HttpEntity<RemittanceTransactionRequestModel> requestEntity = new HttpEntity<RemittanceTransactionRequestModel>(
 					transactionRequestModel, getHeader());
 			String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/save-application/";
 			return restService.ajax(url).post(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<RemittanceApplicationResponseModel>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in saveTransaction : ", e);
-			throw new JaxSystemError();
-		} // end of try-catch
 
 	}
 	
 	public ApiResponse<RemittanceApplicationResponseModel> saveTransactionV2(
 			RemittanceTransactionDrRequestModel transactionRequestModel)
 			throws RemittanceTransactionValidationException, LimitExeededException {
-		try {
+		
 			HttpEntity<RemittanceTransactionDrRequestModel> requestEntity = new HttpEntity<RemittanceTransactionDrRequestModel>(
 					transactionRequestModel, getHeader());
 			String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/save-application/v2/";
 			return restService.ajax(url).post(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<RemittanceApplicationResponseModel>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in saveTransaction : ", e);
-			throw new JaxSystemError();
-		} // end of try-catch
 
 	}
 	
@@ -234,7 +192,6 @@ public class RemitClient extends AbstractJaxServiceClient {
 	public ApiResponse<PaymentResponseDto> saveRemittanceTransaction(PaymentResponseDto paymentResponseDto)
 			throws RemittanceTransactionValidationException, LimitExeededException {
 
-		try {
 			jaxMetaInfo.setCountryId(paymentResponseDto.getApplicationCountryId());
 			jaxMetaInfo.setCustomerId(paymentResponseDto.getCustomerId());
 			HttpEntity<PaymentResponseDto> requestEntity = new HttpEntity<PaymentResponseDto>(paymentResponseDto,
@@ -245,13 +202,6 @@ public class RemitClient extends AbstractJaxServiceClient {
 			return restService.ajax(url).post(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<PaymentResponseDto>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in saveRemittanceTransaction : ", e);
-			throw new JaxSystemError();
-		} // end of try-catch
-
 	}
 
 	/**
@@ -261,20 +211,14 @@ public class RemitClient extends AbstractJaxServiceClient {
 	public ApiResponse<RemittanceTransactionStatusResponseModel> fetchTransactionDetails(
 			RemittanceTransactionStatusRequestModel request, Boolean promotion)
 			throws RemittanceTransactionValidationException, LimitExeededException {
-		try {
+	
 			HttpEntity<RemittanceTransactionStatusRequestModel> requestEntity = new HttpEntity<RemittanceTransactionStatusRequestModel>(
 					request, getHeader());
 			String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/status/";
 			return restService.ajax(url).queryParam("promotion", promotion).post(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<RemittanceTransactionStatusResponseModel>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in fetchTransactionDetails : ", e);
-			throw new JaxSystemError();
-		} // end of try-catch
-
+		
 	}
 
 	/**
@@ -289,7 +233,7 @@ public class RemitClient extends AbstractJaxServiceClient {
 	public ApiResponse<PaymentResponseDto> savePaymentId(PaymentResponseDto paymentResponseDto)
 			throws RemittanceTransactionValidationException, LimitExeededException {
 
-		try {
+		
 			jaxMetaInfo.setCountryId(paymentResponseDto.getApplicationCountryId());
 			jaxMetaInfo.setCustomerId(paymentResponseDto.getCustomerId());
 			HttpEntity<PaymentResponseDto> requestEntity = new HttpEntity<PaymentResponseDto>(paymentResponseDto,
@@ -300,19 +244,14 @@ public class RemitClient extends AbstractJaxServiceClient {
 			return restService.ajax(url).post(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<PaymentResponseDto>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in savePaymentId : ", e);
-			throw new JaxSystemError();
-		} // end of try-catch
+		
 
 	}
 
 	public AmxApiResponse<CustomerRatingDTO, ?> saveCustomerRating(CustomerRatingDTO customerRatingDTO,Products prodType)
 			throws RemittanceTransactionValidationException, LimitExeededException {
 
-		try {
+		
 			customerRatingDTO.setProdType(prodType);
 			
 			HttpEntity<CustomerRatingDTO> requestEntity = new HttpEntity<CustomerRatingDTO>(customerRatingDTO,
@@ -321,12 +260,7 @@ public class RemitClient extends AbstractJaxServiceClient {
 			String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/save-customer-rating/";
 			LOGGER.info(" Calling customer rating :" + customerRatingDTO.toString());
 			return restService.ajax(url).post(requestEntity).asApiResponse(CustomerRatingDTO.class);
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in customer rating : ", e);
-			throw new JaxSystemError();
-		} // end of try-catch
+		
 
 	}
 	
@@ -334,27 +268,20 @@ public class RemitClient extends AbstractJaxServiceClient {
 	public AmxApiResponse<CustomerRatingDTO, ?> saveFxorderCustomerRating(CustomerRatingDTO customerRatingDTO)
 			throws RemittanceTransactionValidationException, LimitExeededException {
 
-		try {
+		
 			HttpEntity<CustomerRatingDTO> requestEntity = new HttpEntity<CustomerRatingDTO>(customerRatingDTO,
 					getHeader());
 
 			String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/save-fxorder-customer-rating/";
 			LOGGER.info(" Calling customer rating :" + customerRatingDTO.toString());
 			return restService.ajax(url).post(requestEntity).asApiResponse(CustomerRatingDTO.class);
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in customer rating : ", e);
-			throw new JaxSystemError();
-		} // end of try-catch
+		
 
 	}
 	
 	public AmxApiResponse<CustomerRatingDTO, ?> inquireCustomerRating(BigDecimal remittanceTrnxId, String product)
 			throws RemittanceTransactionValidationException, LimitExeededException {
-
-		try {
-					
+	
 			CustomerRatingDTO request = new CustomerRatingDTO();
 			request.setRemittanceTransactionId(remittanceTrnxId);
 			request.setProducttype(product);
@@ -365,19 +292,14 @@ public class RemitClient extends AbstractJaxServiceClient {
 			
 			return restService.ajax(url).queryParam("remittanceTrnxId", remittanceTrnxId).queryParam("product", product).post(requestEntity)
 					.asApiResponse(CustomerRatingDTO.class);
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in Inquire customer rating : ", e);
-			throw new JaxSystemError();
-		} // end of try-catch
+		
 
 	}
 		
 	public ApiResponse<RemittanceTransactionResponsetModel> calcEquivalentAmount(
 			RemittanceTransactionRequestModel request)
 			throws RemittanceTransactionValidationException, LimitExeededException {
-		try {
+	
 			HttpEntity<RemittanceTransactionRequestModel> requestEntity = new HttpEntity<RemittanceTransactionRequestModel>(
 					request, getHeader());
 
@@ -386,12 +308,7 @@ public class RemitClient extends AbstractJaxServiceClient {
 			return restService.ajax(url).post(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<RemittanceTransactionResponsetModel>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in calcEquivalentAmount : ", e);
-			throw new JaxSystemError();
-		} // end of try-catch
+		
 	}
 
 }
