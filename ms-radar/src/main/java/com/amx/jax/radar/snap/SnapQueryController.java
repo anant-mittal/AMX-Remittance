@@ -114,7 +114,7 @@ public class SnapQueryController {
 				if (level < 0)
 					break;
 				PivotTable table = new PivotTable(
-						pivot.get("rows"), pivot.get("cols"),
+						pivot.get("rows"),pivot.get("cols"),
 						pivot.get("vals"), pivot.get("aggs"), pivot.get("alias"),
 						pivot.get("computed"), pivot.get("noncomputed"));
 				for (Map<String, Object> map : inputBulk) {
@@ -122,6 +122,7 @@ public class SnapQueryController {
 				}
 				table.calculate();
 				inputBulk = table.toBulk();
+				//break;
 			}
 			x.toMap().put("bulk", inputBulk);
 			x.removeAggregations();

@@ -33,6 +33,11 @@
                     "field": "logmap.cust.id"
                   }
                 },
+                "tCount": {
+                  "cardinality": {
+                    "field": "traceid.keyword"
+                  }
+                },
                 "branchName": {
                   "top_hits": {
                     "docvalue_fields": [
@@ -148,12 +153,14 @@
   	{
 	 "rows" : ["custId", "contactType"],
 	 "cols" : ["eventType"],
-	 "vals" : ["any areaId", "any branchName", "any branchUser", "ucount custId AS uCount", "count * AS total"]
+	 "vals" : ["any areaId", "any branchName", "any branchUser", "ucount custId AS uCount", "sum tCount AS total"]
   	},
   	{
 	 "rows" : ["areaId_CONTACT_VERF_INIT:DONE AS areaId DEFAULT -", "branchName_CONTACT_VERF_INIT:DONE AS branchName DEFAULT -","branchUser_CONTACT_VERF_INIT:DONE AS branchUser DEFAULT SYSTEM"],
 	 "cols" : ["contactType"],
-	 "vals" : ["sum uCount_CONTACT_VERF_INIT:DONE AS verification", "sum uCount_CONTACT_VERF_COMPLETE:DONE AS Confirmed"]
+	 "vals" : ["sum uCount_CONTACT_VERF_INIT:DONE AS verification", "sum uCount_CONTACT_VERF_COMPLETE:DONE AS Confirmed",
+	 		"sum total_CONTACT_VERF_INIT:DONE AS Tverification", "sum total_CONTACT_VERF_COMPLETE:DONE AS TConfirmed"
+	  ]
   	}
   ]
 }

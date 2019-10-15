@@ -33,6 +33,7 @@ public class SnapConstants {
 		BUGZ_STORIES("bugz-stories", SnapIndexName.ALL),
 
 		RPT("rpt", SnapIndexName.TRANX),
+		RPT2("rpt2", SnapIndexName.TRANX),
 		;
 
 		String file;
@@ -83,5 +84,6 @@ public class SnapConstants {
 		static {
 			RPT.setQueryParams("q:val");
 		}
+
 	}
 }
