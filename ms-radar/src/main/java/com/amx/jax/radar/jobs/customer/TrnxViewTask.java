@@ -38,11 +38,13 @@ import com.amx.utils.TimeUtils;
 @ConditionalOnExpression(RadarConfig.CE_TRNX_SYNC_AND_ES)
 public class TrnxViewTask extends AbstractDBSyncTask {
 
+	private static final int REV_INTERVAL_DAYS = 2;
+	private static final int FWD_INTERVAL_DAYS = 2;
 	private static final Logger LOGGER = LoggerService.getLogger(TrnxViewTask.class);
 	private static final String TIME_TRACK_KEY = "lastUpdateDate";
 	private static final int PAGE_SIZE = 5000;
 
-	long intervalDays = 2;
+	long intervalDays = FWD_INTERVAL_DAYS;
 	
 	@Autowired
 	RadarConfig radarConfig;
@@ -145,7 +147,7 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 			return;
 		}
 
-		Long lastUpdateDateNowLimit = lastUpdateDateNow - (10 * AmxCurConstants.INTERVAL_DAYS);
+		Long lastUpdateDateNowLimit = lastUpdateDateNow - (REV_INTERVAL_DAYS * AmxCurConstants.INTERVAL_DAYS);
 
 		String dateString = GridConstants.GRID_TIME_FORMATTER_JAVA.format(new Date(lastUpdateDateNow));
 		String dateStringLimit = GridConstants.GRID_TIME_FORMATTER_JAVA
