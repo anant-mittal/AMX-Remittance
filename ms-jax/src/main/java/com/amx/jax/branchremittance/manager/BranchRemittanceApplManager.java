@@ -547,26 +547,15 @@ public class BranchRemittanceApplManager {
 			remittanceApplication.setApplInd(ConstantDocument.COUNTER);
 			remittanceApplication.setWuIpAddress(metaData.getDeviceIp());
 			remittanceApplication.setInstruction("URGENT");
-			//if(JaxUtil.isNullZeroBigDecimalCheck(remittanceApplication.getLocalCommisionAmount())) {
-			
-			if(!StringUtils.isBlank(dynamicRoutingPricingResponse.getDiscountOnComissionFlag()) 
-			&& dynamicRoutingPricingResponse.getDiscountOnComissionFlag().equalsIgnoreCase(ConstantDocument.Yes)) {
 			
 			remitApplManager.setFurtherInstruction(remittanceApplication,applRequestModel.getAdditionalFields());
 			
-			/*
-			 * if(applRequestModel.getAdditionalFields()!=null &&
-			 * applRequestModel.getAdditionalFields().get(JaxDynamicField.INSTRUCTION)!=
-			 * null) { //INSTRUCTION
-			 * remittanceApplication.setInstruction(applRequestModel.getAdditionalFields().
-			 * get(JaxDynamicField.INSTRUCTION).toString()); }else {
-			 * remittanceApplication.setInstruction("URGENT"); }
-			 */
 			
-			if(JaxUtil.isNullZeroBigDecimalCheck(remittanceApplication.getLocalCommisionAmount())) {
-				remittanceApplication.setDiscountOnCommission(corporateDiscountManager.corporateDiscount());
+			if(!StringUtils.isBlank(dynamicRoutingPricingResponse.getDiscountOnComissionFlag()) 
+					&& dynamicRoutingPricingResponse.getDiscountOnComissionFlag().equalsIgnoreCase(ConstantDocument.Yes)) {
+						remittanceApplication.setDiscountOnCommission(corporateDiscountManager.corporateDiscount());
 			}
-
+			
 			if(dynamicRoutingPricingResponse.getCostRateLimitReached()!=null) {
 				remittanceApplication.setReachedCostRateLimit(dynamicRoutingPricingResponse.getCostRateLimitReached()==false?"N":"Y");
 			}
@@ -594,7 +583,7 @@ public class BranchRemittanceApplManager {
 
 
 			
-			}
+		
 		}catch(GlobalException e){
 			logger.error("create application", e.getErrorMessage() + "" +e.getErrorKey());
 			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());

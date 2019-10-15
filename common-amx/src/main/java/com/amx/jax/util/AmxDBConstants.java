@@ -13,7 +13,15 @@ public class AmxDBConstants {
 	public static final String Compliance = "C";
 
 	public static enum Status {
-		Y, N, D, U, B, C, V
+		Y, N, 
+		/**
+		 * DELETED or DEACTIVATED
+		 */
+		D, U, B, C, V, 
+		/**
+		 * EXPIRED
+		 */
+		E
 	}
 
 	// document id
@@ -215,5 +223,7 @@ public class AmxDBConstants {
 	public static final String WU_CANC_REM = "CANC_REMINDER";
 	public static final String WU_CANCELLED = "WU_CANC";
 	
+	public static final String JOB_IN_PROGRESS="P";
+	public static final String JOB_COMPLETED = "C";
 
 }

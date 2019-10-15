@@ -286,6 +286,7 @@ public enum JaxError implements IExceptionEnum {
 	ENTITY_INVALID,
 	USER_ALREADY_ACTIVE,
 	MISSING_CONTACT,
+	ALREADY_VERIFIED_CONTACT,
 	MISSING_OTP_CONTACT,
 	
 	APPL_CREATION_ERROR,
@@ -328,7 +329,10 @@ public enum JaxError implements IExceptionEnum {
 	SINGLE_TRANSACTION_SERVICE_PROVIDER,
 	// Default in last, IMPORTANT:- It should be last
 	JAX_SYSTEM_ERROR,
-	BPI_SETUP_IS_MISSING;
+	BPI_SETUP_IS_MISSING,
+	
+	// Job In Progress Error Key
+	JAX_JOB_IN_PROGRESS;
 	
 	@Deprecated
 	public String getCode() {
