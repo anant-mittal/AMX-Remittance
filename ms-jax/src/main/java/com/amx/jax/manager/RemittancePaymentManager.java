@@ -319,6 +319,7 @@ public class RemittancePaymentManager extends AbstractService{
 					if(!lstPayIdDetails.isEmpty()) {
 						paymentResponse.setErrorText(errorMsg);
 						remittanceApplicationService.updatePayTokenNull(lstPayIdDetails, paymentResponse);
+						fcSaleApplicationDao.updatePaygDetails(null, paymentResponse);
 					}
 				}
 
@@ -345,6 +346,7 @@ public class RemittancePaymentManager extends AbstractService{
 					return response;
 				}
 				remittanceApplicationService.updatePayTokenNull(lstPayIdDetails, paymentResponse);
+				fcSaleApplicationDao.updatePaygDetails(null, paymentResponse);
 				
 			}
 
