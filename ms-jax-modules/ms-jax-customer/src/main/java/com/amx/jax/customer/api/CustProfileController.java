@@ -1,6 +1,5 @@
 package com.amx.jax.customer.api;
 
-
 import java.math.BigDecimal;
 
 import org.slf4j.Logger;
@@ -10,10 +9,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.jax.ICustomerProfileService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.customer.ICustomerProfileService;
 import com.amx.jax.customer.manager.CustomerContactVerificationManager;
 import com.amx.jax.customer.service.JaxCustomerContactVerificationService;
+import com.amx.jax.customer.manager.CustomerPreferenceManager;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerContactVerification;
 import com.amx.jax.dict.ContactType;
@@ -21,11 +22,14 @@ import com.amx.jax.exception.ApiHttpExceptions.ApiHttpArgException;
 import com.amx.jax.exception.ApiHttpExceptions.ApiStatusCodes;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.customer.CustomerContactVerificationDto;
+import com.amx.jax.model.response.customer.CustomerDto;
 import com.amx.jax.postman.PostManService;
+import com.amx.jax.postman.model.Email;
+import com.amx.jax.postman.model.SMS;
+import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.repository.CustomerRepository;
 import com.amx.utils.ArgUtil;
-
-
+import com.amx.utils.EntityDtoUtil;
 
 @RestController
 public class CustProfileController implements ICustomerProfileService {
@@ -34,6 +38,9 @@ public class CustProfileController implements ICustomerProfileService {
 
 	@Autowired
 	private CustomerContactVerificationManager customerContactVerificationManager;
+
+	@Autowired
+	private CustomerPreferenceManager customerPreferenceManager;
 
 	@Autowired
 	CustomerRepository customerRepository;
@@ -68,33 +75,6 @@ public class CustProfileController implements ICustomerProfileService {
 	}
 
 	@Override
-	@RequestMapping(value = ApiPath.CONTACT_LINK_VALIDATE, method = RequestMethod.POST)
-	public AmxApiResponse<CustomerContactVerificationDto, Object> validateVerificationLink(
-			@RequestParam(value = ApiParams.LINK_ID) BigDecimal id) {
-		CustomerContactVerification x = customerContactVerificationManager.getCustomerContactVerification(id);
-		x = customerContactVerificationManager.validate(x);
-		return AmxApiResponse.build(customerContactVerificationManager.convertToDto(x));
-	}
-
-	@Override
-	@RequestMapping(value = ApiPath.CONTACT_LINK_VERIFY_BY_CODE, method = RequestMethod.POST)
-	public AmxApiResponse<CustomerContactVerificationDto, Object> verifyLinkByCode(
-			@RequestParam(value = ApiParams.IDENTITY) String identity,
-			@RequestParam(value = ApiParams.LINK_ID) BigDecimal linkId,
-			@RequestParam(value = ApiParams.VERIFICATION_CODE) String code) {
-		CustomerContactVerification x = customerContactVerificationManager.verifyByCode(identity, linkId, code);
-		return AmxApiResponse.build(customerContactVerificationManager.convertToDto(x));
-		}
-
-	@Override
-	@RequestMapping(value = ApiPath.CONTACT_LINK_VERIFY_BY_CONTACT, method = RequestMethod.POST)
-	public AmxApiResponse<CustomerContactVerificationDto, Object> verifyLinkByContact(@RequestParam(value = ApiParams.IDENTITY) String identity,
-			@RequestParam(value = ApiParams.CONTACT_TYPE) ContactType type, @RequestParam(value = ApiParams.CONTACT) String contact) {
-		CustomerContactVerification x = customerContactVerificationManager.verifyByContact(identity, type, contact);
-		return AmxApiResponse.build(customerContactVerificationManager.convertToDto(x));
-	}
-
-	@Override
 	@RequestMapping(value = ApiPath.CONTACT_LINK_RESEND, method = RequestMethod.POST)
 	public AmxApiResponse<CustomerContactVerificationDto, Object> resendLink(
 			@RequestParam(value = ApiParams.IDENTITY) String identity,
@@ -111,5 +91,43 @@ public class CustProfileController implements ICustomerProfileService {
 		jaxCustomerContactVerificationService.sendVerificationLink(c, newLink);
 		return AmxApiResponse.build(customerContactVerificationManager.convertToDto(newLink));
 	}
+
+	@Override
+	@RequestMapping(value = ApiPath.CONTACT_LINK_VALIDATE, method = RequestMethod.POST)
+	public AmxApiResponse<CustomerContactVerificationDto, Object> validateVerificationLink(
+			@RequestParam(value = ApiParams.LINK_ID) BigDecimal id) {
+		CustomerContactVerification x = customerContactVerificationManager.getCustomerContactVerification(id);
+		x = customerContactVerificationManager.validate(x);
+		return AmxApiResponse.build(customerContactVerificationManager.convertToDto(x));
+	}
+
+	@Override
+	@RequestMapping(value = ApiPath.CONTACT_LINK_VERIFY_BY_CODE, method = RequestMethod.POST)
+	public AmxApiResponse<CustomerContactVerificationDto, Object> verifyLinkByCode(
+			@RequestParam(value = ApiParams.IDENTITY) String identity,
+			@RequestParam(value = ApiParams.LINK_ID) BigDecimal linkId,
+			@RequestParam(value = ApiParams.VERIFICATION_CODE) String code) {
+		CustomerContactVerification x = customerContactVerificationManager.verifyByCode(identity, linkId, code);
+		return AmxApiResponse.build(customerContactVerificationManager.convertToDto(x));
+	}
+
+	@Override
+	@RequestMapping(value = ApiPath.CONTACT_LINK_VERIFY_BY_CONTACT, method = RequestMethod.POST)
+	public AmxApiResponse<CustomerContactVerificationDto, Object> verifyLinkByContact(
+			@RequestParam(value = ApiParams.IDENTITY) String identity,
+			@RequestParam(value = ApiParams.CONTACT_TYPE) ContactType type,
+			@RequestParam(value = ApiParams.CONTACT) String contact) {
+		CustomerContactVerification x = customerContactVerificationManager.verifyByContact(identity, type, contact);
+		return AmxApiResponse.build(customerContactVerificationManager.convertToDto(x));
+	}
+
+	@Override
+	@RequestMapping(value = ApiPath.CUSTOMER_ONLINE_APP_LANGUAGE, method = RequestMethod.POST)
+	public AmxApiResponse<String, Object> saveLanguage(@RequestParam(value = ApiParams.CUSTOMER_ID) BigDecimal customerId, 
+			@RequestParam(value = ApiParams.LANGUAGE_ID)BigDecimal languageId) {
+		String status = customerPreferenceManager.saveLanguage(customerId, languageId);
+		return AmxApiResponse.build(status);
+	}
+	
 
 }

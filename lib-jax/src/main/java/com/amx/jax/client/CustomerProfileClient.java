@@ -126,4 +126,21 @@ public class CustomerProfileClient implements ICustomerProfileService {
 		}
 	}
 
+	@Override
+	public AmxApiResponse<String, Object> saveLanguage(BigDecimal customerId, BigDecimal languageId) {
+		try {
+			LOGGER.debug("in save language id : {} {}", customerId,languageId);
+			String url = appConfig.getJaxURL() + ApiPath.CUSTOMER_ONLINE_APP_LANGUAGE;
+			return restService.ajax(url).meta(new JaxMetaInfo())
+					.field(ApiParams.CUSTOMER_ID, customerId)
+					.field(ApiParams.LANGUAGE_ID, languageId)
+					.postForm()
+					.as(new ParameterizedTypeReference<AmxApiResponse<String, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.debug("exception in verifyLinkByContact : ", e);
+			return JaxSystemError.evaluate(e);
+		}
+	}
+
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.def.CacheForSession;
 import com.amx.jax.pricer.dbmodel.ExchangeRateAPRDET;
 import com.amx.jax.pricer.dbmodel.ExchangeRateApprovalDetModelAlt;
 import com.amx.jax.pricer.repository.ExchangeRateApprovalDetRepository;
@@ -72,6 +73,7 @@ public class ExchangeRateDao {
 		return repo.getUniqueSellRatesMinForRoutingBank(currencyId, applicationCountryId, routingBankId);
 	}
 
+	@CacheForSession
 	public List<ExchangeRateAPRDET> getUniqueSellRatesForRoutingBanks(BigDecimal currencyId, BigDecimal countryId,
 			BigDecimal applicationCountryId, List<BigDecimal> routingBankIds, List<BigDecimal> serviceIds) {
 

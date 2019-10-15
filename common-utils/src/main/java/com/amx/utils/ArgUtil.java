@@ -522,22 +522,22 @@ public final class ArgUtil {
 	 * @param defaultValue the default value
 	 * @return the enum
 	 */
-	public static Enum parseAsEnum(Object value, Enum defaultValue) {
+	public static <T extends Enum> Enum parseAsEnum(Object value, Enum defaultValue,Class<T> enumType) {
 		String enumString = parseAsString(value);
 		if (enumString == null) {
 			return defaultValue;
 		}
 		String enumStringCaps = enumString.toUpperCase();
-		if (defaultValue instanceof EnumType) {
-			for (Object enumValue : defaultValue.getClass().getEnumConstants()) {
+		if (EnumType.class.isAssignableFrom(enumType) || defaultValue instanceof EnumType) {
+			for (Object enumValue : enumType.getEnumConstants()) {
 				if (enumString.equals(((EnumType) enumValue).name())
 						|| enumStringCaps.equals(((EnumType) enumValue).name())) {
 					return (Enum) enumValue;
 				}
 			}
 			return defaultValue;
-		} else if (defaultValue instanceof EnumById) {
-			for (Object enumValue : defaultValue.getClass().getEnumConstants()) {
+		} else if (EnumById.class.isAssignableFrom(enumType) || defaultValue instanceof EnumById) {
+			for (Object enumValue : enumType.getEnumConstants()) {
 				if (enumString.equals(((EnumById) enumValue).getId())
 						|| enumStringCaps.equals(((EnumById) enumValue).getId())) {
 					return (Enum) enumValue;
@@ -546,14 +546,18 @@ public final class ArgUtil {
 			return defaultValue;
 		}
 		try {
-			return Enum.valueOf(defaultValue.getClass(), enumString);
+			return Enum.valueOf(enumType, enumString);
 		} catch (IllegalArgumentException e) {
 			try {
-				return Enum.valueOf(defaultValue.getClass(), enumStringCaps);
+				return Enum.valueOf(enumType, enumStringCaps);
 			} catch (IllegalArgumentException e2) {
 				return defaultValue;
 			}
 		}
+	}
+	
+	public static Enum parseAsEnum(Object value, Enum defaultValue) {
+		return parseAsEnum(value,defaultValue,defaultValue.getClass());
 	}
 
 	public static Enum parseAsEnum(Object value, Enum nullValue, Enum defaultValue) {

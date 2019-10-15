@@ -4,11 +4,13 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Date;
 
+import com.amx.jax.dict.Language;
 import com.amx.jax.model.AbstractModel;
-
+import com.amx.utils.ArgUtil;
 
 public class PersonInfo extends AbstractModel implements Cloneable {
 
+	private static final long serialVersionUID = 5896377663759307087L;
 	private String title;
 	private String firstName;
 	private String middleName;
@@ -31,7 +33,10 @@ public class PersonInfo extends AbstractModel implements Cloneable {
 	private String referallId;
 	private String emailVerified;
 	private BigDecimal identityTypeId;
-	
+	private BigDecimal languageId;
+
+	private Language lang;
+
 	public String getWhatsappPrefixCode() {
 		return whatsappPrefixCode;
 	}
@@ -225,6 +230,25 @@ public class PersonInfo extends AbstractModel implements Cloneable {
 	public void setEmailVerified(String emailVerified) {
 		this.emailVerified = emailVerified;
 	}
+	
+	public BigDecimal getLanguageId() {
+		return languageId;
+	}
+	
+	public void setLanguageId(BigDecimal languageId) {
+		this.languageId = languageId;
+	}
+
+	public Language getLang() {
+		if (ArgUtil.isEmpty(this.lang)) {
+			this.lang = Language.fromId(this.languageId);
+		}
+		return lang;
+	}
+
+	public void setLang(Language lang) {
+		this.lang = lang;
+	}
 
 	public BigDecimal getIdentityTypeId() {
 		return identityTypeId;
@@ -233,6 +257,4 @@ public class PersonInfo extends AbstractModel implements Cloneable {
 	public void setIdentityTypeId(BigDecimal identityTypeId) {
 		this.identityTypeId = identityTypeId;
 	}
-
-	
 }

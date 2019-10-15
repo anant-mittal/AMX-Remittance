@@ -1,4 +1,4 @@
-package com.jax.amxlib.exception.jax;
+package com.jax.amxlib.exception.jax.deprectd;
 
 import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.jax.error.JaxError;

@@ -119,7 +119,7 @@ public class RemitPriceManager {
 	 * 
 	 * @param requestDto
 	 */
-	public void computeBaseSellRates(PricingRequestDTO requestDto) {
+	public void computeGrossSellRates(PricingRequestDTO requestDto) {
 
 		List<ExchangeRateDetails> bankWiseRates = new ArrayList<ExchangeRateDetails>();
 		exchRateAndRoutingTransientDataCache.setSellRateDetails(bankWiseRates);
@@ -159,6 +159,10 @@ public class RemitPriceManager {
 				throw new PricerServiceException(PricerServiceError.MISSING_VALID_EXCHANGE_RATES,
 						"Missing Valid Exchange rates : None Found");
 			}
+
+			// Get the rack Rates for the respective Banks.
+			Map<BigDecimal, ExchangeRateAPRDET> rackRateMap = getRackRates(requestDto.getForeignCurrencyId(),
+					requestDto.getForeignCountryId(), requestDto.getLocalCountryId(), validBankIds);
 
 			for (ExchangeRateAPRDET exchangeRate : exchangeRateMap.values()) {
 
@@ -206,6 +210,22 @@ public class RemitPriceManager {
 					if (adjustedFcCurBal != null
 							&& adjustedFcCurBal.compareTo(exRateDetails.getSellRateBase().getConvertedFCAmount()) > 0) {
 						exRateDetails.setFundedIntermediary(true);
+					}
+				}
+
+				// Set the rack Rate
+				if (rackRateMap.containsKey(bankDetailsDto.getBankId())) {
+					ExchangeRateAPRDET rackRate = rackRateMap.get(bankDetailsDto.getBankId());
+					BigDecimal grossRate = exRateDetails.getSellRateBase().getInverseRate();
+
+					// Check if gross Rate is still lower than the computed Rack Rate
+					// This won't happen only in the case where all the branches are operating
+					// to provide the rate at lower than the Cost+Margin Rate.
+
+					if (grossRate != null && grossRate.compareTo(rackRate.getSellRateMax()) < 0) {
+						exRateDetails.setRackExchangeRate(rackRate.getSellRateMax());
+					} else {
+						exRateDetails.setRackExchangeRate(grossRate);
 					}
 				}
 
@@ -271,6 +291,10 @@ public class RemitPriceManager {
 						"Missing Valid Exchange rates : None Found");
 			}
 
+			// Get the rack Rates for the respective Banks.
+			Map<BigDecimal, ExchangeRateAPRDET> rackRateMap = getRackRates(requestDto.getForeignCurrencyId(),
+					requestDto.getForeignCountryId(), requestDto.getLocalCountryId(), validBankIds);
+
 			for (ExchangeRateApprovalDetModelAlt exchangeRate : bankExchangeRates) {
 
 				BankDetailsDTO bankDetailsDTO;
@@ -327,6 +351,24 @@ public class RemitPriceManager {
 					if (adjustedFcCurBal != null
 							&& adjustedFcCurBal.compareTo(exRateDetails.getSellRateBase().getConvertedFCAmount()) > 0) {
 						exRateDetails.setFundedIntermediary(true);
+					}
+
+				}
+
+				// Set the rack Rate
+				if (rackRateMap.containsKey(rBankId)) {
+					ExchangeRateAPRDET rackRate = rackRateMap.get(rBankId);
+
+					BigDecimal grossRate = exRateDetails.getSellRateBase().getInverseRate();
+
+					// Check if gross Rate is still lower than the computed Rack Rate
+					// This won't happen only in the case where all the branches are operating
+					// to provide the rate at lower than the Cost+Margin Rate.
+
+					if (grossRate != null && grossRate.compareTo(rackRate.getSellRateMax()) < 0) {
+						exRateDetails.setRackExchangeRate(rackRate.getSellRateMax());
+					} else {
+						exRateDetails.setRackExchangeRate(grossRate);
 					}
 
 				}
@@ -864,6 +906,48 @@ public class RemitPriceManager {
 			breakup.setConvertedLCAmount(lcAmount);
 		}
 		return breakup;
+	}
+
+	private Map<BigDecimal, ExchangeRateAPRDET> getRackRates(BigDecimal currencyId, BigDecimal foreignCountryId,
+			BigDecimal applicationCountryId, List<BigDecimal> routingBankIds) {
+
+		List<ExchangeRateAPRDET> exchangeRates;
+
+		if (SERVICE_GROUP.CASH.equals(exchRateAndRoutingTransientDataCache.getServiceGroup())) {
+			exchangeRates = exchangeRateDao.getUniqueSellRatesForRoutingBanks(currencyId, foreignCountryId,
+					applicationCountryId, routingBankIds, ValidCashServiceIndicatorIds);
+		} else {
+			// Default Is Bank
+			exchangeRates = exchangeRateDao.getUniqueSellRatesForRoutingBanks(currencyId, foreignCountryId,
+					applicationCountryId, routingBankIds, ValidBankServiceIndicatorIds);
+		}
+
+		Map<BigDecimal, ExchangeRateAPRDET> bankExchangeRateMap = new HashMap<BigDecimal, ExchangeRateAPRDET>();
+
+		for (ExchangeRateAPRDET rate : exchangeRates) {
+
+			BigDecimal bankId = rate.getBankMaster().getBankId();
+
+			System.out.println(" Bank ==>" + rate.getBankMaster().getBankId() + " Rate==>" + rate.getSellRateMax());
+
+			if (bankExchangeRateMap.containsKey(bankId)) {
+
+				ExchangeRateAPRDET ratePrev = bankExchangeRateMap.get(bankId);
+
+				// New Worse Rate Found
+				// Higher than Previous Exchange Bank Rate
+				if (ratePrev.getSellRateMax().compareTo(rate.getSellRateMax()) < 0) {
+					bankExchangeRateMap.put(rate.getBankMaster().getBankId(), rate);
+				}
+
+			} else {
+				bankExchangeRateMap.put(rate.getBankMaster().getBankId(), rate);
+			}
+
+		}
+
+		return bankExchangeRateMap;
+
 	}
 
 }

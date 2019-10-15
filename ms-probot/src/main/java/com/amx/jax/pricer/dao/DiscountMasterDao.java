@@ -21,17 +21,14 @@ public class DiscountMasterDao {
 	}
 
 	public DiscountMaster getByDiscountTypeAndDiscountTypeId(String discType, BigDecimal discTypeId) {
-		// TODO Auto-generated method stub
 		return repository.getByDiscountTypeAndDiscountTypeId(discType, discTypeId);
 	}
 
 	public List<DiscountMaster> getByDiscountTypeAndGroupId(String discType, BigDecimal groupId) {
-		// TODO Auto-generated method stub
 		return repository.getByDiscountTypeAndGroupId(discType, groupId);
 	}
 
 	public DiscountMaster getByDiscountIdAndGroupId(BigDecimal disountId, BigDecimal groupId, String discountType) {
-		// TODO Auto-generated method stub
 		return repository.getByDiscountIdAndGroupId(disountId, groupId, discountType);
 	}
 
