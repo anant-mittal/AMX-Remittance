@@ -39,6 +39,7 @@ function explicitFieldErrors(step) {
 
 function sendData(step) {
 	var selectedMode = $("input[name='cardtype']:checked").val();
+	var $loginForm = $(".login-form");
 	// let noErrors = explicitFieldErrors(step);
 	// if(!noErrors) return;
 	var reqObj;
@@ -65,6 +66,7 @@ function sendData(step) {
 		}
 	}
 
+	$loginForm.addClass("loading-inline");
 	$.ajax({
 		type : "post",
 		contentType : "application/json",
@@ -78,6 +80,7 @@ function sendData(step) {
 	}).done(
 			function(resp) {
 				console.log(resp);
+				$loginForm.removeClass("loading-inline");
 				if (resp.redirectUrl) {
 					window.location.href = resp.redirectUrl;
 				}
@@ -91,6 +94,7 @@ function sendData(step) {
 				}
 			}).fail(
 			function(jqXHR, y, z) {
+				$loginForm.removeClass("loading-inline");
 				console.log(jqXHR, y, z);
 				if (step === "CREDS")
 					$("input[name='sec-code']").val(''); // $(".prefix").text("---");

@@ -15,8 +15,8 @@ multitenancy:
       -
         tenantId: KWT2
         url: jdbc:oracle:thin:@192.170.161.99:1521:QEMOS
-        username: QEMOS
-        password: QEMOS
+        username: QJOAMX_USER
+        password: QJOAMX#456
         driverClassName: oracle.jdbc.OracleDriver
       -
         tenantId: BHR

@@ -4,6 +4,7 @@ import static com.amx.amxlib.constant.NotificationConstants.BRANCH_SEARCH;
 import static com.amx.amxlib.constant.NotificationConstants.REG_SUC;
 import static com.amx.amxlib.constant.NotificationConstants.RESP_DATA_KEY;
 import static com.amx.amxlib.constant.NotificationConstants.SERVICE_PROVIDER_RESPONSE;
+import static com.amx.amxlib.constant.NotificationConstants.TRANSACTION_FAIL;
 
 import java.util.List;
 
@@ -322,7 +323,7 @@ public class JaxNotificationService {
 			for (ExEmailNotification emailNot : emailNotification) {
 				String emailid = emailNot.getEmailId();
 				Email email = new Email();
-				email.setSubject(BRANCH_SEARCH);
+				email.setSubject(TRANSACTION_FAIL);
 				email.addTo(emailid);
 				email.setITemplate(TemplatesMX.TRANSACTION_FAILURE);
 				email.setHtml(true);
