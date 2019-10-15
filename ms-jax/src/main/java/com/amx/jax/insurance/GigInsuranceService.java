@@ -316,7 +316,7 @@ public class GigInsuranceService {
 		try {
 			currentAction.setOptOutDateAccount(new SimpleDateFormat("dd/MM/yyyy").parse(DateUtil.getCurrentAccMMYear()));
 		} catch (ParseException e) {
-			log.debug("error in parsedate in optIn function");
+			log.error("error in parsedate in optIn function");
 		}
 		currentAction.setModifiedBy(getCreatedBy());
 		currentAction.setModifiedDate(new Date());
@@ -382,7 +382,7 @@ public class GigInsuranceService {
 			try {
 				newAction.setOptInDateAccount(new SimpleDateFormat("dd/MM/yyyy").parse(DateUtil.getCurrentAccMMYear()));
 			} catch (ParseException e) {
-				log.debug("error in parsedate in optIn function");
+				log.error("error in parsedate in optIn function");
 			}
 			insuranceActionRepository.save(newAction);
 			insuranceDetail.setCurrenctActionId(newAction.getActionId());

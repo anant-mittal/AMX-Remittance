@@ -282,7 +282,7 @@ public class UserService extends AbstractUserService {
 			model.setPersoninfo(personinfo);
 			model.setIdentityId(customer.getIdentityInt());
 		} catch (Exception e) {
-			logger.debug("Exception while populating PersonInfo : ", e);
+			logger.error("Exception while populating PersonInfo : ", e);
 		}
 		return model;
 	}
@@ -1251,7 +1251,7 @@ public class UserService extends AbstractUserService {
 		try {
 			postManService.sendEmailAsync(email);
 		} catch (PostManException e) {
-			logger.debug("error in link fingerprint", e);
+			logger.error("error in link fingerprint", e);
 		}
 	}
 

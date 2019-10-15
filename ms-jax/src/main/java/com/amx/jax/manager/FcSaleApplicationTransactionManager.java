@@ -378,14 +378,14 @@ public class FcSaleApplicationTransactionManager extends AbstractModel {
 			try {
 				receiptPaymentAppl.setAccountMMYYYY(new SimpleDateFormat("dd/MM/yyyy").parse(DateUtil.getCurrentAccMMYear()));
 			} catch (ParseException e) {
-				logger.debug("Error in saving application", e);
+				logger.error("Error in saving application", e);
 			}
 
 		} catch (GlobalException e) {
 			logger.debug("createFcSaleReceiptApplication", e.getErrorMessage() + "" + e.getErrorKey());
 			throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
 		} catch (Exception e) {
-			logger.debug("createFcSaleReceiptApplication", e.getMessage());
+			logger.error("createFcSaleReceiptApplication", e.getMessage());
 		}
 
 		return receiptPaymentAppl;
@@ -480,7 +480,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel {
 			responeModel.setCartDetails(cartListDto);
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.debug("removeitemFromCart ", e.getMessage() + "applId :" + applId);
+			logger.error("removeitemFromCart ", e.getMessage() + "applId :" + applId);
 		}
 		return responeModel;
 
@@ -596,7 +596,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel {
 		try {
 			BeanUtils.copyProperties(dto, cartDetails);
 		} catch (IllegalAccessException | InvocationTargetException e) {
-			logger.debug("convertModel  to convert currency", e);
+			logger.error("convertModel  to convert currency", e);
 		}
 		return dto;
 	}
@@ -697,7 +697,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel {
 		try {
 			BeanUtils.copyProperties(dto, trnxDetails);
 		} catch (IllegalAccessException | InvocationTargetException e) {
-			logger.debug("convertModel  to convert currency", e);
+			logger.error("convertModel  to convert currency", e);
 		}
 		return dto;
 	}

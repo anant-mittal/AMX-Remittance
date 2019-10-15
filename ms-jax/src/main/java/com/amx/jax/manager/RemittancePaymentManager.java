@@ -287,7 +287,7 @@ public class RemittancePaymentManager extends AbstractService{
 							notificationService.sendTransactionNotification(rrsrl.get(0), personinfo);
 						}
 					} catch (Exception e) {
-						logger.debug("error while sending transaction notification", e);
+						logger.error("error while sending transaction notification", e);
 					}
 
 				}else {
@@ -454,7 +454,7 @@ public class RemittancePaymentManager extends AbstractService{
 				}
 			}
 		}else {
-			logger.debug("Service provider api fail to execute : ColDocNo : ", responseDto.getCollectionDocumentNo() + " : ColDocCod : " +responseDto.getCollectionDocumentCode()+"  : ColDocYear : "+responseDto.getCollectionDocumentFYear());
+			logger.error("Service provider api fail to execute : ColDocNo : ", responseDto.getCollectionDocumentNo() + " : ColDocCod : " +responseDto.getCollectionDocumentCode()+"  : ColDocYear : "+responseDto.getCollectionDocumentFYear());
 		}
 	}
 }

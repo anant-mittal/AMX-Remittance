@@ -901,7 +901,7 @@ public class PartnerTransactionManager extends AbstractModel {
 						"Unable to convert Customer Details");
 			}
 		}  catch (Exception e) {
-			logger.debug("Unable to saveServiceProviderXml Exception " +e);
+			logger.error("Unable to saveServiceProviderXml Exception " +e);
 		}
 	}
 
@@ -960,7 +960,7 @@ public class PartnerTransactionManager extends AbstractModel {
 						partnerTransactionDao.saveRemittanceRemarksDeliveryInd(actionInd, responseDescription, remittanceTransactionView.getRemittanceTransactionId());
 						//remittanceTransactionRepository.updateDeliveryIndRemarksBySP(remitTrnxSPDTO.getActionInd(), remitTrnxSPDTO.getResponseDescription(), remittanceTransactionView.getRemittanceTransactionId());
 						if(emailStatus) {
-							logger.debug("Service provider api fail to execute : ColDocNo : ", responseDto.getCollectionDocumentNo() + " : ColDocCod : " +responseDto.getCollectionDocumentCode()+"  : ColDocYear : "+responseDto.getCollectionDocumentFYear());
+							logger.error("Service provider api fail to execute : ColDocNo : ", responseDto.getCollectionDocumentNo() + " : ColDocCod : " +responseDto.getCollectionDocumentCode()+"  : ColDocYear : "+responseDto.getCollectionDocumentFYear());
 							auditService.log(new CActivityEvent(Type.TRANSACTION_CREATED,String.format("%s/%s", responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo())).field("STATUS").to(JaxTransactionStatus.PAYMENT_SUCCESS_SERVICE_PROVIDER_FAIL).result(Result.DONE));
 							sendSrvPrvTranxFailReport(remittanceTransactionView, remitTrnxSPDTO, partnerTransactionId);
 						}else {

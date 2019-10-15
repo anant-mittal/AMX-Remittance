@@ -76,7 +76,7 @@ public class RemittanceProcedureDao {
 			cs.close();
 
 		} catch (Exception e) {
-			LOGGER.debug("Error while calling EX_INSERT_REMITTANCE_ONLINE : ", e);
+			LOGGER.error("Error while calling EX_INSERT_REMITTANCE_ONLINE : ", e);
 		} finally {
 			try {
 				if (connection != null)
@@ -118,13 +118,13 @@ public class RemittanceProcedureDao {
 			cs.close();
 
 		} catch (Exception e) {
-			LOGGER.debug("Error while calling EX_INSERT_EMOS_TRANSFER_LIVE : ", e);
+			LOGGER.error("Error while calling EX_INSERT_EMOS_TRANSFER_LIVE : ", e);
 		} finally {
 			try {
 				if (connection != null)
 					connection.close();
 			} catch (Exception ee) {
-				LOGGER.debug("Error while closing connection. : ", ee);
+				LOGGER.error("Error while closing connection. : ", ee);
 			}
 		}
 		return output;

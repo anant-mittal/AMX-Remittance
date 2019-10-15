@@ -270,7 +270,7 @@ public class MetaService extends AbstractService {
 		try {
 			BeanUtils.copyProperties(dto, cityModel);
 		} catch (IllegalAccessException | InvocationTargetException e) {
-			logger.debug("unable to convert city", e);
+			logger.error("unable to convert city", e);
 		}
 		return dto;
 	}

@@ -86,7 +86,7 @@ public class ConverterFlyingSaucer implements FileConverter {
 				file.setType(Type.PNG);
 			}
 		} catch (DocumentException | IOException e) {
-			LOGGER.debug("Some Error", e);
+			LOGGER.error("Some Error", e);
 		} finally {
 			if (outputStream != null) {
 				try {

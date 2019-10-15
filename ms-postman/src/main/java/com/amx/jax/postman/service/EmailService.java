@@ -143,7 +143,7 @@ public class EmailService {
 		try {
 			emailClone = email.clone();
 		} catch (CloneNotSupportedException e1) {
-			LOGGER.debug("Clonning exception {} Email to {}", email.getTemplate(), Utils.commaConcat(email.getTo()));
+			LOGGER.error("Clonning exception {} Email to {}", email.getTemplate(), Utils.commaConcat(email.getTo()));
 		}
 		try {
 			if (LOGGER.isDebugEnabled()) {

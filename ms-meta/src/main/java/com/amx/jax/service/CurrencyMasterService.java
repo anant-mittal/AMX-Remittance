@@ -151,7 +151,7 @@ public class CurrencyMasterService extends AbstractService {
 		try {
 			BeanUtils.copyProperties(dto, currency);
 		} catch (IllegalAccessException | InvocationTargetException e) {
-			logger.debug("unable to convert currency", e);
+			logger.error("unable to convert currency", e);
 		}
 		return dto;
 	}
@@ -167,7 +167,7 @@ public class CurrencyMasterService extends AbstractService {
 		try {
 			BeanUtils.copyProperties(dto, currency);
 		} catch (IllegalAccessException | InvocationTargetException e) {
-			logger.debug("unable to convert currency", e);
+			logger.error("unable to convert currency", e);
 		}
 		return dto;
 	}

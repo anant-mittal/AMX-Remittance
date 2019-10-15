@@ -409,7 +409,7 @@ public class FxOrderPaymentManager {
 			throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.debug("save collection :" + e.getMessage());
+			logger.error("save collection :" + e.getMessage());
 		}
 
 		return collection;
@@ -474,7 +474,7 @@ public class FxOrderPaymentManager {
 			throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.debug("save collection details :" + e.getMessage());
+			logger.error("save collection details :" + e.getMessage());
 		}
 		return collectDetail;
 	}

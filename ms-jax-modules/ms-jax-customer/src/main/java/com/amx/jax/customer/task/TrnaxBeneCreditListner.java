@@ -298,7 +298,7 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 			postManService.sendEmailAsync(email);
 		} catch (PostManException e) {
 			LOGGER.info("email exception");
-			LOGGER.debug("error in link fingerprint", e);
+			LOGGER.error("error in link fingerprint", e);
 		}
 	}
 

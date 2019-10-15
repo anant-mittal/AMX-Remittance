@@ -147,7 +147,7 @@ public class ApplicationProcedureDao {
 			LOGGER.info("EX_GET_ADDL_BENE_DETAILS Out put Parameters :" + output.toString());
 
 		} catch (DataAccessException e) {
-			LOGGER.debug("error shile getting additional beneficiary details : ", e);
+			LOGGER.error("error shile getting additional beneficiary details : ", e);
 			e.printStackTrace();
 		}
 		if (output.get("P_ERROR_MESSAGE") != null) {
@@ -200,7 +200,7 @@ public class ApplicationProcedureDao {
 			LOGGER.info(OUT_PARAMETERS + output.toString());
 
 		} catch (DataAccessException | SQLException e) {
-			LOGGER.debug("error in generate docNo", e);
+			LOGGER.error("error in generate docNo", e);
 			LOGGER.info(OUT_PARAMETERS + e.getMessage());
 		} finally {
 			DBUtil.closeResources(cs, connection);
@@ -453,7 +453,7 @@ public class ApplicationProcedureDao {
 			LOGGER.info("EX_APPL_ADDL_CHECKS Out put Parameters :" + output.toString());
 
 		} catch (DataAccessException e) {
-			LOGGER.debug(OUT_PARAMETERS, e);
+			LOGGER.error(OUT_PARAMETERS, e);
 		}
 		return output;
 	}
@@ -592,7 +592,7 @@ public class ApplicationProcedureDao {
 			LOGGER.info("EX_P_CHECK_SWIFT_BANK Out put Parameters :" + output.toString());
 
 		} catch (DataAccessException e) {
-			LOGGER.debug(OUT_PARAMETERS, e);
+			LOGGER.error(OUT_PARAMETERS, e);
 		}
 		return output;
 	}
@@ -643,7 +643,7 @@ public class ApplicationProcedureDao {
 			LOGGER.info("EX_INSERT_EMOS_TRANSFER_LIVE Out put Parameters :" + output.toString());
 
 		} catch (DataAccessException e) {
-			LOGGER.debug(OUT_PARAMETERS, e);
+			LOGGER.error(OUT_PARAMETERS, e);
 		}
 		return output;
 	}
@@ -767,7 +767,7 @@ public class ApplicationProcedureDao {
 			LOGGER.info("EX_REMIT_ADDL_INFO Out put Parameters :" + output.toString());
 
 		} catch (DataAccessException e) {
-			LOGGER.info(OUT_PARAMETERS, e);
+			LOGGER.error(OUT_PARAMETERS, e);
 		}
 		return output;
 	}
@@ -812,7 +812,7 @@ public class ApplicationProcedureDao {
 			output.put("P_SWIFT", cs.getString(16));
 			output.put("P_ERROR_MESSAGE", cs.getString(17));
 		} catch (DataAccessException | SQLException e) {
-			LOGGER.debug("error in getRoutingDetails", e);
+			LOGGER.error("error in getRoutingDetails", e);
 			LOGGER.info(OUT_PARAMETERS + e.getMessage());
 		} finally {
 			DBUtil.closeResources(cs, connection);
@@ -963,7 +963,7 @@ public class ApplicationProcedureDao {
 			output.put("P_SWIFT", cs.getString(16));
 			output.put("P_ERROR_MESSAGE", cs.getString(17));
 		} catch (DataAccessException | SQLException e) {
-			LOGGER.debug("error in getRoutingDetailFromOthProcedure", e);
+			LOGGER.error("error in getRoutingDetailFromOthProcedure", e);
 			LOGGER.info(OUT_PARAMETERS + e.getMessage());
 		} finally {
 			DBUtil.closeResources(cs, connection);
@@ -1023,7 +1023,7 @@ public class ApplicationProcedureDao {
 			output.put("P_DERIVED_SELL_RATE", cs.getBigDecimal(19));
 			output.put("P_ERROR_MESSAGE", cs.getString(20));
 		} catch (DataAccessException | SQLException e) {
-			LOGGER.debug("error in getRoutingDetailFromOthRateProcedure", e);
+			LOGGER.error("error in getRoutingDetailFromOthRateProcedure", e);
 			LOGGER.info(OUT_PARAMETERS + e.getMessage());
 		} finally {
 			DBUtil.closeResources(cs, connection);
@@ -1167,7 +1167,7 @@ public class ApplicationProcedureDao {
 				output.put("P_ERROR_MESSAGE", cs.getString(37));
 			
 			} catch (DataAccessException | SQLException e) {
-				LOGGER.debug("error in EX_GET_EXCHANGE_RATE :", e);
+				LOGGER.error("error in EX_GET_EXCHANGE_RATE :", e);
 				LOGGER.info(OUT_PARAMETERS + e.getMessage());
 			} finally {
 				DBUtil.closeResources(cs, connection);
@@ -1282,7 +1282,7 @@ public class ApplicationProcedureDao {
 			output.put("MESSAGE4", out26 == null ? "" : out26);
 			
 		} catch (DataAccessException | SQLException e) {
-			LOGGER.debug("error in EX_GET_EXCHANGE_RATE :", e);
+			LOGGER.error("error in EX_GET_EXCHANGE_RATE :", e);
 			LOGGER.info(OUT_PARAMETERS + e.getMessage());
 		} finally {
 			DBUtil.closeResources(cs, connection);

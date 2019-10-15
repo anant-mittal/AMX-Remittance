@@ -60,7 +60,7 @@ public class JaxMetaServiceFilter implements IMetaRequestInFilter<JaxMetaInfo> {
 				MDC.put("customer-id", metaData.getCustomerId());
 				logger.debug("Referrer = {}", metaData.getReferrer());
 			} catch (IOException | IllegalAccessException | InvocationTargetException e) {
-				logger.debug("Meta Exception", e);
+				logger.error("Meta Exception", e);
 			}
 
 		}
@@ -76,7 +76,7 @@ public class JaxMetaServiceFilter implements IMetaRequestInFilter<JaxMetaInfo> {
 				MDC.put("customer-id", metaData.getCustomerId());
 				logger.debug("Referrer = {}", metaData.getReferrer());
 			} catch (IllegalAccessException | InvocationTargetException e) {
-				logger.debug("Meta Exception", e);
+				logger.error("Meta Exception", e);
 			}
 		}
 		resolveMetaDataFields();

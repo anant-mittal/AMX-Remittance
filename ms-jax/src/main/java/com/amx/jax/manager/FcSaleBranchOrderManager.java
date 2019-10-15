@@ -891,7 +891,7 @@ public class FcSaleBranchOrderManager {
 		insertEmos.put("P_DOCUMENT_NO", collectionDocNumber);
 
 		Map<String, Object> errorStatus = remittanceProcedureDao.insertEMOSLIVETransfer(insertEmos);
-		logger.debug("Error in insertEMOSLIVETransfer : " + errorStatus.get("P_ERROR_MESSAGE"));
+		logger.error("Error in insertEMOSLIVETransfer : " + errorStatus.get("P_ERROR_MESSAGE"));
 	}
 
 	// check the denomination details send correctly
@@ -1499,15 +1499,15 @@ public class FcSaleBranchOrderManager {
 						status = Boolean.TRUE;
 					}else {
 						// fail
-						logger.debug("currentStockMigration : lstToStock " + lstToStock.toString() + "\n lstOldToStock " + lstOldToStock.toString());
+						logger.error("currentStockMigration : lstToStock " + lstToStock.toString() + "\n lstOldToStock " + lstOldToStock.toString());
 					}
 				}else {
 					// fail
-					logger.debug("currentStockMigration : countryId " + countryId + " collectionDocumentYear " + collectionDocumentYear + " collectionDocumentNo " + collectionDocumentNo + " companyId " + companyId);
+					logger.error("currentStockMigration : countryId " + countryId + " collectionDocumentYear " + collectionDocumentYear + " collectionDocumentNo " + collectionDocumentNo + " companyId " + companyId);
 				}
 			}else {
 				// fail
-				logger.debug("currentStockMigration : lstFromStock " + lstFromStock.toString());
+				logger.error("currentStockMigration : lstFromStock " + lstFromStock.toString());
 			}
 
 			if(!status) {
@@ -1515,11 +1515,11 @@ public class FcSaleBranchOrderManager {
 			}
 		}catch (GlobalException e) {
 			e.printStackTrace();
-			logger.debug("Error in currentStockMigration", e.getMessage()+" deliveryDetailSeqId :"+deliveryDetailSeqId+" driverEmployeeId :"+driverEmployeeId);
+			logger.error("Error in currentStockMigration", e.getMessage()+" deliveryDetailSeqId :"+deliveryDetailSeqId+" driverEmployeeId :"+driverEmployeeId);
 			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}catch (Exception e) {
 			e.printStackTrace();
-			logger.debug("Error in currentStockMigration", e.getMessage()+" deliveryDetailSeqId :"+deliveryDetailSeqId+" driverEmployeeId :"+driverEmployeeId);
+			logger.error("Error in currentStockMigration", e.getMessage()+" deliveryDetailSeqId :"+deliveryDetailSeqId+" driverEmployeeId :"+driverEmployeeId);
 			throw new GlobalException(e.getMessage());
 		}
 
@@ -1741,7 +1741,7 @@ public class FcSaleBranchOrderManager {
 			status = Boolean.TRUE;
 		}else {
 			// fail
-			logger.debug("currentStockMigration : lstFromStock " + lstFromStock.toString() + "\n lstToStock " + lstToStock.toString() + "\n lstOldToStock " + lstOldToStock.toString());
+			logger.error("currentStockMigration : lstFromStock " + lstFromStock.toString() + "\n lstToStock " + lstToStock.toString() + "\n lstOldToStock " + lstOldToStock.toString());
 		}
 
 		if(!status) {
@@ -1925,7 +1925,7 @@ public class FcSaleBranchOrderManager {
 						stockStatus = Boolean.TRUE;
 					}else {
 						// break
-						logger.debug("Error in Stock Mismatch deliveryDetailSeqId : "+deliveryDetailSeqId+" fromEmployeeId : "+fromEmployeeId+" denomination Id : "+orderManagementView.getFsDenominationId().getDenominationId());
+						logger.error("Error in Stock Mismatch deliveryDetailSeqId : "+deliveryDetailSeqId+" fromEmployeeId : "+fromEmployeeId+" denomination Id : "+orderManagementView.getFsDenominationId().getDenominationId());
 						stockStatus = Boolean.FALSE;
 						break;
 					}

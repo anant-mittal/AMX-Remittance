@@ -287,7 +287,7 @@ public class FcSaleApplicationDao {
 			
 		}catch(Exception e){
 			e.printStackTrace();
-			logger.debug("saveAll of FX Order :"+e.getMessage());
+			logger.error("saveAll of FX Order :"+e.getMessage());
 			outMessage = e.getMessage();
 			output.put("P_ERROR_MESG", outMessage);
 		}

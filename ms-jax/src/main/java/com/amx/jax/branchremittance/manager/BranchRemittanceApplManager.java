@@ -536,7 +536,7 @@ public class BranchRemittanceApplManager {
 			try {
 				remittanceApplication.setAccountMmyyyy(new SimpleDateFormat("dd/MM/yyyy").parse(DateUtil.getCurrentAccMMYear()));
 			} catch (ParseException e) {
-				logger.debug("Error in saving application", e);
+				logger.error("Error in saving application", e);
 			}
 
 			remittanceApplication.setCreatedBy(getEmployeeDetails().getUserName());

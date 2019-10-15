@@ -102,7 +102,7 @@ public class PlaceOrderService extends AbstractService {
 			
 		} catch (Exception e) {
 			response.setResponseStatus(ResponseStatus.INTERNAL_ERROR);
-			logger.debug("Error while saving Place Order.", e);
+			logger.error("Error while saving Place Order.", e);
 		}
 		logger.info("Place Order saved for customer : " +customerId);       
 		return response;
@@ -176,7 +176,7 @@ public class PlaceOrderService extends AbstractService {
 			
 		} catch (Exception e) {
 			response.setResponseStatus(ResponseStatus.INTERNAL_ERROR);
-			logger.debug("Error while fetching Place Order List by Customer", e);
+			logger.error("Error while fetching Place Order List by Customer", e);
 		}
 		
 		response.getData().getValues().addAll(dtoList);
@@ -230,7 +230,7 @@ public class PlaceOrderService extends AbstractService {
 			
 		} catch (Exception e) {
 			response.setResponseStatus(ResponseStatus.INTERNAL_ERROR);
-			logger.debug("Error while fetching All Place Order List", e);
+			logger.error("Error while fetching All Place Order List", e);
 		}
 		
 		response.getData().getValues().addAll(dtoList);

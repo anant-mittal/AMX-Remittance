@@ -133,7 +133,7 @@ public class ForexOutlookService extends AbstractService {
 		}
 
 		catch (Exception e) {
-			LOGGER.debug("exception in saving : ", e);
+			LOGGER.error("exception in saving : ", e);
 			throw new GlobalException(JaxError.SAVE_FAILED, "Error occured while saving Currency Pair");
 
 		}

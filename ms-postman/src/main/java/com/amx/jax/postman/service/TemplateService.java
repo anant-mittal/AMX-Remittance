@@ -93,7 +93,7 @@ public class TemplateService {
 				rawStr = rawStr.replace("src=\"inline:" + contentId + "\"",
 						"src=\"" + templateUtils.readAsBase64String(contentId) + "\"");
 			} catch (IOException e) {
-				log.debug("Template parsing Error : " + template.getFileName(), e);
+				log.error("Template parsing Error : " + template.getFileName(), e);
 			}
 		}
 
@@ -113,7 +113,7 @@ public class TemplateService {
 				rawStr = rawStr.replace("src=\"inline:" + contentId + "\"",
 						"src=\"" + templateUtils.readAsBase64String(contentId) + "\"");
 			} catch (IOException e) {
-				log.debug("Template parsing Error : " + template.getFileName(), e);
+				log.error("Template parsing Error : " + template.getFileName(), e);
 			}
 		}
 		return rawStr;
