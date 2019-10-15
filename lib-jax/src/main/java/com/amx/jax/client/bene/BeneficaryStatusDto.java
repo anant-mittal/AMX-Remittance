@@ -41,7 +41,7 @@ public class BeneficaryStatusDto extends ResourceDTO {
 
 	@Override
 	public String getResourceCode() {
-		return this.resourceName;
+		return this.beneficaryStatusName.toUpperCase();
 	}
 	
 	
