@@ -20,10 +20,6 @@ public class AddBeneCashRequest extends AbstractBeneDetailDto {
 	@ApiMockModelProperty(example = "4")
 	private BigDecimal currencyId;
 
-	@NotNull(message = "Service Group Id may not be null")
-	@ApiMockModelProperty(example = "1")
-	private BigDecimal serviceGroupId;// cash or bank
-
 	@NotNull(message = "serviceProviderId may not be null")
 	@ApiMockModelProperty(example = "2520")
 	private BigDecimal serviceProviderId; // service provider
@@ -50,14 +46,6 @@ public class AddBeneCashRequest extends AbstractBeneDetailDto {
 
 	public void setCurrencyId(BigDecimal currencyId) {
 		this.currencyId = currencyId;
-	}
-
-	public BigDecimal getServiceGroupId() {
-		return serviceGroupId;
-	}
-
-	public void setServiceGroupId(BigDecimal serviceGroupId) {
-		this.serviceGroupId = serviceGroupId;
 	}
 
 	public BigDecimal getServiceProviderId() {

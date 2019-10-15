@@ -19,7 +19,7 @@ import com.amx.jax.swagger.ApiMockModelProperty;
 public abstract class AbstractBeneDetailDto {
 	// bene details
 	@NotNull
-	@ApiMockModelProperty(example = "Individual")
+	@ApiMockModelProperty(example = "1")
 	BigDecimal beneficaryTypeId;
 
 	@NotNull(message = "First Name may not be null")
