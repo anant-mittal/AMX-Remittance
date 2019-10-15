@@ -142,6 +142,10 @@ public class RemittanceApplication implements Serializable {
 	/** added by rabil **/
 	private String beneDeductFlag;
 	private String wuPurposeOfTransaction;
+	private BigDecimal savedAmount;
+	/** lowest exchange rate amount all the branches **/
+	private BigDecimal rackExchangeRate;
+	private String customerChoice;
 
 
 	private List<RemittanceAppBenificiary> exRemittanceAppBenificiary = new ArrayList<RemittanceAppBenificiary>(0);
@@ -976,6 +980,33 @@ public class RemittanceApplication implements Serializable {
 	}
 	public void setWuPurposeOfTransaction(String wuPurposeOfTransaction) {
 		this.wuPurposeOfTransaction = wuPurposeOfTransaction;
+	}
+
+	@Column(name="SAVED_AMOUNT")
+	public BigDecimal getSavedAmount() {
+		return savedAmount;
+	}
+
+	public void setSavedAmount(BigDecimal savedAmount) {
+		this.savedAmount = savedAmount;
+	}
+
+	@Column(name="RACK_EXCHANGE_RATE")
+	public BigDecimal getRackExchangeRate() {
+		return rackExchangeRate;
+	}
+
+	public void setRackExchangeRate(BigDecimal rackExchangeRate) {
+		this.rackExchangeRate = rackExchangeRate;
+	}
+	
+	@Column(name="CUSTOMER_CHOICE")
+	public String getCustomerChoice() {
+		return customerChoice;
+	}
+
+	public void setCustomerChoice(String customerChoice) {
+		this.customerChoice = customerChoice;
 	}
 	
 	

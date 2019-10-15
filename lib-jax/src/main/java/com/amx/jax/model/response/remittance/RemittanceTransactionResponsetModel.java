@@ -36,9 +36,13 @@ public class RemittanceTransactionResponsetModel extends AbstractModel {
 	private boolean isBetterRateAvailable = false;
 	private BigDecimal betterRateAmountSlab;
 	private BigDecimal diffInBetterRateFcAmount;
-	
 	private String discountOnComissionFlag;
-
+	/** added by Rabil**/
+	private BigDecimal rackExchangeRate; /**Worst rate amount all the branches **/
+	private BigDecimal youSavedAmount;
+	private String customerChoice;
+	
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -192,5 +196,31 @@ public class RemittanceTransactionResponsetModel extends AbstractModel {
 	public void setDiscountOnComissionFlag(String discountOnComissionFlag) {
 		this.discountOnComissionFlag = discountOnComissionFlag;
 	}
+
+	public BigDecimal getRackExchangeRate() {
+		return rackExchangeRate;
+	}
+
+	public void setRackExchangeRate(BigDecimal rackExchangeRate) {
+		this.rackExchangeRate = rackExchangeRate;
+	}
+
+	public BigDecimal getYouSavedAmount() {
+		return youSavedAmount;
+	}
+
+	public void setYouSavedAmount(BigDecimal youSavedAmount) {
+		this.youSavedAmount = youSavedAmount;
+	}
+
+	public String getCustomerChoice() {
+		return customerChoice;
+	}
+
+	public void setCustomerChoice(String customerChoice) {
+		this.customerChoice = customerChoice;
+	}
+
+	
 
 }

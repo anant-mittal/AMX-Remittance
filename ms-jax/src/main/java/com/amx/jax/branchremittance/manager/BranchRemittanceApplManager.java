@@ -375,7 +375,6 @@ public class BranchRemittanceApplManager {
 			String signature =null;
 			BranchRemittanceApplRequestModel applRequestModel = (BranchRemittanceApplRequestModel)hashMap.get("APPL_REQ_MODEL");
 			BenificiaryListView beneDetails  =(BenificiaryListView) hashMap.get("BENEFICIARY_DETAILS");
-
 			if(!StringUtils.isBlank(applRequestModel.getSignature())) {
 				signature =applRequestModel.getSignature();
 			}else {
@@ -569,10 +568,13 @@ public class BranchRemittanceApplManager {
 			}
 
 			remittanceApplication.setBeneDeductFlag(dynamicRoutingPricingResponse.getBeneDeductFlag());
-
+			
+			remittanceApplication.setCustomerChoice(dynamicRoutingPricingResponse.getCustomerChoice());
+			
 			remitApplManager.setCustomerDiscountColumns(remittanceApplication, dynamicRoutingPricingResponse);
 			remitApplManager.setVatDetails(remittanceApplication, dynamicRoutingPricingResponse);
-
+			remitApplManager.setSavedAmount(remittanceApplication, dynamicRoutingPricingResponse);
+			
 			BigDecimal documentNo = branchRemitManager.generateDocumentNumber(applSetup.getApplicationCountryId(), applSetup.getCompanyId(), ConstantDocument.DOCUMENT_CODE_FOR_REMITTANCE_APPLICATION, userFinancialYear.getFinancialYear(), ConstantDocument.A, countryBranch.getBranchId());
 			if(JaxUtil.isNullZeroBigDecimalCheck(documentNo)) {
 				remittanceApplication.setDocumentNo(documentNo);

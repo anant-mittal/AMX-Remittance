@@ -238,22 +238,16 @@ public class RemittanceApplicationManager {
 				generateDocumentNumber(remittanceApplication.getExCountryBranch(), ConstantDocument.Update));
 		remittanceApplication.setPaymentId(remittanceApplication.getDocumentNo().toString());
 		remittanceApplication.setWuIpAddress(metaData.getDeviceIp());
+		remittanceApplication.setCustomerChoice(validationResults.getCustomerChoice());
 		
 		validateAdditionalErrorMessages(requestModel);
 		validateBannedBank();
 		validateDailyBeneficiaryTransactionLimit(beneDetails);
 
 		setFurtherInstruction(remittanceApplication, requestModel.getAdditionalFields());
-
-		/*
-		 * if(requestModel.getAdditionalFields()!=null &&
-		 * requestModel.getAdditionalFields().get("INSTRUCTION")!=null) { //INSTRUCTION
-		 * remittanceApplication.setInstruction(requestModel.getAdditionalFields().get(
-		 * "INSTRUCTION").toString()); }else {
-		 * remittanceApplication.setInstruction("URGENT"); }
-		 */
 		setCustomerDiscountColumns(remittanceApplication, validationResults);
 		setVatDetails(remittanceApplication, validationResults);
+		setSavedAmount(remittanceApplication, validationResults);
 		return remittanceApplication;
 	}
 	
@@ -372,6 +366,7 @@ public class RemittanceApplicationManager {
 		remittanceApplication.setDocumentNo(generateDocumentNumber(remittanceApplication.getExCountryBranch(), ConstantDocument.Update));
 		remittanceApplication.setPaymentId(remittanceApplication.getDocumentNo().toString());
 		remittanceApplication.setWuIpAddress(metaData.getDeviceIp());
+		remittanceApplication.setCustomerChoice(validationResults.getCustomerChoice());
 		
 		DynamicRoutingPricingDto dynamicRoutingPricingResponse = requestModel.getDynamicRroutingPricingBreakup();
 		if(dynamicRoutingPricingResponse.getServiceProviderDto() != null && dynamicRoutingPricingResponse.getServiceProviderDto().getIntialAmountInSettlCurr() != null) {
@@ -394,6 +389,7 @@ public class RemittanceApplicationManager {
 
 		setCustomerDiscountColumns(remittanceApplication, validationResults);
 		setVatDetails(remittanceApplication, validationResults);
+		setSavedAmount(remittanceApplication, validationResults);
 		return remittanceApplication;
 	}
 	
@@ -648,6 +644,7 @@ public class RemittanceApplicationManager {
 		}
 	}
 
+	/** added by Rabil **/
 	public void setFurtherInstruction(RemittanceApplication remittanceApplication,
 			Map<String, Object> additionalFields) {
 		if (additionalFields != null && !additionalFields.isEmpty()) {
@@ -659,4 +656,10 @@ public class RemittanceApplicationManager {
 		}
 	}
 
+	/** added by Rabil **/
+	public void setSavedAmount(RemittanceApplication remittanceApplication,RemittanceTransactionResponsetModel validationResults) {
+		remittanceApplication.setSavedAmount(validationResults.getYouSavedAmount());
+		remittanceApplication.setRackExchangeRate(validationResults.getRackExchangeRate());
+	}
+	
 }
