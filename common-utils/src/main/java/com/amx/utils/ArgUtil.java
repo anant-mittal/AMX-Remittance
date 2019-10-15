@@ -453,6 +453,22 @@ public final class ArgUtil {
 		}
 		return null;
 	}
+	
+	public static Double parseAsDouble(Object value, Double defaultValue) {
+		if (value instanceof Double) {
+			return (Double) value;
+		} else if (value instanceof Number) {
+			return Double.valueOf(((Number) value).doubleValue());
+		} else if (value instanceof String) {
+			try {
+				return Double.valueOf(Double.parseDouble((String) value));
+			} catch (NumberFormatException e) {
+				return defaultValue;
+			}
+		}
+		return defaultValue;
+	}
+
 
 	/**
 	 * <pre>

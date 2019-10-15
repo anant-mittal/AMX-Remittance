@@ -17,7 +17,7 @@ public class SnapModels {
 
 	private static final String BUCKETS = "buckets";
 	private static final JsonPath BUCKETS_LIST = new JsonPath(BUCKETS);
-	private static final String AGGREGATIONS_KEY = "aggregations";
+	public static final String AGGREGATIONS_KEY = "aggregations";
 	private static final JsonPath AGGREGATIONS = new JsonPath(AGGREGATIONS_KEY);
 	private static final String HITS_KEY = "hits";
 	private static final JsonPath HITS = new JsonPath(HITS_KEY);
@@ -34,6 +34,10 @@ public class SnapModels {
 		KEYS.put("doc_count_error_upper_bound", true);
 		KEYS.put("sum_other_doc_count", true);
 		KEYS.put("doc_count", true);
+		KEYS.put("to_as_string", true);
+		KEYS.put("from_as_string", true);
+		KEYS.put("from", true);
+		KEYS.put("to", true);
 	}
 
 	public static class ASnapModel extends MapModel {
@@ -103,6 +107,11 @@ public class SnapModels {
 				}
 			}
 			return pivot;
+		}
+
+		public SnapModelWrapper removeAggregations() {
+			map.remove(AGGREGATIONS_KEY);
+			return this;
 		}
 	}
 
@@ -293,10 +302,15 @@ public class SnapModels {
 			if (fieldObject instanceof AggregationField) {
 				return (AggregationField) fieldObject;
 			} else {
-				HashMap<String, Object> fieldMap = new JsonPath(field).load(map, new HashMap<String, Object>());
-				AggregationField aggregationField = new AggregationField(fieldMap, field);
-				this.map.put(field, aggregationField);
-				return aggregationField;
+				try {
+					HashMap<String, Object> fieldMap = new JsonPath(field).load(map, new HashMap<String, Object>());
+					AggregationField aggregationField = new AggregationField(fieldMap, field);
+					this.map.put(field, aggregationField);
+					return aggregationField;
+				} catch (Exception e) {
+					System.out.println(map + "=== " + field);
+					return new AggregationField(new HashMap<String, Object>(), field);
+				}
 			}
 		}
 
@@ -336,6 +350,7 @@ public class SnapModels {
 								space + afIndex + bucketItemIndex);
 						for (Map<String, Object> bulkItem : bulk) {
 							if (bulkItem.containsKey("_id")) {
+								bulkItem.put("_docs", bucketItem.getDocCount());
 								list.add(bulkItem);
 							}
 							// System.out.println("bulkItem " + JsonUtil.toJson(bulkItem));
