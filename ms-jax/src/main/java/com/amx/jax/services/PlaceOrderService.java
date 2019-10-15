@@ -253,7 +253,7 @@ public class PlaceOrderService extends AbstractService {
 			response.setResponseStatus(ResponseStatus.OK);
 		} catch (Exception e) {
 			response.setResponseStatus(ResponseStatus.INTERNAL_ERROR);
-			logger.error("Error while deleting Place Order record.", e);
+			logger.debug("Error while deleting Place Order record.", e);
 		}
 		
 		logger.info("Place order Deleted ");
@@ -304,7 +304,7 @@ public class PlaceOrderService extends AbstractService {
 			
 		} catch (Exception e) {
 			response.setResponseStatus(ResponseStatus.INTERNAL_ERROR);
-			logger.error("Error while fetching Place Order List By Id", e);	
+			logger.debug("Error while fetching Place Order List By Id", e);	
 		}
 		
 		response.getData().getValues().addAll(dtoList);
@@ -363,7 +363,7 @@ public class PlaceOrderService extends AbstractService {
 		
 		} catch (Exception e) {
 			response.setResponseStatus(ResponseStatus.INTERNAL_ERROR);
-			logger.error("Error while updating Place Order record.", e);
+			logger.debug("Error while updating Place Order record.", e);
 		}
 		return response;
 	}
@@ -441,7 +441,7 @@ public class PlaceOrderService extends AbstractService {
 
 		} catch (Exception e) {
 			response.setResponseStatus(ResponseStatus.INTERNAL_ERROR);
-			logger.error("Error while fetching Place Order List by Trigger Exchange Rate", e);
+			logger.debug("Error while fetching Place Order List by Trigger Exchange Rate", e);
 		}
 		return response;
 	}

@@ -281,7 +281,7 @@ public class MetaService extends AbstractService {
 		try {
 			BeanUtils.copyProperties(dto, output.get(0));
 		} catch (IllegalAccessException | InvocationTargetException e) {
-			logger.error("unable to convert OnlineConfigurationDto", e);
+			logger.debug("unable to convert OnlineConfigurationDto", e);
 		}
 		return AmxApiResponse.build(dto);
 	}

@@ -362,7 +362,7 @@ public class BranchRemittanceSaveManager {
 			responseDto = brRemittanceDao.saveRemittanceTransaction(mapAllDetailRemitSave);
 			auditService.log(new CActivityEvent(Type.TRANSACTION_CREATED,String.format("%s/%s", responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo())).field("STATUS").to(JaxTransactionStatus.PAYMENT_SUCCESS_APPLICATION_SUCCESS).result(Result.DONE));
 	}catch (GlobalException e) {
-			logger.error("routing  procedure", e.getErrorMessage() + "" + e.getErrorKey());
+			logger.debug("routing  procedure", e.getErrorMessage() + "" + e.getErrorKey());
 			throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
 		}finally {
 			amlList	 = new HashMap<>();
@@ -390,7 +390,7 @@ public class BranchRemittanceSaveManager {
 			}
 		
 		}catch(GlobalException e){
-			logger.error("create collection", e.getErrorMessage() + "" +e.getErrorKey());
+			logger.debug("create collection", e.getErrorMessage() + "" +e.getErrorKey());
 			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}
 		
@@ -462,7 +462,7 @@ public class BranchRemittanceSaveManager {
 			}
 			
 		}catch(GlobalException e){
-			logger.error("create collection", e.getErrorMessage() + "" +e.getErrorKey());
+			logger.debug("create collection", e.getErrorMessage() + "" +e.getErrorKey());
 			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}
 		return collection;

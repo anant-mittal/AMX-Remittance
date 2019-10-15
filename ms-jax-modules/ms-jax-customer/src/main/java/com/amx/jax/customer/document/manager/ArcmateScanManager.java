@@ -13,7 +13,6 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.CountryBranchMdlv1;
 import com.amx.jax.dbmodel.CustomerIdProof;
-import com.amx.jax.dbmodel.DmsApplMapping;
 import com.amx.jax.dbmodel.customer.ArcmateScanMaster;
 import com.amx.jax.dbmodel.customer.CustomerDocumentTypeMaster;
 import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReference;
