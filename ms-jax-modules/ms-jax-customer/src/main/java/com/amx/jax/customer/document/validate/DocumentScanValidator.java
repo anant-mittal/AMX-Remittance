@@ -9,12 +9,14 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.customer.document.manager.CustomerDocMasterManager;
 import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.dbmodel.customer.CustomerDocumentTypeMaster;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.customer.document.UploadCustomerDocumentRequest;
 import com.amx.jax.model.customer.document.UploadCustomerKycRequest;
 import com.amx.jax.repository.customer.CustomerDocumentUploadReferenceRepo;
+import com.amx.jax.userservice.manager.CustomerIdProofManager;
 import com.amx.jax.userservice.service.UserService;
 
 @Component
@@ -28,6 +30,8 @@ public class DocumentScanValidator {
 	CustomerDocumentUploadReferenceRepo customerDocumentUploadReferenceRepo;
 	@Autowired
 	CustomerDocMasterManager customerDocMasterManager;
+	@Autowired
+	CustomerIdProofManager customerIdProofManager;
 
 	public void validateUploadKycDocumentRequest(UploadCustomerKycRequest uploadCustomerKycRequest) {
 		if (metaData.getCustomerId() == null && uploadCustomerKycRequest.getIdentityInt() == null) {
@@ -35,8 +39,9 @@ public class DocumentScanValidator {
 		}
 		if (metaData.getCustomerId() != null) {
 			Customer customer = userService.getCustById(metaData.getCustomerId());
-			if (customer.getIdentityExpiredDate() != null) {
-				boolean isIdExpired = Calendar.getInstance().getTime().after(customer.getIdentityExpiredDate());
+			CustomerIdProof customerIdProof = customerIdProofManager.getCustomerIdProofByCustomerId(customer.getCustomerId());
+			if (customerIdProof != null) {
+				boolean isIdExpired = Calendar.getInstance().getTime().after(customerIdProof.getIdentityExpiryDate());
 				if (ConstantDocument.Yes.equals(customer.getIsActive())
 						&& customer.getIdentityTypeId().equals(uploadCustomerKycRequest.getIdentityTypeId()) && !isIdExpired) {
 					throw new GlobalException("customer already active and uploaded kyc document");
