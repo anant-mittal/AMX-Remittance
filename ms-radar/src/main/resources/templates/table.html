@@ -29,6 +29,9 @@
 	type='text/javascript'></script>	
 <link rel="stylesheet"
 	href="//cdn.datatables.net/buttons/1.5.6/css/buttons.dataTables.min.css">	
+
+<script src='//cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.js'
+	type='text/javascript'></script>	
 	
 <!--  PivotTable 
 <script
@@ -327,16 +330,20 @@ function dropdown(classname) {
 
 	<div class="form padbox">
 		<form>
-			<label> From : <input name="gte" th:value="${gte}">
-			</label> <label> To : <input name="lte" th:value="${lte}">
+			<input name="level" type="number" th:value="${level}">
+			<label> From : <input name="gte" th:value="${gte}" placeholder="2019-10-01 00:00:00">
+			</label> <label> To : <input name="lte" th:value="${lte}" placeholder="2019-10-02 00:00:00">
 			</label>
+			<input name="hash" type="text" size=50 th:value="${hash}" placeholder="params">
 			<button type="submit" value="submit" class="dropbtn">Submit</button>
 		</form>
 	</div>
 	<div class="padbox" style="float: left">
 		<button onclick="dropdown('querybox')" class="dropbtn">Query</button>
 	</div>
-
+	<div class="padbox" style="float: left">
+		
+	</div>
 </div>
 
 <hr />
@@ -393,7 +400,7 @@ function dropdown(classname) {
 				var bulkItem = bulk[i];
 				var tableItem = [];
 				for(var key in _bulkItem){
-					if(bulkItem[key]){
+					if(bulkItem[key] !==undefined){
 						if(typeof bulkItem[key] == "object")
 						bulkItem[key] = JSON.stringify(bulkItem[key]);
 					} else {
@@ -432,14 +439,35 @@ function dropdown(classname) {
 		}); 
   }
   
-  
+  var DATE_REG = /([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))( +)(0[0-9]|1[0-9]|2[0-4]):([0-5][0-9]):([0-5][0-9])/;
   $(document).ready(function(){
 	  var _html = $("#tabledivWrapper").html();
-	  executeQuery("/radar/snap/view/[[${snapView}]]",{
-		  "lte" : "[[${lte}]]",
-		  "gte" : "[[${gte}]]",
+	  
+	  var lte = "[[${lte}]]";
+	  var gte = "[[${gte}]]";
+     	if(DATE_REG.test(lte)){
+     		lte = new Date(lte).getTime();
+     	} 
+     	if(DATE_REG.test(gte)){
+     		gte = new Date(gte).getTime();
+     	} 
+     	
+     var paramsHash = "[[${hash}]]" || document.location.hash.replace("#","");
+     var params = paramsHash.split(";").reduce(function(map,a){
+         var _ = a.split(":");
+         if(_[0]){
+            map[_[0]] = _[1];
+         }
+         return map;
+     },{});
+		  
+	  
+	  executeQuery("/radar/snap/view/[[${snapView}]]",Object.assign(params,{
+		  "lte" : lte,
+		  "gte" : gte,
+		  "level" : "[[${level}]]",
 		  "bulk" : true
-	  });
+	  }));
 	  
 	  $("#querybutton").click(function(){
 		  $("#tabledivWrapper").html(_html);

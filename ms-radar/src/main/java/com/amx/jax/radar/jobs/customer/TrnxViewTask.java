@@ -3,6 +3,7 @@ package com.amx.jax.radar.jobs.customer;
 import java.util.Date;
 
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -41,12 +42,15 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 	private static final String TIME_TRACK_KEY = "lastUpdateDate";
 	private static final int PAGE_SIZE = 5000;
 
-	long intervalDays = 20;
+	long intervalDays = 2;
+	
+	@Autowired
+	RadarConfig radarConfig;
 
 	@SchedulerLock(lockMaxAge = AmxCurConstants.INTERVAL_MIN * 30, context = LockContext.BY_METHOD)
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_SEC * 15)
 	public void doTaskModeNight() {
-		if (TimeUtils.inHourSlot(4, 0)) {
+		if (TimeUtils.inHourSlot(4, 0) && radarConfig.isJobTranxNightEnabled()) {
 			this.doTask();
 		}
 	}
@@ -54,7 +58,7 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 	@SchedulerLock(lockMaxAge = AmxCurConstants.INTERVAL_MIN * 30, context = LockContext.BY_METHOD)
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_MIN * 10)
 	public void doTaskModeDay() {
-		if (!TimeUtils.inHourSlot(4, 0)) {
+		if (!TimeUtils.inHourSlot(4, 0) && radarConfig.isJobTranxDayEnabled()) {
 			this.doTask();
 		}
 	}
@@ -114,7 +118,7 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 
 		long todayOffset = System.currentTimeMillis() - AmxCurConstants.INTERVAL_DAYS;
 		if (x.getResults().size() > 0) {
-			intervalDays = 10;
+			intervalDays = 1;
 			esRepository.bulk(builder.build());
 			oracleVarsCache.setStampStart(DBSyncJobs.TRANSACTION_JOB, lastUpdateDateNow);
 			if ((lastUpdateDateNowStart == lastUpdateDateNow) || (x.getResults().size() == 1000 && lastPage < 10)) {
