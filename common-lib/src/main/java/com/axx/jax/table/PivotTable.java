@@ -40,25 +40,25 @@ public class PivotTable {
 		this.pivotrows = new HashMap<String, PivotBucket>();
 	}
 
-	public PivotTable(List<String> rows, List<String> cols, List<String> vals, List<String> aggs, List<String> alias,
-			List<String> computedCols, List<String> noncomputedVals) {
+	public PivotTable(List<String> rowsTemp, List<String> colsTemp, List<String> valsTemp, List<String> aggsTemp, List<String> aliasTemp,
+			List<String> computedColsTemp, List<String> noncomputedValsTemp) {
 		this();
-		this.rows = rows;
-		this.cols = cols;
-		this.vals = vals;
-		this.aggs = aggs != null ? aggs : this.aggs;
-		this.alias = alias != null ? alias : this.alias;
-		this.computedCols = computedCols != null ? computedCols : this.aggs;
-		this.noncomputedVals = noncomputedVals != null ? noncomputedVals : this.aggs;
+		this.rows = rowsTemp;
+		this.cols = colsTemp;
+		this.vals = valsTemp;
+		this.aggs = aggsTemp != null ? aggsTemp : this.aggs;
+		this.alias = aliasTemp != null ? aliasTemp : this.alias;
+		this.computedCols = computedColsTemp != null ? computedColsTemp : this.computedVals;
+		this.noncomputedVals = noncomputedValsTemp != null ? noncomputedValsTemp : this.noncomputedCols;
 
-		int rowCount = rows.size();
-		int valCount = vals.size();
-		int colCount = cols.size();
-		int computedCount = computedCols.size();
-		int noncomputedCount = noncomputedCols.size();
+		int rowCount = this.rows.size();
+		int valCount = this.vals.size();
+		int colCount = this.cols.size();
+		int computedCount = this.computedCols.size();
+		int noncomputedCount = this.noncomputedCols.size();
 
 		for (int r = 0; r < rowCount; r++) {
-			StringMatcher funkey = new StringMatcher(rows.get(r));
+			StringMatcher funkey = new StringMatcher(this.rows.get(r));
 			if (funkey.isMatch(ROW_AS_ALIAS_DEFAULT)) {
 				this.rows.set(r, funkey.group(1));
 				CollectionUtil.set(this.rows_alias, r, funkey.group(3));
@@ -74,7 +74,7 @@ public class PivotTable {
 		}
 
 		for (int v = 0; v < valCount; v++) {
-			StringMatcher funkey = new StringMatcher(vals.get(v));
+			StringMatcher funkey = new StringMatcher(this.vals.get(v));
 			if (funkey.isMatch(FUN_AS_ALIAS_DEFAULT)) {
 				CollectionUtil.set(this.aggs, v, funkey.group(1));
 				this.vals.set(v, funkey.group(2));
