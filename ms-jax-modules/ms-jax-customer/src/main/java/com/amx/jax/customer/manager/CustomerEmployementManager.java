@@ -61,7 +61,9 @@ public class CustomerEmployementManager {
 			employmentDetails.setArticleDetailsId(customer.getFsArticleDetails().getArticleDetailId());
 			employmentDetails.setArticleId(customer.getFsArticleDetails().getFsArticleMaster().getArticleId());
 			employmentDetails.setIncomeRangeId(customer.getFsIncomeRangeMaster().getIncomeRangeId());
-			employmentDetails.setDesignation(customercoreView.getDesignation());
+			if(customercoreView != null) {
+				employmentDetails.setDesignation(customercoreView.getDesignation());
+			}
 			if(articleDesc != null)
 			{
 				employmentDetails.setArticleDesc(articleDesc);

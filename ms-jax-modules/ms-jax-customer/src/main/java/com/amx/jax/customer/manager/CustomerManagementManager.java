@@ -107,7 +107,7 @@ public class CustomerManagementManager {
 		OffsiteCustomerDataDTO offsiteCustomer = new OffsiteCustomerDataDTO();
 		LOGGER.debug("identityInt :" + identityInt + "\t identityTypeId :" + identityTypeId + "\t country id " + metaData.getCountryId());
 		customerManagementValidation.validateIdentityIntLength(identityInt, identityTypeId);
-		List<Customer> customerList = userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(identityInt,
+		List<Customer> customerList = userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(identityInt, identityTypeId,
 				JaxApiFlow.OFFSITE_REGISTRATION);
 		JaxError jaxError = null;
 		String additionalStatus = null;
