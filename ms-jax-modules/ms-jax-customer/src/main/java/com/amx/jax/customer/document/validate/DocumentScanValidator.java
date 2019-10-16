@@ -40,7 +40,7 @@ public class DocumentScanValidator {
 		if (metaData.getCustomerId() != null) {
 			Customer customer = userService.getCustById(metaData.getCustomerId());
 			CustomerIdProof customerIdProof = customerIdProofManager.getCustomerIdProofByCustomerId(customer.getCustomerId());
-			if (customerIdProof != null) {
+			if (customerIdProof != null && customerIdProof.getIdentityExpiryDate() != null) {
 				boolean isIdExpired = Calendar.getInstance().getTime().after(customerIdProof.getIdentityExpiryDate());
 				if (ConstantDocument.Yes.equals(customer.getIsActive())
 						&& customer.getIdentityTypeId().equals(uploadCustomerKycRequest.getIdentityTypeId()) && !isIdExpired) {
