@@ -16,7 +16,7 @@ public class UserClient {
 	 *
 	 */
 	public enum Channel {
-		ONLINE, KIOSK, MOBILE, BRANCH, THIRD_PARTY, SYSTEM, UNKNOWN;
+		ONLINE, KIOSK, MOBILE, BRANCH, TPC, SYSTEM, UNKNOWN;
 	}
 
 	/**

@@ -13,7 +13,13 @@ public class App { // Noncompliant
 	 * 
 	 * @param args
 	 */
+
 	public static void main(String[] args) {
+
+		//System.out.println(StringUtils.maskString("9930104050"));
+	}
+
+	public static void main2(String[] args) {
 		printAndCheck(StringUtils.pad("abdefg", "xxxx", 0, 1), "defg");
 		printAndCheck(StringUtils.pad("abdefg", "xxxxxxx", 0, 1), "xabdefg");
 
