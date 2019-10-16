@@ -6,7 +6,10 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
@@ -19,10 +22,8 @@ public class GroupingMaster implements Serializable {
 	private static final long serialVersionUID = -5519877984392715225L;
 
 	@Id
-	// @GeneratedValue(generator = "cc_discount_seq", strategy =
-	// GenerationType.SEQUENCE)
-	// @SequenceGenerator(name = "cc_discount_seq", sequenceName =
-	// "JAX_PR_CUSTOMER_DISCOUNT_SEQ", allocationSize = 1)
+	@GeneratedValue(generator = "grouping_master_seq", strategy = GenerationType.SEQUENCE)
+	@SequenceGenerator(name = "grouping_master_seq", sequenceName = "EX_GROUPING_MASTER_SEQ", allocationSize = 1)
 	@Column(name = "ID", unique = true, nullable = false, precision = 22, scale = 0)
 	private BigDecimal id;
 
