@@ -211,6 +211,9 @@ public class CustomerManagementManager {
 				jaxError = statusKeyBefore;
 			}
 		}
+		if(JaxError.ID_PROOFS_SCAN_IND_MISSING.equals(jaxError)) {
+			jaxError = statusKeyBefore;
+		}
 
 		return jaxError;
 	}
