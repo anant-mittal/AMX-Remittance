@@ -34,6 +34,7 @@ import com.amx.amxlib.constant.PrefixEnum;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.CustomerCredential;
+import com.amx.jax.ICustRegService;
 import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
@@ -46,6 +47,7 @@ import com.amx.jax.customer.manager.OffsiteCustomerRegManager;
 import com.amx.jax.customer.manager.OffsiteCustomerRegValidator;
 import com.amx.jax.dal.ArticleDao;
 import com.amx.jax.dal.BizcomponentDao;
+import com.amx.jax.dal.CustomerDocumentDao;
 import com.amx.jax.dal.FieldListDao;
 import com.amx.jax.dal.ImageCheckDao;
 import com.amx.jax.dao.BlackListDao;
@@ -69,6 +71,7 @@ import com.amx.jax.dbmodel.IncomeModel;
 import com.amx.jax.dbmodel.ProfessionMasterView;
 import com.amx.jax.dbmodel.StateMaster;
 import com.amx.jax.dbmodel.UserFinancialYear;
+import com.amx.jax.dbmodel.customer.DmsDocumentBlobTemparory;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.AuditEvent.Result;
@@ -112,10 +115,12 @@ import com.amx.jax.repository.IDocumentUploadMapRepository;
 import com.amx.jax.repository.IUserFinancialYearRepo;
 import com.amx.jax.repository.JaxConditionalFieldRuleRepository;
 import com.amx.jax.repository.ProfessionRepository;
+import com.amx.jax.repository.customer.DmsDocumentBlobTemparoryRepository;
 import com.amx.jax.scope.TenantContext;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.service.PrefixService;
 import com.amx.jax.services.AbstractService;
+import com.amx.jax.services.JaxDBService;
 import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.trnx.CustomerRegistrationTrnxModel;
 import com.amx.jax.userservice.dao.AddressProofDao;
@@ -274,6 +279,12 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 	CustomerEmployementManager customerEmployementManager;
 	@Autowired
 	CustomerKycManager customerKycManager;
+	@Autowired
+	JaxDBService jaxDBService;
+	@Autowired
+	DmsDocumentBlobTemparoryRepository dmsDocumentBlobTemparoryRepository;
+	@Autowired
+	CustomerDocumentDao customerDocumentDao;
 
 
 	public AmxApiResponse<ComponentDataDto, Object> getIdTypes() {
@@ -852,10 +863,10 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 	public AmxApiResponse<String, Object> saveCustomeKycDocumentAndPopulateCusmas(ImageSubmissionRequest model)
 			throws ParseException {
 		AmxApiResponse<String, Object> result = saveCustomeKycDocument(model);
-		/*
-		 * if (metaData.getCustomerId() != null) {
-		 * customerDao.callProcedurePopulateCusmas(metaData.getCustomerId()); }
-		 */
+		Map<String, Object> outputParams = (Map<String, Object>) result.getMeta();
+		BigDecimal docBlobId = (BigDecimal) outputParams.get("docBlobId");
+		BigDecimal docFinYear = (BigDecimal) outputParams.get("docFinYear");
+		customerDocumentDao.copyBlobDataFromJava(docBlobId, docFinYear);
 		return result;
 	}
 
@@ -899,7 +910,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 
 		CActivityEvent auditEvent = new CActivityEvent(CActivityEvent.Type.PROFILE_UPDATE)
 				.field("KYC_DOC");
-
+		Map<String, Object> outputParams = new HashMap<>();
 		if (model != null) {
 			if (metaData.getCustomerId() == null) {
 				auditService.log(auditEvent.result(Result.REJECTED).message(JaxError.NULL_CUSTOMER_ID));
@@ -921,11 +932,28 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 				DmsApplMapping mappingData = new DmsApplMapping();
 				mappingData = customerKycManager.getDmsApplMappingData(customer, model);
 				idmsAppMappingRepository.save(mappingData);
-				DocBlobUpload documentDetails = new DocBlobUpload();
-				documentDetails = getDocumentUploadDetails(image, mappingData);
-				LOGGER.debug("document details are "+documentDetails.toString());
-				docblobRepository.save(documentDetails);
-				
+				DmsDocumentBlobTemparory dmsDocumentBlobTemparory = new DmsDocumentBlobTemparory();
+				dmsDocumentBlobTemparory.setCreatedBy(jaxDBService.getCreatedOrUpdatedBy());
+				dmsDocumentBlobTemparory.setCreatedDate(new Date());
+				DmsApplMapping dmsApplMapping = getDmsApplMappingData(customer, model);
+				dmsApplMapping.setCustomerId(customer.getCustomerId());
+				dmsApplMapping.setIdentityExpiryDate(model.getIdentityExpiredDate());
+				BigDecimal docBlobId = dmsApplMapping.getDocBlobId();
+				BigDecimal docFinYear = dmsApplMapping.getFinancialYear();
+				outputParams.put("docBlobId", docBlobId);
+				outputParams.put("docFinYear", docFinYear);
+				dmsDocumentBlobTemparory.setDocBlobId(docBlobId);
+				dmsDocumentBlobTemparory.setDocFinYear(docFinYear);
+				Blob documentContent;
+				try {
+					documentContent = new javax.sql.rowset.serial.SerialBlob(decodeImage(image));
+					dmsDocumentBlobTemparory.setDocumentContent(documentContent);
+				} catch (Exception e) {
+					LOGGER.error("error occured", e);
+				}
+				dmsDocumentBlobTemparory.setCountryCode(dmsApplMapping.getApplicationCountryId());
+				dmsDocumentBlobTemparory.setSeqNo(BigDecimal.ONE);
+				dmsDocumentBlobTemparoryRepository.save(dmsDocumentBlobTemparory);
 			}
 			
 		} else {
@@ -933,7 +961,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			throw new GlobalException(JaxError.IMAGE_NOT_AVAILABLE, "Image data is not available");
 		}
 		auditService.log(auditEvent.result(Result.DONE));
-		return AmxApiResponse.build("Document Uploaded Successfully");
+		return AmxApiResponse.build("Document upload success", outputParams);
 	}
 
 	private DocBlobUpload getDocumentUploadDetails(String image, DmsApplMapping mappingData) {
