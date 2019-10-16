@@ -19,6 +19,7 @@ public class ViewBankChannelModel {
 	private String bankShortName;
 	private String ibanFlag;
 	private String localName;
+	private String languageInd;
 
 	@Id
 	@Column(name = "ROW_ID")
@@ -93,4 +94,12 @@ public class ViewBankChannelModel {
 		this.localName = localName;
 	}
 
+	@Column(name = "LANGUAGE_IND")
+	public String getLanguageInd() {
+		return this.languageInd;
+	}
+
+	public void setLanguageInd(String languageInd) {
+		this.languageInd = languageInd;
+	}
 }

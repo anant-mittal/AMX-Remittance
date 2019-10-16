@@ -10,4 +10,6 @@ import com.amx.jax.dbmodel.ViewBankChannelModel;
 public interface IViewBankChannelRepository extends CrudRepository<ViewBankChannelModel, BigDecimal> {
 
 	public List<ViewBankChannelModel> findBybankCountryIdOrderByBankShortNameAsc(BigDecimal bankCountryId);
+
+	public List<ViewBankChannelModel> findBybankCountryIdAndLanguageInd(BigDecimal countryId, String languageInd);
 }
