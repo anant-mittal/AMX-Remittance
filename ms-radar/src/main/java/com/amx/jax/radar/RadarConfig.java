@@ -52,6 +52,13 @@ public class RadarConfig {
 	
 	@Value("${jax.jobs.trnx.day}")
 	boolean jobTranxDayEnabled;
+	
+	@Value("${jax.jobs.wa.fail.retry}")
+	boolean jobWAFailRetryEnabled;
+
+	public boolean isJobWAFailRetryEnabled() {
+		return jobWAFailRetryEnabled;
+	}
 
 	public boolean isJobTranxDayEnabled() {
 		return jobTranxDayEnabled;
