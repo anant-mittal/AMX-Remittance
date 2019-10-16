@@ -2,7 +2,9 @@ package com.amx.jax.manager.remittance;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -18,6 +20,7 @@ import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.remittance.GetServiceApplicabilityRequest;
 import com.amx.jax.model.response.remittance.GetServiceApplicabilityResponse;
 import com.amx.jax.repository.IServiceApplicabilityRuleDao;
+import com.google.common.collect.Sets;
 import com.jax.amxlib.exception.jax.GlobaLException;
 
 @Component
@@ -35,10 +38,28 @@ public class ServiceApplicabilityManager {
 		}
 		List<ServiceApplicabilityRule> rules = iServiceApplicabilityRuleDao.getServiceApplicabilityRules(metaData.getCountryId(),
 				BigDecimal.valueOf(request.getCountryId()), BigDecimal.valueOf(request.getCurrencyId()), request.getFieldNames());
-		Set<GetServiceApplicabilityResponse> ruleSet = rules.stream().map(i -> {
-			return new GetServiceApplicabilityResponse(i.getFieldName(), i.getFieldDesc(), ConstantDocument.Yes.equals(i.getMandatory()));
-		}).collect(Collectors.toSet());
-		return new ArrayList<>(ruleSet);
+		Set<String> availableFields = rules.stream().map(i -> i.getFieldName()).collect(Collectors.toSet());
+		Set<String> requestedFields = request.getFieldNames().stream().collect(Collectors.toSet());
+		Set<String> outputFields = Sets.intersection(availableFields, requestedFields);
+
+		List<GetServiceApplicabilityResponse> serviceApplicabilityList = new ArrayList<>();
+		Map<String, GetServiceApplicabilityResponse> fieldMap = new HashMap<>();
+		outputFields.stream().forEach(i -> {
+			GetServiceApplicabilityResponse fieldServiceApplicability = new GetServiceApplicabilityResponse();
+			fieldServiceApplicability.setFieldName(i);
+			serviceApplicabilityList.add(fieldServiceApplicability);
+			fieldMap.put(i, fieldServiceApplicability);
+		});
+
+		rules.stream().forEach(i -> {
+			if (ConstantDocument.Yes.equals(i.getMandatory())) {
+				GetServiceApplicabilityResponse getServiceApplicabilityResponse = fieldMap.get(i.getFieldName());
+				if (getServiceApplicabilityResponse != null) {
+					getServiceApplicabilityResponse.setMandatory(true);
+				}
+			}
+		});
+		return serviceApplicabilityList;
 	}
 
 }
