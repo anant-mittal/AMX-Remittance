@@ -6,8 +6,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.amx.amxlib.meta.model.BeneficiaryListDTO;
-import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
@@ -21,6 +19,7 @@ import com.amx.jax.client.RemitClient;
 import com.amx.jax.client.TpcClient;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.http.CommonHttpRequest;
+import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.response.ExchangeRateBreakup;
 import com.amx.jax.model.response.SourceOfIncomeDto;
@@ -35,6 +34,7 @@ import com.amx.jax.proto.tpc.models.RemittenceModels.RemitTranxStatusResponse;
 import com.amx.jax.proto.tpc.models.RemittenceModels.RemittenceDTO;
 import com.amx.jax.proto.tpc.models.RemittenceModels.TranxStatus;
 import com.amx.jax.proto.tpc.models.SourceOfFundDTO;
+import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.StringUtils;
 

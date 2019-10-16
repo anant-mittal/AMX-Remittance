@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.AmxResponseSchemes.ApiDataMetaResponse;
 import com.amx.jax.api.AmxResponseSchemes.ApiDataResponse;
@@ -35,7 +34,7 @@ import com.amx.jax.proto.tpc.models.RemittenceModels.RemitVerifyRequest;
 import com.amx.jax.proto.tpc.models.RemittenceModels.RemitVerifyResponse;
 import com.amx.jax.proto.tpc.models.RemittenceModels.RemittenceDTO;
 import com.amx.jax.proto.tpc.models.SourceOfFundDTO;
-import com.amx.utils.CollectionUtil;
+import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
