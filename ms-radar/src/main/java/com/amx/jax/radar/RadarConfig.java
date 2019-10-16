@@ -68,20 +68,6 @@ public class RadarConfig {
 		return jobTranxNightEnabled;
 	}
 
-	@Value("${jax.jobs.trnx.day}")
-	boolean jobTranxDayEnabled;
-
-	public boolean isJobTranxDayEnabled() {
-		return jobTranxDayEnabled;
-	}
-
-	public boolean isJobTranxNightEnabled() {
-		return jobTranxNightEnabled;
-	}
-
-	@Value("${jax.jobs.trnx.night}")
-	boolean jobTranxNightEnabled;
-
 	public String getCompanyName() {
 		return companyName;
 	}
