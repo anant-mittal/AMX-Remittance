@@ -33,8 +33,8 @@ public class TPCApiConstants {
 		public static final String CUSTOMER_SOURCE_LIST = "/tpc/customer/source/list";
 		public static final String CUSTOMER_PURPOSE_LIST = "/tpc/customer/purpose/list";
 		public static final String CUSTOMER_REMIT_INQUIRY = "/tpc/customer/remit/inquiry";
-		public static final String CUSTOMER_REMIT_APPLICATION = "/tpc/customer/remit/application";
-		public static final String CUSTOMER_REMIT_PAYMENT = "/tpc/customer/remit/payment";
+		public static final String CUSTOMER_REMIT_INIT = "/tpc/customer/remit/init";
+		public static final String CUSTOMER_REMIT_CONFIRM = "/tpc/customer/remit/confirm";
 		public static final String CUSTOMER_REMIT_VERIFY = "/tpc/customer/remit/verify";
 		public static final String CUSTOMER_REMIT_STATUS = "/tpc/customer/remit/status";
 	}

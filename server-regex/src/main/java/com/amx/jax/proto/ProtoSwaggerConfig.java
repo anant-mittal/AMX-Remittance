@@ -6,11 +6,9 @@ import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.amx.jax.AppConstants;
+import com.amx.jax.swagger.DefaultSwaggerConfig.DocketWrapper;
 
-import springfox.documentation.builders.ParameterBuilder;
 import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.schema.ModelRef;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Contact;
 import springfox.documentation.service.Parameter;
@@ -26,7 +24,7 @@ public class ProtoSwaggerConfig {
 	public static final String PARAM_HEADER = "header";
 
 	@Bean
-	public Docket productApi() {
+	public DocketWrapper docketWrapper() {
 		Docket docket = new Docket(DocumentationType.SWAGGER_2).select()
 				.apis(RequestHandlerSelectors.basePackage("com.amx.jax"))
 				// .paths(regex("/product.*"))
@@ -34,13 +32,13 @@ public class ProtoSwaggerConfig {
 
 		List<Parameter> operationParameters = new ArrayList<Parameter>();
 
-		operationParameters.add(
-				new ParameterBuilder().name(AppConstants.TRACE_ID_XKEY).description("Trace Id")
-						.modelRef(new ModelRef(PARAM_STRING)).parameterType(PARAM_HEADER).required(false).build());
+//		operationParameters.add(
+//				new ParameterBuilder().name(AppConstants.TRACE_ID_XKEY).description("Trace Id")
+//						.modelRef(new ModelRef(PARAM_STRING)).parameterType(PARAM_HEADER).required(false).build());
 
 		docket.globalOperationParameters(operationParameters);
 		docket.apiInfo(metaData());
-		return docket;
+		return new DocketWrapper(docket);
 	}
 
 	private ApiInfo metaData() {
