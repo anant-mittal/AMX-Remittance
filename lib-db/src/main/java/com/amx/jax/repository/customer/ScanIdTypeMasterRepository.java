@@ -11,4 +11,6 @@ import com.amx.jax.dbmodel.customer.ScanIdTypeMaster;
 public interface ScanIdTypeMasterRepository extends CrudRepository<ScanIdTypeMaster, Serializable> {
 
 	List<ScanIdTypeMaster> findByidTypeIdAndScanIndAndIsActive(BigDecimal idTypeId, String scanInd, String isActive);
+	
+	List<ScanIdTypeMaster> findByidTypeIdAndIsActive(BigDecimal idTypeId, String isActive);
 }
