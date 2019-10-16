@@ -28,6 +28,12 @@ public enum JaxChannel {
 			return UserClient.Channel.BRANCH;
 		}
 	},
+	TPC {
+		@Override
+		public Channel getClientChannel() {
+			return UserClient.Channel.TPC;
+		}
+	},
 	SYSTEM {
 		@Override
 		public Channel getClientChannel() {

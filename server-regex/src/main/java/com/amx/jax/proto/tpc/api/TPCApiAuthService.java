@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.client.TpcClient;
+import com.amx.jax.client.ITpcService;
 import com.amx.jax.client.UserClient;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.exception.AbstractJaxException;
@@ -45,8 +45,8 @@ public class TPCApiAuthService {
 	@Autowired
 	CommonHttpRequest commonHttpRequest;
 
-	@Autowired
-	TpcClient tpcClient;
+	@Autowired(required = false)
+	ITpcService tpcClient;
 
 	@Autowired
 	private UserClient userclient;

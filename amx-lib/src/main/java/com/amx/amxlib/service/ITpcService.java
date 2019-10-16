@@ -10,6 +10,7 @@ import com.amx.jax.model.response.tpc.TpcGenerateClientSecretResponse;
  * @author prashant
  *
  */
+@Deprecated
 public interface ITpcService {
 
 	public static class Path {

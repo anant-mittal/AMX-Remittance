@@ -14,9 +14,9 @@ import com.amx.jax.api.AmxResponseSchemes.ApiDataMetaResponse;
 import com.amx.jax.api.AmxResponseSchemes.ApiDataResponse;
 import com.amx.jax.api.AmxResponseSchemes.ApiResultsResponse;
 import com.amx.jax.client.BeneClient;
+import com.amx.jax.client.ITpcService;
 import com.amx.jax.client.JaxPaymentService;
 import com.amx.jax.client.RemitClient;
-import com.amx.jax.client.TpcClient;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.model.BeneficiaryListDTO;
@@ -44,8 +44,8 @@ public class TPCApiRemitService {
 	@Autowired
 	CommonHttpRequest commonHttpRequest;
 
-	@Autowired
-	TpcClient tpcClient;
+	@Autowired(required = false)
+	ITpcService tpcClient;
 
 	@Autowired
 	JaxMetaInfo jaxMetaInfoContext;
@@ -60,7 +60,7 @@ public class TPCApiRemitService {
 	private BeneClient beneClient;
 
 	public ApiResultsResponse<CustomerBeneDTO> fetchBeneficiaryList() {
-		List<BeneficiaryListDTO> x = beneClient.getBeneficiaryList(new BigDecimal(0)).getResults();
+		List<BeneficiaryListDTO> x = beneClient.getBeneficiaryList(new BigDecimal(0), true).getResults();
 
 		AmxApiResponse<CustomerBeneDTO, Object> resp = new AmxApiResponse<CustomerBeneDTO, Object>();
 		for (BeneficiaryListDTO beneficiaryListDTO : x) {
