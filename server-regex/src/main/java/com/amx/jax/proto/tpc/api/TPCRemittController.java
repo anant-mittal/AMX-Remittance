@@ -42,7 +42,7 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 @Api(value = "Third Party Client APIs", tags = "List of APIs to communicate with AMX Service")
 @RequestMapping(produces = { CommonMediaType.APPLICATION_JSON_VALUE })
-public class TPCApiController {
+public class TPCRemittController {
 
 	@Autowired
 	TPCApiAuthService tpcService;

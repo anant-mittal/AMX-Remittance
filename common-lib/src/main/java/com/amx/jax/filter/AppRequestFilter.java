@@ -34,10 +34,10 @@ import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.logger.events.RequestTrackEvent;
 import com.amx.jax.model.MapModel;
 import com.amx.jax.rest.AppRequestContextInFilter;
+import com.amx.jax.rest.AppRequestInterfaces.VendorAuthFilter;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.session.SessionContextService;
 import com.amx.utils.ArgUtil;
-import com.amx.utils.Constants;
 import com.amx.utils.CryptoUtil;
 import com.amx.utils.JsonUtil;
 import com.amx.utils.Urly;
@@ -72,6 +72,9 @@ public class AppRequestFilter implements Filter {
 	@Autowired(required = false)
 	VendorAuthConfig appVendorConfig;
 
+	@Autowired(required = false)
+	VendorAuthFilter vaendorAuthFilter;
+
 	private boolean doesTokenMatch(CommonHttpRequest localCommonHttpRequest, HttpServletRequest req,
 			HttpServletResponse resp, String traceId, boolean checkHMAC) {
 		String authToken = localCommonHttpRequest.get(AppConstants.AUTH_TOKEN_XKEY);
@@ -97,7 +100,11 @@ public class AppRequestFilter implements Filter {
 			AppContextUtil.setVendor(VendorAuthConfig.class, authVendor);
 			String authToken = localCommonHttpRequest.get(AppConstants.AUTH_TOKEN_XKEY);
 			if (ArgUtil.is(authToken)) {
-				return appVendorConfig.isRequestValid(apiRequest, req, traceId, authToken);
+				if (vaendorAuthFilter != null) {
+					return vaendorAuthFilter.isAuthVendorRequest(apiRequest, localCommonHttpRequest, traceId, authToken);
+				} else {
+					return appVendorConfig.isRequestValid(apiRequest, localCommonHttpRequest, traceId, authToken);
+				}
 			}
 			return false;
 		}

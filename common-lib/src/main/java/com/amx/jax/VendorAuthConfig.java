@@ -1,9 +1,8 @@
 package com.amx.jax;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.http.CommonHttpRequest.ApiRequestDetail;
 import com.amx.jax.scope.VendorContext.VendorScoped;
 import com.amx.jax.scope.VendorContext.VendorValue;
@@ -19,6 +18,13 @@ public class VendorAuthConfig {
 	@VendorValue("${basic.auth.id}")
 	String basicAuthUser;
 
+	@VendorValue("${basic.auth.ip}")
+	String basicAuthIp;
+
+	public String getBasicAuthIp() {
+		return basicAuthIp;
+	}
+
 	public String getBasicAuthPassword() {
 		return basicAuthPassword;
 	}
@@ -27,7 +33,7 @@ public class VendorAuthConfig {
 		return basicAuthUser;
 	}
 
-	public boolean isRequestValid(ApiRequestDetail apiRequest, HttpServletRequest req, String traceId,
+	public boolean isRequestValid(ApiRequestDetail apiRequest, CommonHttpRequest req, String traceId,
 			String authToken) {
 		return authToken.equals(basicAuthPassword)
 				|| CryptoUtil.validateHMAC(this.basicAuthPassword, traceId, authToken);
