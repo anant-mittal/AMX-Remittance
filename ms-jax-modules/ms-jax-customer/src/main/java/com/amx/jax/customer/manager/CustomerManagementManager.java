@@ -162,11 +162,10 @@ public class CustomerManagementManager {
 		customerDetails.setDateOfBirth(customer.getDateOfBirth());
 		customerDetails.setIdentityTypeId(customer.getIdentityTypeId());
 		customerDetails.setInsurance(customer.getMedicalInsuranceInd());
-		if(null != customer.getWhatsapp())
-		{
+		if (null != customer.getWhatsapp()) {
 			customerDetails.setWatsAppMobileNo(new BigDecimal(customer.getWhatsapp()));
 		}
-		customerDetails.setWatsAppTelePrefix(customer.getPrefixCodeMobileOther());
+		customerDetails.setWatsAppTelePrefix(customer.getWhatsappPrefix());
 		customerDetails.setIsWatsApp(customer.getIsMobileWhatsApp());
 		customerDetails.setRegistrationType(customer.getCustomerRegistrationType());
 		customerDetails.setCustomerSignature(customer.getSignatureSpecimenClob());
@@ -211,6 +210,9 @@ public class CustomerManagementManager {
 			if (compliancePendingProofs.size() > 0) {
 				jaxError = statusKeyBefore;
 			}
+		}
+		if(JaxError.ID_PROOFS_SCAN_IND_MISSING.equals(jaxError)) {
+			jaxError = statusKeyBefore;
 		}
 
 		return jaxError;

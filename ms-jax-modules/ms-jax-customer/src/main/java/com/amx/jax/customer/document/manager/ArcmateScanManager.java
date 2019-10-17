@@ -51,8 +51,7 @@ public class ArcmateScanManager implements DocumentScanManager {
 		StringBuffer urlBuffer = new StringBuffer();
 		List<ArcmateScanMaster> arcmateList = arcmateScanMasterRepository.findByModeOfOperationAndScanTypeAndIsActive(ConstantDocument.VIEW,
 				ConstantDocument.BOTH_VIEW, ConstantDocument.Yes);
-		List<ScanIdTypeMaster> scanIdList = scanIdTypeMasterRepository.findByidTypeIdAndScanIndAndIsActive(customerIdProof.getIdentityTypeId(),
-				countryBranch.getScanInd(), ConstantDocument.Yes);
+		List<ScanIdTypeMaster> scanIdList = scanIdTypeMasterRepository.findByidTypeIdAndIsActive(customerIdProof.getIdentityTypeId(), ConstantDocument.Yes);
 		
 		customerDocumentImage.setUploadedDate(customerIdProof.getCreationDate());
 		CustomerDocumentTypeMaster kycDocTypeMaster = customerDocumentManager.getKycDocTypeMaster(customerIdProof.getIdentityTypeId());

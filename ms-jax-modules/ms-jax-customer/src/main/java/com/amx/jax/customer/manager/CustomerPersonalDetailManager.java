@@ -63,6 +63,10 @@ public class CustomerPersonalDetailManager {
 			customer.setSignatureSpecimenClob(req.getCustomerSignature());
 		}
 		List<CustomerContactVerification> cvs = new ArrayList<>();
+		// mobile
+		if (req.getTelPrefix() != null) {
+			customer.setPrefixCodeMobile(req.getTelPrefix());
+		}
 		if (req.getMobile() != null) {
 			countryMetaValidation.validateMobileNumber(customer.getCountryId(), req.getMobile());
 			countryMetaValidation.validateMobileNumberLength(customer.getCountryId(), req.getMobile());
@@ -74,6 +78,7 @@ public class CustomerPersonalDetailManager {
 			CustomerContactVerification cv = customerContactVerificationManager.create(customer, ContactType.MOBILE);
 			cvs.add(cv);
 		}
+		// email
 		if (req.getEmail() != null) {
 			if (!req.getEmail().equals(customer.getEmail())) {
 				tenantContext.get().validateEmailId(req.getEmail());
@@ -82,9 +87,12 @@ public class CustomerPersonalDetailManager {
 			customer.setEmailVerified(Status.N);
 			cvs.add(customerContactVerificationManager.create(customer, ContactType.EMAIL));
 		}
+		// whatsapp
+		if (req.getWatsAppTelePrefix() != null) {
+			customer.setWhatsappPrefix(req.getWatsAppTelePrefix());
+		}
 		if (req.getWatsAppMobileNo() != null) {
 			customer.setWhatsapp(req.getWatsAppMobileNo().toString());
-			customer.setWhatsappPrefix(req.getWatsAppTelePrefix());
 			customer.setWhatsAppVerified(Status.N);
 			cvs.add(customerContactVerificationManager.create(customer, ContactType.WHATSAPP));
 		}
