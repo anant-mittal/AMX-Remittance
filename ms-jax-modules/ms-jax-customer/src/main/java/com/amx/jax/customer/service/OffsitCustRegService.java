@@ -806,6 +806,13 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		customer.setMobile(customerDetails.getMobile());
 		customer.setMobileOther(customerDetails.getWatsAppMobileNo());
 		customer.setPrefixCodeMobileOther(customerDetails.getWatsAppTelePrefix());
+		if (customerDetails.getWatsAppMobileNo() != null) {
+			customer.setWhatsapp(customerDetails.getWatsAppMobileNo().toString());
+		}
+		if (customerDetails.getWatsAppTelePrefix() != null) {
+			customer.setWhatsappPrefix(customerDetails.getWatsAppTelePrefix());
+		}
+		customer.setPrefixCodeMobileOther(customerDetails.getWatsAppTelePrefix());
 		customer.setIsMobileWhatsApp(customerDetails.getIsWatsApp());
 		if (null != customerDetails.getWatsAppMobileNo()) {
 			customer.setIsMobileOtherWhatsApp(ConstantDocument.Yes);
