@@ -615,7 +615,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		return AmxApiResponse.build(info);
 	}
 
-	private void commitEmploymentDetails(CustomerEmploymentDetails customerEmploymentDetails, Customer customer,
+	public void commitEmploymentDetails(CustomerEmploymentDetails customerEmploymentDetails, Customer customer,
 			LocalAddressDetails localAddressDetails) {
 		if (customerEmploymentDetails != null) {
 
