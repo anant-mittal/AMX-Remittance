@@ -265,52 +265,14 @@
                                 <textFieldExpression class="java.lang.String">
                                     <![CDATA["I "+"<style  pdfFontName='fonts/all/arialbd.ttf' isUnderline='true'>"+ $F{tranx}.get("firstName") +" "+$F{tranx}.get("lastName")  + "</style>"+ " holding Civil ID number/Passport Number "+"<style  pdfFontName='fonts/all/arialbd.ttf' isUnderline='true'>"+ $F{tranx}.get("identityInt")  + "</style>"  +" valid upto " +
  									"<style  pdfFontName='fonts/all/arialbd.ttf' isUnderline='true'>"+ $F{tranx}.get("expiryDate")  + "</style>" +", hereby declare that I am holding the position of "+"<style  pdfFontName='fonts/all/arialbd.ttf' >"+ 
- 									"PEP (Politically Exposed Person)/FPEP (Foreign Politically Exposed Person) " + "</style>"                                      
+ 									"PEP (Politically Exposed Person)/FPEP (Foreign Politically Exposed Person) " + "</style>" +"<br/>" +"<br/>"+ "Further, I hereby declare that the funds are not being used for any illegal activities or Terrorism financing. "+"<br/>" +"<br/>"+"I also hereby submit my valid Civil ID and also declare that upon request from Law enforcement authorities to further substantiate the source of funds I will furnish the relevant documents accordingly."                                    
  									 ]]>
                                 </textFieldExpression>
                             </textField>
                             </frame>
                         <!--##################customer details  END####################-->
                                        
-                         <!--##################declaration text1  details START####################-->
-                        <frame>
-                            <reportElement x="5" y="270" width="585" height="30"/>
-                            <staticText>
-                                <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
-                                <textElement />
-                                <text><![CDATA[]]></text>
-                            </staticText>
-                             <staticText>
-                                <reportElement x="15" y="3" width="550" height="30" isPrintWhenDetailOverflows="true"/>
-
-                                <textElement>
-                                    <font fontName="Arial" size="10" isItalic="true"
-                                          pdfFontName="fonts/all/arial.ttf"/>
-                                </textElement>
-                                <text><![CDATA[Further, I hereby declare that the funds are not being used for any illegal activities or Terrorism financing.]]></text>
-                            </staticText>
-                            </frame>
-                        <!--##################declaration text1  END####################--> 
-                         
-                          <!--##################declaration text2  details START####################-->
-                        <frame>
-                            <reportElement x="5" y="290" width="585" height="30"/>
-                            <staticText>
-                                <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
-                                <textElement />
-                                <text><![CDATA[]]></text>
-                            </staticText>
-                             <staticText>
-                                <reportElement x="15" y="3" width="550" height="30" isPrintWhenDetailOverflows="true"/>
-
-                                <textElement>
-                                    <font fontName="Arial" size="10" isItalic="true"
-                                          pdfFontName="fonts/all/arial.ttf"/>
-                                </textElement>
-                                <text><![CDATA[I also hereby submit my valid Civil ID and also declare that upon request from Law enforcement authorities to further substantiate the source of funds I will furnish the relevant documents accordingly.]]></text>
-                            </staticText>
-                            </frame>
-                        <!--##################declaration text2  END####################-->
+                        
                    
                              <!--##################Thanking you START####################-->
                         <frame>
