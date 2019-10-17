@@ -15,6 +15,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dal.CustomerDocumentDao;
@@ -26,6 +27,7 @@ import com.amx.jax.dbmodel.DmsApplMapping;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReferenceTemp;
 import com.amx.jax.dbmodel.customer.DmsDocumentBlobTemparory;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.customer.CustomerKycData;
 import com.amx.jax.model.request.ImageSubmissionRequest;
@@ -38,7 +40,6 @@ import com.amx.jax.userservice.manager.CustomerIdProofManager;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.utils.Constants;
 import com.amx.utils.JsonUtil;
-import com.jax.amxlib.exception.jax.GlobaLException;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -93,7 +94,7 @@ public class CustomerKycManager {
 		}
 		CustomerIdProof existingIdProof = customerIdProofManager.getCustomerIdProofByCustomerId(customer.getCustomerId());
 		if (existingIdProof == null) {
-			throw new GlobaLException("No active id proof record found.");
+			throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "No active id proof record found.");
 		}
 		if (!customer.getIdentityTypeId().equals(upload.getIdentityTypeId())) {
 			log.info("creating id proof for duplication customer id type, current id type {}, uploaded id type {}", customer.getIdentityTypeId(),
