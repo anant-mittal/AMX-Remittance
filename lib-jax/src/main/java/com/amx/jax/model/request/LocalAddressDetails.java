@@ -2,11 +2,20 @@ package com.amx.jax.model.request;
 
 import java.math.BigDecimal;
 
-import javax.validation.constraints.NotNull;
-
 import com.amx.jax.swagger.ApiMockModelProperty;
 
 public class LocalAddressDetails {
+	
+	public LocalAddressDetails() {
+		super();
+	}
+
+	public LocalAddressDetails(BigDecimal countryId, BigDecimal stateId, BigDecimal districtId) {
+		super();
+		this.countryId = countryId;
+		this.stateId = stateId;
+		this.districtId = districtId;
+	}
 
 	@ApiMockModelProperty(example="49")
 	private BigDecimal contactTypeId;

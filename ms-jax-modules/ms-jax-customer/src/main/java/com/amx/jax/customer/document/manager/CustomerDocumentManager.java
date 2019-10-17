@@ -19,6 +19,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.client.compliance.ComplianceTrnxdDocStatus;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constants.DocumentScanIndic;
@@ -48,7 +49,6 @@ import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.manager.CustomerIdProofManager;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.utils.JsonUtil;
-import com.jax.amxlib.exception.jax.GlobaLException;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -203,7 +203,7 @@ public class CustomerDocumentManager {
 			sbuff.append(" id type: ").append(customer.getIdentityTypeId());
 			sbuff.append(" customer id: ").append(customer.getCustomerId());
 			sbuff.append("id expiery date: ").append(customer.getIdentityExpiredDate());
-			throw new GlobaLException(JaxError.JAX_FIELD_VALIDATION_FAILURE, sbuff.toString());
+			throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, sbuff.toString());
 		}
 		databaseImageScanManager.copyBlobDataFromJava(dmsMapping.getDocBlobId(), dmsMapping.getFinancialYear());
 	}
@@ -234,10 +234,10 @@ public class CustomerDocumentManager {
 		// TODO look for comlinace blocked customer and dont acitvate
 		List<CustomerIdProof> idProofs = customerIdProofManager.fetchCustomerIdProofsForCustomerActivation(customerId);
 		if (idProofs.size() > 1) {
-			throw new GlobaLException("duplicate customer id proof records. Deactivate one of id proof with status 'C' or 'Y' ");
+			throw new GlobalException("duplicate customer id proof records. Deactivate one of id proof with status 'C' or 'Y' ");
 		}
 		if (idProofs.size() == 0) {
-			throw new GlobaLException("kyc not added");
+			throw new GlobalException("kyc not added");
 		}
 
 		String data = kycUpload.get().getUploadData();

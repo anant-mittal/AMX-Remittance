@@ -92,6 +92,14 @@ public class RequestTrackEvent extends AuditEvent {
 		this.responseTime = responseTime;
 	}
 
+	/**
+	 * 
+	 * FOR RESP_OUT Event;
+	 * 
+	 * @param response
+	 * @param request
+	 * @return
+	 */
 	public RequestTrackEvent track(HttpServletResponse response, HttpServletRequest request) {
 		this.description = String.format("%s %s=%s", this.type, response.getStatus(), request.getRequestURI());
 
@@ -102,6 +110,8 @@ public class RequestTrackEvent extends AuditEvent {
 			this.message = apiEventObject.getMessage();
 			this.details = apiEventObject.getDetails();
 			this.errorCode = apiEventObject.getErrorCode();
+			this.exception = apiEventObject.getException();
+			this.exceptionType = apiEventObject.getExceptionType();
 		}
 
 		return this;

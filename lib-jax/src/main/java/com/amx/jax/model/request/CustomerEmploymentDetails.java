@@ -6,6 +6,20 @@ import com.amx.jax.swagger.ApiMockModelProperty;
 
 public class CustomerEmploymentDetails {
 	
+	public CustomerEmploymentDetails() {
+		super();
+	}
+
+	public CustomerEmploymentDetails(BigDecimal employmentTypeId, BigDecimal professionId, String employer, BigDecimal articleDetailsId,
+			BigDecimal incomeRangeId) {
+		super();
+		this.employmentTypeId = employmentTypeId;
+		this.professionId = professionId;
+		this.employer = employer;
+		this.articleDetailsId = articleDetailsId;
+		this.incomeRangeId = incomeRangeId;
+	}
+
 	@ApiMockModelProperty(example="188")
 	private BigDecimal employmentTypeId;
 	
