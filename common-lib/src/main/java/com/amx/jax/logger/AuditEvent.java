@@ -196,10 +196,31 @@ public abstract class AuditEvent extends AbstractEvent {
 		return this;
 	}
 
-	public AuditEvent result(Result result, AmxApiException excep) {
-		this.setResult(result);
+	public void setException(Exception excep) {
+		this.setExceptionType(excep.getClass().getName());
+		this.setException(excep.getMessage());
+	}
+
+	public void setException(AmxApiException excep) {
+		this.setExceptionType(excep.getClass().getName());
+		this.setException(excep.getMessage());
 		this.errorCode = ArgUtil.isEmpty(excep.getErrorKey()) ? ArgUtil.parseAsString(excep.getError())
 				: excep.getErrorKey();
+	}
+
+	public AuditEvent excep(Exception excep) {
+		this.setException(excep);
+		return this;
+	}
+
+	public AuditEvent excep(AmxApiException excep) {
+		this.setException(excep);
+		return this;
+	}
+
+	public AuditEvent result(Result result, AmxApiException excep) {
+		this.setResult(result);
+		this.setException(excep);
 		return this;
 	}
 

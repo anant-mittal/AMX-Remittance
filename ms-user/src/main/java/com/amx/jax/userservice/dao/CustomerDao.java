@@ -6,7 +6,6 @@ import java.sql.Connection;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -22,6 +21,7 @@ import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.placeorder.PlaceOrderCustomer;
 import com.amx.jax.constant.ConstantDocument;
@@ -43,7 +43,6 @@ import com.amx.jax.userservice.repository.ViewOnlineCustomerCheckRepository;
 import com.amx.jax.util.AmxDBConstants;
 import com.amx.jax.util.CryptoUtil;
 import com.google.common.collect.Lists;
-import com.jax.amxlib.exception.jax.GlobaLException;
 
 @Component
 public class CustomerDao {
@@ -338,7 +337,7 @@ public class CustomerDao {
 			String errorText = "Error in callProcedurePopulateCusmas, P_ERROR_IND: " + output.get("P_ERROR_IND")
 					+ " P_ERROR_MSG: " + output.get("P_ERROR_MSG");
 			LOGGER.error(errorText);
-			throw new GlobaLException(JaxError.JAX_FIELD_VALIDATION_FAILURE, errorText);
+			throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, errorText);
 		}
 		return output;
 	}

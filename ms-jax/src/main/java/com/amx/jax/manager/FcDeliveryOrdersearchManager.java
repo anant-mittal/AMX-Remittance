@@ -1,6 +1,8 @@
 package com.amx.jax.manager;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -13,9 +15,11 @@ import com.amx.jax.dao.FcSaleBranchDao;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.Employee;
 import com.amx.jax.dbmodel.fx.FxOrderTransactionModel;
+import com.amx.jax.dbmodel.fx.OrderManagementView;
 import com.amx.jax.dbmodel.fx.predicate.FxOrderTransactionModelPredicateCreator;
 import com.amx.jax.model.request.fx.FcDeliveryBranchOrderSearchRequest;
 import com.amx.jax.model.response.fx.FcSaleCurrencyAmountModel;
+import com.amx.jax.model.response.fx.FcSaleOrderManagementDTO;
 import com.amx.jax.model.response.fx.FxOrderTransactionHistroyDto;
 import com.amx.jax.repository.ICustomerRepository;
 import com.querydsl.core.types.Predicate;
@@ -45,7 +49,12 @@ public class FcDeliveryOrdersearchManager {
 		List<FxOrderTransactionHistroyDto> fxOrderTransactionHistroyDto = new ArrayList<>();
 
 		if(fxOrderTransactionModelValue!=null && fxOrderTransactionModelValue.size()!=0) {	
+			List<String> duplicate = new ArrayList<>();
+		
 			for (FxOrderTransactionModel fxOrderTransactionModel : fxOrderTransactionModelValue) {	
+				if(!duplicate.contains(fxOrderTransactionModel.getCollectionDocumentFinYear()+""+fxOrderTransactionModel.getCollectionDocumentNo())) {
+					duplicate.add(fxOrderTransactionModel.getCollectionDocumentFinYear()+""+fxOrderTransactionModel.getCollectionDocumentNo());
+					
 				FxOrderTransactionHistroyDto dto = new FxOrderTransactionHistroyDto();
 				dto.setTransactionReferenceNo(fxOrderTransactionModel.getTransactionReferenceNo());
 				dto.setDeliveryDate(fxOrderTransactionModel.getDeliveryDate());
@@ -68,6 +77,7 @@ public class FcDeliveryOrdersearchManager {
 				dto.setDeliveryDetSeqId(fxOrderTransactionModel.getDeliveryDetSeqId());
 				dto.setDocumentNumber(fxOrderTransactionModel.getDocumentNumber());
 
+				HashMap<BigDecimal, BigDecimal> foreignCurrencyAmt = new HashMap<>();
 				List<FcSaleCurrencyAmountModel> lstCurrencyAmt = new ArrayList<>();
 				String mutipleInventoryId = null;
 				for (FxOrderTransactionModel fxOrderTxnModel : fxOrderTransactionModelValue) {
@@ -77,6 +87,7 @@ public class FcDeliveryOrdersearchManager {
 						fcSaleCurrencyAmountModel.setAmount(fxOrderTxnModel.getForeignTransactionAmount());
 						fcSaleCurrencyAmountModel.setCurrencyQuote(fxOrderTxnModel.getCurrencyQuoteName());
 						lstCurrencyAmt.add(fcSaleCurrencyAmountModel);
+						foreignCurrencyAmt.put(new BigDecimal(fxOrderTxnModel.getForeignCurrencyCode()), fxOrderTxnModel.getForeignTransactionAmount());
 
 						if(mutipleInventoryId != null) {
 							mutipleInventoryId = mutipleInventoryId.concat(",").concat(fxOrderTxnModel.getInventoryId());
@@ -123,6 +134,7 @@ public class FcDeliveryOrdersearchManager {
 							
 				fxOrderTransactionHistroyDto.add(dto);
 			}
+		}
 		}
 		return fxOrderTransactionHistroyDto;
 	}

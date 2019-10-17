@@ -231,6 +231,8 @@ public class WebJaxAdvice {
 		ResponseWrapper<Object> wrapper = new ResponseWrapper<Object>();
 		wrapper.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
 		wrapper.setException(ex.getClass().getName());
+		ApiAuditEvent apiAuditEvent = new ApiAuditEvent(ex);
+		auditService.log(apiAuditEvent, ex);
 		LOG.error("In Advice Exception Captured", ex);
 		//postManService.notifyException(wrapper.getStatus(), ex);
 		return new ResponseEntity<ResponseWrapper<Object>>(wrapper, HttpStatus.INTERNAL_SERVER_ERROR);
