@@ -49,9 +49,6 @@ public class CustomerUpdateManager {
 	public void updateCustomer(UpdateCustomerInfoRequest req) throws ParseException {
 		BigDecimal customerId = metaData.getCustomerId();
 		Customer customer = userService.getCustById(customerId);
-		if (req.getEmploymentDetail() != null) {
-			customerEmployementManager.updateCustomerEmploymentInfo(customer, req.getEmploymentDetail());
-		}
 		if (req.getHomeAddressDetail() != null) {
 			req.getHomeAddressDetail().setContactType(ConstantDocument.CONTACT_TYPE_FOR_HOME);
 			customerAddressDetailsManager.updateCustomerAddressDetail(customer, req.getHomeAddressDetail());
@@ -63,6 +60,9 @@ public class CustomerUpdateManager {
 		}
 		if (req.getPersonalDetailInfo() != null) {
 			customerPersonalDetailManager.updateCustomerPersonalDetail(customer, req.getPersonalDetailInfo());
+		}
+		if (req.getEmploymentDetail() != null) {
+			customerEmployementManager.updateCustomerEmploymentInfo(customer, req.getEmploymentDetail());
 		}
 		customerDocumentManager.addCustomerDocument(metaData.getCustomerId());
 		customerBranchAuditManager.logAuditUpdateCustomer(req);

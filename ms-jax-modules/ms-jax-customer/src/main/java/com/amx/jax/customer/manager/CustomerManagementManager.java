@@ -303,7 +303,7 @@ public class CustomerManagementManager {
 
 	public CustomerShortInfo getCustomerShortDetail(String identityInt, BigDecimal identityType) {
 		customerManagementValidation.validateIdentityIntLength(identityInt, identityType);
-		List<Customer> customerList = userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(identityInt,
+		List<Customer> customerList = userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(identityInt, identityType,
 				JaxApiFlow.OFFSITE_REGISTRATION);
 		CustomerShortInfo info = new CustomerShortInfo();
 		if (customerList.size() > 0) {
