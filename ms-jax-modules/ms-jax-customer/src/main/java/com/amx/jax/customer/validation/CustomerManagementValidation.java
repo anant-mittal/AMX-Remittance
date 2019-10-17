@@ -67,7 +67,7 @@ public class CustomerManagementValidation {
 			}
 		} else {
 			throw new GlobalException(JaxError.ID_TYPE_LENGTH_NOT_DEFINED,
-					"Id length setup is missing  in paramter :" + identityInt + " identityTypeId :" + identityTypeId);
+					"Id length setup is missing  in parameter :" + identityInt + " identityTypeId :" + identityTypeId);
 		}
 	}
 
