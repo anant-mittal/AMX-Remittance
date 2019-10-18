@@ -45,13 +45,17 @@ public final class UniqueID {
 		return Long.toString(generate(), 36);
 	}
 
+	public static String generateString62() {
+		return StringUtils.alpha62(generate());
+	}
+
 	/**
 	 * Unique Session String across Systems
 	 * 
 	 * @return
 	 */
 	public static String generateSessionId() {
-		return generateSessionId(Constants.BLANK);
+		return generateSessionId(generateString62());
 	}
 
 	public static String generateSessionId(String sessionPrefix) {

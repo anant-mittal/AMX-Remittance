@@ -52,6 +52,7 @@ public class AppConstants extends Constants {
 	public static final String DEVICE_ID_KEY = "did";
 	public static final String DEVICE_ID_XKEY = "x-did";
 	public static final String DEVICE_IP_XKEY = "x-ip";
+	public static final String DEVICE_XID_KEY = "xid";
 	public static final String DEVICE_IP_LOCAL_XKEY = "x-ip-local";
 	public static final String APP_DETAILS = "app";
 	public static final String BROWSER_ID_KEY = "bid";

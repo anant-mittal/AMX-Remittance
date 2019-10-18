@@ -39,6 +39,7 @@ import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 import com.amx.utils.CryptoUtil;
 import com.amx.utils.JsonUtil;
+import com.amx.utils.UniqueID;
 import com.amx.utils.Urly;
 
 @Component
@@ -215,10 +216,17 @@ public class AppRequestFilter implements Filter {
 			}
 			if (StringUtils.isEmpty(traceId)) {
 				setFlow(req, apiRequest);
-				HttpSession session = req.getSession(false);
+				HttpSession session = req.getSession(appConfig.isAppSessionEnabled());
 				if (ArgUtil.isEmpty(sessionId)) {
+					if (ArgUtil.isEmpty(fp)) {
+						fp = localCommonHttpRequest.getRequestParam(AppConstants.DEVICE_XID_KEY);
+						if (ArgUtil.isEmpty(fp)) {
+							fp = UniqueID.generateString62();
+							localCommonHttpRequest.setCookie(AppConstants.DEVICE_XID_KEY, fp);
+						}
+					}
+					AppContextUtil.setSessionPrefix(fp);
 					if (session == null) {
-						AppContextUtil.setSessionPrefix(fp);
 						sessionId = AppContextUtil.getSessionId(true);
 					} else {
 						sessionId = AppContextUtil.getSessionId(ArgUtil.parseAsString(
