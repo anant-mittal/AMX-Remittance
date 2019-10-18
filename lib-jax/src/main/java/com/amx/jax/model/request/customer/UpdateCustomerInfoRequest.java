@@ -101,6 +101,7 @@ public class UpdateCustomerInfoRequest implements CustomerDocValidationData {
 		return this.localAddressDetail != null;
 	}
 
+	@JsonIgnore
 	public boolean isCalledFromAddApi() {
 		return isCalledFromAddApi;
 	}

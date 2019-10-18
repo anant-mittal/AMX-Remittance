@@ -299,7 +299,7 @@ public class CustomerManagementManager {
 	public void updateCustomer(UpdateCustomerInfoRequest updateCustomerInfoRequest) throws ParseException {
 		customerManagementValidation.validateDocumentsData(updateCustomerInfoRequest);
 		if (!updateCustomerInfoRequest.isCalledFromAddApi()) {
-			customerManagementValidation.validateCustomerDataForUpdate(metaData.getCustomerId());
+			customerManagementValidation.validateCustomerDataForUpdate(updateCustomerInfoRequest, metaData.getCustomerId());
 		}
 		customerUpdateManager.updateCustomer(updateCustomerInfoRequest);
 	}
