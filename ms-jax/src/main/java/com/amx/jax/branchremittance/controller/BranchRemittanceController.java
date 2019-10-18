@@ -47,8 +47,6 @@ import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
 import com.amx.jax.model.response.remittance.branch.DynamicRoutingPricingResponse;
 
-import io.swagger.annotations.ApiOperation;
-
 @RestController
 public class BranchRemittanceController implements IRemittanceService {
 	private Logger logger = LoggerFactory.getLogger(getClass());
@@ -59,7 +57,9 @@ public class BranchRemittanceController implements IRemittanceService {
 	BranchRemittanceService branchRemitService;
 	@Autowired
 	BranchRemittanceExchangeRateService branchRemittanceExchangeRateService;
-
+	@Autowired
+	ServiceApplicabilityManager serviceApplicabilityManager;
+	
 	@RequestMapping(value = Path.BR_REMITTANCE_SAVE_APPL, method = RequestMethod.POST)
 	@Override
 	public AmxApiResponse<BranchRemittanceApplResponseDto, Object> saveBranchRemittanceApplication(
