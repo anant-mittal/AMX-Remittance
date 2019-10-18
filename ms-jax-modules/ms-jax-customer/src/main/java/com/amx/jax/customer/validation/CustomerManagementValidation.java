@@ -134,7 +134,7 @@ public class CustomerManagementValidation {
 	public void validateCustomerDataForUpdate(BigDecimal customerId) {
 		Customer customer = userService.getCustById(customerId);
 		if (customer.getSignatureSpecimenClob() == null) {
-			throw new GlobalException(JaxError.SIGNATURE_NOT_AVAILABLE, "signature missing");
+			throw new GlobalException(JaxError.SIGNATURE_NOT_AVAILABLE, "Customer Signature Missing");
 		}
 	}
 

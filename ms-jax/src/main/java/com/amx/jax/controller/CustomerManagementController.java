@@ -2,6 +2,7 @@ package com.amx.jax.controller;
 
 import static com.amx.jax.customer.ICustomerManagementController.ApiPath.CREATE_CUSTOMER;
 import static com.amx.jax.customer.ICustomerManagementController.ApiPath.DOCUMENT_CATEGORY_GET;
+import static com.amx.jax.customer.ICustomerManagementController.ApiPath.DOCUMENT_CAT_TYPE_LIST_GET;
 import static com.amx.jax.customer.ICustomerManagementController.ApiPath.DOCUMENT_FIELD_GET;
 import static com.amx.jax.customer.ICustomerManagementController.ApiPath.DOCUMENT_TYPE_GET;
 import static com.amx.jax.customer.ICustomerManagementController.ApiPath.DUPLICATE_CUSTOMER_CHECK;
@@ -13,7 +14,6 @@ import static com.amx.jax.customer.ICustomerManagementController.ApiPath.UPDATE_
 import static com.amx.jax.customer.ICustomerManagementController.ApiPath.UPLOAD_CUSTOMER_DOCUMENT;
 import static com.amx.jax.customer.ICustomerManagementController.ApiPath.UPLOAD_CUSTOMER_KYC;
 import static com.amx.jax.customer.ICustomerManagementController.ApiPath.VERIFY_CONTACT;
-import static com.amx.jax.customer.ICustomerManagementController.ApiPath.DOCUMENT_CAT_TYPE_LIST_GET;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -31,7 +31,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.customer.ICustomerManagementController;
@@ -44,7 +43,6 @@ import com.amx.jax.customer.service.CustomerManagementService;
 import com.amx.jax.customer.service.CustomerService;
 import com.amx.jax.dbmodel.customer.CustomerDocumentTypeMaster;
 import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReferenceTemp;
-import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.customer.CreateCustomerInfoRequest;
 import com.amx.jax.model.customer.DuplicateCustomerDto;
@@ -61,7 +59,6 @@ import com.amx.jax.model.request.VerifyCustomerContactRequest;
 import com.amx.jax.model.request.customer.UpdateCustomerInfoRequest;
 import com.amx.jax.model.response.CustomerInfo;
 import com.amx.jax.model.response.customer.CustomerShortInfo;
-import com.amx.jax.model.response.customer.OffsiteCustomerDataDTO;
 import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.services.NotificationTaskService;
 import com.amx.jax.userservice.manager.OnlineCustomerManager;
@@ -106,7 +103,9 @@ public class CustomerManagementController implements ICustomerManagementControll
 		log.debug("request createCustomer  {}", JsonUtil.toJson(createCustomerRequest));
 		AmxApiResponse<CustomerInfo, Object> createCustomerResponse = customerManagementManager.createCustomer(createCustomerRequest);
 		metaData.setCustomerId(createCustomerResponse.getResult().getCustomerId());
-		updateCustomer(new UpdateCustomerInfoRequest());
+		UpdateCustomerInfoRequest updateInfoRequest = new UpdateCustomerInfoRequest();
+		updateInfoRequest.setCalledFromAddApi(true);
+		updateCustomer(updateInfoRequest);
 		return createCustomerResponse;
 	}
 
@@ -206,31 +205,29 @@ public class CustomerManagementController implements ICustomerManagementControll
 	@Override
 	@RequestMapping(path = GET_CUSTOMER_SHORT_DETAIL, method = RequestMethod.GET)
 	public AmxApiResponse<CustomerShortInfo, Object> getCustomerShortDetail(
-			@RequestParam(value = ApiParams.IDENTITY ,required = false) String identityInt,
-			@RequestParam(value = ApiParams.IDENTITY_TYPE_ID,required = false) BigDecimal identityType,
-			@RequestParam(value = ApiParams.CUSTOMER_ID,required = false) BigDecimal customerId) {
-		
+			@RequestParam(value = ApiParams.IDENTITY, required = false) String identityInt,
+			@RequestParam(value = ApiParams.IDENTITY_TYPE_ID, required = false) BigDecimal identityType,
+			@RequestParam(value = ApiParams.CUSTOMER_ID, required = false) BigDecimal customerId) {
+
 		customerManagementService.validateCustomerField(identityInt, identityType, customerId);
 
-    	CustomerShortInfo customerShortDetail=null;
-		if(!ArgUtil.isEmpty(customerId))
-		{
+		CustomerShortInfo customerShortDetail = null;
+		if (!ArgUtil.isEmpty(customerId)) {
 			PersonInfo personInfo = userService.getPersonInfo(customerId);
-			String identityIntByCustId =personInfo.getIdentityInt();
-			customerShortDetail=customerManagementManager.getCustomerShortDetail(identityIntByCustId, personInfo.getIdentityTypeId());
+			String identityIntByCustId = personInfo.getIdentityInt();
+			customerShortDetail = customerManagementManager.getCustomerShortDetail(identityIntByCustId, personInfo.getIdentityTypeId());
 
+		} else {
+			customerShortDetail = customerManagementManager.getCustomerShortDetail(identityInt, identityType);
 		}
-		else {
-			customerShortDetail=customerManagementManager.getCustomerShortDetail(identityInt, identityType);
-		}
-		
+
 		return AmxApiResponse.build(customerShortDetail);
 	}
 
 	@Override
 	@RequestMapping(path = DOCUMENT_CAT_TYPE_LIST_GET, method = { RequestMethod.GET })
 	public AmxApiResponse<CustomerDocCatTypeDto, Object> listDocCatType() {
-		List<CustomerDocCatTypeDto> resultList  = customerDocMasterManager.listDocCatType();
+		List<CustomerDocCatTypeDto> resultList = customerDocMasterManager.listDocCatType();
 		return AmxApiResponse.buildList(resultList);
 	}
 }

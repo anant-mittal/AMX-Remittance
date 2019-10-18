@@ -16,6 +16,9 @@ public class UpdateCustomerInfoRequest implements CustomerDocValidationData {
 	UpdateCustomerEmploymentDetailsReq employmentDetail;
 
 	List<BigDecimal> documentUploadReference;
+	
+	@JsonIgnore
+	boolean isCalledFromAddApi = false;
 
 	public UpdateCustomerPersonalDetailRequest getPersonalDetailInfo() {
 		return personalDetailInfo;
@@ -96,5 +99,13 @@ public class UpdateCustomerInfoRequest implements CustomerDocValidationData {
 	@Override
 	public Boolean isLocalAddressChange() {
 		return this.localAddressDetail != null;
+	}
+
+	public boolean isCalledFromAddApi() {
+		return isCalledFromAddApi;
+	}
+
+	public void setCalledFromAddApi(boolean isCalledFromAddApi) {
+		this.isCalledFromAddApi = isCalledFromAddApi;
 	}
 }

@@ -211,7 +211,7 @@ public class CustomerManagementManager {
 				jaxError = statusKeyBefore;
 			}
 		}
-		if(JaxError.ID_PROOFS_SCAN_IND_MISSING.equals(jaxError)) {
+		if (JaxError.ID_PROOFS_SCAN_IND_MISSING.equals(jaxError)) {
 			jaxError = statusKeyBefore;
 		}
 
@@ -298,6 +298,9 @@ public class CustomerManagementManager {
 	@Transactional
 	public void updateCustomer(UpdateCustomerInfoRequest updateCustomerInfoRequest) throws ParseException {
 		customerManagementValidation.validateDocumentsData(updateCustomerInfoRequest);
+		if (!updateCustomerInfoRequest.isCalledFromAddApi()) {
+			customerManagementValidation.validateCustomerDataForUpdate(metaData.getCustomerId());
+		}
 		customerUpdateManager.updateCustomer(updateCustomerInfoRequest);
 	}
 
@@ -327,8 +330,7 @@ public class CustomerManagementManager {
 	}
 
 	private PolicyDetails createPolicyDetails(Customer customer) {
-		CustomerInsurance custInsurance = customerInsuranceRepo.findByCustomerIdAndIsActive(customer.getCustomerId(),
-				ConstantDocument.Yes);
+		CustomerInsurance custInsurance = customerInsuranceRepo.findByCustomerIdAndIsActive(customer.getCustomerId(), ConstantDocument.Yes);
 		PolicyDetails policyDetails = new PolicyDetails();
 
 		if (custInsurance != null) {
