@@ -51,9 +51,9 @@ public class BranchUserController implements IBranchService {
 	@Autowired
 	CustomerCallDetailsRepository customerCallDetailsRepository;
 
-	@ApiVendorHeaders
-	@RequestMapping(value = "/branch-user/customer-call-session", method = RequestMethod.POST)
-	public AmxApiResponse<CustomerCall, Object> customerConnnected(@RequestParam BigDecimal agentId,
+	@Override
+	@RequestMapping(value = Path.BRANCH_USER_CUSTOMER_CALL_SESSION, method = RequestMethod.POST)
+	public AmxApiResponse<CustomerCall, Object> customerCallSession(@RequestParam BigDecimal agentId,
 			@RequestParam BigDecimal customerId,
 			@RequestParam(required = false) String mobile,
 			@RequestParam(required = false) String leadId) {
@@ -76,9 +76,9 @@ public class BranchUserController implements IBranchService {
 		return AmxApiResponse.build(new CustomerCall()).statusEnum(ApiStatusCodes.FAIL);
 	}
 
-	@ApiVendorHeaders
-	@RequestMapping(value = "/branch-user/customer-call-status", method = RequestMethod.POST)
-	public AmxApiResponse<CustomerCall, Object> customerConnnectedStatus(@RequestParam BigDecimal agentId,
+	@Override
+	@RequestMapping(value = Path.BRANCH_USER_CUSTOMER_CALL_STATUS, method = RequestMethod.POST)
+	public AmxApiResponse<CustomerCall, Object> customerCallStatus(@RequestParam BigDecimal agentId,
 			@RequestParam(required = false) String mobile, @RequestParam(required = false) String sessionId,
 			@RequestParam(required = false) String leadId,
 			@RequestParam String status, @RequestParam String comment,
