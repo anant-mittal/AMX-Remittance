@@ -14,7 +14,8 @@ public final class UniqueID {
 
 	/** The Constant PREF. */
 	public static final String PREF = Random.randomAlpha(3);
-	public static final Pattern SYSTEM_STRING_PATTERN = Pattern.compile("^([A-Z]{3})-([\\w]+)-([\\w]+)-(\\w+)$");
+	public static final Pattern SYSTEM_STRING_PATTERN = Pattern
+			.compile("^([A-Z]{3})-([\\w]+)-([\\w]+)-([\\w]+)-(\\w+)$");
 
 	/** The atom. */
 	private static AtomicInteger atom = new AtomicInteger();
@@ -50,7 +51,11 @@ public final class UniqueID {
 	 * @return
 	 */
 	public static String generateSessionId() {
-		return PREF + "-" + generateString();
+		return generateSessionId(Constants.BLANK);
+	}
+
+	public static String generateSessionId(String sessionPrefix) {
+		return PREF + "-" + StringUtils.pad(sessionPrefix, "xxxxx", 0) + "-" + generateString();
 	}
 
 	public static String generateRequestId(String sessionId, String requestPrefix) {
@@ -63,6 +68,7 @@ public final class UniqueID {
 	 * @param midfix the midfix
 	 * @return : Unique String ID
 	 */
+	@Deprecated
 	public static String generateSystemString(String midfix, String prefix) {
 		return PREF + "-" + midfix + "-" + prefix + "-" + Long.toString(generate(), 36);
 	}

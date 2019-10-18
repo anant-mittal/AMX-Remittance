@@ -24,6 +24,7 @@ public class AppConstants extends Constants {
 	public static final String AUTH_KEY_XKEY = "x-app-auth-key";
 	public static final String AUTH_TOKEN_XKEY = "x-app-auth-token";
 	public static final String AUTH_CLIENT_KEY_XKEY = "x-client-auth-key";
+	public static final String SESSION_PREFIX_XKEY = "x-session-prefix";
 	public static final String SESSION_ID_XKEY = "x-session-id";
 	public static final String SESSION_UID_XKEY = "x-session-uid";
 	public static final String TRACE_ID_XKEY = "x-trace-id";

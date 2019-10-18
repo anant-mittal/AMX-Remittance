@@ -83,27 +83,50 @@ public final class StringUtils {
 		return (str == null) ? str : str.trim();
 	}
 
-	public static String pad(String src, String pad, int alignment, int trim) {
-		if (alignment == 0) {
-			String fullPart = pad + src;
-			if (trim == 0) {
-				return fullPart.substring(Math.min(src.length(), pad.length()));
+	/**
+	 * 
+	 * @param src
+	 * @param pad
+	 * @param flip => 0: left, 1:right
+	 * @param trim : 1=max size will of pad, 0: min size will be of src;
+	 * @return
+	 */
+	public static String pad(String src, String pad, int flip, int trim) {
+		if (trim == 0) {
+			return src;
+		}
+
+		int lendiff = pad.length() - src.length();
+		if (flip == 1) {
+			String fullPart = substring(pad, lendiff) + src;
+			if (trim == 1) {
+				return fullPart.substring(-1 * Math.min(lendiff, 0)); // fullPart.substring(Math.min(src.length(),
 			} else {
-				return fullPart.substring(src.length());
+				return lendiff >= 0 ? fullPart.substring(lendiff) : fullPart;
 			}
 		} else {
-			String fullPart = src + pad;
+			String fullPart = src + ((lendiff >= 0) ? pad.substring(src.length()) : Constants.BLANK);
 			if (trim == 0) {
-				return fullPart.substring(0, Math.max(src.length(), pad.length()));
+				return fullPart.substring(0, src.length());
 			} else {
 				return fullPart.substring(0, pad.length());
 			}
 		}
+	}
 
+	/**
+	 * 
+	 * @param src
+	 * @param pad
+	 * @param flip => 0: left, 1:right
+	 * @return
+	 */
+	public static String pad(String src, String pad, int flip) {
+		return pad(src, pad, flip, 1);
 	}
 
 	public static String substring(String str, int length) {
-		if (str == null || str.length() <= 0) {
+		if (str == null || str.length() <= 0 || length <= 0) {
 			return Constants.BLANK;
 		} else if (str.length() <= length) {
 			return str;
