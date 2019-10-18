@@ -104,7 +104,11 @@ public class AppContextUtil {
 	}
 
 	public static Language getLang() {
-		return (Language) ArgUtil.parseAsEnum(ContextUtil.map().get(AppConstants.LANG_PARAM_KEY), Language.EN);
+		return (Language) ArgUtil.parseAsEnum(ContextUtil.map().get(AppConstants.LANG_PARAM_KEY), Language.EN,Language.class);
+	}
+
+	public static Language getLang(Language lang) {
+		return (Language) ArgUtil.parseAsEnum(ContextUtil.map().get(AppConstants.LANG_PARAM_KEY), lang, Language.class);
 	}
 
 	public static UserDeviceClient getUserClient() {
@@ -182,6 +186,10 @@ public class AppContextUtil {
 
 	public static void setTraceTime(long timestamp) {
 		ContextUtil.map().put(AppConstants.TRACE_TIME_XKEY, timestamp);
+	}
+
+	public static void resetTraceTime() {
+		ContextUtil.map().put(AppConstants.TRACE_TIME_XKEY, System.currentTimeMillis());
 	}
 
 	public static void setActorId(Object actorId) {
@@ -383,7 +391,7 @@ public class AppContextUtil {
 				List<String> traceIds = httpHeaders.get(AppConstants.TRACE_ID_XKEY);
 				if (traceIds.size() >= 0) {
 					setTranceId(traceIds.get(0));
-				} 
+				}
 			}
 		}
 

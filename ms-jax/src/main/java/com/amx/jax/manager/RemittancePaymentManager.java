@@ -31,6 +31,7 @@ import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dao.RemittanceProcedureDao;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.PlaceOrder;
+import com.amx.jax.dbmodel.ReferralDetails;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.partner.TransactionDetailsView;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
@@ -48,7 +49,9 @@ import com.amx.jax.partner.dao.PartnerTransactionDao;
 import com.amx.jax.partner.dto.RemitTrnxSPDTO;
 import com.amx.jax.partner.manager.PartnerTransactionManager;
 import com.amx.jax.payg.PaymentResponseDto;
+import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.model.Email;
+import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.pricer.var.PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE;
 import com.amx.jax.repository.IPlaceOrderDao;
 import com.amx.jax.repository.IShoppingCartDetailsDao;
@@ -61,9 +64,11 @@ import com.amx.jax.services.RemittanceApplicationService;
 import com.amx.jax.services.ReportManagerService;
 import com.amx.jax.services.TransactionHistroyService;
 import com.amx.jax.userservice.dao.CustomerDao;
+import com.amx.jax.userservice.dao.ReferralDetailsDao;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.RoundUtil;
+import com.amx.utils.JsonUtil;
 
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -110,6 +115,9 @@ public class RemittancePaymentManager extends AbstractService{
 	@Autowired
 	UserService userService;
 	
+	@Autowired
+	PushNotifyClient pushNotifyClient;
+	
     @Autowired
     IPlaceOrderDao placeOrderdao;
     
@@ -126,6 +134,9 @@ public class RemittancePaymentManager extends AbstractService{
 	DailyPromotionManager dailyPromotionManager;
 	
 	@Autowired
+   	ReferralDetailsDao refDao;
+	
+	@Autowired
 	PartnerTransactionManager partnerTransactionManager;
 	
 	@Autowired
@@ -136,7 +147,7 @@ public class RemittancePaymentManager extends AbstractService{
 	
 	public ApiResponse<PaymentResponseDto> paymentCapture(PaymentResponseDto paymentResponse) {
 		ApiResponse response = null;
-		logger.info("paymment capture :"+paymentResponse.toString());
+		logger.debug("paymment capture :{}", JsonUtil.toJson(paymentResponse));
 		List<ShoppingCartDetails>  shoppingCartList = new ArrayList<>();
 		UserFinancialYear userFinancialYear = finanacialService.getUserFinancialYear();
 		List<RemittanceApplication> lstPayIdDetails =null;
@@ -171,6 +182,33 @@ public class RemittancePaymentManager extends AbstractService{
 				remittanceApplicationService.updatePaymentDetails(lstPayIdDetails, paymentResponse);
 				/** Calling stored procedure  insertRemittanceOnline **/
 				remitanceMap = remittanceApplicationService.saveRemittance(paymentResponse);
+				
+//				/** Referral Code **/
+//				List<RemittanceTransaction> remittanceList = remitAppDao.getOnlineRemittanceList(paymentResponse.getCustomerId());
+//				logger.info("Remittance Count:" + remittanceList.size());
+//				if(remittanceList.size() == 0) {
+//					ReferralDetails referralDetails = refDao.getReferralByCustomerId(paymentResponse.getCustomerId());
+//					referralDetails.setIsConsumed("Y");
+//					refDao.updateReferralCode(referralDetails);
+//					if (referralDetails.getRefferedByCustomerId() != null) {
+//						PushMessage pushMessage = new PushMessage();
+//						pushMessage.setSubject("Refer To Win!");
+//						pushMessage.setMessage(
+//								"Congraturlations! Your reference has done the first transaction on AMIEC App! You will get a chance to win from our awesome Referral Program! Keep sharing the links to as many contacts you can and win exciting prices on referral success!");
+//						pushMessage.addToUser(referralDetails.getRefferedByCustomerId());
+//						pushNotifyClient.send(pushMessage);
+//					}
+//					
+//					if(referralDetails.getCustomerId() != null) {
+//						PushMessage pushMessage = new PushMessage();
+//						pushMessage.setSubject("Refer To Win!");
+//						pushMessage.setMessage(
+//								"Welcome to Al Mulla family! Win a chance to get exciting offers at Al Mulla Exchange by sharing the links to as many contacts as you can.");
+//						pushMessage.addToUser(referralDetails.getCustomerId());
+//						pushNotifyClient.send(pushMessage);	
+//					}
+//				}			
+				
 				errorMsg = (String)remitanceMap.get("P_ERROR_MESG");
 				errorMsg= null;
 				if(remitanceMap!=null && !remitanceMap.isEmpty() && StringUtils.isBlank(errorMsg)){
@@ -380,12 +418,16 @@ public class RemittancePaymentManager extends AbstractService{
 	}
 	
 	public void callingServiceProviderApi(RemittanceResponseDto responseDto,BigDecimal customerId) {
+		TransactionDetailsView serviceProviderView = null;
+		String partnerTransactionId = null;
+		
 		if(responseDto!=null && JaxUtil.isNullZeroBigDecimalCheck(responseDto.getCollectionDocumentNo())) {
 			Boolean spCheckStatus = Boolean.FALSE;
 			List<TransactionDetailsView> lstTrnxDetails = partnerTransactionDao.fetchTrnxSPDetails(customerId,responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo());
 			for (TransactionDetailsView transactionDetailsView : lstTrnxDetails) {
 				if(transactionDetailsView.getBankCode().equalsIgnoreCase(SERVICE_PROVIDER_BANK_CODE.HOME.name())) {
 					spCheckStatus = Boolean.TRUE;
+					serviceProviderView = transactionDetailsView;
 					break;
 				}
 			}
@@ -393,7 +435,10 @@ public class RemittancePaymentManager extends AbstractService{
 			if(spCheckStatus) {
 				AmxApiResponse<Remittance_Call_Response, Object> apiResponse = partnerTransactionManager.callingPartnerApi(responseDto);
 				if(apiResponse != null) {
-					RemitTrnxSPDTO remitTrnxSPDTO = partnerTransactionManager.saveRemitTransactionDetails(apiResponse,responseDto);
+					if(serviceProviderView != null && serviceProviderView.getPartnerSessionId() != null) {
+						partnerTransactionId = serviceProviderView.getPartnerSessionId();
+					}
+					RemitTrnxSPDTO remitTrnxSPDTO = partnerTransactionManager.saveRemitTransactionDetails(apiResponse,responseDto,partnerTransactionId);
 					if(remitTrnxSPDTO != null && remitTrnxSPDTO.getActionInd() != null && remitTrnxSPDTO.getResponseDescription() != null) {
 						// got success to fetch response from API
 						logger.info(" Service provider result Action Ind " +remitTrnxSPDTO.getActionInd() + " Description : " + remitTrnxSPDTO.getResponseDescription());

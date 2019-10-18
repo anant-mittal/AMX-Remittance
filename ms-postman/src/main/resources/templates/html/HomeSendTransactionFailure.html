@@ -4,7 +4,7 @@
 <head>
 <meta name="viewport" content="width=device-width" />
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>Online Remittance - HomeSend Transaction Attempt Failed</title>
+<title>Remittance - HomeSend Transaction Attempt Failed</title>
 <style>
 * {	
 	margin: 0;
@@ -318,15 +318,15 @@ a {
 											</tr>
 											<tr>
 												<td>Transaction Amount (<span th:text="${data.localCurrencyQuote}"></span>)</td>
-												<td><span th:text="${data.localCurrencyQuote}"></span> <span th:text="${data.localCurrencyQuote}"></span></td>
+												<td><span th:text="${data.localCurrencyQuote}"></span> <span th:text="${data.transactionAmount}"></span></td>
 											</tr>
 											<tr>
 												<td>Transaction Amount in FC</td>
-												<td><span th:text="${data.transactionForeignAmount}"></span> (<span th:text="${data.foreignCurrencyQuote}"></span>)</td>
+												<td><span th:text="${data.foreignCurrencyQuote}"></span> <span th:text="${data.transactionForeignAmount}"></span> </td>
 											</tr>
 											<tr>
 												<td>Transaction Reference No.</td>
-												<td th:text="${data.transactionDocYear + '' +  data.transactionDocNumber}"></td>
+												<td th:text="${data.transactionDocYear + '/' +  data.transactionDocNumber}"></td>
 											</tr>
 											<tr>
 												<td>HomeSend Transaction ID	</td>

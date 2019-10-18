@@ -38,7 +38,6 @@ import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.remittance.AdditionalBankRuleAmiec;
-import com.amx.jax.dbmodel.remittance.ViewVatDetails;
 import com.amx.jax.dict.UserClient.Channel;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.exrateservice.service.ExchangeRateService;
@@ -77,7 +76,6 @@ import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.services.BeneficiaryValidationService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.JaxUtil;
-import com.amx.jax.util.RoundUtil;
 import com.amx.jax.validation.RemittanceTransactionRequestValidator;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -175,7 +173,6 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 		result.setCostRateLimitReached(exchangeRateResponseModel.getCostRateLimitReached());
 		// trnx fee
 		BigDecimal commission = getComission();
-		
 		VatDetailsDto vatDetails = remittanceTransactionManager.getVatAmount(commission);
 		if(vatDetails!=null && !StringUtils.isBlank(vatDetails.getVatApplicable()) && vatDetails.getVatApplicable().equalsIgnoreCase(ConstantDocument.Yes)) {
 			result.setVatAmount(vatDetails.getVatAmount()==null?BigDecimal.ZERO:vatDetails.getVatAmount());
@@ -229,6 +226,7 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 			commission =commission.subtract(corpDiscount);
 		}
 		return commission;
+		
 	}
 
 	
@@ -327,6 +325,10 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 			result.setCustomerDiscountDetails(sellRateDetail.getCustomerDiscountDetails());
 			result.setDiscountAvailed(sellRateDetail.isDiscountAvailed());
 			result.setCostRateLimitReached(sellRateDetail.isCostRateLimitReached());
+			result.setDiffInBetterRateFcAmount(sellRateDetail.getDiffInBetterRateFcAmount());
+			result.setBetterRateAvailable(sellRateDetail.isBetterRateAvailable());
+			result.setBetterRateAmountSlab(sellRateDetail.getBetterRateAmountSlab());
+			
 			BigDecimal commission =null;
 			if(prType.equals(PRICE_TYPE.NO_BENE_DEDUCT)) {
 			 commission =trnxRoutingDetails.getChargeAmount();
@@ -337,8 +339,9 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 			}
 			BigDecimal corpDiscount = corporateDiscountManager.corporateDiscount();
 			
-			if(JaxUtil.isNullZeroBigDecimalCheck(commission) && commission.compareTo(corpDiscount)>=0) {
+			if(JaxUtil.isNullZeroBigDecimalCheck(commission) &&  JaxUtil.isNullZeroBigDecimalCheck(corpDiscount) && commission.compareTo(corpDiscount)>=0) {
 				commission =commission.subtract(corpDiscount);
+				result.setDiscountOnComissionFlag(ConstantDocument.Yes);
 			}
 			
 			VatDetailsDto vatDetails = remittanceTransactionManager.getVatAmount(commission);
@@ -370,11 +373,13 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 			remittanceTransactionManager.setLoyalityPointFlags(customer, result);
 			remittanceTransactionManager.setLoyalityPointIndicaters(result);
 			BranchRemittanceApplRequestModel remittanceApplRequestModel = buildRemittanceTransactionModel(routingPricingRequest);
-			if(trnxRoutingDetails != null && trnxRoutingDetails.getBankIndicator() != null && !trnxRoutingDetails.getBankIndicator().equalsIgnoreCase(ConstantDocument.BANK_INDICATOR_SERVICE_PROVIDER_BANK)) {
+			//if(trnxRoutingDetails != null && trnxRoutingDetails.getBankIndicator() != null && !trnxRoutingDetails.getBankIndicator().equalsIgnoreCase(ConstantDocument.BANK_INDICATOR_SERVICE_PROVIDER_BANK)) {
+			/** isFcRoundingAllowed() --Yes normal ,N -Not allowed **/
+			if(trnxRoutingDetails != null && trnxRoutingDetails.getIsFcRoundingAllowed() !=null && trnxRoutingDetails.getIsFcRoundingAllowed().equalsIgnoreCase(ConstantDocument.Yes)) { 
 				remittanceTransactionManager.applyChannelAmountRouding(result.getExRateBreakup(),metaData.getChannel().getClientChannel(), true);
 			}
 			remittanceTransactionManager.setNetAmountAndLoyalityState(result.getExRateBreakup(), remittanceApplRequestModel, result, commission,vatDetails.getVatApplicableAmount());
-			if(trnxRoutingDetails != null && trnxRoutingDetails.getBankIndicator() != null && !trnxRoutingDetails.getBankIndicator().equalsIgnoreCase(ConstantDocument.BANK_INDICATOR_SERVICE_PROVIDER_BANK)) {
+			if(trnxRoutingDetails != null && trnxRoutingDetails.getIsFcRoundingAllowed() !=null && trnxRoutingDetails.getIsFcRoundingAllowed().equalsIgnoreCase(ConstantDocument.Yes)) {
 				remittanceTransactionManager.applyCurrencyRoudingLogic(result.getExRateBreakup());
 			}else {
 				remittanceTransactionManager.applyCurrencyRoudingLogicSP(result.getExRateBreakup());

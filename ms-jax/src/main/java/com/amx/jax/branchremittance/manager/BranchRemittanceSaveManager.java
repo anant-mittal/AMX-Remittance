@@ -24,6 +24,7 @@ import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.branchremittance.dao.BranchRemittanceDao;
+import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constants.JaxTransactionStatus;
 import com.amx.jax.dal.RoutingProcedureDao;
@@ -78,6 +79,7 @@ import com.amx.jax.model.response.remittance.RemittanceCollectionDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.TransferDto;
 import com.amx.jax.model.response.serviceprovider.Remittance_Call_Response;
+import com.amx.jax.model.response.serviceprovider.ServiceProviderResponse;
 import com.amx.jax.partner.dao.PartnerTransactionDao;
 import com.amx.jax.partner.dto.RemitTrnxSPDTO;
 import com.amx.jax.partner.manager.PartnerTransactionManager;
@@ -204,7 +206,6 @@ public class BranchRemittanceSaveManager {
 	
     @Autowired
     IPlaceOrderDao placeOrderdao;
-    
 	@Autowired
 	RemittanceManager remittanceManager;
 	
@@ -226,6 +227,9 @@ public class BranchRemittanceSaveManager {
 	@Autowired
 	PartnerTransactionDao partnerTransactionDao;
 	
+    @Autowired
+	RemittanceSignatureManager remittanceSignatureManager;
+	
 	
 	List<LoyaltyPointsModel> loyaltyPoints 	 = new ArrayList<>();
 	Map<BigDecimal,RemittanceBenificiary> remitBeneList = new HashMap<>();
@@ -235,7 +239,11 @@ public class BranchRemittanceSaveManager {
 	
 	
 	@Autowired
-    AuditService auditService;
+    	AuditService auditService;
+	
+	
+	@Autowired
+	JaxTenantProperties jaxTenantProperties;
 	
 	/**
 	 * 
@@ -250,7 +258,10 @@ public class BranchRemittanceSaveManager {
 		shoppingCartList = remittanceRequestModel.getRemittanceApplicationId();
 		//updateApplicationStatus(shoppingCartList);
 		RemittanceResponseDto responseDto = saveRemittance(remittanceRequestModel);
+		TransactionDetailsView serviceProviderView = null;
+		String partnerTransactionId = null;
 		
+		try {
 		// service Provider api
 		if(responseDto!=null && JaxUtil.isNullZeroBigDecimalCheck(responseDto.getCollectionDocumentNo())) {
 			Boolean spCheckStatus = Boolean.FALSE;
@@ -258,6 +269,7 @@ public class BranchRemittanceSaveManager {
 			for (TransactionDetailsView transactionDetailsView : lstTrnxDetails) {
 				if(transactionDetailsView.getBankCode().equalsIgnoreCase(SERVICE_PROVIDER_BANK_CODE.HOME.name())) {
 					spCheckStatus = Boolean.TRUE;
+					serviceProviderView = transactionDetailsView;
 					break;
 				}
 			}
@@ -265,7 +277,10 @@ public class BranchRemittanceSaveManager {
 			if(spCheckStatus) {
 				AmxApiResponse<Remittance_Call_Response, Object> apiResponse = partnerTransactionManager.callingPartnerApi(responseDto);
 				if(apiResponse != null) {
-					RemitTrnxSPDTO remitTrnxSPDTO = partnerTransactionManager.saveRemitTransactionDetails(apiResponse,responseDto);
+					if(serviceProviderView != null && serviceProviderView.getPartnerSessionId() != null) {
+						partnerTransactionId = serviceProviderView.getPartnerSessionId();
+					}
+					RemitTrnxSPDTO remitTrnxSPDTO = partnerTransactionManager.saveRemitTransactionDetails(apiResponse,responseDto,partnerTransactionId);
 					if(remitTrnxSPDTO != null && remitTrnxSPDTO.getActionInd() != null && remitTrnxSPDTO.getResponseDescription() != null) {
 						// got success to fetch response from API
 						logger.info(" Service provider result Action Ind " +remitTrnxSPDTO.getActionInd() + " Description : " + remitTrnxSPDTO.getResponseDescription());
@@ -283,6 +298,7 @@ public class BranchRemittanceSaveManager {
 		}else {
 			logger.error("Service provider api fail to execute : ColDocNo : ", responseDto.getCollectionDocumentNo() + " : ColDocCod : " +responseDto.getCollectionDocumentCode()+"  : ColDocYear : "+responseDto.getCollectionDocumentFYear());
 		}
+		logger.info("MRU --BEFORE appliation move to EMOS -->"+responseDto.getCollectionDocumentNo());
 		
 		if(responseDto!=null && JaxUtil.isNullZeroBigDecimalCheck(responseDto.getCollectionDocumentNo())) {
 			brRemittanceDao.updateApplicationToMoveEmos(responseDto);
@@ -293,11 +309,28 @@ public class BranchRemittanceSaveManager {
 			paymentResponse.setCompanyId(metaData.getCompanyId());
 			paymentResponse.setApplicationCountryId(metaData.getCountryId());
 			paymentResponse.setCustomerId(metaData.getCustomerId());
-			remittanceApplicationService.saveRemittancetoOldEmos(paymentResponse);
+			if(jaxTenantProperties.getHashSigEnable()==true) {
+				remittanceSignatureManager.updateSignatureHash(paymentResponse);
+			}
+			logger.info("MRU --BEFORE saveRemittancetoOldEmos  EMOS -->"+JsonUtil.toJson(paymentResponse));
+			Map<String, Object> outpuMap = remittanceApplicationService.saveRemittancetoOldEmos(paymentResponse);
+			logger.info("MRU procedure OUTPUT --->"+outpuMap==null?"TRNX MOVED SUCCESS":outpuMap.toString());
+			if(outpuMap!=null && outpuMap.get("P_ERROR_MESSAGE")!=null) {
+				String errrMsg = outpuMap.get("P_ERROR_MESSAGE").toString();
+				logger.info("MRU Procedure Error Msg :"+errrMsg);
+				if(!StringUtils.isBlank(errrMsg)) {
+					notificationService.sendTransactionErrorAlertEmail(errrMsg,"TRNX NOT MOVED TO EMOS",paymentResponse);
+				}
+			}
 			String promotionMsg = promotionManager.getPromotionPrizeForBranch(responseDto);
 			responseDto.setPromotionMessage(promotionMsg);
 		}else {
-			logger.error("NOT moved to old emos ", responseDto.getCollectionDocumentNo() + "" +responseDto.getCollectionDocumentCode()+" "+responseDto.getCollectionDocumentFYear());
+			logger.info("NOT moved to old emos ", responseDto.getCollectionDocumentNo() + "" +responseDto.getCollectionDocumentCode()+" "+responseDto.getCollectionDocumentFYear());
+		}
+		
+		}catch(Exception e) {
+			e.printStackTrace();
+			logger.info("MRU saveRemittanceTrnx catch block -->"+e.getMessage());
 		}
 		return responseDto;
 	}
@@ -798,7 +831,7 @@ public class BranchRemittanceSaveManager {
 					remitTrnx.setSourceofincome(appl.getSourceofincome());
 					remitTrnx.setLocalCommisionCurrencyId(appl.getExCurrencyMasterByLocalTranxCurrencyId());
 					TransferDto trnaferType = getTrasnferModeByBankServiceRule(remitTrnx);
-					remitTrnx.setFileCreation(trnaferType.getTrasnferMode());
+					remitTrnx.setFileCreation(trnaferType.getFileCreation());
 					remitTrnx.setTransferMode(trnaferType.getTrasnferMode());
 					remitTrnx.setTransferModeId(trnaferType.getTransferModeId());
 					remitTrnx.setUsdAmount(appl.getUsdAmt());
@@ -1161,25 +1194,28 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
 	 Map<String,Object> mapBankServiceRule= routingProDao.checkBankServiceRule(remitTrnx);
 	 TransferDto dto = new TransferDto();
 	 String transferMode=null;
+	 String fileCreation=ConstantDocument.No;
 	 BigDecimal transferModeId=BigDecimal.ZERO;
-	 if(mapBankServiceRule!=null) {
+	 if(mapBankServiceRule!=null && !mapBankServiceRule.isEmpty()) {
 		 transferMode = mapBankServiceRule.get("P_TRANSFER_MODE")==null?"":mapBankServiceRule.get("P_TRANSFER_MODE").toString();
 		 transferModeId = mapBankServiceRule.get("P_TRANSFER_MODE_ID")==null?BigDecimal.ZERO:(BigDecimal)mapBankServiceRule.get("P_TRANSFER_MODE_ID");
-		 if(transferMode!=null && transferMode.equalsIgnoreCase(ConstantDocument.FILE_CREATION)) {
-			 transferMode=ConstantDocument.Yes;
-		 }else if(transferMode!=null && transferMode.equalsIgnoreCase(ConstantDocument.WEB_SERVICE)) {
-			 transferMode=ConstantDocument.No;
-		 }
-		 if(!JaxUtil.isNullZeroBigDecimalCheck(transferModeId)){
-			 throw new GlobalException(JaxError.NO_RECORD_FOUND,"Please check bank service rule.:"+remitTrnx);
+		 
+		 if(!JaxUtil.isNullZeroBigDecimalCheck(transferModeId) && StringUtils.isBlank(transferMode)){
+			 throw new GlobalException(JaxError.NO_RECORD_FOUND,"Transfer mode is not defined in bank service rule");
 		 }
 		 
-	 }else {
-		 throw new GlobalException(JaxError.NO_RECORD_FOUND,"Please check bank service rule.:"+remitTrnx);
+		 if(!StringUtils.isBlank(transferMode) && (transferMode.equalsIgnoreCase(ConstantDocument.FILE_CREATION) || transferMode.equalsIgnoreCase(ConstantDocument.TELEX_TRANFER))) {
+			 fileCreation=ConstantDocument.Yes;
+		 }else if(!StringUtils.isBlank(transferMode) && transferMode.equalsIgnoreCase(ConstantDocument.WEB_SERVICE)) {
+			 fileCreation=ConstantDocument.No;
+		 }
+	 }else {		
+		 throw new GlobalException(JaxError.NO_RECORD_FOUND,"Transfer mode is not defined in bank service rule");
 	 }
 	
 	 dto.setTransferModeId(transferModeId);
 	 dto.setTrasnferMode(transferMode);
+	 dto.setFileCreation(fileCreation);
 	 return dto;
  }
  
@@ -1283,32 +1319,30 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
 		}
 		return validStatus;
 	}
-	
-	@SuppressWarnings("unchecked")
-	public void validateSaveTrnxDetails(HashMap<String, Object> mapAllDetailRemitSave ) {
-		CollectionModel collectModel = (CollectionModel) mapAllDetailRemitSave.get("EX_COLLECT");
-		List<CollectDetailModel> collectDetailsModel = (List<CollectDetailModel>) mapAllDetailRemitSave.get("EX_COLLECT_DET");
+@SuppressWarnings("unchecked")
+public void validateSaveTrnxDetails(HashMap<String, Object> mapAllDetailRemitSave ) {
+	CollectionModel collectModel = (CollectionModel) mapAllDetailRemitSave.get("EX_COLLECT");
+	List<CollectDetailModel> collectDetailsModel = (List<CollectDetailModel>) mapAllDetailRemitSave.get("EX_COLLECT_DET");
 
-		Map<BigDecimal,RemittanceTransaction> remitTrnxList = (Map<BigDecimal,RemittanceTransaction>) mapAllDetailRemitSave.get("EX_REMIT_TRNX");
-		Map<BigDecimal,RemittanceBenificiary> remitBeneList = (Map<BigDecimal,RemittanceBenificiary>) mapAllDetailRemitSave.get("EX_REMIT_BENE");
-		Map<BigDecimal,List<RemittanceAdditionalInstructionData>> addlTrnxList = (Map<BigDecimal,List<RemittanceAdditionalInstructionData>>) mapAllDetailRemitSave.get("EX_REMIT_ADDL");
-		if(collectModel==null) {
-			throw new GlobalException(JaxError.NO_RECORD_FOUND, "Collection data not found");
-		}	
-		if(collectDetailsModel==null || collectDetailsModel.isEmpty() ) {
-			throw new GlobalException(JaxError.NO_RECORD_FOUND, "Collection details data not found");
-		}
-		if(remitTrnxList.isEmpty()) {
-			throw new GlobalException(JaxError.NO_RECORD_FOUND, "Remittance trnx details not found");
-		}
-		if(remitBeneList.isEmpty()) {
-			throw new GlobalException(JaxError.NO_RECORD_FOUND, "Remittance bene  details not found");
-		}
-		if(addlTrnxList.isEmpty()) {
-			throw new GlobalException(JaxError.NO_RECORD_FOUND, "Remittance additional instruction details not found");
-		}
-
+	Map<BigDecimal,RemittanceTransaction> remitTrnxList = (Map<BigDecimal,RemittanceTransaction>) mapAllDetailRemitSave.get("EX_REMIT_TRNX");
+	Map<BigDecimal,RemittanceBenificiary> remitBeneList = (Map<BigDecimal,RemittanceBenificiary>) mapAllDetailRemitSave.get("EX_REMIT_BENE");
+	Map<BigDecimal,List<RemittanceAdditionalInstructionData>> addlTrnxList = (Map<BigDecimal,List<RemittanceAdditionalInstructionData>>) mapAllDetailRemitSave.get("EX_REMIT_ADDL");
+	if(collectModel==null) {
+		throw new GlobalException(JaxError.NO_RECORD_FOUND, "Collection data not found");
+	}	
+	if(collectDetailsModel==null || collectDetailsModel.isEmpty() ) {
+		throw new GlobalException(JaxError.NO_RECORD_FOUND, "Collection details data not found");
 	}
+	if(remitTrnxList.isEmpty()) {
+		throw new GlobalException(JaxError.NO_RECORD_FOUND, "Remittance trnx details not found");
+	}
+	if(remitBeneList.isEmpty()) {
+		throw new GlobalException(JaxError.NO_RECORD_FOUND, "Remittance bene  details not found");
+	}
+	if(addlTrnxList.isEmpty()) {
+		throw new GlobalException(JaxError.NO_RECORD_FOUND, "Remittance additional instruction details not found");
+	}
+}
 	
 	public Map<BigDecimal,RemitTrnxSrvProv> saveRemitTrnxSrvProv(BigDecimal remittanceApplicationId,String createdBy) {
 		Map<BigDecimal,RemitTrnxSrvProv> mapRemitTrnxSrvProv = null;
@@ -1319,7 +1353,6 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
 		if (applSrvProv != null) {
 			mapRemitTrnxSrvProv = new HashMap<>();
 			remitTrnxSrvProv = new RemitTrnxSrvProv();
-			
 			remitTrnxSrvProv.setAmgSessionId(applSrvProv.getAmgSessionId());
 			remitTrnxSrvProv.setBankId(applSrvProv.getBankId());
 			remitTrnxSrvProv.setFixedCommInSettlCurr(applSrvProv.getFixedCommInSettlCurr());

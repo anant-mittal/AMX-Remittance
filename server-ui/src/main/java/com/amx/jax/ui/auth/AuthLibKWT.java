@@ -9,22 +9,14 @@ import com.amx.jax.model.response.customer.CustomerFlags;
 import com.amx.jax.scope.TenantSpecific;
 import com.amx.jax.ui.UIConstants.Features;
 import com.amx.jax.ui.auth.AuthLibContext.AuthLib;
-import com.amx.jax.ui.service.LoginService;
-import com.amx.jax.ui.service.SessionService;
 import com.amx.jax.ui.session.UserDeviceBean;
 
 /**
  * The Class AuthLibKWT.
  */
 @Component
-@TenantSpecific({ Tenant.KWT })
+@TenantSpecific({ Tenant.KWT,Tenant.KWT2})
 public class AuthLibKWT implements AuthLib {
-
-	@Autowired
-	private SessionService sessionService;
-
-	@Autowired
-	private LoginService loginService;
 
 	@Autowired
 	private UserDeviceBean userDevice;

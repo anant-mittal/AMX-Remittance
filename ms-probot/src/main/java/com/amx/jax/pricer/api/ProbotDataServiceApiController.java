@@ -18,12 +18,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.pricer.ProbotDataService;
+import com.amx.jax.pricer.dbmodel.OnlineMarginMarkup;
 import com.amx.jax.pricer.dto.CurrencyMasterDTO;
 import com.amx.jax.pricer.dto.DiscountDetailsReqRespDTO;
 import com.amx.jax.pricer.dto.DiscountMgmtReqDTO;
 import com.amx.jax.pricer.dto.GroupDetails;
 import com.amx.jax.pricer.dto.HolidayResponseDTO;
+import com.amx.jax.pricer.dto.OnlineMarginMarkupInfo;
+import com.amx.jax.pricer.dto.OnlineMarginMarkupReq;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
 import com.amx.jax.pricer.service.ExchangeDataService;
 import com.amx.jax.pricer.service.HolidayListService;
@@ -115,5 +119,22 @@ public class ProbotDataServiceApiController implements ProbotDataService{
 		
 		return AmxApiResponse.buildList(groupInfoForCurrency);
 	}
+	@Override
+	@RequestMapping(value = ApiEndPoints.GET_MARKUP_DETAILS, method = RequestMethod.POST)
+	public AmxApiResponse<OnlineMarginMarkupInfo, Object> getOnlineMarginMarkupData(
+			@RequestBody @Valid OnlineMarginMarkupReq onlineMarginMarkupReq ) {
+		LOGGER.info("Received Request for markup " +onlineMarginMarkupReq.toString());
+		OnlineMarginMarkupInfo marginMarkupResp = dataService.getOnlineMarginMarkupData(onlineMarginMarkupReq);
+		return AmxApiResponse.build(marginMarkupResp);	
+		}
+	
+	@Override
+	@RequestMapping(value = ApiEndPoints.SAVE_MARKUP_DETAILS, method = RequestMethod.POST)
+	public AmxApiResponse<BoolRespModel, Object> saveOnlineMarginMarkupData(
+			@RequestBody @Valid OnlineMarginMarkupInfo onlineMarginMarkupInfo ) {
+		LOGGER.info("Received Request for save  markup " +onlineMarginMarkupInfo.toString());
+		BoolRespModel marginMarkupResp = dataService.saveOnlineMarginMarkupData(onlineMarginMarkupInfo);;
+		return  AmxApiResponse.build(marginMarkupResp);
+		}
 
 }

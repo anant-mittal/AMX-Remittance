@@ -19,6 +19,8 @@ public class CustomerCredential implements Serializable, ICustomerCredential {
 
 	@NotNull(message="Password may not be null")
 	String password;
+	
+	String referralId;
 
 	public CustomerCredential() {
 		super();
@@ -49,4 +51,13 @@ public class CustomerCredential implements Serializable, ICustomerCredential {
 	public void setPassword(String password) {
 		this.password = password;
 	}
+
+	public String getReferralId() {
+		return referralId;
+	}
+
+	public void setReferralId(String referralId) {
+		this.referralId = referralId;
+	}
+		
 }

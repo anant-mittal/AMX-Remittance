@@ -4,6 +4,7 @@ import static com.amx.amxlib.constant.NotificationConstants.BRANCH_SEARCH;
 import static com.amx.amxlib.constant.NotificationConstants.REG_SUC;
 import static com.amx.amxlib.constant.NotificationConstants.RESP_DATA_KEY;
 import static com.amx.amxlib.constant.NotificationConstants.SERVICE_PROVIDER_RESPONSE;
+import static com.amx.amxlib.constant.NotificationConstants.TRANSACTION_FAIL;
 
 import java.util.List;
 
@@ -22,6 +23,7 @@ import com.amx.amxlib.model.BranchSearchNotificationModel;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.notification.RemittanceTransactionFailureAlertModel;
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.dbmodel.ApplicationSetup;
 import com.amx.jax.dbmodel.ExEmailNotification;
 import com.amx.jax.dict.Tenant;
@@ -87,6 +89,8 @@ public class JaxNotificationService {
 			file.setName("TransactionReceipt");
 			file.setType(File.Type.PDF);
 			file.getModel().put(RESP_DATA_KEY, remittanceReceiptSubreport);
+			file.setPassword(pinfo.getIdentityInt());
+			file.setLang(AppContextUtil.getTenant().defaultLang());
 
 			email.addFile(file);
 			logger.debug("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getFirstName());
@@ -109,6 +113,7 @@ public class JaxNotificationService {
 		file.setITemplate(TemplatesMX.FXO_RECEIPT);
 		file.setType(File.Type.PDF);
 		file.getModel().put(Message.RESULTS_KEY, CollectionUtil.getList(remittanceReceiptSubreport));
+		file.setLang(AppContextUtil.getTenant().defaultLang());
 
 		email.addFile(file);
 		logger.debug("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getCustomerName());
@@ -315,7 +320,7 @@ public class JaxNotificationService {
 			for (ExEmailNotification emailNot : emailNotification) {
 				String emailid = emailNot.getEmailId();
 				Email email = new Email();
-				email.setSubject(BRANCH_SEARCH);
+				email.setSubject(TRANSACTION_FAIL);
 				email.addTo(emailid);
 				email.setITemplate(TemplatesMX.TRANSACTION_FAILURE);
 				email.setHtml(true);

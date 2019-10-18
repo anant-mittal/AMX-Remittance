@@ -95,4 +95,10 @@ public class DeclarationModel implements IResourceEntity, Serializable {
 		this.textRemark = textRemark;
 	}
 
+	@Override
+	public String resourceLocalName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

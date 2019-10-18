@@ -1,6 +1,7 @@
 package com.amx.jax.client.remittance;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import com.amx.jax.IJaxService;
 import com.amx.jax.api.AmxApiResponse;
@@ -21,6 +22,7 @@ import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.FlexFieldReponseDto;
 import com.amx.jax.model.response.remittance.GetServiceApplicabilityResponse;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
+import com.amx.jax.model.response.remittance.ParameterDetailsResponseDto;
 import com.amx.jax.model.response.remittance.PaymentModeDto;
 import com.amx.jax.model.response.remittance.RemittanceDeclarationReportDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
@@ -59,6 +61,7 @@ public interface IRemittanceService extends  IJaxService {
 		public static final String GET_SERVICE_APPLICABILITY = PREFIX + "/get-service-applicability/";
 
 		
+		public static final String BR_REMITTANCE_GET_GIFT_PACKAGE = PREFIX + "/get-gift-package/";
 		
 		
 	}
@@ -153,6 +156,9 @@ public interface IRemittanceService extends  IJaxService {
 	AmxApiResponse<FlexFieldReponseDto,Object> getFlexField(BranchRemittanceGetExchangeRateRequest request);
 
 	AmxApiResponse<GetServiceApplicabilityResponse, Object> getServiceApplicability(GetServiceApplicabilityRequest request);
+	
+	@ApiJaxStatus({JaxError.NO_RECORD_FOUND})
+	AmxApiResponse<ParameterDetailsResponseDto, Object> getGiftService(BigDecimal beneRelaId);
 	
 }
 

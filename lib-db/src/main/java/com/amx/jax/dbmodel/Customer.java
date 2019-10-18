@@ -22,12 +22,15 @@ import javax.persistence.TemporalType;
 import org.hibernate.annotations.Proxy;
 
 import com.amx.jax.constants.CustomerRegistrationType;
+import com.amx.jax.dict.Communicatable;
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.util.AmxDBConstants.Status;
+import com.amx.utils.ArgUtil;
 
 @Entity
 @Table(name = "FS_CUSTOMER")
 @Proxy(lazy = false)
-public class Customer implements java.io.Serializable {
+public class Customer implements java.io.Serializable, Communicatable {
 
 	private static final long serialVersionUID = 1L;
 	private BigDecimal customerId;
@@ -98,6 +101,7 @@ public class Customer implements java.io.Serializable {
 	private String isOnlineUser;
 	private BigDecimal customerTypeId;
 	private Date identityExpiredDate;
+	
 
 	/**
 	 * Added following field for CR. DAILY_LIMIT WEEKLY_LIMIT MONTHLY_LIMIT
@@ -1097,7 +1101,7 @@ public class Customer implements java.io.Serializable {
 	}
 
 	public boolean canSendEmail() {
-		return !(Status.D.equals(this.emailVerified) || Status.N.equals(this.emailVerified));
+		return !(Status.D.equals(this.emailVerified) || Status.N.equals(this.emailVerified) || ArgUtil.isEmpty(this.email));
 	}
 
 	private Status mobileVerified;
@@ -1114,6 +1118,21 @@ public class Customer implements java.io.Serializable {
 
 	public boolean canSendMobile() {
 		return !(Status.D.equals(this.mobileVerified) || Status.N.equals(this.mobileVerified));
+	}
+	
+	public boolean hasVerified(ContactType contactType) {
+		switch (contactType) {
+		case SMS:
+		case MOBILE:
+			return Status.Y.equals(this.mobileVerified);
+		case EMAIL:
+			return Status.Y.equals(this.emailVerified);
+		case WHATSAPP:
+			return Status.Y.equals(this.whatsAppVerified);
+		default:
+			break;
+		}
+		return false;
 	}
 
 	@Column(name = "VAT_NUMBER")
@@ -1133,7 +1152,8 @@ public class Customer implements java.io.Serializable {
 	@Override
 	public String toString() {
 		return "Customer [customerId=" + customerId + ", email=" + email +
-				", emailVerified=" + emailVerified + ", mobileVerified="
+				", whatsApp=" + whatsapp + ", mobile=" + mobile +
+				", emailVerified=" + emailVerified + ", whatsAppVerified=" + whatsAppVerified + ", mobileVerified="
 				+ mobileVerified + "]";
 	}
 

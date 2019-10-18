@@ -56,7 +56,6 @@ import com.amx.jax.dbmodel.partner.ServiceProviderXmlLog;
 import com.amx.jax.dbmodel.partner.TransactionDetailsView;
 import com.amx.jax.dbmodel.remittance.AdditionalBankRuleAmiec;
 import com.amx.jax.dbmodel.remittance.AmiecAndBankMapping;
-import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.dbmodel.remittance.ShoppingCartDetails;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.AuditEvent.Result;
@@ -69,7 +68,6 @@ import com.amx.jax.model.request.partner.PaymentLimitDTO;
 import com.amx.jax.model.request.partner.RemittanceTransactionPartnerDTO;
 import com.amx.jax.model.request.partner.SrvProvBeneficiaryTransactionDTO;
 import com.amx.jax.model.request.partner.TransactionFailReportDTO;
-import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.serviceprovider.Benificiary;
 import com.amx.jax.model.request.serviceprovider.Customer;
 import com.amx.jax.model.request.serviceprovider.ServiceProviderCallRequestDto;
@@ -160,9 +158,6 @@ public class PartnerTransactionManager extends AbstractModel {
 
 	@Autowired
 	BankMasterRepository bankMasterRepo;
-
-	@Autowired
-	IRemittanceTransactionRepository remittanceTransactionRepository;
 
 	@Autowired
 	CurrencyMasterService currencyMasterService;
@@ -336,8 +331,14 @@ public class PartnerTransactionManager extends AbstractModel {
 
 		AccountTypeFromViewModel accountTypeFromViewModel = partnerTransactionDao.getAccountTypeDetails(beneficiaryDetailsDTO.getBankAccountTypeId());
 		if(accountTypeFromViewModel != null) {
-			bankAccountTypeDesc = accountTypeFromViewModel.getAmiecDesc();
+			AmiecAndBankMapping amiecCodes = amiecAndBankMappingRepository.fetchAmiecBankData(metaData.getCountryId(), remitTrnxDto.getRoutingBankId(), accountTypeFromViewModel.getFlexiFiled(), accountTypeFromViewModel.getAmiecCode(),AmxDBConstants.Yes);
+			if(amiecCodes != null && amiecCodes.getBankCode() != null) {
+				bankAccountTypeDesc = amiecCodes.getBankCode();
+			}else {
+				bankAccountTypeDesc = accountTypeFromViewModel.getAmiecDesc();
+			}
 		}
+		
 		beneficiaryDto.setBeneficiary_account_type(removeSpaces(bankAccountTypeDesc));
 
 		String routingNumber_Indic2 = remitTrnxDto.getRoutingNumber_Indic2();
@@ -864,6 +865,8 @@ public class PartnerTransactionManager extends AbstractModel {
 				EmployeeDetailsView empDetails = employeeDetailsRepository.findByEmployeeId(metaData.getEmployeeId());
 				serviceProviderXmlLog.setForeignTerminalId(metaData.getEmployeeId().toPlainString());
 				serviceProviderXmlLog.setCreatedBy(empDetails.getUserName());
+			}else {
+				serviceProviderXmlLog.setCreatedBy("ON_LINE");
 			}
 
 			serviceProviderXmlLog.setIdentifier(PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name());
@@ -903,12 +906,11 @@ public class PartnerTransactionManager extends AbstractModel {
 	}
 
 	// saving the remarks and delivery indicator to remit trnx
-	public RemitTrnxSPDTO saveRemitTransactionDetails(AmxApiResponse<Remittance_Call_Response, Object> apiResponse,RemittanceResponseDto responseDto) {
+	public RemitTrnxSPDTO saveRemitTransactionDetails(AmxApiResponse<Remittance_Call_Response, Object> apiResponse,RemittanceResponseDto responseDto,String partnerTransactionId) {
 		String actionInd = null; 
 		String responseDescription = null;
 		RemitTrnxSPDTO remitTrnxSPDTO = null;
 		boolean emailStatus = Boolean.FALSE;
-		String transactionId = null;
 
 		if(responseDto != null && responseDto.getCollectionDocumentFYear() != null && responseDto.getCollectionDocumentNo() != null) {
 
@@ -934,6 +936,7 @@ public class PartnerTransactionManager extends AbstractModel {
 								serviceProviderResponse.getAction_ind().equalsIgnoreCase(PricerServiceConstants.ACTION_IND_F)){
 							actionInd = serviceProviderResponse.getAction_ind();
 							responseDescription = serviceProviderResponse.getResponse_description();
+							//emailStatus = Boolean.TRUE; // testing
 						}else if(serviceProviderResponse.getAction_ind().equalsIgnoreCase(PricerServiceConstants.ACTION_IND_T)){
 							actionInd = PricerServiceConstants.ACTION_IND_U;
 							responseDescription = PricerServiceConstants.RESPONSE_UNKNOWN_ERROR;
@@ -951,25 +954,18 @@ public class PartnerTransactionManager extends AbstractModel {
 						remitTrnxSPDTO = new RemitTrnxSPDTO();
 						remitTrnxSPDTO.setActionInd(actionInd);
 						remitTrnxSPDTO.setResponseDescription(responseDescription);
-						logger.info("actionInd : " + actionInd + " responseDescription : "+ responseDescription + " transaction Id " + remittanceTransactionView.getRemittanceTransactionId());
+						remitTrnxSPDTO.setTransactionId(partnerTransactionId);
+						logger.info("actionInd : " + actionInd + " responseDescription : "+ responseDescription + " transaction Id " + remittanceTransactionView.getRemittanceTransactionId() + " partner transaction id : "  + partnerTransactionId);
 						// save remit trnx
-						remittanceTransactionRepository.updateDeliveryIndRemarksBySP(remitTrnxSPDTO.getActionInd(), remitTrnxSPDTO.getResponseDescription(), remittanceTransactionView.getRemittanceTransactionId());
+						partnerTransactionDao.saveRemittanceRemarksDeliveryInd(actionInd, responseDescription, remittanceTransactionView.getRemittanceTransactionId());
+						//remittanceTransactionRepository.updateDeliveryIndRemarksBySP(remitTrnxSPDTO.getActionInd(), remitTrnxSPDTO.getResponseDescription(), remittanceTransactionView.getRemittanceTransactionId());
 						if(emailStatus) {
 							logger.error("Service provider api fail to execute : ColDocNo : ", responseDto.getCollectionDocumentNo() + " : ColDocCod : " +responseDto.getCollectionDocumentCode()+"  : ColDocYear : "+responseDto.getCollectionDocumentFYear());
 							auditService.log(new CActivityEvent(Type.TRANSACTION_CREATED,String.format("%s/%s", responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo())).field("STATUS").to(JaxTransactionStatus.PAYMENT_SUCCESS_SERVICE_PROVIDER_FAIL).result(Result.DONE));
-							sendSrvPrvTranxFailReport(remittanceTransactionView, remitTrnxSPDTO, transactionId);
+							sendSrvPrvTranxFailReport(remittanceTransactionView, remitTrnxSPDTO, partnerTransactionId);
 						}else {
 							auditService.log(new CActivityEvent(Type.TRANSACTION_CREATED,String.format("%s/%s", responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo())).field("STATUS").to(JaxTransactionStatus.PAYMENT_SUCCESS_SERVICE_PROVIDER_SUCCESS).result(Result.DONE));
 						}
-						
-						/*RemittanceTransaction remittanceTransaction = remittanceTransactionRepository.findOne(remittanceTransactionView.getRemittanceTransactionId());
-						if(remittanceTransaction != null) {
-							remittanceTransaction.setDeliveryInd(remitTrnxSPDTO.getActionInd());
-							remittanceTransaction.setRemarks(remitTrnxSPDTO.getResponseDescription());
-							remittanceTransactionRepository.save(remittanceTransaction);
-						}else {
-							throw new GlobalException("Unable to get remittance trnx to update remarks and delivery indicator");
-						}*/
 
 						logger.info(" Service provider result " +JsonUtil.toJson(serviceProviderResponse));
 					}else {
@@ -1273,7 +1269,20 @@ public class PartnerTransactionManager extends AbstractModel {
 			}
 		}
 		model.setForeignCurrencyQuote(remittanceTransactionView.getCurrencyQuoteName());
-		model.setCustomerName(remittanceTransactionView.getFirstName().concat(" ").concat(remittanceTransactionView.getMiddleName()).concat(" ").concat(remittanceTransactionView.getLastName()));
+		StringBuffer customerName = new StringBuffer();
+		if(remittanceTransactionView.getFirstName() != null) {
+			customerName.append(remittanceTransactionView.getFirstName());
+			if(remittanceTransactionView.getMiddleName() != null) {
+				customerName.append(" ");
+				customerName.append(remittanceTransactionView.getMiddleName());
+			}
+			if(remittanceTransactionView.getLastName() != null) {
+				customerName.append(" ");
+				customerName.append(remittanceTransactionView.getLastName());
+			}
+			model.setCustomerName(customerName.toString());
+		}
+		//model.setCustomerName(remittanceTransactionView.getFirstName().concat(" ").concat(remittanceTransactionView.getMiddleName()).concat(" ").concat(remittanceTransactionView.getLastName()));
 		model.setCustomerReference(remittanceTransactionView.getCustomerReference());
 		model.setCustomerContact(remittanceTransactionView.getContactNumber());
 		model.setExceptionMessage(remitTrnxSPDTO.getActionInd() + " : " + remitTrnxSPDTO.getResponseDescription() + " : " + remittanceTransactionView.getCountryBranchName() + " : " +remittanceTransactionView.getCreatedBy());

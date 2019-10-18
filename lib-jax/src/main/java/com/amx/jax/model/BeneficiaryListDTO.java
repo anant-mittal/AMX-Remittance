@@ -7,7 +7,7 @@ import java.util.List;
 import com.amx.jax.model.response.benebranch.BeneStatusDto;
 import com.amx.jax.model.response.benebranch.UpdateBeneStatus;
 
-public class BeneficiaryListDTO {
+public class BeneficiaryListDTO extends ResourceDTO {
 	
 	
 	private BigDecimal idNo;
@@ -96,6 +96,9 @@ public class BeneficiaryListDTO {
 	private BeneStatusDto beneStatusDto;
 	private UpdateBeneStatus updateBeneStatus;
 	
+
+	private String bankLocalName;
+
 	public BigDecimal getIdNo() {
 		return idNo;
 	}
@@ -571,6 +574,17 @@ public class BeneficiaryListDTO {
 		this.updateBeneStatus = updateBeneStatus;
 	}
 	
-	
+	public String getBankLocalName() {
+		return bankLocalName;
+	}
+
+	public void setBankLocalName(String bankLocalName) {
+		this.bankLocalName = bankLocalName;
+	}
+
+	@Override
+	public String getResourceLocalName() {
+		return this.bankLocalName;
+	}
 
 }

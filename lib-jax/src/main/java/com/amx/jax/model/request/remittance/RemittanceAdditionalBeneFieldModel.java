@@ -21,6 +21,8 @@ public abstract class RemittanceAdditionalBeneFieldModel extends AbstractRemitta
 	private BigDecimal purposeOfTrnxId;
 	private String staffUserName;
 	private String amlRemarks;
+	private Map<String, FlexFieldDto> additionalDtoMap;
+	private FlexFieldDto servicePackage;
 	
 	public Map<String, Object> getAdditionalFields() {
 		return additionalFields;
@@ -63,6 +65,28 @@ public abstract class RemittanceAdditionalBeneFieldModel extends AbstractRemitta
 		this.flexFieldDtoMap = flexFieldDtoMap;
 	}
 
+	public void populateAdditionalFieldsDtoMap() {
+		if (this.additionalFields != null) {
+			Map<String, String> flexFieldMap = createAdditionalFieldMap(additionalFields);
+			Function<Map.Entry<String, String>, FlexFieldDto> valueMapper = (entryObject) -> {
+				String value = entryObject.getValue().toString();
+				FlexFieldDto flexFieldDto = null;
+				try {
+					flexFieldDto = JsonUtil.fromJson(value, FlexFieldDto.class);
+				} catch (Exception e) {
+				}
+				if (flexFieldDto == null) {
+					flexFieldDto = new FlexFieldDto(value);
+				}
+				return flexFieldDto;
+			};
+			this.additionalDtoMap = flexFieldMap.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, valueMapper));
+		}
+	}
+	
+	
+	
+	
 	public void populateFlexFieldDtoMap() {
 		if (this.flexFields != null) {
 			Map<String, String> flexFieldMap = createFlexFieldMap(flexFields);
@@ -82,6 +106,8 @@ public abstract class RemittanceAdditionalBeneFieldModel extends AbstractRemitta
 		}
 	}
 	
+	
+	
 	public Map<String, Object> getFlexFields() {
 		return flexFields;
 	}
@@ -96,6 +122,16 @@ public abstract class RemittanceAdditionalBeneFieldModel extends AbstractRemitta
 		Map<String, String> output = es.stream().collect(Collectors.toMap(x -> x.getKey(), x -> JsonUtil.toJson(x.getValue())));
 		return output;
 	}
+	
+	
+	
+	private Map<String, String> createAdditionalFieldMap(Map<String, Object> flexFields2) {
+
+		Set<Entry<String, Object>> es = flexFields2.entrySet();
+		Map<String, String> output = es.stream().collect(Collectors.toMap(x -> x.getKey(), x -> JsonUtil.toJson(x.getValue())));
+		return output;
+	}
+	
 	
 	public BigDecimal getPurposeOfTrnxId() {
 		return purposeOfTrnxId;
@@ -119,6 +155,22 @@ public abstract class RemittanceAdditionalBeneFieldModel extends AbstractRemitta
 
 	public void setAmlRemarks(String amlRemarks) {
 		this.amlRemarks = amlRemarks;
+	}
+
+	public Map<String, FlexFieldDto> getAdditionalDtoMap() {
+		return additionalDtoMap;
+	}
+
+	public void setAdditionalDtoMap(Map<String, FlexFieldDto> additionalDtoMap) {
+		this.additionalDtoMap = additionalDtoMap;
+	}
+	public FlexFieldDto getServicePackage() {
+		return servicePackage;
+	}
+
+	public void setServicePackage(FlexFieldDto servicePackage) {
+		this.servicePackage = servicePackage;
+
 	}
 
 	

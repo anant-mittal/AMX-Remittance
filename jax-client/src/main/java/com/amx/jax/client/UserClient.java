@@ -243,7 +243,7 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 	 * @param eOtp  email otp
 	 */
 	public ApiResponse<CustomerModel> saveCredentials(String loginId, String password, String mOtp, String eOtp,
-			String email) throws AlreadyExistsException {
+			String email,String referralCode) throws AlreadyExistsException {
 		try {
 			CustomerModel custModel = new CustomerModel();
 			custModel.setRegistrationFlow(true);
@@ -252,6 +252,7 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 			custModel.setMotp(mOtp);
 			custModel.setEotp(eOtp);
 			custModel.setEmail(email);
+			custModel.setReferralCode(referralCode);
 			custModel.setCustomerId(jaxMetaInfo.getCustomerId());
 			HttpEntity<CustomerModel> requestEntity = new HttpEntity<CustomerModel>(custModel, getHeader());
 			String saveCustUrl = this.getBaseUrl() + CUSTOMER_ENDPOINT;
@@ -649,7 +650,6 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 
 			return restService.ajax(appConfig.getJaxURL()).path(UserApi.PREFIX + UserApi.LINK_DEVICE_LOGGEDIN_USER)
 					.meta(new JaxMetaInfo()).post()
-
 					.as(new ParameterizedTypeReference<AmxApiResponse<UserFingerprintResponseModel, Object>>() {
 					});
 		} catch (Exception ae) {
@@ -662,8 +662,8 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 		try {
 
 			return restService.ajax(appConfig.getJaxURL())
-					.path(UserApi.PREFIX + UserApi.LOGIN_CUSTOMER_BY_FINGERPRINT).meta(new JaxMetaInfo()).post()
-					.queryParam(UserApi.IDENTITYINT, civilId).queryParam(UserApi.PASSWORD, password).post()
+					.path(UserApi.PREFIX + UserApi.LOGIN_CUSTOMER_BY_FINGERPRINT).meta(new JaxMetaInfo())
+					.field(UserApi.IDENTITYINT, civilId).field(UserApi.PASSWORD, password).postForm()
 					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerModel, Object>>() {
 					});
 		} catch (Exception ae) {

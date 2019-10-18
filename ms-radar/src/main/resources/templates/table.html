@@ -1,72 +1,114 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>Swagger UI</title>
-  
-  <script src='/radar/webjars/springfox-swagger-ui/lib/jquery-1.8.0.min.js' type='text/javascript'></script>
- 
-  <link rel="stylesheet" href="//cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
-  
-    <script src='//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js' type='text/javascript'></script>
-    
-    <style>
-    /* Dropdown Button */
+<meta charset="UTF-8">
+<title>[[${snapView}]]</title>
+
+<script
+	src='//code.jquery.com/jquery-3.3.1.js'
+	type='text/javascript'></script>
+<script src='//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js'
+	type='text/javascript'></script>
+<link rel="stylesheet"
+	href="//cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
+
+<!--  Data table Buttons -->
+<script src='//cdn.datatables.net/buttons/1.5.6/js/dataTables.buttons.min.js'
+	type='text/javascript'></script>
+<script src='//cdn.datatables.net/buttons/1.5.6/js/buttons.flash.min.js'
+	type='text/javascript'></script>	
+<script src='//cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js'
+	type='text/javascript'></script>	
+<script src='//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js'
+	type='text/javascript'></script>	
+<script src='//cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js'
+	type='text/javascript'></script>	
+<script src='//cdn.datatables.net/buttons/1.5.6/js/buttons.html5.min.js'
+	type='text/javascript'></script>	
+<script src='//cdn.datatables.net/buttons/1.5.6/js/buttons.print.min.js'
+	type='text/javascript'></script>	
+<link rel="stylesheet"
+	href="//cdn.datatables.net/buttons/1.5.6/css/buttons.dataTables.min.css">	
+
+<script src='//cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.js'
+	type='text/javascript'></script>	
+	
+<!--  PivotTable 
+<script
+	src='https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js'
+	type='text/javascript'></script>
+<script
+	src='https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js'
+	type='text/javascript'></script>
+<script
+	src='https://cdnjs.cloudflare.com/ajax/libs/pivottable/2.13.0/pivot.min.js'
+	type='text/javascript'></script>
+<link rel="stylesheet"
+	href="//cdnjs.cloudflare.com/ajax/libs/pivottable/2.13.0/pivot.min.css">
+
+<script src='/radar/js/jSQL.js' type='text/javascript'></script>
+
+-->
+<style>
+/* Dropdown Button */
 .dropbtn {
-  background-color: #3498DB;
-  color: white;
-  padding: 7px;
- /*  font-size: 16px; */
-  border: none;
-  cursor: pointer;
+	background-color: #3498DB;
+	color: white;
+	padding: 7px;
+	/*  font-size: 16px; */
+	border: none;
+	cursor: pointer;
 }
 
 /* Dropdown button on hover & focus */
 .dropbtn:hover, .dropbtn:focus {
-  background-color: #2980B9;
+	background-color: #2980B9;
 }
 
 /* The container <div> - needed to position the dropdown content */
 .dropdown {
-  position: relative;
-  display: inline-block;
+	position: relative;
+	display: inline-block;
 }
 
 /* Dropdown Content (Hidden by Default) */
 .dropdown-content {
-  display: none;
-  position: absolute;
-  background-color: #f1f1f1;
-  min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-  z-index: 1;
+	display: none;
+	position: absolute;
+	background-color: #f1f1f1;
+	min-width: 160px;
+	box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+	z-index: 1;
 }
 
 /* Links inside the dropdown */
 .dropdown-content a {
-  color: black;
-  padding: 12px 16px;
-  text-decoration: none;
-  display: block;
+	color: black;
+	padding: 12px 16px;
+	text-decoration: none;
+	display: block;
 }
 
 /* Change color of dropdown links on hover */
-.dropdown-content a:hover {background-color: #ddd}
+.dropdown-content a:hover {
+	background-color: #ddd
+}
 
 /* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
-
 .padbox {
-	padding: 5px; 
+	padding: 5px;
 	float: left;
 }
-#querybox{
+
+#querybox {
 	position: fixed;
-    right: 0;
-    top: 0;
-    height: 100%;
-    width: 0px;
-    opacity: 0;
+	right: 0;
+	top: 0;
+	height: 100%;
+	width: 0px;
+	opacity: 0;
 }
+
 #querybox.show {
 	width: 400px;
 }
@@ -78,18 +120,20 @@
 	transition-duration: .5s;
 	transition-timing-function: cubic-bezier(0, 1, 0.5, 1);
 }
+
 #querytext {
 	margin: 0px;
-    height: calc(100% - 60px );
-    width: 100%;
+	height: calc(100% - 60px);
+	width: 100%;
 }
+
 .show {
-	display:block!important;
-    visibility: visible!important;
-    opacity: 1!important;
+	display: block !important;
+	visibility: visible !important;
+	opacity: 1 !important;
 }
-    </style>
-  <script>
+</style>
+<script>
 function tabify(response, options) {
     let table;
     if (typeof (options) === 'undefined') {
@@ -137,9 +181,21 @@ function collectBucket(node, stack=[]) {
         const value = node[key];
         if (typeof value === 'object' && value !== null) {
             if ("hits" in value && Array.isArray(value.hits) && value.hits.length === 1) {
-                if ("sort" in value.hits[0]) {
-                    value.hits[0]._source['sort'] = value.hits[0].sort[0];
+                if ("fields" in value.hits[0]) {
+                	console.log(value.hits[0]['fields'])
+                    //value.hits[0]._source['fields'] = value.hits[0].sort[0];
+                    for(var __key in value.hits[0]['fields']){
+                    	return value.hits[0]['fields'][__key][0]
+                    	value.hits[0]._source[__key] = value.hits[0]['fields'][__key][0];
+                    	console.log(value.hits[0]['fields'][__key][0])
+                    }
+                    console.log(value.hits[0])
+                    //return value.hits[0]['fields'][0];
                 }
+                if ("sort" in value.hits[0]) {
+                    //value.hits[0]._source['sort'] = value.hits[0].sort[0];
+                }
+                return null;
                 return value.hits[0]._source;
             }
 
@@ -261,10 +317,10 @@ function dropdown(classname) {
 	  document.getElementById(classname).classList.toggle("show");
 }
 </script>
-  </head>
+</head>
 
 <div style="width: 100%; height: 60px">
-	<div class="dropdown padbox" >
+	<div class="dropdown padbox">
 		<button onclick="dropdown('myDropdown')" class="dropbtn">[[${snapView}]]</button>
 		<div id="myDropdown" class="dropdown-content">
 			<a th:each="sv : ${snapViews}" th:href="'/radar/snap/table/' + ${sv}"
@@ -272,35 +328,44 @@ function dropdown(classname) {
 		</div>
 	</div>
 
-	<div class="form padbox" >
-	<form>
-		<label> From : <input name="gte" th:value="${gte}" >  </label>
-		<label> To : <input name="lte" th:value="${lte}"> </label>
-		<button type="submit" value="submit" class="dropbtn">Submit</button>
-	</form>
+	<div class="form padbox">
+		<form>
+			<input name="level" type="number" th:value="${level}">
+			<label> From : <input name="gte" th:value="${gte}" placeholder="2019-10-01 00:00:00">
+			</label> <label> To : <input name="lte" th:value="${lte}" placeholder="2019-10-02 00:00:00">
+			</label>
+			<button type="submit" value="submit" class="dropbtn">Submit</button>
+		</form>
 	</div>
-	<div class="padbox" style="float:left" >
+	<div class="padbox" style="float: left">
 		<button onclick="dropdown('querybox')" class="dropbtn">Query</button>
 	</div>
-	
+
 </div>
 
-<hr/>
-  <div id="tabledivWrapper">
-  
-   <table id="tablediv" class="display">
-    <thead>
-         <tr>
-        </tr>
-    </thead>
-    <tbody>
-    </tbody>
-</table>
+<hr />
+<div id="tabledivWrapper">
 
-  </div>
+	<table id="tablediv" class="display nowrap" style="width:100%">
+		<thead>
+			<tr>
+			</tr>
+		</thead>
+		<tbody>
+		</tbody>
+		<tfoot>
+            <tr>
+            </tr>
+        </tfoot>
+	</table>
 
-  
-  <script>
+</div>
+
+<div id="pivotTable"></div>
+
+<script>
+  var SQL_DATA;
+
   function executeQuery(url,map){
 	   $.ajax({
 		    type: 'POST',
@@ -309,38 +374,87 @@ function dropdown(classname) {
 		    contentType: "application/json",
 		    dataType: 'json'
 		}).done(function(resp){
-			var bulk = tabify(resp);
+			var bulk = resp.bulk ? resp.bulk : tabify(resp);
 			$("#querytext").val(JSON.stringify(resp._query, null, 2));
 			
+			if(bulk.length ==0){
+				return;
+			}
+			
 			var columns = []; 
-			var _bulkItem = bulk[0];
+			var _bulkItem = bulk.reduce(function(total, currentValue, currentIndex, arr){
+				for(var k in currentValue){
+					total[k] = currentValue[k];
+				}
+				return total;
+			},{});
+			
+			var table = [Object.keys(_bulkItem).map(function(key){
+				return key;
+			})];
 			
 			for(var i in bulk){
 				var bulkItem = bulk[i];
-				for(var key in bulkItem){
+				var tableItem = [];
+				for(var key in _bulkItem){
 					if(bulkItem[key]){
 						if(typeof bulkItem[key] == "object")
 						bulkItem[key] = JSON.stringify(bulkItem[key]);
+					} else {
+						bulkItem[key] = null;
 					}
+					tableItem.push(bulkItem[key])
 				}
+				table.push(tableItem);
 			}
+			console.log("table",table);
+			SQL_DATA = bulk;
 			if(_bulkItem){
 				columns = Object.keys(_bulkItem).map(function(key){
 					return { data: key, title : key.toUpperCase()  };
 				});
 				console.log(columns,bulk);
-				$('#tablediv').DataTable({columns : columns, data: bulk});
+				$('#tablediv').DataTable({
+					dom: 'Bfrtip',
+					columns : columns, data: bulk,
+			        buttons: [
+			        	'copy', 'csv', 'excel', 'pdf', 'print'
+			        ]
+				});
 			}
-
+			
+			return;
+			$("#pivotTable").pivotUI(
+					table, {
+				    rows: ["sex", "smoker"],
+				    cols: ["day", "time"],
+				    vals: ["tip", "total_bill"],
+				    aggregatorName: "Sum over Sum",
+				    rendererName: "Heatmap"
+			});
+			
 		}); 
   }
   
-  
+  var DATE_REG = /([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))( +)(0[0-9]|1[0-9]|2[0-4]):([0-5][0-9]):([0-5][0-9])/;
   $(document).ready(function(){
 	  var _html = $("#tabledivWrapper").html();
+	  
+	  var lte = "[[${lte}]]";
+	  var gte = "[[${gte}]]";
+     	if(DATE_REG.test(lte)){
+     		lte = new Date(lte).getTime();
+     	} 
+     	if(DATE_REG.test(gte)){
+     		gte = new Date(gte).getTime();
+     	} 
+		  
+	  
 	  executeQuery("/radar/snap/view/[[${snapView}]]",{
-		  "lte" : "[[${lte}]]",
-		  "gte" : "[[${gte}]]"
+		  "lte" : lte,
+		  "gte" : gte,
+		  "level" : "[[${level}]]",
+		  "bulk" : true
 	  });
 	  
 	  $("#querybutton").click(function(){
@@ -350,17 +464,18 @@ function dropdown(classname) {
 	  });
   });
   </script>
-  
-  <div id="querybox" class="slider">
-  <textarea id="querytext">
+
+<div id="querybox" class="slider">
+	<textarea id="querytext">
   	
   </textarea>
-  <center>
-  	<button id="querybutton" class="dropbtn">Submit Query</button>
-  	<button onclick="dropdown('querybox')" class="dropbtn">Close</button>
-  </center>
-  
-  </div>
+	<center>
+		<button id="querybutton" class="dropbtn">Submit Query</button>
+		<button onclick="dropdown('querybox')" class="dropbtn">Close</button>
+	</center>
+
+</div>
 
 </body>
+
 </html>

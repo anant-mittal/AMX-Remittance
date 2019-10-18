@@ -48,7 +48,7 @@ public class CustomerProfileClient implements ICustomerProfileService {
 					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerContactVerificationDto, Object>>() {
 					});
 		} catch (Exception e) {
-			LOGGER.error("exception in createVerificationLink : ", e);
+			LOGGER.debug("exception in createVerificationLink : ", e);
 			return JaxSystemError.evaluate(e);
 		}
 	}
@@ -64,10 +64,29 @@ public class CustomerProfileClient implements ICustomerProfileService {
 					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerContactVerificationDto, Object>>() {
 					});
 		} catch (Exception e) {
-			LOGGER.error("exception in validateVerificationLink : ", e);
+			LOGGER.debug("exception in validateVerificationLink : ", e);
 			return JaxSystemError.evaluate(e);
 		}
 	};
+
+	@Override
+	public AmxApiResponse<CustomerContactVerificationDto, Object> resendLink(String identity, BigDecimal linkId,
+			String code) {
+		try {
+			LOGGER.debug("in resendLink : {} {} ", linkId, code);
+			String url = appConfig.getJaxURL() + ApiPath.CONTACT_LINK_RESEND;
+			return restService.ajax(url).meta(new JaxMetaInfo())
+					.field(ApiParams.IDENTITY, identity)
+					.field(ApiParams.LINK_ID, linkId)
+					.field(ApiParams.VERIFICATION_CODE, code)
+					.postForm()
+					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerContactVerificationDto, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.debug("exception in resendLink : ", e);
+			return JaxSystemError.evaluate(e);
+		}
+	}
 
 	@Override
 	public AmxApiResponse<CustomerContactVerificationDto, Object> verifyLinkByCode(String identity, BigDecimal linkId,
@@ -83,7 +102,7 @@ public class CustomerProfileClient implements ICustomerProfileService {
 					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerContactVerificationDto, Object>>() {
 					});
 		} catch (Exception e) {
-			LOGGER.error("exception in verifyLinkByCode : ", e);
+			LOGGER.debug("exception in verifyLinkByCode : ", e);
 			return JaxSystemError.evaluate(e);
 		}
 	}
@@ -102,7 +121,7 @@ public class CustomerProfileClient implements ICustomerProfileService {
 					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerContactVerificationDto, Object>>() {
 					});
 		} catch (Exception e) {
-			LOGGER.error("exception in verifyLinkByContact : ", e);
+			LOGGER.debug("exception in verifyLinkByContact : ", e);
 			return JaxSystemError.evaluate(e);
 		}
 	}

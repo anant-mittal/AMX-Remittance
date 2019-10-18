@@ -2,6 +2,10 @@ package com.amx.jax.userservice.manager;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -18,8 +22,10 @@ import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.jax.JaxAuthContext;
 import com.amx.jax.JaxAuthMetaResp;
+import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
+import com.amx.jax.dbmodel.ViewOnlineCurrency;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
@@ -30,6 +36,7 @@ import com.amx.jax.userservice.service.CommunicationChannelContactService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.userservice.service.UserValidationService;
 import com.amx.jax.util.CryptoUtil;
+import com.amx.utils.ArgUtil;
 import com.amx.utils.Random;
 
 @Component
@@ -56,6 +63,9 @@ public class CustomerDBAuthManager {
 
 	@Autowired
 	CommunicationChannelContactService communicationChannelContactService;
+	
+	@Autowired
+	OtpSettings otpSettings;
 
 	private static final Logger log = LoggerFactory.getLogger(CustomerDBAuthManager.class);
 
@@ -66,6 +76,27 @@ public class CustomerDBAuthManager {
 
 		CustomerOnlineRegistration onlineCust = custDao.getOnlineCustByCustomerId(customerId);
 		Customer customer = custDao.getCustById(customerId);
+		
+		if(onlineCust != null) {
+			if (onlineCust.getLockCnt() != null) {
+				int lockCnt = onlineCust.getLockCnt().intValue();
+				Date midnightTomorrow = getMidnightToday();
+				final Integer MAX_OTP_ATTEMPTS = otpSettings.getMaxValidateOtpAttempts();
+				
+				if (lockCnt > 0 && onlineCust.getLockDt() != null) {
+					if (midnightTomorrow.compareTo(onlineCust.getLockDt()) > 0) {
+						onlineCust.setLockCnt(new BigDecimal(0));
+						onlineCust.setLockDt(null);
+						custDao.saveOnlineCustomer(onlineCust);
+						lockCnt = 0;
+					}
+					if (lockCnt >= MAX_OTP_ATTEMPTS) {
+						throw new GlobalException(JaxError.USER_LOGIN_ATTEMPT_EXCEEDED,
+								"Customer is locked. No of attempts:- " + lockCnt);
+					}
+				}
+			}
+		}
 
 		ContactType contactType = JaxAuthContext.getContactType();
 
@@ -74,6 +105,17 @@ public class CustomerDBAuthManager {
 			// send list of contact types available for customer
 			List<CustomerCommunicationChannel> communicationChannelContact = communicationChannelContactService
 					.getCustomerCommunicationChannels(identityInt);
+			
+			Iterator<CustomerCommunicationChannel> itr = communicationChannelContact.iterator();
+			if (!communicationChannelContact.isEmpty()) {
+				while (itr.hasNext()) {
+					ContactType name = itr.next().getContactType();
+					log.info("CONTACT TYPE NAME ---> "+name);
+					if(ContactType.WHATSAPP.equals(name)) {
+						itr.remove();
+					}
+				}
+			}
 
 			// set communication channel in meta of exception then throw exception
 			GlobalException ex = new GlobalException(JaxError.CONTACT_TYPE_REQUIRED, "Contact Type is missing");
@@ -83,30 +125,33 @@ public class CustomerDBAuthManager {
 
 		boolean isMotpRequired = false;
 		boolean isEotpRequired = false;
+		
+		String mOtp = JaxAuthContext.getMotpOrOtp();
+		String eOtp = JaxAuthContext.getEotpOrOtp();
 
 		switch (contactType) {
 		case MOBILE:
 		case SMS:
-			if (StringUtils.isBlank(JaxAuthContext.getMotp())) {
+			if (ArgUtil.isEmpty(mOtp)) {
 				isMotpRequired = true;
 			} else {
 				validateMotp(onlineCust, customer);
 			}
 			break;
 		case SMS_EMAIL:
-			if (StringUtils.isBlank(JaxAuthContext.getMotp())) {
+			if (ArgUtil.isEmpty(mOtp)) {
 				isMotpRequired = true;
 			} else {
 				validateMotp(onlineCust, customer);
 			}
-			if (StringUtils.isBlank(JaxAuthContext.getEotp())) {
+			if (ArgUtil.isEmpty(eOtp)) {
 				isEotpRequired = true;
 			} else {
 				validateEotp(onlineCust, customer);
 			}
 			break;
 		case EMAIL:
-			if (StringUtils.isBlank(JaxAuthContext.getEotp())) {
+			if (ArgUtil.isEmpty(eOtp)) {
 				isEotpRequired = true;
 			} else {
 				validateEotp(onlineCust, customer);
@@ -154,16 +199,26 @@ public class CustomerDBAuthManager {
 		String eOtpPrefix = Random.randomAlpha(3);
 		String hashedeOtp = cryptoUtil.getHash(customer.getIdentityInt(), eOtp);
 		jaxAuthMetaResp.seteOtpPrefix(eOtpPrefix);
+		jaxAuthMetaResp.setOtpPrefix(eOtpPrefix);
 
 		CivilIdOtpModel model = new CivilIdOtpModel();
 		model.seteOtp(eOtp);
 		model.seteOtpPrefix(eOtpPrefix);
 		model.setHashedeOtp(hashedeOtp);
+		if(customer.getFirstName() != null) {
+			model.setFirstName(customer.getFirstName());
+		}
+		if(customer.getMiddleName() != null) {
+			model.setMiddleName(customer.getMiddleName());
+		}
+		if(customer.getLastName() != null) {
+			model.setLastName(customer.getLastName());
+		}
 
 		onlineCust.setEmailToken(model.getHashedeOtp());
 		custDao.saveOnlineCustomer(onlineCust);
 
-		jaxNotificationService.sendOtpEmail(userService.getPersonInfo(metaData.getCustomerId()), model);
+		jaxNotificationService.sendOtpEmail(userService.getPersonInfo(customer.getCustomerId()), model);
 	}
 
 	private void sendMotp(JaxAuthMetaResp jaxAuthMetaResp, CustomerOnlineRegistration onlineCust, Customer customer) {
@@ -171,6 +226,7 @@ public class CustomerDBAuthManager {
 		String mOtpPrefix = Random.randomAlpha(3);
 		String hashedmOtp = cryptoUtil.getHash(customer.getIdentityInt(), mOtp);
 		jaxAuthMetaResp.setmOtpPrefix(mOtpPrefix);
+		jaxAuthMetaResp.setOtpPrefix(mOtpPrefix);
 
 		CivilIdOtpModel model = new CivilIdOtpModel();
 		model.setmOtp(mOtp);
@@ -180,11 +236,11 @@ public class CustomerDBAuthManager {
 		onlineCust.setSmsToken(model.getHashedmOtp());
 		custDao.saveOnlineCustomer(onlineCust);
 
-		jaxNotificationService.sendOtpSms(userService.getPersonInfo(metaData.getCustomerId()), model);
+		jaxNotificationService.sendOtpSms(userService.getPersonInfo(customer.getCustomerId()), model);
 	}
 
 	public void validateEotp(CustomerOnlineRegistration onlineCust, Customer customer) {
-		String eOtp = JaxAuthContext.getEotp();
+		String eOtp = JaxAuthContext.getEotpOrOtp();
 		String etokenHash = onlineCust.getEmailToken();
 		String eOtpHash = null;
 		if (StringUtils.isNotBlank(eOtp)) {
@@ -200,7 +256,7 @@ public class CustomerDBAuthManager {
 	}
 
 	public void validateMotp(CustomerOnlineRegistration onlineCust, Customer customer) {
-		String mOtp = JaxAuthContext.getMotp();
+		String mOtp = JaxAuthContext.getMotpOrOtp(); 
 		String mtokenHash = onlineCust.getSmsToken();
 		String mOtpHash = null;
 		if (StringUtils.isNotBlank(mOtp)) {
@@ -213,6 +269,16 @@ public class CustomerDBAuthManager {
 		// unlock method here
 		userService.unlockCustomer(onlineCust);
 		custDao.saveOnlineCustomer(onlineCust);
+	}
+	
+	public Date getMidnightToday() {
+		Calendar date = new GregorianCalendar();
+		date.set(Calendar.HOUR_OF_DAY, 0);
+		date.set(Calendar.MINUTE, 0);
+		date.set(Calendar.SECOND, 0);
+		date.set(Calendar.MILLISECOND, 0);
+
+		return date.getTime();
 	}
 
 }

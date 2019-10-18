@@ -16,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.mobile.device.Device;
 import org.springframework.mobile.device.DeviceUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
@@ -30,6 +31,7 @@ import com.amx.jax.dict.UserClient;
 import com.amx.jax.dict.UserClient.AppType;
 import com.amx.jax.dict.UserClient.DevicePlatform;
 import com.amx.jax.dict.UserClient.DeviceType;
+import com.amx.jax.filter.AppParamController;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.UserDevice;
 import com.amx.utils.ArgUtil;
@@ -81,6 +83,9 @@ public class CommonHttpRequest {
 
 	@Autowired(required = false)
 	private HttpServletResponse response;
+
+	@Autowired(required = false)
+	private ApiRequestConfig apiRequestConfig;
 
 	@Autowired
 	private AppConfig appConfig;
@@ -443,19 +448,40 @@ public class CommonHttpRequest {
 		}
 
 		if (ArgUtil.isEmpty(detail.getType()) || RequestType.DEFAULT.equals(detail.getType())) {
-			detail.setType(RequestType.from(req));
+			detail.setType(from(req, apiRequestConfig));
 		}
 		return detail;
 	}
 
 	public RequestType getApiRequestType(HttpServletRequest req) {
-		RequestType reqType = RequestType.from(req);
+		RequestType reqType = from(req, apiRequestConfig);
 		if (reqType == RequestType.DEFAULT) {
 			ApiRequest x = getApiRequestModel(req);
 			if (x != null) {
 				return x.type();
 			}
 		}
+		return reqType;
+	}
+
+	public static RequestType from(HttpServletRequest req, ApiRequestConfig apiRequestConfig) {
+		if (req.getRequestURI().contains(AppParamController.PUB_AMX_PREFIX)) {
+			return RequestType.PING;
+		}
+		if (req.getRequestURI().contains(AppParamController.PUBG_AMX_PREFIX)) {
+			return RequestType.PUBG;
+		}
+
+		RequestType reqType = RequestType.DEFAULT;
+		String reqTypeStr = req.getHeader(AppConstants.REQUEST_TYPE_XKEY);
+		if (!StringUtils.isEmpty(reqTypeStr)) {
+			reqType = (RequestType) ArgUtil.parseAsEnum(reqTypeStr, reqType);
+		}
+
+		if (apiRequestConfig != null) {
+			return apiRequestConfig.from(req, reqType);
+		}
+
 		return reqType;
 	}
 }

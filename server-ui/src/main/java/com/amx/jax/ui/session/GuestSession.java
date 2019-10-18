@@ -4,8 +4,6 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
@@ -19,7 +17,6 @@ import org.springframework.stereotype.Component;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.jax.dict.Language;
 import com.amx.jax.logger.AuditService;
-import com.amx.jax.logger.events.SessionEvent;
 import com.amx.jax.model.AuthState;
 import com.amx.jax.model.AuthState.AuthFlow;
 import com.amx.jax.model.AuthState.AuthStep;
@@ -51,7 +48,7 @@ public class GuestSession implements Serializable {
 	@Autowired
 	transient AuditService auditService;
 
-	Language language = Language.DEFAULT;
+	Language language;
 
 	/**
 	 * Gets the lang.
@@ -276,29 +273,6 @@ public class GuestSession implements Serializable {
 		quesIndex++;
 	}
 
-	/**
-	 * Started.
-	 *
-	 * @throws Exception the exception
-	 */
-	@PostConstruct
-	public void started() {
-		SessionEvent evt = new SessionEvent();
-		evt.setType(SessionEvent.Type.SESSION_STARTED);
-		auditService.log(evt);
-	}
-
-	/**
-	 * Ended.
-	 *
-	 * @throws Exception the exception
-	 */
-	@PreDestroy
-	public void ended() {
-		SessionEvent evt = new SessionEvent();
-		evt.setType(SessionEvent.Type.SESSION_ENDED);
-		auditService.log(evt);
-	}
 
 	/**
 	 * Gets the return url.

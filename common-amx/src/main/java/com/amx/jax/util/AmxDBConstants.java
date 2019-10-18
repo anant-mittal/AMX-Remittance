@@ -14,7 +14,15 @@ public class AmxDBConstants {
 	public static final String Hold = "H";
 
 	public static enum Status {
-		Y, N, D, U, B, C
+		Y, N, 
+		/**
+		 * DELETED or DEACTIVATED
+		 */
+		D, U, B, C, V, 
+		/**
+		 * EXPIRED
+		 */
+		E
 	}
 
 	// document id
@@ -67,7 +75,11 @@ public class AmxDBConstants {
 
 	public static final BigDecimal DELIVERY_MODE_BANKING_CHANNEL = new BigDecimal(105);
 	public static final String MM_DD_YYYY_DATE_FORMAT = "MM/dd/yyyy";
-
+	
+	public static final String DD_MM_YYYY_DATE_FORMAT = "dd/MM/yyyy";
+	
+	public static final String DD_MMM_YY_DATE_FORMAT = "dd-MMM-yy";
+	
 	public static final BigDecimal SERVICE_MASTER_ID_EFT = new BigDecimal(101);
 	public static final BigDecimal SERVICE_MASTER_ID_TT = new BigDecimal(102);
 	public static final BigDecimal SERVICE_MASTER_ID_DD = new BigDecimal(104);
@@ -128,8 +140,11 @@ public class AmxDBConstants {
 	public static final BigDecimal BIZ_COMPONENT_ID_GCC_ID = new BigDecimal(201);
 	public static final BigDecimal BIZ_COMPONENT_ID_BEDOUIN_ID = new BigDecimal(197);
 	public static final BigDecimal MURQAB_FOREIGNCURRENCY = new BigDecimal(89);
+	public static final BigDecimal KUWAIT_FOREIGNCURRENCY = new BigDecimal(89);
+	public static final BigDecimal OMAN_FOREIGNCURRENCY = new BigDecimal(99);
+	public static final BigDecimal BAHRAIN_FOREIGNCURRENCY = new BigDecimal(70);
 	public static final BigDecimal BIZ_COMPONENT_ID_PASSPORT = new BigDecimal(204);
-	
+
 
 	public static final String ARTICLE_20_CODE = "20";
 	public static final BigDecimal BIZ_COMPONENT_ID_NEW_CIVIL_ID = new BigDecimal(2000);
@@ -163,35 +178,53 @@ public class AmxDBConstants {
 	public static final String BNFBANK = "BNFBANK";
 	public static final String BNFBRCH = "BNFBRCH";
 	public static final String BNFBANK_SWIFT = "BNFBANK_SWIFT";
-	
+
 	public static final String HOME_SEND_PAYMENT_TYPE_CASH = "CASH";
 	public static final String HOME_SEND_PAYMENT_TYPE_KNET = "CARD";
 	public static final String HOME_SEND_PAYMENT_TYPE_BANK_TRANSFER = "BANK";
 	public static final String HOME_SEND_PAYMENT_TYPE_CHEQUE = "CHEQUE";
-	
-   // Constant for Article detail id "Others"
-	
+
+	// Constant for Article detail id "Others"
+
 	public static final BigDecimal ARTICLE_DETAIL_ID_OTHERS = new BigDecimal(16);
-	public static final String  VAT_ACCOUNT_TYPE_COMM = "COMMISSION";
-	public static final String  VAT_CALCULATION_TYPE_INCLUDE= "I";
-	public static final String  VAT_CALCULATION_TYPE_EXCLUDE="E";
-	public static final String  VAT_CATEGORY= "OUTPUT_TAX";
-	public static final String  BENE_ACCT_VALID="BENE_ACCT_VALID";
-	
+	public static final String VAT_ACCOUNT_TYPE_COMM = "COMMISSION";
+	public static final String VAT_CALCULATION_TYPE_INCLUDE = "I";
+	public static final String VAT_CALCULATION_TYPE_EXCLUDE = "E";
+	public static final String VAT_CATEGORY = "OUTPUT_TAX";
+	public static final String BENE_ACCT_VALID = "BENE_ACCT_VALID";
+
 	// Constants for Serviceprovider
-	
-	public static final String TOTAL_PAY_INDICATOR  = "T";
+
+	public static final String TOTAL_PAY_INDICATOR = "T";
 
 	// Constants for annual income
 	public static final String ANNUAL_INCOME_RANGE = "AIR";
-	
+
 	// Constants for annual transaction limit range
-	
+
 	public static final String ANNUAL_TRANSACTION_LIMIT = "ATL";
 	public static final long MILLISEC_IN_YEAR = 31540000000L;
 	
 	public static final String  COMM_INCLUDE= "I";
 	public static final String COMM_EXCLUDE="E";
 	
+
+	/** added by rabil  for corporate remittance**/
+	public static final String  CORPORATE= "C";
+
+	public static final String BPI_GIFT="GIFT";
 	
+	public static final String TELEX_TRANFER = "T";
+	public static final String DEMAND_DRAFT = "D";
+
+	public static final BigDecimal EXCHANGE_RATE_DECIMAL = new BigDecimal(9);
+
+	public static final String WU_PAID = "PAID";
+	public static final String WU_PICK = "PICK_REMINDER";
+	public static final String WU_CANC_REM = "CANC_REMINDER";
+	public static final String WU_CANCELLED = "WU_CANC";
+	
+	public static final String JOB_IN_PROGRESS="P";
+	public static final String JOB_COMPLETED = "C";
+
 }

@@ -14,7 +14,6 @@ import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.exception.RemittanceTransactionValidationException;
-import com.amx.amxlib.meta.model.CustomerRatingDTO;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
@@ -25,6 +24,8 @@ import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.client.util.ConverterUtility;
+import com.amx.jax.dict.AmxEnums.Products;
+import com.amx.jax.model.customer.CustomerRatingDTO;
 import com.amx.jax.model.request.remittance.IRemitTransReqPurpose;
 import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
@@ -308,10 +309,12 @@ public class RemitClient extends AbstractJaxServiceClient {
 
 	}
 
-	public AmxApiResponse<CustomerRatingDTO, ?> saveCustomerRating(CustomerRatingDTO customerRatingDTO)
+	public AmxApiResponse<CustomerRatingDTO, ?> saveCustomerRating(CustomerRatingDTO customerRatingDTO,Products prodType)
 			throws RemittanceTransactionValidationException, LimitExeededException {
 
 		try {
+			customerRatingDTO.setProdType(prodType);
+			
 			HttpEntity<CustomerRatingDTO> requestEntity = new HttpEntity<CustomerRatingDTO>(customerRatingDTO,
 					getHeader());
 
@@ -327,20 +330,40 @@ public class RemitClient extends AbstractJaxServiceClient {
 
 	}
 	
-	public AmxApiResponse<CustomerRatingDTO, ?> inquireCustomerRating(BigDecimal remittanceTrnxId)
+	
+	public AmxApiResponse<CustomerRatingDTO, ?> saveFxorderCustomerRating(CustomerRatingDTO customerRatingDTO)
+			throws RemittanceTransactionValidationException, LimitExeededException {
+
+		try {
+			HttpEntity<CustomerRatingDTO> requestEntity = new HttpEntity<CustomerRatingDTO>(customerRatingDTO,
+					getHeader());
+
+			String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/save-fxorder-customer-rating/";
+			LOGGER.info(" Calling customer rating :" + customerRatingDTO.toString());
+			return restService.ajax(url).post(requestEntity).asApiResponse(CustomerRatingDTO.class);
+		} catch (AbstractJaxException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in customer rating : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
+
+	}
+	
+	public AmxApiResponse<CustomerRatingDTO, ?> inquireCustomerRating(BigDecimal remittanceTrnxId, String product)
 			throws RemittanceTransactionValidationException, LimitExeededException {
 
 		try {
 					
 			CustomerRatingDTO request = new CustomerRatingDTO();
 			request.setRemittanceTransactionId(remittanceTrnxId);
+			request.setProducttype(product);
 			HttpEntity<CustomerRatingDTO> requestEntity = new HttpEntity<CustomerRatingDTO>(
 					request, getHeader());
 
 			String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/customer-trnx-rating/";
 			
-			return restService.ajax(url).post(requestEntity)
-					.queryParam("remittanceTrnxId", remittanceTrnxId)
+			return restService.ajax(url).queryParam("remittanceTrnxId", remittanceTrnxId).queryParam("product", product).post(requestEntity)
 					.asApiResponse(CustomerRatingDTO.class);
 		} catch (AbstractJaxException ae) {
 			throw ae;

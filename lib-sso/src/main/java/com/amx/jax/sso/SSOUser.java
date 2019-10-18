@@ -146,10 +146,20 @@ public class SSOUser implements Serializable {
 		this.loginTime = loginTime;
 	}
 
+	/**
+	 * Logged In terminal
+	 * 
+	 * @return
+	 */
 	public String getTerminalId() {
 		return terminalId;
 	}
 
+	/**
+	 * Logged In terminal
+	 * 
+	 * @param terminalId
+	 */
 	public void setTerminalId(String terminalId) {
 		this.terminalId = terminalId;
 	}

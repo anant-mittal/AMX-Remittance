@@ -39,12 +39,15 @@ import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.FlexFieldReponseDto;
 import com.amx.jax.model.response.remittance.GetServiceApplicabilityResponse;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
+import com.amx.jax.model.response.remittance.ParameterDetailsResponseDto;
 import com.amx.jax.model.response.remittance.PaymentModeDto;
 import com.amx.jax.model.response.remittance.RemittanceDeclarationReportDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
 import com.amx.jax.model.response.remittance.branch.DynamicRoutingPricingResponse;
+
+import io.swagger.annotations.ApiOperation;
 
 @RestController
 public class BranchRemittanceController implements IRemittanceService {
@@ -56,8 +59,6 @@ public class BranchRemittanceController implements IRemittanceService {
 	BranchRemittanceService branchRemitService;
 	@Autowired
 	BranchRemittanceExchangeRateService branchRemittanceExchangeRateService;
-	@Autowired
-	ServiceApplicabilityManager serviceApplicabilityManager;
 
 	@RequestMapping(value = Path.BR_REMITTANCE_SAVE_APPL, method = RequestMethod.POST)
 	@Override
@@ -257,6 +258,12 @@ public class BranchRemittanceController implements IRemittanceService {
 	return branchRemittanceExchangeRateService.getFlexField(request);
 	}
 	
+	@RequestMapping(value=Path.BR_REMITTANCE_GET_GIFT_PACKAGE,method=RequestMethod.POST)
+	@Override
+	public AmxApiResponse<ParameterDetailsResponseDto, Object> getGiftService(@RequestParam(value = Params.BENE_RELATION_SHIP_ID, required = true) BigDecimal beneRelaId) {		
+		return branchRemitService.getGiftService(beneRelaId);
+	}	
+
 	@RequestMapping(value = Path.GET_SERVICE_APPLICABILITY, method = RequestMethod.POST)
 	@Override
 	public AmxApiResponse<GetServiceApplicabilityResponse, Object> getServiceApplicability(@RequestBody @Valid GetServiceApplicabilityRequest request) {

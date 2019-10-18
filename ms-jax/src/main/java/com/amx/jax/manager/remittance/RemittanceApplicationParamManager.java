@@ -13,6 +13,7 @@ import static com.amx.amxlib.constant.ApplicationProcedureParam.P_LC_AMOUNT;
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_REMITTANCE_MODE_ID;
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_BANK_ID;
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_COUNTRY_ID;
+import static com.amx.amxlib.constant.ApplicationProcedureParam.P_BENEFICIARY_BANK_COUNTRY_ID;
 
 import java.util.Map;
 
@@ -69,5 +70,8 @@ public class RemittanceApplicationParamManager {
 		P_BENEFICIARY_COUNTRY_ID.putValue(remitApplParametersMap, beneficiaryView.getCountryId());
 		P_BENEFICIARY_ACCOUNT_NO.putValue(remitApplParametersMap, beneficiaryView.getBankAccountNumber());
 		P_BENEFICIARY_BRANCH_ID.putValue(remitApplParametersMap, beneficiaryView.getBranchId());
+		P_BENEFICIARY_BANK_COUNTRY_ID.putValue(remitApplParametersMap, beneficiaryView.getBenificaryCountry());
 	}
 }
+
+
