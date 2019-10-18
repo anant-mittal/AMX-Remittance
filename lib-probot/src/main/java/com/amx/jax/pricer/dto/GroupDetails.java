@@ -2,10 +2,9 @@ package com.amx.jax.pricer.dto;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Comparator;
 import java.util.List;
 
-public class GroupDetails implements Serializable {
+public class GroupDetails implements Serializable, Comparable<GroupDetails> {
 
 	private static final long serialVersionUID = 1L;
 
@@ -69,7 +68,7 @@ public class GroupDetails implements Serializable {
 		this.valSet = valSet;
 	}
 
-	public static class GroupDetailsComparator implements Comparator<GroupDetails> {
+	/*public static class GroupDetailsComparator implements Comparator<GroupDetails> {
 
 		@Override
 		public int compare(GroupDetails arg1, GroupDetails arg2) {
@@ -79,5 +78,19 @@ public class GroupDetails implements Serializable {
 			return 0;
 		}
 
+	}*/
+
+	@Override
+	public int compareTo(GroupDetails o) {
+
+		if (null == o || null == o.getGroupName()) {
+			return 1;
+		} else if (null == this.getGroupName()) {
+			return -1;
+		} else {
+			return this.getGroupName().compareTo(o.getGroupName());
+		}
+
 	}
+
 }

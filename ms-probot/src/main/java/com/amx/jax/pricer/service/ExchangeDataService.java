@@ -3,7 +3,6 @@ package com.amx.jax.pricer.service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +43,6 @@ import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
 import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.manager.DiscountManager;
-import com.amx.jax.pricer.meta.ProbotMetaInfo;
 import com.amx.jax.pricer.var.PricerServiceConstants.DISCOUNT_TYPE;
 
 @Service
@@ -211,7 +209,7 @@ public class ExchangeDataService {
 
 		List<GroupingMaster> groupingMaster = groupingMasterDao.getGroupForCurrency();
 		List<GroupDetails> groupInfo = discountManager.convertGroupInfo(groupingMaster);
-		Collections.sort(groupInfo, new GroupDetails.GroupDetailsComparator());
+		Collections.sort(groupInfo);
 
 		return groupInfo;
 	}
