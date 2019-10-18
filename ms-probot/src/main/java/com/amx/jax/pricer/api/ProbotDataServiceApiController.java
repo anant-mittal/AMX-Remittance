@@ -20,7 +20,6 @@ import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.pricer.ProbotDataService;
-import com.amx.jax.pricer.dbmodel.OnlineMarginMarkup;
 import com.amx.jax.pricer.dto.CurrencyMasterDTO;
 import com.amx.jax.pricer.dto.DiscountDetailsReqRespDTO;
 import com.amx.jax.pricer.dto.DiscountMgmtReqDTO;
@@ -33,7 +32,7 @@ import com.amx.jax.pricer.service.ExchangeDataService;
 import com.amx.jax.pricer.service.HolidayListService;
 
 @RestController
-public class ProbotDataServiceApiController implements ProbotDataService{
+public class ProbotDataServiceApiController implements ProbotDataService {
 
 	/** The Constant LOGGER. */
 	private static final Logger LOGGER = LoggerFactory.getLogger(ProbotDataServiceApiController.class);
@@ -50,7 +49,7 @@ public class ProbotDataServiceApiController implements ProbotDataService{
 			@RequestBody @Valid DiscountMgmtReqDTO discountMgmtReqDTO) {
 		LOGGER.info("Received Request for Discount Management " + " with TraceId: " + AppContextUtil.getTraceId());
 		DiscountDetailsReqRespDTO discountMgmtRespDTO = dataService.getDiscountManagementData(discountMgmtReqDTO);
-		
+
 		return AmxApiResponse.build(discountMgmtRespDTO);
 	}
 
@@ -58,7 +57,8 @@ public class ProbotDataServiceApiController implements ProbotDataService{
 	@RequestMapping(value = ApiEndPoints.GET_ROUTBANKS_AND_SEVICES, method = RequestMethod.POST)
 	public AmxApiResponse<RoutBanksAndServiceRespDTO, Object> getRbanksAndServices(
 			@RequestParam(required = true) BigDecimal countryId, @RequestParam(required = true) BigDecimal currencyId) {
-		LOGGER.info("Get Country Id And Currency Id For Routing Bank and Service " + " with TraceId: " + AppContextUtil.getTraceId());
+		LOGGER.info("Get Country Id And Currency Id For Routing Bank and Service " + " with TraceId: "
+				+ AppContextUtil.getTraceId());
 		List<RoutBanksAndServiceRespDTO> routBanksAndServiceRespDTO = dataService.getRoutBanksAndServices(countryId,
 				currencyId);
 
@@ -78,13 +78,13 @@ public class ProbotDataServiceApiController implements ProbotDataService{
 
 		return AmxApiResponse.buildList(holidayResponseDTO);
 	}
-	
+
 	@Override
 	@RequestMapping(value = ApiEndPoints.SAVE_DISCOUNT_DETAILS, method = RequestMethod.POST)
 	public AmxApiResponse<DiscountDetailsReqRespDTO, Object> saveDiscountDetails(
 			@RequestBody DiscountDetailsReqRespDTO discountdetailsRequestDTO) {
-		
-		//TODO : Log proper Info : Subodh
+
+		// TODO : Log proper Info : Subodh
 		LOGGER.info("Recieved Save Request for Discount Details " + " with TraceId: " + AppContextUtil.getTraceId());
 		return dataService.saveDiscountDetails(discountdetailsRequestDTO);
 	}
@@ -92,11 +92,10 @@ public class ProbotDataServiceApiController implements ProbotDataService{
 	@Override
 	@RequestMapping(value = ApiEndPoints.GET_CUR_GROUPING_DATA, method = RequestMethod.POST)
 	public AmxApiResponse<GroupDetails, Object> getCurrencyGroupingData() {
-		
-		//TODO : Log proper Info : Subodh
+
 		LOGGER.info("Get Currency Grouping Data " + " with TraceId: " + AppContextUtil.getTraceId());
 		List<GroupDetails> groupInfoForCurrency = dataService.getGroupInfoForCurrency();
-		
+
 		return AmxApiResponse.buildList(groupInfoForCurrency);
 	}
 
@@ -104,37 +103,38 @@ public class ProbotDataServiceApiController implements ProbotDataService{
 	@RequestMapping(value = ApiEndPoints.UPDATE_CUR_GROUP_ID, method = RequestMethod.POST)
 	public AmxApiResponse<CurrencyMasterDTO, Object> updateCurrencyGroupId(
 			@RequestParam(required = true) BigDecimal groupId, @RequestParam(required = true) BigDecimal currencyId) {
-		//TODO : Log proper Info : Subodh
 		LOGGER.info("Get Group Id And Currency Id For Update " + " with TraceId: " + AppContextUtil.getTraceId());
 		return dataService.updateCurrencyGroupId(groupId, currencyId);
 	}
 
 	@Override
 	@RequestMapping(value = ApiEndPoints.GET_CUR_BY_GROUP_ID, method = RequestMethod.POST)
-	public AmxApiResponse<CurrencyMasterDTO, Object> getCurrencyByGroupId(@RequestParam(required = true) BigDecimal groupId) {
-		
-		//TODO : Log proper Info : Subodh
+	public AmxApiResponse<CurrencyMasterDTO, Object> getCurrencyByGroupId(
+			@RequestParam(required = true) BigDecimal groupId) {
+
 		LOGGER.info("Get Group Id For Currency " + " with TraceId: " + AppContextUtil.getTraceId());
 		List<CurrencyMasterDTO> groupInfoForCurrency = dataService.getCurrencyByGroupId(groupId);
-		
+
 		return AmxApiResponse.buildList(groupInfoForCurrency);
 	}
+
 	@Override
 	@RequestMapping(value = ApiEndPoints.GET_MARKUP_DETAILS, method = RequestMethod.POST)
 	public AmxApiResponse<OnlineMarginMarkupInfo, Object> getOnlineMarginMarkupData(
-			@RequestBody @Valid OnlineMarginMarkupReq onlineMarginMarkupReq ) {
-		LOGGER.info("Received Request for markup " +onlineMarginMarkupReq.toString());
+			@RequestBody @Valid OnlineMarginMarkupReq onlineMarginMarkupReq) {
+		LOGGER.info("Received Request for markup " + onlineMarginMarkupReq.toString());
 		OnlineMarginMarkupInfo marginMarkupResp = dataService.getOnlineMarginMarkupData(onlineMarginMarkupReq);
-		return AmxApiResponse.build(marginMarkupResp);	
-		}
-	
+		return AmxApiResponse.build(marginMarkupResp);
+	}
+
 	@Override
 	@RequestMapping(value = ApiEndPoints.SAVE_MARKUP_DETAILS, method = RequestMethod.POST)
 	public AmxApiResponse<BoolRespModel, Object> saveOnlineMarginMarkupData(
-			@RequestBody @Valid OnlineMarginMarkupInfo onlineMarginMarkupInfo ) {
-		LOGGER.info("Received Request for save  markup " +onlineMarginMarkupInfo.toString());
-		BoolRespModel marginMarkupResp = dataService.saveOnlineMarginMarkupData(onlineMarginMarkupInfo);;
-		return  AmxApiResponse.build(marginMarkupResp);
-		}
+			@RequestBody @Valid OnlineMarginMarkupInfo onlineMarginMarkupInfo) {
+		LOGGER.info("Received Request for save  markup " + onlineMarginMarkupInfo.toString());
+		BoolRespModel marginMarkupResp = dataService.saveOnlineMarginMarkupData(onlineMarginMarkupInfo);
+		;
+		return AmxApiResponse.build(marginMarkupResp);
+	}
 
 }

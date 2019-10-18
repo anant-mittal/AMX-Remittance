@@ -19,12 +19,24 @@ public class GroupingMasterDao {
 		return repository.findOne(groupId);
 	}
 
+	public GroupingMaster getByGroupTypeAndGroupName(String groupType, String groupName) {
+		return repository.findByGroupTypeAndGroupName(groupType, groupName);
+	}
+
 	public List<GroupingMaster> getAllGroup() {
 		return (List<GroupingMaster>) repository.findAll();
 	}
 
 	public List<GroupingMaster> getGroupForCurrency() {
 		return repository.getGroupForCurrency();
+	}
+
+	public Iterable<GroupingMaster> saveAll(Iterable<GroupingMaster> groups) {
+		return repository.save(groups);
+	}
+
+	public GroupingMaster save(GroupingMaster group) {
+		return repository.save(group);
 	}
 
 }

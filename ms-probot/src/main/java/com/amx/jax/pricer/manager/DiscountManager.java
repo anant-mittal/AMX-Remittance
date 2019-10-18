@@ -40,7 +40,6 @@ import com.amx.jax.pricer.dto.OnlineMarginMarkupInfo;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
 import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
-import com.amx.jax.pricer.meta.ProbotMetaInfo;
 import com.amx.jax.pricer.var.PricerServiceConstants.DISCOUNT_TYPE;
 
 @Component
@@ -63,26 +62,25 @@ public class DiscountManager {
 
 	@Autowired
 	ServiceMasterDescDao serviceMasterDescDao;
-	
+
 	@Autowired
 	DiscountMasterDao discountMasterDao;
-	
+
 	@Autowired
 	CurrencyMasterDao currencyMasterDao;
-	
+
 	@Autowired
 	MarginMarkupDao marginMarkupDao;
-	
-	@Autowired
-	private ProbotMetaInfo metaInfo;
-	
-	private static final Logger LOGGER = Logger.getLogger(DiscountManager.class);
 
+	// @Autowired
+	// private ProbotMetaInfo metaInfo;
+
+	private static final Logger LOGGER = Logger.getLogger(DiscountManager.class);
 
 	// ------ To get Discount details Start here ------
 	public List<ChannelDetails> convertChannelData(List<ChannelDiscount> channelDiscount, BigDecimal groupId) {
 		List<ChannelDetails> list = new ArrayList<>();
-		
+
 		for (ChannelDiscount discList : channelDiscount) {
 			ChannelDetails channelDetail = new ChannelDetails();
 			channelDetail.setChannelId(discList.getId());
@@ -112,9 +110,9 @@ public class DiscountManager {
 
 	public List<AmountSlabDetails> convertAmountSlabData(List<PipsMaster> pipsMasterData) {
 		List<AmountSlabDetails> list = new ArrayList<>();
-		
+
 		for (PipsMaster pipsMasterList : pipsMasterData) {
-			
+
 			AmountSlabDetails amountSlabDetail = new AmountSlabDetails();
 			amountSlabDetail.setPipsMasterId(pipsMasterList.getPipsMasterId());
 			amountSlabDetail.setFromAmount(pipsMasterList.getFromAmount());
@@ -138,7 +136,7 @@ public class DiscountManager {
 			amountSlabDetail.setMinDiscountPips(pipsMasterList.getMinDiscountPips());
 			amountSlabDetail.setMaxDiscountPips(pipsMasterList.getMaxDiscountPips());
 			list.add(amountSlabDetail);
-		
+
 		}
 		return list;
 	}
@@ -173,15 +171,16 @@ public class DiscountManager {
 		List<ChannelDetails> channelData = convertchannelRequest(channelDetails);
 		List<DiscountMaster> list = new ArrayList<>();
 		for (ChannelDetails channelUpdate : channelData) {
-			if(null != channelUpdate.getDiscountId() && null != channelUpdate.getGroupId()) {
-				DiscountMaster discChannelByIdAndGroupId = 
-						discountMasterDao.getByDiscountIdAndGroupId(channelUpdate.getDiscountId(), channelUpdate.getGroupId(), DISCOUNT_TYPE.CHANNEL.getTypeKey());
+			if (null != channelUpdate.getDiscountId() && null != channelUpdate.getGroupId()) {
+				DiscountMaster discChannelByIdAndGroupId = discountMasterDao.getByDiscountIdAndGroupId(
+						channelUpdate.getDiscountId(), channelUpdate.getGroupId(), DISCOUNT_TYPE.CHANNEL.getTypeKey());
 
-				if(null != discChannelByIdAndGroupId) {
+				if (null != discChannelByIdAndGroupId) {
 					if (null != channelUpdate.getDiscountPips()) {
-						if (channelUpdate.getDiscountPips().doubleValue() >= discChannelByIdAndGroupId.getMinDiscountPips().doubleValue()
-								&& channelUpdate.getDiscountPips().doubleValue() <= discChannelByIdAndGroupId.getMaxDiscountPips()
-										.doubleValue()) {
+						if (channelUpdate.getDiscountPips().doubleValue() >= discChannelByIdAndGroupId
+								.getMinDiscountPips().doubleValue()
+								&& channelUpdate.getDiscountPips().doubleValue() <= discChannelByIdAndGroupId
+										.getMaxDiscountPips().doubleValue()) {
 							discChannelByIdAndGroupId.setDiscountPips(channelUpdate.getDiscountPips());
 						} else {
 							throw new PricerServiceException(PricerServiceError.INVALID_CHANNEL_DISC_PIPS,
@@ -195,7 +194,7 @@ public class DiscountManager {
 
 					list.add(discChannelByIdAndGroupId);
 				}
-			}else {
+			} else {
 				throw new PricerServiceException(PricerServiceError.MISSING_DISCOUNT_OR_GROUP_ID,
 						"Either DiscountId or GroupId is missing for Channel");
 			}
@@ -223,14 +222,16 @@ public class DiscountManager {
 		List<CustomerCategoryDetails> customerDiscountData = convertCustomerDiscountRequest(customerCategoryDetails);
 		List<DiscountMaster> list = new ArrayList<>();
 		for (CustomerCategoryDetails custCatUpdate : customerDiscountData) {
-			if(null != custCatUpdate.getDiscountId() && null != custCatUpdate.getGroupId()) {
-				DiscountMaster discCustCatByIdAndGroupId = 
-						discountMasterDao.getByDiscountIdAndGroupId(custCatUpdate.getDiscountId(), custCatUpdate.getGroupId(), DISCOUNT_TYPE.CUSTOMER_CATEGORY.getTypeKey()); 
-				if(null != discCustCatByIdAndGroupId) {
+			if (null != custCatUpdate.getDiscountId() && null != custCatUpdate.getGroupId()) {
+				DiscountMaster discCustCatByIdAndGroupId = discountMasterDao.getByDiscountIdAndGroupId(
+						custCatUpdate.getDiscountId(), custCatUpdate.getGroupId(),
+						DISCOUNT_TYPE.CUSTOMER_CATEGORY.getTypeKey());
+				if (null != discCustCatByIdAndGroupId) {
 					if (null != custCatUpdate.getDiscountPips()) {
-						if (custCatUpdate.getDiscountPips().doubleValue() >= discCustCatByIdAndGroupId.getMinDiscountPips().doubleValue()
-								&& custCatUpdate.getDiscountPips().doubleValue() <= discCustCatByIdAndGroupId.getMaxDiscountPips()
-										.doubleValue()) {
+						if (custCatUpdate.getDiscountPips().doubleValue() >= discCustCatByIdAndGroupId
+								.getMinDiscountPips().doubleValue()
+								&& custCatUpdate.getDiscountPips().doubleValue() <= discCustCatByIdAndGroupId
+										.getMaxDiscountPips().doubleValue()) {
 							discCustCatByIdAndGroupId.setDiscountPips(custCatUpdate.getDiscountPips());
 						} else {
 							throw new PricerServiceException(PricerServiceError.INVALID_CUST_CAT_DISC_PIPS,
@@ -243,8 +244,8 @@ public class DiscountManager {
 
 					list.add(discCustCatByIdAndGroupId);
 				}
-			
-			}else {
+
+			} else {
 				throw new PricerServiceException(PricerServiceError.MISSING_DISCOUNT_OR_GROUP_ID,
 						"Either DiscountId or GroupId is missing for Customer Category");
 			}
@@ -252,7 +253,8 @@ public class DiscountManager {
 		discountMasterDao.saveDiscountForCustomerCategory(list);
 	}
 
-	private List<CustomerCategoryDetails> convertCustomerDiscountRequest(List<CustomerCategoryDetails> customerCategoryDetails) {
+	private List<CustomerCategoryDetails> convertCustomerDiscountRequest(
+			List<CustomerCategoryDetails> customerCategoryDetails) {
 		List<CustomerCategoryDetails> list = new ArrayList<>();
 		for (CustomerCategoryDetails dto : customerCategoryDetails) {
 			CustomerCategoryDetails customerCategoryData = new CustomerCategoryDetails();
@@ -302,11 +304,11 @@ public class DiscountManager {
 	// ------ Currency Grouping changes ------
 	public List<ChannelDetails> convertChannelGroupingData(List<DiscountMaster> chDiscMaster, BigDecimal groupId) {
 		List<ChannelDetails> list = new ArrayList<>();
-		
+
 		for (DiscountMaster discChannelList : chDiscMaster) {
-			
+
 			ChannelDiscount channelData = channelDiscountDao.getDiscountById(discChannelList.getDiscountTypeId());
-						
+
 			ChannelDetails channelDetail = new ChannelDetails();
 			channelDetail.setChannelId(channelData.getId());
 			channelDetail.setChannel(channelData.getChannel());
@@ -323,13 +325,15 @@ public class DiscountManager {
 
 		return list;
 	}
-	
-	public List<CustomerCategoryDetails> convertCustCatGroupingData(List<DiscountMaster> custCatDiscMaster, BigDecimal groupId) {
-		List <CustomerCategoryDetails> list = new ArrayList<>();
-		
-		for(DiscountMaster discCustCatList : custCatDiscMaster) {
-			CustomerCategoryDiscount custCatData = custCatDiscountDao.getCustCatDiscountById(discCustCatList.getDiscountTypeId());
-			
+
+	public List<CustomerCategoryDetails> convertCustCatGroupingData(List<DiscountMaster> custCatDiscMaster,
+			BigDecimal groupId) {
+		List<CustomerCategoryDetails> list = new ArrayList<>();
+
+		for (DiscountMaster discCustCatList : custCatDiscMaster) {
+			CustomerCategoryDiscount custCatData = custCatDiscountDao
+					.getCustCatDiscountById(discCustCatList.getDiscountTypeId());
+
 			CustomerCategoryDetails customerCategoryDetails = new CustomerCategoryDetails();
 			customerCategoryDetails.setCustCatId(custCatData.getId());
 			customerCategoryDetails.setCustomerCategory(custCatData.getCustomerCategory());
@@ -340,115 +344,113 @@ public class DiscountManager {
 			customerCategoryDetails.setMinDiscountPips(discCustCatList.getMinDiscountPips());
 			customerCategoryDetails.setMaxDiscountPips(discCustCatList.getMaxDiscountPips());
 			customerCategoryDetails.setIsActive(discCustCatList.getIsActive());
-			
+
 			list.add(customerCategoryDetails);
 		}
-		
+
 		return list;
 	}
 
 	public Map<BigDecimal, List<ChannelDetails>> convertGrpChannel(BigDecimal groupId,
 			List<ChannelDetails> channelData) {
-		
+
 		Map<BigDecimal, List<ChannelDetails>> grpChannelData = new HashMap<BigDecimal, List<ChannelDetails>>();
 		grpChannelData.put(groupId, channelData);
-		
+
 		return grpChannelData;
 	}
-	
+
 	public Map<BigDecimal, List<CustomerCategoryDetails>> convertGrpCustCat(BigDecimal groupId,
 			List<CustomerCategoryDetails> custCatData) {
-		
+
 		Map<BigDecimal, List<CustomerCategoryDetails>> grpCustCatData = new HashMap<BigDecimal, List<CustomerCategoryDetails>>();
 		grpCustCatData.put(groupId, custCatData);
-		
+
 		return grpCustCatData;
 	}
 
-	public List<GroupDetails> convertGroupInfo(List<GroupingMaster> groupingMaster) {
-		List<GroupDetails> list = new ArrayList<>();
-		
-		for (GroupingMaster groupList : groupingMaster) {
+	public List<GroupDetails> convertGroupInfo(List<GroupingMaster> groupingMasterList) {
+		List<GroupDetails> grpDetailsList = new ArrayList<>();
+
+		for (GroupingMaster grpMaster : groupingMasterList) {
 			GroupDetails groupDetails = new GroupDetails();
-			groupDetails.setGroupId(groupList.getId());
-			groupDetails.setGroupName(groupList.getGroupName());
-			groupDetails.setGroupType(groupList.getGroupType());
-			groupDetails.setIsActive(groupList.getIsActive());
-			
-			list.add(groupDetails);
+			groupDetails.setGroupId(grpMaster.getId());
+			groupDetails.setGroupName(grpMaster.getGroupName());
+			groupDetails.setGroupType(grpMaster.getGroupType());
+			groupDetails.setIsActive(grpMaster.getIsActive());
+			groupDetails.setValType(grpMaster.getValType());
+
+			grpDetailsList.add(groupDetails);
 		}
-		return list;
+		return grpDetailsList;
 	}
 
 	public void commitCurrencyGroupId(BigDecimal groupId, BigDecimal currencyId) {
 		CurrencyMasterModel currencyById = currencyMasterDao.getByCurrencyId(currencyId);
-		
+
 		currencyById.setCurrGroupId(groupId);
 		currencyMasterDao.updateCurrencyGroupId(currencyById);
 	}
 
 	public List<CurrencyMasterDTO> convertCurrencyData(List<CurrencyMasterModel> currencyByGrId) {
 		List<CurrencyMasterDTO> list = new ArrayList<>();
-		
-		for(CurrencyMasterModel currencyList : currencyByGrId) {
+
+		for (CurrencyMasterModel currencyList : currencyByGrId) {
 			CurrencyMasterDTO currencyMasterDTO = new CurrencyMasterDTO();
 			currencyMasterDTO.setCurrencyId(currencyList.getCurrencyId());
 			currencyMasterDTO.setCurrencyCode(currencyList.getCurrencyCode());
 			currencyMasterDTO.setQuoteName(currencyList.getQuoteName());
 			currencyMasterDTO.setCurrencyName(currencyList.getCurrencyName());
 			currencyMasterDTO.setCurrGroupId(currencyList.getCurrGroupId());
-			
+
 			list.add(currencyMasterDTO);
 		}
 		return list;
 	}
-	
-	public OnlineMarginMarkupInfo convertMarkup(OnlineMarginMarkup onlineMarginMarkup ) {
-		OnlineMarginMarkupInfo markupDetails=new OnlineMarginMarkupInfo();
-			markupDetails.setBankId(onlineMarginMarkup.getBankId());
-			markupDetails.setMarginMarkup(onlineMarginMarkup.getMarginMarkup());
-			markupDetails.setCountryId(onlineMarginMarkup.getCountryId());
-			markupDetails.setCurrencyId(onlineMarginMarkup.getCurrencyId());
-			markupDetails.setOnlineMarginMarkupId(onlineMarginMarkup.getOnlineMarginMarkupId());
-			markupDetails.setEmpName(onlineMarginMarkup.getCreatedBy());
-			return markupDetails;
-		
-		
+
+	public OnlineMarginMarkupInfo convertMarkup(OnlineMarginMarkup onlineMarginMarkup) {
+		OnlineMarginMarkupInfo markupDetails = new OnlineMarginMarkupInfo();
+		markupDetails.setBankId(onlineMarginMarkup.getBankId());
+		markupDetails.setMarginMarkup(onlineMarginMarkup.getMarginMarkup());
+		markupDetails.setCountryId(onlineMarginMarkup.getCountryId());
+		markupDetails.setCurrencyId(onlineMarginMarkup.getCurrencyId());
+		markupDetails.setOnlineMarginMarkupId(onlineMarginMarkup.getOnlineMarginMarkupId());
+		markupDetails.setEmpName(onlineMarginMarkup.getCreatedBy());
+		return markupDetails;
+
 	}
-	public Boolean commitMarkup(OnlineMarginMarkup marginMarkupData,OnlineMarginMarkupInfo request) {
+
+	public Boolean commitMarkup(OnlineMarginMarkup marginMarkupData, OnlineMarginMarkupInfo request) {
 		try {
-			
-			if (marginMarkupData !=null) 
-			{
-			marginMarkupData.setMarginMarkup(request.getMarginMarkup());
-			marginMarkupData.setModifiedDate(new Date());
-			marginMarkupData.setModifiedBy(request.getEmpName());
-			marginMarkupDao.saveOnlineMarginMarkup(marginMarkupData);
-			return true;
+
+			if (marginMarkupData != null) {
+				marginMarkupData.setMarginMarkup(request.getMarginMarkup());
+				marginMarkupData.setModifiedDate(new Date());
+				marginMarkupData.setModifiedBy(request.getEmpName());
+				marginMarkupDao.saveOnlineMarginMarkup(marginMarkupData);
+				return true;
+
+			} else {
+				OnlineMarginMarkup onlineMarginMarkup = new OnlineMarginMarkup();
+				onlineMarginMarkup.setCountryId(request.getCountryId());
+				onlineMarginMarkup.setBankId(request.getBankId());
+				onlineMarginMarkup.setCurrencyId(request.getCurrencyId());
+				onlineMarginMarkup.setIsActive("Y");
+				onlineMarginMarkup.setMarginMarkup(request.getMarginMarkup());
+				onlineMarginMarkup.setCreatedDate(new Date());
+				onlineMarginMarkup.setModifiedDate(new Date());
+				onlineMarginMarkup.setModifiedBy(request.getEmpName());
+				onlineMarginMarkup.setCreatedBy(request.getEmpName());
+				onlineMarginMarkup.setApplicationCountryId(request.getApplicationCountryId());
+				marginMarkupDao.saveOnlineMarginMarkup(onlineMarginMarkup);
+				return true;
 
 			}
-		 else {
-			 OnlineMarginMarkup onlineMarginMarkup=new OnlineMarginMarkup();
-			 onlineMarginMarkup.setCountryId(request.getCountryId());
-			 onlineMarginMarkup.setBankId(request.getBankId());
-			 onlineMarginMarkup.setCurrencyId(request.getCurrencyId());
-			 onlineMarginMarkup.setIsActive("Y");
-			 onlineMarginMarkup.setMarginMarkup(request.getMarginMarkup());
-			 onlineMarginMarkup.setCreatedDate(new Date());
-			 onlineMarginMarkup.setModifiedDate(new Date());
-			 onlineMarginMarkup.setModifiedBy(request.getEmpName());
-			 onlineMarginMarkup.setCreatedBy(request.getEmpName());
-			 onlineMarginMarkup.setApplicationCountryId(request.getApplicationCountryId());
-			 marginMarkupDao.saveOnlineMarginMarkup(onlineMarginMarkup);
-			 return true;
-
-		 }
-	 }catch(PricerServiceException e)
-		{
-		 LOGGER.info("ErrorKey : - " +e.getErrorKey()+ " ErrorMessage : - " +e.getErrorMessage());
-		 throw new PricerServiceException(PricerServiceError.INVALID_MARKUP,
+		} catch (PricerServiceException e) {
+			LOGGER.info("ErrorKey : - " + e.getErrorKey() + " ErrorMessage : - " + e.getErrorMessage());
+			throw new PricerServiceException(PricerServiceError.INVALID_MARKUP,
 					"The markup value entered is not valid for the selected country,currency and bank.");
 		}
 	}
-	
+
 }

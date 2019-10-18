@@ -3,6 +3,7 @@ package com.amx.jax.pricer.dto;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Comparator;
+import java.util.List;
 
 public class GroupDetails implements Serializable {
 
@@ -15,6 +16,10 @@ public class GroupDetails implements Serializable {
 	private String groupType;
 
 	private String isActive;
+
+	private String valType;
+
+	private List<String> valSet;
 
 	public BigDecimal getGroupId() {
 		return groupId;
@@ -46,6 +51,22 @@ public class GroupDetails implements Serializable {
 
 	public void setIsActive(String isActive) {
 		this.isActive = isActive;
+	}
+
+	public String getValType() {
+		return valType;
+	}
+
+	public void setValType(String valType) {
+		this.valType = valType;
+	}
+
+	public List<String> getValSet() {
+		return valSet;
+	}
+
+	public void setValSet(List<String> valSet) {
+		this.valSet = valSet;
 	}
 
 	public static class GroupDetailsComparator implements Comparator<GroupDetails> {

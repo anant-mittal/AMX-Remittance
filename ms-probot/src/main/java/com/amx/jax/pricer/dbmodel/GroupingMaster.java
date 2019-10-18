@@ -51,6 +51,12 @@ public class GroupingMaster implements Serializable {
 	@Column(name = "MODIFIED_DATE")
 	private Date modifiedDate;
 
+	@Column(name = "VAL_TYPE")
+	private String valType;
+
+	@Column(name = "VAL_SET_JSON")
+	private String valSetJson;
+
 	public BigDecimal getId() {
 		return id;
 	}
@@ -121,6 +127,22 @@ public class GroupingMaster implements Serializable {
 
 	public void setModifiedDate(Date modifiedDate) {
 		this.modifiedDate = modifiedDate;
+	}
+
+	public String getValType() {
+		return valType;
+	}
+
+	public void setValType(String valType) {
+		this.valType = valType;
+	}
+
+	public String getValSetJson() {
+		return valSetJson;
+	}
+
+	public void setValSetJson(String valSetJson) {
+		this.valSetJson = valSetJson;
 	}
 
 }
