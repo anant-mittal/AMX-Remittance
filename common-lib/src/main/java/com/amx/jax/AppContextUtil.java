@@ -19,6 +19,7 @@ import com.amx.jax.dict.UserClient.UserDeviceClient;
 import com.amx.jax.http.RequestType;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.Constants;
 import com.amx.utils.ContextUtil;
 import com.amx.utils.JsonUtil;
 import com.amx.utils.StringUtils;
@@ -29,14 +30,20 @@ public class AppContextUtil {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AppContextUtil.class);
 
+	public static void setSessionPrefix(String sessionPrefix) {
+		ContextUtil.map().put(AppConstants.SESSION_PREFIX_XKEY, sessionPrefix);
+	}
+
 	public static void setSessionId(Object sessionId) {
 		ContextUtil.map().put(AppConstants.SESSION_ID_XKEY, sessionId);
 	}
 
 	public static String getSessionId(boolean generate, String defautSessionId) {
 		String sessionId = ArgUtil.parseAsString(ContextUtil.map().get(AppConstants.SESSION_ID_XKEY), defautSessionId);
+		String sessionPrefix = ArgUtil.parseAsString(ContextUtil.map().get(AppConstants.SESSION_PREFIX_XKEY),
+				Constants.BLANK);
 		if (generate && ArgUtil.isEmptyString(sessionId)) {
-			sessionId = UniqueID.generateSessionId();
+			sessionId = UniqueID.generateSessionId(sessionPrefix);
 			setSessionId(sessionId);
 		}
 		return sessionId;
@@ -105,7 +112,8 @@ public class AppContextUtil {
 	}
 
 	public static Language getLang() {
-		return (Language) ArgUtil.parseAsEnum(ContextUtil.map().get(AppConstants.LANG_PARAM_KEY), Language.EN,Language.class);
+		return (Language) ArgUtil.parseAsEnum(ContextUtil.map().get(AppConstants.LANG_PARAM_KEY), Language.EN,
+				Language.class);
 	}
 
 	public static Language getLang(Language lang) {
@@ -139,7 +147,7 @@ public class AppContextUtil {
 
 	public static RequestType getRequestType() {
 		return (RequestType) ArgUtil.parseAsEnum(ContextUtil.map().get(AppConstants.REQUEST_TYPE_XKEY),
-				RequestType.DEFAULT);
+				RequestType.DEFAULT, RequestType.class);
 	}
 
 	public static String getSessionIdFromTraceId() {
@@ -147,7 +155,7 @@ public class AppContextUtil {
 		if (!ArgUtil.isEmptyString(traceId)) {
 			Matcher matcher = UniqueID.SYSTEM_STRING_PATTERN.matcher(traceId);
 			if (matcher.find()) {
-				setSessionId(matcher.group(1) + "-" + matcher.group(2));
+				setSessionId(matcher.group(1) + "-" + matcher.group(2) + "-" + matcher.group(3));
 			}
 		}
 		return getSessionId(true);
