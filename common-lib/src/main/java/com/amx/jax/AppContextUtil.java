@@ -105,7 +105,8 @@ public class AppContextUtil {
 	}
 
 	public static Language getLang() {
-		return (Language) ArgUtil.parseAsEnum(ContextUtil.map().get(AppConstants.LANG_PARAM_KEY), Language.EN,Language.class);
+		return (Language) ArgUtil.parseAsEnum(ContextUtil.map().get(AppConstants.LANG_PARAM_KEY), Language.EN,
+				Language.class);
 	}
 
 	public static Language getLang(Language lang) {
@@ -163,6 +164,10 @@ public class AppContextUtil {
 
 	public static void setVendor(Class<?> class1, String vendor) {
 		ContextUtil.map().put("scopedTarget." + StringUtils.decapitalize(class1.getSimpleName()), vendor);
+	}
+
+	public static String getVendor(Class<?> class1) {
+		return (String) ContextUtil.map().get("scopedTarget." + StringUtils.decapitalize(class1.getSimpleName()));
 	}
 
 	public static String getVendor(String scopedTargetClassName) {

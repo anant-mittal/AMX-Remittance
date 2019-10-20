@@ -33,12 +33,10 @@ public class BranchUserClient implements IBranchService {
 			return restService.ajax(url).meta(new JaxMetaInfo()).queryParam(Params.TRNX_DATE, transactiondate).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<UserwiseTransactionDto, Object>>() {
 					});
-
 		} catch (Exception e) {
 			LOGGER.error("exception in userwise Total trnx Count : ", e);
 			return JaxSystemError.evaluate(e);
 		}
-
 	}
 
 	@Override

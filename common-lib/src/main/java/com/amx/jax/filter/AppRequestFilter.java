@@ -36,6 +36,7 @@ import com.amx.jax.model.MapModel;
 import com.amx.jax.rest.AppRequestContextInFilter;
 import com.amx.jax.rest.AppRequestInterfaces.VendorAuthFilter;
 import com.amx.jax.scope.TenantContextHolder;
+import com.amx.jax.scope.VendorProperties;
 import com.amx.jax.session.SessionContextService;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.CryptoUtil;
@@ -97,6 +98,7 @@ public class AppRequestFilter implements Filter {
 		String authVendor = localCommonHttpRequest.get(AppConstants.AUTH_ID_XKEY);
 
 		if (ArgUtil.is(authVendor)) {
+			AppContextUtil.setVendor(VendorProperties.class, authVendor);
 			AppContextUtil.setVendor(VendorAuthConfig.class, authVendor);
 			String authToken = localCommonHttpRequest.get(AppConstants.AUTH_TOKEN_XKEY);
 			if (ArgUtil.is(authToken)) {

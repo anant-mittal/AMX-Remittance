@@ -3,6 +3,7 @@ package com.amx.jax.proto.tpc.api;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -42,6 +43,7 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 @Api(value = "Third Party Client APIs", tags = "List of APIs to communicate with AMX Service")
 @RequestMapping(produces = { CommonMediaType.APPLICATION_JSON_VALUE })
+@ConditionalOnProperty("app.api.tpc.remit")
 public class TPCRemittController {
 
 	@Autowired

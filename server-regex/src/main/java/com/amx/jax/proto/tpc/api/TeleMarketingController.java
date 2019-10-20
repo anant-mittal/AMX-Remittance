@@ -3,6 +3,7 @@ package com.amx.jax.proto.tpc.api;
 import java.math.BigDecimal;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.cache.box.CustomerOnCall.CustomerCall;
 import com.amx.jax.client.branch.BranchUserClient;
+import com.amx.jax.http.ApiRequest;
 import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
 import com.amx.jax.proto.tpc.api.TPCStatus.ApiTPCStatus;
 import com.amx.jax.proto.tpc.api.TPCStatus.TPCServerCodes;
@@ -20,9 +22,12 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-@Api(value = "TeleMarketing APIs", tags = "List of APIs to communicate with Telemarketing Service")
+@Api(value = "TeleMarketing APIs", tags = "For Centrix")
+@ConditionalOnProperty("app.api.tpc.tm")
 @RequestMapping(produces = { CommonMediaType.APPLICATION_JSON_VALUE })
 public class TeleMarketingController {
+
+	private static final String TELEMARKETING = "TELEMARKETING";
 
 	@Autowired
 	BranchUserClient branchUserClient;
@@ -30,6 +35,7 @@ public class TeleMarketingController {
 	@ApiVendorHeaders
 	@ApiOperation(value = "Create Customer Call Session")
 	@ApiTPCStatus({ TPCServerCodes.INVALID_CLIENT_CREDS })
+	@ApiRequest(feature = TELEMARKETING)
 	@RequestMapping(value = { "tpc/tm/customer/call/session" }, method = { RequestMethod.POST })
 	public AmxApiResponse<CustomerCall, Object> customerCallSession(@RequestParam BigDecimal agentId,
 			@RequestParam BigDecimal customerId,
@@ -40,10 +46,10 @@ public class TeleMarketingController {
 	@ApiVendorHeaders
 	@ApiOperation(value = "Update Customer Call Session")
 	@ApiTPCStatus({ TPCServerCodes.INVALID_CLIENT_CREDS })
+	@ApiRequest(feature = TELEMARKETING)
 	@RequestMapping(value = { "tpc/tm/customer/call/status" }, method = { RequestMethod.POST })
 	public AmxApiResponse<CustomerCall, Object> customerCallStatus(
-			@RequestParam BigDecimal agentId,
-			@RequestParam(required = false) String mobile, @RequestParam(required = false) String sessionId,
+			@RequestParam BigDecimal agentId, @RequestParam(required = false) String sessionId,
 			@RequestParam(required = false) String leadId,
 			@RequestParam String followUpCode, @RequestParam String remark,
 			@RequestParam BigDecimal customerId) {

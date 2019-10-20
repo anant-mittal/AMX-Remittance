@@ -28,6 +28,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.def.IndicatorListner;
 import com.amx.jax.def.IndicatorListner.GaugeIndicator;
+import com.amx.jax.dict.VendorFeatures;
 import com.amx.jax.exception.AmxApiError;
 import com.amx.jax.http.ApiRequest;
 import com.amx.jax.http.CommonHttpRequest;
@@ -35,6 +36,7 @@ import com.amx.jax.http.RequestType;
 import com.amx.jax.model.UserDevice;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.scope.TenantProperties;
+import com.amx.jax.scope.VendorContext.ApiVendorHeaders;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.CryptoUtil.HashBuilder;
 import com.amx.utils.JsonUtil;
@@ -47,6 +49,7 @@ public class AppParamController {
 	public static final String PUB_AMX_PREFIX = "/pub/amx";
 	public static final String PUBG_AMX_PREFIX = "/pubg/";
 	public static final String PARAM_URL = PUB_AMX_PREFIX + "/params";
+	public static final String FEATURE_URL = PUB_AMX_PREFIX + "/features";
 	public static final String METRIC_URL = PUB_AMX_PREFIX + "/metric";
 
 	@Autowired
@@ -59,6 +62,9 @@ public class AppParamController {
 	AppTenantConfig appTenantConfig;
 
 	@Autowired(required = false)
+	VendorAuthConfig vendorAuthConfig;
+
+	@Autowired(required = false)
 	List<IndicatorListner> listners;
 
 	@ApiRequest(type = RequestType.NO_TRACK_PING)
@@ -69,6 +75,16 @@ public class AppParamController {
 			LOGGER.info("App Param {} changed to {}", id, id.isEnabled());
 		}
 		return AppParam.values();
+	}
+
+	@ApiVendorHeaders
+	@ApiRequest(type = RequestType.NO_TRACK_PING)
+	@RequestMapping(value = FEATURE_URL, method = RequestMethod.GET)
+	public Object[] features() {
+		if (vendorAuthConfig != null) {
+			return vendorAuthConfig.getFeaturesList().toArray();
+		}
+		return null;
 	}
 
 	@ApiRequest(type = RequestType.NO_TRACK_PING)

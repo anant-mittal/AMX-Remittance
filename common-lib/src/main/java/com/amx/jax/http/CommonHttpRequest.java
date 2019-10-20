@@ -403,6 +403,7 @@ public class CommonHttpRequest {
 		boolean useAuthToken;
 		boolean useAuthKey;
 		String flow;
+		String[] perms;
 
 		public RequestType getType() {
 			return type;
@@ -435,6 +436,15 @@ public class CommonHttpRequest {
 		public void setFlow(String flow) {
 			this.flow = flow;
 		}
+
+		public String[] getPerms() {
+			return perms;
+		}
+
+		public void setPerms(String[] perms) {
+			this.perms = perms;
+		}
+
 	}
 
 	public ApiRequestDetail getApiRequest(HttpServletRequest req) {
