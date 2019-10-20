@@ -28,6 +28,7 @@ import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.customer.CreateCustomerInfoRequest;
 import com.amx.jax.model.customer.document.CustomerDocValidationResponseData;
 import com.amx.jax.model.request.customer.CustomerDocValidationData;
+import com.amx.jax.model.request.customer.UpdateCustomerInfoRequest;
 import com.amx.jax.repository.remittance.IIdNumberLengthCheckRepository;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.userservice.manager.CustomerIdProofManager;
@@ -67,7 +68,7 @@ public class CustomerManagementValidation {
 			}
 		} else {
 			throw new GlobalException(JaxError.ID_TYPE_LENGTH_NOT_DEFINED,
-					"Id length setup is missing  in paramter :" + identityInt + " identityTypeId :" + identityTypeId);
+					"Id length setup is missing  in parameter :" + identityInt + " identityTypeId :" + identityTypeId);
 		}
 	}
 
@@ -131,10 +132,15 @@ public class CustomerManagementValidation {
 		}
 	}
 
-	public void validateCustomerDataForUpdate(BigDecimal customerId) {
+	public void validateCustomerDataForUpdate(UpdateCustomerInfoRequest updateCustomerInfoRequest, BigDecimal customerId) {
 		Customer customer = userService.getCustById(customerId);
-		if (customer.getSignatureSpecimenClob() == null) {
-			throw new GlobalException(JaxError.SIGNATURE_NOT_AVAILABLE, "signature missing");
+		boolean updateSignature = false;
+		if (updateCustomerInfoRequest.getPersonalDetailInfo() != null
+				&& updateCustomerInfoRequest.getPersonalDetailInfo().getCustomerSignature() != null) {
+			updateSignature = true;
+		}
+		if (customer.getSignatureSpecimenClob() == null && !updateSignature) {
+			throw new GlobalException(JaxError.SIGNATURE_NOT_AVAILABLE, "Customer Signature Missing");
 		}
 	}
 

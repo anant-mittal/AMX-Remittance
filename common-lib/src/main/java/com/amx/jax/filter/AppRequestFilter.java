@@ -41,6 +41,7 @@ import com.amx.jax.session.SessionContextService;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.CryptoUtil;
 import com.amx.utils.JsonUtil;
+import com.amx.utils.UniqueID;
 import com.amx.utils.Urly;
 
 @Component
@@ -191,14 +192,18 @@ public class AppRequestFilter implements Filter {
 				AppContextUtil.setLang(lang);
 			}
 
+			String fp = Constants.BLANK;
 			// UserClient Tracking
 			String userClientJson = req.getHeader(AppConstants.USER_CLIENT_XKEY);
 			if (!StringUtils.isEmpty(userClientJson)) {
-				AppContextUtil.setUserClient(JsonUtil.fromJson(userClientJson, UserDeviceClient.class));
+				UserDeviceClient x = JsonUtil.fromJson(userClientJson, UserDeviceClient.class);
+				AppContextUtil.setUserClient(x);
+				fp = x.getFingerprint();
 			} else {
 				UserDeviceClient userDevice = localCommonHttpRequest.getUserDevice().toUserDeviceClient();
 				UserDeviceClient userClient = AppContextUtil.getUserClient();
 				userClient.importFrom(userDevice);
+				fp = userClient.getFingerprint();
 				AppContextUtil.setUserClient(userClient);
 			}
 
@@ -230,8 +235,16 @@ public class AppRequestFilter implements Filter {
 			}
 			if (StringUtils.isEmpty(traceId)) {
 				setFlow(req, apiRequest);
-				HttpSession session = req.getSession(false);
+				HttpSession session = req.getSession(appConfig.isAppSessionEnabled());
 				if (ArgUtil.isEmpty(sessionId)) {
+					if (ArgUtil.isEmpty(fp)) {
+						fp = localCommonHttpRequest.getRequestParam(AppConstants.DEVICE_XID_KEY);
+						if (ArgUtil.isEmpty(fp)) {
+							fp = UniqueID.generateString62();
+							localCommonHttpRequest.setCookie(AppConstants.DEVICE_XID_KEY, fp);
+						}
+					}
+					AppContextUtil.setSessionPrefix(fp);
 					if (session == null) {
 						sessionId = AppContextUtil.getSessionId(true);
 					} else {

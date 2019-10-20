@@ -5,10 +5,12 @@ import java.sql.Timestamp;
 import java.util.Date;
 
 import com.amx.jax.model.AbstractModel;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class PersonInfo extends AbstractModel implements Cloneable {
 
+	private static final long serialVersionUID = -3459616922568817666L;
 	private String title;
 	private String firstName;
 	private String middleName;
