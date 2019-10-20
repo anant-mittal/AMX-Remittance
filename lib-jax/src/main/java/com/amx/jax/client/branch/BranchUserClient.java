@@ -43,26 +43,24 @@ public class BranchUserClient implements IBranchService {
 
 	@Override
 	public AmxApiResponse<CustomerCall, Object> customerCallSession(BigDecimal agentId, BigDecimal customerId,
-			String mobile, String leadId) {
+			String leadId) {
 		return restService.ajax(appConfig.getJaxURL() + Path.BRANCH_USER_CUSTOMER_CALL_SESSION).meta(new JaxMetaInfo())
 				.field(Params.AGENT_ID, agentId)
 				.field(Params.CUSTOMER_ID, customerId)
-				.field(Params.MOBILE2, mobile)
 				.field(Params.LEAD_ID, leadId).postForm()
 				.as(new ParameterizedTypeReference<AmxApiResponse<CustomerCall, Object>>() {
 				});
 	}
 
 	@Override
-	public AmxApiResponse<CustomerCall, Object> customerCallStatus(BigDecimal agentId, String mobile, String sessionId,
-			String leadId, String status, String comment, BigDecimal customerId) {
+	public AmxApiResponse<CustomerCall, Object> customerCallStatus(BigDecimal agentId, BigDecimal customerId,
+			String leadId, String followUpCode, String remark, String sessionId) {
 		return restService.ajax(appConfig.getJaxURL() + Path.BRANCH_USER_CUSTOMER_CALL_SESSION).meta(new JaxMetaInfo())
 				.field(Params.AGENT_ID, agentId)
-				.field(Params.MOBILE2, mobile)
 				.field(Params.SESSION_ID, sessionId)
 				.field(Params.LEAD_ID, leadId)
-				.field(Params.STATUS2, status)
-				.field(Params.COMMENT2, comment)
+				.field(Params.STATUS2, followUpCode)
+				.field(Params.COMMENT2, remark)
 				.field(Params.CUSTOMER_ID, customerId).postForm()
 				.as(new ParameterizedTypeReference<AmxApiResponse<CustomerCall, Object>>() {
 				});

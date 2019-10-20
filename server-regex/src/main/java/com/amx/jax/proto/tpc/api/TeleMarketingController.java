@@ -33,9 +33,8 @@ public class TeleMarketingController {
 	@RequestMapping(value = { "tpc/tm/customer/call/session" }, method = { RequestMethod.POST })
 	public AmxApiResponse<CustomerCall, Object> customerCallSession(@RequestParam BigDecimal agentId,
 			@RequestParam BigDecimal customerId,
-			@RequestParam(required = false) String mobile,
 			@RequestParam(required = false) String leadId) {
-		return branchUserClient.customerCallSession(agentId, customerId, mobile, leadId);
+		return branchUserClient.customerCallSession(agentId, customerId, leadId);
 	}
 
 	@ApiVendorHeaders
@@ -46,9 +45,9 @@ public class TeleMarketingController {
 			@RequestParam BigDecimal agentId,
 			@RequestParam(required = false) String mobile, @RequestParam(required = false) String sessionId,
 			@RequestParam(required = false) String leadId,
-			@RequestParam String status, @RequestParam String comment,
+			@RequestParam String followUpCode, @RequestParam String remark,
 			@RequestParam BigDecimal customerId) {
-		return branchUserClient.customerCallStatus(agentId, mobile, sessionId, leadId, status, comment, customerId);
+		return branchUserClient.customerCallStatus(agentId, customerId, leadId, followUpCode, remark, sessionId);
 
 	}
 }

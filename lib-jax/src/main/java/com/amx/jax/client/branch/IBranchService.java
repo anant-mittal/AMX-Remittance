@@ -21,10 +21,10 @@ public interface IBranchService extends IJaxService {
 	public static class Params {
 		public static final String TRNX_DATE = "transactiondate";
 		public static final String SESSION_ID = "sessionId";
-		static final String COMMENT2 = "comment";
+		static final String COMMENT2 = "remark";
 		static final String MOBILE2 = "mobile";
 		static final String AGENT_ID = "agentId";
-		static final String STATUS2 = "status";
+		static final String STATUS2 = "followUpCode";
 		static final String LEAD_ID = "leadId";
 		static final String CUSTOMER_ID = "customerId";
 	}
@@ -33,9 +33,9 @@ public interface IBranchService extends IJaxService {
 			JaxError.INVALID_COMPANY_ID })
 	AmxApiResponse<UserwiseTransactionDto, Object> getTotalCount(String transactiondate);
 
-	AmxApiResponse<CustomerCall, Object> customerCallSession(BigDecimal agentId, BigDecimal customerId, String mobile,
-			String leadId);
+	AmxApiResponse<CustomerCall, Object> customerCallSession(BigDecimal agentId, BigDecimal customerId, String leadId);
 
-	AmxApiResponse<CustomerCall, Object> customerCallStatus(BigDecimal agentId, String mobile, String sessionId,
-			String leadId, String status, String comment, BigDecimal customerId);
+	AmxApiResponse<CustomerCall, Object> customerCallStatus(BigDecimal agentId, BigDecimal customerId, String leadId,
+			String followUpCode, String remark, String sessionId);
+
 }
