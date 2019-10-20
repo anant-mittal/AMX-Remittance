@@ -58,8 +58,9 @@ public class VendorAuthConfig {
 
 	public boolean isRequestValid(ApiRequestDetail apiRequest, CommonHttpRequest req, String traceId,
 			String authToken) {
-		return authToken.equals(basicAuthPassword)
-				|| CryptoUtil.validateHMAC(this.basicAuthPassword, traceId, authToken);
+		return (authToken.equals(basicAuthPassword)
+				|| CryptoUtil.validateHMAC(this.basicAuthPassword, traceId, authToken))
+						&& (ArgUtil.isEmpty(apiRequest.getFeature()) || this.hasFeature(apiRequest.getFeature()));
 	}
 
 	public List<String> getFeaturesList() {
@@ -77,7 +78,7 @@ public class VendorAuthConfig {
 					featuresListMap.put(allFeatures[i].name(), true);
 				} else {
 					isFeature = ArgUtil.parseAsBoolean(
-							vendorPropertiesLocal	
+							vendorPropertiesLocal
 									.getProperty("vendor.features." + allFeatures[i].name().toUpperCase()),
 							false);
 					if (isFeature) {

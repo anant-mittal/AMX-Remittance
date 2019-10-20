@@ -403,7 +403,7 @@ public class CommonHttpRequest {
 		boolean useAuthToken;
 		boolean useAuthKey;
 		String flow;
-		String[] perms;
+		String feature;
 
 		public RequestType getType() {
 			return type;
@@ -437,12 +437,12 @@ public class CommonHttpRequest {
 			this.flow = flow;
 		}
 
-		public String[] getPerms() {
-			return perms;
+		public String getFeature() {
+			return feature;
 		}
 
-		public void setPerms(String[] perms) {
-			this.perms = perms;
+		public void setFeature(String feature) {
+			this.feature = feature;
 		}
 
 	}
@@ -455,6 +455,7 @@ public class CommonHttpRequest {
 			detail.setUseAuthKey(x.useAuthKey());
 			detail.setUseAuthToken(x.useAuthToken());
 			detail.setFlow(x.flow());
+			detail.setFeature(x.feature());
 		}
 
 		if (ArgUtil.isEmpty(detail.getType()) || RequestType.DEFAULT.equals(detail.getType())) {
