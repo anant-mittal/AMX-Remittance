@@ -17,7 +17,7 @@ import com.amx.jax.repository.ICommunicationPrefsRepository;
 @Component
 public class AmxSharedConfigDBImpl implements AmxSharedConfigDB {
 
-	@Autowired
+	@Autowired(required=false)
 	ICommunicationPrefsRepository communicationPrefsRepository;
 
 	@Override

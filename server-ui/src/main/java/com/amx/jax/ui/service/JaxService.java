@@ -17,9 +17,11 @@ import com.amx.jax.client.JaxFieldClient;
 import com.amx.jax.client.MetaClient;
 import com.amx.jax.client.PlaceOrderClient;
 import com.amx.jax.client.RateAlertClient;
+import com.amx.jax.client.ReferralClient;
 import com.amx.jax.client.RemitClient;
 import com.amx.jax.client.UserClient;
 import com.amx.jax.client.configs.JaxMetaInfo;
+import com.amx.jax.client.fx.FxOrderBranchClient;
 import com.amx.jax.dict.Language;
 import com.amx.jax.dict.UserClient.AppType;
 import com.amx.jax.dict.UserClient.Channel;
@@ -69,9 +71,16 @@ public class JaxService implements IMetaRequestOutFilter<JaxMetaInfo>, AppReques
 
 	@Autowired
 	PlaceOrderClient placeOrderClient;
-
+	
 	@Autowired
 	CustomerRegistrationClient customerRegistrationClient;
+	
+	@Autowired
+	FxOrderBranchClient fxOrderBranchClient;
+	
+	//Added by Pranjal
+	@Autowired 
+	ReferralClient referralClient;
 
 	/**
 	 * Gets the jax field client.
@@ -153,6 +162,14 @@ public class JaxService implements IMetaRequestOutFilter<JaxMetaInfo>, AppReques
 	public PlaceOrderClient getPlaceOrderClient() {
 		return placeOrderClient;
 	}
+	
+	/**
+	 * Gets the referral client
+	 * @return the referral client
+	 */
+	public ReferralClient getReferralClient() {
+		return this.referralClient;
+	}
 
 	/** The meta client. */
 	@Autowired
@@ -176,7 +193,9 @@ public class JaxService implements IMetaRequestOutFilter<JaxMetaInfo>, AppReques
 		Language lang = amxMeta.getClientLanguage(sessionService.getGuestSession().getLanguage());
 		amxMeta.setClientLanguage(lang);
 
-		jaxMetaInfo.setLanguageId(lang.getBDCode());
+		if(ArgUtil.is(lang)) {
+			jaxMetaInfo.setLanguageId(lang.getBDCode());
+		}
 		jaxMetaInfo.setCountryBranchId(amxConfig.getDefaultBranchId());
 	}
 
@@ -254,5 +273,16 @@ public class JaxService implements IMetaRequestOutFilter<JaxMetaInfo>, AppReques
 		return new AuditActor(sessionService.getUserSession().isValid() ? AuditActor.ActorType.CUSTOMER
 				: AuditActor.ActorType.GUEST, sessionService.getUserSession().getUserid());
 	}
+
+	public FxOrderBranchClient getFxOrderBranchClient() {
+		return fxOrderBranchClient;
+	}
+
+	public void setFxOrderBranchClient(FxOrderBranchClient fxOrderBranchClient) {
+		this.fxOrderBranchClient = fxOrderBranchClient;
+	}
+	
+	
+	
 
 }

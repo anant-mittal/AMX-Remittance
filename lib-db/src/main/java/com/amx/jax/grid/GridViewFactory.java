@@ -5,10 +5,10 @@ import java.util.Map;
 
 import com.amx.jax.dbmodel.BranchSystemDetail;
 import com.amx.jax.dbmodel.Device;
-import com.amx.jax.dbmodel.FeedbackStarRating;
 import com.amx.jax.dbmodel.employee.UserSession;
 import com.amx.jax.grid.views.CustomerDetailViewRecord;
 import com.amx.jax.grid.views.EmployeeDetailViewRecord;
+import com.amx.jax.grid.views.FeedbackStarRating;
 import com.amx.jax.grid.views.TranxViewRecord;
 import com.amx.jax.grid.views.UserSessionRecord;
 import com.amx.jax.grid.views.XRateViewRecord;

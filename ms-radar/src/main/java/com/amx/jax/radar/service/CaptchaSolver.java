@@ -35,6 +35,7 @@ public class CaptchaSolver {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CaptchaSolver.class);
 	private TessBaseAPI tess;
+	public static CaptchaSolver INSTANCE = new CaptchaSolver("tessdata0");
 
 	/**
 	 * Creates a new <code>CaptchaSolver</code> instance.

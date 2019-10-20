@@ -81,6 +81,7 @@ import com.amx.jax.model.response.remittance.RemittanceCollectionDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.TransferDto;
 import com.amx.jax.model.response.serviceprovider.Remittance_Call_Response;
+import com.amx.jax.model.response.serviceprovider.ServiceProviderResponse;
 import com.amx.jax.partner.dao.PartnerTransactionDao;
 import com.amx.jax.partner.dto.RemitTrnxSPDTO;
 import com.amx.jax.partner.manager.PartnerTransactionManager;
@@ -208,7 +209,6 @@ public class BranchRemittanceSaveManager {
 	
     @Autowired
     IPlaceOrderDao placeOrderdao;
-    
 	@Autowired
 	RemittanceManager remittanceManager;
 	
@@ -232,7 +232,7 @@ public class BranchRemittanceSaveManager {
 	
 	@Autowired
 	RemittanceApplicationDao remittanceApplicationDao;
-        @Autowired
+    @Autowired
 	RemittanceSignatureManager remittanceSignatureManager;
 	
 	
@@ -273,6 +273,7 @@ public class BranchRemittanceSaveManager {
 		TransactionDetailsView serviceProviderView = null;
 		String partnerTransactionId = null;
 		
+		try {
 		// service Provider api
 		if(responseDto!=null && JaxUtil.isNullZeroBigDecimalCheck(responseDto.getCollectionDocumentNo())) {
 			Boolean spCheckStatus = Boolean.FALSE;
@@ -309,6 +310,7 @@ public class BranchRemittanceSaveManager {
 		}else {
 			logger.error("Service provider api fail to execute : ColDocNo : ", responseDto.getCollectionDocumentNo() + " : ColDocCod : " +responseDto.getCollectionDocumentCode()+"  : ColDocYear : "+responseDto.getCollectionDocumentFYear());
 		}
+		logger.info("MRU --BEFORE appliation move to EMOS -->"+responseDto.getCollectionDocumentNo());
 		
 		if(responseDto!=null && JaxUtil.isNullZeroBigDecimalCheck(responseDto.getCollectionDocumentNo())) {
 			brRemittanceDao.updateApplicationToMoveEmos(responseDto);
@@ -322,11 +324,25 @@ public class BranchRemittanceSaveManager {
 			if(jaxTenantProperties.getHashSigEnable()==true) {
 				remittanceSignatureManager.updateSignatureHash(paymentResponse);
 			}
-			remittanceApplicationService.saveRemittancetoOldEmos(paymentResponse);
+			logger.info("MRU --BEFORE saveRemittancetoOldEmos  EMOS -->"+JsonUtil.toJson(paymentResponse));
+			Map<String, Object> outpuMap = remittanceApplicationService.saveRemittancetoOldEmos(paymentResponse);
+			logger.info("MRU procedure OUTPUT --->"+outpuMap==null?"TRNX MOVED SUCCESS":outpuMap.toString());
+			if(outpuMap!=null && outpuMap.get("P_ERROR_MESSAGE")!=null) {
+				String errrMsg = outpuMap.get("P_ERROR_MESSAGE").toString();
+				logger.info("MRU Procedure Error Msg :"+errrMsg);
+				if(!StringUtils.isBlank(errrMsg)) {
+					notificationService.sendTransactionErrorAlertEmail(errrMsg,"TRNX NOT MOVED TO EMOS",paymentResponse);
+				}
+			}
 			String promotionMsg = promotionManager.getPromotionPrizeForBranch(responseDto);
 			responseDto.setPromotionMessage(promotionMsg);
 		}else {
-			logger.error("NOT moved to old emos ", responseDto.getCollectionDocumentNo() + "" +responseDto.getCollectionDocumentCode()+" "+responseDto.getCollectionDocumentFYear());
+			logger.info("NOT moved to old emos ", responseDto.getCollectionDocumentNo() + "" +responseDto.getCollectionDocumentCode()+" "+responseDto.getCollectionDocumentFYear());
+		}
+		
+		}catch(Exception e) {
+			e.printStackTrace();
+			logger.info("MRU saveRemittanceTrnx catch block -->"+e.getMessage());
 		}
 		
 		int i;
@@ -447,11 +463,16 @@ public class BranchRemittanceSaveManager {
 							collection.setCreatedBy("WEB");
 						 }
 					}
+					countryBranch.setCountryBranchId(countryBranch.getCountryBranchId());
 				}else {
 				EmployeeDetailsView employee =branchRemittanceApplManager.getEmployeeDetails();
+				if(employee!=null && JaxUtil.isNullZeroBigDecimalCheck(employee.getCountryBranchId())) {
+					countryBranch.setCountryBranchId(employee.getCountryBranchId());
+				}else {
+					countryBranch.setCountryBranchId(metaData.getCountryBranchId());
+				}
 				collection.setCreatedBy(employee.getUserName());
 				collection.setLocCode(employee.getBranchId());
-				countryBranch.setCountryBranchId(employee.getCountryBranchId());
 				}
 				
 				
@@ -463,13 +484,6 @@ public class BranchRemittanceSaveManager {
 				}
 				collection.setIsActive(ConstantDocument.Yes);
 				
-				
-					/*
-					 * if(employee!=null &&
-					 * JaxUtil.isNullZeroBigDecimalCheck(employee.getCountryBranchId())) {
-					 * countryBranch.setCountryBranchId(employee.getCountryBranchId()); }else {
-					 * countryBranch.setCountryBranchId(metaData.getCountryBranchId()); }
-					 */
 				collection.setExBankBranch(countryBranch);
 				collection.setFsCompanyMaster(appl.getFsCompanyMaster());
 				collection.setTotalAmountDeclarationIndicator(null); //ned to check
@@ -861,7 +875,7 @@ public class BranchRemittanceSaveManager {
 					remitTrnx.setSourceofincome(appl.getSourceofincome());
 					remitTrnx.setLocalCommisionCurrencyId(appl.getExCurrencyMasterByLocalTranxCurrencyId());
 					TransferDto trnaferType = getTrasnferModeByBankServiceRule(remitTrnx);
-					remitTrnx.setFileCreation(trnaferType.getTrasnferMode());
+					remitTrnx.setFileCreation(trnaferType.getFileCreation());
 					remitTrnx.setTransferMode(trnaferType.getTrasnferMode());
 					remitTrnx.setTransferModeId(trnaferType.getTransferModeId());
 					remitTrnx.setUsdAmount(appl.getUsdAmt());
@@ -1235,6 +1249,7 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
 	 logger.debug("getTrasnferModeByBankServiceRule request json : {}", JsonUtil.toJson(remitTrnx));
 	 TransferDto dto = new TransferDto();
 	 String transferMode=null;
+	 String fileCreation=ConstantDocument.No;
 	 BigDecimal transferModeId=BigDecimal.ZERO;
 	 if(mapBankServiceRule!=null && !mapBankServiceRule.isEmpty()) {
 		 transferMode = mapBankServiceRule.get("P_TRANSFER_MODE")==null?"":mapBankServiceRule.get("P_TRANSFER_MODE").toString();
@@ -1245,9 +1260,9 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
 		 }
 		 
 		 if(!StringUtils.isBlank(transferMode) && (transferMode.equalsIgnoreCase(ConstantDocument.FILE_CREATION) || transferMode.equalsIgnoreCase(ConstantDocument.TELEX_TRANFER))) {
-			 transferMode=ConstantDocument.Yes;
+			 fileCreation=ConstantDocument.Yes;
 		 }else if(!StringUtils.isBlank(transferMode) && transferMode.equalsIgnoreCase(ConstantDocument.WEB_SERVICE)) {
-			 transferMode=ConstantDocument.No;
+			 fileCreation=ConstantDocument.No;
 		 }
 	 }else {		
 		 throw new GlobalException(JaxError.NO_RECORD_FOUND,"Transfer mode is not defined in bank service rule");
@@ -1255,6 +1270,7 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
 	
 	 dto.setTransferModeId(transferModeId);
 	 dto.setTrasnferMode(transferMode);
+	 dto.setFileCreation(fileCreation);
 	 return dto;
  }
  
@@ -1392,7 +1408,6 @@ public void validateSaveTrnxDetails(HashMap<String, Object> mapAllDetailRemitSav
 		if (applSrvProv != null) {
 			mapRemitTrnxSrvProv = new HashMap<>();
 			remitTrnxSrvProv = new RemitTrnxSrvProv();
-			
 			remitTrnxSrvProv.setAmgSessionId(applSrvProv.getAmgSessionId());
 			remitTrnxSrvProv.setBankId(applSrvProv.getBankId());
 			remitTrnxSrvProv.setFixedCommInSettlCurr(applSrvProv.getFixedCommInSettlCurr());

@@ -74,7 +74,7 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 		String dateStringLimit = GridConstants.GRID_TIME_FORMATTER_JAVA
 				.format(new Date(lastUpdateDateNowLimit));
 
-		LOGGER.info("Pg:{},Tm:{} {}-{}", lastPage, lastUpdateDateNow, dateString, dateStringLimit);
+		LOGGER.info("+{} T:{} {}-{}", lastPage, lastUpdateDateNow, dateString, dateStringLimit);
 
 		GridQuery gridQuery = getForwardQuery(lastPage, PAGE_SIZE, TIME_TRACK_KEY, dateString, dateStringLimit);
 
@@ -103,7 +103,7 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 			}
 		}
 
-		LOGGER.info("Pg:{}, Rcds:{},{}, Nxt:{}", lastPage, x.getResults().size(), lastIdNow, lastUpdateDateNow);
+		LOGGER.info("+{} *{} #{} N:{}", lastPage, x.getResults().size(), lastIdNow, lastUpdateDateNow);
 
 		if (lastIdNow.equalsIgnoreCase(lastId) && x.getResults().size() > 0) {
 			// Same data records case, nothing to do
@@ -141,13 +141,13 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 			return;
 		}
 
-		Long lastUpdateDateNowLimit = lastUpdateDateNow - (10 * AmxCurConstants.INTERVAL_DAYS);
+		Long lastUpdateDateNowLimit = lastUpdateDateNow - (5 * AmxCurConstants.INTERVAL_DAYS);
 
 		String dateString = GridConstants.GRID_TIME_FORMATTER_JAVA.format(new Date(lastUpdateDateNow));
 		String dateStringLimit = GridConstants.GRID_TIME_FORMATTER_JAVA
 				.format(new Date(lastUpdateDateNowLimit));
 
-		LOGGER.info("Pg:{},Tm:{} {}-{}", lastPage, lastUpdateDateNow, dateString, dateStringLimit);
+		LOGGER.info("-{} T:{} {}-{}", lastPage, lastUpdateDateNow, dateString, dateStringLimit);
 
 		GridQuery gridQuery = getReverseQuery(lastPage, PAGE_SIZE, TIME_TRACK_KEY, dateString, dateStringLimit);
 
@@ -177,7 +177,7 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 			}
 		}
 
-		LOGGER.info("Pg:{}, Rcds:{},{}, Nxt:{}", lastPage, x.getResults().size(), lastIdNow, lastUpdateDateNow);
+		LOGGER.info("-{} *{} #{} N:{}", lastPage, x.getResults().size(), lastIdNow, lastUpdateDateNow);
 
 		if (lastIdNow.equalsIgnoreCase(lastId) && x.getResults().size() > 0) {
 			// Same data records case, nothing to do

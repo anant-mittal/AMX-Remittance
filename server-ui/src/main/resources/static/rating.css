@@ -194,8 +194,7 @@ h1 { font-size: 1.5em; margin: 10px; }
 .rating { 
     border: none;
     float: none;
-    width: 270px;
-    margin: 0 auto;
+    padding:0 30px;
   }
   
   .rating > input { display: none; } 

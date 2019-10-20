@@ -55,6 +55,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements A
 				.and().authorizeRequests().antMatchers("/pub/**").permitAll()
 				// Login Calls
 				.and().authorizeRequests().antMatchers("/login/**").permitAll()
+				// Referral Calls
+				.and().authorizeRequests().antMatchers("/refer/**").permitAll()
 				// API Calls
 				.and().authorizeRequests().antMatchers("/api/**").authenticated()
 				// App Pages

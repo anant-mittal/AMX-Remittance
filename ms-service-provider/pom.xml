@@ -113,7 +113,6 @@
 		<dependency>
 			<groupId>com.amx.jax</groupId>
 			<artifactId>lib-db</artifactId>
-			<version>${amx.version}</version>
 		</dependency>
 
 		<dependency>

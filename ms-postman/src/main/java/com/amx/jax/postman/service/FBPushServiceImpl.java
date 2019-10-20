@@ -1,8 +1,14 @@
 package com.amx.jax.postman.service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,6 +48,22 @@ public class FBPushServiceImpl implements IPushNotifyService {
 	/** The server key. */
 	@Value("${fcm.server.key}")
 	String serverKey;
+	
+	/** The server key. */
+	@Value("${fcm.api.key}")
+	String apiKey;
+	
+	@Value("${android.app.domain}")
+	String androidPackageName;
+	
+	@Value("${ios.app.domain}")
+	String iosPackageName;
+	
+	@Value("${domain.uri.prefix}")
+	String domainUriPrefix;
+	
+	@Value("${company.app.url}")
+	String companyAppUrl;
 
 	/** The rest service. */
 	@Autowired
@@ -347,6 +369,98 @@ public class FBPushServiceImpl implements IPushNotifyService {
 			// slackService.sendException(topic, e);
 		}
 		return AmxApiResponse.build(token);
+	}
+	
+	@Override
+	public String shortLink(String relativeUrl) {
+		PMGaugeEvent pMGaugeEvent = new PMGaugeEvent();
+		pMGaugeEvent.setType(PMGaugeEvent.Type.NOTIFCATION_SUBSCRIPTION);
+		String response = "";
+		try {
+			Map<String, Object> androidInfo = new HashMap<String, Object>();
+			androidInfo.put("androidPackageName", androidPackageName);
+			Map<String, Object> iosInfo = new HashMap<String, Object>();
+			iosInfo.put("iosBundleId", iosPackageName);
+
+			Map<String, Object> dynamicLinkInfo = new HashMap<String, Object>();
+			dynamicLinkInfo.put("domainUriPrefix", domainUriPrefix);
+			dynamicLinkInfo.put("link", companyAppUrl+relativeUrl);
+			dynamicLinkInfo.put("androidInfo", androidInfo);
+			dynamicLinkInfo.put("iosInfo", iosInfo);
+
+			Map<String, Object> suffix = new HashMap<String, Object>();
+
+			suffix.put("option", "SHORT");
+
+			Map<String, Object> fields = new HashMap<String, Object>();
+
+			fields.put("dynamicLinkInfo", dynamicLinkInfo);
+			fields.put("suffix", suffix);
+			 response = restService.ajax("https://firebasedynamiclinks.googleapis.com/v1/shortLinks?key="+apiKey)
+					.header("Content-Type", "application/json").post(fields)
+					.asString();
+			pMGaugeEvent.setResponseText(response);
+			auditServiceClient.gauge(pMGaugeEvent);
+		} catch (Exception e) {
+			auditServiceClient.excep(pMGaugeEvent, LOGGER, e);			
+		}
+		Map<String, Object> responseMap;
+		try {
+			responseMap = jsonToMap(new JSONObject(response));
+			if (responseMap.containsKey("shortLink")) {			
+				return responseMap.get("shortLink").toString();
+			}
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return "";
+	}
+	
+	public Map<String, Object> jsonToMap(JSONObject json) throws JSONException {
+		Map<String, Object> retMap = new HashMap<String, Object>();
+
+		if (json != JSONObject.NULL) {
+			retMap = toMap(json);
+		}
+		return retMap;
+	}
+
+	public Map<String, Object> toMap(JSONObject object) throws JSONException {
+		Map<String, Object> map = new HashMap<String, Object>();
+
+		Iterator<String> keysItr = object.keys();
+		while (keysItr.hasNext()) {
+			String key = keysItr.next();
+			Object value = object.get(key);
+
+			if (value instanceof JSONArray) {
+				value = toList((JSONArray) value);
+			}
+
+			else if (value instanceof JSONObject) {
+				value = toMap((JSONObject) value);
+			}
+			map.put(key, value);
+		}
+		return map;
+	}
+
+	public List<Object> toList(JSONArray array) throws JSONException {
+		List<Object> list = new ArrayList<Object>();
+		for (int i = 0; i < array.length(); i++) {
+			Object value = array.get(i);
+			if (value instanceof JSONArray) {
+				value = toList((JSONArray) value);
+			}
+
+			else if (value instanceof JSONObject) {
+				value = toMap((JSONObject) value);
+			}
+			list.add(value);
+		}
+		return list;
 	}
 
 	@Override

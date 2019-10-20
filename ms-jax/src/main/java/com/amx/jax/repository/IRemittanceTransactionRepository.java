@@ -18,8 +18,8 @@ public interface IRemittanceTransactionRepository extends CrudRepository<Remitta
 	public List<RemittanceTransaction> findByCollectionDocIdAndCollectionDocFinanceYearAndCollectionDocumentNo(BigDecimal collectionDocId,BigDecimal collectionDocFinanceYear,BigDecimal collectionDocumentNo);
 
 	@Transactional
-	@Modifying
+	@Modifying(clearAutomatically = true)
 	@Query("update RemittanceTransaction remit set remit.deliveryInd =:deliveryInd,remit.remarks =:remarks where remit.remittanceTransactionId=:remittanceTransactionId")
 	public void updateDeliveryIndRemarksBySP(@Param("deliveryInd") String deliveryInd,@Param("remarks") String remarks,@Param("remittanceTransactionId") BigDecimal remittanceTransactionId);
-
+	
 }

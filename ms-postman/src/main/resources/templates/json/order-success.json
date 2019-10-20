@@ -1,0 +1,5 @@
+{
+	"_subject": "FC Order Successfully Delivered",
+	"_message": "This is to inform you that your order [[${data.deliveryDetail.transactionRefId}]] is successfully delivered at [[${data.deliveryDetail.deliveryTimeSlot}]]",
+	"url": "[[${_tu.prop('company.app.url') + '/pub/rating/FXORDER/' + data.tranxId + '/' + data.verCode }]]"
+}

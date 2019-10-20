@@ -190,12 +190,15 @@ public class FxOrderReportManager {
 
 			List<Customer> customerList = customerDao.getCustomerByCustomerId(countryId, companyId, customerId);
 			if(customerList != null && !customerList.isEmpty()){
-				reportModel.setIdExpiryDate(DateUtil.todaysDateWithDDMMYY(customerList.get(0).getIdentityExpiredDate(),"0"));
-				reportModel.setCivilId(customerList.get(0).getIdentityInt());
-				customerReferenceId = customerList.get(0).getCustomerReference();
-				phoneNo =  customerList.get(0).getMobile();
-				loyaltyPoints = customerList.get(0).getLoyaltyPoints()==null?BigDecimal.ZERO:customerList.get(0).getLoyaltyPoints();
-				email = customerList.get(0).getEmail();
+				Customer customer = customerList.get(0);
+				if(customer.getIdentityExpiredDate() != null) {
+					reportModel.setIdExpiryDate(DateUtil.todaysDateWithDDMMYY(customer.getIdentityExpiredDate(),"0"));
+				}
+				reportModel.setCivilId(customer.getIdentityInt());
+				customerReferenceId = customer.getCustomerReference();
+				phoneNo =  customer.getMobile();
+				loyaltyPoints = customer.getLoyaltyPoints()==null?BigDecimal.ZERO:customer.getLoyaltyPoints();
+				email = customer.getEmail();
 				reportModel.setLoyaltyPoints(loyaltyPoints);
 				reportModel.setEmail(email);
 				reportModel.setCustomerReferenceId(customerReferenceId);

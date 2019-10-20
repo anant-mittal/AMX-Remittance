@@ -6,7 +6,7 @@ import java.util.SimpleTimeZone;
 public class GridConstants {
 
 	public static enum FilterOperater {
-		GT(">"), GTE(">="), EQ("="), STE("<="), ST("<"), LK("like");
+		GT(">"), GTE(">="), EQ("="), STE("<="), ST("<"), LK("like"),NEQ("!=");;
 
 		String sign;
 

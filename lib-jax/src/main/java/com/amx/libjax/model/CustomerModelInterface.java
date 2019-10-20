@@ -34,6 +34,10 @@ public final class CustomerModelInterface {
 		public String getEmail();
 
 		public void setEmail(String email);
+		
+		public String getReferralCode();
+		
+		public void setReferralCode(String referralCode);
 	}
 
 }

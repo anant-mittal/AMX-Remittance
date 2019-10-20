@@ -77,6 +77,7 @@ public class SnapQueryService {
 	public SnapModelWrapper executeQuery(Map<String, Object> query, String index) {
 		Map<String, Object> x = null;
 		String fullIndex = resolveIndex(EsConfig.indexName(index));
+		Object pivot = query.remove("pivot");
 		try {
 			x = restService.ajax(ssConfig.getClusterUrl())
 					.header(ssConfig.getBasicAuthHeader()).path(
@@ -90,6 +91,7 @@ public class SnapQueryService {
 			x = new HashMap<String, Object>();
 		}
 		x.put("_query", query);
+		x.put("_pivot", pivot);
 		x.put("_index", index);
 		x.put("__index", fullIndex);
 

@@ -31,6 +31,12 @@ public class ExchangeRateDetails implements Serializable, Cloneable, Comparable<
 
 	private boolean isLowGLBalance = false;
 
+	private boolean isBetterRateAvailable = false;
+
+	private BigDecimal betterRateAmountSlab;
+
+	private BigDecimal diffInBetterRateFcAmount;
+
 	public BigDecimal getBankId() {
 		return bankId;
 	}
@@ -95,6 +101,30 @@ public class ExchangeRateDetails implements Serializable, Cloneable, Comparable<
 		this.isLowGLBalance = isLowGLBalance;
 	}
 
+	public boolean isBetterRateAvailable() {
+		return isBetterRateAvailable;
+	}
+
+	public void setBetterRateAvailable(boolean isBetterRateAvailable) {
+		this.isBetterRateAvailable = isBetterRateAvailable;
+	}
+
+	public BigDecimal getBetterRateAmountSlab() {
+		return betterRateAmountSlab;
+	}
+
+	public void setBetterRateAmountSlab(BigDecimal betterRateAmountSlab) {
+		this.betterRateAmountSlab = betterRateAmountSlab;
+	}
+
+	public BigDecimal getDiffInBetterRateFcAmount() {
+		return diffInBetterRateFcAmount;
+	}
+
+	public void setDiffInBetterRateFcAmount(BigDecimal diffInBetterRateFcAmount) {
+		this.diffInBetterRateFcAmount = diffInBetterRateFcAmount;
+	}
+
 	@Override
 	public int compareTo(ExchangeRateDetails o) {
 
@@ -137,6 +167,9 @@ public class ExchangeRateDetails implements Serializable, Cloneable, Comparable<
 			cloned.sellRateNet = this.sellRateNet.clone();
 			cloned.isDiscountAvailed = this.isDiscountAvailed;
 			cloned.isCostRateLimitReached = this.isCostRateLimitReached;
+			cloned.isBetterRateAvailable = this.isBetterRateAvailable;
+			cloned.betterRateAmountSlab = this.betterRateAmountSlab;
+			cloned.diffInBetterRateFcAmount = this.diffInBetterRateFcAmount;
 
 			// cloned.customerDiscountDetails =
 			// this.customerDiscountDetails.entrySet().stream()

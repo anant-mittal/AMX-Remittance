@@ -13,8 +13,6 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Proxy;
-
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.logger.AuditActor.ActorType;
 import com.amx.jax.util.AmxDBConstants;
@@ -28,6 +26,8 @@ import com.amx.utils.TimeUtils;
 public class CustomerContactVerification implements java.io.Serializable {
 
 	private static final long serialVersionUID = 1L;
+	public static final int EXPIRY_DAY = 1;
+	public static final int EXPIRY_DAY_WHATS_APP = 30;
 
 	public CustomerContactVerification() {
 	}
@@ -41,6 +41,7 @@ public class CustomerContactVerification implements java.io.Serializable {
 		return "CustomerContactVerification [id=" + id + ", appCountryId=" + appCountryId + ", contactType="
 				+ contactType + ", contactValue=" + contactValue + ", verificationCode=" + verificationCode
 				+ ", customerId=" + customerId + ", isActive=" + isActive + ", createdDate=" + createdDate
+				+ ", sendDate=" + sendDate
 				+ ", verifiedDate=" + verifiedDate + "]";
 	}
 
@@ -211,9 +212,15 @@ public class CustomerContactVerification implements java.io.Serializable {
 	}
 
 	public boolean hasExpired() {
-		return (ArgUtil.isEmpty(this.getSendDate())
-				&& TimeUtils.isExpired(this.getCreatedDate(), Constants.TimeInterval.DAY))
-				|| TimeUtils.isExpired(this.getSendDate(), Constants.TimeInterval.DAY);
+		long intrval = Constants.TimeInterval.DAY;
+		if (ContactType.WHATSAPP.equals(contactType)) {
+			intrval = intrval * EXPIRY_DAY_WHATS_APP;
+		}
+
+		if (ArgUtil.isEmpty(this.getSendDate())) {
+			return TimeUtils.isExpired(this.getCreatedDate(), intrval);
+		}
+		return TimeUtils.isExpired(this.getSendDate(), intrval);
 	}
 
 	public boolean hasVerified() {

@@ -25,7 +25,6 @@ import com.amx.amxlib.exception.InvalidInputException;
 import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.exception.RemittanceTransactionValidationException;
 import com.amx.amxlib.exception.ResourceNotFoundException;
-import com.amx.amxlib.meta.model.CustomerRatingDTO;
 import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
@@ -36,12 +35,15 @@ import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.JaxAuthContext;
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.JaxClientUtil;
 import com.amx.jax.client.PayAtBranchClient;
 import com.amx.jax.client.remittance.RemittanceClient;
+import com.amx.jax.dict.AmxEnums.Products;
 import com.amx.jax.dict.Language;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.ResourceDTO;
+import com.amx.jax.model.customer.CustomerRatingDTO;
 import com.amx.jax.model.request.remittance.BranchRemittanceGetExchangeRateRequest;
 import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
@@ -53,6 +55,7 @@ import com.amx.jax.model.response.remittance.FlexFieldReponseDto;
 import com.amx.jax.model.response.remittance.ParameterDetailsDto;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.model.response.remittance.branch.DynamicRoutingPricingResponse;
+import com.amx.jax.model.response.remittance.branch.DynamicRoutingPricingResponse.SELECTION;
 import com.amx.jax.payg.PayGParams;
 import com.amx.jax.payg.PayGService;
 import com.amx.jax.postman.PostManException;
@@ -155,6 +158,7 @@ public class RemittController {
 		file.setITemplate(TemplatesMX.REMIT_STATMENT_EMAIL_FILE);
 		file.setType(File.Type.PDF);
 		file.getModel().put(UIConstants.RESP_DATA_KEY, data);
+		//file.setLang(AppContextUtil.getTenant().defaultLang());
 		Email email = new Email();
 		email.setSubject(String.format("Transaction Statement %s - %s", fromDate, toDate));
 		email.addTo(sessionService.getUserSession().getCustomerModel().getEmail());
@@ -320,8 +324,12 @@ public class RemittController {
 
 	@RequestMapping(value = "/api/remitt/xrate/v2", method = { RequestMethod.POST })
 	public ResponseWrapper<DynamicRoutingPricingResponse> xrate(
-			@RequestBody RoutingPricingRequest routingPricingRequest) {
-		return ResponseWrapper.build(remittanceClient.getDynamicRoutingPricing(routingPricingRequest));
+			@RequestBody RoutingPricingRequest routingPricingRequest,
+			@RequestParam(required = false, defaultValue = "MIN_TIME") SELECTION selection) {
+		AmxApiResponse<DynamicRoutingPricingResponse, Object> x = remittanceClient
+				.getDynamicRoutingPricing(routingPricingRequest);
+		x.getResult().setSelection(selection);
+		return ResponseWrapper.build(x);
 	}
 
 	@RequestMapping(value = "/api/remitt/flex/v2", method = { RequestMethod.POST })
@@ -399,6 +407,7 @@ public class RemittController {
 		return new ResponseWrapper<List<ParameterDetailsDto>>(
 				remittanceClient.getGiftService(beneId).getResult().getParameterDetailsDto());
 	}
+
 
 	/**
 	 * Bnfcry check.
@@ -526,12 +535,13 @@ public class RemittController {
 
 	@RequestMapping(value = { "/api/remitt/tranx/rating", "/pub/remitt/tranx/rating" }, method = { RequestMethod.POST })
 	public ResponseWrapper<CustomerRatingDTO> appStatus(@RequestBody CustomerRatingDTO customerRatingDTO,
-			@RequestParam String veryCode) {
+			@RequestParam String veryCode, @PathVariable Products prodType) {
 
 		if (!JaxClientUtil.getTransactionVeryCode(customerRatingDTO.getRemittanceTransactionId()).equals(veryCode)) {
 			throw new UIServerError(OWAStatusStatusCodes.INVALID_LINK);
 		}
-		return ResponseWrapper.build(jaxService.setDefaults().getRemitClient().saveCustomerRating(customerRatingDTO));
+		return ResponseWrapper
+				.build(jaxService.setDefaults().getRemitClient().saveCustomerRating(customerRatingDTO, prodType));
 	}
 
 	@RequestMapping(value = "/api/remitt/cart/add", method = { RequestMethod.POST })

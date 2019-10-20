@@ -48,7 +48,7 @@ public class CustomerProfileClient implements ICustomerProfileService {
 					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerContactVerificationDto, Object>>() {
 					});
 		} catch (Exception e) {
-			LOGGER.error("exception in createVerificationLink : ", e);
+			LOGGER.debug("exception in createVerificationLink : ", e);
 			return JaxSystemError.evaluate(e);
 		}
 	}
@@ -64,7 +64,7 @@ public class CustomerProfileClient implements ICustomerProfileService {
 					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerContactVerificationDto, Object>>() {
 					});
 		} catch (Exception e) {
-			LOGGER.error("exception in validateVerificationLink : ", e);
+			LOGGER.debug("exception in validateVerificationLink : ", e);
 			return JaxSystemError.evaluate(e);
 		}
 	};
@@ -83,7 +83,7 @@ public class CustomerProfileClient implements ICustomerProfileService {
 					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerContactVerificationDto, Object>>() {
 					});
 		} catch (Exception e) {
-			LOGGER.error("exception in resendLink : ", e);
+			LOGGER.debug("exception in resendLink : ", e);
 			return JaxSystemError.evaluate(e);
 		}
 	}
@@ -102,7 +102,7 @@ public class CustomerProfileClient implements ICustomerProfileService {
 					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerContactVerificationDto, Object>>() {
 					});
 		} catch (Exception e) {
-			LOGGER.error("exception in verifyLinkByCode : ", e);
+			LOGGER.debug("exception in verifyLinkByCode : ", e);
 			return JaxSystemError.evaluate(e);
 		}
 	}
@@ -121,7 +121,7 @@ public class CustomerProfileClient implements ICustomerProfileService {
 					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerContactVerificationDto, Object>>() {
 					});
 		} catch (Exception e) {
-			LOGGER.error("exception in verifyLinkByContact : ", e);
+			LOGGER.debug("exception in verifyLinkByContact : ", e);
 			return JaxSystemError.evaluate(e);
 		}
 	}

@@ -243,7 +243,7 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 	 * @param eOtp  email otp
 	 */
 	public ApiResponse<CustomerModel> saveCredentials(String loginId, String password, String mOtp, String eOtp,
-			String email) throws AlreadyExistsException {
+			String email,String referralCode) throws AlreadyExistsException {
 		try {
 			CustomerModel custModel = new CustomerModel();
 			custModel.setRegistrationFlow(true);
@@ -252,6 +252,7 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 			custModel.setMotp(mOtp);
 			custModel.setEotp(eOtp);
 			custModel.setEmail(email);
+			custModel.setReferralCode(referralCode);
 			custModel.setCustomerId(jaxMetaInfo.getCustomerId());
 			HttpEntity<CustomerModel> requestEntity = new HttpEntity<CustomerModel>(custModel, getHeader());
 			String saveCustUrl = this.getBaseUrl() + CUSTOMER_ENDPOINT;

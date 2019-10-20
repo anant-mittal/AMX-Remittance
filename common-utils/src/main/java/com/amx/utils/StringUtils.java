@@ -33,6 +33,10 @@ public final class StringUtils {
 			return this.m.group(index);
 		}
 
+		public String toString() {
+			return this.str;
+		}
+
 	}
 
 	public static boolean isNotBlank(String str) {

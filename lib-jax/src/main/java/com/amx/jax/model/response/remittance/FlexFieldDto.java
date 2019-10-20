@@ -19,8 +19,6 @@ public class FlexFieldDto extends ResourceDTO{
 	private String localName;
 	private String amieceCode;
 	private String indic;
-	
-	
 
 	public FlexFieldDto(BigDecimal additionalBankRuleFiledId, BigDecimal srlId, String amieceDescription,String amieceCode) {
 		super();
@@ -29,7 +27,7 @@ public class FlexFieldDto extends ResourceDTO{
 		this.amieceDescription = amieceDescription;
 		this.amieceCode = amieceCode;
 	}
-
+	
 	
 	public FlexFieldDto(BigDecimal additionalBankRuleFiledId, BigDecimal srlId, String amieceDescription,String amieceCode,String indic) {
 		super();
@@ -141,5 +139,6 @@ public class FlexFieldDto extends ResourceDTO{
 	public void setIndic(String indic) {
 		this.indic = indic;
 	}
+
 
 }

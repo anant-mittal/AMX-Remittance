@@ -1,16 +1,18 @@
 {
-  "data":{
-  "mOtp":null,
-  "mOtpPrefix":null,
-  "deliveryDetail":{
-     "customerName":"CHIRANJEEVI VEERAVALLI",
-     "mobile":"56432189",
-     "deliveryTimeSlot":"16:00 pm-17:00 pm",
-     "transactionRefId":1344,
-     "inventoryId":null,
-     "deliveryRemark":null,
-     "orderStatus":"Returned",
-     "deliveryDetailSeqId":5
-  }
+  "data": {
+    "mOtp": null,
+    "mOtpPrefix": null,
+    "deliveryDetail": {
+      "customerName": "CHIRANJEEVI VEERAVALLI",
+      "mobile": "56432189",
+      "deliveryTimeSlot": "16:00 pm-17:00 pm",
+      "transactionRefId": 1344,
+      "inventoryId": null,
+      "deliveryRemark": null,
+      "orderStatus": "Returned",
+      "deliveryDetailSeqId": 5
+    },
+    "tranxId": 1234,
+	  "verCode": "84649293"
   }
 }

@@ -112,6 +112,7 @@ import com.amx.jax.model.response.remittance.LoyalityPointState;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.model.response.remittance.VatDetailsDto;
 import com.amx.jax.partner.manager.PartnerTransactionManager;
+import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.pricer.dto.TrnxRoutingDetails;
 import com.amx.jax.pricer.var.PricerServiceConstants;
 import com.amx.jax.remittance.manager.RemittanceParameterMapManager;
@@ -138,6 +139,7 @@ import com.amx.jax.services.RemittanceApplicationService;
 import com.amx.jax.services.RoutingService;
 import com.amx.jax.services.TransactionHistroyService;
 import com.amx.jax.userservice.dao.CustomerDao;
+import com.amx.jax.userservice.dao.ReferralDetailsDao;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.AmxDBConstants;
 import com.amx.jax.util.DateUtil;
@@ -281,6 +283,12 @@ public class RemittanceTransactionManager {
 	private RestService restService;
 	@Autowired
 	BankService bankService;
+	
+	@Autowired
+   	ReferralDetailsDao refDao;
+	
+	@Autowired
+	PushNotifyClient pushNotifyClient;
 
 	@Autowired
 	BranchRemittanceApplManager branchRemittanceApplManager;
@@ -492,8 +500,7 @@ public class RemittanceTransactionManager {
 		validateNumberOfTransactionLimits();
 		validateBeneficiaryTransactionLimit(beneficiary);
 		setLoyalityPointIndicaters(responseModel);
-		BigDecimal commission = getCommissionAmount(routingBankId, rountingCountryId, currencyId, remittanceMode,
-				deliveryMode);
+		BigDecimal commission = getCommissionAmount(routingBankId, rountingCountryId, currencyId, remittanceMode,deliveryMode);
 		
 		logger.info("commission: " +commission);
 		
@@ -502,6 +509,7 @@ public class RemittanceTransactionManager {
 		}
 		if (commission.longValue() > 0) {
 			commission = commission.subtract(corporateDiscountManager.corporateDiscount());
+			responseModel.setDiscountOnComissionFlag(ConstantDocument.Yes);
 			logger.info("commissioncorporate: " +commission);
 			
 		}
@@ -994,7 +1002,7 @@ public class RemittanceTransactionManager {
 		if (!JaxUtil.isNullZeroBigDecimalCheck(comission)) {
 			responseModel.setCanRedeemLoyalityPoints(false);
 			responseModel.setLoyalityPointState(LoyalityPointState.CAN_NOT_AVAIL);
-			responseModel.setDiscountOnComission(BigDecimal.ZERO);
+			//responseModel.setDiscountOnComission(BigDecimal.ZERO);
 		}else {
 			responseModel.setDiscountOnComission(corporateDiscountManager.corporateDiscount());
 		}
@@ -1265,9 +1273,8 @@ public class RemittanceTransactionManager {
 			// this flow is for validate OTP
 			userService.validateOtp(null, model.getmOtp(), null);
 		}
-		
-		
-		
+		remiteAppModel.setCivilIdOtpModel(civilIdOtpModel);
+
 		logger.info("Application saved successfully, response: " + remiteAppModel.toString());
 
 		auditService.log(new CActivityEvent(Type.APPLICATION_CREATED,

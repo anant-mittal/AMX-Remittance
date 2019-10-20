@@ -199,7 +199,7 @@ public class OldController {
 	@RequestMapping(value = "/api/creds/set", method = { RequestMethod.POST, })
 	public ResponseWrapper<UserUpdateData> saveLoginIdAndPassword(@RequestParam String loginId,
 			@RequestParam String password, @RequestParam String mOtp, @RequestParam(required = false) String eOtp,
-			@RequestParam(required = false) String email) {
-		return registrationService.setCredentials(loginId, password, mOtp, eOtp, email, false);
+			@RequestParam(required = false) String email,@RequestParam(required = false) String referralCode) {
+		return registrationService.setCredentials(loginId, password, mOtp, eOtp, email,referralCode, false);
 	}
 }

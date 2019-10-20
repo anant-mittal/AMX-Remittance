@@ -275,7 +275,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		List<ComponentDataDto> list = new ArrayList<>();
 		for (Map row : tempList) {
 			String idType = bizcomponentDao.getIdentityTypeMaster((BigDecimal) row.get("COMPONENT_DATA_ID"));
-			if (idType.equalsIgnoreCase("I")) {
+			if (!StringUtils.isBlank(idType) && idType.equalsIgnoreCase("I") || idType.equalsIgnoreCase("C")) {
 				list.add(new ComponentDataDto((BigDecimal) row.get("COMPONENT_DATA_ID"), (String) row.get("DATA_DESC"),
 						(String) row.get("SHORT_CODE")));
 			}

@@ -4,11 +4,14 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +23,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.branchremittance.manager.BranchRemittanceManager;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.constant.JaxDynamicField;
 import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dbmodel.BankMasterModel;
 import com.amx.jax.dbmodel.BenificiaryListView;
@@ -34,14 +38,17 @@ import com.amx.jax.dbmodel.remittance.AdditionalBankDetailsViewx;
 import com.amx.jax.dbmodel.remittance.BankBranch;
 import com.amx.jax.dbmodel.remittance.DeliveryMode;
 import com.amx.jax.dbmodel.remittance.Document;
+import com.amx.jax.dbmodel.remittance.RemittanceAppBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceModeMaster;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.remittance.AbstractRemittanceApplicationRequestModel;
+import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.response.ExchangeRateBreakup;
+import com.amx.jax.model.response.remittance.FlexFieldDto;
 import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.pricer.dto.ExchangeDiscountInfo;
@@ -100,28 +107,31 @@ public class RemittanceApplicationManager {
 
 	@Autowired
 	private BankMetaService bankMetaService;
-	
+
 	@Autowired
 	ICurrencyDao currencyDao;
-	
+
 	@Autowired
 	BranchRemittanceManager branchRemittanceManager;
 	
 	/**
 	 * @param remitApplParametersMap2
-	 * @param validatedObjects:
-	 *            - contains objects obtained after being passed through beneficiary
-	 *            validation process, validationResults- validation result like
-	 *            exchange rate, net amount etc
+	 * @param                         validatedObjects: - contains objects obtained
+	 *                                after being passed through beneficiary
+	 *                                validation process, validationResults-
+	 *                                validation result like exchange rate, net
+	 *                                amount etc
 	 * @return
 	 **/
-	public RemittanceApplication createRemittanceApplication(RemittanceTransactionRequestModel requestModel,Map<String, Object> validatedObjects, RemittanceTransactionResponsetModel validationResults,Map<String, Object> remitApplParametersMap) {
+	public RemittanceApplication createRemittanceApplication(RemittanceTransactionRequestModel requestModel,
+			Map<String, Object> validatedObjects, RemittanceTransactionResponsetModel validationResults,
+			Map<String, Object> remitApplParametersMap) {
 		RemittanceApplication remittanceApplication = new RemittanceApplication();
 
 		BigDecimal localCurrencyId = metaData.getDefaultCurrencyId();
 		BigDecimal routingCountryId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_COUNTRY_ID");
 		Customer customer = (Customer) validatedObjects.get("CUSTOMER");
-		BigDecimal routingBankId = (BigDecimal)remitApplParametersMap.get("P_ROUTING_BANK_ID");
+		BigDecimal routingBankId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_BANK_ID");
 		BigDecimal routingBankBranchId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_BANK_BRANCH_ID");
 		BenificiaryListView beneDetails = (BenificiaryListView) validatedObjects.get("BENEFICIARY");
 		BigDecimal foreignCurrencyId = beneDetails.getCurrencyId();
@@ -231,15 +241,18 @@ public class RemittanceApplicationManager {
 		validateAdditionalErrorMessages(requestModel);
 		validateBannedBank(requestModel.getBeneId());
 		validateDailyBeneficiaryTransactionLimit(beneDetails);
-		remittanceApplication.setInstruction("URGENT");
+
+		setFurtherInstruction(remittanceApplication, requestModel.getAdditionalFields());
+
 		setCustomerDiscountColumns(remittanceApplication, validationResults);
 		setVatDetails(remittanceApplication, validationResults);
 		return remittanceApplication;
 	}
 	
 
-	
-	public RemittanceApplication createRemittanceApplicationV2(RemittanceTransactionDrRequestModel requestModel,Map<String, Object> validatedObjects, RemittanceTransactionResponsetModel validationResults,Map<String, Object> remitApplParametersMap) {
+	public RemittanceApplication createRemittanceApplicationV2(RemittanceTransactionDrRequestModel requestModel,
+			Map<String, Object> validatedObjects, RemittanceTransactionResponsetModel validationResults,
+			Map<String, Object> remitApplParametersMap) {
 		RemittanceApplication remittanceApplication = new RemittanceApplication();
 
 		BigDecimal localCurrencyId = metaData.getDefaultCurrencyId();
@@ -374,11 +387,9 @@ public class RemittanceApplicationManager {
 		
 		validateAdditionalErrorMessagesV2(requestModel);
 		validateBannedBank(requestModel.getBeneId());
-		
-		//validateDailyBeneficiaryTransactionLimit(beneDetails);
-		
-		
-		remittanceApplication.setInstruction("URGENT");
+		validateDailyBeneficiaryTransactionLimit(beneDetails);
+		setFurtherInstruction(remittanceApplication, requestModel.getAdditionalFields());
+
 		setCustomerDiscountColumns(remittanceApplication, validationResults);
 		setVatDetails(remittanceApplication, validationResults);
 		return remittanceApplication;
@@ -435,12 +446,12 @@ public class RemittanceApplicationManager {
 		}
 		return metaData.getDefaultCurrencyId();
 	}
-	
+
 	private void validateDailyBeneficiaryTransactionLimit(BenificiaryListView beneDetails) {
-		Integer todaysTxns = beneficiaryService.getTodaysTransactionForBene(metaData.getCustomerId(),beneDetails.getBeneficaryMasterSeqId());
+		Integer todaysTxns = beneficiaryService.getTodaysTransactionForBene(metaData.getCustomerId(),
+				beneDetails.getBeneficaryMasterSeqId());
 		if (todaysTxns > 0) {
-			throw new GlobalException(
-					JaxError.NO_OF_TRANSACTION_LIMIT_EXCEEDED,
+			throw new GlobalException(JaxError.NO_OF_TRANSACTION_LIMIT_EXCEEDED,
 					"Dear Customer, you have already done 1 application to this beneficiary within the last 24"
 							+ " hours. In the interest of safety, we do not allow a customer to repeat the same"
 							+ " transaction to the same beneficiary more than once in 24 hours."
@@ -511,9 +522,11 @@ public class RemittanceApplicationManager {
 			BigDecimal foreignCurrencyId = (BigDecimal) remitApplParametersMap.get("P_FOREIGN_CURRENCY_ID");
 			logger.info("bankId: " + bankId + "remittanceModeId: " + remittanceModeId + "deliveryModeId "
 					+ deliveryModeId + " foreignCurrencyId: " + foreignCurrencyId);
-			AdditionalBankDetailsViewx additionaBnankDetail = bankService.getAdditionalBankDetail(srlId,foreignCurrencyId, bankId, remittanceModeId, deliveryModeId);
+			AdditionalBankDetailsViewx additionaBnankDetail = bankService.getAdditionalBankDetail(srlId,
+					foreignCurrencyId, bankId, remittanceModeId, deliveryModeId);
 			if (additionaBnankDetail != null) {
-				logger.info("additionaBnankDetail getServiceApplicabilityRuleId: "+ additionaBnankDetail.getServiceApplicabilityRuleId());
+				logger.info("additionaBnankDetail getServiceApplicabilityRuleId: "
+						+ additionaBnankDetail.getServiceApplicabilityRuleId());
 				remitApplParametersMap.put("P_AMIEC_CODE_1", additionaBnankDetail.getAmiecCode());
 				remitApplParametersMap.put("P_FLEX_FIELD_VALUE_1", additionaBnankDetail.getAmieceDescription());
 				remitApplParametersMap.put("P_FLEX_FIELD_CODE_1", additionaBnankDetail.getFlexField());
@@ -534,13 +547,14 @@ public class RemittanceApplicationManager {
 		BigDecimal documentId = (BigDecimal) remitApplParametersMap.get("P_DOCUMENT_ID");
 		BigDecimal finYear = (BigDecimal) remitApplParametersMap.get("P_USER_FINANCIAL_YEAR");
 		BigDecimal branchId = countryBranch.getBranchId();
-		Map<String, Object> output = applicationProcedureDao.getDocumentSeriality(appCountryId, companyId, documentId,finYear, processInd, branchId);
-		BigDecimal docno = output.get("P_DOC_NO")==null?BigDecimal.ZERO:(BigDecimal)output.get("P_DOC_NO");
-		
-		if(JaxUtil.isNullZeroBigDecimalCheck(docno)) {
+		Map<String, Object> output = applicationProcedureDao.getDocumentSeriality(appCountryId, companyId, documentId,
+				finYear, processInd, branchId);
+		BigDecimal docno = output.get("P_DOC_NO") == null ? BigDecimal.ZERO : (BigDecimal) output.get("P_DOC_NO");
+
+		if (JaxUtil.isNullZeroBigDecimalCheck(docno)) {
 			return docno;
-		}else {
-			throw new GlobalException(JaxError.INVALID_APPLICATION_DOCUMENT_NO,"Document seriality is missing");
+		} else {
+			throw new GlobalException(JaxError.INVALID_APPLICATION_DOCUMENT_NO, "Document seriality is missing");
 		}
 	}
 
@@ -563,9 +577,13 @@ public class RemittanceApplicationManager {
 		if(JaxUtil.isNullZeroBigDecimalCheck(breakup.getBaseRate())) {
 			remittanceApplication.setOriginalExchangeRate(breakup.getBaseRate());
 		}
+		
+		if(!StringUtils.isBlank(validationResults.getDiscountOnComissionFlag()) 
+				&& validationResults.getDiscountOnComissionFlag().equalsIgnoreCase(ConstantDocument.Yes)) {
+					remittanceApplication.setDiscountOnCommission(validationResults.getDiscountOnComission());
+		}
 	}
-	
-	
+
 	private void setApplicableRatesV2(RemittanceApplication remittanceApplication,
 			RemittanceTransactionDrRequestModel requestModel, RemittanceTransactionResponsetModel validationResults) {
 		ExchangeRateBreakup breakup = validationResults.getExRateBreakup();
@@ -585,9 +603,12 @@ public class RemittanceApplicationManager {
 		if(JaxUtil.isNullZeroBigDecimalCheck(breakup.getBaseRate())) {
 			remittanceApplication.setOriginalExchangeRate(breakup.getBaseRate());
 		}
+		if(!StringUtils.isBlank(validationResults.getDiscountOnComissionFlag()) 
+				&& validationResults.getDiscountOnComissionFlag().equalsIgnoreCase(ConstantDocument.Yes)) {
+					remittanceApplication.setDiscountOnCommission(validationResults.getDiscountOnComission());
+		}
 	}
-	
-	
+
 	/**
 	 * whether customer has availed loyality points or not
 	 * 
@@ -598,9 +619,44 @@ public class RemittanceApplicationManager {
 	 */
 	public Boolean loyalityPointsAvailed(AbstractRemittanceApplicationRequestModel requestModel,
 			RemittanceTransactionResponsetModel responseModel) {
-		if (requestModel.isAvailLoyalityPoints() &&  responseModel.getCanRedeemLoyalityPoints() !=null && responseModel.getCanRedeemLoyalityPoints()) {
+		if (requestModel.isAvailLoyalityPoints() && responseModel.getCanRedeemLoyalityPoints() != null
+				&& responseModel.getCanRedeemLoyalityPoints()) {
 			return true;
 		}
 		return false;
 	}
+
+	public void setIntermediateSwiftBank(RemittanceAppBenificiary remittanceAppBenificary,
+			 BranchRemittanceApplRequestModel applRequestModel) {
+		applRequestModel.populateAdditionalFieldsDtoMap();
+		Map<String, FlexFieldDto> requestAddlFields = applRequestModel.getAdditionalDtoMap();
+		if (requestAddlFields != null && !requestAddlFields.isEmpty()) {
+
+			requestAddlFields.forEach((k, v) -> {
+				if (k.equalsIgnoreCase(JaxDynamicField.BENEFICIARY_SWIFT_BANK1.toString())) {
+					remittanceAppBenificary.setBeneficiarySwiftBank1Id(v.getSrlId());
+					remittanceAppBenificary.setBeneficiarySwiftAddr1(v.getAmieceDescription());
+				}
+				if (k.equalsIgnoreCase(JaxDynamicField.BENEFICIARY_SWIFT_BANK2.toString())) {
+					remittanceAppBenificary.setBeneficiarySwiftBank2Id(v.getSrlId());
+					remittanceAppBenificary.setBeneficiarySwiftAddr2(v.getAmieceDescription());
+				}
+
+			});
+
+			
+		}
+	}
+
+	public void setFurtherInstruction(RemittanceApplication remittanceApplication,
+			Map<String, Object> additionalFields) {
+		if (additionalFields != null && !additionalFields.isEmpty()) {
+			if (additionalFields.get(JaxDynamicField.INSTRUCTION.toString()) != null)
+				remittanceApplication
+						.setInstruction(additionalFields.get(JaxDynamicField.INSTRUCTION.toString()).toString());
+		} else {
+			remittanceApplication.setInstruction("URGENT");
+		}
+	}
+
 }

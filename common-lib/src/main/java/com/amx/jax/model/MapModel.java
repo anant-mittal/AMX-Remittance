@@ -2,16 +2,57 @@ package com.amx.jax.model;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import com.amx.jax.json.JsonSerializerType;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.Constants;
 import com.amx.utils.JsonUtil;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MapModel implements JsonSerializerType<Object> {
+
+	public static class MapEntry {
+		private Object value;
+
+		public MapEntry(Object value) {
+			this.value = value;
+		}
+
+		public String asString() {
+			return ArgUtil.parseAsString(value);
+		}
+
+		public String asString(String defaultvalue) {
+			return ArgUtil.parseAsString(value, defaultvalue);
+		}
+
+		public Long asLong() {
+			return ArgUtil.parseAsLong(value);
+		}
+
+		public Long asLong(Long defaultvalue) {
+			return ArgUtil.parseAsLong(value, defaultvalue);
+		}
+
+		public BigDecimal asBigDecimal() {
+			return ArgUtil.parseAsBigDecimal(value);
+		}
+
+		public BigDecimal asBigDecimal(BigDecimal defaultvalue) {
+			return ArgUtil.parseAsBigDecimal(value, defaultvalue);
+		}
+
+		@SuppressWarnings("unchecked")
+		public <T> List<T> asList(T listItem) {
+			return ArgUtil.parseAsListOfT(value, listItem, ((List<T>) Constants.EMPTY_LIST), false);
+		}
+
+	}
+
 	protected Map<String, Object> map;
 
 	public MapModel() {
@@ -25,6 +66,14 @@ public class MapModel implements JsonSerializerType<Object> {
 	@SuppressWarnings("unchecked")
 	public MapModel(String json) {
 		this.map = JsonUtil.fromJson(json, Map.class);
+	}
+
+	public MapEntry entry(String key) {
+		return new MapEntry(this.map.get(key));
+	}
+
+	public MapEntry first() {
+		return new MapEntry(this.getFirst());
 	}
 
 	public Object get(String key) {

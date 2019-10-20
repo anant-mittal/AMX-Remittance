@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.fx.IFxBranchOrderService;
+import com.amx.jax.dbmodel.CustomerRating;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.fx.FcDeliveryBranchOrderSearchRequest;
 import com.amx.jax.model.request.fx.FcSaleBranchDispatchRequest;
@@ -24,6 +25,7 @@ import com.amx.jax.model.response.fx.FcSaleOrderManagementDTO;
 import com.amx.jax.model.response.fx.FxOrderReportResponseDto;
 import com.amx.jax.model.response.fx.FxOrderTransactionHistroyDto;
 import com.amx.jax.model.response.fx.UserStockDto;
+import com.amx.jax.services.CustomerRatingService;
 import com.amx.jax.services.FcSaleBranchService;
 
 /**
@@ -42,6 +44,9 @@ public class FcSaleBranchOrderController implements IFxBranchOrderService {
 
 	@Autowired
 	MetaData metaData;
+	
+	@Autowired
+	CustomerRatingService customerRatingService;
 	
 
 	/**
@@ -234,6 +239,17 @@ public class FcSaleBranchOrderController implements IFxBranchOrderService {
 
 	
 	/**
+	 * To get the FC-delivery Enquiry order search 
+	* @author : Radhika
+    * @date : 19/08/2019
+	*/
+	@RequestMapping(value = Path.FC_CUSTOMER_RATING , method = RequestMethod.POST)
+	public AmxApiResponse<CustomerRating, ?> inquireFxOrderCustomerRating(@RequestParam(value = Params.FX_DELIVERY_SEQ_ID) BigDecimal deliveryDetailSeqId,@RequestParam(value=Params.FX_PRODUCT) String product) {
+		return customerRatingService.fxOrderinquireCustomerRating(deliveryDetailSeqId, product);
+
+	}
+
+    /**
 	 * To get the order to based on date selection
 	 * 
 	 */
@@ -246,4 +262,6 @@ public class FcSaleBranchOrderController implements IFxBranchOrderService {
 	}
 	
 
+
+	
 }

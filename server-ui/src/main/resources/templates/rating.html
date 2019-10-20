@@ -96,8 +96,14 @@
 
     </div>
     <script th:inline="javascript">
-
-      function showLoader(b){
+    var url=window.location.pathname	
+    if (url.indexOf("FXORDER") != -1) {
+        document.title = "Fxorder Feedback";
+      } else {
+        document.title = "Remittance Feedback";
+      }
+   
+ 	function showLoader(b){
       	var loader = document.getElementById("loading");
       	if(b){
       		loader.classList.remove("dn")
@@ -160,7 +166,7 @@
     	  feedbackView.classList.add("dn");
           ratingView.classList.remove('dn');
       }
-
+		
       function submitFeedback(){
         if(document.getElementById('submit').classList.contains('disable')) return; 
       	var reqObj = {
@@ -168,7 +174,7 @@
       		"ratingRemark": document.getElementById('feedbackInput').value,
       		"remittanceTransactionId": ratingData.trnxId
       	}
-      	makeAjaxCall('/pub/remitt/tranx/rating?veryCode=' + ratingData.verCode,'POST', JSON.stringify(reqObj),resolveFeedbackPost,rejectFeedbackPost)
+      	makeAjaxCall('/pub/rating/'+ ratingData.prodType +'/submit?veryCode=' + ratingData.verCode,'POST', JSON.stringify(reqObj),resolveFeedbackPost,rejectFeedbackPost)
       }
 
       function resolveFeedbackPost(respJson){

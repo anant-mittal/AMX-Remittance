@@ -49,10 +49,10 @@ public class RemittanceSignatureManager {
 				remitTrnx.setRemittanceTransactionId(trnxDetails.getRemittanceTransactionId());
 				RemittanceBenificiary remitBene = remitBeneRepository.findByExRemittancefromBenfi(remitTrnx);
 				RemittanceSignatureDto sigDto = createSignature(trnxDetails,remitBene);
-				logger.info("Signature JSON ----- :"+JsonUtil.toJson(sigDto));
+				//logger.info("Signature JSON ----- :"+JsonUtil.toJson(sigDto));
 				String signature =getTrnxSignature(sigDto);
 				branchRemittanceDao.updateSignatureHash(trnxDetails,signature);
-				logger.info("Signature value ----- :"+signature);
+				//logger.info("Signature value ----- :"+signature);
 			}
 		}
 		}catch(Exception e) {

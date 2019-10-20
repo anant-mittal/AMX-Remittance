@@ -4,7 +4,7 @@
 <head>
 <meta name="viewport" content="width=device-width" />
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>Alerts e.g. approaching your limit</title>
+<title>FC Order Successfully Delivered</title>
 <style>
 * {	
 	margin: 0;
@@ -292,6 +292,11 @@ a {
 										for your FX Order and hope you had a pleasant experience.
 										</td>
 									</tr>
+									<tr>
+											<td class="content-block">
+													<p align="center"><a th:href="${_tu.prop('company.app.url') + '/pub/rating/FXORDER/' + data.tranxId + '/' + data.verCode }" style="width:200px" class="btn-primary" target="_blank">Rate this transaction</a></p>
+											</td>
+										</tr>
 									<tr>
 										<td class="content-block">Thanks and Regards,<br/>
 											<strong><span th:text="${_tu.prop('company.fullname')}" th:remove="tag"></span>,</strong><br/>

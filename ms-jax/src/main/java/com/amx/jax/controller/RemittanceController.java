@@ -3,6 +3,7 @@ package com.amx.jax.controller;
 import static com.amx.amxlib.constant.ApiEndpoint.REMIT_API_ENDPOINT;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -16,8 +17,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+
 import com.amx.amxlib.constant.ApiEndpoint.RemittanceApplEndPoint;
-import com.amx.amxlib.meta.model.CustomerRatingDTO;
+
+
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
@@ -25,27 +28,36 @@ import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.jax.AmxMeta;
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.client.fx.IFxBranchOrderService.Params;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxEvent;
 import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerRating;
+import com.amx.jax.dbmodel.ReferralDetails;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.dict.Language;
 import com.amx.jax.manager.RemittancePaymentManager;
 import com.amx.jax.meta.MetaData;
+
 import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
+
+import com.amx.jax.model.customer.CustomerRatingDTO;
+
 import com.amx.jax.model.request.remittance.IRemitTransReqPurpose;
 import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.payg.PaymentResponseDto;
+import com.amx.jax.postman.client.PushNotifyClient;
+import com.amx.jax.postman.model.PushMessage;
+import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.services.CustomerRatingService;
 import com.amx.jax.services.PurposeOfTransactionService;
 import com.amx.jax.services.RemittanceTransactionService;
 import com.amx.jax.services.ReportManagerService;
 import com.amx.jax.services.TransactionHistroyService;
+import com.amx.jax.userservice.dao.ReferralDetailsDao;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.ConverterUtil;
 import com.amx.jax.util.JaxContextUtil;
@@ -90,6 +102,15 @@ public class RemittanceController {
 	@Autowired
 	UserService userService;
 
+	@Autowired
+	ReferralDetailsDao refDao;
+
+	@Autowired
+	PushNotifyClient pushNotifyClient;
+
+	@Autowired
+	protected AmxMeta amxMeta;
+
 	@RequestMapping(value = "/trnxHist/", method = RequestMethod.GET)
 	public ApiResponse getTrnxHistroyDetailResponse(@RequestParam(required = false, value = "docfyr") BigDecimal docfyr,
 			@RequestParam(required = false, value = "docNumber") String docNumber,
@@ -118,8 +139,9 @@ public class RemittanceController {
 	public ApiResponse getRemittanceDetailForReport(@RequestBody String jsonTransactionHistroyDTO,
 			@RequestParam("promotion") Boolean promotion) {
 		logger.info("getRemittanceDetailForReport Trnx Report:");
-		logger.debug("Json tras history is "+jsonTransactionHistroyDTO);
-		logger.debug("promotion value is "+promotion);
+		logger.debug("getRemittanceDetailForReport Trnx Report:");
+		logger.debug("Json tras history is " + jsonTransactionHistroyDTO);
+		logger.debug("promotion value is " + promotion);
 		TransactionHistroyDTO transactionHistroyDTO = (TransactionHistroyDTO) converterUtil
 				.unmarshall(jsonTransactionHistroyDTO, TransactionHistroyDTO.class);
 		logger.info("Colle Doc No :" + transactionHistroyDTO.getCollectionDocumentNo());
@@ -150,9 +172,6 @@ public class RemittanceController {
 		ApiResponse response = remittanceTransactionService.validateRemittanceTransaction(model);
 		return response;
 	}
-
-	@Autowired
-	protected AmxMeta amxMeta;
 
 	@RequestMapping(value = "/sourceofincome/", method = RequestMethod.POST)
 	public ApiResponse sourceofIncome() {
@@ -190,8 +209,9 @@ public class RemittanceController {
 	public ApiResponse saveRemittance(@RequestBody PaymentResponseDto paymentResponse) {
 		JaxContextUtil.setJaxEvent(JaxEvent.CREATE_REMITTANCE);
 		JaxContextUtil.setRequestModel(paymentResponse);
-		logger.debug("Payment respone is "+paymentResponse.toString());
-		logger.info("save-Remittance Controller :" + paymentResponse.getCustomerId() + "\t country ID :"
+		logger.info("save-Remittance Controller :" + paymentResponse.getCustomerId() + "\t country ID :");
+		logger.debug("Payment respone is " + paymentResponse.toString());
+		logger.debug("save-Remittance Controller :" + paymentResponse.getCustomerId() + "\t country ID :"
 				+ paymentResponse.getApplicationCountryId() + "\t Compa Id:" + paymentResponse.getCompanyId());
 
 		BigDecimal customerId = metaData.getCustomerId();
@@ -207,6 +227,32 @@ public class RemittanceController {
 		logger.info("save-Remittance before payment capture :" + customerId + "\t country ID :" + applicationCountryId
 				+ "\t Compa Id:" + companyId);
 
+		// Referral
+		List<RemittanceTransaction> remittanceList = remitAppDao.getOnlineRemittanceList(customerId);
+		logger.info("Remittance Count:" + remittanceList.size());
+////		if(remittanceList.size() == 0) {
+//			ReferralDetails referralDetails = refDao.getReferralByCustomerId(customerId);
+//			referralDetails.setIsConsumed("Y");
+//			refDao.updateReferralCode(referralDetails);
+//			if (referralDetails.getRefferedByCustomerId() != null) {
+//				PushMessage pushMessage = new PushMessage();
+//				pushMessage.setSubject("Refer To Win!");
+//				pushMessage.setMessage(
+//						"Congraturlations! Your reference has done the first transaction on AMIEC App! You will get a chance to win from our awesome Referral Program! Keep sharing the links to as many contacts you can and win exciting prices on referral success!");
+//				pushMessage.addToUser(referralDetails.getRefferedByCustomerId());
+//				pushNotifyClient.send(pushMessage);
+//			}
+//			
+//			if(referralDetails.getCustomerId() != null) {
+//				PushMessage pushMessage = new PushMessage();
+//				pushMessage.setSubject("Refer To Win!");
+//				pushMessage.setMessage(
+//						"Welcome to Al Mulla family! Win a chance to get exciting offers at Al Mulla Exchange by sharing the links to as many contacts as you can.");
+//				pushMessage.addToUser(referralDetails.getCustomerId());
+//				pushNotifyClient.send(pushMessage);	
+//			}
+////		}	
+
 		ApiResponse response = remittancePaymentManager.paymentCapture(paymentResponse);
 		return response;
 	}
@@ -220,8 +266,6 @@ public class RemittanceController {
 		ApiResponse response = remittanceTransactionService.getTransactionStatus(request);
 		return response;
 	}
-	
-	
 
 	@RequestMapping(value = "/save-payment-id/", method = RequestMethod.POST)
 	public ApiResponse savePaymentId(@RequestBody PaymentResponseDto paymentResponse) {
@@ -277,8 +321,9 @@ public class RemittanceController {
 
 	// radhika
 	@RequestMapping(value = "/customer-trnx-rating/", method = RequestMethod.POST)
-	public AmxApiResponse<CustomerRating, ?> inquireCustomerRating(@RequestParam BigDecimal remittanceTrnxId) {
-		return customerRatingService.inquireCustomerRating(remittanceTrnxId);
+	public AmxApiResponse<CustomerRating, ?> inquireCustomerRating(@RequestParam BigDecimal remittanceTrnxId,
+			@RequestParam(value = Params.FX_PRODUCT) String product) {
+		return customerRatingService.inquireCustomerRating(remittanceTrnxId, product);
 
 	}
 	

@@ -894,4 +894,6 @@ public class ReceiptPayment implements Serializable {
 		this.vatAmount = vatAmount;
 	}
 	
+	
+	
 }
