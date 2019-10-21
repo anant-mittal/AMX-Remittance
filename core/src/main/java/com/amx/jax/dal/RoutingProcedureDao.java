@@ -413,7 +413,8 @@ public class RoutingProcedureDao {
 						+" AND    A.CURRENCY_ID            = ? "
 						+" AND    A.BANK_ID                = ? "
 						+" AND    A.REMITTANCE_MODE_ID     = ? "
-						+" AND    A.DELIVERY_MODE_ID       = ? ";
+						+" AND    A.DELIVERY_MODE_ID       = ? "
+						+ "AND     A.ISACTIVE  = 'Y'";
 				LOGGER.debug("sql :"+sql);
 				
 				List<BigDecimal> inputList = new ArrayList<>();
