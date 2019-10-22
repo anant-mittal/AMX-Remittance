@@ -41,7 +41,7 @@ public class BranchUserClient implements IBranchService {
 
 	@Override
 	public AmxApiResponse<CustomerCall, Object> customerCallSession(BigDecimal agentId, BigDecimal customerId,
-			String leadId) {
+			BigDecimal leadId) {
 		return restService.ajax(appConfig.getJaxURL() + Path.BRANCH_USER_CUSTOMER_CALL_SESSION).meta(new JaxMetaInfo())
 				.field(Params.AGENT_ID, agentId)
 				.field(Params.CUSTOMER_ID, customerId)
@@ -52,8 +52,8 @@ public class BranchUserClient implements IBranchService {
 
 	@Override
 	public AmxApiResponse<CustomerCall, Object> customerCallStatus(BigDecimal agentId, BigDecimal customerId,
-			String leadId, String followUpCode, String remark, String sessionId) {
-		return restService.ajax(appConfig.getJaxURL() + Path.BRANCH_USER_CUSTOMER_CALL_SESSION).meta(new JaxMetaInfo())
+			BigDecimal leadId, String followUpCode, String remark, String sessionId) {
+		return restService.ajax(appConfig.getJaxURL() + Path.BRANCH_USER_CUSTOMER_CALL_STATUS).meta(new JaxMetaInfo())
 				.field(Params.AGENT_ID, agentId)
 				.field(Params.SESSION_ID, sessionId)
 				.field(Params.LEAD_ID, leadId)

@@ -130,9 +130,12 @@ public class CustomerDocumentManager {
 				break;
 			default:
 			}
-			if (customerDocumentImage != null) {
-				addDataFromCustomerIdProof(customerDocumentImage, customerIdProof);
-			}
+		}
+		if(customerIdProof != null && customerIdProof.getScanSystem() == null) {
+			customerDocumentImage = databaseImageScanManager.fetchKycImageInfo(customerIdProof);
+		}
+		if (customerDocumentImage != null) {
+			addDataFromCustomerIdProof(customerDocumentImage, customerIdProof);
 		}
 		return customerDocumentImage;
 	}

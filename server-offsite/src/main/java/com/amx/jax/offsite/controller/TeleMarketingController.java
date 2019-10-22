@@ -34,7 +34,7 @@ public class TeleMarketingController {
 	@RequestMapping(value = { "tpc/tm/customer/call/session" }, method = { RequestMethod.POST })
 	public AmxApiResponse<CustomerCall, Object> customerCallSession(@RequestParam BigDecimal agentId,
 			@RequestParam BigDecimal customerId,
-			@RequestParam(required = false) String leadId) {
+			@RequestParam(required = false) BigDecimal leadId) {
 		return branchUserClient.customerCallSession(agentId, customerId, leadId);
 	}
 
@@ -44,7 +44,7 @@ public class TeleMarketingController {
 	@RequestMapping(value = { "tpc/tm/customer/call/status" }, method = { RequestMethod.POST })
 	public AmxApiResponse<CustomerCall, Object> customerCallStatus(
 			@RequestParam BigDecimal agentId, @RequestParam(required = false) String sessionId,
-			@RequestParam(required = false) String leadId,
+			@RequestParam(required = false) BigDecimal leadId,
 			@RequestParam String followUpCode, @RequestParam String remark,
 			@RequestParam BigDecimal customerId) {
 		return branchUserClient.customerCallStatus(agentId, customerId, leadId, followUpCode, remark, sessionId);
