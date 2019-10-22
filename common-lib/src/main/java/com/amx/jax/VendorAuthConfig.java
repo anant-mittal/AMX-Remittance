@@ -60,7 +60,9 @@ public class VendorAuthConfig {
 			String authToken) {
 		return (authToken.equals(basicAuthPassword)
 				|| CryptoUtil.validateHMAC(this.basicAuthPassword, traceId, authToken))
-						&& (ArgUtil.isEmpty(apiRequest.getFeature()) || this.hasFeature(apiRequest.getFeature()));
+						&& (ArgUtil.isEmpty(apiRequest.getFeature()) || this.hasFeature(apiRequest.getFeature())
+						&& (ArgUtil.is(basicAuthIp) || basicAuthIp.equals(req.getIPAddress()))
+								);
 	}
 
 	public List<String> getFeaturesList() {
