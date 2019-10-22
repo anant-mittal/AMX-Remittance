@@ -42,8 +42,9 @@ public class DocumentScanValidator {
 			CustomerIdProof customerIdProof = customerIdProofManager.getCustomerIdProofByCustomerId(customer.getCustomerId());
 			if (customerIdProof != null && customerIdProof.getIdentityExpiryDate() != null) {
 				boolean isIdExpired = Calendar.getInstance().getTime().after(customerIdProof.getIdentityExpiryDate());
+				boolean isSysIndicPresent = (customerIdProof.getScanSystem() != null);
 				if (ConstantDocument.Yes.equals(customer.getIsActive())
-						&& customer.getIdentityTypeId().equals(uploadCustomerKycRequest.getIdentityTypeId()) && !isIdExpired) {
+						&& customer.getIdentityTypeId().equals(uploadCustomerKycRequest.getIdentityTypeId()) && !isIdExpired && isSysIndicPresent) {
 					throw new GlobalException("customer already active and uploaded kyc document");
 				}
 			}
