@@ -42,13 +42,14 @@ import com.amx.jax.dict.AmxEnums.Products;
 import com.amx.jax.dict.Language;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.customer.CustomerRatingDTO;
+import com.amx.jax.model.request.remittance.BenePackageRequest;
 import com.amx.jax.model.request.remittance.BranchRemittanceGetExchangeRateRequest;
 import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.request.remittance.RoutingPricingRequest;
 import com.amx.jax.model.response.CurrencyMasterDTO;
+import com.amx.jax.model.response.customer.BenePackageResponse;
 import com.amx.jax.model.response.remittance.FlexFieldReponseDto;
-import com.amx.jax.model.response.remittance.ParameterDetailsDto;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.model.response.remittance.branch.DynamicRoutingPricingResponse;
 import com.amx.jax.model.response.remittance.branch.DynamicRoutingPricingResponse.SELECTION;
@@ -366,6 +367,12 @@ public class RemittController {
 
 		wrapper.setData(remittancePageDto);
 		return wrapper;
+	}
+	
+	@RequestMapping(value = "/api/remitt/packages", method = { RequestMethod.POST })
+	public ResponseWrapper<List<BenePackageResponse>> getBenePackages(
+			@RequestBody BenePackageRequest benePackageRequest) {
+		return ResponseWrapper.buildList(remittanceClient.getBenePackages(benePackageRequest));
 	}
 
 	/**

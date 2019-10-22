@@ -23,9 +23,11 @@ import com.amx.jax.manager.FcSaleBranchOrderManager;
 import com.amx.jax.manager.remittance.AdditionalBankDetailManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.ResourceDTO;
+import com.amx.jax.model.request.remittance.BenePackageRequest;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
 import com.amx.jax.model.request.remittance.CustomerBankRequest;
+import com.amx.jax.model.response.customer.BenePackageResponse;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
@@ -75,7 +77,6 @@ public class BranchRemittanceService extends AbstractService{
 	ReportManager reportManager;
 	@Autowired
 	AdditionalBankDetailManager additionalBankDetailManager;
-	
 
 	
 	public AmxApiResponse<BranchRemittanceApplResponseDto, Object> saveBranchRemittanceApplication(BranchRemittanceApplRequestModel requestApplModel){
@@ -208,10 +209,20 @@ public class BranchRemittanceService extends AbstractService{
 		return new BoolRespModel(result);
 	}
 	
-	public AmxApiResponse<ParameterDetailsResponseDto, Object> getGiftService(BigDecimal beneRelaId) {
-		ParameterDetailsResponseDto parameterDetailsResponseDto = branchRemitManager.getGiftService(beneRelaId);
+	
+public  AmxApiResponse<ParameterDetailsResponseDto, Object> getGiftService(BigDecimal beneRelaId) {
+	ParameterDetailsResponseDto parameterDetailsResponseDto =branchRemitManager.getGiftService(beneRelaId);
 		parameterDetailsResponseDto.getParameterDetailsDto().addAll(additionalBankDetailManager.fetchServiceProviderFcAmount(beneRelaId));
-		return AmxApiResponse.build(parameterDetailsResponseDto);
-	}
+	return AmxApiResponse.build(parameterDetailsResponseDto);
+}
+
+public  AmxApiResponse<BenePackageResponse, Object> getBenePackages(
+		BenePackageRequest benePackageRequest) {
+	ParameterDetailsResponseDto parameterDetailsResponseDto =branchRemitManager.getGiftService(benePackageRequest.getBeneId());
+	parameterDetailsResponseDto.getParameterDetailsDto().addAll(additionalBankDetailManager.fetchServiceProviderFcAmount(benePackageRequest.getBeneId()));
+	BenePackageResponse resp = new BenePackageResponse();
+	resp.setPackages(parameterDetailsResponseDto.getParameterDetailsDto());
+	return AmxApiResponse.build(resp);
+}
 	
 }

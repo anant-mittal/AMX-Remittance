@@ -12,13 +12,14 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.client.fx.FcSaleOrderClient;
-import com.amx.jax.exception.JaxSystemError;
 import com.amx.jax.model.ResourceDTO;
+import com.amx.jax.model.request.remittance.BenePackageRequest;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.BranchRemittanceGetExchangeRateRequest;
 import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
 import com.amx.jax.model.request.remittance.CustomerBankRequest;
 import com.amx.jax.model.request.remittance.RoutingPricingRequest;
+import com.amx.jax.model.response.customer.BenePackageResponse;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
@@ -432,7 +433,18 @@ public class RemittanceClient implements IRemittanceService {
 		
 	}
 
-
+	@Override
+	public AmxApiResponse<BenePackageResponse, Object> getBenePackages(BenePackageRequest benePackageRequest) {
+		
+		//beneRelationshipId
+			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_GET_BENE_PACKAGE).meta(new JaxMetaInfo())
+					.meta(new JaxMetaInfo())
+					.post(benePackageRequest)
+					.as(new ParameterizedTypeReference<AmxApiResponse<BenePackageResponse, Object>>() {
+					});
+		
+		
+	}
 
 
 
