@@ -1,6 +1,6 @@
 {
   "aggs": {
-    "c2": {
+    "area": {
       "terms": {
         "field": "branch.areaName.keyword",
         "size": 5,
@@ -9,7 +9,7 @@
         }
       },
       "aggs": {
-        "c7": {
+        "period": {
           "date_range": {
             "field": "trnx.trnxDate",
             "ranges": [
@@ -26,26 +26,36 @@
             ]
           },
           "aggs": {
-            "c3": {
+            "localCommRecv": {
               "sum": {
                 "field": "trnx.localCommRecv"
               }
             },
-            "c4": {
+            "commRecv": {
               "sum": {
                 "field": "trnx.commRecv"
               }
             },
-            "c5": {
+            "exchangeGain": {
               "sum": {
                 "field": "trnx.exchangeGain"
               }
             },
-            "c6": {
+            "coBankCharges": {
               "sum": {
                 "field": "trnx.coBankCharges"
               }
+            },
+            
+            "8-bucket": {
+              "date_histogram": {
+                "field": "trnx.trnxDate",
+                "calendar_interval": "1d",
+                "time_zone": "Asia/Calcutta",
+                "min_doc_count": 1
+              }
             }
+            
           }
         }
       }
@@ -113,10 +123,10 @@
   },
   "pivot" : [
   	{
-	 "rows" : ["c2"],
-	 "cols" : ["c7 DEFAULT 0"],
-	 "vals" : ["sum c3", "count * AS total"],
-	 "computed" : ["half=c3_ThisMonth/2"]
+	 "rows" : ["area"],
+	 "cols" : ["period"],
+	 "vals" : ["localCommRecv","commRecv","exchangeGain","coBankCharges","count * AS Trnx"],
+	 "computed" : ["Revenue=localCommRecv + commRecv + exchangeGain - coBankCharges","RPT=Revenue/Trnx"]
   	}
   ]
 }
