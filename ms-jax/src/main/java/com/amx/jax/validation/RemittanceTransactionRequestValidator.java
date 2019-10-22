@@ -1,11 +1,9 @@
 package com.amx.jax.validation;
 
-import java.io.ObjectInputStream.GetField;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,11 +27,8 @@ import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.FlexFieldBehaviour;
 import com.amx.jax.constants.JaxChannel;
 import com.amx.jax.dao.RemittanceApplicationDao;
-import com.amx.jax.dbmodel.BenificiaryListView;
-import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.PurposeTrnxAmicDesc;
 import com.amx.jax.dbmodel.remittance.AdditionalBankDetailsViewx;
-import com.amx.jax.dbmodel.remittance.AdditionalBankRuleAmiec;
 import com.amx.jax.dbmodel.remittance.AdditionalBankRuleMap;
 import com.amx.jax.dbmodel.remittance.AdditionalDataDisplayView;
 import com.amx.jax.dbmodel.remittance.FlexFiledView;
@@ -118,7 +113,6 @@ public class RemittanceTransactionRequestValidator {
 		BigDecimal remittanceModeId = (BigDecimal) remitApplParametersMap.get("P_REMITTANCE_MODE_ID");
 		BigDecimal deliveryModeId = (BigDecimal) remitApplParametersMap.get("P_DELIVERY_MODE_ID");
 		BigDecimal foreignCurrencyId = (BigDecimal) remitApplParametersMap.get("P_FOREIGN_CURRENCY_ID");
-		BigDecimal routingBankId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_BANK_ID");
 
 		List<String> flexiFieldIn = allFlexFields.stream().map(i -> i.getFieldName()).collect(Collectors.toList());
 		// remove indic1 validation from branch and other channels
