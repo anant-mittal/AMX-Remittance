@@ -7,6 +7,7 @@ import com.amx.jax.exception.ExceptionMessageKey;
 import com.amx.jax.exception.IExceptionEnum;
 import com.amx.jax.exception.IMessageKey;
 
+@Deprecated
 public class GlobaLException extends AbstractJaxException {
 
 	private static final long serialVersionUID = 1L;

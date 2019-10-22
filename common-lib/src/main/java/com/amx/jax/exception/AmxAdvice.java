@@ -70,9 +70,12 @@ public abstract class AmxAdvice implements ResponseBodyAdvice<AmxApiResponse<?, 
 		apiError.setPath(request.getRequestURI());
 		apiError.setRedirectUrl(ex.getRedirectUrl());
 		ExceptionMessageKey.resolveLocalMessage(apiError);
-		response.setHeader(AppConstants.EXCEPTION_HEADER_KEY, apiError.getException());
+		ApiAuditEvent apiAuditEvent = new ApiAuditEvent(ex);
+		alert(ex, apiAuditEvent);
 
-		alert(ex);
+		response.setHeader(AppConstants.EXCEPTION_HEADER_KEY, apiError.getException());
+		response.setHeader(AppConstants.EXCEPTION_HEADER_CODE_KEY, apiAuditEvent.getErrorCode());
+
 		return new ResponseEntity<AmxApiError>(apiError, getHttpStatus(ex));
 	}
 
@@ -80,9 +83,9 @@ public abstract class AmxAdvice implements ResponseBodyAdvice<AmxApiResponse<?, 
 		return exp.getHttpStatus();
 	}
 
-	private void alert(AmxApiException ex) {
+	private void alert(AmxApiException ex, ApiAuditEvent apiAuditEvent) {
 		// Raise Alert for Specific Event
-		auditService.log(new ApiAuditEvent(ex), ex);
+		auditService.log(apiAuditEvent, ex);
 	}
 
 	public void alert(Exception ex) {

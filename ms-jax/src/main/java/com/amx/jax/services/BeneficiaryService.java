@@ -180,6 +180,10 @@ public class BeneficiaryService extends AbstractService {
 	ILanguageTypeRepository languageTypeRepository;
 	
 	
+	@Autowired
+	IBeneficaryContactDao beneficaryContactDao;
+	
+	
 	public ApiResponse getBeneficiaryListForOnline(BigDecimal customerId, BigDecimal applicationCountryId,BigDecimal beneCountryId,Boolean excludePackage) {
 		List<BenificiaryListView> beneList = null;
 		if (beneCountryId != null && beneCountryId.compareTo(BigDecimal.ZERO) != 0) {
@@ -411,7 +415,7 @@ public class BeneficiaryService extends AbstractService {
 			} else {
 				beneList = beneficiaryOnlineDao.getDefaultBeneficiary(customerId, applicationCountryId);
 			}
-			if(beneList!=null){
+			if(beneList!=null ){
 				beneDto = beneCheck.beneCheck(convertBeneModelToDto((beneList)));
 				if (beneDto != null && !JaxUtil.isNullZeroBigDecimalCheck(transactionId)
 						&& (JaxUtil.isNullZeroBigDecimalCheck(beneRealtionId)
@@ -427,7 +431,9 @@ public class BeneficiaryService extends AbstractService {
 			}
 
 			remitPageDto.setBeneficiaryDto(beneDto);
+			if(beneDto!=null) {
 			remitPageDto.setForCur(getCurrencyDTO(beneDto.getCurrencyId()));
+			}
 			if (trnxView != null) {
 				remitPageDto.setTrnxHistDto(convertTranHistDto(trnxView));
 			}
@@ -1121,4 +1127,23 @@ public class BeneficiaryService extends AbstractService {
 		BenificiaryListView beneDetailModel = beneficiaryOnlineDao.findByCustomerIdAndBeneficaryMasterSeqIdAndIsActive(customerId, beneMasterSeqId, ConstantDocument.Yes);
 		return convertBeneModelToDto(beneDetailModel);
 	}
+	
+	
+	
+	
+	public BeneficaryContact getBeneContact(BigDecimal beneMasterSeqId) {
+		List<BeneficaryContact> beneContactList = beneficaryContactDao.getBeneContact(beneMasterSeqId);
+		BeneficaryContact contact = null;
+		if(beneContactList!=null && !beneContactList.isEmpty()) {
+			contact = beneContactList.get(0);
+		}
+		return contact;
+	}
+	
+	
+	public void saveBeneContact(BeneficaryContact beneficaryContact) {
+		beneficaryContactDao.save(beneficaryContact);
+	}
+	
+	
 }

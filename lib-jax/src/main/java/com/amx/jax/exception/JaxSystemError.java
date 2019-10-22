@@ -1,5 +1,7 @@
 package com.amx.jax.exception;
 
+import org.slf4j.Logger;
+
 import com.amx.jax.error.JaxError;
 
 public class JaxSystemError extends AmxApiException {
@@ -41,6 +43,17 @@ public class JaxSystemError extends AmxApiException {
 		} else if (e instanceof AmxApiException) {
 			throw (AmxApiException) e;
 		} else {
+			throw new JaxSystemError(e);
+		}
+	}
+
+	public static <T> T evaluate(Logger logger, Exception e) {
+		if (e instanceof AbstractJaxException) {
+			throw (AbstractJaxException) e;
+		} else if (e instanceof AmxApiException) {
+			throw (AmxApiException) e;
+		} else {
+			logger.error("JaxSystemError : ", e);
 			throw new JaxSystemError(e);
 		}
 	}

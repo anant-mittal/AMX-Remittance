@@ -3,7 +3,7 @@ package com.amx.jax.radar.jobs.customer;
 import java.util.Date;
 
 import org.slf4j.Logger;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -18,23 +18,15 @@ import com.amx.jax.grid.GridService.GridViewBuilder;
 import com.amx.jax.grid.GridView;
 import com.amx.jax.grid.views.TranxViewRecord;
 import com.amx.jax.logger.LoggerService;
-import com.amx.jax.mcq.shedlock.SchedulerLock;
-import com.amx.jax.mcq.shedlock.SchedulerLock.LockContext;
-import com.amx.jax.radar.AESRepository.BulkRequestBuilder;
-import com.amx.jax.radar.RadarConfig;
-import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncJobs;
 import com.amx.jax.rates.AmxCurConstants;
-import com.amx.utils.ArgUtil;
-import com.amx.utils.Constants;
 import com.amx.utils.JsonUtil;
-import com.amx.utils.TimeUtils;
 
-//@Configuration
-//@EnableScheduling
-//@Component
-//@Service
+@Configuration
+@EnableScheduling
+@Component
+@Service
 //@ConditionalOnExpression(TestSizeApp.ENABLE_JOBS)
-//@ConditionalOnProperty("jax.jobs.trnx")
+@ConditionalOnProperty("jax.jobs.test")
 //@ConditionalOnExpression(RadarConfig.CE_TRNX_SYNC_AND_ES)
 public class TrnxViewTaskTest extends AbstractDBSyncTask {
 
@@ -59,8 +51,8 @@ public class TrnxViewTaskTest extends AbstractDBSyncTask {
 
 	public void doTask(int lastPage, String lastId) {
 
-		Long lastUpdateDateNow = 1471804200000L;
-		Long lastUpdateDateNowLimit = lastUpdateDateNow + (intervalDays * AmxCurConstants.INTERVAL_DAYS);
+		Long lastUpdateDateNow = System.currentTimeMillis()- (5 * AmxCurConstants.INTERVAL_DAYS);
+		Long lastUpdateDateNowLimit = System.currentTimeMillis();
 
 		String dateString = GridConstants.GRID_TIME_FORMATTER_JAVA.format(new Date(lastUpdateDateNow));
 		String dateStringLimit = GridConstants.GRID_TIME_FORMATTER_JAVA
@@ -68,7 +60,7 @@ public class TrnxViewTaskTest extends AbstractDBSyncTask {
 
 		LOGGER.info("Pg:{},Tm:{} {}-{}", lastPage, lastUpdateDateNow, dateString, dateStringLimit);
 
-		GridQuery gridQuery = getForwardQuery(lastPage, 5, TIME_TRACK_KEY, dateString, dateStringLimit);
+		GridQuery gridQuery = getForwardQuery(lastPage, 200, TIME_TRACK_KEY, dateString, dateStringLimit);
 
 		GridViewBuilder<TranxViewRecord> y = gridService
 				.view(GridView.VW_KIBANA_TRNX, gridQuery);

@@ -4,6 +4,8 @@ package com.amx.jax.ui.api;
 import java.math.BigDecimal;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -20,6 +22,7 @@ import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.response.JaxTransactionResponse;
 import com.amx.amxlib.model.trnx.BeneficiaryTrnxModel;
 import com.amx.jax.JaxAuthContext;
+
 import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 import com.amx.jax.ui.model.AuthData;
@@ -30,6 +33,7 @@ import com.amx.jax.ui.response.ResponseWrapperM;
 import com.amx.jax.ui.service.JaxService;
 import com.amx.jax.ui.session.Transactions;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.JsonUtil;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -40,7 +44,7 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 @Api(value = "Beneficiary APIs")
 public class BeneController {
-
+	private static final Logger LOGGER = LoggerFactory.getLogger(BeneController.class);
 	/** The jax service. */
 	@Autowired
 	private JaxService jaxService;
@@ -179,6 +183,7 @@ public class BeneController {
 	@RequestMapping(value = "/api/user/bnfcry/personal", method = { RequestMethod.POST })
 	public ResponseWrapper<JaxTransactionResponse> saveBenePersonalDetailInTrnx(
 			@RequestBody BenePersonalDetailModel benePersonalDetailModel) {
+		LOGGER.info("saveBenePersonalDetailInTrnx request: " + JsonUtil.toJson(benePersonalDetailModel));
 		transactions.track();
 		return new ResponseWrapper<>(jaxService.setDefaults().getBeneClient()
 				.saveBenePersonalDetailInTrnx(benePersonalDetailModel).getResult());

@@ -100,6 +100,9 @@ public class OracleViewDocument extends AESDocument {
 		this.customer.setNationality(this.trnx.getCustmerNation());
 		this.trnx.setCustmerNation(null);
 
+		this.customer.setTrnxCustomerCategory(this.trnx.getTrnxCustomerCategory());
+		this.trnx.setTrnxCustomerCategory(null);
+		
 		this.branch = new BranchViewRecord();
 
 		this.branch.setId(this.trnx.getCountryBranchId());
@@ -126,6 +129,10 @@ public class OracleViewDocument extends AESDocument {
 		this.trnx.setBeneBankName(null);
 		this.bene.setCountryCode(this.trnx.getBeneCountryCode());
 		this.trnx.setBeneCountryCode(null);
+		this.bene.setBeneName(this.trnx.getBeneName());
+		this.trnx.setBeneName(null);
+		this.bene.setBeneId(this.trnx.getBeneId());
+		this.trnx.setBeneId(null);
 
 		this.user = new BranchUserViewRecord();
 

@@ -37,6 +37,7 @@ public class RemittanceTransactionResponsetModel extends AbstractModel {
 	private BigDecimal betterRateAmountSlab;
 	private BigDecimal diffInBetterRateFcAmount;
 	
+	private String discountOnComissionFlag;
 
 	/*
 	 * (non-Javadoc)
@@ -184,6 +185,12 @@ public class RemittanceTransactionResponsetModel extends AbstractModel {
 		this.diffInBetterRateFcAmount = diffInBetterRateFcAmount;
 	}
 	
-	
+	public String getDiscountOnComissionFlag() {
+		return discountOnComissionFlag;
+	}
+
+	public void setDiscountOnComissionFlag(String discountOnComissionFlag) {
+		this.discountOnComissionFlag = discountOnComissionFlag;
+	}
 
 }

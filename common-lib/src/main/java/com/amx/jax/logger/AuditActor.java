@@ -16,11 +16,13 @@ public class AuditActor {
 
 	public static enum ActorType implements EnumType {
 
-		G, C, E, S,
+		G, C, I, W, E, S,
 
 		// Not To be used
 		GUEST(G),
 		CUSTOMER(C),
+		IDENTITY(I),
+		WHATSAPP(W),
 		EMP(E),
 		SYSTEM(S);
 
@@ -36,7 +38,7 @@ public class AuditActor {
 
 		@Override
 		public String toString() {
-			return this.name();
+			return this.shortName.name();
 		}
 
 		@Override

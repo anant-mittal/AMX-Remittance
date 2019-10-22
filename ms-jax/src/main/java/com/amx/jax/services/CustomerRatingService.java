@@ -1,11 +1,8 @@
 package com.amx.jax.services;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +10,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
+
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.dbmodel.CustomerRating;
@@ -23,7 +21,6 @@ import com.amx.jax.dict.AmxEnums;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.customer.CustomerRatingDTO;
-import com.amx.jax.model.response.remittance.CustomerBankRelationNameDto;
 import com.amx.jax.partner.repository.ReceiptPaymenttRepository;
 import com.amx.jax.repository.ICustomerRatingDao;
 import com.amx.jax.repository.RemittanceApplicationRepository;

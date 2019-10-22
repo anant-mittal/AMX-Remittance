@@ -357,14 +357,13 @@ public class BranchRemittanceDao {
 		}
 	}
 	
-	public void updateSignatureHash(RemittanceTransactionView trnxDetails,String Signature) {
-	if(trnxDetails!=null && !StringUtils.isBlank(Signature) && JaxUtil.isNullZeroBigDecimalCheck(trnxDetails.getRemittanceTransactionId())) {
-		RemittanceTransaction remit = remitTrnxRepository.findOne(trnxDetails.getRemittanceTransactionId());
-		if(remit!=null) {
-			remit.setCustomerSignature(Signature);
-			remitTrnxRepository.save(remit);
+	public void updateSignatureHash(RemittanceTransactionView trnxDetails,String signature) {
+		if(trnxDetails!=null && !StringUtils.isBlank(signature) && JaxUtil.isNullZeroBigDecimalCheck(trnxDetails.getRemittanceTransactionId())) {
+			RemittanceTransaction remit = remitTrnxRepository.findOne(trnxDetails.getRemittanceTransactionId());
+			if(remit!=null) {
+				remit.setCustomerSignature(signature);
+				remitTrnxRepository.save(remit);
+			}
 		}
-	}
-	
 	}
 }

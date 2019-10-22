@@ -35,6 +35,12 @@ public class BeneViewRecord implements Serializable {
 
 	@Column(name = "BENE_COUNTRY_CODE")
 	private String countryCode;
+	
+	@Column(name = "BENE_NAME")
+	private String beneName;
+	
+	@Column(name = "BENE_ID")
+	private BigDecimal beneId;
 
 	public BigDecimal getBankId() {
 		return bankId;
@@ -82,5 +88,21 @@ public class BeneViewRecord implements Serializable {
 
 	public void setCountryCode(String countryCode) {
 		this.countryCode = countryCode;
+	}
+
+	public String getBeneName() {
+		return beneName;
+	}
+
+	public void setBeneName(String beneName) {
+		this.beneName = beneName;
+	}
+
+	public BigDecimal getBeneId() {
+		return beneId;
+	}
+
+	public void setBeneId(BigDecimal beneId) {
+		this.beneId = beneId;
 	}
 }

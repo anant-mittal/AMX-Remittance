@@ -170,6 +170,9 @@ public class PivotTable {
 		case "sum":
 			row.result.put(rowKey, col.sum(funkey));
 			break;
+		case "avg":
+			row.result.put(rowKey, col.avg(funkey));
+			break;
 		case "ucount":
 			row.result.put(rowKey, col.ucount(funkey));
 			break;

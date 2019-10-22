@@ -29,12 +29,14 @@ import com.amx.jax.dbmodel.BankBranchView;
 import com.amx.jax.dbmodel.BankMasterModel;
 import com.amx.jax.dbmodel.CountryBranch;
 import com.amx.jax.dbmodel.SourceOfIncomeView;
+import com.amx.jax.dbmodel.ViewBankChannelModel;
 import com.amx.jax.dbmodel.treasury.BankApplicability;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.response.SourceOfIncomeDto;
 import com.amx.jax.repository.BankMasterRepository;
 import com.amx.jax.repository.CountryBranchRepository;
+import com.amx.jax.repository.IViewBankChannelRepository;
 import com.amx.jax.repository.VwBankBranchRepository;
 import com.amx.jax.repository.meta.BankApplicabilityRepository;
 import com.amx.jax.services.AbstractService;
@@ -55,6 +57,8 @@ public class BankMetaService extends AbstractService {
 	BankApplicabilityRepository bankApplicabilityRepository;
 	@Autowired
 	MetaData metaData;
+	@Autowired
+	IViewBankChannelRepository bankChannelRepository;
 	
 	public List<BankMasterModel> getBanksByCountryId(BigDecimal countryId) {
 	
@@ -199,6 +203,65 @@ public class BankMetaService extends AbstractService {
 
 	public BankApplicability getBankApplicability(BigDecimal bankId) {
 		return bankApplicabilityRepository.findByBankMaster(new BankMasterModel(bankId));
+	}
+	
+	// ------ Bank Detail fetch from VIEW ------ //
+	public List<ViewBankChannelModel> getBankViewByCountryId(BigDecimal countryId) {
+		
+		return bankChannelRepository.findBybankCountryIdOrderByBankShortNameAsc(countryId);
+	}
+	
+	public AmxApiResponse<BankMasterDTO, Object> getBankViewApiResponseByCountryId(BigDecimal countryId) {
+		
+		BigDecimal languageId = metaData.getLanguageId();
+		List<ViewBankChannelModel> banks = new ArrayList<>();
+		
+		banks =this.getBankViewByCountryId(countryId);
+		
+		if (banks.isEmpty()) {
+			throw new GlobalException("banks details not avaliable");
+		}
+		else if(languageId.equals(new BigDecimal(2))) {
+			
+			List<ViewBankChannelModel> bankArabicName = bankChannelRepository.findBybankCountryIdAndLanguageInd(countryId, languageId.toString());
+			banks.addAll(bankArabicName);
+						
+		}
+		return AmxApiResponse.buildList(convertBankView(banks));
+	}
+	
+	private List<BankMasterDTO> convertBankView(List<ViewBankChannelModel> banks) {
+
+		List<BankMasterDTO> bankdtos = new ArrayList<>();
+		
+		BigDecimal arabicLanguageInd = new BigDecimal("2");
+		
+		banks.forEach(i -> {
+			BankMasterDTO bankDto = convertView(i);
+			
+			if(!metaData.getLanguageId().equals(arabicLanguageInd)) {
+				bankDto.setLocalName(i.getBankFullName());
+				
+			}else {
+				bankDto.setLocalName(i.getLocalName());
+			}
+			if (ConstantDocument.Yes.equalsIgnoreCase(i.getIbanFlag())) {
+				bankDto.setIbanRequired(true);
+						}
+							
+			bankdtos.add(bankDto);
+		});
+		return bankdtos;
+	}
+	
+	public BankMasterDTO convertView(ViewBankChannelModel dbmodel) {
+		BankMasterDTO dto = new BankMasterDTO();
+		try {
+			BeanUtils.copyProperties(dto, dbmodel);
+		} catch (IllegalAccessException | InvocationTargetException e) {
+			logger.error("error in convert of bankmaster", e);
+		}
+		return dto;
 	}
 
 	@Override

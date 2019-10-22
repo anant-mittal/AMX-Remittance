@@ -96,8 +96,14 @@
 
     </div>
     <script th:inline="javascript">
-
-      function showLoader(b){
+    var url=window.location.pathname	
+    if (url.indexOf("FXORDER") != -1) {
+        document.title = "Fxorder Feedback";
+      } else {
+        document.title = "Remittance Feedback";
+      }
+   
+ 	function showLoader(b){
       	var loader = document.getElementById("loading");
       	if(b){
       		loader.classList.remove("dn")

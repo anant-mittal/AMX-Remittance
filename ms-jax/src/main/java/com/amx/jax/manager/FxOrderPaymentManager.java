@@ -468,7 +468,7 @@ public class FxOrderPaymentManager {
 			collectDetail.setDocumentLineNo(new BigDecimal(1));
 			collectDetail.setAuthdate(new Date());
 			collectDetail.setPayId(paymentResponse.getPaymentId());
-			collectDetail.setKnetReceiptDateTime(new SimpleDateFormat("dd/MM/YYYY hh:mm").format(new Date()));
+			collectDetail.setKnetReceiptDateTime(new SimpleDateFormat("dd/MM/YYYY HH:mm:ss").format(new Date()));
 		} catch (GlobalException e) {
 			logger.error("createFcSaleReceiptApplication", e.getErrorMessage() + "" + e.getErrorKey());
 			throw new GlobalException(e.getErrorKey(), e.getErrorMessage());

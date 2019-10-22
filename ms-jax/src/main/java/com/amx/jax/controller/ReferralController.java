@@ -19,6 +19,7 @@ import com.amx.amxlib.model.ReferralDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.services.LinkService;
 import com.amx.jax.services.ReferralService;
@@ -35,6 +36,7 @@ public class ReferralController {
 
 	@Autowired
 	LinkService linkService;
+		
 
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/get", method = RequestMethod.GET)
@@ -56,8 +58,8 @@ public class ReferralController {
 	}
 
 	@RequestMapping(value = "/link/open", method = RequestMethod.POST)
-	public BoolRespModel handleOpenLink(@RequestBody @Valid LinkDTO linkDto) {				
-		referralService.validateLinkDetails(linkDto);
-		return linkService.openLink(linkDto);
+	public AmxApiResponse<LinkDTO, Object> handleOpenLink(@RequestBody @Valid LinkDTO linkDto) {				
+		referralService.validateLinkDetails(linkDto);		
+		return linkService.openLink(linkDto,metaData.getChannel());
 	}
 }

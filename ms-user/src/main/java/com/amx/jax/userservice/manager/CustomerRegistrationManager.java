@@ -248,7 +248,7 @@ public class CustomerRegistrationManager extends TransactionModel<CustomerRegist
 		customer.setCustomerRegistrationType(CustomerRegistrationType.PARTIAL_REG);
 		customer.setMobileVerified(Status.Y);
 		customer.setEmailVerified(Status.Y);
-
+		
 		LOGGER.info("generated customer ref: {}", customerReference);
 		LOGGER.info("Createing new customer record, civil id- {}", customerPersonalDetail.getIdentityInt());
 		customerRepository.save(customer);
@@ -342,6 +342,7 @@ public class CustomerRegistrationManager extends TransactionModel<CustomerRegist
 		custProof.setCreatedBy(customer.getIdentityInt());
 		custProof.setCreationDate(new Date());
 		custProof.setIdentityTypeId(new BigDecimal(Constants.IDENTITY_TYPE_CIVIL_ID_STR));
+		custProof.setIdentityFor(ConstantDocument.IDENTITY_FOR_ID_PROOF);
 		customerIdProofRepository.save(custProof);
 
 	}

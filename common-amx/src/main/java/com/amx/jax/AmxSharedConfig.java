@@ -1,11 +1,9 @@
 package com.amx.jax;
 
-import java.math.BigDecimal;
-
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.dict.AmxEnums.CommunicationEvents;
 
-public interface AmxSharedConfig {
+public interface AmxSharedConfig extends AppSharedConfig {
 
 	public interface AmxSharedConfigDB extends AmxSharedConfig {
 

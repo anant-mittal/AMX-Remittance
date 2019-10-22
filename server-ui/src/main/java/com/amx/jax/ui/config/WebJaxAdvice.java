@@ -28,6 +28,7 @@ import com.amx.jax.api.AmxFieldError;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.exception.AmxApiException;
 import com.amx.jax.logger.AuditService;
+import com.amx.jax.logger.events.ApiAuditEvent;
 import com.amx.jax.model.AuthState;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.ui.audit.CAuthEvent;
@@ -78,22 +79,27 @@ public class WebJaxAdvice {
 
 		wrapper.setMessage(OWAStatusStatusCodes.UNKNOWN_JAX_ERROR, exc);
 
+		/*
 		String errorKey = ArgUtil.parseAsString(exc.getErrorKey(), OWAStatusStatusCodes.UNKNOWN_JAX_ERROR.toString());
 		if (exc.isReportable()) {
-			LOG.error(errorKey, exc);
+			LOG.debug(errorKey, exc);
 			//postManService.notifyException(errorKey, exc);
 		} else {
-			LOG.error(ArgUtil.parseAsString(errorKey, exc.getErrorMessage()));
-		}
+			LOG.debug(ArgUtil.parseAsString(errorKey, exc.getErrorMessage()));
+		}*/
 
 		AuthState state = guestSession.getState();
 		if (state.getFlow() != null) {
 			auditService.log(new CAuthEvent(state, CAuthEvent.Result.FAIL, exc.getError()));
 		}
+		
 		if (exc.getError() == JaxError.USER_LOGIN_ATTEMPT_EXCEEDED
 				|| JaxError.UNAUTHORIZED.equals(exc.getError())) {
 			sessionService.unIndexUser();
 		}
+		
+		ApiAuditEvent apiAuditEvent = new ApiAuditEvent(exc);
+		auditService.log(apiAuditEvent, exc);
 
 		wrapper.setRedirectUrl(exc.getRedirectUrl());
 		wrapper.setException(exc.getClass().getName());

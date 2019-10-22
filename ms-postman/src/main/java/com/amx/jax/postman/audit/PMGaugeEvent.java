@@ -55,7 +55,7 @@ public class PMGaugeEvent extends AuditEvent {
 		 */
 		@Override
 		public EventMarker marker() {
-			return null;
+			return EventMarker.GAUGE;
 		}
 
 	}
