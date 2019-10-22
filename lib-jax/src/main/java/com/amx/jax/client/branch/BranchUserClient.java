@@ -53,7 +53,7 @@ public class BranchUserClient implements IBranchService {
 	@Override
 	public AmxApiResponse<CustomerCall, Object> customerCallStatus(BigDecimal agentId, BigDecimal customerId,
 			String leadId, String followUpCode, String remark, String sessionId) {
-		return restService.ajax(appConfig.getJaxURL() + Path.BRANCH_USER_CUSTOMER_CALL_SESSION).meta(new JaxMetaInfo())
+		return restService.ajax(appConfig.getJaxURL() + Path.BRANCH_USER_CUSTOMER_CALL_STATUS).meta(new JaxMetaInfo())
 				.field(Params.AGENT_ID, agentId)
 				.field(Params.SESSION_ID, sessionId)
 				.field(Params.LEAD_ID, leadId)
