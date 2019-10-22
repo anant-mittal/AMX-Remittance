@@ -64,29 +64,42 @@ public class CommunicationPrefsUtil {
 	}
 
 	public CommunicationPrefsResult forCustomer(CommunicationEvents event, Communicatable communicatable) {
-		//amxSharedConfigClient.clear();
+		// amxSharedConfigClient.clear();
 		CommunicationPrefs prefs = get(event);
 
 		CommunicationPrefsResult result = new CommunicationPrefsResult();
 
+		String alwaysLong = "9";
+		String alwaysChar = "A";
+
+		boolean isAlwaysEmail = alwaysLong.equals(prefs.getEmailPrefs()) || alwaysChar.equals(prefs.getEmailPrefs());
+		boolean isAlwaysSMS = alwaysLong.equals(prefs.getSmsPrefs()) || alwaysChar.equals(prefs.getSmsPrefs());
+		boolean isAlwaysWA = alwaysLong.equals(prefs.getWaPrefs()) || alwaysChar.equals(prefs.getWaPrefs());
+		boolean isAlwaysPush = alwaysLong.equals(prefs.getPushPrefs()) || alwaysChar.equals(prefs.getPushPrefs());
+
 		for (long i = 1; i < 9; i++) {
-			if (prefs.getEmailPrefs().longValue() == i && communicatable.canSendEmail()) {
+
+			String thisLong = Long.toString(i);
+
+			if ((thisLong.equals(prefs.getEmailPrefs()) || isAlwaysEmail) && communicatable.canSendEmail()) {
 				result.setEmail(true);
 			}
 
-			if (prefs.getSmsPrefs().longValue() == i && communicatable.canSendMobile()) {
+			if ((thisLong.equals(prefs.getSmsPrefs()) || isAlwaysSMS) && communicatable.canSendMobile()) {
 				result.setSms(true);
 			}
 
-			if (prefs.getWaPrefs().longValue() == i && communicatable.canSendWhatsApp()) {
+			if ((thisLong.equals(prefs.getWaPrefs()) || isAlwaysWA) && communicatable.canSendWhatsApp()) {
 				result.setWhatsApp(true);
 			}
 
-			if (prefs.getPushPrefs().longValue() == i) {
+			if ((thisLong.equals(prefs.getPushPrefs()) || isAlwaysPush)) {
 				result.setPushNotify(true);
 			}
 
-			if (result.isEmail() || result.isSms() || result.isWhatsApp()) {
+			if ((result.isEmail() && !isAlwaysEmail)
+					|| (result.isSms() && !isAlwaysSMS)
+					|| (result.isWhatsApp() && !isAlwaysWA)) {
 				return result;
 			}
 		}
