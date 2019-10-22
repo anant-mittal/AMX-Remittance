@@ -69,7 +69,7 @@ public class CommunicationPrefsUtil {
 
 		CommunicationPrefsResult result = new CommunicationPrefsResult();
 
-		for (long i = 1; i < 5; i++) {
+		for (long i = 1; i < 9; i++) {
 			if (prefs.getEmailPrefs().longValue() == i && communicatable.canSendEmail()) {
 				result.setEmail(true);
 			}

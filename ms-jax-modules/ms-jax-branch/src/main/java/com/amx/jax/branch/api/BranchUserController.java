@@ -18,7 +18,7 @@ import com.amx.jax.cache.box.CustomerOnCall.CustomerCall;
 import com.amx.jax.client.JaxStompClient;
 import com.amx.jax.client.branch.IBranchService;
 import com.amx.jax.dbmodel.Customer;
-import com.amx.jax.dbmodel.CustomerCallDetails;
+import com.amx.jax.dbmodel.CustomerTeleMarketingDetails;
 import com.amx.jax.dbmodel.Employee;
 import com.amx.jax.exception.ApiHttpExceptions.ApiStatusCodes;
 import com.amx.jax.logger.LoggerService;
@@ -26,8 +26,8 @@ import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.response.remittance.UserwiseTransactionDto;
 import com.amx.jax.repository.CustomerCallDetailsRepository;
 import com.amx.jax.repository.CustomerRepository;
+import com.amx.jax.repository.CustomerTeleMarketingDetailsRepository;
 import com.amx.jax.repository.EmployeeRespository;
-import com.amx.jax.scope.VendorContext.ApiVendorHeaders;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.CollectionUtil;
 
@@ -51,11 +51,14 @@ public class BranchUserController implements IBranchService {
 	@Autowired
 	CustomerCallDetailsRepository customerCallDetailsRepository;
 
-	@ApiVendorHeaders
-	@RequestMapping(value = "/branch-user/customer-call-session", method = RequestMethod.POST)
-	public AmxApiResponse<CustomerCall, Object> customerConnnected(@RequestParam BigDecimal agentId,
+	@Autowired
+	CustomerTeleMarketingDetailsRepository customerTeleMarketingDetailsRepository;
+
+	@Override
+	@RequestMapping(value = Path.BRANCH_USER_CUSTOMER_CALL_SESSION, method = RequestMethod.POST)
+	public AmxApiResponse<CustomerCall, Object> customerCallSession(
+			@RequestParam BigDecimal agentId,
 			@RequestParam BigDecimal customerId,
-			@RequestParam(required = false) String mobile,
 			@RequestParam(required = false) String leadId) {
 		Employee e = employeeRespository.findEmployeeById(agentId);
 		if (ArgUtil.is(e)) {
@@ -65,7 +68,6 @@ public class BranchUserController implements IBranchService {
 				CustomerCall customerCall = new CustomerCall();
 				customerCall.setCustomerid(c.getCustomerId());
 				customerCall.setSessionId(AppContextUtil.getTraceId());
-				customerCall.setMobile(mobile);
 				customerOnCall.put(employeeId, customerCall);
 				jaxStompClient.publishOnCallCustomerStatus(e.getEmployeeId(), c.getCustomerId());
 				return AmxApiResponse.build(customerCall);
@@ -76,13 +78,14 @@ public class BranchUserController implements IBranchService {
 		return AmxApiResponse.build(new CustomerCall()).statusEnum(ApiStatusCodes.FAIL);
 	}
 
-	@ApiVendorHeaders
-	@RequestMapping(value = "/branch-user/customer-call-status", method = RequestMethod.POST)
-	public AmxApiResponse<CustomerCall, Object> customerConnnectedStatus(@RequestParam BigDecimal agentId,
-			@RequestParam(required = false) String mobile, @RequestParam(required = false) String sessionId,
+	@Override
+	@RequestMapping(value = Path.BRANCH_USER_CUSTOMER_CALL_STATUS, method = RequestMethod.POST)
+	public AmxApiResponse<CustomerCall, Object> customerCallStatus(
+			@RequestParam BigDecimal agentId,
+			@RequestParam BigDecimal customerId,
 			@RequestParam(required = false) String leadId,
-			@RequestParam String status, @RequestParam String comment,
-			@RequestParam BigDecimal customerId) {
+			@RequestParam String followUpCode, @RequestParam String remark,
+			@RequestParam(required = false) String sessionId) {
 		Employee e = employeeRespository.findEmployeeById(agentId);
 		CustomerCall call = null;
 		if (ArgUtil.is(e)) {
@@ -93,24 +96,20 @@ public class BranchUserController implements IBranchService {
 				c = customerRepository.getCustomerByCustomerId(customerId);
 			} else if (ArgUtil.is(sessionId) && ArgUtil.is(call) && call.getSessionId().equals(sessionId)) {
 				c = customerRepository.getCustomerByCustomerId(call.getCustomerid());
-			} else if (ArgUtil.is(mobile) && ArgUtil.is(call) && call.getMobile().equals(mobile)) {
-				c = customerRepository.getCustomerByCustomerId(call.getCustomerid());
-			} else if (ArgUtil.is(mobile)) {
-				c = CollectionUtil.getOne(customerRepository.getCustomerByMobile(mobile));
-			}
-			if (ArgUtil.is(c)) {
-				CustomerCallDetails customerCallDetail = new CustomerCallDetails();
-				customerCallDetail.setSession(sessionId + ":" + leadId);
-				customerCallDetail.setCreatedDate(new Date());
-				customerCallDetail.setEmployeeId(e.getEmployeeId());
-				customerCallDetail.setCustomerId(c.getCustomerId());
-				customerCallDetail.setMobile(mobile);
-				customerCallDetail.setStatus(status);
-				customerCallDetail.setRemark(comment);
-				customerCallDetailsRepository.save(customerCallDetail);
-				return AmxApiResponse.build(call).statusEnum(ApiStatusCodes.SUCCESS);
 			}
 
+			if (ArgUtil.is(c)) {
+				CustomerTeleMarketingDetails custTMDetails = CollectionUtil
+						.getOne(customerTeleMarketingDetailsRepository.getCustomerTeleMarketingDetailsByLeadId(leadId));
+				if (ArgUtil.is(custTMDetails)) {
+					custTMDetails.setRemark(remark);
+					custTMDetails.setFollowUpCode(followUpCode);
+					custTMDetails.setFollowUpDate(new Date());
+					custTMDetails.setEmployeeId(e.getEmployeeId());
+					customerTeleMarketingDetailsRepository.save(custTMDetails);
+					return AmxApiResponse.build(call).statusEnum(ApiStatusCodes.SUCCESS);
+				}
+			}
 		}
 		return AmxApiResponse.build(call).statusEnum(ApiStatusCodes.FAIL);
 	}

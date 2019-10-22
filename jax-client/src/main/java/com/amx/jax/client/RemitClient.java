@@ -3,6 +3,7 @@ package com.amx.jax.client;
 import static com.amx.amxlib.constant.ApiEndpoint.REMIT_API_ENDPOINT;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +11,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Component;
 
-import com.amx.amxlib.exception.AbstractJaxException;
+import com.amx.amxlib.constant.ApiEndpoint;
 import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.exception.RemittanceTransactionValidationException;
@@ -21,6 +22,7 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.PurposeOfTransactionModel;
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
+import com.amx.amxlib.service.IRemittanceServiceOnline;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.client.util.ConverterUtility;
@@ -33,9 +35,10 @@ import com.amx.jax.model.response.SourceOfIncomeDto;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.rest.RestService;
+import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
 
 @Component
-public class RemitClient extends AbstractJaxServiceClient {
+public class RemitClient extends AbstractJaxServiceClient implements IRemittanceServiceOnline {
 	private static final Logger LOGGER = Logger.getLogger(RemitClient.class);
 
 	@Autowired
@@ -310,5 +313,36 @@ public class RemitClient extends AbstractJaxServiceClient {
 					});
 		
 	}
+	
+	@Override
+	public AmxApiResponse<RemittanceTransactionResponsetModel, List<JaxConditionalFieldDto>> validateTransactionV2(
+			RemittanceTransactionRequestModel model) {
+		try {
+			return restService.ajax(appConfig.getJaxURL()).path(ApiEndpoint.REMIT_API_ENDPOINT + Path.RATE_ENQUIRY)
+					.meta(new JaxMetaInfo()).post(model)
+					.as(new ParameterizedTypeReference<AmxApiResponse<RemittanceTransactionResponsetModel, List<JaxConditionalFieldDto>>>() {
+					});
+		} catch (Exception ae) {
+			LOGGER.error("exception in validateTransactionV2 : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}
+	}
+
+	@Override
+	public AmxApiResponse<RemittanceTransactionStatusResponseModel, Object> getApplicationStatusByAppId(
+			BigDecimal applicationId) {
+		try {
+			return restService.ajax(appConfig.getJaxURL())
+					.path(ApiEndpoint.REMIT_API_ENDPOINT + Path.APPLICATION_STATUS).meta(new JaxMetaInfo())
+					.pathParam(Params.APPLICATION_ID, applicationId).get()
+					.as(new ParameterizedTypeReference<AmxApiResponse<RemittanceTransactionStatusResponseModel, Object>>() {
+					});
+		} catch (Exception ae) {
+			LOGGER.error("exception in getApplicationStatusByAppId : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}
+	}
+
+
 
 }

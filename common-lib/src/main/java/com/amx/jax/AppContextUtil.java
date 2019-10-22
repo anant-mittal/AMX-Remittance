@@ -173,6 +173,10 @@ public class AppContextUtil {
 		ContextUtil.map().put("scopedTarget." + StringUtils.decapitalize(class1.getSimpleName()), vendor);
 	}
 
+	public static String getVendor(Class<?> class1) {
+		return (String) ContextUtil.map().get("scopedTarget." + StringUtils.decapitalize(class1.getSimpleName()));
+	}
+
 	public static String getVendor(String scopedTargetClassName) {
 		return (String) ContextUtil.map().get(scopedTargetClassName);
 	}
