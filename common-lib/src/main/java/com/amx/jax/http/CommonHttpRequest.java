@@ -123,7 +123,7 @@ public class CommonHttpRequest {
 	public Language getLanguage() {
 		return (Language) ArgUtil.parseAsEnum(
 				ArgUtil.ifNotEmpty(getRequestParam(AppConstants.LANG_PARAM_KEY), request.getLocale().getLanguage()),
-				Language.DEFAULT);
+				Language.DEFAULT, Language.class);
 	}
 
 	public Device getCurrentDevice() {

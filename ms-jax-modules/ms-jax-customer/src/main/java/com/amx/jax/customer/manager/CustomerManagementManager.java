@@ -276,8 +276,8 @@ public class CustomerManagementManager {
 		customer.setCustomerRegistrationType(CustomerRegistrationType.NEW_BRANCH);
 		customer.setPepsIndicator(createCustomerInfoRequest.getPepsIndicator() ? ConstantDocument.Yes : ConstantDocument.No);
 		customer.setIsOnlineUser(ConstantDocument.No);
+		customer.setSignatureSpecimenClob(createCustomerInfoRequest.getCustomerPersonalDetail().getCustomerSignature());
 		custDao.saveCustomer(customer);
-
 	}
 
 	public void moveCustomerDataUsingProcedures(BigDecimal customerId, List<CustomerDocumentUploadReferenceTemp> customerTempUploads) {
@@ -299,7 +299,7 @@ public class CustomerManagementManager {
 	public void updateCustomer(UpdateCustomerInfoRequest updateCustomerInfoRequest) throws ParseException {
 		customerManagementValidation.validateDocumentsData(updateCustomerInfoRequest);
 		if (!updateCustomerInfoRequest.isCalledFromAddApi()) {
-			customerManagementValidation.validateCustomerDataForUpdate(metaData.getCustomerId());
+			customerManagementValidation.validateCustomerDataForUpdate(updateCustomerInfoRequest, metaData.getCustomerId());
 		}
 		customerUpdateManager.updateCustomer(updateCustomerInfoRequest);
 	}

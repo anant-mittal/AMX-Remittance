@@ -208,6 +208,13 @@ public class AppConfig {
 
 	@Value("${app.response.ok}")
 	private boolean appResponseOK;
+	
+	@Value("${app.session}")
+	private boolean appSessionEnabled;
+
+	public boolean isAppSessionEnabled() {
+		return appSessionEnabled;
+	}
 
 	@Value("${server.session.cookie.http-only}")
 	private boolean cookieHttpOnly;
