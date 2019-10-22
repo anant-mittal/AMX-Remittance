@@ -33,9 +33,9 @@ public interface IBranchService extends IJaxService {
 			JaxError.INVALID_COMPANY_ID })
 	AmxApiResponse<UserwiseTransactionDto, Object> getTotalCount(String transactiondate);
 
-	AmxApiResponse<CustomerCall, Object> customerCallSession(BigDecimal agentId, BigDecimal customerId, String leadId);
+	AmxApiResponse<CustomerCall, Object> customerCallSession(BigDecimal agentId, BigDecimal customerId, BigDecimal leadId);
 
-	AmxApiResponse<CustomerCall, Object> customerCallStatus(BigDecimal agentId, BigDecimal customerId, String leadId,
+	AmxApiResponse<CustomerCall, Object> customerCallStatus(BigDecimal agentId, BigDecimal customerId, BigDecimal leadId,
 			String followUpCode, String remark, String sessionId);
 
 }

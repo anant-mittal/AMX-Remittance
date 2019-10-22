@@ -11,5 +11,5 @@ import com.amx.jax.dbmodel.CustomerTeleMarketingDetails;
 public interface CustomerTeleMarketingDetailsRepository
 		extends CrudRepository<CustomerTeleMarketingDetails, BigDecimal> {
 	@Query("select c from CustomerTeleMarketingDetails c where leadId=?1")
-	public List<CustomerTeleMarketingDetails> getCustomerTeleMarketingDetailsByLeadId(String leadId);
+	public List<CustomerTeleMarketingDetails> getCustomerTeleMarketingDetailsByLeadId(BigDecimal leadId);
 }
