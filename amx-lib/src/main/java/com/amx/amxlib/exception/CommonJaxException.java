@@ -61,7 +61,7 @@ public class CommonJaxException extends AmxApiException {
 		if (JaxError.ID_PROOFS_SCAN_NOT_FOUND.getStatusKey().equals(apiError.getStatusKey())) {
 			iscustValidationError = true;
 		}
-		if (JaxError.CUSTOMER__SIGNATURE_UNAVAILABLE.getStatusKey().equals(apiError.getStatusKey())) {
+		if (JaxError.CUSTOMER_SIGNATURE_UNAVAILABLE.getStatusKey().equals(apiError.getStatusKey())) {
 			iscustValidationError = true;
 		}
 		if (JaxError.INVALID_INSURANCE_INDICATOR.getStatusKey().equals(apiError.getStatusKey())) {

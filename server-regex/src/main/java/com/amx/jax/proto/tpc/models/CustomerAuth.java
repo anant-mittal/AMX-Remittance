@@ -1,7 +1,5 @@
 package com.amx.jax.proto.tpc.models;
 
-import java.math.BigDecimal;
-
 import com.amx.jax.proto.tpc.api.TPCApiConstants;
 import com.amx.jax.swagger.ApiMockModelProperty;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -9,13 +7,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class CustomerAuth {
 
 	public static class CustomerAuthRequest {
-
-		@Deprecated
-		@ApiMockModelProperty(
-				value = "Redirect URL after customer auth is completed. Client is supposed to implement this api URL",
-				example = "https://clientsite.com/amx/callback",
-				required = true)
-		private String callbackUrl;
 
 		@ApiMockModelProperty(
 				value = "Gloabl IP of System/Device being used by Customer",
@@ -25,7 +16,7 @@ public class CustomerAuth {
 
 		@ApiMockModelProperty(
 				value = "CPR id of customer",
-				example = "123488122112",
+				example = "284052306594",
 				required = true)
 		public String identity;
 
@@ -41,7 +32,7 @@ public class CustomerAuth {
 				value = "Client is supposed to save this id for customer session.",
 				example = "xwe2323w82323")
 		@JsonProperty(TPCApiConstants.Keys.CUSTOMER_SESSION_TOKEN_XKEY)
-		public BigDecimal customerToken;
+		public String customerToken;
 
 		@Deprecated
 		@ApiMockModelProperty(

@@ -14,7 +14,7 @@ import com.amx.amxlib.model.CountryBranchDTO;
 import com.amx.jax.AmxConfig;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
-import com.amx.jax.dbmodel.CountryBranch;
+import com.amx.jax.dbmodel.CountryBranchMdlv1;
 import com.amx.jax.pricer.PricerServiceClient;
 import com.amx.jax.pricer.dto.ExchangeRateBreakup;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
@@ -44,7 +44,7 @@ public class DiscountManagementService {
 
 	public AmxApiResponse<CountryBranchDTO, Object> getCountryBranch(BigDecimal countryId) {
 
-		List<CountryBranch> countryBranchList = discountManagementRepository.getCountryBranch(countryId);
+		List<CountryBranchMdlv1> countryBranchList = discountManagementRepository.getCountryBranch(countryId);
 		
 		LOGGER.info("COUNT OF BRANCHES : - " +countryBranchList.size());
 		
@@ -58,9 +58,9 @@ public class DiscountManagementService {
 	}
 	
 	
-	List<CountryBranchDTO> convertCountryBranch(List<CountryBranch> countryBranchList) {
+	List<CountryBranchDTO> convertCountryBranch(List<CountryBranchMdlv1> countryBranchList) {
 		List<CountryBranchDTO> list = new ArrayList<>();
-		for(CountryBranch incomeRange: countryBranchList) {
+		for(CountryBranchMdlv1 incomeRange: countryBranchList) {
 			CountryBranchDTO countryBranch = new CountryBranchDTO();
 			countryBranch.setBranchId(incomeRange.getBranchId());;
 			countryBranch.setBranchName(incomeRange.getBranchName());

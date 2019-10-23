@@ -32,11 +32,14 @@ import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.userservice.repository.CustomerVerificationRepository;
 import com.amx.jax.userservice.repository.OnlineCustomerRepository;
 import com.amx.jax.userservice.service.CustomerVerificationService;
+import com.amx.jax.util.AmxDBConstants;
 import com.amx.jax.util.AmxDBConstants.Status;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.CollectionUtil;
+import com.amx.utils.Constants;
 import com.amx.utils.EntityDtoUtil;
 import com.amx.utils.Random;
+import com.amx.utils.TimeUtils;
 
 /**
  * 
@@ -82,7 +85,9 @@ public class CustomerContactVerificationManager {
 
 	public List<CustomerContactVerification> getValidCustomerContactVerificationsByCustomerId(BigDecimal customerId,
 			ContactType contactType, String contact) {
+		Calendar cal = Calendar.getInstance();
 		if (ContactType.WHATSAPP.equals(contactType)) {
+			cal.add(Calendar.DATE, -1 * CustomerContactVerification.EXPIRY_DAY_WHATS_APP);
 			return this.getValidCustomerContactVerificationsByCustomerId(customerId, contactType, contact,
 					CustomerContactVerification.EXPIRY_DAY_WHATS_APP);
 		} else {
@@ -94,6 +99,9 @@ public class CustomerContactVerificationManager {
 
 	public CustomerContactVerification getValidCustomerContactVerificationByCustomerId(BigDecimal customerId,
 			ContactType contactType, String contact) {
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DATE, -1);
+		java.util.Date oneDay = new java.util.Date(cal.getTimeInMillis());
 		List<CustomerContactVerification> links = getValidCustomerContactVerificationsByCustomerId(customerId,
 				contactType, contact);
 		if (ArgUtil.isEmpty(links) || links.size() == 0) {
@@ -162,7 +170,7 @@ public class CustomerContactVerificationManager {
 			auditService.log(audit.result(Result.FAIL).message(e.getError()));
 			throw e;
 		}
-		
+
 		CustomerContactVerification link2 = customerContactVerificationRepository.save(link);
 
 		// Audit Info

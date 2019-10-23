@@ -31,10 +31,7 @@ public class ChannelDiscount implements Serializable {
 	@Column(name = "CHANNEL")
 	@Enumerated(value = EnumType.STRING)
 	private Channel channel;
-
-	//@Column(name = "DISCOUNT_PIPS")
-	//private BigDecimal discountPips;
-
+	
 	@Column(name = "ISACTIVE")
 	private String isActive;
 

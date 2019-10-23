@@ -60,6 +60,8 @@ public class TunnelSubscriberFactory {
 		} else {
 			for (ITunnelSubscriber listener : listeners) {
 				Class<?> c = AopProxyUtils.ultimateTargetClass(listener);
+				ITunnelSubscriber listenerTarget = (ITunnelSubscriber) AopProxyUtils.getSingletonTarget(listener);
+				// System.out.println("====="+c.getName());
 				TunnelEventMapping tunnelEvent = getAnnotationProxyReady(c, TunnelEventMapping.class);
 				String eventTopic = tunnelEvent.topic();
 
@@ -67,8 +69,10 @@ public class TunnelSubscriberFactory {
 					eventTopic = tunnelEvent.byEvent().getName();
 				}
 
-				if (!ArgUtil.isEmpty(listener.getTopic())) {
+				if (ArgUtil.is(listener.getTopic())) {
 					eventTopic = listener.getTopic();
+				} else if (ArgUtil.is(listenerTarget) && ArgUtil.is(listenerTarget.getTopic())) {
+					eventTopic = listenerTarget.getTopic();
 				}
 
 				boolean integrity = tunnelEvent.integrity();

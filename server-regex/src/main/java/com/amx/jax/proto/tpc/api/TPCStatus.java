@@ -62,35 +62,35 @@ public class TPCStatus extends IStatusCodeListPlugin<TPCServerCodes, ApiTPCStatu
 	 * @author lalittanwar
 	 *
 	 */
-	public static class OffsiteServerError extends AmxApiException {
+	public static class TPCServerError extends AmxApiException {
 
 		private static final long serialVersionUID = 1L;
 
-		public OffsiteServerError(AmxApiError error) {
+		public TPCServerError(AmxApiError error) {
 			super(error);
 		}
 
-		public OffsiteServerError() {
+		public TPCServerError() {
 			super("Offsite Server error occured");
 			this.setError(TPCServerCodes.UNKNOWN_ERROR);
 		}
 
-		public OffsiteServerError(TPCServerCodes statusCode) {
+		public TPCServerError(TPCServerCodes statusCode) {
 			super(statusCode);
 		}
 
-		public OffsiteServerError(TPCServerCodes statusCode, String message) {
+		public TPCServerError(TPCServerCodes statusCode, String message) {
 			super(statusCode, message);
 		}
 
-		public OffsiteServerError(Exception e) {
+		public TPCServerError(Exception e) {
 			super(e);
 			this.setError(TPCServerCodes.UNKNOWN_ERROR);
 		}
 
 		@Override
 		public AmxApiException getInstance(AmxApiError apiError) {
-			return new OffsiteServerError(apiError);
+			return new TPCServerError(apiError);
 		}
 
 		@Override
@@ -99,7 +99,7 @@ public class TPCStatus extends IStatusCodeListPlugin<TPCServerCodes, ApiTPCStatu
 		}
 
 		public static <T> T evaluate(Exception e) {
-			throw new OffsiteServerError(e);
+			throw new TPCServerError(e);
 		}
 
 		@Override

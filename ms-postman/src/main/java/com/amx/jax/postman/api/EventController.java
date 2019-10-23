@@ -1,9 +1,12 @@
 package com.amx.jax.postman.api;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -11,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.event.TriggerEvent;
+import com.amx.jax.postman.PostManConfig;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManUrls;
 import com.amx.jax.tunnel.ITunnelService;
@@ -30,15 +34,11 @@ public class EventController {
 	/**
 	 * Geo location.
 	 *
-	 * @param ip
-	 *            the ip
+	 * @param ip the ip
 	 * @return the geo location
-	 * @throws PostManException
-	 *             the post man exception
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
-	 * @throws GeoIp2Exception
-	 *             the geo ip 2 exception
+	 * @throws PostManException the post man exception
+	 * @throws IOException      Signals that an I/O exception has occurred.
+	 * @throws GeoIp2Exception  the geo ip 2 exception
 	 */
 	@RequestMapping(value = PostManUrls.EVENT_PUBLISH, method = RequestMethod.GET)
 	public long publishEvent(@RequestParam String event, @PathVariable String id,
@@ -46,4 +46,17 @@ public class EventController {
 		return tunnelService.shout(event, new TriggerEvent(event, id, value));
 	}
 
+	@Autowired
+	PostManConfig postManConfig;
+
+	@RequestMapping(value = "properties/test", method = RequestMethod.GET)
+	public Map<String, Object> test() throws PostManException, IOException {
+		Map<String, Object> map = new HashMap<String, Object>();
+
+		map.put("key", postManConfig.getTenant());
+		LOGGER.info("=====");
+		map.put("key2", postManConfig.getTenant());
+
+		return map;
+	}
 }

@@ -21,11 +21,11 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import com.amx.jax.dbmodel.BankMasterModel;
+import com.amx.jax.dbmodel.BankMasterMdlv1;
 import com.amx.jax.dbmodel.CompanyMaster;
-import com.amx.jax.dbmodel.CountryBranch;
+import com.amx.jax.dbmodel.CountryBranchMdlv1;
 import com.amx.jax.dbmodel.CountryMaster;
-import com.amx.jax.dbmodel.CurrencyMasterModel;
+import com.amx.jax.dbmodel.CurrencyMasterMdlv1;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.UserFinancialYear;
 
@@ -43,27 +43,27 @@ public class RemittanceApplication implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	private BigDecimal remittanceApplicationId;
-	private CurrencyMasterModel exCurrencyMasterByForeignCurrencyId;
+	private CurrencyMasterMdlv1 exCurrencyMasterByForeignCurrencyId;
 	private Document exDocument;
 	private CompanyMaster fsCompanyMaster;
 	private UserFinancialYear exUserFinancialYearByTransactionFinanceYearID;
-	private CountryBranch exCountryBranch;
-	private CurrencyMasterModel exCurrencyMasterByLocalCommisionCurrencyId;
-	private CurrencyMasterModel exCurrencyMasterByLocalTranxCurrencyId;
+	private CountryBranchMdlv1 exCountryBranch;
+	private CurrencyMasterMdlv1 exCurrencyMasterByLocalCommisionCurrencyId;
+	private CurrencyMasterMdlv1 exCurrencyMasterByLocalTranxCurrencyId;
 	private CountryMaster fsCountryMasterByBankCountryId;
 	private CountryMaster fsCountryMasterByApplicationCountryId;
 	private DeliveryMode exDeliveryMode;
-	private CurrencyMasterModel exCurrencyMasterByLocalChargeCurrencyId;
+	private CurrencyMasterMdlv1 exCurrencyMasterByLocalChargeCurrencyId;
 	private RemittanceModeMaster exRemittanceMode;
 	private Customer fsCustomer;
 	private UserFinancialYear exUserFinancialYearByDocumentFinanceYear;
-	private CurrencyMasterModel exCurrencyMasterByLocalNetCurrencyId;
-	private CurrencyMasterModel exCurrencyMasterByLocalDeliveryCurrencyId;
+	private CurrencyMasterMdlv1 exCurrencyMasterByLocalNetCurrencyId;
+	private CurrencyMasterMdlv1 exCurrencyMasterByLocalDeliveryCurrencyId;
 	private BigDecimal documentNo;
 	private Date documentDate;
 	private BigDecimal transactionDocumentNo;
 	private BigDecimal customerRef;
-	private BankMasterModel exBankMaster;
+	private BankMasterMdlv1 exBankMaster;
 	private BankBranch exBankBranch;
 	private String debitAccountNo;
 	private BigDecimal foreignTranxAmount;
@@ -163,10 +163,10 @@ public class RemittanceApplication implements Serializable {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "FOREIGN_CURRENCY_ID")
-	public CurrencyMasterModel getExCurrencyMasterByForeignCurrencyId() {
+	public CurrencyMasterMdlv1 getExCurrencyMasterByForeignCurrencyId() {
 		return this.exCurrencyMasterByForeignCurrencyId;
 	}
-	public void setExCurrencyMasterByForeignCurrencyId(CurrencyMasterModel exCurrencyMasterByForeignCurrencyId) {
+	public void setExCurrencyMasterByForeignCurrencyId(CurrencyMasterMdlv1 exCurrencyMasterByForeignCurrencyId) {
 		this.exCurrencyMasterByForeignCurrencyId = exCurrencyMasterByForeignCurrencyId;
 	}
 
@@ -199,28 +199,28 @@ public class RemittanceApplication implements Serializable {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "COUNTRY_BRANCH_ID")
-	public CountryBranch getExCountryBranch() {
+	public CountryBranchMdlv1 getExCountryBranch() {
 		return this.exCountryBranch;
 	}
-	public void setExCountryBranch(CountryBranch exCountryBranch) {
+	public void setExCountryBranch(CountryBranchMdlv1 exCountryBranch) {
 		this.exCountryBranch = exCountryBranch;
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "LOCAL_COMMISION_CURRENCY_ID")
-	public CurrencyMasterModel getExCurrencyMasterByLocalCommisionCurrencyId() {
+	public CurrencyMasterMdlv1 getExCurrencyMasterByLocalCommisionCurrencyId() {
 		return this.exCurrencyMasterByLocalCommisionCurrencyId;
 	}
-	public void setExCurrencyMasterByLocalCommisionCurrencyId(CurrencyMasterModel exCurrencyMasterByLocalCommisionCurrencyId) {
+	public void setExCurrencyMasterByLocalCommisionCurrencyId(CurrencyMasterMdlv1 exCurrencyMasterByLocalCommisionCurrencyId) {
 		this.exCurrencyMasterByLocalCommisionCurrencyId = exCurrencyMasterByLocalCommisionCurrencyId;
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "LOCAL_TRANX_CURRENCY_ID")
-	public CurrencyMasterModel getExCurrencyMasterByLocalTranxCurrencyId() {
+	public CurrencyMasterMdlv1 getExCurrencyMasterByLocalTranxCurrencyId() {
 		return this.exCurrencyMasterByLocalTranxCurrencyId;
 	}
-	public void setExCurrencyMasterByLocalTranxCurrencyId(CurrencyMasterModel exCurrencyMasterByLocalTranxCurrencyId) {
+	public void setExCurrencyMasterByLocalTranxCurrencyId(CurrencyMasterMdlv1 exCurrencyMasterByLocalTranxCurrencyId) {
 		this.exCurrencyMasterByLocalTranxCurrencyId = exCurrencyMasterByLocalTranxCurrencyId;
 	}
 
@@ -253,10 +253,10 @@ public class RemittanceApplication implements Serializable {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "LOCAL_CHARGE_CURRENCY_ID")
-	public CurrencyMasterModel getExCurrencyMasterByLocalChargeCurrencyId() {
+	public CurrencyMasterMdlv1 getExCurrencyMasterByLocalChargeCurrencyId() {
 		return this.exCurrencyMasterByLocalChargeCurrencyId;
 	}
-	public void setExCurrencyMasterByLocalChargeCurrencyId(CurrencyMasterModel exCurrencyMasterByLocalChargeCurrencyId) {
+	public void setExCurrencyMasterByLocalChargeCurrencyId(CurrencyMasterMdlv1 exCurrencyMasterByLocalChargeCurrencyId) {
 		this.exCurrencyMasterByLocalChargeCurrencyId = exCurrencyMasterByLocalChargeCurrencyId;
 	}
 
@@ -289,19 +289,19 @@ public class RemittanceApplication implements Serializable {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "LOCAL_NET_CURRENCY_ID")
-	public CurrencyMasterModel getExCurrencyMasterByLocalNetCurrencyId() {
+	public CurrencyMasterMdlv1 getExCurrencyMasterByLocalNetCurrencyId() {
 		return this.exCurrencyMasterByLocalNetCurrencyId;
 	}
-	public void setExCurrencyMasterByLocalNetCurrencyId(CurrencyMasterModel exCurrencyMasterByLocalNetCurrencyId) {
+	public void setExCurrencyMasterByLocalNetCurrencyId(CurrencyMasterMdlv1 exCurrencyMasterByLocalNetCurrencyId) {
 		this.exCurrencyMasterByLocalNetCurrencyId = exCurrencyMasterByLocalNetCurrencyId;
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "LOCAL_DELIVERY_CURRENCY_ID")
-	public CurrencyMasterModel getExCurrencyMasterByLocalDeliveryCurrencyId() {
+	public CurrencyMasterMdlv1 getExCurrencyMasterByLocalDeliveryCurrencyId() {
 		return this.exCurrencyMasterByLocalDeliveryCurrencyId;
 	}
-	public void setExCurrencyMasterByLocalDeliveryCurrencyId(CurrencyMasterModel exCurrencyMasterByLocalDeliveryCurrencyId) {
+	public void setExCurrencyMasterByLocalDeliveryCurrencyId(CurrencyMasterMdlv1 exCurrencyMasterByLocalDeliveryCurrencyId) {
 		this.exCurrencyMasterByLocalDeliveryCurrencyId = exCurrencyMasterByLocalDeliveryCurrencyId;
 	}
 
@@ -339,10 +339,10 @@ public class RemittanceApplication implements Serializable {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "BANK_ID")
-	public BankMasterModel getExBankMaster() {
+	public BankMasterMdlv1 getExBankMaster() {
 		return exBankMaster;
 	}
-	public void setExBankMaster(BankMasterModel exBankMaster) {
+	public void setExBankMaster(BankMasterMdlv1 exBankMaster) {
 		this.exBankMaster = exBankMaster;
 	}
 

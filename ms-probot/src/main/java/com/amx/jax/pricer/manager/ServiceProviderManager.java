@@ -135,6 +135,7 @@ public class ServiceProviderManager {
 		exchRateDetails.setCostRateLimitReached(false);
 		exchRateDetails.setDiscountAvailed(true);
 		exchRateDetails.setLowGLBalance(false);
+		exchRateDetails.setFundedIntermediary(false);
 		exchRateDetails.setSellRateBase(sellRateBase);
 		exchRateDetails.setSellRateNet(sellRateNet);
 		exchRateDetails.setServiceIndicatorId(homeSendMatrix.getServiceMasterId());

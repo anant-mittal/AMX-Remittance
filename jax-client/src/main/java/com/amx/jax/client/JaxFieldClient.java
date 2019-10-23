@@ -10,14 +10,14 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Component;
 
-import com.amx.amxlib.constant.JaxFieldEntity;
 import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.model.GetJaxFieldRequest;
 import com.amx.amxlib.model.JaxCondition;
-import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.jax.constants.JaxFieldEntity;
 import com.amx.jax.rest.RestService;
+import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
 
 @Component
 public class JaxFieldClient extends AbstractJaxServiceClient {

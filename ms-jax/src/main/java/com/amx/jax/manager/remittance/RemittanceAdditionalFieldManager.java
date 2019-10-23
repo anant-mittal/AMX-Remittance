@@ -16,20 +16,16 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
-
-import com.amx.amxlib.constant.JaxFieldEntity;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.model.GetJaxFieldRequest;
-import com.amx.amxlib.model.JaxConditionalFieldDto;
-import com.amx.amxlib.model.JaxFieldDto;
-import com.amx.amxlib.model.JaxFieldValueDto;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.branchremittance.manager.BranchRemittanceManager;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxDynamicField;
+import com.amx.jax.constants.JaxFieldEntity;
 import com.amx.jax.dbmodel.BenificiaryListView;
-import com.amx.jax.dbmodel.CountryBranch;
+import com.amx.jax.dbmodel.CountryBranchMdlv1;
 import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.SwiftMasterView;
 import com.amx.jax.dbmodel.bene.BeneficaryAccount;
@@ -52,7 +48,9 @@ import com.amx.jax.service.BankMetaService;
 import com.amx.jax.services.BankService;
 import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.services.JaxFieldService;
-import com.amx.jax.dbmodel.SwiftMasterView;
+import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
+import com.amx.libjax.model.jaxfield.JaxFieldDto;
+import com.amx.libjax.model.jaxfield.JaxFieldValueDto;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -88,8 +86,6 @@ public class RemittanceAdditionalFieldManager {
 	@Autowired
 	ISwiftMasterDao swiftMasterRepo;
 
-	
-	
 	Logger logger = LoggerFactory.getLogger(getClass());
 
 	public void validateAdditionalFields(RemittanceAdditionalBeneFieldModel model, Map<String, Object> remitApplParametersMap) {
@@ -167,6 +163,7 @@ public class RemittanceAdditionalFieldManager {
 			
 			for (JaxConditionalFieldDto jaxConditionalFieldDto : allJaxConditionalFields) {
 				JaxDynamicField jaxDynamicField = JaxDynamicField.valueOf(jaxConditionalFieldDto.getField().getName());
+
 				switch (jaxDynamicField) {
 				case BENE_FLAT_NO:
 					jaxConditionalFieldDto.getField().setDefaultValue(beneficaryMaster.getFlatNo());
@@ -230,7 +227,7 @@ public class RemittanceAdditionalFieldManager {
 
 		List<AdditionalDataDisplayView> additionalDataRequired = additionalDataDisplayDao.getAdditionalDataFromServiceApplicability(applicationCountryId, routingCountryId,
 				foreignCurrencyId, remittanceModeId, deliveryModeId, JaxDynamicField.getAllAdditionalFlexFields());
-		return additionalDataRequired.stream().collect(Collectors.toMap(i -> i.getFlexField(), i -> i));
+		return additionalDataRequired.stream().collect(Collectors.toMap(i -> i.getFlexField(), i -> i, (x1, x2) -> x1));
 	}
 
 	private boolean isDynamicFieldRequired(JaxConditionalFieldDto jaxConditionalField, RemittanceAdditionalBeneFieldModel model,Map<String, AdditionalDataDisplayView> flexFieldMap) {
@@ -357,7 +354,7 @@ public class RemittanceAdditionalFieldManager {
 			ApiResponse<JaxConditionalFieldDto> apiResponse = jaxFieldService.getJaxFieldsForEntity(new GetJaxFieldRequest(JaxFieldEntity.AML_AUTH));
 			allJaxConditionalFields = apiResponse.getResults();
 			List<JaxConditionalFieldDto> missingJaxConditionalFields = new ArrayList<>();
-			CountryBranch countryBranch = bankMetaService.getCountryBranchById(metaData.getCountryBranchId()); 
+			CountryBranchMdlv1 countryBranch = bankMetaService.getCountryBranchById(metaData.getCountryBranchId()); 
 			List<StaffAuthorizationView> staffList =  staffAuthorizationRepository.findByLocCode(countryBranch.getBranchId());
 			for (JaxConditionalFieldDto jaxConditionalField : allJaxConditionalFields) {
 					if(JaxDynamicField.AML_MESSAGE.name().equalsIgnoreCase(jaxConditionalField.getField().getName())) {
