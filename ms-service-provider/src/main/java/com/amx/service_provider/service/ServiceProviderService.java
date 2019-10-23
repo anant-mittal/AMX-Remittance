@@ -39,4 +39,9 @@ public class ServiceProviderService
 	{
 		return serviceProviderGateWayManger.getRemittanceStatus(getRemittanceStatusRequestDto);
 	}
+	
+	public ServiceProviderResponse cancelRemittance(ServiceProviderCallRequestDto cancelRemittanceRequestDto)
+	{
+		return serviceProviderGateWayManger.cancelRemittance(cancelRemittanceRequestDto);
+	}
 }

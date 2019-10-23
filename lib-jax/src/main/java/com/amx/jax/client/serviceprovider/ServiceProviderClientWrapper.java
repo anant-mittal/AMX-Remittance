@@ -7,9 +7,12 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.model.request.serviceprovider.ServiceProviderCallRequestDto;
+import com.amx.jax.model.response.serviceprovider.Cancellation_Call_Response;
+import com.amx.jax.model.response.serviceprovider.Get_Rmittance_Details_Call_Response;
 import com.amx.jax.model.response.serviceprovider.Quotation_Call_Response;
 import com.amx.jax.model.response.serviceprovider.Remittance_Call_Response;
 import com.amx.jax.model.response.serviceprovider.ServiceProviderResponse;
+import com.amx.jax.model.response.serviceprovider.Status_Call_Response;
 import com.amx.jax.model.response.serviceprovider.Validate_Remittance_Inputs_Call_Response;
 import com.amx.utils.JsonUtil;
 
@@ -45,12 +48,26 @@ public class ServiceProviderClientWrapper {
 	}
 
 	public AmxApiResponse<ServiceProviderResponse, Object> getRemittanceDetails(ServiceProviderCallRequestDto getRemittanceDetailsRequestDto) {
-		// TODO Auto-generated method stub
-		return null;
+		log.debug("getRemittanceDetails request {}", JsonUtil.toJson(getRemittanceDetailsRequestDto));
+		AmxApiResponse<ServiceProviderResponse, Object> response = serviceProviderClient.getRemittanceDetails(getRemittanceDetailsRequestDto);
+		Get_Rmittance_Details_Call_Response result = (Get_Rmittance_Details_Call_Response) response.getResult();
+		log.debug("getRemittanceDetails response {}", JsonUtil.toJson(result));
+		return AmxApiResponse.build(result);
 	}
 
 	public AmxApiResponse<ServiceProviderResponse, Object> getRemittanceStatus(ServiceProviderCallRequestDto getRemittanceStatusRequestDto) {
-		// TODO Auto-generated method stub
-		return null;
+		log.debug("getRemittanceStatus request {}", JsonUtil.toJson(getRemittanceStatusRequestDto));
+		AmxApiResponse<ServiceProviderResponse, Object> response = serviceProviderClient.getRemittanceStatus(getRemittanceStatusRequestDto);
+		Status_Call_Response result = (Status_Call_Response) response.getResult();
+		log.debug("getRemittanceStatus response {}", JsonUtil.toJson(result));
+		return AmxApiResponse.build(result);
+	}
+	
+	public AmxApiResponse<ServiceProviderResponse, Object> cancelRemittance(ServiceProviderCallRequestDto cancelRemittanceRequestDto) {
+		log.debug("cancelRemittance request {}", JsonUtil.toJson(cancelRemittanceRequestDto));
+		AmxApiResponse<ServiceProviderResponse, Object> response = serviceProviderClient.cancelRemittance(cancelRemittanceRequestDto);
+		Cancellation_Call_Response result = (Cancellation_Call_Response) response.getResult();
+		log.debug("cancelRemittance response {}", JsonUtil.toJson(result));
+		return AmxApiResponse.build(result);
 	}
 }

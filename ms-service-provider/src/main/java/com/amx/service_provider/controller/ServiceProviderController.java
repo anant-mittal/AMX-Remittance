@@ -54,4 +54,11 @@ public class ServiceProviderController implements IServiceProviderService
 	{
 		return AmxApiResponse.build(serviceProviderGateService.getRemittanceStatus(getRemittanceStatusRequestDto));
 	}
+	
+	@RequestMapping(value = IServiceProviderService.Path.CANCEL_REMITTANCE, method = RequestMethod.POST)
+	public AmxApiResponse<ServiceProviderResponse, Object> cancelRemittance(
+			@Valid @RequestBody ServiceProviderCallRequestDto cancelRemittanceRequestDto)
+	{
+		return AmxApiResponse.build(serviceProviderGateService.cancelRemittance(cancelRemittanceRequestDto));
+	}
 }

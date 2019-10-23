@@ -37,13 +37,13 @@ public class ServiceProviderManger implements IServiceProvider
 
 	@Autowired
 	private OwsTransferLogRepository owsTransferLogRep;
-	
+
 	@Autowired
 	MSServiceProviderConfig msServiceProviderConfig;
 
-
 	private final String SEND_TXN_METHOD_IND = new String("2"), VALIDATE_SEND_TXN_INPUTS_METHOD_IND = new String("13"),
-			GET_REMITTANCE_DETAILS_METHOD_IND = new String("12"), STATUS_INQ_METHOD_IND = new String("3");
+			GET_REMITTANCE_DETAILS_METHOD_IND = new String("12"), STATUS_INQ_METHOD_IND = new String("3"),
+			CANCEL_TXN_METHOD_IND = new String("7");
 
 	public ServiceProviderResponse getQutation(ServiceProviderCallRequestDto quatationRequestDto)
 	{
@@ -63,13 +63,13 @@ public class ServiceProviderManger implements IServiceProvider
 		Customer customer_data = quatationRequestDto.getCustomerDto();
 		Benificiary bene_data = quatationRequestDto.getBeneficiaryDto();
 
-		HashMap<String, String> validate_inputs_result = validate_initial_inputs(
-				txn_data.getApplication_country_3_digit_ISO(),
-				txn_data.getDestination_country_3_digit_ISO(),
-				txn_data.getRoutting_bank_code(),
-				txn_data.getDestination_currency(),
-				txn_data.getRemittance_mode(),
-				txn_data.getDelivery_mode());
+		HashMap<String, String> validate_inputs_result =
+				validate_initial_inputs(txn_data.getApplication_country_3_digit_ISO(),
+						txn_data.getDestination_country_3_digit_ISO(),
+						txn_data.getRoutting_bank_code(),
+						txn_data.getDestination_currency(),
+						txn_data.getRemittance_mode(),
+						txn_data.getDelivery_mode());
 
 		if (validate_inputs_result.isEmpty() == true) // No validation issues in initial stage
 		{
@@ -79,45 +79,48 @@ public class ServiceProviderManger implements IServiceProvider
 
 			if (validate_inputs_result.isEmpty() == true) // No validation issues in getQutation inputs
 			{
-				com.amx.service_provider.dbmodel.webservice.ExOwsLoginCredentials owsLoginCredentialsObject = exOwsLoginCredentialsRepository
-						.findByApplicationCountryAndBankCode(txn_data.getApplication_country_3_digit_ISO(),
+				com.amx.service_provider.dbmodel.webservice.ExOwsLoginCredentials owsLoginCredentialsObject =
+						exOwsLoginCredentialsRepository.findByApplicationCountryAndBankCode(
+								txn_data.getApplication_country_3_digit_ISO(),
 								txn_data.getRoutting_bank_code());
-				
+
 				// Setting the Trust store details
 				owsLoginCredentialsObject.setTruststore_path(msServiceProviderConfig.getTrustStoreLocation());
-				owsLoginCredentialsObject.setTrusttore_pwd(msServiceProviderConfig.getTrustStorePassword()); 
+				owsLoginCredentialsObject.setTrusttore_pwd(msServiceProviderConfig.getTrustStorePassword());
 
 				// Selecting which service to call based on the routing bank code
 				if (txn_data.getRoutting_bank_code().equals("HOME")) // HomeSend
-				{					
+				{
 					// Setting the Key store details
 					owsLoginCredentialsObject.setKeystore_path(msServiceProviderConfig.getHomeSendKeyStoreLocation());
-					owsLoginCredentialsObject.setKeystore_pwd(msServiceProviderConfig.getHomeSendkeyStorePassword()); 
-					
-					HomesendGate homesend_service = new HomesendGate(owsLoginCredentialsObject, owsParamRespcodeRepository);
+					owsLoginCredentialsObject.setKeystore_pwd(msServiceProviderConfig.getHomeSendkeyStorePassword());
+
+					HomesendGate homesend_service =
+							new HomesendGate(owsLoginCredentialsObject, owsParamRespcodeRepository);
 
 					// Calling the quotation service
-					response = homesend_service.getQuotation(txn_data.getSettlement_amount(),
-							txn_data.getSettlement_currency(),
-							txn_data.getDestination_amount(),
-							txn_data.getDestination_currency(),
-							txn_data.getDestination_country_2_digit_ISO(),
-							txn_data.getDestination_country_3_digit_ISO(),
-							txn_data.getOrigin_country_3_digit_ISO(),
-							customer_data.getCustomer_reference(),
-							customer_data.getCustomer_type(),
-							bene_data.getBeneficiary_reference(),
-							bene_data.getBeneficiary_type(),
-							bene_data.getFull_name(),
-							bene_data.getBeneficiary_account_number(),
-							bene_data.getBic_indicator(),
-							bene_data.getBeneficiary_bank_code(),
-							bene_data.getBeneficiary_branch_code(),
-							bene_data.getBeneficiary_bank_branch_swift_code(),
-							bene_data.getWallet_service_provider(),
-							txn_data.getRequest_sequence_id(),
-							txn_data.getRemittance_mode(),
-							txn_data.getDelivery_mode());
+					response =
+							homesend_service.getQuotation(txn_data.getSettlement_amount(),
+									txn_data.getSettlement_currency(),
+									txn_data.getDestination_amount(),
+									txn_data.getDestination_currency(),
+									txn_data.getDestination_country_2_digit_ISO(),
+									txn_data.getDestination_country_3_digit_ISO(),
+									txn_data.getOrigin_country_3_digit_ISO(),
+									customer_data.getCustomer_reference(),
+									customer_data.getCustomer_type(),
+									bene_data.getBeneficiary_reference(),
+									bene_data.getBeneficiary_type(),
+									bene_data.getFull_name(),
+									bene_data.getBeneficiary_account_number(),
+									bene_data.getBic_indicator(),
+									bene_data.getBeneficiary_bank_code(),
+									bene_data.getBeneficiary_branch_code(),
+									bene_data.getBeneficiary_bank_branch_swift_code(),
+									bene_data.getWallet_service_provider(),
+									txn_data.getRequest_sequence_id(),
+									txn_data.getRemittance_mode(),
+									txn_data.getDelivery_mode());
 
 				}
 				else if (txn_data.getRoutting_bank_code().equals("WU")) // Western Union
@@ -165,27 +168,28 @@ public class ServiceProviderManger implements IServiceProvider
 
 			if (validate_inputs_result.isEmpty() == true) // No validation issues in sendRemittance inputs
 			{
-				com.amx.service_provider.dbmodel.webservice.ExOwsLoginCredentials owsLoginCredentialsObject = exOwsLoginCredentialsRepository
-						.findByApplicationCountryAndBankCode(txn_data.getApplication_country_3_digit_ISO(),
-								txn_data.getRoutting_bank_code());				
+				com.amx.service_provider.dbmodel.webservice.ExOwsLoginCredentials owsLoginCredentialsObject =
+						exOwsLoginCredentialsRepository.findByApplicationCountryAndBankCode(
+								txn_data.getApplication_country_3_digit_ISO(),
+								txn_data.getRoutting_bank_code());
 
 				// Setting the Trust store details
 				owsLoginCredentialsObject.setTruststore_path(msServiceProviderConfig.getTrustStoreLocation());
-				owsLoginCredentialsObject.setTrusttore_pwd(msServiceProviderConfig.getTrustStorePassword()); 
-				
+				owsLoginCredentialsObject.setTrusttore_pwd(msServiceProviderConfig.getTrustStorePassword());
+
 				// Selecting which service to call based on the routing bank code
 				if (txn_data.getRoutting_bank_code().equals("HOME")) // HomeSend
 				{
 				}
-				else if (txn_data.getRoutting_bank_code().equals("VINTJA"))
+				else if (txn_data.getRoutting_bank_code().equals("VINT"))
 				{
 					// Setting the Key store details
 					owsLoginCredentialsObject.setKeystore_path(msServiceProviderConfig.getVintjaKeyStoreLocation());
-					owsLoginCredentialsObject.setKeystore_pwd(msServiceProviderConfig.getVintjakeyStorePassword()); 
-					
+					owsLoginCredentialsObject.setKeystore_pwd(msServiceProviderConfig.getVintjakeyStorePassword());
+
 					response =
-							new VintajaGate(owsLoginCredentialsObject, owsParamRespcodeRepository,
-									owsTransferLogRep).send_api_call(txn_data,
+							new VintajaGate(owsLoginCredentialsObject, owsParamRespcodeRepository, owsTransferLogRep)
+									.send_api_call(txn_data,
 											customer_data,
 											bene_data,
 											VALIDATE_SEND_TXN_INPUTS_METHOD_IND);
@@ -250,55 +254,56 @@ public class ServiceProviderManger implements IServiceProvider
 				ExOwsLoginCredentials owsLoginCredentialsObject =
 						exOwsLoginCredentialsRepository.findByApplicationCountryAndBankCode(
 								txn_data.getApplication_country_3_digit_ISO(),
-								txn_data.getRoutting_bank_code());				
+								txn_data.getRoutting_bank_code());
 
 				// Setting the Trust store details
 				owsLoginCredentialsObject.setTruststore_path(msServiceProviderConfig.getTrustStoreLocation());
-				owsLoginCredentialsObject.setTrusttore_pwd(msServiceProviderConfig.getTrustStorePassword()); 
+				owsLoginCredentialsObject.setTrusttore_pwd(msServiceProviderConfig.getTrustStorePassword());
 
 				// Selecting which service to call based on the routing bank code
 				if (txn_data.getRoutting_bank_code().equals("HOME")) // HomeSend
 				{
 					// Setting the Key store details
 					owsLoginCredentialsObject.setKeystore_path(msServiceProviderConfig.getHomeSendKeyStoreLocation());
-					owsLoginCredentialsObject.setKeystore_pwd(msServiceProviderConfig.getHomeSendkeyStorePassword()); 
-					
-					HomesendGate homesend_service = new HomesendGate(owsLoginCredentialsObject, owsParamRespcodeRepository);
+					owsLoginCredentialsObject.setKeystore_pwd(msServiceProviderConfig.getHomeSendkeyStorePassword());
+
+					HomesendGate homesend_service =
+							new HomesendGate(owsLoginCredentialsObject, owsParamRespcodeRepository);
 
 					// Calling the quotation service
-					response = homesend_service.getQuotation(txn_data.getSettlement_amount(),
-							txn_data.getSettlement_currency(),
-							txn_data.getDestination_amount(),
-							txn_data.getDestination_currency(),
-							txn_data.getDestination_country_2_digit_ISO(),
-							txn_data.getDestination_country_3_digit_ISO(),
-							txn_data.getOrigin_country_3_digit_ISO(),
-							customer_data.getCustomer_reference(),
-							customer_data.getCustomer_type(),
-							bene_data.getBeneficiary_reference(),
-							bene_data.getBeneficiary_type(),
-							bene_data.getFull_name(),
-							bene_data.getBeneficiary_account_number(),
-							bene_data.getBic_indicator(),
-							bene_data.getBeneficiary_bank_code(),
-							bene_data.getBeneficiary_branch_code(),
-							bene_data.getBeneficiary_bank_branch_swift_code(),
-							bene_data.getWallet_service_provider(),
-							txn_data.getRequest_sequence_id(),
-							txn_data.getRemittance_mode(),
-							txn_data.getDelivery_mode());
+					response =
+							homesend_service.getQuotation(txn_data.getSettlement_amount(),
+									txn_data.getSettlement_currency(),
+									txn_data.getDestination_amount(),
+									txn_data.getDestination_currency(),
+									txn_data.getDestination_country_2_digit_ISO(),
+									txn_data.getDestination_country_3_digit_ISO(),
+									txn_data.getOrigin_country_3_digit_ISO(),
+									customer_data.getCustomer_reference(),
+									customer_data.getCustomer_type(),
+									bene_data.getBeneficiary_reference(),
+									bene_data.getBeneficiary_type(),
+									bene_data.getFull_name(),
+									bene_data.getBeneficiary_account_number(),
+									bene_data.getBic_indicator(),
+									bene_data.getBeneficiary_bank_code(),
+									bene_data.getBeneficiary_branch_code(),
+									bene_data.getBeneficiary_bank_branch_swift_code(),
+									bene_data.getWallet_service_provider(),
+									txn_data.getRequest_sequence_id(),
+									txn_data.getRemittance_mode(),
+									txn_data.getDelivery_mode());
 
 				}
-				else if (txn_data.getRoutting_bank_code().equals("VINTJA"))
+				else if (txn_data.getRoutting_bank_code().equals("VINT"))
 				{
 					// Setting the Key store details
 					owsLoginCredentialsObject.setKeystore_path(msServiceProviderConfig.getVintjaKeyStoreLocation());
-					owsLoginCredentialsObject.setKeystore_pwd(msServiceProviderConfig.getVintjakeyStorePassword()); 
-					
+					owsLoginCredentialsObject.setKeystore_pwd(msServiceProviderConfig.getVintjakeyStorePassword());
+
 					response =
-							new VintajaGate(owsLoginCredentialsObject, owsParamRespcodeRepository,
-									owsTransferLogRep)
-											.send_api_call(txn_data, customer_data, bene_data, SEND_TXN_METHOD_IND);
+							new VintajaGate(owsLoginCredentialsObject, owsParamRespcodeRepository, owsTransferLogRep)
+									.send_api_call(txn_data, customer_data, bene_data, SEND_TXN_METHOD_IND);
 				}
 				else if (txn_data.getRoutting_bank_code().equals("WU")) // Western Union
 				{
@@ -359,22 +364,22 @@ public class ServiceProviderManger implements IServiceProvider
 				ExOwsLoginCredentials owsLoginCredentialsObject =
 						exOwsLoginCredentialsRepository.findByApplicationCountryAndBankCode(
 								txn_data.getApplication_country_3_digit_ISO(),
-								txn_data.getRoutting_bank_code());				
+								txn_data.getRoutting_bank_code());
 
 				// Setting the Trust store details
 				owsLoginCredentialsObject.setTruststore_path(msServiceProviderConfig.getTrustStoreLocation());
-				owsLoginCredentialsObject.setTrusttore_pwd(msServiceProviderConfig.getTrustStorePassword()); 
-				
+				owsLoginCredentialsObject.setTrusttore_pwd(msServiceProviderConfig.getTrustStorePassword());
+
 				// Selecting which service to call based on the routing bank code
-				if (txn_data.getRoutting_bank_code().equals("VINTJA"))
+				if (txn_data.getRoutting_bank_code().equals("VINT"))
 				{
 					// Setting the Key store details
 					owsLoginCredentialsObject.setKeystore_path(msServiceProviderConfig.getVintjaKeyStoreLocation());
-					owsLoginCredentialsObject.setKeystore_pwd(msServiceProviderConfig.getVintjakeyStorePassword()); 
-					
+					owsLoginCredentialsObject.setKeystore_pwd(msServiceProviderConfig.getVintjakeyStorePassword());
+
 					response =
-							new VintajaGate(owsLoginCredentialsObject, owsParamRespcodeRepository,
-									owsTransferLogRep).send_api_call(txn_data,
+							new VintajaGate(owsLoginCredentialsObject, owsParamRespcodeRepository, owsTransferLogRep)
+									.send_api_call(txn_data,
 											customer_data,
 											bene_data,
 											GET_REMITTANCE_DETAILS_METHOD_IND);
@@ -437,23 +442,22 @@ public class ServiceProviderManger implements IServiceProvider
 				ExOwsLoginCredentials owsLoginCredentialsObject =
 						exOwsLoginCredentialsRepository.findByApplicationCountryAndBankCode(
 								txn_data.getApplication_country_3_digit_ISO(),
-								txn_data.getRoutting_bank_code());				
+								txn_data.getRoutting_bank_code());
 
 				// Setting the Trust store details
 				owsLoginCredentialsObject.setTruststore_path(msServiceProviderConfig.getTrustStoreLocation());
-				owsLoginCredentialsObject.setTrusttore_pwd(msServiceProviderConfig.getTrustStorePassword()); 
-				
+				owsLoginCredentialsObject.setTrusttore_pwd(msServiceProviderConfig.getTrustStorePassword());
+
 				// Selecting which service to call based on the routing bank code
-				if (txn_data.getRoutting_bank_code().equals("VINTJA"))
+				if (txn_data.getRoutting_bank_code().equals("VINT"))
 				{
 					// Setting the Key store details
 					owsLoginCredentialsObject.setKeystore_path(msServiceProviderConfig.getVintjaKeyStoreLocation());
-					owsLoginCredentialsObject.setKeystore_pwd(msServiceProviderConfig.getVintjakeyStorePassword()); 
-					
+					owsLoginCredentialsObject.setKeystore_pwd(msServiceProviderConfig.getVintjakeyStorePassword());
+
 					response =
-							new VintajaGate(owsLoginCredentialsObject, owsParamRespcodeRepository,
-									owsTransferLogRep)
-											.send_api_call(txn_data, customer_data, bene_data, STATUS_INQ_METHOD_IND);
+							new VintajaGate(owsLoginCredentialsObject, owsParamRespcodeRepository, owsTransferLogRep)
+									.send_api_call(txn_data, customer_data, bene_data, STATUS_INQ_METHOD_IND);
 				}
 				else if (txn_data.getRoutting_bank_code().equals("WU")) // Western Union
 				{
@@ -484,7 +488,82 @@ public class ServiceProviderManger implements IServiceProvider
 
 		return response;
 	}
-	
+
+	public ServiceProviderResponse cancelRemittance(ServiceProviderCallRequestDto cancelRemittanceRequestDto)
+	{
+		ServiceProviderResponse response = new ServiceProviderResponse();
+
+		TransactionData txn_data = cancelRemittanceRequestDto.getTransactionDto();
+		Customer customer_data = cancelRemittanceRequestDto.getCustomerDto();
+		Benificiary bene_data = cancelRemittanceRequestDto.getBeneficiaryDto();
+
+		// Initial validation to validate the key fields require to identify the other
+		// validation rules
+		HashMap<String, String> validate_inputs_result =
+				Common_API_Utils.validate_initial_inputs(txn_data.getApplication_country_3_digit_ISO(),
+						txn_data.getDestination_country_3_digit_ISO(),
+						txn_data.getRoutting_bank_code(),
+						txn_data.getDestination_currency(),
+						txn_data.getRemittance_mode(),
+						txn_data.getDelivery_mode());
+
+		if (validate_inputs_result.isEmpty() == true) // No validation issues in initial stage
+		{
+			validate_inputs_result =
+					Common_API_Utils.validate_cancel_remittance_inputs(txn_data, customer_data, bene_data);
+
+			if (validate_inputs_result.isEmpty() == true) // No validation issues in sendRemittance inputs
+			{
+				ExOwsLoginCredentials owsLoginCredentialsObject =
+						exOwsLoginCredentialsRepository.findByApplicationCountryAndBankCode(
+								txn_data.getApplication_country_3_digit_ISO(),
+								txn_data.getRoutting_bank_code());
+
+				// Setting the Trust store details
+				owsLoginCredentialsObject.setTruststore_path(msServiceProviderConfig.getTrustStoreLocation());
+				owsLoginCredentialsObject.setTrusttore_pwd(msServiceProviderConfig.getTrustStorePassword());
+
+				// Selecting which service to call based on the routing bank code
+				if (txn_data.getRoutting_bank_code().equals("VINT"))
+				{
+					// Setting the Key store details
+					owsLoginCredentialsObject.setKeystore_path(msServiceProviderConfig.getVintjaKeyStoreLocation());
+					owsLoginCredentialsObject.setKeystore_pwd(msServiceProviderConfig.getVintjakeyStorePassword());
+
+					response =
+							new VintajaGate(owsLoginCredentialsObject, owsParamRespcodeRepository, owsTransferLogRep)
+									.send_api_call(txn_data, customer_data, bene_data, CANCEL_TXN_METHOD_IND);
+				}
+				else if (txn_data.getRoutting_bank_code().equals("WU")) // Western Union
+				{
+
+				} // TODO: Add the remaining service provider
+				else
+				{
+					// This service is not available for the given service provider
+					response.setAction_ind("T");
+					response.setResponse_description(
+							"This service (sendRemittance) is not available for the given service provider " +
+									txn_data.getRoutting_bank_code());
+				}
+			}
+			else
+			{
+				// sendRemittance inputs validation fails
+				response.setAction_ind("R");
+				response.setResponse_description("Missing Data: " + validate_inputs_result.toString());
+			}
+		}
+		else
+		{
+			// Initial validation fails
+			response.setAction_ind("R");
+			response.setResponse_description("Missing Data: " + validate_inputs_result.toString());
+		}
+
+		return response;
+	}
+
 	private HashMap<String, String> validate_get_qutation_inputs(TransactionData txn_data, Customer customer_data,
 			Benificiary bene_data)
 	{
@@ -493,7 +572,7 @@ public class ServiceProviderManger implements IServiceProvider
 		// TODO Auto-generated method stub
 		return validation_result;
 	}
-	
+
 	private HashMap<String, String> validate_initial_inputs(String application_country_3_digit_ISO,
 			String destination_country_3_digit_ISO, String routting_bank_code, String destination_currency,
 			String remittance_mode, String delivery_mode)

@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 import com.amx.jax.model.request.serviceprovider.Benificiary;
 import com.amx.jax.model.request.serviceprovider.Customer;
 import com.amx.jax.model.request.serviceprovider.TransactionData;
+import com.amx.jax.model.response.serviceprovider.Cancellation_Call_Response;
 import com.amx.jax.model.response.serviceprovider.Get_Rmittance_Details_Call_Response;
 import com.amx.jax.model.response.serviceprovider.Remittance_Call_Response;
 import com.amx.jax.model.response.serviceprovider.ServiceProviderResponse;
@@ -18,12 +19,13 @@ import com.amx.service_provider.repository.webservice.OwsTransferLogRepository;
 public class VintajaGate
 {
 	private final String SEND_TXN_METHOD_IND = new String("2"), VALIDATE_SEND_TXN_INPUTS_METHOD_IND = new String("13"),
-			GET_REMITTANCE_DETAILS_METHOD_IND = new String("12"), STATUS_INQ_METHOD_IND = new String("3");
+			GET_REMITTANCE_DETAILS_METHOD_IND = new String("12"), STATUS_INQ_METHOD_IND = new String("3"),
+			CANCEL_TXN_METHOD_IND = new String("7");
 	Logger logger = Logger.getLogger("VintajaGate.class");
 
 	// Direct DB object
 	private ExOwsLoginCredentials owsLoginCredentialsObject;
-	
+
 	// Repo
 	private OwsParamRespcodeRepository owsParamRespcodeRepository;
 	private OwsTransferLogRepository owsTransferLogRep;
@@ -34,13 +36,13 @@ public class VintajaGate
 		this.owsLoginCredentialsObject = owsLoginCredentialsObject;
 		this.owsParamRespcodeRepository = owsParamRespcodeRepository;
 		this.owsTransferLogRep = owsTransferLogRep;
-		
+
 		if (owsLoginCredentialsObject.getTruststore_path() != null)
 		{
 			System.setProperty("javax.net.ssl.trustStore", owsLoginCredentialsObject.getTruststore_path());
 			System.setProperty("javax.net.ssl.trustStorePassword", owsLoginCredentialsObject.getTrusttore_pwd()); // changeit
 		}
-		
+
 		// No need for key store setup at this level
 	}
 
@@ -74,7 +76,13 @@ public class VintajaGate
 						.setOut_going_transaction_reference(txn_data.getOut_going_transaction_reference());
 			}
 			else if (ws_call_type.equals(VALIDATE_SEND_TXN_INPUTS_METHOD_IND))
+			{
 				response = new Validate_Remittance_Inputs_Call_Response();
+			}
+			else if (ws_call_type.equals(CANCEL_TXN_METHOD_IND))
+			{
+				response = new Cancellation_Call_Response();
+			}
 			else
 				throw new Exception("Given Web-Service method call is undefined. " + ws_call_type);
 		}
@@ -275,6 +283,5 @@ public class VintajaGate
 
 	public static void main(String[] args)
 	{
-
 	}
 }

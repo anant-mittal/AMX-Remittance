@@ -34,7 +34,8 @@ public class VintajaUtils
 	private final static String DATE_FORMAT_IN_USE = "yyyy-MM-dd";
 	private final static String SEND_TXN_METHOD_IND = new String("2"),
 			VALIDATE_SEND_TXN_INPUTS_METHOD_IND = new String("13"),
-			GET_REMITTANCE_DETAILS_METHOD_IND = new String("12"), STATUS_INQ_METHOD_IND = new String("3");
+			GET_REMITTANCE_DETAILS_METHOD_IND = new String("12"), STATUS_INQ_METHOD_IND = new String("3"),
+			CANCEL_TXN_METHOD_IND = new String("7");
 
 	public static String form_api_call_input(TransactionData txn_data, Customer customer_data, Benificiary bene_data,
 			ExOwsLoginCredentials owsLoginCredentialsObject, String ws_call_type) throws Exception
@@ -638,7 +639,7 @@ public class VintajaUtils
 				data += "\"reservationNumber\":\"" + bene_data.getBeneficiary_account_number() + "\"";
 			}
 		}
-		else if (ws_call_type.equals(STATUS_INQ_METHOD_IND))
+		else if (ws_call_type.equals(STATUS_INQ_METHOD_IND) || ws_call_type.equals(CANCEL_TXN_METHOD_IND))
 		{
 			if (txn_data.getOut_going_transaction_reference() != null)
 			{
@@ -761,6 +762,10 @@ public class VintajaUtils
 				url_string = owsLoginCredentialsObject.getFlexiField2(); // inquiry
 			else if (ws_call_type.equals(VALIDATE_SEND_TXN_INPUTS_METHOD_IND))
 				url_string = owsLoginCredentialsObject.getFlexiField3(); // validate
+			else if (ws_call_type.equals(CANCEL_TXN_METHOD_IND))
+			{
+				url_string = owsLoginCredentialsObject.getFlexiField4(); // cancel
+			}
 			else
 				url_string = owsLoginCredentialsObject.getFlexiField1(); // process
 
@@ -933,6 +938,11 @@ public class VintajaUtils
 				((Status_Call_Response) response).setAddtional_external_reference(
 						api_response_map.get(Common_API_Utils.remove_hidden_characters("prn")));
 			}
+		}
+		else if (ws_call_type.equals(CANCEL_TXN_METHOD_IND))
+		{
+			// There are no special tags may come in the response for cancellation API call
+			// Kept this block for the reader information
 		}
 
 		// Common tag

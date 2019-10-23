@@ -137,5 +137,25 @@ public class ServiceProviderClient implements IServiceProviderService
 			return JaxSystemError.evaluate(e);
 		} // end of try-catch
 	}
+	
+	@Override
+	public AmxApiResponse<ServiceProviderResponse, Object> cancelRemittance(
+			ServiceProviderCallRequestDto cancelRemittanceRequestDto)
+	{
+		try
+		{
+			LOGGER.debug("in cancelRemittance :");
+			return restService.ajax(appConfig.getServiceProviderURL() + Path.CANCEL_REMITTANCE).meta(new JaxMetaInfo())
+					.post(cancelRemittanceRequestDto)
+					.as(new ParameterizedTypeReference<AmxApiResponse<ServiceProviderResponse, Object>>()
+					{
+					});
+		}
+		catch (Exception e)
+		{
+			LOGGER.error("exception in cancelRemittance : ", e);
+			return JaxSystemError.evaluate(e);
+		} // end of try-catch
+	}
 
 }

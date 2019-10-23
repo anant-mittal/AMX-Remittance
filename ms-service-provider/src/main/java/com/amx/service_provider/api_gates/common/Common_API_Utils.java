@@ -10,8 +10,10 @@ import java.security.Signature;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
@@ -399,7 +401,7 @@ public class Common_API_Utils
 
 		// Should not be called before validate_initial_inputs method
 
-		if (txn_data.getRoutting_bank_code().equals("VINTJA"))
+		if (txn_data.getRoutting_bank_code().equals("VINT"))
 		{
 			GovermantPaymentServices target_payment_service =
 					VintajaUtils.get_goverment_payment_service(txn_data.getRemittance_mode(),
@@ -419,8 +421,8 @@ public class Common_API_Utils
 				if (bene_data.getDate_of_birth() == null)
 					validation_result.put("bene_data.getDate_of_birth()", "beneficiary date of birth is empty");
 
-				 if (StringUtils.isEmpty(bene_data.getContact_no()) == true)
-				 validation_result.put("bene_data.getContact_no()", "beneficiary contact is	 empty");
+				if (StringUtils.isEmpty(bene_data.getContact_no()) == true)
+					validation_result.put("bene_data.getContact_no()", "beneficiary contact is	 empty");
 
 				// if (StringUtils.isEmpty(bene_data.getEmail()) == true)
 				// validation_result.put("bene_data.getEmail()", "beneficiary email is empty");
@@ -454,8 +456,8 @@ public class Common_API_Utils
 				// validation_result.put("bene_data.getDate_of_birth()", "beneficiary date of
 				// birth is empty");
 
-				 if (StringUtils.isEmpty(bene_data.getContact_no()) == true)
-				 validation_result.put("bene_data.getContact_no()", "beneficiary contact is empty");
+				if (StringUtils.isEmpty(bene_data.getContact_no()) == true)
+					validation_result.put("bene_data.getContact_no()", "beneficiary contact is empty");
 
 				// if (StringUtils.isEmpty(bene_data.getEmail()) == true)
 				// validation_result.put("bene_data.getEmail()", "beneficiary email is empty");
@@ -485,8 +487,9 @@ public class Common_API_Utils
 				if (StringUtils.isEmpty(bene_data.getFirst_name()) == true)
 					validation_result.put("bene_data.getFirst_name()", "beneficiary first name is empty");
 
-				//if (bene_data.getDate_of_birth() == null)
-					//validation_result.put("bene_data.getDate_of_birth()", "beneficiary date of birth is empty");
+				// if (bene_data.getDate_of_birth() == null)
+				// validation_result.put("bene_data.getDate_of_birth()", "beneficiary date of
+				// birth is empty");
 
 				if (StringUtils.isEmpty(bene_data.getContact_no()) == true)
 					validation_result.put("bene_data.getContact_no()", "beneficiary contact is empty");
@@ -522,8 +525,9 @@ public class Common_API_Utils
 				if (StringUtils.isEmpty(bene_data.getFirst_name()) == true)
 					validation_result.put("bene_data.getFirst_name()", "beneficiary first name is empty");
 
-				//if (bene_data.getDate_of_birth() == null)
-					//validation_result.put("bene_data.getDate_of_birth()", "beneficiary date of birth is empty");
+				// if (bene_data.getDate_of_birth() == null)
+				// validation_result.put("bene_data.getDate_of_birth()", "beneficiary date of
+				// birth is empty");
 
 				if (StringUtils.isEmpty(bene_data.getContact_no()) == true)
 					validation_result.put("bene_data.getContact_no()", "beneficiary contact is empty");
@@ -563,8 +567,9 @@ public class Common_API_Utils
 				if (StringUtils.isEmpty(bene_data.getFirst_name()) == true)
 					validation_result.put("bene_data.getFirst_name()", "beneficiary first name is empty");
 
-				//if (bene_data.getDate_of_birth() == null)
-					//validation_result.put("bene_data.getDate_of_birth()", "beneficiary date of birth is empty");
+				// if (bene_data.getDate_of_birth() == null)
+				// validation_result.put("bene_data.getDate_of_birth()", "beneficiary date of
+				// birth is empty");
 
 				if (StringUtils.isEmpty(bene_data.getContact_no()) == true)
 					validation_result.put("bene_data.getContact_no()", "beneficiary contact is empty");
@@ -594,8 +599,9 @@ public class Common_API_Utils
 				if (StringUtils.isEmpty(bene_data.getFirst_name()) == true)
 					validation_result.put("bene_data.getFirst_name()", "beneficiary first name is empty");
 
-				//if (bene_data.getDate_of_birth() == null)
-					//validation_result.put("bene_data.getDate_of_birth()", "beneficiary date of birth is empty");
+				// if (bene_data.getDate_of_birth() == null)
+				// validation_result.put("bene_data.getDate_of_birth()", "beneficiary date of
+				// birth is empty");
 
 				if (StringUtils.isEmpty(bene_data.getContact_no()) == true)
 					validation_result.put("bene_data.getContact_no()", "beneficiary contact is empty");
@@ -629,8 +635,9 @@ public class Common_API_Utils
 				if (StringUtils.isEmpty(bene_data.getPartner_beneficiary_id()) == true)
 					validation_result.put("partner_beneficiary_id", "partner beneficiary id is empty");
 
-				//if (bene_data.getDate_of_birth() == null)
-					//validation_result.put("bene_data.getDate_of_birth()", "beneficiary date of birth is empty");
+				// if (bene_data.getDate_of_birth() == null)
+				// validation_result.put("bene_data.getDate_of_birth()", "beneficiary date of
+				// birth is empty");
 
 				if (StringUtils.isEmpty(bene_data.getContact_no()) == true)
 					validation_result.put("bene_data.getContact_no()", "beneficiary contact is empty");
@@ -679,8 +686,9 @@ public class Common_API_Utils
 				if (StringUtils.isEmpty(bene_data.getFirst_name()) == true)
 					validation_result.put("bene_data.getFirst_name()", "beneficiary first name is empty");
 
-				//if (bene_data.getDate_of_birth() == null)
-					//validation_result.put("bene_data.getDate_of_birth()", "beneficiary date of birth is empty");
+				// if (bene_data.getDate_of_birth() == null)
+				// validation_result.put("bene_data.getDate_of_birth()", "beneficiary date of
+				// birth is empty");
 
 				if (StringUtils.isEmpty(bene_data.getContact_no()) == true)
 					validation_result.put("bene_data.getContact_no()", "beneficiary contact is empty");
@@ -710,8 +718,9 @@ public class Common_API_Utils
 				if (StringUtils.isEmpty(bene_data.getFirst_name()) == true)
 					validation_result.put("bene_data.getFirst_name()", "beneficiary first name is empty");
 
-				//if (bene_data.getDate_of_birth() == null)
-					//validation_result.put("bene_data.getDate_of_birth()", "beneficiary date of birth is empty");
+				// if (bene_data.getDate_of_birth() == null)
+				// validation_result.put("bene_data.getDate_of_birth()", "beneficiary date of
+				// birth is empty");
 
 				if (StringUtils.isEmpty(bene_data.getContact_no()) == true)
 					validation_result.put("bene_data.getContact_no()", "beneficiary contact is empty");
@@ -745,8 +754,9 @@ public class Common_API_Utils
 				if (StringUtils.isEmpty(bene_data.getFirst_name()) == true)
 					validation_result.put("bene_data.getFirst_name()", "beneficiary first name is empty");
 
-				//if (bene_data.getDate_of_birth() == null)
-					//validation_result.put("bene_data.getDate_of_birth()", "beneficiary date of birth is empty");
+				// if (bene_data.getDate_of_birth() == null)
+				// validation_result.put("bene_data.getDate_of_birth()", "beneficiary date of
+				// birth is empty");
 
 				if (StringUtils.isEmpty(bene_data.getContact_no()) == true)
 					validation_result.put("bene_data.getContact_no()", "beneficiary contact is empty");
@@ -842,7 +852,7 @@ public class Common_API_Utils
 		// TODO Auto-generated method stub
 		return validation_result;
 	}
-	
+
 	public static HashMap<String, String> validate_get_remittance_status_inputs(TransactionData txn_data,
 			Customer customer_data, Benificiary bene_data)
 	{
@@ -893,6 +903,42 @@ public class Common_API_Utils
 		System.out.println(stringToDate(year, month, day));
 	}
 
+	public static HashMap<String, String> validate_cancel_remittance_inputs(TransactionData txn_data,
+			Customer customer_data, Benificiary bene_data)
+	{
+		HashMap<String, String> validation_result = new HashMap<String, String>();
 
+		if (StringUtils.isEmpty(txn_data.getOut_going_transaction_reference()) == true)
+			validation_result.put("txn_data.getOut_going_transaction_reference", "outgoing reference number is empty");
 
+		if (txn_data.getRoutting_bank_code().equals("VINT"))
+		{
+			final List<GovermantPaymentServices> ALLOWED_SERVICES_FOR_CANCEL_CALL =
+					Arrays.asList(GovermantPaymentServices.PHIL_HEALTH_YEAR_WISE,
+							GovermantPaymentServices.PHIL_HEALTH_MONTH_WISE,
+							GovermantPaymentServices.PAG_IBIG_SAVING,
+							GovermantPaymentServices.PAG_IBIG_MP2,
+							GovermantPaymentServices.PAG_IBIG_SHORT_TERM_LOAN,
+							GovermantPaymentServices.PAG_IBIG_HOUSE_LOAN,
+							GovermantPaymentServices.SSS_SHORT_TERM_LOAN,
+							GovermantPaymentServices.SSS_REAL_ESTATE_LOAN,
+							GovermantPaymentServices.SSS_MISCELLANOUS,
+							GovermantPaymentServices.BILL_PAYMENTS);
+
+			GovermantPaymentServices target_payment_service =
+					VintajaUtils.get_goverment_payment_service(txn_data.getRemittance_mode(),
+							txn_data.getDelivery_mode());
+
+			if (!ALLOWED_SERVICES_FOR_CANCEL_CALL.contains(target_payment_service))
+			{
+				validation_result.put("Remittance_mode/Delivery_mode",
+						"Cancellation is not allowed for the selected services (remtmod/delvmod: " +
+								txn_data.getRemittance_mode() +
+								" / " +
+								txn_data.getDelivery_mode()+")");
+			}
+		}
+
+		return validation_result;
+	}
 }

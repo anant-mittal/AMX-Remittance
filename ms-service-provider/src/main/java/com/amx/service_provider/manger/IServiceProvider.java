@@ -10,4 +10,6 @@ public interface IServiceProvider
 	ServiceProviderResponse sendRemittance(ServiceProviderCallRequestDto sendRemittanceRequestDto);
 	ServiceProviderResponse getRemittanceDetails(ServiceProviderCallRequestDto getRemittanceDetailsRequestDto);
 	ServiceProviderResponse getRemittanceStatus(ServiceProviderCallRequestDto getRemittanceStatusRequestDto);	
+    ServiceProviderResponse cancelRemittance(ServiceProviderCallRequestDto cancelRemittanceRequestDto);
+
 }
