@@ -603,15 +603,19 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 	@Override
 	@Transactional
 	public AmxApiResponse<CustomerInfo, Object> saveCustomerInfo(CustomerInfoRequest model) {
+		HomeAddressDetails homeAddressDetails = model.getHomeAddressDetails();
+		if (homeAddressDetails == null) {
+			homeAddressDetails = model.getHomeAddressDestails();
+		}
 		offsiteCustomerRegValidator.validateLocalContact(model.getLocalAddressDetails());
-		offsiteCustomerRegValidator.validateHomeContact(model.getHomeAddressDetails());
+		offsiteCustomerRegValidator.validateHomeContact(homeAddressDetails);
 		LOGGER.debug("in saveCustomerInfo with request model: {}", JsonUtil.toJson(model));
 		CustomerPersonalDetail customerDetails = new CustomerPersonalDetail();
 		jaxUtil.convert(model.getCustomerPersonalDetail(), customerDetails);
 		Customer customer = commitCustomer(customerDetails, model.getCustomerEmploymentDetails());
 		
 		commitCustomerLocalContact(model.getLocalAddressDetails(), customer, customerDetails);
-		commitCustomerHomeContact(model.getHomeAddressDetails(), customer, customerDetails);
+		commitCustomerHomeContact(homeAddressDetails, customer, customerDetails);
 		customerIdProofManager.commitOnlineCustomerIdProof(customer);
 		commitEmploymentDetails(model.getCustomerEmploymentDetails(), customer, model.getLocalAddressDetails());
 		auditService.log(new CActivityEvent(CActivityEvent.Type.PROFILE_UPDATE).result(Result.DONE));
