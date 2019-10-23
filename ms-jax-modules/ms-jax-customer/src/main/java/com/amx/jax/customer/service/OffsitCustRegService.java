@@ -2,7 +2,6 @@ package com.amx.jax.customer.service;
 
 import java.math.BigDecimal;
 import java.sql.Blob;
-import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -14,8 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import javax.sql.rowset.serial.SerialException;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.codec.binary.Base64;
@@ -57,11 +54,9 @@ import com.amx.jax.dbmodel.CityMaster;
 import com.amx.jax.dbmodel.ContactDetail;
 import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.Customer;
-import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.DistrictMaster;
 import com.amx.jax.dbmodel.DmsApplMapping;
-import com.amx.jax.dbmodel.DocBlobUpload;
 import com.amx.jax.dbmodel.Employee;
 import com.amx.jax.dbmodel.EmployeeDetails;
 import com.amx.jax.dbmodel.EmploymentTypeMasterView;
@@ -869,40 +864,6 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		return result;
 	}
 
-	private void commitOnlineCustomerIdProof(CustomerInfoRequest model, Customer customer) {
-
-		CustomerIdProof custProof = null;
-		List<CustomerIdProof> customerIdProofs = customerIdProofRepository
-				.getCustomerIdProofByCustomerId(customer.getCustomerId());
-		if (!customerIdProofs.isEmpty()) {
-			custProof = customerIdProofs.get(0);
-		}
-		if (custProof == null) {
-			custProof = new CustomerIdProof();
-		}
-		Customer customerData = new Customer();
-		customerData.setCustomerId(customer.getCustomerId());
-		custProof.setFsCustomer(customerData);
-		custProof.setLanguageId(metaData.getLanguageId());
-		BizComponentData customerType = new BizComponentData();
-		customerType.setComponentDataId(
-				bizcomponentDao.getComponentId(Constants.CUSTOMERTYPE_INDU, metaData.getLanguageId())
-						.getFsBizComponentData().getComponentDataId());
-		custProof.setFsBizComponentDataByCustomerTypeId(customerType);
-		custProof.setIdentityInt(customer.getIdentityInt());
-		custProof.setIdentityStatus(Constants.CUST_ACTIVE_INDICATOR);
-		custProof.setCreatedBy(customer.getIdentityInt());
-		custProof.setCreationDate(new Date());
-		custProof.setIdentityTypeId(customer.getIdentityTypeId());
-
-		if (customer.getIdentityExpiredDate() != null) {
-			custProof.setIdentityExpiryDate(customer.getIdentityExpiredDate());
-		}
-		custProof.setIdentityFor(ConstantDocument.IDENTITY_FOR_ID_PROOF);
-		custProof.setScanSystem(Constants.CUST_DB_SCAN);
-		customerIdProofRepository.save(custProof);
-	}
-
 	@Override
 	@Transactional
 	public AmxApiResponse<String, Object> saveCustomeKycDocument(ImageSubmissionRequest model) throws ParseException {
@@ -928,8 +889,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 				customerIdProofManager.createIdProofForExpiredCivilId(model, customer);
 			}
 			for (String image : model.getImage()) {
-				DmsApplMapping mappingData = new DmsApplMapping();
-				mappingData = customerKycManager.getDmsApplMappingData(customer, model);
+				DmsApplMapping mappingData = customerKycManager.getDmsApplMappingData(customer, model);
 				idmsAppMappingRepository.save(mappingData);
 				DmsDocumentBlobTemparory dmsDocumentBlobTemparory = new DmsDocumentBlobTemparory();
 				dmsDocumentBlobTemparory.setCreatedBy(jaxDBService.getCreatedOrUpdatedBy());
@@ -961,28 +921,6 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		}
 		auditService.log(auditEvent.result(Result.DONE));
 		return AmxApiResponse.build("Document upload success", outputParams);
-	}
-
-	private DocBlobUpload getDocumentUploadDetails(String image, DmsApplMapping mappingData) {
-		DocBlobUpload documentDetails = new DocBlobUpload();
-		documentDetails.setCntryCd(mappingData.getApplicationCountryId());
-		documentDetails.setDocBlobID(mappingData.getDocBlobId());
-		documentDetails.setDocFinYear(mappingData.getFinancialYear());
-		documentDetails.setSeqNo(new BigDecimal(1));
-		// documentDetails.setDocContent(image.getBytes());
-
-		try {
-			Blob documentContent = new javax.sql.rowset.serial.SerialBlob(decodeImage(image));
-			documentDetails.setDocContent(documentContent);
-		} catch (SerialException e) {
-			e.printStackTrace();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
-		documentDetails.setCreatedOn(new Date());
-		documentDetails.setCreatedBy(metaData.getCustomerId().toString());
-		return documentDetails;
 	}
 
 	public static byte[] decodeImage(String imageDataString) {
