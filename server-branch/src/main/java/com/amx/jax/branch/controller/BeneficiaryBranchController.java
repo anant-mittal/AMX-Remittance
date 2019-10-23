@@ -21,6 +21,7 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.BeneClient;
 import com.amx.jax.client.MetaClient;
 import com.amx.jax.client.bene.BeneBranchClient;
+import com.amx.jax.client.bene.BeneficaryStatusDto;
 import com.amx.jax.client.serviceprovider.RoutingBankMasterDTO;
 import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.model.request.benebranch.AddBeneBankRequest;
@@ -47,9 +48,46 @@ public class BeneficiaryBranchController {
 
 	@Autowired
 	BeneClient beneClient;
-	
+
 	@Autowired
 	MetaClient metaClient;
+
+	// Add Bene Api's
+	@RequestMapping(value = "/api/bene/country/list", method = RequestMethod.GET)
+	public AmxApiResponse<CountryMasterDTO, Object> getBeneficiaryCountryList() {
+		return beneClient.getBeneficiaryCountryList().toAmxApiResponse();
+	}
+
+	@RequestMapping(value = "/api/bene/currency/list", method = RequestMethod.POST)
+	public AmxApiResponse<CurrencyMasterDTO, Object> getBeneficiaryCurrency(@RequestParam BigDecimal countryId,
+			@RequestParam(required = false) BigDecimal serviceGroupId,
+			@RequestParam(required = false) BigDecimal routingBankId) {
+		return metaClient.getBeneficiaryCurrency(countryId, serviceGroupId, routingBankId);
+	}
+
+	@RequestMapping(value = "/api/bene/service_provider/list", method = RequestMethod.POST)
+	public AmxApiResponse<RoutingBankMasterDTO, Object> getServiceProvider(
+			@RequestBody RoutingBankMasterServiceProviderParam param) {
+		return beneClient.getServiceProvider(param).toAmxApiResponse();
+	}
+
+	@RequestMapping(value = "/api/bene/status_master/list", method = RequestMethod.GET)
+	public AmxApiResponse<BeneficaryStatusDto, Object> getBeneStatusMaster() {
+		return beneClient.getBeneStatusMaster();
+	}
+
+	@RequestMapping(value = "/api/bene/agent_branch/list", method = RequestMethod.POST)
+	public AmxApiResponse<RoutingBankMasterDTO, Object> getAgentBranch(
+			@RequestBody RoutingBankMasterAgentBranchParam param) {
+		return beneClient.getAgentBranch(param).toAmxApiResponse();
+	}
+
+	// Bene Mgmt Api's
+	// Prashant Sir needs to check getting jax system error
+	@RequestMapping(value = "/api/bene/list", method = RequestMethod.POST)
+	public AmxApiResponse<BeneficiaryListDTO, Object> listBene(@RequestBody ListBeneRequest request) {
+		return beneBranchClient.listBene(request);
+	}
 
 	@RequestMapping(value = "/api/bene/bank/list", method = RequestMethod.POST)
 	@ApiOperation("List bank by country and currency")
@@ -85,11 +123,6 @@ public class BeneficiaryBranchController {
 		return beneBranchClient.getBeneListStatuses();
 	}
 
-	@RequestMapping(value = "/api/bene/list", method = RequestMethod.POST)
-	public AmxApiResponse<BeneficiaryListDTO, Object> listBene(ListBeneRequest request) {
-		return beneBranchClient.listBene(request);
-	}
-
 	@RequestMapping(value = "/api/bene/update_status", method = RequestMethod.POST)
 	public AmxApiResponse<BoolRespModel, Object> updateBeneStatus(UpdateBeneStatusRequest request) {
 		return beneBranchClient.updateBeneStatus(request);
@@ -104,36 +137,16 @@ public class BeneficiaryBranchController {
 	public AmxApiResponse<BoolRespModel, Object> updateBeneCash(@RequestBody @Valid UpdateBeneCashRequest request) {
 		return beneBranchClient.updateBeneCash(request);
 	}
-//1
-	@RequestMapping(value = "/api/bene/country/list", method = RequestMethod.GET)
-	public ApiResponse<CountryMasterDTO> getBeneficiaryCountryList() {
-		return beneClient.getBeneficiaryCountryList();
+
+	@RequestMapping(value = "/api/bene/id/list", method = RequestMethod.POST)
+	public AmxApiResponse<BeneficiaryListDTO, Object> getBeneByIdNo(@RequestParam Integer idNo) {
+		return beneBranchClient.getBeneByIdNo(idNo);
 	}
 
-	@RequestMapping(value = "/api/bene/agent_branch/list", method = RequestMethod.POST)
-	public ApiResponse<RoutingBankMasterDTO> getAgentBranch(@RequestBody RoutingBankMasterAgentBranchParam param) {
-		return beneClient.getAgentBranch(param);
-	}
-
-	@RequestMapping(value = "/api/bene/relations/list", method = RequestMethod.GET)
-	public ApiResponse<BeneRelationsDescriptionDto> getBeneficiaryRelations() {
-		return beneClient.getBeneficiaryRelations();
-	}
-
-	// TODO needs to check add it into meta or not
-	@RequestMapping(value = "/api/bene/service_provider/list", method = RequestMethod.POST)
-	public ApiResponse<RoutingBankMasterDTO> getServiceProvider(
-			@RequestBody RoutingBankMasterServiceProviderParam param) {
-		return beneClient.getServiceProvider(param);
-	}
-	
-	@RequestMapping(value = "/api/bene/currency/list", method = RequestMethod.POST)
-	public AmxApiResponse<CurrencyMasterDTO, Object> getBeneficiaryCurrency(@RequestParam BigDecimal countryId,
-			@RequestParam(required = false) BigDecimal serviceGroupId,
-			@RequestParam(required = false) BigDecimal routingBankId) {
-		return metaClient.getBeneficiaryCurrency(countryId, serviceGroupId, routingBankId);
-	}
-	
-	//service group api needs to be added
+	/*
+	 * @RequestMapping(value = "/api/bene/relations/list", method =
+	 * RequestMethod.GET) public ApiResponse<BeneRelationsDescriptionDto>
+	 * getBeneficiaryRelations() { return beneClient.getBeneficiaryRelations(); }
+	 */
 
 }
