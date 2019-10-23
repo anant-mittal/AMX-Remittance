@@ -227,7 +227,7 @@ public class RemittanceAdditionalFieldManager {
 
 		List<AdditionalDataDisplayView> additionalDataRequired = additionalDataDisplayDao.getAdditionalDataFromServiceApplicability(applicationCountryId, routingCountryId,
 				foreignCurrencyId, remittanceModeId, deliveryModeId, JaxDynamicField.getAllAdditionalFlexFields());
-		return additionalDataRequired.stream().collect(Collectors.toMap(i -> i.getFlexField(), i -> i));
+		return additionalDataRequired.stream().collect(Collectors.toMap(i -> i.getFlexField(), i -> i, (x1, x2) -> x1));
 	}
 
 	private boolean isDynamicFieldRequired(JaxConditionalFieldDto jaxConditionalField, RemittanceAdditionalBeneFieldModel model,Map<String, AdditionalDataDisplayView> flexFieldMap) {
