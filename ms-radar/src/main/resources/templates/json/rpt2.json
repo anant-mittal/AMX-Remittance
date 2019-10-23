@@ -46,13 +46,19 @@
                 "field": "trnx.coBankCharges"
               }
             },
-            
+  
             "8-bucket": {
               "date_histogram": {
                 "field": "trnx.trnxDate",
                 "calendar_interval": "1d",
                 "time_zone": "Asia/Calcutta",
                 "min_doc_count": 1
+              }
+            },
+            
+            "8": {
+              "avg_bucket": {
+                "buckets_path": "8-bucket>_count"
               }
             }
             
@@ -92,8 +98,8 @@
         {
           "range": {
             "@timestamp": {
-              "gte": 1562999505752,
-              "lte": 1570775505753,
+              "gte": "now-3M",
+              "lte": "now",
               "format": "epoch_millis"
             }
           }
@@ -125,8 +131,16 @@
   	{
 	 "rows" : ["area"],
 	 "cols" : ["period"],
-	 "vals" : ["localCommRecv","commRecv","exchangeGain","coBankCharges","count * AS Trnx"],
-	 "computed" : ["Revenue=localCommRecv + commRecv + exchangeGain - coBankCharges","RPT=Revenue/Trnx"]
-  	}
+	 "vals" : ["sum localCommRecv","sum commRecv","sum exchangeGain","sum coBankCharges","sum _docs AS Trnx"],
+	 "computed" : ["PrevMonth_Revenue=PrevMonth_localCommRecv + PrevMonth_commRecv + PrevMonth_exchangeGain - PrevMonth_coBankCharges",
+	 				"PrevMonth_RPT=PrevMonth_Revenue/PrevMonth_Trnx",
+	 				"ThisMonth_Revenue=ThisMonth_localCommRecv + ThisMonth_commRecv + ThisMonth_exchangeGain - ThisMonth_coBankCharges",
+	 				"ThisMonth_RPT=ThisMonth_Revenue/ThisMonth_Trnx"],
+	 "colgroups" : [
+	 	"PrevMonth(area,PrevMonth_Trnx,PrevMonth_RPT)",
+	 	"ThisMonth(area,ThisMonth_Trnx,ThisMonth_RPT)",
+	 	"DEFAULT(area,PrevMonth_Trnx,PrevMonth_RPT,ThisMonth_Trnx,ThisMonth_RPT)"
+	 ]
+   }
   ]
 }

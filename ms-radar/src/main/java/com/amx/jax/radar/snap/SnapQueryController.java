@@ -26,6 +26,7 @@ import com.amx.jax.tunnel.TunnelEvent;
 import com.amx.jax.tunnel.TunnelEventXchange;
 import com.amx.jax.tunnel.TunnelService;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.FileUtil;
 import com.axx.jax.table.PivotTable;
 
 @Controller
@@ -108,22 +109,25 @@ public class SnapQueryController {
 		if (level >= 0) {
 			List<Map<String, List<String>>> p = x.getPivot();
 			List<Map<String, Object>> inputBulk = x.getAggregations().toBulk();
-
+			Object cols = null;
 			for (Map<String, List<String>> pivot : p) {
 				level--;
 				if (level < 0)
 					break;
 				PivotTable table = new PivotTable(
-						pivot.get("rows"),pivot.get("cols"),
+						pivot.get("rows"), pivot.get("cols"),
 						pivot.get("vals"), pivot.get("aggs"), pivot.get("alias"),
-						pivot.get("computed"), pivot.get("noncomputed"));
+						pivot.get("computed"), pivot.get("noncomputed"),
+						pivot.get("colgroups"));
 				for (Map<String, Object> map : inputBulk) {
 					table.add(map);
 				}
 				table.calculate();
 				inputBulk = table.toBulk();
-				//break;
+				cols = table.getColGroup();
+				// break;
 			}
+			x.toMap().put("colGroup", cols);
 			x.toMap().put("bulk", inputBulk);
 			x.removeAggregations();
 		}

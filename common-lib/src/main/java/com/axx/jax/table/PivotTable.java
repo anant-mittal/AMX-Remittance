@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.StringJoiner;
 import java.util.regex.Pattern;
 
 import com.amx.utils.CollectionUtil;
@@ -21,6 +22,7 @@ public class PivotTable {
 	public static final Pattern FUN_COLS = Pattern.compile("^(sum|any|count|ucount) (.+)$");
 	public static final Pattern COMPUTED = Pattern.compile("^(.+)=(.+)$");
 	public static final Pattern NONCOMPUTED = Pattern.compile("^(.+)=(.+)$");
+	public static final Pattern COL_GROUPING = Pattern.compile("^(.+)\\((.+)\\)$");
 
 	List<String> rows = CollectionUtil.getList("*");
 	List<String> rows_alias = CollectionUtil.getList("*");
@@ -33,6 +35,7 @@ public class PivotTable {
 	List<String> computedVals = CollectionUtil.getList();
 	List<String> noncomputedCols = CollectionUtil.getList();
 	List<String> noncomputedVals = CollectionUtil.getList();
+	Map<String, Object> colGroup = null;
 
 	public Map<String, PivotBucket> pivotrows;
 
@@ -41,7 +44,8 @@ public class PivotTable {
 	}
 
 	public PivotTable(List<String> rowsTemp, List<String> colsTemp, List<String> valsTemp, List<String> aggsTemp, List<String> aliasTemp,
-			List<String> computedColsTemp, List<String> noncomputedValsTemp) {
+			List<String> computedColsTemp, List<String> noncomputedValsTemp,
+			 List<String> colgroupList) {
 		this();
 		this.rows = rowsTemp;
 		this.cols = colsTemp;
@@ -50,6 +54,7 @@ public class PivotTable {
 		this.alias = aliasTemp != null ? aliasTemp : this.alias;
 		this.computedCols = computedColsTemp != null ? computedColsTemp : this.computedVals;
 		this.noncomputedVals = noncomputedValsTemp != null ? noncomputedValsTemp : this.noncomputedCols;
+		colgroupList = colgroupList != null ? colgroupList : CollectionUtil.getList();
 
 		int rowCount = this.rows.size();
 		int valCount = this.vals.size();
@@ -93,7 +98,7 @@ public class PivotTable {
 				CollectionUtil.set(this.alias, v, funkey.group(2));
 			} else {
 				CollectionUtil.set(this.aggs, v, "count");
-				this.alias.set(v, funkey.toString());
+				CollectionUtil.set(this.alias, v, funkey.toString());
 			}
 		}
 
@@ -110,6 +115,15 @@ public class PivotTable {
 			if (funkey.isMatch(NONCOMPUTED)) {
 				CollectionUtil.set(this.noncomputedCols, ncp, funkey.group(1));
 				CollectionUtil.set(this.noncomputedVals, ncp, funkey.group(2));
+			}
+		}
+		
+		this.colGroup = new HashMap<String,Object>();
+		
+		for (String string : colgroupList) {
+			StringMatcher funkey = new StringMatcher(string);
+			if (funkey.isMatch(COL_GROUPING)) {
+				colGroup.put(funkey.group(1), funkey.group(2).split(","));
 			}
 		}
 
@@ -156,16 +170,25 @@ public class PivotTable {
 						row.result.put(rows_alias.get(r), col.any(funkey, funkeyDefault));
 					}
 
-					StringBuilder rowKey = new StringBuilder();
+					StringJoiner rowKeyDot = new StringJoiner(".");
+					StringJoiner rowKey_ = new StringJoiner("_");
 					for (int c = 0; c < colCount; c++) {
-						rowKey.append(col.any(cols.get(c), Constants.BLANK));
+						String thisCol = (String) col.any(cols.get(c), Constants.BLANK);
+						// row.result.put(cols.get(c), thisCol);
+						//colGroup.put(thisCol,thisCol);
+						rowKey_.add(thisCol);
+						rowKeyDot.add(thisCol);
 					}
+					String rowKey_String = rowKey_.toString();
+					String rowKeyDotString = rowKey_.toString();
 
 					for (int i = 0; i < valCount; i++) {
 						String fun = aggs.get(i);
 						String funkey = vals.get(i);
 						String funkeyAlias = alias.get(i);
-						this.calculate(row, funkeyAlias + "_" + rowKey.toString(), fun, funkey, col, Constants.BLANK);
+						String colRowKey = rowKey_String + "_" + funkeyAlias;
+						colGroup.put(rowKeyDotString + "$" + funkeyAlias,colRowKey);
+						this.calculate(row, colRowKey, fun, funkey, col, Constants.BLANK);
 					}
 				}
 			} else {
@@ -217,6 +240,14 @@ public class PivotTable {
 			row.result.put(rowKey, col.count());
 			break;
 		}
+	}
+
+	public List<String> getCols() {
+		return cols;
+	}
+
+	public Map<String, Object> getColGroup() {
+		return colGroup;
 	}
 
 }

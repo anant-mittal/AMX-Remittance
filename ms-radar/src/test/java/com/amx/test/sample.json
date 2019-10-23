@@ -1,324 +1,134 @@
 {
-  "took": 53,
-  "timed_out": false,
-  "_shards": {
-    "total": 15,
-    "successful": 15,
-    "skipped": 0,
-    "failed": 0
+  "took" : 873,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 15,
+    "successful" : 15,
+    "skipped" : 0,
+    "failed" : 0
   },
-  "hits": {
-    "total": 1482423,
-    "max_score": 0,
-    "hits": []
+  "hits" : {
+    "total" : {
+      "value" : 212,
+      "relation" : "eq"
+    },
+    "max_score" : null,
+    "hits" : [ ]
   },
-  "aggregations": {
-    "2": {
-      "doc_count_error_upper_bound": 0,
-      "sum_other_doc_count": 93221,
-      "buckets": [
+  "aggregations" : {
+    "area" : {
+      "doc_count_error_upper_bound" : 0,
+      "sum_other_doc_count" : 0,
+      "buckets" : [
         {
-          "7": {
-            "buckets": [
+          "key" : "OTHERS",
+          "doc_count" : 205,
+          "period" : {
+            "buckets" : [
               {
-                "3": {
-                  "value": 0
+                "key" : "PrevMonth",
+                "from" : 1.5672762E12,
+                "from_as_string" : "2019-09-01T00:00:00.000+05:30",
+                "to" : 1.569177513898E12,
+                "to_as_string" : "2019-09-23T00:08:33.898+05:30",
+                "doc_count" : 67,
+                "coBankCharges" : {
+                  "value" : 0.0
                 },
-                "4": {
-                  "value": 0
+                "exchangeGain" : {
+                  "value" : 0.0
                 },
-                "5": {
-                  "value": 0
+                "localCommRecv" : {
+                  "value" : 136.0
                 },
-                "6": {
-                  "value": 0
+                "commRecv" : {
+                  "value" : 0.0
                 },
-                "8": {
-                  "value": null
-                },
-                "key": "2019-09-01T00:00:00.000Z-2019-09-10T12:13:51.599Z",
-                "from": 1567296000000,
-                "from_as_string": "2019-09-01T00:00:00.000Z",
-                "to": 1568117631599,
-                "to_as_string": "2019-09-10T12:13:51.599Z",
-                "doc_count": 0,
-                "8-bucket": {
-                  "buckets": []
+                "sam" : {
+                  "value" : "ho2"
                 }
               },
               {
-                "3": {
-                  "value": 0
+                "key" : "ThisMonth",
+                "from" : 1.5698682E12,
+                "from_as_string" : "2019-10-01T00:00:00.000+05:30",
+                "to" : 1.571769513898E12,
+                "to_as_string" : "2019-10-23T00:08:33.898+05:30",
+                "doc_count" : 54,
+                "coBankCharges" : {
+                  "value" : 0.0
                 },
-                "4": {
-                  "value": 0
+                "exchangeGain" : {
+                  "value" : 0.0
                 },
-                "5": {
-                  "value": 0
+                "localCommRecv" : {
+                  "value" : 94.0
                 },
-                "6": {
-                  "value": 0
+                "commRecv" : {
+                  "value" : 0.0
                 },
-                "8": {
-                  "value": null
-                },
-                "key": "2019-10-01T00:00:00.000Z-2019-10-10T12:13:51.599Z",
-                "from": 1569888000000,
-                "from_as_string": "2019-10-01T00:00:00.000Z",
-                "to": 1570709631599,
-                "to_as_string": "2019-10-10T12:13:51.599Z",
-                "doc_count": 0,
-                "8-bucket": {
-                  "buckets": []
+                "sam" : {
+                  "value" : "ho"
                 }
               }
             ]
-          },
-          "key": "FARWANIYA AREA",
-          "doc_count": 308412
+          }
         },
         {
-          "7": {
-            "buckets": [
+          "key" : "ABBASSIYA AREA",
+          "doc_count" : 7,
+          "period" : {
+            "buckets" : [
               {
-                "3": {
-                  "value": 0
+                "key" : "PrevMonth",
+                "from" : 1.5672762E12,
+                "from_as_string" : "2019-09-01T00:00:00.000+05:30",
+                "to" : 1.569177513898E12,
+                "to_as_string" : "2019-09-23T00:08:33.898+05:30",
+                "doc_count" : 3,
+                "coBankCharges" : {
+                  "value" : 0.0
                 },
-                "4": {
-                  "value": 0
+                "exchangeGain" : {
+                  "value" : 0.0
                 },
-                "5": {
-                  "value": 0
+                "localCommRecv" : {
+                  "value" : 9.0
                 },
-                "6": {
-                  "value": 0
+                "commRecv" : {
+                  "value" : 0.0
                 },
-                "8": {
-                  "value": null
-                },
-                "key": "2019-09-01T00:00:00.000Z-2019-09-10T12:13:51.599Z",
-                "from": 1567296000000,
-                "from_as_string": "2019-09-01T00:00:00.000Z",
-                "to": 1568117631599,
-                "to_as_string": "2019-09-10T12:13:51.599Z",
-                "doc_count": 0,
-                "8-bucket": {
-                  "buckets": []
+                "sam" : {
+                  "value" : "ho"
                 }
               },
               {
-                "3": {
-                  "value": 0
+                "key" : "ThisMonth",
+                "from" : 1.5698682E12,
+                "from_as_string" : "2019-10-01T00:00:00.000+05:30",
+                "to" : 1.571769513898E12,
+                "to_as_string" : "2019-10-23T00:08:33.898+05:30",
+                "doc_count" : 2,
+                "coBankCharges" : {
+                  "value" : 0.0
                 },
-                "4": {
-                  "value": 0
+                "exchangeGain" : {
+                  "value" : 0.0
                 },
-                "5": {
-                  "value": 0
+                "localCommRecv" : {
+                  "value" : 5.0
                 },
-                "6": {
-                  "value": 0
+                "commRecv" : {
+                  "value" : 0.0
                 },
-                "8": {
-                  "value": null
-                },
-                "key": "2019-10-01T00:00:00.000Z-2019-10-10T12:13:51.599Z",
-                "from": 1569888000000,
-                "from_as_string": "2019-10-01T00:00:00.000Z",
-                "to": 1570709631599,
-                "to_as_string": "2019-10-10T12:13:51.599Z",
-                "doc_count": 0,
-                "8-bucket": {
-                  "buckets": []
+                "sam" : {
+                  "value" : "ho2"
                 }
               }
             ]
-          },
-          "key": "FAHAHEEL AREA",
-          "doc_count": 302683
-        },
-        {
-          "7": {
-            "buckets": [
-              {
-                "3": {
-                  "value": 0
-                },
-                "4": {
-                  "value": 0
-                },
-                "5": {
-                  "value": 0
-                },
-                "6": {
-                  "value": 0
-                },
-                "8": {
-                  "value": null
-                },
-                "key": "2019-09-01T00:00:00.000Z-2019-09-10T12:13:51.599Z",
-                "from": 1567296000000,
-                "from_as_string": "2019-09-01T00:00:00.000Z",
-                "to": 1568117631599,
-                "to_as_string": "2019-09-10T12:13:51.599Z",
-                "doc_count": 0,
-                "8-bucket": {
-                  "buckets": []
-                }
-              },
-              {
-                "3": {
-                  "value": 0
-                },
-                "4": {
-                  "value": 0
-                },
-                "5": {
-                  "value": 0
-                },
-                "6": {
-                  "value": 0
-                },
-                "8": {
-                  "value": null
-                },
-                "key": "2019-10-01T00:00:00.000Z-2019-10-10T12:13:51.599Z",
-                "from": 1569888000000,
-                "from_as_string": "2019-10-01T00:00:00.000Z",
-                "to": 1570709631599,
-                "to_as_string": "2019-10-10T12:13:51.599Z",
-                "doc_count": 0,
-                "8-bucket": {
-                  "buckets": []
-                }
-              }
-            ]
-          },
-          "key": "MURGAB AREA",
-          "doc_count": 259791
-        },
-        {
-          "7": {
-            "buckets": [
-              {
-                "3": {
-                  "value": 0
-                },
-                "4": {
-                  "value": 0
-                },
-                "5": {
-                  "value": 0
-                },
-                "6": {
-                  "value": 0
-                },
-                "8": {
-                  "value": null
-                },
-                "key": "2019-09-01T00:00:00.000Z-2019-09-10T12:13:51.599Z",
-                "from": 1567296000000,
-                "from_as_string": "2019-09-01T00:00:00.000Z",
-                "to": 1568117631599,
-                "to_as_string": "2019-09-10T12:13:51.599Z",
-                "doc_count": 0,
-                "8-bucket": {
-                  "buckets": []
-                }
-              },
-              {
-                "3": {
-                  "value": 0
-                },
-                "4": {
-                  "value": 0
-                },
-                "5": {
-                  "value": 0
-                },
-                "6": {
-                  "value": 0
-                },
-                "8": {
-                  "value": null
-                },
-                "key": "2019-10-01T00:00:00.000Z-2019-10-10T12:13:51.599Z",
-                "from": 1569888000000,
-                "from_as_string": "2019-10-01T00:00:00.000Z",
-                "to": 1570709631599,
-                "to_as_string": "2019-10-10T12:13:51.599Z",
-                "doc_count": 0,
-                "8-bucket": {
-                  "buckets": []
-                }
-              }
-            ]
-          },
-          "key": "ABBASSIYA AREA",
-          "doc_count": 259717
-        },
-        {
-          "7": {
-            "buckets": [
-              {
-                "3": {
-                  "value": 0
-                },
-                "4": {
-                  "value": 0
-                },
-                "5": {
-                  "value": 0
-                },
-                "6": {
-                  "value": 0
-                },
-                "8": {
-                  "value": null
-                },
-                "key": "2019-09-01T00:00:00.000Z-2019-09-10T12:13:51.599Z",
-                "from": 1567296000000,
-                "from_as_string": "2019-09-01T00:00:00.000Z",
-                "to": 1568117631599,
-                "to_as_string": "2019-09-10T12:13:51.599Z",
-                "doc_count": 0,
-                "8-bucket": {
-                  "buckets": []
-                }
-              },
-              {
-                "3": {
-                  "value": 0
-                },
-                "4": {
-                  "value": 0
-                },
-                "5": {
-                  "value": 0
-                },
-                "6": {
-                  "value": 0
-                },
-                "8": {
-                  "value": null
-                },
-                "key": "2019-10-01T00:00:00.000Z-2019-10-10T12:13:51.599Z",
-                "from": 1569888000000,
-                "from_as_string": "2019-10-01T00:00:00.000Z",
-                "to": 1570709631599,
-                "to_as_string": "2019-10-10T12:13:51.599Z",
-                "doc_count": 0,
-                "8-bucket": {
-                  "buckets": []
-                }
-              }
-            ]
-          },
-          "key": "SALMIYA AREA",
-          "doc_count": 258599
+          }
         }
       ]
     }
-  },
-  "status": 200
+  }
 }

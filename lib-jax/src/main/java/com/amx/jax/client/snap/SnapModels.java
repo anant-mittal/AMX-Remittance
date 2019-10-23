@@ -38,6 +38,7 @@ public class SnapModels {
 		KEYS.put("from_as_string", true);
 		KEYS.put("from", true);
 		KEYS.put("to", true);
+		KEYS.put("key_as_string", true);
 	}
 
 	public static class ASnapModel extends MapModel {
@@ -308,7 +309,7 @@ public class SnapModels {
 					this.map.put(field, aggregationField);
 					return aggregationField;
 				} catch (Exception e) {
-					System.out.println(map + "=== " + field);
+					System.out.println("ERROR : " + map + "=== " + field);
 					return new AggregationField(new HashMap<String, Object>(), field);
 				}
 			}
@@ -350,7 +351,7 @@ public class SnapModels {
 								space + afIndex + bucketItemIndex);
 						for (Map<String, Object> bulkItem : bulk) {
 							if (bulkItem.containsKey("_id")) {
-								bulkItem.put("_docs", bucketItem.getDocCount());
+								//bulkItem.put("_docs", bucketItem.getDocCount());
 								list.add(bulkItem);
 							}
 							// System.out.println("bulkItem " + JsonUtil.toJson(bulkItem));
@@ -359,6 +360,7 @@ public class SnapModels {
 					}
 
 				} else {
+					bulkItemBlank.put("_docs", this.getDocCount());
 					af.toBulkItem(bulkItemBlank, space + afIndex);
 				}
 				afIndex++;
