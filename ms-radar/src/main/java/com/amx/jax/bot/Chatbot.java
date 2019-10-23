@@ -27,6 +27,7 @@ public class Chatbot {
 	public static void initChatSession(String newNotName) {
 		train(newNotName);
 		if (CHAT_SESSION == null) {
+			LOGGER.info("initChatSession");
 			String resourcesPath = getResourcesPath();
 			MagicBooleans.trace_mode = false;// LOGGER.isDebugEnabled();
 			Bot bot = new Bot(newNotName, resourcesPath);
@@ -114,6 +115,7 @@ public class Chatbot {
 			if (IS_TRAINED) {
 				return;
 			}
+			LOGGER.info("TRAINING");
 			String resourcesPath = getResourcesPath();
 			MagicBooleans.trace_mode = false;
 			Bot bot = new Bot(newNotName, resourcesPath);
