@@ -5,8 +5,8 @@ import com.amx.jax.error.JaxError;
 import com.amx.jax.model.AuthState;
 import com.amx.jax.model.UserDevice;
 import com.amx.jax.model.response.customer.CustomerFlags;
-import com.amx.jax.ui.config.UIServerError;
 import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
+import com.amx.jax.ui.config.UIServerError;
 import com.amx.utils.ArgUtil;
 
 public class AuthPermUtil {

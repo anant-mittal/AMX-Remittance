@@ -345,6 +345,11 @@ public enum JaxError implements IExceptionEnum {
 	
 	// Job In Progress Error Key
 	JAX_JOB_IN_PROGRESS;
+
+	//Direct Payment Link
+	VERIFICATION_CODE_MISMATCH,
+	DIRECT_LINK_DEACTIVATED,
+	DIRECT_LINK_EXPIRED;
 	
 	@Deprecated
 	public String getCode() {

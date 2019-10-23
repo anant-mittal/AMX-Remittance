@@ -101,6 +101,7 @@ import com.amx.jax.repository.PaymentModeRepository;
 import com.amx.jax.repository.RemittanceApplicationBeneRepository;
 import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.repository.remittance.LocalBankDetailsRepository;
+import com.amx.jax.service.BankMetaService;
 import com.amx.jax.service.CompanyService;
 import com.amx.jax.service.FinancialService;
 import com.amx.jax.services.JaxEmailNotificationService;
@@ -245,6 +246,9 @@ public class BranchRemittanceSaveManager {
 	@Autowired
 	JaxTenantProperties jaxTenantProperties;
 	
+	@Autowired
+	BankMetaService bankMetaService;
+	
 	/**
 	 * 
 	 * @param remittanceRequestModel
@@ -362,7 +366,7 @@ public class BranchRemittanceSaveManager {
 			responseDto = brRemittanceDao.saveRemittanceTransaction(mapAllDetailRemitSave);
 			auditService.log(new CActivityEvent(Type.TRANSACTION_CREATED,String.format("%s/%s", responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo())).field("STATUS").to(JaxTransactionStatus.PAYMENT_SUCCESS_APPLICATION_SUCCESS).result(Result.DONE));
 	}catch (GlobalException e) {
-			logger.debug("routing  procedure", e.getErrorMessage() + "" + e.getErrorKey());
+			logger.error("routing  procedure", e.getErrorMessage() + "" + e.getErrorKey());
 			throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
 		}finally {
 			amlList	 = new HashMap<>();
@@ -426,21 +430,46 @@ public class BranchRemittanceSaveManager {
 				collection.setDocumentCode(ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION);
 				collection.setReceiptType(ConstantDocument.COLLECTION_RECEIPT_TYPE);
 				collection.setCreatedDate(new Date());
-				EmployeeDetailsView employee =branchRemittanceApplManager.getEmployeeDetails();
+				/*EmployeeDetailsView employee =branchRemittanceApplManager.getEmployeeDetails();
 				collection.setCreatedBy(employee.getUserName());
-				collection.setLocCode(employee.getBranchId());
+				collection.setLocCode(employee.getBranchId());*/
 				BigDecimal declarationTotalamount = getDeclarationReportAmount(ConstantDocument.DECL_REPORT_FOR_TOT_AMOUNT);
 				if(JaxUtil.isNullZeroBigDecimalCheck(declarationTotalamount) && collection.getNetAmount().compareTo(declarationTotalamount)>=1) {
 					collection.setCashDeclarationIndicator(ConstantDocument.Yes);
 				}
 				collection.setIsActive(ConstantDocument.Yes);
+			
 				
-				CountryBranchMdlv1 countryBranch = new CountryBranchMdlv1();
+				CountryBranchMdlv1 countryBranch = new CountryBranch();
+				countryBranch = bankMetaService.getCountryBranchById(metaData.getCountryBranchId()); //user branch not customer branch
+				logger.info("Meta Country Branch id : " +metaData.getCountryBranchId());
+				if(countryBranch!=null && countryBranch.getBranchId().compareTo(ConstantDocument.ONLINE_BRANCH_LOC_CODE)==0) {
+					collection.setLocCode(countryBranch.getBranchId());
+					if(!StringUtils.isBlank(metaData.getReferrer())){
+						collection.setCreatedBy(metaData.getReferrer());
+					}else{
+						if(!StringUtils.isBlank(metaData.getAppType())){				
+							collection.setCreatedBy(metaData.getAppType());
+						}else{
+							collection.setCreatedBy("WEB");
+						 }
+					}
+				}else {
+					logger.info("EmployeeDetails View : ");
+					EmployeeDetailsView employee =branchRemittanceApplManager.getEmployeeDetails();
+					collection.setCreatedBy(employee.getUserName());
+					collection.setLocCode(employee.getBranchId());
+					countryBranch.setCountryBranchId(employee.getCountryBranchId());
+				}
+				
+				
+				
+				/*CountryBranch countryBranch = new CountryBranch();
 				if(employee!=null && JaxUtil.isNullZeroBigDecimalCheck(employee.getCountryBranchId())) {
 					countryBranch.setCountryBranchId(employee.getCountryBranchId());
 				}else {
 					countryBranch.setCountryBranchId(metaData.getCountryBranchId());
-				}
+				}*/
 				collection.setExBankBranch(countryBranch);
 				collection.setFsCompanyMaster(appl.getFsCompanyMaster());
 				collection.setTotalAmountDeclarationIndicator(null); //ned to check
@@ -462,7 +491,9 @@ public class BranchRemittanceSaveManager {
 			}
 			
 		}catch(GlobalException e){
-			logger.debug("create collection", e.getErrorMessage() + "" +e.getErrorKey());
+			logger.info("Exception : CREATE COLLECTION ");
+			e.printStackTrace();
+			logger.error("create collection", e.getErrorMessage() + "" +e.getErrorKey());
 			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}
 		return collection;
@@ -526,9 +557,10 @@ public class BranchRemittanceSaveManager {
 				collectDetails.setApprovalNo(collectDataTable.getApprovalNo());
 				collectDetails.setKnetReceiptDateTime(new SimpleDateFormat("dd/MM/YYYY hh:mm").format(new Date()));
 				collectDetails.setChequeRef(collectDataTable.getChequeBankCode());
-				BankMasterMdlv1 Model = getPosBankDetails(collectDataTable.getPosBankCode());
-				collectDetails.setPosBankId(Model.getBankId());
-				
+				if(null != collectDataTable.getPosBankCode()) {
+					BankMasterMdlv1 Model = getPosBankDetails(collectDataTable.getPosBankCode());
+					collectDetails.setPosBankId(Model.getBankId());
+				}
 			}
 			
 			if(payMode.getPaymentModeCode().equalsIgnoreCase(ConstantDocument.CHEQUE)) {
@@ -1075,6 +1107,8 @@ public void collectedAmountValidation(CollectionMdlv1 collectionModel,List<Colle
 		totalPaidAmount = collectionModel.getPaidAmount();
 		refundAmount    = collectionModel.getRefoundAmount();
 		netAmount       = collectionModel.getNetAmount();
+		
+		logger.info("collectionModel not empty ------> " +totalPaidAmount);
 		if(totalPaidAmount.subtract(refundAmount).compareTo(netAmount)!=0) {
 			throw new GlobalException(JaxError.AMOUNT_MISMATCH,"There is a mismatch found in the Net amount and Refunded amount");
 			}
@@ -1092,6 +1126,7 @@ public void collectedAmountValidation(CollectionMdlv1 collectionModel,List<Colle
 	}
 	
 	if(totalPaidAmount.compareTo(totalCollectedAmount)!=0) {
+		logger.info("Total Paid Amt : " +totalPaidAmount+ " Total Collect Amt : " +totalCollectedAmount);
 		throw new GlobalException(JaxError.AMOUNT_MISMATCH,"The collection amount does not match with the collection details as per payment mode selected.");
 	}
 	
@@ -1192,6 +1227,7 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
 
  public TransferDto getTrasnferModeByBankServiceRule(RemittanceTransaction remitTrnx){
 	 Map<String,Object> mapBankServiceRule= routingProDao.checkBankServiceRule(remitTrnx);
+	 logger.debug("getTrasnferModeByBankServiceRule request json : {}", JsonUtil.toJson(remitTrnx));
 	 TransferDto dto = new TransferDto();
 	 String transferMode=null;
 	 String fileCreation=ConstantDocument.No;

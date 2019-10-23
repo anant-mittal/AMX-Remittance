@@ -21,6 +21,8 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.pricer.PricerServiceClient;
 import com.amx.jax.pricer.AbstractProbotInterface.ApiEndPoints;
+import com.amx.jax.pricer.dto.CurrencyMasterDTO;
+import com.amx.jax.pricer.dto.DiscountDetailsReqRespDTO;
 import com.amx.jax.pricer.dto.DiscountMgmtReqDTO;
 import com.amx.jax.pricer.dto.GroupDetails;
 import com.amx.jax.pricer.dto.OnlineMarginMarkupInfo;

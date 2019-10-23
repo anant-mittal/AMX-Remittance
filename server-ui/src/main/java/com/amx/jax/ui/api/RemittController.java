@@ -25,6 +25,7 @@ import com.amx.amxlib.exception.InvalidInputException;
 import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.exception.RemittanceTransactionValidationException;
 import com.amx.amxlib.exception.ResourceNotFoundException;
+import com.amx.amxlib.meta.model.CustomerRatingDTO;
 import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
@@ -49,6 +50,7 @@ import com.amx.jax.model.request.remittance.RoutingPricingRequest;
 import com.amx.jax.model.response.CurrencyMasterDTO;
 import com.amx.jax.model.response.remittance.FlexFieldReponseDto;
 import com.amx.jax.model.response.remittance.ParameterDetailsDto;
+import com.amx.jax.model.response.remittance.RemittanceApplicationResponseModel;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.model.response.remittance.branch.DynamicRoutingPricingResponse;
 import com.amx.jax.model.response.remittance.branch.DynamicRoutingPricingResponse.SELECTION;
@@ -379,6 +381,12 @@ public class RemittController {
 		ResponseWrapper<List<PurposeOfTransactionModel>> wrapper = new ResponseWrapper<List<PurposeOfTransactionModel>>();
 		wrapper.setData(jaxService.setDefaults().getRemitClient().getPurposeOfTransactions(beneId).getResults());
 		return wrapper;
+	}
+
+	@RequestMapping(value = "/api/remitt/package/list", method = { RequestMethod.POST })
+	public ResponseWrapper<List<ParameterDetailsDto>> getPackages(@RequestParam BigDecimal beneId) {
+		return new ResponseWrapper<List<ParameterDetailsDto>>(
+				remittanceClient.getGiftService(beneId).getResult().getParameterDetailsDto());
 	}
 
 	/**
