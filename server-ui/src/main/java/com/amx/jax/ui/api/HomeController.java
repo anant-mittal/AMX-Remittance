@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 
-import com.amx.amxlib.meta.model.CustomerRatingDTO;
 import com.amx.jax.AppConstants;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
@@ -312,14 +311,6 @@ public class HomeController {
 			map.put("errorMessage", e.getMessage());
 		}
 		return map;
-	}
-
-	@RequestMapping(value = { "/pub/recaptcha/{feature}" },
-			method = { RequestMethod.GET })
-	public String recaptach(Model model, @PathVariable Features feature) {
-		model.addAttribute("googelReCaptachSiteKey", webAppConfig.getGoogelReCaptachSiteKey());
-		model.addAttribute("companyTnt", AppContextUtil.getTenant());
-		return "recaptcha";
 	}
 
 	@ApiJaxStatus({ JaxError.CUSTOMER_NOT_FOUND, JaxError.INVALID_OTP, JaxError.ENTITY_INVALID,

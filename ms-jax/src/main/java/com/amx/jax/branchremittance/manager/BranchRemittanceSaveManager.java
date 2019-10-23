@@ -440,7 +440,7 @@ public class BranchRemittanceSaveManager {
 				collection.setIsActive(ConstantDocument.Yes);
 			
 				
-				CountryBranchMdlv1 countryBranch = new CountryBranch();
+				CountryBranchMdlv1 countryBranch = new CountryBranchMdlv1();
 				countryBranch = bankMetaService.getCountryBranchById(metaData.getCountryBranchId()); //user branch not customer branch
 				logger.info("Meta Country Branch id : " +metaData.getCountryBranchId());
 				if(countryBranch!=null && countryBranch.getBranchId().compareTo(ConstantDocument.ONLINE_BRANCH_LOC_CODE)==0) {

@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.amxlib.meta.model.AnnualIncomeRangeDTO;
 import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.meta.model.IncomeDto;
-import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.CustomerNotificationDTO;
 import com.amx.amxlib.model.UserFingerprintResponseModel;
