@@ -59,7 +59,7 @@ public class BranchUserController implements IBranchService {
 	public AmxApiResponse<CustomerCall, Object> customerCallSession(
 			@RequestParam BigDecimal agentId,
 			@RequestParam BigDecimal customerId,
-			@RequestParam(required = false) String leadId) {
+			@RequestParam(required = false) BigDecimal leadId) {
 		Employee e = employeeRespository.findEmployeeById(agentId);
 		if (ArgUtil.is(e)) {
 			String employeeId = ArgUtil.parseAsString(e.getEmployeeId());
@@ -83,7 +83,7 @@ public class BranchUserController implements IBranchService {
 	public AmxApiResponse<CustomerCall, Object> customerCallStatus(
 			@RequestParam BigDecimal agentId,
 			@RequestParam BigDecimal customerId,
-			@RequestParam(required = false) String leadId,
+			@RequestParam(required = false) BigDecimal leadId,
 			@RequestParam String followUpCode, @RequestParam String remark,
 			@RequestParam(required = false) String sessionId) {
 		Employee e = employeeRespository.findEmployeeById(agentId);

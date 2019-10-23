@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.snap.SnapConstants.SnapQueryTemplate;
+import com.amx.jax.client.snap.SnapModels;
 import com.amx.jax.client.snap.SnapModels.SnapModelWrapper;
 import com.amx.jax.radar.jobs.customer.OracleVarsCache;
 import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncJobs;
@@ -25,6 +26,7 @@ import com.amx.jax.tunnel.TunnelEvent;
 import com.amx.jax.tunnel.TunnelEventXchange;
 import com.amx.jax.tunnel.TunnelService;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.FileUtil;
 import com.axx.jax.table.PivotTable;
 
 @Controller
@@ -101,13 +103,13 @@ public class SnapQueryController {
 			params.put("lte", lte);
 		}
 		level = ArgUtil.parseAsInteger(params.getOrDefault("level", level));
-		
+
 		SnapModelWrapper x = snapQueryTemplateService.execute(snapView, params);
 
 		if (level >= 0) {
 			List<Map<String, List<String>>> p = x.getPivot();
 			List<Map<String, Object>> inputBulk = x.getAggregations().toBulk();
-			
+			Object cols = null;
 			for (Map<String, List<String>> pivot : p) {
 				level--;
 				if (level < 0)
@@ -115,14 +117,19 @@ public class SnapQueryController {
 				PivotTable table = new PivotTable(
 						pivot.get("rows"), pivot.get("cols"),
 						pivot.get("vals"), pivot.get("aggs"), pivot.get("alias"),
-						pivot.get("computed"),pivot.get("noncomputed"));
+						pivot.get("computed"), pivot.get("noncomputed"),
+						pivot.get("colgroups"));
 				for (Map<String, Object> map : inputBulk) {
 					table.add(map);
 				}
 				table.calculate();
 				inputBulk = table.toBulk();
+				cols = table.getColGroup();
+				// break;
 			}
+			x.toMap().put("colGroup", cols);
 			x.toMap().put("bulk", inputBulk);
+			x.removeAggregations();
 		}
 
 		return x;
@@ -171,10 +178,12 @@ public class SnapQueryController {
 	public String table(@PathVariable(value = "snapView") SnapQueryTemplate snapView,
 			@RequestParam(defaultValue = "now-1m") String gte, @RequestParam(defaultValue = "now") String lte,
 			@RequestParam(defaultValue = "100", required = false) int level,
+			@RequestParam(defaultValue = "", required = false) String hash,
 			Model model) throws IOException {
 		model.addAttribute("gte", gte);
 		model.addAttribute("lte", lte);
 		model.addAttribute("level", level);
+		model.addAttribute("hash", ArgUtil.isEmpty(hash) ? snapView.getQueryParams() : hash);
 		model.addAttribute("snapView", snapView.toString());
 		model.addAttribute("snapViews", SnapQueryTemplate.values());
 		return "table";

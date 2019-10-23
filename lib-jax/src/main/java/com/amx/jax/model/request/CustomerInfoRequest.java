@@ -11,6 +11,9 @@ public class CustomerInfoRequest {
 	
 	HomeAddressDetails homeAddressDetails;
 	
+	@Deprecated
+	HomeAddressDetails homeAddressDestails;
+	
 	@Valid
 	CustomerEmploymentDetails customerEmploymentDetails;
 
@@ -52,6 +55,14 @@ public class CustomerInfoRequest {
 
 	public void setHomeAddressDetails(HomeAddressDetails homeAddressDetails) {
 		this.homeAddressDetails = homeAddressDetails;
+	}
+
+	public HomeAddressDetails getHomeAddressDestails() {
+		return homeAddressDestails;
+	}
+
+	public void setHomeAddressDestails(HomeAddressDetails homeAddressDestails) {
+		this.homeAddressDestails = homeAddressDestails;
 	}
 
 }

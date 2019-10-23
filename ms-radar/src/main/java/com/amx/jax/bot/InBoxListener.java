@@ -177,7 +177,7 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 	@SchedulerLock(lockMaxAge = AmxCurConstants.INTERVAL_HRS * 13, context = LockContext.BY_METHOD)
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_HRS * 12)
 	public void doTaskModeDay() {
-		if (!TimeUtils.inHourSlot(4, 0)) {
+		if (TimeUtils.inHourSlot(4, 0) && radarConfig.isJobWAFailRetryEnabled()) {
 			Calendar cal = Calendar.getInstance();
 			cal.add(Calendar.DATE, -1);
 			java.util.Date oneDay = new java.util.Date(cal.getTimeInMillis());

@@ -5,6 +5,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.amx.jax.AppParam;
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.scope.TenantContextHolder;
 
@@ -35,7 +36,7 @@ public class PushMessage extends Message {
 	boolean condition;
 
 	public PushMessage() {
-		super();
+		super(ContactType.FBPUSH);
 		this.condition = false;
 	}
 

@@ -654,8 +654,8 @@ public class ReportManagerService extends AbstractService{
 							+ view.getOriginalExchangeRate().toString());
 					if (view.getOriginalExchangeRate() != null && view.getForeignTransactionAmount() != null
 							&& view.getLocalTransactionCurrencyId() != null) {
-						BigDecimal calKwtAmt = view.getOriginalExchangeRate().multiply(view.getForeignTransactionAmount());
-						BigDecimal transationAmount = RoundUtil.roundBigDecimal((calKwtAmt), decimalPerCurrency);
+						//BigDecimal calKwtAmt = view.getOriginalExchangeRate().multiply(view.getForeignTransactionAmount());
+						BigDecimal transationAmount = RoundUtil.roundBigDecimal((view.getLocalTransactionAmount()), decimalPerCurrency);
 						obj.setKwdAmount(currencyQuoteName + "     " + transationAmount.toString());
 					}
 				}

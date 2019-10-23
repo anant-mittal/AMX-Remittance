@@ -469,6 +469,7 @@ public final class ArgUtil {
 		return defaultValue;
 	}
 
+
 	/**
 	 * <pre>
 	 * Parses the given object as date. It keeps the time information intact.
@@ -588,7 +589,7 @@ public final class ArgUtil {
 		}
 		return parseAsEnum(value,defaultValue,defaultValue.getClass());
 	}
-	
+
 	public static Enum parseAsEnum(Object value, Enum nullValue, Enum defaultValue) {
 		if (ArgUtil.isEmpty(value)) {
 			return parseAsEnum(value, nullValue);

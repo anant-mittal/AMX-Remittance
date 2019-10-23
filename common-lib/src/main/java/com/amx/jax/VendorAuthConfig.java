@@ -61,7 +61,7 @@ public class VendorAuthConfig {
 		return (authToken.equals(basicAuthPassword)
 				|| CryptoUtil.validateHMAC(this.basicAuthPassword, traceId, authToken))
 						&& (ArgUtil.isEmpty(apiRequest.getFeature()) || this.hasFeature(apiRequest.getFeature())
-						&& (ArgUtil.is(basicAuthIp) || basicAuthIp.equals(req.getIPAddress()))
+						&& (ArgUtil.isEmpty(basicAuthIp) || basicAuthIp.equals(req.getIPAddress()))
 								);
 	}
 
