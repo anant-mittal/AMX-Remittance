@@ -40,7 +40,9 @@ import com.amx.jax.pricer.dto.OnlineMarginMarkupInfo;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
 import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
+import com.amx.jax.pricer.var.PricerServiceConstants;
 import com.amx.jax.pricer.var.PricerServiceConstants.DISCOUNT_TYPE;
+import com.amx.jax.pricer.var.PricerServiceConstants.GROUP_TYPE;
 
 @Component
 public class DiscountManager {
@@ -369,20 +371,72 @@ public class DiscountManager {
 		return grpCustCatData;
 	}
 
-	public List<GroupDetails> convertGroupInfo(List<GroupingMaster> groupingMasterList) {
+	public static List<GroupDetails> convertGroupInfo(List<GroupingMaster> groupingMasterList) {
 		List<GroupDetails> grpDetailsList = new ArrayList<>();
 
-		for (GroupingMaster grpMaster : groupingMasterList) {
-			GroupDetails groupDetails = new GroupDetails();
-			groupDetails.setGroupId(grpMaster.getId());
-			groupDetails.setGroupName(grpMaster.getGroupName());
-			groupDetails.setGroupType(grpMaster.getGroupType());
-			groupDetails.setIsActive(grpMaster.getIsActive());
-			groupDetails.setValType(grpMaster.getValType());
+		if (groupingMasterList != null && !groupingMasterList.isEmpty()) {
 
-			grpDetailsList.add(groupDetails);
+			for (GroupingMaster grpMaster : groupingMasterList) {
+
+				GroupDetails groupDetails = convertToGroupDetails(grpMaster);
+
+				grpDetailsList.add(groupDetails);
+			}
 		}
 		return grpDetailsList;
+	}
+
+	public static GroupDetails convertToGroupDetails(GroupingMaster grpMaster) {
+
+		if (grpMaster == null) {
+			return null;
+		}
+
+		GroupDetails groupDetails = new GroupDetails();
+		groupDetails.setApplCountryId(grpMaster.getAplicationCountryId());
+		groupDetails.setGroupId(grpMaster.getId());
+		groupDetails.setGroupName(grpMaster.getGroupName());
+		groupDetails.setGroupType(grpMaster.getGroupType());
+		groupDetails.setIsActive(grpMaster.getIsActive());
+		groupDetails.setValType(grpMaster.getValType());
+
+		groupDetails.setValSet(grpMaster.getValSet());
+
+		return groupDetails;
+	}
+
+	public static GroupingMaster convertToGroupMaster(GroupDetails groupDetails) {
+
+		GroupingMaster group = new GroupingMaster();
+
+		if (groupDetails.getGroupId() == null || groupDetails.getGroupId().compareTo(BigDecimal.ZERO) == 0) {
+			group.setId(null);
+		} else {
+			group.setId(groupDetails.getGroupId());
+		}
+
+		GROUP_TYPE grpType;
+
+		try {
+			grpType = PricerServiceConstants.GROUP_TYPE.valueOf(groupDetails.getGroupType());
+		} catch (IllegalArgumentException ex) {
+			grpType = null;
+		}
+
+		if (grpType == null) {
+			throw new PricerServiceException(PricerServiceError.INVALID_GROUP_TYPE, "Invalid Group Type");
+		}
+
+		group.setAplicationCountryId(groupDetails.getApplCountryId());
+		group.setGroupName(groupDetails.getGroupName());
+		group.setGroupType(groupDetails.getGroupType());
+		group.setIsActive(groupDetails.getIsActive());
+		group.setValType(groupDetails.getValType());
+
+		group.setValSet(groupDetails.getValSet());
+
+		return group;
+
 	}
 
 	public void commitCurrencyGroupId(BigDecimal groupId, BigDecimal currencyId) {

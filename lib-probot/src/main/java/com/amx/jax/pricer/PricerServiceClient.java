@@ -195,7 +195,7 @@ public class PricerServiceClient implements ProbotExchangeRateService, ProbotDat
 	@Override
 	public AmxApiResponse<OnlineMarginMarkupInfo, Object> getOnlineMarginMarkupData(
 			OnlineMarginMarkupReq OnlineMarginMarkupReq) {
-				LOGGER.info("fetch Online Margin Markup Details : transaction Id: {}, with TraceId: {}",
+		LOGGER.info("fetch Online Margin Markup Details : transaction Id: {}, with TraceId: {}",
 				AppContextUtil.getTranxId(), AppContextUtil.getTraceId());
 
 		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.GET_MARKUP_DETAILS)
@@ -207,14 +207,35 @@ public class PricerServiceClient implements ProbotExchangeRateService, ProbotDat
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> saveOnlineMarginMarkupData(
 			OnlineMarginMarkupInfo onlineMarginMarkupInfo) {
-	
-			LOGGER.info("fetch Online Margin Markup Details : transaction Id: {}, with TraceId: {}",
-					AppContextUtil.getTranxId(), AppContextUtil.getTraceId());
-			return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.SAVE_MARKUP_DETAILS)
-					.post(onlineMarginMarkupInfo)
-					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
-					});
-		
+
+		LOGGER.info("fetch Online Margin Markup Details : transaction Id: {}, with TraceId: {}",
+				AppContextUtil.getTranxId(), AppContextUtil.getTraceId());
+		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.SAVE_MARKUP_DETAILS)
+				.post(onlineMarginMarkupInfo)
+				.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
+				});
+
+	}
+
+	@Override
+	public AmxApiResponse<GroupDetails, Object> getGroupsOfType(String groupType) {
+		LOGGER.info("Get Group Data for Type: {}, transaction Id: {}, with TraceId: {}", groupType,
+				AppContextUtil.getTranxId(), AppContextUtil.getTraceId());
+
+		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.GET_GROUPS_OF_TYPE)
+				.queryParam("groupType", groupType).post()
+				.as(new ParameterizedTypeReference<AmxApiResponse<GroupDetails, Object>>() {
+				});
+	}
+
+	@Override
+	public AmxApiResponse<GroupDetails, Object> saveGroups(GroupDetails group) {
+		LOGGER.info("Save Group Data transaction Id: {}, with TraceId: {}", AppContextUtil.getTranxId(),
+				AppContextUtil.getTraceId());
+
+		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.SAVE_GROUPS).post(group)
+				.as(new ParameterizedTypeReference<AmxApiResponse<GroupDetails, Object>>() {
+				});
 	}
 
 }

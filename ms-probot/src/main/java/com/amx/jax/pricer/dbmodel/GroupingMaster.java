@@ -3,14 +3,18 @@ package com.amx.jax.pricer.dbmodel;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+
+import com.amx.jax.converter.JsonStrListConverter;
 
 @Entity
 @Table(name = "EX_GROUPING_MASTER")
@@ -55,7 +59,8 @@ public class GroupingMaster implements Serializable {
 	private String valType;
 
 	@Column(name = "VAL_SET_JSON")
-	private String valSetJson;
+	@Convert(converter = JsonStrListConverter.class)
+	private List<String> valSet;
 
 	public BigDecimal getId() {
 		return id;
@@ -137,12 +142,12 @@ public class GroupingMaster implements Serializable {
 		this.valType = valType;
 	}
 
-	public String getValSetJson() {
-		return valSetJson;
+	public List<String> getValSet() {
+		return valSet;
 	}
 
-	public void setValSetJson(String valSetJson) {
-		this.valSetJson = valSetJson;
+	public void setValSet(List<String> valSet) {
+		this.valSet = valSet;
 	}
 
 }

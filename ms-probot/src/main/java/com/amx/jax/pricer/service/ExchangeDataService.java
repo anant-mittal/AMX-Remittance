@@ -43,7 +43,9 @@ import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
 import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.manager.DiscountManager;
+import com.amx.jax.pricer.var.PricerServiceConstants;
 import com.amx.jax.pricer.var.PricerServiceConstants.DISCOUNT_TYPE;
+import com.amx.jax.pricer.var.PricerServiceConstants.GROUP_TYPE;
 
 @Service
 public class ExchangeDataService {
@@ -94,7 +96,7 @@ public class ExchangeDataService {
 		DiscountDetailsReqRespDTO discountMgmtRespDTO = new DiscountDetailsReqRespDTO();
 
 		List<GroupingMaster> groupingMaster = groupingMasterDao.getAllGroup();
-		List<GroupDetails> groupInfo = discountManager.convertGroupInfo(groupingMaster);
+		List<GroupDetails> groupInfo = DiscountManager.convertGroupInfo(groupingMaster);
 		discountMgmtRespDTO.setCurGroupDetails(groupInfo);
 
 		Map<BigDecimal, List<ChannelDetails>> curGrpChannelDetails = new HashMap<BigDecimal, List<ChannelDetails>>();
@@ -208,7 +210,7 @@ public class ExchangeDataService {
 	public List<GroupDetails> getGroupInfoForCurrency() {
 
 		List<GroupingMaster> groupingMaster = groupingMasterDao.getGroupForCurrency();
-		List<GroupDetails> groupInfo = discountManager.convertGroupInfo(groupingMaster);
+		List<GroupDetails> groupInfo = DiscountManager.convertGroupInfo(groupingMaster);
 		Collections.sort(groupInfo);
 
 		return groupInfo;
@@ -247,6 +249,40 @@ public class ExchangeDataService {
 			return new BoolRespModel(Boolean.TRUE);
 		else
 			return new BoolRespModel(Boolean.FALSE);
+
+	}
+
+	public List<GroupDetails> getGroupsOfType(String groupType) {
+
+		GROUP_TYPE grpType;
+
+		try {
+			grpType = PricerServiceConstants.GROUP_TYPE.valueOf(groupType);
+		} catch (IllegalArgumentException ex) {
+			grpType = null;
+		}
+
+		if (grpType == null) {
+			throw new PricerServiceException(PricerServiceError.INVALID_GROUP_TYPE, "Invalid Group Type");
+		}
+
+		List<GroupingMaster> groupMs = groupingMasterDao.getByGroupType(groupType);
+
+		return DiscountManager.convertGroupInfo(groupMs);
+
+	}
+
+	public GroupDetails saveGroup(GroupDetails group) {
+
+		if (group == null) {
+			return null;
+		}
+
+		GroupingMaster master = DiscountManager.convertToGroupMaster(group);
+
+		master = groupingMasterDao.save(master);
+
+		return DiscountManager.convertToGroupDetails(master);
 
 	}
 

@@ -247,7 +247,6 @@ public class PricerServiceApiTest implements ProbotExchangeRateService, ProbotDa
 							allFutureQueue.add(amxFutureResp);
 
 						} catch (Exception e) {
-							// TODO: handle exception
 							// Ignore
 						}
 
@@ -352,10 +351,6 @@ public class PricerServiceApiTest implements ProbotExchangeRateService, ProbotDa
 
 						}
 
-						// strBuilder.append("\n" + JsonUtil.toJson(amxResp.getResult()));
-
-						// errorPrintWriter.println(" Response Future Hash ==> " + future.hashCode());
-
 					} catch (Exception e) {
 
 						Throwable cause = e.getCause().getCause();
@@ -421,17 +416,6 @@ public class PricerServiceApiTest implements ProbotExchangeRateService, ProbotDa
 
 		System.out.println(" ======= Done Now ======= ");
 
-		// BufferedReader countryBranchReader = new BufferedReader(
-		// new InputStreamReader(countryBranchFile.getInputStream()));
-
-		// System.out.println("File 2 ==> " + countryCurrencyFile.getFilename());
-
-		// outPrintWriter.close();
-		// outFileWriter.close();
-
-		// errorPrintWriter.close();
-		// errorFileWriter.close();
-
 		watch.stop();
 		long timetaken = watch.getLastTaskTimeMillis();
 		System.out.println("Total time taken to Complete the Process with size: " + allFutureQueue.size() + " : "
@@ -450,7 +434,6 @@ public class PricerServiceApiTest implements ProbotExchangeRateService, ProbotDa
 	@RequestMapping(value = ApiEndPoints.GET_ROUTBANKS_AND_SEVICES, method = RequestMethod.POST)
 	public AmxApiResponse<RoutBanksAndServiceRespDTO, Object> getRbanksAndServices(
 			@RequestParam(required = true) BigDecimal countryId, @RequestParam(required = true) BigDecimal currencyId) {
-		// TODO Subodh To Fix This
 		return pricerServiceClient.getRbanksAndServices(countryId, currencyId);
 	}
 
@@ -458,7 +441,6 @@ public class PricerServiceApiTest implements ProbotExchangeRateService, ProbotDa
 	@RequestMapping(value = ApiEndPoints.SAVE_DISCOUNT_DETAILS, method = RequestMethod.POST)
 	public AmxApiResponse<DiscountDetailsReqRespDTO, Object> saveDiscountDetails(
 			DiscountDetailsReqRespDTO discountMgmtReqDTO) {
-		// TODO Subodh To Fix This
 		return pricerServiceClient.saveDiscountDetails(discountMgmtReqDTO);
 	}
 
@@ -466,7 +448,6 @@ public class PricerServiceApiTest implements ProbotExchangeRateService, ProbotDa
 	@RequestMapping(value = ApiEndPoints.GET_DISCOUNT_DETAILS, method = RequestMethod.POST)
 	public AmxApiResponse<DiscountDetailsReqRespDTO, Object> getDiscountManagemet(
 			DiscountMgmtReqDTO discountMgmtReqDTO) {
-		// TODO Subodh To Fix This
 		return pricerServiceClient.getDiscountManagemet(discountMgmtReqDTO);
 	}
 
@@ -485,7 +466,6 @@ public class PricerServiceApiTest implements ProbotExchangeRateService, ProbotDa
 	@Override
 	@RequestMapping(value = ApiEndPoints.GET_CUR_GROUPING_DATA, method = RequestMethod.POST)
 	public AmxApiResponse<GroupDetails, Object> getCurrencyGroupingData() {
-		// TODO Subodh To Fix This
 		return pricerServiceClient.getCurrencyGroupingData();
 	}
 
@@ -493,7 +473,6 @@ public class PricerServiceApiTest implements ProbotExchangeRateService, ProbotDa
 	@RequestMapping(value = ApiEndPoints.UPDATE_CUR_GROUP_ID, method = RequestMethod.POST)
 	public AmxApiResponse<CurrencyMasterDTO, Object> updateCurrencyGroupId(
 			@RequestParam(required = true) BigDecimal groupId, @RequestParam(required = true) BigDecimal currencyId) {
-		// TODO Subodh To Fix This
 		return pricerServiceClient.updateCurrencyGroupId(groupId, currencyId);
 	}
 
@@ -501,12 +480,8 @@ public class PricerServiceApiTest implements ProbotExchangeRateService, ProbotDa
 	@RequestMapping(value = ApiEndPoints.GET_CUR_BY_GROUP_ID, method = RequestMethod.POST)
 	public AmxApiResponse<CurrencyMasterDTO, Object> getCurrencyByGroupId(
 			@RequestParam(required = true) BigDecimal groupId) {
-		// TODO Subodh To Fix This
 		return pricerServiceClient.getCurrencyByGroupId(groupId);
 	}
-	
-	
-	
 
 	@Override
 	@RequestMapping(value = ApiEndPoints.GET_SERVICE_PROVIDER_QUOTE, method = RequestMethod.POST)
@@ -526,6 +501,18 @@ public class PricerServiceApiTest implements ProbotExchangeRateService, ProbotDa
 	public AmxApiResponse<BoolRespModel, Object> saveOnlineMarginMarkupData(
 			OnlineMarginMarkupInfo onlineMarginMarkupInfo) {
 		return pricerServiceClient.saveOnlineMarginMarkupData(onlineMarginMarkupInfo);
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.GET_GROUPS_OF_TYPE, method = RequestMethod.POST)
+	public AmxApiResponse<GroupDetails, Object> getGroupsOfType(String groupType) {
+		return pricerServiceClient.getGroupsOfType(groupType);
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.SAVE_GROUPS, method = RequestMethod.POST)
+	public AmxApiResponse<GroupDetails, Object> saveGroups(GroupDetails group) {
+		return pricerServiceClient.saveGroups(group);
 	}
 
 }

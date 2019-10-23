@@ -23,6 +23,10 @@ public class GroupingMasterDao {
 		return repository.findByGroupTypeAndGroupName(groupType, groupName);
 	}
 
+	public List<GroupingMaster> getByGroupType(String groupType) {
+		return repository.findByGroupType(groupType);
+	}
+
 	public List<GroupingMaster> getAllGroup() {
 		return (List<GroupingMaster>) repository.findAll();
 	}

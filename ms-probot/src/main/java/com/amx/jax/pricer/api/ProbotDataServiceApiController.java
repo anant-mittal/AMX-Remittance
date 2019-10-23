@@ -30,6 +30,7 @@ import com.amx.jax.pricer.dto.OnlineMarginMarkupReq;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
 import com.amx.jax.pricer.service.ExchangeDataService;
 import com.amx.jax.pricer.service.HolidayListService;
+import com.amx.utils.JsonUtil;
 
 @RestController
 public class ProbotDataServiceApiController implements ProbotDataService {
@@ -135,6 +136,27 @@ public class ProbotDataServiceApiController implements ProbotDataService {
 		BoolRespModel marginMarkupResp = dataService.saveOnlineMarginMarkupData(onlineMarginMarkupInfo);
 		;
 		return AmxApiResponse.build(marginMarkupResp);
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.GET_GROUPS_OF_TYPE, method = RequestMethod.POST)
+	public AmxApiResponse<GroupDetails, Object> getGroupsOfType(@RequestParam(required = true) String groupType) {
+
+		LOGGER.info("Received Probot API Service Request for getting groups of type: " + groupType);
+
+		List<GroupDetails> groups = dataService.getGroupsOfType(groupType);
+
+		return AmxApiResponse.buildList(groups);
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.SAVE_GROUPS, method = RequestMethod.POST)
+	public AmxApiResponse<GroupDetails, Object> saveGroups(@RequestBody @Valid GroupDetails group) {
+		LOGGER.info("Received Probot API Service Request for Save groups: " + JsonUtil.toJson(group));
+
+		GroupDetails details = dataService.saveGroup(group);
+
+		return AmxApiResponse.build(details);
 	}
 
 }

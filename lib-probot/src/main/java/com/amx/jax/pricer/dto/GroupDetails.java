@@ -4,21 +4,37 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
+
 public class GroupDetails implements Serializable, Comparable<GroupDetails> {
 
 	private static final long serialVersionUID = 1L;
 
+	@NotNull(message = "Application Country Id can not be Null or Empty")
+	private BigDecimal applCountryId;
+
 	private BigDecimal groupId;
 
+	@NotNull(message = "Group Name can not be Null or Empty")
 	private String groupName;
 
+	@NotNull(message = "Group Type can not be Null or Empty")
 	private String groupType;
 
 	private String isActive;
 
+	@NotNull(message = "Val Type can not be Null or Empty")
 	private String valType;
 
 	private List<String> valSet;
+
+	public BigDecimal getApplCountryId() {
+		return applCountryId;
+	}
+
+	public void setApplCountryId(BigDecimal applCountryId) {
+		this.applCountryId = applCountryId;
+	}
 
 	public BigDecimal getGroupId() {
 		return groupId;
@@ -68,17 +84,16 @@ public class GroupDetails implements Serializable, Comparable<GroupDetails> {
 		this.valSet = valSet;
 	}
 
-	/*public static class GroupDetailsComparator implements Comparator<GroupDetails> {
-
-		@Override
-		public int compare(GroupDetails arg1, GroupDetails arg2) {
-			if (null != arg1.getGroupName()) {
-				return arg1.getGroupName().compareTo(arg2.getGroupName());
-			}
-			return 0;
-		}
-
-	}*/
+	/*
+	 * public static class GroupDetailsComparator implements
+	 * Comparator<GroupDetails> {
+	 * 
+	 * @Override public int compare(GroupDetails arg1, GroupDetails arg2) { if (null
+	 * != arg1.getGroupName()) { return
+	 * arg1.getGroupName().compareTo(arg2.getGroupName()); } return 0; }
+	 * 
+	 * }
+	 */
 
 	@Override
 	public int compareTo(GroupDetails o) {
