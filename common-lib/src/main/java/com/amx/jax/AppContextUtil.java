@@ -104,7 +104,7 @@ public class AppContextUtil {
 	}
 
 	public static Language getLang() {
-		return (Language) ArgUtil.parseAsEnum(ContextUtil.map().get(AppConstants.LANG_PARAM_KEY), Language.EN);
+		return (Language) ArgUtil.parseAsEnum(ContextUtil.map().get(AppConstants.LANG_PARAM_KEY), Language.EN,Language.class);
 	}
 
 	public static Language getLang(Language lang) {

@@ -13,6 +13,7 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.DependsOn;
 
 /**
  * The Class ArgUtil.
@@ -522,13 +523,13 @@ public final class ArgUtil {
 	 * @param defaultValue the default value
 	 * @return the enum
 	 */
-	public static <T extends Enum> Enum parseAsEnum(Object value, Enum defaultValue,Class<T> enumType) {
+	public static <T extends Enum> Enum parseAsEnum(Object value, Enum defaultValue , Class<T> enumType) {
 		String enumString = parseAsString(value);
 		if (enumString == null) {
 			return defaultValue;
 		}
 		String enumStringCaps = enumString.toUpperCase();
-		if (EnumType.class.isAssignableFrom(enumType) || defaultValue instanceof EnumType) {
+		if (defaultValue instanceof EnumType) {
 			for (Object enumValue : enumType.getEnumConstants()) {
 				if (enumString.equals(((EnumType) enumValue).name())
 						|| enumStringCaps.equals(((EnumType) enumValue).name())) {
@@ -536,7 +537,7 @@ public final class ArgUtil {
 				}
 			}
 			return defaultValue;
-		} else if (EnumById.class.isAssignableFrom(enumType) || defaultValue instanceof EnumById) {
+		} else if (defaultValue instanceof EnumById) {
 			for (Object enumValue : enumType.getEnumConstants()) {
 				if (enumString.equals(((EnumById) enumValue).getId())
 						|| enumStringCaps.equals(((EnumById) enumValue).getId())) {
@@ -556,10 +557,24 @@ public final class ArgUtil {
 		}
 	}
 	
-	public static Enum parseAsEnum(Object value, Enum defaultValue) {
-		return parseAsEnum(value,defaultValue,defaultValue.getClass());
+	public static <T extends Enum> Enum parseAsEnum(Object value, Class<T> enumType) {
+		return parseAsEnum(value, null, enumType);
 	}
 
+	/**
+	 * Use  {{@link #parseAsEnum(Object, Enum, Class)}
+	 * @param value
+	 * @param defaultValue
+	 * @return
+	 */
+	@Deprecated
+	public static Enum parseAsEnum(Object value, Enum defaultValue) {
+		if(ArgUtil.isEmpty(defaultValue)) {
+			return null;
+		}
+		return parseAsEnum(value,defaultValue,defaultValue.getClass());
+	}
+	
 	public static Enum parseAsEnum(Object value, Enum nullValue, Enum defaultValue) {
 		if (ArgUtil.isEmpty(value)) {
 			return parseAsEnum(value, nullValue);

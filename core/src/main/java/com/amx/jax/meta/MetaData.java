@@ -18,6 +18,8 @@ import com.amx.utils.ArgUtil;
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class MetaData implements IMetaData {
 	
+	private static final BigDecimal MAX_LANG_ID = new BigDecimal(2);
+
 	private BigDecimal countryId;
 
 	private BigDecimal languageId;
@@ -89,8 +91,12 @@ public class MetaData implements IMetaData {
 	}
 
 	public BigDecimal getLanguageId() {
-		return JaxUtil.languageScale(this.languageId);
+		if(ArgUtil.isEmpty(languageId) || (MAX_LANG_ID.compareTo(languageId) < 0)) {
+			return BigDecimal.ONE;
+		}
+		return languageId;
 	}
+
 
 	public void setLanguageId(BigDecimal languageId) {
 		this.languageId = languageId;
