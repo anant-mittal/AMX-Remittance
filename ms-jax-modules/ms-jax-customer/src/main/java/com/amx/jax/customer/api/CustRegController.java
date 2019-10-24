@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.CustomerCredential;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
@@ -22,7 +21,6 @@ import com.amx.jax.customer.ICustRegService;
 import com.amx.jax.customer.manager.OffsiteAddressProofManager;
 import com.amx.jax.customer.service.CustomerManagementService;
 import com.amx.jax.customer.service.OffsitCustRegService;
-import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.CardDetail;
@@ -50,6 +48,7 @@ import com.amx.jax.service.ViewDistrictService;
 import com.amx.jax.service.ViewStateService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.JsonUtil;
 
 
 @RestController
@@ -136,6 +135,7 @@ public class CustRegController implements ICustRegService {
 
 	@RequestMapping(value = CustRegApiEndPoints.SAVE_CUST_INFO, method = RequestMethod.POST)
 	public AmxApiResponse<CustomerInfo, Object> saveCustomerInfo(@RequestBody @Valid CustomerInfoRequest model) {
+		LOGGER.debug("saveCustomerInfo request: {}", JsonUtil.toJson(model));
 		return offsiteCustRegService.saveCustomerInfo(model);
 	}
 

@@ -1,16 +1,10 @@
 package com.amx.jax.radar;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.amx.jax.dict.Tenant;
-import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncJobs;
-import com.amx.jax.scope.TenantProperties;
 import com.amx.jax.scope.TenantScoped;
 import com.amx.jax.scope.TenantValue;
-import com.amx.utils.ArgUtil;
 
 /**
  * The Class PostManConfig.
@@ -52,9 +46,19 @@ public class RadarConfig {
 
 	@Value("${jax.jobs.rate.counter}")
 	private String jobsRateVersion;
-
+	
+	@Value("${jax.jobs.trnx.night}")
+	boolean jobTranxNightEnabled;
+	
 	@Value("${jax.jobs.trnx.day}")
 	boolean jobTranxDayEnabled;
+	
+	@Value("${jax.jobs.wa.fail.retry}")
+	boolean jobWAFailRetryEnabled;
+
+	public boolean isJobWAFailRetryEnabled() {
+		return jobWAFailRetryEnabled;
+	}
 
 	public boolean isJobTranxDayEnabled() {
 		return jobTranxDayEnabled;
@@ -63,9 +67,6 @@ public class RadarConfig {
 	public boolean isJobTranxNightEnabled() {
 		return jobTranxNightEnabled;
 	}
-
-	@Value("${jax.jobs.trnx.night}")
-	boolean jobTranxNightEnabled;
 
 	public String getCompanyName() {
 		return companyName;

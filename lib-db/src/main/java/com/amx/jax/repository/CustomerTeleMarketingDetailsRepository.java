@@ -12,4 +12,7 @@ public interface CustomerTeleMarketingDetailsRepository
 		extends CrudRepository<CustomerTeleMarketingDetails, BigDecimal> {
 	@Query("select c from CustomerTeleMarketingDetails c where leadId=?1")
 	public List<CustomerTeleMarketingDetails> getCustomerTeleMarketingDetailsByLeadId(BigDecimal leadId);
+
+	@Query("select c from CustomerTeleMarketingDetails c where customerId=?1")
+	public List<CustomerTeleMarketingDetails> getCustomerTeleMarketingDetailsByCustomerId(BigDecimal customerId);
 }

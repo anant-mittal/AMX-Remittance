@@ -3,6 +3,10 @@ package com.amx.amxlib.model;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import com.amx.jax.dict.Tenant;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CustomerNotificationDTO {
 
 	private BigDecimal notificationId;
@@ -13,6 +17,24 @@ public class CustomerNotificationDTO {
 	private String message;
 	private Date notificationDate;
 	private BigDecimal countryId;
+	private Tenant tnt;
+	private String template;
+
+	public Tenant getTnt() {
+		return tnt;
+	}
+
+	public void setTnt(Tenant tnt) {
+		this.tnt = tnt;
+	}
+
+	public String getTemplate() {
+		return template;
+	}
+
+	public void setTemplate(String template) {
+		this.template = template;
+	}
 
 	public BigDecimal getNotificationId() {
 		return notificationId;
