@@ -21,28 +21,27 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxlib.constant.JaxFieldEntity;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.GetJaxFieldRequest;
-import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.branchremittance.manager.BranchRoutingManager;
 import com.amx.jax.client.serviceprovider.ServiceProviderClient;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxDynamicField;
+import com.amx.jax.constants.JaxFieldEntity;
 import com.amx.jax.constants.JaxTransactionStatus;
 import com.amx.jax.dao.BankDao;
 import com.amx.jax.dao.BranchRemittancePaymentDao;
 import com.amx.jax.dbmodel.AccountTypeFromViewModel;
 import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
 import com.amx.jax.dbmodel.BankBranchView;
-import com.amx.jax.dbmodel.BankMasterModel;
+import com.amx.jax.dbmodel.BankMasterMdlv1;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.CollectionDetailViewModel;
-import com.amx.jax.dbmodel.CountryBranch;
+import com.amx.jax.dbmodel.CountryBranchMdlv1;
 import com.amx.jax.dbmodel.CountryMaster;
-import com.amx.jax.dbmodel.CurrencyMasterModel;
+import com.amx.jax.dbmodel.CurrencyMasterMdlv1;
 import com.amx.jax.dbmodel.CustomerDetailsView;
 import com.amx.jax.dbmodel.ExEmailNotification;
 import com.amx.jax.dbmodel.ParameterDetails;
@@ -102,6 +101,7 @@ import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.services.JaxFieldService;
 import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.util.AmxDBConstants;
+import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
 import com.amx.utils.Constants;
 import com.amx.utils.IoUtils;
 import com.amx.utils.JsonUtil;
@@ -532,7 +532,7 @@ public class PartnerTransactionManager extends AbstractModel {
 			try {
 				BeanUtils.copyProperties(customerdto, customerDetails);
 			} catch (IllegalAccessException | InvocationTargetException e) {
-				logger.error("Unable to convert Customer Details : None Found : " + customerId + " Exception " +e);
+				logger.debug("Unable to convert Customer Details : None Found : " + customerId + " Exception " +e);
 				throw new PricerServiceException(PricerServiceError.INVALID_CUSTOMER,
 						"Unable to convert Customer Details : None Found : " + customerId);
 			}
@@ -554,7 +554,7 @@ public class PartnerTransactionManager extends AbstractModel {
 			try {
 				BeanUtils.copyProperties(beneficiaryDto, beneficaryDetails);
 			} catch (IllegalAccessException | InvocationTargetException e) {
-				logger.error("Unable to convert Beneficiary Details : None Found : Customer Id " + customerId + " Beneficiary Relation Ship Id " + beneficiaryRelationShipId + " Exception " +e);
+				logger.debug("Unable to convert Beneficiary Details : None Found : Customer Id " + customerId + " Beneficiary Relation Ship Id " + beneficiaryRelationShipId + " Exception " +e);
 				throw new PricerServiceException(PricerServiceError.INVALID_BENEFICIARY,
 						"Unable to convert Beneficiary Details : None Found : Customer Id " + customerId + " Beneficiary Relation Ship Id " + beneficiaryRelationShipId);
 			}
@@ -855,7 +855,7 @@ public class PartnerTransactionManager extends AbstractModel {
 			serviceProviderXmlLog.setCustomerId(metaData.getCustomerId());
 			serviceProviderXmlLog.setCustomerReference(customerReference);
 			if(metaData.getCountryBranchId() != null) {
-				CountryBranch countryBranch = countryBranchRepository.findByCountryBranchId(metaData.getCountryBranchId());
+				CountryBranchMdlv1 countryBranch = countryBranchRepository.findByCountryBranchId(metaData.getCountryBranchId());
 				if(countryBranch != null) {
 					serviceProviderXmlLog.setEmosBranchCode(countryBranch.getBranchId());
 				}
@@ -896,7 +896,7 @@ public class PartnerTransactionManager extends AbstractModel {
 				BeanUtils.copyProperties(serviceProviderXmlLog, serviceProviderLogDTO);
 				serviceProviderXMLRepository.save(serviceProviderXmlLog);
 			} catch (IllegalAccessException | InvocationTargetException e) {
-				logger.error("Unable to convert Customer Details Exception " +e);
+				logger.debug("Unable to convert Customer Details Exception " +e);
 				throw new PricerServiceException(PricerServiceError.UNKNOWN_EXCEPTION,
 						"Unable to convert Customer Details");
 			}
@@ -915,7 +915,7 @@ public class PartnerTransactionManager extends AbstractModel {
 		if(responseDto != null && responseDto.getCollectionDocumentFYear() != null && responseDto.getCollectionDocumentNo() != null) {
 
 			// checking home send transaction
-			BankMasterModel bankMaster = bankMasterRepo.findByBankCodeAndRecordStatus(PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name(), PricerServiceConstants.Yes);
+			BankMasterMdlv1 bankMaster = bankMasterRepo.findByBankCodeAndRecordStatus(PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name(), PricerServiceConstants.Yes);
 			if(bankMaster == null) {
 				throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record not found for bank code :"+PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name());
 			}
@@ -1058,7 +1058,7 @@ public class PartnerTransactionManager extends AbstractModel {
 		}
 
 		// settlement currency data
-		CurrencyMasterModel settlementCurrencyModel = currencyMasterService.getCurrencyMasterById(paymentLimitDTO.getCurrencyQuote());
+		CurrencyMasterMdlv1 settlementCurrencyModel = currencyMasterService.getCurrencyMasterById(paymentLimitDTO.getCurrencyQuote());
 		if(settlementCurrencyModel != null) {
 			currencyId = settlementCurrencyModel.getCurrencyId();
 		}
@@ -1074,7 +1074,7 @@ public class PartnerTransactionManager extends AbstractModel {
 		}
 
 		// local currency decimal
-		CurrencyMasterModel currencyMaster = currencyMasterService.getCurrencyMasterById(metaData.getDefaultCurrencyId());
+		CurrencyMasterMdlv1 currencyMaster = currencyMasterService.getCurrencyMasterById(metaData.getDefaultCurrencyId());
 
 		// usd rate fetch
 		BigDecimal settlementExchangeRate = partnerTransactionDao.fetchUsdExchangeRate();
@@ -1109,7 +1109,7 @@ public class PartnerTransactionManager extends AbstractModel {
 		Boolean multipleTrnx = Boolean.FALSE;
 		BigDecimal cashlimit = BigDecimal.ZERO;
 		
-		BankMasterModel bankMaster = bankMasterRepo.findByBankCodeAndRecordStatus(PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name(), PricerServiceConstants.Yes);
+		BankMasterMdlv1 bankMaster = bankMasterRepo.findByBankCodeAndRecordStatus(PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name(), PricerServiceConstants.Yes);
 		if(bankMaster == null) {
 			// no need error
 		}else {
@@ -1216,7 +1216,7 @@ public class PartnerTransactionManager extends AbstractModel {
 		boolean includeSPlimits = Boolean.FALSE;
 		ShoppingCartDetails shoppingCartSPData = null;
 		
-		BankMasterModel bankMaster = bankMasterRepo.findByBankCodeAndRecordStatus(PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name(), PricerServiceConstants.Yes);
+		BankMasterMdlv1 bankMaster = bankMasterRepo.findByBankCodeAndRecordStatus(PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name(), PricerServiceConstants.Yes);
 		if(bankMaster == null) {
 			// no need error
 		}else {
@@ -1263,7 +1263,7 @@ public class PartnerTransactionManager extends AbstractModel {
 		model.setBeneficiaryName(remittanceTransactionView.getBeneficiaryName());
 		if(remittanceTransactionView.getLocalTransactionCurrencyId() != null) {
 			// settlement currency data
-			CurrencyMasterModel settlementCurrencyModel = currencyMasterService.getCurrencyMasterById(remittanceTransactionView.getLocalTransactionCurrencyId());
+			CurrencyMasterMdlv1 settlementCurrencyModel = currencyMasterService.getCurrencyMasterById(remittanceTransactionView.getLocalTransactionCurrencyId());
 			if(settlementCurrencyModel != null) {
 				model.setLocalCurrencyQuote(settlementCurrencyModel.getQuoteName());
 			}

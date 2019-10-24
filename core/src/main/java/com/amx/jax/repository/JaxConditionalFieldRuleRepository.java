@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.springframework.data.repository.CrudRepository;
 
-import com.amx.amxlib.constant.JaxFieldEntity;
+import com.amx.jax.constants.JaxFieldEntity;
 import com.amx.jax.dbmodel.JaxConditionalFieldRule;
 
 public interface JaxConditionalFieldRuleRepository extends CrudRepository<JaxConditionalFieldRule, BigDecimal> {

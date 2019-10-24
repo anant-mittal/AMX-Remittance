@@ -6,6 +6,8 @@ import java.util.Date;
 
 import com.amx.jax.dict.Language;
 import com.amx.jax.model.AbstractModel;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import com.amx.utils.ArgUtil;
 
 public class PersonInfo extends AbstractModel implements Cloneable {
@@ -35,6 +37,7 @@ public class PersonInfo extends AbstractModel implements Cloneable {
 	private BigDecimal languageId;
 
 	private Language lang;
+	private BigDecimal identityTypeId;
 
 	public String getWhatsappPrefixCode() {
 		return whatsappPrefixCode;
@@ -201,10 +204,10 @@ public class PersonInfo extends AbstractModel implements Cloneable {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-
-	public Object clone() throws CloneNotSupportedException {
-		return super.clone();
-	}
+	
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
 
 	public String getWhatsAppNumber() {
 		return whatsAppNumber;
@@ -213,7 +216,7 @@ public class PersonInfo extends AbstractModel implements Cloneable {
 	public void setWhatsAppNumber(String whatsAppNumber) {
 		this.whatsAppNumber = whatsAppNumber;
 	}
-
+	
 	public String getReferallId() {
 		return referallId;
 	}
@@ -229,7 +232,15 @@ public class PersonInfo extends AbstractModel implements Cloneable {
 	public void setEmailVerified(String emailVerified) {
 		this.emailVerified = emailVerified;
 	}
+	
+	public BigDecimal getIdentityTypeId() {
+		return identityTypeId;
+	}
 
+	public void setIdentityTypeId(BigDecimal identityTypeId) {
+		this.identityTypeId = identityTypeId;
+	}
+	
 	public BigDecimal getLanguageId() {
 		return languageId;
 	}
@@ -248,5 +259,4 @@ public class PersonInfo extends AbstractModel implements Cloneable {
 	public void setLang(Language lang) {
 		this.lang = lang;
 	}
-
 }

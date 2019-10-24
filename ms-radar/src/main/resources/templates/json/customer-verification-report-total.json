@@ -156,10 +156,11 @@
 	 "vals" : ["any areaId", "any branchName", "any branchUser", "ucount custId AS uCount", "sum tCount AS total"]
   	},
   	{
-	 "rows" : ["areaId_CONTACT_VERF_INIT:DONE AS areaId DEFAULT -", "branchName_CONTACT_VERF_INIT:DONE AS branchName DEFAULT -","branchUser_CONTACT_VERF_INIT:DONE AS branchUser DEFAULT SYSTEM"],
+	 "rows" : ["CONTACT_VERF_INIT:DONE_areaId AS areaId DEFAULT -", "CONTACT_VERF_INIT:DONE_branchName AS branchName DEFAULT -",
+	 	"CONTACT_VERF_INIT:DONE_branchUser AS branchUser DEFAULT SYSTEM"],
 	 "cols" : ["contactType"],
-	 "vals" : ["sum uCount_CONTACT_VERF_INIT:DONE AS verification", "sum uCount_CONTACT_VERF_COMPLETE:DONE AS Confirmed",
-	 		"sum total_CONTACT_VERF_INIT:DONE AS Tverification", "sum total_CONTACT_VERF_COMPLETE:DONE AS TConfirmed"
+	 "vals" : ["sum CONTACT_VERF_INIT:DONE_uCount AS verification", "sum CONTACT_VERF_COMPLETE:DONE_uCount AS Confirmed",
+	 		"sum CONTACT_VERF_INIT:DONE_total AS Tverification", "sum CONTACT_VERF_COMPLETE:DONE_total AS TConfirmed"
 	  ]
   	}
   ]

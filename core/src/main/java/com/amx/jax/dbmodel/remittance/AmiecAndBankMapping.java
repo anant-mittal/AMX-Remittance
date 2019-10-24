@@ -19,7 +19,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import com.amx.jax.dbmodel.BankMasterModel;
+import com.amx.jax.dbmodel.BankMasterMdlv1;
 import com.amx.jax.dbmodel.CountryMaster;
 
 
@@ -34,7 +34,7 @@ public class AmiecAndBankMapping implements Serializable {
 	private BigDecimal amiecAndBankMappingId;
 	private String flexField;
 	private CountryMaster countryId;
-	private BankMasterModel bankId;
+	private BankMasterMdlv1 bankId;
 	private String bankCode;
 	private String amiecCode;
 	private String amiecDescription;
@@ -64,7 +64,7 @@ public class AmiecAndBankMapping implements Serializable {
 	
 
 	public AmiecAndBankMapping(BigDecimal amiecAndBankMappingId,
-			String flexField, CountryMaster countryId, BankMasterModel bankId,
+			String flexField, CountryMaster countryId, BankMasterMdlv1 bankId,
 			String bankCode, String amiecCode, String amiecDescription,
 			String bankDecription, String createdBy, Date createdDate,
 			String modifiedBy, Date modifiedDate, String isActive,
@@ -127,12 +127,12 @@ public class AmiecAndBankMapping implements Serializable {
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "BANK_ID")
-	public BankMasterModel getBankId() {
+	public BankMasterMdlv1 getBankId() {
 		return bankId;
 	}
 
 
-	public void setBankId(BankMasterModel bankId) {
+	public void setBankId(BankMasterMdlv1 bankId) {
 		this.bankId = bankId;
 	}
 

@@ -35,13 +35,13 @@ public class BranchApplication extends SpringBootServletInitializer {
 	}
 
 	@Bean
-	@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
+	@Scope(value = WebApplicationContext.SCOPE_SESSION, proxyMode = ScopedProxyMode.TARGET_CLASS)
 	public CustomerContext customerSession() {
 		return new CustomerContext();
 	}
 
 	@Bean
-	@Scope(value = WebApplicationContext.SCOPE_SESSION, proxyMode = ScopedProxyMode.TARGET_CLASS)
+	@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 	public CustomerContext customerRequest() {
 		return new CustomerContext();
 	}

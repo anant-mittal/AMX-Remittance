@@ -22,7 +22,7 @@ import javax.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.amx.jax.dbmodel.BankMasterModel;
+import com.amx.jax.dbmodel.BankMasterMdlv1;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.model.request.remittance.IRemittanceApplicationParams;
 import com.amx.jax.model.response.ExchangeRateBreakup;
@@ -42,7 +42,7 @@ public class RemittanceApplicationParamManager {
 
 	public void populateRemittanceApplicationParamMap(IRemittanceApplicationParams remittanceApplicationParams,
 			BenificiaryListView beneficiaryView, ExchangeRateBreakup exchangeRateBreakup) {
-		BankMasterModel routintBankMaster = null;
+		BankMasterMdlv1 routintBankMaster = null;
 		if(remittanceApplicationParams!=null) {
 		 routintBankMaster = bankService.getBankById(remittanceApplicationParams.getCorrespondanceBankIdBD());
 		 P_ROUTING_BANK_ID.putValue(remitApplParametersMap, remittanceApplicationParams.getCorrespondanceBankIdBD());

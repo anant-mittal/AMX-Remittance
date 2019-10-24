@@ -13,7 +13,6 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.DependsOn;
 
 /**
  * The Class ArgUtil.
@@ -454,6 +453,22 @@ public final class ArgUtil {
 		}
 		return null;
 	}
+	
+	public static Double parseAsDouble(Object value, Double defaultValue) {
+		if (value instanceof Double) {
+			return (Double) value;
+		} else if (value instanceof Number) {
+			return Double.valueOf(((Number) value).doubleValue());
+		} else if (value instanceof String) {
+			try {
+				return Double.valueOf(Double.parseDouble((String) value));
+			} catch (NumberFormatException e) {
+				return defaultValue;
+			}
+		}
+		return defaultValue;
+	}
+
 
 	/**
 	 * <pre>
@@ -574,7 +589,7 @@ public final class ArgUtil {
 		}
 		return parseAsEnum(value,defaultValue,defaultValue.getClass());
 	}
-	
+
 	public static Enum parseAsEnum(Object value, Enum nullValue, Enum defaultValue) {
 		if (ArgUtil.isEmpty(value)) {
 			return parseAsEnum(value, nullValue);

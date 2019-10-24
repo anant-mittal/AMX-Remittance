@@ -2,6 +2,7 @@ package com.amx.jax.postman.model;
 
 import java.math.BigDecimal;
 
+import com.amx.jax.dict.ContactType;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -18,7 +19,7 @@ public class WAMessage extends Message {
 	private BigDecimal queue;
 
 	public WAMessage() {
-		super();
+		super(ContactType.WHATSAPP);
 	}
 
 	public String getId() {

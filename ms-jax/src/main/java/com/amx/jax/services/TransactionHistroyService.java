@@ -71,7 +71,7 @@ public class TransactionHistroyService extends AbstractService {
 		} else {
 		    
 			Set<BigDecimal> beneRelSeqSet = trnxHisList.stream().map(emp -> emp.getBeneficiaryRelationSeqId())
-					.collect(Collectors.toSet());
+					.filter(seqId -> seqId != null).collect(Collectors.toSet());
 			List<BenificiaryListView> beneList = beneficiaryOnlineDao.getBeneficiaryRelationShipSeqIds(
 					metaData.getCustomerId(), new ArrayList<BigDecimal>(beneRelSeqSet));
 			Map<BigDecimal, BenificiaryListView> beneMap = beneList.stream()

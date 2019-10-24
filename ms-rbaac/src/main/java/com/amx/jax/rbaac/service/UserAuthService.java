@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import com.amx.jax.AmxConstants;
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppContextUtil;
+import com.amx.jax.config.RbaacTenantProperties;
 import com.amx.jax.dbmodel.Device;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.dict.UserClient.DeviceType;
@@ -24,7 +25,7 @@ import com.amx.jax.model.OtpData;
 import com.amx.jax.rbaac.constants.RbaacServiceConstants;
 import com.amx.jax.rbaac.constants.RbaacServiceConstants.LOGIN_TYPE;
 import com.amx.jax.rbaac.dao.RbaacDao;
-import com.amx.jax.rbaac.dbmodel.Employee;
+import com.amx.jax.rbaac.dbmodel.FSEmployee;
 import com.amx.jax.rbaac.dbmodel.Role;
 import com.amx.jax.rbaac.dbmodel.UserRoleMapping;
 import com.amx.jax.rbaac.dbmodel.ViewExEmpBranchSysDetails;
@@ -72,6 +73,9 @@ public class UserAuthService {
 
 	@Autowired
 	private AppConfig appConfig;
+	
+	@Autowired
+	RbaacTenantProperties rbaacTenantProperties;
 
 	/**
 	 * Verify user details.
@@ -129,9 +133,9 @@ public class UserAuthService {
 			}
 		}
 
-		List<Employee> employees = rbaacDao.getEmployees(employeeNo, identity);
+		List<FSEmployee> employees = rbaacDao.getEmployees(employeeNo, identity);
 
-		Employee selfEmployee = getValidEmployee(employees, "Self");
+		FSEmployee selfEmployee = getValidEmployee(employees, "Self");
 
 		// Validate Employee Device/Terminal Assignment
 
@@ -169,10 +173,10 @@ public class UserAuthService {
 		/**
 		 * For Assisted Login;
 		 */
-		Employee partnerEmployee = new Employee();
+		FSEmployee partnerEmployee = new FSEmployee();
 
 		if (isAssisted) {
-			List<Employee> possiblePartners = rbaacDao.getEmployeesByCivilId(partnerIdentity);
+			List<FSEmployee> possiblePartners = rbaacDao.getEmployeesByCivilId(partnerIdentity);
 
 			partnerEmployee = getValidEmployee(possiblePartners, "Partner");
 
@@ -313,10 +317,10 @@ public class UserAuthService {
 			throw new AuthServiceException(RbaacServiceError.OTP_TIMED_OUT, "Invalid OTP: OTP is timedOut");
 		}
 
-		Employee cachedEmployee = userOtpData.getEmployee();
+		FSEmployee cachedEmployee = userOtpData.getEmployee();
 
 		// Get Fresh Employee
-		Employee employee = rbaacDao.getEmployeeByEmployeeId(cachedEmployee.getEmployeeId());
+		FSEmployee employee = rbaacDao.getEmployeeByEmployeeId(cachedEmployee.getEmployeeId());
 
 		String mOtpHash = UserOtpManager.getOtpHash(mOtp);
 		String partnerOtpHash = "";
@@ -411,7 +415,18 @@ public class UserAuthService {
 		RoleResponseDTO roleResponseDTO = getRoleForUser(employee.getEmployeeId());
 
 		empDetail.setUserRole(roleResponseDTO);
-
+		
+		//Tenant base value set
+		if(rbaacTenantProperties.getTenant() != null) {
+			empDetail.setTenant(rbaacTenantProperties.getTenant());
+		}
+		if(rbaacTenantProperties.getCurrencyQuote() != null) {
+			empDetail.setCurrencyQuote(rbaacTenantProperties.getCurrencyQuote());
+		}
+		if(rbaacTenantProperties.getCurrencyId() != null) {
+			empDetail.setCurrencyId(rbaacTenantProperties.getCurrencyId());
+		}
+		
 		// Set Last Successful Login Date as Current Date
 		updateLastLogin(employee);
 
@@ -449,7 +464,7 @@ public class UserAuthService {
 
 	}
 
-	private Employee getValidEmployee(List<Employee> employees, String userType) {
+	private FSEmployee getValidEmployee(List<FSEmployee> employees, String userType) {
 
 		// LOGIN_TYPE userType = userAuthInitReqDTO.getLoginType();
 
@@ -461,7 +476,7 @@ public class UserAuthService {
 					"Employee Details not available : " + userType);
 		}
 
-		List<Employee> activeEmployees = new ArrayList<Employee>();
+		List<FSEmployee> activeEmployees = new ArrayList<FSEmployee>();
 		/**
 		 * Filter Out InActive Employees
 		 */
@@ -484,7 +499,7 @@ public class UserAuthService {
 					"Multiple Users Corresponding to the same Info: Pls contact Support : " + userType);
 		}
 
-		Employee validEmployee = activeEmployees.get(0);
+		FSEmployee validEmployee = activeEmployees.get(0);
 
 		/**
 		 * Check if user A/C is Locked. lockcnt >= 3
@@ -510,7 +525,7 @@ public class UserAuthService {
 		return validEmployee;
 	}
 
-	private boolean validateLoginClient(Employee employee, UserAuthInitReqDTO userAuthInitReqDTO) {
+	private boolean validateLoginClient(FSEmployee employee, UserAuthInitReqDTO userAuthInitReqDTO) {
 
 		UserClientDto userClientDto = userAuthInitReqDTO.getUserClientDto();
 
@@ -593,9 +608,9 @@ public class UserAuthService {
 	/**
 	 * Lock user Account
 	 */
-	private boolean lockUserAccount(Employee srcEmp) {
+	private boolean lockUserAccount(FSEmployee srcEmp) {
 
-		Employee destEmp = rbaacDao.getEmployeeByEmployeeId(srcEmp.getEmployeeId());
+		FSEmployee destEmp = rbaacDao.getEmployeeByEmployeeId(srcEmp.getEmployeeId());
 		destEmp.setLockCount(new BigDecimal(3));
 		destEmp.setLockDate(new Date());
 
@@ -604,9 +619,9 @@ public class UserAuthService {
 		return true;
 	}
 
-	private boolean updateLastLogin(Employee srcEmp) {
+	private boolean updateLastLogin(FSEmployee srcEmp) {
 
-		Employee destEmp = rbaacDao.getEmployeeByEmployeeId(srcEmp.getEmployeeId());
+		FSEmployee destEmp = rbaacDao.getEmployeeByEmployeeId(srcEmp.getEmployeeId());
 		destEmp.setLastLogin(new Date());
 
 		rbaacDao.saveEmployee(destEmp);

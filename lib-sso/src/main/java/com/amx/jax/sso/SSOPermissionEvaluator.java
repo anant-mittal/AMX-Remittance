@@ -32,7 +32,6 @@ public class SSOPermissionEvaluator implements PermissionEvaluator {
 				return true;
 			}
 		}
-		
 		return false;
 	}
 

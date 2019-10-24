@@ -8,5 +8,5 @@ package com.amx.jax.model.response.remittance;
  */
 public enum LoyalityPointState {
 
-	INSUFFICIENT_POINTS, CAN_NOT_AVAIL;
+	INSUFFICIENT_POINTS, CAN_NOT_AVAIL, LOYALTY_POINT_NOT_AVAILABLE;
 }

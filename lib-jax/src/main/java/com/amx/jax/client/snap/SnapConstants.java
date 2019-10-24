@@ -31,11 +31,23 @@ public class SnapConstants {
 		CUSTOMER_VERIFICATION_REPORT("customer-verification-report", SnapIndexName.LOGS, "auditlogs"),
 		CUSTOMER_VERIFICATION_REPORT_TOTAL("customer-verification-report-total", SnapIndexName.LOGS, "auditlogs"),
 		BUGZ_STORIES("bugz-stories", SnapIndexName.ALL),
+
+		RPT("rpt", SnapIndexName.TRANX),
+		RPT2("rpt2", SnapIndexName.TRANX),
 		;
 
 		String file;
 		String index;
 		String indexType;
+		String queryParams;
+
+		public String getQueryParams() {
+			return queryParams;
+		}
+
+		public void setQueryParams(String queryParams) {
+			this.queryParams = queryParams;
+		}
 
 		SnapQueryTemplate(String file) {
 			this.file = file;
@@ -68,5 +80,10 @@ public class SnapConstants {
 		public void setIndexType(String indexType) {
 			this.indexType = indexType;
 		}
+
+		static {
+			RPT.setQueryParams("q:val");
+		}
+
 	}
 }
