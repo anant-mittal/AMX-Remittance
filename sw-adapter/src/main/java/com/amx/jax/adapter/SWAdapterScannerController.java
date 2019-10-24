@@ -7,24 +7,18 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
-import com.amx.jax.http.ApiRequest;
-import com.amx.jax.http.RequestType;
 import com.amx.jax.logger.LoggerService;
 import com.amx.utils.IoUtils;
 
-@Controller
+@RestController
 public class SWAdapterScannerController {
 
 	private static final Logger LOGGER = LoggerService.getLogger(SWAdapterScannerController.class);
 
-	@ResponseBody
-	@ApiRequest(type = RequestType.POLL)
-	@RequestMapping(value = "/pub/doc/scan", method = RequestMethod.GET,
+	@RequestMapping(value = "/pub/doc/scan",
 			produces = MediaType.IMAGE_PNG_VALUE)
 	public ResponseEntity<byte[]> documentScan() throws Exception {
 		File scanFile = new File("c:\\temp\\scanimage.jpg");
