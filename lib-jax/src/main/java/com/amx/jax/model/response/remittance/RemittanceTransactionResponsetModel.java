@@ -41,6 +41,7 @@ public class RemittanceTransactionResponsetModel extends AbstractModel {
 	private BigDecimal rackExchangeRate; /**Worst rate amount all the branches **/
 	private BigDecimal youSavedAmount;
 	private String customerChoice;
+	private BigDecimal youSavedAmountInFC;
 	
 	
 	/*
@@ -219,6 +220,14 @@ public class RemittanceTransactionResponsetModel extends AbstractModel {
 
 	public void setCustomerChoice(String customerChoice) {
 		this.customerChoice = customerChoice;
+	}
+
+	public BigDecimal getYouSavedAmountInFC() {
+		return youSavedAmountInFC;
+	}
+
+	public void setYouSavedAmountInFC(BigDecimal youSavedAmountInFC) {
+		this.youSavedAmountInFC = youSavedAmountInFC;
 	}
 
 	

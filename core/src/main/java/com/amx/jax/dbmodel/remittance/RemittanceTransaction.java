@@ -164,6 +164,9 @@ public class RemittanceTransaction implements Serializable {
 	
 	private String customerChoice;
 	
+	
+	private BigDecimal savedAmountInFc;
+	
 	public RemittanceTransaction() {
 	}
 		
@@ -1223,6 +1226,14 @@ public class RemittanceTransaction implements Serializable {
 
 	public void setCustomerChoice(String customerChoice) {
 		this.customerChoice = customerChoice;
+	}
+	@Column(name="SAVED_AMOUNT_FC")
+	public BigDecimal getSavedAmountInFc() {
+		return savedAmountInFc;
+	}
+
+	public void setSavedAmountInFc(BigDecimal savedAmountInFc) {
+		this.savedAmountInFc = savedAmountInFc;
 	}
 
 }

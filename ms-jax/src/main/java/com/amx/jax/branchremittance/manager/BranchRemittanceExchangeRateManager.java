@@ -7,6 +7,7 @@ import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_BANK_I
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_COUNTRY_ID;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -390,6 +391,7 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 			}
 		
 			result.setYouSavedAmount(getYouSavedAmount(result));
+			result.setYouSavedAmountInFC(getYouSavedAmountInFc(result));
 		}
 		return result;
 	}
@@ -522,12 +524,28 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 		BigDecimal savedAmount = BigDecimal.ZERO;
 		if(result!=null && result.getDiscountAvailed() && result.getRackExchangeRate().compareTo(BigDecimal.ZERO)>0 && result.getExRateBreakup().getConvertedFCAmount().compareTo(BigDecimal.ZERO)>0) {
 			savedAmount =result.getRackExchangeRate().multiply(result.getExRateBreakup().getConvertedFCAmount()).subtract(result.getExRateBreakup().getConvertedLCAmount());
-		}
+		
 		
 		if(savedAmount.compareTo(BigDecimal.ZERO)>0) {
 			savedAmount = RoundUtil.roundBigDecimal(savedAmount,result.getExRateBreakup().getLcDecimalNumber().intValue());
 		}
+		}
 		return savedAmount;
 	}
 	
+	
+	private BigDecimal getYouSavedAmountInFc(DynamicRoutingPricingDto result) {
+		BigDecimal savedAmountFC = BigDecimal.ZERO;
+		
+		if(result.getRackExchangeRate().compareTo(BigDecimal.ZERO)>0 && result.getExRateBreakup().getConvertedFCAmount().compareTo(BigDecimal.ZERO)>0) {
+			BigDecimal exchRate = new BigDecimal(1).divide(result.getRackExchangeRate(), 10, RoundingMode.HALF_UP);
+			
+			savedAmountFC = result.getExRateBreakup().getConvertedFCAmount().subtract(result.getExRateBreakup().getConvertedLCAmount().multiply(exchRate));
+		
+			if(savedAmountFC.compareTo(BigDecimal.ZERO)>0) {
+				savedAmountFC = RoundUtil.roundBigDecimal(savedAmountFC,result.getExRateBreakup().getFcDecimalNumber().intValue());
+			}
+		}
+		return savedAmountFC;
+	}
 }

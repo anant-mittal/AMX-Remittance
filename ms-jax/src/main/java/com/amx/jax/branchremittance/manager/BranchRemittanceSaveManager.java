@@ -855,6 +855,7 @@ public class BranchRemittanceSaveManager {
 					remitTrnx.setSavedAmount(appl.getSavedAmount());
 					remitTrnx.setRackExchangeRate(appl.getRackExchangeRate());
 					remitTrnx.setCustomerChoice(appl.getCustomerChoice());
+					remitTrnx.setSavedAmountInFc(appl.getSavedAmountInFc());
 					
 					BigDecimal documentNo =generateDocumentNumber(appl.getFsCountryMasterByApplicationCountryId().getCountryId(),appl.getFsCompanyMaster().getCompanyId(),remitTrnx.getDocumentId().getDocumentCode(),remitTrnx.getDocumentFinanceYear(),remitTrnx.getLoccod(),ConstantDocument.A);
 					

@@ -146,6 +146,8 @@ public class RemittanceApplication implements Serializable {
 	/** lowest exchange rate amount all the branches **/
 	private BigDecimal rackExchangeRate;
 	private String customerChoice;
+	private BigDecimal savedAmountInFc;
+	 
 
 
 	private List<RemittanceAppBenificiary> exRemittanceAppBenificiary = new ArrayList<RemittanceAppBenificiary>(0);
@@ -1007,6 +1009,15 @@ public class RemittanceApplication implements Serializable {
 
 	public void setCustomerChoice(String customerChoice) {
 		this.customerChoice = customerChoice;
+	}
+
+	@Column(name="SAVED_AMOUNT_FC")
+	public BigDecimal getSavedAmountInFc() {
+		return savedAmountInFc;
+	}
+
+	public void setSavedAmountInFc(BigDecimal savedAmountInFc) {
+		this.savedAmountInFc = savedAmountInFc;
 	}
 	
 	

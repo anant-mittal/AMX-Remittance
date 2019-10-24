@@ -660,6 +660,7 @@ public class RemittanceApplicationManager {
 	public void setSavedAmount(RemittanceApplication remittanceApplication,RemittanceTransactionResponsetModel validationResults) {
 		remittanceApplication.setSavedAmount(validationResults.getYouSavedAmount());
 		remittanceApplication.setRackExchangeRate(validationResults.getRackExchangeRate());
+		remittanceApplication.setSavedAmountInFc(validationResults.getYouSavedAmountInFC());
 	}
 	
 }
