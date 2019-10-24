@@ -112,7 +112,11 @@ public class ApplicationProcedureDao {
 				@Override
 				public CallableStatement createCallableStatement(Connection con) throws SQLException {
 
-					String proc = " { call EX_GET_ADDL_BENE_DETAILS (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,? )} ";
+					//------ after testing error need to un comment
+					//String proc = " { call EX_GET_ADDL_BENE_DETAILS (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,? )} ";
+					
+					//------- Use for testing jax system error
+					String proc = " { call EX_GET_ADDL_BENE_DETAILS (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )} ";
 					CallableStatement cs = con.prepareCall(proc);
 					cs.setBigDecimal(1, beneficaryMasterId);
 					cs.setBigDecimal(2, beneficaryBankId);

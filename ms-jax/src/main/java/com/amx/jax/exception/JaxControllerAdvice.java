@@ -3,6 +3,8 @@ package com.amx.jax.exception;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +19,8 @@ import com.amx.jax.util.JaxContextUtil;
 
 @ControllerAdvice
 public class JaxControllerAdvice extends AmxAdvice {
+	
+	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Autowired
 	private ApplicationContext appContext;
@@ -25,6 +29,7 @@ public class JaxControllerAdvice extends AmxAdvice {
 	@ResponseBody
 	public ResponseEntity<AmxApiError> handle(AbstractJaxException ex, HttpServletRequest request,
 			HttpServletResponse response) {
+		logger.info("TRNX FAILURE LOGS FOR TEST - " +ex);
 		raiseAlert(ex);
 		return super.handle(ex, request, response);
 	}
