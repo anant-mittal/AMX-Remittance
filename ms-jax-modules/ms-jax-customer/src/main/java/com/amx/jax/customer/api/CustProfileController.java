@@ -1,6 +1,5 @@
 package com.amx.jax.customer.api;
 
-
 import java.math.BigDecimal;
 
 import org.slf4j.Logger;
@@ -22,7 +21,6 @@ import com.amx.jax.exception.ApiHttpExceptions.ApiHttpArgException;
 import com.amx.jax.exception.ApiHttpExceptions.ApiStatusCodes;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.customer.CustomerContactVerificationDto;
-import com.amx.jax.postman.PostManService;
 import com.amx.jax.repository.CustomerRepository;
 import com.amx.utils.ArgUtil;
 
@@ -36,12 +34,9 @@ public class CustProfileController implements ICustomerProfileService {
 
 	@Autowired
 	private CustomerPreferenceManager customerPreferenceManager;
-	
-	@Autowired
-	CustomerRepository customerRepository;
 
 	@Autowired
-	private PostManService postManService;
+	CustomerRepository customerRepository;
 
 	@Autowired
 	JaxCustomerContactVerificationService jaxCustomerContactVerificationService;
@@ -100,12 +95,13 @@ public class CustProfileController implements ICustomerProfileService {
 
 	@Override
 	@RequestMapping(value = ApiPath.CUSTOMER_ONLINE_APP_LANGUAGE, method = RequestMethod.POST)
-	public AmxApiResponse<String, Object> saveLanguage(@RequestParam(value = ApiParams.CUSTOMER_ID) BigDecimal customerId, 
-			@RequestParam(value = ApiParams.LANGUAGE_ID)BigDecimal languageId) {
+	public AmxApiResponse<String, Object> saveLanguage(
+			@RequestParam(value = ApiParams.CUSTOMER_ID) BigDecimal customerId,
+			@RequestParam(value = ApiParams.LANGUAGE_ID) BigDecimal languageId) {
 		String status = customerPreferenceManager.saveLanguage(customerId, languageId);
 		return AmxApiResponse.build(status);
 	}
-	
+
 	@Override
 	@RequestMapping(value = ApiPath.CONTACT_LINK_RESEND, method = RequestMethod.POST)
 	public AmxApiResponse<CustomerContactVerificationDto, Object> resendLink(
@@ -123,6 +119,5 @@ public class CustProfileController implements ICustomerProfileService {
 		jaxCustomerContactVerificationService.sendVerificationLink(c, newLink);
 		return AmxApiResponse.build(customerContactVerificationManager.convertToDto(newLink));
 	}
-
 
 }
