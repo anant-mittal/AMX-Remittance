@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -62,6 +61,7 @@ public class SWAdapterScannerController {
 				LOGGER.info("Total time for Image reading:" + (endTime - startTime) / 1000L);
 			}
 			if (isScanDocument == true) {
+				LOGGER.info("getAbsolutePath :" + scanFile.getAbsolutePath());
 				FileInputStream fin = new FileInputStream(scanFile.getAbsolutePath());
 				byte[] out1 = IoUtils.toByteArray(fin);
 				return ResponseEntity.ok()
