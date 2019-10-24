@@ -18,6 +18,7 @@ import com.amx.jax.constant.JaxEvent;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.notification.alert.IAlert;
 import com.amx.jax.util.JaxContextUtil;
+import com.google.common.base.Throwables;
 
 @ControllerAdvice
 public class JaxControllerAdvice extends AmxAdvice {
@@ -31,7 +32,6 @@ public class JaxControllerAdvice extends AmxAdvice {
 	@ResponseBody
 	public ResponseEntity<AmxApiError> handle(AbstractJaxException ex, HttpServletRequest request,
 			HttpServletResponse response) {
-		logger.info("TRNX FAILURE LOGS FOR TEST AE - " +ex);
 		raiseAlert(ex);
 		return super.handle(ex, request, response);
 	}
@@ -40,8 +40,8 @@ public class JaxControllerAdvice extends AmxAdvice {
 	@ResponseBody
 	public ResponseEntity<AmxApiError> handleException(Exception ex, HttpServletRequest request,
 			HttpServletResponse response) {
-		logger.info("TRNX FAILURE LOGS FOR TEST JE- " +ex);
-		AbstractJaxException jaxException= new GlobalException( JaxError.JAX_SYSTEM_ERROR,ex.getStackTrace().toString());
+		String stackTrace = Throwables.getStackTraceAsString(ex);
+		AbstractJaxException jaxException = new GlobalException(JaxError.JAX_SYSTEM_ERROR, stackTrace);
 		raiseAlert(jaxException);
 		return super.handle(jaxException, request, response);
 	}

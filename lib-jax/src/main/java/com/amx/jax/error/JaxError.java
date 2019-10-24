@@ -327,6 +327,7 @@ public enum JaxError implements IExceptionEnum {
 
 	//HOME SEND
 	SINGLE_TRANSACTION_SERVICE_PROVIDER,
+	REMITTANCE_SETUP_ERROR,
 	// Default in last, IMPORTANT:- It should be last
 	JAX_SYSTEM_ERROR,
 	BPI_SETUP_IS_MISSING,
