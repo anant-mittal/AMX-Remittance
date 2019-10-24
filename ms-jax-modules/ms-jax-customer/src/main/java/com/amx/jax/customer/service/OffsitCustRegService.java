@@ -898,8 +898,6 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 				DmsDocumentBlobTemparory dmsDocumentBlobTemparory = new DmsDocumentBlobTemparory();
 				dmsDocumentBlobTemparory.setCreatedBy(jaxDBService.getCreatedOrUpdatedBy());
 				dmsDocumentBlobTemparory.setCreatedDate(new Date());
-				dmsApplMapping.setCustomerId(customer.getCustomerId());
-				dmsApplMapping.setIdentityExpiryDate(model.getIdentityExpiredDate());
 				BigDecimal docBlobId = dmsApplMapping.getDocBlobId();
 				BigDecimal docFinYear = dmsApplMapping.getFinancialYear();
 				outputParams.put("docBlobId", docBlobId);
