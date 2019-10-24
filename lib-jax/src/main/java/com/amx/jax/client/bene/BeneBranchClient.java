@@ -133,7 +133,7 @@ public class BeneBranchClient implements IBranchBeneService {
 	public AmxApiResponse<BeneficiaryListDTO, Object> listBene(ListBeneRequest request) {
 		try {
 			LOGGER.debug("in listBene :");
-			return restService.ajax(appConfig.getJaxURL() + Path.LIST_BANK_BRANCH).meta(new JaxMetaInfo()).get()
+			return restService.ajax(appConfig.getJaxURL() + Path.LIST_BENE).meta(new JaxMetaInfo()).post(request)
 					.as(new ParameterizedTypeReference<AmxApiResponse<BeneficiaryListDTO, Object>>() {
 					});
 		} catch (Exception e) {

@@ -115,7 +115,7 @@ public class BeneBranchController implements IBranchBeneService {
 	@RequestMapping(value = Path.LIST_BENE, method = RequestMethod.POST)
 	@Override
 	@ApiOperation("get bene list statuss")
-	public AmxApiResponse<BeneficiaryListDTO, Object> listBene(ListBeneRequest request) {
+	public AmxApiResponse<BeneficiaryListDTO, Object> listBene(@RequestBody @Valid ListBeneRequest request) {
 		List<BeneficiaryListDTO> list = beneBranchService.listBene(request);
 		return AmxApiResponse.buildList(list);
 	}
@@ -123,7 +123,7 @@ public class BeneBranchController implements IBranchBeneService {
 	@RequestMapping(value = Path.UPDATE_BENE_STATUS, method = RequestMethod.POST)
 	@Override
 	@ApiOperation("update bene status")
-	public AmxApiResponse<BoolRespModel, Object> updateBeneStatus(UpdateBeneStatusRequest request) {
+	public AmxApiResponse<BoolRespModel, Object> updateBeneStatus(@RequestBody @Valid UpdateBeneStatusRequest request) {
 		logger.debug("updateBeneStatus request: {}", JsonUtil.toJson(request));
 		beneBranchService.updateBeneStatus(request);
 		return AmxApiResponse.build(new BoolRespModel(true));
