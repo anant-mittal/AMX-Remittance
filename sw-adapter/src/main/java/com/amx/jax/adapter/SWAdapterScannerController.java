@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.amx.jax.http.ApiRequest;
 import com.amx.jax.http.RequestType;
@@ -21,8 +22,9 @@ public class SWAdapterScannerController {
 
 	private static final Logger LOGGER = LoggerService.getLogger(SWAdapterScannerController.class);
 
+	@ResponseBody
 	@ApiRequest(type = RequestType.POLL)
-	@RequestMapping(value = "/pub/document/scan", method = RequestMethod.GET,
+	@RequestMapping(value = "/pub/doc/scan", method = RequestMethod.GET,
 			produces = MediaType.IMAGE_PNG_VALUE)
 	public ResponseEntity<byte[]> documentScan() throws Exception {
 		File scanFile = new File("c:\\temp\\scanimage.jpg");
