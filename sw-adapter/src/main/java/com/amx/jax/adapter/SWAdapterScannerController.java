@@ -21,8 +21,12 @@ public class SWAdapterScannerController {
 	@RequestMapping(value = "/pub/doc/scan",
 			produces = MediaType.IMAGE_PNG_VALUE)
 	public ResponseEntity<byte[]> documentScan() throws Exception {
+		//File scanFile = new File("/Users/lalittanwar/Projects/amx-scanner/test/civilfornt_copy.jpg");
+		//File directory = new File("/Users/lalittanwar/Projects/amx-scanner/test/");
+		
 		File scanFile = new File("c:\\temp\\scanimage.jpg");
 		File directory = new File("c:\\temp");
+		
 		boolean isScanDocument = false;
 
 		try {
@@ -64,7 +68,7 @@ public class SWAdapterScannerController {
 						.contentType(MediaType.valueOf("image/jpeg")).body(out1);
 			}
 		} catch (Exception e) {
-			e.getStackTrace();
+			LOGGER.error("ERROR",e);
 		}
 		return ResponseEntity.noContent().build();
 	}
