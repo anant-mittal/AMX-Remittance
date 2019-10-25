@@ -162,9 +162,14 @@ public class AppContextUtil {
 	public static String getSessionIdFromTraceId() {
 		String traceId = getTraceId();
 		if (!ArgUtil.isEmptyString(traceId)) {
-			Matcher matcher = UniqueID.SYSTEM_STRING_PATTERN.matcher(traceId);
+			Matcher matcher = UniqueID.SYSTEM_STRING_PATTERN_V2.matcher(traceId);
 			if (matcher.find()) {
 				setSessionId(matcher.group(1) + "-" + matcher.group(2) + "-" + matcher.group(3));
+			} else {
+				Matcher matcher2 = UniqueID.SYSTEM_STRING_PATTERN.matcher(traceId);
+				if (matcher2.find()) {
+					setSessionId(matcher2.group(1) + "-" + matcher2.group(2) + "-" + matcher2.group(3));
+				}
 			}
 		}
 		return getSessionId(true);

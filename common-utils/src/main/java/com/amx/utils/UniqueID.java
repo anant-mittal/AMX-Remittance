@@ -16,6 +16,8 @@ public final class UniqueID {
 	public static final String PREF = Random.randomAlpha(3);
 	public static final Pattern SYSTEM_STRING_PATTERN = Pattern
 			.compile("^([A-Z]{3})-([\\w]+)-([\\w]+)-([\\w]+)-(\\w+)$");
+	public static final Pattern SYSTEM_STRING_PATTERN_V2 = Pattern
+			.compile("^([A-Z]{3})-([\\w]+)-([\\w]+)-([\\w]+)-([\\w]+)-(\\w+)$");
 
 	/** The atom. */
 	private static AtomicInteger atom = new AtomicInteger();
