@@ -9,6 +9,7 @@ import java.util.Set;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -142,6 +143,25 @@ public class CommonHttpRequest {
 			}
 		}
 		return deviceId;
+	}
+
+	public void setTraceUserIdentifier(Object sessionUserId) {
+		if (request != null) {
+			HttpSession session = request.getSession(false);
+			if (session != null) {
+				session.setAttribute(AppConstants.SESSION_SUFFIX_XKEY, sessionUserId);
+			}
+		}
+	}
+
+	public String getTraceUserIdentifier() {
+		if (request != null) {
+			HttpSession session = request.getSession(false);
+			if (session != null) {
+				return ArgUtil.parseAsString(session.getAttribute(AppConstants.SESSION_SUFFIX_XKEY));
+			}
+		}
+		return null;
 	}
 
 	public String getRequestParam(String... contextKeys) {

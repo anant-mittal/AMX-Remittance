@@ -66,8 +66,13 @@ public final class UniqueID {
 		return PREF + "-" + StringUtils.pad(sessionPrefix, "xxxxx", 0) + "-" + generateString62();
 	}
 
-	public static String generateRequestId(String sessionId, String requestPrefix) {
-		return sessionId + "-" + requestPrefix + "-" + generateString62();
+	public static String generateRequestId(String sessionId, String requestGroup) {
+		return generateRequestId(sessionId, "000000", requestGroup);
+	}
+
+	public static String generateRequestId(String sessionId, String requestUser, String requestGroup) {
+		return sessionId + "-" + StringUtils.pad(requestUser, "000000", 1) + "-" + requestGroup + "-"
+				+ generateString62();
 	}
 
 	/**
