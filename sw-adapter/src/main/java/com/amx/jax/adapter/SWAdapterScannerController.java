@@ -2,6 +2,7 @@ package com.amx.jax.adapter;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
@@ -18,15 +19,15 @@ public class SWAdapterScannerController {
 
 	private static final Logger LOGGER = LoggerService.getLogger(SWAdapterScannerController.class);
 
-	@RequestMapping(value = "/pub/doc/scan",
-			produces = MediaType.IMAGE_PNG_VALUE)
+	@RequestMapping(value = "/pub/doc/scan", produces = MediaType.IMAGE_PNG_VALUE)
 	public ResponseEntity<byte[]> documentScan() throws Exception {
-		//File scanFile = new File("/Users/lalittanwar/Projects/amx-scanner/test/civilfornt_copy.jpg");
-		//File directory = new File("/Users/lalittanwar/Projects/amx-scanner/test/");
-		
+		// File scanFile = new
+		// File("/Users/lalittanwar/Projects/amx-scanner/test/civilfornt_copy.jpg");
+		// File directory = new File("/Users/lalittanwar/Projects/amx-scanner/test/");
+
 		File scanFile = new File("c:\\temp\\scanimage.jpg");
 		File directory = new File("c:\\temp");
-		
+
 		boolean isScanDocument = false;
 
 		try {
@@ -37,6 +38,7 @@ public class SWAdapterScannerController {
 
 			if (isScanDocument == false) {
 				if (scanFile.exists()) {
+					LOGGER.info("Deleting : " + scanFile.getAbsolutePath());
 					scanFile.delete();
 				}
 				// Runtime.getRuntime().exec("cmd /c scan.bat", null, new
@@ -60,15 +62,32 @@ public class SWAdapterScannerController {
 				LOGGER.info("ofile :" + f);
 				LOGGER.info("Total time for Image reading:" + (endTime - startTime) / 1000L);
 			}
+
 			if (isScanDocument == true) {
-				LOGGER.info("getAbsolutePath :" + scanFile.getAbsolutePath());
-				FileInputStream fin = new FileInputStream(scanFile.getAbsolutePath());
-				byte[] out1 = IoUtils.toByteArray(fin);
-				return ResponseEntity.ok()
-						.contentType(MediaType.valueOf("image/jpeg")).body(out1);
+				FileInputStream fin = null;
+				try {
+					if(scanFile.exists()) {
+						LOGGER.debug("File Exists"+ scanFile.getAbsolutePath());
+						fin = new FileInputStream(scanFile.getAbsolutePath());
+						byte[] out1 = IoUtils.toByteArray(fin);
+						return ResponseEntity.ok().contentType(MediaType.valueOf("image/jpeg")).body(out1);
+					} else {
+						LOGGER.error("File NotExists"+ scanFile.getAbsolutePath());
+					}
+				} catch (IOException e) {
+					LOGGER.error("FileInputStream", e);
+				} finally {
+					try {
+						if (fin != null) {
+							fin.close();
+						}
+					} catch (IOException e) {
+						LOGGER.debug("FileInputStream",e);
+					}
+				}
 			}
 		} catch (Exception e) {
-			LOGGER.error("ERROR",e);
+			LOGGER.error("ERROR", e);
 		}
 		return ResponseEntity.noContent().build();
 	}
