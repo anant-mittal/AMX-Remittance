@@ -17,5 +17,9 @@ public class StringUtilTest {
 		String s2 = "p";
 		String op2 = StringUtils.capitalize(s2);
 		assertEquals("P", op2);
+		long val = 999999999999999L * 248L;
+		System.out.println("======" + val);
+		System.out.println("======" + Long.toString(val, 36));
+		System.out.println("======" + StringUtils.alpha62(val));
 	}
 }

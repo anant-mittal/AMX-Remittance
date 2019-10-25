@@ -39,12 +39,16 @@ public final class UniqueID {
 	/**
 	 * Generate string.
 	 *
-	 * @return : Unique String ID
+	 * @return : Unique String ID - 7R34Yp643g8
 	 */
 	public static String generateString() {
 		return Long.toString(generate(), 36);
 	}
 
+	/**
+	 * 
+	 * @return 7R34Yp6lEod
+	 */
 	public static String generateString62() {
 		return StringUtils.alpha62(generate());
 	}
@@ -59,11 +63,11 @@ public final class UniqueID {
 	}
 
 	public static String generateSessionId(String sessionPrefix) {
-		return PREF + "-" + StringUtils.pad(sessionPrefix, "xxxxx", 0) + "-" + generateString();
+		return PREF + "-" + StringUtils.pad(sessionPrefix, "xxxxx", 0) + "-" + generateString62();
 	}
 
 	public static String generateRequestId(String sessionId, String requestPrefix) {
-		return sessionId + "-" + requestPrefix + "-" + Long.toString(generate(), 36);
+		return sessionId + "-" + requestPrefix + "-" + generateString62();
 	}
 
 	/**
@@ -74,7 +78,7 @@ public final class UniqueID {
 	 */
 	@Deprecated
 	public static String generateSystemString(String midfix, String prefix) {
-		return PREF + "-" + midfix + "-" + prefix + "-" + Long.toString(generate(), 36);
+		return PREF + "-" + midfix + "-" + prefix + "-" + generateString62();
 	}
 
 }

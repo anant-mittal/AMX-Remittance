@@ -107,15 +107,15 @@ public class DiscountManagementService {
 		
 	}
 
-	public AmxApiResponse<BoolRespModel, Object> saveOnlineMarginMarkupData(OnlineMarginMarkupInfo onlineMarginMarkupInfo) {
+	public AmxApiResponse<BoolRespModel, Object> saveOnlineMarginMarkupData(
+			OnlineMarginMarkupInfo onlineMarginMarkupInfo) {
 		onlineMarginMarkupInfo.setApplicationCountryId(amxConfig.getDefaultCountryId());
 		try {
-		return pricerServiceClient.saveOnlineMarginMarkupData(onlineMarginMarkupInfo);
+			return pricerServiceClient.saveOnlineMarginMarkupData(onlineMarginMarkupInfo);
 		} catch (PricerServiceException e) {
-		LOGGER.info("ErrorKey : - " +e.getErrorKey()+ " ErrorMessage : - " +e.getErrorMessage());
-		 throw new PricerServiceException(PricerServiceError.INVALID_MARKUP,
-					"The markup value entered is not valid for the selected country,currency and bank.");
-	}
+			LOGGER.info("ErrorKey : - " + e.getErrorKey() + " ErrorMessage : - " + e.getErrorMessage());
+			throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
+		}
 	}
 
 

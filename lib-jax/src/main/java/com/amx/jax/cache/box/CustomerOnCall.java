@@ -21,6 +21,7 @@ public class CustomerOnCall extends CacheBox<CustomerCall> {
 
 		private static final long serialVersionUID = -8788305096383678577L;
 		private BigDecimal customerid;
+		private BigDecimal leadId;
 		private String sessionId;
 
 		public BigDecimal getCustomerid() {
@@ -37,6 +38,14 @@ public class CustomerOnCall extends CacheBox<CustomerCall> {
 
 		public void setSessionId(String sessionId) {
 			this.sessionId = sessionId;
+		}
+
+		public BigDecimal getLeadId() {
+			return leadId;
+		}
+
+		public void setLeadId(BigDecimal leadId) {
+			this.leadId = leadId;
 		}
 
 	}
