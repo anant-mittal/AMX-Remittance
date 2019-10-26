@@ -36,6 +36,7 @@ public class AdditionalDataDisplayView implements Serializable{
 	private String isActive;
 	private BigDecimal routingBankId;
 	private String isBeneTag;
+	private String preFlexIndicator;
 	
 	@Id
 	@Column(name = "SERVICE_ID")
@@ -188,6 +189,14 @@ public class AdditionalDataDisplayView implements Serializable{
 	}
 	public void setIsBeneTag(String isBeneTag) {
 		this.isBeneTag = isBeneTag;
+	}
+	
+	@Column(name="PREFLEX_IND")
+	public String getPreFlexIndicator() {
+		return preFlexIndicator;
+	}
+	public void setPreFlexIndicator(String preFlexIndicator) {
+		this.preFlexIndicator = preFlexIndicator;
 	}
 	
 }

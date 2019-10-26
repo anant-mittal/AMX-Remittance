@@ -266,8 +266,7 @@ public class BranchRemittanceController implements IRemittanceService {
 
 	@RequestMapping(value = Path.BR_REMITTANCE_GET_BENE_PACKAGE, method = RequestMethod.POST)
 	@Override
-	public AmxApiResponse<BenePackageResponse, Object> getBenePackages(
-			@RequestBody BenePackageRequest benePackageRequest) {
+	public AmxApiResponse<BenePackageResponse, Object> getBenePackages(@RequestBody @Valid BenePackageRequest benePackageRequest) {
 		return branchRemitService.getBenePackages(benePackageRequest);
 	}
 

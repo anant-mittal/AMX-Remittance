@@ -121,68 +121,18 @@ public class RemittanceTransactionRequestValidator {
 		}
 		List<AdditionalDataDisplayView> additionalDataRequired = additionalDataDisplayDao.getAdditionalDataFromServiceApplicabilityForBank(
 				applicationCountryId, routingCountryId, foreignCurrencyId, remittanceModeId, deliveryModeId,
-				flexiFieldIn.toArray(new String[flexiFieldIn.size()]), routingBankId);
+				flexiFieldIn.toArray(new String[flexiFieldIn.size()]), routingBankId, ConstantDocument.No);
 		if (CollectionUtils.isEmpty(additionalDataRequired)) {
 			additionalDataRequired = additionalDataDisplayDao.getAdditionalDataFromServiceApplicability(applicationCountryId, routingCountryId,
 					foreignCurrencyId, remittanceModeId, deliveryModeId, flexiFieldIn.toArray(new String[flexiFieldIn.size()]));
 		}
-		
+		FlexFieldDto servicePackage = request.getServicePackage();
 		List<JaxConditionalFieldDto> requiredFlexFields = new ArrayList<>();
 		for (AdditionalDataDisplayView flexField : additionalDataRequired) {
-			FlexFieldDto flexFieldValueInRequest = requestFlexFields.get(flexField.getFlexField());
-
-			String fieldBehaviour = flexField.getFieldBehaviour();
-			LOGGER.info("Flex field value is "+flexField.getFlexField());
-			LOGGER.info("Routing country value is "+routingCountryId);
-			List<AdditionalBankRuleMap> addtionalBankRules = additionalBankRuleMapDao
-					.getDynamicLevelMatch(routingCountryId, flexField.getFlexField());
-			// bank rule for this flex field
-			AdditionalBankRuleMap bankRule = addtionalBankRules.get(0);
-			JaxConditionalFieldDto dto = new JaxConditionalFieldDto();
-			dto.setEntityName(JaxFieldEntity.FLEX_FIELD);
-			JaxFieldDto field = new JaxFieldDto();
-			field.setName(bankRule.getFlexField());
-			field.setLabel(bankRule.getFieldName());
-			field.setRequired(ConstantDocument.Yes.equals(flexField.getIsRequired()));
-			if (flexField.getMinLength() != null && flexField.getMinLength().compareTo(BigDecimal.ZERO) != 0
-					&& flexField.getMaxLength() != null && flexField.getMaxLength().compareTo(BigDecimal.ZERO) != 0) {
-				field.setMinLength(flexField.getMinLength());
-				field.setMaxLength(flexField.getMaxLength());
-			} else {
-				field.setMinLength(BigDecimal.ONE);
-				field.setMaxLength(new BigDecimal(100));
-			}
-			field.setDtoPath("flexFields." + bankRule.getFlexField());
-			dto.setId(bankRule.getAdditionalBankRuleId());
-			FlexFieldBehaviour flexFieldBehaviourEnum = FlexFieldBehaviour.valueOf(fieldBehaviour);
-			field.setType(flexFieldBehaviourEnum.getFieldType().toString());
-			switch (flexFieldBehaviourEnum) {
-			case PRE_DEFINED:
-				List<JaxFieldValueDto> amiecValues = getAmiecValues(bankRule.getFlexField(), routingCountryId, deliveryModeId, remittanceModeId,
-						routingBankId, foreignCurrencyId, bankRule.getAdditionalBankRuleId());
-				// To set default value for bpi gift service provider
-				if (request != null && request.getServicePackage() != null && request.getServicePackage().getIndic() != null
-						&& request.getServicePackage().getAmieceCode() != null
-						&& request.getServicePackage().getIndic().equalsIgnoreCase(field.getName())) {
-					amiecValues = getDefaultForServicePackage(request, amiecValues);
-					if (amiecValues != null && !amiecValues.isEmpty())
-						field.setDefaultValue(amiecValues.get(0).getId().toString());
-				}
-				field.setPossibleValues(amiecValues);
-				break;
-			case DATE:
-				field.getAdditionalValidations().put("format", ConstantDocument.MM_DD_YYYY_DATE_FORMAT.toUpperCase());
-				break;
-			default:
-				break;
-			}
-			dto.setField(field);
-			if (flexFieldValueInRequest == null) {
-				requiredFlexFields.add(dto);
-			} else {
-				if (field.getPossibleValues() != null && hasFieldValueChanged(field, flexFieldValueInRequest)) {
-					requiredFlexFields.add(dto);
-				}
+			JaxConditionalFieldDto jaxConditionalFieldDto = getConditionalFieldDto(flexField, requestFlexFields, foreignCurrencyId, foreignCurrencyId,
+					foreignCurrencyId, foreignCurrencyId, foreignCurrencyId, servicePackage);
+			if (jaxConditionalFieldDto != null) {
+				requiredFlexFields.add(jaxConditionalFieldDto);
 			}
 		}
 		// update jaxfield defination from db
@@ -221,13 +171,72 @@ public class RemittanceTransactionRequestValidator {
 		}
 		
 		// ventaja api validation
-		//additionalBankDetailManager.validateAdditionalBankFields(request, remitApplParametersMap);
+		additionalBankDetailManager.validateAdditionalBankFields(request, remitApplParametersMap);
+	}
+
+	public JaxConditionalFieldDto getConditionalFieldDto(AdditionalDataDisplayView flexField, Map<String, FlexFieldDto> requestFlexFields,
+			BigDecimal routingCountryId, BigDecimal remittanceModeId, BigDecimal deliveryModeId, BigDecimal foreignCurrencyId,
+			BigDecimal routingBankId, FlexFieldDto servicePackage) {
+
+		FlexFieldDto flexFieldValueInRequest = requestFlexFields.get(flexField.getFlexField());
+
+		String fieldBehaviour = flexField.getFieldBehaviour();
+		LOGGER.info("Flex field value is " + flexField.getFlexField());
+		LOGGER.info("Routing country value is " + routingCountryId);
+		List<AdditionalBankRuleMap> addtionalBankRules = additionalBankRuleMapDao.getDynamicLevelMatch(routingCountryId, flexField.getFlexField());
+		// bank rule for this flex field
+		AdditionalBankRuleMap bankRule = addtionalBankRules.get(0);
+		JaxConditionalFieldDto dto = new JaxConditionalFieldDto();
+		dto.setEntityName(JaxFieldEntity.FLEX_FIELD);
+		JaxFieldDto field = new JaxFieldDto();
+		field.setName(bankRule.getFlexField());
+		field.setLabel(bankRule.getFieldName());
+		field.setRequired(ConstantDocument.Yes.equals(flexField.getIsRequired()));
+		if (flexField.getMinLength() != null && flexField.getMinLength().compareTo(BigDecimal.ZERO) != 0 && flexField.getMaxLength() != null
+				&& flexField.getMaxLength().compareTo(BigDecimal.ZERO) != 0) {
+			field.setMinLength(flexField.getMinLength());
+			field.setMaxLength(flexField.getMaxLength());
+		} else {
+			field.setMinLength(BigDecimal.ONE);
+			field.setMaxLength(new BigDecimal(100));
+		}
+		field.setDtoPath("flexFields." + bankRule.getFlexField());
+		dto.setId(bankRule.getAdditionalBankRuleId());
+		FlexFieldBehaviour flexFieldBehaviourEnum = FlexFieldBehaviour.valueOf(fieldBehaviour);
+		field.setType(flexFieldBehaviourEnum.getFieldType().toString());
+		switch (flexFieldBehaviourEnum) {
+		case PRE_DEFINED:
+			List<JaxFieldValueDto> amiecValues = getAmiecValues(bankRule.getFlexField(), routingCountryId, deliveryModeId, remittanceModeId,
+					routingBankId, foreignCurrencyId, bankRule.getAdditionalBankRuleId());
+			// To set default value for bpi gift service provider
+			if (servicePackage != null && servicePackage.getIndic() != null && servicePackage.getIndic().equalsIgnoreCase(field.getName())) {
+				amiecValues = getDefaultForServicePackage(servicePackage, amiecValues);
+				if (amiecValues != null && !amiecValues.isEmpty())
+					field.setDefaultValue(amiecValues.get(0).getId().toString());
+			}
+			field.setPossibleValues(amiecValues);
+			break;
+		case DATE:
+			field.getAdditionalValidations().put("format", ConstantDocument.MM_DD_YYYY_DATE_FORMAT.toUpperCase());
+			break;
+		default:
+			break;
+		}
+		dto.setField(field);
+		if (flexFieldValueInRequest == null) {
+			return dto;
+		} else {
+			if (field.getPossibleValues() != null && hasFieldValueChanged(field, flexFieldValueInRequest)) {
+				return dto;
+			}
+		}
+		return null;
 	}
 
 	/**
 	 * process flex fields for further modification
 	 */
-	private void processFlexFields(List<JaxConditionalFieldDto> requiredFlexFields) {
+	public void processFlexFields(List<JaxConditionalFieldDto> requiredFlexFields) {
 		// make type field to be upper case
 		requiredFlexFields.forEach(i -> {
 			i.getField().setType(i.getField().getType().toUpperCase());
@@ -365,14 +374,13 @@ public class RemittanceTransactionRequestValidator {
 		return null;
 	}
 
-	private List<JaxFieldValueDto> getDefaultForServicePackage(RemittanceAdditionalBeneFieldModel request,
+	private List<JaxFieldValueDto> getDefaultForServicePackage(FlexFieldDto servicePackage,
 			List<JaxFieldValueDto> amiecValues) {
 		List<JaxFieldValueDto> amiecValue = new ArrayList<>();
-		FlexFieldDto servicePackDtoValue = request.getServicePackage();
 		for (JaxFieldValueDto flexDto : amiecValues) {
 			FlexFieldDto flex = (FlexFieldDto) flexDto.getValue();
 			if (flex != null && flex.getAmieceCode() != null
-					&& flex.getAmieceCode().equals(servicePackDtoValue.getAmieceCode())) {
+					&& flex.getAmieceCode().equals(servicePackage.getAmieceCode())) {
 				amiecValue.add(flexDto);
 			}
 		}

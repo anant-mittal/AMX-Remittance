@@ -108,7 +108,7 @@ public class AdditionalBankDetailManager {
 		List<String> flexiFieldIn = allFlexFields.stream().map(i -> i.getFieldName()).collect(Collectors.toList());
 		List<AdditionalDataDisplayView> additionalDataRequired = additionalDataDisplayDao.getAdditionalDataFromServiceApplicabilityForBank(
 				applicationCountryId, routingCountryId, foreignCurrencyId, remittanceModeId, deliveryModeId,
-				flexiFieldIn.toArray(new String[flexiFieldIn.size()]), routingBankId);
+				flexiFieldIn.toArray(new String[flexiFieldIn.size()]), routingBankId, ConstantDocument.No);
 		if (CollectionUtils.isEmpty(additionalDataRequired)) {
 			additionalDataRequired = additionalDataDisplayDao.getAdditionalDataFromServiceApplicability(applicationCountryId, routingCountryId,
 					foreignCurrencyId, remittanceModeId, deliveryModeId, flexiFieldIn.toArray(new String[flexiFieldIn.size()]));

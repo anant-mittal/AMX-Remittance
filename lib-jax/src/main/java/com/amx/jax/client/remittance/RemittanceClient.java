@@ -12,6 +12,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.client.fx.FcSaleOrderClient;
+import com.amx.jax.exception.JaxSystemError;
 import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.request.remittance.BenePackageRequest;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
