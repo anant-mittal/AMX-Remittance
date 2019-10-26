@@ -55,6 +55,9 @@ public class SWAdapterLauncher {
 			SWAdapterGUI ex = ctx.getBean(SWAdapterGUI.class);
 			SWAdapterGUI.CONTEXT = ex;
 			ex.setVisible(true);
+			
+			SWDocumentScanner scanner = ctx.getBean(SWDocumentScanner.class);
+			SWDocumentScanner.CONTEXT = scanner;
 			// opnePage();
 		});
 	}

@@ -6,6 +6,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.io.IOException;
 import java.util.Date;
 
 import javax.swing.JButton;
@@ -69,8 +70,10 @@ public class SWAdapterGUI extends JFrame {
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 
+		
 		JTabbedPane tabs = new JTabbedPane();
 
+		// +++CardReader
 		// create a new panel with GridBagLayout manager
 		JPanel newPanel = new JPanel();
 		newPanel.setLayout(new GridBagLayout());
@@ -164,6 +167,7 @@ public class SWAdapterGUI extends JFrame {
 		// newPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),
 		// "Card Reader Status"));
 
+		// +++LOGS
 		textArea = new JTextArea();
 		textArea.setFont(new Font("monospaced", Font.PLAIN, 8));
 		textArea.setEditable(false);
@@ -173,10 +177,33 @@ public class SWAdapterGUI extends JFrame {
 		aboutTextArea.setFont(new Font("monospaced", Font.PLAIN, 8));
 		aboutTextArea.setEditable(false);
 
+		// +++DocScanner
+		// create a new panel with GridBagLayout manager
+		JPanel scannerPanel = new JPanel();
+		scannerPanel.setLayout(new GridBagLayout());
+		scannerPanel.setFont(font);
+		constraints.gridx = 1;
+		constraints.gridy = 7;
+		constraints.gridwidth = 1;
+		constraints.anchor = GridBagConstraints.CENTER;
+		JButton scannerButton = new JButton("Scan");
+		scannerButton.addActionListener((ActionEvent event) -> {
+			if(SWDocumentScanner.CONTEXT!=null) {
+				try {
+					SWDocumentScanner.CONTEXT.scan();
+				} catch (IOException e) {
+					logWindow(e.getMessage());
+				}
+			}
+		});
+		scannerPanel.add(scannerButton, constraints);
+		
+		// +++About PANE
 		about = new JScrollPane(aboutTextArea);
-
+		
 		tabs.addTab("Adapter", newPanel);
 		tabs.addTab("Logs", pane);
+		tabs.addTab("Scanner", scannerPanel);
 		tabs.addTab("About", about);
 		add(tabs);
 
