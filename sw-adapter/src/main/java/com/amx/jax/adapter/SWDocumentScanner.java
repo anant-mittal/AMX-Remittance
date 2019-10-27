@@ -12,8 +12,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
 import org.slf4j.Logger;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.logger.LoggerService;
