@@ -7,6 +7,7 @@ import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_BANK_I
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_COUNTRY_ID;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -68,6 +69,7 @@ import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.services.BeneficiaryValidationService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.JaxUtil;
+import com.amx.jax.util.RoundUtil;
 import com.amx.jax.validation.RemittanceTransactionRequestValidator;
 import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
 
@@ -537,11 +539,14 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 			count = splitCount[0].add(splitCount[1].compareTo(BigDecimal.ZERO)>0?BigDecimal.ONE:BigDecimal.ZERO);
 			List<String> amountStrList= new ArrayList<>();
 			for(int i=0;i<splitCount[0].intValue();i++) {
-				amountStrList.add(routingDetails.getSplitAmount().toString());
+				BigDecimal spValue = RoundUtil.roundBigDecimal(routingDetails.getSplitAmount(),drDto.getExRateBreakup().getFcDecimalNumber().intValue());
+				//amountStrList.add(routingDetails.getSplitAmount().toString());
+				amountStrList.add(formtingNumbers(spValue));
 			}
-			String joinedString = amountStrList.stream().collect(Collectors.joining(","));
-			if(splitCount[1]!=null && splitCount[1].compareTo(BigDecimal.ZERO)>0) { 
-				reminder ="and "+ currQuoteName+" "+splitCount[1]+"";
+			String joinedString = amountStrList.stream().collect(Collectors.joining(" , "));
+			if(splitCount[1]!=null && splitCount[1].compareTo(BigDecimal.ZERO)>0) {
+				BigDecimal spValue = RoundUtil.roundBigDecimal(splitCount[1],drDto.getExRateBreakup().getFcDecimalNumber().intValue());
+				reminder ="and "+ currQuoteName+" "+formtingNumbers(spValue)+"";
 			}
 		    msg = "This single remittance will be reflected as "+count.intValue()+" transactions in your bank account.The "+count.intValue()+" transactions will be "+currQuoteName+" "+joinedString+" "+reminder +" . Click Yes to continue, No to choose another rate.";
 		}
@@ -552,4 +557,14 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 		return msg;
 	}
 	//Click Yes to continue, No to choose another rate
+	
+	private String formtingNumbers(BigDecimal value) {
+		 DecimalFormat myFormatter = new DecimalFormat("#,###.00");
+		 String strValue = null;
+		 if(JaxUtil.isNullZeroBigDecimalCheck(value)) {
+			 strValue = myFormatter.format(value);
+		 }
+		 return strValue;
+	}
 }
+
