@@ -64,6 +64,7 @@ public class OracleViewDocument extends AESDocument {
 	public OracleViewDocument(CustomerContactVerification contactVerificationRecord) {
 		super(SnapIndexName.VERIFY);
 		this.verifylink = contactVerificationRecord;
+		this.id = "verify-" + contactVerificationRecord.getId();
 		if (ArgUtil.is(contactVerificationRecord.getVerifiedDate())) {
 			this.timestamp = ArgUtil.parseAsSimpleDate(
 					contactVerificationRecord.getVerifiedDate());
