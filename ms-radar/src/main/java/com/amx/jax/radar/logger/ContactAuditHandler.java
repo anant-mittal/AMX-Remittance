@@ -43,7 +43,7 @@ public class ContactAuditHandler implements AuditHandler {
 			CustomerContactVerification customerContactVerification = customerContactVerificationRepository
 					.findById(verificationId);
 			OracleViewDocument doc = new OracleViewDocument(customerContactVerification);
-			snapQueryService.save(oracleVarsCache.getIndex(DBSyncIndex.VERIFY_INDEX), doc);
+			snapQueryService.save(DBSyncIndex.VERIFY_INDEX.getIndexName(), doc);
 		}
 	}
 
@@ -57,7 +57,7 @@ public class ContactAuditHandler implements AuditHandler {
 				.getByContactsByEmployee(oneDay);
 		for (CustomerContactVerification customerContactVerification : x) {
 			OracleViewDocument doc = new OracleViewDocument(customerContactVerification);
-			snapQueryService.save(oracleVarsCache.getIndex(DBSyncIndex.VERIFY_INDEX), doc);
+			snapQueryService.save(DBSyncIndex.VERIFY_INDEX.getIndexName(), doc);
 		}
 	}
 

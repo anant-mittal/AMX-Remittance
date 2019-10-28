@@ -17,13 +17,13 @@ import com.amx.jax.dict.Currency;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.mcq.shedlock.SchedulerLock;
 import com.amx.jax.mcq.shedlock.SchedulerLock.LockContext;
-import com.amx.jax.radar.AESRepository.BulkRequestBuilder;
 import com.amx.jax.radar.ARadarTask;
 import com.amx.jax.radar.ESRepository;
 import com.amx.jax.radar.RadarConfig;
 import com.amx.jax.radar.jobs.customer.OracleVarsCache;
 import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncIndex;
 import com.amx.jax.radar.jobs.customer.OracleViewDocument;
+import com.amx.jax.radar.snap.SnapQueryService.BulkRequestSnapBuilder;
 import com.amx.jax.rates.AmxCurConstants;
 import com.amx.jax.rates.AmxCurRate;
 import com.amx.jax.rest.RestService;
@@ -66,7 +66,7 @@ public class AmanKuwaitJob extends ARadarTask {
 		// xmlMapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
 		try {
 			AmanKuwaitModels.Rates rates2 = JsonUtil.getMapper().readValue(response, AmanKuwaitModels.RatesJson.class);
-			BulkRequestBuilder builder = new BulkRequestBuilder();
+			BulkRequestSnapBuilder builder = new BulkRequestSnapBuilder();
 			for (AmanKuwaitModels.CurRates rates : rates2.getCurRates()) {
 				AmxCurRate trnsfrRate = new AmxCurRate();
 				trnsfrRate.setrSrc(RateSource.AMANKUWAIT);
@@ -76,15 +76,15 @@ public class AmanKuwaitJob extends ARadarTask {
 				trnsfrRate.setrType(RateType.SELL_TRNSFR);
 				trnsfrRate.setrRate(rates.getKdrate());
 
-				builder.update(oracleVarsCache.getIndex(DBSyncIndex.XRATE_JOB),
+				builder.update(DBSyncIndex.XRATE_JOB.getIndexName(),
 						new OracleViewDocument(trnsfrRate));
 
 				AmxCurRate buyCash = trnsfrRate.clone(RateType.BUY_CASH, rates.getBuyrate());
-				builder.update(oracleVarsCache.getIndex(DBSyncIndex.XRATE_JOB),
+				builder.update(DBSyncIndex.XRATE_JOB.getIndexName(),
 						new OracleViewDocument(buyCash));
 
 				AmxCurRate sellCash = trnsfrRate.clone(RateType.SELL_CASH, rates.getSellrate());
-				builder.update(oracleVarsCache.getIndex(DBSyncIndex.XRATE_JOB),
+				builder.update(DBSyncIndex.XRATE_JOB.getIndexName(),
 						new OracleViewDocument(sellCash));
 			}
 			esRepository.bulk(builder.build());

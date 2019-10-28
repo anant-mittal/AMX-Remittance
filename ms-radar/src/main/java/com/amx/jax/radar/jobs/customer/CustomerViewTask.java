@@ -23,6 +23,7 @@ import com.amx.jax.mcq.shedlock.SchedulerLock.LockContext;
 import com.amx.jax.radar.AESRepository.BulkRequestBuilder;
 import com.amx.jax.radar.RadarConfig;
 import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncIndex;
+import com.amx.jax.radar.snap.SnapQueryService.BulkRequestSnapBuilder;
 import com.amx.jax.rates.AmxCurConstants;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
@@ -82,7 +83,7 @@ public class CustomerViewTask extends AbstractDBSyncTask {
 
 		AmxApiResponse<CustomerDetailViewRecord, GridMeta> x = y.get();
 
-		BulkRequestBuilder builder = new BulkRequestBuilder();
+		BulkRequestSnapBuilder builder = new BulkRequestSnapBuilder();
 
 		Long lastUpdateDateNowStart = lastUpdateDateNow;
 		String lastIdNow = Constants.BLANK;
@@ -97,7 +98,7 @@ public class CustomerViewTask extends AbstractDBSyncTask {
 				}
 
 				OracleViewDocument document = new OracleViewDocument(record);
-				builder.update(oracleVarsCache.getCustomerIndex(), document);
+				builder.update(DBSyncIndex.CUSTOMER_JOB.getIndexName(), document);
 				lastIdNow = ArgUtil.parseAsString(document.getId(), Constants.BLANK);
 			} catch (Exception e) {
 				LOGGER.error("CustomerViewTask Excep", e);
@@ -154,7 +155,7 @@ public class CustomerViewTask extends AbstractDBSyncTask {
 
 		AmxApiResponse<CustomerDetailViewRecord, GridMeta> x = y.get();
 
-		BulkRequestBuilder builder = new BulkRequestBuilder();
+		BulkRequestSnapBuilder builder = new BulkRequestSnapBuilder();
 
 		Long lastUpdateDateNowStart = lastUpdateDateNow;
 		String lastIdNow = Constants.BLANK;
@@ -169,7 +170,7 @@ public class CustomerViewTask extends AbstractDBSyncTask {
 				}
 
 				OracleViewDocument document = new OracleViewDocument(record);
-				builder.update(oracleVarsCache.getCustomerIndex(), document);
+				builder.update(DBSyncIndex.CUSTOMER_JOB.getIndexName(), document);
 				lastIdNow = ArgUtil.parseAsString(document.getId(), Constants.BLANK);
 			} catch (Exception e) {
 				LOGGER.error("CustomerViewTask Excep", e);

@@ -26,11 +26,11 @@ import com.amx.jax.grid.views.XRateViewRecord;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.mcq.shedlock.SchedulerLock;
 import com.amx.jax.mcq.shedlock.SchedulerLock.LockContext;
-import com.amx.jax.radar.AESRepository.BulkRequestBuilder;
 import com.amx.jax.radar.RadarConfig;
 import com.amx.jax.radar.jobs.customer.AbstractDBSyncTask;
 import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncIndex;
 import com.amx.jax.radar.jobs.customer.OracleViewDocument;
+import com.amx.jax.radar.snap.SnapQueryService.BulkRequestSnapBuilder;
 import com.amx.jax.rates.AmxCurConstants;
 import com.amx.jax.rates.AmxCurRate;
 import com.amx.utils.ArgUtil;
@@ -85,7 +85,7 @@ public class AMXKWTRatesService extends AbstractDBSyncTask {
 		Currency domCur = (Currency) ArgUtil.parseAsEnum(appConfig.getDefaultTenant().getCurrency(), Currency.UNKNOWN);
 
 		////
-		BulkRequestBuilder builder = new BulkRequestBuilder();
+		BulkRequestSnapBuilder builder = new BulkRequestSnapBuilder();
 		Long lastUpdateDateNowStart = lastUpdateDateNow;
 		String lastIdNow = Constants.BLANK;
 
@@ -111,7 +111,7 @@ public class AMXKWTRatesService extends AbstractDBSyncTask {
 						trnsfrRate.setTimestamp(ArgUtil.parseAsSimpleDate(xrate.getProcessDate()));
 						OracleViewDocument document = new OracleViewDocument(trnsfrRate);
 						lastIdNow = document.getId();
-						builder.update(oracleVarsCache.getIndex(DBSyncIndex.XRATE_JOB), document);
+						builder.update(DBSyncIndex.XRATE_JOB.getIndexName(), document);
 					}
 				}
 			} catch (Exception e) {

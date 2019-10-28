@@ -78,14 +78,6 @@ public class OracleVarsCache {
 		// super("OracleVarsCache");
 	}
 
-	public String getTranxIndex() {
-		return EsConfig.indexName(DBSyncIndex.TRANSACTION_JOB.getIndexName());
-	}
-
-	public String getCustomerIndex() {
-		return EsConfig.indexName(DBSyncIndex.CUSTOMER_JOB.getIndexName());
-	}
-
 	public String get(String key) {
 		return amxSharedValues.getValue(key);
 	}
@@ -100,7 +92,7 @@ public class OracleVarsCache {
 	 * @param job
 	 * @return
 	 */
-	public String getIndex(DBSyncIndex job) {
+	private String getIndex(DBSyncIndex job) {
 		return EsConfig.indexName(job.getIndexName());
 	}
 

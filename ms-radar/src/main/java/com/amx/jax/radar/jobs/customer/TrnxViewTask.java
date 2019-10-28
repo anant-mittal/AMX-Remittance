@@ -21,9 +21,9 @@ import com.amx.jax.grid.views.TranxViewRecord;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.mcq.shedlock.SchedulerLock;
 import com.amx.jax.mcq.shedlock.SchedulerLock.LockContext;
-import com.amx.jax.radar.AESRepository.BulkRequestBuilder;
 import com.amx.jax.radar.RadarConfig;
 import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncIndex;
+import com.amx.jax.radar.snap.SnapQueryService.BulkRequestSnapBuilder;
 import com.amx.jax.rates.AmxCurConstants;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
@@ -45,7 +45,7 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 	private static final int PAGE_SIZE = 5000;
 
 	long intervalDays = FWD_INTERVAL_DAYS;
-	
+
 	@Autowired
 	RadarConfig radarConfig;
 
@@ -89,7 +89,7 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 
 		AmxApiResponse<TranxViewRecord, GridMeta> x = y.get();
 
-		BulkRequestBuilder builder = new BulkRequestBuilder();
+		BulkRequestSnapBuilder builder = new BulkRequestSnapBuilder();
 
 		Long lastUpdateDateNowStart = lastUpdateDateNow;
 		String lastIdNow = Constants.BLANK;
@@ -103,7 +103,7 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 				}
 				OracleViewDocument document = new OracleViewDocument(record);
 				lastIdNow = ArgUtil.parseAsString(document.getId(), Constants.BLANK);
-				builder.update(oracleVarsCache.getTranxIndex(), document);
+				builder.update(DBSyncIndex.TRANSACTION_JOB.getIndexName(), document);
 			} catch (Exception e) {
 				LOGGER.error("TranxViewRecord Excep", e);
 			}
@@ -162,7 +162,7 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 
 		AmxApiResponse<TranxViewRecord, GridMeta> x = y.get();
 
-		BulkRequestBuilder builder = new BulkRequestBuilder();
+		BulkRequestSnapBuilder builder = new BulkRequestSnapBuilder();
 
 		Long lastUpdateDateNowStart = lastUpdateDateNow;
 		String lastIdNow = Constants.BLANK;
@@ -177,7 +177,7 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 
 				OracleViewDocument document = new OracleViewDocument(record);
 				lastIdNow = ArgUtil.parseAsString(document.getId(), Constants.BLANK);
-				builder.update(oracleVarsCache.getTranxIndex(), document);
+				builder.update(DBSyncIndex.TRANSACTION_JOB.getIndexName(), document);
 			} catch (Exception e) {
 				LOGGER.error("TranxViewRecordRev Excep", e);
 			}
