@@ -37,7 +37,10 @@ public class ContactAuditHandler implements AuditHandler {
 
 		BigDecimal verificationId = event.getTargetId();
 		if (ArgUtil.is(verificationId)) {
-			customerContactVerificationRepository.findById(verificationId);
+			CustomerContactVerification customerContactVerification = customerContactVerificationRepository
+					.findById(verificationId);
+			OracleViewDocument doc = new OracleViewDocument(customerContactVerification);
+			snapQueryService.save(SnapIndexName.VERIFY, doc);
 		}
 
 	}
