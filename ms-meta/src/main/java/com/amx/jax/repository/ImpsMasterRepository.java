@@ -5,13 +5,13 @@ import java.util.List;
 
 import org.springframework.data.repository.CrudRepository;
 
-import com.amx.jax.dbmodel.BankMasterModel;
+import com.amx.jax.dbmodel.BankMasterMdlv1;
 import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.remittance.ImpsMaster;
 
 public interface ImpsMasterRepository extends CrudRepository<ImpsMaster, BigDecimal> {
 
 	List<ImpsMaster> findByFsCountryMasterAndRoutingBankIdAndBeneBankIdAndApprovedDateIsNotNullAndIsActive(
-			CountryMaster cm, BankMasterModel rb, BankMasterModel bb, String isActive);
+			CountryMaster cm, BankMasterMdlv1 rb, BankMasterMdlv1 bb, String isActive);
 
 }

@@ -172,6 +172,7 @@ public class FBPushServiceImpl implements IPushNotifyService {
 			userMessageEvent.setImage(msg.getImage());
 			userMessageEvent.setLink(msg.getLink());
 			userMessageEvent.setTemplate(msg.getTemplate());
+			userMessageEvent.setContactType(msg.getContactType());
 
 			String topic = msg.getTo().get(0);
 			StringBuilder androidTopic = new StringBuilder();

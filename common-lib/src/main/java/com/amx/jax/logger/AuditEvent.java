@@ -4,13 +4,12 @@ import java.util.Map;
 
 import com.amx.jax.dict.UserClient.UserDeviceClient;
 import com.amx.jax.exception.AmxApiException;
-import com.amx.jax.exception.IExceptionEnum;
 import com.amx.utils.ArgUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(Include.NON_NULL)
@@ -196,10 +195,31 @@ public abstract class AuditEvent extends AbstractEvent {
 		return this;
 	}
 
-	public AuditEvent result(Result result, AmxApiException excep) {
-		this.setResult(result);
+	public void setException(Exception excep) {
+		this.setExceptionType(excep.getClass().getName());
+		this.setException(excep.getMessage());
+	}
+
+	public void setException(AmxApiException excep) {
+		this.setExceptionType(excep.getClass().getName());
+		this.setException(excep.getMessage());
 		this.errorCode = ArgUtil.isEmpty(excep.getErrorKey()) ? ArgUtil.parseAsString(excep.getError())
 				: excep.getErrorKey();
+	}
+
+	public AuditEvent excep(Exception excep) {
+		this.setException(excep);
+		return this;
+	}
+
+	public AuditEvent excep(AmxApiException excep) {
+		this.setException(excep);
+		return this;
+	}
+
+	public AuditEvent result(Result result, AmxApiException excep) {
+		this.setResult(result);
+		this.setException(excep);
 		return this;
 	}
 

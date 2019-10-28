@@ -274,7 +274,7 @@ public class BranchRoutingManager {
 				}
 			}
 		} catch (GlobalException e) {
-			logger.error("routing  procedure", e.getErrorMessage() + "" + e.getErrorKey());
+			logger.debug("routing  procedure", e.getErrorMessage() + "" + e.getErrorKey());
 			throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
 		}
 		return routingResponseDto;

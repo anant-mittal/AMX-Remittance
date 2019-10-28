@@ -51,7 +51,7 @@ import com.amx.jax.dbmodel.AgentMasterModel;
 import com.amx.jax.dbmodel.BeneficiaryCountryView;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.CountryMasterView;
-import com.amx.jax.dbmodel.CurrencyMasterModel;
+import com.amx.jax.dbmodel.CurrencyMasterMdlv1;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.CustomerRemittanceTransactionView;
@@ -74,6 +74,7 @@ import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.model.response.CurrencyMasterDTO;
 import com.amx.jax.model.response.customer.PersonInfo;
+import com.amx.jax.model.response.remittance.LoyalityPointState;
 import com.amx.jax.repository.BeneficaryAccountRepository;
 import com.amx.jax.repository.CountryRepository;
 import com.amx.jax.repository.IBeneficaryContactDao;
@@ -182,6 +183,9 @@ public class BeneficiaryService extends AbstractService {
 	
 	@Autowired
 	IBeneficaryContactDao beneficaryContactDao;
+	
+	@Autowired
+	LoyalityPointService loyalityPointService;
 	
 	
 	public ApiResponse getBeneficiaryListForOnline(BigDecimal customerId, BigDecimal applicationCountryId,BigDecimal beneCountryId,Boolean excludePackage) {
@@ -415,7 +419,7 @@ public class BeneficiaryService extends AbstractService {
 			} else {
 				beneList = beneficiaryOnlineDao.getDefaultBeneficiary(customerId, applicationCountryId);
 			}
-			if(beneList!=null){
+			if(beneList!=null ){
 				beneDto = beneCheck.beneCheck(convertBeneModelToDto((beneList)));
 				if (beneDto != null && !JaxUtil.isNullZeroBigDecimalCheck(transactionId)
 						&& (JaxUtil.isNullZeroBigDecimalCheck(beneRealtionId)
@@ -431,15 +435,24 @@ public class BeneficiaryService extends AbstractService {
 			}
 
 			remitPageDto.setBeneficiaryDto(beneDto);
+			if(beneDto!=null) {
 			remitPageDto.setForCur(getCurrencyDTO(beneDto.getCurrencyId()));
+			}
 			if (trnxView != null) {
 				remitPageDto.setTrnxHistDto(convertTranHistDto(trnxView));
 			}
+			
+			//------ Loyalty Point Status check ------
+			LoyalityPointState loyalityState = loyalityPointService.getLoyalityState(metaData.getCustomerId());
+			if(null != loyalityState) {
+				remitPageDto.setLoyalityPointState(loyalityState);
+			}
+			
 			response.getData().getValues().add(remitPageDto);
 			response.getData().setType(remitPageDto.getModelType());
 			response.setResponseStatus(ResponseStatus.OK);
 		} catch (Exception e) {
-			logger.error("Error occured in getDefaultBeneficiary method", e);
+			logger.debug("Error occured in getDefaultBeneficiary method", e);
 			throw new GlobalException("Default bene not found" + e.getMessage());
 		}
 		return response;
@@ -521,7 +534,7 @@ public class BeneficiaryService extends AbstractService {
 		try {
 			BeanUtils.copyProperties(dto, beneModel);
 		} catch (IllegalAccessException | InvocationTargetException e) {
-			logger.error("bene list display", e);
+			logger.debug("bene list display", e);
 		}
 		beneCheck.setCanTransact(dto);
 		if (isCashBene(beneModel)) {
@@ -540,7 +553,7 @@ public class BeneficiaryService extends AbstractService {
 		try {
 			BeanUtils.copyProperties(tranDto, tranView);
 		} catch (IllegalAccessException | InvocationTargetException e) {
-			logger.error("bene list display", e);
+			logger.debug("bene list display", e);
 		}
 		return tranDto;
 
@@ -1083,12 +1096,12 @@ public class BeneficiaryService extends AbstractService {
 
 	private CurrencyMasterDTO getCurrencyDTO(BigDecimal currencyId) {
 		CurrencyMasterDTO dto = new CurrencyMasterDTO();
-		List<CurrencyMasterModel> currencyList = currencyDao.getCurrencyList(currencyId);
+		List<CurrencyMasterMdlv1> currencyList = currencyDao.getCurrencyList(currencyId);
 		/*
 		 * if (currencyList.isEmpty()) { throw new
 		 * GlobalException("Currency details not avaliable"); }
 		 */if(currencyList!=null && !currencyList.isEmpty()) {
-			CurrencyMasterModel curModel = currencyList.get(0);
+			 CurrencyMasterMdlv1 curModel = currencyList.get(0);
 			dto.setCountryId(curModel.getCountryId());
 			dto.setCurrencyCode(curModel.getCurrencyCode());
 			dto.setQuoteName(curModel.getQuoteName());

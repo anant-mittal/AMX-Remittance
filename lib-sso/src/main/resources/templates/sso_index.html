@@ -31,7 +31,10 @@
 					<small style="font-weight: 200;" th:case="true" >Make sure branch adapter is running. <a target="_blank" href="http://127.0.0.1:8020">check</a></small>
 					<small style="font-weight: 200;" th:case="false" >Make sure device is registered. <a target="_blank" th:href="${SSO_LOGIN_PREFIX + '/pub/device/pair'}">check</a></small>
 				</th:block>
+				<span id="adapter_indicator" class="adapter_indicator radio down" style="margin: -4px 8px;"><input type="radio" value="RUNNING" checked /><span></span>
+				</span>
 			</h4>
+
 			<ul class="tip-list withSmartCard">
 				<li>
 					<div class="img-wrapper"><img th:src="${SSO_LOGIN_PREFIX} + '/images/civilid.png'" /></div>

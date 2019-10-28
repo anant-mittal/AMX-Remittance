@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -27,6 +28,7 @@ import javax.crypto.NoSuchPaddingException;
 
 import org.apache.commons.lang.time.DurationFormatUtils;
 
+import com.amx.utils.ArgUtil;
 import com.amx.utils.CryptoUtil;
 import com.amx.utils.JsonUtil;
 
@@ -71,6 +73,12 @@ public final class RuntimeTest {
 	public static void main(String[] args)
 			throws NoSuchAlgorithmException, InvalidKeySpecException, IllegalBlockSizeException, BadPaddingException,
 			InvalidKeyException, NoSuchPaddingException, UnsupportedEncodingException {
+
+		BigDecimal hrs = new BigDecimal(245).divide(new BigDecimal(60), 4, RoundingMode.HALF_EVEN);
+
+		long procTimeInMin = Math.round(hrs.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue() * 60);
+
+		System.out.println(" Hrs ==>" + hrs + " Mins ==>" + procTimeInMin);
 
 		String modulusString = "rqP/kEVeoNKndXPx1wCUbpm8irJoC44DCoMPZm64fPZY+68qARcK/iTRzXmfUS9ZBCSqugt3fAdR4L7nJaWM4DVbJvbWvF7Sp8KbaFlh7oCH2k1FPYAe1nBEjg3Ykj+JLawL1F36hmDY7Y1uzgrGvRYaLWrf46+GS0DeMJTiK78=";
 		String publicExponentString = "AQAB";

@@ -193,7 +193,9 @@ public class JaxService implements IMetaRequestOutFilter<JaxMetaInfo>, AppReques
 		Language lang = amxMeta.getClientLanguage(sessionService.getGuestSession().getLanguage());
 		amxMeta.setClientLanguage(lang);
 
-		jaxMetaInfo.setLanguageId(lang.getBDCode());
+		if(ArgUtil.is(lang)) {
+			jaxMetaInfo.setLanguageId(lang.getBDCode());
+		}
 		jaxMetaInfo.setCountryBranchId(amxConfig.getDefaultBranchId());
 	}
 

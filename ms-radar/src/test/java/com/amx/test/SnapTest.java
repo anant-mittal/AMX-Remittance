@@ -2,23 +2,17 @@ package com.amx.test;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.hibernate.mapping.Map;
 import org.slf4j.Logger;
 
-import com.amx.jax.client.snap.SnapModels.AggregationField;
-import com.amx.jax.client.snap.SnapModels.Aggregations;
 import com.amx.jax.client.snap.SnapModels.SnapModelWrapper;
-import com.amx.jax.grid.GridConstants;
-import com.amx.jax.grid.views.CustomerDetailViewRecord;
 import com.amx.jax.logger.LoggerService;
-import com.amx.jax.radar.ESDocumentParser;
-import com.amx.jax.rates.AmxCurConstants;
 import com.amx.utils.FileUtil;
 import com.amx.utils.JsonUtil;
+import com.axx.jax.table.PivotTable;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 public class SnapTest { // Noncompliant
@@ -41,16 +35,33 @@ public class SnapTest { // Noncompliant
 		String json = FileUtil
 				.readFile(FileUtil.normalize(
 						"file://" + System.getProperty("user.dir") + "/src/test/java/com/amx/test/sample.json"));
-		SnapModelWrapper wrapper = new SnapModelWrapper(json);
-		AggregationField x = wrapper.getAggregations().field("tranx");
-		System.out.println("x=====" + JsonUtil.toJson(x));
-		List<Aggregations> xl = x.getBuckets();
-		System.out.println("[x1]=====" + JsonUtil.toJson(xl));
-		Aggregations x1 = x.getBuckets().get(0);
-		System.out.println("x1=====" + JsonUtil.toJson(x1));
-		AggregationField x2 = x1.field("channel");
-		System.out.println("x2=====" + JsonUtil.toJson(x2));
-		System.out.println("x2.key=====" + x2.getBuckets().get(0).getKey());
+		SnapModelWrapper x = new SnapModelWrapper(json);
+		int level = 0;
+		if (level  >= 0) {
+			List<Map<String, List<String>>> p = x.getPivot();
+			List<Map<String, Object>> inputBulk = x.getAggregations().toBulk();
+
+			for (Map<String, List<String>> pivot : p) {
+				level--;
+				if (level < 0)
+					break;
+				PivotTable table = new PivotTable(
+						pivot.get("rows"), pivot.get("cols"),
+						pivot.get("vals"), pivot.get("aggs"), pivot.get("alias"),
+						pivot.get("computed"), pivot.get("noncomputed"),
+						 pivot.get("colgroups"));
+				for (Map<String, Object> map : inputBulk) {
+					table.add(map);
+				}
+				table.calculate();
+				inputBulk = table.toBulk();
+				// break;
+			}
+			x.toMap().put("bulk", inputBulk);
+			x.removeAggregations();
+		}
+		
+		System.out.println("====="+JsonUtil.toJson(x.get("bulk")));
 	}
 
 }

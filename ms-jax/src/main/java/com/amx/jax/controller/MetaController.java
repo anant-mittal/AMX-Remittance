@@ -42,7 +42,7 @@ import com.amx.jax.dbmodel.BranchSystemDetail;
 import com.amx.jax.dbmodel.CollectionDetailViewModel;
 import com.amx.jax.dbmodel.CollectionPaymentDetailsViewModel;
 import com.amx.jax.dbmodel.CountryMasterView;
-import com.amx.jax.dbmodel.CurrencyMasterModel;
+import com.amx.jax.dbmodel.CurrencyMasterMdlv1;
 import com.amx.jax.dbmodel.PrefixModel;
 import com.amx.jax.dbmodel.PurposeOfRemittanceViewModel;
 import com.amx.jax.dbmodel.UserFinancialYear;
@@ -263,7 +263,7 @@ public class MetaController {
 	}
 
 	@RequestMapping(value = "/currency/{currencyId}", method = RequestMethod.GET)
-	public AmxApiResponse<CurrencyMasterModel, Object> getCurrencyMasterResponse(
+	public AmxApiResponse<CurrencyMasterMdlv1, Object> getCurrencyMasterResponse(
 			@PathVariable("currencyId") BigDecimal currencyId) {
 		return currencyMasterService.getCurrencyDetails(currencyId);
 	}
@@ -319,7 +319,8 @@ public class MetaController {
 	@RequestMapping(value = "/bank/{country-id}", method = RequestMethod.GET)
 	public AmxApiResponse<BankMasterDTO, Object> getAllCurrencyDetails(
 			@PathVariable("country-id") BigDecimal countryId) {
-		return bankMasterService.getBanksApiResponseByCountryId(countryId);
+		//return bankMasterService.getBanksApiResponseByCountryId(countryId);
+		return bankMasterService.getBankViewApiResponseByCountryId(countryId);
 	}
 
 	@RequestMapping(value = MetaApi.API_DISTRICTDESC, method = RequestMethod.GET)

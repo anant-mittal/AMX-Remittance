@@ -12,7 +12,7 @@ import com.amx.jax.constant.DeviceState;
 import com.amx.jax.dbmodel.BranchSystemDetail;
 import com.amx.jax.dbmodel.Device;
 import com.amx.jax.dict.UserClient.ClientType;
-import com.amx.jax.rbaac.dbmodel.Employee;
+import com.amx.jax.rbaac.dbmodel.FSEmployee;
 import com.amx.jax.rbaac.dto.request.DeviceRegistrationRequest;
 import com.amx.jax.rbaac.error.RbaacServiceError;
 import com.amx.jax.rbaac.exception.AuthServiceException;
@@ -54,7 +54,7 @@ public class DeviceDao {
 			device.setBranchSystemInventoryId(branchSystem.getCountryBranchSystemInventoryId());
 		}
 		if (request.getIdentityInt() != null) {
-			Employee employee = rbaacDao.fetchEmpDetails(request.getIdentityInt());
+			FSEmployee employee = rbaacDao.fetchEmpDetails(request.getIdentityInt());
 
 			if (ArgUtil.isEmpty(employee)) {
 				throw new AuthServiceException(RbaacServiceError.INVALID_USER_DETAILS,
