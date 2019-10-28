@@ -57,10 +57,10 @@ public final class StringUtils {
 
 	// public static Map<String, String> getMapFromString(String splitter_char,
 	// String key_value_separator_char,
-//			String data) {
+	// String data) {
 	// return
 	// Splitter.on(splitter_char).withKeyValueSeparator(key_value_separator_char).split(data);
-//	}
+	// }
 
 	public static Map<String, String> getMapFromString(String splitter_char, String key_value_separator_char,
 			String data) {
@@ -240,6 +240,25 @@ public final class StringUtils {
 		char c[] = string.toCharArray();
 		c[0] = Character.toLowerCase(c[0]);
 		return new String(c);
+	}
+
+	public static String[] split(String str, String regex) {
+		if (str == null) {
+			return new String[0];
+		}
+		return str.split(regex);
+	}
+
+	public static String getByIndex(String str, String regex, int index) {
+		String[] x = split(str, regex);
+		if (x.length > index) {
+			return x[index];
+		}
+		return null;
+	}
+
+	public static boolean isEmpty(String str) {
+		return ArgUtil.isEmptyString(str);
 	}
 
 }
