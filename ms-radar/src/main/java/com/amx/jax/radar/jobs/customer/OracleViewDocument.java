@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import com.amx.jax.client.snap.SnapConstants.SnapIndexName;
+import com.amx.jax.dbmodel.CustomerContactVerification;
 import com.amx.jax.dict.UserClient.AppType;
 import com.amx.jax.dict.UserClient.Channel;
 import com.amx.jax.dict.UserClient.ClientType;
@@ -11,7 +12,6 @@ import com.amx.jax.dict.UserClient.UserDeviceClient;
 import com.amx.jax.grid.views.BeneViewRecord;
 import com.amx.jax.grid.views.BranchUserViewRecord;
 import com.amx.jax.grid.views.BranchViewRecord;
-import com.amx.jax.grid.views.ContactVerificationRecord;
 import com.amx.jax.grid.views.CustomerDetailViewRecord;
 import com.amx.jax.grid.views.TranxViewRecord;
 import com.amx.jax.radar.AESDocument;
@@ -28,7 +28,7 @@ public class OracleViewDocument extends AESDocument {
 	UserDeviceClient client;
 	BeneViewRecord bene;
 
-	ContactVerificationRecord verifylink;
+	CustomerContactVerification verifylink;
 
 	public OracleViewDocument() {
 
@@ -61,7 +61,7 @@ public class OracleViewDocument extends AESDocument {
 		}
 	}
 
-	public OracleViewDocument(ContactVerificationRecord contactVerificationRecord) {
+	public OracleViewDocument(CustomerContactVerification contactVerificationRecord) {
 		super(SnapIndexName.VERIFY);
 		this.verifylink = contactVerificationRecord;
 	}
@@ -102,7 +102,7 @@ public class OracleViewDocument extends AESDocument {
 
 		this.customer.setTrnxCustomerCategory(this.trnx.getTrnxCustomerCategory());
 		this.trnx.setTrnxCustomerCategory(null);
-		
+
 		this.branch = new BranchViewRecord();
 
 		this.branch.setId(this.trnx.getCountryBranchId());
@@ -229,11 +229,11 @@ public class OracleViewDocument extends AESDocument {
 		this.bene = bene;
 	}
 
-	public ContactVerificationRecord getVerifylink() {
+	public CustomerContactVerification getVerifylink() {
 		return verifylink;
 	}
 
-	public void setVerifylink(ContactVerificationRecord verifylink) {
+	public void setVerifylink(CustomerContactVerification verifylink) {
 		this.verifylink = verifylink;
 	}
 }
