@@ -1,6 +1,7 @@
 package com.amx.utils;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FilterOutputStream;
@@ -23,12 +24,11 @@ import org.springframework.util.StreamUtils;
  * The Class IoUtils.
  */
 public class IoUtils {
-	
+
 	/** The Constant BUFFER_SIZE. */
 	private static final int BUFFER_SIZE = 1024;
 
 	private static final Charset CHARSET_UTF8 = StandardCharsets.UTF_8;
-
 
 	/**
 	 * To byte array.
@@ -93,7 +93,7 @@ public class IoUtils {
 	 * The Class DrainableOutputStream.
 	 */
 	public class DrainableOutputStream extends FilterOutputStream {
-		
+
 		/** The buffer. */
 		private final ByteArrayOutputStream buffer;
 
@@ -149,11 +149,11 @@ public class IoUtils {
 			return this.buffer.toByteArray();
 		}
 	}
-	
+
 	public static java.sql.Clob stringToClob(String source) throws SerialException, SQLException {
 		return new javax.sql.rowset.serial.SerialClob(source.toCharArray());
 	}
-	
+
 	/**
 	 * converts inputstream to string
 	 * 
@@ -165,20 +165,6 @@ public class IoUtils {
 	public static String inputStreamToString(InputStream inputStream, Charset charset) throws IOException {
 
 		try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, charset))) {
-			return br.lines().collect(Collectors.joining(System.lineSeparator()));
-		}
-	}
-
-	/**
-	 * converts inputstream to string using default uft8 charset
-	 * 
-	 * @param inputStream
-	 * @return
-	 * @throws IOException
-	 */
-	public static String inputStreamToString(InputStream inputStream) throws IOException {
-
-		try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, CHARSET_UTF8))) {
 			return br.lines().collect(Collectors.joining(System.lineSeparator()));
 		}
 	}

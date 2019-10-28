@@ -8,11 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.client.snap.SnapConstants.SnapQueryTemplate;
-import com.amx.jax.def.AbstarctQueryFactory;
+import com.amx.jax.def.AbstractQueryFactory;
 import com.amx.jax.radar.service.SnapQueryFactory.SnapQuery;
 
 @Component
-public class SnapQueryFactory extends AbstarctQueryFactory<SnapQueryTemplate, SnapQuery> {
+public class SnapQueryFactory extends AbstractQueryFactory<SnapQueryTemplate, SnapQuery> {
 
 	private static final long serialVersionUID = 4887835524923451254L;
 

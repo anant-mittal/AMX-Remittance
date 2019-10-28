@@ -1,6 +1,6 @@
 package com.amx.jax.client.snap;
 
-import com.amx.jax.def.AbstarctQueryFactory.IQueryTemplate;
+import com.amx.jax.def.AbstractQueryFactory.IQueryTemplate;
 
 public class SnapConstants {
 

@@ -1,19 +1,19 @@
-package com.amx.jax.radar.logger;
+package com.amx.jax.logger;
 
 import java.util.Map;
 
 import com.amx.jax.model.MapModel;
 import com.amx.utils.JsonPath;
 
-public class LoggerMapModel extends MapModel {
+public class AuditMapModel extends MapModel {
 
 	private static final JsonPath TYPE = new JsonPath("type");
 
-	public LoggerMapModel(Map<String, Object> event) {
+	public AuditMapModel(Map<String, Object> event) {
 		super(event);
 	}
 
 	public String getType() {
-		return null;
+		return TYPE.load(this.map, null);
 	}
 }

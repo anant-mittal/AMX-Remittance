@@ -18,7 +18,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.snap.SnapConstants.SnapQueryTemplate;
 import com.amx.jax.client.snap.SnapModels;
 import com.amx.jax.client.snap.SnapModels.SnapModelWrapper;
-import com.amx.jax.def.AbstarctQueryFactory.QueryProcessor;
+import com.amx.jax.def.AbstractQueryFactory.QueryProcessor;
 import com.amx.jax.radar.jobs.customer.OracleVarsCache;
 import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncJobs;
 import com.amx.jax.radar.service.SnapQueryFactory;

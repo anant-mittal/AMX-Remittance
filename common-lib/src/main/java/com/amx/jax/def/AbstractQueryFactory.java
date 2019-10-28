@@ -4,10 +4,10 @@ import java.lang.annotation.Annotation;
 import java.util.List;
 
 import com.amx.common.ScopedBeanFactory;
-import com.amx.jax.def.AbstarctQueryFactory.IQueryTemplate;
-import com.amx.jax.def.AbstarctQueryFactory.QueryProcessor;
+import com.amx.jax.def.AbstractQueryFactory.IQueryTemplate;
+import com.amx.jax.def.AbstractQueryFactory.QueryProcessor;
 
-public abstract class AbstarctQueryFactory<QT extends IQueryTemplate, QA extends Annotation>
+public abstract class AbstractQueryFactory<QT extends IQueryTemplate, QA extends Annotation>
 		extends ScopedBeanFactory<QT, QueryProcessor<?>> {
 
 	private static final long serialVersionUID = -2475686410285813714L;
@@ -19,7 +19,7 @@ public abstract class AbstarctQueryFactory<QT extends IQueryTemplate, QA extends
 		public List<B> process();
 	}
 
-	public AbstarctQueryFactory(List<QueryProcessor<?>> libs) {
+	public AbstractQueryFactory(List<QueryProcessor<?>> libs) {
 		super(libs);
 	}
 
