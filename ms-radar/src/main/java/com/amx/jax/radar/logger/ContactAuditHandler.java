@@ -42,7 +42,7 @@ public class ContactAuditHandler implements AuditHandler {
 
 	}
 
-	@SchedulerLock(lockMaxAge = AmxCurConstants.INTERVAL_HRS, context = LockContext.BY_METHOD)
+	@SchedulerLock(lockMaxAge = AmxCurConstants.INTERVAL_HRS * 24, context = LockContext.BY_METHOD)
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_HRS * 24, initialDelay = AmxCurConstants.INTERVAL_SEC * 60)
 	public void syncContactVerf() {
 		Calendar cal = Calendar.getInstance();
