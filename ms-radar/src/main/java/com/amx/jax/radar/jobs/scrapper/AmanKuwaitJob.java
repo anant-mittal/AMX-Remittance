@@ -22,7 +22,7 @@ import com.amx.jax.radar.ARadarTask;
 import com.amx.jax.radar.ESRepository;
 import com.amx.jax.radar.RadarConfig;
 import com.amx.jax.radar.jobs.customer.OracleVarsCache;
-import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncJobs;
+import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncIndex;
 import com.amx.jax.radar.jobs.customer.OracleViewDocument;
 import com.amx.jax.rates.AmxCurConstants;
 import com.amx.jax.rates.AmxCurRate;
@@ -76,15 +76,15 @@ public class AmanKuwaitJob extends ARadarTask {
 				trnsfrRate.setrType(RateType.SELL_TRNSFR);
 				trnsfrRate.setrRate(rates.getKdrate());
 
-				builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE_JOB),
+				builder.update(oracleVarsCache.getIndex(DBSyncIndex.XRATE_JOB),
 						new OracleViewDocument(trnsfrRate));
 
 				AmxCurRate buyCash = trnsfrRate.clone(RateType.BUY_CASH, rates.getBuyrate());
-				builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE_JOB),
+				builder.update(oracleVarsCache.getIndex(DBSyncIndex.XRATE_JOB),
 						new OracleViewDocument(buyCash));
 
 				AmxCurRate sellCash = trnsfrRate.clone(RateType.SELL_CASH, rates.getSellrate());
-				builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE_JOB),
+				builder.update(oracleVarsCache.getIndex(DBSyncIndex.XRATE_JOB),
 						new OracleViewDocument(sellCash));
 			}
 			esRepository.bulk(builder.build());

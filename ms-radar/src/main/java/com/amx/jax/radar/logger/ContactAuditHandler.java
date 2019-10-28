@@ -3,19 +3,19 @@ package com.amx.jax.radar.logger;
 import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.amx.common.HandlerBeanFactory.HandlerMapping;
-import com.amx.jax.client.snap.SnapConstants.SnapIndexName;
 import com.amx.jax.dbmodel.CustomerContactVerification;
 import com.amx.jax.logger.AuditHandler;
 import com.amx.jax.logger.AuditMapModel;
 import com.amx.jax.mcq.shedlock.SchedulerLock;
 import com.amx.jax.mcq.shedlock.SchedulerLock.LockContext;
+import com.amx.jax.radar.jobs.customer.OracleVarsCache;
+import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncIndex;
 import com.amx.jax.radar.jobs.customer.OracleViewDocument;
 import com.amx.jax.radar.snap.SnapQueryService;
 import com.amx.jax.rates.AmxCurConstants;
@@ -30,6 +30,9 @@ public class ContactAuditHandler implements AuditHandler {
 	private SnapQueryService snapQueryService;
 
 	@Autowired
+	public OracleVarsCache oracleVarsCache;
+
+	@Autowired
 	private CustomerContactVerificationRepository customerContactVerificationRepository;
 
 	@Override
@@ -40,9 +43,8 @@ public class ContactAuditHandler implements AuditHandler {
 			CustomerContactVerification customerContactVerification = customerContactVerificationRepository
 					.findById(verificationId);
 			OracleViewDocument doc = new OracleViewDocument(customerContactVerification);
-			snapQueryService.save(SnapIndexName.VERIFY, doc);
+			snapQueryService.save(oracleVarsCache.getIndex(DBSyncIndex.VERIFY_INDEX), doc);
 		}
-
 	}
 
 	@SchedulerLock(lockMaxAge = AmxCurConstants.INTERVAL_HRS * 24, context = LockContext.BY_METHOD)
@@ -55,7 +57,7 @@ public class ContactAuditHandler implements AuditHandler {
 				.getByContactsByEmployee(oneDay);
 		for (CustomerContactVerification customerContactVerification : x) {
 			OracleViewDocument doc = new OracleViewDocument(customerContactVerification);
-			snapQueryService.save(SnapIndexName.VERIFY, doc);
+			snapQueryService.save(oracleVarsCache.getIndex(DBSyncIndex.VERIFY_INDEX), doc);
 		}
 	}
 

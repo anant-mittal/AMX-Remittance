@@ -26,7 +26,7 @@ import com.amx.jax.radar.AESRepository.BulkRequestBuilder;
 import com.amx.jax.radar.ESRepository;
 import com.amx.jax.radar.RadarConfig;
 import com.amx.jax.radar.jobs.customer.OracleVarsCache;
-import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncJobs;
+import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncIndex;
 import com.amx.jax.radar.jobs.customer.OracleViewDocument;
 import com.amx.jax.rates.AmxCurConstants;
 import com.amx.jax.rates.AmxCurRate;
@@ -87,7 +87,7 @@ public class MuzainiJob {
 					if (!ArgUtil.isEmpty(rate)) {
 						sellTrnsfrRate.setrType(RateType.SELL_TRNSFR);
 						sellTrnsfrRate.setrRate(rate);
-						builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE_JOB),
+						builder.update(oracleVarsCache.getIndex(DBSyncIndex.XRATE_JOB),
 								new OracleViewDocument(sellTrnsfrRate));
 					}
 					AmxCurRate sellCash = sellTrnsfrRate.clone();
@@ -95,7 +95,7 @@ public class MuzainiJob {
 					if (!ArgUtil.isEmpty(sellCashRate)) {
 						sellCash.setrType(RateType.SELL_CASH);
 						sellTrnsfrRate.setrRate(sellCashRate);
-						builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE_JOB),
+						builder.update(oracleVarsCache.getIndex(DBSyncIndex.XRATE_JOB),
 								new OracleViewDocument(sellCash));
 					}
 
@@ -104,7 +104,7 @@ public class MuzainiJob {
 					if (!ArgUtil.isEmpty(buyCashRate)) {
 						buyCash.setrType(RateType.BUY_CASH);
 						sellTrnsfrRate.setrRate(buyCashRate);
-						builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE_JOB),
+						builder.update(oracleVarsCache.getIndex(DBSyncIndex.XRATE_JOB),
 								new OracleViewDocument(buyCash));
 					}
 				}

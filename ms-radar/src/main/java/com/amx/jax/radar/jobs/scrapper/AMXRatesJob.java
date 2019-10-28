@@ -28,7 +28,7 @@ import com.amx.jax.radar.ARadarTask;
 import com.amx.jax.radar.ESRepository;
 import com.amx.jax.radar.RadarConfig;
 import com.amx.jax.radar.jobs.customer.OracleVarsCache;
-import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncJobs;
+import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncIndex;
 import com.amx.jax.radar.jobs.customer.OracleViewDocument;
 import com.amx.jax.rates.AmxCurConstants;
 import com.amx.jax.rates.AmxCurRate;
@@ -97,7 +97,7 @@ public class AMXRatesJob extends ARadarTask {
 					trnsfrRate.setrRate(rate);
 					trnsfrRate.setrRate(BigDecimal.ONE.divide(rate, 12, RoundingMode.CEILING));
 					// System.out.println(JsonUtil.toJson(trnsfrRate));
-					builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE_JOB),
+					builder.update(oracleVarsCache.getIndex(DBSyncIndex.XRATE_JOB),
 							new OracleViewDocument(trnsfrRate));
 				}
 			}

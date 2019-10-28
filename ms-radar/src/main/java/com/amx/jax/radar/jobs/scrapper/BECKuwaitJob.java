@@ -28,7 +28,7 @@ import com.amx.jax.radar.ARadarTask;
 import com.amx.jax.radar.ESRepository;
 import com.amx.jax.radar.RadarConfig;
 import com.amx.jax.radar.jobs.customer.OracleVarsCache;
-import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncJobs;
+import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncIndex;
 import com.amx.jax.radar.jobs.customer.OracleViewDocument;
 import com.amx.jax.rates.AmxCurConstants;
 import com.amx.jax.rates.AmxCurRate;
@@ -86,7 +86,7 @@ public class BECKuwaitJob extends ARadarTask {
 							trnsfrRate.setrForCur(cur);
 							trnsfrRate.setrType(RateType.SELL_TRNSFR);
 							trnsfrRate.setrRate(BigDecimal.ONE.divide(rate, 12, RoundingMode.CEILING));
-							builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE_JOB),
+							builder.update(oracleVarsCache.getIndex(DBSyncIndex.XRATE_JOB),
 									new OracleViewDocument(trnsfrRate));
 						}
 					}
@@ -110,7 +110,7 @@ public class BECKuwaitJob extends ARadarTask {
 						if (!ArgUtil.isEmpty(buyCashRate)) {
 							buyCash.setrType(RateType.BUY_CASH);
 							buyCash.setrRate(BigDecimal.ONE.divide(buyCashRate, 12, RoundingMode.CEILING));
-							builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE_JOB),
+							builder.update(oracleVarsCache.getIndex(DBSyncIndex.XRATE_JOB),
 									new OracleViewDocument(buyCash));
 						}
 
@@ -120,7 +120,7 @@ public class BECKuwaitJob extends ARadarTask {
 						if (!ArgUtil.isEmpty(sellCashRate)) {
 							sellCash.setrType(RateType.SELL_CASH);
 							sellCash.setrRate(BigDecimal.ONE.divide(sellCashRate, 12, RoundingMode.CEILING));
-							builder.update(oracleVarsCache.getIndex(DBSyncJobs.XRATE_JOB),
+							builder.update(oracleVarsCache.getIndex(DBSyncIndex.XRATE_JOB),
 									new OracleViewDocument(sellCash));
 						}
 

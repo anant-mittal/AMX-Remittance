@@ -20,7 +20,7 @@ import com.amx.jax.client.snap.SnapModels;
 import com.amx.jax.client.snap.SnapModels.SnapModelWrapper;
 import com.amx.jax.def.AbstractQueryFactory.QueryProcessor;
 import com.amx.jax.radar.jobs.customer.OracleVarsCache;
-import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncJobs;
+import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncIndex;
 import com.amx.jax.radar.service.SnapQueryFactory;
 import com.amx.jax.rest.RestService;
 import com.amx.jax.tunnel.DBEvent;
@@ -177,14 +177,14 @@ public class SnapQueryController {
 
 	@ResponseBody
 	@RequestMapping(value = "/snap/reset/start/{dbSyncJobs}", method = RequestMethod.GET)
-	public String snapResetStart(@PathVariable(value = "dbSyncJobs") DBSyncJobs dbSyncJobs) throws IOException {
+	public String snapResetStart(@PathVariable(value = "dbSyncJobs") DBSyncIndex dbSyncJobs) throws IOException {
 		oracleVarsCache.clearStampStart(dbSyncJobs);
 		return "CLEARED";
 	}
 
 	@ResponseBody
 	@RequestMapping(value = "/snap/reset/end/{dbSyncJobs}", method = RequestMethod.GET)
-	public String snapResetEnd(@PathVariable(value = "dbSyncJobs") DBSyncJobs dbSyncJobs) throws IOException {
+	public String snapResetEnd(@PathVariable(value = "dbSyncJobs") DBSyncIndex dbSyncJobs) throws IOException {
 		oracleVarsCache.clearStampEnd(dbSyncJobs);
 		return "CLEARED";
 	}
