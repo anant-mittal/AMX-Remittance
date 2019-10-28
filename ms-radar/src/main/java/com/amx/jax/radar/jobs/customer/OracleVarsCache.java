@@ -34,7 +34,7 @@ public class OracleVarsCache {
 		CUSTOMER_JOB(SnapConstants.SnapIndexName.CUSTOMER, "v5", 20),
 		TRANSACTION_JOB(SnapConstants.SnapIndexName.TRANX, "v8", 22),
 		XRATE_JOB(SnapConstants.SnapIndexName.XRATE, "v5", 21),
-		VERIFY_INDEX(SnapConstants.SnapIndexName.VERIFY, "v5", 21);
+		VERIFY_INDEX(SnapConstants.SnapIndexName.VERIFY, "v6", 21);
 
 		String indexName;
 		int resetCounter;
