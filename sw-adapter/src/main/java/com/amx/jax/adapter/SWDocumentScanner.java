@@ -127,12 +127,12 @@ public class SWDocumentScanner {
 
 					File f = new File(SWDocumentScanner.SCAN_FILE.getAbsolutePath());
 					long startTime = System.currentTimeMillis();
-					long end = startTime + 3000;// 10 seconds *1000=10000 // 15 sec *1000 =15000
+					long end = startTime + 5000;// 10 seconds *1000=10000 // 15 sec *1000 =15000
 					while (System.currentTimeMillis() < end) {
 						if (f.exists()) {
 							break;
 						} else {
-							// TimeUnit.SECONDS.sleep(1);
+							TimeUnit.SECONDS.sleep(1);
 						}
 					}
 					long endTime = System.currentTimeMillis();
@@ -141,7 +141,10 @@ public class SWDocumentScanner {
 				}
 
 				if (isScanDocument == true) {
-					return readImage();
+					byte[] x = readImage();
+					if(x!=null) {
+						return readImage();						
+					}
 
 				}
 			} catch (Exception e) {
