@@ -9,6 +9,12 @@ import com.amx.utils.StringUtils;
 public class StringUtilTest {
 
 	@Test
+	public void testSplit() {
+		assertEquals(StringUtils.getByIndex("10.28.42.255", ",", 0), "10.28.42.255");
+		assertEquals(StringUtils.getByIndex("10.28.42.109,10.28.42.255", ",", 0), "10.28.42.109");
+	}
+
+	@Test
 	public void testCapitalize() {
 		String s1 = "target";
 		String op = StringUtils.capitalize(s1);
