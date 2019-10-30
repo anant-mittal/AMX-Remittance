@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.meta.model.AccountTypeDto;
 import com.amx.amxlib.meta.model.CountryMasterDTO;
 import com.amx.amxlib.model.BeneRelationsDescriptionDto;
 import com.amx.amxlib.model.response.ApiResponse;
@@ -82,6 +83,22 @@ public class BeneficiaryBranchController {
 		return beneClient.getAgentBranch(param).toAmxApiResponse();
 	}
 
+	@RequestMapping(value = "/api/bene/bank/list", method = RequestMethod.POST)
+	@ApiOperation("List bank by country and currency")
+	public AmxApiResponse<BankMasterDTO, Object> listBeneBank(@RequestBody ListBeneBankOrCashRequest request) {
+		return beneBranchClient.listBeneBank(request);
+	}
+
+	@RequestMapping(value = "/api/bene/accounts/list", method = RequestMethod.GET)
+	public AmxApiResponse<AccountTypeDto, Object> getBeneficiaryAccountType(BigDecimal beneCountryId) {
+		return beneClient.getBeneficiaryAccountType(beneCountryId).toAmxApiResponse();
+	}
+
+	@RequestMapping(value = "/api/bene/id/list", method = RequestMethod.GET)
+	public AmxApiResponse<BeneficiaryListDTO, Object> getBeneByIdNo(@RequestParam Integer idNo) {
+		return beneBranchClient.getBeneByIdNo(idNo);
+	}
+
 	// Bene Mgmt Api's
 	// Prashant Sir needs to check getting jax system error
 	@RequestMapping(value = "/api/bene/list", method = RequestMethod.POST)
@@ -89,10 +106,14 @@ public class BeneficiaryBranchController {
 		return beneBranchClient.listBene(request);
 	}
 
-	@RequestMapping(value = "/api/bene/bank/list", method = RequestMethod.POST)
-	@ApiOperation("List bank by country and currency")
-	public AmxApiResponse<BankMasterDTO, Object> listBeneBank(@RequestBody ListBeneBankOrCashRequest request) {
-		return beneBranchClient.listBeneBank(request);
+	@RequestMapping(value = "/api/bene/status/list", method = RequestMethod.GET)
+	public AmxApiResponse<BeneStatusDto, Object> getBeneListStatuses() {
+		return beneBranchClient.getBeneListStatuses();
+	}
+
+	@RequestMapping(value = "/api/bene/update_status", method = RequestMethod.POST)
+	public AmxApiResponse<BoolRespModel, Object> updateBeneStatus(@RequestBody UpdateBeneStatusRequest request) {
+		return beneBranchClient.updateBeneStatus(request);
 	}
 
 	@RequestMapping(value = "/api/bene/cash_agent/list", method = RequestMethod.POST)
@@ -102,30 +123,20 @@ public class BeneficiaryBranchController {
 		return beneBranchClient.listBeneCashAgents(request);
 	}
 
-	@RequestMapping(value = "/api/bene/add_bene_bank", method = RequestMethod.POST)
+	@RequestMapping(value = "/api/bene/add/bank", method = RequestMethod.POST)
 	public AmxApiResponse<BoolRespModel, Object> addBeneBank(@RequestBody @Valid AddBeneBankRequest request) {
 		return beneBranchClient.addBeneBank(request);
 	}
 
-	@RequestMapping(value = "/api/bene/add_bene_cash", method = RequestMethod.POST)
+	@RequestMapping(value = "/api/bene/add/cash", method = RequestMethod.POST)
 	public AmxApiResponse<BoolRespModel, Object> addBenecash(@RequestBody @Valid AddBeneCashRequest request) {
 		return beneBranchClient.addBenecash(request);
 	}
 
-	@RequestMapping(value = "/api/bene/add_new_branch", method = RequestMethod.POST)
+	@RequestMapping(value = "/api/bene/add/branch", method = RequestMethod.POST)
 	public AmxApiResponse<BoolRespModel, Object> addNewBankBranchRequest(
 			@RequestBody @Valid AddNewBankBranchRequest request) {
 		return beneBranchClient.addNewBankBranchRequest(request);
-	}
-
-	@RequestMapping(value = "/api/bene/status/list", method = RequestMethod.GET)
-	public AmxApiResponse<BeneStatusDto, Object> getBeneListStatuses() {
-		return beneBranchClient.getBeneListStatuses();
-	}
-
-	@RequestMapping(value = "/api/bene/update_status", method = RequestMethod.POST)
-	public AmxApiResponse<BoolRespModel, Object> updateBeneStatus(UpdateBeneStatusRequest request) {
-		return beneBranchClient.updateBeneStatus(request);
 	}
 
 	@RequestMapping(value = "/api/bene/update_bank", method = RequestMethod.POST)
@@ -136,11 +147,6 @@ public class BeneficiaryBranchController {
 	@RequestMapping(value = "/api/bene/update_cash", method = RequestMethod.POST)
 	public AmxApiResponse<BoolRespModel, Object> updateBeneCash(@RequestBody @Valid UpdateBeneCashRequest request) {
 		return beneBranchClient.updateBeneCash(request);
-	}
-
-	@RequestMapping(value = "/api/bene/id/list", method = RequestMethod.POST)
-	public AmxApiResponse<BeneficiaryListDTO, Object> getBeneByIdNo(@RequestParam Integer idNo) {
-		return beneBranchClient.getBeneByIdNo(idNo);
 	}
 
 	/*
