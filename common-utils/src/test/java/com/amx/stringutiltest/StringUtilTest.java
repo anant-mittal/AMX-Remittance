@@ -9,6 +9,12 @@ import com.amx.utils.StringUtils;
 public class StringUtilTest {
 
 	@Test
+	public void testSplit() {
+		assertEquals(StringUtils.getByIndex("10.28.42.255", ",", 0), "10.28.42.255");
+		assertEquals(StringUtils.getByIndex("10.28.42.109,10.28.42.255", ",", 0), "10.28.42.109");
+	}
+
+	@Test
 	public void testCapitalize() {
 		String s1 = "target";
 		String op = StringUtils.capitalize(s1);
@@ -17,5 +23,9 @@ public class StringUtilTest {
 		String s2 = "p";
 		String op2 = StringUtils.capitalize(s2);
 		assertEquals("P", op2);
+		long val = 999999999999999L * 248L;
+		System.out.println("======" + val);
+		System.out.println("======" + Long.toString(val, 36));
+		System.out.println("======" + StringUtils.alpha62(val));
 	}
 }
