@@ -145,9 +145,10 @@ public class ViewExRoutingMatrix implements Serializable {
 
 	@Column(name = "IS_FC_ROUDNING_ALLOWED")
 	private String isFcRoundingAllowed;
-
-	@Column(name = "SPLIT_AMOUNT")
-	private BigDecimal splitAmount;
+	
+	@Column(name = "SPLIT_AMOUNT") 
+	 private BigDecimal splitAmount;
+	 
 
 	public String getUuid() {
 		return uuid;
@@ -494,14 +495,13 @@ public String getIsFcRoundingAllowed() {
 	}
 
 
-	public BigDecimal getSplitAmount() {
-		return splitAmount;
-	}
-
-	public void setSplitAmount(BigDecimal splitAmount) {
-		this.splitAmount = splitAmount;
-	}
-
+	
+	  public BigDecimal getSplitAmount() {
+		  return splitAmount; }
+	  
+	  public void setSplitAmount(BigDecimal splitAmount) { this.splitAmount =
+	  splitAmount; }
+	 
 	
 
 }
