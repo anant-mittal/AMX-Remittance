@@ -104,24 +104,29 @@ public class SWDocumentScanner {
 
 	public byte[] documentScan() throws Exception {
 
+		if (!SWDocumentScanner.SCAN_DIRECTORY.exists()) {
+			SWDocumentScanner.SCAN_DIRECTORY.mkdir();
+		}
+
+		if (SWDocumentScanner.SCAN_FILE.exists()) {
+			LOGGER.info("Deleting : " + SWDocumentScanner.SCAN_FILE.getAbsolutePath());
+			SWDocumentScanner.SCAN_FILE.delete();
+		} else {
+			LOGGER.info("Not Deleting : " + SWDocumentScanner.SCAN_FILE.getAbsolutePath());
+		}
+		
+		boolean isFirtsTry = true;
+
 		for (int i = 0; i < 5; i++) {
 			boolean isScanDocument = false;
 
 			try {
-
-				if (!SWDocumentScanner.SCAN_DIRECTORY.exists()) {
-					SWDocumentScanner.SCAN_DIRECTORY.mkdir();
-				}
-
 				if (isScanDocument == false) {
-					if (SWDocumentScanner.SCAN_FILE.exists()) {
-						LOGGER.info("Deleting : " + SWDocumentScanner.SCAN_FILE.getAbsolutePath());
-						SWDocumentScanner.SCAN_FILE.delete();
-					} else {
-						LOGGER.info("Not Deleting : " + SWDocumentScanner.SCAN_FILE.getAbsolutePath());
+					
+					if(isFirtsTry || !SWDocumentScanner.SCAN_FILE.exists()) {
+						scan();						
 					}
-					scan();
-
+					
 					isScanDocument = true;
 					// TimeUnit.SECONDS.sleep(15);
 
@@ -142,8 +147,8 @@ public class SWDocumentScanner {
 
 				if (isScanDocument == true) {
 					byte[] x = readImage();
-					if(x!=null) {
-						return readImage();						
+					if (x != null) {
+						return readImage();
 					}
 
 				}
