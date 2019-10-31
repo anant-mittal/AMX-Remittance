@@ -5,6 +5,8 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.servlet.http.HttpServletResponse;
+
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
@@ -40,6 +42,7 @@ import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.TemplatesMX;
+import com.amx.jax.rest.RestService;
 import com.amx.jax.sso.SSOUser;
 import com.amx.jax.terminal.TerminalService;
 import com.amx.jax.utils.PostManUtil;
@@ -71,6 +74,9 @@ public class CustomerBranchController {
 
 	@Autowired
 	TerminalService terminalService;
+
+	@Autowired
+	RestService restService;
 
 	@Autowired
 	BranchSession branchSession;
@@ -257,6 +263,18 @@ public class CustomerBranchController {
 				.lang(AppContextUtil.getTenant().defaultLang())).getResult();
 		return PostManUtil.download(file);
 
+	}
+
+	@RequestMapping(value = "/api/customer/kyc/scan", method = { RequestMethod.POST })
+	public ResponseEntity<byte[]> scanKyc(HttpServletResponse response) {
+		String ip = ssoUser.getUserClient().getLocalIpAddress();
+		String scanUrl = "http://" + ip + "/Scan/Scan";
+		File file = restService.ajax(scanUrl).get().as(File.class);
+		response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Allow-Credentials", "true");
+        response.setHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT, OPTIONS, HEAD");
+        response.setHeader("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With");
+		return PostManUtil.download(file);
 	}
 
 }
