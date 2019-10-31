@@ -1353,9 +1353,9 @@ public class PartnerTransactionManager extends AbstractModel {
 	}
 
 	// check beneficiary zip code required or not
-	public boolean checkBeneficiaryZipCodeAvailable(Map<String, Object> remitApplParametersMap) {
-		boolean status = Boolean.TRUE;
+	public JaxConditionalFieldDto checkBeneficiaryZipCodeAvailable(Map<String, Object> remitApplParametersMap,JaxConditionalFieldDto jaxConditionalFieldDto) {
 		Set<String> set = new HashSet<>();
+		JaxConditionalFieldDto jaxConditionalFieldBeneZipDto = null;
 
 		BigDecimal applicationCountryId = (BigDecimal) remitApplParametersMap.get("P_APPLICATION_COUNTRY_ID");
 		BigDecimal routingCountryId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_COUNTRY_ID");
@@ -1373,14 +1373,25 @@ public class PartnerTransactionManager extends AbstractModel {
 
 			if(additionalDataRequired != null && additionalDataRequired.size() != 0) {
 				AdditionalDataDisplayView additionalDataDisplayView = additionalDataRequired.get(0);
-				if(additionalDataDisplayView.getIsRendered() != null && additionalDataDisplayView.getIsRendered().equalsIgnoreCase(AmxDBConstants.No)) {
+				if(additionalDataDisplayView.getIsRendered() != null && additionalDataDisplayView.getIsRendered().equalsIgnoreCase(AmxDBConstants.No) 
+						&& additionalDataDisplayView.getIsRequired() != null && additionalDataDisplayView.getIsRequired().equalsIgnoreCase(AmxDBConstants.No)) {
 					// no need to render
-					status = Boolean.FALSE;
+				}else if(additionalDataDisplayView.getIsRendered() != null && additionalDataDisplayView.getIsRendered().equalsIgnoreCase(AmxDBConstants.No) 
+						&& additionalDataDisplayView.getIsRequired() != null && additionalDataDisplayView.getIsRequired().equalsIgnoreCase(AmxDBConstants.Yes)) {
+					// no need to render
+				}else if(additionalDataDisplayView.getIsRendered() != null && additionalDataDisplayView.getIsRendered().equalsIgnoreCase(AmxDBConstants.Yes) 
+						&& additionalDataDisplayView.getIsRequired() != null && additionalDataDisplayView.getIsRequired().equalsIgnoreCase(AmxDBConstants.No)) {
+					jaxConditionalFieldDto.getField().setRequired(Boolean.FALSE);
+					jaxConditionalFieldBeneZipDto = jaxConditionalFieldDto;
+				}else if(additionalDataDisplayView.getIsRendered() != null && additionalDataDisplayView.getIsRendered().equalsIgnoreCase(AmxDBConstants.Yes) 
+						&& additionalDataDisplayView.getIsRequired() != null && additionalDataDisplayView.getIsRequired().equalsIgnoreCase(AmxDBConstants.Yes)) {
+					jaxConditionalFieldDto.getField().setRequired(Boolean.TRUE);
+					jaxConditionalFieldBeneZipDto = jaxConditionalFieldDto;
 				}
 			}
 		}
 
-		return status;
+		return jaxConditionalFieldBeneZipDto;
 	}
 
 }
