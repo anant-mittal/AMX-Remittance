@@ -185,7 +185,7 @@ public class PartnerTransactionManager extends AbstractModel {
 
 	@Autowired
 	CountryBranchRepository countryBranchRepository;
-
+	
 	@Autowired
 	IAdditionalDataDisplayDao additionalDataDisplayDao;
 

@@ -119,8 +119,6 @@ public class RemittanceAdditionalFieldManager {
 			}
 		}
 		
-		
-		
 		if(interMediateBank1ApiResponse!=null && interMediateBank1ApiResponse.getResult()!=null) {
 			allJaxConditionalFields.addAll(interMediateBank1ApiResponse.getResults());
 		}
