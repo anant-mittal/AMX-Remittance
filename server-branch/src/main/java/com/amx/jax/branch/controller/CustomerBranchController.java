@@ -50,6 +50,7 @@ import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
 import com.amx.utils.ArgUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -273,8 +274,13 @@ public class CustomerBranchController {
 		response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Access-Control-Allow-Credentials", "true");
         response.setHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT, OPTIONS, HEAD");
-        response.setHeader("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With");
-		return PostManUtil.download(file);
+		response.setHeader("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With");
+		return ResponseEntity.ok().contentLength(file.getBody().length)
+				.header("Access-Control-Allow-Origin", "*")
+				.header("Access-Control-Allow-Credentials", "true")
+				.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT, OPTIONS, HEAD")
+				.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With")
+				.contentType(MediaType.valueOf(file.getType().getContentType())).body(file.getBody());
 	}
 
 }
