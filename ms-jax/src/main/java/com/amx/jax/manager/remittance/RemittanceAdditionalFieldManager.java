@@ -108,9 +108,9 @@ public class RemittanceAdditionalFieldManager {
 			if(allSPJaxConditionalFields != null && allSPJaxConditionalFields.size() != 0) {
 				for (JaxConditionalFieldDto jaxConditionalFieldDto : allSPJaxConditionalFields) {
 					if(JaxDynamicField.BENE_ZIP_CODE.name().equals(jaxConditionalFieldDto.getField().getName())) {
-						Boolean beneZip = partnerTransactionManager.checkBeneficiaryZipCodeAvailable(remitApplParametersMap);
-						if(beneZip) {
-							allJaxConditionalFields.add(jaxConditionalFieldDto);
+						JaxConditionalFieldDto beneZipConditionalFieldDto = partnerTransactionManager.checkBeneficiaryZipCodeAvailable(remitApplParametersMap,jaxConditionalFieldDto);
+						if(beneZipConditionalFieldDto != null) {
+							allJaxConditionalFields.add(beneZipConditionalFieldDto);
 						}
 					}else {
 						allJaxConditionalFields.add(jaxConditionalFieldDto);
@@ -215,7 +215,11 @@ public class RemittanceAdditionalFieldManager {
 				AdditionalDataDisplayView addlDataDisplay = flexFieldMap.get(jaxDynamicField.getFlexField());
 				if (addlDataDisplay != null) {
 					if (addlDataDisplay.getIsRequired() != null) {
-						jaxConditionalField.getField().setRequired(ConstantDocument.Yes.equalsIgnoreCase(addlDataDisplay.getIsRequired()) ? true : false);
+						if(jaxConditionalField.getField().getRequired() != null && !jaxConditionalField.getField().getRequired()) {
+							// continue
+						}else {
+							jaxConditionalField.getField().setRequired(ConstantDocument.Yes.equalsIgnoreCase(addlDataDisplay.getIsRequired()) ? true : false);
+						}
 					}
 					if(jaxConditionalField.getField().getMinLength() == null) {
 						jaxConditionalField.getField().setMinLength(addlDataDisplay.getMinLength());
