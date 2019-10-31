@@ -19,7 +19,6 @@ import org.thymeleaf.spring4.SpringTemplateEngine;
 
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.dict.ContactType;
-import com.amx.jax.dict.Tenant;
 import com.amx.jax.postman.PostManConfig;
 import com.amx.jax.postman.custom.HelloDialect;
 import com.amx.jax.postman.model.File;

@@ -8,11 +8,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.branchremittance.service.DirectPaymentLinkService;
 import com.amx.jax.constant.JaxEvent;
 import com.amx.jax.manager.RemittancePaymentManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.util.JaxContextUtil;
+import com.amx.utils.ArgUtil;
 
 @Component
 public class PaymentService {
@@ -27,6 +29,9 @@ public class PaymentService {
 
 	@Autowired
 	FcSaleService fcSaleService;
+	
+	@Autowired
+	DirectPaymentLinkService directPaymentLinkService;
 
 	public AmxApiResponse<PaymentResponseDto, Object> captrueForRemittance(
 			@RequestBody PaymentResponseDto paymentResponse) {
@@ -56,5 +61,12 @@ public class PaymentService {
 		logger.info("save-fcsale Controller :" + paymentResponse.getCustomerId() + "\t country ID :"
 				+ paymentResponse.getApplicationCountryId() + "\t Compa Id:" + paymentResponse.getCompanyId());
 		return fcSaleService.savePaymentId(paymentResponse);
+	}
+
+	public AmxApiResponse<PaymentResponseDto, Object> captrueForDirectLink(@RequestBody PaymentResponseDto paymentResponse) {
+		logger.info("Direct Link :" + paymentResponse.getCustomerId() + "\t country ID :"
+				+ paymentResponse.getApplicationCountryId() + "\t Compa Id:" + paymentResponse.getCompanyId());
+		BigDecimal linkId = ArgUtil.parseAsBigDecimal(paymentResponse.getPayId());
+		return directPaymentLinkService.saveDirectLinkPayment(paymentResponse, linkId);
 	}
 }
