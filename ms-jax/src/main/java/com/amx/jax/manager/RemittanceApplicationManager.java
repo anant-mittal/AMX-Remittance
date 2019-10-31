@@ -502,9 +502,8 @@ public class RemittanceApplicationManager {
 	
 	public void validateAdditionalErrorMessagesV2(RemittanceTransactionDrRequestModel requestModel) {
 		remitApplParametersMap.put("P_FURTHER_INSTR", "URGENT");
-		Map<String, Object> errorResponse = applicationProcedureDao
-				.toFetchPurtherInstractionErrorMessaage(remitApplParametersMap);
-		String errorMessage = (String) errorResponse.get("P_ERRMSG");
+		//Map<String, Object> errorResponse = applicationProcedureDao.toFetchPurtherInstractionErrorMessaage(remitApplParametersMap);
+		String errorMessage =null;// (String) errorResponse.get("P_ERRMSG");
 		Map<String, Object> furtherSwiftAdditionalDetails = applicationProcedureDao
 				.fetchAdditionalBankRuleIndicators(remitApplParametersMap);
 		remitApplParametersMap.putAll(furtherSwiftAdditionalDetails);
