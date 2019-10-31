@@ -855,14 +855,29 @@ public class UserService extends AbstractUserService {
 
 	/**
 	 * reset lock
+	 * 
+	 * @param onlineCustomer
+	 * @return TRUE, if CustomerLock Status has Changed from locked to unlock
 	 */
-	public void unlockCustomer(CustomerOnlineRegistration onlineCustomer) {
+	public boolean unlockCustomer(CustomerOnlineRegistration onlineCustomer) {
+		boolean unlockDone = false;
 		if (onlineCustomer.getLockCnt() != null || onlineCustomer.getLockDt() != null) {
+			// Audit
+			CActivityEvent auditEvent = new CActivityEvent(CActivityEvent.Type.PROFILE_UPDATE).customerId(onlineCustomer.getCustomerId())
+					.field(FIELD_LOCK);
+			auditEvent.from(onlineCustomer.getLockCnt()); // Audit
+			
 			onlineCustomer.setLockCnt(null);
 			onlineCustomer.setLockDt(null);
 			custDao.saveOnlineCustomer(onlineCustomer);
+			
+			auditEvent.to(onlineCustomer.getLockCnt()); // Audit
+			auditService.log(auditEvent.result(Result.DONE)); // Audit
+			
+			unlockDone = true;
 		}
 		onlineCustomer.setTokenSentCount(BigDecimal.ZERO);
+		return unlockDone;
 	}
 
 	public LoginLogoutHistory getLoginLogoutHistoryByUserName(String userName) {
@@ -1015,25 +1030,16 @@ public class UserService extends AbstractUserService {
 		BooleanResponse responseModel = new BooleanResponse();
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customerId);
 
-		// Audit
-		CActivityEvent auditEvent = new CActivityEvent(CActivityEvent.Type.PROFILE_UPDATE).customerId(customerId)
-				.field(FIELD_LOCK);
-
 		if (onlineCustomer == null) {
-			auditService.log(
-					auditEvent.result(Result.REJECTED).message(JaxError.USER_NOT_REGISTERED));
 			throw new GlobalException(JaxError.USER_NOT_REGISTERED,
 					"User with userId: " + customerId + " is not registered or not active");
 		}
-		auditEvent.from(onlineCustomer.getLockCnt()); // Audit
 		this.unlockCustomer(onlineCustomer);
-		auditEvent.to(onlineCustomer.getLockCnt()); // Audit
 		responseModel.setSuccess(true);
 		response.getData().getValues().add(responseModel);
 		response.getData().setType(responseModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
 
-		auditService.log(auditEvent.result(Result.DONE)); // Audit
 		return response;
 
 	}
