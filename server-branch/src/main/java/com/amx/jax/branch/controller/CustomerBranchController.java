@@ -269,7 +269,7 @@ public class CustomerBranchController {
 	}
 
 	@ApiRequest(type = RequestType.POLL)
-	@RequestMapping(value = "/pub/customer/kyc/scan", method = { RequestMethod.GET })
+	@RequestMapping(value = "/api/customer/kyc/scan", method = { RequestMethod.GET })
 	public ResponseEntity<byte[]> scanKyc(HttpServletRequest request, HttpServletResponse response) {
 		String ip = request.getRemoteAddr();
 		String scanUrl = "http://" + ip + ":8085/Scan/Scan";
