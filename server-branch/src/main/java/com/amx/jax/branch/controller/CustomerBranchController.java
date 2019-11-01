@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.amx.jax.AppContextUtil;
@@ -16,7 +17,9 @@ import com.amx.jax.cache.box.CustomerOnCall.CustomerCall;
 import com.amx.jax.client.OffsiteCustRegClient;
 import com.amx.jax.client.branch.BranchUserClient;
 import com.amx.jax.client.customer.CustomerManagementClient;
+import com.amx.jax.http.ApiRequest;
 import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
+import com.amx.jax.http.RequestType;
 import com.amx.jax.model.customer.CreateCustomerInfoRequest;
 import com.amx.jax.model.customer.DuplicateCustomerDto;
 import com.amx.jax.model.customer.document.CustomerDocumentCategoryDto;
@@ -57,6 +60,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import io.swagger.annotations.Api;
 
@@ -87,7 +91,6 @@ public class CustomerBranchController {
 
 	@Autowired
 	private PostManService postManService;
-	
 
 	@Autowired
 	CustomerOnCall customerOnCall;
@@ -108,7 +111,6 @@ public class CustomerBranchController {
 	public AmxApiResponse<OffsiteCustomerDataDTO, Object> getCustomerDetails() {
 		return AmxApiResponse.build(branchSession.getCustomerData());
 	}
-
 
 	@RequestMapping(value = "/api/customer/connected", method = { RequestMethod.GET })
 	public AmxApiResponse<CustomerCall, Object> getCustomerConnected() {
@@ -244,8 +246,8 @@ public class CustomerBranchController {
 				: customer != null ? customer.getCustomerPersonalDetail().getLastName() : "";
 		expiryDateInString = !ArgUtil.isEmpty(expiryDateInString) ? expiryDateInString
 				: customer != null
-				? new SimpleDateFormat(pattern).format(customer.getCustomerPersonalDetail().getExpiryDate())
-				: "";
+						? new SimpleDateFormat(pattern).format(customer.getCustomerPersonalDetail().getExpiryDate())
+						: "";
 		// if(ArgUtil.isEmpty(identity) || ArgUtil.isEmpty(firstName) ||
 		// ArgUtil.isEmpty(lastName)){ // TODO: Whole model creation shouldn't be done
 		// here. Gonna confirm where and put it there.
@@ -266,21 +268,19 @@ public class CustomerBranchController {
 
 	}
 
-	@RequestMapping(value = "/api/customer/kyc/scan", method = { RequestMethod.POST })
-	public ResponseEntity<byte[]> scanKyc(HttpServletResponse response) {
-		String ip = ssoUser.getUserClient().getLocalIpAddress();
-		String scanUrl = "http://" + ip + "/Scan/Scan";
-		File file = restService.ajax(scanUrl).get().as(File.class);
-		response.setHeader("Access-Control-Allow-Origin", "*");
-        response.setHeader("Access-Control-Allow-Credentials", "true");
-        response.setHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT, OPTIONS, HEAD");
-		response.setHeader("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With");
-		return ResponseEntity.ok().contentLength(file.getBody().length)
+	@ApiRequest(type = RequestType.POLL)
+	@RequestMapping(value = "/pub/customer/kyc/scan", method = { RequestMethod.GET })
+	public ResponseEntity<byte[]> scanKyc(HttpServletRequest request, HttpServletResponse response) {
+		String ip = request.getRemoteAddr();
+		String scanUrl = "http://" + ip + ":8085/Scan/Scan";
+		UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(scanUrl);
+		byte[] imgData = restService.ajax(builder.build().encode().toUri()).get().asByteArray();
+		return ResponseEntity.ok()
 				.header("Access-Control-Allow-Origin", "*")
 				.header("Access-Control-Allow-Credentials", "true")
 				.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT, OPTIONS, HEAD")
 				.header("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With")
-				.contentType(MediaType.valueOf(file.getType().getContentType())).body(file.getBody());
+				.contentType(MediaType.valueOf("image/jpeg")).body(imgData);
 	}
 
 }
