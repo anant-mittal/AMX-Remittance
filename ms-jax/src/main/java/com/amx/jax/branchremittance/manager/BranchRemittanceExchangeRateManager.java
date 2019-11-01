@@ -7,23 +7,15 @@ import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_BANK_I
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_COUNTRY_ID;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
-import org.springframework.stereotype.Component;
-import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.AdditionalFlexRequiredException;
 import com.amx.amxlib.exception.jax.GlobalException;
@@ -34,8 +26,10 @@ import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.dao.CurrencyMasterDao;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.CountryMaster;
+import com.amx.jax.dbmodel.CurrencyMasterMdlv1;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.remittance.AdditionalBankRuleAmiec;
 import com.amx.jax.dict.UserClient.Channel;
@@ -75,8 +69,19 @@ import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.services.BeneficiaryValidationService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.JaxUtil;
+import com.amx.jax.util.RoundUtil;
 import com.amx.jax.validation.RemittanceTransactionRequestValidator;
 import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.stereotype.Component;
+import org.springframework.web.context.WebApplicationContext;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
@@ -133,6 +138,10 @@ public class BranchRemittanceExchangeRateManager {
 	
 	@Autowired
 	IViewVatDetailsRespository vatDetailsRepository;
+	
+	@Autowired
+	CurrencyMasterDao currencyMasterDao;
+	
 
 public void validateGetExchangRateRequest(IRemittanceApplicationParams request) {
 
@@ -383,6 +392,9 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 			}else {
 				remittanceTransactionManager.applyCurrencyRoudingLogicSP(result.getExRateBreakup());
 			}
+			/** Imps split message for multiple trnx  **/
+			String msg = impsSplittingMessage(result);
+			result.setErrorMessage(msg);
 		}
 		return result;
 	}
@@ -506,4 +518,53 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 		return serviceProviderDto ; 
 	}
 	
+	
+	
+	private String impsSplittingMessage(DynamicRoutingPricingDto drDto) {
+		String msg = null;
+		String reminder = "";
+		try {
+		TrnxRoutingDetails routingDetails = drDto.getTrnxRoutingPaths();
+		BigDecimal foreignAmont = drDto.getExRateBreakup().getConvertedFCAmount();
+		
+		if(JaxUtil.isNullZeroBigDecimalCheck(routingDetails.getSplitAmount()) && foreignAmont.compareTo(routingDetails.getSplitAmount())>0) {
+		
+		BigDecimal fcurrencyId = (BigDecimal) remitApplParametersMap.get("P_FOREIGN_CURRENCY_ID");
+		CurrencyMasterMdlv1 currMaster = currencyMasterDao.getCurrencyMasterById(fcurrencyId); 
+		String currQuoteName = currMaster!=null?(currMaster.getQuoteName()==null?"":currMaster.getQuoteName()):currMaster.getCurrencyCode(); 
+		BigDecimal[] splitCount = foreignAmont.divideAndRemainder(routingDetails.getSplitAmount());
+		BigDecimal count = new BigDecimal(0);
+		Map<BigDecimal,BigDecimal> mapSplitAmount = new HashMap<>();
+		if(splitCount!=null && splitCount.length>0) {
+			count = splitCount[0].add(splitCount[1].compareTo(BigDecimal.ZERO)>0?BigDecimal.ONE:BigDecimal.ZERO);
+			List<String> amountStrList= new ArrayList<>();
+			for(int i=0;i<splitCount[0].intValue();i++) {
+				BigDecimal spValue = RoundUtil.roundBigDecimal(routingDetails.getSplitAmount(),drDto.getExRateBreakup().getFcDecimalNumber().intValue());
+				//amountStrList.add(routingDetails.getSplitAmount().toString());
+				amountStrList.add(formtingNumbers(spValue));
+			}
+			String joinedString = amountStrList.stream().collect(Collectors.joining(" , "));
+			if(splitCount[1]!=null && splitCount[1].compareTo(BigDecimal.ZERO)>0) {
+				BigDecimal spValue = RoundUtil.roundBigDecimal(splitCount[1],drDto.getExRateBreakup().getFcDecimalNumber().intValue());
+				reminder ="and "+ currQuoteName+" "+formtingNumbers(spValue)+"";
+			}
+		    msg = "This single remittance will be reflected as "+count.intValue()+" transactions in your bank account.The "+count.intValue()+" transactions will be "+currQuoteName+" "+joinedString+" "+reminder +" . Click Yes to continue, No to choose another rate.";
+		}
+		}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return msg;
+	}
+	//Click Yes to continue, No to choose another rate
+	
+	private String formtingNumbers(BigDecimal value) {
+		 DecimalFormat myFormatter = new DecimalFormat("#,###.00");
+		 String strValue = null;
+		 if(JaxUtil.isNullZeroBigDecimalCheck(value)) {
+			 strValue = myFormatter.format(value);
+		 }
+		 return strValue;
+	}
 }
+

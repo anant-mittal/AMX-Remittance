@@ -2,13 +2,11 @@ package com.amx.jax.manager.remittance;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
-import org.hamcrest.core.IsCollectionContaining;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +14,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
+
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.model.GetJaxFieldRequest;
@@ -104,10 +103,21 @@ public class RemittanceAdditionalFieldManager {
 		
 		List<JaxConditionalFieldDto> allJaxConditionalFields = apiResponse.getResults();
 		if(spApiResponse != null && spApiResponse.getResults() != null) {
-			allJaxConditionalFields.addAll(spApiResponse.getResults());
+			//allJaxConditionalFields.addAll(spApiResponse.getResults());
+			List<JaxConditionalFieldDto> allSPJaxConditionalFields = spApiResponse.getResults();
+			if(allSPJaxConditionalFields != null && allSPJaxConditionalFields.size() != 0) {
+				for (JaxConditionalFieldDto jaxConditionalFieldDto : allSPJaxConditionalFields) {
+					if(JaxDynamicField.BENE_ZIP_CODE.name().equals(jaxConditionalFieldDto.getField().getName())) {
+						JaxConditionalFieldDto beneZipConditionalFieldDto = partnerTransactionManager.checkBeneficiaryZipCodeAvailable(remitApplParametersMap,jaxConditionalFieldDto);
+						if(beneZipConditionalFieldDto != null) {
+							allJaxConditionalFields.add(beneZipConditionalFieldDto);
+						}
+					}else {
+						allJaxConditionalFields.add(jaxConditionalFieldDto);
+					}
+				}
+			}
 		}
-		
-		
 		
 		if(interMediateBank1ApiResponse!=null && interMediateBank1ApiResponse.getResult()!=null) {
 			allJaxConditionalFields.addAll(interMediateBank1ApiResponse.getResults());
@@ -203,7 +213,11 @@ public class RemittanceAdditionalFieldManager {
 				AdditionalDataDisplayView addlDataDisplay = flexFieldMap.get(jaxDynamicField.getFlexField());
 				if (addlDataDisplay != null) {
 					if (addlDataDisplay.getIsRequired() != null) {
-						jaxConditionalField.getField().setRequired(ConstantDocument.Yes.equalsIgnoreCase(addlDataDisplay.getIsRequired()) ? true : false);
+						if(jaxConditionalField.getField().getRequired() != null && !jaxConditionalField.getField().getRequired()) {
+							// continue
+						}else {
+							jaxConditionalField.getField().setRequired(ConstantDocument.Yes.equalsIgnoreCase(addlDataDisplay.getIsRequired()) ? true : false);
+						}
 					}
 					if(jaxConditionalField.getField().getMinLength() == null) {
 						jaxConditionalField.getField().setMinLength(addlDataDisplay.getMinLength());
@@ -283,12 +297,11 @@ public class RemittanceAdditionalFieldManager {
 		if(allSPJaxConditionalFields != null && allSPJaxConditionalFields.size() != 0) {
 			allJaxConditionalFields.addAll(allSPJaxConditionalFields);
 		}
+		
 		if(beneTeleApiReponse!=null && beneTeleApiReponse.getResult()!=null) {
 			allJaxConditionalFields.addAll(beneTeleApiReponse.getResults());
 		}
-		
-		
-		
+				
 		Map<String, Object> fieldValues = model.getAdditionalFields();
 		if (allJaxConditionalFields != null && fieldValues != null) {
 			BenificiaryListView beneficiaryDetail = beneficiaryService.getBeneByIdNo(model.getBeneId());
@@ -331,7 +344,6 @@ public class RemittanceAdditionalFieldManager {
 					logger.info("setting city name for bene master seq id {} , : {} ", beneficiaryDetail.getBeneficaryMasterSeqId(), fieldValue);
 					beneficiaryService.saveBeneMaster(beneficaryMaster);
 				}
-				
 				if (JaxDynamicField.BENE_TELE_NO.name().equals(jaxConditionalField.getField().getName()) && fieldValue != null) {
 					BeneficaryContact beneContact = beneficiaryService.getBeneContact(beneficiaryDetail.getBeneficaryMasterSeqId());
 					beneContact.setTelephoneNumber(fieldValue.toString());

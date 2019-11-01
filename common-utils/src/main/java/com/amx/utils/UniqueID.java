@@ -16,6 +16,8 @@ public final class UniqueID {
 	public static final String PREF = Random.randomAlpha(3);
 	public static final Pattern SYSTEM_STRING_PATTERN = Pattern
 			.compile("^([A-Z]{3})-([\\w]+)-([\\w]+)-([\\w]+)-(\\w+)$");
+	public static final Pattern SYSTEM_STRING_PATTERN_V2 = Pattern
+			.compile("^([A-Z]{3})-([\\w]+)-([\\w]+)-([\\w]+)-([\\w]+)-(\\w+)$");
 
 	/** The atom. */
 	private static AtomicInteger atom = new AtomicInteger();
@@ -39,12 +41,16 @@ public final class UniqueID {
 	/**
 	 * Generate string.
 	 *
-	 * @return : Unique String ID
+	 * @return : Unique String ID - 7R34Yp643g8
 	 */
 	public static String generateString() {
 		return Long.toString(generate(), 36);
 	}
 
+	/**
+	 * 
+	 * @return 7R34Yp6lEod
+	 */
 	public static String generateString62() {
 		return StringUtils.alpha62(generate());
 	}
@@ -59,11 +65,16 @@ public final class UniqueID {
 	}
 
 	public static String generateSessionId(String sessionPrefix) {
-		return PREF + "-" + StringUtils.pad(sessionPrefix, "xxxxx", 0) + "-" + generateString();
+		return PREF + "-" + StringUtils.pad(sessionPrefix, "xxxxx", 0) + "-" + generateString62();
 	}
 
-	public static String generateRequestId(String sessionId, String requestPrefix) {
-		return sessionId + "-" + requestPrefix + "-" + Long.toString(generate(), 36);
+	public static String generateRequestId(String sessionId, String requestGroup) {
+		return generateRequestId(sessionId, "000000", requestGroup);
+	}
+
+	public static String generateRequestId(String sessionId, String requestUser, String requestGroup) {
+		return sessionId + "-" + StringUtils.pad(requestUser, "000000", 1) + "-" + requestGroup + "-"
+				+ generateString62();
 	}
 
 	/**
@@ -74,7 +85,7 @@ public final class UniqueID {
 	 */
 	@Deprecated
 	public static String generateSystemString(String midfix, String prefix) {
-		return PREF + "-" + midfix + "-" + prefix + "-" + Long.toString(generate(), 36);
+		return PREF + "-" + midfix + "-" + prefix + "-" + generateString62();
 	}
 
 }

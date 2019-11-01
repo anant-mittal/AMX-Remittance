@@ -1,5 +1,6 @@
 package com.amx.jax.ui.service;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -8,11 +9,11 @@ import org.springframework.stereotype.Service;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.CustomerDto;
-import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.model.CivilIdOtpModel;
 import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.model.customer.SecurityQuestionModel;
 import com.amx.jax.model.response.customer.CustomerFlags;
@@ -101,6 +102,8 @@ public class UserService {
 		msg.addToTenant(AppContextUtil.getTenant());
 		msg.addToCountry(customerModel.getPersoninfo().getNationalityId());
 		msg.addToUser(customerModel.getCustomerId());
+		Date dob = customerModel.getPersoninfo().getDateOfBirth();
+		msg.addToDate("dob", dob);
 		return msg.getTo();
 	}
 

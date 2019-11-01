@@ -105,7 +105,8 @@ public class AppRequestFilter implements Filter {
 			String authToken = localCommonHttpRequest.get(AppConstants.AUTH_TOKEN_XKEY);
 			if (ArgUtil.is(authToken)) {
 				if (vaendorAuthFilter != null) {
-					return vaendorAuthFilter.isAuthVendorRequest(apiRequest, localCommonHttpRequest, traceId, authToken);
+					return vaendorAuthFilter.isAuthVendorRequest(apiRequest, localCommonHttpRequest, traceId,
+							authToken);
 				} else {
 					return appVendorConfig.isRequestValid(apiRequest, localCommonHttpRequest, traceId, authToken);
 				}
@@ -246,6 +247,8 @@ public class AppRequestFilter implements Filter {
 						}
 					}
 					AppContextUtil.setSessionPrefix(fp);
+					AppContextUtil.setRequestUser(localCommonHttpRequest.getTraceUserIdentifier());
+
 					if (session == null) {
 						sessionId = AppContextUtil.getSessionId(true);
 					} else {
