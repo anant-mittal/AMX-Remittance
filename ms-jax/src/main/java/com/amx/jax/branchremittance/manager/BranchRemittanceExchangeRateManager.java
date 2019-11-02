@@ -543,7 +543,7 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 				//amountStrList.add(routingDetails.getSplitAmount().toString());
 				amountStrList.add(formtingNumbers(spValue));
 			}
-			String joinedString = amountStrList.stream().collect(Collectors.joining(" , "));
+			String joinedString = amountStrList.stream().collect(Collectors.joining(" , "+currQuoteName +" "));
 			if(splitCount[1]!=null && splitCount[1].compareTo(BigDecimal.ZERO)>0) {
 				BigDecimal spValue = RoundUtil.roundBigDecimal(splitCount[1],drDto.getExRateBreakup().getFcDecimalNumber().intValue());
 				reminder ="and "+ currQuoteName+" "+formtingNumbers(spValue)+"";
