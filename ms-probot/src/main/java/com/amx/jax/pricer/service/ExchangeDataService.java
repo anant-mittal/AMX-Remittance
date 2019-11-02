@@ -3,6 +3,7 @@ package com.amx.jax.pricer.service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -279,6 +280,16 @@ public class ExchangeDataService {
 		}
 
 		GroupingMaster master = DiscountManager.convertToGroupMaster(group);
+
+		Date today = new Date();
+
+		if (null == master.getId()) {
+			master.setCreatedBy("JOMEX");
+			master.setCreatedDate(today);
+		}
+
+		master.setModifiedBy("JOMEX");
+		master.setModifiedDate(today);
 
 		master = groupingMasterDao.save(master);
 

@@ -161,9 +161,13 @@ public final class PricerServiceConstants {
 	public static enum GROUP_TYPE {
 		CUR, BRN;
 	}
-	
+
 	public static enum GROUP_VAL_TYPE {
 		LINKED, ASSEMBLED;
+	}
+
+	public static enum RATE_UPLOAD_STATUS {
+		CREATED, REJECTED, APPROVED, EXPIRED;
 	}
 
 	public static final String SEND_TRNX = "S";
