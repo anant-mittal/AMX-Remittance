@@ -147,6 +147,7 @@ public class RemittanceApplication implements Serializable {
 	private BigDecimal rackExchangeRate;
 	private String customerChoice;
 	private BigDecimal savedAmountInFc;
+	private BigDecimal timeToDeliverInSec;
 	 
 
 
@@ -1018,6 +1019,15 @@ public class RemittanceApplication implements Serializable {
 
 	public void setSavedAmountInFc(BigDecimal savedAmountInFc) {
 		this.savedAmountInFc = savedAmountInFc;
+	}
+
+	@Column(name="TIME_TO_DELIVER_IN_SEC")
+	public BigDecimal getTimeToDeliverInSec() {
+		return timeToDeliverInSec;
+	}
+
+	public void setTimeToDeliverInSec(BigDecimal timeToDeliverInSec) {
+		this.timeToDeliverInSec = timeToDeliverInSec;
 	}
 	
 	

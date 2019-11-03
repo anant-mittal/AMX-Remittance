@@ -856,6 +856,10 @@ public class BranchRemittanceSaveManager {
 					remitTrnx.setRackExchangeRate(appl.getRackExchangeRate());
 					remitTrnx.setCustomerChoice(appl.getCustomerChoice());
 					remitTrnx.setSavedAmountInFc(appl.getSavedAmountInFc());
+					Date date = DateUtil.addCurrentDateTimeToGetNewTime(appl.getTimeToDeliverInSec());
+					if(date!=null) {
+						remitTrnx.setTimeToDeliver(date);
+					}
 					
 					BigDecimal documentNo =generateDocumentNumber(appl.getFsCountryMasterByApplicationCountryId().getCountryId(),appl.getFsCompanyMaster().getCompanyId(),remitTrnx.getDocumentId().getDocumentCode(),remitTrnx.getDocumentFinanceYear(),remitTrnx.getLoccod(),ConstantDocument.A);
 					

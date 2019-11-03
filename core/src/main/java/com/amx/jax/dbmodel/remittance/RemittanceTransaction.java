@@ -167,6 +167,8 @@ public class RemittanceTransaction implements Serializable {
 	
 	private BigDecimal savedAmountInFc;
 	
+	private Date timeToDeliver;
+	
 	public RemittanceTransaction() {
 	}
 		
@@ -1234,6 +1236,15 @@ public class RemittanceTransaction implements Serializable {
 
 	public void setSavedAmountInFc(BigDecimal savedAmountInFc) {
 		this.savedAmountInFc = savedAmountInFc;
+	}
+
+	@Column(name="TIME_TO_DELIVER")
+	public Date getTimeToDeliver() {
+		return timeToDeliver;
+	}
+
+	public void setTimeToDeliver(Date timeToDeliver) {
+		this.timeToDeliver = timeToDeliver;
 	}
 
 }
