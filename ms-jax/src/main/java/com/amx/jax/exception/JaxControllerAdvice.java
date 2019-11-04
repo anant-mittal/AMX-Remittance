@@ -41,8 +41,9 @@ public class JaxControllerAdvice extends AmxAdvice {
 	public ResponseEntity<AmxApiError> handleException(Exception ex, HttpServletRequest request,
 			HttpServletResponse response) {
 		String stackTrace = Throwables.getStackTraceAsString(ex);
-		AbstractJaxException jaxException = new GlobalException(JaxError.JAX_SYSTEM_ERROR, stackTrace);
+		AbstractJaxException jaxException = new GlobalException(JaxError.JAX_SYSTEM_ERROR, ex);
 		raiseAlert(jaxException);
+		alert(ex);
 		return super.handle(jaxException, request, response);
 	}
 
