@@ -28,16 +28,16 @@ public class CommunicationPrefsModel implements CommunicationPrefs {
 	Date createdDate;
 
 	@Column(name = "PUSH_NOTIFICATION")
-	Long pushPrefs;
+	String pushPrefs;
 
 	@Column(name = "WHATSAPP")
-	Long waPrefs;
+	String waPrefs;
 
 	@Column(name = "EMAIL")
-	Long emailPrefs;
+	String emailPrefs;
 
 	@Column(name = "SMS")
-	Long smsPrefs;
+	String smsPrefs;
 
 	@Column(name = "ISACTIVE")
 	String active;
@@ -63,38 +63,38 @@ public class CommunicationPrefsModel implements CommunicationPrefs {
 	}
 
 	@Override
-	public Long getPushPrefs() {
+	public String getPushPrefs() {
 		return pushPrefs;
 	}
 
-	public void setPushPrefs(Long pushPrefs) {
+	public void setPushPrefs(String pushPrefs) {
 		this.pushPrefs = pushPrefs;
 	}
 
 	@Override
-	public Long getWaPrefs() {
+	public String getWaPrefs() {
 		return waPrefs;
 	}
 
-	public void setWaPrefs(Long waPrefs) {
+	public void setWaPrefs(String waPrefs) {
 		this.waPrefs = waPrefs;
 	}
 
 	@Override
-	public Long getEmailPrefs() {
+	public String getEmailPrefs() {
 		return emailPrefs;
 	}
 
-	public void setEmailPrefs(Long emailPrefs) {
+	public void setEmailPrefs(String emailPrefs) {
 		this.emailPrefs = emailPrefs;
 	}
 
 	@Override
-	public Long getSmsPrefs() {
+	public String getSmsPrefs() {
 		return smsPrefs;
 	}
 
-	public void setSmsPrefs(Long smsPrefs) {
+	public void setSmsPrefs(String smsPrefs) {
 		this.smsPrefs = smsPrefs;
 	}
 

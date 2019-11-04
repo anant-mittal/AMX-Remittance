@@ -1,8 +1,5 @@
 package com.bootloaderjs;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
 import com.amx.utils.CryptoUtil.HashBuilder;

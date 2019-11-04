@@ -27,28 +27,22 @@ public class GigInsuranceClient implements IGigInsuranceService {
 
 	@Override
 	public AmxApiResponse<GigInsuranceDetail, Object> fetchInsuranceDetail() {
-		try {
+		
 			LOGGER.debug("in fetchInsuranceDetail :");
 			return restService.ajax(appConfig.getJaxURL() + Path.FETCH_INSURANCE_DETAIL).meta(new JaxMetaInfo()).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<GigInsuranceDetail, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.error("exception in fetchInsuranceDetail : ", e);
-			return JaxSystemError.evaluate(e);
-		}
+		
 	}
 
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> saveInsuranceDetail(SaveInsuranceDetailRequest request) {
-		try {
+		
 			LOGGER.debug("in saveInsuranceDetail :");
 			return restService.ajax(appConfig.getJaxURL() + Path.SAVE_INSURANCE_DETAIL).meta(new JaxMetaInfo()).post(request)
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.error("exception in saveInsuranceDetail : ", e);
-			return JaxSystemError.evaluate(e);
-		}
+		
 	}
 
 }

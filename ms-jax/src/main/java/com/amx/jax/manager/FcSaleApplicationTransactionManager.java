@@ -32,7 +32,7 @@ import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dao.FcSaleApplicationDao;
 import com.amx.jax.dao.FcSaleExchangeRateDao;
 import com.amx.jax.dbmodel.ApplicationSetup;
-import com.amx.jax.dbmodel.CountryBranch;
+import com.amx.jax.dbmodel.CountryBranchMdlv1;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.FxShoppingCartDetails;
 import com.amx.jax.dbmodel.ParameterDetails;
@@ -183,11 +183,11 @@ public class FcSaleApplicationTransactionManager extends AbstractModel {
 			responeModel.setDeliveryCharges(getDeliveryChargesFromParameter());
 			return responeModel;
 		} catch (GlobalException e) {
-			logger.error("createFcSaleReceiptApplication", e.getErrorMessage() + "" + e.getErrorKey());
+			logger.debug("createFcSaleReceiptApplication", e.getErrorMessage() + "" + e.getErrorKey());
 			throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.error("saveApplication", e.getMessage());
+			logger.debug("saveApplication", e.getMessage());
 			throw new GlobalException("FC Sale application creation failed");
 		}
 	}
@@ -286,11 +286,11 @@ public class FcSaleApplicationTransactionManager extends AbstractModel {
 
 				receiptPaymentAppl.setCustomerName(customerName);
 			} else {
-				logger.error("Customer is not registered" + customerId);
+				logger.debug("Customer is not registered" + customerId);
 				throw new GlobalException(JaxError.CUSTOMER_NOT_REGISTERED_ONLINE, "Customer is not registered");
 			}
 
-			CountryBranch countryBranch = countryBranchRepository
+			CountryBranchMdlv1 countryBranch = countryBranchRepository
 					.findByBranchId(ConstantDocument.ONLINE_BRANCH_LOC_CODE);
 			if (countryBranch != null) {
 				locCode = countryBranch.getBranchId();
@@ -382,7 +382,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel {
 			}
 
 		} catch (GlobalException e) {
-			logger.error("createFcSaleReceiptApplication", e.getErrorMessage() + "" + e.getErrorKey());
+			logger.debug("createFcSaleReceiptApplication", e.getErrorMessage() + "" + e.getErrorKey());
 			throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
 		} catch (Exception e) {
 			logger.error("createFcSaleReceiptApplication", e.getMessage());
@@ -445,11 +445,11 @@ public class FcSaleApplicationTransactionManager extends AbstractModel {
 
 			return breakup;
 		} catch (GlobalException e) {
-			logger.error("createFcSaleReceiptApplication", e.getErrorMessage() + "" + e.getErrorKey());
+			logger.debug("createFcSaleReceiptApplication", e.getErrorMessage() + "" + e.getErrorKey());
 			throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.error("getExchangeRateFcSaleOrder", e.getMessage());
+			logger.debug("getExchangeRateFcSaleOrder", e.getMessage());
 			throw new GlobalException(JaxError.FS_APPLIATION_CREATION_FAILED, "FC Sale application exchange");
 		}
 	}
@@ -544,7 +544,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel {
 		return list;
 	}
 
-	public BigDecimal generateDocumentNumber(CountryBranch countryBranch, String processInd, BigDecimal finYear) {
+	public BigDecimal generateDocumentNumber(CountryBranchMdlv1 countryBranch, String processInd, BigDecimal finYear) {
 		BigDecimal appCountryId = metaData.getCountryId() == null ? BigDecimal.ZERO : metaData.getCountryId();
 		BigDecimal companyId = metaData.getCompanyId() == null ? BigDecimal.ZERO : metaData.getCompanyId();
 		BigDecimal documentId = ConstantDocument.DOCUMENT_CODE_FOR_FCSALE;
@@ -554,7 +554,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel {
 		return (BigDecimal) output.get("P_DOC_NO");
 	}
 
-	public List<TimeSlotDto> fetchTimeSlot(BigDecimal shippingAddressId) {
+	/*public List<TimeSlotDto> fetchTimeSlot(BigDecimal shippingAddressId) {
 		List<TimeSlotDto> timeSlotList = new ArrayList<>();
 		BigDecimal appCountryId = metaData.getCountryId() == null ? BigDecimal.ZERO : metaData.getCountryId();
 		BigDecimal companyId = metaData.getCompanyId() == null ? BigDecimal.ZERO : metaData.getCompanyId();
@@ -583,8 +583,45 @@ public class FcSaleApplicationTransactionManager extends AbstractModel {
 			throw new GlobalException(JaxError.FC_SALE_TIME_SLOT_SETUP_MISSING, "No data found in DB");
 		}
 		return timeSlotList;
-	}
+	}*/
 
+	
+	public List<TimeSlotDto> fetchTimeSlot(BigDecimal shippingAddressId) {
+		List<TimeSlotDto> timeSlotList = new ArrayList<>();
+		BigDecimal appCountryId = metaData.getCountryId() == null ? BigDecimal.ZERO : metaData.getCountryId();
+		BigDecimal companyId = metaData.getCompanyId() == null ? BigDecimal.ZERO : metaData.getCompanyId();
+		List<FxDeliveryTimeSlotMaster> list = fcSaleOrderTimeSlotDao
+				.findByCountryIdAndCompanyIdAndIsActive(appCountryId, companyId, ConstantDocument.Yes);
+
+		if (list != null && !list.isEmpty()) {
+			BigDecimal startTime = list.get(0).getStartTime() == null ? BigDecimal.ZERO : list.get(0).getStartTime();
+			BigDecimal endTime = list.get(0).getEndTime() == null ? BigDecimal.ZERO : list.get(0).getEndTime();
+			BigDecimal timeInterval = list.get(0).getTimeInterval() == null ? BigDecimal.ZERO
+					: list.get(0).getTimeInterval();
+			BigDecimal noOfDays = list.get(0).getNoOfDays() == null ? BigDecimal.ZERO : list.get(0).getNoOfDays();
+			BigDecimal officeendTime = list.get(0).getOfficeEndTime() == null ? BigDecimal.ZERO
+					: list.get(0).getOfficeEndTime();
+			BigDecimal officeStartTime = list.get(0).getOfficeStartTime() == null ? BigDecimal.ZERO
+					: list.get(0).getOfficeStartTime();
+			BigDecimal timeIntervalOffice = list.get(0).getTimeIntervalOffice() == null ? BigDecimal.ZERO
+					: list.get(0).getTimeIntervalOffice();
+			if (JaxUtil.isNullZeroBigDecimalCheck(shippingAddressId)) {
+				ShippingAddressDetail shipp = shippingAddressDao.findOne(shippingAddressId);
+				if (shipp != null && shipp.getAddressType() != null
+						&& shipp.getAddressType().equalsIgnoreCase(ConstantDocument.FX_LOA)) {
+					startTime = officeStartTime;
+					endTime = officeendTime;
+					timeInterval = timeIntervalOffice;
+				}
+			}
+
+			timeSlotList = DateUtil.getTimeSlotRange(startTime, endTime, timeInterval,
+					noOfDays.intValue());
+		} else {
+			throw new GlobalException(JaxError.FC_SALE_TIME_SLOT_SETUP_MISSING, "No data found in DB");
+		}
+		return timeSlotList;
+	}
 	public List<ShoppingCartDetailsDto> convertShopingCartDto(List<FxShoppingCartDetails> cartDetailList) {
 		List<ShoppingCartDetailsDto> cartListDto = new ArrayList<>();
 		cartDetailList.forEach(cartDetails -> cartListDto.add(convertCartDto(cartDetails)));

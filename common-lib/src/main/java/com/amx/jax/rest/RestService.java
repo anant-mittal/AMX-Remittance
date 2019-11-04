@@ -26,7 +26,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
@@ -334,6 +333,11 @@ public class RestService {
 		public <T> T as(ParameterizedTypeReference<T> responseType) {
 			URI uri = builder.buildAndExpand(uriParams).toUri();
 			return restTemplate.exchange(uri, method, requestEntity, responseType).getBody();
+		}
+
+		public byte[] asByteArray() {
+			URI uri = builder.buildAndExpand(uriParams).toUri();
+			return restTemplate.getForObject(uri, byte[].class);
 		}
 
 		public String asString() {

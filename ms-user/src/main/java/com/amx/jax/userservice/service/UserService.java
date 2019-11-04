@@ -866,7 +866,7 @@ public class UserService extends AbstractUserService {
 		onlineCustomer.setTokenSentCount(BigDecimal.ZERO);
 	}
 
-	protected LoginLogoutHistory getLoginLogoutHistoryByUserName(String userName) {
+	public LoginLogoutHistory getLoginLogoutHistoryByUserName(String userName) {
 
 		Sort sort = new Sort(Direction.DESC, "loginLogoutId");
 		List<LoginLogoutHistory> last2HistoryList = loginLogoutHistoryRepositoryRepo.findFirst2ByuserName(userName,
@@ -1000,7 +1000,7 @@ public class UserService extends AbstractUserService {
 		try {
 			BeanUtils.copyProperties(dto, beneModel);
 		} catch (IllegalAccessException | InvocationTargetException e) {
-			logger.error("bene list display", e);
+			logger.debug("bene list display", e);
 		}
 		return dto;
 	}
@@ -1135,6 +1135,7 @@ public class UserService extends AbstractUserService {
 			personInfo.setWhatsAppNumber(customer.getWhatsapp());
 			personInfo.setPrefixCodeMobile("+" + customer.getPrefixCodeMobile());
 			personInfo.setWhatsappPrefixCode("+" + customer.getWhatsappPrefix());
+			personInfo.setIdentityTypeId(customer.getIdentityTypeId());
 			if(customer.getFirstName() != null) {
 				personInfo.setFirstName(customer.getFirstName());
 			}
@@ -1262,7 +1263,7 @@ public class UserService extends AbstractUserService {
 		try {
 			hashpassword = com.amx.utils.CryptoUtil.getSHA2Hash(password);
 		} catch (NoSuchAlgorithmException e) {
-			logger.error("Exception thrown for incorrect algorithm ", e);
+			logger.debug("Exception thrown for incorrect algorithm ", e);
 			throw new GlobalException("Unable to generate fingerprint password");
 		}
 		return hashpassword;

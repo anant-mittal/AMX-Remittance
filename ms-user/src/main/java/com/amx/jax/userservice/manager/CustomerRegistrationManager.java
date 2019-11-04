@@ -90,7 +90,7 @@ public class CustomerRegistrationManager extends TransactionModel<CustomerRegist
 	@Autowired
 	CustomerIdProofRepository customerIdProofRepository;
 	@Autowired
-	BizcomponentDao bizcomponentDao; 
+	BizcomponentDao bizcomponentDao;
 	@Autowired
 	UserService userService;
 	
@@ -366,7 +366,7 @@ public class CustomerRegistrationManager extends TransactionModel<CustomerRegist
 				throw new GlobalException(JaxError.ID_TYPE_LENGTH_NOT_DEFINED,"The minimum length should be:"+minimumLength +" and maximum should be :"+maxLength);
 			}
 		}else {
-			throw new GlobalException(JaxError.ID_TYPE_LENGTH_NOT_DEFINED,"Id length setup is missing  in paramter :"+identityInt +" identityTypeId :"+identityTypeId);
+			throw new GlobalException(JaxError.ID_TYPE_LENGTH_NOT_DEFINED,"Id length setup is missing  in parameter :"+identityInt +" identityTypeId :"+identityTypeId);
 		}
 		
 		List<Customer> customerList = customerRepository.getCustomerDetails(identityInt,jaxMetaInfo.getCountryId());
@@ -496,7 +496,7 @@ public class CustomerRegistrationManager extends TransactionModel<CustomerRegist
 				if(null != homeData.getFsCityMaster()) {
 					homeAddress.setCityId(homeData.getFsCityMaster().getCityId());		
 				}
-				offsiteCustomer.setHomeAddressDestails(homeAddress);
+				offsiteCustomer.setHomeAddressDetails(homeAddress);
 			}
 		}else {
 			throw new GlobalException(JaxError.NO_RECORD_FOUND,"The customer does not exist in the system :"+identityInt);

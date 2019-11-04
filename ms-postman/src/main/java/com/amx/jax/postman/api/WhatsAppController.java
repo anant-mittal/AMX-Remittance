@@ -101,7 +101,8 @@ public class WhatsAppController {
 			throws PostManException {
 		long ageOfMessage = System.currentTimeMillis() - msg.getTimestamp();
 
-		if (ageOfMessage < MESSAGE_TIMEOUT) {
+		if (ageOfMessage < MESSAGE_TIMEOUT || msg.getAttempt() < 5) {
+			msg.setAttempt(msg.getAttempt() + 1);
 			whatsAppService.send(msg, ArgUtil.parseAsBigDecimal(q, BigDecimal.ZERO));
 		} else {
 			msg.setStatus(Status.FAILED);

@@ -27,13 +27,13 @@ public interface AmxSharedConfig extends AppSharedConfig {
 
 		CommunicationEvents getEvent();
 
-		Long getSmsPrefs();
+		String getSmsPrefs();
 
-		Long getEmailPrefs();
+		String getEmailPrefs();
 
-		Long getWaPrefs();
+		String getWaPrefs();
 
-		Long getPushPrefs();
+		String getPushPrefs();
 
 	}
 

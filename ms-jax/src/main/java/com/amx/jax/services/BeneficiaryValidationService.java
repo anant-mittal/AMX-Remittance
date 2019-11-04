@@ -23,7 +23,7 @@ import com.amx.amxlib.model.trnx.BeneficiaryTrnxModel;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.ServiceApplicabilityField;
 import com.amx.jax.dao.BlackListDao;
-import com.amx.jax.dbmodel.BankMasterModel;
+import com.amx.jax.dbmodel.BankMasterMdlv1;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.BlackListModel;
 import com.amx.jax.dbmodel.ServiceApplicabilityRule;
@@ -108,7 +108,7 @@ public class BeneficiaryValidationService {
 	}
 
 	private void validateIban(BeneAccountModel beneAccountModel) {
-		BankMasterModel bankMaster = bankService.getBankById(beneAccountModel.getBankId());
+		BankMasterMdlv1 bankMaster = bankService.getBankById(beneAccountModel.getBankId());
 		if (bankMaster == null) {
 			return;
 		}

@@ -28,7 +28,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constants.JaxChannel;
-import com.amx.jax.dbmodel.CurrencyMasterModel;
+import com.amx.jax.dbmodel.CurrencyMasterMdlv1;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.insurance.CustomerInsurance;
 import com.amx.jax.dbmodel.insurance.InsuranceAction;
@@ -85,7 +85,7 @@ public class GigInsuranceService {
 
 	public GigInsuranceDetail fetchInsuranceDetail() {
 		GigInsuranceDetail gigInsuranceDetail = new GigInsuranceDetail();
-		CurrencyMasterModel currency = currencyMasterService.getCurrencyMasterById(metaData.getDefaultCurrencyId());
+		CurrencyMasterMdlv1 currency = currencyMasterService.getCurrencyMasterById(metaData.getDefaultCurrencyId());
 		gigInsuranceDetail.setCurrency(currencyMasterService.convertModel(currency));
 		BigDecimal customerId = metaData.getCustomerId();
 		List<InsurnaceClaimNominee> nominees = insurnaceClaimNomineeRepository.findByCustomerIdAndIsActive(customerId, ConstantDocument.Yes);

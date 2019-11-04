@@ -90,6 +90,13 @@ public abstract class AmxApiException extends AmxException {
 		super(null, e, true, false);
 	}
 
+	public AmxApiException(IExceptionEnum errorCode, Exception ex) {
+		super(null, ex, true, false);
+		this.error = errorCode;
+		this.errorKey = error.getStatusKey();
+		this.errorMessage = ex.toString();
+	}
+
 	public IExceptionEnum getError() {
 		return error;
 	}

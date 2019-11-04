@@ -14,17 +14,46 @@ public class App { // Noncompliant
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		printAndCheck(StringUtils.pad("abdefg", "xxxx", 0, 1), "defg");
-		printAndCheck(StringUtils.pad("abdefg", "xxxxxxx", 0, 1), "xabdefg");
+		String pad = "FffffffffffffffffffffffffffffffG";
+		String src = "SssssssssssssT";
+		System.out.println(pad);
+		System.out.println(src);
+		System.out.println(StringUtils.pad(src, pad, 1, 0));
+		System.out.println(StringUtils.pad(src, pad, 1, 1));
 
-		printAndCheck(StringUtils.pad("abdefg", "xxxx", 1, 1), "abde");
-		printAndCheck(StringUtils.pad("abdefg", "xxxxxxx", 1, 1), "abdefgx");
+		System.out.println("Set 1");
+		printAndCheck(StringUtils.pad("SssssssssssssT", "FffffffffffffffffffffffffffffffG", 0, 0),
+				"SssssssssssssT");
+		printAndCheck(StringUtils.pad("SssssssssssssT", "FffffffffffffffffffffffffffffffG", 0, 1),
+				"SssssssssssssTfffffffffffffffffG");
+		printAndCheck(StringUtils.pad("SssssssssssssT", "FffffffffffffffffffffffffffffffG", 1, 0),
+				"SssssssssssssT");
+		printAndCheck(StringUtils.pad("SssssssssssssT", "FffffffffffffffffffffffffffffffG", 1, 1),
+				"FfffffffffffffffffSssssssssssssT");
 
+		System.out.println("Set 2");
+		printAndCheck(StringUtils.pad("SssssssssssssT", "", 0, 0), "SssssssssssssT");
+		printAndCheck(StringUtils.pad("SssssssssssssT", "", 0, 1), "");
+		printAndCheck(StringUtils.pad("SssssssssssssT", "", 1, 0), "SssssssssssssT");
+		printAndCheck(StringUtils.pad("SssssssssssssT", "", 1, 1), "");
+
+		System.out.println("Set 3");
 		printAndCheck(StringUtils.pad("abdefg", "xxxx", 0, 0), "abdefg");
-		printAndCheck(StringUtils.pad("abdefg", "xxxxxxx", 0, 0), "xabdefg");
-
+		printAndCheck(StringUtils.pad("abdefg", "xxxx", 0, 1), "abde");
 		printAndCheck(StringUtils.pad("abdefg", "xxxx", 1, 0), "abdefg");
-		printAndCheck(StringUtils.pad("abdefg", "xxxxxxx", 1, 0), "abdefgx");
+		printAndCheck(StringUtils.pad("abdefg", "xxxx", 1, 1), "defg");
+
+		System.out.println("Set 4");
+		printAndCheck(StringUtils.pad("abdefg", "xxxxxxx", 0, 0), "abdefg");
+		printAndCheck(StringUtils.pad("abdefg", "xxxxxxx", 0, 1), "abdefgx");
+		printAndCheck(StringUtils.pad("abdefg", "xxxxxxx", 1, 0), "abdefg");
+		printAndCheck(StringUtils.pad("abdefg", "xxxxxxx", 1, 1), "xabdefg");
+
+		System.out.println("Set 5");
+		printAndCheck(StringUtils.pad("", "xxxxxxx", 0, 0), "");
+		printAndCheck(StringUtils.pad("", "xxxxxxx", 0, 1), "xxxxxxx");
+		printAndCheck(StringUtils.pad("", "xxxxxxx", 1, 0), "");
+		printAndCheck(StringUtils.pad("", "xxxxxxx", 1, 1), "xxxxxxx");
 
 	}
 

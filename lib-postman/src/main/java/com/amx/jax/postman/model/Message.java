@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.dict.Language;
 import com.amx.jax.postman.model.ITemplates.ITemplate;
 import com.amx.utils.JsonUtil;
@@ -36,6 +37,26 @@ public class Message implements Serializable {
 	private String template = null;
 	private Map<String, Object> model = new HashMap<String, Object>();
 	private MessageType messageType = null;
+	private ContactType contactType;
+
+	private String id;
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public ContactType getContactType() {
+		return contactType;
+	}
+
+	public void setContactType(ContactType contactType) {
+		this.contactType = contactType;
+	}
+
 	private Status status = null;
 
 	private List<String> lines = new ArrayList<String>();
@@ -112,6 +133,11 @@ public class Message implements Serializable {
 		this.timestamp = System.currentTimeMillis();
 		this.status = Status.INIT;
 		this.to = new ArrayList<String>();
+	}
+
+	public Message(ContactType contactType) {
+		this();
+		this.contactType = contactType;
 	}
 
 	/**
