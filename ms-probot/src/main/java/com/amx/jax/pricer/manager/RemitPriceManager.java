@@ -59,7 +59,6 @@ import com.amx.jax.pricer.var.PricerServiceConstants;
 import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_BY;
 import com.amx.jax.pricer.var.PricerServiceConstants.SERVICE_GROUP;
 import com.amx.jax.pricer.var.PricerServiceConstants.TREASURY_FUND_STATUS;
-import com.amx.utils.JsonUtil;
 
 @Component
 public class RemitPriceManager {
@@ -290,11 +289,11 @@ public class RemitPriceManager {
 				if (requestDto.getLocalAmount() != null) {
 
 					exRateDetails.setSellRateBase(
-							createBreakUpForLcCur(exchangeRate.getSellRateMin(), requestDto.getLocalAmount()));
+							createBreakUpForLcCur(exchangeRate.getSellRateMax(), requestDto.getLocalAmount()));
 
 				} else {
 					exRateDetails.setSellRateBase(
-							createBreakUpForFcCur(exchangeRate.getSellRateMin(), requestDto.getForeignAmount()));
+							createBreakUpForFcCur(exchangeRate.getSellRateMax(), requestDto.getForeignAmount()));
 				}
 
 				BigDecimal rBankId = exchangeRate.getBankMaster().getBankId();

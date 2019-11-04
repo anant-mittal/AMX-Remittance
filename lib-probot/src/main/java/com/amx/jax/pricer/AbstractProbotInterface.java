@@ -56,6 +56,9 @@ public interface AbstractProbotInterface {
 		// Grouping APIs
 		public static final String GET_GROUPS_OF_TYPE = SERVICE_PREFIX + API_VERSION_V1 + "/get-groups-of-type";
 		public static final String SAVE_GROUPS = SERVICE_PREFIX + API_VERSION_V1 + "/save-groups";
+		
+		// Exchnage Rate Enquiry
+		public static final String ENQUIRE_EXCH_RATE = SERVICE_PREFIX + API_VERSION_V1 + "/enquire-exch-rate";
 
 
 	}

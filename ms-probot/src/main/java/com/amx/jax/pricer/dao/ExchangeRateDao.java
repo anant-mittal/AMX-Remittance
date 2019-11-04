@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.pricer.dbmodel.ExchangeRateAPRDET;
@@ -84,6 +86,19 @@ public class ExchangeRateDao {
 
 	public List<ExchangeRateMasterApprovalDet> getByCurIdIn(List<BigDecimal> curIds) {
 		return customRepo.findByPredicateIn(curIds);
+	}
+
+	public List<ExchangeRateMasterApprovalDet> getExchangeRatesForPredicates(BigDecimal countryId,
+			BigDecimal currencyId, BigDecimal bankId, BigDecimal serviceIndId, BigDecimal countryBranchId,
+			Pageable pageable) {
+
+		if (pageable == null) {
+			pageable = new PageRequest(0, 15);
+		}
+
+		return customRepo.getExchangeRatesForPredicates(countryId, currencyId, bankId, serviceIndId, countryBranchId,
+				pageable);
+
 	}
 
 }

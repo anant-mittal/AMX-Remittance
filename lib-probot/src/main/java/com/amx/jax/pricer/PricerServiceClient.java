@@ -20,8 +20,10 @@ import com.amx.jax.partner.dto.SrvPrvFeeInqResDTO;
 import com.amx.jax.pricer.dto.CurrencyMasterDTO;
 import com.amx.jax.pricer.dto.DiscountDetailsReqRespDTO;
 import com.amx.jax.pricer.dto.DiscountMgmtReqDTO;
+import com.amx.jax.pricer.dto.ExchRateEnquiryReqDto;
 import com.amx.jax.pricer.dto.ExchangeRateAndRoutingRequest;
 import com.amx.jax.pricer.dto.ExchangeRateAndRoutingResponse;
+import com.amx.jax.pricer.dto.ExchangeRateEnquiryRespDto;
 import com.amx.jax.pricer.dto.GroupDetails;
 import com.amx.jax.pricer.dto.HolidayResponseDTO;
 import com.amx.jax.pricer.dto.OnlineMarginMarkupInfo;
@@ -235,6 +237,17 @@ public class PricerServiceClient implements ProbotExchangeRateService, ProbotDat
 
 		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.SAVE_GROUPS).post(group)
 				.as(new ParameterizedTypeReference<AmxApiResponse<GroupDetails, Object>>() {
+				});
+	}
+
+	@Override
+	public AmxApiResponse<ExchangeRateEnquiryRespDto, Object> enquireExchangeRates(
+			ExchRateEnquiryReqDto rateEnquiryReqDto) {
+		LOGGER.info("Received Client Request for Enquire Exchange Rates, transaction Id: {}, with TraceId: {}",
+				AppContextUtil.getTranxId(), AppContextUtil.getTraceId());
+
+		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.ENQUIRE_EXCH_RATE).post(rateEnquiryReqDto)
+				.as(new ParameterizedTypeReference<AmxApiResponse<ExchangeRateEnquiryRespDto, Object>>() {
 				});
 	}
 

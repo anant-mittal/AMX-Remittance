@@ -4,11 +4,11 @@ import java.math.BigDecimal;
 
 import javax.transaction.Transactional;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 
 import com.amx.jax.pricer.dbmodel.ExchangeRateMasterApprovalDet;
 
 @Transactional
-public interface AprDetJpaRepo extends JpaRepository<ExchangeRateMasterApprovalDet, BigDecimal>, AprDetJpaRepoCustom {
+public interface AprDetJpaRepo extends PagingAndSortingRepository<ExchangeRateMasterApprovalDet, BigDecimal>, AprDetJpaRepoCustom {
 
 }

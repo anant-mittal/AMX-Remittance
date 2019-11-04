@@ -23,6 +23,8 @@ import com.amx.jax.pricer.ProbotDataService;
 import com.amx.jax.pricer.dto.CurrencyMasterDTO;
 import com.amx.jax.pricer.dto.DiscountDetailsReqRespDTO;
 import com.amx.jax.pricer.dto.DiscountMgmtReqDTO;
+import com.amx.jax.pricer.dto.ExchRateEnquiryReqDto;
+import com.amx.jax.pricer.dto.ExchangeRateEnquiryRespDto;
 import com.amx.jax.pricer.dto.GroupDetails;
 import com.amx.jax.pricer.dto.HolidayResponseDTO;
 import com.amx.jax.pricer.dto.OnlineMarginMarkupInfo;
@@ -157,6 +159,18 @@ public class ProbotDataServiceApiController implements ProbotDataService {
 		GroupDetails details = dataService.saveGroup(group);
 
 		return AmxApiResponse.build(details);
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.ENQUIRE_EXCH_RATE, method = RequestMethod.POST)
+	public AmxApiResponse<ExchangeRateEnquiryRespDto, Object> enquireExchangeRates(
+			@RequestBody @Valid ExchRateEnquiryReqDto rateEnquiryReqDto) {
+
+		LOGGER.info("Received Probot API Service Request for Exchange Rate Enquiry");
+
+		ExchangeRateEnquiryRespDto respDto = dataService.enquireExchRate(rateEnquiryReqDto);
+
+		return AmxApiResponse.build(respDto);
 	}
 
 }

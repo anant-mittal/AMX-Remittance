@@ -42,9 +42,11 @@ import com.amx.jax.pricer.dto.BankDetailsDTO;
 import com.amx.jax.pricer.dto.CurrencyMasterDTO;
 import com.amx.jax.pricer.dto.DiscountDetailsReqRespDTO;
 import com.amx.jax.pricer.dto.DiscountMgmtReqDTO;
+import com.amx.jax.pricer.dto.ExchRateEnquiryReqDto;
 import com.amx.jax.pricer.dto.ExchangeRateAndRoutingRequest;
 import com.amx.jax.pricer.dto.ExchangeRateAndRoutingResponse;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
+import com.amx.jax.pricer.dto.ExchangeRateEnquiryRespDto;
 import com.amx.jax.pricer.dto.GroupDetails;
 import com.amx.jax.pricer.dto.HolidayResponseDTO;
 import com.amx.jax.pricer.dto.OnlineMarginMarkupInfo;
@@ -513,6 +515,13 @@ public class PricerServiceApiTest implements ProbotExchangeRateService, ProbotDa
 	@RequestMapping(value = ApiEndPoints.SAVE_GROUPS, method = RequestMethod.POST)
 	public AmxApiResponse<GroupDetails, Object> saveGroups(GroupDetails group) {
 		return pricerServiceClient.saveGroups(group);
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.ENQUIRE_EXCH_RATE, method = RequestMethod.POST)
+	public AmxApiResponse<ExchangeRateEnquiryRespDto, Object> enquireExchangeRates(
+			ExchRateEnquiryReqDto rateEnquiryReqDto) {
+		return pricerServiceClient.enquireExchangeRates(rateEnquiryReqDto);
 	}
 
 }

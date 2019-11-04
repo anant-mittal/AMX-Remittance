@@ -8,6 +8,8 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.pricer.dto.CurrencyMasterDTO;
 import com.amx.jax.pricer.dto.DiscountDetailsReqRespDTO;
 import com.amx.jax.pricer.dto.DiscountMgmtReqDTO;
+import com.amx.jax.pricer.dto.ExchRateEnquiryReqDto;
+import com.amx.jax.pricer.dto.ExchangeRateEnquiryRespDto;
 import com.amx.jax.pricer.dto.GroupDetails;
 import com.amx.jax.pricer.dto.HolidayResponseDTO;
 import com.amx.jax.pricer.dto.OnlineMarginMarkupInfo;
@@ -41,5 +43,8 @@ public interface ProbotDataService extends AbstractProbotInterface {
 	public AmxApiResponse<GroupDetails, Object> getGroupsOfType(String groupType);
 
 	public AmxApiResponse<GroupDetails, Object> saveGroups(GroupDetails group);
+
+	public AmxApiResponse<ExchangeRateEnquiryRespDto, Object> enquireExchangeRates(
+			ExchRateEnquiryReqDto rateEnquiryReqDto);
 
 }

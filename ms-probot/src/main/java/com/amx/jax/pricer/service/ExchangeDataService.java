@@ -37,6 +37,8 @@ import com.amx.jax.pricer.dto.CurrencyMasterDTO;
 import com.amx.jax.pricer.dto.CustomerCategoryDetails;
 import com.amx.jax.pricer.dto.DiscountDetailsReqRespDTO;
 import com.amx.jax.pricer.dto.DiscountMgmtReqDTO;
+import com.amx.jax.pricer.dto.ExchRateEnquiryReqDto;
+import com.amx.jax.pricer.dto.ExchangeRateEnquiryRespDto;
 import com.amx.jax.pricer.dto.GroupDetails;
 import com.amx.jax.pricer.dto.OnlineMarginMarkupInfo;
 import com.amx.jax.pricer.dto.OnlineMarginMarkupReq;
@@ -44,6 +46,7 @@ import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
 import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.manager.DiscountManager;
+import com.amx.jax.pricer.manager.ExchangeRateManager;
 import com.amx.jax.pricer.var.PricerServiceConstants;
 import com.amx.jax.pricer.var.PricerServiceConstants.DISCOUNT_TYPE;
 import com.amx.jax.pricer.var.PricerServiceConstants.GROUP_TYPE;
@@ -86,6 +89,9 @@ public class ExchangeDataService {
 
 	@Autowired
 	MarginMarkupDao marginMarkupDao;
+
+	@Autowired
+	ExchangeRateManager exchangeRateManager;
 
 	// @Autowired
 	// private ProbotMetaInfo metaInfo;
@@ -294,6 +300,12 @@ public class ExchangeDataService {
 		master = groupingMasterDao.save(master);
 
 		return DiscountManager.convertToGroupDetails(master);
+
+	}
+
+	public ExchangeRateEnquiryRespDto enquireExchRate(ExchRateEnquiryReqDto rateEnquiryReqDto) {
+
+		return exchangeRateManager.enquireExchRate(rateEnquiryReqDto);
 
 	}
 
