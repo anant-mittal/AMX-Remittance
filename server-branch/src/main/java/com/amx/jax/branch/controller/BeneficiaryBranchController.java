@@ -14,28 +14,35 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.amxlib.meta.model.AccountTypeDto;
 import com.amx.amxlib.meta.model.CountryMasterDTO;
 import com.amx.amxlib.model.BeneRelationsDescriptionDto;
+import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterAgentBranchParam;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterServiceProviderParam;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.BeneClient;
+import com.amx.jax.client.JaxFieldClient;
 import com.amx.jax.client.MetaClient;
 import com.amx.jax.client.bene.BeneBranchClient;
 import com.amx.jax.client.bene.BeneficaryStatusDto;
+import com.amx.jax.client.remittance.RemittanceClient;
 import com.amx.jax.client.serviceprovider.RoutingBankMasterDTO;
 import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.model.request.benebranch.AddBeneBankRequest;
 import com.amx.jax.model.request.benebranch.AddBeneCashRequest;
 import com.amx.jax.model.request.benebranch.AddNewBankBranchRequest;
+import com.amx.jax.model.request.benebranch.BankBranchListRequest;
 import com.amx.jax.model.request.benebranch.ListBeneBankOrCashRequest;
 import com.amx.jax.model.request.benebranch.ListBeneRequest;
 import com.amx.jax.model.request.benebranch.UpdateBeneBankRequest;
 import com.amx.jax.model.request.benebranch.UpdateBeneCashRequest;
 import com.amx.jax.model.request.benebranch.UpdateBeneStatusRequest;
+import com.amx.jax.model.request.remittance.GetServiceApplicabilityRequest;
 import com.amx.jax.model.response.BankMasterDTO;
 import com.amx.jax.model.response.CurrencyMasterDTO;
+import com.amx.jax.model.response.benebranch.BankBranchDto;
 import com.amx.jax.model.response.benebranch.BeneStatusDto;
+import com.amx.jax.model.response.remittance.GetServiceApplicabilityResponse;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -52,6 +59,12 @@ public class BeneficiaryBranchController {
 
 	@Autowired
 	MetaClient metaClient;
+
+	@Autowired
+	RemittanceClient remittanceClient;
+
+	@Autowired
+	private JaxFieldClient jaxFieldClient;
 
 	// Add Bene Api's
 	@RequestMapping(value = "/api/bene/country/list", method = RequestMethod.GET)
@@ -94,9 +107,29 @@ public class BeneficiaryBranchController {
 		return beneClient.getBeneficiaryAccountType(beneCountryId).toAmxApiResponse();
 	}
 
+	@RequestMapping(value = "/api/bene/branch/list", method = RequestMethod.POST)
+	public AmxApiResponse<BankBranchDto, Object> listBankBranch(@RequestBody BankBranchListRequest request) {
+		return beneBranchClient.listBankBranch(request);
+
+	}
+
 	@RequestMapping(value = "/api/bene/id/list", method = RequestMethod.GET)
 	public AmxApiResponse<BeneficiaryListDTO, Object> getBeneByIdNo(@RequestParam Integer idNo) {
 		return beneBranchClient.getBeneByIdNo(idNo);
+	}
+
+	// Ifsc and SWift code mandatory api
+	@RequestMapping(value = "/api/bene/fields/list", method = RequestMethod.GET)
+	public AmxApiResponse<GetServiceApplicabilityResponse, Object> getServiceApplicability(
+			@RequestBody GetServiceApplicabilityRequest request) {
+		return remittanceClient.getServiceApplicability(request);
+
+	}
+
+	@RequestMapping(value = "/api/bene/form/fields", method = RequestMethod.GET)
+	public AmxApiResponse<JaxConditionalFieldDto, Object> getDynamicFieldsForBeneficiary(
+			@RequestParam BigDecimal beneCountryId) {
+		return jaxFieldClient.getDynamicFieldsForBeneficiary(beneCountryId).toAmxApiResponse();
 	}
 
 	// Bene Mgmt Api's
