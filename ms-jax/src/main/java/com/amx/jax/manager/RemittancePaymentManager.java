@@ -439,7 +439,7 @@ public class RemittancePaymentManager extends AbstractService{
 					serviceProviderView = transactionDetailsView;
 				}
 				
-				if(transactionDetailsView.getBankCode().equalsIgnoreCase(SERVICE_PROVIDER_BANK_CODE.VINTJA.name())) {
+				if(transactionDetailsView.getBankCode().equalsIgnoreCase(SERVICE_PROVIDER_BANK_CODE.VINT.name())) {
 					ventajaCheckStatus = Boolean.TRUE;
 				}
 			}

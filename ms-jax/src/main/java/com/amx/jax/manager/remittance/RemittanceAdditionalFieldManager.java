@@ -2,13 +2,11 @@ package com.amx.jax.manager.remittance;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
-import org.hamcrest.core.IsCollectionContaining;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +50,6 @@ import com.amx.jax.service.BankMetaService;
 import com.amx.jax.services.BankService;
 import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.services.JaxFieldService;
-import com.amx.jax.dbmodel.SwiftMasterView;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -104,14 +101,24 @@ public class RemittanceAdditionalFieldManager {
 		
 		ApiResponse<JaxConditionalFieldDto> beneTeleApiReponse = jaxFieldService.getJaxFieldsForEntity(new GetJaxFieldRequest(JaxFieldEntity.BNFTELLAB));
 		
-		
-		
+		// service provider city , street and beneficiary zip code need to populate, but bene zip code check for navigable in service applicability
 		List<JaxConditionalFieldDto> allJaxConditionalFields = apiResponse.getResults();
 		if(spApiResponse != null && spApiResponse.getResults() != null) {
-			allJaxConditionalFields.addAll(spApiResponse.getResults());
+			//allJaxConditionalFields.addAll(spApiResponse.getResults());
+			List<JaxConditionalFieldDto> allSPJaxConditionalFields = spApiResponse.getResults();
+			if(allSPJaxConditionalFields != null && allSPJaxConditionalFields.size() != 0) {
+				for (JaxConditionalFieldDto jaxConditionalFieldDto : allSPJaxConditionalFields) {
+					if(JaxDynamicField.BENE_ZIP_CODE.name().equals(jaxConditionalFieldDto.getField().getName())) {
+						JaxConditionalFieldDto beneZipConditionalFieldDto = partnerTransactionManager.checkBeneficiaryZipCodeAvailable(remitApplParametersMap,jaxConditionalFieldDto);
+						if(beneZipConditionalFieldDto != null) {
+							allJaxConditionalFields.add(beneZipConditionalFieldDto);
+						}
+					}else {
+						allJaxConditionalFields.add(jaxConditionalFieldDto);
+					}
+				}
+			}
 		}
-		
-		
 		
 		if(interMediateBank1ApiResponse!=null && interMediateBank1ApiResponse.getResult()!=null) {
 			allJaxConditionalFields.addAll(interMediateBank1ApiResponse.getResults());
@@ -120,6 +127,7 @@ public class RemittanceAdditionalFieldManager {
 		if(interMediateBank2ApiResponse!=null && interMediateBank2ApiResponse.getResult()!=null) {
 			allJaxConditionalFields.addAll(interMediateBank2ApiResponse.getResults());
 		}
+		
 		if(furtherInstruction!=null && furtherInstruction.getResult()!=null) {
 			allJaxConditionalFields.addAll(furtherInstruction.getResults());
 		}
@@ -206,7 +214,11 @@ public class RemittanceAdditionalFieldManager {
 				AdditionalDataDisplayView addlDataDisplay = flexFieldMap.get(jaxDynamicField.getFlexField());
 				if (addlDataDisplay != null) {
 					if (addlDataDisplay.getIsRequired() != null) {
-						jaxConditionalField.getField().setRequired(ConstantDocument.Yes.equalsIgnoreCase(addlDataDisplay.getIsRequired()) ? true : false);
+						if(jaxConditionalField.getField().getRequired() != null && !jaxConditionalField.getField().getRequired()) {
+							// continue
+						}else {
+							jaxConditionalField.getField().setRequired(ConstantDocument.Yes.equalsIgnoreCase(addlDataDisplay.getIsRequired()) ? true : false);
+						}
 					}
 					if(jaxConditionalField.getField().getMinLength() == null) {
 						jaxConditionalField.getField().setMinLength(addlDataDisplay.getMinLength());
@@ -271,7 +283,7 @@ public class RemittanceAdditionalFieldManager {
 		return false;
 	}
 
-	public void processAdditionalFields(RemittanceAdditionalBeneFieldModel model) {
+	public void processAdditionalFields(RemittanceAdditionalBeneFieldModel model) { //,Map<String, Object> remitApplParametersMap
 		ApiResponse<JaxConditionalFieldDto> apiResponse = jaxFieldService.getJaxFieldsForEntity(new GetJaxFieldRequest(JaxFieldEntity.REMITTANCE_ONLINE));
 		List<JaxConditionalFieldDto> allJaxConditionalFields = apiResponse.getResults();
 		
@@ -284,8 +296,19 @@ public class RemittanceAdditionalFieldManager {
 		
 		List<JaxConditionalFieldDto> allSPJaxConditionalFields = spApiResponse.getResults();
 		if(allSPJaxConditionalFields != null && allSPJaxConditionalFields.size() != 0) {
+			/*for (JaxConditionalFieldDto jaxConditionalFieldDto : allSPJaxConditionalFields) {
+				if(JaxDynamicField.BENE_ZIP_CODE.name().equals(jaxConditionalFieldDto.getField().getName())) {
+					Boolean beneZip = partnerTransactionManager.checkBeneficiaryZipCodeAvailable(remitApplParametersMap);
+					if(beneZip) {
+						allJaxConditionalFields.add(jaxConditionalFieldDto);
+					}
+				}else {
+					allJaxConditionalFields.add(jaxConditionalFieldDto);
+				}
+			}*/
 			allJaxConditionalFields.addAll(allSPJaxConditionalFields);
 		}
+		
 		if(beneTeleApiReponse!=null && beneTeleApiReponse.getResult()!=null) {
 			allJaxConditionalFields.addAll(beneTeleApiReponse.getResults());
 		}

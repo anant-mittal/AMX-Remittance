@@ -1356,7 +1356,7 @@ public void validateSaveTrnxDetails(HashMap<String, Object> mapAllDetailRemitSav
 					serviceProviderView = transactionDetailsView;
 				}
 				
-				if(transactionDetailsView.getBankCode().equalsIgnoreCase(SERVICE_PROVIDER_BANK_CODE.VINTJA.name())) {
+				if(transactionDetailsView.getBankCode().equalsIgnoreCase(SERVICE_PROVIDER_BANK_CODE.VINT.name())) {
 					ventajaCheckStatus = Boolean.TRUE;
 				}
 			}

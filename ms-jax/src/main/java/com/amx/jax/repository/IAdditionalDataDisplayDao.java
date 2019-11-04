@@ -44,4 +44,17 @@ public interface IAdditionalDataDisplayDao  extends JpaRepository<AdditionalData
 			@Param("flexiFieldIn") String[] flexiFieldIn ,
 			@Param("bankId") BigDecimal bankId,
 			@Param("preFlexIndicator") String preFlexIndicator);
+	
+	@Query("select av from AdditionalDataDisplayView av where av.applicationCountryId=:applicationCountryId "
+			+ " and av.routingCountryId=:countryId "
+			+ " and av.routingCurrencyId=:currencyId and av.remittanceModeId=:remittanceModeId "
+			+ " and av.deliveryModeId =:deliveryModeId and av.isActive='Y' "
+			+ " and av.flexField in :flexiFieldIn")
+	public List<AdditionalDataDisplayView> getAdditionalDataFromSrvApplRule(
+			@Param("applicationCountryId") BigDecimal applicationCountryId, 
+			@Param("countryId") BigDecimal countryId, 
+			@Param("currencyId") BigDecimal currencyId, 
+			@Param("remittanceModeId") BigDecimal remittanceModeId,
+			@Param("deliveryModeId") BigDecimal deliveryModeId,
+			@Param("flexiFieldIn") String[] flexiFieldIn );
 }

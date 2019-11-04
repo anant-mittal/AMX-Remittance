@@ -64,6 +64,7 @@ public class ServiceProviderTransactionDataManager {
 		transactionDto.setDestination_currency(fcCurrencyQuote);
 		
 		transactionDto.setFlexi_field_1("0");
+		transactionDto.setFlexi_field_2("3");
 		
 		BigDecimal tokenno = null;
 		if(requestSequenceId != null) {

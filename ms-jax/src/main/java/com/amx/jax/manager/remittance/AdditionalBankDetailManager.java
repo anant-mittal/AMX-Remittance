@@ -122,7 +122,7 @@ public class AdditionalBankDetailManager {
 		if (additionalbankFields != null) {
 			additionalbankFields.forEach((k, v) -> {
 				AdditionalDataDisplayView additionalDataDisplayView = additionalDataRequiredMap.get(k);
-				if (ConstantDocument.Yes.equalsIgnoreCase(additionalDataDisplayView.getIsBeneTag())) {
+				if (additionalDataDisplayView != null && ConstantDocument.Yes.equalsIgnoreCase(additionalDataDisplayView.getIsBeneTag())) {
 					AdditionalBankDetailData data = valueMap.get(k);
 					if (data == null) {
 						data = new AdditionalBankDetailData(requestApplModel.getBeneId(), k, v.getAmieceDescription());
