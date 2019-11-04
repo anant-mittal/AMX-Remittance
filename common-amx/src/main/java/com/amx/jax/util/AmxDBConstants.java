@@ -148,6 +148,7 @@ public class AmxDBConstants {
 	public static final String ARTICLE_20_CODE = "20";
 	public static final BigDecimal BIZ_COMPONENT_ID_NEW_CIVIL_ID = new BigDecimal(2000);
 	public static final String CASH = "C";
+	public static final String CASH_STRING = "CASH";
 	public static final String BANK_TRANSFER = "T";
 	public static final String CHEQUE = "B";
 	public static final String OTHER = "O";

@@ -13,4 +13,5 @@ import com.amx.jax.dbmodel.remittance.RemittanceModeMaster;
  */
 public interface RemittanceModeMasterRepository extends CrudRepository<RemittanceModeMaster, java.io.Serializable> {
 
+	RemittanceModeMaster findByRemittance(String code);
 }

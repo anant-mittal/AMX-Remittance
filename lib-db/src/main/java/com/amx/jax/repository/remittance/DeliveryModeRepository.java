@@ -8,4 +8,5 @@ import com.amx.jax.dbmodel.remittance.DeliveryMode;
 
 public interface DeliveryModeRepository extends CrudRepository<DeliveryMode, Serializable> {
 
+	DeliveryMode findByDeliveryMode(String code);
 }

@@ -1,17 +1,15 @@
 package com.amx.jax.model.response.customer;
 
-import java.util.List;
-
-import com.amx.jax.model.response.remittance.ParameterDetailsDto;
+import java.math.BigDecimal;
 
 public class BenePackageResponse {
-	private List<ParameterDetailsDto> packages;
+	BigDecimal amount;
 
-	public List<ParameterDetailsDto> getPackages() {
-		return packages;
+	public BigDecimal getAmount() {
+		return amount;
 	}
 
-	public void setPackages(List<ParameterDetailsDto> packages) {
-		this.packages = packages;
+	public void setAmount(BigDecimal amount) {
+		this.amount = amount;
 	}
 }
