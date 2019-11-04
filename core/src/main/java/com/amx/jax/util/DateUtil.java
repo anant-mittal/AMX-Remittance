@@ -514,4 +514,24 @@ public class DateUtil {
 			return date;
 		}
 	 
+	 
+	 public static Date addCurrentDateTimeToGetNewTime(BigDecimal bts) {
+		 		 SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+		 		 Date date = new Date();
+		 		 if(JaxUtil.isNullZeroBigDecimalCheck(bts)) {
+		 			try {
+		 				//long now = Instant.now().toEpochMilli();
+		 				 long ts = bts.longValue();
+		 				 Calendar calendar = Calendar.getInstance();
+		 				 calendar.add(Calendar.SECOND, (int)ts);
+		 				 date = calendar.getTime();
+		 				  //date = formatter.parse(datenew);
+		 			} catch (Exception e) {
+		 				e.getMessage();
+		 			}
+		 		 }
+		 			return date;
+		 	 }
+		 	 
+	 
 }
