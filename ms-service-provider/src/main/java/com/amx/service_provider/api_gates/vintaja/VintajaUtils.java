@@ -222,18 +222,18 @@ public class VintajaUtils
 								txn_data.getDestination_amount().setScale(2, BigDecimal.ROUND_HALF_EVEN)
 										.stripTrailingZeros().toPlainString() +
 								"," +
-								"\"startYear\":\"" +
-								new SimpleDateFormat("yyyy").format(txn_data.getCoverage_start_date()) +
-								"\"," +
-								"\"startMonth\":\"" +
-								new SimpleDateFormat("MM").format(txn_data.getCoverage_start_date()) +
-								"\"," +
-								"\"endYear\":\"" +
-								new SimpleDateFormat("yyyy").format(txn_data.getCoverage_end_date()) +
-								"\"," +
-								"\"endMonth\":\"" +
-								new SimpleDateFormat("MM").format(txn_data.getCoverage_end_date()) +
-								"\"," +
+								//"\"startYear\":\"" +
+								//new SimpleDateFormat("yyyy").format(txn_data.getCoverage_start_date()) +
+								//"\"," +
+								//"\"startMonth\":\"" +
+								//new SimpleDateFormat("MM").format(txn_data.getCoverage_start_date()) +
+								//"\"," +
+								//"\"endYear\":\"" +
+								//new SimpleDateFormat("yyyy").format(txn_data.getCoverage_end_date()) +
+								//"\"," +
+								//"\"endMonth\":\"" +
+								//new SimpleDateFormat("MM").format(txn_data.getCoverage_end_date()) +
+								//"\"," +
 								"\"mp2\":\"" +
 								bene_data.getBeneficiary_account_number() +
 								"\"," +

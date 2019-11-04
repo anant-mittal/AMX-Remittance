@@ -270,29 +270,8 @@ public class ServiceProviderManger implements IServiceProvider
 					HomesendGate homesend_service =
 							new HomesendGate(owsLoginCredentialsObject, owsParamRespcodeRepository);
 
-					// Calling the quotation service
-					response =
-							homesend_service.getQuotation(txn_data.getSettlement_amount(),
-									txn_data.getSettlement_currency(),
-									txn_data.getDestination_amount(),
-									txn_data.getDestination_currency(),
-									txn_data.getDestination_country_2_digit_ISO(),
-									txn_data.getDestination_country_3_digit_ISO(),
-									txn_data.getOrigin_country_3_digit_ISO(),
-									customer_data.getCustomer_reference(),
-									customer_data.getCustomer_type(),
-									bene_data.getBeneficiary_reference(),
-									bene_data.getBeneficiary_type(),
-									bene_data.getFull_name(),
-									bene_data.getBeneficiary_account_number(),
-									bene_data.getBic_indicator(),
-									bene_data.getBeneficiary_bank_code(),
-									bene_data.getBeneficiary_branch_code(),
-									bene_data.getBeneficiary_bank_branch_swift_code(),
-									bene_data.getWallet_service_provider(),
-									txn_data.getRequest_sequence_id(),
-									txn_data.getRemittance_mode(),
-									txn_data.getDelivery_mode());
+					// Calling the send remittance service
+					response = homesend_service.send_remittance(txn_data, customer_data, bene_data);
 
 				}
 				else if (txn_data.getRoutting_bank_code().equals("VINT"))
