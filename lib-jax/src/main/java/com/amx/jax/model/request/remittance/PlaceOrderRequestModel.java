@@ -7,11 +7,25 @@ import java.math.BigDecimal;
 
 import com.amx.jax.model.response.ExchangeRateBreakup;
 
-public class PlaceOrderRequestModel extends AbstractRemittanceApplicationRequestModel{
+public class PlaceOrderRequestModel {
 	
-	@Override
-	public ExchangeRateBreakup getExchangeRateBreakup() {
-	return null;
+	BranchRemittanceApplRequestModel applRequestModel = new BranchRemittanceApplRequestModel();
+	String remarks;
+
+	public BranchRemittanceApplRequestModel getApplRequestModel() {
+		return applRequestModel;
+	}
+
+	public void setApplRequestModel(BranchRemittanceApplRequestModel applRequestModel) {
+		this.applRequestModel = applRequestModel;
+	}
+
+	public String getRemarks() {
+		return remarks;
+	}
+
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
 	}
 	
 	

@@ -18,6 +18,7 @@ import com.amx.jax.branchremittance.manager.BranchRemittanceManager;
 import com.amx.jax.branchremittance.manager.BranchRemittancePaymentManager;
 import com.amx.jax.branchremittance.manager.BranchRemittanceSaveManager;
 import com.amx.jax.branchremittance.manager.BranchRoutingManager;
+import com.amx.jax.branchremittance.manager.PlaceOrderManager;
 import com.amx.jax.branchremittance.manager.ReportManager;
 import com.amx.jax.manager.FcSaleBranchOrderManager;
 import com.amx.jax.meta.MetaData;
@@ -25,6 +26,7 @@ import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
 import com.amx.jax.model.request.remittance.CustomerBankRequest;
+import com.amx.jax.model.request.remittance.PlaceOrderRequestModel;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
@@ -73,6 +75,8 @@ public class BranchRemittanceService extends AbstractService{
 	@Autowired
 	ReportManager reportManager;
 	
+	@Autowired
+	PlaceOrderManager placeOrderManager;
 
 	
 	public AmxApiResponse<BranchRemittanceApplResponseDto, Object> saveBranchRemittanceApplication(BranchRemittanceApplRequestModel requestApplModel){
@@ -206,9 +210,17 @@ public class BranchRemittanceService extends AbstractService{
 	}
 	
 	
-public  AmxApiResponse<ParameterDetailsResponseDto, Object> getGiftService(BigDecimal beneRelaId) {
-	ParameterDetailsResponseDto parameterDetailsResponseDto =branchRemitManager.getGiftService(beneRelaId);
-	return AmxApiResponse.build(parameterDetailsResponseDto);
-}
+	public  AmxApiResponse<ParameterDetailsResponseDto, Object> getGiftService(BigDecimal beneRelaId) {
+		ParameterDetailsResponseDto parameterDetailsResponseDto =branchRemitManager.getGiftService(beneRelaId);
+		return AmxApiResponse.build(parameterDetailsResponseDto);
+	}
+	
+	public AmxApiResponse<BoolRespModel, Object> createPlaceOrder(PlaceOrderRequestModel placeOrderRequestModel){
+		Boolean result = placeOrderManager.createPlaceOrder(placeOrderRequestModel);
+		BoolRespModel resultBool = new BoolRespModel();
+		resultBool.setSuccess(result);
+		return AmxApiResponse.build(resultBool);
+	}
+	
 	
 }
