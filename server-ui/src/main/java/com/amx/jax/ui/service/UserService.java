@@ -1,5 +1,6 @@
 package com.amx.jax.ui.service;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -101,6 +102,8 @@ public class UserService {
 		msg.addToTenant(AppContextUtil.getTenant());
 		msg.addToCountry(customerModel.getPersoninfo().getNationalityId());
 		msg.addToUser(customerModel.getCustomerId());
+		Date dob = customerModel.getPersoninfo().getDateOfBirth();
+		msg.addToDate("dob", dob);
 		return msg.getTo();
 	}
 

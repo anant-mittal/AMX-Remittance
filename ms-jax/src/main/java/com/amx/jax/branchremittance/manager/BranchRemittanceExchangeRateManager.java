@@ -534,19 +534,22 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 		String currQuoteName = currMaster!=null?(currMaster.getQuoteName()==null?"":currMaster.getQuoteName()):currMaster.getCurrencyCode(); 
 		BigDecimal[] splitCount = foreignAmont.divideAndRemainder(routingDetails.getSplitAmount());
 		BigDecimal count = new BigDecimal(0);
-		Map<BigDecimal,BigDecimal> mapSplitAmount = new HashMap<>();
 		if(splitCount!=null && splitCount.length>0) {
 			count = splitCount[0].add(splitCount[1].compareTo(BigDecimal.ZERO)>0?BigDecimal.ONE:BigDecimal.ZERO);
 			List<String> amountStrList= new ArrayList<>();
 			for(int i=0;i<splitCount[0].intValue();i++) {
 				BigDecimal spValue = RoundUtil.roundBigDecimal(routingDetails.getSplitAmount(),drDto.getExRateBreakup().getFcDecimalNumber().intValue());
-				//amountStrList.add(routingDetails.getSplitAmount().toString());
-				amountStrList.add(formtingNumbers(spValue));
+				//amountStrList.add(formtingNumbers(spValue));
+				amountStrList.add(format(spValue.doubleValue()));
 			}
-			String joinedString = amountStrList.stream().collect(Collectors.joining(" , "));
+			String joinedString = amountStrList.stream().collect(Collectors.joining(" , "+currQuoteName +" "));
+		
 			if(splitCount[1]!=null && splitCount[1].compareTo(BigDecimal.ZERO)>0) {
 				BigDecimal spValue = RoundUtil.roundBigDecimal(splitCount[1],drDto.getExRateBreakup().getFcDecimalNumber().intValue());
 				reminder ="and "+ currQuoteName+" "+formtingNumbers(spValue)+"";
+			}else {
+				joinedString = amountStrList.stream().collect(Collectors.joining(" "+currQuoteName +" "));
+				joinedString =replaceWithAnd(joinedString,currQuoteName);
 			}
 		    msg = "This single remittance will be reflected as "+count.intValue()+" transactions in your bank account.The "+count.intValue()+" transactions will be "+currQuoteName+" "+joinedString+" "+reminder +" . Click Yes to continue, No to choose another rate.";
 		}
@@ -559,12 +562,46 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 	//Click Yes to continue, No to choose another rate
 	
 	private String formtingNumbers(BigDecimal value) {
-		 DecimalFormat myFormatter = new DecimalFormat("#,###.00");
+		 DecimalFormat myFormatter = new DecimalFormat("#,##,###.00");
 		 String strValue = null;
 		 if(JaxUtil.isNullZeroBigDecimalCheck(value)) {
 			 strValue = myFormatter.format(value);
 		 }
 		 return strValue;
 	}
+	
+
+	private String replaceWithAnd(String splitStr,String currQuoteName) {
+		String afterSplit = null;
+		if(!StringUtils.isBlank(splitStr) && !StringUtils.isBlank(currQuoteName)) {
+			String[] strList = splitStr.split(currQuoteName);
+			int j =strList.length; 
+			for(int i =0;i<strList.length;i++) {
+				if(i==j-1) {
+					afterSplit = afterSplit+" and "+currQuoteName+"  "+strList[i];
+				}else {
+					afterSplit =afterSplit==null?strList[i] :afterSplit.concat(currQuoteName +strList[i]);
+				}
+			}
+		}
+		return afterSplit;
+	}
+	
+	/** for INDIAN curreny format **/
+	public static String format(double value) {
+	    if(value < 1000) {
+	        return format("###.##", value);
+	    } else {
+	        double hundreds = value % 1000;
+	        int other = (int) (value / 1000);
+	        return format(",##", other) + ',' + format("000.00", hundreds);
+	    }
+	}
+
+	private static String format(String pattern, Object value) {
+	    return new DecimalFormat(pattern).format(value);
+	}
+	
+	
 }
 
