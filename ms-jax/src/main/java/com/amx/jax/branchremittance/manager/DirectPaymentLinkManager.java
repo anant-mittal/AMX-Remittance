@@ -257,6 +257,9 @@ public class DirectPaymentLinkManager extends AbstractModel {
 		ResponseCodeDetailDTO responseCodeDetail = new ResponseCodeDetailDTO();
 		
 		if(paymentLink.getResultCode() != null) {
+			if(paymentLink.getResultCode().equals("NOT CAPTURED")) {
+				paymentLink.setResultCode("NOT_CAPTURED");
+			}
 			responseCodeDetail = PayGRespCodeJSONConverter.getResponseCodeDetail(paymentLink.getResultCode());
 		}
 		responseCodeDetail.setPgPaymentId(paymentLink.getPgPaymentId());
