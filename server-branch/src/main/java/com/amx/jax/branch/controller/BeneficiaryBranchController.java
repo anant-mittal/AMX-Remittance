@@ -137,7 +137,6 @@ public class BeneficiaryBranchController {
 	}
 
 	// Bene Mgmt Api's
-	// Prashant Sir needs to check getting jax system error
 	@RequestMapping(value = "/api/bene/list", method = RequestMethod.POST)
 	public AmxApiResponse<BeneficiaryListDTO, Object> listBene(@RequestBody ListBeneRequest request) {
 		return beneBranchClient.listBene(request);
