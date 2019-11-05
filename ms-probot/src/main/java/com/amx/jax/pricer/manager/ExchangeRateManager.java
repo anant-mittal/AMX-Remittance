@@ -86,9 +86,19 @@ public class ExchangeRateManager {
 				rateEnquiryReqDto.getServiceIndId(), rateEnquiryReqDto.getBranchId(), pageable);
 
 		if (exchangeRateList == null || exchangeRateList.isEmpty()) {
-			LOGGER.error("No Exchnage Rate found for Given Filter");
-			throw new PricerServiceException(PricerServiceError.MISSING_VALID_EXCHANGE_RATES,
-					"Invalid or Missing Valid Exchange Rates for Selected Filters.");
+			LOGGER.debug("No Exchnage Rate found for Given Filter");
+			// throw new
+			// PricerServiceException(PricerServiceError.MISSING_VALID_EXCHANGE_RATES,
+			// "Invalid or Missing Valid Exchange Rates for Selected Filters.");
+
+			ExchangeRateEnquiryRespDto respDto = new ExchangeRateEnquiryRespDto();
+
+			respDto.setPageNo(rateEnquiryReqDto.getPageNo());
+			respDto.setPageSize(rateEnquiryReqDto.getPageSize());
+
+			respDto.setRateDetails(new ArrayList<BuySellRateDetails>());
+
+			return respDto;
 		}
 
 		List<BigDecimal> bankIds = new ArrayList<BigDecimal>();

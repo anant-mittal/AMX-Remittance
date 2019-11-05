@@ -64,7 +64,7 @@ public class AprDetJpaRepoImpl implements AprDetJpaRepoCustom {
 		}
 
 		if (bankId != null) {
-			predicates.add(cBuilder.equal(root.get("bankMaster.bankId"), bankId));
+			predicates.add(cBuilder.equal(root.get("bankMaster"), bankId));
 		}
 
 		if (serviceIndId != null) {
