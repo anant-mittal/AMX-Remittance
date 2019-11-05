@@ -410,6 +410,16 @@ public class CustomerDiscountManager {
 				}
 			}
 
+			// Set the better Rate diff - Round to Next Int Val
+			if (bankExRateDetail.isBetterRateAvailable()) {
+
+				BigDecimal diffAmt = bankExRateDetail.getBetterRateAmountSlab()
+						.subtract(bankExRateDetail.getSellRateNet().getConvertedFCAmount())
+						.setScale(0, RoundingMode.UP);
+
+				bankExRateDetail.setDiffInBetterRateFcAmount(diffAmt);
+			}
+
 			// discountedRatesNPrices.add(discountedRateDetail);
 
 			// System.out.println(" Discounted Rates ==> " + discountedRateDetail);

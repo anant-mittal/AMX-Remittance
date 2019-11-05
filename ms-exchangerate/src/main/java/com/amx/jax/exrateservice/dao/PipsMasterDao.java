@@ -8,12 +8,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.amx.jax.dbmodel.BankMasterModel;
-import com.amx.jax.dbmodel.CountryBranch;
+import com.amx.jax.dbmodel.BankMasterMdlv1;
+import com.amx.jax.dbmodel.CountryBranchMdlv1;
 import com.amx.jax.dbmodel.CountryMaster;
-import com.amx.jax.dbmodel.CurrencyMasterModel;
+import com.amx.jax.dbmodel.CurrencyMasterMdlv1;
 import com.amx.jax.dbmodel.ExchangeRateApprovalDetModel;
-import com.amx.jax.dbmodel.PipsMaster;
+import com.amx.jax.dbmodel.PipsMdlv1;
 import com.amx.jax.exrateservice.repository.PipsMasterRepository;
 import com.amx.jax.meta.MetaData;
 
@@ -29,42 +29,42 @@ public class PipsMasterDao {
 	@Autowired
 	private static final Logger logger = LoggerFactory.getLogger(PipsMasterDao.class);
 
-	public List<PipsMaster> getPipsForOnline(BigDecimal toCurrency) {
+	public List<PipsMdlv1> getPipsForOnline(BigDecimal toCurrency) {
 		logger.info("in getPipsForOnline params toCurrency:{} countryBranchId:{} ", toCurrency,
 				metaData.getCountryBranchId());
-		CountryBranch onlineBranch = new CountryBranch();
+		CountryBranchMdlv1 onlineBranch = new CountryBranchMdlv1();
 		onlineBranch.setCountryBranchId(metaData.getCountryBranchId());
-		return repo.getPipsMasterForBranch(onlineBranch, new CurrencyMasterModel(toCurrency));
+		return repo.getPipsMasterForBranch(onlineBranch, new CurrencyMasterMdlv1(toCurrency));
 	}
 
-	public List<PipsMaster> getPipsMasterForBranch(ExchangeRateApprovalDetModel exchangeRate, BigDecimal fcAmount) {
-		CountryBranch onlineBranch = new CountryBranch();
+	public List<PipsMdlv1> getPipsMasterForBranch(ExchangeRateApprovalDetModel exchangeRate, BigDecimal fcAmount) {
+		CountryBranchMdlv1 onlineBranch = new CountryBranchMdlv1();
 		onlineBranch.setCountryBranchId(metaData.getCountryBranchId());
-		CountryBranch countryBranch = new CountryBranch();
+		CountryBranchMdlv1 countryBranch = new CountryBranchMdlv1();
 		countryBranch.setCountryBranchId(exchangeRate.getCountryBranchId());
 		CountryMaster countryMaster = new CountryMaster();
 		countryMaster.setCountryId(exchangeRate.getCountryId());
 
-		CurrencyMasterModel currencyMaster = new CurrencyMasterModel();
+		CurrencyMasterMdlv1 currencyMaster = new CurrencyMasterMdlv1();
 		currencyMaster.setCurrencyId(exchangeRate.getCurrencyId());
-		BankMasterModel bankMaster = exchangeRate.getBankMaster();
-		List<PipsMaster> list = repo.getPipsMasterForBranch(countryBranch, countryMaster, bankMaster, currencyMaster,
+		BankMasterMdlv1 bankMaster = exchangeRate.getBankMaster();
+		List<PipsMdlv1> list = repo.getPipsMasterForBranch(countryBranch, countryMaster, bankMaster, currencyMaster,
 				fcAmount);
 		return list;
 	}
 	
 
-	public List<PipsMaster> getPipsMaster(BigDecimal toCurrency, BigDecimal lcAmount, BigDecimal countryBranchId,
+	public List<PipsMdlv1> getPipsMaster(BigDecimal toCurrency, BigDecimal lcAmount, BigDecimal countryBranchId,
 			List<BigDecimal> validBankIds) {
 		return repo.getPipsMasterForOnline(toCurrency, countryBranchId, lcAmount, validBankIds);
 	}
 	
 
-	public List<PipsMaster> getPipsMasterForLocalAmount(BigDecimal toCurrency, BigDecimal lcAmount, BigDecimal countryBranchId, BigDecimal bankId) {
+	public List<PipsMdlv1> getPipsMasterForLocalAmount(BigDecimal toCurrency, BigDecimal lcAmount, BigDecimal countryBranchId, BigDecimal bankId) {
 		return repo.getPipsMasterForLocalAmount(toCurrency, countryBranchId, lcAmount, bankId);
 	}
 	
-	public List<PipsMaster> getPipsMasterForForeignAmount(BigDecimal toCurrency, BigDecimal fcAmount,
+	public List<PipsMdlv1> getPipsMasterForForeignAmount(BigDecimal toCurrency, BigDecimal fcAmount,
 			BigDecimal countryBranchId, BigDecimal bankId) {
 		return repo.getPipsMasterForForeignAmount(toCurrency, countryBranchId, fcAmount, bankId);
 	}

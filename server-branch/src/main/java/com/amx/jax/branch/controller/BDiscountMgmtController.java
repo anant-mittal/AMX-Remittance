@@ -111,7 +111,7 @@ public class BDiscountMgmtController {
 			@RequestBody PricingRequestDTO pricingRequestDTO, 
 			@RequestParam(required = false) String identity,
 			@RequestParam(required = false) BigDecimal identityType) {
-		branchSession.getCustomerContext().refresh();
+		branchSession.getCustomerContext(false).refresh();
 		pricingRequestDTO.setCustomerId(branchSession.getCustomerId());
 		return discountMgmtClient.fetchCustomerRates(pricingRequestDTO);
 	}
@@ -135,7 +135,7 @@ public class BDiscountMgmtController {
 	@RequestMapping(value = "/api/save-markup/details", method = { RequestMethod.POST })
 	public AmxApiResponse<BoolRespModel, Object> saveOnlineMarginMarkupData(@RequestBody OnlineMarginMarkupInfo onlineMarginMarkupInfo) {
 		 LOGGER.debug("ssoUser.getUserDetails().getEmployeeName()",ssoUser.getUserDetails().getEmployeeName());
-		 String username=ssoUser.getUserDetails().getEmployeeName()!= null ? ssoUser.getUserDetails().getEmployeeName(): "";
+		 String username=ssoUser.getUserDetails().getUserName()!= null ? ssoUser.getUserDetails().getUserName(): "";
 		onlineMarginMarkupInfo.setEmpName(username);
 		return discountMgmtClient.saveOnlineMarginMarkupData(onlineMarginMarkupInfo);
 	}

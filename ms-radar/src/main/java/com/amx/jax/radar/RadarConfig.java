@@ -1,16 +1,10 @@
 package com.amx.jax.radar;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.amx.jax.dict.Tenant;
-import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncJobs;
-import com.amx.jax.scope.TenantProperties;
 import com.amx.jax.scope.TenantScoped;
 import com.amx.jax.scope.TenantValue;
-import com.amx.utils.ArgUtil;
 
 /**
  * The Class PostManConfig.
@@ -25,7 +19,7 @@ public class RadarConfig {
 
 	public static final String CE_RATE_SCRAPPER_AND_ES_AND_ANY_TNT = "${jax.jobs.scrapper.rate:true} " +
 			"&& ${elasticsearch.enabled:true} ";
-	
+
 	public static final String CE_RATE_SYNC_AND_ES = "${jax.jobs.rate:true} " +
 			"&& ${elasticsearch.enabled:true} ";
 
@@ -52,6 +46,27 @@ public class RadarConfig {
 
 	@Value("${jax.jobs.rate.counter}")
 	private String jobsRateVersion;
+	
+	@Value("${jax.jobs.trnx.night}")
+	boolean jobTranxNightEnabled;
+	
+	@Value("${jax.jobs.trnx.day}")
+	boolean jobTranxDayEnabled;
+	
+	@Value("${jax.jobs.wa.fail.retry}")
+	boolean jobWAFailRetryEnabled;
+
+	public boolean isJobWAFailRetryEnabled() {
+		return jobWAFailRetryEnabled;
+	}
+
+	public boolean isJobTranxDayEnabled() {
+		return jobTranxDayEnabled;
+	}
+
+	public boolean isJobTranxNightEnabled() {
+		return jobTranxNightEnabled;
+	}
 
 	public String getCompanyName() {
 		return companyName;

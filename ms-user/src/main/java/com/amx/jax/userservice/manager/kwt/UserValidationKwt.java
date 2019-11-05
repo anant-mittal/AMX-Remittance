@@ -86,7 +86,7 @@ public class UserValidationKwt implements CustomerValidation {
 				}
 			}
 		} else {
-			throw new GlobalException(JaxError.ID_PROOFS_SCAN_NOT_FOUND, "Identity proof scans not found");
+			throw new GlobalException(JaxError.ID_PROOFS_SCAN_IND_MISSING, "Identity proof scans not found");
 		}
 	}
 

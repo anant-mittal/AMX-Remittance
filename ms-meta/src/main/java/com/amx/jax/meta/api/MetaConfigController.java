@@ -1,7 +1,5 @@
 package com.amx.jax.meta.api;
 
-import java.math.BigDecimal;
-
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;

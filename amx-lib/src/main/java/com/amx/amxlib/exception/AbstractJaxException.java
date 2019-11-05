@@ -59,6 +59,10 @@ public abstract class AbstractJaxException extends com.amx.jax.exception.Abstrac
 		super(errorCode, message);
 	}
 
+	public AbstractJaxException(IExceptionEnum errorCode, Exception ex) {
+		super(errorCode, ex);
+	}
+
 	@Override
 	public boolean isReportable() {
 		return false;

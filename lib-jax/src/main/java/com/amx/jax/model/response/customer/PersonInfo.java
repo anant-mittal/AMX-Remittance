@@ -5,10 +5,12 @@ import java.sql.Timestamp;
 import java.util.Date;
 
 import com.amx.jax.model.AbstractModel;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class PersonInfo extends AbstractModel implements Cloneable {
 
+	private static final long serialVersionUID = -3459616922568817666L;
 	private String title;
 	private String firstName;
 	private String middleName;
@@ -30,6 +32,8 @@ public class PersonInfo extends AbstractModel implements Cloneable {
 	private String whatsappPrefixCode;
 	private String referallId;
 	private String emailVerified;
+	private BigDecimal identityTypeId;
+	
 	public String getWhatsappPrefixCode() {
 		return whatsappPrefixCode;
 	}
@@ -223,7 +227,14 @@ public class PersonInfo extends AbstractModel implements Cloneable {
 	public void setEmailVerified(String emailVerified) {
 		this.emailVerified = emailVerified;
 	}
-	
-	
 
+	public BigDecimal getIdentityTypeId() {
+		return identityTypeId;
+	}
+
+	public void setIdentityTypeId(BigDecimal identityTypeId) {
+		this.identityTypeId = identityTypeId;
+	}
+
+	
 }

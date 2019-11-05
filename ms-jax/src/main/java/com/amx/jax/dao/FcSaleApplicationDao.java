@@ -22,9 +22,9 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
-import com.amx.jax.dbmodel.CollectDetailModel;
-import com.amx.jax.dbmodel.CollectionModel;
-import com.amx.jax.dbmodel.CountryBranch;
+import com.amx.jax.dbmodel.CollectDetailMdlv1;
+import com.amx.jax.dbmodel.CollectionMdlv1;
+import com.amx.jax.dbmodel.CountryBranchMdlv1;
 import com.amx.jax.dbmodel.PaygDetailsModel;
 import com.amx.jax.dbmodel.ReceiptPayment;
 import com.amx.jax.dbmodel.ReceiptPaymentApp;
@@ -206,12 +206,12 @@ public class FcSaleApplicationDao {
 				pgModel.setPgReferenceId(paymentResponse.getReferenceId());
 				pgRepository.save(pgModel);
 			}else{
-				logger.error("Update after PG details Payment Id :"+paymentResponse.getPaymentId()+"\t Udf 3--Pg trnx seq Id :"+paymentResponse.getUdf3()+"Result code :"+paymentResponse.getResultCode());
+				logger.debug("Update after PG details Payment Id :"+paymentResponse.getPaymentId()+"\t Udf 3--Pg trnx seq Id :"+paymentResponse.getUdf3()+"Result code :"+paymentResponse.getResultCode());
 				throw new GlobalException(JaxError.PAYMENT_UPDATION_FAILED,"PG updatio failed");
 			}
 		}catch (Exception e) {
 			e.printStackTrace();
-			logger.error("catch Update after PG details Payment Id :"+paymentResponse.getPaymentId()+"\t Udf 3--Pg trnx seq Id :"+paymentResponse.getUdf3()+"Result code :"+paymentResponse.getResultCode());
+			logger.debug("catch Update after PG details Payment Id :"+paymentResponse.getPaymentId()+"\t Udf 3--Pg trnx seq Id :"+paymentResponse.getUdf3()+"Result code :"+paymentResponse.getResultCode());
 			throw new GlobalException(JaxError.PAYMENT_UPDATION_FAILED,"PG updatio failed");
 		}
 		
@@ -227,8 +227,8 @@ public class FcSaleApplicationDao {
 		try{
 			BigDecimal collectionId= BigDecimal.ZERO;
 			 List<ReceiptPayment> receiptPaymentList=(List<ReceiptPayment>)hashMapToSaveAllInput.get("RCPT_PAY");
-			 CollectionModel collection =(CollectionModel)hashMapToSaveAllInput.get("COLLECTION");
-			 CollectDetailModel collectDetail =(CollectDetailModel)hashMapToSaveAllInput.get("COLL_DETAILS");
+			 CollectionMdlv1 collection =(CollectionMdlv1)hashMapToSaveAllInput.get("COLLECTION");
+			 CollectDetailMdlv1 collectDetail =(CollectDetailMdlv1)hashMapToSaveAllInput.get("COLL_DETAILS");
 			 List<ReceiptPaymentApp> listOfRecAppl = (List<ReceiptPaymentApp>)hashMapToSaveAllInput.get("LIST_RCPT_APPL");
 			 PayGModel	pgResponse =(PayGModel)hashMapToSaveAllInput.get("PG_RESP_DETAILS");
 			 
@@ -380,7 +380,7 @@ public class FcSaleApplicationDao {
 
 	
 	
-	public BigDecimal generateDocumentNumber(CountryBranch countryBranch, BigDecimal appCountryId, BigDecimal companyId,
+	public BigDecimal generateDocumentNumber(CountryBranchMdlv1 countryBranch, BigDecimal appCountryId, BigDecimal companyId,
 			String processInd, BigDecimal finYear, BigDecimal documentId) {
 		BigDecimal branchId = countryBranch.getBranchId() == null ? ConstantDocument.ONLINE_BRANCH_LOC_CODE
 				: countryBranch.getBranchId();

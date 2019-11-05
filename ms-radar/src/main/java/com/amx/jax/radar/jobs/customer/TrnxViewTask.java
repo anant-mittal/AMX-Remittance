@@ -3,6 +3,7 @@ package com.amx.jax.radar.jobs.customer;
 import java.util.Date;
 
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -37,16 +38,21 @@ import com.amx.utils.TimeUtils;
 @ConditionalOnExpression(RadarConfig.CE_TRNX_SYNC_AND_ES)
 public class TrnxViewTask extends AbstractDBSyncTask {
 
+	private static final int REV_INTERVAL_DAYS = 2;
+	private static final int FWD_INTERVAL_DAYS = 2;
 	private static final Logger LOGGER = LoggerService.getLogger(TrnxViewTask.class);
 	private static final String TIME_TRACK_KEY = "lastUpdateDate";
 	private static final int PAGE_SIZE = 5000;
 
-	long intervalDays = 20;
+	long intervalDays = FWD_INTERVAL_DAYS;
+	
+	@Autowired
+	RadarConfig radarConfig;
 
 	@SchedulerLock(lockMaxAge = AmxCurConstants.INTERVAL_MIN * 30, context = LockContext.BY_METHOD)
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_SEC * 15)
 	public void doTaskModeNight() {
-		if (TimeUtils.inHourSlot(4, 0)) {
+		if (TimeUtils.inHourSlot(4, 0) && radarConfig.isJobTranxNightEnabled()) {
 			this.doTask();
 		}
 	}
@@ -54,7 +60,7 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 	@SchedulerLock(lockMaxAge = AmxCurConstants.INTERVAL_MIN * 30, context = LockContext.BY_METHOD)
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_MIN * 10)
 	public void doTaskModeDay() {
-		if (!TimeUtils.inHourSlot(4, 0)) {
+		if (!TimeUtils.inHourSlot(4, 0) && radarConfig.isJobTranxDayEnabled()) {
 			this.doTask();
 		}
 	}
@@ -74,7 +80,7 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 		String dateStringLimit = GridConstants.GRID_TIME_FORMATTER_JAVA
 				.format(new Date(lastUpdateDateNowLimit));
 
-		LOGGER.info("+{} T:{} {}-{}", lastPage, lastUpdateDateNow, dateString, dateStringLimit);
+		LOGGER.info("Pg:{},Tm:{} {}-{}", lastPage, lastUpdateDateNow, dateString, dateStringLimit);
 
 		GridQuery gridQuery = getForwardQuery(lastPage, PAGE_SIZE, TIME_TRACK_KEY, dateString, dateStringLimit);
 
@@ -103,7 +109,7 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 			}
 		}
 
-		LOGGER.info("+{} *{} #{} N:{}", lastPage, x.getResults().size(), lastIdNow, lastUpdateDateNow);
+		LOGGER.info("Pg:{}, Rcds:{},{}, Nxt:{}", lastPage, x.getResults().size(), lastIdNow, lastUpdateDateNow);
 
 		if (lastIdNow.equalsIgnoreCase(lastId) && x.getResults().size() > 0) {
 			// Same data records case, nothing to do
@@ -114,7 +120,7 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 
 		long todayOffset = System.currentTimeMillis() - AmxCurConstants.INTERVAL_DAYS;
 		if (x.getResults().size() > 0) {
-			intervalDays = 10;
+			intervalDays = 1;
 			esRepository.bulk(builder.build());
 			oracleVarsCache.setStampStart(DBSyncJobs.TRANSACTION_JOB, lastUpdateDateNow);
 			if ((lastUpdateDateNowStart == lastUpdateDateNow) || (x.getResults().size() == 1000 && lastPage < 10)) {
@@ -141,13 +147,13 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 			return;
 		}
 
-		Long lastUpdateDateNowLimit = lastUpdateDateNow - (5 * AmxCurConstants.INTERVAL_DAYS);
+		Long lastUpdateDateNowLimit = lastUpdateDateNow - (REV_INTERVAL_DAYS * AmxCurConstants.INTERVAL_DAYS);
 
 		String dateString = GridConstants.GRID_TIME_FORMATTER_JAVA.format(new Date(lastUpdateDateNow));
 		String dateStringLimit = GridConstants.GRID_TIME_FORMATTER_JAVA
 				.format(new Date(lastUpdateDateNowLimit));
 
-		LOGGER.info("-{} T:{} {}-{}", lastPage, lastUpdateDateNow, dateString, dateStringLimit);
+		LOGGER.info("Pg:{},Tm:{} {}-{}", lastPage, lastUpdateDateNow, dateString, dateStringLimit);
 
 		GridQuery gridQuery = getReverseQuery(lastPage, PAGE_SIZE, TIME_TRACK_KEY, dateString, dateStringLimit);
 
@@ -177,7 +183,7 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 			}
 		}
 
-		LOGGER.info("-{} *{} #{} N:{}", lastPage, x.getResults().size(), lastIdNow, lastUpdateDateNow);
+		LOGGER.info("Pg:{}, Rcds:{},{}, Nxt:{}", lastPage, x.getResults().size(), lastIdNow, lastUpdateDateNow);
 
 		if (lastIdNow.equalsIgnoreCase(lastId) && x.getResults().size() > 0) {
 			// Same data records case, nothing to do

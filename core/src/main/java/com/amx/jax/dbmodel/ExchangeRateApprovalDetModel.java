@@ -31,7 +31,7 @@ public class ExchangeRateApprovalDetModel implements Serializable{
 	private Date approvedDate;
 	private String authorisedBy;
 	private Date authorisedDate;
-	private BankMasterModel bankMaster;
+	private BankMasterMdlv1 bankMaster;
 	private BigDecimal buyRateMax;
 	private BigDecimal buyRateMin;
 	private BigDecimal corporateRate;
@@ -291,11 +291,11 @@ public class ExchangeRateApprovalDetModel implements Serializable{
 
 	@JoinColumn(name = "BANK_ID")
 	@ManyToOne(fetch = FetchType.LAZY)
-	public BankMasterModel getBankMaster() {
+	public BankMasterMdlv1 getBankMaster() {
 		return bankMaster;
 	}
 
-	public void setBankMaster(BankMasterModel bankMaster) {
+	public void setBankMaster(BankMasterMdlv1 bankMaster) {
 		this.bankMaster = bankMaster;
 	}
 
