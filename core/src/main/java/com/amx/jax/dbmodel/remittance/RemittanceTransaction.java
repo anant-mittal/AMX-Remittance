@@ -159,11 +159,10 @@ public class RemittanceTransaction implements Serializable {
 	private BigDecimal usdAmt;
 	private String wuPurposeOfTransaction;
 	
-	private String applSplit;
-	
 
-	
-	
+	private String applSplit;
+
+	private Date timeToDeliver;
 	
 	public RemittanceTransaction() {
 	}
@@ -1198,6 +1197,16 @@ public class RemittanceTransaction implements Serializable {
 	public void setWuPurposeOfTransaction(String wuPurposeOfTransaction) {
 		this.wuPurposeOfTransaction = wuPurposeOfTransaction;
 	}
+
+	@Column(name="TIME_TO_DELIVER")
+	public Date getTimeToDeliver() {
+		return timeToDeliver;
+	}
+
+	public void setTimeToDeliver(Date timeToDeliver) {
+		this.timeToDeliver = timeToDeliver;
+	}
+	
 	
 
 	@Column(name="IS_SPLITTED")

@@ -51,6 +51,7 @@ import com.amx.jax.model.response.remittance.FlexFieldDto;
 import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.pricer.dto.ExchangeDiscountInfo;
+import com.amx.jax.pricer.dto.TrnxRoutingDetails;
 import com.amx.jax.pricer.var.PricerServiceConstants.DISCOUNT_TYPE;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.ICurrencyDao;
@@ -387,6 +388,7 @@ public class RemittanceApplicationManager {
 
 		setCustomerDiscountColumns(remittanceApplication, validationResults);
 		setVatDetails(remittanceApplication, validationResults);
+		setDeliveryTimeDuration(remittanceApplication,dynamicRoutingPricingResponse.getTrnxRoutingPaths());
 		return remittanceApplication;
 	}
 	
@@ -648,5 +650,17 @@ public class RemittanceApplicationManager {
 			remittanceApplication.setInstruction("URGENT");
 		}
 	}
+	
+		/** @author rabil
+		 * Purpose : to store the delivery date and time 
+		 * 
+		 */
+		public  void setDeliveryTimeDuration(RemittanceApplication remittanceApplication,TrnxRoutingDetails trnxRoutingDetails) {
+			if(trnxRoutingDetails!=null && trnxRoutingDetails.getEstimatedDeliveryDetails()!=null) {
+				if(trnxRoutingDetails.getEstimatedDeliveryDetails().getProcessTimeTotalInSeconds()>0) {
+					remittanceApplication.setTimeToDeliverInSec(new BigDecimal(trnxRoutingDetails.getEstimatedDeliveryDetails().getProcessTimeTotalInSeconds()));
+				}
+			}
+		}
 
 }
