@@ -60,14 +60,14 @@ public class BeneBranchValidation {
 	}
 
 	public void validateAbtractBeneDetail(AbstractBeneDetailDto request) {
-		if (request.getDateOfBirth() == null) {
+		/*if (request.getDateOfBirth() == null) {
 			if (request.getAge() == null && request.getYearOfBirth() == null) {
 				throw new GlobalException("dob or age or year of birth is mandatory");
 			}
 		} else {
 			request.setAge(AgeUtil.calculateAgeInYears(request.getDateOfBirth()));
 			request.setYearOfBirth(AgeUtil.getYearOfBirthInt(request.getDateOfBirth()));
-		}
+		}*/
 		BeneficiaryTrnxModel beneTrnxModel = request.createBeneficiaryTrnxModelObject();
 		BeneAccountModel beneAccountModel = beneTrnxModel.getBeneAccountModel();
 		if (StringUtils.isNotBlank(beneAccountModel.getIfscCode())) {

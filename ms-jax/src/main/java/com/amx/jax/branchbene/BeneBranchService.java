@@ -133,14 +133,14 @@ public class BeneBranchService {
 		beneficaryMaster.setBeneficaryStatus(beneStatus.getBeneficaryStatusId());
 		beneficaryMaster.setBeneficaryStatusName(beneStatus.getBeneficaryStatusName());
 
-		if (request.getAge() != null) {
+	/*	if (request.getAge() != null) {
 			beneficaryMaster.setAge(BigDecimal.valueOf(request.getAge()));
 		}
 		if (request.getYearOfBirth() != null) {
 			beneficaryMaster.setYearOfBrith(BigDecimal.valueOf(request.getYearOfBirth()));
 		}
 		beneficaryMaster.setDateOfBrith(request.getDateOfBirth());
-		beneService.saveBeneMaster(beneficaryMaster);
+	*/	beneService.saveBeneMaster(beneficaryMaster);
 	}
 
 	public void addNewBankBranchRequest(AddNewBankBranchRequest request) {
@@ -187,8 +187,11 @@ public class BeneBranchService {
 	}
 
 	public List<BeneficiaryListDTO> listBene(ListBeneRequest request) {
-		ApiResponse beneList = beneService.getBeneficiaryListForBranch(metaData.getCustomerId(), metaData.getCountryId(),
-				BigDecimal.valueOf(request.getBeneCoutryId()));
+		BigDecimal beneCountryId = null;
+		if (request.getBeneCoutryId() != null) {
+			beneCountryId = BigDecimal.valueOf(request.getBeneCoutryId());
+		}
+		ApiResponse beneList = beneService.getBeneficiaryListForBranch(metaData.getCustomerId(), metaData.getCountryId(), beneCountryId);
 		List<BeneficiaryListDTO> beneListDto = beneList.getResults();
 		beneListDto.forEach(i -> {
 			String dbFlag = i.getIsActive();

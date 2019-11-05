@@ -2,9 +2,7 @@ package com.amx.jax.model.request;
 
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
-import java.util.Date;
 
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -94,16 +92,6 @@ public abstract class AbstractBeneDetailDto {
 
 	@ApiMockModelProperty(example = "HDFCINBBAHM")
 	String swiftCode;
-
-	Date dateOfBirth;
-
-	@ApiMockModelProperty(example = "25")
-	@Min(1)
-	Integer age;
-
-	@ApiMockModelProperty(example = "1986")
-	@Min(1900)
-	Integer yearOfBirth;
 
 	public String getFirstName() {
 		return firstName;
@@ -274,30 +262,6 @@ public abstract class AbstractBeneDetailDto {
 
 	public void setSwiftCode(String swiftCode) {
 		this.swiftCode = swiftCode;
-	}
-
-	public Date getDateOfBirth() {
-		return dateOfBirth;
-	}
-
-	public void setDateOfBirth(Date dateOfBirth) {
-		this.dateOfBirth = dateOfBirth;
-	}
-
-	public Integer getAge() {
-		return age;
-	}
-
-	public void setAge(Integer age) {
-		this.age = age;
-	}
-
-	public Integer getYearOfBirth() {
-		return yearOfBirth;
-	}
-
-	public void setYearOfBirth(Integer yearOfBirth) {
-		this.yearOfBirth = yearOfBirth;
 	}
 
 	public BigDecimal getBeneficaryTypeId() {

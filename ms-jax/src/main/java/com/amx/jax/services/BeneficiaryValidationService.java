@@ -354,7 +354,9 @@ public class BeneficiaryValidationService {
 				"benePersonalDetailModel");
 		BeneAccountModel beneAccountModel = trnxModel.getBeneAccountModel();
 		validateBeneAccount(beneAccountModel);
-		validateDuplicateCashBeneficiary(trnxModel);
+		if (BigDecimal.ONE.equals(beneAccountModel.getServiceGroupId())) {
+			validateDuplicateCashBeneficiary(trnxModel);
+		}
 		benePersonalDetailValidator.validate(trnxModel, errors);
 	}
 }
