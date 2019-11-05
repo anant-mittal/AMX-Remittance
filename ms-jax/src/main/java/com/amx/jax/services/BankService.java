@@ -89,7 +89,7 @@ public class BankService {
 	}
 	
 	public List<BankMasterDTO> getBankByCountryAndCurrency(BigDecimal countryId, BigDecimal currencyId) {
-		List<BankMasterModel> list = bankMasterRepository.findBankByCountryCurrency(countryId, currencyId);
+		List<BankMasterMdlv1> list = bankMasterRepository.findBankByCountryCurrency(countryId, currencyId);
 		return bankMetaService.convert(list);
 	}
 }

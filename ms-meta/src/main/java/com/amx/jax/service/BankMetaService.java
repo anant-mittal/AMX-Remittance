@@ -18,17 +18,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.meta.model.BankBranchDto;
-import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.model.request.GetBankBranchRequest;
-import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.BankBranchView;
 import com.amx.jax.dbmodel.BankMasterMdlv1;
 import com.amx.jax.dbmodel.CountryBranchMdlv1;
-import com.amx.jax.dbmodel.SourceOfIncomeView;
 import com.amx.jax.dbmodel.ViewBankChannelModel;
 import com.amx.jax.dbmodel.treasury.BankApplicability;
 import com.amx.jax.error.JaxError;
@@ -36,7 +31,6 @@ import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.benebranch.BankBranchListRequest;
 import com.amx.jax.model.response.BankMasterDTO;
 import com.amx.jax.model.response.benebranch.BankBranchDto;
-import com.amx.jax.model.response.SourceOfIncomeDto;
 import com.amx.jax.repository.BankMasterRepository;
 import com.amx.jax.repository.CountryBranchRepository;
 import com.amx.jax.repository.IViewBankChannelRepository;
@@ -87,7 +81,7 @@ public class BankMetaService extends AbstractService {
 		return AmxApiResponse.buildList(convert(banks));
 	}
 
-	private List<BankMasterDTO> convert(List<BankMasterMdlv1> banks) {
+	public List<BankMasterDTO> convert(List<BankMasterMdlv1> banks) {
 
 		List<BankMasterDTO> bankdtos = new ArrayList<>();
 		

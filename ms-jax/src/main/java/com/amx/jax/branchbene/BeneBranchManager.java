@@ -11,6 +11,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.dbmodel.bene.BeneficaryAccount;
 import com.amx.jax.dbmodel.bene.BeneficaryContact;
 import com.amx.jax.dbmodel.bene.BeneficaryMaster;
@@ -28,7 +29,6 @@ import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.services.JaxDBService;
 import com.amx.jax.trnx.BeneficiaryTrnxManager;
 import com.amx.jax.util.JaxUtil;
-import com.jax.amxlib.exception.jax.GlobaLException;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
@@ -54,7 +54,7 @@ public class BeneBranchManager {
 	public void updateBeneStatus(UpdateBeneStatusRequest request) {
 		BeneficaryRelationship beneRel = iBeneficiaryRelationshipDao.findOne(BigDecimal.valueOf(request.getBeneRelationshipSeqId()));
 		if (beneRel == null) {
-			throw new GlobaLException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Bene not found");
+			throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Bene not found");
 		}
 		beneRel.setIsActive(request.getStatusCode().getDbFlag());
 		iBeneficiaryRelationshipDao.save(beneRel);

@@ -13,9 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.AccountTypeDto;
 import com.amx.amxlib.meta.model.CountryMasterDTO;
-import com.amx.amxlib.model.BeneRelationsDescriptionDto;
-import com.amx.amxlib.model.JaxConditionalFieldDto;
-import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterAgentBranchParam;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterServiceProviderParam;
 import com.amx.jax.api.AmxApiResponse;
@@ -43,6 +40,7 @@ import com.amx.jax.model.response.CurrencyMasterDTO;
 import com.amx.jax.model.response.benebranch.BankBranchDto;
 import com.amx.jax.model.response.benebranch.BeneStatusDto;
 import com.amx.jax.model.response.remittance.GetServiceApplicabilityResponse;
+import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
