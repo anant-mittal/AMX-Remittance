@@ -1,11 +1,10 @@
 package com.amx.jax.sso;
 
-import java.math.BigDecimal;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.cache.CacheBox;
+import com.amx.jax.http.CommonHttpRequest;
 import com.amx.utils.ArgUtil;
 
 @Component
@@ -17,6 +16,9 @@ public class SSOUserSessions extends CacheBox<Long> {
 
 	@Autowired
 	SSOUser sSOUser;
+
+	@Autowired
+	CommonHttpRequest commonHttpRequest;
 
 	/**
 	 * To make sure user is not loggedin from other system
@@ -61,8 +63,15 @@ public class SSOUserSessions extends CacheBox<Long> {
 		return false;
 	}
 
+	public boolean isTerminalIPSame() {
+		if (ArgUtil.isEmpty(sSOUser.getTerminalId())) {
+			return true;
+		}
+		return sSOUser.getTerminalId().equals(commonHttpRequest.getIPAddress());
+	}
+
 	public boolean isUserToBeThrownOut() {
-		return !(isUserValidUnique() && isTerminalValidUnique());
+		return !(isUserValidUnique() && isTerminalValidUnique() && isTerminalIPSame());
 	}
 
 	public void invalidateTerminal(String terminalId) {

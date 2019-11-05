@@ -311,6 +311,7 @@ public class SSOServerController {
 						// TODO:-- TO validate
 						auth.setIpAddress(terminalId);
 					}
+					ssoUser.setTerminalIp(userDeviceClient.getIp());
 
 					auth.setDeviceId(userDeviceClient.getFingerprint());
 					auth.setmOtp(formdata.getMotp());
