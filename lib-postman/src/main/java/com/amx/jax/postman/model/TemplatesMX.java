@@ -72,7 +72,7 @@ public enum TemplatesMX implements ITemplate {
 
 	HOMESEND_TRANSACTION_FAILAURE("HomeSendTransactionFailure"),
 
-	PAYMENT_LINK("PaymentLink"),
+	PAYMENT_LINK("PaymentLink",Channel.NOTIPY),
 	
 	//Add Bene Templates
 	BENE_SUCC("BeneCreationSuccess"),

@@ -87,7 +87,7 @@ public class FcDeliveryOrdersearchManager {
 						fcSaleCurrencyAmountModel.setAmount(fxOrderTxnModel.getForeignTransactionAmount());
 						fcSaleCurrencyAmountModel.setCurrencyQuote(fxOrderTxnModel.getCurrencyQuoteName());
 						lstCurrencyAmt.add(fcSaleCurrencyAmountModel);
-						foreignCurrencyAmt.put(new BigDecimal(fxOrderTxnModel.getForeignCurrencyCode()), fxOrderTxnModel.getForeignTransactionAmount());
+						//foreignCurrencyAmt.put(new BigDecimal(fxOrderTxnModel.getForeignCurrencyCode()), fxOrderTxnModel.getForeignTransactionAmount());
 
 						if(mutipleInventoryId != null) {
 							mutipleInventoryId = mutipleInventoryId.concat(",").concat(fxOrderTxnModel.getInventoryId());

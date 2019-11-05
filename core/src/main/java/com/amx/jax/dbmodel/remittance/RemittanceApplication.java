@@ -149,6 +149,7 @@ public class RemittanceApplication implements Serializable {
 
 	
 	private String wuPurposeOfTransaction;
+	private BigDecimal timeToDeliverInSec;
 
 	private String applSplit;
 	
@@ -1005,5 +1006,13 @@ public class RemittanceApplication implements Serializable {
 		this.applSplit = applSplit;
 	}
 	
+	@Column(name="TIME_TO_DELIVER_IN_SEC")
+	public BigDecimal getTimeToDeliverInSec() {
+		return timeToDeliverInSec;
+	}
 	
+	public void setTimeToDeliverInSec(BigDecimal timeToDeliverInSec) {
+		this.timeToDeliverInSec = timeToDeliverInSec;
+	}
+	 	
 }

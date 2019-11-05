@@ -348,7 +348,8 @@ public class RemittanceAdditionalFieldManager {
 					BeneficaryContact beneContact = beneficiaryService.getBeneContact(beneficiaryDetail.getBeneficaryMasterSeqId());
 					beneContact.setTelephoneNumber(fieldValue.toString());
 					if(fieldValue!=null) {
-					beneContact.setMobileNumber(new BigDecimal(fieldValue.toString()));
+						logger.info("Field Value Mobile Number : " +fieldValue.toString());
+						beneContact.setMobileNumber(new BigDecimal(fieldValue.toString()));
 					}
 					beneficiaryService.saveBeneContact(beneContact);
 				}

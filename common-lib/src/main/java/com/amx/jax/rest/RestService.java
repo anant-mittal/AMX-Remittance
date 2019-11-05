@@ -335,6 +335,11 @@ public class RestService {
 			return restTemplate.exchange(uri, method, requestEntity, responseType).getBody();
 		}
 
+		public byte[] asByteArray() {
+			URI uri = builder.buildAndExpand(uriParams).toUri();
+			return restTemplate.getForObject(uri, byte[].class);
+		}
+
 		public String asString() {
 			return this.as(String.class);
 		}

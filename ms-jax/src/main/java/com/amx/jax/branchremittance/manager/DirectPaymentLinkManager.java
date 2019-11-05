@@ -217,27 +217,17 @@ public class DirectPaymentLinkManager extends AbstractModel {
 				paymentLinkResp.setMerchantTrackId(paymentLink.getCustomerId());
 				paymentLinkResp.setDocumentFinancialYear(paymentLink.getCollDocFYear());
 				paymentLinkResp.setDocumentIdForPayment(paymentLink.getPaygTrnxSeqId().toString());
+				
+				if(paymentLink.getResultCode() != null) {
+					JaxTransactionStatus status = getJaxTransactionStatus(paymentLink);
+					getPaymentLinkResponseStatus(statusModel, status, paymentLink);
+					paymentLinkResp.setPaymentLinkRespStatus(statusModel);
+				}
 			}
 			if(paymentLink.getLinkActive().equals("P")) {
 				JaxTransactionStatus status = getJaxTransactionStatus(paymentLink);
-				statusModel.setStatus(status);
-				
-				statusModel.setNetAmount(paymentLink.getPayAmount());
-				statusModel.setTransactionReference(paymentLink.getApplIds());
-				statusModel.setErrorMessage(paymentLink.getErrorMessage());
-				
-				ResponseCodeDetailDTO responseCodeDetail = new ResponseCodeDetailDTO();
-				
-				if(paymentLink.getResultCode() != null) {
-					responseCodeDetail = PayGRespCodeJSONConverter.getResponseCodeDetail(paymentLink.getResultCode());
-				}
-				responseCodeDetail.setPgPaymentId(paymentLink.getPgPaymentId());
-				responseCodeDetail.setPgReferenceId(paymentLink.getPgReferenceId());
-				responseCodeDetail.setPgTransId(paymentLink.getPgTransactionId());
-				responseCodeDetail.setPgAuth(paymentLink.getPgAuthCode());
-				
-				statusModel.setResponseCodeDetail(responseCodeDetail);
-				
+				getPaymentLinkResponseStatus(statusModel, status, paymentLink);
+								
 				paymentLinkResp.setPaymentLinkRespStatus(statusModel);
 				paymentLinkResp.setApplicationIds(paymentLink.getApplIds());
 				paymentLinkResp.setLinkStatus(paymentLink.getLinkActive());
@@ -254,6 +244,31 @@ public class DirectPaymentLinkManager extends AbstractModel {
 					"Invalidate link, Verification Code Mismatch");
 		}
 		return paymentLinkResp;
+	}
+
+	private void getPaymentLinkResponseStatus(PaymentLinkRespStatus statusModel, JaxTransactionStatus status,
+			PaygDetailsModel paymentLink) {
+		statusModel.setStatus(status);
+		
+		statusModel.setNetAmount(paymentLink.getPayAmount());
+		statusModel.setTransactionReference(paymentLink.getApplIds());
+		statusModel.setErrorMessage(paymentLink.getErrorMessage());
+		
+		ResponseCodeDetailDTO responseCodeDetail = new ResponseCodeDetailDTO();
+		
+		if(paymentLink.getResultCode() != null) {
+			if(paymentLink.getResultCode().equals("NOT CAPTURED")) {
+				paymentLink.setResultCode("NOT_CAPTURED");
+			}
+			responseCodeDetail = PayGRespCodeJSONConverter.getResponseCodeDetail(paymentLink.getResultCode());
+		}
+		responseCodeDetail.setPgPaymentId(paymentLink.getPgPaymentId());
+		responseCodeDetail.setPgReferenceId(paymentLink.getPgReferenceId());
+		responseCodeDetail.setPgTransId(paymentLink.getPgTransactionId());
+		responseCodeDetail.setPgAuth(paymentLink.getPgAuthCode());
+		
+		statusModel.setResponseCodeDetail(responseCodeDetail);
+		
 	}
 
 	private Boolean validatePreviiousDateLink(BigDecimal linkId) {
