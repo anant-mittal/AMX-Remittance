@@ -64,10 +64,10 @@ public class SSOUserSessions extends CacheBox<Long> {
 	}
 
 	public boolean isTerminalIPSame() {
-		if (ArgUtil.isEmpty(sSOUser.getTerminalId())) {
+		if (ArgUtil.isEmpty(sSOUser.getTerminalIp())) {
 			return true;
 		}
-		return sSOUser.getTerminalId().equals(commonHttpRequest.getIPAddress());
+		return sSOUser.getTerminalIp().equals(commonHttpRequest.getIPAddress());
 	}
 
 	public boolean isUserToBeThrownOut() {
