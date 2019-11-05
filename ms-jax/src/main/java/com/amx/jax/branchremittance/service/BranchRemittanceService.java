@@ -216,7 +216,7 @@ public class BranchRemittanceService extends AbstractService{
 	}
 	
 	public AmxApiResponse<BoolRespModel, Object> createPlaceOrder(PlaceOrderRequestModel placeOrderRequestModel){
-		Boolean result = placeOrderManager.createPlaceOrder(placeOrderRequestModel);
+		Boolean result = placeOrderManager.savePlaceOrder(placeOrderRequestModel);
 		BoolRespModel resultBool = new BoolRespModel();
 		resultBool.setSuccess(result);
 		return AmxApiResponse.build(resultBool);

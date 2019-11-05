@@ -9,6 +9,7 @@ package com.amx.jax.branchremittance.manager;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -23,6 +24,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.branchremittance.dao.PlaceOrderDao;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.CountryBranchMdlv1;
@@ -32,6 +34,7 @@ import com.amx.jax.dbmodel.remittance.Document;
 import com.amx.jax.dbmodel.remittance.RatePlaceOrder;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.manager.remittance.CorporateDiscountManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
@@ -80,13 +83,34 @@ public class PlaceOrderManager implements Serializable{
 	@Autowired
 	CustomerRepository customerRepository;
 	
+	@Autowired
+	PlaceOrderDao placeOrderDao;
 	
-	//IRatePlaceOrderRepository
+	@Autowired
+	CorporateDiscountManager corporateDiscountManager;
+	
+
 	
 	
-	public Boolean createPlaceOrder(PlaceOrderRequestModel placeOrderRequestModel) {
+	public Boolean savePlaceOrder(PlaceOrderRequestModel placeOrderRequestModel) {
+		 Boolean boolRespModel = false;
+		 try {
+		 RatePlaceOrder placeOrderAppl  =createPlaceOrder(placeOrderRequestModel);
+		 HashMap<String, Object> mapAllDetailApplSave = new HashMap<String, Object>();
+		 mapAllDetailApplSave.put("EX_RATE_PLACE_ORD", placeOrderAppl);
+		 placeOrderDao.savePlaceOrder(mapAllDetailApplSave);
+		 boolRespModel =true;
+		 }catch(Exception e) {
+			 e.printStackTrace();
+		 }
+		 return boolRespModel;
+	}
+	
+	
+	
+	public RatePlaceOrder createPlaceOrder(PlaceOrderRequestModel placeOrderRequestModel) {
 		
-		Boolean boolRespModel = false;
+		
 		
 		RatePlaceOrder placeOrderAppl = new RatePlaceOrder();
 		
@@ -134,12 +158,32 @@ public class PlaceOrderManager implements Serializable{
 		placeOrderAppl.setCustomerEmail(customer.getEmail());
 		placeOrderAppl.setIsActive(ConstantDocument.Status.U.toString());
 		placeOrderAppl.setReachedCostRateLimit(dynPricingDto.getCostRateLimitReached()==false?"N":"Y");
-		placeOrderAppl.setReachedCostRateLimit(placeOrderRequestModel.getRemarks());
-		placeOrderAppl.setRemitDocumentYear(trnxRoutingDtls.getRemittanceModeId());
+		placeOrderAppl.setRemarks(placeOrderRequestModel.getRemarks());
+		placeOrderAppl.setRemitDocumentYear(null);
 		placeOrderAppl.setRoutingBankId(trnxRoutingDtls.getRoutingBankId());
 		placeOrderAppl.setRequestCurrencyId(selectedCurrId);
 		placeOrderAppl.setRoutingBranchId(applRequestModel.getRoutingBankBranchId());
 		placeOrderAppl.setRoutingCountryId(trnxRoutingDtls.getRoutingCountryId());	
+		placeOrderAppl.setTransactionAmountPaid(dynPricingDto.getExRateBreakup().getConvertedLCAmount());
+		placeOrderAppl.setRemitType(beneficaryDetails.getServiceGroupId());
+		placeOrderAppl.setServiceMasterId(applRequestModel.getServiceMasterId());
+		placeOrderAppl.setRemittanceModeId(trnxRoutingDtls.getRemittanceModeId());
+		placeOrderAppl.setDeliveryModeId(trnxRoutingDtls.getDeliveryModeId());
+		placeOrderAppl.setSourceOfincomeId(applRequestModel.getSourceOfFund());
+		
+		if(JaxUtil.isNullZeroBigDecimalCheck(applRequestModel.getForeignAmount())){
+			placeOrderAppl.setTransactionAmount(applRequestModel.getForeignAmount());
+		}else {
+			placeOrderAppl.setTransactionAmount(applRequestModel.getLocalAmount());
+		}
+		
+		
+		if(!StringUtils.isBlank(dynPricingDto.getDiscountOnComissionFlag()) 
+				&& dynPricingDto.getDiscountOnComissionFlag().equalsIgnoreCase(ConstantDocument.Yes)) {
+			placeOrderAppl.setDiscountOnCommission(corporateDiscountManager.corporateDiscount());
+		}
+		
+		
 		
 		
 		Document document = documentDao.getDocumnetByCode(ConstantDocument.DOCUMENT_CODE_FOR_PLACEORDER).get(0);
@@ -154,10 +198,9 @@ public class PlaceOrderManager implements Serializable{
 		CountryBranchMdlv1 countryBranch = bankMetaService.getCountryBranchById(metaData.getCountryBranchId()); //user branch not customer branch
 		
 		
-		BigDecimal documentNo = branchRemitManager.generateDocumentNumber(metaData.getCountryId(), metaData.getCompanyId(), ConstantDocument.DOCUMENT_CODE_FOR_PLACEORDER, userFinancialYear.getFinancialYear(), ConstantDocument.A, countryBranch.getBranchId());
+		BigDecimal documentNo = branchRemitManager.generateDocumentNumber(metaData.getCountryId(), metaData.getCompanyId(), ConstantDocument.DOCUMENT_CODE_FOR_PLACEORDER, userFinancialYear.getFinancialYear(), ConstantDocument.Status.U.toString(), countryBranch.getBranchId());
 		if(JaxUtil.isNullZeroBigDecimalCheck(documentNo)) {
 			placeOrderAppl.setDocumentNumber(documentNo);
-			boolRespModel=true;
 		}else {
 			throw new GlobalException(JaxError.INVALID_APPLICATION_DOCUMENT_NO,"Application document number shouldnot be null or blank");
 		}		
@@ -169,7 +212,7 @@ public class PlaceOrderManager implements Serializable{
 			throw new GlobalException(JaxError.INVALID_INPUT,"Invalid request model");
 		}
 		
-		return boolRespModel;
+		return placeOrderAppl;
 	}
 
 	
