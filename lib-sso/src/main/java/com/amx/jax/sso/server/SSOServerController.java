@@ -239,8 +239,8 @@ public class SSOServerController {
 					DeviceData branchDeviceData = deviceBox.get(sSOTranx.get().getBranchAdapterId());
 					userClientDto.setLocalIpAddress(branchDeviceData.getLocalIp());
 					userClientDto.setTerminalId(ArgUtil.parseAsBigDecimal(branchDeviceData.getTerminalId()));
-					LOGGER.info("Gloabal IPs THIS: {} ADAPTER: {}", userDeviceClient.getIp(),
-							branchDeviceData.getGlobalIp());
+					LOGGER.info("Gloabal IPs THIS: {} ADAPTER: {}, REQUEST: {}", userDeviceClient.getIp(),
+							branchDeviceData.getGlobalIp(),commonHttpRequest.getIPAddress());
 
 					// Audit
 					auditEvent.terminalId(userClientDto.getTerminalId())
