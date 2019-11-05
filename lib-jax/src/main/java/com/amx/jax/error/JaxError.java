@@ -350,7 +350,8 @@ public enum JaxError implements IExceptionEnum {
 	//Direct Payment Link
 	VERIFICATION_CODE_MISMATCH,
 	DIRECT_LINK_DEACTIVATED,
-	DIRECT_LINK_EXPIRED;
+	DIRECT_LINK_EXPIRED,
+	DIRECT_LINK_INVALID;
 	
 	@Deprecated
 	public String getCode() {

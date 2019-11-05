@@ -183,8 +183,8 @@ public class DirectPaymentLinkManager extends AbstractModel {
 				if (shoppingCartDetails != null) {
 					BigDecimal totalNetAmounts = shpCartData.getTotalNetAmount();
 					int value = totalNetAmounts.compareTo(paymentLink.getPayAmount());
-					if (value == -1) {
-						throw new GlobalException(JaxError.AMOUNT_MISMATCH, "Amount is Mismatch, Invalid Link");
+					if (value != 0) {
+						throw new GlobalException(JaxError.DIRECT_LINK_INVALID, "Link is invalid");
 					}
 				} else {
 					throw new GlobalException(JaxError.DIRECT_LINK_EXPIRED, "Link Expired");
@@ -241,6 +241,7 @@ public class DirectPaymentLinkManager extends AbstractModel {
 				paymentLinkResp.setPaymentLinkRespStatus(statusModel);
 				paymentLinkResp.setApplicationIds(paymentLink.getApplIds());
 				paymentLinkResp.setLinkStatus(paymentLink.getLinkActive());
+				paymentLinkResp.setCurQutoe(currencyQuote);
 			}
 			if (paymentLink.getLinkActive().equals("D")) {
 				throw new GlobalException(JaxError.DIRECT_LINK_DEACTIVATED,
