@@ -2,6 +2,7 @@ package com.amx.jax.branchremittance.service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -213,15 +214,15 @@ public class BranchRemittanceService extends AbstractService{
 	}
 	
 	
-public  AmxApiResponse<ParameterDetailsResponseDto, Object> getGiftService(BigDecimal beneRelaId) {
-	ParameterDetailsResponseDto parameterDetailsResponseDto =branchRemitManager.getGiftService(beneRelaId);
+	public AmxApiResponse<ParameterDetailsResponseDto, Object> getGiftService(BigDecimal beneRelaId) {
+		ParameterDetailsResponseDto parameterDetailsResponseDto = branchRemitManager.getGiftService(beneRelaId);
 		parameterDetailsResponseDto.getParameterDetailsDto().addAll(additionalBankDetailManager.fetchServiceProviderFcAmount(beneRelaId));
-	return AmxApiResponse.build(parameterDetailsResponseDto);
-}
+		return AmxApiResponse.build(parameterDetailsResponseDto);
+	}
 
 	public AmxApiResponse<BenePackageResponse, Object> getBenePackages(BenePackageRequest benePackageRequest) {
-		preFlexFieldManager.validateBenePackageRequest(benePackageRequest);
-		BenePackageResponse resp = new BenePackageResponse();
+		Map<String, Object> validationResults = preFlexFieldManager.validateBenePackageRequest(benePackageRequest);
+		BenePackageResponse resp = preFlexFieldManager.createBenePackageResponse(validationResults);
 		return AmxApiResponse.build(resp);
 	}
 	

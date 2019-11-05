@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.amx.jax.swagger.ApiMockModelProperty;
-import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 
 public class JaxFieldDto {
 
@@ -39,10 +38,12 @@ public class JaxFieldDto {
 	String dtoPath;
 
 	Map<String, Object> additionalValidations = new HashMap<>();
-	
-	
 
-	
+	@ApiMockModelProperty(value = "Minimum input value", example = "1")
+	BigDecimal minValue;
+
+	@ApiMockModelProperty(value = "Maximum input value", example = "100")
+	BigDecimal maxValue;
 
 	public String getName() {
 		return name;
@@ -110,9 +111,9 @@ public class JaxFieldDto {
 
 	@Override
 	public String toString() {
-		return "JaxFieldDto [name=" + name + ", required=" + required + ", type=" + type + ", defaultValue="
-				+ defaultValue + ", minLength=" + minLength + ", maxLength=" + maxLength + ", validationRegex="
-				+ validationRegex + ", label=" + label + ", possibleValues=" + possibleValues + "]";
+		return "JaxFieldDto [name=" + name + ", required=" + required + ", type=" + type + ", defaultValue=" + defaultValue + ", minLength="
+				+ minLength + ", maxLength=" + maxLength + ", validationRegex=" + validationRegex + ", label=" + label + ", possibleValues="
+				+ possibleValues + "]";
 	}
 
 	public List<JaxFieldValueDto> getPossibleValues() {
@@ -137,6 +138,22 @@ public class JaxFieldDto {
 
 	public void setAdditionalValidations(Map<String, Object> additionalValidations) {
 		this.additionalValidations = additionalValidations;
+	}
+
+	public BigDecimal getMinValue() {
+		return minValue;
+	}
+
+	public void setMinValue(BigDecimal minValue) {
+		this.minValue = minValue;
+	}
+
+	public BigDecimal getMaxValue() {
+		return maxValue;
+	}
+
+	public void setMaxValue(BigDecimal maxValue) {
+		this.maxValue = maxValue;
 	}
 
 }
