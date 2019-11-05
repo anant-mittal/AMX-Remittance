@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.amxlib.meta.model.AccountTypeDto;
 import com.amx.amxlib.meta.model.CountryMasterDTO;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterAgentBranchParam;
+import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterAgentParam;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterServiceProviderParam;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
@@ -114,6 +115,11 @@ public class BeneficiaryBranchController {
 	@RequestMapping(value = "/api/bene/id/list", method = RequestMethod.GET)
 	public AmxApiResponse<BeneficiaryListDTO, Object> getBeneByIdNo(@RequestParam Integer idNo) {
 		return beneBranchClient.getBeneByIdNo(idNo);
+	}
+
+	@RequestMapping(value = "/api/bene/agent_master/list", method = RequestMethod.POST)
+	public AmxApiResponse<RoutingBankMasterDTO, Object> getAgentMaster(@RequestBody RoutingBankMasterAgentParam param) {
+		return beneClient.getAgentMaster(param).toAmxApiResponse();
 	}
 
 	// Ifsc and SWift code mandatory api
