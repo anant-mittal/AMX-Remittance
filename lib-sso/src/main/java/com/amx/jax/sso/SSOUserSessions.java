@@ -72,8 +72,11 @@ public class SSOUserSessions extends CacheBox<Long> {
 		if (ArgUtil.isEmpty(sSOUser.getTerminalIp())) {
 			return true;
 		}
-		LOGGER.info("IP:   {}   {}", sSOUser.getTerminalIp(), commonHttpRequest.getIPAddress());
-		return sSOUser.getTerminalIp().equals(commonHttpRequest.getIPAddress());
+		boolean isTerminalIPSametemp = sSOUser.getTerminalIp().contains(commonHttpRequest.getIPAddress());
+		if (!isTerminalIPSametemp) {
+			LOGGER.info("IP:   {}   {}", sSOUser.getTerminalIp(), commonHttpRequest.getIPAddress());
+		}
+		return isTerminalIPSametemp;
 	}
 
 	public boolean isUserToBeThrownOut() {
