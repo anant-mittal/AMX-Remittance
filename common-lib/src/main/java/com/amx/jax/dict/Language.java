@@ -28,7 +28,7 @@ public enum Language {
 
 	BM("bam", 100, "Bambara"),
 
-	BN("ben", 100, "Bengali"),
+	BN("ben", 10, "Bengali"),
 	BO("bod", 100, "Tibetan"),
 	BR("bre", 100, "Breton"),
 	BS("bos", 100, "Bosnian"),
@@ -71,7 +71,7 @@ public enum Language {
 	GD("gla", 100, "Scottish Gaelic"),
 	GL("glg", 100, "Gallegan"),
 	GN("grn", 100, "Guarani"),
-	GU("guj", 100, "Gujarati"),
+	GU("guj", 6, "Gujarati"),
 
 	GV("glv", 100, "Manx"),
 
@@ -139,10 +139,10 @@ public enum Language {
 	MI("mri", 100, "Maori"),
 	MK("mkd", 100, "Macedonian"),
 
-	ML("mal", 100, "Malayalam"),
+	ML("mal", 5, "Malayalam"),
 	MN("mon", 100, "Mongolian"),
 	MO("mol", 100, "Moldavian"),
-	MR("mar", 100, "Marathi"),
+	MR("mar", 4, "Marathi"),
 
 	MS("msa", 100, "Malay"),
 	MT("mlt", 100, "Maltese"),
@@ -188,7 +188,7 @@ public enum Language {
 	SE("sme", 100, "Northern Sami"),
 
 	SG("sag", 100, "Sango"),
-	SI("sin", 100, "Sinhalese"),
+	SI("sin", 9, "Sinhalese"),
 	SK("slk", 100, "Slovak"),
 	SL("slv", 100, "Slovenian"),
 
@@ -205,14 +205,14 @@ public enum Language {
 	SV("swe", 100, "Swedish"),
 	SW("swa", 100, "Swahili"),
 
-	TA("tam", 100, "Tamil"),
+	TA("tam", 7, "Tamil"),
 	TE("tel", 100, "Telugu"),
 	TG("tgk", 100, "Tajik"),
 	TH("tha", 100, "Thai"),
 	TI("tir", 100, "Tigrinya"),
 
 	TK("tuk", 100, "Turkmen"),
-	TL("tgl", 100, "Tagalog"),
+	TL("tgl", 8, "Tagalog"),
 	TN("tsn", 100, "Tswana"),
 
 	TO("ton", 100, "Tonga"),
