@@ -33,6 +33,26 @@ public class CompanyService extends AbstractService {
 	MetaData metaData;
 
 	public static List<ViewCompanyDetails> DEFAULT_COMPANY_DETALIS;
+	
+	public ViewCompanyDetails getCompanyDetailInLang(BigDecimal languageId) {
+		List<ViewCompanyDetails> companyDetails = companyDao.getCompanyDetailInLang(languageId,Language.EN.getBDCode());
+		if (companyDetails.isEmpty()) {
+			throw new GlobalException(ResponseStatus.NOT_FOUND.toString());
+		}
+		if (companyDetails.size() == 1) {
+			return companyDetails.get(0);
+		}
+		ViewCompanyDetails viewCompanyDetailsDefault = null;
+		
+		for (ViewCompanyDetails viewCompanyDetails : companyDetails) {
+			if(viewCompanyDetails.getCompanyId().equals(languageId)) {
+				return viewCompanyDetails;
+			} else if(viewCompanyDetails.getCompanyId().equals(Language.EN.getBDCode())) {
+				viewCompanyDetailsDefault = viewCompanyDetails;
+			}
+		}
+		return viewCompanyDetailsDefault;
+	}
 
 	public AmxApiResponse<ViewCompanyDetailDTO, Object> getCompanyDetails(BigDecimal languageId) {
 		List<ViewCompanyDetails> companyDetails = companyDao.getCompanyDetails(languageId);
@@ -42,6 +62,13 @@ public class CompanyService extends AbstractService {
 		return AmxApiResponse.buildList(convert(companyDetails));
 	}
 
+	/**
+	 * Use {@link #getCompanyDetailInLang(BigDecimal)}
+	 * 
+	 * @param languageId
+	 * @return
+	 */
+	@Deprecated
 	public ViewCompanyDetails getCompanyDetail(BigDecimal languageId) {
 		List<ViewCompanyDetails> companyDetails = companyDao.getCompanyDetails(languageId);
 		if (companyDetails.isEmpty()) {
