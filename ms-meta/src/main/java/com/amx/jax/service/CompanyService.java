@@ -16,6 +16,7 @@ import com.amx.amxlib.meta.model.ViewCompanyDetailDTO;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.dbmodel.ViewCompanyDetails;
+import com.amx.jax.dict.Language;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.ICompanyDAO;
@@ -54,7 +55,7 @@ public class CompanyService extends AbstractService {
 	 */
 	@Transactional(readOnly = true)
 	public ViewCompanyDetails getCompanyDetail() {
-		List<ViewCompanyDetails> companyDetails = companyDao.getCompanyDetailsByCompanyId(metaData.getLanguageId(),
+		List<ViewCompanyDetails> companyDetails = companyDao.getCompanyDetailsByCompanyId(Language.EN.getBDCode(),
 				metaData.getCompanyId());
 		return companyDetails.get(0);
 	}
