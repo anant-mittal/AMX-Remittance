@@ -34,6 +34,7 @@ import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.request.remittance.BranchApplicationDto;
 import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
+import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerShoppingCartDto;
 import com.amx.jax.model.response.remittance.PaymentLinkRespDTO;
@@ -44,6 +45,8 @@ import com.amx.jax.repository.CurrencyRepository;
 import com.amx.jax.repository.PaygDetailsRepository;
 import com.amx.jax.repository.PaymentModeRepository;
 import com.amx.jax.repository.RemittanceApplicationRepository;
+import com.amx.jax.services.JaxNotificationService;
+import com.amx.jax.userservice.service.UserService;
 import com.amx.utils.Random;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -82,6 +85,12 @@ public class DirectPaymentLinkManager extends AbstractModel {
 	
 	@Autowired
 	PaymentModeRepository payModeRepositoy;
+	
+	@Autowired
+	UserService userService;
+	
+	@Autowired
+	JaxNotificationService notificationService;
 	
 	public PaymentLinkRespDTO getPaymentLinkDetails(BigDecimal customerId, BranchRemittanceApplResponseDto shpCartData) {
 		deactivatePaymentLink(customerId);
@@ -375,6 +384,14 @@ public class DirectPaymentLinkManager extends AbstractModel {
 				// update payg details in payment link table
 				fcSaleApplicationDao.updatePaygDetailsInPayLink(paymentResponse, linkId);
 				
+				//Send trnx successful notification
+				if(paymentResponse.getCustomerId() != null) {
+					PersonInfo personInfo = userService.getPersonInfo(paymentResponse.getCustomerId());
+					if(personInfo!=null && !StringUtils.isBlank(personInfo.getEmail()) && personInfo.getEmail() != null) {
+						notificationService.sendTransactionNotificationDL(personInfo);
+					}
+				}
+								
 				//payment process to remittance
 				PaygDetailsModel paymentLinkData =pgRepository.findOne(linkId);
 				BranchRemittanceRequestModel request = new BranchRemittanceRequestModel();
