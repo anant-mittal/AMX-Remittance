@@ -1,6 +1,6 @@
 package com.amx.jax.constant;
 
-import com.amx.amxlib.constant.JaxFieldType;
+import com.amx.jax.model.response.jaxfield.JaxFieldType;
 
 public enum FlexFieldBehaviour {
 	PRE_DEFINED(JaxFieldType.SELECT), USER_ENTERABLE(JaxFieldType.TEXT), SELECT_DATE(

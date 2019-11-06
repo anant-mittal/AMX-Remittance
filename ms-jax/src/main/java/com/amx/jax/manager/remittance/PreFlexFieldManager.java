@@ -15,10 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.amx.amxlib.constant.JaxFieldEntity;
-import com.amx.amxlib.exception.AdditionalFlexRequiredException;
-import com.amx.amxlib.model.JaxConditionalFieldDto;
-import com.amx.amxlib.model.JaxFieldDto;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.BankMasterModel;
@@ -26,10 +22,12 @@ import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.remittance.AdditionalDataDisplayView;
 import com.amx.jax.dbmodel.remittance.FlexFiledView;
 import com.amx.jax.dbmodel.remittance.ViewParameterDetails;
-import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.remittance.BenePackageRequest;
 import com.amx.jax.model.response.customer.BenePackageResponse;
+import com.amx.jax.model.response.jaxfield.JaxConditionalFieldDto;
+import com.amx.jax.model.response.jaxfield.JaxFieldDto;
+import com.amx.jax.model.response.jaxfield.JaxFieldEntity;
 import com.amx.jax.model.response.remittance.FlexFieldDto;
 import com.amx.jax.model.response.remittance.ParameterDetailsDto;
 import com.amx.jax.repository.IAdditionalDataDisplayDao;
@@ -42,6 +40,8 @@ import com.amx.jax.validation.RemittanceTransactionRequestValidator;
 
 @Component
 public class PreFlexFieldManager {
+
+	public static final String FC_AMOUNT_FLEX_FIELD_NAME = "PACKAGE_FCAMOUNT";
 
 	@Autowired
 	IAdditionalDataDisplayDao additionalDataDisplayDao;
@@ -73,6 +73,9 @@ public class PreFlexFieldManager {
 		int noOfMonth = 0;
 		benePackageRequest.populateFlexFieldDtoMap();
 		Map<String, FlexFieldDto> requestFlexFields = benePackageRequest.getFlexFieldDtoMap();
+		if (requestFlexFields == null) {
+			requestFlexFields = new HashMap<>();
+		}
 		BenificiaryListView beneficaryDetails = beneficiaryRepository.findByCustomerIdAndBeneficiaryRelationShipSeqIdAndIsActive(
 				metaData.getCustomerId(), benePackageRequest.getBeneId(), ConstantDocument.Yes);
 		BigDecimal routingBankId = beneficaryDetails.getServiceProvider();
@@ -85,36 +88,41 @@ public class PreFlexFieldManager {
 		if (cashSetUp != null) {
 			requiredFlexFields.addAll(fetchFlexFieldsForCashSetup(cashSetUp, benePackageRequest, beneficaryDetails));
 		} else {
+			// fetch flex field from parameter setup
 			List<ParameterDetailsDto> parameterSetUp = additionalBankDetailManager.fetchServiceProviderFcAmount(benePackageRequest.getBeneId());
 			if (parameterSetUp.size() == 1) {
 				ParameterDetailsDto parameterDto = parameterSetUp.get(0);
-				requiredFlexFields.add(fetchFlexFieldsForParameterSetup(parameterDto));
-				packageFcAmount = parameterDto.getAmount();
+				FlexFieldDto flexFieldValueInRequest = requestFlexFields.get(FC_AMOUNT_FLEX_FIELD_NAME);
+				JaxConditionalFieldDto jaxConditionalFieldDto = fetchFlexFieldsForParameterSetup(parameterDto);
+				requiredFlexFields.add(jaxConditionalFieldDto);
+				packageFcAmount = flexFieldValueInRequest == null ? null : new BigDecimal(flexFieldValueInRequest.getAmieceDescription());
+				if (packageFcAmount != null) {
+					jaxConditionalFieldDto.getField().setDefaultValue(packageFcAmount.toString());
+				}
 			}
 		}
 		if (!requiredFlexFields.isEmpty()) {
 			log.debug(requiredFlexFields.toString());
-			AdditionalFlexRequiredException exp = new AdditionalFlexRequiredException("Addtional flex fields are required",
-					JaxError.ADDTIONAL_FLEX_FIELD_REQUIRED);
 			remittanceTransactionRequestValidator.processFlexFields(requiredFlexFields);
-			exp.setMeta(requiredFlexFields);
-			throw exp;
 		}
-		for (Entry<String, FlexFieldDto> element : requestFlexFields.entrySet()) {
-			String k = element.getKey();
-			FlexFieldDto v = element.getValue();
-			if ("INDIC16".equals(k)) {
-				monthlyContribution = new BigDecimal(v.getAmieceCode());
-			}
-			if ("INDIC17".equals(k)) {
-				volunteerContribution = new BigDecimal(v.getAmieceCode());
-			}
-			if ("INDIC18".equals(k)) {
-				noOfMonth = Integer.parseInt(v.getAmieceCode());
+		if (requestFlexFields != null) {
+			for (Entry<String, FlexFieldDto> element : requestFlexFields.entrySet()) {
+				String k = element.getKey();
+				FlexFieldDto v = element.getValue();
+				if ("INDIC16".equals(k)) {
+					monthlyContribution = new BigDecimal(v.getAmieceCode());
+				}
+				if ("INDIC17".equals(k)) {
+					volunteerContribution = new BigDecimal(v.getAmieceCode());
+				}
+				if ("INDIC18".equals(k)) {
+					noOfMonth = Integer.parseInt(v.getAmieceCode());
+				}
 			}
 		}
 		Map<String, Object> validationResults = new HashMap<>();
 		validationResults.put("PACKAGE_FC_AMOUNT", packageFcAmount);
+		validationResults.put("requiredFlexFields", requiredFlexFields);
 		if (monthlyContribution != null) {
 			packageFcAmount = monthlyContribution.multiply(BigDecimal.valueOf(noOfMonth));
 		}
@@ -128,12 +136,13 @@ public class PreFlexFieldManager {
 		JaxConditionalFieldDto dto = new JaxConditionalFieldDto();
 		dto.setEntityName(JaxFieldEntity.FLEX_FIELD);
 		JaxFieldDto field = new JaxFieldDto();
-		field.setDtoPath("packageFcAmount");
+		field.setDtoPath("flexFields.PACKAGE_FCAMOUNT");
 		field.setLabel("Foreign Amount");
-		field.setName("PACKAGE_FCAMOUNT");
+		field.setName(FC_AMOUNT_FLEX_FIELD_NAME);
 		field.setMaxValue(parameterDetailsDto.getMaxAmount());
 		field.setMinValue(parameterDetailsDto.getMinAmount());
-		if (parameterDetailsDto.getAmount() != null) {
+		field.setRequired(true);
+		if (parameterDetailsDto.getAmount() != null && parameterDetailsDto.getAmount().doubleValue() > 0) {
 			field.setDefaultValue(parameterDetailsDto.getAmount().toString());
 		}
 		field.setType("TEXT");
@@ -164,7 +173,7 @@ public class PreFlexFieldManager {
 		for (AdditionalDataDisplayView flexField : additionalDataRequired) {
 			FlexFieldDto flexFieldValueInRequest = requestFlexFields.get(flexField.getFlexField());
 			JaxConditionalFieldDto jaxConditionalFieldDto = remittanceTransactionRequestValidator.getConditionalFieldDto(flexField, requestFlexFields,
-					foreignCurrencyId, foreignCurrencyId, foreignCurrencyId, foreignCurrencyId, foreignCurrencyId, null);
+					foreignCurrencyId, foreignCurrencyId, foreignCurrencyId, foreignCurrencyId, foreignCurrencyId, null, true);
 			if ("INDIC16".equals(flexField.getFlexField()) && flexFieldValueInRequest.getAmieceCode().contains("+")) {
 				volunteerContributionIndic = true;
 			}
@@ -176,7 +185,7 @@ public class PreFlexFieldManager {
 			}
 		}
 		if (volunteerContributionIndic && !volunteerContributionSelected) {
-			log.debug("volunteerContributionSelected");
+			log.debug("volunteer Contribution Selected");
 		} else {
 			// remove volunteer Indic 17
 			Iterator<JaxConditionalFieldDto> itr = requiredFlexFields.iterator();
@@ -192,9 +201,12 @@ public class PreFlexFieldManager {
 
 	public BenePackageResponse createBenePackageResponse(Map<String, Object> validationResults) {
 		BenePackageResponse resp = new BenePackageResponse();
+		List<JaxConditionalFieldDto> requiredFlexFields = (List<JaxConditionalFieldDto>) validationResults.get("requiredFlexFields");
+		resp.setRequiredFlexFields(requiredFlexFields);
 		if (validationResults.get("PACKAGE_FC_AMOUNT") != null) {
 			resp.setAmount(new BigDecimal(validationResults.get("PACKAGE_FC_AMOUNT").toString()));
 		}
+
 		return resp;
 	}
 

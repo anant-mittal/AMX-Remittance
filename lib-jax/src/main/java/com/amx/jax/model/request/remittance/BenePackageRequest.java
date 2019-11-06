@@ -12,12 +12,14 @@ import javax.validation.constraints.NotNull;
 import com.amx.jax.model.response.remittance.FlexFieldDto;
 import com.amx.jax.swagger.ApiMockModelProperty;
 import com.amx.utils.JsonUtil;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class BenePackageRequest {
 	@NotNull
 	@ApiMockModelProperty(example="4314078")
 	BigDecimal beneId;
 	Map<String, Object> flexFields;
+	@JsonIgnore
 	Map<String, FlexFieldDto> flexFieldDtoMap;
 
 	public BigDecimal getBeneId() {

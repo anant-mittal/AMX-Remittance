@@ -15,12 +15,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.amx.amxlib.constant.JaxFieldEntity;
 import com.amx.amxlib.exception.AdditionalFlexRequiredException;
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.model.JaxConditionalFieldDto;
-import com.amx.amxlib.model.JaxFieldDto;
-import com.amx.amxlib.model.JaxFieldValueDto;
 import com.amx.jax.branchremittance.manager.BranchRemittanceManager;
 import com.amx.jax.constant.BankConstants;
 import com.amx.jax.constant.ConstantDocument;
@@ -38,6 +34,10 @@ import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.remittance.AbstractRemittanceApplicationRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceAdditionalBeneFieldModel;
 import com.amx.jax.model.response.ExchangeRateBreakup;
+import com.amx.jax.model.response.jaxfield.JaxConditionalFieldDto;
+import com.amx.jax.model.response.jaxfield.JaxFieldDto;
+import com.amx.jax.model.response.jaxfield.JaxFieldEntity;
+import com.amx.jax.model.response.jaxfield.JaxFieldValueDto;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.FlexFieldDto;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
@@ -130,7 +130,7 @@ public class RemittanceTransactionRequestValidator {
 		List<JaxConditionalFieldDto> requiredFlexFields = new ArrayList<>();
 		for (AdditionalDataDisplayView flexField : additionalDataRequired) {
 			JaxConditionalFieldDto jaxConditionalFieldDto = getConditionalFieldDto(flexField, requestFlexFields, foreignCurrencyId, foreignCurrencyId,
-					foreignCurrencyId, foreignCurrencyId, foreignCurrencyId, servicePackage);
+					foreignCurrencyId, foreignCurrencyId, foreignCurrencyId, servicePackage, false);
 			if (jaxConditionalFieldDto != null) {
 				requiredFlexFields.add(jaxConditionalFieldDto);
 			}
@@ -176,7 +176,7 @@ public class RemittanceTransactionRequestValidator {
 
 	public JaxConditionalFieldDto getConditionalFieldDto(AdditionalDataDisplayView flexField, Map<String, FlexFieldDto> requestFlexFields,
 			BigDecimal routingCountryId, BigDecimal remittanceModeId, BigDecimal deliveryModeId, BigDecimal foreignCurrencyId,
-			BigDecimal routingBankId, FlexFieldDto servicePackage) {
+			BigDecimal routingBankId, FlexFieldDto servicePackage, boolean forceIncludeFlexField) {
 
 		FlexFieldDto flexFieldValueInRequest = requestFlexFields.get(flexField.getFlexField());
 
@@ -226,11 +226,16 @@ public class RemittanceTransactionRequestValidator {
 		if (flexFieldValueInRequest == null) {
 			return dto;
 		} else {
+			dto.getField().setDefaultValue(flexFieldValueInRequest.getAmieceDescription());
 			if (field.getPossibleValues() != null && hasFieldValueChanged(field, flexFieldValueInRequest)) {
 				return dto;
 			}
 		}
-		return null;
+		if (forceIncludeFlexField) {
+			return dto;
+		} else {
+			return null;
+		}
 	}
 
 	/**

@@ -1,10 +1,6 @@
-package com.amx.amxlib.model;
+package com.amx.jax.model.response.jaxfield;
 
 import java.math.BigDecimal;
-import java.util.List;
-
-import com.amx.amxlib.constant.JaxFieldEntity;
-import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 
 public class JaxConditionalFieldDto {
 

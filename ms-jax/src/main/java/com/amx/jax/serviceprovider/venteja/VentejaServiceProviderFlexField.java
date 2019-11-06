@@ -5,9 +5,9 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.Map;
 
-import com.amx.amxlib.model.JaxFieldDto;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.model.request.serviceprovider.ServiceProviderCallRequestDto;
+import com.amx.jax.model.response.jaxfield.JaxFieldDto;
 import com.amx.jax.model.response.remittance.FlexFieldDto;
 import com.amx.utils.DateUtil;
 

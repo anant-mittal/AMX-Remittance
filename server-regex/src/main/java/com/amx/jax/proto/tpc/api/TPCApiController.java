@@ -8,13 +8,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.AmxResponseSchemes.ApiDataMetaResponse;
 import com.amx.jax.api.AmxResponseSchemes.ApiDataResponse;
 import com.amx.jax.api.AmxResponseSchemes.ApiMetaResponse;
 import com.amx.jax.api.AmxResponseSchemes.ApiResultsResponse;
 import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
+import com.amx.jax.model.response.jaxfield.JaxConditionalFieldDto;
 import com.amx.jax.proto.tpc.api.TPCApiConstants.TPCApiClientHeaders;
 import com.amx.jax.proto.tpc.api.TPCApiConstants.TPCApiCustomerHeaders;
 import com.amx.jax.proto.tpc.api.TPCStatus.ApiTPCStatus;
