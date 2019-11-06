@@ -546,7 +546,7 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 		
 			if(splitCount[1]!=null && splitCount[1].compareTo(BigDecimal.ZERO)>0) {
 				BigDecimal spValue = RoundUtil.roundBigDecimal(splitCount[1],drDto.getExRateBreakup().getFcDecimalNumber().intValue());
-				reminder ="and "+ currQuoteName+" "+formtingNumbers(spValue)+"";
+				reminder ="and "+ currQuoteName+" "+format(spValue.doubleValue())+"";
 			}else {
 				joinedString = amountStrList.stream().collect(Collectors.joining(" "+currQuoteName +" "));
 				joinedString =replaceWithAnd(joinedString,currQuoteName);

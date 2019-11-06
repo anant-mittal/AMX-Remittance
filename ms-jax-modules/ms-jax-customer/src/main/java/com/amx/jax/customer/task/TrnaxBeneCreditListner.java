@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.async.ExecutorConfig;
 import com.amx.jax.client.JaxClientUtil;
 import com.amx.jax.customer.manager.CustomerContactVerificationManager;
@@ -142,7 +143,13 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 			LOGGER.info("email verified is " + c.getEmailVerified());
 			if (c.getEmailVerified() != AmxDBConstants.Status.Y) {
 				LOGGER.info("email value is " + c.getEmailVerified());
-				CustomerContactVerification x = customerContactVerificationManager.create(c, ContactType.EMAIL);
+				CustomerContactVerification x = null;
+				try {
+					x = customerContactVerificationManager.create(c, ContactType.EMAIL);
+				} catch (GlobalException e) {
+					LOGGER.info(e.getMessage());
+				}
+				
 				LOGGER.info("value of x is " + x.toString());
 				// modeldata.put("customer", c);
 				modeldata.put("verifylink", x);

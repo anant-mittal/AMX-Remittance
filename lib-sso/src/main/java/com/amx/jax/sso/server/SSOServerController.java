@@ -239,9 +239,11 @@ public class SSOServerController {
 					DeviceData branchDeviceData = deviceBox.get(sSOTranx.get().getBranchAdapterId());
 					userClientDto.setLocalIpAddress(branchDeviceData.getLocalIp());
 					userClientDto.setTerminalId(ArgUtil.parseAsBigDecimal(branchDeviceData.getTerminalId()));
-					LOGGER.info("Gloabal IPs THIS: {} ADAPTER: {}", userDeviceClient.getIp(),
-							branchDeviceData.getGlobalIp());
+					LOGGER.info("Gloabal IPs THIS: {} ADAPTER: {}, REQUEST: {}", userDeviceClient.getIp(),
+							branchDeviceData.getGlobalIp(),commonHttpRequest.getIPAddress());
 
+					ssoUser.setTerminalIp(userDeviceClient.getIp() + "," + branchDeviceData.getGlobalIp());
+					
 					// Audit
 					auditEvent.terminalId(userClientDto.getTerminalId())
 							// .clientType(ClientType.BRANCH_ADAPTER)
@@ -299,6 +301,7 @@ public class SSOServerController {
 				SSOAuditEvent auditEvent = new SSOAuditEvent(SSOAuditEvent.Type.LOGIN_OTP, Result.FAIL)
 						.clientType(clientType);
 				try {
+					DeviceData branchDeviceData = deviceBox.get(sSOTranx.get().getBranchAdapterId());
 					String terminalId = ArgUtil.parseAsString(sSOTranx.get().getTerminalId());
 
 					UserAuthorisationReqDTO auth = new UserAuthorisationReqDTO();
@@ -311,6 +314,7 @@ public class SSOServerController {
 						// TODO:-- TO validate
 						auth.setIpAddress(terminalId);
 					}
+					ssoUser.setTerminalIp(userDeviceClient.getIp() + "," + branchDeviceData.getGlobalIp());
 
 					auth.setDeviceId(userDeviceClient.getFingerprint());
 					auth.setmOtp(formdata.getMotp());

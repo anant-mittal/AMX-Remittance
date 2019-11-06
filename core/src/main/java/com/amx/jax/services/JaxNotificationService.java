@@ -434,4 +434,18 @@ public void sendSPErrorEmail(TransactionFailReportDTO model,
 			logger.error("error in sendErrormail", e);
 		}
 	}
+
+	public void sendTransactionNotificationDL(PersonInfo pinfo) {
+		logger.debug("Sending txn notification to customer");
+		Email email = new Email();
+
+		email.setSubject("Your transaction on AMX is successful");
+		email.addTo(pinfo.getEmail());
+		email.setITemplate(TemplatesMX.TXN_CRT_SUCC);
+		email.setHtml(true);
+		email.getModel().put(RESP_DATA_KEY, pinfo);
+
+		logger.debug("Email to DL - " + pinfo.getEmail());
+		sendEmail(email);
+	}
 }

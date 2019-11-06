@@ -159,9 +159,11 @@ public class RemittanceTransaction implements Serializable {
 	private BigDecimal usdAmt;
 	private String wuPurposeOfTransaction;
 	
-	private String applSplit;
-	private Date timeToDeliver;
 
+	private String applSplit;
+
+	private Date timeToDeliver;
+	
 	
 	public RemittanceTransaction() {
 	}
