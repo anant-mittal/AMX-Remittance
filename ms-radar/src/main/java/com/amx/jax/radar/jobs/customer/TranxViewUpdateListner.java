@@ -31,7 +31,7 @@ import com.amx.utils.JsonUtil;
 
 //@TunnelEventMapping(topic = AmxTunnelEvents.Names.DATAUPD_TRNX, scheme = TunnelEventXchange.TASK_WORKER)
 @TunnelEventMapping(topic = AmxTunnelEvents.Names.TRNX_BENE_CREDIT, scheme = TunnelEventXchange.TASK_LISTNER)
-public class TranxDataUpdateListner implements ITunnelSubscriber<DBEvent> {
+public class TranxViewUpdateListner implements ITunnelSubscriber<DBEvent> {
 
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
