@@ -196,7 +196,7 @@ public class DirectPaymentLinkManager extends AbstractModel {
 						throw new GlobalException(JaxError.DIRECT_LINK_INVALID, "Link is invalid");
 					}
 				} else {
-					throw new GlobalException(JaxError.DIRECT_LINK_EXPIRED, "Link Expired");
+					throw new GlobalException(JaxError.DIRECT_LINK_INVALID, "Link Expired");
 				}
 
 				List<CustomerShoppingCartDto> custShopList = new ArrayList<>();
@@ -243,13 +243,13 @@ public class DirectPaymentLinkManager extends AbstractModel {
 				paymentLinkResp.setCurQutoe(currencyQuote);
 			}
 			if (paymentLink.getLinkActive().equals("D")) {
-				throw new GlobalException(JaxError.DIRECT_LINK_DEACTIVATED,
+				throw new GlobalException(JaxError.DIRECT_LINK_INVALID,
 						"Payment link is deactivated");
 			}
 			
 
 		} else {
-			throw new GlobalException(JaxError.VERIFICATION_CODE_MISMATCH,
+			throw new GlobalException(JaxError.DIRECT_LINK_INVALID,
 					"Invalidate link, Verification Code Mismatch");
 		}
 		return paymentLinkResp;
