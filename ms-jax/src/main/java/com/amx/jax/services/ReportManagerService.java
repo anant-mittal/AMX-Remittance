@@ -458,7 +458,7 @@ public class ReportManagerService extends AbstractService{
 					obj.setSignature(view.getCustomerSignatureClob());
 				}
 				
-					List<ViewCompanyDetails> companyMaster = iCompanyDao.getCompanyDetailsByCompanyId(languageId, companyId);
+					List<ViewCompanyDetails> companyMaster = iCompanyDao.getCompanyDetailsByCompanyId(BigDecimal.ONE, companyId);
 			
 					StringBuffer engCompanyInfo = null;
 					StringBuffer arabicCompanyInfo = null;
