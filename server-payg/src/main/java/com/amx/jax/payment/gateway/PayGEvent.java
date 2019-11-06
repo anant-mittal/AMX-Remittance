@@ -27,6 +27,10 @@ public class PayGEvent extends AuditEvent {
 		this.response = response;
 	}
 
+	public PayGEvent(Type type) {
+		super(type);
+	}
+
 	PayGParams params = null;
 	PayGModel response = null;
 
@@ -45,5 +49,6 @@ public class PayGEvent extends AuditEvent {
 	public void setParams(PayGParams params) {
 		this.params = params;
 	}
+	
 
 }
