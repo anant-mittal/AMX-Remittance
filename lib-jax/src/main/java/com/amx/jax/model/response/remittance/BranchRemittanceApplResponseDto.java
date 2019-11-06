@@ -25,6 +25,8 @@ public class BranchRemittanceApplResponseDto {
 	/* application records */
 	List<CustomerShoppingCartDto> shoppingCartDetails;
 	
+	List<PlaceOrderApplDto> placeOrderApplList;
+	
 	public BigDecimal getTotalLocalAmount() {
 		return totalLocalAmount;
 	}
@@ -72,5 +74,11 @@ public class BranchRemittanceApplResponseDto {
 	}
 	public void setWarnigMsg(String warnigMsg) {
 		this.warnigMsg = warnigMsg;
+	}
+	public List<PlaceOrderApplDto> getPlaceOrderApplList() {
+		return placeOrderApplList;
+	}
+	public void setPlaceOrderApplList(List<PlaceOrderApplDto> placeOrderApplList) {
+		this.placeOrderApplList = placeOrderApplList;
 	}
 }

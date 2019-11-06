@@ -51,6 +51,7 @@ import com.amx.jax.model.response.remittance.CustomerShoppingCartDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
 import com.amx.jax.model.response.remittance.PaymentModeDto;
 import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
+import com.amx.jax.model.response.remittance.PlaceOrderApplDto;
 import com.amx.jax.partner.manager.PartnerTransactionManager;
 import com.amx.jax.repository.IBankMasterFromViewDao;
 import com.amx.jax.repository.ICurrencyDao;
@@ -102,6 +103,9 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 	@Autowired
 	PartnerTransactionManager partnerTransactionManager;
 
+	@Autowired
+	PlaceOrderManager placeOrderManager;
+	
 
 	/* 
 	 * @param   :fetch customer shopping cart application
@@ -179,6 +183,12 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 			throw new GlobalException(JaxError.INVALID_CURRENCY_ID, "Invalid local currency id passed");
 		}
 
+		List<PlaceOrderApplDto> placeOrderList = placeOrderManager.getPlaceOrderList();
+		
+		if(placeOrderList!=null && !placeOrderList.isEmpty()) {
+			cartList.setPlaceOrderApplList(placeOrderList);
+		}
+		
 		return cartList;
 	}
 
@@ -586,4 +596,6 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		return config;
 		
 	}
+	
+	
 }

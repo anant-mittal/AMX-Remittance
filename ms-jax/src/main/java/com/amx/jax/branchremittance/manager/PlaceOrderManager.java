@@ -8,9 +8,13 @@ package com.amx.jax.branchremittance.manager;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -28,27 +32,36 @@ import com.amx.jax.branchremittance.dao.PlaceOrderDao;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.CountryBranchMdlv1;
+import com.amx.jax.dbmodel.CurrencyMasterMdlv1;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.remittance.Document;
 import com.amx.jax.dbmodel.remittance.RatePlaceOrder;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.exrateservice.service.ExchangeRateService;
+import com.amx.jax.manager.RemittanceTransactionManager;
 import com.amx.jax.manager.remittance.CorporateDiscountManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.PlaceOrderRequestModel;
+import com.amx.jax.model.response.ExchangeRateBreakup;
 import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;
+import com.amx.jax.model.response.remittance.PlaceOrderApplDto;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.pricer.dto.ExchangeDiscountInfo;
 import com.amx.jax.pricer.dto.TrnxRoutingDetails;
 import com.amx.jax.pricer.var.PricerServiceConstants.DISCOUNT_TYPE;
 import com.amx.jax.repository.CustomerRepository;
+import com.amx.jax.repository.IBeneficiaryOnlineDao;
+import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.IDocumentDao;
+import com.amx.jax.repository.IRatePlaceOrderRepository;
 import com.amx.jax.service.BankMetaService;
 import com.amx.jax.service.FinancialService;
 import com.amx.jax.util.JaxUtil;
+import com.amx.utils.JsonUtil;
 
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -89,8 +102,24 @@ public class PlaceOrderManager implements Serializable{
 	@Autowired
 	CorporateDiscountManager corporateDiscountManager;
 	
-
+	@Autowired
+	IRatePlaceOrderRepository ratePlaceOrderRepository;
 	
+	
+	@Autowired
+	IBeneficiaryOnlineDao beneficiaryRepository;
+	
+	@Autowired
+	ICurrencyDao currDao;
+	
+	@Autowired
+	ExchangeRateService exchangeRateService;
+	
+	@Autowired
+	RemittanceTransactionManager remittanceTransactionManager;
+	
+	@Resource
+	private Map<String, Object> remitApplParametersMap;
 	
 	public Boolean savePlaceOrder(PlaceOrderRequestModel placeOrderRequestModel) {
 		 Boolean boolRespModel = false;
@@ -170,6 +199,7 @@ public class PlaceOrderManager implements Serializable{
 		placeOrderAppl.setRemittanceModeId(trnxRoutingDtls.getRemittanceModeId());
 		placeOrderAppl.setDeliveryModeId(trnxRoutingDtls.getDeliveryModeId());
 		placeOrderAppl.setSourceOfincomeId(applRequestModel.getSourceOfFund());
+		placeOrderAppl.setRequestModel(JsonUtil.toJson(applRequestModel));
 		
 		if(JaxUtil.isNullZeroBigDecimalCheck(applRequestModel.getForeignAmount())){
 			placeOrderAppl.setTransactionAmount(applRequestModel.getForeignAmount());
@@ -235,4 +265,103 @@ public class PlaceOrderManager implements Serializable{
 		}
 	}
 	
+	/** 
+	 * @author rabil
+	 * @return :to return list of place Order for customer.
+	 */
+	public List<PlaceOrderApplDto> getPlaceOrderList(){
+		List<PlaceOrderApplDto> list = new ArrayList<>();
+		List<RatePlaceOrder> placeOrderLsit = ratePlaceOrderRepository.fetchPlaceOrderForCustomer(metaData.getCustomerId());
+		if(placeOrderLsit!=null && !placeOrderLsit.isEmpty()) {
+			
+			for(RatePlaceOrder placeOrder : placeOrderLsit) {
+				
+				PlaceOrderApplDto applDto = new PlaceOrderApplDto();
+				
+				BenificiaryListView beneficaryDetails =beneficiaryRepository.findByCustomerIdAndBeneficiaryRelationShipSeqIdAndIsActive(placeOrder.getCustomerId(),placeOrder.getBeneficiaryRelationId(),ConstantDocument.Yes);
+				Customer customer = customerRepository.getCustomerByCustomerId(placeOrder.getCustomerId());
+				CurrencyMasterMdlv1 localCurr = currDao.getOne(metaData.getDefaultCurrencyId());
+				ExchangeRateBreakup exRateBreakUp = new ExchangeRateBreakup();
+				
+				applDto.setCustomerId(placeOrder.getCustomerId());
+				applDto.setPlaceOrderId(placeOrder.getRatePlaceOrderId());
+				applDto.setBeneficiaryAccountNo(beneficaryDetails==null?"":beneficaryDetails.getBankAccountNumber());
+				applDto.setBeneficiaryName(beneficaryDetails.getBenificaryName());
+				applDto.setRemarks(placeOrder.getRemarks());
+				applDto.setCustomerReference(customer.getCustomerReference());
+				applDto.setCustomerName(getCustomerFullName(customer));
+				applDto.setExchangeRateOfferd(placeOrder.getRateOffered());
+				applDto.setDocumentId(placeOrder.getDocumentId());
+				applDto.setDocumentFinanceYear(placeOrder.getDocumentNumber());
+				applDto.setDocumentFinanceYear(placeOrder.getDocumentFinanceYear());
+				applDto.setBeneficiaryBank(beneficaryDetails.getBankName());
+				applDto.setBeneficiaryBranch(beneficaryDetails.getBankBranchName());
+				applDto.setCompanyId(placeOrder.getCompanyId());
+				applDto.setCreatedBy(placeOrder.getCreatedBy());
+				applDto.setApprovedBy(placeOrder.getApprovedBy());
+				applDto.setLocalcurrency(metaData.getDefaultCurrencyId());
+				applDto.setForeigncurrency(placeOrder.getDestinationCurrenyId());
+				applDto.setForeigncurrencyName(beneficaryDetails.getCurrencyQuoteName());
+				applDto.setLocalcurrencyName(localCurr==null?"":localCurr.getQuoteName());
+				
+				exRateBreakUp.setInverseRate(placeOrder.getRateOffered());				
+				if(JaxUtil.isNullZeroBigDecimalCheck(placeOrder.getRequestCurrencyId()) && placeOrder.getRequestCurrencyId().compareTo(metaData.getDefaultCurrencyId())==0) {
+					 applDto.setLocalTranxAmount(placeOrder.getTransactionAmount());
+					 exRateBreakUp = exchangeRateService.createBreakUp(placeOrder.getRateOffered(), placeOrder.getTransactionAmount());
+					 applDto.setForeignTranxAmount(exRateBreakUp.getConvertedFCAmount());
+				}else {
+					applDto.setForeignTranxAmount(placeOrder.getTransactionAmount());
+					exRateBreakUp = exchangeRateService.createBreakUpFromForeignCurrency(placeOrder.getRateOffered(), placeOrder.getTransactionAmount());
+					applDto.setLocalTranxAmount(exRateBreakUp.getConvertedLCAmount());
+					
+				}
+				if(exRateBreakUp!=null) {
+					remitApplParametersMap.put("P_FOREIGN_CURRENCY_ID", beneficaryDetails.getCurrencyId());
+					exRateBreakUp.setNetAmount(exRateBreakUp.getConvertedLCAmount());
+					exRateBreakUp.setNetAmountWithoutLoyality(exRateBreakUp.getConvertedLCAmount());
+					remittanceTransactionManager.applyCurrencyRoudingLogic(exRateBreakUp);
+					applDto.setLocalTranxAmount(exRateBreakUp.getConvertedLCAmount());
+					applDto.setForeignTranxAmount(exRateBreakUp.getConvertedFCAmount());
+					
+				}
+				
+				
+				
+				list.add(applDto);
+				
+				
+				
+			}
+		}
+		
+		return list;
+	}
+
+	
+
+	
+	
+	
+	
+	
+	
+	
+	
+	public String getCustomerFullName(Customer customer){
+		String customerName =null;
+
+		if(customer !=null){
+			if(customer.getFirstName() !=null){
+				customerName = customer.getFirstName(); 
+			}
+			if(!StringUtils.isEmpty(customer.getMiddleName())){
+				customerName = customerName +" "+customer.getMiddleName();
+			}
+			if(!StringUtils.isEmpty(customer.getLastName())){
+				customerName = customerName+ " "+ customer.getLastName();
+			}
+		}
+		return customerName;
+		}
+
 }

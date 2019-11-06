@@ -101,6 +101,7 @@ public class RatePlaceOrder implements Serializable {
 		private BigDecimal pipsToAmt;
 		private BigDecimal pipsDiscount;
 		private String reachedCostRateLimit;
+		private String requestModel;
 		
 		public RatePlaceOrder() {
 			super();
@@ -820,6 +821,15 @@ public class RatePlaceOrder implements Serializable {
 
 		public void setReachedCostRateLimit(String reachedCostRateLimit) {
 			this.reachedCostRateLimit = reachedCostRateLimit;
+		}
+
+		@Column(name="REQUEST_MODEL")
+		public String getRequestModel() {
+			return requestModel;
+		}
+
+		public void setRequestModel(String requestModel) {
+			this.requestModel = requestModel;
 		}
 		
 		
