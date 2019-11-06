@@ -55,8 +55,7 @@ public class CompanyService extends AbstractService {
 	}
 
 	public AmxApiResponse<ViewCompanyDetailDTO, Object> getCompanyDetails(BigDecimal languageId) {
-		languageId= BigDecimal.ONE;
-		List<ViewCompanyDetails> companyDetails = companyDao.getCompanyDetails(languageId);
+		List<ViewCompanyDetails> companyDetails = companyDao.getCompanyDetails(Language.EN.getBDCode());
 		if (companyDetails.isEmpty()) {
 			throw new GlobalException(ResponseStatus.NOT_FOUND.toString());
 		}
