@@ -53,7 +53,8 @@ public final class ArgUtil {
 	 * This method is called for generating the error message in case of Parameter
 	 * missing or invalid exceptions.
 	 *
-	 * @param object the object
+	 * @param object
+	 *            the object
 	 * @return : String indicating the type of the given object
 	 */
 	public static String getType(Object object) {
@@ -78,7 +79,8 @@ public final class ArgUtil {
 	/**
 	 * Gets the type enum.
 	 *
-	 * @param enumValue the enum value
+	 * @param enumValue
+	 *            the enum value
 	 * @return the type enum
 	 */
 	public static String[] getTypeEnum(Enum enumValue) {
@@ -98,10 +100,14 @@ public final class ArgUtil {
 	/**
 	 * Parse as T.
 	 *
-	 * @param              <T> the generic type
-	 * @param value        the value
-	 * @param defaultValue the default value
-	 * @param required     the required
+	 * @param <T>
+	 *            the generic type
+	 * @param value
+	 *            the value
+	 * @param defaultValue
+	 *            the default value
+	 * @param required
+	 *            the required
 	 * @return the t
 	 */
 	public static <T> T parseAsT(Object value, T defaultValue, boolean required) {
@@ -177,11 +183,16 @@ public final class ArgUtil {
 	/**
 	 * Parse as List &lt;T&gt;.
 	 *
-	 * @param                  <T> the generic type
-	 * @param value            the value
-	 * @param defaultValue     the default value
-	 * @param defaultListValue the default list value
-	 * @param required         the required
+	 * @param <T>
+	 *            the generic type
+	 * @param value
+	 *            the value
+	 * @param defaultValue
+	 *            the default value
+	 * @param defaultListValue
+	 *            the default list value
+	 * @param required
+	 *            the required
 	 * @return the list
 	 */
 	public static <T> List<T> parseAsListOfT(Object value, T defaultValue, List<T> defaultListValue, boolean required) {
@@ -210,12 +221,18 @@ public final class ArgUtil {
 	/**
 	 * Parse as List&lt;List&lt;T&gt;&gt;.
 	 *
-	 * @param                        <T> the generic type
-	 * @param value                  the value
-	 * @param defaultValue           the default value
-	 * @param defaultListValue       the default list value
-	 * @param defaultListOfListValue the default list of list value
-	 * @param required               the required
+	 * @param <T>
+	 *            the generic type
+	 * @param value
+	 *            the value
+	 * @param defaultValue
+	 *            the default value
+	 * @param defaultListValue
+	 *            the default list value
+	 * @param defaultListOfListValue
+	 *            the default list of list value
+	 * @param required
+	 *            the required
 	 * @return the list
 	 */
 	public static <T> List<List<T>> parseAsListListOfT(Object value, T defaultValue, List<T> defaultListValue,
@@ -239,13 +256,20 @@ public final class ArgUtil {
 	/**
 	 * Parse as List&lt;List&lt;List&lt;T&gt;&gt;&gt;.
 	 *
-	 * @param                            <T> the generic type
-	 * @param value                      the value
-	 * @param defaultValue               the default value
-	 * @param defaultListValue           the default list value
-	 * @param defaultListListValue       the default list list value
-	 * @param defaultListListOfListValue the default list list of list value
-	 * @param required                   the required
+	 * @param <T>
+	 *            the generic type
+	 * @param value
+	 *            the value
+	 * @param defaultValue
+	 *            the default value
+	 * @param defaultListValue
+	 *            the default list value
+	 * @param defaultListListValue
+	 *            the default list list value
+	 * @param defaultListListOfListValue
+	 *            the default list list of list value
+	 * @param required
+	 *            the required
 	 * @return the list
 	 */
 	public static <T> List<List<List<T>>> parseAsListListListOfT(Object value, T defaultValue, List<T> defaultListValue,
@@ -277,7 +301,8 @@ public final class ArgUtil {
 	 * 3) String ("true" / "false")
 	 * </pre>
 	 *
-	 * @param value the value
+	 * @param value
+	 *            the value
 	 * @return : Boolean object if valid else null
 	 */
 	public static Boolean parseAsBoolean(Object value) {
@@ -294,8 +319,10 @@ public final class ArgUtil {
 	/**
 	 * Parses the as boolean.
 	 *
-	 * @param value     the value
-	 * @param nullValue the null value
+	 * @param value
+	 *            the value
+	 * @param nullValue
+	 *            the null value
 	 * @return the boolean
 	 */
 	public static Boolean parseAsBoolean(Object value, Boolean nullValue) {
@@ -317,7 +344,8 @@ public final class ArgUtil {
 	 * 5) String ("023567" / "011256" etc.) - Octal or base 8 if starts with 0
 	 * </pre>
 	 *
-	 * @param value the value
+	 * @param value
+	 *            the value
 	 * @return : Integer object if valid else null
 	 */
 	public static Integer parseAsInteger(Object value) {
@@ -353,8 +381,10 @@ public final class ArgUtil {
 	 * 5) String ("023567" / "011256" etc.) - Octal or base 8 if starts with 0
 	 * </pre>
 	 *
-	 * @param value        the value
-	 * @param defaultValue the default value
+	 * @param value
+	 *            the value
+	 * @param defaultValue
+	 *            the default value
 	 * @return : Long object if valid else null
 	 */
 	public static Long parseAsLong(Object value, Long defaultValue) {
@@ -379,7 +409,8 @@ public final class ArgUtil {
 	}
 
 	/**
-	 * @param value the value
+	 * @param value
+	 *            the value
 	 * @return the long
 	 */
 	public static Long parseAsLong(Object value) {
@@ -396,7 +427,8 @@ public final class ArgUtil {
 	 * </pre>
 	 * 
 	 * @param value
-	 * @param defaultValue [optional, default : null]
+	 * @param defaultValue
+	 *            [optional, default : null]
 	 * @return
 	 */
 	public static BigDecimal parseAsBigDecimal(Object value, BigDecimal defaultValue) {
@@ -435,7 +467,8 @@ public final class ArgUtil {
 	 * 3) String ("1" / "2" etc.)
 	 * </pre>
 	 *
-	 * @param value the value
+	 * @param value
+	 *            the value
 	 * @return : Double object if valid else null
 	 */
 
@@ -453,7 +486,7 @@ public final class ArgUtil {
 		}
 		return null;
 	}
-	
+
 	public static Double parseAsDouble(Object value, Double defaultValue) {
 		if (value instanceof Double) {
 			return (Double) value;
@@ -469,7 +502,6 @@ public final class ArgUtil {
 		return defaultValue;
 	}
 
-
 	/**
 	 * <pre>
 	 * Parses the given object as date. It keeps the time information intact.
@@ -479,7 +511,8 @@ public final class ArgUtil {
 	 * 2) unix timestamp
 	 * </pre>
 	 *
-	 * @param value the value
+	 * @param value
+	 *            the value
 	 * @return : Date object if valid else null
 	 */
 	public static Date parseAsSimpleDate(Object value) {
@@ -494,7 +527,8 @@ public final class ArgUtil {
 	/**
 	 * Returns object.toString() if the object is not null else returns null
 	 *
-	 * @param object the object
+	 * @param object
+	 *            the object
 	 * @return : Returns object.toString() if the object is not null else returns
 	 *         null
 	 */
@@ -508,9 +542,10 @@ public final class ArgUtil {
 	/**
 	 * Parses the as string.
 	 *
-	 * @param object       the object
-	 * @param defaultValue - if passed value is null or empty then default is
-	 *                     returned.
+	 * @param object
+	 *            the object
+	 * @param defaultValue
+	 *            - if passed value is null or empty then default is returned.
 	 * @return the string
 	 */
 	public static String parseAsString(Object object, String defaultValue) {
@@ -523,7 +558,8 @@ public final class ArgUtil {
 	/**
 	 * Parses the as string.
 	 *
-	 * @param object the object
+	 * @param object
+	 *            the object
 	 * @return the string
 	 */
 	public static String[] parseAsStringArray(Object object) {
@@ -534,11 +570,13 @@ public final class ArgUtil {
 	/**
 	 * Parses the as enum.
 	 *
-	 * @param value        the value
-	 * @param defaultValue the default value
+	 * @param value
+	 *            the value
+	 * @param defaultValue
+	 *            the default value
 	 * @return the enum
 	 */
-	public static <T extends Enum> Enum parseAsEnum(Object value, Enum defaultValue , Class<T> enumType) {
+	public static <T extends Enum> Enum parseAsEnum(Object value, Enum defaultValue, Class<T> enumType) {
 		String enumString = parseAsString(value);
 		if (enumString == null) {
 			return defaultValue;
@@ -571,23 +609,24 @@ public final class ArgUtil {
 			}
 		}
 	}
-	
+
 	public static <T extends Enum> Enum parseAsEnum(Object value, Class<T> enumType) {
 		return parseAsEnum(value, null, enumType);
 	}
 
 	/**
-	 * Use  {{@link #parseAsEnum(Object, Enum, Class)}
+	 * Use {{@link #parseAsEnum(Object, Enum, Class)}
+	 * 
 	 * @param value
 	 * @param defaultValue
 	 * @return
 	 */
 	@Deprecated
 	public static Enum parseAsEnum(Object value, Enum defaultValue) {
-		if(ArgUtil.isEmpty(defaultValue)) {
+		if (ArgUtil.isEmpty(defaultValue)) {
 			return null;
 		}
-		return parseAsEnum(value,defaultValue,defaultValue.getClass());
+		return parseAsEnum(value, defaultValue, defaultValue.getClass());
 	}
 
 	public static Enum parseAsEnum(Object value, Enum nullValue, Enum defaultValue) {
@@ -654,7 +693,8 @@ public final class ArgUtil {
 	/**
 	 * Checks if is object empty.
 	 *
-	 * @param object the object
+	 * @param object
+	 *            the object
 	 * @return true, if is object empty
 	 */
 	public static boolean isEmpty(Object object) {
@@ -677,7 +717,8 @@ public final class ArgUtil {
 	/**
 	 * Checks if is collection empty.
 	 *
-	 * @param collection the collection
+	 * @param collection
+	 *            the collection
 	 * @return true, if is collection empty
 	 */
 	static boolean isCollectionEmpty(Collection<?> collection) {
@@ -690,7 +731,8 @@ public final class ArgUtil {
 	/**
 	 * Checks if is empty string.
 	 *
-	 * @param str the str
+	 * @param str
+	 *            the str
 	 * @return true, if is empty string
 	 */
 	public static boolean isEmptyString(String str) {
@@ -725,6 +767,19 @@ public final class ArgUtil {
 
 	public static <T> T assignDefaultIfNull(T assignee, T defaultVal) {
 		return (null == assignee) ? defaultVal : assignee;
+	}
+
+	public static <T> boolean presentIn(T checkFor, T... within) {
+		if (checkFor == null || within == null || within.length == 0) {
+			return false;
+		}
+
+		for (T val : within) {
+			if (checkFor.equals(val))
+				return true;
+		}
+
+		return false;
 	}
 
 }

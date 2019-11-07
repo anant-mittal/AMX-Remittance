@@ -1,7 +1,6 @@
 package com.amx.jax.pricer.api;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -30,7 +29,7 @@ import com.amx.jax.pricer.dto.GroupDetails;
 import com.amx.jax.pricer.dto.HolidayResponseDTO;
 import com.amx.jax.pricer.dto.OnlineMarginMarkupInfo;
 import com.amx.jax.pricer.dto.OnlineMarginMarkupReq;
-import com.amx.jax.pricer.dto.RateUploadRuleDto;
+import com.amx.jax.pricer.dto.RateUploadRequestDto;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
 import com.amx.jax.pricer.service.ExchangeDataService;
 import com.amx.jax.pricer.service.HolidayListService;
@@ -178,11 +177,23 @@ public class ProbotDataServiceApiController implements ProbotDataService {
 	@Override
 	@RequestMapping(value = ApiEndPoints.RATE_UPLOAD_RULE_MAKER, method = RequestMethod.POST)
 	public AmxApiResponse<Long, Object> rateUpoadRuleMaker(
-			@RequestBody @Valid ArrayList<RateUploadRuleDto> rateUploadRules) {
+			@RequestBody @Valid RateUploadRequestDto rateUploadRequestDto) {
 
 		LOGGER.info("Received Probot API Service Request for Rate Upload Rule Maker");
 
-		Long rowsUpdated = dataService.rateUpoadRuleMaker(rateUploadRules);
+		Long rowsUpdated = dataService.rateUpoadRuleMaker(rateUploadRequestDto);
+
+		return AmxApiResponse.build(rowsUpdated);
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.RATE_UPLOAD_RULE_CHECKER, method = RequestMethod.POST)
+	public AmxApiResponse<Long, Object> rateUpoadRuleChecker(
+			@RequestBody @Valid RateUploadRequestDto rateUploadRequestDto) {
+
+		LOGGER.info("Received Probot API Service Request for Rate Upload Rule Checker");
+
+		Long rowsUpdated = dataService.rateUploadRuleChecker(rateUploadRequestDto);
 
 		return AmxApiResponse.build(rowsUpdated);
 	}

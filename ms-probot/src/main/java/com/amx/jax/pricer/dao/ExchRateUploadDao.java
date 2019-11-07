@@ -1,8 +1,12 @@
 package com.amx.jax.pricer.dao;
 
+import java.util.Date;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.pricer.dbmodel.ExchRateUpload;
@@ -20,12 +24,23 @@ public class ExchRateUploadDao {
 		return repo.findByRuleId(ruleId);
 	}
 
+	public List<ExchRateUpload> getByRuleIdIn(Iterable<String> ruleIds) {
+		return repo.findByRuleIdIn(ruleIds);
+	}
+
 	public List<ExchRateUpload> getActiveRulesByStatus(RATE_UPLOAD_STATUS status) {
 		return repo.findByIsActiveAndStatus(IS_ACTIVE.Y, status);
 	}
 
 	public List<ExchRateUpload> saveAll(List<ExchRateUpload> exchRateUploads) {
 		return (List<ExchRateUpload>) repo.save(exchRateUploads);
+	}
+
+	@Transactional
+	@Modifying
+	public int updateStatusForRuleIdIn(Iterable<String> ruleIds, RATE_UPLOAD_STATUS status, String approvedBy,
+			Date approvedDate) {
+		return repo.updateStatusForRuleIdIn(ruleIds, status, approvedBy, approvedDate);
 	}
 
 }

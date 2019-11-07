@@ -3,7 +3,6 @@ package com.amx.jax.pricer;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 
 import org.slf4j.Logger;
@@ -32,7 +31,7 @@ import com.amx.jax.pricer.dto.OnlineMarginMarkupReq;
 import com.amx.jax.pricer.dto.PricingAndCostResponseDTO;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
-import com.amx.jax.pricer.dto.RateUploadRuleDto;
+import com.amx.jax.pricer.dto.RateUploadRequestDto;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
 import com.amx.jax.rest.RestService;
 
@@ -254,11 +253,20 @@ public class PricerServiceClient implements ProbotExchangeRateService, ProbotDat
 	}
 
 	@Override
-	public AmxApiResponse<Long, Object> rateUpoadRuleMaker(ArrayList<RateUploadRuleDto> rateUploadRules) {
+	public AmxApiResponse<Long, Object> rateUpoadRuleMaker(RateUploadRequestDto rateUploadRequestDto) {
 		LOGGER.info("Received Probot API Service Request for Rate Upload Rule Maker Client");
 
 		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.RATE_UPLOAD_RULE_MAKER)
-				.post(rateUploadRules).as(new ParameterizedTypeReference<AmxApiResponse<Long, Object>>() {
+				.post(rateUploadRequestDto).as(new ParameterizedTypeReference<AmxApiResponse<Long, Object>>() {
+				});
+	}
+	
+	@Override
+	public AmxApiResponse<Long, Object> rateUpoadRuleChecker(RateUploadRequestDto rateUploadRequestDto) {
+		LOGGER.info("Received Probot API Service Request for Rate Upload Rule Checker Client");
+
+		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.RATE_UPLOAD_RULE_CHECKER)
+				.post(rateUploadRequestDto).as(new ParameterizedTypeReference<AmxApiResponse<Long, Object>>() {
 				});
 	}
 

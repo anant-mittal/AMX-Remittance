@@ -4,10 +4,14 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.UUID;
+
+import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,11 +38,13 @@ import com.amx.jax.pricer.dbmodel.ServiceMasterDesc;
 import com.amx.jax.pricer.dto.ExchRateEnquiryReqDto;
 import com.amx.jax.pricer.dto.ExchangeRateEnquiryRespDto;
 import com.amx.jax.pricer.dto.ExchangeRateEnquiryRespDto.BuySellRateDetails;
+import com.amx.jax.pricer.dto.RateUploadRequestDto;
 import com.amx.jax.pricer.dto.RateUploadRuleDto;
 import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.var.PricerServiceConstants.IS_ACTIVE;
 import com.amx.jax.pricer.var.PricerServiceConstants.RATE_UPLOAD_STATUS;
+import com.amx.utils.ArgUtil;
 
 @Component
 public class ExchangeRateManager {
@@ -200,7 +206,9 @@ public class ExchangeRateManager {
 
 	}
 
-	public Long rateUpoadRuleMaker(List<RateUploadRuleDto> rateUploadRules) {
+	public Long rateUpoadRuleMaker(RateUploadRequestDto rateUploadRequestDto) {
+
+		List<RateUploadRuleDto> rateUploadRules = rateUploadRequestDto.getRateUploadRules();
 
 		if (rateUploadRules == null || rateUploadRules.isEmpty()) {
 			throw new PricerServiceException(PricerServiceError.MISSING_VALID_RULES,
@@ -301,7 +309,7 @@ public class ExchangeRateManager {
 
 					for (BigDecimal sId : rule.getServiceIdNameMap().keySet()) {
 						ExchRateUpload newCloned = transientRate.clone();
-						newCloned.setCorBankId(sId);
+						newCloned.setServiceId(sId);
 						swapRuleSet.add(newCloned);
 					} // for
 				} // for
@@ -344,6 +352,74 @@ public class ExchangeRateManager {
 		List<ExchRateUpload> saved = exchRateUploadDao.saveAll(rateUploadMakerList);
 
 		return new Long(saved.size());
+	}
+
+	@Transactional
+	public Long rateUpoadRuleChecker(RateUploadRequestDto rateUploadRequestDto) {
+
+		if (rateUploadRequestDto.getRuleStatusUpdateMap() == null
+				|| rateUploadRequestDto.getRuleStatusUpdateMap().isEmpty()) {
+			return 0L;
+		}
+
+		Map<RATE_UPLOAD_STATUS, Set<String>> ruleStatusUpdateMap = new HashMap<RATE_UPLOAD_STATUS, Set<String>>();
+
+		for (Entry<String, RATE_UPLOAD_STATUS> entry : rateUploadRequestDto.getRuleStatusUpdateMap().entrySet()) {
+
+			RATE_UPLOAD_STATUS status = entry.getValue();
+
+			if (!ArgUtil.presentIn(status, RATE_UPLOAD_STATUS.APPROVED, RATE_UPLOAD_STATUS.REJECTED)) {
+				// throw Exception
+			}
+
+			if (!ruleStatusUpdateMap.containsKey(status)) {
+				ruleStatusUpdateMap.put(status, new HashSet<String>());
+			}
+
+			ruleStatusUpdateMap.get(status).add(entry.getKey());
+		}
+
+		// Validate Approved and Rejected Rules - for - No Intersections.
+		Set<String> union = new HashSet<String>();
+		int matcher = 0;
+
+		if (ruleStatusUpdateMap.containsKey(RATE_UPLOAD_STATUS.APPROVED)) {
+			union.addAll(ruleStatusUpdateMap.get(RATE_UPLOAD_STATUS.APPROVED));
+			matcher += ruleStatusUpdateMap.get(RATE_UPLOAD_STATUS.APPROVED).size();
+		}
+
+		if (ruleStatusUpdateMap.containsKey(RATE_UPLOAD_STATUS.REJECTED)) {
+			union.addAll(ruleStatusUpdateMap.get(RATE_UPLOAD_STATUS.REJECTED));
+			matcher += ruleStatusUpdateMap.get(RATE_UPLOAD_STATUS.REJECTED).size();
+		}
+
+		if (matcher != union.size()) {
+			// throw Conflicting Rule Status Change
+		}
+
+		// List<ExchRateUpload> createdRules = exchRateUploadDao.getByRuleIdIn(union);
+
+		// Match That all the Entries for the Rules Exist and Valid.
+
+		int totalRowsUpdated = 0;
+		Date today = new Date();
+
+		if (ruleStatusUpdateMap.containsKey(RATE_UPLOAD_STATUS.APPROVED)) {
+
+			totalRowsUpdated += exchRateUploadDao.updateStatusForRuleIdIn(
+					ruleStatusUpdateMap.get(RATE_UPLOAD_STATUS.APPROVED), RATE_UPLOAD_STATUS.APPROVED,
+					rateUploadRequestDto.getUpdatedBy(), today);
+		}
+
+		if (ruleStatusUpdateMap.containsKey(RATE_UPLOAD_STATUS.REJECTED)) {
+
+			totalRowsUpdated += exchRateUploadDao.updateStatusForRuleIdIn(
+					ruleStatusUpdateMap.get(RATE_UPLOAD_STATUS.REJECTED), RATE_UPLOAD_STATUS.REJECTED,
+					rateUploadRequestDto.getUpdatedBy(), today);
+		}
+
+		return new Long(totalRowsUpdated);
+
 	}
 
 }

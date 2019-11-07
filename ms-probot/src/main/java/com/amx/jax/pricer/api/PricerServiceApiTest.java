@@ -54,7 +54,7 @@ import com.amx.jax.pricer.dto.OnlineMarginMarkupReq;
 import com.amx.jax.pricer.dto.PricingAndCostResponseDTO;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
-import com.amx.jax.pricer.dto.RateUploadRuleDto;
+import com.amx.jax.pricer.dto.RateUploadRequestDto;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
 import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.service.PricerTestService;
@@ -527,8 +527,14 @@ public class PricerServiceApiTest implements ProbotExchangeRateService, ProbotDa
 
 	@Override
 	@RequestMapping(value = ApiEndPoints.RATE_UPLOAD_RULE_MAKER, method = RequestMethod.POST)
-	public AmxApiResponse<Long, Object> rateUpoadRuleMaker(ArrayList<RateUploadRuleDto> rateUploadRules) {
-		return pricerServiceClient.rateUpoadRuleMaker(rateUploadRules);
+	public AmxApiResponse<Long, Object> rateUpoadRuleMaker(RateUploadRequestDto rateUploadRequestDto) {
+		return pricerServiceClient.rateUpoadRuleMaker(rateUploadRequestDto);
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.RATE_UPLOAD_RULE_CHECKER, method = RequestMethod.POST)
+	public AmxApiResponse<Long, Object> rateUpoadRuleChecker(RateUploadRequestDto rateUploadRequestDto) {
+		return pricerServiceClient.rateUpoadRuleChecker(rateUploadRequestDto);
 	}
 
 }
