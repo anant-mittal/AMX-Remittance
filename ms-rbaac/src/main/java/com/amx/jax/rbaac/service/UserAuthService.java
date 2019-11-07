@@ -456,7 +456,9 @@ public class UserAuthService {
 				.secret(otpDevice.getClientSecreteKey()).message(sac).length(6);
 
 		// Added Complex Password
-		if (builder.validateComplexHMAC(otp) || builder.validateNumHMAC(otp)) {
+		if (builder.validateComplexHMAC(otp) 
+			//	|| builder.validateNumHMAC(otp)
+				) {
 			return Boolean.TRUE;
 		}
 
