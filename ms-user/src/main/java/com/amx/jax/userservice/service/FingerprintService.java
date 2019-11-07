@@ -180,7 +180,6 @@ public class FingerprintService {
 		CustomerOnlineRegistration customerOnlineRegistration = userValidationService
 				.validateOnlineCustomerByIdentityId(customerId);
 		if(metaData.getDeviceId()==null) {
-			logger.error("device id null exception");
 			throw new GlobalException("Device id cannot be null");
 		}
 		String password = Random.randomPassword(6);
@@ -240,7 +239,6 @@ public class FingerprintService {
 		userValidationService.validateIdentityInt(civilId, identityTypeStr);
 		userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(civilId, JaxApiFlow.LOGIN);
 		if (metaData.getDeviceId() == null) {
-			logger.error("device id null exception");
 			throw new GlobalException("Device id cannot be null");
 		}
 		

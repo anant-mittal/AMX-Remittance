@@ -317,16 +317,12 @@ public class RemitClient extends AbstractJaxServiceClient implements IRemittance
 	@Override
 	public AmxApiResponse<RemittanceTransactionResponsetModel, List<JaxConditionalFieldDto>> validateTransactionV2(
 			RemittanceTransactionRequestModel model) {
-		try {
+	
 			return restService.ajax(appConfig.getJaxURL()).path(ApiEndpoint.REMIT_API_ENDPOINT + Path.RATE_ENQUIRY)
 					.meta(new JaxMetaInfo()).post(model)
 					.as(new ParameterizedTypeReference<AmxApiResponse<RemittanceTransactionResponsetModel, List<JaxConditionalFieldDto>>>() {
 					});
-		} catch (Exception ae) {
-			LOGGER.error("exception in validateTransactionV2 : ", ae);
-			return JaxSystemError.evaluate(ae);
-		}
-	}
+			}
 
 	@Override
 	public AmxApiResponse<RemittanceTransactionStatusResponseModel, Object> getApplicationStatusByAppId(
