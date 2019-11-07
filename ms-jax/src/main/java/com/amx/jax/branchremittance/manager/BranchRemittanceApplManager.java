@@ -552,7 +552,14 @@ public class BranchRemittanceApplManager {
 			remittanceApplication.setEmployeeId(getEmployeeDetails().getEmployeeId());
 			remittanceApplication.setCreatedDate(new Date());
 			remittanceApplication.setIsactive(ConstantDocument.Yes);
-			remittanceApplication.setSourceofincome(applRequestModel.getSourceOfFund());
+			
+			if(JaxUtil.isNullZeroBigDecimalCheck(applRequestModel.getSourceOfFund())) {
+				remittanceApplication.setSourceofincome(applRequestModel.getSourceOfFund());
+			}else {
+				throw new GlobalException(JaxError.INVALID_NUMBER,"Please enter source of income");
+			}
+			
+			
 			remittanceApplication.setApplInd(ConstantDocument.COUNTER);
 			remittanceApplication.setWuIpAddress(metaData.getDeviceIp());
 			remittanceApplication.setInstruction("URGENT");
