@@ -353,6 +353,7 @@ public final class CryptoUtil {
 			this.currentTime = System.currentTimeMillis();
 			this.interval = INTERVAL;
 			this.tolerance = TOLERANCE;
+			this.length = 0;
 		}
 
 		/**
