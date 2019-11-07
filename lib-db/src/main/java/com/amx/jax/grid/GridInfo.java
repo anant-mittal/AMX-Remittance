@@ -67,7 +67,7 @@ public class GridInfo<T> {
 				info.setGroupBy(groupString);
 			}
 
-			if (ArgUtil.is(table)) {
+			if (ArgUtil.isEmpty(table)) {
 				Table tableAnnot = clazz.getAnnotation(Table.class);
 				if (!ArgUtil.isEmpty(tableAnnot) && !ArgUtil.isEmpty(tableAnnot.name())) {
 					table = tableAnnot.name();
