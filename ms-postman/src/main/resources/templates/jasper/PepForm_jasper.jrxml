@@ -248,14 +248,14 @@
                        
                         <!--##################customer details START####################-->
                         <frame>
-                            <reportElement x="5" y="225" width="585" height="30"/>
+                            <reportElement x="5" y="225" width="585" height="100"/>
                             <staticText>
                                 <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "14" backcolor = "#FFFFFF" />
                                 <textElement />
                                 <text><![CDATA[]]></text>
                             </staticText>
                              <textField isStretchWithOverflow="true">
-                                <reportElement x="15" y="4" width="550" height="15"
+                                <reportElement x="15" y="4" width="550" height="100"
                                                forecolor="#000000"
                                                isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Left" markup="styled">
