@@ -453,7 +453,7 @@ public class UserAuthService {
 
 		HashBuilder builder = new HashBuilder().currentTime(System.currentTimeMillis())
 				.interval(AmxConstants.OFFLINE_OTP_TTL).tolerance(AmxConstants.OFFLINE_OTP_TOLERANCE)
-				.secret(otpDevice.getClientSecreteKey()).message(sac).length(6);
+				.secret(otpDevice.getClientSecreteKey()).message(sac).length(AmxConstants.OTP_LENGTH);
 
 		// Added Complex Password
 		if (builder.validateComplexHMAC(otp) 
