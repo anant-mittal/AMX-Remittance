@@ -1,4 +1,8 @@
+/**
+ * 
+ */
 package com.amx.jax.rbaac.service;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -449,10 +453,12 @@ public class UserAuthService {
 
 		HashBuilder builder = new HashBuilder().currentTime(System.currentTimeMillis())
 				.interval(AmxConstants.OFFLINE_OTP_TTL).tolerance(AmxConstants.OFFLINE_OTP_TOLERANCE)
-				.secret(otpDevice.getClientSecreteKey()).message(sac).length(6);
+				.secret(otpDevice.getClientSecreteKey()).message(sac).length(AmxConstants.OTP_LENGTH);
 
 		// Added Complex Password
-		if (builder.validateComplexHMAC(otp) || builder.validateNumHMAC(otp)) {
+		if (builder.validateComplexHMAC(otp) 
+			//	|| builder.validateNumHMAC(otp)
+				) {
 			return Boolean.TRUE;
 		}
 
@@ -530,7 +536,7 @@ public class UserAuthService {
 		}
 
 		DeviceType deviceType = userClientDto.getDeviceType();
-
+		
 		// Check for Employee System Assignment
 		if (DeviceType.COMPUTER.isParentOf(deviceType)) {
 
@@ -626,3 +632,4 @@ public class UserAuthService {
 	}
 
 }
+

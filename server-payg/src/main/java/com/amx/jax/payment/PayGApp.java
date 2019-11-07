@@ -8,15 +8,15 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 @ComponentScan("com.amx.jax")
-public class PaymentServiceApplication extends SpringBootServletInitializer {
+public class PayGApp extends SpringBootServletInitializer {
 
     public static void main(String[] args) {
-        SpringApplication.run(PaymentServiceApplication.class, args);
+        SpringApplication.run(PayGApp.class, args);
     }
 
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-        return application.sources(PaymentServiceApplication.class);
+        return application.sources(PayGApp.class);
     }
     
 }

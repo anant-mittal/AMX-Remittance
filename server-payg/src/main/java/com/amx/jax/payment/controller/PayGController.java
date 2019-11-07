@@ -286,11 +286,11 @@ public class PayGController {
 			auditEvent.result(Result.ERROR);
 			auditEvent.excep(e);
 			LOGGER.error("Exception while Saving Payment Capture info", e);
+			return "thymeleaf/pg_error";
 		} finally {
 			// Audit
 			auditService.log(auditEvent);
 		}
-		return "thymeleaf/repback";
 	}
 
 }
