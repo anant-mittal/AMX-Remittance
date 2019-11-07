@@ -571,6 +571,7 @@ public class BranchRemittanceApplManager {
 
 			remitApplManager.setCustomerDiscountColumns(remittanceApplication, dynamicRoutingPricingResponse);
 			remitApplManager.setVatDetails(remittanceApplication, dynamicRoutingPricingResponse);
+			remitApplManager.setDeliveryTimeDuration(remittanceApplication, dynamicRoutingPricingResponse.getTrnxRoutingPaths());
 
 			BigDecimal documentNo = branchRemitManager.generateDocumentNumber(applSetup.getApplicationCountryId(), applSetup.getCompanyId(), ConstantDocument.DOCUMENT_CODE_FOR_REMITTANCE_APPLICATION, userFinancialYear.getFinancialYear(), ConstantDocument.A, countryBranch.getBranchId());
 			if(JaxUtil.isNullZeroBigDecimalCheck(documentNo)) {

@@ -142,6 +142,7 @@ public class RemittanceApplication implements Serializable {
 	/** added by rabil **/
 	private String beneDeductFlag;
 	private String wuPurposeOfTransaction;
+	private BigDecimal timeToDeliverInSec;
 
 
 	private List<RemittanceAppBenificiary> exRemittanceAppBenificiary = new ArrayList<RemittanceAppBenificiary>(0);
@@ -978,5 +979,13 @@ public class RemittanceApplication implements Serializable {
 		this.wuPurposeOfTransaction = wuPurposeOfTransaction;
 	}
 	
+	@Column(name="TIME_TO_DELIVER_IN_SEC")
+	public BigDecimal getTimeToDeliverInSec() {
+		return timeToDeliverInSec;
+	}
 	
+	public void setTimeToDeliverInSec(BigDecimal timeToDeliverInSec) {
+		this.timeToDeliverInSec = timeToDeliverInSec;
+	}
+	 	
 }
