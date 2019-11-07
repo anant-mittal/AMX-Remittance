@@ -181,6 +181,12 @@
 			<version>${tesseract-platform.version}</version>
 		</dependency>
 
+		<dependency>
+			<groupId>Ab</groupId>
+			<artifactId>com.google</artifactId>
+			<version>0.0.4.3</version>
+		</dependency>
+	
 	</dependencies>
 
 

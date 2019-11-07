@@ -6,6 +6,20 @@ import com.amx.jax.swagger.ApiMockModelProperty;
 
 public class CustomerEmploymentDetails {
 	
+	public CustomerEmploymentDetails() {
+		super();
+	}
+
+	public CustomerEmploymentDetails(BigDecimal employmentTypeId, BigDecimal professionId, String employer, BigDecimal articleDetailsId,
+			BigDecimal incomeRangeId) {
+		super();
+		this.employmentTypeId = employmentTypeId;
+		this.professionId = professionId;
+		this.employer = employer;
+		this.articleDetailsId = articleDetailsId;
+		this.incomeRangeId = incomeRangeId;
+	}
+
 	@ApiMockModelProperty(example="188")
 	private BigDecimal employmentTypeId;
 	
@@ -53,6 +67,12 @@ public class CustomerEmploymentDetails {
 	
 	@ApiMockModelProperty(example="1")
 	private BigDecimal companyId;
+	
+	@ApiMockModelProperty(example="Software Developer")
+	private String designation;
+	
+	@ApiMockModelProperty(example="ARTICLE-18")
+	private String articleDesc;
 	
 	public BigDecimal getEmploymentTypeId() {
 		return employmentTypeId;
@@ -180,6 +200,22 @@ public class CustomerEmploymentDetails {
 
 	public void setCompanyId(BigDecimal companyId) {
 		this.companyId = companyId;
+	}
+	
+	public String getDesignation() {
+		return designation;
+	}
+
+	public void setDesignation(String designation) {
+		this.designation = designation;
+	}
+	
+	public String getArticleDesc() {
+		return articleDesc;
+	}
+
+	public void setArticleDesc(String articleDesc) {
+		this.articleDesc = articleDesc;
 	}
 
 	@Override

@@ -42,7 +42,7 @@ import com.amx.jax.dbmodel.BranchSystemDetail;
 import com.amx.jax.dbmodel.CollectionDetailViewModel;
 import com.amx.jax.dbmodel.CollectionPaymentDetailsViewModel;
 import com.amx.jax.dbmodel.CountryMasterView;
-import com.amx.jax.dbmodel.CurrencyMasterModel;
+import com.amx.jax.dbmodel.CurrencyMasterMdlv1;
 import com.amx.jax.dbmodel.PrefixModel;
 import com.amx.jax.dbmodel.PurposeOfRemittanceViewModel;
 import com.amx.jax.dbmodel.UserFinancialYear;
@@ -263,7 +263,7 @@ public class MetaController {
 	}
 
 	@RequestMapping(value = "/currency/{currencyId}", method = RequestMethod.GET)
-	public AmxApiResponse<CurrencyMasterModel, Object> getCurrencyMasterResponse(
+	public AmxApiResponse<CurrencyMasterMdlv1, Object> getCurrencyMasterResponse(
 			@PathVariable("currencyId") BigDecimal currencyId) {
 		return currencyMasterService.getCurrencyDetails(currencyId);
 	}

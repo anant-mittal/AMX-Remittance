@@ -18,7 +18,7 @@ import com.amx.jax.AmxConfig;
 import com.amx.jax.AppConstants;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.constants.JaxChannel;
-import com.amx.jax.dbmodel.CountryBranch;
+import com.amx.jax.dbmodel.CountryBranchMdlv1;
 import com.amx.jax.dbmodel.ViewCompanyDetails;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.rest.IMetaRequestInFilter;
@@ -84,7 +84,7 @@ public class JaxMetaServiceFilter implements IMetaRequestInFilter<JaxMetaInfo> {
 
 	private void resolveMetaDataFields() {
 		if (JaxChannel.ONLINE.equals(metaData.getChannel())) {
-			CountryBranch cb = countryBranchService.getOnlineCountryBranch();
+			CountryBranchMdlv1 cb = countryBranchService.getOnlineCountryBranch();
 			if (cb != null) {
 				metaData.setCountryBranchId(cb.getCountryBranchId());
 			}

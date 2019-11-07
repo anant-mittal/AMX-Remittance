@@ -1,9 +1,5 @@
 package com.amx.utils;
 
-/**
- * The Class Random.
- */
-import java.util.*;
 public class Random {
 
 	/**

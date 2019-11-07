@@ -32,9 +32,6 @@ public class CustomerCategoryDiscount implements Serializable {
 	@Enumerated(value = EnumType.STRING)
 	private CUSTOMER_CATEGORY customerCategory;
 
-	//@Column(name = "DISCOUNT_PIPS")
-	//private BigDecimal discountPips;
-
 	@Column(name = "ISACTIVE")
 	private String isActive;
 

@@ -30,7 +30,7 @@ public class ExchangeRateClient extends AbstractJaxServiceClient {
 
 	public ApiResponse<ExchangeRateResponseModel> getExchangeRate(BigDecimal fromCurrency, BigDecimal toCurrency,
 			BigDecimal amount, BigDecimal bankId, BigDecimal beneBankCountryId) throws ResourceNotFoundException, InvalidInputException {
-		try {
+		
 			String endpoint = EXCHANGE_RATE_ENDPOINT + "/online/";
 			StringBuilder sb = new StringBuilder();
 			sb.append("?").append("fromCurrency=").append(fromCurrency);
@@ -48,13 +48,7 @@ public class ExchangeRateClient extends AbstractJaxServiceClient {
 			return restService.ajax(getExchangeRateUrl).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<ExchangeRateResponseModel>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in getExchangeRate : ", e);
-			throw new JaxSystemError();
-		} // end of try-catch
-
+		
 	}
 
 	public ApiResponse<BooleanResponse> setExchangeRate(String toCurrency, BigDecimal amount)

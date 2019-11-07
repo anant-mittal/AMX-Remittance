@@ -17,7 +17,7 @@ import com.amx.jax.rbaac.constants.RbaacServiceConstants;
 import com.amx.jax.rbaac.dao.BranchDetailDao;
 import com.amx.jax.rbaac.dao.EmployeeSystemDao;
 import com.amx.jax.rbaac.dao.RbaacDao;
-import com.amx.jax.rbaac.dbmodel.Employee;
+import com.amx.jax.rbaac.dbmodel.FSEmployee;
 import com.amx.jax.rbaac.dto.request.EmployeeDetailsRequestDTO;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
 import com.amx.jax.rbaac.error.RbaacServiceError;
@@ -57,11 +57,11 @@ public class UserAccountService {
 				return employeeDtoList;
 			}
 
-			List<Employee> updatedEmployeeList = new ArrayList<Employee>();
+			List<FSEmployee> updatedEmployeeList = new ArrayList<FSEmployee>();
 
 			for (EmployeeDetailsDTO empDetailsDTO : employeeDtoList) {
 
-				Employee employee = rbaacDao.getEmployeeByEmployeeId(empDetailsDTO.getEmployeeId());
+				FSEmployee employee = rbaacDao.getEmployeeByEmployeeId(empDetailsDTO.getEmployeeId());
 
 				if (employee != null) {
 
@@ -124,7 +124,7 @@ public class UserAccountService {
 	public BoolRespModel createEmployeeSystemMapping(BigDecimal employeeId, BigDecimal countryBranchSystemInventoryId) {
 		LOGGER.debug("creating employee system mapping. employeeId {}, countryBranchSystemInventoryId {}", employeeId,
 				countryBranchSystemInventoryId);
-		Employee employee = rbaacDao.getEmployeeByEmployeeId(employeeId);
+		FSEmployee employee = rbaacDao.getEmployeeByEmployeeId(employeeId);
 		if (employee == null) {
 			throw new AuthServiceException(RbaacServiceError.EMPLOYEE_NOT_FOUND, "No employee found with given id");
 		}

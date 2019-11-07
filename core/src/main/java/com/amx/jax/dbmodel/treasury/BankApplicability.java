@@ -17,7 +17,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import com.amx.jax.dbmodel.BankMasterModel;
+import com.amx.jax.dbmodel.BankMasterMdlv1;
 import com.amx.jax.dbmodel.CompanyMaster;
 import com.amx.jax.dbmodel.CountryMaster;
 
@@ -51,7 +51,7 @@ public class BankApplicability implements java.io.Serializable {
 	
 	private String approvedBy;
 	private Date approvedDate;
-	private BankMasterModel bankMaster;
+	private BankMasterMdlv1 bankMaster;
 	
 	//private Set<AccountBalance> accountBanalce = new HashSet<AccountBalance>(0);
 	
@@ -114,11 +114,11 @@ public class BankApplicability implements java.io.Serializable {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "BANK_ID")
-	public BankMasterModel getBankMaster() {
+	public BankMasterMdlv1 getBankMaster() {
 		return this.bankMaster;
 	}
 
-	public void setBankMaster(BankMasterModel bankMaster) {
+	public void setBankMaster(BankMasterMdlv1 bankMaster) {
 		this.bankMaster = bankMaster;
 	}
 

@@ -488,6 +488,24 @@
 						<artifactId>knetv2_test</artifactId> <version>1.0</version> <packaging>jar</packaging> 
 						<file>${basedir}/lib/knet2/ipaypipe.jar</file> <generatePom>true</generatePom> 
 						</configuration> </execution> -->
+						
+						
+					<!-- aiml-chatbot -->
+					<execution>
+						<id>aiml-chatbot</id>
+						<phase>package</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<groupId>Ab</groupId>
+							<artifactId>com.google</artifactId>
+							<version>0.0.4.3</version>
+							<packaging>jar</packaging>
+							<file>${basedir}/lib/bot/Ab.jar</file>
+							<generatePom>true</generatePom>
+						</configuration>
+					</execution>
 
 				</executions>
 			</plugin>

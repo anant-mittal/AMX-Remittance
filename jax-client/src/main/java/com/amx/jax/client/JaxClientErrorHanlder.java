@@ -106,7 +106,7 @@ public class JaxClientErrorHanlder implements ResponseErrorHandler {
 			if (JaxError.ID_PROOFS_SCAN_NOT_FOUND.getStatusKey().equals(error.getErrorKey())) {
 				iscustValidationError = true;
 			}
-			if (JaxError.CUSTOMER__SIGNATURE_UNAVAILABLE.getStatusKey().equals(error.getErrorKey())) {
+			if (JaxError.CUSTOMER_SIGNATURE_UNAVAILABLE.getStatusKey().equals(error.getErrorKey())) {
 				iscustValidationError = true;
 			}
 			if (JaxError.INVALID_INSURANCE_INDICATOR.getStatusKey().equals(error.getErrorKey())) {

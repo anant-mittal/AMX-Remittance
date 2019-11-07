@@ -14,7 +14,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.jax.model.OtpData;
 import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.rbaac.dao.RbaacDao;
-import com.amx.jax.rbaac.dbmodel.Employee;
+import com.amx.jax.rbaac.dbmodel.FSEmployee;
 import com.amx.jax.rbaac.dbmodel.RoleDefinition;
 import com.amx.jax.rbaac.dbmodel.UserRoleMaster;
 import com.amx.jax.rbaac.error.RbaacServiceError;
@@ -60,7 +60,7 @@ public class AuthLoginOTPManager {
 	 */
 	public void sendOtpStaff() {
 		AuthLoginTrnxModel model = authLoginManager.get();
-		Employee employeeDetail = model.getEmpDetails();
+		FSEmployee employeeDetail = model.getEmpDetails();
 		OtpData otpData = model.getOtpData();
 		EmployeeInfo einfo = new EmployeeInfo();
 		jaxUtil.convert(employeeDetail, einfo);
@@ -95,7 +95,7 @@ public class AuthLoginOTPManager {
 	/**
 	 * Validates the otp for staff
 	 */
-	public AuthLoginTrnxModel validateOtpStaff(Employee empDetails, String mOtp) {
+	public AuthLoginTrnxModel validateOtpStaff(FSEmployee empDetails, String mOtp) {
 		AuthLoginTrnxModel authLoginTrnxModel = null;
 		OtpData otpData = authLoginManager.get().getOtpData();
 		try {

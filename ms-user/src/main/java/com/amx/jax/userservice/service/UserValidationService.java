@@ -325,7 +325,7 @@ public class UserValidationService {
 			throw new GlobalException(JaxError.CUSTOMER_INACTIVE, "Customer is not active");
 		}
 		if (customer.getSignatureSpecimenClob() == null) {
-			throw new GlobalException(JaxError.CUSTOMER__SIGNATURE_UNAVAILABLE, "CUSTOMER SIGNATURE NOT AVAILABLE");
+			throw new GlobalException(JaxError.CUSTOMER_SIGNATURE_UNAVAILABLE, "CUSTOMER SIGNATURE NOT AVAILABLE");
 		}
 		boolean insuranceCheck = ("Y".equals(customer.getMedicalInsuranceInd())
 				|| "N".equals(customer.getMedicalInsuranceInd()));
@@ -345,6 +345,9 @@ public class UserValidationService {
 			throw new GlobalException(JaxError.OLD_EMOS_USER_NOT_FOUND, "Old customer records not found in EMOS");
 		}
 		CusmasModel emosCustomer = cusmosDao.getOldCusMasDetails(customer.getCustomerReference());
+		if (emosCustomer == null) {
+			throw new GlobalException(JaxError.OLD_EMOS_USER_NOT_FOUND, "Old customer records not found in EMOS");
+		}
 		if (emosCustomer.getStatus() != null) {
 			throw new GlobalException(JaxError.OLD_EMOS_USER_DELETED, "RECORD IS DELETED IN OLD EMOS");
 		}
@@ -488,6 +491,9 @@ public class UserValidationService {
 							"Customer is locked. No of attempts:- " + lockCnt);
 				}
 			}
+		}
+		if (onlineCustomer.getLockDt() != null) {
+			throw new GlobalException(JaxError.ONLINE_ACCOUNT_LOCKED, "Customer is locked. Contact branch");
 		}
 	}
 	
