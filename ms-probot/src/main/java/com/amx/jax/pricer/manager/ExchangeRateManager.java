@@ -369,7 +369,9 @@ public class ExchangeRateManager {
 			RATE_UPLOAD_STATUS status = entry.getValue();
 
 			if (!ArgUtil.presentIn(status, RATE_UPLOAD_STATUS.APPROVED, RATE_UPLOAD_STATUS.REJECTED)) {
-				// throw Exception
+				throw new PricerServiceException(PricerServiceError.INVALID_RULE_UPDATE_STATUS,
+						"Invalid or Missing Rule Update Status, should be one of: " + RATE_UPLOAD_STATUS.APPROVED
+								+ " OR " + RATE_UPLOAD_STATUS.REJECTED);
 			}
 
 			if (!ruleStatusUpdateMap.containsKey(status)) {
@@ -395,6 +397,9 @@ public class ExchangeRateManager {
 
 		if (matcher != union.size()) {
 			// throw Conflicting Rule Status Change
+			throw new PricerServiceException(PricerServiceError.CONFLICTING_RULE_UPDATE_STATUS,
+					"Conflicting Rule Update Status for one of the Same Rule Id");
+
 		}
 
 		// List<ExchRateUpload> createdRules = exchRateUploadDao.getByRuleIdIn(union);
