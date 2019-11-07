@@ -17,7 +17,9 @@ import com.amx.jax.error.JaxError;
 public class JaxValidationUtil {
 
 	public static void validatePositiveNumber(Number num, String errorMessage, JaxError jaxError) {
-		if (num != null && num.doubleValue() <= 0) {
+		if(num==null) {
+			throw new GlobalException(jaxError, errorMessage);
+		}else if (num != null && num.doubleValue() <= 0) {
 			throw new GlobalException(jaxError, errorMessage);
 		}
 	}
