@@ -167,7 +167,11 @@ public final class PricerServiceConstants {
 	}
 
 	public static enum RATE_UPLOAD_STATUS {
-		CREATED, REJECTED, APPROVED, EXPIRED;
+		CREATED, REJECTED, APPROVED, APPLIED, EXPIRED;
+	}
+
+	public static enum IS_ACTIVE {
+		Y, N;
 	}
 
 	public static final String SEND_TRNX = "S";

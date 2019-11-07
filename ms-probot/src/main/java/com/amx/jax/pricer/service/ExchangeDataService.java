@@ -42,6 +42,7 @@ import com.amx.jax.pricer.dto.ExchangeRateEnquiryRespDto;
 import com.amx.jax.pricer.dto.GroupDetails;
 import com.amx.jax.pricer.dto.OnlineMarginMarkupInfo;
 import com.amx.jax.pricer.dto.OnlineMarginMarkupReq;
+import com.amx.jax.pricer.dto.RateUploadRuleDto;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
 import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
@@ -307,6 +308,10 @@ public class ExchangeDataService {
 
 		return exchangeRateManager.enquireExchRate(rateEnquiryReqDto);
 
+	}
+
+	public Long rateUpoadRuleMaker(List<RateUploadRuleDto> rateUploadRules) {
+		return exchangeRateManager.rateUpoadRuleMaker(rateUploadRules);
 	}
 
 }

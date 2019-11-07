@@ -1,7 +1,9 @@
 package com.amx.jax.pricer.dao;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,6 +19,21 @@ public class GroupingMasterDao {
 
 	public GroupingMaster getGroupById(BigDecimal groupId) {
 		return repository.findOne(groupId);
+	}
+
+	public Map<BigDecimal, GroupingMaster> getGroupById(List<BigDecimal> groupIds) {
+
+		Iterable<GroupingMaster> grpItr = repository.findAll(groupIds);
+
+		Map<BigDecimal, GroupingMaster> grpMap = new HashMap<BigDecimal, GroupingMaster>();
+
+		if (grpItr != null) {
+			for (GroupingMaster master : grpItr) {
+				grpMap.put(master.getId(), master);
+			}
+		}
+
+		return grpMap;
 	}
 
 	public GroupingMaster getByGroupTypeAndGroupName(String groupType, String groupName) {

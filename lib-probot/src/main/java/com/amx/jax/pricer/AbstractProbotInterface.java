@@ -60,6 +60,8 @@ public interface AbstractProbotInterface {
 		// Exchnage Rate Enquiry
 		public static final String ENQUIRE_EXCH_RATE = SERVICE_PREFIX + API_VERSION_V1 + "/enquire-exch-rate";
 		
+		public static final String RATE_UPLOAD_RULE_MAKER = SERVICE_PREFIX + API_VERSION_V1 + "/rate-upload-rule-maker";
+		
 		
 
 

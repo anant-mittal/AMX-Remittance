@@ -8,12 +8,15 @@ import javax.transaction.Transactional;
 import org.springframework.data.repository.CrudRepository;
 
 import com.amx.jax.pricer.dbmodel.ExchRateUpload;
+import com.amx.jax.pricer.var.PricerServiceConstants.IS_ACTIVE;
+import com.amx.jax.pricer.var.PricerServiceConstants.RATE_UPLOAD_STATUS;
 
 @Transactional
 public interface ExchRateUploadRepository extends CrudRepository<ExchRateUpload, BigDecimal> {
 
 	List<ExchRateUpload> findByRuleId(String ruleId);
-	
+
+	List<ExchRateUpload> findByIsActiveAndStatus(IS_ACTIVE isActive, RATE_UPLOAD_STATUS status);
 	
 
 }

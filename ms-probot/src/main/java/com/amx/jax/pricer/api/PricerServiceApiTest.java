@@ -54,6 +54,7 @@ import com.amx.jax.pricer.dto.OnlineMarginMarkupReq;
 import com.amx.jax.pricer.dto.PricingAndCostResponseDTO;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
+import com.amx.jax.pricer.dto.RateUploadRuleDto;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
 import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.service.PricerTestService;
@@ -522,6 +523,12 @@ public class PricerServiceApiTest implements ProbotExchangeRateService, ProbotDa
 	public AmxApiResponse<ExchangeRateEnquiryRespDto, Object> enquireExchangeRates(
 			ExchRateEnquiryReqDto rateEnquiryReqDto) {
 		return pricerServiceClient.enquireExchangeRates(rateEnquiryReqDto);
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.RATE_UPLOAD_RULE_MAKER, method = RequestMethod.POST)
+	public AmxApiResponse<Long, Object> rateUpoadRuleMaker(ArrayList<RateUploadRuleDto> rateUploadRules) {
+		return pricerServiceClient.rateUpoadRuleMaker(rateUploadRules);
 	}
 
 }

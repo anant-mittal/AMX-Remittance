@@ -51,6 +51,8 @@ public enum PricerServiceError implements IExceptionEnum {
 
 	MISSING_TIMEZONE,
 
+	MISSING_VALID_RULES,
+
 	NULL_ROUTING_MATRIX,
 
 	INVALID_AMT_SLAB_DISC_PIPS,
@@ -122,6 +124,8 @@ public enum PricerServiceError implements IExceptionEnum {
 	INVALID_MARKUP,
 
 	INVALID_GROUP_TYPE,
+
+	INVALID_OR_MISSING_PARAM,
 
 	/** The unknown exception. */
 	// MISC

@@ -1,6 +1,7 @@
 package com.amx.jax.pricer;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 
 import com.amx.jax.api.AmxApiResponse;
@@ -14,6 +15,7 @@ import com.amx.jax.pricer.dto.GroupDetails;
 import com.amx.jax.pricer.dto.HolidayResponseDTO;
 import com.amx.jax.pricer.dto.OnlineMarginMarkupInfo;
 import com.amx.jax.pricer.dto.OnlineMarginMarkupReq;
+import com.amx.jax.pricer.dto.RateUploadRuleDto;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
 
 public interface ProbotDataService extends AbstractProbotInterface {
@@ -46,5 +48,7 @@ public interface ProbotDataService extends AbstractProbotInterface {
 
 	public AmxApiResponse<ExchangeRateEnquiryRespDto, Object> enquireExchangeRates(
 			ExchRateEnquiryReqDto rateEnquiryReqDto);
+
+	public AmxApiResponse<Long, Object> rateUpoadRuleMaker(ArrayList<RateUploadRuleDto> rateUploadRules);
 
 }

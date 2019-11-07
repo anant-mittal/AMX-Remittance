@@ -6,15 +6,20 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import com.amx.jax.pricer.var.PricerServiceConstants.IS_ACTIVE;
+import com.amx.jax.pricer.var.PricerServiceConstants.RATE_UPLOAD_STATUS;
+
 @Entity
 @Table(name = "JAX_PR_EXCH_RATE_UPLOAD")
-public class ExchRateUpload implements Serializable {
+public class ExchRateUpload implements Serializable, Cloneable {
 
 	/**
 	 * 
@@ -52,10 +57,12 @@ public class ExchRateUpload implements Serializable {
 	private BigDecimal buyRate;
 
 	@Column(name = "IS_ACTIVE")
-	private String isActive;
+	@Enumerated(value = EnumType.STRING)
+	private IS_ACTIVE isActive;
 
 	@Column(name = "STATUS")
-	private String status;
+	@Enumerated(value = EnumType.STRING)
+	private RATE_UPLOAD_STATUS status;
 
 	@Column(name = "CREATED_BY")
 	private String createdBy;
@@ -147,19 +154,19 @@ public class ExchRateUpload implements Serializable {
 		this.buyRate = buyRate;
 	}
 
-	public String getIsActive() {
+	public IS_ACTIVE getIsActive() {
 		return isActive;
 	}
 
-	public void setIsActive(String isActive) {
+	public void setIsActive(IS_ACTIVE isActive) {
 		this.isActive = isActive;
 	}
 
-	public String getStatus() {
+	public RATE_UPLOAD_STATUS getStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(RATE_UPLOAD_STATUS status) {
 		this.status = status;
 	}
 
@@ -210,5 +217,49 @@ public class ExchRateUpload implements Serializable {
 	public void setApprovedDate(Date approvedDate) {
 		this.approvedDate = approvedDate;
 	}
+
+	@Override
+	public ExchRateUpload clone() {
+		try {
+			return (ExchRateUpload) super.clone();
+		} catch (CloneNotSupportedException e) {
+
+			ExchRateUpload newRate = new ExchRateUpload();
+
+			newRate.id = this.id;
+			newRate.ruleId = this.ruleId;
+			newRate.currencyId = this.currencyId;
+			newRate.countryId = this.countryId;
+			newRate.corBankId = this.corBankId;
+			newRate.serviceId = this.serviceId;
+			newRate.countryBranchId = this.countryBranchId;
+			newRate.sellRate = this.sellRate;
+			newRate.buyRate = this.buyRate;
+			newRate.isActive = this.isActive;
+			newRate.status = this.status;
+			newRate.createdBy = this.createdBy;
+			newRate.createdDate = this.createdDate;
+			newRate.modifiedBy = this.modifiedBy;
+			newRate.modifiedDate = this.modifiedDate;
+			newRate.approvedBy = this.approvedBy;
+			newRate.approvedDate = this.approvedDate;
+
+			return newRate;
+		}
+	}
+
+	/*public List<ExchRateUpload> multiCloneForField(Field field, List<Object> fieldValues)
+			throws NoSuchFieldException, SecurityException {
+
+		List<ExchRateUpload> multiCloned = new ArrayList<ExchRateUpload>();
+
+		if (field == null || fieldValues == null || fieldValues.isEmpty()) {
+			multiCloned.add(this.clone());
+			return multiCloned;
+		} else if (field.equals(this.getClass().getDeclaredField("corBankId"))) {
+			
+		}
+
+	}*/
 
 }
