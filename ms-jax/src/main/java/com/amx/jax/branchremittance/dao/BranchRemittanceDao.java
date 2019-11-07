@@ -259,10 +259,12 @@ public class BranchRemittanceDao {
 					
 					if(remitTrnxSplitList!=null && !remitTrnxSplitList.isEmpty()) {
 						List<RemittanceTransactionSplitting> trnxRemitSplitList = remitTrnxSplitList.get(applicationId);
+						if(trnxRemitSplitList!=null && !trnxRemitSplitList.isEmpty()) {
 						for(RemittanceTransactionSplitting remitSplit : trnxRemitSplitList) {
 							remitSplit.setRemittanceTransactionId(remitTrnx1);
 							remitSplit.setDocumentNo(documentNo);
 							remittanceTrnxSplitRepository.save(remitSplit);
+						}
 						}
 						
 					}

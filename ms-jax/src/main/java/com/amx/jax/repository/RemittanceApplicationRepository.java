@@ -40,7 +40,7 @@ public interface RemittanceApplicationRepository extends CrudRepository<Remittan
 	public Long getFailedTransactionAttemptCount(BigDecimal customerId);
 	
 	
-	@Query("select ra from RemittanceApplication ra where ra.fsCustomer=:customerid and ra.remittanceApplicationId=:remittanceApplicationId and ra.isactive='Y' and  trunc(sysdate)=trunc(createdDate)  and applicaitonStatus <>'T' ")
+	@Query("select ra from RemittanceApplication ra where ra.fsCustomer=:customerid and ra.remittanceApplicationId=:remittanceApplicationId and ra.isactive='Y' and  trunc(sysdate)=trunc(createdDate)  and NVL(applicaitonStatus,' ') <>'T' ")
 	public RemittanceApplication getApplicationForRemittance(@Param("customerid") Customer customerid,@Param("remittanceApplicationId") BigDecimal remittanceApplicationId);
 	
 	
