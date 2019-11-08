@@ -27,6 +27,7 @@ import com.amx.jax.branchremittance.dao.BranchRemittanceDao;
 import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constants.JaxTransactionStatus;
+import com.amx.jax.customer.manager.CustomerContactVerificationManager;
 import com.amx.jax.dal.RoutingProcedureDao;
 import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dao.JaxEmployeeDao;
@@ -82,6 +83,7 @@ import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.TransferDto;
 import com.amx.jax.model.response.serviceprovider.Remittance_Call_Response;
 import com.amx.jax.model.response.serviceprovider.ServiceProviderResponse;
+import com.amx.jax.notification.JaxNotificationDataManager;
 import com.amx.jax.partner.dao.PartnerTransactionDao;
 import com.amx.jax.partner.dto.RemitTrnxSPDTO;
 import com.amx.jax.partner.manager.PartnerTransactionManager;
@@ -236,6 +238,8 @@ public class BranchRemittanceSaveManager {
 
     @Autowired
     IRemittanceApplSplitRepository applSplitRepo;
+    @Autowired
+    JaxNotificationDataManager jaxNotificationDataManager;
     
 	
 	
@@ -1363,7 +1367,8 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
 			}
 
 			if (personinfo != null && rrsrl != null && !StringUtils.isBlank(personinfo.getEmail())) {
-				notificationService.sendTransactionNotification(rrsrl.get(0), personinfo);
+				notificationService.sendTransactionNotification(rrsrl.get(0), personinfo,
+						jaxNotificationDataManager.getTransactionSuccessEmailData());
 				validStatus = Boolean.TRUE;
 			}
 		} catch (Exception e) {

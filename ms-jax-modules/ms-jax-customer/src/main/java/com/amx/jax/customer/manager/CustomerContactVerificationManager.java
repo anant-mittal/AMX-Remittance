@@ -32,14 +32,11 @@ import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.userservice.repository.CustomerVerificationRepository;
 import com.amx.jax.userservice.repository.OnlineCustomerRepository;
 import com.amx.jax.userservice.service.CustomerVerificationService;
-import com.amx.jax.util.AmxDBConstants;
 import com.amx.jax.util.AmxDBConstants.Status;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.CollectionUtil;
-import com.amx.utils.Constants;
 import com.amx.utils.EntityDtoUtil;
 import com.amx.utils.Random;
-import com.amx.utils.TimeUtils;
 
 /**
  * 
@@ -428,4 +425,22 @@ public class CustomerContactVerificationManager {
 		return EntityDtoUtil.entityToDto(entity, dto);
 	}
 
+	public CustomerContactVerification checkAndCreateVerification(Customer customer, ContactType contactType) {
+		CustomerContactVerification verification = null;
+		switch (contactType) {
+		case EMAIL:
+			if (!Status.Y.equals(customer.getEmailVerified())) {
+				verification = create(customer, contactType);
+			}
+			break;
+		case SMS:
+			if (!Status.Y.equals(customer.getMobileVerified())) {
+				verification = create(customer, contactType);
+			}
+			break;
+		default:
+			break;
+		}
+		return verification;
+	}
 }
