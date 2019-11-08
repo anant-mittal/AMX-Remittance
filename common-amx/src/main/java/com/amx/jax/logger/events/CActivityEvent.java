@@ -3,10 +3,8 @@ package com.amx.jax.logger.events;
 import java.math.BigDecimal;
 
 import com.amx.jax.dict.ContactType;
-import com.amx.jax.logger.AuditEvent;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
-import com.amx.utils.EnumType;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -75,24 +73,9 @@ public class CActivityEvent extends AmxAuditEvent<CActivityEvent> {
 	}
 
 	private Step step;
-	private String target = null;
-	private BigDecimal targetId = null;
-	private String field = null;
-	private String fromValue = null;
-	private String toValue = null;
-	private BigDecimal customerId = null;
-	private String customer = null;
-	private AuditActorInfo actor;
 	private RemitInfo trxn = null;
 	private CustInfo cust = null;
 	private ContactType contactType;
-
-	private CustInfo cust() {
-		if (this.cust == null) {
-			this.cust = new CustInfo();
-		}
-		return this.cust;
-	}
 
 	@Override
 	public String getDescription() {
@@ -137,14 +120,6 @@ public class CActivityEvent extends AmxAuditEvent<CActivityEvent> {
 
 	public void setContactType(ContactType contactType) {
 		this.contactType = contactType;
-	}
-
-	public BigDecimal getLanguageId() {
-		return languageId;
-	}
-
-	public void setLanguageId(BigDecimal languageId) {
-		this.languageId = languageId;
 	}
 
 }
