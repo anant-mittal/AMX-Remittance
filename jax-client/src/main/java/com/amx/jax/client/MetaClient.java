@@ -14,8 +14,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.amx.amxlib.constant.ApiEndpoint.MetaApi;
-import com.amx.amxlib.exception.AbstractJaxException;
-import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.meta.model.ApplicationSetupDTO;
 import com.amx.amxlib.meta.model.AuthenticationLimitCheckDTO;
 import com.amx.amxlib.meta.model.BankBranchDto;
@@ -45,6 +43,7 @@ import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.model.response.BranchSystemDetailDto;
 import com.amx.jax.model.response.CurrencyMasterDTO;
+import com.amx.jax.model.response.remittance.ServiceMasterDTO;
 import com.amx.jax.rest.RestService;
 
 /**
@@ -523,6 +522,16 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 		
 	}
+	public AmxApiResponse<ServiceMasterDTO, Object> getServiceMaster() {
+		
+
+		return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.SERVICE_MASTER)
+				.meta(new JaxMetaInfo()).get()
+				.as(new ParameterizedTypeReference<AmxApiResponse<ServiceMasterDTO, Object>>() {
+				});
+	
+}
+	
 	
 	
 }

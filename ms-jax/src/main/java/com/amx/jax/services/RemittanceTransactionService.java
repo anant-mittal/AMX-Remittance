@@ -31,6 +31,7 @@ import com.amx.jax.dbmodel.RemittanceTransactionView;
 import com.amx.jax.dbmodel.SourceOfIncomeView;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
+import com.amx.jax.dbmodel.remittance.ViewServiceDetails;
 import com.amx.jax.exrateservice.service.NewExchangeRateService;
 import com.amx.jax.manager.RemittanceTransactionManager;
 import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
@@ -38,6 +39,7 @@ import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.response.ExchangeRateBreakup;
 import com.amx.jax.model.response.SourceOfIncomeDto;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
+import com.amx.jax.model.response.remittance.ServiceMasterDTO;
 import com.amx.jax.payg.PayGModel;
 import com.amx.jax.repository.IRemittanceTransactionDao;
 import com.amx.jax.repository.ISourceOfIncomeDao;
@@ -295,5 +297,21 @@ public class RemittanceTransactionService extends AbstractService {
 			remittanceTransactionRepository.save(trnx);
 			break;
 		}
+	}
+	
+	public List<ServiceMasterDTO> getServiceMaster(){
+		List<ViewServiceDetails> serviceMasterViewList = remittanceApplicationDao.getServiceMaster();
+		List<ServiceMasterDTO> serviceMasterDTOList = new ArrayList<ServiceMasterDTO>();
+		for(ViewServiceDetails serviceMasterView:serviceMasterViewList) {
+			ServiceMasterDTO serviceMasterDTO = new ServiceMasterDTO();
+			serviceMasterDTO.setResourceId(serviceMasterView.getServiceMasterId());
+			serviceMasterDTO.setResourceCode(serviceMasterView.getServiceGroupCode());
+			serviceMasterDTO.setResourceName(serviceMasterView.getServiceDescription());
+			serviceMasterDTO.setServiceCode(serviceMasterView.getServiceCode());
+			serviceMasterDTOList.add(serviceMasterDTO);
+		}
+		
+		return serviceMasterDTOList;
+		
 	}
 }
