@@ -13,7 +13,7 @@ import com.amx.jax.dbmodel.customer.CustomerNotifyHubRecord;
 
 public interface IJaxPushNotificationDao extends JpaRepository<CustomerNotifyHubRecord, Serializable> {
 
-	@Query("select n from PushNotificationRecord n where (n.customerId=:customerId "
+	@Query("select n from CustomerNotifyHubRecord n where (n.customerId=:customerId "
 			+ "or (n.customerId is null and (n.nationalityId=:nationalityId or "
 			+ "(n.nationalityId is null and n.countryId=:countryId)))) and  n.notificationDate >= trunc(:notificationDate) ")
 	public List<CustomerNotifyHubRecord> getJaxNotification(@Param("customerId") BigDecimal customerId,
