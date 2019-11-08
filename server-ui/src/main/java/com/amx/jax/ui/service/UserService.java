@@ -1,5 +1,6 @@
 package com.amx.jax.ui.service;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -14,6 +15,7 @@ import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.dict.Language;
+import com.amx.jax.model.CivilIdOtpModel;
 import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.model.customer.SecurityQuestionModel;
 import com.amx.jax.model.response.customer.CustomerFlags;
@@ -109,6 +111,8 @@ public class UserService {
 		msg.addToCountry(customerModel.getPersoninfo().getNationalityId(), lang);
 		msg.addToUser(customerModel.getCustomerId(), lang);
 
+		Date dob = customerModel.getPersoninfo().getDateOfBirth();
+		msg.addToDate("dob", dob);
 		return msg.getTo();
 	}
 

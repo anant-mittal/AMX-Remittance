@@ -1,6 +1,8 @@
 package com.amx.jax.postman.model;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -12,10 +14,14 @@ import com.amx.jax.scope.TenantContextHolder;
 
 public class PushMessage extends Message {
 
+	String pattern = "yyyy-MM-dd";
+	SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+
 	public static final String TOPICS_PREFIX = "/topics/";
 	private static final String FORMAT_TO_ALL = "%s-%s-all-%s";
 	private static final String FORMAT_TO_NATIONALITY = "%s-%s-nationality-%s-%s";
 	private static final String FORMAT_TO_USER = "%s-%s-user-%s-%s";
+	private static final String FORMAT_TO_DATE = "%s-%s-%s-date-%s";
 	public static final String CONDITION_SEPRATOR = " || ";
 
 	public static final Pattern FORMAT_TO_ALL_PATTERN = Pattern.compile("/topics/(.+)-all$");
@@ -65,6 +71,13 @@ public class PushMessage extends Message {
 
 	public void addTopic(String topic) {
 		this.addTo(TOPICS_PREFIX + topic);
+	}
+
+	public void addToDate(String prefix, Date date) {
+		this.addTo(TOPICS_PREFIX
+				+ String.format(FORMAT_TO_DATE, AppParam.APP_ENV.getValue(), TenantContextHolder.currentSite(), prefix,
+						simpleDateFormat.format(date))
+						.toLowerCase().replaceAll("\\s+", ""));
 	}
 
 	public void addToTenant(Tenant tenant, Language lang) {

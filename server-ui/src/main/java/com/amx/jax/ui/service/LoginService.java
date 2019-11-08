@@ -10,16 +10,17 @@ import org.springframework.stereotype.Service;
 
 import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.logger.AuditActor;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.events.AuditActorInfo;
 import com.amx.jax.model.AuthState;
 import com.amx.jax.model.AuthState.AuthStep;
+import com.amx.jax.model.CivilIdOtpModel;
 import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.model.customer.SecurityQuestionModel;
 import com.amx.jax.session.SessionContextService;
@@ -65,6 +66,9 @@ public class LoginService {
 
 	@Autowired
 	SessionContextService sessionContextService;
+
+	@Autowired
+	CommonHttpRequest commonHttpRequest;
 
 	/**
 	 * Login.
@@ -204,6 +208,7 @@ public class LoginService {
 
 		AuditActorInfo actor = new AuditActorInfo(AuditActor.ActorType.C, customerModel.getCustomerId());
 		sessionContextService.setContext(actor);
+		commonHttpRequest.setTraceUserIdentifier(customerModel.getCustomerId());
 
 		if (sessionService.getGuestSession().getState().isFlow(AuthState.AuthFlow.LOGIN)) {
 			jaxService.setDefaults().getUserclient().customerLoggedIn(sessionService.getAppDevice().getUserDevice());
@@ -317,7 +322,7 @@ public class LoginService {
 
 	public ResponseWrapper<AuthResponse> initResetPassword2(String identity, String password) {
 		ResponseWrapper<AuthResponse> wrapper = new ResponseWrapper<AuthResponse>(new AuthData());
-		
+
 		AmxApiResponse<CustomerModel, Object> x = jaxService.getUserclient().validateCustomerLoginOtp(identity);
 		sessionService.getGuestSession().setCustomerModel(x.getResult());
 		return wrapper;
