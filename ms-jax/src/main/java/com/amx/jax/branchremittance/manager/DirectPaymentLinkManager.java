@@ -466,6 +466,15 @@ public class DirectPaymentLinkManager extends AbstractModel {
 		return paymentResponse;
 	}
 
+	public void validateHomesendApplication(List<CustomerShoppingCartDto> shoppingCartDetails) {
+		for(CustomerShoppingCartDto shpCartData : shoppingCartDetails) {
+			if(shpCartData.getBankIndicator() != null && shpCartData.getBankIndicator().equals("SB")) {
+				throw new GlobalException(JaxError.HOMESEND_APPL_NOT_ALLOWED, "Home Send Application not allowed");
+			}
+		}
+		
+	}
+
 	
 
 	

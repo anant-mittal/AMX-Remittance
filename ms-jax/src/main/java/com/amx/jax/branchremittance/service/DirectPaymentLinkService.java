@@ -68,6 +68,9 @@ public class DirectPaymentLinkService extends AbstractService {
 		
 		BranchRemittanceApplResponseDto shpCartData = branchRemittancePaymentManager.fetchCustomerShoppingCart(customerId, localCurrencyId);
 		PaymentLinkRespDTO paymentDtoNEW = directPaymentLinkManager.getPaymentLinkDetails(customerId, shpCartData);
+		if(shpCartData.getShoppingCartDetails() != null) {
+			directPaymentLinkManager.validateHomesendApplication(shpCartData.getShoppingCartDetails());
+		}
 		
 		PersonInfo personInfo = userService.getPersonInfo(customerId);
 		sendDirectLinkEmail(paymentDtoNEW, personInfo, customerId);
