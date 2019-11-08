@@ -1,4 +1,4 @@
-package com.amx.jax.worker.tasks;
+package com.amx.jax.customer.task;
 
 import java.math.BigDecimal;
 import java.util.LinkedList;
@@ -8,9 +8,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.amx.amxlib.model.CustomerNotificationDTO;
-import com.amx.jax.client.JaxPushNotificationClient;
 import com.amx.jax.client.configs.JaxMetaInfo;
+import com.amx.jax.customer.service.CustomerNotifyHubService;
+import com.amx.jax.dbmodel.customer.CustomerNotifyHubRecord;
 import com.amx.jax.dict.Language;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.postman.events.UserMessageEvent;
@@ -23,12 +23,12 @@ import com.amx.jax.tunnel.TunnelEventXchange;
 import com.amx.utils.ArgUtil;
 
 @TunnelEventMapping(byEvent = UserMessageEvent.class, scheme = TunnelEventXchange.TASK_WORKER)
-public class UserNotificationSent implements ITunnelSubscriber<UserMessageEvent> {
+public class CustomerNotifyHubListner implements ITunnelSubscriber<UserMessageEvent> {
 
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
 	@Autowired
-	private JaxPushNotificationClient notificationClient;
+	private CustomerNotifyHubService customerNotificationService;
 
 	@Autowired
 	private JaxMetaInfo jaxMetaInfo;
@@ -43,12 +43,12 @@ public class UserNotificationSent implements ITunnelSubscriber<UserMessageEvent>
 		jaxMetaInfo.setCompanyId(new BigDecimal(JaxMetaInfo.DEFAULT_COMPANY_ID));
 		jaxMetaInfo.setCountryBranchId(new BigDecimal(JaxMetaInfo.DEFAULT_COUNTRY_BRANCH_ID));
 
-		List<CustomerNotificationDTO> customerNotificationList = new LinkedList<CustomerNotificationDTO>();
+		List<CustomerNotifyHubRecord> customerNotificationList = new LinkedList<CustomerNotifyHubRecord>();
 
 		List<String> tos = task.getTo();
 
 		for (String to : tos) {
-			CustomerNotificationDTO customerNotification = new CustomerNotificationDTO();
+			CustomerNotifyHubRecord customerNotification = new CustomerNotifyHubRecord();
 
 			Contact c = PushMessage.toContact(to);
 			boolean foundTo = false;
@@ -74,7 +74,7 @@ public class UserNotificationSent implements ITunnelSubscriber<UserMessageEvent>
 			}
 		}
 
-		notificationClient.save(customerNotificationList);
+		customerNotificationService.save(customerNotificationList);
 
 	}
 

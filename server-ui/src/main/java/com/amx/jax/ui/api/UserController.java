@@ -24,14 +24,14 @@ import com.amx.amxlib.meta.model.AnnualIncomeRangeDTO;
 import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.meta.model.IncomeDto;
 import com.amx.amxlib.model.CustomerModel;
-import com.amx.amxlib.model.CustomerNotificationDTO;
+import com.amx.amxlib.model.CustomerNotifyHubDTO;
 import com.amx.amxlib.model.UserFingerprintResponseModel;
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.JaxAuthContext;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
-import com.amx.jax.client.JaxPushNotificationClient;
+import com.amx.jax.client.CustomerNotifyHubClient;
 import com.amx.jax.dict.Language;
 import com.amx.jax.dict.UserClient.AppType;
 import com.amx.jax.http.CommonHttpRequest;
@@ -266,12 +266,12 @@ public class UserController {
 	}
 
 	@Autowired
-	JaxPushNotificationClient notificationClient;
+	CustomerNotifyHubClient notificationClient;
 
 	@RequestMapping(value = "/pub/user/notifications", method = { RequestMethod.GET })
-	public ResponseWrapper<List<CustomerNotificationDTO>> getNotifications(@RequestParam BigDecimal customerId) {
+	public ResponseWrapper<List<CustomerNotifyHubDTO>> getNotifications(@RequestParam BigDecimal customerId) {
 		AppContextUtil.setActorId(new AuditActor(AuditActor.ActorType.GUEST, customerId));
-		return new ResponseWrapper<List<CustomerNotificationDTO>>(notificationClient.get(customerId).getResults());
+		return new ResponseWrapper<List<CustomerNotifyHubDTO>>(notificationClient.get(customerId).getResults());
 	}
 
 	/**

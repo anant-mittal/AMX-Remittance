@@ -31,7 +31,7 @@ import com.amx.amxlib.meta.model.WhyDoAskInformationDTO;
 import com.amx.amxlib.model.BeneAccountModel;
 import com.amx.amxlib.model.BeneRelationsDescriptionDto;
 import com.amx.amxlib.model.CustomerModel;
-import com.amx.amxlib.model.CustomerNotificationDTO;
+import com.amx.amxlib.model.CustomerNotifyHubDTO;
 import com.amx.amxlib.model.MinMaxExRateDTO;
 import com.amx.amxlib.model.OnlineConfigurationDto;
 import com.amx.amxlib.model.PlaceOrderDTO;
@@ -303,7 +303,7 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 			});
 			break;	
 		case "jax-push-notification":
-			models = new ObjectMapper().readValue(values, new TypeReference<List<CustomerNotificationDTO>>() {
+			models = new ObjectMapper().readValue(values, new TypeReference<List<CustomerNotifyHubDTO>>() {
 			});
 			break;	
 		case "employee-detail":
