@@ -45,7 +45,7 @@ public class CustomerPreferenceManager {
 		Language toLang = Language.fromId(JaxUtil.languageScale(languageId));
 
 		// Audit Info
-		CActivityEvent audit = new CActivityEvent(Type.LANG_UPDATE).customerId(customerId).to(toLang);
+		CActivityEvent audit = new CActivityEvent(Type.PREFS_UPDATE).field("lang").customerId(customerId).to(toLang);
 
 		Customer c = customerRepository.getActiveCustomerDetailsByCustomerId(customerId);
 		try {

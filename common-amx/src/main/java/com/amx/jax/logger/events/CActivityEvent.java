@@ -22,6 +22,7 @@ public class CActivityEvent extends AmxAuditEvent<CActivityEvent> {
 		VALIDATION,
 
 		PROFILE_UPDATE, ACCOUNT_LOCKED, ACCOUNT_UNLOCKED,
+		PREFS_UPDATE,
 
 		BENE_ADD, BENE_UPDATE,
 
@@ -33,8 +34,7 @@ public class CActivityEvent extends AmxAuditEvent<CActivityEvent> {
 
 		LANG_CHNG(EventMarker.NOTICE),
 
-		TP_REDIRECT,
-		LANG_UPDATE;
+		TP_REDIRECT;
 
 		EventMarker marker;
 
