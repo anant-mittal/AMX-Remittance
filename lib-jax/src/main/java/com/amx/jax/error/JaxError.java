@@ -351,7 +351,8 @@ public enum JaxError implements IExceptionEnum {
 	VERIFICATION_CODE_MISMATCH,
 	DIRECT_LINK_DEACTIVATED,
 	DIRECT_LINK_EXPIRED,
-	DIRECT_LINK_INVALID;
+	DIRECT_LINK_INVALID,
+	HOMESEND_APPL_NOT_ALLOWED;
 	
 	@Deprecated
 	public String getCode() {

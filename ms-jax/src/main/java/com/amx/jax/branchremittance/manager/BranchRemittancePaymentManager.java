@@ -276,7 +276,9 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		List<BanksView> bankView =bankMaster.getBankListByBankId(shoppingCartDetails.getRoutingBankId());
 		if(bankView != null && !bankView.isEmpty()) {
 			shoppingCartDataTableBean.setRoutingBank(bankView.get(0)==null?"":bankView.get(0).getBankFullName());
+			shoppingCartDataTableBean.setBankIndicator(bankView.get(0)==null?"":bankView.get(0).getBankInd());
 		}
+		shoppingCartDataTableBean.setRoutingBankId(shoppingCartDetails.getRoutingBankId());
 		shoppingCartDataTableBean.setBeneRelationseqId(shoppingCartDetails.getBeneRelationseqId());
 		shoppingCartDataTableBean.setSourceOfIncomeId(shoppingCartDetails.getSourceofincome()==null?BigDecimal.ZERO:new BigDecimal(shoppingCartDetails.getSourceofincome()));
 		shoppingCartDataTableBean.setDomXRate(RoundUtil.roundBigDecimal(BigDecimal.ONE.divide(shoppingCartDetails.getExchangeRateApplied(),10,RoundingMode.HALF_UP),breakup.getFcDecimalNumber().intValue()));

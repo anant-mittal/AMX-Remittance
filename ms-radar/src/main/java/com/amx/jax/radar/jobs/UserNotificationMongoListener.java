@@ -1,4 +1,4 @@
-package com.amx.jax.radar.jobs.customer;
+package com.amx.jax.radar.jobs;
 
 import java.math.BigDecimal;
 import java.util.LinkedList;
@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
-import com.amx.amxlib.model.CustomerNotificationDTO;
+import com.amx.amxlib.model.CustomerNotifyHubDTO;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.dict.Language;
 import com.amx.jax.dict.Tenant;
@@ -43,12 +43,12 @@ public class UserNotificationMongoListener implements ITunnelSubscriber<UserMess
 		jaxMetaInfo.setCompanyId(new BigDecimal(JaxMetaInfo.DEFAULT_COMPANY_ID));
 		jaxMetaInfo.setCountryBranchId(new BigDecimal(JaxMetaInfo.DEFAULT_COUNTRY_BRANCH_ID));
 
-		List<CustomerNotificationDTO> customerNotificationList = new LinkedList<CustomerNotificationDTO>();
+		List<CustomerNotifyHubDTO> customerNotificationList = new LinkedList<CustomerNotifyHubDTO>();
 
 		List<String> tos = task.getTo();
 
 		for (String to : tos) {
-			CustomerNotificationDTO customerNotification = new CustomerNotificationDTO();
+			CustomerNotifyHubDTO customerNotification = new CustomerNotifyHubDTO();
 
 			Contact c = PushMessage.toContact(to);
 			boolean foundTo = false;
@@ -76,7 +76,7 @@ public class UserNotificationMongoListener implements ITunnelSubscriber<UserMess
 			}
 		}
 
-		for (CustomerNotificationDTO customerNotification : customerNotificationList) {
+		for (CustomerNotifyHubDTO customerNotification : customerNotificationList) {
 			mongoTemplate.save(customerNotification, "notifications");
 		}
 

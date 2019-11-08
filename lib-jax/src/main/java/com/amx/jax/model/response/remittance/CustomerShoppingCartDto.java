@@ -63,6 +63,9 @@ public class CustomerShoppingCartDto implements Serializable{
 	private String localCurrencyCode;
 	private String foreignCurrencyCode;
 	
+	private BigDecimal routingBankId;
+	private String bankIndicator;
+	
 	/* adding service provider trnx duration */	
 	private Long trnxExpirationDate;
 	private Long trnxStartDate;
@@ -438,4 +441,17 @@ public class CustomerShoppingCartDto implements Serializable{
 	public void setTrnxStartDate(Long trnxStartDate) {
 		this.trnxStartDate = trnxStartDate;
 	}
+	public BigDecimal getRoutingBankId() {
+		return routingBankId;
+	}
+	public void setRoutingBankId(BigDecimal routingBankId) {
+		this.routingBankId = routingBankId;
+	}
+	public String getBankIndicator() {
+		return bankIndicator;
+	}
+	public void setBankIndicator(String bankIndicator) {
+		this.bankIndicator = bankIndicator;
+	}
+	
 }
