@@ -536,7 +536,7 @@ public class UserAuthService {
 		}
 
 		DeviceType deviceType = userClientDto.getDeviceType();
-
+		
 		// Check for Employee System Assignment
 		if (DeviceType.COMPUTER.isParentOf(deviceType)) {
 
