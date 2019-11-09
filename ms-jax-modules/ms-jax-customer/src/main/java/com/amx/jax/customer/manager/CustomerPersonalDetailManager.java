@@ -24,7 +24,6 @@ import com.amx.jax.services.JaxDBService;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.service.CustomerValidationContext.CustomerValidation;
 import com.amx.jax.userservice.service.UserService;
-import com.amx.jax.util.AmxDBConstants.Status;
 import com.amx.jax.validation.CountryMetaValidation;
 import com.amx.utils.JsonUtil;
 
@@ -47,6 +46,8 @@ public class CustomerPersonalDetailManager {
 	MetaData metaData;
 	@Autowired
 	UserService userService;
+	@Autowired
+	OffsiteCustomerRegManager offsiteCustomerRegManager;
 
 	private static final Logger log = LoggerFactory.getLogger(CustomerPersonalDetailManager.class);
 
@@ -70,21 +71,13 @@ public class CustomerPersonalDetailManager {
 		if (req.getMobile() != null) {
 			countryMetaValidation.validateMobileNumber(customer.getCountryId(), req.getMobile());
 			countryMetaValidation.validateMobileNumberLength(customer.getCountryId(), req.getMobile());
-			if (!req.getMobile().equals(customer.getMobile())) {
-				tenantContext.get().validateDuplicateMobile(req.getMobile());
-			}
 			customer.setMobile(req.getMobile());
-			customer.setMobileVerified(Status.N);
 			CustomerContactVerification cv = customerContactVerificationManager.create(customer, ContactType.MOBILE);
 			cvs.add(cv);
 		}
 		// email
 		if (req.getEmail() != null) {
-			if (!req.getEmail().equals(customer.getEmail())) {
-				tenantContext.get().validateEmailId(req.getEmail());
-			}
 			customer.setEmail(req.getEmail());
-			customer.setEmailVerified(Status.N);
 			cvs.add(customerContactVerificationManager.create(customer, ContactType.EMAIL));
 		}
 		// whatsapp
@@ -93,11 +86,11 @@ public class CustomerPersonalDetailManager {
 		}
 		if (req.getWatsAppMobileNo() != null) {
 			customer.setWhatsapp(req.getWatsAppMobileNo().toString());
-			customer.setWhatsAppVerified(Status.N);
 			cvs.add(customerContactVerificationManager.create(customer, ContactType.WHATSAPP));
 		}
 		cvs.forEach(x -> jaxCustomerContactVerificationService.sendVerificationLink(customer, x));
 		customer.setUpdatedBy(jaxDbService.getCreatedOrUpdatedBy());
+		offsiteCustomerRegManager.setNotificationVerificationFlags(customer, req);
 		customerDao.saveCustomer(customer);
 	}
 

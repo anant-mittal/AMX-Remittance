@@ -7,9 +7,10 @@ import javax.validation.constraints.Pattern;
 
 import org.hibernate.validator.constraints.Email;
 
+import com.amx.jax.model.request.customer.ICustomerContactData;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class UpdateCustomerPersonalDetailRequest {
+public class UpdateCustomerPersonalDetailRequest implements ICustomerContactData {
 
 	Date dateOfBirth;
 	String insuranceInd;
@@ -60,6 +61,7 @@ public class UpdateCustomerPersonalDetailRequest {
 		this.pepsIndicator = pepsIndicator;
 	}
 
+	@Override
 	public String getMobile() {
 		return mobile;
 	}
@@ -68,6 +70,7 @@ public class UpdateCustomerPersonalDetailRequest {
 		this.mobile = mobile;
 	}
 
+	@Override
 	public String getTelPrefix() {
 		return telPrefix;
 	}
@@ -76,6 +79,7 @@ public class UpdateCustomerPersonalDetailRequest {
 		this.telPrefix = telPrefix;
 	}
 
+	@Override
 	public String getEmail() {
 		return email;
 	}
@@ -84,6 +88,7 @@ public class UpdateCustomerPersonalDetailRequest {
 		this.email = email;
 	}
 
+	@Override
 	public String getWatsAppTelePrefix() {
 		return watsAppTelePrefix;
 	}
@@ -92,6 +97,7 @@ public class UpdateCustomerPersonalDetailRequest {
 		this.watsAppTelePrefix = watsAppTelePrefix;
 	}
 
+	@Override
 	public BigDecimal getWatsAppMobileNo() {
 		return watsAppMobileNo;
 	}

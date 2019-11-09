@@ -23,6 +23,11 @@ public class CustomerValidationContext extends TenantContext<CustomerValidation>
 
 		public void validateCivilId(String civilId);
 
+		/**
+		 *  @deprecated since method only validates duplicate email but name is contradicting
+		 * @param emailId
+		 */
+		@Deprecated
 		public void validateEmailId(String emailId);
 
 		public void validateDuplicateMobile(String mobileNo);
