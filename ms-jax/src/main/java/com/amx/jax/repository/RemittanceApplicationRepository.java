@@ -81,5 +81,10 @@ public interface RemittanceApplicationRepository extends CrudRepository<Remittan
     
     @Query("select ra from RemittanceApplication ra where ra.paymentLinkId=:paymentLinkId")
 	public List<RemittanceApplication> getApplByPaymentlinkId(@Param("paymentLinkId") BigDecimal paymentLinkId);
+    
+    @Transactional
+	@Modifying
+	@Query("update RemittanceApplication appl set paymentLinkId = :paymentLinkId where appl.remittanceApplicationId=:remittanceApplicationId")
+	public void updateLinkId(@Param("remittanceApplicationId") BigDecimal remittanceApplicationId, @Param("paymentLinkId") BigDecimal paymentLinkId);
 	 
 }

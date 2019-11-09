@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -137,10 +139,9 @@ public class DirectPaymentLinkManager extends AbstractModel {
 			        	String token = tokenizer.nextToken();
 			            BigDecimal appId = new BigDecimal(token);
 			            logger.info("Application Id : " + appId);
-			            RemittanceApplication fetchApplication = remittanceApplicationRepository.fetchByRemittanceApplicationId(appId);
-			            fetchApplication.setPaymentLinkId(fetchPaymentLinkData.getPaygTrnxSeqId());
 			            
-			            remittanceApplicationRepository.save(fetchApplication);
+			            //remittanceApplicationRepository.save(fetchApplication);
+			            remittanceApplicationRepository.updateLinkId(appId, fetchPaymentLinkData.getPaygTrnxSeqId());
 			        } 
 				}
 			}
@@ -195,6 +196,11 @@ public class DirectPaymentLinkManager extends AbstractModel {
 					if (value != 0) {
 						throw new GlobalException(JaxError.DIRECT_LINK_INVALID, "Link is invalid");
 					}
+					
+					//Validate application Id's
+					String applicationIds = paymentLink.getApplIds();
+					validateApplicationIds(shoppingCartDetails, applicationIds);
+					
 				} else {
 					throw new GlobalException(JaxError.DIRECT_LINK_INVALID, "Link Expired");
 				}
@@ -473,6 +479,29 @@ public class DirectPaymentLinkManager extends AbstractModel {
 			}
 		}
 		
+	}
+	
+	private void validateApplicationIds(List<CustomerShoppingCartDto> shoppingCartDetails, String applicationIds) {
+		List<String> list = Arrays.asList(applicationIds.split(","));
+		List<BigDecimal> l = new ArrayList<BigDecimal>();
+		for (String value : list) {
+		    l.add(new BigDecimal(value));
+		}
+		
+		List<BigDecimal> l2 = new ArrayList<BigDecimal>();
+		for(CustomerShoppingCartDto shpCartData : shoppingCartDetails) {
+			l2.add(shpCartData.getApplicationDetailsId());
+		}
+		
+		 Collections.sort(l);
+	     Collections.sort(l2);
+	     
+	     if(!l.equals(l2)) {
+	    	 throw new GlobalException(JaxError.DIRECT_LINK_INVALID,
+						"Invalidate link, Application Id mismatch");
+	     }
+	     
+	     
 	}
 
 	
