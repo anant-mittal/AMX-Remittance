@@ -23,6 +23,8 @@ public interface ExchRateUploadRepository extends JpaRepository<ExchRateUpload, 
 
 	List<ExchRateUpload> findByIsActiveAndStatus(IS_ACTIVE isActive, RATE_UPLOAD_STATUS status);
 
+	List<ExchRateUpload> findByStatus(RATE_UPLOAD_STATUS status);
+
 	@Transactional
 	@Modifying
 	@Query("update ExchRateUpload u set u.status=?2 , u.approvedBy=?3, u.approvedDate=?4 where u.ruleId in ( ?1 )")

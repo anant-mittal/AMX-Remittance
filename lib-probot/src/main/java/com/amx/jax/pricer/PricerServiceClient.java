@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,9 @@ import com.amx.jax.pricer.dto.PricingAndCostResponseDTO;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
 import com.amx.jax.pricer.dto.RateUploadRequestDto;
+import com.amx.jax.pricer.dto.RateUploadRuleDto;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
+import com.amx.jax.pricer.var.PricerServiceConstants.RATE_UPLOAD_STATUS;
 import com.amx.jax.rest.RestService;
 
 @Component
@@ -260,13 +263,23 @@ public class PricerServiceClient implements ProbotExchangeRateService, ProbotDat
 				.post(rateUploadRequestDto).as(new ParameterizedTypeReference<AmxApiResponse<Long, Object>>() {
 				});
 	}
-	
+
 	@Override
 	public AmxApiResponse<Long, Object> rateUpoadRuleChecker(RateUploadRequestDto rateUploadRequestDto) {
 		LOGGER.info("Received Probot API Service Request for Rate Upload Rule Checker Client");
 
 		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.RATE_UPLOAD_RULE_CHECKER)
 				.post(rateUploadRequestDto).as(new ParameterizedTypeReference<AmxApiResponse<Long, Object>>() {
+				});
+	}
+
+	@Override
+	public AmxApiResponse<Map<String, RateUploadRuleDto>, Object> getRateUploadRulesByStatus(RATE_UPLOAD_STATUS status,
+			Boolean onlyActive) {
+		LOGGER.info("Received Probot API Service Request for Get Rate Upload Rule By Status Client");
+		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.GET_RATE_UPLOAD_RULES)
+				.queryParam("status", status).queryParam("onlyActive", onlyActive).post()
+				.as(new ParameterizedTypeReference<AmxApiResponse<Map<String, RateUploadRuleDto>, Object>>() {
 				});
 	}
 

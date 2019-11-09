@@ -63,7 +63,8 @@ public interface AbstractProbotInterface {
 		public static final String RATE_UPLOAD_RULE_MAKER = SERVICE_PREFIX + API_VERSION_V1 + "/rate-upload-rule-maker";
 		
 		public static final String RATE_UPLOAD_RULE_CHECKER = SERVICE_PREFIX + API_VERSION_V1 + "/rate-upload-rule-checker";
-
+		
+		public static final String GET_RATE_UPLOAD_RULES = SERVICE_PREFIX + API_VERSION_V1 + "/get-rate-upload-rules";
 
 	}
 }

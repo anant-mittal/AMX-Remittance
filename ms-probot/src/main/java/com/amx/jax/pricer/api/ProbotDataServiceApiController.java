@@ -3,6 +3,7 @@ package com.amx.jax.pricer.api;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.validation.Valid;
 
@@ -30,9 +31,11 @@ import com.amx.jax.pricer.dto.HolidayResponseDTO;
 import com.amx.jax.pricer.dto.OnlineMarginMarkupInfo;
 import com.amx.jax.pricer.dto.OnlineMarginMarkupReq;
 import com.amx.jax.pricer.dto.RateUploadRequestDto;
+import com.amx.jax.pricer.dto.RateUploadRuleDto;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
 import com.amx.jax.pricer.service.ExchangeDataService;
 import com.amx.jax.pricer.service.HolidayListService;
+import com.amx.jax.pricer.var.PricerServiceConstants.RATE_UPLOAD_STATUS;
 import com.amx.utils.JsonUtil;
 
 @RestController
@@ -196,6 +199,19 @@ public class ProbotDataServiceApiController implements ProbotDataService {
 		Long rowsUpdated = dataService.rateUploadRuleChecker(rateUploadRequestDto);
 
 		return AmxApiResponse.build(rowsUpdated);
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.GET_RATE_UPLOAD_RULES, method = RequestMethod.POST)
+	public AmxApiResponse<Map<String, RateUploadRuleDto>, Object> getRateUploadRulesByStatus(
+			@RequestParam(required = true) RATE_UPLOAD_STATUS status,
+			@RequestParam(required = true) Boolean onlyActive) {
+		
+		LOGGER.info("Received Probot API Service Request for Get Rate Upload Rules By Status");
+
+		Map<String, RateUploadRuleDto> rateUploadRules = dataService.getRateUploadRulesByStatus(status, onlyActive);
+
+		return AmxApiResponse.build(rateUploadRules);
 	}
 
 }

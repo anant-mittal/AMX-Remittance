@@ -20,6 +20,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.pricer.dao.BankMasterDao;
 import com.amx.jax.pricer.dao.CountryBranchDao;
 import com.amx.jax.pricer.dao.CountryMasterDao;
 import com.amx.jax.pricer.dao.CurrencyMasterDao;
@@ -27,6 +28,7 @@ import com.amx.jax.pricer.dao.ExchRateUploadDao;
 import com.amx.jax.pricer.dao.ExchangeRateDao;
 import com.amx.jax.pricer.dao.GroupingMasterDao;
 import com.amx.jax.pricer.dao.ServiceMasterDescDao;
+import com.amx.jax.pricer.dbmodel.BankMasterModel;
 import com.amx.jax.pricer.dbmodel.CountryBranch;
 import com.amx.jax.pricer.dbmodel.CountryMasterDescriptor;
 import com.amx.jax.pricer.dbmodel.CountryMasterModel;
@@ -76,6 +78,9 @@ public class ExchangeRateManager {
 
 	@Autowired
 	ExchRateUploadDao exchRateUploadDao;
+
+	@Autowired
+	BankMasterDao bankMasterDao;
 
 	public ExchangeRateEnquiryRespDto enquireExchRate(ExchRateEnquiryReqDto rateEnquiryReqDto) {
 
@@ -402,7 +407,9 @@ public class ExchangeRateManager {
 
 		}
 
-		// List<ExchRateUpload> createdRules = exchRateUploadDao.getByRuleIdIn(union);
+		List<ExchRateUpload> createdRules = exchRateUploadDao.getByRuleIdIn(union);
+
+		validateRateUploadRulesForApproval(createdRules);
 
 		// Match That all the Entries for the Rules Exist and Valid.
 
@@ -425,6 +432,188 @@ public class ExchangeRateManager {
 
 		return new Long(totalRowsUpdated);
 
+	}
+
+	private boolean validateRateUploadRulesForApproval(List<ExchRateUpload> toBeApprovedList) {
+
+		List<String> invalidRules = new ArrayList<String>();
+		boolean isInactive = false;
+		boolean isApproved = false;
+
+		for (ExchRateUpload rateUpload : toBeApprovedList) {
+			if (rateUpload.getIsActive() == null || rateUpload.getIsActive().equals(IS_ACTIVE.N)) {
+				invalidRules.add(rateUpload.getRuleId());
+			}
+
+			if (rateUpload.getStatus() == null || !rateUpload.getStatus().equals(RATE_UPLOAD_STATUS.CREATED)) {
+				invalidRules.add(rateUpload.getRuleId());
+			}
+
+		}
+
+		if (isInactive && !invalidRules.isEmpty()) {
+			throw new PricerServiceException(PricerServiceError.INACTIVE_RULES,
+					"One or more Rule(s) are Not Active: " + invalidRules.toString());
+		} else if (isApproved && !invalidRules.isEmpty()) {
+			throw new PricerServiceException(PricerServiceError.RULE_STATUS_ALREADY_UPDATED,
+					"Status of one or more Rule(s) are already Updated: " + invalidRules.toString());
+		}
+
+		return true;
+
+	}
+
+	public Map<String, RateUploadRuleDto> getRateUploadRulesByStatus(RATE_UPLOAD_STATUS status, Boolean onlyActive) {
+
+		IS_ACTIVE active = (onlyActive == null || onlyActive) ? IS_ACTIVE.Y : IS_ACTIVE.N;
+
+		List<ExchRateUpload> exchRateUploads;
+
+		if (IS_ACTIVE.Y.equals(active)) {
+			exchRateUploads = exchRateUploadDao.getRulesByStatusAndActive(status, active);
+		} else {
+			exchRateUploads = exchRateUploadDao.getRulesByStatus(status);
+		}
+
+		Map<String, RateUploadRuleDto> rateUploadMap = new HashMap<String, RateUploadRuleDto>();
+
+		if (exchRateUploads != null && !exchRateUploads.isEmpty()) {
+
+			BigDecimal curId = null;
+			BigDecimal countryId = null;
+
+			List<BigDecimal> bankIds = new ArrayList<BigDecimal>();
+			List<BigDecimal> cBranchIds = new ArrayList<BigDecimal>();
+			List<BigDecimal> serviceIds = new ArrayList<BigDecimal>();
+
+			for (ExchRateUpload exchRateUpload : exchRateUploads) {
+
+				if (curId == null) {
+					curId = exchRateUpload.getCurrencyId();
+				}
+
+				if (countryId == null && exchRateUpload.getCountryId() != null) {
+					countryId = exchRateUpload.getCountryId();
+				}
+
+				if (exchRateUpload.getCorBankId() != null && !bankIds.contains(exchRateUpload.getCorBankId())) {
+					bankIds.add(exchRateUpload.getCorBankId());
+				}
+
+				if (exchRateUpload.getCountryBranchId() != null
+						&& !cBranchIds.contains(exchRateUpload.getCountryBranchId())) {
+					cBranchIds.add(exchRateUpload.getCountryBranchId());
+				}
+
+				if (exchRateUpload.getServiceId() != null && !serviceIds.contains(exchRateUpload.getServiceId())) {
+					serviceIds.add(exchRateUpload.getServiceId());
+				}
+			}
+
+			CurrencyMasterModel currencyMasterModel = currencyMasterDao.getByCurrencyId(curId);
+			CountryMasterModel countryMasterModel = new CountryMasterModel();
+			CountryMasterDescriptor countryMasterDescriptor = new CountryMasterDescriptor();
+
+			if (countryId != null) {
+				countryMasterModel = countryMasterDao.getByCountryId(countryId);
+				for (CountryMasterDescriptor desc : countryMasterModel.getFsCountryMasterDescs()) {
+					if (desc.getLanguageId() != null && desc.getLanguageId().compareTo(BigDecimal.ONE) == 0) {
+						countryMasterDescriptor = desc;
+						break;
+					}
+				}
+			}
+
+			Map<BigDecimal, BankMasterModel> bankMasters = new HashMap<>();
+			if (!bankIds.isEmpty()) {
+				bankMasters = bankMasterDao.getBankByIdIn(bankIds);
+			}
+
+			Map<BigDecimal, CountryBranch> cBranches = new HashMap<>();
+			if (!cBranchIds.isEmpty()) {
+				cBranches = countryBranchDao.getByCountryBranchIds(cBranchIds);
+			}
+
+			Map<BigDecimal, ServiceMasterDesc> sMasterDescs = new HashMap<>();
+			if (!serviceIds.isEmpty()) {
+				sMasterDescs = serviceMasterDescDao.getByServiceIdIn(serviceIds);
+			}
+
+			for (ExchRateUpload exchRateUpload : exchRateUploads) {
+
+				RateUploadRuleDto rateDto;
+
+				if (!rateUploadMap.containsKey(exchRateUpload.getRuleId())) {
+					rateDto = new RateUploadRuleDto();
+					rateDto.setRuleId(exchRateUpload.getRuleId());
+					rateDto.setCurrencyId(exchRateUpload.getCurrencyId());
+					rateDto.setCurDisplayName(
+							currencyMasterModel.getCurrencyCode() + "-" + currencyMasterModel.getQuoteName());
+
+					// Set Empty Structures
+					rateDto.setBankIdQuoteMap(new HashMap<BigDecimal, String>());
+					rateDto.setServiceIdNameMap(new HashMap<BigDecimal, String>());
+					rateDto.setcBranchIdNameMap(new HashMap<BigDecimal, String>());
+
+					// Set rates
+					rateDto.setSellExchangeRate(exchRateUpload.getSellRate());
+					rateDto.setBuyExchangeRate(exchRateUpload.getBuyRate());
+
+					// Info
+					rateDto.setIsActive(exchRateUpload.getIsActive());
+					rateDto.setStatus(exchRateUpload.getStatus());
+					rateDto.setCreatedBy(exchRateUpload.getCreatedBy());
+					rateDto.setCreatedDate(String.valueOf(exchRateUpload.getCreatedDate()));
+					rateDto.setModifiedBy(exchRateUpload.getModifiedBy());
+					rateDto.setModifiedDate(String.valueOf(exchRateUpload.getModifiedDate()));
+					rateDto.setApprovedBy(exchRateUpload.getApprovedBy());
+					rateDto.setApprovedDate(String.valueOf(exchRateUpload.getApprovedDate()));
+
+					if (exchRateUpload.getCountryId() != null) {
+						rateDto.setCountryId(exchRateUpload.getCountryId());
+						rateDto.setCountryDisplayName(
+								countryMasterModel.getCountryCode() + "-" + countryMasterDescriptor.getCountryName());
+					}
+
+					rateUploadMap.put(rateDto.getRuleId(), rateDto);
+
+				} else {
+					rateDto = rateUploadMap.get(exchRateUpload.getRuleId());
+				}
+
+				if (exchRateUpload.getCorBankId() != null) {
+
+					BankMasterModel bankModel = bankMasters.get(exchRateUpload.getCorBankId());
+					if (bankModel != null) {
+						rateDto.getBankIdQuoteMap().put(exchRateUpload.getCorBankId(), bankModel.getBankFullName());
+					} else {
+						rateDto.getBankIdQuoteMap().put(exchRateUpload.getCorBankId(), null);
+					}
+				}
+
+				if (exchRateUpload.getServiceId() != null) {
+					ServiceMasterDesc serviceDesc = sMasterDescs.get(exchRateUpload.getServiceId());
+					if (serviceDesc != null) {
+						rateDto.getServiceIdNameMap().put(exchRateUpload.getServiceId(), serviceDesc.getServiceDesc());
+					} else {
+						rateDto.getServiceIdNameMap().put(exchRateUpload.getServiceId(), null);
+					}
+				}
+
+				if (exchRateUpload.getCountryBranchId() != null) {
+					CountryBranch branch = cBranches.get(exchRateUpload.getCountryBranchId());
+					if (branch != null) {
+						rateDto.getcBranchIdNameMap().put(exchRateUpload.getCountryBranchId(), branch.getBranchName());
+					} else {
+						rateDto.getcBranchIdNameMap().put(exchRateUpload.getCountryBranchId(), null);
+					}
+				}
+
+			}
+
+		}
+
+		return rateUploadMap;
 	}
 
 }

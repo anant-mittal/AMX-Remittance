@@ -55,11 +55,13 @@ import com.amx.jax.pricer.dto.PricingAndCostResponseDTO;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
 import com.amx.jax.pricer.dto.RateUploadRequestDto;
+import com.amx.jax.pricer.dto.RateUploadRuleDto;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
 import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.service.PricerTestService;
 import com.amx.jax.pricer.var.PricerServiceConstants;
 import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_BY;
+import com.amx.jax.pricer.var.PricerServiceConstants.RATE_UPLOAD_STATUS;
 import com.amx.utils.ArgUtil;
 
 /**
@@ -75,9 +77,6 @@ public class PricerServiceApiTest implements ProbotExchangeRateService, ProbotDa
 
 	@Autowired
 	PricerTestService pricerTestService;
-
-	// @Autowired
-	// HolidayListService holidayListService;
 
 	@Override
 	@RequestMapping(value = ApiEndPoints.FETCH_PRICE_CUSTOMER, method = RequestMethod.POST)
@@ -535,6 +534,13 @@ public class PricerServiceApiTest implements ProbotExchangeRateService, ProbotDa
 	@RequestMapping(value = ApiEndPoints.RATE_UPLOAD_RULE_CHECKER, method = RequestMethod.POST)
 	public AmxApiResponse<Long, Object> rateUpoadRuleChecker(RateUploadRequestDto rateUploadRequestDto) {
 		return pricerServiceClient.rateUpoadRuleChecker(rateUploadRequestDto);
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.GET_RATE_UPLOAD_RULES, method = RequestMethod.POST)
+	public AmxApiResponse<Map<String, RateUploadRuleDto>, Object> getRateUploadRulesByStatus(@RequestParam(required = true) RATE_UPLOAD_STATUS status,
+			@RequestParam(required = true) Boolean onlyActive) {
+		return pricerServiceClient.getRateUploadRulesByStatus(status, onlyActive);
 	}
 
 }

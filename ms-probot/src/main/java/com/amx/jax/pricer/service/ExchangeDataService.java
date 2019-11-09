@@ -43,6 +43,7 @@ import com.amx.jax.pricer.dto.GroupDetails;
 import com.amx.jax.pricer.dto.OnlineMarginMarkupInfo;
 import com.amx.jax.pricer.dto.OnlineMarginMarkupReq;
 import com.amx.jax.pricer.dto.RateUploadRequestDto;
+import com.amx.jax.pricer.dto.RateUploadRuleDto;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
 import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
@@ -51,6 +52,7 @@ import com.amx.jax.pricer.manager.ExchangeRateManager;
 import com.amx.jax.pricer.var.PricerServiceConstants;
 import com.amx.jax.pricer.var.PricerServiceConstants.DISCOUNT_TYPE;
 import com.amx.jax.pricer.var.PricerServiceConstants.GROUP_TYPE;
+import com.amx.jax.pricer.var.PricerServiceConstants.RATE_UPLOAD_STATUS;
 
 @Service
 public class ExchangeDataService {
@@ -316,6 +318,10 @@ public class ExchangeDataService {
 
 	public Long rateUploadRuleChecker(RateUploadRequestDto rateUploadRequestDto) {
 		return exchangeRateManager.rateUpoadRuleChecker(rateUploadRequestDto);
+	}
+
+	public Map<String, RateUploadRuleDto> getRateUploadRulesByStatus(RATE_UPLOAD_STATUS status, Boolean onlyActive) {
+		return exchangeRateManager.getRateUploadRulesByStatus(status, onlyActive);
 	}
 
 }

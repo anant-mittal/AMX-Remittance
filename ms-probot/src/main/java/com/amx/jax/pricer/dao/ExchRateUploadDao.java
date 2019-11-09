@@ -28,8 +28,12 @@ public class ExchRateUploadDao {
 		return repo.findByRuleIdIn(ruleIds);
 	}
 
-	public List<ExchRateUpload> getActiveRulesByStatus(RATE_UPLOAD_STATUS status) {
-		return repo.findByIsActiveAndStatus(IS_ACTIVE.Y, status);
+	public List<ExchRateUpload> getRulesByStatusAndActive(RATE_UPLOAD_STATUS status, IS_ACTIVE active) {
+		return repo.findByIsActiveAndStatus(active, status);
+	}
+
+	public List<ExchRateUpload> getRulesByStatus(RATE_UPLOAD_STATUS status) {
+		return repo.findByStatus(status);
 	}
 
 	public List<ExchRateUpload> saveAll(List<ExchRateUpload> exchRateUploads) {
