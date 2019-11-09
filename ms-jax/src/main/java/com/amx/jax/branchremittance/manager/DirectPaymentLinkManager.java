@@ -405,21 +405,6 @@ public class DirectPaymentLinkManager extends AbstractModel {
 				List<RemittanceCollectionDto> collctionModeDto = new ArrayList<>();
 				//List<UserStockDto> currencyRefundDenomination = new ArrayList<>();
 				
-				/*
-				BranchApplicationDto remitApplicationId = new BranchApplicationDto();
-				
-				String applicationid = paymentLinkData.getApplIds();
-				StringTokenizer tokenizer = new StringTokenizer(applicationid, ",");
-				while (tokenizer.hasMoreTokens()) {
-					String token = tokenizer.nextToken();
-					BigDecimal appId = new BigDecimal(token);
-					logger.info("Application Id : " + appId);
-					remitApplicationId.setApplicationId(appId);
-					remittanceApplicationIds.add(remitApplicationId);
-				}*/
-				
-				logger.info("Count of application Ids : "+remittanceApplicationIds.size());
-				
 				PaymentModeModel payModeModel = payModeRepositoy.getPaymentModeDetails(ConstantDocument.KNET_CODE);
 				
 				RemittanceCollectionDto remittanceCollection = new RemittanceCollectionDto();
@@ -427,17 +412,19 @@ public class DirectPaymentLinkManager extends AbstractModel {
 				remittanceCollection.setPaymentModeId(payModeModel.getPaymentModeId());
 				remittanceCollection.setPaymentAmount(paymentLinkData.getPayAmount());
 				remittanceCollection.setApprovalNo(paymentLinkData.getPgAuthCode());
-				
-				logger.info("Payment value set in remittanceCollection : "+paymentLinkData.getPayAmount());
-				
 				collctionModeDto.add(remittanceCollection);
 				
 				BigDecimal totalLoyaltyEncashed =BigDecimal.ZERO;
 				BigDecimal totalPaidAmount =BigDecimal.ZERO;
-				List<RemittanceApplication> applications = remittanceApplicationRepository.getApplByPaymentlinkId(linkId);
+				
+				logger.info("Ex APPL TRNX Query Start ------> ");
+				String[] appIds = paymentLinkData.getApplIds().split(",");
+				List<BigDecimal> appIdsBigDecimalList = Arrays.asList(appIds).stream().map(i-> new BigDecimal(i)).collect(Collectors.toList());
+				List<RemittanceApplication> applications = remittanceApplicationRepository.getApplicationList(appIdsBigDecimalList);
+				//List<RemittanceApplication> applications = remittanceApplicationRepository.getApplByPaymentlinkId(linkId);
+				logger.info("Ex APPL TRNX Query End ------> ");
 				
 				if(null != applications){
-					logger.info("applications count ------> : " +applications);
 					for(RemittanceApplication appl: applications) {
 						BranchApplicationDto applDto = new BranchApplicationDto();
 				        applDto.setApplicationId(appl.getRemittanceApplicationId());
@@ -445,14 +432,10 @@ public class DirectPaymentLinkManager extends AbstractModel {
 						totalPaidAmount=totalPaidAmount.add(appl.getLocalNetTranxAmount());
 						remittanceApplicationIds.add(applDto);
 					}
-				}	
-				
-				logger.info("Count of application Ids : "+remittanceApplicationIds.size());
-				
-				logger.info("Total Paid Amt ------> : " +totalPaidAmount);
-				
+				}				
 				
 				//Set request Parameter
+				logger.info("request Parameter SET for saveRemittanceTrnx ------> ");
 				request.setRemittanceApplicationId(remittanceApplicationIds);
 				request.setCollctionModeDto(collctionModeDto);
 				request.setCurrencyRefundDenomination(null);
