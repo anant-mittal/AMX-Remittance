@@ -9,49 +9,71 @@
         "size": 15
       },
       "aggs": {
-        "TimeRange": {
-          "date_range": {
-            "field": "trnx.trnxDate",
-            "ranges": [
-              {
-				"key" : "[[${PrevMonth}]]",
-                "from": "now-1d-1M/M",
-                "to": "now-1M-0d/d"
-              },
-              {
-				"key" : "[[${ThisMonth}]]",
-                "from": "now-1d-0M/M",
-                "to": "now-0d/d"
-              }
-            ],
-            "time_zone": "Asia/Calcutta"
+        "Branch": {
+          "terms": {
+            "field": "branch.name.keyword",
+            "order": {
+              "_count": "desc"
+            },
+            "size": 150
           },
           "aggs": {
-            "LocalCommissionReceived": {
-              "sum": {
-                "field": "trnx.localCommRecv"
-              }
-            },
-            "CommissionReceived": {
-              "sum": {
-                "field": "trnx.commRecv"
-              }
-            },
-            "ExchangeGain": {
-              "sum": {
-                "field": "trnx.exchangeGain"
-              }
-            },
-            "CoBankCharges": {
-              "sum": {
-                "field": "trnx.coBankCharges"
-              }
-            },
-            "LastDateOfTrnx": {
-              "max": {
-                "script": {
-                  "source": "if (doc.containsKey('trnx.trnxDate') && !doc['trnx.trnxDate'].empty && !doc['trnx.trnxDate'].empty && doc['_type'].value == \"trnx\") {\n   if (doc['trnx.trnxStatus.keyword'].value == \"PAID\" || doc['trnx.trnxStatus.keyword'].value == \"DONE\" ) {\n       def d = doc['trnx.trnxDate'].value.dayOfMonth;\n       return d;\n   }\n   else {\n       return null;\n   }\n}\n",
-                  "lang": "painless"
+            "Channel": {
+              "terms": {
+                "field": "client.cn.keyword",
+                "order": {
+                  "_count": "desc"
+                },
+                "size": 5
+              },
+              "aggs": {
+                "TimeRange": {
+                  "date_range": {
+                    "field": "trnx.trnxDate",
+                    "ranges": [
+                      {
+                        "key" : "[[${PrevMonth}]]",
+                        "from": "now-1d-1M/M",
+                        "to": "now-1M-0d/d"
+                      },
+                      {
+                        "key" : "[[${ThisMonth}]]",
+                        "from": "now-1d-0M/M",
+                        "to": "now-0d/d"
+                      }
+                    ],
+                    "time_zone": "Asia/Calcutta"
+                  },
+                  "aggs": {
+                    "LocalCommissionReceived": {
+                      "sum": {
+                        "field": "trnx.localCommRecv"
+                      }
+                    },
+                    "CommissionReceived": {
+                      "sum": {
+                        "field": "trnx.commRecv"
+                      }
+                    },
+                    "ExchangeGain": {
+                      "sum": {
+                        "field": "trnx.exchangeGain"
+                      }
+                    },
+                    "CoBankCharges": {
+                      "sum": {
+                        "field": "trnx.coBankCharges"
+                      }
+                    },
+                    "LastDateOfTrnx": {
+                      "max": {
+                        "script": {
+                          "source": "if (doc.containsKey('trnx.trnxDate') && !doc['trnx.trnxDate'].empty && !doc['trnx.trnxDate'].empty && doc['_type'].value == \"trnx\") {\n   if (doc['trnx.trnxStatus.keyword'].value == \"PAID\" || doc['trnx.trnxStatus.keyword'].value == \"DONE\" ) {\n       def d = doc['trnx.trnxDate'].value.dayOfMonth;\n       return d;\n   }\n   else {\n       return null;\n   }\n}\n",
+                          "lang": "painless"
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -170,7 +192,7 @@
   },
   "pivot" : [
   	{
-	 "rows" : ["Area"],
+	 "rows" : ["Area","Branch","Channel"],
 	 "cols" : ["TimeRange"],
 	 "vals" : ["sum LocalCommissionReceived","sum CommissionReceived","sum ExchangeGain","sum CoBankCharges", "sum _docs AS Trnx", "sum LastDateOfTrnx"],
 	 "computed" : ["[[${PrevMonth}]]_Revenue=[[${PrevMonth}]]_LocalCommissionReceived + [[${PrevMonth}]]_CommissionReceived + [[${PrevMonth}]]_ExchangeGain - [[${PrevMonth}]]_CoBankCharges",
@@ -182,9 +204,9 @@
 	 				"RPDdiff=[[${ThisMonth}]]_RPD - [[${PrevMonth}]]_RPD",
 	 				"RevDiff=[[${ThisMonth}]]_Revenue - [[${PrevMonth}]]_Revenue"],
 	 "colgroups" : [
-	 	"[[${PrevMonth}]](Area,[[${PrevMonth}]]_Trnx,[[${PrevMonth}]]_Revenue,[[${PrevMonth}]]_RPT,[[${PrevMonth}]]_RPD)",
-	 	"[[${ThisMonth}]](Area,[[${ThisMonth}]]_Trnx,[[${ThisMonth}]]_Revenue,[[${ThisMonth}]]_RPT,[[${ThisMonth}]]_RPD)",
-	 	"Summary(Area,[[${PrevMonth}]]_Trnx,[[${PrevMonth}]]_Revenue,[[${PrevMonth}]]_RPT,[[${PrevMonth}]]_RPD,[[${ThisMonth}]]_Trnx,[[${ThisMonth}]]_Revenue,[[${ThisMonth}]]_RPT,[[${ThisMonth}]]_RPD,RPDdiff,RevDiff)"
+	 	"[[${PrevMonth}]](Area,Branch,Channel,[[${PrevMonth}]]_Trnx,[[${PrevMonth}]]_Revenue,[[${PrevMonth}]]_RPT,[[${PrevMonth}]]_RPD)",
+	 	"[[${ThisMonth}]](Area,Branch,Channel,[[${ThisMonth}]]_Trnx,[[${ThisMonth}]]_Revenue,[[${ThisMonth}]]_RPT,[[${ThisMonth}]]_RPD)",
+	 	"Summary(Area,Branch,Channel,[[${PrevMonth}]]_Trnx,[[${PrevMonth}]]_RPT,[[${PrevMonth}]]_RPD,[[${ThisMonth}]]_Trnx,[[${ThisMonth}]]_RPT,[[${ThisMonth}]]_RPD,RPDdiff,RevDiff)"
 	 	]
 	} 
  ]
