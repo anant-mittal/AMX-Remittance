@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -137,10 +139,9 @@ public class DirectPaymentLinkManager extends AbstractModel {
 			        	String token = tokenizer.nextToken();
 			            BigDecimal appId = new BigDecimal(token);
 			            logger.info("Application Id : " + appId);
-			            RemittanceApplication fetchApplication = remittanceApplicationRepository.fetchByRemittanceApplicationId(appId);
-			            fetchApplication.setPaymentLinkId(fetchPaymentLinkData.getPaygTrnxSeqId());
 			            
-			            remittanceApplicationRepository.save(fetchApplication);
+			            //remittanceApplicationRepository.save(fetchApplication);
+			            remittanceApplicationRepository.updateLinkId(appId, fetchPaymentLinkData.getPaygTrnxSeqId());
 			        } 
 				}
 			}
@@ -195,6 +196,11 @@ public class DirectPaymentLinkManager extends AbstractModel {
 					if (value != 0) {
 						throw new GlobalException(JaxError.DIRECT_LINK_INVALID, "Link is invalid");
 					}
+					
+					//Validate application Id's
+					String applicationIds = paymentLink.getApplIds();
+					validateApplicationIds(shoppingCartDetails, applicationIds);
+					
 				} else {
 					throw new GlobalException(JaxError.DIRECT_LINK_INVALID, "Link Expired");
 				}
@@ -399,21 +405,6 @@ public class DirectPaymentLinkManager extends AbstractModel {
 				List<RemittanceCollectionDto> collctionModeDto = new ArrayList<>();
 				//List<UserStockDto> currencyRefundDenomination = new ArrayList<>();
 				
-				/*
-				BranchApplicationDto remitApplicationId = new BranchApplicationDto();
-				
-				String applicationid = paymentLinkData.getApplIds();
-				StringTokenizer tokenizer = new StringTokenizer(applicationid, ",");
-				while (tokenizer.hasMoreTokens()) {
-					String token = tokenizer.nextToken();
-					BigDecimal appId = new BigDecimal(token);
-					logger.info("Application Id : " + appId);
-					remitApplicationId.setApplicationId(appId);
-					remittanceApplicationIds.add(remitApplicationId);
-				}*/
-				
-				logger.info("Count of application Ids : "+remittanceApplicationIds.size());
-				
 				PaymentModeModel payModeModel = payModeRepositoy.getPaymentModeDetails(ConstantDocument.KNET_CODE);
 				
 				RemittanceCollectionDto remittanceCollection = new RemittanceCollectionDto();
@@ -421,9 +412,7 @@ public class DirectPaymentLinkManager extends AbstractModel {
 				remittanceCollection.setPaymentModeId(payModeModel.getPaymentModeId());
 				remittanceCollection.setPaymentAmount(paymentLinkData.getPayAmount());
 				remittanceCollection.setApprovalNo(paymentLinkData.getPgAuthCode());
-				
-				logger.info("Payment value set in remittanceCollection : "+paymentLinkData.getPayAmount());
-				
+								
 				collctionModeDto.add(remittanceCollection);
 				
 				BigDecimal totalLoyaltyEncashed =BigDecimal.ZERO;
@@ -431,7 +420,6 @@ public class DirectPaymentLinkManager extends AbstractModel {
 				List<RemittanceApplication> applications = remittanceApplicationRepository.getApplByPaymentlinkId(linkId);
 				
 				if(null != applications){
-					logger.info("applications count ------> : " +applications);
 					for(RemittanceApplication appl: applications) {
 						BranchApplicationDto applDto = new BranchApplicationDto();
 				        applDto.setApplicationId(appl.getRemittanceApplicationId());
@@ -439,14 +427,10 @@ public class DirectPaymentLinkManager extends AbstractModel {
 						totalPaidAmount=totalPaidAmount.add(appl.getLocalNetTranxAmount());
 						remittanceApplicationIds.add(applDto);
 					}
-				}	
-				
-				logger.info("Count of application Ids : "+remittanceApplicationIds.size());
-				
-				logger.info("Total Paid Amt ------> : " +totalPaidAmount);
-				
+				}				
 				
 				//Set request Parameter
+				logger.info("request Parameter SET for saveRemittanceTrnx ------> ");
 				request.setRemittanceApplicationId(remittanceApplicationIds);
 				request.setCollctionModeDto(collctionModeDto);
 				request.setCurrencyRefundDenomination(null);
@@ -473,6 +457,29 @@ public class DirectPaymentLinkManager extends AbstractModel {
 			}
 		}
 		
+	}
+	
+	private void validateApplicationIds(List<CustomerShoppingCartDto> shoppingCartDetails, String applicationIds) {
+		List<String> list = Arrays.asList(applicationIds.split(","));
+		List<BigDecimal> l = new ArrayList<BigDecimal>();
+		for (String value : list) {
+		    l.add(new BigDecimal(value));
+		}
+		
+		List<BigDecimal> l2 = new ArrayList<BigDecimal>();
+		for(CustomerShoppingCartDto shpCartData : shoppingCartDetails) {
+			l2.add(shpCartData.getApplicationDetailsId());
+		}
+		
+		 Collections.sort(l);
+	     Collections.sort(l2);
+	     
+	     if(!l.equals(l2)) {
+	    	 throw new GlobalException(JaxError.DIRECT_LINK_INVALID,
+						"Invalidate link, Application Id mismatch");
+	     }
+	     
+	     
 	}
 
 	
