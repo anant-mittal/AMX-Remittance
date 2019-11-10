@@ -7,6 +7,7 @@ import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_BANK_I
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_COUNTRY_ID;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -75,8 +76,11 @@ import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.services.BeneficiaryValidationService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.JaxUtil;
+import com.amx.jax.util.RoundUtil;
 import com.amx.jax.validation.RemittanceTransactionRequestValidator;
 import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
+
+import net.bytebuddy.utility.privilege.GetSystemPropertyAction;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
@@ -328,6 +332,8 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 			result.setBetterRateAvailable(sellRateDetail.isBetterRateAvailable());
 			result.setBetterRateAmountSlab(sellRateDetail.getBetterRateAmountSlab());
 			
+			result.setRackExchangeRate(sellRateDetail.getRackExchangeRate());
+			
 			BigDecimal commission =null;
 			if(prType.equals(PRICE_TYPE.NO_BENE_DEDUCT)) {
 			 commission =trnxRoutingDetails.getChargeAmount();
@@ -383,6 +389,9 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 			}else {
 				remittanceTransactionManager.applyCurrencyRoudingLogicSP(result.getExRateBreakup());
 			}
+		
+			result.setYouSavedAmount(getYouSavedAmount(result));
+			result.setYouSavedAmountInFC(getYouSavedAmountInFc(result));
 		}
 		return result;
 	}
@@ -506,4 +515,37 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 		return serviceProviderDto ; 
 	}
 	
+	/** 
+	 * @author rabil
+	 * @param result
+	 * @return :saved Amount
+	 */
+	private BigDecimal getYouSavedAmount(DynamicRoutingPricingDto result ) {
+		BigDecimal savedAmount = BigDecimal.ZERO;
+		if(result!=null && result.getDiscountAvailed() && result.getRackExchangeRate().compareTo(BigDecimal.ZERO)>0 && result.getExRateBreakup().getConvertedFCAmount().compareTo(BigDecimal.ZERO)>0) {
+			savedAmount =result.getRackExchangeRate().multiply(result.getExRateBreakup().getConvertedFCAmount()).subtract(result.getExRateBreakup().getConvertedLCAmount());
+		
+		
+		if(savedAmount.compareTo(BigDecimal.ZERO)>0) {
+			savedAmount = RoundUtil.roundBigDecimal(savedAmount,result.getExRateBreakup().getLcDecimalNumber().intValue());
+		}
+		}
+		return savedAmount;
+	}
+	
+	
+	private BigDecimal getYouSavedAmountInFc(DynamicRoutingPricingDto result) {
+		BigDecimal savedAmountFC = BigDecimal.ZERO;
+		
+		if(result.getRackExchangeRate().compareTo(BigDecimal.ZERO)>0 && result.getExRateBreakup().getConvertedFCAmount().compareTo(BigDecimal.ZERO)>0) {
+			BigDecimal exchRate = new BigDecimal(1).divide(result.getRackExchangeRate(), 10, RoundingMode.HALF_UP);
+			
+			savedAmountFC = result.getExRateBreakup().getConvertedFCAmount().subtract(result.getExRateBreakup().getConvertedLCAmount().multiply(exchRate));
+		
+			if(savedAmountFC.compareTo(BigDecimal.ZERO)>0) {
+				savedAmountFC = RoundUtil.roundBigDecimal(savedAmountFC,result.getExRateBreakup().getFcDecimalNumber().intValue());
+			}
+		}
+		return savedAmountFC;
+	}
 }

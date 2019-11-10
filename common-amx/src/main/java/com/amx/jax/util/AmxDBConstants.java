@@ -3,8 +3,15 @@ package com.amx.jax.util;
 import java.math.BigDecimal;
 
 public class AmxDBConstants {
+	
+	/**
+	 * Maximum value possible for language id, in according to DB;
+	 */
+	public static final BigDecimal MAX_LANG_ID = new BigDecimal(10);
+	
 	public static final BigDecimal DOCUMENT_CODE_FOR_COLLECT_TRANSACTION = new BigDecimal(2);
 	public static final BigDecimal DOCUMENT_CODE_FOR_REMITTANCE_APPLICATION = new BigDecimal(1);
+	
 	public static final String No = "N";
 	public static final String Yes = "Y";
 	public static final String Deleted = "D";
@@ -144,7 +151,6 @@ public class AmxDBConstants {
 	public static final BigDecimal OMAN_FOREIGNCURRENCY = new BigDecimal(99);
 	public static final BigDecimal BAHRAIN_FOREIGNCURRENCY = new BigDecimal(70);
 	public static final BigDecimal BIZ_COMPONENT_ID_PASSPORT = new BigDecimal(204);
-	
 
 
 	public static final String ARTICLE_20_CODE = "20";
@@ -246,6 +252,9 @@ public class AmxDBConstants {
 	public static String BANKTRANSFER;
 	//For Palce Order 
 	public static final BigDecimal DOCUMENT_CODE_FOR_PLACEORDER = new BigDecimal(59);
-	
-	
+	// Constants for direct payment link
+	public static final String DIRECT_PAYMENT_LINK_PAID ="P";
+	public static final String DIRECT_LINK ="LINK";
+    public static final String IMPS = "IMPS";
+
 }

@@ -156,7 +156,7 @@ public class Customer implements java.io.Serializable, Communicatable {
 	private String isBusinessCardVerified;
 	private List<ComplianceBlockedCustomerDocMap> complianceBlockedDocuments;
 	
-		
+
 	private String customerVatNumber;
 	private String premInsurance;
 
@@ -165,6 +165,13 @@ public class Customer implements java.io.Serializable, Communicatable {
 	private BigDecimal annualTransactionLimitFrom;
 	private BigDecimal annualTransactionLimitTo;
 	private Date annualTransactionUpdatedDate;
+	
+	
+	
+	/** added by rabil on 09 Oc 2019 **/
+	
+	private BigDecimal onlineLanguageChangeCount;
+	
 
 	@Column(name = "ANNUAL_TRNXLIMIT_FROM")
 	public BigDecimal getAnnualTransactionLimitFrom() {
@@ -1110,7 +1117,7 @@ public class Customer implements java.io.Serializable, Communicatable {
 	}
 
 	public boolean canSendEmail() {
-		return !(Status.D.equals(this.emailVerified) || Status.N.equals(this.emailVerified));
+		return !(Status.D.equals(this.emailVerified) || Status.N.equals(this.emailVerified) || ArgUtil.isEmpty(this.email));
 	}
 
 	private Status mobileVerified;
@@ -1148,7 +1155,7 @@ public class Customer implements java.io.Serializable, Communicatable {
 	public String getCustomerVatNumber() {
 		return customerVatNumber;
 	}
-	
+
 	@ManyToMany(cascade = CascadeType.ALL, fetch=FetchType.LAZY)
 	@JoinTable(  name = "JAX_COMPLIANCE_BLOCKED_DOC_MAP", joinColumns = @JoinColumn(name = "CUSTOMER_ID", referencedColumnName="CUSTOMER_ID"), inverseJoinColumns = @JoinColumn(name = "COMP_BLOCKED_CUST_DOC_MAP_ID",
 			referencedColumnName="ID"))
@@ -1176,7 +1183,18 @@ public class Customer implements java.io.Serializable, Communicatable {
 	public void setCustomerVatNumber(String customerVatNumber) {
 		this.customerVatNumber = customerVatNumber;
 	}
+
 	
+	
+	@Column(name="LANGUAGE_CHANGE_COUNT")
+	public BigDecimal getOnlineLanguageChangeCount() {
+		return onlineLanguageChangeCount;
+	}
+
+	public void setOnlineLanguageChangeCount(BigDecimal onlineLanguageChangeCount) {
+		this.onlineLanguageChangeCount = onlineLanguageChangeCount;
+	}
+
 	public void setComplianceBlockedDocuments(List<ComplianceBlockedCustomerDocMap> complianceBlockedDocuments) {
 		this.complianceBlockedDocuments = complianceBlockedDocuments;
 	}

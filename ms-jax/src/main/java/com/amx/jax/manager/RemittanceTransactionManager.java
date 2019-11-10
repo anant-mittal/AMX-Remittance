@@ -408,6 +408,8 @@ public class RemittanceTransactionManager {
 		}
 		
 		setCustomerDiscountColumnsV2(responseModel, dynamicRoutingPricing);
+		setSavedAmount(responseModel,dynamicRoutingPricing);
+		
 		return responseModel;
 
 	}
@@ -1597,4 +1599,13 @@ public class RemittanceTransactionManager {
 		exRatebreakUp.setNetAmountWithoutLoyality(RoundUtil.roundBigDecimal(exRatebreakUp.getNetAmountWithoutLoyality(),exRatebreakUp.getLcDecimalNumber().intValue()));
 		exRatebreakUp.setInverseRate((RoundUtil.roundBigDecimal(exRatebreakUp.getInverseRate(), AmxDBConstants.EXCHANGE_RATE_DECIMAL.intValue())));
 	}
+
+	public void setSavedAmount(RemittanceTransactionResponsetModel validationResults,DynamicRoutingPricingDto model) {
+		
+		validationResults.setYouSavedAmount(model.getYouSavedAmount());
+		validationResults.setRackExchangeRate(model.getRackExchangeRate());
+		validationResults.setYouSavedAmountInFC(model.getYouSavedAmountInFC());
+		validationResults.setCustomerChoice(model.getCustomerChoice());
+	}
+
 }

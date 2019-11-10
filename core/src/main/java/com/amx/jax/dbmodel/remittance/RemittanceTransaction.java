@@ -159,6 +159,14 @@ public class RemittanceTransaction implements Serializable {
 	private BigDecimal usdAmt;
 	private String wuPurposeOfTransaction;
 	
+	private BigDecimal savedAmount;
+	private BigDecimal rackExchangeRate;
+	
+	private String customerChoice;
+	
+	
+	private BigDecimal savedAmountInFc;
+	
 	private Date timeToDeliver;
 	
 	public RemittanceTransaction() {
@@ -1194,6 +1202,41 @@ public class RemittanceTransaction implements Serializable {
 	public void setWuPurposeOfTransaction(String wuPurposeOfTransaction) {
 		this.wuPurposeOfTransaction = wuPurposeOfTransaction;
 	}
+	
+	@Column(name="SAVED_AMOUNT")
+	public BigDecimal getSavedAmount() {
+		return savedAmount;
+	}
+
+	public void setSavedAmount(BigDecimal savedAmount) {
+		this.savedAmount = savedAmount;
+	}
+	
+	@Column(name="RACK_EXCHANGE_RATE")
+	public BigDecimal getRackExchangeRate() {
+		return rackExchangeRate;
+	}
+
+	public void setRackExchangeRate(BigDecimal rackExchangeRate) {
+		this.rackExchangeRate = rackExchangeRate;
+	}
+	
+	@Column(name="CUSTOMER_CHOICE")
+	public String getCustomerChoice() {
+		return customerChoice;
+	}
+
+	public void setCustomerChoice(String customerChoice) {
+		this.customerChoice = customerChoice;
+	}
+	@Column(name="SAVED_AMOUNT_FC")
+	public BigDecimal getSavedAmountInFc() {
+		return savedAmountInFc;
+	}
+
+	public void setSavedAmountInFc(BigDecimal savedAmountInFc) {
+		this.savedAmountInFc = savedAmountInFc;
+	}
 
 	@Column(name="TIME_TO_DELIVER")
 	public Date getTimeToDeliver() {
@@ -1203,8 +1246,6 @@ public class RemittanceTransaction implements Serializable {
 	public void setTimeToDeliver(Date timeToDeliver) {
 		this.timeToDeliver = timeToDeliver;
 	}
-	
-	
 
 }
  

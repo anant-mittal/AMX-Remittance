@@ -16,12 +16,20 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.exception.ExceptionMessageKey;
+import com.amx.utils.ArgUtil;
 
 /**
  * The Class JaxUtil.
  */
 @Component
 public class JaxUtil {
+	
+	public static BigDecimal languageScale(BigDecimal languageId) {
+		if(ArgUtil.isEmpty(languageId) || (AmxDBConstants.MAX_LANG_ID.compareTo(languageId) < 0)) {
+			return BigDecimal.ONE;
+		}
+		return languageId;
+	}
 
 	/** The logger. */
 	Logger logger = LoggerFactory.getLogger(getClass());
