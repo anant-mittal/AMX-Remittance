@@ -21,6 +21,7 @@ import com.amx.jax.client.OffsiteCustRegClient;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.response.ComponentDataDto;
 import com.amx.jax.model.response.CurrencyMasterDTO;
+import com.amx.jax.model.response.remittance.ServiceMasterDTO;
 
 import io.swagger.annotations.Api;
 
@@ -104,6 +105,11 @@ public class MetaController {
 	@RequestMapping(value = "/pub/meta/service/list", method = RequestMethod.GET)
 	public AmxApiResponse<ServiceGroupMasterDescDto, Object> getServiceList() {
 		return metaClient.getServiceGroupList();
+	}
+
+	@RequestMapping(value = "/pub/meta/service_master/list", method = RequestMethod.GET)
+	public AmxApiResponse<ServiceMasterDTO, Object> getServiceMasterList() {
+		return metaClient.getServiceMaster();
 	}
 
 }
