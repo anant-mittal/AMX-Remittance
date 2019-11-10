@@ -151,6 +151,7 @@ public class PlaceOrderManager implements Serializable{
 		TrnxRoutingDetails trnxRoutingDtls = dynPricingDto.getTrnxRoutingPaths();
 		BigDecimal selectedCurrId = branchRemitManager.getSelectedCurrency(beneficaryDetails.getCurrencyId(), applRequestModel);
 		Customer customer = customerRepository.getCustomerByCustomerId(metaData.getCustomerId());
+		ExchangeRateBreakup exchRateBreakup = applRequestModel.getExchangeRateBreakup();
 		
 		//place order
 		placeOrderAppl.setAccountSeqquenceId(beneficaryDetails.getBeneficiaryAccountSeqId());
@@ -199,6 +200,10 @@ public class PlaceOrderManager implements Serializable{
 		placeOrderAppl.setRemittanceModeId(trnxRoutingDtls.getRemittanceModeId());
 		placeOrderAppl.setDeliveryModeId(trnxRoutingDtls.getDeliveryModeId());
 		placeOrderAppl.setSourceOfincomeId(applRequestModel.getSourceOfFund());
+		
+		placeOrderAppl.setExchangeRateApplied(exchRateBreakup.getInverseRate());
+		placeOrderAppl.setRackExchangeRate(null);
+		
 		placeOrderAppl.setRequestModel(JsonUtil.toJson(applRequestModel));
 		
 		if(JaxUtil.isNullZeroBigDecimalCheck(applRequestModel.getForeignAmount())){
@@ -338,13 +343,8 @@ public class PlaceOrderManager implements Serializable{
 	}
 
 	
-
 	
-	
-	
-	
-	
-	
+	//public void rejectPlaceOrder
 	
 	
 	public String getCustomerFullName(Customer customer){

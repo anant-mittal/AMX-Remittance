@@ -102,6 +102,9 @@ public class RatePlaceOrder implements Serializable {
 		private BigDecimal pipsDiscount;
 		private String reachedCostRateLimit;
 		private String requestModel;
+		private BigDecimal exchangeRateApplied;
+		private BigDecimal rackExchangeRate;
+		
 		
 		public RatePlaceOrder() {
 			super();
@@ -830,6 +833,24 @@ public class RatePlaceOrder implements Serializable {
 
 		public void setRequestModel(String requestModel) {
 			this.requestModel = requestModel;
+		}
+		
+		@Column(name="EXCHANGE_RATE_APPLIED")
+		public BigDecimal getExchangeRateApplied() {
+			return exchangeRateApplied;
+		}
+
+		public void setExchangeRateApplied(BigDecimal exchangeRateApplied) {
+			this.exchangeRateApplied = exchangeRateApplied;
+		}
+
+		@Column(name="RACK_EXCHANGE_RATE")
+		public BigDecimal getRackExchangeRate() {
+			return rackExchangeRate;
+		}
+
+		public void setRackExchangeRate(BigDecimal rackExchangeRate) {
+			this.rackExchangeRate = rackExchangeRate;
 		}
 		
 		
