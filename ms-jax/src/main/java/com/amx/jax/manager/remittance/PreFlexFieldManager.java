@@ -44,6 +44,7 @@ import com.amx.jax.validation.RemittanceTransactionRequestValidator;
 public class PreFlexFieldManager {
 
 	public static final String FC_AMOUNT_FLEX_FIELD_NAME = "PACKAGE_FCAMOUNT";
+	public static final String INDIC_16_VOLUNTEERCONTRIBUTION_SYMBOL = ">";
 
 	@Autowired
 	IAdditionalDataDisplayDao additionalDataDisplayDao;
@@ -78,12 +79,14 @@ public class PreFlexFieldManager {
 		if (requestFlexFields == null) {
 			requestFlexFields = new HashMap<>();
 		}
-		BenificiaryListView beneficaryDetails = beneficiaryRepository.findByCustomerIdAndBeneficiaryRelationShipSeqIdAndIsActive(
-				metaData.getCustomerId(), benePackageRequest.getBeneId(), ConstantDocument.Yes);
+		BenificiaryListView beneficaryDetails = beneficiaryRepository
+				.findByCustomerIdAndBeneficiaryRelationShipSeqIdAndIsActive(metaData.getCustomerId(),
+						benePackageRequest.getBeneId(), ConstantDocument.Yes);
 		BigDecimal routingBankId = beneficaryDetails.getServiceProvider();
 		BankMasterModel routingBank = bankService.getBankById(routingBankId);
-		ViewParameterDetails cashSetUp = viewParameterDetailsRespository.findByRecordIdAndCharField1AndCharField2AndNumericField1(
-				ConstantDocument.CASH_STRING, routingBank.getBankCode(), beneficaryDetails.getBankCode(), beneficaryDetails.getBranchCode());
+		ViewParameterDetails cashSetUp = viewParameterDetailsRespository
+				.findByRecordIdAndCharField1AndCharField2AndNumericField1(ConstantDocument.CASH_STRING,
+						routingBank.getBankCode(), beneficaryDetails.getBankCode(), beneficaryDetails.getBranchCode());
 		List<JaxConditionalFieldDto> requiredFlexFields = new ArrayList<>();
 		// when size of package is 1 then we are using parameter setup otherwise we are
 		// using additional data setup
@@ -91,13 +94,15 @@ public class PreFlexFieldManager {
 			requiredFlexFields.addAll(fetchFlexFieldsForCashSetup(cashSetUp, benePackageRequest, beneficaryDetails));
 		} else {
 			// fetch flex field from parameter setup
-			List<ParameterDetailsDto> parameterSetUp = additionalBankDetailManager.fetchServiceProviderFcAmount(benePackageRequest.getBeneId());
+			List<ParameterDetailsDto> parameterSetUp = additionalBankDetailManager
+					.fetchServiceProviderFcAmount(benePackageRequest.getBeneId());
 			if (parameterSetUp.size() == 1) {
 				ParameterDetailsDto parameterDto = parameterSetUp.get(0);
 				FlexFieldDto flexFieldValueInRequest = requestFlexFields.get(FC_AMOUNT_FLEX_FIELD_NAME);
 				JaxConditionalFieldDto jaxConditionalFieldDto = fetchFlexFieldsForParameterSetup(parameterDto);
 				requiredFlexFields.add(jaxConditionalFieldDto);
-				packageFcAmount = flexFieldValueInRequest == null ? null : new BigDecimal(flexFieldValueInRequest.getAmieceDescription());
+				packageFcAmount = flexFieldValueInRequest == null ? null
+						: new BigDecimal(flexFieldValueInRequest.getAmieceDescription());
 				if (parameterDto.getAmount() != null && parameterDto.getAmount().doubleValue() > 0) {
 					packageFcAmount = parameterDto.getAmount();
 				}
@@ -167,21 +172,24 @@ public class PreFlexFieldManager {
 		String deliveryModeCode = cashSetUp.getCharField4();
 		Map<String, FlexFieldDto> requestFlexFields = benePackageRequest.getFlexFieldDtoMap();
 		List<FlexFiledView> allFlexFields = remittanceApplicationDao.getFlexFields();
-		BigDecimal remittanceModeId = remittanceModeMasterRepository.findByRemittance(remittanceModeCode).getRemittanceModeId();
+		BigDecimal remittanceModeId = remittanceModeMasterRepository.findByRemittance(remittanceModeCode)
+				.getRemittanceModeId();
 		BigDecimal deliveryModeId = deliveryModeRepository.findByDeliveryMode(deliveryModeCode).getDeliveryModeId();
 		List<String> flexiFieldIn = allFlexFields.stream().map(i -> i.getFieldName()).collect(Collectors.toList());
-		List<AdditionalDataDisplayView> additionalDataRequired = additionalDataDisplayDao.getAdditionalDataFromServiceApplicabilityForBank(
-				applicationCountryId, routingCountryId, foreignCurrencyId, remittanceModeId, deliveryModeId,
-				flexiFieldIn.toArray(new String[flexiFieldIn.size()]), routingBankId, ConstantDocument.Yes);
+		List<AdditionalDataDisplayView> additionalDataRequired = additionalDataDisplayDao
+				.getAdditionalDataFromServiceApplicabilityForBank(applicationCountryId, routingCountryId,
+						foreignCurrencyId, remittanceModeId, deliveryModeId,
+						flexiFieldIn.toArray(new String[flexiFieldIn.size()]), routingBankId, ConstantDocument.Yes);
 		boolean volunteerContributionIndic = false;
 		boolean volunteerContributionSelected = false;
 		for (AdditionalDataDisplayView flexField : additionalDataRequired) {
 			FlexFieldDto flexFieldValueInRequest = requestFlexFields.get(flexField.getFlexField());
-			JaxConditionalFieldDto jaxConditionalFieldDto = remittanceTransactionRequestValidator.getConditionalFieldDto(flexField, requestFlexFields,
-					routingCountryId, remittanceModeId, deliveryModeId, foreignCurrencyId, routingBankId, null, true);
+			JaxConditionalFieldDto jaxConditionalFieldDto = remittanceTransactionRequestValidator
+					.getConditionalFieldDto(flexField, requestFlexFields, routingCountryId, remittanceModeId,
+							deliveryModeId, foreignCurrencyId, routingBankId, null, true);
 			sortPossibleValues(jaxConditionalFieldDto);
 			if ("INDIC16".equals(flexField.getFlexField()) && flexFieldValueInRequest != null
-					&& flexFieldValueInRequest.getAmieceCode().contains("+")) {
+					&& flexFieldValueInRequest.getAmieceCode().contains(INDIC_16_VOLUNTEERCONTRIBUTION_SYMBOL)) {
 				volunteerContributionIndic = true;
 			}
 			if ("INDIC17".equals(flexField.getFlexField()) && flexFieldValueInRequest != null) {
@@ -215,7 +223,8 @@ public class PreFlexFieldManager {
 				Collections.sort(possibleValues, (o1, o2) -> {
 					FlexFieldDto dto1 = (FlexFieldDto) o1.getValue();
 					FlexFieldDto dto2 = (FlexFieldDto) o2.getValue();
-					BigDecimal amount1 = new BigDecimal(dto1.getAmieceCode().replace("+", ""));
+					BigDecimal amount1 = new BigDecimal(
+							dto1.getAmieceCode().replace(INDIC_16_VOLUNTEERCONTRIBUTION_SYMBOL, ""));
 					BigDecimal amount2 = new BigDecimal(dto2.getAmieceCode());
 					return amount1.compareTo(amount2);
 				});
@@ -225,7 +234,8 @@ public class PreFlexFieldManager {
 
 	public BenePackageResponse createBenePackageResponse(Map<String, Object> validationResults) {
 		BenePackageResponse resp = new BenePackageResponse();
-		List<JaxConditionalFieldDto> requiredFlexFields = (List<JaxConditionalFieldDto>) validationResults.get("requiredFlexFields");
+		List<JaxConditionalFieldDto> requiredFlexFields = (List<JaxConditionalFieldDto>) validationResults
+				.get("requiredFlexFields");
 		resp.setRequiredFlexFields(requiredFlexFields);
 		if (validationResults.get("PACKAGE_FC_AMOUNT") != null) {
 			resp.setAmount(new BigDecimal(validationResults.get("PACKAGE_FC_AMOUNT").toString()));
