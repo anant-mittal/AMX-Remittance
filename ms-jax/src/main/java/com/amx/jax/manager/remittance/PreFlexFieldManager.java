@@ -3,6 +3,7 @@ package com.amx.jax.manager.remittance;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -28,6 +29,7 @@ import com.amx.jax.model.response.customer.BenePackageResponse;
 import com.amx.jax.model.response.jaxfield.JaxConditionalFieldDto;
 import com.amx.jax.model.response.jaxfield.JaxFieldDto;
 import com.amx.jax.model.response.jaxfield.JaxFieldEntity;
+import com.amx.jax.model.response.jaxfield.JaxFieldValueDto;
 import com.amx.jax.model.response.remittance.FlexFieldDto;
 import com.amx.jax.model.response.remittance.ParameterDetailsDto;
 import com.amx.jax.repository.IAdditionalDataDisplayDao;
@@ -96,6 +98,9 @@ public class PreFlexFieldManager {
 				JaxConditionalFieldDto jaxConditionalFieldDto = fetchFlexFieldsForParameterSetup(parameterDto);
 				requiredFlexFields.add(jaxConditionalFieldDto);
 				packageFcAmount = flexFieldValueInRequest == null ? null : new BigDecimal(flexFieldValueInRequest.getAmieceDescription());
+				if (parameterDto.getAmount() != null && parameterDto.getAmount().doubleValue() > 0) {
+					packageFcAmount = parameterDto.getAmount();
+				}
 				if (packageFcAmount != null) {
 					jaxConditionalFieldDto.getField().setDefaultValue(packageFcAmount.toString());
 				}
@@ -121,14 +126,14 @@ public class PreFlexFieldManager {
 			}
 		}
 		Map<String, Object> validationResults = new HashMap<>();
-		validationResults.put("PACKAGE_FC_AMOUNT", packageFcAmount);
-		validationResults.put("requiredFlexFields", requiredFlexFields);
 		if (monthlyContribution != null) {
 			packageFcAmount = monthlyContribution.multiply(BigDecimal.valueOf(noOfMonth));
 		}
 		if (volunteerContribution != null) {
 			packageFcAmount = monthlyContribution.add(volunteerContribution).multiply(BigDecimal.valueOf(noOfMonth));
 		}
+		validationResults.put("PACKAGE_FC_AMOUNT", packageFcAmount);
+		validationResults.put("requiredFlexFields", requiredFlexFields);
 		return validationResults;
 	}
 
@@ -167,14 +172,16 @@ public class PreFlexFieldManager {
 		List<String> flexiFieldIn = allFlexFields.stream().map(i -> i.getFieldName()).collect(Collectors.toList());
 		List<AdditionalDataDisplayView> additionalDataRequired = additionalDataDisplayDao.getAdditionalDataFromServiceApplicabilityForBank(
 				applicationCountryId, routingCountryId, foreignCurrencyId, remittanceModeId, deliveryModeId,
-				flexiFieldIn.toArray(new String[flexiFieldIn.size()]), routingBankId, ConstantDocument.No);
+				flexiFieldIn.toArray(new String[flexiFieldIn.size()]), routingBankId, ConstantDocument.Yes);
 		boolean volunteerContributionIndic = false;
 		boolean volunteerContributionSelected = false;
 		for (AdditionalDataDisplayView flexField : additionalDataRequired) {
 			FlexFieldDto flexFieldValueInRequest = requestFlexFields.get(flexField.getFlexField());
 			JaxConditionalFieldDto jaxConditionalFieldDto = remittanceTransactionRequestValidator.getConditionalFieldDto(flexField, requestFlexFields,
-					foreignCurrencyId, foreignCurrencyId, foreignCurrencyId, foreignCurrencyId, foreignCurrencyId, null, true);
-			if ("INDIC16".equals(flexField.getFlexField()) && flexFieldValueInRequest.getAmieceCode().contains("+")) {
+					routingCountryId, remittanceModeId, deliveryModeId, foreignCurrencyId, routingBankId, null, true);
+			sortPossibleValues(jaxConditionalFieldDto);
+			if ("INDIC16".equals(flexField.getFlexField()) && flexFieldValueInRequest != null
+					&& flexFieldValueInRequest.getAmieceCode().contains("+")) {
 				volunteerContributionIndic = true;
 			}
 			if ("INDIC17".equals(flexField.getFlexField()) && flexFieldValueInRequest != null) {
@@ -197,6 +204,23 @@ public class PreFlexFieldManager {
 			}
 		}
 		return requiredFlexFields;
+	}
+
+	private void sortPossibleValues(JaxConditionalFieldDto jaxConditionalFieldDto) {
+		List<JaxFieldValueDto> possibleValues = jaxConditionalFieldDto.getField().getPossibleValues();
+		String fieldName = jaxConditionalFieldDto.getField().getName();
+		if ("INDIC16".equals(fieldName) || "INDIC18".equals(fieldName)) {
+			if (possibleValues != null) {
+				// sorting possible values acc. to amiec code
+				Collections.sort(possibleValues, (o1, o2) -> {
+					FlexFieldDto dto1 = (FlexFieldDto) o1.getValue();
+					FlexFieldDto dto2 = (FlexFieldDto) o2.getValue();
+					BigDecimal amount1 = new BigDecimal(dto1.getAmieceCode().replace("+", ""));
+					BigDecimal amount2 = new BigDecimal(dto2.getAmieceCode());
+					return amount1.compareTo(amount2);
+				});
+			}
+		}
 	}
 
 	public BenePackageResponse createBenePackageResponse(Map<String, Object> validationResults) {
