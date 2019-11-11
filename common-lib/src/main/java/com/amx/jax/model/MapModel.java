@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import com.amx.jax.json.JsonSerializerType;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
+import com.amx.utils.JsonPath;
 import com.amx.utils.JsonUtil;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -70,6 +71,10 @@ public class MapModel implements JsonSerializerType<Object> {
 
 	public MapEntry entry(String key) {
 		return new MapEntry(this.map.get(key));
+	}
+
+	public MapEntry entry(JsonPath jsonPath) {
+		return new MapEntry(jsonPath.load(this.map, null));
 	}
 
 	public MapEntry first() {

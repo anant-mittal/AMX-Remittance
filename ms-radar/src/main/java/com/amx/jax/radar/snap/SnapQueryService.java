@@ -129,10 +129,20 @@ public class SnapQueryService {
 		return this.executeQuery(query, template.getIndex());
 	}
 
-	public static class BulkRequestSnapBuilder extends BulkRequestBuilder {
+	public static class BulkRequestSnapBuilder extends BulkRequestBuilder<BulkRequestSnapBuilder> {
 		@Override
-		public BulkRequestBuilder updateById(String index, String type, String id, AESDocument vote) {
+		public BulkRequestSnapBuilder updateById(String index, String type, String id, AESDocument vote) {
 			return super.updateById(EsConfig.indexName(index), type, id, vote);
+		}
+
+		@Override
+		public BulkRequestSnapBuilder update(String index, String type, AESDocument vote) {
+			return this.updateById(EsConfig.indexName(index), type, vote.getId(), vote);
+		}
+
+		@Override
+		public BulkRequestSnapBuilder update(String index, AESDocument vote) {
+			return this.updateById(EsConfig.indexName(index), vote.getType(), vote.getId(), vote);
 		}
 	}
 

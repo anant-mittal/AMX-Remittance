@@ -674,6 +674,10 @@ public final class ArgUtil {
 		return !ArgUtil.isEmpty(object);
 	}
 
+	public static boolean isNotEmpty(Object object) {
+		return !isEmpty(object);
+	}
+
 	/**
 	 * Checks if is collection empty.
 	 *

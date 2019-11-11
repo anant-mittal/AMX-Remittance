@@ -23,4 +23,7 @@ public interface CustomerContactVerificationRepository extends CrudRepository<Cu
 
 	@Query("select cv from CustomerContactVerification cv where cv.contactType=?1 and cv.isActive='Y' and cv.sendDate < ?2")
 	public List<CustomerContactVerification> getExpiredLinks(ContactType contactType, java.util.Date date);
+
+	@Query("select cv from CustomerContactVerification cv where cv.isActive='Y' and cv.sendDate > ?1 and cv.createdByType='E'")
+	public List<CustomerContactVerification> getByContactsByEmployee(java.util.Date date);
 }
