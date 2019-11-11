@@ -526,7 +526,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 		
 
 		return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.SERVICE_MASTER)
-				.meta(new JaxMetaInfo()).get()
+				.meta(new JaxMetaInfo()).post()
 				.as(new ParameterizedTypeReference<AmxApiResponse<ServiceMasterDTO, Object>>() {
 				});
 	
