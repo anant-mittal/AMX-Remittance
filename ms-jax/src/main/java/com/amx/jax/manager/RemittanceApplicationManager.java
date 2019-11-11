@@ -391,10 +391,7 @@ public class RemittanceApplicationManager {
 
 		setCustomerDiscountColumns(remittanceApplication, validationResults);
 		setVatDetails(remittanceApplication, validationResults);
-<<<<<<< HEAD
 		setSavedAmount(remittanceApplication, validationResults);
-=======
->>>>>>> staging
 		setDeliveryTimeDuration(remittanceApplication,dynamicRoutingPricingResponse.getTrnxRoutingPaths());
 		return remittanceApplication;
 	}
@@ -681,19 +678,5 @@ public class RemittanceApplicationManager {
 		
 	}
 	
-	/** @author rabil
-	 * Purpose : to store the delivery date and time 
-	 * 
-	 */
-	public  void setDeliveryTimeDuration(RemittanceApplication remittanceApplication,TrnxRoutingDetails trnxRoutingDetails) {
-		if(trnxRoutingDetails!=null && trnxRoutingDetails.getEstimatedDeliveryDetails()!=null) {
-			if(trnxRoutingDetails.getEstimatedDeliveryDetails().getProcessTimeTotalInSeconds()>0) {
-				remittanceApplication.setTimeToDeliverInSec(new BigDecimal(trnxRoutingDetails.getEstimatedDeliveryDetails().getProcessTimeTotalInSeconds()));
-			}
-		}
-		
-		
-		
-	}
 	
 }

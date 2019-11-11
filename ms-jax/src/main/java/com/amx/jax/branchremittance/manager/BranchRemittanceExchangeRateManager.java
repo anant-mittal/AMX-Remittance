@@ -525,7 +525,7 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 	
 	
 	
-	private String impsSplittingMessage(DynamicRoutingPricingDto drDto) {
+	/*private String impsSplittingMessage(DynamicRoutingPricingDto drDto) {
 		String msg = null;
 		String reminder = "";
 		try {
@@ -560,7 +560,7 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 		}
 		}
 		return savedAmount;
-	}
+	}*/
 	
 	
 /** 

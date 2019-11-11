@@ -1,7 +1,6 @@
 package com.amx.jax.ui.api;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.http.Cookie;
@@ -23,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.amxlib.meta.model.AnnualIncomeRangeDTO;
 import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.meta.model.IncomeDto;
-import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.CustomerNotifyHubDTO;
 import com.amx.amxlib.model.UserFingerprintResponseModel;
@@ -32,16 +30,14 @@ import com.amx.jax.AppContextUtil;
 import com.amx.jax.JaxAuthContext;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
-import com.amx.jax.client.CustomerProfileClient;
-import com.amx.jax.client.JaxPushNotificationClient;
 import com.amx.jax.client.CustomerNotifyHubClient;
+import com.amx.jax.client.CustomerProfileClient;
 import com.amx.jax.dict.Language;
 import com.amx.jax.dict.UserClient.AppType;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.logger.AuditActor;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.LoggerService;
-import com.amx.jax.logger.events.CActivityEvent;
 import com.amx.jax.model.CivilIdOtpModel;
 import com.amx.jax.model.response.customer.CustomerFlags;
 import com.amx.jax.model.response.customer.CustomerModelSignupResponse;
