@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.pricer.dao.BankMasterDao;
@@ -443,10 +444,13 @@ public class DiscountManager {
 			 return true;
 
 		 }
-	 }catch(PricerServiceException e)
-		{
-		 LOGGER.info("ErrorKey : - " +e.getErrorKey()+ " ErrorMessage : - " +e.getErrorMessage());
-		 throw new PricerServiceException(PricerServiceError.INVALID_MARKUP,
+		} catch (PricerServiceException e) {
+			LOGGER.info("ErrorKey : - " + e.getErrorKey() + " ErrorMessage : - " + e.getErrorMessage());
+			throw new PricerServiceException(PricerServiceError.INVALID_MARKUP,
+					"The markup value entered is not valid for the selected country,currency and bank.");
+		} catch (JpaSystemException e) {
+			LOGGER.info("ErrorMessage : - " + e.getMessage());
+			throw new PricerServiceException(PricerServiceError.INVALID_MARKUP,
 					"The markup value entered is not valid for the selected country,currency and bank.");
 		}
 	}

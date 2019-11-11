@@ -116,7 +116,13 @@ public class PaymentService {
 	public PaymentResponseDto generatePaymentResponseDTO(PayGParams params,
 			PaymentGateWayResponse payGServiceResponse) {
 		PaymentResponseDto paymentResponseDto = new PaymentResponseDto();
-
+		
+		//For Local References
+		paymentResponseDto.setPayId(params.getPayId());
+		paymentResponseDto.setAmount(params.getAmount());
+	
+		
+		//For Service Reference
 		paymentResponseDto.setApplicationCountryId(payGServiceResponse.getApplicationCountryId());
 
 		paymentResponseDto.setAuth_appNo(payGServiceResponse.getAuth());

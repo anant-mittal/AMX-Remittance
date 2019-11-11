@@ -33,6 +33,8 @@ public class SSOUser implements Serializable {
 	SSOConfig ssoConfig;
 
 	private String terminalId;
+	
+	private String terminalIp;
 
 	private boolean authDone = false;
 	private String tranxId;
@@ -162,6 +164,14 @@ public class SSOUser implements Serializable {
 	 */
 	public void setTerminalId(String terminalId) {
 		this.terminalId = terminalId;
+	}
+
+	public String getTerminalIp() {
+		return terminalIp;
+	}
+
+	public void setTerminalIp(String terminalIp) {
+		this.terminalIp = terminalIp;
 	}
 
 }

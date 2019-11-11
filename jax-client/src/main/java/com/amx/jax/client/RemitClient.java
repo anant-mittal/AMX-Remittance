@@ -20,7 +20,6 @@ import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.PurposeOfTransactionModel;
-import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.amxlib.service.IRemittanceServiceOnline;
 import com.amx.jax.api.AmxApiResponse;
@@ -32,6 +31,7 @@ import com.amx.jax.model.request.remittance.IRemitTransReqPurpose;
 import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.response.SourceOfIncomeDto;
+import com.amx.jax.model.response.remittance.RemittanceApplicationResponseModel;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.rest.RestService;
@@ -317,16 +317,12 @@ public class RemitClient extends AbstractJaxServiceClient implements IRemittance
 	@Override
 	public AmxApiResponse<RemittanceTransactionResponsetModel, List<JaxConditionalFieldDto>> validateTransactionV2(
 			RemittanceTransactionRequestModel model) {
-		try {
+	
 			return restService.ajax(appConfig.getJaxURL()).path(ApiEndpoint.REMIT_API_ENDPOINT + Path.RATE_ENQUIRY)
 					.meta(new JaxMetaInfo()).post(model)
 					.as(new ParameterizedTypeReference<AmxApiResponse<RemittanceTransactionResponsetModel, List<JaxConditionalFieldDto>>>() {
 					});
-		} catch (Exception ae) {
-			LOGGER.error("exception in validateTransactionV2 : ", ae);
-			return JaxSystemError.evaluate(ae);
-		}
-	}
+			}
 
 	@Override
 	public AmxApiResponse<RemittanceTransactionStatusResponseModel, Object> getApplicationStatusByAppId(

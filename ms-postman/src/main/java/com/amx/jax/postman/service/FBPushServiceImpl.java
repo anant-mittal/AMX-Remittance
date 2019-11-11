@@ -88,6 +88,7 @@ public class FBPushServiceImpl implements IPushNotifyService {
 
 	/** The Constant DATA_TITLE. */
 	private static final JsonPath DATA_TITLE = new JsonPath("/data/data/title");
+	private static final JsonPath DATA_TAG = new JsonPath("/data/data/tag");
 
 	/** The Constant DATA_IS_BG. */
 	private static final JsonPath DATA_IS_BG = new JsonPath("/data/data/is_background");
@@ -106,6 +107,7 @@ public class FBPushServiceImpl implements IPushNotifyService {
 
 	/** The Constant NOTFY_TITLE. */
 	private static final JsonPath NOTFY_TITLE = new JsonPath("/notification/title");
+	private static final JsonPath NOTFY_TAG = new JsonPath("/notification/tag");
 
 	/** The Constant NOTFY_SOUND. */
 	private static final JsonPath NOTFY_SOUND = new JsonPath("/notification/sound");
@@ -293,7 +295,8 @@ public class FBPushServiceImpl implements IPushNotifyService {
 
 				.put(DATA_IS_BG, true).put(DATA_TITLE, msg.getSubject()).put(DATA_MESSAGE, message)
 				.put(DATA_IMAGE, msg.getImage()).put(DATA_PAYLOAD, msg.getModel())
-				.put(DATA_TIMESTAMP, System.currentTimeMillis());
+				.put(DATA_TIMESTAMP, System.currentTimeMillis())
+				.put(DATA_TAG, msg.getId());
 
 		fields.put(msg.isCondition() ? MAIN_CONDITION : MAIN_TOPIC, topic);
 
@@ -315,8 +318,10 @@ public class FBPushServiceImpl implements IPushNotifyService {
 				.put(DATA_IS_BG, true).put(DATA_TITLE, msg.getSubject()).put(DATA_MESSAGE, message)
 				.put(DATA_IMAGE, msg.getImage()).put(DATA_PAYLOAD, msg.getModel())
 				.put(DATA_TIMESTAMP, System.currentTimeMillis())
+				.put(DATA_TAG, msg.getId())
 
-				.put(NOTFY_TITLE, msg.getSubject()).put(NOTFY_MESSAGE, message).put(NOTFY_SOUND, "default");
+				.put(NOTFY_TITLE, msg.getSubject()).put(NOTFY_MESSAGE, message).put(NOTFY_SOUND, "default")
+				.put(NOTFY_TAG, msg.getId());
 
 		fields.put(msg.isCondition() ? MAIN_CONDITION : MAIN_TOPIC, topic);
 

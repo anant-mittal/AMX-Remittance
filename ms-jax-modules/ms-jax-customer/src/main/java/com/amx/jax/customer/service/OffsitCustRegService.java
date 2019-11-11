@@ -893,14 +893,11 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 				customerIdProofManager.createIdProofForExpiredCivilId(model, customer);
 			}
 			for (String image : model.getImage()) {
-				DmsApplMapping mappingData = customerKycManager.getDmsApplMappingData(customer, model);
-				idmsAppMappingRepository.save(mappingData);
+				DmsApplMapping dmsApplMapping = customerKycManager.getDmsApplMappingData(customer, model);
+				idmsAppMappingRepository.save(dmsApplMapping);
 				DmsDocumentBlobTemparory dmsDocumentBlobTemparory = new DmsDocumentBlobTemparory();
 				dmsDocumentBlobTemparory.setCreatedBy(jaxDBService.getCreatedOrUpdatedBy());
 				dmsDocumentBlobTemparory.setCreatedDate(new Date());
-				DmsApplMapping dmsApplMapping = getDmsApplMappingData(customer, model);
-				dmsApplMapping.setCustomerId(customer.getCustomerId());
-				dmsApplMapping.setIdentityExpiryDate(model.getIdentityExpiredDate());
 				BigDecimal docBlobId = dmsApplMapping.getDocBlobId();
 				BigDecimal docFinYear = dmsApplMapping.getFinancialYear();
 				outputParams.put("docBlobId", docBlobId);

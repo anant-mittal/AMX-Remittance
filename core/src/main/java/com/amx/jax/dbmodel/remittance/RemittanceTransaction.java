@@ -159,6 +159,10 @@ public class RemittanceTransaction implements Serializable {
 	private BigDecimal usdAmt;
 	private String wuPurposeOfTransaction;
 	
+
+	private String applSplit;
+
+	private Date timeToDeliver;
 	private BigDecimal savedAmount;
 	private BigDecimal rackExchangeRate;
 	
@@ -1202,6 +1206,15 @@ public class RemittanceTransaction implements Serializable {
 	public void setWuPurposeOfTransaction(String wuPurposeOfTransaction) {
 		this.wuPurposeOfTransaction = wuPurposeOfTransaction;
 	}
+
+	@Column(name="TIME_TO_DELIVER")
+	public Date getTimeToDeliver() {
+		return timeToDeliver;
+	}
+
+	public void setTimeToDeliver(Date timeToDeliver) {
+		this.timeToDeliver = timeToDeliver;
+	}
 	
 	@Column(name="SAVED_AMOUNT")
 	public BigDecimal getSavedAmount() {
@@ -1247,5 +1260,10 @@ public class RemittanceTransaction implements Serializable {
 		this.timeToDeliver = timeToDeliver;
 	}
 
+	public void setApplSplit(String applSplit) {
+		this.applSplit = applSplit;
+	}
+	
+	
 }
  

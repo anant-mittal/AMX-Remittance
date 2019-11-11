@@ -141,6 +141,13 @@ public class RemittanceApplication implements Serializable {
 	private BigDecimal vatAmount;
 	/** added by rabil **/
 	private String beneDeductFlag;
+	/** added for direct link **/
+	private BigDecimal paymentLinkId;
+	
+
+
+
+	
 	private String wuPurposeOfTransaction;
 	private BigDecimal savedAmount;
 	/** lowest exchange rate amount all the branches **/
@@ -148,8 +155,9 @@ public class RemittanceApplication implements Serializable {
 	private String customerChoice;
 	private BigDecimal savedAmountInFc;
 	private BigDecimal timeToDeliverInSec;
-	 
 
+	private String applSplit;
+	
 
 	private List<RemittanceAppBenificiary> exRemittanceAppBenificiary = new ArrayList<RemittanceAppBenificiary>(0);
 	
@@ -976,6 +984,15 @@ public class RemittanceApplication implements Serializable {
 	public void setBeneDeductFlag(String beneDeductFlag) {
 		this.beneDeductFlag = beneDeductFlag;
 	}
+	
+	@Column(name = "PAYMENT_LINK_ID")
+	public BigDecimal getPaymentLinkId() {
+		return paymentLinkId;
+	}
+
+	public void setPaymentLinkId(BigDecimal paymentLinkId) {
+		this.paymentLinkId = paymentLinkId;
+	}
 
 	@Column(name="WU_PURPOSE_OF_TRANSACTION")
 	public String getWuPurposeOfTransaction() {
@@ -1029,6 +1046,4 @@ public class RemittanceApplication implements Serializable {
 	public void setTimeToDeliverInSec(BigDecimal timeToDeliverInSec) {
 		this.timeToDeliverInSec = timeToDeliverInSec;
 	}
-	
-	
 }

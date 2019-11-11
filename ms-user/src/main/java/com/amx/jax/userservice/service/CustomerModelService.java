@@ -28,7 +28,6 @@ import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.manager.CustomerFlagManager;
 import com.amx.jax.userservice.manager.OnlineCustomerManager;
 import com.amx.jax.userservice.repository.OnlineCustomerRepository;
-import com.amx.jax.util.AmxDBConstants.Status;
 import com.amx.utils.MaskUtil;
 
 @Service

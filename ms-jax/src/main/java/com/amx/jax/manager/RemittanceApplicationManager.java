@@ -391,7 +391,10 @@ public class RemittanceApplicationManager {
 
 		setCustomerDiscountColumns(remittanceApplication, validationResults);
 		setVatDetails(remittanceApplication, validationResults);
+<<<<<<< HEAD
 		setSavedAmount(remittanceApplication, validationResults);
+=======
+>>>>>>> staging
 		setDeliveryTimeDuration(remittanceApplication,dynamicRoutingPricingResponse.getTrnxRoutingPaths());
 		return remittanceApplication;
 	}
@@ -581,7 +584,6 @@ public class RemittanceApplicationManager {
 					remittanceApplication.setDiscountOnCommission(validationResults.getDiscountOnComission());
 		}
 	}
-
 	private void setApplicableRatesV2(RemittanceApplication remittanceApplication,
 			RemittanceTransactionDrRequestModel requestModel, RemittanceTransactionResponsetModel validationResults) {
 		ExchangeRateBreakup breakup = validationResults.getExRateBreakup();
@@ -657,6 +659,18 @@ public class RemittanceApplicationManager {
 			remittanceApplication.setInstruction("URGENT");
 		}
 	}
+	
+		/** @author rabil
+		 * Purpose : to store the delivery date and time 
+		 * 
+		 */
+		public  void setDeliveryTimeDuration(RemittanceApplication remittanceApplication,TrnxRoutingDetails trnxRoutingDetails) {
+			if(trnxRoutingDetails!=null && trnxRoutingDetails.getEstimatedDeliveryDetails()!=null) {
+				if(trnxRoutingDetails.getEstimatedDeliveryDetails().getProcessTimeTotalInSeconds()>0) {
+					remittanceApplication.setTimeToDeliverInSec(new BigDecimal(trnxRoutingDetails.getEstimatedDeliveryDetails().getProcessTimeTotalInSeconds()));
+				}
+			}
+		}
 
 	/** added by Rabil **/
 	public void setSavedAmount(RemittanceApplication remittanceApplication,RemittanceTransactionResponsetModel validationResults) {

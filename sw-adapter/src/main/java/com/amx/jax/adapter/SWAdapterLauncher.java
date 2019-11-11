@@ -119,12 +119,24 @@ public class SWAdapterLauncher {
 			SWAdapterGUI.CONTEXT = ex;
 			// opnePage();
 			SWAdapterGUI.ADAPTER_FOLDER = ADAPTER_FOLDER;
+
+			SWDocumentScanner scanner = ctx.getBean(SWDocumentScanner.class);
+			SWDocumentScanner.CONTEXT = scanner;
 		});
 	}
 
 	public static void opnePage() {
 		try {
 			URI homepage = new URI("http://127.0.0.1:" + PORT + "/");
+			Desktop.getDesktop().browse(homepage);
+		} catch (URISyntaxException | IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void opneDocumentScanPage() {
+		try {
+			URI homepage = new URI("http://127.0.0.1:" + PORT + SWAdapterScannerController.PUB_DOC_SCAN);
 			Desktop.getDesktop().browse(homepage);
 		} catch (URISyntaxException | IOException e) {
 			e.printStackTrace();

@@ -6,9 +6,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.sql.rowset.serial.SerialException;
 
@@ -54,6 +56,7 @@ import com.amx.jax.dbmodel.partner.PaymentModeLimitsView;
 import com.amx.jax.dbmodel.partner.ServiceProviderXmlLog;
 import com.amx.jax.dbmodel.partner.TransactionDetailsView;
 import com.amx.jax.dbmodel.remittance.AdditionalBankRuleAmiec;
+import com.amx.jax.dbmodel.remittance.AdditionalDataDisplayView;
 import com.amx.jax.dbmodel.remittance.AmiecAndBankMapping;
 import com.amx.jax.dbmodel.remittance.ShoppingCartDetails;
 import com.amx.jax.error.JaxError;
@@ -88,12 +91,12 @@ import com.amx.jax.pricer.var.PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE;
 import com.amx.jax.repository.BankMasterRepository;
 import com.amx.jax.repository.CountryBranchRepository;
 import com.amx.jax.repository.IAdditionalBankRuleAmiecRepository;
+import com.amx.jax.repository.IAdditionalDataDisplayDao;
 import com.amx.jax.repository.IAmiecAndBankMappingRepository;
 import com.amx.jax.repository.IBeneficiaryMasterDao;
 import com.amx.jax.repository.ICollectionDetailViewDao;
 import com.amx.jax.repository.IExEmailNotificationDao;
 import com.amx.jax.repository.IRemittanceTransactionDao;
-import com.amx.jax.repository.IRemittanceTransactionRepository;
 import com.amx.jax.repository.ISourceOfIncomeDao;
 import com.amx.jax.repository.fx.EmployeeDetailsRepository;
 import com.amx.jax.service.CurrencyMasterService;
@@ -161,27 +164,30 @@ public class PartnerTransactionManager extends AbstractModel {
 
 	@Autowired
 	CurrencyMasterService currencyMasterService;
-	
+
 	@Autowired
 	BranchRemittancePaymentDao branchRemittancePaymentDao;
-	
+
 	@Autowired
 	JaxNotificationService notificationService;
-	
+
 	@Autowired
 	IExEmailNotificationDao emailNotificationDao;
-	
+
 	@Autowired
-    AuditService auditService;
-	
+	AuditService auditService;
+
 	@Autowired
 	IBeneficiaryMasterDao beneficiaryMasterDao;
-	
+
 	@Autowired
 	JaxFieldService jaxFieldService;
-	
+
 	@Autowired
 	CountryBranchRepository countryBranchRepository;
+	
+	@Autowired
+	IAdditionalDataDisplayDao additionalDataDisplayDao;
 
 	public AmxApiResponse<Remittance_Call_Response, Object> callingPartnerApi(RemittanceResponseDto responseDto) {
 		BigDecimal customerId = metaData.getCustomerId();
@@ -338,7 +344,7 @@ public class PartnerTransactionManager extends AbstractModel {
 				bankAccountTypeDesc = accountTypeFromViewModel.getAmiecDesc();
 			}
 		}
-		
+
 		beneficiaryDto.setBeneficiary_account_type(removeSpaces(bankAccountTypeDesc));
 
 		String routingNumber_Indic2 = remitTrnxDto.getRoutingNumber_Indic2();
@@ -1097,7 +1103,7 @@ public class PartnerTransactionManager extends AbstractModel {
 
 		return servProviderAmtlimit;
 	}
-	
+
 	public ConfigDto paymentModeServiceProviderLimit(ConfigDto config,List<ShoppingCartDetails> customerShoppingCart,BigDecimal identityTypeId) {
 		ConfigDto spConfigDto = config;
 		BigDecimal otherLimits = new BigDecimal(-1);
@@ -1108,7 +1114,7 @@ public class PartnerTransactionManager extends AbstractModel {
 		int trnxCount = 0;
 		Boolean multipleTrnx = Boolean.FALSE;
 		BigDecimal cashlimit = BigDecimal.ZERO;
-		
+
 		BankMasterMdlv1 bankMaster = bankMasterRepo.findByBankCodeAndRecordStatus(PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name(), PricerServiceConstants.Yes);
 		if(bankMaster == null) {
 			// no need error
@@ -1131,7 +1137,7 @@ public class PartnerTransactionManager extends AbstractModel {
 			if(trnxCount > 1) {
 				multipleTrnx = Boolean.TRUE;
 			}
-			
+
 			if(includeSPlimits && shoppingCartSPData != null) {
 				PaymentLimitDTO paymentLimitDTO = new PaymentLimitDTO();
 				paymentLimitDTO.setBankId(bankMaster.getBankId());
@@ -1139,7 +1145,7 @@ public class PartnerTransactionManager extends AbstractModel {
 				paymentLimitDTO.setCurrencyQuote(PricerServiceConstants.SETTLEMENT_CURRENCY_CODE);
 				Map<String, BigDecimal> srvprvlimit = fetchPaymentLimitsForSP(paymentLimitDTO);
 				if(srvprvlimit != null && srvprvlimit.size() != 0) {
-					
+
 					// check customer what type {civil id , new civil id 3000} , {passport 300} and {gcc 1000}
 					if(identityTypeId != null) {
 						if(identityTypeId.compareTo(AmxDBConstants.BIZ_COMPONENT_ID_CIVIL_ID) == 0 || identityTypeId.compareTo(AmxDBConstants.BIZ_COMPONENT_ID_NEW_CIVIL_ID) == 0) {
@@ -1155,14 +1161,14 @@ public class PartnerTransactionManager extends AbstractModel {
 						// throw error
 						throw new GlobalException("Customer Identity Type Id is empty");
 					}
-					
+
 					if(cashlimit.compareTo(config.getTodayTrnxAmount()) >= 0) {
 						cashTotalCashLimit = cashlimit;
 						cashTotalCashLimit = cashTotalCashLimit.subtract(config.getTodayTrnxAmount());
 					}else {
 						cashTotalCashLimit = BigDecimal.ZERO;
 					}
-					
+
 					for (Map.Entry<String,BigDecimal> paymentAmount : srvprvlimit.entrySet()) {
 						if(paymentAmount.getKey().contains("CASH")) {
 							BigDecimal hsCashAmount = paymentAmount.getValue();
@@ -1205,17 +1211,17 @@ public class PartnerTransactionManager extends AbstractModel {
 				}
 			}
 		}
-		
+
 		spConfigDto.setTotalLimit(otherLimits);
 		return spConfigDto;
 	}
-	
+
 	public BigDecimal onlineServiceProviderLimit(AuthenticationLimitCheckView authenticationLimitCheckView) {
 		AuthenticationLimitCheckView spAuthLimit = authenticationLimitCheckView;
 		BigDecimal otherLimits = spAuthLimit.getAuthLimit();
 		boolean includeSPlimits = Boolean.FALSE;
 		ShoppingCartDetails shoppingCartSPData = null;
-		
+
 		BankMasterMdlv1 bankMaster = bankMasterRepo.findByBankCodeAndRecordStatus(PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name(), PricerServiceConstants.Yes);
 		if(bankMaster == null) {
 			// no need error
@@ -1232,7 +1238,7 @@ public class PartnerTransactionManager extends AbstractModel {
 					}
 				}
 			}
-			
+
 			if(includeSPlimits && shoppingCartSPData != null) {
 				PaymentLimitDTO paymentLimitDTO = new PaymentLimitDTO();
 				paymentLimitDTO.setBankId(bankMaster.getBankId());
@@ -1248,15 +1254,15 @@ public class PartnerTransactionManager extends AbstractModel {
 				}
 			}
 		}
-		
+
 		return otherLimits;
 	}
-	
+
 	// template to send fail transaction
 	public void sendSrvPrvTranxFailReport(RemittanceTransactionView remittanceTransactionView,RemitTrnxSPDTO remitTrnxSPDTO,String transactionId) {
 		TransactionFailReportDTO model = new TransactionFailReportDTO();
 		List<ExEmailNotification> emailNotification = emailNotificationDao.getServiceProviderEmailNotification();
-		
+
 		model.setBeneficiaryAccount(remittanceTransactionView.getBenefeciaryAccountNo());
 		model.setBeneficiaryBankName(remittanceTransactionView.getBeneficiaryBank());
 		model.setBeneficiaryBranchName(remittanceTransactionView.getBenefeciaryBranch());
@@ -1292,12 +1298,12 @@ public class PartnerTransactionManager extends AbstractModel {
 		model.setTransactionDocNumber(remittanceTransactionView.getDocumentNo());
 		model.setTransactionDocYear(remittanceTransactionView.getDocumentFinancialYear());
 		model.setTransactionId(transactionId);
-		
+
 		logger.info("Email Service Provider Fail Transaction : " + JsonUtil.toJson(model));
-		
+
 		notificationService.sendSPErrorEmail(model, emailNotification);
 	}
-	
+
 	// validation for saving application 
 	public void validateServiceProvider(Map<String, Object> fieldValues,BigDecimal beneId) { //(BranchRemittanceApplRequestModel requestApplModel) {
 		// home send validation
@@ -1345,5 +1351,47 @@ public class PartnerTransactionManager extends AbstractModel {
 			}
 		}
 	}
-	
+
+	// check beneficiary zip code required or not
+	public JaxConditionalFieldDto checkBeneficiaryZipCodeAvailable(Map<String, Object> remitApplParametersMap,JaxConditionalFieldDto jaxConditionalFieldDto) {
+		Set<String> set = new HashSet<>();
+		JaxConditionalFieldDto jaxConditionalFieldBeneZipDto = null;
+
+		BigDecimal applicationCountryId = (BigDecimal) remitApplParametersMap.get("P_APPLICATION_COUNTRY_ID");
+		BigDecimal routingCountryId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_COUNTRY_ID");
+		BigDecimal remittanceModeId = (BigDecimal) remitApplParametersMap.get("P_REMITTANCE_MODE_ID");
+		BigDecimal deliveryModeId = (BigDecimal) remitApplParametersMap.get("P_DELIVERY_MODE_ID");
+		BigDecimal foreignCurrencyId = (BigDecimal) remitApplParametersMap.get("P_FOREIGN_CURRENCY_ID");
+		JaxDynamicField jaxDynamicField = JaxDynamicField.valueOf(JaxDynamicField.BENF_ZIP_CODE.name());
+		if (jaxDynamicField.getFlexField() != null) {
+			set.add(jaxDynamicField.getFlexField());
+		}
+		if(set != null && set.size() != 0) {
+			String[] bnfZip = set.toArray(new String[set.size()]);
+			List<AdditionalDataDisplayView> additionalDataRequired = additionalDataDisplayDao.getAdditionalDataFromSrvApplRule(applicationCountryId, routingCountryId,
+					foreignCurrencyId, remittanceModeId, deliveryModeId, bnfZip);
+
+			if(additionalDataRequired != null && additionalDataRequired.size() != 0) {
+				AdditionalDataDisplayView additionalDataDisplayView = additionalDataRequired.get(0);
+				if(additionalDataDisplayView.getIsRendered() != null && additionalDataDisplayView.getIsRendered().equalsIgnoreCase(AmxDBConstants.No) 
+						&& additionalDataDisplayView.getIsRequired() != null && additionalDataDisplayView.getIsRequired().equalsIgnoreCase(AmxDBConstants.No)) {
+					// no need to render
+				}else if(additionalDataDisplayView.getIsRendered() != null && additionalDataDisplayView.getIsRendered().equalsIgnoreCase(AmxDBConstants.No) 
+						&& additionalDataDisplayView.getIsRequired() != null && additionalDataDisplayView.getIsRequired().equalsIgnoreCase(AmxDBConstants.Yes)) {
+					// no need to render
+				}else if(additionalDataDisplayView.getIsRendered() != null && additionalDataDisplayView.getIsRendered().equalsIgnoreCase(AmxDBConstants.Yes) 
+						&& additionalDataDisplayView.getIsRequired() != null && additionalDataDisplayView.getIsRequired().equalsIgnoreCase(AmxDBConstants.No)) {
+					jaxConditionalFieldDto.getField().setRequired(Boolean.FALSE);
+					jaxConditionalFieldBeneZipDto = jaxConditionalFieldDto;
+				}else if(additionalDataDisplayView.getIsRendered() != null && additionalDataDisplayView.getIsRendered().equalsIgnoreCase(AmxDBConstants.Yes) 
+						&& additionalDataDisplayView.getIsRequired() != null && additionalDataDisplayView.getIsRequired().equalsIgnoreCase(AmxDBConstants.Yes)) {
+					jaxConditionalFieldDto.getField().setRequired(Boolean.TRUE);
+					jaxConditionalFieldBeneZipDto = jaxConditionalFieldDto;
+				}
+			}
+		}
+
+		return jaxConditionalFieldBeneZipDto;
+	}
+
 }

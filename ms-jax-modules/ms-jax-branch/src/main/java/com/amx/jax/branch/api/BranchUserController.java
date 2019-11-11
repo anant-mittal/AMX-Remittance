@@ -17,7 +17,6 @@ import com.amx.jax.cache.box.CustomerOnCall;
 import com.amx.jax.cache.box.CustomerOnCall.CustomerCall;
 import com.amx.jax.client.JaxStompClient;
 import com.amx.jax.client.branch.IBranchService;
-import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerTeleMarketingDetails;
 import com.amx.jax.dbmodel.Employee;
 import com.amx.jax.exception.ApiHttpExceptions.ApiStatusCodes;
@@ -58,18 +57,26 @@ public class BranchUserController implements IBranchService {
 	@RequestMapping(value = Path.BRANCH_USER_CUSTOMER_CALL_SESSION, method = RequestMethod.POST)
 	public AmxApiResponse<CustomerCall, Object> customerCallSession(
 			@RequestParam BigDecimal agentId,
-			@RequestParam BigDecimal customerId,
+			@RequestParam(required = false) BigDecimal customerId,
 			@RequestParam(required = false) BigDecimal leadId) {
 		Employee e = employeeRespository.findEmployeeById(agentId);
 		if (ArgUtil.is(e)) {
 			String employeeId = ArgUtil.parseAsString(e.getEmployeeId());
-			Customer c = customerRepository.getCustomerByCustomerId(customerId);
-			if (ArgUtil.is(c)) {
+			if (ArgUtil.isEmpty(customerId) && ArgUtil.is(leadId)) {
+				CustomerTeleMarketingDetails custTMDetails = CollectionUtil
+						.getOne(customerTeleMarketingDetailsRepository.getCustomerTeleMarketingDetailsByLeadId(leadId));
+				if (ArgUtil.is(custTMDetails)) {
+					customerId = custTMDetails.getCustomerId();
+				}
+			}
+
+			if (ArgUtil.is(customerId)) {
 				CustomerCall customerCall = new CustomerCall();
-				customerCall.setCustomerid(c.getCustomerId());
+				customerCall.setCustomerid(customerId);
+				customerCall.setLeadId(leadId);
 				customerCall.setSessionId(AppContextUtil.getTraceId());
 				customerOnCall.put(employeeId, customerCall);
-				jaxStompClient.publishOnCallCustomerStatus(e.getEmployeeId(), c.getCustomerId());
+				jaxStompClient.publishOnCallCustomerStatus(e.getEmployeeId(), customerId);
 				return AmxApiResponse.build(customerCall);
 			} else {
 				customerOnCall.remove(employeeId);
@@ -82,7 +89,7 @@ public class BranchUserController implements IBranchService {
 	@RequestMapping(value = Path.BRANCH_USER_CUSTOMER_CALL_STATUS, method = RequestMethod.POST)
 	public AmxApiResponse<CustomerCall, Object> customerCallStatus(
 			@RequestParam BigDecimal agentId,
-			@RequestParam BigDecimal customerId,
+			@RequestParam(required = false) BigDecimal customerId,
 			@RequestParam(required = false) BigDecimal leadId,
 			@RequestParam String followUpCode, @RequestParam String remark,
 			@RequestParam(required = false) String sessionId) {
@@ -91,24 +98,27 @@ public class BranchUserController implements IBranchService {
 		if (ArgUtil.is(e)) {
 			String employeeId = ArgUtil.parseAsString(e.getEmployeeId());
 			call = customerOnCall.get(employeeId);
-			Customer c = null;
-			if (ArgUtil.is(customerId)) {
-				c = customerRepository.getCustomerByCustomerId(customerId);
-			} else if (ArgUtil.is(sessionId) && ArgUtil.is(call) && call.getSessionId().equals(sessionId)) {
-				c = customerRepository.getCustomerByCustomerId(call.getCustomerid());
+			CustomerTeleMarketingDetails custTMDetails = null;
+			if (ArgUtil.is(leadId)) {
+				custTMDetails = CollectionUtil
+						.getOne(customerTeleMarketingDetailsRepository.getCustomerTeleMarketingDetailsByLeadId(leadId));
+			} else if (ArgUtil.is(customerId)) {
+				custTMDetails = CollectionUtil
+						.getOne(customerTeleMarketingDetailsRepository
+								.getCustomerTeleMarketingDetailsByCustomerId(customerId));
+			} else if (ArgUtil.is(sessionId) && ArgUtil.is(call) && sessionId.equals(call.getSessionId())) {
+				custTMDetails = CollectionUtil
+						.getOne(customerTeleMarketingDetailsRepository
+								.getCustomerTeleMarketingDetailsByCustomerId(call.getCustomerid()));
 			}
 
-			if (ArgUtil.is(c)) {
-				CustomerTeleMarketingDetails custTMDetails = CollectionUtil
-						.getOne(customerTeleMarketingDetailsRepository.getCustomerTeleMarketingDetailsByLeadId(leadId));
-				if (ArgUtil.is(custTMDetails)) {
-					custTMDetails.setRemark(remark);
-					custTMDetails.setFollowUpCode(followUpCode);
-					custTMDetails.setFollowUpDate(new Date());
-					custTMDetails.setEmployeeId(e.getEmployeeId());
-					customerTeleMarketingDetailsRepository.save(custTMDetails);
-					return AmxApiResponse.build(call).statusEnum(ApiStatusCodes.SUCCESS);
-				}
+			if (ArgUtil.is(custTMDetails)) {
+				custTMDetails.setRemark(remark);
+				custTMDetails.setFollowUpCode(followUpCode);
+				custTMDetails.setFollowUpDate(new Date());
+				custTMDetails.setEmployeeId(e.getEmployeeId());
+				customerTeleMarketingDetailsRepository.save(custTMDetails);
+				return AmxApiResponse.build(call).statusEnum(ApiStatusCodes.SUCCESS);
 			}
 		}
 		return AmxApiResponse.build(call).statusEnum(ApiStatusCodes.FAIL);

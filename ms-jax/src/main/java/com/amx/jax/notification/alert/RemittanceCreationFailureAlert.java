@@ -122,6 +122,9 @@ public class RemittanceCreationFailureAlert implements IAlert {
 		if (ex.getErrorKey().equals(JaxError.JAX_SYSTEM_ERROR.toString())) {
 			return true;
 		}
+		if (ex.getErrorKey().equals(JaxError.REMITTANCE_SETUP_ERROR.toString())) {
+			return true;
+		}
 		return false;
 	}
 	

@@ -126,7 +126,7 @@ public class CustomerManagementController implements ICustomerManagementControll
 	@Override
 	public AmxApiResponse<UploadCustomerKycResponse, Object> uploadCustomerKyc(
 			@RequestBody @Valid UploadCustomerKycRequest uploadCustomerKycRequest) {
-		log.info("request uploadCustomerKycRequest {}", JsonUtil.toJson(uploadCustomerKycRequest));
+		log.debug("request uploadCustomerKycRequest {}", JsonUtil.toJson(uploadCustomerKycRequest));
 		UploadCustomerKycResponse uploadReference = customerDocumentManager.uploadKycDocument(uploadCustomerKycRequest);
 		return AmxApiResponse.build(uploadReference);
 	}
@@ -135,7 +135,7 @@ public class CustomerManagementController implements ICustomerManagementControll
 	@Override
 	public AmxApiResponse<UploadCustomerDocumentResponse, Object> uploadCustomerDocument(
 			@RequestBody @Valid UploadCustomerDocumentRequest uploadCustomerDocumentRequest) {
-		log.info("request uploadCustomerDocumentRequest {}", JsonUtil.toJson(uploadCustomerDocumentRequest));
+		log.debug("request uploadCustomerDocumentRequest {}", JsonUtil.toJson(uploadCustomerDocumentRequest));
 		UploadCustomerDocumentResponse uploadReference = customerDocumentManager.uploadDocument(uploadCustomerDocumentRequest);
 		return AmxApiResponse.build(uploadReference);
 	}

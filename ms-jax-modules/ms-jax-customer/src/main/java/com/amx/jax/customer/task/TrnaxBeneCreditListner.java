@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.async.ExecutorConfig;
 import com.amx.jax.client.JaxClientUtil;
 import com.amx.jax.customer.manager.CustomerContactVerificationManager;
@@ -44,7 +45,6 @@ import com.amx.utils.JsonUtil;
 
 @TunnelEventMapping(topic = AmxTunnelEvents.Names.TRNX_BENE_CREDIT, scheme = TunnelEventXchange.TASK_WORKER)
 public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
-		
 
 	@Autowired
 	PostManService postManService;
@@ -57,23 +57,22 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 
 	@Autowired
 	CustomerRepository customerRepository;
-	
+
 	@Autowired
 	CustomerFlagManager customerFlagManager;
-	
+
 	@Autowired
-   	ReferralDetailsDao refDao;
-	
+	ReferralDetailsDao refDao;
+
 	@Autowired
 	RemittanceRepository remittanceTransactionRepository;
-	
 
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
 	// EMAIL:MOBILE:CUST_NAME:TRNXAMT:LOYALTY:TRNREF:TRNDATE:LANG_ID:TNT
-	//private static final String EMAIL = "EMAIL";
-	//private static final String MOBILE = "MOBILE";
-	//private static final String CUST_NAME = "CUST_NAME";
+	// private static final String EMAIL = "EMAIL";
+	// private static final String MOBILE = "MOBILE";
+	// private static final String CUST_NAME = "CUST_NAME";
 	private static final String CUST_ID = "CUST_ID";
 	private static final String TRANX_ID = "TRANX_ID";
 	private static final String TRNXAMT = "TRNXAMT";
@@ -81,17 +80,16 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 	private static final String TRNREF = "TRNREF";
 	private static final String TRNDATE = "TRNDATE";
 	private static final String LANG_ID = "LANG_ID";
-	private static final String TENANT = "TENANT";
 	private static final String CURNAME = "CURNAME";
 	private static final String TYPE = "TYPE";
 
 	@Override
 	public void onMessage(String channel, DBEvent event) {
 		LOGGER.info("======onMessage1==={} ====  {}", channel, JsonUtil.toJson(event));
-		//String emailId = ArgUtil.parseAsString(event.getData().get(EMAIL));
-		//String smsNo = ArgUtil.parseAsString(event.getData().get(MOBILE));
-		//String custNname = ArgUtil.parseAsString(event.getData().get(CUST_NAME));
-		
+		// String emailId = ArgUtil.parseAsString(event.getData().get(EMAIL));
+		// String smsNo = ArgUtil.parseAsString(event.getData().get(MOBILE));
+		// String custNname = ArgUtil.parseAsString(event.getData().get(CUST_NAME));
+
 		BigDecimal custId = ArgUtil.parseAsBigDecimal(event.getData().get(CUST_ID));
 		BigDecimal trnxAmount = ArgUtil.parseAsBigDecimal(event.getData().get(TRNXAMT));
 		BigDecimal loyality = ArgUtil.parseAsBigDecimal(event.getData().get(LOYALTY));
@@ -101,30 +99,26 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 		String curName = ArgUtil.parseAsString(event.getData().get(CURNAME));
 		String type = ArgUtil.parseAsString(event.getData().get(TYPE));
 		BigDecimal tranxId = ArgUtil.parseAsBigDecimal(event.getData().get(TRANX_ID), new BigDecimal(0));
-		LOGGER.info("Customer id is "+custId);
+		LOGGER.info("Customer id is " + custId);
 		Customer c = customerRepository.getCustomerByCustomerIdAndIsActive(custId, "Y");
-		LOGGER.info("Customer object is "+c.toString());
+		LOGGER.info("Customer object is " + c.toString());
 		String emailId = c.getEmail();
 		String smsNo = c.getMobile();
-		
+
 		String custName;
-		if(StringUtils.isEmpty(c.getMiddleName())) {
+		if (StringUtils.isEmpty(c.getMiddleName())) {
 			c.setMiddleName("");
-			custName=c.getFirstName()+c.getMiddleName() + ' '+c.getLastName();
-		}else {
-			custName=c.getFirstName()+' '+c.getMiddleName() + ' '+c.getLastName();
+			custName = c.getFirstName() + c.getMiddleName() + ' ' + c.getLastName();
+		} else {
+			custName = c.getFirstName() + ' ' + c.getMiddleName() + ' ' + c.getLastName();
 		}
-		
-		 
-		LOGGER.info("transaction id is  "+tranxId);
+
+		LOGGER.info("transaction id is  " + tranxId);
 		NumberFormat myFormat = NumberFormat.getInstance();
 		myFormat.setGroupingUsed(true);
 		String trnxAmountval = myFormat.format(trnxAmount);
 
-		
-		
-		
-		Boolean isOnlineCustomer=false;
+		Boolean isOnlineCustomer = false;
 		Map<String, Object> wrapper = new HashMap<String, Object>();
 		Map<String, Object> modeldata = new HashMap<String, Object>();
 		modeldata.put("to", emailId);
@@ -143,21 +137,27 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 		}
 
 		wrapper.put("data", modeldata);
-		LOGGER.info("email is is "+emailId);
+		LOGGER.info("email is is " + emailId);
 		if (!ArgUtil.isEmpty(emailId)) {
-			
-			LOGGER.info("email verified is "+c.getEmailVerified());
+
+			LOGGER.info("email verified is " + c.getEmailVerified());
 			if (c.getEmailVerified() != AmxDBConstants.Status.Y) {
-				LOGGER.info("email value is "+c.getEmailVerified());
-				CustomerContactVerification x = customerContactVerificationManager.create(c, ContactType.EMAIL);
-				LOGGER.info("value of x is "+x.toString());
-				//modeldata.put("customer", c);
+				LOGGER.info("email value is " + c.getEmailVerified());
+				CustomerContactVerification x = null;
+				try {
+					x = customerContactVerificationManager.create(c, ContactType.EMAIL);
+				} catch (GlobalException e) {
+					LOGGER.debug(e.getMessage());
+				}
+				
+				LOGGER.debug("value of x is " + x.toString());
+				// modeldata.put("customer", c);
 				modeldata.put("verifylink", x);
 				for (Map.Entry<String, Object> entry : modeldata.entrySet()) {
 					LOGGER.info("KeyModel2 = " + entry.getKey() + ", ValueModel2 = " + entry.getValue());
 				}
 				LOGGER.debug("Model data is {}", modeldata.get("verifylink"));
-				//LOGGER.debug("Customer value is ", modeldata.get("customer"));
+				// LOGGER.debug("Customer value is ", modeldata.get("customer"));
 
 			} else {
 				modeldata.put("customer", custName);
@@ -175,7 +175,7 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 			for (Map.Entry<String, Object> entry : wrapper.entrySet()) {
 				LOGGER.info("KeyModelWrap = " + entry.getKey() + ", ValueModelWrap = " + entry.getValue());
 			}
-			LOGGER.info("Json value of wrapper is "+JsonUtil.toJson(wrapper));
+			LOGGER.info("Json value of wrapper is " + JsonUtil.toJson(wrapper));
 			LOGGER.info("Wrapper data is {}", wrapper.get("data"));
 			email.setModel(wrapper);
 			email.addTo(emailId);
@@ -197,7 +197,7 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 			sendEmail(email);
 		}
 
-		if (!ArgUtil.isEmpty(smsNo)&&isOnlineCustomer) {
+		if (!ArgUtil.isEmpty(smsNo) && isOnlineCustomer) {
 			if (c.getMobileVerified() != AmxDBConstants.Status.Y) {
 				CustomerContactVerification x = customerContactVerificationManager.create(c, ContactType.SMS);
 				modeldata.put("customer", c);
@@ -233,38 +233,37 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 			postManService.sendSMSAsync(sms);
 
 		}
-		
-		List<RemittanceTransaction> remittanceList = remittanceTransactionRepository.getTransactionMadeByOnline(String.valueOf(custId));
-		System.out.println("RemittanceCount : "+remittanceList.size());
-		
-		
-		if((remittanceList.size() == 0) || (remittanceList.size() == 1)) {
+
+		List<RemittanceTransaction> remittanceList = remittanceTransactionRepository
+				.getTransactionMadeByOnline(String.valueOf(custId));
+
+		if ((remittanceList.size() == 0) || (remittanceList.size() == 1)) {
 			ReferralDetails referralDetails = refDao.getReferralByCustomerId(custId);
-			if(!ArgUtil.isEmpty(referralDetails)) {
-				System.out.println("Referrer Customer Id"+referralDetails.getCustomerId());
-				System.out.println("Referree Customer Id"+referralDetails.getRefferedByCustomerId());
+			if (!ArgUtil.isEmpty(referralDetails)) {
 				referralDetails.setIsConsumed("Y");
 				refDao.updateReferralCode(referralDetails);
-				
+
 				if (referralDetails.getRefferedByCustomerId() != null) {
 					PushMessage pushMessage = new PushMessage();
-					pushMessage.setSubject("Refer To Win!");
-					pushMessage.setMessage(
-							"Congratulations! Your reference has done the first transaction on AMIEC App! You will get a chance to win from our awesome Referral Program! Keep sharing the links to as many contacts you can and win exciting prices on referral success!");
+//					pushMessage.setSubject("Refer To Win!");
+//					pushMessage.setMessage(
+//							"Congratulations! Your reference has done the first transaction on AMIEC App! You will get a chance to win from our awesome Referral Program! Keep sharing the links to as many contacts you can and win exciting prices on referral success!");
+					pushMessage.setITemplate(TemplatesMX.FRIEND_REFERED);
 					pushMessage.addToUser(referralDetails.getRefferedByCustomerId());
 					pushNotifyClient.send(pushMessage);
 				}
-				
-				if(referralDetails.getCustomerId() != null) {
+
+				if (referralDetails.getCustomerId() != null) {
 					PushMessage pushMessage = new PushMessage();
-					pushMessage.setSubject("Refer To Win!");
-					pushMessage.setMessage(
-							"Welcome to Al Mulla family! Win a chance to get exciting offers at Al Mulla Exchange by sharing the links to as many contacts as you can.");
+//					pushMessage.setSubject("Refer To Win!");
+//					pushMessage.setMessage(
+//							"Welcome to Al Mulla family! Win a chance to get exciting offers at Al Mulla Exchange by sharing the links to as many contacts as you can.");
+					pushMessage.setITemplate(TemplatesMX.FRIEND_REFER);
 					pushMessage.addToUser(referralDetails.getCustomerId());
-					pushNotifyClient.send(pushMessage);	
+					pushNotifyClient.send(pushMessage);
 				}
 			}
-			
+
 		}
 
 		if (!ArgUtil.isEmpty(custId)) {
@@ -283,6 +282,7 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 			default:
 				break;
 			}
+			pushMessage.setId(AmxTunnelEvents.Names.TRNX_BENE_CREDIT + tranxId);
 			pushMessage.setModel(wrapper);
 			pushMessage.addToUser(custId);
 			pushMessage.setModel(wrapper);

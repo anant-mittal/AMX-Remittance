@@ -265,6 +265,8 @@ public class CustomerManagementManager {
 	public AmxApiResponse<CustomerInfo, Object> createCustomer(CreateCustomerInfoRequest createCustomerInfoRequest) throws ParseException {
 		customerManagementValidation.validateCustomerDataForCreate(createCustomerInfoRequest);
 		customerManagementValidation.validateDocumentsData(createCustomerInfoRequest);
+		// ui hack to set emp country to personal detail country
+		createCustomerInfoRequest.getCustomerEmploymentDetails().setCountryId(createCustomerInfoRequest.getCustomerPersonalDetail().getCountryId());
 		AmxApiResponse<CustomerInfo, Object> response = offsitCustRegService.saveCustomerInfo(createCustomerInfoRequest);
 		BigDecimal customerId = response.getResult().getCustomerId();
 		setAdditionalDataForCreateCustomer(createCustomerInfoRequest, customerId);
