@@ -32,7 +32,7 @@ import com.amx.jax.pricer.dao.CurrencyMasterDao;
 import com.amx.jax.pricer.dao.ExchangeRateDao;
 import com.amx.jax.pricer.dao.MarginMarkupDao;
 import com.amx.jax.pricer.dao.PipsMasterDao;
-import com.amx.jax.pricer.dao.RoutingDaoAlt;
+import com.amx.jax.pricer.dao.RoutingHeaderDao;
 import com.amx.jax.pricer.dao.TreasuryFTImpactDao;
 import com.amx.jax.pricer.dao.ViewExGLCBALDao;
 import com.amx.jax.pricer.dao.VwExGLCBalProvDao;
@@ -94,7 +94,7 @@ public class RemitPriceManager {
 	CurrencyMasterDao currencyMasterDao;
 
 	@Autowired
-	RoutingDaoAlt routingDaoAlt;
+	RoutingHeaderDao routingHeaderDao;
 
 	@Resource
 	ExchRateAndRoutingTransientDataCache exchRateAndRoutingTransientDataCache;
@@ -579,7 +579,7 @@ public class RemitPriceManager {
 		 **/
 
 		/** Start: Routing Bank Find **/
-		List<RoutingHeader> routingHeaders = routingDaoAlt.getRoutHeadersByCountryIdAndCurrenyId(fCountryId,
+		List<RoutingHeader> routingHeaders = routingHeaderDao.getRoutHeadersByCountryIdAndCurrenyId(fCountryId,
 				fCurrencyId);
 
 		if (routingHeaders == null || routingHeaders.isEmpty()) {
