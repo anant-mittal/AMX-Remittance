@@ -123,7 +123,7 @@ public class BeneficiaryBranchController {
 	}
 
 	// Ifsc and SWift code mandatory api
-	@RequestMapping(value = "/api/bene/fields/list", method = RequestMethod.GET)
+	@RequestMapping(value = "/api/bene/fields/list", method = RequestMethod.POST)
 	public AmxApiResponse<GetServiceApplicabilityResponse, Object> getServiceApplicability(
 			@RequestBody GetServiceApplicabilityRequest request) {
 		return remittanceClient.getServiceApplicability(request);
