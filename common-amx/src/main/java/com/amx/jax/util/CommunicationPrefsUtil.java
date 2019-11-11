@@ -17,6 +17,11 @@ public class CommunicationPrefsUtil {
 		private boolean whatsApp;
 		private boolean pushNotify;
 
+		private boolean emailEnabled;
+		private boolean smsEnaled;
+		private boolean whatsAppEnabled;
+		private boolean pushNotifyEnabled;
+
 		public boolean isEmail() {
 			return email;
 		}
@@ -49,6 +54,38 @@ public class CommunicationPrefsUtil {
 			this.pushNotify = pushNotify;
 		}
 
+		public boolean isEmailEnabled() {
+			return emailEnabled;
+		}
+
+		public void setEmailEnabled(boolean emailEnabled) {
+			this.emailEnabled = emailEnabled;
+		}
+
+		public boolean isSmsEnaled() {
+			return smsEnaled;
+		}
+
+		public void setSmsEnaled(boolean smsEnaled) {
+			this.smsEnaled = smsEnaled;
+		}
+
+		public boolean isWhatsAppEnabled() {
+			return whatsAppEnabled;
+		}
+
+		public void setWhatsAppEnabled(boolean whatsAppEnabled) {
+			this.whatsAppEnabled = whatsAppEnabled;
+		}
+
+		public boolean isPushNotifyEnabled() {
+			return pushNotifyEnabled;
+		}
+
+		public void setPushNotifyEnabled(boolean pushNotifyEnabled) {
+			this.pushNotifyEnabled = pushNotifyEnabled;
+		}
+
 	}
 
 	@Autowired
@@ -61,6 +98,10 @@ public class CommunicationPrefsUtil {
 			}
 		}
 		return null;
+	}
+
+	public CommunicationPrefsResult forEvent(CommunicationEvents event) {
+		return forCustomer(event, null);
 	}
 
 	public CommunicationPrefsResult forCustomer(CommunicationEvents event, Communicatable communicatable) {
@@ -77,23 +118,37 @@ public class CommunicationPrefsUtil {
 		boolean isAlwaysWA = alwaysLong.equals(prefs.getWaPrefs()) || alwaysChar.equals(prefs.getWaPrefs());
 		boolean isAlwaysPush = alwaysLong.equals(prefs.getPushPrefs()) || alwaysChar.equals(prefs.getPushPrefs());
 
+		boolean canSendEmail = (communicatable == null) || communicatable.canSendEmail();
+		boolean canSendSMS = (communicatable == null) || communicatable.canSendMobile();
+		boolean canSendWA = (communicatable == null) || communicatable.canSendWhatsApp();
+
 		for (long i = 1; i < 9; i++) {
 
 			String thisLong = Long.toString(i);
 
-			if ((thisLong.equals(prefs.getEmailPrefs()) || isAlwaysEmail) && communicatable.canSendEmail()) {
-				result.setEmail(true);
+			if ((thisLong.equals(prefs.getEmailPrefs()) || isAlwaysEmail)) {
+				result.setEmailEnabled(true);
+				if (canSendEmail) {
+					result.setEmail(true);
+				}
 			}
 
-			if ((thisLong.equals(prefs.getSmsPrefs()) || isAlwaysSMS) && communicatable.canSendMobile()) {
-				result.setSms(true);
+			if ((thisLong.equals(prefs.getSmsPrefs()) || isAlwaysSMS)) {
+				result.setSmsEnaled(true);
+				if (canSendSMS) {
+					result.setSms(true);
+				}
 			}
 
-			if ((thisLong.equals(prefs.getWaPrefs()) || isAlwaysWA) && communicatable.canSendWhatsApp()) {
-				result.setWhatsApp(true);
+			if ((thisLong.equals(prefs.getWaPrefs()) || isAlwaysWA)) {
+				result.setWhatsAppEnabled(true);
+				if (canSendWA) {
+					result.setWhatsApp(true);
+				}
 			}
 
 			if ((thisLong.equals(prefs.getPushPrefs()) || isAlwaysPush)) {
+				result.setPushNotifyEnabled(true);
 				result.setPushNotify(true);
 			}
 
