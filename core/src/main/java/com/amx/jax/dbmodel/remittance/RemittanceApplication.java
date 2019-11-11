@@ -1046,4 +1046,13 @@ public class RemittanceApplication implements Serializable {
 	public void setTimeToDeliverInSec(BigDecimal timeToDeliverInSec) {
 		this.timeToDeliverInSec = timeToDeliverInSec;
 	}
+
+	@Column(name="IS_SPLITTED")
+	public String getApplSplit() {
+		return applSplit;
+	}
+
+	public void setApplSplit(String applSplit) {
+		this.applSplit = applSplit;
+	}
 }
