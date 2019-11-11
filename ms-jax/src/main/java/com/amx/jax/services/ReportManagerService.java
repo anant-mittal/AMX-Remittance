@@ -638,7 +638,10 @@ public class ReportManagerService extends AbstractService{
 		}
 
 		// Branch Exchange Rate and kwd Amount
-		if (null != view.getIsDiscAvail() && view.getIsDiscAvail().equals("Y")) {
+		//if (null != view.getIsDiscAvail() && view.getIsDiscAvail().equals("Y") && ) {
+		
+		 if(!StringUtils.isBlank(view.getIsDiscAvail()) && view.getIsDiscAvail().equalsIgnoreCase(ConstantDocument.Yes) && JaxUtil.isNullZeroBigDecimalCheck(view.getAmountSaved()) && view.getAmountSaved().compareTo(BigDecimal.ZERO)>0) {
+		
 			if (view.getCurrencyQuoteName() != null && currencyQuoteName != null
 					&& view.getOriginalExchangeRate() != null) {
 				if (view.getOriginalExchangeRate().compareTo(view.getExchangeRateApplied()) != 1) {

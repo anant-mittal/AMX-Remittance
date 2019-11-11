@@ -108,8 +108,8 @@ public class BizcomponentDao {
 	
 	public String getIdentityTypeMaster(BigDecimal componentId) {
 		 
-		String sql = "SELECT CUSTOMER_TYPE FROM FS_IDENTITY_TYPE_MASTER A INNER JOIN FS_BUSINESS_COMPONENT B  " + 
-				"ON A.BUSINESS_COMPONENT_ID = B.COMPONENT_ID WHERE A.BUSINESS_COMPONENT_ID = ?";
+		String sql = "SELECT CUSTOMER_TYPE FROM FS_IDENTITY_TYPE_MASTER A INNER JOIN FS_BIZ_COMPONENT_DATA B  " + 
+				"ON A.BUSINESS_COMPONENT_ID = B.COMPONENT_DATA_ID WHERE A.BUSINESS_COMPONENT_ID = ?";
 		
 		List<String> lstIdentity = jdbcTemplate.queryForList(sql, new Object[] { componentId }, String.class);		
 		 

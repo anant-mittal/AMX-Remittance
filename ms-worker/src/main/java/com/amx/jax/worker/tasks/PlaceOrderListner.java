@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.amx.amxlib.model.PlaceOrderNotificationDTO;
-import com.amx.jax.client.JaxPushNotificationClient;
+import com.amx.jax.client.CustomerNotifyHubClient;
 import com.amx.jax.client.PlaceOrderClient;
 import com.amx.jax.event.AmxTunnelEvents;
 import com.amx.jax.postman.PostManException;
@@ -64,7 +64,7 @@ public class PlaceOrderListner implements ITunnelSubscriber<DBEvent> {
 	private PushNotifyClient pushNotifyClient;
 
 	@Autowired
-	JaxPushNotificationClient notificationClient;
+	CustomerNotifyHubClient notificationClient;
 
 	public void sendBatchNotification(List<PlaceOrderNotificationDTO> placeorderNotDTO) {
 

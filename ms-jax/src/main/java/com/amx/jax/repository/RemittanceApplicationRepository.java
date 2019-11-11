@@ -40,7 +40,7 @@ public interface RemittanceApplicationRepository extends CrudRepository<Remittan
 	public Long getFailedTransactionAttemptCount(BigDecimal customerId);
 	
 	
-	@Query("select ra from RemittanceApplication ra where ra.fsCustomer=:customerid and ra.remittanceApplicationId=:remittanceApplicationId and ra.isactive='Y' and  trunc(sysdate)=trunc(createdDate)")
+	@Query("select ra from RemittanceApplication ra where ra.fsCustomer=:customerid and ra.remittanceApplicationId=:remittanceApplicationId and ra.isactive='Y' and  trunc(sysdate)=trunc(createdDate)  and NVL(applicaitonStatus,' ') <>'T' ")
 	public RemittanceApplication getApplicationForRemittance(@Param("customerid") Customer customerid,@Param("remittanceApplicationId") BigDecimal remittanceApplicationId);
 	
 	
@@ -81,5 +81,13 @@ public interface RemittanceApplicationRepository extends CrudRepository<Remittan
     
     @Query("select ra from RemittanceApplication ra where ra.paymentLinkId=:paymentLinkId")
 	public List<RemittanceApplication> getApplByPaymentlinkId(@Param("paymentLinkId") BigDecimal paymentLinkId);
+    
+    @Transactional
+	@Modifying
+	@Query("update RemittanceApplication appl set paymentLinkId = :paymentLinkId where appl.remittanceApplicationId=:remittanceApplicationId")
+	public void updateLinkId(@Param("remittanceApplicationId") BigDecimal remittanceApplicationId, @Param("paymentLinkId") BigDecimal paymentLinkId);
+
+    @Query("select ra from RemittanceApplication ra where ra.remittanceApplicationId in (?1)")
+	public List<RemittanceApplication> getApplicationList(List<BigDecimal> appIdsBigDecimalList);
 	 
 }

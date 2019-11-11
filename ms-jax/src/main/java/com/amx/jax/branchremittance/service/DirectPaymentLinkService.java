@@ -68,6 +68,9 @@ public class DirectPaymentLinkService extends AbstractService {
 		
 		BranchRemittanceApplResponseDto shpCartData = branchRemittancePaymentManager.fetchCustomerShoppingCart(customerId, localCurrencyId);
 		PaymentLinkRespDTO paymentDtoNEW = directPaymentLinkManager.getPaymentLinkDetails(customerId, shpCartData);
+		if(shpCartData.getShoppingCartDetails() != null) {
+			directPaymentLinkManager.validateHomesendApplication(shpCartData.getShoppingCartDetails());
+		}
 		
 		PersonInfo personInfo = userService.getPersonInfo(customerId);
 		sendDirectLinkEmail(paymentDtoNEW, personInfo, customerId);
@@ -89,7 +92,7 @@ public class DirectPaymentLinkService extends AbstractService {
 			if (paymentdto != null) {
 				logger.info("Sending Direct Link Email to customer : ");
 				Email directLinkEmail = new Email();
-				directLinkEmail.setSubject("Direct Link from Al Mulla Exchange.");
+				directLinkEmail.setSubject("Payment Link for your remittance request");
 				if (personInfo.getEmail() != null && !StringUtils.isBlank(personInfo.getEmail())) {
 					directLinkEmail.addTo(personInfo.getEmail());
 				}

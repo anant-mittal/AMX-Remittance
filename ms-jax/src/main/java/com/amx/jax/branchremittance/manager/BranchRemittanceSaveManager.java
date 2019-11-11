@@ -495,7 +495,8 @@ public class BranchRemittanceSaveManager {
 				
 				
 				}else {
-					throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record not found to save in collection"+customerid+"\t appl No :"+shoppingCartList.get(0).getApplicationId());
+					//throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record not found to save in collection"+customerid+"\t appl No :"+shoppingCartList.get(0).getApplicationId());
+					throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record not found to save in Collection. ");
 				}
 			}else {
 				throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record not found to save in collection");
@@ -1244,7 +1245,6 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
 
  public TransferDto getTrasnferModeByBankServiceRule(RemittanceTransaction remitTrnx){
 	 Map<String,Object> mapBankServiceRule= routingProDao.checkBankServiceRule(remitTrnx);
-	 logger.debug("getTrasnferModeByBankServiceRule request json : {}", JsonUtil.toJson(remitTrnx));
 	 TransferDto dto = new TransferDto();
 	 String transferMode=null;
 	 String fileCreation=ConstantDocument.No;

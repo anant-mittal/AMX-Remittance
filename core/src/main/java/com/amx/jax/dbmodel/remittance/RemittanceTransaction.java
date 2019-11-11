@@ -164,6 +164,7 @@ public class RemittanceTransaction implements Serializable {
 
 	private Date timeToDeliver;
 	
+	
 	public RemittanceTransaction() {
 	}
 		
