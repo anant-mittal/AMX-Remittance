@@ -10,14 +10,14 @@ import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.model.BenePersonalDetailModel;
-import com.amx.amxlib.model.trnx.BeneficiaryTrnxModel;
 import com.amx.jax.dao.BlackListDao;
 import com.amx.jax.dbmodel.BlackListModel;
 import com.amx.jax.dbmodel.ServiceApplicabilityRule;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.exception.ExceptionMessageKey;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.request.benebranch.BenePersonalDetailModel;
+import com.amx.jax.model.request.benebranch.BeneficiaryTrnxModel;
 import com.amx.jax.repository.IServiceApplicabilityRuleDao;
 
 @Component
@@ -43,6 +43,15 @@ public class BenePersonalDetailValidator implements Validator {
 		BeneficiaryTrnxModel beneficiaryTrnxModel = (BeneficiaryTrnxModel) target;
 		BenePersonalDetailModel benePersonalDetailModel = beneficiaryTrnxModel.getBenePersonalDetailModel();
 		validateMobile(benePersonalDetailModel, beneficiaryTrnxModel);
+		validateBeneBlacklist(benePersonalDetailModel);
+		validateBeneArabicBlacklist(benePersonalDetailModel);
+	}
+
+	public void validateUpdateBene(BeneficiaryTrnxModel beneficiaryTrnxModel) {
+		BenePersonalDetailModel benePersonalDetailModel = beneficiaryTrnxModel.getBenePersonalDetailModel();
+		if (StringUtils.isNotBlank(benePersonalDetailModel.getMobileNumber())) {
+			validateMobile(benePersonalDetailModel, beneficiaryTrnxModel);
+		}
 		validateBeneBlacklist(benePersonalDetailModel);
 		validateBeneArabicBlacklist(benePersonalDetailModel);
 	}
@@ -101,16 +110,12 @@ public class BenePersonalDetailValidator implements Validator {
 		}
 	}
 
-	private void validateMobile(BenePersonalDetailModel benePersonalDetailModel,
-			BeneficiaryTrnxModel beneficiaryTrnxModel) {
+	private void validateMobile(BenePersonalDetailModel benePersonalDetailModel, BeneficiaryTrnxModel beneficiaryTrnxModel) {
 
-		List<ServiceApplicabilityRule> serviceAppList = serviceApplicabilityRuleDao.getBeneTelServiceApplicabilityRule(
-				metaData.getCountryId(), benePersonalDetailModel.getCountryId(),
-				beneficiaryTrnxModel.getBeneAccountModel().getCurrencyId());
+		List<ServiceApplicabilityRule> serviceAppList = serviceApplicabilityRuleDao.getBeneTelServiceApplicabilityRule(metaData.getCountryId(),
+				benePersonalDetailModel.getCountryId(), beneficiaryTrnxModel.getBeneAccountModel().getCurrencyId());
 
-		int benePhoneLength = (null != benePersonalDetailModel.getMobileNumber())
-				? benePersonalDetailModel.getMobileNumber().toString().length()
-				: 0;
+		int benePhoneLength = (null != benePersonalDetailModel.getMobileNumber()) ? benePersonalDetailModel.getMobileNumber().toString().length() : 0;
 
 		int minLength = serviceAppList.stream().filter(i -> i.getMinLenght() != null).mapToInt(i -> {
 			return i.getMinLenght().intValue();

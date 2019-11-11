@@ -18,11 +18,31 @@ import com.amx.amxlib.constant.BeneficiaryConstant.BeneStatus;
 import com.amx.amxlib.meta.model.BeneCountryDTO;
 import com.amx.amxlib.model.BeneAccountModel;
 import com.amx.amxlib.model.BenePersonalDetailModel;
+import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.response.JaxTransactionResponse;
 import com.amx.amxlib.model.trnx.BeneficiaryTrnxModel;
 import com.amx.jax.JaxAuthContext;
-
+import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.client.BeneClient;
+import com.amx.jax.client.bene.BeneBranchClient;
+import com.amx.jax.client.bene.BeneficaryStatusDto;
+import com.amx.jax.client.bene.BeneficiaryConstant.BeneStatus;
+import com.amx.jax.client.bene.IBeneficiaryService;
+import com.amx.jax.client.branch.IBranchBeneService;
+import com.amx.jax.client.remittance.RemittanceClient;
 import com.amx.jax.model.BeneficiaryListDTO;
+import com.amx.jax.model.request.benebranch.AddNewBankBranchRequest;
+import com.amx.jax.model.request.benebranch.BankBranchListRequest;
+import com.amx.jax.model.request.benebranch.BeneAccountModel;
+import com.amx.jax.model.request.benebranch.BenePersonalDetailModel;
+import com.amx.jax.model.request.benebranch.BeneficiaryTrnxModel;
+import com.amx.jax.model.request.benebranch.ListBeneBankOrCashRequest;
+import com.amx.jax.model.request.remittance.GetServiceApplicabilityRequest;
+import com.amx.jax.model.response.BankMasterDTO;
+import com.amx.jax.model.response.benebranch.BankBranchDto;
+import com.amx.jax.model.response.benebranch.BeneStatusDto;
+import com.amx.jax.model.response.remittance.GetServiceApplicabilityResponse;
+import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
 import com.amx.jax.model.CivilIdOtpModel;
 import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 import com.amx.jax.ui.model.AuthData;
@@ -43,6 +63,7 @@ import io.swagger.annotations.ApiOperation;
  */
 @RestController
 @Api(value = "Beneficiary APIs")
+@ApiStatusService({ IBranchBeneService.class, IBeneficiaryService.class })
 public class BeneController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(BeneController.class);
 	/** The jax service. */
@@ -52,6 +73,9 @@ public class BeneController {
 	/** The transactions. */
 	@Autowired
 	private Transactions transactions;
+
+	@Autowired
+	BeneClient beneClient;
 
 	/**
 	 * Bene list.
@@ -219,4 +243,49 @@ public class BeneController {
 				jaxService.setDefaults().getBeneClient().commitAddBeneTrnx(req.getmOtp(), req.geteOtp()).getResult());
 	}
 
+	@Autowired
+	BeneBranchClient beneBranchClient;
+
+	@ApiOperation(value = "Get Lists Of Statuses for bene Filtering")
+	@RequestMapping(value = "/api/bnfcry/meta/status", method = { RequestMethod.GET })
+	public ResponseWrapperM<List<BeneStatusDto>, Object> getBeneListStatuses() {
+		return ResponseWrapperM.fromAsList(beneBranchClient.getBeneListStatuses());
+	}
+
+	@ApiOperation(value = "Get Lists Of Types for bene")
+	@RequestMapping(value = "/api/bnfcry/meta/types", method = { RequestMethod.GET })
+	public ResponseWrapperM<List<BeneficaryStatusDto>, Object> getBeneStatusMaster() {
+		return ResponseWrapperM.fromAsList(beneClient.getBeneStatusMaster());
+	}
+
+	@ApiOperation(value = "Add new branch request")
+	@RequestMapping(value = "/api/bnfcry/meta/bank-branch/add", method = { RequestMethod.POST })
+	public ResponseWrapperM<List<BoolRespModel>, Object> addNewBankBranchRequest(
+			@RequestBody AddNewBankBranchRequest request) {
+		return ResponseWrapperM.fromAsList(beneBranchClient.addNewBankBranchRequest(request));
+	}
+
+	@ApiOperation(value = "List of banks for currency and country")
+	@RequestMapping(value = "/api/bnfcry/meta/bank/list", method = { RequestMethod.POST })
+	public ResponseWrapperM<List<BankMasterDTO>, Object> addNewBankBranchRequest(
+			@RequestBody ListBeneBankOrCashRequest request2) {
+		return ResponseWrapperM.fromAsList(beneBranchClient.listBeneBank(request2));
+	}
+
+	@ApiOperation(value = "List of bank-branches")
+	@RequestMapping(value = "/api/bnfcry/meta/bank-branch/list", method = { RequestMethod.POST })
+	public ResponseWrapperM<List<BankBranchDto>, Object> addNewBankBranchRequest(
+			@RequestBody BankBranchListRequest request) {
+		return ResponseWrapperM.fromAsList(beneBranchClient.listBankBranch(request));
+	}
+
+	@Autowired
+	RemittanceClient remittanceClient;
+
+	@ApiOperation(value = "List of get-service-applicability")
+	@RequestMapping(value = "/api/bnfcry/meta/fields/list", method = { RequestMethod.POST })
+	public ResponseWrapperM<List<GetServiceApplicabilityResponse>, Object> getServiceApplicability(
+			@RequestBody GetServiceApplicabilityRequest request) {
+		return ResponseWrapperM.fromAsList(remittanceClient.getServiceApplicability(request));
+	}
 }

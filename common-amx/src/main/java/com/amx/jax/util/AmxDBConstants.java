@@ -18,6 +18,7 @@ public class AmxDBConstants {
 	public static final String Update = "U";
 	public static final String Black = "B";
 	public static final String Compliance = "C";
+	public static final String Hold = "H";
 	public static final String Processing = "P";
 
 	public static enum Status {

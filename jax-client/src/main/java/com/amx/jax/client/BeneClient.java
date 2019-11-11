@@ -38,6 +38,7 @@ import com.amx.amxlib.model.AbstractUserModel;
 import com.amx.amxlib.model.BeneAccountModel;
 import com.amx.amxlib.model.BenePersonalDetailModel;
 import com.amx.amxlib.model.BeneRelationsDescriptionDto;
+import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.JaxTransactionResponse;
@@ -45,15 +46,23 @@ import com.amx.amxlib.model.trnx.BeneficiaryTrnxModel;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterAgentBranchParam;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterAgentParam;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterServiceProviderParam;
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.configs.JaxMetaInfo;
+import com.amx.jax.client.serviceprovider.RoutingBankMasterDTO;
 import com.amx.jax.client.util.ConverterUtility;
 import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.model.CivilIdOtpModel;
+import com.amx.jax.model.request.benebranch.BeneAccountModel;
+import com.amx.jax.model.request.benebranch.BenePersonalDetailModel;
+import com.amx.jax.model.request.benebranch.BeneficiaryTrnxModel;
+import com.amx.jax.client.bene.BeneficaryStatusDto;
+import com.amx.jax.client.bene.BeneficiaryConstant.BeneStatus;
+import com.amx.jax.client.bene.IBeneficiaryService;
 import com.amx.jax.rest.RestService;
 import com.amx.utils.JsonUtil;
 
 @Component
-public class BeneClient extends AbstractJaxServiceClient {
+public class BeneClient extends AbstractJaxServiceClient implements IBeneficiaryService{
 
 	private static final Logger LOGGER = Logger.getLogger(BeneClient.class);
 
@@ -381,5 +390,20 @@ public class BeneClient extends AbstractJaxServiceClient {
 					.as(new ParameterizedTypeReference<ApiResponse<RemittancePageDto>>() {
 					});
 		
+	}
+
+	@Override
+	public AmxApiResponse<BeneficaryStatusDto, Object> getBeneStatusMaster() {
+		try {
+			String url = this.getBaseUrl() + BENE_API_ENDPOINT + Path.GET_BENE_STATUS_MASTER;
+			return restService.ajax(url).meta(new JaxMetaInfo()).get()
+					.as(new ParameterizedTypeReference<AmxApiResponse<BeneficaryStatusDto, Object>>() {
+					});
+		} catch (AbstractJaxException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in getBeneStatusMaster : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
 	}
 }
