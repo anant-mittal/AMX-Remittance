@@ -15,6 +15,7 @@ import com.amx.amxlib.meta.model.ServiceGroupMasterDescDto;
 import com.amx.amxlib.meta.model.ViewCityDto;
 import com.amx.amxlib.meta.model.ViewDistrictDto;
 import com.amx.amxlib.meta.model.ViewStateDto;
+import com.amx.amxlib.model.CountryBranchDTO;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.MetaClient;
 import com.amx.jax.client.OffsiteCustRegClient;
@@ -105,6 +106,11 @@ public class MetaController {
 	@RequestMapping(value = "/pub/meta/service/list", method = RequestMethod.GET)
 	public AmxApiResponse<ServiceGroupMasterDescDto, Object> getServiceList() {
 		return metaClient.getServiceGroupList();
+	}
+
+	@RequestMapping(value = "/pub/meta/branch/list", method = RequestMethod.GET)
+	public AmxApiResponse<CountryBranchDTO, Object> getBranchList() {
+		return metaClient.getCountryBranchList();
 	}
 
 	@RequestMapping(value = "/pub/meta/service_master/list", method = RequestMethod.GET)

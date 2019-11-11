@@ -530,7 +530,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 				.as(new ParameterizedTypeReference<AmxApiResponse<ServiceMasterDTO, Object>>() {
 				});
 	
-}
+	}
 	
 	
 	
