@@ -107,7 +107,7 @@ public class ExchangeRateManager {
 
 		List<ExchangeRateMasterApprovalDet> exchangeRateList = exchangeRateDao.getExchangeRatesForPredicates(
 				rateEnquiryReqDto.getCountryId(), rateEnquiryReqDto.getCurrencyId(), rateEnquiryReqDto.getBankId(),
-				rateEnquiryReqDto.getServiceIndId(), rateEnquiryReqDto.getBranchId(), pageable);
+				rateEnquiryReqDto.getServiceIndId(), rateEnquiryReqDto.getCountryBranchId(), pageable);
 
 		if (exchangeRateList == null || exchangeRateList.isEmpty()) {
 			LOGGER.debug("No Exchnage Rate found for Given Filter");

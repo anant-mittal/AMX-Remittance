@@ -84,17 +84,6 @@ public class GroupDetails implements Serializable, Comparable<GroupDetails> {
 		this.valSet = valSet;
 	}
 
-	/*
-	 * public static class GroupDetailsComparator implements
-	 * Comparator<GroupDetails> {
-	 * 
-	 * @Override public int compare(GroupDetails arg1, GroupDetails arg2) { if (null
-	 * != arg1.getGroupName()) { return
-	 * arg1.getGroupName().compareTo(arg2.getGroupName()); } return 0; }
-	 * 
-	 * }
-	 */
-
 	@Override
 	public int compareTo(GroupDetails o) {
 

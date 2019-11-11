@@ -22,7 +22,7 @@ public class ExchRateEnquiryReqDto implements Serializable {
 
 	private BigDecimal serviceIndId;
 
-	private BigDecimal branchId;
+	private BigDecimal countryBranchId;
 
 	private BigDecimal pageNo;
 
@@ -60,12 +60,12 @@ public class ExchRateEnquiryReqDto implements Serializable {
 		this.serviceIndId = serviceIndId;
 	}
 
-	public BigDecimal getBranchId() {
-		return branchId;
+	public BigDecimal getCountryBranchId() {
+		return countryBranchId;
 	}
 
-	public void setBranchId(BigDecimal branchId) {
-		this.branchId = branchId;
+	public void setCountryBranchId(BigDecimal countryBranchId) {
+		this.countryBranchId = countryBranchId;
 	}
 
 	public BigDecimal getPageNo() {
