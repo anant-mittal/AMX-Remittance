@@ -17,7 +17,6 @@ import org.springframework.http.MediaType;
 import org.springframework.mobile.device.Device;
 import org.springframework.mobile.device.DeviceUtils;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
@@ -38,6 +37,7 @@ import com.amx.jax.model.UserDevice;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 import com.amx.utils.HttpUtils;
+import com.amx.utils.StringUtils;
 
 import eu.bitwalker.useragentutils.Browser;
 import eu.bitwalker.useragentutils.OperatingSystem;
@@ -163,7 +163,6 @@ public class CommonHttpRequest {
 		}
 		return null;
 	}
-
 
 	/**
 	 * Returns Value from Query,Header,Cookies
