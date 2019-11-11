@@ -1,6 +1,7 @@
 package com.amx.jax.ui.api;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.http.Cookie;
@@ -22,16 +23,15 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.amxlib.meta.model.AnnualIncomeRangeDTO;
 import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.meta.model.IncomeDto;
-import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
-import com.amx.amxlib.model.CustomerNotificationDTO;
+import com.amx.amxlib.model.CustomerNotifyHubDTO;
 import com.amx.amxlib.model.UserFingerprintResponseModel;
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.JaxAuthContext;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
-import com.amx.jax.client.JaxPushNotificationClient;
+import com.amx.jax.client.CustomerNotifyHubClient;
 import com.amx.jax.dict.Language;
 import com.amx.jax.dict.UserClient.AppType;
 import com.amx.jax.http.CommonHttpRequest;
@@ -39,6 +39,7 @@ import com.amx.jax.logger.AuditActor;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.logger.events.CActivityEvent;
+import com.amx.jax.model.CivilIdOtpModel;
 import com.amx.jax.model.response.customer.CustomerFlags;
 import com.amx.jax.model.response.customer.CustomerModelSignupResponse;
 import com.amx.jax.postman.PostManException;
@@ -213,8 +214,8 @@ public class UserController {
 			CustomerFlags customerFlags = sessionService.getUserSession().getCustomerModel().getFlags();
 
 			if (validate) {
-				customerFlags = authLibContext.get().checkUserMeta(sessionService.getGuestSession().getState(),
-						customerFlags);
+				customerFlags = authLibContext.get()
+						.checkUserMeta(sessionService.getGuestSession().getState(), customerFlags);
 			}
 
 			wrapper.getData().setFlags(customerFlags);
@@ -255,7 +256,8 @@ public class UserController {
 	@RequestMapping(value = "/pub/user/notify/hotpoint", method = { RequestMethod.POST })
 	public ResponseWrapper<Object> meNotify(@RequestParam(required = false) String token,
 			@RequestParam(required = false) GeoHotPoints hotpoint, @RequestParam BigDecimal customerId,
-			HttpServletRequest request) throws PostManException {
+			HttpServletRequest request)
+			throws PostManException {
 		AppContextUtil.setActorId(new AuditActor(AuditActor.ActorType.GUEST, customerId));
 		if (ArgUtil.isEmpty(hotpoint)) {
 			LOGGER.error("HOTPOINT:{} not defined for customer {} ", request.getParameter("hotpoint"), customerId);
@@ -264,12 +266,12 @@ public class UserController {
 	}
 
 	@Autowired
-	JaxPushNotificationClient notificationClient;
+	CustomerNotifyHubClient notificationClient;
 
 	@RequestMapping(value = "/pub/user/notifications", method = { RequestMethod.GET })
-	public ResponseWrapper<List<CustomerNotificationDTO>> getNotifications(@RequestParam BigDecimal customerId) {
+	public ResponseWrapper<List<CustomerNotifyHubDTO>> getNotifications(@RequestParam BigDecimal customerId) {
 		AppContextUtil.setActorId(new AuditActor(AuditActor.ActorType.GUEST, customerId));
-		return new ResponseWrapper<List<CustomerNotificationDTO>>(notificationClient.get(customerId).getResults());
+		return new ResponseWrapper<List<CustomerNotifyHubDTO>>(notificationClient.get(customerId).getResults());
 	}
 
 	/**
@@ -327,7 +329,8 @@ public class UserController {
 	@RequestMapping(value = "/api/user/password", method = {
 			RequestMethod.POST }, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 	public ResponseWrapper<UserUpdateResponse> changePassword(@RequestParam(required = false) String oldPassword,
-			@RequestParam String password, @Deprecated @RequestParam String mOtp,
+			@RequestParam String password,
+			@Deprecated @RequestParam String mOtp,
 			@Deprecated @RequestParam(required = false) String eOtp) {
 		JaxAuthContext.mOtp(mOtp);
 		JaxAuthContext.eOtp(eOtp);
@@ -344,7 +347,8 @@ public class UserController {
 	@RequestMapping(value = "/api/user/password/**", method = { RequestMethod.POST })
 	public ResponseWrapperM<Object, AuthResponseOTPprefix> changePasswordJSON(
 			@Deprecated @RequestHeader(value = "mOtp", required = false) String mOtpHeader,
-			@Deprecated @RequestParam(required = false) String mOtp, @RequestBody UserUpdateRequest userUpdateRequest) {
+			@Deprecated @RequestParam(required = false) String mOtp,
+			@RequestBody UserUpdateRequest userUpdateRequest) {
 		ResponseWrapperM<Object, AuthResponseOTPprefix> wrapper = new ResponseWrapperM<>();
 
 		mOtp = JaxAuthContext.mOtp(ArgUtil.ifNotEmpty(userUpdateRequest.getmOtp(), mOtp, mOtpHeader));
@@ -395,7 +399,8 @@ public class UserController {
 			@Deprecated @RequestHeader(value = "mOtp", required = false) String mOtpHeader,
 			@Deprecated @RequestHeader(value = "eOtp", required = false) String eOtpHeader,
 			@Deprecated @RequestParam(required = false) String mOtp,
-			@Deprecated @RequestParam(required = false) String eOtp, @RequestBody UserUpdateRequest userUpdateRequest) {
+			@Deprecated @RequestParam(required = false) String eOtp,
+			@RequestBody UserUpdateRequest userUpdateRequest) {
 
 		mOtp = JaxAuthContext.mOtp(ArgUtil.ifNotEmpty(userUpdateRequest.getmOtp(), mOtp, mOtpHeader));
 		eOtp = JaxAuthContext.eOtp(ArgUtil.ifNotEmpty(userUpdateRequest.geteOtp(), eOtp, eOtpHeader));
@@ -453,7 +458,8 @@ public class UserController {
 			@Deprecated @RequestHeader(value = "mOtp", required = false) String mOtpHeader,
 			@Deprecated @RequestHeader(value = "eOtp", required = false) String eOtpHeader,
 			@Deprecated @RequestParam(required = false) String mOtp,
-			@Deprecated @RequestParam(required = false) String eOtp, @RequestBody UserUpdateRequest userUpdateRequest) {
+			@Deprecated @RequestParam(required = false) String eOtp,
+			@RequestBody UserUpdateRequest userUpdateRequest) {
 
 		mOtp = JaxAuthContext.mOtp(ArgUtil.ifNotEmpty(userUpdateRequest.getmOtp(), mOtp, mOtpHeader));
 		eOtp = JaxAuthContext.eOtp(ArgUtil.ifNotEmpty(userUpdateRequest.geteOtp(), eOtp, eOtpHeader));
@@ -496,7 +502,8 @@ public class UserController {
 	@RequestMapping(value = "/api/user/secques", method = { RequestMethod.POST })
 	public ResponseWrapperM<Object, AuthResponseOTPprefix> regSecQues(
 			@Deprecated @RequestHeader(value = "mOtp", required = false) String mOtpHeader,
-			@Deprecated @RequestParam(required = false) String mOtp, @RequestBody UserUpdateRequest userUpdateData) {
+			@Deprecated @RequestParam(required = false) String mOtp,
+			@RequestBody UserUpdateRequest userUpdateData) {
 		ResponseWrapperM<Object, AuthResponseOTPprefix> wrapper = new ResponseWrapperM<>();
 		mOtp = JaxAuthContext.mOtp(ArgUtil.ifNotEmpty(userUpdateData.getmOtp(), mOtp, mOtpHeader));
 //		mOtp = (mOtp == null) ? (mOtpHeader == null ? userUpdateData.getmOtp() : mOtpHeader) : mOtp;
@@ -518,7 +525,8 @@ public class UserController {
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/api/user/secques/v2", method = { RequestMethod.POST })
-	public AmxApiResponse<BoolRespModel, Object> regSecQuesV2(@RequestBody UserUpdateRequest userUpdateData) {
+	public AmxApiResponse<BoolRespModel, Object> regSecQuesV2(
+			@RequestBody UserUpdateRequest userUpdateData) {
 		return userService.updateSecQues(userUpdateData.getSecQuesAns());
 	}
 
@@ -531,7 +539,8 @@ public class UserController {
 	@RequestMapping(value = "/api/user/phising", method = { RequestMethod.POST })
 	public ResponseWrapperM<Object, AuthResponseOTPprefix> updatePhising(
 			@Deprecated @RequestHeader(value = "mOtp", required = false) String mOtpHeader,
-			@Deprecated @RequestParam(required = false) String mOtp, @RequestBody UserUpdateRequest userUpdateData) {
+			@Deprecated @RequestParam(required = false) String mOtp,
+			@RequestBody UserUpdateRequest userUpdateData) {
 		ResponseWrapperM<Object, AuthResponseOTPprefix> wrapper = new ResponseWrapperM<>();
 		mOtp = JaxAuthContext.mOtp(ArgUtil.ifNotEmpty(userUpdateData.getmOtp(), mOtp, mOtpHeader));
 		// mOtp = (mOtp == null) ? (mOtpHeader == null ? userUpdateData.getmOtp() :
@@ -541,8 +550,8 @@ public class UserController {
 			wrapper.getMeta().setmOtpPrefix(loginService.sendOTP(null, null).getData().getmOtpPrefix());
 			wrapper.setStatusEnum(OWAStatusStatusCodes.MOTP_REQUIRED);
 		} else {
-			wrapper.setData(
-					userService.updatePhising(userUpdateData.getImageUrl(), userUpdateData.getCaption(), mOtp, null));
+			wrapper.setData(userService.updatePhising(userUpdateData.getImageUrl(), userUpdateData.getCaption(),
+					mOtp, null));
 			wrapper.setStatusEnum(OWAStatusStatusCodes.USER_UPDATE_SUCCESS);
 		}
 		return wrapper;

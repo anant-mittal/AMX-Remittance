@@ -249,8 +249,10 @@ public class SSOServerController {
 					DeviceData branchDeviceData = deviceBox.get(sSOTranx.get().getBranchAdapterId());
 					userClientDto.setLocalIpAddress(branchDeviceData.getLocalIp());
 					userClientDto.setTerminalId(ArgUtil.parseAsBigDecimal(branchDeviceData.getTerminalId()));
-					LOGGER.info("Gloabal IPs THIS: {} ADAPTER: {}", userDeviceClient.getIp(),
-							branchDeviceData.getGlobalIp());
+					LOGGER.info("Gloabal IPs THIS: {} ADAPTER: {}, REQUEST: {}", userDeviceClient.getIp(),
+							branchDeviceData.getGlobalIp(), commonHttpRequest.getIPAddress());
+
+					ssoUser.setTerminalIp(userDeviceClient.getIp() + "," + branchDeviceData.getGlobalIp());
 
 					// Audit
 					auditEvent.terminalId(userClientDto.getTerminalId())
@@ -309,7 +311,17 @@ public class SSOServerController {
 				SSOAuditEvent auditEvent = new SSOAuditEvent(SSOAuditEvent.Type.LOGIN_OTP, Result.FAIL)
 						.clientType(clientType);
 				try {
+
 					String terminalId = ArgUtil.parseAsString(sSOTranx.get().getTerminalId());
+					String branchAdapterId = sSOTranx.get().getBranchAdapterId();
+					String terminalIpList = userDeviceClient.getIp();
+
+					if (ArgUtil.is(branchAdapterId)) {
+						DeviceData branchDeviceData = deviceBox.get(branchAdapterId);
+						if (ArgUtil.is(branchDeviceData)) {
+							terminalIpList = terminalIpList + "," + branchDeviceData.getGlobalIp();
+						}
+					}
 
 					UserAuthorisationReqDTO auth = new UserAuthorisationReqDTO();
 					auth.setEmployeeNo(formdata.getEcnumber());
@@ -321,6 +333,7 @@ public class SSOServerController {
 						// TODO:-- TO validate
 						auth.setIpAddress(terminalId);
 					}
+					ssoUser.setTerminalIp(terminalIpList);
 
 					auth.setDeviceId(userDeviceClient.getFingerprint());
 					auth.setmOtp(formdata.getMotp());
@@ -357,9 +370,9 @@ public class SSOServerController {
 					model.put(SSOConstants.PARAM_REDIRECT, redirectUrl);
 					result.setRedirectUrl(redirectUrl);
 					result.setStatusEnum(SSOServerCodes.AUTH_DONE);
-					
+
 					stompTunnelSessionManager.registerUser(ActorType.E.getId(empDto.getEmployeeId()));
-					
+
 					if (redirect) {
 						resp.setHeader("Location", redirectUrl);
 						resp.setStatus(302);

@@ -15,7 +15,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.amx.amxlib.exception.InvalidInputException;
 import com.amx.amxlib.exception.ResourceNotFoundException;
-import com.amx.amxlib.model.CustomerNotificationDTO;
+import com.amx.amxlib.model.CustomerNotifyHubDTO;
 import com.amx.jax.api.AmxApiResponse;
 
 @RunWith(SpringRunner.class)
@@ -26,11 +26,11 @@ public class JaxPushNotificationClientTest {
 	MetaClient metaclient;
 
 	@Autowired
-	JaxPushNotificationClient client;
+	CustomerNotifyHubClient client;
 
 	// @Test
 	public void testGetPushNotification() throws IOException, ResourceNotFoundException, InvalidInputException {
-		AmxApiResponse<CustomerNotificationDTO, Object> response = null;
+		AmxApiResponse<CustomerNotifyHubDTO, Object> response = null;
 
 		BigDecimal customerId = new BigDecimal("5218");
 
@@ -41,7 +41,7 @@ public class JaxPushNotificationClientTest {
 
 	@Test
 	public void saveCustomerNotification() throws ParseException {
-		CustomerNotificationDTO customerNotificationDTO = new CustomerNotificationDTO();
+		CustomerNotifyHubDTO customerNotificationDTO = new CustomerNotifyHubDTO();
 
 		// customerNotificationDTO.setCustomerId(new BigDecimal(5218));
 		customerNotificationDTO.setCountryId(new BigDecimal(91));

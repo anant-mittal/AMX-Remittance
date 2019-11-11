@@ -39,12 +39,6 @@ public class GlobalException extends AbstractJaxException {
 	}
 
 	@Deprecated
-	public GlobalException(JaxError error, Object... expressions) {
-		this.error = error;
-		this.errorKey = ExceptionMessageKey.build(error, expressions).toString();
-	}
-
-	@Deprecated
 	public GlobalException(String errorMessage, JaxError error, Object... expressions) {
 		this.error = error;
 		this.errorKey = ExceptionMessageKey.build(error, expressions).toString();
@@ -53,5 +47,9 @@ public class GlobalException extends AbstractJaxException {
 
 	public GlobalException(IExceptionEnum errorCode, String message) {
 		super(errorCode, message);
+	}
+
+	public GlobalException(IExceptionEnum errorCode, Exception ex) {
+		super(errorCode,ex);
 	}
 }

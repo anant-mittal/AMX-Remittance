@@ -16,7 +16,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonPropertyOrder({ AuditEvent.PROP_DESC, AuditEvent.PROP_MSG, AbstractEvent.PROP_COMPONENT, AbstractEvent.PROP_CATG,
 		AbstractEvent.PROP_TYPE, AuditEvent.PROP_RESULT, AbstractEvent.PROP_TIMSTAMP })
-public abstract class AuditEvent extends AbstractEvent {
+public abstract class AuditEvent<T extends AuditEvent<T>> extends AbstractEvent {
 
 	public static final String PROP_MSG = "msg";
 	public static final String PROP_DESC = "desc";
@@ -59,7 +59,7 @@ public abstract class AuditEvent extends AbstractEvent {
 	protected Map<String, String> details;
 
 	public static enum Result {
-		DEFAULT, DONE, REJECTED, FAIL, ERROR, PASS;
+		DEFAULT, DONE, REJECTED, FAIL,CANCELLED, ERROR, PASS;
 	}
 
 	public AuditEvent() {
@@ -190,9 +190,10 @@ public abstract class AuditEvent extends AbstractEvent {
 		this.client = client;
 	}
 
-	public AuditEvent result(Result result) {
+	@SuppressWarnings("unchecked")
+	public T result(Result result) {
 		this.setResult(result);
-		return this;
+		return (T) this;
 	}
 
 	public void setException(Exception excep) {
@@ -207,25 +208,29 @@ public abstract class AuditEvent extends AbstractEvent {
 				: excep.getErrorKey();
 	}
 
-	public AuditEvent excep(Exception excep) {
+	@SuppressWarnings("unchecked")
+	public T excep(Exception excep) {
 		this.setException(excep);
-		return this;
+		return (T) this;
 	}
 
-	public AuditEvent excep(AmxApiException excep) {
+	@SuppressWarnings("unchecked")
+	public T excep(AmxApiException excep) {
 		this.setException(excep);
-		return this;
+		return (T) this;
 	}
 
-	public AuditEvent result(Result result, AmxApiException excep) {
+	@SuppressWarnings("unchecked")
+	public T result(Result result, AmxApiException excep) {
 		this.setResult(result);
 		this.setException(excep);
-		return this;
+		return (T) this;
 	}
 
-	public AuditEvent message(Object message) {
+	@SuppressWarnings("unchecked")
+	public T message(Object message) {
 		this.setMessage(ArgUtil.parseAsString(message));
-		return this;
+		return (T) this;
 	}
 
 	public boolean isSuccess() {

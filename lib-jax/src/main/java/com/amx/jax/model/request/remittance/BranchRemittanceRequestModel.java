@@ -54,6 +54,9 @@ public class BranchRemittanceRequestModel {
 		public void setTotalLoyaltyAmount(BigDecimal totalLoyaltyAmount) {
 			this.totalLoyaltyAmount = totalLoyaltyAmount;
 		}
+		public void setPaidAmount(BigDecimal paidAmount) {
+			this.paidAmount = paidAmount;
+		}
 	
 		
 		

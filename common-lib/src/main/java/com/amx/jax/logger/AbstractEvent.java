@@ -71,7 +71,7 @@ public abstract class AbstractEvent implements Serializable {
 	public interface EventType extends EnumType {
 		EventMarker marker();
 	}
-
+	
 	@JsonProperty(PROP_COMPONENT)
 	protected String component;
 

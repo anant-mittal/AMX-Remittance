@@ -455,10 +455,12 @@ public class UserAuthService {
 
 		HashBuilder builder = new HashBuilder().currentTime(System.currentTimeMillis())
 				.interval(AmxConstants.OFFLINE_OTP_TTL).tolerance(AmxConstants.OFFLINE_OTP_TOLERANCE)
-				.secret(otpDevice.getClientSecreteKey()).message(sac);
+				.secret(otpDevice.getClientSecreteKey()).message(sac).length(AmxConstants.OTP_LENGTH);
 
 		// Added Complex Password
-		if (builder.validateComplexHMAC(otp) || builder.validateNumHMAC(otp)) {
+		if (builder.validateComplexHMAC(otp) 
+			//	|| builder.validateNumHMAC(otp)
+				) {
 			return Boolean.TRUE;
 		}
 
@@ -536,7 +538,7 @@ public class UserAuthService {
 		}
 
 		DeviceType deviceType = userClientDto.getDeviceType();
-
+		
 		// Check for Employee System Assignment
 		if (UserClient.isAuthSystem(userClientDto.getClientType(), AuthSystem.TERMINAL)) {
 
@@ -632,3 +634,4 @@ public class UserAuthService {
 	}
 
 }
+

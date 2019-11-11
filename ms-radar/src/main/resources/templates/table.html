@@ -38,7 +38,7 @@
 <script src='//cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.js'
 	type='text/javascript'></script>	
 	
-<!--  PivotTable 
+<!--  PivotTable -->
 <script
 	src='https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js'
 	type='text/javascript'></script>
@@ -53,7 +53,6 @@
 
 <script src='/radar/js/jSQL.js' type='text/javascript'></script>
 
--->
 <style>
 /* Dropdown Button */
 .dropbtn {
@@ -136,6 +135,20 @@
 	display: block !important;
 	visibility: visible !important;
 	opacity: 1 !important;
+}
+.hide {
+	display: none !important;
+	opacity: 0 !important;
+}
+.loader{
+  position: fixed;
+  left: 0px;
+  top: 80px;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  background: url('/radar/img/loader.gif') 
+              50% 50% no-repeat rgb(249,249,249);
 }
 </style>
 <script>
@@ -366,7 +379,7 @@ function dropdown(classname) {
             </tr>
         </tfoot>
 	</table>
-
+	<div id="loader" class="loader hide"></div>
 </div>
 
 <div id="pivotTable"></div>
@@ -392,6 +405,7 @@ function dropdown(classname) {
 
 
   function executeQuery(url,map){
+	  $("#loader").removeClass("hide");
 	   $.ajax({
 		    type: 'POST',
 		    url: url,
@@ -483,7 +497,7 @@ function dropdown(classname) {
 				});
 			}
 			
-			return;
+			//return;
 			$("#pivotTable").pivotUI(
 					table, {
 				    rows: ["sex", "smoker"],
@@ -493,6 +507,8 @@ function dropdown(classname) {
 				    rendererName: "Heatmap"
 			});
 			
+		}).always(function(){
+			$("#loader").addClass("hide");
 		}); 
   }
   

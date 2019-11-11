@@ -1,15 +1,19 @@
 package com.amx.jax.sso;
 
-import java.math.BigDecimal;
-
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.cache.CacheBox;
+import com.amx.jax.http.CommonHttpRequest;
+import com.amx.jax.logger.LoggerService;
+import com.amx.jax.sso.server.SSOServerController;
 import com.amx.utils.ArgUtil;
 
 @Component
 public class SSOUserSessions extends CacheBox<Long> {
+
+	private Logger LOGGER = LoggerService.getLogger(SSOUserSessions.class);
 
 	public SSOUserSessions() {
 		super("SSOUserSessions");
@@ -17,6 +21,9 @@ public class SSOUserSessions extends CacheBox<Long> {
 
 	@Autowired
 	SSOUser sSOUser;
+
+	@Autowired
+	CommonHttpRequest commonHttpRequest;
 
 	/**
 	 * To make sure user is not loggedin from other system
@@ -61,8 +68,19 @@ public class SSOUserSessions extends CacheBox<Long> {
 		return false;
 	}
 
+	public boolean isTerminalIPSame() {
+		if (ArgUtil.isEmpty(sSOUser.getTerminalIp())) {
+			return true;
+		}
+		boolean isTerminalIPSametemp = sSOUser.getTerminalIp().contains(commonHttpRequest.getIPAddress());
+		if (!isTerminalIPSametemp) {
+			LOGGER.info("IP:   {}   {}", sSOUser.getTerminalIp(), commonHttpRequest.getIPAddress());
+		}
+		return isTerminalIPSametemp;
+	}
+
 	public boolean isUserToBeThrownOut() {
-		return !(isUserValidUnique() && isTerminalValidUnique());
+		return !(isUserValidUnique() && isTerminalValidUnique() && isTerminalIPSame());
 	}
 
 	public void invalidateTerminal(String terminalId) {

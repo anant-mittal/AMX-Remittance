@@ -16,6 +16,8 @@ public final class UniqueID {
 	public static final String PREF = Random.randomAlpha(3);
 	public static final Pattern SYSTEM_STRING_PATTERN = Pattern
 			.compile("^([A-Z]{3})-([\\w]+)-([\\w]+)-([\\w]+)-(\\w+)$");
+	public static final Pattern SYSTEM_STRING_PATTERN_V2 = Pattern
+			.compile("^([A-Z]{3})-([\\w]+)-([\\w]+)-([\\w]+)-([\\w]+)-(\\w+)$");
 
 	/** The atom. */
 	private static AtomicInteger atom = new AtomicInteger();
@@ -66,8 +68,13 @@ public final class UniqueID {
 		return PREF + "-" + StringUtils.pad(sessionPrefix, "xxxxx", 0) + "-" + generateString62();
 	}
 
-	public static String generateRequestId(String sessionId, String requestPrefix) {
-		return sessionId + "-" + requestPrefix + "-" + generateString62();
+	public static String generateRequestId(String sessionId, String requestGroup) {
+		return generateRequestId(sessionId, "000000", requestGroup);
+	}
+
+	public static String generateRequestId(String sessionId, String requestUser, String requestGroup) {
+		return sessionId + "-" + StringUtils.pad(requestUser, "000000", 1) + "-" + requestGroup + "-"
+				+ generateString62();
 	}
 
 	/**

@@ -202,7 +202,7 @@ public abstract class AmxAdvice implements ResponseBodyAdvice<AmxApiResponse<?, 
 		errors.add(newError);
 		return badRequest(ex, errors, request, response, ApiStatusCodes.PARAM_TYPE_MISMATCH);
 	}
-
+	
 	/**
 	 * Handle.
 	 *
@@ -271,4 +271,5 @@ public abstract class AmxAdvice implements ResponseBodyAdvice<AmxApiResponse<?, 
 				"Unable to process this request.",
 				HttpStatus.BAD_REQUEST);
 	}
+	
 }

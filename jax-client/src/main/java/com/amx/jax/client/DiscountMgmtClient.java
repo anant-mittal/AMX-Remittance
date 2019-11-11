@@ -21,6 +21,8 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.pricer.PricerServiceClient;
 import com.amx.jax.pricer.AbstractProbotInterface.ApiEndPoints;
+import com.amx.jax.pricer.dto.CurrencyMasterDTO;
+import com.amx.jax.pricer.dto.DiscountDetailsReqRespDTO;
 import com.amx.jax.pricer.dto.DiscountMgmtReqDTO;
 import com.amx.jax.pricer.dto.GroupDetails;
 import com.amx.jax.pricer.dto.OnlineMarginMarkupInfo;
@@ -57,14 +59,11 @@ public class DiscountMgmtClient extends AbstractJaxServiceClient implements IDis
 	}
 	
 	public AmxApiResponse<PricingAndCostResponseDTO, Object> fetchDiscountedRates(PricingRequestDTO pricingRequestDTO) {
-		try {
+	
 			return restService.ajax(appConfig.getJaxURL()).path(ApiEndPoints.GET_DISCOUTN_RATE).meta(new JaxMetaInfo())
 					.post(pricingRequestDTO).as(new ParameterizedTypeReference<AmxApiResponse<PricingAndCostResponseDTO, Object>>() {
 					});
-		} catch (Exception ae) {
-			LOGGER.error("exception in fetchDiscountedRates : ", ae);
-			return JaxSystemError.evaluate(ae);
-		}
+		
 	}
 
 	public AmxApiResponse<PricingResponseDTO, Object> fetchCustomerRates(PricingRequestDTO pricingRequestDTO) {
