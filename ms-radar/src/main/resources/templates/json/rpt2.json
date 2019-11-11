@@ -135,11 +135,12 @@
 	 "computed" : ["PrevMonth_Revenue=PrevMonth_localCommRecv + PrevMonth_commRecv + PrevMonth_exchangeGain - PrevMonth_coBankCharges",
 	 				"PrevMonth_RPT=PrevMonth_Revenue/PrevMonth_Trnx",
 	 				"ThisMonth_Revenue=ThisMonth_localCommRecv + ThisMonth_commRecv + ThisMonth_exchangeGain - ThisMonth_coBankCharges",
-	 				"ThisMonth_RPT=ThisMonth_Revenue/ThisMonth_Trnx"],
+	 				"ThisMonth_RPT=ThisMonth_Revenue/ThisMonth_Trnx",
+	 				"DIFF=ThisMonth_RPT-PrevMonth_RPT"],
 	 "colgroups" : [
 	 	"PrevMonth(area,PrevMonth_Trnx,PrevMonth_RPT)",
 	 	"ThisMonth(area,ThisMonth_Trnx,ThisMonth_RPT)",
-	 	"DEFAULT(area,PrevMonth_Trnx,PrevMonth_RPT,ThisMonth_Trnx,ThisMonth_RPT)"
+	 	"DEFAULT(area,PrevMonth_Trnx,PrevMonth_RPT,ThisMonth_Trnx,ThisMonth_RPT,DIFF)"
 	 ]
    }
   ]
