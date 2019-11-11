@@ -61,6 +61,7 @@ public class CardData implements Serializable {
 	private String addressUKey;
 	private String localUnitType;
 	private String fullName;
+	private String passport;
 	private int photoLength = 0;
 	private String info;
 
@@ -402,6 +403,14 @@ public class CardData implements Serializable {
 
 	public void setPhotoLength(int photoLength) {
 		this.photoLength = photoLength;
+	}
+
+	public String getPassport() {
+		return passport;
+	}
+
+	public void setPassport(String passport) {
+		this.passport = passport;
 	}
 
 	public String toString() {
