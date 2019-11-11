@@ -16,17 +16,20 @@ public class CustomerTeleMarketingDetails implements Serializable {
 	private static final long serialVersionUID = -6694134035069111195L;
 
 	@Id
-	@Column(name = "TELEMART_CUSTOMER_ID")
+	@Column(name = "CENTRIX_ID")
 	BigDecimal leadId;
+
+	@Column(name = "TELEMART_CUSTOMER_ID")
+	BigDecimal teleMartCustomerId;
+
+	@Column(name = "CUSTOMER_ID")
+	BigDecimal customerId;
 
 	@Column(name = "FOLW_UP_CODE")
 	String followUpCode;
 
 	@Column(name = "FOLW_UP_DATE")
 	Date followUpDate;
-
-	@Column(name = "CUSTOMER_ID")
-	BigDecimal customerId;
 
 	@Column(name = "EMPLOYEE_ID")
 	BigDecimal employeeId;
@@ -48,14 +51,6 @@ public class CustomerTeleMarketingDetails implements Serializable {
 
 	public void setCustomerId(BigDecimal customerId) {
 		this.customerId = customerId;
-	}
-
-	public BigDecimal getLeadId() {
-		return leadId;
-	}
-
-	public void setLeadId(BigDecimal leadId) {
-		this.leadId = leadId;
 	}
 
 	public BigDecimal getEmployeeId() {
@@ -80,6 +75,14 @@ public class CustomerTeleMarketingDetails implements Serializable {
 
 	public void setFollowUpDate(Date followUpDate) {
 		this.followUpDate = followUpDate;
+	}
+
+	public BigDecimal getLeadId() {
+		return leadId;
+	}
+
+	public void setLeadId(BigDecimal leadId) {
+		this.leadId = leadId;
 	}
 
 }
