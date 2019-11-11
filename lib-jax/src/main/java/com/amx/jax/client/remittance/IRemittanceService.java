@@ -26,6 +26,7 @@ import com.amx.jax.model.response.remittance.FlexFieldReponseDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
 import com.amx.jax.model.response.remittance.ParameterDetailsResponseDto;
 import com.amx.jax.model.response.remittance.PaymentModeDto;
+import com.amx.jax.model.response.remittance.RatePlaceOrderInquiryDto;
 import com.amx.jax.model.response.remittance.RemittanceDeclarationReportDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
@@ -61,6 +62,10 @@ public interface IRemittanceService extends  IJaxService {
 		public static final String BR_REMITTANCE_GET_FLEX_FIELDS = PREFIX + "/get-flex-field/";
 		public static final String BR_REMITTANCE_GET_GIFT_PACKAGE = PREFIX + "/get-gift-package/";
 		public static final String BR_REMITTANCE_SAVE_PLACE_ORDER = PREFIX + "/save-place-order-appl/";
+		public static final String BR_REMITTANCE_FETCH_PLACE_ORDER = PREFIX + "/rate-place-order-inq/";
+		public static final String BR_REMITTANCE_UPDATE_PLACE_ORDER = PREFIX + "/update_rate-place-order/";
+		
+		
 		
 		
 		
@@ -79,7 +84,13 @@ public interface IRemittanceService extends  IJaxService {
 		public static final String COLLECTION_DOC_CODE = "collectionDocCode";
 		public static final String LOCAL_AMOUNT = "localAmount";
 		public static final String FOREIGN_AMOUNT = "foreignAmount";
-		public static final String ROUTING_COUNTRY_ID="routingcountryId"; 
+		public static final String ROUTING_COUNTRY_ID="routingcountryId";
+		public static final String COUNTRY_BRANCH_ID="countryBranchId"; 
+		public static final String PLACE_ORDER_ID="ratePlaceOrderId";
+		public static final String PLACE_ORDER_STATUS="flag";
+		
+		
+		
 		
 	}
 	
@@ -160,9 +171,10 @@ public interface IRemittanceService extends  IJaxService {
 	
 	AmxApiResponse<BoolRespModel, Object> savePlaceOrderApplication(PlaceOrderRequestModel placeOrderRequestModel);
 	
+	AmxApiResponse<RatePlaceOrderInquiryDto, Object> fetchPlaceOrderInquiry(BigDecimal countryBranchId);
 	
 	
-	
+	AmxApiResponse<BoolRespModel, Object>  updateRatePlaceOrder(BigDecimal ratePlaceOrderId,String flag);
 }
 
 

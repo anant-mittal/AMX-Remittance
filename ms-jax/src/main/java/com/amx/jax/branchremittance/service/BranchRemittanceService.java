@@ -34,6 +34,7 @@ import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
 import com.amx.jax.model.response.remittance.ParameterDetailsResponseDto;
 import com.amx.jax.model.response.remittance.PaymentModeDto;
+import com.amx.jax.model.response.remittance.RatePlaceOrderInquiryDto;
 import com.amx.jax.model.response.remittance.RemittanceDeclarationReportDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
@@ -222,5 +223,17 @@ public class BranchRemittanceService extends AbstractService{
 		return AmxApiResponse.build(resultBool);
 	}
 	
+	
+	public AmxApiResponse<RatePlaceOrderInquiryDto, Object> fetchRatePlaceOrder(BigDecimal countryBranchId){
+		List<RatePlaceOrderInquiryDto> list =  placeOrderManager.getPlaceOrderInquiry(countryBranchId);
+		return AmxApiResponse.buildList(list);		
+	}
+	
+	public AmxApiResponse<BoolRespModel, Object> updatePlaceOrder(BigDecimal ratePlaceOrderId,String flag){
+		Boolean result = placeOrderManager.updateRatePlaceOrder(ratePlaceOrderId, flag);
+		BoolRespModel resultBool = new BoolRespModel();
+		resultBool.setSuccess(result);
+		return AmxApiResponse.build(resultBool);
+	}
 	
 }

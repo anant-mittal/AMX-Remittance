@@ -28,6 +28,7 @@ import com.amx.jax.model.response.remittance.FlexFieldReponseDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
 import com.amx.jax.model.response.remittance.ParameterDetailsResponseDto;
 import com.amx.jax.model.response.remittance.PaymentModeDto;
+import com.amx.jax.model.response.remittance.RatePlaceOrderInquiryDto;
 import com.amx.jax.model.response.remittance.RemittanceDeclarationReportDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
@@ -368,6 +369,25 @@ public class RemittanceClient implements IRemittanceService {
 	public AmxApiResponse<BoolRespModel, Object> savePlaceOrderApplication(PlaceOrderRequestModel placeOrderRequestModel) {
 		return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_SAVE_PLACE_ORDER).meta(new JaxMetaInfo())
 				.post(placeOrderRequestModel)
+				.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
+				});
+	}
+
+	@Override
+	public AmxApiResponse<RatePlaceOrderInquiryDto, Object> fetchPlaceOrderInquiry(BigDecimal countryBranchId) {
+		return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_FETCH_PLACE_ORDER).meta(new JaxMetaInfo())
+				.queryParam(Params.COUNTRY_BRANCH_ID, countryBranchId)
+				.post()
+				.as(new ParameterizedTypeReference<AmxApiResponse<RatePlaceOrderInquiryDto, Object>>() {
+				});
+	}
+
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> updateRatePlaceOrder(BigDecimal ratePlaceOrderId, String flag) {
+		return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_FETCH_PLACE_ORDER).meta(new JaxMetaInfo())
+				.queryParam(Params.PLACE_ORDER_ID, ratePlaceOrderId)
+				.queryParam(Params.PLACE_ORDER_STATUS, flag)
+				.post()
 				.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 				});
 	}

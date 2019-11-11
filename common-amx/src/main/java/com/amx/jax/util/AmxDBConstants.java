@@ -27,9 +27,10 @@ public class AmxDBConstants {
 		 */
 		D, U, B, C, V, 
 		/**
-		 * EXPIRED
+		 * EXPIRED,
+		 * R-Reject,N- Negotiate, N-New 
 		 */
-		E
+		E,R
 	}
 
 	// document id
@@ -257,4 +258,8 @@ public class AmxDBConstants {
 	public static final String DIRECT_LINK ="LINK";
     public static final String IMPS = "IMPS";
 
+    public static enum Statusd {
+		APPROVED,NEGOTIATED,UNAPPROVED,VIEW,REJECT 
+		
+	}
 }

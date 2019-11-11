@@ -1,3 +1,4 @@
+
 package com.amx.jax.branchremittance.manager;
 /**
  * @author rabil 
@@ -38,6 +39,7 @@ import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.remittance.Document;
 import com.amx.jax.dbmodel.remittance.RatePlaceOrder;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
+import com.amx.jax.dbmodel.remittance.ViewPlaceOnOrderInquiry;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.exrateservice.service.ExchangeRateService;
 import com.amx.jax.manager.RemittanceTransactionManager;
@@ -48,6 +50,7 @@ import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.PlaceOrderRequestModel;
 import com.amx.jax.model.response.ExchangeRateBreakup;
 import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;
+import com.amx.jax.model.response.remittance.RatePlaceOrderInquiryDto;
 import com.amx.jax.model.response.remittance.PlaceOrderApplDto;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.pricer.dto.ExchangeDiscountInfo;
@@ -58,6 +61,7 @@ import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.IDocumentDao;
 import com.amx.jax.repository.IRatePlaceOrderRepository;
+import com.amx.jax.repository.remittance.IViewPlaceOnOrderInquiryRepository;
 import com.amx.jax.service.BankMetaService;
 import com.amx.jax.service.FinancialService;
 import com.amx.jax.util.JaxUtil;
@@ -121,6 +125,9 @@ public class PlaceOrderManager implements Serializable{
 	@Resource
 	private Map<String, Object> remitApplParametersMap;
 	
+	@Autowired
+	IViewPlaceOnOrderInquiryRepository viewPlaceOnOrderInquiryRepository; 
+	
 	public Boolean savePlaceOrder(PlaceOrderRequestModel placeOrderRequestModel) {
 		 Boolean boolRespModel = false;
 		 try {
@@ -129,9 +136,10 @@ public class PlaceOrderManager implements Serializable{
 		 mapAllDetailApplSave.put("EX_RATE_PLACE_ORD", placeOrderAppl);
 		 placeOrderDao.savePlaceOrder(mapAllDetailApplSave);
 		 boolRespModel =true;
-		 }catch(Exception e) {
-			 e.printStackTrace();
-		 }
+		}catch(GlobalException e){
+				logger.debug("create application", e.getErrorMessage() + "" +e.getErrorKey());
+				throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
+			}
 		 return boolRespModel;
 	}
 	
@@ -202,7 +210,8 @@ public class PlaceOrderManager implements Serializable{
 		placeOrderAppl.setSourceOfincomeId(applRequestModel.getSourceOfFund());
 		
 		placeOrderAppl.setExchangeRateApplied(exchRateBreakup.getInverseRate());
-		placeOrderAppl.setRackExchangeRate(null);
+		placeOrderAppl.setRackExchangeRate(dynPricingDto.getRackExchangeRate());
+		placeOrderAppl.setValueDate(new Date());
 		
 		placeOrderAppl.setRequestModel(JsonUtil.toJson(applRequestModel));
 		
@@ -330,12 +339,9 @@ public class PlaceOrderManager implements Serializable{
 					
 				}
 				
-				
+				applDto.setCivilId(customer.getIdentityInt());
 				
 				list.add(applDto);
-				
-				
-				
 			}
 		}
 		
@@ -343,8 +349,79 @@ public class PlaceOrderManager implements Serializable{
 	}
 
 	
+	public List<RatePlaceOrderInquiryDto> getPlaceOrderInquiry(BigDecimal countryBranchId) {
+		List<RatePlaceOrderInquiryDto> poInqList = new ArrayList<RatePlaceOrderInquiryDto>();
+		List <ViewPlaceOnOrderInquiry> viewPOderInqList = viewPlaceOnOrderInquiryRepository.findByCountryBranchId(countryBranchId==null?metaData.getCountryBranchId():countryBranchId);
+		if(viewPOderInqList!=null && !viewPOderInqList.isEmpty()) {
+			for(ViewPlaceOnOrderInquiry ratePlaceOrder :viewPOderInqList) {
+				
+				RatePlaceOrderInquiryDto lstPlaceOrder = new RatePlaceOrderInquiryDto();
+				
+				lstPlaceOrder.setBeneficiaryAccountNumber(ratePlaceOrder.getBeneficiaryAccountNumber());
+				lstPlaceOrder.setBeneficiaryBankBranchName(ratePlaceOrder.getBeneficiaryBankBranchName());
+				lstPlaceOrder.setBeneficiaryBankName(ratePlaceOrder.getBeneficiaryBankName());
+				lstPlaceOrder.setBeneficiaryFullName(ratePlaceOrder.getBeneficiaryFullName());
+				lstPlaceOrder.setCountryBranchId(ratePlaceOrder.getCountryBranchId());
+				lstPlaceOrder.setCreatedBy(ratePlaceOrder.getCreatedBy());
+				lstPlaceOrder.setCurrencyQuote(ratePlaceOrder.getCurrencyQuote());
+				lstPlaceOrder.setCustomerIdType(ratePlaceOrder.getCustomerIdType());
+				lstPlaceOrder.setCustomerNumber(ratePlaceOrder.getCustomerNumber());
+				lstPlaceOrder.setIdNo(ratePlaceOrder.getIdNo());
+				lstPlaceOrder.setCustomerFullName(ratePlaceOrder.getCustomerFullName());
+				lstPlaceOrder.setTransactionAmount(ratePlaceOrder.getTransactionAmount());
+				lstPlaceOrder.setRateOffered(ratePlaceOrder.getRateOffered());
+				lstPlaceOrder.setNegotiate(ratePlaceOrder.getNegotiate());
+				lstPlaceOrder.setIsActive(ratePlaceOrder.getIsActive());
+
+				if(ratePlaceOrder.getNegotiate() != null && ratePlaceOrder.getNegotiate().equalsIgnoreCase(ConstantDocument.Yes)){
+					if(ratePlaceOrder.getIsActive() != null && ratePlaceOrder.getIsActive().equalsIgnoreCase(ConstantDocument.Yes)){
+						lstPlaceOrder.setStatus(ConstantDocument.Statusd.APPROVED.toString());
+					}else{
+						lstPlaceOrder.setStatus(ConstantDocument.Statusd.NEGOTIATED.toString());
+					}
+				}else{
+					if(ratePlaceOrder.getIsActive() != null && ratePlaceOrder.getIsActive().equalsIgnoreCase(ConstantDocument.Yes)){
+						lstPlaceOrder.setStatus(ConstantDocument.Statusd.APPROVED.toString());
+					}else{
+						lstPlaceOrder.setStatus(ConstantDocument.Statusd.UNAPPROVED.toString());
+					}
+				}
+
+				poInqList.add(lstPlaceOrder);
+			}
+		}
+		
+		return poInqList;
+	}
 	
-	//public void rejectPlaceOrder
+	
+	
+	public Boolean updateRatePlaceOrder(BigDecimal ratePlaceOrderId ,String flag) {
+		 Boolean boolRespModel = false;
+		try {
+		if(JaxUtil.isNullZeroBigDecimalCheck(ratePlaceOrderId) 
+				&& !StringUtils.isBlank(flag) && (flag.equalsIgnoreCase(ConstantDocument.Status.N.toString()) || flag.equalsIgnoreCase(ConstantDocument.Status.R.toString()))) {
+			RatePlaceOrder ratePlaceOrder = ratePlaceOrderRepository.findOne(ratePlaceOrderId);
+			if(flag.equalsIgnoreCase(ConstantDocument.Status.N.toString())){
+			ratePlaceOrder.setNegotiateSts(ConstantDocument.Status.N.toString());
+			ratePlaceOrder.setIsActive(ConstantDocument.Status.U.toString());
+			}else if(flag.equalsIgnoreCase(ConstantDocument.Status.R.toString())){
+				ratePlaceOrder.setIsActive(ConstantDocument.Status.D.toString());
+			}
+			ratePlaceOrder.setModifiedBy(brApplManager.getEmployeeDetails().getUserName());
+			ratePlaceOrder.setModifiedDate(new Date());
+			ratePlaceOrder.setApprovedDate(null);
+			ratePlaceOrder.setApprovedBy(null);
+			ratePlaceOrderRepository.save(ratePlaceOrder);
+			boolRespModel=true;
+		}
+		}catch(GlobalException e){
+			logger.debug("create application", e.getErrorMessage() + "" +e.getErrorKey());
+			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
+		}
+		return boolRespModel;
+		
+	}
 	
 	
 	public String getCustomerFullName(Customer customer){
@@ -365,3 +442,4 @@ public class PlaceOrderManager implements Serializable{
 		}
 
 }
+

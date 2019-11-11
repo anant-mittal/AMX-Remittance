@@ -39,6 +39,7 @@ import com.amx.jax.model.response.remittance.FlexFieldReponseDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
 import com.amx.jax.model.response.remittance.ParameterDetailsResponseDto;
 import com.amx.jax.model.response.remittance.PaymentModeDto;
+import com.amx.jax.model.response.remittance.RatePlaceOrderInquiryDto;
 import com.amx.jax.model.response.remittance.RemittanceDeclarationReportDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
@@ -267,6 +268,20 @@ public class BranchRemittanceController implements IRemittanceService {
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> savePlaceOrderApplication(@RequestBody @Valid PlaceOrderRequestModel placeOrderRequestModel) {
 		return branchRemitService.createPlaceOrder(placeOrderRequestModel);
+	}
+
+	@RequestMapping(value=Path.BR_REMITTANCE_FETCH_PLACE_ORDER,method=RequestMethod.POST)
+	@Override
+	public AmxApiResponse<RatePlaceOrderInquiryDto, Object> fetchPlaceOrderInquiry(BigDecimal countryBranchId) {
+		return branchRemitService.fetchRatePlaceOrder(countryBranchId);
+	}
+
+
+	@RequestMapping(value=Path.BR_REMITTANCE_UPDATE_PLACE_ORDER,method=RequestMethod.POST)
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> updateRatePlaceOrder(@RequestParam(value = Params.PLACE_ORDER_ID, required = true)BigDecimal ratePlaceOrderId, @RequestParam(value = Params.PLACE_ORDER_STATUS, required = true) String flag) {
+		// TODO Auto-generated method stub
+		return branchRemitService.updatePlaceOrder(ratePlaceOrderId, flag);
 	}
 
 

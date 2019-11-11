@@ -27,6 +27,7 @@ public class PlaceOrderApplDto {
 	private String approvedBy;
 	private String foreigncurrencyName;
 	private String localcurrencyName;
+	private String civilId;
 	
 	public BigDecimal getPlaceOrderId() {
 		return placeOrderId;
@@ -165,6 +166,12 @@ public class PlaceOrderApplDto {
 	}
 	public void setLocalcurrencyName(String localcurrencyName) {
 		this.localcurrencyName = localcurrencyName;
+	}
+	public String getCivilId() {
+		return civilId;
+	}
+	public void setCivilId(String civilId) {
+		this.civilId = civilId;
 	}     
 	
 	

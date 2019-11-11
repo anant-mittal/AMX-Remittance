@@ -128,9 +128,7 @@ public class RemittanceSignatureManager {
 			
 			if(sb!=null) {
 				signature =sb.toString();
-				System.out.println("signature -->"+signature);
 				signature =pKCS7Signer.getSignature(signature);
-				System.out.println("hash signature -->"+signature);
 			}
 		}
 		return signature;
