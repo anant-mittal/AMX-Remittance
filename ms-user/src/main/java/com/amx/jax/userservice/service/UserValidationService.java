@@ -265,7 +265,6 @@ public class UserValidationService {
 	public void validateCustIdProofs(BigDecimal custId) {
 
 		if (tenantContext.get() != null) {
-			logger.info("Tenent is not bahrain" + tenantContext.get());
 			tenantContext.get().validateCustIdProofs(custId);
 			return;
 		}
@@ -788,6 +787,7 @@ public class UserValidationService {
 						"Customer not active in branch, please visit branch");
 			}
 		}
+		this.validateCustIdProofs(customers.get(0).getCustomerId());
 		switch (apiFlow) {
 		case SIGNUP_ONLINE:
 			validateCustomerForSignUpOnline(customers.get(0));

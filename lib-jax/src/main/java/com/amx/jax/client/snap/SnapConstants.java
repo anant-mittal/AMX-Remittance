@@ -1,5 +1,7 @@
 package com.amx.jax.client.snap;
 
+import com.amx.jax.def.AbstractQueryFactory.IQueryTemplate;
+
 public class SnapConstants {
 
 	public static final String ORACLE = "oracle";
@@ -20,7 +22,7 @@ public class SnapConstants {
 		return String.format("%s-%s-%s-*", ORACLE, DOC_VERSION, prefix);
 	}
 
-	public static enum SnapQueryTemplate {
+	public static enum SnapQueryTemplate implements IQueryTemplate {
 		FIND_DOC_BY_ID("find-doc-by-id", SnapIndexName.ALL),
 		CUSTOMER_LIMIT("customer-limit", SnapIndexName.ALL),
 		CUSTOMERS_JOINED("customer-joined", SnapIndexName.CUSTOMER),
@@ -34,7 +36,10 @@ public class SnapConstants {
 
 		RPT("rpt", SnapIndexName.TRANX),
 		RPT2("rpt2", SnapIndexName.TRANX),
-		;
+		
+		ACTIVE_DEVICE_REPORT("active-device", SnapIndexName.ALL),
+		ACTIVE_SIGNPAD_REPORT("active-signpad", SnapIndexName.ALL),
+		ACTIVE_TERMINAL_REPORT("active-terminal", SnapIndexName.ALL);
 
 		String file;
 		String index;

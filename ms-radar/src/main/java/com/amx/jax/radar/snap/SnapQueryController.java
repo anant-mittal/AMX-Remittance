@@ -18,8 +18,10 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.snap.SnapConstants.SnapQueryTemplate;
 import com.amx.jax.client.snap.SnapModels;
 import com.amx.jax.client.snap.SnapModels.SnapModelWrapper;
+import com.amx.jax.def.AbstractQueryFactory.QueryProcessor;
 import com.amx.jax.radar.jobs.customer.OracleVarsCache;
-import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncJobs;
+import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncIndex;
+import com.amx.jax.radar.service.SnapQueryFactory;
 import com.amx.jax.rest.RestService;
 import com.amx.jax.tunnel.DBEvent;
 import com.amx.jax.tunnel.TunnelEvent;
@@ -34,6 +36,9 @@ public class SnapQueryController {
 
 	@Autowired
 	private SnapQueryService snapQueryTemplateService;
+
+	@Autowired
+	SnapQueryFactory snapQueryFactory;
 
 	@Autowired
 	RestService restService;
@@ -103,8 +108,18 @@ public class SnapQueryController {
 			params.put("lte", lte);
 		}
 		level = ArgUtil.parseAsInteger(params.getOrDefault("level", level));
+		
+		QueryProcessor<?> qp = snapQueryFactory.get(snapView);
 
-		SnapModelWrapper x = snapQueryTemplateService.execute(snapView, params);
+		SnapModelWrapper x;
+
+		if (ArgUtil.is(qp)) {
+			x = new SnapModelWrapper("{}");
+			x.toMap().put("bulk", qp.process());
+			return x;
+		}
+
+		x = snapQueryTemplateService.execute(snapView, params);
 
 		if (level >= 0) {
 			List<Map<String, List<String>>> p = x.getPivot();
@@ -162,14 +177,14 @@ public class SnapQueryController {
 
 	@ResponseBody
 	@RequestMapping(value = "/snap/reset/start/{dbSyncJobs}", method = RequestMethod.GET)
-	public String snapResetStart(@PathVariable(value = "dbSyncJobs") DBSyncJobs dbSyncJobs) throws IOException {
+	public String snapResetStart(@PathVariable(value = "dbSyncJobs") DBSyncIndex dbSyncJobs) throws IOException {
 		oracleVarsCache.clearStampStart(dbSyncJobs);
 		return "CLEARED";
 	}
 
 	@ResponseBody
 	@RequestMapping(value = "/snap/reset/end/{dbSyncJobs}", method = RequestMethod.GET)
-	public String snapResetEnd(@PathVariable(value = "dbSyncJobs") DBSyncJobs dbSyncJobs) throws IOException {
+	public String snapResetEnd(@PathVariable(value = "dbSyncJobs") DBSyncIndex dbSyncJobs) throws IOException {
 		oracleVarsCache.clearStampEnd(dbSyncJobs);
 		return "CLEARED";
 	}
