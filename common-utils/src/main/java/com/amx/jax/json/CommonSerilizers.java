@@ -37,7 +37,10 @@ public class CommonSerilizers {
 		public void serialize(EnumType value, JsonGenerator gen, SerializerProvider serializers)
 				throws IOException, JsonProcessingException {
 			if (!ArgUtil.isEmpty(value)) {
+				// super.serialize(value, gen, serializers);
 				gen.writeString(value.enumValue().name());
+				// defaultSerializer.serialize(value, gen, serializers);
+				// serializers.defaultSerialize(value, gen);
 			}
 		}
 	}
