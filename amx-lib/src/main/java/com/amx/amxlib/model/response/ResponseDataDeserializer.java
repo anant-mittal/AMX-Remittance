@@ -52,6 +52,7 @@ import com.amx.jax.model.response.fx.PurposeOfTransactionDto;
 import com.amx.jax.model.response.jaxfield.JaxConditionalFieldDto;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.payg.PaymentResponseDto;
+import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;

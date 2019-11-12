@@ -23,6 +23,9 @@ import com.amx.jax.model.response.jaxfield.ValidationRegexDto;
 import com.amx.jax.repository.JaxConditionalFieldRuleRepository;
 import com.amx.jax.repository.JaxFieldRepository;
 import com.amx.jax.util.JaxUtil;
+import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
+import com.amx.libjax.model.jaxfield.JaxFieldDto;
+import com.amx.libjax.model.jaxfield.ValidationRegexDto;
 
 /**
  * @author Prashant

@@ -1,6 +1,6 @@
 package com.amx.amxlib.model;
 
-import com.amx.jax.model.response.jaxfield.JaxFieldEntity;
+import com.amx.jax.constants.JaxFieldEntity;
 
 public class GetJaxFieldRequest {
 

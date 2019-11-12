@@ -59,7 +59,7 @@ public class CryptoDao {
 			decStr = output.get("output_str").toString();
 			logger.debug("Done decrypt=" + declaredParameters.get(0));
 		} catch (Exception e) {
-			logger.error("error in decrypt", e);
+			logger.debug("error in decrypt", e);
 		}
 		return decStr;
 	}

@@ -99,16 +99,39 @@ public final class CryptoUtil {
 	}
 
 	public static boolean validateNumHMAC(long currentTime, long interval, long tolerance, String secretKey,
-			String message, String numHash) {
+			String message, String numHash, int length) {
 		LOGGER.debug("validateHMAC I:{} S:{} M:{} C:{} H:{} T:{}", interval, secretKey, message, currentTime, numHash,
 				tolerance);
-		if (toNumeric(numHash.length(), generateHMAC(interval, secretKey, message)).equals(numHash)) {
+		if (toNumeric(length, generateHMAC(interval, secretKey, message)).equals(numHash)) {
 			return true;
-		} else if (toNumeric(numHash.length(),
+		} else if (toNumeric(length,
 				generateHMAC(interval, secretKey, message, currentTime - tolerance * 1000)).equals(numHash)) {
 			return true;
-		} else if (toNumeric(numHash.length(),
+		} else if (toNumeric(length,
 				generateHMAC(interval, secretKey, message, currentTime + tolerance * 1000)).equals(numHash)) {
+			return true;
+		}
+		return false;
+	}
+
+	public static boolean validateNumHMAC(long currentTime, long interval, long tolerance, String secretKey,
+			String message, String numHash) {
+		return validateNumHMAC(currentTime, interval, tolerance, secretKey, message, numHash, numHash.length());
+	}
+
+	public static boolean validateComplexHMAC(long currentTime, long interval, long tolerance, String secretKey,
+			String message, String complexHash, int length) {
+
+		LOGGER.debug("validateHMAC I:{} S:{} M:{} C:{} H:{} T:{}", interval, secretKey, message, currentTime,
+				complexHash, tolerance);
+
+		if (toComplex(length, generateHMAC(interval, secretKey, message)).equals(complexHash)) {
+			return true;
+		} else if (toComplex(length,
+				generateHMAC(interval, secretKey, message, currentTime - tolerance * 1000)).equals(complexHash)) {
+			return true;
+		} else if (toComplex(length,
+				generateHMAC(interval, secretKey, message, currentTime + tolerance * 1000)).equals(complexHash)) {
 			return true;
 		}
 		return false;
@@ -116,20 +139,8 @@ public final class CryptoUtil {
 
 	public static boolean validateComplexHMAC(long currentTime, long interval, long tolerance, String secretKey,
 			String message, String complexHash) {
-
-		LOGGER.debug("validateHMAC I:{} S:{} M:{} C:{} H:{} T:{}", interval, secretKey, message, currentTime,
-				complexHash, tolerance);
-
-		if (toComplex(complexHash.length(), generateHMAC(interval, secretKey, message)).equals(complexHash)) {
-			return true;
-		} else if (toComplex(complexHash.length(),
-				generateHMAC(interval, secretKey, message, currentTime - tolerance * 1000)).equals(complexHash)) {
-			return true;
-		} else if (toComplex(complexHash.length(),
-				generateHMAC(interval, secretKey, message, currentTime + tolerance * 1000)).equals(complexHash)) {
-			return true;
-		}
-		return false;
+		return validateComplexHMAC(currentTime, interval, tolerance, secretKey, message, complexHash,
+				complexHash.length());
 	}
 
 	@Deprecated
@@ -336,11 +347,13 @@ public final class CryptoUtil {
 		private long currentTime;
 		private String output;
 		private String hash;
+		private int length;
 
 		public HashBuilder() {
 			this.currentTime = System.currentTimeMillis();
 			this.interval = INTERVAL;
 			this.tolerance = TOLERANCE;
+			this.length = 0;
 		}
 
 		/**
@@ -378,6 +391,11 @@ public final class CryptoUtil {
 
 		public HashBuilder hash(String hash) {
 			this.hash = hash;
+			return this;
+		}
+
+		public HashBuilder length(int length) {
+			this.length = length;
 			return this;
 		}
 
@@ -422,13 +440,28 @@ public final class CryptoUtil {
 			return this;
 		}
 
+		public HashBuilder toNumeric() {
+			this.output = CryptoUtil.toNumeric(this.length, this.hash);
+			return this;
+		}
+
 		public HashBuilder toComplex(int length) {
 			this.output = CryptoUtil.toComplex(length, this.hash).toString();
 			return this;
 		}
 
+		public HashBuilder toComplex() {
+			this.output = CryptoUtil.toComplex(this.length, this.hash).toString();
+			return this;
+		}
+
 		public HashBuilder toHex(int length) {
 			this.output = CryptoUtil.toHex(length, this.hash);
+			return this;
+		}
+
+		public HashBuilder toHex() {
+			this.output = CryptoUtil.toHex(this.length, this.hash);
 			return this;
 		}
 
@@ -453,13 +486,21 @@ public final class CryptoUtil {
 		}
 
 		public boolean validateNumHMAC(String numHash) {
+			int lengthThis = this.length;
+			if (lengthThis == 0) {
+				lengthThis = numHash.length();
+			}
 			return CryptoUtil.validateNumHMAC(this.currentTime, this.interval, this.tolerance, this.secret,
-					this.message, numHash);
+					this.message, numHash, lengthThis);
 		}
 
 		public boolean validateComplexHMAC(String complexHash) {
+			int lengthThis = this.length;
+			if (lengthThis == 0) {
+				lengthThis = complexHash.length();
+			}
 			return CryptoUtil.validateComplexHMAC(this.currentTime, this.interval, this.tolerance, this.secret,
-					this.message, complexHash);
+					this.message, complexHash, lengthThis);
 		}
 
 	}

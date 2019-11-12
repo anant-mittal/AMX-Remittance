@@ -22,6 +22,7 @@ import com.amx.jax.radar.ESRepository;
 import com.amx.jax.radar.EsConfig;
 import com.amx.jax.rest.RestService;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.FileUtil;
 import com.amx.utils.JsonUtil;
 
 /**
@@ -74,16 +75,24 @@ public class SnapQueryService {
 		return JsonUtil.getMapFromJsonString(this.buildQueryString(template, params));
 	}
 
+	@SuppressWarnings("unchecked")
 	public SnapModelWrapper executeQuery(Map<String, Object> query, String index) {
 		Map<String, Object> x = null;
 		String fullIndex = resolveIndex(EsConfig.indexName(index));
 		Object pivot = query.remove("pivot");
 		try {
+			/*
 			x = restService.ajax(ssConfig.getClusterUrl())
 					.header(ssConfig.getBasicAuthHeader()).path(
 							fullIndex + "/_search")
 					.post(query)
 					.asMap();
+			*/
+			String json = FileUtil
+					.readFile(FileUtil.normalize(
+							"file://" + System.getProperty("user.dir") + "/src/test/java/com/amx/test/sample.json"));
+			x = JsonUtil.fromJson(json, Map.class);
+			
 		} catch (Exception e) {
 			log.error(e);
 		}

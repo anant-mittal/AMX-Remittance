@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.amx.jax.error.JaxError;
 import com.amx.jax.exception.AmxApiError;
-import com.amx.jax.model.response.jaxfield.JaxConditionalFieldDto;
+import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
 import com.amx.utils.JsonUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

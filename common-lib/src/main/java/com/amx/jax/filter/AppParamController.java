@@ -21,6 +21,7 @@ import com.amx.jax.AppContextUtil;
 import com.amx.jax.AppParam;
 import com.amx.jax.AppSharedConfig;
 import com.amx.jax.AppTenantConfig;
+import com.amx.jax.VendorAuthConfig;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.def.IndicatorListner;
@@ -32,6 +33,7 @@ import com.amx.jax.http.RequestType;
 import com.amx.jax.model.UserDevice;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.scope.TenantProperties;
+import com.amx.jax.scope.VendorContext.ApiVendorHeaders;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.CryptoUtil.HashBuilder;
 import com.amx.utils.JsonUtil;
@@ -44,6 +46,7 @@ public class AppParamController {
 	public static final String PUB_AMX_PREFIX = "/pub/amx";
 	public static final String PUBG_AMX_PREFIX = "/pubg/";
 	public static final String PARAM_URL = PUB_AMX_PREFIX + "/params";
+	public static final String FEATURE_URL = PUB_AMX_PREFIX + "/features";
 	public static final String METRIC_URL = PUB_AMX_PREFIX + "/metric";
 
 	@Autowired
@@ -56,6 +59,9 @@ public class AppParamController {
 	AppTenantConfig appTenantConfig;
 
 	@Autowired(required = false)
+	VendorAuthConfig vendorAuthConfig;
+
+	@Autowired(required = false)
 	List<IndicatorListner> listners;
 
 	@ApiRequest(type = RequestType.NO_TRACK_PING)
@@ -66,6 +72,16 @@ public class AppParamController {
 			LOGGER.info("App Param {} changed to {}", id, id.isEnabled());
 		}
 		return AppParam.values();
+	}
+
+	@ApiVendorHeaders
+	@ApiRequest(type = RequestType.NO_TRACK_PING)
+	@RequestMapping(value = FEATURE_URL, method = RequestMethod.GET)
+	public Object[] features() {
+		if (vendorAuthConfig != null) {
+			return vendorAuthConfig.getFeaturesList().toArray();
+		}
+		return null;
 	}
 
 	@ApiRequest(type = RequestType.NO_TRACK_PING)
@@ -112,14 +128,24 @@ public class AppParamController {
 		return AmxApiResponse.build(new BoolRespModel(true));
 	}
 
-	@RequestMapping(value = "/pub/amx/device", method = RequestMethod.GET)
-	public AmxApiResponse<UserDevice, Map<String, Object>> userDevice(@RequestParam(required = false) String key) {
+	@Autowired(required = false)
+	VendorAuthConfig appVendorConfigForAuth;
+
+	@RequestMapping(value = "/pub/amx/device", method = { RequestMethod.GET, RequestMethod.POST})
+	public AmxApiResponse<UserDevice, Map<String, Object>> userDevice(@RequestParam(required = false) String key,
+			@RequestParam(required = false) String vendor) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("getAppSpecifcDecryptedProp", appConfig.getAppSpecifcDecryptedProp());
 		map.put("getTenantSpecifcDecryptedProp2", appTenantConfig.getTenantSpecifcDecryptedProp2());
 		map.put("getTenantSpecifcDecryptedProp", appTenantConfig.getTenantSpecifcDecryptedProp());
 		map.put("defaultTenant", appConfig.getDefaultTenant());
 		map.put(TenantContextHolder.TENANT, TenantContextHolder.currentSite(false));
+
+		AppContextUtil.setVendor(VendorAuthConfig.class, vendor);
+
+		map.put("getBasicAuthPassword", appVendorConfigForAuth.getBasicAuthPassword());
+		map.put("getBasicAuthUser", appVendorConfigForAuth.getBasicAuthUser());
+		map.put("commonHttpRequest.getIPAddress", commonHttpRequest.getIPAddress());
 
 		if (!ArgUtil.isEmpty(key)) {
 			map.put(key, prop(key));

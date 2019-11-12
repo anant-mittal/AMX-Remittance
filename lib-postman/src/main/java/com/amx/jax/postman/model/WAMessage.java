@@ -2,6 +2,7 @@ package com.amx.jax.postman.model;
 
 import java.math.BigDecimal;
 
+import com.amx.jax.dict.ContactType;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -12,21 +13,11 @@ public class WAMessage extends Message {
 		TWILIO, APIWHA, DEFAULT
 	}
 
-	private String id;
-
 	protected Channel channel = Channel.DEFAULT;
 	private BigDecimal queue;
 
 	public WAMessage() {
-		super();
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
+		super(ContactType.WHATSAPP);
 	}
 
 	public Channel getChannel() {

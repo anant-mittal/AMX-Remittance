@@ -134,7 +134,7 @@ public final class ContextUtil {
 
 	private static String getFlowfix() {
 		String flowfix = ArgUtil.parseAsString(context.get().get(FLOW_FIX_KEY), FLOW_FIX_DEFAULT);
-		return StringUtils.pad(flowfix, "xxx", 1, 1).toLowerCase();
+		return StringUtils.pad(flowfix, "xxx", 0).toLowerCase();
 	}
 
 }

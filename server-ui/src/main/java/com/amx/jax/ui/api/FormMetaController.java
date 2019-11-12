@@ -14,6 +14,7 @@ import com.amx.amxlib.model.GetJaxFieldRequest;
 import com.amx.jax.model.response.jaxfield.JaxConditionalFieldDto;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.JaxService;
+import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
 
 import io.swagger.annotations.Api;
 

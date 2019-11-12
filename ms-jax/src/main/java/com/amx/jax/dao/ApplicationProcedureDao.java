@@ -151,7 +151,7 @@ public class ApplicationProcedureDao {
 			e.printStackTrace();
 		}
 		if (output.get("P_ERROR_MESSAGE") != null) {
-			throw new GlobalException(JaxError.TRANSACTION_VALIDATION_FAIL, output.get("P_ERROR_MESSAGE").toString());
+			throw new GlobalException(JaxError.REMITTANCE_SETUP_ERROR, output.get("P_ERROR_MESSAGE").toString());
 		}
 		return output;
 	}
@@ -522,7 +522,7 @@ public class ApplicationProcedureDao {
 			LOGGER.info("EX_P_FURTHER_INSTR Out put Parameters :" + output.toString());
 
 		} catch (DataAccessException e) {
-			LOGGER.error(OUT_PARAMETERS + e);
+			LOGGER.debug(OUT_PARAMETERS + e);
 			e.printStackTrace();
 		}
 		return output;
@@ -767,7 +767,7 @@ public class ApplicationProcedureDao {
 			LOGGER.info("EX_REMIT_ADDL_INFO Out put Parameters :" + output.toString());
 
 		} catch (DataAccessException e) {
-			LOGGER.info(OUT_PARAMETERS, e);
+			LOGGER.error(OUT_PARAMETERS, e);
 		}
 		return output;
 	}
@@ -1084,7 +1084,7 @@ public class ApplicationProcedureDao {
 			output.put("P_ERROR_MESSAGE", pErrorMesg);
 			
 		} catch (DataAccessException | SQLException e) {
-			LOGGER.error("error in getRoutingBankSetupDetailsForBranch", e);
+			LOGGER.debug("error in getRoutingBankSetupDetailsForBranch", e);
 			LOGGER.info(OUT_PARAMETERS + e.getMessage());
 		} finally {
 			DBUtil.closeResources(cs, connection);

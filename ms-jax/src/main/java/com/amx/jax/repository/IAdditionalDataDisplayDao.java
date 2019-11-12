@@ -58,3 +58,6 @@ public interface IAdditionalDataDisplayDao  extends JpaRepository<AdditionalData
 			@Param("deliveryModeId") BigDecimal deliveryModeId,
 			@Param("flexiFieldIn") String[] flexiFieldIn );
 }
+
+//('"+ConstantDocument.INDIC1+"','"+ConstantDocument.INDIC2+"'"
+//		+ ",'"+ConstantDocument.INDIC3+"','"+ConstantDocument.INDIC4+"','"+ConstantDocument.INDIC5+"')")

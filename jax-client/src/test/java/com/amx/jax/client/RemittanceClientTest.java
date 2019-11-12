@@ -33,6 +33,7 @@ import com.amx.jax.model.response.jaxfield.JaxConditionalFieldDto;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.scope.TenantContextHolder;
+import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
 import com.amx.utils.JsonUtil;
 
 @RunWith(SpringRunner.class)

@@ -62,6 +62,10 @@ public final class PricerServiceConstants {
 	// public static enum DEVICE_TYPE {
 	// MOBILE, PC;
 	// }
+	
+	public static enum TREASURY_FUND_STATUS {
+		FUNDED, OUT_OF_FUND;
+	}
 
 	public static enum PRICE_BY {
 		ROUTING_BANK, COUNTRY;

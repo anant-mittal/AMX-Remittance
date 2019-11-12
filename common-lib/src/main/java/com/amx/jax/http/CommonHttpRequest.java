@@ -16,7 +16,6 @@ import org.springframework.http.MediaType;
 import org.springframework.mobile.device.Device;
 import org.springframework.mobile.device.DeviceUtils;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
@@ -37,6 +36,7 @@ import com.amx.jax.model.UserDevice;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 import com.amx.utils.HttpUtils;
+import com.amx.utils.StringUtils;
 
 import eu.bitwalker.useragentutils.Browser;
 import eu.bitwalker.useragentutils.OperatingSystem;
@@ -117,13 +117,13 @@ public class CommonHttpRequest {
 				return deviceIp;
 			}
 		}
-		return HttpUtils.getIPAddress(request);
+		return StringUtils.getByIndex(HttpUtils.getIPAddress(request), ",", 0);
 	}
 
 	public Language getLanguage() {
 		return (Language) ArgUtil.parseAsEnum(
 				ArgUtil.ifNotEmpty(getRequestParam(AppConstants.LANG_PARAM_KEY), request.getLocale().getLanguage()),
-				Language.DEFAULT);
+				Language.DEFAULT, Language.class);
 	}
 
 	public Device getCurrentDevice() {
@@ -403,6 +403,7 @@ public class CommonHttpRequest {
 		boolean useAuthToken;
 		boolean useAuthKey;
 		String flow;
+		String feature;
 
 		public RequestType getType() {
 			return type;
@@ -435,6 +436,15 @@ public class CommonHttpRequest {
 		public void setFlow(String flow) {
 			this.flow = flow;
 		}
+
+		public String getFeature() {
+			return feature;
+		}
+
+		public void setFeature(String feature) {
+			this.feature = feature;
+		}
+
 	}
 
 	public ApiRequestDetail getApiRequest(HttpServletRequest req) {
@@ -445,6 +455,7 @@ public class CommonHttpRequest {
 			detail.setUseAuthKey(x.useAuthKey());
 			detail.setUseAuthToken(x.useAuthToken());
 			detail.setFlow(x.flow());
+			detail.setFeature(x.feature());
 		}
 
 		if (ArgUtil.isEmpty(detail.getType()) || RequestType.DEFAULT.equals(detail.getType())) {

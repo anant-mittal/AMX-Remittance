@@ -77,6 +77,7 @@ import com.amx.jax.services.BeneficiaryValidationService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.validation.RemittanceTransactionRequestValidator;
+import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
@@ -255,7 +256,6 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 		if (apiResponse != null) {
 				Map<PRICE_TYPE, List<String>> bestExchangeRatePaths =apiResponse.getResult().getBestExchangeRatePaths();
 				List<Map<String,List<DynamicRoutingPricingDto>>> dynamicRoutingPricingList = new ArrayList<>();
-				
 				
 				if(bestExchangeRatePaths!=null && !bestExchangeRatePaths.isEmpty()) {
 					for (Map.Entry<PRICE_TYPE, List<String>> mapEntry : bestExchangeRatePaths.entrySet()) {

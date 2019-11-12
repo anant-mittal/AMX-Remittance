@@ -2,11 +2,13 @@ package com.amx.jax.manager.remittance;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
+import org.hamcrest.core.IsCollectionContaining;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,15 +17,20 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.constant.JaxFieldEntity;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.model.GetJaxFieldRequest;
+import com.amx.amxlib.model.JaxConditionalFieldDto;
+import com.amx.amxlib.model.JaxFieldDto;
+import com.amx.amxlib.model.JaxFieldValueDto;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.branchremittance.manager.BranchRemittanceManager;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxDynamicField;
+import com.amx.jax.constants.JaxFieldEntity;
 import com.amx.jax.dbmodel.BenificiaryListView;
-import com.amx.jax.dbmodel.CountryBranch;
+import com.amx.jax.dbmodel.CountryBranchMdlv1;
 import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.SwiftMasterView;
 import com.amx.jax.dbmodel.bene.BeneficaryAccount;
@@ -50,6 +57,7 @@ import com.amx.jax.service.BankMetaService;
 import com.amx.jax.services.BankService;
 import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.services.JaxFieldService;
+import com.amx.jax.dbmodel.SwiftMasterView;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -120,6 +128,8 @@ public class RemittanceAdditionalFieldManager {
 			}
 		}
 		
+		
+		
 		if(interMediateBank1ApiResponse!=null && interMediateBank1ApiResponse.getResult()!=null) {
 			allJaxConditionalFields.addAll(interMediateBank1ApiResponse.getResults());
 		}
@@ -127,7 +137,6 @@ public class RemittanceAdditionalFieldManager {
 		if(interMediateBank2ApiResponse!=null && interMediateBank2ApiResponse.getResult()!=null) {
 			allJaxConditionalFields.addAll(interMediateBank2ApiResponse.getResults());
 		}
-		
 		if(furtherInstruction!=null && furtherInstruction.getResult()!=null) {
 			allJaxConditionalFields.addAll(furtherInstruction.getResults());
 		}
@@ -242,7 +251,7 @@ public class RemittanceAdditionalFieldManager {
 
 		List<AdditionalDataDisplayView> additionalDataRequired = additionalDataDisplayDao.getAdditionalDataFromServiceApplicability(applicationCountryId, routingCountryId,
 				foreignCurrencyId, remittanceModeId, deliveryModeId, JaxDynamicField.getAllAdditionalFlexFields());
-		return additionalDataRequired.stream().collect(Collectors.toMap(i -> i.getFlexField(), i -> i));
+		return additionalDataRequired.stream().collect(Collectors.toMap(i -> i.getFlexField(), i -> i, (x1, x2) -> x1));
 	}
 
 	private boolean isDynamicFieldRequired(JaxConditionalFieldDto jaxConditionalField, RemittanceAdditionalBeneFieldModel model,Map<String, AdditionalDataDisplayView> flexFieldMap) {
@@ -283,7 +292,7 @@ public class RemittanceAdditionalFieldManager {
 		return false;
 	}
 
-	public void processAdditionalFields(RemittanceAdditionalBeneFieldModel model) { //,Map<String, Object> remitApplParametersMap
+	public void processAdditionalFields(RemittanceAdditionalBeneFieldModel model) {
 		ApiResponse<JaxConditionalFieldDto> apiResponse = jaxFieldService.getJaxFieldsForEntity(new GetJaxFieldRequest(JaxFieldEntity.REMITTANCE_ONLINE));
 		List<JaxConditionalFieldDto> allJaxConditionalFields = apiResponse.getResults();
 		
@@ -296,19 +305,8 @@ public class RemittanceAdditionalFieldManager {
 		
 		List<JaxConditionalFieldDto> allSPJaxConditionalFields = spApiResponse.getResults();
 		if(allSPJaxConditionalFields != null && allSPJaxConditionalFields.size() != 0) {
-			/*for (JaxConditionalFieldDto jaxConditionalFieldDto : allSPJaxConditionalFields) {
-				if(JaxDynamicField.BENE_ZIP_CODE.name().equals(jaxConditionalFieldDto.getField().getName())) {
-					Boolean beneZip = partnerTransactionManager.checkBeneficiaryZipCodeAvailable(remitApplParametersMap);
-					if(beneZip) {
-						allJaxConditionalFields.add(jaxConditionalFieldDto);
-					}
-				}else {
-					allJaxConditionalFields.add(jaxConditionalFieldDto);
-				}
-			}*/
 			allJaxConditionalFields.addAll(allSPJaxConditionalFields);
 		}
-		
 		if(beneTeleApiReponse!=null && beneTeleApiReponse.getResult()!=null) {
 			allJaxConditionalFields.addAll(beneTeleApiReponse.getResults());
 		}
@@ -362,7 +360,8 @@ public class RemittanceAdditionalFieldManager {
 					BeneficaryContact beneContact = beneficiaryService.getBeneContact(beneficiaryDetail.getBeneficaryMasterSeqId());
 					beneContact.setTelephoneNumber(fieldValue.toString());
 					if(fieldValue!=null) {
-					beneContact.setMobileNumber(new BigDecimal(fieldValue.toString()));
+						logger.info("Field Value Mobile Number : " +fieldValue.toString());
+						beneContact.setMobileNumber(new BigDecimal(fieldValue.toString()));
 					}
 					beneficiaryService.saveBeneContact(beneContact);
 				}
@@ -380,7 +379,7 @@ public class RemittanceAdditionalFieldManager {
 			ApiResponse<JaxConditionalFieldDto> apiResponse = jaxFieldService.getJaxFieldsForEntity(new GetJaxFieldRequest(JaxFieldEntity.AML_AUTH));
 			allJaxConditionalFields = apiResponse.getResults();
 			List<JaxConditionalFieldDto> missingJaxConditionalFields = new ArrayList<>();
-			CountryBranch countryBranch = bankMetaService.getCountryBranchById(metaData.getCountryBranchId()); 
+			CountryBranchMdlv1 countryBranch = bankMetaService.getCountryBranchById(metaData.getCountryBranchId()); 
 			List<StaffAuthorizationView> staffList =  staffAuthorizationRepository.findByLocCode(countryBranch.getBranchId());
 			for (JaxConditionalFieldDto jaxConditionalField : allJaxConditionalFields) {
 					if(JaxDynamicField.AML_MESSAGE.name().equalsIgnoreCase(jaxConditionalField.getField().getName())) {
