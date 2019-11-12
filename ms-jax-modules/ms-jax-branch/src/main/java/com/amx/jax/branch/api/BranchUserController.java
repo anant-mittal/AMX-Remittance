@@ -118,6 +118,9 @@ public class BranchUserController implements IBranchService {
 				custTMDetails.setFollowUpDate(new Date());
 				custTMDetails.setEmployeeId(e.getEmployeeId());
 				customerTeleMarketingDetailsRepository.save(custTMDetails);
+
+				call.setCustomerid(custTMDetails.getCustomerId());
+				call.setLeadId(custTMDetails.getLeadId());
 				return AmxApiResponse.build(call).statusEnum(ApiStatusCodes.SUCCESS);
 			}
 		}
