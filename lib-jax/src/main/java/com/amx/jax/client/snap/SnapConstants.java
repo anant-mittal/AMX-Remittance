@@ -32,6 +32,9 @@ public class SnapConstants {
 		XRATE_SELL_TRANSFER("xrate-sell-transfer", SnapIndexName.XRATE),
 		CUSTOMER_VERIFICATION_REPORT("customer-verification-report", SnapIndexName.LOGS, "auditlogs"),
 		CUSTOMER_VERIFICATION_REPORT_TOTAL("customer-verification-report-total", SnapIndexName.LOGS, "auditlogs"),
+		CUSTOMER_LOGIN("customer-login", SnapIndexName.LOGS, "auditlogs"),
+		
+		
 		BUGZ_STORIES("bugz-stories", SnapIndexName.ALL),
 		RPTPG2("rptpg2", SnapIndexName.TRANX),
 		RPT("rpt", SnapIndexName.TRANX),
@@ -39,6 +42,7 @@ public class SnapConstants {
 		RPTMONTHLY("rptmonthly", SnapIndexName.TRANX),
 		RPTCOMPARISON("rptcomparison", SnapIndexName.TRANX),
 		RPTMONTHCOMPARISON("rptmonthcomparison", SnapIndexName.TRANX),
+		
 		
 		ACTIVE_DEVICE_REPORT("active-device", SnapIndexName.ALL),
 		ACTIVE_SIGNPAD_REPORT("active-signpad", SnapIndexName.ALL),
