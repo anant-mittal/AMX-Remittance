@@ -79,6 +79,8 @@ public class PreFlexFieldManager {
 		BigDecimal monthlyContribution = null;
 		BigDecimal volunteerContribution = null;
 		int noOfMonth = 0;
+		Map<String, Object> validationResults = new HashMap<>();
+		List<JaxConditionalFieldDto> requiredFlexFields = new ArrayList<>();
 		benePackageRequest.populateFlexFieldDtoMap();
 		Map<String, FlexFieldDto> requestFlexFields = benePackageRequest.getFlexFieldDtoMap();
 		if (requestFlexFields == null) {
@@ -87,10 +89,13 @@ public class PreFlexFieldManager {
 		BenificiaryListView beneficaryDetails = beneficiaryRepository.findByCustomerIdAndBeneficiaryRelationShipSeqIdAndIsActive(
 				metaData.getCustomerId(), benePackageRequest.getBeneId(), ConstantDocument.Yes);
 		BigDecimal routingBankId = beneficaryDetails.getServiceProvider();
+		if (routingBankId == null) {
+			return validationResults;
+		}
 		BankMasterMdlv1 routingBank = bankService.getBankById(routingBankId);
 		ViewParameterDetails cashSetUp = viewParameterDetailsRespository.findByRecordIdAndCharField1AndCharField2AndNumericField1(
 				ConstantDocument.CASH_STRING, routingBank.getBankCode(), beneficaryDetails.getBankCode(), beneficaryDetails.getBranchCode());
-		List<JaxConditionalFieldDto> requiredFlexFields = new ArrayList<>();
+
 		// fetch flex field from parameter setup
 		List<ParameterDetailsDto> parameterSetUp = additionalBankDetailManager.fetchServiceProviderFcAmount(benePackageRequest.getBeneId());
 		if (cashSetUp != null) {
@@ -133,7 +138,7 @@ public class PreFlexFieldManager {
 		}
 		Object volunteerContributionIndicVal = localVariableMap.get("volunteerContributionIndic");
 		Boolean volunteerContributionIndic = volunteerContributionIndicVal != null ? (boolean) volunteerContributionIndicVal : null;
-		Map<String, Object> validationResults = new HashMap<>();
+
 		if (monthlyContribution != null && !Boolean.TRUE.equals(volunteerContributionIndic)) {
 			packageFcAmount = monthlyContribution.multiply(BigDecimal.valueOf(noOfMonth));
 		}
@@ -174,6 +179,9 @@ public class PreFlexFieldManager {
 		String remittanceModeCode = cashSetUp.getCharField3();
 		String deliveryModeCode = cashSetUp.getCharField4();
 		Map<String, FlexFieldDto> requestFlexFields = benePackageRequest.getFlexFieldDtoMap();
+		if (requestFlexFields == null) {
+			requestFlexFields = new HashMap<>();
+		}
 		List<FlexFiledView> allFlexFields = remittanceApplicationDao.getFlexFields();
 		BigDecimal remittanceModeId = remittanceModeMasterRepository.findByRemittance(remittanceModeCode).getRemittanceModeId();
 		BigDecimal deliveryModeId = deliveryModeRepository.findByDeliveryMode(deliveryModeCode).getDeliveryModeId();
