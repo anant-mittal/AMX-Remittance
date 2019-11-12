@@ -31,6 +31,9 @@ public class CustomerTeleMarketingDetails implements Serializable {
 	@Column(name = "FOLW_UP_DATE")
 	Date followUpDate;
 
+	@Column(name = "MODIFIED_DATE")
+	Date modifiedDate;
+
 	@Column(name = "EMPLOYEE_ID")
 	BigDecimal employeeId;
 
@@ -83,6 +86,22 @@ public class CustomerTeleMarketingDetails implements Serializable {
 
 	public void setLeadId(BigDecimal leadId) {
 		this.leadId = leadId;
+	}
+
+	public Date getModifiedDate() {
+		return modifiedDate;
+	}
+
+	public void setModifiedDate(Date modifiedDate) {
+		this.modifiedDate = modifiedDate;
+	}
+
+	public BigDecimal getTeleMartCustomerId() {
+		return teleMartCustomerId;
+	}
+
+	public void setTeleMartCustomerId(BigDecimal teleMartCustomerId) {
+		this.teleMartCustomerId = teleMartCustomerId;
 	}
 
 }

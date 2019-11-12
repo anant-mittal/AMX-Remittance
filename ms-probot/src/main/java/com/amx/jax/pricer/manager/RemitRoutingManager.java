@@ -59,13 +59,13 @@ public class RemitRoutingManager {
 
 	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd-MMM hh:mm a");
 
-	private static final BigDecimal DEF_TR_TRANSACTION_START_TIME = new BigDecimal(10);
-	private static final BigDecimal DEF_TR_TRANSACTION_END_TIME = new BigDecimal(14.3);
+	private static final BigDecimal DEF_TR_TRANSACTION_START_TIME = new BigDecimal("10");
+	private static final BigDecimal DEF_TR_TRANSACTION_END_TIME = new BigDecimal("14.3");
 
-	private static final BigDecimal DEF_TR_WORK_DAY_FROM = new BigDecimal(2);
-	private static final BigDecimal DEF_TR_WORK_DAY_TO = new BigDecimal(5);
+	private static final BigDecimal DEF_TR_WORK_DAY_FROM = new BigDecimal("2");
+	private static final BigDecimal DEF_TR_WORK_DAY_TO = new BigDecimal("5");
 
-	private static final BigDecimal BIGD_SIXTY = new BigDecimal(60);
+	private static final BigDecimal BIGD_SIXTY = new BigDecimal("60");
 
 	/** The Constant LOGGER. */
 	private static final Logger LOGGER = LoggerFactory.getLogger(RemitRoutingManager.class);
