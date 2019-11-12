@@ -93,6 +93,8 @@ import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.repository.RelationsRepository;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.userservice.service.UserValidationService;
+import com.amx.jax.util.CommunicationPrefsUtil;
+import com.amx.jax.util.CommunicationPrefsUtil.CommunicationPrefsResult;
 import com.amx.jax.util.JaxUtil;
 
 @Service
@@ -186,6 +188,9 @@ public class BeneficiaryService extends AbstractService {
 	
 	@Autowired
 	LoyalityPointService loyalityPointService;
+	
+	@Autowired
+	CommunicationPrefsUtil communicationPrefsUtil;
 	
 	
 	public ApiResponse getBeneficiaryListForOnline(BigDecimal customerId, BigDecimal applicationCountryId,BigDecimal beneCountryId,Boolean excludePackage) {
@@ -672,7 +677,7 @@ public class BeneficiaryService extends AbstractService {
 	 * 
 	 */
 	public ApiResponse sendOtp(List<ContactType> channels) {
-
+		//communicationPrefsUtil.forCustomer(event, communicatable)
 		Customer customer = null;
 		String civilId = null;
 		BigDecimal customerId = null;
