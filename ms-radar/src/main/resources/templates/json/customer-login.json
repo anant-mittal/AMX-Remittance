@@ -87,7 +87,7 @@
                                           {
                                            "key" : "lastmonth",
                                             "to": "now-15m",
-                                            "from": "now-1m"
+                                            "from": "now-1M"
                                           }
                                         ],
                                         "time_zone": "Asia/Calcutta"
@@ -148,7 +148,7 @@
           "range": {
             "@timestamp": {
               "format": "epoch_millis",
-              "gte": "now-2m",
+              "gte": "now-1M",
               "lte": "now"
             }
           }
