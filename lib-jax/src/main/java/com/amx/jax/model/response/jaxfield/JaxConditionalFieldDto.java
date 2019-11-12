@@ -9,6 +9,15 @@ public class JaxConditionalFieldDto {
 	JaxFieldEntity entityName;
 
 	JaxFieldDto field;
+	
+	public JaxConditionalFieldDto() {
+		super();
+	}
+
+	public JaxConditionalFieldDto(JaxFieldDto field) {
+		super();
+		this.field = field;
+	}
 
 	public BigDecimal getId() {
 		return id;
@@ -38,4 +47,5 @@ public class JaxConditionalFieldDto {
 	public String toString() {
 		return "JaxConditionalFieldDto [id=" + id + ", entityName=" + entityName + ", field=" + field + "]";
 	}
+
 }

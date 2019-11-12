@@ -21,7 +21,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.RemittanceApplicationDao;
-import com.amx.jax.dbmodel.BankMasterModel;
+import com.amx.jax.dbmodel.BankMasterMdlv1;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.remittance.AdditionalDataDisplayView;
 import com.amx.jax.dbmodel.remittance.FlexFiledView;
@@ -87,7 +87,7 @@ public class PreFlexFieldManager {
 		BenificiaryListView beneficaryDetails = beneficiaryRepository.findByCustomerIdAndBeneficiaryRelationShipSeqIdAndIsActive(
 				metaData.getCustomerId(), benePackageRequest.getBeneId(), ConstantDocument.Yes);
 		BigDecimal routingBankId = beneficaryDetails.getServiceProvider();
-		BankMasterModel routingBank = bankService.getBankById(routingBankId);
+		BankMasterMdlv1 routingBank = bankService.getBankById(routingBankId);
 		ViewParameterDetails cashSetUp = viewParameterDetailsRespository.findByRecordIdAndCharField1AndCharField2AndNumericField1(
 				ConstantDocument.CASH_STRING, routingBank.getBankCode(), beneficaryDetails.getBankCode(), beneficaryDetails.getBranchCode());
 		List<JaxConditionalFieldDto> requiredFlexFields = new ArrayList<>();
@@ -169,7 +169,7 @@ public class PreFlexFieldManager {
 		BigDecimal applicationCountryId = beneficaryDetails.getApplicationCountryId();
 		BigDecimal foreignCurrencyId = beneficaryDetails.getCurrencyId();
 		BigDecimal routingBankId = beneficaryDetails.getServiceProvider();
-		BankMasterModel routingBank = bankService.getBankById(routingBankId);
+		BankMasterMdlv1 routingBank = bankService.getBankById(routingBankId);
 		BigDecimal routingCountryId = routingBank.getBankCountryId();
 		String remittanceModeCode = cashSetUp.getCharField3();
 		String deliveryModeCode = cashSetUp.getCharField4();

@@ -14,7 +14,6 @@ import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.model.GetJaxFieldRequest;
 import com.amx.amxlib.model.JaxCondition;
-import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.model.response.jaxfield.JaxConditionalFieldDto;
 import com.amx.jax.model.response.jaxfield.JaxFieldEntity;

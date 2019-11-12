@@ -36,7 +36,6 @@ import com.amx.jax.proto.tpc.models.RemittenceModels.RemitVerifyRequest;
 import com.amx.jax.proto.tpc.models.RemittenceModels.RemitVerifyResponse;
 import com.amx.jax.proto.tpc.models.RemittenceModels.RemittenceDTO;
 import com.amx.jax.proto.tpc.models.SourceOfFundDTO;
-import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

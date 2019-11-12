@@ -16,7 +16,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.jax.dbmodel.BankMasterModel;
+import com.amx.jax.dbmodel.BankMasterMdlv1;
 import com.amx.jax.dbmodel.bene.RelationsDescription;
 import com.amx.jax.dbmodel.partner.TransactionDetailsView;
 import com.amx.jax.meta.MetaData;
@@ -25,7 +25,6 @@ import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.response.remittance.FlexFieldDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.serviceprovider.Remittance_Call_Response;
-import com.amx.jax.model.response.serviceprovider.Validate_Remittance_Inputs_Call_Response;
 import com.amx.jax.partner.dao.PartnerTransactionDao;
 import com.amx.jax.partner.dto.BeneficiaryDetailsDTO;
 import com.amx.jax.partner.manager.PartnerTransactionManager;
@@ -189,7 +188,7 @@ public class VentajaManager extends AbstractModel {
 		remitParametersMap.put("flexFieldDtoMap", flexFieldDtoMap);
 		
 		try {
-			BankMasterModel routintBankMaster = bankService.getBankById(routingBankId);
+			BankMasterMdlv1 routintBankMaster = bankService.getBankById(routingBankId);
 			ServiceProviderApiManager serviceProviderApiManager = (ServiceProviderApiManager) appContext.getBean(routintBankMaster.getBankCode());
 			serviceProviderApiManager.validateApiVentajaInput(requestApplModel.getDynamicRroutingPricingBreakup(),remitParametersMap);
 		} catch (NoSuchBeanDefinitionException ex) {

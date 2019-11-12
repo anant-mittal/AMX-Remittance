@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.Map.Entry;
 
 import javax.sql.rowset.serial.SerialException;
 
@@ -24,17 +23,14 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxlib.constant.JaxFieldEntity;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.GetJaxFieldRequest;
-import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.branchremittance.manager.BranchRoutingManager;
 import com.amx.jax.client.serviceprovider.ServiceProviderClientWrapper;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxDynamicField;
-import com.amx.jax.constants.JaxFieldEntity;
 import com.amx.jax.constants.JaxTransactionStatus;
 import com.amx.jax.dao.BankDao;
 import com.amx.jax.dao.BranchRemittancePaymentDao;
@@ -62,7 +58,6 @@ import com.amx.jax.dbmodel.remittance.AdditionalBankRuleAmiec;
 import com.amx.jax.dbmodel.remittance.AdditionalDataDisplayView;
 import com.amx.jax.dbmodel.remittance.AmiecAndBankMapping;
 import com.amx.jax.dbmodel.remittance.ShoppingCartDetails;
-import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.events.CActivityEvent;
@@ -110,7 +105,6 @@ import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.services.JaxFieldService;
 import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.util.AmxDBConstants;
-import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
 import com.amx.utils.Constants;
 import com.amx.utils.IoUtils;
 import com.amx.utils.JsonUtil;
@@ -192,9 +186,6 @@ public class PartnerTransactionManager extends AbstractModel {
 	@Autowired
 	JaxFieldService jaxFieldService;
 
-	@Autowired
-	CountryBranchRepository countryBranchRepository;
-	
 	@Autowired
 	CountryBranchRepository countryBranchRepository;
 	
