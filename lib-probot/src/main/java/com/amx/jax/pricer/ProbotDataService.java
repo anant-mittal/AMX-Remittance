@@ -47,7 +47,10 @@ public interface ProbotDataService extends AbstractProbotInterface {
 
 	public AmxApiResponse<GroupDetails, Object> getGroupsOfType(GROUP_TYPE groupType);
 
-	public AmxApiResponse<GroupDetails, Object> saveGroups(GroupDetails group);
+	public AmxApiResponse<GroupDetails, Object> saveGroup(GroupDetails group);
+
+	public AmxApiResponse<Long, Object> deleteGroup(BigDecimal applicationCountryId, BigDecimal groupId,
+			GROUP_TYPE groupType, String groupName);
 
 	public AmxApiResponse<ExchangeRateEnquiryRespDto, Object> enquireExchangeRates(
 			ExchRateEnquiryReqDto rateEnquiryReqDto);

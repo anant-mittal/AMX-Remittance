@@ -32,7 +32,7 @@ public class GroupingMaster implements Serializable {
 	private BigDecimal id;
 
 	@Column(name = "APPLICATION_COUNTRY_ID")
-	private BigDecimal aplicationCountryId;
+	private BigDecimal applicationCountryId;
 
 	@Column(name = "GROUP_TYPE")
 	private String groupType;
@@ -70,12 +70,12 @@ public class GroupingMaster implements Serializable {
 		this.id = id;
 	}
 
-	public BigDecimal getAplicationCountryId() {
-		return aplicationCountryId;
+	public BigDecimal getApplicationCountryId() {
+		return applicationCountryId;
 	}
 
-	public void setAplicationCountryId(BigDecimal aplicationCountryId) {
-		this.aplicationCountryId = aplicationCountryId;
+	public void setApplicationCountryId(BigDecimal aplicationCountryId) {
+		this.applicationCountryId = aplicationCountryId;
 	}
 
 	public String getGroupType() {

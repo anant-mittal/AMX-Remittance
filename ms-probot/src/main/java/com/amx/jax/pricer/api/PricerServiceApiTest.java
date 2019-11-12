@@ -513,9 +513,17 @@ public class PricerServiceApiTest implements ProbotExchangeRateService, ProbotDa
 	}
 
 	@Override
-	@RequestMapping(value = ApiEndPoints.SAVE_GROUPS, method = RequestMethod.POST)
-	public AmxApiResponse<GroupDetails, Object> saveGroups(GroupDetails group) {
-		return pricerServiceClient.saveGroups(group);
+	@RequestMapping(value = ApiEndPoints.SAVE_GROUP, method = RequestMethod.POST)
+	public AmxApiResponse<GroupDetails, Object> saveGroup(GroupDetails group) {
+		return pricerServiceClient.saveGroup(group);
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.DELETE_GROUP, method = RequestMethod.POST)
+	public AmxApiResponse<Long, Object> deleteGroup(@RequestParam(required = true) BigDecimal applicationCountryId,
+			@RequestParam(required = true) BigDecimal groupId, @RequestParam(required = true) GROUP_TYPE groupType,
+			@RequestParam(required = true) String groupName) {
+		return pricerServiceClient.deleteGroup(applicationCountryId, groupId, groupType, groupName);
 	}
 
 	@Override

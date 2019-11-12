@@ -134,6 +134,10 @@ public enum PricerServiceError implements IExceptionEnum {
 	INVALID_GROUP_TYPE,
 	
 	DUPLICATE_GROUP,
+	
+	INVALID_GROUP,
+	
+	INCORRECT_GROUP_DETAILS,
 
 	INVALID_GROUP_VAL_TYPE,
 

@@ -236,12 +236,26 @@ public class PricerServiceClient implements ProbotExchangeRateService, ProbotDat
 	}
 
 	@Override
-	public AmxApiResponse<GroupDetails, Object> saveGroups(GroupDetails group) {
+	public AmxApiResponse<GroupDetails, Object> saveGroup(GroupDetails group) {
 		LOGGER.info("Save Group Data transaction Id: {}, with TraceId: {}", AppContextUtil.getTranxId(),
 				AppContextUtil.getTraceId());
 
-		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.SAVE_GROUPS).post(group)
+		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.SAVE_GROUP).post(group)
 				.as(new ParameterizedTypeReference<AmxApiResponse<GroupDetails, Object>>() {
+				});
+	}
+
+	@Override
+	public AmxApiResponse<Long, Object> deleteGroup(BigDecimal applicationCountryId, BigDecimal groupId,
+			GROUP_TYPE groupType, String groupName) {
+
+		LOGGER.info("Delete Group Data transaction Id: {}, with TraceId: {}", AppContextUtil.getTranxId(),
+				AppContextUtil.getTraceId());
+
+		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.DELETE_GROUP)
+				.queryParam("applicationCountryId", applicationCountryId).queryParam("groupId", groupId)
+				.queryParam("groupType", groupType).queryParam("groupName", groupName).post()
+				.as(new ParameterizedTypeReference<AmxApiResponse<Long, Object>>() {
 				});
 	}
 

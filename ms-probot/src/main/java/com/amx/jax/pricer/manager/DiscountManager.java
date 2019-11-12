@@ -394,7 +394,7 @@ public class DiscountManager {
 		}
 
 		GroupDetails groupDetails = new GroupDetails();
-		groupDetails.setApplCountryId(grpMaster.getAplicationCountryId());
+		groupDetails.setApplCountryId(grpMaster.getApplicationCountryId());
 		groupDetails.setGroupId(grpMaster.getId());
 		groupDetails.setGroupName(grpMaster.getGroupName());
 		groupDetails.setGroupType(GROUP_TYPE.valueOf(grpMaster.getGroupType()));
@@ -449,7 +449,7 @@ public class DiscountManager {
 			group.setModifiedDate(today);
 		}
 
-		group.setAplicationCountryId(groupDetails.getApplCountryId());
+		group.setApplicationCountryId(groupDetails.getApplCountryId());
 		group.setGroupName(groupDetails.getGroupName());
 		group.setGroupType(groupDetails.getGroupType().toString());
 		group.setIsActive(IS_ACTIVE.Y.toString());

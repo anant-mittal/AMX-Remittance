@@ -36,7 +36,7 @@ public class ExchRateMgmtClient extends AbstractJaxServiceClient {
 	}
 
 	public AmxApiResponse<GroupDetails, Object> saveGroup(GroupDetails group) {
-		return pricerServiceClient.saveGroups(group);
+		return pricerServiceClient.saveGroup(group);
 	}
 
 	// public AmxApiResponse<GroupDetails, Object> saveGroup(GroupDetails group) {
@@ -45,7 +45,7 @@ public class ExchRateMgmtClient extends AbstractJaxServiceClient {
 	// 		JaxMetaInfo jaxMetaInfo = new JaxMetaInfo();
 	// 		group.setApplCountryId(jaxMetaInfo.getCountryBranchId());
 	// 	}
-	// 	return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.SAVE_GROUPS).post(group)
+	// 	return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.SAVE_GROUP).post(group)
 	// 			.as(new ParameterizedTypeReference<AmxApiResponse<GroupDetails, Object>>() {
 	// 			});
 	// }

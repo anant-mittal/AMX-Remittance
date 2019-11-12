@@ -292,6 +292,29 @@ public class ExchangeDataService {
 
 	}
 
+	public Long deleteGroup(BigDecimal applicationCountryId, BigDecimal groupId, GROUP_TYPE groupType,
+			String groupName) {
+
+		GroupingMaster master = groupingMasterDao.getGroupById(groupId);
+
+		if (master == null) {
+			throw new PricerServiceException(PricerServiceError.INVALID_GROUP, "Invalid Group");
+		}
+
+		if (applicationCountryId.compareTo(master.getApplicationCountryId()) != 0
+				|| groupId.compareTo(master.getId()) != 0
+				|| !groupType.toString().equalsIgnoreCase(master.getGroupType())
+				|| !groupName.equalsIgnoreCase(master.getGroupName())) {
+			throw new PricerServiceException(PricerServiceError.INCORRECT_GROUP_DETAILS,
+					"One or more of applicationCountryId, groupId, groupType or groupName don't match.");
+		}
+
+		groupingMasterDao.delete(groupId);
+
+		return 1L;
+
+	}
+
 	public ExchangeRateEnquiryRespDto enquireExchRate(ExchRateEnquiryReqDto rateEnquiryReqDto) {
 
 		return exchangeRateManager.enquireExchRate(rateEnquiryReqDto);

@@ -156,13 +156,22 @@ public class ProbotDataServiceApiController implements ProbotDataService {
 	}
 
 	@Override
-	@RequestMapping(value = ApiEndPoints.SAVE_GROUPS, method = RequestMethod.POST)
-	public AmxApiResponse<GroupDetails, Object> saveGroups(@RequestBody @Valid GroupDetails group) {
+	@RequestMapping(value = ApiEndPoints.SAVE_GROUP, method = RequestMethod.POST)
+	public AmxApiResponse<GroupDetails, Object> saveGroup(@RequestBody @Valid GroupDetails group) {
 		LOGGER.info("Received Probot API Service Request for Save groups: " + JsonUtil.toJson(group));
 
 		GroupDetails details = dataService.saveGroup(group);
 
 		return AmxApiResponse.build(details);
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.DELETE_GROUP, method = RequestMethod.POST)
+	public AmxApiResponse<Long, Object> deleteGroup(@RequestParam(required = true) BigDecimal applicationCountryId,
+			@RequestParam(required = true) BigDecimal groupId, @RequestParam(required = true) GROUP_TYPE groupType,
+			@RequestParam(required = true) String groupName) {
+		Long i = dataService.deleteGroup(applicationCountryId, groupId, groupType, groupName);
+		return AmxApiResponse.build(i);
 	}
 
 	@Override
