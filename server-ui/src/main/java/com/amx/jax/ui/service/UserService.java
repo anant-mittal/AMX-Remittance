@@ -14,6 +14,8 @@ import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.dict.Language;
+import com.amx.jax.error.JaxError;
+import com.amx.jax.model.AuthState;
 import com.amx.jax.model.CivilIdOtpModel;
 import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.model.customer.SecurityQuestionModel;
@@ -117,12 +119,15 @@ public class UserService {
 
 	public AmxApiResponse<CustomerFlags, Object> checkModule(Features feature) {
 		try {
+			sessionService.getGuestSession().initFlow(AuthState.AuthFlow.PERMS,AuthState.AuthStep.CHECK );
 			return ResponseWrapper.buildData(authLibContext.get()
 					.checkModule(sessionService.getGuestSession().getState(),
 							sessionService.getUserSession().getCustomerModel().getFlags(), feature));
 		} catch (GlobalException ex) {
-			AuthData authData = getRandomSecurityQuestion(sessionService.getUserSession().getCustomerModel());
-			ex.setMeta(authData.toJaxAuthMetaResp());
+			if(ex.getError().equals(JaxError.SQA_REQUIRED)) {
+				AuthData authData = getRandomSecurityQuestion(sessionService.getUserSession().getCustomerModel());
+				ex.setMeta(authData.toJaxAuthMetaResp());				
+			}
 			throw ex;
 		}
 	}
