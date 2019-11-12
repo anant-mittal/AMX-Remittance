@@ -345,7 +345,8 @@ public enum JaxError implements IExceptionEnum {
 	BPI_SETUP_IS_MISSING,
 	
 	// Job In Progress Error Key
-	JAX_JOB_IN_PROGRESS;
+	JAX_JOB_IN_PROGRESS,
+	RATE_PLACE_ERROR;
 	
 	@Deprecated
 	public String getCode() {

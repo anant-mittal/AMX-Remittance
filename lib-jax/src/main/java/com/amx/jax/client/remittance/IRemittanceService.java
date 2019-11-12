@@ -17,6 +17,7 @@ import com.amx.jax.model.request.remittance.BranchRemittanceGetExchangeRateReque
 import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
 import com.amx.jax.model.request.remittance.CustomerBankRequest;
 import com.amx.jax.model.request.remittance.PlaceOrderRequestModel;
+import com.amx.jax.model.request.remittance.PlaceOrderUpdateStatusDto;
 import com.amx.jax.model.request.remittance.RoutingPricingRequest;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
@@ -174,7 +175,7 @@ public interface IRemittanceService extends  IJaxService {
 	AmxApiResponse<RatePlaceOrderInquiryDto, Object> fetchPlaceOrderInquiry(BigDecimal countryBranchId);
 	
 	
-	AmxApiResponse<BoolRespModel, Object>  updateRatePlaceOrder(BigDecimal ratePlaceOrderId,String flag);
+	AmxApiResponse<BoolRespModel, Object>  updateRatePlaceOrder(PlaceOrderUpdateStatusDto dto);
 }
 
 

@@ -19,6 +19,7 @@ import com.amx.jax.model.request.remittance.BranchRemittanceGetExchangeRateReque
 import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
 import com.amx.jax.model.request.remittance.CustomerBankRequest;
 import com.amx.jax.model.request.remittance.PlaceOrderRequestModel;
+import com.amx.jax.model.request.remittance.PlaceOrderUpdateStatusDto;
 import com.amx.jax.model.request.remittance.RoutingPricingRequest;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
@@ -383,11 +384,9 @@ public class RemittanceClient implements IRemittanceService {
 	}
 
 	@Override
-	public AmxApiResponse<BoolRespModel, Object> updateRatePlaceOrder(BigDecimal ratePlaceOrderId, String flag) {
+	public AmxApiResponse<BoolRespModel, Object> updateRatePlaceOrder(PlaceOrderUpdateStatusDto placeOrderRequestUpdatDto) {
 		return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_FETCH_PLACE_ORDER).meta(new JaxMetaInfo())
-				.queryParam(Params.PLACE_ORDER_ID, ratePlaceOrderId)
-				.queryParam(Params.PLACE_ORDER_STATUS, flag)
-				.post()
+				.post(placeOrderRequestUpdatDto)
 				.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 				});
 	}

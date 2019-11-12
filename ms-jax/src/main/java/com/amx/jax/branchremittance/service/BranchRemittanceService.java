@@ -27,6 +27,7 @@ import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
 import com.amx.jax.model.request.remittance.CustomerBankRequest;
 import com.amx.jax.model.request.remittance.PlaceOrderRequestModel;
+import com.amx.jax.model.request.remittance.PlaceOrderUpdateStatusDto;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
@@ -229,8 +230,8 @@ public class BranchRemittanceService extends AbstractService{
 		return AmxApiResponse.buildList(list);		
 	}
 	
-	public AmxApiResponse<BoolRespModel, Object> updatePlaceOrder(BigDecimal ratePlaceOrderId,String flag){
-		Boolean result = placeOrderManager.updateRatePlaceOrder(ratePlaceOrderId, flag);
+	public AmxApiResponse<BoolRespModel, Object> updatePlaceOrder(PlaceOrderUpdateStatusDto dto){
+		Boolean result = placeOrderManager.updateRatePlaceOrder(dto);
 		BoolRespModel resultBool = new BoolRespModel();
 		resultBool.setSuccess(result);
 		return AmxApiResponse.build(resultBool);

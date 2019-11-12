@@ -30,6 +30,7 @@ import com.amx.jax.model.request.remittance.BranchRemittanceGetExchangeRateReque
 import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
 import com.amx.jax.model.request.remittance.CustomerBankRequest;
 import com.amx.jax.model.request.remittance.PlaceOrderRequestModel;
+import com.amx.jax.model.request.remittance.PlaceOrderUpdateStatusDto;
 import com.amx.jax.model.request.remittance.RoutingPricingRequest;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
@@ -279,9 +280,9 @@ public class BranchRemittanceController implements IRemittanceService {
 
 	@RequestMapping(value=Path.BR_REMITTANCE_UPDATE_PLACE_ORDER,method=RequestMethod.POST)
 	@Override
-	public AmxApiResponse<BoolRespModel, Object> updateRatePlaceOrder(@RequestParam(value = Params.PLACE_ORDER_ID, required = true)BigDecimal ratePlaceOrderId, @RequestParam(value = Params.PLACE_ORDER_STATUS, required = true) String flag) {
+	public AmxApiResponse<BoolRespModel, Object> updateRatePlaceOrder(@Valid @RequestBody PlaceOrderUpdateStatusDto dto) {
 		// TODO Auto-generated method stub
-		return branchRemitService.updatePlaceOrder(ratePlaceOrderId, flag);
+		return branchRemitService.updatePlaceOrder(dto);
 	}
 
 

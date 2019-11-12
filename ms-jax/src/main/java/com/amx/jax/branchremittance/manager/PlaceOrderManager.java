@@ -48,6 +48,7 @@ import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.PlaceOrderRequestModel;
+import com.amx.jax.model.request.remittance.PlaceOrderUpdateStatusDto;
 import com.amx.jax.model.response.ExchangeRateBreakup;
 import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;
 import com.amx.jax.model.response.remittance.RatePlaceOrderInquiryDto;
@@ -396,24 +397,45 @@ public class PlaceOrderManager implements Serializable{
 	
 	
 	
-	public Boolean updateRatePlaceOrder(BigDecimal ratePlaceOrderId ,String flag) {
+	public Boolean updateRatePlaceOrder(PlaceOrderUpdateStatusDto dto){
 		 Boolean boolRespModel = false;
 		try {
-		if(JaxUtil.isNullZeroBigDecimalCheck(ratePlaceOrderId) 
-				&& !StringUtils.isBlank(flag) && (flag.equalsIgnoreCase(ConstantDocument.Status.N.toString()) || flag.equalsIgnoreCase(ConstantDocument.Status.R.toString()))) {
+			BigDecimal ratePlaceOrderId = dto.getRatePlaceOrderId();
+			String flag = dto.getFlag();
+			String remarks = dto.getRemarks();
+		if(JaxUtil.isNullZeroBigDecimalCheck(dto.getRatePlaceOrderId()) && !StringUtils.isBlank(flag) && (flag.equalsIgnoreCase(ConstantDocument.Status.N.toString()) || flag.equalsIgnoreCase(ConstantDocument.Status.R.toString()))) {
 			RatePlaceOrder ratePlaceOrder = ratePlaceOrderRepository.findOne(ratePlaceOrderId);
+			if(ratePlaceOrder!=null) {
+			
+			if(!StringUtils.isBlank(ratePlaceOrder.getIsActive()) 
+				&& !ratePlaceOrder.getIsActive().equalsIgnoreCase(ConstantDocument.Status.Y.toString()) 
+				&& !JaxUtil.isNullZeroBigDecimalCheck(ratePlaceOrder.getApplDocumentNumber()) && !JaxUtil.isNullZeroBigDecimalCheck(ratePlaceOrder.getApplDocumentFinanceYear())) {	
+			
 			if(flag.equalsIgnoreCase(ConstantDocument.Status.N.toString())){
 			ratePlaceOrder.setNegotiateSts(ConstantDocument.Status.N.toString());
 			ratePlaceOrder.setIsActive(ConstantDocument.Status.U.toString());
 			}else if(flag.equalsIgnoreCase(ConstantDocument.Status.R.toString())){
 				ratePlaceOrder.setIsActive(ConstantDocument.Status.D.toString());
+			}else if(flag.equalsIgnoreCase(ConstantDocument.Status.A.toString())){
+				ratePlaceOrder.setIsActive(ConstantDocument.Status.Y.toString());
 			}
 			ratePlaceOrder.setModifiedBy(brApplManager.getEmployeeDetails().getUserName());
 			ratePlaceOrder.setModifiedDate(new Date());
 			ratePlaceOrder.setApprovedDate(null);
 			ratePlaceOrder.setApprovedBy(null);
+			if(!StringUtils.isBlank(remarks)) {
+				ratePlaceOrder.setRemarks(remarks);
+			}
 			ratePlaceOrderRepository.save(ratePlaceOrder);
 			boolRespModel=true;
+			}else {
+				throw new GlobalException(JaxError.RATE_PLACE_ERROR,"Application is already created for this order");
+			}
+			}else {
+				throw new GlobalException(JaxError.RATE_PLACE_ERROR,"Record not found for the customerId :"+metaData.getCustomerId()+" and Place order id :"+ratePlaceOrderId);
+			}
+		}else {
+			throw new GlobalException(JaxError.RATE_PLACE_ERROR,"Record not found for the customerId :"+metaData.getCustomerId()+" and Place order id :"+ratePlaceOrderId);
 		}
 		}catch(GlobalException e){
 			logger.debug("create application", e.getErrorMessage() + "" +e.getErrorKey());

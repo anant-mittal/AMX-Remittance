@@ -28,9 +28,9 @@ public class AmxDBConstants {
 		D, U, B, C, V, 
 		/**
 		 * EXPIRED,
-		 * R-Reject,N- Negotiate, N-New 
+		 * R-Reject,N- Negotiate, N-New ,A-Accept 
 		 */
-		E,R
+		E,R,A
 	}
 
 	// document id
