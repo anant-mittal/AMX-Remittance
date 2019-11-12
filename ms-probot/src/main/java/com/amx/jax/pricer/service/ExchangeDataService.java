@@ -3,12 +3,12 @@ package com.amx.jax.pricer.service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import com.amx.jax.api.AmxApiResponse;
@@ -49,7 +49,6 @@ import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.manager.DiscountManager;
 import com.amx.jax.pricer.manager.ExchangeRateManager;
-import com.amx.jax.pricer.var.PricerServiceConstants;
 import com.amx.jax.pricer.var.PricerServiceConstants.DISCOUNT_TYPE;
 import com.amx.jax.pricer.var.PricerServiceConstants.GROUP_TYPE;
 import com.amx.jax.pricer.var.PricerServiceConstants.RATE_UPLOAD_STATUS;
@@ -262,21 +261,13 @@ public class ExchangeDataService {
 
 	}
 
-	public List<GroupDetails> getGroupsOfType(String groupType) {
+	public List<GroupDetails> getGroupsOfType(GROUP_TYPE groupType) {
 
-		GROUP_TYPE grpType;
-
-		try {
-			grpType = PricerServiceConstants.GROUP_TYPE.valueOf(groupType);
-		} catch (IllegalArgumentException ex) {
-			grpType = null;
-		}
-
-		if (grpType == null) {
+		if (groupType == null) {
 			throw new PricerServiceException(PricerServiceError.INVALID_GROUP_TYPE, "Invalid Group Type");
 		}
 
-		List<GroupingMaster> groupMs = groupingMasterDao.getByGroupType(groupType);
+		List<GroupingMaster> groupMs = groupingMasterDao.getActiveByGroupType(groupType.toString());
 
 		return DiscountManager.convertGroupInfo(groupMs);
 
@@ -290,17 +281,12 @@ public class ExchangeDataService {
 
 		GroupingMaster master = DiscountManager.convertToGroupMaster(group);
 
-		Date today = new Date();
-
-		if (null == master.getId()) {
-			master.setCreatedBy("JOMEX");
-			master.setCreatedDate(today);
+		try {
+			master = groupingMasterDao.save(master);
+		} catch (DataIntegrityViolationException e) {
+			throw new PricerServiceException(PricerServiceError.DUPLICATE_GROUP,
+					"Duplicate Group of the same Group Type");
 		}
-
-		master.setModifiedBy("JOMEX");
-		master.setModifiedDate(today);
-
-		master = groupingMasterDao.save(master);
 
 		return DiscountManager.convertToGroupDetails(master);
 
@@ -320,7 +306,7 @@ public class ExchangeDataService {
 		return exchangeRateManager.rateUpoadRuleChecker(rateUploadRequestDto);
 	}
 
-	public Map<String, RateUploadRuleDto> getRateUploadRulesByStatus(RATE_UPLOAD_STATUS status, Boolean onlyActive) {
+	public List<RateUploadRuleDto> getRateUploadRulesByStatus(RATE_UPLOAD_STATUS status, Boolean onlyActive) {
 		return exchangeRateManager.getRateUploadRulesByStatus(status, onlyActive);
 	}
 

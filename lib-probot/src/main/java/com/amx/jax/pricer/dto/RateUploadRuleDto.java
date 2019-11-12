@@ -2,6 +2,7 @@ package com.amx.jax.pricer.dto;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.Map;
 
 import javax.validation.constraints.NotNull;
@@ -32,7 +33,7 @@ public class RateUploadRuleDto implements Serializable {
 
 	@NotNull(message = "Sell Rate Can not be Null or Empty")
 	private BigDecimal sellExchangeRate;
-	
+
 	@NotNull(message = "Buy Rate Can not be Null or Empty")
 	private BigDecimal buyExchangeRate;
 
@@ -40,13 +41,13 @@ public class RateUploadRuleDto implements Serializable {
 	private RATE_UPLOAD_STATUS status;
 
 	private String createdBy;
-	private String createdDate;
+	private Date createdDate;
 
 	private String modifiedBy;
-	private String modifiedDate;
+	private Date modifiedDate;
 
 	private String approvedBy;
-	private String approvedDate;
+	private Date approvedDate;
 
 	public String getRuleId() {
 		return ruleId;
@@ -160,11 +161,11 @@ public class RateUploadRuleDto implements Serializable {
 		this.createdBy = createdBy;
 	}
 
-	public String getCreatedDate() {
+	public Date getCreatedDate() {
 		return createdDate;
 	}
 
-	public void setCreatedDate(String createdDate) {
+	public void setCreatedDate(Date createdDate) {
 		this.createdDate = createdDate;
 	}
 
@@ -176,11 +177,11 @@ public class RateUploadRuleDto implements Serializable {
 		this.modifiedBy = modifiedBy;
 	}
 
-	public String getModifiedDate() {
+	public Date getModifiedDate() {
 		return modifiedDate;
 	}
 
-	public void setModifiedDate(String modifiedDate) {
+	public void setModifiedDate(Date modifiedDate) {
 		this.modifiedDate = modifiedDate;
 	}
 
@@ -192,11 +193,11 @@ public class RateUploadRuleDto implements Serializable {
 		this.approvedBy = approvedBy;
 	}
 
-	public String getApprovedDate() {
+	public Date getApprovedDate() {
 		return approvedDate;
 	}
 
-	public void setApprovedDate(String approvedDate) {
+	public void setApprovedDate(Date approvedDate) {
 		this.approvedDate = approvedDate;
 	}
 

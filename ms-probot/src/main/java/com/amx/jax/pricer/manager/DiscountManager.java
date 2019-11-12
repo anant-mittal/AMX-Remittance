@@ -10,7 +10,6 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.pricer.dao.BankMasterDao;
@@ -41,9 +40,10 @@ import com.amx.jax.pricer.dto.OnlineMarginMarkupInfo;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
 import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
-import com.amx.jax.pricer.var.PricerServiceConstants;
 import com.amx.jax.pricer.var.PricerServiceConstants.DISCOUNT_TYPE;
 import com.amx.jax.pricer.var.PricerServiceConstants.GROUP_TYPE;
+import com.amx.jax.pricer.var.PricerServiceConstants.GROUP_VAL_TYPE;
+import com.amx.jax.pricer.var.PricerServiceConstants.IS_ACTIVE;
 
 @Component
 public class DiscountManager {
@@ -397,9 +397,15 @@ public class DiscountManager {
 		groupDetails.setApplCountryId(grpMaster.getAplicationCountryId());
 		groupDetails.setGroupId(grpMaster.getId());
 		groupDetails.setGroupName(grpMaster.getGroupName());
-		groupDetails.setGroupType(grpMaster.getGroupType());
+		groupDetails.setGroupType(GROUP_TYPE.valueOf(grpMaster.getGroupType()));
 		groupDetails.setIsActive(grpMaster.getIsActive());
-		groupDetails.setValType(grpMaster.getValType());
+		groupDetails.setValType(GROUP_VAL_TYPE.valueOf(grpMaster.getValType()));
+
+		groupDetails.setCreatedBy(grpMaster.getCreatedBy());
+		groupDetails.setCreatedDate(grpMaster.getCreatedDate());
+
+		groupDetails.setModifiedBy(grpMaster.getModifiedBy());
+		groupDetails.setModifiedDate(grpMaster.getModifiedDate());
 
 		groupDetails.setValSet(grpMaster.getValSet());
 
@@ -416,23 +422,38 @@ public class DiscountManager {
 			group.setId(groupDetails.getGroupId());
 		}
 
-		GROUP_TYPE grpType;
-
-		try {
-			grpType = PricerServiceConstants.GROUP_TYPE.valueOf(groupDetails.getGroupType());
-		} catch (IllegalArgumentException ex) {
-			grpType = null;
+		if (groupDetails.getGroupType() == null) {
+			throw new PricerServiceException(PricerServiceError.INVALID_GROUP_TYPE, "Invalid Group Type");
 		}
 
-		if (grpType == null) {
-			throw new PricerServiceException(PricerServiceError.INVALID_GROUP_TYPE, "Invalid Group Type");
+		if (groupDetails.getValType() == null) {
+			throw new PricerServiceException(PricerServiceError.INVALID_GROUP_VAL_TYPE, "Invalid Group Value Type");
+		}
+
+		if (groupDetails.getValType().equals(GROUP_VAL_TYPE.ASSEMBLED) && groupDetails.getValSet() == null
+				|| groupDetails.getValSet().isEmpty()) {
+			throw new PricerServiceException(PricerServiceError.EMPTY_OR_NULL_VAL_SET, "Empty or Null value Set");
+		}
+
+		Date today = new Date();
+
+		if (groupDetails.getGroupId() == null || groupDetails.getGroupId().compareTo(BigDecimal.ZERO) == 0) {
+			// Case Created
+			group.setId(null);
+			group.setCreatedDate(today);
+			group.setCreatedBy(groupDetails.getCreatedBy());
+		} else {
+			// Case Modified
+			group.setId(groupDetails.getGroupId());
+			group.setModifiedBy(groupDetails.getModifiedBy());
+			group.setModifiedDate(today);
 		}
 
 		group.setAplicationCountryId(groupDetails.getApplCountryId());
 		group.setGroupName(groupDetails.getGroupName());
-		group.setGroupType(groupDetails.getGroupType());
-		group.setIsActive(groupDetails.getIsActive());
-		group.setValType(groupDetails.getValType());
+		group.setGroupType(groupDetails.getGroupType().toString());
+		group.setIsActive(IS_ACTIVE.Y.toString());
+		group.setValType(groupDetails.getValType().toString());
 
 		group.setValSet(groupDetails.getValSet());
 

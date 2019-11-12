@@ -16,7 +16,7 @@ public interface GroupingMasterRepository extends CrudRepository<GroupingMaster,
 	@Query("select d from GroupingMaster d where groupType='CUR' and isActive='Y'")
 	List<GroupingMaster> getGroupForCurrency();
 
-	List<GroupingMaster> findByGroupType(String groupType);
+	List<GroupingMaster> findByGroupTypeAndIsActive(String groupType, String isActive);
 
 	GroupingMaster findByGroupTypeAndGroupName(String groupType, String groupName);
 

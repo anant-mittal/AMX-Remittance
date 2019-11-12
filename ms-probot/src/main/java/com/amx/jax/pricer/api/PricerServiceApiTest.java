@@ -60,6 +60,7 @@ import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
 import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.service.PricerTestService;
 import com.amx.jax.pricer.var.PricerServiceConstants;
+import com.amx.jax.pricer.var.PricerServiceConstants.GROUP_TYPE;
 import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_BY;
 import com.amx.jax.pricer.var.PricerServiceConstants.RATE_UPLOAD_STATUS;
 import com.amx.utils.ArgUtil;
@@ -507,7 +508,7 @@ public class PricerServiceApiTest implements ProbotExchangeRateService, ProbotDa
 
 	@Override
 	@RequestMapping(value = ApiEndPoints.GET_GROUPS_OF_TYPE, method = RequestMethod.POST)
-	public AmxApiResponse<GroupDetails, Object> getGroupsOfType(String groupType) {
+	public AmxApiResponse<GroupDetails, Object> getGroupsOfType(@RequestParam(required = true) GROUP_TYPE groupType) {
 		return pricerServiceClient.getGroupsOfType(groupType);
 	}
 
@@ -538,7 +539,8 @@ public class PricerServiceApiTest implements ProbotExchangeRateService, ProbotDa
 
 	@Override
 	@RequestMapping(value = ApiEndPoints.GET_RATE_UPLOAD_RULES, method = RequestMethod.POST)
-	public AmxApiResponse<Map<String, RateUploadRuleDto>, Object> getRateUploadRulesByStatus(@RequestParam(required = true) RATE_UPLOAD_STATUS status,
+	public AmxApiResponse<List<RateUploadRuleDto>, Object> getRateUploadRulesByStatus(
+			@RequestParam(required = true) RATE_UPLOAD_STATUS status,
 			@RequestParam(required = true) Boolean onlyActive) {
 		return pricerServiceClient.getRateUploadRulesByStatus(status, onlyActive);
 	}

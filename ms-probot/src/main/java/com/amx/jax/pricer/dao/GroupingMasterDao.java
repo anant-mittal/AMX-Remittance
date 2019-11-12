@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.pricer.dbmodel.GroupingMaster;
@@ -40,8 +41,8 @@ public class GroupingMasterDao {
 		return repository.findByGroupTypeAndGroupName(groupType, groupName);
 	}
 
-	public List<GroupingMaster> getByGroupType(String groupType) {
-		return repository.findByGroupType(groupType);
+	public List<GroupingMaster> getActiveByGroupType(String groupType) {
+		return repository.findByGroupTypeAndIsActive(groupType, "Y");
 	}
 
 	public List<GroupingMaster> getAllGroup() {
@@ -56,8 +57,12 @@ public class GroupingMasterDao {
 		return repository.save(groups);
 	}
 
-	public GroupingMaster save(GroupingMaster group) {
+	public GroupingMaster save(GroupingMaster group) throws DataIntegrityViolationException {
 		return repository.save(group);
+	}
+
+	public void delete(BigDecimal grpId) {
+		repository.delete(grpId);
 	}
 
 }

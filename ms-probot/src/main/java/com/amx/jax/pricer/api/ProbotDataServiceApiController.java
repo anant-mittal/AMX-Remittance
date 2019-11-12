@@ -3,7 +3,6 @@ package com.amx.jax.pricer.api;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import javax.validation.Valid;
 
@@ -35,6 +34,7 @@ import com.amx.jax.pricer.dto.RateUploadRuleDto;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
 import com.amx.jax.pricer.service.ExchangeDataService;
 import com.amx.jax.pricer.service.HolidayListService;
+import com.amx.jax.pricer.var.PricerServiceConstants.GROUP_TYPE;
 import com.amx.jax.pricer.var.PricerServiceConstants.RATE_UPLOAD_STATUS;
 import com.amx.utils.JsonUtil;
 
@@ -146,7 +146,7 @@ public class ProbotDataServiceApiController implements ProbotDataService {
 
 	@Override
 	@RequestMapping(value = ApiEndPoints.GET_GROUPS_OF_TYPE, method = RequestMethod.POST)
-	public AmxApiResponse<GroupDetails, Object> getGroupsOfType(@RequestParam(required = true) String groupType) {
+	public AmxApiResponse<GroupDetails, Object> getGroupsOfType(@RequestParam(required = true) GROUP_TYPE groupType) {
 
 		LOGGER.info("Received Probot API Service Request for getting groups of type: " + groupType);
 
@@ -203,13 +203,13 @@ public class ProbotDataServiceApiController implements ProbotDataService {
 
 	@Override
 	@RequestMapping(value = ApiEndPoints.GET_RATE_UPLOAD_RULES, method = RequestMethod.POST)
-	public AmxApiResponse<Map<String, RateUploadRuleDto>, Object> getRateUploadRulesByStatus(
+	public AmxApiResponse<List<RateUploadRuleDto>, Object> getRateUploadRulesByStatus(
 			@RequestParam(required = true) RATE_UPLOAD_STATUS status,
 			@RequestParam(required = true) Boolean onlyActive) {
-		
+
 		LOGGER.info("Received Probot API Service Request for Get Rate Upload Rules By Status");
 
-		Map<String, RateUploadRuleDto> rateUploadRules = dataService.getRateUploadRulesByStatus(status, onlyActive);
+		List<RateUploadRuleDto> rateUploadRules = dataService.getRateUploadRulesByStatus(status, onlyActive);
 
 		return AmxApiResponse.build(rateUploadRules);
 	}

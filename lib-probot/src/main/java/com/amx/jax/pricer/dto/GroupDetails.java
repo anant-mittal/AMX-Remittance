@@ -2,9 +2,13 @@ package com.amx.jax.pricer.dto;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 import javax.validation.constraints.NotNull;
+
+import com.amx.jax.pricer.var.PricerServiceConstants.GROUP_TYPE;
+import com.amx.jax.pricer.var.PricerServiceConstants.GROUP_VAL_TYPE;
 
 public class GroupDetails implements Serializable, Comparable<GroupDetails> {
 
@@ -19,14 +23,22 @@ public class GroupDetails implements Serializable, Comparable<GroupDetails> {
 	private String groupName;
 
 	@NotNull(message = "Group Type can not be Null or Empty")
-	private String groupType;
+	private GROUP_TYPE groupType;
 
 	private String isActive;
 
 	@NotNull(message = "Val Type can not be Null or Empty")
-	private String valType;
+	private GROUP_VAL_TYPE valType;
 
 	private List<String> valSet;
+
+	private String createdBy;
+
+	private Date createdDate;
+
+	private String modifiedBy;
+
+	private Date modifiedDate;
 
 	public BigDecimal getApplCountryId() {
 		return applCountryId;
@@ -52,12 +64,20 @@ public class GroupDetails implements Serializable, Comparable<GroupDetails> {
 		this.groupName = groupName;
 	}
 
-	public String getGroupType() {
+	public GROUP_TYPE getGroupType() {
 		return groupType;
 	}
 
-	public void setGroupType(String groupType) {
+	public void setGroupType(GROUP_TYPE groupType) {
 		this.groupType = groupType;
+	}
+
+	public GROUP_VAL_TYPE getValType() {
+		return valType;
+	}
+
+	public void setValType(GROUP_VAL_TYPE valType) {
+		this.valType = valType;
 	}
 
 	public String getIsActive() {
@@ -68,14 +88,6 @@ public class GroupDetails implements Serializable, Comparable<GroupDetails> {
 		this.isActive = isActive;
 	}
 
-	public String getValType() {
-		return valType;
-	}
-
-	public void setValType(String valType) {
-		this.valType = valType;
-	}
-
 	public List<String> getValSet() {
 		return valSet;
 	}
@@ -84,8 +96,55 @@ public class GroupDetails implements Serializable, Comparable<GroupDetails> {
 		this.valSet = valSet;
 	}
 
+	public String getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
+	}
+
+	public Date getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
+	}
+
+	public String getModifiedBy() {
+		return modifiedBy;
+	}
+
+	public void setModifiedBy(String modifiedBy) {
+		this.modifiedBy = modifiedBy;
+	}
+
+	public Date getModifiedDate() {
+		return modifiedDate;
+	}
+
+	public void setModifiedDate(Date modifiedDate) {
+		this.modifiedDate = modifiedDate;
+	}
+
 	@Override
 	public int compareTo(GroupDetails o) {
+
+		// null is heavy
+		if (null == o || null == o.getCreatedDate()) {
+			return -1;
+		} else if (null == this.createdDate) {
+			return 1;
+		} else {
+			int i = this.createdDate.compareTo(o.createdDate);
+			return i != 0 ? -i : compareToByName(o);
+
+		}
+
+	}
+
+	public int compareToByName(GroupDetails o) {
 
 		if (null == o || null == o.getGroupName()) {
 			return 1;

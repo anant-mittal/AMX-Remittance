@@ -463,7 +463,7 @@ public class ExchangeRateManager {
 
 	}
 
-	public Map<String, RateUploadRuleDto> getRateUploadRulesByStatus(RATE_UPLOAD_STATUS status, Boolean onlyActive) {
+	public List<RateUploadRuleDto> getRateUploadRulesByStatus(RATE_UPLOAD_STATUS status, Boolean onlyActive) {
 
 		IS_ACTIVE active = (onlyActive == null || onlyActive) ? IS_ACTIVE.Y : IS_ACTIVE.N;
 
@@ -563,11 +563,11 @@ public class ExchangeRateManager {
 					rateDto.setIsActive(exchRateUpload.getIsActive());
 					rateDto.setStatus(exchRateUpload.getStatus());
 					rateDto.setCreatedBy(exchRateUpload.getCreatedBy());
-					rateDto.setCreatedDate(String.valueOf(exchRateUpload.getCreatedDate()));
+					rateDto.setCreatedDate(exchRateUpload.getCreatedDate());
 					rateDto.setModifiedBy(exchRateUpload.getModifiedBy());
-					rateDto.setModifiedDate(String.valueOf(exchRateUpload.getModifiedDate()));
+					rateDto.setModifiedDate(exchRateUpload.getModifiedDate());
 					rateDto.setApprovedBy(exchRateUpload.getApprovedBy());
-					rateDto.setApprovedDate(String.valueOf(exchRateUpload.getApprovedDate()));
+					rateDto.setApprovedDate(exchRateUpload.getApprovedDate());
 
 					if (exchRateUpload.getCountryId() != null) {
 						rateDto.setCountryId(exchRateUpload.getCountryId());
@@ -613,7 +613,7 @@ public class ExchangeRateManager {
 
 		}
 
-		return rateUploadMap;
+		return new ArrayList<RateUploadRuleDto>(rateUploadMap.values());
 	}
 
 }

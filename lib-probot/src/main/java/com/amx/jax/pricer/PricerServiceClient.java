@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Map;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +35,7 @@ import com.amx.jax.pricer.dto.PricingResponseDTO;
 import com.amx.jax.pricer.dto.RateUploadRequestDto;
 import com.amx.jax.pricer.dto.RateUploadRuleDto;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
+import com.amx.jax.pricer.var.PricerServiceConstants.GROUP_TYPE;
 import com.amx.jax.pricer.var.PricerServiceConstants.RATE_UPLOAD_STATUS;
 import com.amx.jax.rest.RestService;
 
@@ -224,7 +225,7 @@ public class PricerServiceClient implements ProbotExchangeRateService, ProbotDat
 	}
 
 	@Override
-	public AmxApiResponse<GroupDetails, Object> getGroupsOfType(String groupType) {
+	public AmxApiResponse<GroupDetails, Object> getGroupsOfType(GROUP_TYPE groupType) {
 		LOGGER.info("Get Group Data for Type: {}, transaction Id: {}, with TraceId: {}", groupType,
 				AppContextUtil.getTranxId(), AppContextUtil.getTraceId());
 
@@ -274,12 +275,12 @@ public class PricerServiceClient implements ProbotExchangeRateService, ProbotDat
 	}
 
 	@Override
-	public AmxApiResponse<Map<String, RateUploadRuleDto>, Object> getRateUploadRulesByStatus(RATE_UPLOAD_STATUS status,
+	public AmxApiResponse<List<RateUploadRuleDto>, Object> getRateUploadRulesByStatus(RATE_UPLOAD_STATUS status,
 			Boolean onlyActive) {
 		LOGGER.info("Received Probot API Service Request for Get Rate Upload Rule By Status Client");
 		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.GET_RATE_UPLOAD_RULES)
 				.queryParam("status", status).queryParam("onlyActive", onlyActive).post()
-				.as(new ParameterizedTypeReference<AmxApiResponse<Map<String, RateUploadRuleDto>, Object>>() {
+				.as(new ParameterizedTypeReference<AmxApiResponse<List<RateUploadRuleDto>, Object>>() {
 				});
 	}
 

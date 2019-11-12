@@ -2,7 +2,7 @@ package com.amx.jax.pricer;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.Map;
+import java.util.List;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
@@ -18,6 +18,7 @@ import com.amx.jax.pricer.dto.OnlineMarginMarkupReq;
 import com.amx.jax.pricer.dto.RateUploadRequestDto;
 import com.amx.jax.pricer.dto.RateUploadRuleDto;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
+import com.amx.jax.pricer.var.PricerServiceConstants.GROUP_TYPE;
 import com.amx.jax.pricer.var.PricerServiceConstants.RATE_UPLOAD_STATUS;
 
 public interface ProbotDataService extends AbstractProbotInterface {
@@ -44,7 +45,7 @@ public interface ProbotDataService extends AbstractProbotInterface {
 	public AmxApiResponse<BoolRespModel, Object> saveOnlineMarginMarkupData(
 			OnlineMarginMarkupInfo OnlineMarginMarkupReq);
 
-	public AmxApiResponse<GroupDetails, Object> getGroupsOfType(String groupType);
+	public AmxApiResponse<GroupDetails, Object> getGroupsOfType(GROUP_TYPE groupType);
 
 	public AmxApiResponse<GroupDetails, Object> saveGroups(GroupDetails group);
 
@@ -55,7 +56,7 @@ public interface ProbotDataService extends AbstractProbotInterface {
 
 	public AmxApiResponse<Long, Object> rateUpoadRuleChecker(RateUploadRequestDto rateUploadRequestDto);
 
-	public AmxApiResponse<Map<String, RateUploadRuleDto>, Object> getRateUploadRulesByStatus(RATE_UPLOAD_STATUS status,
+	public AmxApiResponse<List<RateUploadRuleDto>, Object> getRateUploadRulesByStatus(RATE_UPLOAD_STATUS status,
 			Boolean onlyActive);
 
 }
