@@ -239,15 +239,17 @@ public class RemittanceApplicationManager {
 				generateDocumentNumber(remittanceApplication.getExCountryBranch(), ConstantDocument.Update));
 		remittanceApplication.setPaymentId(remittanceApplication.getDocumentNo().toString());
 		remittanceApplication.setWuIpAddress(metaData.getDeviceIp());
+		remittanceApplication.setCustomerChoice(validationResults.getCustomerChoice());
 		
 		validateAdditionalErrorMessages(requestModel);
 		validateBannedBank();
 		validateDailyBeneficiaryTransactionLimit(beneDetails);
 
 		setFurtherInstruction(remittanceApplication, requestModel.getAdditionalFields());
-
 		setCustomerDiscountColumns(remittanceApplication, validationResults);
 		setVatDetails(remittanceApplication, validationResults);
+		setSavedAmount(remittanceApplication, validationResults);
+		
 		return remittanceApplication;
 	}
 	
@@ -366,6 +368,7 @@ public class RemittanceApplicationManager {
 		remittanceApplication.setDocumentNo(generateDocumentNumber(remittanceApplication.getExCountryBranch(), ConstantDocument.Update));
 		remittanceApplication.setPaymentId(remittanceApplication.getDocumentNo().toString());
 		remittanceApplication.setWuIpAddress(metaData.getDeviceIp());
+		remittanceApplication.setCustomerChoice(validationResults.getCustomerChoice());
 		
 		DynamicRoutingPricingDto dynamicRoutingPricingResponse = requestModel.getDynamicRroutingPricingBreakup();
 		if(dynamicRoutingPricingResponse.getServiceProviderDto() != null && dynamicRoutingPricingResponse.getServiceProviderDto().getIntialAmountInSettlCurr() != null) {
@@ -388,6 +391,7 @@ public class RemittanceApplicationManager {
 
 		setCustomerDiscountColumns(remittanceApplication, validationResults);
 		setVatDetails(remittanceApplication, validationResults);
+		setSavedAmount(remittanceApplication, validationResults);
 		setDeliveryTimeDuration(remittanceApplication,dynamicRoutingPricingResponse.getTrnxRoutingPaths());
 		return remittanceApplication;
 	}
@@ -503,7 +507,8 @@ public class RemittanceApplicationManager {
 		remitApplParametersMap.put("P_FURTHER_INSTR", "URGENT");
 		//Map<String, Object> errorResponse = applicationProcedureDao.toFetchPurtherInstractionErrorMessaage(remitApplParametersMap);
 		String errorMessage =null;// (String) errorResponse.get("P_ERRMSG");
-		Map<String, Object> furtherSwiftAdditionalDetails = applicationProcedureDao.fetchAdditionalBankRuleIndicators(remitApplParametersMap);
+		Map<String, Object> furtherSwiftAdditionalDetails = applicationProcedureDao
+				.fetchAdditionalBankRuleIndicators(remitApplParametersMap);
 		remitApplParametersMap.putAll(furtherSwiftAdditionalDetails);
 		remitApplParametersMap.put("P_ADDITIONAL_BANK_RULE_ID_1", requestModel.getAdditionalBankRuleFiledId());
 		if (requestModel.getSrlId() != null) {
@@ -640,6 +645,7 @@ public class RemittanceApplicationManager {
 		}
 	}
 
+	/** added by Rabil **/
 	public void setFurtherInstruction(RemittanceApplication remittanceApplication,
 			Map<String, Object> additionalFields) {
 		if (additionalFields != null && !additionalFields.isEmpty()) {
@@ -663,4 +669,14 @@ public class RemittanceApplicationManager {
 			}
 		}
 
+	/** added by Rabil **/
+	public void setSavedAmount(RemittanceApplication remittanceApplication,RemittanceTransactionResponsetModel validationResults) {
+		remittanceApplication.setSavedAmount(validationResults.getYouSavedAmount());
+		remittanceApplication.setRackExchangeRate(validationResults.getRackExchangeRate());
+		remittanceApplication.setSavedAmountInFc(validationResults.getYouSavedAmountInFC());
+		remittanceApplication.setCustomerChoice(validationResults.getCustomerChoice());
+		
+	}
+	
+	
 }

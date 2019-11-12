@@ -13,6 +13,7 @@ import com.amx.amxlib.model.CustomerModel;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.dict.Language;
 import com.amx.jax.model.CivilIdOtpModel;
 import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.model.customer.SecurityQuestionModel;
@@ -94,14 +95,21 @@ public class UserService {
 	 * Gets the notify topics.
 	 *
 	 * @param prefix the prefix
+	 * @param lang
 	 * @return the notify topics
 	 */
-	public List<String> getNotifyTopics(String prefix) {
+	public List<String> getNotifyTopics(String prefix, Language lang) {
 		CustomerModel customerModel = sessionService.getUserSession().getCustomerModel();
 		PushMessage msg = new PushMessage();
 		msg.addToTenant(AppContextUtil.getTenant());
 		msg.addToCountry(customerModel.getPersoninfo().getNationalityId());
 		msg.addToUser(customerModel.getCustomerId());
+
+		// With Language
+		msg.addToTenant(AppContextUtil.getTenant(), lang);
+		msg.addToCountry(customerModel.getPersoninfo().getNationalityId(), lang);
+		msg.addToUser(customerModel.getCustomerId(), lang);
+
 		Date dob = customerModel.getPersoninfo().getDateOfBirth();
 		msg.addToDate("dob", dob);
 		return msg.getTo();
@@ -136,6 +144,7 @@ public class UserService {
 		sessionService.getUserSession().getCustomerModel().setFlags(x.getResult().getCustomerFlags());
 		sessionService.getUserSession().getCustomerModel().setPersoninfo(x.getResult().getPersonInfo());
 		sessionService.getUserSession().getCustomerModel().setSecurityquestions(x.getResult().getSecurityquestions());
+		// sessionService.getGuestSession().setLanguage(x.getResult().getPersonInfo().getLang());
 	}
 
 	/**

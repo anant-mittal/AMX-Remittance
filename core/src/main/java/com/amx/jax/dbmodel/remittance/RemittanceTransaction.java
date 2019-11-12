@@ -163,6 +163,14 @@ public class RemittanceTransaction implements Serializable {
 	private String applSplit;
 
 	private Date timeToDeliver;
+	private BigDecimal savedAmount;
+	private BigDecimal rackExchangeRate;
+	
+	private String customerChoice;
+	
+	
+	private BigDecimal savedAmountInFc;
+	
 	
 	
 	public RemittanceTransaction() {
@@ -1208,15 +1216,49 @@ public class RemittanceTransaction implements Serializable {
 		this.timeToDeliver = timeToDeliver;
 	}
 	
-	
-
-	@Column(name="IS_SPLITTED")
-	public String getApplSplit() {
-		return applSplit;
+	@Column(name="SAVED_AMOUNT")
+	public BigDecimal getSavedAmount() {
+		return savedAmount;
 	}
 
+	public void setSavedAmount(BigDecimal savedAmount) {
+		this.savedAmount = savedAmount;
+	}
+	
+	@Column(name="RACK_EXCHANGE_RATE")
+	public BigDecimal getRackExchangeRate() {
+		return rackExchangeRate;
+	}
+
+	public void setRackExchangeRate(BigDecimal rackExchangeRate) {
+		this.rackExchangeRate = rackExchangeRate;
+	}
+	
+	@Column(name="CUSTOMER_CHOICE")
+	public String getCustomerChoice() {
+		return customerChoice;
+	}
+
+	public void setCustomerChoice(String customerChoice) {
+		this.customerChoice = customerChoice;
+	}
+	@Column(name="SAVED_AMOUNT_FC")
+	public BigDecimal getSavedAmountInFc() {
+		return savedAmountInFc;
+	}
+
+	public void setSavedAmountInFc(BigDecimal savedAmountInFc) {
+		this.savedAmountInFc = savedAmountInFc;
+	}
+
+	
+	@Column(name="IS_SPLITTED")
 	public void setApplSplit(String applSplit) {
 		this.applSplit = applSplit;
+	}
+
+	public String getApplSplit() {
+		return applSplit;
 	}
 	
 	

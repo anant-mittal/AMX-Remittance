@@ -81,18 +81,17 @@ public class SnapQueryService {
 		String fullIndex = resolveIndex(EsConfig.indexName(index));
 		Object pivot = query.remove("pivot");
 		try {
-			/*
 			x = restService.ajax(ssConfig.getClusterUrl())
 					.header(ssConfig.getBasicAuthHeader()).path(
 							fullIndex + "/_search")
 					.post(query)
 					.asMap();
-			*/
+/*			
 			String json = FileUtil
 					.readFile(FileUtil.normalize(
 							"file://" + System.getProperty("user.dir") + "/src/test/java/com/amx/test/sample.json"));
 			x = JsonUtil.fromJson(json, Map.class);
-			
+*/			
 		} catch (Exception e) {
 			log.error(e);
 		}
@@ -130,10 +129,20 @@ public class SnapQueryService {
 		return this.executeQuery(query, template.getIndex());
 	}
 
-	public static class BulkRequestSnapBuilder extends BulkRequestBuilder {
+	public static class BulkRequestSnapBuilder extends BulkRequestBuilder<BulkRequestSnapBuilder> {
 		@Override
-		public BulkRequestBuilder updateById(String index, String type, String id, AESDocument vote) {
+		public BulkRequestSnapBuilder updateById(String index, String type, String id, AESDocument vote) {
 			return super.updateById(EsConfig.indexName(index), type, id, vote);
+		}
+
+		@Override
+		public BulkRequestSnapBuilder update(String index, String type, AESDocument vote) {
+			return this.updateById(EsConfig.indexName(index), type, vote.getId(), vote);
+		}
+
+		@Override
+		public BulkRequestSnapBuilder update(String index, AESDocument vote) {
+			return this.updateById(EsConfig.indexName(index), vote.getType(), vote.getId(), vote);
 		}
 	}
 

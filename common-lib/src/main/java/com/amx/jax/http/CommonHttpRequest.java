@@ -164,6 +164,12 @@ public class CommonHttpRequest {
 		return null;
 	}
 
+	/**
+	 * Returns Value from Query,Header,Cookies
+	 * 
+	 * @param contextKey
+	 * @return
+	 */
 	public String getRequestParam(String... contextKeys) {
 		for (String contextKey : contextKeys) {
 			String value = request.getParameter(contextKey);
@@ -183,6 +189,12 @@ public class CommonHttpRequest {
 		return null;
 	}
 
+	/**
+	 * Returns Value from Context,Query,Header,Cookies
+	 * 
+	 * @param contextKey
+	 * @return
+	 */
 	public String get(String contextKey) {
 		String value = AppContextUtil.get(contextKey);
 		if (request != null) {

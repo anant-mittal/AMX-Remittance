@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.amxlib.model.response.ResponseStatus;
@@ -31,6 +30,7 @@ import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.pricer.PricerServiceClient;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
+import com.amx.jax.model.response.BankMasterDTO;
 import com.amx.jax.model.response.ExchangeRateBreakup;
 import com.amx.jax.remittance.manager.RemittanceParameterMapManager;
 import com.amx.jax.util.RoundUtil;

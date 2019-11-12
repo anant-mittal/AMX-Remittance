@@ -2,6 +2,7 @@ package com.amx.utils;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FilterOutputStream;
 import java.io.IOException;
@@ -17,17 +18,17 @@ import java.util.stream.Collectors;
 
 import javax.sql.rowset.serial.SerialException;
 
+import org.springframework.util.StreamUtils;
 
 /**
  * The Class IoUtils.
  */
 public class IoUtils {
-	
+
 	/** The Constant BUFFER_SIZE. */
 	private static final int BUFFER_SIZE = 1024;
-	
-	private static final Charset CHARSET_UTF8 = StandardCharsets.UTF_8;
 
+	private static final Charset CHARSET_UTF8 = StandardCharsets.UTF_8;
 
 	/**
 	 * To byte array.
@@ -72,11 +73,27 @@ public class IoUtils {
 		return writer.toString();
 	}
 
+	public static class StreamWrapper {
+		InputStream in;
+		private byte[] body;
+
+		public StreamWrapper(InputStream in) {
+			this.in = in;
+		}
+
+		public InputStream toStream() throws IOException {
+			if (this.body == null) {
+				this.body = StreamUtils.copyToByteArray(in);
+			}
+			return new ByteArrayInputStream(this.body);
+		}
+	}
+
 	/**
 	 * The Class DrainableOutputStream.
 	 */
 	public class DrainableOutputStream extends FilterOutputStream {
-		
+
 		/** The buffer. */
 		private final ByteArrayOutputStream buffer;
 
@@ -90,7 +107,9 @@ public class IoUtils {
 			this.buffer = new ByteArrayOutputStream();
 		}
 
-		/* (non-Javadoc)
+		/*
+		 * (non-Javadoc)
+		 * 
 		 * @see java.io.FilterOutputStream#write(byte[])
 		 */
 		@Override
@@ -99,7 +118,9 @@ public class IoUtils {
 			super.write(b);
 		}
 
-		/* (non-Javadoc)
+		/*
+		 * (non-Javadoc)
+		 * 
 		 * @see java.io.FilterOutputStream#write(byte[], int, int)
 		 */
 		@Override
@@ -108,7 +129,9 @@ public class IoUtils {
 			super.write(b, off, len);
 		}
 
-		/* (non-Javadoc)
+		/*
+		 * (non-Javadoc)
+		 * 
 		 * @see java.io.FilterOutputStream#write(int)
 		 */
 		@Override
@@ -126,11 +149,11 @@ public class IoUtils {
 			return this.buffer.toByteArray();
 		}
 	}
-	
+
 	public static java.sql.Clob stringToClob(String source) throws SerialException, SQLException {
 		return new javax.sql.rowset.serial.SerialClob(source.toCharArray());
 	}
-	
+
 	/**
 	 * converts inputstream to string
 	 * 
@@ -142,20 +165,6 @@ public class IoUtils {
 	public static String inputStreamToString(InputStream inputStream, Charset charset) throws IOException {
 
 		try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, charset))) {
-			return br.lines().collect(Collectors.joining(System.lineSeparator()));
-		}
-	}
-
-	/**
-	 * converts inputstream to string using default uft8 charset
-	 * 
-	 * @param inputStream
-	 * @return
-	 * @throws IOException
-	 */
-	public static String inputStreamToString(InputStream inputStream) throws IOException {
-
-		try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, CHARSET_UTF8))) {
 			return br.lines().collect(Collectors.joining(System.lineSeparator()));
 		}
 	}

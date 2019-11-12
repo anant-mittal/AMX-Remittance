@@ -7,13 +7,17 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import com.amx.jax.dict.ContactType;
+import com.amx.jax.es.ESDocFormat;
 import com.amx.jax.logger.AuditActor.ActorType;
 import com.amx.jax.util.AmxDBConstants;
 import com.amx.jax.util.AmxDBConstants.Status;
@@ -128,6 +132,7 @@ public class CustomerContactVerification implements java.io.Serializable {
 		this.isActive = isActive;
 	}
 
+	@ESDocFormat(ESDocFormat.Type.DATE)
 	Date createdDate;
 
 	@Column(name = "CREATED_DATE")
@@ -162,6 +167,7 @@ public class CustomerContactVerification implements java.io.Serializable {
 		this.createdByType = createdByType;
 	}
 
+	@ESDocFormat(ESDocFormat.Type.DATE)
 	Date sendDate;
 
 	@Column(name = "SEND_DATE")
@@ -196,6 +202,7 @@ public class CustomerContactVerification implements java.io.Serializable {
 //		this.sendByType = sendByType;
 //	}
 
+	@ESDocFormat(ESDocFormat.Type.DATE)
 	Date verifiedDate;
 
 	@Column(name = "VERIFIED_DATE")
