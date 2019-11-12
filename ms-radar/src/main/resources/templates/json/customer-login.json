@@ -1,6 +1,6 @@
 {
   "aggs": {
-    "2": {
+    "fp": {
       "terms": {
         "field": "logmap.client.fp.keyword",
         "order": {
@@ -9,7 +9,7 @@
         "size": 20
       },
       "aggs": {
-        "4": {
+        "browser": {
           "terms": {
             "field": "logmap.agent.browser.keyword",
             "order": {
@@ -18,7 +18,7 @@
             "size": 10
           },
           "aggs": {
-            "5": {
+            "os": {
               "terms": {
                 "field": "logmap.agent.operatingSystem.keyword",
                 "order": {
@@ -27,7 +27,7 @@
                 "size": 5
               },
               "aggs": {
-                "3": {
+                "ip": {
                   "terms": {
                     "field": "logmap.client.ip.keyword",
                     "order": {
@@ -36,7 +36,7 @@
                     "size": 50
                   },
                   "aggs": {
-                    "6": {
+                    "country": {
                       "terms": {
                         "field": "geoip.country_code2.keyword",
                         "order": {
@@ -46,7 +46,7 @@
                         "size": 5
                       },
                       "aggs": {
-                        "7": {
+                        "rg": {
                           "terms": {
                             "field": "geoip.region_code.keyword",
                             "order": {
@@ -56,7 +56,7 @@
                             "size": 5
                           },
                           "aggs": {
-                            "8": {
+                            "city": {
                               "terms": {
                                 "field": "geoip.city_name.keyword",
                                 "order": {
@@ -66,7 +66,7 @@
                                 "size": 20
                               },
                               "aggs": {
-                                "9": {
+                                "app": {
                                   "terms": {
                                     "field": "logmap.client.ct.keyword",
                                     "order": {
@@ -75,15 +75,17 @@
                                     "size": 15
                                   },
                                   "aggs": {
-                                    "11": {
+                                    "span": {
                                       "date_range": {
                                         "field": "@timestamp",
                                         "ranges": [
                                           {
+                                            "key" : "lastminute",
                                             "from": "now-15m",
                                             "to": "now"
                                           },
                                           {
+                                           "key" : "lastmonth",
                                             "to": "now-15m",
                                             "from": "now-1m"
                                           }
