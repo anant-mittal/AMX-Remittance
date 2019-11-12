@@ -62,21 +62,28 @@ public class BranchUserController implements IBranchService {
 		Employee e = employeeRespository.findEmployeeById(agentId);
 		if (ArgUtil.is(e)) {
 			String employeeId = ArgUtil.parseAsString(e.getEmployeeId());
-			if (ArgUtil.isEmpty(customerId) && ArgUtil.is(leadId)) {
-				CustomerTeleMarketingDetails custTMDetails = CollectionUtil
+			CustomerTeleMarketingDetails custTMDetails = null;
+			if (ArgUtil.is(leadId)) {
+				custTMDetails = CollectionUtil
 						.getOne(customerTeleMarketingDetailsRepository.getCustomerTeleMarketingDetailsByLeadId(leadId));
-				if (ArgUtil.is(custTMDetails)) {
-					customerId = custTMDetails.getCustomerId();
-				}
+			} else if (ArgUtil.is(customerId)) {
+				custTMDetails = CollectionUtil
+						.getOne(customerTeleMarketingDetailsRepository
+								.getCustomerTeleMarketingDetailsByCustomerId(customerId));
 			}
 
-			if (ArgUtil.is(customerId)) {
+			if (ArgUtil.is(custTMDetails)) {
 				CustomerCall customerCall = new CustomerCall();
-				customerCall.setCustomerid(customerId);
-				customerCall.setLeadId(leadId);
+				customerCall.setCustomerid(custTMDetails.getCustomerId());
+				customerCall.setLeadId(custTMDetails.getLeadId());
 				customerCall.setSessionId(AppContextUtil.getTraceId());
+
+				custTMDetails.setEmployeeId(e.getEmployeeId());
+				custTMDetails.setModifiedDate(new Date());
+				customerTeleMarketingDetailsRepository.save(custTMDetails);
+
 				customerOnCall.put(employeeId, customerCall);
-				jaxStompClient.publishOnCallCustomerStatus(e.getEmployeeId(), customerId);
+				jaxStompClient.publishOnCallCustomerStatus(e.getEmployeeId(), custTMDetails.getCustomerId());
 				return AmxApiResponse.build(customerCall);
 			} else {
 				customerOnCall.remove(employeeId);
@@ -115,7 +122,7 @@ public class BranchUserController implements IBranchService {
 			if (ArgUtil.is(custTMDetails)) {
 				custTMDetails.setRemark(remark);
 				custTMDetails.setFollowUpCode(followUpCode);
-				custTMDetails.setFollowUpDate(new Date());
+				custTMDetails.setModifiedDate(new Date());
 				custTMDetails.setEmployeeId(e.getEmployeeId());
 				customerTeleMarketingDetailsRepository.save(custTMDetails);
 
