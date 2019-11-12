@@ -27,6 +27,7 @@ import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.CountryMasterDesc;
 import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.bene.BeneficaryContact;
 import com.amx.jax.dbmodel.bene.BeneficaryMaster;
 import com.amx.jax.dbmodel.bene.BeneficaryRelationship;
 import com.amx.jax.dbmodel.bene.BeneficaryStatus;
@@ -133,14 +134,13 @@ public class BeneBranchService {
 		beneficaryMaster.setBeneficaryStatus(beneStatus.getBeneficaryStatusId());
 		beneficaryMaster.setBeneficaryStatusName(beneStatus.getBeneficaryStatusName());
 
-	/*	if (request.getAge() != null) {
-			beneficaryMaster.setAge(BigDecimal.valueOf(request.getAge()));
-		}
-		if (request.getYearOfBirth() != null) {
-			beneficaryMaster.setYearOfBrith(BigDecimal.valueOf(request.getYearOfBirth()));
-		}
-		beneficaryMaster.setDateOfBrith(request.getDateOfBirth());
-	*/	beneService.saveBeneMaster(beneficaryMaster);
+		/*
+		 * if (request.getAge() != null) {
+		 * beneficaryMaster.setAge(BigDecimal.valueOf(request.getAge())); } if
+		 * (request.getYearOfBirth() != null) {
+		 * beneficaryMaster.setYearOfBrith(BigDecimal.valueOf(request.getYearOfBirth()))
+		 * ; } beneficaryMaster.setDateOfBrith(request.getDateOfBirth());
+		 */ beneService.saveBeneMaster(beneficaryMaster);
 	}
 
 	public void addNewBankBranchRequest(AddNewBankBranchRequest request) {
@@ -239,12 +239,17 @@ public class BeneBranchService {
 
 	public List<BeneficiaryListDTO> getBeneByIdNo(Integer idNo) {
 		BeneficiaryListDTO beneView = beneService.getBeneDtoByIdNo(BigDecimal.valueOf(idNo));
+		BeneficaryContact beneContact = beneService.getBeneficiaryContactByMasterId(beneView.getBeneficaryMasterSeqId());
 		List<BeneficiaryListDTO> beneListDto = Arrays.asList(beneView);
 		beneListDto.forEach(i -> {
 			String dbFlag = i.getIsActive();
 			BeneStatus beneStatus = BeneficiaryConstant.BeneStatus.findBeneStatusBydbFlag(dbFlag);
 			BeneStatusDto dto = new BeneStatusDto(beneStatus.getDescription(), beneStatus.name());
 			i.setBeneStatusDto(dto);
+			if (beneContact != null) {
+				i.setMobileNumber(beneContact.getMobileNumber() != null ? beneContact.getMobileNumber().toString() : null);
+				i.setCountryTelCode(beneContact.getCountryTelCode());
+			}
 		});
 		addBeneUpdateFlag(beneListDto);
 		return beneListDto;
