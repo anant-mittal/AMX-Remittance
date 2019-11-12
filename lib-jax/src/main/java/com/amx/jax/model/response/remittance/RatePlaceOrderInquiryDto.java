@@ -20,6 +20,7 @@ public class RatePlaceOrderInquiryDto {
 	private String Negotiate;
 	private String isActive;
 	private String status;
+	private String gsmStatus;
 	public BigDecimal getIdNo() {
 		return idNo;
 	}
@@ -115,5 +116,11 @@ public class RatePlaceOrderInquiryDto {
 	}
 	public void setStatus(String status) {
 		this.status = status;
+	}
+	public String getGsmStatus() {
+		return gsmStatus;
+	}
+	public void setGsmStatus(String gsmStatus) {
+		this.gsmStatus = gsmStatus;
 	}
 }
