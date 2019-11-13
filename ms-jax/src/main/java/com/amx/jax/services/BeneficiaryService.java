@@ -1088,6 +1088,13 @@ public class BeneficiaryService extends AbstractService {
 			trxDto.setSrlId(poDto.getSrlId());
 			remitPageDto.setTrnxHistDto(trxDto);
 		}
+		
+		//------ Loyalty Point Status check ------
+		LoyalityPointState loyalityState = loyalityPointService.getLoyalityState(customerId);
+		if(null != loyalityState) {
+			remitPageDto.setLoyalityPointState(loyalityState);
+		}
+		
 		response.getData().getValues().add(remitPageDto);
 		response.getData().setType(remitPageDto.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
