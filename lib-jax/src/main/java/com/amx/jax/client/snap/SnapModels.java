@@ -10,6 +10,7 @@ import com.amx.jax.model.MapModel;
 import com.amx.utils.CollectionUtil;
 import com.amx.utils.JsonPath;
 import com.amx.utils.JsonUtil;
+import com.amx.utils.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -339,16 +340,20 @@ public class SnapModels {
 			List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 			long afIndex = 0;
 			for (AggregationField af : this.fields()) {
+				String afIndexStr = StringUtils.alpha62(afIndex);
+				//String afIndexStr = "-";//StringUtils.alpha62(afIndex);
 				if (af.toMap().containsKey("buckets")) {
 					List<Aggregations> buckets = af.getBuckets();
 
 					long bucketItemIndex = 0;
 					for (Aggregations bucketItem : buckets) {
+						String bucketItemIndexStr = StringUtils.alpha62(afIndex+bucketItemIndex);
+						//String bucketItemIndexStr = "-";
 						// System.out.println(af.fieldName() + " " + bucketItem.getKey());
 						Map<String, Object> _bulkItemBlank = copy(bulkItemBlank);
 						_bulkItemBlank.put(af.fieldName(), bucketItem.getKey());
 						List<Map<String, Object>> bulk = bucketItem.toBulk(_bulkItemBlank,
-								space + afIndex + bucketItemIndex);
+								space + bucketItemIndexStr);
 						for (Map<String, Object> bulkItem : bulk) {
 							if (bulkItem.containsKey("_id")) {
 								//bulkItem.put("_docs", bucketItem.getDocCount());
@@ -358,10 +363,9 @@ public class SnapModels {
 						}
 						bucketItemIndex++;
 					}
-
 				} else {
 					bulkItemBlank.put("_docs", this.getDocCount());
-					af.toBulkItem(bulkItemBlank, space + afIndex);
+					af.toBulkItem(bulkItemBlank, space + afIndexStr);
 				}
 				afIndex++;
 			}
