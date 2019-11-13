@@ -371,6 +371,7 @@ public class SnapModels {
 			}
 			if(afIndex==0) {
 				bulkItemBlank.put("_id", space);
+				bulkItemBlank.put("_docs", this.getDocCount());
 				//System.out.println("This is end of "+ this.getKey() + "   " + space);
 			}
 			if (bulkItemBlank.containsKey("_id")) {
