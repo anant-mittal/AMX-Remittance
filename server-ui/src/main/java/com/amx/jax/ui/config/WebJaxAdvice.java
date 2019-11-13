@@ -90,7 +90,7 @@ public class WebJaxAdvice {
 
 		AuthState state = guestSession.getState();
 		if (state.getFlow() != null) {
-			auditService.log(new CAuthEvent(state, CAuthEvent.Result.FAIL, exc.getError()));
+			auditService.log(new CAuthEvent(state, CAuthEvent.Result.FAIL, exc.getError()).step(state.getcStep()));
 		}
 		
 		if (exc.getError() == JaxError.USER_LOGIN_ATTEMPT_EXCEEDED

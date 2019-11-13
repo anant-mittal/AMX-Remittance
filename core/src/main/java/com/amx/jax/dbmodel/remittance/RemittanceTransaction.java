@@ -1252,11 +1252,12 @@ public class RemittanceTransaction implements Serializable {
 	}
 
 	
-	@Column(name="IS_SPLITTED")
+	
 	public void setApplSplit(String applSplit) {
 		this.applSplit = applSplit;
 	}
 
+	@Column(name="IS_SPLITTED")
 	public String getApplSplit() {
 		return applSplit;
 	}

@@ -45,11 +45,15 @@ public class GridService {
 		PaginationCriteria pagination = dataTableInRQ.getPaginationRequest();
 		String paginatedQuery = GridUtil.buildPaginatedQueryForOracle(baseQuery, pagination,
 				gridQuery.isPaginated() && GridViewRecord.class.isAssignableFrom(gridViewRecordClass),
-				gridInfo.isCustomeQuery(),gridInfo);
-		LOGGER.debug(paginatedQuery);
-		Query query = entityManager.createNativeQuery(paginatedQuery, gridViewRecordClass);
-
-		return new GridViewBuilder<T>(query, dataTableInRQ);
+				gridInfo.isCustomeQuery(), gridInfo);
+		try {
+			LOGGER.debug(paginatedQuery);
+			Query query = entityManager.createNativeQuery(paginatedQuery, gridViewRecordClass);
+			return new GridViewBuilder<T>(query, dataTableInRQ);
+		} catch (Exception e) {
+			LOGGER.error("GridViewError V:{} Q {}", gridView, paginatedQuery);
+			throw e;
+		}
 
 	}
 
