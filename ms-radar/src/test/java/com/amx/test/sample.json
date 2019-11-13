@@ -1,5 +1,5 @@
 {
-  "took" : 3119,
+  "took" : 2577,
   "timed_out" : false,
   "_shards" : {
     "total" : 1371,
@@ -9,7 +9,7 @@
   },
   "hits" : {
     "total" : {
-      "value" : 38,
+      "value" : 35,
       "relation" : "eq"
     },
     "max_score" : null,
@@ -22,73 +22,79 @@
       "buckets" : [
         {
           "key" : "DEC412F8-FC65-40E6-ACA1-3897B3AD52BF",
-          "doc_count" : 13,
+          "doc_count" : 12,
           "browser" : {
             "doc_count_error_upper_bound" : 0,
             "sum_other_doc_count" : 0,
             "buckets" : [
               {
                 "key" : "CFNETWORK",
-                "doc_count" : 13,
+                "doc_count" : 12,
                 "os" : {
                   "doc_count_error_upper_bound" : 0,
                   "sum_other_doc_count" : 0,
                   "buckets" : [
                     {
                       "key" : "MAC_OS_X",
-                      "doc_count" : 13,
+                      "doc_count" : 12,
                       "ip" : {
                         "doc_count_error_upper_bound" : 0,
                         "sum_other_doc_count" : 0,
                         "buckets" : [
                           {
                             "key" : "115.111.75.13",
-                            "doc_count" : 13,
+                            "doc_count" : 12,
                             "country" : {
                               "doc_count_error_upper_bound" : 0,
                               "sum_other_doc_count" : 0,
                               "buckets" : [
                                 {
                                   "key" : "IN",
-                                  "doc_count" : 13,
+                                  "doc_count" : 12,
                                   "rg" : {
                                     "doc_count_error_upper_bound" : 0,
                                     "sum_other_doc_count" : 0,
                                     "buckets" : [
                                       {
                                         "key" : "MH",
-                                        "doc_count" : 13,
+                                        "doc_count" : 12,
                                         "city" : {
                                           "doc_count_error_upper_bound" : 0,
                                           "sum_other_doc_count" : 0,
                                           "buckets" : [
                                             {
                                               "key" : "Mumbai",
-                                              "doc_count" : 13,
+                                              "doc_count" : 12,
                                               "app" : {
                                                 "doc_count_error_upper_bound" : 0,
                                                 "sum_other_doc_count" : 0,
                                                 "buckets" : [
                                                   {
                                                     "key" : "ONLINE_WEB",
-                                                    "doc_count" : 13,
+                                                    "doc_count" : 12,
                                                     "span" : {
                                                       "buckets" : [
                                                         {
                                                           "key" : "lastminute",
-                                                          "from" : 1.573625662689E12,
-                                                          "from_as_string" : "2019-11-13T11:44:22.689+05:30",
-                                                          "to" : 1.573626562689E12,
-                                                          "to_as_string" : "2019-11-13T11:59:22.689+05:30",
-                                                          "doc_count" : 0
+                                                          "from" : 1.573625973903E12,
+                                                          "from_as_string" : "2019-11-13T11:49:33.903+05:30",
+                                                          "to" : 1.573626873903E12,
+                                                          "to_as_string" : "2019-11-13T12:04:33.903+05:30",
+                                                          "doc_count" : 0,
+                                                          "UT" : {
+                                                            "value" : 0
+                                                          }
                                                         },
                                                         {
                                                           "key" : "lastmonth",
-                                                          "from" : 1.573626502689E12,
-                                                          "from_as_string" : "2019-11-13T11:58:22.689+05:30",
-                                                          "to" : 1.573625662689E12,
-                                                          "to_as_string" : "2019-11-13T11:44:22.689+05:30",
-                                                          "doc_count" : 0
+                                                          "from" : 1.573626813903E12,
+                                                          "from_as_string" : "2019-11-13T12:03:33.903+05:30",
+                                                          "to" : 1.573625973903E12,
+                                                          "to_as_string" : "2019-11-13T11:49:33.903+05:30",
+                                                          "doc_count" : 0,
+                                                          "UT" : {
+                                                            "value" : 0
+                                                          }
                                                         }
                                                       ]
                                                     }
@@ -116,73 +122,79 @@
         },
         {
           "key" : "cede785933bbd225",
-          "doc_count" : 13,
+          "doc_count" : 11,
           "browser" : {
             "doc_count_error_upper_bound" : 0,
             "sum_other_doc_count" : 0,
             "buckets" : [
               {
                 "key" : "UNKNOWN",
-                "doc_count" : 13,
+                "doc_count" : 11,
                 "os" : {
                   "doc_count_error_upper_bound" : 0,
                   "sum_other_doc_count" : 0,
                   "buckets" : [
                     {
                       "key" : "ANDROID8_TABLET",
-                      "doc_count" : 13,
+                      "doc_count" : 11,
                       "ip" : {
                         "doc_count_error_upper_bound" : 0,
                         "sum_other_doc_count" : 0,
                         "buckets" : [
                           {
                             "key" : "115.111.75.13",
-                            "doc_count" : 13,
+                            "doc_count" : 11,
                             "country" : {
                               "doc_count_error_upper_bound" : 0,
                               "sum_other_doc_count" : 0,
                               "buckets" : [
                                 {
                                   "key" : "IN",
-                                  "doc_count" : 13,
+                                  "doc_count" : 11,
                                   "rg" : {
                                     "doc_count_error_upper_bound" : 0,
                                     "sum_other_doc_count" : 0,
                                     "buckets" : [
                                       {
                                         "key" : "MH",
-                                        "doc_count" : 13,
+                                        "doc_count" : 11,
                                         "city" : {
                                           "doc_count_error_upper_bound" : 0,
                                           "sum_other_doc_count" : 0,
                                           "buckets" : [
                                             {
                                               "key" : "Mumbai",
-                                              "doc_count" : 13,
+                                              "doc_count" : 11,
                                               "app" : {
                                                 "doc_count_error_upper_bound" : 0,
                                                 "sum_other_doc_count" : 0,
                                                 "buckets" : [
                                                   {
                                                     "key" : "ONLINE_AND",
-                                                    "doc_count" : 13,
+                                                    "doc_count" : 11,
                                                     "span" : {
                                                       "buckets" : [
                                                         {
                                                           "key" : "lastminute",
-                                                          "from" : 1.573625662689E12,
-                                                          "from_as_string" : "2019-11-13T11:44:22.689+05:30",
-                                                          "to" : 1.573626562689E12,
-                                                          "to_as_string" : "2019-11-13T11:59:22.689+05:30",
-                                                          "doc_count" : 0
+                                                          "from" : 1.573625973903E12,
+                                                          "from_as_string" : "2019-11-13T11:49:33.903+05:30",
+                                                          "to" : 1.573626873903E12,
+                                                          "to_as_string" : "2019-11-13T12:04:33.903+05:30",
+                                                          "doc_count" : 0,
+                                                          "UT" : {
+                                                            "value" : 0
+                                                          }
                                                         },
                                                         {
                                                           "key" : "lastmonth",
-                                                          "from" : 1.573626502689E12,
-                                                          "from_as_string" : "2019-11-13T11:58:22.689+05:30",
-                                                          "to" : 1.573625662689E12,
-                                                          "to_as_string" : "2019-11-13T11:44:22.689+05:30",
-                                                          "doc_count" : 0
+                                                          "from" : 1.573626813903E12,
+                                                          "from_as_string" : "2019-11-13T12:03:33.903+05:30",
+                                                          "to" : 1.573625973903E12,
+                                                          "to_as_string" : "2019-11-13T11:49:33.903+05:30",
+                                                          "doc_count" : 0,
+                                                          "UT" : {
+                                                            "value" : 0
+                                                          }
                                                         }
                                                       ]
                                                     }
@@ -264,19 +276,25 @@
                                                       "buckets" : [
                                                         {
                                                           "key" : "lastminute",
-                                                          "from" : 1.573625662689E12,
-                                                          "from_as_string" : "2019-11-13T11:44:22.689+05:30",
-                                                          "to" : 1.573626562689E12,
-                                                          "to_as_string" : "2019-11-13T11:59:22.689+05:30",
-                                                          "doc_count" : 0
+                                                          "from" : 1.573625973903E12,
+                                                          "from_as_string" : "2019-11-13T11:49:33.903+05:30",
+                                                          "to" : 1.573626873903E12,
+                                                          "to_as_string" : "2019-11-13T12:04:33.903+05:30",
+                                                          "doc_count" : 0,
+                                                          "UT" : {
+                                                            "value" : 0
+                                                          }
                                                         },
                                                         {
                                                           "key" : "lastmonth",
-                                                          "from" : 1.573626502689E12,
-                                                          "from_as_string" : "2019-11-13T11:58:22.689+05:30",
-                                                          "to" : 1.573625662689E12,
-                                                          "to_as_string" : "2019-11-13T11:44:22.689+05:30",
-                                                          "doc_count" : 0
+                                                          "from" : 1.573626813903E12,
+                                                          "from_as_string" : "2019-11-13T12:03:33.903+05:30",
+                                                          "to" : 1.573625973903E12,
+                                                          "to_as_string" : "2019-11-13T11:49:33.903+05:30",
+                                                          "doc_count" : 0,
+                                                          "UT" : {
+                                                            "value" : 0
+                                                          }
                                                         }
                                                       ]
                                                     }
@@ -358,19 +376,25 @@
                                                       "buckets" : [
                                                         {
                                                           "key" : "lastminute",
-                                                          "from" : 1.573625662689E12,
-                                                          "from_as_string" : "2019-11-13T11:44:22.689+05:30",
-                                                          "to" : 1.573626562689E12,
-                                                          "to_as_string" : "2019-11-13T11:59:22.689+05:30",
-                                                          "doc_count" : 0
+                                                          "from" : 1.573625973903E12,
+                                                          "from_as_string" : "2019-11-13T11:49:33.903+05:30",
+                                                          "to" : 1.573626873903E12,
+                                                          "to_as_string" : "2019-11-13T12:04:33.903+05:30",
+                                                          "doc_count" : 0,
+                                                          "UT" : {
+                                                            "value" : 0
+                                                          }
                                                         },
                                                         {
                                                           "key" : "lastmonth",
-                                                          "from" : 1.573626502689E12,
-                                                          "from_as_string" : "2019-11-13T11:58:22.689+05:30",
-                                                          "to" : 1.573625662689E12,
-                                                          "to_as_string" : "2019-11-13T11:44:22.689+05:30",
-                                                          "doc_count" : 0
+                                                          "from" : 1.573626813903E12,
+                                                          "from_as_string" : "2019-11-13T12:03:33.903+05:30",
+                                                          "to" : 1.573625973903E12,
+                                                          "to_as_string" : "2019-11-13T11:49:33.903+05:30",
+                                                          "doc_count" : 0,
+                                                          "UT" : {
+                                                            "value" : 0
+                                                          }
                                                         }
                                                       ]
                                                     }
@@ -452,19 +476,25 @@
                                                       "buckets" : [
                                                         {
                                                           "key" : "lastminute",
-                                                          "from" : 1.573625662689E12,
-                                                          "from_as_string" : "2019-11-13T11:44:22.689+05:30",
-                                                          "to" : 1.573626562689E12,
-                                                          "to_as_string" : "2019-11-13T11:59:22.689+05:30",
-                                                          "doc_count" : 0
+                                                          "from" : 1.573625973903E12,
+                                                          "from_as_string" : "2019-11-13T11:49:33.903+05:30",
+                                                          "to" : 1.573626873903E12,
+                                                          "to_as_string" : "2019-11-13T12:04:33.903+05:30",
+                                                          "doc_count" : 0,
+                                                          "UT" : {
+                                                            "value" : 0
+                                                          }
                                                         },
                                                         {
                                                           "key" : "lastmonth",
-                                                          "from" : 1.573626502689E12,
-                                                          "from_as_string" : "2019-11-13T11:58:22.689+05:30",
-                                                          "to" : 1.573625662689E12,
-                                                          "to_as_string" : "2019-11-13T11:44:22.689+05:30",
-                                                          "doc_count" : 0
+                                                          "from" : 1.573626813903E12,
+                                                          "from_as_string" : "2019-11-13T12:03:33.903+05:30",
+                                                          "to" : 1.573625973903E12,
+                                                          "to_as_string" : "2019-11-13T11:49:33.903+05:30",
+                                                          "doc_count" : 0,
+                                                          "UT" : {
+                                                            "value" : 0
+                                                          }
                                                         }
                                                       ]
                                                     }
@@ -546,19 +576,25 @@
                                                       "buckets" : [
                                                         {
                                                           "key" : "lastminute",
-                                                          "from" : 1.573625662689E12,
-                                                          "from_as_string" : "2019-11-13T11:44:22.689+05:30",
-                                                          "to" : 1.573626562689E12,
-                                                          "to_as_string" : "2019-11-13T11:59:22.689+05:30",
-                                                          "doc_count" : 0
+                                                          "from" : 1.573625973903E12,
+                                                          "from_as_string" : "2019-11-13T11:49:33.903+05:30",
+                                                          "to" : 1.573626873903E12,
+                                                          "to_as_string" : "2019-11-13T12:04:33.903+05:30",
+                                                          "doc_count" : 0,
+                                                          "UT" : {
+                                                            "value" : 0
+                                                          }
                                                         },
                                                         {
                                                           "key" : "lastmonth",
-                                                          "from" : 1.573626502689E12,
-                                                          "from_as_string" : "2019-11-13T11:58:22.689+05:30",
-                                                          "to" : 1.573625662689E12,
-                                                          "to_as_string" : "2019-11-13T11:44:22.689+05:30",
-                                                          "doc_count" : 0
+                                                          "from" : 1.573626813903E12,
+                                                          "from_as_string" : "2019-11-13T12:03:33.903+05:30",
+                                                          "to" : 1.573625973903E12,
+                                                          "to_as_string" : "2019-11-13T11:49:33.903+05:30",
+                                                          "doc_count" : 0,
+                                                          "UT" : {
+                                                            "value" : 0
+                                                          }
                                                         }
                                                       ]
                                                     }

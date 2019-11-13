@@ -369,6 +369,10 @@ public class SnapModels {
 				}
 				afIndex++;
 			}
+			if(afIndex==0) {
+				bulkItemBlank.put("_id", space);
+				//System.out.println("This is end of "+ this.getKey() + "   " + space);
+			}
 			if (bulkItemBlank.containsKey("_id")) {
 				list.add(bulkItemBlank);
 			}
