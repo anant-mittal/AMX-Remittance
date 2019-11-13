@@ -100,6 +100,8 @@ public class CustomerManagementManager {
 	CountryService countryService;
 	@Autowired
 	CustomerInsuranceRepository customerInsuranceRepo;
+	@Autowired
+	CustomerIdentityManager customerIdentityManager;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CustomerManagementManager.class);
 
@@ -116,11 +118,6 @@ public class CustomerManagementManager {
 			jaxError = getJaxErrorForCustomer(customer);
 			additionalStatus = getAdditionalCustomerStatus(customer);
 			userValidationService.validateBlackListedCustomerForLogin(customer);
-			/*
-			 * if (ConstantDocument.Yes.equals(customer.getIsActive())) {
-			 * userValidationService.validateOldEmosData(customer); }
-			 */
-
 			offsiteCustomer.setIdentityInt(customer.getIdentityInt());
 			offsiteCustomer.setIdentityTypeId(customer.getIdentityTypeId());
 			offsiteCustomer.setCustomerPersonalDetail(createCustomerPersonalDetail(customer));
@@ -141,6 +138,7 @@ public class CustomerManagementManager {
 		if (StringUtils.isNotBlank(additionalStatus)) {
 			offsiteCustomer.setStatusKey(additionalStatus);
 		}
+		offsiteCustomer.setIdentityDerivedDob(customerIdentityManager.generateDob(identityInt, identityTypeId));
 		return offsiteCustomer;
 	}
 
