@@ -301,6 +301,7 @@ public class CustomerManagementManager {
 		if (!updateCustomerInfoRequest.isCalledFromAddApi()) {
 			customerManagementValidation.validateCustomerDataForUpdate(updateCustomerInfoRequest, metaData.getCustomerId());
 		}
+		customerManagementValidation.validateInsuranceFlag(updateCustomerInfoRequest);
 		customerUpdateManager.updateCustomer(updateCustomerInfoRequest);
 	}
 
