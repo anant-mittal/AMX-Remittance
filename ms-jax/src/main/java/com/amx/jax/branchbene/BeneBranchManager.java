@@ -74,45 +74,15 @@ public class BeneBranchManager {
 			beneMaster.setFsDistrictMaster(benePersonalDetail.getDistrictId());
 			beneMaster.setDistrictName(districtName);
 		}
-		if (benePersonalDetail.getFifthName() != null) {
-			beneMaster.setFifthName(benePersonalDetail.getFifthName());
-		}
-		if (benePersonalDetail.getFirstName() != null) {
-			beneMaster.setFirstName(benePersonalDetail.getFirstName());
-		}
-
-		if (benePersonalDetail.getFourthName() != null) {
-			beneMaster.setFourthName(benePersonalDetail.getFourthName());
-		}
-		if (benePersonalDetail.getLocalFifthName() != null) {
-			beneMaster.setLocalFifthName(benePersonalDetail.getLocalFifthName());
-		}
-		if (benePersonalDetail.getLocalFirstName() != null) {
-			beneMaster.setLocalFirstName(benePersonalDetail.getLocalFirstName());
-		}
-		if (benePersonalDetail.getLocalFourthName() != null) {
-			beneMaster.setLocalFourthName(benePersonalDetail.getLocalFourthName());
-		}
-		if (benePersonalDetail.getLocalSecondName() != null) {
-			beneMaster.setLocalSecondName(benePersonalDetail.getLocalSecondName());
-		}
-		if (benePersonalDetail.getLocalThirdName() != null) {
-			beneMaster.setLocalThirdName(benePersonalDetail.getLocalThirdName());
-		}
 		if (benePersonalDetail.getNationality() != null) {
 			beneMaster.setNationality(benePersonalDetail.getNationality());
-		}
-		if (benePersonalDetail.getSecondName() != null) {
-			beneMaster.setSecondName(benePersonalDetail.getSecondName());
 		}
 		if (benePersonalDetail.getStateId() != null) {
 			beneMaster.setFsStateMaster(benePersonalDetail.getStateId());
 			String stateName = metaService.getStateMasterById(benePersonalDetail.getStateId()).getStateName();
 			beneMaster.setStateName(stateName);
 		}
-		if (benePersonalDetail.getThirdName() != null) {
-			beneMaster.setThirdName(benePersonalDetail.getThirdName());
-		}
+
 		if (request.getAge() != null) {
 			beneMaster.setAge(BigDecimal.valueOf(request.getAge()));
 		}
@@ -131,6 +101,58 @@ public class BeneBranchManager {
 		}
 	}
 
+	public void updateBeneRelationship(BeneficaryRelationship beneRelationship, BenePersonalDetailModel benePersonalDetail,
+			AbtractUpdateBeneDetailDto request) {
+		boolean isModified = false;
+
+		if (benePersonalDetail.getFifthName() != null) {
+			beneRelationship.setFifthName(benePersonalDetail.getFifthName());
+			isModified = true;
+		}
+		if (benePersonalDetail.getFirstName() != null) {
+			beneRelationship.setFirstName(benePersonalDetail.getFirstName());
+			isModified = true;
+		}
+
+		if (benePersonalDetail.getFourthName() != null) {
+			beneRelationship.setFourthName(benePersonalDetail.getFourthName());
+			isModified = true;
+		}
+		if (benePersonalDetail.getLocalFifthName() != null) {
+			beneRelationship.setLocalFifthName(benePersonalDetail.getLocalFifthName());
+			isModified = true;
+		}
+		if (benePersonalDetail.getLocalFirstName() != null) {
+			beneRelationship.setLocalFirstName(benePersonalDetail.getLocalFirstName());
+			isModified = true;
+		}
+		if (benePersonalDetail.getLocalFourthName() != null) {
+			beneRelationship.setLocalFourthName(benePersonalDetail.getLocalFourthName());
+			isModified = true;
+		}
+		if (benePersonalDetail.getLocalSecondName() != null) {
+			beneRelationship.setLocalSecondName(benePersonalDetail.getLocalSecondName());
+			isModified = true;
+		}
+		if (benePersonalDetail.getLocalThirdName() != null) {
+			beneRelationship.setLocalThirdName(benePersonalDetail.getLocalThirdName());
+			isModified = true;
+		}
+		if (benePersonalDetail.getSecondName() != null) {
+			beneRelationship.setSecondName(benePersonalDetail.getSecondName());
+			isModified = true;
+		}
+		if (benePersonalDetail.getThirdName() != null) {
+			beneRelationship.setThirdName(benePersonalDetail.getThirdName());
+			isModified = true;
+		}
+		if (isModified) {
+			beneRelationship.setModifiedBy(jaxDBService.getCreatedOrUpdatedBy());
+			beneRelationship.setModifiedDate(new Date());
+			iBeneficiaryRelationshipDao.save(beneRelationship);
+		}
+	}
+
 	public void updateBeneContact(BeneficaryRelationship beneRelationship, BenePersonalDetailModel beneDetails) {
 		boolean isModified = false;
 		BeneficaryContact beneficaryContact = beneficiaryService.getBeneficiaryContactByMasterId(beneRelationship.getBeneficaryMasterId());
@@ -138,10 +160,8 @@ public class BeneBranchManager {
 			beneficaryContact.setCountryTelCode(beneDetails.getCountryTelCode());
 			isModified = true;
 		}
-		String beneMobileNo = null;
 		if (beneDetails.getMobileNumber() != null) {
-			beneMobileNo = beneDetails.getMobileNumber().toString();
-			beneficaryContact.setTelephoneNumber((beneDetails.getTelephoneNumber() == null) ? beneMobileNo : beneDetails.getTelephoneNumber());
+			beneficaryContact.setMobileNumber(new BigDecimal(beneDetails.getMobileNumber()));
 			isModified = true;
 		}
 		log.info("in updateBeneContact isModified: {}", isModified);

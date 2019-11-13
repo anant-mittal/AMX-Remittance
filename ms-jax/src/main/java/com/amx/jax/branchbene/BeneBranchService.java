@@ -233,6 +233,7 @@ public class BeneBranchService {
 		BenePersonalDetailModel benePersonalDetail = beneficiaryTrnxModel.getBenePersonalDetailModel();
 		BeneficaryRelationship beneRelationship = beneService.getBeneRelationshipByIdNo(BigDecimal.valueOf(request.getIdNo()));
 		beneBranchManager.updateBeneMaster(beneRelationship, benePersonalDetail, request);
+		beneBranchManager.updateBeneRelationship(beneRelationship, benePersonalDetail, request);
 		beneBranchManager.updateBeneContact(beneRelationship, benePersonalDetail);
 		beneBranchManager.updateBeneAccount(beneRelationship, beneAccountDetail);
 	}
