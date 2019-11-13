@@ -99,7 +99,8 @@ public class SnapQueryController {
 			@RequestBody Map<String, Object> params,
 			@RequestParam(defaultValue = "now-1m", required = false) String gte,
 			@RequestParam(defaultValue = "now", required = false) String lte,
-			@RequestParam(defaultValue = "100", required = false) Integer level)
+			@RequestParam(defaultValue = "100", required = false) Integer level,
+			@RequestParam(defaultValue = "0", required = false) Integer minCount)
 			throws IOException {
 		if (!ArgUtil.isEmpty(gte) && !params.containsKey("gte")) {
 			params.put("gte", gte);
@@ -108,7 +109,8 @@ public class SnapQueryController {
 			params.put("lte", lte);
 		}
 		level = ArgUtil.parseAsInteger(params.getOrDefault("level", level));
-		
+		minCount = ArgUtil.parseAsInteger(params.getOrDefault("minCount", minCount));
+
 		QueryProcessor<?> qp = snapQueryFactory.get(snapView);
 
 		SnapModelWrapper x;
@@ -123,7 +125,7 @@ public class SnapQueryController {
 
 		if (level >= 0) {
 			List<Map<String, List<String>>> p = x.getPivot();
-			List<Map<String, Object>> inputBulk = x.getAggregations().toBulk();
+			List<Map<String, Object>> inputBulk = x.getAggregations().toBulk(minCount);
 			Object cols = null;
 			for (Map<String, List<String>> pivot : p) {
 				level--;
@@ -193,11 +195,13 @@ public class SnapQueryController {
 	public String table(@PathVariable(value = "snapView") SnapQueryTemplate snapView,
 			@RequestParam(defaultValue = "now-1m") String gte, @RequestParam(defaultValue = "now") String lte,
 			@RequestParam(defaultValue = "100", required = false) int level,
+			@RequestParam(defaultValue = "100", required = false) int minCount,
 			@RequestParam(defaultValue = "", required = false) String hash,
 			Model model) throws IOException {
 		model.addAttribute("gte", gte);
 		model.addAttribute("lte", lte);
 		model.addAttribute("level", level);
+		model.addAttribute("minCount", minCount);
 		model.addAttribute("hash", ArgUtil.isEmpty(hash) ? snapView.getQueryParams() : hash);
 		model.addAttribute("snapView", snapView.toString());
 		model.addAttribute("snapViews", SnapQueryTemplate.values());

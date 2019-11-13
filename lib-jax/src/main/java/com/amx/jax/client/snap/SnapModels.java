@@ -327,7 +327,11 @@ public class SnapModels {
 		}
 
 		public List<Map<String, Object>> toBulk() {
-			return this.toBulk(new HashMap<String, Object>(), "");
+			return this.toBulk(new HashMap<String, Object>(), "", 0);
+		}
+
+		public List<Map<String, Object>> toBulk(int minCount) {
+			return this.toBulk(new HashMap<String, Object>(), "", minCount);
 		}
 
 		public static Map<String, Object> copy(Map<String, Object> map) {
@@ -336,27 +340,28 @@ public class SnapModels {
 			return newMap;
 		}
 
-		public List<Map<String, Object>> toBulk(Map<String, Object> bulkItemBlank, String space) {
+		public List<Map<String, Object>> toBulk(Map<String, Object> bulkItemBlank, String space,
+				int minCount) {
 			List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 			long afIndex = 0;
 			for (AggregationField af : this.fields()) {
 				String afIndexStr = StringUtils.alpha62(afIndex);
-				//String afIndexStr = "-";//StringUtils.alpha62(afIndex);
+				// String afIndexStr = "-";//StringUtils.alpha62(afIndex);
 				if (af.toMap().containsKey("buckets")) {
 					List<Aggregations> buckets = af.getBuckets();
 
 					long bucketItemIndex = 0;
 					for (Aggregations bucketItem : buckets) {
-						String bucketItemIndexStr = StringUtils.alpha62(afIndex+bucketItemIndex);
-						//String bucketItemIndexStr = "-";
+						String bucketItemIndexStr = StringUtils.alpha62(afIndex + bucketItemIndex);
+						// String bucketItemIndexStr = "-";
 						// System.out.println(af.fieldName() + " " + bucketItem.getKey());
 						Map<String, Object> _bulkItemBlank = copy(bulkItemBlank);
 						_bulkItemBlank.put(af.fieldName(), bucketItem.getKey());
 						List<Map<String, Object>> bulk = bucketItem.toBulk(_bulkItemBlank,
-								space + bucketItemIndexStr);
+								space + bucketItemIndexStr, minCount);
 						for (Map<String, Object> bulkItem : bulk) {
 							if (bulkItem.containsKey("_id")) {
-								//bulkItem.put("_docs", bucketItem.getDocCount());
+								// bulkItem.put("_docs", bucketItem.getDocCount());
 								list.add(bulkItem);
 							}
 							// System.out.println("bulkItem " + JsonUtil.toJson(bulkItem));
@@ -369,12 +374,12 @@ public class SnapModels {
 				}
 				afIndex++;
 			}
-			if(afIndex==0) {
+			if (afIndex == 0) {
 				bulkItemBlank.put("_id", space);
 				bulkItemBlank.put("_docs", this.getDocCount());
-				//System.out.println("This is end of "+ this.getKey() + "   " + space);
+				// System.out.println("This is end of "+ this.getKey() + " " + space);
 			}
-			if (bulkItemBlank.containsKey("_id")) {
+			if (bulkItemBlank.containsKey("_id") && (this.getDocCount() >= minCount)) {
 				list.add(bulkItemBlank);
 			}
 			return list;
