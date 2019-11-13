@@ -278,7 +278,7 @@ public class PreFlexFieldManager {
 		List<JaxConditionalFieldDto> requiredFlexFields = (List<JaxConditionalFieldDto>) validationResults.get("requiredFlexFields");
 		resp.setRequiredFlexFields(requiredFlexFields);
 		if (validationResults.get("PACKAGE_FC_AMOUNT") != null) {
-			resp.setAmount(new BigDecimal(validationResults.get("PACKAGE_FC_AMOUNT").toString()));
+			resp.setFcAmount(new BigDecimal(validationResults.get("PACKAGE_FC_AMOUNT").toString()));
 		}
 
 		return resp;

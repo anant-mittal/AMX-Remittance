@@ -7,16 +7,8 @@ import com.amx.jax.model.response.jaxfield.JaxConditionalFieldDto;
 
 
 public class BenePackageResponse {
-	BigDecimal amount;
+	BigDecimal fcAmount;
 	List<JaxConditionalFieldDto> requiredFlexFields;
-
-	public BigDecimal getAmount() {
-		return amount;
-	}
-
-	public void setAmount(BigDecimal amount) {
-		this.amount = amount;
-	}
 
 	public List<JaxConditionalFieldDto> getRequiredFlexFields() {
 		return requiredFlexFields;
@@ -24,5 +16,13 @@ public class BenePackageResponse {
 
 	public void setRequiredFlexFields(List<JaxConditionalFieldDto> requiredFlexFields) {
 		this.requiredFlexFields = requiredFlexFields;
+	}
+
+	public BigDecimal getFcAmount() {
+		return fcAmount;
+	}
+
+	public void setFcAmount(BigDecimal fcAmount) {
+		this.fcAmount = fcAmount;
 	}
 }
