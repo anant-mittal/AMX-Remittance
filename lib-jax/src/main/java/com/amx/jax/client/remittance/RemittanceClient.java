@@ -26,6 +26,8 @@ import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.FlexFieldReponseDto;
+import com.amx.jax.model.response.remittance.GsmPlaceOrderListDto;
+import com.amx.jax.model.response.remittance.GsmSearchRequestParameter;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
 import com.amx.jax.model.response.remittance.ParameterDetailsResponseDto;
 import com.amx.jax.model.response.remittance.PaymentModeDto;
@@ -388,6 +390,14 @@ public class RemittanceClient implements IRemittanceService {
 		return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_FETCH_PLACE_ORDER).meta(new JaxMetaInfo())
 				.post(placeOrderRequestUpdatDto)
 				.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
+				});
+	}
+
+	@Override
+	public AmxApiResponse<GsmPlaceOrderListDto, Object> getCountryWisePlaceOrderCount(GsmSearchRequestParameter requestParameter) {
+		return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_PLACE_ORDER_COUNT).meta(new JaxMetaInfo())
+				.post(requestParameter)
+				.as(new ParameterizedTypeReference<AmxApiResponse<GsmPlaceOrderListDto, Object>>() {
 				});
 	}
 

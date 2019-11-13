@@ -259,7 +259,7 @@ public class AmxDBConstants {
     public static final String IMPS = "IMPS";
 
     public static enum Statusd {
-		APPROVED,NEGOTIATED,UNAPPROVED,VIEW,REJECT 
+		APPROVED,NEGOTIATED,UNAPPROVED,VIEW,REJECT,NEW 
 		
 	}
 }

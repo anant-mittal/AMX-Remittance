@@ -37,6 +37,8 @@ import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.FlexFieldReponseDto;
+import com.amx.jax.model.response.remittance.GsmPlaceOrderListDto;
+import com.amx.jax.model.response.remittance.GsmSearchRequestParameter;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
 import com.amx.jax.model.response.remittance.ParameterDetailsResponseDto;
 import com.amx.jax.model.response.remittance.PaymentModeDto;
@@ -283,6 +285,13 @@ public class BranchRemittanceController implements IRemittanceService {
 	public AmxApiResponse<BoolRespModel, Object> updateRatePlaceOrder(@Valid @RequestBody PlaceOrderUpdateStatusDto dto) {
 		// TODO Auto-generated method stub
 		return branchRemitService.updatePlaceOrder(dto);
+	}
+
+	@RequestMapping(value=Path.BR_REMITTANCE_PLACE_ORDER_COUNT,method=RequestMethod.POST)
+	@Override
+	public AmxApiResponse<GsmPlaceOrderListDto, Object> getCountryWisePlaceOrderCount(GsmSearchRequestParameter requestParameter) {
+		// TODO Auto-generated method stub
+		return branchRemitService.getCountryWisePlaceOrderCount(requestParameter);
 	}
 
 

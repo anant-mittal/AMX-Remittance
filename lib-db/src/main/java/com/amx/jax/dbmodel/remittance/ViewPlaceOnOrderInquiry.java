@@ -9,7 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "JAX_VW_EX_PLACE_ORDER_INQ")
+@Table(name = "VW_EX_PLACE_ORDER_INQ")
 public class ViewPlaceOnOrderInquiry implements Serializable{
 
 	private static final long serialVersionUID = 1L;

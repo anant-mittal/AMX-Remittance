@@ -28,6 +28,15 @@ public class PlaceOrderApplDto {
 	private String foreigncurrencyName;
 	private String localcurrencyName;
 	private String civilId;
+	private String specialOrCommonPoolIndicator;
+	private BigDecimal routingCountry;
+	private String routingCountryName;
+	private String routingBankName;
+	private String customerEmailId;
+	private Boolean boonegotiate=false;
+	private String status;
+	private BigDecimal orignalExchangeRate;
+	private BigDecimal routingBankId;
 	
 	public BigDecimal getPlaceOrderId() {
 		return placeOrderId;
@@ -172,6 +181,60 @@ public class PlaceOrderApplDto {
 	}
 	public void setCivilId(String civilId) {
 		this.civilId = civilId;
+	}
+	public String getSpecialOrCommonPoolIndicator() {
+		return specialOrCommonPoolIndicator;
+	}
+	public void setSpecialOrCommonPoolIndicator(String specialOrCommonPoolIndicator) {
+		this.specialOrCommonPoolIndicator = specialOrCommonPoolIndicator;
+	}
+	public BigDecimal getRoutingCountry() {
+		return routingCountry;
+	}
+	public void setRoutingCountry(BigDecimal routingCountry) {
+		this.routingCountry = routingCountry;
+	}
+	public String getRoutingCountryName() {
+		return routingCountryName;
+	}
+	public void setRoutingCountryName(String routingCountryName) {
+		this.routingCountryName = routingCountryName;
+	}
+	public String getRoutingBankName() {
+		return routingBankName;
+	}
+	public void setRoutingBankName(String routingBankName) {
+		this.routingBankName = routingBankName;
+	}
+	public String getCustomerEmailId() {
+		return customerEmailId;
+	}
+	public void setCustomerEmailId(String customerEmailId) {
+		this.customerEmailId = customerEmailId;
+	}
+	public Boolean getBoonegotiate() {
+		return boonegotiate;
+	}
+	public void setBoonegotiate(Boolean boonegotiate) {
+		this.boonegotiate = boonegotiate;
+	}
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	public BigDecimal getOrignalExchangeRate() {
+		return orignalExchangeRate;
+	}
+	public void setOrignalExchangeRate(BigDecimal orignalExchangeRate) {
+		this.orignalExchangeRate = orignalExchangeRate;
+	}
+	public BigDecimal getRoutingBankId() {
+		return routingBankId;
+	}
+	public void setRoutingBankId(BigDecimal routingBankId) {
+		this.routingBankId = routingBankId;
 	}     
 	
 	

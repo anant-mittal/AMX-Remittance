@@ -32,6 +32,8 @@ import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
+import com.amx.jax.model.response.remittance.GsmPlaceOrderListDto;
+import com.amx.jax.model.response.remittance.GsmSearchRequestParameter;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
 import com.amx.jax.model.response.remittance.ParameterDetailsResponseDto;
 import com.amx.jax.model.response.remittance.PaymentModeDto;
@@ -235,6 +237,11 @@ public class BranchRemittanceService extends AbstractService{
 		BoolRespModel resultBool = new BoolRespModel();
 		resultBool.setSuccess(result);
 		return AmxApiResponse.build(resultBool);
+	}
+	
+	public AmxApiResponse<GsmPlaceOrderListDto, Object> getCountryWisePlaceOrderCount(GsmSearchRequestParameter requestParameter){
+		GsmPlaceOrderListDto placeOrderCount = placeOrderManager.getCountryWisePlaceOrderCount(requestParameter);
+		return AmxApiResponse.build(placeOrderCount);
 	}
 	
 }
