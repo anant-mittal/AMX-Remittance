@@ -29,6 +29,7 @@ public class AmxDBConstants {
 		/**
 		 * EXPIRED,
 		 * R-Reject,N- Negotiate, N-New ,A-Accept 
+		 * C-Canceled, C-In place order it is common pool
 		 */
 		E,R,A
 	}

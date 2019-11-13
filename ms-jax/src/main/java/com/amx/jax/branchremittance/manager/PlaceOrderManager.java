@@ -381,6 +381,7 @@ public class PlaceOrderManager implements Serializable{
 			}
 			ratePlaceOrder.setModifiedBy(brApplManager.getEmployeeDetails().getUserName());
 			ratePlaceOrder.setModifiedDate(new Date());
+			ratePlaceOrder.setCustomerIndicator(ConstantDocument.Status.C.toString());
 			ratePlaceOrder.setApprovedDate(null);
 			ratePlaceOrder.setApprovedBy(null);
 			if(!StringUtils.isBlank(remarks)) {
