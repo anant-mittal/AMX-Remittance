@@ -27,4 +27,8 @@ public class RoutingHeaderDao {
 		return routingHeaderRepo.findByCountryIdAndCurrenyIdAndIsActive(countryId, currencyId, "Y");
 	}
 
+	public List<RoutingHeader> getRoutHeadersByCurrenyId(BigDecimal currencyId) {
+		return routingHeaderRepo.findByCurrenyIdAndIsActive(currencyId, "Y");
+	}
+
 }

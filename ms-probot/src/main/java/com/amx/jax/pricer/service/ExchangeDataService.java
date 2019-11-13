@@ -45,6 +45,7 @@ import com.amx.jax.pricer.dto.OnlineMarginMarkupReq;
 import com.amx.jax.pricer.dto.RateUploadRequestDto;
 import com.amx.jax.pricer.dto.RateUploadRuleDto;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
+import com.amx.jax.pricer.dto.RoutingCountryBankInfo;
 import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.manager.DiscountManager;
@@ -331,6 +332,10 @@ public class ExchangeDataService {
 
 	public List<RateUploadRuleDto> getRateUploadRulesByStatus(RATE_UPLOAD_STATUS status, Boolean onlyActive) {
 		return exchangeRateManager.getRateUploadRulesByStatus(status, onlyActive);
+	}
+
+	public RoutingCountryBankInfo getRoutingCountryBanksForCurrency(BigDecimal currencyId) {
+		return exchangeRateManager.getRoutingCountryBanksForCurrency(currencyId);
 	}
 
 }

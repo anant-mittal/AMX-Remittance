@@ -57,6 +57,7 @@ import com.amx.jax.pricer.dto.PricingResponseDTO;
 import com.amx.jax.pricer.dto.RateUploadRequestDto;
 import com.amx.jax.pricer.dto.RateUploadRuleDto;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
+import com.amx.jax.pricer.dto.RoutingCountryBankInfo;
 import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.service.PricerTestService;
 import com.amx.jax.pricer.var.PricerServiceConstants;
@@ -551,6 +552,13 @@ public class PricerServiceApiTest implements ProbotExchangeRateService, ProbotDa
 			@RequestParam(required = true) RATE_UPLOAD_STATUS status,
 			@RequestParam(required = true) Boolean onlyActive) {
 		return pricerServiceClient.getRateUploadRulesByStatus(status, onlyActive);
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.GET_ROUTE_COUNTRY_BANKS, method = RequestMethod.POST)
+	public AmxApiResponse<RoutingCountryBankInfo, Object> getRoutingCountryBanksForCurrency(
+			@RequestParam(required = true) BigDecimal currencyId) {
+		return pricerServiceClient.getRoutingCountryBanksForCurrency(currencyId);
 	}
 
 }

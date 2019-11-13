@@ -27,6 +27,7 @@ import com.amx.jax.pricer.dao.CurrencyMasterDao;
 import com.amx.jax.pricer.dao.ExchRateUploadDao;
 import com.amx.jax.pricer.dao.ExchangeRateDao;
 import com.amx.jax.pricer.dao.GroupingMasterDao;
+import com.amx.jax.pricer.dao.RoutingHeaderDao;
 import com.amx.jax.pricer.dao.ServiceMasterDescDao;
 import com.amx.jax.pricer.dbmodel.BankMasterModel;
 import com.amx.jax.pricer.dbmodel.CountryBranch;
@@ -36,12 +37,16 @@ import com.amx.jax.pricer.dbmodel.CurrencyMasterModel;
 import com.amx.jax.pricer.dbmodel.ExchRateUpload;
 import com.amx.jax.pricer.dbmodel.ExchangeRateMasterApprovalDet;
 import com.amx.jax.pricer.dbmodel.GroupingMaster;
+import com.amx.jax.pricer.dbmodel.RoutingHeader;
 import com.amx.jax.pricer.dbmodel.ServiceMasterDesc;
+import com.amx.jax.pricer.dto.BankDetailsDTO;
+import com.amx.jax.pricer.dto.CountryMasterDTO;
 import com.amx.jax.pricer.dto.ExchRateEnquiryReqDto;
 import com.amx.jax.pricer.dto.ExchangeRateEnquiryRespDto;
 import com.amx.jax.pricer.dto.ExchangeRateEnquiryRespDto.BuySellRateDetails;
 import com.amx.jax.pricer.dto.RateUploadRequestDto;
 import com.amx.jax.pricer.dto.RateUploadRuleDto;
+import com.amx.jax.pricer.dto.RoutingCountryBankInfo;
 import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.var.PricerServiceConstants.IS_ACTIVE;
@@ -81,6 +86,9 @@ public class ExchangeRateManager {
 
 	@Autowired
 	BankMasterDao bankMasterDao;
+
+	@Autowired
+	RoutingHeaderDao routingHeaderDao;
 
 	public ExchangeRateEnquiryRespDto enquireExchRate(ExchRateEnquiryReqDto rateEnquiryReqDto) {
 
@@ -434,6 +442,93 @@ public class ExchangeRateManager {
 
 	}
 
+	public RoutingCountryBankInfo getRoutingCountryBanksForCurrency(BigDecimal currencyId) {
+
+		if (currencyId == null) {
+			throw new PricerServiceException(PricerServiceError.INVALID_CURRENCY, "Invalid Currency");
+		}
+
+		List<RoutingHeader> routingHeaders = routingHeaderDao.getRoutHeadersByCurrenyId(currencyId);
+
+		RoutingCountryBankInfo routingCountryBankInfo = new RoutingCountryBankInfo();
+
+		if (routingHeaders == null || routingHeaders.isEmpty()) {
+			return routingCountryBankInfo;
+		}
+
+		Map<BigDecimal, List<BigDecimal>> banksForCountry = new HashMap<BigDecimal, List<BigDecimal>>();
+
+		Map<BigDecimal, CountryMasterDTO> countries = new HashMap<BigDecimal, CountryMasterDTO>();
+
+		Map<BigDecimal, BankDetailsDTO> routingBanks = new HashMap<BigDecimal, BankDetailsDTO>();
+
+		for (RoutingHeader header : routingHeaders) {
+			if (!countries.containsKey(header.getCountryId())) {
+				countries.put(header.getRoutingCountryId(), null);
+			}
+
+			if (!routingBanks.containsKey(header.getRoutingBankId())) {
+				routingBanks.put(header.getRoutingBankId(), null);
+			}
+
+			if (!banksForCountry.containsKey(header.getRoutingCountryId())) {
+
+				List<BigDecimal> banks = new ArrayList<BigDecimal>();
+				banks.add(header.getRoutingBankId());
+
+				banksForCountry.put(header.getRoutingCountryId(), banks);
+			} else {
+
+				if (!banksForCountry.get(header.getRoutingCountryId()).contains(header.getRoutingBankId())) {
+					banksForCountry.get(header.getRoutingCountryId()).add(header.getRoutingBankId());
+				}
+			}
+		}
+
+		List<CountryMasterModel> countryMasters = countryMasterDao
+				.getByCountryIdIn(new ArrayList<BigDecimal>(countries.keySet()));
+
+		for (CountryMasterModel country : countryMasters) {
+			if (countries.get(country.getCountryId()) == null) {
+
+				CountryMasterDTO dto = new CountryMasterDTO();
+				dto.setCountryId(country.getCountryId());
+				dto.setCountryCode(country.getCountryCode());
+
+				for (CountryMasterDescriptor descriptor : country.getFsCountryMasterDescs()) {
+					if (descriptor != null && descriptor.getLanguageId() != null
+							&& descriptor.getLanguageId().compareTo(BigDecimal.ONE) == 0) {
+						dto.setCountryName(descriptor.getCountryName());
+					}
+				}
+
+				countries.put(country.getCountryId(), dto);
+			}
+		}
+
+		Map<BigDecimal, BankMasterModel> bankMasters = bankMasterDao
+				.getBankByIdIn(new ArrayList<BigDecimal>(routingBanks.keySet()));
+
+		for (BankMasterModel bankMaster : bankMasters.values()) {
+			if (routingBanks.get(bankMaster.getBankId()) == null) {
+				BankDetailsDTO dto = new BankDetailsDTO();
+				dto.setBankId(bankMaster.getBankId());
+				dto.setBankCode(bankMaster.getBankCode());
+				dto.setBankCountryId(bankMaster.getBankCountryId());
+				dto.setBankFullName(bankMaster.getBankFullName());
+				dto.setBankShortName(bankMaster.getBankShortName());
+
+				routingBanks.put(bankMaster.getBankId(), dto);
+			}
+		}
+
+		routingCountryBankInfo.setBanksForCountry(banksForCountry);
+		routingCountryBankInfo.setCountries(new ArrayList<CountryMasterDTO>(countries.values()));
+		routingCountryBankInfo.setRoutingBanks(new ArrayList<BankDetailsDTO>(routingBanks.values()));
+
+		return routingCountryBankInfo;
+	}
+
 	private boolean validateRateUploadRulesForApproval(List<ExchRateUpload> toBeApprovedList) {
 
 		List<String> invalidRules = new ArrayList<String>();
@@ -585,7 +680,7 @@ public class ExchangeRateManager {
 
 					BankMasterModel bankModel = bankMasters.get(exchRateUpload.getCorBankId());
 					if (bankModel != null) {
-						rateDto.getBankIdQuoteMap().put(exchRateUpload.getCorBankId(), bankModel.getBankFullName());
+						rateDto.getBankIdQuoteMap().put(exchRateUpload.getCorBankId(), bankModel.getBankCode());
 					} else {
 						rateDto.getBankIdQuoteMap().put(exchRateUpload.getCorBankId(), null);
 					}

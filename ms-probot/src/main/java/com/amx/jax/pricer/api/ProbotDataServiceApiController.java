@@ -32,6 +32,7 @@ import com.amx.jax.pricer.dto.OnlineMarginMarkupReq;
 import com.amx.jax.pricer.dto.RateUploadRequestDto;
 import com.amx.jax.pricer.dto.RateUploadRuleDto;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
+import com.amx.jax.pricer.dto.RoutingCountryBankInfo;
 import com.amx.jax.pricer.service.ExchangeDataService;
 import com.amx.jax.pricer.service.HolidayListService;
 import com.amx.jax.pricer.var.PricerServiceConstants.GROUP_TYPE;
@@ -221,6 +222,18 @@ public class ProbotDataServiceApiController implements ProbotDataService {
 		List<RateUploadRuleDto> rateUploadRules = dataService.getRateUploadRulesByStatus(status, onlyActive);
 
 		return AmxApiResponse.build(rateUploadRules);
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.GET_ROUTE_COUNTRY_BANKS, method = RequestMethod.POST)
+	public AmxApiResponse<RoutingCountryBankInfo, Object> getRoutingCountryBanksForCurrency(
+			@RequestParam(required = true) BigDecimal currencyId) {
+
+		LOGGER.info("Received Probot API Service Request for Get Routing Country Bank Info");
+
+		RoutingCountryBankInfo info = dataService.getRoutingCountryBanksForCurrency(currencyId);
+
+		return AmxApiResponse.build(info);
 	}
 
 }

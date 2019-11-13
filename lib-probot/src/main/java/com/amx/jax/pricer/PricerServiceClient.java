@@ -35,6 +35,7 @@ import com.amx.jax.pricer.dto.PricingResponseDTO;
 import com.amx.jax.pricer.dto.RateUploadRequestDto;
 import com.amx.jax.pricer.dto.RateUploadRuleDto;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
+import com.amx.jax.pricer.dto.RoutingCountryBankInfo;
 import com.amx.jax.pricer.var.PricerServiceConstants.GROUP_TYPE;
 import com.amx.jax.pricer.var.PricerServiceConstants.RATE_UPLOAD_STATUS;
 import com.amx.jax.rest.RestService;
@@ -295,6 +296,17 @@ public class PricerServiceClient implements ProbotExchangeRateService, ProbotDat
 		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.GET_RATE_UPLOAD_RULES)
 				.queryParam("status", status).queryParam("onlyActive", onlyActive).post()
 				.as(new ParameterizedTypeReference<AmxApiResponse<List<RateUploadRuleDto>, Object>>() {
+				});
+	}
+
+	@Override
+	public AmxApiResponse<RoutingCountryBankInfo, Object> getRoutingCountryBanksForCurrency(BigDecimal currencyId) {
+
+		LOGGER.info("Received Probot API Service Request for Get Routing Country Banks for Currency Client");
+
+		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.GET_ROUTE_COUNTRY_BANKS)
+				.queryParam("currencyId", currencyId).post()
+				.as(new ParameterizedTypeReference<AmxApiResponse<RoutingCountryBankInfo, Object>>() {
 				});
 	}
 
