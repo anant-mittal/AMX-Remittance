@@ -89,6 +89,12 @@ public enum TemplatesMX implements ITemplate {
 	WU_TRNX_CANCELLED("WUTrnxCancelled"),
 	RESEND_VERIFICATION_LINK("resend-verification"),
 	
+	EVENT_DARLY_ONG("EventDarlyOng"),
+	BPI_JOLLIBEE("BpiJollibee"),
+	BIRTHDAY_WISH("BirthdayWish"),
+
+
+
 	//Refer friend
 	FRIEND_REFER("friend-refer.json"),
 	FRIEND_REFERED("friend-refered.json"),
