@@ -117,7 +117,7 @@ public class SnapQueryController {
 
 		if (ArgUtil.is(qp)) {
 			x = new SnapModelWrapper("{}");
-			x.toMap().put("bulk", qp.process());
+			x.toMap().put("bulk", qp.process(params));
 			return x;
 		}
 
