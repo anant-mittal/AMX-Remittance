@@ -1,5 +1,10 @@
 package com.amx.jax.branch.controller;
 
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.amx.jax.IDiscManagementService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.branch.beans.BranchSession;
@@ -9,7 +14,11 @@ import com.amx.jax.logger.LoggerService;
 import com.amx.jax.pricer.dto.ExchRateEnquiryReqDto;
 import com.amx.jax.pricer.dto.ExchangeRateEnquiryRespDto;
 import com.amx.jax.pricer.dto.GroupDetails;
+import com.amx.jax.pricer.dto.RateUploadRequestDto;
+import com.amx.jax.pricer.dto.RateUploadRuleDto;
+import com.amx.jax.pricer.dto.RoutingCountryBankInfo;
 import com.amx.jax.pricer.var.PricerServiceConstants.GROUP_TYPE;
+import com.amx.jax.pricer.var.PricerServiceConstants.RATE_UPLOAD_STATUS;
 import com.amx.jax.sso.SSOUser;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
 import com.amx.utils.ArgUtil;
@@ -59,6 +68,41 @@ public class ExchRateMgmtController {
 			group.setApplCountryId(ssoUser.getUserDetails().getCountryId());
 		}
 		return exchRateMgmtClient.saveGroup(group);
+	}
+
+	@RequestMapping(value = "/api/exch/group/delete", method = { RequestMethod.POST })
+	public AmxApiResponse<Long, Object> deleteGroup(@RequestParam BigDecimal applicationCountryId,
+			@RequestParam BigDecimal groupId, @RequestParam GROUP_TYPE groupType, @RequestParam String groupName) {
+		applicationCountryId = applicationCountryId == null ? ssoUser.getUserDetails().getCountryId()
+				: applicationCountryId;
+		return exchRateMgmtClient.deleteGroup(applicationCountryId, groupId, groupType, groupName);
+	}
+
+	@RequestMapping(value = "/api/exch/country_bank/get", method = { RequestMethod.POST })
+	public AmxApiResponse<RoutingCountryBankInfo, Object> getCountryBankFromCurrency(BigDecimal currencyId) {
+		return exchRateMgmtClient.getRoutingCountryBanksForCurrency(currencyId);
+	}
+
+	@RequestMapping(value = "/api/exch/checker/rules", method = { RequestMethod.POST })
+	public AmxApiResponse<List<RateUploadRuleDto>, Object> getRateUploadRulesByStatus(
+			@RequestParam RATE_UPLOAD_STATUS status, @RequestParam Boolean onlyActive) {
+		return exchRateMgmtClient.getRateUploadRulesByStatus(status, onlyActive);
+	}
+
+	@RequestMapping(value = "/api/exch/maker/submit", method = { RequestMethod.POST })
+	public AmxApiResponse<Long, Object> rateUpoadRuleMaker(@RequestBody RateUploadRequestDto rateUploadRequestDto) {
+		if (ArgUtil.isEmpty(rateUploadRequestDto.getUpdatedBy())) {
+			rateUploadRequestDto.setUpdatedBy(ssoUser.getUserDetails().getEmployeeName());
+		}
+		return exchRateMgmtClient.rateUpoadRuleMaker(rateUploadRequestDto);
+	}
+
+	@RequestMapping(value = "/api/exch/checker/submit", method = { RequestMethod.POST })
+	public AmxApiResponse<Long, Object> rateUpoadRuleChecker(@RequestBody RateUploadRequestDto rateUploadRequestDto) {
+		if (ArgUtil.isEmpty(rateUploadRequestDto.getUpdatedBy())) {
+			rateUploadRequestDto.setUpdatedBy(ssoUser.getUserDetails().getEmployeeName());
+		}
+		return exchRateMgmtClient.rateUpoadRuleChecker(rateUploadRequestDto);
 	}
 
 }
