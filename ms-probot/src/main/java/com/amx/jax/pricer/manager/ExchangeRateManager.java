@@ -10,12 +10,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
@@ -362,7 +364,14 @@ public class ExchangeRateManager {
 
 		}
 
-		List<ExchRateUpload> saved = exchRateUploadDao.saveAll(rateUploadMakerList);
+		List<ExchRateUpload> saved;
+
+		try {
+			saved = exchRateUploadDao.saveAll(rateUploadMakerList);
+		} catch (DataIntegrityViolationException e) {
+			throw new PricerServiceException(PricerServiceError.INVALID_DATA_IDS_FOR_RULES,
+					"Invalid Data Ref Ids for the rule maker.");
+		}
 
 		return new Long(saved.size());
 	}
@@ -574,8 +583,8 @@ public class ExchangeRateManager {
 
 		if (exchRateUploads != null && !exchRateUploads.isEmpty()) {
 
-			BigDecimal curId = null;
-			BigDecimal countryId = null;
+			List<BigDecimal> curIds = new ArrayList<BigDecimal>();
+			List<BigDecimal> countryIds = new ArrayList<BigDecimal>();
 
 			List<BigDecimal> bankIds = new ArrayList<BigDecimal>();
 			List<BigDecimal> cBranchIds = new ArrayList<BigDecimal>();
@@ -583,12 +592,12 @@ public class ExchangeRateManager {
 
 			for (ExchRateUpload exchRateUpload : exchRateUploads) {
 
-				if (curId == null) {
-					curId = exchRateUpload.getCurrencyId();
+				if (exchRateUpload.getCurrencyId() != null && !curIds.contains(exchRateUpload.getCurrencyId())) {
+					curIds.add(exchRateUpload.getCurrencyId());
 				}
 
-				if (countryId == null && exchRateUpload.getCountryId() != null) {
-					countryId = exchRateUpload.getCountryId();
+				if (exchRateUpload.getCountryId() != null && !countryIds.contains(exchRateUpload.getCountryId())) {
+					countryIds.add(exchRateUpload.getCountryId());
 				}
 
 				if (exchRateUpload.getCorBankId() != null && !bankIds.contains(exchRateUpload.getCorBankId())) {
@@ -605,16 +614,23 @@ public class ExchangeRateManager {
 				}
 			}
 
-			CurrencyMasterModel currencyMasterModel = currencyMasterDao.getByCurrencyId(curId);
-			CountryMasterModel countryMasterModel = new CountryMasterModel();
-			CountryMasterDescriptor countryMasterDescriptor = new CountryMasterDescriptor();
+			Map<BigDecimal, CurrencyMasterModel> currencyMasters = currencyMasterDao.getCurrencyByIds(curIds).stream()
+					.collect(Collectors.toMap(c -> c.getCurrencyId(), c -> c));
 
-			if (countryId != null) {
-				countryMasterModel = countryMasterDao.getByCountryId(countryId);
-				for (CountryMasterDescriptor desc : countryMasterModel.getFsCountryMasterDescs()) {
-					if (desc.getLanguageId() != null && desc.getLanguageId().compareTo(BigDecimal.ONE) == 0) {
-						countryMasterDescriptor = desc;
-						break;
+			Map<BigDecimal, CountryMasterModel> countryMasters = new HashMap<BigDecimal, CountryMasterModel>();
+			Map<BigDecimal, CountryMasterDescriptor> countryDescriptors = new HashMap<BigDecimal, CountryMasterDescriptor>();
+
+			if (countryIds != null && !countryIds.isEmpty()) {
+				
+				countryMasters = countryMasterDao.getByCountryIdIn(countryIds).stream()
+						.collect(Collectors.toMap(c -> c.getCountryId(), c -> c));
+				
+				for (CountryMasterModel countryMaster : countryMasters.values()) {
+					for (CountryMasterDescriptor desc : countryMaster.getFsCountryMasterDescs()) {
+						if (desc.getLanguageId() != null && desc.getLanguageId().compareTo(BigDecimal.ONE) == 0) {
+							countryDescriptors.put(countryMaster.getCountryId(), desc);
+							break;
+						}
 					}
 				}
 			}
@@ -642,6 +658,9 @@ public class ExchangeRateManager {
 					rateDto = new RateUploadRuleDto();
 					rateDto.setRuleId(exchRateUpload.getRuleId());
 					rateDto.setCurrencyId(exchRateUpload.getCurrencyId());
+
+					CurrencyMasterModel currencyMasterModel = currencyMasters.get(exchRateUpload.getCurrencyId());
+
 					rateDto.setCurDisplayName(
 							currencyMasterModel.getCurrencyCode() + "-" + currencyMasterModel.getQuoteName());
 
@@ -666,6 +685,11 @@ public class ExchangeRateManager {
 
 					if (exchRateUpload.getCountryId() != null) {
 						rateDto.setCountryId(exchRateUpload.getCountryId());
+
+						CountryMasterModel countryMasterModel = countryMasters.get(exchRateUpload.getCountryId());
+						CountryMasterDescriptor countryMasterDescriptor = countryDescriptors
+								.get(exchRateUpload.getCountryId());
+
 						rateDto.setCountryDisplayName(
 								countryMasterModel.getCountryCode() + "-" + countryMasterDescriptor.getCountryName());
 					}

@@ -6,6 +6,7 @@ import java.util.List;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Component;
 
@@ -36,7 +37,9 @@ public class ExchRateUploadDao {
 		return repo.findByStatus(status);
 	}
 
-	public List<ExchRateUpload> saveAll(List<ExchRateUpload> exchRateUploads) {
+	@Transactional
+	@Modifying
+	public List<ExchRateUpload> saveAll(List<ExchRateUpload> exchRateUploads) throws DataIntegrityViolationException {
 		return (List<ExchRateUpload>) repo.save(exchRateUploads);
 	}
 

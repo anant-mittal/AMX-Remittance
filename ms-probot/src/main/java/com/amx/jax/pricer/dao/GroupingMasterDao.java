@@ -5,8 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.pricer.dbmodel.GroupingMaster;
@@ -53,14 +56,19 @@ public class GroupingMasterDao {
 		return repository.getGroupForCurrency();
 	}
 
-	public Iterable<GroupingMaster> saveAll(Iterable<GroupingMaster> groups) {
+	@Transactional
+	@Modifying
+	public Iterable<GroupingMaster> saveAll(Iterable<GroupingMaster> groups) throws DataIntegrityViolationException {
 		return repository.save(groups);
 	}
 
+	@Transactional
+	@Modifying
 	public GroupingMaster save(GroupingMaster group) throws DataIntegrityViolationException {
 		return repository.save(group);
 	}
 
+	@Modifying
 	public void delete(BigDecimal grpId) {
 		repository.delete(grpId);
 	}
