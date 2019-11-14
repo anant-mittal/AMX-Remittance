@@ -239,6 +239,8 @@ public class BranchRemittanceApplManager {
 	@Autowired
 	VentajaManager ventajaManager;
 	
+	List<RemittanceApplicationSplitting> applSplitList = new ArrayList<>();
+	
 	
 	public BranchRemittanceApplResponseDto saveBranchRemittanceApplication(BranchRemittanceApplRequestModel requestApplModel) {
 		Map<String,Object> hashMap = new HashMap<>();

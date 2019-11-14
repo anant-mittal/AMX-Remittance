@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.AmxResponseSchemes.ApiDataMetaResponse;
@@ -36,7 +35,6 @@ import com.amx.jax.proto.tpc.models.RemittenceModels.RemitTranxStatusResponse;
 import com.amx.jax.proto.tpc.models.RemittenceModels.RemittenceDTO;
 import com.amx.jax.proto.tpc.models.RemittenceModels.TranxStatus;
 import com.amx.jax.proto.tpc.models.SourceOfFundDTO;
-import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.StringUtils;
 

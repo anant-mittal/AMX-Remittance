@@ -16,13 +16,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.model.GetJaxFieldRequest;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.branchremittance.manager.BranchRemittanceManager;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxDynamicField;
-import com.amx.jax.constants.JaxFieldEntity;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.CountryBranchMdlv1;
 import com.amx.jax.dbmodel.CountryMaster;
@@ -35,11 +33,11 @@ import com.amx.jax.dbmodel.remittance.StaffAuthorizationView;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.remittance.RemittanceAdditionalBeneFieldModel;
+import com.amx.jax.model.response.BankMasterDTO;
 import com.amx.jax.model.response.jaxfield.JaxConditionalFieldDto;
 import com.amx.jax.model.response.jaxfield.JaxFieldDto;
 import com.amx.jax.model.response.jaxfield.JaxFieldEntity;
 import com.amx.jax.model.response.jaxfield.JaxFieldValueDto;
-import com.amx.jax.model.response.BankMasterDTO;
 import com.amx.jax.model.response.remittance.AmlCheckResponseDto;
 import com.amx.jax.model.response.remittance.FlexFieldDto;
 import com.amx.jax.partner.manager.PartnerTransactionManager;
@@ -52,9 +50,6 @@ import com.amx.jax.service.BankMetaService;
 import com.amx.jax.services.BankService;
 import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.services.JaxFieldService;
-import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
-import com.amx.libjax.model.jaxfield.JaxFieldDto;
-import com.amx.libjax.model.jaxfield.JaxFieldValueDto;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)

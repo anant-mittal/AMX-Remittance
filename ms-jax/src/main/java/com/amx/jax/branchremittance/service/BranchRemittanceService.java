@@ -246,9 +246,4 @@ public class BranchRemittanceService extends AbstractService{
 		BenePackageResponse resp = preFlexFieldManager.createBenePackageResponse(validationResults);
 		return AmxApiResponse.build(resp);
 	}
-	
-	public  AmxApiResponse<ParameterDetailsResponseDto, Object> getGiftService(BigDecimal beneRelaId) {
-	ParameterDetailsResponseDto parameterDetailsResponseDto =branchRemitManager.getGiftService(beneRelaId);
-	return AmxApiResponse.build(parameterDetailsResponseDto);
-}
 }
