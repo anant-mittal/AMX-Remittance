@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.constraints.NotNull;
+
 import com.amx.jax.pricer.var.PricerServiceConstants.RATE_UPLOAD_STATUS;
 
 public class RateUploadRequestDto implements Serializable {
@@ -14,6 +16,7 @@ public class RateUploadRequestDto implements Serializable {
 
 	private Map<String, RATE_UPLOAD_STATUS> ruleStatusUpdateMap;
 
+	@NotNull(message = "Updated By Can not be Null or Empty")
 	private String updatedBy;
 
 	public List<RateUploadRuleDto> getRateUploadRules() {
