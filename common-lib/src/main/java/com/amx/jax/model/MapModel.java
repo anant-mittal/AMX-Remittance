@@ -85,6 +85,10 @@ public class MapModel implements JsonSerializerType<Object> {
 		return this.map.get(key);
 	}
 
+	public Object get(String key, Object defaultValue) {
+		return this.map.getOrDefault(key, defaultValue);
+	}
+
 	public Object getFirst() {
 		for (Entry<String, Object> iterable_element : map.entrySet()) {
 			return iterable_element.getValue();
@@ -106,6 +110,14 @@ public class MapModel implements JsonSerializerType<Object> {
 
 	public Long getLong(String key, Long defaultvalue) {
 		return ArgUtil.parseAsLong(this.get(key), defaultvalue);
+	}
+
+	public Integer getInteger(String key) {
+		return ArgUtil.parseAsInteger(this.get(key));
+	}
+
+	public Integer getInteger(String key, Integer defaultvalue) {
+		return ArgUtil.parseAsInteger(this.get(key, defaultvalue));
 	}
 
 	public BigDecimal getBigDecimal(String key) {
@@ -133,6 +145,10 @@ public class MapModel implements JsonSerializerType<Object> {
 
 	public Map<String, Object> toMap() {
 		return this.map;
+	}
+
+	public String toJson() {
+		return JsonUtil.toJson(this.map);
 	}
 
 	public <T> T as(Class<T> clazz) {

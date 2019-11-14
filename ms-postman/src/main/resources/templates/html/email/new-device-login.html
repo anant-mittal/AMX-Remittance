@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<!-- If you delete this meta tag, the ground will open and swallow you. -->
+<meta name="viewport" content="width=device-width" />
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>New login on your [[${_tu.prop('company.name')}]] account</title>
+
+<style type="text/css">
+</style>
+
+</head>
+
+<body class="body" style="margin: 0; padding: 0; background: #f4f4f4">
+	<center>
+
+
+		New device signed in to, for the account <b>[[${name}]]</b> Your
+		[[${_tu.prop('company.name')}]] Account was just signed into, from a
+		new ${logmap.agent.operatingSystem} device. You're getting this email
+		to make sure that it was you. In case it was not you, please call
+		1-800-1234, immediately. Device Details : <span></span>
+
+
+		<table class="head-wrap" bgcolor="#f4f4f4" width="100%">
+			<tr>
+				<td align="center">[[${logmap.agent.operatingSystem}]]</td>
+				<td align="center">[[${logmap.agent.browser}]]</td>
+				<td align="center">[[${logmap.client.ct}]]</td>
+				<td align="center">[[${logmap.client.ip}]]</td>
+				<td align="center">[[${logmap.client.fp}]]</td>
+			</tr>
+		</table>
+		<!-- /HEADER -->
+
+	</center>
+</body>
+</html>

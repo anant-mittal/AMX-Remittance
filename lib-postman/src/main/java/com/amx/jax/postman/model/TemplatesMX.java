@@ -13,6 +13,7 @@ public enum TemplatesMX implements ITemplate {
 	// Contact Verification
 	CONTACT_VERIFICATION_SMS("contact-verifiy-sms", Channel.NOTIPY),
 	CONTACT_VERIFICATION_EMAIL("contact-verifiy-email", Channel.NOTIPY),
+	NEW_DEVICE_LOGIN("new-device-login",Channel.NOTIPY),
 
 	SERVER_UP("health-server-up"),
 

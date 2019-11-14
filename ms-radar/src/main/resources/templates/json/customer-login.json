@@ -18,7 +18,7 @@
             "size": 10
           },
           "aggs": {
-            "os": {
+            "operatingSystem": {
               "terms": {
                 "field": "logmap.agent.operatingSystem.keyword",
                 "order": {
@@ -46,7 +46,7 @@
                         "size": 5
                       },
                       "aggs": {
-                        "rg": {
+                        "region": {
                           "terms": {
                             "field": "geoip.region_code.keyword",
                             "order": {
@@ -66,7 +66,7 @@
                                 "size": 20
                               },
                               "aggs": {
-                                "app": {
+                                "ct": {
                                   "terms": {
                                     "field": "logmap.client.ct.keyword",
                                     "order": {
@@ -75,22 +75,64 @@
                                     "size": 15
                                   },
                                   "aggs": {
-                                    "span": {
-                                      "date_range": {
-                                        "field": "@timestamp",
-                                        "ranges": [
-                                          {
-                                            "key" : "lastminute",
-                                            "from": "now-15m",
-                                            "to": "now"
+                                    "traceid": {
+                                      "filters": {
+                                        "filters": {
+                                          "this": {
+                                            "bool": {
+                                              "must": [],
+                                              "filter": [
+                                                {
+                                                  "bool": {
+                                                    "should": [
+                                                      {
+                                                        "match_phrase": {
+                                                          "traceid": "[[${traceid}]]"
+                                                        }
+                                                      }
+                                                    ],
+                                                    "minimum_should_match": 1
+                                                  }
+                                                }
+                                              ],
+                                              "should": [],
+                                              "must_not": []
+                                            }
                                           },
-                                          {
-                                           "key" : "lastmonth",
-                                            "to": "now-15m",
-                                            "from": "now-1M"
+                                          "other": {
+                                            "bool": {
+                                              "must": [],
+                                              "filter": [
+                                                {
+                                                  "bool": {
+                                                    "should": [
+                                                      {
+                                                        "exists": {
+                                                          "field": "traceid"
+                                                        }
+                                                      }
+                                                    ],
+                                                    "minimum_should_match": 1
+                                                  }
+                                                }
+                                              ],
+                                              "should": [],
+                                              "must_not": []
+                                            }
                                           }
-                                        ],
-                                        "time_zone": "Asia/Calcutta"
+                                        }
+                                      },
+                                      "aggs": {
+                                        "ut": {
+                                          "cardinality": {
+                                            "field": "traceid.keyword"
+                                          }
+                                        },
+                                        "lasttime": {
+                                          "max": {
+                                            "field": "@timestamp"
+                                          }
+                                        }
                                       }
                                     }
                                   }
@@ -127,8 +169,72 @@
     "bool": {
       "must": [],
       "filter": [
-        {
-          "match_all": {}
+         {
+          "bool": {
+            "should": [
+              {
+                "bool": {
+                  "should": [
+                    {
+                      "match_phrase": {
+                        "logmap.client.fp.keyword": "[[${logmap.client.fp}]]"
+                      }
+                    }
+                  ],
+                  "minimum_should_match": 1
+                }
+              },
+              {
+                "bool": {
+                  "should": [
+                    {
+                      "match_phrase": {
+                        "logmap.client.ip.keyword": "[[${logmap.client.ip}]]"
+                      }
+                    }
+                  ],
+                  "minimum_should_match": 1
+                }
+              },
+              {
+                "bool": {
+                  "should": [
+                    {
+                      "match_phrase": {
+                        "logmap.client.ct.keyword": "[[${logmap.client.ct}]]"
+                      }
+                    }
+                  ],
+                  "minimum_should_match": 1
+                }
+              },
+              {
+                "bool": {
+                  "should": [
+                    {
+                      "match_phrase": {
+                        "logmap.agent.operatingSystem.keyword": "[[${logmap.agent.operatingSystem}]]"
+                      }
+                    }
+                  ],
+                  "minimum_should_match": 1
+                }
+              },
+              {
+                "bool": {
+                  "should": [
+                    {
+                      "match_phrase": {
+                        "logmap.agent.browser.keyword": "[[${logmap.agent.browser}]]"
+                      }
+                    }
+                  ],
+                  "minimum_should_match": 1
+                }
+              }
+            ],
+            "minimum_should_match": 1
+          }
         },
         {
           "match_phrase": {
