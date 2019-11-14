@@ -3,7 +3,6 @@ package com.amx.jax.dbmodel;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -28,11 +27,9 @@ import org.hibernate.annotations.Proxy;
 
 import com.amx.jax.constants.CustomerRegistrationType;
 import com.amx.jax.dbmodel.compliance.ComplianceBlockedCustomerDocMap;
-import com.amx.jax.dbmodel.customer.CustomerDocumentTypeMaster;
 import com.amx.jax.dict.Communicatable;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.util.AmxDBConstants.Status;
-import com.amx.utils.ArgUtil;
 
 @Entity
 @Table(name = "FS_CUSTOMER")
@@ -165,6 +162,9 @@ public class Customer implements java.io.Serializable, Communicatable {
 	private BigDecimal annualTransactionLimitFrom;
 	private BigDecimal annualTransactionLimitTo;
 	private Date annualTransactionUpdatedDate;
+	private String passportNumber;
+	private Date passportIssueDate;
+	private Date passportExpiryDate;
 
 	@Column(name = "ANNUAL_TRNXLIMIT_FROM")
 	public BigDecimal getAnnualTransactionLimitFrom() {
@@ -1179,5 +1179,32 @@ public class Customer implements java.io.Serializable, Communicatable {
 	
 	public void setComplianceBlockedDocuments(List<ComplianceBlockedCustomerDocMap> complianceBlockedDocuments) {
 		this.complianceBlockedDocuments = complianceBlockedDocuments;
+	}
+
+	@Column(name="PASSPORT_NO")
+	public String getPassportNumber() {
+		return passportNumber;
+	}
+
+	public void setPassportNumber(String passportNumber) {
+		this.passportNumber = passportNumber;
+	}
+
+	@Column(name="PASSPORT_ISSUE_DATE")
+	public Date getPassportIssueDate() {
+		return passportIssueDate;
+	}
+
+	public void setPassportIssueDate(Date passportIssueDate) {
+		this.passportIssueDate = passportIssueDate;
+	}
+
+	@Column(name="PASSPORT_EXPIRY_DATE")
+	public Date getPassportExpiryDate() {
+		return passportExpiryDate;
+	}
+
+	public void setPassportExpiryDate(Date passportExpiryDate) {
+		this.passportExpiryDate = passportExpiryDate;
 	}
 }

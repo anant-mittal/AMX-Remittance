@@ -1,5 +1,7 @@
 package com.amx.jax.customer.manager;
 
+import java.util.Date;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,7 @@ import com.amx.jax.model.request.LocalAddressDetails;
 import com.amx.jax.model.request.UpdateCustomerEmploymentDetailsReq;
 import com.amx.jax.repository.CustomerCoreDetailsRepository;
 import com.amx.jax.repository.CustomerEmployeeDetailsRepository;
+import com.amx.jax.services.JaxDBService;
 import com.amx.jax.userservice.service.ContactDetailService;
 
 @Component
@@ -37,6 +40,8 @@ public class CustomerEmployementManager {
 	OffsitCustRegService offsitCustRegService;
 	@Autowired
 	ContactDetailService contactDetailService;
+	@Autowired
+	JaxDBService jaxDBService;
 
 	private static final Logger log = LoggerFactory.getLogger(CustomerEmployementManager.class);
 
@@ -79,7 +84,7 @@ public class CustomerEmployementManager {
 	}
 
 	public void updateCustomerEmploymentInfo(Customer customer, UpdateCustomerEmploymentDetailsReq req) {
-
+		boolean isModified = false;
 		log.debug("in updateCustomerEmploymentInfo");
 		EmployeeDetails employeeModel = customerEmployeeDetailsRepository.getCustomerEmploymentData(customer);
 		if (employeeModel == null) {
@@ -108,6 +113,7 @@ public class CustomerEmployementManager {
 		// need docs
 		if (req.getEmployer() != null) {
 			employeeModel.setEmployerName(req.getEmployer());
+			isModified = true;
 		}
 		if (req.getArticleDetailsId() != null) {
 			customer.setFsArticleDetails(articleDao.getArticleDetailsByArticleDetailId(req.getArticleDetailsId()));
@@ -118,9 +124,15 @@ public class CustomerEmployementManager {
 		// no need of doc upload
 		if (req.getEmploymentTypeId() != null) {
 			employeeModel.setFsBizComponentDataByEmploymentTypeId(bizcomponentDao.getBizComponentDataByComponmentDataId(req.getEmploymentTypeId()));
+			isModified = true;
 		}
 		if (req.getProfessionId() != null) {
 			employeeModel.setFsBizComponentDataByOccupationId(bizcomponentDao.getBizComponentDataByComponmentDataId(req.getProfessionId()));
+			isModified = true;
+		}
+		if (isModified) {
+			employeeModel.setUpdatedBy(jaxDBService.getCreatedOrUpdatedBy());
+			employeeModel.setLastUpdated(new Date());
 		}
 		customerEmployeeDetailsRepository.save(employeeModel);
 	}

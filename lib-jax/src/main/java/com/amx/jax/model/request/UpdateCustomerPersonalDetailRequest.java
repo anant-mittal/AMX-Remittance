@@ -3,10 +3,12 @@ package com.amx.jax.model.request;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
 
 import org.hibernate.validator.constraints.Email;
 
+import com.amx.jax.model.request.customer.CustomerPassportData;
 import com.amx.jax.model.request.customer.ICustomerContactData;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -26,8 +28,9 @@ public class UpdateCustomerPersonalDetailRequest implements ICustomerContactData
 	String email;
 	@Pattern(regexp = "^[1-9]\\d*$", message = "Invalid whatsapp Prefix")
 	String watsAppTelePrefix;
-	@Pattern(regexp = "^[1-9]\\d*$", message = "Invalid whatspapp")
 	BigDecimal watsAppMobileNo;
+	@Valid
+	CustomerPassportData customerPassportData;
 
 	public Date getDateOfBirth() {
 		return dateOfBirth;
@@ -115,6 +118,14 @@ public class UpdateCustomerPersonalDetailRequest implements ICustomerContactData
 		if (insuranceInd != null) {
 			this.insurance = "Y".equalsIgnoreCase(insuranceInd);
 		}
+	}
+
+	public CustomerPassportData getCustomerPassportData() {
+		return customerPassportData;
+	}
+
+	public void setCustomerPassportData(CustomerPassportData customerPassportData) {
+		this.customerPassportData = customerPassportData;
 	}
 
 }

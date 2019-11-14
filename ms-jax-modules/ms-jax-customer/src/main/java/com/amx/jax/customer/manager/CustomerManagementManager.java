@@ -102,6 +102,8 @@ public class CustomerManagementManager {
 	CustomerInsuranceRepository customerInsuranceRepo;
 	@Autowired
 	CustomerIdentityManager customerIdentityManager;
+	@Autowired
+	CustomerPersonalDetailManager customerPersonalDetailManager;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CustomerManagementManager.class);
 
@@ -128,7 +130,7 @@ public class CustomerManagementManager {
 			offsiteCustomer.setCustomerDocuments(customerDocumentManager.getCustomerUploadDocuments(customer.getCustomerId()));
 			offsiteCustomer.setLastLoginDetails(createLastLoginDetails(customer));
 			offsiteCustomer.setPolicyDetails(createPolicyDetails(customer));
-
+			offsiteCustomer.getCustomerPersonalDetail().setCustomerPassportData(customerPersonalDetailManager.getPassportDetailData(customer));
 		} else {
 			jaxError = JaxError.CUSTOMER_NOT_FOUND;
 		}
@@ -139,6 +141,7 @@ public class CustomerManagementManager {
 			offsiteCustomer.setStatusKey(additionalStatus);
 		}
 		offsiteCustomer.setIdentityDerivedDob(customerIdentityManager.generateDob(identityInt, identityTypeId));
+	
 		return offsiteCustomer;
 	}
 
@@ -277,6 +280,7 @@ public class CustomerManagementManager {
 		customer.setPepsIndicator(createCustomerInfoRequest.getPepsIndicator() ? ConstantDocument.Yes : ConstantDocument.No);
 		customer.setIsOnlineUser(ConstantDocument.No);
 		customer.setSignatureSpecimenClob(createCustomerInfoRequest.getCustomerPersonalDetail().getCustomerSignature());
+		customerPersonalDetailManager.savePassportDetail(customer, createCustomerInfoRequest.getCustomerPersonalDetail().getCustomerPassportData());
 		custDao.saveCustomer(customer);
 	}
 
