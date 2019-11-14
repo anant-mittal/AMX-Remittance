@@ -280,10 +280,10 @@ public class ExchangeRateManager {
 			rateUpload.setBuyRate(rule.getBuyExchangeRate());
 
 			Date today = new Date();
-			rateUpload.setCreatedBy(rule.getCreatedBy());
+			rateUpload.setCreatedBy(rateUploadRequestDto.getUpdatedBy());
 			rateUpload.setCreatedDate(today);
 
-			rateUpload.setModifiedBy(rule.getCreatedBy());
+			rateUpload.setModifiedBy(rateUploadRequestDto.getUpdatedBy());
 			rateUpload.setModifiedDate(today);
 
 			rateUpload.setIsActive(IS_ACTIVE.Y);
