@@ -1616,9 +1616,13 @@ public class RemittanceTransactionManager {
 
 	public void setSavedAmount(RemittanceTransactionResponsetModel validationResults,DynamicRoutingPricingDto model) {
 		
-		validationResults.setYouSavedAmount(model.getYouSavedAmount());
+		if(JaxUtil.isNullZeroBigDecimalCheck(model.getYouSavedAmount()) && model.getYouSavedAmount().compareTo(BigDecimal.ZERO)>0) {
+			validationResults.setYouSavedAmount(model.getYouSavedAmount());
+		}
 		validationResults.setRackExchangeRate(model.getRackExchangeRate());
+		if(JaxUtil.isNullZeroBigDecimalCheck(model.getYouSavedAmountInFC())  && model.getYouSavedAmountInFC().compareTo(BigDecimal.ZERO)>0) {
 		validationResults.setYouSavedAmountInFC(model.getYouSavedAmountInFC());
+		}
 		validationResults.setCustomerChoice(model.getCustomerChoice());
 	}
 

@@ -671,9 +671,13 @@ public class RemittanceApplicationManager {
 
 	/** added by Rabil **/
 	public void setSavedAmount(RemittanceApplication remittanceApplication,RemittanceTransactionResponsetModel validationResults) {
+		if(JaxUtil.isNullZeroBigDecimalCheck(validationResults.getYouSavedAmount()) &&  validationResults.getYouSavedAmount().compareTo(BigDecimal.ZERO)>0) {
 		remittanceApplication.setSavedAmount(validationResults.getYouSavedAmount());
+		}
 		remittanceApplication.setRackExchangeRate(validationResults.getRackExchangeRate());
-		remittanceApplication.setSavedAmountInFc(validationResults.getYouSavedAmountInFC());
+		if(JaxUtil.isNullZeroBigDecimalCheck(validationResults.getYouSavedAmountInFC()) && validationResults.getYouSavedAmountInFC().compareTo(BigDecimal.ZERO)>0){
+			remittanceApplication.setSavedAmountInFc(validationResults.getYouSavedAmountInFC());
+		}
 		remittanceApplication.setCustomerChoice(validationResults.getCustomerChoice());
 		
 	}
