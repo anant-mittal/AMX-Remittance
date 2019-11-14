@@ -71,7 +71,7 @@ public class ExchRateMgmtController {
 	}
 
 	@RequestMapping(value = "/api/exch/group/delete", method = { RequestMethod.POST })
-	public AmxApiResponse<Long, Object> deleteGroup(@RequestParam BigDecimal applicationCountryId,
+	public AmxApiResponse<Long, Object> deleteGroup(@RequestParam(required = false) BigDecimal applicationCountryId,
 			@RequestParam BigDecimal groupId, @RequestParam GROUP_TYPE groupType, @RequestParam String groupName) {
 		applicationCountryId = applicationCountryId == null ? ssoUser.getUserDetails().getCountryId()
 				: applicationCountryId;
