@@ -371,9 +371,9 @@ public class RemittController {
 	}
 	
 	@RequestMapping(value = "/api/remitt/packages", method = { RequestMethod.POST })
-	public ResponseWrapper<List<BenePackageResponse>> getBenePackages(
+	public ResponseWrapper<BenePackageResponse> getBenePackages(
 			@RequestBody BenePackageRequest benePackageRequest) {
-		return ResponseWrapper.buildList(remittanceClient.getBenePackages(benePackageRequest));
+		return ResponseWrapper.build(remittanceClient.getBenePackages(benePackageRequest));
 	}
 
 	/**
