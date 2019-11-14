@@ -2,6 +2,7 @@ package com.amx.jax.def;
 
 import java.lang.annotation.Annotation;
 import java.util.List;
+import java.util.Map;
 
 import com.amx.common.ScopedBeanFactory;
 import com.amx.jax.def.AbstractQueryFactory.IQueryTemplate;
@@ -16,7 +17,7 @@ public abstract class AbstractQueryFactory<QT extends IQueryTemplate, QA extends
 	}
 
 	public static interface QueryProcessor<B> {
-		public List<B> process();
+		public List<B> process(Map<String, Object> params);
 	}
 
 	public AbstractQueryFactory(List<QueryProcessor<?>> libs) {

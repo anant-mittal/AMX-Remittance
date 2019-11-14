@@ -2,6 +2,7 @@ package com.amx.jax.radar.snap;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -27,7 +28,7 @@ public class SnapQueryProcessorActiveTerminals implements QueryProcessor<Termina
 	TerminalBox terminalBox;
 
 	@Override
-	public List<TerminalData> process() {
+	public List<TerminalData> process(Map<String, Object> params) {
 
 		List<TerminalData> devices = new ArrayList<TerminalData>();
 

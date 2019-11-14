@@ -2,6 +2,7 @@ package com.amx.jax.radar.snap;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -26,7 +27,7 @@ public class SnapQueryProcessorActiveSignPad implements QueryProcessor<SignPadDa
 	SignPadBox signPadBox;
 
 	@Override
-	public List<SignPadData> process() {
+	public List<SignPadData> process(Map<String, Object> params) {
 
 		List<SignPadData> devices = new ArrayList<SignPadData>();
 

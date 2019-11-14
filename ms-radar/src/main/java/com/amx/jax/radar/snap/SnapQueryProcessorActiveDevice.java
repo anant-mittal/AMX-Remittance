@@ -2,6 +2,7 @@ package com.amx.jax.radar.snap;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -29,7 +30,7 @@ public class SnapQueryProcessorActiveDevice implements QueryProcessor<DeviceData
 	DeviceBox deviceBox;
 
 	@Override
-	public List<DeviceData> process() {
+	public List<DeviceData> process(Map<String, Object> params) {
 
 		List<DeviceData> devices = new ArrayList<DeviceData>();
 

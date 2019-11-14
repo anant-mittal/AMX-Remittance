@@ -58,7 +58,7 @@ public class BranchUserController implements IBranchService {
 	public AmxApiResponse<CustomerCall, Object> customerCallSession(
 			@RequestParam BigDecimal agentId,
 			@RequestParam(required = false) BigDecimal customerId,
-			@RequestParam(required = false) BigDecimal leadId) {
+			@RequestParam(required = true) BigDecimal leadId) {
 		Employee e = employeeRespository.findEmployeeById(agentId);
 		if (ArgUtil.is(e)) {
 			String employeeId = ArgUtil.parseAsString(e.getEmployeeId());
@@ -97,26 +97,16 @@ public class BranchUserController implements IBranchService {
 	public AmxApiResponse<CustomerCall, Object> customerCallStatus(
 			@RequestParam BigDecimal agentId,
 			@RequestParam(required = false) BigDecimal customerId,
-			@RequestParam(required = false) BigDecimal leadId,
+			@RequestParam(required = true) BigDecimal leadId,
 			@RequestParam String followUpCode, @RequestParam String remark,
 			@RequestParam(required = false) String sessionId) {
 		Employee e = employeeRespository.findEmployeeById(agentId);
-		CustomerCall call = null;
+		CustomerCall call = new CustomerCall();
 		if (ArgUtil.is(e)) {
-			String employeeId = ArgUtil.parseAsString(e.getEmployeeId());
-			call = customerOnCall.get(employeeId);
 			CustomerTeleMarketingDetails custTMDetails = null;
 			if (ArgUtil.is(leadId)) {
 				custTMDetails = CollectionUtil
 						.getOne(customerTeleMarketingDetailsRepository.getCustomerTeleMarketingDetailsByLeadId(leadId));
-			} else if (ArgUtil.is(customerId)) {
-				custTMDetails = CollectionUtil
-						.getOne(customerTeleMarketingDetailsRepository
-								.getCustomerTeleMarketingDetailsByCustomerId(customerId));
-			} else if (ArgUtil.is(sessionId) && ArgUtil.is(call) && sessionId.equals(call.getSessionId())) {
-				custTMDetails = CollectionUtil
-						.getOne(customerTeleMarketingDetailsRepository
-								.getCustomerTeleMarketingDetailsByCustomerId(call.getCustomerid()));
 			}
 
 			if (ArgUtil.is(custTMDetails)) {

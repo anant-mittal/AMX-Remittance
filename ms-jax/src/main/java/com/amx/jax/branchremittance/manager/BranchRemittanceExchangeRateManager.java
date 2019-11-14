@@ -8,6 +8,7 @@ import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_COUNTR
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -397,6 +398,10 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 			}else {
 				remittanceTransactionManager.applyCurrencyRoudingLogicSP(result.getExRateBreakup());
 			}
+			
+			/** Imps split message for multiple trnx  **/
+			String msg = impsSplittingMessage(result);
+			result.setErrorMessage(msg);
 		
 			result.setYouSavedAmount(getYouSavedAmount(result));
 			result.setYouSavedAmountInFC(getYouSavedAmountInFc(result));
@@ -525,7 +530,7 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 	
 	
 	
-	/*private String impsSplittingMessage(DynamicRoutingPricingDto drDto) {
+	private String impsSplittingMessage(DynamicRoutingPricingDto drDto) {
 		String msg = null;
 		String reminder = "";
 		try {
@@ -559,9 +564,54 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 		    msg = "This single remittance will be reflected as "+count.intValue()+" transactions in your bank account.The "+count.intValue()+" transactions will be "+currQuoteName+" "+joinedString+" "+reminder +" . Click Yes to continue, No to choose another rate.";
 		}
 		}
-		return savedAmount;
-	}*/
-	
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return msg;
+	}
+		//Click Yes to continue, No to choose another rate
+		
+		private String formtingNumbers(BigDecimal value) {
+			 DecimalFormat myFormatter = new DecimalFormat("#,##,###.00");
+			 String strValue = null;
+			 if(JaxUtil.isNullZeroBigDecimalCheck(value)) {
+				 strValue = myFormatter.format(value);
+			 }
+			 return strValue;
+		}
+		
+
+		private String replaceWithAnd(String splitStr,String currQuoteName) {
+			String afterSplit = null;
+			if(!StringUtils.isBlank(splitStr) && !StringUtils.isBlank(currQuoteName)) {
+				String[] strList = splitStr.split(currQuoteName);
+				int j =strList.length; 
+				for(int i =0;i<strList.length;i++) {
+					if(i==j-1) {
+						afterSplit = afterSplit+" and "+currQuoteName+"  "+strList[i];
+					}else {
+						afterSplit =afterSplit==null?strList[i] :afterSplit.concat(currQuoteName +strList[i]);
+					}
+				}
+			}
+			return afterSplit;
+		}
+		
+		/** for INDIAN curreny format **/
+		public static String format(double value) {
+		    if(value < 1000) {
+		        return format("###.##", value);
+		    } else {
+		        double hundreds = value % 1000;
+		        int other = (int) (value / 1000);
+		        return format(",##", other) + ',' + format("000.00", hundreds);
+		    }
+		}
+
+		private static String format(String pattern, Object value) {
+		    return new DecimalFormat(pattern).format(value);
+		}		
+		
 	
 /** 
 	 * @author rabil
