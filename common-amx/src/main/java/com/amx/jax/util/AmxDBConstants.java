@@ -30,8 +30,9 @@ public class AmxDBConstants {
 		 * EXPIRED,
 		 * R-Reject,N- Negotiate, N-New ,A-Accept 
 		 * C-Canceled, C-In place order it is common pool
+		 * O-Offered Rate by GSM
 		 */
-		E,R,A
+		E,R,A,O
 	}
 
 	// document id
@@ -263,4 +264,6 @@ public class AmxDBConstants {
 		APPROVED,NEGOTIATED,UNAPPROVED,VIEW,REJECT,NEW 
 		
 	}
+    
+    public static String PO_LIMIT_CHK ="24"; 
 }

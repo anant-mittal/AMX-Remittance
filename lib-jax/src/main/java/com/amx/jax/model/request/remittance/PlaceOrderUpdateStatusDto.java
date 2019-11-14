@@ -3,9 +3,11 @@ package com.amx.jax.model.request.remittance;
 import java.math.BigDecimal;
 
 public class PlaceOrderUpdateStatusDto {
+	
 	BigDecimal ratePlaceOrderId;
 	String flag;
 	String remarks;
+	BigDecimal exchangeRateOffered;
 	public BigDecimal getRatePlaceOrderId() {
 		return ratePlaceOrderId;
 	}
@@ -23,5 +25,11 @@ public class PlaceOrderUpdateStatusDto {
 	}
 	public void setRemarks(String remarks) {
 		this.remarks = remarks;
+	}
+	public BigDecimal getExchangeRateOffered() {
+		return exchangeRateOffered;
+	}
+	public void setExchangeRateOffered(BigDecimal exchangeRateOffered) {
+		this.exchangeRateOffered = exchangeRateOffered;
 	}
 }

@@ -24,6 +24,19 @@ public interface IRatePlaceOrderRepository  extends CrudRepository<RatePlaceOrde
 	public List<RatePlaceOrder> fetchByBeneficiaryCountryId(BigDecimal beneficiaryCountryId);
 	
 	
+	@Query("select rv from RatePlaceOrder rv where rv.customerId=?1 and trunc(createdDate)=trunc(sysdate)  and rv.isActive='U' "
+			+ "and rv.beneficiaryRelationId=?2 and rv.transactionAmount=?3 and remitType=?4")
+	public List<RatePlaceOrder> sameBeneTrnxAmtCheck(BigDecimal customerId,BigDecimal beneRelationId,BigDecimal trnxAmount,BigDecimal remitType);
+	
+	
+	
+	@Query("select rv from RatePlaceOrder rv where rv.customerId=?1 and trunc(createdDate)=trunc(sysdate)  and rv.isActive='U' "
+			+ "and rv.beneficiaryRelationId=?2 and remitType=?4")
+	public List<RatePlaceOrder> sameBeneTrnxButDiffAmtCheck(BigDecimal customerId,BigDecimal beneRelationId,BigDecimal remitType);
+	
+	
+	
+	
 	
 	
 	@Query(value =  "Select\n" + 

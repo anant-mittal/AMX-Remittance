@@ -134,5 +134,9 @@ public class ParameterService extends AbstractService {
 		List<TransactionLimitCheckView> trnxLimits =transactionLimit.findAll();
 		return trnxLimits;
 	}
+	
+	public AuthenticationLimitCheckView getPlaceOrderLimitCheck(String authType) {
+		return authentication.getPlaceOrderLimitCheck(authType);
+	}
 
 }
