@@ -34,11 +34,9 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.constant.AuthType;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
-import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.PromotionDto;
 import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
-import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.jax.api.ResponseCodeDetailDTO;
 import com.amx.jax.branchremittance.manager.BranchRemittanceApplManager;
@@ -72,6 +70,7 @@ import com.amx.jax.dbmodel.remittance.AmiecAndBankMapping;
 import com.amx.jax.dbmodel.remittance.OWSScheduleModel;
 import com.amx.jax.dbmodel.remittance.RemittanceAppBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
+import com.amx.jax.dbmodel.remittance.RemittanceApplicationSplitting;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.dbmodel.remittance.ServiceProviderCredentialsModel;
 import com.amx.jax.dbmodel.remittance.ViewTransfer;
@@ -93,6 +92,7 @@ import com.amx.jax.manager.remittance.CorporateDiscountManager;
 import com.amx.jax.manager.remittance.RemittanceAdditionalFieldManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.BeneficiaryListDTO;
+import com.amx.jax.model.CivilIdOtpModel;
 import com.amx.jax.model.request.remittance.AbstractRemittanceApplicationRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
@@ -100,6 +100,7 @@ import com.amx.jax.model.response.ExchangeRateBreakup;
 import com.amx.jax.model.response.remittance.BsbApiResponse;
 import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;
 import com.amx.jax.model.response.remittance.LoyalityPointState;
+import com.amx.jax.model.response.remittance.RemittanceApplicationResponseModel;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.model.response.remittance.VatDetailsDto;
 import com.amx.jax.partner.manager.PartnerTransactionManager;
@@ -409,6 +410,8 @@ public class RemittanceTransactionManager {
 		}
 		
 		setCustomerDiscountColumnsV2(responseModel, dynamicRoutingPricing);
+		setSavedAmount(responseModel,dynamicRoutingPricing);
+		
 		return responseModel;
 
 	}
@@ -1131,7 +1134,10 @@ public class RemittanceTransactionManager {
 	
 		// save service provider
 		RemitApplSrvProv remitApplSrvProv = null;
-		remitAppDao.saveAllApplicationData(remittanceApplication, remittanceAppBeneficairy, additionalInstrumentData,remitApplSrvProv);
+		//Imps splitiing
+		List<RemittanceApplicationSplitting>  applSplitList =null;
+		
+		remitAppDao.saveAllApplicationData(remittanceApplication, remittanceAppBeneficairy, additionalInstrumentData,remitApplSrvProv,applSplitList);
 		remitAppDao.updatePlaceOrder(model, remittanceApplication);
 		remiteAppModel.setRemittanceAppId(remittanceApplication.getRemittanceApplicationId());
 		remiteAppModel.setNetPayableAmount(netAmountPayable);
@@ -1189,6 +1195,9 @@ public class RemittanceTransactionManager {
 		remittanceAdditionalFieldManager.processAdditionalFields(model);
 		remittanceTransactionRequestValidator.saveFlexFields(model, remitApplParametersMap);
 		RemittanceApplication remittanceApplication = remitAppManager.createRemittanceApplicationV2(model,validatedObjects, validationResults, remitApplParametersMap);
+		
+		
+		
 		RemittanceAppBenificiary remittanceAppBeneficairy = remitAppBeneManager.createRemittanceAppBeneficiary(remittanceApplication);
 		List<AdditionalInstructionData> additionalInstrumentData;
 		if (jaxTenantProperties.getFlexFieldEnabled()) {
@@ -1213,7 +1222,14 @@ public class RemittanceTransactionManager {
 				}
 			}
 		}
-		remitAppDao.saveAllApplicationData(remittanceApplication, remittanceAppBeneficairy, additionalInstrumentData,remitApplSrvProv);
+		
+		
+		List<RemittanceApplicationSplitting>  applSplitList = branchRemittanceApplManager.createChildApplication(remittanceApplication, model.getDynamicRroutingPricingBreakup());
+		if(applSplitList!=null && !applSplitList.isEmpty()) {
+			remittanceApplication.setApplSplit(ConstantDocument.Yes);
+		}
+		
+		remitAppDao.saveAllApplicationData(remittanceApplication, remittanceAppBeneficairy, additionalInstrumentData,remitApplSrvProv,applSplitList);
 		remitAppDao.updatePlaceOrderV2(model, remittanceApplication);
 		remiteAppModel.setRemittanceAppId(remittanceApplication.getRemittanceApplicationId());
 		remiteAppModel.setNetPayableAmount(netAmountPayable);
@@ -1602,4 +1618,13 @@ public class RemittanceTransactionManager {
 		exRatebreakUp.setNetAmountWithoutLoyality(RoundUtil.roundBigDecimal(exRatebreakUp.getNetAmountWithoutLoyality(),exRatebreakUp.getLcDecimalNumber().intValue()));
 		exRatebreakUp.setInverseRate((RoundUtil.roundBigDecimal(exRatebreakUp.getInverseRate(), AmxDBConstants.EXCHANGE_RATE_DECIMAL.intValue())));
 	}
+
+	public void setSavedAmount(RemittanceTransactionResponsetModel validationResults,DynamicRoutingPricingDto model) {
+		
+		validationResults.setYouSavedAmount(model.getYouSavedAmount());
+		validationResults.setRackExchangeRate(model.getRackExchangeRate());
+		validationResults.setYouSavedAmountInFC(model.getYouSavedAmountInFC());
+		validationResults.setCustomerChoice(model.getCustomerChoice());
+	}
+
 }

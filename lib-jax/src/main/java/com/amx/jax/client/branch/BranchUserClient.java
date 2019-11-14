@@ -28,15 +28,12 @@ public class BranchUserClient implements IBranchService {
 
 	@Override
 	public AmxApiResponse<UserwiseTransactionDto, Object> getTotalCount(String transactiondate) {
-		try {
+		
 			String url = appConfig.getJaxURL() + Path.BR_REMITTANCE_USER_WISE_COUNT;
 			return restService.ajax(url).meta(new JaxMetaInfo()).queryParam(Params.TRNX_DATE, transactiondate).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<UserwiseTransactionDto, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.error("exception in userwise Total trnx Count : ", e);
-			return JaxSystemError.evaluate(e);
-		}
+		
 	}
 
 	@Override

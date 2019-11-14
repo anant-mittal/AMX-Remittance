@@ -199,15 +199,12 @@ public class CustomerManagementClient implements ICustomerManagementController {
 
 	@Override
 	public AmxApiResponse<JaxConditionalFieldDto, Object> getDocumentFields(String documentCategory, String documentType) {
-		try {
+		
 			return restService.ajax(appConfig.getJaxURL()).path(ApiPath.DOCUMENT_FIELD_GET).meta(new JaxMetaInfo())
 					.queryParam(ApiParams.DOCUMENT_CATEGORY, documentCategory).queryParam(ApiParams.DOCUMENT_TYPE, documentType).post()
 					.as(new ParameterizedTypeReference<AmxApiResponse<JaxConditionalFieldDto, Object>>() {
 					});
-		} catch (Exception ae) {
-			LOGGER.error("exception in getDocumentFields : ", ae);
-			return JaxSystemError.evaluate(ae);
-		}
+		
 	}
 
 	@Override
@@ -224,16 +221,13 @@ public class CustomerManagementClient implements ICustomerManagementController {
 
 	@Override
 	public AmxApiResponse<CustomerShortInfo, Object> getCustomerShortDetail(String identityInt, BigDecimal identityType, BigDecimal customerId) {
-		try {
+		
 			return restService.ajax(appConfig.getJaxURL()).path(ApiPath.GET_CUSTOMER_SHORT_DETAIL).meta(new JaxMetaInfo())
 					.queryParam(ApiParams.IDENTITY, identityInt).queryParam(ApiParams.IDENTITY_TYPE_ID, identityType)
 					.queryParam(ApiParams.CUSTOMER_ID, customerId).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<CustomerShortInfo, Object>>() {
 					});
-		} catch (Exception ae) {
-			LOGGER.error("exception in getCustomerShortDetail : ", ae);
-			return JaxSystemError.evaluate(ae);
-		}
+		
 	}
 
 	@Override

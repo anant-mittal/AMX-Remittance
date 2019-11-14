@@ -25,6 +25,13 @@ public class BranchRemittanceApplResponseDto {
 	/* application records */
 	List<CustomerShoppingCartDto> shoppingCartDetails;
 	
+	List<PaymentLinkAppDto> paymentLinkAppDto;  
+	public List<PaymentLinkAppDto> getPaymentLinkAppDto() {
+		return paymentLinkAppDto;
+	}
+	public void setPaymentLinkAppDto(List<PaymentLinkAppDto> paymentLinkAppDto) {
+		this.paymentLinkAppDto = paymentLinkAppDto;
+	}
 	public BigDecimal getTotalLocalAmount() {
 		return totalLocalAmount;
 	}

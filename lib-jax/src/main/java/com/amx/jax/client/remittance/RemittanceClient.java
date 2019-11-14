@@ -1,6 +1,7 @@
 package com.amx.jax.client.remittance;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.BranchRemittanceGetExchangeRateRequest;
 import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
 import com.amx.jax.model.request.remittance.CustomerBankRequest;
+import com.amx.jax.model.request.remittance.GetServiceApplicabilityRequest;
 import com.amx.jax.model.request.remittance.RoutingPricingRequest;
 import com.amx.jax.model.response.customer.BenePackageResponse;
 import com.amx.jax.model.response.fx.UserStockDto;
@@ -26,9 +28,12 @@ import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.FlexFieldReponseDto;
+import com.amx.jax.model.response.remittance.GetServiceApplicabilityResponse;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
+import com.amx.jax.model.response.remittance.PaymentLinkRespDTO;
 import com.amx.jax.model.response.remittance.ParameterDetailsResponseDto;
 import com.amx.jax.model.response.remittance.PaymentModeDto;
+import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
 import com.amx.jax.model.response.remittance.RemittanceDeclarationReportDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
@@ -348,8 +353,41 @@ public class RemittanceClient implements IRemittanceService {
 						});
 			
 	}
-	
+
 	@Override
+	public AmxApiResponse<PaymentLinkRespDTO, Object> createAndSendPaymentLink() {
+		try {
+			LOGGER.debug("In Payment link Create Client :");
+			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_PAYMENT_LINK).meta(new JaxMetaInfo())
+					.get()
+					.as(new ParameterizedTypeReference<AmxApiResponse<PaymentLinkRespDTO, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in Payment link Create Client : ", e);
+			return JaxSystemError.evaluate(e);
+		}
+	}
+
+	@Override
+	public AmxApiResponse<PaymentLinkRespDTO, Object> validatePayLink(BigDecimal linkId, String verificationCode) {
+
+		try {
+			LOGGER.debug("In Validate Payment link Client : " );
+			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_VALIDATE_PAY_LINK).meta(new JaxMetaInfo())
+					.queryParam(Params.LINK_ID, linkId)
+					.queryParam(Params.VERIFICATION_CODE, verificationCode)
+					.post()
+					.as(new ParameterizedTypeReference<AmxApiResponse<PaymentLinkRespDTO, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in Validate Payment link Client :", e);
+			return JaxSystemError.evaluate(e);
+		}
+	
+	}
+
+
+@Override
 	public AmxApiResponse<ParameterDetailsResponseDto, Object> getGiftService(BigDecimal beneRelaId) {
 		
 		//beneRelationshipId
@@ -363,6 +401,19 @@ public class RemittanceClient implements IRemittanceService {
 					});
 		
 		
+	}
+
+	@Override
+	public AmxApiResponse<GetServiceApplicabilityResponse, Object> getServiceApplicability(GetServiceApplicabilityRequest request) {
+		try {
+			LOGGER.debug("in getServiceApplicability :" + request);
+			return restService.ajax(appConfig.getJaxURL() + Path.GET_SERVICE_APPLICABILITY).meta(new JaxMetaInfo()).post(request)
+					.as(new ParameterizedTypeReference<AmxApiResponse<GetServiceApplicabilityResponse, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in getServiceApplicability : ", e);
+			return JaxSystemError.evaluate(e);
+		}
 	}
 
 	@Override

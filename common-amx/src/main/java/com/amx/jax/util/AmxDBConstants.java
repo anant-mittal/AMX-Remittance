@@ -3,14 +3,22 @@ package com.amx.jax.util;
 import java.math.BigDecimal;
 
 public class AmxDBConstants {
+	
+	/**
+	 * Maximum value possible for language id, in according to DB;
+	 */
+	public static final BigDecimal MAX_LANG_ID = new BigDecimal(10);
+	
 	public static final BigDecimal DOCUMENT_CODE_FOR_COLLECT_TRANSACTION = new BigDecimal(2);
 	public static final BigDecimal DOCUMENT_CODE_FOR_REMITTANCE_APPLICATION = new BigDecimal(1);
+	
 	public static final String No = "N";
 	public static final String Yes = "Y";
 	public static final String Deleted = "D";
 	public static final String Update = "U";
 	public static final String Black = "B";
 	public static final String Compliance = "C";
+	public static final String Hold = "H";
 	public static final String Processing = "P";
 
 	public static enum Status {
@@ -245,4 +253,10 @@ public class AmxDBConstants {
 	public static String CHECK_DOCUMENT;
 	public static String CHECK_FILE;
 	public static String BANKTRANSFER;
+
+	// Constants for direct payment link
+	public static final String DIRECT_PAYMENT_LINK_PAID ="P";
+	public static final String DIRECT_LINK ="LINK";
+	
+public static final String IMPS = "IMPS";
 }

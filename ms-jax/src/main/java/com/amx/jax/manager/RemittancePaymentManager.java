@@ -319,7 +319,6 @@ public class RemittancePaymentManager extends AbstractService{
 			}
 
 		}catch(Exception e) {
-			logger.error("error occured in paymentCapture", e);
 			lstPayIdDetails =applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(paymentResponse.getUdf3(),new Customer(paymentResponse.getCustomerId()));
 			
 			if(!lstPayIdDetails.isEmpty()) {

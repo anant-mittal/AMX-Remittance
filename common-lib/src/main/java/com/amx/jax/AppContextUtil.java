@@ -34,6 +34,15 @@ public class AppContextUtil {
 		ContextUtil.map().put(AppConstants.SESSION_PREFIX_XKEY, sessionPrefix);
 	}
 
+	public static void setRequestUser(String sessionSuffix) {
+		ContextUtil.map().put(AppConstants.SESSION_SUFFIX_XKEY, sessionSuffix);
+	}
+
+	public static String getRequestUser() {
+		return ArgUtil.parseAsString(ContextUtil.map().get(AppConstants.SESSION_SUFFIX_XKEY),
+				Constants.BLANK);
+	}
+
 	public static void setSessionId(Object sessionId) {
 		ContextUtil.map().put(AppConstants.SESSION_ID_XKEY, sessionId);
 	}
@@ -69,11 +78,11 @@ public class AppContextUtil {
 			if (ArgUtil.isEmpty(sessionId)) {
 				sessionId = getSessionId(true);
 			}
-			return ContextUtil.generateTraceId(sessionId);
+			return ContextUtil.generateTraceId(sessionId, getRequestUser());
 		}
 		String traceId = ContextUtil.getTraceId(false);
 		if (generate && ArgUtil.isEmpty(traceId)) {
-			return ContextUtil.getTraceId(true, sessionId);
+			return ContextUtil.getTraceId(true, sessionId, getRequestUser());
 		}
 		return traceId;
 	}
@@ -153,9 +162,14 @@ public class AppContextUtil {
 	public static String getSessionIdFromTraceId() {
 		String traceId = getTraceId();
 		if (!ArgUtil.isEmptyString(traceId)) {
-			Matcher matcher = UniqueID.SYSTEM_STRING_PATTERN.matcher(traceId);
+			Matcher matcher = UniqueID.SYSTEM_STRING_PATTERN_V2.matcher(traceId);
 			if (matcher.find()) {
 				setSessionId(matcher.group(1) + "-" + matcher.group(2) + "-" + matcher.group(3));
+			} else {
+				Matcher matcher2 = UniqueID.SYSTEM_STRING_PATTERN.matcher(traceId);
+				if (matcher2.find()) {
+					setSessionId(matcher2.group(1) + "-" + matcher2.group(2) + "-" + matcher2.group(3));
+				}
 			}
 		}
 		return getSessionId(true);

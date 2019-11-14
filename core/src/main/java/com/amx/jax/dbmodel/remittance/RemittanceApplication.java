@@ -141,9 +141,23 @@ public class RemittanceApplication implements Serializable {
 	private BigDecimal vatAmount;
 	/** added by rabil **/
 	private String beneDeductFlag;
+	/** added for direct link **/
+	private BigDecimal paymentLinkId;
+	
+
+
+
+	
 	private String wuPurposeOfTransaction;
+	private BigDecimal savedAmount;
+	/** lowest exchange rate amount all the branches **/
+	private BigDecimal rackExchangeRate;
+	private String customerChoice;
+	private BigDecimal savedAmountInFc;
 	private BigDecimal timeToDeliverInSec;
 
+	private String applSplit;
+	
 
 	private List<RemittanceAppBenificiary> exRemittanceAppBenificiary = new ArrayList<RemittanceAppBenificiary>(0);
 	
@@ -970,6 +984,15 @@ public class RemittanceApplication implements Serializable {
 	public void setBeneDeductFlag(String beneDeductFlag) {
 		this.beneDeductFlag = beneDeductFlag;
 	}
+	
+	@Column(name = "PAYMENT_LINK_ID")
+	public BigDecimal getPaymentLinkId() {
+		return paymentLinkId;
+	}
+
+	public void setPaymentLinkId(BigDecimal paymentLinkId) {
+		this.paymentLinkId = paymentLinkId;
+	}
 
 	@Column(name="WU_PURPOSE_OF_TRANSACTION")
 	public String getWuPurposeOfTransaction() {
@@ -978,14 +1001,58 @@ public class RemittanceApplication implements Serializable {
 	public void setWuPurposeOfTransaction(String wuPurposeOfTransaction) {
 		this.wuPurposeOfTransaction = wuPurposeOfTransaction;
 	}
+
+	@Column(name="SAVED_AMOUNT")
+	public BigDecimal getSavedAmount() {
+		return savedAmount;
+	}
+
+	public void setSavedAmount(BigDecimal savedAmount) {
+		this.savedAmount = savedAmount;
+	}
+
+	@Column(name="RACK_EXCHANGE_RATE")
+	public BigDecimal getRackExchangeRate() {
+		return rackExchangeRate;
+	}
+
+	public void setRackExchangeRate(BigDecimal rackExchangeRate) {
+		this.rackExchangeRate = rackExchangeRate;
+	}
 	
+	@Column(name="CUSTOMER_CHOICE")
+	public String getCustomerChoice() {
+		return customerChoice;
+	}
+
+	public void setCustomerChoice(String customerChoice) {
+		this.customerChoice = customerChoice;
+	}
+
+	@Column(name="SAVED_AMOUNT_FC")
+	public BigDecimal getSavedAmountInFc() {
+		return savedAmountInFc;
+	}
+
+	public void setSavedAmountInFc(BigDecimal savedAmountInFc) {
+		this.savedAmountInFc = savedAmountInFc;
+	}
+
 	@Column(name="TIME_TO_DELIVER_IN_SEC")
 	public BigDecimal getTimeToDeliverInSec() {
 		return timeToDeliverInSec;
 	}
-	
+
 	public void setTimeToDeliverInSec(BigDecimal timeToDeliverInSec) {
 		this.timeToDeliverInSec = timeToDeliverInSec;
 	}
-	 	
+
+	@Column(name="IS_SPLITTED")
+	public String getApplSplit() {
+		return applSplit;
+	}
+
+	public void setApplSplit(String applSplit) {
+		this.applSplit = applSplit;
+	}
 }

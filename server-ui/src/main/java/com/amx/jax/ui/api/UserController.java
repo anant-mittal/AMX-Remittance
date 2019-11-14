@@ -22,23 +22,23 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.amxlib.meta.model.AnnualIncomeRangeDTO;
 import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.meta.model.IncomeDto;
-import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
-import com.amx.amxlib.model.CustomerNotificationDTO;
+import com.amx.amxlib.model.CustomerNotifyHubDTO;
 import com.amx.amxlib.model.UserFingerprintResponseModel;
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.JaxAuthContext;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
-import com.amx.jax.client.JaxPushNotificationClient;
+import com.amx.jax.client.CustomerNotifyHubClient;
+import com.amx.jax.client.CustomerProfileClient;
 import com.amx.jax.dict.Language;
 import com.amx.jax.dict.UserClient.AppType;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.logger.AuditActor;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.LoggerService;
-import com.amx.jax.logger.events.CActivityEvent;
+import com.amx.jax.model.CivilIdOtpModel;
 import com.amx.jax.model.response.customer.CustomerFlags;
 import com.amx.jax.model.response.customer.CustomerModelSignupResponse;
 import com.amx.jax.postman.PostManException;
@@ -124,6 +124,9 @@ public class UserController {
 	AuthLibContext authLibContext;
 
 	@Autowired
+	private CustomerProfileClient customerProfileClient;
+
+	@Autowired
 	AuditService auditService;
 
 	@ApiOWAStatus(OWAStatusStatusCodes.INCOME_UPDATE_REQUIRED)
@@ -186,26 +189,46 @@ public class UserController {
 		}
 
 		lang = httpService.getLanguage();
-		httpService.setCookie("lang", lang.toString(), 60 * 60 * 2);
-		
-		if (ArgUtil.is(lang) && !lang.equals(sessionService.getGuestSession().getLanguage())) {
-			auditService.log(new CActivityEvent(CActivityEvent.Type.LANG_CHNG));
-		}
-		sessionService.getGuestSession().setLanguage(lang);
+		Language sessionLang = sessionService.getGuestSession().getLanguage();
+		boolean isLangChange = ArgUtil.is(lang) && !lang.equals(sessionLang);
 
 		wrapper.getData().setTenant(AppContextUtil.getTenant());
 		wrapper.getData().setTenantCode(AppContextUtil.getTenant().getCode());
-		wrapper.getData().setLang(lang);
 		wrapper.getData().setCdnUrl(appConfig.getCdnURL());
 
 		wrapper.getData().setDevice(sessionService.getAppDevice().getUserDevice().toSanitized());
 		wrapper.getData().setState(sessionService.getGuestSession().getState());
 		wrapper.getData().setValidSession(sessionService.getUserSession().isValid());
 
-		if (sessionService.getUserSession().getCustomerModel() != null) {
+		CustomerModel customer = sessionService.getUserSession().getCustomerModel();
+
+		if (customer != null) {
 			wrapper.getData().setActive(true);
 			wrapper.getData().setCustomerId(sessionService.getUserSession().getCustomerModel().getCustomerId());
 			wrapper.getData().setInfo(sessionService.getUserSession().getCustomerModel().getPersoninfo());
+
+			Language profileLang = customer.getPersoninfo().getLang();
+
+			if (false
+					/**
+					 * This is language Change request after Login
+					 */
+					|| isLangChange
+					/**
+					 * profile language is empty
+					 */
+					|| (ArgUtil.isEmpty(profileLang) && !Language.EN.equals(lang))
+					/**
+					 * Client language is NON-English and different than profile Language
+					 */
+					|| (!Language.EN.equals(lang) && !lang.equals(profileLang))
+
+			) {
+				customerProfileClient.saveLanguage(customer.getCustomerId(), lang.getBDCode());
+				refresh = true;
+			} else {
+				lang = profileLang;
+			}
 
 			if (refresh) {
 				userService.updateCustoemrModel();
@@ -225,7 +248,7 @@ public class UserController {
 
 			wrapper.getData().setDomCurrency(tenantContext.getDomCurrency());
 			wrapper.getData().setConfig(jaxService.setDefaults().getMetaClient().getJaxMetaParameter().getResult());
-			wrapper.getData().getSubscriptions().addAll(userService.getNotifyTopics("/topics/"));
+			wrapper.getData().getSubscriptions().addAll(userService.getNotifyTopics("/topics/",lang));
 			wrapper.getData().setReturnUrl(sessionService.getGuestSession().getReturnUrl());
 
 			wrapper.getData().setFeatures(
@@ -234,6 +257,13 @@ public class UserController {
 		} else {
 			wrapper.getData().setFeatures(webAppConfig.getFeaturesList());
 		}
+
+		/**
+		 * Language Changed - Change it in session, cookie and meta
+		 */
+		sessionService.getGuestSession().setLanguage(lang);
+		wrapper.getData().setLang(sessionService.getGuestSession().getLanguage());
+		httpService.setCookie("lang", lang.toString(), 30 * 60 * 60 * 2);
 
 		wrapper.getData().setMileStones(MileStone.LIST);
 		wrapper.getData().setNotifyRangeShort(webAppConfig.getNotifyRangeShort());
@@ -264,12 +294,12 @@ public class UserController {
 	}
 
 	@Autowired
-	JaxPushNotificationClient notificationClient;
+	CustomerNotifyHubClient notificationClient;
 
 	@RequestMapping(value = "/pub/user/notifications", method = { RequestMethod.GET })
-	public ResponseWrapper<List<CustomerNotificationDTO>> getNotifications(@RequestParam BigDecimal customerId) {
+	public ResponseWrapper<List<CustomerNotifyHubDTO>> getNotifications(@RequestParam BigDecimal customerId) {
 		AppContextUtil.setActorId(new AuditActor(AuditActor.ActorType.GUEST, customerId));
-		return new ResponseWrapper<List<CustomerNotificationDTO>>(notificationClient.get(customerId).getResults());
+		return new ResponseWrapper<List<CustomerNotifyHubDTO>>(notificationClient.get(customerId).getResults());
 	}
 
 	/**
@@ -281,7 +311,7 @@ public class UserController {
 	 */
 	@RequestMapping(value = "/api/user/notify/register", method = { RequestMethod.POST })
 	public ResponseWrapper<Object> registerNotify(@RequestParam String token) throws PostManException {
-		for (String topic : userService.getNotifyTopics("")) {
+		for (String topic : userService.getNotifyTopics("", null)) {
 			pushNotifyClient.subscribe(token, topic + "_web");
 		}
 		return new ResponseWrapper<Object>();

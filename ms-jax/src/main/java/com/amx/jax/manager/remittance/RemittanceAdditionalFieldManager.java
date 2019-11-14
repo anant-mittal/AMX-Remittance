@@ -22,6 +22,7 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.branchremittance.manager.BranchRemittanceManager;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxDynamicField;
+import com.amx.jax.constants.JaxFieldEntity;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.CountryBranchMdlv1;
 import com.amx.jax.dbmodel.CountryMaster;
@@ -38,6 +39,7 @@ import com.amx.jax.model.response.jaxfield.JaxConditionalFieldDto;
 import com.amx.jax.model.response.jaxfield.JaxFieldDto;
 import com.amx.jax.model.response.jaxfield.JaxFieldEntity;
 import com.amx.jax.model.response.jaxfield.JaxFieldValueDto;
+import com.amx.jax.model.response.BankMasterDTO;
 import com.amx.jax.model.response.remittance.AmlCheckResponseDto;
 import com.amx.jax.model.response.remittance.FlexFieldDto;
 import com.amx.jax.partner.manager.PartnerTransactionManager;
@@ -50,6 +52,9 @@ import com.amx.jax.service.BankMetaService;
 import com.amx.jax.services.BankService;
 import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.services.JaxFieldService;
+import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
+import com.amx.libjax.model.jaxfield.JaxFieldDto;
+import com.amx.libjax.model.jaxfield.JaxFieldValueDto;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -85,8 +90,6 @@ public class RemittanceAdditionalFieldManager {
 	@Autowired
 	ISwiftMasterDao swiftMasterRepo;
 
-	
-	
 	Logger logger = LoggerFactory.getLogger(getClass());
 
 	public void validateAdditionalFields(RemittanceAdditionalBeneFieldModel model, Map<String, Object> remitApplParametersMap) {
@@ -119,8 +122,6 @@ public class RemittanceAdditionalFieldManager {
 				}
 			}
 		}
-		
-		
 		
 		if(interMediateBank1ApiResponse!=null && interMediateBank1ApiResponse.getResult()!=null) {
 			allJaxConditionalFields.addAll(interMediateBank1ApiResponse.getResults());
@@ -176,6 +177,7 @@ public class RemittanceAdditionalFieldManager {
 			
 			for (JaxConditionalFieldDto jaxConditionalFieldDto : allJaxConditionalFields) {
 				JaxDynamicField jaxDynamicField = JaxDynamicField.valueOf(jaxConditionalFieldDto.getField().getName());
+
 				switch (jaxDynamicField) {
 				case BENE_FLAT_NO:
 					jaxConditionalFieldDto.getField().setDefaultValue(beneficaryMaster.getFlatNo());
@@ -299,12 +301,11 @@ public class RemittanceAdditionalFieldManager {
 		if(allSPJaxConditionalFields != null && allSPJaxConditionalFields.size() != 0) {
 			allJaxConditionalFields.addAll(allSPJaxConditionalFields);
 		}
+		
 		if(beneTeleApiReponse!=null && beneTeleApiReponse.getResult()!=null) {
 			allJaxConditionalFields.addAll(beneTeleApiReponse.getResults());
 		}
-		
-		
-		
+				
 		Map<String, Object> fieldValues = model.getAdditionalFields();
 		if (allJaxConditionalFields != null && fieldValues != null) {
 			BenificiaryListView beneficiaryDetail = beneficiaryService.getBeneByIdNo(model.getBeneId());
@@ -347,7 +348,6 @@ public class RemittanceAdditionalFieldManager {
 					logger.info("setting city name for bene master seq id {} , : {} ", beneficiaryDetail.getBeneficaryMasterSeqId(), fieldValue);
 					beneficiaryService.saveBeneMaster(beneficaryMaster);
 				}
-				
 				if (JaxDynamicField.BENE_TELE_NO.name().equals(jaxConditionalField.getField().getName()) && fieldValue != null) {
 					BeneficaryContact beneContact = beneficiaryService.getBeneContact(beneficiaryDetail.getBeneficaryMasterSeqId());
 					beneContact.setTelephoneNumber(fieldValue.toString());

@@ -34,7 +34,6 @@ import com.amx.jax.logger.LoggerService;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.scope.TenantProperties;
 import com.amx.utils.ArgUtil;
-import com.amx.utils.JsonUtil;
 import com.amx.utils.NetworkAdapter;
 import com.amx.utils.NetworkAdapter.NetAddress;
 import com.amx.utils.TimeUtils;

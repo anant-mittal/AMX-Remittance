@@ -12,7 +12,8 @@
 			CONTEXT: '[[${SSO_LOGIN_PREFIX}]]',
 			SSO_LOGIN_URL: '[[${SSO_LOGIN_URL}]]',
 			SECURITY_CODE: '[[${sec_code}]]',
-			PARTNER_SECURITY_CODE: '[[${partner_sec_code}]]'
+			PARTNER_SECURITY_CODE: '[[${partner_sec_code}]]',
+			CLIENT_TYPE : '[[${partner_sec_code}]]'
 		}
 	</script>
 	<script id="terminal_session" th:src="${ADAPTER_URL} + '/pub/script/validation.js?tranx=' + ${x_tranx_id}"></script>
@@ -26,8 +27,10 @@
 	<div class="login-form">
 		<div class="left-panel">
 			<h4>Quick Tips<br />
-				<small style="font-weight: 200;">
-				Make sure branch adapter is running. <a target="_blank" href="http://127.0.0.1:8020">check</a></small>
+				<th:block th:switch="${loginWithDevice}">
+					<small style="font-weight: 200;" th:case="true" >Make sure branch adapter is running. <a target="_blank" href="http://127.0.0.1:8020">check</a></small>
+					<small style="font-weight: 200;" th:case="false" >Make sure device is registered. <a target="_blank" th:href="${SSO_LOGIN_PREFIX + '/pub/device/pair'}">check</a></small>
+				</th:block>
 				<span id="adapter_indicator" class="adapter_indicator radio down" style="margin: -4px 8px;"><input type="radio" value="RUNNING" checked /><span></span>
 				</span>
 			</h4>
@@ -78,8 +81,10 @@
 					<div>
 						<label class="radio-container"><span class="radio"><input type="radio" name="cardtype" value="SELF" checked /><span></span></span>Smart
 							Card</label>&nbsp;&nbsp;&nbsp;
-						<label class="radio-container"><span class="radio"><input type="radio" name="cardtype" value="ASSISTED" /><span></span></span>Smart
+						<th:block th:switch="${loginWithPartner}">
+						<label class="radio-container" th:case="true"><span class="radio"><input type="radio" name="cardtype" value="ASSISTED" /><span></span></span>Smart
 							Card Not Available</label>
+						</th:block>
 					</div>
 				</div>
 				<div class="withSmartCard SELF">
@@ -95,9 +100,19 @@
 							</div>
 						</div>
 						<div class="form-col">
-							<label>Scan Smart Card</label>
+							<label>Scan Smart Card
+							<th:block th:switch="${loginWithRop}">
+								<small style="font-weight: 200;" th:case="true">
+							    <a href="http://127.0.0.1:8020/rop"
+									  target="popup" 
+									  onclick="window.open('http://127.0.0.1:8020/rop','popup','width=600,height=600'); return false;"
+								>scan</a></small>
+							</th:block>
+								
+							</label>
 							<div class="input-wrapper">
-								<input type="text" class="scan-input" name="identity" value="" on-keyup="UI.CREDS" clear-error readonly />
+								<input type="text" class="scan-input" name="identity" value="" on-keyup="UI.CREDS" clear-error 
+								th:readonly="${loginWithoutCard==false}" />
 								<div class="error-wrapper">
 									<div class="error-message" step="CREDS"></div>
 								</div>
