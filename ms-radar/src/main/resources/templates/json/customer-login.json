@@ -42,7 +42,7 @@
                         "order": {
                           "_count": "desc"
                         },
-                        "missing": "__missing__",
+                        "missing": "UNKNOWN",
                         "size": 5
                       },
                       "aggs": {
@@ -52,7 +52,7 @@
                             "order": {
                               "_count": "desc"
                             },
-                            "missing": "__missing__",
+                            "missing": "UNKNOWN",
                             "size": 5
                           },
                           "aggs": {
@@ -62,7 +62,7 @@
                                 "order": {
                                   "_count": "desc"
                                 },
-                                "missing": "__missing__",
+                                "missing": "UNKNOWN",
                                 "size": 20
                               },
                               "aggs": {

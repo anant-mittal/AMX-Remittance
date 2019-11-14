@@ -73,9 +73,13 @@ public class LoginAuditHandler implements AuditHandler {
 	}
 
 	private boolean isKnownDevice(AuditMapModel event, SnapModelWrapper x, SnapQueryParams params) {
+		boolean newLocation = true;
+		boolean newDevice = true;
+		boolean newIP = true;
 		List<Map<String, Object>> bulk = x.getBulk();
-		params.toMap().put("newDevice", true);
-		params.toMap().put("newLocation", true);
+		params.toMap().put("newDevice", newDevice);
+		params.toMap().put("newLocation", newLocation);
+		params.toMap().put("newIP", newIP);
 		if (ArgUtil.is(bulk) && bulk.size() == 0) {
 			return false;
 		}
@@ -99,32 +103,39 @@ public class LoginAuditHandler implements AuditHandler {
 			}
 		}
 
-		if (mapFP.containsKey(event.getClientFp())) {
-
-			params.toMap().put("newDevice", false);
-
-			if (bulkItemThis == null) {
-				return true;
-			}
+		if (bulkItemThis != null) {
 			String country = ArgUtil.parseAsString(bulkItemThis.get("country"));
 			String region = ArgUtil.parseAsString(bulkItemThis.get("region"));
 			String city = ArgUtil.parseAsString(bulkItemThis.get("city"));
 
-			if (!mapCountry.containsKey(country)
-					|| !mapRegion.containsKey(region)
-					|| !mapCity.containsKey(city)) {
-				params.toMap().put("country", country);
-				params.toMap().put("region", region);
-				params.toMap().put("city", city);
+			params.toMap().put("country", country);
+			params.toMap().put("region", region);
+			params.toMap().put("city", city);
 
-				return false;
+			if (mapCountry.containsKey(country)
+					&& mapRegion.containsKey(region)
+					&& mapCity.containsKey(city) && !"UNKNOWN".equals(city)) {
+				newLocation = false;
 			}
+		} else {
+			newLocation = false;
+		}
+
+		if (mapFP.containsKey(event.getClientFp())) {
+			newDevice = false;
 		}
 
 		if (mapIP.containsKey(event.getClientIp())) {
+			newIP = false;
+		}
+
+		if (!newDevice && (!newLocation || !newIP)) {
 			return true;
 		}
 
+		params.toMap().put("newDevice", newDevice);
+		params.toMap().put("newLocation", newLocation);
+		params.toMap().put("newIP", newIP);
 		return false;
 	}
 
