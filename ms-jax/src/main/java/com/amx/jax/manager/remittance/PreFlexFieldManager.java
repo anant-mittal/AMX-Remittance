@@ -78,6 +78,7 @@ public class PreFlexFieldManager {
 		BigDecimal packageFcAmount = null;
 		BigDecimal monthlyContribution = null;
 		BigDecimal volunteerContribution = null;
+		String packageSelectedAmiecCode = null;
 		int noOfMonth = 0;
 		Map<String, Object> validationResults = new HashMap<>();
 		List<JaxConditionalFieldDto> requiredFlexFields = new ArrayList<>();
@@ -126,6 +127,7 @@ public class PreFlexFieldManager {
 				String k = element.getKey();
 				FlexFieldDto v = element.getValue();
 				if ("INDIC16".equals(k)) {
+					packageSelectedAmiecCode = v.getAmieceCode();
 					monthlyContribution = new BigDecimal(v.getAmieceCode().replaceAll(">", ""));
 				}
 				if ("INDIC17".equals(k)) {
@@ -147,6 +149,7 @@ public class PreFlexFieldManager {
 		}
 		validationResults.put("PACKAGE_FC_AMOUNT", packageFcAmount);
 		validationResults.put("requiredFlexFields", requiredFlexFields);
+		validationResults.put("packageSelectedAmiecCode", packageSelectedAmiecCode);
 		return validationResults;
 	}
 
