@@ -69,6 +69,7 @@ public class BirthdayWishesListener implements ITunnelSubscriber<DBEvent> {
 				email.setLang(Language.EN);
 				
 			}
+			email.addTo(customer.getEmail());
 			email.setITemplate(TemplatesMX.BIRTHDAY_WISH);
 			
 			sendEmail(email);
