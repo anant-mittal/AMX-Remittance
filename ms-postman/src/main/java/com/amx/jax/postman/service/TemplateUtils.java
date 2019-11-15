@@ -73,7 +73,7 @@ public class TemplateUtils {
 	private Resource[] jasperFiles2;
 
 	public String getTemplateFile(String file, Tenant tnt, Locale locale, ContactType contactType) {
-		if (!IS_TEMPLATE_SCANNED || true) {
+		if (!IS_TEMPLATE_SCANNED) {
 			try {
 				for (Resource resource : htmlFiles) {
 					String absPath = resource.getURI().toString().split("\\/templates\\/html\\/")[1];

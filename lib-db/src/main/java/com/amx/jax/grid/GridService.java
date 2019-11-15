@@ -49,7 +49,7 @@ public class GridService {
 		try {
 			LOGGER.debug(paginatedQuery);
 			Query query = entityManager.createNativeQuery(paginatedQuery, gridViewRecordClass);
-			return new GridViewBuilder<T>(query, dataTableInRQ).queryStr(paginatedQuery);
+			return new GridViewBuilder<T>(query, dataTableInRQ).queryStr(paginatedQuery).gridView(gridView);
 		} catch (Exception e) {
 			LOGGER.error("GridViewError V:{} Q {}", gridView, paginatedQuery);
 			throw e;
