@@ -26,6 +26,7 @@ import com.amx.jax.AppConfig;
 import com.amx.jax.AppContext;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.async.ExecutorConfig;
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.postman.PostManConfig;
@@ -165,7 +166,7 @@ public class EmailService {
 					file.setModel(email.getModel());
 					file.setLang(email.getLang());
 
-					email.setMessage(fileService.create(file).getContent());
+					email.setMessage(fileService.create(file, ContactType.EMAIL).getContent());
 
 					if (ArgUtil.isEmptyString(email.getSubject())) {
 						email.setSubject(file.getTitle());
