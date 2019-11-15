@@ -1,5 +1,7 @@
 package com.amx.jax.model.response.jaxfield;
 
+import java.util.List;
+
 import com.amx.jax.model.ResourceDTO;
 
 public class JaxFieldValueDto extends ResourceDTO{
@@ -12,6 +14,15 @@ public class JaxFieldValueDto extends ResourceDTO{
 	Object optLable;
 	Object value;
 	private String localName;
+	private String packageDescription;
+
+	public String getPackageDescription() {
+		return packageDescription;
+	}
+
+	public void setPackageDescription(String packageDescription) {
+		this.packageDescription = packageDescription;
+	}
 
 	public Object getId() {
 		return id;

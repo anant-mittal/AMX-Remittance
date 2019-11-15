@@ -9,7 +9,14 @@ import com.amx.jax.model.response.jaxfield.JaxConditionalFieldDto;
 public class BenePackageResponse {
 	BigDecimal fcAmount;
 	List<JaxConditionalFieldDto> requiredFlexFields;
+	String packageDescription;
+	public String getPackageDescription() {
+		return packageDescription;
+	}
 
+	public void setPackageDescription(String packageDescription) {
+		this.packageDescription = packageDescription;
+	}
 	public List<JaxConditionalFieldDto> getRequiredFlexFields() {
 		return requiredFlexFields;
 	}

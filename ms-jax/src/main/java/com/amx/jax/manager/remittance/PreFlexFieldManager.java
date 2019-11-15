@@ -284,7 +284,7 @@ public class PreFlexFieldManager {
 		if (validationResults.get("PACKAGE_FC_AMOUNT") != null) {
 			resp.setFcAmount(new BigDecimal(validationResults.get("PACKAGE_FC_AMOUNT").toString()));
 		}
-
+		
 		return resp;
 	}
 

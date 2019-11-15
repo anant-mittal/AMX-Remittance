@@ -23,6 +23,7 @@ import com.amx.jax.branchremittance.manager.ReportManager;
 import com.amx.jax.dbmodel.remittance.ShoppingCartDetails;
 import com.amx.jax.manager.FcSaleBranchOrderManager;
 import com.amx.jax.manager.remittance.AdditionalBankDetailManager;
+import com.amx.jax.manager.remittance.PackageDescriptionManager;
 import com.amx.jax.manager.remittance.PreFlexFieldManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.ResourceDTO;
@@ -86,7 +87,9 @@ public class BranchRemittanceService extends AbstractService{
 	@Autowired
 	DirectPaymentLinkService directPaymentLinkService;
 	
-	
+	@Autowired
+	PackageDescriptionManager packageDescriptionManager;
+
 	public AmxApiResponse<BranchRemittanceApplResponseDto, Object> saveBranchRemittanceApplication(BranchRemittanceApplRequestModel requestApplModel){
 		logger.info("saveBranchRemittanceApplication : " + JsonUtil.toJson(requestApplModel));
 		BranchRemittanceApplResponseDto applResponseDto = branchRemitApplManager.saveBranchRemittanceApplication(requestApplModel);
@@ -244,6 +247,8 @@ public class BranchRemittanceService extends AbstractService{
 	public AmxApiResponse<BenePackageResponse, Object> getBenePackages(BenePackageRequest benePackageRequest) {
 		Map<String, Object> validationResults = preFlexFieldManager.validateBenePackageRequest(benePackageRequest);
 		BenePackageResponse resp = preFlexFieldManager.createBenePackageResponse(validationResults);
+		packageDescriptionManager.fetchGiftPackageDesc(benePackageRequest,resp,null);
 		return AmxApiResponse.build(resp);
 	}
+	
 }
