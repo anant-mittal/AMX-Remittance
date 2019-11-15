@@ -195,45 +195,37 @@
                   ],
                   "minimum_should_match": 1
                 }
-              },
-              {
-                "bool": {
-                  "should": [
-                    {
-                      "match_phrase": {
-                        "logmap.client.ct.keyword": "[[${logmap.client.ct}]]"
-                      }
-                    }
-                  ],
-                  "minimum_should_match": 1
-                }
-              },
-              {
-                "bool": {
-                  "should": [
-                    {
-                      "match_phrase": {
-                        "logmap.agent.operatingSystem.keyword": "[[${logmap.agent.operatingSystem}]]"
-                      }
-                    }
-                  ],
-                  "minimum_should_match": 1
-                }
-              },
-              {
-                "bool": {
-                  "should": [
-                    {
-                      "match_phrase": {
-                        "logmap.agent.browser.keyword": "[[${logmap.agent.browser}]]"
-                      }
-                    }
-                  ],
-                  "minimum_should_match": 1
-                }
               }
             ],
             "minimum_should_match": 1
+          }
+        },
+        {
+          "match_phrase": {
+            "logmap.cust.id": {
+              "query": "[[${lcustomerId}]]"
+            }
+          }
+        },
+        {
+          "match_phrase": {
+            "logmap.agent.browser.keyword": {
+              "query": "[[${logmap.agent.browser}]]"
+            }
+          }
+        },
+        {
+          "match_phrase": {
+            "logmap.agent.operatingSystem.keyword": {
+              "query": "[[${logmap.agent.operatingSystem}]]"
+            }
+          }
+        },
+        {
+          "match_phrase": {
+            "logmap.client.ct.keyword": {
+              "query": "[[${logmap.client.ct}]]"
+            }
           }
         },
         {

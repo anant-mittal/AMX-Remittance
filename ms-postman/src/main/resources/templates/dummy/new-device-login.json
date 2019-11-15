@@ -1,4 +1,9 @@
 {
+	"name" : "Rabil Mir Uddin",
+	"country" : "IN",
+	"region" : "MH",
+	"city" : "Mumbai",
+	"customerId" : "234",
 	"logmap" : {
 		"desc": "LOGIN:COMPLETED:DONE",
 		"ms": "SERVER-UI",

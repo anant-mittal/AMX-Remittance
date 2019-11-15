@@ -10,38 +10,43 @@
 <title>New login on your [[${_tu.prop('company.name')}]] account</title>
 
 <style type="text/css">
+.head-wrap {
+	text-align: center;
+}
+.small {
+	font-size: small;
+}
 </style>
 
 </head>
 
 <body class="body" style="margin: 0; padding: 0; background: #f4f4f4">
-	<center>
+	<table class="head-wrap" bgcolor="#f4f4f4" width="100%">
+		<tr>
+			<td>New device signed in to, for the account</td>
+		</tr>
+		<tr>
+			<td><b>[[${name}]]</b></td>
+		</tr>
+		<tr>
+			<td>Your [[${_tu.prop('company.name')}]] Account was just signed
+				into, from a new device or location. You're
+				getting this email to make sure that it was you.</td>
+		</tr>
+		<tr class="small">
+			<td><b>Device Details</b></td>
+		</tr>
+		<tr class="small">
+			<td align="center">[[${logmap.agent.operatingSystem}]] | [[${logmap.agent.browser}]] | [[${logmap.client.ct}]]</td>
+		</tr>
+		<tr class="small">
+			<td align="center">IP : [[${logmap.client.ip}]] |  Location : [[${country}]] [[${region}]] [[${city}]]  (Approximate)</td>
+		</tr>
+		<tr>
+			<td>In case it was not you, please call 1-800-1234, immediately.</td>
+		</tr>
+	</table>
+	<!-- /HEADER -->
 
-
-		New device signed in to, for the account <b>[[${name}]]</b> Your
-		[[${_tu.prop('company.name')}]] Account was just signed into, from a
-		new [[${logmap.agent.operatingSystem}]] device. You're getting this email
-		to make sure that it was you. In case it was not you, please call
-		1-800-1234, immediately. Device Details : <span></span>
-
-
-		<table class="head-wrap" bgcolor="#f4f4f4" width="100%">
-			<tr>
-				<td align="center">[[${logmap.agent.operatingSystem}]]</td>
-				<td align="center">[[${logmap.agent.browser}]]</td>
-				<td align="center">[[${logmap.client.ct}]]</td>
-				<td align="center">[[${logmap.client.ip}]]</td>
-				<td align="center">[[${logmap.client.fp}]]</td>
-				<td align="center">[[${country}]]</td>
-				<td align="center">[[${region}]]</td>
-				<td align="center">[[${city}]]</td>
-				<td align="center">[[${newDevice}]]</td>
-				<td align="center">[[${newLocation}]]</td>
-				<td align="center">[[${newIP}]]</td>
-			</tr>
-		</table>
-		<!-- /HEADER -->
-
-	</center>
 </body>
 </html>
