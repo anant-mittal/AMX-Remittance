@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.dict.Tenant;
+import com.amx.jax.logger.LoggerService;
 import com.amx.jax.scope.TenantProperties;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
@@ -35,7 +36,7 @@ import net.sf.jasperreports.engine.SimpleJasperReportsContext;
 public class TemplateUtils {
 
 	/** The log. */
-	private static Logger log = Logger.getLogger(TemplateUtils.class);
+	private static Logger log = LoggerService.getLogger(TemplateUtils.class);
 
 	/** The Constant base64. */
 	private static final Map<String, String> base64 = new ConcurrentHashMap<String, String>();
@@ -73,7 +74,7 @@ public class TemplateUtils {
 	private Resource[] jasperFiles2;
 
 	public String getTemplateFile(String file, Tenant tnt, Locale locale, ContactType contactType) {
-		if (!IS_TEMPLATE_SCANNED) {
+		if (!IS_TEMPLATE_SCANNED || true) {
 			try {
 				for (Resource resource : htmlFiles) {
 					String absPath = resource.getURI().toString().split("\\/templates\\/html\\/")[1];
@@ -115,6 +116,22 @@ public class TemplateUtils {
 			}
 		}
 
+		String fileCacheKey = String.format("%s:%s:%s:%s", file, locale, tnt, contactType);
+
+		if (templateFiles.containsKey(fileCacheKey)) {
+			return templateFiles.get(fileCacheKey);
+		}
+
+		String specficFile = getTemplateFileInternal(file, tnt, locale, contactType);
+		if (ArgUtil.is(specficFile)) {
+			templateFiles.put(fileCacheKey, specficFile);
+			return specficFile;
+		}
+		log.error("Template Not Found {}", fileCacheKey);
+		return file;
+	}
+
+	private String getTemplateFileInternal(String file, Tenant tnt, Locale locale, ContactType contactType) {
 		String relativeFile = file;
 		String folder = Constants.BLANK;
 
@@ -130,20 +147,16 @@ public class TemplateUtils {
 				relativeFile = file.replace("jasper/", Constants.BLANK);
 				folder = "jasper/" + contactType.getShortCode() + "/";
 			}
-			specficFile = getTemplateFile(folder, relativeFile, tnt, locale);
+			specficFile = getTemplateFileInternal(folder, relativeFile, tnt, locale);
 			if (!ArgUtil.isEmpty(specficFile)) {
 				return specficFile;
 			}
 		}
-		specficFile = getTemplateFile(Constants.BLANK, file, tnt, locale);
-		if (!ArgUtil.isEmpty(specficFile)) {
-			return specficFile;
-		}
-		templateFiles.put(specficFile, file);
-		return file;
+		specficFile = getTemplateFileInternal(Constants.BLANK, file, tnt, locale);
+		return specficFile;
 	}
 
-	private String getTemplateFile(String folder, String file, Tenant tnt, Locale locale) {
+	private String getTemplateFileInternal(String folder, String file, Tenant tnt, Locale locale) {
 		String specficFile = String.format(folder + "%s_%s.%s", file, locale.getLanguage(),
 				ArgUtil.parseAsString(tnt, Constants.BLANK).toLowerCase());
 		if (templateFiles.containsKey(specficFile)) {
