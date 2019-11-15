@@ -6,6 +6,8 @@ import java.text.Bidi;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
@@ -341,6 +343,9 @@ public class TemplateUtils {
 		}
 	}
 
+	@Value("${jax.static.url}")
+	String jaxStaticUrl;
+
 	/**
 	 * Read as base 64 string.
 	 *
@@ -352,14 +357,21 @@ public class TemplateUtils {
 		StringBuilder sb = new StringBuilder();
 		sb.append("data:image/png;base64,");
 		String base64String = null;
+
 		if (base64.containsKey(contentId)) {
 			base64String = base64.get(contentId);
+		} else if (contentId.startsWith("owa-content")) {
+			byte[] imageByteArray = IoUtils
+					.toByteArray(
+							applicationContext.getResource("file:" + jaxStaticUrl + "/" + contentId).getInputStream());
+			base64String = StringUtils.newStringUtf8(Base64.encodeBase64(imageByteArray, false));
 		} else {
 			byte[] imageByteArray = IoUtils
 					.toByteArray(applicationContext.getResource("classpath:" + contentId).getInputStream());
 			base64String = StringUtils.newStringUtf8(Base64.encodeBase64(imageByteArray, false));
 			base64.put(contentId, base64String);
 		}
+
 		sb.append(base64String);
 		return sb.toString();
 	}
@@ -372,7 +384,11 @@ public class TemplateUtils {
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public Resource readAsResource(String contentId) throws IOException {
-		return applicationContext.getResource("classpath:" + contentId);
+		if (contentId.startsWith("owa-content")) {
+			return applicationContext.getResource("file:" + jaxStaticUrl + "/" + contentId);
+		} else {
+			return applicationContext.getResource("classpath:" + contentId);
+		}
 	}
 
 	/**
@@ -387,5 +403,7 @@ public class TemplateUtils {
 		}
 		return parseAsString;
 	}
+
+	public static final Pattern PATTERN_CID = Pattern.compile("src=\"cid:(.*?)\"");
 
 }

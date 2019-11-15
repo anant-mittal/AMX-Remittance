@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.postman.PostManConfig;
+import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.tunnel.TunnelMessage;
 import com.amx.utils.ArgUtil;
@@ -27,7 +28,7 @@ import com.amx.utils.TimeUtils;
 public class EmailServiceTask {
 
 	private static final Logger LOGGER = LoggerService.getLogger(EmailServiceTask.class);
-	@Autowired
+	@Autowired(required = false)
 	RedissonClient redisson;
 
 	@Autowired
@@ -38,6 +39,9 @@ public class EmailServiceTask {
 
 	@Scheduled(fixedDelay = EmailService.RESEND_INTERVAL)
 	public void doTask() throws IOException {
+		if (redisson == null) {
+			throw new PostManException("No Redisson Avaialble");
+		}
 		RQueue<TunnelMessage<Email>> emailQueue = redisson
 				.getQueue(EmailService.FAILED_EMAIL_QUEUE + "_" +
 						TimeUtils.getReverseRotationNumber(EmailService.RESEND_INTERVAL, 0x1)
