@@ -28,7 +28,7 @@ public class AmxEnums {
 	}
 
 	public static enum CommunicationEvents implements EnumType {
-		CASH_PICKUP_BANK, CASH_PICKUP_WU, CASH_PICKUP_TF, BIRTHDAY_WISHES
+		CASH_PICKUP_BANK, CASH_PICKUP_WU, CASH_PICKUP_TF, BIRTHDAY_WISHES,NEW_DEVICE_LOGIN
 	}
 
 }
