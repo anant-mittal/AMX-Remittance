@@ -118,6 +118,9 @@ public class LoginAuditHandler implements AuditHandler {
 				newLocation = false;
 			}
 		} else {
+			params.toMap().put("country", "UNKNOWN");
+			params.toMap().put("region", "UNKNOWN");
+			params.toMap().put("city", "UNKNOWN");
 			newLocation = false;
 		}
 
