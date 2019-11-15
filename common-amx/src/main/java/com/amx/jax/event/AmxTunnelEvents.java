@@ -28,6 +28,7 @@ public enum AmxTunnelEvents implements ITunnelEventsDict {
 		public static final String CASH_TRNX_COMM = "CASH_TRNX_COMM";
 		public static final String INS_PENDING_TRNX = "INS_PENDING_TRNX";
 		public static final String IPSOS_DISCOUNT = "IPSOS_DISCOUNT";
+		public static final String BIRTHDAY_WISHES = "BIRTHDAY_WISHES";
 
 	}
 
