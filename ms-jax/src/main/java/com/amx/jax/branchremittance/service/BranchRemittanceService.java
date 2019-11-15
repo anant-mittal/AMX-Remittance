@@ -247,7 +247,8 @@ public class BranchRemittanceService extends AbstractService{
 	public AmxApiResponse<BenePackageResponse, Object> getBenePackages(BenePackageRequest benePackageRequest) {
 		Map<String, Object> validationResults = preFlexFieldManager.validateBenePackageRequest(benePackageRequest);
 		BenePackageResponse resp = preFlexFieldManager.createBenePackageResponse(validationResults);
-		packageDescriptionManager.fetchGiftPackageDesc(benePackageRequest,resp,null);
+		String packageAmiecCode = (String) validationResults.get("packageSelectedAmiecCode");
+		packageDescriptionManager.fetchGiftPackageDesc(benePackageRequest, resp, packageAmiecCode);
 		return AmxApiResponse.build(resp);
 	}
 	

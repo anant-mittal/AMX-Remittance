@@ -33,35 +33,32 @@ public class PackageDescriptionManager {
 	IBeneficiaryOnlineDao beneficiaryRepository;
 
 	public void fetchGiftPackageDesc(BenePackageRequest benePackageRequest, BenePackageResponse resp, String amiecCode) {
-		BenificiaryListView beneficaryDetails = beneficiaryRepository
-				.findByCustomerIdAndBeneficiaryRelationShipSeqIdAndIsActive(metaData.getCustomerId(),
-						benePackageRequest.getBeneId(), ConstantDocument.Yes);
+		BenificiaryListView beneficaryDetails = beneficiaryRepository.findByCustomerIdAndBeneficiaryRelationShipSeqIdAndIsActive(
+				metaData.getCustomerId(), benePackageRequest.getBeneId(), ConstantDocument.Yes);
 		BigDecimal routingBankId = beneficaryDetails.getServiceProvider();
 		List<JaxConditionalFieldDto> requiredFlexFields = resp.getRequiredFlexFields();
 		for (JaxConditionalFieldDto jaxConditionalFieldDto : requiredFlexFields) {
 			List<JaxFieldValueDto> possibleValues = jaxConditionalFieldDto.getField().getPossibleValues();
-			if(!ArgUtil.isEmpty(possibleValues)) {
+			if (!ArgUtil.isEmpty(possibleValues)) {
 				for (JaxFieldValueDto jaxFieldValueDto : possibleValues) {
 					FlexFieldDto flexFieldDto = (FlexFieldDto) jaxFieldValueDto.getValue();
-					GiftPackageDescModel giftpackageDescModel = iGiftPackageDescRepository
-							.findByRoutingBankIdAndAmiecCode(routingBankId,flexFieldDto.getAmieceCode());
-					if(!ArgUtil.isEmpty(giftpackageDescModel)) {
+					GiftPackageDescModel giftpackageDescModel = iGiftPackageDescRepository.findByRoutingBankIdAndAmiecCode(routingBankId,
+							flexFieldDto.getAmieceCode());
+					if (!ArgUtil.isEmpty(giftpackageDescModel)) {
 						jaxFieldValueDto.setPackageDescription(giftpackageDescModel.getPackageDesc());
 					}
-					
 
 				}
 			}
-			
+
 		}
-		
+
 		if (resp.getFcAmount() != null) {
-			GiftPackageDescModel giftpackageDescModel = iGiftPackageDescRepository
-					.findByRoutingBankIdAndBeneficiaryBankIdAndBankBranchIdAndAmiecCode(routingBankId,
-							beneficaryDetails.getBankId(), beneficaryDetails.getBranchId(), amiecCode);
-
-			resp.setPackageDescription(giftpackageDescModel.getPackageDesc());
-
+			GiftPackageDescModel giftpackageDescModel = iGiftPackageDescRepository.findByRoutingBankIdAndBeneficiaryBankIdAndBankBranchIdAndAmiecCode(
+					routingBankId, beneficaryDetails.getBankId(), beneficaryDetails.getBranchId(), amiecCode);
+			if (giftpackageDescModel != null) {
+				resp.setPackageDescription(giftpackageDescModel.getPackageDesc());
+			}
 		}
 	}
 

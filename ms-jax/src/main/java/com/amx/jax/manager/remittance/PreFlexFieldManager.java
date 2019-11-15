@@ -2,6 +2,7 @@ package com.amx.jax.manager.remittance;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -49,6 +50,7 @@ public class PreFlexFieldManager {
 
 	public static final String FC_AMOUNT_FLEX_FIELD_NAME = "PACKAGE_FCAMOUNT";
 	public static final String INDIC_16_VOLUNTEERCONTRIBUTION_SYMBOL = ">";
+	public static final List<String> GIFT_PACKAGE_INDICATORS = Arrays.asList("INDIC6");
 
 	@Autowired
 	IAdditionalDataDisplayDao additionalDataDisplayDao;
@@ -127,7 +129,6 @@ public class PreFlexFieldManager {
 				String k = element.getKey();
 				FlexFieldDto v = element.getValue();
 				if ("INDIC16".equals(k)) {
-					packageSelectedAmiecCode = v.getAmieceCode();
 					monthlyContribution = new BigDecimal(v.getAmieceCode().replaceAll(">", ""));
 				}
 				if ("INDIC17".equals(k)) {
@@ -135,6 +136,11 @@ public class PreFlexFieldManager {
 				}
 				if ("INDIC18".equals(k)) {
 					noOfMonth = Integer.parseInt(v.getAmieceCode().replaceAll(">", ""));
+				}
+				// bpi
+				if (GIFT_PACKAGE_INDICATORS.contains(k)) {
+					packageSelectedAmiecCode = v.getAmieceCode();
+					packageFcAmount = new BigDecimal(v.getAmieceCode().replaceAll(">", ""));
 				}
 			}
 		}
@@ -284,7 +290,7 @@ public class PreFlexFieldManager {
 		if (validationResults.get("PACKAGE_FC_AMOUNT") != null) {
 			resp.setFcAmount(new BigDecimal(validationResults.get("PACKAGE_FC_AMOUNT").toString()));
 		}
-		
+
 		return resp;
 	}
 
