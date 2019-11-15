@@ -10,7 +10,7 @@ import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dict.AmxEnums.CommunicationEvents;
 import com.amx.jax.dict.Language;
 import com.amx.jax.event.AmxTunnelEvents;
-import com.amx.jax.postman.client.PostManClient;
+import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.client.WhatsAppClient;
 import com.amx.jax.postman.model.Email;
@@ -31,7 +31,7 @@ import com.amx.utils.JsonUtil;
 @TunnelEventMapping(topic = AmxTunnelEvents.Names.BIRTHDAY_WISHES,scheme = TunnelEventXchange.TASK_WORKER)
 public class BirthdayWishesListener implements ITunnelSubscriber<DBEvent> {
 	@Autowired
-	PostManClient postManClient;
+	PostManService postManService;
 
 	@Autowired
 	private PushNotifyClient pushNotifyClient;
@@ -68,7 +68,7 @@ public class BirthdayWishesListener implements ITunnelSubscriber<DBEvent> {
 			}
 			email.setITemplate(TemplatesMX.BIRTHDAY_WISH);
 
-			postManClient.sendEmail(email);
+			postManService.sendEmailAsync(email);
 		}
 
 		if (x.isWhatsApp()) {
@@ -82,7 +82,7 @@ public class BirthdayWishesListener implements ITunnelSubscriber<DBEvent> {
 			SMS smsMessage = new SMS();
 			smsMessage.setITemplate(TemplatesMX.BIRTHDAY_WISH);
 			smsMessage.addTo(customer.getWhatsappPrefix() + customer.getWhatsapp());
-			postManClient.sendSMSAsync(smsMessage);
+			postManService.sendSMSAsync(smsMessage);
 		}
 
 		if (x.isPushNotify()) {
