@@ -55,13 +55,11 @@ public class PackageDescriptionManager {
 			
 		}
 		
-		if (resp.getAmount() != null) {
-			// TODO set package descriptin response
-
+		if (resp.getFcAmount() != null) {
 			GiftPackageDescModel giftpackageDescModel = iGiftPackageDescRepository
 					.findByRoutingBankIdAndBeneficiaryBankIdAndBankBranchIdAndAmiecCode(routingBankId,
 							beneficaryDetails.getBankId(), beneficaryDetails.getBranchId(), amiecCode);
-			
+
 			resp.setPackageDescription(giftpackageDescModel.getPackageDesc());
 
 		}
