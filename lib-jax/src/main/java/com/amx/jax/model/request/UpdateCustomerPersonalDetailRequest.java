@@ -5,6 +5,7 @@ import java.util.Date;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.Email;
 
@@ -31,6 +32,10 @@ public class UpdateCustomerPersonalDetailRequest implements ICustomerContactData
 	BigDecimal watsAppMobileNo;
 	@Valid
 	CustomerPassportData customerPassportData;
+	@Size(max = 200)
+	String firstName;
+	@Size(max = 200)
+	String lastName;
 
 	public Date getDateOfBirth() {
 		return dateOfBirth;
@@ -126,6 +131,22 @@ public class UpdateCustomerPersonalDetailRequest implements ICustomerContactData
 
 	public void setCustomerPassportData(CustomerPassportData customerPassportData) {
 		this.customerPassportData = customerPassportData;
+	}
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
 
 }

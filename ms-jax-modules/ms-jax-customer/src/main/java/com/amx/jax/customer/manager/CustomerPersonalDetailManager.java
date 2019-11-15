@@ -24,6 +24,7 @@ import com.amx.jax.model.request.customer.CustomerPassportData;
 import com.amx.jax.scope.TenantContext;
 import com.amx.jax.services.JaxDBService;
 import com.amx.jax.userservice.dao.CustomerDao;
+import com.amx.jax.userservice.manager.CustomerIdProofManager;
 import com.amx.jax.userservice.service.CustomerValidationContext.CustomerValidation;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.validation.CountryMetaValidation;
@@ -50,6 +51,8 @@ public class CustomerPersonalDetailManager {
 	UserService userService;
 	@Autowired
 	OffsiteCustomerRegManager offsiteCustomerRegManager;
+	@Autowired
+	CustomerIdProofManager customerIdProofManager;
 
 	private static final Logger log = LoggerFactory.getLogger(CustomerPersonalDetailManager.class);
 
@@ -92,6 +95,14 @@ public class CustomerPersonalDetailManager {
 		}
 		if (req.getCustomerPassportData() != null) {
 			savePassportDetail(customer, req.getCustomerPassportData());
+		}
+		if (req.getFirstName() != null) {
+			customer.setFirstName(req.getFirstName());
+			customerIdProofManager.markCustomerPendingCompliance(customer.getCustomerId());
+		}
+		if (req.getLastName() != null) {
+			customer.setLastName(req.getLastName());
+			customerIdProofManager.markCustomerPendingCompliance(customer.getCustomerId());
 		}
 		cvs.forEach(x -> jaxCustomerContactVerificationService.sendVerificationLink(customer, x));
 		customer.setUpdatedBy(jaxDbService.getCreatedOrUpdatedBy());
