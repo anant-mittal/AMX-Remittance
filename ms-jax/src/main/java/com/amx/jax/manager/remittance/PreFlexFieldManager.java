@@ -167,6 +167,7 @@ public class PreFlexFieldManager {
 			field.setDefaultValue(parameterDetailsDto.getAmount().toString());
 		}
 		field.setType("TEXT");
+		dto.setId(parameterDetailsDto.getParameterDetailsId());
 		dto.setField(field);
 		return dto;
 	}
