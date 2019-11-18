@@ -239,9 +239,9 @@ public class BranchRemittanceService extends AbstractService{
 	
 	
 	public AmxApiResponse<ParameterDetailsResponseDto, Object> getGiftService(BigDecimal beneRelaId) {
-		ParameterDetailsResponseDto parameterDetailsResponseDto = branchRemitManager.getGiftService(beneRelaId);
-		parameterDetailsResponseDto.getParameterDetailsDto().addAll(additionalBankDetailManager.fetchServiceProviderFcAmount(beneRelaId));
-		return AmxApiResponse.build(parameterDetailsResponseDto);
+		/*ParameterDetailsResponseDto parameterDetailsResponseDto = branchRemitManager.getGiftService(beneRelaId);
+		parameterDetailsResponseDto.getParameterDetailsDto().addAll(additionalBankDetailManager.fetchServiceProviderFcAmount(beneRelaId));*/
+		return AmxApiResponse.build(new ParameterDetailsResponseDto());
 	}
 
 	public AmxApiResponse<BenePackageResponse, Object> getBenePackages(BenePackageRequest benePackageRequest) {
