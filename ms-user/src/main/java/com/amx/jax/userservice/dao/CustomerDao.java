@@ -346,4 +346,9 @@ public class CustomerDao {
 			String firstName) {
 		return repo.getCustomerForDuplicateCheck(nationality, mobile, email, firstName);
 	}
+	
+	public Customer getActiveCustomerDetailsByCustomerId(BigDecimal customerId) {
+		Customer customer = customerRepo.getActiveCustomerDetailsByCustomerId(customerId);
+		return customer;
+	}
 }

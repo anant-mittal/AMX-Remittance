@@ -63,11 +63,13 @@ import com.amx.jax.dbmodel.bene.BeneficaryMaster;
 import com.amx.jax.dbmodel.bene.BeneficaryRelationship;
 import com.amx.jax.dbmodel.bene.RelationsDescription;
 import com.amx.jax.dbmodel.remittance.ViewParameterDetails;
+import com.amx.jax.dict.AmxEnums.CommunicationEvents;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.events.CActivityEvent;
+import com.amx.jax.manager.CommunicationPreferencesManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.model.CivilIdOtpModel;
@@ -190,7 +192,9 @@ public class BeneficiaryService extends AbstractService {
 	LoyalityPointService loyalityPointService;
 	
 	@Autowired
-	CommunicationPrefsUtil communicationPrefsUtil;
+	CommunicationPreferencesManager communicationPreferencesManager;
+	
+	
 	
 	
 	public ApiResponse getBeneficiaryListForOnline(BigDecimal customerId, BigDecimal applicationCountryId,BigDecimal beneCountryId,Boolean excludePackage) {
@@ -677,11 +681,11 @@ public class BeneficiaryService extends AbstractService {
 	 * 
 	 */
 	public ApiResponse sendOtp(List<ContactType> channels) {
-		//communicationPrefsUtil.forCustomer(event, communicatable)
+		communicationPreferencesManager.validateCommunicationPreferences(channels);
 		Customer customer = null;
 		String civilId = null;
 		BigDecimal customerId = null;
-
+		
 		if (metaData.getCustomerId() != null) {
 			customer = custDao.getCustById(metaData.getCustomerId());
 			civilId = customer.getIdentityInt();
