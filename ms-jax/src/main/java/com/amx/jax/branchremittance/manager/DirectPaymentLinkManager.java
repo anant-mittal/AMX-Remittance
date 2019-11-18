@@ -412,12 +412,17 @@ public class DirectPaymentLinkManager extends AbstractModel {
 				remittanceCollection.setPaymentModeId(payModeModel.getPaymentModeId());
 				remittanceCollection.setPaymentAmount(paymentLinkData.getPayAmount());
 				remittanceCollection.setApprovalNo(paymentLinkData.getPgAuthCode());
-								
 				collctionModeDto.add(remittanceCollection);
 				
 				BigDecimal totalLoyaltyEncashed =BigDecimal.ZERO;
 				BigDecimal totalPaidAmount =BigDecimal.ZERO;
-				List<RemittanceApplication> applications = remittanceApplicationRepository.getApplByPaymentlinkId(linkId);
+				
+				logger.info("Ex APPL TRNX Query Start ------> ");
+				String[] appIds = paymentLinkData.getApplIds().split(",");
+				List<BigDecimal> appIdsBigDecimalList = Arrays.asList(appIds).stream().map(i-> new BigDecimal(i)).collect(Collectors.toList());
+				List<RemittanceApplication> applications = remittanceApplicationRepository.getApplicationList(appIdsBigDecimalList);
+				//List<RemittanceApplication> applications = remittanceApplicationRepository.getApplByPaymentlinkId(linkId);
+				logger.info("Ex APPL TRNX Query End ------> ");
 				
 				if(null != applications){
 					for(RemittanceApplication appl: applications) {
