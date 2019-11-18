@@ -22,6 +22,7 @@ import org.springframework.stereotype.Component;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.postman.PostManException;
 import com.amx.jax.scope.TenantProperties;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
@@ -36,6 +37,8 @@ import net.sf.jasperreports.engine.SimpleJasperReportsContext;
  */
 @Component
 public class TemplateUtils {
+
+	private static final String CHECKED = "_NOT_FOUND_TEMPLATE_";
 
 	/** The log. */
 	private static Logger log = LoggerService.getLogger(TemplateUtils.class);
@@ -75,8 +78,17 @@ public class TemplateUtils {
 	@Value("classpath*:*/templates/jasper/*.jrxml")
 	private Resource[] jasperFiles2;
 
+	@Value("${jax.static.url}")
+	String jaxStaticUrl;
+
+	@Value("${jax.static.context}")
+	String jaxStaticContext;
+
+	@Value("${jax.static.path}")
+	String jaxStaticPath;
+
 	public String getTemplateFile(String file, Tenant tnt, Locale locale, ContactType contactType) {
-		if (!IS_TEMPLATE_SCANNED || true) {
+		if (!IS_TEMPLATE_SCANNED) {
 			try {
 				for (Resource resource : htmlFiles) {
 					String absPath = resource.getURI().toString().split("\\/templates\\/html\\/")[1];
@@ -120,17 +132,28 @@ public class TemplateUtils {
 
 		String fileCacheKey = String.format("%s:%s:%s:%s", file, locale, tnt, contactType);
 
-		if (templateFiles.containsKey(fileCacheKey)) {
-			return templateFiles.get(fileCacheKey);
+		if (templateFiles.containsKey(fileCacheKey)) { // File is Scanned Already
+			if (!CHECKED.equals(templateFiles.get(fileCacheKey))) { // File is already Scanned and Found
+				return templateFiles.get(fileCacheKey);
+			}
+			// Template will be searched in External Folder
+		} else { // File is Not scanned yet, this is first time
+			String specficFile = getTemplateFileInternal(file, tnt, locale, contactType);
+			if (ArgUtil.is(specficFile)) {
+				templateFiles.put(fileCacheKey, specficFile);
+				return specficFile;
+			} else {
+				templateFiles.put(fileCacheKey, CHECKED);
+			}
 		}
 
-		String specficFile = getTemplateFileInternal(file, tnt, locale, contactType);
-		if (ArgUtil.is(specficFile)) {
-			templateFiles.put(fileCacheKey, specficFile);
-			return specficFile;
+		Resource r = applicationContext.getResource("file:" + jaxStaticPath + "/" + file);
+		if (r != null && r.exists()) {
+			return file;
+		} else {
+			log.error("Template Not Found {}", fileCacheKey);
+			throw new PostManException("Template Not Found");
 		}
-		log.error("Template Not Found {}", fileCacheKey);
-		return file;
 	}
 
 	private String getTemplateFileInternal(String file, Tenant tnt, Locale locale, ContactType contactType) {
@@ -343,9 +366,6 @@ public class TemplateUtils {
 		}
 	}
 
-	@Value("${jax.static.url}")
-	String jaxStaticUrl;
-
 	/**
 	 * Read as base 64 string.
 	 *
@@ -360,7 +380,7 @@ public class TemplateUtils {
 
 		if (base64.containsKey(contentId)) {
 			base64String = base64.get(contentId);
-		} else if (contentId.startsWith("owa-content")) {
+		} else if (contentId.startsWith(jaxStaticContext)) {
 			byte[] imageByteArray = IoUtils
 					.toByteArray(
 							applicationContext.getResource("file:" + jaxStaticUrl + "/" + contentId).getInputStream());
@@ -384,7 +404,7 @@ public class TemplateUtils {
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public Resource readAsResource(String contentId) throws IOException {
-		if (contentId.startsWith("owa-content")) {
+		if (contentId.startsWith(jaxStaticContext)) {
 			return applicationContext.getResource("file:" + jaxStaticUrl + "/" + contentId);
 		} else {
 			return applicationContext.getResource("classpath:" + contentId);
