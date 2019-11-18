@@ -50,6 +50,8 @@ public class BeneBranchManager {
 	BankService bankService;
 	@Autowired
 	BeneficiaryTrnxManager beneficiaryTrnxManager;
+	@Autowired
+	BeneAccountManager beneAccountManager;
 
 	public void updateBeneStatus(UpdateBeneStatusRequest request) {
 		BeneficaryRelationship beneRel = iBeneficiaryRelationshipDao.findOne(BigDecimal.valueOf(request.getBeneRelationshipSeqId()));
@@ -175,7 +177,7 @@ public class BeneBranchManager {
 			beneficaryAccount.setServiceGroupId(accountDetails.getServiceGroupId());
 		}
 		if (accountDetails.getServiceProviderBranchId() != null) {
-			beneficaryAccount.setServiceProviderBranchId(accountDetails.getServiceProviderBranchId());
+			beneficaryAccount.setServiceProviderBranchId(beneAccountManager.getRoutingBankBranchId(accountDetails));
 		}
 		if (accountDetails.getServiceProviderId() != null) {
 			beneficaryAccount.setServiceProviderId(accountDetails.getServiceProviderId());
