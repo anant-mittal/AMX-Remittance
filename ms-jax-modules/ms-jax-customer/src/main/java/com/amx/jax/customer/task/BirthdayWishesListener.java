@@ -5,14 +5,11 @@ import java.math.BigDecimal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 
-import com.amx.jax.async.ExecutorConfig;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dict.AmxEnums.CommunicationEvents;
 import com.amx.jax.dict.Language;
 import com.amx.jax.event.AmxTunnelEvents;
-import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.client.WhatsAppClient;
@@ -72,7 +69,7 @@ public class BirthdayWishesListener implements ITunnelSubscriber<DBEvent> {
 			email.addTo(customer.getEmail());
 			email.setITemplate(TemplatesMX.BIRTHDAY_WISH);
 			
-			sendEmail(email);
+			postManService.sendEmailAsync(email);
 		}
 
 		if (x.isWhatsApp()) {
@@ -97,15 +94,6 @@ public class BirthdayWishesListener implements ITunnelSubscriber<DBEvent> {
 		}
 	}
 	
-	@Async(ExecutorConfig.DEFAULT)
-	public void sendEmail(Email email) {
-		try {
-			LOGGER.debug("email sent");
-			postManService.sendEmailAsync(email);
-		} catch (PostManException e) {
-			LOGGER.debug("email exception",e);
-
-		}
-	}
+	
 
 }
