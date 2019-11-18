@@ -20,6 +20,7 @@ import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.AuditActor;
 import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.postman.PostManConfig;
+import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.audit.PMGaugeEvent;
 import com.amx.jax.postman.events.UserInboxEvent;
 import com.amx.jax.postman.model.File;
@@ -36,7 +37,7 @@ public class WhatsAppService {
 
 	public static String WHATS_MESSAGES = "WHATS_MESSAGES";
 
-	@Autowired
+	@Autowired(required = false)
 	RedissonClient redisson;
 
 	@Autowired
@@ -55,6 +56,9 @@ public class WhatsAppService {
 	private AuditService auditService;
 
 	private RBlockingQueue<WAMessage> getQueue(BigDecimal queueId) {
+		if (redisson == null) {
+			throw new PostManException("No Redisson Avaialble");
+		}
 		if (ArgUtil.isEmpty(queueId) || queueId.equals(BigDecimal.ZERO)) {
 			return redisson.getBlockingQueue(WHATS_MESSAGES + "_" + AppContextUtil.getTenant());
 		}

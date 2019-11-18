@@ -3,7 +3,6 @@ package com.amx.jax.dbmodel;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -28,7 +27,6 @@ import org.hibernate.annotations.Proxy;
 
 import com.amx.jax.constants.CustomerRegistrationType;
 import com.amx.jax.dbmodel.compliance.ComplianceBlockedCustomerDocMap;
-import com.amx.jax.dbmodel.customer.CustomerDocumentTypeMaster;
 import com.amx.jax.dict.Communicatable;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.util.AmxDBConstants.Status;

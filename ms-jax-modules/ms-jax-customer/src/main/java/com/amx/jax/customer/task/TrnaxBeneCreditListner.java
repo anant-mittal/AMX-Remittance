@@ -24,7 +24,6 @@ import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.dict.Language;
 import com.amx.jax.event.AmxTunnelEvents;
-
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.client.PushNotifyClient;
