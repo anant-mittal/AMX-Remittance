@@ -7,11 +7,9 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
-import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.CrudRepository;
 
 import com.amx.jax.dbmodel.Device;
-import com.amx.jax.dbmodel.DeviceStateInfo;
 import com.amx.jax.dict.UserClient.ClientType;
 
 /**

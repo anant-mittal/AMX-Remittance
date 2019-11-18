@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import com.amx.jax.logger.AbstractEvent.EventMarker;
 import com.amx.jax.logger.AbstractEvent.EventType;
+import com.amx.jax.logger.events.AmxAuditEvent.EventStep;
 
 /**
  * The Class AuthState.
@@ -45,7 +46,7 @@ public class AuthState implements Serializable {
 	/**
 	 * The Enum AuthStep.
 	 */
-	public static enum AuthStep {
+	public static enum AuthStep implements EventStep {
 
 		DEVICEPASS,
 		/** The userpass. */

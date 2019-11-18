@@ -345,7 +345,14 @@ public enum JaxError implements IExceptionEnum {
 	BPI_SETUP_IS_MISSING,
 	
 	// Job In Progress Error Key
-	JAX_JOB_IN_PROGRESS;
+	JAX_JOB_IN_PROGRESS,
+
+	//Direct Payment Link
+	VERIFICATION_CODE_MISMATCH,
+	DIRECT_LINK_DEACTIVATED,
+	DIRECT_LINK_EXPIRED,
+	DIRECT_LINK_INVALID,
+	HOMESEND_APPL_NOT_ALLOWED;
 	
 	@Deprecated
 	public String getCode() {

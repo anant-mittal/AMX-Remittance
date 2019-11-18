@@ -7,7 +7,7 @@ import com.amx.jax.dict.Tenant;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CustomerNotificationDTO {
+public class CustomerNotifyHubDTO {
 
 	private BigDecimal notificationId;
 	private BigDecimal customerId;

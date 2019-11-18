@@ -34,7 +34,7 @@ public class GridInfo<T> {
 		return fieldMap;
 	}
 
-	public static <T> String query(GridInfo<?> info, Class<?> clazz, String query) {
+	public static <T> String query(GridInfo<?> info, String table, Class<?> clazz, String query) {
 		if (ArgUtil.isEmpty(query)) {
 			Class<?> tmpClass = clazz;
 			String columnString = "";
@@ -67,9 +67,15 @@ public class GridInfo<T> {
 				info.setGroupBy(groupString);
 			}
 
-			Table tableAnnot = clazz.getAnnotation(Table.class);
-			if (!ArgUtil.isEmpty(tableAnnot) && !ArgUtil.isEmpty(tableAnnot.name())) {
-				return String.format("SELECT %s  FROM %s", columnString, tableAnnot.name());
+			if (ArgUtil.isEmpty(table)) {
+				Table tableAnnot = clazz.getAnnotation(Table.class);
+				if (!ArgUtil.isEmpty(tableAnnot) && !ArgUtil.isEmpty(tableAnnot.name())) {
+					table = tableAnnot.name();
+				}
+			}
+
+			if (ArgUtil.is(table)) {
+				return String.format("SELECT %s  FROM %s", columnString, table);
 			}
 		}
 		return query;
@@ -81,21 +87,25 @@ public class GridInfo<T> {
 	Class<T> resultClass;
 	boolean customeQuery;
 
-	GridInfo(String query, Class<T> resultClass) {
+	GridInfo(String table, Class<T> resultClass, String query) {
 		if (!ArgUtil.isEmpty(query)) {
 			this.customeQuery = true;
 		}
-		this.query = query(this, resultClass, query);
+		this.query = query(this, table, resultClass, query);
 		this.resultClass = resultClass;
 		this.map = map(resultClass, new HashMap<String, String>());
 	}
 
 	GridInfo(Class<T> resultClass, String query) {
-		this(query, resultClass);
+		this(null, resultClass, query);
+	}
+
+	GridInfo(String table, Class<T> resultClass) {
+		this(table, resultClass, null);
 	}
 
 	GridInfo(Class<T> resultClass) {
-		this(null, resultClass);
+		this(null, resultClass, null);
 	}
 
 	public String getQuery() {

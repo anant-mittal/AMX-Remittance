@@ -1,4 +1,4 @@
-package com.amx.jax.radar.jobs.customer;
+package com.amx.jax.customer.task;
 
 import java.math.BigDecimal;
 import java.util.LinkedList;
@@ -7,12 +7,13 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
 
-import com.amx.amxlib.model.CustomerNotificationDTO;
 import com.amx.jax.client.configs.JaxMetaInfo;
+import com.amx.jax.customer.service.CustomerNotifyHubService;
+import com.amx.jax.dbmodel.customer.CustomerNotifyHubRecord;
 import com.amx.jax.dict.Language;
 import com.amx.jax.dict.Tenant;
+import com.amx.jax.meta.MetaData;
 import com.amx.jax.postman.events.UserMessageEvent;
 import com.amx.jax.postman.model.Contact;
 import com.amx.jax.postman.model.PushMessage;
@@ -22,16 +23,16 @@ import com.amx.jax.tunnel.TunnelEventMapping;
 import com.amx.jax.tunnel.TunnelEventXchange;
 import com.amx.utils.ArgUtil;
 
-@TunnelEventMapping(byEvent = UserMessageEvent.class, scheme = TunnelEventXchange.TASK_LISTNER, integrity = true)
-public class UserNotificationMongoListener implements ITunnelSubscriber<UserMessageEvent> {
+@TunnelEventMapping(byEvent = UserMessageEvent.class, scheme = TunnelEventXchange.TASK_WORKER)
+public class CustomerNotifyHubListner implements ITunnelSubscriber<UserMessageEvent> {
 
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
 	@Autowired
-	MongoTemplate mongoTemplate;
+	private CustomerNotifyHubService customerNotificationService;
 
 	@Autowired
-	private JaxMetaInfo jaxMetaInfo;
+	private MetaData jaxMetaInfo;
 
 	@Override
 	public void onMessage(String channel, UserMessageEvent task) {
@@ -43,12 +44,12 @@ public class UserNotificationMongoListener implements ITunnelSubscriber<UserMess
 		jaxMetaInfo.setCompanyId(new BigDecimal(JaxMetaInfo.DEFAULT_COMPANY_ID));
 		jaxMetaInfo.setCountryBranchId(new BigDecimal(JaxMetaInfo.DEFAULT_COUNTRY_BRANCH_ID));
 
-		List<CustomerNotificationDTO> customerNotificationList = new LinkedList<CustomerNotificationDTO>();
+		List<CustomerNotifyHubRecord> customerNotificationList = new LinkedList<CustomerNotifyHubRecord>();
 
 		List<String> tos = task.getTo();
 
 		for (String to : tos) {
-			CustomerNotificationDTO customerNotification = new CustomerNotificationDTO();
+			CustomerNotifyHubRecord customerNotification = new CustomerNotifyHubRecord();
 
 			Contact c = PushMessage.toContact(to);
 			boolean foundTo = false;
@@ -70,15 +71,11 @@ public class UserNotificationMongoListener implements ITunnelSubscriber<UserMess
 			if (foundTo) {
 				customerNotification.setTitle(task.getSubject());
 				customerNotification.setMessage(task.getMessage());
-				customerNotification.setTemplate(task.getTemplate());
-				customerNotification.setTnt(tnt);
 				customerNotificationList.add(customerNotification);
 			}
 		}
 
-		for (CustomerNotificationDTO customerNotification : customerNotificationList) {
-			mongoTemplate.save(customerNotification, "notifications");
-		}
+		customerNotificationService.save(customerNotificationList);
 
 	}
 

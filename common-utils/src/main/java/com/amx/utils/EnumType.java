@@ -4,7 +4,6 @@ package com.amx.utils;
  * The Interface EnumType.
  */
 public interface EnumType {
-
 	/**
 	 * Name.
 	 *
@@ -27,5 +26,4 @@ public interface EnumType {
 	public default EnumType enumValue() {
 		return this;
 	};
-
 }

@@ -1,4 +1,4 @@
-package com.amx.jax.dbmodel;
+package com.amx.jax.dbmodel.customer;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -14,7 +14,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "JAX_PUSH_NOTIFICATION")
-public class PushNotificationRecord implements Serializable {
+public class CustomerNotifyHubRecord implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private BigDecimal notificationId;

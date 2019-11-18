@@ -4,7 +4,6 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,7 +24,6 @@ import com.amx.amxlib.exception.ResourceNotFoundException;
 import com.amx.amxlib.meta.model.AnnualIncomeRangeDTO;
 import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.meta.model.IncomeDto;
-import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.UserFingerprintResponseModel;
 import com.amx.amxlib.model.response.ApiResponse;
@@ -35,7 +33,7 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.constants.JaxChannel;
 import com.amx.jax.dict.Tenant;
-
+import com.amx.jax.model.CivilIdOtpModel;
 import com.amx.jax.model.UserDevice;
 import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.model.customer.SecurityQuestionModel;

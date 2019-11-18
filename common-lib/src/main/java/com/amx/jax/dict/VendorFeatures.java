@@ -1,8 +1,9 @@
 package com.amx.jax.dict;
 
 import com.amx.jax.types.Pnum;
+import com.amx.utils.EnumType;
 
-public class VendorFeatures extends Pnum {
+public class VendorFeatures extends Pnum implements EnumType {
 
 	public VendorFeatures(String name, int ordinal) {
 		super(name, ordinal);

@@ -9,11 +9,13 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.jax.constants.JaxChannel;
 import com.amx.jax.dict.Tenant;
+import com.amx.jax.scope.ThreadScoped;
 import com.amx.jax.services.AbstractServiceFactory;
 import com.amx.utils.ArgUtil;
 
 @Component
-@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
+//@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
+@ThreadScoped
 public class MetaData implements IMetaData {
 	
 	private static final BigDecimal MAX_LANG_ID = new BigDecimal(2);
