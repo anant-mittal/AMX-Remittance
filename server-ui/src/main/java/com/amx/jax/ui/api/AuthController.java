@@ -108,7 +108,7 @@ public class AuthController {
 		}
 
 		if(sessionService.validatedUser()) {
-			throw new UIServerError(OWAStatusStatusCodes.ACTIVE_SESSION);
+			//throw new UIServerError(OWAStatusStatusCodes.ACTIVE_SESSION);
 		}
 		
 		String captcha = JaxAuthContext.captcha(authData.getCaptachKey());

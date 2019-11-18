@@ -13,6 +13,7 @@ import com.amx.jax.customer.service.CustomerNotifyHubService;
 import com.amx.jax.dbmodel.customer.CustomerNotifyHubRecord;
 import com.amx.jax.dict.Language;
 import com.amx.jax.dict.Tenant;
+import com.amx.jax.meta.MetaData;
 import com.amx.jax.postman.events.UserMessageEvent;
 import com.amx.jax.postman.model.Contact;
 import com.amx.jax.postman.model.PushMessage;
@@ -31,7 +32,7 @@ public class CustomerNotifyHubListner implements ITunnelSubscriber<UserMessageEv
 	private CustomerNotifyHubService customerNotificationService;
 
 	@Autowired
-	private JaxMetaInfo jaxMetaInfo;
+	private MetaData jaxMetaInfo;
 
 	@Override
 	public void onMessage(String channel, UserMessageEvent task) {
