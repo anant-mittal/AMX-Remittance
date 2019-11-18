@@ -112,7 +112,7 @@ public class BeneficiaryBranchController {
 
 	}
 
-	@RequestMapping(value = "/api/bene/id/list", method = RequestMethod.GET)
+	@RequestMapping(value = "/api/bene/details/list", method = RequestMethod.GET)
 	public AmxApiResponse<BeneficiaryListDTO, Object> getBeneByIdNo(@RequestParam Integer idNo) {
 		return beneBranchClient.getBeneByIdNo(idNo);
 	}
