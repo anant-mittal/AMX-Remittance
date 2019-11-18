@@ -366,10 +366,13 @@ public class PlaceOrderManager implements Serializable{
 	public Boolean updateRatePlaceOrder(PlaceOrderUpdateStatusDto dto){
 		 Boolean boolRespModel = false;
 		try {
-			BigDecimal ratePlaceOrderId = dto.getRatePlaceOrderId();
+			List<BigDecimal> placeOrderIdList = dto.getRatePlaceOrderIdList();
+			if(placeOrderIdList!=null && !placeOrderIdList.isEmpty()) {
+				
+		  for(BigDecimal ratePlaceOrderId : placeOrderIdList) {
 			String flag = dto.getFlag();
 			String remarks = dto.getRemarks();
-		if(JaxUtil.isNullZeroBigDecimalCheck(dto.getRatePlaceOrderId()) 
+		if(JaxUtil.isNullZeroBigDecimalCheck(ratePlaceOrderId) 
 			&& !StringUtils.isBlank(flag) ) {
 			//&& (flag.equalsIgnoreCase(ConstantDocument.Status.N.toString()) || flag.equalsIgnoreCase(ConstantDocument.Status.R.toString()))) {
 			RatePlaceOrder ratePlaceOrder = ratePlaceOrderRepository.findOne(ratePlaceOrderId);
@@ -421,6 +424,11 @@ public class PlaceOrderManager implements Serializable{
 			}
 		}else {
 			throw new GlobalException(JaxError.RATE_PLACE_ERROR,"Record not found for the customerId :"+metaData.getCustomerId()+" and Place order id :"+ratePlaceOrderId);
+		}
+		
+		}
+		}else {
+			throw new GlobalException(JaxError.RATE_PLACE_ERROR,"No record found");
 		}
 		}catch(GlobalException e){
 			logger.debug("create application", e.getErrorMessage() + "" +e.getErrorKey());

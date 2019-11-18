@@ -126,6 +126,7 @@ public class JaxUtil {
 
 		int size = 3;
 		util.getRandomIntegersFromList(input, size);
+		
 	}
 
 	/**
@@ -148,10 +149,10 @@ public class JaxUtil {
 	 * Checks if is null zero big decimal check.
 	 *
 	 * @param value the value
-	 * @return true, if is null zero big decimal check
+	 * @return true, if is null zero big decimal check,negative check
 	 */
 	public static boolean isNullZeroBigDecimalCheck(BigDecimal value) {
-		if (value != null && value.compareTo(BigDecimal.ZERO) != 0) {
+		if (value != null && value.compareTo(BigDecimal.ZERO) != 0 && value.compareTo(BigDecimal.ZERO)>0) {
 			return true;
 		} else {
 			return false;
@@ -239,4 +240,6 @@ public class JaxUtil {
 		}
 	}
 
+	
+	
 }
