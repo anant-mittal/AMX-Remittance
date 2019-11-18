@@ -347,7 +347,7 @@ public enum JaxError implements IExceptionEnum {
 	// Job In Progress Error Key
 	JAX_JOB_IN_PROGRESS,
 
-	RATE_PLACE_ERROR;
+	RATE_PLACE_ERROR,
 
 
 	//Direct Payment Link
