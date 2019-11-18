@@ -270,10 +270,6 @@ public class BranchRemittanceService extends AbstractService{
 	}
 
 
-public  AmxApiResponse<ParameterDetailsResponseDto, Object> getGiftService(BigDecimal beneRelaId) {
-	ParameterDetailsResponseDto parameterDetailsResponseDto =branchRemitManager.getGiftService(beneRelaId);
-	return AmxApiResponse.build(parameterDetailsResponseDto);
-}
 
 	
 }
