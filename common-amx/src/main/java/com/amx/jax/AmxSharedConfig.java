@@ -25,7 +25,7 @@ public interface AmxSharedConfig extends AppSharedConfig {
 
 	public static interface CommunicationPrefs {
 
-		CommunicationEvents getEvent();
+		String getEvent();
 
 		String getSmsPrefs();
 
