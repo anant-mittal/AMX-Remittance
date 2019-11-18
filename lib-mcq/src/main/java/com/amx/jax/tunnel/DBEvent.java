@@ -14,11 +14,11 @@ public class DBEvent extends TunnelEvent {
 	private String text;
 
 	private Map<String, String> data;
-	private Map<String, String> msg;
+	private Map<String, String> details;
 
 	public DBEvent() {
 		super();
-		this.msg = new HashMap<String, String>();
+		this.details = new HashMap<String, String>();
 		this.data = new HashMap<String, String>();
 	}
 
@@ -60,12 +60,12 @@ public class DBEvent extends TunnelEvent {
 		this.text = text;
 	}
 
-	public Map<String, String> getMsg() {
-		return msg;
+	public Map<String, String> getDetails() {
+		return details;
 	}
 
-	public void setMsg(Map<String, String> msg) {
-		this.msg = msg;
+	public void setDetails(Map<String, String> details) {
+		this.details = details;
 	}
 
 }
