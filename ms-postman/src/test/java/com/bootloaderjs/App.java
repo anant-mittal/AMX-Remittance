@@ -4,6 +4,7 @@ import java.text.Bidi;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.amx.jax.postman.model.ITemplates;
 import com.amx.jax.postman.service.TemplateUtils;
 
 public class App { // Noncompliant
@@ -14,15 +15,18 @@ public class App { // Noncompliant
 	 */
 	TemplateUtils templateUtils = new TemplateUtils();
 	public static final Pattern pattern = Pattern.compile("^(.*)<(.*)>$");
-	
 
 	public static void main(String[] args) {
+		System.out.println(ITemplates.getTemplate("RESET_OTP_SMs").getHtmlFile());
+	}
+
+	public static void main5(String[] args) {
 		String from = "Al Mulla International Exchange<amxjax@gmail.com>";
 		String[] path = "html/sms/omsoe".split("^html\\/");
 
 		System.out.println(path[0] + " " + path[1]);
 	}
-	
+
 	public static void main4(String[] args) {
 		String from = "Al Mulla International Exchange<amxjax@gmail.com>";
 		String[] path = "html/sms/omsoe".split("^html\\/");

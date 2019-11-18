@@ -13,12 +13,13 @@ import com.amx.jax.client.snap.SnapConstants.SnapQueryTemplate;
 import com.amx.jax.def.AbstractQueryFactory.QueryProcessor;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.radar.service.SnapQueryFactory.SnapQuery;
+import com.amx.jax.radar.service.SnapQueryFactory.SnapQueryParams;
 import com.amx.jax.signpad.SignPadBox;
 import com.amx.jax.signpad.SignPadData;
 
 @Component
 @SnapQuery(SnapQueryTemplate.ACTIVE_SIGNPAD_REPORT)
-public class SnapQueryProcessorActiveSignPad implements QueryProcessor<SignPadData> {
+public class SnapQueryProcessorActiveSignPad implements QueryProcessor<SignPadData, SnapQueryParams> {
 
 	public static final Logger LOGGER = LoggerService.getLogger(SnapQueryProcessorActiveSignPad.class);
 
@@ -26,7 +27,7 @@ public class SnapQueryProcessorActiveSignPad implements QueryProcessor<SignPadDa
 	SignPadBox signPadBox;
 
 	@Override
-	public List<SignPadData> process() {
+	public List<SignPadData> process(SnapQueryParams params) {
 
 		List<SignPadData> devices = new ArrayList<SignPadData>();
 

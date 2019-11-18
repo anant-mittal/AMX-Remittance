@@ -11,15 +11,15 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.client.snap.SnapConstants.SnapQueryTemplate;
 import com.amx.jax.def.AbstractQueryFactory.QueryProcessor;
-import com.amx.jax.device.DeviceData;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.radar.service.SnapQueryFactory.SnapQuery;
+import com.amx.jax.radar.service.SnapQueryFactory.SnapQueryParams;
 import com.amx.jax.signpad.TerminalData;
 import com.amx.jax.terminal.TerminalBox;
 
 @Component
 @SnapQuery(SnapQueryTemplate.ACTIVE_TERMINAL_REPORT)
-public class SnapQueryProcessorActiveTerminals implements QueryProcessor<TerminalData> {
+public class SnapQueryProcessorActiveTerminals implements QueryProcessor<TerminalData, SnapQueryParams> {
 
 	public static final Logger LOGGER = LoggerService.getLogger(SnapQueryProcessorActiveTerminals.class);
 
@@ -27,7 +27,7 @@ public class SnapQueryProcessorActiveTerminals implements QueryProcessor<Termina
 	TerminalBox terminalBox;
 
 	@Override
-	public List<TerminalData> process() {
+	public List<TerminalData> process(SnapQueryParams params) {
 
 		List<TerminalData> devices = new ArrayList<TerminalData>();
 

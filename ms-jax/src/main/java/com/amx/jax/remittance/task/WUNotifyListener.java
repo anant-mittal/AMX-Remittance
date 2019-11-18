@@ -177,7 +177,7 @@ public class WUNotifyListener implements ITunnelSubscriber<DBEvent> {
 			SMS smsMessage = new SMS();
 			smsMessage.setITemplate(thisTemplate);
 			smsMessage.setModel(wrapper);
-			smsMessage.addTo(c.getWhatsappPrefix() + c.getWhatsapp());
+			smsMessage.addTo(c.getMobile());
 			postManService.sendSMSAsync(smsMessage);
 		}
 

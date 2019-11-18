@@ -88,6 +88,8 @@ public class BrokerService {
 				event.setData(event_data_map);
 				// event.setDescription(current_event_record.getEvent_desc());
 				event.setText(current_event_record.getEvent_desc());
+				//Additional Details to be synced
+				event.getDetails().put("msg1", current_event_record.getEvent_desc());
 
 				logger.debug("------------------ Event Data to push to Message Queue --------------------");
 				logger.debug(event.toString());

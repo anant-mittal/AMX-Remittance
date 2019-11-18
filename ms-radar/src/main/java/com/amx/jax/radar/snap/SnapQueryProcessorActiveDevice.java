@@ -2,10 +2,10 @@ package com.amx.jax.radar.snap;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.bytedeco.javacpp.opencv_videostab.RansacParams;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -15,13 +15,11 @@ import com.amx.jax.def.AbstractQueryFactory.QueryProcessor;
 import com.amx.jax.device.DeviceBox;
 import com.amx.jax.device.DeviceData;
 import com.amx.jax.logger.LoggerService;
-import com.amx.jax.radar.service.CivilIdValidationService;
 import com.amx.jax.radar.service.SnapQueryFactory.SnapQuery;
-import com.amx.utils.Random;
 
 @Component
 @SnapQuery(SnapQueryTemplate.ACTIVE_DEVICE_REPORT)
-public class SnapQueryProcessorActiveDevice implements QueryProcessor<DeviceData> {
+public class SnapQueryProcessorActiveDevice implements QueryProcessor<DeviceData, Map<String, Object>> {
 
 	public static final Logger LOGGER = LoggerService.getLogger(SnapQueryProcessorActiveDevice.class);
 
@@ -29,7 +27,7 @@ public class SnapQueryProcessorActiveDevice implements QueryProcessor<DeviceData
 	DeviceBox deviceBox;
 
 	@Override
-	public List<DeviceData> process() {
+	public List<DeviceData> process(Map<String, Object> params) {
 
 		List<DeviceData> devices = new ArrayList<DeviceData>();
 

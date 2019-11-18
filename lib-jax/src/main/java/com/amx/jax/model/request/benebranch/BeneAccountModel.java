@@ -29,6 +29,10 @@ public class BeneAccountModel extends AbstractModel {
 	@NotNull(message="Service Group Id may not be null")
 	private BigDecimal serviceGroupId;// cash or bank
 	private BigDecimal serviceProviderId; // service provider
+	/**
+	 * @deprecated this field actually contain bene bank branch id
+	 * */
+	@Deprecated
 	private BigDecimal serviceProviderBranchId; // agent branch
 	private String swiftCode;
 	private String ifscCode;
