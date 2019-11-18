@@ -73,6 +73,7 @@ public class CustomerCommunicationListner implements ITunnelSubscriber<DBEvent> 
 		String thisTemplate = ArgUtil.parseAsString(event.getData().get(TEMPLATE));
 		String communicationFlow = ArgUtil.parseAsString(event.getData().get(COMFLOW));
 		Map<String, Object> wrapper = new HashMap<String, Object>();
+		wrapper.put("details", event.getMsg());
 
 		Customer c = null;
 		CommunicationPrefsResult communicationFlowPrefs = null;
