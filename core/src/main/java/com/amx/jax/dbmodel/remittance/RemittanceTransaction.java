@@ -166,8 +166,11 @@ public class RemittanceTransaction implements Serializable {
 	
 	
 	private BigDecimal savedAmountInFc;
+
+	private String applSplit;
 	
 	private Date timeToDeliver;
+	
 	
 	public RemittanceTransaction() {
 	}
@@ -1247,5 +1250,15 @@ public class RemittanceTransaction implements Serializable {
 		this.timeToDeliver = timeToDeliver;
 	}
 
+	@Column(name="IS_SPLITTED")
+	public String getApplSplit() {
+		return applSplit;
+	}
+
+	public void setApplSplit(String applSplit) {
+		this.applSplit = applSplit;
+	}
+	
+	
 }
  

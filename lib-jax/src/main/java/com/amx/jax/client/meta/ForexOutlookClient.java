@@ -31,31 +31,24 @@ public class ForexOutlookClient implements IForexOutlookService {
 
 	@Override
 	public AmxApiResponse<CurrencyPairDTO, Object> getCurrencyPairList() {
-		// TODO Auto-generated method stub
-		try {
+	
 			LOGGER.debug("in CurrencyPairInfo :");
 			return restService.ajax(appConfig.getJaxURL() + Path.CURRENCY_PAIR_GET).meta(new JaxMetaInfo()).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<CurrencyPairDTO, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.error("exception in CurrencyPairInfo : ", e);
-			return JaxSystemError.evaluate(e);
-		} // end of try-catch
+	
 
 	}
 
 	@Override
 	public AmxApiResponse<ForexOutLookResponseDTO, Object> getCurpairHistory() {
 
-		try {
+		
 			LOGGER.debug("in getCurpairHistory :");
 			return restService.ajax(appConfig.getJaxURL() + Path.CURRENCY_PAIR_HISTORY_GET).meta(new JaxMetaInfo())
 					.get().as(new ParameterizedTypeReference<AmxApiResponse<ForexOutLookResponseDTO, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.error("exception in CurrencyPairInfo : ", e);
-			return JaxSystemError.evaluate(e);
-		} // end of try-catch
+	
 	}
 
 	@Override

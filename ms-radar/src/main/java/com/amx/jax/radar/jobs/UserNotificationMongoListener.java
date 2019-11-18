@@ -1,16 +1,15 @@
-package com.amx.jax.worker.tasks;
+package com.amx.jax.radar.jobs;
 
 import java.math.BigDecimal;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.regex.Matcher;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
 
-import com.amx.amxlib.model.CustomerNotificationDTO;
-import com.amx.jax.client.JaxPushNotificationClient;
+import com.amx.amxlib.model.CustomerNotifyHubDTO;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.dict.Language;
 import com.amx.jax.dict.Tenant;
@@ -23,13 +22,13 @@ import com.amx.jax.tunnel.TunnelEventMapping;
 import com.amx.jax.tunnel.TunnelEventXchange;
 import com.amx.utils.ArgUtil;
 
-@TunnelEventMapping(byEvent = UserMessageEvent.class, scheme = TunnelEventXchange.TASK_WORKER)
-public class UserNotificationSent implements ITunnelSubscriber<UserMessageEvent> {
+@TunnelEventMapping(byEvent = UserMessageEvent.class, scheme = TunnelEventXchange.TASK_LISTNER, integrity = true)
+public class UserNotificationMongoListener implements ITunnelSubscriber<UserMessageEvent> {
 
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
 	@Autowired
-	private JaxPushNotificationClient notificationClient;
+	MongoTemplate mongoTemplate;
 
 	@Autowired
 	private JaxMetaInfo jaxMetaInfo;
@@ -44,12 +43,12 @@ public class UserNotificationSent implements ITunnelSubscriber<UserMessageEvent>
 		jaxMetaInfo.setCompanyId(new BigDecimal(JaxMetaInfo.DEFAULT_COMPANY_ID));
 		jaxMetaInfo.setCountryBranchId(new BigDecimal(JaxMetaInfo.DEFAULT_COUNTRY_BRANCH_ID));
 
-		List<CustomerNotificationDTO> customerNotificationList = new LinkedList<CustomerNotificationDTO>();
+		List<CustomerNotifyHubDTO> customerNotificationList = new LinkedList<CustomerNotifyHubDTO>();
 
 		List<String> tos = task.getTo();
 
 		for (String to : tos) {
-			CustomerNotificationDTO customerNotification = new CustomerNotificationDTO();
+			CustomerNotifyHubDTO customerNotification = new CustomerNotifyHubDTO();
 
 			Contact c = PushMessage.toContact(to);
 			boolean foundTo = false;
@@ -71,11 +70,15 @@ public class UserNotificationSent implements ITunnelSubscriber<UserMessageEvent>
 			if (foundTo) {
 				customerNotification.setTitle(task.getSubject());
 				customerNotification.setMessage(task.getMessage());
+				customerNotification.setTemplate(task.getTemplate());
+				customerNotification.setTnt(tnt);
 				customerNotificationList.add(customerNotification);
 			}
 		}
 
-		notificationClient.save(customerNotificationList);
+		for (CustomerNotifyHubDTO customerNotification : customerNotificationList) {
+			mongoTemplate.save(customerNotification, "notifications");
+		}
 
 	}
 

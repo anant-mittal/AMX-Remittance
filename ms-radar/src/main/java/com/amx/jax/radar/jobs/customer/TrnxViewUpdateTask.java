@@ -36,11 +36,11 @@ import com.amx.utils.TimeUtils;
 //@ConditionalOnExpression(TestSizeApp.ENABLE_JOBS)
 //@ConditionalOnProperty("jax.jobs.trnx")
 @ConditionalOnExpression(RadarConfig.CE_TRNX_SYNC_AND_ES)
-public class TrnxViewTask extends AbstractDBSyncTask {
+public class TrnxViewUpdateTask extends AbstractDBSyncTask {
 
 	private static final int REV_INTERVAL_DAYS = 2;
 	private static final int FWD_INTERVAL_DAYS = 2;
-	private static final Logger LOGGER = LoggerService.getLogger(TrnxViewTask.class);
+	private static final Logger LOGGER = LoggerService.getLogger(TrnxViewUpdateTask.class);
 	private static final String TIME_TRACK_KEY = "lastUpdateDate";
 	private static final int PAGE_SIZE = 5000;
 
@@ -85,7 +85,7 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 		GridQuery gridQuery = getForwardQuery(lastPage, PAGE_SIZE, TIME_TRACK_KEY, dateString, dateStringLimit);
 
 		GridViewBuilder<TranxViewRecord> y = gridService
-				.view(GridView.VW_KIBANA_TRNX, gridQuery);
+				.view(GridView.VW_KIBANA_TRNX_MV, gridQuery);
 
 		AmxApiResponse<TranxViewRecord, GridMeta> x = y.get();
 
@@ -158,7 +158,7 @@ public class TrnxViewTask extends AbstractDBSyncTask {
 		GridQuery gridQuery = getReverseQuery(lastPage, PAGE_SIZE, TIME_TRACK_KEY, dateString, dateStringLimit);
 
 		GridViewBuilder<TranxViewRecord> y = gridService
-				.view(GridView.VW_KIBANA_TRNX, gridQuery);
+				.view(GridView.VW_KIBANA_TRNX_MV, gridQuery);
 
 		AmxApiResponse<TranxViewRecord, GridMeta> x = y.get();
 

@@ -147,10 +147,10 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 				try {
 					x = customerContactVerificationManager.create(c, ContactType.EMAIL);
 				} catch (GlobalException e) {
-					LOGGER.info(e.getMessage());
+					LOGGER.debug(e.getMessage());
 				}
 				
-				LOGGER.info("value of x is " + x.toString());
+				LOGGER.debug("value of x is " + x.toString());
 				// modeldata.put("customer", c);
 				modeldata.put("verifylink", x);
 				for (Map.Entry<String, Object> entry : modeldata.entrySet()) {

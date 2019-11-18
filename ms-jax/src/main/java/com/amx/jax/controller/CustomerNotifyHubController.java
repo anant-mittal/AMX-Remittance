@@ -12,22 +12,21 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.constant.ApiEndpoint;
-import com.amx.amxlib.model.CustomerNotificationDTO;
+import com.amx.amxlib.model.CustomerNotifyHubDTO;
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.dbmodel.Customer;
-import com.amx.jax.dbmodel.PushNotificationRecord;
+import com.amx.jax.customer.service.CustomerNotifyHubService;
+import com.amx.jax.dbmodel.customer.CustomerNotifyHubRecord;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.meta.MetaData;
-import com.amx.jax.services.JaxPushNotificationService;
 import com.amx.jax.userservice.service.UserService;
 
 @RestController
-public class JaxCustomerNotificationController {
+public class CustomerNotifyHubController {
 
 	private Logger logger = LoggerService.getLogger(getClass());
 
 	@Autowired
-	JaxPushNotificationService jaxPushNotificationService;
+	CustomerNotifyHubService jaxPushNotificationService;
 
 	@Autowired
 	UserService userService;
@@ -36,20 +35,16 @@ public class JaxCustomerNotificationController {
 	MetaData metaData;
 
 	@RequestMapping(value = ApiEndpoint.JAX_CUSTOMER_NOTIFICATION, method = RequestMethod.GET)
-	public AmxApiResponse<CustomerNotificationDTO, ?> getNotificationForCustomer(
+	public AmxApiResponse<CustomerNotifyHubDTO, ?> getNotificationForCustomer(
 			@RequestParam(required = true, value = "customerId") BigDecimal customerId) {
-		Customer customer = userService.getCustById(customerId);
-		BigDecimal nationalityId = customer.getNationalityId();
-		BigDecimal countryId = metaData.getCountryId();
-		logger.debug("In GET Jax Push Notification Controller ------ ");
-		return jaxPushNotificationService.get(customerId, nationalityId, countryId);
+		return jaxPushNotificationService.get(customerId);
 
 	}
 
 	@RequestMapping(value = ApiEndpoint.JAX_CUSTOMER_NOTIFICATION, method = RequestMethod.POST)
 	public AmxApiResponse<Object, Object> saveJaxPushNotification(
-			@RequestBody List<PushNotificationRecord> jaxPushNotifications) {
-		logger.info("In SAVE Push Notification Controller ------ " +jaxPushNotifications.toString());
+			@RequestBody List<CustomerNotifyHubRecord> jaxPushNotifications) {
+		logger.info("In SAVE Push Notification Controller ------ " + jaxPushNotifications.toString());
 		return jaxPushNotificationService.save(jaxPushNotifications);
 	}
 

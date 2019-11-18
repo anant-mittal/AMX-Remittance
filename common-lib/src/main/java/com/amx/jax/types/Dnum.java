@@ -9,10 +9,11 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import com.amx.utils.EnumType;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class Dnum<E extends Dnum<E>> implements EnumType {
+@JsonFormat(shape = JsonFormat.Shape.ANY)
+public class Dnum<E extends Dnum<E>> {
 	private static Map<Class<? extends Dnum<?>>, Map<String, Dnum<?>>> elements = new LinkedHashMap<Class<? extends Dnum<?>>, Map<String, Dnum<?>>>();
 
 	private final String name;
