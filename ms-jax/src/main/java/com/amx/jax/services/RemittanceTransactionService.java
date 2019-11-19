@@ -102,12 +102,12 @@ public class RemittanceTransactionService extends AbstractService {
 
 	public ApiResponse getSourceOfIncome(BigDecimal languageId) {
 		List<SourceOfIncomeView> sourceOfIncomeList;
+		List<SourceOfIncomeView> sourceOfIncomeListArabic;
 		ApiResponse response = getBlackApiResponse();
 		if(languageId==null)
 		{
-		languageId = amxMeta.getClientLanguage(Language.EN).getBDCode();
 		sourceOfIncomeList = sourceOfIncomeDao.getSourceofIncome(languageId);
-		response.getData().getValues().addAll(convertSourceOfIncome(sourceOfIncomeList));
+		response.getData().getValues().addAll(convertSourceOfIncomeForEnglish(sourceOfIncomeList));
 		response.setResponseStatus(ResponseStatus.OK);
 		}
 		else {
@@ -175,21 +175,21 @@ public class RemittanceTransactionService extends AbstractService {
 
 	}
 	
-	/*
-	 * public List<SourceOfIncomeDto>
-	 * convertSourceOfIncomeForEnglish(List<SourceOfIncomeView> sourceOfIncomeList)
-	 * { List<SourceOfIncomeDto> list = new ArrayList<>(); for (SourceOfIncomeView
-	 * model : sourceOfIncomeList) { SourceOfIncomeDto dto = new
-	 * SourceOfIncomeDto(); dto.setSourceofIncomeId(model.getSourceofIncomeId());
-	 * dto.setShortDesc(model.getShortDesc());
-	 * dto.setLanguageId(model.getLanguageId());
-	 * dto.setDescription(model.getDescription());
-	 * dto.setLocalName(model.getDescription());
-	 * 
-	 * list.add(dto); } return list;
-	 * 
-	 * }
-	 */
+	public List<SourceOfIncomeDto> convertSourceOfIncomeForEnglish(List<SourceOfIncomeView> sourceOfIncomeList) {
+		List<SourceOfIncomeDto> list = new ArrayList<>();
+		for (SourceOfIncomeView model : sourceOfIncomeList) {
+			SourceOfIncomeDto dto = new SourceOfIncomeDto();
+			dto.setSourceofIncomeId(model.getSourceofIncomeId());
+			//dto.setShortDesc(model.getShortDesc());
+			dto.setLanguageId(model.getLanguageId());
+			dto.setDescription(model.getDescription());
+			dto.setLocalName(model.getDescription());
+
+			list.add(dto);
+		}
+		return list;
+
+	}
 
 	public ApiResponse saveApplication(RemittanceTransactionRequestModel model) {
 		ApiResponse response = getBlackApiResponse();
