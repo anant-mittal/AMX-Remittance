@@ -102,7 +102,7 @@ public class RemittanceTransactionService extends AbstractService {
 	}
 
 	public ApiResponse getSourceOfIncome(BigDecimal languageId) {
-		List<SourceOfIncomeView> sourceOfIncomeList;
+		List<SourceOfIncomeView> sourceOfIncomeList = null;
 		ApiResponse response = getBlackApiResponse();
 		if(languageId!=null)
 		{
@@ -110,8 +110,8 @@ public class RemittanceTransactionService extends AbstractService {
 		response.getData().getValues().addAll(convertSourceOfIncomeForEnglish(sourceOfIncomeList));
 		response.setResponseStatus(ResponseStatus.OK);
 		}
-		else {
-			sourceOfIncomeList = sourceOfIncomeDao.getSourceofIncome(languageId);
+		else if(sourceOfIncomeList==null || languageId==null){
+			sourceOfIncomeList = sourceOfIncomeDao.getSourceofIncome(amxMeta.getClientLanguage(Language.EN).getBDCode());
 			response.getData().getValues().addAll(convertSourceOfIncome(sourceOfIncomeList));
 			response.setResponseStatus(ResponseStatus.OK);
 		
