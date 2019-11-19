@@ -260,7 +260,7 @@ public class SSOServerController {
 							// .clientType(ClientType.BRANCH_ADAPTER)
 							.deviceRegId(sSOTranx.get().getBranchAdapterId());
 
-				} else if (ArgUtil.is(deviceRegId)) { // Device LOGIN
+				} else if (ArgUtil.is(deviceRegId) && sSOConfig.isLoginWithDevice()) { // Device LOGIN
 
 					userClientDto.setLocalIpAddress(userDeviceClient.getIp());
 					userClientDto.setDeviceId(userDeviceClient.getFingerprint());
