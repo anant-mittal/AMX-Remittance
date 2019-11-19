@@ -16,15 +16,15 @@ import java.util.Map;
 public final class PricerServiceConstants {
 
 	public static final String TTE = "TTE";
-	
+
 	public static final String CHARGES_TYPE = "C";
-	
+
 	public static final String SERVICE_PROVIDER_INDICATOR = "SB";
-	
+
 	public static final String SETTLEMENT_CURRENCY_CODE = "USD";
-	
+
 	public static final String Yes = "Y";
-	
+
 	public static final String ACTION_IND_I = "I";
 	public static final String ACTION_IND_C = "C";
 	public static final String ACTION_IND_T = "T";
@@ -33,26 +33,23 @@ public final class PricerServiceConstants {
 	public static final String ACTION_IND_P = "P";
 	public static final String ACTION_IND_F = "F";
 	public static final String RESPONSE_UNKNOWN_ERROR = "UNKNOWN ERROR";
-	
-	
+
 	public static final String PARAM_BIC_BRANCH = "HSBS";
-	
+
 	public static final String PARAM_BENE_ADDRESS = "HSEC";
-	
+
 	public static final String PARAM_FEE_DUMMY_ACCOUNT = "HMUS";
-	
+
 	public static final BigDecimal BOTH_BANK_SERVICE_COMPONENT = new BigDecimal(777);
 
 	// public static final BigDecimal DEFAULT_ONLINE_SERVICE_ID = BigDecimal.ZERO;
 
 	public static final BigDecimal MAX_BIGD_12 = new BigDecimal(999999999999l);
-	
-	
+
 	// Def Pricing Scale
 	public static int DEF_DECIMAL_SCALE = 9;
 
 	public static MathContext DEF_CONTEXT = new MathContext(DEF_DECIMAL_SCALE, RoundingMode.HALF_EVEN);
-	
 
 	private PricerServiceConstants() {
 		// Not Allowed
@@ -62,7 +59,7 @@ public final class PricerServiceConstants {
 	// public static enum DEVICE_TYPE {
 	// MOBILE, PC;
 	// }
-	
+
 	public static enum TREASURY_FUND_STATUS {
 		FUNDED, OUT_OF_FUND;
 	}
@@ -156,23 +153,31 @@ public final class PricerServiceConstants {
 		}
 
 	}
-	
+
 	public static enum SERVICE_PROVIDER_BANK_CODE {
 		HOME, WU, MONEY;
 	}
-	
+
+	public static enum ROUTING_STATUS {
+		ACTIVE, INACTIVE;
+	}
+
+	public static enum GL_JOB_STATUS {
+		Successful, Failed;
+	}
+
 	public static final String SEND_TRNX = "S";
 	public static final String REQUEST = "R";
 	public static final String RESPONSE = "P";
-	
+
 	public static final String FEE_REQUEST = "fee Request";
 	public static final String FEE_RESPONSE = "fee Response";
 	public static final String COMMIT_REQUEST = "commit Request";
 	public static final String COMMIT_RESPONSE = "commit response";
-	
+
 	public static final String COUNTRY_AUS_ALPHA3CODE = "AUS";
 	public static final String COUNTRY_USA_ALPHA3CODE = "USA";
-	
+
 	public static final String Business = "B";
 	public static final String Personal = "P";
 
