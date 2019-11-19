@@ -140,4 +140,10 @@ public class FlexFieldDto extends ResourceDTO{
 	}
 
 
+	@Override
+	public BigDecimal getResourceId() {
+		return this.getSrlId();
+	}
+
+
 }
