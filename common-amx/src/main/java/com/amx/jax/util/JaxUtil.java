@@ -31,7 +31,14 @@ public class JaxUtil {
 		}
 		return languageId;
 	}
-
+	
+	public static BigDecimal languageScaleMeta(BigDecimal languageId) {
+		if(ArgUtil.isEmpty(languageId) || (AmxDBConstants.MAX_LANG_ID_META.compareTo(languageId) < 0)) {
+			return BigDecimal.ONE;
+		}
+		return languageId;
+	}
+	
 	/** The logger. */
 	Logger logger = LoggerFactory.getLogger(getClass());
 	BeanUtilsBean notNullBeanUtilsBean = new NullAwareBeanUtilsBean();
