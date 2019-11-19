@@ -348,12 +348,14 @@ public final class CryptoUtil {
 		private String output;
 		private String hash;
 		private int length;
+		private boolean isToleranceSet;
 
 		public HashBuilder() {
 			this.currentTime = System.currentTimeMillis();
 			this.interval = INTERVAL;
 			this.tolerance = TOLERANCE;
 			this.length = 0;
+			this.isToleranceSet = false;
 		}
 
 		/**
@@ -369,6 +371,7 @@ public final class CryptoUtil {
 
 		public HashBuilder tolerance(long tolerance) {
 			this.tolerance = tolerance;
+			this.isToleranceSet = true;
 			return this;
 		}
 
@@ -480,9 +483,15 @@ public final class CryptoUtil {
 		public boolean validate(String hash) {
 			// return CryptoUtil.validateHMAC(this.interval, this.secret, this.message,
 			// this.currentTime, hash);
-			return CryptoUtil.validateHMAC(this.currentTime, this.interval, this.tolerance, this.secret, this.message,
-					hash);
-
+			if (isToleranceSet) {
+				return CryptoUtil.validateHMAC(this.currentTime, this.interval, this.tolerance, this.secret,
+						this.message,
+						hash);
+			} else {
+				return CryptoUtil.validateHMAC(this.currentTime, this.interval, this.interval, this.secret,
+						this.message,
+						hash);
+			}
 		}
 
 		public boolean validateNumHMAC(String numHash) {
