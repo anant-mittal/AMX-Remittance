@@ -961,20 +961,33 @@ public class BeneficiaryService extends AbstractService {
 	public ApiResponse getBeneficiaryCountryListWithChannelingForOnline(BigDecimal customerId) {
 
 		List<CountryMasterView> countryList;
+		BigDecimal defaultLanguageId =new BigDecimal("1"); 
 		if (jaxTenantProperties.getBeneThreeCountryCheck()) {
 			countryList = countryRepository.getBeneCountryList(metaData.getLanguageId());
 		} else {
 			if (jaxConfigService.getBooleanConfigValue(JaxDbConfig.BLOCK_BENE_RISK_TRANSACTION, true)) {
 				Customer customer = userService.getCustById(customerId);
-				if(metaData.getLanguageId()==new BigDecimal("1")) {
+				if(metaData.getLanguageId()==defaultLanguageId) {
 				countryList = countryRepository.findByLanguageIdAndNonBeneRisk(metaData.getLanguageId(),
 						customer.getNationalityId());
+				
 				}else {
 					countryList = countryRepository.findByArabicLanguageIdAndNonBeneRisk(metaData.getLanguageId(),
 							customer.getNationalityId());
+					if(countryList.isEmpty()) {
+						
+						countryList = countryRepository.findByArabicLanguageIdAndNonBeneRisk(defaultLanguageId,
+								customer.getNationalityId());
+					}
+					
 				}
 			} else {
 				countryList = countryRepository.findByArabicLanguageId(metaData.getLanguageId());
+				
+				if(countryList.isEmpty()) {
+					countryList = countryRepository.findByArabicLanguageId(defaultLanguageId);
+				}
+				
 			}
 		}
 		List<BigDecimal> supportedServiceGroupList = beneDao.getRoutingBankMasterList(); // add for channeling

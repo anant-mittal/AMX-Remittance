@@ -104,6 +104,7 @@ public class RemittanceTransactionService extends AbstractService {
 	public ApiResponse getSourceOfIncome(BigDecimal languageId) {
 		List<SourceOfIncomeView> sourceOfIncomeList = null;
 		ApiResponse response = getBlackApiResponse();
+		BigDecimal defaultLanguageId = new BigDecimal(1);
 		if(languageId!=null)
 		{
 		sourceOfIncomeList = sourceOfIncomeDao.getSourceofIncome(languageId);
@@ -111,7 +112,7 @@ public class RemittanceTransactionService extends AbstractService {
 		response.setResponseStatus(ResponseStatus.OK);
 		}
 	   if(sourceOfIncomeList.isEmpty() || languageId==null){
-			sourceOfIncomeList = sourceOfIncomeDao.getSourceofIncome(amxMeta.getClientLanguage(Language.EN).getBDCode());
+			sourceOfIncomeList = sourceOfIncomeDao.getSourceofIncome(defaultLanguageId);
 			response.getData().getValues().addAll(convertSourceOfIncome(sourceOfIncomeList));
 			response.setResponseStatus(ResponseStatus.OK);
 		}
