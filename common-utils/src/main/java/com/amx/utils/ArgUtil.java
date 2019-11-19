@@ -577,7 +577,8 @@ public final class ArgUtil {
 	}
 
 	/**
-	 * Use  {{@link #parseAsEnum(Object, Enum, Class)}
+	 * @deprecated 
+	 * @see {{@link #parseAsEnum(Object, Enum, Class)}
 	 * @param value
 	 * @param defaultValue
 	 * @return
