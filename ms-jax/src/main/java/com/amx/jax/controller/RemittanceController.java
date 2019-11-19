@@ -165,6 +165,7 @@ public class RemittanceController {
 	@RequestMapping(value = "/sourceofincome/", method = RequestMethod.POST)
 	public ApiResponse sourceofIncome() {
 		BigDecimal languageId = amxMeta.getClientLanguage(Language.EN).getBDCode();
+		logger.debug("sourceofIncome lng" + languageId);
 		ApiResponse response = remittanceTransactionService.getSourceOfIncome(languageId);
 		return response;
 	}
