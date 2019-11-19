@@ -186,7 +186,7 @@ public class DailyPromotionManager {
 	public void applyJolibeePadalaCoupons(BigDecimal documentFinanceyear, BigDecimal documentNumber, BigDecimal countryBranchId) {
 		dailyPromotionDao.applyJolibeePadalaCoupons(documentFinanceyear,documentNumber,countryBranchId);
 		Customer customer = customerRepository.getCustomerByCustomerIdAndIsActive(metaData.getCustomerId(), "Y");
-		CommunicationPrefsResult communicationPrefsResult = communicationPrefsUtil.forCustomer(CommunicationEvents.JOLIBEE_PADALA, customer);
+		CommunicationPrefsResult communicationPrefsResult = communicationPrefsUtil.forCustomer(CommunicationEvents.BPI_JOLLIBEE, customer);
 		if(communicationPrefsResult.isEmail()) {
 			Email email = new Email();
 			email.setITemplate(TemplatesMX.BPI_JOLLIBEE);
