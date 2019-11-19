@@ -32,6 +32,7 @@ import com.amx.jax.dbmodel.SourceOfIncomeView;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.dict.Language;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.exrateservice.service.NewExchangeRateService;
 import com.amx.jax.manager.RemittanceTransactionManager;
 import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
@@ -101,24 +102,23 @@ public class RemittanceTransactionService extends AbstractService {
 	}
 
 	public ApiResponse getSourceOfIncome(BigDecimal languageId) {
-		List<SourceOfIncomeView> sourceOfIncomeList;
-		List<SourceOfIncomeView> sourceOfIncomeListArabic;
+		List<SourceOfIncomeView> sourceOfIncomeList = null;
 		ApiResponse response = getBlackApiResponse();
-		if(languageId==null)
+		BigDecimal defaultLanguageId = new BigDecimal(1);
+		if(languageId!=null)
 		{
 		sourceOfIncomeList = sourceOfIncomeDao.getSourceofIncome(languageId);
 		response.getData().getValues().addAll(convertSourceOfIncomeForEnglish(sourceOfIncomeList));
 		response.setResponseStatus(ResponseStatus.OK);
 		}
-		else {
-			sourceOfIncomeList = sourceOfIncomeDao.getSourceofIncome(languageId);
+	   if(sourceOfIncomeList.isEmpty() || languageId==null){
+			sourceOfIncomeList = sourceOfIncomeDao.getSourceofIncome(defaultLanguageId);
 			response.getData().getValues().addAll(convertSourceOfIncome(sourceOfIncomeList));
 			response.setResponseStatus(ResponseStatus.OK);
-		
 		}
 		
 		if (sourceOfIncomeList.isEmpty()) {
-			throw new GlobalException("No data found");
+			throw new GlobalException(JaxError.SOURCE_OF_INCOME_NOT_FOUND,"No data found FOR SOURCE OF INCOME");
 		} 
 		response.getData().setType("sourceofincome");
 		return response;
