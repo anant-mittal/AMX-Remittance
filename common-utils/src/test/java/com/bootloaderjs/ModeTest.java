@@ -4,7 +4,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 import com.amx.utils.CryptoUtil;
-import com.amx.utils.StringUtils;
 
 public class ModeTest { // Noncompliant
 

@@ -71,7 +71,7 @@ public class TransactionHistroyService extends AbstractService {
 		} else {
 		    
 			Set<BigDecimal> beneRelSeqSet = trnxHisList.stream().map(emp -> emp.getBeneficiaryRelationSeqId())
-					.collect(Collectors.toSet());
+					.filter(seqId -> seqId != null).collect(Collectors.toSet());
 			List<BenificiaryListView> beneList = beneficiaryOnlineDao.getBeneficiaryRelationShipSeqIds(
 					metaData.getCustomerId(), new ArrayList<BigDecimal>(beneRelSeqSet));
 			Map<BigDecimal, BenificiaryListView> beneMap = beneList.stream()
@@ -207,11 +207,19 @@ public class TransactionHistroyService extends AbstractService {
 	            model.setTransactionReference(getTransactionReferece(hist));
 	            model.setReceiptNumber(getReceiptReference(hist));
 	            
+	            
+	            
+	            
+	            
+	            
 			BenificiaryListView beneViewModel = beneficiaryOnlineDao.getBeneficiaryByRelationshipId(
 					hist.getCustomerId(), metaData.getCountryId(), hist.getBeneficiaryRelationSeqId());
 	            if(beneViewModel!=null){
 	                 beneDtoCheck=beneCheckService.beneCheck(convertBeneModelToDto(beneViewModel));
+	                 model.setBeneIsActive(beneViewModel.getIsActive().equalsIgnoreCase(ConstantDocument.Status.Y.toString())?Boolean.TRUE:Boolean.FALSE);
+	                 
 	            }
+	            
 	            if(beneDtoCheck != null){
 	                model.setBeneficiaryErrorStatus(beneDtoCheck.getBeneficiaryErrorStatus());
 	            }
@@ -221,9 +229,14 @@ public class TransactionHistroyService extends AbstractService {
 	                list.add(model);
 	            }
 
+	            
+	            
+	            
 	        }
 	        return list;
 	    }
+	   
+	  
 	   
 	   private List<TransactionHistoryDto> convertv2(List<CustomerRemittanceTransactionHistoryView> trnxHist) {
 	        List<TransactionHistoryDto> list = new ArrayList<>();
@@ -268,6 +281,12 @@ public class TransactionHistroyService extends AbstractService {
 	            if(beneDtoCheck != null){
 	                model.setBeneficiaryErrorStatus(beneDtoCheck.getBeneficiaryErrorStatus());
 	            }
+	            
+	            
+	            
+	            
+	            
+	            
 	            if (!StringUtils.isBlank(hist.getBeneficaryCorespondingBankName()) 
 	                && !hist.getBeneficaryCorespondingBankName().equalsIgnoreCase(ConstantDocument.WU) 
 	                && !hist.getBeneficaryCorespondingBankName().equalsIgnoreCase(ConstantDocument.MONEY)) {
@@ -335,6 +354,7 @@ public class TransactionHistroyService extends AbstractService {
 			BenificiaryListView beneViewModel = beneficiaryOnlineDao.getBeneficiaryByRelationshipId(hist.getCustomerId(),metaData.getCountryId(),hist.getBeneficiaryRelationSeqId());
 			if(beneViewModel!=null){
 				 beneDtoCheck=beneCheckService.beneCheck(convertBeneModelToDto(beneViewModel));
+				 model.setBeneIsActive(beneViewModel.getIsActive().equalsIgnoreCase("Y")?Boolean.TRUE:Boolean.FALSE);
 			}
 			if(beneDtoCheck != null){
 				model.setBeneficiaryErrorStatus(beneDtoCheck.getBeneficiaryErrorStatus());

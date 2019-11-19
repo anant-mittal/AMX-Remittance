@@ -18,16 +18,22 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.constant.NotificationConstants;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.model.BranchSearchNotificationModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.notification.RemittanceTransactionFailureAlertModel;
+import com.amx.jax.db.utils.EntityDtoUtil;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.dbmodel.ApplicationSetup;
+import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.CustomerContactVerification;
 import com.amx.jax.dbmodel.ExEmailNotification;
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.dict.Tenant;
-import com.amx.jax.model.customer.CivilIdOtpModel;
+import com.amx.jax.model.CivilIdOtpModel;
 import com.amx.jax.model.request.partner.TransactionFailReportDTO;
+import com.amx.jax.model.response.customer.CustomerDto;
 import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.model.response.fx.FxDeliveryDetailNotificationDto;
 import com.amx.jax.model.response.fx.FxOrderDetailNotificationDto;
@@ -387,7 +393,32 @@ public class JaxNotificationService {
 		}
 	}
 	
-	public void sendSPErrorEmail(TransactionFailReportDTO model,
+	public void sendCustomerVerificationNotification(List<CustomerContactVerification> cvs, Customer c) {
+
+		cvs.forEach(i -> {
+			if (ContactType.EMAIL.equals(i.getContactType())) {
+				Email email = new Email();
+				email.addTo(c.getEmail());
+				email.setITemplate(TemplatesMX.CONTACT_VERIFICATION_EMAIL);
+				email.getModel().put("customer", EntityDtoUtil.entityToDto(c, new CustomerDto()));
+				email.getModel().put("link", i);
+				postManService.sendEmailAsync(email);
+			} else if (ContactType.SMS.equals(i.getContactType())) {
+				SMS sms = new SMS();
+				sms.addTo(c.getMobile());
+				sms.setITemplate(TemplatesMX.CONTACT_VERIFICATION_SMS);
+
+				sms.getModel().put("customer", EntityDtoUtil.entityToDto(c, new CustomerDto()));
+				sms.getModel().put("link", i);
+				postManService.sendSMSAsync(sms);
+			} else if (ContactType.WHATSAPP.equals(i.getContactType())) {
+
+			}
+		});
+
+	}
+
+public void sendSPErrorEmail(TransactionFailReportDTO model,
 			List<ExEmailNotification> emailNotification) {
 		try {
 			for (ExEmailNotification emailNot : emailNotification) {
@@ -403,5 +434,19 @@ public class JaxNotificationService {
 		} catch (Exception e) {
 			logger.error("error in sendErrormail", e);
 		}
+	}
+
+	public void sendTransactionNotificationDL(PersonInfo pinfo) {
+		logger.debug("Sending txn notification to customer");
+		Email email = new Email();
+
+		email.setSubject("Your transaction on AMX is successful");
+		email.addTo(pinfo.getEmail());
+		email.setITemplate(TemplatesMX.TXN_CRT_SUCC);
+		email.setHtml(true);
+		email.getModel().put(RESP_DATA_KEY, pinfo);
+
+		logger.debug("Email to DL - " + pinfo.getEmail());
+		sendEmail(email);
 	}
 }

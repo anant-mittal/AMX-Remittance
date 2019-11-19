@@ -20,11 +20,11 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import com.amx.jax.dbmodel.BankMasterModel;
+import com.amx.jax.dbmodel.BankMasterMdlv1;
 import com.amx.jax.dbmodel.CompanyMaster;
-import com.amx.jax.dbmodel.CountryBranch;
+import com.amx.jax.dbmodel.CountryBranchMdlv1;
 import com.amx.jax.dbmodel.CountryMaster;
-import com.amx.jax.dbmodel.CurrencyMasterModel;
+import com.amx.jax.dbmodel.CurrencyMasterMdlv1;
 import com.amx.jax.dbmodel.Customer;
 
 /**
@@ -45,28 +45,28 @@ public class RemittanceTransaction implements Serializable {
 	private BigDecimal documentFinanceYear;
 	private Document documentId;
 	private BigDecimal documentNo;
-	private CountryBranch branchId;
+	private CountryBranchMdlv1 branchId;
 	private Date documentDate;
 	private BigDecimal applicationFinanceYear;
 	private BigDecimal applicationDocumentNo;
 	private Customer customerId;
 	private BigDecimal customerRef;
 	private CountryMaster bankCountryId;
-	private BankMasterModel bankId;
+	private BankMasterMdlv1 bankId;
 	private BankBranch bankBranchId;
 	private String debitAccountNo;
-	private CurrencyMasterModel foreignCurrencyId;
+	private CurrencyMasterMdlv1 foreignCurrencyId;
 	private BigDecimal foreignTranxAmount;
-	private CurrencyMasterModel localTranxCurrencyId;
+	private CurrencyMasterMdlv1 localTranxCurrencyId;
 	private BigDecimal localTranxAmount;
 	private BigDecimal exchangeRateApplied;
-	private CurrencyMasterModel localCommisionCurrencyId;
+	private CurrencyMasterMdlv1 localCommisionCurrencyId;
 	private BigDecimal localCommisionAmount;
-	private CurrencyMasterModel localChargeCurrencyId;
+	private CurrencyMasterMdlv1 localChargeCurrencyId;
 	private BigDecimal localChargeAmount;
-	private CurrencyMasterModel localDeliveryCurrencyId;
+	private CurrencyMasterMdlv1 localDeliveryCurrencyId;
 	private BigDecimal localDeliveryAmount;
-	private CurrencyMasterModel localNetCurrencyId;
+	private CurrencyMasterMdlv1 localNetCurrencyId;
 	private BigDecimal localNetTranxAmount;
 	private String transactionStatus;
 	private String transactionUpdatedBy;
@@ -152,6 +152,7 @@ public class RemittanceTransaction implements Serializable {
 	
 
 	private String beneDeductFlag;
+	private String suspicousTransaction;
 	
 	private String deliveryInd;
 	private String remarks;
@@ -159,7 +160,22 @@ public class RemittanceTransaction implements Serializable {
 	private String wuPurposeOfTransaction;
 	private String paymentType;
 	
+
 	private BigDecimal paygTrnxDetailId;
+
+
+	private String applSplit;
+
+	private Date timeToDeliver;
+	private BigDecimal savedAmount;
+	private BigDecimal rackExchangeRate;
+	
+	private String customerChoice;
+	
+	
+	private BigDecimal savedAmountInFc;
+	
+
 	
 	
 	@Column(name="PAYMENT_TYPE")
@@ -177,22 +193,22 @@ public class RemittanceTransaction implements Serializable {
 	public RemittanceTransaction(BigDecimal remittanceTransactionId,
 			CountryMaster applicationCountryId, CompanyMaster companyId,
 			BigDecimal documentFinanceYear, Document documentId,
-			BigDecimal documentNo, CountryBranch branchId,
+			BigDecimal documentNo, CountryBranchMdlv1 branchId,
 			Date documentDate, BigDecimal applicationFinanceYear,
 			BigDecimal applicationDocumentNo, Customer customerId,
 			BigDecimal customerRef, CountryMaster bankCountryId,
-			BankMasterModel bankId, BankBranch bankBranchId,
-			String debitAccountNo, CurrencyMasterModel foreignCurrencyId,
+			BankMasterMdlv1 bankId, BankBranch bankBranchId,
+			String debitAccountNo, CurrencyMasterMdlv1 foreignCurrencyId,
 			BigDecimal foreignTranxAmount,
-			CurrencyMasterModel localTranxCurrencyId,
+			CurrencyMasterMdlv1 localTranxCurrencyId,
 			BigDecimal localTranxAmount, BigDecimal exchangeRateApplied,
-			CurrencyMasterModel localCommisionCurrencyId,
+			CurrencyMasterMdlv1 localCommisionCurrencyId,
 			BigDecimal localCommisionAmount,
-			CurrencyMasterModel localChargeCurrencyId,
+			CurrencyMasterMdlv1 localChargeCurrencyId,
 			BigDecimal localChargeAmount,
-			CurrencyMasterModel localDeliveryCurrencyId,
+			CurrencyMasterMdlv1 localDeliveryCurrencyId,
 			BigDecimal localDeliveryAmount,
-			CurrencyMasterModel localNetCurrencyId,
+			CurrencyMasterMdlv1 localNetCurrencyId,
 			BigDecimal localNetTranxAmount, String transactionStatus,
 			String transactionUpdatedBy, Date transactionUpdatedDate,
 			String generalLedgerEntry, String generalLedgerErr,
@@ -351,10 +367,10 @@ public class RemittanceTransaction implements Serializable {
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="COUNTRY_BRANCH_ID")
-	public CountryBranch getBranchId() {
+	public CountryBranchMdlv1 getBranchId() {
 		return branchId;
 	}
-	public void setBranchId(CountryBranch branchId) {
+	public void setBranchId(CountryBranchMdlv1 branchId) {
 		this.branchId = branchId;
 	}
 	
@@ -414,10 +430,10 @@ public class RemittanceTransaction implements Serializable {
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "BANK_ID")
-	public BankMasterModel getBankId() {
+	public BankMasterMdlv1 getBankId() {
 		return bankId;
 	}
-	public void setBankId(BankMasterModel bankId) {
+	public void setBankId(BankMasterMdlv1 bankId) {
 		this.bankId = bankId;
 	}
 	
@@ -440,10 +456,10 @@ public class RemittanceTransaction implements Serializable {
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "FOREIGN_CURRENCY_ID")
-	public CurrencyMasterModel getForeignCurrencyId() {
+	public CurrencyMasterMdlv1 getForeignCurrencyId() {
 		return foreignCurrencyId;
 	}
-	public void setForeignCurrencyId(CurrencyMasterModel foreignCurrencyId) {
+	public void setForeignCurrencyId(CurrencyMasterMdlv1 foreignCurrencyId) {
 		this.foreignCurrencyId = foreignCurrencyId;
 	}
 	
@@ -457,10 +473,10 @@ public class RemittanceTransaction implements Serializable {
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "LOCAL_TRANX_CURRENCY_ID")
-	public CurrencyMasterModel getLocalTranxCurrencyId() {
+	public CurrencyMasterMdlv1 getLocalTranxCurrencyId() {
 		return localTranxCurrencyId;
 	}
-	public void setLocalTranxCurrencyId(CurrencyMasterModel localTranxCurrencyId) {
+	public void setLocalTranxCurrencyId(CurrencyMasterMdlv1 localTranxCurrencyId) {
 		this.localTranxCurrencyId = localTranxCurrencyId;
 	}
 	
@@ -482,10 +498,10 @@ public class RemittanceTransaction implements Serializable {
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "LOCAL_COMMISION_CURRENCY_ID")
-	public CurrencyMasterModel getLocalCommisionCurrencyId() {
+	public CurrencyMasterMdlv1 getLocalCommisionCurrencyId() {
 		return localCommisionCurrencyId;
 	}
-	public void setLocalCommisionCurrencyId(CurrencyMasterModel localCommisionCurrencyId) {
+	public void setLocalCommisionCurrencyId(CurrencyMasterMdlv1 localCommisionCurrencyId) {
 		this.localCommisionCurrencyId = localCommisionCurrencyId;
 	}
 	
@@ -499,10 +515,10 @@ public class RemittanceTransaction implements Serializable {
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "LOCAL_CHARGE_CURRENCY_ID")
-	public CurrencyMasterModel getLocalChargeCurrencyId() {
+	public CurrencyMasterMdlv1 getLocalChargeCurrencyId() {
 		return localChargeCurrencyId;
 	}
-	public void setLocalChargeCurrencyId(CurrencyMasterModel localChargeCurrencyId) {
+	public void setLocalChargeCurrencyId(CurrencyMasterMdlv1 localChargeCurrencyId) {
 		this.localChargeCurrencyId = localChargeCurrencyId;
 	}
 	
@@ -516,10 +532,10 @@ public class RemittanceTransaction implements Serializable {
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "LOCAL_DELIVERY_CURRENCY_ID")
-	public CurrencyMasterModel getLocalDeliveryCurrencyId() {
+	public CurrencyMasterMdlv1 getLocalDeliveryCurrencyId() {
 		return localDeliveryCurrencyId;
 	}
-	public void setLocalDeliveryCurrencyId(CurrencyMasterModel localDeliveryCurrencyId) {
+	public void setLocalDeliveryCurrencyId(CurrencyMasterMdlv1 localDeliveryCurrencyId) {
 		this.localDeliveryCurrencyId = localDeliveryCurrencyId;
 	}
 	
@@ -533,10 +549,10 @@ public class RemittanceTransaction implements Serializable {
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "LOCAL_NET_CURRENCY_ID")
-	public CurrencyMasterModel getLocalNetCurrencyId() {
+	public CurrencyMasterMdlv1 getLocalNetCurrencyId() {
 		return localNetCurrencyId;
 	}
-	public void setLocalNetCurrencyId(CurrencyMasterModel localNetCurrencyId) {
+	public void setLocalNetCurrencyId(CurrencyMasterMdlv1 localNetCurrencyId) {
 		this.localNetCurrencyId = localNetCurrencyId;
 	}
 	
@@ -792,7 +808,7 @@ public class RemittanceTransaction implements Serializable {
 		this.highValueAuthDate = highValueAuthDate;
 	}
 
-	
+	@Lob
 	@Column(name = "SIGNATURE_SPECIMEN")
 	public String getCustomerSignature() {
 		return customerSignature;
@@ -1163,6 +1179,15 @@ public class RemittanceTransaction implements Serializable {
 	public void setBeneDeductFlag(String beneDeductFlag) {
 		this.beneDeductFlag = beneDeductFlag;
 	}
+
+	@Column(name="SUSPICIOUS_TRNX")
+	public String getSuspicousTransaction() {
+		return suspicousTransaction;
+	}
+
+	public void setSuspicousTransaction(String suspicousTransaction) {
+		this.suspicousTransaction = suspicousTransaction;
+	}
 	
 	@Column(name="DELIVERY_IND")
 	public String getDeliveryInd() {
@@ -1195,7 +1220,53 @@ public class RemittanceTransaction implements Serializable {
 	public void setWuPurposeOfTransaction(String wuPurposeOfTransaction) {
 		this.wuPurposeOfTransaction = wuPurposeOfTransaction;
 	}
+
+	@Column(name="TIME_TO_DELIVER")
+	public Date getTimeToDeliver() {
+		return timeToDeliver;
+	}
+
+	public void setTimeToDeliver(Date timeToDeliver) {
+		this.timeToDeliver = timeToDeliver;
+	}
 	
+	@Column(name="SAVED_AMOUNT")
+	public BigDecimal getSavedAmount() {
+		return savedAmount;
+	}
+
+	public void setSavedAmount(BigDecimal savedAmount) {
+		this.savedAmount = savedAmount;
+	}
+	
+	@Column(name="RACK_EXCHANGE_RATE")
+	public BigDecimal getRackExchangeRate() {
+		return rackExchangeRate;
+	}
+
+	public void setRackExchangeRate(BigDecimal rackExchangeRate) {
+		this.rackExchangeRate = rackExchangeRate;
+	}
+	
+	@Column(name="CUSTOMER_CHOICE")
+	public String getCustomerChoice() {
+		return customerChoice;
+	}
+
+	public void setCustomerChoice(String customerChoice) {
+		this.customerChoice = customerChoice;
+	}
+	@Column(name="SAVED_AMOUNT_FC")
+	public BigDecimal getSavedAmountInFc() {
+		return savedAmountInFc;
+	}
+
+	public void setSavedAmountInFc(BigDecimal savedAmountInFc) {
+		this.savedAmountInFc = savedAmountInFc;
+	}
+
+	
+
 	@Column(name="PAYG_TRNX_DTLS_ID")
 	public BigDecimal getPaygTrnxDetailId() {
 		return paygTrnxDetailId;
@@ -1204,5 +1275,16 @@ public class RemittanceTransaction implements Serializable {
 	public void setPaygTrnxDetailId(BigDecimal paygTrnxDetailId) {
 		this.paygTrnxDetailId = paygTrnxDetailId;
 	}
+
+	public void setApplSplit(String applSplit) {
+		this.applSplit = applSplit;
+	}
+
+	@Column(name="IS_SPLITTED")
+	public String getApplSplit() {
+		return applSplit;
+	}
+	
+
 }
  

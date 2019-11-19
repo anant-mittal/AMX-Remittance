@@ -111,7 +111,7 @@ public class BDiscountMgmtController {
 			@RequestBody PricingRequestDTO pricingRequestDTO, 
 			@RequestParam(required = false) String identity,
 			@RequestParam(required = false) BigDecimal identityType) {
-		branchSession.getCustomerContext().refresh();
+		branchSession.getCustomerContext(false).refresh();
 		pricingRequestDTO.setCustomerId(branchSession.getCustomerId());
 		return discountMgmtClient.fetchCustomerRates(pricingRequestDTO);
 	}

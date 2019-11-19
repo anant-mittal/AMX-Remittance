@@ -43,8 +43,16 @@ public class DefaultSwaggerConfig {
 	public static final String SWGGER_SECRET_PARAM = "x-swagger-key";
 	public static final String SWGGER_SECRET_VALUE = UniqueID.generateString();
 
+	@Autowired(required = false)
+	DocketWrapper docketWrapper;
+
 	@Bean
 	public Docket productApi(List<MockParam> mockParams) {
+
+		if (docketWrapper != null && docketWrapper.getDocket() != null) {
+			return docketWrapper.getDocket();
+		}
+
 		Docket docket = new Docket(DocumentationType.SWAGGER_2)
 				.select()
 				.apis(RequestHandlerSelectors.basePackage("com.amx.jax"))
@@ -106,5 +114,17 @@ public class DefaultSwaggerConfig {
 				"Terms of service",
 				new Contact("Lalit Tanwar", "https://springframework.guru/about/", "lalit.tanwar@almullaexchange.com"),
 				"Apache License Version 2.0", "https://www.apache.org/licenses/LICENSE-2.0");
+	}
+
+	public static class DocketWrapper {
+		Docket docket;
+
+		public DocketWrapper(Docket docket) {
+			this.docket = docket;
+		}
+
+		public Docket getDocket() {
+			return docket;
+		}
 	}
 }

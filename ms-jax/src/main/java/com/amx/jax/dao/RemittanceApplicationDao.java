@@ -24,6 +24,7 @@ import com.amx.jax.dbmodel.remittance.FlexFiledView;
 import com.amx.jax.dbmodel.remittance.RemitApplAmlModel;
 import com.amx.jax.dbmodel.remittance.RemittanceAppBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
+import com.amx.jax.dbmodel.remittance.RemittanceApplicationSplitting;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.manager.RemittanceApplicationManager;
@@ -34,6 +35,8 @@ import com.amx.jax.repository.IFlexFiledView;
 import com.amx.jax.repository.IPlaceOrderDao;
 import com.amx.jax.repository.IRemitApplAmlRepository;
 import com.amx.jax.repository.IRemitApplSrvProvRepository;
+import com.amx.jax.repository.IRemittanceApplSplitRepository;
+import com.amx.jax.repository.IRemittanceTrnxSplitRepository;
 import com.amx.jax.repository.RemittanceApplicationBeneRepository;
 import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.repository.RemittanceTransactionRepository;
@@ -89,10 +92,21 @@ public class RemittanceApplicationDao {
 			remitApplSrvProvRepository.save(remitApplSrvProv);
 		}
 		
+
 		if(remitApplAml!=null) {
 			remitApplAml.setExRemittanceAppfromAml(applObj);
 			applAmlRepository.save(remitApplAml);
 		}
+
+		if(applSplitList !=null && !applSplitList.isEmpty()) {
+			for(RemittanceApplicationSplitting applSplit : applSplitList) {				
+				applSplit.setDocumentNo(applSave1.getDocumentNo());
+				applSplit.setRemittanceApplicationId(applSave1);
+				remittanceApplSplitRepository.save(applSplit);
+			}
+		}
+	
+
 		logger.info("Application saved in the database, docNo: " + app.getDocumentNo());
 	}
 

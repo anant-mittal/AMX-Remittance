@@ -31,6 +31,7 @@ public enum PayGServiceCode {
 		return this.pgEnum;
 	}
 
+
 	public PayGServiceCode longEnum() {
 		return this.longEnum;
 	}
@@ -50,3 +51,6 @@ public enum PayGServiceCode {
 	}
 
 }
+
+}
+

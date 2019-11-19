@@ -5,7 +5,10 @@ import java.util.List;
 
 import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.model.AbstractModel;
-import com.amx.jax.model.customer.CivilIdOtpModel;
+import com.amx.jax.model.CivilIdOtpModel;
+
+
+
 
 public class BranchRemittanceApplResponseDto extends AbstractModel{
 
@@ -38,6 +41,13 @@ public class BranchRemittanceApplResponseDto extends AbstractModel{
 	/* application records */
 	List<CustomerShoppingCartDto> shoppingCartDetails;
 	
+	List<PaymentLinkAppDto> paymentLinkAppDto;  
+	public List<PaymentLinkAppDto> getPaymentLinkAppDto() {
+		return paymentLinkAppDto;
+	}
+	public void setPaymentLinkAppDto(List<PaymentLinkAppDto> paymentLinkAppDto) {
+		this.paymentLinkAppDto = paymentLinkAppDto;
+	}
 	public BigDecimal getTotalLocalAmount() {
 		return totalLocalAmount;
 	}

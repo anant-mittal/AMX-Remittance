@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.AmxSharedConfig.CommunicationPrefs;
 import com.amx.jax.AmxSharedConfigClient;
-import com.amx.jax.dict.AmxEnums.CommunicationEvents;
+import com.amx.jax.def.Communication.CommunicationEvent;
 import com.amx.jax.dict.Communicatable;
 
 @Component
@@ -54,39 +54,52 @@ public class CommunicationPrefsUtil {
 	@Autowired
 	AmxSharedConfigClient amxSharedConfigClient;
 
-	private CommunicationPrefs get(CommunicationEvents event) {
+	private CommunicationPrefs get(CommunicationEvent event) {
 		for (CommunicationPrefs iterable_element : amxSharedConfigClient.getCommunicationPrefs().getResults()) {
-			if (iterable_element.getEvent().equals(event)) {
+			if (iterable_element.getEvent().equals(event.name())) {
 				return iterable_element;
 			}
 		}
 		return null;
 	}
 
-	public CommunicationPrefsResult forCustomer(CommunicationEvents event, Communicatable communicatable) {
-		//amxSharedConfigClient.clear();
+	public CommunicationPrefsResult forCustomer(CommunicationEvent event, Communicatable communicatable) {
+		// amxSharedConfigClient.clear();
 		CommunicationPrefs prefs = get(event);
 
 		CommunicationPrefsResult result = new CommunicationPrefsResult();
 
-		for (long i = 1; i < 5; i++) {
-			if (prefs.getEmailPrefs().longValue() == i && communicatable.canSendEmail()) {
+		String alwaysLong = "9";
+		String alwaysChar = "A";
+
+		boolean isAlwaysEmail = alwaysLong.equals(prefs.getEmailPrefs()) || alwaysChar.equals(prefs.getEmailPrefs());
+		boolean isAlwaysSMS = alwaysLong.equals(prefs.getSmsPrefs()) || alwaysChar.equals(prefs.getSmsPrefs());
+		boolean isAlwaysWA = alwaysLong.equals(prefs.getWaPrefs()) || alwaysChar.equals(prefs.getWaPrefs());
+		boolean isAlwaysPush = alwaysLong.equals(prefs.getPushPrefs()) || alwaysChar.equals(prefs.getPushPrefs());
+
+		for (long i = 1; i < 9; i++) {
+
+			String thisLong = Long.toString(i);
+
+			if ((thisLong.equals(prefs.getEmailPrefs()) || isAlwaysEmail) && communicatable.canSendEmail()) {
 				result.setEmail(true);
 			}
 
-			if (prefs.getSmsPrefs().longValue() == i && communicatable.canSendMobile()) {
+			if ((thisLong.equals(prefs.getSmsPrefs()) || isAlwaysSMS) && communicatable.canSendMobile()) {
 				result.setSms(true);
 			}
 
-			if (prefs.getWaPrefs().longValue() == i && communicatable.canSendWhatsApp()) {
+			if ((thisLong.equals(prefs.getWaPrefs()) || isAlwaysWA) && communicatable.canSendWhatsApp()) {
 				result.setWhatsApp(true);
 			}
 
-			if (prefs.getPushPrefs().longValue() == i) {
+			if ((thisLong.equals(prefs.getPushPrefs()) || isAlwaysPush)) {
 				result.setPushNotify(true);
 			}
 
-			if (result.isEmail() || result.isSms() || result.isWhatsApp()) {
+			if ((result.isEmail() && !isAlwaysEmail)
+					|| (result.isSms() && !isAlwaysSMS)
+					|| (result.isWhatsApp() && !isAlwaysWA)) {
 				return result;
 			}
 		}

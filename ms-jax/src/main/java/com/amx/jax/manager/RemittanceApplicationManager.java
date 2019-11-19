@@ -25,12 +25,12 @@ import com.amx.jax.branchremittance.manager.BranchRemittanceManager;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxDynamicField;
 import com.amx.jax.dao.ApplicationProcedureDao;
-import com.amx.jax.dbmodel.BankMasterModel;
+import com.amx.jax.dbmodel.BankMasterMdlv1;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.CompanyMaster;
-import com.amx.jax.dbmodel.CountryBranch;
+import com.amx.jax.dbmodel.CountryBranchMdlv1;
 import com.amx.jax.dbmodel.CountryMaster;
-import com.amx.jax.dbmodel.CurrencyMasterModel;
+import com.amx.jax.dbmodel.CurrencyMasterMdlv1;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.ViewCompanyDetails;
@@ -52,6 +52,7 @@ import com.amx.jax.model.response.remittance.FlexFieldDto;
 import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.pricer.dto.ExchangeDiscountInfo;
+import com.amx.jax.pricer.dto.TrnxRoutingDetails;
 import com.amx.jax.pricer.var.PricerServiceConstants.DISCOUNT_TYPE;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.ICurrencyDao;
@@ -147,8 +148,8 @@ public class RemittanceApplicationManager {
 		CountryMaster appCountryId = new CountryMaster();
 		appCountryId.setCountryId(metaData.getCountryId());
 		remittanceApplication.setFsCountryMasterByApplicationCountryId(appCountryId);
-		CurrencyMasterModel localCurrency = new CurrencyMasterModel();
-		CurrencyMasterModel foreignCurrency = new CurrencyMasterModel();
+		CurrencyMasterMdlv1 localCurrency = new CurrencyMasterMdlv1();
+		CurrencyMasterMdlv1 foreignCurrency = new CurrencyMasterMdlv1();
 		foreignCurrency.setCurrencyId(foreignCurrencyId);
 		localCurrency.setCurrencyId(localCurrencyId);
 		remittanceApplication.setSourceofincome(requestModel.getSourceOfFund());
@@ -170,7 +171,7 @@ public class RemittanceApplicationManager {
 		ViewCompanyDetails companyDetails = companyService.getCompanyDetailsById(metaData.getCompanyId());
 		remittanceApplication.setCompanyCode(companyDetails.getCompanyCode());
 		// branch id
-		CountryBranch countryBranch = bankMetaService.getCountryBranchById((metaData.getCountryBranchId()));
+		CountryBranchMdlv1 countryBranch = bankMetaService.getCountryBranchById((metaData.getCountryBranchId()));
 		remittanceApplication.setLoccod(metaData.getCountryBranchId());
 		remittanceApplication.setExCountryBranch(countryBranch);
 		// fin year
@@ -200,7 +201,7 @@ public class RemittanceApplicationManager {
 		remittanceApplication.setCustomerRef(customer.getCustomerReference());
 
 		// Routing Bank
-		BankMasterModel bankmaster = new BankMasterModel();
+		BankMasterMdlv1 bankmaster = new BankMasterMdlv1();
 		bankmaster.setBankId(routingBankId);
 		remittanceApplication.setExBankMaster(bankmaster);
 
@@ -237,6 +238,7 @@ public class RemittanceApplicationManager {
 		remittanceApplication.setDocumentNo(generateDocumentNumber(remittanceApplication.getExCountryBranch(), ConstantDocument.Update));
 		remittanceApplication.setPaymentId(remittanceApplication.getDocumentNo().toString());
 		remittanceApplication.setWuIpAddress(metaData.getDeviceIp());
+		remittanceApplication.setCustomerChoice(validationResults.getCustomerChoice());
 		
 		validateAdditionalErrorMessages(requestModel);
 		validateBannedBank(requestModel.getBeneId());
@@ -246,6 +248,8 @@ public class RemittanceApplicationManager {
 
 		setCustomerDiscountColumns(remittanceApplication, validationResults);
 		setVatDetails(remittanceApplication, validationResults);
+		setSavedAmount(remittanceApplication, validationResults);
+		
 		return remittanceApplication;
 	}
 	
@@ -274,8 +278,8 @@ public class RemittanceApplicationManager {
 		CountryMaster appCountryId = new CountryMaster();
 		appCountryId.setCountryId(metaData.getCountryId());
 		remittanceApplication.setFsCountryMasterByApplicationCountryId(appCountryId);
-		CurrencyMasterModel localCurrency = new CurrencyMasterModel();
-		CurrencyMasterModel foreignCurrency = new CurrencyMasterModel();
+		CurrencyMasterMdlv1 localCurrency = new CurrencyMasterMdlv1();
+		CurrencyMasterMdlv1 foreignCurrency = new CurrencyMasterMdlv1();
 		foreignCurrency.setCurrencyId(foreignCurrencyId);
 		localCurrency.setCurrencyId(localCurrencyId);
 		remittanceApplication.setSourceofincome(requestModel.getSourceOfFund());
@@ -297,7 +301,7 @@ public class RemittanceApplicationManager {
 		ViewCompanyDetails companyDetails = companyService.getCompanyDetailsById(metaData.getCompanyId());
 		remittanceApplication.setCompanyCode(companyDetails.getCompanyCode());
 		// branch id
-		CountryBranch countryBranch = bankMetaService.getCountryBranchById((metaData.getCountryBranchId()));
+		CountryBranchMdlv1 countryBranch = bankMetaService.getCountryBranchById((metaData.getCountryBranchId()));
 		remittanceApplication.setLoccod(metaData.getCountryBranchId());
 		remittanceApplication.setExCountryBranch(countryBranch);
 		// fin year
@@ -327,7 +331,7 @@ public class RemittanceApplicationManager {
 		remittanceApplication.setCustomerRef(customer.getCustomerReference());
 
 		// Routing Bank
-		BankMasterModel bankmaster = new BankMasterModel();
+		BankMasterMdlv1 bankmaster = new BankMasterMdlv1();
 		bankmaster.setBankId(routingBankId);
 		remittanceApplication.setExBankMaster(bankmaster);
 
@@ -369,9 +373,8 @@ public class RemittanceApplicationManager {
 
 			remittanceApplication.setWtStatus(ConstantDocument.PB_STATUS_NEW);
 		}
-		
-		
-		
+		remittanceApplication.setCustomerChoice(validationResults.getCustomerChoice());
+
 		
 		DynamicRoutingPricingDto dynamicRoutingPricingResponse = requestModel.getDynamicRroutingPricingBreakup();
 		if(dynamicRoutingPricingResponse.getServiceProviderDto() != null && dynamicRoutingPricingResponse.getServiceProviderDto().getIntialAmountInSettlCurr() != null) {
@@ -392,6 +395,8 @@ public class RemittanceApplicationManager {
 
 		setCustomerDiscountColumns(remittanceApplication, validationResults);
 		setVatDetails(remittanceApplication, validationResults);
+		setSavedAmount(remittanceApplication, validationResults);
+		setDeliveryTimeDuration(remittanceApplication,dynamicRoutingPricingResponse.getTrnxRoutingPaths());
 		return remittanceApplication;
 	}
 	
@@ -540,8 +545,8 @@ public class RemittanceApplicationManager {
 		}
 	}
 	
-	
-	public BigDecimal generateDocumentNumber(CountryBranch countryBranch, String processInd) {
+
+	public BigDecimal generateDocumentNumber(CountryBranchMdlv1 countryBranch, String processInd) {
 		BigDecimal appCountryId = metaData.getCountryId();
 		BigDecimal companyId = metaData.getCompanyId();
 		BigDecimal documentId = (BigDecimal) remitApplParametersMap.get("P_DOCUMENT_ID");
@@ -583,7 +588,6 @@ public class RemittanceApplicationManager {
 					remittanceApplication.setDiscountOnCommission(validationResults.getDiscountOnComission());
 		}
 	}
-
 	private void setApplicableRatesV2(RemittanceApplication remittanceApplication,
 			RemittanceTransactionDrRequestModel requestModel, RemittanceTransactionResponsetModel validationResults) {
 		ExchangeRateBreakup breakup = validationResults.getExRateBreakup();
@@ -648,6 +652,7 @@ public class RemittanceApplicationManager {
 		}
 	}
 
+	/** added by Rabil **/
 	public void setFurtherInstruction(RemittanceApplication remittanceApplication,
 			Map<String, Object> additionalFields) {
 		if (additionalFields != null && !additionalFields.isEmpty()) {
@@ -658,5 +663,31 @@ public class RemittanceApplicationManager {
 			remittanceApplication.setInstruction("URGENT");
 		}
 	}
+	
+		/** @author rabil
+		 * Purpose : to store the delivery date and time 
+		 * 
+		 */
+		public  void setDeliveryTimeDuration(RemittanceApplication remittanceApplication,TrnxRoutingDetails trnxRoutingDetails) {
+			if(trnxRoutingDetails!=null && trnxRoutingDetails.getEstimatedDeliveryDetails()!=null) {
+				if(trnxRoutingDetails.getEstimatedDeliveryDetails().getProcessTimeTotalInSeconds()>0) {
+					remittanceApplication.setTimeToDeliverInSec(new BigDecimal(trnxRoutingDetails.getEstimatedDeliveryDetails().getProcessTimeTotalInSeconds()));
+				}
+			}
+		}
 
+	/** added by Rabil **/
+	public void setSavedAmount(RemittanceApplication remittanceApplication,RemittanceTransactionResponsetModel validationResults) {
+		if(JaxUtil.isNullZeroBigDecimalCheck(validationResults.getYouSavedAmount()) &&  validationResults.getYouSavedAmount().compareTo(BigDecimal.ZERO)>0) {
+		remittanceApplication.setSavedAmount(validationResults.getYouSavedAmount());
+		}
+		remittanceApplication.setRackExchangeRate(validationResults.getRackExchangeRate());
+		if(JaxUtil.isNullZeroBigDecimalCheck(validationResults.getYouSavedAmountInFC()) && validationResults.getYouSavedAmountInFC().compareTo(BigDecimal.ZERO)>0){
+			remittanceApplication.setSavedAmountInFc(validationResults.getYouSavedAmountInFC());
+		}
+		remittanceApplication.setCustomerChoice(validationResults.getCustomerChoice());
+		
+	}
+	
+	
 }

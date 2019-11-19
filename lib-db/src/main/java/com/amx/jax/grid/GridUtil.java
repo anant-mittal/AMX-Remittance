@@ -38,24 +38,24 @@ public class GridUtil {
 	}
 
 	public static String buildPaginatedQueryForOracle(String baseQuery, PaginationCriteria paginationCriteria,
-			boolean isGridViewRecord, boolean isCustomeQuery) {
+			boolean isGridViewRecord, boolean isCustomeQuery, GridInfo<?> gridInfo) {
 
 		String finalQuery = null;
 
 		StringBuilder sb = null;
 
 		if (isCustomeQuery) {
-			//Record Query with Custom // SLOWEST
+			// Record Query with Custom // SLOWEST
 			sb = new StringBuilder(
 					"SELECT * FROM (SELECT FILTERED_ORDERED_RESULTS.*, COUNT(1) OVER() total_records, ROWNUM AS RN FROM (SELECT BASEINFO.* FROM ( #BASE_QUERY# ) BASEINFO ) FILTERED_ORDERED_RESULTS #WHERE_CLAUSE# #ORDER_CLASUE# ) WHERE RN > (#PAGE_NUMBER# * #PAGE_SIZE#) AND RN <= (#PAGE_NUMBER# + 1) * #PAGE_SIZE# ");
 		} else if (!isCustomeQuery && !isGridViewRecord) {
-			//Plain Query
+			// Plain Query
 			sb = new StringBuilder(
-					"SELECT * FROM (SELECT FILTERED_ORDERED_RESULTS.* , 0 total_records, ROWNUM as RN FROM (#BASE_QUERY# #WHERE_CLAUSE# #ORDER_CLASUE# ) FILTERED_ORDERED_RESULTS ) WHERE RN > (#PAGE_NUMBER# * #PAGE_SIZE#) AND RN <= (#PAGE_NUMBER# + 1) * #PAGE_SIZE#");
+					"SELECT * FROM (SELECT FILTERED_ORDERED_RESULTS.* , 0 total_records, ROWNUM as RN FROM (#BASE_QUERY# #WHERE_CLAUSE# #GROUP_CLAUSE# #ORDER_CLASUE# ) FILTERED_ORDERED_RESULTS ) WHERE RN > (#PAGE_NUMBER# * #PAGE_SIZE#) AND RN <= (#PAGE_NUMBER# + 1) * #PAGE_SIZE#");
 		} else if (!isCustomeQuery && isGridViewRecord) {
-			//Record Query : MEDIUM
+			// Record Query : MEDIUM
 			sb = new StringBuilder(
-					"SELECT * FROM (SELECT FILTERED_ORDERED_RESULTS.*, COUNT(1) OVER() total_records, ROWNUM as RN FROM (#BASE_QUERY# #WHERE_CLAUSE# #ORDER_CLASUE# ) FILTERED_ORDERED_RESULTS) WHERE RN > (#PAGE_NUMBER# * #PAGE_SIZE#) AND RN <= (#PAGE_NUMBER# + 1) * #PAGE_SIZE# ");
+					"SELECT * FROM (SELECT FILTERED_ORDERED_RESULTS.*, COUNT(1) OVER() total_records, ROWNUM as RN FROM (#BASE_QUERY# #WHERE_CLAUSE# #GROUP_CLAUSE# #ORDER_CLASUE# ) FILTERED_ORDERED_RESULTS) WHERE RN > (#PAGE_NUMBER# * #PAGE_SIZE#) AND RN <= (#PAGE_NUMBER# + 1) * #PAGE_SIZE# ");
 		}
 
 		if (!ArgUtil.isEmpty(paginationCriteria)) {
@@ -73,6 +73,9 @@ public class GridUtil {
 									+ combinedClause)
 					.replaceAll("#NOWHERE#",
 							((ArgUtil.isEmpty(combinedClause)) ? " WHERE " : " AND "))
+
+					.replaceAll("#GROUP_CLAUSE#",
+							((ArgUtil.isEmpty(gridInfo.getGroupBy())) ? "" : (" GROUP BY " + gridInfo.getGroupBy())))
 					.replaceAll("#ORDER_CLASUE#", paginationCriteria.getOrderByClause())
 					.replaceAll("#PAGE_NUMBER#", paginationCriteria.getPageNumber().toString())
 					.replaceAll("#PAGE_SIZE#", paginationCriteria.getPageSize().toString());

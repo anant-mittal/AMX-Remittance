@@ -77,6 +77,10 @@ public class AuthController {
 		if (!ArgUtil.isEmpty(authData.getLockId()) && !authData.getLockId().equalsIgnoreCase(authData.getIdentity())) {
 			throw new UIServerError(OWAStatusStatusCodes.DEVICE_LOCKED);
 		}
+		
+		if(sessionService.validatedUser()) {
+			throw new UIServerError(OWAStatusStatusCodes.ACTIVE_SESSION);
+		}
 
 		if (!ArgUtil.isEmpty(authData.getDeviceToken())) {
 			return loginService.loginByDevice(authData.getIdentity(), authData.getDeviceToken());
@@ -103,6 +107,10 @@ public class AuthController {
 			throw new UIServerError(OWAStatusStatusCodes.DEVICE_LOCKED);
 		}
 
+		if(sessionService.validatedUser()) {
+			//throw new UIServerError(OWAStatusStatusCodes.ACTIVE_SESSION);
+		}
+		
 		String captcha = JaxAuthContext.captcha(authData.getCaptachKey());
 
 		if (!ArgUtil.isEmpty(captcha) &&

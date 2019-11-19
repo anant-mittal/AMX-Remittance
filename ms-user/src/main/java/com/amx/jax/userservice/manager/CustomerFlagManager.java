@@ -20,6 +20,7 @@ import com.amx.jax.model.response.customer.CustomerFlags;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.service.UserValidationService;
 import com.amx.jax.util.AmxDBConstants;
+import com.amx.jax.util.AmxDBConstants.Status;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -27,10 +28,9 @@ public class CustomerFlagManager {
 	private static final Logger logger = Logger.getLogger(CustomerFlags.class);
 	@Autowired
 	UserValidationService userValidationService;
-	
+
 	@Autowired
 	private CustomerDao custDao;
-
 
 	public CustomerFlags getCustomerFlags(BigDecimal customerId) {
 		CustomerFlags customerFlags = new CustomerFlags();
@@ -48,8 +48,12 @@ public class CustomerFlagManager {
 
 		customerFlags.setAnnualIncomeExpired(Boolean.FALSE);
 		customerFlags.setAnnualTransactionLimitExpired(isAnnualTransactionLimitExpired(customer));
+		customerFlags.setIsDeactivated(ConstantDocument.Deleted.equals(customer.getIsActive()));
 		setCustomerCommunicationChannelFlags(customer, customerFlags);
 		customerFlags.setIsEmailMissing(isEmailMissing(customer));
+		customerFlags.setIsMobileMissing(isMobileMissing(customer));
+		customerFlags.setIsEmailVerified(Status.Y.equals(customer.getEmailVerified()));
+		customerFlags.setIsMobileVerified(Status.Y.equals(customer.getMobileVerified()));
 
 		return customerFlags;
 	}
@@ -127,7 +131,7 @@ public class CustomerFlagManager {
 			}
 		}
 	}
-	
+
 	public static Boolean isAnnualTransactionLimitExpired(Customer customer) {
 		Date annualTransactionLimitExpired = customer.getAnnualTransactionUpdatedDate();
 		if (annualTransactionLimitExpired == null) {
@@ -144,12 +148,19 @@ public class CustomerFlagManager {
 		}
 
 	}
-	
+
 	public static Boolean isEmailMissing(Customer customer) {
-		if(StringUtils.isEmpty(customer.getEmail())) {
+		if (StringUtils.isEmpty(customer.getEmail())) {
 			return true;
 		}
 		return false;
-		
+	}
+
+	public static Boolean isMobileMissing(Customer customer) {
+		if (StringUtils.isEmpty(customer.getMobile())) {
+			return true;
+		}
+		return false;
+
 	}
 }

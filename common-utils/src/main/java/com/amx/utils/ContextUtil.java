@@ -114,27 +114,35 @@ public final class ContextUtil {
 	 * @param midfix   the midfix
 	 * @return the trace id
 	 */
-	public static String getTraceId(boolean generate, String sessionId) {
+	public static String getTraceId(boolean generate, String sessionId, String requestUser) {
 		String traceId = (String) context.get().get(TRACE_ID);
 		if (traceId == null) {
 			if (!generate) {
 				return "";
 			}
-			traceId = UniqueID.generateRequestId(sessionId, getFlowfix());
+			traceId = UniqueID.generateRequestId(sessionId, requestUser, getFlowfix());
 			context.get().put(TRACE_ID, traceId);
 		}
 		return traceId;
 	}
 
-	public static String generateTraceId(String sessionId) {
-		String traceId = UniqueID.generateRequestId(sessionId, getFlowfix());
+	public static String getTraceId(boolean generate, String sessionId) {
+		return getTraceId(generate, sessionId, null);
+	}
+
+	public static String generateTraceId(String sessionId, String requestUser) {
+		String traceId = UniqueID.generateRequestId(sessionId, requestUser, getFlowfix());
 		context.get().put(TRACE_ID, traceId);
 		return traceId;
 	}
 
+	public static String generateTraceId(String sessionId) {
+		return generateTraceId(sessionId, null);
+	}
+
 	private static String getFlowfix() {
 		String flowfix = ArgUtil.parseAsString(context.get().get(FLOW_FIX_KEY), FLOW_FIX_DEFAULT);
-		return StringUtils.pad(flowfix, "xxx", 1, 1).toLowerCase();
+		return StringUtils.pad(flowfix, "xxx", 0).toLowerCase();
 	}
 
 }

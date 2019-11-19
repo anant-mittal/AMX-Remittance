@@ -1,12 +1,8 @@
 package com.bootloaderjs;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
-import com.amx.utils.CryptoUtil.HashBuilder;
-import com.amx.utils.Random;
+import com.amx.utils.CryptoUtil;
 
 public class HmacTest { // Noncompliant
 
@@ -18,33 +14,28 @@ public class HmacTest { // Noncompliant
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		System.out.println(new HashBuilder().hash(Random.randomHexa(1000)).toComplex(6)
-				.output() + "   ===  "+ 338798704%100 + "   " + 338798704/100);
-//		if (false) {
-//			Map<String, Integer> map = new HashMap<String, Integer>();
-//			for (int i = 0; i < 1; i++) {
-//				String otp = new HashBuilder().hash("RED").toHex(6)
-//						.toNumeric(6)
-//						.output();
-//
-//				// String otp = Random.randomAlphaNumeric(6);
-//				Integer count = map.getOrDefault(otp, 0);
-//				count++;
-//				map.put(otp, count);
-//			}
-//			Map<Integer, Integer> counter = new HashMap<Integer, Integer>();
-//			for (Entry<String, Integer> entry : map.entrySet()) {
-//				// System.out.println(String.format("%s x%s", entry.getKey(),
-//				// entry.getValue()));
-//				Integer count = counter.getOrDefault(entry.getValue(), 0);
-//				counter.put(entry.getValue(), ++count);
-//				// System.out.println(String.format("%s > %s", entry.getValue(), count));
-//			}
-//
-//			for (Entry<Integer, Integer> entry : counter.entrySet()) {
-//				System.out.println(String.format("x%s v%s", entry.getKey(), entry.getValue()));
-//			}
-//		}
+		
+		//validateHMAC I:60 S:b9dbe6a92c73cbe137b81bdd322cc0655655cd2bc0a782609283cddab528f369 M:5KE3ZQ C:1573114585707 H:3 T:60
+		//validateHMAC I:60 S:b9dbe6a92c73cbe137b81bdd322cc0655655cd2bc0a782609283cddab528f369 M:5KE3ZQ C:1573114585707 H:3 T:60
+		
+		//validateHMAC I:60 S:b9dbe6a92c73cbe137b81bdd322cc0655655cd2bc0a782609283cddab528f369 M:EET8AP C:1573112719915 H:r T:60
+//		System.out.println(CryptoUtil.validateComplexHMAC(1573114585707L, 60L, 60,
+//				"S:b9dbe6a92c73cbe137b81bdd322cc0655655cd2bc0a782609283cddab528f369", "5KE3ZQ", "3"));
+		
+		System.out.println(CryptoUtil.validateNumHMAC(1573114585707L, 60L, 60,
+				"S:b9dbe6a92c73cbe137b81bdd322cc0655655cd2bc0a782609283cddab528f369", "5KE3ZQ", "3"));
+		
+//		System.out.println(CryptoUtil.validateComplexHMAC(1573114585707L, 60L, 60,
+//				"S:b9dbe6a92c73cbe137b81bdd322cc0655655cd2bc0a782609283cddab528f369", "5KE3ZQ", "zmBHL7"));
+//		
+//		System.out.println(CryptoUtil.validateNumHMAC(1573114585707L, 60L, 60,
+//				"S:b9dbe6a92c73cbe137b81bdd322cc0655655cd2bc0a782609283cddab528f369", "5KE3ZQ", "zmBHL7"));
+//		
+//		System.out.println(CryptoUtil.validateComplexHMAC(1573114585707L, 60L, 60,
+//				"S:b9dbe6a92c73cbe137b81bdd322cc0655655cd2bc0a782609283cddab528f369", "5KE3ZQ", "S59hL6"));
+//		
+//		System.out.println(CryptoUtil.validateNumHMAC(1573114585707L, 60L, 60,
+//				"S:b9dbe6a92c73cbe137b81bdd322cc0655655cd2bc0a782609283cddab528f369", "5KE3ZQ", "S59hL6"));
 	}
 
 }

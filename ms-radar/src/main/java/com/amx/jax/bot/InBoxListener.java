@@ -10,14 +10,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import com.amx.jax.AppContext;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.client.CustomerProfileClient;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerContactVerification;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.exception.AmxApiException;
-import com.amx.jax.exception.AmxException;
 import com.amx.jax.logger.AuditActor;
 import com.amx.jax.logger.AuditActor.ActorType;
 import com.amx.jax.mcq.shedlock.SchedulerLock;
@@ -74,16 +72,19 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 	@Autowired
 	EsConfig esConfig;
 
-	public static final String FOUND_MATCHED = "Thank you for verification. Your account is now linked to this whatsApp number.";
-	public static final String FOUND_MATCH_NOT = "This WhatsApp number is not linked to the {companyIDType} entered. "
+	@Autowired
+	Chatbot chatbot;
+
+	public static final String VERIFICATION_DONE = "Thank you for verification. Your account is now linked to this whatsApp number.";
+	public static final String NO_LINK_FOUND = "This WhatsApp number is not linked to the {companyIDType} entered. "
 			+ "Please recheck. In case the {companyIDType} is correct, please go to the branch and update your"
 			+ " WhatsApp number with any of our counter staff.";
-	public static final String FOUND_NOT = "We cannot find an account with this {companyIDType}. "
+	public static final String NO_ACCOUNT_FOUND = "We cannot find an account with this {companyIDType}. "
 			+ "Kindly check if {companyIDType} is correct or visit branch to create a new account. "
 			+ "You can also register online on https://{companyWebSiteUrl}";
-	public static final String ANY_TEXT = "We cannot find any account linked with this WhatsApp number. "
+	public static final String NO_ACCOUNT_FOUND_FOR_WHATSAPP = "We cannot find any account linked with this WhatsApp number. "
 			+ "Please send {companyIDType} to link your account. Eg : LINK 123456789987";
-	public static final String NO_ACTION = "Your number is verified. Visit https://{companyWebSiteUrl} or download our app, "
+	public static final String ALREADY_VERIFIED = "Your number is verified. Visit https://{companyWebSiteUrl} or download our app, "
 			+ "register yourself and see exchange rates, view past transactions, place orders for targeted exchange rates, "
 			+ "do remittances and order Foreign Exchange to be delivered to you.";
 	public static final String SOME_ERROR = "There is some issue while verifying your WhatsApp number."
@@ -124,38 +125,41 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 			StringMatcher matcher = new StringMatcher(event.getMessage().toUpperCase());
 
 			String errorCode = "TECHNICAL_ERROR";
+			String whatsAppNUmber = swissISDProtoString + swissNumberProtoString;
 
 			if (matcher.isMatch(PING)) {
 				replyMessage = "PING";
 			} else if (matcher.isMatch(LINK_CIVIL_ID) || matcher.isMatch(JUST_CIVIL_ID)) {
 				try {
 					AppContextUtil
-							.setActorId(new AuditActor(ActorType.W, swissISDProtoString + swissNumberProtoString));
+							.setActorId(new AuditActor(ActorType.W, whatsAppNUmber));
 					String civilId = matcher.group(2);
 					Customer customer = CollectionUtil.getOne(customerRepository.findActiveCustomers(civilId));
 
 					if (ArgUtil.isEmpty(customer)) { // Customer no Found
-						replyMessage = FOUND_NOT;
+						replyMessage = chatbot.response(whatsAppNUmber, "NO ACCOUNT FOUND", NO_ACCOUNT_FOUND);
 					} else if (!swissNumberProtoString.equalsIgnoreCase(customer.getWhatsapp())) { // Customer number
 																									// does
-						replyMessage = FOUND_MATCH_NOT;
+						replyMessage = chatbot.response(whatsAppNUmber, "NO LINK FOUND", NO_LINK_FOUND);
 					} else if (customer.hasVerified(ContactType.WHATSAPP)) { // Already Verified so
-						replyMessage = NO_ACTION;
+						replyMessage = chatbot.response(whatsAppNUmber, "ALREADY VERIFIED", ALREADY_VERIFIED);
 					} else { // Found and matched
 								// customer.setWhatsAppVerified(AmxDBConstants.Status.Y);
 						customerProfileClient.verifyLinkByContact(civilId, ContactType.WHATSAPP,
 								swissISDProtoString + swissNumberProtoString);
 						// customerRepository.save(customer);
-						replyMessage = FOUND_MATCHED;
+						replyMessage = chatbot.response(whatsAppNUmber, "VERIFICATION DONE", VERIFICATION_DONE);
 					}
 				} catch (AmxApiException e) {
 					errorCode = e.getErrorKey();
 					LOGGER.error("SOME_AmxApiException", e);
 				} catch (Exception e) {
-					replyMessage = SOME_ERROR;
+					replyMessage = chatbot.response(whatsAppNUmber, "SOME ERROR", SOME_ERROR);
 					LOGGER.error("SOME_Exception", e);
 				}
 
+			} else {
+				replyMessage = chatbot.response(whatsAppNUmber, event.getMessage().toUpperCase(), "NO_RESPONSE");
 			}
 			/*
 			 * else if (esConfig.isEnabled()) { OracleViewDocument doc =
@@ -177,7 +181,7 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 	@SchedulerLock(lockMaxAge = AmxCurConstants.INTERVAL_HRS * 13, context = LockContext.BY_METHOD)
 	@Scheduled(fixedDelay = AmxCurConstants.INTERVAL_HRS * 12)
 	public void doTaskModeDay() {
-		if (!TimeUtils.inHourSlot(4, 0)) {
+		if (TimeUtils.inHourSlot(4, 0) && radarConfig.isJobWAFailRetryEnabled()) {
 			Calendar cal = Calendar.getInstance();
 			cal.add(Calendar.DATE, -1);
 			java.util.Date oneDay = new java.util.Date(cal.getTimeInMillis());

@@ -11,7 +11,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import com.amx.amxlib.constant.JaxFieldEntity;
+import com.amx.jax.constants.JaxFieldEntity;
 
 @Entity
 @Table(name = "JAX_CONDITIONAL_FIELD_RULE")

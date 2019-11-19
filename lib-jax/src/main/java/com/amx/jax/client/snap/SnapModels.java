@@ -5,11 +5,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.amx.jax.model.MapModel;
 import com.amx.utils.CollectionUtil;
 import com.amx.utils.JsonPath;
 import com.amx.utils.JsonUtil;
+import com.amx.utils.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -17,7 +19,7 @@ public class SnapModels {
 
 	private static final String BUCKETS = "buckets";
 	private static final JsonPath BUCKETS_LIST = new JsonPath(BUCKETS);
-	private static final String AGGREGATIONS_KEY = "aggregations";
+	public static final String AGGREGATIONS_KEY = "aggregations";
 	private static final JsonPath AGGREGATIONS = new JsonPath(AGGREGATIONS_KEY);
 	private static final String HITS_KEY = "hits";
 	private static final JsonPath HITS = new JsonPath(HITS_KEY);
@@ -34,6 +36,11 @@ public class SnapModels {
 		KEYS.put("doc_count_error_upper_bound", true);
 		KEYS.put("sum_other_doc_count", true);
 		KEYS.put("doc_count", true);
+		KEYS.put("to_as_string", true);
+		KEYS.put("from_as_string", true);
+		KEYS.put("from", true);
+		KEYS.put("to", true);
+		KEYS.put("key_as_string", true);
 	}
 
 	public static class ASnapModel extends MapModel {
@@ -103,6 +110,16 @@ public class SnapModels {
 				}
 			}
 			return pivot;
+		}
+
+		@SuppressWarnings("unchecked")
+		public List<Map<String, Object>> getBulk() {
+			return (List<Map<String, Object>>) map.get("bulk");
+		}
+
+		public SnapModelWrapper removeAggregations() {
+			map.remove(AGGREGATIONS_KEY);
+			return this;
 		}
 	}
 
@@ -224,10 +241,26 @@ public class SnapModels {
 		public List<Aggregations> getBuckets() {
 			if (this.buckets == null) {
 				this.buckets = new ArrayList<SnapModels.Aggregations>();
-				List<Map<String, Object>> tempbuckets = BUCKETS_LIST.loadList(map, new HashMap<String, Object>());
-				for (Map<String, Object> aggregationMap : tempbuckets) {
-					Aggregations aggr = new Aggregations(aggregationMap);
-					this.buckets.add(aggr);
+				try {
+					if (map.containsKey(BUCKETS) && map.containsKey("sum_other_doc_count")) {
+						List<Map<String, Object>> tempbuckets = BUCKETS_LIST.loadList(map,
+								new HashMap<String, Object>());
+						for (Map<String, Object> aggregationMap : tempbuckets) {
+							Aggregations aggr = new Aggregations(aggregationMap);
+							this.buckets.add(aggr);
+						}
+					} else {
+						HashMap<String, Map<String, Object>> tempbucketsmap = BUCKETS_LIST.load(map,
+								new HashMap<String, Map<String, Object>>());
+
+						for (Entry<String, Map<String, Object>> aggregationMap : tempbucketsmap.entrySet()) {
+							Aggregations aggr = new Aggregations(aggregationMap.getValue());
+							aggr.toMap().put("key", aggregationMap.getKey());
+							this.buckets.add(aggr);
+						}
+					}
+				} catch (Exception e) {
+					System.out.println("===  " + JsonUtil.toJson(map));
 				}
 			}
 			return buckets;
@@ -293,10 +326,15 @@ public class SnapModels {
 			if (fieldObject instanceof AggregationField) {
 				return (AggregationField) fieldObject;
 			} else {
-				HashMap<String, Object> fieldMap = new JsonPath(field).load(map, new HashMap<String, Object>());
-				AggregationField aggregationField = new AggregationField(fieldMap, field);
-				this.map.put(field, aggregationField);
-				return aggregationField;
+				try {
+					HashMap<String, Object> fieldMap = new JsonPath(field).load(map, new HashMap<String, Object>());
+					AggregationField aggregationField = new AggregationField(fieldMap, field);
+					this.map.put(field, aggregationField);
+					return aggregationField;
+				} catch (Exception e) {
+					System.out.println("ERROR : " + map + "=== " + field);
+					return new AggregationField(new HashMap<String, Object>(), field);
+				}
 			}
 		}
 
@@ -311,7 +349,11 @@ public class SnapModels {
 		}
 
 		public List<Map<String, Object>> toBulk() {
-			return this.toBulk(new HashMap<String, Object>(), "");
+			return this.toBulk(new HashMap<String, Object>(), "", 0);
+		}
+
+		public List<Map<String, Object>> toBulk(int minCount) {
+			return this.toBulk(new HashMap<String, Object>(), "", minCount);
 		}
 
 		public static Map<String, Object> copy(Map<String, Object> map) {
@@ -320,36 +362,46 @@ public class SnapModels {
 			return newMap;
 		}
 
-		public List<Map<String, Object>> toBulk(Map<String, Object> bulkItemBlank, String space) {
+		public List<Map<String, Object>> toBulk(Map<String, Object> bulkItemBlank, String space,
+				int minCount) {
 			List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 			long afIndex = 0;
 			for (AggregationField af : this.fields()) {
+				String afIndexStr = StringUtils.alpha62(afIndex);
+				// String afIndexStr = "-";//StringUtils.alpha62(afIndex);
 				if (af.toMap().containsKey("buckets")) {
 					List<Aggregations> buckets = af.getBuckets();
 
 					long bucketItemIndex = 0;
 					for (Aggregations bucketItem : buckets) {
+						String bucketItemIndexStr = StringUtils.alpha62(afIndex + bucketItemIndex);
+						// String bucketItemIndexStr = "-";
 						// System.out.println(af.fieldName() + " " + bucketItem.getKey());
 						Map<String, Object> _bulkItemBlank = copy(bulkItemBlank);
 						_bulkItemBlank.put(af.fieldName(), bucketItem.getKey());
 						List<Map<String, Object>> bulk = bucketItem.toBulk(_bulkItemBlank,
-								space + afIndex + bucketItemIndex);
+								space + bucketItemIndexStr, minCount);
 						for (Map<String, Object> bulkItem : bulk) {
 							if (bulkItem.containsKey("_id")) {
-								bulkItem.put("_docs", bucketItem.getDocCount());
+								// bulkItem.put("_docs", bucketItem.getDocCount());
 								list.add(bulkItem);
 							}
 							// System.out.println("bulkItem " + JsonUtil.toJson(bulkItem));
 						}
 						bucketItemIndex++;
 					}
-
 				} else {
-					af.toBulkItem(bulkItemBlank, space + afIndex);
+					bulkItemBlank.put("_docs", this.getDocCount());
+					af.toBulkItem(bulkItemBlank, space + afIndexStr);
 				}
 				afIndex++;
 			}
-			if (bulkItemBlank.containsKey("_id")) {
+			if (afIndex == 0) {
+				bulkItemBlank.put("_id", space);
+				bulkItemBlank.put("_docs", this.getDocCount());
+				// System.out.println("This is end of "+ this.getKey() + " " + space);
+			}
+			if (bulkItemBlank.containsKey("_id") && (this.getDocCount() >= minCount)) {
 				list.add(bulkItemBlank);
 			}
 			return list;

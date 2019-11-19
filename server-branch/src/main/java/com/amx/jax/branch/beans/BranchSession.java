@@ -2,15 +2,16 @@ package com.amx.jax.branch.beans;
 
 import java.math.BigDecimal;
 
+import com.amx.jax.http.CommonHttpRequest;
+import com.amx.jax.model.response.customer.CustomerShortInfo;
+import com.amx.jax.model.response.customer.OffsiteCustomerDataDTO;
+import com.amx.utils.ArgUtil;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
-
-import com.amx.jax.http.CommonHttpRequest;
-import com.amx.jax.model.response.customer.OffsiteCustomerDataDTO;
-import com.amx.utils.ArgUtil;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_SESSION, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -44,12 +45,16 @@ public class BranchSession {
 		return getCustomerContext().getCustomerId();
 	}
 
-	public void setCustomer(OffsiteCustomerDataDTO customer) {
+	public void setCustomer(CustomerShortInfo customer) {
 		getCustomerContext().setCustomer(customer);
 	}
 
-	public OffsiteCustomerDataDTO getCustomer() {
+	public CustomerShortInfo getCustomer() {
 		return getCustomerContext().getCustomer();
+	}
+
+	public OffsiteCustomerDataDTO getCustomerData() {
+		return getCustomerContext().getCustomerData();
 	}
 
 }

@@ -3,7 +3,7 @@ package com.amx.jax.dbmodel;
 import java.math.BigDecimal;
 import java.util.List;
 
-import com.amx.amxlib.constant.JaxFieldEntity;
+import com.amx.jax.constants.JaxFieldEntity;
 
 public class JaxConditionalFieldRuleDto {
 	

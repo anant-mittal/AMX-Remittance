@@ -1,11 +1,16 @@
 package com.amx.jax.model.response.customer;
 
 import java.math.BigDecimal;
+import java.util.List;
 
+import com.amx.jax.model.customer.CustomerDocumentInfo;
+import com.amx.jax.model.customer.CustomerStatusModel;
 import com.amx.jax.model.request.CustomerEmploymentDetails;
 import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.model.request.HomeAddressDetails;
+import com.amx.jax.model.request.LastLoginDetails;
 import com.amx.jax.model.request.LocalAddressDetails;
+import com.amx.jax.model.request.PolicyDetails;
 
 public class OffsiteCustomerDataDTO {
 
@@ -17,11 +22,16 @@ public class OffsiteCustomerDataDTO {
 	
 	LocalAddressDetails localAddressDetails;
 	
-	HomeAddressDetails homeAddressDestails;
+	HomeAddressDetails homeAddressDetails;
 
 	CustomerEmploymentDetails customerEmploymentDetails;
 	CustomerFlags customerFlags;
-
+	List<CustomerDocumentInfo>  customerDocuments;
+	CustomerStatusModel customerStatusModel;
+	String statusKey;
+	LastLoginDetails lastLoginDetails;
+	PolicyDetails policyDetails;
+	
 	public String getIdentityInt() {
 		return identityInt;
 	}
@@ -54,14 +64,6 @@ public class OffsiteCustomerDataDTO {
 		this.localAddressDetails = localAddressDetails;
 	}
 
-	public HomeAddressDetails getHomeAddressDestails() {
-		return homeAddressDestails;
-	}
-
-	public void setHomeAddressDestails(HomeAddressDetails homeAddressDestails) {
-		this.homeAddressDestails = homeAddressDestails;
-	}
-
 	public CustomerEmploymentDetails getCustomerEmploymentDetails() {
 		return customerEmploymentDetails;
 	}
@@ -77,5 +79,54 @@ public class OffsiteCustomerDataDTO {
 	public void setCustomerFlags(CustomerFlags customerFlags) {
 		this.customerFlags = customerFlags;
 	}
+
+	public String getStatusKey() {
+		return statusKey;
+	}
+
+	public void setStatusKey(String statusKey) {
+		this.statusKey = statusKey;
+	}
+
+	public List<CustomerDocumentInfo> getCustomerDocuments() {
+		return customerDocuments;
+	}
+
+	public void setCustomerDocuments(List<CustomerDocumentInfo> customerDocuments) {
+		this.customerDocuments = customerDocuments;
+	}
+
+	public CustomerStatusModel getCustomerStatusModel() {
+		return customerStatusModel;
+	}
+
+	public void setCustomerStatusModel(CustomerStatusModel customerStatusModel) {
+		this.customerStatusModel = customerStatusModel;
+	}
+
+	public HomeAddressDetails getHomeAddressDetails() {
+		return homeAddressDetails;
+	}
+
+	public void setHomeAddressDetails(HomeAddressDetails homeAddressDetails) {
+		this.homeAddressDetails = homeAddressDetails;
+	}
+
+	public LastLoginDetails getLastLoginDetails() {
+		return lastLoginDetails;
+	}
+
+	public void setLastLoginDetails(LastLoginDetails lastLoginDetails) {
+		this.lastLoginDetails = lastLoginDetails;
+	}
+
+	public PolicyDetails getPolicyDetails() {
+		return policyDetails;
+	}
+
+	public void setPolicyDetails(PolicyDetails policyDetails) {
+		this.policyDetails = policyDetails;
+	}
+	
 	
 }

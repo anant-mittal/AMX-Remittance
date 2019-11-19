@@ -2,6 +2,7 @@ package com.amx.jax.payment.controller;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.web.ErrorController;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,7 +18,7 @@ import com.amx.jax.payment.gateway.PayGSession;
  * @author Viki Sangani 13-Dec-2017 Appcontroller.java
  */
 @Controller
-public class AppController {
+public class AppController implements ErrorController {
 
 	private static final Logger LOGGER = Logger.getLogger(AppController.class);
 
@@ -51,6 +52,16 @@ public class AppController {
 			return "redirect:" + payGSession.getCallback();
 		}
 		return "thymeleaf/pg_response";
+	}
+
+	@RequestMapping("/error")
+	public String handleError() {
+		return "thymeleaf/pg_error";
+	}
+
+	@Override
+	public String getErrorPath() {
+		return "/error";
 	}
 
 }

@@ -33,7 +33,9 @@ import com.amx.jax.pricer.dao.ExchangeRateDao;
 import com.amx.jax.pricer.dao.MarginMarkupDao;
 import com.amx.jax.pricer.dao.PipsMasterDao;
 import com.amx.jax.pricer.dao.RoutingDaoAlt;
+import com.amx.jax.pricer.dao.TreasuryFTImpactDao;
 import com.amx.jax.pricer.dao.ViewExGLCBALDao;
+import com.amx.jax.pricer.dao.VwExGLCBalProvDao;
 import com.amx.jax.pricer.dbmodel.BankApplicability;
 import com.amx.jax.pricer.dbmodel.BankIndicator;
 import com.amx.jax.pricer.dbmodel.BankMasterModel;
@@ -44,7 +46,9 @@ import com.amx.jax.pricer.dbmodel.ExchangeRateApprovalDetModelAlt;
 import com.amx.jax.pricer.dbmodel.OnlineMarginMarkup;
 import com.amx.jax.pricer.dbmodel.PipsMaster;
 import com.amx.jax.pricer.dbmodel.RoutingHeader;
+import com.amx.jax.pricer.dbmodel.TreasuryFundTimeImpact;
 import com.amx.jax.pricer.dbmodel.ViewExGLCBAL;
+import com.amx.jax.pricer.dbmodel.ViewExGLCBalProvisional;
 import com.amx.jax.pricer.dto.BankDetailsDTO;
 import com.amx.jax.pricer.dto.ExchangeRateBreakup;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
@@ -54,6 +58,7 @@ import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.var.PricerServiceConstants;
 import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_BY;
 import com.amx.jax.pricer.var.PricerServiceConstants.SERVICE_GROUP;
+import com.amx.jax.pricer.var.PricerServiceConstants.TREASURY_FUND_STATUS;
 
 @Component
 public class RemitPriceManager {
@@ -72,6 +77,12 @@ public class RemitPriceManager {
 
 	@Autowired
 	ViewExGLCBALDao viewExGLCBALDao;
+
+	@Autowired
+	VwExGLCBalProvDao viewExGlcBalProvDao;
+
+	@Autowired
+	TreasuryFTImpactDao treasuryFTImpactDao;
 
 	@Autowired
 	MarginMarkupDao marginMarkupDao;
@@ -108,7 +119,7 @@ public class RemitPriceManager {
 	 * 
 	 * @param requestDto
 	 */
-	public void computeBaseSellRates(PricingRequestDTO requestDto) {
+	public void computeGrossSellRates(PricingRequestDTO requestDto) {
 
 		List<ExchangeRateDetails> bankWiseRates = new ArrayList<ExchangeRateDetails>();
 		exchRateAndRoutingTransientDataCache.setSellRateDetails(bankWiseRates);
@@ -149,6 +160,10 @@ public class RemitPriceManager {
 						"Missing Valid Exchange rates : None Found");
 			}
 
+			// Get the rack Rates for the respective Banks.
+			Map<BigDecimal, ExchangeRateAPRDET> rackRateMap = getRackRates(requestDto.getForeignCurrencyId(),
+					requestDto.getForeignCountryId(), requestDto.getLocalCountryId(), validBankIds);
+
 			for (ExchangeRateAPRDET exchangeRate : exchangeRateMap.values()) {
 
 				BankDetailsDTO bankDetailsDto;
@@ -181,14 +196,37 @@ public class RemitPriceManager {
 
 				// Check if the GL Account is running low
 				BigDecimal maxFcCurBal = exchRateAndRoutingTransientDataCache
-						.getMaxGLLcBalForBank(exchangeRate.getBankMaster().getBankId(), Boolean.TRUE);
+						.getMaxGLCBalForBank(exchangeRate.getBankMaster().getBankId(), Boolean.TRUE);
 
-				// System.out.println(" Required Amt ==> " +
-				// exRateDetails.getSellRateBase().getConvertedFCAmount().toPlainString()
-				// + " Current Amt ==>" + maxFcCurBal.toPlainString());
+				// Check for Low GL Balance
 				if (maxFcCurBal.compareTo(exRateDetails.getSellRateBase().getConvertedFCAmount()) < 0) {
 
 					exRateDetails.setLowGLBalance(true);
+
+					// Check if funded enough in Settlement/Intermediary Currency
+					BigDecimal adjustedFcCurBal = exchRateAndRoutingTransientDataCache
+							.getAdjustedGLCBalForBank(exchangeRate.getBankMaster().getBankId(), Boolean.TRUE);
+
+					if (adjustedFcCurBal != null
+							&& adjustedFcCurBal.compareTo(exRateDetails.getSellRateBase().getConvertedFCAmount()) > 0) {
+						exRateDetails.setFundedIntermediary(true);
+					}
+				}
+
+				// Set the rack Rate
+				if (rackRateMap.containsKey(bankDetailsDto.getBankId())) {
+					ExchangeRateAPRDET rackRate = rackRateMap.get(bankDetailsDto.getBankId());
+					BigDecimal grossRate = exRateDetails.getSellRateBase().getInverseRate();
+
+					// Check if gross Rate is still lower than the computed Rack Rate
+					// This won't happen only in the case where all the branches are operating
+					// to provide the rate at lower than the Cost+Margin Rate.
+
+					if (grossRate != null && grossRate.compareTo(rackRate.getSellRateMax()) < 0) {
+						exRateDetails.setRackExchangeRate(rackRate.getSellRateMax());
+					} else {
+						exRateDetails.setRackExchangeRate(grossRate);
+					}
 				}
 
 				bankWiseRates.add(exRateDetails);
@@ -226,12 +264,7 @@ public class RemitPriceManager {
 			 */
 			setMarkupForBanks(requestDto.getLocalCountryId(), validBankIds, requestDto.getForeignCurrencyId(),
 					requestDto.getChannel());
-
-			// Old Call -- For
-			// getOnlineMarginMarkup(requestDto.getLocalCountryId(),
-			// requestDto.getForeignCountryId(),
-			// requestDto.getForeignCurrencyId(), requestDto.getChannel());
-
+			
 			/************* Process Bank Exchange Rates ***********/
 
 			List<ExchangeRateApprovalDetModelAlt> bankExchangeRates;
@@ -257,6 +290,10 @@ public class RemitPriceManager {
 				throw new PricerServiceException(PricerServiceError.MISSING_VALID_EXCHANGE_RATES,
 						"Missing Valid Exchange rates : None Found");
 			}
+
+			// Get the rack Rates for the respective Banks.
+			Map<BigDecimal, ExchangeRateAPRDET> rackRateMap = getRackRates(requestDto.getForeignCurrencyId(),
+					requestDto.getForeignCountryId(), requestDto.getLocalCountryId(), validBankIds);
 
 			for (ExchangeRateApprovalDetModelAlt exchangeRate : bankExchangeRates) {
 
@@ -287,7 +324,7 @@ public class RemitPriceManager {
 
 				BigDecimal avgBankGLCBALRate = exchRateAndRoutingTransientDataCache.getAvgRateGLCForBank(rBankId);
 
-				BigDecimal maxFcCurBal = exchRateAndRoutingTransientDataCache.getMaxGLLcBalForBank(rBankId,
+				BigDecimal maxFcCurBal = exchRateAndRoutingTransientDataCache.getMaxGLCBalForBank(rBankId,
 						Boolean.TRUE);
 
 				// Update GLCBAL Rate to Markup Adjusted Rates
@@ -302,9 +339,38 @@ public class RemitPriceManager {
 				if (exRateDetails.getSellRateBase().getInverseRate().compareTo(adjustedSellRate) <= 0) {
 					exRateDetails.setCostRateLimitReached(true);
 				}
-
+				
+				// Check for Low GL Balance
 				if (maxFcCurBal.compareTo(exRateDetails.getSellRateBase().getConvertedFCAmount()) < 0) {
 					exRateDetails.setLowGLBalance(true);
+
+					// Check if funded enough in Settlement/Intermediary Currency
+					BigDecimal adjustedFcCurBal = exchRateAndRoutingTransientDataCache
+							.getAdjustedGLCBalForBank(exchangeRate.getBankMaster().getBankId(), Boolean.TRUE);
+
+					if (adjustedFcCurBal != null
+							&& adjustedFcCurBal.compareTo(exRateDetails.getSellRateBase().getConvertedFCAmount()) > 0) {
+						exRateDetails.setFundedIntermediary(true);
+					}
+
+				}
+
+				// Set the rack Rate
+				if (rackRateMap.containsKey(rBankId)) {
+					ExchangeRateAPRDET rackRate = rackRateMap.get(rBankId);
+
+					BigDecimal grossRate = exRateDetails.getSellRateBase().getInverseRate();
+
+					// Check if gross Rate is still lower than the computed Rack Rate
+					// This won't happen only in the case where all the branches are operating
+					// to provide the rate at lower than the Cost+Margin Rate.
+
+					if (grossRate != null && grossRate.compareTo(rackRate.getSellRateMax()) < 0) {
+						exRateDetails.setRackExchangeRate(rackRate.getSellRateMax());
+					} else {
+						exRateDetails.setRackExchangeRate(grossRate);
+					}
+
 				}
 
 				bankWiseRates.add(exRateDetails);
@@ -439,7 +505,8 @@ public class RemitPriceManager {
 
 		String curCode = curMaster.getCurrencyCode();
 
-		List<ViewExGLCBAL> glcbalRatesForBanks = viewExGLCBALDao.getGLCBALforCurrencyAndBank(curCode, routingBankIds);
+		// Get GLCBAL Data
+		List<ViewExGLCBAL> glcbalRatesForBanks = viewExGLCBALDao.getGLCBALforCurrencyAndBanks(curCode, routingBankIds);
 
 		if (glcbalRatesForBanks == null || glcbalRatesForBanks.isEmpty()) {
 			throw new PricerServiceException(PricerServiceError.MISSING_GLCBAL_ENTRIES,
@@ -457,13 +524,19 @@ public class RemitPriceManager {
 			}
 		}
 
+		// Get Pending Provisional GL Accumulations
+		Map<BigDecimal, ViewExGLCBalProvisional> glcBalProvForBanks = viewExGlcBalProvDao
+				.getByCurrencyCodeAndBankIdIn(curCode, routingBankIds);
+
 		Map<BigDecimal, BankGLCData> bankGlcBalDataMap = new HashMap<BigDecimal, BankGLCData>();
 
 		for (ViewExGLCBAL viewExGLCBAL : glcbalRatesForBanks) {
 
+			BankGLCData glData;
+
 			if (bankGlcBalDataMap.containsKey(viewExGLCBAL.getBankId())) {
 
-				BankGLCData glData = bankGlcBalDataMap.get(viewExGLCBAL.getBankId());
+				glData = bankGlcBalDataMap.get(viewExGLCBAL.getBankId());
 
 				if (glData.getGlAccountsDetails() == null) {
 					glData.setGlAccountsDetails(new ArrayList<ViewExGLCBAL>());
@@ -473,7 +546,7 @@ public class RemitPriceManager {
 
 			} else {
 
-				BankGLCData glData = new BankGLCData();
+				glData = new BankGLCData();
 
 				List<ViewExGLCBAL> glcBalList = new ArrayList<ViewExGLCBAL>();
 
@@ -482,6 +555,36 @@ public class RemitPriceManager {
 				glData.setGlAccountsDetails(glcBalList);
 
 				bankGlcBalDataMap.put(viewExGLCBAL.getBankId(), glData);
+			}
+
+			if (glcBalProvForBanks.containsKey(viewExGLCBAL.getBankId())) {
+				glData.setProvisionalBalDetails(glcBalProvForBanks.get(viewExGLCBAL.getBankId()));
+			}
+
+			// Treasury Funding Time Impact Details
+			Map<TREASURY_FUND_STATUS, TreasuryFundTimeImpact> treasuryFundImpacts = treasuryFTImpactDao
+					.findByCountryIdAndCurrencyId(viewExGLCBAL.getBankCountryId(), currencyId);
+
+			TreasuryFundTimeImpact fundedImpact = treasuryFundImpacts.get(TREASURY_FUND_STATUS.FUNDED);
+
+			glData.setFundedTimeImpact(fundedImpact);
+			glData.setOutOfFundTimeImpact(treasuryFundImpacts.get(TREASURY_FUND_STATUS.OUT_OF_FUND));
+
+			if (fundedImpact != null && fundedImpact.getFundingCurId() != null) {
+
+				CurrencyMasterModel fundCurMaster = currencyMasterDao.getByCurrencyId(fundedImpact.getFundingCurId());
+
+				if (null == fundCurMaster) {
+					LOGGER.warn("Critical: Invalid Fund Currency Id: " + fundedImpact.getFundingCurId());
+				} else {
+
+					String fundCurCode = fundCurMaster.getCurrencyCode();
+					List<ViewExGLCBAL> fundGLCBalList = viewExGLCBALDao.getGLCBALforCurrencyAndBank(fundCurCode,
+							viewExGLCBAL.getBankId());
+
+					glData.setFundingGlAcDetails(fundGLCBalList);
+				}
+
 			}
 
 		}
@@ -803,6 +906,48 @@ public class RemitPriceManager {
 			breakup.setConvertedLCAmount(lcAmount);
 		}
 		return breakup;
+	}
+
+	private Map<BigDecimal, ExchangeRateAPRDET> getRackRates(BigDecimal currencyId, BigDecimal foreignCountryId,
+			BigDecimal applicationCountryId, List<BigDecimal> routingBankIds) {
+
+		List<ExchangeRateAPRDET> exchangeRates;
+
+		if (SERVICE_GROUP.CASH.equals(exchRateAndRoutingTransientDataCache.getServiceGroup())) {
+			exchangeRates = exchangeRateDao.getUniqueSellRatesForRoutingBanks(currencyId, foreignCountryId,
+					applicationCountryId, routingBankIds, ValidCashServiceIndicatorIds);
+		} else {
+			// Default Is Bank
+			exchangeRates = exchangeRateDao.getUniqueSellRatesForRoutingBanks(currencyId, foreignCountryId,
+					applicationCountryId, routingBankIds, ValidBankServiceIndicatorIds);
+		}
+
+		Map<BigDecimal, ExchangeRateAPRDET> bankExchangeRateMap = new HashMap<BigDecimal, ExchangeRateAPRDET>();
+
+		for (ExchangeRateAPRDET rate : exchangeRates) {
+
+			BigDecimal bankId = rate.getBankMaster().getBankId();
+
+			System.out.println(" Bank ==>" + rate.getBankMaster().getBankId() + " Rate==>" + rate.getSellRateMax());
+
+			if (bankExchangeRateMap.containsKey(bankId)) {
+
+				ExchangeRateAPRDET ratePrev = bankExchangeRateMap.get(bankId);
+
+				// New Worse Rate Found
+				// Higher than Previous Exchange Bank Rate
+				if (ratePrev.getSellRateMax().compareTo(rate.getSellRateMax()) < 0) {
+					bankExchangeRateMap.put(rate.getBankMaster().getBankId(), rate);
+				}
+
+			} else {
+				bankExchangeRateMap.put(rate.getBankMaster().getBankId(), rate);
+			}
+
+		}
+
+		return bankExchangeRateMap;
+
 	}
 
 }

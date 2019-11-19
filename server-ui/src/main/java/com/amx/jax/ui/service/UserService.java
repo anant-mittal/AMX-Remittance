@@ -1,5 +1,6 @@
 package com.amx.jax.ui.service;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -12,6 +13,10 @@ import com.amx.amxlib.model.CustomerModel;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.dict.Language;
+import com.amx.jax.error.JaxError;
+import com.amx.jax.model.AuthState;
+import com.amx.jax.model.CivilIdOtpModel;
 import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.model.customer.CivilIdOtpModel;
 import com.amx.jax.model.customer.SecurityQuestionModel;
@@ -93,25 +98,37 @@ public class UserService {
 	 * Gets the notify topics.
 	 *
 	 * @param prefix the prefix
+	 * @param lang
 	 * @return the notify topics
 	 */
-	public List<String> getNotifyTopics(String prefix) {
+	public List<String> getNotifyTopics(String prefix, Language lang) {
 		CustomerModel customerModel = sessionService.getUserSession().getCustomerModel();
 		PushMessage msg = new PushMessage();
 		msg.addToTenant(AppContextUtil.getTenant());
 		msg.addToCountry(customerModel.getPersoninfo().getNationalityId());
 		msg.addToUser(customerModel.getCustomerId());
+
+		// With Language
+		msg.addToTenant(AppContextUtil.getTenant(), lang);
+		msg.addToCountry(customerModel.getPersoninfo().getNationalityId(), lang);
+		msg.addToUser(customerModel.getCustomerId(), lang);
+
+		Date dob = customerModel.getPersoninfo().getDateOfBirth();
+		msg.addToDate("dob", dob);
 		return msg.getTo();
 	}
 
 	public AmxApiResponse<CustomerFlags, Object> checkModule(Features feature) {
 		try {
+			sessionService.getGuestSession().initFlow(AuthState.AuthFlow.PERMS,AuthState.AuthStep.CHECK );
 			return ResponseWrapper.buildData(authLibContext.get()
 					.checkModule(sessionService.getGuestSession().getState(),
 							sessionService.getUserSession().getCustomerModel().getFlags(), feature));
 		} catch (GlobalException ex) {
-			AuthData authData = getRandomSecurityQuestion(sessionService.getUserSession().getCustomerModel());
-			ex.setMeta(authData.toJaxAuthMetaResp());
+			if(ex.getError().equals(JaxError.SQA_REQUIRED)) {
+				AuthData authData = getRandomSecurityQuestion(sessionService.getUserSession().getCustomerModel());
+				ex.setMeta(authData.toJaxAuthMetaResp());				
+			}
 			throw ex;
 		}
 	}
@@ -133,6 +150,7 @@ public class UserService {
 		sessionService.getUserSession().getCustomerModel().setFlags(x.getResult().getCustomerFlags());
 		sessionService.getUserSession().getCustomerModel().setPersoninfo(x.getResult().getPersonInfo());
 		sessionService.getUserSession().getCustomerModel().setSecurityquestions(x.getResult().getSecurityquestions());
+		// sessionService.getGuestSession().setLanguage(x.getResult().getPersonInfo().getLang());
 	}
 
 	/**

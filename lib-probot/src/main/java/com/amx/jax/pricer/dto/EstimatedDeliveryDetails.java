@@ -18,6 +18,8 @@ public class EstimatedDeliveryDetails implements Serializable, Comparable<Estima
 
 	private long processTimeAbsoluteInSeconds = 0;
 
+	private long delayDueToInsufficientFundInSeconds = 0;
+
 	private long nonWorkingDelayInDays = 0;
 
 	private long holidayDelayInDays = 0;
@@ -46,6 +48,10 @@ public class EstimatedDeliveryDetails implements Serializable, Comparable<Estima
 
 	public long getProcessTimeAbsoluteInSeconds() {
 		return processTimeAbsoluteInSeconds;
+	}
+
+	public long getDelayDueToInsufficientFundInSeconds() {
+		return delayDueToInsufficientFundInSeconds;
 	}
 
 	public long getNonWorkingDelayInDays() {
@@ -130,6 +136,11 @@ public class EstimatedDeliveryDetails implements Serializable, Comparable<Estima
 		addToProcessTimeTotal(seconds);
 	}
 
+	public void addToInsufficientFundDelay(long seconds) {
+		this.delayDueToInsufficientFundInSeconds += seconds;
+		addToProcessTimeTotal(seconds);
+	}
+
 	public void addToProcessTimeTotal(long seconds) {
 		this.processTimeTotalInSeconds += seconds;
 	}
@@ -140,6 +151,10 @@ public class EstimatedDeliveryDetails implements Serializable, Comparable<Estima
 
 	public void setProcessTimeOperationalInSeconds(long processTimeOperationalInSeconds) {
 		this.processTimeOperationalInSeconds = processTimeOperationalInSeconds;
+	}
+
+	public void setDelayDueToInsufficientFundInSeconds(long insufficientFundDelayInSeconds) {
+		this.delayDueToInsufficientFundInSeconds = insufficientFundDelayInSeconds;
 	}
 
 	public void setProcessTimeAbsoluteInSeconds(long processTimeAbsoluteInSeconds) {

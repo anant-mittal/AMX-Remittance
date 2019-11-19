@@ -90,7 +90,7 @@ public class WebJaxAdvice {
 
 		AuthState state = guestSession.getState();
 		if (state.getFlow() != null) {
-			auditService.log(new CAuthEvent(state, CAuthEvent.Result.FAIL, exc.getError()));
+			auditService.log(new CAuthEvent(state, CAuthEvent.Result.FAIL, exc.getError()).step(state.getcStep()));
 		}
 		
 		if (exc.getError() == JaxError.USER_LOGIN_ATTEMPT_EXCEEDED
@@ -231,6 +231,8 @@ public class WebJaxAdvice {
 		ResponseWrapper<Object> wrapper = new ResponseWrapper<Object>();
 		wrapper.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
 		wrapper.setException(ex.getClass().getName());
+		ApiAuditEvent apiAuditEvent = new ApiAuditEvent(ex);
+		auditService.log(apiAuditEvent, ex);
 		LOG.error("In Advice Exception Captured", ex);
 		//postManService.notifyException(wrapper.getStatus(), ex);
 		return new ResponseEntity<ResponseWrapper<Object>>(wrapper, HttpStatus.INTERNAL_SERVER_ERROR);

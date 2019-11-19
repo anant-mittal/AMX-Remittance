@@ -84,6 +84,7 @@ public class PaygDetailsModel implements Serializable{
 	@Column(name="REMARKS")
 	private String remarks;
 	
+
 	
 	@Column(name="APPLICATION_IDS")
 	private String applIds;
@@ -105,6 +106,10 @@ public class PaygDetailsModel implements Serializable{
 	
 	@Column(name="ERROR_CATEGORY")
 	private String errorCategory;
+
+    @Column(name="PAYMENT_TYPE")
+    private String paymentType;
+
 
 	public BigDecimal getPaygTrnxSeqId() {
 		return paygTrnxSeqId;
@@ -297,6 +302,7 @@ public class PaygDetailsModel implements Serializable{
 	public void setLinkActive(String linkActive) {
 		this.linkActive = linkActive;
 	}
+
 	
 	
 	public String getErrorCategory() {
@@ -306,4 +312,14 @@ public class PaygDetailsModel implements Serializable{
 	public void setErrorCategory(String errorCategory) {
 		this.errorCategory = errorCategory;
 	}
+
+
+	public String getPaymentType() {
+		return paymentType;
+	}
+
+	public void setPaymentType(String paymentType) {
+		this.paymentType = paymentType;
+	}
+
 }

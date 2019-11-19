@@ -23,6 +23,8 @@ public class ExchangeRateDetails implements Serializable, Cloneable, Comparable<
 
 	private ExchangeRateBreakup sellRateBase;
 
+	private BigDecimal rackExchangeRate;
+
 	private Map<DISCOUNT_TYPE, ExchangeDiscountInfo> customerDiscountDetails;
 
 	private boolean isDiscountAvailed = false;
@@ -31,6 +33,8 @@ public class ExchangeRateDetails implements Serializable, Cloneable, Comparable<
 
 	private boolean isLowGLBalance = false;
 
+	private boolean isFundedIntermediary = false;
+	
 	private boolean isBetterRateAvailable = false;
 
 	private BigDecimal betterRateAmountSlab;
@@ -101,6 +105,14 @@ public class ExchangeRateDetails implements Serializable, Cloneable, Comparable<
 		this.isLowGLBalance = isLowGLBalance;
 	}
 
+	public boolean isFundedIntermediary() {
+		return isFundedIntermediary;
+	}
+
+	public void setFundedIntermediary(boolean isFunded) {
+		this.isFundedIntermediary = isFunded;
+	}
+
 	public boolean isBetterRateAvailable() {
 		return isBetterRateAvailable;
 	}
@@ -123,6 +135,14 @@ public class ExchangeRateDetails implements Serializable, Cloneable, Comparable<
 
 	public void setDiffInBetterRateFcAmount(BigDecimal diffInBetterRateFcAmount) {
 		this.diffInBetterRateFcAmount = diffInBetterRateFcAmount;
+	}
+
+	public BigDecimal getRackExchangeRate() {
+		return rackExchangeRate;
+	}
+
+	public void setRackExchangeRate(BigDecimal rackExchangeRate) {
+		this.rackExchangeRate = rackExchangeRate;
 	}
 
 	@Override

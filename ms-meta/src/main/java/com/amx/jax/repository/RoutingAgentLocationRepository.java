@@ -18,4 +18,13 @@ public interface RoutingAgentLocationRepository extends CrudRepository<RoutingAg
 	                                      BigDecimal routingBankId, 
 	                                      BigDecimal currencyId,
 	                                      BigDecimal agentBankId);
+	
+	@Query("Select new com.amx.jax.dbmodel.AgentBranchModel(applicationCountryId, routingCountryId,serviceGroupId, routingBankId, currencyId, agentBankId, bankBranchId, routingBranchId, branchFullName) from RoutingAgentLocationView c where  applicationCountryId=?1 and routingCountryId=?2 and serviceGroupId=?3 and routingBankId=?4 and currencyId=?5 and agentBankId=?6 and bankBranchId=?7 GROUP BY  applicationCountryId, routingCountryId,serviceGroupId, routingBankId, currencyId, agentBankId, bankBranchId, routingBranchId, branchFullName ORDER BY branchFullName ASC")
+	List<AgentBranchModel> getRoutingBankBranch(BigDecimal applicationCountryId, 
+	                                      BigDecimal routingCountryId, 
+	                                      BigDecimal serviceGroupId,
+	                                      BigDecimal routingBankId, 
+	                                      BigDecimal currencyId,
+	                                      BigDecimal agentBankId,
+	                                      BigDecimal agentBankBranchId);
 }

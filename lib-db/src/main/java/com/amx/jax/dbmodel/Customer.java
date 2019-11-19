@@ -2,7 +2,9 @@ package com.amx.jax.dbmodel;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -12,6 +14,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.SequenceGenerator;
@@ -22,6 +26,7 @@ import javax.persistence.TemporalType;
 import org.hibernate.annotations.Proxy;
 
 import com.amx.jax.constants.CustomerRegistrationType;
+import com.amx.jax.dbmodel.compliance.ComplianceBlockedCustomerDocMap;
 import com.amx.jax.dict.Communicatable;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.util.AmxDBConstants.Status;
@@ -147,6 +152,8 @@ public class Customer implements java.io.Serializable, Communicatable {
 	private String annualIncomeUpdatedBy;
 	private Date annualIncomeUpdatedDate;
 	private String isBusinessCardVerified;
+	private List<ComplianceBlockedCustomerDocMap> complianceBlockedDocuments;
+	
 
 	private String customerVatNumber;
 	private String premInsurance;
@@ -156,6 +163,13 @@ public class Customer implements java.io.Serializable, Communicatable {
 	private BigDecimal annualTransactionLimitFrom;
 	private BigDecimal annualTransactionLimitTo;
 	private Date annualTransactionUpdatedDate;
+	
+	
+	
+	/** added by rabil on 09 Oc 2019 **/
+	
+	private BigDecimal onlineLanguageChangeCount;
+	
 
 	@Column(name = "ANNUAL_TRNXLIMIT_FROM")
 	public BigDecimal getAnnualTransactionLimitFrom() {
@@ -1140,6 +1154,13 @@ public class Customer implements java.io.Serializable, Communicatable {
 		return customerVatNumber;
 	}
 
+	@ManyToMany(cascade = CascadeType.ALL, fetch=FetchType.LAZY)
+	@JoinTable(  name = "JAX_COMPLIANCE_BLOCKED_DOC_MAP", joinColumns = @JoinColumn(name = "CUSTOMER_ID", referencedColumnName="CUSTOMER_ID"), inverseJoinColumns = @JoinColumn(name = "COMP_BLOCKED_CUST_DOC_MAP_ID",
+			referencedColumnName="ID"))
+	public List<ComplianceBlockedCustomerDocMap> getComplianceBlockedDocuments() {
+		return complianceBlockedDocuments;
+	}
+
 	@Column(name = "PREM_INSURANCE")
 	public String getPremInsurance() {
 		return premInsurance;
@@ -1161,4 +1182,18 @@ public class Customer implements java.io.Serializable, Communicatable {
 		this.customerVatNumber = customerVatNumber;
 	}
 
+	
+	
+	@Column(name="LANGUAGE_CHANGE_COUNT")
+	public BigDecimal getOnlineLanguageChangeCount() {
+		return onlineLanguageChangeCount;
+	}
+
+	public void setOnlineLanguageChangeCount(BigDecimal onlineLanguageChangeCount) {
+		this.onlineLanguageChangeCount = onlineLanguageChangeCount;
+	}
+
+	public void setComplianceBlockedDocuments(List<ComplianceBlockedCustomerDocMap> complianceBlockedDocuments) {
+		this.complianceBlockedDocuments = complianceBlockedDocuments;
+	}
 }

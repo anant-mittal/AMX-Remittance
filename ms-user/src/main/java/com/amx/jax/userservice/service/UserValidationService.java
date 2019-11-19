@@ -63,7 +63,6 @@ import com.amx.jax.userservice.manager.UserContactVerificationManager;
 import com.amx.jax.userservice.service.CustomerValidationContext.CustomerValidation;
 import com.amx.jax.userservice.validation.ValidationClient;
 import com.amx.jax.userservice.validation.ValidationClients;
-import com.amx.jax.util.AmxDBConstants.Status;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.validation.CustomerValidationService;
@@ -266,7 +265,6 @@ public class UserValidationService {
 	public void validateCustIdProofs(BigDecimal custId) {
 
 		if (tenantContext.get() != null) {
-			logger.info("Tenent is not bahrain" + tenantContext.get());
 			tenantContext.get().validateCustIdProofs(custId);
 			return;
 		}
@@ -325,7 +323,7 @@ public class UserValidationService {
 			throw new GlobalException(JaxError.CUSTOMER_INACTIVE, "Customer is not active");
 		}
 		if (customer.getSignatureSpecimenClob() == null) {
-			throw new GlobalException(JaxError.CUSTOMER__SIGNATURE_UNAVAILABLE, "CUSTOMER SIGNATURE NOT AVAILABLE");
+			throw new GlobalException(JaxError.CUSTOMER_SIGNATURE_UNAVAILABLE, "CUSTOMER SIGNATURE NOT AVAILABLE");
 		}
 		boolean insuranceCheck = ("Y".equals(customer.getMedicalInsuranceInd())
 				|| "N".equals(customer.getMedicalInsuranceInd()));
@@ -345,6 +343,9 @@ public class UserValidationService {
 			throw new GlobalException(JaxError.OLD_EMOS_USER_NOT_FOUND, "Old customer records not found in EMOS");
 		}
 		CusmasModel emosCustomer = cusmosDao.getOldCusMasDetails(customer.getCustomerReference());
+		if (emosCustomer == null) {
+			throw new GlobalException(JaxError.OLD_EMOS_USER_NOT_FOUND, "Old customer records not found in EMOS");
+		}
 		if (emosCustomer.getStatus() != null) {
 			throw new GlobalException(JaxError.OLD_EMOS_USER_DELETED, "RECORD IS DELETED IN OLD EMOS");
 		}
@@ -488,6 +489,9 @@ public class UserValidationService {
 							"Customer is locked. No of attempts:- " + lockCnt);
 				}
 			}
+		}
+		if (onlineCustomer.getLockDt() != null) {
+			throw new GlobalException(JaxError.ONLINE_ACCOUNT_LOCKED, "Customer is locked. Contact branch");
 		}
 	}
 	
@@ -783,6 +787,7 @@ public class UserValidationService {
 						"Customer not active in branch, please visit branch");
 			}
 		}
+		
 		switch (apiFlow) {
 		case SIGNUP_ONLINE:
 			validateCustomerForSignUpOnline(customers.get(0));
@@ -818,7 +823,7 @@ public class UserValidationService {
 		if (onlineCustomer == null) {
 			throw new GlobalException(JaxError.CUSTOMER_NOT_REGISTERED_ONLINE, "Customer not registered in online");
 		}
-
+		
 		userValidationService.validateCustomerVerification(onlineCustomer.getCustomerId());
 
 		if (!ConstantDocument.Yes.equals(onlineCustomer.getStatus())) {

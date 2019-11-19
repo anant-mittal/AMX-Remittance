@@ -11,6 +11,7 @@ public class DynamicRoutingPricingDto extends RemittanceTransactionResponsetMode
 	private TrnxRoutingDetails trnxRoutingPaths;
 	String beneDeductFlag;
 	private ServiceProviderDto serviceProviderDto;
+	String errorMessage;
 	
 	public ServiceProviderDto getServiceProviderDto() {
 		return serviceProviderDto;
@@ -29,5 +30,11 @@ public class DynamicRoutingPricingDto extends RemittanceTransactionResponsetMode
 	}
 	public void setBeneDeductFlag(String beneDeductFlag) {
 		this.beneDeductFlag = beneDeductFlag;
+	}
+	public String getErrorMessage() {
+		return errorMessage;
+	}
+	public void setErrorMessage(String errorMessage) {
+		this.errorMessage = errorMessage;
 	}
 }

@@ -13,6 +13,7 @@ public enum TemplatesMX implements ITemplate {
 	// Contact Verification
 	CONTACT_VERIFICATION_SMS("contact-verifiy-sms", Channel.NOTIPY),
 	CONTACT_VERIFICATION_EMAIL("contact-verifiy-email", Channel.NOTIPY),
+	NEW_DEVICE_LOGIN("new-device-login",Channel.NOTIPY),
 
 	SERVER_UP("health-server-up"),
 
@@ -72,9 +73,12 @@ public enum TemplatesMX implements ITemplate {
 
 	HOMESEND_TRANSACTION_FAILAURE("HomeSendTransactionFailure"),
 
+	PAYMENT_LINK("PaymentLink",Channel.NOTIPY),
+	
 	//Add Bene Templates
 	BENE_SUCC("BeneCreationSuccess"),
 	BENE_SUCC_SMS("bene-success-sms",Channel.NOTIPY),
+	BRANCH_SEARCH_EMPTY_BRANCH("BranchSearchEmpty"),
 
 	// Online coupon template
 	ONLINE_COUPON("OnlineCoupon"),
@@ -87,10 +91,20 @@ public enum TemplatesMX implements ITemplate {
 	WU_TRNX_CANCELLED("WUTrnxCancelled"),
 	RESEND_VERIFICATION_LINK("resend-verification"),
 	
+	EVENT_DARLY_ONG("EventDarlyOng"),
+	BPI_JOLLIBEE("BpiJollibee"),
+	BIRTHDAY_WISH("BirthdayWish"),
+
+
+	//Refer friend
+	FRIEND_REFER("friend-refer"),
+	FRIEND_REFERED("friend-refered"),
+	WIRE_TRANSFER_PAYMENT_SUCCESS("WireTransferPaymentSuccess"),
+	WIRE_TRANSFER_CANCEL_BRANCH("WireTransferCancelBranch"),
 	
-	FRIEND_REFER("friend-refer.json"),
-	
-	FRIEND_REFERED("friend-refered.json"),
+	//PEP_FORM("PepForm"),
+	PEP_FORM_JASPER("PepForm_jasper", PDFConverter.JASPER, "PepForm.json"),
+
 
 	// Default add enums above this
 	DEFAULT("default");

@@ -27,7 +27,7 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.config.JaxConfig;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.client.util.ConverterUtility;
-import com.amx.jax.model.customer.CivilIdOtpModel;
+import com.amx.jax.model.CivilIdOtpModel;
 import com.amx.jax.model.customer.SecurityQuestionModel;
 
 @RunWith(SpringRunner.class)

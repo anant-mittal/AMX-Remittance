@@ -28,7 +28,7 @@ import com.amx.jax.dbmodel.ViewOnlineCurrency;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
-import com.amx.jax.model.customer.CivilIdOtpModel;
+import com.amx.jax.model.CivilIdOtpModel;
 import com.amx.jax.model.response.customer.CustomerCommunicationChannel;
 import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.userservice.dao.CustomerDao;

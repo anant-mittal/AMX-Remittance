@@ -111,7 +111,7 @@ public class ExchangePricingAndRoutingService {
 
 		}
 
-		remitPriceManager.computeBaseSellRates(pricingRequestDTO);
+		remitPriceManager.computeGrossSellRates(pricingRequestDTO);
 
 		customerDiscountManager.getDiscountedRates(pricingRequestDTO, customer, CUSTOMER_CATEGORY.BRONZE);
 
@@ -141,7 +141,7 @@ public class ExchangePricingAndRoutingService {
 
 		validatePricingRequest(pricingRequestDTO, Boolean.FALSE);
 
-		remitPriceManager.computeBaseSellRates(pricingRequestDTO);
+		remitPriceManager.computeGrossSellRates(pricingRequestDTO);
 
 		PricingResponseDTO pricingResponseDTO = new PricingResponseDTO();
 
@@ -165,7 +165,7 @@ public class ExchangePricingAndRoutingService {
 			PricingRequestDTO pricingRequestDTO) {
 		validatePricingRequest(pricingRequestDTO, Boolean.FALSE);
 
-		remitPriceManager.computeBaseSellRates(pricingRequestDTO);
+		remitPriceManager.computeGrossSellRates(pricingRequestDTO);
 
 		List<ExchangeRateDetails> baseRateDetails = getClonedExchangeRates(
 				exchRateAndRoutingTransientDataCache.getSellRateDetails());
@@ -284,7 +284,7 @@ public class ExchangePricingAndRoutingService {
 				cat = customerExtended.getCustomerCategoryDiscount().getCustomerCategory();
 			}
 
-			// asynch Call to get the Service Provider Prices
+			// async Call to get the Service Provider Prices
 			sProviderFuture = serviceProviderManager.getServiceProviderQuote(homeSendMatrix,
 					exchangeRateAndRoutingRequest, cat);
 
@@ -299,7 +299,7 @@ public class ExchangePricingAndRoutingService {
 			exchangeRateAndRoutingRequest.setPricingLevel(PRICE_BY.ROUTING_BANK);
 
 			// Get The Rates for Routing Banks.
-			remitPriceManager.computeBaseSellRates(exchangeRateAndRoutingRequest);
+			remitPriceManager.computeGrossSellRates(exchangeRateAndRoutingRequest);
 		}
 
 		SrvPrvFeeInqResDTO partnerResp = null;
@@ -450,10 +450,10 @@ public class ExchangePricingAndRoutingService {
 
 						// GLC Comparison goes here.
 						BigDecimal lastGlcBalFc = exchRateAndRoutingTransientDataCache
-								.getMaxGLLcBalForBank(lastNoBeneRoute.getExchangeRateDetails().getBankId(), true);
+								.getMaxGLCBalForBank(lastNoBeneRoute.getExchangeRateDetails().getBankId(), true);
 
 						BigDecimal curGLCBalFc = exchRateAndRoutingTransientDataCache
-								.getMaxGLLcBalForBank(routeDetails.getExchangeRateDetails().getBankId(), true);
+								.getMaxGLCBalForBank(routeDetails.getExchangeRateDetails().getBankId(), true);
 
 						if (curGLCBalFc.compareTo(lastGlcBalFc) > 0) {
 							// Replace only if the Current GLC BAL is More than the prev GLC BAL
@@ -484,10 +484,10 @@ public class ExchangePricingAndRoutingService {
 
 						// GLC Comparison goes here.
 						BigDecimal lastGlcBalFc = exchRateAndRoutingTransientDataCache
-								.getMaxGLLcBalForBank(lastNoBeneRoute.getExchangeRateDetails().getBankId(), true);
+								.getMaxGLCBalForBank(lastNoBeneRoute.getExchangeRateDetails().getBankId(), true);
 
 						BigDecimal curGLCBalFc = exchRateAndRoutingTransientDataCache
-								.getMaxGLLcBalForBank(routeDetails.getExchangeRateDetails().getBankId(), true);
+								.getMaxGLCBalForBank(routeDetails.getExchangeRateDetails().getBankId(), true);
 
 						if (curGLCBalFc.compareTo(lastGlcBalFc) > 0) {
 							// Replace only if the Current GLC BAL is More than the prev GLC BAL

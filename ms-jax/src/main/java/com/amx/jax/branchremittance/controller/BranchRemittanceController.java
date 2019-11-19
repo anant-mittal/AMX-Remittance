@@ -22,20 +22,25 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.branchremittance.service.BranchRemittanceExchangeRateService;
 import com.amx.jax.branchremittance.service.BranchRemittanceService;
+import com.amx.jax.branchremittance.service.DirectPaymentLinkService;
 import com.amx.jax.client.remittance.IRemittanceService;
+import com.amx.jax.manager.remittance.ServiceApplicabilityManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.BranchRemittanceGetExchangeRateRequest;
 import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
 import com.amx.jax.model.request.remittance.CustomerBankRequest;
+import com.amx.jax.model.request.remittance.GetServiceApplicabilityRequest;
 import com.amx.jax.model.request.remittance.RoutingPricingRequest;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.FlexFieldReponseDto;
+import com.amx.jax.model.response.remittance.GetServiceApplicabilityResponse;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
+import com.amx.jax.model.response.remittance.PaymentLinkRespDTO;
 import com.amx.jax.model.response.remittance.ParameterDetailsResponseDto;
 import com.amx.jax.model.response.remittance.PaymentModeDto;
 import com.amx.jax.model.response.remittance.RemittanceDeclarationReportDto;
@@ -56,6 +61,11 @@ public class BranchRemittanceController implements IRemittanceService {
 	BranchRemittanceService branchRemitService;
 	@Autowired
 	BranchRemittanceExchangeRateService branchRemittanceExchangeRateService;
+	@Autowired
+	ServiceApplicabilityManager serviceApplicabilityManager;
+	
+	@Autowired
+	DirectPaymentLinkService directPaymentLinkService;
 
 	@RequestMapping(value = Path.BR_REMITTANCE_SAVE_APPL, method = RequestMethod.POST)
 	@Override
@@ -254,12 +264,33 @@ public class BranchRemittanceController implements IRemittanceService {
 	logger.debug("getExchaneRate : " + request);
 	return branchRemittanceExchangeRateService.getFlexField(request);
 	}
+
+	@RequestMapping(value = Path.BR_REMITTANCE_PAYMENT_LINK, method = RequestMethod.GET)
+	@Override
+	public AmxApiResponse<PaymentLinkRespDTO, Object> createAndSendPaymentLink() {
+		logger.info("Payment Link API Call ------ ");
+		return directPaymentLinkService.fetchPaymentLinkDetails();
+	}
+
+	@RequestMapping(value=Path.BR_REMITTANCE_VALIDATE_PAY_LINK,method=RequestMethod.POST)
+	@Override
+	public AmxApiResponse<PaymentLinkRespDTO, Object> validatePayLink(BigDecimal linkId, String verificationCode) {
+		logger.info(" ------ Validate Payment Link API Call ------ ");
+		return directPaymentLinkService.validatePayLink(linkId, verificationCode);
+	}
 	
 
 	@RequestMapping(value=Path.BR_REMITTANCE_GET_GIFT_PACKAGE,method=RequestMethod.POST)
 	@Override
 	public AmxApiResponse<ParameterDetailsResponseDto, Object> getGiftService(@RequestParam(value = Params.BENE_RELATION_SHIP_ID, required = true) BigDecimal beneRelaId) {		
 		return branchRemitService.getGiftService(beneRelaId);
+	}	
+
+	@RequestMapping(value = Path.GET_SERVICE_APPLICABILITY, method = RequestMethod.POST)
+	@Override
+	public AmxApiResponse<GetServiceApplicabilityResponse, Object> getServiceApplicability(@RequestBody @Valid GetServiceApplicabilityRequest request) {
+		List<GetServiceApplicabilityResponse> rules = serviceApplicabilityManager.getServiceApplicability(request);
+		return AmxApiResponse.buildList(rules);
 	}
 
 

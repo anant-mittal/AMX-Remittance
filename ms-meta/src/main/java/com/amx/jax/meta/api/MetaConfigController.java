@@ -1,7 +1,5 @@
 package com.amx.jax.meta.api;
 
-import java.math.BigDecimal;
-
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -45,7 +43,7 @@ public class MetaConfigController implements AmxSharedConfig {
 
 	@RequestMapping(value = AmxSharedConfigApi.Path.COMM_PREFS, method = RequestMethod.POST)
 	public AmxApiResponse<CommunicationPrefs, Object> getCommunicationPrefs(
-			@RequestParam CommunicationEvents event,
+			@RequestParam String event,
 			@RequestBody CommunicationPrefsModel prefs) {
 		CommunicationPrefsModel x = communicationPrefsRepository
 				.findByEvent(ArgUtil.ifNotEmpty(event, prefs.getEvent()));

@@ -1,5 +1,6 @@
 package com.amx.jax.util;
 
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.text.DateFormatSymbols;
 import java.util.ArrayList;
@@ -16,12 +17,20 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.exception.ExceptionMessageKey;
+import com.amx.utils.ArgUtil;
 
 /**
  * The Class JaxUtil.
  */
 @Component
 public class JaxUtil {
+	
+	public static BigDecimal languageScale(BigDecimal languageId) {
+		if(ArgUtil.isEmpty(languageId) || (AmxDBConstants.MAX_LANG_ID.compareTo(languageId) < 0)) {
+			return BigDecimal.ONE;
+		}
+		return languageId;
+	}
 
 	/** The logger. */
 	Logger logger = LoggerFactory.getLogger(getClass());
@@ -229,6 +238,21 @@ public class JaxUtil {
 		} catch (Exception e) {
 			logger.error("error in convert", e);
 		}
+	}
+	
+	/**
+	 * true if object has all fields null
+	 * 
+	 * @return
+	 * @throws IllegalAccessException
+	 */
+	public static boolean checkNull(Object obj) throws IllegalAccessException {
+		for (Field f : obj.getClass().getDeclaredFields()) {
+			if (f.get(obj) != null) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 }

@@ -7,8 +7,8 @@ import com.amx.utils.EnumType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonInclude(Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -71,7 +71,7 @@ public abstract class AbstractEvent implements Serializable {
 	public interface EventType extends EnumType {
 		EventMarker marker();
 	}
-
+	
 	@JsonProperty(PROP_COMPONENT)
 	protected String component;
 

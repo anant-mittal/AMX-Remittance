@@ -19,11 +19,15 @@ public class AppConstants extends Constants {
 		public static final String SESSION = "session";
 		public static final String TENANT = "tenant";
 		public static final String THREAD = "thread";
+		public static final String VENDOR = "vendor";
 	}
 
+	public static final String AUTH_ID_XKEY = "x-app-auth-id";
 	public static final String AUTH_KEY_XKEY = "x-app-auth-key";
 	public static final String AUTH_TOKEN_XKEY = "x-app-auth-token";
 	public static final String AUTH_CLIENT_KEY_XKEY = "x-client-auth-key";
+	public static final String SESSION_PREFIX_XKEY = "x-session-prefix";
+	public static final String SESSION_SUFFIX_XKEY = "x-session-suffix";
 	public static final String SESSION_ID_XKEY = "x-session-id";
 	public static final String SESSION_UID_XKEY = "x-session-uid";
 	public static final String TRACE_ID_XKEY = "x-trace-id";
@@ -51,6 +55,7 @@ public class AppConstants extends Constants {
 	public static final String DEVICE_ID_KEY = "did";
 	public static final String DEVICE_ID_XKEY = "x-did";
 	public static final String DEVICE_IP_XKEY = "x-ip";
+	public static final String DEVICE_XID_KEY = "xid";
 	public static final String DEVICE_IP_LOCAL_XKEY = "x-ip-local";
 	public static final String APP_DETAILS = "app";
 	public static final String BROWSER_ID_KEY = "bid";

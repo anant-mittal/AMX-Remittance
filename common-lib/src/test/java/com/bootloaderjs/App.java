@@ -4,6 +4,7 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
@@ -16,11 +17,20 @@ import com.amx.jax.dict.UserClient.AppType;
 import com.amx.jax.dict.UserClient.DeviceType;
 import com.amx.jax.dict.UserClient.UserDeviceClient;
 import com.amx.jax.tunnel.TunnelMessage;
+import com.amx.utils.HttpUtils;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.ContextUtil;
 import com.amx.utils.JsonUtil;
 import com.amx.utils.TimeUtils;
+import com.amx.utils.UniqueID;
+import com.amx.utils.Urly;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.github.gianlucanitti.javaexpreval.Expression;
+import com.github.gianlucanitti.javaexpreval.ExpressionContext;
+import com.github.gianlucanitti.javaexpreval.ExpressionException;
+import com.github.gianlucanitti.javaexpreval.InvalidSymbolNameException;
+import com.github.gianlucanitti.javaexpreval.ReadonlyException;
+import com.github.gianlucanitti.javaexpreval.UndefinedException;
 
 public class App { // Noncompliant
 
@@ -32,16 +42,38 @@ public class App { // Noncompliant
 	 * This is just a test method
 	 * 
 	 * @param args
+	 * @throws ExpressionException 
 	 * @throws MalformedURLException
 	 * @throws URISyntaxException
 	 */
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws ExpressionException {
+		String traceId = "KTE-63dd5-7R4cP9TxM9c-000000-lgn-7R4cPbd0EtK";
+		
+		Matcher matcher = UniqueID.SYSTEM_STRING_PATTERN.matcher(traceId);
+		if (matcher.find()) {
+			System.out.println("="+matcher.group(1) + "-" + matcher.group(2) + "-" + matcher.group(3));
+		} 
+		Matcher matcher2 = UniqueID.SYSTEM_STRING_PATTERN_V2.matcher(traceId);
+		if (matcher2.find()) {
+			System.out.println("=="+matcher2.group(1) + "-" + matcher2.group(2) + "-" + matcher2.group(3));
+		} 
+	}
+	
+	public static void main5(String[] args) throws ExpressionException {
+		ExpressionContext c = new ExpressionContext();
+		c.setVariable("x", ArgUtil.parseAsDouble("2.04", Double.valueOf(0)));
+		c.setVariable("y", ArgUtil.parseAsDouble("3.0", Double.valueOf(0)));
+		Expression expr = Expression.parse("x*y");
+		double result = expr.eval(c);
+		System.out.println("Z="+result);
+	}
+
+	public static void main4(String[] args) {
 		Long traceTime = ArgUtil.parseAsLong(ContextUtil.map().get(AppConstants.TRACE_TIME_XKEY), 0L);
 		if (traceTime != null && traceTime != 0L) {
 			System.out.println(TimeUtils.timeSince(AppContextUtil.getTraceTime()));
 		}
-
 	}
 
 	public static void main3(String[] args) {

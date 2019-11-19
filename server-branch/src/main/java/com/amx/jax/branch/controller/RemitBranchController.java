@@ -43,6 +43,7 @@ import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
+import com.amx.jax.model.response.remittance.PaymentLinkRespDTO;
 import com.amx.jax.model.response.remittance.ParameterDetailsResponseDto;
 import com.amx.jax.model.response.remittance.PaymentModeDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
@@ -348,5 +349,10 @@ public class RemitBranchController {
 	@RequestMapping(value = "/api/remitt/package/list", method = { RequestMethod.POST })
 	public AmxApiResponse<ParameterDetailsResponseDto, Object> getPackages(@RequestParam BigDecimal beneId) {
 			return branchRemittanceClient.getGiftService(beneId);
+	}
+
+	@RequestMapping(value = "/api/remitt/payment/link", method = { RequestMethod.POST })
+	public AmxApiResponse<PaymentLinkRespDTO, Object> sendPaymentLink() {
+		return branchRemittanceClient.createAndSendPaymentLink();
 	}
 }

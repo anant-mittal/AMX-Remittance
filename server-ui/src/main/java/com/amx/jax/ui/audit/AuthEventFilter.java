@@ -5,6 +5,8 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppConfig;
 import com.amx.jax.logger.client.AuditFilter;
+import com.amx.jax.logger.events.AuditActorInfo;
+import com.amx.jax.session.SessionContextService;
 import com.amx.jax.ui.session.GuestSession;
 import com.amx.jax.ui.session.UserDeviceBean;
 import com.amx.utils.ArgUtil;
@@ -27,6 +29,9 @@ public class AuthEventFilter implements AuditFilter<CAuthEvent> {
 	@Autowired
 	AppConfig appConfig;
 
+	@Autowired(required = false)
+	SessionContextService sessionContextService;
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -36,11 +41,21 @@ public class AuthEventFilter implements AuditFilter<CAuthEvent> {
 	@Override
 	public void doFilter(CAuthEvent event) {
 		event.setIdentiy(guestSession.getIdentity());
+
 		if (guestSession.getCustomerModel() != null) {
 			event.setUserId(ArgUtil.parseAsString(guestSession.getCustomerModel().getCustomerId()));
+			event.setCustomerId(guestSession.getCustomerModel().getCustomerId());
 		}
+
 		if (userDevice.getUserDevice().getFingerprint() == null) {
 			userDevice.resolve();
+		}
+
+		if (sessionContextService != null) {
+			AuditActorInfo x = sessionContextService.getContext(AuditActorInfo.class);
+			if (ArgUtil.is(x)) {
+				event.setActor(x);
+			}
 		}
 		event.setAgent(userDevice.getUserAgent());
 	}

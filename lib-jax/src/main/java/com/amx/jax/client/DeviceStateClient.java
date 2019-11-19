@@ -35,7 +35,7 @@ public class DeviceStateClient implements IDeviceStateService {
 	public AmxApiResponse<DeviceStatusInfoDto, Object> getStatus(
 			Integer registrationId, String paireToken,
 			String sessionToken) {
-		try {
+		
 			LOGGER.debug("in getStatus");
 			String url = appConfig.getJaxURL() + Path.DEVICE_STATUS_GET;
 			return restService.ajax(url).meta(new JaxMetaInfo())
@@ -43,10 +43,7 @@ public class DeviceStateClient implements IDeviceStateService {
 					.queryParam(Params.PAIRE_TOKEN, paireToken).queryParam(Params.SESSION_TOKEN, sessionToken).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<DeviceStatusInfoDto, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.error("exception in getStatus : ", e);
-			return JaxSystemError.evaluate(e);
-		}
+		
 	}
 
 	@Override
@@ -54,7 +51,7 @@ public class DeviceStateClient implements IDeviceStateService {
 			ClientType deviceType,
 			Integer countryBranchSystemInventoryId, SignaturePadRemittanceInfo signaturePadRemittanceInfo,
 			BigDecimal employeeId) {
-		try {
+	
 			LOGGER.debug("in updateRemittanceState");
 			String url = appConfig.getJaxURL() + Path.DEVICE_STATE_REMITTANCE_UPDATE;
 			return restService.ajax(url).meta(new JaxMetaInfo())
@@ -63,10 +60,7 @@ public class DeviceStateClient implements IDeviceStateService {
 					.post(signaturePadRemittanceInfo)
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.error("exception in updateRemittanceState : ", e);
-			return JaxSystemError.evaluate(e);
-		}
+		
 	}
 
 	@Override
@@ -74,7 +68,7 @@ public class DeviceStateClient implements IDeviceStateService {
 			ClientType deviceType,
 			Integer countryBranchSystemInventoryId, SignaturePadFCPurchaseSaleInfo signaturePadPurchseInfo,
 			BigDecimal employeeId) {
-		try {
+		
 			LOGGER.debug("in getFcPurchase");
 			String url = appConfig.getJaxURL() + Path.DEVICE_FC_PURCHASE_UPDATE;
 			return restService.ajax(url).meta(new JaxMetaInfo())
@@ -83,10 +77,7 @@ public class DeviceStateClient implements IDeviceStateService {
 					.post(signaturePadPurchseInfo)
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.error("exception in getFcPurchase : ", e);
-			return JaxSystemError.evaluate(e);
-		}
+		
 	}
 
 	@Override
@@ -94,7 +85,7 @@ public class DeviceStateClient implements IDeviceStateService {
 			ClientType deviceType,
 			Integer countryBranchSystemInventoryId, SignaturePadFCPurchaseSaleInfo signaturePadSaleInfo,
 			BigDecimal employeeId) {
-		try {
+		
 			LOGGER.debug("in getFcSale");
 			String url = appConfig.getJaxURL() + Path.DEVICE_FC_SALE_UPDATE;
 			return restService.ajax(url).meta(new JaxMetaInfo())
@@ -103,10 +94,7 @@ public class DeviceStateClient implements IDeviceStateService {
 					.post(signaturePadSaleInfo)
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.error("exception in getFcSale : ", e);
-			return JaxSystemError.evaluate(e);
-		}
+		
 	}
 
 	@Override
@@ -114,7 +102,7 @@ public class DeviceStateClient implements IDeviceStateService {
 			ClientType deviceType,
 			Integer countryBranchSystemInventoryId, SignaturePadCustomerRegStateMetaInfo metaInfo,
 			BigDecimal employeeId) {
-		try {
+		
 			LOGGER.debug("in updateCustomerRegStateData");
 			String url = appConfig.getJaxURL() + Path.DEVICE_STATE_CUSTOMER_REG_UPDATE;
 			return restService.ajax(url).meta(new JaxMetaInfo())
@@ -123,17 +111,14 @@ public class DeviceStateClient implements IDeviceStateService {
 					.post(metaInfo)
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.error("exception in updateCustomerRegStateData : ", e);
-			return JaxSystemError.evaluate(e);
-		}
+		
 	}
 
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> updateCustomerProfileStateData(ClientType deviceType,
 			Integer countryBranchSystemInventoryId, SignaturePadCustomerRegStateMetaInfo metaInfo,
 			BigDecimal employeeId) {
-		try {
+		
 			LOGGER.debug("in updateCustomerProfileStateData");
 			String url = appConfig.getJaxURL() + Path.DEVICE_STATE_CUSTOMER_PROFILE_UPDATE;
 			return restService.ajax(url).meta(new JaxMetaInfo())
@@ -142,43 +127,34 @@ public class DeviceStateClient implements IDeviceStateService {
 					.post(metaInfo)
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.error("exception in updateCustomerRegStateData : ", e);
-			return JaxSystemError.evaluate(e);
-		}
+		
 	}
 
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> updateSignatureStateData(
 			Integer deviceRegId,
 			String signatureImageClob) {
-		try {
+		
 			LOGGER.debug("in updateSignatureStateData");
 			String url = appConfig.getJaxURL() + Path.DEVICE_STATE_SIGNATURE_UPDATE;
 			return restService.ajax(url).meta(new JaxMetaInfo()).field(Params.DEVICE_REG_ID, deviceRegId)
 					.field("signatureImageClob", signatureImageClob).postForm()
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.error("exception in updateSignatureStateData : ", e);
-			return JaxSystemError.evaluate(e);
-		}
+		
 	}
 
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> clearDeviceState(Integer deviceRegId, String paireToken,
 			String sessionToken) {
-		try {
+		
 			LOGGER.debug("in clearDeviceState {}", deviceRegId);
 			String url = appConfig.getJaxURL() + Path.DEVICE_STATE_CLEAR;
 			return restService.ajax(url).meta(new JaxMetaInfo()).field(Params.DEVICE_REG_ID, deviceRegId)
 					.field(Params.PAIRE_TOKEN, paireToken).field(Params.SESSION_TOKEN, sessionToken).postForm()
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.error("exception in clearDeviceState : ", e);
-			return JaxSystemError.evaluate(e);
-		}
+		
 	}
 
 }

@@ -7,4 +7,5 @@ import com.amx.jax.dict.AmxEnums.FxOrderStatus;
 
 public interface IJaxStompService extends IJaxService {
     public void publishFxOrderStatusChange(BigDecimal orderNumber, BigDecimal orderYear,  FxOrderStatus status);
+	void publishOnCallCustomerStatus(BigDecimal empId, BigDecimal customerid);
 }

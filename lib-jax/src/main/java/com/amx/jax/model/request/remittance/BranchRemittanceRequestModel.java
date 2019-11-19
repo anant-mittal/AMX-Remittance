@@ -63,7 +63,8 @@ public class BranchRemittanceRequestModel {
 
 	public void setPaidAmount(BigDecimal paidAmount) {
 		this.paidAmount = paidAmount;
-		}
+	}
+
 	
 		
 		

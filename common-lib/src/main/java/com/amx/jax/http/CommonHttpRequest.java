@@ -9,6 +9,7 @@ import java.util.Set;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,6 @@ import org.springframework.http.MediaType;
 import org.springframework.mobile.device.Device;
 import org.springframework.mobile.device.DeviceUtils;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
@@ -37,6 +37,7 @@ import com.amx.jax.model.UserDevice;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 import com.amx.utils.HttpUtils;
+import com.amx.utils.StringUtils;
 
 import eu.bitwalker.useragentutils.Browser;
 import eu.bitwalker.useragentutils.OperatingSystem;
@@ -117,13 +118,13 @@ public class CommonHttpRequest {
 				return deviceIp;
 			}
 		}
-		return HttpUtils.getIPAddress(request);
+		return StringUtils.getByIndex(HttpUtils.getIPAddress(request), ",", 0);
 	}
 
 	public Language getLanguage() {
 		return (Language) ArgUtil.parseAsEnum(
 				ArgUtil.ifNotEmpty(getRequestParam(AppConstants.LANG_PARAM_KEY), request.getLocale().getLanguage()),
-				Language.DEFAULT);
+				Language.DEFAULT, Language.class);
 	}
 
 	public Device getCurrentDevice() {
@@ -144,6 +145,31 @@ public class CommonHttpRequest {
 		return deviceId;
 	}
 
+	public void setTraceUserIdentifier(Object sessionUserId) {
+		if (request != null) {
+			HttpSession session = request.getSession(false);
+			if (session != null) {
+				session.setAttribute(AppConstants.SESSION_SUFFIX_XKEY, sessionUserId);
+			}
+		}
+	}
+
+	public String getTraceUserIdentifier() {
+		if (request != null) {
+			HttpSession session = request.getSession(false);
+			if (session != null) {
+				return ArgUtil.parseAsString(session.getAttribute(AppConstants.SESSION_SUFFIX_XKEY));
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Returns Value from Query,Header,Cookies
+	 * 
+	 * @param contextKey
+	 * @return
+	 */
 	public String getRequestParam(String... contextKeys) {
 		for (String contextKey : contextKeys) {
 			String value = request.getParameter(contextKey);
@@ -163,6 +189,12 @@ public class CommonHttpRequest {
 		return null;
 	}
 
+	/**
+	 * Returns Value from Context,Query,Header,Cookies
+	 * 
+	 * @param contextKey
+	 * @return
+	 */
 	public String get(String contextKey) {
 		String value = AppContextUtil.get(contextKey);
 		if (request != null) {
@@ -403,6 +435,7 @@ public class CommonHttpRequest {
 		boolean useAuthToken;
 		boolean useAuthKey;
 		String flow;
+		String feature;
 
 		public RequestType getType() {
 			return type;
@@ -435,6 +468,15 @@ public class CommonHttpRequest {
 		public void setFlow(String flow) {
 			this.flow = flow;
 		}
+
+		public String getFeature() {
+			return feature;
+		}
+
+		public void setFeature(String feature) {
+			this.feature = feature;
+		}
+
 	}
 
 	public ApiRequestDetail getApiRequest(HttpServletRequest req) {
@@ -445,6 +487,7 @@ public class CommonHttpRequest {
 			detail.setUseAuthKey(x.useAuthKey());
 			detail.setUseAuthToken(x.useAuthToken());
 			detail.setFlow(x.flow());
+			detail.setFeature(x.feature());
 		}
 
 		if (ArgUtil.isEmpty(detail.getType()) || RequestType.DEFAULT.equals(detail.getType())) {

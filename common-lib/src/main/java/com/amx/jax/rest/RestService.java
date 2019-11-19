@@ -26,7 +26,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
@@ -123,6 +122,11 @@ public class RestService {
 		return IN_FILTERS_MAP;
 	}
 
+	public RestTemplate getLocalRestTemplate(RestTemplate restTemplateLocal) {
+		restTemplateLocal.setInterceptors(Collections.singletonList(appClientInterceptor));
+		return restTemplateLocal;
+	}
+
 	public RestTemplate getRestTemplate() {
 		if (staticRestTemplate == null) {
 			if (restTemplate != null) {
@@ -143,6 +147,11 @@ public class RestService {
 	public Ajax ajax(URI uri) {
 		this.getOutFilters();
 		return new Ajax(getRestTemplate(), uri).header(AppConstants.APP_VERSION_XKEY, appConfig.getAppVersion());
+	}
+
+	public Ajax ajax(RestTemplate restTemplate, String url) {
+		this.getOutFilters();
+		return new Ajax(restTemplate, url);
 	}
 
 	public static class Ajax {
@@ -334,6 +343,11 @@ public class RestService {
 		public <T> T as(ParameterizedTypeReference<T> responseType) {
 			URI uri = builder.buildAndExpand(uriParams).toUri();
 			return restTemplate.exchange(uri, method, requestEntity, responseType).getBody();
+		}
+
+		public byte[] asByteArray() {
+			URI uri = builder.buildAndExpand(uriParams).toUri();
+			return restTemplate.getForObject(uri, byte[].class);
 		}
 
 		public String asString() {

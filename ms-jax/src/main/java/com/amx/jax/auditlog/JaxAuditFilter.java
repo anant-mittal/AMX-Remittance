@@ -17,7 +17,7 @@ public class JaxAuditFilter implements AuditFilter<CActivityEvent> {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 
-	@Autowired
+	@Autowired(required = false)
 	MetaData metaData;
 
 	@Autowired
@@ -25,7 +25,7 @@ public class JaxAuditFilter implements AuditFilter<CActivityEvent> {
 
 	@Override
 	public void doFilter(CActivityEvent event) {
-		if (!ArgUtil.isEmpty(metaData.getCustomerId())
+		if (ArgUtil.is(metaData) && !ArgUtil.isEmpty(metaData.getCustomerId())
 				&& ArgUtil.isEmpty(event.getCustomerId())) {
 			event.setCustomerId(metaData.getCustomerId());
 		}

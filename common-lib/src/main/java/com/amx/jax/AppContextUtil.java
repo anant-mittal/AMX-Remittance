@@ -19,8 +19,10 @@ import com.amx.jax.dict.UserClient.UserDeviceClient;
 import com.amx.jax.http.RequestType;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.Constants;
 import com.amx.utils.ContextUtil;
 import com.amx.utils.JsonUtil;
+import com.amx.utils.StringUtils;
 import com.amx.utils.UniqueID;
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -28,14 +30,29 @@ public class AppContextUtil {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AppContextUtil.class);
 
+	public static void setSessionPrefix(String sessionPrefix) {
+		ContextUtil.map().put(AppConstants.SESSION_PREFIX_XKEY, sessionPrefix);
+	}
+
+	public static void setRequestUser(String sessionSuffix) {
+		ContextUtil.map().put(AppConstants.SESSION_SUFFIX_XKEY, sessionSuffix);
+	}
+
+	public static String getRequestUser() {
+		return ArgUtil.parseAsString(ContextUtil.map().get(AppConstants.SESSION_SUFFIX_XKEY),
+				Constants.BLANK);
+	}
+
 	public static void setSessionId(Object sessionId) {
 		ContextUtil.map().put(AppConstants.SESSION_ID_XKEY, sessionId);
 	}
 
 	public static String getSessionId(boolean generate, String defautSessionId) {
 		String sessionId = ArgUtil.parseAsString(ContextUtil.map().get(AppConstants.SESSION_ID_XKEY), defautSessionId);
+		String sessionPrefix = ArgUtil.parseAsString(ContextUtil.map().get(AppConstants.SESSION_PREFIX_XKEY),
+				Constants.BLANK);
 		if (generate && ArgUtil.isEmptyString(sessionId)) {
-			sessionId = UniqueID.generateSessionId();
+			sessionId = UniqueID.generateSessionId(sessionPrefix);
 			setSessionId(sessionId);
 		}
 		return sessionId;
@@ -61,11 +78,11 @@ public class AppContextUtil {
 			if (ArgUtil.isEmpty(sessionId)) {
 				sessionId = getSessionId(true);
 			}
-			return ContextUtil.generateTraceId(sessionId);
+			return ContextUtil.generateTraceId(sessionId, getRequestUser());
 		}
 		String traceId = ContextUtil.getTraceId(false);
 		if (generate && ArgUtil.isEmpty(traceId)) {
-			return ContextUtil.getTraceId(true, sessionId);
+			return ContextUtil.getTraceId(true, sessionId, getRequestUser());
 		}
 		return traceId;
 	}
@@ -104,7 +121,8 @@ public class AppContextUtil {
 	}
 
 	public static Language getLang() {
-		return (Language) ArgUtil.parseAsEnum(ContextUtil.map().get(AppConstants.LANG_PARAM_KEY), Language.EN,Language.class);
+		return (Language) ArgUtil.parseAsEnum(ContextUtil.map().get(AppConstants.LANG_PARAM_KEY), Language.EN,
+				Language.class);
 	}
 
 	public static Language getLang(Language lang) {
@@ -138,15 +156,20 @@ public class AppContextUtil {
 
 	public static RequestType getRequestType() {
 		return (RequestType) ArgUtil.parseAsEnum(ContextUtil.map().get(AppConstants.REQUEST_TYPE_XKEY),
-				RequestType.DEFAULT);
+				RequestType.DEFAULT, RequestType.class);
 	}
 
 	public static String getSessionIdFromTraceId() {
 		String traceId = getTraceId();
 		if (!ArgUtil.isEmptyString(traceId)) {
-			Matcher matcher = UniqueID.SYSTEM_STRING_PATTERN.matcher(traceId);
+			Matcher matcher = UniqueID.SYSTEM_STRING_PATTERN_V2.matcher(traceId);
 			if (matcher.find()) {
-				setSessionId(matcher.group(1) + "-" + matcher.group(2));
+				setSessionId(matcher.group(1) + "-" + matcher.group(2) + "-" + matcher.group(3));
+			} else {
+				Matcher matcher2 = UniqueID.SYSTEM_STRING_PATTERN.matcher(traceId);
+				if (matcher2.find()) {
+					setSessionId(matcher2.group(1) + "-" + matcher2.group(2) + "-" + matcher2.group(3));
+				}
 			}
 		}
 		return getSessionId(true);
@@ -158,6 +181,18 @@ public class AppContextUtil {
 
 	public static void setTenant(Tenant tenant) {
 		TenantContextHolder.setCurrent(tenant);
+	}
+
+	public static void setVendor(Class<?> class1, String vendor) {
+		ContextUtil.map().put("scopedTarget." + StringUtils.decapitalize(class1.getSimpleName()), vendor);
+	}
+
+	public static String getVendor(Class<?> class1) {
+		return (String) ContextUtil.map().get("scopedTarget." + StringUtils.decapitalize(class1.getSimpleName()));
+	}
+
+	public static String getVendor(String scopedTargetClassName) {
+		return (String) ContextUtil.map().get(scopedTargetClassName);
 	}
 
 	public static void setTranceId(String traceId) {

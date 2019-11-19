@@ -28,18 +28,54 @@ public class GridInfo<T> {
 				}
 			}
 			tmpClass = tmpClass.getSuperclass();
-			
+
 		} while (tmpClass != null);
-		
+
 		return fieldMap;
 	}
 
-	public static <T> String query(Class<?> clazz, String query) {
+	public static <T> String query(GridInfo<?> info, String table, Class<?> clazz, String query) {
 		if (ArgUtil.isEmpty(query)) {
 			Class<?> tmpClass = clazz;
-			Table tableAnnot = tmpClass.getAnnotation(Table.class);
-			if (!ArgUtil.isEmpty(tableAnnot) && !ArgUtil.isEmpty(tableAnnot.name())) {
-				return String.format("SELECT *  FROM %s", tableAnnot.name());
+			String columnString = "";
+			String groupString = "";
+			boolean hasGroupCondition = false;
+			do {
+				Field[] f = tmpClass.getDeclaredFields();
+
+				for (Field field : f) {
+					Column c = field.getAnnotation(Column.class);
+					GridGroup g = field.getAnnotation(GridGroup.class);
+					if (!ArgUtil.isEmpty(g) && !ArgUtil.isEmpty(g.value())) {
+						hasGroupCondition = true;
+						columnString = columnString
+								+ ((ArgUtil.isEmpty(columnString) ? "" : ",") + g.value() + " as " + c.name());
+					} else if (!ArgUtil.isEmpty(c) && !ArgUtil.isEmpty(c.name())) {
+						columnString = columnString + (ArgUtil.isEmpty(columnString) ? c.name() : ("," + c.name()));
+						groupString = groupString + (ArgUtil.isEmpty(groupString) ? c.name() : ("," + c.name()));
+					}
+				}
+				tmpClass = tmpClass.getSuperclass();
+
+			} while (tmpClass != null);
+
+			if (ArgUtil.isEmpty(columnString)) {
+				columnString = "*";
+			}
+
+			if (hasGroupCondition && !ArgUtil.isEmpty(groupString)) {
+				info.setGroupBy(groupString);
+			}
+
+			if (ArgUtil.isEmpty(table)) {
+				Table tableAnnot = clazz.getAnnotation(Table.class);
+				if (!ArgUtil.isEmpty(tableAnnot) && !ArgUtil.isEmpty(tableAnnot.name())) {
+					table = tableAnnot.name();
+				}
+			}
+
+			if (ArgUtil.is(table)) {
+				return String.format("SELECT %s  FROM %s", columnString, table);
 			}
 		}
 		return query;
@@ -47,24 +83,29 @@ public class GridInfo<T> {
 
 	Map<String, String> map;
 	String query;
+	String groupBy;
 	Class<T> resultClass;
 	boolean customeQuery;
 
-	GridInfo(String query, Class<T> resultClass) {
+	GridInfo(String table, Class<T> resultClass, String query) {
 		if (!ArgUtil.isEmpty(query)) {
 			this.customeQuery = true;
 		}
-		this.query = query(resultClass, query);
+		this.query = query(this, table, resultClass, query);
 		this.resultClass = resultClass;
 		this.map = map(resultClass, new HashMap<String, String>());
 	}
 
 	GridInfo(Class<T> resultClass, String query) {
-		this(query, resultClass);
+		this(null, resultClass, query);
+	}
+
+	GridInfo(String table, Class<T> resultClass) {
+		this(table, resultClass, null);
 	}
 
 	GridInfo(Class<T> resultClass) {
-		this(null, resultClass);
+		this(null, resultClass, null);
 	}
 
 	public String getQuery() {
@@ -93,6 +134,19 @@ public class GridInfo<T> {
 
 	public void setCustomeQuery(boolean customeQuery) {
 		this.customeQuery = customeQuery;
+	}
+
+	public String getGroupBy() {
+		return groupBy;
+	}
+
+	public void setGroupBy(String groupBy) {
+		this.groupBy = groupBy;
+	}
+
+	public GridInfo<T> groupBy(String groupBy) {
+		this.groupBy = groupBy;
+		return this;
 	}
 
 }

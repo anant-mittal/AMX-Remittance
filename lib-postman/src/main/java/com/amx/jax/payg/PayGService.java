@@ -14,7 +14,9 @@ import com.amx.jax.AppConstants;
 import com.amx.jax.AppContext;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.dict.PayGServiceCode;
+import com.amx.jax.rest.RestService;
 import com.amx.utils.CryptoUtil;
+import com.amx.utils.HttpUtils;
 import com.amx.utils.JsonUtil;
 import com.amx.utils.URLBuilder;
 import com.amx.utils.Urly;
@@ -24,6 +26,9 @@ public class PayGService {
 
 	@Autowired
 	private AppConfig appConfig;
+
+	@Autowired
+	private RestService restService;
 
 	private static BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
 	{

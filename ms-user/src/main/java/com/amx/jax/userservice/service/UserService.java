@@ -72,6 +72,7 @@ import com.amx.jax.logger.events.CActivityEvent;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.BeneficiaryListDTO;
+import com.amx.jax.model.CivilIdOtpModel;
 import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.model.customer.CivilIdOtpModel;
 import com.amx.jax.model.customer.SecurityQuestionModel;
@@ -102,7 +103,6 @@ import com.amx.jax.userservice.manager.SecurityQuestionsManager;
 import com.amx.jax.userservice.manager.UserContactVerificationManager;
 import com.amx.jax.userservice.repository.LoginLogoutHistoryRepository;
 import com.amx.jax.userservice.service.CustomerValidationContext.CustomerValidation;
-import com.amx.jax.util.AmxDBConstants.Status;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.StringUtil;
@@ -856,17 +856,32 @@ public class UserService extends AbstractUserService {
 
 	/**
 	 * reset lock
+	 * 
+	 * @param onlineCustomer
+	 * @return TRUE, if CustomerLock Status has Changed from locked to unlock
 	 */
-	public void unlockCustomer(CustomerOnlineRegistration onlineCustomer) {
+	public boolean unlockCustomer(CustomerOnlineRegistration onlineCustomer) {
+		boolean unlockDone = false;
 		if (onlineCustomer.getLockCnt() != null || onlineCustomer.getLockDt() != null) {
+			// Audit
+			CActivityEvent auditEvent = new CActivityEvent(CActivityEvent.Type.PROFILE_UPDATE).customerId(onlineCustomer.getCustomerId())
+					.field(FIELD_LOCK);
+			auditEvent.from(onlineCustomer.getLockCnt()); // Audit
+			
 			onlineCustomer.setLockCnt(null);
 			onlineCustomer.setLockDt(null);
 			custDao.saveOnlineCustomer(onlineCustomer);
+			
+			auditEvent.to(onlineCustomer.getLockCnt()); // Audit
+			auditService.log(auditEvent.result(Result.DONE)); // Audit
+			
+			unlockDone = true;
 		}
 		onlineCustomer.setTokenSentCount(BigDecimal.ZERO);
+		return unlockDone;
 	}
 
-	protected LoginLogoutHistory getLoginLogoutHistoryByUserName(String userName) {
+	public LoginLogoutHistory getLoginLogoutHistoryByUserName(String userName) {
 
 		Sort sort = new Sort(Direction.DESC, "loginLogoutId");
 		List<LoginLogoutHistory> last2HistoryList = loginLogoutHistoryRepositoryRepo.findFirst2ByuserName(userName,
@@ -1000,7 +1015,7 @@ public class UserService extends AbstractUserService {
 		try {
 			BeanUtils.copyProperties(dto, beneModel);
 		} catch (IllegalAccessException | InvocationTargetException e) {
-			logger.error("bene list display", e);
+			logger.debug("bene list display", e);
 		}
 		return dto;
 	}
@@ -1016,25 +1031,16 @@ public class UserService extends AbstractUserService {
 		BooleanResponse responseModel = new BooleanResponse();
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customerId);
 
-		// Audit
-		CActivityEvent auditEvent = new CActivityEvent(CActivityEvent.Type.PROFILE_UPDATE).customerId(customerId)
-				.field(FIELD_LOCK);
-
 		if (onlineCustomer == null) {
-			auditService.log(
-					auditEvent.result(Result.REJECTED).message(JaxError.USER_NOT_REGISTERED));
 			throw new GlobalException(JaxError.USER_NOT_REGISTERED,
 					"User with userId: " + customerId + " is not registered or not active");
 		}
-		auditEvent.from(onlineCustomer.getLockCnt()); // Audit
 		this.unlockCustomer(onlineCustomer);
-		auditEvent.to(onlineCustomer.getLockCnt()); // Audit
 		responseModel.setSuccess(true);
 		response.getData().getValues().add(responseModel);
 		response.getData().setType(responseModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
 
-		auditService.log(auditEvent.result(Result.DONE)); // Audit
 		return response;
 
 	}
@@ -1135,6 +1141,7 @@ public class UserService extends AbstractUserService {
 			personInfo.setWhatsAppNumber(customer.getWhatsapp());
 			personInfo.setPrefixCodeMobile("+" + customer.getPrefixCodeMobile());
 			personInfo.setWhatsappPrefixCode("+" + customer.getWhatsappPrefix());
+			personInfo.setIdentityTypeId(customer.getIdentityTypeId());
 			if(customer.getFirstName() != null) {
 				personInfo.setFirstName(customer.getFirstName());
 			}
@@ -1262,7 +1269,7 @@ public class UserService extends AbstractUserService {
 		try {
 			hashpassword = com.amx.utils.CryptoUtil.getSHA2Hash(password);
 		} catch (NoSuchAlgorithmException e) {
-			logger.error("Exception thrown for incorrect algorithm ", e);
+			logger.debug("Exception thrown for incorrect algorithm ", e);
 			throw new GlobalException("Unable to generate fingerprint password");
 		}
 		return hashpassword;
@@ -1402,8 +1409,10 @@ public class UserService extends AbstractUserService {
 
 	public AmxApiResponse<CustomerModel, Object> validateCustomerLoginOtp(String identityInt) {
 		if (identityInt != null) {
-			userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(identityInt, JaxApiFlow.LOGIN);
 			Customer customer = custDao.getCustomerByCivilId(identityInt);
+			userValidationService.validateCustIdProofs(customer.getCustomerId());
+			userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(identityInt, JaxApiFlow.LOGIN);
+			
 			
 			// ---- check for blacklisted customer ----
 			userValidationService.validateBlackListedCustomerForLogin(customer);
