@@ -23,7 +23,7 @@ public class AmxEnums {
 	}
 
 	public static enum Products implements EnumType {
-		REMIT, FXORDER, HOME, OFFICE, REMITLINK;
+		REMIT, FXORDER, HOME, OFFICE,REMITLINK;
 	}
 
 	public static enum FxOrderStatus implements EnumType {
@@ -31,7 +31,7 @@ public class AmxEnums {
 	}
 
 	public static enum CommunicationEvents implements CommunicationEvent {
-		NEW_DEVICE_LOGIN,
+		NEW_DEVICE_LOGIN,BIRTHDAY_WISHES,
 		CASH_PICKUP_BANK, CASH_PICKUP_WU, CASH_PICKUP_TF;
 
 		public static CommunicationEvent fromString(String eventStr) {
