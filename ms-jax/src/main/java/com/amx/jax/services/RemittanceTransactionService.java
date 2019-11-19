@@ -20,6 +20,7 @@ import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.AmxMeta;
 import com.amx.jax.client.compliance.ComplianceBlockedTrnxType;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.RemittanceApplicationDao;
@@ -30,6 +31,7 @@ import com.amx.jax.dbmodel.RemittanceTransactionView;
 import com.amx.jax.dbmodel.SourceOfIncomeView;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
+import com.amx.jax.dict.Language;
 import com.amx.jax.exrateservice.service.NewExchangeRateService;
 import com.amx.jax.manager.RemittanceTransactionManager;
 import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
@@ -78,6 +80,8 @@ public class RemittanceTransactionService extends AbstractService {
 	RemittanceProcedureDao  remittanceProcedureDao;
 	@Autowired
 	RemittanceTransactionRepository remittanceTransactionRepository;
+	@Autowired
+	protected AmxMeta amxMeta;
 	
 	public ApiResponse getRemittanceTransactionDetails(BigDecimal collectionDocumentNo, BigDecimal fYear,
 			BigDecimal collectionDocumentCode) {
@@ -100,21 +104,18 @@ public class RemittanceTransactionService extends AbstractService {
 		List<SourceOfIncomeView> sourceOfIncomeList;
 		List<SourceOfIncomeView> sourceOfIncomeListArabic;
 		ApiResponse response = getBlackApiResponse();
-		if((languageId==null) || languageId.equals(new BigDecimal(1)))
+		if(languageId==null)
 		{
 		sourceOfIncomeList = sourceOfIncomeDao.getSourceofIncome(languageId);
 		response.getData().getValues().addAll(convertSourceOfIncomeForEnglish(sourceOfIncomeList));
 		response.setResponseStatus(ResponseStatus.OK);
 		}
 		else {
-			sourceOfIncomeList = sourceOfIncomeDao.getSourceofIncome(new BigDecimal(2));
-			
-			sourceOfIncomeListArabic= sourceOfIncomeDao.getSourceofIncome(languageId);
-			sourceOfIncomeList.get(0).setLocalName(sourceOfIncomeListArabic.get(0).getLocalName());
+			sourceOfIncomeList = sourceOfIncomeDao.getSourceofIncome(languageId);
 			response.getData().getValues().addAll(convertSourceOfIncome(sourceOfIncomeList));
 			response.setResponseStatus(ResponseStatus.OK);
-		}
 		
+		}
 		
 		if (sourceOfIncomeList.isEmpty()) {
 			throw new GlobalException("No data found");
