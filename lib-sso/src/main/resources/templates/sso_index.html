@@ -28,8 +28,8 @@
 		<div class="left-panel">
 			<h4>Quick Tips<br />
 				<th:block th:switch="${loginWithDevice}">
-					<small style="font-weight: 200;" th:case="true" >Make sure branch adapter is running. <a target="_blank" href="http://127.0.0.1:8020">check</a></small>
-					<small style="font-weight: 200;" th:case="false" >Make sure device is registered. <a target="_blank" th:href="${SSO_LOGIN_PREFIX + '/pub/device/pair'}">check</a></small>
+					<small style="font-weight: 200;" th:case="false" >Make sure branch adapter is running. <a target="_blank" href="http://127.0.0.1:8020">check</a></small>
+					<small style="font-weight: 200;" th:case="true" >Make sure device is registered. <a target="_blank" th:href="${SSO_LOGIN_PREFIX + '/pub/device/pair'}">check</a></small>
 				</th:block>
 				<span id="adapter_indicator" class="adapter_indicator radio down" style="margin: -4px 8px;"><input type="radio" value="RUNNING" checked /><span></span>
 				</span>

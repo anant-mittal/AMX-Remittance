@@ -150,17 +150,17 @@ public class SSOServerController {
 			if ((ArgUtil.isEmpty(refresh) || TimeUtils.isExpired(refresh, 10 * 1000))) {
 				String newTranxId = AppContextUtil.getTraceId(true, true);
 				ssoUser.setTranxId(newTranxId);
-				
+
 				URLBuilder builder = Urly.parse(
-							ArgUtil.ifNotEmpty(sSOTranx.get().getAppUrl(),
-									appConfig.getAppPrefix() + SSOConstants.APP_LOGIN_URL_DONE))
-							.queryParam(AppConstants.TRANX_ID_XKEY, newTranxId)
-							.queryParam(SSOConstants.PARAM_STEP, SSOAuthStep.DONE)
+						ArgUtil.ifNotEmpty(sSOTranx.get().getAppUrl(),
+								appConfig.getAppPrefix() + SSOConstants.APP_LOGIN_URL_DONE))
+						.queryParam(AppConstants.TRANX_ID_XKEY, newTranxId)
+						.queryParam(SSOConstants.PARAM_STEP, SSOAuthStep.DONE)
 						.queryParam(SSOConstants.PARAM_SOTP, sSOTranx.get().getAppToken());
-				
-				///builder.path(appConfig.getAppPrefix() + SSOConstants.SSO_LOGIN_URL)
-						//.queryParam("refresh", System.currentTimeMillis())
-						;
+
+				/// builder.path(appConfig.getAppPrefix() + SSOConstants.SSO_LOGIN_URL)
+				// .queryParam("refresh", System.currentTimeMillis())
+				;
 				resp.setHeader("Location", builder.getURL());
 				resp.setStatus(302);
 			} else {
@@ -201,7 +201,7 @@ public class SSOServerController {
 
 		redirect = ArgUtil.parseAsBoolean(redirect, true);
 		isReturn = ArgUtil.parseAsBoolean(isReturn, false);
-		clientType = (ClientType) ArgUtil.parseAsEnum(clientType, sSOConfig.getLoginWithClientType());
+		clientType = (ClientType) ArgUtil.parseAsEnum(clientType, sSOConfig.getLoginWithClientType(),ClientType.class);
 
 		if (json == SSOAuthStep.DO) {
 			json = formdata.getStep();
@@ -221,6 +221,7 @@ public class SSOServerController {
 		if (sSOTranx.get() != null) {
 
 			UserDeviceClient userDeviceClient = commonHttpRequest.getUserDevice().toUserDeviceClient();
+			String deviceRegId = commonHttpRequest.get(DeviceConstants.Keys.CLIENT_REG_KEY_XKEY);
 
 			if (SSOAuthStep.CREDS == json) {
 
@@ -241,26 +242,26 @@ public class SSOServerController {
 					userClientDto.setDeviceType(deviceType);
 				}
 				AmxFieldError x = new AmxFieldError();
-				x.setDescription("Terminal Id is " + sSOTranx.get().getBranchAdapterId());
-
+				x.setDescription(String.format("T:%s D:%s", sSOTranx.get().getBranchAdapterId(), deviceRegId));
 				AppContextUtil.addWarning(x);
-				if (!ArgUtil.isEmpty(sSOTranx.get().getBranchAdapterId())) {
-					// Terminal Login
+
+				if (!ArgUtil.isEmpty(sSOTranx.get().getBranchAdapterId())) { // Terminal Login
+
 					DeviceData branchDeviceData = deviceBox.get(sSOTranx.get().getBranchAdapterId());
 					userClientDto.setLocalIpAddress(branchDeviceData.getLocalIp());
 					userClientDto.setTerminalId(ArgUtil.parseAsBigDecimal(branchDeviceData.getTerminalId()));
 					LOGGER.info("Gloabal IPs THIS: {} ADAPTER: {}, REQUEST: {}", userDeviceClient.getIp(),
 							branchDeviceData.getGlobalIp(), commonHttpRequest.getIPAddress());
 
-					ssoUser.setTerminalIp(userDeviceClient.getIp() + "," + branchDeviceData.getGlobalIp());
+					ssoUser.setTerminalIp(userDeviceClient.getIp(), branchDeviceData.getGlobalIp());
 
 					// Audit
 					auditEvent.terminalId(userClientDto.getTerminalId())
 							// .clientType(ClientType.BRANCH_ADAPTER)
 							.deviceRegId(sSOTranx.get().getBranchAdapterId());
-				} else {
-					// Device LOGIN
-					String deviceRegId = commonHttpRequest.get(DeviceConstants.Keys.CLIENT_REG_KEY_XKEY);
+
+				} else if (ArgUtil.is(deviceRegId) && sSOConfig.isLoginWithDevice()) { // Device LOGIN
+
 					userClientDto.setLocalIpAddress(userDeviceClient.getIp());
 					userClientDto.setDeviceId(userDeviceClient.getFingerprint());
 					userClientDto.setDeviceRegId(ArgUtil.parseAsBigDecimal(deviceRegId));
@@ -268,8 +269,11 @@ public class SSOServerController {
 							commonHttpRequest.get(DeviceConstants.Keys.CLIENT_REG_TOKEN_XKEY));
 					userClientDto.setDeviceSessionToken(
 							commonHttpRequest.get(DeviceConstants.Keys.CLIENT_SESSION_TOKEN_XKEY));
+
+					ssoUser.setTerminalIp(userDeviceClient.getIp());
 					// Audit
 					auditEvent.deviceRegId(deviceRegId);
+
 				}
 
 				ssoUser.setUserClient(userClientDto);
