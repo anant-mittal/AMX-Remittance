@@ -15,9 +15,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.BeneCountryDTO;
-
-import com.amx.amxlib.model.BeneAccountModel;
-import com.amx.amxlib.model.BenePersonalDetailModel;
 import com.amx.amxlib.model.response.JaxTransactionResponse;
 import com.amx.jax.JaxAuthContext;
 import com.amx.jax.api.BoolRespModel;

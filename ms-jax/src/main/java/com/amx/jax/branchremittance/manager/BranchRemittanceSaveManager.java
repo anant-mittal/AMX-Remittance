@@ -466,7 +466,7 @@ public class BranchRemittanceSaveManager {
 				if(JaxUtil.isNullZeroBigDecimalCheck(declarationTotalamount) && collection.getNetAmount().compareTo(declarationTotalamount)>=1) {
 					collection.setCashDeclarationIndicator(ConstantDocument.Yes);
 				}
-				}
+				
 				collection.setIsActive(ConstantDocument.Yes);
 			
 				

@@ -77,6 +77,7 @@ public class ShoppingCartDetails implements Serializable {
 
 	public void setApplicationPaymentType(String applicationPaymentType) {
 		this.applicationPaymentType = applicationPaymentType;
+	}
 
 	private BigDecimal paymentLinkId;
 	

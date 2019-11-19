@@ -39,7 +39,6 @@ import com.amx.jax.logger.AuditActor;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.logger.events.CActivityEvent;
-import com.amx.jax.model.customer.CivilIdOtpModel;
 import com.amx.jax.model.CivilIdOtpModel;
 import com.amx.jax.model.response.customer.CustomerFlags;
 import com.amx.jax.model.response.customer.CustomerModelSignupResponse;

@@ -1385,7 +1385,13 @@ public class RemittanceTransactionManager {
 		
 		RemitApplAmlModel remitApplAml = applAmlManger.createRemittanceApplAml(remittanceApplication,remittanceAppBeneficairy);
 		
-		remitAppDao.saveAllApplicationData(remittanceApplication, remittanceAppBeneficairy, additionalInstrumentData,remitApplSrvProv,remitApplAml);
+		List<RemittanceApplicationSplitting>  applSplitList = branchRemittanceApplManager.createChildApplication(remittanceApplication, model.getDynamicRroutingPricingBreakup());
+		if(applSplitList!=null && !applSplitList.isEmpty()) {
+			remittanceApplication.setApplSplit(ConstantDocument.Yes);
+		}
+		
+		
+		remitAppDao.saveAllApplicationData(remittanceApplication, remittanceAppBeneficairy, additionalInstrumentData,remitApplSrvProv,applSplitList,remitApplAml);
 		remitAppDao.updatePlaceOrderV2(model, remittanceApplication);
 		
 		  remiteAppModel.setRemittanceAppId(remittanceApplication.

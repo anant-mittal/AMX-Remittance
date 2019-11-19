@@ -43,7 +43,6 @@ import com.amx.jax.dict.ContactType;
 import com.amx.jax.model.CivilIdOtpModel;
 import com.amx.jax.model.UserDevice;
 import com.amx.jax.model.auth.QuestModelDTO;
-import com.amx.jax.model.customer.CivilIdOtpModel;
 import com.amx.jax.model.customer.SecurityQuestionModel;
 import com.amx.jax.model.response.customer.CustomerModelResponse;
 import com.amx.jax.model.response.customer.CustomerModelSignupResponse;

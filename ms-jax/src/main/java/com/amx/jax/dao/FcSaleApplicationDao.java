@@ -208,6 +208,9 @@ public class FcSaleApplicationDao {
 				pgModel.setErrorCategory(paymentResponse.getErrorCategory());
 				pgModel.setErrorMessage(paymentResponse.getErrorText());
 				pgRepository.save(pgModel);
+				}else {
+					logger.error("Update after PG details Payment Id :"+paymentResponse.getPaymentId()+"\t Udf 3--Pg trnx seq Id :"+paymentResponse.getUdf3()+"Result code :"+paymentResponse.getResultCode());
+					throw new GlobalException(JaxError.PAYMENT_UPDATION_FAILED,"PG updation failed");
 				}
 			}else{
 
@@ -218,8 +221,7 @@ public class FcSaleApplicationDao {
 			e.printStackTrace();
 			logger.error("catch Update after PG details Payment Id :"+paymentResponse.getPaymentId()+"\t Udf 3--Pg trnx seq Id :"+paymentResponse.getUdf3()+"Result code :"+paymentResponse.getResultCode());
 			throw new GlobalException(JaxError.PAYMENT_UPDATION_FAILED,"PG updation failed");
-			logger.debug("Update after PG details Payment Id :"+paymentResponse.getPaymentId()+"\t Udf 3--Pg trnx seq Id :"+paymentResponse.getUdf3()+"Result code :"+paymentResponse.getResultCode());
-				throw new GlobalException(JaxError.PAYMENT_UPDATION_FAILED,"PG updatio failed");
+				
 			}
 		
 	}

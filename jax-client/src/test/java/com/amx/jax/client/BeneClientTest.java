@@ -21,6 +21,7 @@ import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterAgentBra
 import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterAgentParam;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterServiceImpl;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterServiceProviderParam;
+import com.amx.jax.client.bene.BeneficiaryConstant.BeneStatus;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.model.CivilIdOtpModel;
 

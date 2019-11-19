@@ -16,7 +16,6 @@ import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.model.CivilIdOtpModel;
 import com.amx.jax.model.OtpData;
-import com.amx.jax.model.customer.CivilIdOtpModel;
 import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.model.response.customer.PersonInfo;

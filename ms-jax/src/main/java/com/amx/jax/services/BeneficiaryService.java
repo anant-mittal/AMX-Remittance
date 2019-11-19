@@ -78,7 +78,7 @@ import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.model.CivilIdOtpModel;
 import com.amx.jax.model.auth.QuestModelDTO;
-import com.amx.jax.model.customer.CivilIdOtpModel;
+
 import com.amx.jax.model.response.CurrencyMasterDTO;
 import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.model.response.remittance.LoyalityPointState;

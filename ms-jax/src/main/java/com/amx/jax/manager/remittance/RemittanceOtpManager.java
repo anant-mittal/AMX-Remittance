@@ -20,7 +20,7 @@ import com.amx.jax.dbmodel.TransactionLimitCheckView;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.manager.DailyPromotionManager;
 import com.amx.jax.meta.MetaData;
-import com.amx.jax.model.customer.CivilIdOtpModel;
+import com.amx.jax.model.CivilIdOtpModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
 import com.amx.jax.partner.manager.PartnerTransactionManager;
 import com.amx.jax.repository.CustomerRepository;

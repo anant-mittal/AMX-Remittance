@@ -18,13 +18,15 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
+
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.ApplicationProcedureDao;
+import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.CollectDetailMdlv1;
 import com.amx.jax.dbmodel.CollectionMdlv1;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ForeignCurrencyAdjustMdlv1;
+import com.amx.jax.dbmodel.PaygDetailsModel;
 import com.amx.jax.dbmodel.RemittanceTransactionView;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.partner.RemitApplSrvProv;
@@ -45,6 +47,7 @@ import com.amx.jax.dbmodel.remittance.RemittanceTransactionSplitting;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.remittance.BranchApplicationDto;
+import com.amx.jax.model.response.remittance.RemittanceApplicationResponseModel;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.repository.AdditionalInstructionDataRepository;
@@ -142,6 +145,7 @@ public class BranchRemittanceDao {
 
 	@Autowired
 	PaygDetailsRepository pgRepository;
+	
 	@Autowired
 	RemittanceApplicationDao remittanceApplicationDao;
 	

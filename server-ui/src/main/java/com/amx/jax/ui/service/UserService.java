@@ -18,7 +18,6 @@ import com.amx.jax.error.JaxError;
 import com.amx.jax.model.AuthState;
 import com.amx.jax.model.CivilIdOtpModel;
 import com.amx.jax.model.auth.QuestModelDTO;
-import com.amx.jax.model.customer.CivilIdOtpModel;
 import com.amx.jax.model.customer.SecurityQuestionModel;
 import com.amx.jax.model.response.customer.CustomerFlags;
 import com.amx.jax.model.response.customer.CustomerModelResponse;

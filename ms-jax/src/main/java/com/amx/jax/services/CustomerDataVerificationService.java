@@ -24,9 +24,8 @@ import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.CustomerVerification;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
-import com.amx.jax.model.CivilIdOtpModel;
+
 import com.amx.jax.model.auth.QuestModelDTO;
-import com.amx.jax.model.customer.CivilIdOtpModel;
 import com.amx.jax.model.customer.SecurityQuestionModel;
 import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.repository.IContactDetailDao;

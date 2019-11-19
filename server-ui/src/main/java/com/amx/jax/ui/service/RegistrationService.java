@@ -14,7 +14,6 @@ import com.amx.jax.model.AuthState;
 import com.amx.jax.model.AuthState.AuthStep;
 import com.amx.jax.model.CivilIdOtpModel;
 import com.amx.jax.model.auth.QuestModelDTO;
-import com.amx.jax.model.customer.CivilIdOtpModel;
 import com.amx.jax.model.customer.SecurityQuestionModel;
 import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 import com.amx.jax.ui.model.AuthData;

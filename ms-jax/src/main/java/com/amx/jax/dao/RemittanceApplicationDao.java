@@ -80,11 +80,15 @@ public class RemittanceApplicationDao {
     @Autowired
     IRemitApplAmlRepository applAmlRepository;
     
+    @Autowired
+    IRemittanceApplSplitRepository remittanceApplSplitRepository;
+    
+    
 	@Transactional
 	public void saveAllApplicationData(RemittanceApplication app, RemittanceAppBenificiary appBene,
-			List<AdditionalInstructionData> additionalInstrumentData,RemitApplSrvProv remitApplSrvProv,RemitApplAmlModel remitApplAml) {
+			List<AdditionalInstructionData> additionalInstrumentData,RemitApplSrvProv remitApplSrvProv,List<RemittanceApplicationSplitting>  applSplitList ,RemitApplAmlModel remitApplAml) {
 
-		RemittanceApplication applObj = appRepo.save(app);
+		RemittanceApplication applSave1 = appRepo.save(app);
 		appBeneRepo.save(appBene);
 		addlInstDataRepo.save(additionalInstrumentData);
 		if (remitApplSrvProv != null) {
@@ -94,7 +98,7 @@ public class RemittanceApplicationDao {
 		
 
 		if(remitApplAml!=null) {
-			remitApplAml.setExRemittanceAppfromAml(applObj);
+			remitApplAml.setExRemittanceAppfromAml(applSave1);
 			applAmlRepository.save(remitApplAml);
 		}
 

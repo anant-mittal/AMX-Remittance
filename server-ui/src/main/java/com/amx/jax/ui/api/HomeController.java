@@ -425,7 +425,7 @@ public class HomeController {
 				Urly.parse(HttpUtils.getServerName(request)).path("/pub/app/pay/{prodType}/{linkId}")
 						.pathParam("prodType", prodType)
 						.pathParam("linkId", linkId)
-						.queryParam("v", veryCode).queryParam("page", "response").getURL()));
+						.queryParam("v", veryCode).queryParam("page", "response").getURL(),null));
 
 		map.put("statusKey", OWAStatus.OWAStatusStatusCodes.SUCCESS);
 		map.put("messageKey", OWAStatus.OWAStatusStatusCodes.SUCCESS);

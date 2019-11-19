@@ -11,7 +11,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-import java.util.Base64;
 
 import javax.transaction.Transactional;
 
@@ -74,7 +73,7 @@ import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.model.CivilIdOtpModel;
 import com.amx.jax.model.auth.QuestModelDTO;
-import com.amx.jax.model.customer.CivilIdOtpModel;
+
 import com.amx.jax.model.customer.SecurityQuestionModel;
 import com.amx.jax.model.response.customer.CustomerFlags;
 import com.amx.jax.model.response.customer.PersonInfo;

@@ -24,7 +24,7 @@ import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.PromotionDto;
 import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
+
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.async.ExecutorConfig;
@@ -57,6 +57,7 @@ import com.amx.jax.model.request.remittance.BranchApplicationDto;
 import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
 import com.amx.jax.model.response.customer.PersonInfo;
+import com.amx.jax.model.response.remittance.RemittanceApplicationResponseModel;
 import com.amx.jax.model.response.remittance.RemittanceCollectionDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.serviceprovider.Remittance_Call_Response;
