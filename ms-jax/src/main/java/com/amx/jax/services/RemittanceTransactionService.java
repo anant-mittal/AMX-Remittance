@@ -110,11 +110,10 @@ public class RemittanceTransactionService extends AbstractService {
 		response.getData().getValues().addAll(convertSourceOfIncomeForEnglish(sourceOfIncomeList));
 		response.setResponseStatus(ResponseStatus.OK);
 		}
-		else if(sourceOfIncomeList==null || languageId==null){
+	   if(sourceOfIncomeList.isEmpty() || languageId==null){
 			sourceOfIncomeList = sourceOfIncomeDao.getSourceofIncome(amxMeta.getClientLanguage(Language.EN).getBDCode());
 			response.getData().getValues().addAll(convertSourceOfIncome(sourceOfIncomeList));
 			response.setResponseStatus(ResponseStatus.OK);
-		
 		}
 		
 		if (sourceOfIncomeList.isEmpty()) {
