@@ -29,37 +29,28 @@ public class CommunicationPreferencesManager {
 	@Autowired
 	CommunicationPrefsUtil communicationPrefsUtil;
 
-	public void validateCommunicationPreferences(List<ContactType> channel) {
+	public void validateCommunicationPreferences(List<ContactType> channelList) {
 		Customer cust = custDao.getActiveCustomerDetailsByCustomerId(metaData.getCustomerId());
 
 		CommunicationPrefsResult communicationPrefsResult = communicationPrefsUtil
 				.forCustomer(CommunicationEvents.ADD_BENEFICIARY, cust);
 
-		boolean isEmailVerified = communicationPrefsResult.isEmail();
-		boolean isSmsVerified = communicationPrefsResult.isSms();
-		boolean isWhatsappVerified = communicationPrefsResult.isWhatsApp();
-
-		if (!isEmailVerified && !isSmsVerified && !isWhatsappVerified) {
-			throw new GlobalException("Email,Sms,whatsapp are not verified");
-		}
-		if (!isEmailVerified && !isSmsVerified && isWhatsappVerified) {
-			throw new GlobalException("Email,Sms are not verified");
-		}
-		if (isEmailVerified && !isSmsVerified && !isWhatsappVerified) {
-			throw new GlobalException("Sms,Whatsapp are not verified");
-		}
-		if (!isEmailVerified && isSmsVerified && !isWhatsappVerified) {
-			throw new GlobalException("Email,Whatsapp are not verified");
-		}
-
-		if (!communicationPrefsResult.isEmail()) {
-			throw new GlobalException("Email is not verified");
-		}
-		if (!communicationPrefsResult.isSms()) {
-			throw new GlobalException("Sms is not verified");
-		}
-		if (!communicationPrefsResult.isWhatsApp()) {
-			throw new GlobalException("Whatsapp is not verified");
+		for (ContactType channel : channelList) {
+			if (ContactType.EMAIL.equals(channel)) {
+				boolean isEmailVerified = communicationPrefsResult.isEmail();
+				if (!isEmailVerified)
+					throw new GlobalException("Email id is not verified");
+			} else if (ContactType.SMS.equals(channel)) {
+				boolean isSmsVerified = communicationPrefsResult.isSms();
+				if (!isSmsVerified) {
+					throw new GlobalException("Sms number is not verified");
+				}
+			} else if (ContactType.WHATSAPP.equals(channel)) {
+				boolean isWhatsAppVerified = communicationPrefsResult.isWhatsApp();
+				if (!isWhatsAppVerified) {
+					throw new GlobalException("Whatsapp number is not verified");
+				}
+			}
 		}
 	}
 }
