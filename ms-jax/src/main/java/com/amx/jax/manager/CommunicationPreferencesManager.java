@@ -22,31 +22,43 @@ import com.amx.jax.util.CommunicationPrefsUtil.CommunicationPrefsResult;
 public class CommunicationPreferencesManager {
 	@Autowired
 	MetaData metaData;
-	
+
 	@Autowired
 	CustomerDao custDao;
-	
+
 	@Autowired
 	CommunicationPrefsUtil communicationPrefsUtil;
-	
-	public void validateCommunicationPreferences(List<ContactType> channels){
+
+	public void validateCommunicationPreferences(List<ContactType> channel) {
 		Customer cust = custDao.getActiveCustomerDetailsByCustomerId(metaData.getCustomerId());
-		
-		CommunicationPrefsResult communicationPrefsResult=communicationPrefsUtil.forCustomer(CommunicationEvents.ADD_BENEFICIARY, cust);
-		if(!communicationPrefsResult.isEmail()&&!communicationPrefsResult.isSms()&&!communicationPrefsResult.isWhatsApp()) {
+
+		CommunicationPrefsResult communicationPrefsResult = communicationPrefsUtil
+				.forCustomer(CommunicationEvents.ADD_BENEFICIARY, cust);
+
+		boolean isEmailVerified = communicationPrefsResult.isEmail();
+		boolean isSmsVerified = communicationPrefsResult.isSms();
+		boolean isWhatsappVerified = communicationPrefsResult.isWhatsApp();
+
+		if (!isEmailVerified && !isSmsVerified && !isWhatsappVerified) {
 			throw new GlobalException("Email,Sms,whatsapp are not verified");
 		}
-		if(!communicationPrefsResult.isEmail()&&!communicationPrefsResult.isSms()&&communicationPrefsResult.isWhatsApp()) {
-			
+		if (!isEmailVerified && !isSmsVerified && isWhatsappVerified) {
+			throw new GlobalException("Email,Sms are not verified");
 		}
-		
-		if(!communicationPrefsResult.isEmail()) {
+		if (isEmailVerified && !isSmsVerified && !isWhatsappVerified) {
+			throw new GlobalException("Sms,Whatsapp are not verified");
+		}
+		if (!isEmailVerified && isSmsVerified && !isWhatsappVerified) {
+			throw new GlobalException("Email,Whatsapp are not verified");
+		}
+
+		if (!communicationPrefsResult.isEmail()) {
 			throw new GlobalException("Email is not verified");
 		}
-		if(!communicationPrefsResult.isSms()) {
+		if (!communicationPrefsResult.isSms()) {
 			throw new GlobalException("Sms is not verified");
 		}
-		if(!communicationPrefsResult.isWhatsApp()) {
+		if (!communicationPrefsResult.isWhatsApp()) {
 			throw new GlobalException("Whatsapp is not verified");
 		}
 	}
