@@ -32,6 +32,7 @@ import com.amx.jax.dbmodel.SourceOfIncomeView;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.dict.Language;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.exrateservice.service.NewExchangeRateService;
 import com.amx.jax.manager.RemittanceTransactionManager;
 import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
@@ -102,9 +103,8 @@ public class RemittanceTransactionService extends AbstractService {
 
 	public ApiResponse getSourceOfIncome(BigDecimal languageId) {
 		List<SourceOfIncomeView> sourceOfIncomeList;
-		List<SourceOfIncomeView> sourceOfIncomeListArabic;
 		ApiResponse response = getBlackApiResponse();
-		if(languageId==null)
+		if(languageId!=null)
 		{
 		sourceOfIncomeList = sourceOfIncomeDao.getSourceofIncome(languageId);
 		response.getData().getValues().addAll(convertSourceOfIncomeForEnglish(sourceOfIncomeList));
@@ -118,7 +118,7 @@ public class RemittanceTransactionService extends AbstractService {
 		}
 		
 		if (sourceOfIncomeList.isEmpty()) {
-			throw new GlobalException("No data found");
+			throw new GlobalException(JaxError.SOURCE_OF_INCOME_NOT_FOUND,"No data found FOR SOURCE OF INCOME");
 		} 
 		response.getData().setType("sourceofincome");
 		return response;
