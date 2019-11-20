@@ -23,6 +23,7 @@ import com.amx.jax.client.bene.BeneficiaryConstant;
 import com.amx.jax.client.bene.BeneficiaryConstant.BeneStatus;
 import com.amx.jax.client.serviceprovider.RoutingBankMasterDTO;
 import com.amx.jax.config.JaxProperties;
+import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.CountryMasterDesc;
@@ -96,6 +97,8 @@ public class BeneBranchService {
 	ITransactionHistroyDAO iTransactionHistroyDAO;
 	@Autowired
 	BeneficaryStatusRepository beneficaryStatusRepository;
+	@Autowired
+	JaxTenantProperties jaxTenantProperties;
 
 	// bank
 	public List<BankMasterDTO> getBankByCountryAndCurrency(ListBeneBankOrCashRequest request) {
@@ -166,14 +169,14 @@ public class BeneBranchService {
 
 	private void sendaddNewBankBranchRequestEmail(AddBeneBankBranchRequestModel model) {
 		Email email = new Email();
-		String emailid = jaxProperties.getSupportSoaEmail().get(0);
+		String emailid = jaxTenantProperties.getAppSupportEmail();
 		email.setSubject(BRANCH_SEARCH);
 		email.addTo(jaxProperties.getSupportSoaEmail().get(0));
 		email.setITemplate(TemplatesMX.BRANCH_SEARCH_EMPTY_BRANCH);
 		email.setHtml(true);
 		email.getModel().put(RESP_DATA_KEY, model);
 
-		logger.info("Email to - " + emailid + " first name : " + model.getCustomerName());
+		logger.info("Add bank branch Email to - " + emailid + " first name : " + model.getCustomerName());
 		postManService.sendEmailAsync(email);
 	}
 
