@@ -14,4 +14,6 @@ public interface VwExGLCBalProvRepository extends CrudRepository<ViewExGLCBalPro
 
 	public List<ViewExGLCBalProvisional> findByCurrencyCodeAndBankIdIn(String currencyCode, List<BigDecimal> bankIds);
 
+	public List<ViewExGLCBalProvisional> findByCurrencyCodeAndBankId(String currencyCode, BigDecimal bankId);
+
 }
