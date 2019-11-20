@@ -36,9 +36,6 @@ public interface IRatePlaceOrderRepository  extends CrudRepository<RatePlaceOrde
 	
 	
 	
-	
-	
-	
 	@Query(value =  "Select\n" + 
 			"    Beneficiary_Country_Id,(select COUNTRY_NAME FROM FS_COUNTRY_MASTER_DESC where COUNTRY_ID =Beneficiary_Country_Id AND LANGUAGE_ID=1) COUNTRY_NAME, \n" + 
 			"    count(Beneficiary_Country_Id) \n" + 
@@ -52,5 +49,10 @@ public interface IRatePlaceOrderRepository  extends CrudRepository<RatePlaceOrde
 			"Group By\n" + 
 			"    Beneficiary_Country_Id",nativeQuery=true)
 	public List<Object[]> getPlaceOrderCountryWiseCoount();
+	
+	
+	@Query("select * from RatePlaceOrder rv where rv.customerId=?1 and ratePlaceOrderId = ?2 and trunc(createdDate)=trunc(sysdate)  "
+			+ "and rv.isActive='Y' and applDocumentNumber is null and applDocumentFinanceYear is null and NVL(approvedBy,' ') <> ' '  ")
+	public RatePlaceOrder fetchApprovedPlaceOrder(BigDecimal customerId,BigDecimal placeOrderId);
 	
 }

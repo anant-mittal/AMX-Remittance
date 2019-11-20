@@ -104,6 +104,7 @@ public class RatePlaceOrder implements Serializable {
 		private String requestModel;
 		private BigDecimal exchangeRateApplied;
 		private BigDecimal rackExchangeRate;
+		private String terminalId;
 		
 		
 		public RatePlaceOrder() {
@@ -851,6 +852,17 @@ public class RatePlaceOrder implements Serializable {
 
 		public void setRackExchangeRate(BigDecimal rackExchangeRate) {
 			this.rackExchangeRate = rackExchangeRate;
+		}
+
+		@Column(name="TERMINAL_ID")
+		public String getTerminalId() {
+			return terminalId;
+		}
+
+		
+		
+		public void setTerminalId(String terminalId) {
+			this.terminalId = terminalId;
 		}
 		
 		

@@ -231,7 +231,6 @@ public class PlaceOrderManager implements Serializable{
 		placeOrderAppl.setExchangeRateApplied(exchRateBreakup.getInverseRate());
 		placeOrderAppl.setRackExchangeRate(dynPricingDto.getRackExchangeRate());
 		placeOrderAppl.setValueDate(new Date());
-		
 		placeOrderAppl.setRequestModel(JsonUtil.toJson(applRequestModel));
 		
 		if(JaxUtil.isNullZeroBigDecimalCheck(applRequestModel.getLocalAmount())){
@@ -247,7 +246,7 @@ public class PlaceOrderManager implements Serializable{
 			placeOrderAppl.setDiscountOnCommission(corporateDiscountManager.corporateDiscount());
 		}
 		
-		
+		placeOrderAppl.setTerminalId(metaData.getDeviceIp());
 		
 		
 		Document document = documentDao.getDocumnetByCode(ConstantDocument.DOCUMENT_CODE_FOR_PLACEORDER).get(0);
@@ -679,6 +678,37 @@ public void validatePlaceOrderRequest(BranchRemittanceApplRequestModel applReque
 	
 }
 	
+public DynamicRoutingPricingDto acceptPlaceOrderByCustomer(BigDecimal ratePlaceOrderId) {
+	
+	RatePlaceOrder ratePlaceOrder = ratePlaceOrderRepository.fetchApprovedPlaceOrder(metaData.getCustomerId(),ratePlaceOrderId);
+	 ObjectMapper mapper = new ObjectMapper();
+	 DynamicRoutingPricingDto dyRoutingPricingdto = new DynamicRoutingPricingDto();
+try {
+	 
+	if(ratePlaceOrder!=null ) {
+	String requestJson = ratePlaceOrder.getRequestModel();
+	mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+	BranchRemittanceApplRequestModel requestModelObject = mapper.readValue(requestJson, BranchRemittanceApplRequestModel.class);
+	dyRoutingPricingdto =requestModelObject.getDynamicRroutingPricingBreakup();
+	
+	ExchangeRateBreakup exRateBreakUp = getExchangeRateBreakUPForPlaceOrder(ratePlaceOrder);
+	exRateBreakUp.setInverseRate(ratePlaceOrder.getRateOffered());
+	dyRoutingPricingdto.setExRateBreakup(exRateBreakUp);
+	
+	}else {
+		throw new GlobalException(JaxError.RATE_PLACE_ERROR,"No record found");
+	}
+	
+	}catch (Exception e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	
+return dyRoutingPricingdto;
+}
+
+
+
 	public String getCustomerFullName(Customer customer){
 		String customerName =null;
 

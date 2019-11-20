@@ -235,7 +235,7 @@ public class BranchRemittanceApplManager {
 	@Autowired
 	PartnerTransactionManager partnerTransactionManager;
 	
-	List<RemittanceApplicationSplitting> applSplitList = new ArrayList<>();
+
 	
 	
 	public BranchRemittanceApplResponseDto saveBranchRemittanceApplication(BranchRemittanceApplRequestModel requestApplModel) {
@@ -331,7 +331,13 @@ public class BranchRemittanceApplManager {
 		RemittanceApplication remittanceApplication = this.createRemittanceApplication(hashMap);
 		RemittanceAppBenificiary remittanceAppBeneficairy = this.createRemittanceAppBeneficiary(remittanceApplication,hashMap);
 		List<AdditionalInstructionData>  additioalInstructionData = remittanceAppAddlDataManager.createAdditionalInstnDataForBranch(remittanceApplication,hashMap);
-
+		
+		List<RemittanceApplicationSplitting> applSplitList = this.createChildApplication(remittanceApplication,requestApplModel.getDynamicRroutingPricingBreakup());
+		if(applSplitList!=null && !applSplitList.isEmpty()) {
+			remittanceApplication.setApplSplit(ConstantDocument.Yes);
+		}
+		
+		
 		//RemittanceTransactionRequestModel
 		List<RemitApplAmlModel> amlData = this.saveRemittanceAppAML(remittanceApplication,hashMap);
 
@@ -599,20 +605,14 @@ public class BranchRemittanceApplManager {
 				throw new GlobalException(JaxError.INVALID_APPLICATION_DOCUMENT_NO,"Application document number shouldnot be null or blank");
 			}			
 
-	
-			applSplitList = createChildApplication(remittanceApplication, dynamicRoutingPricingResponse);
-			
-			if(!applSplitList.isEmpty()) {
-				remittanceApplication.setApplSplit(ConstantDocument.Yes);
-			}
-			
-			return remittanceApplication;
 
+			
+		
 		}catch(GlobalException e){
 			logger.debug("create application", e.getErrorMessage() + "" +e.getErrorKey());
 			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}
-
+		return remittanceApplication;
 
 	}
 
@@ -1062,7 +1062,7 @@ public class BranchRemittanceApplManager {
 
 	public List<RemittanceApplicationSplitting> createChildApplication(RemittanceApplication remitAppl,DynamicRoutingPricingDto dyRandPriDto){
 		
-		 applSplitList = new ArrayList<RemittanceApplicationSplitting>();
+		List<RemittanceApplicationSplitting> applSplitList = new ArrayList<RemittanceApplicationSplitting>();
 		 try{
 		 
 		 if(remitAppl !=null && dyRandPriDto!=null) {
