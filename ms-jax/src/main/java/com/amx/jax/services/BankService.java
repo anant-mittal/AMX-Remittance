@@ -1,6 +1,7 @@
 package com.amx.jax.services;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,6 +92,9 @@ public class BankService {
 	
 	public List<BankMasterDTO> getBankByCountryAndCurrency(BigDecimal countryId, BigDecimal currencyId) {
 		List<ViewBankChannelModel> list = bankMetaService.getBankViewByCountryIdAndCurrency(countryId, currencyId);
+		Collections.sort(list, (o1, o2) -> {
+			return o1.getBankFullName().compareTo(o2.getBankFullName());
+		});
 		return bankMetaService.convertBankView(list);
 	}
 }
