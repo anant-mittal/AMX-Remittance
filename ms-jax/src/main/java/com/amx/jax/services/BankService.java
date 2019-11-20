@@ -13,6 +13,7 @@ import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.BankDao;
 import com.amx.jax.dbmodel.BankBranchView;
 import com.amx.jax.dbmodel.BankMasterMdlv1;
+import com.amx.jax.dbmodel.ViewBankChannelModel;
 import com.amx.jax.dbmodel.bene.BankAccountLength;
 import com.amx.jax.dbmodel.remittance.AdditionalBankDetailsViewx;
 import com.amx.jax.model.response.BankMasterDTO;
@@ -89,7 +90,7 @@ public class BankService {
 	}
 	
 	public List<BankMasterDTO> getBankByCountryAndCurrency(BigDecimal countryId, BigDecimal currencyId) {
-		List<BankMasterMdlv1> list = bankMasterRepository.findBankByCountryCurrency(countryId, currencyId);
-		return bankMetaService.convert(list);
+		List<ViewBankChannelModel> list = bankMetaService.getBankViewByCountryIdAndCurrency(countryId, currencyId);
+		return bankMetaService.convertBankView(list);
 	}
 }
