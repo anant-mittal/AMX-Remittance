@@ -86,9 +86,11 @@ public final class CryptoUtil {
 
 	public static boolean validateHMAC(long currentTime, long interval, long tolerance, String secretKey,
 			String message, String hash) {
-		LOGGER.debug("validateHMAC I:{} S:{} M:{} C:{} H:{} T:{}", interval, secretKey, message, currentTime, hash,
-				tolerance);
-		if (generateHMAC(interval, secretKey, message).equals(hash)) {
+
+		LOGGER.debug("validateHMAC C:{} I:{} T:{} S:{} M:{} H:{}", currentTime, interval, tolerance, secretKey,
+				message, hash);
+
+		if (generateHMAC(interval, secretKey, message, currentTime).equals(hash)) {
 			return true;
 		} else if (generateHMAC(interval, secretKey, message, currentTime - tolerance * 1000).equals(hash)) {
 			return true;
@@ -100,9 +102,11 @@ public final class CryptoUtil {
 
 	public static boolean validateNumHMAC(long currentTime, long interval, long tolerance, String secretKey,
 			String message, String numHash, int length) {
-		LOGGER.debug("validateHMAC I:{} S:{} M:{} C:{} H:{} T:{}", interval, secretKey, message, currentTime, numHash,
-				tolerance);
-		if (toNumeric(length, generateHMAC(interval, secretKey, message)).equals(numHash)) {
+
+		LOGGER.debug("validateHMAC C:{} I:{} T:{} S:{} M:{} H:{}", currentTime, interval, tolerance, secretKey,
+				message, numHash);
+
+		if (toNumeric(length, generateHMAC(interval, secretKey, message, currentTime)).equals(numHash)) {
 			return true;
 		} else if (toNumeric(length,
 				generateHMAC(interval, secretKey, message, currentTime - tolerance * 1000)).equals(numHash)) {
@@ -122,10 +126,10 @@ public final class CryptoUtil {
 	public static boolean validateComplexHMAC(long currentTime, long interval, long tolerance, String secretKey,
 			String message, String complexHash, int length) {
 
-		LOGGER.debug("validateHMAC I:{} S:{} M:{} C:{} H:{} T:{}", interval, secretKey, message, currentTime,
-				complexHash, tolerance);
+		LOGGER.debug("validateHMAC C:{} I:{} T:{} S:{} M:{} H:{}", currentTime, interval, tolerance, secretKey,
+				message, complexHash);
 
-		if (toComplex(length, generateHMAC(interval, secretKey, message)).equals(complexHash)) {
+		if (toComplex(length, generateHMAC(interval, secretKey, message, currentTime)).equals(complexHash)) {
 			return true;
 		} else if (toComplex(length,
 				generateHMAC(interval, secretKey, message, currentTime - tolerance * 1000)).equals(complexHash)) {

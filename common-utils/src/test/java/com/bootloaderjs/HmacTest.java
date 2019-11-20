@@ -56,7 +56,14 @@ public class HmacTest { // Noncompliant
 
 		System.out.println(
 				new HashBuilder().currentTime(1574145993263L).interval(30).secret("HG85XJKFD3").message("21276")
+						.toHMAC().output());
+		
+		System.out.println(
+				new HashBuilder().currentTime(1574145993263L).interval(30).secret("HG85XJKFD3").message("21276")
 						.validate("A7E51403BB2C5C57BE14D27FE6BC219C8C39F275F01629204DD9FF8D239592B3"));
+		
+		System.out.println(
+				new HashBuilder().interval(30).secret("HG85XJKFD3").message("21276").toHMAC().hash());
 
 //		System.out.println(CryptoUtil.validateHMAC(1574145993263L, 60, 60,
 //				"HG85XJKFD3", "21276", 
