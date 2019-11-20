@@ -7,6 +7,8 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.amx.jax.AmxMeta;
+import com.amx.jax.dict.Language;
 import com.amx.jax.dict.VendorFeatures;
 import com.amx.jax.ui.service.GeoHotPoints;
 import com.amx.utils.JsonUtil;
@@ -28,6 +30,10 @@ public class OWATest { // Noncompliant
 	 */
 
 	public static void main(String[] args) throws MalformedURLException, URISyntaxException {
+		new AmxMeta().setClientLanguage(Language.AR);
+		LOGGER.info("L{}",new AmxMeta().getClientLanguage(Language.EN).getBDCode());
+	}
+	public static void main2(String[] args) throws MalformedURLException, URISyntaxException {
 
 		LOGGER.info("GHP====== {}", JsonUtil.toJson(GeoHotPoints.values()));
 		String messageJson = JsonUtil
@@ -37,6 +43,7 @@ public class OWATest { // Noncompliant
 		LOGGER.info("VF====== {}", JsonUtil.toJson(VendorFeatures.values()));
 		String messageJson2 = JsonUtil.toJson(VendorFeatures.fromString(VendorFeatures.class, "REMIT2"));
 		LOGGER.info("====== {}", messageJson2);
+		
 
 	}
 }
