@@ -18,20 +18,21 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.amxlib.model.response.LanguageCodeType;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.AmxMeta;
 import com.amx.jax.client.compliance.ComplianceBlockedTrnxType;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dao.RemittanceProcedureDao;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.Customer;
-import com.amx.jax.dbmodel.LanguageType;
 import com.amx.jax.dbmodel.RemittanceTransactionView;
 import com.amx.jax.dbmodel.SourceOfIncomeView;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
+import com.amx.jax.dict.Language;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.exrateservice.service.NewExchangeRateService;
 import com.amx.jax.manager.RemittanceTransactionManager;
 import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
@@ -41,7 +42,6 @@ import com.amx.jax.model.response.SourceOfIncomeDto;
 import com.amx.jax.model.response.remittance.RemittanceApplicationResponseModel;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.payg.PayGModel;
-import com.amx.jax.repository.ILanguageTypeRepository;
 import com.amx.jax.repository.IRemittanceTransactionDao;
 import com.amx.jax.repository.ISourceOfIncomeDao;
 import com.amx.jax.repository.RemittanceTransactionRepository;
@@ -82,7 +82,7 @@ public class RemittanceTransactionService extends AbstractService {
 	@Autowired
 	RemittanceTransactionRepository remittanceTransactionRepository;
 	@Autowired
-	ILanguageTypeRepository languageTypeRepository;
+	protected AmxMeta amxMeta;
 	
 	public ApiResponse getRemittanceTransactionDetails(BigDecimal collectionDocumentNo, BigDecimal fYear,
 			BigDecimal collectionDocumentCode) {
@@ -102,29 +102,23 @@ public class RemittanceTransactionService extends AbstractService {
 	}
 
 	public ApiResponse getSourceOfIncome(BigDecimal languageId) {
-		List<SourceOfIncomeView> sourceOfIncomeList;
-		List<SourceOfIncomeView> sourceOfIncomeListArabic;
+		List<SourceOfIncomeView> sourceOfIncomeList = null;
 		ApiResponse response = getBlackApiResponse();
-		LanguageType languageType = new LanguageType();
-		sourceOfIncomeList = sourceOfIncomeDao.getSourceofIncome(languageId);
-		
-		if(languageType.getLanguageName().equals(LanguageCodeType.Arabic.toString())){
-		
-		sourceOfIncomeListArabic= sourceOfIncomeDao.getSourceofIncome(languageId);
-		sourceOfIncomeList.get(0).setLocalName(sourceOfIncomeListArabic.get(0).getLocalName());
-		response.getData().getValues().addAll(convertSourceOfIncome(sourceOfIncomeList));
-		response.setResponseStatus(ResponseStatus.OK);			
-		
-	}else {
-		
+		BigDecimal defaultLanguageId = new BigDecimal(1);
+		if(languageId!=null)
+		{
 		sourceOfIncomeList = sourceOfIncomeDao.getSourceofIncome(languageId);
 		response.getData().getValues().addAll(convertSourceOfIncomeForEnglish(sourceOfIncomeList));
 		response.setResponseStatus(ResponseStatus.OK);
-		
-	}
+		}
+	   if(sourceOfIncomeList.isEmpty() || languageId==null){
+			sourceOfIncomeList = sourceOfIncomeDao.getSourceofIncome(defaultLanguageId);
+			response.getData().getValues().addAll(convertSourceOfIncome(sourceOfIncomeList));
+			response.setResponseStatus(ResponseStatus.OK);
+		}
 		
 		if (sourceOfIncomeList.isEmpty()) {
-			throw new GlobalException("No data found");
+			throw new GlobalException(JaxError.SOURCE_OF_INCOME_NOT_FOUND,"No data found FOR SOURCE OF INCOME");
 		} 
 		response.getData().setType("sourceofincome");
 		return response;

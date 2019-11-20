@@ -3,6 +3,7 @@ package com.amx.jax.dbmodel;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -27,9 +28,11 @@ import org.hibernate.annotations.Proxy;
 
 import com.amx.jax.constants.CustomerRegistrationType;
 import com.amx.jax.dbmodel.compliance.ComplianceBlockedCustomerDocMap;
+import com.amx.jax.dbmodel.customer.CustomerDocumentTypeMaster;
 import com.amx.jax.dict.Communicatable;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.util.AmxDBConstants.Status;
+import com.amx.utils.ArgUtil;
 
 @Entity
 @Table(name = "FS_CUSTOMER")
@@ -165,6 +168,13 @@ public class Customer implements java.io.Serializable, Communicatable {
 	private String passportNumber;
 	private Date passportIssueDate;
 	private Date passportExpiryDate;
+	
+	
+	
+	/** added by rabil on 09 Oc 2019 **/
+	
+	private BigDecimal onlineLanguageChangeCount;
+	
 
 	@Column(name = "ANNUAL_TRNXLIMIT_FROM")
 	public BigDecimal getAnnualTransactionLimitFrom() {
@@ -1110,7 +1120,7 @@ public class Customer implements java.io.Serializable, Communicatable {
 	}
 
 	public boolean canSendEmail() {
-		return !(Status.D.equals(this.emailVerified) || Status.N.equals(this.emailVerified));
+		return !(Status.D.equals(this.emailVerified) || Status.N.equals(this.emailVerified) || ArgUtil.isEmpty(this.email));
 	}
 
 	private Status mobileVerified;
@@ -1177,6 +1187,20 @@ public class Customer implements java.io.Serializable, Communicatable {
 		this.customerVatNumber = customerVatNumber;
 	}
 	
+	
+	@Column(name="LANGUAGE_CHANGE_COUNT")
+	public BigDecimal getOnlineLanguageChangeCount() {
+		return onlineLanguageChangeCount;
+	}
+
+	public void setOnlineLanguageChangeCount(BigDecimal onlineLanguageChangeCount) {
+		this.onlineLanguageChangeCount = onlineLanguageChangeCount;
+	}
+
+	public void setComplianceBlockedDocuments(List<ComplianceBlockedCustomerDocMap> complianceBlockedDocuments) {
+		this.complianceBlockedDocuments = complianceBlockedDocuments;
+	}
+
 	public void setComplianceBlockedDocuments(List<ComplianceBlockedCustomerDocMap> complianceBlockedDocuments) {
 		this.complianceBlockedDocuments = complianceBlockedDocuments;
 	}

@@ -3,6 +3,7 @@ package com.amx.jax.device;
 import com.amx.jax.device.DeviceRestModels.DevicePairingCreds;
 import com.amx.jax.device.DeviceRestModels.SessionPairingCreds;
 import com.amx.utils.CryptoUtil;
+import com.amx.utils.CryptoUtil.HashBuilder;
 
 public class DeviceConstants {
 
@@ -29,6 +30,7 @@ public class DeviceConstants {
 		public static final String DEVICE_TERMINALS = "/pub/device/terminal/list";
 		public static final String DEVICE_PAIR = "/pub/device/pair";
 		public static final String DEVICE_ACTIVATE = "/pub/device/activate";
+		public static final String DEVICE_STATUS = "/pub/device/status";
 		public static final String DEVICE_DEACTIVATE = "/pub/device/deactivate";
 		public static final String DEVICE_DELETE = "/pub/device/delete";
 		public static final String DEVICE_SESSION = "/pub/device/session";
@@ -38,10 +40,8 @@ public class DeviceConstants {
 		public static final String DEVICE_STATUS_NOTIPY = "/pub/notipy/status";
 		public static final String DEVICE_SEND_NOTIPY = "/pub/notipy/send";
 		public static final String DEVICE_VERIFY_NOTIPY = "/pub/notipy/verify";
-		public static final String SESSION_PAIR_DEVICE = SESSION_PAIR+ "/{deviceType}";
+		public static final String SESSION_PAIR_DEVICE = SESSION_PAIR + "/{deviceType}";
 		public static final String DEVICE_TYPE = "/pub/deviceType/list";
-
-
 
 		@Deprecated
 		public static final String DEVICE_STATUS_ACTIVITY = "/pub/device/status/activity";
@@ -67,12 +67,17 @@ public class DeviceConstants {
 	}
 
 	public static boolean validateDeviceReqToken(String deviceReqKey, String deviceRegId, String deviceReqToken) {
-		return CryptoUtil.validateHMAC(
-				DeviceConstants.Config.REQUEST_TOKEN_VALIDITY, deviceReqKey, deviceRegId,
-				deviceReqToken)
-				|| CryptoUtil.validateHMAC(
-						DeviceConstants.Config.REQUEST_TOKEN_VALIDITY_OLD, deviceReqKey, deviceRegId,
-						deviceReqToken);
+		return new HashBuilder().interval(DeviceConstants.Config.REQUEST_TOKEN_VALIDITY).secret(deviceReqKey)
+				.message(deviceRegId).validate(deviceReqToken) ||
+				new HashBuilder().interval(DeviceConstants.Config.REQUEST_TOKEN_VALIDITY_OLD).secret(deviceReqKey)
+						.message(deviceRegId).validate(deviceReqToken);
+		/*
+		 * return CryptoUtil.validateHMAC(
+		 * DeviceConstants.Config.REQUEST_TOKEN_VALIDITY, deviceReqKey, deviceRegId,
+		 * deviceReqToken) || CryptoUtil.validateHMAC(
+		 * DeviceConstants.Config.REQUEST_TOKEN_VALIDITY_OLD, deviceReqKey, deviceRegId,
+		 * deviceReqToken);
+		 */
 	}
 
 	public static String generateSessionPairingTokenX(String deviceRegToken, String sessionPairingToken) {
@@ -84,9 +89,14 @@ public class DeviceConstants {
 	public static boolean validateSessionPairingTokenX(
 			String deviceRegKey, String sessionPairingToken,
 			String sessionPairingTokenX) {
-		return CryptoUtil.validateHMAC(
-				DeviceConstants.Config.SESSION_TOKEN_VALIDITY, deviceRegKey, sessionPairingToken,
-				sessionPairingTokenX);
+		return new HashBuilder().interval(DeviceConstants.Config.SESSION_TOKEN_VALIDITY).secret(deviceRegKey)
+				.message(sessionPairingToken).validate(sessionPairingTokenX);
+		/*
+		 * return CryptoUtil.validateHMAC(
+		 * DeviceConstants.Config.SESSION_TOKEN_VALIDITY, deviceRegKey,
+		 * sessionPairingToken, sessionPairingTokenX);
+		 */
+
 	}
 
 }

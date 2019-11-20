@@ -52,14 +52,14 @@ public final class FileUtil {
 		try {
 			String forwrdPath = path.replace("\\", "/");
 			// URI uri = new File(path).toURI();
-			URI uri = new URI(forwrdPath);
+			URI uri = new URI(forwrdPath.replace(" ", "%20"));
 
 			resolvedPath = uri.normalize().toString();
 			if (resolvedPath.contains(FILE_TRAVER_BACK) || resolvedPath.contains(FILE_TRAVER_HOME)) {
 				throw new Exception();
 			}
 		} catch (Exception e) {
-			LOG.error("Path normalize {}  to {} ", path, resolvedPath);
+			LOG.error("Path normalize {}  to {} ", path, resolvedPath,e);
 			throw new RuntimeException("FILE_TRAVERSAL FOUND");
 		}
 		return path;
@@ -381,5 +381,46 @@ public final class FileUtil {
 			return new FileInputStream(file);
 		}
 		return in;
+	}
+
+	public static InputStream getInternalOrExternalResourceAsStream(String filePath) {
+		return getInternalOrExternalResourceAsStream(filePath, FileUtil.class);
+	}
+
+	public static InputStream getInternalOrExternalResourceAsStream(String filePath, Class<?> clazz) {
+		String propertyFile = filePath;
+		InputStream inSideInputStream = null;
+		InputStream outSideInputStream = null;
+		try {
+			URL ufile = FileUtil.getResource(propertyFile, clazz);
+			if (ufile != null) {
+				inSideInputStream = ufile.openStream();
+				// tenantProperties.load(inSideInputStream);
+				if (inSideInputStream != null) {
+					LOG.info("Loaded from classpath: {}", ufile.getPath());
+					return inSideInputStream;
+				} else {
+					LOG.info("Stream is EMPTY from classpath: {}", ufile.getPath());
+				}
+			} else {
+				LOG.info("URL is EMPTY from classpath: {}", propertyFile);
+			}
+		} catch (IllegalArgumentException | IOException e) {
+			LOG.error("Fail:inSideInputStream:getResource", e);
+		}
+
+		try {
+			outSideInputStream = FileUtil.getExternalResourceAsStream(propertyFile, clazz);
+			if (outSideInputStream != null) {
+				LOG.info("Loaded from jarpath: {}", propertyFile);
+				return outSideInputStream;
+			} else {
+				LOG.info("Stream is EMPTY from jarpath: {}", propertyFile);
+			}
+
+		} catch (IllegalArgumentException | IOException e) {
+			LOG.error("Fail:outSideInputStream:getExternalResourceAsStream", e);
+		}
+		return null;
 	}
 }

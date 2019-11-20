@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
@@ -34,6 +36,7 @@ import com.amx.jax.logger.LoggerService;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.scope.TenantProperties;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.MapBuilder.MapModel;
 import com.amx.utils.NetworkAdapter;
 import com.amx.utils.NetworkAdapter.NetAddress;
 import com.amx.utils.TimeUtils;
@@ -52,6 +55,7 @@ public abstract class ACardReaderService {
 	public static ACardReaderService CONTEXT = null;
 	protected static CardReader READER = new CardReader();
 	protected static BlockingHashMap<String, CardData> MAP = new BlockingHashMap<String, CardData>();
+	private MapModel params = new MapModel(Collections.synchronizedMap(new HashMap<String, Object>()));
 
 	public static enum DeviceStatus {
 		ERROR, TIMEOUT,
@@ -89,6 +93,10 @@ public abstract class ACardReaderService {
 	@Value("${app.profile.env}")
 	String env;
 
+	@Value("${server.port}")
+	private int port;
+
+	
 	@Autowired
 	private ConfigurableEnvironment environment;
 
@@ -591,5 +599,14 @@ public abstract class ACardReaderService {
 	public String getLane() {
 		return lane;
 	}
+	
+	public MapModel getParams() {
+		return params;
+	}
+
+	public int getPort() {
+		return port;
+	}
+
 
 }

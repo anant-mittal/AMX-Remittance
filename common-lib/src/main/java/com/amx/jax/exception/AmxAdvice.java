@@ -76,6 +76,9 @@ public abstract class AmxAdvice implements ResponseBodyAdvice<AmxApiResponse<?, 
 		response.setHeader(AppConstants.EXCEPTION_HEADER_KEY, apiError.getException());
 		response.setHeader(AppConstants.EXCEPTION_HEADER_CODE_KEY, apiAuditEvent.getErrorCode());
 
+		for (AmxFieldError warning : AppContextUtil.getWarnings()) {
+			apiError.addWarning(warning);
+		}
 		return new ResponseEntity<AmxApiError>(apiError, getHttpStatus(ex));
 	}
 
@@ -103,6 +106,11 @@ public abstract class AmxAdvice implements ResponseBodyAdvice<AmxApiResponse<?, 
 		apiError.setException(ApiHttpArgException.class.getName());
 		ExceptionMessageKey.resolveLocalMessage(apiError);
 		response.setHeader(AppConstants.EXCEPTION_HEADER_KEY, apiError.getException());
+		
+		for (AmxFieldError warning : AppContextUtil.getWarnings()) {
+			apiError.addWarning(warning);
+		}
+		
 		return new ResponseEntity<AmxApiError>(apiError, HttpStatus.BAD_REQUEST);
 	}
 

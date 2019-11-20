@@ -1,0 +1,196 @@
+{
+  "aggs": {
+    "Area": {
+      "terms": {
+        "field": "branch.areaName.keyword",
+        "order": {
+          "_count": "desc"
+        },
+        "size": 15
+      },
+      "aggs": {
+        "Branch": {
+          "terms": {
+            "field": "branch.name.keyword",
+            "order": {
+              "_count": "desc"
+            },
+            "size": 150
+          },
+          "aggs": {
+            "Channel": {
+              "terms": {
+                "field": "client.cn.keyword",
+                "order": {
+                  "_count": "desc"
+                },
+                "size": 5
+              },
+              "aggs": {
+                "TimeRange": {
+                  "date_range": {
+                    "field": "trnx.trnxDate",
+                    "format": "date",
+                    "ranges": [
+                      {
+                        "key" : "MonthOne",
+                        "from": "[[${MonthOneFrom}]]",
+              			"to": "[[${MonthOneTo}]]"
+                      },
+                      {
+                        "key" : "MonthTwo",
+                        "from": "[[${MonthTwoFrom}]]",
+             			"to": "[[${MonthTwoTo}]]"
+                      }
+                    ],
+                    "time_zone": "Asia/Calcutta"
+                  },
+                  "aggs": {
+                    "LocalCommissionReceived": {
+                      "sum": {
+                        "field": "trnx.localCommRecv"
+                      }
+                    },
+                    "ExchangeGain": {
+                      "sum": {
+                        "field": "trnx.exchangeGain"
+                      }
+                    },
+                    "CoBankCharges": {
+                      "sum": {
+                        "field": "trnx.coBankCharges"
+                      }
+                    },
+                    "LastDateOfTrnx": {
+                      "max": {
+                        "script": {
+                          "source": "if (doc.containsKey('trnx.trnxDate') && !doc['trnx.trnxDate'].empty && !doc['trnx.trnxDate'].empty && doc['_type'].value == \"trnx\") {\n   if (doc['trnx.trnxStatus.keyword'].value == \"PAID\" || doc['trnx.trnxStatus.keyword'].value == \"DONE\" ) {\n       def d = doc['trnx.trnxDate'].value.dayOfMonth;\n       return d;\n   }\n   else {\n       return null;\n   }\n}\n",
+                          "lang": "painless"
+                        }
+                      }
+                    },
+                    "CommissionReceived": {
+                      "sum": {
+                        "field": "trnx.commRecv"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "size": 0,
+  "_source": {
+    "excludes": []
+  },
+  "stored_fields": [
+    "*"
+  ],
+  "script_fields": {
+    "MonthDay": {
+      "script": {
+        "source": "if (doc.containsKey('trnx.trnxDate') && !doc['trnx.trnxDate'].empty && !doc['trnx.trnxDate'].empty && doc['_type'].value == \"trnx\") {\n   if (doc['trnx.trnxStatus.keyword'].value == \"PAID\" || doc['trnx.trnxStatus.keyword'].value == \"DONE\" ) {\n       def d = doc['trnx.trnxDate'].value.dayOfMonth;\n       return d;\n   }\n   else {\n       return null;\n   }\n}\n",
+        "lang": "painless"
+      }
+    }
+  },
+  "docvalue_fields": [
+    {
+      "field": "@timestamp",
+      "format": "date_time"
+    },
+    {
+      "field": "customer.creationDate",
+      "format": "date_time"
+    },
+    {
+      "field": "customer.creationDateOnline",
+      "format": "date_time"
+    },
+    {
+      "field": "customer.dateOfBirth",
+      "format": "date_time"
+    },
+    {
+      "field": "customer.lastTransactionDate",
+      "format": "date_time"
+    },
+    {
+      "field": "customer.lastUpdateDate",
+      "format": "date_time"
+    },
+    {
+      "field": "customer.updateDate",
+      "format": "date_time"
+    },
+    {
+      "field": "trnx.creationDate",
+      "format": "date_time"
+    },
+    {
+      "field": "trnx.lastUpdateDate",
+      "format": "date_time"
+    },
+    {
+      "field": "trnx.trnxDate",
+      "format": "date_time"
+    },
+    {
+      "field": "trnx.trnxPaidDate",
+      "format": "date_time"
+    },
+    {
+      "field": "trnx.trnxSendDatetime",
+      "format": "date_time"
+    },
+    {
+      "field": "xrate.timestamp",
+      "format": "date_time"
+    }
+  ],
+  "query": {
+    "bool": {
+      "must": [],
+      "filter": [
+        {
+          "match_all": {}
+        },
+        {
+          "range": {
+            "trnx.trnxDate": {
+              "format": "date",
+              "gte": "[[${MonthOneFrom}]]",
+              "lte": "[[${MonthTwoTo}]]"
+            }
+          }
+        }
+      ],
+      "should": [],
+      "must_not": []
+    }
+  },
+  "pivot" : [
+  	{
+	 "rows" : ["Area","Branch","Channel"],
+	 "cols" : ["TimeRange"],
+	 "vals" : ["sum LocalCommissionReceived","sum CommissionReceived","sum ExchangeGain","sum CoBankCharges", "sum _docs AS Trnx", "sum LastDateOfTrnx"],
+	 "computed" : ["MonthOne_Revenue=MonthOne_LocalCommissionReceived + MonthOne_CommissionReceived + MonthOne_ExchangeGain - MonthOne_CoBankCharges",
+	 				"MonthOne_RPT=MonthOne_Revenue/MonthOne_Trnx",
+	 				"MonthOne_RPD=MonthOne_Revenue/MonthOne_LastDateOfTrnx",
+	 				"MonthTwo_Revenue=MonthTwo_LocalCommissionReceived + MonthTwo_CommissionReceived + MonthTwo_ExchangeGain - MonthTwo_CoBankCharges",
+	 				"MonthTwo_RPT=MonthTwo_Revenue/MonthTwo_Trnx",
+	 				"MonthTwo_RPD=MonthTwo_Revenue/MonthTwo_LastDateOfTrnx",
+	 				"RPDdiff=MonthTwo_RPD - MonthOne_RPD",
+	 				"RevDiff=MonthTwo_Revenue - MonthOne_Revenue"],
+	 "colgroups" : [
+	 	"MonthOne(Area,Branch,Channel,MonthOne_Trnx,MonthOne_Revenue,MonthOne_RPT,MonthOne_RPD)",
+	 	"MonthTwo(Area,Branch,Channel,MonthTwo_Trnx,MonthTwo_Revenue,MonthTwo_RPT,MonthTwo_RPD)",
+	 	"Summary(Area,Branch,Channel,MonthOne_Trnx,MonthOne_Revenue,MonthOne_RPT,MonthOne_RPD,MonthTwo_Trnx,MonthTwo_Revenue,MonthTwo_RPT,MonthTwo_RPD,RPDdiff,RevDiff)"
+	 	]
+	} 
+ ]
+}

@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import com.amx.jax.json.JsonSerializerType;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
+import com.amx.utils.JsonPath;
 import com.amx.utils.JsonUtil;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -72,12 +73,20 @@ public class MapModel implements JsonSerializerType<Object> {
 		return new MapEntry(this.map.get(key));
 	}
 
+	public MapEntry entry(JsonPath jsonPath) {
+		return new MapEntry(jsonPath.load(this.map, null));
+	}
+
 	public MapEntry first() {
 		return new MapEntry(this.getFirst());
 	}
 
 	public Object get(String key) {
 		return this.map.get(key);
+	}
+
+	public Object get(String key, Object defaultValue) {
+		return this.map.getOrDefault(key, defaultValue);
 	}
 
 	public Object getFirst() {
@@ -101,6 +110,14 @@ public class MapModel implements JsonSerializerType<Object> {
 
 	public Long getLong(String key, Long defaultvalue) {
 		return ArgUtil.parseAsLong(this.get(key), defaultvalue);
+	}
+
+	public Integer getInteger(String key) {
+		return ArgUtil.parseAsInteger(this.get(key));
+	}
+
+	public Integer getInteger(String key, Integer defaultvalue) {
+		return ArgUtil.parseAsInteger(this.get(key, defaultvalue));
 	}
 
 	public BigDecimal getBigDecimal(String key) {
@@ -128,6 +145,10 @@ public class MapModel implements JsonSerializerType<Object> {
 
 	public Map<String, Object> toMap() {
 		return this.map;
+	}
+
+	public String toJson() {
+		return JsonUtil.toJson(this.map);
 	}
 
 	public <T> T as(Class<T> clazz) {
