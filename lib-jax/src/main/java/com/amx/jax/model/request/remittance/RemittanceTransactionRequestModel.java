@@ -25,6 +25,16 @@ public class RemittanceTransactionRequestModel extends RemittanceAdditionalBeneF
 	@NotNull
 	private ExchangeRateBreakup exRateBreakup;
 	private BigDecimal placeOrderId;
+	private String paymentType;
+
+	public String getPaymentType() {
+		return paymentType;
+	}
+
+
+	public void setPaymentType(String paymentType) {
+		this.paymentType = paymentType;
+	}
 
 
 	/*

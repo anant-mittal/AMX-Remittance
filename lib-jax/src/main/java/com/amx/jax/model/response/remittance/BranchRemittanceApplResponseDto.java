@@ -3,8 +3,19 @@ package com.amx.jax.model.response.remittance;
 import java.math.BigDecimal;
 import java.util.List;
 
-public class BranchRemittanceApplResponseDto {
+import com.amx.jax.dict.PayGServiceCode;
+import com.amx.jax.model.AbstractModel;
+import com.amx.jax.model.CivilIdOtpModel;
 
+
+
+
+public class BranchRemittanceApplResponseDto extends AbstractModel{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	/*Total Gross amount */
 	BigDecimal totalLocalAmount =BigDecimal.ZERO;
 	/* total net amount with commission */
@@ -16,6 +27,11 @@ public class BranchRemittanceApplResponseDto {
 	String warnigMsg;
 	ConfigDto configDto = new ConfigDto();
 	
+	
+	private CivilIdOtpModel civilIdOtpModel;
+	private PayGServiceCode pgCode = PayGServiceCode.DEFAULT;
+	
+	
 	public ConfigDto getConfigDto() {
 		return configDto;
 	}
@@ -25,6 +41,13 @@ public class BranchRemittanceApplResponseDto {
 	/* application records */
 	List<CustomerShoppingCartDto> shoppingCartDetails;
 	
+	List<PaymentLinkAppDto> paymentLinkAppDto;  
+	public List<PaymentLinkAppDto> getPaymentLinkAppDto() {
+		return paymentLinkAppDto;
+	}
+	public void setPaymentLinkAppDto(List<PaymentLinkAppDto> paymentLinkAppDto) {
+		this.paymentLinkAppDto = paymentLinkAppDto;
+	}
 	public BigDecimal getTotalLocalAmount() {
 		return totalLocalAmount;
 	}
@@ -72,5 +95,11 @@ public class BranchRemittanceApplResponseDto {
 	}
 	public void setWarnigMsg(String warnigMsg) {
 		this.warnigMsg = warnigMsg;
+	}
+	public CivilIdOtpModel getCivilIdOtpModel() {
+		return civilIdOtpModel;
+	}
+	public void setCivilIdOtpModel(CivilIdOtpModel civilIdOtpModel) {
+		this.civilIdOtpModel = civilIdOtpModel;
 	}
 }

@@ -4,13 +4,10 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
 import com.amx.jax.AmxSharedConfig.CommunicationPrefs;
-import com.amx.jax.dict.AmxEnums.CommunicationEvents;
 
 @Entity
 @Table(name = "JAX_COMMUNICATION_PREFERENCES")
@@ -18,8 +15,7 @@ public class CommunicationPrefsModel implements CommunicationPrefs {
 
 	@Id
 	@Column(name = "COMMUNICATION_EVENT")
-	@Enumerated(value = EnumType.STRING)
-	CommunicationEvents event;
+	String event;
 
 	@Column(name = "CREATED_BY")
 	String createdBy;
@@ -107,11 +103,11 @@ public class CommunicationPrefsModel implements CommunicationPrefs {
 	}
 
 	@Override
-	public CommunicationEvents getEvent() {
+	public String getEvent() {
 		return event;
 	}
 
-	public void setEvent(CommunicationEvents event) {
+	public void setEvent(String event) {
 		this.event = event;
 	}
 

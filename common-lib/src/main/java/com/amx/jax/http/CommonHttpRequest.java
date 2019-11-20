@@ -9,6 +9,7 @@ import java.util.Set;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -144,6 +145,31 @@ public class CommonHttpRequest {
 		return deviceId;
 	}
 
+	public void setTraceUserIdentifier(Object sessionUserId) {
+		if (request != null) {
+			HttpSession session = request.getSession(false);
+			if (session != null) {
+				session.setAttribute(AppConstants.SESSION_SUFFIX_XKEY, sessionUserId);
+			}
+		}
+	}
+
+	public String getTraceUserIdentifier() {
+		if (request != null) {
+			HttpSession session = request.getSession(false);
+			if (session != null) {
+				return ArgUtil.parseAsString(session.getAttribute(AppConstants.SESSION_SUFFIX_XKEY));
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Returns Value from Query,Header,Cookies
+	 * 
+	 * @param contextKey
+	 * @return
+	 */
 	public String getRequestParam(String... contextKeys) {
 		for (String contextKey : contextKeys) {
 			String value = request.getParameter(contextKey);
@@ -163,6 +189,12 @@ public class CommonHttpRequest {
 		return null;
 	}
 
+	/**
+	 * Returns Value from Context,Query,Header,Cookies
+	 * 
+	 * @param contextKey
+	 * @return
+	 */
 	public String get(String contextKey) {
 		String value = AppContextUtil.get(contextKey);
 		if (request != null) {

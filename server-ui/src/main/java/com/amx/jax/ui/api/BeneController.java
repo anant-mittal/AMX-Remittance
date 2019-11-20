@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.BeneCountryDTO;
-import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.response.JaxTransactionResponse;
 import com.amx.jax.JaxAuthContext;
 import com.amx.jax.api.BoolRespModel;
@@ -27,6 +26,7 @@ import com.amx.jax.client.bene.IBeneficiaryService;
 import com.amx.jax.client.branch.IBranchBeneService;
 import com.amx.jax.client.remittance.RemittanceClient;
 import com.amx.jax.model.BeneficiaryListDTO;
+import com.amx.jax.model.CivilIdOtpModel;
 import com.amx.jax.model.request.benebranch.AddNewBankBranchRequest;
 import com.amx.jax.model.request.benebranch.BankBranchListRequest;
 import com.amx.jax.model.request.benebranch.BeneAccountModel;

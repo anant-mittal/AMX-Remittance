@@ -1,5 +1,6 @@
 package com.amx.jax.tunnel;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -13,6 +14,13 @@ public class DBEvent extends TunnelEvent {
 	private String text;
 
 	private Map<String, String> data;
+	private Map<String, String> details;
+
+	public DBEvent() {
+		super();
+		this.details = new HashMap<String, String>();
+		this.data = new HashMap<String, String>();
+	}
 
 	public Map<String, String> getData() {
 		return data;
@@ -50,6 +58,14 @@ public class DBEvent extends TunnelEvent {
 
 	public void setText(String text) {
 		this.text = text;
+	}
+
+	public Map<String, String> getDetails() {
+		return details;
+	}
+
+	public void setDetails(Map<String, String> details) {
+		this.details = details;
 	}
 
 }

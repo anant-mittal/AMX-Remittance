@@ -28,9 +28,12 @@ import com.amx.jax.dbmodel.CurrencyMasterMdlv1;
 import com.amx.jax.dbmodel.CurrencyWiseDenominationMdlv1;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ParameterDetails;
+import com.amx.jax.dbmodel.PaygDetailsModel;
 import com.amx.jax.dbmodel.partner.RemitApplSrvProv;
+import com.amx.jax.dbmodel.remittance.AdditionalInstructionData;
 import com.amx.jax.dbmodel.remittance.CustomerBank;
 import com.amx.jax.dbmodel.remittance.LocalBankDetailsView;
+import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.ShoppingCartDetails;
 import com.amx.jax.dbmodel.remittance.StaffAuthorizationView;
 import com.amx.jax.error.JaxError;
@@ -49,15 +52,21 @@ import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.CustomerBankRelationNameDto;
 import com.amx.jax.model.response.remittance.CustomerShoppingCartDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
+import com.amx.jax.model.response.remittance.PaymentLinkAppDto;
 import com.amx.jax.model.response.remittance.PaymentModeDto;
 import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
 import com.amx.jax.partner.manager.PartnerTransactionManager;
+import com.amx.jax.repository.AdditionalInstructionDataRepository;
 import com.amx.jax.repository.IBankMasterFromViewDao;
 import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.ICustomerRepository;
+import com.amx.jax.repository.IShoppingCartDetailsDao;
+import com.amx.jax.repository.IShoppingCartDetailsRepository;
+import com.amx.jax.repository.PaygDetailsRepository;
 import com.amx.jax.repository.IRemitApplSrvProvRepository;
 import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.service.CurrencyMasterService;
+import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.RoundUtil;
@@ -97,10 +106,19 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 	ICurrencyDao currDao;
 	
 	@Autowired
+	CryptoUtil cryptoUtil;
+		
+	@Autowired
+	IShoppingCartDetailsRepository iShoppingCartDetailsRepository;
+
+	@Autowired
 	IRemitApplSrvProvRepository remitApplSrvProvRepository;
 	
 	@Autowired
 	PartnerTransactionManager partnerTransactionManager;
+	
+	@Autowired
+	AdditionalInstructionDataRepository addlInstDataRepo;
 
 
 	/* 
@@ -119,6 +137,7 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		
 		
 		List<CustomerShoppingCartDto> lstCustShpcrt = new ArrayList<>();
+		List<PaymentLinkAppDto> listPaymentLinkAppDto = new ArrayList<PaymentLinkAppDto>();
 		FxExchangeRateBreakup breakup = new FxExchangeRateBreakup();
 		BigDecimal decimalNumber = BigDecimal.ZERO;
 		CurrencyMasterMdlv1 currencyMaster = currencyMasterService.getCurrencyMasterById(localCurrencyId);
@@ -130,7 +149,7 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 				totalCustomerLoyaltyPoits = customer.getLoyaltyPoints()==null?BigDecimal.ZERO:customer.getLoyaltyPoints();
 			}
 			
-			deActivateOnlineApplication();
+			//deActivateOnlineApplication();
 			
 			List<ShoppingCartDetails> lstCustomerShopping = branchRemittancePaymentDao.fetchCustomerShoppingCart(customerId);
 			
@@ -164,8 +183,30 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 					currencyMaster = currencyMasterService.getCurrencyMasterById(fcCurrencyId);
 					if(currencyMaster != null) {
 						breakup.setFcDecimalNumber(currencyMaster.getDecinalNumber() == null ? decimalNumber : currencyMaster.getDecinalNumber());
+
+						if(!ConstantDocument.PB_PAYMENT.equalsIgnoreCase(customerApplDto.getApplicationPaymentType())) {
+							lstCustShpcrt.add(createCustomerShoppingCartDto(customerApplDto,localCurrencyId,fcCurrencyId,breakup));
+						}
+
 						lstCustShpcrt.add(createCustomerShoppingCartDto(customerApplDto,localCurrencyId,fcCurrencyId,breakup));
+						// Direct Payment link application now getting converted to remittance so commenting the following code
+						/*if(customerApplDto.getPaymentLinkId()!=null) {
+							PaygDetailsModel paymentLinkModel = payGDetailsRepository.findOne(customerApplDto.getPaymentLinkId());
+							if(paymentLinkModel != null && ConstantDocument.DIRECT_PAYMENT_LINK_PAID.equalsIgnoreCase(paymentLinkModel.getLinkActive())) {
+								String applicationIds = paymentLinkModel.getApplIds();
+								String appIdsArray[] = applicationIds.split(",");
+								for(int i=0;i<appIdsArray.length;i++) {
+									listPaymentLinkAppDto.add(createPaymentLinkAppDto(new BigDecimal(appIdsArray[i]), paymentLinkModel));
+									cartList.setPaymentLinkAppDto(listPaymentLinkAppDto);
+								}
+							}
+							
+							
+						}*/
+
+						
 						cartList.setShoppingCartDetails(lstCustShpcrt);
+						
 						
 					}else {
 						throw new GlobalException(JaxError.INVALID_CURRENCY_ID, "Invalid foreign currency id passed");
@@ -242,11 +283,13 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		} else {
 			shoppingCartDataTableBean.setSpldealStatus(ConstantDocument.No);
 		}
-
+		
 		List<BanksView> bankView =bankMaster.getBankListByBankId(shoppingCartDetails.getRoutingBankId());
 		if(bankView != null && !bankView.isEmpty()) {
 			shoppingCartDataTableBean.setRoutingBank(bankView.get(0)==null?"":bankView.get(0).getBankFullName());
+			shoppingCartDataTableBean.setBankIndicator(bankView.get(0)==null?"":bankView.get(0).getBankInd());
 		}
+		shoppingCartDataTableBean.setRoutingBankId(shoppingCartDetails.getRoutingBankId());
 		shoppingCartDataTableBean.setBeneRelationseqId(shoppingCartDetails.getBeneRelationseqId());
 		shoppingCartDataTableBean.setSourceOfIncomeId(shoppingCartDetails.getSourceofincome()==null?BigDecimal.ZERO:new BigDecimal(shoppingCartDetails.getSourceofincome()));
 		shoppingCartDataTableBean.setDomXRate(RoundUtil.roundBigDecimal(BigDecimal.ONE.divide(shoppingCartDetails.getExchangeRateApplied(),10,RoundingMode.HALF_UP),breakup.getFcDecimalNumber().intValue()));
@@ -271,6 +314,8 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 				shoppingCartDataTableBean.setTrnxStartDate(remitApplSrvProv.getOfferStartingDate().getTime());
 			}
 		}
+		shoppingCartDataTableBean.setApplPaymentType(shoppingCartDetails.getApplicationPaymentType());
+		shoppingCartDataTableBean.setPurposeOfTrnx(getPurposeOfTrnx(shoppingCartDetails.getRemittanceApplicationId()));
 		
 		return shoppingCartDataTableBean;
 	}
@@ -524,27 +569,16 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 	}
 
 	
+
 	public Boolean deActivateOnlineApplication() {
 		try {
-			
-			// deactivate only online application
-			appRepository.deActivateNotUsedOnlineApplication(new Customer(metaData.getCustomerId()), ConstantDocument.ONLINE_BRANCH_LOC_CODE);
-			
-			/*List<RemittanceApplication> listOfApplication = appRepository.deActivateNotUsedApplication(new Customer(metaData.getCustomerId()));
-			if(!listOfApplication.isEmpty() && listOfApplication!=null) {
-				for(RemittanceApplication application : listOfApplication) {
-					if(application.getLoccod().compareTo(ConstantDocument.ONLINE_BRANCH_LOC_CODE)==0) {
-						RemittanceApplication remittanceApplication = appRepository.findOne(application.getRemittanceApplicationId());
-						remittanceApplication.setIsactive("D");
-						remittanceApplication.setApplicaitonStatus(null);
-						appRepository.save(remittanceApplication);
-					}
-				}
-			}*/
+
+			appRepository.deActivateNotUsedOnlineApplication(new Customer(metaData.getCustomerId()),
+					ConstantDocument.ONLINE_BRANCH_LOC_CODE);
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new GlobalException("De-Activate Application failed for customer:"+metaData.getCustomerId());
+			throw new GlobalException("De-Activate Application failed for customer:" + metaData.getCustomerId());
 		}
 		return true;
 	}
@@ -552,13 +586,15 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 	
 	public ConfigDto getLimitCheck(BigDecimal customerId) {
 		ConfigDto config = new ConfigDto();
-	
+		logger.debug("Customer id is{}",customerId);
 		String accMonthYear =DateUtil.getCurrentAccMMYear();
 		Map<String, Object> inputValues = new HashMap<>();
 		inputValues.put("P_CUSTOMER_ID", metaData.getCustomerId());
 		inputValues.put("P_ACMMYY", accMonthYear);
+		logger.debug("Country id is {}{}{}",metaData.getCountryId(),metaData.getCompanyId(),metaData.getCustomerId());
 		Customer customer = customerRepos.getCustomerByCountryAndCompAndCustoemrId(metaData.getCountryId(),metaData.getCompanyId(),metaData.getCustomerId());
-		BigDecimal idType =customer.getIdentityTypeId()==null?BigDecimal.ZERO:customer.getIdentityTypeId();
+		logger.debug("Customer data is {}",customer.toString());
+		BigDecimal idType =null==customer.getIdentityTypeId()?BigDecimal.ZERO:customer.getIdentityTypeId();
 		inputValues.put("ID_TYPE", idType);
 		
 		Map<String,Object> map =routingProDao.limitCheck(inputValues);
@@ -584,6 +620,35 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		*/
 		config.setTodayTrnxAmount(todayTrnxLimit);
 		return config;
+	}
+	
+	/** added by Rabil on 5th Oct 2019**/
+	private String getPurposeOfTrnx(BigDecimal remitApplId) {
+		String purTrnx = null;
+		RemittanceApplication remitAppl = new RemittanceApplication();
+		remitAppl.setRemittanceApplicationId(remitApplId);
+		AdditionalInstructionData addlInsData = addlInstDataRepo.findByExRemittanceApplicationAndFlexField(remitAppl, ConstantDocument.INDIC1);
+		if(addlInsData!=null) {
+			purTrnx = addlInsData.getFlexFieldValue();
+		}
+		return purTrnx;
+	}
+	// Direct Payment link application now getting converted to remittance so commenting the following code
+	@Deprecated
+	private PaymentLinkAppDto createPaymentLinkAppDto(BigDecimal remittanceApplicationId,PaygDetailsModel paymentLinkModel) {
+		ShoppingCartDetails shoppingCartDetails=iShoppingCartDetailsRepository.findByCustomerIdAndRemittanceApplicationId(metaData.getCustomerId(), remittanceApplicationId); 
+		PaymentLinkAppDto paymentLinkAppDto = new PaymentLinkAppDto();
+		paymentLinkAppDto.setRemittanceApplicationId(remittanceApplicationId);
+		paymentLinkAppDto.setLinkDate(paymentLinkModel.getLinkDate());
+		paymentLinkAppDto.setCustomerId(metaData.getCustomerId());
+		paymentLinkAppDto.setAmount(shoppingCartDetails.getLocalNextTranxAmount());
+		paymentLinkAppDto.setForeignAmount(shoppingCartDetails.getForeignTranxAmount());
+		paymentLinkAppDto.setExchangeRate(shoppingCartDetails.getExchangeRateApplied());
+		paymentLinkAppDto.setForeignCurrencyDesc(shoppingCartDetails.getForeignCurrencyDesc());
+		return paymentLinkAppDto;
+		
 		
 	}
+
+		
 }

@@ -109,21 +109,16 @@ public class TransactionHistroyService extends AbstractService {
 		return response;
 	}
 
-	public TransactionHistroyDTO getTransactionHistoryDto(BigDecimal cutomerReference, BigDecimal remittanceDocfyr,
-			BigDecimal remittancedocNumber) {
-		List<CustomerRemittanceTransactionView> trnxHisList = transactionHistroyDao
-				.getTransactionHistroyByDocumnet(cutomerReference, remittanceDocfyr, remittancedocNumber); 
+	public TransactionHistroyDTO getTransactionHistoryDto(BigDecimal cutomerReference, BigDecimal remittanceDocfyr,BigDecimal remittancedocNumber) {
+		List<CustomerRemittanceTransactionView> trnxHisList = transactionHistroyDao.getTransactionHistroyByDocumnet(cutomerReference, remittanceDocfyr, remittancedocNumber); 
 		if(trnxHisList.isEmpty()) {
 			getTransactionHistoryDTO(cutomerReference, remittanceDocfyr, remittancedocNumber);
 		}
 		return convert(trnxHisList).get(0);
 	}
 
-	public TransactionHistoryDto getTransactionHistoryDTO(BigDecimal cutomerReference, BigDecimal remittanceDocfyr,
-			BigDecimal remittancedocNumber) {
-		
+	public TransactionHistoryDto getTransactionHistoryDTO(BigDecimal cutomerReference, BigDecimal remittanceDocfyr,BigDecimal remittancedocNumber) {
 		List<CustomerRemittanceTransactionHistoryView> trnxHistList = transactionHistroyDAO.getTransactionHistroyByDocumnet(cutomerReference, remittanceDocfyr, remittancedocNumber);
-				
 		return convertv2(trnxHistList).get(0);
 	}
 		
@@ -133,8 +128,7 @@ public class TransactionHistroyService extends AbstractService {
 		List<CustomerRemittanceTransactionHistoryView> trnxHistoryList = new ArrayList<CustomerRemittanceTransactionHistoryView>();
 		ApiResponse response = getBlackApiResponse();
 		if (docfyr != null) {
-			trnxList = transactionHistroyDao.getTransactionHistroyDocfyrDateWise(cutomerReference, docfyr, fromDate,
-					toDate);
+			trnxList = transactionHistroyDao.getTransactionHistroyDocfyrDateWise(cutomerReference, docfyr, fromDate,toDate);
 			if (!trnxList.isEmpty()) {
 				response.getData().getValues().addAll(convert(trnxList));
 				response.setResponseStatus(ResponseStatus.OK);
@@ -142,7 +136,6 @@ public class TransactionHistroyService extends AbstractService {
 			trnxHistoryList = transactionHistroyDAO.getTransactionHistroyDocfyrAndDateWise(cutomerReference, docfyr, fromDate,
 					toDate);
 			if (!trnxHistoryList.isEmpty()) {
-
 				response.getData().getValues().addAll(convertv2(trnxHistoryList));
 				response.setResponseStatus(ResponseStatus.OK);
 
@@ -212,12 +205,21 @@ public class TransactionHistroyService extends AbstractService {
 				}
 	            
 	            model.setTransactionReference(getTransactionReferece(hist));
+	            model.setReceiptNumber(getReceiptReference(hist));
+	            
+	            
+	            
+	            
+	            
 	            
 			BenificiaryListView beneViewModel = beneficiaryOnlineDao.getBeneficiaryByRelationshipId(
 					hist.getCustomerId(), metaData.getCountryId(), hist.getBeneficiaryRelationSeqId());
 	            if(beneViewModel!=null){
 	                 beneDtoCheck=beneCheckService.beneCheck(convertBeneModelToDto(beneViewModel));
+	                 model.setBeneIsActive(beneViewModel.getIsActive().equalsIgnoreCase(ConstantDocument.Status.Y.toString())?Boolean.TRUE:Boolean.FALSE);
+	                 
 	            }
+	            
 	            if(beneDtoCheck != null){
 	                model.setBeneficiaryErrorStatus(beneDtoCheck.getBeneficiaryErrorStatus());
 	            }
@@ -227,9 +229,14 @@ public class TransactionHistroyService extends AbstractService {
 	                list.add(model);
 	            }
 
+	            
+	            
+	            
 	        }
 	        return list;
 	    }
+	   
+	  
 	   
 	   private List<TransactionHistoryDto> convertv2(List<CustomerRemittanceTransactionHistoryView> trnxHist) {
 	        List<TransactionHistoryDto> list = new ArrayList<>();
@@ -267,14 +274,19 @@ public class TransactionHistroyService extends AbstractService {
 	            model.setSourceOfIncomeId(hist.getSourceOfIncomeId());
 	            model.setTransactionReference(getTransactionReference(hist));
 	            
-			BenificiaryListView beneViewModel = beneficiaryOnlineDao.getBeneficiaryByRelationshipId(
-					hist.getCustomerId(), metaData.getCountryId(), hist.getBeneficiaryRelationSeqId());
+			BenificiaryListView beneViewModel = beneficiaryOnlineDao.getBeneficiaryByRelationshipId(hist.getCustomerId(), metaData.getCountryId(), hist.getBeneficiaryRelationSeqId());
 	            if(beneViewModel!=null){
 	                 beneDtoCheck=beneCheckService.beneCheck(convertBeneModelToDto(beneViewModel));
 	            }
 	            if(beneDtoCheck != null){
 	                model.setBeneficiaryErrorStatus(beneDtoCheck.getBeneficiaryErrorStatus());
 	            }
+	            
+	            
+	            
+	            
+	            
+	            
 	            if (!StringUtils.isBlank(hist.getBeneficaryCorespondingBankName()) 
 	                && !hist.getBeneficaryCorespondingBankName().equalsIgnoreCase(ConstantDocument.WU) 
 	                && !hist.getBeneficaryCorespondingBankName().equalsIgnoreCase(ConstantDocument.MONEY)) {
@@ -342,6 +354,7 @@ public class TransactionHistroyService extends AbstractService {
 			BenificiaryListView beneViewModel = beneficiaryOnlineDao.getBeneficiaryByRelationshipId(hist.getCustomerId(),metaData.getCountryId(),hist.getBeneficiaryRelationSeqId());
 			if(beneViewModel!=null){
 				 beneDtoCheck=beneCheckService.beneCheck(convertBeneModelToDto(beneViewModel));
+				 model.setBeneIsActive(beneViewModel.getIsActive().equalsIgnoreCase("Y")?Boolean.TRUE:Boolean.FALSE);
 			}
 			if(beneDtoCheck != null){
 				model.setBeneficiaryErrorStatus(beneDtoCheck.getBeneficiaryErrorStatus());
@@ -423,6 +436,10 @@ public class TransactionHistroyService extends AbstractService {
 		return hist.getDocumentNumber().toString() + hist.getDocumentFinanceYear().toString();
 	}
 	
+	
+	private String getReceiptReference(CustomerRemittanceTransactionView hist) {
+		return hist.getCollectionDocumentNo().toString()+hist.getCollectionDocumentFinYear().toString();
+	}
 
 	private String getTransactionReference(CustomerRemittanceTransactionHistoryView hist) {
 		return hist.getDocumentNumber().toString() + hist.getDocumentFinanceYear().toString();

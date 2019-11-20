@@ -13,14 +13,18 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.PlaceOrder;
 import com.amx.jax.dbmodel.ReferralDetails;
 import com.amx.jax.dbmodel.RemittanceTransactionView;
 import com.amx.jax.dbmodel.partner.RemitApplSrvProv;
 import com.amx.jax.dbmodel.remittance.AdditionalInstructionData;
 import com.amx.jax.dbmodel.remittance.FlexFiledView;
+import com.amx.jax.dbmodel.remittance.RemitApplAmlModel;
 import com.amx.jax.dbmodel.remittance.RemittanceAppBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
+import com.amx.jax.dbmodel.remittance.RemittanceApplicationSplitting;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.manager.RemittanceApplicationManager;
@@ -29,7 +33,10 @@ import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.repository.AdditionalInstructionDataRepository;
 import com.amx.jax.repository.IFlexFiledView;
 import com.amx.jax.repository.IPlaceOrderDao;
+import com.amx.jax.repository.IRemitApplAmlRepository;
 import com.amx.jax.repository.IRemitApplSrvProvRepository;
+import com.amx.jax.repository.IRemittanceApplSplitRepository;
+import com.amx.jax.repository.IRemittanceTrnxSplitRepository;
 import com.amx.jax.repository.RemittanceApplicationBeneRepository;
 import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.repository.RemittanceTransactionRepository;
@@ -70,24 +77,46 @@ public class RemittanceApplicationDao {
     @Autowired
 	IRemitApplSrvProvRepository remitApplSrvProvRepository;
     
+    @Autowired
+    IRemitApplAmlRepository applAmlRepository;
+    
+    @Autowired
+    IRemittanceApplSplitRepository remittanceApplSplitRepository;
+    
+    
 	@Transactional
 	public void saveAllApplicationData(RemittanceApplication app, RemittanceAppBenificiary appBene,
-			List<AdditionalInstructionData> additionalInstrumentData,RemitApplSrvProv remitApplSrvProv) {
+			List<AdditionalInstructionData> additionalInstrumentData,RemitApplSrvProv remitApplSrvProv,List<RemittanceApplicationSplitting>  applSplitList ,RemitApplAmlModel remitApplAml) {
 
-		appRepo.save(app);
+		RemittanceApplication applSave1 = appRepo.save(app);
 		appBeneRepo.save(appBene);
 		addlInstDataRepo.save(additionalInstrumentData);
 		if (remitApplSrvProv != null) {
 			remitApplSrvProv.setRemittanceApplicationId(app.getRemittanceApplicationId());
 			remitApplSrvProvRepository.save(remitApplSrvProv);
 		}
+		
+
+		if(remitApplAml!=null) {
+			remitApplAml.setExRemittanceAppfromAml(applSave1);
+			applAmlRepository.save(remitApplAml);
+		}
+
+		if(applSplitList !=null && !applSplitList.isEmpty()) {
+			for(RemittanceApplicationSplitting applSplit : applSplitList) {				
+				applSplit.setDocumentNo(applSave1.getDocumentNo());
+				applSplit.setRemittanceApplicationId(applSave1);
+				remittanceApplSplitRepository.save(applSplit);
+			}
+		}
+	
+
 		logger.info("Application saved in the database, docNo: " + app.getDocumentNo());
 	}
 
 	public RemittanceTransactionView getRemittanceTransactionView(BigDecimal documentNumber, BigDecimal finYear) {
 		RemittanceTransactionView remittanceTransactionView = appRepo.fetchRemitApplTrnxView(documentNumber, finYear);
 		return remittanceTransactionView;
-
 	}
 
 	public RemittanceApplication getApplication(BigDecimal documentNumber, BigDecimal finYear) {
@@ -171,4 +200,13 @@ public class RemittanceApplicationDao {
 	public RemittanceApplication getApplication(BigDecimal remittanceApplicationId) {
 		return appRepo.findOne(remittanceApplicationId);
 	}
+	
+	public List<RemittanceApplication> getApplicationDeatilsByPaygId(Customer custoemrId,BigDecimal paygTrnxDetailId){
+		return appRepo.findByFsCustomerAndPaygTrnxDetailId(custoemrId, paygTrnxDetailId);
+	}
+	
+	public List<RemittanceTransaction> getRemittanceTrnxByPaygId(Customer customerId,BigDecimal payTrnxId){
+		return remittanceTransactionRepository.findByCustomerIdAndPaygTrnxDetailIdAndIsactive(customerId,payTrnxId,ConstantDocument.Yes);
+	}
+	
 }

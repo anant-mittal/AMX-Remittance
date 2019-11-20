@@ -67,7 +67,29 @@ public class ShoppingCartDetails implements Serializable {
 	private BigDecimal amtbCouponEncashed;
 	private BigDecimal routingBankId;
 	private BigDecimal beneRelationseqId;
+
+	private String applicationPaymentType; 
 	
+	@Column(name="APPL_PAYMENT_TYPE")
+	public String getApplicationPaymentType() {
+		return applicationPaymentType;
+	}
+
+	public void setApplicationPaymentType(String applicationPaymentType) {
+		this.applicationPaymentType = applicationPaymentType;
+	}
+
+	private BigDecimal paymentLinkId;
+	
+	public BigDecimal getPaymentLinkId() {
+		return paymentLinkId;
+	}
+
+	public void setPaymentLinkId(BigDecimal paymentLinkId) {
+		this.paymentLinkId = paymentLinkId;
+
+	}
+
 	public ShoppingCartDetails() {
 		super();
 	}

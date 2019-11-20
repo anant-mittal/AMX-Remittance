@@ -23,8 +23,7 @@ public interface IBeneBankBlackCheckDao extends JpaRepository<BankBlWorld, Seria
 		//public List<BankBlWorld> getCheckBnakBeneBanned(@Param("inputString") String inputString); //
 		
 	
-	
-	
-	//List<Registration> findByPlaceContaining(String place);
-
+	/** added by Rabil  3rd Oct **/
+	 @Query(value="SELECT * FROM   BNKBLWORD WHERE  BNKCOD=?1  AND NVL(RECSTS,' ') <> 'D'" ,nativeQuery=true)
+	 public List<BankBlWorld> getbnkWordList(String inputString); //
 }

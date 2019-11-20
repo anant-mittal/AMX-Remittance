@@ -131,7 +131,7 @@ public class AppParamController {
 	@Autowired(required = false)
 	VendorAuthConfig appVendorConfigForAuth;
 
-	@RequestMapping(value = "/pub/amx/device", method = RequestMethod.GET)
+	@RequestMapping(value = "/pub/amx/device", method = { RequestMethod.GET, RequestMethod.POST})
 	public AmxApiResponse<UserDevice, Map<String, Object>> userDevice(@RequestParam(required = false) String key,
 			@RequestParam(required = false) String vendor) {
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -145,6 +145,7 @@ public class AppParamController {
 
 		map.put("getBasicAuthPassword", appVendorConfigForAuth.getBasicAuthPassword());
 		map.put("getBasicAuthUser", appVendorConfigForAuth.getBasicAuthUser());
+		map.put("commonHttpRequest.getIPAddress", commonHttpRequest.getIPAddress());
 
 		if (!ArgUtil.isEmpty(key)) {
 			map.put(key, prop(key));
@@ -221,4 +222,5 @@ public class AppParamController {
 		error.setException(exception);
 		return error;
 	}
+
 }

@@ -342,10 +342,22 @@ public enum JaxError implements IExceptionEnum {
 	ID_PROOFS_SCAN_IND_MISSING,
 	// Default in last, IMPORTANT:- It should be last
 	JAX_SYSTEM_ERROR,
+
+	//Pay at Branch
+	PAYAT_BRANCH_TRNX_NOT_FOUND,
 	BPI_SETUP_IS_MISSING,
-	
 	// Job In Progress Error Key
-	JAX_JOB_IN_PROGRESS;
+
+	JAX_JOB_IN_PROGRESS,
+
+
+	//Direct Payment Link
+	VERIFICATION_CODE_MISMATCH,
+	DIRECT_LINK_DEACTIVATED,
+	DIRECT_LINK_EXPIRED,
+	DIRECT_LINK_INVALID,
+	HOMESEND_APPL_NOT_ALLOWED;
+
 	
 	@Deprecated
 	public String getCode() {

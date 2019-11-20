@@ -14,7 +14,9 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.thavam.util.concurrent.blockingMap.BlockingHashMap;
 
+import com.amx.jax.AppConfig;
 import com.amx.jax.AppContextUtil;
+import com.amx.jax.AppParam;
 import com.amx.jax.api.AmxFieldError;
 import com.amx.jax.cache.MCQStatus.MCQStatusCodes;
 import com.amx.jax.cache.MCQStatus.MCQStatusError;
@@ -22,6 +24,7 @@ import com.amx.jax.def.ICacheBox;
 import com.amx.jax.logger.LoggerService;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.ClazzUtil;
+import com.amx.utils.JsonUtil;
 
 public class CacheBox<T> implements ICacheBox<T> {
 
@@ -33,6 +36,9 @@ public class CacheBox<T> implements ICacheBox<T> {
 
 	@Autowired(required = false)
 	RedissonClient redisson;
+
+	@Autowired
+	AppConfig appConfig;
 
 	public void setClient(RedissonClient redisson) {
 		this.redisson = redisson;
@@ -46,7 +52,7 @@ public class CacheBox<T> implements ICacheBox<T> {
 			if (locker == null) {
 				locker = new BlockingHashMap<String, T>();
 			}
-			String localCacheName = String.format("%s-%s.%s",
+			String localCacheName = String.format("%s-%s-%s.%s", AppParam.APP_ENV.getValue(),
 					(ArgUtil.isEmpty(getCahceName()) ? getClazzName() : getCahceName()),
 					CacheRedisConfiguration.CODEC_VERSION, version());
 			if (cache == null) {
@@ -90,7 +96,7 @@ public class CacheBox<T> implements ICacheBox<T> {
 		try {
 			return this.map().put(key, value);
 		} catch (Exception e) {
-			LOGGER.error("REDIS_SAVE_EXCEPTION KEY:" + key, e);
+			LOGGER.error("REDIS_SAVE_EXCEPTION KEY:" + key + " = " + JsonUtil.toJson(value), e);
 			throw new MCQStatusError(MCQStatusCodes.DATA_SAVE_ERROR, "REDIS_SAVE_EXCEPTION KEY:" + key);
 		}
 	}
@@ -100,7 +106,8 @@ public class CacheBox<T> implements ICacheBox<T> {
 		try {
 			return this.map().get(key);
 		} catch (Exception e) {
-			LOGGER.error("REDIS_READ_EXCEPTION KEY:" + key, e);
+
+			LOGGER.error("REDIS_READ_EXCEPTION KEY:" + key + " from " + cache.getName(), e);
 			AmxFieldError w = new AmxFieldError();
 			w.setCode(MCQStatusCodes.DATA_READ_ERROR.toString());
 			w.setDescription("REDIS_READ_EXCEPTION KEY");
@@ -117,14 +124,24 @@ public class CacheBox<T> implements ICacheBox<T> {
 		try {
 			return this.map().putIfAbsent(key, value);
 		} catch (Exception e) {
-			LOGGER.error("REDIS_SAVE_EXCEPTION KEY:" + key, e);
+			LOGGER.error("REDIS_SAVE_EXCEPTION KEY:" + key + " = " + JsonUtil.toJson(value), e);
 			throw new MCQStatusError(MCQStatusCodes.DATA_SAVE_ERROR, "REDIS_SAVE_EXCEPTION KEY:" + key);
 		}
 	}
 
 	@Override
 	public T remove(String key) {
-		return this.map().remove(key);
+		try {
+			return this.map().remove(key);
+		} catch (Exception e) {
+			LOGGER.error("REDIS_REMOVE_EXCEPTION KEY:" + key, e);
+			AmxFieldError w = new AmxFieldError();
+			w.setCode(MCQStatusCodes.DATA_REMOVE_ERROR.toString());
+			w.setDescription("REDIS_REMOVE_EXCEPTION KEY");
+			w.setField(key);
+			AppContextUtil.addWarning(w);
+			return null;
+		}
 	}
 
 	@Override
@@ -159,7 +176,12 @@ public class CacheBox<T> implements ICacheBox<T> {
 
 	@Override
 	public boolean fastPut(String key, T value) {
-		return this.map().fastPut(key, value);
+		try {
+			return this.map().fastPut(key, value);
+		} catch (Exception e) {
+			LOGGER.error("REDIS_FAST_SAVE_EXCEPTION KEY:" + key + " = " + JsonUtil.toJson(value), e);
+			throw new MCQStatusError(MCQStatusCodes.DATA_SAVE_ERROR, "REDIS_SAVE_EXCEPTION KEY:" + key);
+		}
 	}
 
 	@Override

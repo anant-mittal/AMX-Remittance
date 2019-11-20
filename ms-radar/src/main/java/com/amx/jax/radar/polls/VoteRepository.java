@@ -2,7 +2,6 @@ package com.amx.jax.radar.polls;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.delete.DeleteRequest;

@@ -25,9 +25,6 @@ import com.amx.jax.http.ApiRequest;
 import com.amx.jax.http.RequestType;
 import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
 import com.amx.jax.model.response.DeviceStatusInfoDto;
-import com.amx.jax.terminal.TerminalBox;
-import com.amx.jax.terminal.TerminalService;
-import com.amx.jax.terminal.TerminalConstants.Path;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.File.Type;
 import com.amx.jax.rbaac.RbaacServiceClient;
@@ -36,6 +33,9 @@ import com.amx.jax.sso.SSOUser;
 import com.amx.jax.sso.server.ApiHeaderAnnotations.ApiDeviceHeaders;
 import com.amx.jax.sso.server.ApiHeaderAnnotations.ApiDeviceSessionHeaders;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
+import com.amx.jax.terminal.TerminalBox;
+import com.amx.jax.terminal.TerminalConstants.Path;
+import com.amx.jax.terminal.TerminalService;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 import com.amx.utils.TimeUtils;
@@ -78,6 +78,8 @@ public class SignPadController {
 
 		TerminalData terminalData = terminalBox.getOrDefault(deviceData.getTerminalId());
 		SignPadData signPadData = signPadBox.getOrDefault(deviceData.getTerminalId());
+		signPadData.setTerminalId(deviceData.getTerminalId());
+		signPadData.setRegId(deviceData.getRegId());
 
 		boolean isTerminalUpdated = signPadData.getUpdatestamp() < terminalData.getUpdatestamp();
 		boolean isSignPadDataStaled = signPadData.getChangeStamp() < terminalData.getStartStamp();

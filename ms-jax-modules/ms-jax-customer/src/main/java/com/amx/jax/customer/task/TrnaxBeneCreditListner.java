@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.async.ExecutorConfig;
 import com.amx.jax.client.JaxClientUtil;
 import com.amx.jax.customer.manager.CustomerContactVerificationManager;
@@ -23,7 +24,6 @@ import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.dict.Language;
 import com.amx.jax.event.AmxTunnelEvents;
-
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.client.PushNotifyClient;
@@ -142,8 +142,14 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 			LOGGER.info("email verified is " + c.getEmailVerified());
 			if (c.getEmailVerified() != AmxDBConstants.Status.Y) {
 				LOGGER.info("email value is " + c.getEmailVerified());
-				CustomerContactVerification x = customerContactVerificationManager.create(c, ContactType.EMAIL);
-				LOGGER.info("value of x is " + x.toString());
+				CustomerContactVerification x = null;
+				try {
+					x = customerContactVerificationManager.create(c, ContactType.EMAIL);
+				} catch (GlobalException e) {
+					LOGGER.debug(e.getMessage());
+				}
+				
+				LOGGER.debug("value of x is " + x.toString());
 				// modeldata.put("customer", c);
 				modeldata.put("verifylink", x);
 				for (Map.Entry<String, Object> entry : modeldata.entrySet()) {

@@ -35,7 +35,6 @@ import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.meta.model.ServiceGroupMasterDescDto;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.BeneRelationsDescriptionDto;
-import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.PlaceOrderDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
@@ -77,7 +76,9 @@ import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.events.CActivityEvent;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.BeneficiaryListDTO;
+import com.amx.jax.model.CivilIdOtpModel;
 import com.amx.jax.model.auth.QuestModelDTO;
+
 import com.amx.jax.model.response.CurrencyMasterDTO;
 import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.model.response.remittance.LoyalityPointState;
@@ -1105,6 +1106,13 @@ public class BeneficiaryService extends AbstractService {
 			trxDto.setSrlId(poDto.getSrlId());
 			remitPageDto.setTrnxHistDto(trxDto);
 		}
+		
+		//------ Loyalty Point Status check ------
+		LoyalityPointState loyalityState = loyalityPointService.getLoyalityState(customerId);
+		if(null != loyalityState) {
+			remitPageDto.setLoyalityPointState(loyalityState);
+		}
+		
 		response.getData().getValues().add(remitPageDto);
 		response.getData().setType(remitPageDto.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);

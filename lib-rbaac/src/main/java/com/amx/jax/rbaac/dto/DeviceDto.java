@@ -3,6 +3,7 @@ package com.amx.jax.rbaac.dto;
 import java.math.BigDecimal;
 
 import com.amx.jax.AmxConstants;
+import com.amx.jax.constant.DeviceState;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -21,11 +22,20 @@ public class DeviceDto {
 
 	String pairToken;
 
-	@JsonIgnore
 	String status;
+	
+	DeviceState state;
 
 	public BigDecimal getRegistrationId() {
 		return registrationId;
+	}
+
+	public DeviceState getState() {
+		return state;
+	}
+
+	public void setState(DeviceState state) {
+		this.state = state;
 	}
 
 	public void setRegistrationId(BigDecimal registrationId) {
@@ -60,7 +70,6 @@ public class DeviceDto {
 		return status;
 	}
 
-	@JsonIgnore
 	public void setStatus(String status) {
 		this.status = status;
 	}
