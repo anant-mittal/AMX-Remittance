@@ -158,7 +158,7 @@ public class BeneBranchService {
 		Customer customer = userService.getCustById(metaData.getCustomerId());
 		String firstname = customer.getFirstName();
 		String lastename = customer.getLastName();
-		model.setCustomerName(firstname + lastename);
+		model.setCustomerName(firstname +" "+ lastename);
 		model.setDistrict(metaService.getDistrictMasterById(request.getDistrictId()).getDistrictDesc());
 		model.setIdentityId(customer.getIdentityInt());
 		model.setIfscCode(request.getIfscCode());
