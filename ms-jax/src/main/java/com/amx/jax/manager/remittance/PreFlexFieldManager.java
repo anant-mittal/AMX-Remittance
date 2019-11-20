@@ -221,13 +221,14 @@ public class PreFlexFieldManager {
 			if ("INDIC17".equals(flexField.getFlexField())) {
 				volunteerJaxConditionalFieldDto = jaxConditionalFieldDto;
 			}
-			if (jaxConditionalFieldDto != null) {
+			//TODO remove this check indic12 , added for testingonly
+			if (jaxConditionalFieldDto != null && !"INDIC12".equals(flexField.getFlexField())) {
 				requiredFlexFields.add(jaxConditionalFieldDto);
 			}
 		}
 		addMinMaxValueForVoluteerContri(volunteerJaxConditionalFieldDto, volunteerParameter);
 		localVariableMap.put("volunteerContributionIndic", volunteerContributionIndic);
-		if (volunteerContributionIndic && !volunteerContributionSelected) {
+		if (volunteerContributionIndic) {
 			log.debug("volunteer Contribution Selected");
 		} else {
 			// remove volunteer Indic 17

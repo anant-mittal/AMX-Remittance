@@ -37,6 +37,7 @@ public class AdditionalDataDisplayView implements Serializable{
 	private BigDecimal routingBankId;
 	private String isBeneTag;
 	private String preFlexIndicator;
+	private String fieldFormat;
 	
 	@Id
 	@Column(name = "SERVICE_ID")
@@ -197,6 +198,14 @@ public class AdditionalDataDisplayView implements Serializable{
 	}
 	public void setPreFlexIndicator(String preFlexIndicator) {
 		this.preFlexIndicator = preFlexIndicator;
+	}
+	
+	@Column(name="FIELD_FORMAT")
+	public String getFieldFormat() {
+		return fieldFormat;
+	}
+	public void setFieldFormat(String fieldFormat) {
+		this.fieldFormat = fieldFormat;
 	}
 	
 }
