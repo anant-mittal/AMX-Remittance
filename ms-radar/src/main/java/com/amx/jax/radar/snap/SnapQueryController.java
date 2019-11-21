@@ -16,29 +16,22 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.snap.SnapConstants.SnapQueryTemplate;
-import com.amx.jax.client.snap.SnapModels;
 import com.amx.jax.client.snap.SnapModels.SnapModelWrapper;
-import com.amx.jax.def.AbstractQueryFactory.QueryProcessor;
 import com.amx.jax.radar.jobs.customer.OracleVarsCache;
 import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncIndex;
-import com.amx.jax.radar.service.SnapQueryFactory;
+import com.amx.jax.radar.service.SnapQueryFactory.SnapQueryParams;
 import com.amx.jax.rest.RestService;
 import com.amx.jax.tunnel.DBEvent;
 import com.amx.jax.tunnel.TunnelEvent;
 import com.amx.jax.tunnel.TunnelEventXchange;
 import com.amx.jax.tunnel.TunnelService;
 import com.amx.utils.ArgUtil;
-import com.amx.utils.FileUtil;
-import com.axx.jax.table.PivotTable;
 
 @Controller
 public class SnapQueryController {
 
 	@Autowired
 	private SnapQueryService snapQueryTemplateService;
-
-	@Autowired
-	SnapQueryFactory snapQueryFactory;
 
 	@Autowired
 	RestService restService;
@@ -99,7 +92,8 @@ public class SnapQueryController {
 			@RequestBody Map<String, Object> params,
 			@RequestParam(defaultValue = "now-1m", required = false) String gte,
 			@RequestParam(defaultValue = "now", required = false) String lte,
-			@RequestParam(defaultValue = "100", required = false) Integer level)
+			@RequestParam(defaultValue = "100", required = false) Integer level,
+			@RequestParam(defaultValue = "0", required = false) Integer minCount)
 			throws IOException {
 		if (!ArgUtil.isEmpty(gte) && !params.containsKey("gte")) {
 			params.put("gte", gte);
@@ -107,47 +101,15 @@ public class SnapQueryController {
 		if (!ArgUtil.isEmpty(lte) && !params.containsKey("lte")) {
 			params.put("lte", lte);
 		}
-		level = ArgUtil.parseAsInteger(params.getOrDefault("level", level));
-		
-		QueryProcessor<?> qp = snapQueryFactory.get(snapView);
 
-		SnapModelWrapper x;
-
-		if (ArgUtil.is(qp)) {
-			x = new SnapModelWrapper("{}");
-			x.toMap().put("bulk", qp.process());
-			return x;
+		if (!ArgUtil.isEmpty(level) && !params.containsKey("level")) {
+			params.put("level", level);
+		}
+		if (!ArgUtil.isEmpty(minCount) && !params.containsKey("minCount")) {
+			params.put("minCount", minCount);
 		}
 
-		x = snapQueryTemplateService.execute(snapView, params);
-
-		if (level >= 0) {
-			List<Map<String, List<String>>> p = x.getPivot();
-			List<Map<String, Object>> inputBulk = x.getAggregations().toBulk();
-			Object cols = null;
-			for (Map<String, List<String>> pivot : p) {
-				level--;
-				if (level < 0)
-					break;
-				PivotTable table = new PivotTable(
-						pivot.get("rows"), pivot.get("cols"),
-						pivot.get("vals"), pivot.get("aggs"), pivot.get("alias"),
-						pivot.get("computed"), pivot.get("noncomputed"),
-						pivot.get("colgroups"));
-				for (Map<String, Object> map : inputBulk) {
-					table.add(map);
-				}
-				table.calculate();
-				inputBulk = table.toBulk();
-				cols = table.getColGroup();
-				// break;
-			}
-			x.toMap().put("colGroup", cols);
-			x.toMap().put("bulk", inputBulk);
-			x.removeAggregations();
-		}
-
-		return x;
+		return snapQueryTemplateService.process(snapView, new SnapQueryParams(params));
 	}
 
 	@ResponseBody
@@ -193,11 +155,13 @@ public class SnapQueryController {
 	public String table(@PathVariable(value = "snapView") SnapQueryTemplate snapView,
 			@RequestParam(defaultValue = "now-1m") String gte, @RequestParam(defaultValue = "now") String lte,
 			@RequestParam(defaultValue = "100", required = false) int level,
+			@RequestParam(defaultValue = "100", required = false) int minCount,
 			@RequestParam(defaultValue = "", required = false) String hash,
 			Model model) throws IOException {
 		model.addAttribute("gte", gte);
 		model.addAttribute("lte", lte);
 		model.addAttribute("level", level);
+		model.addAttribute("minCount", minCount);
 		model.addAttribute("hash", ArgUtil.isEmpty(hash) ? snapView.getQueryParams() : hash);
 		model.addAttribute("snapView", snapView.toString());
 		model.addAttribute("snapViews", SnapQueryTemplate.values());

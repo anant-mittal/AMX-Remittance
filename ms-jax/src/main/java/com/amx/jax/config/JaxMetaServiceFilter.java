@@ -105,8 +105,8 @@ public class JaxMetaServiceFilter implements IMetaRequestInFilter<JaxMetaInfo> {
 		if (ArgUtil.isEmpty(metaData.getCountryBranchId())) {
 			metaData.setCountryBranchId(amxConfig.getDefaultBranchId());
 		}
-		if (metaData.getLanguageId() != null) {
-			ViewCompanyDetails company = companyService.getCompanyDetail(metaData.getLanguageId());
+		if (metaData.getCompanyId() != null) {
+			ViewCompanyDetails company = companyService.getCompanyDetail();
 			metaData.setCompanyId(company.getCompanyId());
 			BigDecimal defaultCurrencyId = currencyMasterService
 					.getCurrencyMasterByCountryId(company.getApplicationCountryId()).get(0).getCurrencyId();

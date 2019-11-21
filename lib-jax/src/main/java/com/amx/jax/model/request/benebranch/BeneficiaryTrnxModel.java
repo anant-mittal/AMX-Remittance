@@ -1,10 +1,7 @@
-package com.amx.amxlib.model.trnx;
+package com.amx.jax.model.request.benebranch;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-
-import com.amx.amxlib.model.BeneAccountModel;
-import com.amx.amxlib.model.BenePersonalDetailModel;
 
 public class BeneficiaryTrnxModel implements Serializable {
 
@@ -18,6 +15,7 @@ public class BeneficiaryTrnxModel implements Serializable {
 	BigDecimal beneTransactionAmountLimit;
 	BigDecimal beneficaryAccountSeqId;
 	BigDecimal beneficaryMasterSeqId;
+	BigDecimal beneficaryRelationSeqId;
 
 	public BeneAccountModel getBeneAccountModel() {
 		return beneAccountModel;
@@ -64,6 +62,14 @@ public class BeneficiaryTrnxModel implements Serializable {
 		return "BeneficiaryTrnxModel [beneAccountModel=" + beneAccountModel + ", benePersonalDetailModel=" + benePersonalDetailModel
 				+ ", beneTransactionAmountLimit=" + beneTransactionAmountLimit + ", beneficaryAccountSeqId=" + beneficaryAccountSeqId
 				+ ", beneficaryMasterSeqId=" + beneficaryMasterSeqId + "]";
+	}
+
+	public BigDecimal getBeneficaryRelationSeqId() {
+		return beneficaryRelationSeqId;
+	}
+
+	public void setBeneficaryRelationSeqId(BigDecimal beneficaryRelationSeqId) {
+		this.beneficaryRelationSeqId = beneficaryRelationSeqId;
 	}
 
 }

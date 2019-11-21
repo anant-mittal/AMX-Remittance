@@ -94,7 +94,7 @@ public abstract class ScopedBeanFactory<E, T> implements Serializable {
 		if (this.libsByCode.containsKey(key.toString().toLowerCase())) {
 			return this.libsByCode.get(key.toString().toLowerCase());
 		}
-		LOGGER.error("libsByCode Not Exists for Code== {}", key);
+		LOGGER.debug("libsByCode Not Exists for Code== {}", key);
 		return null;
 	}
 

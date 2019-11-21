@@ -27,5 +27,6 @@ public final class AmxConstants {
 	public static final long SMS_OTP_TTL = 15 * 60;
 
 	public static final int OTP_LENGTH = 6;
+	
 
 }

@@ -348,7 +348,8 @@ function dropdown(classname) {
 
 	<div class="form padbox">
 		<form>
-			<input name="level" type="number" th:value="${level}">
+			<input name="level" type="number" th:value="${level}" size=10>
+			<input name="minCount" type="number" th:value="${minCount}" size=10>
 			<label> From : <input name="gte" th:value="${gte}" placeholder="2019-10-01 00:00:00">
 			</label> <label> To : <input name="lte" th:value="${lte}" placeholder="2019-10-02 00:00:00">
 			</label>
@@ -539,6 +540,7 @@ function dropdown(classname) {
 		  "lte" : lte,
 		  "gte" : gte,
 		  "level" : "[[${level}]]",
+		  "minCount" : "[[${minCount}]]",
 		  "bulk" : true
 	  }));
 	  

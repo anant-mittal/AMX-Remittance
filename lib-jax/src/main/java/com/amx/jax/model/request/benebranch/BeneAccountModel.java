@@ -1,4 +1,4 @@
-package com.amx.amxlib.model;
+package com.amx.jax.model.request.benebranch;
 
 import java.math.BigDecimal;
 
@@ -29,8 +29,13 @@ public class BeneAccountModel extends AbstractModel {
 	@NotNull(message="Service Group Id may not be null")
 	private BigDecimal serviceGroupId;// cash or bank
 	private BigDecimal serviceProviderId; // service provider
+	/**
+	 * @deprecated this field actually contain bene bank branch id
+	 * */
+	@Deprecated
 	private BigDecimal serviceProviderBranchId; // agent branch
 	private String swiftCode;
+	private String ifscCode;
 	private BigDecimal bankAccountTypeId;
 
 	public BeneAccountModel() {
@@ -161,6 +166,14 @@ public class BeneAccountModel extends AbstractModel {
 
 	public void setIbanNumber(String ibanNumber) {
 		this.ibanNumber = ibanNumber;
+	}
+
+	public String getIfscCode() {
+		return ifscCode;
+	}
+
+	public void setIfscCode(String ifscCode) {
+		this.ifscCode = ifscCode;
 	}
 
 }

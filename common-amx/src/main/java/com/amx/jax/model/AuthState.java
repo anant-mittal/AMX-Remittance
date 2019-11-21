@@ -21,6 +21,7 @@ public class AuthState implements Serializable {
 
 		/** The default. */
 		DEFAULT,
+		PERMS,
 		/** The login. */
 		LOGIN,
 		/** The activation. */
@@ -84,6 +85,12 @@ public class AuthState implements Serializable {
 		/** The locked. */
 		LOCKED,
 		UNAUTH_DEVICE,
+		
+		//Perms
+		CHECK,
+		
+		//Common
+		PROFILE_UPDATE,
 
 		/** The completed. */
 		// DONE
@@ -93,10 +100,10 @@ public class AuthState implements Serializable {
 	/** The flow. */
 	public AuthFlow flow = AuthFlow.DEFAULT;
 
-	/** The c step. */
+	/** The completed step. */
 	public AuthStep cStep = null;
 
-	/** The n step. */
+	/** The in progress/next step. */
 	public AuthStep nStep = null;
 
 	/** The valid id. */

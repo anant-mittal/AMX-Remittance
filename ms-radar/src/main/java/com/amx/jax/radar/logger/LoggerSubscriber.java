@@ -44,12 +44,16 @@ public class LoggerSubscriber implements ITunnelSubscriber<Map<String, Object>> 
 	@Override
 	public void onMessage(String channel, Map<String, Object> event) {
 		LOGGER.debug("onMessage {}", channel);
-
 		try {
 			AuditMapModel eventModel = new AuditMapModel(event);
 			AuditHandler handler = auditHandlerBeanFactory.get(eventModel.getType());
 			if (handler != null) {
 				handler.doHandle(eventModel);
+			} else {
+				handler = auditHandlerBeanFactory.get(eventModel.getDescription());
+				if (handler != null) {
+					handler.doHandle(eventModel);
+				}
 			}
 		} catch (Exception e) {
 			LOGGER.error("Error while processing handler", e);

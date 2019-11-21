@@ -787,7 +787,7 @@ public class UserValidationService {
 						"Customer not active in branch, please visit branch");
 			}
 		}
-		this.validateCustIdProofs(customers.get(0).getCustomerId());
+		
 		switch (apiFlow) {
 		case SIGNUP_ONLINE:
 			validateCustomerForSignUpOnline(customers.get(0));
@@ -823,7 +823,7 @@ public class UserValidationService {
 		if (onlineCustomer == null) {
 			throw new GlobalException(JaxError.CUSTOMER_NOT_REGISTERED_ONLINE, "Customer not registered in online");
 		}
-
+		
 		userValidationService.validateCustomerVerification(onlineCustomer.getCustomerId());
 
 		if (!ConstantDocument.Yes.equals(onlineCustomer.getStatus())) {
