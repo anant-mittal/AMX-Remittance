@@ -242,25 +242,31 @@ public class SnapModels {
 			if (this.buckets == null) {
 				this.buckets = new ArrayList<SnapModels.Aggregations>();
 				try {
-					if (map.containsKey(BUCKETS) && map.containsKey("sum_other_doc_count")) {
-						List<Map<String, Object>> tempbuckets = BUCKETS_LIST.loadList(map,
-								new HashMap<String, Object>());
-						for (Map<String, Object> aggregationMap : tempbuckets) {
-							Aggregations aggr = new Aggregations(aggregationMap);
-							this.buckets.add(aggr);
-						}
-					} else {
-						HashMap<String, Map<String, Object>> tempbucketsmap = BUCKETS_LIST.load(map,
+					if (map.containsKey(BUCKETS)) {
+						Object tempbucketsmapCheck = BUCKETS_LIST.load(map,
 								new HashMap<String, Map<String, Object>>());
+						if(tempbucketsmapCheck instanceof ArrayList) {
+							List<Map<String, Object>> tempbuckets = BUCKETS_LIST.loadList(map,
+									new HashMap<String, Object>());
+							for (Map<String, Object> aggregationMap : tempbuckets) {
+								Aggregations aggr = new Aggregations(aggregationMap);
+								this.buckets.add(aggr);
+							}
+						} else {
+							HashMap<String, Map<String, Object>> tempbucketsmap = BUCKETS_LIST.load(map,
+									new HashMap<String, Map<String, Object>>());
 
-						for (Entry<String, Map<String, Object>> aggregationMap : tempbucketsmap.entrySet()) {
-							Aggregations aggr = new Aggregations(aggregationMap.getValue());
-							aggr.toMap().put("key", aggregationMap.getKey());
-							this.buckets.add(aggr);
+							for (Entry<String, Map<String, Object>> aggregationMap : tempbucketsmap.entrySet()) {
+								Aggregations aggr = new Aggregations(aggregationMap.getValue());
+								aggr.toMap().put("key", aggregationMap.getKey());
+								this.buckets.add(aggr);
+							}
 						}
+
 					}
 				} catch (Exception e) {
 					System.out.println("===  " + JsonUtil.toJson(map));
+					//e.printStackTrace();
 				}
 			}
 			return buckets;
