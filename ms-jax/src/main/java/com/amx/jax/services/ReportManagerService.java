@@ -639,7 +639,7 @@ public class ReportManagerService extends AbstractService{
 		if(!StringUtils.isBlank(view.getIsDiscAvail()) && view.getIsDiscAvail().equalsIgnoreCase(ConstantDocument.Yes) && JaxUtil.isNullZeroBigDecimalCheck(view.getAmountSaved()) && view.getAmountSaved().compareTo(BigDecimal.ZERO)>0) {
 			if (view.getCurrencyQuoteName() != null && currencyQuoteName != null && view.getOriginalExchangeRate() != null) {
 				//if (view.getOriginalExchangeRate().compareTo(view.getExchangeRateApplied()) != 1) {
-				if (view.getRackExchangeRate().compareTo(view.getExchangeRateApplied()) != 1) {
+				if (JaxUtil.isNullZeroBigDecimalCheck(view.getRackExchangeRate()) && view.getRackExchangeRate().compareTo(view.getExchangeRateApplied()) != 1) {
 					obj.setBranchExchangeRate(view.getCurrencyQuoteName() + " / " + currencyQuoteName + "     "+ view.getExchangeRateApplied().toString());
 					if (view.getLocalTransactionAmount() != null && view.getLocalTransactionCurrencyId() != null) {
 						BigDecimal transationAmount = RoundUtil.roundBigDecimal((view.getLocalTransactionAmount()),decimalPerCurrency);
@@ -647,7 +647,7 @@ public class ReportManagerService extends AbstractService{
 					}
 				} else {
 					//obj.setBranchExchangeRate(view.getCurrencyQuoteName() + " / " + currencyQuoteName + "     "+ view.getOriginalExchangeRate().toString());
-					obj.setBranchExchangeRate(view.getCurrencyQuoteName() + " / " + currencyQuoteName + "     "+ view.getRackExchangeRate().toString());
+					obj.setBranchExchangeRate(view.getCurrencyQuoteName() + " / " + currencyQuoteName + "     "+ view.getRackExchangeRate()==null?view.getOriginalExchangeRate().toString():view.getRackExchangeRate().toString());
 					if (view.getRackExchangeRate() != null && view.getForeignTransactionAmount() != null && view.getLocalTransactionCurrencyId() != null) {
 						//BigDecimal calKwtAmt = view.getOriginalExchangeRate().multiply(view.getForeignTransactionAmount());
 						BigDecimal calKwtAmt = view.getRackExchangeRate().multiply(view.getForeignTransactionAmount());

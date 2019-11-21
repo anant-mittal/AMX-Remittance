@@ -635,14 +635,11 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 	private BigDecimal getYouSavedAmountInFc(DynamicRoutingPricingDto result) {
 		BigDecimal savedAmountFC = BigDecimal.ZERO;
 		
-		if(result.getRackExchangeRate().compareTo(BigDecimal.ZERO)>0 && result.getExRateBreakup().getConvertedLCAmount().compareTo(BigDecimal.ZERO)>0) {
+		if(JaxUtil.isNullZeroBigDecimalCheck(result.getRackExchangeRate()) && result.getRackExchangeRate().compareTo(BigDecimal.ZERO)>0 && result.getExRateBreakup().getConvertedLCAmount().compareTo(BigDecimal.ZERO)>0) {
 			//BigDecimal exchRate = new BigDecimal(1).divide(result.getRackExchangeRate(), 10, RoundingMode.HALF_UP);
 			BigDecimal discountFCAmount =result.getExRateBreakup().getConvertedLCAmount().divide(result.getExRateBreakup().getInverseRate(),result.getExRateBreakup().getFcDecimalNumber().intValue(), RoundingMode.HALF_UP);
 			BigDecimal originAmount =result.getExRateBreakup().getConvertedLCAmount().divide(result.getRackExchangeRate(),result.getExRateBreakup().getFcDecimalNumber().intValue(), RoundingMode.HALF_UP);
 			savedAmountFC =discountFCAmount.subtract(originAmount);
-			
-			
-		
 			if(savedAmountFC.compareTo(BigDecimal.ZERO)>0) {
 				savedAmountFC =RoundUtil.roundBigDecimal(savedAmountFC,result.getExRateBreakup().getFcDecimalNumber().intValue());
 			}
