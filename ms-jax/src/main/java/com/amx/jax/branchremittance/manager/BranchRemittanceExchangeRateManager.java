@@ -600,7 +600,7 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 		/** for INDIAN curreny format **/
 		public static String format(double value) {
 		    if(value < 1000) {
-		        return format("###.##", value);
+		        return format("00.00", value);
 		    } else {
 		        double hundreds = value % 1000;
 		        int other = (int) (value / 1000);
@@ -622,6 +622,7 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 		BigDecimal savedAmount = BigDecimal.ZERO;
 		if(JaxUtil.isNullZeroBigDecimalCheck(result.getRackExchangeRate()) && result!=null && result.getDiscountAvailed() && result.getRackExchangeRate().compareTo(BigDecimal.ZERO)>0 && result.getExRateBreakup().getConvertedFCAmount().compareTo(BigDecimal.ZERO)>0) {
 			savedAmount =result.getRackExchangeRate().multiply(result.getExRateBreakup().getConvertedFCAmount()).subtract(result.getExRateBreakup().getConvertedLCAmount());
+		
 		if(savedAmount.compareTo(BigDecimal.ZERO)>0) {
 			savedAmount = RoundUtil.roundBigDecimal(savedAmount,result.getExRateBreakup().getLcDecimalNumber().intValue());
 		}
