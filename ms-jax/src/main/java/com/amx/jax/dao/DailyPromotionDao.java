@@ -3,6 +3,7 @@ package com.amx.jax.dao;
 import java.math.BigDecimal;
 import java.sql.CallableStatement;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.slf4j.Logger;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 
+import com.amx.amxlib.model.DailyPromotionDTO;
 import com.amx.jax.dbmodel.promotion.DailyPromotion;
 import com.amx.jax.multitenant.MultiTenantConnectionProviderImpl;
 import com.amx.jax.repository.promotion.DailyPromotionRepository;
@@ -30,7 +32,8 @@ public class DailyPromotionDao {
 
 		return dailyPromotionRepository.getWantitByTrnxId(remittanceTransactionId);
 	}
-	public void applyJolibeePadalaCoupons(BigDecimal documentFinanceyear, BigDecimal documentNumber, BigDecimal countryBranchId) {
+	public DailyPromotionDTO applyJolibeePadalaCoupons(BigDecimal documentFinanceyear, BigDecimal documentNumber, BigDecimal branchCode) {
+		DailyPromotionDTO dailyPromotionDTO = new DailyPromotionDTO();
 		Connection connection = null;
 		CallableStatement cs = null;
 		try {
@@ -39,13 +42,17 @@ public class DailyPromotionDao {
 			cs = connection.prepareCall(callProcedure);
 			cs.setBigDecimal(1, documentFinanceyear);
 			cs.setBigDecimal(2, documentNumber);
-			cs.setBigDecimal(2, countryBranchId);
+			cs.setBigDecimal(3, branchCode);
+			cs.registerOutParameter(4, java.sql.Types.VARCHAR);
+			cs.registerOutParameter(5, java.sql.Types.VARCHAR);
 			cs.executeUpdate();
-			
+			dailyPromotionDTO.setPromotionMsg(cs.getString(4));
+			dailyPromotionDTO.setErrorMsg(cs.getString(5)); 
 		}catch(DataAccessException | SQLException e) {
 			logger.info("Exception in procedure to get promotion prize" + e.getMessage());
 		}finally {
 			DBUtil.closeResources(cs, connection);
 		}
+		return dailyPromotionDTO;
 	}
 }

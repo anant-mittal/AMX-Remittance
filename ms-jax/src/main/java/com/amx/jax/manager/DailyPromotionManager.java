@@ -39,11 +39,13 @@ import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.postman.model.WAMessage;
 import com.amx.jax.repository.CustomerRepository;
+import com.amx.jax.repository.RemittanceTransactionRepository;
 import com.amx.jax.repository.promotion.DailyPromotionRepository;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.util.CommunicationPrefsUtil;
 import com.amx.jax.util.CommunicationPrefsUtil.CommunicationPrefsResult;
 import com.amx.jax.util.DBUtil;
+import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 import com.amx.utils.DateUtil;
 
@@ -80,6 +82,9 @@ public class DailyPromotionManager {
 	
 	@Autowired
 	WhatsAppClient whatsAppClient;
+	
+	@Autowired
+	RemittanceTransactionRepository remittanceTransactionRepository;
 
 	Logger logger = LoggerFactory.getLogger(DailyPromotionManager.class);
 
@@ -183,41 +188,49 @@ public class DailyPromotionManager {
 		return dto;
 	}
 
-	public void applyJolibeePadalaCoupons(BigDecimal documentFinanceyear, BigDecimal documentNumber, BigDecimal countryBranchId) {
-		dailyPromotionDao.applyJolibeePadalaCoupons(documentFinanceyear,documentNumber,countryBranchId);
-		Customer customer = customerRepository.getCustomerByCustomerIdAndIsActive(metaData.getCustomerId(), "Y");
-		CommunicationPrefsResult communicationPrefsResult = communicationPrefsUtil.forCustomer(CommunicationEvents.BPI_JOLLIBEE, customer);
-		if(communicationPrefsResult.isEmail()) {
-			Email email = new Email();
-			email.setITemplate(TemplatesMX.BPI_JOLLIBEE);
-			if(metaData.getLanguageId().equals(ConstantDocument.L_ENG)) {
-				email.setLang(Language.EN);
-			}
-			else {
-				email.setLang(Language.AR);
-			}
-			email.addTo(customer.getEmail());
-			postManService.sendEmailAsync(email);
+	public void applyJolibeePadalaCoupons(BigDecimal documentFinanceYear, BigDecimal documentNumber, BigDecimal branchCode) {
+		DailyPromotionDTO dailyPromotionDTO=new DailyPromotionDTO();
+		if(!ConstantDocument.ONLINE_BRANCH_LOC_CODE.equals(branchCode)) {
+			RemittanceTransaction remittanceTransaction =remittanceTransactionRepository.findByCollectionDocFinanceYearAndCollectionDocumentNo(documentFinanceYear, documentNumber); 
+			dailyPromotionDTO=dailyPromotionDao.applyJolibeePadalaCoupons(documentFinanceYear, documentNumber, remittanceTransaction.getBranchId().getBranchId());
+		}else {
+			dailyPromotionDTO=dailyPromotionDao.applyJolibeePadalaCoupons(documentFinanceYear,documentNumber,branchCode);
 		}
-		if(communicationPrefsResult.isSms()) {
-			SMS sms = new SMS();
-			sms.setITemplate(TemplatesMX.BPI_JOLLIBEE);
-			sms.addTo(customer.getPrefixCodeMobile()+customer.getMobile());
-			postManService.sendSMSAsync(sms);
+		if(!ArgUtil.isEmpty(dailyPromotionDTO.getPromotionMsg())&&ArgUtil.isEmpty(dailyPromotionDTO.getErrorMsg())) {
+			Customer customer = customerRepository.getCustomerByCustomerIdAndIsActive(metaData.getCustomerId(), "Y");
+			CommunicationPrefsResult communicationPrefsResult = communicationPrefsUtil.forCustomer(CommunicationEvents.BPI_JOLLIBEE, customer);
+			if(communicationPrefsResult.isEmail()) {
+				Email email = new Email();
+				email.setITemplate(TemplatesMX.BPI_JOLLIBEE);
+				if(metaData.getLanguageId().equals(ConstantDocument.L_ENG)) {
+					email.setLang(Language.EN);
+				}
+				else {
+					email.setLang(Language.AR);
+				}
+				email.addTo(customer.getEmail());
+				postManService.sendEmailAsync(email);
+			}
+			if(communicationPrefsResult.isSms()) {
+				SMS sms = new SMS();
+				sms.setITemplate(TemplatesMX.BPI_JOLLIBEE);
+				sms.addTo(customer.getPrefixCodeMobile()+customer.getMobile());
+				postManService.sendSMSAsync(sms);
+			}
+			
+			if (communicationPrefsResult.isWhatsApp()) {
+				WAMessage waMessage = new WAMessage();
+				waMessage.setITemplate(TemplatesMX.BPI_JOLLIBEE);
+				waMessage.addTo(customer.getWhatsappPrefix() + customer.getWhatsapp());
+				whatsAppClient.send(waMessage);
+			}
+			if(communicationPrefsResult.isPushNotify()) {
+				PushMessage pushMessage = new PushMessage();
+				pushMessage.setITemplate(TemplatesMX.BPI_JOLLIBEE);
+				pushMessage.addToUser(metaData.getCustomerId());
+				pushNotifyClient.send(pushMessage);
+			}
 		}
 		
-		if (communicationPrefsResult.isWhatsApp()) {
-			WAMessage waMessage = new WAMessage();
-			waMessage.setITemplate(TemplatesMX.BPI_JOLLIBEE);
-			waMessage.addTo(customer.getWhatsappPrefix() + customer.getWhatsapp());
-			whatsAppClient.send(waMessage);
-		}
-		if(communicationPrefsResult.isPushNotify()) {
-			PushMessage pushMessage = new PushMessage();
-			pushMessage.setITemplate(TemplatesMX.BPI_JOLLIBEE);
-			pushMessage.addToUser(metaData.getCustomerId());
-			pushNotifyClient.send(pushMessage);
-		}
 	}
-
 }
