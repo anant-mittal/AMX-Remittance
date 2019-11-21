@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.transaction.Transactional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -108,7 +109,7 @@ public class RemittanceTransactionService extends AbstractService {
 		LanguageType languageType = new LanguageType();
 		sourceOfIncomeList = sourceOfIncomeDao.getSourceofIncome(languageId);
 		
-		if(languageType.getLanguageName().equals(LanguageCodeType.Arabic.toString())){
+		if(!StringUtils.isBlank(languageType.getLanguageName()) && languageType.getLanguageName().equals(LanguageCodeType.Arabic.toString())){
 		
 		sourceOfIncomeListArabic= sourceOfIncomeDao.getSourceofIncome(languageId);
 		sourceOfIncomeList.get(0).setLocalName(sourceOfIncomeListArabic.get(0).getLocalName());
