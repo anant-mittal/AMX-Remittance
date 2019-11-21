@@ -274,6 +274,7 @@ public class RemittancePaymentManager extends AbstractService{
 
 						// --- WantIT BuyIT Coupons Promotions
 						dailyPromotionManager.applyWantITbuyITCoupans(remittanceTransaction.getRemittanceTransactionId(), personInfo);
+						logger.debug("Jolibee Padala");
 						dailyPromotionManager.applyJolibeePadalaCoupons(remittanceTransaction.getDocumentFinanceYear(),remittanceTransaction.getDocumentNo(),remittanceTransaction.getBranchId().getBranchId());
 
 						reportManagerService.generatePersonalRemittanceReceiptReportDetails(trxnDto, Boolean.TRUE);

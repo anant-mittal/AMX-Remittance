@@ -189,6 +189,7 @@ public class DailyPromotionManager {
 	}
 
 	public void applyJolibeePadalaCoupons(BigDecimal documentFinanceYear, BigDecimal documentNumber, BigDecimal branchCode) {
+		logger.debug("DocumentFinYear "+documentFinanceYear+"document No "+documentNumber+"branchcode "+branchCode);
 		DailyPromotionDTO dailyPromotionDTO=new DailyPromotionDTO();
 		if(!ConstantDocument.ONLINE_BRANCH_LOC_CODE.equals(branchCode)) {
 			RemittanceTransaction remittanceTransaction =remittanceTransactionRepository.findByCollectionDocFinanceYearAndCollectionDocumentNo(documentFinanceYear, documentNumber); 
