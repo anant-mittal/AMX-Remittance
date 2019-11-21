@@ -1201,10 +1201,6 @@ public class Customer implements java.io.Serializable, Communicatable {
 		this.complianceBlockedDocuments = complianceBlockedDocuments;
 	}
 
-	public void setComplianceBlockedDocuments(List<ComplianceBlockedCustomerDocMap> complianceBlockedDocuments) {
-		this.complianceBlockedDocuments = complianceBlockedDocuments;
-	}
-
 	@Column(name="PASSPORT_NO")
 	public String getPassportNumber() {
 		return passportNumber;
