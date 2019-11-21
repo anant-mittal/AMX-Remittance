@@ -235,7 +235,7 @@ public class BranchRemittanceApplManager {
 	@Autowired
 	PartnerTransactionManager partnerTransactionManager;
 	
-	List<RemittanceApplicationSplitting> applSplitList = new ArrayList<>();
+	
 	
 	
 	public BranchRemittanceApplResponseDto saveBranchRemittanceApplication(BranchRemittanceApplRequestModel requestApplModel) {
@@ -331,6 +331,14 @@ public class BranchRemittanceApplManager {
 		RemittanceApplication remittanceApplication = this.createRemittanceApplication(hashMap);
 		RemittanceAppBenificiary remittanceAppBeneficairy = this.createRemittanceAppBeneficiary(remittanceApplication,hashMap);
 		List<AdditionalInstructionData>  additioalInstructionData = remittanceAppAddlDataManager.createAdditionalInstnDataForBranch(remittanceApplication,hashMap);
+		
+		List<RemittanceApplicationSplitting> applSplitList = createChildApplication(remittanceApplication, requestApplModel.getDynamicRroutingPricingBreakup());
+		
+		if(!applSplitList.isEmpty()) {
+			remittanceApplication.setApplSplit(ConstantDocument.Yes);
+		}
+		
+		
 
 		//RemittanceTransactionRequestModel
 		List<RemitApplAmlModel> amlData = this.saveRemittanceAppAML(remittanceApplication,hashMap);
@@ -600,11 +608,6 @@ public class BranchRemittanceApplManager {
 			}			
 
 	
-			applSplitList = createChildApplication(remittanceApplication, dynamicRoutingPricingResponse);
-			
-			if(!applSplitList.isEmpty()) {
-				remittanceApplication.setApplSplit(ConstantDocument.Yes);
-			}
 			
 			return remittanceApplication;
 
@@ -1062,9 +1065,12 @@ public class BranchRemittanceApplManager {
 
 	public List<RemittanceApplicationSplitting> createChildApplication(RemittanceApplication remitAppl,DynamicRoutingPricingDto dyRandPriDto){
 		
-		 applSplitList = new ArrayList<RemittanceApplicationSplitting>();
+		List<RemittanceApplicationSplitting> applSplitList = new ArrayList<RemittanceApplicationSplitting>();
 		 try{
 		 
+			 logger.info("createChildApplication :"+metaData.getCustomerId());
+			 logger.info("createChildApplication :"+JsonUtil.toJson(dyRandPriDto));
+			 
 		 if(remitAppl !=null && dyRandPriDto!=null) {
 			 TrnxRoutingDetails routingDetails = dyRandPriDto.getTrnxRoutingPaths(); 
 
