@@ -620,10 +620,6 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 	 */
 	private BigDecimal getYouSavedAmount(DynamicRoutingPricingDto result ) {
 		BigDecimal savedAmount = BigDecimal.ZERO;
-		if(result!=null) {
-			logger.info("Rack Exchange Rate ------> " +result.getRackExchangeRate());
-			logger.info("Converted FC amount ------> "+result.getExRateBreakup().getConvertedFCAmount());
-		}
 		if(JaxUtil.isNullZeroBigDecimalCheck(result.getRackExchangeRate()) && result!=null && result.getDiscountAvailed() && result.getRackExchangeRate().compareTo(BigDecimal.ZERO)>0 && result.getExRateBreakup().getConvertedFCAmount().compareTo(BigDecimal.ZERO)>0) {
 			savedAmount =result.getRackExchangeRate().multiply(result.getExRateBreakup().getConvertedFCAmount()).subtract(result.getExRateBreakup().getConvertedLCAmount());
 		if(savedAmount.compareTo(BigDecimal.ZERO)>0) {
