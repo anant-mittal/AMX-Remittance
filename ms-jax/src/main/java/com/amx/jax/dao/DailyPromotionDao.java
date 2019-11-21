@@ -38,7 +38,7 @@ public class DailyPromotionDao {
 		CallableStatement cs = null;
 		try {
 			connection = connectionProvider.getDataSource().getConnection();
-			String callProcedure = "{call GET_PROMOTION_PRIZE (?,?,?)}";
+			String callProcedure = "{call GET_PROMOTION_PRIZE (?,?,?,?,?)}";
 			cs = connection.prepareCall(callProcedure);
 			cs.setBigDecimal(1, documentFinanceyear);
 			cs.setBigDecimal(2, documentNumber);
