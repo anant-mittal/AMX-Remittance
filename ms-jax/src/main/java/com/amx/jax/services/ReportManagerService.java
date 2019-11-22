@@ -647,7 +647,7 @@ public class ReportManagerService extends AbstractService{
 					}
 				} else {
 					//obj.setBranchExchangeRate(view.getCurrencyQuoteName() + " / " + currencyQuoteName + "     "+ view.getOriginalExchangeRate().toString());
-					obj.setBranchExchangeRate(view.getCurrencyQuoteName() + " / " + currencyQuoteName + "     "+ view.getRackExchangeRate()==null?view.getOriginalExchangeRate().toString():view.getRackExchangeRate().toString());
+					obj.setBranchExchangeRate(view.getCurrencyQuoteName() + " / " + currencyQuoteName + "     "+ (view.getRackExchangeRate()==null?view.getOriginalExchangeRate().toString():view.getRackExchangeRate().toString()));
 					if (view.getRackExchangeRate() != null && view.getForeignTransactionAmount() != null && view.getLocalTransactionCurrencyId() != null) {
 						//BigDecimal calKwtAmt = view.getOriginalExchangeRate().multiply(view.getForeignTransactionAmount());
 						BigDecimal calKwtAmt = view.getRackExchangeRate().multiply(view.getForeignTransactionAmount());
