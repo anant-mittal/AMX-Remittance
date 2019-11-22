@@ -600,7 +600,7 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 		/** for INDIAN curreny format **/
 		public static String format(double value) {
 		    if(value < 1000) {
-		        return format("###.##", value);
+		        return format("00.00", value);
 		    } else {
 		        double hundreds = value % 1000;
 		        int other = (int) (value / 1000);
@@ -622,6 +622,7 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 		BigDecimal savedAmount = BigDecimal.ZERO;
 		if(JaxUtil.isNullZeroBigDecimalCheck(result.getRackExchangeRate()) && result!=null && result.getDiscountAvailed() && result.getRackExchangeRate().compareTo(BigDecimal.ZERO)>0 && result.getExRateBreakup().getConvertedFCAmount().compareTo(BigDecimal.ZERO)>0) {
 			savedAmount =result.getRackExchangeRate().multiply(result.getExRateBreakup().getConvertedFCAmount()).subtract(result.getExRateBreakup().getConvertedLCAmount());
+		
 		if(savedAmount.compareTo(BigDecimal.ZERO)>0) {
 			savedAmount = RoundUtil.roundBigDecimal(savedAmount,result.getExRateBreakup().getLcDecimalNumber().intValue());
 		}
@@ -634,14 +635,11 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 	private BigDecimal getYouSavedAmountInFc(DynamicRoutingPricingDto result) {
 		BigDecimal savedAmountFC = BigDecimal.ZERO;
 		
-		if(result.getRackExchangeRate().compareTo(BigDecimal.ZERO)>0 && result.getExRateBreakup().getConvertedLCAmount().compareTo(BigDecimal.ZERO)>0) {
+		if(JaxUtil.isNullZeroBigDecimalCheck(result.getRackExchangeRate()) && result.getRackExchangeRate().compareTo(BigDecimal.ZERO)>0 && result.getExRateBreakup().getConvertedLCAmount().compareTo(BigDecimal.ZERO)>0) {
 			//BigDecimal exchRate = new BigDecimal(1).divide(result.getRackExchangeRate(), 10, RoundingMode.HALF_UP);
 			BigDecimal discountFCAmount =result.getExRateBreakup().getConvertedLCAmount().divide(result.getExRateBreakup().getInverseRate(),result.getExRateBreakup().getFcDecimalNumber().intValue(), RoundingMode.HALF_UP);
 			BigDecimal originAmount =result.getExRateBreakup().getConvertedLCAmount().divide(result.getRackExchangeRate(),result.getExRateBreakup().getFcDecimalNumber().intValue(), RoundingMode.HALF_UP);
 			savedAmountFC =discountFCAmount.subtract(originAmount);
-			
-			
-		
 			if(savedAmountFC.compareTo(BigDecimal.ZERO)>0) {
 				savedAmountFC =RoundUtil.roundBigDecimal(savedAmountFC,result.getExRateBreakup().getFcDecimalNumber().intValue());
 			}
