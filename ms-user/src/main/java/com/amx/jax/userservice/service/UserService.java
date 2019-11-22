@@ -1409,12 +1409,15 @@ public class UserService extends AbstractUserService {
 	public AmxApiResponse<CustomerModel, Object> validateCustomerLoginOtp(String identityInt) {
 		if (identityInt != null) {
 			Customer customer = custDao.getCustomerByCivilId(identityInt);
-			userValidationService.validateCustIdProofs(customer.getCustomerId());
-			userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(identityInt, JaxApiFlow.LOGIN);
+			if(customer != null) {
+				userValidationService.validateCustIdProofs(customer.getCustomerId());
+				userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(identityInt, JaxApiFlow.LOGIN);
+				// ---- check for blacklisted customer ----
+				userValidationService.validateBlackListedCustomerForLogin(customer);
+			}else {
+				throw new GlobalException(JaxError.CUSTOMER_NOT_REGISTERED_BRANCH, "Customer not registered in branch ");
+			}
 			
-			
-			// ---- check for blacklisted customer ----
-			userValidationService.validateBlackListedCustomerForLogin(customer);
 		}
 		CustomerModel c = onlineCustomerManager.validateCustomerLoginOtp(identityInt);
 		return AmxApiResponse.build(c);
