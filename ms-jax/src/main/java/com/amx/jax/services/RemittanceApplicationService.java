@@ -17,7 +17,6 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.constant.NotificationConstants;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.config.JaxTenantProperties;
-import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dao.RemittanceProcedureDao;

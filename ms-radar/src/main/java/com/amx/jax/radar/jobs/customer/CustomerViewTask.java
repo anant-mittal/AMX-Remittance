@@ -20,7 +20,6 @@ import com.amx.jax.grid.views.CustomerDetailViewRecord;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.mcq.shedlock.SchedulerLock;
 import com.amx.jax.mcq.shedlock.SchedulerLock.LockContext;
-import com.amx.jax.radar.AESRepository.BulkRequestBuilder;
 import com.amx.jax.radar.RadarConfig;
 import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncIndex;
 import com.amx.jax.radar.snap.SnapQueryService.BulkRequestSnapBuilder;

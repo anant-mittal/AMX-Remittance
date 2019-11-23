@@ -3,12 +3,11 @@ package com.amx.jax.model.response;
 import java.math.BigDecimal;
 import java.util.Comparator;
 
-import com.amx.jax.model.AbstractModel;
-import com.amx.jax.model.IResourceEntity;
 import com.amx.jax.model.ResourceDTO;
 
 public class BankMasterDTO extends ResourceDTO implements Comparable<BankMasterDTO> {
 
+	private static final long serialVersionUID = 3783689872719551243L;
 	private BigDecimal bankId;
 	private String bankCode;
 	private String bankFullName;

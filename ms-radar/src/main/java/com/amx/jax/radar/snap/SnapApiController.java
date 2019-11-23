@@ -16,7 +16,6 @@ import com.amx.jax.client.snap.SnapConstants.SnapQueryTemplate;
 import com.amx.jax.client.snap.SnapModels.SnapModelWrapper;
 import com.amx.jax.dict.Currency;
 import com.amx.jax.radar.jobs.customer.OracleVarsCache;
-import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncIndex;
 import com.amx.jax.rest.RestService;
 import com.amx.utils.ArgUtil;
 

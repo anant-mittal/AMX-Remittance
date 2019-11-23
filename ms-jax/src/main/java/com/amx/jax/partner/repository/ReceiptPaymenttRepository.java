@@ -4,10 +4,9 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.jdbc.core.JdbcTemplate;
+
 import com.amx.jax.dbmodel.ReceiptPayment;
 
 

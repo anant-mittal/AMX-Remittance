@@ -4,7 +4,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.nustaq.serialization.FSTConfiguration;

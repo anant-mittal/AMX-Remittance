@@ -5,7 +5,6 @@ import java.util.Map;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppContextUtil;
-import com.amx.jax.cache.CacheBox;
 import com.amx.jax.session.SessionContextCache;
 import com.amx.utils.ArgUtil;
 

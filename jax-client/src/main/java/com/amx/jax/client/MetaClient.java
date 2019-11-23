@@ -14,8 +14,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.amx.amxlib.constant.ApiEndpoint.MetaApi;
-import com.amx.amxlib.exception.AbstractJaxException;
-import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.meta.model.ApplicationSetupDTO;
 import com.amx.amxlib.meta.model.AuthenticationLimitCheckDTO;
 import com.amx.amxlib.meta.model.BranchDetailDTO;

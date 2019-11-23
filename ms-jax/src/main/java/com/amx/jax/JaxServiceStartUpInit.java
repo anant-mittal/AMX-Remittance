@@ -1,7 +1,5 @@
 package com.amx.jax;
 
-import java.lang.reflect.InvocationTargetException;
-
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.beanutils.BeanUtils;

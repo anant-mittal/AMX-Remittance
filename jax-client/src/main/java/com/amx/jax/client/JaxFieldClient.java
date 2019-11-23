@@ -10,8 +10,6 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Component;
 
-import com.amx.amxlib.exception.AbstractJaxException;
-import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.model.GetJaxFieldRequest;
 import com.amx.amxlib.model.JaxCondition;
 import com.amx.amxlib.model.response.ApiResponse;

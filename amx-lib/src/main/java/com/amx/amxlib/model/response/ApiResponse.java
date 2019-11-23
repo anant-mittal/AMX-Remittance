@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.client.serviceprovider.RoutingBankMasterDTO;
 import com.amx.jax.exception.AmxApiError;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

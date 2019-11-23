@@ -4,7 +4,6 @@ package com.amx.jax.model.request.remittance;
  * @author rabil
  */
 import java.math.BigDecimal;
-import java.util.Date;
 
 public class RemittanceSignatureDto {
 

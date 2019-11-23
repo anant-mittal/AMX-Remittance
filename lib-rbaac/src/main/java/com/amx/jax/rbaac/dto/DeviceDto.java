@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 
 import com.amx.jax.AmxConstants;
 import com.amx.jax.constant.DeviceState;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)

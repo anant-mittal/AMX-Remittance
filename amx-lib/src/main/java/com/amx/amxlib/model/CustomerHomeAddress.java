@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
 
 /** THis model represents customer's home address */
 public class CustomerHomeAddress implements Serializable {

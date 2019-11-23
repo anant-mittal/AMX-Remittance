@@ -40,16 +40,14 @@ import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.FlexFieldReponseDto;
 import com.amx.jax.model.response.remittance.GetServiceApplicabilityResponse;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
-import com.amx.jax.model.response.remittance.PaymentLinkRespDTO;
 import com.amx.jax.model.response.remittance.ParameterDetailsResponseDto;
+import com.amx.jax.model.response.remittance.PaymentLinkRespDTO;
 import com.amx.jax.model.response.remittance.PaymentModeDto;
 import com.amx.jax.model.response.remittance.RemittanceDeclarationReportDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
 import com.amx.jax.model.response.remittance.branch.DynamicRoutingPricingResponse;
-
-import io.swagger.annotations.ApiOperation;
 
 @RestController
 public class BranchRemittanceController implements IRemittanceService {
