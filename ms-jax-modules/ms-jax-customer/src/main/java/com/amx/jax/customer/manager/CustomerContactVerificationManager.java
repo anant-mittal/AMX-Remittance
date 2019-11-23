@@ -177,7 +177,7 @@ public class CustomerContactVerificationManager {
 		CustomerContactVerification link2 = customerContactVerificationRepository.save(link);
 
 		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.DATE, -1 * 9000);
+		cal.add(Calendar.DATE, -1 * 90);
 		java.util.Date expiryPeriod = new java.util.Date(cal.getTimeInMillis());
 		List<Object[]> x = customerContactVerificationRepository.getCountsByCustomer(c.getCustomerId(), contactType,
 				expiryPeriod);
