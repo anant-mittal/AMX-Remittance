@@ -69,7 +69,7 @@ import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.events.CActivityEvent;
-import com.amx.jax.manager.CommunicationPreferencesManager;
+
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.model.CivilIdOtpModel;
@@ -92,6 +92,7 @@ import com.amx.jax.repository.RoutingBankMasterRepository;
 import com.amx.jax.repository.remittance.IViewParameterDetailsRespository;
 import com.amx.jax.service.MetaService;
 import com.amx.jax.userservice.dao.CustomerDao;
+import com.amx.jax.userservice.manager.CommunicationPreferencesManager;
 import com.amx.jax.userservice.repository.RelationsRepository;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.userservice.service.UserValidationService;
@@ -681,7 +682,7 @@ public class BeneficiaryService extends AbstractService {
 	 * 
 	 */
 	public ApiResponse sendOtp(List<ContactType> channels) {
-		communicationPreferencesManager.validateCommunicationPreferences(channels);
+		communicationPreferencesManager.validateCommunicationPreferences(channels,CommunicationEvents.ADD_BENEFICIARY);
 		Customer customer = null;
 		String civilId = null;
 		BigDecimal customerId = null;

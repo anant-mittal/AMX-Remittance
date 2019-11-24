@@ -1,4 +1,4 @@
-package com.amx.jax.manager;
+package com.amx.jax.userservice.manager;
 
 import java.util.List;
 
@@ -10,8 +10,8 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.dbmodel.Customer;
-import com.amx.jax.dict.AmxEnums.CommunicationEvents;
 import com.amx.jax.dict.ContactType;
+import com.amx.jax.dict.AmxEnums.CommunicationEvents;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.util.CommunicationPrefsUtil;
@@ -29,11 +29,12 @@ public class CommunicationPreferencesManager {
 	@Autowired
 	CommunicationPrefsUtil communicationPrefsUtil;
 
-	public void validateCommunicationPreferences(List<ContactType> channelList) {
+	public void validateCommunicationPreferences(List<ContactType> channelList,
+			CommunicationEvents communicationEvent) {
 		Customer cust = custDao.getActiveCustomerDetailsByCustomerId(metaData.getCustomerId());
 
-		CommunicationPrefsResult communicationPrefsResult = communicationPrefsUtil
-				.forCustomer(CommunicationEvents.ADD_BENEFICIARY, cust);
+		CommunicationPrefsResult communicationPrefsResult = communicationPrefsUtil.forCustomer(communicationEvent,
+				cust);
 
 		for (ContactType channel : channelList) {
 			if (ContactType.EMAIL.equals(channel)) {

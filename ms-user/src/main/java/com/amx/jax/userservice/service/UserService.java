@@ -65,10 +65,12 @@ import com.amx.jax.dbmodel.ViewCity;
 import com.amx.jax.dbmodel.ViewDistrict;
 import com.amx.jax.dbmodel.ViewState;
 import com.amx.jax.dict.ContactType;
+import com.amx.jax.dict.AmxEnums.CommunicationEvents;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.events.CActivityEvent;
+
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.BeneficiaryListDTO;
@@ -96,6 +98,7 @@ import com.amx.jax.userservice.dao.AbstractUserDao;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.dao.CustomerIdProofDao;
 import com.amx.jax.userservice.dao.ReferralDetailsDao;
+import com.amx.jax.userservice.manager.CommunicationPreferencesManager;
 import com.amx.jax.userservice.manager.CustomerFlagManager;
 import com.amx.jax.userservice.manager.OnlineCustomerManager;
 import com.amx.jax.userservice.manager.SecurityQuestionsManager;
@@ -225,6 +228,9 @@ public class UserService extends AbstractUserService {
 	
 	@Autowired
 	JaxTenantProperties jaxTenantProperties;
+	
+	@Autowired
+	CommunicationPreferencesManager communicationPreferencesManager;
 	
 	@Override
 	public ApiResponse registerUser(AbstractUserModel userModel) {
@@ -461,6 +467,7 @@ public class UserService extends AbstractUserService {
 
 	public ApiResponse sendOtpForCivilId(String civilId, List<ContactType> channels,
 			CustomerModel customerModel, Boolean initRegistration) {
+		//communicationPreferencesManager.validateCommunicationPreferences(channels,CommunicationEvents.ADD_BENEFICIARY);
 		if (StringUtils.isNotBlank(civilId)) {
 			if (tenantContext.getKey().equals("OMN")) {
 				tenantContext.get().validateCivilId(civilId);
