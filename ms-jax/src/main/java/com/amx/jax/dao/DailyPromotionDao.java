@@ -10,6 +10,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.model.DailyPromotionDTO;
@@ -25,6 +29,8 @@ public class DailyPromotionDao {
 	DailyPromotionRepository dailyPromotionRepository;
 	@Autowired
 	MultiTenantConnectionProviderImpl connectionProvider;
+	@Autowired
+	JdbcTemplate jdbcTemplate;
 	
 	Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -58,22 +64,12 @@ public class DailyPromotionDao {
 	
 	public DailyPromotionDTO applyJolibeePadalaCouponReceipt(BigDecimal documentFinanceyear, BigDecimal documentNumber) {
 		DailyPromotionDTO dailyPromotionDTO = new DailyPromotionDTO();
-		Connection connection = null;
-		CallableStatement cs = null;
-		try {
-			connection = connectionProvider.getDataSource().getConnection();
-			String callProcedure = "{call EX_PROMOTION_MESSAGE (?,?,?)}";
-			cs = connection.prepareCall(callProcedure);
-			cs.setBigDecimal(1, documentFinanceyear);
-			cs.setBigDecimal(2, documentNumber);
-			cs.registerOutParameter(0, java.sql.Types.VARCHAR);
-			cs.executeUpdate();
-			dailyPromotionDTO.setPromotionMsg(cs.getString(0));
-		}catch(DataAccessException | SQLException e) {
-			logger.info("Exception in procedure to get promotion prize" + e.getMessage());
-		}finally {
-			DBUtil.closeResources(cs, connection);
-		}
+		SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate).withFunctionName("EX_PROMOTION_MESSAGE");
+		SqlParameterSource paramMap = new MapSqlParameterSource().addValue("P_TRNFYR", documentFinanceyear).addValue("P_TRNREF",
+				documentNumber);
+		// First parameter is function output parameter type.
+		String promotionMsg = jdbcCall.executeFunction(String.class, paramMap);
+		dailyPromotionDTO.setPromotionMsg(promotionMsg);
 		return dailyPromotionDTO;
 	}
 }
