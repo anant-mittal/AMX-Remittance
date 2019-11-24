@@ -96,14 +96,14 @@ public class PromotionManager {
 		try {
 			PromotionDto dto = null;
 			DailyPromotionDTO dailyPromotionDTO=null;
-			RemittanceTransaction remittanceTransaction = remittanceApplicationDao
-					.getRemittanceTransactionByRemitDocNo(docNoRemit, docFinyear);
-			dailyPromotionDTO=dailyPromotionDao.applyJolibeePadalaCoupons(docNoRemit, docFinyear, remittanceTransaction.getBranchId().getBranchId());
+			
+			dailyPromotionDTO=dailyPromotionDao.applyJolibeePadalaCouponReceipt(docNoRemit, docFinyear);
 			if(!ArgUtil.isEmpty(dailyPromotionDTO.getPromotionMsg())) {
 				dto.setPrizeMessage(dailyPromotionDTO.getPromotionMsg());
 			}
 			/*
-
+			RemittanceTransaction remittanceTransaction = remittanceApplicationDao
+					.getRemittanceTransactionByRemitDocNo(docNoRemit, docFinyear);
 			List<PromotionDetailModel> models = promotionDao.getPromotionDetailModel(docFinyear, docNoRemit);
 			if (models != null && models.size() > 0) {
 				dto = new PromotionDto();

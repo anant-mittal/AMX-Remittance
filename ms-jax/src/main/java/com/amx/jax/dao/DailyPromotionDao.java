@@ -55,4 +55,25 @@ public class DailyPromotionDao {
 		}
 		return dailyPromotionDTO;
 	}
+	
+	public DailyPromotionDTO applyJolibeePadalaCouponReceipt(BigDecimal documentFinanceyear, BigDecimal documentNumber) {
+		DailyPromotionDTO dailyPromotionDTO = new DailyPromotionDTO();
+		Connection connection = null;
+		CallableStatement cs = null;
+		try {
+			connection = connectionProvider.getDataSource().getConnection();
+			String callProcedure = "{call EX_PROMOTION_MESSAGE (?,?,?)}";
+			cs = connection.prepareCall(callProcedure);
+			cs.setBigDecimal(1, documentFinanceyear);
+			cs.setBigDecimal(2, documentNumber);
+			cs.registerOutParameter(3, java.sql.Types.VARCHAR);
+			cs.executeUpdate();
+			dailyPromotionDTO.setPromotionMsg(cs.getString(3));
+		}catch(DataAccessException | SQLException e) {
+			logger.info("Exception in procedure to get promotion prize" + e.getMessage());
+		}finally {
+			DBUtil.closeResources(cs, connection);
+		}
+		return dailyPromotionDTO;
+	}
 }
