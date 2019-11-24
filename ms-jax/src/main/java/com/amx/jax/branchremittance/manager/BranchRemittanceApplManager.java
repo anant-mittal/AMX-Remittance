@@ -59,7 +59,6 @@ import com.amx.jax.dbmodel.remittance.RemitApplAmlModel;
 import com.amx.jax.dbmodel.remittance.RemittanceAppBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceApplicationSplitting;
-import com.amx.jax.dbmodel.remittance.RemittanceBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceModeMaster;
 import com.amx.jax.dbmodel.remittance.ShoppingCartDetails;
 import com.amx.jax.dict.UserClient.ClientType;
@@ -236,11 +235,11 @@ public class BranchRemittanceApplManager {
 	@Autowired
 	PartnerTransactionManager partnerTransactionManager;
 	
+
 	@Autowired
 	PlaceOrderManager placeOrderManager;
 	
 
-	
 	
 	public BranchRemittanceApplResponseDto saveBranchRemittanceApplication(BranchRemittanceApplRequestModel requestApplModel) {
 		Map<String,Object> hashMap = new HashMap<>();
@@ -342,7 +341,7 @@ public class BranchRemittanceApplManager {
 			remittanceApplication.setApplSplit(ConstantDocument.Yes);
 		}
 		
-		
+
 		//RemittanceTransactionRequestModel
 		List<RemitApplAmlModel> amlData = this.saveRemittanceAppAML(remittanceApplication,hashMap);
 
@@ -608,11 +607,7 @@ public class BranchRemittanceApplManager {
 				remittanceApplication.setDocumentNo(documentNo);
 			}else {
 				throw new GlobalException(JaxError.INVALID_APPLICATION_DOCUMENT_NO,"Application document number shouldnot be null or blank");
-			}			
-
-
-			
-		
+			}	
 		}catch(GlobalException e){
 			logger.debug("create application", e.getErrorMessage() + "" +e.getErrorKey());
 			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
@@ -1070,6 +1065,9 @@ public class BranchRemittanceApplManager {
 		List<RemittanceApplicationSplitting> applSplitList = new ArrayList<RemittanceApplicationSplitting>();
 		 try{
 		 
+			 logger.info("createChildApplication :"+metaData.getCustomerId());
+			 logger.info("createChildApplication :"+JsonUtil.toJson(dyRandPriDto));
+			 
 		 if(remitAppl !=null && dyRandPriDto!=null) {
 			 TrnxRoutingDetails routingDetails = dyRandPriDto.getTrnxRoutingPaths(); 
 

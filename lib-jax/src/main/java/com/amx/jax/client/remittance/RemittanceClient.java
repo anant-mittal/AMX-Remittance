@@ -1,7 +1,6 @@
 package com.amx.jax.client.remittance;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +18,12 @@ import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.BranchRemittanceGetExchangeRateRequest;
 import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
 import com.amx.jax.model.request.remittance.CustomerBankRequest;
+
 import com.amx.jax.model.request.remittance.PlaceOrderRequestModel;
 import com.amx.jax.model.request.remittance.PlaceOrderUpdateStatusDto;
+
+import com.amx.jax.model.request.remittance.GetServiceApplicabilityRequest;
+
 import com.amx.jax.model.request.remittance.RoutingPricingRequest;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
@@ -28,15 +31,17 @@ import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;
 import com.amx.jax.model.response.remittance.FlexFieldReponseDto;
+
 import com.amx.jax.model.response.remittance.GsmPlaceOrderListDto;
 import com.amx.jax.model.response.remittance.GsmSearchRequestParameter;
+
+import com.amx.jax.model.response.remittance.GetServiceApplicabilityResponse;
+
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
-import com.amx.jax.model.response.remittance.PaymentLinkRespDTO;
 import com.amx.jax.model.response.remittance.ParameterDetailsResponseDto;
+import com.amx.jax.model.response.remittance.PaymentLinkRespDTO;
 import com.amx.jax.model.response.remittance.PaymentModeDto;
-
 import com.amx.jax.model.response.remittance.RatePlaceOrderInquiryDto;
-
 import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
 
 import com.amx.jax.model.response.remittance.RemittanceDeclarationReportDto;
@@ -449,6 +454,18 @@ public class RemittanceClient implements IRemittanceService {
 				.as(new ParameterizedTypeReference<AmxApiResponse<DynamicRoutingPricingDto, Object>>() {
 				});
 	
+
+	public AmxApiResponse<GetServiceApplicabilityResponse, Object> getServiceApplicability(GetServiceApplicabilityRequest request) {
+		try {
+			LOGGER.debug("in getServiceApplicability :" + request);
+			return restService.ajax(appConfig.getJaxURL() + Path.GET_SERVICE_APPLICABILITY).meta(new JaxMetaInfo()).post(request)
+					.as(new ParameterizedTypeReference<AmxApiResponse<GetServiceApplicabilityResponse, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in getServiceApplicability : ", e);
+			return JaxSystemError.evaluate(e);
+		}
+
 	}
 
 

@@ -44,7 +44,6 @@ import com.amx.jax.dbmodel.remittance.RemittanceTransactionSplitting;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
-import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.repository.AdditionalInstructionDataRepository;
 import com.amx.jax.repository.ForeignCurrencyAdjustRepository;
 import com.amx.jax.repository.ICollectionDetailRepository;
@@ -64,7 +63,6 @@ import com.amx.jax.repository.IRemittanceTrnxSplitRepository;
 import com.amx.jax.repository.RemittanceApplicationBeneRepository;
 import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.repository.remittance.ILoyaltyPointRepository;
-
 import com.amx.jax.util.JaxUtil;
 
 @Component

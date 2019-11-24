@@ -2,10 +2,7 @@ package com.amx.jax.meta;
 
 import java.math.BigDecimal;
 
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.jax.constants.JaxChannel;
 import com.amx.jax.dict.Tenant;
@@ -89,7 +86,7 @@ public class MetaData implements IMetaData {
 	}
 
 	public BigDecimal getLanguageId() {
-		return JaxUtil.languageScale(languageId);
+		return JaxUtil.languageScaleMeta(languageId);
 	}
 
 

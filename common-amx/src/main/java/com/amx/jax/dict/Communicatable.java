@@ -7,4 +7,5 @@ public interface Communicatable {
 	public boolean canSendWhatsApp();
 
 	public boolean canSendMobile();
+
 }

@@ -1,9 +1,12 @@
-package com.amx.amxlib.meta.model;
+package com.amx.jax.model.response.benebranch;
 
 import java.math.BigDecimal;
 
-public class BankBranchDto {
+import com.amx.jax.model.AResourceDTO;
 
+public class BankBranchDto extends AResourceDTO<BankBranchDto> {
+
+	private static final long serialVersionUID = -2665050090379833406L;
 	private BigDecimal bankBranchId;
 	private String address1;
 	private String address2;
@@ -147,6 +150,12 @@ public class BankBranchDto {
 				+ ", cityId=" + cityId + ", stateId=" + stateId + ", districtId=" + districtId + ", cityName="
 				+ cityName + ", stateName=" + stateName + ", districtName=" + districtName + ", swift=" + swift
 				+ ", zipcode=" + zipcode + ", ifscCode=" + ifscCode + "]";
+	}
+
+
+	@Override
+	public BankBranchDto newInstance() {
+		return new BankBranchDto();
 	}
 
 }

@@ -1038,7 +1038,7 @@ public class RemittanceApplication implements Serializable {
 		this.savedAmountInFc = savedAmountInFc;
 	}
 
-  @Column(name="IS_SPLITTED")
+ @Column(name="IS_SPLITTED")
 	public String getApplSplit() {
 		return applSplit;
 	}
@@ -1065,6 +1065,4 @@ public class RemittanceApplication implements Serializable {
 	public void setRatePlaceOrderId(BigDecimal ratePlaceOrderId) {
 		this.ratePlaceOrderId = ratePlaceOrderId;
 	}
-	
-	
 }

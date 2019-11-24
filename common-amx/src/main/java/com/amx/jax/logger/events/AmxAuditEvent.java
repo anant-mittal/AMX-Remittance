@@ -32,6 +32,7 @@ public abstract class AmxAuditEvent<T> extends AuditEvent<AmxAuditEvent<T>> {
 	protected RemitInfo trxn = null;
 	protected CustInfo cust = null;
 	protected ContactType contactType;
+	protected Verify verify;
 
 	public AmxAuditEvent(EventType type, Object target) {
 		super(type);
@@ -212,6 +213,14 @@ public abstract class AmxAuditEvent<T> extends AuditEvent<AmxAuditEvent<T>> {
 
 	public void setContactType(ContactType contactType) {
 		this.contactType = contactType;
+	}
+
+	public Verify getVerify() {
+		return verify;
+	}
+
+	public void setVerify(Verify verify) {
+		this.verify = verify;
 	}
 
 }

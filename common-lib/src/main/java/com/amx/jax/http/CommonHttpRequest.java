@@ -164,7 +164,6 @@ public class CommonHttpRequest {
 		return null;
 	}
 
-
 	/**
 	 * Returns Value from Query,Header,Cookies
 	 * 

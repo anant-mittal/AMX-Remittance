@@ -84,7 +84,7 @@ public class RemittanceSignatureManager {
 		
 	}
 	
-	private  String getTrnxSignature(RemittanceSignatureDto sigDto) {
+	private  String getTrnxSignature(RemittanceSignatureDto sigDto) throws Exception{
 		String signature =null;
 	
 		if(sigDto!=null) {
@@ -137,4 +137,6 @@ public class RemittanceSignatureManager {
 	private String getSignature(String str) {
 		return null;
 	}
+
+
 }

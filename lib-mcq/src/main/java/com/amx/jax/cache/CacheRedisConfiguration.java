@@ -25,6 +25,7 @@ import com.amx.jax.def.CacheForSessionKey;
 import com.amx.jax.def.CacheForTenantKey;
 import com.amx.jax.def.CacheForThisKey;
 import com.amx.jax.def.CacheForUserKey;
+import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
 
 @Configuration
@@ -48,7 +49,12 @@ public class CacheRedisConfiguration
 	@Value("${spring.redis.port}")
 	private String port;
 
-	public static final String CODEC_VERSION = "1";
+	public static enum CODEC {
+		FST, JACKSON
+	}
+
+	public static final CODEC CODEC_SELECTED = CODEC.FST;
+	public static final String CODEC_VERSION = ArgUtil.parseAsString(CODEC_SELECTED.ordinal() + 1);
 
 	@Bean(destroyMethod = "shutdown")
 	public RedissonClient redisson() throws IOException {
@@ -81,11 +87,18 @@ public class CacheRedisConfiguration
 			singleServerConfig.setReconnectionTimeout(3000);
 
 		}
-		// Commenting this as we dont want to use session sharing across applications
-		// org.redisson.codec.JsonJacksonCodec codec = new
-		// org.redisson.codec.JsonJacksonCodec(JsonUtil.getMapper());
-		org.redisson.codec.FstCodec codec = new org.redisson.codec.FstCodec();
-		config.setCodec(codec);
+		if (CODEC_SELECTED.equals(CODEC.JACKSON)) {
+			org.redisson.codec.JsonJacksonCodec codec = new org.redisson.codec.JsonJacksonCodec(
+					JsonUtil.createRawMapper("forRedis"));
+			config.setCodec(codec);
+		} else {
+			//FSTConfiguration x = FSTConfiguration.createDefaultConfiguration();
+			//x.setSerializerRegistryDelegate(new MyFSTSerializerRegistryDelegate());
+			//org.redisson.codec.FstCodec codec = new org.redisson.codec.FstCodec(x);
+			org.redisson.codec.FstCodec codec = new org.redisson.codec.FstCodec();
+			config.setCodec(codec);
+		}
+
 		return Redisson.create(config);
 	}
 

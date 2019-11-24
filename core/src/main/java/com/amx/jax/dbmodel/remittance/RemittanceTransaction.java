@@ -1241,6 +1241,7 @@ public class RemittanceTransaction implements Serializable {
 		this.savedAmountInFc = savedAmountInFc;
 	}
 
+<<<<<<< HEAD
 	@Column(name="TIME_TO_DELIVER")
 	public Date getTimeToDeliver() {
 		return timeToDeliver;
@@ -1248,15 +1249,24 @@ public class RemittanceTransaction implements Serializable {
 
 	public void setTimeToDeliver(Date timeToDeliver) {
 		this.timeToDeliver = timeToDeliver;
+=======
+	
+	
+	public void setApplSplit(String applSplit) {
+		this.applSplit = applSplit;
+>>>>>>> milestone_addbene
 	}
 
 	@Column(name="IS_SPLITTED")
 	public String getApplSplit() {
 		return applSplit;
+<<<<<<< HEAD
 	}
 
 	public void setApplSplit(String applSplit) {
 		this.applSplit = applSplit;
+=======
+>>>>>>> milestone_addbene
 	}
 	
 	

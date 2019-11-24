@@ -1,21 +1,18 @@
 package com.amx.jax.client;
 
+import static com.amx.amxlib.constant.ApiEndpoint.REFER_API_ENDPOINT;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 
-import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.model.LinkDTO;
 import com.amx.amxlib.model.LinkResponseModel;
-import com.amx.amxlib.model.ReferralDTO;
 import com.amx.amxlib.model.ReferralResponseModel;
-import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.configs.JaxMetaInfo;
-import com.amx.jax.rest.RestService;
-
-import static com.amx.amxlib.constant.ApiEndpoint.REFER_API_ENDPOINT;;
+import com.amx.jax.rest.RestService;;
 
 @Component
 public class ReferralClient extends AbstractJaxServiceClient {

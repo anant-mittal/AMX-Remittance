@@ -4,14 +4,11 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
-import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,8 +44,8 @@ import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.response.ExchangeRateBreakup;
-import com.amx.jax.model.response.remittance.FlexFieldDto;
 import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;
+import com.amx.jax.model.response.remittance.FlexFieldDto;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.pricer.dto.ExchangeDiscountInfo;
 import com.amx.jax.pricer.dto.TrnxRoutingDetails;
@@ -246,8 +243,11 @@ public class RemittanceApplicationManager {
 		validateDailyBeneficiaryTransactionLimit(beneDetails);
 
 		setFurtherInstruction(remittanceApplication, requestModel.getAdditionalFields());
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> milestone_addbene
 		setCustomerDiscountColumns(remittanceApplication, validationResults);
 		setVatDetails(remittanceApplication, validationResults);
 		setSavedAmount(remittanceApplication, validationResults);
@@ -584,7 +584,8 @@ public class RemittanceApplicationManager {
 	}
 	private void setApplicableRatesV2(RemittanceApplication remittanceApplication,
 			RemittanceTransactionDrRequestModel requestModel, RemittanceTransactionResponsetModel validationResults) {
-		ExchangeRateBreakup breakup = validationResults.getExRateBreakup();
+		//ExchangeRateBreakup breakup = validationResults.getExRateBreakup();
+		ExchangeRateBreakup breakup = requestModel.getExchangeRateBreakup();
 		BigDecimal loyalityPointsEncashed = BigDecimal.ZERO;
 		if (loyalityPointsAvailed(requestModel, validationResults)) {
 			loyalityPointsEncashed = validationResults.getLoyalityAmountAvailableForTxn();
@@ -660,26 +661,16 @@ public class RemittanceApplicationManager {
 
 	/** added by Rabil **/
 	public void setSavedAmount(RemittanceApplication remittanceApplication,RemittanceTransactionResponsetModel validationResults) {
+		if(JaxUtil.isNullZeroBigDecimalCheck(validationResults.getYouSavedAmount()) &&  validationResults.getYouSavedAmount().compareTo(BigDecimal.ZERO)>0) {
 		remittanceApplication.setSavedAmount(validationResults.getYouSavedAmount());
+		}
 		remittanceApplication.setRackExchangeRate(validationResults.getRackExchangeRate());
-		remittanceApplication.setSavedAmountInFc(validationResults.getYouSavedAmountInFC());
+		if(JaxUtil.isNullZeroBigDecimalCheck(validationResults.getYouSavedAmountInFC()) && validationResults.getYouSavedAmountInFC().compareTo(BigDecimal.ZERO)>0){
+			remittanceApplication.setSavedAmountInFc(validationResults.getYouSavedAmountInFC());
+		}
 		remittanceApplication.setCustomerChoice(validationResults.getCustomerChoice());
 		
 	}
 	
-	/** @author rabil
-	 * Purpose : to store the delivery date and time 
-	 * 
-	 */
-	public  void setDeliveryTimeDuration(RemittanceApplication remittanceApplication,TrnxRoutingDetails trnxRoutingDetails) {
-		if(trnxRoutingDetails!=null && trnxRoutingDetails.getEstimatedDeliveryDetails()!=null) {
-			if(trnxRoutingDetails.getEstimatedDeliveryDetails().getProcessTimeTotalInSeconds()>0) {
-				remittanceApplication.setTimeToDeliverInSec(new BigDecimal(trnxRoutingDetails.getEstimatedDeliveryDetails().getProcessTimeTotalInSeconds()));
-			}
-		}
-		
-		
-		
-	}
 	
 }

@@ -1,7 +1,9 @@
 package com.amx.jax.client.remittance;
 
+/**
+ * @author rabil
+ */
 import java.math.BigDecimal;
-import java.util.List;
 
 import com.amx.jax.IJaxService;
 import com.amx.jax.api.AmxApiResponse;
@@ -13,8 +15,12 @@ import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.BranchRemittanceGetExchangeRateRequest;
 import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
 import com.amx.jax.model.request.remittance.CustomerBankRequest;
+<<<<<<< HEAD
 import com.amx.jax.model.request.remittance.PlaceOrderRequestModel;
 import com.amx.jax.model.request.remittance.PlaceOrderUpdateStatusDto;
+=======
+import com.amx.jax.model.request.remittance.GetServiceApplicabilityRequest;
+>>>>>>> milestone_addbene
 import com.amx.jax.model.request.remittance.RoutingPricingRequest;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
@@ -22,8 +28,12 @@ import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;
 import com.amx.jax.model.response.remittance.FlexFieldReponseDto;
+
 import com.amx.jax.model.response.remittance.GsmPlaceOrderListDto;
 import com.amx.jax.model.response.remittance.GsmSearchRequestParameter;
+
+import com.amx.jax.model.response.remittance.GetServiceApplicabilityResponse;
+
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
 import com.amx.jax.model.response.remittance.ParameterDetailsResponseDto;
 import com.amx.jax.model.response.remittance.PaymentLinkRespDTO;
@@ -64,6 +74,9 @@ public interface IRemittanceService extends  IJaxService {
 		public static final String BR_REMITTANCE_GET_FLEX_FIELDS = PREFIX + "/get-flex-field/";
 		public static final String BR_REMITTANCE_PAYMENT_LINK = PREFIX + "/payment-link/";
 		public static final String BR_REMITTANCE_VALIDATE_PAY_LINK = PREFIX + "/validate-payment-link/";
+
+		public static final String GET_SERVICE_APPLICABILITY = PREFIX + "/get-service-applicability/";
+
 		
 		public static final String BR_REMITTANCE_GET_GIFT_PACKAGE = PREFIX + "/get-gift-package/";
 		public static final String BR_REMITTANCE_SAVE_PLACE_ORDER = PREFIX + "/save-place-order-appl/";
@@ -133,7 +146,6 @@ public interface IRemittanceService extends  IJaxService {
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND})
 	AmxApiResponse<UserStockDto, Object> fetchLocalCurrencyRefundDenomination();
 
-	//AmxApiResponse<BoolRespModel, Object> saveCustomerBankDetails(List<CustomerBankRequest> customerBank);
 	AmxApiResponse<BoolRespModel, Object> saveCustomerBankDetails(CustomerBankRequest customerBank);
 	
 	AmxApiResponse<BoolRespModel, Object> validationStaffCredentials(String staffUserName, String staffPassword);
@@ -170,6 +182,8 @@ public interface IRemittanceService extends  IJaxService {
 	
 	@ApiJaxStatus({JaxError.DATA_NOT_FOUND})
 	AmxApiResponse<FlexFieldReponseDto,Object> getFlexField(BranchRemittanceGetExchangeRateRequest request);
+
+	AmxApiResponse<GetServiceApplicabilityResponse, Object> getServiceApplicability(GetServiceApplicabilityRequest request);
 	
 	AmxApiResponse<PaymentLinkRespDTO, Object> createAndSendPaymentLink();
 	

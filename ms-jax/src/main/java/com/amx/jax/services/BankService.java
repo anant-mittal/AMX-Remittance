@@ -1,6 +1,7 @@
 package com.amx.jax.services;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,12 +14,15 @@ import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.BankDao;
 import com.amx.jax.dbmodel.BankBranchView;
 import com.amx.jax.dbmodel.BankMasterMdlv1;
+import com.amx.jax.dbmodel.ViewBankChannelModel;
 import com.amx.jax.dbmodel.bene.BankAccountLength;
 import com.amx.jax.dbmodel.remittance.AdditionalBankDetailsViewx;
+import com.amx.jax.model.response.BankMasterDTO;
 import com.amx.jax.repository.BankMasterRepository;
 import com.amx.jax.repository.IAdditionalBankDetailsDao;
 import com.amx.jax.repository.IBankAccountLengthDao;
 import com.amx.jax.repository.IBankBranchView;
+import com.amx.jax.service.BankMetaService;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -38,6 +42,8 @@ public class BankService {
 	
 	@Autowired
 	BankMasterRepository bankMasterRepository;
+	@Autowired
+	BankMetaService bankMetaService;
 
 	public String getBranchSwiftCode(BigDecimal bankId, BigDecimal bankBranchId) {
 		BankBranchView branch = bankDao.getBankBranchById(bankId, bankBranchId);
@@ -84,4 +90,11 @@ public class BankService {
 		return bankMasterRepository.findByBankCodeAndRecordStatus(BankCode,ConstantDocument.Yes);
 	}
 	
+	public List<BankMasterDTO> getBankByCountryAndCurrency(BigDecimal countryId, BigDecimal currencyId) {
+		List<ViewBankChannelModel> list = bankMetaService.getBankViewByCountryIdAndCurrency(countryId, currencyId);
+		Collections.sort(list, (o1, o2) -> {
+			return o1.getBankFullName().compareTo(o2.getBankFullName());
+		});
+		return bankMetaService.convertBankView(list);
+	}
 }
