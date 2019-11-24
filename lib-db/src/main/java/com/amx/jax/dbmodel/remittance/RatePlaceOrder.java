@@ -105,6 +105,8 @@ public class RatePlaceOrder implements Serializable {
 		private BigDecimal exchangeRateApplied;
 		private BigDecimal rackExchangeRate;
 		private String terminalId;
+		private String loyaltyPointInd;
+		 
 		
 		
 		public RatePlaceOrder() {
@@ -866,5 +868,12 @@ public class RatePlaceOrder implements Serializable {
 		}
 		
 		
+		@Column(name="LOYALTY_POINTS_IND")
+		public String getLoyaltyPointInd() {
+			return loyaltyPointInd;
+		}
+		public void setLoyaltyPointInd(String loyaltyPointInd) {
+			this.loyaltyPointInd = loyaltyPointInd;
+		}
 	}
 

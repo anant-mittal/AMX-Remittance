@@ -910,6 +910,10 @@ public class BranchRemittanceSaveManager {
 						remitTrnx.setTimeToDeliver(date);
 					}
 					
+					remitTrnx.setApprovalNo(appl.getApprovalNumber());
+					remitTrnx.setApprovalYear(appl.getApprovalYear());
+					
+					
 					BigDecimal documentNo =generateDocumentNumber(appl.getFsCountryMasterByApplicationCountryId().getCountryId(),appl.getFsCompanyMaster().getCompanyId(),remitTrnx.getDocumentId().getDocumentCode(),remitTrnx.getDocumentFinanceYear(),remitTrnx.getLoccod(),ConstantDocument.A);
 					
 					if(documentNo!=null && documentNo.compareTo(BigDecimal.ZERO)!=0){

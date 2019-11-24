@@ -45,6 +45,7 @@ import com.amx.jax.exrateservice.service.ExchangeRateService;
 import com.amx.jax.manager.RemittanceTransactionManager;
 import com.amx.jax.manager.remittance.CorporateDiscountManager;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.request.remittance.AbstractRemittanceApplicationRequestModel;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.PlaceOrderRequestModel;
 import com.amx.jax.model.request.remittance.PlaceOrderUpdateStatusDto;
@@ -260,6 +261,12 @@ public class PlaceOrderManager implements Serializable{
 		placeOrderAppl.setDocumentCode(document.getDocumentCode());
 		placeOrderAppl.setDocumentId(document.getDocumentID());
 		
+		BigDecimal loyalityPointsEncashed = BigDecimal.ZERO;
+		if(applRequestModel.isAvailLoyalityPoints() && JaxUtil.isNullZeroBigDecimalCheck(customer.getLoyaltyPoints()) && customer.getLoyaltyPoints().compareTo(new BigDecimal(1000))>=0) {
+			placeOrderAppl.setLoyaltyPointInd(ConstantDocument.Yes);
+		}else {
+			placeOrderAppl.setLoyaltyPointInd(ConstantDocument.No);
+		}
 		
 		CountryBranchMdlv1 countryBranch = bankMetaService.getCountryBranchById(metaData.getCountryBranchId()); //user branch not customer branch
 		
@@ -599,6 +606,7 @@ private ExchangeRateBreakup getExchangeRateBreakUPForPlaceOrder(RatePlaceOrder p
 		exRateBreakUp.setNetAmount(exRateBreakUp.getConvertedLCAmount());
 		exRateBreakUp.setNetAmountWithoutLoyality(exRateBreakUp.getConvertedLCAmount());
 		remittanceTransactionManager.applyCurrencyRoudingLogic(exRateBreakUp);
+	
 	}
 	
 	
@@ -686,6 +694,7 @@ public DynamicRoutingPricingDto acceptPlaceOrderByCustomer(BigDecimal ratePlaceO
 	RatePlaceOrder ratePlaceOrder = ratePlaceOrderRepository.fetchApprovedPlaceOrder(metaData.getCustomerId(),ratePlaceOrderId);
 	 ObjectMapper mapper = new ObjectMapper();
 	 DynamicRoutingPricingDto dyRoutingPricingdto = new DynamicRoutingPricingDto();
+
 try {
 	 
 	if(ratePlaceOrder!=null ) {
@@ -698,8 +707,25 @@ try {
 	exRateBreakUp.setInverseRate(ratePlaceOrder.getRateOffered());
 	dyRoutingPricingdto.setExRateBreakup(exRateBreakUp);
 	dyRoutingPricingdto.setPlaceOrderId(ratePlaceOrderId);
+	
+	BranchRemittanceApplRequestModel model = new BranchRemittanceApplRequestModel();
+	model.setBeneId(ratePlaceOrder.getBeneficiaryRelationId());
+	model.setAvailLoyalityPoints(ratePlaceOrder.getLoyaltyPointInd()=="Y"?true:false);
+	model.setLocalAmount(exRateBreakUp.getConvertedLCAmount());
+	model.setForeignAmount(exRateBreakUp.getConvertedFCAmount());
+	
+	
+	remittanceTransactionManager.setNetAmountAndLoyalityState(exRateBreakUp, model, dyRoutingPricingdto, dyRoutingPricingdto.getTxnFee(),dyRoutingPricingdto.getVatAmount());
+	
+	
+	
 	dyRoutingPricingdto.setYouSavedAmount(branchRemittanceExchangeRateManager.getYouSavedAmount(dyRoutingPricingdto));
 	dyRoutingPricingdto.setYouSavedAmountInFC(branchRemittanceExchangeRateManager.getYouSavedAmountInFc(dyRoutingPricingdto));
+	
+	
+	
+	
+	
 	}else {
 		throw new GlobalException(JaxError.RATE_PLACE_ERROR,"No record found");
 	}

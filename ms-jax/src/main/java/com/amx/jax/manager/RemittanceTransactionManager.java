@@ -1004,7 +1004,6 @@ public class RemittanceTransactionManager {
 		if (!JaxUtil.isNullZeroBigDecimalCheck(comission)) {
 			responseModel.setCanRedeemLoyalityPoints(false);
 			responseModel.setLoyalityPointState(LoyalityPointState.CAN_NOT_AVAIL);
-			//responseModel.setDiscountOnComission(BigDecimal.ZERO);
 		}else {
 			responseModel.setDiscountOnComission(corporateDiscountManager.corporateDiscount());
 		}

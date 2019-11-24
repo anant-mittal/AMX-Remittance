@@ -170,6 +170,7 @@ public class RemittanceTransaction implements Serializable {
 	private String applSplit;
 	
 	private Date timeToDeliver;
+	private BigDecimal approvalYear;
 	
 	
 	public RemittanceTransaction() {
@@ -1259,6 +1260,15 @@ public class RemittanceTransaction implements Serializable {
 	public void setApplSplit(String applSplit) {
 		this.applSplit = applSplit;
 
+	}
+
+	@Column(name="APPROVAL_YEAR")
+	public BigDecimal getApprovalYear() {
+		return approvalYear;
+	}
+
+	public void setApprovalYear(BigDecimal approvalYear) {
+		this.approvalYear = approvalYear;
 	}
 	
 	
