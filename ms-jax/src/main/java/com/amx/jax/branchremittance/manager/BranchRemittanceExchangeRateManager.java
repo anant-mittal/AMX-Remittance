@@ -546,41 +546,7 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 	}
 
 
-	/** 
-	 * @author rabil
-	 * @param result
-	 * @return :saved Amount
-	 */
-	public BigDecimal getYouSavedAmount(DynamicRoutingPricingDto result ) {
-		BigDecimal savedAmount = BigDecimal.ZERO;
-		if(result!=null && result.getDiscountAvailed() && result.getRackExchangeRate().compareTo(BigDecimal.ZERO)>0 && result.getExRateBreakup().getConvertedFCAmount().compareTo(BigDecimal.ZERO)>0) {
-			savedAmount =result.getRackExchangeRate().multiply(result.getExRateBreakup().getConvertedFCAmount()).subtract(result.getExRateBreakup().getConvertedLCAmount());
-		
-		
-		if(savedAmount.compareTo(BigDecimal.ZERO)>0) {
-			savedAmount = RoundUtil.roundBigDecimal(savedAmount,result.getExRateBreakup().getLcDecimalNumber().intValue());
-		}
-		}
-		return savedAmount;
-	}
 	
-	
-	public BigDecimal getYouSavedAmountInFc(DynamicRoutingPricingDto result) {
-		BigDecimal savedAmountFC = BigDecimal.ZERO;
-		
-		if(result.getRackExchangeRate().compareTo(BigDecimal.ZERO)>0 && result.getExRateBreakup().getConvertedFCAmount().compareTo(BigDecimal.ZERO)>0) {
-			BigDecimal exchRate = new BigDecimal(1).divide(result.getRackExchangeRate(), 10, RoundingMode.HALF_UP);
-			
-			savedAmountFC = result.getExRateBreakup().getConvertedFCAmount().subtract(result.getExRateBreakup().getConvertedLCAmount().multiply(exchRate));
-		
-			if(savedAmountFC.compareTo(BigDecimal.ZERO)>0) {
-				savedAmountFC = RoundUtil.roundBigDecimal(savedAmountFC,result.getExRateBreakup().getFcDecimalNumber().intValue());
-			}
-		}
-		return savedAmountFC;
-	}
-
-
 	
 	
 	private String impsSplittingMessage(DynamicRoutingPricingDto drDto) {
@@ -671,7 +637,7 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 	 * @param result
 	 * @return :saved Amount
 	 */
-	private BigDecimal getYouSavedAmount(DynamicRoutingPricingDto result ) {
+	public BigDecimal getYouSavedAmount(DynamicRoutingPricingDto result ) {
 		BigDecimal savedAmount = BigDecimal.ZERO;
 		if(JaxUtil.isNullZeroBigDecimalCheck(result.getRackExchangeRate()) && result!=null && result.getDiscountAvailed() && result.getRackExchangeRate().compareTo(BigDecimal.ZERO)>0 && result.getExRateBreakup().getConvertedFCAmount().compareTo(BigDecimal.ZERO)>0) {
 			savedAmount =result.getRackExchangeRate().multiply(result.getExRateBreakup().getConvertedFCAmount()).subtract(result.getExRateBreakup().getConvertedLCAmount());
@@ -685,7 +651,7 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 	
 
 
-	private BigDecimal getYouSavedAmountInFc(DynamicRoutingPricingDto result) {
+	public BigDecimal getYouSavedAmountInFc(DynamicRoutingPricingDto result) {
 		BigDecimal savedAmountFC = BigDecimal.ZERO;
 		
 		if(JaxUtil.isNullZeroBigDecimalCheck(result.getRackExchangeRate()) && result.getRackExchangeRate().compareTo(BigDecimal.ZERO)>0 && result.getExRateBreakup().getConvertedLCAmount().compareTo(BigDecimal.ZERO)>0) {

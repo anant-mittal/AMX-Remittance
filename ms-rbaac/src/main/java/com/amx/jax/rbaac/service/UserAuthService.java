@@ -18,8 +18,6 @@ import com.amx.jax.AppConfig;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.config.RbaacTenantProperties;
 import com.amx.jax.dbmodel.Device;
-import com.amx.jax.dict.UserClient;
-import com.amx.jax.dict.UserClient.AuthSystem;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.dict.UserClient.DeviceType;
 import com.amx.jax.logger.LoggerService;
@@ -538,9 +536,9 @@ public class UserAuthService {
 		}
 
 		DeviceType deviceType = userClientDto.getDeviceType();
-		
+		userClientDto.setTerminalId(new BigDecimal("686"));
 		// Check for Employee System Assignment
-		if (UserClient.isAuthSystem(userClientDto.getClientType(), AuthSystem.TERMINAL)) {
+		if (DeviceType.COMPUTER.isParentOf(deviceType)) {
 
 			if (null == userClientDto.getTerminalId()) {
 				throw new AuthServiceException(RbaacServiceError.INVALID_OR_MISSING_TERMINAL_ID,
@@ -570,7 +568,7 @@ public class UserAuthService {
 
 			return Boolean.TRUE;
 
-		} else if (UserClient.isAuthSystem(userClientDto.getClientType(), AuthSystem.DEVICE)) {
+		} else if (DeviceType.MOBILE.isParentOf(deviceType)) {
 
 			// Device and terminal Validations
 			if (StringUtils.isBlank(userClientDto.getDeviceId()) || null == userClientDto.getDeviceRegId()
@@ -634,4 +632,5 @@ public class UserAuthService {
 	}
 
 }
+
 

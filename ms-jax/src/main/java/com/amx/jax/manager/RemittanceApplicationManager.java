@@ -243,11 +243,6 @@ public class RemittanceApplicationManager {
 		validateDailyBeneficiaryTransactionLimit(beneDetails);
 
 		setFurtherInstruction(remittanceApplication, requestModel.getAdditionalFields());
-<<<<<<< HEAD
-
-
-=======
->>>>>>> milestone_addbene
 		setCustomerDiscountColumns(remittanceApplication, validationResults);
 		setVatDetails(remittanceApplication, validationResults);
 		setSavedAmount(remittanceApplication, validationResults);
@@ -387,8 +382,6 @@ public class RemittanceApplicationManager {
 		validateAdditionalErrorMessagesV2(requestModel);
 		validateBannedBank();
 		validateDailyBeneficiaryTransactionLimit(beneDetails);
-		// remittanceApplication.setInstruction("URGENT");
-
 		setFurtherInstruction(remittanceApplication, requestModel.getAdditionalFields());
 
 		setCustomerDiscountColumns(remittanceApplication, validationResults);
@@ -672,5 +665,21 @@ public class RemittanceApplicationManager {
 		
 	}
 	
+	
+	
+
+	/** @author rabil
+	 * Purpose : to store the delivery date and time 
+	 * 
+	 */
+	public  void setDeliveryTimeDuration(RemittanceApplication remittanceApplication,TrnxRoutingDetails trnxRoutingDetails) {
+		if(trnxRoutingDetails!=null && trnxRoutingDetails.getEstimatedDeliveryDetails()!=null) {
+			if(trnxRoutingDetails.getEstimatedDeliveryDetails().getProcessTimeTotalInSeconds()>0) {
+				remittanceApplication.setTimeToDeliverInSec(new BigDecimal(trnxRoutingDetails.getEstimatedDeliveryDetails().getProcessTimeTotalInSeconds()));
+			}
+		}
+	}
+
+
 	
 }

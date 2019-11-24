@@ -454,7 +454,7 @@ public class RemittanceClient implements IRemittanceService {
 				.as(new ParameterizedTypeReference<AmxApiResponse<DynamicRoutingPricingDto, Object>>() {
 				});
 	
-
+	}
 	public AmxApiResponse<GetServiceApplicabilityResponse, Object> getServiceApplicability(GetServiceApplicabilityRequest request) {
 		try {
 			LOGGER.debug("in getServiceApplicability :" + request);
