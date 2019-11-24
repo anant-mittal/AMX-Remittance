@@ -54,6 +54,7 @@ import com.amx.jax.dbmodel.remittance.AmiecAndBankMapping;
 import com.amx.jax.dbmodel.remittance.BankBranch;
 import com.amx.jax.dbmodel.remittance.DeliveryMode;
 import com.amx.jax.dbmodel.remittance.Document;
+import com.amx.jax.dbmodel.remittance.RatePlaceOrder;
 import com.amx.jax.dbmodel.remittance.RemitApplAmlModel;
 import com.amx.jax.dbmodel.remittance.RemittanceAppBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
@@ -235,6 +236,9 @@ public class BranchRemittanceApplManager {
 	@Autowired
 	PartnerTransactionManager partnerTransactionManager;
 	
+	@Autowired
+	PlaceOrderManager placeOrderManager;
+	
 
 	
 	
@@ -291,9 +295,10 @@ public class BranchRemittanceApplManager {
 		}else {
 			//Dynamic Routing and Priccing API
 			BranchRemittanceGetExchangeRateResponse exchangeRateResposne =branchRemittanceExchangeRateManager.getDynamicRoutingAndPricingExchangeRateResponseCompare(requestApplModel);
-			remittanceTransactionRequestValidator.validateExchangeRate(requestApplModel, exchangeRateResposne);
+			if(!JaxUtil.isNullZeroBigDecimalCheck(requestApplModel.getDynamicRroutingPricingBreakup().getPlaceOrderId())) {
+				remittanceTransactionRequestValidator.validateExchangeRate(requestApplModel, exchangeRateResposne);
+			}
 			logger.debug("branchExchangeRate :"+exchangeRateResposne);
-
 			exchangeRateBreakup = exchangeRateResposne.getExRateBreakup();
 			commission = exchangeRateResposne.getTxnFee();
 			logger.debug("branchExchangeRate :"+exchangeRateBreakup+" commission : "+commission);
@@ -331,7 +336,7 @@ public class BranchRemittanceApplManager {
 		RemittanceApplication remittanceApplication = this.createRemittanceApplication(hashMap);
 		RemittanceAppBenificiary remittanceAppBeneficairy = this.createRemittanceAppBeneficiary(remittanceApplication,hashMap);
 		List<AdditionalInstructionData>  additioalInstructionData = remittanceAppAddlDataManager.createAdditionalInstnDataForBranch(remittanceApplication,hashMap);
-		
+		/** create imps split **/
 		List<RemittanceApplicationSplitting> applSplitList = this.createChildApplication(remittanceApplication,requestApplModel.getDynamicRroutingPricingBreakup());
 		if(applSplitList!=null && !applSplitList.isEmpty()) {
 			remittanceApplication.setApplSplit(ConstantDocument.Yes);
@@ -364,9 +369,8 @@ public class BranchRemittanceApplManager {
 		mapAllDetailApplSave.put("EX_APPL_ADDL", additioalInstructionData);
 		mapAllDetailApplSave.put("EX_APPL_AML", amlData);
 		mapAllDetailApplSave.put("EX_APPL_SRV_PROV", remitApplSrvProv);
-		if(!applSplitList.isEmpty()) {
-			mapAllDetailApplSave.put("EX_APPL_SPLIT", applSplitList);
-		}
+		mapAllDetailApplSave.put("EX_APPL_SPLIT", applSplitList);
+		
 		
 		validateApplDetails(mapAllDetailApplSave);
 		brRemittanceDao.saveAllApplications(mapAllDetailApplSave);
@@ -597,6 +601,7 @@ public class BranchRemittanceApplManager {
 			remitApplManager.setVatDetails(remittanceApplication, dynamicRoutingPricingResponse);
 			remitApplManager.setSavedAmount(remittanceApplication, dynamicRoutingPricingResponse);
 			remitApplManager.setDeliveryTimeDuration(remittanceApplication, dynamicRoutingPricingResponse.getTrnxRoutingPaths());
+			placeOrderManager.setPlaceOrdertoApplication(dynamicRoutingPricingResponse,remittanceApplication);
 			
 			BigDecimal documentNo = branchRemitManager.generateDocumentNumber(applSetup.getApplicationCountryId(), applSetup.getCompanyId(), ConstantDocument.DOCUMENT_CODE_FOR_REMITTANCE_APPLICATION, userFinancialYear.getFinancialYear(), ConstantDocument.A, countryBranch.getBranchId());
 			if(JaxUtil.isNullZeroBigDecimalCheck(documentNo)) {

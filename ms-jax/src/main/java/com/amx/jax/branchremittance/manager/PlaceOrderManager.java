@@ -38,6 +38,7 @@ import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.remittance.Document;
 import com.amx.jax.dbmodel.remittance.RatePlaceOrder;
+import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.ViewPlaceOnOrderInquiry;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.exrateservice.service.ExchangeRateService;
@@ -140,6 +141,8 @@ public class PlaceOrderManager implements Serializable{
 	
 	@Autowired
 	ParameterService parameterService;
+	@Autowired
+	BranchRemittanceExchangeRateManager branchRemittanceExchangeRateManager;
 	
 	
 	
@@ -670,7 +673,7 @@ public void validatePlaceOrderRequest(BranchRemittanceApplRequestModel applReque
 			diffPlaceOrderCount =  new BigDecimal(listPoDiffAmount.size());
 		}
 		
-		if(JaxUtil.isNullZeroBigDecimalCheck(diffPlaceOrderCount) && JaxUtil.isNullZeroBigDecimalCheck(authLimitForDiffBene) && diffPlaceOrderCount.compareTo(authLimitForDiffBene)<0) {
+		if(JaxUtil.isNullZeroBigDecimalCheck(diffPlaceOrderCount) && JaxUtil.isNullZeroBigDecimalCheck(authLimitForDiffBene) && diffPlaceOrderCount.compareTo(authLimitForDiffBene)>=0) {
 			throw new GlobalException(JaxError.RATE_PLACE_ERROR,"The same bene and differnt amount place order limit is exceded");
 		}
 		
@@ -694,7 +697,9 @@ try {
 	ExchangeRateBreakup exRateBreakUp = getExchangeRateBreakUPForPlaceOrder(ratePlaceOrder);
 	exRateBreakUp.setInverseRate(ratePlaceOrder.getRateOffered());
 	dyRoutingPricingdto.setExRateBreakup(exRateBreakUp);
-	
+	dyRoutingPricingdto.setPlaceOrderId(ratePlaceOrderId);
+	dyRoutingPricingdto.setYouSavedAmount(branchRemittanceExchangeRateManager.getYouSavedAmount(dyRoutingPricingdto));
+	dyRoutingPricingdto.setYouSavedAmountInFC(branchRemittanceExchangeRateManager.getYouSavedAmountInFc(dyRoutingPricingdto));
 	}else {
 		throw new GlobalException(JaxError.RATE_PLACE_ERROR,"No record found");
 	}
@@ -707,7 +712,18 @@ try {
 return dyRoutingPricingdto;
 }
 
+/** setting place details for application **/
+public void  setPlaceOrdertoApplication(DynamicRoutingPricingDto dynamicDto,RemittanceApplication remittanceApplication) {
 
+	if(dynamicDto!=null && JaxUtil.isNullZeroBigDecimalCheck(dynamicDto.getPlaceOrderId())) {
+		RatePlaceOrder ratePlaceOrder = ratePlaceOrderRepository.fetchApprovedPlaceOrder(metaData.getCustomerId(),dynamicDto.getPlaceOrderId());
+		if(ratePlaceOrder!=null ) {
+			remittanceApplication.setApprovalNumber(ratePlaceOrder.getDocumentNumber());
+			remittanceApplication.setApprovalYear(ratePlaceOrder.getDocumentFinanceYear());
+			remittanceApplication.setRatePlaceOrderId(ratePlaceOrder.getRatePlaceOrderId());
+		}
+	}
+}
 
 	public String getCustomerFullName(Customer customer){
 		String customerName =null;

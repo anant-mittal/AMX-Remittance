@@ -31,7 +31,7 @@ public interface IRatePlaceOrderRepository  extends CrudRepository<RatePlaceOrde
 	
 	
 	@Query("select rv from RatePlaceOrder rv where rv.customerId=?1 and trunc(createdDate)=trunc(sysdate)  and rv.isActive='U' "
-			+ "and rv.beneficiaryRelationId=?2 and remitType=?4")
+			+ "and rv.beneficiaryRelationId=?2 and remitType=?3")
 	public List<RatePlaceOrder> sameBeneTrnxButDiffAmtCheck(BigDecimal customerId,BigDecimal beneRelationId,BigDecimal remitType);
 	
 	
@@ -51,8 +51,8 @@ public interface IRatePlaceOrderRepository  extends CrudRepository<RatePlaceOrde
 	public List<Object[]> getPlaceOrderCountryWiseCoount();
 	
 	
-	@Query("select * from RatePlaceOrder rv where rv.customerId=?1 and ratePlaceOrderId = ?2 and trunc(createdDate)=trunc(sysdate)  "
-			+ "and rv.isActive='Y' and applDocumentNumber is null and applDocumentFinanceYear is null and NVL(approvedBy,' ') <> ' '  ")
+	@Query("select rv from RatePlaceOrder rv where rv.customerId=?1 and ratePlaceOrderId = ?2 and trunc(createdDate)=trunc(sysdate)  "
+			+ " and rv.isActive='Y' and applDocumentNumber is null and applDocumentFinanceYear is null and NVL(approvedBy,' ') <> ' '  ")
 	public RatePlaceOrder fetchApprovedPlaceOrder(BigDecimal customerId,BigDecimal placeOrderId);
 	
 }

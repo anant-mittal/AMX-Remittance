@@ -155,9 +155,8 @@ public class RemittanceApplication implements Serializable {
 	private String customerChoice;
 	private BigDecimal savedAmountInFc;
 	private BigDecimal timeToDeliverInSec;
-	 
-
 	private String applSplit;
+    private BigDecimal ratePlaceOrderId;
 	
 
 	private List<RemittanceAppBenificiary> exRemittanceAppBenificiary = new ArrayList<RemittanceAppBenificiary>(0);
@@ -1057,6 +1056,14 @@ public class RemittanceApplication implements Serializable {
 
 	public void setTimeToDeliverInSec(BigDecimal timeToDeliverInSec) {
 		this.timeToDeliverInSec = timeToDeliverInSec;
+	}
+	@Column(name="RATE_PLACE_ORDER_ID")
+	public BigDecimal getRatePlaceOrderId() {
+		return ratePlaceOrderId;
+	}
+
+	public void setRatePlaceOrderId(BigDecimal ratePlaceOrderId) {
+		this.ratePlaceOrderId = ratePlaceOrderId;
 	}
 	
 	

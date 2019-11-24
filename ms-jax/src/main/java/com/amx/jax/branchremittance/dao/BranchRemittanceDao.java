@@ -31,6 +31,7 @@ import com.amx.jax.dbmodel.partner.RemitTrnxSrvProv;
 import com.amx.jax.dbmodel.remittance.AdditionalInstructionData;
 import com.amx.jax.dbmodel.remittance.LoyaltyClaimRequest;
 import com.amx.jax.dbmodel.remittance.LoyaltyPointsModel;
+import com.amx.jax.dbmodel.remittance.RatePlaceOrder;
 import com.amx.jax.dbmodel.remittance.RemitApplAmlModel;
 import com.amx.jax.dbmodel.remittance.RemittanceAdditionalInstructionData;
 import com.amx.jax.dbmodel.remittance.RemittanceAml;
@@ -49,6 +50,7 @@ import com.amx.jax.repository.ForeignCurrencyAdjustRepository;
 import com.amx.jax.repository.ICollectionDetailRepository;
 import com.amx.jax.repository.ICollectionRepository;
 import com.amx.jax.repository.ILoyaltyClaimRequestRepository;
+import com.amx.jax.repository.IRatePlaceOrderRepository;
 import com.amx.jax.repository.IRemitApplAmlRepository;
 import com.amx.jax.repository.IRemitApplSrvProvRepository;
 import com.amx.jax.repository.IRemitTrnxSrvProvRepository;
@@ -135,6 +137,9 @@ public class BranchRemittanceDao {
     
     @Autowired
     IRemittanceTrnxSplitRepository remittanceTrnxSplitRepository;
+    
+    @Autowired
+    IRatePlaceOrderRepository placeOrderRepository; 
 
 
 	@Transactional
@@ -163,6 +168,14 @@ public class BranchRemittanceDao {
 					remittanceApplSplitRepository.save(applSplit);
 				}
 			}
+			if(JaxUtil.isNullZeroBigDecimalCheck(saveApplTrnx.getRatePlaceOrderId())) {
+				RatePlaceOrder ratePlaceOrder = placeOrderRepository.findOne(saveApplTrnx.getRatePlaceOrderId());
+				if(ratePlaceOrder!=null) {
+					ratePlaceOrder.setApplDocumentFinanceYear(saveApplTrnx.getDocumentFinancialyear());
+					ratePlaceOrder.setApplDocumentNumber(documentNo);
+					placeOrderRepository.save(ratePlaceOrder);
+				}
+			} //end of place order
 		}
 		
 		if (saveApplBene != null) {
@@ -181,6 +194,10 @@ public class BranchRemittanceDao {
 			saveApplSrvProv.setRemittanceApplicationId(saveApplTrnx.getRemittanceApplicationId());
 			remitApplSrvProvRepository.save(saveApplSrvProv);
 		}
+		
+		
+		
+		
 
 	}
 

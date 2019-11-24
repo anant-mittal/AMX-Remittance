@@ -26,6 +26,7 @@ import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
+import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;
 import com.amx.jax.model.response.remittance.FlexFieldReponseDto;
 import com.amx.jax.model.response.remittance.GsmPlaceOrderListDto;
 import com.amx.jax.model.response.remittance.GsmSearchRequestParameter;
@@ -438,6 +439,16 @@ public class RemittanceClient implements IRemittanceService {
 				.post(requestParameter)
 				.as(new ParameterizedTypeReference<AmxApiResponse<GsmPlaceOrderListDto, Object>>() {
 				});
+	}
+
+	@Override
+	public AmxApiResponse<DynamicRoutingPricingDto, Object> acceptPlaceOrderByCustomer(BigDecimal ratePlaceOrderId) {
+		return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_ACCEPT_PLACE_ORDER).meta(new JaxMetaInfo())
+				.queryParam(Params.RATE_PLACE_ORDER_ID, ratePlaceOrderId).meta(new JaxMetaInfo())
+				.post()
+				.as(new ParameterizedTypeReference<AmxApiResponse<DynamicRoutingPricingDto, Object>>() {
+				});
+	
 	}
 
 

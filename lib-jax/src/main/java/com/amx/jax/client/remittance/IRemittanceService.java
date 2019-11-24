@@ -20,6 +20,7 @@ import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
+import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;
 import com.amx.jax.model.response.remittance.FlexFieldReponseDto;
 import com.amx.jax.model.response.remittance.GsmPlaceOrderListDto;
 import com.amx.jax.model.response.remittance.GsmSearchRequestParameter;
@@ -69,6 +70,7 @@ public interface IRemittanceService extends  IJaxService {
 		public static final String BR_REMITTANCE_FETCH_PLACE_ORDER = PREFIX + "/rate-place-order-inq/";
 		public static final String BR_REMITTANCE_UPDATE_PLACE_ORDER = PREFIX + "/update_rate-place-order/";
 		public static final String BR_REMITTANCE_PLACE_ORDER_COUNT = PREFIX + "/rate-place-order-count/";
+		public static final String BR_REMITTANCE_ACCEPT_PLACE_ORDER = PREFIX + "/accept-place-order/";
 		
 		
 		
@@ -93,6 +95,7 @@ public interface IRemittanceService extends  IJaxService {
 		public static final String COUNTRY_BRANCH_ID="countryBranchId"; 
 		public static final String LINK_ID="linkId";
 		public static final String VERIFICATION_CODE="verificationCode";
+		public static final String RATE_PLACE_ORDER_ID="ratePlaceOrderId";
 		
 	}
 	
@@ -186,6 +189,9 @@ public interface IRemittanceService extends  IJaxService {
 	
 	
 	AmxApiResponse<GsmPlaceOrderListDto,Object>  getCountryWisePlaceOrderCount(GsmSearchRequestParameter requestParameter);
+	
+	AmxApiResponse<DynamicRoutingPricingDto,Object> acceptPlaceOrderByCustomer(BigDecimal ratePlaceOrderId);
+	
 }
 
 

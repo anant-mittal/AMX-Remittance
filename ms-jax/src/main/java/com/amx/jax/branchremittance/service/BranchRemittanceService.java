@@ -33,6 +33,7 @@ import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
+import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;
 import com.amx.jax.model.response.remittance.GsmPlaceOrderListDto;
 import com.amx.jax.model.response.remittance.GsmSearchRequestParameter;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
@@ -269,6 +270,11 @@ public class BranchRemittanceService extends AbstractService{
 		return AmxApiResponse.build(placeOrderCount);
 	}
 
+	
+	public AmxApiResponse<DynamicRoutingPricingDto, Object> acceptPlaceOrder(BigDecimal ratePlaceOrderId){
+		DynamicRoutingPricingDto dynamicRoutingPricingDto = placeOrderManager.acceptPlaceOrderByCustomer(ratePlaceOrderId);
+		return AmxApiResponse.build(dynamicRoutingPricingDto);
+	}
 
 
 	

@@ -37,6 +37,7 @@ import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
+import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;
 import com.amx.jax.model.response.remittance.FlexFieldReponseDto;
 import com.amx.jax.model.response.remittance.GsmPlaceOrderListDto;
 import com.amx.jax.model.response.remittance.GsmSearchRequestParameter;
@@ -311,6 +312,13 @@ public class BranchRemittanceController implements IRemittanceService {
 	public AmxApiResponse<GsmPlaceOrderListDto, Object> getCountryWisePlaceOrderCount(GsmSearchRequestParameter requestParameter) {
 		// TODO Auto-generated method stub
 		return branchRemitService.getCountryWisePlaceOrderCount(requestParameter);
+	}
+
+	@RequestMapping(value=Path.BR_REMITTANCE_ACCEPT_PLACE_ORDER,method=RequestMethod.POST)
+	@Override
+	public AmxApiResponse<DynamicRoutingPricingDto, Object> acceptPlaceOrderByCustomer(BigDecimal ratePlaceOrderId) {
+		// TODO Auto-generated method stub
+		return branchRemitService.acceptPlaceOrder(ratePlaceOrderId);
 	}
 
 
