@@ -16,8 +16,10 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.model.DailyPromotionDTO;
 import com.amx.amxlib.model.PromotionDto;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.dao.DailyPromotionDao;
 import com.amx.jax.dao.PromotionDao;
 import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.CountryBranchMdlv1;
@@ -39,6 +41,7 @@ import com.amx.jax.service.CountryBranchService;
 import com.amx.jax.service.FinancialService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.DateUtil;
+import com.amx.utils.ArgUtil;
 
 import javassist.bytecode.stackmap.BasicBlock.Catch;
 
@@ -71,6 +74,8 @@ public class PromotionManager {
 	@Autowired
 	CountryBranchRepository countryBranchRepository;
 	
+	@Autowired
+	DailyPromotionDao dailyPromotionDao;
 
 
 	/**
@@ -90,8 +95,14 @@ public class PromotionManager {
 	public PromotionDto getPromotionDto(BigDecimal docNoRemit, BigDecimal docFinyear) {
 		try {
 			PromotionDto dto = null;
+			DailyPromotionDTO dailyPromotionDTO=null;
 			RemittanceTransaction remittanceTransaction = remittanceApplicationDao
 					.getRemittanceTransactionByRemitDocNo(docNoRemit, docFinyear);
+			dailyPromotionDTO=dailyPromotionDao.applyJolibeePadalaCoupons(docNoRemit, docFinyear, remittanceTransaction.getBranchId().getBranchId());
+			if(!ArgUtil.isEmpty(dailyPromotionDTO.getPromotionMsg())) {
+				dto.setPrizeMessage(dailyPromotionDTO.getPromotionMsg());
+			}
+			/*
 
 			List<PromotionDetailModel> models = promotionDao.getPromotionDetailModel(docFinyear, docNoRemit);
 			if (models != null && models.size() > 0) {
@@ -112,7 +123,7 @@ public class PromotionManager {
 			if (dto != null && remittanceTransaction.getDocumentNo() != null) {
 				dto.setTransactionReference(remittanceTransaction.getDocumentFinanceYear().toString() + " / "
 						+ remittanceTransaction.getDocumentNo().toString());
-			}
+			}*/
 			return dto;
 		} catch (Exception e) {
 			logger.debug("error occured in get promo dto", e);
