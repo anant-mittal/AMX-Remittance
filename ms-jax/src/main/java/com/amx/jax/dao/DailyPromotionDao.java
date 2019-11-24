@@ -66,9 +66,9 @@ public class DailyPromotionDao {
 			cs = connection.prepareCall(callProcedure);
 			cs.setBigDecimal(1, documentFinanceyear);
 			cs.setBigDecimal(2, documentNumber);
-			cs.registerOutParameter(3, java.sql.Types.VARCHAR);
+			cs.registerOutParameter(0, java.sql.Types.VARCHAR);
 			cs.executeUpdate();
-			dailyPromotionDTO.setPromotionMsg(cs.getString(3));
+			dailyPromotionDTO.setPromotionMsg(cs.getString(0));
 		}catch(DataAccessException | SQLException e) {
 			logger.info("Exception in procedure to get promotion prize" + e.getMessage());
 		}finally {
