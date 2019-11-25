@@ -1,7 +1,6 @@
 package com.amx.jax;
 
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.dict.AmxEnums.CommunicationEvents;
 
 public interface AmxSharedConfig extends AppSharedConfig {
 

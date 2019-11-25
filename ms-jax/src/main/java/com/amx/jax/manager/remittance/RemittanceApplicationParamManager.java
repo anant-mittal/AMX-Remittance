@@ -2,6 +2,7 @@ package com.amx.jax.manager.remittance;
 
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_APPLICATION_COUNTRY_ID;
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_BENEFICIARY_ACCOUNT_NO;
+import static com.amx.amxlib.constant.ApplicationProcedureParam.P_BENEFICIARY_BANK_COUNTRY_ID;
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_BENEFICIARY_BANK_ID;
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_BENEFICIARY_BRANCH_ID;
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_BENEFICIARY_COUNTRY_ID;
@@ -13,7 +14,6 @@ import static com.amx.amxlib.constant.ApplicationProcedureParam.P_LC_AMOUNT;
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_REMITTANCE_MODE_ID;
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_BANK_ID;
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_COUNTRY_ID;
-import static com.amx.amxlib.constant.ApplicationProcedureParam.P_BENEFICIARY_BANK_COUNTRY_ID;
 
 import java.util.Map;
 

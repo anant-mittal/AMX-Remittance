@@ -27,7 +27,6 @@ import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.services.BeneficiaryValidationService;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.validation.BenePersonalDetailValidator;
-import com.amx.utils.AgeUtil;
 
 @Component
 public class BeneBranchValidation {

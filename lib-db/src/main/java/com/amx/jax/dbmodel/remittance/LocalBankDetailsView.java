@@ -8,8 +8,6 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import com.amx.jax.model.IResourceEntity;
-
 @Entity
 @Table(name="V_EX_CBNK")
 public class LocalBankDetailsView implements Serializable {

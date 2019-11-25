@@ -155,7 +155,7 @@ public class SnapQueryController {
 	public String table(@PathVariable(value = "snapView") SnapQueryTemplate snapView,
 			@RequestParam(defaultValue = "now-1m") String gte, @RequestParam(defaultValue = "now") String lte,
 			@RequestParam(defaultValue = "100", required = false) int level,
-			@RequestParam(defaultValue = "100", required = false) int minCount,
+			@RequestParam(defaultValue = "0", required = false) int minCount,
 			@RequestParam(defaultValue = "", required = false) String hash,
 			Model model) throws IOException {
 		model.addAttribute("gte", gte);

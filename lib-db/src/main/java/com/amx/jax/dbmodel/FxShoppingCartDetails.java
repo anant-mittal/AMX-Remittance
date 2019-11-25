@@ -8,15 +8,12 @@ package com.amx.jax.dbmodel;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.sql.Clob;
 import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-
-import com.amx.jax.dict.AmxEnums.DenominationType;
 @Entity
 @Table(name="JAX_FX_VW_APPLICATION_DETAILS")
 public class FxShoppingCartDetails implements Serializable {

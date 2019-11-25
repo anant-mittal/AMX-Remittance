@@ -14,8 +14,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import com.amx.jax.dbmodel.CompanyMaster;
-import com.amx.jax.dbmodel.CountryMaster;
 
 
 @Entity

@@ -1,6 +1,5 @@
 package com.amx.jax.dbmodel;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 
 import javax.persistence.Column;

@@ -55,7 +55,6 @@ import com.amx.jax.dbmodel.fx.OrderManagementView;
 import com.amx.jax.dbmodel.fx.UserFcStockView;
 import com.amx.jax.dbmodel.fx.UserStockView;
 import com.amx.jax.dbmodel.remittance.Document;
-import com.amx.jax.dict.AmxEnums;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.AuditService;

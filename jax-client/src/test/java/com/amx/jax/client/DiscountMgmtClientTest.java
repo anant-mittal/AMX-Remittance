@@ -18,7 +18,6 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.dict.UserClient.Channel;
 import com.amx.jax.pricer.dto.PricingAndCostResponseDTO;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
-import com.amx.jax.pricer.dto.PricingResponseDTO;
 import com.amx.jax.pricer.var.PricerServiceConstants.PRICE_BY;
 
 @RunWith(SpringRunner.class)

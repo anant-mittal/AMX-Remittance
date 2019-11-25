@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.dict.Tenant;
 import com.amx.jax.http.ApiRequest;
 import com.amx.jax.http.RequestType;
 import com.amx.jax.tunnel.TunnelEvent;
