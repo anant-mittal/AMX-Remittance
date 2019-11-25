@@ -126,8 +126,8 @@ public class PromotionManager {
 	
 	public PromotionDto getPromotionDtoJP(BigDecimal docFinyear, BigDecimal docNoRemit) {
 		try {
-			PromotionDto dto = null;
-			DailyPromotionDTO dailyPromotionDTO=null;
+			PromotionDto dto = new PromotionDto();
+			DailyPromotionDTO dailyPromotionDTO=new DailyPromotionDTO();
 			
 			dailyPromotionDTO=dailyPromotionDao.applyJolibeePadalaCouponReceipt(docFinyear,docNoRemit);
 			logger.debug("Daily promotion dto is "+dailyPromotionDTO.getPromotionMsg());
