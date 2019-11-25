@@ -591,7 +591,7 @@ public class ReportManagerService extends AbstractService{
 						transactionHistroyDTO.getDocumentFinanceYear());
 				PromotionDto promotionDtoJP = promotionManager.getPromotionDtoJP(
 						transactionHistroyDTO.getDocumentNumber(), transactionHistroyDTO.getDocumentFinanceYear());
-				if(!ArgUtil.isEmpty(promotionDtoJP.getPrizeMessage())) {
+				if(!ArgUtil.isEmpty(promotionDtoJP)&&!ArgUtil.isEmpty(promotionDtoJP.getPrizeMessage())) {
 					remittanceReceiptSubreportList.get(0).getRemittanceApplList().get(0).setPromotionDto(promotionDtoJP);
 				}else {
 					if (promotionDto != null && !promotionDto.isChichenVoucher()) {
