@@ -58,6 +58,7 @@ import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.RoundUtil;
+import com.amx.utils.ArgUtil;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -586,11 +587,18 @@ public class ReportManagerService extends AbstractService{
 		
 		}
 		if (Boolean.TRUE.equals(promotion)) {
-			PromotionDto promotionDto = promotionManager.getPromotionDto(transactionHistroyDTO.getDocumentNumber(),
-					transactionHistroyDTO.getDocumentFinanceYear());
-				if (promotionDto != null && !promotionDto.isChichenVoucher()) {
-					remittanceReceiptSubreportList.get(0).getRemittanceApplList().get(0).setPromotionDto(promotionDto);
+				PromotionDto promotionDto = promotionManager.getPromotionDto(transactionHistroyDTO.getDocumentNumber(),
+						transactionHistroyDTO.getDocumentFinanceYear());
+				PromotionDto promotionDtoJP = promotionManager.getPromotionDtoJP(
+						transactionHistroyDTO.getDocumentNumber(), transactionHistroyDTO.getDocumentFinanceYear());
+				if(!ArgUtil.isEmpty(promotionDtoJP.getPrizeMessage())) {
+					remittanceReceiptSubreportList.get(0).getRemittanceApplList().get(0).setPromotionDto(promotionDtoJP);
+				}else {
+					if (promotionDto != null && !promotionDto.isChichenVoucher()) {
+						remittanceReceiptSubreportList.get(0).getRemittanceApplList().get(0).setPromotionDto(promotionDto);
+					}
 				}
+				
 		}
 		response.getData().getValues().addAll(remittanceReceiptSubreportList);
 		response.setResponseStatus(ResponseStatus.OK);

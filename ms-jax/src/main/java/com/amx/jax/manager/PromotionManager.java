@@ -95,13 +95,6 @@ public class PromotionManager {
 	public PromotionDto getPromotionDto(BigDecimal docNoRemit, BigDecimal docFinyear) {
 		try {
 			PromotionDto dto = null;
-			DailyPromotionDTO dailyPromotionDTO=null;
-			
-			dailyPromotionDTO=dailyPromotionDao.applyJolibeePadalaCouponReceipt(docNoRemit, docFinyear);
-			if(!ArgUtil.isEmpty(dailyPromotionDTO.getPromotionMsg())) {
-				dto.setPrizeMessage(dailyPromotionDTO.getPromotionMsg());
-			}
-			/*
 			RemittanceTransaction remittanceTransaction = remittanceApplicationDao
 					.getRemittanceTransactionByRemitDocNo(docNoRemit, docFinyear);
 			List<PromotionDetailModel> models = promotionDao.getPromotionDetailModel(docFinyear, docNoRemit);
@@ -123,14 +116,29 @@ public class PromotionManager {
 			if (dto != null && remittanceTransaction.getDocumentNo() != null) {
 				dto.setTransactionReference(remittanceTransaction.getDocumentFinanceYear().toString() + " / "
 						+ remittanceTransaction.getDocumentNo().toString());
-			}*/
+			}
 			return dto;
 		} catch (Exception e) {
 			logger.debug("error occured in get promo dto", e);
 			return null;
 		}
 	}
-
+	
+	public PromotionDto getPromotionDtoJP(BigDecimal docNoRemit, BigDecimal docFinyear) {
+		try {
+			PromotionDto dto = null;
+			DailyPromotionDTO dailyPromotionDTO=null;
+			
+			dailyPromotionDTO=dailyPromotionDao.applyJolibeePadalaCouponReceipt(docNoRemit, docFinyear);
+			if(!ArgUtil.isEmpty(dailyPromotionDTO.getPromotionMsg())) {
+				dto.setPrizeMessage(dailyPromotionDTO.getPromotionMsg());
+			}
+			return dto;
+		} catch (Exception e) {
+			logger.debug("error occured in get promo dto JB", e);
+			return null;
+		}
+	}
 	private boolean isPromotionValid(List<PromotionHeader> promoHeaders) {
 		if (promoHeaders != null && promoHeaders.size() > 0) {
 			for (PromotionHeader ph : promoHeaders) {
