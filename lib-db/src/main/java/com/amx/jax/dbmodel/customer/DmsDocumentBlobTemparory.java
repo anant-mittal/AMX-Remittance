@@ -2,6 +2,7 @@ package com.amx.jax.dbmodel.customer;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.sql.Blob;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -11,8 +12,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-
-import java.sql.Blob;
 
 @Entity
 @Table(name = "DMS_DOC_BLOB_TEMP_JAVA")

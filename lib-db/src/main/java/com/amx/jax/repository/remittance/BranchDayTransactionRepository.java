@@ -2,7 +2,6 @@ package com.amx.jax.repository.remittance;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.Query;

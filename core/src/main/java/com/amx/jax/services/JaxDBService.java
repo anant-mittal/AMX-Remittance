@@ -6,12 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.jax.dbmodel.Employee;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.EmployeeRespository;
-
-import org.springframework.web.context.WebApplicationContext;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)

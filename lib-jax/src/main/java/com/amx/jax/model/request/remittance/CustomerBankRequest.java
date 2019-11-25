@@ -1,6 +1,5 @@
 package com.amx.jax.model.request.remittance;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 public class CustomerBankRequest {

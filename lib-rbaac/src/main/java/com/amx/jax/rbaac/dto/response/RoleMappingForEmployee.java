@@ -4,8 +4,6 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Map;
 
-import org.hibernate.validator.constraints.NotBlank;
-
 public class RoleMappingForEmployee implements Serializable {
 	
 	/** The Constant serialVersionUID. */

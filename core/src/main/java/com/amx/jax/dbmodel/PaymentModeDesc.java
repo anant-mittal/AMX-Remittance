@@ -18,8 +18,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import com.amx.jax.dbmodel.PaymentModeModel;
-
 @Entity
 @Table(name = "EX_PAYMENT_MODE_DESC")
 public class PaymentModeDesc implements Serializable {

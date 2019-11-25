@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import com.amx.jax.cache.CacheBox;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.logger.LoggerService;
-import com.amx.jax.sso.server.SSOServerController;
 import com.amx.utils.ArgUtil;
 
 @Component

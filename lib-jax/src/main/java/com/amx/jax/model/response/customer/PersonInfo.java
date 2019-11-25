@@ -6,8 +6,6 @@ import java.util.Date;
 
 import com.amx.jax.dict.Language;
 import com.amx.jax.model.AbstractModel;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import com.amx.utils.ArgUtil;
 
 public class PersonInfo extends AbstractModel implements Cloneable {

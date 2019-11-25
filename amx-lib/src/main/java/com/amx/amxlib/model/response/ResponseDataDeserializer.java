@@ -33,7 +33,6 @@ import com.amx.amxlib.model.OnlineConfigurationDto;
 import com.amx.amxlib.model.PlaceOrderDTO;
 import com.amx.amxlib.model.PlaceOrderNotificationDTO;
 import com.amx.amxlib.model.RateAlertDTO;
-import com.amx.amxlib.model.ReferralDTO;
 import com.amx.amxlib.model.UserModel;
 import com.amx.amxlib.model.UserVerificationCheckListDTO;
 import com.amx.jax.client.serviceprovider.RoutingBankMasterDTO;

@@ -1,7 +1,7 @@
 package com.amx.jax.grid;
 
-import java.util.Map;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class SortBy {
 

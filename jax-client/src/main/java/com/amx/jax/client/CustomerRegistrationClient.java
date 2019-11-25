@@ -11,8 +11,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.amx.amxlib.exception.AbstractJaxException;
-import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.model.CustomerHomeAddress;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;

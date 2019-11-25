@@ -1,7 +1,6 @@
 package com.amx.jax.serviceprovider.service;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.sql.Date;
@@ -41,8 +40,6 @@ import com.amx.jax.response.serviceprovider.ServiceProviderPartnerDTO;
 import com.amx.jax.response.serviceprovider.ServiceProviderSummaryDTO;
 import com.amx.jax.serviceprovider.dao.ServiceProviderDao;
 import com.amx.jax.services.AbstractService;
-
-import oracle.jdbc.Const;
 
 
 @Component

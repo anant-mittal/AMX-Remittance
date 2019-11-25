@@ -7,7 +7,6 @@ import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +15,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.h2.util.New;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -36,7 +34,6 @@ import com.amx.jax.dal.LoyaltyInsuranceProDao;
 import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.CollectionDetailViewModel;
 import com.amx.jax.dbmodel.CollectionPaymentDetailsViewModel;
-import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.PurposeOfRemittanceViewModel;
 import com.amx.jax.dbmodel.RemittanceTransactionView;
@@ -54,7 +51,6 @@ import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.IPurposeOfRemittance;
 import com.amx.jax.repository.IRemittanceTransactionDao;
 import com.amx.jax.service.CountryService;
-import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.RoundUtil;
@@ -647,7 +643,7 @@ public class ReportManagerService extends AbstractService{
 					}
 				} else {
 					//obj.setBranchExchangeRate(view.getCurrencyQuoteName() + " / " + currencyQuoteName + "     "+ view.getOriginalExchangeRate().toString());
-					obj.setBranchExchangeRate(view.getCurrencyQuoteName() + " / " + currencyQuoteName + "     "+ view.getRackExchangeRate()==null?view.getOriginalExchangeRate().toString():view.getRackExchangeRate().toString());
+					obj.setBranchExchangeRate(view.getCurrencyQuoteName() + " / " + currencyQuoteName + "     "+ (view.getRackExchangeRate()==null?view.getOriginalExchangeRate().toString():view.getRackExchangeRate().toString()));
 					if (view.getRackExchangeRate() != null && view.getForeignTransactionAmount() != null && view.getLocalTransactionCurrencyId() != null) {
 						//BigDecimal calKwtAmt = view.getOriginalExchangeRate().multiply(view.getForeignTransactionAmount());
 						BigDecimal calKwtAmt = view.getRackExchangeRate().multiply(view.getForeignTransactionAmount());

@@ -2,12 +2,12 @@ package com.amx.jax.grid.views;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.util.Date;
 
 @Entity
 @Table(name = "JAX_VW_CUSTOMER_CH_LOG")

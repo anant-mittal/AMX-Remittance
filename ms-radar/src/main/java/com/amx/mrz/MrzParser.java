@@ -18,16 +18,16 @@
  */
 package com.amx.mrz;
 
+import java.text.Normalizer;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.amx.mrz.types.MrzDate;
 import com.amx.mrz.types.MrzFormat;
 import com.amx.mrz.types.MrzSex;
-
-import java.text.Normalizer;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Parses the MRZ records.

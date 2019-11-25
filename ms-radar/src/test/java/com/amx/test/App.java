@@ -14,8 +14,6 @@ import org.jsoup.select.Elements;
 import com.amx.jax.client.snap.ISnapService.RateSource;
 import com.amx.jax.client.snap.ISnapService.RateType;
 import com.amx.jax.dict.Currency;
-import com.amx.jax.payg.PayGParams;
-import com.amx.jax.payg.PayGService;
 import com.amx.jax.rates.AmxCurRate;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.FileUtil;

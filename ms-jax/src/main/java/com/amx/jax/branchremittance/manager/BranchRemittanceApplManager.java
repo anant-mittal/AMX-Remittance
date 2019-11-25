@@ -58,7 +58,6 @@ import com.amx.jax.dbmodel.remittance.RemitApplAmlModel;
 import com.amx.jax.dbmodel.remittance.RemittanceAppBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceApplicationSplitting;
-import com.amx.jax.dbmodel.remittance.RemittanceBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceModeMaster;
 import com.amx.jax.dbmodel.remittance.ShoppingCartDetails;
 import com.amx.jax.dict.UserClient.ClientType;

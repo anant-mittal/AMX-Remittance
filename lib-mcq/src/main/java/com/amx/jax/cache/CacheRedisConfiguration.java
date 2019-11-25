@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.nustaq.serialization.FSTConfiguration;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
@@ -22,7 +21,6 @@ import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.amx.jax.cache.SerializerDelegateTest.MyFSTSerializerRegistryDelegate;
 import com.amx.jax.def.CacheForSessionKey;
 import com.amx.jax.def.CacheForTenantKey;
 import com.amx.jax.def.CacheForThisKey;

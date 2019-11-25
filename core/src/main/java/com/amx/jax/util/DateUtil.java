@@ -13,11 +13,11 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
-import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.model.response.fx.TimeSlotDto;
 
 import jodd.typeconverter.Convert;
