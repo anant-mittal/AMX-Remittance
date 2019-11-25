@@ -40,9 +40,10 @@ public class VentejaApiManager extends ServiceProviderApiManager {
 		parseValidateResponseForError(response.getResult());
 		return response.getResult();
 	}
-	
+
 	@Override
-	public Validate_Remittance_Inputs_Call_Response validateApiVentajaInput(DynamicRoutingPricingDto dynamicRoutingPricingDto,Map<String, Object> remitApplParametersMap) {
+	public Validate_Remittance_Inputs_Call_Response validateApiVentajaInput(DynamicRoutingPricingDto dynamicRoutingPricingDto,
+			Map<String, Object> remitApplParametersMap) {
 		ServiceProviderCallRequestDto serviceProviderCallRequestDto = createValidateInputRequest(remitApplParametersMap);
 		AmxApiResponse<Validate_Remittance_Inputs_Call_Response, Object> response = serviceProviderClientWrapper
 				.validateRemittanceInputs(serviceProviderCallRequestDto);
@@ -89,7 +90,7 @@ public class VentejaApiManager extends ServiceProviderApiManager {
 			}
 		}
 	}
-	
+
 	@Override
 	public Remittance_Call_Response sendRemittance(Map<String, Object> remitApplParametersMap) {
 		Map<String, Object> inputs = new HashMap<>();
@@ -102,4 +103,5 @@ public class VentejaApiManager extends ServiceProviderApiManager {
 		return response.getResult();
 	}
 
+	
 }

@@ -2,19 +2,17 @@ package com.amx.jax.manager.remittance;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
@@ -33,7 +31,6 @@ import com.amx.jax.model.response.customer.BenePackageResponse;
 import com.amx.jax.model.response.jaxfield.JaxConditionalFieldDto;
 import com.amx.jax.model.response.jaxfield.JaxFieldDto;
 import com.amx.jax.model.response.jaxfield.JaxFieldEntity;
-import com.amx.jax.model.response.jaxfield.JaxFieldValueDto;
 import com.amx.jax.model.response.remittance.FlexFieldDto;
 import com.amx.jax.model.response.remittance.ParameterDetailsDto;
 import com.amx.jax.repository.IAdditionalDataDisplayDao;
@@ -41,6 +38,7 @@ import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.remittance.DeliveryModeRepository;
 import com.amx.jax.repository.remittance.IViewParameterDetailsRespository;
 import com.amx.jax.repository.remittance.RemittanceModeMasterRepository;
+import com.amx.jax.serviceprovider.service.AbstractFlexFieldManager;
 import com.amx.jax.services.BankService;
 import com.amx.jax.validation.RemittanceTransactionRequestValidator;
 
@@ -49,8 +47,6 @@ import com.amx.jax.validation.RemittanceTransactionRequestValidator;
 public class PreFlexFieldManager {
 
 	public static final String FC_AMOUNT_FLEX_FIELD_NAME = "PACKAGE_FCAMOUNT";
-	public static final String INDIC_16_VOLUNTEERCONTRIBUTION_SYMBOL = ">";
-	public static final List<String> GIFT_PACKAGE_INDICATORS = Arrays.asList("INDIC6");
 
 	@Autowired
 	IAdditionalDataDisplayDao additionalDataDisplayDao;
@@ -72,16 +68,15 @@ public class PreFlexFieldManager {
 	DeliveryModeRepository deliveryModeRepository;
 	@Autowired
 	AdditionalBankDetailManager additionalBankDetailManager;
+	@Autowired
+	ApplicationContext appContext;
+
 	Map<String, Object> localVariableMap = new HashMap<>();
 
 	private static final Logger log = LoggerFactory.getLogger(PreFlexFieldManager.class);
 
 	public Map<String, Object> validateBenePackageRequest(BenePackageRequest benePackageRequest) {
 		BigDecimal packageFcAmount = null;
-		BigDecimal monthlyContribution = null;
-		BigDecimal volunteerContribution = null;
-		String packageSelectedAmiecCode = null;
-		int noOfMonth = 0;
 		Map<String, Object> validationResults = new HashMap<>();
 		List<JaxConditionalFieldDto> requiredFlexFields = new ArrayList<>();
 		benePackageRequest.populateFlexFieldDtoMap();
@@ -124,38 +119,15 @@ public class PreFlexFieldManager {
 			log.debug(requiredFlexFields.toString());
 			remittanceTransactionRequestValidator.processFlexFields(requiredFlexFields);
 		}
-		if (requestFlexFields != null) {
-			for (Entry<String, FlexFieldDto> element : requestFlexFields.entrySet()) {
-				String k = element.getKey();
-				FlexFieldDto v = element.getValue();
-				if ("INDIC16".equals(k)) {
-					monthlyContribution = new BigDecimal(v.getAmieceCode().replaceAll(">", ""));
-				}
-				if ("INDIC17".equals(k)) {
-					volunteerContribution = new BigDecimal(v.getAmieceDescription().replaceAll(">", ""));
-				}
-				if ("INDIC18".equals(k)) {
-					noOfMonth = Integer.parseInt(v.getAmieceCode().replaceAll(">", ""));
-				}
-				// bpi
-				if (GIFT_PACKAGE_INDICATORS.contains(k)) {
-					packageSelectedAmiecCode = v.getAmieceCode();
-					packageFcAmount = new BigDecimal(v.getAmieceCode().replaceAll(">", ""));
-				}
-			}
-		}
-		Object volunteerContributionIndicVal = localVariableMap.get("volunteerContributionIndic");
-		Boolean volunteerContributionIndic = volunteerContributionIndicVal != null ? (boolean) volunteerContributionIndicVal : null;
 
-		if (monthlyContribution != null && !Boolean.TRUE.equals(volunteerContributionIndic)) {
-			packageFcAmount = monthlyContribution.multiply(BigDecimal.valueOf(noOfMonth));
-		}
-		if (volunteerContribution != null) {
-			packageFcAmount = monthlyContribution.add(volunteerContribution).multiply(BigDecimal.valueOf(noOfMonth));
-		}
-		validationResults.put("PACKAGE_FC_AMOUNT", packageFcAmount);
 		validationResults.put("requiredFlexFields", requiredFlexFields);
-		validationResults.put("packageSelectedAmiecCode", packageSelectedAmiecCode);
+		try {
+			AbstractFlexFieldManager flexFieldManager = (AbstractFlexFieldManager) appContext
+					.getBean(routingBank.getBankCode() + AbstractFlexFieldManager.FLEX_FIELD_MANAGER_BEAN_SUFFIX);
+			flexFieldManager.validatePreFlexField(requestFlexFields, localVariableMap, validationResults);
+		} catch (NoSuchBeanDefinitionException ex) {
+
+		}
 		return validationResults;
 	}
 
@@ -188,6 +160,9 @@ public class PreFlexFieldManager {
 		BigDecimal routingCountryId = routingBank.getBankCountryId();
 		String remittanceModeCode = cashSetUp.getCharField3();
 		String deliveryModeCode = cashSetUp.getCharField4();
+		String bankCode = bankService.getBankById(routingBankId).getBankCode();
+		// TODO find if routing bank addl flex field validation is needed or not based
+
 		Map<String, FlexFieldDto> requestFlexFields = benePackageRequest.getFlexFieldDtoMap();
 		if (requestFlexFields == null) {
 			requestFlexFields = new HashMap<>();
@@ -200,88 +175,16 @@ public class PreFlexFieldManager {
 				applicationCountryId, routingCountryId, foreignCurrencyId, remittanceModeId, deliveryModeId,
 				flexiFieldIn.toArray(new String[flexiFieldIn.size()]), routingBankId, ConstantDocument.Yes);
 
-		boolean volunteerContributionIndic = false;
-		boolean volunteerContributionSelected = false;
-		ParameterDetailsDto volunteerParameter = null;
-		JaxConditionalFieldDto volunteerJaxConditionalFieldDto = null;
-		for (AdditionalDataDisplayView flexField : additionalDataRequired) {
-			FlexFieldDto flexFieldValueInRequest = requestFlexFields.get(flexField.getFlexField());
-			JaxConditionalFieldDto jaxConditionalFieldDto = remittanceTransactionRequestValidator.getConditionalFieldDto(flexField, requestFlexFields,
-					routingCountryId, remittanceModeId, deliveryModeId, foreignCurrencyId, routingBankId, null, true);
-			sortPossibleValues(jaxConditionalFieldDto);
-			if ("INDIC16".equals(flexField.getFlexField()) && flexFieldValueInRequest != null
-					&& flexFieldValueInRequest.getAmieceCode().contains(INDIC_16_VOLUNTEERCONTRIBUTION_SYMBOL)) {
-				volunteerContributionIndic = true;
-				volunteerParameter = findVolunteerParam(parameterSetUp,
-						flexFieldValueInRequest.getAmieceCode().replaceAll(INDIC_16_VOLUNTEERCONTRIBUTION_SYMBOL, ""));
-			}
-			if ("INDIC17".equals(flexField.getFlexField()) && flexFieldValueInRequest != null) {
-				volunteerContributionSelected = true;
-			}
-			if ("INDIC17".equals(flexField.getFlexField())) {
-				volunteerJaxConditionalFieldDto = jaxConditionalFieldDto;
-			}
-			//TODO remove this check indic12 , added for testingonly
-			if (jaxConditionalFieldDto != null && !"INDIC12".equals(flexField.getFlexField())) {
-				requiredFlexFields.add(jaxConditionalFieldDto);
-			}
-		}
-		addMinMaxValueForVoluteerContri(volunteerJaxConditionalFieldDto, volunteerParameter);
-		localVariableMap.put("volunteerContributionIndic", volunteerContributionIndic);
-		if (volunteerContributionIndic) {
-			log.debug("volunteer Contribution Selected");
-		} else {
-			// remove volunteer Indic 17
-			Iterator<JaxConditionalFieldDto> itr = requiredFlexFields.iterator();
-			while (itr.hasNext()) {
-				JaxConditionalFieldDto flexField = itr.next();
-				if ("INDIC17".equals(flexField.getField().getName())) {
-					itr.remove();
-				}
-			}
+		try {
+			AbstractFlexFieldManager flexFieldManager = (AbstractFlexFieldManager) appContext
+					.getBean(bankCode + AbstractFlexFieldManager.FLEX_FIELD_MANAGER_BEAN_SUFFIX);
+			Map<String, Object> result = flexFieldManager.managePreFlexFields(additionalDataRequired, requestFlexFields, cashSetUp, beneficaryDetails,
+					requiredFlexFields);
+			localVariableMap.putAll(result);
+		} catch (NoSuchBeanDefinitionException ex) {
+
 		}
 		return requiredFlexFields;
-	}
-
-	private ParameterDetailsDto findVolunteerParam(List<ParameterDetailsDto> parameterSetUp, String amount) {
-		List<ParameterDetailsDto> list = parameterSetUp.stream().filter(i -> {
-			if (i.getAmount() != null && i.getMinAmount() != null && i.getMinAmount().doubleValue() > 0 && i.getMaxAmount() != null
-					&& i.getMaxAmount().doubleValue() > 0) {
-				if (i.getAmount().toString().equals(amount)) {
-					return true;
-				}
-			}
-			return false;
-		}).collect(Collectors.toList());
-		if (list != null && list.size() > 0) {
-			return list.get(0);
-		} else {
-			return null;
-		}
-	}
-
-	private void addMinMaxValueForVoluteerContri(JaxConditionalFieldDto jaxConditionalFieldDto, ParameterDetailsDto volunteerParameter) {
-		if (jaxConditionalFieldDto != null && volunteerParameter != null) {
-			jaxConditionalFieldDto.getField().setMinValue(volunteerParameter.getMinAmount());
-			jaxConditionalFieldDto.getField().setMaxValue(volunteerParameter.getMaxAmount());
-		}
-	}
-
-	private void sortPossibleValues(JaxConditionalFieldDto jaxConditionalFieldDto) {
-		List<JaxFieldValueDto> possibleValues = jaxConditionalFieldDto.getField().getPossibleValues();
-		String fieldName = jaxConditionalFieldDto.getField().getName();
-		if ("INDIC16".equals(fieldName) || "INDIC18".equals(fieldName)) {
-			if (possibleValues != null) {
-				// sorting possible values acc. to amiec code
-				Collections.sort(possibleValues, (o1, o2) -> {
-					FlexFieldDto dto1 = (FlexFieldDto) o1.getValue();
-					FlexFieldDto dto2 = (FlexFieldDto) o2.getValue();
-					BigDecimal amount1 = new BigDecimal(dto1.getAmieceCode().replace(INDIC_16_VOLUNTEERCONTRIBUTION_SYMBOL, ""));
-					BigDecimal amount2 = new BigDecimal(dto2.getAmieceCode());
-					return amount1.compareTo(amount2);
-				});
-			}
-		}
 	}
 
 	public BenePackageResponse createBenePackageResponse(Map<String, Object> validationResults) {
