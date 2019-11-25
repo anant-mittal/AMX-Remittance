@@ -531,11 +531,13 @@ public class ReportManagerService extends AbstractService{
 					 
 					 PromotionDto promotionDtoJP = promotionManager.getPromotionDtoJP(
 							 view.getDocumentNo(),view.getDocumentFinancialYear());
+					 logger.debug("Promotion dto for JB value is  "+JsonUtil.toJson(promotionDtoJP));
 					 if(!ArgUtil.isEmpty(promotionDtoJP)&&!ArgUtil.isEmpty(promotionDtoJP.getPrizeMessage())) {
 						 obj.setPromotionMessage(promotionDtoJP.getPrizeMessage());
 					 }
 					 else {
 						 PromotionDto prmoDto  = promotionManager.getPromotionMessage(view.getDocumentNo(),view.getDocumentFinancialYear(),view.getCountryBranchId(),currencyQuoteName);
+						 logger.debug("Promotion dto value is  "+JsonUtil.toJson(prmoDto));
 						 if(prmoDto!=null && !StringUtils.isBlank(prmoDto.getPrizeMessage())) {
 							 obj.setPromotionMessage(prmoDto.getPrizeMessage());
 						 }
@@ -600,11 +602,13 @@ public class ReportManagerService extends AbstractService{
 				
 				PromotionDto promotionDtoJP = promotionManager.getPromotionDtoJP(
 						transactionHistroyDTO.getDocumentNumber(), transactionHistroyDTO.getDocumentFinanceYear());
+				logger.debug("Promotion dto2 for JB value is  "+JsonUtil.toJson(promotionDtoJP));
 				if(!ArgUtil.isEmpty(promotionDtoJP)&&!ArgUtil.isEmpty(promotionDtoJP.getPrizeMessage())) {
 					remittanceReceiptSubreportList.get(0).getRemittanceApplList().get(0).setPromotionDto(promotionDtoJP);
 				}else {
 					PromotionDto promotionDto = promotionManager.getPromotionDto(transactionHistroyDTO.getDocumentNumber(),
 							transactionHistroyDTO.getDocumentFinanceYear());
+					logger.debug("Promotion dto2 value is  "+JsonUtil.toJson(promotionDto));
 					if (promotionDto != null && !promotionDto.isChichenVoucher()) {
 						remittanceReceiptSubreportList.get(0).getRemittanceApplList().get(0).setPromotionDto(promotionDto);
 					}
