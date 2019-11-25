@@ -527,10 +527,19 @@ public class ReportManagerService extends AbstractService{
 					 
 					/** end **/
 					
-					 PromotionDto prmoDto  = promotionManager.getPromotionMessage(view.getDocumentNo(),view.getDocumentFinancialYear(),view.getCountryBranchId(),currencyQuoteName);
-					 if(prmoDto!=null && !StringUtils.isBlank(prmoDto.getPrizeMessage())) {
-						 obj.setPromotionMessage(prmoDto.getPrizeMessage());
+					 
+					 PromotionDto promotionDtoJP = promotionManager.getPromotionDtoJP(
+							 view.getDocumentNo(),view.getDocumentFinancialYear());
+					 if(!ArgUtil.isEmpty(promotionDtoJP)&&!ArgUtil.isEmpty(promotionDtoJP.getPrizeMessage())) {
+						 obj.setPromotionMessage(promotionDtoJP.getPrizeMessage());
 					 }
+					 else {
+						 PromotionDto prmoDto  = promotionManager.getPromotionMessage(view.getDocumentNo(),view.getDocumentFinancialYear(),view.getCountryBranchId(),currencyQuoteName);
+						 if(prmoDto!=null && !StringUtils.isBlank(prmoDto.getPrizeMessage())) {
+							 obj.setPromotionMessage(prmoDto.getPrizeMessage());
+						 }
+					 }
+					 
 					
 					if(JaxUtil.isNullZeroBigDecimalCheck(view.getVatAmount())) {
 						BigDecimal vatAmount=RoundUtil.roundBigDecimal((view.getVatAmount()),decimalPerCurrency);
@@ -587,13 +596,14 @@ public class ReportManagerService extends AbstractService{
 		
 		}
 		if (Boolean.TRUE.equals(promotion)) {
-				PromotionDto promotionDto = promotionManager.getPromotionDto(transactionHistroyDTO.getDocumentNumber(),
-						transactionHistroyDTO.getDocumentFinanceYear());
+				
 				PromotionDto promotionDtoJP = promotionManager.getPromotionDtoJP(
 						transactionHistroyDTO.getDocumentNumber(), transactionHistroyDTO.getDocumentFinanceYear());
 				if(!ArgUtil.isEmpty(promotionDtoJP)&&!ArgUtil.isEmpty(promotionDtoJP.getPrizeMessage())) {
 					remittanceReceiptSubreportList.get(0).getRemittanceApplList().get(0).setPromotionDto(promotionDtoJP);
 				}else {
+					PromotionDto promotionDto = promotionManager.getPromotionDto(transactionHistroyDTO.getDocumentNumber(),
+							transactionHistroyDTO.getDocumentFinanceYear());
 					if (promotionDto != null && !promotionDto.isChichenVoucher()) {
 						remittanceReceiptSubreportList.get(0).getRemittanceApplList().get(0).setPromotionDto(promotionDto);
 					}
