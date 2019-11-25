@@ -3,7 +3,7 @@
     "custId": {
       "terms": {
         "field": "logmap.cust.id",
-        "size": 500000,
+        "size": 5000000,
         "order": {
           "_key": "desc"
         }
