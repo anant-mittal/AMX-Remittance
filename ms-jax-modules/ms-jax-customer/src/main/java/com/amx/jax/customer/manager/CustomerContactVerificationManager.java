@@ -112,6 +112,21 @@ public class CustomerContactVerificationManager {
 		return links.get(0);
 	}
 
+	public BigDecimal getConfirmedCountsByCustomer(Customer c, ContactType contactType) {
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DATE, -1 * 90);
+		java.util.Date expiryPeriod = new java.util.Date(cal.getTimeInMillis());
+		List<Object[]> x = customerContactVerificationRepository.getCountsByCustomer(c.getCustomerId(),
+				contactType,
+				expiryPeriod);
+		for (Object[] p : x) {
+			if (Status.N.equals(p[1])) {
+				return ArgUtil.parseAsBigDecimal(p[0]);
+			}
+		}
+		return BigDecimal.ZERO;
+	}
+
 	public CustomerContactVerification create(Customer c, ContactType contactType) {
 
 		contactType = contactType.contactType();
@@ -176,16 +191,7 @@ public class CustomerContactVerificationManager {
 
 		CustomerContactVerification link2 = customerContactVerificationRepository.save(link);
 
-		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.DATE, -1 * 90);
-		java.util.Date expiryPeriod = new java.util.Date(cal.getTimeInMillis());
-		List<Object[]> x = customerContactVerificationRepository.getCountsByCustomer(c.getCustomerId(), contactType,
-				expiryPeriod);
-		for (Object[] p : x) {
-			if(Status.N.equals(p[1])) {
-				audit.getVerify().setCount(ArgUtil.parseAsBigDecimal(p[0]));
-			}
-		}
+		audit.getVerify().setCount(getConfirmedCountsByCustomer(c, contactType));
 
 		// Audit Info
 		audit.setTargetId(link2.getId());
@@ -364,6 +370,8 @@ public class CustomerContactVerificationManager {
 			link.setIsActive(Status.N);
 			link.setVerifiedDate(new Date());
 			customerContactVerificationRepository.save(link);
+
+			audit.getVerify().setCount(getConfirmedCountsByCustomer(c, link.getContactType()));
 
 		} catch (GlobalException e) {
 			auditService.log(audit.result(Result.FAIL).message(e.getError()));
