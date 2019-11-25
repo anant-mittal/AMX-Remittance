@@ -124,12 +124,13 @@ public class PromotionManager {
 		}
 	}
 	
-	public PromotionDto getPromotionDtoJP(BigDecimal docNoRemit, BigDecimal docFinyear) {
+	public PromotionDto getPromotionDtoJP(BigDecimal docFinyear, BigDecimal docNoRemit) {
 		try {
 			PromotionDto dto = null;
 			DailyPromotionDTO dailyPromotionDTO=null;
 			
-			dailyPromotionDTO=dailyPromotionDao.applyJolibeePadalaCouponReceipt(docNoRemit, docFinyear);
+			dailyPromotionDTO=dailyPromotionDao.applyJolibeePadalaCouponReceipt(docFinyear,docNoRemit);
+			logger.debug("Daily promotion dto is "+dailyPromotionDTO.getPromotionMsg());
 			if(!ArgUtil.isEmpty(dailyPromotionDTO.getPromotionMsg())) {
 				dto.setPrizeMessage(dailyPromotionDTO.getPromotionMsg());
 			}

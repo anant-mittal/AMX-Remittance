@@ -530,7 +530,7 @@ public class ReportManagerService extends AbstractService{
 					
 					 
 					 PromotionDto promotionDtoJP = promotionManager.getPromotionDtoJP(
-							 view.getDocumentNo(),view.getDocumentFinancialYear());
+							 view.getDocumentFinancialYear(),view.getDocumentNo());
 					 logger.debug("Promotion dto for JB value is  "+JsonUtil.toJson(promotionDtoJP));
 					 if(!ArgUtil.isEmpty(promotionDtoJP)&&!ArgUtil.isEmpty(promotionDtoJP.getPrizeMessage())) {
 						 obj.setPromotionMessage(promotionDtoJP.getPrizeMessage());
@@ -601,7 +601,7 @@ public class ReportManagerService extends AbstractService{
 		if (Boolean.TRUE.equals(promotion)) {
 				
 				PromotionDto promotionDtoJP = promotionManager.getPromotionDtoJP(
-						transactionHistroyDTO.getDocumentNumber(), transactionHistroyDTO.getDocumentFinanceYear());
+						transactionHistroyDTO.getDocumentFinanceYear(),transactionHistroyDTO.getDocumentNumber());
 				logger.debug("Promotion dto2 for JB value is  "+JsonUtil.toJson(promotionDtoJP));
 				if(!ArgUtil.isEmpty(promotionDtoJP)&&!ArgUtil.isEmpty(promotionDtoJP.getPrizeMessage())) {
 					remittanceReceiptSubreportList.get(0).getRemittanceApplList().get(0).setPromotionDto(promotionDtoJP);
