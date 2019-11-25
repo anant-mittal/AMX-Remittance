@@ -127,8 +127,8 @@ public class RemittanceTransactionRequestValidator {
 		FlexFieldDto servicePackage = request.getServicePackage();
 		List<JaxConditionalFieldDto> requiredFlexFields = new ArrayList<>();
 		for (AdditionalDataDisplayView flexField : additionalDataRequired) {
-			JaxConditionalFieldDto jaxConditionalFieldDto = getConditionalFieldDto(flexField, requestFlexFields, foreignCurrencyId, foreignCurrencyId,
-					foreignCurrencyId, foreignCurrencyId, foreignCurrencyId, servicePackage, false);
+			JaxConditionalFieldDto jaxConditionalFieldDto = getConditionalFieldDto(flexField, requestFlexFields, routingCountryId, remittanceModeId,
+					deliveryModeId, foreignCurrencyId, routingBankId, servicePackage, false);
 			if (jaxConditionalFieldDto != null) {
 				requiredFlexFields.add(jaxConditionalFieldDto);
 			}

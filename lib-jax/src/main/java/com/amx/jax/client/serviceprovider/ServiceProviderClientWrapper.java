@@ -33,8 +33,10 @@ public class ServiceProviderClientWrapper {
 	}
 
 	public AmxApiResponse<Remittance_Call_Response, Object> sendRemittance(ServiceProviderCallRequestDto sendRemittanceRequestDto) {
+		log.debug("sendRemittance request {}", JsonUtil.toJson(sendRemittanceRequestDto));
 		AmxApiResponse<ServiceProviderResponse, Object> response = serviceProviderClient.sendRemittance(sendRemittanceRequestDto);
 		Remittance_Call_Response result = (Remittance_Call_Response) response.getResult();
+		log.debug("sendRemittance response {}", JsonUtil.toJson(result));
 		return AmxApiResponse.build(result);
 	}
 
