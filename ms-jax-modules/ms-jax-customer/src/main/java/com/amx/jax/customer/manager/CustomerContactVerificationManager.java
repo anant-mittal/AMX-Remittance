@@ -190,8 +190,7 @@ public class CustomerContactVerificationManager {
 		}
 
 		CustomerContactVerification link2 = customerContactVerificationRepository.save(link);
-
-		audit.getVerify().setCount(getConfirmedCountsByCustomer(c, contactType));
+		audit.getVerify().id(link2.getId()).count(getConfirmedCountsByCustomer(c, contactType));
 
 		// Audit Info
 		audit.setTargetId(link2.getId());
@@ -216,6 +215,7 @@ public class CustomerContactVerificationManager {
 		audit.setCustomerId(c.getCustomerId());
 		audit.setCustomer(c.getIdentityInt());
 		audit.setContactType(oldLink.getContactType());
+		audit.setVerify(new Verify().contactType(oldLink.getContactType()).id(oldLink.getId()));
 
 		try {
 			if (!oldLink.getCustomerId().equals(c.getCustomerId())) {
@@ -229,6 +229,7 @@ public class CustomerContactVerificationManager {
 
 			oldLink.setVerificationCode(Random.randomAlphaNumeric(8));
 			oldLink.setSendDate(new Date());
+			audit.getVerify().count(getConfirmedCountsByCustomer(c, oldLink.getContactType()));
 
 		} catch (GlobalException e) {
 			auditService.log(audit.result(Result.FAIL).message(e.getError()));
@@ -347,6 +348,7 @@ public class CustomerContactVerificationManager {
 		audit.setCustomerId(c.getCustomerId());
 		audit.setCustomer(c.getIdentityInt());
 		audit.setContactType(link.getContactType());
+		audit.setVerify(new Verify().contactType(link.getContactType()).id(link.getId()));
 
 		try {
 
@@ -371,13 +373,14 @@ public class CustomerContactVerificationManager {
 			link.setVerifiedDate(new Date());
 			customerContactVerificationRepository.save(link);
 
-			audit.getVerify().setCount(getConfirmedCountsByCustomer(c, link.getContactType()));
+			audit.getVerify().count(getConfirmedCountsByCustomer(c, link.getContactType()));
 
 		} catch (GlobalException e) {
 			auditService.log(audit.result(Result.FAIL).message(e.getError()));
 			throw e;
 		}
 
+		// Audit Info
 		audit.setTargetId(link.getId());
 		auditService.log(audit.result(Result.DONE));
 
