@@ -3,7 +3,7 @@
     "custId": {
       "terms": {
         "field": "logmap.cust.id",
-        "size": 500000,
+        "size": 5000000,
         "order": {
           "_key": "desc"
         }
@@ -154,7 +154,11 @@
 	 "rows" : ["CONTACT_VERF_INIT:DONE_areaId AS areaId DEFAULT -", "CONTACT_VERF_INIT:DONE_branchName AS branchName DEFAULT -",
 	 	"CONTACT_VERF_INIT:DONE_branchUser AS branchUser DEFAULT SYSTEM"],
 	 "cols" : ["contactType"],
-	 "vals" : ["sum CONTACT_VERF_INIT:DONE_uCount AS verification", "sum CONTACT_VERF_COMPLETE:DONE_uCount AS Confirmed"]
+	 "vals" : ["sum CONTACT_VERF_INIT:DONE_uCount AS verification", "sum CONTACT_VERF_COMPLETE:DONE_uCount AS confirmed"],
+	 "computed" : [
+	 		"total_verification=SMS_verification + EMAIL_verification + WHATSAPP_verification",
+	 		"total_confirmed=SMS_confirmed + EMAIL_confirmed + WHATSAPP_confirmed"
+	 	]
   	}
   ]
 }
