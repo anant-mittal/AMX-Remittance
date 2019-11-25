@@ -3,7 +3,6 @@ package com.amx.jax.pricer.service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,12 +40,12 @@ import com.amx.jax.pricer.dto.GroupDetails;
 import com.amx.jax.pricer.dto.OnlineMarginMarkupInfo;
 import com.amx.jax.pricer.dto.OnlineMarginMarkupReq;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
+import com.amx.jax.pricer.dto.RoutingProductStatusDetails;
 import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.manager.DiscountManager;
-import com.amx.jax.pricer.meta.ProbotMetaInfo;
+import com.amx.jax.pricer.manager.RoutingProductManager;
 import com.amx.jax.pricer.var.PricerServiceConstants.DISCOUNT_TYPE;
-
 
 @Service
 public class ExchangeDataService {
@@ -83,12 +82,15 @@ public class ExchangeDataService {
 
 	@Autowired
 	CurrencyMasterDao currencyMasterDao;
-	
+
 	@Autowired
 	MarginMarkupDao marginMarkupDao;
-	
+
+	// @Autowired
+	// private ProbotMetaInfo metaInfo;
+
 	@Autowired
-	private ProbotMetaInfo metaInfo;
+	RoutingProductManager routingProductManager;
 
 	private static BigDecimal OnlineCountryBranchId;
 
@@ -142,7 +144,8 @@ public class ExchangeDataService {
 		}
 
 		if (discountMgmtReqDTO.getDiscountType().contains(DISCOUNT_TYPE.AMOUNT_SLAB)) {
-			if (null != discountMgmtReqDTO.getCountryId() && null != discountMgmtReqDTO.getCurrencyId() && null != discountMgmtReqDTO.getBankId()) {
+			if (null != discountMgmtReqDTO.getCountryId() && null != discountMgmtReqDTO.getCurrencyId()
+					&& null != discountMgmtReqDTO.getBankId()) {
 
 				if (OnlineCountryBranchId == null) {
 					CountryBranch cb = countryBranchDao.getOnlineCountryBranch();
@@ -150,12 +153,12 @@ public class ExchangeDataService {
 				}
 
 				List<PipsMaster> pipsMasterData = pipsMasterDao.getAmountSlab(discountMgmtReqDTO.getCountryId(),
-						discountMgmtReqDTO.getCurrencyId(), OnlineCountryBranchId,discountMgmtReqDTO.getBankId());
+						discountMgmtReqDTO.getCurrencyId(), OnlineCountryBranchId, discountMgmtReqDTO.getBankId());
 				List<AmountSlabDetails> amountSlabData = discountManager.convertAmountSlabData(pipsMasterData);
-				
+
 				discountMgmtRespDTO.setAmountSlabDetails(amountSlabData);
 			}
-			
+
 		}
 
 		return discountMgmtRespDTO;
@@ -203,7 +206,6 @@ public class ExchangeDataService {
 			discountManager.commitPipsDiscount(discountdetailsRequestDTO.getAmountSlabDetails());
 
 		}
-		
 
 		return AmxApiResponse.build();
 	}
@@ -228,26 +230,33 @@ public class ExchangeDataService {
 		List<CurrencyMasterDTO> currencyData = discountManager.convertCurrencyData(currencyByGrId);
 		return currencyData;
 	}
+
 	public OnlineMarginMarkupInfo getOnlineMarginMarkupData(OnlineMarginMarkupReq request) {
-		 OnlineMarginMarkup marginMarkupData= marginMarkupDao.getMarkupData(request.getApplicationCountryId(),request.getCountryId(), request.getCurrencyId(), request.getBankId());
-		 OnlineMarginMarkupInfo marginMarkupInfo;
-		 if(marginMarkupData!=null) {
-		  marginMarkupInfo=discountManager.convertMarkup(marginMarkupData);
-		 }
-		 else {
-		 marginMarkupInfo=new OnlineMarginMarkupInfo();
-		 }
-		
+		OnlineMarginMarkup marginMarkupData = marginMarkupDao.getMarkupData(request.getApplicationCountryId(),
+				request.getCountryId(), request.getCurrencyId(), request.getBankId());
+		OnlineMarginMarkupInfo marginMarkupInfo;
+		if (marginMarkupData != null) {
+			marginMarkupInfo = discountManager.convertMarkup(marginMarkupData);
+		} else {
+			marginMarkupInfo = new OnlineMarginMarkupInfo();
+		}
+
 		return marginMarkupInfo;
 	}
+
 	public BoolRespModel saveOnlineMarginMarkupData(OnlineMarginMarkupInfo request) {
-		 OnlineMarginMarkup marginMarkupData= marginMarkupDao.getMarkupData(request.getApplicationCountryId(),request.getCountryId(), request.getCurrencyId(), request.getBankId());
-		 Boolean resp=discountManager.commitMarkup(marginMarkupData,request );
-		 if(resp == true)
-		 return new BoolRespModel(Boolean.TRUE);
-		 else
-	    return new BoolRespModel(Boolean.FALSE);
-				
-		}
-	
+		OnlineMarginMarkup marginMarkupData = marginMarkupDao.getMarkupData(request.getApplicationCountryId(),
+				request.getCountryId(), request.getCurrencyId(), request.getBankId());
+		Boolean resp = discountManager.commitMarkup(marginMarkupData, request);
+		if (resp == true)
+			return new BoolRespModel(Boolean.TRUE);
+		else
+			return new BoolRespModel(Boolean.FALSE);
+
+	}
+
+	public RoutingProductStatusDetails getRoutingProductStatus(BigDecimal countryId, BigDecimal currencyId) {
+		return routingProductManager.getRoutingProductStatus(countryId, currencyId);
+	}
+
 }

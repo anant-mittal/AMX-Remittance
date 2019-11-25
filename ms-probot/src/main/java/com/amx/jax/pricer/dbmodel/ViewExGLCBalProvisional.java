@@ -35,6 +35,10 @@ public class ViewExGLCBalProvisional implements Serializable {
 	@Column(name = "BANK_FULL_NAME")
 	private String bankFullName;
 
+	/** The currency id. */
+	@Column(name = "CURRENCY_ID")
+	private BigDecimal currencyId;
+
 	/** The currency code. */
 	@Column(name = "CURRENCY_CODE")
 	private String currencyCode;
@@ -129,6 +133,24 @@ public class ViewExGLCBalProvisional implements Serializable {
 	 */
 	public void setBankFullName(String bankFullName) {
 		this.bankFullName = bankFullName;
+	}
+
+	/**
+	 * Gets the currency id.
+	 *
+	 * @return the currency id
+	 */
+	public BigDecimal getCurrencyId() {
+		return currencyId;
+	}
+
+	/**
+	 * Sets the currency id.
+	 *
+	 * @param currencyId the new currency id
+	 */
+	public void setCurrencyId(BigDecimal currencyId) {
+		this.currencyId = currencyId;
 	}
 
 	/**

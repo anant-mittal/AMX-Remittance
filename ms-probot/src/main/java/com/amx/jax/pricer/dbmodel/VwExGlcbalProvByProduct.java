@@ -21,7 +21,7 @@ public class VwExGlcbalProvByProduct implements Serializable {
 	/** The row id. */
 	@Id
 	@Column(name = "ROW_ID")
-	private BigDecimal rowId;
+	private String rowId;
 
 	/** The bank id. */
 	@Column(name = "BANK_ID")
@@ -34,6 +34,9 @@ public class VwExGlcbalProvByProduct implements Serializable {
 	/** The bank full name. */
 	@Column(name = "BANK_FULL_NAME")
 	private String bankFullName;
+
+	@Column(name = "CURRENCY_ID")
+	private BigDecimal currencyId;
 
 	/** The currency code. */
 	@Column(name = "CURRENCY_CODE")
@@ -54,6 +57,9 @@ public class VwExGlcbalProvByProduct implements Serializable {
 	/** The rate cur bal. */
 	@Column(name = "RATE_CURBAL")
 	private BigDecimal rateCurBal;
+
+	@Column(name = "SERVICE_MASTER_ID")
+	private BigDecimal serviceMasterId;
 
 	/** The remittance mode id. */
 	@Column(name = "REMITTANCE_MODE_ID")
@@ -84,7 +90,7 @@ public class VwExGlcbalProvByProduct implements Serializable {
 	 *
 	 * @return the row id
 	 */
-	public BigDecimal getRowId() {
+	public String getRowId() {
 		return rowId;
 	}
 
@@ -94,7 +100,7 @@ public class VwExGlcbalProvByProduct implements Serializable {
 	 * @param rowId
 	 *            the new row id
 	 */
-	public void setRowId(BigDecimal rowId) {
+	public void setRowId(String rowId) {
 		this.rowId = rowId;
 	}
 

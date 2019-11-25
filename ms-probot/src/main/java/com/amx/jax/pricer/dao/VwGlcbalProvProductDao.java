@@ -6,17 +6,17 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.amx.jax.pricer.dbmodel.ViewExGLCBalProvisional;
-import com.amx.jax.pricer.repository.VwExGLCBalProvRepository;
+import com.amx.jax.pricer.dbmodel.VwExGlcbalProvByProduct;
+import com.amx.jax.pricer.repository.VwGlcbalProvProductRepository;
 
 @Component
 public class VwGlcbalProvProductDao {
 
 	@Autowired
-	VwExGLCBalProvRepository repo;
+	VwGlcbalProvProductRepository repo;
 
-	public List<ViewExGLCBalProvisional> getByCurrencyCodeAndBankIdIn(String currencyCode, List<BigDecimal> bankIds) {
-		return repo.findByCurrencyCodeAndBankIdIn(currencyCode, bankIds);
+	public List<VwExGlcbalProvByProduct> getByCurrencyIdAndBankIdIn(BigDecimal currencyId, List<BigDecimal> bankIds) {
+		return repo.findByCurrencyIdAndBankIdIn(currencyId, bankIds);
 	}
 
 }

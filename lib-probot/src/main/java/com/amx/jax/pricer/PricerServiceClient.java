@@ -30,6 +30,7 @@ import com.amx.jax.pricer.dto.PricingAndCostResponseDTO;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
+import com.amx.jax.pricer.dto.RoutingProductStatusDetails;
 import com.amx.jax.rest.RestService;
 
 @Component
@@ -195,7 +196,7 @@ public class PricerServiceClient implements ProbotExchangeRateService, ProbotDat
 	@Override
 	public AmxApiResponse<OnlineMarginMarkupInfo, Object> getOnlineMarginMarkupData(
 			OnlineMarginMarkupReq OnlineMarginMarkupReq) {
-				LOGGER.info("fetch Online Margin Markup Details : transaction Id: {}, with TraceId: {}",
+		LOGGER.info("fetch Online Margin Markup Details : transaction Id: {}, with TraceId: {}",
 				AppContextUtil.getTranxId(), AppContextUtil.getTraceId());
 
 		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.GET_MARKUP_DETAILS)
@@ -207,14 +208,25 @@ public class PricerServiceClient implements ProbotExchangeRateService, ProbotDat
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> saveOnlineMarginMarkupData(
 			OnlineMarginMarkupInfo onlineMarginMarkupInfo) {
-	
-			LOGGER.info("fetch Online Margin Markup Details : transaction Id: {}, with TraceId: {}",
-					AppContextUtil.getTranxId(), AppContextUtil.getTraceId());
-			return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.SAVE_MARKUP_DETAILS)
-					.post(onlineMarginMarkupInfo)
-					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
-					});
-		
+
+		LOGGER.info("fetch Online Margin Markup Details : transaction Id: {}, with TraceId: {}",
+				AppContextUtil.getTranxId(), AppContextUtil.getTraceId());
+		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.SAVE_MARKUP_DETAILS)
+				.post(onlineMarginMarkupInfo)
+				.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
+				});
+
+	}
+
+	@Override
+	public AmxApiResponse<RoutingProductStatusDetails, Object> getRoutingProductStatus(BigDecimal countryId,
+			BigDecimal currencyId) {
+		LOGGER.info("Get Routing Product Status with transaction Id: {}, with TraceId: {}", AppContextUtil.getTranxId(),
+				AppContextUtil.getTraceId());
+		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.GET_ROUTING_PRODUCT_STATUS)
+				.queryParam("countryId", countryId).queryParam("currencyId", currencyId).post()
+				.as(new ParameterizedTypeReference<AmxApiResponse<RoutingProductStatusDetails, Object>>() {
+				});
 	}
 
 }

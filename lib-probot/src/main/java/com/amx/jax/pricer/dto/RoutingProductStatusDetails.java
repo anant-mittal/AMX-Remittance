@@ -7,13 +7,13 @@ public class RoutingProductStatusDetails implements Serializable {
 
 	private static final long serialVersionUID = -2890168223468730676L;
 
-	private List<RoutingProductStatusDetails> routingProductsStatus;
+	private List<RoutingProductStatusInfo> routingProductsStatus;
 
-	public List<RoutingProductStatusDetails> getRoutingProductsStatus() {
+	public List<RoutingProductStatusInfo> getRoutingProductsStatus() {
 		return routingProductsStatus;
 	}
 
-	public void setRoutingProductsStatus(List<RoutingProductStatusDetails> routingProductsStatus) {
+	public void setRoutingProductsStatus(List<RoutingProductStatusInfo> routingProductsStatus) {
 		this.routingProductsStatus = routingProductsStatus;
 	}
 

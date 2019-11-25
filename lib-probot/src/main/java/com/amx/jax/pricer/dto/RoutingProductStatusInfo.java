@@ -14,15 +14,16 @@ public class RoutingProductStatusInfo implements Serializable, Comparable<Routin
 	private BigDecimal glcbalLocal;
 	private BigDecimal glcbalForeign;
 
-	private BigDecimal pendingTrnxAmountLocal;
-	private BigDecimal pendingTrnxAmountForeign;
+	private BigDecimal provisionalTrnxAmountLocal;
+	private BigDecimal provisionalTrnxAmountForeign;
 
 	private BigDecimal netBalanceLocal;
 	private BigDecimal netBalanceForeign;
 
 	private BigDecimal fundingCurrencyId;
-	private BigDecimal fundingCurrencyQuote;
-	private BigDecimal fundingCurrencyBal;
+	private String fundingCurrencyQuote;
+	private BigDecimal fundingCurrencyBalLocal;
+	private BigDecimal fundingCurrencyBalForeign;
 
 	private List<RemitModeStatusInfo> remitModesStatus;
 
@@ -58,20 +59,20 @@ public class RoutingProductStatusInfo implements Serializable, Comparable<Routin
 		this.glcbalForeign = glcbalForeign;
 	}
 
-	public BigDecimal getPendingTrnxAmountLocal() {
-		return pendingTrnxAmountLocal;
+	public BigDecimal getProvisionalTrnxAmountLocal() {
+		return provisionalTrnxAmountLocal;
 	}
 
-	public void setPendingTrnxAmountLocal(BigDecimal pendingTrnxAmountLocal) {
-		this.pendingTrnxAmountLocal = pendingTrnxAmountLocal;
+	public void setProvisionalTrnxAmountLocal(BigDecimal pendingTrnxAmountLocal) {
+		this.provisionalTrnxAmountLocal = pendingTrnxAmountLocal;
 	}
 
-	public BigDecimal getPendingTrnxAmountForeign() {
-		return pendingTrnxAmountForeign;
+	public BigDecimal getProvisionalTrnxAmountForeign() {
+		return provisionalTrnxAmountForeign;
 	}
 
-	public void setPendingTrnxAmountForeign(BigDecimal pendingTrnxAmountForeign) {
-		this.pendingTrnxAmountForeign = pendingTrnxAmountForeign;
+	public void setProvisionalTrnxAmountForeign(BigDecimal pendingTrnxAmountForeign) {
+		this.provisionalTrnxAmountForeign = pendingTrnxAmountForeign;
 	}
 
 	public BigDecimal getNetBalanceLocal() {
@@ -98,20 +99,28 @@ public class RoutingProductStatusInfo implements Serializable, Comparable<Routin
 		this.fundingCurrencyId = fundingCurrencyId;
 	}
 
-	public BigDecimal getFundingCurrencyQuote() {
+	public String getFundingCurrencyQuote() {
 		return fundingCurrencyQuote;
 	}
 
-	public void setFundingCurrencyQuote(BigDecimal fundingCurrencyQuote) {
+	public void setFundingCurrencyQuote(String fundingCurrencyQuote) {
 		this.fundingCurrencyQuote = fundingCurrencyQuote;
 	}
 
-	public BigDecimal getFundingCurrencyBal() {
-		return fundingCurrencyBal;
+	public BigDecimal getFundingCurrencyBalLocal() {
+		return fundingCurrencyBalLocal;
 	}
 
-	public void setFundingCurrencyBal(BigDecimal fundingCurrencyBal) {
-		this.fundingCurrencyBal = fundingCurrencyBal;
+	public void setFundingCurrencyBalLocal(BigDecimal fundingCurrencyBal) {
+		this.fundingCurrencyBalLocal = fundingCurrencyBal;
+	}
+
+	public BigDecimal getFundingCurrencyBalForeign() {
+		return fundingCurrencyBalForeign;
+	}
+
+	public void setFundingCurrencyBalForeign(BigDecimal fundingCurrencyBalForeign) {
+		this.fundingCurrencyBalForeign = fundingCurrencyBalForeign;
 	}
 
 	public List<RemitModeStatusInfo> getRemitModesStatus() {

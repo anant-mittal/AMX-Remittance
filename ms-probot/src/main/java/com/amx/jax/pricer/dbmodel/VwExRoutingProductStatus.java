@@ -10,7 +10,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import com.amx.jax.pricer.var.PricerServiceConstants.ROUTING_STATUS;
+import com.amx.jax.pricer.var.PricerServiceConstants.ROUTING_REMIT_STATUS;
 
 /**
  * The Class VwExRoutingProductStatus.
@@ -55,6 +55,10 @@ public class VwExRoutingProductStatus implements Serializable {
 	@Column(name = "BANK_NAME")
 	private String bankName;
 
+	/** The service id. */
+	@Column(name = "SERVICE_MASTER_ID")
+	private BigDecimal serviceId;
+
 	/** The service. */
 	@Column(name = "SERVICE")
 	private String service;
@@ -62,7 +66,7 @@ public class VwExRoutingProductStatus implements Serializable {
 	/** The routing. */
 	@Column(name = "ROUTING")
 	@Enumerated(value = EnumType.STRING)
-	private ROUTING_STATUS routing;
+	private ROUTING_REMIT_STATUS routing;
 
 	/** The remit mode id. */
 	@Column(name = "REMITTANCE_MODE_ID")
@@ -74,10 +78,11 @@ public class VwExRoutingProductStatus implements Serializable {
 
 	/** The product status. */
 	@Column(name = "PRODUCT_STATUS")
-	private String productStatus;
+	@Enumerated(value = EnumType.STRING)
+	private ROUTING_REMIT_STATUS productStatus;
 
 	/** The fc glbal. */
-	@Column(name = "FC_GLBAL")
+	@Column(name = "FC_GLCBAL")
 	private BigDecimal fcGlbal;
 
 	/** The product desc. */
@@ -245,6 +250,25 @@ public class VwExRoutingProductStatus implements Serializable {
 	}
 
 	/**
+	 * Gets the service id.
+	 *
+	 * @return the service id
+	 */
+	public BigDecimal getServiceId() {
+		return serviceId;
+	}
+
+	/**
+	 * Sets the service id.
+	 *
+	 * @param serviceId
+	 *            the new service id
+	 */
+	public void setServiceId(BigDecimal serviceId) {
+		this.serviceId = serviceId;
+	}
+
+	/**
 	 * Gets the service.
 	 *
 	 * @return the service
@@ -268,7 +292,7 @@ public class VwExRoutingProductStatus implements Serializable {
 	 *
 	 * @return the routing
 	 */
-	public ROUTING_STATUS getRouting() {
+	public ROUTING_REMIT_STATUS getRouting() {
 		return routing;
 	}
 
@@ -278,7 +302,7 @@ public class VwExRoutingProductStatus implements Serializable {
 	 * @param routing
 	 *            the new routing
 	 */
-	public void setRouting(ROUTING_STATUS routing) {
+	public void setRouting(ROUTING_REMIT_STATUS routing) {
 		this.routing = routing;
 	}
 
@@ -325,7 +349,7 @@ public class VwExRoutingProductStatus implements Serializable {
 	 *
 	 * @return the product status
 	 */
-	public String getProductStatus() {
+	public ROUTING_REMIT_STATUS getProductStatus() {
 		return productStatus;
 	}
 
@@ -335,7 +359,7 @@ public class VwExRoutingProductStatus implements Serializable {
 	 * @param productStatus
 	 *            the new product status
 	 */
-	public void setProductStatus(String productStatus) {
+	public void setProductStatus(ROUTING_REMIT_STATUS productStatus) {
 		this.productStatus = productStatus;
 	}
 

@@ -158,8 +158,12 @@ public final class PricerServiceConstants {
 		HOME, WU, MONEY;
 	}
 
-	public static enum ROUTING_STATUS {
+	public static enum ROUTING_REMIT_STATUS {
 		ACTIVE, INACTIVE;
+	}
+
+	public static enum FIELD_STATUS {
+		ENABLED, DISABLED;
 	}
 
 	public static enum GL_JOB_STATUS {
