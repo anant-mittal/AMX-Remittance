@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,7 @@ import com.amx.jax.model.response.ExchangeRateBreakup;
 import com.amx.jax.model.response.jaxfield.JaxConditionalFieldDto;
 import com.amx.jax.model.response.jaxfield.JaxFieldDto;
 import com.amx.jax.model.response.jaxfield.JaxFieldEntity;
+import com.amx.jax.model.response.jaxfield.JaxFieldType;
 import com.amx.jax.model.response.jaxfield.JaxFieldValueDto;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.FlexFieldDto;
@@ -197,7 +199,7 @@ public class RemittanceTransactionRequestValidator {
 		field.setDtoPath("flexFields." + bankRule.getFlexField());
 		dto.setId(bankRule.getAdditionalBankRuleId());
 		FlexFieldBehaviour flexFieldBehaviourEnum = FlexFieldBehaviour.valueOf(fieldBehaviour);
-		field.setType(flexFieldBehaviourEnum.getFieldType().toString());
+		field.setType(getFieldType(flexFieldBehaviourEnum, flexField.getFieldType()));
 		field.getAdditionalValidations().put("format", flexField.getFieldFormat());
 		switch (flexFieldBehaviourEnum) {
 		case PRE_DEFINED:
@@ -387,4 +389,21 @@ public class RemittanceTransactionRequestValidator {
 		additionalBankDetailManager.saveFlexFields(requestApplModel, remitApplParametersMap);
 	}
 
+	private String getFieldType(FlexFieldBehaviour flexFieldBehaviour, String fieldType) {
+		String flexFieldType = flexFieldBehaviour.getFieldType().toString();
+		if (FlexFieldBehaviour.USER_ENTERABLE.equals(flexFieldBehaviour)) {
+			if (StringUtils.isNotBlank(fieldType)) {
+				switch (fieldType) {
+				case "N":
+					flexFieldType = JaxFieldType.NUMBER.toString();
+					break;
+				case "A":
+				case "B":
+					flexFieldType = JaxFieldType.TEXT.toString();
+					break;
+				}
+			}
+		}
+		return flexFieldType;
+	}
 }

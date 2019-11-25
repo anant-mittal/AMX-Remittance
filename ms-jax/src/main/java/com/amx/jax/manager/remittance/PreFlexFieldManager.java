@@ -31,6 +31,7 @@ import com.amx.jax.model.response.customer.BenePackageResponse;
 import com.amx.jax.model.response.jaxfield.JaxConditionalFieldDto;
 import com.amx.jax.model.response.jaxfield.JaxFieldDto;
 import com.amx.jax.model.response.jaxfield.JaxFieldEntity;
+import com.amx.jax.model.response.jaxfield.JaxFieldType;
 import com.amx.jax.model.response.remittance.FlexFieldDto;
 import com.amx.jax.model.response.remittance.ParameterDetailsDto;
 import com.amx.jax.repository.IAdditionalDataDisplayDao;
@@ -144,7 +145,7 @@ public class PreFlexFieldManager {
 		if (parameterDetailsDto.getAmount() != null && parameterDetailsDto.getAmount().doubleValue() > 0) {
 			field.setDefaultValue(parameterDetailsDto.getAmount().toString());
 		}
-		field.setType("TEXT");
+		field.setType(JaxFieldType.NUMBER.toString());
 		dto.setId(parameterDetailsDto.getParameterDetailsId());
 		dto.setField(field);
 		return dto;
