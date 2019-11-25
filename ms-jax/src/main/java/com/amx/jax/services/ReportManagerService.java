@@ -59,6 +59,7 @@ import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.RoundUtil;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.JsonUtil;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -613,7 +614,7 @@ public class ReportManagerService extends AbstractService{
 		response.getData().getValues().addAll(remittanceReceiptSubreportList);
 		response.setResponseStatus(ResponseStatus.OK);
 	    response.getData().setType("remitReport");
-	 
+	    logger.debug("Receipt details are  "+JsonUtil.toJson(response.getData().getValues().get(0)));
 		}catch(Exception e) {
 			e.printStackTrace();
 			response.getData().getValues().addAll(remittanceReceiptSubreportList);
