@@ -14,8 +14,11 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
@@ -71,8 +74,8 @@ import com.amx.jax.services.RemittanceTransactionService;
 import com.amx.jax.util.JaxUtil;
 
 @Component
-// @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode =
-// ScopedProxyMode.TARGET_CLASS)
+ @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode =
+ ScopedProxyMode.TARGET_CLASS)
 public class BranchRemittanceDao {
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
@@ -454,16 +457,15 @@ public class BranchRemittanceDao {
 		return responseModel;
 	}
 	
-	
 
-	public void updateSignatureHash(RemittanceTransactionView trnxDetails,String Signature) {
-	if(trnxDetails!=null && !StringUtils.isBlank(Signature) && JaxUtil.isNullZeroBigDecimalCheck(trnxDetails.getRemittanceTransactionId())) {
-		RemittanceTransaction remit = remitTrnxRepository.findOne(trnxDetails.getRemittanceTransactionId());
-		if(remit!=null) {
-			remit.setCustomerSignature(Signature);
-			remitTrnxRepository.save(remit);
+	public void updateSignatureHash(RemittanceTransactionView trnxDetails,String signature) {
+		if(trnxDetails!=null && !StringUtils.isBlank(signature) && JaxUtil.isNullZeroBigDecimalCheck(trnxDetails.getRemittanceTransactionId())) {
+			RemittanceTransaction remit = remitTrnxRepository.findOne(trnxDetails.getRemittanceTransactionId());
+			if(remit!=null) {
+				remit.setCustomerSignature(signature);
+				remitTrnxRepository.save(remit);
+			}
 		}
-	}
 	
 	}
 

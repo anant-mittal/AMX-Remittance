@@ -1234,7 +1234,8 @@ public class RemittanceTransactionManager {
 		}
 		remittanceAdditionalFieldManager.validateAdditionalFields(model, remitApplParametersMap);
 		// validate routing bank requirements
-		ExchangeRateBreakup breakup = validationResults.getExRateBreakup();
+		//ExchangeRateBreakup breakup = validationResults.getExRateBreakup();
+		ExchangeRateBreakup breakup = model.getExchangeRateBreakup();
 		
 		logger.info("amount in exchnagerate break up"+breakup.getNetAmount());
 		BigDecimal netAmountPayable = breakup.getNetAmount();
@@ -1428,7 +1429,7 @@ public class RemittanceTransactionManager {
 		
 	}
 
-	
+
 	
 	
 	private void deactivatePreviousApplications() {
@@ -1475,8 +1476,6 @@ public class RemittanceTransactionManager {
 	}
 	
 	
-	
-	
 	private void validateAdditionalCheck() {
 		applicationProcedureDao.getAdditionalCheckProcedure(remitApplParametersMap);
 	}
@@ -1489,56 +1488,60 @@ public class RemittanceTransactionManager {
 		logger.info("Request is "+request.toString());
 		RemittanceApplication application = remitAppDao.getApplication(request.getApplicationDocumentNumber(),
 				request.getDocumentFinancialYear());
+		if(application == null) {
+			throw new GlobalException("Invalid application document details.");
+		}
+
 		logger.info("Application is "+application.toString());
 		RemittanceAppBenificiary remittanceBenificiary = remittanceApplicationBeneRepository.findByExRemittanceAppfromBenfi(application);
 		logger.info("Remit appl id is "+application.getRemittanceApplicationId());
-		remittanceApplicationService.checkForSuspiciousPaymentAttempts(application.getRemittanceApplicationId());
+			remittanceApplicationService.checkForSuspiciousPaymentAttempts(application.getRemittanceApplicationId());
 		if(ConstantDocument.PB_PAYMENT.equalsIgnoreCase(application.getPaymentType())) {
 			model.setBeneName(remittanceBenificiary.getBeneficiaryName());
 		}
 		
-		if (remittanceTransaction != null) {
-			BigDecimal cutomerReference = remittanceTransaction.getCustomerId().getCustomerId();
-			BigDecimal remittancedocfyr = remittanceTransaction.getDocumentFinanceYear();
-			BigDecimal remittancedocNumber = remittanceTransaction.getDocumentNo();
-			TransactionHistroyDTO transactionHistoryDto = transactionHistroyService
-					.getTransactionHistoryDto(cutomerReference, remittancedocfyr, remittancedocNumber);
-			model.setTransactionHistroyDTO(transactionHistoryDto);
-			if (Boolean.TRUE.equals(request.getPromotion())) {
-				PromotionDto promoDto = promotionManager.getPromotionDto(remittancedocNumber, remittancedocfyr);
-				if (promoDto != null && !promoDto.isChichenVoucher()) {
-					model.setPromotionDto(promotionManager.getPromotionDto(remittancedocNumber, remittancedocfyr));
+			if (remittanceTransaction != null) {
+				BigDecimal cutomerReference = remittanceTransaction.getCustomerId().getCustomerId();
+				BigDecimal remittancedocfyr = remittanceTransaction.getDocumentFinanceYear();
+				BigDecimal remittancedocNumber = remittanceTransaction.getDocumentNo();
+				TransactionHistroyDTO transactionHistoryDto = transactionHistroyService
+						.getTransactionHistoryDto(cutomerReference, remittancedocfyr, remittancedocNumber);
+				model.setTransactionHistroyDTO(transactionHistoryDto);
+				if (Boolean.TRUE.equals(request.getPromotion())) {
+					PromotionDto promoDto = promotionManager.getPromotionDto(remittancedocNumber, remittancedocfyr);
+					if (promoDto != null && !promoDto.isChichenVoucher()) {
+						model.setPromotionDto(promotionManager.getPromotionDto(remittancedocNumber, remittancedocfyr));
+					}
 				}
 			}
-		}
-		model.setTransactionReference(getTransactionReference(application));
-		if ("Y".equals(application.getLoyaltyPointInd())) {
-			model.setNetAmount(application.getLocalTranxAmount());
-		} else {
-			model.setNetAmount(application.getLocalNetTranxAmount());
-		}
-		JaxTransactionStatus status = getJaxTransactionStatus(application);
-		model.setStatus(status);
-		
-		if (remittanceTransaction != null) {
-			PromotionDto obj = dailyPromotionManager.getWanitBuyitMsg(remittanceTransaction);
-			if(obj != null) {
-				model.setPromotionDto(obj);
+			model.setTransactionReference(getTransactionReference(application));
+			if ("Y".equals(application.getLoyaltyPointInd())) {
+				model.setNetAmount(application.getLocalTranxAmount());
+			} else {
+				model.setNetAmount(application.getLocalNetTranxAmount());
 			}
-		}
+			JaxTransactionStatus status = getJaxTransactionStatus(application);
+			model.setStatus(status);
+
+			if (remittanceTransaction != null) {
+				PromotionDto obj = dailyPromotionManager.getWanitBuyitMsg(remittanceTransaction);
+				if(obj != null) {
+					model.setPromotionDto(obj);
+				}
+			}
 		
-		model.setErrorCategory(application.getErrorCategory());
-		model.setErrorMessage(application.getErrorMessage());
-	if(application.getErrorCategory() != null) {
-			ResponseCodeDetailDTO responseCodeDetail = PayGRespCodeJSONConverter.getResponseCodeDetail(application.getErrorCategory());
-			
-			responseCodeDetail.setPgPaymentId(application.getPaymentId());
-			responseCodeDetail.setPgReferenceId(application.getPgReferenceId());
-			responseCodeDetail.setPgTransId(application.getPgTransactionId());
-			responseCodeDetail.setPgAuth(application.getPgAuthCode());
-			
-			model.setResponseCodeDetail(responseCodeDetail);
-		}
+			model.setErrorCategory(application.getErrorCategory());
+			model.setErrorMessage(application.getErrorMessage());
+			if(application.getErrorCategory() != null) {
+				ResponseCodeDetailDTO responseCodeDetail = PayGRespCodeJSONConverter.getResponseCodeDetail(application.getErrorCategory());
+
+				responseCodeDetail.setPgPaymentId(application.getPaymentId());
+				responseCodeDetail.setPgReferenceId(application.getPgReferenceId());
+				responseCodeDetail.setPgTransId(application.getPgTransactionId());
+				responseCodeDetail.setPgAuth(application.getPgAuthCode());
+
+				model.setResponseCodeDetail(responseCodeDetail);
+			}
 		
 		return model;
 	}
@@ -1795,7 +1798,7 @@ public class RemittanceTransactionManager {
 		exRatebreakUp.setNetAmountWithoutLoyality(RoundUtil.roundBigDecimal(exRatebreakUp.getNetAmountWithoutLoyality(),exRatebreakUp.getLcDecimalNumber().intValue()));
 		exRatebreakUp.setInverseRate((RoundUtil.roundBigDecimal(exRatebreakUp.getInverseRate(), AmxDBConstants.EXCHANGE_RATE_DECIMAL.intValue())));
 	}
-	
+
 	
 	public RemittanceTransactionStatusResponseModel getTransactionStatusV2(RemittanceTransactionStatusRequestModel request) {
 		Customer customerId = new Customer(meta.getCustomerId());
@@ -1875,6 +1878,5 @@ public class RemittanceTransactionManager {
 		}
 		validationResults.setCustomerChoice(model.getCustomerChoice());
 	}
-
 
 }

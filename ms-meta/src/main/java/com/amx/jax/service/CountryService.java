@@ -51,11 +51,12 @@ public class CountryService extends AbstractService {
 		BigDecimal languageIdValue = new BigDecimal("1");
 		ApiResponse response = getBlackApiResponse();
 		
+		if(meta.getLanguageId()!=null)
 		countryList = countryRepository.findByLanguageId(meta.getLanguageId());
 
-		if (!(meta.getLanguageId().equals(languageIdValue)) || !(meta.getLanguageId().toString().equalsIgnoreCase("en"))) {
+		if (countryList.isEmpty() || meta.getLanguageId()==null) {
 			
-			countryList = countryRepository.findByLanguageId(meta.getLanguageId());
+			countryList = countryRepository.findByLanguageId(languageIdValue);
 		response.getData().getValues().addAll(countryList);
 		response.setResponseStatus(ResponseStatus.OK);
 		}

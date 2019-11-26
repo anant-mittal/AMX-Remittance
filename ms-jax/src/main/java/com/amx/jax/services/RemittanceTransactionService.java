@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.exception.jax.OtpRequiredException;
 import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
@@ -33,6 +32,7 @@ import com.amx.jax.dbmodel.RemittanceTransactionView;
 import com.amx.jax.dbmodel.SourceOfIncomeView;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.exrateservice.service.NewExchangeRateService;
 import com.amx.jax.manager.RemittanceTransactionManager;
 import com.amx.jax.meta.MetaData;
@@ -98,7 +98,7 @@ public class RemittanceTransactionService extends AbstractService {
 	RemittanceTransactionRepository remittanceTransactionRepository;
 	@Autowired
 	protected AmxMeta amxMeta;
-
+	
 	
 	public ApiResponse getRemittanceTransactionDetails(BigDecimal collectionDocumentNo, BigDecimal fYear,
 			BigDecimal collectionDocumentCode) {
@@ -117,28 +117,15 @@ public class RemittanceTransactionService extends AbstractService {
 
 	}
 
-	public ApiResponse getSourceOfIncome(BigDecimal languageId) {
-		List<SourceOfIncomeView> sourceOfIncomeList;
-		List<SourceOfIncomeView> sourceOfIncomeListArabic;
-		ApiResponse response = getBlackApiResponse();
-		if(languageId==null)
-		{
+	public AmxApiResponse<SourceOfIncomeDto, Object> getSourceOfIncome(BigDecimal languageId) {
+		List<SourceOfIncomeView> sourceOfIncomeList = null;
+		if (languageId != null) {
 		sourceOfIncomeList = sourceOfIncomeDao.getSourceofIncome(languageId);
-		response.getData().getValues().addAll(convertSourceOfIncomeForEnglish(sourceOfIncomeList));
-		response.setResponseStatus(ResponseStatus.OK);
 		}
-		else {
-			sourceOfIncomeList = sourceOfIncomeDao.getSourceofIncome(languageId);
-			response.getData().getValues().addAll(convertSourceOfIncome(sourceOfIncomeList));
-			response.setResponseStatus(ResponseStatus.OK);
-		
-		}
-		
 		if (sourceOfIncomeList.isEmpty()) {
-			throw new GlobalException("No data found");
+			throw new GlobalException(JaxError.SOURCE_OF_INCOME_NOT_FOUND, "No data found FOR SOURCE OF INCOME");
 		} 
-		response.getData().setType("sourceofincome");
-		return response;
+		return AmxApiResponse.buildList(convertSourceOfIncome(sourceOfIncomeList));
 	}
 
 	@Override
@@ -177,21 +164,10 @@ public class RemittanceTransactionService extends AbstractService {
 	
 
 	public List<SourceOfIncomeDto> convertSourceOfIncome(List<SourceOfIncomeView> sourceOfIncomeList) {
-		List<SourceOfIncomeDto> list = new ArrayList<>();
-		for (SourceOfIncomeView model : sourceOfIncomeList) {
-			SourceOfIncomeDto dto = new SourceOfIncomeDto();
-			dto.setSourceofIncomeId(model.getSourceofIncomeId());
-			dto.setShortDesc(model.getShortDesc());
-			dto.setLanguageId(model.getLanguageId());
-			dto.setDescription(model.getDescription());
-			dto.setLocalName(model.getLocalName());
-
-			list.add(dto);
+		return new SourceOfIncomeDto().importFrom(sourceOfIncomeList);
 		}
-		return list;
 
-	}
-	
+	@Deprecated
 	public List<SourceOfIncomeDto> convertSourceOfIncomeForEnglish(List<SourceOfIncomeView> sourceOfIncomeList) {
 		List<SourceOfIncomeDto> list = new ArrayList<>();
 		for (SourceOfIncomeView model : sourceOfIncomeList) {
@@ -218,15 +194,9 @@ public class RemittanceTransactionService extends AbstractService {
 	}
 
 	
-	
 	public ApiResponse saveApplicationV2(RemittanceTransactionDrRequestModel model) {
 		ApiResponse response = getBlackApiResponse();
-		RemittanceApplicationResponseModel responseModel = null;
-		try {
-			responseModel = remittanceTxnManger.saveApplicationV2(model);
-		} catch (OtpRequiredException ex) {
-			responseModel = (RemittanceApplicationResponseModel) ex.getMeta();
-		}
+		RemittanceApplicationResponseModel responseModel = remittanceTxnManger.saveApplicationV2(model);
 		response.getData().getValues().add(responseModel);
 		response.setResponseStatus(ResponseStatus.OK);
 		response.getData().setType(responseModel.getModelType());
@@ -304,7 +274,7 @@ public class RemittanceTransactionService extends AbstractService {
 				.getBeneficiaryRelationShipSeqId();
 		return beneficiaryService.getBeneBybeneficiaryRelationShipSeqId(beneficiaryRelationShipSeqId);
 	}
-
+	
 	/** added by Rabil for Online shopping cart**/
 	public BranchRemittanceApplResponseDto addtoCart(RemittanceTransactionDrRequestModel model) {
 		BranchRemittanceApplResponseDto responseModel = remittanceTxnManger.addtoCart(model);

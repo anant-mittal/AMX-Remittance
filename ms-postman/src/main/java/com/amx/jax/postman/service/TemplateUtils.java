@@ -177,7 +177,7 @@ public class TemplateUtils {
 			}
 		}
 		specficFile = getTemplateFileInternal(Constants.BLANK, file, tnt, locale);
-		return specficFile;
+			return specficFile;
 	}
 
 	private String getTemplateFileInternal(String folder, String file, Tenant tnt, Locale locale) {
@@ -406,8 +406,8 @@ public class TemplateUtils {
 		if (contentId.startsWith(jaxStaticContext)) {
 			return applicationContext.getResource("file:" + jaxStaticUrl + "/" + contentId);
 		} else {
-			return applicationContext.getResource("classpath:" + contentId);
-		}
+		return applicationContext.getResource("classpath:" + contentId);
+	}
 	}
 
 	/**

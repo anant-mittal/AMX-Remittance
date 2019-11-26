@@ -28,6 +28,7 @@ public class CustomerContactVerification implements java.io.Serializable {
 
 	private static final long serialVersionUID = 1L;
 	public static final int EXPIRY_DAY = 1;
+	public static final int EXPIRY_DAYS_REVERIFY = 60;
 	public static final int EXPIRY_DAY_WHATS_APP = 30;
 
 	public CustomerContactVerification() {

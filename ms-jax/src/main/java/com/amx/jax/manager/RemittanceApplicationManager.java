@@ -587,7 +587,8 @@ public class RemittanceApplicationManager {
 	}
 	private void setApplicableRatesV2(RemittanceApplication remittanceApplication,
 			RemittanceTransactionDrRequestModel requestModel, RemittanceTransactionResponsetModel validationResults) {
-		ExchangeRateBreakup breakup = validationResults.getExRateBreakup();
+		//ExchangeRateBreakup breakup = validationResults.getExRateBreakup();
+		ExchangeRateBreakup breakup = requestModel.getExchangeRateBreakup();
 		BigDecimal loyalityPointsEncashed = BigDecimal.ZERO;
 		if (loyalityPointsAvailed(requestModel, validationResults)) {
 			loyalityPointsEncashed = validationResults.getLoyalityAmountAvailableForTxn();

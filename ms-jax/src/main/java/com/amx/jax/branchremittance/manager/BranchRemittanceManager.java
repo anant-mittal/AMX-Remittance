@@ -217,6 +217,8 @@ public class BranchRemittanceManager extends AbstractModel {
 	
 	@Autowired
 	IViewParameterDetailsRespository viewParameterDetailsRespository;
+	
+	
 
 	@Autowired
 	IAdditionalBankRuleMapRepos additionalBankRuleMapRepos;
@@ -332,10 +334,10 @@ public class BranchRemittanceManager extends AbstractModel {
 		String allBankcheck =null;
 		Boolean booBlakCheck = false;
 		String blakListIndicator=null;
-		
+			
 		if(StringUtils.isBlank(beneficaryDetails.getBenificaryName())) {
 			throw new GlobalException(JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL, "Bene name is not valid");
-		}
+			}
 		
 		if(bnkWorldcheck.isEmpty()) {
 			checkBank="ALL";
@@ -708,7 +710,7 @@ public class BranchRemittanceManager extends AbstractModel {
 	 public void validateAdditionalErrorMessages(Map<String ,Object> hashMap) {
 		 	BranchRemittanceApplRequestModel applRequestModel = (BranchRemittanceApplRequestModel)hashMap.get("APPL_REQ_MODEL");
 			BenificiaryListView beneDetails  =(BenificiaryListView) hashMap.get("BENEFICIARY_DETAILS");
-
+			
 			RemittanceTransactionRequestModel requestModel = new RemittanceTransactionRequestModel();
 			requestModel.setAdditionalBankRuleFiledId(applRequestModel.getAdditionalBankRuleFiledId());
 			
@@ -733,7 +735,7 @@ public class BranchRemittanceManager extends AbstractModel {
 	
 	public void validateAdditionalErrorMessages(BranchRemittanceApplRequestModel requestModel) {
 		remitApplParametersMap.put("P_FURTHER_INSTR", "URGENT");
-		//Map<String, Object> errorResponse = applProcedureDao.toFetchPurtherInstractionErrorMessaage(remitApplParametersMap);
+	//	Map<String, Object> errorResponse = applProcedureDao.toFetchPurtherInstractionErrorMessaage(remitApplParametersMap);
 		String errorMessage =null;// (String) errorResponse.get("P_ERRMSG");
 		//Map<String, Object> furtherSwiftAdditionalDetails = applProcedureDao.fetchAdditionalBankRuleIndicators(remitApplParametersMap);
 		//remitApplParametersMap.putAll(furtherSwiftAdditionalDetails);
@@ -928,8 +930,8 @@ public BeneAdditionalDto getAdditionalBeneDetailJax(BenificiaryListView benefica
 	 if(requestApplModel==null && trnxRoutingPath==null) {
 		 throw new GlobalException(JaxError.INVALID_ROUTING_BANK, "Routing details not found");
 	 }
+	 
 
-	
 	 BigDecimal routingCountryId = trnxRoutingPath.getRoutingCountryId();
 	 BigDecimal routingBankId = trnxRoutingPath.getRoutingBankId();
 	 BigDecimal routingBranchId = trnxRoutingPath.getBankBranchId();
@@ -1146,7 +1148,7 @@ public BeneAdditionalDto getAdditionalBeneDetailJax(BenificiaryListView benefica
 		}else { //If eng
 			bankName = routingBankMasterModel.getBankFullName();
 			if(!StringUtils.isBlank(routingCityName)) {
-				bankBranchName =routingBankBranchView.get(0)==null?"":routingBankBranchView.get(0).getBranchFullName()+","+ routingCityName==null?"":routingCityName;
+				bankBranchName =routingBankBranchView.get(0)==null?"":routingBankBranchView.get(0).getBranchFullName()+","+ (routingCityName==null?"":routingCityName);
 			}else {
 				bankBranchName =routingBankBranchView.get(0)==null?"":routingBankBranchView.get(0).getBranchFullName();
 			}
@@ -1185,7 +1187,7 @@ public BeneAdditionalDto getAdditionalBeneDetailJax(BenificiaryListView benefica
 				if(bankFlexField.size()>1) {
 					throw new GlobalException(JaxError.INVALID_ROUTING_BANK, "Too many rows for this combination in  Bene bank and branch for flex rules "+beneBankMasterModel.getBankCode());
 				}else {
-					bankBranchName =bankFlexField.get(0).getBankExchId()==null?"": bankFlexField.get(0).getBankExchId()+" ,"+beneBranchName==null?"":beneBranchName;
+					bankBranchName =bankFlexField.get(0).getBankExchId()==null?"": bankFlexField.get(0).getBankExchId()+" ,"+ (beneBranchName==null?"":beneBranchName);
 				}
 			}else {
 				throw new GlobalException(JaxError.INVALID_ROUTING_BANK, "No data found in Flex fields For this  Bene bank and branch "+beneBankMasterModel.getBankCode());

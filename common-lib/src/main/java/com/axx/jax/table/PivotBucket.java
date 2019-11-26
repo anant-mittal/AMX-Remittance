@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.slf4j.Logger;
+
+import com.amx.jax.logger.LoggerService;
 import com.amx.utils.ArgUtil;
 import com.github.gianlucanitti.javaexpreval.Expression;
 import com.github.gianlucanitti.javaexpreval.ExpressionContext;
@@ -15,6 +18,7 @@ import com.github.gianlucanitti.javaexpreval.ExpressionException;
 public class PivotBucket {
 
 	public static final Map<String, PivotBucketColFunction> MAP = new HashMap<String, PivotBucketColFunction>();
+	private static final Logger LOGGER = LoggerService.getLogger(PivotBucket.class);
 
 	public static interface PivotBucketColFunction {
 		default Object body(PivotBucket col, String rowId, String exp) {
@@ -111,12 +115,13 @@ public class PivotBucket {
 				String funkey = computedCols.get(i);
 
 				Expression expr = Expression.parse(funExp);
+				// expr.
 				double result = expr.eval(c);
 				this.result.put(funkey, result);
 				c.setVariable(funkey, result);
 			}
 		} catch (ExpressionException e) {
-			e.printStackTrace();
+			LOGGER.error("ExpressionContext Fauilure", e);
 		}
 	}
 

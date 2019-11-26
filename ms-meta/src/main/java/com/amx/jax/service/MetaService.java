@@ -292,8 +292,13 @@ public class MetaService extends AbstractService {
 	}
 
 	private List<ServiceGroupMasterDescDto> getServiceGroupDto() {
+		BigDecimal defaultLanguageId = new BigDecimal("1");
 		List<ServiceGroupMasterDesc> output = serviceGroupMasterDescRepository
 				.findActiveByLanguageId(metaData.getLanguageId());
+		if(output.isEmpty()) {
+			output = serviceGroupMasterDescRepository
+					.findActiveByLanguageId(defaultLanguageId);
+		}
 
 		final List<ServiceGroupMasterDescDto> outputDto = new ArrayList<>();
 

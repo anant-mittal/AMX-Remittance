@@ -86,7 +86,7 @@ public class MetaData implements IMetaData {
 	}
 
 	public BigDecimal getLanguageId() {
-		return JaxUtil.languageScale(languageId);
+		return JaxUtil.languageScaleMeta(languageId);
 	}
 
 

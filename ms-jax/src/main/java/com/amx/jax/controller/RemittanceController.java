@@ -38,6 +38,7 @@ import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
 import com.amx.jax.model.request.remittance.IRemitTransReqPurpose;
 import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
+import com.amx.jax.model.response.SourceOfIncomeDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.RemittanceApplicationResponseModel;
 import com.amx.jax.payg.PaymentResponseDto;
@@ -164,10 +165,10 @@ public class RemittanceController {
 	}
 
 	@RequestMapping(value = "/sourceofincome/", method = RequestMethod.POST)
-	public ApiResponse sourceofIncome() {
+	public AmxApiResponse<SourceOfIncomeDto, Object> sourceofIncome() {
 		BigDecimal languageId = amxMeta.getClientLanguage(Language.EN).getBDCode();
-		ApiResponse response = remittanceTransactionService.getSourceOfIncome(languageId);
-		return response;
+		logger.debug("sourceofIncome lng " + languageId);
+		return remittanceTransactionService.getSourceOfIncome(languageId);
 	}
 
 	@RequestMapping(value = "/save-application/", method = RequestMethod.POST)
@@ -316,7 +317,7 @@ public class RemittanceController {
 		return customerRatingService.inquireCustomerRating(remittanceTrnxId, product);
 
 	}
-	
+
 	/** added by Rabil **/
 	@RequestMapping(value = "/pay-shopping-cart/", method = RequestMethod.POST)
 	public AmxApiResponse<RemittanceApplicationResponseModel,Object> payShoppingCart(@RequestBody @Valid BranchRemittanceRequestModel remittanceRequestModel) {
