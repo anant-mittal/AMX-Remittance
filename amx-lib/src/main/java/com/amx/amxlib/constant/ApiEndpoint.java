@@ -1,10 +1,5 @@
 package com.amx.amxlib.constant;
 
-import java.util.Date;
-import java.util.List;
-
-import com.amx.jax.model.customer.SecurityQuestionModel;
-
 public class ApiEndpoint {
 
 	private ApiEndpoint() {

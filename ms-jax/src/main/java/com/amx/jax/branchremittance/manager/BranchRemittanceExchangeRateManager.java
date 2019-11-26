@@ -84,8 +84,6 @@ import com.amx.jax.util.RoundUtil;
 import com.amx.jax.validation.RemittanceTransactionRequestValidator;
 import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
 
-import net.bytebuddy.utility.privilege.GetSystemPropertyAction;
-
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
 public class BranchRemittanceExchangeRateManager {

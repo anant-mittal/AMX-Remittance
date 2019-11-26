@@ -1,6 +1,5 @@
 package com.amx.jax.model.response.remittance;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 
 import com.amx.jax.model.ResourceDTO;

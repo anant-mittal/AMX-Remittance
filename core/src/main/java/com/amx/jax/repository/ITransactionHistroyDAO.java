@@ -10,10 +10,6 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
-
-import javax.persistence.Column;
-
-
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

@@ -3,7 +3,6 @@ package com.amx.jax.proto.tpc.models;
 import java.math.BigDecimal;
 import java.util.Map;
 
-import com.amx.jax.dict.Currency;
 import com.amx.jax.swagger.ApiMockModelProperty;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;

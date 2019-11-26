@@ -13,7 +13,6 @@ import com.amx.jax.client.snap.SnapConstants;
 import com.amx.jax.radar.AMXSharedValues;
 import com.amx.jax.radar.EsConfig;
 import com.amx.jax.radar.RadarConfig;
-import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncIndex;
 import com.amx.utils.ArgUtil;
 
 /**

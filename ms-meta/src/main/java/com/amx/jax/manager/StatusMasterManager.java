@@ -2,15 +2,15 @@ package com.amx.jax.manager;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
+
 import com.amx.amxlib.meta.model.ViewStatusDto;
-
 import com.amx.jax.dbmodel.fx.StatusMaster;
-
 import com.amx.jax.repository.IViewStatus;
 
 

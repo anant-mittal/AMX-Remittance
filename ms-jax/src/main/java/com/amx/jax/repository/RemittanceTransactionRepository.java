@@ -8,11 +8,7 @@ import javax.transaction.Transactional;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
-
 import com.amx.jax.dbmodel.Customer;
-
-import com.amx.jax.dbmodel.ReceiptPayment;
-
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 
 @Transactional

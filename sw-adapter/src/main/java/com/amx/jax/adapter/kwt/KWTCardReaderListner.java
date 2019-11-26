@@ -3,13 +3,13 @@ package com.amx.jax.adapter.kwt;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.amx.jax.adapter.ACardReaderService.CardStatus;
 import com.amx.jax.adapter.ACardReaderService.DataStatus;
 import com.amx.jax.device.CardData;
 import com.amx.utils.ArgUtil;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import pacicardlibrary.PACICardAPI;
 import pacicardlibrary.PaciEventHandler;

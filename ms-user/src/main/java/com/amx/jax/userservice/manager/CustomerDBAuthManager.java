@@ -24,7 +24,6 @@ import com.amx.jax.JaxAuthMetaResp;
 import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
-import com.amx.jax.dbmodel.ViewOnlineCurrency;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;

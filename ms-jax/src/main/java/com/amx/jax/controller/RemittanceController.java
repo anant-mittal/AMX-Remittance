@@ -17,14 +17,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-
-import com.amx.amxlib.constant.ApiEndpoint.RemittanceApplEndPoint;
-
-
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
-
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.jax.AmxMeta;
 import com.amx.jax.api.AmxApiResponse;
@@ -34,16 +29,12 @@ import com.amx.jax.constant.JaxEvent;
 import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerRating;
-import com.amx.jax.dbmodel.ReferralDetails;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.dict.Language;
 import com.amx.jax.manager.RemittancePaymentManager;
 import com.amx.jax.meta.MetaData;
-
-import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
-
 import com.amx.jax.model.customer.CustomerRatingDTO;
-
+import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
 import com.amx.jax.model.request.remittance.IRemitTransReqPurpose;
 import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
@@ -51,8 +42,6 @@ import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.RemittanceApplicationResponseModel;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.postman.client.PushNotifyClient;
-import com.amx.jax.postman.model.PushMessage;
-import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.services.CustomerRatingService;
 import com.amx.jax.services.PurposeOfTransactionService;
 import com.amx.jax.services.RemittanceTransactionService;

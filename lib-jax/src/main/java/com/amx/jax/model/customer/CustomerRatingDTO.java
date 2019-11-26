@@ -3,8 +3,6 @@ package com.amx.jax.model.customer;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import javax.validation.constraints.NotNull;
-
 import org.hibernate.validator.constraints.Range;
 
 import com.amx.jax.dict.AmxEnums.Products;

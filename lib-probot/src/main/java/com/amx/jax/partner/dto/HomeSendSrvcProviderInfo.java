@@ -3,11 +3,6 @@ package com.amx.jax.partner.dto;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Calendar;
-import java.util.Map;
-
-import com.amx.jax.pricer.dto.ExchangeDiscountInfo;
-import com.amx.jax.pricer.dto.ExchangeRateDetails;
-import com.amx.jax.pricer.var.PricerServiceConstants.DISCOUNT_TYPE;
 
 public class HomeSendSrvcProviderInfo implements Serializable {
 

@@ -2,7 +2,6 @@ package com.amx.jax.dbmodel.remittance;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.sql.Clob;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

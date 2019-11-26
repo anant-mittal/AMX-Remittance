@@ -2,8 +2,6 @@ package com.amx.amxlib.meta.model;
 
 import java.math.BigDecimal;
 
-import com.amx.jax.model.ResourceDTO;
-
 public class IncomeDto {
 	
 	

@@ -3,7 +3,6 @@ package com.amx.jax.payg;
 import java.math.BigDecimal;
 
 import com.amx.jax.api.ARespModel;
-import com.amx.jax.dict.PayGCodes.CodeCategory;
 import com.amx.utils.JsonUtil;
 
 public class PayGModel extends ARespModel {

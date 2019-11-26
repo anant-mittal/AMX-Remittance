@@ -5,25 +5,17 @@ import static com.amx.amxlib.constant.ApiEndpoint.REMIT_API_ENDPOINT;
 import java.math.BigDecimal;
 import java.util.List;
 
-import javax.validation.Valid;
-
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestBody;
-
-
-import com.amx.amxlib.constant.ApiEndpoint.RemittanceApplEndPoint;
-import com.amx.amxlib.exception.AbstractJaxException;
 
 import com.amx.amxlib.constant.ApiEndpoint;
-
+import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.exception.RemittanceTransactionValidationException;
-
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
@@ -32,27 +24,19 @@ import com.amx.amxlib.model.response.PurposeOfTransactionModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.amxlib.service.IRemittanceServiceOnline;
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.client.util.ConverterUtility;
-
-import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
-
 import com.amx.jax.dict.AmxEnums.Products;
 import com.amx.jax.model.customer.CustomerRatingDTO;
-
+import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
 import com.amx.jax.model.request.remittance.IRemitTransReqPurpose;
 import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.response.SourceOfIncomeDto;
-
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
-
 import com.amx.jax.model.response.remittance.RemittanceApplicationResponseModel;
-
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.payg.PaymentResponseDto;
-
 import com.amx.jax.rest.RestService;
 import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
 

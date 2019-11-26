@@ -13,7 +13,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.PayAtBranchClient;
-
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.constants.JaxChannel;
 import com.amx.jax.dict.Tenant;

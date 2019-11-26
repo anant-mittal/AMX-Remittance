@@ -24,16 +24,13 @@ import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.CustomerVerification;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
-
 import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.model.customer.SecurityQuestionModel;
-import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.repository.IContactDetailDao;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.repository.CustomerVerificationRepository;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.JaxUtil;
-import com.amx.utils.Random;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)

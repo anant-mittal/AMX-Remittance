@@ -1,7 +1,6 @@
 package com.amx.jax.repository.remittance;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.data.repository.CrudRepository;
