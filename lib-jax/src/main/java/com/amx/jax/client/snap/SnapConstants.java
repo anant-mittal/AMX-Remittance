@@ -31,6 +31,7 @@ public class SnapConstants {
 		TRANX_ANOMALY("tranx-anomaly", SnapIndexName.TRANX),
 		XRATE_SELL_TRANSFER("xrate-sell-transfer", SnapIndexName.XRATE),
 		CUSTOMER_VERIFICATION_REPORT("customer-verification-report", SnapIndexName.LOGS, "auditlogs"),
+		CUSTOMER_VERIFICATION_REPORT2("customer-verification-report2", SnapIndexName.LOGS, "auditlogs"),
 		CUSTOMER_VERIFICATION_REPORT_TOTAL("customer-verification-report-total", SnapIndexName.LOGS, "auditlogs"),
 		CUSTOMER_LOGIN("customer-login", SnapIndexName.LOGS, "auditlogs"),
 		
