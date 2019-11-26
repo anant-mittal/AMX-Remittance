@@ -2,7 +2,7 @@
   "aggs": {
     "verId": {
       "terms": {
-        "field": "logmap.cust.id",
+        "field": "logmap.targetId",
         "size": 5000000,
         "order": {
           "_key": "desc"
@@ -162,15 +162,15 @@
   },
   "pivot" : [
   	{
-	 "rows" : ["custId", "contactType"],
+	 "rows" : ["verId" ,"contactType"],
 	 "cols" : ["eventType"],
-	 "vals" : ["any areaId", "any branchName", "any branchUser", "ucount custId AS uCount", "count * AS total"]
+	 "vals" : ["any custId","any areaId", "any branchName", "any branchUser", "count * AS total"]
   	},
   	{
-	 "rows" : ["CONTACT_VERF_INIT:DONE_areaId AS areaId DEFAULT -", "CONTACT_VERF_INIT:DONE_branchName AS branchName DEFAULT -",
-	 	"CONTACT_VERF_INIT:DONE_branchUser AS branchUser DEFAULT SYSTEM"],
+	 "rows" : ["CONTACT_VERF_INIT:DONE_areaId AS areaId DEFAULT -","CONTACT_VERF_INIT:DONE_branchName as branchName DEFAULT -", 
+	 			"CONTACT_VERF_INIT:DONE_branchUser as branchUser DEFAULT -"],
 	 "cols" : ["contactType"],
-	 "vals" : ["sum CONTACT_VERF_INIT:DONE_uCount AS verification", "sum CONTACT_VERF_COMPLETE:DONE_uCount AS Confirmed"]
+	 "vals" : ["ucount CONTACT_VERF_INIT:DONE_custId AS verification","ucount CONTACT_VERF_COMPLETE:DONE_custId AS confirmed"]
   	}
   ]
 }

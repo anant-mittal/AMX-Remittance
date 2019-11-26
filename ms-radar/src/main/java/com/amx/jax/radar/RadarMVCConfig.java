@@ -3,6 +3,7 @@ package com.amx.jax.radar;
 import java.util.Collection;
 import java.util.Collections;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -43,6 +44,9 @@ public class RadarMVCConfig extends WebMvcConfigurerAdapter {
 		registry.addViewController("/index/**").setViewName("mains");
 	}
 
+	@Value("${spring.thymeleaf.cache}")
+	boolean thymleafCache;
+
 	@Bean
 	public SpringResourceTemplateResolver jsonMessageTemplateResolver() {
 		SpringResourceTemplateResolver theResourceTemplateResolver = new SpringResourceTemplateResolver();
@@ -51,7 +55,7 @@ public class RadarMVCConfig extends WebMvcConfigurerAdapter {
 		theResourceTemplateResolver.setSuffix(".json");
 		theResourceTemplateResolver.setTemplateMode(TemplateMode.TEXT);
 		theResourceTemplateResolver.setCharacterEncoding("UTF-8");
-		theResourceTemplateResolver.setCacheable(true);
+		theResourceTemplateResolver.setCacheable(thymleafCache);
 		theResourceTemplateResolver.setOrder(1);
 		return theResourceTemplateResolver;
 	}
