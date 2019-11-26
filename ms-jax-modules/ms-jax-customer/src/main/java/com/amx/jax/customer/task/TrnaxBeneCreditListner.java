@@ -126,7 +126,7 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 		wrapper.put("data", modeldata);
 		CommunicationPrefsResult communicationPrefsResult = communicationPrefsUtil.forCustomer(CommunicationEvents.TRNX_BENE_CREDIT, c);
 		
-		if (!ArgUtil.isEmpty(emailId)&& communicationPrefsResult.isEmail()) {
+		if (communicationPrefsResult.isEmail()) {
 
 			if (c.getEmailVerified() != AmxDBConstants.Status.Y) {
 
@@ -173,7 +173,7 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 			sendEmail(email);
 		}
 
-		if (!ArgUtil.isEmpty(smsNo)&&communicationPrefsResult.isSms()) {
+		if (communicationPrefsResult.isSms()) {
 			if (c.getMobileVerified() != AmxDBConstants.Status.Y) {
 				CustomerContactVerification x = customerContactVerificationManager.create(c, ContactType.SMS);
 				modeldata.put("customer", c);
