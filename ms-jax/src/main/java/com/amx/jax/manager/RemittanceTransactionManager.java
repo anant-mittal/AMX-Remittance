@@ -75,6 +75,7 @@ import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.dbmodel.remittance.ServiceProviderCredentialsModel;
 import com.amx.jax.dbmodel.remittance.ViewTransfer;
 import com.amx.jax.dbmodel.remittance.ViewVatDetails;
+import com.amx.jax.dict.AmxEnums.CommunicationEvents;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.dict.PayGRespCodeJSONConverter;
 import com.amx.jax.dict.UserClient;
@@ -131,6 +132,7 @@ import com.amx.jax.services.RoutingService;
 import com.amx.jax.services.TransactionHistroyService;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.dao.ReferralDetailsDao;
+import com.amx.jax.userservice.manager.CommunicationPreferencesManager;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.AmxDBConstants;
 import com.amx.jax.util.DateUtil;
@@ -289,6 +291,9 @@ public class RemittanceTransactionManager {
 	
 	@Autowired
 	BankMasterRepository bankMasterRepo;
+	
+	@Autowired
+	CommunicationPreferencesManager communicationPreferencesManager;
 
 
 	private static final String IOS = "IOS";
@@ -1434,7 +1439,7 @@ public class RemittanceTransactionManager {
 	
 	
 	private CivilIdOtpModel addOtpOnRemittanceV2(RemittanceTransactionDrRequestModel model) {
-
+		
 		List<TransactionLimitCheckView> trnxLimitList = parameterService.getAllTxnLimits();
 
 		BigDecimal onlineLimit = BigDecimal.ZERO;
@@ -1452,7 +1457,7 @@ public class RemittanceTransactionManager {
 				iosLimit = view.getComplianceChkLimit();
 			}
 		}
-
+		
 		CivilIdOtpModel otpMmodel = null;
 		BigDecimal localAmount = (BigDecimal) remitApplParametersMap.get("P_CALCULATED_LC_AMOUNT");
 		if (((meta.getChannel().equals(JaxChannel.ONLINE)) && (WEB.equals(meta.getAppType()))
@@ -1464,6 +1469,7 @@ public class RemittanceTransactionManager {
 
 			List<ContactType> channel = new ArrayList<>();
 			channel.add(ContactType.SMS_EMAIL);
+			communicationPreferencesManager.validateCommunicationPreferences(channel,CommunicationEvents.REMITTANCE);
 			otpMmodel = (CivilIdOtpModel) userService.sendOtpForCivilId(null, channel, null, null).getData().getValues()
 					.get(0);
 		}
