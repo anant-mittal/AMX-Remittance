@@ -249,8 +249,9 @@ public class BeneController {
 
 	@ApiOperation(value = "Get Lists Of Types for bene")
 	@RequestMapping(value = "/api/bnfcry/meta/types", method = { RequestMethod.GET })
-	public ResponseWrapperM<List<BeneficaryStatusDto>, Object> getBeneStatusMaster() {
-		return ResponseWrapperM.fromAsList(beneClient.getBeneStatusMaster());
+	public ResponseWrapperM<List<BeneficaryStatusDto>, Object> getBeneStatusMaster(
+			@RequestParam(required = false) BigDecimal serviceGroupId) {
+		return ResponseWrapperM.fromAsList(beneClient.getBeneStatusMaster(serviceGroupId));
 	}
 
 	@ApiOperation(value = "Add new branch request")
