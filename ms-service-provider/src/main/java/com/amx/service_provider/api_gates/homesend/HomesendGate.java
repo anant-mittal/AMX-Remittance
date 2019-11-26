@@ -2,8 +2,12 @@ package com.amx.service_provider.api_gates.homesend;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.axis.types.UnsignedInt;
 import org.apache.log4j.Logger;
@@ -30,10 +34,13 @@ import com.amx.jax.model.response.serviceprovider.Quotation_Call_Response;
 import com.amx.jax.model.response.serviceprovider.Remittance_Call_Response;
 import com.amx.jax.model.response.serviceprovider.Status_Call_Response;
 import com.amx.service_provider.api_gates.common.Common_API_Utils;
+import com.amx.service_provider.api_gates.common.TimeOutResponse;
 import com.amx.service_provider.dbmodel.webservice.ExOwsLoginCredentials;
 import com.amx.service_provider.dbmodel.webservice.OwsParamRespcode;
 import com.amx.service_provider.dbmodel.webservice.OwsParamRespcodeKey;
 import com.amx.service_provider.repository.webservice.OwsParamRespcodeRepository;
+
+import io.netty.handler.timeout.TimeoutException;
 
 /*
  * This class is created consume the API services exposed by HomeSend Main
@@ -457,12 +464,13 @@ public class HomesendGate
 			Benificiary bene_data)
 	{
 		Remittance_Call_Response local_api_response = new Remittance_Call_Response();
-		RemittanceResponse response;
+		RemittanceResponse response = null;
 		RemittanceRequest request = new RemittanceRequest();
 		Security security_object = new Security();
 		AmountInformation amountInformation = new AmountInformation();
 		// SenderInformation senderInformation = new SenderInformation();
 		String routting_tag, service_type, cbs_type;
+		ExecutorService executor = null;
 
 		try
 		{
@@ -554,7 +562,31 @@ public class HomesendGate
 							bene_data.getBeneficiary_reference() +
 							" ) ...");
 
-					response = HomeSend_BindingStub.remittance(request);
+					// new functionality - timer logic
+					Boolean timerStatus = Boolean.FALSE;
+					String timerException = null;
+					try {
+						executor = Executors.newSingleThreadExecutor();
+						HashMap<String, Object> mapRequest = new HashMap<String, Object>();
+						mapRequest.put("HomeSend_BindingStub", HomeSend_BindingStub);
+						mapRequest.put("RemittanceRequest", request);
+						mapRequest.put("RoutingBankCode", txn_data.getRoutting_bank_code());
+						Object responseObj = executor.submit(new TimeOutResponse(mapRequest)).get(60, TimeUnit.SECONDS);
+						if(responseObj != null){
+							response = (RemittanceResponse)responseObj;
+						}
+					}catch (TimeoutException exception) {
+						logger.info("response session time exception" + exception.getMessage());
+						timerStatus = Boolean.TRUE;
+						timerException = exception.getMessage();
+					}catch (Exception exception) {
+						logger.info("response session time exception" + exception.getMessage());
+						timerStatus = Boolean.TRUE;
+						timerException = exception.getMessage();
+					}
+
+					// old functionality
+					//response = HomeSend_BindingStub.remittance(request);
 
 					endTime = System.currentTimeMillis();
 
@@ -569,6 +601,22 @@ public class HomesendGate
 							" Seconds");
 
 					// Empty Response Validation
+					if(timerStatus) {
+						System.out.println(timerException);
+
+						local_api_response.setAction_ind("C");
+						local_api_response.setResponse_code("CONERR");// CONERR -- connection error
+						local_api_response.setResponse_description("Issue with connection. " + timerException);
+
+						if (timerException.contains("Connection timed out") || timerException.contains("timeout") || timerException.contains("Bad Gateway"))
+						{
+							local_api_response.setResponse_code("TIMOUT");
+							local_api_response.setResponse_description("Connection Timed Out. " + timerException);
+						}
+
+						throw new Exception(local_api_response.getResponse_description());
+					}
+					
 					if (response == null)
 					{
 						local_api_response.setResponse_code("JAX_INVALID_PARTNER_RESPONSE");

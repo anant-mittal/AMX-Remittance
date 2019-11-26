@@ -1,5 +1,10 @@
 package com.amx.service_provider.api_gates.vintaja;
 
+import java.util.HashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.log4j.Logger;
 
 import com.amx.jax.model.request.serviceprovider.Benificiary;
@@ -12,9 +17,12 @@ import com.amx.jax.model.response.serviceprovider.ServiceProviderResponse;
 import com.amx.jax.model.response.serviceprovider.Status_Call_Response;
 import com.amx.jax.model.response.serviceprovider.Validate_Remittance_Inputs_Call_Response;
 import com.amx.service_provider.api_gates.common.Common_API_Utils;
+import com.amx.service_provider.api_gates.common.TimeOutResponse;
 import com.amx.service_provider.dbmodel.webservice.ExOwsLoginCredentials;
 import com.amx.service_provider.repository.webservice.OwsParamRespcodeRepository;
 import com.amx.service_provider.repository.webservice.OwsTransferLogRepository;
+
+import io.netty.handler.timeout.TimeoutException;
 
 public class VintajaGate
 {
@@ -50,6 +58,7 @@ public class VintajaGate
 			Benificiary bene_data, String ws_call_type)
 	{
 		ServiceProviderResponse response = null;
+		ExecutorService executor = null;
 
 		// Define the call type as a first step
 		try
@@ -149,29 +158,70 @@ public class VintajaGate
 			try
 			{
 				String signed_payload = Common_API_Utils.sign_and_encode_payload(api_input, owsLoginCredentialsObject);
+				
+				// new functionality - timer logic
+				String response_string = null;
+				Boolean timerStatus = Boolean.FALSE;
+				String timerException = null;
+				try {
+					executor = Executors.newSingleThreadExecutor();
+					HashMap<String, Object> mapRequest = new HashMap<String, Object>();
+					mapRequest.put("api_input", api_input);
+					mapRequest.put("signed_payload", signed_payload);
+					mapRequest.put("ws_call_type", ws_call_type);
+					mapRequest.put("owsLoginCredentialsObject", owsLoginCredentialsObject);
+					mapRequest.put("RoutingBankCode", txn_data.getRoutting_bank_code());
+					Object responseObj = executor.submit(new TimeOutResponse(mapRequest)).get(60, TimeUnit.SECONDS);
+					if(responseObj != null){
+						response_string = (String)responseObj;
+					}
+				}catch (TimeoutException exception) {
+					logger.info("response session time exception" + exception.getMessage());
+					timerStatus = Boolean.TRUE;
+					timerException = exception.getMessage();
+				}catch (Exception exception) {
+					logger.info("response session time exception" + exception.getMessage());
+					timerStatus = Boolean.TRUE;
+					timerException = exception.getMessage();
+				}
 
 				// Call external API
 				// Passing response object to the call_send_remittance_api where it will get
 				// updated there
-				String response_string =
-						VintajaUtils
-								.call_vintaja_api(api_input, signed_payload, owsLoginCredentialsObject, ws_call_type);
+				// old functionality
+				//String response_string = VintajaUtils.call_vintaja_api(api_input, signed_payload, owsLoginCredentialsObject, ws_call_type);
 
 				// TODO
+				if(timerStatus) {
+					System.out.println(timerException);
 
-				System.out.println(
-						"--------------------------------- JSON Output -----------------------------------------");
-				System.out.println(Common_API_Utils.get_formatted_jason_string(response_string)); // Print it with
-																									// specified
-																									// indentation
-				System.out.println(
-						"--------------------------------- JSON Output -----------------------------------------");
+					response.setAction_ind("C");
+					response.setResponse_code("CONERR");// CONERR -- connection error
+					response.setResponse_description("Issue with connection. " + timerException);
 
-				// Setting response string
-				response.setResponse_XML("<Response>" + response_string + "</Response>");
+					if (timerException.contains("Connection timed out") || timerException.contains("timeout") || timerException.contains("Bad Gateway"))
+					{
+						response.setResponse_code("TIMOUT");
+						response.setResponse_description("Connection Timed Out. " + timerException);
+					}
 
-				VintajaUtils.parse_api_response(response_string, response, ws_call_type);
+					throw new Exception(response.getResponse_description());
+				}else {
+					if(response_string != null){
+						System.out.println(
+								"--------------------------------- JSON Output -----------------------------------------");
+						System.out.println(Common_API_Utils.get_formatted_jason_string(response_string)); // Print it with
+						// specified
+						// indentation
+						System.out.println(
+								"--------------------------------- JSON Output -----------------------------------------");
 
+						// Setting response string
+						response.setResponse_XML("<Response>" + response_string + "</Response>");
+
+						VintajaUtils.parse_api_response(response_string, response, ws_call_type);
+					}
+				}
 			}
 			catch (Exception e)
 			{
