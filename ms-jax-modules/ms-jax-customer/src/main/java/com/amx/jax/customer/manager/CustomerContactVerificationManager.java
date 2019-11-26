@@ -119,9 +119,11 @@ public class CustomerContactVerificationManager {
 		List<Object[]> x = customerContactVerificationRepository.getCountsByCustomer(c.getCustomerId(),
 				contactType,
 				expiryPeriod);
-		for (Object[] p : x) {
-			if (Status.N.equals(p[1])) {
-				return ArgUtil.parseAsBigDecimal(p[0]);
+		if (ArgUtil.is(x)) {
+			for (Object[] p : x) {
+				if (Status.N.equals(p[1])) {
+					return ArgUtil.parseAsBigDecimal(p[0]);
+				}
 			}
 		}
 		return BigDecimal.ZERO;
@@ -155,7 +157,7 @@ public class CustomerContactVerificationManager {
 			// link.setSendById(actor.getActorIdAsBigDecimal());
 			// link.setSendByType(actor.getActorType());
 		}
-
+		CustomerContactVerification link2;
 		try {
 
 			if (ContactType.EMAIL.equals(contactType)) {
@@ -184,15 +186,16 @@ public class CustomerContactVerificationManager {
 				throw new GlobalException(JaxError.SEND_OTP_LIMIT_EXCEEDED,
 						"Sending Verification Limit has exceeded try again after 24 hours");
 			}
+
+			link2 = customerContactVerificationRepository.save(link);
+
 		} catch (GlobalException e) {
 			auditService.log(audit.result(Result.FAIL).message(e.getError()));
 			throw e;
 		}
 
-		CustomerContactVerification link2 = customerContactVerificationRepository.save(link);
-		audit.getVerify().id(link2.getId()).count(getConfirmedCountsByCustomer(c, contactType));
-
 		// Audit Info
+		audit.getVerify().id(link2.getId()).count(getConfirmedCountsByCustomer(c, contactType));
 		audit.setTargetId(link2.getId());
 		auditService.log(audit.result(Result.DONE));
 
@@ -217,6 +220,8 @@ public class CustomerContactVerificationManager {
 		audit.setContactType(oldLink.getContactType());
 		audit.setVerify(new Verify().contactType(oldLink.getContactType()).id(oldLink.getId()));
 
+		CustomerContactVerification x;
+
 		try {
 			if (!oldLink.getCustomerId().equals(c.getCustomerId())) {
 				throw new GlobalException(JaxError.INVALID_CIVIL_ID, "Civil id does not belong to the link");
@@ -229,7 +234,7 @@ public class CustomerContactVerificationManager {
 
 			oldLink.setVerificationCode(Random.randomAlphaNumeric(8));
 			oldLink.setSendDate(new Date());
-			audit.getVerify().count(getConfirmedCountsByCustomer(c, oldLink.getContactType()));
+			oldLink = customerContactVerificationRepository.save(oldLink);
 
 		} catch (GlobalException e) {
 			auditService.log(audit.result(Result.FAIL).message(e.getError()));
@@ -237,10 +242,11 @@ public class CustomerContactVerificationManager {
 		}
 
 		// Audit Info
+		audit.getVerify().count(getConfirmedCountsByCustomer(c, oldLink.getContactType()));
 		audit.setTargetId(oldLink.getId());
 		auditService.log(audit.result(Result.DONE));
 
-		return customerContactVerificationRepository.save(oldLink);
+		return oldLink;
 	}
 
 	/**
@@ -373,14 +379,13 @@ public class CustomerContactVerificationManager {
 			link.setVerifiedDate(new Date());
 			customerContactVerificationRepository.save(link);
 
-			audit.getVerify().count(getConfirmedCountsByCustomer(c, link.getContactType()));
-
 		} catch (GlobalException e) {
 			auditService.log(audit.result(Result.FAIL).message(e.getError()));
 			throw e;
 		}
 
 		// Audit Info
+		audit.getVerify().count(getConfirmedCountsByCustomer(c, link.getContactType()));
 		audit.setTargetId(link.getId());
 		auditService.log(audit.result(Result.DONE));
 

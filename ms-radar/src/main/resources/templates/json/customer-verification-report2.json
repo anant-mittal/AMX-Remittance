@@ -157,7 +157,16 @@
       ],
       "filter": [],
       "should": [],
-      "must_not": []
+      "must_not": [
+        {
+          "range": {
+            "logmap.verify.count": {
+              "gte": 2,
+              "lt": 10000
+            }
+          }
+        }
+      ]
     }
   },
   "pivot" : [
