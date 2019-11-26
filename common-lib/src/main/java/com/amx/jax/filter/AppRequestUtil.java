@@ -13,14 +13,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.util.LinkedMultiValueMap;
 
+import com.amx.jax.logger.LoggerService;
+
 public class AppRequestUtil {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(AppRequestUtil.class);
+	private static final Logger LOGGER = LoggerService.getLogger(AppRequestUtil.class);
 
 	public static LinkedMultiValueMap<String, String> getHeader(HttpServletRequest req) {
 		LinkedMultiValueMap<String, String> headerMap = new LinkedMultiValueMap<String, String>();
