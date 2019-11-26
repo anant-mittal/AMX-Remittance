@@ -31,8 +31,8 @@ public class AmxEnums {
 	}
 
 	public static enum CommunicationEvents implements CommunicationEvent {
-		NEW_DEVICE_LOGIN,BIRTHDAY_WISHES,
-		CASH_PICKUP_BANK, CASH_PICKUP_WU, CASH_PICKUP_TF;
+		NEW_DEVICE_LOGIN, BIRTHDAY_WISHES, CASH_PICKUP_BANK, CASH_PICKUP_WU, CASH_PICKUP_TF, TRNX_BENE_CREDIT,
+		ADD_BENEFICIARY, BPI_JOLLIBEE, REMITTANCE;
 
 		public static CommunicationEvent fromString(String eventStr) {
 			CommunicationEvent x = (CommunicationEvent) ArgUtil.parseAsEnum(eventStr, CommunicationEvents.class);
