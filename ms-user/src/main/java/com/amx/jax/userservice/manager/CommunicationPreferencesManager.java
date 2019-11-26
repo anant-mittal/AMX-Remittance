@@ -35,7 +35,10 @@ public class CommunicationPreferencesManager {
 
 		CommunicationPrefsResult communicationPrefsResult = communicationPrefsUtil.forCustomer(communicationEvent,
 				cust);
-
+		if(channelList.contains(ContactType.SMS_EMAIL)) {
+			channelList.add(ContactType.EMAIL);
+			channelList.add(ContactType.SMS);
+		}
 		for (ContactType channel : channelList) {
 			if (ContactType.EMAIL.equals(channel)) {
 				boolean isEmailVerified = communicationPrefsResult.isEmail();

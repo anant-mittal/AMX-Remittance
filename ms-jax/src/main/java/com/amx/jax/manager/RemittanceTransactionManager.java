@@ -1235,7 +1235,7 @@ public class RemittanceTransactionManager {
 		remiteAppModel.setDocumentFinancialYear(remittanceApplication.getDocumentFinancialyear());
 		remiteAppModel.setMerchantTrackId(meta.getCustomerId());
 		remiteAppModel.setDocumentIdForPayment(remittanceApplication.getDocumentNo().toString());
-
+		
 		CivilIdOtpModel civilIdOtpModel = null;
 		if (model.getmOtp() == null) {
 			// this flow is for send OTP
@@ -1470,6 +1470,7 @@ public class RemittanceTransactionManager {
 			List<ContactType> channel = new ArrayList<>();
 			channel.add(ContactType.SMS_EMAIL);
 			communicationPreferencesManager.validateCommunicationPreferences(channel,CommunicationEvents.REMITTANCE);
+			
 			otpMmodel = (CivilIdOtpModel) userService.sendOtpForCivilId(null, channel, null, null).getData().getValues()
 					.get(0);
 		}
