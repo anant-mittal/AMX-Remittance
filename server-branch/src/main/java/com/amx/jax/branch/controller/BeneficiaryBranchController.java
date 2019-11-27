@@ -38,6 +38,7 @@ import com.amx.jax.model.request.benebranch.UpdateBeneStatusRequest;
 import com.amx.jax.model.request.remittance.GetServiceApplicabilityRequest;
 import com.amx.jax.model.response.BankMasterDTO;
 import com.amx.jax.model.response.CurrencyMasterDTO;
+import com.amx.jax.model.response.benebranch.AddBeneResponse;
 import com.amx.jax.model.response.benebranch.BankBranchDto;
 import com.amx.jax.model.response.benebranch.BeneStatusDto;
 import com.amx.jax.model.response.remittance.GetServiceApplicabilityResponse;
@@ -161,12 +162,12 @@ public class BeneficiaryBranchController {
 	}
 
 	@RequestMapping(value = "/api/bene/add/bank", method = RequestMethod.POST)
-	public AmxApiResponse<BoolRespModel, Object> addBeneBank(@RequestBody @Valid AddBeneBankRequest request) {
+	public AmxApiResponse<AddBeneResponse, Object> addBeneBank(@RequestBody @Valid AddBeneBankRequest request) {
 		return beneBranchClient.addBeneBank(request);
 	}
 
 	@RequestMapping(value = "/api/bene/add/cash", method = RequestMethod.POST)
-	public AmxApiResponse<BoolRespModel, Object> addBenecash(@RequestBody @Valid AddBeneCashRequest request) {
+	public AmxApiResponse<AddBeneResponse, Object> addBenecash(@RequestBody @Valid AddBeneCashRequest request) {
 		return beneBranchClient.addBenecash(request);
 	}
 

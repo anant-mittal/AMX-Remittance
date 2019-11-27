@@ -29,6 +29,7 @@ import com.amx.jax.model.request.benebranch.UpdateBeneBankRequest;
 import com.amx.jax.model.request.benebranch.UpdateBeneCashRequest;
 import com.amx.jax.model.request.benebranch.UpdateBeneStatusRequest;
 import com.amx.jax.model.response.BankMasterDTO;
+import com.amx.jax.model.response.benebranch.AddBeneResponse;
 import com.amx.jax.model.response.benebranch.BankBranchDto;
 import com.amx.jax.model.response.benebranch.BeneStatusDto;
 import com.amx.utils.JsonUtil;
@@ -77,21 +78,21 @@ public class BeneBranchController implements IBranchBeneService {
 	@RequestMapping(value = Path.ADD_BENE_BANK, method = RequestMethod.POST)
 	@Override
 	@ApiOperation("add bene bank")
-	public AmxApiResponse<BoolRespModel, Object> addBeneBank(@RequestBody @Valid AddBeneBankRequest request) {
+	public AmxApiResponse<AddBeneResponse, Object> addBeneBank(@RequestBody @Valid AddBeneBankRequest request) {
 		logger.debug("request addBeneBank: {} ", JsonUtil.toJson(request));
 		beneBranchValidation.validateaddBeneBank(request);
-		beneBranchService.addBeneBankorCash(request);
-		return AmxApiResponse.build(new BoolRespModel(true));
+		AddBeneResponse result = beneBranchService.addBeneBankorCash(request);
+		return AmxApiResponse.build(result);
 	}
 
 	@RequestMapping(value = Path.ADD_BENE_CASH, method = RequestMethod.POST)
 	@Override
 	@ApiOperation("add bene cash")
-	public AmxApiResponse<BoolRespModel, Object> addBenecash(@RequestBody @Valid AddBeneCashRequest request) {
+	public AmxApiResponse<AddBeneResponse, Object> addBenecash(@RequestBody @Valid AddBeneCashRequest request) {
 		logger.debug("request addBenecash: {} ", JsonUtil.toJson(request));
 		beneBranchValidation.validateaddBenecash(request);
-		beneBranchService.addBeneBankorCash(request);
-		return AmxApiResponse.build(new BoolRespModel(true));
+		AddBeneResponse result = beneBranchService.addBeneBankorCash(request);
+		return AmxApiResponse.build(result);
 	}
 
 	@RequestMapping(value = Path.ADD_NEW_BRANCH_REQUEST, method = RequestMethod.POST)

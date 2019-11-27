@@ -47,6 +47,7 @@ import com.amx.jax.model.request.benebranch.ListBeneRequest;
 import com.amx.jax.model.request.benebranch.UpdateBeneStatusRequest;
 import com.amx.jax.model.response.BankMasterDTO;
 import com.amx.jax.model.response.benebranch.AddBeneBankBranchRequestModel;
+import com.amx.jax.model.response.benebranch.AddBeneResponse;
 import com.amx.jax.model.response.benebranch.BankBranchDto;
 import com.amx.jax.model.response.benebranch.BeneStatusDto;
 import com.amx.jax.model.response.benebranch.UpdateBeneStatus;
@@ -123,11 +124,12 @@ public class BeneBranchService {
 		return bankMetaService.getBankBranches(request);
 	}
 
-	public void addBeneBankorCash(AbstractBeneDetailDto request) {
+	public AddBeneResponse addBeneBankorCash(AbstractBeneDetailDto request) {
 		BeneficiaryTrnxModel beneficiaryTrnxModel = request.createBeneficiaryTrnxModelObject();
 		beneficiaryValidationService.validateBeneficiaryTrnxModel(beneficiaryTrnxModel);
 		beneficiaryTrnxManager.commit(beneficiaryTrnxModel);
 		setAdditionalBranchFields(beneficiaryTrnxModel.getBeneficaryRelationSeqId(), request);
+		return new AddBeneResponse(beneficiaryTrnxModel.getBeneficaryRelationSeqId());
 	}
 
 	private void setAdditionalBranchFields(BigDecimal beneficaryRelationSeqId, AbstractBeneDetailDto request) {

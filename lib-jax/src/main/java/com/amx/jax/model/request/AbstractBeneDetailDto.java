@@ -26,7 +26,7 @@ public abstract class AbstractBeneDetailDto {
 	private String firstName;
 
 	@NotNull
-	@Size(min = 1, max = 50, message = "secondName should be between 1 and 50 characters")
+	@Size(min = 0, max = 50, message = "secondName should be between 0 and 50 characters")
 	@ApiMockModelProperty(example = "testbene")
 	private String secondName;
 
