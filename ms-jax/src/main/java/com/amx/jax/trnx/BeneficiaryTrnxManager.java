@@ -17,6 +17,7 @@ import com.amx.amxlib.constant.AuthType;
 import com.amx.amxlib.constant.NotificationConstants;
 import com.amx.amxlib.model.BeneCreateDetailsDTO;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.jax.branchbene.BeneAccountManager;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.BeneficiaryDao;
 import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
@@ -107,6 +108,8 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 
 	@Autowired
 	IBeneficiaryOnlineDao beneficiaryOnlineDao;
+	@Autowired
+	BeneAccountManager beneAccountManager;
 
 	@Override
 	public BeneficiaryTrnxModel init() {
@@ -239,7 +242,7 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 			beneficaryAccount.setCurrencyId(accountDetails.getCurrencyId());
 			beneficaryAccount.setIsActive(ConstantDocument.Yes);
 			beneficaryAccount.setServiceGroupId(accountDetails.getServiceGroupId());
-			beneficaryAccount.setServiceProviderBranchId(accountDetails.getServiceProviderBranchId());
+			beneficaryAccount.setServiceProviderBranchId(beneAccountManager.getRoutingBankBranchId(accountDetails));
 			beneficaryAccount.setServiceProviderId(accountDetails.getServiceProviderId());
 			beneficaryAccount.setSwiftCode(accountDetails.getSwiftCode());
 

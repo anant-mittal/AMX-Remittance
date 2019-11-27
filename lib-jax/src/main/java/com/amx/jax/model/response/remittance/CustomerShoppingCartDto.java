@@ -2,7 +2,6 @@ package com.amx.jax.model.response.remittance;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Date;
 
 public class CustomerShoppingCartDto implements Serializable{
 
@@ -62,6 +61,9 @@ public class CustomerShoppingCartDto implements Serializable{
 	private String customerSignatureString;
 	private String localCurrencyCode;
 	private String foreignCurrencyCode;
+	
+	private BigDecimal routingBankId;
+	private String bankIndicator;
 	
 	/* adding service provider trnx duration */	
 	private Long trnxExpirationDate;
@@ -438,4 +440,17 @@ public class CustomerShoppingCartDto implements Serializable{
 	public void setTrnxStartDate(Long trnxStartDate) {
 		this.trnxStartDate = trnxStartDate;
 	}
+	public BigDecimal getRoutingBankId() {
+		return routingBankId;
+	}
+	public void setRoutingBankId(BigDecimal routingBankId) {
+		this.routingBankId = routingBankId;
+	}
+	public String getBankIndicator() {
+		return bankIndicator;
+	}
+	public void setBankIndicator(String bankIndicator) {
+		this.bankIndicator = bankIndicator;
+	}
+	
 }

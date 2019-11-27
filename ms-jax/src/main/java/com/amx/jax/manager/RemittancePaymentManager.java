@@ -31,7 +31,6 @@ import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dao.RemittanceProcedureDao;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.PlaceOrder;
-import com.amx.jax.dbmodel.ReferralDetails;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.partner.TransactionDetailsView;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
@@ -51,7 +50,6 @@ import com.amx.jax.partner.manager.PartnerTransactionManager;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.model.Email;
-import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.pricer.var.PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE;
 import com.amx.jax.repository.IPlaceOrderDao;
 import com.amx.jax.repository.IShoppingCartDetailsDao;
@@ -311,7 +309,6 @@ public class RemittancePaymentManager extends AbstractService{
 			}
 
 		}catch(Exception e) {
-			logger.error("error occured in paymentCapture", e);
 			lstPayIdDetails =applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(paymentResponse.getUdf3(),new Customer(paymentResponse.getCustomerId()));
 			
 			if(!lstPayIdDetails.isEmpty()) {

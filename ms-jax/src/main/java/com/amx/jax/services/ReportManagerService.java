@@ -7,7 +7,6 @@ import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +15,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.h2.util.New;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -36,7 +34,6 @@ import com.amx.jax.dal.LoyaltyInsuranceProDao;
 import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.CollectionDetailViewModel;
 import com.amx.jax.dbmodel.CollectionPaymentDetailsViewModel;
-import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.PurposeOfRemittanceViewModel;
 import com.amx.jax.dbmodel.RemittanceTransactionView;
@@ -54,7 +51,6 @@ import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.IPurposeOfRemittance;
 import com.amx.jax.repository.IRemittanceTransactionDao;
 import com.amx.jax.service.CountryService;
-import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.RoundUtil;
@@ -458,7 +454,7 @@ public class ReportManagerService extends AbstractService{
 					obj.setSignature(view.getCustomerSignatureClob());
 				}
 				
-					List<ViewCompanyDetails> companyMaster = iCompanyDao.getCompanyDetailsByCompanyId(languageId, companyId);
+					List<ViewCompanyDetails> companyMaster = iCompanyDao.getCompanyDetailsByCompanyId(BigDecimal.ONE, companyId);
 			
 					StringBuffer engCompanyInfo = null;
 					StringBuffer arabicCompanyInfo = null;
@@ -626,35 +622,31 @@ public class ReportManagerService extends AbstractService{
 			int decimalPerCurrency) {
 		// Special Exchange Rate
 		if (view.getCurrencyQuoteName() != null && currencyQuoteName != null && view.getExchangeRateApplied() != null) {
-			obj.setSpecialExchangeRate(view.getCurrencyQuoteName() + " / " + currencyQuoteName + "     "
-					+ view.getExchangeRateApplied().toString());
+			obj.setSpecialExchangeRate(view.getCurrencyQuoteName() + " / " + currencyQuoteName + "     "+ view.getExchangeRateApplied().toString());
 		}
 
 		// Equivalent kwd Amount
 		if (view.getLocalTransactionAmount() != null && view.getLocalTransactionCurrencyId() != null) {
-			BigDecimal transationAmount = RoundUtil.roundBigDecimal((view.getLocalTransactionAmount()),
-					decimalPerCurrency);
+			BigDecimal transationAmount = RoundUtil.roundBigDecimal((view.getLocalTransactionAmount()),decimalPerCurrency);
 			obj.setSpecialKwdAmount(currencyQuoteName + "     " + transationAmount.toString());
 		}
 
 		// Branch Exchange Rate and kwd Amount
-		if (null != view.getIsDiscAvail() && view.getIsDiscAvail().equals("Y")) {
-			if (view.getCurrencyQuoteName() != null && currencyQuoteName != null
-					&& view.getOriginalExchangeRate() != null) {
-				if (view.getOriginalExchangeRate().compareTo(view.getExchangeRateApplied()) != 1) {
-					obj.setBranchExchangeRate(view.getCurrencyQuoteName() + " / " + currencyQuoteName + "     "
-							+ view.getExchangeRateApplied().toString());
+		if(!StringUtils.isBlank(view.getIsDiscAvail()) && view.getIsDiscAvail().equalsIgnoreCase(ConstantDocument.Yes) && JaxUtil.isNullZeroBigDecimalCheck(view.getAmountSaved()) && view.getAmountSaved().compareTo(BigDecimal.ZERO)>0) {
+			if (view.getCurrencyQuoteName() != null && currencyQuoteName != null && view.getOriginalExchangeRate() != null) {
+				//if (view.getOriginalExchangeRate().compareTo(view.getExchangeRateApplied()) != 1) {
+				if (JaxUtil.isNullZeroBigDecimalCheck(view.getRackExchangeRate()) && view.getRackExchangeRate().compareTo(view.getExchangeRateApplied()) != 1) {
+					obj.setBranchExchangeRate(view.getCurrencyQuoteName() + " / " + currencyQuoteName + "     "+ view.getExchangeRateApplied().toString());
 					if (view.getLocalTransactionAmount() != null && view.getLocalTransactionCurrencyId() != null) {
-						BigDecimal transationAmount = RoundUtil.roundBigDecimal((view.getLocalTransactionAmount()),
-								decimalPerCurrency);
+						BigDecimal transationAmount = RoundUtil.roundBigDecimal((view.getLocalTransactionAmount()),decimalPerCurrency);
 						obj.setKwdAmount(currencyQuoteName + "     " + transationAmount.toString());
 					}
 				} else {
-					obj.setBranchExchangeRate(view.getCurrencyQuoteName() + " / " + currencyQuoteName + "     "
-							+ view.getOriginalExchangeRate().toString());
-					if (view.getOriginalExchangeRate() != null && view.getForeignTransactionAmount() != null
-							&& view.getLocalTransactionCurrencyId() != null) {
-						BigDecimal calKwtAmt = view.getOriginalExchangeRate().multiply(view.getForeignTransactionAmount());
+					//obj.setBranchExchangeRate(view.getCurrencyQuoteName() + " / " + currencyQuoteName + "     "+ view.getOriginalExchangeRate().toString());
+					obj.setBranchExchangeRate(view.getCurrencyQuoteName() + " / " + currencyQuoteName + "     "+ (view.getRackExchangeRate()==null?view.getOriginalExchangeRate().toString():view.getRackExchangeRate().toString()));
+					if (view.getRackExchangeRate() != null && view.getForeignTransactionAmount() != null && view.getLocalTransactionCurrencyId() != null) {
+						//BigDecimal calKwtAmt = view.getOriginalExchangeRate().multiply(view.getForeignTransactionAmount());
+						BigDecimal calKwtAmt = view.getRackExchangeRate().multiply(view.getForeignTransactionAmount());
 						BigDecimal transationAmount = RoundUtil.roundBigDecimal((calKwtAmt), decimalPerCurrency);
 						obj.setKwdAmount(currencyQuoteName + "     " + transationAmount.toString());
 					}
@@ -663,14 +655,11 @@ public class ReportManagerService extends AbstractService{
 			}
 			
 		} else {
-			if (view.getCurrencyQuoteName() != null && currencyQuoteName != null
-					&& view.getExchangeRateApplied() != null) {
-				obj.setBranchExchangeRate(view.getCurrencyQuoteName() + " / " + currencyQuoteName + "     "
-						+ view.getExchangeRateApplied().toString());
+			if (view.getCurrencyQuoteName() != null && currencyQuoteName != null && view.getExchangeRateApplied() != null) {
+				obj.setBranchExchangeRate(view.getCurrencyQuoteName() + " / " + currencyQuoteName + "     "+ view.getExchangeRateApplied().toString());
 			}
 			if (view.getLocalTransactionAmount() != null && view.getLocalTransactionCurrencyId() != null) {
-				BigDecimal transationAmount = RoundUtil.roundBigDecimal((view.getLocalTransactionAmount()),
-						decimalPerCurrency);
+				BigDecimal transationAmount = RoundUtil.roundBigDecimal((view.getLocalTransactionAmount()),decimalPerCurrency);
 				obj.setKwdAmount(currencyQuoteName + "     " + transationAmount.toString());
 			}
 		}

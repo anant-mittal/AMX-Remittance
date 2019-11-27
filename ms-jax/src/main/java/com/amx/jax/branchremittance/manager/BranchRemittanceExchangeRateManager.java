@@ -7,11 +7,14 @@ import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_BANK_I
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_COUNTRY_ID;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
@@ -33,8 +36,10 @@ import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.dao.CurrencyMasterDao;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.CountryMaster;
+import com.amx.jax.dbmodel.CurrencyMasterMdlv1;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.remittance.AdditionalBankRuleAmiec;
 import com.amx.jax.dict.UserClient.Channel;
@@ -75,6 +80,7 @@ import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.services.BeneficiaryValidationService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.JaxUtil;
+import com.amx.jax.util.RoundUtil;
 import com.amx.jax.validation.RemittanceTransactionRequestValidator;
 import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
 
@@ -133,6 +139,10 @@ public class BranchRemittanceExchangeRateManager {
 	
 	@Autowired
 	IViewVatDetailsRespository vatDetailsRepository;
+	
+	@Autowired
+	CurrencyMasterDao currencyMasterDao;
+	
 
 public void validateGetExchangRateRequest(IRemittanceApplicationParams request) {
 
@@ -329,6 +339,8 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 			result.setBetterRateAvailable(sellRateDetail.isBetterRateAvailable());
 			result.setBetterRateAmountSlab(sellRateDetail.getBetterRateAmountSlab());
 			
+			result.setRackExchangeRate(sellRateDetail.getRackExchangeRate());
+			
 			BigDecimal commission =null;
 			if(prType.equals(PRICE_TYPE.NO_BENE_DEDUCT)) {
 			 commission =trnxRoutingDetails.getChargeAmount();
@@ -384,6 +396,13 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 			}else {
 				remittanceTransactionManager.applyCurrencyRoudingLogicSP(result.getExRateBreakup());
 			}
+			
+			/** Imps split message for multiple trnx  **/
+			String msg = impsSplittingMessage(result);
+			result.setErrorMessage(msg);
+		
+			result.setYouSavedAmount(getYouSavedAmount(result));
+			result.setYouSavedAmountInFC(getYouSavedAmountInFc(result));
 		}
 		return result;
 	}
@@ -507,4 +526,126 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 		return serviceProviderDto ; 
 	}
 	
+	
+	
+	private String impsSplittingMessage(DynamicRoutingPricingDto drDto) {
+		String msg = null;
+		String reminder = "";
+		try {
+		TrnxRoutingDetails routingDetails = drDto.getTrnxRoutingPaths();
+		BigDecimal foreignAmont = drDto.getExRateBreakup().getConvertedFCAmount();
+		
+		if(JaxUtil.isNullZeroBigDecimalCheck(routingDetails.getSplitAmount()) && foreignAmont.compareTo(routingDetails.getSplitAmount())>0) {
+		
+		BigDecimal fcurrencyId = (BigDecimal) remitApplParametersMap.get("P_FOREIGN_CURRENCY_ID");
+		CurrencyMasterMdlv1 currMaster = currencyMasterDao.getCurrencyMasterById(fcurrencyId); 
+		String currQuoteName = currMaster!=null?(currMaster.getQuoteName()==null?"":currMaster.getQuoteName()):currMaster.getCurrencyCode(); 
+		BigDecimal[] splitCount = foreignAmont.divideAndRemainder(routingDetails.getSplitAmount());
+		BigDecimal count = new BigDecimal(0);
+		if(splitCount!=null && splitCount.length>0) {
+			count = splitCount[0].add(splitCount[1].compareTo(BigDecimal.ZERO)>0?BigDecimal.ONE:BigDecimal.ZERO);
+			List<String> amountStrList= new ArrayList<>();
+			for(int i=0;i<splitCount[0].intValue();i++) {
+				BigDecimal spValue = RoundUtil.roundBigDecimal(routingDetails.getSplitAmount(),drDto.getExRateBreakup().getFcDecimalNumber().intValue());
+				//amountStrList.add(formtingNumbers(spValue));
+				amountStrList.add(format(spValue.doubleValue()));
+			}
+			String joinedString = amountStrList.stream().collect(Collectors.joining(" , "+currQuoteName +" "));
+		
+			if(splitCount[1]!=null && splitCount[1].compareTo(BigDecimal.ZERO)>0) {
+				BigDecimal spValue = RoundUtil.roundBigDecimal(splitCount[1],drDto.getExRateBreakup().getFcDecimalNumber().intValue());
+				reminder ="and "+ currQuoteName+" "+format(spValue.doubleValue())+"";
+			}else {
+				joinedString = amountStrList.stream().collect(Collectors.joining(" "+currQuoteName +" "));
+				joinedString =replaceWithAnd(joinedString,currQuoteName);
+			}
+		    msg = "This single remittance will be reflected as "+count.intValue()+" transactions in your bank account.The "+count.intValue()+" transactions will be "+currQuoteName+" "+joinedString+" "+reminder +" . Click Yes to continue, No to choose another rate.";
+		}
+		}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return msg;
+	}
+		//Click Yes to continue, No to choose another rate
+		
+		private String formtingNumbers(BigDecimal value) {
+			 DecimalFormat myFormatter = new DecimalFormat("#,##,###.00");
+			 String strValue = null;
+			 if(JaxUtil.isNullZeroBigDecimalCheck(value)) {
+				 strValue = myFormatter.format(value);
+			 }
+			 return strValue;
+		}
+		
+
+		private String replaceWithAnd(String splitStr,String currQuoteName) {
+			String afterSplit = null;
+			if(!StringUtils.isBlank(splitStr) && !StringUtils.isBlank(currQuoteName)) {
+				String[] strList = splitStr.split(currQuoteName);
+				int j =strList.length; 
+				for(int i =0;i<strList.length;i++) {
+					if(i==j-1) {
+						afterSplit = afterSplit+" and "+currQuoteName+"  "+strList[i];
+					}else {
+						afterSplit =afterSplit==null?strList[i] :afterSplit.concat(currQuoteName +strList[i]);
+					}
+				}
+			}
+			return afterSplit;
+		}
+		
+		/** for INDIAN curreny format **/
+		public static String format(double value) {
+		    if(value < 1000) {
+		        return format("00.00", value);
+		    } else {
+		        double hundreds = value % 1000;
+		        int other = (int) (value / 1000);
+		        return format(",##", other) + ',' + format("000.00", hundreds);
+		    }
+		}
+
+		private static String format(String pattern, Object value) {
+		    return new DecimalFormat(pattern).format(value);
+		}		
+		
+	
+/** 
+	 * @author rabil
+	 * @param result
+	 * @return :saved Amount
+	 */
+	private BigDecimal getYouSavedAmount(DynamicRoutingPricingDto result ) {
+		BigDecimal savedAmount = BigDecimal.ZERO;
+		if(JaxUtil.isNullZeroBigDecimalCheck(result.getRackExchangeRate()) && result!=null && result.getDiscountAvailed() && result.getRackExchangeRate().compareTo(BigDecimal.ZERO)>0 && result.getExRateBreakup().getConvertedFCAmount().compareTo(BigDecimal.ZERO)>0) {
+			savedAmount =result.getRackExchangeRate().multiply(result.getExRateBreakup().getConvertedFCAmount()).subtract(result.getExRateBreakup().getConvertedLCAmount());
+		
+		if(savedAmount.compareTo(BigDecimal.ZERO)>0) {
+			savedAmount = RoundUtil.roundBigDecimal(savedAmount,result.getExRateBreakup().getLcDecimalNumber().intValue());
+		}
+		}
+		return savedAmount;
+	}
+	
+
+
+	private BigDecimal getYouSavedAmountInFc(DynamicRoutingPricingDto result) {
+		BigDecimal savedAmountFC = BigDecimal.ZERO;
+		
+		if(JaxUtil.isNullZeroBigDecimalCheck(result.getRackExchangeRate()) && result.getRackExchangeRate().compareTo(BigDecimal.ZERO)>0 && result.getExRateBreakup().getConvertedLCAmount().compareTo(BigDecimal.ZERO)>0) {
+			//BigDecimal exchRate = new BigDecimal(1).divide(result.getRackExchangeRate(), 10, RoundingMode.HALF_UP);
+			BigDecimal discountFCAmount =result.getExRateBreakup().getConvertedLCAmount().divide(result.getExRateBreakup().getInverseRate(),result.getExRateBreakup().getFcDecimalNumber().intValue(), RoundingMode.HALF_UP);
+			BigDecimal originAmount =result.getExRateBreakup().getConvertedLCAmount().divide(result.getRackExchangeRate(),result.getExRateBreakup().getFcDecimalNumber().intValue(), RoundingMode.HALF_UP);
+			savedAmountFC =discountFCAmount.subtract(originAmount);
+			if(savedAmountFC.compareTo(BigDecimal.ZERO)>0) {
+				savedAmountFC =RoundUtil.roundBigDecimal(savedAmountFC,result.getExRateBreakup().getFcDecimalNumber().intValue());
+			}
+		}
+		
+		
+		
+		return savedAmountFC;
+	}
 }
+

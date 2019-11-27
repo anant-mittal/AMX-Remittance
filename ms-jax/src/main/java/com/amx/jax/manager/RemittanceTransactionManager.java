@@ -34,14 +34,13 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.constant.AuthType;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
-import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.PromotionDto;
 import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
-import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.jax.api.ResponseCodeDetailDTO;
 import com.amx.jax.branchremittance.manager.BranchRemittanceApplManager;
+import com.amx.jax.branchremittance.manager.BranchRemittanceExchangeRateManager;
 import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxDbConfig;
@@ -64,7 +63,6 @@ import com.amx.jax.dbmodel.BlackListModel;
 import com.amx.jax.dbmodel.CurrencyMasterMdlv1;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ExchangeRateApprovalDetModel;
-import com.amx.jax.dbmodel.ReferralDetails;
 import com.amx.jax.dbmodel.TransactionLimitCheckView;
 import com.amx.jax.dbmodel.partner.RemitApplSrvProv;
 import com.amx.jax.dbmodel.remittance.AdditionalInstructionData;
@@ -72,6 +70,7 @@ import com.amx.jax.dbmodel.remittance.AmiecAndBankMapping;
 import com.amx.jax.dbmodel.remittance.OWSScheduleModel;
 import com.amx.jax.dbmodel.remittance.RemittanceAppBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
+import com.amx.jax.dbmodel.remittance.RemittanceApplicationSplitting;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.dbmodel.remittance.ServiceProviderCredentialsModel;
 import com.amx.jax.dbmodel.remittance.ViewTransfer;
@@ -93,18 +92,21 @@ import com.amx.jax.manager.remittance.CorporateDiscountManager;
 import com.amx.jax.manager.remittance.RemittanceAdditionalFieldManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.BeneficiaryListDTO;
+import com.amx.jax.model.CivilIdOtpModel;
 import com.amx.jax.model.request.remittance.AbstractRemittanceApplicationRequestModel;
+import com.amx.jax.model.request.remittance.ExchangeRateValidateRequestDto;
 import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.response.ExchangeRateBreakup;
 import com.amx.jax.model.response.remittance.BsbApiResponse;
 import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;
 import com.amx.jax.model.response.remittance.LoyalityPointState;
+import com.amx.jax.model.response.remittance.RemittanceApplicationResponseModel;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.model.response.remittance.VatDetailsDto;
-import com.amx.jax.postman.client.PushNotifyClient;
-import com.amx.jax.postman.model.PushMessage;
+import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
 import com.amx.jax.partner.manager.PartnerTransactionManager;
+import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.pricer.dto.TrnxRoutingDetails;
 import com.amx.jax.pricer.var.PricerServiceConstants;
 import com.amx.jax.remittance.manager.RemittanceParameterMapManager;
@@ -288,6 +290,9 @@ public class RemittanceTransactionManager {
 	
 	@Autowired
 	BankMasterRepository bankMasterRepo;
+	
+	@Autowired
+	BranchRemittanceExchangeRateManager branchRemittanceExchangeRateManager;
 
 
 	private static final String IOS = "IOS";
@@ -320,7 +325,12 @@ public class RemittanceTransactionManager {
 		}
 		
 		TrnxRoutingDetails trnxRoutingDetails =  dynamicRoutingPricing.getTrnxRoutingPaths();
-		ExchangeRateBreakup breakup = dynamicRoutingPricing.getExRateBreakup();
+		
+		//ExchangeRateBreakup breakup = dynamicRoutingPricing.getExRateBreakup();
+		ExchangeRateValidateRequestDto  dto = cretaeModel(model);
+		BranchRemittanceGetExchangeRateResponse exchangeRateResposne = branchRemittanceExchangeRateManager.getDynamicRoutingAndPricingExchangeRateResponseCompare(dto);
+		ExchangeRateBreakup breakup = exchangeRateResposne.getExRateBreakup();
+		
 		Map<String, Object>  routingDetails =setupRoutingDetails(trnxRoutingDetails);
 		
 		// validation for Home Send SP
@@ -408,11 +418,26 @@ public class RemittanceTransactionManager {
 		}
 		
 		setCustomerDiscountColumnsV2(responseModel, dynamicRoutingPricing);
+		setSavedAmount(responseModel,dynamicRoutingPricing);
+		
 		return responseModel;
 
 	}
 	
-	
+	private ExchangeRateValidateRequestDto cretaeModel(RemittanceTransactionDrRequestModel model) {
+		ExchangeRateValidateRequestDto dto = new ExchangeRateValidateRequestDto();
+		
+		dto.setBeneId(model.getBeneId());
+		dto.setLocalAmount(model.getLocalAmount());
+		dto.setForeignAmount(model.getForeignAmount());
+		dto.setRoutingBankId(model.getDynamicRroutingPricingBreakup().getTrnxRoutingPaths().getRoutingBankId());
+		dto.setServiceMasterId(model.getDynamicRroutingPricingBreakup().getTrnxRoutingPaths().getServiceMasterId());
+		dto.setDeliveryModeId(model.getDynamicRroutingPricingBreakup().getTrnxRoutingPaths().getDeliveryModeId());
+		dto.setRemittanceModeId(model.getDynamicRroutingPricingBreakup().getTrnxRoutingPaths().getRemittanceModeId());
+		dto.setAvailLoyalityPoints(model.isAvailLoyalityPoints());
+			
+		return dto;
+	}
 	
 	
 	public RemittanceTransactionResponsetModel validateTransactionData(RemittanceTransactionRequestModel model) {
@@ -1127,7 +1152,10 @@ public class RemittanceTransactionManager {
 			additionalInstrumentData = oldRemittanceApplicationAdditionalDataManager.createAdditionalInstnData(remittanceApplication);
 		}
 		RemitApplSrvProv remitApplSrvProv = null;
-		remitAppDao.saveAllApplicationData(remittanceApplication, remittanceAppBeneficairy, additionalInstrumentData,remitApplSrvProv);
+		//Imps splitiing
+		List<RemittanceApplicationSplitting>  applSplitList =null;
+		
+		remitAppDao.saveAllApplicationData(remittanceApplication, remittanceAppBeneficairy, additionalInstrumentData,remitApplSrvProv,applSplitList);
 		remitAppDao.updatePlaceOrder(model, remittanceApplication);
 		remiteAppModel.setRemittanceAppId(remittanceApplication.getRemittanceApplicationId());
 		remiteAppModel.setNetPayableAmount(netAmountPayable);
@@ -1174,7 +1202,8 @@ public class RemittanceTransactionManager {
 		}
 		remittanceAdditionalFieldManager.validateAdditionalFields(model, remitApplParametersMap);
 		// validate routing bank requirements
-		ExchangeRateBreakup breakup = validationResults.getExRateBreakup();
+		//ExchangeRateBreakup breakup = validationResults.getExRateBreakup();
+		ExchangeRateBreakup breakup = model.getExchangeRateBreakup();
 		
 		logger.info("amount in exchnagerate break up"+breakup.getNetAmount());
 		BigDecimal netAmountPayable = breakup.getNetAmount();
@@ -1184,6 +1213,9 @@ public class RemittanceTransactionManager {
 		validateAdditionalBeneDetailsV2(model);
 		remittanceAdditionalFieldManager.processAdditionalFields(model);
 		RemittanceApplication remittanceApplication = remitAppManager.createRemittanceApplicationV2(model,validatedObjects, validationResults, remitApplParametersMap);
+		
+		
+		
 		RemittanceAppBenificiary remittanceAppBeneficairy = remitAppBeneManager.createRemittanceAppBeneficiary(remittanceApplication);
 		List<AdditionalInstructionData> additionalInstrumentData;
 		if (jaxTenantProperties.getFlexFieldEnabled()) {
@@ -1208,7 +1240,14 @@ public class RemittanceTransactionManager {
 				}
 			}
 		}
-		remitAppDao.saveAllApplicationData(remittanceApplication, remittanceAppBeneficairy, additionalInstrumentData,remitApplSrvProv);
+		
+		
+		List<RemittanceApplicationSplitting>  applSplitList = branchRemittanceApplManager.createChildApplication(remittanceApplication, model.getDynamicRroutingPricingBreakup());
+		if(applSplitList!=null && !applSplitList.isEmpty()) {
+			remittanceApplication.setApplSplit(ConstantDocument.Yes);
+		}
+		
+		remitAppDao.saveAllApplicationData(remittanceApplication, remittanceAppBeneficairy, additionalInstrumentData,remitApplSrvProv,applSplitList);
 		remitAppDao.updatePlaceOrderV2(model, remittanceApplication);
 		remiteAppModel.setRemittanceAppId(remittanceApplication.getRemittanceApplicationId());
 		remiteAppModel.setNetPayableAmount(netAmountPayable);
@@ -1597,4 +1636,17 @@ public class RemittanceTransactionManager {
 		exRatebreakUp.setNetAmountWithoutLoyality(RoundUtil.roundBigDecimal(exRatebreakUp.getNetAmountWithoutLoyality(),exRatebreakUp.getLcDecimalNumber().intValue()));
 		exRatebreakUp.setInverseRate((RoundUtil.roundBigDecimal(exRatebreakUp.getInverseRate(), AmxDBConstants.EXCHANGE_RATE_DECIMAL.intValue())));
 	}
+
+	public void setSavedAmount(RemittanceTransactionResponsetModel validationResults,DynamicRoutingPricingDto model) {
+		
+		if(JaxUtil.isNullZeroBigDecimalCheck(model.getYouSavedAmount()) && model.getYouSavedAmount().compareTo(BigDecimal.ZERO)>0) {
+			validationResults.setYouSavedAmount(model.getYouSavedAmount());
+		}
+		validationResults.setRackExchangeRate(model.getRackExchangeRate());
+		if(JaxUtil.isNullZeroBigDecimalCheck(model.getYouSavedAmountInFC())  && model.getYouSavedAmountInFC().compareTo(BigDecimal.ZERO)>0) {
+		validationResults.setYouSavedAmountInFC(model.getYouSavedAmountInFC());
+		}
+		validationResults.setCustomerChoice(model.getCustomerChoice());
+	}
+
 }

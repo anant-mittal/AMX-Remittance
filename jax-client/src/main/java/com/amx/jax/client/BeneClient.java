@@ -34,7 +34,6 @@ import com.amx.amxlib.meta.model.CountryMasterDTO;
 import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.model.AbstractUserModel;
 import com.amx.amxlib.model.BeneRelationsDescriptionDto;
-import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.JaxTransactionResponse;
@@ -42,16 +41,17 @@ import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterAgentBra
 import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterAgentParam;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterServiceProviderParam;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.client.bene.BeneficaryStatusDto;
+import com.amx.jax.client.bene.BeneficiaryConstant.BeneStatus;
+import com.amx.jax.client.bene.IBeneficiaryService;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.client.serviceprovider.RoutingBankMasterDTO;
 import com.amx.jax.client.util.ConverterUtility;
 import com.amx.jax.model.BeneficiaryListDTO;
+import com.amx.jax.model.CivilIdOtpModel;
 import com.amx.jax.model.request.benebranch.BeneAccountModel;
 import com.amx.jax.model.request.benebranch.BenePersonalDetailModel;
 import com.amx.jax.model.request.benebranch.BeneficiaryTrnxModel;
-import com.amx.jax.client.bene.BeneficaryStatusDto;
-import com.amx.jax.client.bene.BeneficiaryConstant.BeneStatus;
-import com.amx.jax.client.bene.IBeneficiaryService;
 import com.amx.jax.rest.RestService;
 import com.amx.utils.JsonUtil;
 
@@ -387,10 +387,10 @@ public class BeneClient extends AbstractJaxServiceClient implements IBeneficiary
 	}
 
 	@Override
-	public AmxApiResponse<BeneficaryStatusDto, Object> getBeneStatusMaster() {
+	public AmxApiResponse<BeneficaryStatusDto, Object> getBeneStatusMaster(BigDecimal serviceGroupId) {
 		try {
 			String url = this.getBaseUrl() + BENE_API_ENDPOINT + Path.GET_BENE_STATUS_MASTER;
-			return restService.ajax(url).meta(new JaxMetaInfo()).get()
+			return restService.ajax(url).meta(new JaxMetaInfo()).queryParam(Params.SERVICE_GROUP_ID, serviceGroupId).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<BeneficaryStatusDto, Object>>() {
 					});
 		} catch (AbstractJaxException ae) {

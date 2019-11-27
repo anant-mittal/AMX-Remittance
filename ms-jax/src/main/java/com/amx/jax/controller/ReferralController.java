@@ -14,12 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.LinkDTO;
 import com.amx.amxlib.model.LinkResponseModel;
-import com.amx.amxlib.model.PlaceOrderDTO;
 import com.amx.amxlib.model.ReferralDTO;
-import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.api.BoolRespModel;
-import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.services.LinkService;
 import com.amx.jax.services.ReferralService;

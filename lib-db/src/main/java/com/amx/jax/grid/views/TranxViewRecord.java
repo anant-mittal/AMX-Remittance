@@ -8,7 +8,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 import com.amx.jax.es.ESDocFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -58,13 +57,13 @@ public class TranxViewRecord implements Serializable {
 
 	@Column(name = "BENE_COUNTRY_CODE")
 	private String beneCountryCode;
-	
+
 	@Column(name = "BENE_NAME")
 	private String beneName;
-	
+
 	@Column(name = "BENE_ID")
 	private BigDecimal beneId;
-    
+
 	// Branch
 	@Column(name = "COUNTRY_BRANCH_ID")
 	private BigDecimal countryBranchId;
@@ -127,7 +126,7 @@ public class TranxViewRecord implements Serializable {
 
 	@Column(name = "SERVICE_TYPE")
 	private String serviceType;
-	
+
 	@Column(name = "CHANNEL_DISCOUNT")
 	private BigDecimal channelDiscount;
 
@@ -158,13 +157,13 @@ public class TranxViewRecord implements Serializable {
 	@ESDocFormat(ESDocFormat.Type.DATE)
 	@Column(name = "TRNX_SEND_DATETIME")
 	private Date trnxSendDatetime;
-	
+
 	@Column(name = "IS_DISCOUNT_AVAILED")
 	private String isDiscountAvailed;
-	
+
 	@Column(name = "TRNX_PAID_DATE_SOURCE")
 	private String trnxPaidDateSource;
-	
+
 	@Column(name = "TPC_COMM_SHARE")
 	private BigDecimal tpcCommShare;
 
@@ -173,6 +172,9 @@ public class TranxViewRecord implements Serializable {
 
 	@Column(name = "PIPS_DISCOUNT")
 	private BigDecimal pipsDiscount;
+
+	@Column(name = "TRANSACTION_STAGE")
+	private String trnxStage;
 
 	// Revenue
 	@Column(name = "TRNX_ACCOUNT_MMYYYY")
@@ -189,7 +191,7 @@ public class TranxViewRecord implements Serializable {
 
 	@Column(name = "LOCAL_COMMISION_AMOUNT")
 	private BigDecimal localCommRecv;
-	
+
 	@Column(name = "ORIGINAL_EXCHANGE_RATE")
 	private BigDecimal originalExchangeRate;
 
@@ -211,7 +213,7 @@ public class TranxViewRecord implements Serializable {
 
 	@Column(name = "NATIONALITY_CODE")
 	private String custmerNationCode;
-	
+
 	@Column(name = "TRNX_CUSTOMER_CATEGORY")
 	private String trnxCustomerCategory;
 
@@ -224,7 +226,7 @@ public class TranxViewRecord implements Serializable {
 
 	@Column(name = "CLIENT_IP")
 	private String clientIp;
-	
+
 	public BigDecimal getId() {
 		return id;
 	}
@@ -727,5 +729,13 @@ public class TranxViewRecord implements Serializable {
 
 	public void setTrnxCustomerCategory(String trnxCustomerCategory) {
 		this.trnxCustomerCategory = trnxCustomerCategory;
+	}
+
+	public String getTrnxStage() {
+		return trnxStage;
+	}
+
+	public void setTrnxStage(String trnxStage) {
+		this.trnxStage = trnxStage;
 	}
 }

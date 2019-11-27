@@ -63,7 +63,6 @@ import com.amx.jax.userservice.manager.UserContactVerificationManager;
 import com.amx.jax.userservice.service.CustomerValidationContext.CustomerValidation;
 import com.amx.jax.userservice.validation.ValidationClient;
 import com.amx.jax.userservice.validation.ValidationClients;
-import com.amx.jax.util.AmxDBConstants.Status;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.validation.CustomerValidationService;
@@ -266,7 +265,6 @@ public class UserValidationService {
 	public void validateCustIdProofs(BigDecimal custId) {
 
 		if (tenantContext.get() != null) {
-			logger.info("Tenent is not bahrain" + tenantContext.get());
 			tenantContext.get().validateCustIdProofs(custId);
 			return;
 		}
@@ -789,6 +787,7 @@ public class UserValidationService {
 						"Customer not active in branch, please visit branch");
 			}
 		}
+		
 		switch (apiFlow) {
 		case SIGNUP_ONLINE:
 			validateCustomerForSignUpOnline(customers.get(0));
@@ -824,7 +823,7 @@ public class UserValidationService {
 		if (onlineCustomer == null) {
 			throw new GlobalException(JaxError.CUSTOMER_NOT_REGISTERED_ONLINE, "Customer not registered in online");
 		}
-
+		
 		userValidationService.validateCustomerVerification(onlineCustomer.getCustomerId());
 
 		if (!ConstantDocument.Yes.equals(onlineCustomer.getStatus())) {

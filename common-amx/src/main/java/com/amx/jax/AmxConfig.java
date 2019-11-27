@@ -25,9 +25,12 @@ public class AmxConfig {
 
 	@TenantValue("${app.default.branch.id}")
 	BigDecimal defaultBranchId;
-
+	
 	@TenantValue("${app.online.branch.id}")
 	BigDecimal onlineBranchId;
+	
+	@TenantValue("${app.local.currency.iso2}")
+	private String defCurrencyQuote;
 
 	public BigDecimal getDefaultLanguageId() {
 		return defaultLanguageId;
@@ -52,5 +55,8 @@ public class AmxConfig {
 	public BigDecimal getOnlineBranchId() {
 		return onlineBranchId;
 	}
-
+	
+	public String getDefCurrencyQuote() {
+		return defCurrencyQuote;
+	}
 }

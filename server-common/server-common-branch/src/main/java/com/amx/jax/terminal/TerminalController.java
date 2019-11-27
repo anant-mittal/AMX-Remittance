@@ -77,6 +77,7 @@ public class TerminalController {
 		}
 
 		TerminalData terminalData = terminalBox.getOrDefault(terminalId);
+		terminalData.setTerminalId(terminalId);
 
 		if (ArgUtil.isEmpty(pageStamp)) {
 			pageStamp = System.currentTimeMillis();

@@ -1,5 +1,6 @@
 package com.amx.jax.postman.model;
 
+import com.amx.jax.dict.Language;
 import com.amx.jax.dict.Tenant;
 
 public class Contact {
@@ -9,6 +10,15 @@ public class Contact {
 	String prefix;
 	String mobile;
 	String email;
+	Language lang;
+
+	public Language getLang() {
+		return lang;
+	}
+
+	public void setLang(Language lang) {
+		this.lang = lang;
+	}
 
 	public String getPrefix() {
 		return prefix;

@@ -7,12 +7,12 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.model.AuthState;
 import com.amx.jax.model.AuthState.AuthStep;
+import com.amx.jax.model.CivilIdOtpModel;
 import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.model.customer.SecurityQuestionModel;
 import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;

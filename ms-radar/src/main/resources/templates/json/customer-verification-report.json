@@ -3,7 +3,7 @@
     "custId": {
       "terms": {
         "field": "logmap.cust.id",
-        "size": 100000,
+        "size": 5000000,
         "order": {
           "_key": "desc"
         }
@@ -148,13 +148,21 @@
   	{
 	 "rows" : ["custId", "contactType"],
 	 "cols" : ["eventType"],
-	 "vals" : ["any areaId", "any branchName", "any branchUser", "ucount custId AS uCount", "count * AS total"]
+	 "vals" : ["any areaId", "any branchName", "any branchUser", "ucount custId AS uCount DEFAULT 0", "count * AS total"]
   	},
   	{
 	 "rows" : ["CONTACT_VERF_INIT:DONE_areaId AS areaId DEFAULT -", "CONTACT_VERF_INIT:DONE_branchName AS branchName DEFAULT -",
 	 	"CONTACT_VERF_INIT:DONE_branchUser AS branchUser DEFAULT SYSTEM"],
 	 "cols" : ["contactType"],
-	 "vals" : ["sum CONTACT_VERF_INIT:DONE_uCount AS verification", "sum CONTACT_VERF_COMPLETE:DONE_uCount AS Confirmed"]
+	 "vals" : ["sum CONTACT_VERF_INIT:DONE_uCount AS verification DEFAULT 0", "sum CONTACT_VERF_COMPLETE:DONE_uCount AS confirmed DEFAULT 0"],
+ 	 "defaults" : [
+ 		"SMS_verification 0","EMAIL_verification 0","WHATSAPP_verification 0",
+ 		"SMS_confirmed 0","EMAIL_confirmed 0","WHATSAPP_confirmed 0"
+ 	 ],
+	 "computed" : [
+ 		"total_verification=SMS_verification + EMAIL_verification + WHATSAPP_verification",
+ 		"total_confirmed=SMS_confirmed + EMAIL_confirmed + WHATSAPP_confirmed"
+	 ]
   	}
   ]
 }

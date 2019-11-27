@@ -9,6 +9,7 @@ public class BeneficaryStatusDto extends ResourceDTO {
 	BigDecimal beneficaryStatusId;
 	String beneficaryStatusName;
 	Date createdDate;
+	boolean isSelfApplicable;
 
 	public BigDecimal getBeneficaryStatusId() {
 		return beneficaryStatusId;
@@ -42,6 +43,14 @@ public class BeneficaryStatusDto extends ResourceDTO {
 	@Override
 	public String getResourceCode() {
 		return this.beneficaryStatusName.toUpperCase();
+	}
+
+	public boolean isSelfApplicable() {
+		return isSelfApplicable;
+	}
+
+	public void setSelfApplicable(boolean isSelfApplicable) {
+		this.isSelfApplicable = isSelfApplicable;
 	}
 	
 	

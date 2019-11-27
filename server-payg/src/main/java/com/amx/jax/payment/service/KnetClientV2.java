@@ -15,19 +15,18 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-import com.amx.jax.dict.PayGCodes;
 import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.dict.ResponseCodeKWT;
 import com.amx.jax.payg.PayGParams;
-import com.amx.jax.payg.codes.KnetCodes;
 import com.amx.jax.payment.PaymentConstant;
 import com.amx.jax.payment.gateway.PayGClient;
 import com.amx.jax.payment.gateway.PayGConfig;
 import com.amx.jax.payment.gateway.PayGContext.PayGSpecific;
-import com.amx.jax.payment.gateway.PaymentGateWayResponse.PayGStatus;
-import com.amx.utils.JsonUtil;
 import com.amx.jax.payment.gateway.PaymentGateWayResponse;
+import com.amx.jax.payment.gateway.PaymentGateWayResponse.PayGStatus;
 import com.amx.jax.payment.gateway.PaymentService;
+import com.amx.utils.JsonUtil;
+
 import kwt.com.fss.plugin.iPayPipe;
 
 @PayGSpecific(PayGServiceCode.KNET2)

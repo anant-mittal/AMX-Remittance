@@ -19,7 +19,6 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.data.redis.core.TimeoutUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,6 +26,8 @@ import com.amx.jax.dict.Language;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.postman.model.File.Type;
 import com.amx.jax.rest.RestService;
+import com.amx.mrz.MrzParser;
+import com.amx.mrz.MrzRecord;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonPath;
 import com.amx.utils.StringUtils.StringMatcher;
@@ -179,6 +180,7 @@ public class CivilIdValidationService {
 	private static final JsonPath PARSED_TEXT = new JsonPath("ParsedResults/[0]/ParsedText");
 	private static final JsonPath PARSED_ERROR = new JsonPath("ParsedResults/[0]/ParsedText");
 	private static final Pattern FIND_CIVIL_ID = Pattern.compile("Civil ID No[\\n ](\\d{12})\n");
+	private static final Pattern FIND_MRZ_CODE= Pattern.compile("IDKWT(.+)[\\n](.+)[\\n](.+)");
 	private static final Pattern FIND_NAME = Pattern.compile("Name ([a-zA-Z ]+)\n");
 	private static final Pattern FIND_NATIONALITY = Pattern.compile("Nationality ([a-zA-Z]{1,3})\n");
 	private static final Pattern FIND_DATE = Pattern.compile("\n(\\d{2}/\\d{2}/\\d{4})");
@@ -260,6 +262,10 @@ public class CivilIdValidationService {
 			}
 
 			output.put("timeTaken", TimeUtils.timeSince(startTime));
+		}
+		
+		if(matcher.isMatch(FIND_MRZ_CODE)) {
+			MrzRecord record = MrzParser.parse(matcher.group(0));
 		}
 
 		return output;

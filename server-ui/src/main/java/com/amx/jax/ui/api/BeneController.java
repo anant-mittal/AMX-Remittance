@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.BeneCountryDTO;
-import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.response.JaxTransactionResponse;
 import com.amx.jax.JaxAuthContext;
 import com.amx.jax.api.BoolRespModel;
@@ -27,6 +26,7 @@ import com.amx.jax.client.bene.IBeneficiaryService;
 import com.amx.jax.client.branch.IBranchBeneService;
 import com.amx.jax.client.remittance.RemittanceClient;
 import com.amx.jax.model.BeneficiaryListDTO;
+import com.amx.jax.model.CivilIdOtpModel;
 import com.amx.jax.model.request.benebranch.AddNewBankBranchRequest;
 import com.amx.jax.model.request.benebranch.BankBranchListRequest;
 import com.amx.jax.model.request.benebranch.BeneAccountModel;
@@ -249,8 +249,9 @@ public class BeneController {
 
 	@ApiOperation(value = "Get Lists Of Types for bene")
 	@RequestMapping(value = "/api/bnfcry/meta/types", method = { RequestMethod.GET })
-	public ResponseWrapperM<List<BeneficaryStatusDto>, Object> getBeneStatusMaster() {
-		return ResponseWrapperM.fromAsList(beneClient.getBeneStatusMaster());
+	public ResponseWrapperM<List<BeneficaryStatusDto>, Object> getBeneStatusMaster(
+			@RequestParam(required = false) BigDecimal serviceGroupId) {
+		return ResponseWrapperM.fromAsList(beneClient.getBeneStatusMaster(serviceGroupId));
 	}
 
 	@ApiOperation(value = "Add new branch request")

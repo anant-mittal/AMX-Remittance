@@ -14,6 +14,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import com.amx.jax.dict.ContactType;
+import com.amx.jax.es.ESDocFormat;
 import com.amx.jax.logger.AuditActor.ActorType;
 import com.amx.jax.util.AmxDBConstants;
 import com.amx.jax.util.AmxDBConstants.Status;
@@ -27,6 +28,7 @@ public class CustomerContactVerification implements java.io.Serializable {
 
 	private static final long serialVersionUID = 1L;
 	public static final int EXPIRY_DAY = 1;
+	public static final int EXPIRY_DAYS_REVERIFY = 60;
 	public static final int EXPIRY_DAY_WHATS_APP = 30;
 
 	public CustomerContactVerification() {
@@ -128,6 +130,7 @@ public class CustomerContactVerification implements java.io.Serializable {
 		this.isActive = isActive;
 	}
 
+	@ESDocFormat(ESDocFormat.Type.DATE)
 	Date createdDate;
 
 	@Column(name = "CREATED_DATE")
@@ -162,6 +165,7 @@ public class CustomerContactVerification implements java.io.Serializable {
 		this.createdByType = createdByType;
 	}
 
+	@ESDocFormat(ESDocFormat.Type.DATE)
 	Date sendDate;
 
 	@Column(name = "SEND_DATE")
@@ -196,6 +200,7 @@ public class CustomerContactVerification implements java.io.Serializable {
 //		this.sendByType = sendByType;
 //	}
 
+	@ESDocFormat(ESDocFormat.Type.DATE)
 	Date verifiedDate;
 
 	@Column(name = "VERIFIED_DATE")

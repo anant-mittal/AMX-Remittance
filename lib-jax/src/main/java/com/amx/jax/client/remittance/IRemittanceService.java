@@ -1,7 +1,9 @@
 package com.amx.jax.client.remittance;
 
+/**
+ * @author rabil
+ */
 import java.math.BigDecimal;
-import java.util.List;
 
 import com.amx.jax.IJaxService;
 import com.amx.jax.api.AmxApiResponse;
@@ -23,6 +25,7 @@ import com.amx.jax.model.response.remittance.FlexFieldReponseDto;
 import com.amx.jax.model.response.remittance.GetServiceApplicabilityResponse;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
 import com.amx.jax.model.response.remittance.ParameterDetailsResponseDto;
+import com.amx.jax.model.response.remittance.PaymentLinkRespDTO;
 import com.amx.jax.model.response.remittance.PaymentModeDto;
 import com.amx.jax.model.response.remittance.RemittanceDeclarationReportDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
@@ -57,6 +60,8 @@ public interface IRemittanceService extends  IJaxService {
 		public static final String BR_RECEIPT_ON_EMAIL				=PREFIX + "/send-receipt-on-email/";
 		public static final String BR_REMITTANCE_GET_ROUTING_PRICING_RATE = PREFIX + "/get-routing-pricing-exchrate/";
 		public static final String BR_REMITTANCE_GET_FLEX_FIELDS = PREFIX + "/get-flex-field/";
+		public static final String BR_REMITTANCE_PAYMENT_LINK = PREFIX + "/payment-link/";
+		public static final String BR_REMITTANCE_VALIDATE_PAY_LINK = PREFIX + "/validate-payment-link/";
 
 		public static final String GET_SERVICE_APPLICABILITY = PREFIX + "/get-service-applicability/";
 
@@ -80,6 +85,8 @@ public interface IRemittanceService extends  IJaxService {
 		public static final String LOCAL_AMOUNT = "localAmount";
 		public static final String FOREIGN_AMOUNT = "foreignAmount";
 		public static final String ROUTING_COUNTRY_ID="routingcountryId"; 
+		public static final String LINK_ID="linkId";
+		public static final String VERIFICATION_CODE="verificationCode";
 		
 	}
 	
@@ -117,7 +124,6 @@ public interface IRemittanceService extends  IJaxService {
 	@ApiJaxStatus({ JaxError.NO_RECORD_FOUND})
 	AmxApiResponse<UserStockDto, Object> fetchLocalCurrencyRefundDenomination();
 
-	//AmxApiResponse<BoolRespModel, Object> saveCustomerBankDetails(List<CustomerBankRequest> customerBank);
 	AmxApiResponse<BoolRespModel, Object> saveCustomerBankDetails(CustomerBankRequest customerBank);
 	
 	AmxApiResponse<BoolRespModel, Object> validationStaffCredentials(String staffUserName, String staffPassword);
@@ -157,6 +163,11 @@ public interface IRemittanceService extends  IJaxService {
 
 	AmxApiResponse<GetServiceApplicabilityResponse, Object> getServiceApplicability(GetServiceApplicabilityRequest request);
 	
+	AmxApiResponse<PaymentLinkRespDTO, Object> createAndSendPaymentLink();
+	
+	@ApiJaxStatus({JaxError.VERIFICATION_CODE_MISMATCH})
+	AmxApiResponse<PaymentLinkRespDTO, Object> validatePayLink(BigDecimal linkId,String verificationCode);
+
 	@ApiJaxStatus({JaxError.NO_RECORD_FOUND})
 	AmxApiResponse<ParameterDetailsResponseDto, Object> getGiftService(BigDecimal beneRelaId);
 	

@@ -28,7 +28,6 @@ import com.amx.jax.constant.JaxEvent;
 import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerRating;
-import com.amx.jax.dbmodel.ReferralDetails;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.dict.Language;
 import com.amx.jax.manager.RemittancePaymentManager;
@@ -37,10 +36,9 @@ import com.amx.jax.model.customer.CustomerRatingDTO;
 import com.amx.jax.model.request.remittance.IRemitTransReqPurpose;
 import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
+import com.amx.jax.model.response.SourceOfIncomeDto;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.postman.client.PushNotifyClient;
-import com.amx.jax.postman.model.PushMessage;
-import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.services.CustomerRatingService;
 import com.amx.jax.services.PurposeOfTransactionService;
 import com.amx.jax.services.RemittanceTransactionService;
@@ -163,10 +161,10 @@ public class RemittanceController {
 	}
 
 	@RequestMapping(value = "/sourceofincome/", method = RequestMethod.POST)
-	public ApiResponse sourceofIncome() {
+	public AmxApiResponse<SourceOfIncomeDto, Object> sourceofIncome() {
 		BigDecimal languageId = amxMeta.getClientLanguage(Language.EN).getBDCode();
-		ApiResponse response = remittanceTransactionService.getSourceOfIncome(languageId);
-		return response;
+		logger.debug("sourceofIncome lng " + languageId);
+		return remittanceTransactionService.getSourceOfIncome(languageId);
 	}
 
 	@RequestMapping(value = "/save-application/", method = RequestMethod.POST)

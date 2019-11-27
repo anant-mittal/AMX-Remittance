@@ -227,7 +227,7 @@ public class BankMetaService extends AbstractService {
 		return AmxApiResponse.buildList(convertBankView(banks));
 	}
 	
-	private List<BankMasterDTO> convertBankView(List<ViewBankChannelModel> banks) {
+	public List<BankMasterDTO> convertBankView(List<ViewBankChannelModel> banks) {
 
 		List<BankMasterDTO> bankdtos = new ArrayList<>();
 		
@@ -306,5 +306,9 @@ public class BankMetaService extends AbstractService {
 
 	private void validateListBankBrancheRequest(BankBranchListRequest request) {
 		
+	}
+	
+	public List<ViewBankChannelModel> getBankViewByCountryIdAndCurrency(BigDecimal countryId, BigDecimal currencyId) {
+		return bankChannelRepository.findByCountryAndCurrency(countryId, currencyId);
 	}
 }

@@ -26,19 +26,18 @@ import com.amx.amxlib.meta.model.ViewDistrictDto;
 import com.amx.amxlib.meta.model.ViewStateDto;
 import com.amx.amxlib.meta.model.WhyDoAskInformationDTO;
 import com.amx.amxlib.model.BeneRelationsDescriptionDto;
-import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
-import com.amx.amxlib.model.CustomerNotificationDTO;
+import com.amx.amxlib.model.CustomerNotifyHubDTO;
 import com.amx.amxlib.model.MinMaxExRateDTO;
 import com.amx.amxlib.model.OnlineConfigurationDto;
 import com.amx.amxlib.model.PlaceOrderDTO;
 import com.amx.amxlib.model.PlaceOrderNotificationDTO;
 import com.amx.amxlib.model.RateAlertDTO;
-import com.amx.amxlib.model.ReferralDTO;
 import com.amx.amxlib.model.UserModel;
 import com.amx.amxlib.model.UserVerificationCheckListDTO;
 import com.amx.jax.client.serviceprovider.RoutingBankMasterDTO;
 import com.amx.jax.model.BeneficiaryListDTO;
+import com.amx.jax.model.CivilIdOtpModel;
 import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.model.request.benebranch.BeneAccountModel;
@@ -49,6 +48,7 @@ import com.amx.jax.model.response.SourceOfIncomeDto;
 import com.amx.jax.model.response.benebranch.BankBranchDto;
 import com.amx.jax.model.response.fx.FxExchangeRateDto;
 import com.amx.jax.model.response.fx.PurposeOfTransactionDto;
+import com.amx.jax.model.response.remittance.RemittanceApplicationResponseModel;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
@@ -302,7 +302,7 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 			});
 			break;	
 		case "jax-push-notification":
-			models = new ObjectMapper().readValue(values, new TypeReference<List<CustomerNotificationDTO>>() {
+			models = new ObjectMapper().readValue(values, new TypeReference<List<CustomerNotifyHubDTO>>() {
 			});
 			break;	
 		case "employee-detail":

@@ -53,6 +53,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements A
 				.and().authorizeRequests().antMatchers("/home/**").permitAll()
 				// Publics Calls
 				.and().authorizeRequests().antMatchers("/pub/**").permitAll()
+				.and().authorizeRequests().antMatchers("/p/**").permitAll()
 				// Login Calls
 				.and().authorizeRequests().antMatchers("/login/**").permitAll()
 				// Referral Calls
@@ -60,7 +61,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter implements A
 				// API Calls
 				.and().authorizeRequests().antMatchers("/api/**").authenticated()
 				// App Pages
-				.and().authorizeRequests().antMatchers("/app/**").authenticated().and().authorizeRequests()
+				.and().authorizeRequests().antMatchers("/app/**").authenticated()
+				.and().authorizeRequests().antMatchers("/a/**").authenticated().and().authorizeRequests()
 				.antMatchers("/.**").authenticated()
 				// Login Formas
 				.and().formLogin().loginPage("/login").permitAll().failureUrl("/login?error").permitAll()

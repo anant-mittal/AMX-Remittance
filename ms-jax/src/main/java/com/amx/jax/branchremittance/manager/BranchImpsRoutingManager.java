@@ -6,7 +6,6 @@ import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_BANK_B
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_BANK_ID;
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_COUNTRY_ID;
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_SERVICE_MASTER_ID;
-
 import static com.amx.jax.error.JaxError.COMISSION_NOT_DEFINED_FOR_ROUTING_BANK;
 import static com.amx.jax.error.JaxError.TOO_MANY_COMISSION_NOT_DEFINED_FOR_ROUTING_BANK;
 

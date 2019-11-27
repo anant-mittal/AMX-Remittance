@@ -1,7 +1,6 @@
 package com.amx.jax;
 
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.dict.AmxEnums.CommunicationEvents;
 
 public interface AmxSharedConfig extends AppSharedConfig {
 
@@ -25,7 +24,7 @@ public interface AmxSharedConfig extends AppSharedConfig {
 
 	public static interface CommunicationPrefs {
 
-		CommunicationEvents getEvent();
+		String getEvent();
 
 		String getSmsPrefs();
 

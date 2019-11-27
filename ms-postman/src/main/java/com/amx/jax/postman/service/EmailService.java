@@ -26,6 +26,7 @@ import com.amx.jax.AppConfig;
 import com.amx.jax.AppContext;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.async.ExecutorConfig;
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.postman.PostManConfig;
@@ -92,7 +93,7 @@ public class EmailService {
 	@Autowired
 	private AppConfig appConfig;
 
-	@Autowired
+	@Autowired(required = false)
 	RedissonClient redisson;
 
 	public static final int RESEND_INTERVAL = 1 * 60 * 1000;
@@ -165,7 +166,7 @@ public class EmailService {
 					file.setModel(email.getModel());
 					file.setLang(email.getLang());
 
-					email.setMessage(fileService.create(file).getContent());
+					email.setMessage(fileService.create(file, ContactType.EMAIL).getContent());
 
 					if (ArgUtil.isEmptyString(email.getSubject())) {
 						email.setSubject(file.getTitle());
@@ -187,12 +188,12 @@ public class EmailService {
 
 		} catch (Exception e) {
 			auditService.excep(pMGaugeEvent.set(AuditEvent.Result.ERROR).set(email), LOGGER, e);
-			//slackService.sendException(to, e);
+			// slackService.sendException(to, e);
 		}
 
 		if (!ArgUtil.isEmpty(emailClone) && !Status.SENT.equals(email.getStatus())
 				&& !Status.NOT_SENT.equals(email.getStatus())
-				&& !Status.BLOCKED.equals(email.getStatus())) {
+				&& !Status.BLOCKED.equals(email.getStatus()) && redisson != null) {
 			AppContext context = AppContextUtil.getContext();
 			TunnelMessage<Email> tunnelMessage = new TunnelMessage<Email>(emailClone, context);
 			RQueue<TunnelMessage<Email>> emailQueue = redisson

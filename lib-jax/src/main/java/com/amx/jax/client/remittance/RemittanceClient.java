@@ -28,6 +28,7 @@ import com.amx.jax.model.response.remittance.FlexFieldReponseDto;
 import com.amx.jax.model.response.remittance.GetServiceApplicabilityResponse;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
 import com.amx.jax.model.response.remittance.ParameterDetailsResponseDto;
+import com.amx.jax.model.response.remittance.PaymentLinkRespDTO;
 import com.amx.jax.model.response.remittance.PaymentModeDto;
 import com.amx.jax.model.response.remittance.RemittanceDeclarationReportDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
@@ -348,8 +349,41 @@ public class RemittanceClient implements IRemittanceService {
 						});
 			
 	}
-	
+
 	@Override
+	public AmxApiResponse<PaymentLinkRespDTO, Object> createAndSendPaymentLink() {
+		try {
+			LOGGER.debug("In Payment link Create Client :");
+			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_PAYMENT_LINK).meta(new JaxMetaInfo())
+					.get()
+					.as(new ParameterizedTypeReference<AmxApiResponse<PaymentLinkRespDTO, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in Payment link Create Client : ", e);
+			return JaxSystemError.evaluate(e);
+		}
+	}
+
+	@Override
+	public AmxApiResponse<PaymentLinkRespDTO, Object> validatePayLink(BigDecimal linkId, String verificationCode) {
+
+		try {
+			LOGGER.debug("In Validate Payment link Client : " );
+			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_VALIDATE_PAY_LINK).meta(new JaxMetaInfo())
+					.queryParam(Params.LINK_ID, linkId)
+					.queryParam(Params.VERIFICATION_CODE, verificationCode)
+					.post()
+					.as(new ParameterizedTypeReference<AmxApiResponse<PaymentLinkRespDTO, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in Validate Payment link Client :", e);
+			return JaxSystemError.evaluate(e);
+		}
+	
+	}
+
+
+@Override
 	public AmxApiResponse<ParameterDetailsResponseDto, Object> getGiftService(BigDecimal beneRelaId) {
 		
 		//beneRelationshipId
@@ -377,9 +411,6 @@ public class RemittanceClient implements IRemittanceService {
 			return JaxSystemError.evaluate(e);
 		}
 	}
-
-
-
 
 
 }

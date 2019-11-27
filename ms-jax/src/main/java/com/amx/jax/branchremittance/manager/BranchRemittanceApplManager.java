@@ -57,6 +57,8 @@ import com.amx.jax.dbmodel.remittance.Document;
 import com.amx.jax.dbmodel.remittance.RemitApplAmlModel;
 import com.amx.jax.dbmodel.remittance.RemittanceAppBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
+import com.amx.jax.dbmodel.remittance.RemittanceApplicationSplitting;
+import com.amx.jax.dbmodel.remittance.RemittanceBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceModeMaster;
 import com.amx.jax.dbmodel.remittance.ShoppingCartDetails;
 import com.amx.jax.dict.UserClient.ClientType;
@@ -84,6 +86,7 @@ import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel
 import com.amx.jax.model.response.remittance.ServiceProviderDto;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
 import com.amx.jax.partner.manager.PartnerTransactionManager;
+import com.amx.jax.pricer.dto.TrnxRoutingDetails;
 import com.amx.jax.pricer.var.PricerServiceConstants;
 import com.amx.jax.repository.BankMasterRepository;
 import com.amx.jax.repository.DeviceStateRepository;
@@ -235,6 +238,7 @@ public class BranchRemittanceApplManager {
 	
 	public BranchRemittanceApplResponseDto saveBranchRemittanceApplication(BranchRemittanceApplRequestModel requestApplModel) {
 		Map<String,Object> hashMap = new HashMap<>();
+		
 
 		validateSaveApplRequest(requestApplModel);
 
@@ -325,7 +329,12 @@ public class BranchRemittanceApplManager {
 		RemittanceApplication remittanceApplication = this.createRemittanceApplication(hashMap);
 		RemittanceAppBenificiary remittanceAppBeneficairy = this.createRemittanceAppBeneficiary(remittanceApplication,hashMap);
 		List<AdditionalInstructionData>  additioalInstructionData = remittanceAppAddlDataManager.createAdditionalInstnDataForBranch(remittanceApplication,hashMap);
-
+		List<RemittanceApplicationSplitting> applSplitList = this.createChildApplication(remittanceApplication, requestApplModel.getDynamicRroutingPricingBreakup());
+		
+		if(applSplitList!=null && !applSplitList.isEmpty()) {
+			remittanceApplication.setApplSplit(ConstantDocument.Yes);
+		}
+		
 		//RemittanceTransactionRequestModel
 		List<RemitApplAmlModel> amlData = this.saveRemittanceAppAML(remittanceApplication,hashMap);
 
@@ -352,6 +361,10 @@ public class BranchRemittanceApplManager {
 		mapAllDetailApplSave.put("EX_APPL_ADDL", additioalInstructionData);
 		mapAllDetailApplSave.put("EX_APPL_AML", amlData);
 		mapAllDetailApplSave.put("EX_APPL_SRV_PROV", remitApplSrvProv);
+		if(!applSplitList.isEmpty()) {
+			mapAllDetailApplSave.put("EX_APPL_SPLIT", applSplitList);
+		}
+		
 		validateApplDetails(mapAllDetailApplSave);
 		brRemittanceDao.saveAllApplications(mapAllDetailApplSave);
 		auditService.log(new CActivityEvent(Type.APPLICATION_CREATED,String.format("%s/%s", remittanceApplication.getDocumentFinancialyear(),remittanceApplication.getDocumentNo()))
@@ -542,7 +555,14 @@ public class BranchRemittanceApplManager {
 			remittanceApplication.setEmployeeId(getEmployeeDetails().getEmployeeId());
 			remittanceApplication.setCreatedDate(new Date());
 			remittanceApplication.setIsactive(ConstantDocument.Yes);
-			remittanceApplication.setSourceofincome(applRequestModel.getSourceOfFund());
+			
+			if(JaxUtil.isNullZeroBigDecimalCheck(applRequestModel.getSourceOfFund())) {
+				remittanceApplication.setSourceofincome(applRequestModel.getSourceOfFund());
+			}else {
+				throw new GlobalException(JaxError.INVALID_NUMBER,"Please enter source of income");
+			}
+			
+			
 			remittanceApplication.setApplInd(ConstantDocument.COUNTER);
 			remittanceApplication.setWuIpAddress(metaData.getDeviceIp());
 			remittanceApplication.setInstruction("URGENT");
@@ -580,15 +600,14 @@ public class BranchRemittanceApplManager {
 				throw new GlobalException(JaxError.INVALID_APPLICATION_DOCUMENT_NO,"Application document number shouldnot be null or blank");
 			}			
 
+	
+			return remittanceApplication;
 
-
-			
-		
 		}catch(GlobalException e){
 			logger.debug("create application", e.getErrorMessage() + "" +e.getErrorKey());
 			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}
-		return remittanceApplication;
+
 
 	}
 
@@ -688,6 +707,10 @@ public class BranchRemittanceApplManager {
 
 		logger.info(" Exit from saveRemittanceAppBenificary ");
 
+		
+		
+		
+		
 		return remittanceAppBenificary;
 	}
 
@@ -1032,4 +1055,65 @@ public class BranchRemittanceApplManager {
 	}
 
 
+	public List<RemittanceApplicationSplitting> createChildApplication(RemittanceApplication remitAppl,DynamicRoutingPricingDto dyRandPriDto){
+		logger.info("IMPS SPLIT createChildApplication :"+metaData.getCustomerId());
+		logger.info("IMPS SPLIT createChildApplication :"+JsonUtil.toJson(dyRandPriDto));
+		List<RemittanceApplicationSplitting> applSplitList = new ArrayList<RemittanceApplicationSplitting>();
+		 try{
+		 
+		 if(remitAppl !=null && dyRandPriDto!=null) {
+			 TrnxRoutingDetails routingDetails = dyRandPriDto.getTrnxRoutingPaths(); 
+
+			 if(routingDetails!= null && routingDetails.getRemittanceDescription().equalsIgnoreCase(ConstantDocument.IMPS) 
+					 && JaxUtil.isNullZeroBigDecimalCheck(remitAppl.getForeignTranxAmount()) 
+					 && JaxUtil.isNullZeroBigDecimalCheck(routingDetails.getSplitAmount())
+					 && remitAppl.getForeignTranxAmount().compareTo(routingDetails.getSplitAmount())>0) {
+				BigDecimal[] splitCount = remitAppl.getForeignTranxAmount().divideAndRemainder(routingDetails.getSplitAmount());
+				BigDecimal count = new BigDecimal(0);
+				Map<BigDecimal,BigDecimal> mapSplitAmount = new HashMap<>();
+				if(splitCount!=null && splitCount.length>0) {
+					count = splitCount[0].add(splitCount[1].compareTo(BigDecimal.ZERO)>0?BigDecimal.ONE:BigDecimal.ZERO);
+				}
+				
+				
+				 BigDecimal toalFcAmount  = remitAppl.getForeignTranxAmount();
+				 BigDecimal splitAmount =   routingDetails.getSplitAmount();
+				 int i =0;
+				 while(toalFcAmount.compareTo(new BigDecimal(0)) == 1) {
+					 i++;
+				    BigDecimal amount_to_add = null;
+				 	RemittanceApplicationSplitting applSplit = new RemittanceApplicationSplitting();
+					applSplit.setAccountMmyyyy(remitAppl.getAccountMmyyyy());
+					applSplit.setCreatedBy(remitAppl.getCreatedBy());
+					applSplit.setCreatedDate(remitAppl.getCreatedDate());
+					applSplit.setDocumentDate(remitAppl.getDocumentDate());
+					applSplit.setDocumentFinanceYear(remitAppl.getDocumentFinancialyear());
+					applSplit.setDocumentId(remitAppl.getExDocument().getDocumentID());
+					applSplit.setDocumentNo(remitAppl.getDocumentNo());
+					applSplit.setIsactive(ConstantDocument.Yes);
+					applSplit.setSplitDocumentNo(new BigDecimal(i));
+					
+					if (toalFcAmount.compareTo(splitAmount) >= 0)
+					  {
+						amount_to_add = splitAmount;
+						toalFcAmount = toalFcAmount.subtract(splitAmount);
+					  }
+					  else
+					  {
+					   amount_to_add = toalFcAmount;
+					   toalFcAmount = toalFcAmount.subtract(toalFcAmount);
+					  }
+					 applSplit.setForeignTranxAmount(amount_to_add);
+					 applSplitList.add(applSplit);
+				 }
+			}
+	}
+		 
+	 }catch(Exception e) {
+			e.printStackTrace();
+		}
+				 
+		return applSplitList;
+	}
+	
 }
