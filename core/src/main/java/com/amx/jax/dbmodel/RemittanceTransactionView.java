@@ -337,6 +337,11 @@ public class RemittanceTransactionView implements Serializable{
 	private BigDecimal rackExchangeRate;
 	
 	
+	
+	@Column(name="DISCOUNT_ON_COMM")
+	private BigDecimal corporateDisOnCommi;
+	
+	
 	public BigDecimal getTotalAmountSaved() {
 		return totalAmountSaved;
 	}
@@ -1163,6 +1168,14 @@ public class RemittanceTransactionView implements Serializable{
 
 	public void setRackExchangeRate(BigDecimal rackExchangeRate) {
 		this.rackExchangeRate = rackExchangeRate;
+	}
+
+	public BigDecimal getCorporateDisOnCommi() {
+		return corporateDisOnCommi;
+	}
+
+	public void setCorporateDisOnCommi(BigDecimal corporateDisOnCommi) {
+		this.corporateDisOnCommi = corporateDisOnCommi;
 	}
 
 }
