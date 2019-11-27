@@ -85,8 +85,9 @@ public class BeneficiaryBranchController {
 	}
 
 	@RequestMapping(value = "/api/bene/status_master/list", method = RequestMethod.GET)
-	public AmxApiResponse<BeneficaryStatusDto, Object> getBeneStatusMaster() {
-		return beneClient.getBeneStatusMaster();
+	public AmxApiResponse<BeneficaryStatusDto, Object> getBeneStatusMaster(
+			@RequestParam(required = false) BigDecimal serviceGroupId) {
+		return beneClient.getBeneStatusMaster(serviceGroupId);
 	}
 
 	@RequestMapping(value = "/api/bene/agent_branch/list", method = RequestMethod.POST)

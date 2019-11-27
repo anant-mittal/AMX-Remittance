@@ -387,10 +387,10 @@ public class BeneClient extends AbstractJaxServiceClient implements IBeneficiary
 	}
 
 	@Override
-	public AmxApiResponse<BeneficaryStatusDto, Object> getBeneStatusMaster() {
+	public AmxApiResponse<BeneficaryStatusDto, Object> getBeneStatusMaster(BigDecimal serviceGroupId) {
 		try {
 			String url = this.getBaseUrl() + BENE_API_ENDPOINT + Path.GET_BENE_STATUS_MASTER;
-			return restService.ajax(url).meta(new JaxMetaInfo()).get()
+			return restService.ajax(url).meta(new JaxMetaInfo()).queryParam(Params.SERVICE_GROUP_ID, serviceGroupId).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<BeneficaryStatusDto, Object>>() {
 					});
 		} catch (AbstractJaxException ae) {

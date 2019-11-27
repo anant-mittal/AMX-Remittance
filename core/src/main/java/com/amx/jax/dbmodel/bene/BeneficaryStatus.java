@@ -24,6 +24,8 @@ public class BeneficaryStatus implements Serializable {
 	private String modifiedBy;
 	private Date modifiedDate;
 	private String isActive;
+	private String serviceGroupCode;
+	private String selfApplicable;
 	
 public BeneficaryStatus() {
 		
@@ -100,6 +102,22 @@ public BeneficaryStatus() {
 	}
 	public void setIsActive(String isActive) {
 		this.isActive = isActive;
+	}
+
+	public String getServiceGroupCode() {
+		return serviceGroupCode;
+	}
+
+	public void setServiceGroupCode(String serviceGroupCode) {
+		this.serviceGroupCode = serviceGroupCode;
+	}
+
+	public String getSelfApplicable() {
+		return selfApplicable;
+	}
+
+	public void setSelfApplicable(String selfApplicable) {
+		this.selfApplicable = selfApplicable;
 	}
 	
 }

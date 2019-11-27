@@ -339,8 +339,9 @@ public class BeneficiaryController implements IBeneficiaryService{
 	@RequestMapping(value = Path.GET_BENE_STATUS_MASTER, method = RequestMethod.GET)
 	@ApiOperation("getBeneStatusMaster")
 	@Override
-	public AmxApiResponse<BeneficaryStatusDto, Object> getBeneStatusMaster() {
-		List<BeneficaryStatusDto> beneStatusDtoList = beneService.getBeneStatusMaster();
+	public AmxApiResponse<BeneficaryStatusDto, Object> getBeneStatusMaster(
+			@RequestParam(required = false, value = IBeneficiaryService.Params.SERVICE_GROUP_ID) BigDecimal serviceGroupId) {
+		List<BeneficaryStatusDto> beneStatusDtoList = beneService.getBeneStatusMaster(serviceGroupId);
 		return AmxApiResponse.buildList(beneStatusDtoList);
 	}
 }
