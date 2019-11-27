@@ -2,7 +2,6 @@ package com.amx.jax.model.auth;
 
 import java.math.BigDecimal;
 
-import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.ResourceDTO;
 
 public class QuestModelDTO extends ResourceDTO {

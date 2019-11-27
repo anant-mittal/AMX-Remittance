@@ -9,8 +9,6 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import com.amx.jax.grid.GridViewRecord;
-
 @Entity
 @Table(name = "JAX_VW_ONEVIEW_TRNX")
 public class OneViewTrnx implements Serializable {

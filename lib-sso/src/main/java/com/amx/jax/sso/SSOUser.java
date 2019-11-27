@@ -1,6 +1,7 @@
 package com.amx.jax.sso;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 import javax.servlet.http.Cookie;
 
@@ -33,7 +34,7 @@ public class SSOUser implements Serializable {
 	SSOConfig ssoConfig;
 
 	private String terminalId;
-	
+
 	private String terminalIp;
 
 	private boolean authDone = false;
@@ -42,6 +43,11 @@ public class SSOUser implements Serializable {
 	private EmployeeDetailsDTO userDetails = null;
 
 	private UserClientDto userClient;
+
+	UUID outlookState;
+	UUID outlookNonce;
+	String outlookAuthCode;
+	String outlookIdToken;
 
 	public String getUserId() {
 		if (userDetails == null) {
@@ -171,7 +177,47 @@ public class SSOUser implements Serializable {
 	}
 
 	public void setTerminalIp(String terminalIp) {
-		this.terminalIp = terminalIp;
+		this.terminalIp = terminalIp + ",0:0:0:0:0:0:0:1";
+	}
+
+	public void setTerminalIp(String terminalIp, String terminalIp2) {
+		this.terminalIp = terminalIp + ",0:0:0:0:0:0:0:1," + terminalIp2;
+	}
+
+	public void setTerminalIp(String terminalIp, String terminalIp2, String terminalIp3) {
+		this.terminalIp = terminalIp + "," + terminalIp2 + ",0:0:0:0:0:0:0:1," + terminalIp3;
+	}
+
+	public UUID getOutlookState() {
+		return outlookState;
+	}
+
+	public void setOutlookState(UUID outlookState) {
+		this.outlookState = outlookState;
+	}
+
+	public UUID getOutlookNonce() {
+		return outlookNonce;
+	}
+
+	public void setOutlookNonce(UUID outlookNonce) {
+		this.outlookNonce = outlookNonce;
+	}
+
+	public String getOutlookAuthCode() {
+		return outlookAuthCode;
+	}
+
+	public void setOutlookAuthCode(String outlookAuthCode) {
+		this.outlookAuthCode = outlookAuthCode;
+	}
+
+	public String getOutlookIdToken() {
+		return outlookIdToken;
+	}
+
+	public void setOutlookIdToken(String outlookIdToken) {
+		this.outlookIdToken = outlookIdToken;
 	}
 
 }

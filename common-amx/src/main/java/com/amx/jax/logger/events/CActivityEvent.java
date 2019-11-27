@@ -21,6 +21,7 @@ public class CActivityEvent extends AmxAuditEvent<CActivityEvent> {
 		VALIDATION,
 
 		PROFILE_UPDATE, ACCOUNT_LOCKED, ACCOUNT_UNLOCKED,
+		PREFS_UPDATE,
 
 		BENE_ADD, BENE_UPDATE,
 

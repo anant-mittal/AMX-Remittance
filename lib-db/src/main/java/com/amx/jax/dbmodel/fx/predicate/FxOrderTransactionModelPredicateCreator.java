@@ -2,7 +2,9 @@ package com.amx.jax.dbmodel.fx.predicate;
 
 import java.util.Calendar;
 import java.util.Date;
+
 import org.springframework.stereotype.Component;
+
 import com.amx.jax.dbmodel.fx.QFxOrderTransactionModel;
 import com.amx.jax.model.request.fx.FcDeliveryBranchOrderSearchRequest;
 import com.querydsl.core.BooleanBuilder;

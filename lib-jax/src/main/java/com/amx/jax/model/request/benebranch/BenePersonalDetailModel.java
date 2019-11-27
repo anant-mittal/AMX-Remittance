@@ -1,4 +1,4 @@
-package com.amx.amxlib.model;
+package com.amx.jax.model.request.benebranch;
 
 import java.math.BigDecimal;
 
@@ -57,6 +57,7 @@ public class BenePersonalDetailModel extends AbstractModel {
 	private String remarks;
 	@NotNull
 	private BigDecimal relationsId;
+	private BigDecimal beneficaryTypeId;
 
 	@Override
 	public String getModelType() {
@@ -234,6 +235,14 @@ public class BenePersonalDetailModel extends AbstractModel {
 				+ ", localFifthName=" + localFifthName + ", telephoneNumber=" + telephoneNumber + ", mobileNumber="
 				+ mobileNumber + ", countryTelCode=" + countryTelCode + ", remarks=" + remarks + ", relationsId="
 				+ relationsId + "]";
+	}
+
+	public BigDecimal getBeneficaryTypeId() {
+		return beneficaryTypeId;
+	}
+
+	public void setBeneficaryTypeId(BigDecimal beneficaryTypeId) {
+		this.beneficaryTypeId = beneficaryTypeId;
 	}
 
 }

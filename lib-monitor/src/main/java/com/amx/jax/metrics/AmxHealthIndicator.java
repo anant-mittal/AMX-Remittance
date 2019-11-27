@@ -13,7 +13,6 @@ import com.amx.jax.def.IndicatorListner;
 import com.amx.jax.def.IndicatorListner.GaugeIndicator;
 import com.amx.utils.ArgUtil;
 
-import io.prometheus.client.Counter;
 import io.prometheus.client.Gauge;
 
 @Component

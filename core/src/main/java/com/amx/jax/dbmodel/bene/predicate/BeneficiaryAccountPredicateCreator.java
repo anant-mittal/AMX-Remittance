@@ -4,9 +4,9 @@ import java.math.BigDecimal;
 
 import org.springframework.stereotype.Component;
 
-import com.amx.amxlib.model.BeneAccountModel;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.bene.QBeneficaryAccount;
+import com.amx.jax.model.request.benebranch.BeneAccountModel;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
 

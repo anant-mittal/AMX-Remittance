@@ -93,7 +93,7 @@ public class EmailService {
 	@Autowired
 	private AppConfig appConfig;
 
-	@Autowired
+	@Autowired(required = false)
 	RedissonClient redisson;
 
 	public static final int RESEND_INTERVAL = 1 * 60 * 1000;
@@ -188,12 +188,12 @@ public class EmailService {
 
 		} catch (Exception e) {
 			auditService.excep(pMGaugeEvent.set(AuditEvent.Result.ERROR).set(email), LOGGER, e);
-			//slackService.sendException(to, e);
+			// slackService.sendException(to, e);
 		}
 
 		if (!ArgUtil.isEmpty(emailClone) && !Status.SENT.equals(email.getStatus())
 				&& !Status.NOT_SENT.equals(email.getStatus())
-				&& !Status.BLOCKED.equals(email.getStatus())) {
+				&& !Status.BLOCKED.equals(email.getStatus()) && redisson != null) {
 			AppContext context = AppContextUtil.getContext();
 			TunnelMessage<Email> tunnelMessage = new TunnelMessage<Email>(emailClone, context);
 			RQueue<TunnelMessage<Email>> emailQueue = redisson

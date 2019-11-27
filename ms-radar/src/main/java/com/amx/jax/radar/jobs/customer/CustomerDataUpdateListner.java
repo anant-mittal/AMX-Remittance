@@ -20,8 +20,9 @@ import com.amx.jax.grid.GridService.GridViewBuilder;
 import com.amx.jax.grid.GridView;
 import com.amx.jax.grid.SortOrder;
 import com.amx.jax.grid.views.CustomerDetailViewRecord;
-import com.amx.jax.radar.AESRepository.BulkRequestBuilder;
 import com.amx.jax.radar.ESRepository;
+import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncIndex;
+import com.amx.jax.radar.snap.SnapQueryService.BulkRequestSnapBuilder;
 import com.amx.jax.tunnel.DBEvent;
 import com.amx.jax.tunnel.ITunnelSubscriber;
 import com.amx.jax.tunnel.TunnelEventMapping;
@@ -75,12 +76,12 @@ public class CustomerDataUpdateListner implements ITunnelSubscriber<DBEvent> {
 				.view(GridView.VW_CUSTOMER_KIBANA, gridQuery);
 		AmxApiResponse<CustomerDetailViewRecord, GridMeta> x = y.get();
 
-		BulkRequestBuilder builder = new BulkRequestBuilder();
+		BulkRequestSnapBuilder builder = new BulkRequestSnapBuilder();
 		for (CustomerDetailViewRecord record : x.getResults()) {
 			try {
 				OracleViewDocument document = new OracleViewDocument(record);
 				document.setTimestamp(new Date(System.currentTimeMillis()));
-				builder.update(oracleVarsCache.getCustomerIndex(), document);
+				builder.update(DBSyncIndex.CUSTOMER_JOB.getIndexName(), document);
 			} catch (Exception e) {
 				LOGGER.error("CustomerViewTask Excep", e);
 			}

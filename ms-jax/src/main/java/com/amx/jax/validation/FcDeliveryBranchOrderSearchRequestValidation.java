@@ -1,13 +1,14 @@
 package com.amx.jax.validation;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.model.request.fx.FcDeliveryBranchOrderSearchRequest;
 import com.amx.jax.service.MetaService;
 import com.amx.jax.services.FcSaleBranchService;
 import com.amx.jax.userservice.service.UserValidationService;
-import org.springframework.stereotype.Component;
 
 @Component
 public class FcDeliveryBranchOrderSearchRequestValidation {

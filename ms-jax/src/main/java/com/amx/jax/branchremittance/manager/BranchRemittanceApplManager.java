@@ -235,8 +235,6 @@ public class BranchRemittanceApplManager {
 	@Autowired
 	PartnerTransactionManager partnerTransactionManager;
 	
-	List<RemittanceApplicationSplitting> applSplitList = new ArrayList<>();
-	
 	
 	public BranchRemittanceApplResponseDto saveBranchRemittanceApplication(BranchRemittanceApplRequestModel requestApplModel) {
 		Map<String,Object> hashMap = new HashMap<>();
@@ -331,7 +329,12 @@ public class BranchRemittanceApplManager {
 		RemittanceApplication remittanceApplication = this.createRemittanceApplication(hashMap);
 		RemittanceAppBenificiary remittanceAppBeneficairy = this.createRemittanceAppBeneficiary(remittanceApplication,hashMap);
 		List<AdditionalInstructionData>  additioalInstructionData = remittanceAppAddlDataManager.createAdditionalInstnDataForBranch(remittanceApplication,hashMap);
-
+		List<RemittanceApplicationSplitting> applSplitList = this.createChildApplication(remittanceApplication, requestApplModel.getDynamicRroutingPricingBreakup());
+		
+		if(applSplitList!=null && !applSplitList.isEmpty()) {
+			remittanceApplication.setApplSplit(ConstantDocument.Yes);
+		}
+		
 		//RemittanceTransactionRequestModel
 		List<RemitApplAmlModel> amlData = this.saveRemittanceAppAML(remittanceApplication,hashMap);
 
@@ -598,12 +601,6 @@ public class BranchRemittanceApplManager {
 			}			
 
 	
-			applSplitList = createChildApplication(remittanceApplication, dynamicRoutingPricingResponse);
-			
-			if(!applSplitList.isEmpty()) {
-				remittanceApplication.setApplSplit(ConstantDocument.Yes);
-			}
-			
 			return remittanceApplication;
 
 		}catch(GlobalException e){
@@ -1059,8 +1056,9 @@ public class BranchRemittanceApplManager {
 
 
 	public List<RemittanceApplicationSplitting> createChildApplication(RemittanceApplication remitAppl,DynamicRoutingPricingDto dyRandPriDto){
-		
-		 applSplitList = new ArrayList<RemittanceApplicationSplitting>();
+		logger.info("IMPS SPLIT createChildApplication :"+metaData.getCustomerId());
+		logger.info("IMPS SPLIT createChildApplication :"+JsonUtil.toJson(dyRandPriDto));
+		List<RemittanceApplicationSplitting> applSplitList = new ArrayList<RemittanceApplicationSplitting>();
 		 try{
 		 
 		 if(remitAppl !=null && dyRandPriDto!=null) {

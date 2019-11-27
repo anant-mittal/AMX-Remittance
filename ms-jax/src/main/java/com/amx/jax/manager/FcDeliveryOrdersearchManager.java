@@ -4,22 +4,22 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
+
 import com.amx.jax.customer.service.CustomerService;
 import com.amx.jax.customer.service.EmployeeValidationService;
 import com.amx.jax.dao.FcSaleBranchDao;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.Employee;
 import com.amx.jax.dbmodel.fx.FxOrderTransactionModel;
-import com.amx.jax.dbmodel.fx.OrderManagementView;
 import com.amx.jax.dbmodel.fx.predicate.FxOrderTransactionModelPredicateCreator;
 import com.amx.jax.model.request.fx.FcDeliveryBranchOrderSearchRequest;
 import com.amx.jax.model.response.fx.FcSaleCurrencyAmountModel;
-import com.amx.jax.model.response.fx.FcSaleOrderManagementDTO;
 import com.amx.jax.model.response.fx.FxOrderTransactionHistroyDto;
 import com.amx.jax.repository.ICustomerRepository;
 import com.querydsl.core.types.Predicate;

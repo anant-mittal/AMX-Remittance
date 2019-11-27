@@ -2,7 +2,6 @@ package com.amx.jax.model;
 
 import java.math.BigDecimal;
 
-import com.amx.jax.model.AbstractModel;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class CivilIdOtpModel extends AbstractModel {

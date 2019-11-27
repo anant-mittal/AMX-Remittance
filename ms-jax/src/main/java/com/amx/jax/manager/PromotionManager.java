@@ -43,8 +43,6 @@ import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.DateUtil;
 import com.amx.utils.ArgUtil;
 
-import javassist.bytecode.stackmap.BasicBlock.Catch;
-
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class PromotionManager {

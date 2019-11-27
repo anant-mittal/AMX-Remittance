@@ -358,4 +358,24 @@ public class RbaacServiceClient implements IRbaacService {
 				.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 				});
 	}
+
+	@Override
+	public AmxApiResponse<DeviceDto, Object> getDevicesByTerminal(BigDecimal terminalId, String terminalIp) {
+		LOGGER.debug("get devices by terminal");
+		String url = appConfig.getAuthURL() + ApiEndPoints.FIND_DEVICES_BY_TERMINAL;
+		return restService.ajax(url).queryParam(Params.TERMINAL_ID, terminalId)
+				.queryParam(Params.TERMINAL_IP, terminalIp).get()
+				.as(new ParameterizedTypeReference<AmxApiResponse<DeviceDto, Object>>() {
+		});
+	}
+
+	@Override
+	public AmxApiResponse<DeviceDto, Object> getDevicesByRegId(BigDecimal deviceRegId, String deviceId) {
+		LOGGER.debug("get devices by device");
+		String url = appConfig.getAuthURL() + ApiEndPoints.FIND_DEVICES_BY_ID;
+		return restService.ajax(url).queryParam(Params.DEVICE_REG_ID, deviceRegId)
+				.queryParam(Params.DEVICE_CLIENT_ID, deviceId).get()
+				.as(new ParameterizedTypeReference<AmxApiResponse<DeviceDto, Object>>() {
+		});
+	}
 }

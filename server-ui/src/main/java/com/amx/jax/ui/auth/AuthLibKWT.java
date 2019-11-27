@@ -98,6 +98,8 @@ public class AuthLibKWT implements AuthLib {
 			return checkActivationStep(authState);
 		} else if (authState.flow == AuthState.AuthFlow.REGISTRATION) {
 			return checkRegStep(authState);
+		} else if (authState.flow == AuthState.AuthFlow.PERMS) {
+			return authState.cStep;
 		}
 		return authState.cStep;
 	}

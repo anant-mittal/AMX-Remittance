@@ -11,8 +11,6 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import org.apache.tomcat.util.http.fileupload.UploadContext;
-
 @Entity
 @Table(name = "EX_DMS_APPL_MAP")
 public class DmsApplMapping {
