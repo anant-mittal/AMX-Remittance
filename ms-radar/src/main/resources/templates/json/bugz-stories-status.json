@@ -1,0 +1,234 @@
+{
+  "aggs": {
+    "sprint": {
+      "terms": {
+        "field": "cf_sprint.keyword",
+        "order": {
+          "_key": "desc"
+        },
+        "missing": "__missing__",
+        "size": 100
+      },
+      "aggs": {
+        "milestone": {
+          "terms": {
+            "field": "story_milestone.keyword",
+            "order": {
+              "_key": "desc"
+            },
+            "missing": "-",
+            "size": 100
+          },
+          "aggs": {
+            "story": {
+              "terms": {
+                "field": "story_final.keyword",
+                "order": {
+                  "_key": "desc"
+                },
+                "missing": "__missing__",
+                "size": 1000
+              },
+              "aggs": {
+                "phase": {
+                  "terms": {
+                    "field": "story_phase.keyword",
+                    "order": {
+                      "_key": "desc"
+                    },
+                    "missing": "__missing__",
+                    "size": 10
+                  },
+                  "aggs": {
+                    "team": {
+                      "terms": {
+                        "field": "user_layer.keyword",
+                        "order": {
+                          "_key": "desc"
+                        },
+                        "missing": "-",
+                        "size": 10
+                      },
+                      "aggs": {
+                        "dev": {
+                          "terms": {
+                            "field": "short_name.keyword",
+                            "order": {
+                              "_key": "desc"
+                            },
+                            "missing": "-",
+                            "size": 100
+                          },
+                          "aggs": {
+                            "week": {
+                              "date_range": {
+                                "field": "deadline",
+                                "ranges": [
+                                  {
+                                  	"key" : "W1-",
+                                    "from": "now-3M",
+                                    "to": "now+0w/w"
+                                  },
+                                  {
+                                  	"key" : "W0",
+                                    "from": "now+0w/w",
+                                    "to": "now+1w/w"
+                                  },
+                                  {
+                                  	"key" : "W1",
+                                    "from": "now+1w/w",
+                                    "to": "now+2w/w"
+                                  },
+                                  {
+                                  	"key" : "W1+",
+                                    "from": "now+2w/w",
+                                    "to": "now+5y"
+                                  }
+                                ],
+                                "time_zone": "Asia/Calcutta"
+                              },
+                              "aggs": {
+                                "remTime": {
+                                  "sum": {
+                                    "script": {
+                                      "source": "def statuss = [\n'Re-Open': 'REOPEN', \n'OPEN': 'OPEN',\n'DEV-COMPLETED' : 'CLOSED',\n'CLOSED' : 'CLOSED',\n'QA-IN PROGRESS' : 'QIP',\n'UI IN - PROCESS' : 'WIP',\n'BA-IN PROGRESS' : 'WIP',\n'CODE-REVIEW IN PROGRESS' : 'WIP',\n'CODE-REVIEW COMPLETED': 'WIP',\n'UNDER OBSERVATION' : 'WIP',\n'READY FOR PROD' : 'CLOSED',\n'UI Completed' : 'RESOLVED',\n'DEV-IN PROGRESS' : 'WIP',\n'IN-PROGRESS' : 'WIP',\n 'RESOLVED' : 'RESOLVED',\n 'BA-COMPLETED' : 'RESOLVED' ];\ndef gstatus = statuss[doc['bug_status.keyword'].value]; \nreturn ((gstatus=='CLOSED' || gstatus=='RESOLVED') ? 0 : doc['estimated_time'].value)",
+                                      "lang": "painless"
+                                    }
+                                  }
+                                },
+                                "deadline": {
+                                  "max": {
+                                    "field": "deadline"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "size": 0,
+  "_source": {
+    "excludes": []
+  },
+  "stored_fields": [
+    "*"
+  ],
+  "script_fields": {
+    "bugage": {
+      "script": {
+        "source": "(doc['delta_ts'].value.getMillis()-doc['creation_ts'].value.getMillis())",
+        "lang": "painless"
+      }
+    },
+    "bug_age": {
+      "script": {
+        "source": "(new Date().getTime()-doc['creation_ts'].value.getMillis())",
+        "lang": "painless"
+      }
+    },
+    "gstatus": {
+      "script": {
+        "source": "def statuss = [\n'Re-Open': 'REOPEN', \n'DEV-COMPLETED' : 'CLOSED',\n'QA-IN PROGRESS' : 'QIP',\n'UI IN - PROCESS' : 'WIP',\n'BA-IN PROGRESS' : 'WIP',\n'CODE-REVIEW IN PROGRESS' : 'WIP',\n'CODE-REVIEW COMPLETED': 'WIP',\n'UNDER OBSERVATION' : 'WIP',\n'READY FOR PROD' : 'CLOSED',\n'UI Completed' : 'RESOLVED',\n'DEV-IN PROGRESS' : 'WIP',\n'IN-PROGRESS' : 'WIP',\n 'BA-COMPLETED' : 'RESOLVED' ];\ndef gstatus = statuss[doc['bug_status.keyword'].value]; \nreturn (gstatus==null ? doc['bug_status.keyword'].value : gstatus)",
+        "lang": "painless"
+      }
+    },
+    "remaining_time_open": {
+      "script": {
+        "source": "def statuss = [\n'Re-Open': 'REOPEN', \n'OPEN': 'OPEN',\n'DEV-COMPLETED' : 'CLOSED',\n'CLOSED' : 'CLOSED',\n'QA-IN PROGRESS' : 'QIP',\n'UI IN - PROCESS' : 'WIP',\n'BA-IN PROGRESS' : 'WIP',\n'CODE-REVIEW IN PROGRESS' : 'WIP',\n'CODE-REVIEW COMPLETED': 'WIP',\n'UNDER OBSERVATION' : 'WIP',\n'READY FOR PROD' : 'CLOSED',\n'UI Completed' : 'RESOLVED',\n'DEV-IN PROGRESS' : 'WIP',\n'IN-PROGRESS' : 'WIP',\n 'RESOLVED' : 'RESOLVED',\n 'BA-COMPLETED' : 'RESOLVED' ];\ndef gstatus = statuss[doc['bug_status.keyword'].value]; \nreturn ((gstatus=='CLOSED' || gstatus=='RESOLVED') ? 0 : doc['estimated_time'].value)",
+        "lang": "painless"
+      }
+    }
+  },
+  "docvalue_fields": [
+    {
+      "field": "@timestamp",
+      "format": "date_time"
+    },
+    {
+      "field": "bug_when",
+      "format": "date_time"
+    },
+    {
+      "field": "creation_ts",
+      "format": "date_time"
+    },
+    {
+      "field": "deadline",
+      "format": "date_time"
+    },
+    {
+      "field": "delta_ts",
+      "format": "date_time"
+    },
+    {
+      "field": "lastdiffed",
+      "format": "date_time"
+    }
+  ],
+  "query": {
+    "bool": {
+      "must": [],
+      "filter": [
+        {
+          "match_all": {}
+        },
+        {
+          "bool": {
+            "minimum_should_match": 1,
+            "should": [
+              {
+                "match_phrase": {
+                  "cf_type.keyword": "Bug"
+                }
+              },
+              {
+                "match_phrase": {
+                  "cf_type.keyword": "Enhancement"
+                }
+              },
+              {
+                "match_phrase": {
+                  "cf_type.keyword": "Task"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "range": {
+            "delta_ts": {
+              "format": "strict_date_optional_time",
+              "gte": "2019-08-29T05:18:30.192Z",
+              "lte": "2019-11-27T05:18:30.192Z"
+            }
+          }
+        }
+      ],
+      "should": [],
+      "must_not": [
+        {
+          "bool": {
+            "should": [
+              {
+                "match_phrase": {
+                  "user_layer.keyword": "SUPPORT"
+                }
+              }
+            ],
+            "minimum_should_match": 1
+          }
+        }
+      ]
+    }
+  }
+}
