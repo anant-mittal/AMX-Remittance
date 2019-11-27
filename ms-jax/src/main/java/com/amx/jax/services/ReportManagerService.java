@@ -600,19 +600,19 @@ public class ReportManagerService extends AbstractService{
 		}
 		if (Boolean.TRUE.equals(promotion)) {
 				
-				PromotionDto promotionDtoJP = promotionManager.getPromotionDtoJP(
+				/*PromotionDto promotionDtoJP = promotionManager.getPromotionDtoJP(
 						transactionHistroyDTO.getDocumentFinanceYear(),transactionHistroyDTO.getDocumentNumber());
 				logger.debug("Promotion dto2 for JB value is  "+JsonUtil.toJson(promotionDtoJP));
 				if(!ArgUtil.isEmpty(promotionDtoJP)&&!ArgUtil.isEmpty(promotionDtoJP.getPrizeMessage())) {
 					remittanceReceiptSubreportList.get(0).getRemittanceApplList().get(0).setPromotionDto(promotionDtoJP);
-				}else {
+				}else {*/
 					PromotionDto promotionDto = promotionManager.getPromotionDto(transactionHistroyDTO.getDocumentNumber(),
 							transactionHistroyDTO.getDocumentFinanceYear());
 					logger.debug("Promotion dto2 value is  "+JsonUtil.toJson(promotionDto));
 					if (promotionDto != null && !promotionDto.isChichenVoucher()) {
 						remittanceReceiptSubreportList.get(0).getRemittanceApplList().get(0).setPromotionDto(promotionDto);
 					}
-				}
+				//}
 				
 		}
 		response.getData().getValues().addAll(remittanceReceiptSubreportList);
