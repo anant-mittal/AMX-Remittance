@@ -31,6 +31,7 @@ import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.RemittanceApplicationBeneRepository;
 import com.amx.jax.service.CountryService;
 import com.amx.jax.services.BankService;
+import com.amx.jax.util.JaxUtil;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
@@ -102,7 +103,7 @@ public class RemittanceApplAmlManager {
 		}
 		
 		BigDecimal changeHistcount = routingProcedureDao.getCustomerHistroyCount(metaData.getCustomerId());
-		if(changeHistcount.compareTo(BigDecimal.ZERO)>0) {
+		if(JaxUtil.isNullZeroBigDecimalCheck(changeHistcount) && changeHistcount.compareTo(BigDecimal.ZERO)>0) {
 			amlDto.setBlackRemark3("Email / Mobile  changed  within  90  days");
 		}
 		
