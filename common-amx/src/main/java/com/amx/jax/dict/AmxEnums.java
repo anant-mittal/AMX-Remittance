@@ -1,7 +1,7 @@
 package com.amx.jax.dict;
+
 import com.amx.jax.def.Communication.CommunicationEvent;
 import com.amx.jax.def.Communication.CommunicationEventModel;
-
 import com.amx.utils.ArgUtil;
 import com.amx.utils.EnumType;
 
