@@ -7,6 +7,7 @@ import static com.amx.amxlib.constant.NotificationConstants.SERVICE_PROVIDER_RES
 import static com.amx.amxlib.constant.NotificationConstants.TRANSACTION_FAIL;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -70,7 +71,8 @@ public class JaxNotificationService {
 
 	private final String SUBJECT_ACCOUNT_UPDATE = "Account Update";
 
-	public void sendTransactionNotification(RemittanceReceiptSubreport remittanceReceiptSubreport, PersonInfo pinfo) {
+	public void sendTransactionNotification(RemittanceReceiptSubreport remittanceReceiptSubreport, PersonInfo pinfo,
+			Map<String, Object> emailData) {
 
 		logger.debug("Sending txn notification to customer");
 		Email email = new Email();
@@ -83,24 +85,26 @@ public class JaxNotificationService {
 			email.setSubject("Your transaction on Modern Exchange - Oman is successful");
 		}
 
+		email.addTo(pinfo.getEmail());
+		email.setITemplate(TemplatesMX.TXN_CRT_SUCC);
+		email.setHtml(true);
+		email.getModel().put(RESP_DATA_KEY, pinfo);
+		if (emailData != null) {
+			email.getModel().putAll(emailData);
+		}
 
-			email.addTo(pinfo.getEmail());
-			email.setITemplate(TemplatesMX.TXN_CRT_SUCC);
-			email.setHtml(true);
-			email.getModel().put(RESP_DATA_KEY, pinfo);
+		File file = new File();
+		file.setITemplate(TemplatesMX.REMIT_RECEIPT_JASPER);
+		file.setName("TransactionReceipt");
+		file.setType(File.Type.PDF);
+		file.getModel().put(RESP_DATA_KEY, remittanceReceiptSubreport);
+		file.setPassword(pinfo.getIdentityInt());
+		file.setLang(AppContextUtil.getTenant().defaultLang());
 
-			File file = new File();
-			file.setITemplate(TemplatesMX.REMIT_RECEIPT_JASPER);
-			file.setName("TransactionReceipt");
-			file.setType(File.Type.PDF);
-			file.getModel().put(RESP_DATA_KEY, remittanceReceiptSubreport);
-			file.setPassword(pinfo.getIdentityInt());
-			file.setLang(AppContextUtil.getTenant().defaultLang());
+		email.addFile(file);
+		logger.debug("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getFirstName());
+		sendEmail(email);
 
-			email.addFile(file);
-			logger.debug("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getFirstName());
-			sendEmail(email);
-		
 	}
 
 	public void sendTransactionNotification(FxOrderReportResponseDto remittanceReceiptSubreport,

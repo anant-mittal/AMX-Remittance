@@ -2,6 +2,7 @@ package com.amx.jax.customer.validation;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.customer.document.manager.CustomerDocMasterManager;
 import com.amx.jax.customer.document.manager.CustomerDocumentUploadManager;
 import com.amx.jax.customer.manager.OffsiteCustomerRegManager;
@@ -27,12 +29,15 @@ import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.customer.CreateCustomerInfoRequest;
 import com.amx.jax.model.customer.document.CustomerDocValidationResponseData;
+import com.amx.jax.model.request.CustomerPersonalDetail;
+import com.amx.jax.model.request.UpdateCustomerPersonalDetailRequest;
 import com.amx.jax.model.request.customer.CustomerDocValidationData;
 import com.amx.jax.model.request.customer.UpdateCustomerInfoRequest;
 import com.amx.jax.repository.remittance.IIdNumberLengthCheckRepository;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.userservice.manager.CustomerIdProofManager;
 import com.amx.jax.userservice.service.UserService;
+import com.amx.utils.DateUtil;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -54,6 +59,8 @@ public class CustomerManagementValidation {
 	CustomerIdProofManager customerIdProofManager;
 	@Autowired
 	OffsitCustRegService offsitCustRegService;
+
+	public static final int INSURANCE_ELIGILIBITY_AGE = 69;
 
 	public void validateIdentityIntLength(String identityInt, BigDecimal identityTypeId) {
 
@@ -153,6 +160,37 @@ public class CustomerManagementValidation {
 		if (customer != null) {
 			throw new GlobalException("Customer already created, use update api to update customer info");
 		}
+		validateInsuranceFlag(createCustomerInfoRequest);
 		offsitCustRegService.validateCustomerBlackList(createCustomerInfoRequest.getCustomerPersonalDetail());
+	}
+
+	private void validateInsuranceFlag(CreateCustomerInfoRequest createCustomerInfoRequest) {
+		CustomerPersonalDetail personalDetail = createCustomerInfoRequest.getCustomerPersonalDetail();
+		if (personalDetail.getDateOfBirth() != null && ConstantDocument.Yes.equals(personalDetail.getInsurance())) {
+			int age = DateUtil.calculateAge(personalDetail.getDateOfBirth());
+			if (age > INSURANCE_ELIGILIBITY_AGE) {
+				throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE,
+						"Customer is not eligible for insurance. Please remove insurance indic.");
+			}
+		}
+	}
+
+	public void validateInsuranceFlag(UpdateCustomerInfoRequest updateCustomerInfoRequest) {
+		Customer customer = userService.getCustById(metaData.getCustomerId());
+		Date dob = customer.getDateOfBirth();
+		if (updateCustomerInfoRequest.getPersonalDetailInfo() != null) {
+			UpdateCustomerPersonalDetailRequest personalDetailInfo = updateCustomerInfoRequest.getPersonalDetailInfo();
+			if (personalDetailInfo.getDateOfBirth() != null) {
+				dob = personalDetailInfo.getDateOfBirth();
+			}
+			Boolean insuranceIndic = personalDetailInfo.getInsurance();
+			if (insuranceIndic != null && insuranceIndic) {
+				int age = DateUtil.calculateAge(dob);
+				if (age > INSURANCE_ELIGILIBITY_AGE) {
+					throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE,
+							"Customer is not eligible for insurance. Please remove insurance indic.");
+				}
+			}
+		}
 	}
 }

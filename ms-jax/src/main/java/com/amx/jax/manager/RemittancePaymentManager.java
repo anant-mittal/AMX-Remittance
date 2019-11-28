@@ -57,6 +57,7 @@ import com.amx.jax.model.response.remittance.RemittanceApplicationResponseModel;
 import com.amx.jax.model.response.remittance.RemittanceCollectionDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.serviceprovider.Remittance_Call_Response;
+import com.amx.jax.notification.JaxNotificationDataManager;
 import com.amx.jax.partner.dao.PartnerTransactionDao;
 import com.amx.jax.partner.dto.RemitTrnxSPDTO;
 import com.amx.jax.partner.manager.PartnerTransactionManager;
@@ -157,6 +158,8 @@ public class RemittancePaymentManager extends AbstractService{
 	
 	@Autowired
     AuditService auditService;
+	@Autowired
+	JaxNotificationDataManager jaxNotificationDataManager;
 	
 	@Autowired
 	private MetaData meta;
@@ -338,8 +341,9 @@ public class RemittancePaymentManager extends AbstractService{
 							BeanUtils.copyProperties(personinfo, customer);
 						} catch (Exception e) {
 						}
-						if(personInfo!=null && !StringUtils.isBlank(personInfo.getEmail())) {
-							notificationService.sendTransactionNotification(rrsrl.get(0), personinfo);
+						if (personInfo != null && !StringUtils.isBlank(personInfo.getEmail())) {
+							notificationService.sendTransactionNotification(rrsrl.get(0), personinfo,
+									jaxNotificationDataManager.getTransactionSuccessEmailData());
 						}
 					} catch (Exception e) {
 						logger.error("error while sending transaction notification", e);

@@ -55,7 +55,7 @@ public class KWTCardReaderListner implements PaciEventHandler {
 				KWTCardReaderService.CONTEXT.status(CardStatus.READING);
 				LOGGER.debug("KWTCardReaderServiceListner:CardConnectionEvent");
 				CardData data = new CardData();
-				Pattern passportPattern = Pattern.compile("^[A-Z][0-9]{8}$");
+				Pattern passportPattern = Pattern.compile("^[A-Z][0-9]{5,9}$");
 				String englishName4 = KWTCardReaderService.API.getEnglishName_4(readerIndex, false);
 				Matcher checkPassport = passportPattern.matcher(englishName4);
 				if(checkPassport.find()){

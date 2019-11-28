@@ -458,4 +458,22 @@ public class CustomerContactVerificationManager {
 		return EntityDtoUtil.entityToDto(entity, dto);
 	}
 
+	public CustomerContactVerification checkAndCreateVerification(Customer customer, ContactType contactType) {
+		CustomerContactVerification verification = null;
+		switch (contactType) {
+		case EMAIL:
+			if (!Status.Y.equals(customer.getEmailVerified())) {
+				verification = create(customer, contactType);
+			}
+			break;
+		case SMS:
+			if (!Status.Y.equals(customer.getMobileVerified())) {
+				verification = create(customer, contactType);
+			}
+			break;
+		default:
+			break;
+		}
+		return verification;
+	}
 }

@@ -19,6 +19,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.SqlOutParameter;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.util.CollectionUtils;
 
 import com.amx.amxlib.exception.jax.GlobalException;
@@ -345,5 +346,15 @@ public class CustomerDao {
 	public List<Customer> findDuplicateCustomerRecords(BigDecimal nationality, String mobile, String email,
 			String firstName) {
 		return repo.getCustomerForDuplicateCheck(nationality, mobile, email, firstName);
+	}
+	
+	/**
+	 *  It will hit db everytime this method is called
+	 * @param customerId
+	 * @return
+	 */
+	@org.springframework.transaction.annotation.Transactional(propagation = Propagation.REQUIRES_NEW)
+	public Customer fetchCustomerFromDB(BigDecimal customerId) {
+		return repo.findOne(customerId);
 	}
 }

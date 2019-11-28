@@ -17,11 +17,13 @@ import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.request.customer.ICustomerContactData;
 import com.amx.jax.services.JaxDBService;
 import com.amx.jax.userservice.dao.CusmosDao;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.repository.CustomerIdProofRepository;
 import com.amx.jax.userservice.service.UserService;
+import com.amx.jax.util.AmxDBConstants.Status;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -71,6 +73,22 @@ public class OffsiteCustomerRegManager {
 			}
 		}
 		return customer;
+	}
+
+	public void setNotificationVerificationFlags(Customer customerUpdated, ICustomerContactData customerContactData) {
+		Customer customerExisting = customerDao.fetchCustomerFromDB(customerUpdated.getCustomerId());
+		if (customerContactData != null) {
+			if (customerContactData.getEmail() != null && !customerContactData.getEmail().equals(customerExisting.getEmail())) {
+				customerUpdated.setEmailVerified(Status.N);
+			}
+			if (customerContactData.getMobile() != null && !customerContactData.getMobile().equals(customerExisting.getMobile())) {
+				customerUpdated.setMobileVerified(Status.N);
+			}
+			if (customerContactData.getWatsAppMobileNo() != null
+					&& !customerContactData.getWatsAppMobileNo().toString().equals(customerExisting.getWhatsapp())) {
+				customerUpdated.setWhatsAppVerified(Status.N);
+			}
+		}
 	}
 
 }
