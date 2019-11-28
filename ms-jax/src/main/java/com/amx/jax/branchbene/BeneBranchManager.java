@@ -148,11 +148,9 @@ public class BeneBranchManager {
 			beneRelationship.setThirdName(benePersonalDetail.getThirdName());
 			isModified = true;
 		}
-		if (isModified) {
-			beneRelationship.setModifiedBy(jaxDBService.getCreatedOrUpdatedBy());
-			beneRelationship.setModifiedDate(new Date());
-			iBeneficiaryRelationshipDao.save(beneRelationship);
-		}
+		beneRelationship.setModifiedBy(jaxDBService.getCreatedOrUpdatedBy());
+		beneRelationship.setModifiedDate(new Date());
+		iBeneficiaryRelationshipDao.save(beneRelationship);
 	}
 
 	public void updateBeneContact(BeneficaryRelationship beneRelationship, BenePersonalDetailModel beneDetails) {
