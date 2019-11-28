@@ -127,6 +127,7 @@ public class RemittanceReportBean {
 	private BigDecimal discountOnCommission;
 	private String discountOnCommissionStr;
 	
+	
 
 	public String getTotalAmountSavedStr() {
 		return totalAmountSavedStr;
