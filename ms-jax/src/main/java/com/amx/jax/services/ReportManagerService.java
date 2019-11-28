@@ -383,10 +383,9 @@ public class ReportManagerService extends AbstractService{
 				
 				if(JaxUtil.isNullZeroBigDecimalCheck(view.getCorporateDisOnCommi()))
 				{
-					
 					BigDecimal disOnComm=RoundUtil.roundBigDecimal((view.getCorporateDisOnCommi()),decimalPerCurrency);
 					obj.setDiscountOnCommission(disOnComm);
-					obj.setDiscountOnCommissionStr(currencyQuoteName+"     "+disOnComm.toString());
+					obj.setDiscountOnCommissionStr(view.getCorporateDiscountMsgReceipt()==null?"":view.getCorporateDiscountMsgReceipt()+" " +currencyQuoteName+" "+disOnComm.toString()+" applied");
 					
 				}
 				

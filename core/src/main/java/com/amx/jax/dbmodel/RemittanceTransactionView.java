@@ -341,6 +341,9 @@ public class RemittanceTransactionView implements Serializable{
 	@Column(name="DISCOUNT_ON_COMM")
 	private BigDecimal corporateDisOnCommi;
 	
+	@Column(name = "CORP_DISCOUNT_RECEIPT_MSG")
+	private String corporateDiscountMsgReceipt;
+	
 	
 	public BigDecimal getTotalAmountSaved() {
 		return totalAmountSaved;
@@ -1176,6 +1179,14 @@ public class RemittanceTransactionView implements Serializable{
 
 	public void setCorporateDisOnCommi(BigDecimal corporateDisOnCommi) {
 		this.corporateDisOnCommi = corporateDisOnCommi;
+	}
+
+	public String getCorporateDiscountMsgReceipt() {
+		return corporateDiscountMsgReceipt;
+	}
+
+	public void setCorporateDiscountMsgReceipt(String corporateDiscountMsgReceipt) {
+		this.corporateDiscountMsgReceipt = corporateDiscountMsgReceipt;
 	}
 
 }
