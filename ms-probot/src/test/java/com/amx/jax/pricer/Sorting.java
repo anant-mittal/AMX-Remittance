@@ -38,12 +38,11 @@ public class Sorting {
 	}
 
 	public static void merge(int[] vector, int from, int mid, int to) {
-		
-		if(from >= mid || mid >= to)
+		if (from >= to)
 			return;
-		
-		int[] left = Arrays.copyOfRange(vector, from, mid+1);
-		int[] right = Arrays.copyOfRange(vector, mid + 1, to+1);
+
+		int[] left = Arrays.copyOfRange(vector, from, mid + 1);
+		int[] right = Arrays.copyOfRange(vector, mid + 1, to + 1);
 
 		int l = 0;
 		int r = 0;
@@ -78,7 +77,7 @@ public class Sorting {
 			return;
 		}
 
-		int mid = (to - from) / 2;
+		int mid = (to + from) / 2;
 
 		mergeSort(vector, from, mid);
 		mergeSort(vector, mid + 1, to);
@@ -102,21 +101,21 @@ public class Sorting {
 			intList.add(random.nextInt(max - min) + min);
 		}
 
-		// int[] vector = intList.stream().mapToInt(i -> i.intValue()).toArray();
+		int[] vector = intList.stream().mapToInt(i -> i.intValue()).toArray();
 
 		// int[] vector = { 5, 2, 4, 6, 1, 3, 8, 0, 4, 5, -1, -10, 20, 100, 50, -20 };
-		int[] vector = { 100, 80, 50, 20, 10, 8, 0, -10, -20, -25, -30, -50, -100 };
+		// int[] vector = { 100, 80, 50, 20, 10, 8, 0, -10, -20, -25, -30, -50, -100 };
 
 		// int[] vector = null;
 		// int[] vector = {};
 
-		System.out.println(Arrays.toString(vector));
+		System.out.println("Unsorted ==>" + Arrays.toString(vector));
 
-		//bubbleSort(vector);
+		// bubbleSort(vector);
 
 		mergeSort(vector, 0, vector.length - 1);
 
-		System.out.println(Arrays.toString(vector));
+		System.out.println("Sorted ==>" + Arrays.toString(vector));
 
 		// System.out.println(Arrays.toString(bubbleSort(vector)));
 
