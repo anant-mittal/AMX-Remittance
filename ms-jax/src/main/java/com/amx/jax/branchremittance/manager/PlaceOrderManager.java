@@ -508,6 +508,7 @@ public List<PlaceOrderApplDto>  convertGsmDto(List<RatePlaceOrder> placeOrderLsi
 		String requestJson = placeOrder.getRequestModel();
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		BranchRemittanceApplRequestModel requestModelObject = mapper.readValue(requestJson, BranchRemittanceApplRequestModel.class);
+		TrnxRoutingDetails routPath = requestModelObject.getDynamicRroutingPricingBreakup().getTrnxRoutingPaths();
 		
 		applDto.setCustomerId(placeOrder.getCustomerId());
 		applDto.setPlaceOrderId(placeOrder.getRatePlaceOrderId());
@@ -532,6 +533,7 @@ public List<PlaceOrderApplDto>  convertGsmDto(List<RatePlaceOrder> placeOrderLsi
 		applDto.setCustomerEmailId(placeOrder.getCustomerEmail());
 		applDto.setSpecialOrCommonPoolIndicator(placeOrder.getCustomerIndicator());
 		applDto.setApprovedBy(placeOrder.getApprovedBy());
+		
 		
 		
 		exRateBreakUp = getExchangeRateBreakUPForPlaceOrder(placeOrder);
@@ -559,7 +561,7 @@ public List<PlaceOrderApplDto>  convertGsmDto(List<RatePlaceOrder> placeOrderLsi
 		if(requestModelObject!=null) {
 			applDto.setRoutingCountry(requestModelObject.getRoutingCountryId());
 			applDto.setRoutingBankId(requestModelObject.getDynamicRroutingPricingBreakup().getTrnxRoutingPaths().getRoutingBankId());
-			applDto.setRoutingBankName(requestModelObject.getDynamicRroutingPricingBreakup().getTrnxRoutingPaths().getRoutingBankCode());
+			applDto.setRoutingBankName(routPath==null?"":routPath.getRoutingBankCode() +"-"+routPath.getRemittanceDescription());
 		}
 		
 		if(placeOrder.getIsActive()!=null && placeOrder.getIsActive().equalsIgnoreCase(ConstantDocument.Status.U.toString())) {
