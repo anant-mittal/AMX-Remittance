@@ -536,8 +536,8 @@ public class UserAuthService {
 		}
 
 		DeviceType deviceType = userClientDto.getDeviceType();
-		userClientDto.setTerminalId(new BigDecimal("686"));
 		// Check for Employee System Assignment
+		// PLEASE DON'T HARDCODE TERMINAL ID HERE.
 		if (DeviceType.COMPUTER.isParentOf(deviceType)) {
 
 			if (null == userClientDto.getTerminalId()) {
