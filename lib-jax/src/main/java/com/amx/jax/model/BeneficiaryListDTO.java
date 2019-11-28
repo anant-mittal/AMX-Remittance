@@ -100,6 +100,7 @@ public class BeneficiaryListDTO extends ResourceDTO {
 	
 
 	private String bankLocalName;
+	private String ibanNumber;
 
 	public BigDecimal getIdNo() {
 		return idNo;
@@ -600,6 +601,12 @@ public class BeneficiaryListDTO extends ResourceDTO {
 	}
 	public void setCountryTelCode(String countryTelCode) {
 		this.countryTelCode = countryTelCode;
+	}
+	public String getIbanNumber() {
+		return ibanNumber;
+	}
+	public void setIbanNumber(String ibanNumber) {
+		this.ibanNumber = ibanNumber;
 	}
 
 }

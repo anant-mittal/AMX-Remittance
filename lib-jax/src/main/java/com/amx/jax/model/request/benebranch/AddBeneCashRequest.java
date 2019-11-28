@@ -14,7 +14,7 @@ public class AddBeneCashRequest extends AbstractBeneDetailDto {
 
 	@NotNull(message = "Beneficary Country Id may not be null")
 	@ApiMockModelProperty(example = "94")
-	private BigDecimal beneficaryCountryId;
+	private BigDecimal benificaryCountry;
 
 	@NotNull(message = "Currency Id may not be null")
 	@ApiMockModelProperty(example = "4")
@@ -22,23 +22,15 @@ public class AddBeneCashRequest extends AbstractBeneDetailDto {
 
 	@NotNull(message = "serviceProviderId may not be null")
 	@ApiMockModelProperty(example = "2520")
-	private BigDecimal serviceProviderId; // service provider
+	private BigDecimal serviceProvider; // service provider
 
 	@NotNull(message = "Agent Id may not be null")
 	@ApiMockModelProperty(example = "2520")
-	private BigDecimal agentId; // agent master
+	private BigDecimal bankId; // agent master
 
 	@NotNull(message = "serviceProviderBranchId may not be null")
 	@ApiMockModelProperty(example = "305789")
-	private BigDecimal serviceProviderBranchId; // agent branch
-
-	public BigDecimal getBeneficaryCountryId() {
-		return beneficaryCountryId;
-	}
-
-	public void setBeneficaryCountryId(BigDecimal beneficaryCountryId) {
-		this.beneficaryCountryId = beneficaryCountryId;
-	}
+	private BigDecimal branchId; // agent branch
 
 	public BigDecimal getCurrencyId() {
 		return currencyId;
@@ -48,39 +40,52 @@ public class AddBeneCashRequest extends AbstractBeneDetailDto {
 		this.currencyId = currencyId;
 	}
 
-	public BigDecimal getServiceProviderId() {
-		return serviceProviderId;
-	}
-
-	public void setServiceProviderId(BigDecimal serviceProviderId) {
-		this.serviceProviderId = serviceProviderId;
-	}
-
-	public BigDecimal getAgentId() {
-		return agentId;
-	}
-
-	public void setAgentId(BigDecimal agentId) {
-		this.agentId = agentId;
-	}
-
-	public BigDecimal getServiceProviderBranchId() {
-		return serviceProviderBranchId;
-	}
-
-	public void setServiceProviderBranchId(BigDecimal serviceProviderBranchId) {
-		this.serviceProviderBranchId = serviceProviderBranchId;
-	}
-
 	@Override
 	protected BeneAccountModel createBeneAccountModelObject() {
 		BeneAccountModel model = new BeneAccountModel();
 		try {
 			BeanUtils.copyProperties(model, this);
-			model.setBankId(this.getAgentId());
+			model.setBankBranchId(this.getBranchId());
+			model.setBeneficaryCountryId(this.getBenificaryCountry());
+			model.setSwiftCode(this.getSwiftBic());
+			model.setServiceProviderId(this.getServiceProvider());
+			model.setServiceProviderBranchId(this.getBranchId());
+
 		} catch (IllegalAccessException | InvocationTargetException e) {
 			e.printStackTrace();
 		}
 		return model;
+	}
+
+	public BigDecimal getBenificaryCountry() {
+		return benificaryCountry;
+	}
+
+	public void setBenificaryCountry(BigDecimal benificaryCountry) {
+		this.benificaryCountry = benificaryCountry;
+	}
+
+	public BigDecimal getServiceProvider() {
+		return serviceProvider;
+	}
+
+	public void setServiceProvider(BigDecimal serviceProvider) {
+		this.serviceProvider = serviceProvider;
+	}
+
+	public BigDecimal getBankId() {
+		return bankId;
+	}
+
+	public void setBankId(BigDecimal bankId) {
+		this.bankId = bankId;
+	}
+
+	public BigDecimal getBranchId() {
+		return branchId;
+	}
+
+	public void setBranchId(BigDecimal branchId) {
+		this.branchId = branchId;
 	}
 }

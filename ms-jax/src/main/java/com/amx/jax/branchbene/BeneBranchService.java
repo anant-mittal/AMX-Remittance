@@ -135,7 +135,7 @@ public class BeneBranchService {
 	private void setAdditionalBranchFields(BigDecimal beneficaryRelationSeqId, AbstractBeneDetailDto request) {
 		BenificiaryListView beneRelationship = beneService.getBeneByIdNo(beneficaryRelationSeqId);
 		BeneficaryMaster beneficaryMaster = beneService.getBeneficiaryMasterBybeneficaryMasterSeqId(beneRelationship.getBeneficaryMasterSeqId());
-		BeneficaryStatus beneStatus = beneficaryStatusRepository.findOne(request.getBeneficaryTypeId());
+		BeneficaryStatus beneStatus = beneficaryStatusRepository.findOne(request.getBenificaryStatusId());
 		beneficaryMaster.setBeneficaryStatus(beneStatus.getBeneficaryStatusId());
 		beneficaryMaster.setBeneficaryStatusName(beneStatus.getBeneficaryStatusName());
 
@@ -160,7 +160,7 @@ public class BeneBranchService {
 		Customer customer = userService.getCustById(metaData.getCustomerId());
 		String firstname = customer.getFirstName();
 		String lastename = customer.getLastName();
-		model.setCustomerName(firstname +" "+ lastename);
+		model.setCustomerName(firstname + " " + lastename);
 		model.setDistrict(metaService.getDistrictMasterById(request.getDistrictId()).getDistrictDesc());
 		model.setIdentityId(customer.getIdentityInt());
 		model.setIfscCode(request.getIfscCode());

@@ -293,18 +293,20 @@ public class BeneficiaryValidationService {
 		BeneficaryMaster beneMaster = getBeneficaryMaster(benePersonalDetailModel);
 		BigDecimal beneMasterSeqId = (beneMaster != null ? beneMaster.getBeneficaryMasterSeqId() : null);
 		BeneAccountModel beneAccountModel = trnxModel.getBeneAccountModel();
-		BeneficaryAccount beneAccountMaster = getBeneficaryAccountForCash(beneAccountModel, beneMasterSeqId);
+		if (beneMasterSeqId != null) {
+			BeneficaryAccount beneAccountMaster = getBeneficaryAccountForCash(beneAccountModel, beneMasterSeqId);
 
-		if (beneMaster != null) {
-			logger.info("validateDuplicateCashBeneficiary benemaster found: {}", beneMaster.getBeneficaryMasterSeqId());
-			trnxModel.setBeneficaryMasterSeqId(beneMaster.getBeneficaryMasterSeqId());
-		}
+			if (beneMaster != null) {
+				logger.info("validateDuplicateCashBeneficiary benemaster found: {}", beneMaster.getBeneficaryMasterSeqId());
+				trnxModel.setBeneficaryMasterSeqId(beneMaster.getBeneficaryMasterSeqId());
+			}
 
-		if (beneAccountMaster != null && beneMaster != null) {
-			List<BeneficaryRelationship> beneRelationShip = beneficiaryService.getBeneRelationShip(
-					beneMaster.getBeneficaryMasterSeqId(), beneAccountMaster.getBeneficaryAccountSeqId());
-			if (beneRelationShip != null && !beneRelationShip.isEmpty()) {
-				throw new GlobalException(JaxError.DUPLICATE_BENE_CASH_ACCOUNT, "Duplicate Beneficiary  Cash Account");
+			if (beneAccountMaster != null && beneMaster != null) {
+				List<BeneficaryRelationship> beneRelationShip = beneficiaryService.getBeneRelationShip(beneMaster.getBeneficaryMasterSeqId(),
+						beneAccountMaster.getBeneficaryAccountSeqId());
+				if (beneRelationShip != null && !beneRelationShip.isEmpty()) {
+					throw new GlobalException(JaxError.DUPLICATE_BENE_CASH_ACCOUNT, "Duplicate Beneficiary  Cash Account");
+				}
 			}
 		}
 	}
