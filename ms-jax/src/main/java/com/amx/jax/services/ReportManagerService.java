@@ -386,7 +386,7 @@ public class ReportManagerService extends AbstractService{
 					
 					BigDecimal disOnComm=RoundUtil.roundBigDecimal((view.getCorporateDisOnCommi()),decimalPerCurrency);
 					obj.setDiscountOnCommission(disOnComm);
-					obj.setDiscountOnCommissionStr(currencyQuoteName+"     "+disOnComm.toString());
+					obj.setDiscountOnCommissionStr("Employee discount of "+currencyQuoteName+" "+disOnComm.toString());
 					
 				}
 				
