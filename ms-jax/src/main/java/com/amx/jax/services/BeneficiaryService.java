@@ -267,7 +267,11 @@ public class BeneficiaryService extends AbstractService {
 		} else {
 			beneList = beneficiaryOnlineDao.getBeneListFromView(customerId, applicationCountryId);
 		}
-
+		Collections.sort(beneList, (o1, o2) -> {
+			Date date1 = (o1.getModifiedDate() != null ? o1.getModifiedDate() : o1.getCreatedDate());
+			Date date2 = (o2.getModifiedDate() != null ? o2.getModifiedDate() : o2.getCreatedDate());
+			return date1.compareTo(date2);
+		});
 		ApiResponse response = getBlackApiResponse();
 		if (beneList.isEmpty()) {
 			throw new GlobalException(JaxError.BENEFICIARY_LIST_NOT_FOUND, "Beneficiary list is not found");
