@@ -168,13 +168,13 @@ public class SnapQueryController {
 		return "table";
 	}
 
-	@RequestMapping(value = "/snap/page/{snapView}", method = RequestMethod.GET)
+	@RequestMapping(value = "/snap/page/{page}/{snapView}", method = RequestMethod.GET)
 	public String grid(@PathVariable(value = "snapView") SnapQueryTemplate snapView,
 			@RequestParam(defaultValue = "now-1m") String gte, @RequestParam(defaultValue = "now") String lte,
 			@RequestParam(defaultValue = "100", required = false) int level,
 			@RequestParam(defaultValue = "0", required = false) int minCount,
 			@RequestParam(defaultValue = "", required = false) String hash,
-			@RequestParam(defaultValue = "stories-status", required = false) String page,
+			@PathVariable(value = "page", required = false) String page,
 			Model model) throws IOException {
 		model.addAttribute("gte", gte);
 		model.addAttribute("lte", lte);
