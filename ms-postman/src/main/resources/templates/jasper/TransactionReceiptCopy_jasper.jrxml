@@ -1095,7 +1095,7 @@
                             </textField>
 
                         </frame>
-                     <!--##################Amount Saved Details END####################-->
+                   <!--##################Amount Saved Details END####################-->
                         <frame>
                             <reportElement x="5" y="200" width="585" height="60"/>
                             <staticText>
@@ -1105,7 +1105,7 @@
                             </staticText>
                             
                             <ellipse>
-                                <reportElement  x="335" y="0" width="170" height="80" forecolor="#333333" backcolor="#333333">
+                                <reportElement  x="332" y="0" width="170" height="80" forecolor="#333333" backcolor="#333333">
                                         <printWhenExpression><![CDATA[$F{tranx}.get("amountSaved") != "" || $F{tranx}.get("totalAmountSavedStr") != ""]]></printWhenExpression>
                                 </reportElement>
                                 <graphicElement>
@@ -1113,7 +1113,7 @@
                                 </graphicElement>
                             </ellipse>
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="330" y="16" width="170" height="30"
+                                <reportElement x="328" y="16" width="170" height="30"
                                                 forecolor="#ffffff"
                                                 isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Center">
@@ -1127,7 +1127,7 @@
                                 </textFieldExpression>
                             </textField>
                                <textField isStretchWithOverflow="true">
-                                <reportElement x="330" y="28" width="170" height="30"
+                                <reportElement x="325" y="28" width="170" height="30"
                                                 forecolor="#ffffff"
                                                 isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Center">
@@ -1137,13 +1137,13 @@
 
                                 </textElement>  
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$F{tranx}.getValue("discountOnCommissionStr","Employee Disc ") + $F{tranx}.get("discountOnCommissionStr")]]>
+                                    <![CDATA[$F{tranx}.get("discountOnCommissionStr")]]>
                                 </textFieldExpression>
                             </textField>
 
 
                             <textField isStretchWithOverflow="true">
-                                <reportElement x="330" y="40" width="170" height="30"
+                                <reportElement x="328" y="40" width="170" height="30"
                                                 forecolor="#ffffff"
                                                 isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Center">
@@ -1160,7 +1160,8 @@
                         </frame>
                         
                         
-                            <!--##################Payment Mode START####################-->
+              
+                          <!--##################Payment Mode START####################-->
                         <componentElement>
                             <reportElement x="0" y="479" width="595" height="48"/>
                             <d:list xmlns:d="http://jasperreports.sourceforge.net/jasperreports/components"
