@@ -207,9 +207,9 @@
         {
           "range": {
             "delta_ts": {
-              "format": "strict_date_optional_time",
-              "gte": "2019-08-29T05:18:30.192Z",
-              "lte": "2019-11-27T05:18:30.192Z"
+              "gte": "now-90d",
+              "lte": "now",
+              "format": "epoch_millis"
             }
           }
         }
