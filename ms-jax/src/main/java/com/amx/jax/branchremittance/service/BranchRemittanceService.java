@@ -43,6 +43,7 @@ import com.amx.jax.model.response.remittance.PaymentModeDto;
 import com.amx.jax.model.response.remittance.RemittanceDeclarationReportDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
+import com.amx.jax.serviceprovider.service.AbstractFlexFieldManager.ValidationResultKey;
 import com.amx.jax.services.AbstractService;
 import com.amx.jax.validation.FxOrderValidation;
 import com.amx.utils.JsonUtil;
@@ -247,7 +248,7 @@ public class BranchRemittanceService extends AbstractService{
 	public AmxApiResponse<BenePackageResponse, Object> getBenePackages(BenePackageRequest benePackageRequest) {
 		Map<String, Object> validationResults = preFlexFieldManager.validateBenePackageRequest(benePackageRequest);
 		BenePackageResponse resp = preFlexFieldManager.createBenePackageResponse(validationResults);
-		String packageAmiecCode = (String) validationResults.get("packageSelectedAmiecCode");
+		String packageAmiecCode = (String) validationResults.get(ValidationResultKey.PACKAGE_SELECTED_AMIECCODE.getName());
 		packageDescriptionManager.fetchGiftPackageDesc(benePackageRequest, resp, packageAmiecCode);
 		return AmxApiResponse.build(resp);
 	}

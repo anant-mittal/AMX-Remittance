@@ -156,6 +156,7 @@ public class VentajaFlexFieldManager extends AbstractFlexFieldManager {
 		BigDecimal volunteerContribution = null;
 		String packageSelectedAmiecCode = null;
 		int noOfMonth = 0;
+		boolean dateRangePresent = false;
 		List<JaxConditionalFieldDto> requiredFlexFields = (List<JaxConditionalFieldDto>) validationResults.get("requiredFlexFields");
 		if (requestFlexFields != null) {
 			for (Entry<String, FlexFieldDto> element : requestFlexFields.entrySet()) {
@@ -169,6 +170,9 @@ public class VentajaFlexFieldManager extends AbstractFlexFieldManager {
 				}
 				if ("INDIC18".equals(k)) {
 					noOfMonth = Integer.parseInt(v.getAmieceCode().replaceAll(">", ""));
+				}
+				if ("INDIC12".equals(k) && v != null) {
+					dateRangePresent = true;
 				}
 				// bpi
 				if (GIFT_PACKAGE_INDICATORS.contains(k)) {
@@ -187,8 +191,22 @@ public class VentajaFlexFieldManager extends AbstractFlexFieldManager {
 			packageFcAmount = monthlyContribution.add(volunteerContribution).multiply(BigDecimal.valueOf(noOfMonth));
 		}
 		addDateRangeParameters(noOfMonth, requiredFlexFields);
-		validationResults.put("PACKAGE_FC_AMOUNT", packageFcAmount);
-		validationResults.put("packageSelectedAmiecCode", packageSelectedAmiecCode);
+		if (noOfMonth == 0) {
+			// remove Date range flex field if no of months are not selected
+			requiredFlexFields.removeIf(i -> {
+				if ("INDIC12".equalsIgnoreCase(i.getField().getName())) {
+					return true;
+				}
+				return false;
+			});
+		}
+		if (packageFcAmount != null && dateRangePresent) {
+			validationResults.put(ValidationResultKey.PREFLEXCALL_COMPLETE.getName(), Boolean.TRUE);
+		} else {
+			validationResults.put(ValidationResultKey.PREFLEXCALL_COMPLETE.getName(), Boolean.FALSE);
+		}
+		validationResults.put(ValidationResultKey.PACKAGE_FC_AMOUNT.getName(), packageFcAmount);
+		validationResults.put(ValidationResultKey.PACKAGE_SELECTED_AMIECCODE.getName(), packageSelectedAmiecCode);
 	}
 
 	private void addDateRangeParameters(int noOfMonth, List<JaxConditionalFieldDto> requiredFlexFields) {

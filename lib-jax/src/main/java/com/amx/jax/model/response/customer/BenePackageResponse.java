@@ -10,6 +10,8 @@ public class BenePackageResponse {
 	BigDecimal fcAmount;
 	List<JaxConditionalFieldDto> requiredFlexFields;
 	String packageDescription;
+	Boolean preFlexCallComplete;
+	
 	public String getPackageDescription() {
 		return packageDescription;
 	}
@@ -31,5 +33,13 @@ public class BenePackageResponse {
 
 	public void setFcAmount(BigDecimal fcAmount) {
 		this.fcAmount = fcAmount;
+	}
+
+	public Boolean getPreFlexCallComplete() {
+		return preFlexCallComplete;
+	}
+
+	public void setPreFlexCallComplete(Boolean preFlexCallComplete) {
+		this.preFlexCallComplete = preFlexCallComplete;
 	}
 }

@@ -13,6 +13,13 @@ public abstract class AbstractFlexFieldManager {
 
 	public static final String FLEX_FIELD_MANAGER_BEAN_SUFFIX = "_FLEX_FIELD";
 
+	public enum ValidationResultKey {
+		PREFLEXCALL_COMPLETE, PACKAGE_FC_AMOUNT, PACKAGE_SELECTED_AMIECCODE;
+		public String getName() {
+			return this.name();
+		}
+	}
+
 	public Map<String, Object> managePreFlexFields(List<AdditionalDataDisplayView> additionalDataRequired,
 			Map<String, FlexFieldDto> requestFlexFields, ViewParameterDetails cashSetUp, BenificiaryListView beneficaryDetails,
 			List<JaxConditionalFieldDto> requiredFlexFields) {

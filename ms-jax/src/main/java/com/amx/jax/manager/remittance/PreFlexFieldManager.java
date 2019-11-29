@@ -1,5 +1,8 @@
 package com.amx.jax.manager.remittance;
 
+import static com.amx.jax.serviceprovider.service.AbstractFlexFieldManager.ValidationResultKey.PACKAGE_FC_AMOUNT;
+import static com.amx.jax.serviceprovider.service.AbstractFlexFieldManager.ValidationResultKey.PREFLEXCALL_COMPLETE;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -122,6 +125,7 @@ public class PreFlexFieldManager {
 		}
 
 		validationResults.put("requiredFlexFields", requiredFlexFields);
+		validationResults.put(PREFLEXCALL_COMPLETE.getName(), getPreFlexCallComplete(requestFlexFields, requiredFlexFields));
 		try {
 			AbstractFlexFieldManager flexFieldManager = (AbstractFlexFieldManager) appContext
 					.getBean(routingBank.getBankCode() + AbstractFlexFieldManager.FLEX_FIELD_MANAGER_BEAN_SUFFIX);
@@ -130,6 +134,20 @@ public class PreFlexFieldManager {
 
 		}
 		return validationResults;
+	}
+
+	private Boolean getPreFlexCallComplete(Map<String, FlexFieldDto> requestFlexFields, List<JaxConditionalFieldDto> requiredFlexFields) {
+		Boolean preFlexCallComplete = true;
+
+		for (JaxConditionalFieldDto dto : requiredFlexFields) {
+			String fieldName = dto.getField().getName();
+			FlexFieldDto valueInRequest = requestFlexFields.get(fieldName);
+			if (valueInRequest == null) {
+				preFlexCallComplete = false;
+			}
+		}
+
+		return preFlexCallComplete;
 	}
 
 	private JaxConditionalFieldDto fetchFlexFieldsForParameterSetup(ParameterDetailsDto parameterDetailsDto) {
@@ -192,10 +210,12 @@ public class PreFlexFieldManager {
 		BenePackageResponse resp = new BenePackageResponse();
 		List<JaxConditionalFieldDto> requiredFlexFields = (List<JaxConditionalFieldDto>) validationResults.get("requiredFlexFields");
 		resp.setRequiredFlexFields(requiredFlexFields);
-		if (validationResults.get("PACKAGE_FC_AMOUNT") != null) {
-			resp.setFcAmount(new BigDecimal(validationResults.get("PACKAGE_FC_AMOUNT").toString()));
+		if (validationResults.get(PACKAGE_FC_AMOUNT.getName()) != null) {
+			resp.setFcAmount(new BigDecimal(validationResults.get(PACKAGE_FC_AMOUNT.getName()).toString()));
 		}
-
+		if (validationResults.get(PREFLEXCALL_COMPLETE.getName()) != null) {
+			resp.setPreFlexCallComplete((Boolean) validationResults.get(PREFLEXCALL_COMPLETE.getName()));
+		}
 		return resp;
 	}
 

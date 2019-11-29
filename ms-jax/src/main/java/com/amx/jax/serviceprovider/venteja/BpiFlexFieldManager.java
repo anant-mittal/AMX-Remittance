@@ -1,5 +1,6 @@
 package com.amx.jax.serviceprovider.venteja;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +33,10 @@ public class BpiFlexFieldManager extends AbstractFlexFieldManager {
 	public void validatePreFlexField(Map<String, FlexFieldDto> requestFlexFields, Map<String, Object> preFlexValidationVariables,
 			Map<String, Object> validationResults) {
 		ventajaFlexFieldManager.validatePreFlexField(requestFlexFields, preFlexValidationVariables, validationResults);
+		BigDecimal packageFcAmount = (BigDecimal) validationResults.get(ValidationResultKey.PACKAGE_FC_AMOUNT.getName());
+		if (packageFcAmount != null) {
+			validationResults.put(ValidationResultKey.PREFLEXCALL_COMPLETE.getName(), Boolean.TRUE);
+		}
 	}
 
 }
