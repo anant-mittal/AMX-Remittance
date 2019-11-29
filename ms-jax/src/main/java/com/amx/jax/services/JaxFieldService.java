@@ -116,6 +116,7 @@ public class JaxFieldService extends AbstractService {
 			});
 		}
 		dto.setValidationRegex(validationdtos);
+		dto.setDtoPath(field.getDefaultDtoPath());
 		return dto;
 	}
 
