@@ -167,13 +167,14 @@ public class SnapQueryController {
 		model.addAttribute("snapViews", SnapQueryTemplate.values());
 		return "table";
 	}
-	
-	@RequestMapping(value = "/snap/grid/{snapView}", method = RequestMethod.GET)
+
+	@RequestMapping(value = "/snap/page/{snapView}", method = RequestMethod.GET)
 	public String grid(@PathVariable(value = "snapView") SnapQueryTemplate snapView,
 			@RequestParam(defaultValue = "now-1m") String gte, @RequestParam(defaultValue = "now") String lte,
 			@RequestParam(defaultValue = "100", required = false) int level,
 			@RequestParam(defaultValue = "0", required = false) int minCount,
 			@RequestParam(defaultValue = "", required = false) String hash,
+			@RequestParam(defaultValue = "stories-status", required = false) String page,
 			Model model) throws IOException {
 		model.addAttribute("gte", gte);
 		model.addAttribute("lte", lte);
@@ -182,7 +183,7 @@ public class SnapQueryController {
 		model.addAttribute("hash", ArgUtil.isEmpty(hash) ? snapView.getQueryParams() : hash);
 		model.addAttribute("snapView", snapView.toString());
 		model.addAttribute("snapViews", SnapQueryTemplate.values());
-		return "grid";
+		return "page-" + page;
 	}
 
 }

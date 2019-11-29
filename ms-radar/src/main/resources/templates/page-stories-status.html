@@ -399,7 +399,7 @@ function dropdown(classname) {
 	    return 0;
 	};
 
-
+  var flexPivot;
   function executeQuery(url,map){
 	  $("#loader").removeClass("hide");
 	   $.ajax({
@@ -471,25 +471,28 @@ function dropdown(classname) {
 				console.log(columns,bulk);
 				
 				
-				new Flexmonster({
+				flexPivot = new Flexmonster({
 					  container: "#pivot-container",
 					  componentFolder: "https://cdn.flexmonster.com/",
 					  width: "100%",
 					  height: 430,
 					  toolbar: true,
+					  reportcomplete: setWidth,
 					  report: {
 					    dataSource: {
 					    	data: bulk
 					    },
 					    slice: {
 					      columns: [{
-					        uniqueName: "[team]"
-					      }, {
+						    uniqueName: "[Measures]"
+						  },{
+						      uniqueName: "[team]"
+						  },{
 					        uniqueName: "[dev]"
 					      }],
 					      rows: [{
 					        uniqueName: "[story]",
-					        levelName: "[story].[week].[sprint]",
+					        //levelName: "[story].[week].[sprint]",
 					        //caption : "hurray",
 /* 					        filter: {
 					          members: [
@@ -505,12 +508,32 @@ function dropdown(classname) {
 					      },{
 					        uniqueName: "[week]"
 					      },{
-					        uniqueName: "[sprint]"
+					        //uniqueName: "[sprint]"
 					      },{
-					        uniqueName: "[milestone]"
+					       // uniqueName: "[milestone]"
 					      }],
+						"reportFilters": [
+						    {
+						        "uniqueName": "story"
+						    },
+						    {
+						        "uniqueName": "sprint"
+						    },
+						    {
+						        "uniqueName": "week"
+						    },
+						    {
+						        "uniqueName": "milestone"
+						    },
+						    {
+						        "uniqueName": "team"
+						    },
+						    {
+						        "uniqueName": "dev"
+						    }
+						],
 					      measures: [{
-					        "uniqueName": "remTime",
+					        "uniqueName": "[Measures].[remTime]",
 					        "aggregation": "sum",
 					        "active": true,
 					        //"format": "2sfou03a"
@@ -525,7 +548,7 @@ function dropdown(classname) {
 					    },
 					    "options": {
 					        "grid": {
-					        //    "type": "flat"
+					           // "type": "classic"
 					        }
 					    },
 					    conditions: [{
@@ -575,56 +598,40 @@ function dropdown(classname) {
 					    tableSizes: {
 					        columns: [{
 				                "tuple": [],
-				                "measure": "[team].[dev].[remTime]",
-				                "width": 10
+				                "measure": {
+				                	uniqueName  : "[Measures].[remTime]"
+				                },
+				                "width": 200
 					           }
 					        ]
 					    }
 					  }
 					});
-				
-				
-				/**
-				$('#tablediv').DataTable({
-					dom: 'Bfrtip',
-					columns : columns, data: bulk,
-			        buttons: [
-			        	'copy', 'csv', 'excel', 'pdf', 'print'
-			        ].concat(Object.keys(colGrup || []).filter(function(item){
-		    			return Array.isArray(colGrup[item]);
-		    		}).map(function(index,b){
-		    			return {
-		    				extend: 'colvisGroup',
-		    				text: index,
-		    				show : colGrup[index].map(function(item,index){
-		    					return colMap[item];
-			    			}),
-			    			hide : columns.filter(function(item){
-			    				return colGrup[index].indexOf(item.data) < 0;
-			    			}).map(function(item,index){
-			    				return colMap[item.data];
-			    			})
-		    			};
-		    		}))
-				});
-				**/
 			}
-			
-			/**
-			$("#pivotTable").pivotUI(
-					table, {
-				    rows: ["sex", "smoker"],
-				    cols: ["day", "time"],
-				    vals: ["tip", "total_bill"],
-				    aggregatorName: "Sum over Sum",
-				    rendererName: "Heatmap"
-			});
-			**/
-			
 		}).always(function(){
 			$("#loader").addClass("hide");
 		}); 
   }
+  
+  function setWidth () {
+		  if(!flexPivot){
+			  return null;
+		  }
+		flexmonster.off("reportcomplete");
+		var report = flexPivot.getReport();
+  		report["tableSizes"] = {
+  				"columns":[{
+		  			"tuple": ["remTime"],
+		  			"width":500, 
+		  			"measure": {
+	                	uniqueName  : "[Measures].[remTime]"
+	                },
+		  		}],
+		  		
+  		};
+  		console.log("=====")
+		//flexPivot.setReport(report);
+   }
   
   var DATE_REG = /([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))( +)(0[0-9]|1[0-9]|2[0-4]):([0-5][0-9]):([0-5][0-9])/;
   $(document).ready(function(){
@@ -668,5 +675,12 @@ function dropdown(classname) {
 
 
 </body>
+
+<style>
+.fmw-cell.fm-total{
+	min-width: 50px!important;
+ }
+ .fmw-grid-column { min-width: 50px!important; }
+</style>
 
 </html>
