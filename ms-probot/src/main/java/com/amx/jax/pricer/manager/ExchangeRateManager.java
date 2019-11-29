@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import javax.sql.DataSource;
 import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
@@ -51,9 +52,13 @@ import com.amx.jax.pricer.dto.RateUploadRuleDto;
 import com.amx.jax.pricer.dto.RoutingCountryBankInfo;
 import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
+import com.amx.jax.pricer.repository.RateUploadExchAprdetProcedureRepo;
+import com.amx.jax.pricer.repository.custom.ExchRatePopulateProcDao;
+import com.amx.jax.pricer.repository.custom.ExchRatePopulateProcedure;
 import com.amx.jax.pricer.var.PricerServiceConstants.IS_ACTIVE;
 import com.amx.jax.pricer.var.PricerServiceConstants.RATE_UPLOAD_STATUS;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.JsonUtil;
 
 @Component
 public class ExchangeRateManager {
@@ -91,6 +96,15 @@ public class ExchangeRateManager {
 
 	@Autowired
 	RoutingHeaderDao routingHeaderDao;
+
+	@Autowired
+	RateUploadExchAprdetProcedureRepo uploadProcRepo;
+
+	@Autowired
+	DataSource dataSource;
+
+	@Autowired
+	ExchRatePopulateProcDao ratePopulateProcDao;
 
 	public ExchangeRateEnquiryRespDto enquireExchRate(ExchRateEnquiryReqDto rateEnquiryReqDto) {
 
@@ -433,18 +447,43 @@ public class ExchangeRateManager {
 		int totalRowsUpdated = 0;
 		Date today = new Date();
 
-		if (ruleStatusUpdateMap.containsKey(RATE_UPLOAD_STATUS.APPROVED)) {
-
-			totalRowsUpdated += exchRateUploadDao.updateStatusForRuleIdIn(
-					ruleStatusUpdateMap.get(RATE_UPLOAD_STATUS.APPROVED), RATE_UPLOAD_STATUS.APPROVED,
-					rateUploadRequestDto.getUpdatedBy(), today);
-		}
-
 		if (ruleStatusUpdateMap.containsKey(RATE_UPLOAD_STATUS.REJECTED)) {
 
 			totalRowsUpdated += exchRateUploadDao.updateStatusForRuleIdIn(
 					ruleStatusUpdateMap.get(RATE_UPLOAD_STATUS.REJECTED), RATE_UPLOAD_STATUS.REJECTED,
 					rateUploadRequestDto.getUpdatedBy(), today);
+		}
+
+		if (ruleStatusUpdateMap.containsKey(RATE_UPLOAD_STATUS.APPROVED)) {
+
+			totalRowsUpdated += exchRateUploadDao.updateStatusForRuleIdIn(
+					ruleStatusUpdateMap.get(RATE_UPLOAD_STATUS.APPROVED), RATE_UPLOAD_STATUS.APPROVED,
+					rateUploadRequestDto.getUpdatedBy(), today);
+
+			System.out.println(" =========== Start Uploading =========== ");
+
+			System.out.println(" =========== Uploading For=> "
+					+ JsonUtil.toJson(ruleStatusUpdateMap.get(RATE_UPLOAD_STATUS.APPROVED)));
+
+			String[] rulesApproved = new String[ruleStatusUpdateMap.get(RATE_UPLOAD_STATUS.APPROVED).size()];
+
+			ruleStatusUpdateMap.get(RATE_UPLOAD_STATUS.APPROVED).toArray(rulesApproved);
+
+			 ExchRatePopulateProcedure proc = new ExchRatePopulateProcedure(dataSource);
+
+			 proc.execute(new BigDecimal(91), rulesApproved);
+			// proc.populateExchRates(new BigDecimal(91), rulesApproved);
+
+			//Map<String, Object> outMap = ratePopulateProcDao.callProcedurePopulateExchRate(new BigDecimal(91),
+			//		rulesApproved);
+
+			//System.out.println(" Out Map ==> " + JsonUtil.toJson(outMap));
+
+			// uploadProcRepo.uploadApprovedRateRules(new BigDecimal(91),
+			// ruleStatusUpdateMap.get(RATE_UPLOAD_STATUS.APPROVED));
+
+			System.out.println(" =========== End Uploading =========== ");
+
 		}
 
 		return new Long(totalRowsUpdated);
@@ -621,10 +660,10 @@ public class ExchangeRateManager {
 			Map<BigDecimal, CountryMasterDescriptor> countryDescriptors = new HashMap<BigDecimal, CountryMasterDescriptor>();
 
 			if (countryIds != null && !countryIds.isEmpty()) {
-				
+
 				countryMasters = countryMasterDao.getByCountryIdIn(countryIds).stream()
 						.collect(Collectors.toMap(c -> c.getCountryId(), c -> c));
-				
+
 				for (CountryMasterModel countryMaster : countryMasters.values()) {
 					for (CountryMasterDescriptor desc : countryMaster.getFsCountryMasterDescs()) {
 						if (desc.getLanguageId() != null && desc.getLanguageId().compareTo(BigDecimal.ONE) == 0) {

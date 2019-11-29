@@ -10,7 +10,6 @@ import org.springframework.data.jpa.repository.Query;
 
 import com.amx.jax.pricer.dbmodel.ExchangeRateAPRDET;
 import com.amx.jax.pricer.dbmodel.ExchangeRateMasterApprovalDet;
-import com.amx.jax.pricer.repository.custom.AprDetJpaRepoCustom;
 
 @Transactional
 public interface ExchangeRateApprovalDetRepository
