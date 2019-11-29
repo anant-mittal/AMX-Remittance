@@ -939,7 +939,7 @@
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$F{tranx}.get("commision")]]>
+                                    <![CDATA[$F{tranx}.get("commision")+"             "+$F{tranx}.get("discountOnCommissionStr")]]>
                                 </textFieldExpression>
                             </textField>
 
@@ -1112,52 +1112,22 @@
                                 <pen lineWidth="2"/>
                                 </graphicElement>
                             </ellipse>
-                            <textField isStretchWithOverflow="true">
-                                <reportElement x="328" y="16" width="170" height="30"
-                                                forecolor="#ffffff"
-                                                isPrintWhenDetailOverflows="true"/>
-                                <textElement textAlignment="Center">
-                                    <font fontName="Arial" size="9" isItalic="true"
-                                            pdfFontName="fonts/all/arial.ttf"/>
-                                    <paragraph lineSpacing="AtLeast" lineSpacingSize="11" leftIndent="5"/>
-
-                                </textElement>  
-                                <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$F{tranx}.getValue("amountSaved","You Saved ") + $F{tranx}.get("amountSaved")]]>
-                                </textFieldExpression>
-                            </textField>
+                          
                                <textField isStretchWithOverflow="true">
-                                <reportElement x="325" y="28" width="170" height="30"
+                                <reportElement x="320" y="16" width="200" height="45"
                                                 forecolor="#ffffff"
                                                 isPrintWhenDetailOverflows="true"/>
-                                <textElement textAlignment="Center">
+                                <textElement textAlignment="Center" markup="styled">
                                     <font fontName="Arial" size="9" isItalic="true"
                                             pdfFontName="fonts/all/arial.ttf"/>
                                     <paragraph lineSpacing="AtLeast" lineSpacingSize="11" leftIndent="5"/>
 
                                 </textElement>  
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$F{tranx}.get("discountOnCommissionStr")]]>
+                                    <![CDATA[$F{tranx}.getValue("amountSaved","You Saved ")+$F{tranx}.get("amountSaved")+"<br/>"+ "Since June 2019, you've saved "+ $F{tranx}.get("totalAmountSavedStr")]]>
                                 </textFieldExpression>
                             </textField>
-
-
-                            <textField isStretchWithOverflow="true">
-                                <reportElement x="328" y="40" width="170" height="30"
-                                                forecolor="#ffffff"
-                                                isPrintWhenDetailOverflows="true"/>
-                                <textElement textAlignment="Center">
-                                    <font fontName="Arial" size="9" isItalic="true"
-                                            pdfFontName="fonts/all/arial.ttf"/>
-                                    <paragraph lineSpacing="AtLeast" lineSpacingSize="11" leftIndent="5"/>
-
-                                </textElement>
-                                <textFieldExpression class="java.lang.String">
-                                    <![CDATA["Since June 2019, you've saved "+ $F{tranx}.get("totalAmountSavedStr") ]]>
-                                </textFieldExpression>
-                            </textField>
-
-                        </frame>
+							</frame>
                         
                         
                        
