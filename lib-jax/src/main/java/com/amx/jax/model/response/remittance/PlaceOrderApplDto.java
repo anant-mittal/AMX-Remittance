@@ -38,6 +38,8 @@ public class PlaceOrderApplDto {
 	private BigDecimal orignalExchangeRate;
 	private BigDecimal routingBankId;
 	
+	private BigDecimal discount;
+	
 	public BigDecimal getPlaceOrderId() {
 		return placeOrderId;
 	}
@@ -235,6 +237,12 @@ public class PlaceOrderApplDto {
 	}
 	public void setRoutingBankId(BigDecimal routingBankId) {
 		this.routingBankId = routingBankId;
+	}
+	public BigDecimal getDiscount() {
+		return discount;
+	}
+	public void setDiscount(BigDecimal discount) {
+		this.discount = discount;
 	}     
 	
 	

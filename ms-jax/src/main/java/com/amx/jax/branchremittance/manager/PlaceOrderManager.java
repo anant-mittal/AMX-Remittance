@@ -509,6 +509,7 @@ public List<PlaceOrderApplDto>  convertGsmDto(List<RatePlaceOrder> placeOrderLsi
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		BranchRemittanceApplRequestModel requestModelObject = mapper.readValue(requestJson, BranchRemittanceApplRequestModel.class);
 		TrnxRoutingDetails routPath = requestModelObject.getDynamicRroutingPricingBreakup().getTrnxRoutingPaths();
+		Map<DISCOUNT_TYPE, ExchangeDiscountInfo> discountInfo  =  requestModelObject.getDynamicRroutingPricingBreakup().getCustomerDiscountDetails();
 		
 		applDto.setCustomerId(placeOrder.getCustomerId());
 		applDto.setPlaceOrderId(placeOrder.getRatePlaceOrderId());
@@ -554,6 +555,9 @@ public List<PlaceOrderApplDto>  convertGsmDto(List<RatePlaceOrder> placeOrderLsi
 		  }
 		 }
 		 
+		 
+		 
+		 
 		
 		applDto.setCivilId(customer.getIdentityInt());
 		applDto.setExchangeRate(placeOrder.getExchangeRateApplied());
@@ -564,11 +568,26 @@ public List<PlaceOrderApplDto>  convertGsmDto(List<RatePlaceOrder> placeOrderLsi
 			applDto.setRoutingBankName(routPath==null?"":routPath.getRoutingBankCode() +"-"+routPath.getRemittanceDescription());
 		}
 		
+		
+		
+		if(discountInfo!=null && !discountInfo.isEmpty()) {
+			BigDecimal categoryDiscount = discountInfo.get(DISCOUNT_TYPE.CUSTOMER_CATEGORY).getDiscountPipsValue()==null?BigDecimal.ZERO:discountInfo.get(DISCOUNT_TYPE.CUSTOMER_CATEGORY).getDiscountPipsValue();
+			BigDecimal pipsDiscount = discountInfo.get(DISCOUNT_TYPE.AMOUNT_SLAB).getDiscountPipsValue();
+			BigDecimal  channelDiscount= discountInfo.get(DISCOUNT_TYPE.CHANNEL).getDiscountPipsValue();
+			applDto.setDiscount(categoryDiscount.add(pipsDiscount==null?BigDecimal.ZERO:pipsDiscount).add(channelDiscount==null?BigDecimal.ZERO:channelDiscount));
+		}
+		
+		
+		
 		if(placeOrder.getIsActive()!=null && placeOrder.getIsActive().equalsIgnoreCase(ConstantDocument.Status.U.toString())) {
 			applDto.setStatus(ConstantDocument.Statusd.NEW.toString());
 		}else if(placeOrder.getIsActive()!=null && placeOrder.getIsActive().equalsIgnoreCase(ConstantDocument.Status.Y.toString())) {
 				applDto.setStatus(ConstantDocument.Statusd.APPROVED.toString());
 			}
+		
+		
+		
+		
 		
 		
 		list.add(applDto);
