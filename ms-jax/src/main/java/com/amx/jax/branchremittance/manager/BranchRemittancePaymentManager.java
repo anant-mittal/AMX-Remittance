@@ -182,9 +182,12 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 					if(currencyMaster != null) {
 						breakup.setFcDecimalNumber(currencyMaster.getDecinalNumber() == null ? decimalNumber : currencyMaster.getDecinalNumber());
 
-						if(!ConstantDocument.PB_PAYMENT.equalsIgnoreCase(customerApplDto.getApplicationPaymentType())) {
-							lstCustShpcrt.add(createCustomerShoppingCartDto(customerApplDto,localCurrencyId,fcCurrencyId,breakup));
-						}
+							/*
+							 * if(!ConstantDocument.PB_PAYMENT.equalsIgnoreCase(customerApplDto.
+							 * getApplicationPaymentType())) {
+							 * lstCustShpcrt.add(createCustomerShoppingCartDto(customerApplDto,
+							 * localCurrencyId,fcCurrencyId,breakup)); }
+							 */
 
 						lstCustShpcrt.add(createCustomerShoppingCartDto(customerApplDto,localCurrencyId,fcCurrencyId,breakup));
 						// Direct Payment link application now getting converted to remittance so commenting the following code
