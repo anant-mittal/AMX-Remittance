@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.amx.jax.dict.ContactType;
+
 public class Email extends Message implements Cloneable {
 
 	private static final long serialVersionUID = 9210306073311369368L;
@@ -38,6 +40,7 @@ public class Email extends Message implements Cloneable {
 	}
 
 	public Email() {
+		super(ContactType.EMAIL);
 		this.to = new ArrayList<String>();
 		this.cc = new ArrayList<String>();
 		this.files = new ArrayList<File>();

@@ -23,7 +23,8 @@
     dev: false,
     remoteServerUrl: '',
     remoteJsUrl: 'http://10.28.42.83/onlinewebapp',
-    dummyApi: false
+    dummyApi: false,
+    remoteJsVersion: '[[${CDN_VERSION}]]', //
   };
   var config = getJson(window.localStorage.getItem('debugConfig'));
   if (config) {

@@ -15,14 +15,45 @@ public class CustomerFlags {
 
 	/* new login */
 	Boolean whatsAppVerified;
+	/* use isEmailVerified */
+	@Deprecated
 	Boolean emailVerified;
+	/* use isMobileVerified */
+	@Deprecated
 	Boolean mobileVerified;
 
 	Boolean securityQuestionDone;
 	/* new login */
 
-	public Boolean annualIncomeExpired;
-	public Boolean isOnlineCustomer;
+	Boolean annualIncomeExpired;
+	Boolean isDeactivated;
+	Boolean isOnlineCustomer;
+	Boolean isForceUpdateInsuranceRequired = false;
+	Boolean isInsuranceActive = false;
+	
+	Boolean isEmailVerified;
+	Boolean isMobileVerified;
+	Boolean isEmailMissing;
+	Boolean isMobileMissing;
+	
+	public Boolean annualTransactionLimitExpired;
+	
+
+	public Boolean getAnnualTransactionLimitExpired() {
+		return annualTransactionLimitExpired;
+	}
+
+	public void setAnnualTransactionLimitExpired(Boolean annualTransactionLimitExpired) {
+		this.annualTransactionLimitExpired = annualTransactionLimitExpired;
+	}
+
+	public Boolean getIsEmailMissing() {
+		return isEmailMissing;
+	}
+
+	public void setIsEmailMissing(Boolean isEmailMissing) {
+		this.isEmailMissing = isEmailMissing;
+	}
 
 	public Boolean getIsOnlineCustomer() {
 		return isOnlineCustomer;
@@ -103,4 +134,63 @@ public class CustomerFlags {
 	public void setAnnualIncomeExpired(Boolean annualIncomeExpired) {
 		this.annualIncomeExpired = annualIncomeExpired;
 	}
+
+	public Boolean getIsForceUpdateInsuranceRequired() {
+		return isForceUpdateInsuranceRequired;
+	}
+
+	public Boolean getIsDeactivated() {
+		return isDeactivated;
+	}
+
+	public void setIsForceUpdateInsuranceRequired(Boolean isForceUpdateInsuranceRequired) {
+		this.isForceUpdateInsuranceRequired = isForceUpdateInsuranceRequired;
+	}
+
+	public void setIsDeactivated(Boolean isDeactivated) {
+		this.isDeactivated = isDeactivated;
+	}
+
+	@Deprecated
+	public Boolean getDisplayInsuranceDetail() {
+		return isInsuranceActive;
+	}
+
+	@Deprecated
+	public void setDisplayInsuranceDetail(Boolean displayInsuranceDetail) {
+		this.isInsuranceActive = displayInsuranceDetail;
+	}
+
+	public Boolean getIsInsuranceActive() {
+		return isInsuranceActive;
+	}
+
+	public void setIsInsuranceActive(Boolean isInsuranceActive) {
+		this.isInsuranceActive = isInsuranceActive;
+	}
+
+	public Boolean getIsEmailVerified() {
+		return isEmailVerified;
+	}
+
+	public void setIsEmailVerified(Boolean isEmailVerified) {
+		this.isEmailVerified = isEmailVerified;
+	}
+
+	public Boolean getIsMobileVerified() {
+		return isMobileVerified;
+	}
+
+	public void setIsMobileVerified(Boolean isMobileVerified) {
+		this.isMobileVerified = isMobileVerified;
+	}
+
+	public Boolean getIsMobileMissing() {
+		return isMobileMissing;
+	}
+
+	public void setIsMobileMissing(Boolean isMobileMissing) {
+		this.isMobileMissing = isMobileMissing;
+	}
+
 }

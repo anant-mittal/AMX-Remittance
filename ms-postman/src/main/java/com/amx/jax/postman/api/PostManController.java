@@ -23,6 +23,7 @@ import com.amx.jax.postman.PostManUrls;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.ExceptionReport;
 import com.amx.jax.postman.model.File;
+import com.amx.jax.postman.model.Message;
 import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.SupportEmail;
@@ -57,10 +58,22 @@ public class PostManController {
 	 *
 	 * @return the lang
 	 */
-	public Language getLang() {
-		String langString = request.getParameter(PostManServiceImpl.PARAM_LANG);// localeResolver.resolveLocale(request).toString();
-		Language lang = (Language) ArgUtil.parseAsEnum(langString, postManConfig.getTenantLang());
-		return lang;
+	public Language getLang(File file) {
+		if (ArgUtil.isEmpty(file) || ArgUtil.isEmpty(file.getLang())) {
+			String langString = request.getParameter(PostManServiceImpl.PARAM_LANG);// localeResolver.resolveLocale(request).toString();
+			Language lang = (Language) ArgUtil.parseAsEnum(langString, postManConfig.getTenantLang());
+			file.setLang(lang);
+		}
+		return file.getLang();
+	}
+
+	private Language getLang(Message sms) {
+		if (ArgUtil.isEmpty(sms) || ArgUtil.isEmpty(sms.getLang())) {
+			String langString = request.getParameter(PostManServiceImpl.PARAM_LANG);// localeResolver.resolveLocale(request).toString();
+			Language lang = (Language) ArgUtil.parseAsEnum(langString, postManConfig.getTenantLang());
+			sms.setLang(lang);
+		}
+		return sms.getLang();
 	}
 
 	/**
@@ -78,9 +91,8 @@ public class PostManController {
 			@RequestParam(required = false) String data, @RequestParam(required = false) String fileName,
 			@RequestParam(required = false) File.Type fileType) {
 
-		Language lang = getLang();
 		File file = new File();
-		file.setLang(lang);
+		getLang(file);
 
 		file.setITemplate(template);
 		file.setType(fileType);
@@ -97,8 +109,7 @@ public class PostManController {
 	 */
 	@RequestMapping(value = PostManUrls.PROCESS_TEMPLATE_FILE, method = RequestMethod.POST)
 	public File processTemplateFile(@RequestBody File file) {
-		Language lang = getLang();
-		file.setLang(lang);
+		getLang(file);
 		return postManService.processTemplate(file).getResult();
 	}
 
@@ -118,11 +129,7 @@ public class PostManController {
 			LOGGER.info("{}:START", "sendSMS");
 		}
 
-		Language lang = getLang();
-
-		if (sms.getLang() == null) {
-			sms.setLang(lang);
-		}
+		getLang(sms);
 
 		if (async == true) {
 			return postManService.sendSMSAsync(sms);
@@ -144,11 +151,7 @@ public class PostManController {
 	public AmxApiResponse<Email, Object> sendEmail(@RequestBody Email email,
 			@RequestParam(required = false, defaultValue = "false") Boolean async) throws PostManException {
 
-		Language lang = getLang();
-
-		if (email.getLang() == null) {
-			email.setLang(lang);
-		}
+		getLang(email);
 
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("SEND_EMAIL   {} ", JsonUtil.toJson(email));
@@ -175,10 +178,7 @@ public class PostManController {
 	 */
 	@RequestMapping(value = PostManUrls.SEND_EMAIL_SUPPORT, method = RequestMethod.POST)
 	public AmxApiResponse<Email, Object> sendEmail(@RequestBody SupportEmail email) throws PostManException {
-		Language lang = getLang();
-		if (email.getLang() == null) {
-			email.setLang(lang);
-		}
+		getLang(email);
 		return postManService.sendEmailToSupprt(email);
 	}
 

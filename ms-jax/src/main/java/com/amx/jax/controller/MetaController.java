@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.amxlib.constant.ApiEndpoint.MetaApi;
 import com.amx.amxlib.meta.model.ApplicationSetupDTO;
 import com.amx.amxlib.meta.model.AuthenticationLimitCheckDTO;
-import com.amx.amxlib.meta.model.BankBranchDto;
-import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.meta.model.DeclarationDTO;
 import com.amx.amxlib.meta.model.JaxMetaParameter;
 import com.amx.amxlib.meta.model.MultiCountryDTO;
@@ -42,7 +40,7 @@ import com.amx.jax.dbmodel.BranchSystemDetail;
 import com.amx.jax.dbmodel.CollectionDetailViewModel;
 import com.amx.jax.dbmodel.CollectionPaymentDetailsViewModel;
 import com.amx.jax.dbmodel.CountryMasterView;
-import com.amx.jax.dbmodel.CurrencyMasterModel;
+import com.amx.jax.dbmodel.CurrencyMasterMdlv1;
 import com.amx.jax.dbmodel.PrefixModel;
 import com.amx.jax.dbmodel.PurposeOfRemittanceViewModel;
 import com.amx.jax.dbmodel.UserFinancialYear;
@@ -51,8 +49,10 @@ import com.amx.jax.logger.LoggerService;
 import com.amx.jax.manager.JaxNotificationManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.auth.QuestModelDTO;
+import com.amx.jax.model.response.BankMasterDTO;
 import com.amx.jax.model.response.BranchSystemDetailDto;
 import com.amx.jax.model.response.CurrencyMasterDTO;
+import com.amx.jax.model.response.benebranch.BankBranchDto;
 import com.amx.jax.service.ApplicationCountryService;
 import com.amx.jax.service.BankMetaService;
 import com.amx.jax.service.BranchDetailService;
@@ -263,7 +263,7 @@ public class MetaController {
 	}
 
 	@RequestMapping(value = "/currency/{currencyId}", method = RequestMethod.GET)
-	public AmxApiResponse<CurrencyMasterModel, Object> getCurrencyMasterResponse(
+	public AmxApiResponse<CurrencyMasterMdlv1, Object> getCurrencyMasterResponse(
 			@PathVariable("currencyId") BigDecimal currencyId) {
 		return currencyMasterService.getCurrencyDetails(currencyId);
 	}
@@ -319,7 +319,8 @@ public class MetaController {
 	@RequestMapping(value = "/bank/{country-id}", method = RequestMethod.GET)
 	public AmxApiResponse<BankMasterDTO, Object> getAllCurrencyDetails(
 			@PathVariable("country-id") BigDecimal countryId) {
-		return bankMasterService.getBanksApiResponseByCountryId(countryId);
+		//return bankMasterService.getBanksApiResponseByCountryId(countryId);
+		return bankMasterService.getBankViewApiResponseByCountryId(countryId);
 	}
 
 	@RequestMapping(value = MetaApi.API_DISTRICTDESC, method = RequestMethod.GET)

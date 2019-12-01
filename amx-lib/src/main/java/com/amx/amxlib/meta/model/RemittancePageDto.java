@@ -1,8 +1,13 @@
 package com.amx.amxlib.meta.model;
 
+import java.util.List;
+
 import com.amx.amxlib.model.PlaceOrderDTO;
 import com.amx.jax.model.AbstractModel;
+import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.model.response.CurrencyMasterDTO;
+import com.amx.jax.model.response.remittance.LoyalityPointState;
+import com.amx.jax.model.response.remittance.ParameterDetailsDto;
 
 public class RemittancePageDto extends AbstractModel {
 
@@ -15,7 +20,9 @@ public class RemittancePageDto extends AbstractModel {
 	private TransactionHistroyDTO trnxHistDto;
 
 	CurrencyMasterDTO forCur = null;
-	private PlaceOrderDTO placeOrderDTO=null;
+	private PlaceOrderDTO placeOrderDTO = null;
+	
+	private LoyalityPointState loyalityPointState;
 
 	public CurrencyMasterDTO getForCur() {
 		return forCur;
@@ -34,6 +41,8 @@ public class RemittancePageDto extends AbstractModel {
 	}
 
 	CurrencyMasterDTO domCur = null;
+
+	private List<ParameterDetailsDto> packages;
 
 	public BeneficiaryListDTO getBeneficiaryDto() {
 		return beneficiaryDto;
@@ -55,13 +64,29 @@ public class RemittancePageDto extends AbstractModel {
 	public String getModelType() {
 		return "remittance-page-dto";
 	}
-	
+
 	public PlaceOrderDTO getPlaceOrderDTO() {
 		return placeOrderDTO;
 	}
 
 	public void setPlaceOrderDTO(PlaceOrderDTO placeOrderDTO) {
 		this.placeOrderDTO = placeOrderDTO;
+	}
+
+	public void setPackages(List<ParameterDetailsDto> parameterDetailsDto) {
+		this.packages = parameterDetailsDto;
+	}
+
+	public List<ParameterDetailsDto> getPackages() {
+		return packages;
+	}
+
+	public LoyalityPointState getLoyalityPointState() {
+		return loyalityPointState;
+	}
+
+	public void setLoyalityPointState(LoyalityPointState loyalityPointState) {
+		this.loyalityPointState = loyalityPointState;
 	}
 
 }

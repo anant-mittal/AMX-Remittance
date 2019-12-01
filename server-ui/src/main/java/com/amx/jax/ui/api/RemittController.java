@@ -25,27 +25,33 @@ import com.amx.amxlib.exception.InvalidInputException;
 import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.exception.RemittanceTransactionValidationException;
 import com.amx.amxlib.exception.ResourceNotFoundException;
-import com.amx.amxlib.meta.model.CustomerRatingDTO;
 import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.amxlib.model.response.PurposeOfTransactionModel;
-import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.JaxAuthContext;
+import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.client.JaxClientUtil;
 import com.amx.jax.client.remittance.RemittanceClient;
+import com.amx.jax.dict.AmxEnums.Products;
 import com.amx.jax.dict.Language;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.model.customer.CustomerRatingDTO;
 import com.amx.jax.model.request.remittance.BranchRemittanceGetExchangeRateRequest;
 import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.request.remittance.RoutingPricingRequest;
 import com.amx.jax.model.response.CurrencyMasterDTO;
 import com.amx.jax.model.response.remittance.FlexFieldReponseDto;
+import com.amx.jax.model.response.remittance.ParameterDetailsDto;
+import com.amx.jax.model.response.remittance.RemittanceApplicationResponseModel;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.model.response.remittance.branch.DynamicRoutingPricingResponse;
+import com.amx.jax.model.response.remittance.branch.DynamicRoutingPricingResponse.SELECTION;
 import com.amx.jax.payg.PayGParams;
 import com.amx.jax.payg.PayGService;
 import com.amx.jax.postman.PostManException;
@@ -55,6 +61,7 @@ import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
+import com.amx.jax.ui.config.UIServerError;
 import com.amx.jax.ui.model.AuthData;
 import com.amx.jax.ui.model.AuthDataInterface.AuthResponseOTPprefix;
 import com.amx.jax.ui.model.UserBean;
@@ -146,6 +153,7 @@ public class RemittController {
 		file.setITemplate(TemplatesMX.REMIT_STATMENT_EMAIL_FILE);
 		file.setType(File.Type.PDF);
 		file.getModel().put(UIConstants.RESP_DATA_KEY, data);
+		//file.setLang(AppContextUtil.getTenant().defaultLang());
 		Email email = new Email();
 		email.setSubject(String.format("Transaction Statement %s - %s", fromDate, toDate));
 		email.addTo(sessionService.getUserSession().getCustomerModel().getEmail());
@@ -170,7 +178,7 @@ public class RemittController {
 	@RequestMapping(value = "/api/user/tranx/print_history", method = { RequestMethod.POST })
 	public ResponseWrapper<List<Map<String, Object>>> printHistory(
 			@RequestBody ResponseWrapper<List<Map<String, Object>>> wrapper) throws IOException, PostManException {
-		File file = postManService.processTemplate(new File(TemplatesMX.REMIT_STATMENT, wrapper, File.Type.PDF))
+		File file = postManService.processTemplate(new File(TemplatesMX.REMIT_STATMENT, wrapper, File.Type.PDF).lang(AppContextUtil.getTenant().defaultLang()))
 				.getResult();
 		file.create(response, true);
 		return wrapper;
@@ -204,7 +212,7 @@ public class RemittController {
 		if (skipd == null || skipd.booleanValue() == false) {
 			file = postManService.processTemplate(
 					new File(duplicate ? TemplatesMX.REMIT_RECEIPT_COPY_JASPER : TemplatesMX.REMIT_RECEIPT_JASPER,
-							wrapper, File.Type.PDF))
+							wrapper, File.Type.PDF).lang(AppContextUtil.getTenant().defaultLang()))
 					.getResult();
 			file.create(response, true);
 		}
@@ -252,14 +260,14 @@ public class RemittController {
 		if ("pdf".equals(ext)) {
 			File file = postManService.processTemplate(
 					new File(duplicate ? TemplatesMX.REMIT_RECEIPT_COPY_JASPER : TemplatesMX.REMIT_RECEIPT_JASPER,
-							wrapper, File.Type.PDF))
+							wrapper, File.Type.PDF).lang(AppContextUtil.getTenant().defaultLang()))
 					.getResult();
 			file.create(response, false);
 			return null;
 		} else if ("html".equals(ext)) {
 			File file = postManService.processTemplate(
 					new File(duplicate ? TemplatesMX.REMIT_RECEIPT_COPY_JASPER : TemplatesMX.REMIT_RECEIPT_JASPER,
-							wrapper, null))
+							wrapper, null).lang(AppContextUtil.getTenant().defaultLang()))
 					.getResult();
 			return file.getContent();
 		} else {
@@ -306,8 +314,12 @@ public class RemittController {
 
 	@RequestMapping(value = "/api/remitt/xrate/v2", method = { RequestMethod.POST })
 	public ResponseWrapper<DynamicRoutingPricingResponse> xrate(
-			@RequestBody RoutingPricingRequest routingPricingRequest) {
-		return ResponseWrapper.build(remittanceClient.getDynamicRoutingPricing(routingPricingRequest));
+			@RequestBody RoutingPricingRequest routingPricingRequest,
+			@RequestParam(required = false, defaultValue = "MIN_TIME") SELECTION selection) {
+		AmxApiResponse<DynamicRoutingPricingResponse, Object> x = remittanceClient
+				.getDynamicRoutingPricing(routingPricingRequest);
+		x.getResult().setSelection(selection);
+		return ResponseWrapper.build(x);
 	}
 
 	@RequestMapping(value = "/api/remitt/flex/v2", method = { RequestMethod.POST })
@@ -338,6 +350,10 @@ public class RemittController {
 			remittancePageDto = jaxService.setDefaults().getBeneClient().poBeneficiary(placeorderId).getResult();
 		}
 
+		if (!ArgUtil.isEmpty(beneId)) {
+			remittancePageDto.setPackages(remittanceClient.getGiftService(beneId).getResult().getParameterDetailsDto());
+		}
+
 		BigDecimal forCurId = remittancePageDto.getBeneficiaryDto().getCurrencyId();
 
 		for (CurrencyMasterDTO currency : tenantContext.getOnlineCurrencies()) {
@@ -363,6 +379,12 @@ public class RemittController {
 		ResponseWrapper<List<PurposeOfTransactionModel>> wrapper = new ResponseWrapper<List<PurposeOfTransactionModel>>();
 		wrapper.setData(jaxService.setDefaults().getRemitClient().getPurposeOfTransactions(beneId).getResults());
 		return wrapper;
+	}
+
+	@RequestMapping(value = "/api/remitt/package/list", method = { RequestMethod.POST })
+	public ResponseWrapper<List<ParameterDetailsDto>> getPackages(@RequestParam BigDecimal beneId) {
+		return new ResponseWrapper<List<ParameterDetailsDto>>(
+				remittanceClient.getGiftService(beneId).getResult().getParameterDetailsDto());
 	}
 
 	/**
@@ -486,9 +508,14 @@ public class RemittController {
 		return wrapper;
 	}
 
-	@RequestMapping(value = "/api/remitt/tranx/rating", method = { RequestMethod.POST })
-	public ResponseWrapper<CustomerRatingDTO> appStatus(@RequestBody CustomerRatingDTO customerRatingDTO) {
-		return ResponseWrapper.build(jaxService.setDefaults().getRemitClient().saveCustomerRating(customerRatingDTO));
+	@RequestMapping(value = { "/api/remitt/tranx/rating", "/pub/remitt/tranx/rating" }, method = { RequestMethod.POST })
+	public ResponseWrapper<CustomerRatingDTO> appStatus(@RequestBody CustomerRatingDTO customerRatingDTO,
+			@RequestParam String veryCode, @PathVariable Products prodType) {
 
+		if (!JaxClientUtil.getTransactionVeryCode(customerRatingDTO.getRemittanceTransactionId()).equals(veryCode)) {
+			throw new UIServerError(OWAStatusStatusCodes.INVALID_LINK);
+		}
+		return ResponseWrapper
+				.build(jaxService.setDefaults().getRemitClient().saveCustomerRating(customerRatingDTO, prodType));
 	}
 }

@@ -9,8 +9,7 @@ import com.amx.jax.model.response.customer.CustomerFlags;
 import com.amx.jax.scope.TenantSpecific;
 import com.amx.jax.ui.UIConstants.Features;
 import com.amx.jax.ui.auth.AuthLibContext.AuthLib;
-import com.amx.jax.ui.service.LoginService;
-import com.amx.jax.ui.service.SessionService;
+import com.amx.jax.ui.session.UserDeviceBean;
 
 /**
  * The Class AuthLibKWT.
@@ -20,10 +19,7 @@ import com.amx.jax.ui.service.SessionService;
 public class AuthLibBHR implements AuthLib {
 
 	@Autowired
-	private SessionService sessionService;
-
-	@Autowired
-	private LoginService loginService;
+	private UserDeviceBean userDevice;
 
 	/*
 	 * (non-Javadoc)
@@ -169,21 +165,40 @@ public class AuthLibBHR implements AuthLib {
 	@Override
 	public CustomerFlags checkModule(AuthState authState, CustomerFlags customerFlags, Features feature) {
 		switch (feature) {
+		case DASHBOARD:
+			AuthPermUtil.checkEmailUpdate(authState, customerFlags);
+			AuthPermUtil.checkInsuranceUpdate(authState, customerFlags, userDevice.getUserDevice());
+			break;
 		case REMIT:
 		case BENE_UPDATE:
 		case FXORDER:
+			AuthPermUtil.checkEmailUpdate(authState, customerFlags);
 			AuthPermUtil.checkIdProofExpiry(authState, customerFlags);
 			AuthPermUtil.checkSQASetup(authState, customerFlags);
 			AuthPermUtil.checkSQA(authState, customerFlags);
+			AuthPermUtil.checkInsuranceUpdate(authState, customerFlags, userDevice.getUserDevice());
 			break;
 		case SQA_UPDATE:
+			AuthPermUtil.checkEmailUpdate(authState, customerFlags);
 			AuthPermUtil.checkSQASetup(authState, customerFlags);
+			AuthPermUtil.checkInsuranceUpdate(authState, customerFlags, userDevice.getUserDevice());
 			break;
 		default:
+			AuthPermUtil.checkEmailUpdate(authState, customerFlags);
+			AuthPermUtil.checkInsuranceUpdate(authState, customerFlags, userDevice.getUserDevice());
 			break;
 		}
 
 		return customerFlags;
+	}
+
+	public boolean hasFeature(AuthState authState, CustomerFlags customerFlags, Features feature) {
+		switch (feature) {
+		case INSURANCE:
+			return customerFlags.getIsInsuranceActive();
+		default:
+			return true;
+		}
 	}
 
 }

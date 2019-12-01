@@ -124,6 +124,12 @@ public class CustomerCoreDetailsView implements Serializable{
 	private BigDecimal corporateDiscountAmount;
 	
 	
+	@Column(name="CORPORATE_DISCOUNT_AMT_ONL")
+	private BigDecimal corporateoDiscountAmountforOnline;
+	
+	
+	
+	
 	
 	public BigDecimal getCustomerID() {
 		return customerID;
@@ -340,6 +346,12 @@ public class CustomerCoreDetailsView implements Serializable{
 	}
 	public void setCorporateDiscountAmount(BigDecimal corporateDiscountAmount) {
 		this.corporateDiscountAmount = corporateDiscountAmount;
+	}
+	public BigDecimal getCorporateoDiscountAmountforOnline() {
+		return corporateoDiscountAmountforOnline;
+	}
+	public void setCorporateoDiscountAmountforOnline(BigDecimal corporateoDiscountAmountforOnline) {
+		this.corporateoDiscountAmountforOnline = corporateoDiscountAmountforOnline;
 	}
 	
 	

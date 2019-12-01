@@ -1,7 +1,6 @@
 package com.amx.jax.model.request.fx;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -12,7 +11,7 @@ public class FcDeliveryBranchOrderSearchRequest {
 	private String civilId;
 	private String orderStatus;
 	
-	@JsonIgnore
+	//@JsonIgnore
 	private BigDecimal customerId;
 	@JsonIgnore
 	private String countryBranchName;

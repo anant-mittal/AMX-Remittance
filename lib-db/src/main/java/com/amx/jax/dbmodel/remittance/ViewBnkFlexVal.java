@@ -9,11 +9,7 @@ import java.math.BigDecimal;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.NamedNativeQuery;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-
-import org.hibernate.annotations.Proxy;
 
 
 
@@ -55,7 +51,7 @@ public class ViewBnkFlexVal implements Serializable {
 	String beneBankCode;
 	
 	@Column(name="BENE_BRCHCOD")
-	String beneBranchCode;
+	BigDecimal beneBranchCode;
 
 	public BigDecimal getIdNo() {
 		return idNo;
@@ -105,11 +101,11 @@ public class ViewBnkFlexVal implements Serializable {
 		this.beneBankCode = beneBankCode;
 	}
 
-	public String getBeneBranchCode() {
+	public BigDecimal getBeneBranchCode() {
 		return beneBranchCode;
 	}
 
-	public void setBeneBranchCode(String beneBranchCode) {
+	public void setBeneBranchCode(BigDecimal beneBranchCode) {
 		this.beneBranchCode = beneBranchCode;
 	}
 

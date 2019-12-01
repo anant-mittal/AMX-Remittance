@@ -13,10 +13,10 @@ import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
-import com.amx.jax.dbmodel.CollectionModel;
-import com.amx.jax.dbmodel.CurrencyWiseDenomination;
+import com.amx.jax.dbmodel.CollectionMdlv1;
+import com.amx.jax.dbmodel.CurrencyWiseDenominationMdlv1;
 import com.amx.jax.dbmodel.Employee;
-import com.amx.jax.dbmodel.ForeignCurrencyAdjust;
+import com.amx.jax.dbmodel.ForeignCurrencyAdjustMdlv1;
 import com.amx.jax.dbmodel.ReceiptPayment;
 import com.amx.jax.dbmodel.ReceiptPaymentApp;
 import com.amx.jax.dbmodel.fx.EmployeeDetailsView;
@@ -25,6 +25,7 @@ import com.amx.jax.dbmodel.fx.ForeignCurrencyStockTransfer;
 import com.amx.jax.dbmodel.fx.FxDeliveryDetailsModel;
 import com.amx.jax.dbmodel.fx.FxOrderTransactionModel;
 import com.amx.jax.dbmodel.fx.OrderManagementView;
+import com.amx.jax.dbmodel.fx.UserFcStockView;
 import com.amx.jax.dbmodel.fx.UserStockView;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.repository.CurrencyWiseDenominationRepository;
@@ -39,6 +40,7 @@ import com.amx.jax.repository.fx.EmployeeDetailsRepository;
 import com.amx.jax.repository.fx.FcSaleOrderManagementRepository;
 import com.amx.jax.repository.fx.FxDeliveryDetailsRepository;
 import com.amx.jax.repository.fx.FxOrderTransactionRespository;
+import com.amx.jax.repository.fx.UserFcStockRepository;
 import com.amx.jax.repository.fx.UserStockRepository;
 import com.amx.jax.repository.fx.VwFxDeliveryDetailsRepository;
 import com.google.common.collect.Lists;
@@ -92,6 +94,9 @@ public class FcSaleBranchDao {
 	@Autowired
 	FxOrderTransactionRespository fxOrderTransactionRespository;
 	
+	@Autowired
+	UserFcStockRepository userFcStockRepository;
+	
 	public List<OrderManagementView> fetchFcSaleOrderManagement(BigDecimal applicationcountryId,BigDecimal areaCode){
 		return fcSaleOrderManagementRepository.findByApplicationCountryIdAndAreaCode(applicationcountryId,areaCode);
 	}
@@ -138,9 +143,9 @@ public class FcSaleBranchDao {
 				for (int i=0; i < docNum.length; i++){
 					documentNo = new BigDecimal(docNum[i]);
 					if(documentNo != null) {
-						List<ForeignCurrencyAdjust> lstForeignCurrencyAdj = foreignCurrencyAdjustRepository.fetchByDocumentDetails(documentNo, documentYear, companyId, documentCode, ConstantDocument.P);
+						List<ForeignCurrencyAdjustMdlv1> lstForeignCurrencyAdj = foreignCurrencyAdjustRepository.fetchByDocumentDetails(documentNo, documentYear, companyId, documentCode, ConstantDocument.P);
 						if(lstForeignCurrencyAdj != null) {
-							for (ForeignCurrencyAdjust foreignCurrencyAdjust : lstForeignCurrencyAdj) {
+							for (ForeignCurrencyAdjustMdlv1 foreignCurrencyAdjust : lstForeignCurrencyAdj) {
 								foreignCurrencyAdjust.setDocumentStatus(null);
 								foreignCurrencyAdjust.setModifiedBy(deliveryDetail.getUpdatedBy());
 								foreignCurrencyAdjust.setModifiedDate(new Date());
@@ -176,9 +181,9 @@ public class FcSaleBranchDao {
 				for (int i=0; i < docNum.length; i++){
 					documentNo = new BigDecimal(docNum[i]);
 					if(documentNo != null) {
-						List<ForeignCurrencyAdjust> lstForeignCurrencyAdj = foreignCurrencyAdjustRepository.fetchByDocumentDetails(documentNo, documentYear, companyId, documentCode, ConstantDocument.P);
+						List<ForeignCurrencyAdjustMdlv1> lstForeignCurrencyAdj = foreignCurrencyAdjustRepository.fetchByDocumentDetails(documentNo, documentYear, companyId, documentCode, ConstantDocument.P);
 						if(lstForeignCurrencyAdj != null) {
-							for (ForeignCurrencyAdjust foreignCurrencyAdjust : lstForeignCurrencyAdj) {
+							for (ForeignCurrencyAdjustMdlv1 foreignCurrencyAdjust : lstForeignCurrencyAdj) {
 								foreignCurrencyAdjust.setDocumentStatus(null);
 								foreignCurrencyAdjust.setModifiedBy(deliveryDetail.getUpdatedBy());
 								foreignCurrencyAdjust.setModifiedDate(new Date());
@@ -198,13 +203,13 @@ public class FcSaleBranchDao {
 		return employeeDetailsRepository.findByEmployeeId(employeeId);
 	}
 	
-	public List<CollectionModel> fetchCollectionData(BigDecimal collectDocNo,BigDecimal collectDocYear){
+	public List<CollectionMdlv1> fetchCollectionData(BigDecimal collectDocNo,BigDecimal collectDocYear){
 		return collectionRepository.findByDocumentNoAndDocumentFinanceYear(collectDocNo, collectDocYear);
 	}
 	
 	
 	@Transactional
-	public void printOrderSave(List<ForeignCurrencyAdjust> foreignCurrencyAdjusts,List<ReceiptPayment> updateRecPay,String userName,Date currenctDate,BigDecimal deliveryDetailsId,String orderStatus){
+	public void printOrderSave(List<ForeignCurrencyAdjustMdlv1> foreignCurrencyAdjusts,List<ReceiptPayment> updateRecPay,String userName,Date currenctDate,BigDecimal deliveryDetailsId,String orderStatus){
 		HashMap<BigDecimal, BigDecimal> mapBranchDocumentNo = new HashMap<>();
 		if(foreignCurrencyAdjusts != null && foreignCurrencyAdjusts.size() != 0 && deliveryDetailsId != null) {
 			// before updating need to check the status is ordered
@@ -239,7 +244,7 @@ public class FcSaleBranchDao {
 						}
 					}
 					
-					for (ForeignCurrencyAdjust foreignCurrencyAdjust : foreignCurrencyAdjusts) {
+					for (ForeignCurrencyAdjustMdlv1 foreignCurrencyAdjust : foreignCurrencyAdjusts) {
 						foreignCurrencyAdjust.setDocumentNo(mapBranchDocumentNo.get(foreignCurrencyAdjust.getDocumentNo()));
 						foreignCurrencyAdjustRepository.save(foreignCurrencyAdjust);
 					}
@@ -260,7 +265,7 @@ public class FcSaleBranchDao {
 		}
 	}
 	
-	public List<CurrencyWiseDenomination> fetchCurrencyDenomination(BigDecimal currencyId,String isActive){
+	public List<CurrencyWiseDenominationMdlv1> fetchCurrencyDenomination(BigDecimal currencyId,String isActive){
 		return currencyWiseDenominationRepository.fetchCurrencyDenomination(currencyId, isActive);
 	}
 	
@@ -337,7 +342,7 @@ public class FcSaleBranchDao {
 		}
 	}
 	
-	public List<ForeignCurrencyAdjust> fetchByCollectionDetails(BigDecimal documentNo,BigDecimal documentYear,BigDecimal companyId,BigDecimal documentCode,String status){
+	public List<ForeignCurrencyAdjustMdlv1> fetchByCollectionDetails(BigDecimal documentNo,BigDecimal documentYear,BigDecimal companyId,BigDecimal documentCode,String status){
 		return foreignCurrencyAdjustRepository.fetchByCollectionDetails(documentNo,documentYear,companyId,documentCode,status);
 	}
 	
@@ -412,14 +417,14 @@ public class FcSaleBranchDao {
 	}
 	
 	@Transactional
-	public void stockUpdate(List<ForeignCurrencyAdjust> fromFCAdj,List<ForeignCurrencyAdjust> toFCAdj,List<ForeignCurrencyOldModel> oldToFCAdj,List<ForeignCurrencyOldModel> oldFromFCAdj){
+	public void stockUpdate(List<ForeignCurrencyAdjustMdlv1> fromFCAdj,List<ForeignCurrencyAdjustMdlv1> toFCAdj,List<ForeignCurrencyOldModel> oldToFCAdj,List<ForeignCurrencyOldModel> oldFromFCAdj){
 		if(fromFCAdj != null) {
-			for (ForeignCurrencyAdjust fromCurrencyAdj : fromFCAdj) {
+			for (ForeignCurrencyAdjustMdlv1 fromCurrencyAdj : fromFCAdj) {
 				foreignCurrencyAdjustRepository.save(fromCurrencyAdj);
 			}
 		}
 		if(toFCAdj != null) {
-			for (ForeignCurrencyAdjust toCurrencyAdj : toFCAdj) {
+			for (ForeignCurrencyAdjustMdlv1 toCurrencyAdj : toFCAdj) {
 				foreignCurrencyAdjustRepository.save(toCurrencyAdj);
 			}
 		}
@@ -436,7 +441,7 @@ public class FcSaleBranchDao {
 	}
 	
 	
-	public List<ForeignCurrencyAdjust> fetchByCollectionDetailsByTrnxType(BigDecimal documentNo,BigDecimal documentYear,BigDecimal companyId,BigDecimal documentCode,String tranctionType,String stockUpdate,String documentStatus){
+	public List<ForeignCurrencyAdjustMdlv1> fetchByCollectionDetailsByTrnxType(BigDecimal documentNo,BigDecimal documentYear,BigDecimal companyId,BigDecimal documentCode,String tranctionType,String stockUpdate,String documentStatus){
 		return foreignCurrencyAdjustRepository.fetchByCollectionDetailsByTrnxType(documentNo,documentYear,companyId,documentCode,tranctionType,stockUpdate,documentStatus);
 	}
 	
@@ -465,6 +470,22 @@ public class FcSaleBranchDao {
 	public List<FxOrderTransactionModel> searchOrder(Predicate predicate) {
 		Iterable<FxOrderTransactionModel> fxOrdersItr = fxOrderTransactionRespository.findAll(predicate);
 		return Lists.newArrayList(fxOrdersItr);
+	}
+	
+	public List<UserStockView> fetchUserStockAllCurrencyCurrentDate(String userName,BigDecimal countryBranchId,List<BigDecimal> foreignCurrencyId){
+		return userStockRepository.fetchUserStockByAllCurrencyDate(userName, countryBranchId, foreignCurrencyId);
+	}
+	
+	public List<OrderManagementView> fetchFcSaleOrderManagementForHeadOfficeLastOneWeek(BigDecimal applicationCountryId,Date fromDate,Date toDate){
+		return fcSaleOrderManagementRepository.fetchLastOneWeekRecords(applicationCountryId,fromDate,toDate);
+	}
+	
+	public List<OrderManagementView> fetchFcSaleOrderManagementByGovernateLastOneWeek(BigDecimal applicationcountryId,BigDecimal governate,Date fromDate,Date toDate){
+		return fcSaleOrderManagementRepository.fetchLastOneWeekRecordsByGovernateId(applicationcountryId,governate,fromDate,toDate);
+	}
+	
+	public List<UserFcStockView> fetchUserFCStockAllCurrencyCurrentDate(String userName,BigDecimal countryBranchId,List<BigDecimal> foreignCurrencyId){
+		return userFcStockRepository.fetchUserStockByAllCurrencyDate(userName, countryBranchId, foreignCurrencyId);
 	}
 	
 }

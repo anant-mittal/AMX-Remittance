@@ -1,6 +1,7 @@
 package com.amx.jax.notification.alert;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.amxlib.model.BranchSearchNotificationModel;
 import com.amx.amxlib.model.request.GetBankBranchRequest;
-import com.amx.jax.config.JaxProperties;
+import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.response.customer.PersonInfo;
@@ -37,7 +38,7 @@ public class BankBranchSearchFailureAlert implements IAlert {
 	@Autowired
 	CompanyService companySerivce;
 	@Autowired
-	JaxProperties jaxProperties;
+	JaxTenantProperties jaxTenantProperties;
 
 	@Override
 	public void sendAlert(AbstractJaxException ex) {
@@ -49,13 +50,12 @@ public class BankBranchSearchFailureAlert implements IAlert {
 		model.setIdentityId(pinfo.getIdentityInt());
 		model.setCustomerQuery(request);
 		model.setBankFullName(bankFullName);
-		getAlertContacts(ContactType.EMAIL)
-				.forEach(i -> jaxNotificationService.sendBranchSearchEmailNotification(model, i));
+		getAlertContacts(ContactType.EMAIL).forEach(i -> jaxNotificationService.sendBranchSearchEmailNotification(model, i));
 	}
 
 	@Override
 	public List<String> getAlertContacts(ContactType notificationType) {
-		return jaxProperties.getSupportSoaEmail();
+		return Arrays.asList(jaxTenantProperties.getAppSupportEmail());
 	}
 
 	@Override

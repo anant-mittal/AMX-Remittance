@@ -28,7 +28,7 @@ public class MCQStatus extends IStatusCodeListPlugin<MCQStatusCodes, ApiMCQStatu
 	 *
 	 */
 	public static enum MCQStatusCodes implements IExceptionEnum {
-		DATA_ERROR, DATA_READ_ERROR, DATA_SAVE_ERROR;
+		DATA_ERROR, DATA_READ_ERROR, DATA_SAVE_ERROR, DATA_REMOVE_ERROR;
 		@Override
 		public String getStatusKey() {
 			return this.toString();

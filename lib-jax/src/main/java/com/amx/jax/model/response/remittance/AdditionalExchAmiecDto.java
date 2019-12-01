@@ -16,6 +16,7 @@ public class AdditionalExchAmiecDto extends ResourceDTO {
 	//private String amiecDescription;
 	//private String isActive;
 	private BigDecimal additionalBankFieldId;
+	private String localName;
 
 	/*public BigDecimal getAdditionalBankRuleDetailId() {
 		return additionalBankRuleDetailId;
@@ -71,6 +72,14 @@ public class AdditionalExchAmiecDto extends ResourceDTO {
 
 	public void setAdditionalBankFieldId(BigDecimal additionalBankFieldId) {
 		this.additionalBankFieldId = additionalBankFieldId;
+	}
+
+	public String getLocalName() {
+		return localName;
+	}
+
+	public void setLocalName(String localName) {
+		this.localName = localName;
 	}
 
 	

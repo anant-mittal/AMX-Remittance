@@ -16,13 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.meta.model.TransactionHistoryDto;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.response.ApiResponse;
@@ -33,6 +30,7 @@ import com.amx.jax.dbmodel.CustomerRemittanceTransactionHistoryView;
 import com.amx.jax.dbmodel.CustomerRemittanceTransactionView;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.ITransactionHistroyDAO;
 import com.amx.jax.repository.TransactionHistoryDAO;
@@ -71,7 +69,7 @@ public class TransactionHistroyService extends AbstractService {
 		} else {
 		    
 			Set<BigDecimal> beneRelSeqSet = trnxHisList.stream().map(emp -> emp.getBeneficiaryRelationSeqId())
-					.collect(Collectors.toSet());
+					.filter(seqId -> seqId != null).collect(Collectors.toSet());
 			List<BenificiaryListView> beneList = beneficiaryOnlineDao.getBeneficiaryRelationShipSeqIds(
 					metaData.getCustomerId(), new ArrayList<BigDecimal>(beneRelSeqSet));
 			Map<BigDecimal, BenificiaryListView> beneMap = beneList.stream()
@@ -203,13 +201,29 @@ public class TransactionHistroyService extends AbstractService {
 	            model.setBeneficiaryRelationSeqId(hist.getBeneficiaryRelationSeqId());
 	            model.setLocalTrnxAmount(hist.getLocalTrnxAmount());
 	            model.setSourceOfIncomeId(hist.getSourceOfIncomeId());
+	            
+	            model.setExRateApplied(hist.getExRateApplied());
+				if(hist.getExRateApplied() != null) {
+					BigDecimal rateRev = hist.getExRateApplied();
+					BigDecimal rateReversedFinal = new BigDecimal(1).divide(rateRev,2, BigDecimal.ROUND_HALF_UP);
+					model.setExRateReversed(rateReversedFinal);
+				}
+	            
 	            model.setTransactionReference(getTransactionReferece(hist));
+	            
+	            
+	            
+	            
+	            
 	            
 			BenificiaryListView beneViewModel = beneficiaryOnlineDao.getBeneficiaryByRelationshipId(
 					hist.getCustomerId(), metaData.getCountryId(), hist.getBeneficiaryRelationSeqId());
 	            if(beneViewModel!=null){
 	                 beneDtoCheck=beneCheckService.beneCheck(convertBeneModelToDto(beneViewModel));
+	                 model.setBeneIsActive(beneViewModel.getIsActive().equalsIgnoreCase(ConstantDocument.Status.Y.toString())?Boolean.TRUE:Boolean.FALSE);
+	                 
 	            }
+	            
 	            if(beneDtoCheck != null){
 	                model.setBeneficiaryErrorStatus(beneDtoCheck.getBeneficiaryErrorStatus());
 	            }
@@ -219,9 +233,14 @@ public class TransactionHistroyService extends AbstractService {
 	                list.add(model);
 	            }
 
+	            
+	            
+	            
 	        }
 	        return list;
 	    }
+	   
+	  
 	   
 	   private List<TransactionHistoryDto> convertv2(List<CustomerRemittanceTransactionHistoryView> trnxHist) {
 	        List<TransactionHistoryDto> list = new ArrayList<>();
@@ -267,6 +286,12 @@ public class TransactionHistroyService extends AbstractService {
 	            if(beneDtoCheck != null){
 	                model.setBeneficiaryErrorStatus(beneDtoCheck.getBeneficiaryErrorStatus());
 	            }
+	            
+	            
+	            
+	            
+	            
+	            
 	            if (!StringUtils.isBlank(hist.getBeneficaryCorespondingBankName()) 
 	                && !hist.getBeneficaryCorespondingBankName().equalsIgnoreCase(ConstantDocument.WU) 
 	                && !hist.getBeneficaryCorespondingBankName().equalsIgnoreCase(ConstantDocument.MONEY)) {
@@ -312,6 +337,14 @@ public class TransactionHistroyService extends AbstractService {
 			model.setBeneficiaryRelationSeqId(hist.getBeneficiaryRelationSeqId());
 			model.setLocalTrnxAmount(hist.getLocalTrnxAmount());
 			model.setSourceOfIncomeId(hist.getSourceOfIncomeId());
+			
+			model.setExRateApplied(hist.getExRateApplied());
+			if(hist.getExRateApplied() != null) {
+				BigDecimal rateRev = hist.getExRateApplied();
+				BigDecimal rateReversedFinal = new BigDecimal(1).divide(rateRev,2, BigDecimal.ROUND_HALF_UP);
+				model.setExRateReversed(rateReversedFinal);
+			}
+			
 			model.setTransactionReference(getTransactionReferece(hist));
 
 			if (beneMap!=null  && model.getBeneficiaryRelationSeqId()!=null) {
@@ -326,6 +359,7 @@ public class TransactionHistroyService extends AbstractService {
 			BenificiaryListView beneViewModel = beneficiaryOnlineDao.getBeneficiaryByRelationshipId(hist.getCustomerId(),metaData.getCountryId(),hist.getBeneficiaryRelationSeqId());
 			if(beneViewModel!=null){
 				 beneDtoCheck=beneCheckService.beneCheck(convertBeneModelToDto(beneViewModel));
+				 model.setBeneIsActive(beneViewModel.getIsActive().equalsIgnoreCase("Y")?Boolean.TRUE:Boolean.FALSE);
 			}
 			if(beneDtoCheck != null){
 				model.setBeneficiaryErrorStatus(beneDtoCheck.getBeneficiaryErrorStatus());

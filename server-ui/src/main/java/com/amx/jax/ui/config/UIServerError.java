@@ -33,6 +33,11 @@ public class UIServerError extends AmxApiException {
 		this.setError(error);
 	}
 
+	public UIServerError(OWAStatusStatusCodes error, String message) {
+		super(message);
+		this.setError(error);
+	}
+
 	@Override
 	public AmxApiException getInstance(AmxApiError apiError) {
 		return new UIServerError(apiError);

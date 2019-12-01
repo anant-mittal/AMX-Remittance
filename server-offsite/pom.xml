@@ -63,11 +63,6 @@
 
 		<dependency>
 			<groupId>com.amx.jax</groupId>
-			<artifactId>lib-monitor</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>com.amx.jax</groupId>
 			<artifactId>server-common-branch</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>

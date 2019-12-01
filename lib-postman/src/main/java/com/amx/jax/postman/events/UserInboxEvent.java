@@ -66,4 +66,24 @@ public class UserInboxEvent implements ITunnelEvent {
 		return reply;
 	}
 
+	// Builder Functions
+	public UserInboxEvent to(String to) {
+		this.setTo(to);
+		return this;
+	}
+
+	public UserInboxEvent from(String from) {
+		this.setFrom(from);
+		return this;
+	}
+
+	public UserInboxEvent message(String message) {
+		this.setMessage(message);
+		return this;
+	}
+
+	public UserInboxEvent waChannel(WAMessage.Channel waChannel) {
+		this.setWaChannel(waChannel);
+		return this;
+	}
 }

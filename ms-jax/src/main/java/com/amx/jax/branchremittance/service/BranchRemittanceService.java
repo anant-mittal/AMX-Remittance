@@ -30,6 +30,7 @@ import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
+import com.amx.jax.model.response.remittance.ParameterDetailsResponseDto;
 import com.amx.jax.model.response.remittance.PaymentModeDto;
 import com.amx.jax.model.response.remittance.RemittanceDeclarationReportDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
@@ -71,6 +72,9 @@ public class BranchRemittanceService extends AbstractService{
 	
 	@Autowired
 	ReportManager reportManager;
+	
+	@Autowired
+	DirectPaymentLinkService directPaymentLinkService;
 	
 
 	
@@ -203,7 +207,29 @@ public class BranchRemittanceService extends AbstractService{
 		Boolean result = branchRemittanceSaveManager.sendReceiptOnEmail(collectionDocNo,collectionDocYear,collectionDocCode);
 		return new BoolRespModel(result);
 	}
+
+
+	/*public AmxApiResponse<PaymentLinkRespDTO, Object> createAndSendPaymentLink() {
+		validation.validateHeaderInfo();
+		BigDecimal customerId = metaData.getCustomerId();
+		BigDecimal localCurrencyId = metaData.getDefaultCurrencyId();
+		
+		PaymentLinkRespDTO paymentdto = directPaymentLinkService.fetchPaymentLinkDetails(customerId,localCurrencyId);
+				
+		return AmxApiResponse.build(paymentdto);
+	}*/
+
+	/*public AmxApiResponse<PaymentLinkRespDTO, Object> validatePayLink(BigDecimal linkId, String verificationCode) {
+		PaymentLinkRespDTO paymentdto = directPaymentLinkService.validatePayLink(linkId, verificationCode);
+		
+		return AmxApiResponse.build(paymentdto);
+	}*/
 	
 	
 
+public  AmxApiResponse<ParameterDetailsResponseDto, Object> getGiftService(BigDecimal beneRelaId) {
+	ParameterDetailsResponseDto parameterDetailsResponseDto =branchRemitManager.getGiftService(beneRelaId);
+	return AmxApiResponse.build(parameterDetailsResponseDto);
+}
+	
 }

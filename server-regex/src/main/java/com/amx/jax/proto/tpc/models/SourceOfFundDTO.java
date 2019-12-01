@@ -9,10 +9,10 @@ public class SourceOfFundDTO {
 	@ApiMockModelProperty(example = "1234")
 	public BigDecimal id;
 
-	@ApiMockModelProperty(example = "INVEST_LOAN")
+	@ApiMockModelProperty(example = "SALARY")
 	public String code;
 
-	@ApiMockModelProperty(example = "Invest in Loan")
+	@ApiMockModelProperty(example = "Salary Income")
 	public String description;
 
 }

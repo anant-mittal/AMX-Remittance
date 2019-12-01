@@ -1,6 +1,5 @@
 package com.amx.utils;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -116,4 +115,14 @@ public class Constants {
 	}
 	
 	public static final Long ANNUALINCOME_VERIFIED_LIMIT = 25000L;
+	
+	public static final String MALE = "MALE";
+	
+	public static final String GENDER_MALE = "M";
+
+	public static final String FEMALE = "FEMALE";
+	
+	public static final String GENDER_FEMALE = "F";
+	
+	public static final String SENDER_ZIP_CODE = "13077";
 }

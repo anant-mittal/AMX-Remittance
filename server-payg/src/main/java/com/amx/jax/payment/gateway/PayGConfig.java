@@ -12,11 +12,29 @@ public class PayGConfig {
 	@Value("${knet.callback.url}")
 	String serviceCallbackUrl;
 
+	@Value("${app.test.enabled}")
+	boolean testEnabled;
+
 	@Autowired
 	AppConfig appConfig;
 
 	public String getServiceCallbackUrl() {
 		return serviceCallbackUrl + appConfig.getAppPrefix();
+	}
+
+	/**
+	 * @return the testEnabled
+	 */
+	public boolean isTestEnabled() {
+		return testEnabled;
+	}
+
+	/**
+	 * @param testEnabled
+	 *            the testEnabled to set
+	 */
+	public void setTestEnabled(boolean testEnabled) {
+		this.testEnabled = testEnabled;
 	}
 
 }

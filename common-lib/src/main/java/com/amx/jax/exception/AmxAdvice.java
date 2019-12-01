@@ -1,8 +1,16 @@
 package com.amx.jax.exception;
 
+import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.attribute.FileAttribute;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -60,9 +68,17 @@ public abstract class AmxAdvice implements ResponseBodyAdvice<AmxApiResponse<?, 
 		apiError.setMeta(ex.getMeta());
 		apiError.setMessage(ArgUtil.ifNotEmpty(apiError.getMessage(), ex.getMessage(), ex.getErrorMessage()));
 		apiError.setPath(request.getRequestURI());
+		apiError.setRedirectUrl(ex.getRedirectUrl());
 		ExceptionMessageKey.resolveLocalMessage(apiError);
+		ApiAuditEvent apiAuditEvent = new ApiAuditEvent(ex);
+		alert(ex, apiAuditEvent);
+
 		response.setHeader(AppConstants.EXCEPTION_HEADER_KEY, apiError.getException());
-		alert(ex);
+		response.setHeader(AppConstants.EXCEPTION_HEADER_CODE_KEY, apiAuditEvent.getErrorCode());
+
+		for (AmxFieldError warning : AppContextUtil.getWarnings()) {
+			apiError.addWarning(warning);
+		}
 		return new ResponseEntity<AmxApiError>(apiError, getHttpStatus(ex));
 	}
 
@@ -70,8 +86,9 @@ public abstract class AmxAdvice implements ResponseBodyAdvice<AmxApiResponse<?, 
 		return exp.getHttpStatus();
 	}
 
-	private void alert(AmxApiException ex) {
-		auditService.log(new ApiAuditEvent(ex), ex);
+	private void alert(AmxApiException ex, ApiAuditEvent apiAuditEvent) {
+		// Raise Alert for Specific Event
+		auditService.log(apiAuditEvent, ex);
 	}
 
 	public void alert(Exception ex) {
@@ -89,6 +106,11 @@ public abstract class AmxAdvice implements ResponseBodyAdvice<AmxApiResponse<?, 
 		apiError.setException(ApiHttpArgException.class.getName());
 		ExceptionMessageKey.resolveLocalMessage(apiError);
 		response.setHeader(AppConstants.EXCEPTION_HEADER_KEY, apiError.getException());
+		
+		for (AmxFieldError warning : AppContextUtil.getWarnings()) {
+			apiError.addWarning(warning);
+		}
+		
 		return new ResponseEntity<AmxApiError>(apiError, HttpStatus.BAD_REQUEST);
 	}
 
@@ -180,7 +202,7 @@ public abstract class AmxAdvice implements ResponseBodyAdvice<AmxApiResponse<?, 
 		errors.add(newError);
 		return badRequest(ex, errors, request, response, ApiStatusCodes.PARAM_TYPE_MISMATCH);
 	}
-
+	
 	/**
 	 * Handle.
 	 *
@@ -216,4 +238,38 @@ public abstract class AmxAdvice implements ResponseBodyAdvice<AmxApiResponse<?, 
 		}
 		return body;
 	}
+
+	public ResponseEntity<?> handle(org.springframework.web.multipart.MultipartException exception) {
+		logger.error("handle->MultipartException" + exception.getMessage(), exception);
+		// general exception
+		if (exception.getCause() instanceof IOException
+				&& exception.getCause().getMessage().startsWith("The temporary upload location")) {
+			String pathToRecreate = exception.getMessage().substring(exception.getMessage().indexOf("[") + 1,
+					exception.getMessage().indexOf("]"));
+			Set<PosixFilePermission> perms = new HashSet<PosixFilePermission>();
+			// add permission as rw-r--r-- 644
+			perms.add(PosixFilePermission.OWNER_WRITE);
+			perms.add(PosixFilePermission.OWNER_READ);
+			perms.add(PosixFilePermission.OWNER_EXECUTE);
+			perms.add(PosixFilePermission.GROUP_READ);
+			perms.add(PosixFilePermission.GROUP_WRITE);
+			perms.add(PosixFilePermission.GROUP_EXECUTE);
+			FileAttribute<Set<PosixFilePermission>> fileAttributes = PosixFilePermissions.asFileAttribute(perms);
+			try {
+				Files.createDirectories(FileSystems.getDefault().getPath(pathToRecreate), fileAttributes);
+			} catch (IOException e) {
+				logger.error(e.getMessage(), e);
+				return new ResponseEntity<String>(
+						"Unable to recreate deleted temp directories. Please check  " + pathToRecreate,
+						HttpStatus.BAD_REQUEST);
+			}
+			return new ResponseEntity<String>(
+					"Recovered from temporary error by recreating temporary directory. Please try to upload logo again.",
+					HttpStatus.BAD_REQUEST);
+		}
+		return new ResponseEntity<String>(
+				"Unable to process this request.",
+				HttpStatus.BAD_REQUEST);
+	}
+	
 }

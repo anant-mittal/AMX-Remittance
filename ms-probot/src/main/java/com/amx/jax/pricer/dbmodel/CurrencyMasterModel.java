@@ -15,6 +15,10 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+/**
+ * @author :Rabil
+ */
+
 @Entity
 @Table(name = "EX_CURRENCY_MASTER")
 public class CurrencyMasterModel implements java.io.Serializable {
@@ -23,9 +27,8 @@ public class CurrencyMasterModel implements java.io.Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 3842382778044486312L;
-	
 	private BigDecimal currencyId;
-	// private CountryMaster fsCountryMaster;
+	// private CountryMasterModel fsCountryMaster;
 	private String currencyCode;
 	private String currencyName;
 	private String quoteName;
@@ -37,9 +40,7 @@ public class CurrencyMasterModel implements java.io.Serializable {
 	private String arabicDecimalName;
 	private String arabicQuoteName;
 	private String swiftCurrency;
-
 	private String isoCurrencyCode;
-
 	private BigDecimal decinalNumber;
 	private String createdBy;
 
@@ -50,6 +51,8 @@ public class CurrencyMasterModel implements java.io.Serializable {
 	private Date approvedDate;
 	private String remarks;
 	private BigDecimal countryId;
+	private BigDecimal fundMinRate;
+	private BigDecimal fundMaxRate;
 
 	private BigDecimal currGroupId;
 
@@ -75,10 +78,10 @@ public class CurrencyMasterModel implements java.io.Serializable {
 	/*
 	 * @ManyToOne(fetch = FetchType.LAZY)
 	 * 
-	 * @JoinColumn(name = "COUNTRY_ID") public CountryMaster getFsCountryMaster() {
+	 * @JoinColumn(name = "COUNTRY_ID") public CountryMasterModel getFsCountryMaster() {
 	 * return this.fsCountryMaster; }
 	 * 
-	 * public void setFsCountryMaster(CountryMaster fsCountryMaster) {
+	 * public void setFsCountryMaster(CountryMasterModel fsCountryMaster) {
 	 * this.fsCountryMaster = fsCountryMaster; }
 	 */
 
@@ -270,6 +273,15 @@ public class CurrencyMasterModel implements java.io.Serializable {
 		this.countryId = countryId;
 	}
 
+	@Column(name = "FUND_MIN_RATE")
+	public BigDecimal getFundMinRate() {
+		return fundMinRate;
+	}
+
+	public void setFundMinRate(BigDecimal fundMinRate) {
+		this.fundMinRate = fundMinRate;
+	}
+
 	@Column(name = "CURR_GROUPID")
 	public BigDecimal getCurrGroupId() {
 		return currGroupId;
@@ -277,5 +289,14 @@ public class CurrencyMasterModel implements java.io.Serializable {
 
 	public void setCurrGroupId(BigDecimal currGroupId) {
 		this.currGroupId = currGroupId;
+	}
+
+	@Column(name = "FUND_MAX_RATE")
+	public BigDecimal getFundMaxRate() {
+		return fundMaxRate;
+	}
+
+	public void setFundMaxRate(BigDecimal fundMaxRate) {
+		this.fundMaxRate = fundMaxRate;
 	}
 }

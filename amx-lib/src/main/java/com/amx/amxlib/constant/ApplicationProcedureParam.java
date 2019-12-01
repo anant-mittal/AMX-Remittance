@@ -3,8 +3,6 @@
  */
 package com.amx.amxlib.constant;
 
-import java.math.BigDecimal;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -45,7 +43,8 @@ public enum ApplicationProcedureParam {
 	P_ROUTING_BANK_ID,
 	P_FOREIGN_CURRENCY_ID("P_CURRENCY_ID"),
 	P_ROUTING_COUNTRY_ID,
-	P_BRANCH_ID;
+	P_BRANCH_ID,
+	P_BENEFICIARY_BANK_COUNTRY_ID("P_BENE_BANK_COUNTRY_ID");
 
 	String[] aliasNames;
 

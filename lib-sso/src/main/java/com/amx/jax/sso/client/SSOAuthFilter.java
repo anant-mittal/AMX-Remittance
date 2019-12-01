@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppConfig;
-import com.amx.jax.sso.SSOConfig;
 import com.amx.jax.sso.SSOConstants;
 import com.amx.jax.sso.SSOUser;
 import com.amx.jax.sso.SSOUserSessions;
@@ -54,7 +53,7 @@ public class SSOAuthFilter implements Filter {
 	public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain)
 			throws IOException, ServletException {
 
-		if (sSOUser.isAuthDone() && !sSOUserSessions.isValidUnique()) {
+		if (sSOUser.isAuthDone() && sSOUserSessions.isUserToBeThrownOut()) {
 			sSOUser.setAuthDone(false);
 			HttpServletResponse response = ((HttpServletResponse) resp);
 			response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);

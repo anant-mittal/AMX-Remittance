@@ -30,7 +30,7 @@ import com.amx.utils.ArgUtil;
 public class WhatsAppController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(WhatsAppController.class);
-	private static final long MESSAGE_TIMEOUT = 10 * 60 * 1000;
+	private static final long MESSAGE_TIMEOUT = 6 * 60 * 60 * 1000;
 
 	@Autowired
 	WhatsAppService whatsAppService;
@@ -101,7 +101,8 @@ public class WhatsAppController {
 			throws PostManException {
 		long ageOfMessage = System.currentTimeMillis() - msg.getTimestamp();
 
-		if (ageOfMessage < MESSAGE_TIMEOUT) {
+		if (ageOfMessage < MESSAGE_TIMEOUT || msg.getAttempt() < 5) {
+			msg.setAttempt(msg.getAttempt() + 1);
 			whatsAppService.send(msg, ArgUtil.parseAsBigDecimal(q, BigDecimal.ZERO));
 		} else {
 			msg.setStatus(Status.FAILED);

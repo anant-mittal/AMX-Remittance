@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.jax.dbmodel.CountryBranch;
+import com.amx.jax.dbmodel.CountryBranchMdlv1;
 import com.amx.jax.dbmodel.CustomerEmployeeInfoView;
 import com.amx.jax.dbmodel.PurposeOfRemittanceViewModel;
 import com.amx.jax.dbmodel.RemittanceTransactionView;
@@ -120,7 +120,7 @@ public class ReportManager extends AbstractService{
 		if(employeeDetails==null) {
 			throw new GlobalException(JaxError.INVALID_EMPLOYEE, "Employee not found");
 		}
-		CountryBranch countryBranch = bankMetaService.getCountryBranchById(employeeDetails.getCountryBranchId()); //user branch not customer branch
+		CountryBranchMdlv1 countryBranch = bankMetaService.getCountryBranchById(employeeDetails.getCountryBranchId()); //user branch not customer branch
 		List<CustomerDeclerationView> lstDeclarationView = customerDecRepository.findByApplicationCountryIdAndCollectionDocumentFinanceYearAndCollectionDocumentIdAndCollectionDocumentNo(metaData.getCountryId(), collectionDocYear, collectionDocCode, collectionDocNo);
 		
 		if(lstDeclarationView!=null && !lstDeclarationView.isEmpty()) {

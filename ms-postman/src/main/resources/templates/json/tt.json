@@ -1,5 +1,5 @@
 {
 	"_subject": "Transaction Credit Notification",
 	"_message": "Your transaction with us dated [[${data.date}]] having Trans Ref No: [[${data.refno}]] for [[${data.currency}]] [[${data.amount}]] has been successfully processed and made available to the bank of the beneficiary.  You now have [[${data.loyaltypoints}]] loyalty points.",
-	"url": "[[${_tu.prop('company.app.url') + '/app/rating/REMIT/' + data.tranxId + '/' + data.verCode }]]"
+	"url": "[[${_tu.prop('company.app.url') + '/pub/rating/REMIT/' + data.tranxId + '/' + data.verCode }]]"
 }

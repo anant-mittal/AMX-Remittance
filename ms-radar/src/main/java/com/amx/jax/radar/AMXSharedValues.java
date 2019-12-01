@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.cache.CacheBox;
+import com.amx.jax.exception.AmxException;
 import com.amx.utils.ArgUtil;
 import com.querydsl.core.annotations.QueryEntity;
 
@@ -18,11 +19,18 @@ public class AMXSharedValues extends CacheBox<String> {
 
 	public static final String SHARED_KEY_VALUE_COLLECTION = "SharedKeyValue";
 
-	@Autowired
+	@Autowired(required = false)
 	MongoTemplate mongoTemplate;
 
 	public AMXSharedValues() {
 		super("AMXSharedValues");
+	}
+
+	private MongoTemplate getMongoTemplate() {
+		if (mongoTemplate == null) {
+			throw new AmxException("MONGO DB IS NOT AVAIALBLE");
+		}
+		return mongoTemplate;
 	}
 
 	@QueryEntity
@@ -62,7 +70,8 @@ public class AMXSharedValues extends CacheBox<String> {
 	private SharedKeyValue getSharedKeyValue(String key) {
 		Query query = new Query();
 		query.addCriteria(Criteria.where("key").is(key));
-		return mongoTemplate.findOne(query, SharedKeyValue.class, SHARED_KEY_VALUE_COLLECTION);
+
+		return getMongoTemplate().findOne(query, SharedKeyValue.class, SHARED_KEY_VALUE_COLLECTION);
 	}
 
 	public String getValue(String key) {
@@ -83,7 +92,7 @@ public class AMXSharedValues extends CacheBox<String> {
 		}
 		config.setKey(key);
 		config.setValue(value);
-		mongoTemplate.save(config, SHARED_KEY_VALUE_COLLECTION);
+		getMongoTemplate().save(config, SHARED_KEY_VALUE_COLLECTION);
 		this.put(key, value);
 		return value;
 	}
@@ -94,7 +103,7 @@ public class AMXSharedValues extends CacheBox<String> {
 			config = new SharedKeyValue();
 		}
 		config.setKey(key);
-		mongoTemplate.remove(config, SHARED_KEY_VALUE_COLLECTION);
+		getMongoTemplate().remove(config, SHARED_KEY_VALUE_COLLECTION);
 		return this.fastRemove(key);
 	}
 }

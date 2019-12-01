@@ -16,6 +16,7 @@ import com.amx.amxlib.meta.model.ViewCompanyDetailDTO;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.dbmodel.ViewCompanyDetails;
+import com.amx.jax.dict.Language;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.ICompanyDAO;
@@ -32,15 +33,42 @@ public class CompanyService extends AbstractService {
 	MetaData metaData;
 
 	public static List<ViewCompanyDetails> DEFAULT_COMPANY_DETALIS;
+	
+	public ViewCompanyDetails getCompanyDetailInLang(BigDecimal languageId) {
+		List<ViewCompanyDetails> companyDetails = companyDao.getCompanyDetailInLang(languageId,Language.EN.getBDCode());
+		if (companyDetails.isEmpty()) {
+			throw new GlobalException(ResponseStatus.NOT_FOUND.toString());
+		}
+		if (companyDetails.size() == 1) {
+			return companyDetails.get(0);
+		}
+		ViewCompanyDetails viewCompanyDetailsDefault = null;
+		
+		for (ViewCompanyDetails viewCompanyDetails : companyDetails) {
+			if(viewCompanyDetails.getCompanyId().equals(languageId)) {
+				return viewCompanyDetails;
+			} else if(viewCompanyDetails.getCompanyId().equals(Language.EN.getBDCode())) {
+				viewCompanyDetailsDefault = viewCompanyDetails;
+			}
+		}
+		return viewCompanyDetailsDefault;
+	}
 
 	public AmxApiResponse<ViewCompanyDetailDTO, Object> getCompanyDetails(BigDecimal languageId) {
-		List<ViewCompanyDetails> companyDetails = companyDao.getCompanyDetails(languageId);
+		List<ViewCompanyDetails> companyDetails = companyDao.getCompanyDetails(Language.EN.getBDCode());
 		if (companyDetails.isEmpty()) {
 			throw new GlobalException(ResponseStatus.NOT_FOUND.toString());
 		}
 		return AmxApiResponse.buildList(convert(companyDetails));
 	}
 
+	/**
+	 * Use {@link #getCompanyDetailInLang(BigDecimal)}
+	 * 
+	 * @param languageId
+	 * @return
+	 */
+	@Deprecated
 	public ViewCompanyDetails getCompanyDetail(BigDecimal languageId) {
 		List<ViewCompanyDetails> companyDetails = companyDao.getCompanyDetails(languageId);
 		if (companyDetails.isEmpty()) {
@@ -54,7 +82,7 @@ public class CompanyService extends AbstractService {
 	 */
 	@Transactional(readOnly = true)
 	public ViewCompanyDetails getCompanyDetail() {
-		List<ViewCompanyDetails> companyDetails = companyDao.getCompanyDetailsByCompanyId(metaData.getLanguageId(),
+		List<ViewCompanyDetails> companyDetails = companyDao.getCompanyDetailsByCompanyId(Language.EN.getBDCode(),
 				metaData.getCompanyId());
 		return companyDetails.get(0);
 	}

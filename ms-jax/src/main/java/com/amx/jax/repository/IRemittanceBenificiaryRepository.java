@@ -5,7 +5,9 @@ import java.io.Serializable;
 import org.springframework.data.repository.CrudRepository;
 
 import com.amx.jax.dbmodel.remittance.RemittanceBenificiary;
+import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 
 public interface IRemittanceBenificiaryRepository  extends CrudRepository<RemittanceBenificiary, Serializable>{
 
+	RemittanceBenificiary findByExRemittancefromBenfi(RemittanceTransaction remittanceTrnxId);
 }

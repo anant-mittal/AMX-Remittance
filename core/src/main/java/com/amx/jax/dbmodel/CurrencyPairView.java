@@ -102,4 +102,10 @@ public class CurrencyPairView implements IResourceEntity {
 		return null;
 	}
 
+	@Override
+	public String resourceLocalName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

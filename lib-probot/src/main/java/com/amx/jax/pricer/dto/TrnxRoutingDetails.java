@@ -34,6 +34,10 @@ public class TrnxRoutingDetails implements Serializable, Comparable<TrnxRoutingD
 	private BigDecimal costAmount;
 	private BigDecimal beneDeductChargeAmount;
 
+	private String isFcRoundingAllowed;
+
+	private BigDecimal splitAmount;
+
 	private EstimatedDeliveryDetails estimatedDeliveryDetails;
 
 	public String getServiceGroupCode() {
@@ -202,6 +206,22 @@ public class TrnxRoutingDetails implements Serializable, Comparable<TrnxRoutingD
 
 	public void setBeneDeductChargeAmount(BigDecimal beneDeductChargeAmount) {
 		this.beneDeductChargeAmount = beneDeductChargeAmount;
+	}
+
+	public String getIsFcRoundingAllowed() {
+		return isFcRoundingAllowed;
+	}
+
+	public void setIsFcRoundingAllowed(String isFcRoundingAllowed) {
+		this.isFcRoundingAllowed = isFcRoundingAllowed;
+	}
+
+	public BigDecimal getSplitAmount() {
+		return splitAmount;
+	}
+
+	public void setSplitAmount(BigDecimal splitAmount) {
+		this.splitAmount = splitAmount;
 	}
 
 	public EstimatedDeliveryDetails getEstimatedDeliveryDetails() {

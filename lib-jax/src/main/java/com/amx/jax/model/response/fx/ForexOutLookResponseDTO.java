@@ -1,7 +1,5 @@
 package com.amx.jax.model.response.fx;
 
-import java.util.Date;
-
 import com.amx.jax.model.ResourceDTO;
 
 public class ForexOutLookResponseDTO extends ResourceDTO {

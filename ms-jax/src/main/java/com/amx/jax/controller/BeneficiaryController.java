@@ -24,20 +24,26 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.amx.amxlib.constant.BeneficiaryConstant.BeneStatus;
-import com.amx.amxlib.meta.model.BeneficiaryListDTO;
-import com.amx.amxlib.model.BeneAccountModel;
-import com.amx.amxlib.model.BenePersonalDetailModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam;
+import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.client.bene.BeneficaryStatusDto;
+import com.amx.jax.client.bene.BeneficiaryConstant.BeneStatus;
+import com.amx.jax.client.bene.IBeneficiaryService;
 import com.amx.jax.constants.JaxChannel;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.BeneficiaryListDTO;
+import com.amx.jax.model.request.benebranch.BeneAccountModel;
+import com.amx.jax.model.request.benebranch.BenePersonalDetailModel;
 import com.amx.jax.service.AccountTypeService;
 import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.trnx.BeneficiaryTrnxManager;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.ConverterUtil;
+import com.amx.utils.JsonUtil;
+
+import io.swagger.annotations.ApiOperation;
 
 /**
  * 
@@ -47,7 +53,7 @@ import com.amx.jax.util.ConverterUtil;
 @RestController
 @RequestMapping(BENE_API_ENDPOINT)
 @SuppressWarnings("rawtypes")
-public class BeneficiaryController {
+public class BeneficiaryController implements IBeneficiaryService{
 	private static final Logger LOGGER = LoggerFactory.getLogger(BeneficiaryController.class);
 	private static final String RELATIONSHIP_ID = "Relationship Id :";
 	private static final String CUSTOMER_ID = "Customer Id :";
@@ -71,20 +77,14 @@ public class BeneficiaryController {
 	private UserService userService;
 
 	@RequestMapping(value = "/beneList/", method = RequestMethod.GET)
-	public ApiResponse getBeneficiaryListResponse(@RequestParam("beneCountryId") BigDecimal beneCountryId) {
+	public ApiResponse getBeneficiaryListResponse(@RequestParam("beneCountryId") BigDecimal beneCountryId,@RequestParam("excludePackage") Boolean excludePackage) {
 		BigDecimal customerId = metaData.getCustomerId();
 		BigDecimal applicationCountryId = metaData.getCountryId();
 		JaxChannel channel = metaData.getChannel();
-		/*
-		 * LOGGER.debug("userType :" + channel.name() + "\t customerId :" + customerId +
-		 * "\t applicationCountryId :" + applicationCountryId + "\t beneCountryId :" +
-		 * beneCountryId);
-		 */
-
 		if (channel != null && channel.equals(JaxChannel.BRANCH)) {
 			return beneService.getBeneficiaryListForBranch(customerId, applicationCountryId, beneCountryId);
 		} else {
-			return beneService.getBeneficiaryListForOnline(customerId, applicationCountryId, beneCountryId);
+			return beneService.getBeneficiaryListForOnline(customerId, applicationCountryId, beneCountryId,excludePackage);
 		}
 	}
 
@@ -92,7 +92,6 @@ public class BeneficiaryController {
 	public ApiResponse getBeneficiaryCountryListResponse() {
 		BigDecimal customerId = metaData.getCustomerId();
 		JaxChannel channel = metaData.getChannel();
-
 		LOGGER.debug("userType :" + channel + "\t customerId :" + customerId);
 
 		if (channel != null && channel.equals(JaxChannel.BRANCH)) {
@@ -139,9 +138,7 @@ public class BeneficiaryController {
 		BigDecimal applicationCountryId = metaData.getCountryId();
 		LOGGER.info("favouritebene customerId Id :" + customerId);
 		LOGGER.info("favouritebene applicationCountryId  :" + applicationCountryId);
-
 		response = beneService.getFavouriteBeneficiaryList(customerId, applicationCountryId);
-
 		return response;
 	}
 
@@ -214,7 +211,7 @@ public class BeneficiaryController {
 	@RequestMapping(value = "/trnx/bene/bene-details/", method = RequestMethod.POST)
 	public ApiResponse saveBenePersonalDetailInTrnx(
 			@RequestBody @Valid BenePersonalDetailModel benePersonalDetailModel) {
-		LOGGER.debug("saveBenePersonalDetailInTrnx request: " + benePersonalDetailModel.toString());
+		LOGGER.info("saveBenePersonalDetailInTrnx request: " + JsonUtil.toJson(benePersonalDetailModel));
 		return beneficiaryTrnxManager.savePersonalDetailTrnx(benePersonalDetailModel);
 	}
 
@@ -339,4 +336,11 @@ public class BeneficiaryController {
 		return response;
 	}
 
+	@RequestMapping(value = Path.GET_BENE_STATUS_MASTER, method = RequestMethod.GET)
+	@ApiOperation("getBeneStatusMaster")
+	@Override
+	public AmxApiResponse<BeneficaryStatusDto, Object> getBeneStatusMaster() {
+		List<BeneficaryStatusDto> beneStatusDtoList = beneService.getBeneStatusMaster();
+		return AmxApiResponse.buildList(beneStatusDtoList);
+	}
 }

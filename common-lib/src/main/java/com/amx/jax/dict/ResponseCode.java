@@ -271,14 +271,25 @@ public enum ResponseCode {
 
     
 	//BANK of BENEFIT
-	BANK_DISCON("91","The bank is disconnected at the moment"),
     ISSUE_IN_CARD("05","The customer should contact the bank to resolve the Card issue"),
+	INVALID_CARD_NUMBER("14","Invalid card number"),
     CARD_EXPIRED("33","The customer card is expired"),
+	RESTRICTED_CARD("36","Restricted card"),
+	PIN_EXCEED("38","Allowable PIN tries exceeded"),
     INSUFFICIENT_FUNDS("51","Insufficient funds"),
     CUSTOMER_CARD_EXPIRED("54","The customer card is expired"),
     INCORRECT_PIN_NUMBER("55","Incorrect pin number"),
-    INVALID_CARD_NUMBER_02("PY20006","Invalid Brand"),
-    EXCEEDS_WITHDRAW_LIMIT("61","The card exceeds withdrawal amount limit");
+    EXCEEDS_WITHDRAW_LIMIT("61","The card exceeds withdrawal amount limit"),
+	RESTRICT_CARD("62","Restricted card"),
+	EXCEEDS_WITHDRAW_FREQUENCY_LIMIT("65","Exceeds withdrawal frequency limit"),
+	PIN_NUMBER_EXCEED("75","Allowable number PIN tries exceeded"),
+	INELIGIBLE_ACCOUNT("76","Ineligible account"),
+	REFER_ISSUE("78","Refer to Issuer"),
+	BANK_DISCON("91","The bank is disconnected at the moment"),
+	INVALID_CARD_NUMBER_02("PY20006","Invalid Brand");
+    
+    //Added for Testing
+    //ERROR_TEST_92("92", "92 - Unmapped Declined for Testing");
     
 	//public static final ResponseCode DEFAULT = RES_CODE_IPAY0200079;
 
@@ -300,6 +311,18 @@ public enum ResponseCode {
 	
 	public String getResponseDesc() {
 		return this.responseDesc;
+	}
+	
+	// response code method added by Subodh
+	public static ResponseCode getRespCodebyCode(String code) {
+		ResponseCode[] allCodes = ResponseCode.values();
+		for (ResponseCode respCode : allCodes) {
+			if (respCode.getResponseCode().equals(code)){
+				respCode.getResponseDesc();
+				return respCode;
+			}
+		}
+		return null;
 	}
 
 }

@@ -3,7 +3,7 @@ package com.amx.jax.constant;
 import com.amx.amxlib.constant.JaxFieldType;
 
 public enum FlexFieldBehaviour {
-	PRE_DEFINED(JaxFieldType.SELECT), USER_ENTERABLE(JaxFieldType.TEXT);
+	PRE_DEFINED(JaxFieldType.SELECT), USER_ENTERABLE(JaxFieldType.TEXT),SELECT_DATE(JaxFieldType.DATE),SELECT_DATETIME(JaxFieldType.DATETIME);
 
 	JaxFieldType fieldType;
 

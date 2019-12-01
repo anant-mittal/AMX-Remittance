@@ -1,0 +1,20 @@
+{
+  "data": {
+    "routingBankCode": "HOME",
+    "beneficiaryAccount": "GB13MIDL40478642675722",
+    "beneficiaryBankName": "HSBC BANK PLC",
+    "beneficiaryBranchName": "LONDON",
+    "beneficiaryName": "GEE SREE(TEL NO:6174850012)",
+    "customerName": "KHALEDAH MESBEH SALEH ALMESBAH",
+    "exceptionMessage": "R : Transaction cancelled",
+    "customerReference": 327280,
+    "transactionAmount": 28.108,
+    "transactionDocYear": 2019,
+    "transactionDocNumber": 10730,
+	"transactionId": "11ty7ibuwe8yko1dlv8covr7y87-19",
+	"customerContact" : "985634",
+	"transactionForeignAmount"  : 28.108,
+	"foreignCurrencyQuote" : "GBP",
+	"localCurrencyQuote" : "KD"
+  }
+}

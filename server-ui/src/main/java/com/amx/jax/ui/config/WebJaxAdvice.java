@@ -28,6 +28,7 @@ import com.amx.jax.api.AmxFieldError;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.exception.AmxApiException;
 import com.amx.jax.logger.AuditService;
+import com.amx.jax.logger.events.ApiAuditEvent;
 import com.amx.jax.model.AuthState;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.ui.audit.CAuthEvent;
@@ -78,25 +79,30 @@ public class WebJaxAdvice {
 
 		wrapper.setMessage(OWAStatusStatusCodes.UNKNOWN_JAX_ERROR, exc);
 
+		/*
 		String errorKey = ArgUtil.parseAsString(exc.getErrorKey(), OWAStatusStatusCodes.UNKNOWN_JAX_ERROR.toString());
 		if (exc.isReportable()) {
-			LOG.error(errorKey, exc);
-			postManService.notifyException(errorKey, exc);
+			LOG.debug(errorKey, exc);
+			//postManService.notifyException(errorKey, exc);
 		} else {
-			LOG.error(ArgUtil.parseAsString(errorKey, exc.getErrorMessage()));
-		}
+			LOG.debug(ArgUtil.parseAsString(errorKey, exc.getErrorMessage()));
+		}*/
 
 		AuthState state = guestSession.getState();
 		if (state.getFlow() != null) {
-			auditService.log(new CAuthEvent(state, CAuthEvent.Result.FAIL, exc.getError()));
+			auditService.log(new CAuthEvent(state, CAuthEvent.Result.FAIL, exc.getError()).step(state.getcStep()));
 		}
+		
 		if (exc.getError() == JaxError.USER_LOGIN_ATTEMPT_EXCEEDED
 				|| JaxError.UNAUTHORIZED.equals(exc.getError())) {
 			sessionService.unIndexUser();
 		}
+		
+		ApiAuditEvent apiAuditEvent = new ApiAuditEvent(exc);
+		auditService.log(apiAuditEvent, exc);
 
+		wrapper.setRedirectUrl(exc.getRedirectUrl());
 		wrapper.setException(exc.getClass().getName());
-
 		return new ResponseEntity<ResponseWrapper<Object>>(wrapper, HttpStatus.OK);
 	}
 
@@ -108,7 +114,7 @@ public class WebJaxAdvice {
 	 */
 	@ExceptionHandler(ConstraintViolationException.class)
 	@ResponseBody
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)	
 	public ResponseEntity<ResponseWrapper<Object>> handle(ConstraintViolationException exception) {
 		ResponseWrapper<Object> wrapper = new ResponseWrapper<Object>();
 		List<AmxFieldError> errors = new ArrayList<AmxFieldError>();
@@ -225,8 +231,10 @@ public class WebJaxAdvice {
 		ResponseWrapper<Object> wrapper = new ResponseWrapper<Object>();
 		wrapper.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
 		wrapper.setException(ex.getClass().getName());
+		ApiAuditEvent apiAuditEvent = new ApiAuditEvent(ex);
+		auditService.log(apiAuditEvent, ex);
 		LOG.error("In Advice Exception Captured", ex);
-		postManService.notifyException(wrapper.getStatus(), ex);
+		//postManService.notifyException(wrapper.getStatus(), ex);
 		return new ResponseEntity<ResponseWrapper<Object>>(wrapper, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 

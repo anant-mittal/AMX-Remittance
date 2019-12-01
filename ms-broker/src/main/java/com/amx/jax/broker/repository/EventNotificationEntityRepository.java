@@ -12,4 +12,6 @@ public interface EventNotificationEntityRepository extends CrudRepository<EventN
 	
 	@Query("select en from EventNotificationEntity en where en.status = 1")
 	public List<EventNotificationEntity> getEventNotificationRecordsToDelete();
+	
+	public List<EventNotificationEntity>  findByStatus(BigDecimal status);
 }

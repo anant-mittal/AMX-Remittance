@@ -10,8 +10,9 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
+import com.amx.jax.dict.PayGCodes;
 import com.amx.jax.dict.PayGServiceCode;
-import com.amx.jax.payg.PayGCodes;
+import com.amx.jax.dict.ResponseCodeBHR;
 import com.amx.jax.payg.PayGParams;
 import com.amx.jax.payg.codes.BenefitCodes;
 import com.amx.jax.payment.PaymentConstant;
@@ -69,7 +70,7 @@ public class BenefitClient implements PayGClient {
 
 	@Autowired
 	PayGSession payGSession;
-
+	
 	@Override
 	public PayGServiceCode getClientCode() {
 		return PayGServiceCode.BENEFIT;
@@ -121,6 +122,12 @@ public class BenefitClient implements PayGClient {
 				LOGGER.debug(pipe.getDebugMsg());
 				throw new RuntimeException("Problem while sending transaction to Benefit.");
 			}
+			
+			// Set Payment Secrete
+			String hashedSeceret = PaymentConstant.getHashedSecrete(
+				getPaymentParamStr(params.getDocNo(), params.getTrackId()), PaymentConstant.KWT_SECRETE_SALT);
+			
+			pipe.setUdf5(hashedSeceret);
 
 			// get results
 			String payID = pipe.getPaymentId();
@@ -183,24 +190,46 @@ public class BenefitClient implements PayGClient {
 			gatewayResponse.setTrackId(params.getTrackId());
 		}
 
+		String expectedSecrete = PaymentConstant.getHashedSecrete(
+				getPaymentParamStr(gatewayResponse.getUdf3().trim(), gatewayResponse.getTrackId()),
+				PaymentConstant.KWT_SECRETE_SALT);
+		
+		/*if(null != gatewayResponse.getUdf5() && null != expectedSecrete) {
+			LOGGER.info("Secrete ====>  " +  expectedSecrete);
+			LOGGER.info("UDF5 ====>  " +  gatewayResponse.getUdf5());
+			if(!expectedSecrete.equals(gatewayResponse.getUdf5())) {
+				throw new RuntimeException("Transation Parmeters are mismatch");
+			}
+		}*/
+		
 		BenefitCodes statusCode;
 
 		if ("CAPTURED".equalsIgnoreCase(resultCode)) {
 			statusCode = (BenefitCodes) PayGCodes.getPayGCode(resultCode, BenefitCodes.UNKNOWN);
-			gatewayResponse.setErrorCategory(statusCode.getCategory());
+			gatewayResponse.setErrorCategory(statusCode.getCategory().name());
+			LOGGER.info("CAPTURED ---> " + gatewayResponse.getErrorCategory());
 		} else if (resultResponse == null) {
 			statusCode = (BenefitCodes) PayGCodes.getPayGCode(responseCode, BenefitCodes.UNKNOWN);
-			gatewayResponse.setErrorCategory(statusCode.getCategory());
+			gatewayResponse.setErrorCategory(statusCode.getCategory().name());
+			LOGGER.info("resultResponse else if ---> " + gatewayResponse.getErrorCategory());
 			gatewayResponse.setError(responseCode);
 		} else {
 			LOGGER.info("resultResponse ---> " + resultResponse);
-			statusCode = (BenefitCodes) PayGCodes.getPayGCode(resultResponse, BenefitCodes.UNKNOWN);
-			gatewayResponse.setErrorCategory(statusCode.getCategory());
-			LOGGER.info("Result from response Values ---> " + gatewayResponse.getErrorCategory());
+			/*statusCode = (BenefitCodes) PayGCodes.getPayGCode(resultResponse, BenefitCodes.UNKNOWN);
+			gatewayResponse.setErrorCategory(statusCode.getCategory());*/
+			ResponseCodeBHR responseCodeEnum = ResponseCodeBHR.getResponseCodeEnumByCode(gatewayResponse.getError());
+			if(responseCodeEnum != null) {
+				gatewayResponse.setErrorCategory(responseCodeEnum.name());
+				LOGGER.info("Result from response Values IF---> " + responseCodeEnum);
+			}else {
+				gatewayResponse.setErrorCategory(ResponseCodeBHR.UNKNOWN.name());
+				LOGGER.info("Result from response Values ELSE---> " + responseCodeEnum);
+			}
+			
 			gatewayResponse.setError(resultResponse);
 		}
-
-		LOGGER.info("Params captured from BENEFIT : " + JsonUtil.toJson(gatewayResponse));
+		
+		LOGGER.info("Params Captured From BENEFIT : " + JsonUtil.toJson(gatewayResponse));
 
 		paymentService.capturePayment(params, gatewayResponse);
 
@@ -216,5 +245,9 @@ public class BenefitClient implements PayGClient {
 		}
 		return gatewayResponse;
 	}// end of capture
+	
+	private String getPaymentParamStr(String docId, String trackId) {
+		return docId + "-" + trackId;
+	}
 
 }

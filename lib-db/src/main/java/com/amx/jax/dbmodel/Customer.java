@@ -2,7 +2,9 @@ package com.amx.jax.dbmodel;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -12,6 +14,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.SequenceGenerator;
@@ -22,12 +26,16 @@ import javax.persistence.TemporalType;
 import org.hibernate.annotations.Proxy;
 
 import com.amx.jax.constants.CustomerRegistrationType;
+import com.amx.jax.dbmodel.compliance.ComplianceBlockedCustomerDocMap;
+import com.amx.jax.dict.Communicatable;
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.util.AmxDBConstants.Status;
+import com.amx.utils.ArgUtil;
 
 @Entity
 @Table(name = "FS_CUSTOMER")
 @Proxy(lazy = false)
-public class Customer implements java.io.Serializable {
+public class Customer implements java.io.Serializable, Communicatable {
 
 	private static final long serialVersionUID = 1L;
 	private BigDecimal customerId;
@@ -98,6 +106,7 @@ public class Customer implements java.io.Serializable {
 	private String isOnlineUser;
 	private BigDecimal customerTypeId;
 	private Date identityExpiredDate;
+	
 
 	/**
 	 * Added following field for CR. DAILY_LIMIT WEEKLY_LIMIT MONTHLY_LIMIT
@@ -135,21 +144,60 @@ public class Customer implements java.io.Serializable {
 	private String prefixCodeMobileOther;
 	private String isMobileWhatsApp;
 	private String isMobileOtherWhatsApp;
-	
-	
-	//income related fields are added
-	
+
+	// income related fields are added
+
 	private BigDecimal annualIncomeFrom;
 	private BigDecimal annualIncomeTo;
 	private String annualIncomeUpdatedBy;
 	private Date annualIncomeUpdatedDate;
 	private String isBusinessCardVerified;
+	private List<ComplianceBlockedCustomerDocMap> complianceBlockedDocuments;
 	
 
-	
 	private String customerVatNumber;
+	private String premInsurance;
+
+	// annual transaction limit fields added
+
+	private BigDecimal annualTransactionLimitFrom;
+	private BigDecimal annualTransactionLimitTo;
+	private Date annualTransactionUpdatedDate;
 	
 	
+	
+	/** added by rabil on 09 Oc 2019 **/
+	
+	private BigDecimal onlineLanguageChangeCount;
+	
+
+	@Column(name = "ANNUAL_TRNXLIMIT_FROM")
+	public BigDecimal getAnnualTransactionLimitFrom() {
+		return annualTransactionLimitFrom;
+	}
+
+	public void setAnnualTransactionLimitFrom(BigDecimal annualTransactionLimitFrom) {
+		this.annualTransactionLimitFrom = annualTransactionLimitFrom;
+	}
+
+	@Column(name = "ANNUAL_TRNXLIMIT_TO")
+	public BigDecimal getAnnualTransactionLimitTo() {
+		return annualTransactionLimitTo;
+	}
+
+	public void setAnnualTransactionLimitTo(BigDecimal annualTransactionLimitTo) {
+		this.annualTransactionLimitTo = annualTransactionLimitTo;
+	}
+
+	@Column(name = "ANNUAL_TRNXLIMIT_UPDATED_DATE")
+	public Date getAnnualTransactionUpdatedDate() {
+		return annualTransactionUpdatedDate;
+	}
+
+	public void setAnnualTransactionUpdatedDate(Date annualTransactionUpdatedDate) {
+		this.annualTransactionUpdatedDate = annualTransactionUpdatedDate;
+	}
+
 	public String getIsBusinessCardVerified() {
 		return isBusinessCardVerified;
 	}
@@ -1050,6 +1098,10 @@ public class Customer implements java.io.Serializable {
 		this.whatsAppVerified = whatsAppVerified;
 	}
 
+	public boolean canSendWhatsApp() {
+		return !(Status.D.equals(this.whatsAppVerified) || Status.N.equals(this.whatsAppVerified));
+	}
+
 	private Status emailVerified;
 
 	@Column(name = "EMAIL_VERIFIED")
@@ -1060,6 +1112,10 @@ public class Customer implements java.io.Serializable {
 
 	public void setEmailVerified(Status emailVerified) {
 		this.emailVerified = emailVerified;
+	}
+
+	public boolean canSendEmail() {
+		return !(Status.D.equals(this.emailVerified) || Status.N.equals(this.emailVerified) || ArgUtil.isEmpty(this.email));
 	}
 
 	private Status mobileVerified;
@@ -1074,19 +1130,70 @@ public class Customer implements java.io.Serializable {
 		this.mobileVerified = mobileVerified;
 	}
 
-	@Column(name="VAT_NUMBER")
+	public boolean canSendMobile() {
+		return !(Status.D.equals(this.mobileVerified) || Status.N.equals(this.mobileVerified));
+	}
+	
+	public boolean hasVerified(ContactType contactType) {
+		switch (contactType) {
+		case SMS:
+		case MOBILE:
+			return Status.Y.equals(this.mobileVerified);
+		case EMAIL:
+			return Status.Y.equals(this.emailVerified);
+		case WHATSAPP:
+			return Status.Y.equals(this.whatsAppVerified);
+		default:
+			break;
+		}
+		return false;
+	}
+
+	@Column(name = "VAT_NUMBER")
 	public String getCustomerVatNumber() {
 		return customerVatNumber;
 	}
 
+	@ManyToMany(cascade = CascadeType.ALL, fetch=FetchType.LAZY)
+	@JoinTable(  name = "JAX_COMPLIANCE_BLOCKED_DOC_MAP", joinColumns = @JoinColumn(name = "CUSTOMER_ID", referencedColumnName="CUSTOMER_ID"), inverseJoinColumns = @JoinColumn(name = "COMP_BLOCKED_CUST_DOC_MAP_ID",
+			referencedColumnName="ID"))
+	public List<ComplianceBlockedCustomerDocMap> getComplianceBlockedDocuments() {
+		return complianceBlockedDocuments;
+	}
+
+	@Column(name = "PREM_INSURANCE")
+	public String getPremInsurance() {
+		return premInsurance;
+	}
+
+	public void setPremInsurance(String premInsurance) {
+		this.premInsurance = premInsurance;
+	}
+
 	@Override
 	public String toString() {
-		return "Customer [customerId=" + customerId +", email=" + email + 
-				 ", emailVerified=" + emailVerified + ", mobileVerified="
+		return "Customer [customerId=" + customerId + ", email=" + email +
+				", whatsApp=" + whatsapp + ", mobile=" + mobile +
+				", emailVerified=" + emailVerified + ", whatsAppVerified=" + whatsAppVerified + ", mobileVerified="
 				+ mobileVerified + "]";
 	}
 
 	public void setCustomerVatNumber(String customerVatNumber) {
 		this.customerVatNumber = customerVatNumber;
+	}
+
+	
+	
+	@Column(name="LANGUAGE_CHANGE_COUNT")
+	public BigDecimal getOnlineLanguageChangeCount() {
+		return onlineLanguageChangeCount;
+	}
+
+	public void setOnlineLanguageChangeCount(BigDecimal onlineLanguageChangeCount) {
+		this.onlineLanguageChangeCount = onlineLanguageChangeCount;
+	}
+
+	public void setComplianceBlockedDocuments(List<ComplianceBlockedCustomerDocMap> complianceBlockedDocuments) {
+		this.complianceBlockedDocuments = complianceBlockedDocuments;
 	}
 }

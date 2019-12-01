@@ -1,20 +1,22 @@
 package com.amx.jax.logger;
 
+import java.util.Map;
+
 import com.amx.jax.dict.UserClient.UserDeviceClient;
-import com.amx.jax.exception.IExceptionEnum;
+import com.amx.jax.exception.AmxApiException;
 import com.amx.utils.ArgUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonInclude(Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonPropertyOrder({ AuditEvent.PROP_DESC, AuditEvent.PROP_MSG, AbstractEvent.PROP_COMPONENT, AbstractEvent.PROP_CATG,
 		AbstractEvent.PROP_TYPE, AuditEvent.PROP_RESULT, AbstractEvent.PROP_TIMSTAMP })
-public abstract class AuditEvent extends AbstractEvent {
+public abstract class AuditEvent<T extends AuditEvent<T>> extends AbstractEvent {
 
 	public static final String PROP_MSG = "msg";
 	public static final String PROP_DESC = "desc";
@@ -24,7 +26,7 @@ public abstract class AuditEvent extends AbstractEvent {
 	@JsonProperty(PROP_RESULT)
 	protected Result result;
 
-	protected IExceptionEnum errorCode;
+	protected String errorCode;
 
 	@JsonProperty("trxTym")
 	protected long tranxTime;
@@ -54,9 +56,10 @@ public abstract class AuditEvent extends AbstractEvent {
 
 	@JsonIgnore
 	boolean success;
+	protected Map<String, String> details;
 
 	public static enum Result {
-		DEFAULT, DONE, REJECTED, FAIL, ERROR, PASS;
+		DEFAULT, DONE, REJECTED, FAIL,CANCELLED, ERROR, PASS;
 	}
 
 	public AuditEvent() {
@@ -132,10 +135,20 @@ public abstract class AuditEvent extends AbstractEvent {
 		this.exceptionType = exceptionType;
 	}
 
+	/**
+	 * gets the minimum actor info
+	 * 
+	 * @param actorId
+	 */
 	public String getActorId() {
 		return actorId;
 	}
 
+	/**
+	 * Sets the minimum actor info
+	 * 
+	 * @param actorId
+	 */
 	public void setActorId(String actorId) {
 		this.actorId = actorId;
 	}
@@ -156,11 +169,11 @@ public abstract class AuditEvent extends AbstractEvent {
 		this.data = data;
 	}
 
-	public IExceptionEnum getErrorCode() {
+	public String getErrorCode() {
 		return errorCode;
 	}
 
-	public void setErrorCode(IExceptionEnum errorCode) {
+	public void setErrorCode(String errorCode) {
 		this.errorCode = errorCode;
 	}
 
@@ -177,14 +190,47 @@ public abstract class AuditEvent extends AbstractEvent {
 		this.client = client;
 	}
 
-	public AuditEvent result(Result result) {
+	@SuppressWarnings("unchecked")
+	public T result(Result result) {
 		this.setResult(result);
-		return this;
+		return (T) this;
 	}
 
-	public AuditEvent message(Object message) {
+	public void setException(Exception excep) {
+		this.setExceptionType(excep.getClass().getName());
+		this.setException(excep.getMessage());
+	}
+
+	public void setException(AmxApiException excep) {
+		this.setExceptionType(excep.getClass().getName());
+		this.setException(excep.getMessage());
+		this.errorCode = ArgUtil.isEmpty(excep.getErrorKey()) ? ArgUtil.parseAsString(excep.getError())
+				: excep.getErrorKey();
+	}
+
+	@SuppressWarnings("unchecked")
+	public T excep(Exception excep) {
+		this.setException(excep);
+		return (T) this;
+	}
+
+	@SuppressWarnings("unchecked")
+	public T excep(AmxApiException excep) {
+		this.setException(excep);
+		return (T) this;
+	}
+
+	@SuppressWarnings("unchecked")
+	public T result(Result result, AmxApiException excep) {
+		this.setResult(result);
+		this.setException(excep);
+		return (T) this;
+	}
+
+	@SuppressWarnings("unchecked")
+	public T message(Object message) {
 		this.setMessage(ArgUtil.parseAsString(message));
-		return this;
+		return (T) this;
 	}
 
 	public boolean isSuccess() {
@@ -193,6 +239,14 @@ public abstract class AuditEvent extends AbstractEvent {
 
 	public void setSuccess(boolean success) {
 		this.success = success;
+	}
+
+	public Map<String, String> getDetails() {
+		return details;
+	}
+
+	public void setDetails(Map<String, String> details) {
+		this.details = details;
 	}
 
 }

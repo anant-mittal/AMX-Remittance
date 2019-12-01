@@ -23,6 +23,8 @@ import org.springframework.util.StringUtils;
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppConstants;
 import com.amx.jax.AppContextUtil;
+import com.amx.jax.VendorAuthConfig;
+import com.amx.jax.dict.Language;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.dict.UserClient.UserDeviceClient;
 import com.amx.jax.http.CommonHttpRequest;
@@ -30,11 +32,17 @@ import com.amx.jax.http.CommonHttpRequest.ApiRequestDetail;
 import com.amx.jax.http.RequestType;
 import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.logger.events.RequestTrackEvent;
+import com.amx.jax.model.MapModel;
 import com.amx.jax.rest.AppRequestContextInFilter;
+import com.amx.jax.rest.AppRequestInterfaces.VendorAuthFilter;
 import com.amx.jax.scope.TenantContextHolder;
+import com.amx.jax.scope.VendorProperties;
+import com.amx.jax.session.SessionContextService;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.Constants;
 import com.amx.utils.CryptoUtil;
 import com.amx.utils.JsonUtil;
+import com.amx.utils.UniqueID;
 import com.amx.utils.Urly;
 
 @Component
@@ -61,9 +69,18 @@ public class AppRequestFilter implements Filter {
 	@Autowired(required = false)
 	AppRequestContextInFilter appContextInFilter;
 
-	private boolean doesTokenMatch(HttpServletRequest req, HttpServletResponse resp, String traceId,
-			boolean checkHMAC) {
-		String authToken = commonHttpRequest.get(AppConstants.AUTH_TOKEN_XKEY);
+	@Autowired(required = false)
+	SessionContextService sessionContextService;
+
+	@Autowired(required = false)
+	VendorAuthConfig appVendorConfig;
+
+	@Autowired(required = false)
+	VendorAuthFilter vaendorAuthFilter;
+
+	private boolean doesTokenMatch(CommonHttpRequest localCommonHttpRequest, HttpServletRequest req,
+			HttpServletResponse resp, String traceId, boolean checkHMAC) {
+		String authToken = localCommonHttpRequest.get(AppConstants.AUTH_TOKEN_XKEY);
 		if (checkHMAC) {
 			if (StringUtils.isEmpty(authToken)
 					|| (CryptoUtil.validateHMAC(appConfig.getAppAuthKey(), traceId, authToken) == false)) {
@@ -71,26 +88,48 @@ public class AppRequestFilter implements Filter {
 			}
 			return true;
 		} else {
-			if (StringUtils.isEmpty(authToken)
-					|| !authToken.equalsIgnoreCase(appConfig.getAppAuthToken())) {
+			if (StringUtils.isEmpty(authToken) || !authToken.equalsIgnoreCase(appConfig.getAppAuthToken())) {
 				return false;
 			}
 			return true;
 		}
 	}
 
-	private boolean isRequestValid(
-			ApiRequestDetail apiRequest, HttpServletRequest req, HttpServletResponse resp,
-			String traceId) {
+	private boolean isRequestValid(CommonHttpRequest localCommonHttpRequest, ApiRequestDetail apiRequest,
+			HttpServletRequest req, HttpServletResponse resp, String traceId) {
+		String authVendor = localCommonHttpRequest.get(AppConstants.AUTH_ID_XKEY);
+
+		if (ArgUtil.is(authVendor)) {
+			AppContextUtil.setVendor(VendorProperties.class, authVendor);
+			AppContextUtil.setVendor(VendorAuthConfig.class, authVendor);
+			String authToken = localCommonHttpRequest.get(AppConstants.AUTH_TOKEN_XKEY);
+			if (ArgUtil.is(authToken)) {
+				if (vaendorAuthFilter != null) {
+					return vaendorAuthFilter.isAuthVendorRequest(apiRequest, localCommonHttpRequest, traceId,
+							authToken);
+				} else {
+					return appVendorConfig.isRequestValid(apiRequest, localCommonHttpRequest, traceId, authToken);
+				}
+			}
+			return false;
+		}
+
 		if (apiRequest.isUseAuthKey() && appConfig.isAppAuthEnabled()
-				&& !doesTokenMatch(req, resp, traceId, true)) {
+				&& !doesTokenMatch(localCommonHttpRequest, req, resp, traceId, true)) {
 			return false;
 		} else if (!appConfig.isAppAuthEnabled() && apiRequest.isUseAuthToken()
-				&& !doesTokenMatch(req, resp, traceId, false)) {
+				&& !doesTokenMatch(localCommonHttpRequest, req, resp, traceId, false)) {
 			return false;
 		} else {
 			return true;
 		}
+	}
+
+	public void setFlow(HttpServletRequest req, ApiRequestDetail apiRequest) {
+		String url = ArgUtil.ifNotEmpty(apiRequest.getFlow(), req.getRequestURI());
+		AppContextUtil.setFlow(url);
+		AppContextUtil.setFlowfix(url.toLowerCase().replace("pub", "b").replace("api", "p").replace("user", "")
+				.replace("get", "").replace("post", "").replace("save", "").replaceAll("[AaEeIiOoUuYyWwHh]", ""));
 	}
 
 	@Override
@@ -101,6 +140,7 @@ public class AppRequestFilter implements Filter {
 		HttpServletResponse resp = ((HttpServletResponse) response);
 		try {
 			ApiRequestDetail apiRequest = commonHttpRequest.getApiRequest(req);
+			CommonHttpRequest localCommonHttpRequest = commonHttpRequest.instance(req, resp, appConfig);
 			RequestType reqType = apiRequest.getType();
 
 			AppContextUtil.setRequestType(reqType);
@@ -147,16 +187,34 @@ public class AppRequestFilter implements Filter {
 				AppContextUtil.setActorId(actorId);
 			}
 
+			// User Language Tracking
+			Language lang = localCommonHttpRequest.getLanguage();
+
+			if (!StringUtils.isEmpty(lang)) {
+				AppContextUtil.setLang(lang);
+			}
+
+			String fp = Constants.BLANK;
 			// UserClient Tracking
 			String userClientJson = req.getHeader(AppConstants.USER_CLIENT_XKEY);
 			if (!StringUtils.isEmpty(userClientJson)) {
-				AppContextUtil.setUserClient(JsonUtil.fromJson(userClientJson, UserDeviceClient.class));
+				UserDeviceClient x = JsonUtil.fromJson(userClientJson, UserDeviceClient.class);
+				AppContextUtil.setUserClient(x);
+				fp = x.getFingerprint();
 			} else {
-				UserDeviceClient userDevice = commonHttpRequest.instance(req, resp, appConfig).getUserDevice()
-						.toUserDeviceClient();
+				UserDeviceClient userDevice = localCommonHttpRequest.getUserDevice().toUserDeviceClient();
 				UserDeviceClient userClient = AppContextUtil.getUserClient();
 				userClient.importFrom(userDevice);
+				fp = userClient.getFingerprint();
 				AppContextUtil.setUserClient(userClient);
+			}
+
+			// Session Actor Tracking
+			if (!ArgUtil.isEmpty(sessionId) && !ArgUtil.isEmpty(sessionContextService)) {
+				String actorInfoJson = req.getHeader(AppConstants.ACTOR_INFO_XKEY);
+				if (!StringUtils.isEmpty(actorInfoJson)) {
+					sessionContextService.setContext(new MapModel(actorInfoJson));
+				}
 			}
 
 			String requestdParamsJson = ArgUtil.ifNotEmpty(req.getParameter(AppConstants.REQUESTD_PARAMS_XKEY),
@@ -164,8 +222,7 @@ public class AppRequestFilter implements Filter {
 			if (!ArgUtil.isEmpty(requestdParamsJson)) {
 				AppContextUtil.setParams(null, requestdParamsJson);
 			} else {
-				AppContextUtil.setParams(ArgUtil.ifNotEmpty(
-						req.getParameter(AppConstants.REQUEST_PARAMS_XKEY),
+				AppContextUtil.setParams(ArgUtil.ifNotEmpty(req.getParameter(AppConstants.REQUEST_PARAMS_XKEY),
 						req.getHeader(AppConstants.REQUEST_PARAMS_XKEY)), requestdParamsJson);
 			}
 
@@ -179,13 +236,24 @@ public class AppRequestFilter implements Filter {
 				traceId = ArgUtil.parseAsString(req.getParameter(AppConstants.TRACE_ID_XKEY));
 			}
 			if (StringUtils.isEmpty(traceId)) {
-				HttpSession session = req.getSession(false);
+				setFlow(req, apiRequest);
+				HttpSession session = req.getSession(appConfig.isAppSessionEnabled());
 				if (ArgUtil.isEmpty(sessionId)) {
+					if (ArgUtil.isEmpty(fp)) {
+						fp = localCommonHttpRequest.getRequestParam(AppConstants.DEVICE_XID_KEY);
+						if (ArgUtil.isEmpty(fp)) {
+							fp = UniqueID.generateString62();
+							localCommonHttpRequest.setCookie(AppConstants.DEVICE_XID_KEY, fp);
+						}
+					}
+					AppContextUtil.setSessionPrefix(fp);
+					AppContextUtil.setRequestUser(localCommonHttpRequest.getTraceUserIdentifier());
+
 					if (session == null) {
 						sessionId = AppContextUtil.getSessionId(true);
 					} else {
-						sessionId = AppContextUtil.getSessionId(ArgUtil.parseAsString(
-								session.getAttribute(AppConstants.SESSION_ID_XKEY)));
+						sessionId = AppContextUtil.getSessionId(
+								ArgUtil.parseAsString(session.getAttribute(AppConstants.SESSION_ID_XKEY)));
 					}
 				}
 
@@ -209,7 +277,7 @@ public class AppRequestFilter implements Filter {
 				AppRequestUtil.printIfDebug(req);
 			}
 			try {
-				if (isRequestValid(apiRequest, req, resp, traceId)) {
+				if (isRequestValid(localCommonHttpRequest, apiRequest, req, resp, traceId)) {
 					chain.doFilter(request, new AppResponseWrapper(resp));
 				} else {
 					resp.setStatus(HttpServletResponse.SC_FORBIDDEN);

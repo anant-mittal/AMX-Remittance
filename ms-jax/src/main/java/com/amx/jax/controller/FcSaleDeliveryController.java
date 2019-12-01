@@ -61,6 +61,7 @@ public class FcSaleDeliveryController implements IFxOrderDelivery {
 	@ApiOperation("Marks the order status as delivered")
 	public AmxApiResponse<BoolRespModel, Object> markDelivered(
 			@RequestBody FcSaleDeliveryMarkDeliveredRequest fcSaleDeliveryMarkDeliveredRequest) {
+		logger.info("markDelivered requestemail started from: {}");
 		BoolRespModel result = fcSaleDeliveryService.markDelivered(fcSaleDeliveryMarkDeliveredRequest);
 		return AmxApiResponse.build(result);
 	}

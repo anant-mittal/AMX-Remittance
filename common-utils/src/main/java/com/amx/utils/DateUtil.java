@@ -14,7 +14,9 @@ import java.util.Date;
 import java.util.SimpleTimeZone;
 import java.util.TimeZone;
 
-// TODO: Auto-generated Javadoc
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * The Class DateUtil.
  */
@@ -32,6 +34,8 @@ public final class DateUtil {
 
 	/** The Constant DEFAULT_DATE_FORMAT. */
 	private static final String DEFAULT_DATE_FORMAT = "dd/MM/yyyy";
+
+	private static final String DEFAULT_DATE_FORMAT_EVENT = "dd-MMM-yyyy";
 
 	/** The Constant DEFAULT_DATE_TIME_FORMAT. */
 	private static final String DEFAULT_DATE_TIME_FORMAT = "dd/MM/yyyy HH:mm";
@@ -69,6 +73,8 @@ public final class DateUtil {
 	/**
 	 * Instantiates a new date util.
 	 */
+	private static final Logger LOGGER = LoggerFactory.getLogger(DateUtil.class);
+
 	private DateUtil() {
 		throw new IllegalStateException("This is a class with static methods and should not be instantiated");
 	}
@@ -93,6 +99,31 @@ public final class DateUtil {
 				newDate = setDefaultGMTTime(new Date(Long.parseLong(dateStr)));
 			} catch (NumberFormatException ex) {
 				/* return null if date string cannot be parsed */
+				newDate = null;
+			}
+		}
+		return newDate;
+	}
+
+	public static Date parseDateDBEvent(String dateStr) {
+
+		dateStr = dateStr.trim();
+		LOGGER.info("datestr is " + dateStr);
+		SimpleDateFormat format = new SimpleDateFormat(DEFAULT_DATE_FORMAT_EVENT);
+		format.setTimeZone(TimeZone.getTimeZone(GMT));
+		Date newDate;
+		try {
+			newDate = setDefaultGMTTime(format.parse(dateStr));
+			LOGGER.info("newDate is gmt " + newDate);
+		} catch (ParseException e) {
+			// try parsing as long
+			try {
+
+				newDate = setDefaultGMTTime(new Date(Long.parseLong(dateStr)));
+				LOGGER.info("newDate is " + newDate);
+			} catch (NumberFormatException ex) {
+				/* return null if date string cannot be parsed */
+				LOGGER.info("Exception is " + ex);
 				newDate = null;
 			}
 		}
@@ -174,8 +205,10 @@ public final class DateUtil {
 	/**
 	 * Format date time.
 	 *
-	 * @param epoch the epoch
-	 * @param timezone the timezone
+	 * @param epoch
+	 *            the epoch
+	 * @param timezone
+	 *            the timezone
 	 * @return the string
 	 */
 	public static String formatDateTime(long epoch, String timezone) {
@@ -764,6 +797,25 @@ public final class DateUtil {
 	}
 
 	/**
+	 * Critical : Used By PROBOT For Date/Time Computations. <br>
+	 * <strong> DO NOT CHANGE or MODIFY </strong> <br>
+	 * 
+	 * Returns Plus-Day Date for the given Zoned Date. <B> Time is Reset to ZERO #
+	 * Hr:Min:Sec:Nano :: 00:00:00:000 </B>
+	 *
+	 * @param fromDateTime
+	 *            the from date time
+	 * @return the next zoned day
+	 */
+	public static ZonedDateTime getZonedDayPlus(ZonedDateTime fromDateTime, int plusDays) {
+
+		ZonedDateTime dPlusOne = fromDateTime.plusDays(plusDays);
+
+		return dPlusOne.withHour(0).withMinute(0).withSecond(0).withNano(0);
+
+	}
+
+	/**
 	 * * Critical : Used By PROBOT For Date/Time Computations. <br>
 	 * <strong> DO NOT CHANGE or MODIFY </strong> <br>
 	 * 
@@ -879,16 +931,50 @@ public final class DateUtil {
 	 */
 	public static int getHrMinIntVal(String hrMinStr) {
 
-		String[] hrMinArray = hrMinStr.split("\\.");
+		String[] hrMinArray;
+		if (hrMinStr.contains(":")) {
+			hrMinArray = hrMinStr.split(":");
+		} else {
+			hrMinArray = hrMinStr.split("\\.");
+		}
 
 		int hourOfDay = Integer.parseInt(hrMinArray[0]);
 		int minOfHr = 0;
 		if (hrMinArray.length > 1) {
-			minOfHr = Integer.parseInt(hrMinArray[1]);
+			String paddedMin;
+			if (hrMinArray[1].length() == 1) {
+				paddedMin = hrMinArray[1] + "0";
+			} else {
+				paddedMin = hrMinArray[1];
+			}
+
+			minOfHr = Integer.parseInt(paddedMin);
 		}
 
 		return getHrMinIntVal(hourOfDay, minOfHr);
 
+	}
+
+	public static int extractHour(int hourMinVal) {
+		if (hourMinVal >= 0 && hourMinVal <= 2400) {
+			int hr = hourMinVal / 100;
+			if (hr >= 0 && hr <= 24) {
+				return hr;
+			}
+		}
+
+		return -1;
+	}
+
+	public static int extractMinute(int hourMinVal) {
+		if (hourMinVal >= 0 && hourMinVal <= 2400) {
+			int min = hourMinVal % 100;
+			if (min >= 0 && min <= 60) {
+				return min;
+			}
+		}
+
+		return -1;
 	}
 
 }

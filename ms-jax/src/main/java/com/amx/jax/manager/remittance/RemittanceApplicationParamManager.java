@@ -2,6 +2,7 @@ package com.amx.jax.manager.remittance;
 
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_APPLICATION_COUNTRY_ID;
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_BENEFICIARY_ACCOUNT_NO;
+import static com.amx.amxlib.constant.ApplicationProcedureParam.P_BENEFICIARY_BANK_COUNTRY_ID;
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_BENEFICIARY_BANK_ID;
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_BENEFICIARY_BRANCH_ID;
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_BENEFICIARY_COUNTRY_ID;
@@ -21,7 +22,7 @@ import javax.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.amx.jax.dbmodel.BankMasterModel;
+import com.amx.jax.dbmodel.BankMasterMdlv1;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.model.request.remittance.IRemittanceApplicationParams;
 import com.amx.jax.model.response.ExchangeRateBreakup;
@@ -41,7 +42,7 @@ public class RemittanceApplicationParamManager {
 
 	public void populateRemittanceApplicationParamMap(IRemittanceApplicationParams remittanceApplicationParams,
 			BenificiaryListView beneficiaryView, ExchangeRateBreakup exchangeRateBreakup) {
-		BankMasterModel routintBankMaster = null;
+		BankMasterMdlv1 routintBankMaster = null;
 		if(remittanceApplicationParams!=null) {
 		 routintBankMaster = bankService.getBankById(remittanceApplicationParams.getCorrespondanceBankIdBD());
 		 P_ROUTING_BANK_ID.putValue(remitApplParametersMap, remittanceApplicationParams.getCorrespondanceBankIdBD());
@@ -69,5 +70,8 @@ public class RemittanceApplicationParamManager {
 		P_BENEFICIARY_COUNTRY_ID.putValue(remitApplParametersMap, beneficiaryView.getCountryId());
 		P_BENEFICIARY_ACCOUNT_NO.putValue(remitApplParametersMap, beneficiaryView.getBankAccountNumber());
 		P_BENEFICIARY_BRANCH_ID.putValue(remitApplParametersMap, beneficiaryView.getBranchId());
+		P_BENEFICIARY_BANK_COUNTRY_ID.putValue(remitApplParametersMap, beneficiaryView.getBenificaryCountry());
 	}
 }
+
+

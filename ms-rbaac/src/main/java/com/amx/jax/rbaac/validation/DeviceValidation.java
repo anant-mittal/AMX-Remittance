@@ -14,11 +14,10 @@ import com.amx.jax.config.RbaacConfig;
 import com.amx.jax.constant.DeviceState;
 import com.amx.jax.dbmodel.BranchSystemDetail;
 import com.amx.jax.dbmodel.Device;
-import com.amx.jax.dbmodel.DeviceStateInfo;
 import com.amx.jax.rbaac.constants.RbaacServiceConstants;
 import com.amx.jax.rbaac.dao.DeviceDao;
 import com.amx.jax.rbaac.dao.RbaacDao;
-import com.amx.jax.rbaac.dbmodel.Employee;
+import com.amx.jax.rbaac.dbmodel.FSEmployee;
 import com.amx.jax.rbaac.dto.request.DeviceRegistrationRequest;
 import com.amx.jax.rbaac.error.RbaacServiceError;
 import com.amx.jax.rbaac.exception.AuthServiceException;
@@ -96,7 +95,7 @@ public class DeviceValidation {
 			BranchSystemDetail branchSystem = branchDetailService.findBranchSystemByIp(request.getBranchSystemIp());
 			existing = deviceDao.findDevice(branchSystem.getCountryBranchSystemInventoryId(), request.getDeviceType());
 		} else if (request.getIdentityInt() != null) {
-			Employee employee = rbaacDao.fetchEmpDetails(request.getIdentityInt());
+			FSEmployee employee = rbaacDao.fetchEmpDetails(request.getIdentityInt());
 			if (employee == null) {
 				throw new AuthServiceException("Employee not found");
 			}

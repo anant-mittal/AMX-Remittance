@@ -50,7 +50,7 @@ public class RateAlertService extends AbstractService {
 
 		} catch (Exception e) {
 			response.setResponseStatus(ResponseStatus.INTERNAL_ERROR);
-			logger.error("Error while saving rae alert.");
+			logger.debug("Error while saving rae alert.");
 			e.printStackTrace();
 		}
 		return response;
@@ -74,7 +74,7 @@ public class RateAlertService extends AbstractService {
 
 		} catch (Exception e) {
 			response.setResponseStatus(ResponseStatus.INTERNAL_ERROR);
-			logger.error("Error while deleting rate alert record.");
+			logger.debug("Error while deleting rate alert record.");
 			e.printStackTrace();
 		}
 		return response;
@@ -125,7 +125,7 @@ public class RateAlertService extends AbstractService {
 				 */
 		} catch (Exception e) {
 			response.setResponseStatus(ResponseStatus.INTERNAL_ERROR);
-			logger.error("Error while fetching rate alerts");
+			logger.debug("Error while fetching rate alerts");
 			e.printStackTrace();
 		}
 		response.getData().getValues().addAll(dtoList);
@@ -184,7 +184,7 @@ public class RateAlertService extends AbstractService {
 				 */
 		} catch (Exception e) {
 			response.setResponseStatus(ResponseStatus.INTERNAL_ERROR);
-			logger.error("Error while fetching rate alerts");
+			logger.debug("Error while fetching rate alerts");
 			e.printStackTrace();
 		}
 		response.getData().getValues().addAll(dtoList);

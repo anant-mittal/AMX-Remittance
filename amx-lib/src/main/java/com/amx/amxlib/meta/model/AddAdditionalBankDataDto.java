@@ -4,7 +4,9 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AddAdditionalBankDataDto {
+import com.amx.jax.model.ResourceDTO;
+
+public class AddAdditionalBankDataDto extends ResourceDTO{
     private BigDecimal additionalBankRuleFiledId;
     private String additionalDesc;
     private String flexiField;
@@ -31,6 +33,7 @@ public class AddAdditionalBankDataDto {
     private String amicDesc;
     private Boolean msgRender = false;
     private String exceptionMessage;
+    private String localName;
 
     public List<AdditionalBankRuleAddDataDto> additionalBankRuleData = new ArrayList<>();
     public List<AdditionalBankDetailsViewDto> listadditionAmiecData = new ArrayList<>();
@@ -44,7 +47,7 @@ public class AddAdditionalBankDataDto {
             String mandatory, int minLenght, BigDecimal maxLenght, String validation, String isActive,
             BigDecimal fieldLength, Boolean required, Boolean renderInputText, Boolean renderSelect,
             Boolean renderOneSelect, String oneAdditional, BigDecimal oneAdditionalId, String amicCode, String amicDesc,
-            Boolean msgRender) {
+            Boolean msgRender, String localName) {
         super();
         this.additionalBankRuleFiledId = additionalBankRuleFiledId;
         this.additionalDesc = additionalDesc;
@@ -68,6 +71,7 @@ public class AddAdditionalBankDataDto {
         this.oneAdditionalId = oneAdditionalId;
         this.amicCode = amicCode;
         this.amicDesc = amicDesc;
+        this.localName = localName;
 
         this.msgRender = msgRender;
     }
@@ -279,4 +283,27 @@ public class AddAdditionalBankDataDto {
     public void setExceptionMessage(String exceptionMessage) {
         this.exceptionMessage = exceptionMessage;
     }
+
+	public String getLocalName() {
+
+		return localName;
+	}
+
+	public void setLocalName(String localName) {
+		this.localName = localName;
+
+	}
+
+
+	@Override
+	public String getResourceLocalName() {
+		return this.localName;
+	}
+	
+	
+
+	
+    
+
+    
 }

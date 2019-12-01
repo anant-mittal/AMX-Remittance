@@ -20,7 +20,7 @@ public class CountryMasterDesc implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
 	private BigDecimal countryMasterId;
 	// private LanguageType languageType;
-	private CountryMaster fsCountryMaster;
+	private CountryMasterModel fsCountryMaster;
 	private String countryName;
 	private String nationality;
 
@@ -55,11 +55,11 @@ public class CountryMasterDesc implements java.io.Serializable {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "COUNTRY_ID")
-	public CountryMaster getFsCountryMaster() {
+	public CountryMasterModel getFsCountryMaster() {
 		return this.fsCountryMaster;
 	}
 
-	public void setFsCountryMaster(CountryMaster fsCountryMaster) {
+	public void setFsCountryMaster(CountryMasterModel fsCountryMaster) {
 		this.fsCountryMaster = fsCountryMaster;
 	}
 

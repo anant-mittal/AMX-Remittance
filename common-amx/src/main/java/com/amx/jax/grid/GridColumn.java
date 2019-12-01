@@ -1,5 +1,6 @@
 package com.amx.jax.grid;
 
+import com.amx.jax.grid.GridConstants.ColumnFunction;
 import com.amx.jax.grid.GridConstants.FilterDataType;
 import com.amx.jax.grid.GridConstants.FilterOperater;
 import com.amx.jax.swagger.ApiMockModelProperty;
@@ -35,6 +36,16 @@ public class GridColumn {
 	/** The sort dir. */
 	private SortOrder sortDir;
 
+	private ColumnFunction func;
+
+	public ColumnFunction getFunc() {
+		return func;
+	}
+
+	public void setFunc(ColumnFunction func) {
+		this.func = func;
+	}
+
 	/**
 	 * Gets the data.
 	 *
@@ -47,7 +58,8 @@ public class GridColumn {
 	/**
 	 * Sets the data.
 	 *
-	 * @param data the data to set
+	 * @param data
+	 *            the data to set
 	 */
 	public void setKey(String data) {
 		this.key = data;
@@ -65,7 +77,8 @@ public class GridColumn {
 	/**
 	 * Sets the name.
 	 *
-	 * @param name the name to set
+	 * @param name
+	 *            the name to set
 	 */
 	public void setName(String name) {
 		this.name = name;
@@ -84,7 +97,8 @@ public class GridColumn {
 	/**
 	 * Sets the searchable.
 	 *
-	 * @param searchable the searchable to set
+	 * @param searchable
+	 *            the searchable to set
 	 */
 	public void setSearchable(boolean searchable) {
 		this.searchable = searchable;
@@ -102,7 +116,8 @@ public class GridColumn {
 	/**
 	 * Sets the search.
 	 *
-	 * @param search the search to set
+	 * @param search
+	 *            the search to set
 	 */
 	public void setSearch(String search) {
 		this.search = search;
@@ -120,7 +135,8 @@ public class GridColumn {
 	/**
 	 * Sets the sort dir.
 	 *
-	 * @param sortDir the sortDir to set
+	 * @param sortDir
+	 *            the sortDir to set
 	 */
 	public void setSortDir(SortOrder sortDir) {
 		this.sortDir = sortDir;
@@ -139,7 +155,8 @@ public class GridColumn {
 	/**
 	 * Sets the index.
 	 *
-	 * @param index the index to set
+	 * @param index
+	 *            the index to set
 	 */
 	public void setIndex(int index) {
 		this.index = index;

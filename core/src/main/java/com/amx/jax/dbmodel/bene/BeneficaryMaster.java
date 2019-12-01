@@ -55,6 +55,7 @@ public class BeneficaryMaster implements Serializable {
 	private String buildingNo;
 	private String flatNo;
 	private String streetNo;
+	private String beneficiaryZipCode;
 	
 	@Id
 	@GeneratedValue(generator = "ex_beneficary_master_seq", strategy = GenerationType.SEQUENCE)
@@ -362,7 +363,6 @@ public class BeneficaryMaster implements Serializable {
 		this.beneficaryStatusName = beneficaryStatusName;
 	}
 
-	
 	@Column(name = "FIRST_NAME_LOCAL")
 	public String getLocalFirstName() {
 		return localFirstName;
@@ -398,6 +398,7 @@ public class BeneficaryMaster implements Serializable {
 	public void setLocalFourthName(String localFourthName) {
 		this.localFourthName = localFourthName;
 	}
+	
 	@Column(name = "BUILDING_NO")
 	public String getBuildingNo() {
 		return buildingNo;
@@ -406,6 +407,7 @@ public class BeneficaryMaster implements Serializable {
 	public void setBuildingNo(String buildingNo) {
 		this.buildingNo = buildingNo;
 	}
+	
 	@Column(name = "FLAT")
 	public String getFlatNo() {
 		return flatNo;
@@ -414,6 +416,7 @@ public class BeneficaryMaster implements Serializable {
 	public void setFlatNo(String flatNo) {
 		this.flatNo = flatNo;
 	}
+	
 	@Column(name = "STREET")
 	public String getStreetNo() {
 		return streetNo;
@@ -430,7 +433,15 @@ public class BeneficaryMaster implements Serializable {
 
 	public void setLocalFifthName(String localFifthName) {
 		this.localFifthName = localFifthName;
-	
+	}
+
+	@Column(name="BENEFICARY_ZIP_CODE")
+	public String getBeneficiaryZipCode() {
+		return beneficiaryZipCode;
+	}
+
+	public void setBeneficiaryZipCode(String beneficiaryZipCode) {
+		this.beneficiaryZipCode = beneficiaryZipCode;
 	}
 	
 }

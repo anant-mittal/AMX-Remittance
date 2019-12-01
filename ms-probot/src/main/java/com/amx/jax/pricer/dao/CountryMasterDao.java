@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.amx.jax.pricer.dbmodel.CountryMaster;
+import com.amx.jax.pricer.dbmodel.CountryMasterModel;
 import com.amx.jax.pricer.repository.CountryMasterRepository;
 
 @Component
@@ -15,7 +15,7 @@ public class CountryMasterDao {
 	CountryMasterRepository countryMasterRepository;
 
 	// @CacheForThis
-	public CountryMaster getByCountryId(BigDecimal countryId) {
+	public CountryMasterModel getByCountryId(BigDecimal countryId) {
 		if (null == countryId) {
 			return null;
 		}

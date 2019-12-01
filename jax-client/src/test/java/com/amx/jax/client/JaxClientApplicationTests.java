@@ -20,7 +20,6 @@ import com.amx.amxlib.exception.CustomerValidationException;
 import com.amx.amxlib.exception.IncorrectInputException;
 import com.amx.amxlib.exception.InvalidInputException;
 import com.amx.amxlib.exception.LimitExeededException;
-import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.api.AmxApiResponse;
@@ -28,6 +27,7 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.config.JaxConfig;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.client.util.ConverterUtility;
+import com.amx.jax.model.CivilIdOtpModel;
 import com.amx.jax.model.customer.SecurityQuestionModel;
 
 @RunWith(SpringRunner.class)
@@ -103,7 +103,7 @@ public class JaxClientApplicationTests extends AbstractTestClient {
 		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
 		ApiResponse<CustomerModel> response = null;
 		try {
-			response = client.saveCredentials("289072104474", "amx@123", otp, null, null);
+			response = client.saveCredentials("289072104474", "amx@123", otp,null, null, null);
 		} catch (AlreadyExistsException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -120,7 +120,7 @@ public class JaxClientApplicationTests extends AbstractTestClient {
 		testSendotpapi();
 		ApiResponse<CustomerModel> response = null;
 		try {
-			response = client.saveCredentials("289072104474", "amx@123", otp, null, "prashant.thorat@almullagroup.com");
+			response = client.saveCredentials("289072104474", "amx@123", otp, null, "prashant.thorat@almullagroup.com",null);
 		} catch (AlreadyExistsException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

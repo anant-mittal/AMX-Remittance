@@ -1,6 +1,5 @@
 package com.amx.jax.dbmodel;
 
-import java.beans.Transient;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -77,6 +76,12 @@ public class ViewDistrict implements Serializable, IResourceEntity {
 
 	@Override
 	public String resourceCode() {
+		return null;
+	}
+
+	@Override
+	public String resourceLocalName() {
+		// TODO Auto-generated method stub
 		return null;
 	}
 

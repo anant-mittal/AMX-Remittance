@@ -82,6 +82,7 @@ public class AppConfig {
 	public static final String SPRING_REDIS_HOST = "${spring.redis.host}";
 	public static final String SPRING_REDIS_PORT = "${spring.redis.port}";
 	public static final String JAX_PRICER_URL = "${jax.pricer.url}";
+	public static final String JAX_SERVICE_PROVIDER_URL = "${jax.service-provider.url}";
 
 	@Value(APP_ENV)
 	@AppParamKey(AppParam.APP_ENV)
@@ -201,8 +202,19 @@ public class AppConfig {
 	@AppParamKey(AppParam.APP_CONTEXT_PREFIX)
 	private String appPrefix;
 
+	@Value(JAX_SERVICE_PROVIDER_URL)
+	@AppParamKey(AppParam.JAX_SERVICE_PROVIDER_URL)
+	private String serviceProviderURL;
+
 	@Value("${app.response.ok}")
 	private boolean appResponseOK;
+	
+	@Value("${app.session}")
+	private boolean appSessionEnabled;
+
+	public boolean isAppSessionEnabled() {
+		return appSessionEnabled;
+	}
 
 	@Value("${server.session.cookie.http-only}")
 	private boolean cookieHttpOnly;
@@ -396,6 +408,17 @@ public class AppConfig {
 	@Autowired
 	private Environment environment;
 
+	@Autowired
+	TenantProperties tenantProperties;
+
+	public String prop(String key) {
+		String value = tenantProperties.getProperties().getProperty(key);
+		if (ArgUtil.isEmpty(value)) {
+			value = environment.getProperty(key);
+		}
+		return ArgUtil.parseAsString(value);
+	}
+
 	@PostConstruct
 	public void init() {
 		TenantProperties.setEnviroment(environment);
@@ -438,6 +461,14 @@ public class AppConfig {
 
 	public boolean isAppResponseOK() {
 		return appResponseOK;
+	}
+
+	public String getServiceProviderURL() {
+		return serviceProviderURL;
+	}
+
+	public void setServiceProviderURL(String serviceProviderURL) {
+		this.serviceProviderURL = serviceProviderURL;
 	}
 
 }

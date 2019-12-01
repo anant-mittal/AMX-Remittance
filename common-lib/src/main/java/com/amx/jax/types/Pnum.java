@@ -55,7 +55,7 @@ public class Pnum extends Dnum<Pnum> {
 				return inSideInputStream;
 			}
 		}
-		
+
 		return inSideInputStream;
 	}
 
@@ -92,7 +92,7 @@ public class Pnum extends Dnum<Pnum> {
 				}
 				String[] parts = line.split("\\s*=\\s*");
 				if (parts.length == 1) {
-					minimalConstructor.newInstance(parts[0], ordinal);
+					minimalConstructor.newInstance(parts[0], ordinal++);
 				} else {
 					String[] args = parts[1].split("\\s*,\\s*");
 					if (args.length == 1) {
@@ -106,8 +106,9 @@ public class Pnum extends Dnum<Pnum> {
 					} else if (args.length == 5 && additionalConstructor5 != null) {
 						additionalConstructor5.newInstance(parts[0], ordinal++, args[0], args[1], args[2], args[3],
 								args[4]);
+					} else if (minimalConstructor != null) {
+						minimalConstructor.newInstance(parts[0], ordinal++);
 					}
-
 				}
 			}
 
@@ -146,7 +147,9 @@ public class Pnum extends Dnum<Pnum> {
 	private static <E> Constructor<E> getConstructor(Class<E> clazz, Class<?>[] argTypes) {
 		for (Class<?> c = clazz; c != null; c = c.getSuperclass()) {
 			try {
-				if (argTypes.length == 3) {
+				if (argTypes.length == 2) {
+					return (Constructor<E>) c.getDeclaredConstructor(String.class, int.class);
+				} else if (argTypes.length == 3) {
 					return (Constructor<E>) c.getDeclaredConstructor(String.class, int.class, String.class);
 				} else if (argTypes.length == 4) {
 					return (Constructor<E>) c.getDeclaredConstructor(argTypes[0], argTypes[1], argTypes[2],
@@ -160,11 +163,12 @@ public class Pnum extends Dnum<Pnum> {
 				} else if (argTypes.length == 7) {
 					return (Constructor<E>) c.getDeclaredConstructor(argTypes[0], argTypes[1], argTypes[2], argTypes[3],
 							argTypes[4], argTypes[5], argTypes[6]);
-				} else if (argTypes.length == 7) {
+				} else if (argTypes.length == 8) {
 					return (Constructor<E>) c.getDeclaredConstructor(argTypes[0], argTypes[1], argTypes[2], argTypes[3],
 							argTypes[4], argTypes[5], argTypes[6], argTypes[7]);
+				} else {
+					return (Constructor<E>) c.getDeclaredConstructor(String.class, int.class);
 				}
-
 			} catch (Exception e) {
 				continue;
 			}

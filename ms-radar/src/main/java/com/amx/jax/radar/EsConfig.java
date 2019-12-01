@@ -23,6 +23,7 @@ import com.amx.jax.AppContextUtil;
 import com.amx.jax.AppParam;
 import com.amx.utils.ArgUtil;
 
+@SuppressWarnings("rawtypes")
 @Configuration
 public class EsConfig extends AbstractFactoryBean {
 

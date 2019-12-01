@@ -23,6 +23,7 @@ public class BranchRemittanceApplRequestModel extends RemittanceAdditionalBeneFi
 	private BigDecimal routingBankBranchId;
 	private BigDecimal routingCountryId;
 	private BigDecimal remittanceModeId;
+	
 	@NotNull
 	DynamicRoutingPricingDto dynamicRroutingPricingBreakup;
 	
@@ -68,12 +69,7 @@ public class BranchRemittanceApplRequestModel extends RemittanceAdditionalBeneFi
 		this.availLoyalityPoints = availLoyalityPoints;
 	}
 
-	/*public BranchExchangeRateBreakup getBranchExRateBreakup() {
-		return branchExRateBreakup;
-	}
-	public void setBranchExRateBreakup(BranchExchangeRateBreakup branchExRateBreakup) {
-		this.branchExRateBreakup = branchExRateBreakup;
-	}*/
+	
 	public String getSignature() {
 		return signature;
 	}
@@ -176,7 +172,6 @@ public class BranchRemittanceApplRequestModel extends RemittanceAdditionalBeneFi
 		model.setLocalAmount(request.getLocalAmountBD());
 		model.setRemittanceModeId(request.getRemitModeIdBD());
 		model.setServiceMasterId(request.getServiceIndicatorIdBD());
-		//model.setRoutingCountryId(request.getRoutingCountryIdBD());
 		return model;
 	}
 
@@ -195,6 +190,8 @@ public class BranchRemittanceApplRequestModel extends RemittanceAdditionalBeneFi
 	public void setDynamicRroutingPricingBreakup(DynamicRoutingPricingDto dynamicRroutingPricingBreakup) {
 		this.dynamicRroutingPricingBreakup = dynamicRroutingPricingBreakup;
 	}
+
+	
 
 	
 	

@@ -1,7 +1,5 @@
 package com.amx.jax.radar.service;
 
-import java.math.BigDecimal;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,9 +11,6 @@ import org.springframework.stereotype.Component;
 import com.amx.jax.client.snap.SnapConstants.SnapIndexName;
 import com.amx.jax.client.snap.SnapConstants.SnapQueryTemplate;
 import com.amx.jax.client.snap.SnapModels.SnapModelWrapper;
-import com.amx.jax.dict.ContactType;
-import com.amx.jax.grid.views.ContactVerificationRecord;
-import com.amx.jax.model.MapModel;
 import com.amx.jax.radar.jobs.customer.OracleViewDocument;
 import com.amx.jax.radar.snap.SnapQueryService;
 import com.amx.utils.ArgUtil;
@@ -72,15 +67,5 @@ public class SnapDocumentRepository {
 			return x.getHits().getHits().get(0).getSource(OracleViewDocument.class);
 		}
 		return null;
-	}
-
-	public OracleViewDocument createCustomerVerificationLink(ContactType type, BigDecimal custmerId) {
-		ContactVerificationRecord link = new ContactVerificationRecord();
-		link.setCustomerId(custmerId);
-		link.setContactType(type);
-		link.setLinkDate(new Date(System.currentTimeMillis()));
-		OracleViewDocument doc = new OracleViewDocument(link);
-		Map<String, Object> x = snapQueryService.save(SnapIndexName.VERIFY, doc);
-		return new MapModel(x).as(OracleViewDocument.class);
 	}
 }

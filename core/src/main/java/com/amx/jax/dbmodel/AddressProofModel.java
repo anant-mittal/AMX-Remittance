@@ -75,6 +75,12 @@ public class AddressProofModel implements IResourceEntity, Serializable {
 		return this.code;
 	}
 
+	@Override
+	public String resourceLocalName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
 
 	

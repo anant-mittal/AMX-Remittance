@@ -1,6 +1,5 @@
 package com.amx.jax.dbmodel;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 
 import javax.persistence.Column;
@@ -65,6 +64,11 @@ public class VwGovernateModel implements IResourceEntity{
 	public String resourceCode() {
 		// TODO Auto-generated method stub
 		return this.arFullName;
+	}
+	@Override
+	public String resourceLocalName() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
 

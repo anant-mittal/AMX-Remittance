@@ -54,15 +54,23 @@ public class DailyPromotionManager {
 			Date date = new Date();
 			String startDateStr = jaxTenantProperties.getStartDate();
 			String endDateStr = jaxTenantProperties.getEndDate();
+			logger.info("Calling Want IT Buy IT Start Date String : " +startDateStr+ " End Date String : " + endDateStr);
 			if(startDateStr != null && endDateStr != null) {
 				Date startDate = DateUtil.parseDate(startDateStr);
+				startDate.setHours(0);
+				startDate.setMinutes(0);
 				Date endDate = DateUtil.parseDate(endDateStr);
+				endDate.setHours(0);
+				endDate.setMinutes(0);
+				logger.info("INSIDE if Start Date : " +startDate+ " End Date String : " + endDate);
 				if (date.after(startDate) && date.before(endDate)) {
+					logger.info("------ Comparison in Start Date & End Date ------");
 					DailyPromotionDTO dailyPromotionDTO = getDailyPromotions(remittanceTransactionId, personInfo);
 					sendVoucherEmail(dailyPromotionDTO, personInfo);
 				}
 			}
 			else {
+				logger.info(" INSIDE else Start Date End Date ");
 				return;
 			}
 			

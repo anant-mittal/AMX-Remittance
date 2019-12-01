@@ -1,7 +1,10 @@
 package com.amx.jax.rest;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -17,15 +20,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.amx.jax.AppConfig;
@@ -115,6 +122,11 @@ public class RestService {
 		return IN_FILTERS_MAP;
 	}
 
+	public RestTemplate getLocalRestTemplate(RestTemplate restTemplateLocal) {
+		restTemplateLocal.setInterceptors(Collections.singletonList(appClientInterceptor));
+		return restTemplateLocal;
+	}
+
 	public RestTemplate getRestTemplate() {
 		if (staticRestTemplate == null) {
 			if (restTemplate != null) {
@@ -137,6 +149,11 @@ public class RestService {
 		return new Ajax(getRestTemplate(), uri).header(AppConstants.APP_VERSION_XKEY, appConfig.getAppVersion());
 	}
 
+	public Ajax ajax(RestTemplate restTemplate, String url) {
+		this.getOutFilters();
+		return new Ajax(restTemplate, url);
+	}
+
 	public static class Ajax {
 		public static final Pattern pattern = Pattern.compile("^.*\\{(.*)\\}.*$");
 
@@ -148,7 +165,7 @@ public class RestService {
 		HttpEntity<?> requestEntity;
 		HttpMethod method;
 		Map<String, String> uriParams = new HashMap<String, String>();
-		MultiValueMap<String, String> parameters = new LinkedMultiValueMap<String, String>();
+		MultiValueMap<String, Object> parameters = new LinkedMultiValueMap<String, Object>();
 		RestTemplate restTemplate;
 		private HttpHeaders headers = new HttpHeaders();
 		Map<String, String> headersMeta = new HashMap<String, String>();
@@ -204,6 +221,17 @@ public class RestService {
 
 		public Ajax field(String paramKey, Object paramValue) {
 			parameters.add(paramKey, ArgUtil.parseAsString(paramValue));
+			return this;
+		}
+
+		public Ajax field(String paramKey, MultipartFile file) throws IOException {
+			headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+			parameters.add(paramKey, RestService.getByteArrayFile(file));
+			return this;
+		}
+
+		public Ajax resource(String paramKey, Object paramValue) {
+			parameters.add(paramKey, paramValue);
 			return this;
 		}
 
@@ -281,7 +309,7 @@ public class RestService {
 
 		public Ajax postForm() {
 			this.isForm = true;
-			return this.post(new HttpEntity<MultiValueMap<String, String>>(parameters, headers));
+			return this.post(new HttpEntity<MultiValueMap<String, Object>>(parameters, headers));
 		}
 
 		public <T> Ajax postJson(T body) {
@@ -315,6 +343,11 @@ public class RestService {
 		public <T> T as(ParameterizedTypeReference<T> responseType) {
 			URI uri = builder.buildAndExpand(uriParams).toUri();
 			return restTemplate.exchange(uri, method, requestEntity, responseType).getBody();
+		}
+
+		public byte[] asByteArray() {
+			URI uri = builder.buildAndExpand(uriParams).toUri();
+			return restTemplate.getForObject(uri, byte[].class);
 		}
 
 		public String asString() {
@@ -443,4 +476,15 @@ public class RestService {
 			}
 		}
 	}
+
+	public static Resource getByteArrayFile(MultipartFile file) throws IOException {
+		String fileName = file.getOriginalFilename();
+		String ext = "";
+		if (fileName.lastIndexOf(".") != -1 && fileName.lastIndexOf(".") != 0)
+			ext = fileName.substring(fileName.lastIndexOf(".") + 1);
+		Path testFile = Files.createTempFile(file.getName(), "." + ext);
+		Files.write(testFile, file.getBytes());
+		return new FileSystemResource(testFile.toFile());
+	}
+
 }

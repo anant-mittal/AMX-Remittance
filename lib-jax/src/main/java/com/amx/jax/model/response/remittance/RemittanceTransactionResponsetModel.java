@@ -32,7 +32,18 @@ public class RemittanceTransactionResponsetModel extends AbstractModel {
 	private String vatType;
 	private BigDecimal vatPercentage;
 	private BigDecimal vatAmount;
-
+	/** For Better rate **/ 
+	private boolean isBetterRateAvailable = false;
+	private BigDecimal betterRateAmountSlab;
+	private BigDecimal diffInBetterRateFcAmount;
+	private String discountOnComissionFlag;
+	/** added by Rabil**/
+	private BigDecimal rackExchangeRate; /**Worst rate amount all the branches **/
+	private BigDecimal youSavedAmount;
+	private String customerChoice;
+	private BigDecimal youSavedAmountInFC;
+	
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -154,7 +165,71 @@ public class RemittanceTransactionResponsetModel extends AbstractModel {
 	public void setVatAmount(BigDecimal vatAmount) {
 		this.vatAmount = vatAmount;
 	}
+
+	public boolean isBetterRateAvailable() {
+		return isBetterRateAvailable;
+	}
+
+	public void setBetterRateAvailable(boolean isBetterRateAvailable) {
+		this.isBetterRateAvailable = isBetterRateAvailable;
+	}
+
+	public BigDecimal getBetterRateAmountSlab() {
+		return betterRateAmountSlab;
+	}
+
+	public void setBetterRateAmountSlab(BigDecimal betterRateAmountSlab) {
+		this.betterRateAmountSlab = betterRateAmountSlab;
+	}
+
+	public BigDecimal getDiffInBetterRateFcAmount() {
+		return diffInBetterRateFcAmount;
+	}
+
+	public void setDiffInBetterRateFcAmount(BigDecimal diffInBetterRateFcAmount) {
+		this.diffInBetterRateFcAmount = diffInBetterRateFcAmount;
+	}
 	
+	public String getDiscountOnComissionFlag() {
+		return discountOnComissionFlag;
+	}
+
+	public void setDiscountOnComissionFlag(String discountOnComissionFlag) {
+		this.discountOnComissionFlag = discountOnComissionFlag;
+	}
+
+	public BigDecimal getRackExchangeRate() {
+		return rackExchangeRate;
+	}
+
+	public void setRackExchangeRate(BigDecimal rackExchangeRate) {
+		this.rackExchangeRate = rackExchangeRate;
+	}
+
+	public BigDecimal getYouSavedAmount() {
+		return youSavedAmount;
+	}
+
+	public void setYouSavedAmount(BigDecimal youSavedAmount) {
+		this.youSavedAmount = youSavedAmount;
+	}
+
+	public String getCustomerChoice() {
+		return customerChoice;
+	}
+
+	public void setCustomerChoice(String customerChoice) {
+		this.customerChoice = customerChoice;
+	}
+
+	public BigDecimal getYouSavedAmountInFC() {
+		return youSavedAmountInFC;
+	}
+
+	public void setYouSavedAmountInFC(BigDecimal youSavedAmountInFC) {
+		this.youSavedAmountInFC = youSavedAmountInFC;
+	}
+
 	
 
 }

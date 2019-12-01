@@ -5,6 +5,7 @@ import java.util.Collections;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.thymeleaf.spring4.SpringTemplateEngine;
@@ -24,6 +25,10 @@ public class RadarMVCConfig extends WebMvcConfigurerAdapter {
 	public static final String JSON_TEMPLATES_RESOLVE_PATTERN = "json/*";
 	/** Pattern relative to templates base used to match text templates. */
 	public static final String TEXT_TEMPLATES_RESOLVE_PATTERN = "text/*";
+
+	private static final String[] CLASSPATH_RESOURCE_LOCATIONS = {
+			"classpath:/META-INF/resources/", "classpath:/resources/",
+			"classpath:/static/", "classpath:/public/" };
 
 	/*
 	 * (non-Javadoc)
@@ -68,6 +73,18 @@ public class RadarMVCConfig extends WebMvcConfigurerAdapter {
 			theTemplateEngine.addTemplateResolver(theTemplateResolver);
 		}
 		return theTemplateEngine;
+	}
+
+	@Override
+	public void addResourceHandlers(ResourceHandlerRegistry registry) {
+		if (!registry.hasMappingForPattern("/webjars/**")) {
+			registry.addResourceHandler("/webjars/**").addResourceLocations(
+					"classpath:/META-INF/resources/webjars/");
+		}
+		if (!registry.hasMappingForPattern("/**")) {
+			registry.addResourceHandler("/**").addResourceLocations(
+					CLASSPATH_RESOURCE_LOCATIONS);
+		}
 	}
 
 }

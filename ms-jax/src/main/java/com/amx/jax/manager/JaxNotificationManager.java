@@ -8,11 +8,11 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxlib.meta.model.BankBranchDto;
 import com.amx.amxlib.model.BranchSearchNotificationModel;
 import com.amx.amxlib.model.request.GetBankBranchRequest;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.response.benebranch.BankBranchDto;
 import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.services.BankService;
 import com.amx.jax.services.JaxNotificationService;

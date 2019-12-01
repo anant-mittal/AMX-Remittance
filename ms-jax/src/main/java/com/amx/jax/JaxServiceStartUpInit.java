@@ -1,7 +1,5 @@
 package com.amx.jax;
 
-import java.lang.reflect.InvocationTargetException;
-
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.beanutils.BeanUtils;
@@ -43,10 +41,10 @@ public class JaxServiceStartUpInit {
 		final int WRONG_OTP_ATTEMPTS_ALLOWED = 3;
 
 		if (jaxConfig != null) {
-			OtpSettings setting = converterutil.readValue(jaxConfig.getValue(), OtpSettings.class);
 			try {
+				OtpSettings setting = converterutil.readValue(jaxConfig.getValue(), OtpSettings.class);
 				BeanUtils.copyProperties(otpSettings, setting);
-			} catch (IllegalAccessException | InvocationTargetException e) {
+			} catch (Exception e) {
 				logger.error("error in initializeConfigs", e);
 			}
 		} else {

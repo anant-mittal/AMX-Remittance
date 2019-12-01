@@ -30,6 +30,10 @@ public class ExchangeRateAndRoutingRequest extends PricingRequestDTO implements 
 
 	private List<BigDecimal> excludeCorBanks;
 
+	private BigDecimal employeeId;
+
+	private BigDecimal companyId;
+
 	public SERVICE_GROUP getServiceGroup() {
 		return serviceGroup;
 	}
@@ -70,6 +74,22 @@ public class ExchangeRateAndRoutingRequest extends PricingRequestDTO implements 
 
 	public void setExcludeCorBanks(List<BigDecimal> excludeCorBanks) {
 		this.excludeCorBanks = excludeCorBanks;
+	}
+
+	public BigDecimal getEmployeeId() {
+		return employeeId;
+	}
+
+	public void setEmployeeId(BigDecimal employeeId) {
+		this.employeeId = employeeId;
+	}
+
+	public BigDecimal getCompanyId() {
+		return companyId;
+	}
+
+	public void setCompanyId(BigDecimal companyId) {
+		this.companyId = companyId;
 	}
 
 }

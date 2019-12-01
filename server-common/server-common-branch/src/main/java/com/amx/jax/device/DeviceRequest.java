@@ -17,6 +17,7 @@ import com.amx.jax.device.DeviceRestModels.SessionPairingCreds;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.sso.SSOUserSessions;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Random;
 
@@ -33,6 +34,9 @@ public class DeviceRequest {
 
 	@Autowired(required = false)
 	private HttpServletResponse response;
+
+	@Autowired
+	SSOUserSessions ssoUserSessions;
 
 	public String getDeviceRegId() {
 		return commonHttpRequest.get(DeviceConstants.Keys.CLIENT_REG_KEY_XKEY);
@@ -100,6 +104,7 @@ public class DeviceRequest {
 			DeviceData deviceData = deviceBox.get(deviceRegIdStr);
 			if (deviceData != null) {
 				deviceData.setDeviceReqKey(null);
+				ssoUserSessions.invalidateTerminal(deviceData.getTerminalId());
 				deviceBox.put(deviceRegIdStr, deviceData);
 			}
 		}

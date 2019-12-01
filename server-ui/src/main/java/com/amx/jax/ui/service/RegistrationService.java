@@ -7,12 +7,12 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.model.AuthState;
 import com.amx.jax.model.AuthState.AuthStep;
+import com.amx.jax.model.CivilIdOtpModel;
 import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.model.customer.SecurityQuestionModel;
 import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
@@ -21,6 +21,7 @@ import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseMessage;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.session.UserSession;
+import com.amx.utils.ArgUtil;
 
 /**
  * The Class RegistrationService.
@@ -169,7 +170,7 @@ public class RegistrationService {
 		sessionService.authorize(model, false); // TODO:- validate this
 		sessionService.getGuestSession().getState().setValidMotp(true);
 
-		if (model.getEmail() != null) {
+		if (ArgUtil.isEmpty(model.getEmail())) {
 			sessionService.getGuestSession().getState().setPresentEmail(true);
 		} else {
 			ApiResponse<QuestModelDTO> response2 = jaxClient.setDefaults().getUserclient()
@@ -211,7 +212,7 @@ public class RegistrationService {
 		sessionService.authorize(model, false); // TODO:- validate this
 		sessionService.getGuestSession().getState().setValidMotp(true);
 
-		if (model.getEmail() != null) {
+		if (!ArgUtil.isEmpty(model.getEmail())) {
 			sessionService.getGuestSession().getState().setPresentEmail(true);
 		} else {
 			ApiResponse<QuestModelDTO> response2 = jaxClient.setDefaults().getUserclient()
@@ -339,18 +340,18 @@ public class RegistrationService {
 	 * @return the response wrapper
 	 */
 	public ResponseWrapper<UserUpdateData> setCredentials(String loginId, String password, String mOtp, String eOtp,
-			String email, boolean doLogin) {
+			String email, String referralCode, boolean doLogin) {
 		sessionService.getGuestSession().initStep(AuthStep.CREDS_SET);
 		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
 
-		jaxClient.setDefaults().getUserclient().saveCredentials(loginId, password, mOtp, eOtp, email).getResult();
+		jaxClient.setDefaults().getUserclient().saveCredentials(loginId, password, mOtp, eOtp, email,referralCode).getResult();
+
+		userService.updateCustoemrModel();
 
 		if (doLogin) {
 			sessionService.authorize(sessionService.getGuestSession().getCustomerModel(), true);
 			jaxClient.getUserclient().customerLoggedIn(sessionService.getAppDevice().getUserDevice());
 		}
-
-		userService.updateCustoemrModel();
 
 		wrapper.setMessage(OWAStatusStatusCodes.USER_UPDATE_SUCCESS, "LoginId and Password updated");
 		sessionService.getGuestSession().endStep(AuthStep.CREDS_SET);
