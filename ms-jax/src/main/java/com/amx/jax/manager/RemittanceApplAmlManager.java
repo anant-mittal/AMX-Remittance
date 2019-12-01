@@ -65,7 +65,7 @@ public class RemittanceApplAmlManager {
 	public RemitApplAmlModel createRemittanceApplAml(RemittanceApplication remittanceApplication,RemittanceAppBenificiary remittanceAppBeneficairy){
 		  RemitApplAmlModel amlModel = null;
 		BenificiaryListView beneficiaryDT = (BenificiaryListView) remitApplParametersMap.get("BENEFICIARY");
-		AmlCheckResponseDto amlDto = beneRiskAml(beneficiaryDT.getBeneficiaryRelationShipSeqId(),remittanceAppBeneficairy.getBeneficiaryBankCountryId());
+		AmlCheckResponseDto amlDto = beneRiskAml(beneficiaryDT.getBeneficiaryRelationShipSeqId(),remittanceAppBeneficairy.getBeneficiaryBankCountryId(),remittanceApplication);
 		
 		  if(amlDto!=null &&  !StringUtils.isBlank(amlDto.getHighValueTrnxFlag()) && !StringUtils.isBlank(amlDto.getStopTrnxFlag())) { 
 			  amlModel= new  RemitApplAmlModel();
@@ -85,7 +85,7 @@ public class RemittanceApplAmlManager {
 		return amlModel;
 	}
 	
-	public AmlCheckResponseDto beneRiskAml(BigDecimal beneReationId,BigDecimal beneficiaryBankCountryId) {
+	public AmlCheckResponseDto beneRiskAml(BigDecimal beneReationId,BigDecimal beneficiaryBankCountryId,RemittanceApplication remittanceApplication) {
 		
 		BenificiaryListView beneficiaryDT =beneficiaryRepository.findByCustomerIdAndBeneficiaryRelationShipSeqIdAndIsActive(metaData.getCustomerId(),beneReationId,ConstantDocument.Yes);
 		AmlCheckResponseDto amlDto = new AmlCheckResponseDto();
@@ -104,13 +104,23 @@ public class RemittanceApplAmlManager {
 		
 		BigDecimal changeHistcount = routingProcedureDao.getCustomerHistroyCount(metaData.getCustomerId());
 		if(JaxUtil.isNullZeroBigDecimalCheck(changeHistcount) && changeHistcount.compareTo(BigDecimal.ZERO)>0) {
-			amlDto.setBlackRemark3("Email / Mobile  changed  within  90  days");
+			amlDto.setBlackRemark3("Email / Mobile  changed  within  90  days :");
 		}
 		
-		if(riskCount==1 && !StringUtils.isBlank(amlDto.getTag()) && amlDto.getTag().equalsIgnoreCase(ConstantDocument.Yes) && changeHistcount.compareTo(BigDecimal.ZERO)>0) {
+		if(riskCount==1 && !StringUtils.isBlank(amlDto.getTag()) 
+		   && amlDto.getTag().equalsIgnoreCase(ConstantDocument.Yes) 
+		   && changeHistcount.compareTo(BigDecimal.ZERO)>0) {
+			amlDto.setHighValueTrnxFlag(ConstantDocument.Yes);
+			amlDto.setStopTrnxFlag(ConstantDocument.Yes);
+		}else if(riskCount==1 && changeHistcount.compareTo(BigDecimal.ZERO)>0 
+				&& beneficiaryDT.getServiceGroupCode().equalsIgnoreCase(ConstantDocument.CASH)
+				&& remittanceApplication.getLocalTranxAmount().compareTo(new BigDecimal("200"))>1) {
 			amlDto.setHighValueTrnxFlag(ConstantDocument.Yes);
 			amlDto.setStopTrnxFlag(ConstantDocument.Yes);
 		}
+		
+		
+		
 		
 		return amlDto;
 	}
