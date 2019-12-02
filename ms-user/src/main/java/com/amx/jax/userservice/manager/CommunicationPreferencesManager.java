@@ -51,7 +51,7 @@ public class CommunicationPreferencesManager {
 		if(ArgUtil.isEmpty(channelList)) {
 			boolean isSmsVerified = communicationPrefsResult.isSms();
 			if (!isSmsVerified) {
-				throw new GlobalException("Sms number is not verified");
+				throw new GlobalException(JaxError.SMS_NOT_VERIFIED,"Sms number is not verified");
 			}
 		}
 		else{
