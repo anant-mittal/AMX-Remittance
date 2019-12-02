@@ -7,6 +7,7 @@ import com.amx.jax.AmxSharedConfig.CommunicationPrefs;
 import com.amx.jax.AmxSharedConfigClient;
 import com.amx.jax.def.Communication.CommunicationEvent;
 import com.amx.jax.dict.Communicatable;
+import com.amx.utils.ArgUtil;
 
 @Component
 public class CommunicationPrefsUtil {
@@ -68,6 +69,10 @@ public class CommunicationPrefsUtil {
 		CommunicationPrefs prefs = get(event);
 
 		CommunicationPrefsResult result = new CommunicationPrefsResult();
+
+		if (ArgUtil.isEmpty(prefs)) {
+			return result;
+		}
 
 		String alwaysLong = "9";
 		String alwaysChar = "A";
