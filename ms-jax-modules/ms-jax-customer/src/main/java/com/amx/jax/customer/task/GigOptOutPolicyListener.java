@@ -13,19 +13,25 @@ import org.springframework.scheduling.annotation.Async;
 import com.amx.jax.async.ExecutorConfig;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dict.Language;
+import com.amx.jax.dict.AmxEnums.CommunicationEvents;
 import com.amx.jax.event.AmxTunnelEvents;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.client.PushNotifyClient;
+import com.amx.jax.postman.client.WhatsAppClient;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.PushMessage;
+import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.TemplatesMX;
+import com.amx.jax.postman.model.WAMessage;
 import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.tunnel.DBEvent;
 import com.amx.jax.tunnel.ITunnelSubscriber;
 import com.amx.jax.tunnel.TunnelEventMapping;
 import com.amx.jax.tunnel.TunnelEventXchange;
 import com.amx.jax.userservice.manager.CustomerFlagManager;
+import com.amx.jax.util.CommunicationPrefsUtil;
+import com.amx.jax.util.CommunicationPrefsUtil.CommunicationPrefsResult;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
 
@@ -42,6 +48,13 @@ public class GigOptOutPolicyListener implements ITunnelSubscriber<DBEvent> {
 
 	@Autowired
 	CustomerFlagManager customerFlagManager;
+	
+	@Autowired
+	CommunicationPrefsUtil communicationPrefsUtil;
+	
+	@Autowired
+	WhatsAppClient whatsAppClient;
+	
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
 	private static final String CUST_ID = "CUST_ID";
@@ -57,9 +70,8 @@ public class GigOptOutPolicyListener implements ITunnelSubscriber<DBEvent> {
 
 		String langId = ArgUtil.parseAsString(event.getData().get(LANG_ID));
 
-		LOGGER.debug("Customer id is " + custId);
 		Customer c = customerRepository.getCustomerByCustomerIdAndIsActive(custId, "Y");
-		LOGGER.debug("Customer object is " + c.toString());
+
 		String emailId = c.getEmail();
 
 		String custName;
@@ -70,21 +82,22 @@ public class GigOptOutPolicyListener implements ITunnelSubscriber<DBEvent> {
 			custName = c.getFirstName() + ' ' + c.getMiddleName() + ' ' + c.getLastName();
 		}
 
-		LOGGER.debug("opt out is done by " + optoutBy);
-
 		Map<String, Object> wrapper = new HashMap<String, Object>();
 		Map<String, Object> modeldata = new HashMap<String, Object>();
 		modeldata.put("to", emailId);
 		modeldata.put("customer", custName);
 		modeldata.put("optoutby", optoutBy);
 
-		for (Map.Entry<String, Object> entry : modeldata.entrySet()) {
-			LOGGER.debug("KeyModel = " + entry.getKey() + ", ValueModel = " + entry.getValue());
-		}
-
 		wrapper.put("data", modeldata);
-		LOGGER.debug("email is  " + emailId);
-		if (!ArgUtil.isEmpty(emailId)) {
+		
+		TemplatesMX templatesMX = null;
+		if (optoutBy.equals("C")) {
+			templatesMX=TemplatesMX.POLICY_OPTOUT_CUSTOMER;
+		} else {
+			templatesMX=TemplatesMX.POLICY_OPTOUT_SYSTEM;
+		}
+		CommunicationPrefsResult communicationPrefsResult = communicationPrefsUtil.forCustomer(CommunicationEvents.GIG_OPTOUT_POLICY, c);
+		if (communicationPrefsResult.isEmail()) {
 
 			Email email = new Email();
 			if ("2".equals(langId)) {
@@ -94,33 +107,34 @@ public class GigOptOutPolicyListener implements ITunnelSubscriber<DBEvent> {
 				email.setLang(Language.EN);
 				modeldata.put("languageid", Language.EN);
 			}
-			for (Map.Entry<String, Object> entry : wrapper.entrySet()) {
-				LOGGER.debug("KeyModelWrap = " + entry.getKey() + ", ValueModelWrap = " + entry.getValue());
-			}
+
 			LOGGER.debug("Json value of wrapper is " + JsonUtil.toJson(wrapper));
-			LOGGER.debug("Wrapper data is {}", wrapper.get("data"));
+
 			email.setModel(wrapper);
 			email.addTo(emailId);
 			email.setHtml(true);
-
-			if (optoutBy.equals("C")) {
-				email.setITemplate(TemplatesMX.POLICY_OPTOUT_CUSTOMER);
-			} else {
-				email.setITemplate(TemplatesMX.POLICY_OPTOUT_SYSTEM);
-			}
-
+			email.setITemplate(templatesMX);
 			sendEmail(email);
 		}
+		if(communicationPrefsResult.isSms()) {
+			SMS sms = new SMS();
+			sms.setModel(wrapper);
+			sms.addTo(c.getPrefixCodeMobile()+c.getMobile());
+			sms.setITemplate(templatesMX);
+			postManService.sendSMSAsync(sms);
+		}
+		
+		if(communicationPrefsResult.isWhatsApp()) {
+			WAMessage waMessage = new WAMessage();
+			waMessage.setModel(wrapper);
+			waMessage.addTo(c.getWhatsappPrefix()+c.getWhatsapp());
+			waMessage.setITemplate(templatesMX);
+			whatsAppClient.send(waMessage);
+		}
 
-		if (!ArgUtil.isEmpty(custId)) {
+		if (!ArgUtil.isEmpty(custId)&&communicationPrefsResult.isPushNotify()) {
 			PushMessage pushMessage = new PushMessage();
-
-			if (optoutBy.equals("C")) {
-				pushMessage.setITemplate(TemplatesMX.POLICY_OPTOUT_CUSTOMER);
-			} else {
-				pushMessage.setITemplate(TemplatesMX.POLICY_OPTOUT_SYSTEM);
-			}
-
+			pushMessage.setITemplate(templatesMX);
 			pushMessage.setModel(wrapper);
 			pushMessage.addToUser(custId);
 			pushMessage.setModel(wrapper);
@@ -132,7 +146,7 @@ public class GigOptOutPolicyListener implements ITunnelSubscriber<DBEvent> {
 	@Async(ExecutorConfig.DEFAULT)
 	public void sendEmail(Email email) {
 		try {
-			LOGGER.debug("email sent");
+
 			postManService.sendEmailAsync(email);
 		} catch (PostManException e) {
 

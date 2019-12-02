@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.amx.jax.dict.Language;
+import com.amx.jax.dict.AmxEnums.CommunicationEvents;
 import com.amx.jax.event.AmxTunnelEvents;
 import com.amx.jax.postman.client.PostManClient;
 import com.amx.jax.postman.client.PushNotifyClient;
@@ -19,6 +20,8 @@ import com.amx.jax.tunnel.DBEvent;
 import com.amx.jax.tunnel.ITunnelSubscriber;
 import com.amx.jax.tunnel.TunnelEventMapping;
 import com.amx.jax.tunnel.TunnelEventXchange;
+import com.amx.jax.util.CommunicationPrefsUtil;
+import com.amx.jax.util.CommunicationPrefsUtil.CommunicationPrefsResult;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
 
@@ -30,7 +33,10 @@ public class CivilIDExpiryListner implements ITunnelSubscriber<DBEvent> {
 
 	@Autowired
 	private PushNotifyClient pushNotifyClient;
-
+	
+	@Autowired
+	CommunicationPrefsUtil communicationPrefsUtil;
+	
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
 	public static final String EMAIL = "EMAIL";
@@ -63,7 +69,8 @@ public class CivilIDExpiryListner implements ITunnelSubscriber<DBEvent> {
 		modeldata.put("customer", custNname);
 		modeldata.put("date", expDate);
 		wrapper.put("data", modeldata);
-
+		
+		
 		if (!ArgUtil.isEmpty(emailId)) {
 			Email email = new Email();
 			if ("2".equals(langId)) {

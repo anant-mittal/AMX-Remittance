@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
+
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrSubstitutor;
@@ -25,6 +26,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
+
 import com.amx.amxlib.constant.BeneficiaryConstant.BeneStatus;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.BeneCountryDTO;
@@ -69,7 +71,6 @@ import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.events.CActivityEvent;
-
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.model.CivilIdOtpModel;
@@ -96,8 +97,6 @@ import com.amx.jax.userservice.manager.CommunicationPreferencesManager;
 import com.amx.jax.userservice.repository.RelationsRepository;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.userservice.service.UserValidationService;
-import com.amx.jax.util.CommunicationPrefsUtil;
-import com.amx.jax.util.CommunicationPrefsUtil.CommunicationPrefsResult;
 import com.amx.jax.util.JaxUtil;
 
 @Service
@@ -682,7 +681,7 @@ public class BeneficiaryService extends AbstractService {
 	 * 
 	 */
 	public ApiResponse sendOtp(List<ContactType> channels) {
-		communicationPreferencesManager.validateCommunicationPreferences(channels,CommunicationEvents.ADD_BENEFICIARY);
+		communicationPreferencesManager.validateCommunicationPreferences(channels,CommunicationEvents.ADD_BENEFICIARY,null);
 		Customer customer = null;
 		String civilId = null;
 		BigDecimal customerId = null;

@@ -62,7 +62,6 @@ import com.amx.jax.dbmodel.BlackListModel;
 import com.amx.jax.dbmodel.CurrencyMasterMdlv1;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ExchangeRateApprovalDetModel;
-import com.amx.jax.dbmodel.ReferralDetails;
 import com.amx.jax.dbmodel.TransactionLimitCheckView;
 import com.amx.jax.dbmodel.partner.RemitApplSrvProv;
 import com.amx.jax.dbmodel.remittance.AdditionalInstructionData;
@@ -104,9 +103,8 @@ import com.amx.jax.model.response.remittance.LoyalityPointState;
 import com.amx.jax.model.response.remittance.RemittanceApplicationResponseModel;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.model.response.remittance.VatDetailsDto;
-import com.amx.jax.postman.client.PushNotifyClient;
-import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.partner.manager.PartnerTransactionManager;
+import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.pricer.dto.TrnxRoutingDetails;
 import com.amx.jax.pricer.var.PricerServiceConstants;
 import com.amx.jax.remittance.manager.RemittanceParameterMapManager;
@@ -1469,7 +1467,7 @@ public class RemittanceTransactionManager {
 
 			List<ContactType> channel = new ArrayList<>();
 			channel.add(ContactType.SMS_EMAIL);
-			communicationPreferencesManager.validateCommunicationPreferences(channel,CommunicationEvents.REMITTANCE);
+			communicationPreferencesManager.validateCommunicationPreferences(channel,CommunicationEvents.REMITTANCE,null);
 			
 			otpMmodel = (CivilIdOtpModel) userService.sendOtpForCivilId(null, channel, null, null).getData().getValues()
 					.get(0);

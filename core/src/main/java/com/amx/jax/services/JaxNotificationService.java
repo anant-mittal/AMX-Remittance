@@ -31,6 +31,7 @@ import com.amx.jax.dbmodel.CustomerContactVerification;
 import com.amx.jax.dbmodel.ExEmailNotification;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.dict.Tenant;
+import com.amx.jax.dict.AmxEnums.CommunicationEvents;
 import com.amx.jax.model.CivilIdOtpModel;
 import com.amx.jax.model.request.partner.TransactionFailReportDTO;
 import com.amx.jax.model.response.customer.CustomerDto;
@@ -50,6 +51,8 @@ import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.postman.model.WAMessage;
 import com.amx.jax.scope.TenantContextHolder;
+import com.amx.jax.util.CommunicationPrefsUtil;
+import com.amx.jax.util.CommunicationPrefsUtil.CommunicationPrefsResult;
 import com.amx.utils.CollectionUtil;
 
 @Service
@@ -66,6 +69,12 @@ public class JaxNotificationService {
 	JaxNotificationService jaxNotificationService;
 	@Autowired
 	JaxEmailNotificationService jaxEmailNotificationService;
+	
+	@Autowired
+	CommunicationPrefsUtil communicationPrefsUtil;
+	
+	@Autowired
+	
 
 	Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -128,7 +137,9 @@ public class JaxNotificationService {
 	// to send profile (password, security question, image, mobile) change
 	// notification
 	public void sendProfileChangeNotificationEmail(CustomerModel customerModel, PersonInfo pinfo) {
-
+		//Customer customer = cust
+		//CommunicationPrefsResult communicationPrefsResult = communicationPrefsUtil.forCustomer(CommunicationEvents.TRNX_BENE_CREDIT, c);
+		
 		logger.info("Sending Profile change notification to customer : " + pinfo.getFirstName());
 
 		Email email = new Email();

@@ -20,6 +20,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.constant.NotificationConstants;
 import com.amx.amxlib.model.PlaceOrderNotificationDTO;
 import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.dao.RemittanceApplicationDao;
@@ -30,12 +31,17 @@ import com.amx.jax.dbmodel.CustomerRemittanceTransactionView;
 import com.amx.jax.dbmodel.PlaceOrder;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
+import com.amx.jax.dict.AmxEnums.CommunicationEvents;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.response.customer.CustomerDto;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.client.PushNotifyClient;
+import com.amx.jax.postman.client.WhatsAppClient;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.PushMessage;
+import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.TemplatesMX;
+import com.amx.jax.postman.model.WAMessage;
 import com.amx.jax.repository.IPlaceOrderDao;
 import com.amx.jax.repository.ITransactionHistroyDAO;
 import com.amx.jax.service.CurrencyMasterService;
@@ -44,6 +50,9 @@ import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.RoundUtil;
+import com.amx.jax.util.CommunicationPrefsUtil;
+import com.amx.jax.util.CommunicationPrefsUtil.CommunicationPrefsResult;
+import com.amx.utils.EntityDtoUtil;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -75,6 +84,10 @@ public class RemittanceManager {
 	UserService userService;
 	@Autowired
 	JaxTenantProperties jaxTenantProperties;
+	@Autowired
+	CommunicationPrefsUtil communicationPrefsUtil;
+	@Autowired
+	WhatsAppClient whatsAppClient;
 
 	/**
 	 * method will be called after successful remittance
@@ -118,20 +131,42 @@ public class RemittanceManager {
 
 	public void sendPaceorderNotification(PlaceOrderNotificationDTO model) {
 		try {
-			String emailid = model.getEmail();
-			logger.info("Email send to--" + model.getEmail());
-			Email email = new Email();
-			email.setSubject(BRANCH_SEARCH);
-			email.addTo(emailid);
-			email.setITemplate(TemplatesMX.RATE_ALERT);
-			email.setHtml(true);
-			email.getModel().put(RESP_DATA_KEY, model);
-			postManService.sendEmailAsync(email);
-			PushMessage pushMessage = new PushMessage();
-			pushMessage.setITemplate(TemplatesMX.RATE_ALERT);
-			pushMessage.addToUser(model.getCustomerId());
-			pushMessage.getModel().put(RESP_DATA_KEY, model);
-			pushNotifyClient.send(pushMessage);
+			Customer customer = customerDao.getActiveCustomerDetailsByCustomerId(model.getCustomerId());
+			CommunicationPrefsResult communicationPrefsResult = communicationPrefsUtil.forCustomer(CommunicationEvents.TRNX_BENE_CREDIT, customer);
+			if(communicationPrefsResult.isEmail()) {
+				String emailid = model.getEmail();
+				logger.info("Email send to--" + model.getEmail());
+				Email email = new Email();
+				email.setSubject(BRANCH_SEARCH);
+				email.addTo(emailid);
+				email.setITemplate(TemplatesMX.RATE_ALERT);
+				email.setHtml(true);
+				email.getModel().put(RESP_DATA_KEY, model);
+				postManService.sendEmailAsync(email);
+			}
+			
+			if(communicationPrefsResult.isSms()) {
+				SMS sms = new SMS();
+				sms.addTo(customer.getPrefixCodeMobile()+customer.getMobile());
+				sms.getModel().put(NotificationConstants.RESP_DATA_KEY, model);
+				sms.setITemplate(TemplatesMX.RATE_ALERT);
+				postManService.sendSMSAsync(sms);
+			}
+			if(communicationPrefsResult.isWhatsApp()) {
+				WAMessage waMessage =  new WAMessage();
+				waMessage.addTo(customer.getPrefixCodeMobile()+customer.getMobile());
+				waMessage.getModel().put(NotificationConstants.RESP_DATA_KEY, model);
+				waMessage.setITemplate(TemplatesMX.RATE_ALERT);
+				whatsAppClient.send(waMessage);
+			}
+			if(communicationPrefsResult.isPushNotify()) {
+				PushMessage pushMessage = new PushMessage();
+				pushMessage.setITemplate(TemplatesMX.RATE_ALERT);
+				pushMessage.addToUser(model.getCustomerId());
+				pushMessage.getModel().put(RESP_DATA_KEY, model);
+				pushNotifyClient.send(pushMessage);
+			}
+			
 		} catch (Exception e) {
 			logger.error("error in sendPaceorderNotification", e);
 		}

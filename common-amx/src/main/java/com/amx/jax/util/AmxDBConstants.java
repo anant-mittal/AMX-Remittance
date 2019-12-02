@@ -130,8 +130,7 @@ public class AmxDBConstants {
 	public static final String PCK = "PCK";
 	public static final String OFD_CNF = "OFD_CNF";
 	public static final String CND_ACK = "CND_ACK";
-
-	/** end Here **/
+	
 	public static final String P = "P";
 	public static final String R = "R";
 	public static final String FC_SALE = "FC Sale";
@@ -248,5 +247,14 @@ public class AmxDBConstants {
 	public static final String DIRECT_PAYMENT_LINK_PAID ="P";
 	public static final String DIRECT_LINK ="LINK";
 	
-public static final String IMPS = "IMPS";
+	public static final String IMPS = "IMPS";
+	
+	// Constants for Communication Preference
+	public static final String RESET_PASSWORD_FLOW = "/api/user/password";
+	public static final String FORGOT_SECQUE_FLOW = "/pub/auth/otp";
+
+	/** end Here **/
+	
+	
+	
 }

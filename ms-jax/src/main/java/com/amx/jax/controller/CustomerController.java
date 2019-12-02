@@ -26,11 +26,13 @@ import com.amx.amxlib.meta.model.IncomeDto;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.service.ICustomerService;
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.customer.service.CustomerService;
 import com.amx.jax.customer.service.JaxCustomerContactVerificationService;
 import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dict.AmxEnums.CommunicationEvents;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.auth.QuestModelDTO;
@@ -41,6 +43,7 @@ import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.services.CustomerDataVerificationService;
 import com.amx.jax.services.JaxCustomerModelService;
 import com.amx.jax.userservice.dao.CustomerDao;
+import com.amx.jax.userservice.manager.CommunicationPreferencesManager;
 import com.amx.jax.userservice.repository.OnlineCustomerRepository;
 import com.amx.jax.userservice.service.AnnualIncomeService;
 import com.amx.jax.userservice.service.CustomerModelService;
@@ -89,6 +92,10 @@ public class CustomerController implements ICustomerService {
 	
 	@Autowired
 	OnlineCustomerRepository onlineCustomerRepository;
+	
+	@Autowired
+	CommunicationPreferencesManager communicationPreferencesManager;
+	
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -149,6 +156,7 @@ public class CustomerController implements ICustomerService {
 		
 		List<ContactType> channel = new ArrayList<>();
 		channel.add(ContactType.SMS_EMAIL);
+		
 		response = userService.sendOtpForCivilId(civilId, channel, null, null);
 		
 		
@@ -158,6 +166,7 @@ public class CustomerController implements ICustomerService {
 	@RequestMapping(value = "/send-otp/", method = RequestMethod.GET)
 	public ApiResponse sendOtp() {
 		logger.info("in sendOtp Request");
+		logger.info("Flow value is   "+AppContextUtil.getFlow());
 		ApiResponse response = userService.sendOtpForCivilId(null);
 		return response;
 	}
@@ -230,7 +239,7 @@ public class CustomerController implements ICustomerService {
 		List<ContactType> channel = new ArrayList<>();
 		channel.add(ContactType.EMAIL);
 		channel.add(ContactType.SMS);
-
+		communicationPreferencesManager.validateCommunicationPreferences(channel,CommunicationEvents.CONTACT_DETAILS,null);
 		if (custModel.getMobile() != null) {
 			logger.info("Validating mobile for client id : " + custModel.getCustomerId());
 			userService.validateMobile(custModel);
@@ -263,6 +272,7 @@ public class CustomerController implements ICustomerService {
 		if (contactType != null) {
 			contactTypes.add(contactType);
 		}
+		communicationPreferencesManager.validateCommunicationPreferences(contactTypes,CommunicationEvents.SIGNUP_ONLINE,civilId);
 		ApiResponse response = userService.sendOtpForCivilId(civilId, contactTypes, null, init);
 		return response;
 	}

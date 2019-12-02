@@ -25,18 +25,22 @@ import com.amx.jax.constants.JaxChannel;
 import com.amx.jax.dao.BeneficiaryDao;
 import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
 import com.amx.jax.dbmodel.BenificiaryListView;
+import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.bene.BeneficaryAccount;
 import com.amx.jax.dbmodel.bene.BeneficaryContact;
 import com.amx.jax.dbmodel.bene.BeneficaryMaster;
 import com.amx.jax.dbmodel.bene.BeneficaryRelationship;
 import com.amx.jax.dbmodel.bene.BeneficaryStatus;
+import com.amx.jax.dict.AmxEnums.CommunicationEvents;
 import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.client.PushNotifyClient;
+import com.amx.jax.postman.client.WhatsAppClient;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.TemplatesMX;
+import com.amx.jax.postman.model.WAMessage;
 import com.amx.jax.repository.BeneficaryStatusRepository;
 import com.amx.jax.repository.IBeneficaryContactDao;
 import com.amx.jax.repository.IBeneficiaryAccountDao;
@@ -48,7 +52,10 @@ import com.amx.jax.service.ParameterService;
 import com.amx.jax.services.BankService;
 import com.amx.jax.services.BeneficiaryValidationService;
 import com.amx.jax.services.JaxEmailNotificationService;
+import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.service.UserService;
+import com.amx.jax.util.CommunicationPrefsUtil;
+import com.amx.jax.util.CommunicationPrefsUtil.CommunicationPrefsResult;
 import com.amx.jax.validation.BenePersonalDetailValidator;
 import com.amx.utils.ArgUtil;
 
@@ -109,6 +116,16 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 
 	@Autowired
 	IBeneficiaryOnlineDao beneficiaryOnlineDao;
+	
+	@Autowired
+	CustomerDao custDao;
+	
+	@Autowired
+	CommunicationPrefsUtil communicationPrefsUtil;
+	
+	@Autowired
+	WhatsAppClient whatsAppClient;
+
 
 	@Override
 	public BeneficiaryTrnxModel init() {
@@ -497,27 +514,48 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 	}
 	public void sendNotificationTemplate(BeneCreateDetailsDTO wrapper, PersonInfo personInfo, BigDecimal custId) {
 		try {
-
+			Customer c = custDao.getActiveCustomerDetailsByCustomerId(custId);
+			CommunicationPrefsResult communicationPrefsResult = communicationPrefsUtil.forCustomer(CommunicationEvents.BENE_CREAT_SUCC, c);
 			logger.debug("Sending beneCreationEmail  to customer : ");
 			// Send Email
-			Email beneCreationEmail = new Email();
-			beneCreationEmail.setSubject("New Beneficiary Addition Success");
-			if (personInfo.getEmail() != null) {
-				beneCreationEmail.addTo(personInfo.getEmail());
+			if(communicationPrefsResult.isEmail()) {
+				Email beneCreationEmail = new Email();
+				beneCreationEmail.setSubject("New Beneficiary Addition Success");
+				if (personInfo.getEmail() != null) {
+					beneCreationEmail.addTo(personInfo.getEmail());
+				}
+				beneCreationEmail.setITemplate(TemplatesMX.BENE_SUCC);
+				beneCreationEmail.setHtml(true);
+
+				beneCreationEmail.getModel().put(NotificationConstants.RESP_DATA_KEY, wrapper);
+				postManService.sendEmailAsync(beneCreationEmail);
 			}
-			beneCreationEmail.setITemplate(TemplatesMX.BENE_SUCC);
-			beneCreationEmail.setHtml(true);
+			
+			if(communicationPrefsResult.isSms()) {
+				SMS sms = new SMS();
+				sms.addTo(personInfo.getPrefixCodeMobile()+personInfo.getMobile());
+				sms.setITemplate(TemplatesMX.BENE_SUCC);
+				sms.getModel().put(NotificationConstants.RESP_DATA_KEY, wrapper);
+				postManService.sendSMSAsync(sms);
+			}
+			
+			if(communicationPrefsResult.isWhatsApp()) {
+				WAMessage waMessage = new WAMessage();
+				waMessage.addTo(personInfo.getWhatsappPrefixCode()+personInfo.getWhatsAppNumber());
+				waMessage.setITemplate(TemplatesMX.BENE_SUCC);
+				whatsAppClient.send(waMessage);
+			}
+			
+			if(communicationPrefsResult.isPushNotify()) {
+				// Send Push Message
+				PushMessage pushMessage = new PushMessage();
 
-			beneCreationEmail.getModel().put(NotificationConstants.RESP_DATA_KEY, wrapper);
-			postManService.sendEmailAsync(beneCreationEmail);
-
-			// Send Push Message
-			PushMessage pushMessage = new PushMessage();
-
-			pushMessage.setITemplate(TemplatesMX.BENE_SUCC);
-			pushMessage.getModel().put(NotificationConstants.RESP_DATA_KEY, wrapper);
-			pushMessage.addToUser(custId);
-			pushNotifyClient.send(pushMessage);
+				pushMessage.setITemplate(TemplatesMX.BENE_SUCC);
+				pushMessage.getModel().put(NotificationConstants.RESP_DATA_KEY, wrapper);
+				pushMessage.addToUser(custId);
+				pushNotifyClient.send(pushMessage);
+			}
+			
 
 		} catch (Exception e) {
 			logger.error("Error while sending mail beneCreationEmail : " , e);
