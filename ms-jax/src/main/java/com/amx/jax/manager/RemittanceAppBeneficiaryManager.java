@@ -15,6 +15,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dao.RemittanceApplicationDao;
@@ -25,7 +26,9 @@ import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.remittance.Document;
 import com.amx.jax.dbmodel.remittance.RemittanceAppBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.response.remittance.BeneAdditionalDto;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.services.BankService;
 import com.amx.jax.services.BeneficiaryService;
@@ -98,7 +101,8 @@ public class RemittanceAppBeneficiaryManager {
 		remittanceAppBenificary.setCreatedDate(new Date());
 		remittanceAppBenificary.setIsactive(ConstantDocument.Yes);
 
-		setAdditionalBeneficiaryDetails(remittanceAppBenificary);
+		//setAdditionalBeneficiaryDetails(remittanceAppBenificary);
+		setAdditionalBeneficiaryDetailsV2(remittanceAppBenificary);
 		remittanceAppBenificary.setBeneficiaryTelephoneNumber(telNumber);
 
 		logger.info(" Exit from saveRemittanceAppBenificary ");
@@ -169,4 +173,30 @@ public class RemittanceAppBeneficiaryManager {
 			
 		}
 	}
+	
+	
+	public void setAdditionalBeneficiaryDetailsV2(RemittanceAppBenificiary remittanceAppBenificary) {
+		BenificiaryListView beneficiaryDT = (BenificiaryListView) remitApplParametersMap.get("BENEFICIARY");
+		BeneAdditionalDto beneAddDeatisl  = (BeneAdditionalDto)remitApplParametersMap.get("BENE_ADDL_DTLS");
+		if(beneAddDeatisl==null) {
+			throw new GlobalException(JaxError.BENE_ADD_CHECK_ERROR,"Bene additional data is missing");
+		}
+		remittanceAppBenificary.setBeneficiaryBranch(beneAddDeatisl.getBeneBranchName()==null?beneficiaryDT.getBankBranchName():beneAddDeatisl.getBeneBranchName());
+		remittanceAppBenificary.setBeneficiaryName(beneAddDeatisl.getBeneName()==null? beneficiaryDT.getBenificaryName():beneAddDeatisl.getBeneName());
+		remittanceAppBenificary.setBeneficiaryFirstName(beneAddDeatisl.getBeneFirstName()==null?beneficiaryDT.getFirstName():beneAddDeatisl.getBeneFirstName());
+		remittanceAppBenificary.setBeneficiarySecondName(beneAddDeatisl.getBeneSecondName()==null?beneficiaryDT.getSecondName():beneAddDeatisl.getBeneSecondName());
+		remittanceAppBenificary.setBeneficiaryThirdName(beneAddDeatisl.getBeneThirdName()==null?beneficiaryDT.getThirdName():beneAddDeatisl.getBeneThirdName());
+		remittanceAppBenificary.setBeneficiaryFourthName(beneAddDeatisl.getBeneFourthName()==null?beneficiaryDT.getFourthName():beneAddDeatisl.getBeneFourthName());
+		remittanceAppBenificary.setBeneficiaryFifthName(beneAddDeatisl.getBeneFifthName()==null?beneficiaryDT.getFiftheName():beneAddDeatisl.getBeneFifthName());
+		remittanceAppBenificary.setBeneficiaryBranchStateId(beneAddDeatisl.getStateId());
+		remittanceAppBenificary.setBeneficiaryBranchDistrictId(beneAddDeatisl.getDistrictId());
+		remittanceAppBenificary.setBeneficiaryBranchCityId(beneAddDeatisl.getCityId());
+		
+		remittanceAppBenificary.setBeneficiaryBankCountryId(beneficiaryDT.getBenificaryCountry());
+		remittanceAppBenificary.setBeneficiaryBankId(beneficiaryDT.getBankId());
+		remittanceAppBenificary.setBeneficiaryBankBranchId(beneficiaryDT.getBranchId());
+		remittanceAppBenificary.setBeneficiaryAccountSeqId(beneficiaryDT.getBeneficiaryAccountSeqId());
+		remittanceAppBenificary.setBeneficiaryRelationShipSeqId(beneficiaryDT.getBeneficiaryRelationShipSeqId());
+	}
+	
 }

@@ -91,27 +91,10 @@ public class RemittanceApplicationService {
 		
 	}
 	
-/*public void updatePayTokenNull(List<ShoppingCartDetails> lstShoppingCartAppl,PaymentResponseDto paymentResponse) {
-	
-	for(ShoppingCartDetails shopAppl : lstShoppingCartAppl) {
-		RemittanceApplication appl = remittanceApplicationRepository.findOne(shopAppl.getApplicationId());
-		if(appl!=null) {
-			appl.setResultCode(paymentResponse.getResultCode());
-			appl.setPaymentId(paymentResponse.getPaymentId());
-			appl.setPayToken(null);
-			appl.setApplicaitonStatus(null);
-			appl.setIsactive("D");
-			remittanceApplicationRepository.save(appl);
-		}
-	}
-	
-}*/
-
-
 
 
 public void updatePayTokenNull(List<RemittanceApplication> lstPayIdDetails,PaymentResponseDto paymentResponse) {
-	
+	logger.debug("In update payment token method");
 	for(RemittanceApplication shopAppl : lstPayIdDetails) {
 		RemittanceApplication appl = remittanceApplicationRepository.findOne(shopAppl.getRemittanceApplicationId());
 		if(appl!=null) {
@@ -154,6 +137,19 @@ public void updatePayTokenNull(List<RemittanceApplication> lstPayIdDetails,Payme
 		}
 	}
 	
+	public void deActivateLatestPbApplication(Customer customerId , String paymentType) {
+		try {
+
+			// deactivate all the application
+			List<RemittanceApplication> remittanceApplicationList = remittanceApplicationRepository.getLatestPbApplication(customerId, paymentType);
+			
+			remittanceApplicationRepository.deActivateLatestPbApplication(remittanceApplicationList.get(0).getRemittanceApplicationId());
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new GlobalException("De-Activate Application failed for customer:"+customerId);
+		}
+	}
 	/**
 	 * EX_INSERT_REMITTANCE_ONLINE 
 	 * 

@@ -2,8 +2,11 @@ package com.amx.jax.manager;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -24,12 +27,17 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.async.ExecutorConfig;
+import com.amx.jax.branchremittance.dao.BranchRemittanceDao;
+import com.amx.jax.branchremittance.manager.BranchRemittanceSaveManager;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constants.JaxTransactionStatus;
+import com.amx.jax.dao.FcSaleApplicationDao;
 import com.amx.jax.dao.JaxEmployeeDao;
 import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dao.RemittanceProcedureDao;
 import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.PaygDetailsModel;
+import com.amx.jax.dbmodel.PaymentModeModel;
 import com.amx.jax.dbmodel.PlaceOrder;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.partner.TransactionDetailsView;
@@ -41,9 +49,15 @@ import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.events.CActivityEvent;
 import com.amx.jax.logger.events.CActivityEvent.Type;
+import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.request.remittance.BranchApplicationDto;
+import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
 import com.amx.jax.model.response.customer.PersonInfo;
+import com.amx.jax.model.response.remittance.RemittanceApplicationResponseModel;
+import com.amx.jax.model.response.remittance.RemittanceCollectionDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.serviceprovider.Remittance_Call_Response;
+import com.amx.jax.notification.JaxNotificationDataManager;
 import com.amx.jax.partner.dao.PartnerTransactionDao;
 import com.amx.jax.partner.dto.RemitTrnxSPDTO;
 import com.amx.jax.partner.manager.PartnerTransactionManager;
@@ -53,12 +67,14 @@ import com.amx.jax.postman.model.Email;
 import com.amx.jax.pricer.var.PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE;
 import com.amx.jax.repository.IPlaceOrderDao;
 import com.amx.jax.repository.IShoppingCartDetailsDao;
+import com.amx.jax.repository.PaymentModeRepository;
 import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.service.FinancialService;
 import com.amx.jax.services.AbstractService;
 import com.amx.jax.services.JaxEmailNotificationService;
 import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.services.RemittanceApplicationService;
+import com.amx.jax.services.RemittanceTransactionService;
 import com.amx.jax.services.ReportManagerService;
 import com.amx.jax.services.TransactionHistroyService;
 import com.amx.jax.userservice.dao.CustomerDao;
@@ -142,6 +158,28 @@ public class RemittancePaymentManager extends AbstractService{
 	
 	@Autowired
     AuditService auditService;
+	@Autowired
+	JaxNotificationDataManager jaxNotificationDataManager;
+	
+	@Autowired
+	private MetaData meta;
+	
+	@Autowired
+	BranchRemittanceDao branchRemittanceDao;
+	
+	@Autowired
+	FcSaleApplicationDao fcSaleApplicationDao;
+	
+	@Autowired
+	PaymentModeRepository paymentModeRepository;
+	
+	@Autowired
+	BranchRemittanceSaveManager branchRemittanceSaveManager;
+	
+	@Autowired
+	RemittanceTransactionService remittanceTransactionService;
+	
+	
 	
 	public ApiResponse<PaymentResponseDto> paymentCapture(PaymentResponseDto paymentResponse) {
 		ApiResponse response = null;
@@ -154,6 +192,7 @@ public class RemittancePaymentManager extends AbstractService{
 		BigDecimal collectionDocumentCode = null;
 		String errorMsg = null;
 		Map<String,Object> remitanceMap  = null;
+		HashMap<String,Object> applMap = new HashMap<String,Object>(); 
 
 		logger.info("Customer Id :"+paymentResponse.getCustomerId());
 		logger.info("Result code :"+paymentResponse.getResultCode()+"\t Auth Code :"+paymentResponse.getAuth_appNo());
@@ -168,17 +207,30 @@ public class RemittancePaymentManager extends AbstractService{
 			{
 
 				lstPayIdDetails = applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(paymentResponse.getUdf3(),new Customer(paymentResponse.getCustomerId()));
-				RemittanceApplication remittanceApplication = lstPayIdDetails.get(0);
-				validateAmountMismatch(remittanceApplication, paymentResponse);
-				remittanceApplication.setIsactive(ConstantDocument.Yes);
-				applicationDao.save(remittanceApplication);
-				paymentResponse.setCompanyId(remittanceApplication.getFsCompanyMaster().getCompanyId());
-				if (remittanceApplication.getResultCode() != null) {
-					logger.info("Existing payment id found: {}", remittanceApplication.getPaymentId());
-					return response;
-				}
+				
+				validateAmountMismatch(lstPayIdDetails, paymentResponse);
+				// need to check with Prashant  why he adde this code .
+				//RemittanceApplication remittanceApplication = lstPayIdDetails.get(0);
+				//remittanceApplication.setIsactive(ConstantDocument.Yes);
+				//applicationDao.save(remittanceApplication);
+				
+				paymentResponse.setCompanyId(meta.getCompanyId());
+				/*
+				 * if (remittanceApplication.getResultCode() != null) {
+				 * logger.info("Existing payment id found: {}",
+				 * remittanceApplication.getPaymentId()); return response; }
+				 */
 				remittanceApplicationService.updatePaymentDetails(lstPayIdDetails, paymentResponse);
+				applMap.put("APPL_TRNX", lstPayIdDetails);
+				logger.info("PAYMENT RESPONSE VALUES : {}", JsonUtil.toJson(paymentResponse));
+				fcSaleApplicationDao.updatePaygDetails(null, paymentResponse);
+				/** for Online save in JAX **/
+				BranchRemittanceRequestModel remitRequestModel =createRequestModelForOnline(lstPayIdDetails,paymentResponse);
+				RemittanceResponseDto  responseDto = branchRemittanceSaveManager.saveRemittanceTrnx(remitRequestModel);
+				
+				
 				/** Calling stored procedure  insertRemittanceOnline **/
+				/**
 				remitanceMap = remittanceApplicationService.saveRemittance(paymentResponse);
 				
 //				/** Referral Code **/
@@ -206,32 +258,42 @@ public class RemittancePaymentManager extends AbstractService{
 //						pushNotifyClient.send(pushMessage);	
 //					}
 //				}			
-				
+				/*
 				errorMsg = (String)remitanceMap.get("P_ERROR_MESG");
 				errorMsg= null;
 				if(remitanceMap!=null && !remitanceMap.isEmpty() && StringUtils.isBlank(errorMsg)){
-
 					collectionFinanceYear = (BigDecimal)remitanceMap.get("P_COLLECT_FINYR");
 					collectionDocumentNumber = (BigDecimal)remitanceMap.get("P_COLLECTION_NO");
 					collectionDocumentCode = (BigDecimal)remitanceMap.get("P_COLLECTION_DOCUMENT_CODE");
 					errorMsg = (String)remitanceMap.get("P_ERROR_MESG");
-
+					**/
+				if(responseDto!=null && JaxUtil.isNullZeroBigDecimalCheck(responseDto.getCollectionDocumentNo())) {
+				  collectionFinanceYear = responseDto.getCollectionDocumentFYear();
+				  collectionDocumentNumber = responseDto.getCollectionDocumentNo();
+				  collectionDocumentCode = responseDto.getCollectionDocumentCode();
+				
 					logger.info("EX_INSERT_REMITTANCE_ONLINE collectionFinanceYear : " + collectionFinanceYear);
 					logger.info("collectionDocumentNumber : " + collectionDocumentNumber);
 					logger.info("collectionDocumentCode : " + collectionDocumentCode);
 					logger.info("EX_INSERT_REMITTANCE_ONLINE errorMsg : " + errorMsg);
 					
-					// service Provider api
-					RemittanceResponseDto responseDto = new RemittanceResponseDto();
+					/** service Provider api **/
+					//RemittanceResponseDto responseDto = new RemittanceResponseDto();
 					responseDto.setCollectionDocumentFYear(collectionFinanceYear);
 					responseDto.setCollectionDocumentNo(collectionDocumentNumber);
 					responseDto.setCollectionDocumentCode(collectionDocumentCode);
 					callingServiceProviderApi(responseDto,paymentResponse.getCustomerId());
 
 					//Update remittance_transaction_id for place order method call
-					if (lstPayIdDetails.get(0) != null)	{	
-						updatePlaceOrderTransactionId(lstPayIdDetails.get(0),paymentResponse);
-					} 	
+					/*
+					 * if (lstPayIdDetails.get(0) != null) {
+					 * updatePlaceOrderTransactionId(lstPayIdDetails.get(0),paymentResponse); }
+					 */	
+					
+					 for(RemittanceApplication remitAppl :lstPayIdDetails) {
+						 updatePlaceOrderTransactionId(remitAppl,paymentResponse); 
+					 }
+					
 
 					/** Calling stored procedure  to move remittance to old emos **/
 					if(JaxUtil.isNullZeroBigDecimalCheck(collectionDocumentNumber)) {
@@ -244,10 +306,8 @@ public class RemittancePaymentManager extends AbstractService{
 						logger.info("EX_INSERT_EMOS_TRANSFER_LIVE :" + errorMsg);
 
 						/** For Receipt Print **/
-
-						//response.getData().getValues().add(paymentResponse);
 						response.setResponseStatus(ResponseStatus.OK);
-						//response.getData().setType("pg_remit_response");
+						
 					}
 					try {
 						RemittanceTransaction remittanceTransaction = remitAppDao.getRemittanceTransaction(
@@ -258,7 +318,7 @@ public class RemittancePaymentManager extends AbstractService{
 								remittanceTransaction.getDocumentNo());
 						Customer customer = customerDao.getCustById(remittanceTransaction.getCustomerId().getCustomerId());
 						setMetaInfo(trxnDto, paymentResponse);
-						// promotion check not for amg employee
+						/** promotion check not for amg employee **/
 						if (!employeeDao.isAmgEmployee(customer.getIdentityInt())) {
 							promotionManager.promotionWinnerCheck(remittanceTransaction.getDocumentNo(),
 									remittanceTransaction.getDocumentFinanceYear());
@@ -281,8 +341,9 @@ public class RemittancePaymentManager extends AbstractService{
 							BeanUtils.copyProperties(personinfo, customer);
 						} catch (Exception e) {
 						}
-						if(personInfo!=null && !StringUtils.isBlank(personInfo.getEmail())) {
-							notificationService.sendTransactionNotification(rrsrl.get(0), personinfo);
+						if (personInfo != null && !StringUtils.isBlank(personInfo.getEmail())) {
+							notificationService.sendTransactionNotification(rrsrl.get(0), personinfo,
+									jaxNotificationDataManager.getTransactionSuccessEmailData());
 						}
 					} catch (Exception e) {
 						logger.error("error while sending transaction notification", e);
@@ -295,6 +356,7 @@ public class RemittancePaymentManager extends AbstractService{
 					if(!lstPayIdDetails.isEmpty()) {
 						paymentResponse.setErrorText(errorMsg);
 						remittanceApplicationService.updatePayTokenNull(lstPayIdDetails, paymentResponse);
+						fcSaleApplicationDao.updatePaygDetails(null, paymentResponse);
 					}
 				}
 
@@ -304,6 +366,9 @@ public class RemittancePaymentManager extends AbstractService{
 				lstPayIdDetails =applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(paymentResponse.getUdf3(),new Customer(paymentResponse.getCustomerId()));
 				if(!lstPayIdDetails.isEmpty()) {
 					remittanceApplicationService.updatePayTokenNull(lstPayIdDetails, paymentResponse);
+					logger.info("PAYMENT RESPONSE VALUES : {}", JsonUtil.toJson(paymentResponse));
+					fcSaleApplicationDao.updatePaygDetails(null, paymentResponse);
+					
 				}
 				response.setResponseStatus(ResponseStatus.INTERNAL_ERROR);
 			}
@@ -317,6 +382,7 @@ public class RemittancePaymentManager extends AbstractService{
 					return response;
 				}
 				remittanceApplicationService.updatePayTokenNull(lstPayIdDetails, paymentResponse);
+				fcSaleApplicationDao.updatePaygDetails(null, paymentResponse);
 				
 			}
 
@@ -365,13 +431,20 @@ public class RemittancePaymentManager extends AbstractService{
 	public ApiResponse savePaymentId(PaymentResponseDto paymentResponse) {
 		ApiResponse response = getBlackApiResponse();
 		logger.info("in savePaymentId  :" + paymentResponse.toString());
-		List<RemittanceApplication> lstPayIdDetails = applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(
-				paymentResponse.getUdf3(), new Customer(paymentResponse.getCustomerId()));
+		List<RemittanceApplication> lstPayIdDetails = applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(paymentResponse.getUdf3(), new Customer(paymentResponse.getCustomerId()));
 		if (lstPayIdDetails == null || lstPayIdDetails.isEmpty()) {
 			throw new GlobalException("No Application data found for given payment id: " + paymentResponse.getUdf3());
 		}
-		lstPayIdDetails.get(0).setPaymentId(paymentResponse.getPaymentId());
-		applicationDao.save(lstPayIdDetails.get(0));
+		
+		 /** Blocked by Rabil **/ 
+		//lstPayIdDetails.get(0).setPaymentId(paymentResponse.getPaymentId());
+		//applicationDao.save(lstPayIdDetails.get(0));
+		/** added for shopping cart **/
+		for(RemittanceApplication remittanceApplication : lstPayIdDetails) {
+			remittanceApplication.setPaymentId(paymentResponse.getPaymentId());	
+			applicationDao.save(remittanceApplication);
+		}
+		
 		response.getData().getValues().add(paymentResponse);
 		response.getData().setType("pg_remit_response");
 		return response;
@@ -393,21 +466,31 @@ public class RemittancePaymentManager extends AbstractService{
        
     }
 
-	private void validateAmountMismatch(RemittanceApplication remittanceApplication, PaymentResponseDto paymentResponse) {
-		BigDecimal localNetTraxAmount = remittanceApplication.getLocalNetTranxAmount();
-		BigDecimal loyalityPointEncashed = remittanceApplication.getLoyaltyPointsEncashed();
-		loyalityPointEncashed = (loyalityPointEncashed == null ? BigDecimal.ZERO : loyalityPointEncashed);
-		BigDecimal localCurrencyDecimalNumber = remittanceApplication.getExCurrencyMasterByLocalChargeCurrencyId().getDecinalNumber();
-		BigDecimal payableAmount = localNetTraxAmount.subtract(loyalityPointEncashed);
-		if (paymentResponse.getAmount() == null) {
+	private void validateAmountMismatch(List<RemittanceApplication> lstPayIdDetails, PaymentResponseDto paymentResponse) {
+		
+		BigDecimal localCurrencyDecimalNumber = BigDecimal.ZERO;
+		BigDecimal totalPayableAmount = BigDecimal.ZERO;
+		String applicationIds = null;
+		for(RemittanceApplication remittanceApplication :lstPayIdDetails ) {
+			BigDecimal localNetTraxAmount = remittanceApplication.getLocalNetTranxAmount();
+			BigDecimal loyalityPointEncashed = remittanceApplication.getLoyaltyPointsEncashed();
+			loyalityPointEncashed = (loyalityPointEncashed == null ? BigDecimal.ZERO : loyalityPointEncashed);
+			localCurrencyDecimalNumber = remittanceApplication.getExCurrencyMasterByLocalChargeCurrencyId().getDecinalNumber();
+			BigDecimal payableAmount =localNetTraxAmount.subtract(loyalityPointEncashed);
+			payableAmount = RoundUtil.roundBigDecimal(payableAmount, localCurrencyDecimalNumber.intValue());
+			totalPayableAmount =totalPayableAmount.add(payableAmount); 
+			applicationIds = remittanceApplication.getRemittanceApplicationId()!=null?"":remittanceApplication.getRemittanceApplicationId().toString()+",";
+		}
+		
+	
+		if (paymentResponse !=null && paymentResponse.getAmount() == null) {
 			logger.info("amount null in paymentResponse");
 		}
 		BigDecimal paidAmount = new BigDecimal(paymentResponse.getAmount());
-		payableAmount = RoundUtil.roundBigDecimal(payableAmount, localCurrencyDecimalNumber.intValue());
 		paidAmount = RoundUtil.roundBigDecimal(paidAmount, localCurrencyDecimalNumber.intValue());
-		if (!paidAmount.equals(payableAmount)) {
-			String errorMessage = String.format("paidAmount: %s and payableAmount: %s mismatch for remittanceApplicationId: %s", paidAmount,
-					payableAmount, remittanceApplication.getRemittanceApplicationId());
+		
+		if (!paidAmount.equals(totalPayableAmount)) {
+			String errorMessage = String.format("paidAmount: %s and payableAmount: %s mismatch for remittanceApplicationId: %s", paidAmount,totalPayableAmount, applicationIds);
 			logger.info(errorMessage);
 			jaxNotificationService.sendTransactionErrorAlertEmail(errorMessage, "Remittance Amount mistmatch", paymentResponse);
 			throw new GlobalException("paid and payable amount mismatch");
@@ -453,5 +536,99 @@ public class RemittancePaymentManager extends AbstractService{
 		}else {
 			logger.error("Service provider api fail to execute : ColDocNo : ", responseDto.getCollectionDocumentNo() + " : ColDocCod : " +responseDto.getCollectionDocumentCode()+"  : ColDocYear : "+responseDto.getCollectionDocumentFYear());
 		}
+	}
+	
+	
+	public RemittanceApplicationResponseModel payShoppingCart(BranchRemittanceRequestModel remittanceRequestModel){
+			RemittanceApplicationResponseModel responseModel = null;
+		
+		
+			HashMap<String, Object> mapAllDetailApplSave =new HashMap<String, Object>();
+			PaygDetailsModel pgDetails = null;
+			if(remittanceRequestModel!=null) {
+				 pgDetails = createPgDetails(remittanceRequestModel);
+			}
+			mapAllDetailApplSave.put("PG_DETAILS",pgDetails);
+			mapAllDetailApplSave.put("APPL", remittanceRequestModel.getRemittanceApplicationId());
+			responseModel = branchRemittanceDao.saveAndUpdateAll(mapAllDetailApplSave);
+			responseModel.setMerchantTrackId(meta.getCustomerId());
+			responseModel.setNetPayableAmount(remittanceRequestModel.getTotalTrnxAmount());
+			return responseModel;
+	}
+	
+	
+	private PaygDetailsModel  createPgDetails(BranchRemittanceRequestModel remittanceRequestModel) {
+		
+		PaygDetailsModel pgmodel = new PaygDetailsModel();
+		if(remittanceRequestModel!=null) {
+			List<BranchApplicationDto> shoppingCartDetails =  remittanceRequestModel.getRemittanceApplicationId();
+			BigDecimal netPayableAmount =  remittanceRequestModel.getTotalTrnxAmount();
+			String applicationIds = null;
+			if(!shoppingCartDetails.isEmpty()) {
+				String remittanceApplications = shoppingCartDetails.stream().map(i -> i.getApplicationId().toString()).collect(Collectors.joining(","));
+				pgmodel.setApplIds(remittanceApplications);
+			}
+			UserFinancialYear userFinancialYear = finanacialService.getUserFinancialYear();
+			if (userFinancialYear != null) {
+				pgmodel.setCollDocFYear(userFinancialYear.getFinancialYear());
+			}
+			pgmodel.setCreationDate(new Date());
+			pgmodel.setCustomerId(meta.getCustomerId());
+			pgmodel.setTrnxType(ConstantDocument.R);
+			pgmodel.setPayAmount(remittanceRequestModel.getTotalTrnxAmount());
+			
+			
+			if (!StringUtils.isBlank(meta.getReferrer())) {
+				pgmodel.setCreatedBy(meta.getReferrer());
+			} else {
+				if (!StringUtils.isBlank(meta.getAppType())) {
+					pgmodel.setCreatedBy(meta.getAppType());
+				} else {
+					pgmodel.setCreatedBy("WEB");
+				}
+			}
+			
+		}		
+		return pgmodel;
+	}
+	
+	/** added by Rabil on 17 Aug 2019**/
+	
+	private BranchRemittanceRequestModel createRequestModelForOnline(List<RemittanceApplication> lstPayIdDetails,PaymentResponseDto payResDto) {
+		BranchRemittanceRequestModel request = new BranchRemittanceRequestModel();
+		List<BranchApplicationDto> remittanceApplicationIds =new ArrayList<>();
+		List<RemittanceCollectionDto> collctionModeDto = new ArrayList<>();
+		BranchApplicationDto remitApplicationId = new BranchApplicationDto();
+		BigDecimal totalAmount = BigDecimal.ZERO;
+		BigDecimal loyaltyAmount = BigDecimal.ZERO;
+		
+		/** To set the applciation details **/
+		for(RemittanceApplication appl:lstPayIdDetails) {
+			BranchApplicationDto applDto = new BranchApplicationDto();
+			applDto.setApplicationId(appl.getRemittanceApplicationId());
+			totalAmount =totalAmount.add(appl.getLocalNetTranxAmount());
+			loyaltyAmount = loyaltyAmount.add(appl.getLoyaltyPointsEncashed());
+			remittanceApplicationIds.add(applDto);
+		}
+		
+		/** to set the collection amount **/
+		PaymentModeModel payModeModel = paymentModeRepository.getPaymentModeDetails(ConstantDocument.KNET_CODE);
+		RemittanceCollectionDto remittanceCollection = new RemittanceCollectionDto();
+		remittanceCollection.setPaymentModeId(payModeModel.getPaymentModeId());
+		remittanceCollection.setPaymentAmount(new BigDecimal(payResDto.getAmount()));
+		remittanceCollection.setApprovalNo(payResDto.getAuth_appNo());
+		collctionModeDto.add(remittanceCollection);
+		
+		
+		//Set request Parameter
+		request.setRemittanceApplicationId(remittanceApplicationIds);
+		request.setCollctionModeDto(collctionModeDto);
+		request.setCurrencyRefundDenomination(null);
+		request.setTotalTrnxAmount(totalAmount);
+		request.setTotalLoyaltyAmount(loyaltyAmount);
+		request.setPaidAmount(totalAmount);
+		
+		
+		return request;
 	}
 }

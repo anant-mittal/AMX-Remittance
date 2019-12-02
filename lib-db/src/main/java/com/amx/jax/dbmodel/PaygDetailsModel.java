@@ -84,26 +84,32 @@ public class PaygDetailsModel implements Serializable{
 	@Column(name="REMARKS")
 	private String remarks;
 	
+
+	
 	@Column(name="APPLICATION_IDS")
 	private String applIds;
-
+	
 	@Column(name="VERIFICATION_CODE")
-    private String verifycode;
+	private String verifycode;
+	
+	@Column(name="LINK_DATE")
+	private Date linkDate;
+	
+	@Column(name="PAYMENT_DATE")
+	private Date paymentDate;
+	
+	@Column(name="PAYMENT_AMOUNT")
+	private BigDecimal payAmount;
+	
+	@Column(name="LINK_ISACTIVE")
+	private String linkActive;
+	
+	@Column(name="ERROR_CATEGORY")
+	private String errorCategory;
 
-    @Column(name="LINK_DATE")
-    private Date linkDate;
-
-    @Column(name="PAYMENT_DATE")
-    private Date paymentDate;
-
-    @Column(name="PAYMENT_AMOUNT")
-    private BigDecimal payAmount;
-
-    @Column(name="LINK_ISACTIVE")
-    private String linkActive;
-    
     @Column(name="PAYMENT_TYPE")
     private String paymentType;
+
 
 	public BigDecimal getPaygTrnxSeqId() {
 		return paygTrnxSeqId;
@@ -297,6 +303,17 @@ public class PaygDetailsModel implements Serializable{
 		this.linkActive = linkActive;
 	}
 
+	
+	
+	public String getErrorCategory() {
+		return errorCategory;
+	}
+
+	public void setErrorCategory(String errorCategory) {
+		this.errorCategory = errorCategory;
+	}
+
+
 	public String getPaymentType() {
 		return paymentType;
 	}
@@ -304,5 +321,5 @@ public class PaygDetailsModel implements Serializable{
 	public void setPaymentType(String paymentType) {
 		this.paymentType = paymentType;
 	}
-	
+
 }

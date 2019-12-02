@@ -31,22 +31,13 @@ import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
 
 //@TunnelEventMapping(topic = AmxTunnelEvents.Names.DATAUPD_TRNX, scheme = TunnelEventXchange.TASK_WORKER)
-@TunnelEventMapping(topic = AmxTunnelEvents.Names.TRNX_BENE_CREDIT, scheme = TunnelEventXchange.TASK_LISTNER)
+@TunnelEventMapping(topic = AmxTunnelEvents.Names.TRNX_STATUS_UPDATE, scheme = TunnelEventXchange.TASK_WORKER)
 public class TranxViewUpdateListner implements ITunnelSubscriber<DBEvent> {
 
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
-	private static final String ID = "APP_ID";
-	private static final String CUST_ID = "CUST_ID";
+	private static final String APP_ID = "APP_ID";
 	private static final String TRANX_ID = "TRANX_ID";
-	private static final String TRNXAMT = "TRNXAMT";
-	private static final String LOYALTY = "LOYALTY";
-	private static final String TRNREF = "TRNREF";
-	private static final String TRNDATE = "TRNDATE";
-	private static final String LANG_ID = "LANG_ID";
-	private static final String TENANT = "TENANT";
-	private static final String CURNAME = "CURNAME";
-	private static final String TYPE = "TYPE";
 
 	@Autowired
 	public AppConfig appConfig;
@@ -62,15 +53,13 @@ public class TranxViewUpdateListner implements ITunnelSubscriber<DBEvent> {
 
 	@Override
 	public void onMessage(String channel, DBEvent event) {
-		LOGGER.info("======onMessage1==={} ====  {}", channel, JsonUtil.toJson(event));
+		LOGGER.debug("======onMessage1==={} ====  {}", channel, JsonUtil.toJson(event));
 
-		String custId = ArgUtil.parseAsString(event.getData().get(CUST_ID));
-		String trnxRef = ArgUtil.parseAsString(event.getData().get(TRNREF));
-		String trnxDate = ArgUtil.parseAsString(event.getData().get(TRNDATE));
 		String tranxId = ArgUtil.parseAsString(event.getData().get(TRANX_ID));
+		String appId = ArgUtil.parseAsString(event.getData().get(APP_ID));
 
-		if (ArgUtil.isEmpty(tranxId)) {
-			LOGGER.info("Nothing to Do as Transaction Id is Empty");
+		if (ArgUtil.isEmpty(tranxId) && ArgUtil.isEmpty(appId)) {
+			LOGGER.info("Nothing to Do as Transaction/Application Id is Empty");
 			return;
 		}
 
@@ -81,10 +70,17 @@ public class TranxViewUpdateListner implements ITunnelSubscriber<DBEvent> {
 
 		// Conditions/Filters
 		GridColumn column = new GridColumn();
-		column.setKey("trnxId");
 		column.setOperator(FilterOperater.EQ);
 		column.setDataType(FilterDataType.NUMBER);
-		column.setValue(tranxId);
+
+		if (ArgUtil.is(tranxId)) {
+			column.setKey("trnxId");
+			column.setValue(tranxId);
+		} else {
+			column.setKey("id");
+			column.setValue(appId);
+		}
+
 		column.setSortDir(SortOrder.ASC);
 		gridQuery.getColumns().add(column);
 

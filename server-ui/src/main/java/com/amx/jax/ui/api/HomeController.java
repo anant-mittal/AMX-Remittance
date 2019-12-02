@@ -52,9 +52,9 @@ import com.amx.jax.swagger.ApiStatusBuilder.ApiStatus;
 import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.UIConstants.Features;
 import com.amx.jax.ui.WebAppConfig;
-import com.amx.jax.ui.config.UIServerError;
 import com.amx.jax.ui.config.OWAStatus;
 import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
+import com.amx.jax.ui.config.UIServerError;
 import com.amx.jax.ui.model.ServerStatus;
 import com.amx.jax.ui.response.ResponseMessage;
 import com.amx.jax.ui.response.ResponseWrapper;
@@ -425,7 +425,7 @@ public class HomeController {
 				Urly.parse(HttpUtils.getServerName(request)).path("/pub/app/pay/{prodType}/{linkId}")
 						.pathParam("prodType", prodType)
 						.pathParam("linkId", linkId)
-						.queryParam("v", veryCode).queryParam("page", "response").getURL()));
+						.queryParam("v", veryCode).queryParam("page", "response").getURL(),null));
 
 		map.put("statusKey", OWAStatus.OWAStatusStatusCodes.SUCCESS);
 		map.put("messageKey", OWAStatus.OWAStatusStatusCodes.SUCCESS);

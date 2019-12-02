@@ -196,6 +196,7 @@ public class FcSaleApplicationDao {
 			
 			if(paymentResponse!= null && paymentResponse.getUdf3()!=null){
 				PaygDetailsModel pgModel =pgRepository.findOne(new BigDecimal(paymentResponse.getUdf3()));
+				if(pgModel!=null) {
 				pgModel.setResultCode(paymentResponse.getResultCode());
 				pgModel.setModifiedDate(new Date());
 				pgModel.setPgAuthCode(paymentResponse.getAuth_appNo());
@@ -204,16 +205,24 @@ public class FcSaleApplicationDao {
 				pgModel.setPgReceiptDate(paymentResponse.getPostDate());
 				pgModel.setPgTransactionId(paymentResponse.getTransactionId());
 				pgModel.setPgReferenceId(paymentResponse.getReferenceId());
+				pgModel.setErrorCategory(paymentResponse.getErrorCategory());
+				pgModel.setErrorMessage(paymentResponse.getErrorText());
 				pgRepository.save(pgModel);
+				}else {
+					logger.error("Update after PG details Payment Id :"+paymentResponse.getPaymentId()+"\t Udf 3--Pg trnx seq Id :"+paymentResponse.getUdf3()+"Result code :"+paymentResponse.getResultCode());
+					throw new GlobalException(JaxError.PAYMENT_UPDATION_FAILED,"PG updation failed");
+				}
 			}else{
-				logger.debug("Update after PG details Payment Id :"+paymentResponse.getPaymentId()+"\t Udf 3--Pg trnx seq Id :"+paymentResponse.getUdf3()+"Result code :"+paymentResponse.getResultCode());
-				throw new GlobalException(JaxError.PAYMENT_UPDATION_FAILED,"PG updatio failed");
+
+				logger.error("Update after PG details Payment Id :"+paymentResponse.getPaymentId()+"\t Udf 3--Pg trnx seq Id :"+paymentResponse.getUdf3()+"Result code :"+paymentResponse.getResultCode());
+				throw new GlobalException(JaxError.PAYMENT_UPDATION_FAILED,"PG updation failed");
 			}
 		}catch (Exception e) {
 			e.printStackTrace();
-			logger.debug("catch Update after PG details Payment Id :"+paymentResponse.getPaymentId()+"\t Udf 3--Pg trnx seq Id :"+paymentResponse.getUdf3()+"Result code :"+paymentResponse.getResultCode());
-			throw new GlobalException(JaxError.PAYMENT_UPDATION_FAILED,"PG updatio failed");
-		}
+			logger.error("catch Update after PG details Payment Id :"+paymentResponse.getPaymentId()+"\t Udf 3--Pg trnx seq Id :"+paymentResponse.getUdf3()+"Result code :"+paymentResponse.getResultCode());
+			throw new GlobalException(JaxError.PAYMENT_UPDATION_FAILED,"PG updation failed");
+				
+			}
 		
 	}
 	

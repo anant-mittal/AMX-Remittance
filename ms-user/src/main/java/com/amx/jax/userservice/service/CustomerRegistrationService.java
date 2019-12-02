@@ -1,7 +1,5 @@
 package com.amx.jax.userservice.service;
 
-import java.util.Base64;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -42,8 +40,6 @@ import com.amx.jax.userservice.validation.CustomerPhishigImageValidator;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.validation.CountryMetaValidation;
-
-import io.swagger.models.refs.RefFormat;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)

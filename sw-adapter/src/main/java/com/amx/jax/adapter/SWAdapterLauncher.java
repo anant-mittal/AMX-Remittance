@@ -13,8 +13,6 @@ import java.net.URL;
 
 import javax.annotation.PostConstruct;
 import javax.swing.ImageIcon;
-import javax.tools.JavaCompiler;
-import javax.tools.ToolProvider;
 
 import org.apache.commons.lang.SystemUtils;
 import org.slf4j.Logger;
@@ -32,10 +30,10 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
-import com.amx.utils.JarUtil;
-import com.amx.utils.SysConfigUtil;
 import com.amx.utils.FileUtil;
 import com.amx.utils.IoUtils;
+import com.amx.utils.JarUtil;
+import com.amx.utils.SysConfigUtil;
 
 @SpringBootApplication
 @ComponentScan(value = "com.amx.jax")

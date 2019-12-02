@@ -22,9 +22,17 @@ public class RemittanceTransactionDrRequestModel extends RemittanceAdditionalBen
 	private String mOtp;
 	private String eOtp;
 	private BigDecimal placeOrderId;
+	private String paymentType;
 	
 	
-	
+
+	public String getPaymentType() {
+		return paymentType;
+	}
+
+	public void setPaymentType(String paymentType) {
+		this.paymentType = paymentType;
+	}
 
 	public DynamicRoutingPricingDto getDynamicRroutingPricingBreakup() {
 		return dynamicRroutingPricingBreakup;

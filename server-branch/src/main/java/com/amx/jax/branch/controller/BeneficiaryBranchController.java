@@ -113,7 +113,7 @@ public class BeneficiaryBranchController {
 
 	}
 
-	@RequestMapping(value = "/api/bene/id/list", method = RequestMethod.GET)
+	@RequestMapping(value = "/api/bene/details/list", method = RequestMethod.GET)
 	public AmxApiResponse<BeneficiaryListDTO, Object> getBeneByIdNo(@RequestParam Integer idNo) {
 		return beneBranchClient.getBeneByIdNo(idNo);
 	}
@@ -176,15 +176,16 @@ public class BeneficiaryBranchController {
 		return beneBranchClient.addNewBankBranchRequest(request);
 	}
 
-	@RequestMapping(value = "/api/bene/update_bank", method = RequestMethod.POST)
+	@RequestMapping(value = "/api/bene/update/bank_details", method = RequestMethod.POST)
 	public AmxApiResponse<BoolRespModel, Object> updateBeneBank(@RequestBody @Valid UpdateBeneBankRequest request) {
 		return beneBranchClient.updateBeneBank(request);
 	}
 
-	@RequestMapping(value = "/api/bene/update_cash", method = RequestMethod.POST)
+	@RequestMapping(value = "/api/bene/update/cash_details", method = RequestMethod.POST)
 	public AmxApiResponse<BoolRespModel, Object> updateBeneCash(@RequestBody @Valid UpdateBeneCashRequest request) {
 		return beneBranchClient.updateBeneCash(request);
 	}
+
 
 	/*
 	 * @RequestMapping(value = "/api/bene/relations/list", method =

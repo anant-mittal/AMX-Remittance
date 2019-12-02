@@ -21,6 +21,7 @@ import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterAgentBra
 import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterAgentParam;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterServiceImpl;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterServiceProviderParam;
+import com.amx.jax.client.bene.BeneficiaryConstant.BeneStatus;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.model.CivilIdOtpModel;
 
@@ -91,7 +92,20 @@ public class BeneClientTest extends AbstractTestClient {
 		assertNotNull(response.getResult().getModelType());
 	}
 
+	// @Test
+	@SuppressWarnings("rawtypes")
+	public void testUpdateStatus() {
+		jaxMetaInfo.setCountryId(new BigDecimal(91));
+		jaxMetaInfo.setCompanyId(new BigDecimal(1));
+		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
+		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
+		BigDecimal beneMasSeqId = new BigDecimal(1424);
 
+		ApiResponse response = null;
+		response = client.updateStatus(beneMasSeqId, null, BeneStatus.DISABLE,null,null);
+		// response = client.updateStatus(beneMasSeqId,null,BeneStatus.ENABLE);
+		assertNotNull("Response is null", response);
+	}
 
 	// @Test
 	@SuppressWarnings("rawtypes")

@@ -1,5 +1,11 @@
 package com.amx.jax.branch.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.compliance.ApproveDocRequest;
@@ -10,12 +16,6 @@ import com.amx.jax.client.compliance.RejectDocRequest;
 import com.amx.jax.client.customer.CustomerManagementClient;
 import com.amx.jax.model.customer.ComplianceTrnxDocumentInfo;
 import com.amx.jax.model.customer.document.CustomerDocCatTypeDto;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.Api;
 

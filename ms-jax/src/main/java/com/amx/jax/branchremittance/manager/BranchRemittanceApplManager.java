@@ -58,7 +58,6 @@ import com.amx.jax.dbmodel.remittance.RemitApplAmlModel;
 import com.amx.jax.dbmodel.remittance.RemittanceAppBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceApplicationSplitting;
-import com.amx.jax.dbmodel.remittance.RemittanceBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceModeMaster;
 import com.amx.jax.dbmodel.remittance.ShoppingCartDetails;
 import com.amx.jax.dict.UserClient.ClientType;
@@ -311,7 +310,7 @@ public class BranchRemittanceApplManager {
 		/** bene additional check **/
 		// Map<String, Object> addBeneDetails =branchRemitManager.validateAdditionalBeneDetails(beneficaryDetails,requestApplModel);
 
-		BeneAdditionalDto beneAddlDto  =branchRemitManager.getAdditionalBeneDetailJax(beneficaryDetails,requestApplModel);
+		BeneAdditionalDto beneAddlDto  =branchRemitManager.getAdditionalBeneDetailJax(beneficaryDetails,requestApplModel.getDynamicRroutingPricingBreakup());
 
 		/** validate trnx limit check **/
 		branchRemitManager.validateTrnxLimitCheck(exchangeRateBreakup,commission,beneficaryDetails);
@@ -656,19 +655,7 @@ public class BranchRemittanceApplManager {
 
 		remittanceAppBenificary.setBeneficiaryBank(beneficiaryDT.getBankName());
 
-		/*	remittanceAppBenificary.setBeneficiaryBranch(beneAddDeatisl.get("P_BENE_BRANCH_NAME")==null?beneficiaryDT.getBankBranchName():(String) beneAddDeatisl.get("P_BENE_BRANCH_NAME"));
-		remittanceAppBenificary.setBeneficiaryName(beneAddDeatisl.get("P_BENEFICIARY_NAME")==null? beneficiaryDT.getBenificaryName():(String) beneAddDeatisl.get("P_BENEFICIARY_NAME"));
-		remittanceAppBenificary.setBeneficiaryFirstName(beneAddDeatisl.get("P_BENEFICIARY_FIRST_NAME")==null?beneficiaryDT.getFirstName():(String) beneAddDeatisl.get("P_BENEFICIARY_FIRST_NAME"));
-		remittanceAppBenificary.setBeneficiarySecondName(beneAddDeatisl.get("P_BENEFICIARY_SECOND_NAME")==null?beneficiaryDT.getSecondName():(String) beneAddDeatisl.get("P_BENEFICIARY_SECOND_NAME"));
-		remittanceAppBenificary.setBeneficiaryThirdName(beneAddDeatisl.get("P_BENEFICIARY_THIRD_NAME")==null?beneficiaryDT.getThirdName():(String) beneAddDeatisl.get("P_BENEFICIARY_THIRD_NAME"));
-		remittanceAppBenificary.setBeneficiaryFourthName(beneAddDeatisl.get("P_BENEFICIARY_FOURTH_NAME")==null?beneficiaryDT.getFourthName():(String) beneAddDeatisl.get("P_BENEFICIARY_FOURTH_NAME"));
-		remittanceAppBenificary.setBeneficiaryFifthName(beneAddDeatisl.get("P_BENEFICIARY_FIFTH_NAME")==null?beneficiaryDT.getFiftheName():(String) beneAddDeatisl.get("P_BENEFICIARY_FIFTH_NAME"));
-
-		remittanceAppBenificary.setBeneficiaryBranchStateId(beneAddDeatisl.get("P_BENEFICIARY_STATE_ID")!=null?(BigDecimal)beneAddDeatisl.get("P_BENEFICIARY_STATE_ID"):null);
-		remittanceAppBenificary.setBeneficiaryBranchDistrictId(beneAddDeatisl.get("P_BENEFICIARY_DISTRICT_ID")!=null?(BigDecimal)beneAddDeatisl.get("P_BENEFICIARY_DISTRICT_ID"):null);
-		remittanceAppBenificary.setBeneficiaryBranchCityId(beneAddDeatisl.get("P_BENEFICIARY_CITY_ID")!=null?(BigDecimal)beneAddDeatisl.get("P_BENEFICIARY_CITY_ID"):null);
-		 */
-
+		
 		remittanceAppBenificary.setBeneficiaryBranch(beneAddDeatisl.getBeneBranchName()==null?beneficiaryDT.getBankBranchName():beneAddDeatisl.getBeneBranchName());
 		remittanceAppBenificary.setBeneficiaryName(beneAddDeatisl.getBeneName()==null? beneficiaryDT.getBenificaryName():beneAddDeatisl.getBeneName());
 		remittanceAppBenificary.setBeneficiaryFirstName(beneAddDeatisl.getBeneFirstName()==null?beneficiaryDT.getFirstName():beneAddDeatisl.getBeneFirstName());
@@ -707,10 +694,6 @@ public class BranchRemittanceApplManager {
 
 		logger.info(" Exit from saveRemittanceAppBenificary ");
 
-		
-		
-		
-		
 		return remittanceAppBenificary;
 	}
 
@@ -1115,5 +1098,6 @@ public class BranchRemittanceApplManager {
 				 
 		return applSplitList;
 	}
+
 	
 }

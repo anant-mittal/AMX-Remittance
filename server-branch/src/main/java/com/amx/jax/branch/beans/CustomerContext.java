@@ -2,6 +2,8 @@ package com.amx.jax.branch.beans;
 
 import java.math.BigDecimal;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.OffsiteCustRegClient;
 import com.amx.jax.client.customer.CustomerManagementClient;
@@ -9,8 +11,6 @@ import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.model.response.customer.CustomerShortInfo;
 import com.amx.jax.model.response.customer.OffsiteCustomerDataDTO;
 import com.amx.utils.ArgUtil;
-
-import org.springframework.beans.factory.annotation.Autowired;
 
 public class CustomerContext {
 
