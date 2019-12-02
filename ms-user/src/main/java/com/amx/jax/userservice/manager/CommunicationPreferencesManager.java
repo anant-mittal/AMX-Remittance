@@ -12,6 +12,7 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.dict.AmxEnums.CommunicationEvents;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.userservice.dao.CustomerDao;
@@ -62,16 +63,16 @@ public class CommunicationPreferencesManager {
 				if (ContactType.EMAIL.equals(channel)) {
 					boolean isEmailVerified = communicationPrefsResult.isEmail();
 					if (!isEmailVerified)
-						throw new GlobalException("Email id is not verified");
+						throw new GlobalException(JaxError.EMAIL_NOT_VERIFIED,"Email id is not verified");
 				} else if (ContactType.SMS.equals(channel)) {
 					boolean isSmsVerified = communicationPrefsResult.isSms();
 					if (!isSmsVerified) {
-						throw new GlobalException("Sms number is not verified");
+						throw new GlobalException(JaxError.SMS_NOT_VERIFIED,"Sms number is not verified");
 					}
 				} else if (ContactType.WHATSAPP.equals(channel)) {
 					boolean isWhatsAppVerified = communicationPrefsResult.isWhatsApp();
 					if (!isWhatsAppVerified) {
-						throw new GlobalException("Whatsapp number is not verified");
+						throw new GlobalException(JaxError.WHATSAPP_NOT_VERIFIED,"Whatsapp number is not verified");
 					}
 				}
 			}

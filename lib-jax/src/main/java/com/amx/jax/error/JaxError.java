@@ -352,7 +352,14 @@ public enum JaxError implements IExceptionEnum {
 	DIRECT_LINK_DEACTIVATED,
 	DIRECT_LINK_EXPIRED,
 	DIRECT_LINK_INVALID,
-	HOMESEND_APPL_NOT_ALLOWED;
+	HOMESEND_APPL_NOT_ALLOWED,
+	
+	//Communication Preferences
+	
+	SMS_NOT_VERIFIED,
+	WHATSAPP_NOT_VERIFIED;
+	
+	
 	
 	@Deprecated
 	public String getCode() {
