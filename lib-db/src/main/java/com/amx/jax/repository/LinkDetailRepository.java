@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 import com.amx.jax.dbmodel.LinkDetails;
-import com.amx.jax.dbmodel.ReferralDetails;
 
 public interface LinkDetailRepository extends CrudRepository<LinkDetails, BigDecimal> {
 	

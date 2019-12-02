@@ -19,7 +19,7 @@ public enum TunnelEventXchange {
 	SEND_LISTNER("SH"),
 
 	/**
-	 * Only one worker will start working
+	 * Only one worker will start working on event
 	 * 
 	 */
 	TASK_WORKER("TW"),

@@ -69,7 +69,6 @@ import com.amx.jax.util.CommunicationPrefsUtil;
 import com.amx.jax.util.CommunicationPrefsUtil.CommunicationPrefsResult;
 import com.amx.utils.DateUtil;
 import com.amx.utils.Random;
-import static com.amx.amxlib.constant.NotificationConstants.RESP_DATA_KEY;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)

@@ -1,11 +1,9 @@
 package com.amx.jax.validation;
 
-import java.io.ObjectInputStream.GetField;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +24,6 @@ import com.amx.jax.constants.JaxFieldEntity;
 import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.PurposeTrnxAmicDesc;
 import com.amx.jax.dbmodel.remittance.AdditionalBankDetailsViewx;
-import com.amx.jax.dbmodel.remittance.AdditionalBankRuleAmiec;
 import com.amx.jax.dbmodel.remittance.AdditionalBankRuleMap;
 import com.amx.jax.dbmodel.remittance.AdditionalDataDisplayView;
 import com.amx.jax.dbmodel.remittance.FlexFiledView;

@@ -35,6 +35,9 @@ public class DeviceDao {
 	AppConfig appConfig;
 	@Autowired
 	RbaacDao rbaacDao;
+	
+	@Autowired
+	BranchDetailDao branchDetailDao;
 
 	/**
 	 * 
@@ -112,6 +115,22 @@ public class DeviceDao {
 		return devices;
 	}
 	
+	public List<Device> findAllActiveDevicesByTerminal(BigDecimal branchSystemInvId, String branchSystemInvIp) {
+		BigDecimal branchSystemInvId2 = null;
+		if (ArgUtil.is(branchSystemInvIp)) {
+			BranchSystemDetail branchSystem = branchDetailDao.getBranchSystemDetail(branchSystemInvIp);
+			if(ArgUtil.is(branchSystem)) {
+				branchSystemInvId2 = branchSystem.getCountryBranchSystemInventoryId();				
+			}
+		}
+		return deviceRepository.findByBranchSystemInventoryIdAndStatus(branchSystemInvId,branchSystemInvId2,
+				 Constants.YES);
+	}
+	
+	public List<Device> findAllActiveDevicesByDevice(BigDecimal deviceRegId, String deviceId) {
+		return deviceRepository.findByDeviceRegIdAndActiveDevicesByDeviceId(deviceRegId, deviceId);
+	}
+
 	public List<Device> findAllActiveDevicesForEmployee(BigDecimal employeeId, ClientType deviceType) {
 		List<Device> devices = deviceRepository.findByEmployeeIdAndDeviceTypeAndStatus(employeeId, deviceType,
 				Constants.YES);

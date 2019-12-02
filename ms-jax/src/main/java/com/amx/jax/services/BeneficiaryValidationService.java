@@ -14,12 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.model.BeneAccountModel;
-import com.amx.amxlib.model.BenePersonalDetailModel;
-import com.amx.amxlib.model.trnx.BeneficiaryTrnxModel;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.ServiceApplicabilityField;
 import com.amx.jax.dao.BlackListDao;
@@ -35,12 +33,17 @@ import com.amx.jax.dbmodel.bene.predicate.BeneficiaryAccountPredicateCreator;
 import com.amx.jax.dbmodel.bene.predicate.BeneficiaryPersonalDetailPredicateCreator;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.request.benebranch.BeneAccountModel;
+import com.amx.jax.model.request.benebranch.BenePersonalDetailModel;
+import com.amx.jax.model.request.benebranch.BeneficiaryTrnxModel;
 import com.amx.jax.repository.IBeneficiaryAccountDao;
 import com.amx.jax.repository.IBeneficiaryMasterDao;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.IServiceApplicabilityRuleDao;
 import com.amx.jax.service.CountryService;
 import com.amx.jax.util.JaxUtil;
+import com.amx.jax.validation.BankBranchSearchRequestlValidator;
+import com.amx.jax.validation.BenePersonalDetailValidator;
 import com.google.common.collect.Iterables;
 import com.querydsl.core.types.Predicate;
 
@@ -91,6 +94,11 @@ public class BeneficiaryValidationService {
 	
 	@Autowired
 	BlackListDao blackListDao;
+	
+	@Autowired
+	BenePersonalDetailValidator benePersonalDetailValidator;
+	@Autowired
+	BankBranchSearchRequestlValidator bankBranchSearchRequestlValidator;
 
 	/**
 	 * @param beneAccountModel
@@ -106,6 +114,20 @@ public class BeneficiaryValidationService {
 			validateSwiftCode(beneAccountModel);
 		}
 	}
+	
+	public void validateBeneAccountUpdate(BeneAccountModel beneAccountModel) {
+		// validate only for BANK channel and not for CASH channel
+		if (!BigDecimal.ONE.equals(beneAccountModel.getServiceGroupId())) {
+			validateBankAccountNumber(beneAccountModel);
+			if (StringUtils.isNotBlank(beneAccountModel.getIbanNumber())) {
+				validateIban(beneAccountModel);
+			}
+			validateDuplicateBankAccount(beneAccountModel);
+			if (StringUtils.isNotBlank(beneAccountModel.getSwiftCode())) {
+				validateSwiftCode(beneAccountModel);
+			}
+		}
+	}
 
 	private void validateIban(BeneAccountModel beneAccountModel) {
 		BankMasterMdlv1 bankMaster = bankService.getBankById(beneAccountModel.getBankId());
@@ -117,22 +139,44 @@ public class BeneficiaryValidationService {
 			throw new GlobalException(JaxError.BANK_IBAN_EMPTY, "IBAN is required");
 		}
 	}
-
+	
 	private void validateSwiftCode(BeneAccountModel beneAccountModel) {
-		List<ServiceApplicabilityRule> swiftRules = serviceApplicablilityRuleDao
-				.getServiceApplicabilityRulesForBeneficiary(metaData.getCountryId(),
-						beneAccountModel.getBeneficaryCountryId(), beneAccountModel.getCurrencyId(),
-						ServiceApplicabilityField.BNFBANK_SWIFT.toString());
+		validateSwiftCode(beneAccountModel.getBeneficaryCountryId(), beneAccountModel.getCurrencyId(), beneAccountModel.getSwiftCode());
+	}
+
+	public void validateSwiftCode(BigDecimal beneBankCountryId, BigDecimal beneBankCurrencyId, String swiftCode) {
+		List<ServiceApplicabilityRule> swiftRules = serviceApplicablilityRuleDao.getServiceApplicabilityRulesForBeneficiary(metaData.getCountryId(),
+				beneBankCountryId, beneBankCurrencyId, ServiceApplicabilityField.BNFBANK_SWIFT.toString());
 		swiftRules.forEach(i -> {
 			if (ConstantDocument.Yes.equals(i.getMandatory())) {
-				if (StringUtils.isEmpty(beneAccountModel.getSwiftCode())) {
+				if (StringUtils.isEmpty(swiftCode)) {
 					throw new GlobalException(JaxError.BANK_SWIFT_EMPTY, "Swift code is required");
 				}
-				validateSwiftCode(beneAccountModel.getSwiftCode());
+				validateSwiftCode(swiftCode);
 			}
 		});
-		if (!StringUtils.isEmpty(beneAccountModel.getSwiftCode())) {
-			validateSwiftCode(beneAccountModel.getSwiftCode());
+		if (!StringUtils.isEmpty(swiftCode)) {
+			validateSwiftCode(swiftCode);
+		}
+	}
+	
+	public void validateIFscCode(BeneAccountModel beneAccountModel) {
+		validateIFscCode(beneAccountModel.getBeneficaryCountryId(), beneAccountModel.getCurrencyId(), beneAccountModel.getIfscCode());
+	}
+
+	public void validateIFscCode(BigDecimal beneBankCountryId, BigDecimal beneBankCurrencyId, String ifscCode) {
+		List<ServiceApplicabilityRule> swiftRules = serviceApplicablilityRuleDao.getServiceApplicabilityRulesForBeneficiary(metaData.getCountryId(),
+				beneBankCountryId, beneBankCurrencyId, ServiceApplicabilityField.BRANCH_IFSC.toString());
+		swiftRules.forEach(i -> {
+			if (ConstantDocument.Yes.equals(i.getMandatory())) {
+				if (StringUtils.isEmpty(ifscCode)) {
+					throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "ifsc code is required");
+				}
+				bankBranchSearchRequestlValidator.validateIfscCode(ifscCode);
+			}
+		});
+		if (!StringUtils.isEmpty(ifscCode)) {
+			bankBranchSearchRequestlValidator.validateIfscCode(ifscCode);
 		}
 	}
 
@@ -304,4 +348,15 @@ public class BeneficiaryValidationService {
 		return beneficiaryView;
 	}
 
+	public void validateBeneficiaryTrnxModel(BeneficiaryTrnxModel trnxModel) {
+		Object benePersonalDetailModel = trnxModel.getBenePersonalDetailModel();
+		BeanPropertyBindingResult errors = new BeanPropertyBindingResult(benePersonalDetailModel,
+				"benePersonalDetailModel");
+		BeneAccountModel beneAccountModel = trnxModel.getBeneAccountModel();
+		validateBeneAccount(beneAccountModel);
+		if (BigDecimal.ONE.equals(beneAccountModel.getServiceGroupId())) {
+			validateDuplicateCashBeneficiary(trnxModel);
+		}
+		benePersonalDetailValidator.validate(trnxModel, errors);
+	}
 }

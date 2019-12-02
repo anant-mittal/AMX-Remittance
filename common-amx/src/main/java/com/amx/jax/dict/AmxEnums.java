@@ -1,5 +1,8 @@
 package com.amx.jax.dict;
 
+import com.amx.jax.def.Communication.CommunicationEvent;
+import com.amx.jax.def.Communication.CommunicationEventModel;
+import com.amx.utils.ArgUtil;
 import com.amx.utils.EnumType;
 
 public class AmxEnums {
@@ -32,6 +35,13 @@ public class AmxEnums {
 		BPI_JOLLIBEE, TRNX_BENE_CREDIT, REMITTANCE, FORGOT_PASSWORD, RESET_PASSWORD, CONTACT_DETAILS, UPDATE_SECQUE,
 		IPSOS_DISCOUNT, GIG_PENDING_TRNX, GIG_POLICY_CONFIRM, GIG_OPTOUT_POLICY, GIG_EXPIRY_POLICY, SIGNUP_ONLINE,
 		FORGOT_SECQUE, BENE_CREAT_SUCC, PAYMENT_LINK,FC_ORDER_SUCCESS,FX_ORDER_OTP;
+		public static CommunicationEvent fromString(String eventStr) {
+			CommunicationEvent x = (CommunicationEvent) ArgUtil.parseAsEnum(eventStr, CommunicationEvents.class);
+			if (ArgUtil.isEmpty(x)) {
+				return new CommunicationEventModel(eventStr);
+			}
+			return x;
+		}
 	}
 
 }

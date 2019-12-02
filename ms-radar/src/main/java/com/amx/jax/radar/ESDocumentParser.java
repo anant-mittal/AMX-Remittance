@@ -57,7 +57,7 @@ public class ESDocumentParser {
 		} catch (NoSuchFieldException | SecurityException e) {
 			e.printStackTrace();
 		}
-		mapper = JsonUtil.createNewMapper("AESDocumentParser");
+		mapper = JsonUtil.createMapper("AESDocumentParser");
 		mapper.setAnnotationIntrospector(new ESAnnotationIntrospector());
 	}
 

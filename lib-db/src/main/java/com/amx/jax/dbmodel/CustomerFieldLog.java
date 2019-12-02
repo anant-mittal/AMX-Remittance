@@ -1,23 +1,16 @@
 package com.amx.jax.dbmodel;
 
 import java.math.BigDecimal;
-import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.PrePersist;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import com.amx.jax.constant.DeviceState;
-import com.amx.jax.dict.UserClient.ClientType;
-import com.amx.utils.CryptoUtil;
 
 @Entity
 @Table(name = "CUSTOMER_CH_LOG_ID")

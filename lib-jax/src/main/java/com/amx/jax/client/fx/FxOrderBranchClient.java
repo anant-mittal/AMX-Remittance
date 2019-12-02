@@ -7,14 +7,12 @@ import java.math.BigDecimal;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppConfig;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.configs.JaxMetaInfo;
-import com.amx.jax.exception.AbstractJaxException;
 import com.amx.jax.exception.JaxSystemError;
 import com.amx.jax.model.customer.CustomerRatingDTO;
 import com.amx.jax.model.request.fx.FcDeliveryBranchOrderSearchRequest;

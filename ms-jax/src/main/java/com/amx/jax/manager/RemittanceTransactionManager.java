@@ -62,6 +62,7 @@ import com.amx.jax.dbmodel.BlackListModel;
 import com.amx.jax.dbmodel.CurrencyMasterMdlv1;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ExchangeRateApprovalDetModel;
+import com.amx.jax.dbmodel.ReferralDetails;
 import com.amx.jax.dbmodel.TransactionLimitCheckView;
 import com.amx.jax.dbmodel.partner.RemitApplSrvProv;
 import com.amx.jax.dbmodel.remittance.AdditionalInstructionData;
@@ -94,6 +95,7 @@ import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.model.CivilIdOtpModel;
 import com.amx.jax.model.request.remittance.AbstractRemittanceApplicationRequestModel;
+import com.amx.jax.model.request.remittance.ExchangeRateValidateRequestDto;
 import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.response.ExchangeRateBreakup;
@@ -103,8 +105,11 @@ import com.amx.jax.model.response.remittance.LoyalityPointState;
 import com.amx.jax.model.response.remittance.RemittanceApplicationResponseModel;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.model.response.remittance.VatDetailsDto;
+import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
 import com.amx.jax.partner.manager.PartnerTransactionManager;
 import com.amx.jax.postman.client.PushNotifyClient;
+import com.amx.jax.postman.model.PushMessage;
+import com.amx.jax.partner.manager.PartnerTransactionManager;
 import com.amx.jax.pricer.dto.TrnxRoutingDetails;
 import com.amx.jax.pricer.var.PricerServiceConstants;
 import com.amx.jax.remittance.manager.RemittanceParameterMapManager;
@@ -291,6 +296,9 @@ public class RemittanceTransactionManager {
 	BankMasterRepository bankMasterRepo;
 	
 	@Autowired
+	BranchRemittanceExchangeRateManager branchRemittanceExchangeRateManager;
+	
+	@Autowired
 	CommunicationPreferencesManager communicationPreferencesManager;
 
 
@@ -324,7 +332,12 @@ public class RemittanceTransactionManager {
 		}
 		
 		TrnxRoutingDetails trnxRoutingDetails =  dynamicRoutingPricing.getTrnxRoutingPaths();
-		ExchangeRateBreakup breakup = dynamicRoutingPricing.getExRateBreakup();
+		
+		//ExchangeRateBreakup breakup = dynamicRoutingPricing.getExRateBreakup();
+		ExchangeRateValidateRequestDto  dto = cretaeModel(model);
+		BranchRemittanceGetExchangeRateResponse exchangeRateResposne = branchRemittanceExchangeRateManager.getDynamicRoutingAndPricingExchangeRateResponseCompare(dto);
+		ExchangeRateBreakup breakup = exchangeRateResposne.getExRateBreakup();
+		
 		Map<String, Object>  routingDetails =setupRoutingDetails(trnxRoutingDetails);
 		
 		// validation for Home Send SP
@@ -412,11 +425,26 @@ public class RemittanceTransactionManager {
 		}
 		
 		setCustomerDiscountColumnsV2(responseModel, dynamicRoutingPricing);
+		setSavedAmount(responseModel,dynamicRoutingPricing);
+		
 		return responseModel;
 
 	}
 	
-	
+	private ExchangeRateValidateRequestDto cretaeModel(RemittanceTransactionDrRequestModel model) {
+		ExchangeRateValidateRequestDto dto = new ExchangeRateValidateRequestDto();
+		
+		dto.setBeneId(model.getBeneId());
+		dto.setLocalAmount(model.getLocalAmount());
+		dto.setForeignAmount(model.getForeignAmount());
+		dto.setRoutingBankId(model.getDynamicRroutingPricingBreakup().getTrnxRoutingPaths().getRoutingBankId());
+		dto.setServiceMasterId(model.getDynamicRroutingPricingBreakup().getTrnxRoutingPaths().getServiceMasterId());
+		dto.setDeliveryModeId(model.getDynamicRroutingPricingBreakup().getTrnxRoutingPaths().getDeliveryModeId());
+		dto.setRemittanceModeId(model.getDynamicRroutingPricingBreakup().getTrnxRoutingPaths().getRemittanceModeId());
+		dto.setAvailLoyalityPoints(model.isAvailLoyalityPoints());
+			
+		return dto;
+	}
 	
 	
 	public RemittanceTransactionResponsetModel validateTransactionData(RemittanceTransactionRequestModel model) {
@@ -1233,7 +1261,7 @@ public class RemittanceTransactionManager {
 		remiteAppModel.setDocumentFinancialYear(remittanceApplication.getDocumentFinancialyear());
 		remiteAppModel.setMerchantTrackId(meta.getCustomerId());
 		remiteAppModel.setDocumentIdForPayment(remittanceApplication.getDocumentNo().toString());
-		
+
 		CivilIdOtpModel civilIdOtpModel = null;
 		if (model.getmOtp() == null) {
 			// this flow is for send OTP
@@ -1437,7 +1465,7 @@ public class RemittanceTransactionManager {
 	
 	
 	private CivilIdOtpModel addOtpOnRemittanceV2(RemittanceTransactionDrRequestModel model) {
-		
+
 		List<TransactionLimitCheckView> trnxLimitList = parameterService.getAllTxnLimits();
 
 		BigDecimal onlineLimit = BigDecimal.ZERO;
@@ -1455,7 +1483,7 @@ public class RemittanceTransactionManager {
 				iosLimit = view.getComplianceChkLimit();
 			}
 		}
-		
+
 		CivilIdOtpModel otpMmodel = null;
 		BigDecimal localAmount = (BigDecimal) remitApplParametersMap.get("P_CALCULATED_LC_AMOUNT");
 		if (((meta.getChannel().equals(JaxChannel.ONLINE)) && (WEB.equals(meta.getAppType()))
@@ -1616,4 +1644,17 @@ public class RemittanceTransactionManager {
 		exRatebreakUp.setNetAmountWithoutLoyality(RoundUtil.roundBigDecimal(exRatebreakUp.getNetAmountWithoutLoyality(),exRatebreakUp.getLcDecimalNumber().intValue()));
 		exRatebreakUp.setInverseRate((RoundUtil.roundBigDecimal(exRatebreakUp.getInverseRate(), AmxDBConstants.EXCHANGE_RATE_DECIMAL.intValue())));
 	}
+
+	public void setSavedAmount(RemittanceTransactionResponsetModel validationResults,DynamicRoutingPricingDto model) {
+		
+		if(JaxUtil.isNullZeroBigDecimalCheck(model.getYouSavedAmount()) && model.getYouSavedAmount().compareTo(BigDecimal.ZERO)>0) {
+			validationResults.setYouSavedAmount(model.getYouSavedAmount());
+		}
+		validationResults.setRackExchangeRate(model.getRackExchangeRate());
+		if(JaxUtil.isNullZeroBigDecimalCheck(model.getYouSavedAmountInFC())  && model.getYouSavedAmountInFC().compareTo(BigDecimal.ZERO)>0) {
+		validationResults.setYouSavedAmountInFC(model.getYouSavedAmountInFC());
+		}
+		validationResults.setCustomerChoice(model.getCustomerChoice());
+	}
+
 }

@@ -354,6 +354,8 @@ public enum JaxError implements IExceptionEnum {
 	DIRECT_LINK_INVALID,
 	HOMESEND_APPL_NOT_ALLOWED,
 	
+	//Language related
+	SOURCE_OF_INCOME_NOT_FOUND;
 	//Communication Preferences
 	
 	SMS_NOT_VERIFIED,

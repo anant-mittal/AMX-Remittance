@@ -14,7 +14,7 @@ public class TerminalBox extends CacheBox<TerminalData> {
 	}
 
 	/**
-	 * This method is requried to called whenever there is change in status/state of
+	 * This method is required to called whenever there is change in status/state of
 	 * terminal
 	 * 
 	 * @param terminalId
@@ -24,6 +24,7 @@ public class TerminalBox extends CacheBox<TerminalData> {
 			String terminalIdStr = ArgUtil.parseAsString(terminalId);
 			TerminalData terminalData = this.getOrDefault(terminalIdStr);
 			terminalData.setUpdatestamp(System.currentTimeMillis());
+			terminalData.setTerminalId(ArgUtil.parseAsString(terminalId));
 			this.fastPut(terminalIdStr, terminalData);
 		}
 	}

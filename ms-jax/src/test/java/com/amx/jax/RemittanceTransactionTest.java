@@ -14,7 +14,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.BenificiaryListView;
-import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest

@@ -11,11 +11,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
-
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrSubstitutor;
@@ -26,7 +26,6 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
-
 import com.amx.amxlib.constant.BeneficiaryConstant.BeneStatus;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.BeneCountryDTO;
@@ -42,6 +41,10 @@ import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.amxlib.model.response.LanguageCodeType;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam;
+import com.amx.jax.client.bene.BeneficaryStatusDto;
+import com.amx.jax.client.bene.BeneficiaryConstant;
+import com.amx.jax.client.bene.BeneficiaryConstant.BeneStatus;
+import com.amx.jax.client.serviceprovider.RoutingBankMasterDTO;
 import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxDbConfig;
@@ -63,7 +66,9 @@ import com.amx.jax.dbmodel.bene.BeneficaryAccount;
 import com.amx.jax.dbmodel.bene.BeneficaryContact;
 import com.amx.jax.dbmodel.bene.BeneficaryMaster;
 import com.amx.jax.dbmodel.bene.BeneficaryRelationship;
+import com.amx.jax.dbmodel.bene.BeneficaryStatus;
 import com.amx.jax.dbmodel.bene.RelationsDescription;
+import com.amx.jax.dbmodel.meta.ServiceGroupMaster;
 import com.amx.jax.dbmodel.remittance.ViewParameterDetails;
 import com.amx.jax.dict.AmxEnums.CommunicationEvents;
 import com.amx.jax.dict.ContactType;
@@ -79,6 +84,7 @@ import com.amx.jax.model.response.CurrencyMasterDTO;
 import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.model.response.remittance.LoyalityPointState;
 import com.amx.jax.repository.BeneficaryAccountRepository;
+import com.amx.jax.repository.BeneficaryStatusRepository;
 import com.amx.jax.repository.CountryRepository;
 import com.amx.jax.repository.IBeneficaryContactDao;
 import com.amx.jax.repository.IBeneficiaryCountryDao;
@@ -90,6 +96,7 @@ import com.amx.jax.repository.ILanguageTypeRepository;
 import com.amx.jax.repository.ITransactionHistroyDAO;
 import com.amx.jax.repository.RoutingAgentLocationRepository;
 import com.amx.jax.repository.RoutingBankMasterRepository;
+import com.amx.jax.repository.ServiceGroupMasterRepository;
 import com.amx.jax.repository.remittance.IViewParameterDetailsRespository;
 import com.amx.jax.service.MetaService;
 import com.amx.jax.userservice.dao.CustomerDao;
@@ -177,6 +184,8 @@ public class BeneficiaryService extends AbstractService {
 	JaxConfigService jaxConfigService;
 	@Autowired
 	IBeneficiaryMasterDao beneficaryMasterRepository;
+	@Autowired
+	BeneficaryStatusRepository beneficaryStatusRepository;
 
 	@Autowired
 	IViewParameterDetailsRespository viewParameterDetailsRespository;
@@ -190,8 +199,9 @@ public class BeneficiaryService extends AbstractService {
 	
 	@Autowired
 	LoyalityPointService loyalityPointService;
-	
 	@Autowired
+	ServiceGroupMasterRepository serviceGroupMasterRepository;
+	@Autowired	
 	CommunicationPreferencesManager communicationPreferencesManager;
 	
 	
@@ -203,6 +213,13 @@ public class BeneficiaryService extends AbstractService {
 			beneList = beneficiaryOnlineDao.getOnlineBeneListFromViewForCountry(customerId, applicationCountryId,beneCountryId);
 		} else {
 			beneList = beneficiaryOnlineDao.getOnlineBeneListFromView(customerId, applicationCountryId);
+		}
+		Iterator<BenificiaryListView> itr = beneList.iterator();
+		while (itr.hasNext()) {
+			BenificiaryListView beneModel = itr.next();
+			if (BeneficiaryConstant.BeneStatus.HOLD.getDbFlag().equals(beneModel.getIsActive())) {
+				itr.remove();
+			}
 		}
 		BigDecimal nationalityId = custDao.getCustById(customerId).getNationalityId();
 		BenificiaryListViewOnlineComparator comparator = new BenificiaryListViewOnlineComparator(nationalityId);
@@ -685,7 +702,7 @@ public class BeneficiaryService extends AbstractService {
 		Customer customer = null;
 		String civilId = null;
 		BigDecimal customerId = null;
-		
+
 		if (metaData.getCustomerId() != null) {
 			customer = custDao.getCustById(metaData.getCustomerId());
 			civilId = customer.getIdentityInt();
@@ -953,6 +970,7 @@ public class BeneficiaryService extends AbstractService {
 	public ApiResponse getBeneficiaryCountryListWithChannelingForOnline(BigDecimal customerId) {
 
 		List<CountryMasterView> countryList;
+		BigDecimal defaultLanguageId =new BigDecimal("1"); 
 		if (jaxTenantProperties.getBeneThreeCountryCheck()) {
 			countryList = countryRepository.getBeneCountryList(metaData.getLanguageId());
 		} else {
@@ -964,9 +982,20 @@ public class BeneficiaryService extends AbstractService {
 				}else {
 					countryList = countryRepository.findByArabicLanguageIdAndNonBeneRisk(metaData.getLanguageId(),
 							customer.getNationalityId());
+					if(countryList.isEmpty()) {
+						
+						countryList = countryRepository.findByArabicLanguageIdAndNonBeneRisk(defaultLanguageId,
+								customer.getNationalityId());
+					}
+					
 				}
 			} else {
 				countryList = countryRepository.findByArabicLanguageId(metaData.getLanguageId());
+				
+				if(countryList.isEmpty()) {
+					countryList = countryRepository.findByArabicLanguageId(defaultLanguageId);
+				}
+				
 			}
 		}
 		List<BigDecimal> supportedServiceGroupList = beneDao.getRoutingBankMasterList(); // add for channeling
@@ -1097,6 +1126,13 @@ public class BeneficiaryService extends AbstractService {
 			trxDto.setSrlId(poDto.getSrlId());
 			remitPageDto.setTrnxHistDto(trxDto);
 		}
+		
+		//------ Loyalty Point Status check ------
+		LoyalityPointState loyalityState = loyalityPointService.getLoyalityState(customerId);
+		if(null != loyalityState) {
+			remitPageDto.setLoyalityPointState(loyalityState);
+		}
+		
 		response.getData().getValues().add(remitPageDto);
 		response.getData().setType(remitPageDto.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
@@ -1147,9 +1183,34 @@ public class BeneficiaryService extends AbstractService {
 		BenificiaryListView beneDetailModel = beneficiaryOnlineDao.findByCustomerIdAndBeneficaryMasterSeqIdAndIsActive(customerId, beneMasterSeqId, ConstantDocument.Yes);
 		return convertBeneModelToDto(beneDetailModel);
 	}
-	
-	
-	
+
+	public BeneficaryStatus getBeneStatusByNameByName(String beneficaryStatusName) {
+		return beneficaryStatusRepository.findByBeneficaryStatusName(beneficaryStatusName);
+	}
+
+	public BeneficaryRelationship getBeneRelationshipByIdNo(BigDecimal relationshipSeqId) {
+		return beneRelationShipDao.findOne(relationshipSeqId);
+	}
+
+	public BeneficaryContact getBeneficiaryContactByMasterId(BigDecimal beneMasterId) {
+		List<BeneficaryContact> beneContactList = beneficiaryContactDao.getBeneContact(beneMasterId);
+		BeneficaryContact beneContact = null;
+		if (!beneContactList.isEmpty()) {
+			beneContact = beneContactList.get(0);
+		}
+		return beneContact;
+	}
+
+	public List<BeneficaryStatusDto> getBeneStatusMaster() {
+		return beneficaryStatusRepository.findByIsActive(ConstantDocument.Yes).stream().map(i -> {
+			BeneficaryStatusDto dto = new BeneficaryStatusDto();
+			dto.setBeneficaryStatusId(i.getBeneficaryStatusId());
+			dto.setBeneficaryStatusName(i.getBeneficaryStatusName());
+			dto.setCreatedDate(i.getCreatedDate());
+			dto.setSelfApplicable(ConstantDocument.Yes.equalsIgnoreCase(i.getSelfApplicable()));
+			return dto;
+		}).collect(Collectors.toList());
+	}
 	
 	public BeneficaryContact getBeneContact(BigDecimal beneMasterSeqId) {
 		List<BeneficaryContact> beneContactList = beneficaryContactDao.getBeneContact(beneMasterSeqId);
@@ -1164,6 +1225,21 @@ public class BeneficiaryService extends AbstractService {
 	public void saveBeneContact(BeneficaryContact beneficaryContact) {
 		beneficaryContactDao.save(beneficaryContact);
 	}
-	
+
+	public List<BeneficaryStatusDto> getBeneStatusMaster(BigDecimal serviceGroupId) {
+		if (serviceGroupId == null) {
+			return getBeneStatusMaster();
+		}
+		ServiceGroupMaster serviceGroupMaster = serviceGroupMasterRepository.findOne(serviceGroupId);
+		return beneficaryStatusRepository.findByServiceGroupAndActive(ConstantDocument.Yes, serviceGroupMaster.getServiceGroupCode()).stream()
+				.map(i -> {
+					BeneficaryStatusDto dto = new BeneficaryStatusDto();
+					dto.setBeneficaryStatusId(i.getBeneficaryStatusId());
+					dto.setBeneficaryStatusName(i.getBeneficaryStatusName());
+					dto.setCreatedDate(i.getCreatedDate());
+					dto.setSelfApplicable(ConstantDocument.Yes.equalsIgnoreCase(i.getSelfApplicable()));
+					return dto;
+				}).collect(Collectors.toList());
+	}
 	
 }

@@ -74,6 +74,11 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 	CommunicationPrefsUtil communicationPrefsUtil;
 
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
+
+	// EMAIL:MOBILE:CUST_NAME:TRNXAMT:LOYALTY:TRNREF:TRNDATE:LANG_ID:TNT
+	// private static final String EMAIL = "EMAIL";
+	// private static final String MOBILE = "MOBILE";
+	// private static final String CUST_NAME = "CUST_NAME";
 	private static final String CUST_ID = "CUST_ID";
 	private static final String TRANX_ID = "TRANX_ID";
 	private static final String TRNXAMT = "TRNXAMT";
@@ -86,8 +91,7 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 
 	@Override
 	public void onMessage(String channel, DBEvent event) {
-		LOGGER.info("======onMessage1==={} ====  {}", channel, JsonUtil.toJson(event));
-
+		LOGGER.debug("======onMessage1==={} ====  {}", channel, JsonUtil.toJson(event));
 		BigDecimal custId = ArgUtil.parseAsBigDecimal(event.getData().get(CUST_ID));
 		BigDecimal trnxAmount = ArgUtil.parseAsBigDecimal(event.getData().get(TRNXAMT));
 		BigDecimal loyality = ArgUtil.parseAsBigDecimal(event.getData().get(LOYALTY));
@@ -97,7 +101,9 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 		String curName = ArgUtil.parseAsString(event.getData().get(CURNAME));
 		String type = ArgUtil.parseAsString(event.getData().get(TYPE));
 		BigDecimal tranxId = ArgUtil.parseAsBigDecimal(event.getData().get(TRANX_ID), new BigDecimal(0));
+		LOGGER.info("Customer id is " + custId);
 		Customer c = customerRepository.getCustomerByCustomerIdAndIsActive(custId, "Y");
+		LOGGER.info("Customer object is " + c.toString());
 		String emailId = c.getEmail();
 		String smsNo = c.getMobile();
 
@@ -109,9 +115,12 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 			custName = c.getFirstName() + ' ' + c.getMiddleName() + ' ' + c.getLastName();
 		}
 
+		LOGGER.info("transaction id is  " + tranxId);
 		NumberFormat myFormat = NumberFormat.getInstance();
 		myFormat.setGroupingUsed(true);
 		String trnxAmountval = myFormat.format(trnxAmount);
+
+		Boolean isOnlineCustomer = false;
 		Map<String, Object> wrapper = new HashMap<String, Object>();
 		Map<String, Object> modeldata = new HashMap<String, Object>();
 		modeldata.put("to", emailId);
@@ -129,16 +138,24 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 		LOGGER.debug("Comm pref result is "+JsonUtil.toJson(communicationPrefsResult));
 		if (!ArgUtil.isEmpty(emailId)&& communicationPrefsResult.isEmail()) {
 
+			LOGGER.info("email verified is " + c.getEmailVerified());
 			if (c.getEmailVerified() != AmxDBConstants.Status.Y) {
-
+				LOGGER.info("email value is " + c.getEmailVerified());
 				CustomerContactVerification x = null;
 				try {
 					x = customerContactVerificationManager.create(c, ContactType.EMAIL);
 				} catch (GlobalException e) {
 					LOGGER.debug(e.getMessage());
 				}
-
+				
+				LOGGER.debug("value of x is " + x.toString());
+				// modeldata.put("customer", c);
 				modeldata.put("verifylink", x);
+				for (Map.Entry<String, Object> entry : modeldata.entrySet()) {
+					LOGGER.info("KeyModel2 = " + entry.getKey() + ", ValueModel2 = " + entry.getValue());
+				}
+				LOGGER.debug("Model data is {}", modeldata.get("verifylink"));
+				// LOGGER.debug("Customer value is ", modeldata.get("customer"));
 
 			} else {
 				modeldata.put("customer", custName);
@@ -153,7 +170,11 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 				email.setLang(Language.EN);
 				modeldata.put("languageid", Language.EN);
 			}
+			for (Map.Entry<String, Object> entry : wrapper.entrySet()) {
+				LOGGER.info("KeyModelWrap = " + entry.getKey() + ", ValueModelWrap = " + entry.getValue());
+			}
 			LOGGER.info("Json value of wrapper is " + JsonUtil.toJson(wrapper));
+			LOGGER.info("Wrapper data is {}", wrapper.get("data"));
 			email.setModel(wrapper);
 			email.addTo(emailId);
 			email.setHtml(true);
@@ -273,11 +294,11 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 	@Async(ExecutorConfig.DEFAULT)
 	public void sendEmail(Email email) {
 		try {
-
+			LOGGER.info("email sent");
 			postManService.sendEmailAsync(email);
 		} catch (PostManException e) {
-			LOGGER.info("exception in trnax bene credit" + e);
-
+			LOGGER.info("email exception");
+			LOGGER.error("error in link fingerprint", e);
 		}
 	}
 
