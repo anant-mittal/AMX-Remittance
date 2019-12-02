@@ -15,12 +15,12 @@ import org.springframework.validation.BeanPropertyBindingResult;
 
 import com.amx.amxlib.constant.AuthType;
 import com.amx.amxlib.constant.NotificationConstants;
-import com.amx.amxlib.model.BeneAccountModel;
+
 import com.amx.amxlib.model.BeneCreateDetailsDTO;
-import com.amx.amxlib.model.BenePersonalDetailModel;
+
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.branchbene.BeneAccountManager;
-import com.amx.amxlib.model.trnx.BeneficiaryTrnxModel;
+
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constants.JaxChannel;
 import com.amx.jax.dao.BeneficiaryDao;
@@ -451,8 +451,6 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 	private BeneficaryStatus getbeneStatus(BigDecimal beneStatusId) {
 		if (beneStatusId == null) {
 			return beneficaryStatusRepository.findByBeneficaryStatusName(ConstantDocument.INDIVIDUAL_STRING);
-		} else {
-			return beneficaryStatusRepository.findByBeneficaryStatusName(ConstantDocument.NON_INDIVIDUAL_STRING);
 		}
 		return beneficaryStatusRepository.findOne(beneStatusId);
 	}
