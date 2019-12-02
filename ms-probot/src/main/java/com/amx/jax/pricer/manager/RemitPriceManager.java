@@ -212,10 +212,12 @@ public class RemitPriceManager {
 						exRateDetails.setFundedIntermediary(true);
 					}
 				}
+				
+				BigDecimal rBankId = bankDetailsDto.getBankId();
 
 				// Set the rack Rate
-				if (rackRateMap.containsKey(bankDetailsDto.getBankId())) {
-					ExchangeRateAPRDET rackRate = rackRateMap.get(bankDetailsDto.getBankId());
+				if (rackRateMap.containsKey(rBankId)) {
+					ExchangeRateAPRDET rackRate = rackRateMap.get(rBankId);
 					BigDecimal grossRate = exRateDetails.getSellRateBase().getInverseRate();
 
 					// Check if gross Rate is still lower than the computed Rack Rate
@@ -228,7 +230,19 @@ public class RemitPriceManager {
 						exRateDetails.setRackExchangeRate(grossRate);
 					}
 				}
+				
+				// Set Cost Rates
+				BigDecimal costRate = exchRateAndRoutingTransientDataCache.getAvgRateGLCForBank(rBankId);
+				OnlineMarginMarkup margin = this.exchRateAndRoutingTransientDataCache.getMarginForBank(rBankId);
 
+				// Update GLCBAL Rate to Markup Adjusted Rates
+				
+				if(costRate != null && margin != null) {
+					exRateDetails.setCostExchangeRate(costRate.add(margin.getMarginMarkup()));
+				}else {
+					exRateDetails.setCostExchangeRate(null);
+				}
+				
 				bankWiseRates.add(exRateDetails);
 
 			}
@@ -328,15 +342,16 @@ public class RemitPriceManager {
 						Boolean.TRUE);
 
 				// Update GLCBAL Rate to Markup Adjusted Rates
-				BigDecimal adjustedSellRate = new BigDecimal(0);
+				BigDecimal sellRateFloor = new BigDecimal(0);
 
 				OnlineMarginMarkup margin = exchRateAndRoutingTransientDataCache.getMarginForBank(rBankId);
 
 				if (avgBankGLCBALRate != null) {
-					adjustedSellRate = avgBankGLCBALRate.add(margin.getMarginMarkup());
+					sellRateFloor = avgBankGLCBALRate.add(margin.getMarginMarkup());
+					exRateDetails.setCostExchangeRate(sellRateFloor);
 				}
 
-				if (exRateDetails.getSellRateBase().getInverseRate().compareTo(adjustedSellRate) <= 0) {
+				if (exRateDetails.getSellRateBase().getInverseRate().compareTo(sellRateFloor) <= 0) {
 					exRateDetails.setCostRateLimitReached(true);
 				}
 				
@@ -372,6 +387,7 @@ public class RemitPriceManager {
 					}
 
 				}
+				
 
 				bankWiseRates.add(exRateDetails);
 
@@ -928,7 +944,7 @@ public class RemitPriceManager {
 
 			BigDecimal bankId = rate.getBankMaster().getBankId();
 
-			System.out.println(" Bank ==>" + rate.getBankMaster().getBankId() + " Rate==>" + rate.getSellRateMax());
+			//System.out.println(" Bank ==>" + rate.getBankMaster().getBankId() + " Rate==>" + rate.getSellRateMax());
 
 			if (bankExchangeRateMap.containsKey(bankId)) {
 
