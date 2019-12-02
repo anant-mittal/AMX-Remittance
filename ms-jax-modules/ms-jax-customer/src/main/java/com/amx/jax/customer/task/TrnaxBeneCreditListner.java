@@ -126,7 +126,7 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 
 		wrapper.put("data", modeldata);
 		CommunicationPrefsResult communicationPrefsResult = communicationPrefsUtil.forCustomer(CommunicationEvents.TRNX_BENE_CREDIT, c);
-		
+		LOGGER.debug("Comm pref result is "+JsonUtil.toJson(communicationPrefsResult));
 		if (!ArgUtil.isEmpty(emailId)&& communicationPrefsResult.isEmail()) {
 
 			if (c.getEmailVerified() != AmxDBConstants.Status.Y) {
