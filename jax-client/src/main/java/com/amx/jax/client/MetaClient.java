@@ -37,7 +37,9 @@ import com.amx.amxlib.model.CountryBranchDTO;
 import com.amx.amxlib.model.OnlineConfigurationDto;
 import com.amx.amxlib.model.request.GetBankBranchRequest;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.client.bene.InstitutionCategoryDto;
 import com.amx.jax.client.configs.JaxMetaInfo;
+import com.amx.jax.client.meta.IMetaControllerExtn;
 import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.model.response.BankMasterDTO;
 import com.amx.jax.model.response.BranchSystemDetailDto;
@@ -51,7 +53,7 @@ import com.amx.jax.rest.RestService;
  *
  */
 @Component
-public class MetaClient extends AbstractJaxServiceClient {
+public class MetaClient extends AbstractJaxServiceClient implements IMetaControllerExtn {
 	private static final Logger LOGGER = Logger.getLogger(MetaClient.class);
 
 	@Autowired
@@ -520,6 +522,15 @@ public class MetaClient extends AbstractJaxServiceClient {
 					.as(new ParameterizedTypeReference<AmxApiResponse<DeclarationDTO, Object>>() {
 					});
 		
+	}
+
+	@Override
+	public AmxApiResponse<InstitutionCategoryDto, Object> listInstitutionCategoryMaster() {
+		return restService.ajax(appConfig.getJaxURL())
+				.path(MetaApi.PREFIX + IMetaControllerExtn.Path.LIST_INSTITUTION_CATEGORY_MASTER)
+				.meta(new JaxMetaInfo()).get()
+				.as(new ParameterizedTypeReference<AmxApiResponse<InstitutionCategoryDto, Object>>() {
+				});
 	}
 	
 	
