@@ -98,14 +98,14 @@ public enum VentejaServiceProviderFlexField {
 		@Override
 		public void setValue(ServiceProviderCallRequestDto dto, Map<String, FlexFieldDto> requestFlexFields) {
 			FlexFieldDto value = requestFlexFields.get(this.name());
-			BigDecimal noOfMonths = new BigDecimal(value.getAmieceDescription());
+			BigDecimal noOfMonths = new BigDecimal(value.getAmieceCode());
 			FlexFieldDto startDateFlexField = requestFlexFields.get(INDIC12.name());
 			if (startDateFlexField != null) {
 				LocalDate startDateLocal = DateUtil.parseMonthYearFormatDate(startDateFlexField.getAmieceDescription(), ConstantDocument.MM_YYYY);
 				Date startDate = Date.from(startDateLocal.atStartOfDay(ZoneId.systemDefault()).toInstant());
 				Calendar endDate = Calendar.getInstance();
 				endDate.setTime(startDate);
-				endDate.add(Calendar.MONTH, noOfMonths.intValue());
+				endDate.add(Calendar.MONTH, noOfMonths.intValue() - 1);
 				dto.getTransactionDto().setCoverage_end_date(endDate.getTime());
 			}
 
