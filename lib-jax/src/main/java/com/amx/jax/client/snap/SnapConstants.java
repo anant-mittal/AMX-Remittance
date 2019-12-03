@@ -37,6 +37,7 @@ public class SnapConstants {
 		
 		
 		BUGZ_STORIES("bugz-stories", SnapIndexName.ALL),
+		BUGZ_STORIES_STATUS("bugz-stories-status", SnapIndexName.ALL,"bugzilla-bugs"),
 		RPTPG2("rptpg2", SnapIndexName.TRANX),
 		RPT("rpt", SnapIndexName.TRANX),
 		RPT2("rpt2", SnapIndexName.TRANX),
