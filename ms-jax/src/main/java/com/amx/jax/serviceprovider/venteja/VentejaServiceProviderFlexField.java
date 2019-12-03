@@ -1,7 +1,9 @@
 package com.amx.jax.serviceprovider.venteja;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 
@@ -89,6 +91,24 @@ public enum VentejaServiceProviderFlexField {
 		public void setValue(ServiceProviderCallRequestDto dto, Map<String, FlexFieldDto> requestFlexFields) {
 			FlexFieldDto value = requestFlexFields.get(this.name());
 			dto.getBeneficiaryDto().setBeneficiary_bank_code(value.getAmieceDescription());
+		}
+	},
+	INDIC18 {
+		// no of months
+		@Override
+		public void setValue(ServiceProviderCallRequestDto dto, Map<String, FlexFieldDto> requestFlexFields) {
+			FlexFieldDto value = requestFlexFields.get(this.name());
+			BigDecimal noOfMonths = new BigDecimal(value.getAmieceDescription());
+			FlexFieldDto startDateFlexField = requestFlexFields.get(INDIC12.name());
+			if (startDateFlexField != null) {
+				LocalDate startDateLocal = DateUtil.parseMonthYearFormatDate(startDateFlexField.getAmieceDescription(), ConstantDocument.MM_YYYY);
+				Date startDate = Date.from(startDateLocal.atStartOfDay(ZoneId.systemDefault()).toInstant());
+				Calendar endDate = Calendar.getInstance();
+				endDate.setTime(startDate);
+				endDate.add(Calendar.MONTH, noOfMonths.intValue());
+				dto.getTransactionDto().setCoverage_end_date(endDate.getTime());
+			}
+
 		}
 	};
 
