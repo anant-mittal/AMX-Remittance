@@ -83,6 +83,7 @@ public class AmxDBConstants {
 
 	public static final BigDecimal DELIVERY_MODE_BANKING_CHANNEL = new BigDecimal(105);
 	public static final String MM_DD_YYYY_DATE_FORMAT = "MM/dd/yyyy";
+	public static final String MM_YYYY = "MM/yyyy";
 	
 	public static final String DD_MM_YYYY_DATE_FORMAT = "dd/MM/yyyy";
 	

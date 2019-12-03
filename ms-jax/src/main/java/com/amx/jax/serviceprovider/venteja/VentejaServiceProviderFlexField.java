@@ -44,7 +44,7 @@ public enum VentejaServiceProviderFlexField {
 		@Override
 		public void setValue(ServiceProviderCallRequestDto dto, Map<String, FlexFieldDto> requestFlexFields) {
 			FlexFieldDto value = requestFlexFields.get(this.name());
-			LocalDate fromLocalDate = DateUtil.validateDate(value.getAmieceDescription(), ConstantDocument.MM_DD_YYYY_DATE_FORMAT);
+			LocalDate fromLocalDate = DateUtil.parseMonthYearFormatDate(value.getAmieceDescription(), ConstantDocument.MM_YYYY);
 			Date fromDate = Date.from(fromLocalDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
 			dto.getTransactionDto().setCoverage_start_date(fromDate);
 		}
@@ -62,7 +62,7 @@ public enum VentejaServiceProviderFlexField {
 		@Override
 		public void setValue(ServiceProviderCallRequestDto dto, Map<String, FlexFieldDto> requestFlexFields) {
 			FlexFieldDto value = requestFlexFields.get(this.name());
-			LocalDate toLocalDate = DateUtil.validateDate(value.getAmieceDescription(), ConstantDocument.MM_DD_YYYY_DATE_FORMAT);
+			LocalDate toLocalDate = DateUtil.parseMonthYearFormatDate(value.getAmieceDescription(), ConstantDocument.MM_YYYY);
 			Date toDate = Date.from(toLocalDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
 			dto.getTransactionDto().setCoverage_end_date(toDate);
 		}

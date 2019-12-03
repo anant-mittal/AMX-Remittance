@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -1008,5 +1009,13 @@ public final class DateUtil {
 		} catch (Exception e) {
 			return null;
 		}
+	}
+	
+
+	public static LocalDate parseMonthYearFormatDate(String strDate, String format) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
+		YearMonth ym = YearMonth.parse(strDate, formatter);
+		LocalDate dt = ym.atDay(1); 
+		return dt;
 	}
 }
