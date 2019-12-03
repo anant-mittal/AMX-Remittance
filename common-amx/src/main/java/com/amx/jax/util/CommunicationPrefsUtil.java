@@ -102,9 +102,8 @@ public class CommunicationPrefsUtil {
 				result.setPushNotify(true);
 			}
 
-			if ((result.isEmail() && !isAlwaysEmail)
-					|| (result.isSms() && !isAlwaysSMS)
-					|| (result.isWhatsApp() && !isAlwaysWA)) {
+			if ((result.isEmail() && !isAlwaysEmail) || (result.isSms() && !isAlwaysSMS)
+					|| (result.isWhatsApp() && !isAlwaysWA) || (result.isPushNotify() && !isAlwaysPush)) {
 				return result;
 			}
 		}
