@@ -212,7 +212,9 @@ public class BeneficiaryController implements IBeneficiaryService{
 	public ApiResponse saveBenePersonalDetailInTrnx(
 			@RequestBody @Valid BenePersonalDetailModel benePersonalDetailModel) {
 		LOGGER.info("saveBenePersonalDetailInTrnx request: " + JsonUtil.toJson(benePersonalDetailModel));
-		return beneficiaryTrnxManager.savePersonalDetailTrnx(benePersonalDetailModel);
+		 ApiResponse output = beneficiaryTrnxManager.savePersonalDetailTrnx(benePersonalDetailModel);
+		 //Call Commit 
+		 return output;
 	}
 
 	/**

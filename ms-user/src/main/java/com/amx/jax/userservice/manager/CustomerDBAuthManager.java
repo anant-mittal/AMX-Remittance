@@ -72,9 +72,14 @@ public class CustomerDBAuthManager {
 		List<Customer> customers = userService.getCustomerByIdentityInt(identityInt);
 		Customer customerVal = userValidationService.validateCustomerForDuplicateRecords(customers);
 		BigDecimal customerId = customerVal.getCustomerId();
-
+		return validateAndSendOtp(customerId);
+	}
+	
+	public CustomerModel validateAndSendOtp(BigDecimal customerId) {
+		
 		CustomerOnlineRegistration onlineCust = custDao.getOnlineCustByCustomerId(customerId);
 		Customer customer = custDao.getCustById(customerId);
+		String identityInt = customer.getIdentityInt();
 		
 		if(onlineCust != null) {
 			if (onlineCust.getLockCnt() != null) {
@@ -165,10 +170,10 @@ public class CustomerDBAuthManager {
 		if (isMotpRequired && isEotpRequired) {
 			ex = new GlobalException(JaxError.DOTP_REQUIRED, "e and m otp required");
 		}
-		if (isMotpRequired) {
+		if (isMotpRequired && !isEotpRequired) {
 			ex = new GlobalException(JaxError.MOTP_REQUIRED, "m otp required");
 		}
-		if (isEotpRequired) {
+		if (isEotpRequired && !isMotpRequired) {
 			ex = new GlobalException(JaxError.EOTP_REQUIRED, "e otp required");
 		}
 		if (ex != null) {
