@@ -200,13 +200,19 @@ public class VentajaFlexFieldManager extends AbstractFlexFieldManager {
 				return false;
 			});
 		}
-		if (packageFcAmount != null && dateRangePresent) {
-			validationResults.put(ValidationResultKey.PREFLEXCALL_COMPLETE.getName(), Boolean.TRUE);
-		} else {
-			validationResults.put(ValidationResultKey.PREFLEXCALL_COMPLETE.getName(), Boolean.FALSE);
+		if (monthlyContribution != null) {
+			if (packageFcAmount != null && dateRangePresent) {
+				validationResults.put(ValidationResultKey.PREFLEXCALL_COMPLETE.getName(), Boolean.TRUE);
+			} else {
+				validationResults.put(ValidationResultKey.PREFLEXCALL_COMPLETE.getName(), Boolean.FALSE);
+			}
 		}
-		validationResults.put(ValidationResultKey.PACKAGE_FC_AMOUNT.getName(), packageFcAmount);
-		validationResults.put(ValidationResultKey.PACKAGE_SELECTED_AMIECCODE.getName(), packageSelectedAmiecCode);
+		if (packageFcAmount != null) {
+			validationResults.put(ValidationResultKey.PACKAGE_FC_AMOUNT.getName(), packageFcAmount);
+		}
+		if (packageSelectedAmiecCode != null) {
+			validationResults.put(ValidationResultKey.PACKAGE_SELECTED_AMIECCODE.getName(), packageSelectedAmiecCode);
+		}
 	}
 
 	private void addDateRangeParameters(int noOfMonth, List<JaxConditionalFieldDto> requiredFlexFields) {

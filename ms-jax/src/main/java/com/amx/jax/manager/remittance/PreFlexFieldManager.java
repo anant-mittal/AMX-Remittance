@@ -124,8 +124,13 @@ public class PreFlexFieldManager {
 			remittanceTransactionRequestValidator.processFlexFields(requiredFlexFields);
 		}
 
+		/*
+		 * these are default values, may get overridden by calling respective flexfield
+		 * managers below
+		 */
 		validationResults.put("requiredFlexFields", requiredFlexFields);
 		validationResults.put(PREFLEXCALL_COMPLETE.getName(), getPreFlexCallComplete(requestFlexFields, requiredFlexFields));
+		validationResults.put(PACKAGE_FC_AMOUNT.getName(), packageFcAmount);
 		try {
 			AbstractFlexFieldManager flexFieldManager = (AbstractFlexFieldManager) appContext
 					.getBean(routingBank.getBankCode() + AbstractFlexFieldManager.FLEX_FIELD_MANAGER_BEAN_SUFFIX);
@@ -142,7 +147,7 @@ public class PreFlexFieldManager {
 		for (JaxConditionalFieldDto dto : requiredFlexFields) {
 			String fieldName = dto.getField().getName();
 			FlexFieldDto valueInRequest = requestFlexFields.get(fieldName);
-			if (valueInRequest == null) {
+			if (valueInRequest == null && !FC_AMOUNT_FLEX_FIELD_NAME.equals(fieldName)) {
 				preFlexCallComplete = false;
 			}
 		}
