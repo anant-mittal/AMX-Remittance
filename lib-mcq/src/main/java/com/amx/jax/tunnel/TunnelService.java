@@ -15,7 +15,7 @@ import com.amx.jax.AppContext;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.logger.events.RequestTrackEvent;
-import com.amx.jax.tunnel.sample.SampleTunnelEventsDict;
+import com.amx.jax.tunnel.sys.SysTunnelEventsDict;
 import com.amx.utils.JsonUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -202,7 +202,7 @@ public class TunnelService implements ITunnelService {
 	}
 
 	public void sayHello() {
-		this.shout(SampleTunnelEventsDict.Names.TEST_TOPIC, "Hey There");
+		this.shout(SysTunnelEventsDict.Names.SHARED_CONFIG_UPDATE, "Hey There");
 	}
 
 	@Override
