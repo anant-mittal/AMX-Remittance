@@ -125,8 +125,8 @@ public class PreFlexFieldManager {
 		}
 
 		/*
-		 * these are default values, may get overridden by calling respective flexfield
-		 * managers below
+		 * these are default values.These may get overridden by calling respective flexfield
+		 * manager's validatePreFlexField method below
 		 */
 		validationResults.put("requiredFlexFields", requiredFlexFields);
 		validationResults.put(PREFLEXCALL_COMPLETE.getName(), getPreFlexCallComplete(requestFlexFields, requiredFlexFields));
