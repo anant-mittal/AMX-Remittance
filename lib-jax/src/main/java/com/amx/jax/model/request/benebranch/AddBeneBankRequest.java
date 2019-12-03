@@ -43,7 +43,7 @@ public class AddBeneBankRequest extends AbstractBeneDetailDto {
 	@NotNull(message = "bankAccountTypeId may not be null")
 	@ApiMockModelProperty(example = "4")
 	private BigDecimal bankAccountTypeId;
-
+	
 	public BigDecimal getBankId() {
 		return bankId;
 	}
@@ -113,5 +113,4 @@ public class AddBeneBankRequest extends AbstractBeneDetailDto {
 	public void setBenificaryCountry(BigDecimal benificaryCountry) {
 		this.benificaryCountry = benificaryCountry;
 	}
-
 }

@@ -394,7 +394,7 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 			beneMaster.setStateName(stateName);
 			beneMaster.setIsActive(ConstantDocument.Yes);
 			beneMaster.setNationality(benePersonalDetails.getNationality());
-
+			beneMaster.setInstitutionCategoryId(benePersonalDetails.getInstitutionCategoryId());
 			beneficaryMasterRepository.save(beneMaster);
 			logger.info("created new bene master id: " + beneMaster.getBeneficaryMasterSeqId());
 		} else {
@@ -492,7 +492,6 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 			beneficiaryValidationService.validateDuplicateCashBeneficiary(trnxModel);
 		}
 		benePersonalDetailValidator.validate(trnxModel, errors);
-		benePersonalDetailValidator.validateBeneNames(benePersonalDetailModel);
 		save(trnxModel);
 		ApiResponse apiResponse = getJaxTransactionApiResponse();
 

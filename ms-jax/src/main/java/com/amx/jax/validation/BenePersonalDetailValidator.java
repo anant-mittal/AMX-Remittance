@@ -15,6 +15,7 @@ import com.amx.jax.dao.BlackListDao;
 import com.amx.jax.dbmodel.BlackListModel;
 import com.amx.jax.dbmodel.ServiceApplicabilityRule;
 import com.amx.jax.dbmodel.bene.BeneficaryStatus;
+import com.amx.jax.dbmodel.bene.InstitutionCategoryMaster;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.exception.ExceptionMessageKey;
 import com.amx.jax.meta.MetaData;
@@ -22,6 +23,7 @@ import com.amx.jax.model.request.benebranch.BenePersonalDetailModel;
 import com.amx.jax.model.request.benebranch.BeneficiaryTrnxModel;
 import com.amx.jax.repository.BeneficaryStatusRepository;
 import com.amx.jax.repository.IServiceApplicabilityRuleDao;
+import com.amx.jax.service.MetaExtnService;
 
 @Component
 public class BenePersonalDetailValidator implements Validator {
@@ -36,6 +38,8 @@ public class BenePersonalDetailValidator implements Validator {
 	BlackListDao blackListDao;
 	@Autowired
 	BeneficaryStatusRepository beneficaryStatusRepository;
+	@Autowired
+	MetaExtnService metaExtnService;
 
 	@Override
 	public boolean supports(Class clazz) {
@@ -50,6 +54,8 @@ public class BenePersonalDetailValidator implements Validator {
 		validateMobile(benePersonalDetailModel, beneficiaryTrnxModel);
 		validateBeneBlacklist(benePersonalDetailModel);
 		validateBeneArabicBlacklist(benePersonalDetailModel);
+		validateBeneNames(benePersonalDetailModel);
+		validateInstitutionData(benePersonalDetailModel);
 	}
 
 	public void validateUpdateBene(BeneficiaryTrnxModel beneficiaryTrnxModel) {
@@ -158,6 +164,22 @@ public class BenePersonalDetailValidator implements Validator {
 			}
 			if (benePersonalDetailModel.getRelationsId() == null) {
 				throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Bene relationship id can not be null");
+			}
+		}
+	}
+
+	public void validateInstitutionData(BenePersonalDetailModel benePersonalDetailModel) {
+		BeneficaryStatus beneStatus = beneficaryStatusRepository.findOne(benePersonalDetailModel.getBeneficaryTypeId());
+		if (ConstantDocument.Non_Individual.equalsIgnoreCase(beneStatus.getBeneficaryStatusName())) {
+			if (benePersonalDetailModel.getInstitutionCategoryId() == null) {
+				throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Institution category can not be empty");
+			}
+			if (benePersonalDetailModel.getInstitutionCategoryId() != null) {
+				InstitutionCategoryMaster institution = metaExtnService
+						.getInstitutionCategoryMasterById(benePersonalDetailModel.getInstitutionCategoryId());
+				if (institution == null) {
+					throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Invalid institution category");
+				}
 			}
 		}
 	}
