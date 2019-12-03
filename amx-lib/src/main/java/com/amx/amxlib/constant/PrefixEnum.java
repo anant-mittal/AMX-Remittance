@@ -9,8 +9,8 @@ import java.math.BigDecimal;
 
 public enum PrefixEnum {
 
-	MR_CODE("MR", "Mr.", new BigDecimal(181), "Male", "63"), MRS_CODE("M/S", "M/s.", new BigDecimal(180), "Female",
-			"64"), MS("MS", "Ms.", new BigDecimal(182), "Female", "64");
+	MR_CODE("MR", "Mr.", new BigDecimal(181), "Male", "63"), MS("M/S", "M/s.", new BigDecimal(180), "Female",
+			"64"), MRS_CODE("MS", "Ms.", new BigDecimal(182), "Female", "64");
 
 	private String code;
 

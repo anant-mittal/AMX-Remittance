@@ -1,6 +1,7 @@
 package com.amx.jax.model.response.customer;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 import com.amx.jax.model.customer.CustomerDocumentInfo;
@@ -31,6 +32,7 @@ public class OffsiteCustomerDataDTO {
 	String statusKey;
 	LastLoginDetails lastLoginDetails;
 	PolicyDetails policyDetails;
+	Date identityDerivedDob;
 	
 	public String getIdentityInt() {
 		return identityInt;
@@ -126,6 +128,14 @@ public class OffsiteCustomerDataDTO {
 
 	public void setPolicyDetails(PolicyDetails policyDetails) {
 		this.policyDetails = policyDetails;
+	}
+
+	public Date getIdentityDerivedDob() {
+		return identityDerivedDob;
+	}
+
+	public void setIdentityDerivedDob(Date identityDerivedDob) {
+		this.identityDerivedDob = identityDerivedDob;
 	}
 	
 	

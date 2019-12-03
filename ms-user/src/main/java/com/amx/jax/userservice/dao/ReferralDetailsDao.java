@@ -7,8 +7,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.amx.amxlib.constant.ApiEndpoint.MetaApi;
-import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ReferralDetails;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.ReferralDetailRepository;

@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.LinkDTO;
 import com.amx.amxlib.model.LinkResponseModel;
-import com.amx.amxlib.model.PlaceOrderDTO;
-import com.amx.amxlib.model.ReferralDTO;
 import com.amx.amxlib.model.ReferralResponseModel;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.JaxService;

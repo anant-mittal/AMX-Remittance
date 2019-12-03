@@ -27,6 +27,7 @@ import com.amx.jax.branchremittance.dao.BranchRemittanceDao;
 import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constants.JaxTransactionStatus;
+import com.amx.jax.customer.manager.CustomerContactVerificationManager;
 import com.amx.jax.dal.RoutingProcedureDao;
 import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dao.JaxEmployeeDao;
@@ -71,16 +72,20 @@ import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.events.CActivityEvent;
 import com.amx.jax.logger.events.CActivityEvent.Type;
 import com.amx.jax.manager.PromotionManager;
+import com.amx.jax.manager.RemittanceApplAmlManager;
 import com.amx.jax.manager.RemittanceManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.remittance.BranchApplicationDto;
 import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
 import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.model.response.fx.UserStockDto;
+import com.amx.jax.model.response.remittance.AmlCheckResponseDto;
 import com.amx.jax.model.response.remittance.RemittanceCollectionDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.TransferDto;
 import com.amx.jax.model.response.serviceprovider.Remittance_Call_Response;
+import com.amx.jax.model.response.serviceprovider.ServiceProviderResponse;
+import com.amx.jax.notification.JaxNotificationDataManager;
 import com.amx.jax.partner.dao.PartnerTransactionDao;
 import com.amx.jax.partner.dto.RemitTrnxSPDTO;
 import com.amx.jax.partner.manager.PartnerTransactionManager;
@@ -230,11 +235,15 @@ public class BranchRemittanceSaveManager {
 	@Autowired
 	PartnerTransactionDao partnerTransactionDao;
 	
+	@Autowired
+	RemittanceApplicationDao remittanceApplicationDao;
     @Autowired
 	RemittanceSignatureManager remittanceSignatureManager;
 
     @Autowired
     IRemittanceApplSplitRepository applSplitRepo;
+    @Autowired
+    JaxNotificationDataManager jaxNotificationDataManager;
     
 	
 	
@@ -257,6 +266,11 @@ public class BranchRemittanceSaveManager {
 	@Autowired
 	BankMetaService bankMetaService;
 	
+
+	@Autowired
+	RemittanceApplAmlManager applAmlManager; 
+	
+
 	/**
 	 * 
 	 * @param remittanceRequestModel
@@ -343,6 +357,17 @@ public class BranchRemittanceSaveManager {
 		}catch(Exception e) {
 			e.printStackTrace();
 			logger.info("MRU saveRemittanceTrnx catch block -->"+e.getMessage());
+		}
+		
+		int i;
+		for(i=0;i<shoppingCartList.size();i++) {
+			
+			RemittanceApplication remittanceApplication = remittanceApplicationDao.getApplication(shoppingCartList.get(i).getApplicationId());
+			if(remittanceApplication!=null && ConstantDocument.PB_PAYMENT.equalsIgnoreCase(remittanceApplication.getPaymentType())&& ConstantDocument.PB_STATUS_NEW.equalsIgnoreCase(remittanceApplication.getWtStatus())) {
+				remittanceApplication.setWtStatus(ConstantDocument.WT_STATUS_PAID);
+				remittanceApplicationRepository.save(remittanceApplication);
+				
+			}
 		}
 		return responseDto;
 	}
@@ -440,13 +465,12 @@ public class BranchRemittanceSaveManager {
 				collection.setDocumentCode(ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION);
 				collection.setReceiptType(ConstantDocument.COLLECTION_RECEIPT_TYPE);
 				collection.setCreatedDate(new Date());
-				/*EmployeeDetailsView employee =branchRemittanceApplManager.getEmployeeDetails();
-				collection.setCreatedBy(employee.getUserName());
-				collection.setLocCode(employee.getBranchId());*/
+
 				BigDecimal declarationTotalamount = getDeclarationReportAmount(ConstantDocument.DECL_REPORT_FOR_TOT_AMOUNT);
 				if(JaxUtil.isNullZeroBigDecimalCheck(declarationTotalamount) && collection.getNetAmount().compareTo(declarationTotalamount)>=1) {
 					collection.setCashDeclarationIndicator(ConstantDocument.Yes);
 				}
+				
 				collection.setIsActive(ConstantDocument.Yes);
 			
 				
@@ -895,6 +919,18 @@ public class BranchRemittanceSaveManager {
 					remitTrnx.setInstruction(appl.getInstruction());
 					remitTrnx.setUsdAmt(appl.getUsdAmt());
 					remitTrnx.setWuPurposeOfTransaction(appl.getWuPurposeOfTransaction());
+
+					remitTrnx.setPaygTrnxDetailId(appl.getPaygTrnxDetailId());
+					
+					if(remitTrnx.getLoccod().compareTo(ConstantDocument.ONLINE_BRANCH_LOC_CODE)==0) {
+					RemittanceAppBenificiary applBene = applBeneRepository.findByExRemittanceAppfromBenfi(appl);
+					AmlCheckResponseDto amlResDto = applAmlManager.beneRiskAml(applBene.getBeneficiaryRelationShipSeqId(),remitTrnx.getBankCountryId().getCountryId());
+					if(amlResDto!=null && !StringUtils.isBlank(amlResDto.getHighValueTrnxFlag())) {
+						remitTrnx.setHighValueTranx(amlResDto.getHighValueTrnxFlag());
+					}
+				   }
+					
+
 					remitTrnx.setApplSplit(appl.getApplSplit());
 					remitTrnx.setSavedAmount(appl.getSavedAmount());
 					remitTrnx.setRackExchangeRate(appl.getRackExchangeRate());
@@ -904,6 +940,7 @@ public class BranchRemittanceSaveManager {
 					if(date!=null) {
 						remitTrnx.setTimeToDeliver(date);
 					}
+
 					
 					BigDecimal documentNo =generateDocumentNumber(appl.getFsCountryMasterByApplicationCountryId().getCountryId(),appl.getFsCompanyMaster().getCompanyId(),remitTrnx.getDocumentId().getDocumentCode(),remitTrnx.getDocumentFinanceYear(),remitTrnx.getLoccod(),ConstantDocument.A);
 					
@@ -1248,6 +1285,7 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
 
  public TransferDto getTrasnferModeByBankServiceRule(RemittanceTransaction remitTrnx){
 	 Map<String,Object> mapBankServiceRule= routingProDao.checkBankServiceRule(remitTrnx);
+	 logger.debug("getTrasnferModeByBankServiceRule request json : {}", JsonUtil.toJson(remitTrnx));
 	 TransferDto dto = new TransferDto();
 	 String transferMode=null;
 	 String fileCreation=ConstantDocument.No;
@@ -1366,7 +1404,8 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
 			}
 
 			if (personinfo != null && rrsrl != null && !StringUtils.isBlank(personinfo.getEmail())) {
-				notificationService.sendTransactionNotification(rrsrl.get(0), personinfo);
+				notificationService.sendTransactionNotification(rrsrl.get(0), personinfo,
+						jaxNotificationDataManager.getTransactionSuccessEmailData());
 				validStatus = Boolean.TRUE;
 			}
 		} catch (Exception e) {

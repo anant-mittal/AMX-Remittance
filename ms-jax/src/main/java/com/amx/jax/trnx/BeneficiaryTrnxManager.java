@@ -492,6 +492,7 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 			beneficiaryValidationService.validateDuplicateCashBeneficiary(trnxModel);
 		}
 		benePersonalDetailValidator.validate(trnxModel, errors);
+		benePersonalDetailValidator.validateBeneNames(benePersonalDetailModel);
 		save(trnxModel);
 		ApiResponse apiResponse = getJaxTransactionApiResponse();
 

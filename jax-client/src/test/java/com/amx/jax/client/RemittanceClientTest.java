@@ -46,7 +46,7 @@ public class RemittanceClientTest {
 	@Autowired
 	private JaxMetaInfo jaxMetaInfo;
 
-	// @Test
+	@Test
 	public void getPurposeOfTransactions() throws IOException, ResourceNotFoundException, InvalidInputException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
@@ -63,7 +63,7 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult().getModelType());
 	}
 
-	// @Test
+	@Test
 	public void getOldPurposeOfTransactions() throws IOException, ResourceNotFoundException, InvalidInputException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
@@ -126,7 +126,7 @@ public class RemittanceClientTest {
 
 	}
 
-	// @Test
+	@Test
 	public void testvalidateTransactionForNEFTRTGS() throws IOException, ResourceNotFoundException,
 			InvalidInputException, RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
@@ -146,7 +146,7 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult().getModelType());
 	}
 
-	// @Test
+	@Test
 	public void testvalidateTransaction() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
@@ -212,7 +212,7 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult().getModelType());
 	}
 
-	// @Test
+	@Test
 	public void testTransactionHistroy() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
 		ApiResponse<TransactionHistroyDTO> response = null;
@@ -225,4 +225,5 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult());
 
 	}
+	
 }

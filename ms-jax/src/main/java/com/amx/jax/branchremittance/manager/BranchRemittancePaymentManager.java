@@ -30,8 +30,10 @@ import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ParameterDetails;
 import com.amx.jax.dbmodel.PaygDetailsModel;
 import com.amx.jax.dbmodel.partner.RemitApplSrvProv;
+import com.amx.jax.dbmodel.remittance.AdditionalInstructionData;
 import com.amx.jax.dbmodel.remittance.CustomerBank;
 import com.amx.jax.dbmodel.remittance.LocalBankDetailsView;
+import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.ShoppingCartDetails;
 import com.amx.jax.dbmodel.remittance.StaffAuthorizationView;
 import com.amx.jax.error.JaxError;
@@ -54,6 +56,7 @@ import com.amx.jax.model.response.remittance.PaymentLinkAppDto;
 import com.amx.jax.model.response.remittance.PaymentModeDto;
 import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
 import com.amx.jax.partner.manager.PartnerTransactionManager;
+import com.amx.jax.repository.AdditionalInstructionDataRepository;
 import com.amx.jax.repository.IBankMasterFromViewDao;
 import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.ICustomerRepository;
@@ -111,6 +114,9 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 	
 	@Autowired
 	PartnerTransactionManager partnerTransactionManager;
+	
+	@Autowired
+	AdditionalInstructionDataRepository addlInstDataRepo;
 
 
 	/* 
@@ -140,9 +146,8 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 			if(customer!=null) {
 				totalCustomerLoyaltyPoits = customer.getLoyaltyPoints()==null?BigDecimal.ZERO:customer.getLoyaltyPoints();
 			}
-			if(null != metaData.getCustomerId()) {
-				deActivateOnlineApplication();
-			}
+			
+			//deActivateOnlineApplication();
 			
 			List<ShoppingCartDetails> lstCustomerShopping = branchRemittancePaymentDao.fetchCustomerShoppingCart(customerId);
 			
@@ -176,6 +181,11 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 					currencyMaster = currencyMasterService.getCurrencyMasterById(fcCurrencyId);
 					if(currencyMaster != null) {
 						breakup.setFcDecimalNumber(currencyMaster.getDecinalNumber() == null ? decimalNumber : currencyMaster.getDecinalNumber());
+
+						if(!ConstantDocument.PB_PAYMENT.equalsIgnoreCase(customerApplDto.getApplicationPaymentType())) {
+							lstCustShpcrt.add(createCustomerShoppingCartDto(customerApplDto,localCurrencyId,fcCurrencyId,breakup));
+						}
+
 						lstCustShpcrt.add(createCustomerShoppingCartDto(customerApplDto,localCurrencyId,fcCurrencyId,breakup));
 						// Direct Payment link application now getting converted to remittance so commenting the following code
 						/*if(customerApplDto.getPaymentLinkId()!=null) {
@@ -191,6 +201,7 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 							
 							
 						}*/
+
 						
 						cartList.setShoppingCartDetails(lstCustShpcrt);
 						
@@ -301,6 +312,8 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 				shoppingCartDataTableBean.setTrnxStartDate(remitApplSrvProv.getOfferStartingDate().getTime());
 			}
 		}
+		shoppingCartDataTableBean.setApplPaymentType(shoppingCartDetails.getApplicationPaymentType());
+		shoppingCartDataTableBean.setPurposeOfTrnx(getPurposeOfTrnx(shoppingCartDetails.getRemittanceApplicationId()));
 		
 		return shoppingCartDataTableBean;
 	}
@@ -557,25 +570,13 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 
 	public Boolean deActivateOnlineApplication() {
 		try {
-			
-			// deactivate only online application
-			appRepository.deActivateNotUsedOnlineApplication(new Customer(metaData.getCustomerId()), ConstantDocument.ONLINE_BRANCH_LOC_CODE);
-			
-			/*List<RemittanceApplication> listOfApplication = appRepository.deActivateNotUsedApplication(new Customer(metaData.getCustomerId()));
-			if(!listOfApplication.isEmpty() && listOfApplication!=null) {
-				for(RemittanceApplication application : listOfApplication) {
-					if(application.getLoccod().compareTo(ConstantDocument.ONLINE_BRANCH_LOC_CODE)==0) {
-						RemittanceApplication remittanceApplication = appRepository.findOne(application.getRemittanceApplicationId());
-						remittanceApplication.setIsactive("D");
-						remittanceApplication.setApplicaitonStatus(null);
-						appRepository.save(remittanceApplication);
-					}
-				}
-			}*/
+
+			appRepository.deActivateNotUsedOnlineApplication(new Customer(metaData.getCustomerId()),
+					ConstantDocument.ONLINE_BRANCH_LOC_CODE);
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new GlobalException("De-Activate Application failed for customer:"+metaData.getCustomerId());
+			throw new GlobalException("De-Activate Application failed for customer:" + metaData.getCustomerId());
 		}
 		return true;
 	}
@@ -617,7 +618,18 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		*/
 		config.setTodayTrnxAmount(todayTrnxLimit);
 		return config;
-		
+	}
+	
+	/** added by Rabil on 5th Oct 2019**/
+	private String getPurposeOfTrnx(BigDecimal remitApplId) {
+		String purTrnx = null;
+		RemittanceApplication remitAppl = new RemittanceApplication();
+		remitAppl.setRemittanceApplicationId(remitApplId);
+		AdditionalInstructionData addlInsData = addlInstDataRepo.findByExRemittanceApplicationAndFlexField(remitAppl, ConstantDocument.INDIC1);
+		if(addlInsData!=null) {
+			purTrnx = addlInsData.getFlexFieldValue();
+		}
+		return purTrnx;
 	}
 	// Direct Payment link application now getting converted to remittance so commenting the following code
 	@Deprecated

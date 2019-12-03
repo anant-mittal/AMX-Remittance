@@ -10,14 +10,17 @@ import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.BlackListDao;
 import com.amx.jax.dbmodel.BlackListModel;
 import com.amx.jax.dbmodel.ServiceApplicabilityRule;
+import com.amx.jax.dbmodel.bene.BeneficaryStatus;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.exception.ExceptionMessageKey;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.benebranch.BenePersonalDetailModel;
 import com.amx.jax.model.request.benebranch.BeneficiaryTrnxModel;
+import com.amx.jax.repository.BeneficaryStatusRepository;
 import com.amx.jax.repository.IServiceApplicabilityRuleDao;
 
 @Component
@@ -31,6 +34,8 @@ public class BenePersonalDetailValidator implements Validator {
 
 	@Autowired
 	BlackListDao blackListDao;
+	@Autowired
+	BeneficaryStatusRepository beneficaryStatusRepository;
 
 	@Override
 	public boolean supports(Class clazz) {
@@ -132,6 +137,28 @@ public class BenePersonalDetailValidator implements Validator {
 		if (minLength > 0 && benePhoneLength < minLength) {
 			throw new GlobalException(JaxError.VALIDATION_LENGTH_MOBILE,
 					ExceptionMessageKey.build(JaxError.VALIDATION_LENGTH_MOBILE, minLength, maxLength));
+		}
+	}
+
+	public void validateBeneNames(BenePersonalDetailModel benePersonalDetailModel) {
+		BeneficaryStatus beneStatus = beneficaryStatusRepository.findOne(benePersonalDetailModel.getStateId());
+		if (ConstantDocument.Non_Individual.equalsIgnoreCase(beneStatus.getBeneficaryStatusName())) {
+			if (benePersonalDetailModel.getInstitutionName() == null) {
+				throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Institution name can not be null");
+			}
+			if (benePersonalDetailModel.getInstitutionCategoryId() == null) {
+				throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Institution category can not be null");
+			}
+		} else {
+			if (benePersonalDetailModel.getFirstName() == null) {
+				throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "first name can not be null");
+			}
+			if (benePersonalDetailModel.getSecondName() == null) {
+				throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "second name can not be null");
+			}
+			if (benePersonalDetailModel.getRelationsId() == null) {
+				throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Bene relationship id can not be null");
+			}
 		}
 	}
 

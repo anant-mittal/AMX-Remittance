@@ -1,5 +1,7 @@
 package com.amx.jax.customer.manager;
 
+import java.util.Date;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,10 +30,8 @@ public class CustomerAddressDetailsManager {
 	MetaData metaData;
 	@Autowired
 	JaxDBService jaxDbservice;
-	
-	
-	private static final Logger log = LoggerFactory.getLogger(CustomerAddressDetailsManager.class);
 
+	private static final Logger log = LoggerFactory.getLogger(CustomerAddressDetailsManager.class);
 
 	public void updateCustomerAddressDetail(Customer customer, UpdateCustomerAddressDetailRequest req) {
 		log.debug("in updateCustomerAddressDetail");
@@ -44,6 +44,7 @@ public class CustomerAddressDetailsManager {
 
 	public ContactDetail saveorUpdateCustomerContact(Customer customer, UpdateCustomerAddressDetailRequest req) {
 		ContactDetail contactDetail = null;
+		boolean isModified = false;
 		if (ConstantDocument.CONTACT_TYPE_FOR_HOME.equals(req.getContactType())) {
 			contactDetail = contactDetailService.getContactsForHome(customer);
 		} else if (ConstantDocument.CONTACT_TYPE_FOR_LOCAL.equals(req.getContactType())) {
@@ -63,6 +64,8 @@ public class CustomerAddressDetailsManager {
 				contactDetail.setMobile(customer.getMobile());
 				contactDetail.setTelephoneCode(customer.getPrefixCodeMobile());
 				contactDetail.setIsWatsApp(customer.getIsMobileWhatsApp());
+			} else {
+				isModified = true;
 			}
 			if (req.getCountryId() != null) {
 				contactDetail.setFsCountryMaster(new CountryMaster(req.getCountryId()));
@@ -88,7 +91,10 @@ public class CustomerAddressDetailsManager {
 			if (req.getStreet() != null) {
 				contactDetail.setStreet(req.getStreet());
 			}
-
+			if (isModified) {
+				contactDetail.setUpdatedBy(jaxDbservice.getCreatedOrUpdatedBy());
+				contactDetail.setLastUpdated(new Date());
+			}
 		}
 		return contactDetail;
 	}

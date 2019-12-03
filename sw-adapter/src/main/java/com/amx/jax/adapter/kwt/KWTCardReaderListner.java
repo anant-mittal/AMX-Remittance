@@ -3,13 +3,13 @@ package com.amx.jax.adapter.kwt;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.amx.jax.adapter.ACardReaderService.CardStatus;
 import com.amx.jax.adapter.ACardReaderService.DataStatus;
 import com.amx.jax.device.CardData;
 import com.amx.utils.ArgUtil;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import pacicardlibrary.PACICardAPI;
 import pacicardlibrary.PaciEventHandler;
@@ -55,7 +55,7 @@ public class KWTCardReaderListner implements PaciEventHandler {
 				KWTCardReaderService.CONTEXT.status(CardStatus.READING);
 				LOGGER.debug("KWTCardReaderServiceListner:CardConnectionEvent");
 				CardData data = new CardData();
-				Pattern passportPattern = Pattern.compile("^[A-Z][0-9]{8}$");
+				Pattern passportPattern = Pattern.compile("^[A-Z][0-9]{5,9}$");
 				String englishName4 = KWTCardReaderService.API.getEnglishName_4(readerIndex, false);
 				Matcher checkPassport = passportPattern.matcher(englishName4);
 				if(checkPassport.find()){

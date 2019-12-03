@@ -23,10 +23,10 @@ public class BenePersonalDetailModel extends AbstractModel {
 	private BigDecimal countryId;
 	@NotNull(message="District Id may not be null")
 	private BigDecimal districtId;
-	@NotNull(message="First Name may not be null")
+	
 	@Size(min=1, max=50, message="firstName should be between 1 and 50 characters")
 	private String firstName;
-	@NotNull
+	
 	@Size(min=1, max=50, message="secondName should be between 1 and 50 characters")
 	private String secondName;
 	@Size(min=1, max=50, message="thirdName should be between 1 and 50 characters")
@@ -55,9 +55,17 @@ public class BenePersonalDetailModel extends AbstractModel {
 	private String countryTelCode;
 	// bene relationship
 	private String remarks;
-	@NotNull
+	
 	private BigDecimal relationsId;
 	private BigDecimal beneficaryTypeId;
+	
+	@Size(min=1, max=50, message="institutionName should be between 1 and 50 characters")
+	private String institutionName;
+	
+	@Size(min=1, max=50, message="institutionName local should be between 1 and 50 characters")
+	private String institutionNameLocal;
+	
+	private BigDecimal institutionCategoryId;
 
 	@Override
 	public String getModelType() {
@@ -243,6 +251,22 @@ public class BenePersonalDetailModel extends AbstractModel {
 
 	public void setBeneficaryTypeId(BigDecimal beneficaryTypeId) {
 		this.beneficaryTypeId = beneficaryTypeId;
+	}
+
+	public String getInstitutionName() {
+		return institutionName;
+	}
+
+	public void setInstitutionName(String institutionName) {
+		this.institutionName = institutionName;
+	}
+
+	public BigDecimal getInstitutionCategoryId() {
+		return institutionCategoryId;
+	}
+
+	public void setInstitutionCategoryId(BigDecimal institutionCategoryId) {
+		this.institutionCategoryId = institutionCategoryId;
 	}
 
 }

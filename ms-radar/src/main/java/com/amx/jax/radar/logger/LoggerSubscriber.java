@@ -62,6 +62,7 @@ public class LoggerSubscriber implements ITunnelSubscriber<Map<String, Object>> 
 		if (jobAudit) {
 			mongoTemplate.save(event, "AuditEvent");
 		}
+		// LoggerMapModel eventModel = new LoggerMapModel(event);
 	}
 
 }

@@ -23,7 +23,6 @@ import com.amx.jax.api.AmxFieldError;
 import com.amx.jax.exception.AmxAdvice;
 import com.amx.jax.exception.AmxApiError;
 import com.amx.jax.exception.AmxApiException;
-import com.amx.jax.exception.AmxException;
 import com.amx.jax.exception.ApiHttpExceptions.ApiHttpArgException;
 import com.amx.jax.exception.ApiHttpExceptions.ApiStatusCodes;
 import com.amx.jax.exception.ExceptionMessageKey;

@@ -14,7 +14,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
@@ -158,7 +157,11 @@ public class RemittanceTransaction implements Serializable {
 	private String remarks;
 	private BigDecimal usdAmt;
 	private String wuPurposeOfTransaction;
+	private String paymentType;
 	
+
+	private BigDecimal paygTrnxDetailId;
+
 
 	private String applSplit;
 
@@ -171,8 +174,18 @@ public class RemittanceTransaction implements Serializable {
 	
 	private BigDecimal savedAmountInFc;
 	
+
 	
 	
+	@Column(name="PAYMENT_TYPE")
+	public String getPaymentType() {
+		return paymentType;
+	}
+
+	public void setPaymentType(String paymentType) {
+		this.paymentType = paymentType;
+	}
+
 	public RemittanceTransaction() {
 	}
 		
@@ -794,7 +807,7 @@ public class RemittanceTransaction implements Serializable {
 		this.highValueAuthDate = highValueAuthDate;
 	}
 
-	@Lob
+	//@Lob
 	@Column(name = "SIGNATURE_SPECIMEN")
 	public String getCustomerSignature() {
 		return customerSignature;
@@ -1252,7 +1265,16 @@ public class RemittanceTransaction implements Serializable {
 	}
 
 	
-	
+
+	@Column(name="PAYG_TRNX_DTLS_ID")
+	public BigDecimal getPaygTrnxDetailId() {
+		return paygTrnxDetailId;
+	}
+
+	public void setPaygTrnxDetailId(BigDecimal paygTrnxDetailId) {
+		this.paygTrnxDetailId = paygTrnxDetailId;
+	}
+
 	public void setApplSplit(String applSplit) {
 		this.applSplit = applSplit;
 	}
@@ -1262,6 +1284,6 @@ public class RemittanceTransaction implements Serializable {
 		return applSplit;
 	}
 	
-	
+
 }
  

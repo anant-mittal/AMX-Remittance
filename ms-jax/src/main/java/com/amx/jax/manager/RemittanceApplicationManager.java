@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.jax.branchremittance.manager.BranchRemittanceManager;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxDynamicField;
 import com.amx.jax.dao.ApplicationProcedureDao;
@@ -108,6 +109,9 @@ public class RemittanceApplicationManager {
 	@Autowired
 	ICurrencyDao currencyDao;
 
+	@Autowired
+	BranchRemittanceManager branchRemittanceManager;
+	
 	/**
 	 * @param remitApplParametersMap2
 	 * @param                         validatedObjects: - contains objects obtained
@@ -131,8 +135,7 @@ public class RemittanceApplicationManager {
 		BigDecimal foreignCurrencyId = beneDetails.getCurrencyId();
 		BigDecimal deliveryId = (BigDecimal) remitApplParametersMap.get("P_DELIVERY_MODE_ID");
 		BigDecimal remittanceId = (BigDecimal) remitApplParametersMap.get("P_REMITTANCE_MODE_ID");
-		Document document = documentDao.getDocumnetByCode(ConstantDocument.DOCUMENT_CODE_FOR_REMITTANCE_APPLICATION)
-				.get(0);
+		Document document = documentDao.getDocumnetByCode(ConstantDocument.DOCUMENT_CODE_FOR_REMITTANCE_APPLICATION).get(0);
 		BigDecimal selectedCurrency = getSelectedCurrency(foreignCurrencyId, requestModel);
 
 		remitApplParametersMap.put("P_DOCUMENT_ID", document.getDocumentID());
@@ -157,8 +160,7 @@ public class RemittanceApplicationManager {
 		// net amt currency
 		remittanceApplication.setExCurrencyMasterByLocalNetCurrencyId(localCurrency);
 		remittanceApplication.setSpotRateInd(ConstantDocument.No);
-		remittanceApplication.setLoyaltyPointInd(
-				loyalityPointsAvailed(requestModel, validationResults) ? ConstantDocument.Yes : ConstantDocument.No);
+		remittanceApplication.setLoyaltyPointInd(loyalityPointsAvailed(requestModel, validationResults) ? ConstantDocument.Yes : ConstantDocument.No);
 		// company Id and code
 		CompanyMaster companymaster = new CompanyMaster();
 		companymaster.setCompanyId(metaData.getCompanyId());
@@ -212,37 +214,35 @@ public class RemittanceApplicationManager {
 		remittanceApplication.setDocumentFinancialyear(userFinancialYear.getFinancialYear());
 		remittanceApplication.setSelectedCurrencyId(foreignCurrencyId);
 		try {
-			remittanceApplication
-					.setAccountMmyyyy(new SimpleDateFormat("dd/MM/yyyy").parse(DateUtil.getCurrentAccMMYear()));
+			remittanceApplication.setAccountMmyyyy(new SimpleDateFormat("dd/MM/yyyy").parse(DateUtil.getCurrentAccMMYear()));
 		} catch (ParseException e) {
 			logger.error("Error in saving application", e);
 		}
-		logger.info("Created by Refereal :" + metaData.getReferrer() + "\t Device ID :" + metaData.getDeviceId()
-				+ "\t Device Type :" + metaData.getDeviceType() + "\t App type :" + metaData.getAppType());
-		if (!StringUtils.isBlank(metaData.getReferrer())) {
+		logger.info("Created by Refereal :"+metaData.getReferrer()+"\t Device ID :"+metaData.getDeviceId()+"\t Device Type :"+metaData.getDeviceType()+"\t App type :"+metaData.getAppType());
+		if(!StringUtils.isBlank(metaData.getReferrer())){
 			remittanceApplication.setCreatedBy(metaData.getReferrer());
-		} else {
-			if (!StringUtils.isBlank(metaData.getAppType())) {
+		}else{
+			if(!StringUtils.isBlank(metaData.getAppType())){				
 				remittanceApplication.setCreatedBy(metaData.getAppType());
-			} else {
+			}else{
 				remittanceApplication.setCreatedBy("WEB");
-			}
+			 }
 		}
 		remittanceApplication.setCreatedDate(new Date());
 		remittanceApplication.setIsactive(ConstantDocument.Yes);
 		remittanceApplication.setSourceofincome(requestModel.getSourceOfFund());
 		remittanceApplication.setApplInd(ConstantDocument.Online);
-		remittanceApplication.setDocumentNo(
-				generateDocumentNumber(remittanceApplication.getExCountryBranch(), ConstantDocument.Update));
+		remittanceApplication.setDocumentNo(generateDocumentNumber(remittanceApplication.getExCountryBranch(), ConstantDocument.Update));
 		remittanceApplication.setPaymentId(remittanceApplication.getDocumentNo().toString());
 		remittanceApplication.setWuIpAddress(metaData.getDeviceIp());
 		remittanceApplication.setCustomerChoice(validationResults.getCustomerChoice());
 		
 		validateAdditionalErrorMessages(requestModel);
-		validateBannedBank();
+		validateBannedBank(requestModel.getBeneId());
 		validateDailyBeneficiaryTransactionLimit(beneDetails);
 
 		setFurtherInstruction(remittanceApplication, requestModel.getAdditionalFields());
+
 		setCustomerDiscountColumns(remittanceApplication, validationResults);
 		setVatDetails(remittanceApplication, validationResults);
 		setSavedAmount(remittanceApplication, validationResults);
@@ -259,7 +259,7 @@ public class RemittanceApplicationManager {
 		BigDecimal localCurrencyId = metaData.getDefaultCurrencyId();
 		BigDecimal routingCountryId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_COUNTRY_ID");
 		Customer customer = (Customer) validatedObjects.get("CUSTOMER");
-		BigDecimal routingBankId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_BANK_ID");
+		BigDecimal routingBankId = (BigDecimal)remitApplParametersMap.get("P_ROUTING_BANK_ID");
 		BigDecimal routingBankBranchId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_BANK_BRANCH_ID");
 		BenificiaryListView beneDetails = (BenificiaryListView) validatedObjects.get("BENEFICIARY");
 		BigDecimal foreignCurrencyId = beneDetails.getCurrencyId();
@@ -365,7 +365,13 @@ public class RemittanceApplicationManager {
 		remittanceApplication.setDocumentNo(generateDocumentNumber(remittanceApplication.getExCountryBranch(), ConstantDocument.Update));
 		remittanceApplication.setPaymentId(remittanceApplication.getDocumentNo().toString());
 		remittanceApplication.setWuIpAddress(metaData.getDeviceIp());
+		remittanceApplication.setPaymentType(requestModel.getPaymentType());
+		if (ConstantDocument.PB_PAYMENT.equalsIgnoreCase(requestModel.getPaymentType())) {
+
+			remittanceApplication.setWtStatus(ConstantDocument.PB_STATUS_NEW);
+		}
 		remittanceApplication.setCustomerChoice(validationResults.getCustomerChoice());
+
 		
 		DynamicRoutingPricingDto dynamicRoutingPricingResponse = requestModel.getDynamicRroutingPricingBreakup();
 		if(dynamicRoutingPricingResponse.getServiceProviderDto() != null && dynamicRoutingPricingResponse.getServiceProviderDto().getIntialAmountInSettlCurr() != null) {
@@ -380,10 +386,8 @@ public class RemittanceApplicationManager {
 		}
 		
 		validateAdditionalErrorMessagesV2(requestModel);
-		validateBannedBank();
+		validateBannedBank(requestModel.getBeneId());
 		validateDailyBeneficiaryTransactionLimit(beneDetails);
-		// remittanceApplication.setInstruction("URGENT");
-
 		setFurtherInstruction(remittanceApplication, requestModel.getAdditionalFields());
 
 		setCustomerDiscountColumns(remittanceApplication, validationResults);
@@ -457,20 +461,26 @@ public class RemittanceApplicationManager {
 		}
 	}
 
-	private void validateBannedBank() {
-		Map<String, Object> output = applicationProcedureDao.getBannedBankCheckProcedure(remitApplParametersMap);
-		String errorMessage = (String) output.get("P_ERROR_MESSAGE");
-		if (errorMessage != null) {
-			throw new GlobalException(JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL, errorMessage);
-		}
+	private void validateBannedBank(BigDecimal beneRelaId) {
+		
+		branchRemittanceManager.bannedBankCheck(beneRelaId);
+		
+		/*
+		 * Map<String, Object> output =
+		 * applicationProcedureDao.getBannedBankCheckProcedure(remitApplParametersMap);
+		 * String errorMessage = (String) output.get("P_ERROR_MESSAGE"); if
+		 * (errorMessage != null) { throw new
+		 * GlobalException(JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL,
+		 * errorMessage); }
+		 */
 	}
 
 	public void validateAdditionalErrorMessages(RemittanceTransactionRequestModel requestModel) {
 		remitApplParametersMap.put("P_FURTHER_INSTR", "URGENT");
 		//Map<String, Object> errorResponse = applicationProcedureDao.toFetchPurtherInstractionErrorMessaage(remitApplParametersMap);
-		String errorMessage =null;// (String) errorResponse.get("P_ERRMSG");
-		Map<String, Object> furtherSwiftAdditionalDetails = applicationProcedureDao.fetchAdditionalBankRuleIndicators(remitApplParametersMap);
-		remitApplParametersMap.putAll(furtherSwiftAdditionalDetails);
+		String errorMessage = null;//(String) errorResponse.get("P_ERRMSG");
+		//Map<String, Object> furtherSwiftAdditionalDetails = applicationProcedureDao.fetchAdditionalBankRuleIndicators(remitApplParametersMap);
+		//remitApplParametersMap.putAll(furtherSwiftAdditionalDetails);
 		remitApplParametersMap.put("P_ADDITIONAL_BANK_RULE_ID_1", requestModel.getAdditionalBankRuleFiledId());
 		if (requestModel.getSrlId() != null) {
 			BigDecimal srlId = requestModel.getSrlId();
@@ -481,11 +491,9 @@ public class RemittanceApplicationManager {
 			BigDecimal foreignCurrencyId = (BigDecimal) remitApplParametersMap.get("P_FOREIGN_CURRENCY_ID");
 			logger.info("bankId: " + bankId + "remittanceModeId: " + remittanceModeId + "deliveryModeId "
 					+ deliveryModeId + " foreignCurrencyId: " + foreignCurrencyId);
-			AdditionalBankDetailsViewx additionaBnankDetail = bankService.getAdditionalBankDetail(srlId,
-					foreignCurrencyId, bankId, remittanceModeId, deliveryModeId);
+			AdditionalBankDetailsViewx additionaBnankDetail = bankService.getAdditionalBankDetail(srlId,foreignCurrencyId, bankId, remittanceModeId, deliveryModeId);
 			if (additionaBnankDetail != null) {
-				logger.info("additionaBnankDetail getServiceApplicabilityRuleId: "
-						+ additionaBnankDetail.getServiceApplicabilityRuleId());
+				logger.info("additionaBnankDetail getServiceApplicabilityRuleId: "+ additionaBnankDetail.getServiceApplicabilityRuleId());
 				remitApplParametersMap.put("P_AMIEC_CODE_1", additionaBnankDetail.getAmiecCode());
 				remitApplParametersMap.put("P_FLEX_FIELD_VALUE_1", additionaBnankDetail.getAmieceDescription());
 				remitApplParametersMap.put("P_FLEX_FIELD_CODE_1", additionaBnankDetail.getFlexField());
@@ -503,10 +511,9 @@ public class RemittanceApplicationManager {
 	public void validateAdditionalErrorMessagesV2(RemittanceTransactionDrRequestModel requestModel) {
 		remitApplParametersMap.put("P_FURTHER_INSTR", "URGENT");
 		//Map<String, Object> errorResponse = applicationProcedureDao.toFetchPurtherInstractionErrorMessaage(remitApplParametersMap);
-		String errorMessage =null;// (String) errorResponse.get("P_ERRMSG");
-		Map<String, Object> furtherSwiftAdditionalDetails = applicationProcedureDao
-				.fetchAdditionalBankRuleIndicators(remitApplParametersMap);
-		remitApplParametersMap.putAll(furtherSwiftAdditionalDetails);
+		String errorMessage = null;//(String) errorResponse.get("P_ERRMSG");
+		//Map<String, Object> furtherSwiftAdditionalDetails = applicationProcedureDao.fetchAdditionalBankRuleIndicators(remitApplParametersMap);
+		//remitApplParametersMap.putAll(furtherSwiftAdditionalDetails);
 		remitApplParametersMap.put("P_ADDITIONAL_BANK_RULE_ID_1", requestModel.getAdditionalBankRuleFiledId());
 		if (requestModel.getSrlId() != null) {
 			BigDecimal srlId = requestModel.getSrlId();

@@ -16,15 +16,13 @@ import org.springframework.stereotype.Component;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxApiFlow;
-import com.amx.jax.customer.service.OffsitCustRegService;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.request.HomeAddressDetails;
 import com.amx.jax.model.request.LocalAddressDetails;
 import com.amx.jax.model.request.customer.GetOffsiteCustomerDetailRequest;
 import com.amx.jax.userservice.service.UserValidationService;
-import com.amx.jax.logger.AuditService;
-import com.amx.jax.logger.LoggerService;
 /**
  * @author Prashant
  *

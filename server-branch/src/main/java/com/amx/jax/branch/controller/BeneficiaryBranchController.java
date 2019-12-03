@@ -187,6 +187,7 @@ public class BeneficiaryBranchController {
 		return beneBranchClient.updateBeneCash(request);
 	}
 
+
 	/*
 	 * @RequestMapping(value = "/api/bene/relations/list", method =
 	 * RequestMethod.GET) public ApiResponse<BeneRelationsDescriptionDto>
