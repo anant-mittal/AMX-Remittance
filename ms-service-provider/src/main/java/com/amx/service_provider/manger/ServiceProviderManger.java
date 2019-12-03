@@ -181,7 +181,7 @@ public class ServiceProviderManger implements IServiceProvider
 				if (txn_data.getRoutting_bank_code().equals("HOME")) // HomeSend
 				{
 				}
-				else if (txn_data.getRoutting_bank_code().equals("VINTAJ"))
+				else if (txn_data.getRoutting_bank_code().equals("VINTJA"))
 				{
 					// Setting the Key store details
 					owsLoginCredentialsObject.setKeystore_path(msServiceProviderConfig.getVintjaKeyStoreLocation());
@@ -274,7 +274,7 @@ public class ServiceProviderManger implements IServiceProvider
 					response = homesend_service.send_remittance(txn_data, customer_data, bene_data);
 
 				}
-				else if (txn_data.getRoutting_bank_code().equals("VINTAJ"))
+				else if (txn_data.getRoutting_bank_code().equals("VINTJA"))
 				{
 					// Setting the Key store details
 					owsLoginCredentialsObject.setKeystore_path(msServiceProviderConfig.getVintjaKeyStoreLocation());
@@ -350,7 +350,7 @@ public class ServiceProviderManger implements IServiceProvider
 				owsLoginCredentialsObject.setTrusttore_pwd(msServiceProviderConfig.getTrustStorePassword());
 
 				// Selecting which service to call based on the routing bank code
-				if (txn_data.getRoutting_bank_code().equals("VINTAJ"))
+				if (txn_data.getRoutting_bank_code().equals("VINTJA"))
 				{
 					// Setting the Key store details
 					owsLoginCredentialsObject.setKeystore_path(msServiceProviderConfig.getVintjaKeyStoreLocation());
@@ -428,7 +428,7 @@ public class ServiceProviderManger implements IServiceProvider
 				owsLoginCredentialsObject.setTrusttore_pwd(msServiceProviderConfig.getTrustStorePassword());
 
 				// Selecting which service to call based on the routing bank code
-				if (txn_data.getRoutting_bank_code().equals("VINTAJ"))
+				if (txn_data.getRoutting_bank_code().equals("VINTJA"))
 				{
 					// Setting the Key store details
 					owsLoginCredentialsObject.setKeystore_path(msServiceProviderConfig.getVintjaKeyStoreLocation());
@@ -503,7 +503,7 @@ public class ServiceProviderManger implements IServiceProvider
 				owsLoginCredentialsObject.setTrusttore_pwd(msServiceProviderConfig.getTrustStorePassword());
 
 				// Selecting which service to call based on the routing bank code
-				if (txn_data.getRoutting_bank_code().equals("VINTAJ"))
+				if (txn_data.getRoutting_bank_code().equals("VINTJA"))
 				{
 					// Setting the Key store details
 					owsLoginCredentialsObject.setKeystore_path(msServiceProviderConfig.getVintjaKeyStoreLocation());

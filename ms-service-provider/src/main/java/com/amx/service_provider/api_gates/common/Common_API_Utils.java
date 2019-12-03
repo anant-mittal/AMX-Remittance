@@ -401,7 +401,7 @@ public class Common_API_Utils
 
 		// Should not be called before validate_initial_inputs method
 
-		if (txn_data.getRoutting_bank_code().equals("VINTAJ"))
+		if (txn_data.getRoutting_bank_code().equals("VINTJA"))
 		{
 			GovermantPaymentServices target_payment_service =
 					VintajaUtils.get_goverment_payment_service(txn_data.getRemittance_mode(),
@@ -903,7 +903,7 @@ public class Common_API_Utils
 		if (StringUtils.isEmpty(txn_data.getOut_going_transaction_reference()) == true)
 			validation_result.put("txn_data.getOut_going_transaction_reference", "outgoing reference number is empty");
 
-		if (txn_data.getRoutting_bank_code().equals("VINTAJ"))
+		if (txn_data.getRoutting_bank_code().equals("VINTJA"))
 		{
 			final List<GovermantPaymentServices> ALLOWED_SERVICES_FOR_CANCEL_CALL =
 					Arrays.asList(GovermantPaymentServices.PHIL_HEALTH_YEAR_WISE,
