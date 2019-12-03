@@ -124,69 +124,13 @@ public abstract class AbstractBeneDetailDto {
 	public void setFourthName(String fourthName) {
 		this.fourthName = fourthName;
 	}
-
-	public String getFifthName() {
-		return fifthName;
-	}
-
-	public void setFifthName(String fifthName) {
-		this.fifthName = fifthName;
-	}
-
-	public String getLocalFirstName() {
-		return localFirstName;
-	}
-
-	public void setLocalFirstName(String localFirstName) {
-		this.localFirstName = localFirstName;
-	}
-
-	public String getLocalSecondName() {
-		return localSecondName;
-	}
-
-	public void setLocalSecondName(String localSecondName) {
-		this.localSecondName = localSecondName;
-	}
-
-	public String getLocalThirdName() {
-		return localThirdName;
-	}
-
-	public void setLocalThirdName(String localThirdName) {
-		this.localThirdName = localThirdName;
-	}
-
-	public String getLocalFourthName() {
-		return localFourthName;
-	}
-
-	public void setLocalFourthName(String localFourthName) {
-		this.localFourthName = localFourthName;
-	}
-
-	public String getLocalFifthName() {
-		return localFifthName;
-	}
-
-	public void setLocalFifthName(String localFifthName) {
-		this.localFifthName = localFifthName;
-	}
-
+	
 	public BigDecimal getNationality() {
 		return nationality;
 	}
 
 	public void setNationality(BigDecimal nationality) {
 		this.nationality = nationality;
-	}
-
-	public BigDecimal getRelationsId() {
-		return relationsId;
-	}
-
-	public void setRelationsId(BigDecimal relationsId) {
-		this.relationsId = relationsId;
 	}
 
 	public BigDecimal getStateId() {
