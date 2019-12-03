@@ -16,8 +16,6 @@ import com.amx.utils.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import jodd.util.SystemUtil;
-
 public class SnapModels {
 
 	private static final String BUCKETS = "buckets";
@@ -425,6 +423,38 @@ public class SnapModels {
 			return this.getLong("doc_count");
 		}
 
+	}
+
+	public static class SnapQueryParams extends MapModel {
+
+		private static final String LEVEL = "level";
+
+		private List<Map<String, Object>> filters;
+
+		public SnapQueryParams(Map<String, Object> params) {
+			super(params);
+		}
+
+		public SnapQueryParams() {
+			super();
+		}
+
+		public Integer getLevel() {
+			return this.getInteger(LEVEL, 100);
+		}
+
+		public Integer getMinCount() {
+			return this.getInteger("minCount", 0);
+		}
+
+		public void addFilter(String key, String value) {
+			Map<String, Object> f = new HashMap<String, Object>();
+			if (filters == null) {
+				filters = new ArrayList<Map<String, Object>>();
+				this.map.put("filters", filters);
+			}
+			filters.add(f);
+		}
 	}
 
 	@JsonIgnoreProperties(ignoreUnknown = true)
