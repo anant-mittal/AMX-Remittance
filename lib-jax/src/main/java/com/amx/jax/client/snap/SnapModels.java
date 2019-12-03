@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.amx.jax.api.AmxResponseSchemes.ApiWrapperResponse;
 import com.amx.jax.model.MapModel;
 import com.amx.utils.CollectionUtil;
 import com.amx.utils.JsonPath;
@@ -14,6 +15,8 @@ import com.amx.utils.JsonUtil;
 import com.amx.utils.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import jodd.util.SystemUtil;
 
 public class SnapModels {
 
@@ -121,6 +124,7 @@ public class SnapModels {
 			map.remove(AGGREGATIONS_KEY);
 			return this;
 		}
+
 	}
 
 	@JsonIgnoreProperties(ignoreUnknown = true)
@@ -245,7 +249,7 @@ public class SnapModels {
 					if (map.containsKey(BUCKETS)) {
 						Object tempbucketsmapCheck = BUCKETS_LIST.load(map,
 								new HashMap<String, Map<String, Object>>());
-							if(tempbucketsmapCheck instanceof ArrayList) {
+						if (tempbucketsmapCheck instanceof ArrayList) {
 							List<Map<String, Object>> tempbuckets = BUCKETS_LIST.loadList(map,
 									new HashMap<String, Object>());
 							for (Map<String, Object> aggregationMap : tempbuckets) {
@@ -266,7 +270,7 @@ public class SnapModels {
 					}
 				} catch (Exception e) {
 					System.out.println("===  " + JsonUtil.toJson(map));
-					//e.printStackTrace();
+					// e.printStackTrace();
 				}
 			}
 			return buckets;
@@ -419,6 +423,73 @@ public class SnapModels {
 
 		public Long getDocCount() {
 			return this.getLong("doc_count");
+		}
+
+	}
+
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	public static class SnapModelResponse extends SnapModelWrapper implements ApiWrapperResponse {
+
+		public SnapModelResponse(Map<String, Object> map) {
+			super(map);
+		}
+
+		public SnapModelResponse(String string) {
+			super(string);
+			this.setStatus("200");
+			this.setStatusKey("SUCCESS");
+			this.setTimestamp(System.currentTimeMillis());
+		}
+
+		@Override
+		public void setTimestamp(Long timestamp) {
+			this.map.put("timestamp", timestamp);
+		}
+
+		@Override
+		public Long getTimestamp() {
+			return this.getLong("timestamp");
+		}
+
+		@Override
+		public String getStatus() {
+			return this.getString("status", "200");
+		}
+
+		@Override
+		public void setStatus(String status) {
+			this.map.put("status", status);
+
+		}
+
+		@Override
+		public String getStatusKey() {
+			return this.getString("statusKey");
+		}
+
+		@Override
+		public void setStatusKey(String statusKey) {
+			this.map.put("statusKey", statusKey);
+		}
+
+		@Override
+		public String getMessage() {
+			return this.getString("message");
+		}
+
+		@Override
+		public void setMessage(String message) {
+			this.map.put("message", message);
+		}
+
+		@Override
+		public String getMessageKey() {
+			return this.getString("messageKey");
+		}
+
+		@Override
+		public void setMessageKey(String messageKey) {
+			this.map.put("messageKey", messageKey);
 		}
 
 	}
