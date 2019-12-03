@@ -1,9 +1,12 @@
 package com.amx.jax.client.snap;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppConfig;
+import com.amx.jax.client.snap.SnapConstants.SnapQueryTemplate;
 import com.amx.jax.client.snap.SnapModels.SnapModelWrapper;
 import com.amx.jax.dict.Currency;
 import com.amx.jax.rest.RestService;
@@ -37,4 +40,15 @@ public class SnapServiceClient implements ISnapService {
 						.get().asMap());
 	}
 
+	public SnapModelWrapper snapView(SnapQueryTemplate snapView, Map<String, Object> params, String gte, String lte,
+			Integer level, Integer minCount) {
+		return new SnapModelWrapper(
+				restService.ajax(appConfig.getRadarURL() + Path.SNAP_API_VIEW)
+				.pathParam(Params.SNAP_VIEW, snapView)
+				.queryParam("gte", gte).queryParam("lte", lte).queryParam("level", level).
+				queryParam("level", level).queryParam("minCount", minCount)
+				.post(params).asMap());
+	}
+	
+	
 }
