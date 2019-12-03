@@ -1,9 +1,7 @@
 package com.amx.jax.manager;
 
 import java.math.BigDecimal;
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
@@ -12,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -41,10 +38,8 @@ import com.amx.jax.postman.model.WAMessage;
 import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.repository.RemittanceTransactionRepository;
 import com.amx.jax.repository.promotion.DailyPromotionRepository;
-import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.util.CommunicationPrefsUtil;
 import com.amx.jax.util.CommunicationPrefsUtil.CommunicationPrefsResult;
-import com.amx.jax.util.DBUtil;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 import com.amx.utils.DateUtil;
@@ -190,9 +185,10 @@ public class DailyPromotionManager {
 
 	public void applyJolibeePadalaCoupons(BigDecimal documentFinanceYear, BigDecimal documentNumber, BigDecimal branchCode) {
 		logger.debug("DocumentFinYear "+documentFinanceYear+"document No "+documentNumber+"branchcode "+branchCode);
+		RemittanceTransaction remittanceTransaction =remittanceTransactionRepository.findByCollectionDocFinanceYearAndCollectionDocumentNo(documentFinanceYear, documentNumber);
 		DailyPromotionDTO dailyPromotionDTO=new DailyPromotionDTO();
 		if(!ConstantDocument.ONLINE_BRANCH_LOC_CODE.equals(branchCode)) {
-			RemittanceTransaction remittanceTransaction =remittanceTransactionRepository.findByCollectionDocFinanceYearAndCollectionDocumentNo(documentFinanceYear, documentNumber); 
+			 
 			dailyPromotionDTO=dailyPromotionDao.applyJolibeePadalaCoupons(documentFinanceYear, documentNumber, remittanceTransaction.getBranchId().getBranchId());
 		}else {
 			dailyPromotionDTO=dailyPromotionDao.applyJolibeePadalaCoupons(documentFinanceYear,documentNumber,branchCode);
@@ -200,6 +196,9 @@ public class DailyPromotionManager {
 		if(!ArgUtil.isEmpty(dailyPromotionDTO.getPromotionMsg())&&ArgUtil.isEmpty(dailyPromotionDTO.getErrorMsg())) {
 			Customer customer = customerRepository.getCustomerByCustomerIdAndIsActive(metaData.getCustomerId(), "Y");
 			CommunicationPrefsResult communicationPrefsResult = communicationPrefsUtil.forCustomer(CommunicationEvents.BPI_JOLLIBEE, customer);
+			Date createdDate = remittanceTransaction.getCreatedDate();
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-mm-yyyy");
+			String transactionDate = simpleDateFormat.format(createdDate);
 			if(communicationPrefsResult.isEmail()) {
 				Email email = new Email();
 				email.setITemplate(TemplatesMX.BPI_JOLLIBEE);
@@ -210,12 +209,14 @@ public class DailyPromotionManager {
 					email.setLang(Language.AR);
 				}
 				email.addTo(customer.getEmail());
+				email.getModel().put(NotificationConstants.RESP_DATA_KEY, transactionDate);
 				postManService.sendEmailAsync(email);
 			}
 			if(communicationPrefsResult.isSms()) {
 				SMS sms = new SMS();
 				sms.setITemplate(TemplatesMX.BPI_JOLLIBEE);
 				sms.addTo(customer.getPrefixCodeMobile()+customer.getMobile());
+				sms.getModel().put(NotificationConstants.RESP_DATA_KEY, transactionDate);
 				postManService.sendSMSAsync(sms);
 			}
 			
@@ -223,12 +224,14 @@ public class DailyPromotionManager {
 				WAMessage waMessage = new WAMessage();
 				waMessage.setITemplate(TemplatesMX.BPI_JOLLIBEE);
 				waMessage.addTo(customer.getWhatsappPrefix() + customer.getWhatsapp());
+				waMessage.getModel().put(NotificationConstants.RESP_DATA_KEY, transactionDate);
 				whatsAppClient.send(waMessage);
 			}
 			if(communicationPrefsResult.isPushNotify()) {
 				PushMessage pushMessage = new PushMessage();
 				pushMessage.setITemplate(TemplatesMX.BPI_JOLLIBEE);
 				pushMessage.addToUser(metaData.getCustomerId());
+				pushMessage.getModel().put(NotificationConstants.RESP_DATA_KEY, transactionDate);
 				pushNotifyClient.send(pushMessage);
 			}
 		}
