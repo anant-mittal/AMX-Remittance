@@ -68,6 +68,7 @@ import com.amx.jax.dbmodel.bene.BeneficaryMaster;
 import com.amx.jax.dbmodel.bene.BeneficaryRelationship;
 import com.amx.jax.dbmodel.bene.BeneficaryStatus;
 import com.amx.jax.dbmodel.bene.RelationsDescription;
+import com.amx.jax.dbmodel.meta.ServiceGroupMaster;
 import com.amx.jax.dbmodel.remittance.ViewParameterDetails;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.error.JaxError;
@@ -94,6 +95,7 @@ import com.amx.jax.repository.ILanguageTypeRepository;
 import com.amx.jax.repository.ITransactionHistroyDAO;
 import com.amx.jax.repository.RoutingAgentLocationRepository;
 import com.amx.jax.repository.RoutingBankMasterRepository;
+import com.amx.jax.repository.ServiceGroupMasterRepository;
 import com.amx.jax.repository.remittance.IViewParameterDetailsRespository;
 import com.amx.jax.service.MetaService;
 import com.amx.jax.userservice.dao.CustomerDao;
@@ -195,6 +197,8 @@ public class BeneficiaryService extends AbstractService {
 	
 	@Autowired
 	LoyalityPointService loyalityPointService;
+	@Autowired
+	ServiceGroupMasterRepository serviceGroupMasterRepository;
 	
 	
 	public ApiResponse getBeneficiaryListForOnline(BigDecimal customerId, BigDecimal applicationCountryId,BigDecimal beneCountryId,Boolean excludePackage) {
@@ -1199,6 +1203,7 @@ public class BeneficiaryService extends AbstractService {
 			dto.setBeneficaryStatusId(i.getBeneficaryStatusId());
 			dto.setBeneficaryStatusName(i.getBeneficaryStatusName());
 			dto.setCreatedDate(i.getCreatedDate());
+			dto.setSelfApplicable(ConstantDocument.Yes.equalsIgnoreCase(i.getSelfApplicable()));
 			return dto;
 		}).collect(Collectors.toList());
 	}
@@ -1215,6 +1220,22 @@ public class BeneficiaryService extends AbstractService {
 	
 	public void saveBeneContact(BeneficaryContact beneficaryContact) {
 		beneficaryContactDao.save(beneficaryContact);
+	}
+
+	public List<BeneficaryStatusDto> getBeneStatusMaster(BigDecimal serviceGroupId) {
+		if (serviceGroupId == null) {
+			return getBeneStatusMaster();
+		}
+		ServiceGroupMaster serviceGroupMaster = serviceGroupMasterRepository.findOne(serviceGroupId);
+		return beneficaryStatusRepository.findByServiceGroupAndActive(ConstantDocument.Yes, serviceGroupMaster.getServiceGroupCode()).stream()
+				.map(i -> {
+					BeneficaryStatusDto dto = new BeneficaryStatusDto();
+					dto.setBeneficaryStatusId(i.getBeneficaryStatusId());
+					dto.setBeneficaryStatusName(i.getBeneficaryStatusName());
+					dto.setCreatedDate(i.getCreatedDate());
+					dto.setSelfApplicable(ConstantDocument.Yes.equalsIgnoreCase(i.getSelfApplicable()));
+					return dto;
+				}).collect(Collectors.toList());
 	}
 	
 }

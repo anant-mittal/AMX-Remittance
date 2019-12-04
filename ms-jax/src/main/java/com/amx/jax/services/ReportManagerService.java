@@ -376,9 +376,19 @@ public class ReportManagerService extends AbstractService{
 
 				if(view.getLocalCommissionAmount()!=null && view.getLocalTransactionCurrencyId()!=null){
 					BigDecimal localCommitionAmount=RoundUtil.roundBigDecimal((view.getLocalCommissionAmount()),decimalPerCurrency);
+					localCommitionAmount =localCommitionAmount.add(view.getCorporateDisOnCommi()==null?BigDecimal.ZERO:view.getCorporateDisOnCommi());
 					obj.setCommision(currencyQuoteName+"     "+localCommitionAmount.toString()); 
 				}
 
+				
+				if(JaxUtil.isNullZeroBigDecimalCheck(view.getCorporateDisOnCommi()))
+				{
+					BigDecimal disOnComm=RoundUtil.roundBigDecimal((view.getCorporateDisOnCommi()),decimalPerCurrency);
+					obj.setDiscountOnCommission(disOnComm);
+					obj.setDiscountOnCommissionStr(view.getCorporateDiscountMsgReceipt()==null?"":view.getCorporateDiscountMsgReceipt()+" " +currencyQuoteName+" "+disOnComm.toString()+" applied");
+					
+				}
+				
 				if(view.getLocalChargeAmount()!=null && view.getLocalTransactionCurrencyId()!=null){
 					BigDecimal localChargeAmount=RoundUtil.roundBigDecimal((view.getLocalChargeAmount()),decimalPerCurrency);
 					obj.setOtherCharges(currencyQuoteName+"     "+localChargeAmount.toString()); 
