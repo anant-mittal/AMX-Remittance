@@ -5,8 +5,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.amx.utils.ArgUtil;
+import com.amx.utils.EnumType;
 
-public enum Language {
+public enum Language implements EnumType {
 
 	AB("abk", 100, "Abkhazian"),
 	AE("ave", 100, "Avestan"),
@@ -283,11 +284,22 @@ public enum Language {
 		return lang;
 	}
 
+	public String stringValue() {
+		return this.iso3code;
+	}
+
 	public static Language fromId(BigDecimal id) {
 		if (id == null) {
 			return null;
 		}
 		return MAP.get(id.intValue());
+	}
+
+	public static Language fromId(Integer id) {
+		if (id == null) {
+			return null;
+		}
+		return MAP.get(id);
 	}
 
 	public static String toString(Language lang, Language deflang) {
@@ -307,7 +319,11 @@ public enum Language {
 	}
 
 	public static Language fromString(String lang, Language defLang) {
-		return (Language) ArgUtil.parseAsEnum(lang, defLang, Language.class);
+		Language x = (Language) ArgUtil.parseAsEnum(lang, defLang, Language.class);
+		if (x == null) {
+			return null;
+		}
+		return x.getLang();
 	}
 
 	public static Language fromString(String lang) {
