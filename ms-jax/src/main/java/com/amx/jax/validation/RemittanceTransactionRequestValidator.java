@@ -105,7 +105,11 @@ public class RemittanceTransactionRequestValidator {
 				validateFlexFieldValues(requestFlexFields);
 			}
 		}
-		// requestFlexFields.put("INDIC1", new FlexFieldDto(request.getAdditionalBankRuleFiledId(), request.getSrlId(), null, null));
+		// if request is having srl id and addlbankruleid then it is by default INDIC1
+		// values
+		if (request.getAdditionalBankRuleFiledId() != null && request.getSrlId() != null) {
+			requestFlexFields.put("INDIC1", new FlexFieldDto(request.getAdditionalBankRuleFiledId(), request.getSrlId(), null, null));
+		}
 		BigDecimal applicationCountryId = (BigDecimal) remitApplParametersMap.get("P_APPLICATION_COUNTRY_ID");
 		BigDecimal routingCountryId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_COUNTRY_ID");
 		BigDecimal remittanceModeId = (BigDecimal) remitApplParametersMap.get("P_REMITTANCE_MODE_ID");
