@@ -79,8 +79,11 @@ public class JaxFieldClient extends AbstractJaxServiceClient {
 	 * 
 	 */
 	public ApiResponse<JaxConditionalFieldDto> getDynamicFieldsForBeneficiary(BigDecimal beneCountryId, BigDecimal beneficaryTypeId) {
-			LOGGER.info("Get getJaxFieldsForEntity beneCountryId= " + beneCountryId);
-			JaxCondition condition = new JaxCondition("egypt-institution", beneCountryId.toString() + "," + beneficaryTypeId.toString());
+			LOGGER.debug("Get getJaxFieldsForEntity beneCountryId= " + beneCountryId);
+			if(beneficaryTypeId == null) {
+				return getDynamicFieldsForBeneficiary(beneCountryId);
+			}
+			JaxCondition condition = new JaxCondition("country-institution", beneCountryId.toString() + "," + beneficaryTypeId.toString());
 			GetJaxFieldRequest request = new GetJaxFieldRequest(condition, JaxFieldEntity.BENEFICIARY);
 			String url = this.getBaseUrl() + JAX_FIELD_ENDPOINT + "/get";
 			HttpEntity<GetJaxFieldRequest> requestEntity = new HttpEntity<GetJaxFieldRequest>(request, getHeader());

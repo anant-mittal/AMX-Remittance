@@ -58,8 +58,8 @@ public class JaxFieldService extends AbstractService {
 		if (request.getCondition() != null && request.getCondition().getConditionKey() != null
 				&& request.getCondition().getConditionValue() != null) {
 			// special handling for key
-			if ("egypt-institution".equals(request.getCondition().getConditionKey())) {
-				fieldList = getEgyptInstitutionFields(request);
+			if ("country-institution".equals(request.getCondition().getConditionKey())) {
+				fieldList = getCountrytInstitutionFields(request);
 			} else {
 				fieldList = jaxConditionalFieldRuleRepository.findByEntityNameAndConditionKeyAndConditionValue(request.getEntity(),
 						request.getCondition().getConditionKey(), request.getCondition().getConditionValue());
@@ -73,14 +73,18 @@ public class JaxFieldService extends AbstractService {
 		return apiResponse;
 	}
 
-	private List<JaxConditionalFieldRule> getEgyptInstitutionFields(GetJaxFieldRequest request) {
+	private List<JaxConditionalFieldRule> getCountrytInstitutionFields(GetJaxFieldRequest request) {
 		List<JaxConditionalFieldRule> output = new ArrayList<>();
 		String value = request.getCondition().getConditionValue();
 		BigDecimal countryId = new BigDecimal(value.split(",")[0]);
 		BigDecimal beneficaryTypeId = new BigDecimal(value.split(",")[1]);
 		if (countryService.isEgyptCountry(countryId) && beneficiaryService.isNonIndividualBene(beneficaryTypeId)) {
-			output = jaxConditionalFieldRuleRepository.findByEntityNameAndConditionKeyAndConditionValue(request.getEntity(), "egypt-institution",
+			output = jaxConditionalFieldRuleRepository.findByEntityNameAndConditionKeyAndConditionValue(request.getEntity(), "country-institution",
 					"ALL");
+		}
+		if (countryService.isEgyptCountry(countryId) && !beneficiaryService.isNonIndividualBene(beneficaryTypeId)) {
+			output = jaxConditionalFieldRuleRepository.findByEntityNameAndConditionKeyAndConditionValue(request.getEntity(), "bene-country-id",
+					countryId.toString());
 		}
 		return output;
 	}
