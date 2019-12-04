@@ -1241,5 +1241,13 @@ public class BeneficiaryService extends AbstractService {
 					return dto;
 				}).collect(Collectors.toList());
 	}
+
+	public boolean isNonIndividualBene(BigDecimal beneficaryTypeId) {
+		BeneficaryStatus beneStatus = beneficaryStatusRepository.findOne(beneficaryTypeId);
+		if (beneStatus != null && ConstantDocument.NON_INDIVIDUAL_STRING.equalsIgnoreCase(beneStatus.getBeneficaryStatusName())) {
+			return true;
+		}
+		return false;
+	}
 	
 }
