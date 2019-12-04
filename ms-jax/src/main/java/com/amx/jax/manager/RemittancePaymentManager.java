@@ -259,10 +259,11 @@ public class RemittancePaymentManager extends AbstractService{
 						Customer customer = customerDao.getCustById(remittanceTransaction.getCustomerId().getCustomerId());
 						setMetaInfo(trxnDto, paymentResponse);
 						// promotion check not for amg employee
-						if (!employeeDao.isAmgEmployee(customer.getIdentityInt())) {
-							promotionManager.promotionWinnerCheck(remittanceTransaction.getDocumentNo(),
-									remittanceTransaction.getDocumentFinanceYear());
-						}
+						/*
+						 * if (!employeeDao.isAmgEmployee(customer.getIdentityInt())) {
+						 * promotionManager.promotionWinnerCheck(remittanceTransaction.getDocumentNo(),
+						 * remittanceTransaction.getDocumentFinanceYear()); }
+						 */
 						PromotionDto promotDto = promotionManager.getPromotionDto(remittanceTransaction.getDocumentNo(),
 								remittanceTransaction.getDocumentFinanceYear());
 						PersonInfo personInfo = userService.getPersonInfo(customer.getCustomerId());

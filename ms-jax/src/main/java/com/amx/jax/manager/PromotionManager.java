@@ -153,7 +153,7 @@ public class PromotionManager {
 		try {
 			BigDecimal branchId = countryBranchService.getCountryBranchByCountryBranchId(metaData.getCountryBranchId())
 					.getBranchId();
-			promotionDao.callGetPromotionPrize(documentNoRemit, documentFinYearRemit, branchId);
+			String promoMsg= promotionDao.callGetPromotionPrize(documentNoRemit, documentFinYearRemit, branchId);
 			PromotionDto promotDto = getPromotionDto(documentNoRemit, documentFinYearRemit);
 			if (promotDto != null) {
 				logger.info("Sending promo winner Email to helpdesk : ");
