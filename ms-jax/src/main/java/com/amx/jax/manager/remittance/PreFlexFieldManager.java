@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -125,8 +126,8 @@ public class PreFlexFieldManager {
 		}
 
 		/*
-		 * these are default values.These may get overridden by calling respective flexfield
-		 * manager's validatePreFlexField method below
+		 * these are default values.These may get overridden by calling respective
+		 * flexfield manager's validatePreFlexField method below
 		 */
 		validationResults.put("requiredFlexFields", requiredFlexFields);
 		validationResults.put(PREFLEXCALL_COMPLETE.getName(), getPreFlexCallComplete(requestFlexFields, requiredFlexFields));
@@ -198,7 +199,10 @@ public class PreFlexFieldManager {
 		List<AdditionalDataDisplayView> additionalDataRequired = additionalDataDisplayDao.getAdditionalDataFromServiceApplicabilityForBank(
 				applicationCountryId, routingCountryId, foreignCurrencyId, remittanceModeId, deliveryModeId,
 				flexiFieldIn.toArray(new String[flexiFieldIn.size()]), routingBankId, ConstantDocument.Yes);
-
+		if (CollectionUtils.isEmpty(additionalDataRequired)) {
+			additionalDataRequired = additionalDataDisplayDao.getAdditionalDataFromServiceApplicability(applicationCountryId, routingCountryId,
+					foreignCurrencyId, remittanceModeId, deliveryModeId, flexiFieldIn.toArray(new String[flexiFieldIn.size()]), ConstantDocument.Yes);
+		}
 		try {
 			AbstractFlexFieldManager flexFieldManager = (AbstractFlexFieldManager) appContext
 					.getBean(bankCode + AbstractFlexFieldManager.FLEX_FIELD_MANAGER_BEAN_SUFFIX);

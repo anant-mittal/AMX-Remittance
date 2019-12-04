@@ -29,6 +29,7 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.LanguageCodeType;
 import com.amx.amxlib.model.response.PurposeOfTransactionModel;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.LanguageType;
@@ -95,7 +96,8 @@ public class PurposeOfTransactionService extends AbstractService {
 		try {
 			listAdditionalBankDataTable = new ArrayList<>();
 			listDynamicLabel = new ArrayList<>();
-			List<AdditionalDataDisplayView> serviceAppRuleList = additionalDataDisplayDao.getAdditionalDataFromServiceApplicability(applicationCountryId, countryId, currencyId,remittanceModeId, deliveryModeId,IAdditionalDataDisplayDao.flexiFieldIn);
+			List<AdditionalDataDisplayView> serviceAppRuleList = additionalDataDisplayDao.getAdditionalDataFromServiceApplicability(applicationCountryId, countryId, currencyId,remittanceModeId, deliveryModeId,IAdditionalDataDisplayDao.flexiFieldIn,
+					ConstantDocument.No);
 			if (!serviceAppRuleList.isEmpty()) {
 				for (AdditionalDataDisplayView serviceRule : serviceAppRuleList) {
 					AddDynamicLabel addDynamic = new AddDynamicLabel();

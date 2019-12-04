@@ -122,7 +122,7 @@ public class RemittanceTransactionRequestValidator {
 				flexiFieldIn.toArray(new String[flexiFieldIn.size()]), routingBankId, ConstantDocument.No);
 		if (CollectionUtils.isEmpty(additionalDataRequired)) {
 			additionalDataRequired = additionalDataDisplayDao.getAdditionalDataFromServiceApplicability(applicationCountryId, routingCountryId,
-					foreignCurrencyId, remittanceModeId, deliveryModeId, flexiFieldIn.toArray(new String[flexiFieldIn.size()]));
+					foreignCurrencyId, remittanceModeId, deliveryModeId, flexiFieldIn.toArray(new String[flexiFieldIn.size()]),ConstantDocument.No);
 		}
 		FlexFieldDto servicePackage = request.getServicePackage();
 		List<JaxConditionalFieldDto> requiredFlexFields = new ArrayList<>();

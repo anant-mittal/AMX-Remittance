@@ -239,7 +239,7 @@ public class RemittanceAdditionalFieldManager {
 		BigDecimal foreignCurrencyId = (BigDecimal) remitApplParametersMap.get("P_FOREIGN_CURRENCY_ID");
 
 		List<AdditionalDataDisplayView> additionalDataRequired = additionalDataDisplayDao.getAdditionalDataFromServiceApplicability(applicationCountryId, routingCountryId,
-				foreignCurrencyId, remittanceModeId, deliveryModeId, JaxDynamicField.getAllAdditionalFlexFields());
+				foreignCurrencyId, remittanceModeId, deliveryModeId, JaxDynamicField.getAllAdditionalFlexFields(), ConstantDocument.No);
 		return additionalDataRequired.stream().collect(Collectors.toMap(i -> i.getFlexField(), i -> i, (x1, x2) -> x1));
 	}
 
