@@ -212,7 +212,7 @@ public enum Language {
 	TI("tir", 100, "Tigrinya"),
 
 	TK("tuk", 100, "Turkmen"),
-	TL("tgl", 8, "Tagalog"),
+	TL("tgl", 8, "Tagalog"), PH(TL),
 	TN("tsn", 100, "Tswana"),
 
 	TO("ton", 100, "Tonga"),
@@ -247,10 +247,20 @@ public enum Language {
 
 	private String iso3code;
 	private int id;
+	private Language lang;
 
 	Language(String iso3code, int id, String name) {
 		this.id = id;
 		this.iso3code = iso3code;
+		this.lang = this;
+	}
+
+	Language(Language lang) {
+		this.lang = lang;
+		if (lang != null) {
+			this.id = lang.id;
+			this.iso3code = lang.iso3code;
+		}
 	}
 
 	public String getISO3Code() {
@@ -267,6 +277,10 @@ public enum Language {
 
 	public BigDecimal getBDCode() {
 		return new BigDecimal(id);
+	}
+
+	public Language getLang() {
+		return lang;
 	}
 
 	public static Language fromId(BigDecimal id) {
@@ -302,7 +316,7 @@ public enum Language {
 
 	static {
 		for (Language site : Language.values()) {
-			MAP.put(site.getId(), site);
+			MAP.put(site.getId(), site.getLang());
 		}
 	}
 
