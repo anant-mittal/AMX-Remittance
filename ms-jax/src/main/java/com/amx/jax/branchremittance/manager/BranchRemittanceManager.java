@@ -347,7 +347,7 @@ public class BranchRemittanceManager extends AbstractModel {
 		
 		
 		
-		if(!bnkWorldcheck.isEmpty()) {
+		if(bnkWorldcheck!=null && !bnkWorldcheck.isEmpty()) {
 			for(BankBlWorld blworld :bnkWorldcheck) {
 			if(beneficaryDetails.getBenificaryName().contains(blworld.getBankWorldEmded().getBlWord())) {
 			booBlakCheck =true;
