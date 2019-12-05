@@ -224,9 +224,9 @@ public class BeneficiaryController implements IBeneficiaryService{
 	 * 
 	 */
 	@RequestMapping(value = "/trnx/addbene/commit/", method = RequestMethod.POST)
-	public ApiResponse commitAddBeneTrnx(@RequestParam("mOtp") String mOtp,
-			@RequestParam(name = "eOtp") String eOtp) {
-		LOGGER.debug("in commit bene request with param , eOtp: " + eOtp + " motp: " + mOtp);
+	public ApiResponse commitAddBeneTrnx(@RequestParam(required = false, name = "mOtp") String mOtp,
+			@RequestParam(required = false, name = "eOtp") String eOtp) {
+		LOGGER.debug(" In commit bene request with param ");
 		return beneficiaryTrnxManager.commitTransaction(mOtp, eOtp);
 	}
 

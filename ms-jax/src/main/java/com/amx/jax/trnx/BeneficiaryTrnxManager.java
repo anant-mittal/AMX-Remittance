@@ -449,7 +449,18 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 	 * 
 	 */
 	public ApiResponse commitTransaction(String mOtp, String eOtp) {
-		userService.validateOtp(null, mOtp, eOtp);
+		BigDecimal custId = metaData.getCustomerId();
+		JaxAuthContext.contactType(ContactType.SMS_EMAIL);
+		if(eOtp != null) {
+			JaxAuthContext.eOtp(eOtp);
+		}
+		if(mOtp != null) {
+			JaxAuthContext.mOtp(mOtp);
+		}
+		if(custId != null) {
+			customerDBAuthManager.validateAndSendOtp(custId);
+		}
+		//userService.validateOtp(null, mOtp, eOtp);
 		commit();
 		ApiResponse apiResponse = getBlankApiResponse();
 		apiResponse.getData().setType("bene-trnx-model");
@@ -487,13 +498,6 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 	 * 
 	 */
 	public ApiResponse savePersonalDetailTrnx(BenePersonalDetailModel benePersonalDetailModel) {
-		
-		BigDecimal custId = metaData.getCustomerId();
-		JaxAuthContext.contactType(ContactType.SMS_EMAIL);
-		if(custId != null) {
-			customerDBAuthManager.validateAndSendOtp(custId);
-		}
-		
 		BeanPropertyBindingResult errors = new BeanPropertyBindingResult(benePersonalDetailModel,
 				"benePersonalDetailModel");
 		BeneficiaryTrnxModel trnxModel = getWithInit();
