@@ -456,9 +456,9 @@ public class ExchangeRateManager {
 
 		if (ruleStatusUpdateMap.containsKey(RATE_UPLOAD_STATUS.APPROVED)) {
 
-			totalRowsUpdated += exchRateUploadDao.updateStatusForRuleIdIn(
-					ruleStatusUpdateMap.get(RATE_UPLOAD_STATUS.APPROVED), RATE_UPLOAD_STATUS.APPROVED,
-					rateUploadRequestDto.getUpdatedBy(), today);
+			//totalRowsUpdated += exchRateUploadDao.updateStatusForRuleIdIn(
+			//		ruleStatusUpdateMap.get(RATE_UPLOAD_STATUS.APPROVED), RATE_UPLOAD_STATUS.APPROVED,
+			//		rateUploadRequestDto.getUpdatedBy(), today);
 
 			System.out.println(" =========== Start Uploading =========== ");
 
@@ -469,15 +469,16 @@ public class ExchangeRateManager {
 
 			ruleStatusUpdateMap.get(RATE_UPLOAD_STATUS.APPROVED).toArray(rulesApproved);
 
-			 ExchRatePopulateProcedure proc = new ExchRatePopulateProcedure(dataSource);
+			ExchRatePopulateProcedure proc = new ExchRatePopulateProcedure(dataSource);
 
-			 proc.execute(new BigDecimal(91), rulesApproved);
+			proc.execute(new BigDecimal(91), rulesApproved);
 			// proc.populateExchRates(new BigDecimal(91), rulesApproved);
 
-			//Map<String, Object> outMap = ratePopulateProcDao.callProcedurePopulateExchRate(new BigDecimal(91),
-			//		rulesApproved);
+			// Map<String, Object> outMap =
+			// ratePopulateProcDao.callProcedurePopulateExchRate(new BigDecimal(91),
+			// rulesApproved);
 
-			//System.out.println(" Out Map ==> " + JsonUtil.toJson(outMap));
+			// System.out.println(" Out Map ==> " + JsonUtil.toJson(outMap));
 
 			// uploadProcRepo.uploadApprovedRateRules(new BigDecimal(91),
 			// ruleStatusUpdateMap.get(RATE_UPLOAD_STATUS.APPROVED));
@@ -584,12 +585,17 @@ public class ExchangeRateManager {
 		boolean isApproved = false;
 
 		for (ExchRateUpload rateUpload : toBeApprovedList) {
-			if (rateUpload.getIsActive() == null || rateUpload.getIsActive().equals(IS_ACTIVE.N)) {
-				invalidRules.add(rateUpload.getRuleId());
+
+			if (invalidRules.contains(rateUpload.getRuleId())) {
+				continue;
 			}
 
-			if (rateUpload.getStatus() == null || !rateUpload.getStatus().equals(RATE_UPLOAD_STATUS.CREATED)) {
+			if (rateUpload.getIsActive() == null || !IS_ACTIVE.Y.equals(rateUpload.getIsActive())) {
 				invalidRules.add(rateUpload.getRuleId());
+				//isInactive = true;
+			}else if (rateUpload.getStatus() == null || !rateUpload.getStatus().equals(RATE_UPLOAD_STATUS.CREATED)) {
+				invalidRules.add(rateUpload.getRuleId());
+				//isApproved = true;
 			}
 
 		}
