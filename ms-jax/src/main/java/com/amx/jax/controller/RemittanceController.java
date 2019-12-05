@@ -48,6 +48,7 @@ import com.amx.jax.userservice.dao.ReferralDetailsDao;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.ConverterUtil;
 import com.amx.jax.util.JaxContextUtil;
+import com.amx.utils.JsonUtil;
 
 @RestController
 @RequestMapping(REMIT_API_ENDPOINT)
@@ -196,8 +197,8 @@ public class RemittanceController {
 	public ApiResponse saveRemittance(@RequestBody PaymentResponseDto paymentResponse) {
 		JaxContextUtil.setJaxEvent(JaxEvent.CREATE_REMITTANCE);
 		JaxContextUtil.setRequestModel(paymentResponse);
+		logger.debug("Save remnittance request "+JsonUtil.toJson(paymentResponse));
 		logger.info("save-Remittance Controller :" + paymentResponse.getCustomerId() + "\t country ID :");
-		logger.debug("Payment respone is " + paymentResponse.toString());
 		logger.debug("save-Remittance Controller :" + paymentResponse.getCustomerId() + "\t country ID :"
 				+ paymentResponse.getApplicationCountryId() + "\t Compa Id:" + paymentResponse.getCompanyId());
 

@@ -185,12 +185,13 @@ public class DailyPromotionManager {
 
 	public void applyJolibeePadalaCoupons(BigDecimal documentFinanceYear, BigDecimal documentNumber, BigDecimal branchCode) {
 		logger.debug("DocumentFinYear "+documentFinanceYear+"document No "+documentNumber+"branchcode "+branchCode);
-		RemittanceTransaction remittanceTransaction =remittanceTransactionRepository.findByCollectionDocFinanceYearAndCollectionDocumentNo(documentFinanceYear, documentNumber);
+		RemittanceTransaction remittanceTransaction =null;
 		DailyPromotionDTO dailyPromotionDTO=new DailyPromotionDTO();
 		if(!ConstantDocument.ONLINE_BRANCH_LOC_CODE.equals(branchCode)) {
-			 
+			 remittanceTransaction=remittanceTransactionRepository.findByCollectionDocFinanceYearAndCollectionDocumentNo(documentFinanceYear, documentNumber);
 			dailyPromotionDTO=dailyPromotionDao.applyJolibeePadalaCoupons(documentFinanceYear, documentNumber, remittanceTransaction.getBranchId().getBranchId());
 		}else {
+			remittanceTransaction=remittanceTransactionRepository.findByDocumentNoAndDocumentFinanceYear(documentNumber, documentFinanceYear);
 			dailyPromotionDTO=dailyPromotionDao.applyJolibeePadalaCoupons(documentFinanceYear,documentNumber,branchCode);
 		}
 		if(!ArgUtil.isEmpty(dailyPromotionDTO.getPromotionMsg())&&ArgUtil.isEmpty(dailyPromotionDTO.getErrorMsg())) {
