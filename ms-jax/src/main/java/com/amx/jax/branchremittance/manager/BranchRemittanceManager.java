@@ -1197,7 +1197,7 @@ public BeneAdditionalDto getAdditionalBeneDetailJax(BenificiaryListView benefica
 					 bankBranchName = beneBankBranchView.get(0).getBranchFullNameArabic()+","+beneCityNameArabic==null?"":beneCityNameArabic; 
 				 }else {
 					 if(beneBankBranchView.get(0)!=null) {
-						 bankBranchName = beneBankBranchView.get(0).getBranchFullName()==null?"":beneBankBranchView.get(0).getBranchFullName()+" ,"+beneCityName==null?"":beneCityName;
+						 bankBranchName = beneBankBranchView.get(0).getBranchFullName()==null?"":beneBankBranchView.get(0).getBranchFullName()+" ,"+(beneCityName==null?"":beneCityName);
 					 }
 				 }
 			}
