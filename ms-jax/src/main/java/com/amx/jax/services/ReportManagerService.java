@@ -606,8 +606,8 @@ public class ReportManagerService extends AbstractService{
 		}
 		if (Boolean.TRUE.equals(promotion)) {
 				
-				PromotionDto promotionDtoJP = promotionManager.getPromotionDtoJP(
-						transactionHistroyDTO.getDocumentFinanceYear(),transactionHistroyDTO.getDocumentNumber());
+				PromotionDto promotionDtoJP = promotionManager.getJolibeePromotion(
+						transactionHistroyDTO.getDocumentNumber(),transactionHistroyDTO.getDocumentFinanceYear());
 				logger.debug("Promotion dto2 for JB value is  "+JsonUtil.toJson(promotionDtoJP));
 				if(!ArgUtil.isEmpty(promotionDtoJP)&&!ArgUtil.isEmpty(promotionDtoJP.getPrizeMessage())) {
 					remittanceReceiptSubreportList.get(0).getRemittanceApplList().get(0).setPromotionDto(promotionDtoJP);

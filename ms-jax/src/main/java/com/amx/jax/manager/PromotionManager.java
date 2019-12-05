@@ -242,4 +242,24 @@ public class PromotionManager {
 		return null;
 	}
 }	
+	public PromotionDto getJolibeePromotion(BigDecimal docNoRemit, BigDecimal docFinyear) {
+		try {
+			PromotionDto dto = null;
+			RemittanceTransaction remittanceTransaction = remittanceApplicationDao
+					.getRemittanceTransactionByRemitDocNo(docNoRemit, docFinyear);
+			List<PromotionDetailModel> models = promotionDao.getPromotionDetailModel(docFinyear, docNoRemit);
+			if (models != null && models.size() > 0) {
+				dto = new PromotionDto();
+				dto.setPrize(models.get(0).getPrize());
+				dto.setPrizeMessage("Congrats! Free Jollibee meal voucher for your transaction");
+				dto.setTransactionReference(remittanceTransaction.getDocumentFinanceYear().toString() + " / "
+						+ remittanceTransaction.getDocumentNo().toString());
+			} 
+			
+			return dto;
+		} catch (Exception e) {
+			logger.debug("error occured in get promo dto", e);
+			return null;
+		}
+	}
 }	
