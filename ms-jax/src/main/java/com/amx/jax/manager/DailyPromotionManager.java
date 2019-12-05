@@ -204,8 +204,10 @@ public class DailyPromotionManager {
 			Date createdDate = remittanceTransaction.getCreatedDate();
 			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-mm-yyyy");
 			Map<String, Object> modeldata = new HashMap<String, Object>();
+			Map<String, Object> wrapper = new HashMap<String, Object>();
 			String transactionDate = simpleDateFormat.format(createdDate);
 			modeldata.put("transactionDate", transactionDate);
+			wrapper.put("data", modeldata);
 			if(communicationPrefsResult.isEmail()) {
 				Email email = new Email();
 				email.setITemplate(TemplatesMX.BPI_JOLLIBEE);
@@ -216,14 +218,14 @@ public class DailyPromotionManager {
 					email.setLang(Language.AR);
 				}
 				email.addTo(customer.getEmail());
-				email.getModel().put(NotificationConstants.RESP_DATA_KEY, modeldata);
+				email.setModel(wrapper);
 				postManService.sendEmailAsync(email);
 			}
 			if(communicationPrefsResult.isSms()) {
 				SMS sms = new SMS();
 				sms.setITemplate(TemplatesMX.BPI_JOLLIBEE);
 				sms.addTo(customer.getPrefixCodeMobile()+customer.getMobile());
-				sms.getModel().put(NotificationConstants.RESP_DATA_KEY, transactionDate);
+				sms.setModel(wrapper);
 				postManService.sendSMSAsync(sms);
 			}
 			
@@ -231,14 +233,14 @@ public class DailyPromotionManager {
 				WAMessage waMessage = new WAMessage();
 				waMessage.setITemplate(TemplatesMX.BPI_JOLLIBEE);
 				waMessage.addTo(customer.getWhatsappPrefix() + customer.getWhatsapp());
-				waMessage.getModel().put(NotificationConstants.RESP_DATA_KEY, transactionDate);
+				waMessage.setModel(wrapper);
 				whatsAppClient.send(waMessage);
 			}
 			if(communicationPrefsResult.isPushNotify()) {
 				PushMessage pushMessage = new PushMessage();
 				pushMessage.setITemplate(TemplatesMX.BPI_JOLLIBEE);
 				pushMessage.addToUser(metaData.getCustomerId());
-				pushMessage.getModel().put(NotificationConstants.RESP_DATA_KEY, transactionDate);
+				pushMessage.setModel(wrapper);
 				pushNotifyClient.send(pushMessage);
 			}
 		}
