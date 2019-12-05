@@ -3,6 +3,8 @@ package com.amx.jax.manager;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -43,6 +45,7 @@ import com.amx.jax.util.CommunicationPrefsUtil.CommunicationPrefsResult;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 import com.amx.utils.DateUtil;
+import com.amx.utils.JsonUtil;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -194,12 +197,15 @@ public class DailyPromotionManager {
 			remittanceTransaction=remittanceTransactionRepository.findByDocumentNoAndDocumentFinanceYear(documentNumber, documentFinanceYear);
 			dailyPromotionDTO=dailyPromotionDao.applyJolibeePadalaCoupons(documentFinanceYear,documentNumber,branchCode);
 		}
+		logger.debug("Jolibee output "+JsonUtil.toJson(dailyPromotionDTO));
 		if(!ArgUtil.isEmpty(dailyPromotionDTO.getPromotionMsg())&&ArgUtil.isEmpty(dailyPromotionDTO.getErrorMsg())) {
 			Customer customer = customerRepository.getCustomerByCustomerIdAndIsActive(metaData.getCustomerId(), "Y");
 			CommunicationPrefsResult communicationPrefsResult = communicationPrefsUtil.forCustomer(CommunicationEvents.BPI_JOLLIBEE, customer);
 			Date createdDate = remittanceTransaction.getCreatedDate();
 			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-mm-yyyy");
+			Map<String, Object> modeldata = new HashMap<String, Object>();
 			String transactionDate = simpleDateFormat.format(createdDate);
+			modeldata.put("transactionDate", transactionDate);
 			if(communicationPrefsResult.isEmail()) {
 				Email email = new Email();
 				email.setITemplate(TemplatesMX.BPI_JOLLIBEE);
@@ -210,7 +216,7 @@ public class DailyPromotionManager {
 					email.setLang(Language.AR);
 				}
 				email.addTo(customer.getEmail());
-				email.getModel().put(NotificationConstants.RESP_DATA_KEY, transactionDate);
+				email.getModel().put(NotificationConstants.RESP_DATA_KEY, modeldata);
 				postManService.sendEmailAsync(email);
 			}
 			if(communicationPrefsResult.isSms()) {

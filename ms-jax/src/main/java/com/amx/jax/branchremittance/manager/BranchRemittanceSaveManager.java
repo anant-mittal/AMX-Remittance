@@ -340,8 +340,8 @@ public class BranchRemittanceSaveManager {
 					notificationService.sendTransactionErrorAlertEmail(errrMsg,"TRNX NOT MOVED TO EMOS",paymentResponse);
 				}
 			}
-			String promotionMsg = promotionManager.getPromotionPrizeForBranch(responseDto);
-			responseDto.setPromotionMessage(promotionMsg);
+			//String promotionMsg = promotionManager.getPromotionPrizeForBranch(responseDto);
+			//responseDto.setPromotionMessage(promotionMsg);
 			
 			dailyPromotionManager.applyJolibeePadalaCoupons(responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo(),null);
 			
