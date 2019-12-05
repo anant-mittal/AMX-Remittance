@@ -23,6 +23,7 @@ import com.amx.jax.dao.DailyPromotionDao;
 import com.amx.jax.dao.PromotionDao;
 import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.CountryBranchMdlv1;
+import com.amx.jax.dbmodel.CountryTelCodeSerializer;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.promotion.PromotionDetailModel;
 import com.amx.jax.dbmodel.promotion.PromotionHeader;
@@ -125,9 +126,9 @@ public class PromotionManager {
 	public PromotionDto getPromotionDtoJP(BigDecimal docFinyear, BigDecimal docNoRemit) {
 		try {
 			PromotionDto dto = new PromotionDto();
-			DailyPromotionDTO dailyPromotionDTO=new DailyPromotionDTO();
-			
-			dailyPromotionDTO=dailyPromotionDao.applyJolibeePadalaCouponReceipt(docFinyear,docNoRemit);
+			//DailyPromotionDTO dailyPromotionDTO=new DailyPromotionDTO();
+			CountryBranchMdlv1 countryBranchMdlv1 = countryBranchRepository.findByCountryBranchId(metaData.getCountryBranchId());
+			DailyPromotionDTO dailyPromotionDTO=dailyPromotionDao.applyJolibeePadalaCoupons(docFinyear,docNoRemit,countryBranchMdlv1.getBranchId());
 			logger.debug("Daily promotion dto is "+dailyPromotionDTO.getPromotionMsg());
 			if(!ArgUtil.isEmpty(dailyPromotionDTO.getPromotionMsg())) {
 				dto.setPrizeMessage(dailyPromotionDTO.getPromotionMsg());
