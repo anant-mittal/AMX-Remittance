@@ -208,6 +208,7 @@ public class DailyPromotionManager {
 			String transactionDate = simpleDateFormat.format(createdDate);
 			modeldata.put("transactionDate", transactionDate);
 			wrapper.put("data", modeldata);
+			logger.debug("Data for comm is "+JsonUtil.toJson(wrapper));
 			if(communicationPrefsResult.isEmail()) {
 				Email email = new Email();
 				email.setITemplate(TemplatesMX.BPI_JOLLIBEE);
