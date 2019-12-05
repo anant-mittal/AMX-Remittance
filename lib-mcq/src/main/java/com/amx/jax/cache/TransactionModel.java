@@ -2,7 +2,6 @@ package com.amx.jax.cache;
 
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import com.amx.jax.def.ATransactionModel;
 import com.amx.jax.def.ICacheBox;

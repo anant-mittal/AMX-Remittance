@@ -215,6 +215,11 @@ public class TenantProperties {
 					String propertyName = annotation.value().replace("${", "").replace("}", "");
 					currentPropertyName = propertyName;
 					Object propertyValue = tenantProperties.getProperty(propertyName);
+
+					if (propertyValue == null) {
+						propertyValue = getAppEnvProperties(propertyName);
+					}
+
 					if (propertyValue != null) {
 						// ArgUtil.parseAsT(propertyValue, defaultValue, required)
 						Type type = field.getGenericType();

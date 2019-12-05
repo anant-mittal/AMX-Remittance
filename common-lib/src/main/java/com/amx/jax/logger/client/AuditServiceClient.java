@@ -298,6 +298,7 @@ public class AuditServiceClient implements AuditService {
 	}
 
 	@Override
+
 	public AuditActor getActor() {
 		return sessionContextService.getContext(AuditActor.class);
 	}

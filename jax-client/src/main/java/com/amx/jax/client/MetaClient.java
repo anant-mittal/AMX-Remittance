@@ -44,6 +44,7 @@ import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.model.response.BranchSystemDetailDto;
 import com.amx.jax.model.response.CurrencyMasterDTO;
 import com.amx.jax.model.response.remittance.ServiceMasterDTO;
+import com.amx.jax.model.response.benebranch.BankBranchDto;
 import com.amx.jax.rest.RestService;
 
 /**

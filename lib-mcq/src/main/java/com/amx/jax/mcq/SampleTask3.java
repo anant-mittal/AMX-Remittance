@@ -2,11 +2,7 @@ package com.amx.jax.mcq;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import com.amx.jax.AppConfig;
 import com.amx.jax.logger.LoggerService;

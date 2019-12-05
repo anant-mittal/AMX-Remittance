@@ -91,6 +91,12 @@ public class MetaController {
 	public AmxApiResponse<ComponentDataDto, Object> getIdTypes() {
 		return offsiteCustRegClient.getIdTypes();
 	}
+	
+	@RequestMapping(value = "/pub/meta/service/list", method = RequestMethod.GET)
+	public AmxApiResponse<ServiceGroupMasterDescDto, Object> getServiceGroupList() {
+		return metaClient.getServiceGroupList();
+	}
+
 
 	@RequestMapping(value = "/pub/meta/currency/list", method = RequestMethod.GET)
 	public AmxApiResponse<CurrencyMasterDTO, Object> getCurrencyList() {

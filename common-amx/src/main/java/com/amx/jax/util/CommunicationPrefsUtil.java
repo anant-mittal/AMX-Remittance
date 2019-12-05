@@ -5,8 +5,9 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.AmxSharedConfig.CommunicationPrefs;
 import com.amx.jax.AmxSharedConfigClient;
-import com.amx.jax.dict.AmxEnums.CommunicationEvents;
+import com.amx.jax.def.Communication.CommunicationEvent;
 import com.amx.jax.dict.Communicatable;
+import com.amx.utils.ArgUtil;
 
 @Component
 public class CommunicationPrefsUtil {
@@ -54,20 +55,24 @@ public class CommunicationPrefsUtil {
 	@Autowired
 	AmxSharedConfigClient amxSharedConfigClient;
 
-	private CommunicationPrefs get(CommunicationEvents event) {
+	private CommunicationPrefs get(CommunicationEvent event) {
 		for (CommunicationPrefs iterable_element : amxSharedConfigClient.getCommunicationPrefs().getResults()) {
-			if (iterable_element.getEvent().equals(event)) {
+			if (iterable_element.getEvent().equals(event.name())) {
 				return iterable_element;
 			}
 		}
 		return null;
 	}
 
-	public CommunicationPrefsResult forCustomer(CommunicationEvents event, Communicatable communicatable) {
+	public CommunicationPrefsResult forCustomer(CommunicationEvent event, Communicatable communicatable) {
 		// amxSharedConfigClient.clear();
 		CommunicationPrefs prefs = get(event);
 
 		CommunicationPrefsResult result = new CommunicationPrefsResult();
+
+		if (ArgUtil.isEmpty(prefs)) {
+			return result;
+		}
 
 		String alwaysLong = "9";
 		String alwaysChar = "A";

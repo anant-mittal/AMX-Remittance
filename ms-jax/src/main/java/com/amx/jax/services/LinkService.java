@@ -10,11 +10,7 @@ import org.springframework.stereotype.Service;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.LinkDTO;
 import com.amx.amxlib.model.LinkResponseModel;
-import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.api.AmxResponseSchemes;
-import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.constants.JaxChannel;
 import com.amx.jax.dbmodel.ContactLinkDetails;
 import com.amx.jax.dbmodel.Customer;
@@ -24,8 +20,6 @@ import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.userservice.dao.LinkDetailsDao;
 import com.amx.jax.userservice.service.UserService;
-import com.amx.utils.MapBuilder;
-import com.amx.utils.MapBuilder.BuilderMap;
 
 @Service
 @SuppressWarnings("rawtypes")

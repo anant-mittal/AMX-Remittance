@@ -138,7 +138,7 @@ public class AmxApiResponse<T, M> extends AResponse<M>
 	/**
 	 * Builds the list.
 	 *
-	 * @param <TS>       the generic type
+	 * @param            <TS> the generic type
 	 * @param resultList the result list
 	 * @return the amx api response
 	 */
@@ -149,8 +149,8 @@ public class AmxApiResponse<T, M> extends AResponse<M>
 	/**
 	 * Builds the list.
 	 *
-	 * @param <TS>       the generic type
-	 * @param <MS>       the generic type
+	 * @param            <TS> the generic type
+	 * @param            <MS> the generic type
 	 * @param resultList the result list
 	 * @param meta       the meta
 	 * @return the amx api response
@@ -177,6 +177,10 @@ public class AmxApiResponse<T, M> extends AResponse<M>
 
 	public AmxApiResponse<T, M> statusEnum(IExceptionEnum statusEnum) {
 		this.setStatusEnum(statusEnum);
+		return this;
+	}
+	public AmxApiResponse<T, M> message(String message) {
+		this.message = message;
 		return this;
 	}
 

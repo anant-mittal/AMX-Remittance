@@ -615,8 +615,8 @@ public final class ArgUtil {
 	}
 
 	/**
-	 * Use {{@link #parseAsEnum(Object, Enum, Class)}
-	 * 
+	 * @deprecated 
+	 * @see {{@link #parseAsEnum(Object, Enum, Class)}
 	 * @param value
 	 * @param defaultValue
 	 * @return
@@ -712,6 +712,10 @@ public final class ArgUtil {
 
 	public static boolean is(Object object) {
 		return !ArgUtil.isEmpty(object);
+	}
+
+	public static boolean isNotEmpty(Object object) {
+		return !isEmpty(object);
 	}
 
 	/**

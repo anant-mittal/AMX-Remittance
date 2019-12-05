@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+<!-- Static content -->
+
+<title>Device Registration</title>
+
+<style type="text/css">
+table, th, td {
+	border: 1px solid black;
+	font-size: 14px;
+}
+
+table {
+	margin-left: auto;
+	margin-right: auto;
+	border-spacing: 2px;
+}
+.dn {
+	display: none;
+}
+</style>
+	<script>
+window.CONST = {
+	    dev: false,
+	    appContext: '[[${appContext}]]',
+	    remoteServerUrl: '[[${appContext}]]',
+	    remoteJsUrl: '[[${cdnUrl}]]', //
+	    remoteJsVersion: '[[${CDN_VERSION}]]', //
+	    dummyApi: false,
+	    fpath : '[[${cdnUrl}]]/dist/fingerprint.js',
+	    did : '[[${did}]]',
+	    lang : '[[${lang}]]'
+	  };
+</script>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"
+	integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+	crossorigin="anonymous"></script>
+<script src="https://cdnd-kwt.amxremit.com/onlinewebapp/dist/fingerprint.js"></script>
+	<script th:if="${did==null}">
+	(function(a){if("localStorage"in a){var b=a.localStorage.getItem("__did__");b?(a=new Date,a.setTime(a.getTime()+31536E6),a="expires="+a.toUTCString(),document.cookie="did="+b+";"+a+";path=/"):(b=a.CONST.fpath,a=document.createElement("script"),a.type="application/javascript",a.src=b,document.body.appendChild(a))}})(this);
+</script>
+	<script th:unless="${did==null}">
+(function(win){if("localStorage"in win)if(win.CONST.did)win.localStorage.setItem("__did__",win.CONST.did)})(this);
+</script>
+</head>
+<body>
+	<h1 align="center">Device Registration Info</h1>
+	<hr />
+	<br />
+	<br />
+	<table id="panelwrapper">
+		<tr>
+			<td>
+				<table class="session" width="100%">
+					<tr>
+						<th colspan="2">Device Pairing</th>
+					</tr>
+					<tr class="paired dn">
+						<td colspan="2"><center><button id="unpairdevice_button" >UnPair</button></center></td>
+					</tr>
+					<tr class="unpaired" >
+						<td><input id="pairdevice_id" placeholder="Enter Civil ID" size="50"></td>
+						<td id="sessionOTP"><button id="pairdevice_button">Pair</button></td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+
+</body>
+<script type="text/template" id="sessiontemp">
+		<tr>
+			<td>
+				<table class="session" width="100%">
+					<tr>
+						<th colspan="2">Session</th>
+					</tr>
+					<tr>
+						<td>session.id</td><td>{session.id}</td>
+					</tr>
+					<tr>
+						<td>session.terminal.id</td><td>{session.terminal.id}</td>
+					</tr>
+					<tr>
+						<td>session.adapter.id</td><td>{session.adapter.id}</td>
+					</tr>
+					<tr>
+						<td>session.deviceReg.id</td><td>{session.device.regid}</td>
+					</tr>
+					<tr>
+						<td colspan=2>{by_terminal.error}<br/>{by_device.error}</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+</script>
+<script type="text/template" id="devicetemp">
+		<tr>
+			<td>
+				<table class="session" width="100%">
+					<tr>
+						<th colspan="2">{deviceType}</th>
+					</tr>
+					<tr>
+						<td>registrationId</td><td>{registrationId}</td>
+					</tr>
+					<tr>
+						<td>termialId</td><td>{termialId}</td>
+					</tr>
+					<tr>
+						<td>status</td><td>{status} : {state}</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+</script>
+
+<script>
+	var serverUrl = window.CONST.remoteServerUrl;
+	var terminalIP = localStorage.getItem("terminalId")
+			|| window.prompt("Enter Terminal");
+	localStorage.setItem("terminalId", terminalIP);
+	var deviceRegId = localStorage.getItem("deviceRegId");
+	var deviceRegToken = localStorage.getItem("deviceRegToken");
+	var did = localStorage.getItem("__did__") || guid();
+	localStorage.setItem("__did__", did);
+
+	function guid() {
+		function s4() {
+			return Math.floor((1 + Math.random()) * 0x10000).toString(16)
+					.substring(1);
+		}
+		return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4()
+				+ s4() + s4();
+	}
+
+	function pairDevice(identity) {
+		var dfd = jQuery.Deferred();
+		if (deviceRegToken && deviceRegId) {
+			setTimeout(function() {
+				dfd.resolve({
+					deviceRegId : deviceRegId,
+					deviceRegToken : deviceRegToken
+				});
+			}, 0);
+			//activateDevice();
+			return dfd.promise();
+		}
+		return $.ajax({
+			url : serverUrl + "/pub/device/pair",
+			method : 'POST',
+			dataType : 'json',
+			contentType : "application/json",
+			headers : {
+				'x-did' : did
+			},
+			data : JSON.stringify({
+				identity : identity,
+				deivceClientType : "OFFSITE_WEB"
+			})
+		}).then(function(resp) {
+			$(".device #statusKey").text(resp.statusKey);
+			if (resp && resp.results && resp.results[0]) {
+				deviceRegId = resp.results[0].deviceRegId;
+				deviceRegToken = resp.results[0].deviceRegToken;
+				localStorage.setItem("deviceRegId", deviceRegId);
+				localStorage.setItem("deviceRegToken", deviceRegToken);
+				return resp.results[0];
+			}
+		});
+	}
+
+	var deviceActivationStatus, $activateDevice;
+
+	var terminalId, deviceSessionToken, deviceRequestKey, deviceRequestToken, sessionOTP;
+
+	var requestToken, hmacTimer;
+
+	function hmac() {
+		if (deviceRegId && deviceRequestKey) {
+			return $.getJSON(serverUrl + "/offsite/pub/amx/hmac", {
+				interval : 30,
+				secret : deviceRequestKey,
+				message : deviceRegId,
+				length : 6
+			}).done(function(resp) {
+				$(".status #hmac").text(resp.hmac);
+				requestToken = resp.hmac;
+			}).always(function() {
+				clearTimeout(hmacTimer);
+				hmacTimer = setTimeout(hmac, 10000);
+			});
+		} else {
+			clearTimeout(hmacTimer);
+			hmacTimer = setTimeout(hmac, 10000);
+		}
+	}
+	
+	function getStatus(deviceRegId) {
+		
+		return $.ajax({
+			url : serverUrl + "/pub/device/status",
+			method : 'POST',
+			//dataType : 'json',
+			//contentType : "application/json",
+			headers : {
+				'x-did' : did
+			},
+			data : ({
+				deviceRegId : deviceRegId
+			})
+		}).done(function(resp) {
+			var text = $("#devicetemp").text();
+			var $panelwrapper =  $("#panelwrapper");
+			console.log(resp);
+			
+			var textRow = $("#sessiontemp").text();
+			for(var key in resp.data){
+				textRow = textRow.replace("{"+key+"}",resp.data[key]);
+			}
+			$panelwrapper.append(textRow);
+			
+			for(var i in resp.data.by_device){
+				var textRow = text;
+				for(var key in resp.data.by_device[i]){
+					textRow = textRow.replace("{"+key+"}",resp.data.by_device[i][key]);
+				}
+				$panelwrapper.append(textRow);
+			}
+			for(var i in resp.data.by_terminal){
+				var textRow = text;
+				for(var key in resp.data.by_terminal[i]){
+					textRow = textRow.replace("{"+key+"}",resp.data.by_terminal[i][key]);
+				}
+				$panelwrapper.append(textRow);
+			}
+		}).always(function() {
+		});
+	}
+
+	function poll() {
+		return pairDevice().then(function(){
+			return getStatus(deviceRegId);
+		});
+	}
+	hmac();
+	poll();
+	
+	$(function() {
+		if(deviceRegToken && deviceRegId){
+			$(".unpaired").addClass("dn")
+			$(".paired").removeClass("dn")
+		} else {
+			$(".paired").addClass("dn")
+			$(".unpaired").removeClass("dn")
+		}
+		
+		$("#pairdevice_button").click(function(){
+			pairDevice($("#pairdevice_id").val())
+		});
+		$("#unpairdevice_button").click(function(){
+			localStorage.removeItem("deviceRegId");
+			localStorage.removeItem("deviceRegToken");
+			deviceRegId = null;
+			deviceRegToken = null;
+		});
+	});
+</script>
+</html>

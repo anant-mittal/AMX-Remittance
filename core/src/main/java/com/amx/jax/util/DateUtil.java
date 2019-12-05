@@ -13,11 +13,11 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
-import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.model.response.fx.TimeSlotDto;
 
 import jodd.typeconverter.Convert;
@@ -74,11 +74,7 @@ public class DateUtil {
 
 	}
 
-	public static void main(String[] args) {
-		DateUtil u = new DateUtil();
-		u.validateDate("01/01/2018", "dd/MM/yyyy");
-	}
-
+	
 	/** Added by Rabil */
 	public static String getCurrentAccMMYear() {
 		Map<Integer, String> data = new HashMap<Integer, String>();
@@ -516,22 +512,27 @@ public class DateUtil {
 	 
 	 
 	 public static Date addCurrentDateTimeToGetNewTime(BigDecimal bts) {
-		 		 SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-		 		 Date date = new Date();
-		 		 if(JaxUtil.isNullZeroBigDecimalCheck(bts)) {
-		 			try {
-		 				//long now = Instant.now().toEpochMilli();
-		 				 long ts = bts.longValue();
-		 				 Calendar calendar = Calendar.getInstance();
-		 				 calendar.add(Calendar.SECOND, (int)ts);
-		 				 date = calendar.getTime();
-		 				  //date = formatter.parse(datenew);
-		 			} catch (Exception e) {
-		 				e.getMessage();
-		 			}
-		 		 }
-		 			return date;
-		 	 }
-		 	 
+		 SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+		 Date date = new Date();
+		 if(JaxUtil.isNullZeroBigDecimalCheck(bts)) {
+			try {
+				//long now = Instant.now().toEpochMilli();
+				 long ts = bts.longValue();
+				 Calendar calendar = Calendar.getInstance();
+				 calendar.add(Calendar.SECOND, (int)ts);
+				 date = calendar.getTime();
+				  //date = formatter.parse(datenew);
+			} catch (Exception e) {
+				e.getMessage();
+			}
+		 }
+			return date;
+	 }
 	 
+	
+	 public static void main(String[] args) {
+		 Date dd = addCurrentDateTimeToGetNewTime(new BigDecimal(1800));
+		 System.out.println("dd -->"+dd);
+		}
+
 }

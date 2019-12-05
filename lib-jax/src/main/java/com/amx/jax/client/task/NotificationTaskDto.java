@@ -1,6 +1,5 @@
 package com.amx.jax.client.task;
 
-import java.math.BigDecimal;
 import java.util.Date;
 
 public class NotificationTaskDto {
