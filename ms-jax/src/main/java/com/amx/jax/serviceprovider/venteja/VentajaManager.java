@@ -112,7 +112,7 @@ public class VentajaManager extends AbstractModel {
 		List<TransactionDetailsView> lstTrnxDetails = partnerTransactionDao.fetchTrnxSPDetails(customerId,collectionDocYear,collectionDocNumber,collectionDocCode);
 		
 		for (TransactionDetailsView transactionDetailsView : lstTrnxDetails) {
-			if(transactionDetailsView.getBankCode().equalsIgnoreCase(SERVICE_PROVIDER_BANK_CODE.VINT.name())) {
+			if(transactionDetailsView.getBankCode().equalsIgnoreCase(SERVICE_PROVIDER_BANK_CODE.VINTJA.name())) {
 				String docYearNo = transactionDetailsView.getDocumentFinanceYear().toString()+transactionDetailsView.getDocumentNo();
 				if(!dupcheck.contains(docYearNo)) {
 					dupcheck.add(docYearNo);

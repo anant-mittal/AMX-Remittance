@@ -59,7 +59,7 @@ public class TimeOutResponse implements Callable<Object>{
 						}
 					}
 				}
-			}else if(bankCode.equalsIgnoreCase(SERVICE_PROVIDER_BANK_CODE.VINT.name())){
+			}else if(bankCode.equalsIgnoreCase(SERVICE_PROVIDER_BANK_CODE.VINTJA.name())){
 				String api_input = (String) getRequest().get("api_input");
 				String signed_payload = (String) getRequest().get("signed_payload");
 				ExOwsLoginCredentials owsLoginCredentialsObject = (ExOwsLoginCredentials) getRequest().get("owsLoginCredentialsObject");

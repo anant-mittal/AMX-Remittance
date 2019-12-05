@@ -1443,7 +1443,7 @@ public void validateSaveTrnxDetails(HashMap<String, Object> mapAllDetailRemitSav
 					serviceProviderView = transactionDetailsView;
 				}
 				
-				if(transactionDetailsView.getBankCode().equalsIgnoreCase(SERVICE_PROVIDER_BANK_CODE.VINT.name())) {
+				if(transactionDetailsView.getBankCode().equalsIgnoreCase(SERVICE_PROVIDER_BANK_CODE.VINTJA.name())) {
 					ventajaCheckStatus = Boolean.TRUE;
 				}
 			}
