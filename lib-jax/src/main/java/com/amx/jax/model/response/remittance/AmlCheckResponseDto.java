@@ -16,6 +16,9 @@ public class AmlCheckResponseDto {
 	String tag;
 	String stopTrnxFlag;
 	String highValueTrnxFlag;
+	String riskLevel1;
+	String riskLevel2;
+	String riskLevel3;
 	
 	public String getMessageCode() {
 		return messageCode;
@@ -83,6 +86,24 @@ public class AmlCheckResponseDto {
 	}
 	public void setHighValueTrnxFlag(String highValueTrnxFlag) {
 		this.highValueTrnxFlag = highValueTrnxFlag;
+	}
+	public String getRiskLevel1() {
+		return riskLevel1;
+	}
+	public void setRiskLevel1(String riskLevel1) {
+		this.riskLevel1 = riskLevel1;
+	}
+	public String getRiskLevel2() {
+		return riskLevel2;
+	}
+	public void setRiskLevel2(String riskLevel2) {
+		this.riskLevel2 = riskLevel2;
+	}
+	public String getRiskLevel3() {
+		return riskLevel3;
+	}
+	public void setRiskLevel3(String riskLevel3) {
+		this.riskLevel3 = riskLevel3;
 	}
 
 }

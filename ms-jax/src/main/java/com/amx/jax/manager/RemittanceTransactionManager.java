@@ -336,7 +336,12 @@ public class RemittanceTransactionManager {
 		validatedObjects.put("CUSTOMER", customer);
 		RemittanceTransactionResponsetModel responseModel = new RemittanceTransactionResponsetModel();
 		setLoyalityPointFlags(customer, responseModel);
-		BenificiaryListView beneficiary = beneficiaryOnlineDao.findOne(model.getBeneId());
+		//BenificiaryListView beneficiary = beneficiaryOnlineDao.findOne(model.getBeneId());
+		BenificiaryListView beneficiary  = beneficiaryOnlineDao.findByCustomerIdAndBeneficiaryRelationShipSeqIdAndIsActive(metaData.getCustomerId(),model.getBeneId(),ConstantDocument.Yes);
+		if(beneficiary==null) {
+			throw new GlobalException(JaxError.NO_RECORD_FOUND,"Beneficiary having some issue , kindly check with support team");
+		}
+		
 		remitApplParametersMap.put("P_BENEFICIARY_MASTER_ID", beneficiary.getBeneficaryMasterSeqId());
 		addBeneficiaryParameters(beneficiary);
 		validateBlackListedBene(beneficiary);
@@ -1408,9 +1413,7 @@ public class RemittanceTransactionManager {
 			// this flow is for validate OTP
 			userService.validateOtp(null, model.getmOtp(), null);
 		}
-		//remiteAppModel.setCivilIdOtpModel(civilIdOtpModel);
 		
-
 		logger.info("Application saved successfully, response: " + remiteAppModel.toString());
 
 		
@@ -1641,7 +1644,13 @@ public class RemittanceTransactionManager {
 		}
 
 		CivilIdOtpModel otpMmodel = null;
-		BigDecimal localAmount = (BigDecimal) remitApplParametersMap.get("P_CALCULATED_LC_AMOUNT");
+		BigDecimal localAmount = (BigDecimal)remitApplParametersMap.get("P_CALCULATED_LC_AMOUNT");
+		if(!JaxUtil.isNullZeroBigDecimalCheck(localAmount)) {
+			localAmount = model.getLocalAmount();
+		}
+		
+	logger.info("App Type :"+meta.getAppType()+"\t channel :"+meta.getChannel()+"\t localAmount :"+localAmount);
+		
 		if (((meta.getChannel().equals(JaxChannel.ONLINE)) && (WEB.equals(meta.getAppType()))
 				&& (localAmount.compareTo(onlineLimit) >= 0)) ||
 

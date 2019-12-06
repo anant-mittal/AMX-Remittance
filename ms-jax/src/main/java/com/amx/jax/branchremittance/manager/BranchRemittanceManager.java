@@ -347,7 +347,7 @@ public class BranchRemittanceManager extends AbstractModel {
 		
 		
 		
-		if(!bnkWorldcheck.isEmpty()) {
+		if(bnkWorldcheck!=null && !bnkWorldcheck.isEmpty()) {
 			for(BankBlWorld blworld :bnkWorldcheck) {
 			if(beneficaryDetails.getBenificaryName().contains(blworld.getBankWorldEmded().getBlWord())) {
 			booBlakCheck =true;
@@ -1197,7 +1197,7 @@ public BeneAdditionalDto getAdditionalBeneDetailJax(BenificiaryListView benefica
 					 bankBranchName = beneBankBranchView.get(0).getBranchFullNameArabic()+","+beneCityNameArabic==null?"":beneCityNameArabic; 
 				 }else {
 					 if(beneBankBranchView.get(0)!=null) {
-						 bankBranchName = beneBankBranchView.get(0).getBranchFullName()==null?"":beneBankBranchView.get(0).getBranchFullName()+" ,"+beneCityName==null?"":beneCityName;
+						 bankBranchName = beneBankBranchView.get(0).getBranchFullName()==null?"":beneBankBranchView.get(0).getBranchFullName()+" ,"+(beneCityName==null?"":beneCityName);
 					 }
 				 }
 			}
