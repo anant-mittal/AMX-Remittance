@@ -36,6 +36,7 @@ import com.amx.jax.model.request.remittance.RoutingPricingRequest;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
+import com.amx.jax.model.response.remittance.CardTypeDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.FlexFieldReponseDto;
 import com.amx.jax.model.response.remittance.GetServiceApplicabilityResponse;
@@ -289,6 +290,12 @@ public class BranchRemittanceController implements IRemittanceService {
 	public AmxApiResponse<GetServiceApplicabilityResponse, Object> getServiceApplicability(@RequestBody @Valid GetServiceApplicabilityRequest request) {
 		List<GetServiceApplicabilityResponse> rules = serviceApplicabilityManager.getServiceApplicability(request);
 		return AmxApiResponse.buildList(rules);
+	}
+
+	@RequestMapping(value = Path.GET_CUSTOMER_CARD_TYPE, method = RequestMethod.GET)
+	@Override
+	public AmxApiResponse<CardTypeDto, Object> getCustomerCardTypeList() {
+		return branchRemitService.getCustomerCardTypeListResp();
 	}
 
 

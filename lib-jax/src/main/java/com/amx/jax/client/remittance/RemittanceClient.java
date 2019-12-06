@@ -23,6 +23,7 @@ import com.amx.jax.model.request.remittance.RoutingPricingRequest;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
+import com.amx.jax.model.response.remittance.CardTypeDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.FlexFieldReponseDto;
 import com.amx.jax.model.response.remittance.GetServiceApplicabilityResponse;
@@ -408,6 +409,21 @@ public class RemittanceClient implements IRemittanceService {
 					});
 		} catch (Exception e) {
 			LOGGER.error("exception in getServiceApplicability : ", e);
+			return JaxSystemError.evaluate(e);
+		}
+	}
+
+	// ------ Customer Card Type Client call ------
+	@Override
+	public AmxApiResponse<CardTypeDto, Object> getCustomerCardTypeList() {
+		try {
+			LOGGER.debug("In Customer Card Type Client :");
+			return restService.ajax(appConfig.getJaxURL() + Path.GET_CUSTOMER_CARD_TYPE).meta(new JaxMetaInfo())
+					.get()
+					.as(new ParameterizedTypeReference<AmxApiResponse<CardTypeDto, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in Customer Card Type Client : ", e);
 			return JaxSystemError.evaluate(e);
 		}
 	}
