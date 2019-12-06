@@ -3,6 +3,9 @@ package com.amx.jax.ui.service;
 import java.util.Date;
 import java.util.List;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,11 +13,14 @@ import org.springframework.stereotype.Service;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.model.CustomerModel;
+import com.amx.jax.AppConfig;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.client.CustomerProfileClient;
 import com.amx.jax.dict.Language;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.model.AuthState;
 import com.amx.jax.model.CivilIdOtpModel;
 import com.amx.jax.model.auth.QuestModelDTO;
@@ -22,14 +28,18 @@ import com.amx.jax.model.customer.SecurityQuestionModel;
 import com.amx.jax.model.response.customer.CustomerFlags;
 import com.amx.jax.model.response.customer.CustomerModelResponse;
 import com.amx.jax.postman.model.PushMessage;
+import com.amx.jax.ui.WebAppConfig;
 import com.amx.jax.ui.UIConstants.Features;
+import com.amx.jax.ui.UIConstants.MileStone;
 import com.amx.jax.ui.auth.AuthLibContext;
 import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 import com.amx.jax.ui.model.AuthData;
 import com.amx.jax.ui.model.AuthDataInterface.UserUpdateResponse;
 import com.amx.jax.ui.model.UserBean;
+import com.amx.jax.ui.model.UserMetaData;
 import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseWrapper;
+import com.amx.utils.ArgUtil;
 import com.amx.utils.ListManager;
 
 /**
@@ -119,14 +129,14 @@ public class UserService {
 
 	public AmxApiResponse<CustomerFlags, Object> checkModule(Features feature) {
 		try {
-			sessionService.getGuestSession().initFlow(AuthState.AuthFlow.PERMS,AuthState.AuthStep.CHECK );
+			sessionService.getGuestSession().initFlow(AuthState.AuthFlow.PERMS, AuthState.AuthStep.CHECK);
 			return ResponseWrapper.buildData(authLibContext.get()
 					.checkModule(sessionService.getGuestSession().getState(),
 							sessionService.getUserSession().getCustomerModel().getFlags(), feature));
 		} catch (GlobalException ex) {
-			if(ex.getError().equals(JaxError.SQA_REQUIRED)) {
+			if (ex.getError().equals(JaxError.SQA_REQUIRED)) {
 				AuthData authData = getRandomSecurityQuestion(sessionService.getUserSession().getCustomerModel());
-				ex.setMeta(authData.toJaxAuthMetaResp());				
+				ex.setMeta(authData.toJaxAuthMetaResp());
 			}
 			throw ex;
 		}
@@ -267,6 +277,114 @@ public class UserService {
 		} else if (sessionService.getGuestSession().getCustomerModel() != null) {
 			wrapper.getData().setSecQuesAns(sessionService.getGuestSession().getCustomerModel().getSecurityquestions());
 		}
+		return wrapper;
+	}
+
+	/** The http service. */
+	@Autowired
+	private CommonHttpRequest httpService;
+
+	/** The tenant context. */
+	@Autowired
+	private TenantService tenantContext;
+
+	/** The app config. */
+	@Autowired
+	private AppConfig appConfig;
+
+	/** The web app config. */
+	@Autowired
+	private WebAppConfig webAppConfig;
+
+	@Autowired
+	private CustomerProfileClient customerProfileClient;
+
+	public ResponseWrapper<UserMetaData> extracted(boolean refresh, boolean validate, Language lang) {
+
+		ResponseWrapper<UserMetaData> wrapper = new ResponseWrapper<UserMetaData>(new UserMetaData());
+
+		lang = httpService.getLanguage();
+		Language sessionLang = sessionService.getGuestSession().getLanguage();
+		boolean isLangChange = ArgUtil.is(lang) && !lang.equals(sessionLang);
+
+		wrapper.getData().setTenant(AppContextUtil.getTenant());
+		wrapper.getData().setTenantCode(AppContextUtil.getTenant().getCode());
+		wrapper.getData().setCdnUrl(appConfig.getCdnURL());
+
+		wrapper.getData().setDevice(sessionService.getAppDevice().getUserDevice().toSanitized());
+		wrapper.getData().setState(sessionService.getGuestSession().getState());
+		wrapper.getData().setValidSession(sessionService.getUserSession().isValid());
+
+		CustomerModel customer = sessionService.getUserSession().getCustomerModel();
+
+		if (customer != null) {
+			wrapper.getData().setActive(true);
+			wrapper.getData().setCustomerId(sessionService.getUserSession().getCustomerModel().getCustomerId());
+			wrapper.getData().setInfo(sessionService.getUserSession().getCustomerModel().getPersoninfo());
+
+			Language profileLang = customer.getPersoninfo().getLang();
+
+			if (false
+					/**
+					 * This is language Change request after Login
+					 */
+					|| isLangChange
+					/**
+					 * profile language is empty
+					 */
+					|| (ArgUtil.isEmpty(profileLang) && !Language.EN.equals(lang))
+					/**
+					 * Client language is NON-English and different than profile Language
+					 */
+					|| (!Language.EN.equals(lang) && !lang.equals(profileLang))
+
+			) {
+				customerProfileClient.saveLanguage(customer.getCustomerId(), lang.getBDCode());
+				refresh = true;
+			} else {
+				lang = profileLang;
+			}
+
+			if (refresh) {
+				this.updateCustoemrModel();
+			}
+			CustomerFlags customerFlags = sessionService.getUserSession().getCustomerModel().getFlags();
+
+			if (validate) {
+				customerFlags = authLibContext.get().checkUserMeta(sessionService.getGuestSession().getState(),
+						customerFlags);
+			}
+
+			wrapper.getData().setFlags(customerFlags);
+
+			if (!ArgUtil.isEmpty(customerFlags) && customerFlags.getAnnualIncomeExpired()) {
+				wrapper.setStatusEnum(OWAStatusStatusCodes.INCOME_UPDATE_REQUIRED);
+			}
+
+			wrapper.getData().setDomCurrency(tenantContext.getDomCurrency());
+			wrapper.getData().setConfig(jaxService.setDefaults().getMetaClient().getJaxMetaParameter().getResult());
+			wrapper.getData().getSubscriptions().addAll(this.getNotifyTopics("/topics/", lang));
+			wrapper.getData().setReturnUrl(sessionService.getGuestSession().getReturnUrl());
+
+			wrapper.getData().setFeatures(
+					authLibContext.get().filterFeatures(sessionService.getGuestSession().getState(), customerFlags,
+							webAppConfig.getFeaturesList()));
+		} else {
+			wrapper.getData().setFeatures(webAppConfig.getFeaturesList());
+		}
+
+		/**
+		 * Language Changed - Change it in session, cookie and meta
+		 */
+		sessionService.getGuestSession().setLanguage(lang);
+		wrapper.getData().setLang(sessionService.getGuestSession().getLanguage());
+		httpService.setCookie("lang", lang.toString(), 30 * 60 * 60 * 2);
+
+		wrapper.getData().setMileStones(MileStone.LIST);
+		wrapper.getData().setNotifyRangeShort(webAppConfig.getNotifyRangeShort());
+		wrapper.getData().setNotifyRangeLong(webAppConfig.getNotifyRangeLong());
+		wrapper.getData().setNotificationGap(webAppConfig.getNotificationGap());
+
 		return wrapper;
 	}
 

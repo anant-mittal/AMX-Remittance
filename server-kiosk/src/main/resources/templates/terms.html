@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport"
+	content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Terms and Condition</title>
+<style type="text/css">
+	body,html{
+		font-family:arial;
+		font-size:14px;
+		color:#000;
+		margin:0;
+		padding:0;
+	}
+	ol li {
+    		padding-bottom: 16px;
+    		line-height: 18px;
+	}
+	ol li:nth-last-child(1) {
+		list-style: none;
+	    margin-left: -15px;
+	    color: #33bb55;
+	}
+</style>
+</head>
+<body>
+	<div id="app">
+		<ol>
+			<li class="page-break" th:each="term : ${terms}">
+				<span th:text="${term.description}"></span>
+			</li>
+		</ol>
+	</div>
+</body>
+</html>
