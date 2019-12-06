@@ -39,6 +39,7 @@ public class DailyPromotionDao {
 		return dailyPromotionRepository.getWantitByTrnxId(remittanceTransactionId);
 	}
 	public DailyPromotionDTO applyJolibeePadalaCoupons(BigDecimal documentFinanceyear, BigDecimal documentNumber, BigDecimal branchCode) {
+		logger.debug("procedure values are  "+documentFinanceyear+documentNumber+branchCode);
 		DailyPromotionDTO dailyPromotionDTO = new DailyPromotionDTO();
 		Connection connection = null;
 		CallableStatement cs = null;
