@@ -62,7 +62,7 @@ public class WebAppConfig {
 
 	@TenantValue("${company.tnt}")
 	private String companyTnt;
-	
+
 	@Value("${google.recaptach.site.key}")
 	private String googelReCaptachSiteKey;
 
