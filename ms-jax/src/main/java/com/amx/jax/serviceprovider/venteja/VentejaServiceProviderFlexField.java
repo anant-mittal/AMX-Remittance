@@ -110,6 +110,33 @@ public enum VentejaServiceProviderFlexField {
 			}
 
 		}
+	},
+	INDIC17 {
+		// flex fund
+		@Override
+		public void setValue(ServiceProviderCallRequestDto dto, Map<String, FlexFieldDto> requestFlexFields) {
+			FlexFieldDto value = requestFlexFields.get(this.name());
+			dto.getTransactionDto().setFlexi_field_1(value.getAmieceDescription());
+
+		}
+	},
+	INDIC16 {
+		// monthly contribution for sss new prn
+		@Override
+		public void setValue(ServiceProviderCallRequestDto dto, Map<String, FlexFieldDto> requestFlexFields) {
+			FlexFieldDto value = requestFlexFields.get(this.name());
+			dto.getTransactionDto().setDestination_amount(new BigDecimal(value.getAmieceCode().replaceAll(">", "")));
+
+		}
+	},
+	PACKAGE_FCAMOUNT {
+		// hack temp to be removed
+		@Override
+		public void setValue(ServiceProviderCallRequestDto dto, Map<String, FlexFieldDto> requestFlexFields) {
+			FlexFieldDto value = requestFlexFields.get(this.name());
+			dto.getTransactionDto().setDestination_amount(new BigDecimal(value.getAmieceDescription()));
+
+		}
 	};
 
 	public abstract void setValue(ServiceProviderCallRequestDto dto, Map<String, FlexFieldDto> requestFlexFields);

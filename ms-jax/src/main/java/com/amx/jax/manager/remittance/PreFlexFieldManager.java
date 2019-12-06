@@ -2,6 +2,7 @@ package com.amx.jax.manager.remittance;
 
 import static com.amx.jax.serviceprovider.service.AbstractFlexFieldManager.ValidationResultKey.PACKAGE_FC_AMOUNT;
 import static com.amx.jax.serviceprovider.service.AbstractFlexFieldManager.ValidationResultKey.PREFLEXCALL_COMPLETE;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -82,6 +83,7 @@ public class PreFlexFieldManager {
 
 	public Map<String, Object> validateBenePackageRequest(BenePackageRequest benePackageRequest) {
 		BigDecimal packageFcAmount = null;
+		localVariableMap.put("benePackageRequest", benePackageRequest);
 		Map<String, Object> validationResults = new HashMap<>();
 		List<JaxConditionalFieldDto> requiredFlexFields = new ArrayList<>();
 		benePackageRequest.populateFlexFieldDtoMap();
@@ -103,21 +105,20 @@ public class PreFlexFieldManager {
 		List<ParameterDetailsDto> parameterSetUp = additionalBankDetailManager.fetchServiceProviderFcAmount(benePackageRequest.getBeneId());
 		if (cashSetUp != null) {
 			requiredFlexFields.addAll(fetchFlexFieldsForCashSetup(cashSetUp, benePackageRequest, beneficaryDetails, parameterSetUp));
-		} else {
-			// when size of package is 1 then we are using parameter setup otherwise we are
-			// using additional data setup
-			if (parameterSetUp.size() == 1) {
-				ParameterDetailsDto parameterDto = parameterSetUp.get(0);
-				FlexFieldDto flexFieldValueInRequest = requestFlexFields.get(FC_AMOUNT_FLEX_FIELD_NAME);
-				JaxConditionalFieldDto jaxConditionalFieldDto = fetchFlexFieldsForParameterSetup(parameterDto);
-				requiredFlexFields.add(jaxConditionalFieldDto);
-				packageFcAmount = flexFieldValueInRequest == null ? null : new BigDecimal(flexFieldValueInRequest.getAmieceDescription());
-				if (parameterDto.getAmount() != null && parameterDto.getAmount().doubleValue() > 0) {
-					packageFcAmount = parameterDto.getAmount();
-				}
-				if (packageFcAmount != null) {
-					jaxConditionalFieldDto.getField().setDefaultValue(packageFcAmount.toString());
-				}
+		}
+		// when size of package is 1 then we are using parameter setup otherwise we are
+		// using additional data setup
+		if (parameterSetUp.size() == 1) {
+			ParameterDetailsDto parameterDto = parameterSetUp.get(0);
+			FlexFieldDto flexFieldValueInRequest = requestFlexFields.get(FC_AMOUNT_FLEX_FIELD_NAME);
+			JaxConditionalFieldDto jaxConditionalFieldDto = fetchFlexFieldsForParameterSetup(parameterDto);
+			requiredFlexFields.add(jaxConditionalFieldDto);
+			packageFcAmount = flexFieldValueInRequest == null ? null : new BigDecimal(flexFieldValueInRequest.getAmieceDescription());
+			if (parameterDto.getAmount() != null && parameterDto.getAmount().doubleValue() > 0) {
+				packageFcAmount = parameterDto.getAmount();
+			}
+			if (packageFcAmount != null) {
+				jaxConditionalFieldDto.getField().setDefaultValue(packageFcAmount.toString());
 			}
 		}
 		if (!requiredFlexFields.isEmpty()) {

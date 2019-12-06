@@ -55,6 +55,7 @@ public class TransactionDetailsView implements Serializable {
 	private BigDecimal foreignCurrencyId;
 	private BigDecimal localCurrencyId;
 	private String bankReference;
+	private String amiecCode;
 	
 	public TransactionDetailsView() {
 		super();
@@ -363,6 +364,15 @@ public class TransactionDetailsView implements Serializable {
 	}
 	public void setBankReference(String bankReference) {
 		this.bankReference = bankReference;
+	}
+
+	@Column(name="AMIEC_CODE")
+	public String getAmiecCode() {
+		return amiecCode;
+	}
+
+	public void setAmiecCode(String amiecCode) {
+		this.amiecCode = amiecCode;
 	}
 	
 }

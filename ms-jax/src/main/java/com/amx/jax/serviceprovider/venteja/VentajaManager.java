@@ -153,7 +153,9 @@ public class VentajaManager extends AbstractModel {
 				transactionDetailsView.getDocumentNo(), transactionDetailsView.getCollDocumentFinanceYear(), transactionDetailsView.getCollDocumentNo(), transactionDetailsView.getCollDocumentCode());
 		
 		for (TransactionDetailsView transactionDetails : lstTrnxDetails) {
-			flexFieldDtoMap.put(transactionDetails.getFlexField(), new FlexFieldDto(transactionDetails.getFlexFieldValue()));
+			FlexFieldDto flexFieldDto = new FlexFieldDto(transactionDetails.getFlexFieldValue());
+			flexFieldDto.setAmieceCode(transactionDetails.getAmiecCode());
+			flexFieldDtoMap.put(transactionDetails.getFlexField(), flexFieldDto);
 		}
 		
 		return flexFieldDtoMap;

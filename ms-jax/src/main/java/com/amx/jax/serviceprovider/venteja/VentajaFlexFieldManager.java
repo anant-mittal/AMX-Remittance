@@ -21,6 +21,7 @@ import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.remittance.AdditionalDataDisplayView;
 import com.amx.jax.dbmodel.remittance.ViewParameterDetails;
 import com.amx.jax.manager.remittance.AdditionalBankDetailManager;
+import com.amx.jax.model.request.remittance.BenePackageRequest;
 import com.amx.jax.model.response.jaxfield.JaxConditionalFieldDto;
 import com.amx.jax.model.response.jaxfield.JaxFieldValueDto;
 import com.amx.jax.model.response.remittance.FlexFieldDto;
@@ -29,6 +30,7 @@ import com.amx.jax.repository.remittance.DeliveryModeRepository;
 import com.amx.jax.repository.remittance.RemittanceModeMasterRepository;
 import com.amx.jax.serviceprovider.service.AbstractFlexFieldManager;
 import com.amx.jax.services.BankService;
+import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.validation.RemittanceTransactionRequestValidator;
 
 @Component(BankConstants.VINTJA_BANK_CODE + AbstractFlexFieldManager.FLEX_FIELD_MANAGER_BEAN_SUFFIX)
@@ -46,6 +48,8 @@ public class VentajaFlexFieldManager extends AbstractFlexFieldManager {
 	BankService bankService;
 	@Autowired
 	AdditionalBankDetailManager additionalBankDetailManager;
+	@Autowired
+	BeneficiaryService beneficiaryService;
 
 	public static final String FC_AMOUNT_FLEX_FIELD_NAME = "PACKAGE_FCAMOUNT";
 	public static final String INDIC_16_VOLUNTEERCONTRIBUTION_SYMBOL = ">";
@@ -125,8 +129,8 @@ public class VentajaFlexFieldManager extends AbstractFlexFieldManager {
 
 	private void addMinMaxValueForVoluteerContri(JaxConditionalFieldDto jaxConditionalFieldDto, ParameterDetailsDto volunteerParameter) {
 		if (jaxConditionalFieldDto != null && volunteerParameter != null) {
-			jaxConditionalFieldDto.getField().setMinValue(volunteerParameter.getMinAmount());
-			jaxConditionalFieldDto.getField().setMaxValue(volunteerParameter.getMaxAmount());
+			jaxConditionalFieldDto.getField().setMinValue(volunteerParameter.getNumericUdf3());
+			jaxConditionalFieldDto.getField().setMaxValue(volunteerParameter.getNumericUdf4());
 		}
 	}
 
@@ -150,12 +154,17 @@ public class VentajaFlexFieldManager extends AbstractFlexFieldManager {
 	@Override
 	public void validatePreFlexField(Map<String, FlexFieldDto> requestFlexFields, Map<String, Object> preFlexValidationVariables,
 			Map<String, Object> validationResults) {
-
+		BenePackageRequest benePackageRequest = (BenePackageRequest) preFlexValidationVariables.get("benePackageRequest");
+		Integer noOfMonth = null;
+		BenificiaryListView beneListView = beneficiaryService.getBeneByIdNo(benePackageRequest.getBeneId());
+		// phil health does not have end date so end date is same start date
+		if ("PHHTH".equals(beneListView.getBankCode())) {
+			noOfMonth = 1;
+		}
 		BigDecimal packageFcAmount = null;
 		BigDecimal monthlyContribution = null;
 		BigDecimal volunteerContribution = null;
 		String packageSelectedAmiecCode = null;
-		int noOfMonth = 0;
 		boolean dateRangePresent = false;
 		List<JaxConditionalFieldDto> requiredFlexFields = (List<JaxConditionalFieldDto>) validationResults.get("requiredFlexFields");
 		if (requestFlexFields != null) {
@@ -191,7 +200,7 @@ public class VentajaFlexFieldManager extends AbstractFlexFieldManager {
 			packageFcAmount = monthlyContribution.add(volunteerContribution).multiply(BigDecimal.valueOf(noOfMonth));
 		}
 		addDateRangeParameters(noOfMonth, requiredFlexFields);
-		if (noOfMonth == 0) {
+		if (noOfMonth == null) {
 			// remove Date range flex field if no of months are not selected
 			requiredFlexFields.removeIf(i -> {
 				if ("INDIC12".equalsIgnoreCase(i.getField().getName())) {
@@ -215,9 +224,9 @@ public class VentajaFlexFieldManager extends AbstractFlexFieldManager {
 		}
 	}
 
-	private void addDateRangeParameters(int noOfMonth, List<JaxConditionalFieldDto> requiredFlexFields) {
+	private void addDateRangeParameters(Integer noOfMonth, List<JaxConditionalFieldDto> requiredFlexFields) {
 		requiredFlexFields.stream().forEach(i -> {
-			if ("INDIC12".equals(i.getField().getName()) && noOfMonth > 0) {
+			if ("INDIC12".equals(i.getField().getName()) && noOfMonth != null) {
 				Map<String, Object> additionalValidations = i.getField().getAdditionalValidations();
 				additionalValidations.put("range", noOfMonth);
 			}
