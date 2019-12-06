@@ -202,7 +202,7 @@ public class DailyPromotionManager {
 			Customer customer = customerRepository.getCustomerByCustomerIdAndIsActive(metaData.getCustomerId(), "Y");
 			CommunicationPrefsResult communicationPrefsResult = communicationPrefsUtil.forCustomer(CommunicationEvents.BPI_JOLLIBEE, customer);
 			Date createdDate = remittanceTransaction.getCreatedDate();
-			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-mm-yyyy");
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
 			Map<String, Object> modeldata = new HashMap<String, Object>();
 			Map<String, Object> wrapper = new HashMap<String, Object>();
 			String transactionDate = simpleDateFormat.format(createdDate);
