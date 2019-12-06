@@ -5,6 +5,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
@@ -169,6 +171,7 @@ public class RestService {
 		RestTemplate restTemplate;
 		private HttpHeaders headers = new HttpHeaders();
 		Map<String, String> headersMeta = new HashMap<String, String>();
+		List<Cookie> cookies = new ArrayList<Cookie>();
 		boolean isForm = false;
 
 		public Ajax(RestTemplate restTemplate, String url) {
@@ -215,6 +218,15 @@ public class RestService {
 		public Ajax queryParam(String paramKey, Object paramValue) {
 			if (paramValue != null) {
 				builder.queryParam(paramKey, paramValue);
+			}
+			return this;
+		}
+
+		public Ajax cookie(Cookie... cookieList) {
+			if (cookieList != null) {
+				for (Cookie cookie : cookieList) {
+					cookies.add(cookie);
+				}
 			}
 			return this;
 		}
@@ -279,6 +291,17 @@ public class RestService {
 			return this.headers;
 		}
 
+		private HttpHeaders processdHeaders() {
+			if (this.cookies != null) {
+				StringBuilder sb = new StringBuilder();
+				for (Cookie cookie : this.cookies) {
+					sb.append(cookie.getName()).append(cookie.getValue()).append(";");
+				}
+				this.headers.add("Cookie", sb.toString());
+			}
+			return this.headers;
+		}
+
 		public Ajax post(HttpEntity<?> requestEntity) {
 			this.method = HttpMethod.POST;
 			this.requestEntity = requestEntity;
@@ -286,11 +309,11 @@ public class RestService {
 		}
 
 		public <T> Ajax put(T body) {
-			return this.put(new HttpEntity<T>(body, headers));
+			return this.put(new HttpEntity<T>(body, processdHeaders()));
 		}
 
 		public Ajax put() {
-			return this.put(new HttpEntity<Object>(null, headers));
+			return this.put(new HttpEntity<Object>(null, processdHeaders()));
 		}
 
 		public Ajax put(HttpEntity<?> requestEntity) {
@@ -300,16 +323,16 @@ public class RestService {
 		}
 
 		public <T> Ajax post(T body) {
-			return this.post(new HttpEntity<T>(body, headers));
+			return this.post(new HttpEntity<T>(body, processdHeaders()));
 		}
 
 		public Ajax post() {
-			return this.post(new HttpEntity<Object>(null, headers));
+			return this.post(new HttpEntity<Object>(null, processdHeaders()));
 		}
 
 		public Ajax postForm() {
 			this.isForm = true;
-			return this.post(new HttpEntity<MultiValueMap<String, Object>>(parameters, headers));
+			return this.post(new HttpEntity<MultiValueMap<String, Object>>(parameters, processdHeaders()));
 		}
 
 		public <T> Ajax postJson(T body) {
@@ -323,7 +346,7 @@ public class RestService {
 		}
 
 		public Ajax get() {
-			return this.get(new HttpEntity<Object>(null, headers));
+			return this.get(new HttpEntity<Object>(null, processdHeaders()));
 		}
 
 		public Ajax call(RestMethod method) {
