@@ -148,6 +148,10 @@ public class PayGController {
 			appRedirectUrl = kwtRedirectURL;
 		}
 
+		if(payGConfig.isLocalEnabled()) {
+			pg = "LOCAL";
+		}
+		
 		if (callbackd != null) {
 			byte[] decodedBytes = Base64.getDecoder().decode(callbackd);
 			String callback = new String(decodedBytes);
@@ -158,7 +162,7 @@ public class PayGController {
 		LOGGER.info(String.format(
 				"Inside payment method with parameters --> TrackId: %s, amount: %s, docNo: %s, country: %s, pg: %s",
 				trckid, amount, docNo, tnt, pg));
-
+		
 		PayGClient payGClient = payGClients.getPayGClient(pg);
 
 		PayGParams payGParams = new PayGParams();
