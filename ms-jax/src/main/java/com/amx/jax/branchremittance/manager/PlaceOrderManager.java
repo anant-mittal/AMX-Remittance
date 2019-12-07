@@ -36,6 +36,7 @@ import com.amx.jax.dbmodel.CurrencyMasterMdlv1;
 import com.amx.jax.dbmodel.CurrencyOtherInformation;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.UserFinancialYear;
+import com.amx.jax.dbmodel.fx.EmployeeDetailsView;
 import com.amx.jax.dbmodel.remittance.Document;
 import com.amx.jax.dbmodel.remittance.RatePlaceOrder;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
@@ -66,6 +67,7 @@ import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.ICurrencyOtherInfoRepository;
 import com.amx.jax.repository.IDocumentDao;
 import com.amx.jax.repository.IRatePlaceOrderRepository;
+import com.amx.jax.repository.fx.EmployeeDetailsRepository;
 import com.amx.jax.repository.remittance.IViewPlaceOnOrderInquiryRepository;
 import com.amx.jax.service.BankMetaService;
 import com.amx.jax.service.FinancialService;
@@ -144,6 +146,10 @@ public class PlaceOrderManager implements Serializable{
 	ParameterService parameterService;
 	@Autowired
 	BranchRemittanceExchangeRateManager branchRemittanceExchangeRateManager;
+	
+	
+	@Autowired
+	EmployeeDetailsRepository employeeDetailsRepository;
 	
 	
 	
@@ -346,6 +352,13 @@ public class PlaceOrderManager implements Serializable{
 				lstPlaceOrder.setRateOffered(ratePlaceOrder.getRateOffered());
 				lstPlaceOrder.setNegotiate(ratePlaceOrder.getNegotiate());
 				lstPlaceOrder.setIsActive(ratePlaceOrder.getIsActive());
+				
+				EmployeeDetailsView createdDetails = employeeDetailsRepository.findByUserName(ratePlaceOrder.getCreatedBy());
+				
+				if(createdDetails!=null) {
+					lstPlaceOrder.setCreatedByName(createdDetails.getEmployeeName());
+				}
+				
 
 				if(ratePlaceOrder.getNegotiate() != null && ratePlaceOrder.getNegotiate().equalsIgnoreCase(ConstantDocument.Yes)){
 					if(ratePlaceOrder.getIsActive() != null && ratePlaceOrder.getIsActive().equalsIgnoreCase(ConstantDocument.Yes)){
@@ -510,6 +523,11 @@ public List<PlaceOrderApplDto>  convertGsmDto(List<RatePlaceOrder> placeOrderLsi
 		BranchRemittanceApplRequestModel requestModelObject = mapper.readValue(requestJson, BranchRemittanceApplRequestModel.class);
 		TrnxRoutingDetails routPath = requestModelObject.getDynamicRroutingPricingBreakup().getTrnxRoutingPaths();
 		Map<DISCOUNT_TYPE, ExchangeDiscountInfo> discountInfo  =  requestModelObject.getDynamicRroutingPricingBreakup().getCustomerDiscountDetails();
+		EmployeeDetailsView createdDetails = employeeDetailsRepository.findByUserName(placeOrder.getCreatedBy());
+		
+		EmployeeDetailsView approvedByDetails = employeeDetailsRepository.findByUserName(placeOrder.getApprovedBy());
+		
+		
 		
 		applDto.setCustomerId(placeOrder.getCustomerId());
 		applDto.setPlaceOrderId(placeOrder.getRatePlaceOrderId());
@@ -534,8 +552,13 @@ public List<PlaceOrderApplDto>  convertGsmDto(List<RatePlaceOrder> placeOrderLsi
 		applDto.setCustomerEmailId(placeOrder.getCustomerEmail());
 		applDto.setSpecialOrCommonPoolIndicator(placeOrder.getCustomerIndicator());
 		applDto.setApprovedBy(placeOrder.getApprovedBy());
+		if(approvedByDetails!=null) {
+			applDto.setApprovedByName(approvedByDetails.getEmployeeName());	
+		}
 		
-		
+		if(createdDetails!=null) {
+			applDto.setCreatedByName(createdDetails.getEmployeeName());	
+		}
 		
 		exRateBreakUp = getExchangeRateBreakUPForPlaceOrder(placeOrder);
 		exRateBreakUp.setInverseRate(placeOrder.getRateOffered());

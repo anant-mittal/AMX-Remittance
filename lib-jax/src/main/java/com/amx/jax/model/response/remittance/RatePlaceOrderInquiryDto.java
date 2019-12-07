@@ -22,6 +22,10 @@ public class RatePlaceOrderInquiryDto {
 	private String status;
 	private String gsmStatus;
 	private String bankProduct;
+	private String employeeName;
+	private String createdByName;
+	private String approvedName;
+	
 	public BigDecimal getIdNo() {
 		return idNo;
 	}
@@ -129,5 +133,23 @@ public class RatePlaceOrderInquiryDto {
 	}
 	public void setBankProduct(String bankProduct) {
 		this.bankProduct = bankProduct;
+	}
+	public String getEmployeeName() {
+		return employeeName;
+	}
+	public void setEmployeeName(String employeeName) {
+		this.employeeName = employeeName;
+	}
+	public String getCreatedByName() {
+		return createdByName;
+	}
+	public void setCreatedByName(String createdByName) {
+		this.createdByName = createdByName;
+	}
+	public String getApprovedName() {
+		return approvedName;
+	}
+	public void setApprovedName(String approvedName) {
+		this.approvedName = approvedName;
 	}
 }

@@ -37,8 +37,13 @@ public class PlaceOrderApplDto {
 	private String status;
 	private BigDecimal orignalExchangeRate;
 	private BigDecimal routingBankId;
+	private BigDecimal avgCost;
+
+	private String employeeName;
 	
 	private BigDecimal discount;
+	private String approvedByName;
+	private String createdByName;
 	
 	public BigDecimal getPlaceOrderId() {
 		return placeOrderId;
@@ -243,6 +248,30 @@ public class PlaceOrderApplDto {
 	}
 	public void setDiscount(BigDecimal discount) {
 		this.discount = discount;
+	}
+	public BigDecimal getAvgCost() {
+		return avgCost;
+	}
+	public void setAvgCost(BigDecimal avgCost) {
+		this.avgCost = avgCost;
+	}
+	public String getEmployeeName() {
+		return employeeName;
+	}
+	public void setEmployeeName(String employeeName) {
+		this.employeeName = employeeName;
+	}
+	public String getApprovedByName() {
+		return approvedByName;
+	}
+	public void setApprovedByName(String approvedByName) {
+		this.approvedByName = approvedByName;
+	}
+	public String getCreatedByName() {
+		return createdByName;
+	}
+	public void setCreatedByName(String createdByName) {
+		this.createdByName = createdByName;
 	}     
 	
 	
