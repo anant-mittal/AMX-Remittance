@@ -19,6 +19,7 @@ import com.amx.jax.payment.gateway.PayGClient;
 import com.amx.jax.payment.gateway.PayGConfig;
 import com.amx.jax.payment.gateway.PayGContext.PayGSpecific;
 import com.amx.jax.payment.gateway.PaymentGateWayResponse;
+import com.amx.jax.payment.gateway.PaymentGateWayResponse.CallbackScheme;
 import com.amx.jax.payment.gateway.PaymentGateWayResponse.PayGStatus;
 import com.amx.jax.payment.gateway.PaymentService;
 import com.amx.utils.CryptoUtil;
@@ -116,7 +117,6 @@ public class LocalClient implements PayGClient {
 			pipe.setAmt(amount);
 			pipe.setTrackId(params.getTrackId());
 			pipe.setUdf3(params.getDocNo());
-			
 
 			Short pipeValue = pipe.performPaymentInitialization();
 
@@ -126,8 +126,7 @@ public class LocalClient implements PayGClient {
 			String payURL = "/local/payg?piped="
 					+ new CryptoUtil.Encoder().obzect(pipe).encrypt().encodeBase64().toString()
 					+ "&paramsd="
-						+ new CryptoUtil.Encoder().obzect(params).encrypt().encodeBase64().toString()
-					;
+					+ new CryptoUtil.Encoder().obzect(params).encrypt().encodeBase64().toString();
 			responseMap.put("payid", new String(payID));
 			responseMap.put("payurl", payURL);
 			String url = payURL + "&paymentId=" + payID;
@@ -192,6 +191,8 @@ public class LocalClient implements PayGClient {
 		} else {
 			gatewayResponse.setPayGStatus(PayGStatus.ERROR);
 		}
+
+		gatewayResponse.setScheme(CallbackScheme.REDIRECT);
 		return gatewayResponse;
 	}
 

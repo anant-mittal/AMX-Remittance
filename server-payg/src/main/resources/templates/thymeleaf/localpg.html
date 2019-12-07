@@ -26,49 +26,49 @@ table {
 
 	<div class="form">
 		<!-- <form action="app/pay" method="get"> -->
-		<form th:action="${pipe.responseUrl}" method="get">
+		<form th:action="${pipe.responseUrl}" method="post">
 
 			<table>
 				<tr>
 					<td>Tenant</td>
-					<td><input name="tnt" th:value="${params.tenant}" disabled="disabled"  value="121212"  />
+					<td><input name="tnt" th:value="${params.tenant}" readonly="readonly"  value="121212"  />
 					</td>
 				</tr>
 				<tr>
 					<td>Payment Gateway</td>
-					<td><input name="pg"  th:value="${params.serviceCode}" disabled="disabled"  value="121212"  />
+					<td><input name="pg"  th:value="${params.serviceCode}" readonly="readonly"  value="121212"  />
 					</td>
 				</tr>
 				<tr>
 					<td>Amount</td>
 					<td><input type="number" id="amount" name="amount" th:value="${params.amount}"
-						required="required" step="any" value="10" readonly="readonly" disabled="disabled" /></td>
+						required="required" step="any" value="10" readonly="readonly" /></td>
 				</tr>
 				<tr>
 					<td>TicketId</td>
-					<td><input id="trckid" name="trckid" value="121212" th:value="${params.trackId}" disabled="disabled"  /></td>
+					<td><input id="trckid" name="trckid" value="121212" th:value="${params.trackId}" readonly="readonly"  /></td>
 
 				</tr>
 				<tr>
 					<td>Doc No</td>
-					<td><input id="docNo" name="docNo" placeholder="1212" th:value="${params.docNo}" disabled="disabled" 
+					<td><input id="docNo" name="docNo" placeholder="1212" th:value="${params.docNo}" readonly="readonly" 
 						value="121212" /></td>
 				</tr>
 				<tr>
 					<td>Doc No</td>
-					<td><input id="docFy" name="docFy" placeholder="2018" th:value="${params.docFy}" disabled="disabled" 
+					<td><input id="docFy" name="docFy" placeholder="2018" th:value="${params.docFy}" readonly="readonly" 
 						value="2018" /></td>
 				</tr>
 
 				<tr>
 					<td>Channel</td>
-					<td><input id="channel" name="channel" placeholder="KIOSK"  th:value="${params.channel}" disabled="disabled"  /></td>
+					<td><input id="channel" name="channel" placeholder="KIOSK"  th:value="${params.channel}" readonly="readonly"  /></td>
 				</tr>
 
 
 				<tr>
 					<td>Product</td>
-					<td><input id="prod" name="prod" placeholder="REMIT"  th:value="${params.product}" disabled="disabled"  /></td>
+					<td><input id="prod" name="prod" placeholder="REMIT"  th:value="${params.product}" readonly="readonly"  /></td>
 				</tr>
 
 
@@ -96,7 +96,7 @@ table {
 
 					<td>paymentid</td>
 					<td><input id="paymentid" name="paymentid"
-						placeholder="paymentid" th:value="${pipe.paymentId}" readonly="readonly" disabled="disabled"  /></td>
+						placeholder="paymentid" th:value="${pipe.paymentId}" readonly="readonly" /></td>
 				</tr>
 
 				<tr>
@@ -119,7 +119,7 @@ table {
 					<td><input 
 						id="trackid" name="trackid" placeholder="trackid" 
 						th:value="${pipe.trackId}"
-					 	readonly="readonly" disabled="disabled" /></td>
+					 	readonly="readonly" /></td>
 				</tr>
 				<tr>
 					<td>tranid</td>
@@ -140,7 +140,7 @@ table {
 				</tr>
 				<tr>
 					<td>udf3</td>
-					<td><input id="udf3" name="udf3" placeholder="udf3" th:value="${pipe.udf3}" readonly="readonly" disabled="disabled" /></td>
+					<td><input id="udf3" name="udf3" placeholder="udf3" th:value="${pipe.udf3}" readonly="readonly" /></td>
 				</tr>
 				<tr>
 					<td>udf4</td>

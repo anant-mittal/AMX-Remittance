@@ -39,6 +39,7 @@ import com.amx.jax.payment.gateway.PayGEvent;
 import com.amx.jax.payment.gateway.PayGSession;
 import com.amx.jax.payment.gateway.PayGSession.PayGModels;
 import com.amx.jax.payment.gateway.PaymentGateWayResponse;
+import com.amx.jax.payment.gateway.PaymentGateWayResponse.CallbackScheme;
 import com.amx.jax.payment.gateway.PaymentGateWayResponse.PayGStatus;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.ArgUtil;
@@ -86,14 +87,14 @@ public class PayGController {
 	@RequestMapping(value = { "/register/*" }, method = RequestMethod.GET)
 	public PayGParams initTransaction(@RequestParam String trckid, @RequestParam(required = false) String docId,
 			@RequestParam(required = false) String docNo, @RequestParam(required = false) String docFy,
-			 @RequestParam(required = false) String payId,
+			@RequestParam(required = false) String payId,
 			@RequestParam String amount,
 
 			@RequestParam Tenant tnt, @RequestParam String pg, @RequestParam(required = false) Channel channel,
 			@RequestParam(required = false) String prod,
 
 			@RequestParam(required = false) String callbackd, Model model) throws NoSuchAlgorithmException {
-		return payGService.getVerifyHash(trckid, amount, docId, docNo, docFy,payId);
+		return payGService.getVerifyHash(trckid, amount, docId, docNo, docFy, payId);
 	}
 
 	@RequestMapping(value = { "/payment/*", "/payment" }, method = RequestMethod.GET)
@@ -118,9 +119,10 @@ public class PayGController {
 			payId = detailParam.getPayId();
 		}
 
-		//Commented for testing
+		// Commented for testing
 		if (!ArgUtil.isEmpty(verify)
-				&& !verify.equals(payGService.getVerifyHash(trckid, amount, docId, docNo, docFy,payId).getVerification())) {
+				&& !verify.equals(
+						payGService.getVerifyHash(trckid, amount, docId, docNo, docFy, payId).getVerification())) {
 			return "thymeleaf/pg_security";
 		}
 
@@ -148,10 +150,10 @@ public class PayGController {
 			appRedirectUrl = kwtRedirectURL;
 		}
 
-		if(payGConfig.isLocalEnabled()) {
+		if (payGConfig.isLocalEnabled()) {
 			pg = "LOCAL";
 		}
-		
+
 		if (callbackd != null) {
 			byte[] decodedBytes = Base64.getDecoder().decode(callbackd);
 			String callback = new String(decodedBytes);
@@ -162,7 +164,7 @@ public class PayGController {
 		LOGGER.info(String.format(
 				"Inside payment method with parameters --> TrackId: %s, amount: %s, docNo: %s, country: %s, pg: %s",
 				trckid, amount, docNo, tnt, pg));
-		
+
 		PayGClient payGClient = payGClients.getPayGClient(pg);
 
 		PayGParams payGParams = new PayGParams();
@@ -282,6 +284,8 @@ public class PayGController {
 				LOGGER.info("PAYG Response is ----> " + payGResponse.toString());
 				return "redirect:" + kioskOmnRedirectURL;
 			} else if (paygCode.toString().equals("KNET2") && channel.equals(Channel.ONLINE)) {
+				return "redirect:" + redirectUrl;
+			} else if (CallbackScheme.REDIRECT.equals(payGResponse.getScheme())) {
 				return "redirect:" + redirectUrl;
 			} else {
 				return "thymeleaf/repback";
