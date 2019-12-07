@@ -32,7 +32,7 @@ public class DashboardAnalyticsController {
 
 	private static final org.slf4j.Logger logger = LoggerService.getLogger(DashboardAnalyticsController.class);
 
-	@RequestMapping(value = "/pub/snap/view/RPT", method = RequestMethod.POST)
+	@RequestMapping(value = "/api/snap/view/RPT", method = RequestMethod.POST)
 	public SnapModelWrapper snapView(@RequestBody SnapQueryParams params) throws IOException {
 
 		Map<String, Map<String, String>> permissionMap = ssoUser.getUserDetails().getUserRole().getPermissionMap();
@@ -43,7 +43,7 @@ public class DashboardAnalyticsController {
 		Map<String, String> testMap = new HashMap<String, String>();
 
 		for (String outerMapKey : permissionMap.keySet()) {
-			if (outerMapKey == "CUSTOMER_MGMT.REMITTANCE") {
+			if (outerMapKey == "BACK_OFFICE.REVENUE_SUMMARY") {
 				Map<String, String> innerMap = permissionMap.get(outerMapKey);
 				innerMap.forEach((key, value) -> {
 					if (key.contains("VIEW") && value.contains("COUNTRY")) {

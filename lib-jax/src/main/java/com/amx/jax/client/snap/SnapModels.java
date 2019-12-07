@@ -449,10 +449,12 @@ public class SnapModels {
 
 		public void addFilter(String key, String value) {
 			Map<String, Object> f = new HashMap<String, Object>();
+			f.put("key", key);
+			f.put("value", value);
 			if (filters == null) {
 				filters = new ArrayList<Map<String, Object>>();
-				this.map.put("filters", filters);
 			}
+			this.map.put("filters", filters);
 			filters.add(f);
 		}
 	}
