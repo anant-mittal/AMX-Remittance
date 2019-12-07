@@ -527,6 +527,11 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 				customerBankDt.setDebitCardName(customerBankRequest.getDebitCardName());
 				customerBankDt.setIsActive(ConstantDocument.Yes);
 				customerBankDt.setRelationsId(customerBankRequest.getRelationsId());
+				
+				if(customerBankRequest.getCardTypeId() != null){
+					customerBankDt.setCardTypeId(customerBankRequest.getCardTypeId());
+				}
+				
 				lstCustomerBank.add(customerBankDt);
 			}
 			if(lstCustomerBank != null && lstCustomerBank.size() != 0) {
