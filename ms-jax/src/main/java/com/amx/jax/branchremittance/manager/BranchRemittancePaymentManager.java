@@ -447,6 +447,10 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 				customerBankrelationName.setRelationId(new BigDecimal(custBankNameObject[1].toString()));
 				//customerBankDetailsDto.setRelationId(relationList);
 			}
+			if(custBankNameObject[2]!=null) {
+				customerBankrelationName.setCardTypeId(new BigDecimal(custBankNameObject[2].toString()));
+			}
+			
 			listRelationName.add(customerBankrelationName);
 			customerBankDetailsDto.setCustomerBankrelationName(listRelationName);
 		}

@@ -17,5 +17,13 @@ public void setCutomerBankNBame(String cutomerBankNBame) {
 	this.cutomerBankNBame = cutomerBankNBame;
 }
 String cutomerBankNBame;
+
+BigDecimal cardTypeId;
+public BigDecimal getCardTypeId() {
+	return cardTypeId;
+}
+public void setCardTypeId(BigDecimal cardTypeId) {
+	this.cardTypeId = cardTypeId;
+}
 	
 }
