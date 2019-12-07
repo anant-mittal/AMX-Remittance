@@ -432,7 +432,7 @@ public class RemittanceClient implements IRemittanceService {
 
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> updateRatePlaceOrder(PlaceOrderUpdateStatusDto placeOrderRequestUpdatDto) {
-		return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_FETCH_PLACE_ORDER).meta(new JaxMetaInfo())
+		return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_UPDATE_PLACE_ORDER).meta(new JaxMetaInfo())
 				.post(placeOrderRequestUpdatDto)
 				.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 				});
