@@ -37,7 +37,7 @@ public class CardTypeManager extends AbstractModel {
 			for (CardTypeViewModel cardTypeVal : cardTypeList) {
 				CardTypeDto cardTypeDto = new CardTypeDto();
 
-				cardTypeDto.setCardId(cardTypeVal.getCardId());
+				cardTypeDto.setCardTypeId(cardTypeVal.getCardId());
 				cardTypeDto.setCardType(cardTypeVal.getCardType());
 				cardTypeDto.setCardDesc(cardTypeVal.getCardDesc());
 				cardTypes.add(cardTypeDto);

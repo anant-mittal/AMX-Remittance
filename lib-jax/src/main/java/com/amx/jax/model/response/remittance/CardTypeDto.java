@@ -5,16 +5,16 @@ import java.math.BigDecimal;
 public class CardTypeDto implements java.io.Serializable {
 
 	private static final long serialVersionUID = 2381126548661383520L;
-	private BigDecimal cardId;
+	private BigDecimal cardTypeId;
 	private String cardType;
 	private String cardDesc;
 
-	public BigDecimal getCardId() {
-		return cardId;
+	public BigDecimal getCardTypeId() {
+		return cardTypeId;
 	}
 
-	public void setCardId(BigDecimal cardId) {
-		this.cardId = cardId;
+	public void setCardTypeId(BigDecimal cardTypeId) {
+		this.cardTypeId = cardTypeId;
 	}
 
 	public String getCardType() {
