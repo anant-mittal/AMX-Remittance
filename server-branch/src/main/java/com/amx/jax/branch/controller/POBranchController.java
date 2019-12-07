@@ -31,14 +31,13 @@ public class POBranchController {
 	private RemittanceClient branchRemittanceClient;
 
 	@RequestMapping(value = "/api/placeorder/create", method = { RequestMethod.POST })
-	public AmxApiResponse<BoolRespModel, Object> createPlaceOrder(
-			@RequestBody PlaceOrderRequestModel placeOrderRequestModel) {
+	public AmxApiResponse<BoolRespModel, Object> createPlaceOrder(@RequestBody PlaceOrderRequestModel placeOrderRequestModel) {
 		return branchRemittanceClient.savePlaceOrderApplication(placeOrderRequestModel);
 	}
 
 	@RequestMapping(value = "/api/placeorder/provider/list", method = { RequestMethod.POST })
 	public AmxApiResponse<GsmPlaceOrderListDto, Object> getCountryWisePlaceOrderProviderList(
-			GsmSearchRequestParameter requestParameter) {
+		@RequestBody GsmSearchRequestParameter requestParameter) {
 		return branchRemittanceClient.getCountryWisePlaceOrderCount(requestParameter);
 	}
 
@@ -50,7 +49,7 @@ public class POBranchController {
 
 	@RequestMapping(value = "/api/placeorder/consumer/list", method = { RequestMethod.POST })
 	public AmxApiResponse<RatePlaceOrderInquiryDto, Object> getCountryWisePlaceOrderConsumerList(
-			@RequestParam(required = false) BigDecimal countryBranchId) {
+			@RequestParam(required=false) BigDecimal countryBranchId) {
 		return branchRemittanceClient.fetchPlaceOrderInquiry(countryBranchId);
 	}
 

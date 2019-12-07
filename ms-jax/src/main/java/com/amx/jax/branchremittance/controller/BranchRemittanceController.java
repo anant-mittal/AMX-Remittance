@@ -327,7 +327,7 @@ public class BranchRemittanceController implements IRemittanceService {
 
 	@RequestMapping(value=Path.BR_REMITTANCE_PLACE_ORDER_COUNT,method=RequestMethod.POST)
 	@Override
-	public AmxApiResponse<GsmPlaceOrderListDto, Object> getCountryWisePlaceOrderCount(GsmSearchRequestParameter requestParameter) {
+	public AmxApiResponse<GsmPlaceOrderListDto, Object> getCountryWisePlaceOrderCount(@RequestBody GsmSearchRequestParameter requestParameter) {
 		// TODO Auto-generated method stub
 		return branchRemitService.getCountryWisePlaceOrderCount(requestParameter);
 	}
