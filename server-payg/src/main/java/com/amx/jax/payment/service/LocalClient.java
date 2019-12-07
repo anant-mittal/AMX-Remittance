@@ -121,8 +121,8 @@ public class LocalClient implements PayGClient {
 			Short pipeValue = pipe.performPaymentInitialization();
 
 			// get results
-			String payID = pipe.getPaymentId();
 			pipe.setPaymentId(Random.randomNumeric(12));
+			String payID = pipe.getPaymentId();
 			String payURL = "/local/payg?piped="
 					+ new CryptoUtil.Encoder().obzect(pipe).encrypt().encodeBase64().toString()
 					+ "&paramsd="
