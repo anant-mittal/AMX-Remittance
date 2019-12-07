@@ -109,7 +109,7 @@ public class PayGController {
 			@RequestParam(required = false) String verify, @RequestParam(required = false) String detail, Model model)
 			throws NoSuchAlgorithmException {
 
-		if (!payGConfig.isTestEnabled()) {
+		if (!payGConfig.isTestEnabled() || ArgUtil.is(detail)) {
 			PayGParams detailParam = payGService.getDeCryptedDetails(detail);
 			trckid = detailParam.getTrackId();
 			amount = detailParam.getAmount();
