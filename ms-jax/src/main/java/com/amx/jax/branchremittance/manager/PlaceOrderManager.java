@@ -353,13 +353,13 @@ public class PlaceOrderManager implements Serializable{
 				lstPlaceOrder.setNegotiate(ratePlaceOrder.getNegotiate());
 				lstPlaceOrder.setIsActive(ratePlaceOrder.getIsActive());
 				
-				EmployeeDetailsView createdDetails = employeeDetailsRepository.findByUserName(ratePlaceOrder.getCreatedBy());
-				
-				if(createdDetails!=null) {
-					lstPlaceOrder.setCreatedByName(createdDetails.getEmployeeName());
+				EmployeeDetailsView createdDetails =null;
+				if(!StringUtils.isBlank(ratePlaceOrder.getCreatedBy())) {		
+					createdDetails = employeeDetailsRepository.findByUserName(ratePlaceOrder.getCreatedBy());
 				}
 				
-
+				lstPlaceOrder.setCreatedByName(createdDetails.getEmployeeName());
+				
 				if(ratePlaceOrder.getNegotiate() != null && ratePlaceOrder.getNegotiate().equalsIgnoreCase(ConstantDocument.Yes)){
 					if(ratePlaceOrder.getIsActive() != null && ratePlaceOrder.getIsActive().equalsIgnoreCase(ConstantDocument.Yes)){
 						lstPlaceOrder.setStatus(ConstantDocument.Statusd.APPROVED.toString());
@@ -521,11 +521,19 @@ public List<PlaceOrderApplDto>  convertGsmDto(List<RatePlaceOrder> placeOrderLsi
 		String requestJson = placeOrder.getRequestModel();
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		BranchRemittanceApplRequestModel requestModelObject = mapper.readValue(requestJson, BranchRemittanceApplRequestModel.class);
+		DynamicRoutingPricingDto dpDto =requestModelObject.getDynamicRroutingPricingBreakup();
 		TrnxRoutingDetails routPath = requestModelObject.getDynamicRroutingPricingBreakup().getTrnxRoutingPaths();
 		Map<DISCOUNT_TYPE, ExchangeDiscountInfo> discountInfo  =  requestModelObject.getDynamicRroutingPricingBreakup().getCustomerDiscountDetails();
-		EmployeeDetailsView createdDetails = employeeDetailsRepository.findByUserName(placeOrder.getCreatedBy());
 		
-		EmployeeDetailsView approvedByDetails = employeeDetailsRepository.findByUserName(placeOrder.getApprovedBy());
+		EmployeeDetailsView createdDetails =null;
+		if(!StringUtils.isBlank(placeOrder.getCreatedBy())) {		
+			createdDetails = employeeDetailsRepository.findByUserName(placeOrder.getCreatedBy());
+		}
+		
+		EmployeeDetailsView approvedByDetails = null; 
+		if(!StringUtils.isBlank(placeOrder.getApprovedBy())) {
+			approvedByDetails=employeeDetailsRepository.findByUserName(placeOrder.getApprovedBy());
+		}
 		
 		
 		
@@ -552,6 +560,8 @@ public List<PlaceOrderApplDto>  convertGsmDto(List<RatePlaceOrder> placeOrderLsi
 		applDto.setCustomerEmailId(placeOrder.getCustomerEmail());
 		applDto.setSpecialOrCommonPoolIndicator(placeOrder.getCustomerIndicator());
 		applDto.setApprovedBy(placeOrder.getApprovedBy());
+		applDto.setAvgCost(dpDto.getCostExchangeRate());
+		
 		if(approvedByDetails!=null) {
 			applDto.setApprovedByName(approvedByDetails.getEmployeeName());	
 		}
@@ -607,11 +617,6 @@ public List<PlaceOrderApplDto>  convertGsmDto(List<RatePlaceOrder> placeOrderLsi
 		}else if(placeOrder.getIsActive()!=null && placeOrder.getIsActive().equalsIgnoreCase(ConstantDocument.Status.Y.toString())) {
 				applDto.setStatus(ConstantDocument.Statusd.APPROVED.toString());
 			}
-		
-		
-		
-		
-		
 		
 		list.add(applDto);
 	}

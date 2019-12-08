@@ -359,6 +359,7 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 			result.setBetterRateAmountSlab(sellRateDetail.getBetterRateAmountSlab());
 			
 			result.setRackExchangeRate(sellRateDetail.getRackExchangeRate());
+			result.setCostExchangeRate(sellRateDetail.getCostExchangeRate());
 			
 			BigDecimal commission =null;
 			if(prType.equals(PRICE_TYPE.NO_BENE_DEDUCT)) {

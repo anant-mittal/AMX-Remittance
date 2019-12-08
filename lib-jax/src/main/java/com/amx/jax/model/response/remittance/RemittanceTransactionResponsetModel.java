@@ -43,6 +43,7 @@ public class RemittanceTransactionResponsetModel extends AbstractModel {
 	private String customerChoice;
 	private BigDecimal youSavedAmountInFC;
 	private BigDecimal placeOrderId;
+	private BigDecimal costExchangeRate;
 	
 	
 	/*
@@ -237,6 +238,14 @@ public class RemittanceTransactionResponsetModel extends AbstractModel {
 
 	public void setPlaceOrderId(BigDecimal placeOrderId) {
 		this.placeOrderId = placeOrderId;
+	}
+
+	public BigDecimal getCostExchangeRate() {
+		return costExchangeRate;
+	}
+
+	public void setCostExchangeRate(BigDecimal costExchangeRate) {
+		this.costExchangeRate = costExchangeRate;
 	}
 
 	
