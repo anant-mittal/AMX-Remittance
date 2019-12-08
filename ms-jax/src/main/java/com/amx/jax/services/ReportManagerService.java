@@ -600,13 +600,23 @@ public class ReportManagerService extends AbstractService{
 						}
 
 						/** end **/
-
-						PromotionDto prmoDto = promotionManager.getPromotionMessage(view.getDocumentNo(),
-								view.getDocumentFinancialYear(), view.getCountryBranchId(), currencyQuoteName);
-						logger.debug("Promotion dto value is  " + JsonUtil.toJson(prmoDto));
-						if (prmoDto != null && !StringUtils.isBlank(prmoDto.getPrizeMessage())) {
-							obj.setPromotionMessage(prmoDto.getPrizeMessage());
+						
+						PromotionDto promotionDtoJP = promotionManager.getJolibeePromotion(
+								transactionHistroyDTO.getDocumentNumber(), transactionHistroyDTO.getDocumentFinanceYear());
+						logger.debug("Promotion dto2 for JB value is  " + JsonUtil.toJson(promotionDtoJP));
+						if (!ArgUtil.isEmpty(promotionDtoJP) && !ArgUtil.isEmpty(promotionDtoJP.getPrizeMessage())) {
+							obj.setPromotionMessage(promotionDtoJP.getPrizeMessage());
 						}
+						else {
+							PromotionDto prmoDto = promotionManager.getPromotionMessage(view.getDocumentNo(),
+									view.getDocumentFinancialYear(), view.getCountryBranchId(), currencyQuoteName);
+							logger.debug("Promotion dto value is  " + JsonUtil.toJson(prmoDto));
+							if (prmoDto != null && !StringUtils.isBlank(prmoDto.getPrizeMessage())) {
+								obj.setPromotionMessage(prmoDto.getPrizeMessage());
+							}
+						}
+
+						
 
 						if (JaxUtil.isNullZeroBigDecimalCheck(view.getVatAmount())) {
 							BigDecimal vatAmount = RoundUtil.roundBigDecimal((view.getVatAmount()), decimalPerCurrency);
