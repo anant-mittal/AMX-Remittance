@@ -7,6 +7,7 @@ package com.amx.jax.branchremittance.manager;
 
 
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -74,7 +75,9 @@ import com.amx.jax.service.FinancialService;
 import com.amx.jax.service.ParameterService;
 import com.amx.jax.util.JaxUtil;
 import com.amx.utils.JsonUtil;
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
@@ -412,7 +415,8 @@ public class PlaceOrderManager implements Serializable{
 			}else if(flag.equalsIgnoreCase(ConstantDocument.Status.A.toString())){ /** Accept place Order **/
 				ratePlaceOrder.setIsActive(ConstantDocument.Status.Y.toString());
 				/** Offerd  place Order  rate by GSM**/
-			}else if(flag.equalsIgnoreCase(ConstantDocument.Status.O.toString()) && JaxUtil.isNullZeroBigDecimalCheck(dto.getExchangeRateOffered())) { 
+			}else if(flag.equalsIgnoreCase(ConstantDocument.Status.O.toString()) && JaxUtil.isNullZeroBigDecimalCheck(dto.getExchangeRateOffered())) {
+				validateMinAndMaxRate(ratePlaceOrder,dto);
 				ratePlaceOrder.setIsActive(ConstantDocument.Status.Y.toString());
 				ratePlaceOrder.setRateOffered(dto.getExchangeRateOffered());
 				ratePlaceOrder.setAppointmentTime(new Date());
@@ -672,6 +676,8 @@ public void validatePlaceOrderRequest(BranchRemittanceApplRequestModel applReque
 	CurrencyOtherInformation currInfo = null;
 	if(applRequestModel!=null ) {
 		CurrencyMasterMdlv1 currMast = new CurrencyMasterMdlv1();
+		DynamicRoutingPricingDto dpDto =applRequestModel.getDynamicRroutingPricingBreakup(); 
+		
 		if(JaxUtil.isNullZeroBigDecimalCheck(applRequestModel.getLocalAmount())) {
 			currMast.setCurrencyId(metaData.getDefaultCurrencyId());
 			currInfo = currencyOtherInfoRepository.findByExCurrencyMasterAndIsActive(currMast, ConstantDocument.Status.Y.toString());
@@ -715,8 +721,6 @@ public void validatePlaceOrderRequest(BranchRemittanceApplRequestModel applReque
 		/** differnet  trnx amount check for the same beneficairy **/
 		
 		List<RatePlaceOrder> listPoDiffAmount = ratePlaceOrderRepository.sameBeneTrnxButDiffAmtCheck(beneficaryDetails.getCustomerId(),beneficaryDetails.getBeneficiaryRelationShipSeqId(),beneficaryDetails.getServiceGroupId());
-		
-		
 		AuthenticationLimitCheckView authPoLimitchk =parameterService.getPlaceOrderLimitCheck(ConstantDocument.PO_LIMIT_CHK);
 		BigDecimal authLimitForDiffBene  = new BigDecimal(0);
 		BigDecimal diffPlaceOrderCount   = new BigDecimal(0);
@@ -799,6 +803,44 @@ public void  setPlaceOrdertoApplication(DynamicRoutingPricingDto dynamicDto,Remi
 		}
 	}
 }
+
+public void validateMinAndMaxRate(RatePlaceOrder placeOrder,PlaceOrderUpdateStatusDto dto) {
+	 ObjectMapper mapper = new ObjectMapper();
+	 BranchRemittanceApplRequestModel requestModelObject=null;
+	if(placeOrder!=null) {
+	String requestJson = placeOrder.getRequestModel();
+	mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+	try {
+		requestModelObject = mapper.readValue(requestJson, BranchRemittanceApplRequestModel.class);
+	} catch (Exception e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} 
+	DynamicRoutingPricingDto dpDto =requestModelObject.getDynamicRroutingPricingBreakup();
+	TrnxRoutingDetails routPath = requestModelObject.getDynamicRroutingPricingBreakup().getTrnxRoutingPaths();
+	Map<DISCOUNT_TYPE, ExchangeDiscountInfo> discountInfo  =  requestModelObject.getDynamicRroutingPricingBreakup().getCustomerDiscountDetails();
+	BigDecimal minExchangeRate = dpDto==null?BigDecimal.ZERO:dpDto.getRackExchangeRate();
+	BigDecimal maxExchangeRate = dpDto==null?BigDecimal.ZERO:dpDto.getCostExchangeRate();
+	BigDecimal offeredExchangeRate = dto==null?BigDecimal.ZERO:dto.getExchangeRateOffered();
+	
+	if(!JaxUtil.isNullZeroBigDecimalCheck(offeredExchangeRate)) {
+		throw new GlobalException(JaxError.RATE_PLACE_ERROR,"Enter the valid rate");
+	}
+	
+	if(JaxUtil.isNullZeroBigDecimalCheck(minExchangeRate) && JaxUtil.isNullZeroBigDecimalCheck(maxExchangeRate)) {
+		
+		if(offeredExchangeRate.compareTo(minExchangeRate)>0 && maxExchangeRate.compareTo(offeredExchangeRate)>0) {
+		}else {
+			throw new GlobalException(JaxError.RATE_PLACE_ERROR,"The offered rate should be within the range :"+minExchangeRate+"-"+maxExchangeRate);
+		}
+		
+	}else {
+		throw new GlobalException(JaxError.RATE_PLACE_ERROR,"The min and max rate is not defined");
+	}
+	}
+	
+}
+
 
 	public String getCustomerFullName(Customer customer){
 		String customerName =null;
