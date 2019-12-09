@@ -17,6 +17,7 @@ import com.amx.amxlib.constant.AuthType;
 import com.amx.amxlib.constant.NotificationConstants;
 import com.amx.amxlib.model.BeneCreateDetailsDTO;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.jax.JaxAuthContext;
 import com.amx.jax.branchbene.BeneAccountManager;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.BeneficiaryDao;
@@ -27,6 +28,7 @@ import com.amx.jax.dbmodel.bene.BeneficaryContact;
 import com.amx.jax.dbmodel.bene.BeneficaryMaster;
 import com.amx.jax.dbmodel.bene.BeneficaryRelationship;
 import com.amx.jax.dbmodel.bene.BeneficaryStatus;
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.model.request.benebranch.BeneAccountModel;
 import com.amx.jax.model.request.benebranch.BenePersonalDetailModel;
 import com.amx.jax.model.request.benebranch.BeneficiaryTrnxModel;
@@ -47,6 +49,7 @@ import com.amx.jax.service.ParameterService;
 import com.amx.jax.services.BankService;
 import com.amx.jax.services.BeneficiaryValidationService;
 import com.amx.jax.services.JaxEmailNotificationService;
+import com.amx.jax.userservice.manager.CustomerDBAuthManager;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.validation.BenePersonalDetailValidator;
 import com.amx.utils.ArgUtil;
@@ -110,6 +113,9 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 	IBeneficiaryOnlineDao beneficiaryOnlineDao;
 	@Autowired
 	BeneAccountManager beneAccountManager;
+	
+	@Autowired
+	CustomerDBAuthManager customerDBAuthManager;
 
 	@Override
 	public BeneficiaryTrnxModel init() {
@@ -443,7 +449,18 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 	 * 
 	 */
 	public ApiResponse commitTransaction(String mOtp, String eOtp) {
-		userService.validateOtp(null, mOtp, eOtp);
+		BigDecimal custId = metaData.getCustomerId();
+		JaxAuthContext.contactType(ContactType.SMS_EMAIL);
+		if(eOtp != null) {
+			JaxAuthContext.eOtp(eOtp);
+		}
+		if(mOtp != null) {
+			JaxAuthContext.mOtp(mOtp);
+		}
+		if(custId != null) {
+			customerDBAuthManager.validateAndSendOtp(custId);
+		}
+		//userService.validateOtp(null, mOtp, eOtp);
 		commit();
 		ApiResponse apiResponse = getBlankApiResponse();
 		apiResponse.getData().setType("bene-trnx-model");

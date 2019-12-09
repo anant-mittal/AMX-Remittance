@@ -230,7 +230,9 @@ public class CustomerIdProofManager {
 	
 	public void markCustomerPendingCompliance(BigDecimal customerId) {
 		CustomerIdProof idProof = getCustomerIdProofByCustomerId(customerId);
-		idProof.setIdentityStatus(AmxDBConstants.Compliance);
+		if(idProof != null) {
+			idProof.setIdentityStatus(AmxDBConstants.Compliance);
+		}
 		customerIdProofRepository.save(idProof);
 	}
 }
