@@ -14,6 +14,9 @@ public class PayGConfig {
 
 	@Value("${app.test.enabled}")
 	boolean testEnabled;
+	
+	@Value("${app.test.local}")
+	boolean localEnabled;
 
 	@Autowired
 	AppConfig appConfig;
@@ -35,6 +38,10 @@ public class PayGConfig {
 	 */
 	public void setTestEnabled(boolean testEnabled) {
 		this.testEnabled = testEnabled;
+	}
+
+	public boolean isLocalEnabled() {
+		return localEnabled;
 	}
 
 }
