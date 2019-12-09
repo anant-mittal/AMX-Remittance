@@ -2,7 +2,6 @@ package com.amx.jax.manager.remittance;
 
 import static com.amx.jax.serviceprovider.service.AbstractFlexFieldManager.ValidationResultKey.PACKAGE_FC_AMOUNT;
 import static com.amx.jax.serviceprovider.service.AbstractFlexFieldManager.ValidationResultKey.PREFLEXCALL_COMPLETE;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
