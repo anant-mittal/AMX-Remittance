@@ -59,6 +59,27 @@ public final class AuthDataInterface {
 	}
 
 	/**
+	 * The Interface AuthRequestPassword.
+	 */
+	public interface AuthKeyPin {
+
+		/**
+		 * Gets the pin.
+		 *
+		 * @return the pin
+		 */
+		@ApiMockModelProperty(example = "1234")
+		public String getPin();
+
+		/**
+		 * Sets the password.
+		 *
+		 * @param set the pin
+		 */
+		void setPin(String pin);
+	}
+
+	/**
 	 * The Interface AuthRequestSecAns.
 	 */
 	public interface AuthRequestSecAns {
@@ -195,7 +216,7 @@ public final class AuthDataInterface {
 
 	@JsonDeserialize(as = AuthData.class)
 	@JsonIgnoreProperties(ignoreUnknown = true)
-	public interface AuthRequestCaptcha {
+	public interface AuthKeyCaptcha {
 
 		public String getCaptachKey();
 
@@ -208,8 +229,16 @@ public final class AuthDataInterface {
 	 */
 	@JsonDeserialize(as = AuthData.class)
 	@JsonIgnoreProperties(ignoreUnknown = true)
-	public interface AuthRequest extends AuthRequestIdentity, AuthRequestPassword, AuthRequestSecAns, AuthRequestOTP,
-			AuthRequestFingerprint, AuthRequestCaptcha {
+	public interface AuthRequest
+			extends AuthRequestIdentity, AuthRequestPassword, AuthKeyPin, AuthRequestSecAns, AuthRequestOTP,
+			AuthRequestFingerprint, AuthKeyCaptcha {
+
+	}
+
+	@JsonDeserialize(as = AuthData.class)
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	public interface AuthRequestPinLogin
+			extends AuthRequestIdentity, AuthKeyPin, AuthKeyCaptcha {
 
 	}
 

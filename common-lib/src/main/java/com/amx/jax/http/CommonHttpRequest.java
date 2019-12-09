@@ -436,6 +436,7 @@ public class CommonHttpRequest {
 		boolean useAuthKey;
 		String flow;
 		String feature;
+		String clientAuth;
 
 		public RequestType getType() {
 			return type;
@@ -477,6 +478,14 @@ public class CommonHttpRequest {
 			this.feature = feature;
 		}
 
+		public String getClientAuth() {
+			return clientAuth;
+		}
+
+		public void setClientAuth(String clientAuth) {
+			this.clientAuth = clientAuth;
+		}
+
 	}
 
 	public ApiRequestDetail getApiRequest(HttpServletRequest req) {
@@ -488,6 +497,7 @@ public class CommonHttpRequest {
 			detail.setUseAuthToken(x.useAuthToken());
 			detail.setFlow(x.flow());
 			detail.setFeature(x.feature());
+			detail.setClientAuth(x.clientAuth());
 		}
 
 		if (ArgUtil.isEmpty(detail.getType()) || RequestType.DEFAULT.equals(detail.getType())) {

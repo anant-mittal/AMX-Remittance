@@ -299,7 +299,7 @@ public class UserService {
 	@Autowired
 	private CustomerProfileClient customerProfileClient;
 
-	public ResponseWrapper<UserMetaData> extracted(boolean refresh, boolean validate, Language lang) {
+	public ResponseWrapper<UserMetaData> getMeta(boolean refresh, boolean validate, Language lang) {
 
 		ResponseWrapper<UserMetaData> wrapper = new ResponseWrapper<UserMetaData>(new UserMetaData());
 

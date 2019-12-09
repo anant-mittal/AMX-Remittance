@@ -21,4 +21,6 @@ public @interface ApiRequest {
 
 	String feature() default Constants.BLANK;
 
+	String clientAuth() default Constants.BLANK;
+
 }

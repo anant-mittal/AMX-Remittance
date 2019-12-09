@@ -32,6 +32,7 @@ public class AuthData extends AbstractModel implements AuthResponse, AuthRequest
 
 	/** The password. */
 	private String password = null;
+	private String pin = null;
 
 	private String deviceToken = null;
 
@@ -467,6 +468,16 @@ public class AuthData extends AbstractModel implements AuthResponse, AuthRequest
 	@Override
 	public void setCaptachKey(String captachKey) {
 		this.captachKey = captachKey;
+	}
+
+	@Override
+	public String getPin() {
+		return pin;
+	}
+
+	@Override
+	public void setPin(String pin) {
+		this.pin = pin;
 	}
 
 }
