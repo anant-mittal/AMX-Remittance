@@ -147,8 +147,8 @@ public class BenePersonalDetailValidator implements Validator {
 	}
 
 	public void validateBeneNames(BenePersonalDetailModel benePersonalDetailModel) {
-		BeneficaryStatus beneStatus = beneficaryStatusRepository.findOne(benePersonalDetailModel.getStateId());
-		if (ConstantDocument.Non_Individual.equalsIgnoreCase(beneStatus.getBeneficaryStatusName())) {
+		BeneficaryStatus beneStatus = beneficaryStatusRepository.findOne(benePersonalDetailModel.getBeneficaryTypeId());
+		if (ConstantDocument.NON_INDIVIDUAL_STRING.equalsIgnoreCase(beneStatus.getBeneficaryStatusName())) {
 			if (benePersonalDetailModel.getInstitutionName() == null) {
 				throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Institution name can not be null");
 			}
