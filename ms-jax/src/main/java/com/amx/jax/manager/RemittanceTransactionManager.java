@@ -36,8 +36,10 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.PromotionDto;
 import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
+import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
+import com.amx.jax.JaxAuthContext;
 import com.amx.jax.api.ResponseCodeDetailDTO;
 import com.amx.jax.branchremittance.manager.BranchRemittanceApplManager;
 import com.amx.jax.branchremittance.manager.BranchRemittanceExchangeRateManager;
@@ -99,6 +101,7 @@ import com.amx.jax.manager.remittance.RemittanceOtpManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.model.CivilIdOtpModel;
+import com.amx.jax.model.request.benebranch.BeneficiaryTrnxModel;
 import com.amx.jax.model.request.remittance.AbstractRemittanceApplicationRequestModel;
 import com.amx.jax.model.request.remittance.ExchangeRateValidateRequestDto;
 import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
@@ -142,6 +145,7 @@ import com.amx.jax.services.RoutingService;
 import com.amx.jax.services.TransactionHistroyService;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.dao.ReferralDetailsDao;
+import com.amx.jax.userservice.manager.CustomerDBAuthManager;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.AmxDBConstants;
 import com.amx.jax.util.DateUtil;
@@ -321,6 +325,9 @@ public class RemittanceTransactionManager {
 	
 	@Autowired
 	BranchRemittanceManager branchRemitManager;
+	
+	@Autowired
+	CustomerDBAuthManager customerDBAuthManager;
 		
 
 	private static final String IOS = "IOS";
@@ -1293,8 +1300,8 @@ public class RemittanceTransactionManager {
 			remittanceApplication.setApplSplit(ConstantDocument.Yes);
 		}
 		
+		
 		remitAppDao.saveAllApplicationData(remittanceApplication, remittanceAppBeneficairy, additionalInstrumentData,remitApplSrvProv,applSplitList,remitApplAml);
-
 		remitAppDao.updatePlaceOrderV2(model, remittanceApplication);
 		remiteAppModel.setRemittanceAppId(remittanceApplication.getRemittanceApplicationId());
 		remiteAppModel.setNetPayableAmount(netAmountPayable);
@@ -1305,6 +1312,7 @@ public class RemittanceTransactionManager {
 		if(StringUtils.isNotBlank(model.getPaymentType()) && ConstantDocument.PB_PAYMENT.equalsIgnoreCase(model.getPaymentType())) {
 			remiteAppModel.setPgCode(PayGServiceCode.PB);
 		}
+		
 		CivilIdOtpModel civilIdOtpModel = null;
 		if (model.getmOtp() == null) {
 			// this flow is for send OTP
@@ -1313,7 +1321,7 @@ public class RemittanceTransactionManager {
 			// this flow is for validate OTP
 			userService.validateOtp(null, model.getmOtp(), null);
 		}
-		remiteAppModel.setCivilIdOtpModel(civilIdOtpModel);
+		remiteAppModel.setCivilIdOtpModel(civilIdOtpModel); 
 
 		logger.info("Application saved successfully, response: " + remiteAppModel.toString());
 
@@ -1392,6 +1400,26 @@ public class RemittanceTransactionManager {
 		}
 		
 		
+		/** send OTP **/
+		CivilIdOtpModel civilIdOtpModel = null;
+		if (model.getmOtp() == null) {
+			// this flow is for send OTP
+			civilIdOtpModel = addOtpOnRemittanceV2(model);
+		}
+		JaxAuthContext.contactType(ContactType.SMS_EMAIL);
+		if(civilIdOtpModel!=null && civilIdOtpModel.geteOtp()!= null) {
+			JaxAuthContext.eOtp(civilIdOtpModel.geteOtp());
+		}
+		if(civilIdOtpModel!=null && civilIdOtpModel.getmOtp() != null) {
+			JaxAuthContext.mOtp(civilIdOtpModel.getmOtp());
+		}
+		if(meta.getCustomerId() != null) {
+			customerDBAuthManager.validateAndSendOtp(meta.getCustomerId());
+		}
+		
+		
+		
+		
 		remitAppDao.saveAllApplicationData(remittanceApplication, remittanceAppBeneficairy, additionalInstrumentData,remitApplSrvProv,applSplitList,remitApplAml);
 		remitAppDao.updatePlaceOrderV2(model, remittanceApplication);
 		
@@ -1404,7 +1432,7 @@ public class RemittanceTransactionManager {
 		  remiteAppModel.setMerchantTrackId(meta.getCustomerId());
 		  remiteAppModel.setDocumentIdForPayment(remittanceApplication.getDocumentNo().
 		  toString());
-		 
+		/* 
 		CivilIdOtpModel civilIdOtpModel = null;
 		if (model.getmOtp() == null) {
 			// this flow is for send OTP
@@ -1413,7 +1441,7 @@ public class RemittanceTransactionManager {
 			// this flow is for validate OTP
 			userService.validateOtp(null, model.getmOtp(), null);
 		}
-		
+		*/
 		logger.info("Application saved successfully, response: " + remiteAppModel.toString());
 
 		
@@ -1660,8 +1688,7 @@ public class RemittanceTransactionManager {
 
 			List<ContactType> channel = new ArrayList<>();
 			channel.add(ContactType.SMS_EMAIL);
-			otpMmodel = (CivilIdOtpModel) userService.sendOtpForCivilId(null, channel, null, null).getData().getValues()
-					.get(0);
+			otpMmodel = (CivilIdOtpModel) userService.sendOtpForCivilId(null, channel, null, null).getData().getValues().get(0);
 		}
 		return otpMmodel;
 	}
