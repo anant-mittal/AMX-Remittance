@@ -1,0 +1,192 @@
+
+package com.amx.jax.kiosk.api;
+
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.amx.jax.AppConstants;
+import com.amx.jax.AppContextUtil;
+import com.amx.jax.dict.AmxEnums.Products;
+import com.amx.jax.dict.Language;
+import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
+import com.amx.jax.error.JaxError;
+import com.amx.jax.http.CommonHttpRequest;
+import com.amx.jax.logger.LoggerService;
+import com.amx.jax.rest.RestService;
+import com.amx.jax.ui.UIConstants;
+import com.amx.jax.ui.UIConstants.Features;
+import com.amx.jax.ui.WebAppConfig;
+import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
+import com.amx.jax.ui.model.ServerStatus;
+import com.amx.jax.ui.response.ResponseMessage;
+import com.amx.jax.ui.response.ResponseWrapper;
+import com.amx.jax.ui.service.JaxService;
+import com.amx.jax.ui.service.SessionService;
+import com.amx.jax.ui.session.UserDeviceBean;
+import com.amx.jax.ui.session.UserSession;
+import com.amx.utils.ArgUtil;
+import com.amx.utils.JsonUtil;
+
+import io.swagger.annotations.Api;
+
+/**
+ * The Class HomeController.
+ */
+@Controller
+@Api(value = "Auth APIs")
+public class HomeController {
+
+	/** The Constant LOGGER. */
+	private static final Logger LOGGER = LoggerService.getLogger(HomeController.class);
+
+	/** The web app config. */
+	@Autowired
+	private WebAppConfig webAppConfig;
+
+	/** The user device. */
+	@Autowired
+	private UserDeviceBean userDevice;
+
+	/** The jax service. */
+	@Autowired
+	private JaxService jaxService;
+
+	/** The session service. */
+	@Autowired
+	private SessionService sessionService;
+
+	/** The http service. */
+	@Autowired
+	private CommonHttpRequest httpService;
+
+	/** The check time. */
+	private long checkTime = 0L;
+
+	/** The version new. */
+	private String versionNew = "_";
+
+	/** The post man service. */
+	@Autowired
+	private RestService restService;
+
+	@Autowired
+	private UserSession userSession;
+
+	/**
+	 * Gets the version.
+	 *
+	 * @return the version
+	 */
+	public String getVersion() {
+		long checkTimeNew = System.currentTimeMillis() / (1000 * 60 * 5);
+		if (checkTimeNew != checkTime) {
+			try {
+				Map<String, Object> map = restService
+						.ajax(webAppConfig.getCleanCDNUrl() + "/dist/build.json?_=" + checkTimeNew).get().asMap();
+				if (map.containsKey("version")) {
+					versionNew = ArgUtil.parseAsString(map.get("version"));
+				}
+				checkTime = checkTimeNew;
+			} catch (Exception e) {
+				LOGGER.error("getVersion Exception", e);
+			}
+		}
+		return versionNew;
+	}
+
+	/**
+	 * Login ping.
+	 *
+	 * @param request the request
+	 * @return the string
+	 */
+	@ApiJaxStatus({ JaxError.ACCOUNT_LENGTH, JaxError.ACCOUNT_TYPE_UPDATE })
+	@RequestMapping(value = "/pub/meta/**", method = { RequestMethod.GET })
+	@ResponseBody
+	public String loginPing(HttpServletRequest request) {
+		ResponseWrapper<ServerStatus> wrapper = new ResponseWrapper<ServerStatus>(new ServerStatus());
+		Integer hits = sessionService.getGuestSession().hitCounter();
+		userDevice.resolve();
+		wrapper.getData().setHits(hits);
+		wrapper.getData().setDomain(request.getRequestURL().toString());
+		wrapper.getData().setRequestUri(request.getRequestURI());
+		wrapper.getData().setRemoteAddr(httpService.getIPAddress());
+		wrapper.getData().setDevice(userDevice.getUserDevice().toSanitized());
+		return JsonUtil.toJson(wrapper);
+	}
+
+	/**
+	 * Login P json.
+	 *
+	 * @return the string
+	 */
+	@RequestMapping(value = "/login/**", method = { RequestMethod.GET, RequestMethod.POST }, headers = {
+			"Accept=application/json", "Accept=application/v0+json" })
+	@ResponseBody
+	public String loginPJson() {
+		LOGGER.debug("This is debug Statment");
+		LOGGER.info("This is debug Statment");
+		ResponseWrapper<Object> wrapper = new ResponseWrapper<Object>(null);
+		wrapper.setMessage(OWAStatusStatusCodes.UNAUTHORIZED, ResponseMessage.UNAUTHORIZED);
+		return JsonUtil.toJson(wrapper);
+	}
+
+	/**
+	 * Default page.
+	 *
+	 * @param model the model
+	 * @return the string
+	 */
+	@RequestMapping(value = { "/register/**", "/app/**", "/home/**", "/refer/**", "/", "/login/**" },
+			method = { RequestMethod.GET, RequestMethod.POST })
+	public String defaultPage(Model model) {
+		model.addAttribute("lang", httpService.getLanguage());
+		model.addAttribute("applicationTitle", webAppConfig.getAppTitle());
+		model.addAttribute("cdnUrl", webAppConfig.getCleanCDNUrl());
+		model.addAttribute("sac", userSession.sac());
+		model.addAttribute(UIConstants.CDN_VERSION, getVersion());
+		model.addAttribute(AppConstants.DEVICE_ID_KEY, userDevice.getUserDevice().getFingerprint());
+		model.addAttribute("fcmSenderId", webAppConfig.getFcmSenderId());
+		return "app";
+	}
+
+	/**
+	 * Terms page.
+	 *
+	 * @param model the model
+	 * @param lang  the lang
+	 * @return the string
+	 */
+	@RequestMapping(value = { "/app/terms", "/pub/terms" }, method = { RequestMethod.GET })
+	public String termsPage(Model model, @RequestParam Language lang,
+			@RequestParam(required = false) Products product) {
+		model.addAttribute("lang", httpService.getLanguage());
+		sessionService.getGuestSession().setLanguage(lang);
+		if (ArgUtil.isEmpty(product) || Products.REMIT.equals(product)) {
+			model.addAttribute("terms", jaxService.setDefaults().getMetaClient().getTermsAndCondition().getResults());
+		} else if (Products.FXORDER.equals(product)) {
+			model.addAttribute("terms",
+					jaxService.setDefaults().getMetaClient().getTermsAndConditionAsPerCountryForFxOrder().getResults());
+		}
+		return "terms";
+	}
+
+	@RequestMapping(value = { "/pub/recaptcha/{feature}" },
+			method = { RequestMethod.GET })
+	public String recaptach(Model model, @PathVariable Features feature) {
+		model.addAttribute("googelReCaptachSiteKey", webAppConfig.getGoogelReCaptachSiteKey());
+		model.addAttribute("companyTnt", AppContextUtil.getTenant());
+		return "recaptcha";
+	}
+}

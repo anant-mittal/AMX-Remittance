@@ -11,6 +11,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.logger.AuditActor;
+import com.amx.utils.Random;
 
 /**
  * The Class UserSession.
@@ -26,6 +27,8 @@ public class UserSession implements Serializable {
 	private String uuidToken = null;
 
 	private String referrer = null;
+
+	private String sac = null;
 
 	/**
 	 * Sets the referrer.
@@ -114,6 +117,20 @@ public class UserSession implements Serializable {
 	 */
 	public void setValid(boolean valid) {
 		this.valid = valid;
+	}
+
+	public String getSac() {
+		return this.sac;
+	}
+
+	/**
+	 * Generates new SAC and returns the new value
+	 * 
+	 * @return
+	 */
+	public String sac() {
+		this.sac = Random.randomAlphaNumeric(12);
+		return this.sac;
 	}
 
 }

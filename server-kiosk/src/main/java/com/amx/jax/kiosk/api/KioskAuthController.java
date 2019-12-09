@@ -1,5 +1,5 @@
 
-package com.amx.jax.ui.api;
+package com.amx.jax.kiosk.api;
 
 import javax.validation.Valid;
 
