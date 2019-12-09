@@ -51,7 +51,7 @@ public class CommunicationPreferencesManager {
 		if(ArgUtil.isEmpty(channelList)) {
 			boolean isSmsVerified = communicationPrefsResult.isSms();
 			if (!isSmsVerified) {
-				throw new GlobalException(JaxError.SMS_NOT_VERIFIED,"Sms number is not verified");
+				throw new GlobalException(JaxError.SMS_NOT_VERIFIED,"Mobile number is not verified");
 			}
 		}
 		else{
@@ -67,7 +67,7 @@ public class CommunicationPreferencesManager {
 				} else if (ContactType.SMS.equals(channel)) {
 					boolean isSmsVerified = communicationPrefsResult.isSms();
 					if (!isSmsVerified) {
-						throw new GlobalException(JaxError.SMS_NOT_VERIFIED,"Sms number is not verified");
+						throw new GlobalException(JaxError.SMS_NOT_VERIFIED,"Mobile number is not verified");
 					}
 				} else if (ContactType.WHATSAPP.equals(channel)) {
 					boolean isWhatsAppVerified = communicationPrefsResult.isWhatsApp();

@@ -721,9 +721,10 @@ public class UserValidationService {
 		if (customerId != null) {
 			CustomerVerification cv = customerVerificationService.getVerification(customerId,
 					CustomerVerificationType.EMAIL);
-			if (cv != null && ConstantDocument.No.equals(cv.getVerificationStatus()) && cv.getFieldValue() != null) {
-				throw new GlobalException(JaxError.EMAIL_NOT_VERIFIED,
-						"Your email verificaiton is pending");
+			Customer customer = custDao.getActiveCustomerDetailsByCustomerId(customerId);
+			if ((cv != null && ConstantDocument.No.equals(cv.getVerificationStatus()) && cv.getFieldValue() != null)
+					|| (ConstantDocument.No.equals(customer.getEmailVerified()))) {
+				throw new GlobalException(JaxError.EMAIL_NOT_VERIFIED, "Your email verificaiton is pending");
 			}
 		}
 	}
