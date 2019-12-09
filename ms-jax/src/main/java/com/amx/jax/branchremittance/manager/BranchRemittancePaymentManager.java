@@ -24,6 +24,7 @@ import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.RoutingProcedureDao;
 import com.amx.jax.dao.BranchRemittancePaymentDao;
 import com.amx.jax.dbmodel.BanksView;
+import com.amx.jax.dbmodel.CountryBranchMdlv1;
 import com.amx.jax.dbmodel.CurrencyMasterMdlv1;
 import com.amx.jax.dbmodel.CurrencyWiseDenominationMdlv1;
 import com.amx.jax.dbmodel.Customer;
@@ -63,6 +64,7 @@ import com.amx.jax.repository.ICustomerRepository;
 import com.amx.jax.repository.IRemitApplSrvProvRepository;
 import com.amx.jax.repository.IShoppingCartDetailsRepository;
 import com.amx.jax.repository.RemittanceApplicationRepository;
+import com.amx.jax.service.BankMetaService;
 import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.DateUtil;
@@ -117,6 +119,9 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 	
 	@Autowired
 	AdditionalInstructionDataRepository addlInstDataRepo;
+	
+	@Autowired
+	BankMetaService bankMetaService;
 
 
 	/* 
@@ -147,7 +152,13 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 				totalCustomerLoyaltyPoits = customer.getLoyaltyPoints()==null?BigDecimal.ZERO:customer.getLoyaltyPoints();
 			}
 			
-			//deActivateOnlineApplication();
+			
+			CountryBranchMdlv1 countryBranch = new CountryBranchMdlv1();
+			countryBranch = bankMetaService.getCountryBranchById(metaData.getCountryBranchId()); //user branch not customer branch
+			
+			if(countryBranch!=null && !countryBranch.getBranchId().equals(ConstantDocument.ONLINE_BRANCH_LOC_CODE)) {
+				deActivateOnlineApplication();
+			}
 			
 			List<ShoppingCartDetails> lstCustomerShopping = branchRemittancePaymentDao.fetchCustomerShoppingCart(customerId);
 			
