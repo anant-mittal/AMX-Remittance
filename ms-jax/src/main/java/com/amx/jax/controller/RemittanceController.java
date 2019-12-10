@@ -39,6 +39,7 @@ import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.response.SourceOfIncomeDto;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.postman.client.PushNotifyClient;
+import com.amx.jax.repository.RemittanceTransactionRepository;
 import com.amx.jax.services.CustomerRatingService;
 import com.amx.jax.services.PurposeOfTransactionService;
 import com.amx.jax.services.RemittanceTransactionService;
@@ -98,6 +99,9 @@ public class RemittanceController {
 
 	@Autowired
 	protected AmxMeta amxMeta;
+	
+	@Autowired
+	RemittanceTransactionRepository remittanceTransactionRepo;
 
 	@RequestMapping(value = "/trnxHist/", method = RequestMethod.GET)
 	public ApiResponse getTrnxHistroyDetailResponse(@RequestParam(required = false, value = "docfyr") BigDecimal docfyr,
@@ -139,8 +143,10 @@ public class RemittanceController {
 				+ transactionHistroyDTO.getCustomerReference());
 		logger.info("Country Id :" + transactionHistroyDTO.getApplicationCountryId() + "\t Currency Id :"
 				+ transactionHistroyDTO.getCurrencyId());
-
+		RemittanceTransaction remittanceTransaction = remittanceTransactionRepo
+				.findByCollectionDocFinanceYearAndCollectionDocumentNo(transactionHistroyDTO.getCollectionDocumentFinYear(), transactionHistroyDTO.getCollectionDocumentNo());
 		transactionHistroyDTO.setCompanyId(metaData.getCompanyId());
+		transactionHistroyDTO.setDocumentNumber(remittanceTransaction.getDocumentNo());
 		ApiResponse response = reportManagerService
 				.generatePersonalRemittanceReceiptReportDetails(transactionHistroyDTO, Boolean.TRUE);
 		return response;
