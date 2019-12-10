@@ -37,7 +37,10 @@ public class SnapConstants {
 		
 		
 		BUGZ_STORIES("bugz-stories", SnapIndexName.ALL),
+		BUGZ_STORIES_STATUS("bugz-stories-status", SnapIndexName.ALL,"bugzilla-bugs"),
+		
 		RPTPG2("rptpg2", SnapIndexName.TRANX),
+		RPT_DUMMY("rpt_dummy", SnapIndexName.TRANX),
 		RPT("rpt", SnapIndexName.TRANX),
 		RPT2("rpt2", SnapIndexName.TRANX),
 		RPTMONTHLY("rptmonthly", SnapIndexName.TRANX),
@@ -97,6 +100,7 @@ public class SnapConstants {
 		static {
 			RPT.setQueryParams("PrevMonth:PrevMonth;ThisMonth:ThisMonth");
 			RPTPG2.setQueryParams("PrevMonth:PrevMonth;ThisMonth:ThisMonth");
+			RPT_DUMMY.setQueryParams("PrevMonth:PrevMonth;ThisMonth:ThisMonth");
 			RPTMONTHLY.setQueryParams("PrevMonth:PrevMonth;Month:Month");
 			RPTCOMPARISON.setQueryParams("MonthOneFrom:2019-08-06;MonthOneTo:2019-09-06;MonthTwoFrom:2019-09-07;MonthTwoTo:2019-10-07");
 			RPTMONTHCOMPARISON.setQueryParams("MonthOneName:Sept;MonthOne:2019-09;MonthTwoName:Oct;MonthTwo:2019-10");
