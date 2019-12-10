@@ -2,6 +2,7 @@ package com.amx.jax.branchremittance.manager;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -15,9 +16,11 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.dao.CardTypeDao;
 import com.amx.jax.dbmodel.CardTypeViewModel;
+import com.amx.jax.dbmodel.remittance.CustomerBank;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.response.remittance.CardTypeDto;
+import com.amx.jax.repository.remittance.CustomerBankRepository;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
@@ -28,6 +31,9 @@ public class CardTypeManager extends AbstractModel {
 
 	@Autowired
 	CardTypeDao CardTypeDao;
+	
+	@Autowired
+	CustomerBankRepository customerBankRepository;
 
 	public List<CardTypeDto> fetchCardTypeList(BigDecimal languageId) {
 		List<CardTypeDto> cardTypes = new ArrayList<>();
@@ -50,4 +56,19 @@ public class CardTypeManager extends AbstractModel {
 		return cardTypes;
 	}
 
+	public void updateExtCardType(BigDecimal custId, BigDecimal chequeBankId, BigDecimal cardTypeId) {
+		List<CustomerBank> customerBanks = CardTypeDao.getCustomerBanks(custId, chequeBankId);
+		
+		if(customerBanks != null && customerBanks.size() != 0) {
+			logger.info(" Customer Banks list is : " + customerBanks.size());
+			for(CustomerBank custBankVal : customerBanks) {
+				custBankVal.setCardTypeId(cardTypeId);
+				//custBankVal.setModifiedDate(new Date());
+				
+				customerBankRepository.save(custBankVal);
+			}
+		} else {
+			throw new GlobalException(JaxError.NO_RECORD_FOUND, "No records found for Customer Bank");
+		}
+	}
 }
