@@ -196,7 +196,7 @@ public class VentajaFlexFieldManager extends AbstractFlexFieldManager {
 		if (monthlyContribution != null && !Boolean.TRUE.equals(volunteerContributionIndic)) {
 			packageFcAmount = monthlyContribution.multiply(BigDecimal.valueOf(noOfMonth));
 		}
-		if (volunteerContribution != null) {
+		if (volunteerContribution != null && noOfMonth != null) {
 			packageFcAmount = monthlyContribution.add(volunteerContribution).multiply(BigDecimal.valueOf(noOfMonth));
 		}
 		addDateRangeParameters(noOfMonth, requiredFlexFields);
