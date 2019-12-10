@@ -103,6 +103,7 @@ import com.amx.jax.repository.IShoppingCartDetailsRepository;
 import com.amx.jax.repository.PaymentModeRepository;
 import com.amx.jax.repository.RemittanceApplicationBeneRepository;
 import com.amx.jax.repository.RemittanceApplicationRepository;
+import com.amx.jax.repository.RemittanceTransactionRepository;
 import com.amx.jax.repository.remittance.LocalBankDetailsRepository;
 import com.amx.jax.service.BankMetaService;
 import com.amx.jax.service.CompanyService;
@@ -239,6 +240,9 @@ public class BranchRemittanceSaveManager {
     
     @Autowired
     DailyPromotionManager dailyPromotionManager;
+    
+    @Autowired
+    RemittanceTransactionRepository remittanceTransactionRepository;
     
 	
 	
@@ -1356,6 +1360,8 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
 		try {
 			TransactionHistroyDTO trxnDto = new TransactionHistroyDTO();
 			Customer customer = customerDao.getCustById(metaData.getCustomerId());
+			RemittanceTransaction remittanceTransaction = remittanceTransactionRepository
+					.findByCollectionDocFinanceYearAndCollectionDocumentNo(collectionDocYear, collectionDocNo);
 			paymentResponse.setCollectionDocumentCode(collectionDocCode);
 			paymentResponse.setCollectionDocumentNumber(collectionDocNo);
 			paymentResponse.setCollectionFinanceYear(collectionDocYear);
@@ -1368,6 +1374,8 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
 			trxnDto.setLanguageId(metaData.getLanguageId());
 			trxnDto.setApplicationCountryId(metaData.getCountryId());
 			trxnDto.setCustomerReference(customer.getCustomerReference());
+			trxnDto.setDocumentNumber(remittanceTransaction.getDocumentNo());
+			trxnDto.setDocumentFinanceYear(remittanceTransaction.getDocumentFinanceYear());
 			reportManagerService.generatePersonalRemittanceReceiptReportDetails(trxnDto, Boolean.TRUE);
 			List<RemittanceReceiptSubreport> rrsrl = reportManagerService.getRemittanceReceiptSubreportList();
 			PersonInfo personinfo = new PersonInfo();
