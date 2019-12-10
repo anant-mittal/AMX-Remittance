@@ -248,9 +248,9 @@ public class PromotionManager {
 			PromotionDto dto = null;
 			RemittanceTransaction remittanceTransaction = remittanceApplicationDao
 					.getRemittanceTransactionByRemitDocNo(docNoRemit, docFinyear);
-			logger.debug("Remittance transact value is  "+JsonUtil.toJson(remittanceTransaction));
+			
 			List<PromotionDetailModel> models = promotionDao.getPromotionDetailModel(docFinyear, docNoRemit);
-			logger.debug("Promotion dto model value is  "+JsonUtil.toJson(models.get(0)));
+			
 			logger.debug("Model size is "+models.size());
 			if (models != null && models.size() > 0) {
 				dto = new PromotionDto();
