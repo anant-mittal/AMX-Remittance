@@ -47,7 +47,13 @@ public class ExchRateUploadDao {
 	@Modifying
 	public int updateStatusForRuleIdIn(Iterable<String> ruleIds, RATE_UPLOAD_STATUS status, String approvedBy,
 			Date approvedDate) {
-		return repo.updateStatusForRuleIdIn(ruleIds, status, approvedBy, approvedDate);
+		return repo.updateStatusForRuleIdIn(ruleIds, status, approvedBy, approvedDate, IS_ACTIVE.N);
+	}
+
+	@Transactional
+	@Modifying
+	public int updateApprovalForRuleIdIn(Iterable<String> ruleIds, String approvedBy, Date approvedDate) {
+		return repo.updateApprovalForRuleIdIn(ruleIds, approvedBy, approvedDate);
 	}
 
 }

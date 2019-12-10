@@ -18,10 +18,6 @@ import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
-import oracle.jdbc.driver.OracleConnection;
-import oracle.sql.ARRAY;
-import oracle.sql.ArrayDescriptor;
-
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class ExchRatePopulateProcDao {
@@ -29,32 +25,38 @@ public class ExchRatePopulateProcDao {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
-	public Map<String, Object> callProcedurePopulateExchRate(BigDecimal applCountryId, String[] ruleIds) {
+	public Map<String, Object> callProcedurePopulateExchRate(BigDecimal applCountryId, String[] ruleIds,
+			String approvedBy) {
 
 		Map<String, Object> output = null;
 
+		if (ruleIds == null || ruleIds.length == 0) {
+			return output;
+		}
+
+		String concat = String.join(",", ruleIds);
+
 		List<SqlParameter> declareInAndOutputParameters = Arrays.asList(
 				new SqlParameter("P_APPLICATION_COUNTRY_ID", Types.NUMERIC), // 1
-				new SqlParameter("P_RULE_ID", Types.ARRAY, "EXCH_RATE_RULE_ID") // 2
+				new SqlParameter("P_STRING", Types.VARCHAR), // 2
+				new SqlParameter("P_APPROVED_BY", Types.VARCHAR) // 3
+
 		);
 
 		output = jdbcTemplate.call(new CallableStatementCreator() {
 			@Override
 			public CallableStatement createCallableStatement(Connection con) throws SQLException {
 
-				// if (con.isWrapperFor(OracleConnection.class)){
-				OracleConnection oCon = con.unwrap(OracleConnection.class);
-				// }
+				/* if (con.isWrapperFor(OracleConnection.class)){
+				 OracleConnection oCon = con.unwrap(OracleConnection.class);
+				 }*/
 
-				String proc = " { call EX_P_POPULATE_EXRATE_APRDET (?, ?) } ";
+				String proc = " { call EX_P_POPULATE_EXRATE_APRDET (?, ?, ?) } ";
 				CallableStatement cs = con.prepareCall(proc);
 
-				// Array sArray = con.createArrayOf("EXCH_RATE_RULE_ID", ruleIds);
-				ArrayDescriptor des = ArrayDescriptor.createDescriptor("EXCH_RATE_RULE_ID", oCon);
-				ARRAY cArray = new ARRAY(des, oCon, ruleIds);
-
 				cs.setBigDecimal(1, applCountryId);
-				cs.setArray(2, cArray);
+				cs.setString(2, concat);
+				cs.setString(3, approvedBy);
 
 				cs.execute();
 				return cs;

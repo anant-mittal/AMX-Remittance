@@ -23,6 +23,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.multitenant.MultiTenantConnectionProviderImpl;
 import com.amx.jax.pricer.dao.BankMasterDao;
 import com.amx.jax.pricer.dao.CountryBranchDao;
 import com.amx.jax.pricer.dao.CountryMasterDao;
@@ -58,7 +59,6 @@ import com.amx.jax.pricer.repository.custom.ExchRatePopulateProcedure;
 import com.amx.jax.pricer.var.PricerServiceConstants.IS_ACTIVE;
 import com.amx.jax.pricer.var.PricerServiceConstants.RATE_UPLOAD_STATUS;
 import com.amx.utils.ArgUtil;
-import com.amx.utils.JsonUtil;
 
 @Component
 public class ExchangeRateManager {
@@ -99,6 +99,9 @@ public class ExchangeRateManager {
 
 	@Autowired
 	RateUploadExchAprdetProcedureRepo uploadProcRepo;
+
+	@Autowired
+	MultiTenantConnectionProviderImpl connectionProvider;
 
 	@Autowired
 	DataSource dataSource;
@@ -456,34 +459,34 @@ public class ExchangeRateManager {
 
 		if (ruleStatusUpdateMap.containsKey(RATE_UPLOAD_STATUS.APPROVED)) {
 
-			//totalRowsUpdated += exchRateUploadDao.updateStatusForRuleIdIn(
-			//		ruleStatusUpdateMap.get(RATE_UPLOAD_STATUS.APPROVED), RATE_UPLOAD_STATUS.APPROVED,
-			//		rateUploadRequestDto.getUpdatedBy(), today);
-
-			System.out.println(" =========== Start Uploading =========== ");
-
-			System.out.println(" =========== Uploading For=> "
-					+ JsonUtil.toJson(ruleStatusUpdateMap.get(RATE_UPLOAD_STATUS.APPROVED)));
+			totalRowsUpdated += exchRateUploadDao.updateApprovalForRuleIdIn(
+					ruleStatusUpdateMap.get(RATE_UPLOAD_STATUS.APPROVED), rateUploadRequestDto.getUpdatedBy(), today);
 
 			String[] rulesApproved = new String[ruleStatusUpdateMap.get(RATE_UPLOAD_STATUS.APPROVED).size()];
 
 			ruleStatusUpdateMap.get(RATE_UPLOAD_STATUS.APPROVED).toArray(rulesApproved);
 
-			ExchRatePopulateProcedure proc = new ExchRatePopulateProcedure(dataSource);
+			DataSource ds = connectionProvider.getDataSource();
 
-			proc.execute(new BigDecimal(91), rulesApproved);
-			// proc.populateExchRates(new BigDecimal(91), rulesApproved);
+			ExchRatePopulateProcedure proc = new ExchRatePopulateProcedure(ds);
+			// ExchRatePopulateProcedure proc = new ExchRatePopulateProcedure(dataSource);
 
-			// Map<String, Object> outMap =
-			// ratePopulateProcDao.callProcedurePopulateExchRate(new BigDecimal(91),
-			// rulesApproved);
+			proc.populateExchRates(rateUploadRequestDto.getApplicationCountryId(), rulesApproved,
+					rateUploadRequestDto.getUpdatedBy());
 
-			// System.out.println(" Out Map ==> " + JsonUtil.toJson(outMap));
+			// proc.execute(rateUploadRequestDto.getApplicationCountryId(), rulesApproved,
+			// rateUploadRequestDto.getUpdatedBy());
 
-			// uploadProcRepo.uploadApprovedRateRules(new BigDecimal(91),
-			// ruleStatusUpdateMap.get(RATE_UPLOAD_STATUS.APPROVED));
+			/**
+			 * Old Procedure Call via JdbcTemplate
+			 */
 
-			System.out.println(" =========== End Uploading =========== ");
+			// Map<String, Object> output =
+			// ratePopulateProcDao.callProcedurePopulateExchRate(
+			// rateUploadRequestDto.getApplicationCountryId(), rulesApproved,
+			// rateUploadRequestDto.getUpdatedBy());
+
+			// System.out.println(" Output ==> " + output);
 
 		}
 
@@ -592,10 +595,10 @@ public class ExchangeRateManager {
 
 			if (rateUpload.getIsActive() == null || !IS_ACTIVE.Y.equals(rateUpload.getIsActive())) {
 				invalidRules.add(rateUpload.getRuleId());
-				//isInactive = true;
-			}else if (rateUpload.getStatus() == null || !rateUpload.getStatus().equals(RATE_UPLOAD_STATUS.CREATED)) {
+				isInactive = true;
+			} else if (rateUpload.getStatus() == null || !rateUpload.getStatus().equals(RATE_UPLOAD_STATUS.CREATED)) {
 				invalidRules.add(rateUpload.getRuleId());
-				//isApproved = true;
+				isApproved = true;
 			}
 
 		}
