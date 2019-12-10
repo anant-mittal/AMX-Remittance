@@ -11,11 +11,11 @@ import com.sqlite.service.IUserService;
 
 @SpringBootApplication
 @ComponentScan(value = {"com.amx.jax","com.sqlite"})
-public class SampleSqliteApplication {
+public class SWKioskLauncher {
 	
     	public static void main(String[] args) {
     	  ApplicationContext ctx = 
-	  		SpringApplication.run(SampleSqliteApplication.class, args);
+	  		SpringApplication.run(SWKioskLauncher.class, args);
 	  		/*String[] beanNames = ctx.getBeanDefinitionNames();
 	  		    Arrays.sort(beanNames);
 	  		    System.out.println("***********************");
