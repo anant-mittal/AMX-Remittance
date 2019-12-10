@@ -245,8 +245,7 @@ public class SnapModels {
 				this.buckets = new ArrayList<SnapModels.Aggregations>();
 				try {
 					if (map.containsKey(BUCKETS)) {
-						Object tempbucketsmapCheck = BUCKETS_LIST.load(map,
-								new HashMap<String, Map<String, Object>>());
+						Object tempbucketsmapCheck = BUCKETS_LIST.load(map, new HashMap<String, Map<String, Object>>());
 						if (tempbucketsmapCheck instanceof ArrayList) {
 							List<Map<String, Object>> tempbuckets = BUCKETS_LIST.loadList(map,
 									new HashMap<String, Object>());
@@ -370,8 +369,7 @@ public class SnapModels {
 			return newMap;
 		}
 
-		public List<Map<String, Object>> toBulk(Map<String, Object> bulkItemBlank, String space,
-				int minCount) {
+		public List<Map<String, Object>> toBulk(Map<String, Object> bulkItemBlank, String space, int minCount) {
 			List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 			long afIndex = 0;
 			for (AggregationField af : this.fields()) {
@@ -387,8 +385,8 @@ public class SnapModels {
 						// System.out.println(af.fieldName() + " " + bucketItem.getKey());
 						Map<String, Object> _bulkItemBlank = copy(bulkItemBlank);
 						_bulkItemBlank.put(af.fieldName(), bucketItem.getKey());
-						List<Map<String, Object>> bulk = bucketItem.toBulk(_bulkItemBlank,
-								space + bucketItemIndexStr, minCount);
+						List<Map<String, Object>> bulk = bucketItem.toBulk(_bulkItemBlank, space + bucketItemIndexStr,
+								minCount);
 						for (Map<String, Object> bulkItem : bulk) {
 							if (bulkItem.containsKey("_id")) {
 								// bulkItem.put("_docs", bucketItem.getDocCount());
@@ -457,6 +455,10 @@ public class SnapModels {
 			this.map.put("filters", filters);
 			filters.add(f);
 		}
+		public void addValue(String key, String value) {
+			this.map.put(key, value);
+		}
+
 	}
 
 	@JsonIgnoreProperties(ignoreUnknown = true)
