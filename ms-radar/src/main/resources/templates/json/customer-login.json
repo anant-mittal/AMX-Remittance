@@ -203,7 +203,7 @@
         {
           "match_phrase": {
             "logmap.cust.id": {
-              "query": "[[${lcustomerId}]]"
+              "query": "[[${customerId}]]"
             }
           }
         },
