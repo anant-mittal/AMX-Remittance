@@ -603,9 +603,9 @@ public class ReportManagerService extends AbstractService{
 						
 						PromotionDto promotionDtoJP = promotionManager.getJolibeePromotion(
 								transactionHistroyDTO.getDocumentNumber(), transactionHistroyDTO.getDocumentFinanceYear());
-						logger.debug("Promotion dto for JB value is  " + JsonUtil.toJson(promotionDtoJP));
+						
 						logger.debug("Value of first cond "+ArgUtil.isEmpty(promotionDtoJP));
-						logger.debug("Second cond is "+ArgUtil.isEmpty(promotionDtoJP.getPrizeMessage()));
+						
 						if (!ArgUtil.isEmpty(promotionDtoJP) && !ArgUtil.isEmpty(promotionDtoJP.getPrizeMessage())) {
 							obj.setPromotionMessage(promotionDtoJP.getPrizeMessage());
 						}
@@ -613,7 +613,7 @@ public class ReportManagerService extends AbstractService{
 							logger.debug("Promotion dto for JB is null");
 							PromotionDto prmoDto = promotionManager.getPromotionMessage(view.getDocumentNo(),
 									view.getDocumentFinancialYear(), view.getCountryBranchId(), currencyQuoteName);
-							logger.debug("Promotion dto value is  " + JsonUtil.toJson(prmoDto));
+							
 							if (prmoDto != null && !StringUtils.isBlank(prmoDto.getPrizeMessage())) {
 								obj.setPromotionMessage(prmoDto.getPrizeMessage());
 							}
