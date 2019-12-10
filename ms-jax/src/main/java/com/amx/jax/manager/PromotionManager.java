@@ -246,7 +246,7 @@ public class PromotionManager {
 	public PromotionDto getJolibeePromotion(BigDecimal docNoRemit, BigDecimal docFinyear) {
 		try {
 			PromotionDto dto = null;
-			logger.debug("Document No remit ",docNoRemit +"Doc fin year ",docFinyear);
+			logger.debug("Document No remit "+docNoRemit +"Doc fin year "+docFinyear);
 			RemittanceTransaction remittanceTransaction = remittanceApplicationDao
 					.getRemittanceTransactionByRemitDocNo(docNoRemit, docFinyear);
 			
