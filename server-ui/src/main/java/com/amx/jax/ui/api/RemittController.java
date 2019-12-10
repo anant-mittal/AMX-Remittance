@@ -466,6 +466,7 @@ public class RemittController {
 				logger.debug("amount in remittancapplication: in remittcontroller:" + respTxMdl.getNetPayableAmount());
 				payment.setAmountObject(respTxMdl.getNetPayableAmount());
 				payment.setServiceCode(respTxMdl.getPgCode());
+				payment.setProduct(AmxEnums.Products.REMIT_SINGLE);
 
 				String callbackUrl = HttpUtils.getServerName(request) + "/app/landing/remittance";
 				wrapper.setRedirectUrl(payGService.getPaymentUrl(payment, callbackUrl,
@@ -580,6 +581,7 @@ public class RemittController {
 		logger.debug("amount in remittancapplication: in remittcontroller:" + respTxMdl.getNetPayableAmount());
 		payment.setAmountObject(respTxMdl.getNetPayableAmount());
 		payment.setServiceCode(respTxMdl.getPgCode());
+		payment.setProduct(AmxEnums.Products.REMIT);
 
 		wrapper.setRedirectUrl(payGService.getPaymentUrl(payment,
 				HttpUtils.getServerName(request) + "/app/landing/cart/remit", null));
