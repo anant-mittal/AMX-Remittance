@@ -39,6 +39,7 @@ import com.amx.jax.client.JaxClientUtil;
 import com.amx.jax.client.PayAtBranchClient;
 import com.amx.jax.client.remittance.RemittanceClient;
 import com.amx.jax.dict.AmxEnums.Products;
+import com.amx.jax.dict.AmxEnums;
 import com.amx.jax.dict.Language;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.ResourceDTO;
@@ -505,6 +506,7 @@ public class RemittController {
 				logger.debug("amount in remittancapplication: in remittcontroller:" + respTxMdl.getNetPayableAmount());
 				payment.setAmountObject(respTxMdl.getNetPayableAmount());
 				payment.setServiceCode(respTxMdl.getPgCode());
+				payment.setProduct(AmxEnums.Products.REMIT_SINGLE);
 
 				String callbackUrl = HttpUtils.getServerName(request) + "/app/landing/remittance";
 
