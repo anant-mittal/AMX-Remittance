@@ -50,6 +50,7 @@ import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
 import com.amx.jax.model.response.remittance.branch.DynamicRoutingPricingResponse;
+import com.amx.utils.JsonUtil;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -298,6 +299,7 @@ public class BranchRemittanceController implements IRemittanceService {
 	@RequestMapping(value = Path.BR_REMITTANCE_GET_BENE_PACKAGE, method = RequestMethod.POST)
 	@Override
 	public AmxApiResponse<BenePackageResponse, Object> getBenePackages(@RequestBody @Valid BenePackageRequest benePackageRequest) {
+		logger.debug("requst json: {}", JsonUtil.toJson(benePackageRequest));
 		return branchRemitService.getBenePackages(benePackageRequest);
 	}
 
