@@ -295,7 +295,7 @@ public class RestService {
 			if (this.cookies != null) {
 				StringBuilder sb = new StringBuilder();
 				for (Cookie cookie : this.cookies) {
-					sb.append(cookie.getName()).append(cookie.getValue()).append(";");
+					sb.append(cookie.getName()).append("=").append(cookie.getValue()).append(";");
 				}
 				this.headers.add("Cookie", sb.toString());
 			}
