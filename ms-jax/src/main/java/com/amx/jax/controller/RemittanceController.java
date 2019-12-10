@@ -30,6 +30,7 @@ import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerRating;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
+import com.amx.jax.dict.AmxEnums;
 import com.amx.jax.dict.Language;
 import com.amx.jax.manager.RemittancePaymentManager;
 import com.amx.jax.meta.MetaData;
@@ -243,11 +244,21 @@ public class RemittanceController {
 //				pushNotifyClient.send(pushMessage);	
 //			}
 ////		}	
-
-		ApiResponse response = remittancePaymentManager.paymentCapture(paymentResponse);
+		ApiResponse response = null;
+		if(paymentResponse!=null && paymentResponse.getProduct().equals(AmxEnums.Products.REMIT_SINGLE)) { /** for compatability **/
+			response = remittancePaymentManager.paymentCapture(paymentResponse);
+		}else {
+			response = remittancePaymentManager.paymentCaptureV2(paymentResponse);
+		}
 		return response;
 	}
 
+	
+	
+	
+	
+	
+	
 	@RequestMapping(value = "/status/", method = RequestMethod.POST)
 	public ApiResponse getTransactionStatus(@RequestBody RemittanceTransactionStatusRequestModel request,
 			@RequestParam("promotion") Boolean promotion) {
