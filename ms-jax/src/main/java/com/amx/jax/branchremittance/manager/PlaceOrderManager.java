@@ -775,10 +775,6 @@ try {
 	dyRoutingPricingdto.setYouSavedAmount(branchRemittanceExchangeRateManager.getYouSavedAmount(dyRoutingPricingdto));
 	dyRoutingPricingdto.setYouSavedAmountInFC(branchRemittanceExchangeRateManager.getYouSavedAmountInFc(dyRoutingPricingdto));
 	
-	
-	
-	
-	
 	}else {
 		throw new GlobalException(JaxError.RATE_PLACE_ERROR,"No record found");
 	}
@@ -819,9 +815,9 @@ public void validateMinAndMaxRate(RatePlaceOrder placeOrder,PlaceOrderUpdateStat
 	DynamicRoutingPricingDto dpDto =requestModelObject.getDynamicRroutingPricingBreakup();
 	TrnxRoutingDetails routPath = requestModelObject.getDynamicRroutingPricingBreakup().getTrnxRoutingPaths();
 	Map<DISCOUNT_TYPE, ExchangeDiscountInfo> discountInfo  =  requestModelObject.getDynamicRroutingPricingBreakup().getCustomerDiscountDetails();
-	BigDecimal minExchangeRate = dpDto==null?BigDecimal.ZERO:dpDto.getRackExchangeRate();
-	BigDecimal maxExchangeRate = dpDto==null?BigDecimal.ZERO:dpDto.getCostExchangeRate();
-	BigDecimal offeredExchangeRate = dto==null?BigDecimal.ZERO:dto.getExchangeRateOffered();
+	BigDecimal minExchangeRate = dpDto==null?BigDecimal.ZERO:dpDto.getRackExchangeRate(); //MAx value
+	BigDecimal maxExchangeRate = dpDto==null?BigDecimal.ZERO:dpDto.getCostExchangeRate(); //Min value
+	BigDecimal offeredExchangeRate = dto==null?BigDecimal.ZERO:dto.getExchangeRateOffered(); //offer value
 	
 	if(!JaxUtil.isNullZeroBigDecimalCheck(offeredExchangeRate)) {
 		throw new GlobalException(JaxError.RATE_PLACE_ERROR,"Enter the valid rate");
@@ -829,7 +825,8 @@ public void validateMinAndMaxRate(RatePlaceOrder placeOrder,PlaceOrderUpdateStat
 	
 	if(JaxUtil.isNullZeroBigDecimalCheck(minExchangeRate) && JaxUtil.isNullZeroBigDecimalCheck(maxExchangeRate)) {
 		
-		if(offeredExchangeRate.compareTo(minExchangeRate)>0 && maxExchangeRate.compareTo(offeredExchangeRate)>0) {
+		if(offeredExchangeRate.compareTo(minExchangeRate)<0 && offeredExchangeRate.compareTo(maxExchangeRate)>0) {
+			
 		}else {
 			throw new GlobalException(JaxError.RATE_PLACE_ERROR,"The offered rate should be within the range :"+minExchangeRate+"-"+maxExchangeRate);
 		}
