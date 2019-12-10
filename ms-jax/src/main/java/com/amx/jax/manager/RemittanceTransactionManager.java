@@ -103,6 +103,7 @@ import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.model.CivilIdOtpModel;
 import com.amx.jax.model.request.benebranch.BeneficiaryTrnxModel;
 import com.amx.jax.model.request.remittance.AbstractRemittanceApplicationRequestModel;
+import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.ExchangeRateValidateRequestDto;
 import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
@@ -1340,6 +1341,11 @@ public class RemittanceTransactionManager {
 	
 	public BranchRemittanceApplResponseDto addtoCart(RemittanceTransactionDrRequestModel model) {
 		this.isSaveRemittanceFlow = true;
+		BranchRemittanceApplRequestModel applReqModel = new BranchRemittanceApplRequestModel();
+		applReqModel.setDynamicRroutingPricingBreakup(model.getDynamicRroutingPricingBreakup());
+		
+		// validation for Home Send SP
+		branchRemittanceApplManager.checkServiceProviderValidation(applReqModel);
 		
 		
 		RemittanceTransactionResponsetModel validationResults = this.validateTransactionDataV2(model);
