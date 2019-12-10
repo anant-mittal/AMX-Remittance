@@ -243,5 +243,15 @@ public AmxApiResponse<CardTypeDto, Object> getCustomerCardTypeListResp() {
 	
 	return AmxApiResponse.buildList(cardTypeList);
 }
+
+
+public AmxApiResponse<BoolRespModel, Object> updateCustomerCardType(BigDecimal chequeBankId, BigDecimal cardTypeId) {
+	BigDecimal custId = metaData.getCustomerId();
+	cardTypeManager.updateExtCardType(custId, chequeBankId, cardTypeId);
+	
+	BoolRespModel boolRespModel = new BoolRespModel();
+	boolRespModel.setSuccess(Boolean.TRUE);
+	return AmxApiResponse.build(boolRespModel);
+}
 	
 }

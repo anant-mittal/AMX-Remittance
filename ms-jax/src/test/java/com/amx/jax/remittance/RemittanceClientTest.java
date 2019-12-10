@@ -18,6 +18,7 @@ import com.amx.amxlib.exception.ResourceNotFoundException;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.AbstractTest;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.RemitClient;
 import com.amx.jax.client.remittance.RemittanceClient;
 import com.amx.jax.dict.Tenant;
@@ -60,11 +61,22 @@ public class RemittanceClientTest extends AbstractTest {
 		assertNotNull(response.getResult().getModelType());
 	}
 
-	@Test
+	//@Test
 	public void testCustomerCardType() {
 		setDefaults();
 		AmxApiResponse<CardTypeDto, Object> response = null;
 		response = brRemitClient.getCustomerCardTypeList();
+		assertNotNull("Response is null", response);
+		assertNotNull(response.getResults());
+	}
+	
+	@Test
+	public void testUpdateCustomerCardType() {
+		setDefaults();
+		AmxApiResponse<BoolRespModel, Object> response = null;
+		BigDecimal chequeBankId = new BigDecimal(62);
+		BigDecimal cardTypeId = new BigDecimal(2);
+		response = brRemitClient.updateCustomerCardType(chequeBankId, cardTypeId);
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResults());
 	}
