@@ -246,13 +246,14 @@ public class PromotionManager {
 	public PromotionDto getJolibeePromotion(BigDecimal docNoRemit, BigDecimal docFinyear) {
 		try {
 			PromotionDto dto = null;
+			logger.debug("Document No remit ",docNoRemit +"Doc fin year ",docFinyear);
 			RemittanceTransaction remittanceTransaction = remittanceApplicationDao
 					.getRemittanceTransactionByRemitDocNo(docNoRemit, docFinyear);
 			
 			List<PromotionDetailModel> models = promotionDao.getPromotionDetailModel(docFinyear, docNoRemit);
 			
 			logger.debug("Model size is "+models.size());
-			if (models != null && models.size() > 0) {
+			if (null!=models && models.size() > 0) {
 				dto = new PromotionDto();
 				dto.setPrize(models.get(0).getPrize());
 				dto.setPrizeMessage("Congrats! Free Jollibee meal voucher for your transaction");
