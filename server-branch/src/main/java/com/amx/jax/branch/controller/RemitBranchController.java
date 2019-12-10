@@ -40,6 +40,7 @@ import com.amx.jax.model.response.fx.FcSaleOrderManagementDTO;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
+import com.amx.jax.model.response.remittance.CardTypeDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
 import com.amx.jax.model.response.remittance.ParameterDetailsResponseDto;
@@ -344,5 +345,10 @@ public class RemitBranchController {
 	@RequestMapping(value = "/api/remitt/payment/link", method = { RequestMethod.POST })
 	public AmxApiResponse<PaymentLinkRespDTO, Object> sendPaymentLink() {
 		return branchRemittanceClient.createAndSendPaymentLink();
+	}
+	
+	@RequestMapping(value = "/api/remitt/customer_bank/card_type", method = { RequestMethod.GET })
+	public AmxApiResponse<CardTypeDto, Object> getCustomerCardTypeList()  {
+		return branchRemittanceClient.getCustomerCardTypeList();
 	}
 }
