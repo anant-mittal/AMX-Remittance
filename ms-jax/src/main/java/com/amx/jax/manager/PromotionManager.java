@@ -43,6 +43,7 @@ import com.amx.jax.service.FinancialService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.DateUtil;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.JsonUtil;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -247,7 +248,9 @@ public class PromotionManager {
 			PromotionDto dto = null;
 			RemittanceTransaction remittanceTransaction = remittanceApplicationDao
 					.getRemittanceTransactionByRemitDocNo(docNoRemit, docFinyear);
+			logger.debug("Remittance transact value is  "+JsonUtil.toJson(remittanceTransaction));
 			List<PromotionDetailModel> models = promotionDao.getPromotionDetailModel(docFinyear, docNoRemit);
+			logger.debug("Promotion dto model value is  "+JsonUtil.toJson(models.get(0)));
 			if (models != null && models.size() > 0) {
 				dto = new PromotionDto();
 				dto.setPrize(models.get(0).getPrize());
