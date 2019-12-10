@@ -22,6 +22,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.BankMasterMdlv1;
@@ -29,6 +30,7 @@ import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.remittance.AdditionalDataDisplayView;
 import com.amx.jax.dbmodel.remittance.FlexFiledView;
 import com.amx.jax.dbmodel.remittance.ViewParameterDetails;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.remittance.BenePackageRequest;
 import com.amx.jax.model.response.customer.BenePackageResponse;
@@ -112,7 +114,11 @@ public class PreFlexFieldManager {
 			FlexFieldDto flexFieldValueInRequest = requestFlexFields.get(FC_AMOUNT_FLEX_FIELD_NAME);
 			JaxConditionalFieldDto jaxConditionalFieldDto = fetchFlexFieldsForParameterSetup(parameterDto);
 			requiredFlexFields.add(jaxConditionalFieldDto);
-			packageFcAmount = flexFieldValueInRequest == null ? null : new BigDecimal(flexFieldValueInRequest.getAmieceDescription());
+			try {
+				packageFcAmount = flexFieldValueInRequest == null ? null : new BigDecimal(flexFieldValueInRequest.getAmieceDescription());
+			} catch (NumberFormatException ex) {
+				throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Invalid package amount passed");
+			}
 			if (parameterDto.getAmount() != null && parameterDto.getAmount().doubleValue() > 0) {
 				packageFcAmount = parameterDto.getAmount();
 			}
