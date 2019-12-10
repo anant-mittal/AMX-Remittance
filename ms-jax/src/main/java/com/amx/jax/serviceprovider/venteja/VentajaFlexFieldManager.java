@@ -193,7 +193,7 @@ public class VentajaFlexFieldManager extends AbstractFlexFieldManager {
 		Object volunteerContributionIndicVal = preFlexValidationVariables.get("volunteerContributionIndic");
 		Boolean volunteerContributionIndic = volunteerContributionIndicVal != null ? (boolean) volunteerContributionIndicVal : null;
 
-		if (monthlyContribution != null && !Boolean.TRUE.equals(volunteerContributionIndic)) {
+		if (monthlyContribution != null && !Boolean.TRUE.equals(volunteerContributionIndic) && noOfMonth != null) {
 			packageFcAmount = monthlyContribution.multiply(BigDecimal.valueOf(noOfMonth));
 		}
 		if (volunteerContribution != null && noOfMonth != null) {
