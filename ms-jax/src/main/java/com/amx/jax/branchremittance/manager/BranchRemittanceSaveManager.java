@@ -1355,6 +1355,7 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
  
 	public Boolean sendReceiptOnEmail(BigDecimal collectionDocNo, BigDecimal collectionDocYear,
 			BigDecimal collectionDocCode) {
+		logger.debug("ColllectionDocNo DOcYear DocCOde "+collectionDocNo + collectionDocYear + collectionDocCode);
 		Boolean validStatus = Boolean.FALSE;
 		PaymentResponseDto paymentResponse = new PaymentResponseDto();
 		try {
@@ -1362,6 +1363,7 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
 			Customer customer = customerDao.getCustById(metaData.getCustomerId());
 			RemittanceTransaction remittanceTransaction = remittanceTransactionRepository
 					.findByCollectionDocFinanceYearAndCollectionDocumentNo(collectionDocYear, collectionDocNo);
+			logger.debug("Document no and finance year  from remittrnx is "+remittanceTransaction.getDocumentNo()+remittanceTransaction.getDocumentFinanceYear());
 			paymentResponse.setCollectionDocumentCode(collectionDocCode);
 			paymentResponse.setCollectionDocumentNumber(collectionDocNo);
 			paymentResponse.setCollectionFinanceYear(collectionDocYear);
