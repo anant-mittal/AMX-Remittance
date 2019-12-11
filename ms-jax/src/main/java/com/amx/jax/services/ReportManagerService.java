@@ -39,6 +39,7 @@ import com.amx.jax.dbmodel.PurposeOfRemittanceViewModel;
 import com.amx.jax.dbmodel.RemittanceTransactionView;
 import com.amx.jax.dbmodel.ViewCompanyDetails;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
+import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.manager.PromotionManager;
 import com.amx.jax.meta.MetaData;
@@ -50,6 +51,7 @@ import com.amx.jax.repository.ICompanyDAO;
 import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.IPurposeOfRemittance;
 import com.amx.jax.repository.IRemittanceTransactionDao;
+import com.amx.jax.repository.RemittanceTransactionRepository;
 import com.amx.jax.service.CountryService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.JaxUtil;
@@ -108,6 +110,9 @@ public class ReportManagerService extends AbstractService{
 	
 	@Autowired
 	MetaData meta;
+	
+	@Autowired
+	RemittanceTransactionRepository remittanceTransactionRepository;
 	
 	
 
@@ -600,24 +605,28 @@ public class ReportManagerService extends AbstractService{
 						}
 
 						/** end **/
-						
-						PromotionDto promotionDtoJP = promotionManager.getJolibeePromotion(
-								transactionHistroyDTO.getDocumentNumber(), transactionHistroyDTO.getDocumentFinanceYear());
-						
-						logger.debug("Value of first cond "+ArgUtil.isEmpty(promotionDtoJP));
-						
-						if (!ArgUtil.isEmpty(promotionDtoJP) && !ArgUtil.isEmpty(promotionDtoJP.getPrizeMessage())) {
-							obj.setPromotionMessage(promotionDtoJP.getPrizeMessage());
-						}
-						else {
-							logger.debug("Promotion dto for JB is null");
-							PromotionDto prmoDto = promotionManager.getPromotionMessage(view.getDocumentNo(),
-									view.getDocumentFinancialYear(), view.getCountryBranchId(), currencyQuoteName);
+						List<RemittanceTransaction> remittanceTransactionList = remittanceTransactionRepository.findByCollectionDocFinanceYearAndCollectionDocumentNoList(transactionHistroyDTO.getCollectionDocumentFinYear(), transactionHistroyDTO.getCollectionDocumentFinYear());
+						for(RemittanceTransaction remittanceTransaction:remittanceTransactionList) {
+							PromotionDto promotionDtoJP = promotionManager.getJolibeePromotion(
+									remittanceTransaction.getDocumentNo(), remittanceTransaction.getDocumentFinanceYear());
 							
-							if (prmoDto != null && !StringUtils.isBlank(prmoDto.getPrizeMessage())) {
-								obj.setPromotionMessage(prmoDto.getPrizeMessage());
+							logger.debug("Value of first cond "+ArgUtil.isEmpty(promotionDtoJP));
+							
+							if (!ArgUtil.isEmpty(promotionDtoJP) && !ArgUtil.isEmpty(promotionDtoJP.getPrizeMessage())) {
+								obj.setPromotionMessage(promotionDtoJP.getPrizeMessage());
+							}
+							else {
+								logger.debug("Promotion dto for JB is null");
+								PromotionDto prmoDto = promotionManager.getPromotionMessage(view.getDocumentNo(),
+										view.getDocumentFinancialYear(), view.getCountryBranchId(), currencyQuoteName);
+								
+								if (prmoDto != null && !StringUtils.isBlank(prmoDto.getPrizeMessage())) {
+									obj.setPromotionMessage(prmoDto.getPrizeMessage());
+								}
 							}
 						}
+						
+						
 
 						
 
@@ -680,7 +689,7 @@ public class ReportManagerService extends AbstractService{
 			}
 			if (Boolean.TRUE.equals(promotion)) {
 
-				PromotionDto promotionDtoJP = promotionManager.getJolibeePromotion(
+				/*PromotionDto promotionDtoJP = promotionManager.getJolibeePromotion(
 						transactionHistroyDTO.getDocumentNumber(), transactionHistroyDTO.getDocumentFinanceYear());
 				//logger.debug("Promotion dto2 for JB value is  " + JsonUtil.toJson(promotionDtoJP));
 				if (!ArgUtil.isEmpty(promotionDtoJP) && !ArgUtil.isEmpty(promotionDtoJP.getPrizeMessage())) {
@@ -694,7 +703,7 @@ public class ReportManagerService extends AbstractService{
 						remittanceReceiptSubreportList.get(0).getRemittanceApplList().get(0)
 								.setPromotionDto(promotionDto);
 					}
-				}
+				}*/
 
 			}
 			response.getData().getValues().addAll(remittanceReceiptSubreportList);

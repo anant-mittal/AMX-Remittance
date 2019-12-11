@@ -23,7 +23,10 @@ public interface RemittanceTransactionRepository extends CrudRepository<Remittan
 	public List<RemittanceTransaction> getTransactionMadeByOnline(String customerId);
 	
 	RemittanceTransaction findByCollectionDocFinanceYearAndCollectionDocumentNo(BigDecimal collectionDocFinanceYear,BigDecimal collectionDocumentNo);
-
+	
+	List<RemittanceTransaction> findByCollectionDocFinanceYearAndCollectionDocumentNoList(BigDecimal collectionDocFinanceYear,BigDecimal collectionDocumentNo);
+	
+	List<RemittanceTransaction> findByDocumentNoAndDocumentFinanceYearList(BigDecimal documentNo, BigDecimal documentFinanceYear);
 }
 
 

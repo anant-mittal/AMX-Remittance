@@ -1361,9 +1361,8 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
 		try {
 			TransactionHistroyDTO trxnDto = new TransactionHistroyDTO();
 			Customer customer = customerDao.getCustById(metaData.getCustomerId());
-			RemittanceTransaction remittanceTransaction = remittanceTransactionRepository
-					.findByCollectionDocFinanceYearAndCollectionDocumentNo(collectionDocYear, collectionDocNo);
-			logger.debug("Document no and finance year  from remittrnx is "+remittanceTransaction.getDocumentNo()+remittanceTransaction.getDocumentFinanceYear());
+			
+			
 			paymentResponse.setCollectionDocumentCode(collectionDocCode);
 			paymentResponse.setCollectionDocumentNumber(collectionDocNo);
 			paymentResponse.setCollectionFinanceYear(collectionDocYear);
@@ -1376,8 +1375,7 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
 			trxnDto.setLanguageId(metaData.getLanguageId());
 			trxnDto.setApplicationCountryId(metaData.getCountryId());
 			trxnDto.setCustomerReference(customer.getCustomerReference());
-			trxnDto.setDocumentNumber(remittanceTransaction.getDocumentNo());
-			trxnDto.setDocumentFinanceYear(remittanceTransaction.getDocumentFinanceYear());
+			
 			reportManagerService.generatePersonalRemittanceReceiptReportDetails(trxnDto, Boolean.TRUE);
 			List<RemittanceReceiptSubreport> rrsrl = reportManagerService.getRemittanceReceiptSubreportList();
 			PersonInfo personinfo = new PersonInfo();
