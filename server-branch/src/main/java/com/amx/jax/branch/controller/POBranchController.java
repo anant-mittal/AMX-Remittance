@@ -7,6 +7,7 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.remittance.RemittanceClient;
 import com.amx.jax.model.request.remittance.PlaceOrderRequestModel;
 import com.amx.jax.model.request.remittance.PlaceOrderUpdateStatusDto;
+import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;
 import com.amx.jax.model.response.remittance.GsmPlaceOrderListDto;
 import com.amx.jax.model.response.remittance.GsmSearchRequestParameter;
 import com.amx.jax.model.response.remittance.RatePlaceOrderInquiryDto;
@@ -31,13 +32,14 @@ public class POBranchController {
 	private RemittanceClient branchRemittanceClient;
 
 	@RequestMapping(value = "/api/placeorder/create", method = { RequestMethod.POST })
-	public AmxApiResponse<BoolRespModel, Object> createPlaceOrder(@RequestBody PlaceOrderRequestModel placeOrderRequestModel) {
+	public AmxApiResponse<BoolRespModel, Object> createPlaceOrder(
+			@RequestBody PlaceOrderRequestModel placeOrderRequestModel) {
 		return branchRemittanceClient.savePlaceOrderApplication(placeOrderRequestModel);
 	}
 
 	@RequestMapping(value = "/api/placeorder/provider/list", method = { RequestMethod.POST })
 	public AmxApiResponse<GsmPlaceOrderListDto, Object> getCountryWisePlaceOrderProviderList(
-		@RequestBody GsmSearchRequestParameter requestParameter) {
+			@RequestBody GsmSearchRequestParameter requestParameter) {
 		return branchRemittanceClient.getCountryWisePlaceOrderCount(requestParameter);
 	}
 
@@ -49,8 +51,14 @@ public class POBranchController {
 
 	@RequestMapping(value = "/api/placeorder/consumer/list", method = { RequestMethod.POST })
 	public AmxApiResponse<RatePlaceOrderInquiryDto, Object> getCountryWisePlaceOrderConsumerList(
-			@RequestParam(required=false) BigDecimal countryBranchId) {
+			@RequestParam(required = false) BigDecimal countryBranchId) {
 		return branchRemittanceClient.fetchPlaceOrderInquiry(countryBranchId);
 	}
+
+	@RequestMapping(value = "/api/placeorder/consumer/accept", method = { RequestMethod.POST })
+	public AmxApiResponse<DynamicRoutingPricingDto, Object> acceptPlaceOrder(BigDecimal ratePlaceOrderId) {
+		return branchRemittanceClient.acceptPlaceOrderByCustomer(ratePlaceOrderId);
+	}
+
 
 }
