@@ -33,6 +33,7 @@ import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
 import com.amx.jax.model.request.remittance.CustomerBankRequest;
 
 import com.amx.jax.model.request.remittance.PlaceOrderRequestModel;
+import com.amx.jax.model.request.remittance.PlaceOrderResponseModel;
 import com.amx.jax.model.request.remittance.PlaceOrderUpdateStatusDto;
 
 import com.amx.jax.model.request.remittance.GetServiceApplicabilityRequest;
@@ -334,7 +335,7 @@ public class BranchRemittanceController implements IRemittanceService {
 
 	@RequestMapping(value=Path.BR_REMITTANCE_ACCEPT_PLACE_ORDER,method=RequestMethod.POST)
 	@Override
-	public AmxApiResponse<DynamicRoutingPricingDto, Object> acceptPlaceOrderByCustomer(BigDecimal ratePlaceOrderId) {
+	public AmxApiResponse<PlaceOrderResponseModel, Object> acceptPlaceOrderByCustomer(BigDecimal ratePlaceOrderId) {
 		// TODO Auto-generated method stub
 		return branchRemitService.acceptPlaceOrder(ratePlaceOrderId);
 	}

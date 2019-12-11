@@ -17,6 +17,7 @@ import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
 import com.amx.jax.model.request.remittance.CustomerBankRequest;
 
 import com.amx.jax.model.request.remittance.PlaceOrderRequestModel;
+import com.amx.jax.model.request.remittance.PlaceOrderResponseModel;
 import com.amx.jax.model.request.remittance.PlaceOrderUpdateStatusDto;
 
 import com.amx.jax.model.request.remittance.GetServiceApplicabilityRequest;
@@ -204,7 +205,7 @@ public interface IRemittanceService extends  IJaxService {
 	
 	AmxApiResponse<GsmPlaceOrderListDto,Object>  getCountryWisePlaceOrderCount(GsmSearchRequestParameter requestParameter);
 	
-	AmxApiResponse<DynamicRoutingPricingDto,Object> acceptPlaceOrderByCustomer(BigDecimal ratePlaceOrderId);
+	AmxApiResponse<PlaceOrderResponseModel,Object> acceptPlaceOrderByCustomer(BigDecimal ratePlaceOrderId);
 	
 }
 

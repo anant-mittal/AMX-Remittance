@@ -50,6 +50,7 @@ import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.remittance.AbstractRemittanceApplicationRequestModel;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.PlaceOrderRequestModel;
+import com.amx.jax.model.request.remittance.PlaceOrderResponseModel;
 import com.amx.jax.model.request.remittance.PlaceOrderUpdateStatusDto;
 import com.amx.jax.model.response.ExchangeRateBreakup;
 import com.amx.jax.model.response.remittance.CountryWiseCountOrderDto;
@@ -742,9 +743,12 @@ public void validatePlaceOrderRequest(BranchRemittanceApplRequestModel applReque
 	
 }
 	
-public DynamicRoutingPricingDto acceptPlaceOrderByCustomer(BigDecimal ratePlaceOrderId) {
+
+public PlaceOrderResponseModel acceptPlaceOrderByCustomer(BigDecimal ratePlaceOrderId) {
 	
-	RatePlaceOrder ratePlaceOrder = ratePlaceOrderRepository.fetchApprovedPlaceOrder(metaData.getCustomerId(),ratePlaceOrderId);
+	 PlaceOrderResponseModel placeOrderRes = new PlaceOrderResponseModel(); 
+	
+	 RatePlaceOrder ratePlaceOrder = ratePlaceOrderRepository.fetchApprovedPlaceOrder(metaData.getCustomerId(),ratePlaceOrderId);
 	 ObjectMapper mapper = new ObjectMapper();
 	 DynamicRoutingPricingDto dyRoutingPricingdto = new DynamicRoutingPricingDto();
 
@@ -775,6 +779,8 @@ try {
 	dyRoutingPricingdto.setYouSavedAmount(branchRemittanceExchangeRateManager.getYouSavedAmount(dyRoutingPricingdto));
 	dyRoutingPricingdto.setYouSavedAmountInFC(branchRemittanceExchangeRateManager.getYouSavedAmountInFc(dyRoutingPricingdto));
 	
+	placeOrderRes.setBeneId(ratePlaceOrder.getBeneficiaryRelationId());
+	placeOrderRes.setDto(dyRoutingPricingdto);
 	}else {
 		throw new GlobalException(JaxError.RATE_PLACE_ERROR,"No record found");
 	}
@@ -784,7 +790,7 @@ try {
 		e.printStackTrace();
 	}
 	
-return dyRoutingPricingdto;
+return placeOrderRes;
 }
 
 /** setting place details for application **/

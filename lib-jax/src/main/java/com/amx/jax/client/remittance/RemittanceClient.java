@@ -20,6 +20,7 @@ import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
 import com.amx.jax.model.request.remittance.CustomerBankRequest;
 
 import com.amx.jax.model.request.remittance.PlaceOrderRequestModel;
+import com.amx.jax.model.request.remittance.PlaceOrderResponseModel;
 import com.amx.jax.model.request.remittance.PlaceOrderUpdateStatusDto;
 
 import com.amx.jax.model.request.remittance.GetServiceApplicabilityRequest;
@@ -447,11 +448,11 @@ public class RemittanceClient implements IRemittanceService {
 	}
 
 	@Override
-	public AmxApiResponse<DynamicRoutingPricingDto, Object> acceptPlaceOrderByCustomer(BigDecimal ratePlaceOrderId) {
+	public AmxApiResponse<PlaceOrderResponseModel, Object> acceptPlaceOrderByCustomer(BigDecimal ratePlaceOrderId) {
 		return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_ACCEPT_PLACE_ORDER).meta(new JaxMetaInfo())
 				.queryParam(Params.RATE_PLACE_ORDER_ID, ratePlaceOrderId).meta(new JaxMetaInfo())
 				.post()
-				.as(new ParameterizedTypeReference<AmxApiResponse<DynamicRoutingPricingDto, Object>>() {
+				.as(new ParameterizedTypeReference<AmxApiResponse<PlaceOrderResponseModel, Object>>() {
 				});
 	
 	}
