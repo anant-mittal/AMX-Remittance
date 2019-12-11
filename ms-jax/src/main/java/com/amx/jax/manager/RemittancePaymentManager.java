@@ -367,19 +367,12 @@ public class RemittancePaymentManager extends AbstractService{
 			{
 
 				lstPayIdDetails = applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(paymentResponse.getUdf3(),new Customer(paymentResponse.getCustomerId()));
+				if(lstPayIdDetails==null && lstPayIdDetails.isEmpty()) {
+					throw new GlobalException(JaxError.PG_ERROR,"No record found ");
+				}
 				
 				validateAmountMismatchV2(lstPayIdDetails, paymentResponse);
-				// need to check with Prashant  why he adde this code .
-				//RemittanceApplication remittanceApplication = lstPayIdDetails.get(0);
-				//remittanceApplication.setIsactive(ConstantDocument.Yes);
-				//applicationDao.save(remittanceApplication);
-				
 				paymentResponse.setCompanyId(meta.getCompanyId());
-				/*
-				 * if (remittanceApplication.getResultCode() != null) {
-				 * logger.info("Existing payment id found: {}",
-				 * remittanceApplication.getPaymentId()); return response; }
-				 */
 				remittanceApplicationService.updatePaymentDetails(lstPayIdDetails, paymentResponse);
 				applMap.put("APPL_TRNX", lstPayIdDetails);
 				logger.info("PAYMENT RESPONSE VALUES : {}", JsonUtil.toJson(paymentResponse));
@@ -387,11 +380,6 @@ public class RemittancePaymentManager extends AbstractService{
 				/** for Online save in JAX **/
 				BranchRemittanceRequestModel remitRequestModel =createRequestModelForOnline(lstPayIdDetails,paymentResponse);
 				RemittanceResponseDto  responseDto = branchRemittanceSaveManager.saveRemittanceTrnx(remitRequestModel);
-				
-				
-				/** Calling stored procedure  insertRemittanceOnline **/
-				/**
-				remitanceMap = remittanceApplicationService.saveRemittance(paymentResponse);
 				
 //				/** Referral Code **/
 //				List<RemittanceTransaction> remittanceList = remitAppDao.getOnlineRemittanceList(paymentResponse.getCustomerId());
@@ -418,15 +406,7 @@ public class RemittancePaymentManager extends AbstractService{
 //						pushNotifyClient.send(pushMessage);	
 //					}
 //				}			
-				/*
-				errorMsg = (String)remitanceMap.get("P_ERROR_MESG");
-				errorMsg= null;
-				if(remitanceMap!=null && !remitanceMap.isEmpty() && StringUtils.isBlank(errorMsg)){
-					collectionFinanceYear = (BigDecimal)remitanceMap.get("P_COLLECT_FINYR");
-					collectionDocumentNumber = (BigDecimal)remitanceMap.get("P_COLLECTION_NO");
-					collectionDocumentCode = (BigDecimal)remitanceMap.get("P_COLLECTION_DOCUMENT_CODE");
-					errorMsg = (String)remitanceMap.get("P_ERROR_MESG");
-					**/
+				
 				if(responseDto!=null && JaxUtil.isNullZeroBigDecimalCheck(responseDto.getCollectionDocumentNo())) {
 				  collectionFinanceYear = responseDto.getCollectionDocumentFYear();
 				  collectionDocumentNumber = responseDto.getCollectionDocumentNo();
@@ -506,12 +486,12 @@ public class RemittancePaymentManager extends AbstractService{
 									jaxNotificationDataManager.getTransactionSuccessEmailData());
 						}
 					} catch (Exception e) {
+						e.printStackTrace();
 						logger.error("error while sending transaction notification", e);
 					}
 
 				}else {
 					logger.info("PaymentResponseDto "+paymentResponse.getPaymentId()+"\t Result :"+paymentResponse.getResultCode()+"\t Custoemr Id :"+paymentResponse.getCustomerId());
-
 					lstPayIdDetails =applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(paymentResponse.getPaymentId(),new Customer(paymentResponse.getCustomerId()));
 					if(!lstPayIdDetails.isEmpty()) {
 						paymentResponse.setErrorText(errorMsg);
