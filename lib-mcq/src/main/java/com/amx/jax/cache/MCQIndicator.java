@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -12,6 +13,7 @@ import com.amx.jax.AppConfig;
 import com.amx.jax.def.IndicatorListner;
 import com.amx.jax.tunnel.TunnelSubscriberFactory;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.TimeUtils;
 
 @Component
 public class MCQIndicator implements IndicatorListner {
@@ -72,8 +74,19 @@ public class MCQIndicator implements IndicatorListner {
 			gauge.set("redis_put", GaugeIndicator.DOWN);
 		}
 
+		try {
+			for (Entry<String, Object> iterable_element : statusMap.entrySet()) {
+				String newKey = "tunnel_listner_" + iterable_element.getKey().replace(".", "_");
+				String strValue = ArgUtil.parseAsString(iterable_element.getValue());
+				if (ArgUtil.is(strValue)) {
+					Date d = TunnelSubscriberFactory.TS_FORMAT.parse(strValue);
+					gauge.set(newKey, new Long(TimeUtils.timeSince(d.getTime())).doubleValue());
+				}
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 		map.put("redis.cache", cacheMap);
-
 		return map;
 	}
 
