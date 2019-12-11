@@ -6,8 +6,8 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.remittance.RemittanceClient;
 import com.amx.jax.model.request.remittance.PlaceOrderRequestModel;
+import com.amx.jax.model.request.remittance.PlaceOrderResponseModel;
 import com.amx.jax.model.request.remittance.PlaceOrderUpdateStatusDto;
-import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;
 import com.amx.jax.model.response.remittance.GsmPlaceOrderListDto;
 import com.amx.jax.model.response.remittance.GsmSearchRequestParameter;
 import com.amx.jax.model.response.remittance.RatePlaceOrderInquiryDto;
@@ -56,7 +56,7 @@ public class POBranchController {
 	}
 
 	@RequestMapping(value = "/api/placeorder/consumer/accept", method = { RequestMethod.POST })
-	public AmxApiResponse<DynamicRoutingPricingDto, Object> acceptPlaceOrder(@RequestParam BigDecimal ratePlaceOrderId) {
+	public AmxApiResponse<PlaceOrderResponseModel, Object> acceptPlaceOrder(@RequestParam BigDecimal ratePlaceOrderId) {
 		return branchRemittanceClient.acceptPlaceOrderByCustomer(ratePlaceOrderId);
 	}
 
