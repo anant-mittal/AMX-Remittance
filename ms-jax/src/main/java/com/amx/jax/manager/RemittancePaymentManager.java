@@ -320,7 +320,7 @@ public class RemittancePaymentManager extends AbstractService{
 
 		}catch(Exception e) {
 			lstPayIdDetails =applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(paymentResponse.getUdf3(),new Customer(paymentResponse.getCustomerId()));
-			
+			logger.error("error occured in paymentCapture", e);
 			if(!lstPayIdDetails.isEmpty()) {
 				if (lstPayIdDetails.get(0).getResultCode() != null) {
 					logger.info("Existing payment id found: {}", lstPayIdDetails.get(0).getPaymentId());

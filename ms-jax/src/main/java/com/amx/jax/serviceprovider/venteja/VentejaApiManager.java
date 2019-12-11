@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.constant.BankConstants;
 import com.amx.jax.model.request.remittance.RemittanceAdditionalBeneFieldModel;
+import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
 import com.amx.jax.model.request.serviceprovider.ServiceProviderCallRequestDto;
 import com.amx.jax.model.response.jaxfield.JaxFieldDto;
 import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;
@@ -30,6 +31,7 @@ public class VentejaApiManager extends ServiceProviderApiManager {
 	public Validate_Remittance_Inputs_Call_Response validateApiInput(RemittanceAdditionalBeneFieldModel remittanceAdditionalBeneFieldModel,
 			Map<String, Object> remitApplParametersMap) {
 		Map<String, Object> inputs = new HashMap<>();
+		RemittanceTransactionDrRequestModel remittanceTransactionDrRequestModel = (RemittanceTransactionDrRequestModel) remittanceAdditionalBeneFieldModel;
 		inputs.putAll(remitApplParametersMap);
 		inputs.put("P_BENEFICIARY_RELASHIONSHIP_ID", remittanceAdditionalBeneFieldModel.getBeneId());
 		inputs.put("flexFieldDtoMap", remittanceAdditionalBeneFieldModel.getFlexFieldDtoMap());
@@ -37,6 +39,7 @@ public class VentejaApiManager extends ServiceProviderApiManager {
 		AmxApiResponse<Validate_Remittance_Inputs_Call_Response, Object> response = serviceProviderClientWrapper
 				.validateRemittanceInputs(serviceProviderCallRequestDto);
 		fetchServiceProviderLogs(response.getResult(), serviceProviderCallRequestDto);
+		fetchServiceProviderData(remittanceTransactionDrRequestModel.getDynamicRroutingPricingBreakup(), serviceProviderCallRequestDto);
 		parseValidateResponseForError(response.getResult());
 		return response.getResult();
 	}
@@ -103,5 +106,4 @@ public class VentejaApiManager extends ServiceProviderApiManager {
 		return response.getResult();
 	}
 
-	
 }
