@@ -74,6 +74,8 @@ public enum PricerServiceError implements IExceptionEnum {
 	INVALID_BANK_SERVICE_RULE,
 
 	INVALID_RULE_UPDATE_STATUS,
+	
+	MISSING_RULE_IDS,
 
 	CONFLICTING_RULE_UPDATE_STATUS,
 

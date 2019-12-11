@@ -394,10 +394,10 @@ public class ExchangeRateManager {
 
 	// @Transactional
 	synchronized public Long rateUpoadRuleChecker(RateUploadRequestDto rateUploadRequestDto) {
-		
+
 		if (rateUploadRequestDto.getRuleStatusUpdateMap() == null
 				|| rateUploadRequestDto.getRuleStatusUpdateMap().isEmpty()) {
-			return 0L;
+			throw new PricerServiceException(PricerServiceError.MISSING_RULE_IDS, "Null or Missing Rule Ids");
 		}
 
 		Map<RATE_UPLOAD_STATUS, Set<String>> ruleStatusUpdateMap = new HashMap<RATE_UPLOAD_STATUS, Set<String>>();
