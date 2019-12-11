@@ -56,7 +56,7 @@ public class POBranchController {
 	}
 
 	@RequestMapping(value = "/api/placeorder/consumer/accept", method = { RequestMethod.POST })
-	public AmxApiResponse<DynamicRoutingPricingDto, Object> acceptPlaceOrder(BigDecimal ratePlaceOrderId) {
+	public AmxApiResponse<DynamicRoutingPricingDto, Object> acceptPlaceOrder(@RequestParam BigDecimal ratePlaceOrderId) {
 		return branchRemittanceClient.acceptPlaceOrderByCustomer(ratePlaceOrderId);
 	}
 
