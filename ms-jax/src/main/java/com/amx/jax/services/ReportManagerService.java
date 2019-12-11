@@ -605,26 +605,25 @@ public class ReportManagerService extends AbstractService{
 						}
 
 						/** end **/
-						List<RemittanceTransaction> remittanceTransactionList = remittanceTransactionRepository.findByCollectionDocFinanceYearAndCollectionDocumentNoList(transactionHistroyDTO.getCollectionDocumentFinYear(), transactionHistroyDTO.getCollectionDocumentFinYear());
-						for(RemittanceTransaction remittanceTransaction:remittanceTransactionList) {
-							PromotionDto promotionDtoJP = promotionManager.getJolibeePromotion(
-									remittanceTransaction.getDocumentNo(), remittanceTransaction.getDocumentFinanceYear());
-							
-							logger.debug("Value of first cond "+ArgUtil.isEmpty(promotionDtoJP));
-							
-							if (!ArgUtil.isEmpty(promotionDtoJP) && !ArgUtil.isEmpty(promotionDtoJP.getPrizeMessage())) {
-								obj.setPromotionMessage(promotionDtoJP.getPrizeMessage());
-							}
-							else {
-								logger.debug("Promotion dto for JB is null");
-								PromotionDto prmoDto = promotionManager.getPromotionMessage(view.getDocumentNo(),
-										view.getDocumentFinancialYear(), view.getCountryBranchId(), currencyQuoteName);
-								
-								if (prmoDto != null && !StringUtils.isBlank(prmoDto.getPrizeMessage())) {
-									obj.setPromotionMessage(prmoDto.getPrizeMessage());
-								}
+						
+						
+						PromotionDto promotionDtoJP = promotionManager.getJolibeePromotion(view.getDocumentNo(),
+								view.getDocumentFinancialYear());
+
+						logger.debug("Value of first cond " + ArgUtil.isEmpty(promotionDtoJP));
+
+						if (!ArgUtil.isEmpty(promotionDtoJP) && !ArgUtil.isEmpty(promotionDtoJP.getPrizeMessage())) {
+							obj.setPromotionMessage(promotionDtoJP.getPrizeMessage());
+						} else {
+							logger.debug("Promotion dto for JB is null");
+							PromotionDto prmoDto = promotionManager.getPromotionMessage(view.getDocumentNo(),
+									view.getDocumentFinancialYear(), view.getCountryBranchId(), currencyQuoteName);
+
+							if (prmoDto != null && !StringUtils.isBlank(prmoDto.getPrizeMessage())) {
+								obj.setPromotionMessage(prmoDto.getPrizeMessage());
 							}
 						}
+						
 						
 						
 

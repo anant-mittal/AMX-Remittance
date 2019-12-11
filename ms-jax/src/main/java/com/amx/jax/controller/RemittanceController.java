@@ -143,10 +143,9 @@ public class RemittanceController {
 				+ transactionHistroyDTO.getCustomerReference());
 		logger.info("Country Id :" + transactionHistroyDTO.getApplicationCountryId() + "\t Currency Id :"
 				+ transactionHistroyDTO.getCurrencyId());
-		RemittanceTransaction remittanceTransaction = remittanceTransactionRepo
-				.findByCollectionDocFinanceYearAndCollectionDocumentNo(transactionHistroyDTO.getCollectionDocumentFinYear(), transactionHistroyDTO.getCollectionDocumentNo());
+		
 		transactionHistroyDTO.setCompanyId(metaData.getCompanyId());
-		transactionHistroyDTO.setDocumentNumber(remittanceTransaction.getDocumentNo());
+		
 		ApiResponse response = reportManagerService
 				.generatePersonalRemittanceReceiptReportDetails(transactionHistroyDTO, Boolean.TRUE);
 		return response;

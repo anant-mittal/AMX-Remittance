@@ -192,7 +192,7 @@ public class DailyPromotionManager {
 		List<RemittanceTransaction> remittanceTransaction =null;
 		DailyPromotionDTO dailyPromotionDTO=new DailyPromotionDTO();
 		if(!ConstantDocument.ONLINE_BRANCH_LOC_CODE.equals(branchCode)) {
-			 remittanceTransaction=remittanceTransactionRepository.findByCollectionDocFinanceYearAndCollectionDocumentNoList(documentFinanceYear, documentNumber);
+			 remittanceTransaction=remittanceTransactionRepository.findByCollectionDocFinanceYearAndCollectionDocumentNo(documentFinanceYear, documentNumber);
 			 for(RemittanceTransaction remittanceTransaction2:remittanceTransaction) {
 				 dailyPromotionDTO=dailyPromotionDao.applyJolibeePadalaCoupons(remittanceTransaction2.getDocumentFinanceYear(), remittanceTransaction2.getDocumentNo(), remittanceTransaction2.getBranchId().getBranchId());
 				 logger.debug("Jolibee output "+JsonUtil.toJson(dailyPromotionDTO));
@@ -247,7 +247,7 @@ public class DailyPromotionManager {
 			 }
 			 
 		}else {
-			remittanceTransaction=remittanceTransactionRepository.findByDocumentNoAndDocumentFinanceYearList(documentNumber, documentFinanceYear);
+			remittanceTransaction=remittanceTransactionRepository.getRemittanceTransaction(documentNumber, documentFinanceYear);
 			dailyPromotionDTO=dailyPromotionDao.applyJolibeePadalaCoupons(documentFinanceYear,documentNumber,branchCode);
 			logger.debug("Jolibee output "+JsonUtil.toJson(dailyPromotionDTO));
 			if(!ArgUtil.isEmpty(dailyPromotionDTO.getPromotionMsg())&&ArgUtil.isEmpty(dailyPromotionDTO.getErrorMsg())) {
