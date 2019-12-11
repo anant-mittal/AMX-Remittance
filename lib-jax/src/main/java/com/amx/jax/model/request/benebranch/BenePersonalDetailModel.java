@@ -269,4 +269,12 @@ public class BenePersonalDetailModel extends AbstractModel {
 		this.institutionCategoryId = institutionCategoryId;
 	}
 
+	public String getInstitutionNameLocal() {
+		return institutionNameLocal;
+	}
+
+	public void setInstitutionNameLocal(String institutionNameLocal) {
+		this.institutionNameLocal = institutionNameLocal;
+	}
+
 }
