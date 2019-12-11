@@ -13,7 +13,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
-import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,8 +102,8 @@ public class ExchangeRateManager {
 	@Autowired
 	MultiTenantConnectionProviderImpl connectionProvider;
 
-	@Autowired
-	DataSource dataSource;
+	// @Autowired
+	// DataSource dataSource;
 
 	@Autowired
 	ExchRatePopulateProcDao ratePopulateProcDao;
@@ -393,9 +392,9 @@ public class ExchangeRateManager {
 		return new Long(saved.size());
 	}
 
-	@Transactional
-	public Long rateUpoadRuleChecker(RateUploadRequestDto rateUploadRequestDto) {
-
+	// @Transactional
+	synchronized public Long rateUpoadRuleChecker(RateUploadRequestDto rateUploadRequestDto) {
+		
 		if (rateUploadRequestDto.getRuleStatusUpdateMap() == null
 				|| rateUploadRequestDto.getRuleStatusUpdateMap().isEmpty()) {
 			return 0L;
@@ -450,13 +449,6 @@ public class ExchangeRateManager {
 		int totalRowsUpdated = 0;
 		Date today = new Date();
 
-		if (ruleStatusUpdateMap.containsKey(RATE_UPLOAD_STATUS.REJECTED)) {
-
-			totalRowsUpdated += exchRateUploadDao.updateStatusForRuleIdIn(
-					ruleStatusUpdateMap.get(RATE_UPLOAD_STATUS.REJECTED), RATE_UPLOAD_STATUS.REJECTED,
-					rateUploadRequestDto.getUpdatedBy(), today);
-		}
-
 		if (ruleStatusUpdateMap.containsKey(RATE_UPLOAD_STATUS.APPROVED)) {
 
 			totalRowsUpdated += exchRateUploadDao.updateApprovalForRuleIdIn(
@@ -488,6 +480,13 @@ public class ExchangeRateManager {
 
 			// System.out.println(" Output ==> " + output);
 
+		}
+
+		if (ruleStatusUpdateMap.containsKey(RATE_UPLOAD_STATUS.REJECTED)) {
+
+			totalRowsUpdated += exchRateUploadDao.updateStatusForRuleIdIn(
+					ruleStatusUpdateMap.get(RATE_UPLOAD_STATUS.REJECTED), RATE_UPLOAD_STATUS.REJECTED,
+					rateUploadRequestDto.getUpdatedBy(), today);
 		}
 
 		return new Long(totalRowsUpdated);
