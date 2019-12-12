@@ -45,8 +45,9 @@ public class AprDetJpaRepoImpl implements AprDetJpaRepoCustom {
 	}
 
 	@Override
-	public List<ExchangeRateMasterApprovalDet> getExchangeRatesForPredicates(BigDecimal countryId, BigDecimal currencyId,
-			BigDecimal bankId, BigDecimal serviceIndId, BigDecimal countryBranchId, Pageable pageable) {
+	public List<ExchangeRateMasterApprovalDet> getExchangeRatesForPredicates(BigDecimal countryId,
+			BigDecimal currencyId, BigDecimal bankId, BigDecimal serviceIndId, BigDecimal countryBranchId,
+			Pageable pageable) {
 
 		CriteriaBuilder cBuilder = em.getCriteriaBuilder();
 		CriteriaQuery<ExchangeRateMasterApprovalDet> cQuery = cBuilder.createQuery(ExchangeRateMasterApprovalDet.class);
@@ -74,6 +75,8 @@ public class AprDetJpaRepoImpl implements AprDetJpaRepoCustom {
 		if (countryBranchId != null) {
 			predicates.add(cBuilder.equal(root.get("countryBranchId"), countryBranchId));
 		}
+
+		predicates.add(cBuilder.equal(root.get("isActive"), "Y"));
 
 		cQuery.select(root).where(predicates.toArray(new Predicate[predicates.size()]));
 
