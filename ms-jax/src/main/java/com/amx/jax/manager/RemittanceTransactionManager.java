@@ -1412,7 +1412,7 @@ public class RemittanceTransactionManager {
 			// this flow is for send OTP
 			civilIdOtpModel = addOtpOnRemittanceV2(model);
 		}
-		JaxAuthContext.contactType(ContactType.SMS_EMAIL);
+		JaxAuthContext.contactType(ContactType.SMS);
 		if(civilIdOtpModel!=null && civilIdOtpModel.geteOtp()!= null) {
 			JaxAuthContext.eOtp(civilIdOtpModel.geteOtp());
 		}

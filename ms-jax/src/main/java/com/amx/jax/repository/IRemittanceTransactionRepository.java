@@ -25,7 +25,6 @@ public interface IRemittanceTransactionRepository extends CrudRepository<Remitta
 	public void updateDeliveryIndRemarksBySP(@Param("deliveryInd") String deliveryInd,@Param("remarks") String remarks,@Param("remittanceTransactionId") BigDecimal remittanceTransactionId);
 
 	
-	@Query("select a from RemittanceTransaction a where a.customerId=?1 and a.branchId =?2 and trunc(a.documentDate)=trunc(sysdate)")
-	public List<RemittanceTransaction> getTotalTrnxCntForCustomer(Customer customerid,CountryBranchMdlv1 cntryBranchid);
+	
 	
 }
