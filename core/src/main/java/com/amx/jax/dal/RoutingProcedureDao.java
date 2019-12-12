@@ -647,7 +647,7 @@ public class RoutingProcedureDao {
 	 public BigDecimal getCustomerTrnxCount(BigDecimal bankCountryId,BigDecimal countryBranchId,BigDecimal customerId) {
 			BigDecimal totalCount= BigDecimal.ZERO;
 			 
-			 String sql="SELECT COUNT(*) INTO totalcount "
+			 String sql="SELECT COUNT(*) totalcount "
 					 + " FROM EX_REMIT_TRNX A,EX_REMIT_BENE B "
 					 + " WHERE A.CUSTOMER_ID ="+customerId
 					 + " AND TRUNC(A.DOCUMENT_DATE) = TRUNC(SYSDATE) "
