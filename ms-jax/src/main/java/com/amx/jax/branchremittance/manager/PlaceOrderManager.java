@@ -405,11 +405,13 @@ public class PlaceOrderManager implements Serializable{
 			if(ratePlaceOrder!=null) {
 			
 			if(!StringUtils.isBlank(ratePlaceOrder.getIsActive()) 
-				&& !ratePlaceOrder.getIsActive().equalsIgnoreCase(ConstantDocument.Status.Y.toString()) 
+				//&& !ratePlaceOrder.getIsActive().equalsIgnoreCase(ConstantDocument.Status.Y.toString()) 
 				&& !JaxUtil.isNullZeroBigDecimalCheck(ratePlaceOrder.getApplDocumentNumber()) && !JaxUtil.isNullZeroBigDecimalCheck(ratePlaceOrder.getApplDocumentFinanceYear())) {	
 			
 			if(flag.equalsIgnoreCase(ConstantDocument.Status.N.toString())){  /** Negotiate Place Order **/
 			ratePlaceOrder.setNegotiateSts(ConstantDocument.Status.N.toString());
+			ratePlaceOrder.setApprovedBy(null);
+			ratePlaceOrder.setApprovedDate(null);
 			ratePlaceOrder.setIsActive(ConstantDocument.Status.U.toString());
 			}else if(flag.equalsIgnoreCase(ConstantDocument.Status.R.toString())){ /** Reject Place Order **/
 				ratePlaceOrder.setIsActive(ConstantDocument.Status.D.toString());
@@ -439,7 +441,7 @@ public class PlaceOrderManager implements Serializable{
 			ratePlaceOrder.setApprovedDate(new Date());
 			ratePlaceOrder.setApprovedBy(brApplManager.getEmployeeDetails().getUserName());
 			if(!StringUtils.isBlank(remarks)) {
-				ratePlaceOrder.setRemarks(remarks);
+				ratePlaceOrder.setRemarks(ratePlaceOrder.getRemarks()==null?"":ratePlaceOrder.getRemarks()+" "+remarks);
 			}
 			ratePlaceOrderRepository.save(ratePlaceOrder);
 			boolRespModel=true;
