@@ -362,7 +362,7 @@ public class RemittanceApplicationManager {
 		remittanceApplication.setIsactive(ConstantDocument.Yes);
 		remittanceApplication.setSourceofincome(requestModel.getSourceOfFund());
 		remittanceApplication.setApplInd(ConstantDocument.Online);
-		remittanceApplication.setDocumentNo(generateDocumentNumber(remittanceApplication.getExCountryBranch(), ConstantDocument.Update));
+		remittanceApplication.setDocumentNo(generateDocumentNumber(remittanceApplication.getExCountryBranch(), ConstantDocument.A));
 		remittanceApplication.setPaymentId(remittanceApplication.getDocumentNo().toString());
 		remittanceApplication.setWuIpAddress(metaData.getDeviceIp());
 		remittanceApplication.setPaymentType(requestModel.getPaymentType());

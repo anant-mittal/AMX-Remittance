@@ -25,7 +25,7 @@ public interface RemittanceApplicationRepository extends CrudRepository<Remittan
 			+ "  and isactive <> 'D' and NVL(resultCode,' ') NOT IN('CAPTURED','APPROVED')")
 	public List<RemittanceApplication> deActivateNotUsedApplication(@Param("customerId") Customer customerId);
 
-	@Query("select ra from RemittanceApplication ra where ra.fsCustomer=:customerId and ra.paymentId=:paymentId")
+	@Query("select ra from RemittanceApplication ra where ra.fsCustomer=:customerId and ra.paymentId=:paymentId and ra.isactive='Y'")
 	public List<RemittanceApplication> fetchRemitApplTrnxRecordsByCustomerPayId(@Param("paymentId") String paymentId,
 			@Param("customerId") Customer customerId);
 
