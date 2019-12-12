@@ -130,7 +130,7 @@ public enum VentejaServiceProviderFlexField {
 		}
 	},
 	PACKAGE_FCAMOUNT {
-		// hack temp to be removed
+		// set destination amount as foreign amount
 		@Override
 		public void setValue(ServiceProviderCallRequestDto dto, Map<String, FlexFieldDto> requestFlexFields) {
 			FlexFieldDto value = requestFlexFields.get(this.name());
