@@ -1412,14 +1412,15 @@ public class RemittanceTransactionManager {
 			// this flow is for send OTP
 			civilIdOtpModel = addOtpOnRemittanceV2(model);
 		}
-		JaxAuthContext.contactType(ContactType.SMS);
+		
 		if(civilIdOtpModel!=null && civilIdOtpModel.geteOtp()!= null) {
 			JaxAuthContext.eOtp(civilIdOtpModel.geteOtp());
 		}
 		if(civilIdOtpModel!=null && civilIdOtpModel.getmOtp() != null) {
 			JaxAuthContext.mOtp(civilIdOtpModel.getmOtp());
 		}
-		if(meta.getCustomerId() != null) {
+		if(metaData.getCustomerId() !=null && civilIdOtpModel!=null && civilIdOtpModel.getmOtp() != null && civilIdOtpModel.geteOtp()!= null) {
+			JaxAuthContext.contactType(ContactType.SMS);
 			customerDBAuthManager.validateAndSendOtp(meta.getCustomerId());
 		}
 		

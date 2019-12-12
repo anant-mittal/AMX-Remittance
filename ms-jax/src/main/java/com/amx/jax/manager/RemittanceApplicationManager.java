@@ -299,7 +299,10 @@ public class RemittanceApplicationManager {
 		remittanceApplication.setCompanyCode(companyDetails.getCompanyCode());
 		// branch id
 		CountryBranchMdlv1 countryBranch = bankMetaService.getCountryBranchById((metaData.getCountryBranchId()));
-		remittanceApplication.setLoccod(metaData.getCountryBranchId());
+		if(countryBranch==null) {
+			throw new GlobalException(JaxError.NULL_BRANCH_ID,"country branch is missing");
+		}
+		remittanceApplication.setLoccod(countryBranch.getBranchId());
 		remittanceApplication.setExCountryBranch(countryBranch);
 		// fin year
 		UserFinancialYear userFinancialYear = finanacialService.getUserFinancialYear();
