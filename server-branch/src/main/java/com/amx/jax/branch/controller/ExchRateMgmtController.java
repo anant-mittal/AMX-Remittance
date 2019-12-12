@@ -101,6 +101,7 @@ public class ExchRateMgmtController {
 	public AmxApiResponse<Long, Object> rateUpoadRuleChecker(@RequestBody RateUploadRequestDto rateUploadRequestDto) {
 		if (ArgUtil.isEmpty(rateUploadRequestDto.getUpdatedBy())) {
 			rateUploadRequestDto.setUpdatedBy(ssoUser.getUserDetails().getEmployeeName());
+			rateUploadRequestDto.setApplicationCountryId(ssoUser.getUserDetails().getCountryId());
 		}
 		return exchRateMgmtClient.rateUpoadRuleChecker(rateUploadRequestDto);
 	}
