@@ -1,9 +1,7 @@
 package com.amx.jax.branch.controller;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.amx.jax.IDiscManagementService;
 import com.amx.jax.api.AmxApiResponse;
@@ -25,6 +23,7 @@ import com.amx.utils.ArgUtil;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -83,12 +82,14 @@ public class ExchRateMgmtController {
 		return exchRateMgmtClient.getRoutingCountryBanksForCurrency(currencyId);
 	}
 
+	@PreAuthorize("hasPermission('RATE_MGMT.CHECKER', 'VIEW')")
 	@RequestMapping(value = "/api/exch/checker/rules", method = { RequestMethod.POST })
 	public AmxApiResponse<List<RateUploadRuleDto>, Object> getRateUploadRulesByStatus(
 			@RequestParam RATE_UPLOAD_STATUS status, @RequestParam Boolean onlyActive) {
 		return exchRateMgmtClient.getRateUploadRulesByStatus(status, onlyActive);
 	}
 
+	@PreAuthorize("hasPermission('RATE_MGMT.MAKER', 'VIEW')")
 	@RequestMapping(value = "/api/exch/maker/submit", method = { RequestMethod.POST })
 	public AmxApiResponse<Long, Object> rateUpoadRuleMaker(@RequestBody RateUploadRequestDto rateUploadRequestDto) {
 		if (ArgUtil.isEmpty(rateUploadRequestDto.getUpdatedBy())) {
@@ -100,6 +101,7 @@ public class ExchRateMgmtController {
 		return exchRateMgmtClient.rateUpoadRuleMaker(rateUploadRequestDto);
 	}
 
+	@PreAuthorize("hasPermission('RATE_MGMT.CHECKER', 'VIEW')")
 	@RequestMapping(value = "/api/exch/checker/submit", method = { RequestMethod.POST })
 	public AmxApiResponse<Long, Object> rateUpoadRuleChecker(@RequestBody RateUploadRequestDto rateUploadRequestDto) {
 		if (ArgUtil.isEmpty(rateUploadRequestDto.getUpdatedBy())) {
