@@ -26,10 +26,9 @@ public class BranchRemittanceApplResponseDto extends AbstractModel{
 	BigDecimal totalNetCollectionAmount =BigDecimal.ZERO;
 	String warnigMsg;
 	ConfigDto configDto = new ConfigDto();
-	
-	
 	private CivilIdOtpModel civilIdOtpModel;
 	private PayGServiceCode pgCode = PayGServiceCode.DEFAULT;
+	private Boolean addToCart=true;
 	
 	
 	public ConfigDto getConfigDto() {
@@ -101,5 +100,11 @@ public class BranchRemittanceApplResponseDto extends AbstractModel{
 	}
 	public void setCivilIdOtpModel(CivilIdOtpModel civilIdOtpModel) {
 		this.civilIdOtpModel = civilIdOtpModel;
+	}
+	public Boolean getAddToCart() {
+		return addToCart;
+	}
+	public void setAddToCart(Boolean addToCart) {
+		this.addToCart = addToCart;
 	}
 }

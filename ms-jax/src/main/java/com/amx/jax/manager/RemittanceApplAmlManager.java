@@ -38,6 +38,7 @@ import com.amx.jax.partner.dao.PartnerTransactionDao;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.IRemittanceTransactionRepository;
 import com.amx.jax.repository.RemittanceApplicationBeneRepository;
+import com.amx.jax.repository.RemittanceTransactionRepository;
 import com.amx.jax.service.CountryService;
 import com.amx.jax.service.ParameterService;
 import com.amx.jax.services.BankService;
@@ -81,8 +82,11 @@ public class RemittanceApplAmlManager {
 	@Autowired
 	PartnerTransactionDao partnerDetailDao;
 	
+	//@Autowired
+	//IRemittanceTransactionRepository trnxRepository;
+	
 	@Autowired
-	IRemittanceTransactionRepository trnxRepository;
+	RemittanceTransactionRepository trnxRepository;
 	
 	
 	public RemitApplAmlModel createRemittanceApplAml(RemittanceApplication remittanceApplication,RemittanceAppBenificiary remittanceAppBeneficairy){
@@ -122,7 +126,7 @@ public class RemittanceApplAmlManager {
 		CountryBranchMdlv1 cntrybrid = new CountryBranchMdlv1();
 		cntrybrid.setCountryBranchId(cntrybrid.getCountryBranchId());
 		
-		List<RemittanceTransaction>  trnxCountList = trnxRepository.getTotalTrnxCntForCustomer(cust,cntrybrid);
+	List<RemittanceTransaction>  trnxCountList = trnxRepository.getTotalTrnxCntForCustomer(metaData.getCustomerId(),metaData.getCountryBranchId());
 		BigDecimal trnxCount = BigDecimal.ZERO;
 		if(trnxCountList!=null && !trnxCountList.isEmpty()) {
 			trnxCount = new BigDecimal(trnxCountList.size());
