@@ -109,11 +109,6 @@ public class MetaController {
 		return metaClient.getCurrencyByCountryId(countryId);
 	}
 
-	@RequestMapping(value = "/pub/meta/service/list", method = RequestMethod.GET)
-	public AmxApiResponse<ServiceGroupMasterDescDto, Object> getServiceList() {
-		return metaClient.getServiceGroupList();
-	}
-
 	@RequestMapping(value = "/pub/meta/branch/list", method = RequestMethod.GET)
 	public AmxApiResponse<CountryBranchDTO, Object> getBranchList() {
 		return metaClient.getCountryBranchList();
