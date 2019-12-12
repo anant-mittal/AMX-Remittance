@@ -58,6 +58,7 @@ import com.amx.jax.model.response.remittance.PaymentModeDto;
 import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
 import com.amx.jax.partner.manager.PartnerTransactionManager;
 import com.amx.jax.repository.AdditionalInstructionDataRepository;
+import com.amx.jax.repository.CountryBranchRepository;
 import com.amx.jax.repository.IBankMasterFromViewDao;
 import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.ICustomerRepository;
@@ -122,6 +123,9 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 	
 	@Autowired
 	BankMetaService bankMetaService;
+	
+	@Autowired
+	CountryBranchRepository countryBranchRepository;
 
 
 	/* 
@@ -162,12 +166,15 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 			
 			List<ShoppingCartDetails> lstCustomerShopping = branchRemittancePaymentDao.fetchCustomerShoppingCart(customerId);
 			
+			
 			ConfigDto config = getLimitCheck(metaData.getCustomerId());
 			config = partnerTransactionManager.paymentModeServiceProviderLimit(config,lstCustomerShopping,customer.getIdentityTypeId());
 			cartList.setConfigDto(config);
 			
 			if(lstCustomerShopping != null && !lstCustomerShopping.isEmpty() && lstCustomerShopping.size() != 0) {
+				clearCartForPB(lstCustomerShopping);
 				for (ShoppingCartDetails customerApplDto : lstCustomerShopping) {
+					
 					if(customerApplDto.getApplicationType()!=null && !customerApplDto.getApplicationType().equalsIgnoreCase(ConstantDocument.FS)) {
 					BigDecimal fcCurrencyId = customerApplDto.getForeignCurrency();
 					totalLocalAmount = totalLocalAmount.add(customerApplDto.getLocalTranxAmount()==null?BigDecimal.ZERO:customerApplDto.getLocalTranxAmount());
@@ -659,6 +666,21 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		paymentLinkAppDto.setForeignCurrencyDesc(shoppingCartDetails.getForeignCurrencyDesc());
 		return paymentLinkAppDto;
 		
+		
+	}
+	
+	// Clear cart for PB
+	private void clearCartForPB(List<ShoppingCartDetails> shoppingCartDetailsList) {
+		for(ShoppingCartDetails shoppingCartDetails:shoppingCartDetailsList) {
+			RemittanceApplication remittanceApplication = appRepository.findOne(shoppingCartDetails.getApplicationId());
+			CountryBranchMdlv1 countryBranchMdlv1 = countryBranchRepository.findByCountryBranchId(metaData.getCountryBranchId());
+			if (countryBranchMdlv1.getBranchId().equals(ConstantDocument.ONLINE_BRANCH_LOC_CODE)
+					&& ConstantDocument.PB_PAYMENT.equals(remittanceApplication.getPaymentType())
+					&& ConstantDocument.PB_STATUS_NEW.equals(remittanceApplication.getWtStatus())) {
+				shoppingCartDetailsList.remove(shoppingCartDetails);
+
+			}
+		}
 		
 	}
 
