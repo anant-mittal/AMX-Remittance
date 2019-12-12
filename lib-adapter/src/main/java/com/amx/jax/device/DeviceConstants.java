@@ -68,8 +68,18 @@ public class DeviceConstants {
 
 	public static boolean validateDeviceReqToken(String deviceReqKey, String deviceRegId, String deviceReqToken) {
 		return new HashBuilder().interval(DeviceConstants.Config.REQUEST_TOKEN_VALIDITY).secret(deviceReqKey)
-				.message(deviceRegId).validate(deviceReqToken) ||
-				new HashBuilder().interval(DeviceConstants.Config.REQUEST_TOKEN_VALIDITY_OLD).secret(deviceReqKey)
+				.message(deviceRegId).validate(deviceReqToken)
+
+				|| new HashBuilder().interval(DeviceConstants.Config.REQUEST_TOKEN_VALIDITY_OLD)
+						.tolerance(DeviceConstants.Config.REQUEST_TOKEN_VALIDITY)
+						.secret(deviceReqKey)
+						.message(deviceRegId).validate(deviceReqToken)
+
+				|| new HashBuilder().interval(DeviceConstants.Config.REQUEST_TOKEN_VALIDITY_OLD)
+						.tolerance(DeviceConstants.Config.REQUEST_TOKEN_VALIDITY).secret(deviceReqKey)
+						.message(deviceRegId).validate(deviceReqToken)
+
+				|| new HashBuilder().interval(DeviceConstants.Config.REQUEST_TOKEN_VALIDITY_OLD).secret(deviceReqKey)
 						.message(deviceRegId).validate(deviceReqToken);
 		/*
 		 * return CryptoUtil.validateHMAC(

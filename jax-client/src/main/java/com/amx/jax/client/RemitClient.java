@@ -119,14 +119,11 @@ public class RemitClient extends AbstractJaxServiceClient implements IRemittance
 		
 	}
 
-	public ApiResponse<SourceOfIncomeDto> getSourceOfIncome() {
-		
-			HttpEntity<SourceOfIncomeDto> requestEntity = new HttpEntity<SourceOfIncomeDto>(getHeader());
-			String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/sourceofincome/";
-			return restService.ajax(url).post(requestEntity)
-					.as(new ParameterizedTypeReference<ApiResponse<SourceOfIncomeDto>>() {
-					});
-		
+	public AmxApiResponse<SourceOfIncomeDto, Object> getSourceOfIncome() {
+		return restService.ajax(appConfig.getJaxURL())
+				.path(REMIT_API_ENDPOINT + "/sourceofincome/").meta(new JaxMetaInfo()).post()
+				.as(new ParameterizedTypeReference<AmxApiResponse<SourceOfIncomeDto, Object>>() {
+			});
 	}
 
 	public ApiResponse<PurposeOfTransactionModel> getPurposeOfTransactions(

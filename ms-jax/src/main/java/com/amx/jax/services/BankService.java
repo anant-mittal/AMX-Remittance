@@ -1,6 +1,7 @@
 package com.amx.jax.services;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.BankDao;
 import com.amx.jax.dbmodel.BankBranchView;
 import com.amx.jax.dbmodel.BankMasterMdlv1;
+import com.amx.jax.dbmodel.ViewBankChannelModel;
 import com.amx.jax.dbmodel.bene.BankAccountLength;
 import com.amx.jax.dbmodel.remittance.AdditionalBankDetailsViewx;
 import com.amx.jax.model.response.BankMasterDTO;
@@ -89,7 +91,10 @@ public class BankService {
 	}
 	
 	public List<BankMasterDTO> getBankByCountryAndCurrency(BigDecimal countryId, BigDecimal currencyId) {
-		List<BankMasterMdlv1> list = bankMasterRepository.findBankByCountryCurrency(countryId, currencyId);
-		return bankMetaService.convert(list);
+		List<ViewBankChannelModel> list = bankMetaService.getBankViewByCountryIdAndCurrency(countryId, currencyId);
+		Collections.sort(list, (o1, o2) -> {
+			return o1.getBankFullName().compareTo(o2.getBankFullName());
+		});
+		return bankMetaService.convertBankView(list);
 	}
 }
