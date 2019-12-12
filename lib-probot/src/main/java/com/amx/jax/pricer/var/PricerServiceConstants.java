@@ -158,6 +158,10 @@ public final class PricerServiceConstants {
 		HOME, WU, MONEY;
 	}
 
+	public static enum ROUTING_REMIT_STATUS {
+		ACTIVE, INACTIVE;
+	}
+
 	public static enum GROUP_TYPE {
 		CUR, BRN;
 	}

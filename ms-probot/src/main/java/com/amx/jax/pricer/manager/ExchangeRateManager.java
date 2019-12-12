@@ -30,7 +30,7 @@ import com.amx.jax.pricer.dao.CurrencyMasterDao;
 import com.amx.jax.pricer.dao.ExchRateUploadDao;
 import com.amx.jax.pricer.dao.ExchangeRateDao;
 import com.amx.jax.pricer.dao.GroupingMasterDao;
-import com.amx.jax.pricer.dao.RoutingHeaderDao;
+import com.amx.jax.pricer.dao.RoutingProdStatusDao;
 import com.amx.jax.pricer.dao.ServiceMasterDescDao;
 import com.amx.jax.pricer.dbmodel.BankMasterModel;
 import com.amx.jax.pricer.dbmodel.CountryBranch;
@@ -40,8 +40,8 @@ import com.amx.jax.pricer.dbmodel.CurrencyMasterModel;
 import com.amx.jax.pricer.dbmodel.ExchRateUpload;
 import com.amx.jax.pricer.dbmodel.ExchangeRateMasterApprovalDet;
 import com.amx.jax.pricer.dbmodel.GroupingMaster;
-import com.amx.jax.pricer.dbmodel.RoutingHeader;
 import com.amx.jax.pricer.dbmodel.ServiceMasterDesc;
+import com.amx.jax.pricer.dbmodel.VwExRoutingProductStatus;
 import com.amx.jax.pricer.dto.BankDetailsDTO;
 import com.amx.jax.pricer.dto.CountryMasterDTO;
 import com.amx.jax.pricer.dto.ExchRateEnquiryReqDto;
@@ -52,7 +52,6 @@ import com.amx.jax.pricer.dto.RateUploadRuleDto;
 import com.amx.jax.pricer.dto.RoutingCountryBankInfo;
 import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
-import com.amx.jax.pricer.repository.RateUploadExchAprdetProcedureRepo;
 import com.amx.jax.pricer.repository.custom.ExchRatePopulateProcDao;
 import com.amx.jax.pricer.repository.custom.ExchRatePopulateProcedure;
 import com.amx.jax.pricer.var.PricerServiceConstants.IS_ACTIVE;
@@ -94,10 +93,10 @@ public class ExchangeRateManager {
 	BankMasterDao bankMasterDao;
 
 	@Autowired
-	RoutingHeaderDao routingHeaderDao;
+	RoutingProdStatusDao routingProdStatusDao;
 
-	@Autowired
-	RateUploadExchAprdetProcedureRepo uploadProcRepo;
+	// @Autowired
+	// RateUploadExchAprdetProcedureRepo uploadProcRepo;
 
 	@Autowired
 	MultiTenantConnectionProviderImpl connectionProvider;
@@ -499,11 +498,11 @@ public class ExchangeRateManager {
 			throw new PricerServiceException(PricerServiceError.INVALID_CURRENCY, "Invalid Currency");
 		}
 
-		List<RoutingHeader> routingHeaders = routingHeaderDao.getRoutHeadersByCurrenyId(currencyId);
+		List<VwExRoutingProductStatus> routingProdStatusList = routingProdStatusDao.getByCurrencyId(currencyId);
 
 		RoutingCountryBankInfo routingCountryBankInfo = new RoutingCountryBankInfo();
 
-		if (routingHeaders == null || routingHeaders.isEmpty()) {
+		if (routingProdStatusList == null || routingProdStatusList.isEmpty()) {
 			return routingCountryBankInfo;
 		}
 
@@ -513,25 +512,26 @@ public class ExchangeRateManager {
 
 		Map<BigDecimal, BankDetailsDTO> routingBanks = new HashMap<BigDecimal, BankDetailsDTO>();
 
-		for (RoutingHeader header : routingHeaders) {
-			if (!countries.containsKey(header.getCountryId())) {
-				countries.put(header.getRoutingCountryId(), null);
+		for (VwExRoutingProductStatus status : routingProdStatusList) {
+
+			if (!countries.containsKey(status.getCountryId())) {
+				countries.put(status.getCountryId(), null);
 			}
 
-			if (!routingBanks.containsKey(header.getRoutingBankId())) {
-				routingBanks.put(header.getRoutingBankId(), null);
+			if (!routingBanks.containsKey(status.getBankId())) {
+				routingBanks.put(status.getBankId(), null);
 			}
 
-			if (!banksForCountry.containsKey(header.getRoutingCountryId())) {
+			if (!banksForCountry.containsKey(status.getCountryId())) {
 
 				List<BigDecimal> banks = new ArrayList<BigDecimal>();
-				banks.add(header.getRoutingBankId());
+				banks.add(status.getBankId());
 
-				banksForCountry.put(header.getRoutingCountryId(), banks);
+				banksForCountry.put(status.getCountryId(), banks);
 			} else {
 
-				if (!banksForCountry.get(header.getRoutingCountryId()).contains(header.getRoutingBankId())) {
-					banksForCountry.get(header.getRoutingCountryId()).add(header.getRoutingBankId());
+				if (!banksForCountry.get(status.getCountryId()).contains(status.getBankId())) {
+					banksForCountry.get(status.getCountryId()).add(status.getBankId());
 				}
 			}
 		}
