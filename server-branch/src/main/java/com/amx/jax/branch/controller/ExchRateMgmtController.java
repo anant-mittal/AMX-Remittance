@@ -94,6 +94,9 @@ public class ExchRateMgmtController {
 		if (ArgUtil.isEmpty(rateUploadRequestDto.getUpdatedBy())) {
 			rateUploadRequestDto.setUpdatedBy(ssoUser.getUserDetails().getEmployeeName());
 		}
+		if (ArgUtil.isEmpty(rateUploadRequestDto.getApplicationCountryId())){
+			rateUploadRequestDto.setApplicationCountryId(ssoUser.getUserDetails().getCountryId());
+		}
 		return exchRateMgmtClient.rateUpoadRuleMaker(rateUploadRequestDto);
 	}
 
@@ -101,6 +104,8 @@ public class ExchRateMgmtController {
 	public AmxApiResponse<Long, Object> rateUpoadRuleChecker(@RequestBody RateUploadRequestDto rateUploadRequestDto) {
 		if (ArgUtil.isEmpty(rateUploadRequestDto.getUpdatedBy())) {
 			rateUploadRequestDto.setUpdatedBy(ssoUser.getUserDetails().getEmployeeName());
+		}
+		if (ArgUtil.isEmpty(rateUploadRequestDto.getApplicationCountryId())){
 			rateUploadRequestDto.setApplicationCountryId(ssoUser.getUserDetails().getCountryId());
 		}
 		return exchRateMgmtClient.rateUpoadRuleChecker(rateUploadRequestDto);
