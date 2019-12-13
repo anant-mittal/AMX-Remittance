@@ -56,6 +56,15 @@ public class BenePersonalDetailValidator implements Validator {
 		validateBeneArabicBlacklist(benePersonalDetailModel);
 		validateBeneNames(benePersonalDetailModel);
 		validateInstitutionData(benePersonalDetailModel);
+		validateBeneRelationId(benePersonalDetailModel);
+	}
+
+	private void validateBeneRelationId(BenePersonalDetailModel benePersonalDetailModel) {
+		BeneficaryStatus beneStatus = beneficaryStatusRepository.findOne(benePersonalDetailModel.getBeneficaryTypeId());
+		if (ConstantDocument.INDIVIDUAL_STRING.equalsIgnoreCase(beneStatus.getBeneficaryStatusName())
+				&& benePersonalDetailModel.getRelationsId() == null) {
+			throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Relation Id can not be null");
+		}
 	}
 
 	public void validateUpdateBene(BeneficiaryTrnxModel beneficiaryTrnxModel) {
