@@ -13,6 +13,6 @@ public interface RelationsRepository extends JpaRepository<RelationsDescription,
 
 	List<RelationsDescription> findBylangId(BigDecimal langId);
 
-	@Query(value = "SELECT * FROM JAX_VW_RELATIONSHIP jvr WHERE RELATIONS_CODE='30'")
+	@Query(value = "SELECT * FROM JAX_VW_RELATIONSHIP jvr WHERE RELATIONS_CODE='30'", nativeQuery=true)
 	List<RelationsDescription> getOthersRelations();
 }
