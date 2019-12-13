@@ -289,12 +289,12 @@ public class BeneController {
 	public ResponseWrapperM<List<GetServiceApplicabilityResponse>, Object> getServiceApplicability(
 			@RequestBody GetServiceApplicabilityRequest request) {
 		return ResponseWrapperM.fromAsList(remittanceClient.getServiceApplicability(request));
-	}
+	}	
 	
 	@ApiOperation(value = "List Of Institution Category")
 	@RequestMapping(value = "/api/bnfcry/meta/institution_category/list", method = { RequestMethod.GET })
-	public AmxApiResponse<InstitutionCategoryDto, Object> listInstitutionCategoryMaster() {
-		return metaClient.listInstitutionCategoryMaster();
+	public ResponseWrapperM<List<InstitutionCategoryDto>, Object> listInstitutionCategoryMaster() {
+		return ResponseWrapperM.fromAsList(metaClient.listInstitutionCategoryMaster());
 	}
 
 }
