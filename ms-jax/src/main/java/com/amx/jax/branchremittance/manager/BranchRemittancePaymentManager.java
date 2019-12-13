@@ -6,6 +6,7 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -680,18 +681,20 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 	
 	// Clear cart for PB
 	private void clearCartForPB(List<ShoppingCartDetails> shoppingCartDetailsList) {
-		int i;
-		for(i=0;i<shoppingCartDetailsList.size();i++) {
-			RemittanceApplication remittanceApplication = appRepository.findOne(shoppingCartDetailsList.get(i).getApplicationId());
-			CountryBranchMdlv1 countryBranchMdlv1 = countryBranchRepository.findByCountryBranchId(metaData.getCountryBranchId());
+		
+		Iterator<ShoppingCartDetails> iter = shoppingCartDetailsList.iterator();
+
+		while (iter.hasNext()) {
+			ShoppingCartDetails shoppingCartDetails = iter.next();
+			RemittanceApplication remittanceApplication = appRepository.findOne(shoppingCartDetails.getApplicationId());
+			CountryBranchMdlv1 countryBranchMdlv1 = countryBranchRepository
+					.findByCountryBranchId(metaData.getCountryBranchId());
 			if (countryBranchMdlv1.getBranchId().equals(ConstantDocument.ONLINE_BRANCH_LOC_CODE)
 					&& ConstantDocument.PB_PAYMENT.equals(remittanceApplication.getPaymentType())
 					&& ConstantDocument.PB_STATUS_NEW.equals(remittanceApplication.getWtStatus())) {
-				shoppingCartDetailsList.remove(shoppingCartDetailsList.get(i));
-				i--;
-				
-
+				shoppingCartDetailsList.remove(shoppingCartDetails);
 			}
+
 		}
 		
 	}
