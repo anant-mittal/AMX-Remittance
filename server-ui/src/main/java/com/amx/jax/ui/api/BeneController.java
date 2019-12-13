@@ -17,12 +17,15 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.amxlib.meta.model.BeneCountryDTO;
 import com.amx.amxlib.model.response.JaxTransactionResponse;
 import com.amx.jax.JaxAuthContext;
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.BeneClient;
+import com.amx.jax.client.MetaClient;
 import com.amx.jax.client.bene.BeneBranchClient;
 import com.amx.jax.client.bene.BeneficaryStatusDto;
 import com.amx.jax.client.bene.BeneficiaryConstant.BeneStatus;
 import com.amx.jax.client.bene.IBeneficiaryService;
+import com.amx.jax.client.bene.InstitutionCategoryDto;
 import com.amx.jax.client.branch.IBranchBeneService;
 import com.amx.jax.client.remittance.RemittanceClient;
 import com.amx.jax.model.BeneficiaryListDTO;
@@ -71,6 +74,9 @@ public class BeneController {
 
 	@Autowired
 	BeneClient beneClient;
+	
+	@Autowired
+	MetaClient metaClient;
 
 	/**
 	 * Bene list.
@@ -284,4 +290,11 @@ public class BeneController {
 			@RequestBody GetServiceApplicabilityRequest request) {
 		return ResponseWrapperM.fromAsList(remittanceClient.getServiceApplicability(request));
 	}
+	
+	@ApiOperation(value = "List Of Institution Category")
+	@RequestMapping(value = "/api/bnfcry/meta/institution_category/list", method = { RequestMethod.GET })
+	public AmxApiResponse<InstitutionCategoryDto, Object> listInstitutionCategoryMaster() {
+		return metaClient.listInstitutionCategoryMaster();
+	}
+
 }
