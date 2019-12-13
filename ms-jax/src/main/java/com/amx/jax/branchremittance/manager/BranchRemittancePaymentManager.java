@@ -681,9 +681,13 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 	
 	// Clear cart for PB
 	private void clearCartForPB(List<ShoppingCartDetails> shoppingCartDetailsList) {
+		List<ShoppingCartDetails> shoppingCartDetailsTemp = new ArrayList<ShoppingCartDetails>();
+		for(ShoppingCartDetails shoppingCartDetails:shoppingCartDetailsList) {
+			shoppingCartDetailsTemp.add(shoppingCartDetails);
+		}
 		
-		Iterator<ShoppingCartDetails> iter = shoppingCartDetailsList.iterator();
-
+		Iterator<ShoppingCartDetails> iter = shoppingCartDetailsTemp.iterator();
+		
 		while (iter.hasNext()) {
 			ShoppingCartDetails shoppingCartDetails = iter.next();
 			RemittanceApplication remittanceApplication = appRepository.findOne(shoppingCartDetails.getApplicationId());
