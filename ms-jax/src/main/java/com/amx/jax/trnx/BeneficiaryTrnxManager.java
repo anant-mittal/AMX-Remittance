@@ -57,6 +57,7 @@ import com.amx.jax.userservice.repository.RelationsRepository;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.validation.BenePersonalDetailValidator;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.JsonUtil;
 
 /**
  * @author Prashant
@@ -144,7 +145,7 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 
 	public BeneficiaryTrnxModel commit(BeneficiaryTrnxModel beneficiaryTrnxModel) {
 		
-		logger.info("commiting beneficary: " + beneficiaryTrnxModel.toString());
+		logger.info("commiting beneficary: {}", JsonUtil.toJson(beneficiaryTrnxModel));
 		BeneficaryMaster beneMaster = commitBeneMaster(beneficiaryTrnxModel);
 		commitBeneContact(beneficiaryTrnxModel, beneMaster.getBeneficaryMasterSeqId());
 		BeneficaryAccount beneAccount = commitBeneAccount(beneficiaryTrnxModel, beneMaster.getBeneficaryMasterSeqId());
@@ -449,7 +450,7 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 			beneMaster.setFirstName(benePersonalDetails.getInstitutionName());
 		}
 		if (benePersonalDetails.getInstitutionNameLocal() != null) {
-			beneMaster.setFirstName(benePersonalDetails.getInstitutionNameLocal());
+			beneMaster.setLocalFirstName(benePersonalDetails.getInstitutionNameLocal());
 		}
 	}
 
