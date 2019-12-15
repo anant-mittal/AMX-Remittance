@@ -107,6 +107,8 @@ public class RatePlaceOrder implements Serializable {
 		private String terminalId;
 		private String loyaltyPointInd;
 		private BigDecimal avgCost;
+		private BigDecimal savedLocalAmount;
+		
 		 
 		
 		
@@ -884,6 +886,15 @@ public class RatePlaceOrder implements Serializable {
 
 		public void setAvgCost(BigDecimal avgCost) {
 			this.avgCost = avgCost;
+		}
+
+		@Column(name="SAVED_AMOUNT")
+		public BigDecimal getSavedLocalAmount() {
+			return savedLocalAmount;
+		}
+
+		public void setSavedLocalAmount(BigDecimal savedLocalAmount) {
+			this.savedLocalAmount = savedLocalAmount;
 		}
 	}
 
