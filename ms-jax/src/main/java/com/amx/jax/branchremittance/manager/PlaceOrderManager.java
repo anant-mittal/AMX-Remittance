@@ -245,6 +245,8 @@ public class PlaceOrderManager implements Serializable{
 		placeOrderAppl.setExchangeRateApplied(exchRateBreakup.getInverseRate());
 		placeOrderAppl.setRackExchangeRate(dynPricingDto.getRackExchangeRate());
 		placeOrderAppl.setValueDate(new Date());
+		placeOrderAppl.setAvgCost(dynPricingDto.getCostExchangeRate());
+		
 		placeOrderAppl.setRequestModel(JsonUtil.toJson(applRequestModel));
 		
 		if(JaxUtil.isNullZeroBigDecimalCheck(applRequestModel.getLocalAmount())){
@@ -434,12 +436,12 @@ public class PlaceOrderManager implements Serializable{
 				ratePlaceOrder.setTransactionAmountPaid(exchRate.getConvertedLCAmount());
 					
 				}
+				ratePlaceOrder.setApprovedDate(new Date());
+				ratePlaceOrder.setApprovedBy(brApplManager.getEmployeeDetails().getUserName());
 			}
 			ratePlaceOrder.setModifiedBy(brApplManager.getEmployeeDetails().getUserName());
 			ratePlaceOrder.setModifiedDate(new Date());
 			ratePlaceOrder.setCustomerIndicator(ConstantDocument.Status.C.toString());
-			ratePlaceOrder.setApprovedDate(new Date());
-			ratePlaceOrder.setApprovedBy(brApplManager.getEmployeeDetails().getUserName());
 			if(!StringUtils.isBlank(remarks)) {
 				ratePlaceOrder.setRemarks(ratePlaceOrder.getRemarks()==null?"":ratePlaceOrder.getRemarks()+" "+remarks);
 			}
@@ -824,7 +826,7 @@ public void validateMinAndMaxRate(RatePlaceOrder placeOrder,PlaceOrderUpdateStat
 	TrnxRoutingDetails routPath = requestModelObject.getDynamicRroutingPricingBreakup().getTrnxRoutingPaths();
 	Map<DISCOUNT_TYPE, ExchangeDiscountInfo> discountInfo  =  requestModelObject.getDynamicRroutingPricingBreakup().getCustomerDiscountDetails();
 	BigDecimal minExchangeRate = dpDto==null?BigDecimal.ZERO:dpDto.getRackExchangeRate(); //MAx value
-	BigDecimal maxExchangeRate = dpDto==null?BigDecimal.ZERO:dpDto.getCostExchangeRate(); //Min value
+	BigDecimal maxExchangeRate = placeOrder.getAvgCost()==null?BigDecimal.ZERO:placeOrder.getAvgCost(); //Min value
 	BigDecimal offeredExchangeRate = dto==null?BigDecimal.ZERO:dto.getExchangeRateOffered(); //offer value
 	
 	if(!JaxUtil.isNullZeroBigDecimalCheck(offeredExchangeRate)) {

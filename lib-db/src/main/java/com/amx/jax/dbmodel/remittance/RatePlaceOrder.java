@@ -106,6 +106,7 @@ public class RatePlaceOrder implements Serializable {
 		private BigDecimal rackExchangeRate;
 		private String terminalId;
 		private String loyaltyPointInd;
+		private BigDecimal avgCost;
 		 
 		
 		
@@ -874,6 +875,15 @@ public class RatePlaceOrder implements Serializable {
 		}
 		public void setLoyaltyPointInd(String loyaltyPointInd) {
 			this.loyaltyPointInd = loyaltyPointInd;
+		}
+
+		@Column(name="AVG_COST")
+		public BigDecimal getAvgCost() {
+			return avgCost;
+		}
+
+		public void setAvgCost(BigDecimal avgCost) {
+			this.avgCost = avgCost;
 		}
 	}
 
