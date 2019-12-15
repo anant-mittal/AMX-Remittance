@@ -436,16 +436,17 @@ public class RemittancePaymentManager extends AbstractService{
 					
 
 					/** Calling stored procedure  to move remittance to old emos **/
-					if(JaxUtil.isNullZeroBigDecimalCheck(collectionDocumentNumber)) {
+					
+					 if(JaxUtil.isNullZeroBigDecimalCheck(collectionDocumentNumber)) {
 						paymentResponse.setCollectionDocumentCode(collectionDocumentCode);
 						paymentResponse.setCollectionDocumentNumber(collectionDocumentNumber);
 						paymentResponse.setCollectionFinanceYear(collectionFinanceYear);
-						remitanceMap = remittanceApplicationService.saveRemittancetoOldEmos(paymentResponse);
-						errorMsg = (String) remitanceMap.get("P_ERROR_MESSAGE");
+						//remitanceMap = remittanceApplicationService.saveRemittancetoOldEmos(paymentResponse);
+						//errorMsg = (String) remitanceMap.get("P_ERROR_MESSAGE");
 						paymentResponse.setErrorText(errorMsg);
-						logger.info("EX_INSERT_EMOS_TRANSFER_LIVE :" + errorMsg);
+						//logger.info("EX_INSERT_EMOS_TRANSFER_LIVE :" + errorMsg);
 
-						/** For Receipt Print **/
+						// For Receipt Print 
 						response.setResponseStatus(ResponseStatus.OK);
 						
 					}

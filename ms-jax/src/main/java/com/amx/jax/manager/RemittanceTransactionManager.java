@@ -1342,11 +1342,9 @@ public class RemittanceTransactionManager {
 	public BranchRemittanceApplResponseDto addtoCart(RemittanceTransactionDrRequestModel model) {
 		this.isSaveRemittanceFlow = true;
 		BranchRemittanceApplRequestModel applReqModel = new BranchRemittanceApplRequestModel();
+		applReqModel.setRoutingBankId(model.getDynamicRroutingPricingBreakup().getTrnxRoutingPaths().getRoutingBankId());
+		applReqModel.setBeneId(model.getBeneId());
 		applReqModel.setDynamicRroutingPricingBreakup(model.getDynamicRroutingPricingBreakup());
-		
-		// validation for Home Send SP
-		branchRemittanceApplManager.checkServiceProviderValidation(applReqModel);
-		
 		
 		RemittanceTransactionResponsetModel validationResults = this.validateTransactionDataV2(model);
 		if (validationResults !=null && jaxTenantProperties.getFlexFieldEnabled()) {
@@ -1372,6 +1370,12 @@ public class RemittanceTransactionManager {
 		/** code end here **/
 		
 		remittanceAdditionalFieldManager.processAdditionalFields(model);
+		
+		/** validation for  Service Provider **/
+		applReqModel.setAdditionalFields(remitApplParametersMap);
+		branchRemittanceApplManager.checkServiceProviderValidation(applReqModel);
+		
+		
 		RemittanceApplication remittanceApplication = remitAppManager.createRemittanceApplicationV2(model,validatedObjects, validationResults, remitApplParametersMap);
 		RemittanceAppBenificiary remittanceAppBeneficairy = remitAppBeneManager.createRemittanceAppBeneficiary(remittanceApplication);
 		List<AdditionalInstructionData> additionalInstrumentData;
@@ -1684,6 +1688,7 @@ public class RemittanceTransactionManager {
 			localAmount = model.getLocalAmount();
 		}
 		
+	
 	logger.info("App Type :"+meta.getAppType()+"\t channel :"+meta.getChannel()+"\t localAmount :"+localAmount);
 		
 		if (((meta.getChannel().equals(JaxChannel.ONLINE)) && (WEB.equals(meta.getAppType()))
