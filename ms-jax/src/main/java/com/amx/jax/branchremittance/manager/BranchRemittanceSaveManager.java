@@ -343,13 +343,19 @@ public class BranchRemittanceSaveManager {
 			logger.info("MRU procedure OUTPUT --->"+outpuMap==null?"TRNX MOVED SUCCESS":outpuMap.toString());
 			if(outpuMap!=null && outpuMap.get("P_ERROR_MESSAGE")!=null) {
 				String errrMsg = outpuMap.get("P_ERROR_MESSAGE").toString();
+				paymentResponse.setErrorText(errrMsg);
 				logger.info("MRU Procedure Error Msg :"+errrMsg);
 				if(!StringUtils.isBlank(errrMsg)) {
 					notificationService.sendTransactionErrorAlertEmail(errrMsg,"TRNX NOT MOVED TO EMOS",paymentResponse);
 				}
 			}
-			String promotionMsg = promotionManager.getPromotionPrizeForBranch(responseDto);
-			responseDto.setPromotionMessage(promotionMsg);
+			
+			CountryBranchMdlv1 countryBranch = new CountryBranchMdlv1();
+			countryBranch = bankMetaService.getCountryBranchById(metaData.getCountryBranchId()); //user branch not customer branch
+			if(countryBranch!=null && countryBranch.getBranchId().compareTo(ConstantDocument.ONLINE_BRANCH_LOC_CODE)!=0) {
+				String promotionMsg = promotionManager.getPromotionPrizeForBranch(responseDto);
+				responseDto.setPromotionMessage(promotionMsg);
+			}
 		}else {
 			logger.info("NOT moved to old emos ", responseDto.getCollectionDocumentNo() + "" +responseDto.getCollectionDocumentCode()+" "+responseDto.getCollectionDocumentFYear());
 		}

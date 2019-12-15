@@ -191,7 +191,7 @@ public class ReportManagerService extends AbstractService{
 				
 				
 		logger.info("Remittance View List Size is======"+remittanceViewlist.size());
-		if (!remittanceViewlist.isEmpty()) {
+		if (remittanceViewlist!=null && !remittanceViewlist.isEmpty()) {
 
 			for (RemittanceTransactionView remittanceAppview : remittanceViewlist) {
 				if (remittanceAppview.getApplicationTypeDesc().equalsIgnoreCase("REMITTANCE")) {
