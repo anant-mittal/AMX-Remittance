@@ -1,0 +1,156 @@
+{
+  "aggs": {
+    "TimePeriods": {
+      "date_range": {
+        "field": "@timestamp",
+        "ranges": [
+          {
+          	"key":"[[${Today}]]",
+            "from": "now-45d",
+            "to": "now"
+          },
+          {
+            "key":"[[${Yesterday}]]",
+            "from": "now-2M/d",
+            "to": "now-45d"
+          },
+          {
+            "key":"[[${BeforeYesterday}]]",
+            "to": "now-2M/d"
+          }
+        ],
+        "time_zone": "Asia/Calcutta"
+      },
+      "aggs": {
+        "TrnxStage": {
+          "terms": {
+            "field": "trnx.trnxStage.keyword",
+            "order": {
+              "TrnxID": "desc"
+            },
+            "size": 13
+          },
+          "aggs": {
+            "TrnxID": {
+              "cardinality": {
+                "field": "trnx.trnxId"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "size": 0,
+  "_source": {
+    "excludes": []
+  },
+  "stored_fields": [
+    "*"
+  ],
+  "script_fields": {
+    "trnx.dayOfMonth": {
+      "script": {
+        "source": "if (doc.containsKey('trnx.trnxDate') && !doc['trnx.trnxDate'].empty && !doc['trnx.trnxDate'].empty) { \n    return doc['trnx.trnxDate'].value.dayOfMonth;\n} else { \n    return null;\n}",
+        "lang": "painless"
+      }
+    },
+    "cons.daysOfMonth": {
+      "script": {
+        "source": "if (doc.containsKey('@timestamp') && !doc['@timestamp'].empty && !doc['@timestamp'].empty) { \n    def m = doc['@timestamp'].value.monthOfYear;\n    if (m == 1 || m == 3 || m == 5 || m == 7 || m == 8 || m == 10 || m == 12 ){\n        return 31\n    } else  if (m == 2){\n        return 28\n    } else {\n        return 30;\n    }\n} else { \n    return null;\n}",
+        "lang": "painless"
+      }
+    },
+    "MonthDay": {
+      "script": {
+        "source": "if (doc.containsKey('trnx.trnxDate') && !doc['trnx.trnxDate'].empty && !doc['trnx.trnxDate'].empty && doc['_type'].value == \"trnx\") {\n   if (doc['trnx.trnxStatus.keyword'].value == \"PAID\" || doc['trnx.trnxStatus.keyword'].value == \"DONE\" ) {\n       def d = doc['trnx.trnxDate'].value.dayOfMonth;\n       return d;\n   }\n   else {\n       return null;\n   }\n}\n",
+        "lang": "painless"
+      }
+    },
+    "RPT_commission": {
+      "script": {
+        "source": "if (doc.containsKey('trnx.trnxDate') && !doc['trnx.trnxDate'].empty && doc['_type'].value == \"trnx\") {\r\n\tif ((doc['trnx.tpcCommShare'].empty || !doc.containsKey('trnx.tpcCommShare')) && (doc.containsKey('trnx.localCommRecv') && !doc['trnx.localCommRecv'].empty)) {\r\n\t\treturn doc['trnx.localCommRecv'].value;\r\n\t} else if (doc.containsKey('trnx.tpcCommShare') && !doc['trnx.tpcCommShare'].empty) {\r\n\t\treturn doc['trnx.tpcCommShare'].value;\r\n\t}\r\n}\r\n",
+        "lang": "painless"
+      }
+    }
+  },
+  "docvalue_fields": [
+    {
+      "field": "@timestamp",
+      "format": "date_time"
+    },
+    {
+      "field": "customer.creationDate",
+      "format": "date_time"
+    },
+    {
+      "field": "customer.creationDateOnline",
+      "format": "date_time"
+    },
+    {
+      "field": "customer.dateOfBirth",
+      "format": "date_time"
+    },
+    {
+      "field": "customer.lastTransactionDate",
+      "format": "date_time"
+    },
+    {
+      "field": "customer.lastUpdateDate",
+      "format": "date_time"
+    },
+    {
+      "field": "customer.updateDate",
+      "format": "date_time"
+    },
+    {
+      "field": "trnx.creationDate",
+      "format": "date_time"
+    },
+    {
+      "field": "trnx.lastUpdateDate",
+      "format": "date_time"
+    },
+    {
+      "field": "trnx.trnxDate",
+      "format": "date_time"
+    },
+    {
+      "field": "trnx.trnxPaidDate",
+      "format": "date_time"
+    },
+    {
+      "field": "trnx.trnxSendDatetime",
+      "format": "date_time"
+    },
+    {
+      "field": "verifylink.verifiedDate",
+      "format": "date_time"
+    },
+    {
+      "field": "xrate.timestamp",
+      "format": "date_time"
+    }
+  ],
+  "query": {
+    "bool": {
+      "must": [],
+      "filter": [
+        {
+          "match_all": {}
+        },
+        {
+          "range": {
+            "@timestamp": {
+              "format": "strict_date_optional_time",
+              "gte": "2019-09-17T05:33:14.547Z",
+              "lte": "2019-12-16T05:33:14.547Z"
+            }
+          }
+        }
+      ],
+      "should": [],
+      "must_not": []
+    }
+  }
+}
