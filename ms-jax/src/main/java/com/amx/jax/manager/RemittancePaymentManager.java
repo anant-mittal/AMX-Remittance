@@ -184,7 +184,7 @@ public class RemittancePaymentManager extends AbstractService{
 	
 	public ApiResponse<PaymentResponseDto> paymentCapture(PaymentResponseDto paymentResponse) {
 		ApiResponse response = null;
-		logger.info("paymment capture :"+paymentResponse.toString());
+		logger.info("paymment capture old :"+paymentResponse.toString());
 		List<ShoppingCartDetails>  shoppingCartList = new ArrayList<>();
 		UserFinancialYear userFinancialYear = finanacialService.getUserFinancialYear();
 		List<RemittanceApplication> lstPayIdDetails =null;
@@ -343,7 +343,7 @@ public class RemittancePaymentManager extends AbstractService{
 	/** removed calling stored procedure **/
 	public ApiResponse<PaymentResponseDto> paymentCaptureV2(PaymentResponseDto paymentResponse) {
 		ApiResponse response = null;
-		logger.debug("paymment capture :{}", JsonUtil.toJson(paymentResponse));
+		logger.debug("paymment capture v2 :{}", JsonUtil.toJson(paymentResponse));
 		List<ShoppingCartDetails>  shoppingCartList = new ArrayList<>();
 		UserFinancialYear userFinancialYear = finanacialService.getUserFinancialYear();
 		List<RemittanceApplication> lstPayIdDetails =null;

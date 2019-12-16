@@ -444,8 +444,7 @@ public class BranchRemittanceDao {
 					responseModel.setDocumentFinancialYear(appl.getDocumentFinancialyear());
 					if (appl != null && appl.getIsactive().equalsIgnoreCase(ConstantDocument.Yes)) {
 						appl.setPaygTrnxDetailId(responseModel.getRemittanceAppId());
-						appl.setPaymentId(responseModel.getRemittanceAppId() == null ? appl.getPaymentId()
-								: responseModel.getRemittanceAppId().toString());
+						appl.setPaymentId(responseModel.getRemittanceAppId() == null ? appl.getPaymentId(): responseModel.getRemittanceAppId().toString());
 						appl.setPaymentType(applIdDto.getPaymentType());
 						appRepo.save(appl);
 					}

@@ -53,6 +53,9 @@ import com.amx.jax.userservice.dao.ReferralDetailsDao;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.ConverterUtil;
 import com.amx.jax.util.JaxContextUtil;
+import com.amx.utils.JsonUtil;
+
+import springfox.documentation.spring.web.json.Json;
 
 @RestController
 @RequestMapping(REMIT_API_ENDPOINT)
@@ -244,6 +247,8 @@ public class RemittanceController {
 //				pushNotifyClient.send(pushMessage);	
 //			}
 ////		}	
+		
+		logger.info("paymentResponse :"+JsonUtil.toJson(paymentResponse));
 		ApiResponse response = null;
 		if(paymentResponse!=null && paymentResponse.getProduct().equals(AmxEnums.Products.REMIT_SINGLE)) { /** for compatability **/
 			response = remittancePaymentManager.paymentCapture(paymentResponse);
