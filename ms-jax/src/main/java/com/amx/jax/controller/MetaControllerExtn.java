@@ -7,12 +7,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.constant.ApiEndpoint.MetaApi;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.bene.InstitutionCategoryDto;
 import com.amx.jax.client.meta.IMetaControllerExtn;
+import com.amx.jax.model.meta.ReasonsDTO;
 import com.amx.jax.service.MetaExtnService;
 
 import io.swagger.annotations.ApiOperation;
@@ -32,5 +34,10 @@ public class MetaControllerExtn implements IMetaControllerExtn {
 	public AmxApiResponse<InstitutionCategoryDto, Object> listInstitutionCategoryMaster() {
 		List<InstitutionCategoryDto> output = metaExtnService.listInstitutionCategoryMaster();
 		return AmxApiResponse.buildList(output);
+	}
+	
+	@RequestMapping(value = MetaApi.API_REASON_CODE, method = RequestMethod.POST)
+	public AmxApiResponse<ReasonsDTO, Object> getReason(@RequestParam String reasonCategory) {
+		return metaExtnService.getReasonList(reasonCategory);
 	}
 }

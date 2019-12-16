@@ -122,7 +122,6 @@ public class BeneBranchController implements IBranchBeneService {
 	}
 
 	@RequestMapping(value = Path.UPDATE_BENE_STATUS, method = RequestMethod.POST)
-	@Override
 	@ApiOperation("update bene status")
 	public AmxApiResponse<BoolRespModel, Object> updateBeneStatus(@RequestBody @Valid UpdateBeneStatusRequest request) {
 		logger.debug("updateBeneStatus request: {}", JsonUtil.toJson(request));

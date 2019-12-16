@@ -58,7 +58,9 @@ public class BeneBranchManager {
 		if (beneRel == null) {
 			throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Bene not found");
 		}
+		// 
 		beneRel.setIsActive(request.getStatusCode().getDbFlag());
+		beneRel.setReasonCodeId(request.getReasonCodeId());
 		iBeneficiaryRelationshipDao.save(beneRel);
 	}
 

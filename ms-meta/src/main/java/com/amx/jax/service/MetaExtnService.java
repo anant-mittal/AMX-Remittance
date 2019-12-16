@@ -11,8 +11,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.bene.InstitutionCategoryDto;
 import com.amx.jax.dbmodel.bene.InstitutionCategoryMaster;
+import com.amx.jax.manager.ReasonCodeManager;
+import com.amx.jax.model.meta.ReasonsDTO;
 import com.amx.jax.repository.bene.InstitutionCategoryMasterRepository;
 
 @Service
@@ -20,6 +23,8 @@ public class MetaExtnService {
 
 	@Autowired
 	InstitutionCategoryMasterRepository institutionCategoryMasterRepository;
+	@Autowired
+	ReasonCodeManager reasonCodeMaster;
 
 	private static final Logger log = LoggerFactory.getLogger(MetaExtnService.class);
 
@@ -44,5 +49,13 @@ public class MetaExtnService {
 		}
 		return dto;
 	}
+	
+	public AmxApiResponse<ReasonsDTO, Object> getReasonList(String reasonCodeCategory) {		
+		List<ReasonsDTO> viewStatusList = new ArrayList<>();
+		viewStatusList=	reasonCodeMaster.getReasonList(reasonCodeCategory);
+		log.info("StatusList : " +viewStatusList);
+		return AmxApiResponse.buildList(viewStatusList);
+	}
+	
 
 }
