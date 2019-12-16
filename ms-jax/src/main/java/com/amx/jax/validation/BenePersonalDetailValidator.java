@@ -164,6 +164,9 @@ public class BenePersonalDetailValidator implements Validator {
 			if (benePersonalDetailModel.getInstitutionCategoryId() == null) {
 				throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Institution category can not be null");
 			}
+			if (!benePersonalDetailModel.getInstitutionName().trim().contains(" ")) {
+				throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Institution name must have at least one space");
+			}
 		} else {
 			if (benePersonalDetailModel.getFirstName() == null) {
 				throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "first name can not be null");
