@@ -325,8 +325,8 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		beneficaryRelationship.setLocalFourthName(beneDetaisl.getLocalFourthName());
 		beneficaryRelationship.setLocalFifthName(beneDetaisl.getLocalFifthName());
 		if (beneDetaisl.getInstitutionName() != null) {
-			beneficaryRelationship.setFirstName(beneDetaisl.getInstitutionName().split(" ")[0]);
-			beneficaryRelationship.setSecondName(beneDetaisl.getInstitutionName().split(" ")[1]);
+			beneficaryRelationship.setFirstName(getInstitutionFirstName(beneDetaisl));
+			beneficaryRelationship.setSecondName(getInstitutionSecondName(beneDetaisl));
 		}
 		if (beneDetaisl.getInstitutionNameLocal() != null) {
 			beneficaryRelationship.setLocalFirstName(beneDetaisl.getInstitutionNameLocal());
@@ -337,6 +337,16 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		
 		beneficiaryRelationshipDao.save(beneficaryRelationship);
 		return beneficaryRelationship;
+	}
+
+	private String getInstitutionSecondName(BenePersonalDetailModel beneDetaisl) {
+		String institutionName = beneDetaisl.getInstitutionName().trim();
+		int splitIndex = institutionName.indexOf(" ");
+		return institutionName.substring(splitIndex+1);
+	}
+
+	private String getInstitutionFirstName(BenePersonalDetailModel beneDetaisl) {
+		return beneDetaisl.getInstitutionName().trim().split(" ")[0];
 	}
 
 	private BigDecimal getRelationsId(BeneficiaryTrnxModel beneficiaryTrnxModel, BigDecimal relationsId) {
@@ -454,7 +464,8 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		beneMaster.setLocalSecondName(benePersonalDetails.getLocalSecondName());
 		beneMaster.setLocalThirdName(benePersonalDetails.getLocalThirdName());
 		if (benePersonalDetails.getInstitutionName() != null) {
-			beneMaster.setFirstName(benePersonalDetails.getInstitutionName());
+			beneMaster.setFirstName(getInstitutionFirstName(benePersonalDetails));
+			beneMaster.setSecondName(getInstitutionSecondName(benePersonalDetails));
 		}
 		if (benePersonalDetails.getInstitutionNameLocal() != null) {
 			beneMaster.setLocalFirstName(benePersonalDetails.getInstitutionNameLocal());
@@ -570,6 +581,4 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 			logger.error("Error while sending mail beneCreationEmail : " , e);
 		}
 	}
-
-
 }
