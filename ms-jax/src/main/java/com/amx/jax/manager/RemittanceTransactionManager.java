@@ -1410,20 +1410,12 @@ public class RemittanceTransactionManager {
 		}
 		
 		
-		/** send OTP **/
-		CivilIdOtpModel civilIdOtpModel = null;
-		if (model.getmOtp() == null) {
-			// this flow is for send OTP
-			civilIdOtpModel = addOtpOnRemittanceV2(model);
-		}
-		
-		if(civilIdOtpModel!=null && civilIdOtpModel.geteOtp()!= null) {
-			JaxAuthContext.eOtp(civilIdOtpModel.geteOtp());
-		}
-		if(civilIdOtpModel!=null && civilIdOtpModel.getmOtp() != null) {
-			JaxAuthContext.mOtp(civilIdOtpModel.getmOtp());
-		}
-		if(metaData.getCustomerId() !=null && civilIdOtpModel!=null && civilIdOtpModel.getmOtp() != null && civilIdOtpModel.geteOtp()!= null) {
+		/** send OTP for limit exceed**/
+		Boolean limitExceed = addOtpOnRemittanceV3(model);
+		if(metaData.getCustomerId() !=null && (model.getmOtp()==null && limitExceed)) {
+			JaxAuthContext.contactType(ContactType.SMS);
+			customerDBAuthManager.validateAndSendOtp(meta.getCustomerId());
+		}else if(model.getmOtp()!=null) {
 			JaxAuthContext.contactType(ContactType.SMS);
 			customerDBAuthManager.validateAndSendOtp(meta.getCustomerId());
 		}
@@ -1443,21 +1435,12 @@ public class RemittanceTransactionManager {
 		  remiteAppModel.setMerchantTrackId(meta.getCustomerId());
 		  remiteAppModel.setDocumentIdForPayment(remittanceApplication.getDocumentNo().
 		  toString());
-		/* 
-		CivilIdOtpModel civilIdOtpModel = null;
-		if (model.getmOtp() == null) {
-			// this flow is for send OTP
-			civilIdOtpModel = addOtpOnRemittanceV2(model);
-		} else {
-			// this flow is for validate OTP
-			userService.validateOtp(null, model.getmOtp(), null);
-		}
-		*/
+		
 		logger.info("Application saved successfully, response: " + remiteAppModel.toString());
 
 		
 		BranchRemittanceApplResponseDto custShpCart = branchRemittancePaymentManager.fetchCustomerShoppingCart(meta.getCustomerId(),meta.getDefaultCurrencyId());
-		custShpCart.setCivilIdOtpModel(civilIdOtpModel);
+		//custShpCart.setCivilIdOtpModel(civilIdOtpModel);
 		
 		auditService.log(new CActivityEvent(Type.APPLICATION_CREATED,
 				String.format("%s/%s", remittanceApplication.getDocumentFinancialyear(),
@@ -1704,6 +1687,54 @@ public class RemittanceTransactionManager {
 		}
 		return otpMmodel;
 	}
+	
+	
+	
+	private Boolean addOtpOnRemittanceV3(RemittanceTransactionDrRequestModel model) {
+
+		List<TransactionLimitCheckView> trnxLimitList = parameterService.getAllTxnLimits();
+		Boolean limitCheck= false;
+
+		BigDecimal onlineLimit = BigDecimal.ZERO;
+		BigDecimal androidLimit = BigDecimal.ZERO;
+		BigDecimal iosLimit = BigDecimal.ZERO;
+
+		for (TransactionLimitCheckView view : trnxLimitList) {
+			if (JaxChannel.ONLINE.toString().equals(view.getChannel())) {
+				onlineLimit = view.getComplianceChkLimit();
+			}
+			if (ANDROID.equals(view.getChannel())) {
+				androidLimit = view.getComplianceChkLimit();
+			}
+			if (IOS.equals(view.getChannel())) {
+				iosLimit = view.getComplianceChkLimit();
+			}
+		}
+
+		CivilIdOtpModel otpMmodel = null;
+		BigDecimal localAmount = (BigDecimal)remitApplParametersMap.get("P_CALCULATED_LC_AMOUNT");
+		if(!JaxUtil.isNullZeroBigDecimalCheck(localAmount)) {
+			localAmount = model.getLocalAmount();
+		}
+		
+	
+	logger.info("App Type :"+meta.getAppType()+"\t channel :"+meta.getChannel()+"\t localAmount :"+localAmount);
+		
+		if (((meta.getChannel().equals(JaxChannel.ONLINE)) && (WEB.equals(meta.getAppType()))
+				&& (localAmount.compareTo(onlineLimit) >= 0)) ||
+
+				(IOS.equals(meta.getAppType()) && localAmount.compareTo(iosLimit) >= 0) ||
+
+				(ANDROID.equals(meta.getAppType()) && localAmount.compareTo(androidLimit) >= 0)) {
+
+			List<ContactType> channel = new ArrayList<>();
+			channel.add(ContactType.SMS_EMAIL);
+			//otpMmodel = (CivilIdOtpModel) userService.sendOtpForCivilId(null, channel, null, null).getData().getValues().get(0);
+			limitCheck =true;
+		}
+		return limitCheck;
+	}
+	
 	
 	
 	/** added by Rabil on 27 May 2019 **/
