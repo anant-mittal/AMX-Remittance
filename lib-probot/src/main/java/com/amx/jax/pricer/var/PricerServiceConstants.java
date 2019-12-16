@@ -158,7 +158,7 @@ public final class PricerServiceConstants {
 	}
 	
 	public static enum SERVICE_PROVIDER_BANK_CODE {
-		HOME, WU, MONEY;
+		HOME, WU, MONEY, VINTJA;
 	}
 	
 	public static final String SEND_TRNX = "S";
@@ -167,6 +167,8 @@ public final class PricerServiceConstants {
 	
 	public static final String FEE_REQUEST = "fee Request";
 	public static final String FEE_RESPONSE = "fee Response";
+	public static final String VALIDATE_REQUEST = "validate Request";
+	public static final String VALIDATE_RESPONSE = "validate response";
 	public static final String COMMIT_REQUEST = "commit Request";
 	public static final String COMMIT_RESPONSE = "commit response";
 	

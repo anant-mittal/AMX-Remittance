@@ -104,6 +104,7 @@ import com.amx.jax.model.response.remittance.LoyalityPointState;
 import com.amx.jax.model.response.remittance.RemittanceApplicationResponseModel;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.model.response.remittance.VatDetailsDto;
+import com.amx.jax.partner.manager.PartnerTransactionManager;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
 import com.amx.jax.partner.manager.PartnerTransactionManager;
 import com.amx.jax.postman.client.PushNotifyClient;
@@ -1051,6 +1052,7 @@ public class RemittanceTransactionManager {
 		beneBankDetails.put("P_APPLICATION_COUNTRY_ID", meta.getCountryId());
 		beneBankDetails.put("P_USER_TYPE", "ONLINE");
 		beneBankDetails.put("P_BENEFICIARY_COUNTRY_ID", beneficiary.getBenificaryCountry());
+		beneBankDetails.put("P_BENEFICIARY_BANK_COUNTRY_ID", beneficiary.getBenificaryCountry());
 		beneBankDetails.put("P_BENEFICIARY_BANK_ID", beneficiary.getBankId());
 		beneBankDetails.put("P_BENEFICIARY_BRANCH_ID", beneficiary.getBranchId());
 		beneBankDetails.put("P_BENEFICIARY_BANK_ACCOUNT", beneficiary.getBankAccountNumber());
@@ -1151,6 +1153,8 @@ public class RemittanceTransactionManager {
 		} else {
 			additionalInstrumentData = oldRemittanceApplicationAdditionalDataManager.createAdditionalInstnData(remittanceApplication);
 		}
+	
+		// save service provider
 		RemitApplSrvProv remitApplSrvProv = null;
 		//Imps splitiing
 		List<RemittanceApplicationSplitting>  applSplitList =null;
@@ -1212,6 +1216,7 @@ public class RemittanceTransactionManager {
 		validateAdditionalCheck();
 		validateAdditionalBeneDetailsV2(model);
 		remittanceAdditionalFieldManager.processAdditionalFields(model);
+		remittanceTransactionRequestValidator.saveFlexFields(model, remitApplParametersMap);
 		RemittanceApplication remittanceApplication = remitAppManager.createRemittanceApplicationV2(model,validatedObjects, validationResults, remitApplParametersMap);
 		
 		

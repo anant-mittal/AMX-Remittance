@@ -6,8 +6,8 @@ import java.util.List;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
+import com.amx.jax.model.response.jaxfield.JaxConditionalFieldDto;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
-import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
 
 public interface IRemittanceServiceOnline {
 

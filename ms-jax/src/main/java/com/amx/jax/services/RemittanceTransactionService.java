@@ -85,8 +85,10 @@ public class RemittanceTransactionService extends AbstractService {
 	@Autowired
 	RemittanceTransactionRepository remittanceTransactionRepository;
 	@Autowired
-	protected AmxMeta amxMeta;
-	
+	ILanguageTypeRepository languageTypeRepository;
+	@Autowired
+	protected AmxMeta amxMeta;	
+
 	public ApiResponse getRemittanceTransactionDetails(BigDecimal collectionDocumentNo, BigDecimal fYear,
 			BigDecimal collectionDocumentCode) {
 

@@ -5,6 +5,7 @@ import java.text.ParseException;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.model.customer.CreateCustomerInfoRequest;
 import com.amx.jax.model.customer.DuplicateCustomerDto;
 import com.amx.jax.model.customer.IdentityTypeDto;
@@ -20,7 +21,7 @@ import com.amx.jax.model.request.VerifyCustomerContactRequest;
 import com.amx.jax.model.request.customer.UpdateCustomerInfoRequest;
 import com.amx.jax.model.response.CustomerInfo;
 import com.amx.jax.model.response.customer.CustomerShortInfo;
-import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
+import com.amx.jax.model.response.jaxfield.JaxConditionalFieldDto;
 
 public interface ICustomerManagementController {
 	public static class ApiPath {

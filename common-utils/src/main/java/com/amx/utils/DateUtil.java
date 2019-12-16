@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -976,5 +977,45 @@ public final class DateUtil {
 
 		return -1;
 	}
+/**
+	 * validates date string according to the format passed
+	 * 
+	 * @param strDate
+	 * @param format
+	 * @return if date string is valid Date object is returned otherwise null
+	 * 
+	 */
+	public static LocalDate validateDate(String strDate, String format) {
 
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
+		try {
+			return LocalDate.parse(strDate, formatter);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	/**
+	 * parses the date object
+	 * 
+	 * @param localDate
+	 * @param format
+	 * @return parsed date
+	 * 
+	 */
+	public static String format(LocalDate localDate, String format) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
+		try {
+			return localDate.format(formatter);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+
+	public static LocalDate parseMonthYearFormatDate(String strDate, String format) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
+		YearMonth ym = YearMonth.parse(strDate, formatter);
+		LocalDate dt = ym.atDay(1); 
+		return dt;
+	}
 }

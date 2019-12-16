@@ -26,11 +26,11 @@ import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
+import com.amx.jax.model.response.jaxfield.JaxConditionalFieldDto;
 import com.amx.jax.model.response.remittance.RemittanceApplicationResponseModel;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.scope.TenantContextHolder;
-import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
 import com.amx.utils.JsonUtil;
 
 @RunWith(SpringRunner.class)
