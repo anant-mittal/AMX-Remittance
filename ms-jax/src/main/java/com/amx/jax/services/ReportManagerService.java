@@ -38,11 +38,12 @@ import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.PurposeOfRemittanceViewModel;
 import com.amx.jax.dbmodel.RemittanceTransactionView;
 import com.amx.jax.dbmodel.ViewCompanyDetails;
+import com.amx.jax.dbmodel.partner.TransactionDetailsView;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
-import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.manager.PromotionManager;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.partner.dao.PartnerTransactionDao;
 import com.amx.jax.repository.CountryMasterRepository;
 import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.repository.ICollectionDetailViewDao;
@@ -57,7 +58,6 @@ import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.RoundUtil;
 import com.amx.utils.ArgUtil;
-import com.amx.utils.JsonUtil;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
