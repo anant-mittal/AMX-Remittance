@@ -23,7 +23,7 @@ public class AmxEnums {
 	}
 
 	public static enum Products implements EnumType {
-		REMIT, FXORDER, HOME, OFFICE,REMITLINK;
+		REMIT, REMIT_SINGLE, FXORDER, HOME, OFFICE,REMITLINK;
 	}
 
 	public static enum FxOrderStatus implements EnumType {

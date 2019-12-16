@@ -439,9 +439,10 @@ public class SSOServerController {
 	public String getCardDetails() throws InterruptedException {
 		AmxApiResponse<CardData, Map<String, Object>> resp = AmxApiResponse.build(new CardData(),
 				new HashMap<String, Object>());
-		ssoUser.ssoTranxId();
+		String trnxId = ssoUser.ssoTranxId();
 		String terminlId = ArgUtil.parseAsString(sSOTranx.get().getTerminalId());
 		resp.getMeta().put("tid", terminlId);
+		resp.getMeta().put("trnxId", trnxId);
 		if (terminlId != null) {
 			CardData card = adapterServiceClient.pollCardDetailsByTerminal(terminlId).getResult();
 			if (card != null) {

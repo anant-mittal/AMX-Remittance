@@ -179,6 +179,8 @@ public class BranchRemittanceDao {
 					remittanceApplSplitRepository.save(applSplit);
 				}
 			}
+		}else {
+			throw new GlobalException(JaxError.INVALID_APPLICATION_DOCUMENT_NO, "Application document number shouldnot be null or blank");
 		}
 		
 		if (saveApplBene != null) {

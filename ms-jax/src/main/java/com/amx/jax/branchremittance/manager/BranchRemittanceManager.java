@@ -347,7 +347,7 @@ public class BranchRemittanceManager extends AbstractModel {
 		
 		
 		
-		if(!bnkWorldcheck.isEmpty()) {
+		if(bnkWorldcheck!=null && !bnkWorldcheck.isEmpty()) {
 			for(BankBlWorld blworld :bnkWorldcheck) {
 			if(beneficaryDetails.getBenificaryName().contains(blworld.getBankWorldEmded().getBlWord())) {
 			booBlakCheck =true;
@@ -1141,14 +1141,14 @@ public BeneAdditionalDto getAdditionalBeneDetailJax(BenificiaryListView benefica
 		if(!StringUtils.isBlank(langInd) && langInd.equalsIgnoreCase(ConstantDocument.L_ARAB) && bnfBankLangInd != null && bnfBankLangInd.compareTo(new BigDecimal(2))==0) {
 			bankName = routingBankMasterModel.getBankFullNameAr();
 			if(!StringUtils.isBlank(routingCityNameArabic)) {
-				bankBranchName =routingBankBranchView.get(0)==null?"":routingBankBranchView.get(0).getBranchFullNameArabic()+","+ routingCityNameArabic==null?"":routingCityNameArabic;
+				bankBranchName =routingBankBranchView.get(0)==null?"":routingBankBranchView.get(0).getBranchFullNameArabic()+" "+ routingCityNameArabic==null?"":","+routingCityNameArabic;
 			}else {
 				bankBranchName =routingBankBranchView.get(0)==null?"":routingBankBranchView.get(0).getBranchFullNameArabic();
 			}
 		}else { //If eng
 			bankName = routingBankMasterModel.getBankFullName();
 			if(!StringUtils.isBlank(routingCityName)) {
-				bankBranchName =routingBankBranchView.get(0)==null?"":routingBankBranchView.get(0).getBranchFullName()+","+ (routingCityName==null?"":routingCityName);
+				bankBranchName =routingBankBranchView.get(0)==null?"":routingBankBranchView.get(0).getBranchFullName()+" "+ (routingCityName==null?"":","+routingCityName);
 			}else {
 				bankBranchName =routingBankBranchView.get(0)==null?"":routingBankBranchView.get(0).getBranchFullName();
 			}
@@ -1162,7 +1162,7 @@ public BeneAdditionalDto getAdditionalBeneDetailJax(BenificiaryListView benefica
 				if(bankFlexField.size()>1) {
 					throw new GlobalException(JaxError.INVALID_ROUTING_BANK, "Too many rows for this combination in bnfbank for flex rules "+beneBankMasterModel.getBankCode());
 				}else {
-					bankName = bankFlexField.get(0).getBankExchId()==null?"":bankFlexField.get(0).getBankExchId() +","+beneBankName;
+					bankName = bankFlexField.get(0).getBankExchId()==null?"":bankFlexField.get(0).getBankExchId()+","+beneBankName;
 				}
 			}else {
 				throw new GlobalException(JaxError.INVALID_ROUTING_BANK, "No data found in Flex fields For this Bene bank "+beneBankMasterModel.getBankCode());
@@ -1187,17 +1187,17 @@ public BeneAdditionalDto getAdditionalBeneDetailJax(BenificiaryListView benefica
 				if(bankFlexField.size()>1) {
 					throw new GlobalException(JaxError.INVALID_ROUTING_BANK, "Too many rows for this combination in  Bene bank and branch for flex rules "+beneBankMasterModel.getBankCode());
 				}else {
-					bankBranchName =bankFlexField.get(0).getBankExchId()==null?"": bankFlexField.get(0).getBankExchId()+" ,"+ (beneBranchName==null?"":beneBranchName);
+					bankBranchName =bankFlexField.get(0).getBankExchId()==null?"": bankFlexField.get(0).getBankExchId()+" "+ (beneBranchName==null?"":","+beneBranchName);
 				}
 			}else {
 				throw new GlobalException(JaxError.INVALID_ROUTING_BANK, "No data found in Flex fields For this  Bene bank and branch "+beneBankMasterModel.getBankCode());
 			}
 			}else {
 				 if(!StringUtils.isBlank(langInd) && langInd.equalsIgnoreCase(ConstantDocument.L_ARAB) && bnfBankBranchLangInd !=null && bnfBankBranchLangInd.compareTo(new BigDecimal(2))==0) {
-					 bankBranchName = beneBankBranchView.get(0).getBranchFullNameArabic()+","+beneCityNameArabic==null?"":beneCityNameArabic; 
+					 bankBranchName = beneBankBranchView.get(0).getBranchFullNameArabic()+" "+(beneCityNameArabic==null?"":","+beneCityNameArabic); 
 				 }else {
 					 if(beneBankBranchView.get(0)!=null) {
-						 bankBranchName = beneBankBranchView.get(0).getBranchFullName()==null?"":beneBankBranchView.get(0).getBranchFullName()+" ,"+beneCityName==null?"":beneCityName;
+						 bankBranchName = beneBankBranchView.get(0).getBranchFullName()==null?"":beneBankBranchView.get(0).getBranchFullName()+" "+(beneCityName==null?"":","+beneCityName);
 					 }
 				 }
 			}
