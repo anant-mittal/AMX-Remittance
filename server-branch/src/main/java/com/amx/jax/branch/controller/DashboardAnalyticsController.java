@@ -37,21 +37,27 @@ public class DashboardAnalyticsController {
 
 		Map<String, Map<String, String>> permissionMap = ssoUser.getUserDetails().getUserRole().getPermissionMap();
 		SnapQueryParams snapQueryParams = new SnapQueryParams();
-		String userName = ssoUser.getUserDetails().getUserName();
-		BigDecimal areacode = ssoUser.getUserDetails().getAreaCode();
-		BigDecimal branchId = ssoUser.getUserDetails().getBranchId();
+		
+		ssoUser.getUserDetails().getCountryId();
 
 		for (String outerMapKey : permissionMap.keySet()) {
 			if (outerMapKey == "REPORTS.RPT_REPORT") {
 				Map<String, String> innerMap = permissionMap.get(outerMapKey);
 				innerMap.forEach((key, value) -> {
 					if (key.contains("VIEW") && value.contains("AREA")) {
-						//snapQueryParams.addFilter("branch.areaId", "7");
+						BigDecimal areacode = ssoUser.getUserDetails().getAreaCode();
+
 						snapQueryParams.addFilter("branch.areaId",areacode.toString());
 					}
 					if (key.contains("VIEW") && value.contains("BRANCH")) {
-						//snapQueryParams.addFilter("branch.id", "56");
+						BigDecimal branchId = ssoUser.getUserDetails().getBranchId();
+
 						snapQueryParams.addFilter("branch.id",branchId.toString());
+
+					}
+					if (key.contains("VIEW") && value.contains("COUNTRY")) {
+						BigDecimal countryId = ssoUser.getUserDetails().getCountryId();
+						snapQueryParams.addFilter("branch.countryId",countryId.toString());
 
 					}
 
