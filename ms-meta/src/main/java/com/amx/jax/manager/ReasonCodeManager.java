@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
-import com.amx.jax.dbmodel.ReasonsModel;
+import com.amx.jax.dbmodel.ReasonCodeMaster;
 import com.amx.jax.dbmodel.ReasonsRepository;
 import com.amx.jax.model.meta.ReasonsDTO;
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -18,14 +18,14 @@ public class ReasonCodeManager {
 	ReasonsRepository reasonDao;
 	
 	public List<ReasonsDTO> getReasonList(String reasonCodeCategory) {
-		List<ReasonsModel> reasonList = reasonDao.getReasonsList(reasonCodeCategory);
+		List<ReasonCodeMaster> reasonList = reasonDao.getReasonsList(reasonCodeCategory);
 		return convertReasonDTO(reasonList);
 	}
 	
-	public List<ReasonsDTO> convertReasonDTO(List<ReasonsModel> reasonList) {
+	public List<ReasonsDTO> convertReasonDTO(List<ReasonCodeMaster> reasonList) {
 
 		List<ReasonsDTO> output = new ArrayList<>();
-		for (ReasonsModel model : reasonList) {
+		for (ReasonCodeMaster model : reasonList) {
 			ReasonsDTO rDto = new ReasonsDTO();
 			rDto.setReasonCode(model.getReasonCode());
 			rDto.setReasonCodeCategory(model.getReasonCodeCategory());

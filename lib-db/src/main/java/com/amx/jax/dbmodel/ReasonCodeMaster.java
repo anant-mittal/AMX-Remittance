@@ -10,7 +10,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "JAX_REASON_CODE_MASTER")
-public class ReasonsModel {
+public class ReasonCodeMaster {
 	
 	@Id
 	@Column(name = "REASON_CODE_ID")
