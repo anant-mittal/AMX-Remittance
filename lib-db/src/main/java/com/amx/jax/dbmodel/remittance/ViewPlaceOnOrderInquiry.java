@@ -29,6 +29,7 @@ public class ViewPlaceOnOrderInquiry implements Serializable{
 	private BigDecimal rateOffered;
 	private String Negotiate;
 	private String isActive;
+	private String remarks;
 	
 	public ViewPlaceOnOrderInquiry() {
 		super();
@@ -156,6 +157,19 @@ public class ViewPlaceOnOrderInquiry implements Serializable{
 	}
 	public void setIsActive(String isActive) {
 		this.isActive = isActive;
+	}
+
+
+	@Column(name="REMARKS")
+	public String getRemarks() {
+		return remarks;
+	}
+
+
+
+
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
 	}
 	
 	

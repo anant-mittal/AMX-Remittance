@@ -25,6 +25,7 @@ public class RatePlaceOrderInquiryDto {
 	private String employeeName;
 	private String createdByName;
 	private String approvedName;
+	private String remarks;
 	
 	public BigDecimal getIdNo() {
 		return idNo;
@@ -151,5 +152,11 @@ public class RatePlaceOrderInquiryDto {
 	}
 	public void setApprovedName(String approvedName) {
 		this.approvedName = approvedName;
+	}
+	public String getRemarks() {
+		return remarks;
+	}
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
 	}
 }

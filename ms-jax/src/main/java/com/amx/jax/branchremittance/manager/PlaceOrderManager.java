@@ -246,6 +246,7 @@ public class PlaceOrderManager implements Serializable{
 		placeOrderAppl.setRackExchangeRate(dynPricingDto.getRackExchangeRate());
 		placeOrderAppl.setValueDate(new Date());
 		placeOrderAppl.setAvgCost(dynPricingDto.getCostExchangeRate());
+		placeOrderAppl.setSavedLocalAmount(dynPricingDto.getYouSavedAmount());
 		
 		placeOrderAppl.setRequestModel(JsonUtil.toJson(applRequestModel));
 		
@@ -302,21 +303,21 @@ public class PlaceOrderManager implements Serializable{
 
 	
 	
-	public void setCustomerDiscountColumns(RatePlaceOrder remittanceApplication,RemittanceTransactionResponsetModel remittanceTransactionResponsetModel) {
-		remittanceApplication.setIsDiscountAvailed(Boolean.TRUE.equals(remittanceTransactionResponsetModel.getDiscountAvailed()) ? ConstantDocument.Yes: ConstantDocument.No);
+	public void setCustomerDiscountColumns(RatePlaceOrder placeOrderApplication,RemittanceTransactionResponsetModel remittanceTransactionResponsetModel) {
+		placeOrderApplication.setIsDiscountAvailed(Boolean.TRUE.equals(remittanceTransactionResponsetModel.getDiscountAvailed()) ? ConstantDocument.Yes: ConstantDocument.No);
 		Map<DISCOUNT_TYPE, ExchangeDiscountInfo> customerDiscoutDetails = remittanceTransactionResponsetModel.getCustomerDiscountDetails();
 		if (customerDiscoutDetails != null && !customerDiscoutDetails.isEmpty()) {
-			remittanceApplication.setCusCatDiscountId(customerDiscoutDetails.get(DISCOUNT_TYPE.CUSTOMER_CATEGORY).getId());
-			remittanceApplication.setCusCatDiscount(customerDiscoutDetails.get(DISCOUNT_TYPE.CUSTOMER_CATEGORY).getDiscountPipsValue());
-			remittanceApplication.setChannelDiscountId(customerDiscoutDetails.get(DISCOUNT_TYPE.CHANNEL).getId());
-			remittanceApplication.setChannelDiscount(customerDiscoutDetails.get(DISCOUNT_TYPE.CHANNEL).getDiscountPipsValue());
+			placeOrderApplication.setCusCatDiscountId(customerDiscoutDetails.get(DISCOUNT_TYPE.CUSTOMER_CATEGORY).getId());
+			placeOrderApplication.setCusCatDiscount(customerDiscoutDetails.get(DISCOUNT_TYPE.CUSTOMER_CATEGORY).getDiscountPipsValue());
+			placeOrderApplication.setChannelDiscountId(customerDiscoutDetails.get(DISCOUNT_TYPE.CHANNEL).getId());
+			placeOrderApplication.setChannelDiscount(customerDiscoutDetails.get(DISCOUNT_TYPE.CHANNEL).getDiscountPipsValue());
 			String pips = customerDiscoutDetails.get(DISCOUNT_TYPE.AMOUNT_SLAB).getDiscountTypeValue();
 			if (!StringUtils.isBlank(pips)) {
 				String[] parts = pips.split("-");
-				remittanceApplication.setPipsFromAmt(parts[0] == null ? new BigDecimal(0) : new BigDecimal(parts[0]));
-				remittanceApplication.setPipsToAmt(parts[1] == null ? new BigDecimal(0) : new BigDecimal(parts[1]));
+				placeOrderApplication.setPipsFromAmt(parts[0] == null ? new BigDecimal(0) : new BigDecimal(parts[0]));
+				placeOrderApplication.setPipsToAmt(parts[1] == null ? new BigDecimal(0) : new BigDecimal(parts[1]));
 			}
-			remittanceApplication.setPipsDiscount(customerDiscoutDetails.get(DISCOUNT_TYPE.AMOUNT_SLAB).getDiscountPipsValue());
+			placeOrderApplication.setPipsDiscount(customerDiscoutDetails.get(DISCOUNT_TYPE.AMOUNT_SLAB).getDiscountPipsValue());
 		}
 	}
 	
@@ -358,6 +359,7 @@ public class PlaceOrderManager implements Serializable{
 				lstPlaceOrder.setRateOffered(ratePlaceOrder.getRateOffered());
 				lstPlaceOrder.setNegotiate(ratePlaceOrder.getNegotiate());
 				lstPlaceOrder.setIsActive(ratePlaceOrder.getIsActive());
+				lstPlaceOrder.setRemarks(ratePlaceOrder.getRemarks());
 				
 				EmployeeDetailsView createdDetails =null;
 				if(!StringUtils.isBlank(ratePlaceOrder.getCreatedBy())) {		
@@ -382,8 +384,6 @@ public class PlaceOrderManager implements Serializable{
 
 				poInqList.add(lstPlaceOrder);
 			}
-		}else {
-			throw new GlobalException(JaxError.RATE_PLACE_ERROR,"Record not found");
 		}
 		
 		return poInqList;
@@ -443,7 +443,7 @@ public class PlaceOrderManager implements Serializable{
 			ratePlaceOrder.setModifiedDate(new Date());
 			ratePlaceOrder.setCustomerIndicator(ConstantDocument.Status.C.toString());
 			if(!StringUtils.isBlank(remarks)) {
-				ratePlaceOrder.setRemarks(ratePlaceOrder.getRemarks()==null?"":ratePlaceOrder.getRemarks()+" "+remarks);
+				ratePlaceOrder.setRemarks(ratePlaceOrder.getRemarks()==null?"":ratePlaceOrder.getRemarks());
 			}
 			ratePlaceOrderRepository.save(ratePlaceOrder);
 			boolRespModel=true;
@@ -458,8 +458,6 @@ public class PlaceOrderManager implements Serializable{
 		}
 		
 		}
-		}else {
-			throw new GlobalException(JaxError.RATE_PLACE_ERROR,"No record found");
 		}
 		}catch(GlobalException e){
 			logger.debug("create application", e.getErrorMessage() + "" +e.getErrorKey());
@@ -489,9 +487,10 @@ public GsmPlaceOrderListDto getCountryWisePlaceOrderCount(GsmSearchRequestParame
 				}
 				countryWiseCountList.add(dto);
 			}
-		}else {
-			throw new GlobalException(JaxError.RATE_PLACE_ERROR,"Record not found");
-		}
+			} /*
+				 * else { throw new
+				 * GlobalException(JaxError.RATE_PLACE_ERROR,"Record not found"); }
+				 */
 		gsmCountryWiseDto.setCountryWiseCountList(countryWiseCountList);
 		
 		
