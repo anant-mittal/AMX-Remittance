@@ -192,6 +192,7 @@ public abstract class AbstractBeneDetailDto {
 			model.setLocalSecondName(this.getSecondNameLocal());
 			model.setLocalThirdName(this.getThirdNameLocal());
 			model.setRelationsId(this.getRelationShipId());
+			model.setBeneficaryTypeId(this.getBenificaryStatusId());
 		} catch (IllegalAccessException | InvocationTargetException e) {
 			e.printStackTrace();
 		}
