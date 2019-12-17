@@ -15,6 +15,10 @@ public interface PaygDetailsRepository extends CrudRepository<PaygDetailsModel, 
 	
 	public PaygDetailsModel findByPgPaymentId(BigDecimal pgPaymentId);
 
+	
+	public PaygDetailsModel findByPaygTrnxSeqId(BigDecimal paygTrnxSeqId);
+
+
 	@Query("select pl from PaygDetailsModel pl where pl.customerId=?1 and verifycode=?2 "
 			+ " and pl.linkActive ='Y' ")
 	public PaygDetailsModel fetchPayLinkIdForCustomer(BigDecimal customerId, String hashVerifyCode);
@@ -33,4 +37,5 @@ public interface PaygDetailsRepository extends CrudRepository<PaygDetailsModel, 
 	@Query("select pl from PaygDetailsModel pl where pl.paygTrnxSeqId=?1 and trunc(sysdate) > trunc(pl.linkDate) "
 			+ " and pl.linkActive ='Y' ")
 	public List<PaygDetailsModel> validatePrevLink(BigDecimal linkId);
+
 }

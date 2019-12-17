@@ -271,7 +271,8 @@ public class CustomerBranchController {
 	@ApiRequest(type = RequestType.POLL)
 	@RequestMapping(value = "/api/customer/kyc/scan", method = { RequestMethod.GET })
 	public ResponseEntity<byte[]> scanKyc(HttpServletRequest request, HttpServletResponse response) {
-		String ip = request.getRemoteAddr();
+		// good discussion on how to get local ip here: https://stackoverflow.com/questions/22877350/how-to-extract-ip-address-in-spring-mvc-controller-get-call
+		String ip = ssoUser.getUserClient().getLocalIpAddress();
 		String scanUrl = "http://" + ip + ":8085/Scan/Scan";
 		UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(scanUrl);
 		byte[] imgData = restService.ajax(builder.build().encode().toUri()).get().asByteArray();

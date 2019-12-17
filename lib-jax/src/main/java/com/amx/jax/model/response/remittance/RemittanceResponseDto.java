@@ -1,3 +1,4 @@
+
 package com.amx.jax.model.response.remittance;
 
 import java.math.BigDecimal;
@@ -48,3 +49,4 @@ public class RemittanceResponseDto {
 	}
 	
 }
+

@@ -4,6 +4,15 @@ import java.math.BigDecimal;
 
 public class BranchApplicationDto {
 	private BigDecimal applicationId;
+	private String paymentType;
+
+	public String getPaymentType() {
+		return paymentType;
+	}
+
+	public void setPaymentType(String paymentType) {
+		this.paymentType = paymentType;
+	}
 
 	public BigDecimal getApplicationId() {
 		return applicationId;

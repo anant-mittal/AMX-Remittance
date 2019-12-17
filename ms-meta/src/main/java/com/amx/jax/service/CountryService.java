@@ -18,7 +18,6 @@ import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.CountryMasterDesc;
 import com.amx.jax.dbmodel.CountryMasterView;
-import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.CountryMasterRepository;
 import com.amx.jax.repository.CountryRepository;

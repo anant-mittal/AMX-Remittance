@@ -11,6 +11,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
+import com.amx.jax.dbmodel.CountryBranchMdlv1;
+import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 
 public interface IRemittanceTransactionRepository extends CrudRepository<RemittanceTransaction, Serializable> {

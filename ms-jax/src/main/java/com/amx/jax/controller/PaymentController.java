@@ -23,12 +23,14 @@ public class PaymentController {
 			@RequestBody PaymentResponseDto paymentResponse,
 			@RequestParam AmxEnums.Products product) {
 
-		if (AmxEnums.Products.REMIT.equals(product)) {
+		if (AmxEnums.Products.REMIT_SINGLE.equals(product)) { /**For app compatibility **/ 
 			return paymentService.captrueForRemittance(paymentResponse);
 		} else if (AmxEnums.Products.FXORDER.equals(product)) {
 			return paymentService.captrueForFxOrder(paymentResponse);
 		} else if (AmxEnums.Products.REMITLINK.equals(product)) {
 			return paymentService.captrueForDirectLink(paymentResponse);
+		}else if(AmxEnums.Products.REMIT.equals(product)) { /** For shopping cart **/
+			return paymentService.captrueForRemittanceV2(paymentResponse);
 		}
 
 		return null;

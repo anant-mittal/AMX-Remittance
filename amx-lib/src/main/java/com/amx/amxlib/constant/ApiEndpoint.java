@@ -19,6 +19,8 @@ public class ApiEndpoint {
 	public static final String ONLINE_CUSTOMER_VALIDATE_URL = "/nationality-id/{nationality-id}/validate";
 	
 	public static final String REVENUE_REPORT_ENDPOINT = "/revenue-report";
+	
+	public static final String PAYATBRANCH_ENDPOINT = "/payat-branch";
 
 	public final class MetaApi {
 		// Prefix
@@ -213,6 +215,22 @@ public class ApiEndpoint {
 		public static final String REVENUE_REPORT_CONFIRMATION="/revenue-report-confirmation";
 		
 		public static final String REVENUE_REPORT_DEFAULT_DATE = "/revenue-report-default-date";
+	}
+	
+	public final class PayAtBranch{
+		public static final String PREFIX = PAYATBRANCH_ENDPOINT;
+		
+		// Params
+		
+		//Paths
+		public static final String PAYMENT_MODES = "/payment-modes";
+		public static final String PB_TRNX_LIST = "/pb-trnx-list";
+		public static final String PB_TRNX_LIST_BRANCH = "/pb-trnx-list-branch";
+	}
+	
+	public final class RemittanceApplEndPoint{
+		public static final String PREFIX = REMIT_API_ENDPOINT;
+		public static final String PB_SAVE_APPL = "/payat-branch/" ;
 	}
 
 }

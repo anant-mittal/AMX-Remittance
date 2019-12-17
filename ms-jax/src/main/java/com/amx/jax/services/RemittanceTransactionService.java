@@ -38,17 +38,21 @@ import com.amx.jax.dbmodel.remittance.ViewServiceDetails;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.exrateservice.service.NewExchangeRateService;
 import com.amx.jax.manager.RemittanceTransactionManager;
+import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.request.remittance.BranchApplicationDto;
 import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.response.ExchangeRateBreakup;
 import com.amx.jax.model.response.SourceOfIncomeDto;
+import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.RemittanceApplicationResponseModel;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
-import com.amx.jax.model.response.remittance.ServiceMasterDTO;
 import com.amx.jax.payg.PayGModel;
-import com.amx.jax.repository.ILanguageTypeRepository;
+import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.repository.IRemittanceTransactionDao;
 import com.amx.jax.repository.ISourceOfIncomeDao;
+import com.amx.jax.repository.PaygDetailsRepository;
+import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.repository.RemittanceTransactionRepository;
 import com.amx.jax.service.CountryService;
 import com.amx.jax.service.CurrencyMasterService;
@@ -83,6 +87,14 @@ public class RemittanceTransactionService extends AbstractService {
 	@Autowired
 	CountryService countryService;
 	@Autowired
+	RemittanceApplicationRepository remittanceApplicationRepository;
+	@Autowired
+	CustomerRepository customerRepository;
+	@Autowired
+	MetaData metaData;
+	@Autowired
+	PaygDetailsRepository pgRepository;
+	@Autowired
 	RemittanceProcedureDao  remittanceProcedureDao;
 	@Autowired
 	RemittanceTransactionRepository remittanceTransactionRepository;
@@ -111,11 +123,11 @@ public class RemittanceTransactionService extends AbstractService {
 	public AmxApiResponse<SourceOfIncomeDto, Object> getSourceOfIncome(BigDecimal languageId) {
 		List<SourceOfIncomeView> sourceOfIncomeList = null;
 		if (languageId != null) {
-			sourceOfIncomeList = sourceOfIncomeDao.getSourceofIncome(languageId);
+		sourceOfIncomeList = sourceOfIncomeDao.getSourceofIncome(languageId);
 		}
 		if (sourceOfIncomeList.isEmpty()) {
 			throw new GlobalException(JaxError.SOURCE_OF_INCOME_NOT_FOUND, "No data found FOR SOURCE OF INCOME");
-		}
+		} 
 		return AmxApiResponse.buildList(convertSourceOfIncome(sourceOfIncomeList));
 	}
 
@@ -209,6 +221,11 @@ public class RemittanceTransactionService extends AbstractService {
 		return response;
 	}
 	
+	public AmxApiResponse<RemittanceTransactionStatusResponseModel, Object> getTransactionStatusV2(RemittanceTransactionStatusRequestModel request) {
+		return AmxApiResponse.build(remittanceTxnManger.getTransactionStatusV2(request));
+	}
+	
+	
 	@SuppressWarnings("unchecked")
 	public ApiResponse<RemittanceTransactionResponsetModel> calcEquivalentAmount(
 @RequestBody RemittanceTransactionRequestModel model) {
@@ -260,6 +277,38 @@ public class RemittanceTransactionService extends AbstractService {
 				.getBeneficiaryRelationShipSeqId();
 		return beneficiaryService.getBeneBybeneficiaryRelationShipSeqId(beneficiaryRelationShipSeqId);
 	}
+	
+	/** added by Rabil for Online shopping cart**/
+	public BranchRemittanceApplResponseDto addtoCart(RemittanceTransactionDrRequestModel model) {
+		BranchRemittanceApplResponseDto responseModel = remittanceTxnManger.addtoCart(model);
+		return responseModel;
+	}
+	
+	@Transactional
+	@SuppressWarnings("unchecked")
+	public RemittanceApplicationResponseModel savePayAtBranchAppl(List<BranchApplicationDto> branchApplDto, RemittanceApplicationResponseModel remiteAppModel) {
+		
+		for (BranchApplicationDto branchApplicationDto : branchApplDto) {
+			if (ConstantDocument.PB_PAYMENT.equalsIgnoreCase(branchApplicationDto.getPaymentType())) {
+				Customer customer = customerRepository.getActiveCustomerDetailsByCustomerId(metaData.getCustomerId());
+				RemittanceApplication remittanceApplication = remittanceApplicationRepository
+						.getApplicationForRemittance(customer, branchApplicationDto.getApplicationId());
+				if (!ArgUtil.isEmpty(remittanceApplication)) {
+					remittanceApplication.setPaymentType(branchApplicationDto.getPaymentType());
+					remittanceApplication.setWtStatus(ConstantDocument.PB_STATUS_NEW);
+					remittanceApplicationRepository.save(remittanceApplication);
+
+					remiteAppModel.setDocumentFinancialYear(remittanceApplication.getDocumentFinancialyear());
+
+				}
+			}
+		}
+
+		return remiteAppModel;
+
+	}
+	
+
 	
 	@Transactional
 	public void clearHighValueTransaction(BigDecimal remittanceTransactionId, ComplianceBlockedTrnxType trnxType) {

@@ -36,18 +36,23 @@ import com.amx.jax.AppContextUtil;
 import com.amx.jax.JaxAuthContext;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.JaxClientUtil;
+import com.amx.jax.client.PayAtBranchClient;
 import com.amx.jax.client.remittance.RemittanceClient;
 import com.amx.jax.dict.AmxEnums.Products;
+import com.amx.jax.dict.AmxEnums;
 import com.amx.jax.dict.Language;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.customer.CustomerRatingDTO;
 import com.amx.jax.model.request.remittance.BenePackageRequest;
 import com.amx.jax.model.request.remittance.BranchRemittanceGetExchangeRateRequest;
+import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.request.remittance.RoutingPricingRequest;
 import com.amx.jax.model.response.CurrencyMasterDTO;
 import com.amx.jax.model.response.customer.BenePackageResponse;
+import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.FlexFieldReponseDto;
 import com.amx.jax.model.response.remittance.ParameterDetailsDto;
 import com.amx.jax.model.response.remittance.RemittanceApplicationResponseModel;
@@ -61,6 +66,7 @@ import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.TemplatesMX;
+import com.amx.jax.response.payatbranch.PayAtBranchTrnxListDTO;
 import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.config.OWAStatus.OWAStatusStatusCodes;
 import com.amx.jax.ui.config.UIServerError;
@@ -314,6 +320,9 @@ public class RemittController {
 		return wrapper;
 	}
 
+	@Autowired
+	private PayAtBranchClient wireTransferClient;
+
 	@RequestMapping(value = "/api/remitt/xrate/v2", method = { RequestMethod.POST })
 	public ResponseWrapper<DynamicRoutingPricingResponse> xrate(
 			@RequestBody RoutingPricingRequest routingPricingRequest,
@@ -328,6 +337,12 @@ public class RemittController {
 	public ResponseWrapper<List<FlexFieldReponseDto>> flex(
 			@RequestBody BranchRemittanceGetExchangeRateRequest routingPricingRequest) {
 		return ResponseWrapper.buildList(remittanceClient.getFlexField(routingPricingRequest));
+	}
+
+	@ApiOperation(value = "Returns pending transactions list")
+	@RequestMapping(value = "/api/user/tranx/pending/list", method = { RequestMethod.POST })
+	public ResponseWrapper<List<PayAtBranchTrnxListDTO>> getPbTrnxList() {
+		return ResponseWrapper.buildList(wireTransferClient.getPbTrnxList());
 	}
 
 	/**
@@ -389,11 +404,17 @@ public class RemittController {
 		return wrapper;
 	}
 
+	@RequestMapping(value = "/api/remitt/payment_mode/list", method = { RequestMethod.POST })
+	public ResponseWrapper<List<ResourceDTO>> getPaymentModes() {
+		return ResponseWrapper.buildList(wireTransferClient.getPaymentModes());
+	}
+
 	@RequestMapping(value = "/api/remitt/package/list", method = { RequestMethod.POST })
 	public ResponseWrapper<List<ParameterDetailsDto>> getPackages(@RequestParam BigDecimal beneId) {
 		return new ResponseWrapper<List<ParameterDetailsDto>>(
 				remittanceClient.getGiftService(beneId).getResult().getParameterDetailsDto());
 	}
+
 
 	/**
 	 * Bnfcry check.
@@ -448,12 +469,14 @@ public class RemittController {
 				payment.setDocFyObject(respTxMdl.getDocumentFinancialYear());
 				payment.setDocNo(respTxMdl.getDocumentIdForPayment());
 				payment.setTrackIdObject(respTxMdl.getMerchantTrackId());
-				logger.info("amount in remittancapplication: in remittcontroller:" + respTxMdl.getNetPayableAmount());
+				logger.debug("amount in remittancapplication: in remittcontroller:" + respTxMdl.getNetPayableAmount());
 				payment.setAmountObject(respTxMdl.getNetPayableAmount());
 				payment.setServiceCode(respTxMdl.getPgCode());
+				payment.setProduct(AmxEnums.Products.REMIT_SINGLE);
 
-				wrapper.setRedirectUrl(payGService.getPaymentUrl(payment,
-						HttpUtils.getServerName(request) + "/app/landing/remittance"));
+				String callbackUrl = HttpUtils.getServerName(request) + "/app/landing/remittance";
+				wrapper.setRedirectUrl(payGService.getPaymentUrl(payment, callbackUrl,
+						callbackUrl));
 			}
 
 		} catch (RemittanceTransactionValidationException | LimitExeededException | MalformedURLException
@@ -487,12 +510,15 @@ public class RemittController {
 				payment.setDocFyObject(respTxMdl.getDocumentFinancialYear());
 				payment.setDocNo(respTxMdl.getDocumentIdForPayment());
 				payment.setTrackIdObject(respTxMdl.getMerchantTrackId());
-				logger.info("amount in remittancapplication: in remittcontroller:" + respTxMdl.getNetPayableAmount());
+				logger.debug("amount in remittancapplication: in remittcontroller:" + respTxMdl.getNetPayableAmount());
 				payment.setAmountObject(respTxMdl.getNetPayableAmount());
 				payment.setServiceCode(respTxMdl.getPgCode());
+				payment.setProduct(AmxEnums.Products.REMIT_SINGLE);
 
-				wrapper.setRedirectUrl(payGService.getPaymentUrl(payment,
-						HttpUtils.getServerName(request) + "/app/landing/remittance"));
+				String callbackUrl = HttpUtils.getServerName(request) + "/app/landing/remittance";
+
+				wrapper.setRedirectUrl(payGService.getPaymentUrl(payment, callbackUrl,
+						callbackUrl));
 			}
 
 		} catch (RemittanceTransactionValidationException | LimitExeededException | MalformedURLException
@@ -525,5 +551,65 @@ public class RemittController {
 		}
 		return ResponseWrapper
 				.build(jaxService.setDefaults().getRemitClient().saveCustomerRating(customerRatingDTO, prodType));
+	}
+
+	@RequestMapping(value = "/api/remitt/cart/add", method = { RequestMethod.POST })
+	public ResponseWrapperM<BranchRemittanceApplResponseDto, AuthResponseOTPprefix> saveToCart(
+			@RequestHeader(value = "mOtp", required = false) String mOtpHeader,
+			@RequestParam(required = false) String mOtp,
+			@RequestBody RemittanceTransactionDrRequestModel transactionRequestModel, HttpServletRequest request) {
+		ResponseWrapperM<BranchRemittanceApplResponseDto, AuthResponseOTPprefix> wrapper = new ResponseWrapperM<BranchRemittanceApplResponseDto, AuthResponseOTPprefix>();
+
+		mOtp = JaxAuthContext.mOtp(ArgUtil.ifNotEmpty(mOtp, mOtpHeader));
+		transactionRequestModel.setmOtp(mOtp);
+		wrapper.setData(jaxService.setDefaults().getRemitClient()
+				.addToCart(transactionRequestModel).getResult());
+		return wrapper;
+	}
+
+	@RequestMapping(value = "/api/remitt/cart/pay", method = { RequestMethod.POST })
+	public ResponseWrapperM<RemittanceApplicationResponseModel, Object> saveToCart(
+			@RequestBody BranchRemittanceRequestModel remittanceRequestModel, HttpServletRequest request)
+			throws MalformedURLException, URISyntaxException {
+
+		ResponseWrapperM<RemittanceApplicationResponseModel, Object> wrapper = new ResponseWrapperM<RemittanceApplicationResponseModel, Object>();
+
+		RemittanceApplicationResponseModel respTxMdl = jaxService.setDefaults().getRemitClient()
+				.payShoppingCart(remittanceRequestModel)
+				.getResult();
+
+		wrapper.setData(respTxMdl);
+
+		PayGParams payment = new PayGParams();
+		payment.setDocFyObject(respTxMdl.getDocumentFinancialYear());
+		payment.setDocNo(respTxMdl.getDocumentIdForPayment());
+		payment.setTrackIdObject(respTxMdl.getMerchantTrackId());
+		logger.debug("amount in remittancapplication: in remittcontroller:" + respTxMdl.getNetPayableAmount());
+		payment.setAmountObject(respTxMdl.getNetPayableAmount());
+		payment.setServiceCode(respTxMdl.getPgCode());
+		payment.setProduct(AmxEnums.Products.REMIT);
+
+		wrapper.setRedirectUrl(payGService.getPaymentUrl(payment,
+				HttpUtils.getServerName(request) + "/app/landing/cart/remit", null));
+
+		return wrapper;
+	}
+
+	@RequestMapping(value = "/api/remitt/cart/fetch", method = { RequestMethod.GET })
+	public ResponseWrapperM<BranchRemittanceApplResponseDto, Object> fetchCart(
+			HttpServletRequest request) {
+		return ResponseWrapperM.from(remittanceClient.fetchCustomerShoppingCart());
+	}
+
+	@RequestMapping(value = "/api/remitt/cart/remove", method = { RequestMethod.GET })
+	public ResponseWrapperM<BranchRemittanceApplResponseDto, Object> removeitemCart(HttpServletRequest request,
+			@RequestParam BigDecimal appId) {
+		return ResponseWrapperM.from(remittanceClient.deleteFromShoppingCart(appId));
+	}
+
+	@RequestMapping(value = "/api/remitt/cart/status", method = { RequestMethod.POST })
+	public ResponseWrapperM<RemittanceTransactionStatusResponseModel, Object> statusCart(
+			@RequestBody RemittanceTransactionStatusRequestModel request) {
+		return ResponseWrapperM.from(jaxService.getRemitClient().fetchTransactionDetailsV2(request, true));
 	}
 }

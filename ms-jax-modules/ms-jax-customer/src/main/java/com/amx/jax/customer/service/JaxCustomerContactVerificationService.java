@@ -24,7 +24,6 @@ import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.services.AbstractService;
-import com.amx.jax.userservice.service.CustomerVerificationService;
 import com.amx.jax.userservice.service.UserValidationService;
 import com.amx.jax.util.AmxDBConstants.Status;
 import com.amx.utils.EntityDtoUtil;

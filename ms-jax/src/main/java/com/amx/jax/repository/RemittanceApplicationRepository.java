@@ -25,7 +25,7 @@ public interface RemittanceApplicationRepository extends CrudRepository<Remittan
 			+ "  and isactive <> 'D' and NVL(resultCode,' ') NOT IN('CAPTURED','APPROVED')")
 	public List<RemittanceApplication> deActivateNotUsedApplication(@Param("customerId") Customer customerId);
 
-	@Query("select ra from RemittanceApplication ra where ra.fsCustomer=:customerId and ra.paymentId=:paymentId")
+	@Query("select ra from RemittanceApplication ra where ra.fsCustomer=:customerId and ra.paymentId=:paymentId and ra.isactive='Y'")
 	public List<RemittanceApplication> fetchRemitApplTrnxRecordsByCustomerPayId(@Param("paymentId") String paymentId,
 			@Param("customerId") Customer customerId);
 
@@ -70,15 +70,24 @@ public interface RemittanceApplicationRepository extends CrudRepository<Remittan
     @Transactional
 	@Modifying
 	@Query("update RemittanceApplication appl set isactive = 'D',applicaitonStatus = null where appl.fsCustomer=:customerId and trunc(sysdate)=trunc(createdDate) " 
-			+"and isactive <> 'D' and NVL(resultCode,' ') NOT IN('CAPTURED','APPROVED') and appl.loccod =:locCod")
+			+"and isactive <> 'D' and NVL(resultCode,' ') NOT IN('CAPTURED','APPROVED') and appl.loccod =:locCod and paymentType <> 'PB'")
 	public void deActivateNotUsedOnlineApplication(@Param("customerId") Customer customerId,@Param("locCod") BigDecimal locCod);
     
     @Transactional
 	@Modifying
 	@Query("update RemittanceApplication appl set isactive = 'D',applicaitonStatus = null where appl.fsCustomer=:customerId and trunc(sysdate)=trunc(createdDate) " 
-			+"and isactive <> 'D' and NVL(resultCode,' ') NOT IN('CAPTURED','APPROVED')")
+			+"and isactive <> 'D' and NVL(resultCode,' ') NOT IN('CAPTURED','APPROVED') and paymentType <> 'PB'")
 	public void deActivateNotUsedAllApplication(@Param("customerId") Customer customerId);
     
+
+    @Query("select ra from RemittanceApplication ra where ra.fsCustomer = ?1 and ra.paymentType = ?2 and ra.isactive='Y' and ra.createdDate=sysDate order by createdDate desc")
+    public List<RemittanceApplication> getLatestPbApplication(Customer customerId , String paymentType);
+    
+    @Transactional
+	@Modifying
+	@Query("update RemittanceApplication appl set isactive = 'D',applicaitonStatus = null where appl.remittanceApplicationId=?1")
+	public void deActivateLatestPbApplication(BigDecimal remittanceApplicationId);
+
     @Query("select ra from RemittanceApplication ra where ra.paymentLinkId=:paymentLinkId")
 	public List<RemittanceApplication> getApplByPaymentlinkId(@Param("paymentLinkId") BigDecimal paymentLinkId);
     
@@ -89,5 +98,10 @@ public interface RemittanceApplicationRepository extends CrudRepository<Remittan
 
     @Query("select ra from RemittanceApplication ra where ra.remittanceApplicationId in (?1)")
 	public List<RemittanceApplication> getApplicationList(List<BigDecimal> appIdsBigDecimalList);
-	 
+    
+	public List<RemittanceApplication> findByFsCustomerAndPaygTrnxDetailId(Customer fsCustomer, BigDecimal paygTrnxDetailId);
+	
+	@Query(value =" SELECT * FROM EX_APPL_TRNX A WHERE a.CUSTOMER_ID=?1 AND a.ACCOUNT_MMYYYY=trunc(SYSDATE,'MONTH') AND a.ISACTIVE='Y' "+ 
+			" and a.COUNTRY_BRANCH_ID=?2 and TRUNC(SYSDATE)=TRUNC(A.CREATED_DATE)",nativeQuery = true)
+	public List<RemittanceApplication> getApplicationCountList(BigDecimal customerId,BigDecimal countryBranchId);
 }

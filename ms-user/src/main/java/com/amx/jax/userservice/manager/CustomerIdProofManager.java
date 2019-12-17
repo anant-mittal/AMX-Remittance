@@ -227,4 +227,12 @@ public class CustomerIdProofManager {
 	public List<CustomerIdProof> getCustomerIdProofPendingCompliance(BigDecimal customerId, BigDecimal identityTypeId) {
 		return customerIdProofDao.getCompliancePendingCustomerIdProof(customerId, identityTypeId);
 	}
+	
+	public void markCustomerPendingCompliance(BigDecimal customerId) {
+		CustomerIdProof idProof = getCustomerIdProofByCustomerId(customerId);
+		if(idProof != null) {
+			idProof.setIdentityStatus(AmxDBConstants.Compliance);
+		}
+		customerIdProofRepository.save(idProof);
+	}
 }

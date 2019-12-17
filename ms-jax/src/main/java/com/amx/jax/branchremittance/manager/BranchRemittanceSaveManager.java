@@ -83,6 +83,7 @@ import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.TransferDto;
 import com.amx.jax.model.response.serviceprovider.Remittance_Call_Response;
 import com.amx.jax.model.response.serviceprovider.ServiceProviderResponse;
+import com.amx.jax.notification.JaxNotificationDataManager;
 import com.amx.jax.partner.dao.PartnerTransactionDao;
 import com.amx.jax.partner.dto.RemitTrnxSPDTO;
 import com.amx.jax.partner.manager.PartnerTransactionManager;
@@ -234,6 +235,8 @@ public class BranchRemittanceSaveManager {
 	@Autowired
 	PartnerTransactionDao partnerTransactionDao;
 	
+	@Autowired
+	RemittanceApplicationDao remittanceApplicationDao;
     @Autowired
 	RemittanceSignatureManager remittanceSignatureManager;
 
@@ -245,9 +248,24 @@ public class BranchRemittanceSaveManager {
     
     @Autowired
     RemittanceTransactionRepository remittanceTransactionRepository;
+    @Autowired
+    JaxNotificationDataManager jaxNotificationDataManager;
+    
+    @Autowired
+	AuditService auditService;
      @Autowired
     VentajaManager ventajaManager;
 
+
+	@Autowired
+	JaxTenantProperties jaxTenantProperties;
+
+	@Autowired
+	BankMetaService bankMetaService;
+
+	@Autowired
+	RemittanceApplAmlManager applAmlManager;
+    
 	
 	
 	List<LoyaltyPointsModel> loyaltyPoints 	 = new ArrayList<>();
@@ -306,6 +324,7 @@ public class BranchRemittanceSaveManager {
 			logger.info("MRU procedure OUTPUT --->"+outpuMap==null?"TRNX MOVED SUCCESS":outpuMap.toString());
 			if(outpuMap!=null && outpuMap.get("P_ERROR_MESSAGE")!=null) {
 				String errrMsg = outpuMap.get("P_ERROR_MESSAGE").toString();
+				paymentResponse.setErrorText(errrMsg);
 				logger.info("MRU Procedure Error Msg :"+errrMsg);
 				if(!StringUtils.isBlank(errrMsg)) {
 					notificationService.sendTransactionErrorAlertEmail(errrMsg,"TRNX NOT MOVED TO EMOS",paymentResponse);
@@ -317,6 +336,12 @@ public class BranchRemittanceSaveManager {
 			dailyPromotionManager.applyJolibeePadalaCoupons(responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo(),null);
 			
 			
+			CountryBranchMdlv1 countryBranch = new CountryBranchMdlv1();
+			countryBranch = bankMetaService.getCountryBranchById(metaData.getCountryBranchId()); //user branch not customer branch
+			if(countryBranch!=null && countryBranch.getBranchId().compareTo(ConstantDocument.ONLINE_BRANCH_LOC_CODE)!=0) {
+				String promotionMsg = promotionManager.getPromotionPrizeForBranch(responseDto);
+				responseDto.setPromotionMessage(promotionMsg);
+			}
 		}else {
 			logger.info("NOT moved to old emos ", responseDto.getCollectionDocumentNo() + "" +responseDto.getCollectionDocumentCode()+" "+responseDto.getCollectionDocumentFYear());
 		}
@@ -324,6 +349,17 @@ public class BranchRemittanceSaveManager {
 		}catch(Exception e) {
 			e.printStackTrace();
 			logger.info("MRU saveRemittanceTrnx catch block -->"+e.getMessage());
+		}
+		
+		int i;
+		for(i=0;i<shoppingCartList.size();i++) {
+			
+			RemittanceApplication remittanceApplication = remittanceApplicationDao.getApplication(shoppingCartList.get(i).getApplicationId());
+			if(remittanceApplication!=null && ConstantDocument.PB_PAYMENT.equalsIgnoreCase(remittanceApplication.getPaymentType())&& ConstantDocument.PB_STATUS_NEW.equalsIgnoreCase(remittanceApplication.getWtStatus())) {
+				remittanceApplication.setWtStatus(ConstantDocument.WT_STATUS_PAID);
+				remittanceApplicationRepository.save(remittanceApplication);
+				
+			}
 		}
 		return responseDto;
 	}
@@ -354,6 +390,7 @@ public class BranchRemittanceSaveManager {
 			mapAllDetailRemitSave.put("EX_REMIT_SPLIT", remitSplitMap);
 			validateSaveTrnxDetails(mapAllDetailRemitSave);
 			responseDto = brRemittanceDao.saveRemittanceTransaction(mapAllDetailRemitSave);
+			
 			auditService.log(new CActivityEvent(Type.TRANSACTION_CREATED,String.format("%s/%s", responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo())).field("STATUS").to(JaxTransactionStatus.PAYMENT_SUCCESS_APPLICATION_SUCCESS).result(Result.DONE));
 	}catch (GlobalException e) {
 			logger.error("routing  procedure", e.getErrorMessage() + "" + e.getErrorKey());
@@ -876,6 +913,18 @@ public class BranchRemittanceSaveManager {
 					remitTrnx.setInstruction(appl.getInstruction());
 					remitTrnx.setUsdAmt(appl.getUsdAmt());
 					remitTrnx.setWuPurposeOfTransaction(appl.getWuPurposeOfTransaction());
+
+					remitTrnx.setPaygTrnxDetailId(appl.getPaygTrnxDetailId());
+					
+					if(remitTrnx.getLoccod().compareTo(ConstantDocument.ONLINE_BRANCH_LOC_CODE)==0) {
+					RemittanceAppBenificiary applBene = applBeneRepository.findByExRemittanceAppfromBenfi(appl);
+					AmlCheckResponseDto amlResDto = applAmlManager.beneRiskAml(applBene.getBeneficiaryRelationShipSeqId(),remitTrnx.getBankCountryId().getCountryId(),appl);
+					if(amlResDto!=null && !StringUtils.isBlank(amlResDto.getHighValueTrnxFlag()) && amlResDto.getHighValueTrnxFlag().equalsIgnoreCase(ConstantDocument.Yes)) {
+						remitTrnx.setHighValueTranx(amlResDto.getHighValueTrnxFlag());
+					}
+				   }
+					
+
 					remitTrnx.setApplSplit(appl.getApplSplit());
 					remitTrnx.setSavedAmount(appl.getSavedAmount());
 					remitTrnx.setRackExchangeRate(appl.getRackExchangeRate());
@@ -901,8 +950,8 @@ public class BranchRemittanceSaveManager {
 					saveLoyaltyPoints(remitTrnx);
 					mapRemitTrnxSrvProv = saveRemitTrnxSrvProv(appl.getRemittanceApplicationId(), remitTrnx.getCreatedBy());
 					saveRemitTrnxSplit(appl,remitTrnx);
-				}	
 				}
+			}
 			
 		}else {
 			throw new GlobalException(JaxError.NO_RECORD_FOUND,"Record not found to save in remittance");
@@ -1353,7 +1402,8 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
 			}
 
 			if (personinfo != null && rrsrl != null && !StringUtils.isBlank(personinfo.getEmail())) {
-				notificationService.sendTransactionNotification(rrsrl.get(0), personinfo);
+				notificationService.sendTransactionNotification(rrsrl.get(0), personinfo,
+						jaxNotificationDataManager.getTransactionSuccessEmailData());
 				validStatus = Boolean.TRUE;
 			}
 		} catch (Exception e) {

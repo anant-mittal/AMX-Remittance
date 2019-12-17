@@ -12,4 +12,7 @@ public interface AdditionalInstructionDataRepository extends CrudRepository<Addi
 
 	
 	public List<AdditionalInstructionData> findByExRemittanceApplication(RemittanceApplication appl);
+	
+	/** added by Rabil on 10 Oct 2019 **/
+	public AdditionalInstructionData findByExRemittanceApplicationAndFlexField(RemittanceApplication appl,String flexField);
 }

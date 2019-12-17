@@ -230,6 +230,8 @@ public class AmxDBConstants {
 	public static final String DEMAND_DRAFT = "D";
 
 	public static final BigDecimal EXCHANGE_RATE_DECIMAL = new BigDecimal(9);
+	// Wire transfer status constants
+	
 
 	public static final String WU_PAID = "PAID";
 	public static final String WU_PICK = "PICK_REMINDER";
@@ -239,7 +241,13 @@ public class AmxDBConstants {
 	public static final String SELF_STR = "3";
 	public static final String JOB_IN_PROGRESS="P";
 	public static final String JOB_COMPLETED = "C";
-	
+
+
+	public static final String PB_STATUS_NEW = "NEW";
+	public static final String WT_STATUS_CONFIRM = "CONF";
+	public static final String WT_STATUS_CANCELLED = "CANC";
+	public static final String WT_STATUS_PAID  ="PAID";
+	public static final String PB_PAYMENT="PB";
 
 	// Arcmate Scanning
 	public static String CHECK;

@@ -2,6 +2,7 @@ package com.amx.jax.dao;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 import javax.transaction.Transactional;
 
@@ -13,11 +14,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.jax.branchremittance.dao.BranchRemittanceDao;
+import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.PlaceOrder;
 import com.amx.jax.dbmodel.RemittanceTransactionView;
 import com.amx.jax.dbmodel.partner.RemitApplSrvProv;
 import com.amx.jax.dbmodel.remittance.AdditionalInstructionData;
 import com.amx.jax.dbmodel.remittance.FlexFiledView;
+import com.amx.jax.dbmodel.remittance.RemitApplAmlModel;
 import com.amx.jax.dbmodel.remittance.RemittanceAppBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceApplicationSplitting;
@@ -30,6 +35,7 @@ import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.repository.AdditionalInstructionDataRepository;
 import com.amx.jax.repository.IFlexFiledView;
 import com.amx.jax.repository.IPlaceOrderDao;
+import com.amx.jax.repository.IRemitApplAmlRepository;
 import com.amx.jax.repository.IRemitApplSrvProvRepository;
 import com.amx.jax.repository.IRemittanceApplSplitRepository;
 import com.amx.jax.repository.RemittanceApplicationBeneRepository;
@@ -38,6 +44,7 @@ import com.amx.jax.repository.RemittanceTransactionRepository;
 import com.amx.jax.repository.remittance.IServiceViewRepository;
 import com.amx.jax.service.FinancialService;
 import com.amx.jax.userservice.dao.ReferralDetailsDao;
+import com.amx.jax.util.JaxUtil;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -75,13 +82,17 @@ public class RemittanceApplicationDao {
     
     @Autowired
     IServiceViewRepository serviceViewRepository;
-    
+	
+@Autowired
+    IRemitApplAmlRepository applAmlRepository;
+        
+
     @Autowired
     IRemittanceApplSplitRepository remittanceApplSplitRepository;
     
 	@Transactional
 	public void saveAllApplicationData(RemittanceApplication app, RemittanceAppBenificiary appBene,
-			List<AdditionalInstructionData> additionalInstrumentData,RemitApplSrvProv remitApplSrvProv,List<RemittanceApplicationSplitting>  applSplitList) {
+			List<AdditionalInstructionData> additionalInstrumentData,RemitApplSrvProv remitApplSrvProv,List<RemittanceApplicationSplitting>  applSplitList ,RemitApplAmlModel remitApplAml) {
 
 		RemittanceApplication applSave1 = appRepo.save(app);
 		appBeneRepo.save(appBene);
@@ -91,12 +102,37 @@ public class RemittanceApplicationDao {
 			remitApplSrvProvRepository.save(remitApplSrvProv);
 		}
 		
-		if(applSplitList !=null && !applSplitList.isEmpty()) {
-			for(RemittanceApplicationSplitting applSplit : applSplitList) {				
-				applSplit.setDocumentNo(applSave1.getDocumentNo());
-				applSplit.setRemittanceApplicationId(applSave1);
-				remittanceApplSplitRepository.save(applSplit);
+		if(app!=null) {
+				BigDecimal documentNo =brRemitDao.generateDocumentNumber(app.getFsCountryMasterByApplicationCountryId().getCountryId(), app.getFsCompanyMaster().getCompanyId(),
+						app.getDocumentCode(), app.getDocumentFinancialyear(), app.getLoccod());
+				if (!JaxUtil.isNullZeroBigDecimalCheck(documentNo)) {
+					throw new GlobalException(JaxError.INVALID_APPLICATION_DOCUMENT_NO, "Application document number shouldnot be null or blank");
+				}
+				
+			app.setDocumentNo(documentNo);	
+			RemittanceApplication applSave1 = appRepo.save(app);
+			appBeneRepo.save(appBene);
+			addlInstDataRepo.save(additionalInstrumentData);
+			if (remitApplSrvProv != null) {
+				remitApplSrvProv.setRemittanceApplicationId(app.getRemittanceApplicationId());
+				remitApplSrvProvRepository.save(remitApplSrvProv);
 			}
+			
+	
+			if(remitApplAml!=null) {
+				remitApplAml.setExRemittanceAppfromAml(applSave1);
+				applAmlRepository.save(remitApplAml);
+			}
+	
+			if(applSplitList !=null && !applSplitList.isEmpty()) {
+				for(RemittanceApplicationSplitting applSplit : applSplitList) {				
+					applSplit.setDocumentNo(applSave1.getDocumentNo());
+					applSplit.setRemittanceApplicationId(applSave1);
+					remittanceApplSplitRepository.save(applSplit);
+				}
+			}
+		}else {
+			throw new GlobalException(JaxError.INVALID_APPLICATION_DOCUMENT_NO, "Application document number shouldnot be null or blank");
 		}
 	
 		logger.info("Application saved in the database, docNo: " + app.getDocumentNo());
@@ -193,4 +229,13 @@ public class RemittanceApplicationDao {
 	public RemittanceApplication getApplication(BigDecimal remittanceApplicationId) {
 		return appRepo.findOne(remittanceApplicationId);
 	}
+	
+	public List<RemittanceApplication> getApplicationDeatilsByPaygId(Customer custoemrId,BigDecimal paygTrnxDetailId){
+		return appRepo.findByFsCustomerAndPaygTrnxDetailId(custoemrId, paygTrnxDetailId);
+	}
+	
+	public List<RemittanceTransaction> getRemittanceTrnxByPaygId(Customer customerId,BigDecimal payTrnxId){
+		return remittanceTransactionRepository.findByCustomerIdAndPaygTrnxDetailIdAndIsactive(customerId,payTrnxId,ConstantDocument.Yes);
+	}
+	
 }

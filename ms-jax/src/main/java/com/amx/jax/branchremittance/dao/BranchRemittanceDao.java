@@ -14,16 +14,21 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.ApplicationProcedureDao;
+import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.CollectDetailMdlv1;
 import com.amx.jax.dbmodel.CollectionMdlv1;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ForeignCurrencyAdjustMdlv1;
+import com.amx.jax.dbmodel.PaygDetailsModel;
 import com.amx.jax.dbmodel.RemittanceTransactionView;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.partner.RemitApplSrvProv;
@@ -40,8 +45,11 @@ import com.amx.jax.dbmodel.remittance.RemittanceApplicationSplitting;
 import com.amx.jax.dbmodel.remittance.RemittanceBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.dbmodel.remittance.RemittanceTransactionSplitting;
+import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.request.remittance.BranchApplicationDto;
+import com.amx.jax.model.response.remittance.RemittanceApplicationResponseModel;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.repository.AdditionalInstructionDataRepository;
 import com.amx.jax.repository.ForeignCurrencyAdjustRepository;
@@ -58,14 +66,16 @@ import com.amx.jax.repository.IRemittanceBenificiaryRepository;
 import com.amx.jax.repository.IRemittanceTransactionDao;
 import com.amx.jax.repository.IRemittanceTransactionRepository;
 import com.amx.jax.repository.IRemittanceTrnxSplitRepository;
+import com.amx.jax.repository.PaygDetailsRepository;
 import com.amx.jax.repository.RemittanceApplicationBeneRepository;
 import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.repository.remittance.ILoyaltyPointRepository;
+import com.amx.jax.services.RemittanceTransactionService;
 import com.amx.jax.util.JaxUtil;
 
 @Component
-// @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode =
-// ScopedProxyMode.TARGET_CLASS)
+ @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode =
+ ScopedProxyMode.TARGET_CLASS)
 public class BranchRemittanceDao {
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
@@ -134,6 +144,14 @@ public class BranchRemittanceDao {
     @Autowired
     IRemittanceTrnxSplitRepository remittanceTrnxSplitRepository;
 
+	@Autowired
+	PaygDetailsRepository pgRepository;
+	
+	@Autowired
+	RemittanceApplicationDao remittanceApplicationDao;
+	
+	@Autowired
+	RemittanceTransactionService remittanceTransactionService;
 
 	@Transactional
 	@SuppressWarnings("unchecked")
@@ -161,6 +179,8 @@ public class BranchRemittanceDao {
 					remittanceApplSplitRepository.save(applSplit);
 				}
 			}
+		}else {
+			throw new GlobalException(JaxError.INVALID_APPLICATION_DOCUMENT_NO, "Application document number shouldnot be null or blank");
 		}
 		
 		if (saveApplBene != null) {
@@ -251,6 +271,10 @@ public class BranchRemittanceDao {
 					}
 					remitTrnx.setDocumentNo(documentNo);
 					remitTrnx.setCollectionDocumentNo(collectModel.getDocumentNo());
+					RemittanceApplication remittanceApplication = remittanceApplicationDao.getApplication(applicationId);
+					if(ConstantDocument.PB_PAYMENT.equalsIgnoreCase(remittanceApplication.getPaymentType())) { /** why u pplied this logic **/
+						remitTrnx.setPaymentType(ConstantDocument.PB_PAYMENT);
+					}
 					
 					RemittanceTransaction remitTrnx1 = remitTrnxRepository.save(remitTrnx);
 					
@@ -393,6 +417,48 @@ public class BranchRemittanceDao {
 		}
 	}
 	
+
+
+	
+	@Transactional
+	@SuppressWarnings("unchecked")
+	public RemittanceApplicationResponseModel saveAndUpdateAll(HashMap<String, Object> mapAllDetailApplSave) {
+		RemittanceApplicationResponseModel responseModel = new RemittanceApplicationResponseModel();
+		if (mapAllDetailApplSave != null) {
+			PaygDetailsModel pgModel = (PaygDetailsModel) mapAllDetailApplSave.get("PG_DETAILS");
+			List<BranchApplicationDto> applList = (List<BranchApplicationDto>) mapAllDetailApplSave.get("APPL");
+
+			if (pgModel != null) {
+				PaygDetailsModel pgDetails = pgRepository.save(pgModel);
+				responseModel.setDocumentIdForPayment(pgDetails.getPaygTrnxSeqId().toString());
+				responseModel.setRemittanceAppId(pgDetails.getPaygTrnxSeqId());
+			}
+			
+			if(ConstantDocument.PB_PAYMENT.equalsIgnoreCase(applList.get(0).getPaymentType())) {
+				responseModel = remittanceTransactionService.savePayAtBranchAppl(applList,responseModel);
+				responseModel.setPgCode(PayGServiceCode.PB);
+				logger.info("Response of status api is "+responseModel.toString());
+			}else {
+				for (BranchApplicationDto applIdDto : applList) {
+					RemittanceApplication appl = appRepo.findOne(applIdDto.getApplicationId());
+					responseModel.setDocumentFinancialYear(appl.getDocumentFinancialyear());
+					if (appl != null && appl.getIsactive().equalsIgnoreCase(ConstantDocument.Yes)) {
+						appl.setPaygTrnxDetailId(responseModel.getRemittanceAppId());
+						appl.setPaymentId(responseModel.getRemittanceAppId() == null ? appl.getPaymentId(): responseModel.getRemittanceAppId().toString());
+						appl.setPaymentType(applIdDto.getPaymentType());
+						appRepo.save(appl);
+					}
+				}
+				
+				logger.info("Response of KNET status api is "+responseModel.toString());
+			}
+			
+		}
+
+		return responseModel;
+	}
+	
+
 	public void updateSignatureHash(RemittanceTransactionView trnxDetails,String signature) {
 		if(trnxDetails!=null && !StringUtils.isBlank(signature) && JaxUtil.isNullZeroBigDecimalCheck(trnxDetails.getRemittanceTransactionId())) {
 			RemittanceTransaction remit = remitTrnxRepository.findOne(trnxDetails.getRemittanceTransactionId());
@@ -401,5 +467,7 @@ public class BranchRemittanceDao {
 				remitTrnxRepository.save(remit);
 			}
 		}
+	
 	}
+
 }

@@ -32,7 +32,6 @@ public class PrefixService extends AbstractService {
 
 		prefixList.add(new PrefixModel(PrefixEnum.MR_CODE));
 		prefixList.add(new PrefixModel(PrefixEnum.MRS_CODE));
-		prefixList.add(new PrefixModel(PrefixEnum.MS));
 		if (prefixList.isEmpty()) {
 			throw new GlobalException("Prefix list is not abaliable");
 		}
