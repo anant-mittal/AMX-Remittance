@@ -299,7 +299,10 @@ public class RemittanceApplicationManager {
 		remittanceApplication.setCompanyCode(companyDetails.getCompanyCode());
 		// branch id
 		CountryBranchMdlv1 countryBranch = bankMetaService.getCountryBranchById((metaData.getCountryBranchId()));
-		remittanceApplication.setLoccod(metaData.getCountryBranchId());
+		if(countryBranch==null) {
+			throw new GlobalException(JaxError.NULL_BRANCH_ID,"country branch is missing");
+		}
+		remittanceApplication.setLoccod(countryBranch.getBranchId());
 		remittanceApplication.setExCountryBranch(countryBranch);
 		// fin year
 		UserFinancialYear userFinancialYear = finanacialService.getUserFinancialYear();
@@ -362,7 +365,7 @@ public class RemittanceApplicationManager {
 		remittanceApplication.setIsactive(ConstantDocument.Yes);
 		remittanceApplication.setSourceofincome(requestModel.getSourceOfFund());
 		remittanceApplication.setApplInd(ConstantDocument.Online);
-		remittanceApplication.setDocumentNo(generateDocumentNumber(remittanceApplication.getExCountryBranch(), ConstantDocument.Update));
+		remittanceApplication.setDocumentNo(generateDocumentNumber(remittanceApplication.getExCountryBranch(), ConstantDocument.A));
 		remittanceApplication.setPaymentId(remittanceApplication.getDocumentNo().toString());
 		remittanceApplication.setWuIpAddress(metaData.getDeviceIp());
 		remittanceApplication.setPaymentType(requestModel.getPaymentType());

@@ -9,6 +9,10 @@ public class PaymentGateWayResponse extends PayGModel {
 	public static enum PayGStatus {
 		INIT, CAPTURED, CANCELLED, ERROR, NOT_CAPTURED
 	}
+	
+	public static enum CallbackScheme {
+		REDIRECT, RENDER
+	}
 
 	String responseCode = null;
 	String result = null;
@@ -16,6 +20,7 @@ public class PaymentGateWayResponse extends PayGModel {
 	String auth = null;
 	String ref = null;
 	String postDate = null;
+	CallbackScheme scheme;
 
 	PayGStatus status = PayGStatus.INIT;
 
@@ -73,6 +78,14 @@ public class PaymentGateWayResponse extends PayGModel {
 
 	public void setResponseCode(String responseCode) {
 		this.responseCode = responseCode;
+	}
+
+	public CallbackScheme getScheme() {
+		return scheme;
+	}
+
+	public void setScheme(CallbackScheme scheme) {
+		this.scheme = scheme;
 	}
 
 }

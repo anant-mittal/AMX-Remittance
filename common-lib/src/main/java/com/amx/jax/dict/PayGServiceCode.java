@@ -7,7 +7,9 @@ public enum PayGServiceCode {
 	, WT("wt"), KNET2("knet2"), PB("pb"),
 
 	// Short Code - Max 3 Chars
-	K(KNET), BOD(BENEFIT);
+	K(KNET), BOD(BENEFIT),
+	
+	LOCAL("LOCAL");
 
 	public static final PayGServiceCode DEFAULT = KNET;
 

@@ -1104,7 +1104,7 @@ public class Customer implements java.io.Serializable, Communicatable {
 	}
 
 	public boolean canSendWhatsApp() {
-		return !(Status.D.equals(this.whatsAppVerified) || Status.N.equals(this.whatsAppVerified));
+		return !(Status.D.equals(this.whatsAppVerified) || Status.N.equals(this.whatsAppVerified) || ArgUtil.isEmpty(this.whatsapp));
 	}
 
 	private Status emailVerified;
@@ -1136,7 +1136,7 @@ public class Customer implements java.io.Serializable, Communicatable {
 	}
 
 	public boolean canSendMobile() {
-		return !(Status.D.equals(this.mobileVerified) || Status.N.equals(this.mobileVerified));
+		return !(Status.D.equals(this.mobileVerified) || Status.N.equals(this.mobileVerified) || ArgUtil.isEmpty(this.mobile));
 	}
 	
 	public boolean hasVerified(ContactType contactType) {
