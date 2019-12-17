@@ -27,7 +27,6 @@ import com.amx.jax.branchremittance.dao.BranchRemittanceDao;
 import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constants.JaxTransactionStatus;
-import com.amx.jax.customer.manager.CustomerContactVerificationManager;
 import com.amx.jax.dal.RoutingProcedureDao;
 import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dao.JaxEmployeeDao;
@@ -71,6 +70,7 @@ import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.events.CActivityEvent;
 import com.amx.jax.logger.events.CActivityEvent.Type;
+import com.amx.jax.manager.DailyPromotionManager;
 import com.amx.jax.manager.PromotionManager;
 import com.amx.jax.manager.RemittanceApplAmlManager;
 import com.amx.jax.manager.RemittanceManager;
@@ -84,7 +84,6 @@ import com.amx.jax.model.response.remittance.RemittanceCollectionDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.TransferDto;
 import com.amx.jax.model.response.serviceprovider.Remittance_Call_Response;
-import com.amx.jax.model.response.serviceprovider.ServiceProviderResponse;
 import com.amx.jax.notification.JaxNotificationDataManager;
 import com.amx.jax.partner.dao.PartnerTransactionDao;
 import com.amx.jax.partner.dto.RemitTrnxSPDTO;
@@ -107,6 +106,7 @@ import com.amx.jax.repository.IShoppingCartDetailsRepository;
 import com.amx.jax.repository.PaymentModeRepository;
 import com.amx.jax.repository.RemittanceApplicationBeneRepository;
 import com.amx.jax.repository.RemittanceApplicationRepository;
+import com.amx.jax.repository.RemittanceTransactionRepository;
 import com.amx.jax.repository.remittance.LocalBankDetailsRepository;
 import com.amx.jax.service.BankMetaService;
 import com.amx.jax.service.CompanyService;
@@ -243,7 +243,25 @@ public class BranchRemittanceSaveManager {
     @Autowired
     IRemittanceApplSplitRepository applSplitRepo;
     @Autowired
+    DailyPromotionManager dailyPromotionManager;
+    
+    @Autowired
+    RemittanceTransactionRepository remittanceTransactionRepository;
+    @Autowired
     JaxNotificationDataManager jaxNotificationDataManager;
+    
+    @Autowired
+	AuditService auditService;
+
+
+	@Autowired
+	JaxTenantProperties jaxTenantProperties;
+
+	@Autowired
+	BankMetaService bankMetaService;
+
+	@Autowired
+	RemittanceApplAmlManager applAmlManager;
     
 	
 	
@@ -256,19 +274,6 @@ public class BranchRemittanceSaveManager {
 	
 	
 	
-	@Autowired
-    	AuditService auditService;
-	
-	
-	@Autowired
-	JaxTenantProperties jaxTenantProperties;
-	
-	@Autowired
-	BankMetaService bankMetaService;
-	
-
-	@Autowired
-	RemittanceApplAmlManager applAmlManager; 
 	
 
 	/**
@@ -349,6 +354,11 @@ public class BranchRemittanceSaveManager {
 					notificationService.sendTransactionErrorAlertEmail(errrMsg,"TRNX NOT MOVED TO EMOS",paymentResponse);
 				}
 			}
+			//String promotionMsg = promotionManager.getPromotionPrizeForBranch(responseDto);
+			//responseDto.setPromotionMessage(promotionMsg);
+			
+			dailyPromotionManager.applyJolibeePadalaCoupons(responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo(),null);
+			
 			
 			CountryBranchMdlv1 countryBranch = new CountryBranchMdlv1();
 			countryBranch = bankMetaService.getCountryBranchById(metaData.getCountryBranchId()); //user branch not customer branch
@@ -471,12 +481,13 @@ public class BranchRemittanceSaveManager {
 				collection.setDocumentCode(ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION);
 				collection.setReceiptType(ConstantDocument.COLLECTION_RECEIPT_TYPE);
 				collection.setCreatedDate(new Date());
-
+				/*EmployeeDetailsView employee =branchRemittanceApplManager.getEmployeeDetails();
+				collection.setCreatedBy(employee.getUserName());
+				collection.setLocCode(employee.getBranchId());*/
 				BigDecimal declarationTotalamount = getDeclarationReportAmount(ConstantDocument.DECL_REPORT_FOR_TOT_AMOUNT);
 				if(JaxUtil.isNullZeroBigDecimalCheck(declarationTotalamount) && collection.getNetAmount().compareTo(declarationTotalamount)>=1) {
 					collection.setCashDeclarationIndicator(ConstantDocument.Yes);
 				}
-				
 				collection.setIsActive(ConstantDocument.Yes);
 			
 				
@@ -946,7 +957,6 @@ public class BranchRemittanceSaveManager {
 					if(date!=null) {
 						remitTrnx.setTimeToDeliver(date);
 					}
-
 					
 					BigDecimal documentNo =generateDocumentNumber(appl.getFsCountryMasterByApplicationCountryId().getCountryId(),appl.getFsCompanyMaster().getCompanyId(),remitTrnx.getDocumentId().getDocumentCode(),remitTrnx.getDocumentFinanceYear(),remitTrnx.getLoccod(),ConstantDocument.A);
 					
@@ -1384,6 +1394,7 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
  
 	public Boolean sendReceiptOnEmail(BigDecimal collectionDocNo, BigDecimal collectionDocYear,
 			BigDecimal collectionDocCode) {
+		logger.debug("ColllectionDocNo DOcYear DocCOde "+collectionDocNo + collectionDocYear + collectionDocCode);
 		Boolean validStatus = Boolean.FALSE;
 		PaymentResponseDto paymentResponse = new PaymentResponseDto();
 		try {

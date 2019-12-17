@@ -459,11 +459,12 @@ public class RemittancePaymentManager extends AbstractService{
 								remittanceTransaction.getDocumentNo());
 						Customer customer = customerDao.getCustById(remittanceTransaction.getCustomerId().getCustomerId());
 						setMetaInfo(trxnDto, paymentResponse);
-						/** promotion check not for amg employee **/
-						if (!employeeDao.isAmgEmployee(customer.getIdentityInt())) {
-							promotionManager.promotionWinnerCheck(remittanceTransaction.getDocumentNo(),
-									remittanceTransaction.getDocumentFinanceYear());
-						}
+						// promotion check not for amg employee
+						/*
+						 * if (!employeeDao.isAmgEmployee(customer.getIdentityInt())) {
+						 * promotionManager.promotionWinnerCheck(remittanceTransaction.getDocumentNo(),
+						 * remittanceTransaction.getDocumentFinanceYear()); }
+						 */
 						PromotionDto promotDto = promotionManager.getPromotionDto(remittanceTransaction.getDocumentNo(),
 								remittanceTransaction.getDocumentFinanceYear());
 						PersonInfo personInfo = userService.getPersonInfo(customer.getCustomerId());
@@ -473,6 +474,8 @@ public class RemittancePaymentManager extends AbstractService{
 
 						// --- WantIT BuyIT Coupons Promotions
 						dailyPromotionManager.applyWantITbuyITCoupans(remittanceTransaction.getRemittanceTransactionId(), personInfo);
+						logger.debug("Jolibee Padala");
+						dailyPromotionManager.applyJolibeePadalaCoupons(remittanceTransaction.getCollectionDocFinanceYear(),remittanceTransaction.getCollectionDocumentNo(),remittanceTransaction.getBranchId().getBranchId());
 
 						reportManagerService.generatePersonalRemittanceReceiptReportDetails(trxnDto, Boolean.TRUE);
 						List<RemittanceReceiptSubreport> rrsrl = reportManagerService
@@ -493,6 +496,7 @@ public class RemittancePaymentManager extends AbstractService{
 
 				}else {
 					logger.info("PaymentResponseDto "+paymentResponse.getPaymentId()+"\t Result :"+paymentResponse.getResultCode()+"\t Custoemr Id :"+paymentResponse.getCustomerId());
+
 					lstPayIdDetails =applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(paymentResponse.getPaymentId(),new Customer(paymentResponse.getCustomerId()));
 					if(!lstPayIdDetails.isEmpty()) {
 						paymentResponse.setErrorText(errorMsg);

@@ -129,6 +129,7 @@ import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.PaygDetailsRepository;
 import com.amx.jax.repository.RemittanceApplicationBeneRepository;
+import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.repository.VTransferRepository;
 import com.amx.jax.repository.remittance.IOWSScheduleModelRepository;
 import com.amx.jax.repository.remittance.IServiceProviderCredentailsRepository;
@@ -329,6 +330,9 @@ public class RemittanceTransactionManager {
 	
 	@Autowired
 	CustomerDBAuthManager customerDBAuthManager;
+	
+	@Autowired
+	RemittanceApplicationRepository applRepository;
 		
 
 	private static final String IOS = "IOS";
@@ -1132,8 +1136,11 @@ public class RemittanceTransactionManager {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		Map<String, Integer> output = new HashMap<>();
 		Customer customer = custDao.getCustById(meta.getCustomerId());
-		List<ViewTransfer> monthlyTxns = transferRepo
-				.getMonthlyTransactionByCustomerReference(customer.getCustomerReference());
+		List<RemittanceApplication> applCount = null;
+		List<ViewTransfer> monthlyTxns = transferRepo.getMonthlyTransactionByCustomerReference(customer.getCustomerReference());
+		if(JaxUtil.isNullZeroBigDecimalCheck(metaData.getCustomerId()) && JaxUtil.isNullZeroBigDecimalCheck(metaData.getCountryBranchId())){
+		 applCount =applRepository.getApplicationCountList(metaData.getCustomerId(),metaData.getCountryBranchId());
+		}
 		int monthlyCount = monthlyTxns.size();
 		int weeklyCount = 0;
 		int dailyCount = 0;
@@ -1151,8 +1158,13 @@ public class RemittanceTransactionManager {
 				weeklyCount++;
 			}
 		}
-		logger.debug("getCustomerTransactionCounts CustomerId" + meta.getCustomerId() + "\t dailyCount" + dailyCount
-				+ "\t monthlyCount :" + monthlyCount + "\t weeklyCount" + weeklyCount);
+		logger.debug("getCustomerTransactionCounts CustomerId" + meta.getCustomerId() + "\t dailyCount" + dailyCount+ "\t monthlyCount :" + monthlyCount + "\t weeklyCount" + weeklyCount);
+		
+		if(dailyCount==0 && applCount!=null && !applCount.isEmpty()) {
+			dailyCount = applCount.size();
+		}else if(dailyCount>0 && applCount!=null && !applCount.isEmpty()){
+			dailyCount = dailyCount+applCount.size();
+		}
 		output.put("10", dailyCount);
 		output.put("12", monthlyCount);
 		output.put("11", weeklyCount);
@@ -1253,9 +1265,9 @@ public class RemittanceTransactionManager {
 		logger.info("amount in exchnagerate break up"+breakup.getNetAmount());
 		BigDecimal netAmountPayable = breakup.getNetAmount();
 		RemittanceApplicationResponseModel remiteAppModel = new RemittanceApplicationResponseModel();
-		//deactivatePreviousApplications();
+		deactivatePreviousApplications();
 		validateAdditionalCheck();
-		//validateAdditionalBeneDetailsV2(model);
+		validateAdditionalBeneDetailsV2(model);
 		
 		/** To fetch additional bene details from JAX **/
 		BenificiaryListView beneficaryDetails = (BenificiaryListView)remitApplParametersMap.get("BENEFICIARY");
@@ -1505,8 +1517,7 @@ public class RemittanceTransactionManager {
 		applicationProcedureDao.getAdditionalCheckProcedure(remitApplParametersMap);
 	}
 
-	public RemittanceTransactionStatusResponseModel getTransactionStatus(
-			RemittanceTransactionStatusRequestModel request) {
+	public RemittanceTransactionStatusResponseModel getTransactionStatus(RemittanceTransactionStatusRequestModel request) {
 		RemittanceTransactionStatusResponseModel model = new RemittanceTransactionStatusResponseModel();
 		RemittanceTransaction remittanceTransaction = remitAppDao
 				.getRemittanceTransaction(request.getApplicationDocumentNumber(), request.getDocumentFinancialYear());
@@ -1567,9 +1578,10 @@ public class RemittanceTransactionManager {
 
 				model.setResponseCodeDetail(responseCodeDetail);
 			}
+			return model;
+		}
 		
-		return model;
-	}
+
 
 	private String getTransactionReference(RemittanceApplication application) {
 		try {

@@ -44,6 +44,7 @@ import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.RemittanceApplicationResponseModel;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.postman.client.PushNotifyClient;
+import com.amx.jax.repository.RemittanceTransactionRepository;
 import com.amx.jax.services.CustomerRatingService;
 import com.amx.jax.services.PurposeOfTransactionService;
 import com.amx.jax.services.RemittanceTransactionService;
@@ -105,6 +106,9 @@ public class RemittanceController {
 
 	@Autowired
 	protected AmxMeta amxMeta;
+	
+	@Autowired
+	RemittanceTransactionRepository remittanceTransactionRepo;
 
 	@RequestMapping(value = "/trnxHist/", method = RequestMethod.GET)
 	public ApiResponse getTrnxHistroyDetailResponse(@RequestParam(required = false, value = "docfyr") BigDecimal docfyr,
@@ -204,6 +208,7 @@ public class RemittanceController {
 	public ApiResponse saveRemittance(@RequestBody PaymentResponseDto paymentResponse) {
 		JaxContextUtil.setJaxEvent(JaxEvent.CREATE_REMITTANCE);
 		JaxContextUtil.setRequestModel(paymentResponse);
+		logger.debug("Save remnittance request "+JsonUtil.toJson(paymentResponse));
 		logger.info("save-Remittance Controller :" + paymentResponse.getCustomerId() + "\t country ID :");
 		logger.debug("Payment respone is " + paymentResponse.toString());
 		logger.debug("save-Remittance Controller :" + paymentResponse.getCustomerId() + "\t country ID :"
@@ -258,12 +263,6 @@ public class RemittanceController {
 		return response;
 	}
 
-	
-	
-	
-	
-	
-	
 	@RequestMapping(value = "/status/", method = RequestMethod.POST)
 	public ApiResponse getTransactionStatus(@RequestBody RemittanceTransactionStatusRequestModel request,
 			@RequestParam("promotion") Boolean promotion) {

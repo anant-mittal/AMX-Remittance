@@ -23,6 +23,7 @@ import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
 import com.amx.jax.dbmodel.CurrencyMasterMdlv1;
 import com.amx.jax.dbmodel.CurrencyWiseDenominationMdlv1;
 import com.amx.jax.dbmodel.ParameterDetails;
+import com.amx.jax.dbmodel.fx.ForeignCurrencyStockView;
 import com.amx.jax.dbmodel.fx.FxExchangeRateView;
 import com.amx.jax.dbmodel.fx.FxOrderTranxLimitView;
 import com.amx.jax.error.JaxError;
@@ -33,6 +34,7 @@ import com.amx.jax.model.response.fx.FxExchangeRateBreakup;
 import com.amx.jax.repository.AuthenticationLimitCheckDAO;
 import com.amx.jax.repository.CurrencyWiseDenominationRepository;
 import com.amx.jax.repository.ICurrencyDao;
+import com.amx.jax.repository.fx.ForeignCurrencyMaxStockRepository;
 import com.amx.jax.repository.fx.FxOrderTranxLimitRespository;
 import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.util.JaxUtil;
@@ -56,7 +58,6 @@ public class FcSaleOrderTransactionManager extends AbstractModel{
 	@Autowired
 	ICurrencyDao currencyDao;
 	
-	
 	@Autowired
 	AuthenticationLimitCheckDAO authentication;
 	
@@ -65,6 +66,9 @@ public class FcSaleOrderTransactionManager extends AbstractModel{
 
 	@Autowired
 	CurrencyWiseDenominationRepository currenDenominationRepository;
+	
+	@Autowired
+	ForeignCurrencyMaxStockRepository foreignCurrencyMaxStockRepository;
 	
 	/**
 	 * 
@@ -87,7 +91,12 @@ public class FcSaleOrderTransactionManager extends AbstractModel{
 			throw new GlobalException(JaxError.INVALID_CURRENCY_ID, "Currency is not  available/invalid currency id");
 		}
 		
+		// checking minimum denomination
 		checkMinDenomination(fcCurrencyId,fcAmount);
+				
+		// checking maximum stock per each currency
+		checkMaximumAmountPerCurrency(fcCurrencyId, fcAmount);
+		
 		FxExchangeRateBreakup breakup = new FxExchangeRateBreakup();
 		List<FxExchangeRateView> fxSaleRateList = fcSaleExchangeRateDao.getFcSaleExchangeRate(countryId, countryBracnhId, fcCurrencyId);
 		
@@ -209,5 +218,17 @@ public class FcSaleOrderTransactionManager extends AbstractModel{
 			 * else { throw new GlobalException(JaxError.
 			 * MIN_DENOMINATION_ERROR,"Minimum denomination is not defined"); }
 			 */
+	}
+	
+	// stock (staff and safe – across all branches AND Murgab 3 FC branch) * 75%
+	public void checkMaximumAmountPerCurrency(BigDecimal fcCurrencyId,BigDecimal fcAmount) {
+		ForeignCurrencyStockView foreignCurrencyStockView = foreignCurrencyMaxStockRepository.findByCurrencyId(fcCurrencyId);
+		if(foreignCurrencyStockView != null && foreignCurrencyStockView.getMaxStockBalance() != null && foreignCurrencyStockView.getMaxStockBalance().compareTo(BigDecimal.ZERO) != 0) {
+			if(fcAmount.compareTo(foreignCurrencyStockView.getMaxStockBalance()) > 0) {
+				throw new GlobalException(JaxError.FC_MAX_STOCK_ERROR,"The currency is out of stock due to higher demand. We shall revert back to you via email once the currency is available.");
+			}
+		}else {
+			throw new GlobalException(JaxError.INVALID_FC_STOCK_ERROR,"The currency is out of stock due to higher demand. We shall revert back to you via email once the currency is available.");
+		}
 	}
 }
