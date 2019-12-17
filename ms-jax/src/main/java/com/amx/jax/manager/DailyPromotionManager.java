@@ -195,110 +195,68 @@ public class DailyPromotionManager {
 			 remittanceTransaction=remittanceTransactionRepository.findByCollectionDocFinanceYearAndCollectionDocumentNo(documentFinanceYear, documentNumber);
 			 for(RemittanceTransaction remittanceTransaction2:remittanceTransaction) {
 				 dailyPromotionDTO=dailyPromotionDao.applyJolibeePadalaCoupons(remittanceTransaction2.getDocumentFinanceYear(), remittanceTransaction2.getDocumentNo(), remittanceTransaction2.getBranchId().getBranchId());
-				 logger.debug("Jolibee output "+JsonUtil.toJson(dailyPromotionDTO));
-				if(!ArgUtil.isEmpty(dailyPromotionDTO.getPromotionMsg())&&ArgUtil.isEmpty(dailyPromotionDTO.getErrorMsg())) {
-					Customer customer = customerRepository.getCustomerByCustomerIdAndIsActive(metaData.getCustomerId(), "Y");
-					CommunicationPrefsResult communicationPrefsResult = communicationPrefsUtil.forCustomer(CommunicationEvents.BPI_JOLLIBEE, customer);
-					Date createdDate = remittanceTransaction2.getCreatedDate();
-					SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
-					Map<String, Object> modeldata = new HashMap<String, Object>();
-					Map<String, Object> wrapper = new HashMap<String, Object>();
-					String transactionDate = simpleDateFormat.format(createdDate);
-					modeldata.put("transactionDate", transactionDate);
-					wrapper.put("data", modeldata);
-					logger.debug("Data for comm is "+JsonUtil.toJson(wrapper));
-					if(communicationPrefsResult.isEmail()) {
-						Email email = new Email();
-						email.setITemplate(TemplatesMX.BPI_JOLLIBEE);
-						if(metaData.getLanguageId().equals(ConstantDocument.L_ENG)) {
-							email.setLang(Language.EN);
-						}
-						else {
-							email.setLang(Language.AR);
-						}
-						email.addTo(customer.getEmail());
-						email.setModel(wrapper);
-						postManService.sendEmailAsync(email);
-					}
-					if(communicationPrefsResult.isSms()) {
-						SMS sms = new SMS();
-						sms.setITemplate(TemplatesMX.BPI_JOLLIBEE);
-						sms.addTo(customer.getPrefixCodeMobile()+customer.getMobile());
-						sms.setModel(wrapper);
-						postManService.sendSMSAsync(sms);
-					}
-					
-					if (communicationPrefsResult.isWhatsApp()) {
-						WAMessage waMessage = new WAMessage();
-						waMessage.setITemplate(TemplatesMX.BPI_JOLLIBEE);
-						waMessage.addTo(customer.getWhatsappPrefix() + customer.getWhatsapp());
-						waMessage.setModel(wrapper);
-						whatsAppClient.send(waMessage);
-					}
-					if(communicationPrefsResult.isPushNotify()) {
-						PushMessage pushMessage = new PushMessage();
-						pushMessage.setITemplate(TemplatesMX.BPI_JOLLIBEE);
-						pushMessage.addToUser(metaData.getCustomerId());
-						pushMessage.setModel(wrapper);
-						pushNotifyClient.send(pushMessage);
-					}
-				}
+				 //logger.debug("Jolibee output "+JsonUtil.toJson(dailyPromotionDTO));
+				 communicateJolibee(dailyPromotionDTO,remittanceTransaction2);
 					
 			 }
 			 
 		}else {
-			remittanceTransaction=remittanceTransactionRepository.getRemittanceTransaction(documentNumber, documentFinanceYear);
-			dailyPromotionDTO=dailyPromotionDao.applyJolibeePadalaCoupons(documentFinanceYear,documentNumber,branchCode);
-			logger.debug("Jolibee output "+JsonUtil.toJson(dailyPromotionDTO));
-			if(!ArgUtil.isEmpty(dailyPromotionDTO.getPromotionMsg())&&ArgUtil.isEmpty(dailyPromotionDTO.getErrorMsg())) {
-				Customer customer = customerRepository.getCustomerByCustomerIdAndIsActive(metaData.getCustomerId(), "Y");
-				CommunicationPrefsResult communicationPrefsResult = communicationPrefsUtil.forCustomer(CommunicationEvents.BPI_JOLLIBEE, customer);
-				Date createdDate = remittanceTransaction.get(0).getCreatedDate();
-				SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
-				Map<String, Object> modeldata = new HashMap<String, Object>();
-				Map<String, Object> wrapper = new HashMap<String, Object>();
-				String transactionDate = simpleDateFormat.format(createdDate);
-				modeldata.put("transactionDate", transactionDate);
-				wrapper.put("data", modeldata);
-				logger.debug("Data for comm is "+JsonUtil.toJson(wrapper));
-				if(communicationPrefsResult.isEmail()) {
-					Email email = new Email();
-					email.setITemplate(TemplatesMX.BPI_JOLLIBEE);
-					if(metaData.getLanguageId().equals(ConstantDocument.L_ENG)) {
-						email.setLang(Language.EN);
-					}
-					else {
-						email.setLang(Language.AR);
-					}
-					email.addTo(customer.getEmail());
-					email.setModel(wrapper);
-					postManService.sendEmailAsync(email);
-				}
-				if(communicationPrefsResult.isSms()) {
-					SMS sms = new SMS();
-					sms.setITemplate(TemplatesMX.BPI_JOLLIBEE);
-					sms.addTo(customer.getPrefixCodeMobile()+customer.getMobile());
-					sms.setModel(wrapper);
-					postManService.sendSMSAsync(sms);
-				}
-				
-				if (communicationPrefsResult.isWhatsApp()) {
-					WAMessage waMessage = new WAMessage();
-					waMessage.setITemplate(TemplatesMX.BPI_JOLLIBEE);
-					waMessage.addTo(customer.getWhatsappPrefix() + customer.getWhatsapp());
-					waMessage.setModel(wrapper);
-					whatsAppClient.send(waMessage);
-				}
-				if(communicationPrefsResult.isPushNotify()) {
-					PushMessage pushMessage = new PushMessage();
-					pushMessage.setITemplate(TemplatesMX.BPI_JOLLIBEE);
-					pushMessage.addToUser(metaData.getCustomerId());
-					pushMessage.setModel(wrapper);
-					pushNotifyClient.send(pushMessage);
-				}
+			remittanceTransaction=remittanceTransactionRepository.findByCollectionDocFinanceYearAndCollectionDocumentNo(documentNumber, documentFinanceYear);
+			for(RemittanceTransaction remittanceTransaction2:remittanceTransaction) {
+				dailyPromotionDTO=dailyPromotionDao.applyJolibeePadalaCoupons(remittanceTransaction2.getDocumentFinanceYear(),remittanceTransaction2.getDocumentNo(),branchCode);
+				communicateJolibee(dailyPromotionDTO, remittanceTransaction2);
 			}
 		}
 		
 		
+	}
+	public void communicateJolibee(DailyPromotionDTO dailyPromotionDTO, RemittanceTransaction remittanceTransaction2) {
+		if(!ArgUtil.isEmpty(dailyPromotionDTO.getPromotionMsg())&&ArgUtil.isEmpty(dailyPromotionDTO.getErrorMsg())) {
+			Customer customer = customerRepository.getCustomerByCustomerIdAndIsActive(metaData.getCustomerId(), "Y");
+			CommunicationPrefsResult communicationPrefsResult = communicationPrefsUtil.forCustomer(CommunicationEvents.BPI_JOLLIBEE, customer);
+			Date createdDate = remittanceTransaction2.getCreatedDate();
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
+			Map<String, Object> modeldata = new HashMap<String, Object>();
+			Map<String, Object> wrapper = new HashMap<String, Object>();
+			String transactionDate = simpleDateFormat.format(createdDate);
+			modeldata.put("transactionDate", transactionDate);
+			wrapper.put("data", modeldata);
+			logger.debug("Data for comm is "+JsonUtil.toJson(wrapper));
+			if(communicationPrefsResult.isEmail()) {
+				Email email = new Email();
+				email.setITemplate(TemplatesMX.BPI_JOLLIBEE);
+				if(metaData.getLanguageId().equals(ConstantDocument.L_ENG)) {
+					email.setLang(Language.EN);
+				}
+				else {
+					email.setLang(Language.AR);
+				}
+				email.addTo(customer.getEmail());
+				email.setModel(wrapper);
+				postManService.sendEmailAsync(email);
+			}
+			if(communicationPrefsResult.isSms()) {
+				SMS sms = new SMS();
+				sms.setITemplate(TemplatesMX.BPI_JOLLIBEE);
+				sms.addTo(customer.getPrefixCodeMobile()+customer.getMobile());
+				sms.setModel(wrapper);
+				postManService.sendSMSAsync(sms);
+			}
+			
+			if (communicationPrefsResult.isWhatsApp()) {
+				WAMessage waMessage = new WAMessage();
+				waMessage.setITemplate(TemplatesMX.BPI_JOLLIBEE);
+				waMessage.addTo(customer.getWhatsappPrefix() + customer.getWhatsapp());
+				waMessage.setModel(wrapper);
+				whatsAppClient.send(waMessage);
+			}
+			if(communicationPrefsResult.isPushNotify()) {
+				PushMessage pushMessage = new PushMessage();
+				pushMessage.setITemplate(TemplatesMX.BPI_JOLLIBEE);
+				pushMessage.addToUser(metaData.getCustomerId());
+				pushMessage.setModel(wrapper);
+				pushNotifyClient.send(pushMessage);
+			}
+		}
 	}
 }
