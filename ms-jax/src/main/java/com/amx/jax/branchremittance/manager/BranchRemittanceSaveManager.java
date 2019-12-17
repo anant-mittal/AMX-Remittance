@@ -27,7 +27,6 @@ import com.amx.jax.branchremittance.dao.BranchRemittanceDao;
 import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constants.JaxTransactionStatus;
-import com.amx.jax.customer.manager.CustomerContactVerificationManager;
 import com.amx.jax.dal.RoutingProcedureDao;
 import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dao.JaxEmployeeDao;
@@ -71,17 +70,21 @@ import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.events.CActivityEvent;
 import com.amx.jax.logger.events.CActivityEvent.Type;
+import com.amx.jax.manager.DailyPromotionManager;
 import com.amx.jax.manager.PromotionManager;
+import com.amx.jax.manager.RemittanceApplAmlManager;
 import com.amx.jax.manager.RemittanceManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.remittance.BranchApplicationDto;
 import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
 import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.model.response.fx.UserStockDto;
+import com.amx.jax.model.response.remittance.AmlCheckResponseDto;
 import com.amx.jax.model.response.remittance.RemittanceCollectionDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.TransferDto;
 import com.amx.jax.model.response.serviceprovider.Remittance_Call_Response;
+import com.amx.jax.notification.JaxNotificationDataManager;
 import com.amx.jax.partner.dao.PartnerTransactionDao;
 import com.amx.jax.partner.dto.RemitTrnxSPDTO;
 import com.amx.jax.partner.manager.PartnerTransactionManager;
@@ -103,6 +106,7 @@ import com.amx.jax.repository.IShoppingCartDetailsRepository;
 import com.amx.jax.repository.PaymentModeRepository;
 import com.amx.jax.repository.RemittanceApplicationBeneRepository;
 import com.amx.jax.repository.RemittanceApplicationRepository;
+import com.amx.jax.repository.RemittanceTransactionRepository;
 import com.amx.jax.repository.remittance.LocalBankDetailsRepository;
 import com.amx.jax.service.BankMetaService;
 import com.amx.jax.service.CompanyService;
@@ -246,6 +250,19 @@ public class BranchRemittanceSaveManager {
     @Autowired
     JaxNotificationDataManager jaxNotificationDataManager;
     
+    @Autowired
+	AuditService auditService;
+
+
+	@Autowired
+	JaxTenantProperties jaxTenantProperties;
+
+	@Autowired
+	BankMetaService bankMetaService;
+
+	@Autowired
+	RemittanceApplAmlManager applAmlManager;
+    
 	
 	
 	List<LoyaltyPointsModel> loyaltyPoints 	 = new ArrayList<>();
@@ -257,19 +274,6 @@ public class BranchRemittanceSaveManager {
 	
 	
 	
-	@Autowired
-    	AuditService auditService;
-	
-	
-	@Autowired
-	JaxTenantProperties jaxTenantProperties;
-	
-	@Autowired
-	BankMetaService bankMetaService;
-	
-
-	@Autowired
-	RemittanceApplAmlManager applAmlManager; 
 	
 
 	/**
