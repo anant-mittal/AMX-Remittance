@@ -1,4 +1,4 @@
-package com.amx.jax.branch.controller;
+package com.amx.jax.sso.ows;
 
 import java.util.Map;
 
@@ -11,7 +11,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.amx.jax.branch.WebAppConfig;
 import com.amx.jax.rest.RestService;
 import com.amx.jax.sso.SSOConstants;
 import com.amx.jax.sso.SSOUser;
@@ -22,7 +21,7 @@ import io.swagger.annotations.ApiOperation;
 
 @Controller
 @Api(value = "App Pages")
-public class BranchController {
+public class SSOIndexController {
 
 	/** The web app config. */
 	@Autowired
@@ -41,7 +40,7 @@ public class BranchController {
 	@Autowired
 	SSOUser sSOUser;
 
-	private Logger logger = Logger.getLogger(BranchController.class);
+	private Logger logger = Logger.getLogger(SSOIndexController.class);
 
 	@ApiOperation(value = "Branch Pages")
 	@RequestMapping(value = { "/register/**", "/app/**", "/login/**", "/push/**" }, method = { RequestMethod.GET })
@@ -64,7 +63,7 @@ public class BranchController {
 	@ApiOperation(value = "Base URL")
 	@RequestMapping(value = { "/" }, method = { RequestMethod.GET })
 	public String baseUrl(Model model) {
-		return "redirect:/app";
+		return "noindex";
 	}
 
 	public String getVersion() {
