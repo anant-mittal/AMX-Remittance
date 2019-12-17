@@ -466,6 +466,9 @@ public class SnapModels {
 
 		public SnapModelResponse(Map<String, Object> map) {
 			super(map);
+			this.setStatus("200");
+			this.setStatusKey("SUCCESS");
+			this.setTimestamp(System.currentTimeMillis());
 		}
 
 		public SnapModelResponse(String string) {
