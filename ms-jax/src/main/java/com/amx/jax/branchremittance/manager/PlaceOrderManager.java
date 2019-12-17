@@ -442,9 +442,13 @@ public class PlaceOrderManager implements Serializable{
 			ratePlaceOrder.setModifiedBy(brApplManager.getEmployeeDetails().getUserName());
 			ratePlaceOrder.setModifiedDate(new Date());
 			ratePlaceOrder.setCustomerIndicator(ConstantDocument.Status.C.toString());
-			if(!StringUtils.isBlank(remarks)) {
-				ratePlaceOrder.setRemarks(ratePlaceOrder.getRemarks()==null?"":ratePlaceOrder.getRemarks());
-			}
+			ratePlaceOrder.setRemarks(dto.getRemarks());
+			
+								/*
+								 * if(!StringUtils.isBlank(remarks)) {
+								 * ratePlaceOrder.setRemarks(ratePlaceOrder.getRemarks()==null?"":ratePlaceOrder
+								 * .getRemarks()); }
+								 */
 			ratePlaceOrderRepository.save(ratePlaceOrder);
 			boolRespModel=true;
 			}else {
