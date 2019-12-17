@@ -149,7 +149,21 @@ public class RoutingProductManager {
 		Map<BigDecimal, ViewExGLCBAL> glcBalMap = new HashMap<BigDecimal, ViewExGLCBAL>();
 
 		if (glcBals != null && !glcBals.isEmpty()) {
-			glcBalMap = glcBals.stream().collect(Collectors.toMap(g -> g.getBankId(), g -> g));
+
+			for (ViewExGLCBAL g : glcBals) {
+				if (glcBalMap.containsKey(g.getBankId())) {
+					ViewExGLCBAL old = glcBalMap.get(g.getBankId());
+
+					g.setRateCurBal(ArgUtil.assignDefaultIfNull(g.getRateCurBal(), BigDecimal.ZERO)
+							.add(ArgUtil.assignDefaultIfNull(old.getRateCurBal(), BigDecimal.ZERO)));
+
+					g.setRateFcCurBal(ArgUtil.assignDefaultIfNull(g.getRateFcCurBal(), BigDecimal.ZERO)
+							.add(ArgUtil.assignDefaultIfNull(old.getRateFcCurBal(), BigDecimal.ZERO)));
+				} else {
+					glcBalMap.put(g.getBankId(), g);
+				}
+			}
+
 		}
 
 		// Get Provisional Balances Product Wise
