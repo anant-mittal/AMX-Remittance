@@ -239,12 +239,7 @@ public class BranchRemittanceApplManager {
 
 	@Autowired
 	PlaceOrderManager placeOrderManager;
-	
-<<<<<<< HEAD
 
-	
-=======
->>>>>>> fm_template_bpi_birthday_ong
 	public BranchRemittanceApplResponseDto saveBranchRemittanceApplication(BranchRemittanceApplRequestModel requestApplModel) {
 		Map<String,Object> hashMap = new HashMap<>();
 		
