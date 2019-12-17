@@ -1,6 +1,7 @@
 package com.amx.jax.sso.ows;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.scope.TenantScoped;
@@ -8,6 +9,7 @@ import com.amx.jax.scope.TenantValue;
 
 @TenantScoped
 @Component
+@PropertySource("classpath:application-app.properties")
 public class WebAppConfig {
 	
 	@Value("${jax.cdn.url}")

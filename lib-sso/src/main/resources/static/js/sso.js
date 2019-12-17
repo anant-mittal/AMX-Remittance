@@ -88,7 +88,6 @@ function sendData(step) {
 		url : SSO_LOGIN_URL + '?redirect=false&loginType=' + selectedMode,
 		headers : {
 			"x-did" : did,
-			"x-ip" : "124.124.15.25",
 			"x-device-reg-id" : deviceRegId,
 			"x-device-reg-token" : deviceRegToken
 		},
@@ -328,6 +327,12 @@ $(function() {
 	}).on("/branch-user/customer-call-session/0", function(testresponse){
 		console.log("===testresponse0",testresponse)
 	});
+	if(localStorage.getItem("empno")){
+		$("input[name='ecnumber']").val(localStorage.getItem("empno")).trigger('change');
+	}
+	if(localStorage.getItem("identity")){
+		$("input[name='identity']").val(localStorage.getItem("identity")).trigger('change');
+	}
 });
 
 if(window.location.hash === "#test" && !localStorage.getItem('test')){
