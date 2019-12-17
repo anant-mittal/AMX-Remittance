@@ -9,7 +9,7 @@ public class RemittanceResponseDto {
 	private BigDecimal collectionDocumentFYear;
 	private BigDecimal collectionDocumentCode;
 	private boolean declarationReport=false;
-	private String promotionMessage;
+	private String promotionMessage; 
 	public String getReceiptNo() {
 		return receiptNo;
 	}

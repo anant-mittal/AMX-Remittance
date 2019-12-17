@@ -259,10 +259,11 @@ public class RemittancePaymentManager extends AbstractService{
 						Customer customer = customerDao.getCustById(remittanceTransaction.getCustomerId().getCustomerId());
 						setMetaInfo(trxnDto, paymentResponse);
 						// promotion check not for amg employee
-						if (!employeeDao.isAmgEmployee(customer.getIdentityInt())) {
-							promotionManager.promotionWinnerCheck(remittanceTransaction.getDocumentNo(),
-									remittanceTransaction.getDocumentFinanceYear());
-						}
+						/*
+						 * if (!employeeDao.isAmgEmployee(customer.getIdentityInt())) {
+						 * promotionManager.promotionWinnerCheck(remittanceTransaction.getDocumentNo(),
+						 * remittanceTransaction.getDocumentFinanceYear()); }
+						 */
 						PromotionDto promotDto = promotionManager.getPromotionDto(remittanceTransaction.getDocumentNo(),
 								remittanceTransaction.getDocumentFinanceYear());
 						PersonInfo personInfo = userService.getPersonInfo(customer.getCustomerId());
@@ -272,6 +273,8 @@ public class RemittancePaymentManager extends AbstractService{
 
 						// --- WantIT BuyIT Coupons Promotions
 						dailyPromotionManager.applyWantITbuyITCoupans(remittanceTransaction.getRemittanceTransactionId(), personInfo);
+						logger.debug("Jolibee Padala");
+						dailyPromotionManager.applyJolibeePadalaCoupons(remittanceTransaction.getDocumentFinanceYear(),remittanceTransaction.getDocumentNo(),remittanceTransaction.getBranchId().getBranchId());
 
 						reportManagerService.generatePersonalRemittanceReceiptReportDetails(trxnDto, Boolean.TRUE);
 						List<RemittanceReceiptSubreport> rrsrl = reportManagerService
