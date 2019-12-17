@@ -1,4 +1,4 @@
-package com.amx.jax.branch;
+package com.amx.jax.sso.ows;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -50,7 +50,6 @@ public class WebAppConfig {
 	}
 
 	public Object getAppTitle() {
-		// TODO Auto-generated method stub
 		return appTitle;
 	}
 

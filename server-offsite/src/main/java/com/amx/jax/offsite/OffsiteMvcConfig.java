@@ -29,7 +29,7 @@ public class OffsiteMvcConfig extends WebMvcConfigurerAdapter {
 
 	@Override
 	public void addViewControllers(ViewControllerRegistry registry) {
-		registry.addViewController("/").setViewName("index");
+		registry.addViewController("/").setViewName("noindex");
 		if (appConfig.isSwaggerEnabled()) {
 			registry.addViewController("/signpad.html").setViewName("signpad");
 			registry.addViewController("/notipy.html").setViewName("notipy");
