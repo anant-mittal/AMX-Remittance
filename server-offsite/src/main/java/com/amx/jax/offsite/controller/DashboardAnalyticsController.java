@@ -29,7 +29,7 @@ public class DashboardAnalyticsController {
 	@Autowired
 	private SnapServiceClient snapServiceClient;
 
-	@RequestMapping(value = "/pub/reports/trnx_status", method = RequestMethod.POST)
+	@RequestMapping(value = "/api/reports/trnx_status", method = RequestMethod.POST)
 	public SnapModelWrapper snapView(@RequestBody Map<String, Object> params) {
 		return snapServiceClient.snapView(SnapQueryTemplate.TRNX_LIFECYCLE, new SnapQueryParams(params));
 	}
