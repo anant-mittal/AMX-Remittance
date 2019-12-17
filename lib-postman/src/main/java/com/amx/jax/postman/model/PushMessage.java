@@ -11,6 +11,7 @@ import com.amx.jax.dict.ContactType;
 import com.amx.jax.dict.Language;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.scope.TenantContextHolder;
+import com.amx.utils.ArgUtil;
 
 public class PushMessage extends Message {
 
@@ -74,10 +75,12 @@ public class PushMessage extends Message {
 	}
 
 	public void addToDate(String prefix, Date date) {
-		this.addTo(TOPICS_PREFIX
-				+ String.format(FORMAT_TO_DATE, AppParam.APP_ENV.getValue(), TenantContextHolder.currentSite(), prefix,
-						simpleDateFormat.format(date))
-						.toLowerCase().replaceAll("\\s+", ""));
+		if(ArgUtil.is(date)) {
+			this.addTo(TOPICS_PREFIX
+					+ String.format(FORMAT_TO_DATE, AppParam.APP_ENV.getValue(), TenantContextHolder.currentSite(), prefix,
+							simpleDateFormat.format(date))
+							.toLowerCase().replaceAll("\\s+", ""));
+		}
 	}
 
 	public void addToTenant(Tenant tenant, Language lang) {

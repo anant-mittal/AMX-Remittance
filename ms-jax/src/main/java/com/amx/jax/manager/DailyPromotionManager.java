@@ -1,7 +1,11 @@
 package com.amx.jax.manager;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -16,17 +20,33 @@ import com.amx.amxlib.constant.NotificationConstants;
 import com.amx.amxlib.model.DailyPromotionDTO;
 import com.amx.amxlib.model.PromotionDto;
 import com.amx.jax.config.JaxTenantProperties;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.DailyPromotionDao;
 import com.amx.jax.dao.RemittanceApplicationDao;
+import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.promotion.DailyPromotion;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
+import com.amx.jax.dict.AmxEnums.CommunicationEvents;
+import com.amx.jax.dict.Language;
+import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.postman.PostManService;
+import com.amx.jax.postman.client.PushNotifyClient;
+import com.amx.jax.postman.client.WhatsAppClient;
 import com.amx.jax.postman.model.Email;
+import com.amx.jax.postman.model.PushMessage;
+import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.TemplatesMX;
+import com.amx.jax.postman.model.WAMessage;
+import com.amx.jax.repository.CustomerRepository;
+import com.amx.jax.repository.RemittanceTransactionRepository;
 import com.amx.jax.repository.promotion.DailyPromotionRepository;
+import com.amx.jax.util.CommunicationPrefsUtil;
+import com.amx.jax.util.CommunicationPrefsUtil.CommunicationPrefsResult;
+import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 import com.amx.utils.DateUtil;
+import com.amx.utils.JsonUtil;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -46,6 +66,24 @@ public class DailyPromotionManager {
 	
 	@Autowired
 	DailyPromotionDao dailyPromotionDao;
+	
+	@Autowired
+	CommunicationPrefsUtil communicationPrefsUtil;
+	
+	@Autowired
+	CustomerRepository customerRepository;
+	
+	@Autowired
+	MetaData metaData;
+	
+	@Autowired
+	PushNotifyClient pushNotifyClient;
+	
+	@Autowired
+	WhatsAppClient whatsAppClient;
+	
+	@Autowired
+	RemittanceTransactionRepository remittanceTransactionRepository;
 
 	Logger logger = LoggerFactory.getLogger(DailyPromotionManager.class);
 
@@ -149,6 +187,118 @@ public class DailyPromotionManager {
 		return dto;
 	}
 
-
-
+	public void applyJolibeePadalaCoupons(BigDecimal documentFinanceYear, BigDecimal documentNumber, BigDecimal branchCode) {
+		logger.debug("DocumentFinYear "+documentFinanceYear+"document No "+documentNumber+"branchcode "+branchCode);
+		List<RemittanceTransaction> remittanceTransaction =null;
+		DailyPromotionDTO dailyPromotionDTO=new DailyPromotionDTO();
+		if(!ConstantDocument.ONLINE_BRANCH_LOC_CODE.equals(branchCode)) {
+			 remittanceTransaction=remittanceTransactionRepository.findByCollectionDocFinanceYearAndCollectionDocumentNo(documentFinanceYear, documentNumber);
+			 for(RemittanceTransaction remittanceTransaction2:remittanceTransaction) {
+				 dailyPromotionDTO=dailyPromotionDao.applyJolibeePadalaCoupons(remittanceTransaction2.getDocumentFinanceYear(), remittanceTransaction2.getDocumentNo(), remittanceTransaction2.getBranchId().getBranchId());
+				 logger.debug("Jolibee output "+JsonUtil.toJson(dailyPromotionDTO));
+				if(!ArgUtil.isEmpty(dailyPromotionDTO.getPromotionMsg())&&ArgUtil.isEmpty(dailyPromotionDTO.getErrorMsg())) {
+					Customer customer = customerRepository.getCustomerByCustomerIdAndIsActive(metaData.getCustomerId(), "Y");
+					CommunicationPrefsResult communicationPrefsResult = communicationPrefsUtil.forCustomer(CommunicationEvents.BPI_JOLLIBEE, customer);
+					Date createdDate = remittanceTransaction2.getCreatedDate();
+					SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
+					Map<String, Object> modeldata = new HashMap<String, Object>();
+					Map<String, Object> wrapper = new HashMap<String, Object>();
+					String transactionDate = simpleDateFormat.format(createdDate);
+					modeldata.put("transactionDate", transactionDate);
+					wrapper.put("data", modeldata);
+					logger.debug("Data for comm is "+JsonUtil.toJson(wrapper));
+					if(communicationPrefsResult.isEmail()) {
+						Email email = new Email();
+						email.setITemplate(TemplatesMX.BPI_JOLLIBEE);
+						if(metaData.getLanguageId().equals(ConstantDocument.L_ENG)) {
+							email.setLang(Language.EN);
+						}
+						else {
+							email.setLang(Language.AR);
+						}
+						email.addTo(customer.getEmail());
+						email.setModel(wrapper);
+						postManService.sendEmailAsync(email);
+					}
+					if(communicationPrefsResult.isSms()) {
+						SMS sms = new SMS();
+						sms.setITemplate(TemplatesMX.BPI_JOLLIBEE);
+						sms.addTo(customer.getPrefixCodeMobile()+customer.getMobile());
+						sms.setModel(wrapper);
+						postManService.sendSMSAsync(sms);
+					}
+					
+					if (communicationPrefsResult.isWhatsApp()) {
+						WAMessage waMessage = new WAMessage();
+						waMessage.setITemplate(TemplatesMX.BPI_JOLLIBEE);
+						waMessage.addTo(customer.getWhatsappPrefix() + customer.getWhatsapp());
+						waMessage.setModel(wrapper);
+						whatsAppClient.send(waMessage);
+					}
+					if(communicationPrefsResult.isPushNotify()) {
+						PushMessage pushMessage = new PushMessage();
+						pushMessage.setITemplate(TemplatesMX.BPI_JOLLIBEE);
+						pushMessage.addToUser(metaData.getCustomerId());
+						pushMessage.setModel(wrapper);
+						pushNotifyClient.send(pushMessage);
+					}
+				}
+					
+			 }
+			 
+		}else {
+			remittanceTransaction=remittanceTransactionRepository.getRemittanceTransaction(documentNumber, documentFinanceYear);
+			dailyPromotionDTO=dailyPromotionDao.applyJolibeePadalaCoupons(documentFinanceYear,documentNumber,branchCode);
+			logger.debug("Jolibee output "+JsonUtil.toJson(dailyPromotionDTO));
+			if(!ArgUtil.isEmpty(dailyPromotionDTO.getPromotionMsg())&&ArgUtil.isEmpty(dailyPromotionDTO.getErrorMsg())) {
+				Customer customer = customerRepository.getCustomerByCustomerIdAndIsActive(metaData.getCustomerId(), "Y");
+				CommunicationPrefsResult communicationPrefsResult = communicationPrefsUtil.forCustomer(CommunicationEvents.BPI_JOLLIBEE, customer);
+				Date createdDate = remittanceTransaction.get(0).getCreatedDate();
+				SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
+				Map<String, Object> modeldata = new HashMap<String, Object>();
+				Map<String, Object> wrapper = new HashMap<String, Object>();
+				String transactionDate = simpleDateFormat.format(createdDate);
+				modeldata.put("transactionDate", transactionDate);
+				wrapper.put("data", modeldata);
+				logger.debug("Data for comm is "+JsonUtil.toJson(wrapper));
+				if(communicationPrefsResult.isEmail()) {
+					Email email = new Email();
+					email.setITemplate(TemplatesMX.BPI_JOLLIBEE);
+					if(metaData.getLanguageId().equals(ConstantDocument.L_ENG)) {
+						email.setLang(Language.EN);
+					}
+					else {
+						email.setLang(Language.AR);
+					}
+					email.addTo(customer.getEmail());
+					email.setModel(wrapper);
+					postManService.sendEmailAsync(email);
+				}
+				if(communicationPrefsResult.isSms()) {
+					SMS sms = new SMS();
+					sms.setITemplate(TemplatesMX.BPI_JOLLIBEE);
+					sms.addTo(customer.getPrefixCodeMobile()+customer.getMobile());
+					sms.setModel(wrapper);
+					postManService.sendSMSAsync(sms);
+				}
+				
+				if (communicationPrefsResult.isWhatsApp()) {
+					WAMessage waMessage = new WAMessage();
+					waMessage.setITemplate(TemplatesMX.BPI_JOLLIBEE);
+					waMessage.addTo(customer.getWhatsappPrefix() + customer.getWhatsapp());
+					waMessage.setModel(wrapper);
+					whatsAppClient.send(waMessage);
+				}
+				if(communicationPrefsResult.isPushNotify()) {
+					PushMessage pushMessage = new PushMessage();
+					pushMessage.setITemplate(TemplatesMX.BPI_JOLLIBEE);
+					pushMessage.addToUser(metaData.getCustomerId());
+					pushMessage.setModel(wrapper);
+					pushNotifyClient.send(pushMessage);
+				}
+			}
+		}
+		
+		
+	}
 }

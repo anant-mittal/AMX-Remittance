@@ -68,7 +68,6 @@ public class PostManClient implements PostManService {
 
 	public AmxApiResponse<Email, Object> sendEmail(Email email, Boolean async) throws PostManException {
 		try {
-			LOGGER.debug("Email for birthday wish");
 			return restService.ajax(appConfig.getPostmapURL()).path(PostManUrls.SEND_EMAIL)
 					.queryParam(PARAM_LANG, getLang()).queryParam(PARAM_ASYNC, async).post(email)
 					.asApiResponse(Email.class);

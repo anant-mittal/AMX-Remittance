@@ -7,6 +7,26 @@ public class DailyPromotionDTO {
 	private String promotionCode;
 	
 	private String identityInt;
+	
+	private String promotionMsg;
+	
+	private String errorMsg;
+
+	public String getPromotionMsg() {
+		return promotionMsg;
+	}
+
+	public void setPromotionMsg(String promotionMsg) {
+		this.promotionMsg = promotionMsg;
+	}
+
+	public String getErrorMsg() {
+		return errorMsg;
+	}
+
+	public void setErrorMsg(String errorMsg) {
+		this.errorMsg = errorMsg;
+	}
 
 	public String getCustomerName() {
 		return customerName;
