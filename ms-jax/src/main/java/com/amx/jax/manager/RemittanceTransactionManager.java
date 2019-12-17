@@ -1265,9 +1265,9 @@ public class RemittanceTransactionManager {
 		logger.info("amount in exchnagerate break up"+breakup.getNetAmount());
 		BigDecimal netAmountPayable = breakup.getNetAmount();
 		RemittanceApplicationResponseModel remiteAppModel = new RemittanceApplicationResponseModel();
-		//deactivatePreviousApplications();
+		deactivatePreviousApplications();
 		validateAdditionalCheck();
-		//validateAdditionalBeneDetailsV2(model);
+		validateAdditionalBeneDetailsV2(model);
 		
 		/** To fetch additional bene details from JAX **/
 		BenificiaryListView beneficaryDetails = (BenificiaryListView)remitApplParametersMap.get("BENEFICIARY");
