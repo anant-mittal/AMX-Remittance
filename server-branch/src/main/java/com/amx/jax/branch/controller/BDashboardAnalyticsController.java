@@ -15,14 +15,14 @@ import com.amx.jax.client.snap.SnapConstants.SnapQueryTemplate;
 import com.amx.jax.client.snap.SnapModels.SnapModelWrapper;
 import com.amx.jax.client.snap.SnapModels.SnapQueryParams;
 import com.amx.jax.client.snap.SnapServiceClient;
-import com.amx.jax.logger.LoggerService;
 import com.amx.jax.sso.SSOUser;
-
+import org.slf4j.Logger;
+import com.amx.jax.logger.LoggerService;
 import io.swagger.annotations.Api;
 
 @RestController
 @Api(value = "Snap Api")
-public class DashboardAnalyticsController {
+public class BDashboardAnalyticsController {
 
 	@Autowired
 	private SnapServiceClient snapServiceClient;
@@ -30,15 +30,14 @@ public class DashboardAnalyticsController {
 	@Autowired
 	private SSOUser ssoUser;
 
-	private static final org.slf4j.Logger logger = LoggerService.getLogger(DashboardAnalyticsController.class);
+	private static final Logger LOGGER = LoggerService.getLogger(BDashboardAnalyticsController.class);
 
 	@RequestMapping(value = "/api/reports/RPT", method = RequestMethod.POST)
 	public SnapModelWrapper snapView(@RequestBody Map<String, Object> params) throws IOException {
 
 		Map<String, Map<String, String>> permissionMap = ssoUser.getUserDetails().getUserRole().getPermissionMap();
 		SnapQueryParams snapQueryParams = new SnapQueryParams();
-		
-		ssoUser.getUserDetails().getCountryId();
+
 
 		for (String outerMapKey : permissionMap.keySet()) {
 			if (outerMapKey == "REPORTS.RPT_REPORT") {
@@ -46,18 +45,16 @@ public class DashboardAnalyticsController {
 				innerMap.forEach((key, value) -> {
 					if (key.contains("VIEW") && value.contains("AREA")) {
 						BigDecimal areacode = ssoUser.getUserDetails().getAreaCode();
-
-						snapQueryParams.addFilter("branch.areaId",areacode.toString());
+						snapQueryParams.addFilter("branch.areaId", areacode.toString());
 					}
 					if (key.contains("VIEW") && value.contains("BRANCH")) {
 						BigDecimal branchId = ssoUser.getUserDetails().getBranchId();
-
-						snapQueryParams.addFilter("branch.id",branchId.toString());
+						snapQueryParams.addFilter("branch.id", branchId.toString());
 
 					}
 					if (key.contains("VIEW") && value.contains("COUNTRY")) {
 						BigDecimal countryId = ssoUser.getUserDetails().getCountryId();
-						snapQueryParams.addFilter("branch.countryId",countryId.toString());
+						snapQueryParams.addFilter("branch.countryId", countryId.toString());
 
 					}
 
@@ -67,7 +64,11 @@ public class DashboardAnalyticsController {
 		}
 		snapQueryParams.addValue("PrevMonth", "PrevMonth");
 		snapQueryParams.addValue("ThisMonth", "ThisMonth");
-		
+		snapQueryParams.addValue("lte", "now");
+		snapQueryParams.addValue("gte", "now-1m");
+		snapQueryParams.addValue("level", "100");
+		snapQueryParams.addValue("minCount", "0");
+
 		return snapServiceClient.snapView(SnapQueryTemplate.RPTPG2, new SnapQueryParams(params));
 
 	}
