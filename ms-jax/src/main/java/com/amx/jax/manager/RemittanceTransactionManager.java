@@ -146,7 +146,6 @@ import com.amx.jax.services.RoutingService;
 import com.amx.jax.services.TransactionHistroyService;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.dao.ReferralDetailsDao;
-import com.amx.jax.userservice.manager.CustomerDBAuthManager;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.AmxDBConstants;
 import com.amx.jax.util.DateUtil;
@@ -307,29 +306,8 @@ public class RemittanceTransactionManager {
 	BankMasterRepository bankMasterRepo;
 	
 	@Autowired
-	RemittanceApplAmlManager applAmlManger;
-	
-	@Autowired
-	BranchRemittancePaymentManager branchRemittancePaymentManager;
-	
-	@Autowired
-	PaygDetailsRepository paygDetailsRepository;
-	@Autowired
 	BranchRemittanceExchangeRateManager branchRemittanceExchangeRateManager;
 
-
-	@Autowired
-	RemittanceApplicationBeneRepository remittanceApplicationBeneRepository;
-	
-	@Autowired
-	RemittanceOtpManager remittanceOtpManager;
-	
-	@Autowired
-	BranchRemittanceManager branchRemitManager;
-	
-	@Autowired
-	CustomerDBAuthManager customerDBAuthManager;
-		
 
 	private static final String IOS = "IOS";
 	private static final String ANDROID = "ANDROID";
@@ -344,12 +322,7 @@ public class RemittanceTransactionManager {
 		validatedObjects.put("CUSTOMER", customer);
 		RemittanceTransactionResponsetModel responseModel = new RemittanceTransactionResponsetModel();
 		setLoyalityPointFlags(customer, responseModel);
-		//BenificiaryListView beneficiary = beneficiaryOnlineDao.findOne(model.getBeneId());
-		BenificiaryListView beneficiary  = beneficiaryOnlineDao.findByCustomerIdAndBeneficiaryRelationShipSeqIdAndIsActive(metaData.getCustomerId(),model.getBeneId(),ConstantDocument.Yes);
-		if(beneficiary==null) {
-			throw new GlobalException(JaxError.NO_RECORD_FOUND,"Beneficiary having some issue , kindly check with support team");
-		}
-		
+		BenificiaryListView beneficiary = beneficiaryOnlineDao.findOne(model.getBeneId());
 		remitApplParametersMap.put("P_BENEFICIARY_MASTER_ID", beneficiary.getBeneficaryMasterSeqId());
 		addBeneficiaryParameters(beneficiary);
 		validateBlackListedBene(beneficiary);
@@ -1567,6 +1540,7 @@ public class RemittanceTransactionManager {
 
 				model.setResponseCodeDetail(responseCodeDetail);
 			}
+		}
 		
 		return model;
 	}
@@ -1687,54 +1661,6 @@ public class RemittanceTransactionManager {
 		}
 		return otpMmodel;
 	}
-	
-	
-	
-	private Boolean addOtpOnRemittanceV3(RemittanceTransactionDrRequestModel model) {
-
-		List<TransactionLimitCheckView> trnxLimitList = parameterService.getAllTxnLimits();
-		Boolean limitCheck= false;
-
-		BigDecimal onlineLimit = BigDecimal.ZERO;
-		BigDecimal androidLimit = BigDecimal.ZERO;
-		BigDecimal iosLimit = BigDecimal.ZERO;
-
-		for (TransactionLimitCheckView view : trnxLimitList) {
-			if (JaxChannel.ONLINE.toString().equals(view.getChannel())) {
-				onlineLimit = view.getComplianceChkLimit();
-			}
-			if (ANDROID.equals(view.getChannel())) {
-				androidLimit = view.getComplianceChkLimit();
-			}
-			if (IOS.equals(view.getChannel())) {
-				iosLimit = view.getComplianceChkLimit();
-			}
-		}
-
-		CivilIdOtpModel otpMmodel = null;
-		BigDecimal localAmount = (BigDecimal)remitApplParametersMap.get("P_CALCULATED_LC_AMOUNT");
-		if(!JaxUtil.isNullZeroBigDecimalCheck(localAmount)) {
-			localAmount = model.getLocalAmount();
-		}
-		
-	
-	logger.info("App Type :"+meta.getAppType()+"\t channel :"+meta.getChannel()+"\t localAmount :"+localAmount);
-		
-		if (((meta.getChannel().equals(JaxChannel.ONLINE)) && (WEB.equals(meta.getAppType()))
-				&& (localAmount.compareTo(onlineLimit) >= 0)) ||
-
-				(IOS.equals(meta.getAppType()) && localAmount.compareTo(iosLimit) >= 0) ||
-
-				(ANDROID.equals(meta.getAppType()) && localAmount.compareTo(androidLimit) >= 0)) {
-
-			List<ContactType> channel = new ArrayList<>();
-			channel.add(ContactType.SMS_EMAIL);
-			//otpMmodel = (CivilIdOtpModel) userService.sendOtpForCivilId(null, channel, null, null).getData().getValues().get(0);
-			limitCheck =true;
-		}
-		return limitCheck;
-	}
-	
 	
 	
 	/** added by Rabil on 27 May 2019 **/
