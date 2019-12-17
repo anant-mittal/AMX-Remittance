@@ -150,6 +150,7 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		BigDecimal totalTrnxFees =BigDecimal.ZERO;
 		BigDecimal totalLyltyPointAmt =BigDecimal.ZERO;
 		BigDecimal totalCustomerLoyaltyPoits = BigDecimal.ZERO;
+		Boolean addtoCart =true;
 		
 		
 		List<CustomerShoppingCartDto> lstCustShpcrt = new ArrayList<>();
@@ -205,8 +206,9 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 					
 					BankMasterMdlv1 bankMasterView = bankService.getBankById(customerApplDto.getRoutingBankId());
 					
-					if(bankMasterView!=null && bankMasterView.getBankCode().contains(SERVICE_PROVIDER_BANK_CODE.HOME.toString())) {
+					if(bankMasterView!=null && bankMasterView.getBankCode().contains(SERVICE_PROVIDER_BANK_CODE.HOME.toString()) &&  addtoCart==true) {
 						cartList.setAddToCart(false);
+						addtoCart =false;
 					}
 					
 					
