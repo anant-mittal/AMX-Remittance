@@ -222,5 +222,10 @@ public abstract class AmxAuditEvent<T> extends AuditEvent<AmxAuditEvent<T>> {
 	public void setVerify(Verify verify) {
 		this.verify = verify;
 	}
+	@SuppressWarnings("unchecked")
+	public T verify(Verify verify) {
+		this.verify = verify;
+		return (T) this;
+	}
 
 }

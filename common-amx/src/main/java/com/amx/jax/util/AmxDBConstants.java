@@ -239,7 +239,7 @@ public class AmxDBConstants {
 	
 	public static final String JOB_IN_PROGRESS="P";
 	public static final String JOB_COMPLETED = "C";
-
+	
 
 	// Arcmate Scanning
 	public static String CHECK;
@@ -262,11 +262,13 @@ public class AmxDBConstants {
 	public static final String DIRECT_PAYMENT_LINK_PAID ="P";
 	public static final String DIRECT_LINK ="LINK";
     public static final String IMPS = "IMPS";
-
     public static enum Statusd {
 		APPROVED,NEGOTIATED,UNAPPROVED,VIEW,REJECT,NEW 
 		
 	}
-    
     public static String PO_LIMIT_CHK ="24"; 
+	public static final String IMPS = "IMPS";
+	// Constants for jolibee coupon
+	public static final BigDecimal ONLINE_KUWAIT_BRANCH_ID=new BigDecimal(78);
+
 }

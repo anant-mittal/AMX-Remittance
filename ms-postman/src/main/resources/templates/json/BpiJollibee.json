@@ -1,4 +1,4 @@
 {
 	"_subject": "Congrats! Free Jollibee meal voucher for your transaction",
-	"_message": "Your transaction with us for BPI Jollibee Padala dated 00-00-2019 entitles you to receive a FREE Jollibee Meal Voucher worth KD1.4/- in Kuwait as well. Do enjoy your meal and keep transacting with us."
+	"_message": "Your transaction with us for BPI Jollibee Padala dated [[${data.transactionDate}]] entitles you to receive a FREE Jollibee Meal Voucher worth KD1.4/- in Kuwait as well. Do enjoy your meal and keep transacting with us."
 }

@@ -59,6 +59,7 @@ import com.amx.jax.dbmodel.remittance.RemitApplAmlModel;
 import com.amx.jax.dbmodel.remittance.RemittanceAppBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceApplicationSplitting;
+import com.amx.jax.dbmodel.remittance.RemittanceBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceModeMaster;
 import com.amx.jax.dbmodel.remittance.ShoppingCartDetails;
 import com.amx.jax.dict.UserClient.ClientType;
@@ -239,8 +240,11 @@ public class BranchRemittanceApplManager {
 	@Autowired
 	PlaceOrderManager placeOrderManager;
 	
+<<<<<<< HEAD
 
 	
+=======
+>>>>>>> fm_template_bpi_birthday_ong
 	public BranchRemittanceApplResponseDto saveBranchRemittanceApplication(BranchRemittanceApplRequestModel requestApplModel) {
 		Map<String,Object> hashMap = new HashMap<>();
 		
@@ -335,12 +339,11 @@ public class BranchRemittanceApplManager {
 		RemittanceApplication remittanceApplication = this.createRemittanceApplication(hashMap);
 		RemittanceAppBenificiary remittanceAppBeneficairy = this.createRemittanceAppBeneficiary(remittanceApplication,hashMap);
 		List<AdditionalInstructionData>  additioalInstructionData = remittanceAppAddlDataManager.createAdditionalInstnDataForBranch(remittanceApplication,hashMap);
-		/** create imps split **/
-		List<RemittanceApplicationSplitting> applSplitList = this.createChildApplication(remittanceApplication,requestApplModel.getDynamicRroutingPricingBreakup());
+		List<RemittanceApplicationSplitting> applSplitList = this.createChildApplication(remittanceApplication, requestApplModel.getDynamicRroutingPricingBreakup());
+		
 		if(applSplitList!=null && !applSplitList.isEmpty()) {
 			remittanceApplication.setApplSplit(ConstantDocument.Yes);
 		}
-		
 
 		//RemittanceTransactionRequestModel
 		List<RemitApplAmlModel> amlData = this.saveRemittanceAppAML(remittanceApplication,hashMap);
@@ -393,6 +396,7 @@ public class BranchRemittanceApplManager {
 			String signature =null;
 			BranchRemittanceApplRequestModel applRequestModel = (BranchRemittanceApplRequestModel)hashMap.get("APPL_REQ_MODEL");
 			BenificiaryListView beneDetails  =(BenificiaryListView) hashMap.get("BENEFICIARY_DETAILS");
+
 			if(!StringUtils.isBlank(applRequestModel.getSignature())) {
 				signature =applRequestModel.getSignature();
 			}else {
@@ -593,27 +597,23 @@ public class BranchRemittanceApplManager {
 			}
 
 			remittanceApplication.setBeneDeductFlag(dynamicRoutingPricingResponse.getBeneDeductFlag());
-			
-			remittanceApplication.setCustomerChoice(dynamicRoutingPricingResponse.getCustomerChoice());
-			
+
 			remitApplManager.setCustomerDiscountColumns(remittanceApplication, dynamicRoutingPricingResponse);
 			remitApplManager.setVatDetails(remittanceApplication, dynamicRoutingPricingResponse);
-			remitApplManager.setSavedAmount(remittanceApplication, dynamicRoutingPricingResponse);
 			remitApplManager.setDeliveryTimeDuration(remittanceApplication, dynamicRoutingPricingResponse.getTrnxRoutingPaths());
 			placeOrderManager.setPlaceOrdertoApplication(dynamicRoutingPricingResponse,remittanceApplication);
-			
 			BigDecimal documentNo = branchRemitManager.generateDocumentNumber(applSetup.getApplicationCountryId(), applSetup.getCompanyId(), ConstantDocument.DOCUMENT_CODE_FOR_REMITTANCE_APPLICATION, userFinancialYear.getFinancialYear(), ConstantDocument.A, countryBranch.getBranchId());
 			if(JaxUtil.isNullZeroBigDecimalCheck(documentNo)) {
 				remittanceApplication.setDocumentNo(documentNo);
 			}else {
 				throw new GlobalException(JaxError.INVALID_APPLICATION_DOCUMENT_NO,"Application document number shouldnot be null or blank");
 			}	
+			
 		}catch(GlobalException e){
 			logger.debug("create application", e.getErrorMessage() + "" +e.getErrorKey());
 			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}
 		return remittanceApplication;
-
 	}
 
 	@SuppressWarnings("unchecked")
@@ -1061,13 +1061,11 @@ public class BranchRemittanceApplManager {
 
 
 	public List<RemittanceApplicationSplitting> createChildApplication(RemittanceApplication remitAppl,DynamicRoutingPricingDto dyRandPriDto){
-		
+		logger.info("IMPS SPLIT createChildApplication :"+metaData.getCustomerId());
+		logger.info("IMPS SPLIT createChildApplication :"+JsonUtil.toJson(dyRandPriDto));
 		List<RemittanceApplicationSplitting> applSplitList = new ArrayList<RemittanceApplicationSplitting>();
 		 try{
 		 
-			 logger.info("createChildApplication :"+metaData.getCustomerId());
-			 logger.info("createChildApplication :"+JsonUtil.toJson(dyRandPriDto));
-			 
 		 if(remitAppl !=null && dyRandPriDto!=null) {
 			 TrnxRoutingDetails routingDetails = dyRandPriDto.getTrnxRoutingPaths(); 
 

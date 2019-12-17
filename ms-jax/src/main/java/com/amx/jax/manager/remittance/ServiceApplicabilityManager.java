@@ -17,10 +17,14 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.ServiceApplicabilityRule;
+import com.amx.jax.dbmodel.remittance.ViewDeliveryMode;
+import com.amx.jax.dbmodel.remittance.ViewRemittanceMode;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.remittance.GetServiceApplicabilityRequest;
 import com.amx.jax.model.response.remittance.GetServiceApplicabilityResponse;
 import com.amx.jax.repository.IServiceApplicabilityRuleDao;
+import com.amx.jax.repository.remittance.IViewDeliveryMode;
+import com.amx.jax.repository.remittance.IViewRemittanceMode;
 import com.google.common.collect.Sets;
 
 @Component
@@ -31,6 +35,10 @@ public class ServiceApplicabilityManager {
 	IServiceApplicabilityRuleDao iServiceApplicabilityRuleDao;
 	@Autowired
 	MetaData metaData;
+	@Autowired
+	IViewDeliveryMode deliveryModeRepository;
+	@Autowired
+	IViewRemittanceMode remittanceModeRepository;
 
 	public List<GetServiceApplicabilityResponse> getServiceApplicability(GetServiceApplicabilityRequest request) {
 		if (request.getFieldNames().size() == 0) {
@@ -41,6 +49,8 @@ public class ServiceApplicabilityManager {
 		Set<String> availableFields = rules.stream().map(i -> i.getFieldName()).collect(Collectors.toSet());
 		Set<String> requestedFields = request.getFieldNames().stream().collect(Collectors.toSet());
 		Set<String> outputFields = Sets.intersection(availableFields, requestedFields);
+
+		rules = filterInvalidRemitAndDeliveryModes(rules);
 
 		List<GetServiceApplicabilityResponse> serviceApplicabilityList = new ArrayList<>();
 		Map<String, GetServiceApplicabilityResponse> fieldMap = new HashMap<>();
@@ -60,6 +70,24 @@ public class ServiceApplicabilityManager {
 			}
 		});
 		return serviceApplicabilityList;
+	}
+
+	private List<ServiceApplicabilityRule> filterInvalidRemitAndDeliveryModes(List<ServiceApplicabilityRule> rules) {
+		Iterable<ViewDeliveryMode> allDeliveryModes = deliveryModeRepository.findAll();
+		Iterable<ViewRemittanceMode> allRemittanceModes = remittanceModeRepository.findAll();
+		List<BigDecimal> allDeliveryModeIds = new ArrayList<>();
+		allDeliveryModes.forEach(i -> allDeliveryModeIds.add(i.getDeliveryModeId()));
+		List<BigDecimal> allRemitModeIds = new ArrayList<>();
+		allRemittanceModes.forEach(i -> allRemitModeIds.add(i.getRemittanceModeId()));
+		return rules.stream().filter(i -> {
+			if (!allDeliveryModeIds.contains(i.getDeliveryModeId())) {
+				return false;
+			}
+			if (!allRemitModeIds.contains(i.getRemittanceModeId())) {
+				return false;
+			}
+			return true;
+		}).collect(Collectors.toList());
 	}
 
 }
