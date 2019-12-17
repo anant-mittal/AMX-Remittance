@@ -23,6 +23,7 @@ import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
 import com.amx.jax.rbaac.dto.request.UserRoleMappingsRequestDTO;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
+import com.amx.jax.rbaac.dto.response.OfflineOtpData;
 import com.amx.jax.rbaac.dto.response.PermissionResposeDTO;
 import com.amx.jax.rbaac.dto.response.RoleMappingForEmployee;
 import com.amx.jax.rbaac.dto.response.RoleResponseDTO;
@@ -265,6 +266,16 @@ public class RbaacServiceControllerTest implements IRbaacService {
 			@RequestParam(name = Params.DEVICE_REG_ID, required=false) BigDecimal deviceRegId, 
 			@RequestParam(name = Params.DEVICE_CLIENT_ID, required=false) String deviceId) {
 		return rbaacServiceClient.getDevicesByRegId( deviceRegId, deviceId);
+	}
+
+	@Override
+	public AmxApiResponse<OfflineOtpData, Object> generateOfflineOtpPrefix(BigDecimal employeeId) {
+		return rbaacServiceClient.generateOfflineOtpPrefix(employeeId);
+	}
+
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> validateOfflineOtp(BigDecimal employeeId, String otp) {
+		return rbaacServiceClient.validateOfflineOtp(employeeId, otp);
 	}
 
 }

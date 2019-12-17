@@ -35,11 +35,13 @@ import com.amx.jax.rbaac.dto.UserClientDto;
 import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
+import com.amx.jax.rbaac.dto.response.OfflineOtpData;
 import com.amx.jax.rbaac.dto.response.RoleResponseDTO;
 import com.amx.jax.rbaac.dto.response.UserAuthInitResponseDTO;
 import com.amx.jax.rbaac.error.RbaacServiceError;
 import com.amx.jax.rbaac.exception.AuthServiceException;
 import com.amx.jax.rbaac.manager.UserOtpManager;
+import com.amx.jax.rbaac.trnx.OfflineOtpCache;
 import com.amx.jax.rbaac.trnx.UserOtpCache;
 import com.amx.jax.rbaac.trnx.UserOtpData;
 import com.amx.jax.util.ObjectConverter;
@@ -78,6 +80,9 @@ public class UserAuthService {
 	
 	@Autowired
 	RbaacTenantProperties rbaacTenantProperties;
+	
+	@Autowired
+	OfflineOtpCache offlineOtpCache;
 
 	/**
 	 * Verify user details.
@@ -631,6 +636,61 @@ public class UserAuthService {
 		rbaacDao.saveEmployee(destEmp);
 
 		return true;
+	}
+
+	/**
+	 * Generates offline otp prefix
+	 * 
+	 * @param employeeId
+	 * @author prashant
+	 * @return
+	 */
+	public OfflineOtpData generateOfflineOtpPrefix(BigDecimal employeeId) {
+		FSEmployee employee = rbaacDao.getEmployeeByEmployeeId(employeeId);
+		if (employee == null) {
+			throw new AuthServiceException(RbaacServiceError.EMPLOYEE_NOT_FOUND, "No employee found with given id");
+		}
+		String employeeNumber = employee.getEmployeeNumber();
+		Device otpDevice = deviceService.validateEmployeeDeviceMappingForOtpApp(employeeId);
+		String sac = Random.randomAlphaNumeric(6);
+		OfflineOtpData otpData = new OfflineOtpData(sac);
+		LOGGER.debug("generateOfflineOtpPrefix: Emp Id {} Sac generated {}", employeeId, sac);
+		offlineOtpCache.fastPut(employeeId.toString(), otpData);
+		// send otp to slack
+		if (!appConfig.isProdMode()) {
+			if (!ArgUtil.isEmpty(otpDevice)) {
+				HashBuilder builder = new HashBuilder().currentTime(System.currentTimeMillis()).interval(AmxConstants.OFFLINE_OTP_TTL)
+						.tolerance(AmxConstants.OFFLINE_OTP_TOLERANCE).secret(otpDevice.getClientSecreteKey()).message(otpData.getOtpPrefix());
+				userOtpManager.sendToSlack("Offline OTP for Emp: " + employeeNumber, " Self ", otpData.getOtpPrefix(),
+						builder.toHMAC().toComplex(AmxConstants.OTP_LENGTH).output());
+
+			}
+		}
+
+		return otpData;
+	}
+
+	/**
+	 * Validates offline otp
+	 * 
+	 * @param employeeId
+	 * @param otp
+	 * @return true - otp is valid , false - invalid otp
+	 * @author prashant
+	 */
+	public boolean validateOfflineOtp(BigDecimal employeeId, String otp) {
+		LOGGER.debug("validateOfflineOtp: Emp Id {}", employeeId);
+		FSEmployee employee = rbaacDao.getEmployeeByEmployeeId(employeeId);
+		if (employee == null) {
+			throw new AuthServiceException(RbaacServiceError.EMPLOYEE_NOT_FOUND, "No employee found with given id");
+		}
+		OfflineOtpData otpData = offlineOtpCache.get(employeeId.toString());
+		if (otpData == null) {
+			throw new AuthServiceException(RbaacServiceError.INVALID_OTP, "Invalid OTP: OTP is not generated for the user or timedOut");
+		}
+		String sac = otpData.getOtpPrefix();
+		boolean validationResult = validateOfflineOtp(otp, employeeId, sac);
+		return validationResult;
 	}
 
 }
