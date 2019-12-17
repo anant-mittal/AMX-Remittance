@@ -2,7 +2,6 @@ package com.amx.jax.dao;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 
 import javax.transaction.Transactional;
 
@@ -83,25 +82,18 @@ public class RemittanceApplicationDao {
     @Autowired
     IServiceViewRepository serviceViewRepository;
 	
-@Autowired
-    IRemitApplAmlRepository applAmlRepository;
-        
+	@Autowired
+	IRemitApplAmlRepository applAmlRepository;
 
-    @Autowired
-    IRemittanceApplSplitRepository remittanceApplSplitRepository;
+	@Autowired
+	BranchRemittanceDao brRemitDao;
+
+	@Autowired
+	IRemittanceApplSplitRepository remittanceApplSplitRepository;
     
 	@Transactional
 	public void saveAllApplicationData(RemittanceApplication app, RemittanceAppBenificiary appBene,
 			List<AdditionalInstructionData> additionalInstrumentData,RemitApplSrvProv remitApplSrvProv,List<RemittanceApplicationSplitting>  applSplitList ,RemitApplAmlModel remitApplAml) {
-
-		RemittanceApplication applSave1 = appRepo.save(app);
-		appBeneRepo.save(appBene);
-		addlInstDataRepo.save(additionalInstrumentData);
-		if (remitApplSrvProv != null) {
-			remitApplSrvProv.setRemittanceApplicationId(app.getRemittanceApplicationId());
-			remitApplSrvProvRepository.save(remitApplSrvProv);
-		}
-		
 		if(app!=null) {
 				BigDecimal documentNo =brRemitDao.generateDocumentNumber(app.getFsCountryMasterByApplicationCountryId().getCountryId(), app.getFsCompanyMaster().getCompanyId(),
 						app.getDocumentCode(), app.getDocumentFinancialyear(), app.getLoccod());

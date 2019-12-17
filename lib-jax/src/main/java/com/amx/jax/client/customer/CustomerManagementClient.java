@@ -34,7 +34,6 @@ import com.amx.jax.model.response.CustomerInfo;
 import com.amx.jax.model.response.customer.CustomerShortInfo;
 import com.amx.jax.model.response.jaxfield.JaxConditionalFieldDto;
 import com.amx.jax.rest.RestService;
-import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
 
 /**
  * @author prashant

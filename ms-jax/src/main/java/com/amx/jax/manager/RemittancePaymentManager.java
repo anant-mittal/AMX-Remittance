@@ -182,6 +182,8 @@ public class RemittancePaymentManager extends AbstractService{
 	
 	@Autowired
 	RemittanceTransactionService remittanceTransactionService;
+	@Autowired
+	private MetaData meta;
 		
 
 	public ApiResponse<PaymentResponseDto> paymentCapture(PaymentResponseDto paymentResponse) {

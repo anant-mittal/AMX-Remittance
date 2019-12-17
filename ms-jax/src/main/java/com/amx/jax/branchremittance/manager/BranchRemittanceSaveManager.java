@@ -72,17 +72,18 @@ import com.amx.jax.logger.events.CActivityEvent;
 import com.amx.jax.logger.events.CActivityEvent.Type;
 import com.amx.jax.manager.DailyPromotionManager;
 import com.amx.jax.manager.PromotionManager;
+import com.amx.jax.manager.RemittanceApplAmlManager;
 import com.amx.jax.manager.RemittanceManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.remittance.BranchApplicationDto;
 import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
 import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.model.response.fx.UserStockDto;
+import com.amx.jax.model.response.remittance.AmlCheckResponseDto;
 import com.amx.jax.model.response.remittance.RemittanceCollectionDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.TransferDto;
 import com.amx.jax.model.response.serviceprovider.Remittance_Call_Response;
-import com.amx.jax.model.response.serviceprovider.ServiceProviderResponse;
 import com.amx.jax.notification.JaxNotificationDataManager;
 import com.amx.jax.partner.dao.PartnerTransactionDao;
 import com.amx.jax.partner.dto.RemitTrnxSPDTO;
@@ -250,19 +251,8 @@ public class BranchRemittanceSaveManager {
     RemittanceTransactionRepository remittanceTransactionRepository;
     @Autowired
     JaxNotificationDataManager jaxNotificationDataManager;
-    
-    @Autowired
-	AuditService auditService;
      @Autowired
     VentajaManager ventajaManager;
-
-
-	@Autowired
-	JaxTenantProperties jaxTenantProperties;
-
-	@Autowired
-	BankMetaService bankMetaService;
-
 	@Autowired
 	RemittanceApplAmlManager applAmlManager;
     
