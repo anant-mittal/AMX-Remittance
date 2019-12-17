@@ -11,7 +11,6 @@ import com.amx.jax.AppConfig;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.cache.box.CustomerOnCall.CustomerCall;
 import com.amx.jax.client.configs.JaxMetaInfo;
-import com.amx.jax.exception.JaxSystemError;
 import com.amx.jax.model.response.remittance.UserwiseTransactionDto;
 import com.amx.jax.rest.RestService;
 

@@ -123,6 +123,11 @@ public class RemittanceReportBean {
 	private String pgReferenceId;
 	private String pgAuth;
 	private String pgTransId;
+	
+	private BigDecimal discountOnCommission;
+	private String discountOnCommissionStr;
+	
+	
 
 	public String getTotalAmountSavedStr() {
 		return totalAmountSavedStr;
@@ -906,6 +911,22 @@ public class RemittanceReportBean {
 
 	public void setPgTransId(String pgTransId) {
 		this.pgTransId = pgTransId;
+	}
+
+	public BigDecimal getDiscountOnCommission() {
+		return discountOnCommission;
+	}
+
+	public void setDiscountOnCommission(BigDecimal discountOnCommission) {
+		this.discountOnCommission = discountOnCommission;
+	}
+
+	public String getDiscountOnCommissionStr() {
+		return discountOnCommissionStr;
+	}
+
+	public void setDiscountOnCommissionStr(String discountOnCommissionStr) {
+		this.discountOnCommissionStr = discountOnCommissionStr;
 	}
 
 }

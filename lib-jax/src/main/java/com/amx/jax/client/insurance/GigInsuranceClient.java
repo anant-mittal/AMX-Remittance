@@ -9,7 +9,6 @@ import com.amx.jax.AppConfig;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.configs.JaxMetaInfo;
-import com.amx.jax.exception.JaxSystemError;
 import com.amx.jax.model.request.insurance.SaveInsuranceDetailRequest;
 import com.amx.jax.model.response.insurance.GigInsuranceDetail;
 import com.amx.jax.rest.RestService;

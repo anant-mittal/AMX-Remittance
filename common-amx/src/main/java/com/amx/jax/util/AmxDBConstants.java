@@ -3,14 +3,24 @@ package com.amx.jax.util;
 import java.math.BigDecimal;
 
 public class AmxDBConstants {
+	
+	/**
+	 * Maximum value possible for language id, in according to DB;
+	 */
+	public static final BigDecimal MAX_LANG_ID = new BigDecimal(10);
+	public static final BigDecimal MAX_LANG_ID_META = new BigDecimal(2);
+	public static final BigDecimal DEFAULT_LANG_ID = new BigDecimal(1);
+	
 	public static final BigDecimal DOCUMENT_CODE_FOR_COLLECT_TRANSACTION = new BigDecimal(2);
 	public static final BigDecimal DOCUMENT_CODE_FOR_REMITTANCE_APPLICATION = new BigDecimal(1);
+	
 	public static final String No = "N";
 	public static final String Yes = "Y";
 	public static final String Deleted = "D";
 	public static final String Update = "U";
 	public static final String Black = "B";
 	public static final String Compliance = "C";
+	public static final String Hold = "H";
 	public static final String Processing = "P";
 
 	public static enum Status {
@@ -226,7 +236,7 @@ public class AmxDBConstants {
 	
 	public static final String JOB_IN_PROGRESS="P";
 	public static final String JOB_COMPLETED = "C";
-
+	
 
 	// Arcmate Scanning
 	public static String CHECK;
@@ -248,5 +258,8 @@ public class AmxDBConstants {
 	public static final String DIRECT_PAYMENT_LINK_PAID ="P";
 	public static final String DIRECT_LINK ="LINK";
 	
-public static final String IMPS = "IMPS";
+	public static final String IMPS = "IMPS";
+	
+	// Constants for jolibee coupon
+	public static final BigDecimal ONLINE_KUWAIT_BRANCH_ID=new BigDecimal(78);
 }

@@ -26,20 +26,18 @@ import com.amx.jax.logger.events.AuditActorInfo;
 import com.amx.jax.logger.events.CActivityEvent;
 import com.amx.jax.logger.events.CActivityEvent.Step;
 import com.amx.jax.logger.events.CActivityEvent.Type;
+import com.amx.jax.logger.events.Verify;
 import com.amx.jax.model.customer.CustomerContactVerificationDto;
 import com.amx.jax.repository.CustomerContactVerificationRepository;
 import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.userservice.repository.CustomerVerificationRepository;
 import com.amx.jax.userservice.repository.OnlineCustomerRepository;
 import com.amx.jax.userservice.service.CustomerVerificationService;
-import com.amx.jax.util.AmxDBConstants;
 import com.amx.jax.util.AmxDBConstants.Status;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.CollectionUtil;
-import com.amx.utils.Constants;
 import com.amx.utils.EntityDtoUtil;
 import com.amx.utils.Random;
-import com.amx.utils.TimeUtils;
 
 /**
  * 
@@ -78,8 +76,15 @@ public class CustomerContactVerificationManager {
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.DATE, -1 * validDays);
 		java.util.Date oneDay = new java.util.Date(cal.getTimeInMillis());
-		List<CustomerContactVerification> links = customerContactVerificationRepository.getByContact(customerId,
-				contactType, contact, oneDay);
+		List<CustomerContactVerification> links = null;
+
+		if (ArgUtil.is(contact)) {
+			links = customerContactVerificationRepository.getByContact(customerId,
+					contactType, contact, oneDay);
+		} else {
+			links = customerContactVerificationRepository.getByContact(customerId,
+					contactType, oneDay);
+		}
 		return links;
 	}
 
@@ -99,15 +104,27 @@ public class CustomerContactVerificationManager {
 
 	public CustomerContactVerification getValidCustomerContactVerificationByCustomerId(BigDecimal customerId,
 			ContactType contactType, String contact) {
-		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.DATE, -1);
-		java.util.Date oneDay = new java.util.Date(cal.getTimeInMillis());
 		List<CustomerContactVerification> links = getValidCustomerContactVerificationsByCustomerId(customerId,
 				contactType, contact);
 		if (ArgUtil.isEmpty(links) || links.size() == 0) {
 			return null;
 		}
 		return links.get(0);
+	}
+
+	public BigDecimal getConfirmedCountsByCustomer(Customer c, ContactType contactType) {
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DATE, -1 * 90);
+		java.util.Date expiryPeriod = new java.util.Date(cal.getTimeInMillis());
+		List<Object[]> x = customerContactVerificationRepository.getCountsByCustomer(c.getCustomerId(),
+				contactType,
+				expiryPeriod);
+		for (Object[] p : x) {
+			if (Status.N.equals(p[1])) {
+				return ArgUtil.parseAsBigDecimal(p[0]);
+			}
+		}
+		return BigDecimal.ZERO;
 	}
 
 	public CustomerContactVerification create(Customer c, ContactType contactType) {
@@ -119,6 +136,7 @@ public class CustomerContactVerificationManager {
 		audit.setCustomerId(c.getCustomerId());
 		audit.setCustomer(c.getIdentityInt());
 		audit.setContactType(contactType);
+		audit.setVerify(new Verify().contactType(contactType));
 
 		CustomerContactVerification link = new CustomerContactVerification();
 		link.setCustomerId(c.getCustomerId());
@@ -172,6 +190,7 @@ public class CustomerContactVerificationManager {
 		}
 
 		CustomerContactVerification link2 = customerContactVerificationRepository.save(link);
+		audit.getVerify().id(link2.getId()).count(getConfirmedCountsByCustomer(c, contactType));
 
 		// Audit Info
 		audit.setTargetId(link2.getId());
@@ -196,6 +215,7 @@ public class CustomerContactVerificationManager {
 		audit.setCustomerId(c.getCustomerId());
 		audit.setCustomer(c.getIdentityInt());
 		audit.setContactType(oldLink.getContactType());
+		audit.setVerify(new Verify().contactType(oldLink.getContactType()).id(oldLink.getId()));
 
 		try {
 			if (!oldLink.getCustomerId().equals(c.getCustomerId())) {
@@ -209,6 +229,7 @@ public class CustomerContactVerificationManager {
 
 			oldLink.setVerificationCode(Random.randomAlphaNumeric(8));
 			oldLink.setSendDate(new Date());
+			audit.getVerify().count(getConfirmedCountsByCustomer(c, oldLink.getContactType()));
 
 		} catch (GlobalException e) {
 			auditService.log(audit.result(Result.FAIL).message(e.getError()));
@@ -327,6 +348,7 @@ public class CustomerContactVerificationManager {
 		audit.setCustomerId(c.getCustomerId());
 		audit.setCustomer(c.getIdentityInt());
 		audit.setContactType(link.getContactType());
+		audit.setVerify(new Verify().contactType(link.getContactType()).id(link.getId()));
 
 		try {
 
@@ -339,7 +361,7 @@ public class CustomerContactVerificationManager {
 			markCustomerContactVerified(c, link.getContactType(), link.getContactValue());
 
 			List<CustomerContactVerification> oldlinks = getValidCustomerContactVerificationsByCustomerId(
-					c.getCustomerId(), link.getContactType(), link.getContactValue());
+					c.getCustomerId(), link.getContactType(), null);
 			if (!ArgUtil.isEmpty(oldlinks)) {
 				for (CustomerContactVerification customerContactVerification : oldlinks) {
 					customerContactVerification.setIsActive(Status.D);
@@ -351,11 +373,14 @@ public class CustomerContactVerificationManager {
 			link.setVerifiedDate(new Date());
 			customerContactVerificationRepository.save(link);
 
+			audit.getVerify().count(getConfirmedCountsByCustomer(c, link.getContactType()));
+
 		} catch (GlobalException e) {
 			auditService.log(audit.result(Result.FAIL).message(e.getError()));
 			throw e;
 		}
 
+		// Audit Info
 		audit.setTargetId(link.getId());
 		auditService.log(audit.result(Result.DONE));
 

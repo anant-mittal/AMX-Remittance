@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<!-- If you delete this meta tag, the ground will open and swallow you. -->
+<meta name="viewport" content="width=device-width" />
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>New login on your [[${_tu.prop('company.name')}]] account</title>
+
+<style type="text/css">
+.head-wrap {
+	text-align: center;
+}
+.small {
+	font-size: small;
+}
+</style>
+
+</head>
+
+<body class="body" style="margin: 0; padding: 0; background: #f4f4f4">
+	<table class="head-wrap" bgcolor="#f4f4f4" width="100%">
+		<tr>
+			<td>New device signed in to, for the account</td>
+		</tr>
+		<tr>
+			<td><b>[[${name}]]</b></td>
+		</tr>
+		<tr>
+			<td>Your [[${_tu.prop('company.name')}]] Account was just signed
+				into, from a new device or location. You're
+				getting this email to make sure that it was you.</td>
+		</tr>
+		<tr class="small">
+			<td><b>Device Details</b></td>
+		</tr>
+		<tr class="small">
+			<td align="center">[[${logmap.agent.operatingSystem}]] | [[${logmap.agent.browser}]] | [[${logmap.client.ct}]]</td>
+		</tr>
+		<tr class="small">
+			<td align="center">IP : [[${logmap.client.ip}]] |  Location : [[${country}]] [[${region}]] [[${city}]]  (Approximate)</td>
+		</tr>
+		<tr>
+			<td>In case it was not you, please call 1-800-1234, immediately.</td>
+		</tr>
+	</table>
+	<!-- /HEADER -->
+
+</body>
+</html>

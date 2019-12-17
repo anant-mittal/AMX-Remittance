@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.CountryMasterDTO;
 import com.amx.amxlib.meta.model.PrefixDTO;
+import com.amx.amxlib.meta.model.ServiceGroupMasterDescDto;
 import com.amx.amxlib.meta.model.ViewCityDto;
 import com.amx.amxlib.meta.model.ViewDistrictDto;
 import com.amx.amxlib.meta.model.ViewStateDto;
@@ -87,5 +88,11 @@ public class MetaController {
 	public AmxApiResponse<ComponentDataDto, Object> getIdTypes() {
 		return offsiteCustRegClient.getIdTypes();
 	}
+	
+	@RequestMapping(value = "/pub/meta/service/list", method = RequestMethod.GET)
+	public AmxApiResponse<ServiceGroupMasterDescDto, Object> getServiceGroupList() {
+		return metaClient.getServiceGroupList();
+	}
+
 
 }

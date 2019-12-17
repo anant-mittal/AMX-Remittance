@@ -8,7 +8,6 @@ import javax.transaction.Transactional;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
-import com.amx.jax.dbmodel.ReceiptPayment;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 
 @Transactional
@@ -22,7 +21,11 @@ public interface RemittanceTransactionRepository extends CrudRepository<Remittan
 		
 	@Query(value = "SELECT * FROM EX_REMIT_TRNX WHERE CUSTOMER_ID=?1  AND ((CREATED_BY = 'ANDROID') OR (CREATED_BY = 'IOS') OR (CREATED_BY = 'ONLINE'))", nativeQuery = true)
 	public List<RemittanceTransaction> getTransactionMadeByOnline(String customerId);
-
+	
+	List<RemittanceTransaction> findByCollectionDocFinanceYearAndCollectionDocumentNo(BigDecimal collectionDocFinanceYear,BigDecimal collectionDocumentNo);
+	
+	@Query("select c from RemittanceTransaction c where documentNo=?1 and documentFinanceYear=?2")
+	public List<RemittanceTransaction> getRemittanceTransaction(BigDecimal documentNo, BigDecimal documentFinanceYear);
 }
 
 

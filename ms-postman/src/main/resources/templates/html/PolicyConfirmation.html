@@ -300,8 +300,7 @@
            				 <td class="content-block">
                        <strong>
                           Dear
-                     <span th:text="${data.customer}"></span>,</strong
-                        >  
+                     <span th:text="${data.customer}"></span>,</strong>  
                       </td> 
                     </tr>
                     <tr>
@@ -454,8 +453,7 @@
                           binding upon all customers
                         </p>
                         <p>
-                          To opt out, please click the OPT OUT button below. To
-                          add nominees, please click NOMINATE YOUR BENEFICIARIES
+                          To add nominees, please click NOMINATE YOUR BENEFICIARIES
                           button.
                         </p>
                       </td>
@@ -467,15 +465,6 @@
                         align="center"
                         style="padding:20px"
                       >
-                      <span  style="margin-right:42px">
-                        <a
-                          th:href="${_tu.prop('company.app.url')	 + '/app/myaccount/insurance?optin=false'}"
-                          style="width:40%;font-size:9px;color:white;background-color:#33bb55;border: solid #33bb55;"
-                          class="btn-primary"
-                          target="_blank"
-                          >OPT OUT</a
-                        >
-                        </span>
                         <span>
                          <a
                           th:href="${_tu.prop('company.app.url')	 + '/app/myaccount/insurance?optin=true'}"

@@ -1,5 +1,11 @@
 package com.amx.jax.client;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.stereotype.Component;
+
 import com.amx.jax.AppConfig;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
@@ -9,12 +15,6 @@ import com.amx.jax.client.task.INotificationtaskService;
 import com.amx.jax.client.task.NotificationTaskDto;
 import com.amx.jax.exception.JaxSystemError;
 import com.amx.jax.rest.RestService;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.stereotype.Component;
 
 @Component
 public class NotificationTaskClient implements INotificationtaskService {

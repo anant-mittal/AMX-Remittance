@@ -70,6 +70,7 @@ import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.events.CActivityEvent;
 import com.amx.jax.logger.events.CActivityEvent.Type;
+import com.amx.jax.manager.DailyPromotionManager;
 import com.amx.jax.manager.PromotionManager;
 import com.amx.jax.manager.RemittanceManager;
 import com.amx.jax.meta.MetaData;
@@ -81,7 +82,6 @@ import com.amx.jax.model.response.remittance.RemittanceCollectionDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.TransferDto;
 import com.amx.jax.model.response.serviceprovider.Remittance_Call_Response;
-import com.amx.jax.model.response.serviceprovider.ServiceProviderResponse;
 import com.amx.jax.partner.dao.PartnerTransactionDao;
 import com.amx.jax.partner.dto.RemitTrnxSPDTO;
 import com.amx.jax.partner.manager.PartnerTransactionManager;
@@ -103,6 +103,7 @@ import com.amx.jax.repository.IShoppingCartDetailsRepository;
 import com.amx.jax.repository.PaymentModeRepository;
 import com.amx.jax.repository.RemittanceApplicationBeneRepository;
 import com.amx.jax.repository.RemittanceApplicationRepository;
+import com.amx.jax.repository.RemittanceTransactionRepository;
 import com.amx.jax.repository.remittance.LocalBankDetailsRepository;
 import com.amx.jax.service.BankMetaService;
 import com.amx.jax.service.CompanyService;
@@ -237,6 +238,12 @@ public class BranchRemittanceSaveManager {
     @Autowired
     IRemittanceApplSplitRepository applSplitRepo;
     
+    @Autowired
+    DailyPromotionManager dailyPromotionManager;
+    
+    @Autowired
+    RemittanceTransactionRepository remittanceTransactionRepository;
+    
 	
 	
 	List<LoyaltyPointsModel> loyaltyPoints 	 = new ArrayList<>();
@@ -313,6 +320,8 @@ public class BranchRemittanceSaveManager {
 		}
 		logger.info("MRU --BEFORE appliation move to EMOS -->"+responseDto.getCollectionDocumentNo());
 		
+		
+		
 		if(responseDto!=null && JaxUtil.isNullZeroBigDecimalCheck(responseDto.getCollectionDocumentNo())) {
 			brRemittanceDao.updateApplicationToMoveEmos(responseDto);
 			PaymentResponseDto paymentResponse = new PaymentResponseDto();
@@ -335,8 +344,12 @@ public class BranchRemittanceSaveManager {
 					notificationService.sendTransactionErrorAlertEmail(errrMsg,"TRNX NOT MOVED TO EMOS",paymentResponse);
 				}
 			}
-			String promotionMsg = promotionManager.getPromotionPrizeForBranch(responseDto);
-			responseDto.setPromotionMessage(promotionMsg);
+			//String promotionMsg = promotionManager.getPromotionPrizeForBranch(responseDto);
+			//responseDto.setPromotionMessage(promotionMsg);
+			
+			dailyPromotionManager.applyJolibeePadalaCoupons(responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo(),null);
+			
+			
 		}else {
 			logger.info("NOT moved to old emos ", responseDto.getCollectionDocumentNo() + "" +responseDto.getCollectionDocumentCode()+" "+responseDto.getCollectionDocumentFYear());
 		}
@@ -374,6 +387,7 @@ public class BranchRemittanceSaveManager {
 			mapAllDetailRemitSave.put("EX_REMIT_SPLIT", remitSplitMap);
 			validateSaveTrnxDetails(mapAllDetailRemitSave);
 			responseDto = brRemittanceDao.saveRemittanceTransaction(mapAllDetailRemitSave);
+			
 			auditService.log(new CActivityEvent(Type.TRANSACTION_CREATED,String.format("%s/%s", responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo())).field("STATUS").to(JaxTransactionStatus.PAYMENT_SUCCESS_APPLICATION_SUCCESS).result(Result.DONE));
 	}catch (GlobalException e) {
 			logger.error("routing  procedure", e.getErrorMessage() + "" + e.getErrorKey());
@@ -897,10 +911,14 @@ public class BranchRemittanceSaveManager {
 					remitTrnx.setUsdAmt(appl.getUsdAmt());
 					remitTrnx.setWuPurposeOfTransaction(appl.getWuPurposeOfTransaction());
 					remitTrnx.setApplSplit(appl.getApplSplit());
+					remitTrnx.setSavedAmount(appl.getSavedAmount());
+					remitTrnx.setRackExchangeRate(appl.getRackExchangeRate());
+					remitTrnx.setCustomerChoice(appl.getCustomerChoice());
+					remitTrnx.setSavedAmountInFc(appl.getSavedAmountInFc());
 					Date date = DateUtil.addCurrentDateTimeToGetNewTime(appl.getTimeToDeliverInSec());
-						if(date!=null) {
-							remitTrnx.setTimeToDeliver(date);
-						}
+					if(date!=null) {
+						remitTrnx.setTimeToDeliver(date);
+					}
 					
 					BigDecimal documentNo =generateDocumentNumber(appl.getFsCountryMasterByApplicationCountryId().getCountryId(),appl.getFsCompanyMaster().getCompanyId(),remitTrnx.getDocumentId().getDocumentCode(),remitTrnx.getDocumentFinanceYear(),remitTrnx.getLoccod(),ConstantDocument.A);
 					
@@ -1337,11 +1355,14 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
  
 	public Boolean sendReceiptOnEmail(BigDecimal collectionDocNo, BigDecimal collectionDocYear,
 			BigDecimal collectionDocCode) {
+		logger.debug("ColllectionDocNo DOcYear DocCOde "+collectionDocNo + collectionDocYear + collectionDocCode);
 		Boolean validStatus = Boolean.FALSE;
 		PaymentResponseDto paymentResponse = new PaymentResponseDto();
 		try {
 			TransactionHistroyDTO trxnDto = new TransactionHistroyDTO();
 			Customer customer = customerDao.getCustById(metaData.getCustomerId());
+			
+			
 			paymentResponse.setCollectionDocumentCode(collectionDocCode);
 			paymentResponse.setCollectionDocumentNumber(collectionDocNo);
 			paymentResponse.setCollectionFinanceYear(collectionDocYear);
@@ -1354,6 +1375,7 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
 			trxnDto.setLanguageId(metaData.getLanguageId());
 			trxnDto.setApplicationCountryId(metaData.getCountryId());
 			trxnDto.setCustomerReference(customer.getCustomerReference());
+			
 			reportManagerService.generatePersonalRemittanceReceiptReportDetails(trxnDto, Boolean.TRUE);
 			List<RemittanceReceiptSubreport> rrsrl = reportManagerService.getRemittanceReceiptSubreportList();
 			PersonInfo personinfo = new PersonInfo();
