@@ -33,42 +33,42 @@
 			<artifactId>common-amx</artifactId>
 		</dependency>
 
-		<!-- dependency>
-			<groupId>com.amx.jax</groupId>
-			<artifactId>lib-mcq</artifactId>
-		</dependency-->
+		<!-- dependency> <groupId>com.amx.jax</groupId> <artifactId>lib-mcq</artifactId> 
+			</dependency -->
 
-		<!-- dependency>
-			<groupId>com.amx.jax</groupId>
-			<artifactId>lib-rbaac</artifactId>
-		</dependency-->
+		<!-- dependency> <groupId>com.amx.jax</groupId> <artifactId>lib-rbaac</artifactId> 
+			</dependency -->
 
-		<!-- dependency>
-			<groupId>com.amx.jax</groupId>
-			<artifactId>lib-postman</artifactId>
-		</dependency-->
+		<!-- dependency> <groupId>com.amx.jax</groupId> <artifactId>lib-postman</artifactId> 
+			</dependency -->
 
 		<dependency>
 			<groupId>com.amx.jax</groupId>
 			<artifactId>lib-db</artifactId>
-			<!-- >version>0.0.1-SNAPSHOT</version-->
+			<!-- >version>0.0.1-SNAPSHOT</version -->
 		</dependency>
 
 		<dependency>
 			<groupId>com.amx.jax</groupId>
 			<artifactId>lib-monitor</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.amx.jax</groupId>
 			<artifactId>lib-probot</artifactId>
 		</dependency>
-		
+
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-oracle</artifactId>
+			<version>1.0.0.RELEASE</version>
 		</dependency>
 
 	</dependencies>

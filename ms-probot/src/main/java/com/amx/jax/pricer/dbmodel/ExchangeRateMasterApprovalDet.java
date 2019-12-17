@@ -17,7 +17,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "EX_EXCHANGE_RATE_MASTER_APRDET")
-public class ExchangeRateApprovalDetModelAlt implements Serializable {
+public class ExchangeRateMasterApprovalDet implements Serializable {
 
 	/**
 	 * 
@@ -54,11 +54,11 @@ public class ExchangeRateApprovalDetModelAlt implements Serializable {
 	private BigDecimal prvSellRateMin;
 	private BigDecimal prvSellRateMax;
 
-	public ExchangeRateApprovalDetModelAlt() {
+	public ExchangeRateMasterApprovalDet() {
 		super();
 	}
 
-	public ExchangeRateApprovalDetModelAlt(String isActive, BigDecimal sellRateMin, BigDecimal sellRateMax,
+	public ExchangeRateMasterApprovalDet(String isActive, BigDecimal sellRateMin, BigDecimal sellRateMax,
 			BigDecimal serviceId, BankMasterModel bankMaster) {
 		super();
 		this.bankMaster = bankMaster;
@@ -377,7 +377,7 @@ public class ExchangeRateApprovalDetModelAlt implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		ExchangeRateApprovalDetModelAlt other = (ExchangeRateApprovalDetModelAlt) obj;
+		ExchangeRateMasterApprovalDet other = (ExchangeRateMasterApprovalDet) obj;
 		if (applicationCountryId == null) {
 			if (other.applicationCountryId != null)
 				return false;
@@ -528,7 +528,7 @@ public class ExchangeRateApprovalDetModelAlt implements Serializable {
 
 	@Override
 	public String toString() {
-		return "ExchangeRateApprovalDetModelAlt [exchangeRateMasterAprDetId=" + exchangeRateMasterAprDetId
+		return "ExchangeRateMasterApprovalDet [exchangeRateMasterAprDetId=" + exchangeRateMasterAprDetId
 				+ ", applicationCountryId=" + applicationCountryId + ", approvedBy=" + approvedBy + ", approvedDate="
 				+ approvedDate + ", authorisedBy=" + authorisedBy + ", authorisedDate=" + authorisedDate
 				+ ", bankMaster=" + bankMaster + ", buyRateMax=" + buyRateMax + ", buyRateMin=" + buyRateMin

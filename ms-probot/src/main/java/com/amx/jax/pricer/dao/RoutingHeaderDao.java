@@ -8,25 +8,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.pricer.dbmodel.RoutingHeader;
-import com.amx.jax.pricer.repository.RoutingHeaderRepositoryAlt;
+import com.amx.jax.pricer.repository.RoutingHeaderRepo;
 
 @Component
-// @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode =
-// ScopedProxyMode.TARGET_CLASS)
-public class RoutingDaoAlt {
+public class RoutingHeaderDao {
 
 	@Autowired
-	RoutingHeaderRepositoryAlt routingHeaderRepositoryAlt;
+	RoutingHeaderRepo routingHeaderRepo;
 
 	public List<BigDecimal> listAllRoutingBankIds() {
-		List<RoutingHeader> rh = (List<RoutingHeader>) routingHeaderRepositoryAlt.findAll();
+		List<RoutingHeader> rh = (List<RoutingHeader>) routingHeaderRepo.findAll();
 		List<BigDecimal> allRoutingBanks = rh.stream().map(i -> i.getRoutingBankId()).distinct()
 				.collect(Collectors.toList());
 		return allRoutingBanks;
 	}
 
 	public List<RoutingHeader> getRoutHeadersByCountryIdAndCurrenyId(BigDecimal countryId, BigDecimal currencyId) {
-		return routingHeaderRepositoryAlt.findByCountryIdAndCurrenyIdAndIsActive(countryId, currencyId, "Y");
+		return routingHeaderRepo.findByCountryIdAndCurrenyIdAndIsActive(countryId, currencyId, "Y");
+	}
+
+	public List<RoutingHeader> getRoutHeadersByCurrenyId(BigDecimal currencyId) {
+		return routingHeaderRepo.findByCurrenyIdAndIsActive(currencyId, "Y");
 	}
 
 }

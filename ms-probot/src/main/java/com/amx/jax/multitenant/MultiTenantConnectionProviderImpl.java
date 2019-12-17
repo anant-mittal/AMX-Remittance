@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.scope.TenantContextHolder;
+
 @Component
 public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionProvider {
 
@@ -38,7 +40,7 @@ public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionP
 
 	@Override
 	public Connection getConnection(String tenantIdentifie) throws SQLException {
-		String tenantIdentifier = TenantContext.getCurrentTenant();
+		String tenantIdentifier = TenantContextHolder.currentSite().toString();
 		DataSource ds = dataSourcesJax.get(tenantIdentifier);
 		Connection connection;
 
@@ -51,11 +53,11 @@ public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionP
 	}
 
 	public DataSource getDataSource() {
-		String tenantIdentifier = TenantContext.getCurrentTenant();
+		String tenantIdentifier = TenantContextHolder.currentSite().toString();
 		DataSource ds = dataSourcesJax.get(tenantIdentifier);
 		return ds;
 	}
-	
+
 	@Override
 	public void releaseConnection(String tenantIdentifier, Connection connection) throws SQLException {
 		connection.close();

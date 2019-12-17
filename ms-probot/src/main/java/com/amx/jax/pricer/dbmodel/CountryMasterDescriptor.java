@@ -15,19 +15,19 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "FS_COUNTRY_MASTER_DESC")
-public class CountryMasterDesc implements java.io.Serializable {
+public class CountryMasterDescriptor implements java.io.Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private BigDecimal countryMasterId;
-	// private LanguageType languageType;
+	private BigDecimal languageId;
 	private CountryMasterModel fsCountryMaster;
 	private String countryName;
 	private String nationality;
 
-	public CountryMasterDesc() {
+	public CountryMasterDescriptor() {
 	}
 
-	public CountryMasterDesc(BigDecimal countryMasterId) {
+	public CountryMasterDescriptor(BigDecimal countryMasterId) {
 		this.countryMasterId = countryMasterId;
 	}
 
@@ -81,5 +81,13 @@ public class CountryMasterDesc implements java.io.Serializable {
 		this.nationality = nationality;
 	}
 
-	
+	@Column(name = "LANGUAGE_ID")
+	public BigDecimal getLanguageId() {
+		return languageId;
+	}
+
+	public void setLanguageId(BigDecimal languageId) {
+		this.languageId = languageId;
+	}
+
 }
