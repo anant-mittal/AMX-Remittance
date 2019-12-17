@@ -47,6 +47,8 @@ public class SnapConstants {
 		RPTCOMPARISON("rptcomparison", SnapIndexName.TRANX),
 		RPTMONTHCOMPARISON("rptmonthcomparison", SnapIndexName.TRANX),
 		
+		TRNX_LIFECYCLE("trnx-lifecycle", SnapIndexName.TRANX),
+		
 		
 		ACTIVE_DEVICE_REPORT("active-device", SnapIndexName.ALL),
 		ACTIVE_SIGNPAD_REPORT("active-signpad", SnapIndexName.ALL),
@@ -104,6 +106,7 @@ public class SnapConstants {
 			RPTMONTHLY.setQueryParams("PrevMonth:PrevMonth;Month:Month");
 			RPTCOMPARISON.setQueryParams("MonthOneFrom:2019-08-06;MonthOneTo:2019-09-06;MonthTwoFrom:2019-09-07;MonthTwoTo:2019-10-07");
 			RPTMONTHCOMPARISON.setQueryParams("MonthOneName:Sept;MonthOne:2019-09;MonthTwoName:Oct;MonthTwo:2019-10");
+			TRNX_LIFECYCLE.setQueryParams("Today:Today;Yesterday:Yesterday;BeforeYesterday:BeforeYesterday");
 		}
 
 	}

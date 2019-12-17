@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.amx.jax.api.AmxResponseSchemes.ApiWrapperResponse;
 import com.amx.jax.model.MapModel;
 import com.amx.utils.CollectionUtil;
 import com.amx.utils.JsonPath;
@@ -121,6 +122,7 @@ public class SnapModels {
 			map.remove(AGGREGATIONS_KEY);
 			return this;
 		}
+
 	}
 
 	@JsonIgnoreProperties(ignoreUnknown = true)
@@ -243,9 +245,8 @@ public class SnapModels {
 				this.buckets = new ArrayList<SnapModels.Aggregations>();
 				try {
 					if (map.containsKey(BUCKETS)) {
-						Object tempbucketsmapCheck = BUCKETS_LIST.load(map,
-								new HashMap<String, Map<String, Object>>());
-							if(tempbucketsmapCheck instanceof ArrayList) {
+						Object tempbucketsmapCheck = BUCKETS_LIST.load(map, new HashMap<String, Map<String, Object>>());
+						if (tempbucketsmapCheck instanceof ArrayList) {
 							List<Map<String, Object>> tempbuckets = BUCKETS_LIST.loadList(map,
 									new HashMap<String, Object>());
 							for (Map<String, Object> aggregationMap : tempbuckets) {
@@ -266,7 +267,7 @@ public class SnapModels {
 					}
 				} catch (Exception e) {
 					System.out.println("===  " + JsonUtil.toJson(map));
-					//e.printStackTrace();
+					// e.printStackTrace();
 				}
 			}
 			return buckets;
@@ -368,8 +369,7 @@ public class SnapModels {
 			return newMap;
 		}
 
-		public List<Map<String, Object>> toBulk(Map<String, Object> bulkItemBlank, String space,
-				int minCount) {
+		public List<Map<String, Object>> toBulk(Map<String, Object> bulkItemBlank, String space, int minCount) {
 			List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 			long afIndex = 0;
 			for (AggregationField af : this.fields()) {
@@ -385,8 +385,8 @@ public class SnapModels {
 						// System.out.println(af.fieldName() + " " + bucketItem.getKey());
 						Map<String, Object> _bulkItemBlank = copy(bulkItemBlank);
 						_bulkItemBlank.put(af.fieldName(), bucketItem.getKey());
-						List<Map<String, Object>> bulk = bucketItem.toBulk(_bulkItemBlank,
-								space + bucketItemIndexStr, minCount);
+						List<Map<String, Object>> bulk = bucketItem.toBulk(_bulkItemBlank, space + bucketItemIndexStr,
+								minCount);
 						for (Map<String, Object> bulkItem : bulk) {
 							if (bulkItem.containsKey("_id")) {
 								// bulkItem.put("_docs", bucketItem.getDocCount());
@@ -419,6 +419,111 @@ public class SnapModels {
 
 		public Long getDocCount() {
 			return this.getLong("doc_count");
+		}
+
+	}
+
+	public static class SnapQueryParams extends MapModel {
+
+		private static final String LEVEL = "level";
+
+		private List<Map<String, Object>> filters;
+
+		public SnapQueryParams(Map<String, Object> params) {
+			super(params);
+		}
+
+		public SnapQueryParams() {
+			super();
+		}
+
+		public Integer getLevel() {
+			return this.getInteger(LEVEL, 100);
+		}
+
+		public Integer getMinCount() {
+			return this.getInteger("minCount", 0);
+		}
+
+		public void addFilter(String key, String value) {
+			Map<String, Object> f = new HashMap<String, Object>();
+			f.put("key", key);
+			f.put("value", value);
+			if (filters == null) {
+				filters = new ArrayList<Map<String, Object>>();
+			}
+			this.map.put("filters", filters);
+			filters.add(f);
+		}
+		public void addValue(String key, String value) {
+			this.map.put(key, value);
+		}
+
+	}
+
+	@JsonIgnoreProperties(ignoreUnknown = true)
+	public static class SnapModelResponse extends SnapModelWrapper implements ApiWrapperResponse {
+
+		public SnapModelResponse(Map<String, Object> map) {
+			super(map);
+		}
+
+		public SnapModelResponse(String string) {
+			super(string);
+			this.setStatus("200");
+			this.setStatusKey("SUCCESS");
+			this.setTimestamp(System.currentTimeMillis());
+		}
+
+		@Override
+		public void setTimestamp(Long timestamp) {
+			this.map.put("timestamp", timestamp);
+		}
+
+		@Override
+		public Long getTimestamp() {
+			return this.getLong("timestamp");
+		}
+
+		@Override
+		public String getStatus() {
+			return this.getString("status", "200");
+		}
+
+		@Override
+		public void setStatus(String status) {
+			this.map.put("status", status);
+
+		}
+
+		@Override
+		public String getStatusKey() {
+			return this.getString("statusKey");
+		}
+
+		@Override
+		public void setStatusKey(String statusKey) {
+			this.map.put("statusKey", statusKey);
+		}
+
+		@Override
+		public String getMessage() {
+			return this.getString("message");
+		}
+
+		@Override
+		public void setMessage(String message) {
+			this.map.put("message", message);
+		}
+
+		@Override
+		public String getMessageKey() {
+			return this.getString("messageKey");
+		}
+
+		@Override
+		public void setMessageKey(String messageKey) {
+			this.map.put("messageKey", messageKey);
 		}
 
 	}

@@ -189,6 +189,15 @@
             ]
           }
         },
+        [# th:each="filter : ${filters}"]  
+        {
+          "match_phrase": {
+            "[[${filter.key}]]": {
+              "query": "[[${filter.value}]]"
+            }
+          }
+        },
+	  	[/]
         { 
           "range":{ 
             "trnx.trnxDate":{ 
