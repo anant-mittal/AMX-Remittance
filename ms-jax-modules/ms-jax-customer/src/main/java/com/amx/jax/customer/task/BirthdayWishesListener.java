@@ -82,7 +82,7 @@ public class BirthdayWishesListener implements ITunnelSubscriber<DBEvent> {
 		if (x.isSms()) {
 			SMS smsMessage = new SMS();
 			smsMessage.setITemplate(TemplatesMX.BIRTHDAY_WISH);
-			smsMessage.addTo(customer.getWhatsappPrefix() + customer.getWhatsapp());
+			smsMessage.addTo(customer.getPrefixCodeMobile()+customer.getMobile());
 			postManService.sendSMSAsync(smsMessage);
 		}
 

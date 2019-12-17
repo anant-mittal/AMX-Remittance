@@ -5,6 +5,7 @@ package com.amx.jax.manager;
  */
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -20,17 +21,28 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.RoutingProcedureDao;
+import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
 import com.amx.jax.dbmodel.BenificiaryListView;
+import com.amx.jax.dbmodel.CountryBranchMdlv1;
 import com.amx.jax.dbmodel.CountryMaster;
+import com.amx.jax.dbmodel.CusmasModel;
+import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.CustomerDetailsView;
 import com.amx.jax.dbmodel.remittance.RemitApplAmlModel;
 import com.amx.jax.dbmodel.remittance.RemittanceAppBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
+import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.response.remittance.AmlCheckResponseDto;
+import com.amx.jax.partner.dao.PartnerTransactionDao;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
+import com.amx.jax.repository.IRemittanceTransactionRepository;
 import com.amx.jax.repository.RemittanceApplicationBeneRepository;
+import com.amx.jax.repository.RemittanceTransactionRepository;
 import com.amx.jax.service.CountryService;
+import com.amx.jax.service.ParameterService;
 import com.amx.jax.services.BankService;
+import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.JaxUtil;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -61,6 +73,21 @@ public class RemittanceApplAmlManager {
 	@Autowired
 	IBeneficiaryOnlineDao beneficiaryRepository;
 	
+	@Autowired
+	ParameterService parameterService;
+	
+	@Autowired
+	UserService userService;
+	
+	@Autowired
+	PartnerTransactionDao partnerDetailDao;
+	
+	//@Autowired
+	//IRemittanceTransactionRepository trnxRepository;
+	
+	@Autowired
+	RemittanceTransactionRepository trnxRepository;
+	
 	
 	public RemitApplAmlModel createRemittanceApplAml(RemittanceApplication remittanceApplication,RemittanceAppBenificiary remittanceAppBeneficairy){
 		  RemitApplAmlModel amlModel = null;
@@ -74,7 +101,7 @@ public class RemittanceApplAmlManager {
 			  amlModel.setExRemittanceAppfromAml(remittanceApplication);		   
 		  if(amlDto.getHighValueTrnxFlag()!=null && amlDto.getHighValueTrnxFlag().equalsIgnoreCase(ConstantDocument.Yes)) {
 			  if(amlDto.getStopTrnxFlag()!=null && amlDto.getStopTrnxFlag().equalsIgnoreCase(ConstantDocument.Yes)) {
-			  amlModel.setBlackListReason(amlDto.getBlackRemark1()+" "+amlDto.getBlackRemark2()+" "+amlDto.getBlackRemark3());
+			  amlModel.setBlackListReason(amlDto.getBlackRemark1()+" "+amlDto.getBlackRemark2()+" "+amlDto.getBlackRemark3()+" "+amlDto.getRiskLevel1()+" "+amlDto.getRiskLevel2()+" "+amlDto.getRiskLevel3());
 			  }
 		  }
 		  	amlModel.setIsactive(ConstantDocument.Yes);
@@ -90,22 +117,47 @@ public class RemittanceApplAmlManager {
 		BenificiaryListView beneficiaryDT =beneficiaryRepository.findByCustomerIdAndBeneficiaryRelationShipSeqIdAndIsActive(metaData.getCustomerId(),beneReationId,ConstantDocument.Yes);
 		AmlCheckResponseDto amlDto = new AmlCheckResponseDto();
 		CountryMaster countryMaster = countryService.getCountryMaster(beneficiaryBankCountryId);
+		AuthenticationLimitCheckView amlCashRisk = parameterService.getAmlRiskLevelForCash();
+		BigDecimal trnxCntForRiskCntry = routingProcedureDao.getCustomerTrnxCount(beneficiaryBankCountryId,metaData.getCountryBranchId(),metaData.getCustomerId());
+		CustomerDetailsView customer = partnerDetailDao.getCustomerDetails(metaData.getCustomerId());
+		Customer cust = new Customer();
+		cust.setCustomerId(metaData.getCustomerId());
+		
+		CountryBranchMdlv1 cntrybrid = new CountryBranchMdlv1();
+		cntrybrid.setCountryBranchId(cntrybrid.getCountryBranchId());
+		
+	List<RemittanceTransaction>  trnxCountList = trnxRepository.getTotalTrnxCntForCustomer(metaData.getCustomerId(),metaData.getCountryBranchId());
+		BigDecimal trnxCount = BigDecimal.ZERO;
+		if(trnxCountList!=null && !trnxCountList.isEmpty()) {
+			trnxCount = new BigDecimal(trnxCountList.size());
+		}
+		
+		BigDecimal amlCashRiskLevel = BigDecimal.ZERO; 
+		if(amlCashRisk!=null) {
+			amlCashRiskLevel =amlCashRisk.getAuthLimit(); 
+		}
 		Integer riskCount = 0;
 		if(countryMaster!=null) {
 			riskCount = countryMaster.getBeneCountryRisk();
 			if(countryMaster.getBeneCountryRisk()!=null && riskCount==1) {
-				amlDto.setBlackRemark1("Bene country  Risk  Level   1 ");
+				amlDto.setBlackRemark1("Bene country  Risk  Level   1.");
 			}
 		}
 		if(beneficiaryDT.getNationality()!=null && new BigDecimal(beneficiaryDT.getNationality()).compareTo(beneficiaryBankCountryId)!=0) {
-			amlDto.setBlackRemark2("Remitter  Nationality  Mistmatch  with  Bene  Country");
+			amlDto.setBlackRemark2("Remitter  Nationality  Mistmatch  with  Bene  Country.");
 			amlDto.setTag(ConstantDocument.Yes);
 		}
 		
 		BigDecimal changeHistcount = routingProcedureDao.getCustomerHistroyCount(metaData.getCustomerId());
 		if(JaxUtil.isNullZeroBigDecimalCheck(changeHistcount) && changeHistcount.compareTo(BigDecimal.ZERO)>0) {
-			amlDto.setBlackRemark3("Email / Mobile  changed  within  90  days :");
+			amlDto.setBlackRemark3("Email / Mobile  changed  within  90  days.");
 		}
+
+		
+		
+		
+		
+		logger.info("AML RISK -->riskCount "+riskCount+"\t amlCashRiskLevel :"+amlCashRiskLevel+"\t changeHistcount :"+changeHistcount+"\t Risk country value :"+riskCount+"\t trnxCntForRiskCntry :"+trnxCntForRiskCntry);
 		
 		if(riskCount==1 && !StringUtils.isBlank(amlDto.getTag()) 
 		   && amlDto.getTag().equalsIgnoreCase(ConstantDocument.Yes) 
@@ -114,9 +166,18 @@ public class RemittanceApplAmlManager {
 			amlDto.setStopTrnxFlag(ConstantDocument.Yes);
 		}else if(riskCount==1 && changeHistcount.compareTo(BigDecimal.ZERO)>0 
 				&& beneficiaryDT.getServiceGroupCode().equalsIgnoreCase(ConstantDocument.CASH)
-				&& remittanceApplication.getLocalTranxAmount().compareTo(new BigDecimal("200"))>1) {
+				&& JaxUtil.isNullZeroBigDecimalCheck(amlCashRiskLevel) && remittanceApplication.getLocalTranxAmount().compareTo(amlCashRiskLevel)>1) {
 			amlDto.setHighValueTrnxFlag(ConstantDocument.Yes);
 			amlDto.setStopTrnxFlag(ConstantDocument.Yes);
+			amlDto.setRiskLevel1(amlCashRisk.getAuthMessage());
+		}else if(riskCount==1 &&  JaxUtil.isNullZeroBigDecimalCheck(trnxCntForRiskCntry) && trnxCntForRiskCntry.compareTo(BigDecimal.ONE)>1) {
+			amlDto.setHighValueTrnxFlag(ConstantDocument.Yes);
+			amlDto.setStopTrnxFlag(ConstantDocument.Yes);
+			amlDto.setRiskLevel2("No of Online Trn = "+trnxCntForRiskCntry +" by the customer to Pakistan");
+		}else if(riskCount==1 && customer!=null && customer.getNationality().contains("PAKISTAN") && JaxUtil.isNullZeroBigDecimalCheck(trnxCount) && trnxCount.compareTo(BigDecimal.ONE)>1 ) {
+			amlDto.setHighValueTrnxFlag(ConstantDocument.Yes);
+			amlDto.setStopTrnxFlag(ConstantDocument.Yes);
+			amlDto.setRiskLevel2("No of Online Trn = "+trnxCount +" by Pakistan Nationality  ");
 		}
 		
 		

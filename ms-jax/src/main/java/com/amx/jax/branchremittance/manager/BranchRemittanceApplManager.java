@@ -997,7 +997,7 @@ public class BranchRemittanceApplManager {
 		if(requestApplModel != null) {
 			// fetch any shopping records available
 			List<ShoppingCartDetails> lstCustomerShopping = branchRemittancePaymentDao.fetchCustomerShoppingCart(metaData.getCustomerId());
-			if(lstCustomerShopping != null && lstCustomerShopping.size() != 0) {
+			if(lstCustomerShopping != null && !lstCustomerShopping.isEmpty() && lstCustomerShopping.size() != 0) {
 				// checking home send transaction
 				BankMasterMdlv1 bankMaster = bankMasterRepo.findByBankCodeAndRecordStatus(PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name(), PricerServiceConstants.Yes);
 				if(bankMaster == null) {
@@ -1030,7 +1030,7 @@ public class BranchRemittanceApplManager {
 			if(requestApplModel.getDynamicRroutingPricingBreakup() != null && requestApplModel.getDynamicRroutingPricingBreakup().getServiceProviderDto() != null) {
 				BankMasterMdlv1 bankMaster = bankMasterRepo.findByBankCodeAndRecordStatus(PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name(), PricerServiceConstants.Yes);
 				// home send related validation check
-				if(bankMaster != null && requestApplModel.getRoutingBankId().compareTo(bankMaster.getBankId()) == 0) {
+				if(bankMaster != null && requestApplModel.getRoutingBankId()!=null && requestApplModel.getRoutingBankId().compareTo(bankMaster.getBankId()) == 0) {
 					partnerTransactionManager.validateServiceProvider(requestApplModel.getAdditionalFields(),requestApplModel.getBeneId());
 				}
 			}

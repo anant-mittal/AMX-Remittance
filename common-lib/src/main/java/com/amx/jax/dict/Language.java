@@ -5,8 +5,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.amx.utils.ArgUtil;
+import com.amx.utils.EnumType;
 
-public enum Language {
+public enum Language implements EnumType {
 
 	AB("abk", 100, "Abkhazian"),
 	AE("ave", 100, "Avestan"),
@@ -212,7 +213,7 @@ public enum Language {
 	TI("tir", 100, "Tigrinya"),
 
 	TK("tuk", 100, "Turkmen"),
-	TL("tgl", 8, "Tagalog"),
+	TL("tgl", 8, "Tagalog"), PH(TL),
 	TN("tsn", 100, "Tswana"),
 
 	TO("ton", 100, "Tonga"),
@@ -247,10 +248,20 @@ public enum Language {
 
 	private String iso3code;
 	private int id;
+	private Language lang;
 
 	Language(String iso3code, int id, String name) {
 		this.id = id;
 		this.iso3code = iso3code;
+		this.lang = this;
+	}
+
+	Language(Language lang) {
+		this.lang = lang;
+		if (lang != null) {
+			this.id = lang.id;
+			this.iso3code = lang.iso3code;
+		}
 	}
 
 	public String getISO3Code() {
@@ -269,11 +280,26 @@ public enum Language {
 		return new BigDecimal(id);
 	}
 
+	public Language getLang() {
+		return lang;
+	}
+
+	public String stringValue() {
+		return this.iso3code;
+	}
+
 	public static Language fromId(BigDecimal id) {
 		if (id == null) {
 			return null;
 		}
 		return MAP.get(id.intValue());
+	}
+
+	public static Language fromId(Integer id) {
+		if (id == null) {
+			return null;
+		}
+		return MAP.get(id);
 	}
 
 	public static String toString(Language lang, Language deflang) {
@@ -293,7 +319,11 @@ public enum Language {
 	}
 
 	public static Language fromString(String lang, Language defLang) {
-		return (Language) ArgUtil.parseAsEnum(lang, defLang, Language.class);
+		Language x = (Language) ArgUtil.parseAsEnum(lang, defLang, Language.class);
+		if (x == null) {
+			return null;
+		}
+		return x.getLang();
 	}
 
 	public static Language fromString(String lang) {
@@ -302,7 +332,7 @@ public enum Language {
 
 	static {
 		for (Language site : Language.values()) {
-			MAP.put(site.getId(), site);
+			MAP.put(site.getId(), site.getLang());
 		}
 	}
 

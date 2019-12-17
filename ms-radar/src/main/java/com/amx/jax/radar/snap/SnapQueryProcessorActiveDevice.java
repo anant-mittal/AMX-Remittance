@@ -2,7 +2,6 @@ package com.amx.jax.radar.snap;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -16,10 +15,11 @@ import com.amx.jax.device.DeviceBox;
 import com.amx.jax.device.DeviceData;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.radar.service.SnapQueryFactory.SnapQuery;
+import com.amx.jax.radar.service.SnapQueryFactory.SnapQueryParams;
 
 @Component
 @SnapQuery(SnapQueryTemplate.ACTIVE_DEVICE_REPORT)
-public class SnapQueryProcessorActiveDevice implements QueryProcessor<DeviceData, Map<String, Object>> {
+public class SnapQueryProcessorActiveDevice implements QueryProcessor<DeviceData, SnapQueryParams> {
 
 	public static final Logger LOGGER = LoggerService.getLogger(SnapQueryProcessorActiveDevice.class);
 
@@ -27,7 +27,7 @@ public class SnapQueryProcessorActiveDevice implements QueryProcessor<DeviceData
 	DeviceBox deviceBox;
 
 	@Override
-	public List<DeviceData> process(Map<String, Object> params) {
+	public List<DeviceData> process(SnapQueryParams params) {
 
 		List<DeviceData> devices = new ArrayList<DeviceData>();
 
