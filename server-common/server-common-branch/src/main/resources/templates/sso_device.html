@@ -123,8 +123,8 @@ window.CONST = {
 	localStorage.setItem("terminalId", terminalIP);
 	var deviceRegId = localStorage.getItem("deviceRegId");
 	var deviceRegToken = localStorage.getItem("deviceRegToken");
-	var did = localStorage.getItem("__did__") || guid();
-	localStorage.setItem("__did__", did);
+	var did = localStorage.getItem("did") || guid();
+	localStorage.setItem("did", did);
 
 	function guid() {
 		function s4() {
