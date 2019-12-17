@@ -129,6 +129,7 @@ import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.PaygDetailsRepository;
 import com.amx.jax.repository.RemittanceApplicationBeneRepository;
+import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.repository.VTransferRepository;
 import com.amx.jax.repository.remittance.IOWSScheduleModelRepository;
 import com.amx.jax.repository.remittance.IServiceProviderCredentailsRepository;
@@ -146,6 +147,7 @@ import com.amx.jax.services.RoutingService;
 import com.amx.jax.services.TransactionHistroyService;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.dao.ReferralDetailsDao;
+import com.amx.jax.userservice.manager.CustomerDBAuthManager;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.AmxDBConstants;
 import com.amx.jax.util.DateUtil;
@@ -306,8 +308,32 @@ public class RemittanceTransactionManager {
 	BankMasterRepository bankMasterRepo;
 	
 	@Autowired
+	RemittanceApplAmlManager applAmlManger;
+	
+	@Autowired
+	BranchRemittancePaymentManager branchRemittancePaymentManager;
+	
+	@Autowired
+	PaygDetailsRepository paygDetailsRepository;
+	@Autowired
 	BranchRemittanceExchangeRateManager branchRemittanceExchangeRateManager;
 
+
+	@Autowired
+	RemittanceApplicationBeneRepository remittanceApplicationBeneRepository;
+	
+	@Autowired
+	RemittanceOtpManager remittanceOtpManager;
+	
+	@Autowired
+	BranchRemittanceManager branchRemitManager;
+	
+	@Autowired
+	CustomerDBAuthManager customerDBAuthManager;
+	
+	@Autowired
+	RemittanceApplicationRepository applRepository;
+		
 
 	private static final String IOS = "IOS";
 	private static final String ANDROID = "ANDROID";
@@ -322,7 +348,12 @@ public class RemittanceTransactionManager {
 		validatedObjects.put("CUSTOMER", customer);
 		RemittanceTransactionResponsetModel responseModel = new RemittanceTransactionResponsetModel();
 		setLoyalityPointFlags(customer, responseModel);
-		BenificiaryListView beneficiary = beneficiaryOnlineDao.findOne(model.getBeneId());
+		//BenificiaryListView beneficiary = beneficiaryOnlineDao.findOne(model.getBeneId());
+		BenificiaryListView beneficiary  = beneficiaryOnlineDao.findByCustomerIdAndBeneficiaryRelationShipSeqIdAndIsActive(metaData.getCustomerId(),model.getBeneId(),ConstantDocument.Yes);
+		if(beneficiary==null) {
+			throw new GlobalException(JaxError.NO_RECORD_FOUND,"Beneficiary having some issue , kindly check with support team");
+		}
+		
 		remitApplParametersMap.put("P_BENEFICIARY_MASTER_ID", beneficiary.getBeneficaryMasterSeqId());
 		addBeneficiaryParameters(beneficiary);
 		validateBlackListedBene(beneficiary);
@@ -1105,8 +1136,11 @@ public class RemittanceTransactionManager {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		Map<String, Integer> output = new HashMap<>();
 		Customer customer = custDao.getCustById(meta.getCustomerId());
-		List<ViewTransfer> monthlyTxns = transferRepo
-				.getMonthlyTransactionByCustomerReference(customer.getCustomerReference());
+		List<RemittanceApplication> applCount = null;
+		List<ViewTransfer> monthlyTxns = transferRepo.getMonthlyTransactionByCustomerReference(customer.getCustomerReference());
+		if(JaxUtil.isNullZeroBigDecimalCheck(metaData.getCustomerId()) && JaxUtil.isNullZeroBigDecimalCheck(metaData.getCountryBranchId())){
+		 applCount =applRepository.getApplicationCountList(metaData.getCustomerId(),metaData.getCountryBranchId());
+		}
 		int monthlyCount = monthlyTxns.size();
 		int weeklyCount = 0;
 		int dailyCount = 0;
@@ -1124,8 +1158,13 @@ public class RemittanceTransactionManager {
 				weeklyCount++;
 			}
 		}
-		logger.debug("getCustomerTransactionCounts CustomerId" + meta.getCustomerId() + "\t dailyCount" + dailyCount
-				+ "\t monthlyCount :" + monthlyCount + "\t weeklyCount" + weeklyCount);
+		logger.debug("getCustomerTransactionCounts CustomerId" + meta.getCustomerId() + "\t dailyCount" + dailyCount+ "\t monthlyCount :" + monthlyCount + "\t weeklyCount" + weeklyCount);
+		
+		if(dailyCount==0 && applCount!=null && !applCount.isEmpty()) {
+			dailyCount = applCount.size();
+		}else if(dailyCount>0 && applCount!=null && !applCount.isEmpty()){
+			dailyCount = dailyCount+applCount.size();
+		}
 		output.put("10", dailyCount);
 		output.put("12", monthlyCount);
 		output.put("11", weeklyCount);
@@ -1478,8 +1517,7 @@ public class RemittanceTransactionManager {
 		applicationProcedureDao.getAdditionalCheckProcedure(remitApplParametersMap);
 	}
 
-	public RemittanceTransactionStatusResponseModel getTransactionStatus(
-			RemittanceTransactionStatusRequestModel request) {
+	public RemittanceTransactionStatusResponseModel getTransactionStatus(RemittanceTransactionStatusRequestModel request) {
 		RemittanceTransactionStatusResponseModel model = new RemittanceTransactionStatusResponseModel();
 		RemittanceTransaction remittanceTransaction = remitAppDao
 				.getRemittanceTransaction(request.getApplicationDocumentNumber(), request.getDocumentFinancialYear());
@@ -1540,10 +1578,10 @@ public class RemittanceTransactionManager {
 
 				model.setResponseCodeDetail(responseCodeDetail);
 			}
+			return model;
 		}
 		
-		return model;
-	}
+
 
 	private String getTransactionReference(RemittanceApplication application) {
 		try {
@@ -1661,6 +1699,54 @@ public class RemittanceTransactionManager {
 		}
 		return otpMmodel;
 	}
+	
+	
+	
+	private Boolean addOtpOnRemittanceV3(RemittanceTransactionDrRequestModel model) {
+
+		List<TransactionLimitCheckView> trnxLimitList = parameterService.getAllTxnLimits();
+		Boolean limitCheck= false;
+
+		BigDecimal onlineLimit = BigDecimal.ZERO;
+		BigDecimal androidLimit = BigDecimal.ZERO;
+		BigDecimal iosLimit = BigDecimal.ZERO;
+
+		for (TransactionLimitCheckView view : trnxLimitList) {
+			if (JaxChannel.ONLINE.toString().equals(view.getChannel())) {
+				onlineLimit = view.getComplianceChkLimit();
+			}
+			if (ANDROID.equals(view.getChannel())) {
+				androidLimit = view.getComplianceChkLimit();
+			}
+			if (IOS.equals(view.getChannel())) {
+				iosLimit = view.getComplianceChkLimit();
+			}
+		}
+
+		CivilIdOtpModel otpMmodel = null;
+		BigDecimal localAmount = (BigDecimal)remitApplParametersMap.get("P_CALCULATED_LC_AMOUNT");
+		if(!JaxUtil.isNullZeroBigDecimalCheck(localAmount)) {
+			localAmount = model.getLocalAmount();
+		}
+		
+	
+	logger.info("App Type :"+meta.getAppType()+"\t channel :"+meta.getChannel()+"\t localAmount :"+localAmount);
+		
+		if (((meta.getChannel().equals(JaxChannel.ONLINE)) && (WEB.equals(meta.getAppType()))
+				&& (localAmount.compareTo(onlineLimit) >= 0)) ||
+
+				(IOS.equals(meta.getAppType()) && localAmount.compareTo(iosLimit) >= 0) ||
+
+				(ANDROID.equals(meta.getAppType()) && localAmount.compareTo(androidLimit) >= 0)) {
+
+			List<ContactType> channel = new ArrayList<>();
+			channel.add(ContactType.SMS_EMAIL);
+			//otpMmodel = (CivilIdOtpModel) userService.sendOtpForCivilId(null, channel, null, null).getData().getValues().get(0);
+			limitCheck =true;
+		}
+		return limitCheck;
+	}
+	
 	
 	
 	/** added by Rabil on 27 May 2019 **/
