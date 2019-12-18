@@ -113,9 +113,6 @@ public class RemittanceApplAmlManager {
 				amlModel.setBlackListReason(sb.toString());
 			}
 			
-			 /* amlModel.setBlackListReason(amlDto.getBlackRemark1()==null?"":amlDto.getBlackRemark1()+" "+amlDto.getBlackRemark2()==null?"":","+amlDto.getBlackRemark2()
-					  +" "+amlDto.getBlackRemark3()==null?"":","+amlDto.getBlackRemark3()+" "+amlDto.getRiskLevel1()==null?"":","+amlDto.getRiskLevel1()
-					  +" "+amlDto.getRiskLevel2()==null?"":","+amlDto.getRiskLevel2()+" "+amlDto.getRiskLevel3()==null?"":","+amlDto.getRiskLevel3());*/
 			  }
 		  }
 		  	amlModel.setIsactive(ConstantDocument.Yes);
@@ -201,7 +198,7 @@ public class RemittanceApplAmlManager {
 		}else if(customer!=null && customer.getNationality().contains("PAKISTAN") && JaxUtil.isNullZeroBigDecimalCheck(trnxCount) && trnxCount.compareTo(BigDecimal.ONE)>1 ) {
 			amlDto.setHighValueTrnxFlag(ConstantDocument.Yes);
 			amlDto.setStopTrnxFlag(ConstantDocument.Yes);
-			amlDto.setRiskLevel2("No of Online Trn = "+trnxCount +" by Pakistan Nationality .");
+			amlDto.setRiskLevel3("No of Online Trn = "+trnxCount +" by Pakistan Nationality  on the same day.");
 		}
 		
 		
