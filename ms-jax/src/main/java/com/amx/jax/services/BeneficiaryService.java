@@ -199,7 +199,8 @@ public class BeneficiaryService extends AbstractService {
 	LoyalityPointService loyalityPointService;
 	@Autowired
 	ServiceGroupMasterRepository serviceGroupMasterRepository;
-	
+	@Autowired
+	BankService bankService;
 	
 	public ApiResponse getBeneficiaryListForOnline(BigDecimal customerId, BigDecimal applicationCountryId,BigDecimal beneCountryId,Boolean excludePackage) {
 		List<BenificiaryListView> beneList = null;
@@ -468,7 +469,9 @@ public class BeneficiaryService extends AbstractService {
 			if(null != loyalityState) {
 				remitPageDto.setLoyalityPointState(loyalityState);
 			}
-			
+			if (beneList.getServiceProvider() != null) {
+				remitPageDto.setServiceProviderBankCode(bankService.getBankById(beneList.getServiceProvider()).getBankCode());
+			}
 			response.getData().getValues().add(remitPageDto);
 			response.getData().setType(remitPageDto.getModelType());
 			response.setResponseStatus(ResponseStatus.OK);

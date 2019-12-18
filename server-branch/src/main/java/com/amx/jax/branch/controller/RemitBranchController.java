@@ -6,7 +6,6 @@ import java.math.BigDecimal;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,12 +29,14 @@ import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
 import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.request.device.SignaturePadRemittanceInfo;
+import com.amx.jax.model.request.remittance.BenePackageRequest;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.BranchRemittanceGetExchangeRateRequest;
 import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
 import com.amx.jax.model.request.remittance.CustomerBankRequest;
 import com.amx.jax.model.request.remittance.RoutingPricingRequest;
 import com.amx.jax.model.response.SourceOfIncomeDto;
+import com.amx.jax.model.response.customer.BenePackageResponse;
 import com.amx.jax.model.response.fx.FcSaleOrderManagementDTO;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
@@ -64,6 +65,7 @@ import com.amx.utils.JsonUtil;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.http.MediaType;
 
 @RestController
 @Api(value = "Remit  APIs")
@@ -121,7 +123,8 @@ public class RemitBranchController {
 	}
 
 	@RequestMapping(value = "/api/remitt/bnfcry/list", method = { RequestMethod.POST })
-	public AmxApiResponse<BeneficiaryListDTO, Object> beneList(@RequestParam(required = false, defaultValue = "false") boolean excludePackages) {
+	public AmxApiResponse<BeneficiaryListDTO, Object> beneList(
+			@RequestParam(required = false, defaultValue = "false") boolean excludePackages) {
 		return AmxApiResponse.buildList(beneClient.getBeneficiaryList(new BigDecimal(0), excludePackages).getResults());
 	}
 
@@ -131,7 +134,8 @@ public class RemitBranchController {
 			@RequestParam(required = false) BigDecimal transactionId) {
 		RemittancePageDto remittancePageDto = beneClient.defaultBeneficiary(beneId, transactionId).getResult();
 		if (!ArgUtil.isEmpty(beneId)) {
-			remittancePageDto.setPackages(branchRemittanceClient.getGiftService(beneId).getResult().getParameterDetailsDto());
+			remittancePageDto
+					.setPackages(branchRemittanceClient.getGiftService(beneId).getResult().getParameterDetailsDto());
 		}
 		return AmxApiResponse.build(remittancePageDto);
 	}
@@ -268,28 +272,25 @@ public class RemitBranchController {
 		// }
 	}
 
-
 	@RequestMapping(value = "/api/remitt/cart/report", method = { RequestMethod.GET }, produces = {
-		CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE,
-		CommonMediaType.APPLICATION_PDF_VALUE, CommonMediaType.TEXT_HTML_VALUE })
-	public ResponseEntity<byte[]> report(
-			 @RequestParam("ext") File.Type ext) throws PostManException, IOException {
+			CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE,
+			CommonMediaType.APPLICATION_PDF_VALUE, CommonMediaType.TEXT_HTML_VALUE })
+	public ResponseEntity<byte[]> report(@RequestParam("ext") File.Type ext) throws PostManException, IOException {
 
 		// duplicate = (duplicate == null || duplicate.booleanValue() == false) ? false
-		AmxApiResponse<BranchRemittanceApplResponseDto, Object> wrapper = branchRemittanceClient.fetchCustomerShoppingCart();
+		AmxApiResponse<BranchRemittanceApplResponseDto, Object> wrapper = branchRemittanceClient
+				.fetchCustomerShoppingCart();
 		if (File.Type.PDF.equals(ext)) {
-			File file = postManService.processTemplate(
-					new File(TemplatesMX.REMIT_APPLICATION_RECEIPT_JASPER,
-							wrapper, File.Type.PDF).lang(AppContextUtil.getTenant().defaultLang()))
+			File file = postManService
+					.processTemplate(new File(TemplatesMX.REMIT_APPLICATION_RECEIPT_JASPER, wrapper, File.Type.PDF)
+							.lang(AppContextUtil.getTenant().defaultLang()))
 					.getResult();
 			return PostManUtil.download(file);
 			// file.create(response, false);
 			// return null;
 		} else if (File.Type.HTML.equals(ext)) {
-			File file = postManService.processTemplate(
-					new File(TemplatesMX.REMIT_APPLICATION_RECEIPT_JASPER,
-							wrapper, null))
-					.getResult();
+			File file = postManService
+					.processTemplate(new File(TemplatesMX.REMIT_APPLICATION_RECEIPT_JASPER, wrapper, null)).getResult();
 			// return file.getContent();
 			return PostManUtil.download(file);
 		} else {
@@ -301,7 +302,6 @@ public class RemitBranchController {
 		// return JsonUtil.toJson(wrapper);
 		// }
 	}
-
 
 	@RequestMapping(value = "/api/remitt/tranx/email", method = { RequestMethod.GET })
 	public AmxApiResponse<BoolRespModel, Object> sendEmail(
@@ -338,11 +338,17 @@ public class RemitBranchController {
 
 	@RequestMapping(value = "/api/remitt/package/list", method = { RequestMethod.POST })
 	public AmxApiResponse<ParameterDetailsResponseDto, Object> getPackages(@RequestParam BigDecimal beneId) {
-			return branchRemittanceClient.getGiftService(beneId);
+		return branchRemittanceClient.getGiftService(beneId);
 	}
 
 	@RequestMapping(value = "/api/remitt/payment/link", method = { RequestMethod.POST })
 	public AmxApiResponse<PaymentLinkRespDTO, Object> sendPaymentLink() {
 		return branchRemittanceClient.createAndSendPaymentLink();
+	}
+
+	@RequestMapping(value = "/api/remitt/packages/preflex", method = { RequestMethod.POST })
+	public AmxApiResponse<BenePackageResponse, Object> getBenePackages(
+			@RequestBody BenePackageRequest benePackageRequest) {
+		return branchRemittanceClient.getBenePackages(benePackageRequest);
 	}
 }

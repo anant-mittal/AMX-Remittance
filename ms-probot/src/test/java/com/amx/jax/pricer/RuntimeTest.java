@@ -71,6 +71,16 @@ public final class RuntimeTest {
 	public static void main(String[] args)
 			throws NoSuchAlgorithmException, InvalidKeySpecException, IllegalBlockSizeException, BadPaddingException,
 			InvalidKeyException, NoSuchPaddingException, UnsupportedEncodingException {
+		
+		List<String> lst = new ArrayList<String>();
+		
+		lst.add("A");
+		lst.add("B");
+		lst.add("C");
+		lst.add("D");
+		lst.add("E");
+		
+		System.out.println(" List ==> " + lst.toString());
 
 		BigDecimal hrs = new BigDecimal(245).divide(new BigDecimal(60), 4, RoundingMode.HALF_EVEN);
 

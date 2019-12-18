@@ -111,6 +111,7 @@ import com.amx.jax.repository.remittance.LocalBankDetailsRepository;
 import com.amx.jax.service.BankMetaService;
 import com.amx.jax.service.CompanyService;
 import com.amx.jax.service.FinancialService;
+import com.amx.jax.serviceprovider.venteja.VentajaManager;
 import com.amx.jax.services.JaxEmailNotificationService;
 import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.services.RemittanceApplicationService;
@@ -242,6 +243,7 @@ public class BranchRemittanceSaveManager {
 
     @Autowired
     IRemittanceApplSplitRepository applSplitRepo;
+    
     @Autowired
     DailyPromotionManager dailyPromotionManager;
     
@@ -249,17 +251,8 @@ public class BranchRemittanceSaveManager {
     RemittanceTransactionRepository remittanceTransactionRepository;
     @Autowired
     JaxNotificationDataManager jaxNotificationDataManager;
-    
-    @Autowired
-	AuditService auditService;
-
-
-	@Autowired
-	JaxTenantProperties jaxTenantProperties;
-
-	@Autowired
-	BankMetaService bankMetaService;
-
+     @Autowired
+    VentajaManager ventajaManager;
 	@Autowired
 	RemittanceApplAmlManager applAmlManager;
     
@@ -274,8 +267,16 @@ public class BranchRemittanceSaveManager {
 	
 	
 	
+	@Autowired
+    	AuditService auditService;
 	
-
+	
+	@Autowired
+	JaxTenantProperties jaxTenantProperties;
+	
+	@Autowired
+	BankMetaService bankMetaService;
+	
 	/**
 	 * 
 	 * @param remittanceRequestModel
@@ -294,42 +295,7 @@ public class BranchRemittanceSaveManager {
 		
 		try {
 		// service Provider api
-		if(responseDto!=null && JaxUtil.isNullZeroBigDecimalCheck(responseDto.getCollectionDocumentNo())) {
-			Boolean spCheckStatus = Boolean.FALSE;
-			List<TransactionDetailsView> lstTrnxDetails = partnerTransactionDao.fetchTrnxSPDetails(metaData.getCustomerId(),responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo());
-			for (TransactionDetailsView transactionDetailsView : lstTrnxDetails) {
-				if(transactionDetailsView.getBankCode().equalsIgnoreCase(SERVICE_PROVIDER_BANK_CODE.HOME.name())) {
-					spCheckStatus = Boolean.TRUE;
-					serviceProviderView = transactionDetailsView;
-					break;
-				}
-			}
-
-			if(spCheckStatus) {
-				AmxApiResponse<Remittance_Call_Response, Object> apiResponse = partnerTransactionManager.callingPartnerApi(responseDto);
-				if(apiResponse != null) {
-					if(serviceProviderView != null && serviceProviderView.getPartnerSessionId() != null) {
-						partnerTransactionId = serviceProviderView.getPartnerSessionId();
-					}
-					RemitTrnxSPDTO remitTrnxSPDTO = partnerTransactionManager.saveRemitTransactionDetails(apiResponse,responseDto,partnerTransactionId);
-					if(remitTrnxSPDTO != null && remitTrnxSPDTO.getActionInd() != null && remitTrnxSPDTO.getResponseDescription() != null) {
-						// got success to fetch response from API
-						logger.info(" Service provider result Action Ind " +remitTrnxSPDTO.getActionInd() + " Description : " + remitTrnxSPDTO.getResponseDescription());
-					}else {
-						logger.error("Service provider api fail to execute : ColDocNo : ", responseDto.getCollectionDocumentNo() + " : ColDocCod : " +responseDto.getCollectionDocumentCode()+"  : ColDocYear : "+responseDto.getCollectionDocumentFYear());
-						auditService.log(new CActivityEvent(Type.TRANSACTION_CREATED,String.format("%s/%s", responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo())).field("STATUS").to(JaxTransactionStatus.PAYMENT_SUCCESS_SERVICE_PROVIDER_FAIL).result(Result.DONE));
-						throw new GlobalException("Transaction failed to send to Service Provider");
-					}
-				}else {
-					logger.error("Service provider api fail to execute : ColDocNo : ", responseDto.getCollectionDocumentNo() + " : ColDocCod : " +responseDto.getCollectionDocumentCode()+"  : ColDocYear : "+responseDto.getCollectionDocumentFYear());
-					auditService.log(new CActivityEvent(Type.TRANSACTION_CREATED,String.format("%s/%s", responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo())).field("STATUS").to(JaxTransactionStatus.PAYMENT_SUCCESS_SERVICE_PROVIDER_FAIL).result(Result.DONE));
-					throw new GlobalException("Transaction failed to send to Service Provider");
-				}
-			}
-		}else {
-			logger.error("Service provider api fail to execute : ColDocNo : ", responseDto.getCollectionDocumentNo() + " : ColDocCod : " +responseDto.getCollectionDocumentCode()+"  : ColDocYear : "+responseDto.getCollectionDocumentFYear());
-		}
-		logger.info("MRU --BEFORE appliation move to EMOS -->"+responseDto.getCollectionDocumentNo());
+		callThirdPartiesServices(responseDto);
 		
 		if(responseDto!=null && JaxUtil.isNullZeroBigDecimalCheck(responseDto.getCollectionDocumentNo())) {
 			brRemittanceDao.updateApplicationToMoveEmos(responseDto);
@@ -414,6 +380,7 @@ public class BranchRemittanceSaveManager {
 			mapAllDetailRemitSave.put("EX_REMIT_SPLIT", remitSplitMap);
 			validateSaveTrnxDetails(mapAllDetailRemitSave);
 			responseDto = brRemittanceDao.saveRemittanceTransaction(mapAllDetailRemitSave);
+			
 			auditService.log(new CActivityEvent(Type.TRANSACTION_CREATED,String.format("%s/%s", responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo())).field("STATUS").to(JaxTransactionStatus.PAYMENT_SUCCESS_APPLICATION_SUCCESS).result(Result.DONE));
 	}catch (GlobalException e) {
 			logger.error("routing  procedure", e.getErrorMessage() + "" + e.getErrorKey());
@@ -1301,7 +1268,8 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
 
  public TransferDto getTrasnferModeByBankServiceRule(RemittanceTransaction remitTrnx){
 	 Map<String,Object> mapBankServiceRule= routingProDao.checkBankServiceRule(remitTrnx);
-	 logger.debug("getTrasnferModeByBankServiceRule request json : {}", JsonUtil.toJson(remitTrnx));
+	 // commented below line as it was causing stackoverflow issue in logs
+	// logger.debug("getTrasnferModeByBankServiceRule request json : {}", JsonUtil.toJson(remitTrnx));
 	 TransferDto dto = new TransferDto();
 	 String transferMode=null;
 	 String fileCreation=ConstantDocument.No;
@@ -1400,6 +1368,8 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
 		try {
 			TransactionHistroyDTO trxnDto = new TransactionHistroyDTO();
 			Customer customer = customerDao.getCustById(metaData.getCustomerId());
+			
+			
 			paymentResponse.setCollectionDocumentCode(collectionDocCode);
 			paymentResponse.setCollectionDocumentNumber(collectionDocNo);
 			paymentResponse.setCollectionFinanceYear(collectionDocYear);
@@ -1412,6 +1382,7 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
 			trxnDto.setLanguageId(metaData.getLanguageId());
 			trxnDto.setApplicationCountryId(metaData.getCountryId());
 			trxnDto.setCustomerReference(customer.getCustomerReference());
+			
 			reportManagerService.generatePersonalRemittanceReceiptReportDetails(trxnDto, Boolean.TRUE);
 			List<RemittanceReceiptSubreport> rrsrl = reportManagerService.getRemittanceReceiptSubreportList();
 			PersonInfo personinfo = new PersonInfo();
@@ -1516,4 +1487,83 @@ public void validateSaveTrnxDetails(HashMap<String, Object> mapAllDetailRemitSav
 		return remitSplitMap;
 	}
 	
+// calling third party services
+	public void callThirdPartiesServices(RemittanceResponseDto responseDto) {
+		TransactionDetailsView serviceProviderView = null;
+		String partnerTransactionId = null;
+		Boolean homeSendCheckStatus = Boolean.FALSE;
+		Boolean ventajaCheckStatus = Boolean.FALSE;
+		
+		if(responseDto!=null && JaxUtil.isNullZeroBigDecimalCheck(responseDto.getCollectionDocumentNo())) {
+			List<TransactionDetailsView> lstTrnxDetails = partnerTransactionDao.fetchTrnxSPDetails(metaData.getCustomerId(),responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo(),responseDto.getCollectionDocumentCode());
+			for (TransactionDetailsView transactionDetailsView : lstTrnxDetails) {
+				if(transactionDetailsView.getBankCode().equalsIgnoreCase(SERVICE_PROVIDER_BANK_CODE.HOME.name())) {
+					homeSendCheckStatus = Boolean.TRUE;
+					serviceProviderView = transactionDetailsView;
+				}
+				
+				if(transactionDetailsView.getBankCode().equalsIgnoreCase(SERVICE_PROVIDER_BANK_CODE.VINTJA.name())) {
+					ventajaCheckStatus = Boolean.TRUE;
+				}
+			}
+			
+			// if timer in the service provider is priority
+			try {
+				
+			}catch (Exception e) {
+				// TODO: handle exception
+			}
+			
+			if(homeSendCheckStatus) {
+				partnerTransactionId = null;
+				AmxApiResponse<Remittance_Call_Response, Object> apiResponse = partnerTransactionManager.callingHomeSendPartnerApi(responseDto);
+				if(apiResponse != null) {
+					if(serviceProviderView != null && serviceProviderView.getPartnerSessionId() != null) {
+						partnerTransactionId = serviceProviderView.getPartnerSessionId();
+					}
+					RemitTrnxSPDTO remitTrnxSPDTO = partnerTransactionManager.saveRemitTransactionDetails(apiResponse,responseDto,partnerTransactionId,serviceProviderView.getDocumentNo(),serviceProviderView.getDocumentFinanceYear());
+					if(remitTrnxSPDTO != null && remitTrnxSPDTO.getActionInd() != null && remitTrnxSPDTO.getResponseDescription() != null) {
+						// got success to fetch response from API
+						logger.info(" Service provider result Action Ind " +remitTrnxSPDTO.getActionInd() + " Description : " + remitTrnxSPDTO.getResponseDescription());
+					}else {
+						logger.error("Service provider api fail to execute : ColDocNo : ", responseDto.getCollectionDocumentNo() + " : ColDocCod : " +responseDto.getCollectionDocumentCode()+"  : ColDocYear : "+responseDto.getCollectionDocumentFYear());
+						auditService.log(new CActivityEvent(Type.TRANSACTION_CREATED,String.format("%s/%s", responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo())).field("STATUS").to(JaxTransactionStatus.PAYMENT_SUCCESS_SERVICE_PROVIDER_FAIL).result(Result.DONE));
+						throw new GlobalException("Transaction failed to send to Service Provider");
+					}
+				}else {
+					logger.error("Service provider api fail to execute : ColDocNo : ", responseDto.getCollectionDocumentNo() + " : ColDocCod : " +responseDto.getCollectionDocumentCode()+"  : ColDocYear : "+responseDto.getCollectionDocumentFYear());
+					auditService.log(new CActivityEvent(Type.TRANSACTION_CREATED,String.format("%s/%s", responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo())).field("STATUS").to(JaxTransactionStatus.PAYMENT_SUCCESS_SERVICE_PROVIDER_FAIL).result(Result.DONE));
+					throw new GlobalException("Transaction failed to send to Service Provider");
+				}
+			}
+			
+			if(ventajaCheckStatus) {
+				partnerTransactionId = null;
+				Map<BigDecimal, Remittance_Call_Response> apiResponse = ventajaManager.callVentajaPartnerApi(responseDto);
+				for (Map.Entry<BigDecimal, Remittance_Call_Response> apiRes : apiResponse.entrySet()) {
+					if(apiRes.getValue() != null) {
+						AmxApiResponse<Remittance_Call_Response, Object> apiResult = AmxApiResponse.build(apiRes.getValue());
+						if(serviceProviderView != null && serviceProviderView.getPartnerSessionId() != null) {
+							partnerTransactionId = apiResult.getResult().getPartner_transaction_reference();
+						}
+						RemitTrnxSPDTO remitTrnxSPDTO = partnerTransactionManager.saveRemitTransactionDetails(apiResult,responseDto,partnerTransactionId,apiRes.getKey(),responseDto.getCollectionDocumentFYear());
+						if(remitTrnxSPDTO != null && remitTrnxSPDTO.getActionInd() != null && remitTrnxSPDTO.getResponseDescription() != null) {
+							// got success to fetch response from API
+							logger.info(" Service provider result Action Ind " +remitTrnxSPDTO.getActionInd() + " Description : " + remitTrnxSPDTO.getResponseDescription());
+						}else {
+							logger.error("Service provider api fail to execute : ColDocNo : ", responseDto.getCollectionDocumentNo() + " : ColDocCod : " +responseDto.getCollectionDocumentCode()+"  : ColDocYear : "+responseDto.getCollectionDocumentFYear());
+							auditService.log(new CActivityEvent(Type.TRANSACTION_CREATED,String.format("%s/%s", responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo())).field("STATUS").to(JaxTransactionStatus.PAYMENT_SUCCESS_SERVICE_PROVIDER_FAIL).result(Result.DONE));
+							throw new GlobalException("Transaction failed to send to Service Provider");
+						}
+					}else {
+						logger.error("Service provider api fail to execute : ColDocNo : ", responseDto.getCollectionDocumentNo() + " : ColDocCod : " +responseDto.getCollectionDocumentCode()+"  : ColDocYear : "+responseDto.getCollectionDocumentFYear());
+						auditService.log(new CActivityEvent(Type.TRANSACTION_CREATED,String.format("%s/%s", responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo())).field("STATUS").to(JaxTransactionStatus.PAYMENT_SUCCESS_SERVICE_PROVIDER_FAIL).result(Result.DONE));
+						throw new GlobalException("Transaction failed to send to Service Provider");
+					}
+				}
+			}
+		}else {
+			logger.error("Service provider api fail to execute : ColDocNo : ", responseDto.getCollectionDocumentNo() + " : ColDocCod : " +responseDto.getCollectionDocumentCode()+"  : ColDocYear : "+responseDto.getCollectionDocumentFYear());
+		}
+	}
 }
