@@ -10,10 +10,8 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.jax.async.ExecutorConfig;
 import com.amx.jax.client.JaxClientUtil;
 import com.amx.jax.customer.manager.CustomerContactVerificationManager;
 import com.amx.jax.customer.repository.RemittanceRepository;
@@ -21,16 +19,18 @@ import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerContactVerification;
 import com.amx.jax.dbmodel.ReferralDetails;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
+import com.amx.jax.dict.AmxEnums.CommunicationEvents;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.dict.Language;
 import com.amx.jax.event.AmxTunnelEvents;
-import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.client.PushNotifyClient;
+import com.amx.jax.postman.client.WhatsAppClient;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.TemplatesMX;
+import com.amx.jax.postman.model.WAMessage;
 import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.tunnel.DBEvent;
 import com.amx.jax.tunnel.ITunnelSubscriber;
@@ -39,6 +39,8 @@ import com.amx.jax.tunnel.TunnelEventXchange;
 import com.amx.jax.userservice.dao.ReferralDetailsDao;
 import com.amx.jax.userservice.manager.CustomerFlagManager;
 import com.amx.jax.util.AmxDBConstants;
+import com.amx.jax.util.CommunicationPrefsUtil;
+import com.amx.jax.util.CommunicationPrefsUtil.CommunicationPrefsResult;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
 
@@ -65,13 +67,14 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 
 	@Autowired
 	RemittanceRepository remittanceTransactionRepository;
+	
+	@Autowired
+	CommunicationPrefsUtil communicationPrefsUtil;
+	
+	@Autowired
+	WhatsAppClient whatsAppClient;
 
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
-
-	// EMAIL:MOBILE:CUST_NAME:TRNXAMT:LOYALTY:TRNREF:TRNDATE:LANG_ID:TNT
-	// private static final String EMAIL = "EMAIL";
-	// private static final String MOBILE = "MOBILE";
-	// private static final String CUST_NAME = "CUST_NAME";
 	private static final String CUST_ID = "CUST_ID";
 	private static final String TRANX_ID = "TRANX_ID";
 	private static final String TRNXAMT = "TRNXAMT";
@@ -84,7 +87,8 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 
 	@Override
 	public void onMessage(String channel, DBEvent event) {
-		LOGGER.debug("======onMessage1==={} ====  {}", channel, JsonUtil.toJson(event));
+		LOGGER.info("======onMessage1==={} ====  {}", channel, JsonUtil.toJson(event));
+
 		BigDecimal custId = ArgUtil.parseAsBigDecimal(event.getData().get(CUST_ID));
 		BigDecimal trnxAmount = ArgUtil.parseAsBigDecimal(event.getData().get(TRNXAMT));
 		BigDecimal loyality = ArgUtil.parseAsBigDecimal(event.getData().get(LOYALTY));
@@ -105,11 +109,10 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 		} else {
 			custName = c.getFirstName() + ' ' + c.getMiddleName() + ' ' + c.getLastName();
 		}
+
 		NumberFormat myFormat = NumberFormat.getInstance();
 		myFormat.setGroupingUsed(true);
 		String trnxAmountval = myFormat.format(trnxAmount);
-
-		Boolean isOnlineCustomer = false;
 		Map<String, Object> wrapper = new HashMap<String, Object>();
 		Map<String, Object> modeldata = new HashMap<String, Object>();
 		modeldata.put("to", emailId);
@@ -123,11 +126,26 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 		modeldata.put("verCode", JaxClientUtil.getTransactionVeryCode(tranxId).output());
 
 		wrapper.put("data", modeldata);
+		CommunicationPrefsResult communicationPrefsResult = communicationPrefsUtil.forCustomer(CommunicationEvents.TRNX_BENE_CREDIT, c);
+		TemplatesMX templatesMX=null;
+		switch (type) {
+		case "CASH":
+			templatesMX=TemplatesMX.CASH;
+			break;
+		case "TT":
+			templatesMX=TemplatesMX.TT;
+			break;
+		case "EFT":
+			templatesMX=TemplatesMX.EFT;
+			break;
+		default:
+			break;
+		}
+		
+		if (communicationPrefsResult.isEmail()) {
 
-		if (!ArgUtil.isEmpty(emailId)) {
-
-			LOGGER.info("email verified is " + c.getEmailVerified());
 			if (c.getEmailVerified() != AmxDBConstants.Status.Y) {
+
 				CustomerContactVerification x = null;
 				try {
 					x = customerContactVerificationManager.create(c, ContactType.EMAIL);
@@ -136,8 +154,6 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 				}
 
 				modeldata.put("verifylink", x);
-
-				LOGGER.debug("Model data is {}", modeldata.get("verifylink"));
 
 			} else {
 				modeldata.put("customer", custName);
@@ -152,30 +168,16 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 				email.setLang(Language.EN);
 				modeldata.put("languageid", Language.EN);
 			}
-
-			LOGGER.debug("Json value of wrapper is " + JsonUtil.toJson(wrapper));
-
+			LOGGER.info("Json value of wrapper is " + JsonUtil.toJson(wrapper));
 			email.setModel(wrapper);
 			email.addTo(emailId);
 			email.setHtml(true);
 			email.setSubject("Transaction Credit Notification"); // changed as per BA
-			switch (type) {
-			case "CASH":
-				email.setITemplate(TemplatesMX.CASH);
-				break;
-			case "TT":
-				email.setITemplate(TemplatesMX.TT);
-				break;
-			case "EFT":
-				email.setITemplate(TemplatesMX.EFT);
-				break;
-			default:
-				break;
-			}
-			sendEmail(email);
+			email.setITemplate(templatesMX);
+			postManService.sendEmailAsync(email);
 		}
 
-		if (!ArgUtil.isEmpty(smsNo) && isOnlineCustomer) {
+		if (communicationPrefsResult.isSms()) {
 			if (c.getMobileVerified() != AmxDBConstants.Status.Y) {
 				CustomerContactVerification x = customerContactVerificationManager.create(c, ContactType.SMS);
 				modeldata.put("customer", c);
@@ -195,19 +197,7 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 			sms.addTo(c.getMobile());
 			sms.setModel(wrapper);
 			sms.setSubject("Transaction Credit Notification");
-			switch (type) {
-			case "CASH":
-				sms.setITemplate(TemplatesMX.CASH);
-				break;
-			case "TT":
-				sms.setITemplate(TemplatesMX.TT);
-				break;
-			case "EFT":
-				sms.setITemplate(TemplatesMX.EFT);
-				break;
-			default:
-				break;
-			}
+			sms.setITemplate(templatesMX);
 			postManService.sendSMSAsync(sms);
 
 		}
@@ -223,60 +213,45 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 
 				if (referralDetails.getRefferedByCustomerId() != null) {
 					PushMessage pushMessage = new PushMessage();
-//					pushMessage.setSubject("Refer To Win!");
-//					pushMessage.setMessage(
-//							"Congratulations! Your reference has done the first transaction on AMIEC App! You will get a chance to win from our awesome Referral Program! Keep sharing the links to as many contacts you can and win exciting prices on referral success!");
-					pushMessage.setITemplate(TemplatesMX.FRIEND_REFERED);
+					/*
+					 * pushMessage.setSubject("Refer To Win!"); pushMessage.setMessage(
+					 * "Congratulations! Your reference has done the first transaction on AMIEC App! You will get a chance to win from our awesome Referral Program! Keep sharing the links to as many contacts you can and win exciting prices on referral success!"
+					 * );
+					 */ pushMessage.setITemplate(TemplatesMX.FRIEND_REFERED);
 					pushMessage.addToUser(referralDetails.getRefferedByCustomerId());
 					pushNotifyClient.send(pushMessage);
 				}
 
 				if (referralDetails.getCustomerId() != null) {
 					PushMessage pushMessage = new PushMessage();
-//					pushMessage.setSubject("Refer To Win!");
-//					pushMessage.setMessage(
-//							"Welcome to Al Mulla family! Win a chance to get exciting offers at Al Mulla Exchange by sharing the links to as many contacts as you can.");
-					pushMessage.setITemplate(TemplatesMX.FRIEND_REFER);
+					/*
+					 * pushMessage.setSubject("Refer To Win!"); pushMessage.setMessage(
+					 * "Welcome to Al Mulla family! Win a chance to get exciting offers at Al Mulla Exchange by sharing the links to as many contacts as you can."
+					 * );
+					 */ pushMessage.setITemplate(TemplatesMX.FRIEND_REFER);
 					pushMessage.addToUser(referralDetails.getCustomerId());
 					pushNotifyClient.send(pushMessage);
 				}
 			}
 
 		}
+		
+		if(communicationPrefsResult.isWhatsApp()) {
+			WAMessage waMessage = new WAMessage();
+			waMessage.addTo(c.getWhatsappPrefix() + c.getWhatsapp());
+			waMessage.setModel(wrapper);
+			waMessage.setITemplate(templatesMX);
+			whatsAppClient.send(waMessage);
+		}
 
-		if (!ArgUtil.isEmpty(custId)) {
+		if (!ArgUtil.isEmpty(custId)&&communicationPrefsResult.isPushNotify()) {
 			PushMessage pushMessage = new PushMessage();
-
-			switch (type) {
-			case "CASH":
-				pushMessage.setITemplate(TemplatesMX.CASH);
-				break;
-			case "TT":
-				pushMessage.setITemplate(TemplatesMX.TT);
-				break;
-			case "EFT":
-				pushMessage.setITemplate(TemplatesMX.EFT);
-				break;
-			default:
-				break;
-			}
+			pushMessage.setITemplate(templatesMX);
 			pushMessage.setId(AmxTunnelEvents.Names.TRNX_BENE_CREDIT + tranxId);
-			pushMessage.setModel(wrapper);
 			pushMessage.addToUser(custId);
 			pushMessage.setModel(wrapper);
 			pushNotifyClient.send(pushMessage);
 		}
 
 	}
-
-	@Async(ExecutorConfig.DEFAULT)
-	public void sendEmail(Email email) {
-		try {
-			postManService.sendEmailAsync(email);
-		} catch (PostManException e) {
-			LOGGER.debug("email exception");
-			
-		}
-	}
-
 }

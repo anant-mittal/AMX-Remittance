@@ -50,7 +50,14 @@ public class CustomerDiscountManager {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CustomerDiscountManager.class);
 
-	private static final BigDecimal BtrRateIndicatorMarginPercent = new BigDecimal(0.15).setScale(2,
+	// private static final BigDecimal BtrRateIndicatorMarginPercent = new
+	// BigDecimal(0.15).setScale(2,
+	// RoundingMode.HALF_EVEN);
+
+	/**
+	 * Changed to 50% Tolerance : 17th Dec 2019.
+	 */
+	private static final BigDecimal BtrRateIndicatorMarginPercent = new BigDecimal(0.50).setScale(2,
 			RoundingMode.HALF_EVEN);
 
 	@Autowired
