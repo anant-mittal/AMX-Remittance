@@ -232,7 +232,7 @@ public class CustomerIdProofManager {
 		CustomerIdProof idProof = getCustomerIdProofByCustomerId(customerId);
 		if(idProof != null) {
 			idProof.setIdentityStatus(AmxDBConstants.Compliance);
+			customerIdProofRepository.save(idProof);
 		}
-		customerIdProofRepository.save(idProof);
 	}
 }
