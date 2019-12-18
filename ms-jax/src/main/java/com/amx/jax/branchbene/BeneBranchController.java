@@ -13,10 +13,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.jax.JaxAuthContext;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.branch.IBranchBeneService;
 import com.amx.jax.client.serviceprovider.RoutingBankMasterDTO;
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.manager.EmployeeAuthManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.BeneficiaryListDTO;
@@ -83,6 +85,7 @@ public class BeneBranchController implements IBranchBeneService {
 	@ApiOperation("add bene bank")
 	public AmxApiResponse<AddBeneResponse, Object> addBeneBank(@RequestBody @Valid AddBeneBankRequest request) {
 		logger.debug("request addBeneBank: {} ", JsonUtil.toJson(request));
+		JaxAuthContext.contactType(ContactType.NOTP_APP);
 		beneBranchValidation.validateaddBeneBank(request);
 		employeeAuthManager.validateAndSendOtp(metaData.getEmployeeId());
 		AddBeneResponse result = beneBranchService.addBeneBankorCash(request);
@@ -94,6 +97,7 @@ public class BeneBranchController implements IBranchBeneService {
 	@ApiOperation("add bene cash")
 	public AmxApiResponse<AddBeneResponse, Object> addBenecash(@RequestBody @Valid AddBeneCashRequest request) {
 		logger.debug("request addBenecash: {} ", JsonUtil.toJson(request));
+		JaxAuthContext.contactType(ContactType.NOTP_APP);
 		beneBranchValidation.validateaddBenecash(request);
 		employeeAuthManager.validateAndSendOtp(metaData.getEmployeeId());
 		AddBeneResponse result = beneBranchService.addBeneBankorCash(request);
@@ -139,6 +143,7 @@ public class BeneBranchController implements IBranchBeneService {
 	@ApiOperation("add bene bank")
 	public AmxApiResponse<BoolRespModel, Object> updateBeneBank(@RequestBody @Valid UpdateBeneBankRequest request) {
 		logger.debug("request updateBeneBank: {} ", JsonUtil.toJson(request));
+		JaxAuthContext.contactType(ContactType.NOTP_APP);
 		beneBranchValidation.validateUpdateBeneBank(request);
 		employeeAuthManager.validateAndSendOtp(metaData.getEmployeeId());
 		beneBranchService.updateBeneBankorCash(request);
@@ -150,6 +155,7 @@ public class BeneBranchController implements IBranchBeneService {
 	@ApiOperation("update bene bank")
 	public AmxApiResponse<BoolRespModel, Object> updateBeneCash(@RequestBody @Valid UpdateBeneCashRequest request) {
 		logger.debug("request updateBeneBank: {} ", JsonUtil.toJson(request));
+		JaxAuthContext.contactType(ContactType.NOTP_APP);
 		beneBranchValidation.validateUpdateBeneCash(request);
 		employeeAuthManager.validateAndSendOtp(metaData.getEmployeeId());
 		beneBranchService.updateBeneBankorCash(request);

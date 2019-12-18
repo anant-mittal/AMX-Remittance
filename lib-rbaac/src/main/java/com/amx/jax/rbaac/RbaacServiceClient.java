@@ -384,7 +384,7 @@ public class RbaacServiceClient implements IRbaacService {
 	public AmxApiResponse<OfflineOtpData, Object> generateOfflineOtpPrefix(BigDecimal employeeId) {
 		LOGGER.debug("in generateOfflineOtpPrefix");
 		String url = appConfig.getAuthURL() + ApiEndPoints.GENERATE_OFFLINE_OTP_PREFIX;
-		return restService.ajax(url).queryParam(Params.EMPLOYEE_ID, employeeId)
+		return restService.ajax(url).queryParam(Params.EMPLOYEE_ID, employeeId).get()
 				.as(new ParameterizedTypeReference<AmxApiResponse<OfflineOtpData, Object>>() {
 				});
 	}
@@ -393,7 +393,7 @@ public class RbaacServiceClient implements IRbaacService {
 	public AmxApiResponse<BoolRespModel, Object> validateOfflineOtp(BigDecimal employeeId, String otp) {
 		LOGGER.debug("in validateOfflineOtp");
 		String url = appConfig.getAuthURL() + ApiEndPoints.VALIDATE_OFFLINE_OTP;
-		return restService.ajax(url).queryParam(Params.EMPLOYEE_ID, employeeId)
+		return restService.ajax(url).queryParam(Params.EMPLOYEE_ID, employeeId).queryParam(Params.OTP, otp).get()
 				.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 				});
 	}
