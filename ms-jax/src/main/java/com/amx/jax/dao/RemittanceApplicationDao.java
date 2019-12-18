@@ -2,6 +2,7 @@ package com.amx.jax.dao;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 import javax.transaction.Transactional;
 
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.jax.branchremittance.dao.BranchRemittanceDao;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.PlaceOrder;
@@ -40,6 +42,7 @@ import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.repository.RemittanceTransactionRepository;
 import com.amx.jax.service.FinancialService;
 import com.amx.jax.userservice.dao.ReferralDetailsDao;
+import com.amx.jax.util.JaxUtil;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -81,33 +84,60 @@ public class RemittanceApplicationDao {
     @Autowired
     IRemittanceApplSplitRepository remittanceApplSplitRepository;
     
+    @Autowired
+    BranchRemittanceDao brRemitDao;
+    
+    
+    
+    /**
+     
+     public BigDecimal generateDocumentNumber(BigDecimal appCountryId, BigDecimal companyId, BigDecimal documentId, BigDecimal finYear, BigDecimal branchId) {
+		Map<String, Object> output = applicationProcedureDao.getDocumentSeriality(appCountryId, companyId, documentId, finYear, ConstantDocument.Update, branchId);
+		BigDecimal no = (BigDecimal) output.get("P_DOC_NO");
+		return (BigDecimal) output.get("P_DOC_NO");
+	}
+     
+     
+     */
+    
     
 	@Transactional
 	public void saveAllApplicationData(RemittanceApplication app, RemittanceAppBenificiary appBene,
 			List<AdditionalInstructionData> additionalInstrumentData,RemitApplSrvProv remitApplSrvProv,List<RemittanceApplicationSplitting>  applSplitList ,RemitApplAmlModel remitApplAml) {
 
-		RemittanceApplication applSave1 = appRepo.save(app);
-		appBeneRepo.save(appBene);
-		addlInstDataRepo.save(additionalInstrumentData);
-		if (remitApplSrvProv != null) {
-			remitApplSrvProv.setRemittanceApplicationId(app.getRemittanceApplicationId());
-			remitApplSrvProvRepository.save(remitApplSrvProv);
-		}
 		
-
-		if(remitApplAml!=null) {
-			remitApplAml.setExRemittanceAppfromAml(applSave1);
-			applAmlRepository.save(remitApplAml);
-		}
-
-		if(applSplitList !=null && !applSplitList.isEmpty()) {
-			for(RemittanceApplicationSplitting applSplit : applSplitList) {				
-				applSplit.setDocumentNo(applSave1.getDocumentNo());
-				applSplit.setRemittanceApplicationId(applSave1);
-				remittanceApplSplitRepository.save(applSplit);
+		if(app!=null) {
+				BigDecimal documentNo =brRemitDao.generateDocumentNumber(app.getFsCountryMasterByApplicationCountryId().getCountryId(), app.getFsCompanyMaster().getCompanyId(),
+						app.getDocumentCode(), app.getDocumentFinancialyear(), app.getLoccod());
+				if (!JaxUtil.isNullZeroBigDecimalCheck(documentNo)) {
+					throw new GlobalException(JaxError.INVALID_APPLICATION_DOCUMENT_NO, "Application document number shouldnot be null or blank");
+				}
+				
+			app.setDocumentNo(documentNo);	
+			RemittanceApplication applSave1 = appRepo.save(app);
+			appBeneRepo.save(appBene);
+			addlInstDataRepo.save(additionalInstrumentData);
+			if (remitApplSrvProv != null) {
+				remitApplSrvProv.setRemittanceApplicationId(app.getRemittanceApplicationId());
+				remitApplSrvProvRepository.save(remitApplSrvProv);
 			}
-		}
+			
 	
+			if(remitApplAml!=null) {
+				remitApplAml.setExRemittanceAppfromAml(applSave1);
+				applAmlRepository.save(remitApplAml);
+			}
+	
+			if(applSplitList !=null && !applSplitList.isEmpty()) {
+				for(RemittanceApplicationSplitting applSplit : applSplitList) {				
+					applSplit.setDocumentNo(applSave1.getDocumentNo());
+					applSplit.setRemittanceApplicationId(applSave1);
+					remittanceApplSplitRepository.save(applSplit);
+				}
+			}
+		}else {
+			throw new GlobalException(JaxError.INVALID_APPLICATION_DOCUMENT_NO, "Application document number shouldnot be null or blank");
+		}
 
 		logger.info("Application saved in the database, docNo: " + app.getDocumentNo());
 	}

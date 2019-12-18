@@ -16,7 +16,7 @@ public class DateTest { // Noncompliant
 	 * @param args
 	 * @throws ParseException
 	 */
-	public static void main(String[] args) throws ParseException {
+	public static void main2(String[] args) throws ParseException {
 		Date sysDate = new Date(0L);
 		System.out.println("=====" + sysDate.toString());
 		
@@ -26,6 +26,10 @@ public class DateTest { // Noncompliant
 		System.out.println("=====" + oldString);
 		sdf.setTimeZone(new SimpleTimeZone(SimpleTimeZone.UTC_TIME, "UTC"));
 		System.out.println("=====" + sdf.parse(oldString).toString());
+	}
+	
+	public static void main(String[] args) throws ParseException {
+		
 	}
 
 }

@@ -16,11 +16,14 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.model.DailyPromotionDTO;
 import com.amx.amxlib.model.PromotionDto;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.dao.DailyPromotionDao;
 import com.amx.jax.dao.PromotionDao;
 import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.CountryBranchMdlv1;
+import com.amx.jax.dbmodel.CountryTelCodeSerializer;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.promotion.PromotionDetailModel;
 import com.amx.jax.dbmodel.promotion.PromotionHeader;
@@ -39,6 +42,8 @@ import com.amx.jax.service.CountryBranchService;
 import com.amx.jax.service.FinancialService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.DateUtil;
+import com.amx.utils.ArgUtil;
+import com.amx.utils.JsonUtil;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -69,6 +74,8 @@ public class PromotionManager {
 	@Autowired
 	CountryBranchRepository countryBranchRepository;
 	
+	@Autowired
+	DailyPromotionDao dailyPromotionDao;
 
 
 	/**
@@ -90,7 +97,6 @@ public class PromotionManager {
 			PromotionDto dto = null;
 			RemittanceTransaction remittanceTransaction = remittanceApplicationDao
 					.getRemittanceTransactionByRemitDocNo(docNoRemit, docFinyear);
-
 			List<PromotionDetailModel> models = promotionDao.getPromotionDetailModel(docFinyear, docNoRemit);
 			if (models != null && models.size() > 0) {
 				dto = new PromotionDto();
@@ -117,7 +123,23 @@ public class PromotionManager {
 			return null;
 		}
 	}
-
+	
+	public PromotionDto getPromotionDtoJP(BigDecimal docFinyear, BigDecimal docNoRemit) {
+		try {
+			PromotionDto dto = new PromotionDto();
+			//DailyPromotionDTO dailyPromotionDTO=new DailyPromotionDTO();
+			CountryBranchMdlv1 countryBranchMdlv1 = countryBranchRepository.findByCountryBranchId(metaData.getCountryBranchId());
+			DailyPromotionDTO dailyPromotionDTO=dailyPromotionDao.applyJolibeePadalaCoupons(docFinyear,docNoRemit,countryBranchMdlv1.getBranchId());
+			logger.debug("Daily promotion dto is "+dailyPromotionDTO.getPromotionMsg());
+			if(!ArgUtil.isEmpty(dailyPromotionDTO.getPromotionMsg())) {
+				dto.setPrizeMessage(dailyPromotionDTO.getPromotionMsg());
+			}
+			return dto;
+		} catch (Exception e) {
+			logger.debug("error occured in get promo dto JB", e);
+			return null;
+		}
+	}
 	private boolean isPromotionValid(List<PromotionHeader> promoHeaders) {
 		if (promoHeaders != null && promoHeaders.size() > 0) {
 			for (PromotionHeader ph : promoHeaders) {
@@ -133,7 +155,7 @@ public class PromotionManager {
 		try {
 			BigDecimal branchId = countryBranchService.getCountryBranchByCountryBranchId(metaData.getCountryBranchId())
 					.getBranchId();
-			promotionDao.callGetPromotionPrize(documentNoRemit, documentFinYearRemit, branchId);
+			String promoMsg= promotionDao.callGetPromotionPrize(documentNoRemit, documentFinYearRemit, branchId);
 			PromotionDto promotDto = getPromotionDto(documentNoRemit, documentFinYearRemit);
 			if (promotDto != null) {
 				logger.info("Sending promo winner Email to helpdesk : ");
@@ -221,4 +243,28 @@ public class PromotionManager {
 		return null;
 	}
 }	
+	public PromotionDto getJolibeePromotion(BigDecimal docNoRemit, BigDecimal docFinyear) {
+		try {
+			PromotionDto dto = null;
+			logger.debug("Document No remit "+docNoRemit +"Doc fin year "+docFinyear);
+			RemittanceTransaction remittanceTransaction = remittanceApplicationDao
+					.getRemittanceTransactionByRemitDocNo(docNoRemit, docFinyear);
+			
+			List<PromotionDetailModel> models = promotionDao.getPromotionDetailModel(docFinyear, docNoRemit);
+			
+			logger.debug("Model size is "+models.size());
+			if (null!=models && models.size() > 0) {
+				dto = new PromotionDto();
+				dto.setPrize(models.get(0).getPrize());
+				dto.setPrizeMessage("Congrats! Free Jollibee meal voucher for your transaction");
+				dto.setTransactionReference(remittanceTransaction.getDocumentFinanceYear().toString() + " / "
+						+ remittanceTransaction.getDocumentNo().toString());
+			} 
+			
+			return dto;
+		} catch (Exception e) {
+			logger.debug("error occured in get promo dto", e);
+			return null;
+		}
+	}
 }	

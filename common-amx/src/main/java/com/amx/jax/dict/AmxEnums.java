@@ -23,7 +23,7 @@ public class AmxEnums {
 	}
 
 	public static enum Products implements EnumType {
-		REMIT, FXORDER, HOME, OFFICE,REMITLINK;
+		REMIT, REMIT_SINGLE, FXORDER, HOME, OFFICE,REMITLINK;
 	}
 
 	public static enum FxOrderStatus implements EnumType {
@@ -31,16 +31,16 @@ public class AmxEnums {
 	}
 
 	public static enum CommunicationEvents implements CommunicationEvent {
-		NEW_DEVICE_LOGIN,BIRTHDAY_WISHES,
-		CASH_PICKUP_BANK, CASH_PICKUP_WU, CASH_PICKUP_TF;
-
-		public static CommunicationEvent fromString(String eventStr) {
-			CommunicationEvent x = (CommunicationEvent) ArgUtil.parseAsEnum(eventStr, CommunicationEvents.class);
-			if (ArgUtil.isEmpty(x)) {
-				return new CommunicationEventModel(eventStr);
-			}
-			return x;
+		CASH_PICKUP_BANK, CASH_PICKUP_WU, CASH_PICKUP_TF, BIRTHDAY_WISHES, NEW_DEVICE_LOGIN, BPI_JOLLIBEE,
+		ADD_BENEFICIARY, TRNX_BENE_CREDIT, REMITTANCE;
+	
+	public static CommunicationEvent fromString(String eventStr) {
+		CommunicationEvent x = (CommunicationEvent) ArgUtil.parseAsEnum(eventStr, CommunicationEvents.class);
+		if (ArgUtil.isEmpty(x)) {
+			return new CommunicationEventModel(eventStr);
 		}
+		return x;
+	}
 	}
 
 }

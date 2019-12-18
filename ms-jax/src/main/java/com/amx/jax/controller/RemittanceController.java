@@ -30,6 +30,7 @@ import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerRating;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
+import com.amx.jax.dict.AmxEnums;
 import com.amx.jax.dict.Language;
 import com.amx.jax.manager.RemittancePaymentManager;
 import com.amx.jax.meta.MetaData;
@@ -43,6 +44,7 @@ import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.RemittanceApplicationResponseModel;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.postman.client.PushNotifyClient;
+import com.amx.jax.repository.RemittanceTransactionRepository;
 import com.amx.jax.services.CustomerRatingService;
 import com.amx.jax.services.PurposeOfTransactionService;
 import com.amx.jax.services.RemittanceTransactionService;
@@ -52,6 +54,9 @@ import com.amx.jax.userservice.dao.ReferralDetailsDao;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.ConverterUtil;
 import com.amx.jax.util.JaxContextUtil;
+import com.amx.utils.JsonUtil;
+
+import springfox.documentation.spring.web.json.Json;
 
 @RestController
 @RequestMapping(REMIT_API_ENDPOINT)
@@ -101,6 +106,9 @@ public class RemittanceController {
 
 	@Autowired
 	protected AmxMeta amxMeta;
+	
+	@Autowired
+	RemittanceTransactionRepository remittanceTransactionRepo;
 
 	@RequestMapping(value = "/trnxHist/", method = RequestMethod.GET)
 	public ApiResponse getTrnxHistroyDetailResponse(@RequestParam(required = false, value = "docfyr") BigDecimal docfyr,
@@ -200,6 +208,7 @@ public class RemittanceController {
 	public ApiResponse saveRemittance(@RequestBody PaymentResponseDto paymentResponse) {
 		JaxContextUtil.setJaxEvent(JaxEvent.CREATE_REMITTANCE);
 		JaxContextUtil.setRequestModel(paymentResponse);
+		logger.debug("Save remnittance request "+JsonUtil.toJson(paymentResponse));
 		logger.info("save-Remittance Controller :" + paymentResponse.getCustomerId() + "\t country ID :");
 		logger.debug("Payment respone is " + paymentResponse.toString());
 		logger.debug("save-Remittance Controller :" + paymentResponse.getCustomerId() + "\t country ID :"
@@ -243,8 +252,14 @@ public class RemittanceController {
 //				pushNotifyClient.send(pushMessage);	
 //			}
 ////		}	
-
-		ApiResponse response = remittancePaymentManager.paymentCapture(paymentResponse);
+		
+		logger.info("paymentResponse :"+JsonUtil.toJson(paymentResponse));
+		ApiResponse response = null;
+		if(paymentResponse!=null && paymentResponse.getProduct().equals(AmxEnums.Products.REMIT_SINGLE)) { /** for compatability **/
+			response = remittancePaymentManager.paymentCapture(paymentResponse);
+		}else {
+			response = remittancePaymentManager.paymentCaptureV2(paymentResponse);
+		}
 		return response;
 	}
 
