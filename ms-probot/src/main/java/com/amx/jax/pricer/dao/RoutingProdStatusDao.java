@@ -23,9 +23,9 @@ public class RoutingProdStatusDao {
 		return repo.findByCurrencyIdAndCountryId(currencyId, countryId);
 	}
 
-	public List<VwExRoutingProductStatus> getByCurrencyIdAndCountryIdAndBankIdIn(BigDecimal currencyId,
-			BigDecimal countryId, Iterable<BigDecimal> bankIds) {
-		return repo.findByCurrencyIdAndCountryIdAndBankIdIn(currencyId, countryId, bankIds);
+	public List<VwExRoutingProductStatus> getByCurrencyIdAndDestinationCountryId(BigDecimal currencyId,
+			BigDecimal dCountryId) {
+		return repo.findByCurrencyIdAndDestinationCountryId(currencyId, dCountryId);
 	}
 
 }

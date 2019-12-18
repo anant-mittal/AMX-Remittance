@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.pricer.dao.BankMasterDao;
 import com.amx.jax.pricer.dao.CurrencyMasterDao;
-import com.amx.jax.pricer.dao.RoutingDaoAlt;
+import com.amx.jax.pricer.dao.DeliveryModeDescDao;
 import com.amx.jax.pricer.dao.RoutingProdStatusDao;
 import com.amx.jax.pricer.dao.TreasuryFTImpactDao;
 import com.amx.jax.pricer.dao.ViewExGLCBALDao;
@@ -24,29 +24,27 @@ import com.amx.jax.pricer.dao.VwExGLCBalProvDao;
 import com.amx.jax.pricer.dao.VwGlcbalProvProductDao;
 import com.amx.jax.pricer.dbmodel.BankMasterModel;
 import com.amx.jax.pricer.dbmodel.CurrencyMasterModel;
-import com.amx.jax.pricer.dbmodel.RoutingHeader;
+import com.amx.jax.pricer.dbmodel.DeliveryModeDesc;
 import com.amx.jax.pricer.dbmodel.TreasuryFundTimeImpact;
 import com.amx.jax.pricer.dbmodel.ViewExGLCBAL;
 import com.amx.jax.pricer.dbmodel.ViewExGLCBalProvisional;
 import com.amx.jax.pricer.dbmodel.VwExGlcbalProvByProduct;
 import com.amx.jax.pricer.dbmodel.VwExRoutingProductStatus;
+import com.amx.jax.pricer.dto.DeliveryModeStatusInfo;
 import com.amx.jax.pricer.dto.RemitModeStatusInfo;
 import com.amx.jax.pricer.dto.RoutingProductStatusDetails;
 import com.amx.jax.pricer.dto.RoutingProductStatusInfo;
 import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
+import com.amx.jax.pricer.var.PricerServiceConstants;
 import com.amx.jax.pricer.var.PricerServiceConstants.TREASURY_FUND_STATUS;
 import com.amx.utils.ArgUtil;
-import com.amx.utils.JsonUtil;
 
 @Component
 public class RoutingProductManager {
 
 	/** The Constant LOGGER. */
 	private static final Logger LOGGER = LoggerFactory.getLogger(RoutingProductManager.class);
-
-	@Autowired
-	private RoutingDaoAlt routingDao;
 
 	@Autowired
 	private RoutingProdStatusDao routingProdStatusDao;
@@ -69,70 +67,74 @@ public class RoutingProductManager {
 	@Autowired
 	CurrencyMasterDao currencyMasterDao;
 
-	public RoutingProductStatusDetails getRoutingProductStatus(BigDecimal countryId, BigDecimal currencyId) {
+	@Autowired
+	DeliveryModeDescDao deliveryModeDescDao;
 
-		RoutingProductStatusDetails resp = new RoutingProductStatusDetails();
+	public RoutingProductStatusDetails getRoutingProductStatus(BigDecimal beneCountryId, BigDecimal currencyId) {
 
-		// Get Valid Routing Headers
-		List<RoutingHeader> routingHeaders = routingDao.getRoutHeadersByCountryIdAndCurrenyId(countryId, currencyId);
+		// Get valid Routing Product Status
+		List<VwExRoutingProductStatus> viewRoutingProdsStatus = routingProdStatusDao
+				.getByCurrencyIdAndDestinationCountryId(currencyId, beneCountryId);
 
-		if (routingHeaders == null || routingHeaders.isEmpty()) {
-			// throw Exception
-			LOGGER.error("No Routing Headers are available for countryId:" + countryId + " currencyId: " + currencyId);
+		if (viewRoutingProdsStatus == null || viewRoutingProdsStatus.isEmpty()) {
+			// throw Error
+			LOGGER.error("No Routing Products available for countryId:" + beneCountryId + " currencyId: " + currencyId);
 
-			throw new PricerServiceException(PricerServiceError.INVALID_OR_MISSING_ROUTE,
-					"Invalid or Missing Routing Headers for countryId:" + countryId + " currencyId: " + currencyId);
+			throw new PricerServiceException(PricerServiceError.INVALID_REMIT_MODE_STATUS,
+					"No Routing Products available for countryId:" + beneCountryId + " currencyId: " + currencyId);
 
 		}
 
-		List<BigDecimal> correspondentIds = routingHeaders.stream().map(h -> h.getRoutingBankId()).distinct()
+		List<BigDecimal> correspondentIds = viewRoutingProdsStatus.stream().map(h -> h.getBankId()).distinct()
 				.collect(Collectors.toList());
 
 		// Get Bank Details
 		Map<BigDecimal, BankMasterModel> bankMasters = bankMasterDao.getBankByIdIn(correspondentIds);
 
-		// Get valid Routing Product Status
-		List<VwExRoutingProductStatus> viewRoutingProdsStatus = routingProdStatusDao
-				.getByCurrencyIdAndCountryIdAndBankIdIn(currencyId, countryId, correspondentIds);
-
-		if (viewRoutingProdsStatus == null || viewRoutingProdsStatus.isEmpty()) {
-			// throw Error
-			LOGGER.error("No Routing Products available for countryId:" + countryId + " currencyId: " + currencyId
-					+ " and correspondents:" + JsonUtil.toJson(correspondentIds));
-
-			throw new PricerServiceException(PricerServiceError.INVALID_REMIT_MODE_STATUS,
-					"No Routing Products available for countryId:" + countryId + " currencyId: " + currencyId
-							+ " and correspondents:" + JsonUtil.toJson(correspondentIds));
-
-		}
-
-		Map<BigDecimal, Map<BigDecimal, VwExRoutingProductStatus>> bankRemitModeProductStatus = new HashMap<BigDecimal, Map<BigDecimal, VwExRoutingProductStatus>>();
+		Map<BigDecimal, Map<BigDecimal, Map<BigDecimal, VwExRoutingProductStatus>>> bankRemitDeliveryModeProdStatus = new HashMap<BigDecimal, Map<BigDecimal, Map<BigDecimal, VwExRoutingProductStatus>>>();
 
 		for (VwExRoutingProductStatus productStatus : viewRoutingProdsStatus) {
-			if (!bankRemitModeProductStatus.containsKey(productStatus.getBankId())) {
-				Map<BigDecimal, VwExRoutingProductStatus> remitModeProdStatusMap = new HashMap<BigDecimal, VwExRoutingProductStatus>();
+			if (!bankRemitDeliveryModeProdStatus.containsKey(productStatus.getBankId())) {
+				Map<BigDecimal, VwExRoutingProductStatus> delModeProdStatusMap = new HashMap<BigDecimal, VwExRoutingProductStatus>();
+				delModeProdStatusMap.put(productStatus.getDeliveryModeId(), productStatus);
 
-				remitModeProdStatusMap.put(productStatus.getRemitModeId(), productStatus);
-				bankRemitModeProductStatus.put(productStatus.getBankId(), remitModeProdStatusMap);
+				Map<BigDecimal, Map<BigDecimal, VwExRoutingProductStatus>> remitModeProdStatusMap = new HashMap<BigDecimal, Map<BigDecimal, VwExRoutingProductStatus>>();
+
+				remitModeProdStatusMap.put(productStatus.getRemitModeId(), delModeProdStatusMap);
+				bankRemitDeliveryModeProdStatus.put(productStatus.getBankId(), remitModeProdStatusMap);
 			} else {
-				Map<BigDecimal, VwExRoutingProductStatus> remitModeProdStatusMap = bankRemitModeProductStatus
+				Map<BigDecimal, Map<BigDecimal, VwExRoutingProductStatus>> remitModeProdStatusMap = bankRemitDeliveryModeProdStatus
 						.get(productStatus.getBankId());
 
 				if (remitModeProdStatusMap.containsKey(productStatus.getRemitModeId())) {
-					// throw Exception of Duplicate Remit Mode Product
 
-					LOGGER.error("Duplicate Remit Products for countryId:" + countryId + " currencyId: " + currencyId
-							+ " and correspondents:" + JsonUtil.toJson(correspondentIds));
+					Map<BigDecimal, VwExRoutingProductStatus> delModeProdStatusMap = remitModeProdStatusMap
+							.get(productStatus.getRemitModeId());
 
-					/*
-					 * * throw new
-					 * PricerServiceException(PricerServiceError.DUPLICATE_REMIT_MODE_STATUS,
-					 * "No Routing Products available for countryId:" + countryId + " currencyId: "
-					 * + currencyId + " and correspondents:" + JsonUtil.toJson(correspondentIds));
-					 */
+					if (delModeProdStatusMap.containsKey(productStatus.getDeliveryModeId())) {
+						// throw Exception of Duplicate Remit Mode Product
+
+						LOGGER.error("Duplicate Remit Products for countryId:" + beneCountryId + " currencyId: "
+								+ currencyId + " and correspondent bank Id#Name:" + productStatus.getBankId() + "#"
+								+ productStatus.getBankName());
+
+						/*
+						 * * throw new
+						 * PricerServiceException(PricerServiceError.DUPLICATE_REMIT_MODE_STATUS,
+						 * "No Routing Products available for countryId:" + countryId + " currencyId: "
+						 * + currencyId + " and correspondents:" + JsonUtil.toJson(correspondentIds));
+						 */
+					}
+
+					delModeProdStatusMap.put(productStatus.getDeliveryModeId(), productStatus);
+
+				} else {
+					Map<BigDecimal, VwExRoutingProductStatus> delModeProdStatusMap = new HashMap<BigDecimal, VwExRoutingProductStatus>();
+					delModeProdStatusMap.put(productStatus.getDeliveryModeId(), productStatus);
+
+					remitModeProdStatusMap.put(productStatus.getRemitModeId(), delModeProdStatusMap);
+
 				}
-
-				remitModeProdStatusMap.put(productStatus.getRemitModeId(), productStatus);
 
 			}
 		}
@@ -187,7 +189,7 @@ public class RoutingProductManager {
 			}
 		}
 		// Funding Currency and balance Details
-		TreasuryFundTimeImpact ftImpact = treasuryFTImpactDao.findByCountryIdAndCurrencyIdAndFundStatus(countryId,
+		TreasuryFundTimeImpact ftImpact = treasuryFTImpactDao.findByCountryIdAndCurrencyIdAndFundStatus(beneCountryId,
 				currencyId, TREASURY_FUND_STATUS.FUNDED.toString());
 
 		Map<BigDecimal, ViewExGLCBAL> fundingGlBalMap = new HashMap<BigDecimal, ViewExGLCBAL>();
@@ -205,13 +207,15 @@ public class RoutingProductManager {
 
 		}
 
+		Map<BigDecimal, DeliveryModeDesc> delModeDescMap = deliveryModeDescDao
+				.getByLanguageId(PricerServiceConstants.DEF_LANGUAGE_ID);
+
+		RoutingProductStatusDetails resp = new RoutingProductStatusDetails();
 		resp.setRoutingProductsStatus(new ArrayList<RoutingProductStatusInfo>());
 
 		Set<BigDecimal> processedCb = new HashSet<BigDecimal>();
 
-		for (RoutingHeader header : routingHeaders) {
-
-			BigDecimal correspondentId = header.getRoutingBankId();
+		for (BigDecimal correspondentId : correspondentIds) {
 
 			if (processedCb.contains(correspondentId)) {
 				continue;
@@ -269,8 +273,8 @@ public class RoutingProductManager {
 			// Prepare Remit Mode Product Info List
 			List<RemitModeStatusInfo> remitModesStatus = new ArrayList<RemitModeStatusInfo>();
 
-			if (bankRemitModeProductStatus.containsKey(correspondentId)) {
-				Map<BigDecimal, VwExRoutingProductStatus> remitModeProdStatusMap = bankRemitModeProductStatus
+			if (bankRemitDeliveryModeProdStatus.containsKey(correspondentId)) {
+				Map<BigDecimal, Map<BigDecimal, VwExRoutingProductStatus>> remitModeProdStatusMap = bankRemitDeliveryModeProdStatus
 						.get(correspondentId);
 
 				Map<BigDecimal, VwExGlcbalProvByProduct> productBalMap;
@@ -280,23 +284,72 @@ public class RoutingProductManager {
 					productBalMap = new HashMap<BigDecimal, VwExGlcbalProvByProduct>();
 				}
 
-				for (VwExRoutingProductStatus prodStatus : remitModeProdStatusMap.values()) {
-					RemitModeStatusInfo remitModeInfo = new RemitModeStatusInfo();
+				for (Map<BigDecimal, VwExRoutingProductStatus> delModeStatusMap : remitModeProdStatusMap.values()) {
 
-					remitModeInfo.setRemitModeId(prodStatus.getRemitModeId());
-					remitModeInfo.setRemitModeDesc(prodStatus.getProductShortName());
-					remitModeInfo.setRoutingStatus(prodStatus.getRouting());
-					remitModeInfo.setProductStatus(prodStatus.getProductStatus());
+					// Single Delivery Mode
+					if (delModeStatusMap.size() == 1) {
 
-					VwExGlcbalProvByProduct provBal = productBalMap.get(prodStatus.getRemitModeId());
-					if (provBal != null) {
-						remitModeInfo.setProvisionalTrnxAmountLocal(
-								provBal.getRateCurBal() == null ? BigDecimal.ZERO : provBal.getRateCurBal());
-						remitModeInfo.setProvisionalTrnxAmountForeign(
-								provBal.getRateFcCurBal() == null ? BigDecimal.ZERO : provBal.getRateFcCurBal());
-					}
+						VwExRoutingProductStatus prodStatus = delModeStatusMap.values().iterator().next();
 
-					remitModesStatus.add(remitModeInfo);
+						RemitModeStatusInfo remitModeInfo = new RemitModeStatusInfo();
+
+						remitModeInfo.setRemitModeId(prodStatus.getRemitModeId());
+						remitModeInfo.setRemitModeDesc(prodStatus.getProductShortName());
+						remitModeInfo.setRoutingStatus(prodStatus.getRouting());
+						remitModeInfo.setProductStatus(prodStatus.getProductStatus());
+
+						VwExGlcbalProvByProduct provBal = productBalMap.get(prodStatus.getRemitModeId());
+						if (provBal != null) {
+							remitModeInfo.setProvisionalTrnxAmountLocal(
+									provBal.getRateCurBal() == null ? BigDecimal.ZERO : provBal.getRateCurBal());
+							remitModeInfo.setProvisionalTrnxAmountForeign(
+									provBal.getRateFcCurBal() == null ? BigDecimal.ZERO : provBal.getRateFcCurBal());
+						}
+
+						remitModesStatus.add(remitModeInfo);
+					} else { // else
+
+						boolean remitStatusFilled = false;
+						RemitModeStatusInfo remitModeInfo = new RemitModeStatusInfo();
+						remitModeInfo.setDeliveryModesStatus(new ArrayList<DeliveryModeStatusInfo>());
+
+						for (VwExRoutingProductStatus prodStatus : delModeStatusMap.values()) {// 1 for
+							if (!remitStatusFilled) { // 1.1
+								remitModeInfo.setRemitModeId(prodStatus.getRemitModeId());
+								remitModeInfo.setRemitModeDesc(prodStatus.getProductShortName());
+								// remitModeInfo.setRoutingStatus(prodStatus.getRouting());
+								// remitModeInfo.setProductStatus(prodStatus.getProductStatus());
+
+								VwExGlcbalProvByProduct provBal = productBalMap.get(prodStatus.getRemitModeId());
+								if (provBal != null) { // 1.1.1
+									remitModeInfo.setProvisionalTrnxAmountLocal(
+											provBal.getRateCurBal() == null ? BigDecimal.ZERO
+													: provBal.getRateCurBal());
+									remitModeInfo.setProvisionalTrnxAmountForeign(
+											provBal.getRateFcCurBal() == null ? BigDecimal.ZERO
+													: provBal.getRateFcCurBal());
+								} // 1.1.1
+
+							} // 1.1
+
+							DeliveryModeStatusInfo delModeInfo = new DeliveryModeStatusInfo();
+							delModeInfo.setDeliveryModeId(prodStatus.getDeliveryModeId());
+							delModeInfo.setRoutingStatus(prodStatus.getRouting());
+							delModeInfo.setProductStatus(prodStatus.getProductStatus());
+
+							// Set delivery Mode Desc
+							if (delModeDescMap.containsKey(prodStatus.getDeliveryModeId())) {
+								delModeInfo.setDeliveryModeDesc(
+										delModeDescMap.get(prodStatus.getDeliveryModeId()).getDeliveryDesc());
+							}
+
+							remitModeInfo.getDeliveryModesStatus().add(delModeInfo);
+						} // 1 for
+
+						remitModesStatus.add(remitModeInfo);
+
+					} // else
+
 				}
 
 			}

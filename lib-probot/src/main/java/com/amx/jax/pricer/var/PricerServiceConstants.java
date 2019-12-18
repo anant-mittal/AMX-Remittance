@@ -15,6 +15,8 @@ import java.util.Map;
  */
 public final class PricerServiceConstants {
 
+	public static final BigDecimal DEF_LANGUAGE_ID = BigDecimal.ONE;
+
 	public static final String TTE = "TTE";
 
 	public static final String CHARGES_TYPE = "C";
@@ -158,7 +160,7 @@ public final class PricerServiceConstants {
 		HOME, WU, MONEY;
 	}
 
-	public static enum ROUTING_REMIT_STATUS {
+	public static enum ROUTING_STATUS {
 		ACTIVE, INACTIVE;
 	}
 

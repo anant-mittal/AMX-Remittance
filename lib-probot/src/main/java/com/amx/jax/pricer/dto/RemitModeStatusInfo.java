@@ -2,8 +2,9 @@ package com.amx.jax.pricer.dto;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.List;
 
-import com.amx.jax.pricer.var.PricerServiceConstants.ROUTING_REMIT_STATUS;
+import com.amx.jax.pricer.var.PricerServiceConstants.ROUTING_STATUS;
 
 public class RemitModeStatusInfo implements Serializable, Comparable<RemitModeStatusInfo> {
 
@@ -12,11 +13,13 @@ public class RemitModeStatusInfo implements Serializable, Comparable<RemitModeSt
 	private BigDecimal remitModeId;
 	private String remitModeDesc;
 
-	private ROUTING_REMIT_STATUS routingStatus;
-	private ROUTING_REMIT_STATUS productStatus;
+	private ROUTING_STATUS routingStatus;
+	private ROUTING_STATUS productStatus;
 
 	private BigDecimal provisionalTrnxAmountLocal;
 	private BigDecimal provisionalTrnxAmountForeign;
+
+	private List<DeliveryModeStatusInfo> deliveryModesStatus;
 
 	public BigDecimal getRemitModeId() {
 		return remitModeId;
@@ -34,19 +37,19 @@ public class RemitModeStatusInfo implements Serializable, Comparable<RemitModeSt
 		this.remitModeDesc = remitModeDesc;
 	}
 
-	public ROUTING_REMIT_STATUS getRoutingStatus() {
+	public ROUTING_STATUS getRoutingStatus() {
 		return routingStatus;
 	}
 
-	public void setRoutingStatus(ROUTING_REMIT_STATUS routingStatus) {
+	public void setRoutingStatus(ROUTING_STATUS routingStatus) {
 		this.routingStatus = routingStatus;
 	}
 
-	public ROUTING_REMIT_STATUS getProductStatus() {
+	public ROUTING_STATUS getProductStatus() {
 		return productStatus;
 	}
 
-	public void setProductStatus(ROUTING_REMIT_STATUS fieldStatus) {
+	public void setProductStatus(ROUTING_STATUS fieldStatus) {
 		this.productStatus = fieldStatus;
 	}
 
@@ -66,9 +69,19 @@ public class RemitModeStatusInfo implements Serializable, Comparable<RemitModeSt
 		this.provisionalTrnxAmountForeign = pendingTrnxAmountForeign;
 	}
 
+	public List<DeliveryModeStatusInfo> getDeliveryModesStatus() {
+		return deliveryModesStatus;
+	}
+
+	public void setDeliveryModesStatus(List<DeliveryModeStatusInfo> deliveryModesStatus) {
+		this.deliveryModesStatus = deliveryModesStatus;
+	}
+
 	@Override
 	public int compareTo(RemitModeStatusInfo o) {
-		// TODO Auto-generated method stub
-		return 0;
+		if (o == null)
+			return -1;
+
+		return this.remitModeId.compareTo(o.remitModeId);
 	}
 }
