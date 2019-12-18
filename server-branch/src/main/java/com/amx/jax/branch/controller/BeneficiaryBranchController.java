@@ -6,6 +6,7 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.AccountTypeDto;
 import com.amx.amxlib.meta.model.CountryMasterDTO;
+import com.amx.jax.JaxAuthContext;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterAgentBranchParam;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterAgentParam;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterServiceProviderParam;
@@ -25,6 +27,7 @@ import com.amx.jax.client.bene.BeneBranchClient;
 import com.amx.jax.client.bene.BeneficaryStatusDto;
 import com.amx.jax.client.remittance.RemittanceClient;
 import com.amx.jax.client.serviceprovider.RoutingBankMasterDTO;
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.model.request.benebranch.AddBeneBankRequest;
 import com.amx.jax.model.request.benebranch.AddBeneCashRequest;
@@ -43,6 +46,7 @@ import com.amx.jax.model.response.benebranch.BankBranchDto;
 import com.amx.jax.model.response.benebranch.BeneStatusDto;
 import com.amx.jax.model.response.remittance.GetServiceApplicabilityResponse;
 import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
+import com.amx.utils.ArgUtil;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -162,12 +166,22 @@ public class BeneficiaryBranchController {
 	}
 
 	@RequestMapping(value = "/api/bene/add/bank", method = RequestMethod.POST)
-	public AmxApiResponse<AddBeneResponse, Object> addBeneBank(@RequestBody @Valid AddBeneBankRequest request) {
+	public AmxApiResponse<AddBeneResponse, Object> addBeneBank(
+			@RequestHeader(value = "nOtp", required = false) String nOtpHeader,
+			@RequestParam(required = false) String nOtp, @RequestBody @Valid AddBeneBankRequest request) {
+		JaxAuthContext.contactType(ContactType.NOTP_APP);
+		nOtp = JaxAuthContext.nOtp(ArgUtil.ifNotEmpty(nOtp, nOtpHeader));
+		JaxAuthContext.nOtp(nOtp);
 		return beneBranchClient.addBeneBank(request);
 	}
 
 	@RequestMapping(value = "/api/bene/add/cash", method = RequestMethod.POST)
-	public AmxApiResponse<AddBeneResponse, Object> addBenecash(@RequestBody @Valid AddBeneCashRequest request) {
+	public AmxApiResponse<AddBeneResponse, Object> addBenecash(
+			@RequestHeader(value = "nOtp", required = false) String nOtpHeader,
+			@RequestParam(required = false) String nOtp, @RequestBody @Valid AddBeneCashRequest request) {
+		JaxAuthContext.contactType(ContactType.NOTP_APP);
+		nOtp = JaxAuthContext.nOtp(ArgUtil.ifNotEmpty(nOtp, nOtpHeader));
+		JaxAuthContext.nOtp(nOtp);
 		return beneBranchClient.addBenecash(request);
 	}
 
@@ -178,12 +192,22 @@ public class BeneficiaryBranchController {
 	}
 
 	@RequestMapping(value = "/api/bene/update/bank_details", method = RequestMethod.POST)
-	public AmxApiResponse<BoolRespModel, Object> updateBeneBank(@RequestBody @Valid UpdateBeneBankRequest request) {
+	public AmxApiResponse<BoolRespModel, Object> updateBeneBank(
+			@RequestHeader(value = "nOtp", required = false) String nOtpHeader,
+			@RequestParam(required = false) String nOtp, @RequestBody @Valid UpdateBeneBankRequest request) {
+		JaxAuthContext.contactType(ContactType.NOTP_APP);
+		nOtp = JaxAuthContext.nOtp(ArgUtil.ifNotEmpty(nOtp, nOtpHeader));
+		JaxAuthContext.nOtp(nOtp);
 		return beneBranchClient.updateBeneBank(request);
 	}
 
 	@RequestMapping(value = "/api/bene/update/cash_details", method = RequestMethod.POST)
-	public AmxApiResponse<BoolRespModel, Object> updateBeneCash(@RequestBody @Valid UpdateBeneCashRequest request) {
+	public AmxApiResponse<BoolRespModel, Object> updateBeneCash(
+			@RequestHeader(value = "nOtp", required = false) String nOtpHeader,
+			@RequestParam(required = false) String nOtp,@RequestBody @Valid UpdateBeneCashRequest request) {
+		JaxAuthContext.contactType(ContactType.NOTP_APP);
+		nOtp = JaxAuthContext.nOtp(ArgUtil.ifNotEmpty(nOtp, nOtpHeader));
+		JaxAuthContext.nOtp(nOtp);
 		return beneBranchClient.updateBeneCash(request);
 	}
 

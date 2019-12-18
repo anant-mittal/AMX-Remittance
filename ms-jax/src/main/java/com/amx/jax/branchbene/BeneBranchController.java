@@ -17,6 +17,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.branch.IBranchBeneService;
 import com.amx.jax.client.serviceprovider.RoutingBankMasterDTO;
+import com.amx.jax.manager.EmployeeAuthManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.model.request.benebranch.AddBeneBankRequest;
@@ -47,6 +48,8 @@ public class BeneBranchController implements IBranchBeneService {
 	BeneBranchService beneBranchService;
 	@Autowired
 	BeneBranchValidation beneBranchValidation;
+	@Autowired
+	EmployeeAuthManager employeeAuthManager;
 
 	@RequestMapping(value = Path.LIST_BANK_BY_COUNTRY_CURRENCY, method = RequestMethod.POST)
 	@Override
@@ -81,6 +84,7 @@ public class BeneBranchController implements IBranchBeneService {
 	public AmxApiResponse<AddBeneResponse, Object> addBeneBank(@RequestBody @Valid AddBeneBankRequest request) {
 		logger.debug("request addBeneBank: {} ", JsonUtil.toJson(request));
 		beneBranchValidation.validateaddBeneBank(request);
+		employeeAuthManager.validateAndSendOtp(metaData.getEmployeeId());
 		AddBeneResponse result = beneBranchService.addBeneBankorCash(request);
 		return AmxApiResponse.build(result);
 	}
@@ -91,6 +95,7 @@ public class BeneBranchController implements IBranchBeneService {
 	public AmxApiResponse<AddBeneResponse, Object> addBenecash(@RequestBody @Valid AddBeneCashRequest request) {
 		logger.debug("request addBenecash: {} ", JsonUtil.toJson(request));
 		beneBranchValidation.validateaddBenecash(request);
+		employeeAuthManager.validateAndSendOtp(metaData.getEmployeeId());
 		AddBeneResponse result = beneBranchService.addBeneBankorCash(request);
 		return AmxApiResponse.build(result);
 	}
@@ -135,6 +140,7 @@ public class BeneBranchController implements IBranchBeneService {
 	public AmxApiResponse<BoolRespModel, Object> updateBeneBank(@RequestBody @Valid UpdateBeneBankRequest request) {
 		logger.debug("request updateBeneBank: {} ", JsonUtil.toJson(request));
 		beneBranchValidation.validateUpdateBeneBank(request);
+		employeeAuthManager.validateAndSendOtp(metaData.getEmployeeId());
 		beneBranchService.updateBeneBankorCash(request);
 		return AmxApiResponse.build(new BoolRespModel(true));
 	}
@@ -145,6 +151,7 @@ public class BeneBranchController implements IBranchBeneService {
 	public AmxApiResponse<BoolRespModel, Object> updateBeneCash(@RequestBody @Valid UpdateBeneCashRequest request) {
 		logger.debug("request updateBeneBank: {} ", JsonUtil.toJson(request));
 		beneBranchValidation.validateUpdateBeneCash(request);
+		employeeAuthManager.validateAndSendOtp(metaData.getEmployeeId());
 		beneBranchService.updateBeneBankorCash(request);
 		return AmxApiResponse.build(new BoolRespModel(true));
 	}
