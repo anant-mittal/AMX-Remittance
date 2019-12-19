@@ -163,7 +163,7 @@ public class ComplianceService {
 			dto.setCustomerrRef(i.getCustomerrRef());
 			dto.setReasonCode(i.getReasonCode());
 			dto.setRemittanceTranxId(i.getRemittanceTranxId());
-			dto.setReqXml(i.getReqXml());
+			dto.setIpAddress(i.getIpAddress());
 			return dto;
 		}).collect(Collectors.toList());
 	}

@@ -152,9 +152,9 @@ public class ReportJaxB {
 			ExCbkStrReportLOG logtable = new ExCbkStrReportLOG();
 			logtable.setReqXml(IoUtils.stringToClob(xmlContent));
 			logtable.setCustomerName(cbk.getCustFirstName() + cbk.getCustLastName());
-			RemittanceTransaction remit = new RemittanceTransaction();
-			remit.setRemittanceTransactionId(cbk.getRemitTrnxId());
-			logtable.setRemittanceTranxId(remit);
+			//RemittanceTransaction remit = new RemittanceTransaction();
+			//remit.setRemittanceTransactionId(cbk.getRemitTrnxId());
+			logtable.setRemittanceTranxId(cbk.getRemitTrnxId());
 			logtable.setCreatedDate(date);
 			logtable.setCreatedBy(cbk.getAuthorized());
 			logtable.setCustomerId(cust.getCustomerId());

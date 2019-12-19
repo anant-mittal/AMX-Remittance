@@ -12,7 +12,7 @@ public class ExCbkStrReportLogDto implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	private BigDecimal cbkStrRepLogId;
-	private RemittanceTransaction remittanceTranxId;
+	private BigDecimal remittanceTranxId;
 	private BigDecimal customerId;
 	private BigDecimal customerrRef;
 	private String customerName;
@@ -31,10 +31,10 @@ public class ExCbkStrReportLogDto implements Serializable {
 		this.cbkStrRepLogId = cbkStrRepLogId;
 	}
 	
-	public RemittanceTransaction getRemittanceTranxId() {
+	public BigDecimal getRemittanceTranxId() {
 		return remittanceTranxId;
 	}
-	public void setRemittanceTranxId(RemittanceTransaction remittanceTranxId) {
+	public void setRemittanceTranxId(BigDecimal remittanceTranxId) {
 		this.remittanceTranxId = remittanceTranxId;
 	}
 	public BigDecimal getCustomerId() {
