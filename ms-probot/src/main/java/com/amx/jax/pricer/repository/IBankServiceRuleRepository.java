@@ -2,6 +2,7 @@ package com.amx.jax.pricer.repository;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -27,14 +28,17 @@ public interface IBankServiceRuleRepository extends CrudRepository<BankServiceRu
 
 	@Transactional
 	@Modifying
-	@Query(value = "update BankServiceRule rule set rule.isActive=?5 where rule.countryId=?1 and rule.currencyId=?2 and rule.bankId=?3 and rule.remittanceModeId=?4")
+	@Query(value = "update BankServiceRule rule set rule.isActive=?5, rule.modifiedBy=?6, rule.modifiedDate=?7 "
+			+ "where rule.countryId=?1 and rule.currencyId=?2 and rule.bankId=?3 and rule.remittanceModeId=?4")
 	int updateBankServiceRule(BigDecimal countryId, BigDecimal currencyId, BigDecimal bankId, BigDecimal remitModeId,
-			String isActive);
+			String isActive, String modifiedBy, Date modifiedDate);
 
 	@Transactional
 	@Modifying
-	@Query(value = "update BankServiceRule rule set rule.isActive=?6 where rule.countryId=?1 and rule.currencyId=?2 and rule.bankId=?3 and rule.remittanceModeId=?4 and rule.deliveryModeId=?5")
+	@Query(value = "update BankServiceRule rule set rule.isActive=?6, rule.modifiedBy=?7, rule.modifiedDate=?8 "
+			+ "where rule.countryId=?1 and rule.currencyId=?2 and rule.bankId=?3 and rule.remittanceModeId=?4 "
+			+ "and rule.deliveryModeId=?5")
 	int updateBankServiceRule(BigDecimal countryId, BigDecimal currencyId, BigDecimal bankId, BigDecimal remitModeId,
-			BigDecimal deliveryModeId, String isActive);
+			BigDecimal deliveryModeId, String isActive, String modifiedBy, Date modifiedDate);
 
 }

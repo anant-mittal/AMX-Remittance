@@ -1,6 +1,7 @@
 package com.amx.jax.pricer.dao;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,16 +40,18 @@ public class BankServiceRuleDao {
 	@Modifying
 	@Transactional
 	public int updateBankServiceRule(BigDecimal countryId, BigDecimal currencyId, BigDecimal bankId,
-			BigDecimal remitModeId, String isActive) {
-		return repo.updateBankServiceRule(countryId, currencyId, bankId, remitModeId, isActive);
+			BigDecimal remitModeId, String isActive, String modifiedBy, Date modifiedDate) {
+		return repo.updateBankServiceRule(countryId, currencyId, bankId, remitModeId, isActive, modifiedBy,
+				modifiedDate);
 
 	}
 
 	@Transactional
 	@Modifying
 	public int updateBankServiceRule(BigDecimal countryId, BigDecimal currencyId, BigDecimal bankId,
-			BigDecimal remitModeId, BigDecimal deliveryModeId, String isActive) {
-		return repo.updateBankServiceRule(countryId, currencyId, bankId, remitModeId, deliveryModeId, isActive);
+			BigDecimal remitModeId, BigDecimal deliveryModeId, String isActive, String modifiedBy, Date modifiedDate) {
+		return repo.updateBankServiceRule(countryId, currencyId, bankId, remitModeId, deliveryModeId, isActive,
+				modifiedBy, modifiedDate);
 	}
 
 }

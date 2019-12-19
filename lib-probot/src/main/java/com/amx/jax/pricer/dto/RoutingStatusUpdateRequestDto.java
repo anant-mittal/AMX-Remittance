@@ -31,6 +31,9 @@ public class RoutingStatusUpdateRequestDto implements Serializable {
 	@NotNull(message = "Status to be updated Can not be Null or Empty")
 	private ROUTING_STATUS updated;
 
+	@NotNull(message = "Updated By Can not be Null or Empty")
+	private String updatedBy;
+
 	public BigDecimal getCountryId() {
 		return countryId;
 	}
@@ -85,6 +88,14 @@ public class RoutingStatusUpdateRequestDto implements Serializable {
 
 	public void setUpdated(ROUTING_STATUS updated) {
 		this.updated = updated;
+	}
+
+	public String getUpdatedBy() {
+		return updatedBy;
+	}
+
+	public void setUpdatedBy(String updatedBy) {
+		this.updatedBy = updatedBy;
 	}
 
 }

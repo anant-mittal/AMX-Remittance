@@ -2,6 +2,7 @@ package com.amx.jax.pricer.manager;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -424,12 +425,13 @@ public class RoutingProductManager {
 
 		if (request.getDeliveryModeId() == null) {
 			updateCount = bankServiceRuleDao.updateBankServiceRule(request.getCountryId(), request.getCurrencyId(),
-					request.getBankId(), request.getRemitModeId(), request.getUpdated().getIsActive());
+					request.getBankId(), request.getRemitModeId(), request.getUpdated().getIsActive(),
+					request.getUpdatedBy(), new Date());
 
 		} else {
 			updateCount = bankServiceRuleDao.updateBankServiceRule(request.getCountryId(), request.getCurrencyId(),
 					request.getBankId(), request.getRemitModeId(), request.getDeliveryModeId(),
-					request.getUpdated().getIsActive());
+					request.getUpdated().getIsActive(), request.getUpdatedBy(), new Date());
 
 		}
 
