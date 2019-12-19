@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.pricer.dao.BankMasterDao;
+import com.amx.jax.pricer.dao.BankServiceRuleDao;
 import com.amx.jax.pricer.dao.CurrencyMasterDao;
 import com.amx.jax.pricer.dao.DeliveryModeDescDao;
 import com.amx.jax.pricer.dao.RoutingProdStatusDao;
@@ -34,11 +35,14 @@ import com.amx.jax.pricer.dto.DeliveryModeStatusInfo;
 import com.amx.jax.pricer.dto.RemitModeStatusInfo;
 import com.amx.jax.pricer.dto.RoutingProductStatusDetails;
 import com.amx.jax.pricer.dto.RoutingProductStatusInfo;
+import com.amx.jax.pricer.dto.RoutingStatusUpdateRequestDto;
 import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.var.PricerServiceConstants;
+import com.amx.jax.pricer.var.PricerServiceConstants.ROUTING_STATUS;
 import com.amx.jax.pricer.var.PricerServiceConstants.TREASURY_FUND_STATUS;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.JsonUtil;
 
 @Component
 public class RoutingProductManager {
@@ -69,6 +73,9 @@ public class RoutingProductManager {
 
 	@Autowired
 	DeliveryModeDescDao deliveryModeDescDao;
+
+	@Autowired
+	BankServiceRuleDao bankServiceRuleDao;
 
 	public RoutingProductStatusDetails getRoutingProductStatus(BigDecimal beneCountryId, BigDecimal currencyId) {
 
@@ -293,8 +300,12 @@ public class RoutingProductManager {
 
 						RemitModeStatusInfo remitModeInfo = new RemitModeStatusInfo();
 
+						remitModeInfo.setServiceModeId(prodStatus.getServiceId());
+						remitModeInfo.setServiceDesc(prodStatus.getService());
+
 						remitModeInfo.setRemitModeId(prodStatus.getRemitModeId());
 						remitModeInfo.setRemitModeDesc(prodStatus.getProductShortName());
+
 						remitModeInfo.setRoutingStatus(prodStatus.getRouting());
 						remitModeInfo.setProductStatus(prodStatus.getProductStatus());
 
@@ -315,10 +326,12 @@ public class RoutingProductManager {
 
 						for (VwExRoutingProductStatus prodStatus : delModeStatusMap.values()) {// 1 for
 							if (!remitStatusFilled) { // 1.1
+
+								remitModeInfo.setServiceModeId(prodStatus.getServiceId());
+								remitModeInfo.setServiceDesc(prodStatus.getService());
+
 								remitModeInfo.setRemitModeId(prodStatus.getRemitModeId());
 								remitModeInfo.setRemitModeDesc(prodStatus.getProductShortName());
-								// remitModeInfo.setRoutingStatus(prodStatus.getRouting());
-								// remitModeInfo.setProductStatus(prodStatus.getProductStatus());
 
 								VwExGlcbalProvByProduct provBal = productBalMap.get(prodStatus.getRemitModeId());
 								if (provBal != null) { // 1.1.1
@@ -361,6 +374,63 @@ public class RoutingProductManager {
 
 		return resp;
 
+	}
+
+	public int updateRoutingProductStatus(RoutingStatusUpdateRequestDto request) {
+
+		List<VwExRoutingProductStatus> oldStatusList;
+
+		if (request.getDeliveryModeId() == null) {
+			oldStatusList = routingProdStatusDao.getByCountryIdAndCurrencyIdAndBankIdAndServiceIdAndRemitModeId(
+					request.getCountryId(), request.getCurrencyId(), request.getBankId(), request.getServiceModeId(),
+					request.getRemitModeId());
+		} else {
+			oldStatusList = routingProdStatusDao
+					.getByCountryIdAndCurrencyIdAndBankIdAndServiceIdAndRemitModeIdAndDeliveryModeId(
+							request.getCountryId(), request.getCurrencyId(), request.getBankId(),
+							request.getServiceModeId(), request.getRemitModeId(), request.getDeliveryModeId());
+		}
+
+		if (oldStatusList == null) {
+			LOGGER.error("No Such Routing Product available for Request:" + JsonUtil.toJson(request));
+
+			throw new PricerServiceException(PricerServiceError.INVALID_OR_MISSING_ROUTE,
+					"No Routing Products available with given request params");
+		} else if (oldStatusList.size() > 1) {
+			LOGGER.error("Possible Multiple Routing options available for Request params:" + JsonUtil.toJson(request));
+
+			throw new PricerServiceException(PricerServiceError.POSSIBLE_MULTIPLE_ROUTING_OPTIONS,
+					"Possible Multiple Routing options available for given request params");
+		}
+
+		VwExRoutingProductStatus oldStatus = oldStatusList.get(0);
+
+		if (oldStatus.getRouting() == null || ROUTING_STATUS.INACTIVE.equals(oldStatus.getRouting())) {
+			LOGGER.error("Routing Status is DISABLED for given route with request params:" + JsonUtil.toJson(request));
+
+			throw new PricerServiceException(PricerServiceError.DISABLED_ROUTING_PRODUCT,
+					"Routing Status is DISABLED for given request params");
+		} else if (oldStatus.getProductStatus() != null && request.getUpdated().equals(oldStatus.getProductStatus())) {
+			LOGGER.warn("Routing product Status is SAME as updated for given route with request params:"
+					+ JsonUtil.toJson(request));
+
+			return 0;
+		}
+
+		int updateCount;
+
+		if (request.getDeliveryModeId() == null) {
+			updateCount = bankServiceRuleDao.updateBankServiceRule(request.getCountryId(), request.getCurrencyId(),
+					request.getBankId(), request.getRemitModeId(), request.getUpdated().getIsActive());
+
+		} else {
+			updateCount = bankServiceRuleDao.updateBankServiceRule(request.getCountryId(), request.getCurrencyId(),
+					request.getBankId(), request.getRemitModeId(), request.getDeliveryModeId(),
+					request.getUpdated().getIsActive());
+
+		}
+
+		return updateCount;
 	}
 
 }

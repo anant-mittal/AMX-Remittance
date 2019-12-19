@@ -14,6 +14,7 @@ import com.amx.jax.pricer.dto.OnlineMarginMarkupInfo;
 import com.amx.jax.pricer.dto.OnlineMarginMarkupReq;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
 import com.amx.jax.pricer.dto.RoutingProductStatusDetails;
+import com.amx.jax.pricer.dto.RoutingStatusUpdateRequestDto;
 
 public interface ProbotDataService extends AbstractProbotInterface {
 	public AmxApiResponse<DiscountDetailsReqRespDTO, Object> getDiscountManagemet(
@@ -40,5 +41,7 @@ public interface ProbotDataService extends AbstractProbotInterface {
 
 	AmxApiResponse<RoutingProductStatusDetails, Object> getRoutingProductStatus(BigDecimal countryId,
 			BigDecimal currencyId);
+
+	AmxApiResponse<Integer, Object> updateRoutingProductStatus(RoutingStatusUpdateRequestDto request);
 
 }

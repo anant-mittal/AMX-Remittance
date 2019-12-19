@@ -28,4 +28,18 @@ public class RoutingProdStatusDao {
 		return repo.findByCurrencyIdAndDestinationCountryId(currencyId, dCountryId);
 	}
 
+	public List<VwExRoutingProductStatus> getByCountryIdAndCurrencyIdAndBankIdAndServiceIdAndRemitModeId(
+			BigDecimal countryId, BigDecimal currencyId, BigDecimal bankId, BigDecimal ServiceModeId,
+			BigDecimal remitModeId) {
+		return repo.findByCountryIdAndCurrencyIdAndBankIdAndServiceIdAndRemitModeId(countryId, currencyId, bankId,
+				ServiceModeId, remitModeId);
+	}
+
+	public List<VwExRoutingProductStatus> getByCountryIdAndCurrencyIdAndBankIdAndServiceIdAndRemitModeIdAndDeliveryModeId(
+			BigDecimal countryId, BigDecimal currencyId, BigDecimal bankId, BigDecimal ServiceModeId,
+			BigDecimal remitModeId, BigDecimal deliveryModeId) {
+		return repo.findByCountryIdAndCurrencyIdAndBankIdAndServiceIdAndRemitModeIdAndDeliveryModeId(countryId,
+				currencyId, bankId, ServiceModeId, remitModeId, deliveryModeId);
+	}
+
 }

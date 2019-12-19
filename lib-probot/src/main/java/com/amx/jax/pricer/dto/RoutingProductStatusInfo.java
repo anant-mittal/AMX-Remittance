@@ -133,7 +133,11 @@ public class RoutingProductStatusInfo implements Serializable, Comparable<Routin
 
 	@Override
 	public int compareTo(RoutingProductStatusInfo o) {
-		// TODO Auto-generated method stub
-		return 0;
+		if (o == null || o.getCorrespondentName() == null || o.getCorrespondentName().trim().isEmpty())
+			return -1;
+		else if (this.getCorrespondentName() == null || this.getCorrespondentName().trim().isEmpty())
+			return 1;
+
+		return this.getCorrespondentName().compareTo(o.getCorrespondentName());
 	}
 }

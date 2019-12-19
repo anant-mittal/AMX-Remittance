@@ -31,6 +31,7 @@ import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
 import com.amx.jax.pricer.dto.RoutingProductStatusDetails;
+import com.amx.jax.pricer.dto.RoutingStatusUpdateRequestDto;
 import com.amx.jax.rest.RestService;
 
 @Component
@@ -221,11 +222,22 @@ public class PricerServiceClient implements ProbotExchangeRateService, ProbotDat
 	@Override
 	public AmxApiResponse<RoutingProductStatusDetails, Object> getRoutingProductStatus(BigDecimal countryId,
 			BigDecimal currencyId) {
-		LOGGER.info("Get Routing Product Status with transaction Id: {}, with TraceId: {}", AppContextUtil.getTranxId(),
-				AppContextUtil.getTraceId());
+		LOGGER.info("Get Routing Product Status Client with transaction Id: {}, with TraceId: {}",
+				AppContextUtil.getTranxId(), AppContextUtil.getTraceId());
 		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.GET_ROUTING_PRODUCT_STATUS)
 				.queryParam("countryId", countryId).queryParam("currencyId", currencyId).post()
 				.as(new ParameterizedTypeReference<AmxApiResponse<RoutingProductStatusDetails, Object>>() {
+				});
+	}
+
+	@Override
+	public AmxApiResponse<Integer, Object> updateRoutingProductStatus(RoutingStatusUpdateRequestDto request) {
+
+		LOGGER.info("Update Routing Product Status Client with transaction Id: {}, with TraceId: {}",
+				AppContextUtil.getTranxId(), AppContextUtil.getTraceId());
+
+		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.UPDATE_ROUTING_STATUS).post(request)
+				.as(new ParameterizedTypeReference<AmxApiResponse<Integer, Object>>() {
 				});
 	}
 

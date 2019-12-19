@@ -16,4 +16,11 @@ public interface RoutingProdStatusRepo extends CrudRepository<VwExRoutingProduct
 	List<VwExRoutingProductStatus> findByCurrencyIdAndDestinationCountryId(BigDecimal currencyId,
 			BigDecimal dCountryId);
 
+	List<VwExRoutingProductStatus> findByCountryIdAndCurrencyIdAndBankIdAndServiceIdAndRemitModeId(BigDecimal countryId,
+			BigDecimal currencyId, BigDecimal bankId, BigDecimal ServiceModeId, BigDecimal remitModeId);
+
+	List<VwExRoutingProductStatus> findByCountryIdAndCurrencyIdAndBankIdAndServiceIdAndRemitModeIdAndDeliveryModeId(
+			BigDecimal countryId, BigDecimal currencyId, BigDecimal bankId, BigDecimal ServiceModeId,
+			BigDecimal remitModeId, BigDecimal deliveryModeId);
+
 }

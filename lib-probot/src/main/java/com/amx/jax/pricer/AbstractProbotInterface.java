@@ -55,7 +55,7 @@ public interface AbstractProbotInterface {
 		
 		public static final String GET_ROUTING_PRODUCT_STATUS = SERVICE_PREFIX + API_VERSION_V1 + "/get-routing-product-status";
 		
-
+		public static final String UPDATE_ROUTING_STATUS = SERVICE_PREFIX + API_VERSION_V1 + "/update-routing-status";
 
 	}
 }

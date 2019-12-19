@@ -29,6 +29,7 @@ import com.amx.jax.pricer.dto.OnlineMarginMarkupInfo;
 import com.amx.jax.pricer.dto.OnlineMarginMarkupReq;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
 import com.amx.jax.pricer.dto.RoutingProductStatusDetails;
+import com.amx.jax.pricer.dto.RoutingStatusUpdateRequestDto;
 import com.amx.jax.pricer.service.ExchangeDataService;
 import com.amx.jax.pricer.service.HolidayListService;
 
@@ -149,6 +150,17 @@ public class ProbotDataServiceApiController implements ProbotDataService {
 
 		RoutingProductStatusDetails status = dataService.getRoutingProductStatus(countryId, currencyId);
 		return AmxApiResponse.build(status);
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.UPDATE_ROUTING_STATUS, method = RequestMethod.POST)
+	public AmxApiResponse<Integer, Object> updateRoutingProductStatus(
+			@RequestBody @Valid RoutingStatusUpdateRequestDto request) {
+		LOGGER.info("Received Request for Updating routing product status.");
+
+		int updateCnt = dataService.updateRoutingProductStatus(request);
+
+		return AmxApiResponse.build(updateCnt);
 	}
 
 }

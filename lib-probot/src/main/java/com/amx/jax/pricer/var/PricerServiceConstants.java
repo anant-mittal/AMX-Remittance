@@ -161,7 +161,18 @@ public final class PricerServiceConstants {
 	}
 
 	public static enum ROUTING_STATUS {
-		ACTIVE, INACTIVE;
+		ACTIVE("Y"), INACTIVE("U");
+
+		private String isActive;
+
+		private ROUTING_STATUS(String isActive) {
+			this.isActive = isActive;
+		}
+
+		public String getIsActive() {
+			return isActive;
+		}
+
 	}
 
 	public static enum FIELD_STATUS {

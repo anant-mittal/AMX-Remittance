@@ -41,6 +41,7 @@ import com.amx.jax.pricer.dto.OnlineMarginMarkupInfo;
 import com.amx.jax.pricer.dto.OnlineMarginMarkupReq;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
 import com.amx.jax.pricer.dto.RoutingProductStatusDetails;
+import com.amx.jax.pricer.dto.RoutingStatusUpdateRequestDto;
 import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.manager.DiscountManager;
@@ -257,6 +258,10 @@ public class ExchangeDataService {
 
 	public RoutingProductStatusDetails getRoutingProductStatus(BigDecimal countryId, BigDecimal currencyId) {
 		return routingProductManager.getRoutingProductStatus(countryId, currencyId);
+	}
+
+	public int updateRoutingProductStatus(RoutingStatusUpdateRequestDto request) {
+		return routingProductManager.updateRoutingProductStatus(request);
 	}
 
 }

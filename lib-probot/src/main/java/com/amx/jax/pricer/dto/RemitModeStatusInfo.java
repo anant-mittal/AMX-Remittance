@@ -10,6 +10,9 @@ public class RemitModeStatusInfo implements Serializable, Comparable<RemitModeSt
 
 	private static final long serialVersionUID = 2028657101281895917L;
 
+	private BigDecimal serviceModeId;
+	private String ServiceDesc;
+
 	private BigDecimal remitModeId;
 	private String remitModeDesc;
 
@@ -20,6 +23,22 @@ public class RemitModeStatusInfo implements Serializable, Comparable<RemitModeSt
 	private BigDecimal provisionalTrnxAmountForeign;
 
 	private List<DeliveryModeStatusInfo> deliveryModesStatus;
+
+	public BigDecimal getServiceModeId() {
+		return serviceModeId;
+	}
+
+	public void setServiceModeId(BigDecimal serviceModeId) {
+		this.serviceModeId = serviceModeId;
+	}
+	
+	public String getServiceDesc() {
+		return ServiceDesc;
+	}
+
+	public void setServiceDesc(String serviceDesc) {
+		ServiceDesc = serviceDesc;
+	}
 
 	public BigDecimal getRemitModeId() {
 		return remitModeId;

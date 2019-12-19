@@ -54,6 +54,7 @@ import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
 import com.amx.jax.pricer.dto.RoutingProductStatusDetails;
+import com.amx.jax.pricer.dto.RoutingStatusUpdateRequestDto;
 import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.service.PricerTestService;
 import com.amx.jax.pricer.var.PricerServiceConstants;
@@ -531,6 +532,12 @@ public class PricerServiceApiTest implements ProbotExchangeRateService, ProbotDa
 	public AmxApiResponse<RoutingProductStatusDetails, Object> getRoutingProductStatus(
 			@RequestParam(required = true) BigDecimal countryId, @RequestParam(required = true) BigDecimal currencyId) {
 		return pricerServiceClient.getRoutingProductStatus(countryId, currencyId);
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.UPDATE_ROUTING_STATUS, method = RequestMethod.POST)
+	public AmxApiResponse<Integer, Object> updateRoutingProductStatus(RoutingStatusUpdateRequestDto request) {
+		return pricerServiceClient.updateRoutingProductStatus(request);
 	}
 
 }
