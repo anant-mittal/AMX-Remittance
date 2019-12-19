@@ -209,14 +209,25 @@ public class PreFlexFieldManager {
 			additionalDataRequired = additionalDataDisplayDao.getAdditionalDataFromServiceApplicability(applicationCountryId, routingCountryId,
 					foreignCurrencyId, remittanceModeId, deliveryModeId, flexiFieldIn.toArray(new String[flexiFieldIn.size()]), ConstantDocument.Yes);
 		}
+		boolean flexFieldsAdded = false;
 		try {
 			AbstractFlexFieldManager flexFieldManager = (AbstractFlexFieldManager) appContext
 					.getBean(bankCode + AbstractFlexFieldManager.FLEX_FIELD_MANAGER_BEAN_SUFFIX);
 			Map<String, Object> result = flexFieldManager.managePreFlexFields(additionalDataRequired, requestFlexFields, cashSetUp, beneficaryDetails,
 					requiredFlexFields);
 			localVariableMap.putAll(result);
+			flexFieldsAdded = true;
 		} catch (NoSuchBeanDefinitionException ex) {
 
+		}
+		if (!flexFieldsAdded) {
+			for (AdditionalDataDisplayView flexField : additionalDataRequired) {
+				JaxConditionalFieldDto jaxConditionalFieldDto = remittanceTransactionRequestValidator.getConditionalFieldDto(flexField,
+						requestFlexFields, routingCountryId, remittanceModeId, deliveryModeId, foreignCurrencyId, routingBankId, null, true);
+				if (jaxConditionalFieldDto != null) {
+					requiredFlexFields.add(jaxConditionalFieldDto);
+				}
+			}
 		}
 		return requiredFlexFields;
 	}
