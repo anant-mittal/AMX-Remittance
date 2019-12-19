@@ -232,7 +232,6 @@ public class PlaceOrderManager implements Serializable{
 		placeOrderAppl.setRemarks(placeOrderRequestModel.getRemarks());
 		placeOrderAppl.setRemitDocumentYear(null);
 		placeOrderAppl.setRoutingBankId(trnxRoutingDtls.getRoutingBankId());
-		placeOrderAppl.setRequestCurrencyId(selectedCurrId);
 		placeOrderAppl.setRoutingBranchId(applRequestModel.getRoutingBankBranchId());
 		placeOrderAppl.setRoutingCountryId(trnxRoutingDtls.getRoutingCountryId());	
 		placeOrderAppl.setTransactionAmountPaid(dynPricingDto.getExRateBreakup().getConvertedLCAmount());
@@ -252,8 +251,10 @@ public class PlaceOrderManager implements Serializable{
 		
 		if(JaxUtil.isNullZeroBigDecimalCheck(applRequestModel.getLocalAmount())){
 			placeOrderAppl.setTransactionAmount(applRequestModel.getLocalAmount());
+			placeOrderAppl.setRequestCurrencyId(metaData.getDefaultCurrencyId());
 		}else {
 			placeOrderAppl.setTransactionAmount(applRequestModel.getForeignAmount());
+			placeOrderAppl.setRequestCurrencyId(beneficaryDetails.getCurrencyId());
 			
 		}
 		
@@ -588,13 +589,11 @@ public List<PlaceOrderApplDto>  convertGsmDto(List<RatePlaceOrder> placeOrderLsi
 				
 		 if(JaxUtil.isNullZeroBigDecimalCheck(placeOrder.getRequestCurrencyId()) && placeOrder.getRequestCurrencyId().compareTo(metaData.getDefaultCurrencyId())==0) { 
 			 applDto.setLocalTranxAmount(placeOrder.getTransactionAmount());
-		   // exRateBreakUp =exchangeRateService.createBreakUp(placeOrder.getRateOffered()==null?placeOrder.getExchangeRateApplied():placeOrder.getRateOffered(),placeOrder.getTransactionAmount()); 
-			  if(exRateBreakUp!=null) {
+		    if(exRateBreakUp!=null) {
 				  applDto.setForeignTranxAmount(exRateBreakUp.getConvertedFCAmount()); 
 			  } 
 		  }else
 		  { applDto.setForeignTranxAmount(placeOrder.getTransactionAmount());
-		      //exRateBreakUp =exchangeRateService.createBreakUpFromForeignCurrency(placeOrder. getRateOffered()==null?placeOrder.getExchangeRateApplied():placeOrder.getRateOffered(), placeOrder.getTransactionAmount()); 
 		  if(exRateBreakUp!=null)
 		  { applDto.setLocalTranxAmount(exRateBreakUp.getConvertedLCAmount()); 
 		  }
