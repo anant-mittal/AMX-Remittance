@@ -13,6 +13,8 @@ public @interface ApiRequest {
 
 	RequestType type() default RequestType.DEFAULT;
 
+	String deprecated() default Constants.BLANK;
+
 	boolean useAuthKey() default false;
 
 	boolean useAuthToken() default false;

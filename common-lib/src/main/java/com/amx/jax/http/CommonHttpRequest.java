@@ -413,6 +413,7 @@ public class CommonHttpRequest {
 				if (apiRequest == null) {
 					apiRequest = handlerMethod.getBeanType().getAnnotation(ApiRequest.class);
 				}
+
 				if (apiRequest != null) {
 					String handlerKey = handlerMethod.getShortLogMessage() + "#" +
 							ArgUtil.parseAsString(handlerMethod.hashCode());
@@ -437,6 +438,7 @@ public class CommonHttpRequest {
 		String flow;
 		String feature;
 		String clientAuth;
+		String deprecated;
 
 		public RequestType getType() {
 			return type;
@@ -486,6 +488,14 @@ public class CommonHttpRequest {
 			this.clientAuth = clientAuth;
 		}
 
+		public String getDeprecated() {
+			return deprecated;
+		}
+
+		public void setDeprecated(String deprecated) {
+			this.deprecated = deprecated;
+		}
+
 	}
 
 	public ApiRequestDetail getApiRequest(HttpServletRequest req) {
@@ -498,6 +508,7 @@ public class CommonHttpRequest {
 			detail.setFlow(x.flow());
 			detail.setFeature(x.feature());
 			detail.setClientAuth(x.clientAuth());
+			detail.setDeprecated(x.deprecated());
 		}
 
 		if (ArgUtil.isEmpty(detail.getType()) || RequestType.DEFAULT.equals(detail.getType())) {

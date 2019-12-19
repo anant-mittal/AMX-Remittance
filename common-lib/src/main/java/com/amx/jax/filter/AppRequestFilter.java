@@ -291,6 +291,9 @@ public class AppRequestFilter implements Filter {
 			}
 			try {
 				if (isRequestValid(localCommonHttpRequest, apiRequest, req, resp, traceId)) {
+					if(ArgUtil.is(apiRequest.getDeprecated())) {
+						AppContextUtil.addWarning(apiRequest.getDeprecated());
+					}
 					chain.doFilter(request, new AppResponseWrapper(resp));
 				} else {
 					resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
