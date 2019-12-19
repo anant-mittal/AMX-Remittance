@@ -116,7 +116,7 @@ public class ReportJaxB {
 							cbk.getEmail(), "NA"),
 					new Location(cbk.getEmpaddresstype(), "NA", "NA", cbk.getEmpcountrycode()), reasonDetailsDto.get(0).getCharUdf1(), actionDetailsDto.get(0).getCharUdf1(),
 					new Transaction(cbk.getTransactionRefNo().toString(), cbk.getTrnxLocal(),
-							parseTime(cbk.getTrnxDate()), cbk.getTeller(), cbk.getAuthorized(),
+							parseTime(cbk.getTrnxDate()), (cbk.getTeller()== null ? "NA" : cbk.getTeller()), (cbk.getAuthorized()== null ? "NA" : cbk.getAuthorized()),
 							cbk.getTransmodeCode().toString(), cbk.getAmountLocal().toString(),
 							new TFromMyClient("B",
 									new FromForeignCurrency(cbk.getForeignCurrencycode(),
