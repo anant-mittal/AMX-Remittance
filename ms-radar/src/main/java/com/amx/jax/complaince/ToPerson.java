@@ -10,10 +10,9 @@ import javax.xml.bind.annotation.XmlType;
 import com.sun.xml.txw2.annotation.XmlElement;
 
 @XmlRootElement(name="to_person")
-@XmlType(propOrder={"gender","title","first_name","last_name","ssn","nationality1","phone","address","identification"})	
+@XmlType(propOrder={"title","first_name","last_name","ssn","nationality1","phone","address"})	
 public class ToPerson {
 	
-	private String gender;
 	private String title;
 	private String first_name;
 	private String last_name;
@@ -21,15 +20,7 @@ public class ToPerson {
 	private String nationality1;
 	private List<Phones> phone = new  ArrayList<Phones>();
 	private List<Address> address = new ArrayList<Address>();
-	private Identification identification ;
 	
-	@XmlElement
-	public String getGender() {
-		return gender;
-	}
-	public void setGender(String gender) {
-		this.gender = gender;
-	}
 	@XmlElement
 	public String getTitle() {
 		return title;
@@ -66,13 +57,6 @@ public class ToPerson {
 		this.nationality1 = nationality1;
 	}
 	
-	@XmlElement
-	public Identification getIdentification() {
-		return identification;
-	}
-	public void setIdentification(Identification identification) {
-		this.identification = identification;
-	}
 	@XmlElementWrapper(name="phones")
     @XmlElement
 	public List<Phones> getPhone() {
@@ -91,10 +75,9 @@ public class ToPerson {
 	}
 	
 	
-	public ToPerson(String gender, String title, String first_name, String last_name, String ssn, String nationality1,
-			List<Phones> phone, List<Address> address, Identification identification) {
+	public ToPerson(String title, String first_name, String last_name, String ssn, String nationality1,
+			List<Phones> phone, List<Address> address) {
 		super();
-		this.gender = gender;
 		this.title = title;
 		this.first_name = first_name;
 		this.last_name = last_name;
@@ -102,7 +85,6 @@ public class ToPerson {
 		this.nationality1 = nationality1;
 		this.phone = phone;
 		this.address = address;
-		this.identification = identification;
 	}
 	public ToPerson() {
 		super();

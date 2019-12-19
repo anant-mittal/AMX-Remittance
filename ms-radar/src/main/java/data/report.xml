@@ -3,117 +3,109 @@
     <rentity_id>18</rentity_id>
     <submission_code>E</submission_code>
     <report_code>STR</report_code>
-    <submission_date>2019-05-16T00:00:00</submission_date>
+    <submission_date>2019-12-19T12:12:28</submission_date>
     <currency_code_local>KWD</currency_code_local>
     <reporting_person>
-        <first_name>almulla</first_name>
-        <last_name>admin</last_name>
-        <nationality1>KW</nationality1>
+        <first_name>Cincy Varghese</first_name>
+        <last_name>Cincy Varghese</last_name>
+        <nationality1>IN</nationality1>
         <phones>
             <phone>
                 <tph_contact_type>1</tph_contact_type>
                 <tph_communication_type>M</tph_communication_type>
-                <tph_number>123456</tph_number>
+                <tph_number>56787870</tph_number>
             </phone>
         </phones>
-        <email>Mohammed.Jabarullah@almullaexchange.com</email>
-        <occupation>compliance officer</occupation>
+        <occupation>NA</occupation>
     </reporting_person>
     <location>
         <address_type>1</address_type>
-        <address>Khaitan</address>
-        <city>Kuwait</city>
-        <country_code>KW</country_code>
+        <address>NA</address>
+        <city>NA</city>
+        <country_code>IN</country_code>
     </location>
-    <reason>Suspicious transaction</reason>
-    <action>Blocked the transaction</action>
+    <reason>IN CORRECT REMITTER DETAILS</reason>
+    <action>PAYMENT STOPPED</action>
     <transaction>
-        <transactionnumber>2019/123456</transactionnumber>
-        <transaction_location>Murgab Branch</transaction_location>
-        <date_transaction>2019-05-16T00:00:00</date_transaction>
-        <teller>Kanmani</teller>
-        <authorized>Kanmani</authorized>
+        <transactionnumber>201921000029</transactionnumber>
+        <transaction_location>58</transaction_location>
+        <date_transaction>2019-10-16T03:10:06</date_transaction>
+        <teller>Chiranjeevi</teller>
+        <authorized>Cincy Varghese</authorized>
         <transmode_code>C</transmode_code>
-        <amount_local>150</amount_local>
+        <amount_local>1000</amount_local>
         <t_from_my_client>
             <from_funds_code>B</from_funds_code>
             <from_foreign_currency>
                 <foreign_currency_code>INR</foreign_currency_code>
-                <foreign_amount>30000</foreign_amount>
-                <foreign_exchange_rate>230.25</foreign_exchange_rate>
+                <foreign_amount>219684</foreign_amount>
+                <foreign_exchange_rate>0.004552</foreign_exchange_rate>
             </from_foreign_currency>
             <from_person>
                 <gender>M</gender>
-                <title>Mr</title>
-                <first_name>Osaba</first_name>
-                <last_name>Bil Laden</last_name>
-                <ssn>2019/123456</ssn>
-                <nationality1>SA</nationality1>
-                <phones>
-                    <phone>
-                        <tph_contact_type>1</tph_contact_type>
-                        <tph_communication_type>M</tph_communication_type>
-                        <tph_country_prefix>M</tph_country_prefix>
-                        <tph_number>123456</tph_number>
-                    </phone>
-                </phones>
-                <addresses>
-                    <address>
-                        <address_type>1</address_type>
-                        <address>Khaitan</address>
-                        <city>Kuwait</city>
-                        <country_code>KW</country_code>
-                    </address>
-                </addresses>
-                <identification>
-                    <type>B</type>
-                    <number>2810502079628</number>
-                    <issue_country>KW</issue_country>
-                </identification>
-            </from_person>
-            <from_country>KW</from_country>
-        </t_from_my_client>
-        <t_to>
-            <to_funds_code>B</to_funds_code>
-            <to_foreign_currency>
-                <foreign_currency_code>INR</foreign_currency_code>
-                <foreign_amount>3000</foreign_amount>
-                <foreign_exchange_rate>230.50</foreign_exchange_rate>
-            </to_foreign_currency>
-            <to_person>
-                <gender>M</gender>
-                <title>Mr</title>
-                <first_name>Test bene</first_name>
-                <last_name>bene</last_name>
-                <ssn>2019/123456</ssn>
+                <title>Mr.</title>
+                <first_name>Chiranjeevi</first_name>
+                <last_name>V</last_name>
+                <ssn>289053104436</ssn>
                 <nationality1>IN</nationality1>
                 <phones>
                     <phone>
                         <tph_contact_type>1</tph_contact_type>
                         <tph_communication_type>M</tph_communication_type>
-                        <tph_country_prefix>0091</tph_country_prefix>
-                        <tph_number>0091</tph_number>
+                        <tph_country_prefix>965</tph_country_prefix>
+                        <tph_number>NA</tph_number>
                     </phone>
                 </phones>
                 <addresses>
                     <address>
                         <address_type>1</address_type>
-                        <address>Tamil Nadu</address>
-                        <city>Chennai</city>
+                        <address>NA</address>
+                        <city>NA</city>
                         <country_code>IN</country_code>
                     </address>
                 </addresses>
                 <identification>
-                    <type>D</type>
-                    <number>123456</number>
+                    <type>B</type>
+                    <number>289053104436</number>
                     <issue_country>IN</issue_country>
                 </identification>
+            </from_person>
+            <from_country>IN</from_country>
+        </t_from_my_client>
+        <t_to>
+            <to_funds_code>B</to_funds_code>
+            <to_foreign_currency>
+                <foreign_currency_code>INR</foreign_currency_code>
+                <foreign_amount>219684</foreign_amount>
+                <foreign_exchange_rate>0.004552</foreign_exchange_rate>
+            </to_foreign_currency>
+            <to_person>
+                <title>NA</title>
+                <first_name>CHIRU TEST</first_name>
+                <last_name>SBI REC</last_name>
+                <ssn>NA</ssn>
+                <nationality1>NA</nationality1>
+                <phones>
+                    <phone>
+                        <tph_contact_type>1</tph_contact_type>
+                        <tph_communication_type>M</tph_communication_type>
+                        <tph_country_prefix>NA</tph_country_prefix>
+                        <tph_number>9988775566</tph_number>
+                    </phone>
+                </phones>
+                <addresses>
+                    <address>
+                        <address_type>1</address_type>
+                        <address>NA</address>
+                        <city>NA</city>
+                        <country_code>IN</country_code>
+                    </address>
+                </addresses>
             </to_person>
-            <to_country>KW</to_country>
+            <to_country>IN</to_country>
         </t_to>
     </transaction>
     <report_indicators>
-        <indicator>PO-1</indicator>
-        <indicator>RS-2</indicator>
+        <indicator>OTH</indicator>
     </report_indicators>
 </report>

@@ -1,4 +1,6 @@
 package com.amx.jax.complaince;
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import com.sun.xml.txw2.annotation.XmlElement;
@@ -18,7 +20,7 @@ import com.sun.xml.txw2.annotation.XmlElement;
 			  private String reason;
 			  private String action;
 			  private Transaction transaction;
-			  private ReportIndicators report_indicators;
+			  private List<ReportIndicators> report_indicators;
 			  
 			@XmlElement  
 			public String getRentity_id() {
@@ -90,18 +92,16 @@ import com.sun.xml.txw2.annotation.XmlElement;
 			public void setTransaction(Transaction transaction) {
 				this.transaction = transaction;
 			}		
-			
 			@XmlElement 
-			public ReportIndicators getReport_indicators() {
+			public List<ReportIndicators> getReport_indicators() {
 				return report_indicators;
 			}
-			public void setReport_indicators(ReportIndicators report_indicators) {
+			public void setReport_indicators(List<ReportIndicators> report_indicators) {
 				this.report_indicators = report_indicators;
 			}
-			
 			public Report(String rentity_id, String submission_code, String report_code, String submission_date,
 					String currency_code_local, ReportingPerson reporting_person, Location location, String reason,
-					String action, Transaction transaction, ReportIndicators report_indicators) {
+					String action, Transaction transaction, List<ReportIndicators> repoIndList) {
 				super();
 				this.rentity_id = rentity_id;
 				this.submission_code = submission_code;
@@ -113,7 +113,7 @@ import com.sun.xml.txw2.annotation.XmlElement;
 				this.reason = reason;
 				this.action = action;
 				this.transaction = transaction;
-				this.report_indicators = report_indicators;
+				this.report_indicators = repoIndList;
 			}
 			public Report() {
 				super();
