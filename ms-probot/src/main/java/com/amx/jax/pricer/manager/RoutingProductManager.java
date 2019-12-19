@@ -417,6 +417,9 @@ public class RoutingProductManager {
 			return 0;
 		}
 
+		LOGGER.info("Updating Routing Status to: " + request.getUpdated() + " for Product with Request Params:"
+				+ JsonUtil.toJson(request));
+
 		int updateCount;
 
 		if (request.getDeliveryModeId() == null) {
