@@ -184,12 +184,12 @@ public class RemittanceApplAmlManager {
 			amlDto.setHighValueTrnxFlag(ConstantDocument.Yes);
 			amlDto.setStopTrnxFlag(ConstantDocument.Yes);
 			amlDto.setRiskLevel1(amlCashRisk.getAuthMessage());
-		}else if(riskCount==1 &&  JaxUtil.isNullZeroBigDecimalCheck(trnxCntForRiskCntry) && trnxCntForRiskCntry.compareTo(BigDecimal.ONE)>1) {
+		}else if(riskCount==1 &&  JaxUtil.isNullZeroBigDecimalCheck(trnxCntForRiskCntry) && trnxCntForRiskCntry.compareTo(BigDecimal.ONE)>=1) {
 			/** More than one Online transaction to the bene risk  country by a Customer on the same day **/  
 			amlDto.setHighValueTrnxFlag(ConstantDocument.Yes);
 			amlDto.setStopTrnxFlag(ConstantDocument.Yes);
 			amlDto.setRiskLevel2("No of Online Trn = "+trnxCntForRiskCntry +" by the customer to "+countryMaster.getCountryAlpha3Code()+".");
-		}else if(riskCount==1 && customer!=null && customer.getNationality().contains("PAKISTAN") && JaxUtil.isNullZeroBigDecimalCheck(trnxCount) && trnxCount.compareTo(BigDecimal.ONE)>1 ) {
+		}else if(riskCount==1 && customer!=null && customer.getNationality().contains("PAKISTAN") && JaxUtil.isNullZeroBigDecimalCheck(trnxCount) && trnxCount.compareTo(BigDecimal.ONE)>=1 ) {
 			/** ( a ) Bene country  Risk  Level   1 (b)   Remitter  Nationality  Mismatch  with  Bene  Country  and  Email / Mobil changed in last 90 days **/
 			amlDto.setHighValueTrnxFlag(ConstantDocument.Yes);
 			amlDto.setStopTrnxFlag(ConstantDocument.Yes);
