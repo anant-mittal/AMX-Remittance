@@ -1,4 +1,4 @@
-package com.amx.jax.branch.controller;
+package com.amx.jax.branch.common;
 
 import java.util.concurrent.ExecutionException;
 
@@ -16,10 +16,10 @@ import com.amx.jax.sso.SSOUser;
 import io.swagger.annotations.Api;
 
 @RestController
-@Api(value = "User Meta APIs")
-public class UserMetaController {
+@Api(value = "Branch User/Employee Meta APIs")
+public class EmpMetaController {
 
-	private Logger logger = Logger.getLogger(UserMetaController.class);
+	private Logger logger = Logger.getLogger(EmpMetaController.class);
 
 	@Autowired
 	private SSOUser ssoUser;
