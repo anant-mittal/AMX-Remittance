@@ -167,7 +167,8 @@ public class BenePersonalDetailValidator implements Validator {
 			if (!benePersonalDetailModel.getInstitutionName().trim().contains(" ")) {
 				throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Institution name must have at least one space");
 			}
-			if (!benePersonalDetailModel.getInstitutionNameLocal().trim().contains(" ")) {
+			if (benePersonalDetailModel.getInstitutionNameLocal() != null
+					&& !benePersonalDetailModel.getInstitutionNameLocal().trim().contains(" ")) {
 				throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Institution name local must have at least one space");
 			}
 		} else {
