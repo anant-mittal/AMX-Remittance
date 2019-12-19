@@ -151,18 +151,18 @@ public class RemittanceApplAmlManager {
 		if(countryMaster!=null) {
 			riskCount = countryMaster.getBeneCountryRisk();
 			if(countryMaster.getBeneCountryRisk()!=null && riskCount==1) {
-				amlDto.setBlackRemark1("Bene country  Risk  Level   1.");
+				amlDto.setBlackRemark1("Bene country risk level 1.");
 				amlDto.setTag(ConstantDocument.Yes);
 			}
 		}
 		if(beneficiaryDT.getNationality()!=null && new BigDecimal(beneficiaryDT.getNationality()).compareTo(beneficiaryBankCountryId)!=0) {
-			amlDto.setBlackRemark2("Remitter  Nationality  Mistmatch  with  Bene  Country.");
+			amlDto.setBlackRemark2("Remitter nationality mistmatch.");
 			amlDto.setTag(ConstantDocument.Yes);
 		}
 		
 		BigDecimal changeHistcount = routingProcedureDao.getCustomerHistroyCount(metaData.getCustomerId());
 		if(JaxUtil.isNullZeroBigDecimalCheck(changeHistcount) && changeHistcount.compareTo(BigDecimal.ZERO)>0) {
-			amlDto.setBlackRemark3("Email / Mobile  changed  within  90  days.");
+			amlDto.setBlackRemark3("Email/Mobile changed within 90 days.");
 		}
 
 		
@@ -193,12 +193,18 @@ public class RemittanceApplAmlManager {
 			/** ( a ) Bene country  Risk  Level   1 (b)   Remitter  Nationality  Mismatch  with  Bene  Country  and  Email / Mobil changed in last 90 days **/
 			amlDto.setHighValueTrnxFlag(ConstantDocument.Yes);
 			amlDto.setStopTrnxFlag(ConstantDocument.Yes);
-			amlDto.setRiskLevel2("No of Online Trn = "+trnxCount +" by Pakistan Nationality  .");
+			amlDto.setRiskLevel2("No of Online Trn = "+trnxCount +" by Pakistan nationality.");
 		/** Pakistan Nationality sends more than one online transaction to any Country on the same day **/  	
-		}else if(customer!=null && customer.getNationality().contains("PAKISTAN") && JaxUtil.isNullZeroBigDecimalCheck(trnxCount) && trnxCount.compareTo(BigDecimal.ONE)>1 ) {
+		}else if(customer!=null && customer.getNationality().contains("PAKISTAN") && JaxUtil.isNullZeroBigDecimalCheck(trnxCount) && trnxCount.compareTo(BigDecimal.ONE)>=1 ) {
 			amlDto.setHighValueTrnxFlag(ConstantDocument.Yes);
 			amlDto.setStopTrnxFlag(ConstantDocument.Yes);
-			amlDto.setRiskLevel3("No of Online Trn = "+trnxCount +" by Pakistan Nationality  on the same day.");
+			amlDto.setRiskLevel3("No of Online Trn = "+trnxCount +" by Pakistan Nationality on the same day.");
+		}else if(riskCount==1 && beneficiaryDT.getServiceGroupCode().equalsIgnoreCase(ConstantDocument.CASH)
+					&& JaxUtil.isNullZeroBigDecimalCheck(amlCashRiskLevel) && remittanceApplication.getLocalTranxAmount().compareTo(amlCashRiskLevel)>0) { 
+				/** Bene country  Risk  Level    1 and  Cash Trn above 200 KD **/
+				amlDto.setHighValueTrnxFlag(ConstantDocument.Yes);
+				amlDto.setStopTrnxFlag(ConstantDocument.Yes);
+				amlDto.setRiskLevel1(amlCashRisk.getAuthMessage());
 		}
 		
 		
