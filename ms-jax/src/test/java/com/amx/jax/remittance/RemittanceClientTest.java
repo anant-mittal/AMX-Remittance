@@ -76,7 +76,8 @@ public class RemittanceClientTest extends AbstractTest {
 		AmxApiResponse<BoolRespModel, Object> response = null;
 		BigDecimal chequeBankId = new BigDecimal(62);
 		BigDecimal cardTypeId = new BigDecimal(2);
-		response = brRemitClient.updateCustomerCardType(chequeBankId, cardTypeId);
+		String nameOnCard = "test";
+		response = brRemitClient.updateCustomerCardType(chequeBankId, cardTypeId, nameOnCard);
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResults());
 	}

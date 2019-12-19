@@ -11,7 +11,7 @@ import com.amx.jax.dbmodel.remittance.CustomerBank;
 
 public interface CustomerBankRepository extends CrudRepository<CustomerBank, Serializable>{
 
-	@Query("select c from CustomerBank c where c.customerId=?1 and c.bankId=?2 and isActive='Y'")
-	List<CustomerBank> getCustomerBanks(BigDecimal customerId, BigDecimal bankId);
+	@Query("select c from CustomerBank c where c.customerId=?1 and c.bankId=?2 and c.debitCardName=?3 and isActive='Y'")
+	List<CustomerBank> getCustomerBanks(BigDecimal customerId, BigDecimal bankId, String debitCardName);
 
 }

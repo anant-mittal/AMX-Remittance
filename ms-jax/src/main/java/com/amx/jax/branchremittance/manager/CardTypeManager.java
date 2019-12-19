@@ -56,8 +56,8 @@ public class CardTypeManager extends AbstractModel {
 		return cardTypes;
 	}
 
-	public void updateExtCardType(BigDecimal custId, BigDecimal chequeBankId, BigDecimal cardTypeId) {
-		List<CustomerBank> customerBanks = CardTypeDao.getCustomerBanks(custId, chequeBankId);
+	public void updateExtCardType(BigDecimal custId, BigDecimal chequeBankId, BigDecimal cardTypeId, String nameOnCard) {
+		List<CustomerBank> customerBanks = CardTypeDao.getCustomerBanks(custId, chequeBankId, nameOnCard);
 		
 		if(customerBanks != null && customerBanks.size() != 0) {
 			logger.info(" Customer Banks list is : " + customerBanks.size());

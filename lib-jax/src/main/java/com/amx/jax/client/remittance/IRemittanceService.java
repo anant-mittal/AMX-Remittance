@@ -92,6 +92,7 @@ public interface IRemittanceService extends  IJaxService {
 		public static final String VERIFICATION_CODE="verificationCode";
 		public static final String CHEQUE_BANK_ID="chequeBankId"; 
 		public static final String CARD_TYPE_ID="cardTypeId";
+		public static final String NAME_ON_CARD="nameOnCard";
 	}
 	
 	
@@ -178,8 +179,8 @@ public interface IRemittanceService extends  IJaxService {
 	@ApiJaxStatus({JaxError.NO_RECORD_FOUND})
 	public AmxApiResponse<CardTypeDto, Object> getCustomerCardTypeList();
 	
-	
-	AmxApiResponse<BoolRespModel, Object> updateCustomerCardType(BigDecimal chequeBankId, BigDecimal cardTypeId);
+	@ApiJaxStatus({JaxError.NO_RECORD_FOUND})
+	AmxApiResponse<BoolRespModel, Object> updateCustomerCardType(BigDecimal chequeBankId, BigDecimal cardTypeId, String nameOnCard);
 	
 }
 

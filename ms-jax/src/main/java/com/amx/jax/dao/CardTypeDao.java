@@ -28,9 +28,9 @@ public class CardTypeDao {
 		return cardTypeRepo.getCardTypeList(languageId);
 	}
 
-	public List<CustomerBank> getCustomerBanks(BigDecimal custId, BigDecimal chequeBankId) {
+	public List<CustomerBank> getCustomerBanks(BigDecimal custId, BigDecimal chequeBankId, String nameOnCard) {
 		// TODO Auto-generated method stub
-		return customerBankRepository.getCustomerBanks(custId, chequeBankId);
+		return customerBankRepository.getCustomerBanks(custId, chequeBankId, nameOnCard);
 	}
 	
 	

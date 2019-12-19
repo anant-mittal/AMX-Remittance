@@ -301,8 +301,8 @@ public class BranchRemittanceController implements IRemittanceService {
 	@RequestMapping(value = Path.UPDATE_CUSTOMER_CARD_TYPE, method = RequestMethod.POST)
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> updateCustomerCardType(@RequestParam("chequeBankId") BigDecimal chequeBankId, 
-			@RequestParam("cardTypeId") BigDecimal cardTypeId) {
-		AmxApiResponse<BoolRespModel, Object> response = branchRemitService.updateCustomerCardType(chequeBankId, cardTypeId);
+			@RequestParam("cardTypeId") BigDecimal cardTypeId, @RequestParam("nameOnCard") String nameOnCard) {
+		AmxApiResponse<BoolRespModel, Object> response = branchRemitService.updateCustomerCardType(chequeBankId, cardTypeId, nameOnCard);
 		return response;
 	}
 

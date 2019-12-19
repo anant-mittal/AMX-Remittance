@@ -354,7 +354,7 @@ public class RemitBranchController {
 	
 	@RequestMapping(value = "/api/remitt/card_type/update", method = { RequestMethod.POST })
 	public AmxApiResponse<BoolRespModel, Object> updateCustomerCardType(@RequestParam BigDecimal chequeBankId,
-			@RequestParam BigDecimal cardTypeId) {
-		return branchRemittanceClient.updateCustomerCardType(chequeBankId, cardTypeId);
+			@RequestParam BigDecimal cardTypeId, @RequestParam String nameOnCard) {
+		return branchRemittanceClient.updateCustomerCardType(chequeBankId, cardTypeId, nameOnCard);
 	}
 }

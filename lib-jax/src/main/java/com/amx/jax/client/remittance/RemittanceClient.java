@@ -429,12 +429,13 @@ public class RemittanceClient implements IRemittanceService {
 	}
 
 	@Override
-	public AmxApiResponse<BoolRespModel, Object> updateCustomerCardType(BigDecimal chequeBankId, BigDecimal cardTypeId) {
+	public AmxApiResponse<BoolRespModel, Object> updateCustomerCardType(BigDecimal chequeBankId, BigDecimal cardTypeId, String nameOnCard) {
 		try {
 			LOGGER.debug("In Update Customer Card Type : " );
 			return restService.ajax(appConfig.getJaxURL() + Path.UPDATE_CUSTOMER_CARD_TYPE).meta(new JaxMetaInfo())
 					.queryParam(Params.CHEQUE_BANK_ID, chequeBankId)
 					.queryParam(Params.CARD_TYPE_ID, cardTypeId)
+					.queryParam(Params.NAME_ON_CARD, nameOnCard)
 					.post()
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});
