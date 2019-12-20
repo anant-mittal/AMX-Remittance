@@ -70,11 +70,6 @@ public class CustomerAddressDetailsManager {
 				contactDetail.setMobile(customer.getMobile());
 				contactDetail.setTelephoneCode(customer.getPrefixCodeMobile());
 				contactDetail.setIsWatsApp(customer.getIsMobileWhatsApp());
-				if (ConstantDocument.CONTACT_TYPE_FOR_LOCAL.equals(req.getContactType())) {
-					ViewCompanyDetails companyDetail = companyService.getCompanyDetail();
-					BigDecimal appCountry = companyDetail.getApplicationCountryId();
-					contactDetail.setFsCountryMaster(new CountryMaster(appCountry));
-				}
 			} else {
 				isModified = true;
 			}
@@ -101,6 +96,12 @@ public class CustomerAddressDetailsManager {
 			}
 			if (req.getStreet() != null) {
 				contactDetail.setStreet(req.getStreet());
+			}
+			if (ConstantDocument.CONTACT_TYPE_FOR_LOCAL.equals(req.getContactType()) && contactDetail.getFsCityMaster() == null) {
+				log.debug("updating country id for local contact");
+				ViewCompanyDetails companyDetail = companyService.getCompanyDetail();
+				BigDecimal appCountry = companyDetail.getApplicationCountryId();
+				contactDetail.setFsCountryMaster(new CountryMaster(appCountry));
 			}
 			if (isModified) {
 				contactDetail.setUpdatedBy(jaxDbservice.getCreatedOrUpdatedBy());
