@@ -86,7 +86,7 @@ public class CustomerCommunicationListner implements ITunnelSubscriber<DBEvent> 
 		CommunicationPrefsResult communicationFlowPrefs = null;
 		if (ArgUtil.is(custId)) {
 			c = customerRepository.getCustomerByCustomerIdAndIsActive(custId, "Y");
-			wrapper.put("customer", JsonUtil.toMap(c));
+			wrapper.put("customer", JsonUtil.toJsonMap(c));
 			String custName;
 			if (StringUtils.isEmpty(c.getMiddleName())) {
 				custName = c.getFirstName() + ' ' + c.getLastName();
