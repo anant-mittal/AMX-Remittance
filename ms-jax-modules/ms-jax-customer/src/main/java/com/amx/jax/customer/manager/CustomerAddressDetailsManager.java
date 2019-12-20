@@ -1,5 +1,6 @@
 package com.amx.jax.customer.manager;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import org.slf4j.Logger;
@@ -16,8 +17,10 @@ import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.DistrictMaster;
 import com.amx.jax.dbmodel.StateMaster;
+import com.amx.jax.dbmodel.ViewCompanyDetails;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.UpdateCustomerAddressDetailRequest;
+import com.amx.jax.service.CompanyService;
 import com.amx.jax.services.JaxDBService;
 import com.amx.jax.userservice.service.ContactDetailService;
 
@@ -30,6 +33,8 @@ public class CustomerAddressDetailsManager {
 	MetaData metaData;
 	@Autowired
 	JaxDBService jaxDbservice;
+	@Autowired
+	CompanyService companyService;
 
 	private static final Logger log = LoggerFactory.getLogger(CustomerAddressDetailsManager.class);
 
@@ -52,6 +57,7 @@ public class CustomerAddressDetailsManager {
 		}
 		if (req != null) {
 			if (contactDetail == null) {
+				log.debug("creating new customer contact with type {}", req.getContactType());
 				contactDetail = new ContactDetail();
 				BizComponentData fsBizComponentDataByContactTypeId = new BizComponentData();
 				fsBizComponentDataByContactTypeId.setComponentDataId(req.getContactType());
@@ -64,6 +70,11 @@ public class CustomerAddressDetailsManager {
 				contactDetail.setMobile(customer.getMobile());
 				contactDetail.setTelephoneCode(customer.getPrefixCodeMobile());
 				contactDetail.setIsWatsApp(customer.getIsMobileWhatsApp());
+				if (ConstantDocument.CONTACT_TYPE_FOR_LOCAL.equals(req.getContactType())) {
+					ViewCompanyDetails companyDetail = companyService.getCompanyDetail();
+					BigDecimal appCountry = companyDetail.getApplicationCountryId();
+					contactDetail.setFsCountryMaster(new CountryMaster(appCountry));
+				}
 			} else {
 				isModified = true;
 			}
