@@ -280,7 +280,9 @@ public class CustomerManagementManager {
 		customer.setPepsIndicator(createCustomerInfoRequest.getPepsIndicator() ? ConstantDocument.Yes : ConstantDocument.No);
 		customer.setIsOnlineUser(ConstantDocument.No);
 		customer.setSignatureSpecimenClob(createCustomerInfoRequest.getCustomerPersonalDetail().getCustomerSignature());
-		customerPersonalDetailManager.savePassportDetail(customer, createCustomerInfoRequest.getCustomerPersonalDetail().getCustomerPassportData());
+		if(createCustomerInfoRequest.getCustomerPersonalDetail().getCustomerPassportData() != null) {
+			customerPersonalDetailManager.savePassportDetail(customer, createCustomerInfoRequest.getCustomerPersonalDetail().getCustomerPassportData());
+		}
 		custDao.saveCustomer(customer);
 	}
 
