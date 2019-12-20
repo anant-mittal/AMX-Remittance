@@ -143,6 +143,7 @@ public class TunnelSubscriberFactory {
 			@Override
 			public void onMessage(String channel, TunnelMessage<M> msg) {
 				MCQIndicator.messageRcvd(channel);
+				AppContextUtil.clear();
 				AppContext context = msg.getContext();
 				AppContextUtil.setContext(context);
 				AppContextUtil.init();
@@ -215,6 +216,7 @@ public class TunnelSubscriberFactory {
 			}
 
 			public void doMessage(String channel, TunnelMessage<M> msg) {
+				AppContextUtil.clear();
 				AppContextUtil.setContext(msg.getContext());
 				AppContextUtil.init();
 				AuditServiceClient.trackStatic(
@@ -281,6 +283,7 @@ public class TunnelSubscriberFactory {
 					return;
 				}
 				if (!TimeUtils.isDead(msg.getTimestamp(), TIME_TO_EXPIRE_MILLIS)) {
+					AppContextUtil.clear();
 					AppContext context = msg.getContext();
 					AppContextUtil.setContext(context);
 					AppContextUtil.init();
@@ -326,6 +329,7 @@ public class TunnelSubscriberFactory {
 					return;
 				}
 				if (!TimeUtils.isDead(msg.getTimestamp(), TIME_TO_EXPIRE_MILLIS)) {
+					AppContextUtil.clear();
 					AppContext context = msg.getContext();
 					AppContextUtil.setContext(context);
 					AppContextUtil.init();
@@ -370,6 +374,7 @@ public class TunnelSubscriberFactory {
 				TunnelMessage<M> msg = pollSafely(channel, topicMessageQueue, msgId);
 
 				if (msg != null) {
+					AppContextUtil.clear();
 					AppContext context = msg.getContext();
 					AppContextUtil.setContext(context);
 					AppContextUtil.init();

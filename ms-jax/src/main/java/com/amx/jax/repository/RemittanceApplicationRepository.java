@@ -76,7 +76,7 @@ public interface RemittanceApplicationRepository extends CrudRepository<Remittan
     @Transactional
 	@Modifying
 	@Query("update RemittanceApplication appl set isactive = 'D',applicaitonStatus = null where appl.fsCustomer=:customerId and trunc(sysdate)=trunc(createdDate) " 
-			+"and isactive <> 'D' and NVL(resultCode,' ') NOT IN('CAPTURED','APPROVED') and paymentType <> 'PB'")
+			+"and isactive <> 'D' and NVL(resultCode,' ') NOT IN('CAPTURED','APPROVED') and NVL(PAYMENT_TYPE,' ') <> 'PB'")
 	public void deActivateNotUsedAllApplication(@Param("customerId") Customer customerId);
     
 
@@ -102,6 +102,6 @@ public interface RemittanceApplicationRepository extends CrudRepository<Remittan
 	public List<RemittanceApplication> findByFsCustomerAndPaygTrnxDetailId(Customer fsCustomer, BigDecimal paygTrnxDetailId);
 	
 	@Query(value =" SELECT * FROM EX_APPL_TRNX A WHERE a.CUSTOMER_ID=?1 AND a.ACCOUNT_MMYYYY=trunc(SYSDATE,'MONTH') AND a.ISACTIVE='Y' "+ 
-			" and a.COUNTRY_BRANCH_ID=?2 and TRUNC(SYSDATE)=TRUNC(A.CREATED_DATE)",nativeQuery = true)
+			" and a.COUNTRY_BRANCH_ID=?2 and TRUNC(SYSDATE)=TRUNC(A.CREATED_DATE) and NVL(APPLICATION_STATUS,' ' ) <>'T' ",nativeQuery = true)
 	public List<RemittanceApplication> getApplicationCountList(BigDecimal customerId,BigDecimal countryBranchId);
 }

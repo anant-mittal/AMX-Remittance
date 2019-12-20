@@ -418,7 +418,7 @@ public class SnapModels {
 		}
 
 		public Long getDocCount() {
-			return this.getLong("doc_count");
+			return this.getLong("doc_count",0L);
 		}
 
 	}

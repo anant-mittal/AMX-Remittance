@@ -152,11 +152,13 @@ public class CustomerIdProofManager {
 
 	public DmsApplMapping getDmsMapping(CustomerIdProof customerIdProof) {
 		DmsApplMapping mapping = null;
-		List<DmsApplMapping> dmsApplMapping = dmsApplMappingRepository.getDmsApplMapping(
-				customerIdProof.getFsCustomer().getCustomerId(), customerIdProof.getIdentityInt(),
-				customerIdProof.getIdentityTypeId(), customerIdProof.getIdentityExpiryDate());
-		if (CollectionUtils.isNotEmpty(dmsApplMapping)) {
-			mapping = dmsApplMapping.get(0);
+		if (customerIdProof.getIdentityExpiryDate() != null) {
+			List<DmsApplMapping> dmsApplMapping = dmsApplMappingRepository.getDmsApplMapping(
+					customerIdProof.getFsCustomer().getCustomerId(), customerIdProof.getIdentityInt(),
+					customerIdProof.getIdentityTypeId(), customerIdProof.getIdentityExpiryDate());
+			if (CollectionUtils.isNotEmpty(dmsApplMapping)) {
+				mapping = dmsApplMapping.get(0);
+			}
 		}
 		return mapping;
 	}
@@ -232,7 +234,7 @@ public class CustomerIdProofManager {
 		CustomerIdProof idProof = getCustomerIdProofByCustomerId(customerId);
 		if(idProof != null) {
 			idProof.setIdentityStatus(AmxDBConstants.Compliance);
+			customerIdProofRepository.save(idProof);
 		}
-		customerIdProofRepository.save(idProof);
 	}
 }

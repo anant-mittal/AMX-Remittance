@@ -837,8 +837,9 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 					articleDao.getIncomeRangeMasterByIncomeRangeId(customerEmploymentDetails.getIncomeRangeId()));
 		}
 		userValidationService.validateBlackListedCustomerForLogin(customer);
-		offsiteCustomerRegManager.setNotificationVerificationFlags(customer, customerDetails);
-		LOGGER.info("Createing new customer record, civil id- {}", customerDetails.getIdentityInt());
+		if (customer.getCustomerId() != null) {
+			offsiteCustomerRegManager.setNotificationVerificationFlags(customer, customerDetails);
+		}
 		customer = customerRepository.save(customer);
 		return customer;
 	}

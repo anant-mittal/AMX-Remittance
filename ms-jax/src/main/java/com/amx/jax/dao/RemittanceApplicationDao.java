@@ -2,6 +2,7 @@ package com.amx.jax.dao;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 import javax.transaction.Transactional;
 
@@ -80,20 +81,36 @@ public class RemittanceApplicationDao {
 	IRemitApplSrvProvRepository remitApplSrvProvRepository;
     
     @Autowired
+    IRemitApplAmlRepository applAmlRepository;
+    
+    @Autowired
+    IRemittanceApplSplitRepository remittanceApplSplitRepository;
+    
+    @Autowired
+    BranchRemittanceDao brRemitDao;
+
+    @Autowired
     IServiceViewRepository serviceViewRepository;
-	
-	@Autowired
-	IRemitApplAmlRepository applAmlRepository;
 
-	@Autowired
-	BranchRemittanceDao brRemitDao;
-
-	@Autowired
-	IRemittanceApplSplitRepository remittanceApplSplitRepository;
+    
+    
+    /**
+     
+     public BigDecimal generateDocumentNumber(BigDecimal appCountryId, BigDecimal companyId, BigDecimal documentId, BigDecimal finYear, BigDecimal branchId) {
+		Map<String, Object> output = applicationProcedureDao.getDocumentSeriality(appCountryId, companyId, documentId, finYear, ConstantDocument.Update, branchId);
+		BigDecimal no = (BigDecimal) output.get("P_DOC_NO");
+		return (BigDecimal) output.get("P_DOC_NO");
+	}
+     
+     
+     */
+    
     
 	@Transactional
 	public void saveAllApplicationData(RemittanceApplication app, RemittanceAppBenificiary appBene,
 			List<AdditionalInstructionData> additionalInstrumentData,RemitApplSrvProv remitApplSrvProv,List<RemittanceApplicationSplitting>  applSplitList ,RemitApplAmlModel remitApplAml) {
+try {
+		
 		if(app!=null) {
 				BigDecimal documentNo =brRemitDao.generateDocumentNumber(app.getFsCountryMasterByApplicationCountryId().getCountryId(), app.getFsCompanyMaster().getCompanyId(),
 						app.getDocumentCode(), app.getDocumentFinancialyear(), app.getLoccod());
@@ -126,14 +143,16 @@ public class RemittanceApplicationDao {
 		}else {
 			throw new GlobalException(JaxError.INVALID_APPLICATION_DOCUMENT_NO, "Application document number shouldnot be null or blank");
 		}
-	
+
 		logger.info("Application saved in the database, docNo: " + app.getDocumentNo());
-	}
+} catch (GlobalException e){
+	throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
+}
+}
 
 	public RemittanceTransactionView getRemittanceTransactionView(BigDecimal documentNumber, BigDecimal finYear) {
 		RemittanceTransactionView remittanceTransactionView = appRepo.fetchRemitApplTrnxView(documentNumber, finYear);
 		return remittanceTransactionView;
-
 	}
 
 	public RemittanceApplication getApplication(BigDecimal documentNumber, BigDecimal finYear) {
