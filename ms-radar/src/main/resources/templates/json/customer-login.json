@@ -172,6 +172,7 @@
          {
           "bool": {
             "should": [
+             [# th:if="${#logmap.client.containsKey('fp')}"] 
               {
                 "bool": {
                   "should": [
@@ -184,6 +185,8 @@
                   "minimum_should_match": 1
                 }
               },
+              [/]
+              [# th:if="${#logmap.client.containsKey('ip')}"] 
               {
                 "bool": {
                   "should": [
@@ -196,6 +199,7 @@
                   "minimum_should_match": 1
                 }
               }
+              [/]
             ],
             "minimum_should_match": 1
           }
