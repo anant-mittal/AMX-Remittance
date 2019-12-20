@@ -13,7 +13,7 @@ public class AuditMapModel extends MapModel {
 	private static final JsonPath TARGET_ID = new JsonPath("targetId");
 	private static final JsonPath CUSTOMER_ID = new JsonPath("cust/id");
 	private static final JsonPath CLIENT_IP = new JsonPath("client/ip");
-	private static final JsonPath CLIENT_FP = new JsonPath("client/id");
+	private static final JsonPath CLIENT_FP = new JsonPath("client/fp");
 	private static final JsonPath CLIENT_CT = new JsonPath("client/ct");
 	private static final JsonPath AGENT_OS = new JsonPath("agent/operatingSystem");
 	private static final JsonPath AGENT_BROWSER = new JsonPath("agent/browser");
