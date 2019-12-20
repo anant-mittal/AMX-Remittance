@@ -1,6 +1,7 @@
 package com.amx.jax.userservice.manager;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -25,6 +26,7 @@ import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dict.ContactType;
+import com.amx.jax.dict.AmxEnums.CommunicationEvents;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.CivilIdOtpModel;
@@ -65,6 +67,9 @@ public class CustomerDBAuthManager {
 	
 	@Autowired
 	OtpSettings otpSettings;
+	
+	@Autowired
+	CommunicationPreferencesManager communicationPreferencesManager;
 
 	private static final Logger log = LoggerFactory.getLogger(CustomerDBAuthManager.class);
 
@@ -103,6 +108,9 @@ public class CustomerDBAuthManager {
 		}
 
 		ContactType contactType = JaxAuthContext.getContactType();
+		List<ContactType> contactList = new ArrayList<ContactType>();
+		contactList.add(contactType);
+		communicationPreferencesManager.validateCommunicationPreferences(contactList,CommunicationEvents.FORGOT_PASSWORD,identityInt);
 
 		if (contactType == null) {
 

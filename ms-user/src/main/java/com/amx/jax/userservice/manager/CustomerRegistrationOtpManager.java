@@ -13,6 +13,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.amxlib.config.OtpSettings;
+import com.amx.jax.dict.AmxEnums.CommunicationEvents;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.model.CivilIdOtpModel;
 import com.amx.jax.model.OtpData;

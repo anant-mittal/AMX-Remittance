@@ -70,6 +70,7 @@ import com.amx.jax.dbmodel.bene.BeneficaryStatus;
 import com.amx.jax.dbmodel.bene.RelationsDescription;
 import com.amx.jax.dbmodel.meta.ServiceGroupMaster;
 import com.amx.jax.dbmodel.remittance.ViewParameterDetails;
+import com.amx.jax.dict.AmxEnums.CommunicationEvents;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.AuditEvent.Result;
@@ -99,6 +100,7 @@ import com.amx.jax.repository.ServiceGroupMasterRepository;
 import com.amx.jax.repository.remittance.IViewParameterDetailsRespository;
 import com.amx.jax.service.MetaService;
 import com.amx.jax.userservice.dao.CustomerDao;
+import com.amx.jax.userservice.manager.CommunicationPreferencesManager;
 import com.amx.jax.userservice.repository.RelationsRepository;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.userservice.service.UserValidationService;
@@ -199,6 +201,11 @@ public class BeneficiaryService extends AbstractService {
 	LoyalityPointService loyalityPointService;
 	@Autowired
 	ServiceGroupMasterRepository serviceGroupMasterRepository;
+	@Autowired	
+	CommunicationPreferencesManager communicationPreferencesManager;
+	
+	
+	
 	@Autowired
 	BankService bankService;
 	
@@ -696,7 +703,7 @@ public class BeneficiaryService extends AbstractService {
 	 * 
 	 */
 	public ApiResponse sendOtp(List<ContactType> channels) {
-
+		communicationPreferencesManager.validateCommunicationPreferences(channels,CommunicationEvents.ADD_BENEFICIARY,null);
 		Customer customer = null;
 		String civilId = null;
 		BigDecimal customerId = null;

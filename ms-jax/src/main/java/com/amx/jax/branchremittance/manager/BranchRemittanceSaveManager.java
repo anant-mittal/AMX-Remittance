@@ -1391,9 +1391,8 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
 			} catch (Exception e) {
 			}
 
-			if (personinfo != null && rrsrl != null && !StringUtils.isBlank(personinfo.getEmail())) {
-				notificationService.sendTransactionNotification(rrsrl.get(0), personinfo,
-						jaxNotificationDataManager.getTransactionSuccessEmailData());
+			if (personinfo != null && rrsrl != null && !StringUtils.isBlank(personinfo.getEmail())&&customer.canSendEmail()) {
+				notificationService.sendTransactionNotification(rrsrl.get(0), personinfo);
 				validStatus = Boolean.TRUE;
 			}
 		} catch (Exception e) {
