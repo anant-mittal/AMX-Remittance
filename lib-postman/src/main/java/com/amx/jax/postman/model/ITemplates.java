@@ -90,6 +90,11 @@ public class ITemplates {
 			return this.fileName;
 		};
 
+		@Override
+		public String getSampleJSON() {
+			return "custom.json";
+		}
+
 	}
 
 }
