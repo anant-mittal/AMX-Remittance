@@ -13,6 +13,8 @@ import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dict.AmxEnums.CommunicationEvents;
 import com.amx.jax.dict.Language;
 import com.amx.jax.event.AmxTunnelEvents;
+import com.amx.jax.model.response.customer.CustomerModelResponse;
+import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.client.WhatsAppClient;
@@ -77,12 +79,14 @@ public class CustomerCommunicationListner implements ITunnelSubscriber<DBEvent> 
 		String communicationFlow = ArgUtil.parseAsString(event.getData().get(COMFLOW));
 		Map<String, Object> wrapper = new HashMap<String, Object>();
 		wrapper.put("details", event.getDetails());
-
+		
 		Customer c = null;
+
+		
 		CommunicationPrefsResult communicationFlowPrefs = null;
 		if (ArgUtil.is(custId)) {
 			c = customerRepository.getCustomerByCustomerIdAndIsActive(custId, "Y");
-			wrapper.put("customer", c);
+			wrapper.put("customer", JsonUtil.toMap(c));
 			String custName;
 			if (StringUtils.isEmpty(c.getMiddleName())) {
 				custName = c.getFirstName() + ' ' + c.getLastName();
