@@ -177,7 +177,7 @@
                   "should": [
                     {
                       "match_phrase": {
-                        "logmap.client.fp.keyword": "[[${logmap.client.fp}]]"
+                        "logmap.client.fp.keyword": "[[${logmap?.client?.fp}]]"
                       }
                     }
                   ],
@@ -189,7 +189,7 @@
                   "should": [
                     {
                       "match_phrase": {
-                        "logmap.client.ip.keyword": "[[${logmap.client.ip}]]"
+                        "logmap.client.ip.keyword": "[[${logmap?.client?.ip}]]"
                       }
                     }
                   ],
@@ -203,7 +203,7 @@
         {
           "match_phrase": {
             "logmap.cust.id": {
-              "query": "[[${lcustomerId}]]"
+              "query": "[[${customerId}]]"
             }
           }
         },
