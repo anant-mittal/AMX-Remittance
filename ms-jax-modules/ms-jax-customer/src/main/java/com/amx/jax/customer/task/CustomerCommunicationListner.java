@@ -27,6 +27,7 @@ import com.amx.jax.tunnel.DBEvent;
 import com.amx.jax.tunnel.ITunnelSubscriber;
 import com.amx.jax.tunnel.TunnelEventMapping;
 import com.amx.jax.tunnel.TunnelEventXchange;
+import com.amx.jax.userservice.service.CustomerModelService;
 import com.amx.jax.util.CommunicationPrefsUtil;
 import com.amx.jax.util.CommunicationPrefsUtil.CommunicationPrefsResult;
 import com.amx.utils.ArgUtil;
@@ -49,6 +50,9 @@ public class CustomerCommunicationListner implements ITunnelSubscriber<DBEvent> 
 
 	@Autowired
 	private CommunicationPrefsUtil communicationPrefsUtil;
+	
+	@Autowired
+	private CustomerModelService customerModelService;
 
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
@@ -81,12 +85,12 @@ public class CustomerCommunicationListner implements ITunnelSubscriber<DBEvent> 
 		wrapper.put("details", event.getDetails());
 		
 		Customer c = null;
-
+		CustomerModelResponse customerModelResponse = customerModelService.getCustomerModelResponse(custId);
 		
 		CommunicationPrefsResult communicationFlowPrefs = null;
 		if (ArgUtil.is(custId)) {
 			c = customerRepository.getCustomerByCustomerIdAndIsActive(custId, "Y");
-			wrapper.put("customer", JsonUtil.toJsonMap(c));
+			wrapper.put("customer", customerModelResponse);
 			String custName;
 			if (StringUtils.isEmpty(c.getMiddleName())) {
 				custName = c.getFirstName() + ' ' + c.getLastName();
@@ -100,7 +104,7 @@ public class CustomerCommunicationListner implements ITunnelSubscriber<DBEvent> 
 		
 		if (ArgUtil.is(tranxId)) {
 			LOGGER.info("transaction id is  " + tranxId);
-			wrapper.put("customer", c);
+			wrapper.put("customer", customerModelResponse);
 			// c = customerRepository.getCustomerByCustomerIdAndIsActive(custId, "Y");
 		}
 
