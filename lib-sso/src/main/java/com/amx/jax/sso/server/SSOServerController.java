@@ -201,7 +201,9 @@ public class SSOServerController {
 
 		redirect = ArgUtil.parseAsBoolean(redirect, true);
 		isReturn = ArgUtil.parseAsBoolean(isReturn, false);
-		clientType = (ClientType) ArgUtil.parseAsEnum(clientType, sSOConfig.getLoginWithClientType(),ClientType.class);
+
+		clientType = ArgUtil.ifNotEmpty(clientType, ssoUser.getClientType(),
+				sSOConfig.getLoginWithClientType());
 
 		if (json == SSOAuthStep.DO) {
 			json = formdata.getStep();
