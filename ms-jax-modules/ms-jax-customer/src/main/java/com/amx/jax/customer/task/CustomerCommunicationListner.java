@@ -69,8 +69,9 @@ public class CustomerCommunicationListner implements ITunnelSubscriber<DBEvent> 
 		BigDecimal custId = ArgUtil.parseAsBigDecimal(event.getData().get(CUST_ID));
 		BigDecimal langId = ArgUtil.parseAsBigDecimal(event.getData().get(LANG_ID));
 		Language lang = Language.fromId(langId);
+		BigDecimal tranxId = null;
 		if(!ArgUtil.isEmpty(TRANX_ID)){
-		    BigDecimal tranxId = ArgUtil.parseAsBigDecimal(event.getData().get(TRANX_ID));
+		     tranxId = ArgUtil.parseAsBigDecimal(event.getData().get(TRANX_ID));
 		}
 		String thisTemplate = ArgUtil.parseAsString(event.getData().get(TEMPLATE));
 		String communicationFlow = ArgUtil.parseAsString(event.getData().get(COMFLOW));
@@ -92,7 +93,7 @@ public class CustomerCommunicationListner implements ITunnelSubscriber<DBEvent> 
 			communicationFlowPrefs = communicationPrefsUtil
 					.forCustomer(CommunicationEvents.fromString(communicationFlow), c);
 		}
-
+		
 		if (ArgUtil.is(tranxId)) {
 			LOGGER.info("transaction id is  " + tranxId);
 			wrapper.put("customer", c);
