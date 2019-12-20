@@ -84,27 +84,27 @@ public class CustomerCommunicationListner implements ITunnelSubscriber<DBEvent> 
 		Map<String, Object> wrapper = new HashMap<String, Object>();
 		wrapper.put("details", event.getDetails());
 		
-		Customer c = null;
-		CustomerModelResponse customerModelResponse = customerModelService.getCustomerModelResponse(custId);
+		Customer customer =  customerRepository.getCustomerByCustomerIdAndIsActive(custId, "Y");
+		CustomerModelResponse c = customerModelService.getCustomerModelResponse(custId);
 		
 		CommunicationPrefsResult communicationFlowPrefs = null;
 		if (ArgUtil.is(custId)) {
-			c = customerRepository.getCustomerByCustomerIdAndIsActive(custId, "Y");
-			wrapper.put("customer", customerModelResponse);
+			
+			wrapper.put("customer", c);
 			String custName;
-			if (StringUtils.isEmpty(c.getMiddleName())) {
-				custName = c.getFirstName() + ' ' + c.getLastName();
+			if (StringUtils.isEmpty(c.getPersonInfo().getMiddleName())) {
+				custName = c.getPersonInfo().getFirstName() + ' ' + c.getPersonInfo().getLastName();
 			} else {
-				custName = c.getFirstName() + ' ' + c.getMiddleName() + ' ' + c.getLastName();
+				custName = c.getPersonInfo().getFirstName() + ' ' + c.getPersonInfo().getMiddleName() + ' ' + c.getPersonInfo().getLastName();
 			}
 			wrapper.put("customerName", custName);
 			communicationFlowPrefs = communicationPrefsUtil
-					.forCustomer(CommunicationEvents.fromString(communicationFlow), c);
+					.forCustomer(CommunicationEvents.fromString(communicationFlow), customer);
 		}
 		
 		if (ArgUtil.is(tranxId)) {
 			LOGGER.info("transaction id is  " + tranxId);
-			wrapper.put("customer", customerModelResponse);
+			wrapper.put("customer", c);
 			// c = customerRepository.getCustomerByCustomerIdAndIsActive(custId, "Y");
 		}
 
@@ -113,7 +113,7 @@ public class CustomerCommunicationListner implements ITunnelSubscriber<DBEvent> 
 				Email email = new Email();
 				email.setLang(lang);
 				email.setModel(wrapper);
-				email.addTo(c.getEmail());
+				email.addTo(c.getPersonInfo().getEmail());
 				email.setHtml(true);
 				email.setTemplate(thisTemplate);
 				postManService.sendEmailAsync(email);
@@ -123,7 +123,7 @@ public class CustomerCommunicationListner implements ITunnelSubscriber<DBEvent> 
 				WAMessage waMessage = new WAMessage();
 				waMessage.setTemplate(thisTemplate);
 				waMessage.setModel(wrapper);
-				waMessage.addTo(c.getWhatsappPrefix() + c.getWhatsapp());
+				waMessage.addTo(c.getPersonInfo().getWhatsappPrefixCode() + c.getPersonInfo().getWhatsAppNumber());
 				whatsAppClient.send(waMessage);
 			}
 
@@ -131,7 +131,7 @@ public class CustomerCommunicationListner implements ITunnelSubscriber<DBEvent> 
 				SMS smsMessage = new SMS();
 				smsMessage.setTemplate(thisTemplate);
 				smsMessage.setModel(wrapper);
-				smsMessage.addTo(c.getMobile());
+				smsMessage.addTo(c.getPersonInfo().getMobile());
 				postManService.sendSMSAsync(smsMessage);
 			}
 
