@@ -71,7 +71,7 @@ public class CustomerCommunicationListner implements ITunnelSubscriber<DBEvent> 
 		Language lang = Language.fromId(langId);
 		BigDecimal tranxId = null;
 		LOGGER.info("event.getData().get(TRANX_ID)" + event.getData().get(TRANX_ID));
-		if("NULL" != event.getData().get(TRANX_ID)){
+		if("NULL".equals(event.getData().get(TRANX_ID)) ){
 		     tranxId = ArgUtil.parseAsBigDecimal(event.getData().get(TRANX_ID));
 		}
 		String thisTemplate = ArgUtil.parseAsString(event.getData().get(TEMPLATE));
