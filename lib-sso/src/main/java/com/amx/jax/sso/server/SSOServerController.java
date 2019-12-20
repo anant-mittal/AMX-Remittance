@@ -204,6 +204,7 @@ public class SSOServerController {
 
 		clientType = ArgUtil.ifNotEmpty(clientType, ssoUser.getClientType(),
 				sSOConfig.getLoginWithClientType());
+		ssoUser.setClientType(clientType);
 
 		if (json == SSOAuthStep.DO) {
 			json = formdata.getStep();
