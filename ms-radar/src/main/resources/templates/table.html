@@ -127,8 +127,13 @@
 
 #querytext {
 	margin: 0px;
-	height: calc(100% - 60px);
+	height: calc(80% - 60px);
 	width: 100%;
+}
+#paramtext {
+	margin: 0px;
+	width: 100%;
+	height: calc(20%);
 }
 
 .show {
@@ -512,10 +517,13 @@ function dropdown(classname) {
 			$("#loader").addClass("hide");
 		}); 
   }
-  
+  var  paramString = localStorage.getItem("params");
   var DATE_REG = /([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))( +)(0[0-9]|1[0-9]|2[0-4]):([0-5][0-9]):([0-5][0-9])/;
   $(document).ready(function(){
 	  var _html = $("#tabledivWrapper").html();
+	  var queryParam = JSON.parse(paramString||'{}');
+	  console.log("queryParam",queryParam)
+	  $("#paramtext").val(JSON.stringify(queryParam, null, 2));
 	  
 	  var lte = "[[${lte}]]";
 	  var gte = "[[${gte}]]";
@@ -542,24 +550,31 @@ function dropdown(classname) {
 		  "level" : "[[${level}]]",
 		  "minCount" : "[[${minCount}]]",
 		  "bulk" : true
-	  }));
+	  }, queryParam));
 	  
 	  $("#querybutton").click(function(){
 		  $("#tabledivWrapper").html(_html);
 		  var query = $("#querytext").val();
 		  executeQuery("/radar/snap/execute/query/[[${snapView}]]",JSON.parse(query));
 	  });
+	  
+	  $("#paramtext").change(function(){
+		  paramString =  $("#paramtext").val()
+		  localStorage.setItem("params",paramString) 
+	  })
   });
   </script>
 
 <div id="querybox" class="slider">
+	<textarea id="paramtext">
+    </textarea>
 	<textarea id="querytext">
-  	
-  </textarea>
+
+    </textarea>
 	<center>
-		<button id="querybutton" class="dropbtn">Submit Query</button>
-		<button onclick="dropdown('querybox')" class="dropbtn">Close</button>
-	</center>
+			<button id="querybutton" class="dropbtn">Submit Query</button>
+			<button onclick="dropdown('querybox')" class="dropbtn">Close</button>
+		</center>
 
 </div>
 
