@@ -1,0 +1,14 @@
+{
+	"data": {
+	  "customerReference": "HOME",
+	  "customerName": "GB13MIDL40478642675722",
+	  "customerContact": "HSBC BANK PLC",
+	  "transactionLocalAmount": "LONDON",
+	  "transactionForeignAmount": "GEE SREE(TEL NO:6174850012)",
+	  "localCurrencyQuote": "KHALEDAH MESBEH SALEH ALMESBAH",
+	  "foreignCurrencyQuote": "R : Transaction cancelled",
+	  "fromDate": 327280,
+	  "toDate": 28.108
+	}
+  }
+  
