@@ -160,6 +160,7 @@ public class AmxDBConstants {
 	public static final String ARTICLE_20_CODE = "20";
 	public static final BigDecimal BIZ_COMPONENT_ID_NEW_CIVIL_ID = new BigDecimal(2000);
 	public static final String CASH = "C";
+	public static final String CASH_STRING = "CASH";
 	public static final String BANK_TRANSFER = "T";
 	public static final String CHEQUE = "B";
 	public static final String OTHER = "O";
@@ -263,7 +264,7 @@ public class AmxDBConstants {
 	public static String CHECK_DOCUMENT;
 	public static String CHECK_FILE;
 	public static String BANKTRANSFER;
-	public static String CASH_STRING;
+	
 
 	// Constants for direct payment link
 	public static final String DIRECT_PAYMENT_LINK_PAID ="P";
