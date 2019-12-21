@@ -92,7 +92,7 @@ public class ITemplates {
 
 		@Override
 		public String getSampleJSON() {
-			return "custom.json";
+			return "template-generic.json";
 		}
 
 	}

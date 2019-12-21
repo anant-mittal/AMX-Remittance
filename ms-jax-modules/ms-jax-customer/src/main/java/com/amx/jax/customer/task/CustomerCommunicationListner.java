@@ -13,6 +13,8 @@ import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dict.AmxEnums.CommunicationEvents;
 import com.amx.jax.dict.Language;
 import com.amx.jax.event.AmxTunnelEvents;
+import com.amx.jax.model.response.customer.CustomerModelResponse;
+import com.amx.jax.model.response.customer.PersonInfo;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.client.WhatsAppClient;
@@ -25,6 +27,7 @@ import com.amx.jax.tunnel.DBEvent;
 import com.amx.jax.tunnel.ITunnelSubscriber;
 import com.amx.jax.tunnel.TunnelEventMapping;
 import com.amx.jax.tunnel.TunnelEventXchange;
+import com.amx.jax.userservice.service.CustomerModelService;
 import com.amx.jax.util.CommunicationPrefsUtil;
 import com.amx.jax.util.CommunicationPrefsUtil.CommunicationPrefsResult;
 import com.amx.utils.ArgUtil;
@@ -47,6 +50,9 @@ public class CustomerCommunicationListner implements ITunnelSubscriber<DBEvent> 
 
 	@Autowired
 	private CommunicationPrefsUtil communicationPrefsUtil;
+	
+	@Autowired
+	private CustomerModelService customerModelService;
 
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
@@ -69,13 +75,18 @@ public class CustomerCommunicationListner implements ITunnelSubscriber<DBEvent> 
 		BigDecimal custId = ArgUtil.parseAsBigDecimal(event.getData().get(CUST_ID));
 		BigDecimal langId = ArgUtil.parseAsBigDecimal(event.getData().get(LANG_ID));
 		Language lang = Language.fromId(langId);
-		BigDecimal tranxId = ArgUtil.parseAsBigDecimal(event.getData().get(TRANX_ID));
+		BigDecimal tranxId = null;
+		if(!"NULL".equals(event.getData().get(TRANX_ID)) ){
+		     tranxId = ArgUtil.parseAsBigDecimal(event.getData().get(TRANX_ID));
+		}
 		String thisTemplate = ArgUtil.parseAsString(event.getData().get(TEMPLATE));
 		String communicationFlow = ArgUtil.parseAsString(event.getData().get(COMFLOW));
 		Map<String, Object> wrapper = new HashMap<String, Object>();
 		wrapper.put("details", event.getDetails());
-
-		Customer c = null;
+		
+		Customer c =  customerRepository.getCustomerByCustomerIdAndIsActive(custId, "Y");
+		//CustomerModelResponse c = customerModelService.getCustomerModelResponse(custId);
+		
 		CommunicationPrefsResult communicationFlowPrefs = null;
 		if (ArgUtil.is(custId)) {
 			c = customerRepository.getCustomerByCustomerIdAndIsActive(custId, "Y");
@@ -90,7 +101,7 @@ public class CustomerCommunicationListner implements ITunnelSubscriber<DBEvent> 
 			communicationFlowPrefs = communicationPrefsUtil
 					.forCustomer(CommunicationEvents.fromString(communicationFlow), c);
 		}
-
+		
 		if (ArgUtil.is(tranxId)) {
 			LOGGER.info("transaction id is  " + tranxId);
 			wrapper.put("customer", c);
@@ -105,6 +116,7 @@ public class CustomerCommunicationListner implements ITunnelSubscriber<DBEvent> 
 				email.addTo(c.getEmail());
 				email.setHtml(true);
 				email.setTemplate(thisTemplate);
+				LOGGER.debug("data for email is "+JsonUtil.toJson(wrapper));
 				postManService.sendEmailAsync(email);
 			}
 
@@ -132,6 +144,7 @@ public class CustomerCommunicationListner implements ITunnelSubscriber<DBEvent> 
 				pushNotifyClient.send(pushMessage);
 			}
 		}
+
 
 	}
 

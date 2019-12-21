@@ -33,6 +33,7 @@ import com.amx.jax.dict.Communicatable;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.util.AmxDBConstants.Status;
 import com.amx.utils.ArgUtil;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "FS_CUSTOMER")
@@ -991,6 +992,7 @@ public class Customer implements java.io.Serializable, Communicatable {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "ARTICLE_DETAIL_ID")
+	@JsonIgnore
 	public ArticleDetails getFsArticleDetails() {
 		return fsArticleDetails;
 	}
@@ -1001,6 +1003,7 @@ public class Customer implements java.io.Serializable, Communicatable {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "INCOME_RANGE_ID")
+	@JsonIgnore
 	public IncomeRangeMaster getFsIncomeRangeMaster() {
 		return fsIncomeRangeMaster;
 	}
@@ -1162,6 +1165,7 @@ public class Customer implements java.io.Serializable, Communicatable {
 	@ManyToMany(cascade = CascadeType.ALL, fetch=FetchType.LAZY)
 	@JoinTable(  name = "JAX_COMPLIANCE_BLOCKED_DOC_MAP", joinColumns = @JoinColumn(name = "CUSTOMER_ID", referencedColumnName="CUSTOMER_ID"), inverseJoinColumns = @JoinColumn(name = "COMP_BLOCKED_CUST_DOC_MAP_ID",
 			referencedColumnName="ID"))
+	@JsonIgnore
 	public List<ComplianceBlockedCustomerDocMap> getComplianceBlockedDocuments() {
 		return complianceBlockedDocuments;
 	}

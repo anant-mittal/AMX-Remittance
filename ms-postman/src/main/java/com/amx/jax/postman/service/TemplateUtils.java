@@ -6,6 +6,8 @@ import java.text.Bidi;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 import org.apache.commons.codec.binary.Base64;
@@ -27,6 +29,8 @@ import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 import com.amx.utils.ContextUtil;
 import com.amx.utils.IoUtils;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.SimpleJasperReportsContext;
@@ -45,6 +49,12 @@ public class TemplateUtils {
 	/** The Constant base64. */
 	private static final Map<String, String> base64 = new ConcurrentHashMap<String, String>();
 	private static final Map<String, String> templateFiles = new ConcurrentHashMap<String, String>();
+
+	private static final Cache<String, String> templateFilesExternal = CacheBuilder.newBuilder()
+			.maximumSize(10000)
+			.expireAfterWrite(5, TimeUnit.MINUTES)
+			.build();
+
 	private static boolean IS_TEMPLATE_SCANNED = false;
 
 	/** The tenant properties. */
@@ -130,14 +140,14 @@ public class TemplateUtils {
 		}
 
 		String fileCacheKey = String.format("%s:%s:%s:%s", file, locale, tnt, contactType);
-
+		String specficFile = null;
 		if (templateFiles.containsKey(fileCacheKey)) { // File is Scanned Already
 			if (!CHECKED.equals(templateFiles.get(fileCacheKey))) { // File is already Scanned and Found
 				return templateFiles.get(fileCacheKey);
 			}
 			// Template will be searched in External Folder
 		} else { // File is Not scanned yet, this is first time
-			String specficFile = getTemplateFileInternal(file, tnt, locale, contactType);
+			specficFile = getValidTemplateFile(file, tnt, locale, contactType, false);
 			if (ArgUtil.is(specficFile)) {
 				templateFiles.put(fileCacheKey, specficFile);
 				return specficFile;
@@ -146,65 +156,118 @@ public class TemplateUtils {
 			}
 		}
 
-		Resource r = applicationContext.getResource("file:" + jaxStaticPath + "/" + file);
-		if (r != null && r.exists()) {
-			return file;
+		specficFile = templateFilesExternal.getIfPresent(fileCacheKey);
+		if (ArgUtil.is(specficFile)) {
+			return specficFile;
+		}
+
+		specficFile = getValidTemplateFile(file, tnt, locale, contactType, true);
+		if (ArgUtil.is(specficFile)) {
+			templateFilesExternal.put(fileCacheKey, specficFile);
+			return specficFile;
 		} else {
 			log.error("Template Not Found {}", fileCacheKey);
 			throw new PostManException("Template Not Found");
 		}
 	}
 
-	private String getTemplateFileInternal(String file, Tenant tnt, Locale locale, ContactType contactType) {
+	private String getValidTemplateFile(String file, Tenant tnt, Locale locale, ContactType contactType,
+			boolean external) {
 		String relativeFile = file;
 		String folder = Constants.BLANK;
 
 		String specficFile = null;
+		String ext = ".html";
+		String subfolder = "html/";
 		if (!ArgUtil.isEmpty(contactType)) {
 			if (file.startsWith("html/")) {
 				relativeFile = file.replace("html/", Constants.BLANK);
-				folder = "html/" + contactType.getShortCode() + "/";
 			} else if (file.startsWith("json/")) {
 				relativeFile = file.replace("json/", Constants.BLANK);
-				folder = "json/" + contactType.getShortCode() + "/";
+				subfolder = "json/";
+				ext = ".json";
 			} else if (file.startsWith("jasper/")) {
 				relativeFile = file.replace("jasper/", Constants.BLANK);
-				folder = "jasper/" + contactType.getShortCode() + "/";
+				subfolder = "jasper/";
+				ext = ".jrxml";
 			}
-			specficFile = getTemplateFileInternal(folder, relativeFile, tnt, locale);
+			folder = subfolder + contactType.getShortCode() + "/";
+
+			if (external) {
+				specficFile = getValidTemplateFileExternal(folder, relativeFile, ext, tnt, locale);
+				if (ArgUtil.isEmpty(specficFile)) {
+					return getValidTemplateFileExternal(Constants.BLANK, file, ext, tnt, locale);
+				}
+				return specficFile;
+			}
+
+			specficFile = getValidTemplateFileInternal(folder, relativeFile, tnt, locale);
 			if (!ArgUtil.isEmpty(specficFile)) {
 				return specficFile;
 			}
 		}
-		specficFile = getTemplateFileInternal(Constants.BLANK, file, tnt, locale);
+		specficFile = getValidTemplateFileInternal(Constants.BLANK, file, tnt, locale);
 			return specficFile;
 	}
 
-	private String getTemplateFileInternal(String folder, String file, Tenant tnt, Locale locale) {
-		String specficFile = String.format(folder + "%s_%s.%s", file, locale.getLanguage(),
+	private String getValidTemplateFileInternal(String folder, String relativeFile, Tenant tnt, Locale locale) {
+		String specficFile = String.format(folder + "%s_%s.%s", relativeFile, locale.getLanguage(),
 				ArgUtil.parseAsString(tnt, Constants.BLANK).toLowerCase());
+
 		if (templateFiles.containsKey(specficFile)) {
 			return templateFiles.get(specficFile);
 		}
 
-		String tenantFile = String.format(folder + "%s.%s", file,
+		String tenantFile = String.format(folder + "%s.%s", relativeFile,
 				ArgUtil.parseAsString(tnt, Constants.BLANK).toLowerCase());
 		if (templateFiles.containsKey(tenantFile)) {
 			templateFiles.put(specficFile, tenantFile);
 			return tenantFile;
 		}
 
-		String localeFile = String.format(folder + "%s_%s", file,
+		String localeFile = String.format(folder + "%s_%s", relativeFile,
 				locale.getLanguage());
 		if (templateFiles.containsKey(localeFile)) {
 			templateFiles.put(specficFile, localeFile);
 			return tenantFile;
 		}
 
-		String exactFile = folder + file;
+		String exactFile = folder + relativeFile;
 		if (templateFiles.containsKey(exactFile)) {
 			templateFiles.put(specficFile, exactFile);
 			return exactFile;
+		}
+
+		return null;
+	}
+
+	private String getValidTemplateFileExternal(String folder, String relativeFile, String ext, Tenant tnt,
+			Locale locale) {
+		String specficFile = String.format(folder + "%s_%s.%s", relativeFile, locale.getLanguage(),
+				ArgUtil.parseAsString(tnt, Constants.BLANK).toLowerCase());
+
+		Resource r = applicationContext.getResource("file:" + jaxStaticPath + "/templates/" + specficFile + ext);
+		if (r != null && r.exists()) {
+			return specficFile;
+		}
+		specficFile = String.format(folder + "%s.%s", relativeFile,
+				ArgUtil.parseAsString(tnt, Constants.BLANK).toLowerCase());
+		r = applicationContext.getResource("file:" + jaxStaticPath + "/templates/" + specficFile + ext);
+		if (r != null && r.exists()) {
+			return specficFile;
+		}
+
+		specficFile = String.format(folder + "%s_%s", relativeFile,
+				locale.getLanguage());
+		r = applicationContext.getResource("file:" + jaxStaticPath + "/templates/" + specficFile + ext);
+		if (r != null && r.exists()) {
+			return specficFile;
+		}
+
+		specficFile = folder + relativeFile;
+		r = applicationContext.getResource("file:" + jaxStaticPath + "/templates/" + specficFile + ext);
+		if (r != null && r.exists()) {
+			return specficFile;
 		}
 
 		return null;
