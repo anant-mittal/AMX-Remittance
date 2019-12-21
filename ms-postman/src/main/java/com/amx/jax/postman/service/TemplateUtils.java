@@ -6,7 +6,7 @@ import java.text.Bidi;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Matcher;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 import org.apache.commons.codec.binary.Base64;
@@ -28,6 +28,8 @@ import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 import com.amx.utils.ContextUtil;
 import com.amx.utils.IoUtils;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.SimpleJasperReportsContext;
@@ -46,6 +48,12 @@ public class TemplateUtils {
 	/** The Constant base64. */
 	private static final Map<String, String> base64 = new ConcurrentHashMap<String, String>();
 	private static final Map<String, String> templateFiles = new ConcurrentHashMap<String, String>();
+
+	private static final Cache<String, String> templateFilesExternal = CacheBuilder.newBuilder()
+			.maximumSize(10000)
+			.expireAfterWrite(5, TimeUnit.MINUTES)
+			.build();
+
 	private static boolean IS_TEMPLATE_SCANNED = false;
 
 	/** The tenant properties. */
@@ -147,8 +155,14 @@ public class TemplateUtils {
 			}
 		}
 
+		specficFile = templateFilesExternal.getIfPresent(fileCacheKey);
+		if (ArgUtil.is(specficFile)) {
+			return specficFile;
+		}
+
 		specficFile = getValidTemplateFile(file, tnt, locale, contactType, true);
 		if (ArgUtil.is(specficFile)) {
+			templateFilesExternal.put(fileCacheKey, specficFile);
 			return specficFile;
 		} else {
 			log.error("Template Not Found {}", fileCacheKey);
@@ -163,21 +177,27 @@ public class TemplateUtils {
 
 		String specficFile = null;
 		String ext = ".html";
+		String subfolder = "html/";
 		if (!ArgUtil.isEmpty(contactType)) {
 			if (file.startsWith("html/")) {
 				relativeFile = file.replace("html/", Constants.BLANK);
-				folder = "html/" + contactType.getShortCode() + "/";
 			} else if (file.startsWith("json/")) {
 				relativeFile = file.replace("json/", Constants.BLANK);
-				folder = "json/" + contactType.getShortCode() + "/";
+				subfolder = "json/";
 				ext = ".json";
 			} else if (file.startsWith("jasper/")) {
 				relativeFile = file.replace("jasper/", Constants.BLANK);
-				folder = "jasper/" + contactType.getShortCode() + "/";
+				subfolder = "jasper/";
 				ext = ".jrxml";
 			}
+			folder = subfolder + contactType.getShortCode() + "/";
+
 			if (external) {
-				return getValieTemplateFileExternal(folder, relativeFile, ext, tnt, locale);
+				specficFile = getValidTemplateFileExternal(folder, relativeFile, ext, tnt, locale);
+				if (ArgUtil.isEmpty(specficFile)) {
+					return getValidTemplateFileExternal(Constants.BLANK, file, ext, tnt, locale);
+				}
+				return specficFile;
 			}
 
 			specficFile = getValidTemplateFileInternal(folder, relativeFile, tnt, locale);
@@ -220,10 +240,11 @@ public class TemplateUtils {
 		return null;
 	}
 
-	private String getValieTemplateFileExternal(String folder, String relativeFile, String ext, Tenant tnt,
+	private String getValidTemplateFileExternal(String folder, String relativeFile, String ext, Tenant tnt,
 			Locale locale) {
 		String specficFile = String.format(folder + "%s_%s.%s", relativeFile, locale.getLanguage(),
 				ArgUtil.parseAsString(tnt, Constants.BLANK).toLowerCase());
+
 		Resource r = applicationContext.getResource("file:" + jaxStaticPath + "/templates/" + specficFile + ext);
 		if (r != null && r.exists()) {
 			return specficFile;
