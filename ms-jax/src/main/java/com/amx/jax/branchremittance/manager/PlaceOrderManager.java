@@ -59,6 +59,7 @@ import com.amx.jax.model.response.remittance.GsmPlaceOrderListDto;
 import com.amx.jax.model.response.remittance.GsmSearchRequestParameter;
 import com.amx.jax.model.response.remittance.PlaceOrderApplDto;
 import com.amx.jax.model.response.remittance.RatePlaceOrderInquiryDto;
+import com.amx.jax.model.response.remittance.RatePlaceOrderResponseModel;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.pricer.dto.ExchangeDiscountInfo;
 import com.amx.jax.pricer.dto.TrnxRoutingDetails;
@@ -157,19 +158,24 @@ public class PlaceOrderManager implements Serializable{
 	
 	
 	
-	public Boolean savePlaceOrder(PlaceOrderRequestModel placeOrderRequestModel) {
+	public RatePlaceOrderResponseModel savePlaceOrder(PlaceOrderRequestModel placeOrderRequestModel) {
 		 Boolean boolRespModel = false;
+		 RatePlaceOrderResponseModel placeOrderResponse = new RatePlaceOrderResponseModel();
+		 
 		 try {
 		 RatePlaceOrder placeOrderAppl  =createPlaceOrder(placeOrderRequestModel);
 		 HashMap<String, Object> mapAllDetailApplSave = new HashMap<String, Object>();
 		 mapAllDetailApplSave.put("EX_RATE_PLACE_ORD", placeOrderAppl);
+		 
 		 placeOrderDao.savePlaceOrder(mapAllDetailApplSave);
+		 placeOrderResponse.setPlaceOrderId(placeOrderAppl.getRatePlaceOrderId());
+		 placeOrderResponse.setBooGsm(placeOrderRequestModel.getBooGsm());
 		 boolRespModel =true;
 		}catch(GlobalException e){
 				logger.debug("create application", e.getErrorMessage() + "" +e.getErrorKey());
 				throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 			}
-		 return boolRespModel;
+		 return placeOrderResponse;
 	}
 	
 	
@@ -265,6 +271,31 @@ public class PlaceOrderManager implements Serializable{
 		}
 		
 		placeOrderAppl.setTerminalId(metaData.getDeviceIp());
+		
+		/** for GSM **/
+		if(placeOrderRequestModel.getBooGsm()==true && JaxUtil.isNullZeroBigDecimalCheck(placeOrderRequestModel.getExchangeRateOffered())) {
+			placeOrderAppl.setRateOffered(placeOrderRequestModel.getExchangeRateOffered());
+			PlaceOrderUpdateStatusDto dto= new PlaceOrderUpdateStatusDto();
+			dto.setExchangeRateOffered(placeOrderRequestModel.getExchangeRateOffered());
+			validateMinAndMaxRate(placeOrderAppl, dto);
+			placeOrderAppl.setIsActive(ConstantDocument.Status.Y.toString());
+			placeOrderAppl.setAppointmentTime(new Date());
+			ExchangeRateBreakup exchRate = getExchangeRateBreakUPForPlaceOrder(placeOrderAppl);
+			if(exchRate!=null) {
+				
+				if(JaxUtil.isNullZeroBigDecimalCheck(placeOrderAppl.getRequestCurrencyId()) && placeOrderAppl.getRequestCurrencyId().compareTo(metaData.getDefaultCurrencyId())==0) {
+					placeOrderAppl.setTransactionAmount(exchRate.getConvertedLCAmount());
+				}else {
+					placeOrderAppl.setTransactionAmount(exchRate.getConvertedFCAmount());
+				}
+				placeOrderAppl.setTransactionAmountPaid(exchRate.getConvertedLCAmount());
+				
+			}
+			placeOrderAppl.setApprovedDate(new Date());
+			placeOrderAppl.setApprovedBy(brApplManager.getEmployeeDetails().getUserName());
+			placeOrderAppl.setCustomerIndicator(ConstantDocument.Status.C.toString());
+			
+		}
 		
 		
 		Document document = documentDao.getDocumnetByCode(ConstantDocument.DOCUMENT_CODE_FOR_PLACEORDER).get(0);
