@@ -269,14 +269,6 @@ public class CustomerDiscountManager {
 									.add(bankExRateDetail.getSellRateBase().getConvertedFCAmount()
 											.multiply(BtrRateIndicatorMarginPercent));
 
-							// System.out.println("\n\n Limit Val ==>" +
-							// nextEntry.getValue().getFromAmount());
-
-							// System.out.println(
-							// " Base Val ==>" + bankExRateDetail.getSellRateBase().getConvertedFCAmount());
-
-							// System.out.println(" Bumpd Val ==>" + bumpedFcVal);
-
 							if ((bumpedFcVal.compareTo(nextEntry.getValue().getFromAmount()) >= 0)
 									&& amountSlabPips.compareTo(nextEntry.getValue().getPipsNo()) < 0) {
 
@@ -290,7 +282,9 @@ public class CustomerDiscountManager {
 				} // for
 			}
 
-			// Check if discount is already applied
+			/**
+			 * Case where discount is already applied
+			 **/
 			// Avoid Double Discount Application
 			// Shifted place for Next Amount Slab Calculations
 			if (bankExRateDetail.isDiscountAvailed() == true) {
@@ -418,14 +412,15 @@ public class CustomerDiscountManager {
 			}
 
 			// Set the better Rate diff - Round to Next Int Val
-			if (bankExRateDetail.isBetterRateAvailable()) {
-
-				BigDecimal diffAmt = bankExRateDetail.getBetterRateAmountSlab()
-						.subtract(bankExRateDetail.getSellRateNet().getConvertedFCAmount())
-						.setScale(0, RoundingMode.UP);
-
-				bankExRateDetail.setDiffInBetterRateFcAmount(diffAmt);
-			}
+			/*
+			 * if (bankExRateDetail.isBetterRateAvailable()) {
+			 * 
+			 * BigDecimal diffAmt = bankExRateDetail.getBetterRateAmountSlab()
+			 * .subtract(bankExRateDetail.getSellRateNet().getConvertedFCAmount())
+			 * .setScale(0, RoundingMode.UP);
+			 * 
+			 * bankExRateDetail.setDiffInBetterRateFcAmount(diffAmt); }
+			 */
 
 			// discountedRatesNPrices.add(discountedRateDetail);
 
