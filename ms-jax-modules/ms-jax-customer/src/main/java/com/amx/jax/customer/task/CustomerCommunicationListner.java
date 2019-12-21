@@ -51,9 +51,6 @@ public class CustomerCommunicationListner implements ITunnelSubscriber<DBEvent> 
 	@Autowired
 	private CommunicationPrefsUtil communicationPrefsUtil;
 	
-	@Autowired
-	private CustomerModelService customerModelService;
-
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
 	// EMAIL:MOBILE:CUST_NAME:TRNXAMT:LOYALTY:TRNREF:TRNDATE:LANG_ID:TNT
