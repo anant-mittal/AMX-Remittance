@@ -21,7 +21,7 @@ import com.amx.amxlib.model.BeneRelationsDescriptionDto;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
-import com.amx.jax.branch.BranchMetaOutFilter;
+import com.amx.jax.branch.BranchOutFilter;
 import com.amx.jax.client.BeneClient;
 import com.amx.jax.client.PayAtBranchClient;
 import com.amx.jax.client.RemitClient;
@@ -216,7 +216,7 @@ public class RemitBranchController {
 	}
 
 	@Autowired
-	BranchMetaOutFilter branchMetaOutFilter;
+	BranchOutFilter branchMetaOutFilter;
 
 	@ApiOperation(value = "Returns transaction reciept:")
 	@RequestMapping(value = "/api/remitt/tranx/report", method = { RequestMethod.GET }, produces = {
