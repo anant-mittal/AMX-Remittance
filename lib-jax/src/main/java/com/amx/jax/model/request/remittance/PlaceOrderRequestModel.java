@@ -11,7 +11,8 @@ public class PlaceOrderRequestModel {
 	
 	BranchRemittanceApplRequestModel applRequestModel = new BranchRemittanceApplRequestModel();
 	String remarks;
-
+	BigDecimal exchangeRateOffered;
+	Boolean booGsm;
 	public BranchRemittanceApplRequestModel getApplRequestModel() {
 		return applRequestModel;
 	}
@@ -26,6 +27,22 @@ public class PlaceOrderRequestModel {
 
 	public void setRemarks(String remarks) {
 		this.remarks = remarks;
+	}
+
+	public BigDecimal getExchangeRateOffered() {
+		return exchangeRateOffered;
+	}
+
+	public void setExchangeRateOffered(BigDecimal exchangeRateOffered) {
+		this.exchangeRateOffered = exchangeRateOffered;
+	}
+
+	public Boolean getBooGsm() {
+		return booGsm;
+	}
+
+	public void setBooGsm(Boolean booGsm) {
+		this.booGsm = booGsm;
 	}
 	
 	
