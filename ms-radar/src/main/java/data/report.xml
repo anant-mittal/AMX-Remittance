@@ -3,17 +3,15 @@
     <rentity_id>18</rentity_id>
     <submission_code>E</submission_code>
     <report_code>STR</report_code>
-    <submission_date>2019-12-20T04:12:44</submission_date>
+    <submission_date>2019-12-21T08:12:06</submission_date>
     <currency_code_local>KWD</currency_code_local>
     <reporting_person>
-        <first_name>Cincy Varghese</first_name>
-        <last_name>Cincy Varghese</last_name>
         <nationality1>IN</nationality1>
         <phones>
             <phone>
                 <tph_contact_type>1</tph_contact_type>
                 <tph_communication_type>M</tph_communication_type>
-                <tph_number>56787870</tph_number>
+                <tph_number>NA</tph_number>
             </phone>
         </phones>
         <occupation>NA</occupation>
@@ -27,32 +25,32 @@
     <reason>ADDITIONAL DOCUMENT REQUIRED</reason>
     <action>REMITTANCE SEND TO BANK</action>
     <transaction>
-        <transactionnumber>201921000029</transactionnumber>
-        <transaction_location>58</transaction_location>
-        <date_transaction>2019-10-16T03:10:06</date_transaction>
-        <teller>Chiranjeevi</teller>
-        <authorized>Cincy Varghese</authorized>
+        <transactionnumber>201927000439</transactionnumber>
+        <transaction_location>90</transaction_location>
+        <date_transaction>2019-10-10T01:10:52</date_transaction>
+        <teller>KANMANI</teller>
+        <authorized>NA</authorized>
         <transmode_code>C</transmode_code>
-        <amount_local>1000</amount_local>
+        <amount_local>1278.3</amount_local>
         <t_from_my_client>
             <from_funds_code>B</from_funds_code>
             <from_foreign_currency>
                 <foreign_currency_code>INR</foreign_currency_code>
-                <foreign_amount>219684</foreign_amount>
-                <foreign_exchange_rate>0.004552</foreign_exchange_rate>
+                <foreign_amount>300000</foreign_amount>
+                <foreign_exchange_rate>0.004261</foreign_exchange_rate>
             </from_foreign_currency>
             <from_person>
-                <gender>M</gender>
-                <title>Mr.</title>
-                <first_name>Chiranjeevi</first_name>
-                <last_name>V</last_name>
-                <ssn>289053104436</ssn>
+                <gender>F</gender>
+                <title>Ms.</title>
+                <first_name>KANMANI</first_name>
+                <last_name>PALANIYAPPAN</last_name>
+                <ssn>281050207628</ssn>
                 <nationality1>IN</nationality1>
                 <phones>
                     <phone>
                         <tph_contact_type>1</tph_contact_type>
                         <tph_communication_type>M</tph_communication_type>
-                        <tph_country_prefix>965</tph_country_prefix>
+                        <tph_country_prefix>NA</tph_country_prefix>
                         <tph_number>NA</tph_number>
                     </phone>
                 </phones>
@@ -66,7 +64,7 @@
                 </addresses>
                 <identification>
                     <type>B</type>
-                    <number>289053104436</number>
+                    <number>281050207628</number>
                     <issue_country>IN</issue_country>
                 </identification>
             </from_person>
@@ -76,13 +74,13 @@
             <to_funds_code>B</to_funds_code>
             <to_foreign_currency>
                 <foreign_currency_code>INR</foreign_currency_code>
-                <foreign_amount>219684</foreign_amount>
-                <foreign_exchange_rate>0.004552</foreign_exchange_rate>
+                <foreign_amount>300000</foreign_amount>
+                <foreign_exchange_rate>0.004261</foreign_exchange_rate>
             </to_foreign_currency>
             <to_person>
                 <title>NA</title>
-                <first_name>CHIRU TEST</first_name>
-                <last_name>SBI REC</last_name>
+                <first_name>Abc</first_name>
+                <last_name>A</last_name>
                 <ssn>NA</ssn>
                 <nationality1>NA</nationality1>
                 <phones>
@@ -90,7 +88,7 @@
                         <tph_contact_type>1</tph_contact_type>
                         <tph_communication_type>M</tph_communication_type>
                         <tph_country_prefix>NA</tph_country_prefix>
-                        <tph_number>9988775566</tph_number>
+                        <tph_number>1234567890</tph_number>
                     </phone>
                 </phones>
                 <addresses>

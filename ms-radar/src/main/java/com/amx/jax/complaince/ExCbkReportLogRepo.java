@@ -16,9 +16,9 @@ public interface ExCbkReportLogRepo extends JpaRepository<ExCbkStrReportLOG, Ser
 	public List<ExCbkStrReportLOG> getComplainceInqData(String fromDate, String toDate);
 
 	@Transactional
-	@Modifying
-	@Query(value = "update EX_CBK_STR_REPORT_LOG set CBK_STR_ID = ?1 where REMITTANCE_TRANSACTION_ID=?2", nativeQuery = true)
-	public List<ExCbkStrReportLOG> updateCbkStrId(String strId, BigDecimal tranxRef);
+	@Modifying(clearAutomatically = true)
+	@Query("update ExCbkStrReportLOG ex set ex.cbkStrId = ?1 where ex.remittanceTranxId=?2")
+	public void updateCbkStrId(String strId, BigDecimal tranxRef);
 	
 	
 	@Query(value = " select * from EX_CBK_STR_REPORT_LOG  where REMITTANCE_TRANSACTION_ID=?1", nativeQuery = true)

@@ -359,7 +359,10 @@ public enum JaxError implements IExceptionEnum {
 	HOMESEND_APPL_NOT_ALLOWED,
 	
 	//Language related
-	SOURCE_OF_INCOME_NOT_FOUND;
+	SOURCE_OF_INCOME_NOT_FOUND,
+	
+	//KWFIU
+	DUPLICATE_TRNX_DETAILS;
 	
 	@Deprecated
 	public String getCode() {
