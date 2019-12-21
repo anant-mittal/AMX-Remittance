@@ -10,6 +10,8 @@ public interface IComplainceService {
 		public static final String COMPLAINCE_DETAILS_INQUIRY ="/complaince-deatils/inquiry";
 		public static final String COMPLAINCE_DETAILS_REASON ="/complaince-deatils/reason";
 		public static final String COMPLAINCE_DETAILS_ACTION ="/complaince-deatils/action";
+		public static final String COMPLAINCE_REPORT_UPLOAD1 = "/complaince-report/upload1";
+		public static final String COMPLAINCE_DETAILS_DOCFYR ="/complaince-deatils/docfyr";
 		
 		
 		
@@ -22,6 +24,8 @@ public interface IComplainceService {
 			public static final String COMPLAINCE_ACTN_CODE = "COAC";
 			
 			public static final String COMPLAINCE_INDICATOR = "CSSN";
+			
+			public static final String COMPLAINCE_BANK_CODE = "KWFIU";
 			
 			
 		}

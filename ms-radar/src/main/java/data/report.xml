@@ -3,7 +3,7 @@
     <rentity_id>18</rentity_id>
     <submission_code>E</submission_code>
     <report_code>STR</report_code>
-    <submission_date>2019-12-19T12:12:39</submission_date>
+    <submission_date>2019-12-20T04:12:44</submission_date>
     <currency_code_local>KWD</currency_code_local>
     <reporting_person>
         <first_name>Cincy Varghese</first_name>
@@ -24,8 +24,8 @@
         <city>NA</city>
         <country_code>IN</country_code>
     </location>
-    <reason>IN CORRECT REMITTER DETAILS</reason>
-    <action>PAYMENT STOPPED</action>
+    <reason>ADDITIONAL DOCUMENT REQUIRED</reason>
+    <action>REMITTANCE SEND TO BANK</action>
     <transaction>
         <transactionnumber>201921000029</transactionnumber>
         <transaction_location>58</transaction_location>

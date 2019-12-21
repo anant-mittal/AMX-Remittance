@@ -159,6 +159,12 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		
+	<!-- 	<dependency>
+		<groupId>org.springframework</groupId>
+		<artifactId>spring-web</artifactId>
+		<version>5.0.3.RELEASE</version>
+		</dependency> -->
 
 
 		<dependency>
@@ -192,6 +198,12 @@
 			<artifactId>com.google</artifactId>
 			<version>0.0.4.3</version>
 		</dependency>
+		
+		<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-test</artifactId>
+    <scope>test</scope><!-- CHANGE THIS TO "runtime" -->
+</dependency>
 		
 		<dependency>
     		<groupId>com.sun.xml.bind</groupId>

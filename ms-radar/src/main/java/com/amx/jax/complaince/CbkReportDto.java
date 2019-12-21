@@ -121,6 +121,10 @@ private BigDecimal transactionRefNo;
 	private String teller;
 	
 	private String authorized;
+	
+	private BigDecimal docfyr;
+	
+	private BigDecimal docNo;
 
 	public BigDecimal getTransactionRefNo() {
 		return transactionRefNo;
@@ -569,6 +573,24 @@ private BigDecimal transactionRefNo;
 	public void setAuthorized(String authorized) {
 		this.authorized = authorized;
 	}
+
+	public BigDecimal getDocfyr() {
+		return docfyr;
+	}
+
+	public void setDocfyr(BigDecimal docfyr) {
+		this.docfyr = docfyr;
+	}
+
+	public BigDecimal getDocNo() {
+		return docNo;
+	}
+
+	public void setDocNo(BigDecimal docNo) {
+		this.docNo = docNo;
+	}
+
+	
 
 
 
