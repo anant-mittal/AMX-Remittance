@@ -1,11 +1,12 @@
 package com.amx.jax.complaince;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Clob;
 import java.util.Date;
 
-public class ExCbkStrReportLogDto implements Serializable {
+import com.amx.jax.model.ResourceDTO;
+
+public class ExCbkStrReportLogDto extends ResourceDTO {
 	/**
 	 * 
 	 */
@@ -23,6 +24,7 @@ public class ExCbkStrReportLogDto implements Serializable {
 	private String createdBy;
 	private Clob reqXml;
 	private String ipAddress;
+	private ResourceDTO resourceDto;
 	
 	public BigDecimal getCbkStrRepLogId() {
 		return cbkStrRepLogId;
@@ -98,6 +100,20 @@ public class ExCbkStrReportLogDto implements Serializable {
 		this.ipAddress = ipAddress;
 	}
 	
+	public ResourceDTO getResourceDto() {
+		return resourceDto;
+	}
+
+	public void setResourceDto(ResourceDTO resourceDto) {
+		this.resourceDto = resourceDto;
+	}
 	
-	
+	@Override
+	public BigDecimal resourceId() {
+		return this.remittanceTranxId;
+	}
+	@Override
+	public String getResourceCode() {
+		return this.cbkStrId;
+	}
 }

@@ -69,8 +69,6 @@ public class CBK_Report implements Serializable {
 
 	private String fromCountry;
 
-	// private String toFundscode;
-
 	private String beneFirstName;
 
 	private String beneLastName;
@@ -92,8 +90,6 @@ public class CBK_Report implements Serializable {
 	private String beneCountryCode;
 
 	private String toCountry;
-
-//	private String indicator;
 
 	private String rentityId;
 
