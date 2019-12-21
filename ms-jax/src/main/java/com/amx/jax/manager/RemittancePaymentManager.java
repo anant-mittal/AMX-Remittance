@@ -490,7 +490,7 @@ public class RemittancePaymentManager extends AbstractService{
 						} catch (Exception e) {
 						}
 						if(personInfo!=null && !StringUtils.isBlank(personInfo.getEmail())&&customer.canSendEmail()) {
-							notificationService.sendTransactionNotification(rrsrl.get(0), personinfo);
+							notificationService.sendTransactionNotification(rrsrl.get(0), personinfo,jaxNotificationDataManager.getTransactionSuccessEmailData());
 						}
 					} catch (Exception e) {
 						e.printStackTrace();

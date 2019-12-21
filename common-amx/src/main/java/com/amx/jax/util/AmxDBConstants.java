@@ -263,6 +263,7 @@ public class AmxDBConstants {
 	public static String CHECK_DOCUMENT;
 	public static String CHECK_FILE;
 	public static String BANKTRANSFER;
+	public static String CASH_STRING;
 
 	// Constants for direct payment link
 	public static final String DIRECT_PAYMENT_LINK_PAID ="P";
