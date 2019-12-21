@@ -51,6 +51,7 @@ import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
 import com.amx.jax.model.response.remittance.branch.DynamicRoutingPricingResponse;
+import com.amx.utils.JsonUtil;
 
 @RestController
 public class BranchRemittanceController implements IRemittanceService {
