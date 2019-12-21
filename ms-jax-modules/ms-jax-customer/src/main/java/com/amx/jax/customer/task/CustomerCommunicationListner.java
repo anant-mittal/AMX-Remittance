@@ -116,6 +116,7 @@ public class CustomerCommunicationListner implements ITunnelSubscriber<DBEvent> 
 				email.addTo(c.getEmail());
 				email.setHtml(true);
 				email.setTemplate(thisTemplate);
+				LOGGER.debug("data for email is "+JsonUtil.toJson(wrapper));
 				postManService.sendEmailAsync(email);
 			}
 
