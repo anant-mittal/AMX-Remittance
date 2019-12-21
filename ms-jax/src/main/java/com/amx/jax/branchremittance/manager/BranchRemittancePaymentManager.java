@@ -26,6 +26,7 @@ import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.RoutingProcedureDao;
 import com.amx.jax.dao.BranchRemittancePaymentDao;
 import com.amx.jax.dao.PayAtBranchDao;
+import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.BankMasterMdlv1;
 import com.amx.jax.dbmodel.BanksView;
 import com.amx.jax.dbmodel.CountryBranchMdlv1;
@@ -81,6 +82,7 @@ import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.RoundUtil;
+import com.amx.utils.ArgUtil;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
@@ -142,6 +144,9 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 	
 	@Autowired
 	PayAtBranchDao payAtBranchDao;
+	
+	@Autowired
+	RemittanceApplicationDao remittanceApplicationDao;
 
 	/* 
 	 * @param   :fetch customer shopping cart application
@@ -385,6 +390,15 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 			CurrencyMasterMdlv1 fcCurr = currDao.getOne(shoppingCartDetails.getForeignCurrency());
 			shoppingCartDataTableBean.setForeignCurrencyCode(fcCurr.getQuoteName()==null?"":fcCurr.getQuoteName());
 		}
+		
+		RemittanceApplication remittanceApplication = remittanceApplicationDao.getApplication(shoppingCartDetails.getRemittanceApplicationId());
+		if(!ArgUtil.isEmpty(remittanceApplication) && ConstantDocument.PB_PAYMENT.equals(remittanceApplication.getPaymentType())) {
+			shoppingCartDataTableBean.setCustomerSignatureString(remittanceApplication.getFsCustomer().getSignatureSpecimenClob());
+		}
+		else {
+			shoppingCartDataTableBean.setCustomerSignatureString(shoppingCartDetails.getCustomerSignatureClob());
+		}
+
 		
 		// fetch trnx expiry date
 		if(bankCode != null && bankCode.equalsIgnoreCase(PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name())) {

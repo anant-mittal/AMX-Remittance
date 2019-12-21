@@ -21,16 +21,7 @@ public class RemittanceApplicationResponseModel extends AbstractModel {
 	private BigDecimal netPayableAmount;
 	private BigDecimal merchantTrackId;
 	private CivilIdOtpModel civilIdOtpModel;
-	private String applIds;
-
-	public String getApplIds() {
-		return applIds;
-	}
-
-	public void setApplIds(String applIds) {
-		this.applIds = applIds;
-	}
-
+	
 	private PayGServiceCode pgCode = PayGServiceCode.DEFAULT;
 
 	public PayGServiceCode getPgCode() {

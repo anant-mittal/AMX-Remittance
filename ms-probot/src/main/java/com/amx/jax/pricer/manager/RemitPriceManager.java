@@ -939,9 +939,7 @@ public class RemitPriceManager {
 		for (ExchangeRateAPRDET rate : exchangeRates) {
 
 			BigDecimal bankId = rate.getBankMaster().getBankId();
-
-			System.out.println(" Bank ==>" + rate.getBankMaster().getBankId() + " Rate==>" + rate.getSellRateMax());
-
+			
 			if (bankExchangeRateMap.containsKey(bankId)) {
 
 				ExchangeRateAPRDET ratePrev = bankExchangeRateMap.get(bankId);

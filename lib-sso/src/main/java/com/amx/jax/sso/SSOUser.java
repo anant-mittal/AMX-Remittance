@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppContextUtil;
+import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.rbaac.dto.UserClientDto;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
@@ -36,6 +37,8 @@ public class SSOUser implements Serializable {
 	private String terminalId;
 
 	private String terminalIp;
+
+	private ClientType clientType;
 
 	private boolean authDone = false;
 	private String tranxId;
@@ -218,6 +221,14 @@ public class SSOUser implements Serializable {
 
 	public void setOutlookIdToken(String outlookIdToken) {
 		this.outlookIdToken = outlookIdToken;
+	}
+
+	public ClientType getClientType() {
+		return clientType;
+	}
+
+	public void setClientType(ClientType clientType) {
+		this.clientType = clientType;
 	}
 
 }

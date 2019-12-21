@@ -519,6 +519,16 @@ public class ReportManagerService extends AbstractService {
 
 					// Added by Rabil
 					try {
+						RemittanceApplication remitAppl = remittanceApplicationDao
+								.getApplication(view.getApplicationDocumentNo(), view.getAppFinancialYear());
+						if (ConstantDocument.PB_PAYMENT.equalsIgnoreCase(remitAppl.getPaymentType())) {
+							obj.setSignature(remitAppl.getFsCustomer().getSignatureSpecimenClob());
+
+						}
+
+						if (view.getCustomerSignatureClob() != null) {
+							obj.setSignature(view.getCustomerSignatureClob());
+						}
 
 						if (view.getCustomerSignatureClob() != null) {
 							obj.setSignature(view.getCustomerSignatureClob());
