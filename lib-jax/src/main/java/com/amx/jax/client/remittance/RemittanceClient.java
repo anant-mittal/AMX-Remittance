@@ -43,6 +43,7 @@ import com.amx.jax.model.response.remittance.ParameterDetailsResponseDto;
 import com.amx.jax.model.response.remittance.PaymentLinkRespDTO;
 import com.amx.jax.model.response.remittance.PaymentModeDto;
 import com.amx.jax.model.response.remittance.RatePlaceOrderInquiryDto;
+import com.amx.jax.model.response.remittance.RatePlaceOrderResponseModel;
 import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
 
 import com.amx.jax.model.response.remittance.RemittanceDeclarationReportDto;
@@ -415,10 +416,10 @@ public class RemittanceClient implements IRemittanceService {
 	}
 
 	@Override
-	public AmxApiResponse<BoolRespModel, Object> savePlaceOrderApplication(PlaceOrderRequestModel placeOrderRequestModel) {
+	public AmxApiResponse<RatePlaceOrderResponseModel, Object> savePlaceOrderApplication(PlaceOrderRequestModel placeOrderRequestModel) {
 		return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_SAVE_PLACE_ORDER).meta(new JaxMetaInfo())
 				.post(placeOrderRequestModel)
-				.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
+				.as(new ParameterizedTypeReference<AmxApiResponse<RatePlaceOrderResponseModel, Object>>() {
 				});
 	}
 

@@ -56,6 +56,7 @@ import com.amx.jax.model.response.remittance.ParameterDetailsResponseDto;
 import com.amx.jax.model.response.remittance.PaymentLinkRespDTO;
 import com.amx.jax.model.response.remittance.PaymentModeDto;
 import com.amx.jax.model.response.remittance.RatePlaceOrderInquiryDto;
+import com.amx.jax.model.response.remittance.RatePlaceOrderResponseModel;
 import com.amx.jax.model.response.remittance.RemittanceDeclarationReportDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
@@ -308,7 +309,7 @@ public class BranchRemittanceController implements IRemittanceService {
 
 	@RequestMapping(value=Path.BR_REMITTANCE_SAVE_PLACE_ORDER,method=RequestMethod.POST)
 	@Override
-	public AmxApiResponse<BoolRespModel, Object> savePlaceOrderApplication(@RequestBody @Valid PlaceOrderRequestModel placeOrderRequestModel) {
+	public AmxApiResponse<RatePlaceOrderResponseModel, Object> savePlaceOrderApplication(@RequestBody @Valid PlaceOrderRequestModel placeOrderRequestModel) {
 		return branchRemitService.createPlaceOrder(placeOrderRequestModel);
 	}
 

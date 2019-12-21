@@ -40,6 +40,7 @@ import com.amx.jax.model.response.remittance.ParameterDetailsResponseDto;
 import com.amx.jax.model.response.remittance.PaymentLinkRespDTO;
 import com.amx.jax.model.response.remittance.PaymentModeDto;
 import com.amx.jax.model.response.remittance.RatePlaceOrderInquiryDto;
+import com.amx.jax.model.response.remittance.RatePlaceOrderResponseModel;
 import com.amx.jax.model.response.remittance.RemittanceDeclarationReportDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
@@ -195,7 +196,7 @@ public interface IRemittanceService extends  IJaxService {
 	AmxApiResponse<ParameterDetailsResponseDto, Object> getGiftService(BigDecimal beneRelaId);
 	
 	
-	AmxApiResponse<BoolRespModel, Object> savePlaceOrderApplication(PlaceOrderRequestModel placeOrderRequestModel);
+	AmxApiResponse<RatePlaceOrderResponseModel, Object> savePlaceOrderApplication(PlaceOrderRequestModel placeOrderRequestModel);
 	
 	AmxApiResponse<RatePlaceOrderInquiryDto, Object> fetchPlaceOrderInquiry(BigDecimal countryBranchId);
 	
