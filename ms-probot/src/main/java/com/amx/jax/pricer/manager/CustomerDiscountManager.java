@@ -300,7 +300,8 @@ public class CustomerDiscountManager {
 						 * amountSlabPipsInfo.setDiscountPipsValue(amountSlabPips);
 						 */
 
-						Entry<BigDecimal, PipsMaster> nextEntry = pipsMap.higherEntry(entry.getKey());
+						// IMP: Since the Tree Map is REVERSE SORTED
+						Entry<BigDecimal, PipsMaster> nextEntry = pipsMap.lowerEntry(entry.getKey());
 
 						if (nextEntry != null) {
 
@@ -309,9 +310,17 @@ public class CustomerDiscountManager {
 							// Check if Next Slab falls within the tolerance limit of the Current Base Fc
 							// Amount
 
-							BigDecimal bumpedFcVal = bankExRateDetail.getSellRateBase().getConvertedFCAmount()
-									.add(bankExRateDetail.getSellRateBase().getConvertedFCAmount()
-											.multiply(BtrRateIndicatorMarginPercent));
+							/*
+							 * BigDecimal bumpedFcVal =
+							 * bankExRateDetail.getSellRateBase().getConvertedFCAmount()
+							 * .add(bankExRateDetail.getSellRateBase().getConvertedFCAmount()
+							 * .multiply(BtrRateIndicatorMarginPercent));
+							 */
+							/**
+							 * Calculate the Required Bumped value as per the Discounted FC amount.
+							 */
+							BigDecimal bumpedFcVal = discountedFcAmount
+									.add(discountedFcAmount.multiply(BtrRateIndicatorMarginPercent));
 
 							if ((bumpedFcVal.compareTo(nextEntry.getValue().getFromAmount()) >= 0)
 									&& amountSlabPips.compareTo(nextEntry.getValue().getPipsNo()) < 0) {
