@@ -1,6 +1,7 @@
 package com.amx.jax.branchremittance.service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -19,6 +20,7 @@ import com.amx.jax.branchremittance.manager.BranchRemittanceManager;
 import com.amx.jax.branchremittance.manager.BranchRemittancePaymentManager;
 import com.amx.jax.branchremittance.manager.BranchRemittanceSaveManager;
 import com.amx.jax.branchremittance.manager.BranchRoutingManager;
+import com.amx.jax.branchremittance.manager.CardTypeManager;
 import com.amx.jax.branchremittance.manager.ReportManager;
 import com.amx.jax.manager.FcSaleBranchOrderManager;
 import com.amx.jax.manager.remittance.AdditionalBankDetailManager;
@@ -34,6 +36,7 @@ import com.amx.jax.model.response.customer.BenePackageResponse;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
+import com.amx.jax.model.response.remittance.CardTypeDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
 import com.amx.jax.model.response.remittance.ParameterDetailsResponseDto;
@@ -41,7 +44,6 @@ import com.amx.jax.model.response.remittance.PaymentModeDto;
 import com.amx.jax.model.response.remittance.RemittanceDeclarationReportDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
-import com.amx.jax.serviceprovider.service.AbstractFlexFieldManager.ValidationResultKey;
 import com.amx.jax.services.AbstractService;
 import com.amx.jax.validation.FxOrderValidation;
 import com.amx.utils.JsonUtil;
@@ -86,6 +88,9 @@ public class BranchRemittanceService extends AbstractService{
 	@Autowired
 	DirectPaymentLinkService directPaymentLinkService;
 	
+	@Autowired
+	CardTypeManager cardTypeManager;
+
 	@Autowired
 	PackageDescriptionManager packageDescriptionManager;
 
@@ -235,7 +240,23 @@ public class BranchRemittanceService extends AbstractService{
 		
 		return AmxApiResponse.build(paymentdto);
 	}*/
+	public AmxApiResponse<CardTypeDto, Object> getCustomerCardTypeListResp() {
+	BigDecimal languageId = metaData.getLanguageId();
+	List<CardTypeDto> cardTypeList = cardTypeManager.fetchCardTypeList(languageId);
 	
+	return AmxApiResponse.buildList(cardTypeList);
+}
+
+
+public AmxApiResponse<BoolRespModel, Object> updateCustomerCardType(BigDecimal chequeBankId, BigDecimal cardTypeId, String nameOnCard) {
+	BigDecimal custId = metaData.getCustomerId();
+	cardTypeManager.updateExtCardType(custId, chequeBankId, cardTypeId, nameOnCard);
+	
+	BoolRespModel boolRespModel = new BoolRespModel();
+	boolRespModel.setSuccess(Boolean.TRUE);
+	return AmxApiResponse.build(boolRespModel);
+}
+
 	
 	public AmxApiResponse<ParameterDetailsResponseDto, Object> getGiftService(BigDecimal beneRelaId) {
 		/*ParameterDetailsResponseDto parameterDetailsResponseDto = branchRemitManager.getGiftService(beneRelaId);

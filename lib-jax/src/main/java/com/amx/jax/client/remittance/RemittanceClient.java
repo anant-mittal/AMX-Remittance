@@ -25,6 +25,7 @@ import com.amx.jax.model.response.customer.BenePackageResponse;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
+import com.amx.jax.model.response.remittance.CardTypeDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.FlexFieldReponseDto;
 import com.amx.jax.model.response.remittance.GetServiceApplicabilityResponse;
@@ -414,6 +415,38 @@ public class RemittanceClient implements IRemittanceService {
 		}
 	}
 
+	// ------ Customer Card Type Client call ------
+	@Override
+	public AmxApiResponse<CardTypeDto, Object> getCustomerCardTypeList() {
+		try {
+			LOGGER.debug("In Customer Card Type Client :");
+			return restService.ajax(appConfig.getJaxURL() + Path.GET_CUSTOMER_CARD_TYPE).meta(new JaxMetaInfo())
+					.get()
+					.as(new ParameterizedTypeReference<AmxApiResponse<CardTypeDto, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in Customer Card Type Client : ", e);
+			return JaxSystemError.evaluate(e);
+		}
+	}
+
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> updateCustomerCardType(BigDecimal chequeBankId, BigDecimal cardTypeId, String nameOnCard) {
+		try {
+			LOGGER.debug("In Update Customer Card Type : " );
+			return restService.ajax(appConfig.getJaxURL() + Path.UPDATE_CUSTOMER_CARD_TYPE).meta(new JaxMetaInfo())
+					.queryParam(Params.CHEQUE_BANK_ID, chequeBankId)
+					.queryParam(Params.CARD_TYPE_ID, cardTypeId)
+					.queryParam(Params.NAME_ON_CARD, nameOnCard)
+					.post()
+					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in update customer card type :", e);
+			return JaxSystemError.evaluate(e);
+		}
+	}
+
 	@Override
 	public AmxApiResponse<BenePackageResponse, Object> getBenePackages(BenePackageRequest benePackageRequest) {
 		
@@ -426,7 +459,5 @@ public class RemittanceClient implements IRemittanceService {
 		
 		
 	}
-
-
 
 }

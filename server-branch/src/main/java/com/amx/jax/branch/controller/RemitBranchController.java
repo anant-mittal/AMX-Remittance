@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,6 +42,7 @@ import com.amx.jax.model.response.fx.FcSaleOrderManagementDTO;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
+import com.amx.jax.model.response.remittance.CardTypeDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
 import com.amx.jax.model.response.remittance.ParameterDetailsResponseDto;
@@ -272,6 +274,7 @@ public class RemitBranchController {
 		// }
 	}
 
+
 	@RequestMapping(value = "/api/remitt/cart/report", method = { RequestMethod.GET }, produces = {
 			CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE,
 			CommonMediaType.APPLICATION_PDF_VALUE, CommonMediaType.TEXT_HTML_VALUE })
@@ -302,6 +305,7 @@ public class RemitBranchController {
 		// return JsonUtil.toJson(wrapper);
 		// }
 	}
+
 
 	@RequestMapping(value = "/api/remitt/tranx/email", method = { RequestMethod.GET })
 	public AmxApiResponse<BoolRespModel, Object> sendEmail(
@@ -350,5 +354,16 @@ public class RemitBranchController {
 	public AmxApiResponse<BenePackageResponse, Object> getBenePackages(
 			@RequestBody BenePackageRequest benePackageRequest) {
 		return branchRemittanceClient.getBenePackages(benePackageRequest);
+	}
+
+	@RequestMapping(value = "/api/remitt/customer_bank/card_type", method = { RequestMethod.GET })
+	public AmxApiResponse<CardTypeDto, Object> getCustomerCardTypeList()  {
+		return branchRemittanceClient.getCustomerCardTypeList();
+	}
+	
+	@RequestMapping(value = "/api/remitt/card_type/update", method = { RequestMethod.POST })
+	public AmxApiResponse<BoolRespModel, Object> updateCustomerCardType(@RequestParam BigDecimal chequeBankId,
+			@RequestParam BigDecimal cardTypeId, @RequestParam String nameOnCard) {
+		return branchRemittanceClient.updateCustomerCardType(chequeBankId, cardTypeId, nameOnCard);
 	}
 }
