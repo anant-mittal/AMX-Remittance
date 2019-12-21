@@ -19,6 +19,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
+import com.amx.jax.dict.Language;
 import com.amx.jax.dict.Project;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.dict.UserClient.AppType;
@@ -155,7 +156,7 @@ public class AppConfig {
 	private Tenant defaultTenant;
 
 	@Value("${default.lang}")
-	private AppType defaultLang;
+	private Language defaultLang;
 
 	@Value("${default.channel}")
 	private Channel defaultChannel;
@@ -490,7 +491,7 @@ public class AppConfig {
 		this.serviceProviderURL = serviceProviderURL;
 	}
 
-	public AppType getDefaultLang() {
+	public Language getDefaultLang() {
 		return defaultLang;
 	}
 
