@@ -142,7 +142,7 @@ public class CustomerPersonalDetail extends AbstractModel implements ICustomerCo
 	private BigDecimal annualTxnLimitTo;
 	private String premiumInsurance;
 	@Valid
-	@NotNull
+	//@NotNull
 	private CustomerPassportData customerPassportData;
 
 
