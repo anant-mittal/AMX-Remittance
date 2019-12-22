@@ -26,6 +26,7 @@ public class RatePlaceOrderInquiryDto {
 	private String createdByName;
 	private String approvedName;
 	private String remarks;
+	private String fcCurrencyQuote;
 	
 	public BigDecimal getIdNo() {
 		return idNo;
@@ -158,5 +159,11 @@ public class RatePlaceOrderInquiryDto {
 	}
 	public void setRemarks(String remarks) {
 		this.remarks = remarks;
+	}
+	public String getFcCurrencyQuote() {
+		return fcCurrencyQuote;
+	}
+	public void setFcCurrencyQuote(String fcCurrencyQuote) {
+		this.fcCurrencyQuote = fcCurrencyQuote;
 	}
 }

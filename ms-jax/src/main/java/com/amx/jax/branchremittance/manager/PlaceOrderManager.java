@@ -32,11 +32,13 @@ import com.amx.jax.branchremittance.dao.PlaceOrderDao;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
 import com.amx.jax.dbmodel.BenificiaryListView;
+import com.amx.jax.dbmodel.BizComponentData;
 import com.amx.jax.dbmodel.BizComponentDataDesc;
 import com.amx.jax.dbmodel.CountryBranchMdlv1;
 import com.amx.jax.dbmodel.CurrencyMasterMdlv1;
 import com.amx.jax.dbmodel.CurrencyOtherInformation;
 import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.LanguageType;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.fx.EmployeeDetailsView;
 import com.amx.jax.dbmodel.remittance.Document;
@@ -277,7 +279,7 @@ public class PlaceOrderManager implements Serializable{
 		placeOrderAppl.setTerminalId(metaData.getDeviceIp());
 		
 		/** for GSM **/
-		if(placeOrderRequestModel.getBooGsm()==true && JaxUtil.isNullZeroBigDecimalCheck(placeOrderRequestModel.getExchangeRateOffered())) {
+		if(placeOrderRequestModel.getBooGsm()!=null && placeOrderRequestModel.getBooGsm()==true && JaxUtil.isNullZeroBigDecimalCheck(placeOrderRequestModel.getExchangeRateOffered())) {
 			placeOrderAppl.setRateOffered(placeOrderRequestModel.getExchangeRateOffered());
 			PlaceOrderUpdateStatusDto dto= new PlaceOrderUpdateStatusDto();
 			dto.setExchangeRateOffered(placeOrderRequestModel.getExchangeRateOffered());
@@ -396,6 +398,14 @@ public class PlaceOrderManager implements Serializable{
 				lstPlaceOrder.setNegotiate(ratePlaceOrder.getNegotiate());
 				lstPlaceOrder.setIsActive(ratePlaceOrder.getIsActive());
 				lstPlaceOrder.setRemarks(ratePlaceOrder.getRemarks());
+				
+				
+				
+				CurrencyMasterMdlv1 fcCurrency = currDao.getOne(ratePlaceOrder.getDestinationCurrency());
+				if(fcCurrency!=null) {
+					lstPlaceOrder.setFcCurrencyQuote(fcCurrency.getQuoteName());
+				}
+				
 				
 				EmployeeDetailsView createdDetails =null;
 				if(!StringUtils.isBlank(ratePlaceOrder.getCreatedBy())) {		
@@ -583,9 +593,12 @@ public List<PlaceOrderApplDto>  convertGsmDto(List<RatePlaceOrder> placeOrderLsi
 			approvedByDetails=employeeDetailsRepository.findByUserName(placeOrder.getApprovedBy());
 		}
 		
-		BizComponentDataDesc bizCom =  bizCimponentRepo.getCustomrIdType(customer.getIdentityTypeId());
-		if(bizCom!=null) {
-			applDto.setCustomerIdType(bizCom.getDataDesc());
+		
+		BizComponentData bizComponentData = new BizComponentData(customer.getIdentityTypeId());
+		LanguageType langId = new LanguageType(metaData.getLanguageId());
+		List<BizComponentDataDesc> bizCom =  bizCimponentRepo.findByFsBizComponentDataAndFsLanguageType(bizComponentData, langId);
+		if(bizCom!=null && !bizCom.isEmpty()) {
+			applDto.setCustomerIdType(bizCom.get(0).getDataDesc());
 		}
 		
 		applDto.setCustomerId(placeOrder.getCustomerId());
@@ -735,9 +748,14 @@ public void validatePlaceOrderRequest(BranchRemittanceApplRequestModel applReque
 		
 		
 		if(currInfo!=null && JaxUtil.isNullZeroBigDecimalCheck(currInfo.getPlaceOrderLimit())) {
-			if(applRequestModel.getLocalAmount()!=null && currInfo.getPlaceOrderLimit().compareTo(applRequestModel.getLocalAmount())<=0) {
+			if(applRequestModel.getLocalAmount()!=null && applRequestModel.getLocalAmount().compareTo(currInfo.getPlaceOrderLimit())>0) {
 				//Allow the trnx  
-			}else if(applRequestModel.getForeignAmount()!=null && currInfo.getPlaceOrderLimit().compareTo(applRequestModel.getForeignAmount())<=0) {
+			}else {
+				throw new GlobalException(JaxError.RATE_PLACE_ERROR,"The minimum limit for place order is :"+currInfo.getPlaceOrderLimit());
+			}
+			
+			
+			if(applRequestModel.getForeignAmount()!=null && applRequestModel.getForeignAmount().compareTo(currInfo.getPlaceOrderLimit())>0) {
 				//Allow the trnx  
 			}
 			else {

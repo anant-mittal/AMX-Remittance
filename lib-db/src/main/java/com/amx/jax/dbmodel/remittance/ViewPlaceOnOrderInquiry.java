@@ -30,6 +30,7 @@ public class ViewPlaceOnOrderInquiry implements Serializable{
 	private String Negotiate;
 	private String isActive;
 	private String remarks;
+	private BigDecimal destinationCurrency;
 	
 	public ViewPlaceOnOrderInquiry() {
 		super();
@@ -170,6 +171,17 @@ public class ViewPlaceOnOrderInquiry implements Serializable{
 
 	public void setRemarks(String remarks) {
 		this.remarks = remarks;
+	}
+
+
+
+	@Column(name="DESTINATION_CURRENCY_ID")
+	public BigDecimal getDestinationCurrency() {
+		return destinationCurrency;
+	}
+
+	public void setDestinationCurrency(BigDecimal destinationCurrency) {
+		this.destinationCurrency = destinationCurrency;
 	}
 	
 	
