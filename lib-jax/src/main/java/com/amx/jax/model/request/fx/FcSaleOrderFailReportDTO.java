@@ -1,7 +1,6 @@
 package com.amx.jax.model.request.fx;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 public class FcSaleOrderFailReportDTO {
 	
@@ -14,7 +13,6 @@ public class FcSaleOrderFailReportDTO {
 	private String foreignCurrencyQuote;
 	private String fromDate;
 	private String toDate;
-	private String exceptionMessage;
 	
 	public BigDecimal getCustomerReference() {
 		return customerReference;
@@ -77,13 +75,6 @@ public class FcSaleOrderFailReportDTO {
 	}
 	public void setToDate(String toDate) {
 		this.toDate = toDate;
-	}
-	
-	public String getExceptionMessage() {
-		return exceptionMessage;
-	}
-	public void setExceptionMessage(String exceptionMessage) {
-		this.exceptionMessage = exceptionMessage;
 	}
 		
 }
