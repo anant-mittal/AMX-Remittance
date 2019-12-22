@@ -283,9 +283,6 @@
                                   		<p class="lead">Thank you for using <a th:href="@{'https://' +${_tu.prop('company.website.url')}}"><span th:text="${_tu.prop('company.website.url')}"></span></a> for FC Order. We regret to inform you that the currency is out of stock due to higher demand for the amount you have chosen. We shall revert back to you once the currency is in stock.</p>
                                   		<p class="lead">Please contact our team @ <a th:href="@{'mailto:' + ${_tu.prop('support.contact.from')}}" th:text="${_tu.prop('support.contact.from')}"></a> or <strong th:text="${_tu.prop('company.telephone')}"></strong> for more information.</p>
                                         <p class="lead">We are now available <a th:href="${_tu.prop('company.app.url')}"><span >online</span></a> and on App's for <a th:href="${_tu.prop('company.ios.url')}"><span>IOS</span></a> and <a th:href="${_tu.prop('company.android.url')}"><span>Android</span>.</a></p>
-                                   		<br/>
-              							<p align="center"><a th:href="${_tu.prop('company.app.url') + '/pub/rating/REMIT/' + data.tranxId + '/' + data.verCode }" style="width:200px" class="btn-primary" target="_blank">Rate this transaction</a></p>
-                                   		
                                    		<!-- A Real Hero (and a real human being) -->
                                         <p style="padding:40px 0" align="center"><img src="cid:images/product-1.png"/></p><!-- /hero -->
                                         <h4 align="center">There are a lot of reasons to continue transacting with <span th:text="${_tu.prop('company.name')}" th:remove="tag"></span> and few of these are:</h4>
