@@ -259,16 +259,20 @@ public class FcSaleOrderTransactionManager extends AbstractModel{
 
 	// template to send fail transaction
 	public void sendFcSaleTranxFailReport(ReceiptPaymentApp receiptPayment) {
+		Customer customerDetails = null;
 		// email ids
 		List<ExEmailNotification> emailNotification = emailNotificationDao.getFCSupportTeamEmailNotification();
 
 		FcSaleOrderFailReportDTO model = new FcSaleOrderFailReportDTO();
-
-		Customer customerDetails = customerDao.getCustomerByCountryAndCompAndCustoemrId(receiptPayment.getCountryId(), receiptPayment.getCompanyId(), receiptPayment.getCustomerId());
-		if(customerDetails != null) {
-			model.setCustomerReference(customerDetails.getCustomerReference());
-			model.setCustomerContact(customerDetails.getMobile());
+		
+		if(receiptPayment.getCountryId() != null && receiptPayment.getCompanyId() != null && receiptPayment.getCustomerId() != null) {
+			customerDetails = customerDao.getCustomerByCountryAndCompAndCustoemrId(receiptPayment.getCountryId(), receiptPayment.getCompanyId(), receiptPayment.getCustomerId());
+			if(customerDetails != null) {
+				model.setCustomerReference(customerDetails.getCustomerReference());
+				model.setCustomerContact(customerDetails.getMobile());
+			}
 		}
+		
 		model.setCustomerName(receiptPayment.getCustomerName());
 
 		if(receiptPayment.getForeignCurrencyId() != null) {
@@ -286,12 +290,19 @@ public class FcSaleOrderTransactionManager extends AbstractModel{
 		}
 		model.setTransactionForeignAmount(receiptPayment.getForignTrnxAmount());
 		model.setTransactionLocalAmount(receiptPayment.getLocalTrnxAmount());
-		model.setFromDate(new SimpleDateFormat("dd-MMM-YYYY").format(receiptPayment.getTravelStartDate()));
-		model.setToDate(new SimpleDateFormat("dd-MMM-YYYY").format(receiptPayment.getTravelEndDate()));
+		
+		if(receiptPayment.getTravelStartDate() != null) {
+			model.setFromDate(new SimpleDateFormat("dd-MMM-YYYY").format(receiptPayment.getTravelStartDate()));
+		}
+		if(receiptPayment.getTravelEndDate() != null) {
+			model.setToDate(new SimpleDateFormat("dd-MMM-YYYY").format(receiptPayment.getTravelEndDate()));
+		}
 
 		logger.info("Email Foreign currency sale Fail Transaction : " + JsonUtil.toJson(model));
-
-		jaxNotificationService.sendFCSaleSupportErrorEmail(model, emailNotification);
+		
+		if(emailNotification != null && emailNotification.size() != 0) {
+			jaxNotificationService.sendFCSaleSupportErrorEmail(model, emailNotification);
+		}
 		if(customerDetails != null && customerDetails.getEmail() != null) {
 			jaxNotificationService.sendFCSaleCustomerErrorEmail(model, customerDetails.getEmail());
 		}
