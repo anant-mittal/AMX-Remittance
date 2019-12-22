@@ -32,6 +32,7 @@ import com.amx.jax.branchremittance.dao.PlaceOrderDao;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
 import com.amx.jax.dbmodel.BenificiaryListView;
+import com.amx.jax.dbmodel.BizComponentDataDesc;
 import com.amx.jax.dbmodel.CountryBranchMdlv1;
 import com.amx.jax.dbmodel.CurrencyMasterMdlv1;
 import com.amx.jax.dbmodel.CurrencyOtherInformation;
@@ -66,6 +67,7 @@ import com.amx.jax.pricer.dto.TrnxRoutingDetails;
 import com.amx.jax.pricer.var.PricerServiceConstants.DISCOUNT_TYPE;
 import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
+import com.amx.jax.repository.IBizComponentDataDescDaoRepository;
 import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.ICurrencyOtherInfoRepository;
 import com.amx.jax.repository.IDocumentDao;
@@ -156,6 +158,8 @@ public class PlaceOrderManager implements Serializable{
 	@Autowired
 	EmployeeDetailsRepository employeeDetailsRepository;
 	
+	@Autowired
+	IBizComponentDataDescDaoRepository bizCimponentRepo;
 	
 	
 	public RatePlaceOrderResponseModel savePlaceOrder(PlaceOrderRequestModel placeOrderRequestModel) {
@@ -579,7 +583,10 @@ public List<PlaceOrderApplDto>  convertGsmDto(List<RatePlaceOrder> placeOrderLsi
 			approvedByDetails=employeeDetailsRepository.findByUserName(placeOrder.getApprovedBy());
 		}
 		
-		
+		BizComponentDataDesc bizCom =  bizCimponentRepo.getCustomrIdType(customer.getIdentityTypeId());
+		if(bizCom!=null) {
+			applDto.setCustomerIdType(bizCom.getDataDesc());
+		}
 		
 		applDto.setCustomerId(placeOrder.getCustomerId());
 		applDto.setPlaceOrderId(placeOrder.getRatePlaceOrderId());

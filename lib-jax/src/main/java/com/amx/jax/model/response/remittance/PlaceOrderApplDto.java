@@ -38,12 +38,12 @@ public class PlaceOrderApplDto {
 	private BigDecimal orignalExchangeRate;
 	private BigDecimal routingBankId;
 	private BigDecimal avgCost;
-
 	private String employeeName;
-	
 	private BigDecimal discount;
 	private String approvedByName;
 	private String createdByName;
+	private String customerIdType;
+	
 	
 	public BigDecimal getPlaceOrderId() {
 		return placeOrderId;
@@ -272,6 +272,12 @@ public class PlaceOrderApplDto {
 	}
 	public void setCreatedByName(String createdByName) {
 		this.createdByName = createdByName;
+	}
+	public String getCustomerIdType() {
+		return customerIdType;
+	}
+	public void setCustomerIdType(String customerIdType) {
+		this.customerIdType = customerIdType;
 	}     
 	
 	
