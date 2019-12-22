@@ -24,6 +24,9 @@ public class ForeignCurrencyStockView implements Serializable{
 	@Column(name = "CURRENCY_CODE")
 	String currencyCode;
 	
+	@Column(name = "QUOTE_NAME")
+	String currencyQuote;
+	
 	@Column(name = "CURRENCY_NAME")
 	String currencyName;
 	
@@ -45,6 +48,13 @@ public class ForeignCurrencyStockView implements Serializable{
 	}
 	public void setCurrencyCode(String currencyCode) {
 		this.currencyCode = currencyCode;
+	}
+	
+	public String getCurrencyQuote() {
+		return currencyQuote;
+	}
+	public void setCurrencyQuote(String currencyQuote) {
+		this.currencyQuote = currencyQuote;
 	}
 	
 	public String getCurrencyName() {
