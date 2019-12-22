@@ -11,6 +11,7 @@ import com.amx.jax.model.request.remittance.PlaceOrderUpdateStatusDto;
 import com.amx.jax.model.response.remittance.GsmPlaceOrderListDto;
 import com.amx.jax.model.response.remittance.GsmSearchRequestParameter;
 import com.amx.jax.model.response.remittance.RatePlaceOrderInquiryDto;
+import com.amx.jax.model.response.remittance.RatePlaceOrderResponseModel;
 import com.amx.jax.rbaac.IRbaacService;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
 
@@ -32,7 +33,7 @@ public class POBranchController {
 	private RemittanceClient branchRemittanceClient;
 
 	@RequestMapping(value = "/api/placeorder/create", method = { RequestMethod.POST })
-	public AmxApiResponse<BoolRespModel, Object> createPlaceOrder(
+	public AmxApiResponse<RatePlaceOrderResponseModel, Object> createPlaceOrder(
 			@RequestBody PlaceOrderRequestModel placeOrderRequestModel) {
 		return branchRemittanceClient.savePlaceOrderApplication(placeOrderRequestModel);
 	}
