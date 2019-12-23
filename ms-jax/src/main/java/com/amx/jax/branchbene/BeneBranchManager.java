@@ -58,7 +58,7 @@ public class BeneBranchManager {
 		if (beneRel == null) {
 			throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Bene not found");
 		}
-		// 
+		//
 		beneRel.setIsActive(request.getStatusCode().getDbFlag());
 		beneRel.setReasonCodeId(request.getReasonCodeId());
 		iBeneficiaryRelationshipDao.save(beneRel);
@@ -149,6 +149,16 @@ public class BeneBranchManager {
 		if (benePersonalDetail.getThirdName() != null) {
 			beneRelationship.setThirdName(benePersonalDetail.getThirdName());
 			isModified = true;
+		}
+
+		// update institute names
+		if (benePersonalDetail.getInstitutionName() != null) {
+			beneRelationship.setFirstName(beneficiaryTrnxManager.getInstitutionFirstName(benePersonalDetail));
+			beneRelationship.setSecondName(beneficiaryTrnxManager.getInstitutionSecondName(benePersonalDetail));
+		}
+		if (benePersonalDetail.getInstitutionNameLocal() != null) {
+			beneRelationship.setLocalFirstName(beneficiaryTrnxManager.getInstitutionFirstNameLocal(benePersonalDetail));
+			beneRelationship.setLocalSecondName(beneficiaryTrnxManager.getInstitutionSecondNameLocal(benePersonalDetail));
 		}
 		beneRelationship.setModifiedBy(jaxDBService.getCreatedOrUpdatedBy());
 		beneRelationship.setModifiedDate(new Date());

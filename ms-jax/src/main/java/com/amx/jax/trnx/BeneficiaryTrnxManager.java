@@ -347,23 +347,23 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		return beneficaryRelationship;
 	}
 
-	private String getInstitutionSecondName(BenePersonalDetailModel beneDetaisl) {
+	public String getInstitutionSecondName(BenePersonalDetailModel beneDetaisl) {
 		String institutionName = beneDetaisl.getInstitutionName().trim();
 		int splitIndex = institutionName.indexOf(" ");
 		return institutionName.substring(splitIndex+1);
 	}
 
-	private String getInstitutionFirstName(BenePersonalDetailModel beneDetaisl) {
+	public String getInstitutionFirstName(BenePersonalDetailModel beneDetaisl) {
 		return beneDetaisl.getInstitutionName().trim().split(" ")[0];
 	}
 	
-	private String getInstitutionSecondNameLocal(BenePersonalDetailModel beneDetaisl) {
+	public String getInstitutionSecondNameLocal(BenePersonalDetailModel beneDetaisl) {
 		String institutionNameLocal = beneDetaisl.getInstitutionNameLocal().trim();
 		int splitIndex = institutionNameLocal.indexOf(" ");
 		return institutionNameLocal.substring(splitIndex + 1);
 	}
 
-	private String getInstitutionFirstNameLocal(BenePersonalDetailModel beneDetaisl) {
+	public String getInstitutionFirstNameLocal(BenePersonalDetailModel beneDetaisl) {
 		return beneDetaisl.getInstitutionNameLocal().trim().split(" ")[0];
 	}
 
