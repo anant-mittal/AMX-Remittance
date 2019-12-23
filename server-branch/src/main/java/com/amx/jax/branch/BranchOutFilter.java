@@ -74,16 +74,11 @@ public class BranchOutFilter implements IMetaRequestOutFilter<JaxMetaInfo>, Audi
 
 	@Override
 	public void appRequestContextInFilter(CommonHttpRequest localCommonHttpRequest) {
-		UserDevice userDevice = localCommonHttpRequest.getUserDevice();
 		UserDeviceClient userClient = AppContextUtil.getUserClient();
-		if (AppType.ANDROID.equals(userClient.getAppType())) {
-			userClient.setClientType(ClientType.ONLINE_AND);
-		} else if (AppType.IOS.equals(userClient.getAppType())) {
-			userClient.setClientType(ClientType.ONLINE_IOS);
-		} else if (AppType.WEB.equals(userClient.getAppType())) {
-			userClient.setClientType(ClientType.ONLINE_WEB);
+		if (AppType.WEB.equals(userClient.getAppType())) {
+			userClient.setClientType(ClientType.BRANCH_WEB);
 		} else {
-			userClient.setClientType(ClientType.UNKNOWN);
+			userClient.setClientType(ClientType.BRANCH_WEB);
 		}
 	}
 
