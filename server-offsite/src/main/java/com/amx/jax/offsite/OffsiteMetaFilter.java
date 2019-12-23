@@ -76,16 +76,18 @@ public class OffsiteMetaFilter
 
 	@Override
 	public void appRequestContextInFilter(CommonHttpRequest localCommonHttpRequest) {
-		UserDevice userDevice = commonHttpRequest.getUserDevice();
 		UserDeviceClient userClient = AppContextUtil.getUserClient();
-		if (AppType.ANDROID.equals(userClient.getAppType())) {
-			userClient.setClientType(ClientType.ONLINE_AND);
-		} else if (AppType.IOS.equals(userClient.getAppType())) {
-			userClient.setClientType(ClientType.ONLINE_IOS);
-		} else if (AppType.WEB.equals(userClient.getAppType())) {
-			userClient.setClientType(ClientType.ONLINE_WEB);
-		} else {
-			userClient.setClientType(ClientType.UNKNOWN);
+		if (ArgUtil.isEmpty(userClient.getClientType())) {
+			if (AppType.ANDROID.equals(userClient.getAppType())) {
+				userClient.setClientType(ClientType.OFFSITE_PAD);
+			} else if (AppType.IOS.equals(userClient.getAppType())) {
+				userClient.setClientType(ClientType.NOTP_APP);
+			} else if (AppType.WEB.equals(userClient.getAppType())) {
+				userClient.setClientType(ClientType.OFFSITE_WEB);
+			} else {
+				userClient.setClientType(ClientType.UNKNOWN);
+			}
 		}
+
 	}
 }
