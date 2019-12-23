@@ -505,6 +505,7 @@ public class BranchRemittanceSaveManager {
 							collection.setCreatedBy("WEB");
 						 }
 					}
+					countryBranch.setCountryBranchId(metaData.getCountryBranchId());
 				}else {
 					logger.info("EmployeeDetails View : ");
 					EmployeeDetailsView employee =branchRemittanceApplManager.getEmployeeDetails();
