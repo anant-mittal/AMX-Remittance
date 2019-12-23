@@ -29,6 +29,7 @@ import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.customer.CreateCustomerInfoRequest;
 import com.amx.jax.model.customer.document.CustomerDocValidationResponseData;
+import com.amx.jax.model.request.CustomerEmploymentDetails;
 import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.model.request.UpdateCustomerPersonalDetailRequest;
 import com.amx.jax.model.request.customer.CustomerDocValidationData;
@@ -162,6 +163,26 @@ public class CustomerManagementValidation {
 		}
 		validateInsuranceFlag(createCustomerInfoRequest);
 		offsitCustRegService.validateCustomerBlackList(createCustomerInfoRequest.getCustomerPersonalDetail());
+		validateEmploymentInfo(createCustomerInfoRequest.getCustomerEmploymentDetails());
+	}
+
+	private void validateEmploymentInfo(CustomerEmploymentDetails customerEmploymentDetails) {
+
+		if (customerEmploymentDetails.getEmploymentTypeId() == null) {
+			throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Employment type can not be empty");
+		}
+		if (customerEmploymentDetails.getEmployer() == null) {
+			throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Employer name can not be empty");
+		}
+		if (customerEmploymentDetails.getProfessionId() == null) {
+			throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Profession can not be empty");
+		}
+		if (customerEmploymentDetails.getArticleDetailsId() == null) {
+			throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Article detail can not be empty");
+		}
+		if (customerEmploymentDetails.getIncomeRangeId() == null) {
+			throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Income range can not be empty");
+		}
 	}
 
 	private void validateInsuranceFlag(CreateCustomerInfoRequest createCustomerInfoRequest) {
