@@ -24,6 +24,13 @@ public interface IComplainceService {
 			
 			public static final String COMPLAINCE_BANK_CODE = "KWFIU";
 			
+			public static final String COMPLAINCE_CONTACT_TYPE = "1";
+			
+			public static final String COMPLAINCE_COMMUNICATION_TYPE = "M";
+			
+			public static final String COMPLAINCE_ADDRESS_TYPE = "1";
+			
+			
 			
 		}
 }

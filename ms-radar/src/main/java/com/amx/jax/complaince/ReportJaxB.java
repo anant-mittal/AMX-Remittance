@@ -74,15 +74,15 @@ public class ReportJaxB {
 
 			List<Phone> phoneList = new ArrayList<Phone>();
 			Phone phone = new Phone();
-			phone.setTph_contact_type(cbk.getEmpPhcontacttype()== null ? "NA" : cbk.getEmpPhcontacttype());
-			phone.setTph_communication_type(cbk.getEmpPhoneCommunicationtype()== null ? "NA" : cbk.getEmpPhoneCommunicationtype());
+			phone.setTph_contact_type(Paramss.COMPLAINCE_CONTACT_TYPE);
+			phone.setTph_communication_type(Paramss.COMPLAINCE_COMMUNICATION_TYPE);
 			phone.setTph_number(cbk.getEmpPhoneNo()== null ? "NA" : cbk.getEmpPhoneNo());
 			phoneList.add(phone);
 
 			List<Phones> phonesList1 = new ArrayList<Phones>();
 			Phones phones = new Phones();
-			phones.setTph_contact_type(cbk.getCustPhContacttype()== null ? "NA" : cbk.getCustPhContacttype());
-			phones.setTph_communication_type(cbk.getCustPhCommunicationType()== null ? "NA" : cbk.getCustPhCommunicationType());
+			phones.setTph_contact_type(Paramss.COMPLAINCE_CONTACT_TYPE);
+			phones.setTph_communication_type(Paramss.COMPLAINCE_COMMUNICATION_TYPE);
 			phones.setTph_country_prefix(cbk.getCustPhCountryPrefix()== null ? "NA" : cbk.getCustPhCountryPrefix());
 			phones.setTph_number(cbk.getCustPhNo()== null ? "NA" : cbk.getCustPhNo());
 			phonesList1.add(phones);
@@ -90,15 +90,15 @@ public class ReportJaxB {
 			List<Address> addressList = new ArrayList<Address>();
 			Address address = new Address();
 			address.setAddress("NA");
-			address.setAddress_type(cbk.getEmpaddresstype()== null ? "NA" : cbk.getEmpaddresstype());
+			address.setAddress_type(Paramss.COMPLAINCE_ADDRESS_TYPE);
 			address.setCity("NA");
 			address.setCountry_code(cbk.getEmpcountrycode()== null ? "NA" : cbk.getEmpcountrycode());
 			addressList.add(address);
 
 			List<Phones> phonesList2 = new ArrayList<Phones>();
 			Phones phones1 = new Phones();
-			phones1.setTph_contact_type(cbk.getBenePhoneContacttype()== null ? "NA" : cbk.getBenePhoneContacttype());
-			phones1.setTph_communication_type(cbk.getBenePhoneCommunicationType()== null ? "NA" : cbk.getBenePhoneCommunicationType());
+			phones1.setTph_contact_type(Paramss.COMPLAINCE_CONTACT_TYPE);
+			phones1.setTph_communication_type(Paramss.COMPLAINCE_COMMUNICATION_TYPE);
 			phones1.setTph_country_prefix("NA");
 			phones1.setTph_number(cbk.getBenePhoneNumber()== null ? "NA" : cbk.getBenePhoneNumber());
 			phonesList2.add(phones1);
@@ -106,7 +106,7 @@ public class ReportJaxB {
 			List<Address> addressList1 = new ArrayList<Address>();
 			Address address1 = new Address();
 			address1.setAddress(cbk.getBeneAddress()== null ? "NA" : cbk.getBeneAddress());
-			address1.setAddress_type(cbk.getBeneAddressType()== null ? "NA" : cbk.getBeneAddressType());
+			address1.setAddress_type(Paramss.COMPLAINCE_ADDRESS_TYPE);
 			address1.setCity(cbk.getBeneCity()== null ? "NA" : cbk.getBeneCity());
 			address1.setCountry_code(cbk.getBeneCountryCode().toString()== null ? "NA" : cbk.getBeneCountryCode().toString());
 			addressList1.add(address1);
