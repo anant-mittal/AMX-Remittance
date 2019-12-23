@@ -492,7 +492,8 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 			beneMaster.setSecondName(getInstitutionSecondName(benePersonalDetails));
 		}
 		if (benePersonalDetails.getInstitutionNameLocal() != null) {
-			beneMaster.setLocalFirstName(benePersonalDetails.getInstitutionNameLocal());
+			beneMaster.setLocalFirstName(getInstitutionFirstNameLocal(benePersonalDetails));
+			beneMaster.setLocalSecondName(getInstitutionSecondNameLocal(benePersonalDetails));
 		}
 	}
 
