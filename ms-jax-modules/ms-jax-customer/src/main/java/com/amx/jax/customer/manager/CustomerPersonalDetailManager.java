@@ -59,6 +59,7 @@ public class CustomerPersonalDetailManager {
 	@Transactional
 	public void updateCustomerPersonalDetail(Customer customer, UpdateCustomerPersonalDetailRequest req) {
 		log.debug("in updateCustomerPersonalDetail");
+		boolean markCustomerPendingCompliance = false;
 		if (req.getDateOfBirth() != null) {
 			customer.setDateOfBirth(req.getDateOfBirth());
 		}
@@ -98,11 +99,14 @@ public class CustomerPersonalDetailManager {
 		}
 		if (req.getFirstName() != null) {
 			customer.setFirstName(req.getFirstName());
-			customerIdProofManager.markCustomerPendingCompliance(customer.getCustomerId());
+			markCustomerPendingCompliance = true;
 		}
 		if (req.getLastName() != null) {
 			customer.setLastName(req.getLastName());
-			customerIdProofManager.markCustomerPendingCompliance(customer.getCustomerId());
+			markCustomerPendingCompliance = true;
+		}
+		if(markCustomerPendingCompliance) {
+			customerIdProofManager.markCustomerPendingCompliance(customer.getCustomerId());			
 		}
 		cvs.forEach(x -> jaxCustomerContactVerificationService.sendVerificationLink(customer, x));
 		customer.setUpdatedBy(jaxDbService.getCreatedOrUpdatedBy());

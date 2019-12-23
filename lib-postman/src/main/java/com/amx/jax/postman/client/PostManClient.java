@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +18,7 @@ import com.amx.jax.postman.PostManUrls;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.ExceptionReport;
 import com.amx.jax.postman.model.File;
+import com.amx.jax.postman.model.MessageBox;
 import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.SupportEmail;
@@ -68,7 +70,6 @@ public class PostManClient implements PostManService {
 
 	public AmxApiResponse<Email, Object> sendEmail(Email email, Boolean async) throws PostManException {
 		try {
-			LOGGER.debug("Email for birthday wish");
 			return restService.ajax(appConfig.getPostmapURL()).path(PostManUrls.SEND_EMAIL)
 					.queryParam(PARAM_LANG, getLang()).queryParam(PARAM_ASYNC, async).post(email)
 					.asApiResponse(Email.class);
@@ -99,6 +100,18 @@ public class PostManClient implements PostManService {
 		try {
 			return restService.ajax(appConfig.getPostmapURL()).path(PostManUrls.SEND_EMAIL_BULK).post(emailList)
 					.asApiResponse(Email.class);
+		} catch (Exception e) {
+			throw new PostManException(e);
+		}
+	}
+
+	@Override
+	public AmxApiResponse<MessageBox, Object> send(MessageBox messageBox) {
+		LOGGER.info("Sending bulk messages for Notification Service ");
+		try {
+			return restService.ajax(appConfig.getPostmapURL()).path(PostManUrls.SEND_MESSAGE_BOX).post(messageBox)
+					.as(new ParameterizedTypeReference<AmxApiResponse<MessageBox, Object>>() {
+					});
 		} catch (Exception e) {
 			throw new PostManException(e);
 		}

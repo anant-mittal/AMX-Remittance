@@ -19,4 +19,5 @@ public interface IBankMasterFromViewDao extends JpaRepository<BanksView, Seriali
 	@Query("select bm from BanksView bm where bm.bankId=:beneBankId and bm.bankCountryId=:beneBankCountryId")
 	public List<BanksView> getBankListByBeneBankIdAndCountry(@Param("beneBankId") BigDecimal beneBankId,@Param("beneBankCountryId")BigDecimal beneBankCountryId);
 	
+	public BanksView findByBankId(BigDecimal bankId);
 }

@@ -253,8 +253,8 @@ public class JaxService implements IMetaRequestOutFilter<JaxMetaInfo>, AppReques
 	}
 
 	@Override
-	public void appRequestContextInFilter() {
-		UserDevice userDevice = commonHttpRequest.getUserDevice();
+	public void appRequestContextInFilter(CommonHttpRequest localCommonHttpRequest) {
+		UserDevice userDevice = localCommonHttpRequest.getUserDevice();
 		UserDeviceClient userClient = AppContextUtil.getUserClient();
 		userClient.setChannel(Channel.ONLINE);
 		if (AppType.ANDROID.equals(userClient.getAppType())) {
@@ -281,8 +281,5 @@ public class JaxService implements IMetaRequestOutFilter<JaxMetaInfo>, AppReques
 	public void setFxOrderBranchClient(FxOrderBranchClient fxOrderBranchClient) {
 		this.fxOrderBranchClient = fxOrderBranchClient;
 	}
-	
-	
-	
 
 }

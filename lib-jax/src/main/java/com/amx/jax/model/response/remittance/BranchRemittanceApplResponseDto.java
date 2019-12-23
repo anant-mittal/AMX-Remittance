@@ -6,6 +6,7 @@ import java.util.List;
 import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.CivilIdOtpModel;
+import com.amx.jax.response.payatbranch.PaymentModesDTO;
 
 
 
@@ -26,12 +27,17 @@ public class BranchRemittanceApplResponseDto extends AbstractModel{
 	BigDecimal totalNetCollectionAmount =BigDecimal.ZERO;
 	String warnigMsg;
 	ConfigDto configDto = new ConfigDto();
-	
-	
 	private CivilIdOtpModel civilIdOtpModel;
 	private PayGServiceCode pgCode = PayGServiceCode.DEFAULT;
+	private Boolean addToCart=true;
+	private List<PaymentModesDTO> paymentModeList;
 	
-	
+	public List<PaymentModesDTO> getPaymentModeList() {
+		return paymentModeList;
+	}
+	public void setPaymentModeList(List<PaymentModesDTO> paymentModeList) {
+		this.paymentModeList = paymentModeList;
+	}
 	public ConfigDto getConfigDto() {
 		return configDto;
 	}
@@ -101,5 +107,11 @@ public class BranchRemittanceApplResponseDto extends AbstractModel{
 	}
 	public void setCivilIdOtpModel(CivilIdOtpModel civilIdOtpModel) {
 		this.civilIdOtpModel = civilIdOtpModel;
+	}
+	public Boolean getAddToCart() {
+		return addToCart;
+	}
+	public void setAddToCart(Boolean addToCart) {
+		this.addToCart = addToCart;
 	}
 }

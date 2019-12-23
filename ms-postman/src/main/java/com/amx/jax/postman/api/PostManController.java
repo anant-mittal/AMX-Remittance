@@ -24,6 +24,7 @@ import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.ExceptionReport;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.Message;
+import com.amx.jax.postman.model.MessageBox;
 import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.SupportEmail;
@@ -167,6 +168,11 @@ public class PostManController {
 	@RequestMapping(value = PostManUrls.SEND_EMAIL_BULK, method = RequestMethod.POST)
 	public AmxApiResponse<Email, Object> sendEmailBulk(@RequestBody List<Email> emailList) throws PostManException {
 		return postManService.sendEmailBulk(emailList);
+	}
+	
+	@RequestMapping(value = PostManUrls.SEND_MESSAGE_BOX, method = RequestMethod.POST)
+	public AmxApiResponse<MessageBox, Object> send(@RequestBody MessageBox messageBox) throws PostManException {
+		return postManService.send(messageBox);
 	}
 
 	/**

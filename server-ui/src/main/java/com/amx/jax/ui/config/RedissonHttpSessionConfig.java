@@ -11,7 +11,7 @@ import org.springframework.session.web.context.AbstractHttpSessionApplicationIni
  */
 @Configuration
 // @EnableRedissonHttpSession
-@ConditionalOnProperty("app.cache.session")
+@ConditionalOnProperty("app.cache-session")
 @AutoConfigureAfter(RedisAutoConfiguration.class)
 public class RedissonHttpSessionConfig extends AbstractHttpSessionApplicationInitializer {
 

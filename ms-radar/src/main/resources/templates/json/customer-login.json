@@ -172,30 +172,37 @@
          {
           "bool": {
             "should": [
+             [# th:if="${logmap.client.containsKey('fp')}"] 
               {
                 "bool": {
                   "should": [
                     {
                       "match_phrase": {
-                        "logmap.client.fp.keyword": "[[${logmap.client.fp}]]"
-                      }
-                    }
-                  ],
-                  "minimum_should_match": 1
-                }
-              },
-              {
-                "bool": {
-                  "should": [
-                    {
-                      "match_phrase": {
-                        "logmap.client.ip.keyword": "[[${logmap.client.ip}]]"
+                        "logmap.client.fp.keyword": "[[${logmap?.client?.fp}]]"
                       }
                     }
                   ],
                   "minimum_should_match": 1
                 }
               }
+              [/]
+              [# th:if="${logmap.client.containsKey('fp') && logmap.client.containsKey('ip')}"]
+              ,
+              [/]
+              [# th:if="${logmap.client.containsKey('ip')}"] 
+              {
+                "bool": {
+                  "should": [
+                    {
+                      "match_phrase": {
+                        "logmap.client.ip.keyword": "[[${logmap?.client?.ip}]]"
+                      }
+                    }
+                  ],
+                  "minimum_should_match": 1
+                }
+              }
+              [/]	
             ],
             "minimum_should_match": 1
           }
@@ -203,7 +210,7 @@
         {
           "match_phrase": {
             "logmap.cust.id": {
-              "query": "[[${lcustomerId}]]"
+              "query": "[[${customerId}]]"
             }
           }
         },

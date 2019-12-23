@@ -20,10 +20,13 @@ import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.ExceptionReport;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.File.Type;
+import com.amx.jax.postman.model.MessageBox;
 import com.amx.jax.postman.model.Notipy;
+import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.SupportEmail;
 import com.amx.jax.postman.model.TemplatesMX;
+import com.amx.jax.postman.model.WAMessage;
 
 /**
  * The Class PostManServiceImpl.
@@ -45,6 +48,12 @@ public class PostManServiceImpl implements PostManService {
 	/** The sms service. */
 	@Autowired
 	private SMService smsService;
+
+	@Autowired
+	private FBPushServiceImpl fbPushService;
+
+	@Autowired
+	private WhatsAppService whatsAppService;
 
 	/** The slack service. */
 	@Autowired
@@ -230,6 +239,28 @@ public class PostManServiceImpl implements PostManService {
 		msg.setChannel(Notipy.Channel.INQUIRY);
 		this.notifySlack(msg);
 		return AmxApiResponse.build(email);
+	}
+
+	@Override
+	public AmxApiResponse<MessageBox, Object> send(MessageBox messageBox) {
+
+		for (Email email : messageBox.getEmailBucket()) {
+			this.sendEmail(email);
+		}
+
+		for (SMS sms : messageBox.getSmsBucket()) {
+			this.sendSMS(sms);
+		}
+
+		for (WAMessage waMessage : messageBox.getWaBucket()) {
+			whatsAppService.send(waMessage);
+		}
+
+		for (PushMessage pushMessage : messageBox.getPushBucket()) {
+			fbPushService.sendDirect(pushMessage);
+		}
+
+		return AmxApiResponse.build(messageBox);
 	}
 
 }

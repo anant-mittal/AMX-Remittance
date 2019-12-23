@@ -1,6 +1,7 @@
 package com.amx.jax.model.response.remittance;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.model.AbstractModel;
@@ -20,7 +21,7 @@ public class RemittanceApplicationResponseModel extends AbstractModel {
 	private BigDecimal netPayableAmount;
 	private BigDecimal merchantTrackId;
 	private CivilIdOtpModel civilIdOtpModel;
-
+	
 	private PayGServiceCode pgCode = PayGServiceCode.DEFAULT;
 
 	public PayGServiceCode getPgCode() {
