@@ -8,6 +8,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -70,15 +71,22 @@ public class ReportJaxB {
 		param.setCharUdf1(indicatorDetails.get(0).getCharField1());
 		
 		List<Employee> emp ;
-		emp =  employeeRespository.findByEmployeeId(employeeId);		
-		
+		emp =  employeeRespository.findByEmployeeId(employeeId);
 		List<CountryMaster> cntryMaster ;
+		
+		if(emp.get(0).getEmpCountryId()==null) {
+			
+			cntryMaster = countryMasterRepository.getCountryAlpha2Code(new BigDecimal(91));
+			
+		}
+				
 		cntryMaster = countryMasterRepository.getCountryAlpha2Code(emp.get(0).getEmpCountryId());
 		
-		Date subDate = new Date();
-		
-		String submissiondate = exCbkReportLogRepo.updateSubmissionDate(subDate);
-		
+		SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	    Date now = new Date();
+	    String subMissionDate = sdfDate.format(now);
+	    
+	    System.out.println("subdate"+subMissionDate);
 		
 		try {
 
@@ -127,10 +135,10 @@ public class ReportJaxB {
 			repoIndList.add(reportIndicators);
 			
 			Report repo = new Report(cbk.getRentityId(), cbk.getSubmissionCode(), cbk.getReportCode(),
-					parseTime(submissiondate), cbk.getCurrencyCodeLocal(),
+					parseTime(subMissionDate), cbk.getCurrencyCodeLocal(),
 					new ReportingPerson(emp.get(0).getEmployeeName(), emp.get(0).getEmployeeName(),  cntryMaster.get(0).getCountryAlpha2Code(), phoneList,
 							emp.get(0).getEmail(), "NA"),
-					new Location(Paramss.COMPLAINCE_ADDRESS_TYPE, "NA", "NA", emp.get(0).getEmpCountryId().toString()), reasonDetailsDto.get(0).getReasonDesc(), actionDetailsDto.get(0).getActionDesc(),
+					new Location(Paramss.COMPLAINCE_ADDRESS_TYPE, "NA", "NA", cntryMaster.get(0).getCountryAlpha2Code()), reasonDetailsDto.get(0).getReasonDesc(), actionDetailsDto.get(0).getActionDesc(),
 					new Transaction(cbk.getTranxRef().toString(), cbk.getTrnxLocation(),
 							parseTime(cbk.getTranxDate()), ("NA"), ("NA"),
 							cbk.getTranxMode().toString(), cbk.getAmountLocal().toString(),
@@ -244,6 +252,7 @@ public class ReportJaxB {
 		return f;
 
 	}
+
 
 	public String parseTime(String date) {
 		try {

@@ -160,7 +160,9 @@ public class ComplianceService {
 		
 		try {
 			token = tokenGenaration(bankCode.getWsUserName(), bankCode.getWsPassword(), bankCode.getWsPin());
+			System.out.println("tokenbefore:"+token);
 			token = token.replaceAll("^\"|\"$", "");
+			System.out.println("tokenafter:"+token);
 		} catch (Exception e) {
 
 			e.printStackTrace();
@@ -260,12 +262,12 @@ public class ComplianceService {
 		}).collect(Collectors.toList());
 	}
 
-	public List<ExCbkStrReportLogDto> uploadComplaince(MultipartFile file1,
+	public List<ExCbkStrReportLogDto> uploadComplaince(MultipartFile file,
 			String token, jaxCbkReport cbk, String reason , String action) throws IOException {
 
 		String resp = restService.ajax("https://goaml.kwfiu.gov.kw/goAMLWeb/api/Reports/PostReport")
 
-				.field("charset", "UTF-8").field("ContentType", "application/octet-stream").field("zipfile", file1)
+				.field("charset", "UTF-8").field("ContentType", "application/octet-stream").field("zipfile", file)
 				.cookie(new Cookie("SqlAuthCookie", token)).postForm().as(new ParameterizedTypeReference<String>() {
 				});
 

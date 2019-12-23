@@ -2,7 +2,6 @@ package com.amx.jax.complaince;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -25,7 +24,5 @@ public interface ExCbkReportLogRepo extends JpaRepository<ExCbkStrReportLOG, Ser
 	@Query(value = " select * from EX_CBK_STR_REPORT_LOG  where REMITTANCE_TRANSACTION_ID=?1", nativeQuery = true)
 	public List<ExCbkStrReportLOG> getComplainceData(BigDecimal tranxRef);
 	
-	@Query(value= "SELECT TO_CHAR(SYSDATE,'YYYY-MM-DD HH:MM:SS') DATE_TIME FROM DUAL", nativeQuery = true)
-	public String updateSubmissionDate(Date sysDate);
 
 }
