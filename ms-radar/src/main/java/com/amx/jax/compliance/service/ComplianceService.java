@@ -13,9 +13,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import javax.servlet.http.Cookie;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,17 +25,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.UserFinancialYearDTO;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.complaince.ActionParamDto;
 import com.amx.jax.complaince.ActionRepo;
-import com.amx.jax.complaince.CBK_Report;
 import com.amx.jax.complaince.ComplainceRepository;
 import com.amx.jax.complaince.ExCbkReportLogRepo;
 import com.amx.jax.complaince.ExCbkStrReportLOG;
-import com.amx.jax.complaince.ExCbkStrReportLogDto;
 import com.amx.jax.complaince.IndicatorParamDto;
 import com.amx.jax.complaince.IndicatorRepo;
 import com.amx.jax.complaince.ReasonParamDto;
@@ -45,9 +40,11 @@ import com.amx.jax.complaince.ReasonRepo;
 import com.amx.jax.complaince.RemittanceTransactionRepository;
 import com.amx.jax.complaince.ReportJaxB;
 import com.amx.jax.complaince.UserFinancialYearRepo;
+import com.amx.jax.complaince.jaxCbkReport;
 import com.amx.jax.complaince.controller.IComplainceService.ComplainceApiEndpoints.Paramss;
 import com.amx.jax.dbmodel.webservice.ExOwsLoginCredentials;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.radaar.ExCbkStrReportLogDto;
 import com.amx.jax.repository.webservice.ExOwsLoginCredentialsRepository;
 import com.amx.jax.rest.RestService;
 import com.google.gson.JsonObject;
@@ -143,21 +140,21 @@ public class ComplianceService {
 	}
 
 	public List<ExCbkStrReportLogDto> uploadComplainceReportFile(@RequestParam BigDecimal docFyr,
-			@RequestParam BigDecimal documnetNo, @RequestParam String reason, @RequestParam String action)
+			@RequestParam BigDecimal documnetNo, @RequestParam String reason, @RequestParam String action, @RequestParam BigDecimal employeeId)
 			throws IOException {
 		
 		List<ExCbkStrReportLogDto> response = null;
 		String token = null;
 		
-		CBK_Report cbk = complainceRepository.getCBKReportByDocNoAndDocFyr(documnetNo, docFyr);
+		jaxCbkReport cbk = complainceRepository.getCBKReportByDocNoAndDocFyr(documnetNo, docFyr);
 		
-			List<ExCbkStrReportLOG> reportDetails = exCbkReportLogRepo.getComplainceData(cbk.getRemitTrnxId());
+			List<ExCbkStrReportLOG> reportDetails = exCbkReportLogRepo.getComplainceData(cbk.getTranxNo());
 			
 			if(reportDetails.isEmpty()) {		
 		
-		generateXMLFile(docFyr, documnetNo);
+		generateXMLFile(docFyr, documnetNo, employeeId);
 
-	    List<ExCbkStrReportLOG> ex = exCbkReportLogRepo.getComplainceData(cbk.getRemitTrnxId());
+	    List<ExCbkStrReportLOG> ex = exCbkReportLogRepo.getComplainceData(cbk.getTranxNo());
 
 		ExOwsLoginCredentials bankCode = exOwsLoginCredentialsRepository.findByBankCode(Paramss.COMPLAINCE_BANK_CODE);
 		
@@ -187,11 +184,11 @@ public class ComplianceService {
 	
 	}
 
-	public String generateXMLFile(@RequestParam BigDecimal docFyr, @RequestParam BigDecimal docNo) {
+	public String generateXMLFile(BigDecimal docFyr, BigDecimal docNo, BigDecimal employeeId) {
 
 		String issuccess = "File generated successfully";
-		CBK_Report cbk = complainceRepository.getCBKReportByDocNoAndDocFyr(docNo, docFyr);
-		reportJaxB.Marshilling(cbk);
+		jaxCbkReport cbk = complainceRepository.getCBKReportByDocNoAndDocFyr(docNo, docFyr);
+		reportJaxB.Marshilling(cbk,employeeId);
 
 		return issuccess;
 
@@ -211,6 +208,8 @@ public class ComplianceService {
 			dto.setCustomerrRef(i.getCustomerrRef());
 			dto.setReasonCode(i.getReasonCode());
 			dto.setRemittanceTranxId(i.getRemittanceTranxId());
+			dto.setCustIsActive(i.getCustIsActive());
+			dto.setReportType(i.getReportType());
 			return dto;
 		}).collect(Collectors.toList());
 	}
@@ -262,7 +261,7 @@ public class ComplianceService {
 	}
 
 	public List<ExCbkStrReportLogDto> uploadComplaince(MultipartFile file1,
-			String token, CBK_Report cbk, String reason , String action) throws IOException {
+			String token, jaxCbkReport cbk, String reason , String action) throws IOException {
 
 		String resp = restService.ajax("https://goaml.kwfiu.gov.kw/goAMLWeb/api/Reports/PostReport")
 
@@ -272,9 +271,9 @@ public class ComplianceService {
 
 		resp = resp.replaceAll("^\"|\"$", "");
 
-		exCbkReportLogRepo.updateCbkStrId(resp, cbk.getRemitTrnxId());
+		exCbkReportLogRepo.updateCbkStrId(resp, cbk.getTranxNo());
 		
-		return exCbkReportLogRepo.getComplainceData(cbk.getRemitTrnxId()).stream().map(l -> {
+		return exCbkReportLogRepo.getComplainceData(cbk.getTranxNo()).stream().map(l -> {
 			ExCbkStrReportLogDto reportDto = new ExCbkStrReportLogDto();
 			reportDto.setCbkStrId(l.getCbkStrId());
 			reportDto.setActionCode(action);
@@ -286,7 +285,7 @@ public class ComplianceService {
 			reportDto.setCustomerrRef(l.getCustomerrRef());
 			reportDto.setIpAddress(AppContextUtil.getUserClient().getIp().toString());
 			reportDto.setReasonCode(reason);
-			reportDto.setRemittanceTranxId(cbk.getRemitTrnxId());
+			reportDto.setRemittanceTranxId(cbk.getTranxNo());
 			return reportDto;
 		}).collect(Collectors.toList());
 	}

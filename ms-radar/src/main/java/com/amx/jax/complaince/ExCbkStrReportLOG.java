@@ -12,6 +12,8 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import com.amx.jax.model.ResourceDTO;
+
 @Entity
 @Table(name = "EX_CBK_STR_REPORT_LOG")
 public class ExCbkStrReportLOG implements Serializable {
@@ -33,6 +35,8 @@ public class ExCbkStrReportLOG implements Serializable {
 	private String createdBy;
 	private Clob reqXml;
 	private String ipAddress;
+	private String reportType;
+	private String custIsActive;
 	
 	@Id
 	@GeneratedValue(generator = "ex_cbk_report_log_seq", strategy = GenerationType.SEQUENCE)
@@ -123,6 +127,20 @@ public class ExCbkStrReportLOG implements Serializable {
 	}
 	public void setIpAddress(String ipAddress) {
 		this.ipAddress = ipAddress;
+	}
+	@Column(name = "REPORT_TYPE")
+	public String getReportType() {
+		return reportType;
+	}
+	public void setReportType(String reportType) {
+		this.reportType = reportType;
+	}
+	@Column(name = "CUST_ISACTIVE")
+	public String getCustIsActive() {
+		return custIsActive;
+	}
+	public void setCustIsActive(String custIsActive) {
+		this.custIsActive = custIsActive;
 	}
 	
 	

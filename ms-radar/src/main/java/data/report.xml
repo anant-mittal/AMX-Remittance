@@ -3,10 +3,10 @@
     <rentity_id>18</rentity_id>
     <submission_code>E</submission_code>
     <report_code>STR</report_code>
-    <submission_date>2019-12-23T10:12:42</submission_date>
+    <submission_date>2019-12-23T12:12:09</submission_date>
     <currency_code_local>KWD</currency_code_local>
     <reporting_person>
-        <nationality1>IN</nationality1>
+        <nationality1>EG</nationality1>
         <phones>
             <phone>
                 <tph_contact_type>1</tph_contact_type>
@@ -20,37 +20,37 @@
         <address_type>1</address_type>
         <address>NA</address>
         <city>NA</city>
-        <country_code>IN</country_code>
+        <country_code>EG</country_code>
     </location>
     <reason>ADDITIONAL DOCUMENT REQUIRED</reason>
     <action>REMITTANCE SEND TO BANK</action>
     <transaction>
-        <transactionnumber>201927000402</transactionnumber>
+        <transactionnumber>201927000414</transactionnumber>
         <transaction_location>90</transaction_location>
-        <date_transaction>2019-10-03T02:10:44</date_transaction>
-        <teller>RAHAMATHALI</teller>
+        <date_transaction>2019-10-04T01:10:46</date_transaction>
+        <teller>KHALEDAH</teller>
         <authorized>NA</authorized>
         <transmode_code>C</transmode_code>
-        <amount_local>30</amount_local>
+        <amount_local>100</amount_local>
         <t_from_my_client>
             <from_funds_code>B</from_funds_code>
             <from_foreign_currency>
-                <foreign_currency_code>USD</foreign_currency_code>
-                <foreign_amount>99</foreign_amount>
-                <foreign_exchange_rate>0.304514</foreign_exchange_rate>
+                <foreign_currency_code>EGP</foreign_currency_code>
+                <foreign_amount>5902</foreign_amount>
+                <foreign_exchange_rate>0.016942</foreign_exchange_rate>
             </from_foreign_currency>
             <from_person>
-                <gender>M</gender>
-                <title>Mr.</title>
-                <first_name>RAHAMATHALI</first_name>
-                <last_name>SHAIK</last_name>
-                <ssn>289072104474</ssn>
-                <nationality1>IN</nationality1>
+                <gender>F</gender>
+                <title>Ms.</title>
+                <first_name>KHALEDAH</first_name>
+                <last_name>SALEH ALMESBAH</last_name>
+                <ssn>281072301359</ssn>
+                <nationality1>KW</nationality1>
                 <phones>
                     <phone>
                         <tph_contact_type>1</tph_contact_type>
                         <tph_communication_type>M</tph_communication_type>
-                        <tph_country_prefix>NA</tph_country_prefix>
+                        <tph_country_prefix>965</tph_country_prefix>
                         <tph_number>NA</tph_number>
                     </phone>
                 </phones>
@@ -59,28 +59,28 @@
                         <address_type>1</address_type>
                         <address>NA</address>
                         <city>NA</city>
-                        <country_code>IN</country_code>
+                        <country_code>EG</country_code>
                     </address>
                 </addresses>
                 <identification>
                     <type>B</type>
-                    <number>289072104474</number>
-                    <issue_country>IN</issue_country>
+                    <number>281072301359</number>
+                    <issue_country>EG</issue_country>
                 </identification>
             </from_person>
-            <from_country>IN</from_country>
+            <from_country>EG</from_country>
         </t_from_my_client>
         <t_to>
             <to_funds_code>B</to_funds_code>
             <to_foreign_currency>
-                <foreign_currency_code>USD</foreign_currency_code>
-                <foreign_amount>99</foreign_amount>
-                <foreign_exchange_rate>0.304514</foreign_exchange_rate>
+                <foreign_currency_code>EGP</foreign_currency_code>
+                <foreign_amount>5902</foreign_amount>
+                <foreign_exchange_rate>0.016942</foreign_exchange_rate>
             </to_foreign_currency>
             <to_person>
                 <title>NA</title>
-                <first_name>RAHAMATHALI</first_name>
-                <last_name>second name</last_name>
+                <first_name>خالدة</first_name>
+                <last_name>مصبح</last_name>
                 <ssn>NA</ssn>
                 <nationality1>NA</nationality1>
                 <phones>
@@ -88,7 +88,7 @@
                         <tph_contact_type>1</tph_contact_type>
                         <tph_communication_type>M</tph_communication_type>
                         <tph_country_prefix>NA</tph_country_prefix>
-                        <tph_number>7823467890</tph_number>
+                        <tph_number>1152558666</tph_number>
                     </phone>
                 </phones>
                 <addresses>
@@ -96,11 +96,11 @@
                         <address_type>1</address_type>
                         <address>NA</address>
                         <city>NA</city>
-                        <country_code>IN</country_code>
+                        <country_code>EG</country_code>
                     </address>
                 </addresses>
             </to_person>
-            <to_country>IN</to_country>
+            <to_country>EG</to_country>
         </t_to>
     </transaction>
     <report_indicators>

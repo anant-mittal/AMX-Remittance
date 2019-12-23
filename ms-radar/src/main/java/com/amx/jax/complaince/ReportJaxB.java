@@ -7,13 +7,13 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-//import org.springframework.mock.web.MockMultipartFile;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
@@ -22,15 +22,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppContextUtil;
-import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.complaince.controller.IComplainceService.ComplainceApiEndpoints.Paramss;
 import com.amx.jax.compliance.service.ComplianceService;
+import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.Employee;
 import com.amx.jax.dbmodel.ParameterDetails;
 import com.amx.jax.model.response.remittance.ParameterDetailsDto;
 import com.amx.jax.repository.CustomerRepository;
+import com.amx.jax.repository.EmployeeRespository;
 import com.amx.jax.repository.ParameterDetailsRespository;
-import com.amx.jax.repository.fx.EmployeeDetailsRepository;
 import com.amx.utils.IoUtils;
 
 @Component
@@ -46,19 +47,19 @@ public class ReportJaxB {
 	ParameterDetailsRespository parameterDetailsRespository;
 	
 	@Autowired
-	JaxMetaInfo metaData;
-	
-	@Autowired
 	ComplianceService complianceService;
 	
 	@Autowired
 	RemittanceTransactionRepository remittanceTransactionRepository;
 	
 	@Autowired
-	EmployeeDetailsRepository employeeDetailsRepository;
+	EmployeeRespository employeeRespository;
+	
+	@Autowired
+	CountryMasterRepository countryMasterRepository;
 
 
-	public void Marshilling(CBK_Report cbk) {
+	public void Marshilling(jaxCbkReport cbk,BigDecimal employeeId) {
 
 		Customer cust = customerRepository.getCustomerOneByIdentityInt(cbk.getCustSsn());
 		List<ActionParamDto> actionDetailsDto=	complianceService.complainceActionData();
@@ -68,6 +69,15 @@ public class ReportJaxB {
 		ParameterDetailsDto param = new ParameterDetailsDto();
 		param.setCharUdf1(indicatorDetails.get(0).getCharField1());
 		
+		List<Employee> emp ;
+		emp =  employeeRespository.findByEmployeeId(employeeId);		
+		
+		List<CountryMaster> cntryMaster ;
+		cntryMaster = countryMasterRepository.getCountryAlpha2Code(emp.get(0).getEmpCountryId());
+		
+		Date subDate = new Date();
+		
+		String submissiondate = exCbkReportLogRepo.updateSubmissionDate(subDate);
 		
 		
 		try {
@@ -76,15 +86,15 @@ public class ReportJaxB {
 			Phone phone = new Phone();
 			phone.setTph_contact_type(Paramss.COMPLAINCE_CONTACT_TYPE);
 			phone.setTph_communication_type(Paramss.COMPLAINCE_COMMUNICATION_TYPE);
-			phone.setTph_number(cbk.getEmpPhoneNo()== null ? "NA" : cbk.getEmpPhoneNo());
+			phone.setTph_number(emp.get(0).getTelephoneNumber()== null ? "NA" : emp.get(0).getTelephoneNumber());
 			phoneList.add(phone);
 
 			List<Phones> phonesList1 = new ArrayList<Phones>();
 			Phones phones = new Phones();
 			phones.setTph_contact_type(Paramss.COMPLAINCE_CONTACT_TYPE);
 			phones.setTph_communication_type(Paramss.COMPLAINCE_COMMUNICATION_TYPE);
-			phones.setTph_country_prefix(cbk.getCustPhCountryPrefix()== null ? "NA" : cbk.getCustPhCountryPrefix());
-			phones.setTph_number(cbk.getCustPhNo()== null ? "NA" : cbk.getCustPhNo());
+			phones.setTph_country_prefix(cbk.getCustPhcountryPrefix()== null ? "NA" : cbk.getCustPhcountryPrefix());
+			phones.setTph_number(cbk.getCustPhNumber()== null ? "NA" : cbk.getCustPhNumber());
 			phonesList1.add(phones);
 
 			List<Address> addressList = new ArrayList<Address>();
@@ -92,7 +102,7 @@ public class ReportJaxB {
 			address.setAddress("NA");
 			address.setAddress_type(Paramss.COMPLAINCE_ADDRESS_TYPE);
 			address.setCity("NA");
-			address.setCountry_code(cbk.getEmpcountrycode()== null ? "NA" : cbk.getEmpcountrycode());
+			address.setCountry_code(cbk.getCustcountrycode()== null ? "NA" : cbk.getCustcountrycode());
 			addressList.add(address);
 
 			List<Phones> phonesList2 = new ArrayList<Phones>();
@@ -100,7 +110,7 @@ public class ReportJaxB {
 			phones1.setTph_contact_type(Paramss.COMPLAINCE_CONTACT_TYPE);
 			phones1.setTph_communication_type(Paramss.COMPLAINCE_COMMUNICATION_TYPE);
 			phones1.setTph_country_prefix("NA");
-			phones1.setTph_number(cbk.getBenePhoneNumber()== null ? "NA" : cbk.getBenePhoneNumber());
+			phones1.setTph_number(cbk.getBenePhoneNo()== null ? "NA" : cbk.getBenePhoneNo());
 			phonesList2.add(phones1);
 
 			List<Address> addressList1 = new ArrayList<Address>();
@@ -108,7 +118,7 @@ public class ReportJaxB {
 			address1.setAddress(cbk.getBeneAddress()== null ? "NA" : cbk.getBeneAddress());
 			address1.setAddress_type(Paramss.COMPLAINCE_ADDRESS_TYPE);
 			address1.setCity(cbk.getBeneCity()== null ? "NA" : cbk.getBeneCity());
-			address1.setCountry_code(cbk.getBeneCountryCode().toString()== null ? "NA" : cbk.getBeneCountryCode().toString());
+			address1.setCountry_code(cbk.getBeneCountrycode()== null ? "NA" : cbk.getBeneCountrycode());
 			addressList1.add(address1);
 
 			List<ReportIndicators> repoIndList = new ArrayList<ReportIndicators>();
@@ -116,38 +126,35 @@ public class ReportJaxB {
 			reportIndicators.setIndicator(indicatorDetails.get(0).getCharField1());
 			repoIndList.add(reportIndicators);
 			
-
-			Report repo = new Report("18", cbk.getSubmissionCode(), cbk.getReportcode(),
-					parseTime(cbk.getSubmissionDate()), cbk.getCurrencyCodeLocal(),
-					new ReportingPerson(cbk.getEmpFullName(), cbk.getEmpFullName(), cbk.getEmpcountrycode(), phoneList,
-							cbk.getEmail(), "NA"),
-					new Location(cbk.getEmpaddresstype(), "NA", "NA", cbk.getEmpcountrycode()), reasonDetailsDto.get(0).getReasonDesc(), actionDetailsDto.get(0).getActionDesc(),
-					new Transaction(cbk.getTransactionRefNo().toString(), cbk.getTrnxLocal(),
-							parseTime(cbk.getTrnxDate()), (cbk.getTeller()== null ? "NA" : cbk.getTeller()), (cbk.getAuthorized()== null ? "NA" : cbk.getAuthorized()),
-							cbk.getTransmodeCode().toString(), cbk.getAmountLocal().toString(),
-							new TFromMyClient("B",
-									new FromForeignCurrency(cbk.getForeignCurrencycode(),
-											cbk.getForeignAmount().toString(), cbk.getForeignExchangerate().toString()),
+			Report repo = new Report(cbk.getRentityId(), cbk.getSubmissionCode(), cbk.getReportCode(),
+					parseTime(submissiondate), cbk.getCurrencyCodeLocal(),
+					new ReportingPerson(emp.get(0).getEmployeeName(), emp.get(0).getEmployeeName(),  cntryMaster.get(0).getCountryAlpha2Code(), phoneList,
+							emp.get(0).getEmail(), "NA"),
+					new Location(Paramss.COMPLAINCE_ADDRESS_TYPE, "NA", "NA", emp.get(0).getEmpCountryId().toString()), reasonDetailsDto.get(0).getReasonDesc(), actionDetailsDto.get(0).getActionDesc(),
+					new Transaction(cbk.getTranxRef().toString(), cbk.getTrnxLocation(),
+							parseTime(cbk.getTranxDate()), ("NA"), ("NA"),
+							cbk.getTranxMode().toString(), cbk.getAmountLocal().toString(),
+							new TFromMyClient(cbk.getFundsCode(),
+									new FromForeignCurrency(cbk.getForeignCurrencyCode(),
+											cbk.getForeignAmount().toString(), cbk.getForeignExRate().toString()),
 									new FromPerson(cbk.getCustGender(), cbk.getCustTitle(), cbk.getCustFirstName(),
 											cbk.getCustLastName(), cbk.getCustSsn(), cbk.getCustNationality(),
 											phonesList1, addressList,
 											new Identification(cbk.getCustIdentificationType().toString(),
 													cbk.getCustIdentityNumber(), cbk.getCustIdIssueCountry())),
 									cbk.getToCountry().toString()),
-							new Tto("B",
-									new ToForeignCurrency(cbk.getForeignCurrencycode(),
-											cbk.getForeignAmount().toString(), cbk.getForeignExchangerate().toString()),
+							new Tto(cbk.getFundsCode(),
+									new ToForeignCurrency(cbk.getForeignCurrencyCode(),
+											cbk.getForeignAmount().toString(), cbk.getForeignExRate().toString()),
 									new ToPerson("NA", cbk.getBeneFirstName(), cbk.getBeneLastName(), "NA", "NA",
 											phonesList2, addressList1),
-									cbk.getBeneCountryCode().toString())),
+									cbk.getBeneCountrycode())),
 					repoIndList);
 			JAXBContext jb = JAXBContext.newInstance(Report.class);
 			Marshaller ms = jb.createMarshaller();
 			ms.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 			ms.marshal(repo, System.out);
 			ms.marshal(repo, new File("src\\main\\java\\data\\report.xml"));
-
-			System.out.println("ms:" + ms.toString());
 
 			// writing xml in to the database table
 			StringWriter sw = new StringWriter();
@@ -159,14 +166,15 @@ public class ReportJaxB {
 			ExCbkStrReportLOG logtable = new ExCbkStrReportLOG();
 			logtable.setReqXml(IoUtils.stringToClob(xmlContent));
 			logtable.setCustomerName(cbk.getCustFirstName() + cbk.getCustLastName());
-			logtable.setRemittanceTranxId(cbk.getRemitTrnxId());
+			logtable.setRemittanceTranxId(cbk.getTranxNo());
 			logtable.setCreatedDate(date);
-			logtable.setCreatedBy(cbk.getAuthorized());
 			logtable.setCustomerId(cust.getCustomerId());
 			logtable.setCustomerrRef(cust.getCustomerReference());
 			logtable.setIpAddress(AppContextUtil.getUserClient().getIp().toString());
-			logtable.setReasonCode(reasonDetailsDto.get(0).getReasonCode());
-			logtable.setActionCode(actionDetailsDto.get(0).getActionCode());
+			logtable.setReasonCode(reasonDetailsDto.get(0).getReasonDesc());
+			logtable.setActionCode(actionDetailsDto.get(0).getActionDesc());
+			logtable.setReportType(cbk.getReportCode());
+			logtable.setCustIsActive(cbk.getIsActive());
 	
 			exCbkReportLogRepo.save(logtable);
 			

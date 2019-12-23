@@ -1,4 +1,4 @@
-package com.amx.jax.complaince;
+package com.amx.jax.radaar;
 
 import java.math.BigDecimal;
 import java.sql.Clob;
@@ -24,9 +24,9 @@ public class ExCbkStrReportLogDto extends ResourceDTO {
 	private String createdBy;
 	private Clob reqXml;
 	private String ipAddress;
-	private ResourceDTO resourceDto;
 	private String reportType;
 	private String custIsActive;
+	private ResourceDTO resourceDto;
 	
 	public BigDecimal getCbkStrRepLogId() {
 		return cbkStrRepLogId;

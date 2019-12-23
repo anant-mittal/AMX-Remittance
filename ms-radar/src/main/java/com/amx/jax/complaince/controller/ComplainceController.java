@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.amxlib.meta.model.UserFinancialYearDTO;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.complaince.ActionParamDto;
-import com.amx.jax.complaince.ExCbkStrReportLogDto;
 import com.amx.jax.complaince.ReasonParamDto;
 import com.amx.jax.compliance.service.ComplianceService;
+import com.amx.jax.radaar.ExCbkStrReportLogDto;
 
 @RestController
 @RequestMapping("/complaince")
@@ -51,8 +51,8 @@ public class ComplainceController implements IComplainceService {
 		
 	  @RequestMapping(value = "/complaince-report/upload", method =  RequestMethod.POST ,consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	  public  AmxApiResponse<ExCbkStrReportLogDto, Object>uploadComplainceReportFile1( @RequestParam BigDecimal docFyr, @RequestParam
-	  BigDecimal documnetNo,@RequestParam String reason, @RequestParam String action) throws IOException { 
-		  List<ExCbkStrReportLogDto>  uploadDetailsList = complianceService.uploadComplainceReportFile(docFyr, documnetNo, reason , action); 
+	  BigDecimal documnetNo,@RequestParam String reason, @RequestParam String action, @RequestParam BigDecimal employeeId) throws IOException { 
+		  List<ExCbkStrReportLogDto>  uploadDetailsList = complianceService.uploadComplainceReportFile(docFyr, documnetNo, reason , action, employeeId); 
 		  return AmxApiResponse.buildList(uploadDetailsList); 
 		  
 	  }
