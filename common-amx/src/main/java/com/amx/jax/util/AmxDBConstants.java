@@ -270,5 +270,5 @@ public class AmxDBConstants {
 	public static final String IMPS = "IMPS";
 	
 	// Constants for jolibee coupon
-	public static final BigDecimal ONLINE_KUWAIT_BRANCH_ID=new BigDecimal(78);
+	
 }

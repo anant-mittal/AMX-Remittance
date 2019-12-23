@@ -173,6 +173,10 @@ public class FcSaleApplicationTransactionManager extends AbstractModel {
 			deactivateApplications(fcSalerequestModel);
 			trnxManager.checkMinDenomination(fcSalerequestModel.getForeignCurrencyId(),fcSalerequestModel.getForeignAmount());
 			ReceiptPaymentApp receiptPayment = this.createFcSaleReceiptApplication(fcSalerequestModel);
+
+			// checking stock and allowing furture
+			trnxManager.checkMaximumAmountPerCurrency(receiptPayment);
+
 			mapAllDetailApplSave.put("EX_APPL_RECEIPT", receiptPayment);
 			fsSaleapplicationDao.saveAllApplicationData(mapAllDetailApplSave);
 			FxOrderShoppingCartResponseModel cartDetails = fetchApplicationDetails();
@@ -425,7 +429,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel {
 						RoundUtil.roundBigDecimal(
 								parameterList.get(0).getNumericField1() == null ? BigDecimal.ZERO
 										: parameterList.get(0).getNumericField1(),
-								breakup.getLcDecimalNumber().intValue()));
+										breakup.getLcDecimalNumber().intValue()));
 			}
 			if (JaxUtil.isNullZeroBigDecimalCheck(maxExchangeRate) && JaxUtil.isNullZeroBigDecimalCheck(fcAmount)) {
 				breakup.setConvertedLCAmount(maxExchangeRate.multiply(fcAmount));
@@ -585,7 +589,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel {
 		return timeSlotList;
 	}*/
 
-	
+
 	public List<TimeSlotDto> fetchTimeSlot(BigDecimal shippingAddressId) {
 		List<TimeSlotDto> timeSlotList = new ArrayList<>();
 		BigDecimal appCountryId = metaData.getCountryId() == null ? BigDecimal.ZERO : metaData.getCountryId();
@@ -700,7 +704,7 @@ public class FcSaleApplicationTransactionManager extends AbstractModel {
 			delicharges = RoundUtil.roundBigDecimal(
 					parameterList.get(0).getNumericField1() == null ? BigDecimal.ZERO
 							: parameterList.get(0).getNumericField1(),
-					localDecimalCurr == null ? 0 : localDecimalCurr.intValue());
+							localDecimalCurr == null ? 0 : localDecimalCurr.intValue());
 		}
 		return delicharges;
 	}
@@ -924,11 +928,11 @@ public class FcSaleApplicationTransactionManager extends AbstractModel {
 				if(shippingAddressDto.getLocalContactDistrict()!=null && !shippingAddressDto.getLocalContactDistrict().equals("")) {
 					sb.append(concat).append(shippingAddressDto.getLocalContactDistrict());
 				}
-				
+
 				if(shippingAddressDto.getLocalContactState()!=null && !shippingAddressDto.getLocalContactState().equals("")) {
 					sb.append(concat).append(shippingAddressDto.getLocalContactState());
 				}
-				
+
 			}
 		}
 		if (sb != null) {

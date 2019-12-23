@@ -227,7 +227,7 @@ public class AppRequestFilter implements Filter {
 			}
 
 			if (appContextInFilter != null) {
-				appContextInFilter.appRequestContextInFilter();
+				appContextInFilter.appRequestContextInFilter(localCommonHttpRequest);
 			}
 
 			// Trace Id Tracking

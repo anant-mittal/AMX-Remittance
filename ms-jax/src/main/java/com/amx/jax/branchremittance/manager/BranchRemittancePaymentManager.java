@@ -25,6 +25,8 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.RoutingProcedureDao;
 import com.amx.jax.dao.BranchRemittancePaymentDao;
+import com.amx.jax.dao.PayAtBranchDao;
+import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.BankMasterMdlv1;
 import com.amx.jax.dbmodel.BanksView;
 import com.amx.jax.dbmodel.CountryBranchMdlv1;
@@ -34,6 +36,7 @@ import com.amx.jax.dbmodel.CurrencyWiseDenominationMdlv1;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ParameterDetails;
 import com.amx.jax.dbmodel.PaygDetailsModel;
+import com.amx.jax.dbmodel.PaymentModesModel;
 import com.amx.jax.dbmodel.partner.RemitApplSrvProv;
 import com.amx.jax.dbmodel.remittance.AdditionalInstructionData;
 import com.amx.jax.dbmodel.remittance.CustomerBank;
@@ -71,6 +74,7 @@ import com.amx.jax.repository.ICustomerRepository;
 import com.amx.jax.repository.IRemitApplSrvProvRepository;
 import com.amx.jax.repository.IShoppingCartDetailsRepository;
 import com.amx.jax.repository.RemittanceApplicationRepository;
+import com.amx.jax.response.payatbranch.PaymentModesDTO;
 import com.amx.jax.service.BankMetaService;
 import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.services.BankService;
@@ -78,6 +82,7 @@ import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.RoundUtil;
+import com.amx.utils.ArgUtil;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
@@ -136,6 +141,12 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 
 	@Autowired
 	BankService bankService;
+	
+	@Autowired
+	PayAtBranchDao payAtBranchDao;
+	
+	@Autowired
+	RemittanceApplicationDao remittanceApplicationDao;
 
 	/* 
 	 * @param   :fetch customer shopping cart application
@@ -150,6 +161,7 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		BigDecimal totalTrnxFees =BigDecimal.ZERO;
 		BigDecimal totalLyltyPointAmt =BigDecimal.ZERO;
 		BigDecimal totalCustomerLoyaltyPoits = BigDecimal.ZERO;
+		Boolean addtoCart =true;
 		
 		
 		List<CustomerShoppingCartDto> lstCustShpcrt = new ArrayList<>();
@@ -201,14 +213,28 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 					cartList.setTotalLyltyPointAmt(totalLyltyPointAmt);
 					cartList.setTotalLoyaltyPointAvaliable(totalCustomerLoyaltyPoits);
 					cartList.setTotalNetCollectionAmount(totalNetAmount.subtract(totalLyltyPointAmt==null?BigDecimal.ZERO:totalLyltyPointAmt));
-
+					List<PaymentModesDTO> paymentModeDtoList = new ArrayList<>();
+					fetchPaymentModes(paymentModeDtoList);
+					
 					
 					BankMasterMdlv1 bankMasterView = bankService.getBankById(customerApplDto.getRoutingBankId());
 					
-					if(bankMasterView!=null && bankMasterView.getBankCode().contains(SERVICE_PROVIDER_BANK_CODE.HOME.toString())) {
+					if(bankMasterView!=null && bankMasterView.getBankCode().contains(SERVICE_PROVIDER_BANK_CODE.HOME.toString()) &&  addtoCart==true) {
 						cartList.setAddToCart(false);
+						addtoCart =false;
+						Iterator<PaymentModesDTO> iter = paymentModeDtoList.iterator();
+						while(iter.hasNext()) {
+							PaymentModesDTO paymentModesDTO = iter.next();
+							if(ConstantDocument.PB_PAYMENT.equals(paymentModesDTO.getPaymentModeCode())) {
+								iter.remove();
+								break;
+							}
+						}
+						
+						
 					}
 					
+					cartList.setPaymentModeList(paymentModeDtoList);
 					
 					if(fcCurrencyId == null || fcCurrencyId.compareTo(BigDecimal.ZERO) == 0){
 						throw new GlobalException(JaxError.NULL_CURRENCY_ID, "Null foreign currency id passed");
@@ -257,6 +283,19 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		}
 
 		return cartList;
+	}
+
+	private void fetchPaymentModes(List<PaymentModesDTO> paymentModeDtoList) {
+		
+		List<PaymentModesModel> paymentModesList = payAtBranchDao.getPaymentModes();
+		
+		for(PaymentModesModel paymentModel:paymentModesList) {
+			PaymentModesDTO paymentModeDto = new PaymentModesDTO();
+			paymentModeDto.setPaymentModeCode(paymentModel.getPaymentType());
+			paymentModeDto.setPaymentModeDesc(paymentModel.getPaymentDescription());
+			paymentModeDtoList.add(paymentModeDto);
+		}
+		
 	}
 
 	private CustomerShoppingCartDto createCustomerShoppingCartDto(ShoppingCartDetails shoppingCartDetails,BigDecimal localCurrencyId,BigDecimal fcCurrencyId,FxExchangeRateBreakup breakup) {
@@ -351,6 +390,15 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 			CurrencyMasterMdlv1 fcCurr = currDao.getOne(shoppingCartDetails.getForeignCurrency());
 			shoppingCartDataTableBean.setForeignCurrencyCode(fcCurr.getQuoteName()==null?"":fcCurr.getQuoteName());
 		}
+		
+		RemittanceApplication remittanceApplication = remittanceApplicationDao.getApplication(shoppingCartDetails.getRemittanceApplicationId());
+		if(!ArgUtil.isEmpty(remittanceApplication) && ConstantDocument.PB_PAYMENT.equals(remittanceApplication.getPaymentType())) {
+			shoppingCartDataTableBean.setCustomerSignatureString(remittanceApplication.getFsCustomer().getSignatureSpecimenClob());
+		}
+		else {
+			shoppingCartDataTableBean.setCustomerSignatureString(shoppingCartDetails.getCustomerSignatureClob());
+		}
+
 		
 		// fetch trnx expiry date
 		if(bankCode != null && bankCode.equalsIgnoreCase(PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name())) {
@@ -709,12 +757,9 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 	
 	// Clear cart for PB
 	private void clearCartForPB(List<ShoppingCartDetails> shoppingCartDetailsList) {
-		List<ShoppingCartDetails> shoppingCartDetailsTemp = new ArrayList<ShoppingCartDetails>();
-		for(ShoppingCartDetails shoppingCartDetails:shoppingCartDetailsList) {
-			shoppingCartDetailsTemp.add(shoppingCartDetails);
-		}
 		
-		Iterator<ShoppingCartDetails> iter = shoppingCartDetailsTemp.iterator();
+		
+		Iterator<ShoppingCartDetails> iter = shoppingCartDetailsList.iterator();
 		
 		while (iter.hasNext()) {
 			ShoppingCartDetails shoppingCartDetails = iter.next();
@@ -724,7 +769,7 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 			if (countryBranchMdlv1.getBranchId().equals(ConstantDocument.ONLINE_BRANCH_LOC_CODE)
 					&& ConstantDocument.PB_PAYMENT.equals(remittanceApplication.getPaymentType())
 					&& ConstantDocument.PB_STATUS_NEW.equals(remittanceApplication.getWtStatus())) {
-				shoppingCartDetailsList.remove(shoppingCartDetails);
+				iter.remove();
 			}
 
 		}

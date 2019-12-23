@@ -505,6 +505,7 @@ public class BranchRemittanceSaveManager {
 							collection.setCreatedBy("WEB");
 						 }
 					}
+					countryBranch.setCountryBranchId(metaData.getCountryBranchId());
 				}else {
 					logger.info("EmployeeDetails View : ");
 					EmployeeDetailsView employee =branchRemittanceApplManager.getEmployeeDetails();
@@ -1487,11 +1488,8 @@ public void validateSaveTrnxDetails(HashMap<String, Object> mapAllDetailRemitSav
 
 	
 	Map<BigDecimal,List<RemittanceTransactionSplitting>>  saveRemitTrnxSplit(RemittanceApplication appl, RemittanceTransaction remitTrnx){
-		remitSplitMap = new HashMap<>(); 
-		
 		List<RemittanceTransactionSplitting> trnxList = new ArrayList<>();
 		List<RemittanceApplicationSplitting> applSplitList = applSplitRepo.findByRemittanceApplicationId(appl);
-		
 		
 		if(applSplitList !=null && !applSplitList.isEmpty()) {
 			

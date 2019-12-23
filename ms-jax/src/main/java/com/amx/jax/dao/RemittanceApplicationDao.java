@@ -104,7 +104,7 @@ public class RemittanceApplicationDao {
 	@Transactional
 	public void saveAllApplicationData(RemittanceApplication app, RemittanceAppBenificiary appBene,
 			List<AdditionalInstructionData> additionalInstrumentData,RemitApplSrvProv remitApplSrvProv,List<RemittanceApplicationSplitting>  applSplitList ,RemitApplAmlModel remitApplAml) {
-
+try {
 		
 		if(app!=null) {
 				BigDecimal documentNo =brRemitDao.generateDocumentNumber(app.getFsCountryMasterByApplicationCountryId().getCountryId(), app.getFsCompanyMaster().getCompanyId(),
@@ -140,7 +140,10 @@ public class RemittanceApplicationDao {
 		}
 
 		logger.info("Application saved in the database, docNo: " + app.getDocumentNo());
-	}
+} catch (GlobalException e){
+	throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
+}
+}
 
 	public RemittanceTransactionView getRemittanceTransactionView(BigDecimal documentNumber, BigDecimal finYear) {
 		RemittanceTransactionView remittanceTransactionView = appRepo.fetchRemitApplTrnxView(documentNumber, finYear);

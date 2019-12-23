@@ -7,9 +7,15 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.client.configs.JaxMetaInfo;
+import com.amx.jax.dict.UserClient.AppType;
+import com.amx.jax.dict.UserClient.ClientType;
+import com.amx.jax.dict.UserClient.UserDeviceClient;
+import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.logger.AuditActor;
 import com.amx.jax.logger.AuditDetailProvider;
+import com.amx.jax.model.UserDevice;
 import com.amx.jax.offsite.service.CustomerSession;
+import com.amx.jax.rest.AppRequestContextInFilter;
 import com.amx.jax.rest.IMetaRequestOutFilter;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.sso.SSOUser;
@@ -17,7 +23,8 @@ import com.amx.utils.ArgUtil;
 import com.amx.utils.ContextUtil;
 
 @Component
-public class OffsiteMetaOutFilter implements IMetaRequestOutFilter<JaxMetaInfo>, AuditDetailProvider {
+public class OffsiteMetaFilter
+		implements IMetaRequestOutFilter<JaxMetaInfo>, AuditDetailProvider, AppRequestContextInFilter {
 
 	@Autowired
 	OffsiteAppConfig offsiteAppConfig;
@@ -27,6 +34,9 @@ public class OffsiteMetaOutFilter implements IMetaRequestOutFilter<JaxMetaInfo>,
 
 	@Autowired(required = false)
 	SSOUser sSOUser;
+
+	@Autowired
+	CommonHttpRequest commonHttpRequest;
 
 	@Override
 	public JaxMetaInfo exportMeta() {
@@ -62,5 +72,22 @@ public class OffsiteMetaOutFilter implements IMetaRequestOutFilter<JaxMetaInfo>,
 	@Override
 	public AuditActor getActor() {
 		return new AuditActor(AuditActor.ActorType.EMP, getCustomerId());
+	}
+
+	@Override
+	public void appRequestContextInFilter(CommonHttpRequest localCommonHttpRequest) {
+		UserDeviceClient userClient = AppContextUtil.getUserClient();
+		if (ArgUtil.isEmpty(userClient.getClientType())) {
+			if (AppType.ANDROID.equals(userClient.getAppType())) {
+				userClient.setClientType(ClientType.OFFSITE_PAD);
+			} else if (AppType.IOS.equals(userClient.getAppType())) {
+				userClient.setClientType(ClientType.NOTP_APP);
+			} else if (AppType.WEB.equals(userClient.getAppType())) {
+				userClient.setClientType(ClientType.OFFSITE_WEB);
+			} else {
+				userClient.setClientType(ClientType.UNKNOWN);
+			}
+		}
+
 	}
 }

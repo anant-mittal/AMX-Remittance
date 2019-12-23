@@ -9,7 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="VW_APPLICATION_DETAILS")
+@Table(name="JAX_VW_APPLICATION_DETAILS")
 public class ShoppingCartDetails implements Serializable {
 
 

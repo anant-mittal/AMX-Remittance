@@ -432,6 +432,7 @@ public class BranchRemittanceDao {
 				PaygDetailsModel pgDetails = pgRepository.save(pgModel);
 				responseModel.setDocumentIdForPayment(pgDetails.getPaygTrnxSeqId().toString());
 				responseModel.setRemittanceAppId(pgDetails.getPaygTrnxSeqId());
+				
 			}
 			
 			if(ConstantDocument.PB_PAYMENT.equalsIgnoreCase(applList.get(0).getPaymentType())) {
