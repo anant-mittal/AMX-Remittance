@@ -162,8 +162,8 @@ public class TemplateUtils {
 
 		specficFile = getValidTemplateFile(file, tnt, locale, contactType, true);
 		if (ArgUtil.is(specficFile)) {
-			templateFilesExternal.put(fileCacheKey, specficFile);
-			return specficFile;
+			templateFilesExternal.put(fileCacheKey, jaxStaticContext + "/templates/" + specficFile);
+			return jaxStaticContext + "/templates/" + specficFile;
 		} else {
 			log.error("Template Not Found {}", fileCacheKey);
 			throw new PostManException("Template Not Found");
