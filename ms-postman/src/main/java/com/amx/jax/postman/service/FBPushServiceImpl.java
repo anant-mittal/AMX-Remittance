@@ -16,6 +16,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.logger.client.AuditServiceClient;
