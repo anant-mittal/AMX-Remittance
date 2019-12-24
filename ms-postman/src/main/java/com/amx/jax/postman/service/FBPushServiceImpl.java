@@ -16,6 +16,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.dict.ContactType;
 import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.logger.client.AuditServiceClient;
@@ -138,7 +139,7 @@ public class FBPushServiceImpl implements IPushNotifyService {
 				file.setType(File.Type.JSON);
 
 				@SuppressWarnings("unchecked")
-				Map<String, Object> map = JsonUtil.fromJson(fileService.create(file).getContent(), Map.class);
+				Map<String, Object> map = JsonUtil.fromJson(fileService.create(file, ContactType.FBPUSH).getContent(), Map.class);
 				msg.setModel(map);
 
 				String message = ArgUtil.parseAsString(map.get("_message"));
