@@ -42,7 +42,7 @@ public class ComplainceController implements IComplainceService {
 	}
 		
 	
-	@RequestMapping(value = ComplainceApiEndpoints.COMPLAINCE_DETAILS_ACTION, method = { RequestMethod.GET })
+	@RequestMapping(value = "/complaince-deatils/action", method = { RequestMethod.GET })
 	public AmxApiResponse<ActionParamDto, Object> complainceActionDetails() throws Exception {
 		List<ActionParamDto> actionCodeList = complianceService.complainceActionData();
 		return AmxApiResponse.buildList(actionCodeList);
