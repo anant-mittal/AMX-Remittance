@@ -462,7 +462,7 @@ public class JaxNotificationService {
 			for (ExEmailNotification emailNot : emailNotification) {
 				String emailid = emailNot.getEmailId();
 				Email email = new Email();
-				email.setSubject(FC_OUTOF_STOCK_SUPPORT);
+				//email.setSubject(FC_OUTOF_STOCK_SUPPORT);
 				email.addTo(emailid);
 				email.setITemplate(TemplatesMX.FC_OUTOF_STOCK_SUPPORT);
 				email.setHtml(true);
@@ -478,7 +478,7 @@ public class JaxNotificationService {
 			String emailid) {
 		try {
 			Email email = new Email();
-			email.setSubject(FC_OUTOF_STOCK_CUSTOMER);
+			//email.setSubject(FC_OUTOF_STOCK_CUSTOMER);
 			email.addTo(emailid);
 			email.setITemplate(TemplatesMX.FC_OUTOF_STOCK_CUSTOMER);
 			email.setHtml(true);
