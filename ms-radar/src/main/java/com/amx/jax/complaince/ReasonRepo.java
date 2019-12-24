@@ -10,4 +10,7 @@ public interface ReasonRepo extends JpaRepository<ReasonParam, Serializable> {
 	
 	@Query(value = " select * from JAX_VW_CORE_PARAM  where RECORD_ID=?1", nativeQuery = true)
 	public List<ReasonParam> getComplainceReasonData(String recordId);
+	
+	@Query(value = " select * from JAX_VW_CORE_PARAM  where REASON_CODE=?1", nativeQuery = true)
+	public ReasonParam getComplainceReasonDetails(String reasonCode);
 }

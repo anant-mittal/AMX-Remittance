@@ -58,13 +58,19 @@ public class ReportJaxB {
 	
 	@Autowired
 	CountryMasterRepository countryMasterRepository;
+	
+	@Autowired
+	ActionRepo actionRepo;
+	
+	@Autowired
+	ReasonRepo reasonRepo;
 
 
-	public void Marshilling(jaxCbkReport cbk,BigDecimal employeeId) {
+	public void Marshilling(jaxCbkReport cbk,BigDecimal employeeId, String reasonCode, String actionCode) {
 
 		Customer cust = customerRepository.getCustomerOneByIdentityInt(cbk.getCustSsn());
-		List<ActionParamDto> actionDetailsDto=	complianceService.complainceActionData();
-		List<ReasonParamDto> reasonDetailsDto=	complianceService.complainceReasonData();
+		ActionParam actionDetailsDto=	actionRepo.getComplainceActionDetails(actionCode);
+		ReasonParam reasonDetailsDto=	reasonRepo.getComplainceReasonDetails(reasonCode);
 		
 		List<ParameterDetails> indicatorDetails = parameterDetailsRespository.fetchCodeDetails(Paramss.COMPLAINCE_INDICATOR);
 		ParameterDetailsDto param = new ParameterDetailsDto();
@@ -78,10 +84,10 @@ public class ReportJaxB {
 			
 			cntryMaster = countryMasterRepository.getCountryAlpha2Code(new BigDecimal(91));
 			
-		}
+		}else {
 				
 		cntryMaster = countryMasterRepository.getCountryAlpha2Code(emp.get(0).getEmpCountryId());
-		
+		}
 		SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	    Date now = new Date();
 	    String subMissionDate = sdfDate.format(now);
@@ -137,8 +143,8 @@ public class ReportJaxB {
 			Report repo = new Report(cbk.getRentityId(), cbk.getSubmissionCode(), cbk.getReportCode(),
 					parseTime(subMissionDate), cbk.getCurrencyCodeLocal(),
 					new ReportingPerson(emp.get(0).getEmployeeName(), emp.get(0).getEmployeeName(),  cntryMaster.get(0).getCountryAlpha2Code(), phoneList,
-							emp.get(0).getEmail(), "NA"),
-					new Location(Paramss.COMPLAINCE_ADDRESS_TYPE, "NA", "NA", cntryMaster.get(0).getCountryAlpha2Code()), reasonDetailsDto.get(0).getReasonDesc(), actionDetailsDto.get(0).getActionDesc(),
+							(emp.get(0).getEmail()==null ? "NA" : emp.get(0).getEmail()), "NA"),
+					new Location(Paramss.COMPLAINCE_ADDRESS_TYPE, "NA", "NA", cntryMaster.get(0).getCountryAlpha2Code()), reasonDetailsDto.getReasonDesc(), actionDetailsDto.getActionDesc(),
 					new Transaction(cbk.getTranxRef().toString(), cbk.getTrnxLocation(),
 							parseTime(cbk.getTranxDate()), ("NA"), ("NA"),
 							cbk.getTranxMode().toString(), cbk.getAmountLocal().toString(),
@@ -179,8 +185,8 @@ public class ReportJaxB {
 			logtable.setCustomerId(cust.getCustomerId());
 			logtable.setCustomerrRef(cust.getCustomerReference());
 			logtable.setIpAddress(AppContextUtil.getUserClient().getIp().toString());
-			logtable.setReasonCode(reasonDetailsDto.get(0).getReasonDesc());
-			logtable.setActionCode(actionDetailsDto.get(0).getActionDesc());
+			logtable.setReasonCode(reasonDetailsDto.getReasonDesc());
+			logtable.setActionCode(actionDetailsDto.getActionDesc());
 			logtable.setReportType(cbk.getReportCode());
 			logtable.setCustIsActive(cbk.getIsActive());
 	

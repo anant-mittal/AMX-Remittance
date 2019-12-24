@@ -3,11 +3,11 @@
     <rentity_id>18</rentity_id>
     <submission_code>E</submission_code>
     <report_code>STR</report_code>
-    <submission_date>2019-12-23T16:49:47</submission_date>
+    <submission_date>2019-12-24T10:29:24</submission_date>
     <currency_code_local>KWD</currency_code_local>
     <reporting_person>
-        <first_name>JAFFER ALI</first_name>
-        <last_name>JAFFER ALI</last_name>
+        <first_name>FAISAL PUNATHIL</first_name>
+        <last_name>FAISAL PUNATHIL</last_name>
         <nationality1>KW</nationality1>
         <phones>
             <phone>
@@ -16,6 +16,7 @@
                 <tph_number>NA</tph_number>
             </phone>
         </phones>
+        <email>NA</email>
         <occupation>NA</occupation>
     </reporting_person>
     <location>
@@ -24,35 +25,35 @@
         <city>NA</city>
         <country_code>KW</country_code>
     </location>
-    <reason>ADDITIONAL DOCUMENT REQUIRED</reason>
+    <reason>NOT VALID REMITTER DETAILS </reason>
     <action>REMITTANCE SEND TO BANK</action>
     <transaction>
-        <transactionnumber>201927000470</transactionnumber>
+        <transactionnumber>201827000058</transactionnumber>
         <transaction_location>ONLINE</transaction_location>
-        <date_transaction>2019-10-11T03:10:03</date_transaction>
+        <date_transaction>2018-08-10T01:08:46</date_transaction>
         <teller>NA</teller>
         <authorized>NA</authorized>
         <transmode_code>C</transmode_code>
-        <amount_local>200</amount_local>
+        <amount_local>100</amount_local>
         <t_from_my_client>
             <from_funds_code>-</from_funds_code>
             <from_foreign_currency>
                 <foreign_currency_code>INR</foreign_currency_code>
-                <foreign_amount>44227</foreign_amount>
-                <foreign_exchange_rate>0.0045220809999999998</foreign_exchange_rate>
+                <foreign_amount>25504</foreign_amount>
+                <foreign_exchange_rate>0.003921</foreign_exchange_rate>
             </from_foreign_currency>
             <from_person>
-                <gender>F</gender>
-                <title>Ms.</title>
-                <first_name>KANMANI</first_name>
-                <last_name>PALANIYAPPAN</last_name>
-                <ssn>281050207628</ssn>
+                <gender>M</gender>
+                <title>Mr.</title>
+                <first_name>Chiranjeevi</first_name>
+                <last_name>V</last_name>
+                <ssn>289053104436</ssn>
                 <nationality1>IN</nationality1>
                 <phones>
                     <phone>
                         <tph_contact_type>1</tph_contact_type>
                         <tph_communication_type>M</tph_communication_type>
-                        <tph_country_prefix>NA</tph_country_prefix>
+                        <tph_country_prefix>965</tph_country_prefix>
                         <tph_number>NA</tph_number>
                     </phone>
                 </phones>
@@ -66,7 +67,7 @@
                 </addresses>
                 <identification>
                     <type>B</type>
-                    <number>281050207628</number>
+                    <number>289053104436</number>
                     <issue_country>IN</issue_country>
                 </identification>
             </from_person>
@@ -76,13 +77,13 @@
             <to_funds_code>-</to_funds_code>
             <to_foreign_currency>
                 <foreign_currency_code>INR</foreign_currency_code>
-                <foreign_amount>44227</foreign_amount>
-                <foreign_exchange_rate>0.0045220809999999998</foreign_exchange_rate>
+                <foreign_amount>25504</foreign_amount>
+                <foreign_exchange_rate>0.003921</foreign_exchange_rate>
             </to_foreign_currency>
             <to_person>
                 <title>NA</title>
-                <first_name>Rabil</first_name>
-                <last_name>online bene add</last_name>
+                <first_name>CHIRANJEEVI</first_name>
+                <last_name>VEERAVALLI</last_name>
                 <ssn>NA</ssn>
                 <nationality1>NA</nationality1>
                 <phones>
@@ -90,14 +91,14 @@
                         <tph_contact_type>1</tph_contact_type>
                         <tph_communication_type>M</tph_communication_type>
                         <tph_country_prefix>NA</tph_country_prefix>
-                        <tph_number>9876543219</tph_number>
+                        <tph_number>9043040378</tph_number>
                     </phone>
                 </phones>
                 <addresses>
                     <address>
                         <address_type>1</address_type>
                         <address>NA</address>
-                        <city>NA</city>
+                        <city>TANUKU</city>
                         <country_code>IN</country_code>
                     </address>
                 </addresses>

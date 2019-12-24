@@ -6,10 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestParam;
+import com.amx.jax.AppConfig;
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.client.configs.JaxMetaInfo;
-import com.amx.jax.exception.JaxSystemError;
-import com.amx.jax.model.response.remittance.ParameterDetailsDto;
 import com.amx.jax.radaar.IComplainceService.ComplainceApiEndpoints;
 import com.amx.jax.rest.RestService;
 
@@ -19,32 +17,33 @@ public class SnapComplainceClient {
 
 	@Autowired
 	RestService restService;  
+	@Autowired
+	AppConfig appConfig;
 
 	public AmxApiResponse<ExCbkStrReportLogDto, Object> getComplainceInqDetails(String fromDate, String toDate) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("&fromDate=").append(fromDate).append("&toDate=").append(toDate);
 		LOGGER.info("Input String :" + sb.toString());
-		String url = (ComplainceApiEndpoints.COMPLAINCE_DETAILS_INQUIRY) + sb.toString();
-		return restService.ajax(url)
+		return restService.ajax(appConfig.getRadarURL()).path(ComplainceApiEndpoints.COMPLAINCE_DETAILS_INQUIRY)
+				.queryParam("fromDate", fromDate).queryParam("toDate", toDate)
 				.as(new ParameterizedTypeReference<AmxApiResponse<ExCbkStrReportLogDto, Object>>() {
 				});
 
 	}
 
-	public AmxApiResponse<ParameterDetailsDto, Object> complainceReasonDetails() {
+	public AmxApiResponse<ReasonParamDto, Object> complainceReasonDetails() {
 
-		String url = (ComplainceApiEndpoints.COMPLAINCE_DETAILS_REASON);
-		return restService.ajax(url)
-				.as(new ParameterizedTypeReference<AmxApiResponse<ParameterDetailsDto, Object>>() {
+		
+		return restService.ajax(appConfig.getRadarURL()).path(ComplainceApiEndpoints.COMPLAINCE_DETAILS_REASON).get()
+				.as(new ParameterizedTypeReference<AmxApiResponse<ReasonParamDto, Object>>() {
 				});
 		
 	}
 
-	public AmxApiResponse<ParameterDetailsDto, Object> complainceActionDetails() {
+	public AmxApiResponse<ActionParamDto, Object> complainceActionDetails() {
 
-		String url = (ComplainceApiEndpoints.COMPLAINCE_DETAILS_ACTION);
-		return restService.ajax(url)
-				.as(new ParameterizedTypeReference<AmxApiResponse<ParameterDetailsDto, Object>>() {
+		return restService.ajax(appConfig.getRadarURL()).path(ComplainceApiEndpoints.COMPLAINCE_DETAILS_ACTION).get()
+				.as(new ParameterizedTypeReference<AmxApiResponse<ActionParamDto, Object>>() {
 				});
 
 	}
@@ -52,26 +51,19 @@ public class SnapComplainceClient {
 	public AmxApiResponse<ExCbkStrReportLogDto, Object> uploadComplainceReportFile(@RequestParam BigDecimal docFyr,
 			@RequestParam BigDecimal documentNo, @RequestParam String reasonCode, @RequestParam String actionCode, @RequestParam BigDecimal employeeId) throws Exception {
 
-		try {
-
-			return restService.ajax("https://goaml.kwfiu.gov.kw/goAMLWeb/api/Reports/PostReport")
-					.meta(new JaxMetaInfo()).path(ComplainceApiEndpoints.COMPLAINCE_REPORT_UPLOAD)
+		
+			return restService.ajax(appConfig.getRadarURL()).path(ComplainceApiEndpoints.COMPLAINCE_REPORT_UPLOAD)
 					.queryParam("docFyr", docFyr).queryParam("documentNo", documentNo)
 					.queryParam("reasonCode", reasonCode).queryParam("actionCode", actionCode)
 					.queryParam("employeeId", employeeId)
 					.as(new ParameterizedTypeReference<AmxApiResponse<ExCbkStrReportLogDto, Object>>() {
 					});
-		} catch (Exception e) {
-			LOGGER.error("exception in upload complaince report: ", e);
-			return JaxSystemError.evaluate(e);
-		}
 	}
 
-	public AmxApiResponse<ParameterDetailsDto, Object> complainceDocYearDetails() {
+	public AmxApiResponse<UserFinancialYearDTO, Object> complainceDocYearDetails() {
 
-		String url = (ComplainceApiEndpoints.COMPLAINCE_DETAILS_DOCFYR);
-		return restService.ajax(url)
-				.as(new ParameterizedTypeReference<AmxApiResponse<ParameterDetailsDto, Object>>() {
+		return restService.ajax(appConfig.getRadarURL()).path(ComplainceApiEndpoints.COMPLAINCE_DETAILS_DOCFYR).get()
+				.as(new ParameterizedTypeReference<AmxApiResponse<UserFinancialYearDTO, Object>>() {
 				});
 
 	}

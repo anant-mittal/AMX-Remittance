@@ -152,7 +152,7 @@ public class ComplianceService {
 			
 			if(reportDetails.isEmpty()) {		
 		
-		generateXMLFile(docFyr, documnetNo, employeeId);
+		generateXMLFile(docFyr, documnetNo, employeeId,reason,action);
 
 	    List<ExCbkStrReportLOG> ex = exCbkReportLogRepo.getComplainceData(cbk.getTranxNo());
 
@@ -171,6 +171,7 @@ public class ComplianceService {
 		String fileformat = ex.get(0).getReqXml().toString();
 
 		File file = reportJaxB.MakeZipfile(fileformat);
+		
 
 		FileInputStream input = new FileInputStream(file);
 		MultipartFile multipartFile = new MockMultipartFile("file", file.getName(), "zipfile",
@@ -186,11 +187,11 @@ public class ComplianceService {
 	
 	}
 
-	public String generateXMLFile(BigDecimal docFyr, BigDecimal docNo, BigDecimal employeeId) {
+	public String generateXMLFile(BigDecimal docFyr, BigDecimal docNo, BigDecimal employeeId, String reasonCode, String actionCode ) {
 
 		String issuccess = "File generated successfully";
 		jaxCbkReport cbk = complainceRepository.getCBKReportByDocNoAndDocFyr(docNo, docFyr);
-		reportJaxB.Marshilling(cbk,employeeId);
+		reportJaxB.Marshilling(cbk,employeeId,reasonCode,actionCode);
 
 		return issuccess;
 
