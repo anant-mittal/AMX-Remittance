@@ -53,7 +53,7 @@ public class ComplainceController implements IComplainceService {
 				
 	}
 		
-	  @RequestMapping(value = "/complaince-report/upload", method =  RequestMethod.POST ,consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	  @RequestMapping(value = "/complaince-report/upload", method =  RequestMethod.POST)
 	  public  AmxApiResponse<ExCbkStrReportLogDto, Object>uploadComplainceReportFile( @RequestParam BigDecimal docFyr, @RequestParam
 	  BigDecimal documnetNo,@RequestParam String reason, @RequestParam String action, @RequestParam BigDecimal employeeId) throws IOException, SQLException { 
 		  List<ExCbkStrReportLogDto>  uploadDetailsList = complianceService.uploadComplainceReportFile(docFyr, documnetNo, reason , action, employeeId); 
