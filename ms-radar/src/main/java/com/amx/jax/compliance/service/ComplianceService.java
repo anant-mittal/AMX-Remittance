@@ -8,9 +8,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.Reader;
+import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.sql.Clob;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.http.Cookie;
@@ -141,7 +145,7 @@ public class ComplianceService {
 
 	public List<ExCbkStrReportLogDto> uploadComplainceReportFile(@RequestParam BigDecimal docFyr,
 			@RequestParam BigDecimal documnetNo, @RequestParam String reason, @RequestParam String action, @RequestParam BigDecimal employeeId)
-			throws IOException {
+			throws IOException, SQLException {
 		
 		List<ExCbkStrReportLogDto> response = null;
 		String token = null;
@@ -160,21 +164,22 @@ public class ComplianceService {
 		
 		try {
 			token = tokenGenaration(bankCode.getWsUserName(), bankCode.getWsPassword(), bankCode.getWsPin());
-			System.out.println("tokenbefore:"+token);
+			
 			token = token.replaceAll("^\"|\"$", "");
-			System.out.println("tokenafter:"+token);
 		} catch (Exception e) {
 
 			e.printStackTrace();
 		}
 
-		String fileformat = ex.get(0).getReqXml().toString();
-
-		File file = reportJaxB.MakeZipfile(fileformat);
+		Clob fileformat = ex.get(0).getReqXml();
 		
-		System.out.println("file content" +file.getAbsoluteFile());
+		Reader reader = fileformat.getCharacterStream();
+		StringWriter writer = new StringWriter();
+		IOUtils.copy(reader, writer);
+		String clobContent = writer.toString();
 		
-
+		File file = reportJaxB.MakeZipfile(clobContent);
+		
 		FileInputStream input = new FileInputStream(file);
 		MultipartFile multipartFile = new MockMultipartFile("file", file.getName(), "zipfile",
 				IOUtils.toByteArray(input));

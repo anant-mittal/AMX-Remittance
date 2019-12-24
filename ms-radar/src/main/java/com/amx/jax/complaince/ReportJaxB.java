@@ -139,8 +139,7 @@ public class ReportJaxB {
 			
 			Report repo = new Report(cbk.getRentityId(), cbk.getSubmissionCode(), cbk.getReportCode(),
 					parseTime(subMissionDate), cbk.getCurrencyCodeLocal(),
-					new ReportingPerson(emp.get(0).getEmployeeName(), emp.get(0).getEmployeeName(),  cntryMaster.get(0).getCountryAlpha2Code(), phoneList,
-							(emp.get(0).getEmail()==null ? "NA" : emp.get(0).getEmail()), "NA"),
+					new ReportingPerson(emp.get(0).getEmployeeName(), emp.get(0).getEmployeeName(),  cntryMaster.get(0).getCountryAlpha2Code(), phoneList, "NA"),
 					new Location(Paramss.COMPLAINCE_ADDRESS_TYPE, "NA", "NA", cntryMaster.get(0).getCountryAlpha2Code()), reasonDetailsDto.getReasonDesc(), actionDetailsDto.getActionDesc(),
 					new Transaction(cbk.getTranxRef().toString(), cbk.getTrnxLocation(),
 							parseTime(cbk.getTranxDate()), ("NA"), ("NA"),

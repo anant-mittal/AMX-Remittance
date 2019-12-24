@@ -10,9 +10,6 @@ public interface IComplainceService {
 		public static final String COMPLAINCE_DETAILS_ACTION ="/complaince-deatils/action";
 		public static final String COMPLAINCE_DETAILS_DOCFYR ="/complaince-deatils/docfyr";
 		
-		
-		
-
 		public static class Paramss {
 			public static final String TOKEN_VALUE="tokens";
 						
@@ -29,8 +26,7 @@ public interface IComplainceService {
 			public static final String COMPLAINCE_COMMUNICATION_TYPE = "M";
 			
 			public static final String COMPLAINCE_ADDRESS_TYPE = "1";
-			
-			
+						
 			
 		}
 }
