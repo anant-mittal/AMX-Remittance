@@ -21,10 +21,8 @@ public class SnapComplainceClient {
 	AppConfig appConfig;
 
 	public AmxApiResponse<ExCbkStrReportLogDto, Object> getComplainceInqDetails(String fromDate, String toDate) {
-		StringBuilder sb = new StringBuilder();
-		sb.append("&fromDate=").append(fromDate).append("&toDate=").append(toDate);
-		LOGGER.info("Input String :" + sb.toString());
-		return restService.ajax(appConfig.getRadarURL()).path(ComplainceApiEndpoints.COMPLAINCE_DETAILS_INQUIRY)
+		
+		return restService.ajax(appConfig.getRadarURL()).path(ComplainceApiEndpoints.COMPLAINCE_DETAILS_INQUIRY).get()
 				.queryParam("fromDate", fromDate).queryParam("toDate", toDate)
 				.as(new ParameterizedTypeReference<AmxApiResponse<ExCbkStrReportLogDto, Object>>() {
 				});

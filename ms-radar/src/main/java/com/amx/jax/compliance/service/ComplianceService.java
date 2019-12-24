@@ -172,6 +172,8 @@ public class ComplianceService {
 
 		File file = reportJaxB.MakeZipfile(fileformat);
 		
+		System.out.println("file content" +file.getAbsoluteFile());
+		
 
 		FileInputStream input = new FileInputStream(file);
 		MultipartFile multipartFile = new MockMultipartFile("file", file.getName(), "zipfile",

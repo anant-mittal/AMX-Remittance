@@ -14,14 +14,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.complaince.controller.IComplainceService.ComplainceApiEndpoints.Paramss;
 import com.amx.jax.compliance.service.ComplianceService;
@@ -228,7 +225,7 @@ public class ReportJaxB {
 		reader.close();
 
 		String content = stringBuilder.toString();
-
+		
 		StringBuilder sb = new StringBuilder();
 		sb.append(content);
 
@@ -239,6 +236,7 @@ public class ReportJaxB {
 
 		String filenamewithoutextension = abc + time;
 		File f = new File(filenamewithoutextension + ".zip");
+		
 		ZipOutputStream out = null;
 
 		out = new ZipOutputStream(new FileOutputStream(f));

@@ -1,3 +1,4 @@
+
 package com.amx.jax.complaince.controller;
 
 import java.io.IOException;
@@ -19,7 +20,6 @@ import com.amx.jax.compliance.service.ComplianceService;
 import com.amx.jax.radaar.ExCbkStrReportLogDto;
 
 @RestController
-@RequestMapping("/complaince")
 @SuppressWarnings("rawtypes")
 public class ComplainceController implements IComplainceService {
 	
@@ -50,7 +50,7 @@ public class ComplainceController implements IComplainceService {
 	}
 		
 	  @RequestMapping(value = "/complaince-report/upload", method =  RequestMethod.POST ,consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	  public  AmxApiResponse<ExCbkStrReportLogDto, Object>uploadComplainceReportFile1( @RequestParam BigDecimal docFyr, @RequestParam
+	  public  AmxApiResponse<ExCbkStrReportLogDto, Object>uploadComplainceReportFile( @RequestParam BigDecimal docFyr, @RequestParam
 	  BigDecimal documnetNo,@RequestParam String reason, @RequestParam String action, @RequestParam BigDecimal employeeId) throws IOException { 
 		  List<ExCbkStrReportLogDto>  uploadDetailsList = complianceService.uploadComplainceReportFile(docFyr, documnetNo, reason , action, employeeId); 
 		  return AmxApiResponse.buildList(uploadDetailsList); 

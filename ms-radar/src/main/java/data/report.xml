@@ -3,7 +3,7 @@
     <rentity_id>18</rentity_id>
     <submission_code>E</submission_code>
     <report_code>STR</report_code>
-    <submission_date>2019-12-24T10:29:24</submission_date>
+    <submission_date>2019-12-24T15:29:51</submission_date>
     <currency_code_local>KWD</currency_code_local>
     <reporting_person>
         <first_name>FAISAL PUNATHIL</first_name>
@@ -28,19 +28,19 @@
     <reason>NOT VALID REMITTER DETAILS </reason>
     <action>REMITTANCE SEND TO BANK</action>
     <transaction>
-        <transactionnumber>201827000058</transactionnumber>
+        <transactionnumber>201827000184</transactionnumber>
         <transaction_location>ONLINE</transaction_location>
-        <date_transaction>2018-08-10T01:08:46</date_transaction>
+        <date_transaction>2018-10-24T02:10:47</date_transaction>
         <teller>NA</teller>
         <authorized>NA</authorized>
         <transmode_code>C</transmode_code>
-        <amount_local>100</amount_local>
+        <amount_local>4</amount_local>
         <t_from_my_client>
             <from_funds_code>-</from_funds_code>
             <from_foreign_currency>
                 <foreign_currency_code>INR</foreign_currency_code>
-                <foreign_amount>25504</foreign_amount>
-                <foreign_exchange_rate>0.003921</foreign_exchange_rate>
+                <foreign_amount>825</foreign_amount>
+                <foreign_exchange_rate>0.004848</foreign_exchange_rate>
             </from_foreign_currency>
             <from_person>
                 <gender>M</gender>
@@ -77,13 +77,13 @@
             <to_funds_code>-</to_funds_code>
             <to_foreign_currency>
                 <foreign_currency_code>INR</foreign_currency_code>
-                <foreign_amount>25504</foreign_amount>
-                <foreign_exchange_rate>0.003921</foreign_exchange_rate>
+                <foreign_amount>825</foreign_amount>
+                <foreign_exchange_rate>0.004848</foreign_exchange_rate>
             </to_foreign_currency>
             <to_person>
                 <title>NA</title>
-                <first_name>CHIRANJEEVI</first_name>
-                <last_name>VEERAVALLI</last_name>
+                <first_name>SURYA</first_name>
+                <last_name>NARAYANA</last_name>
                 <ssn>NA</ssn>
                 <nationality1>NA</nationality1>
                 <phones>
@@ -91,7 +91,7 @@
                         <tph_contact_type>1</tph_contact_type>
                         <tph_communication_type>M</tph_communication_type>
                         <tph_country_prefix>NA</tph_country_prefix>
-                        <tph_number>9043040378</tph_number>
+                        <tph_number>9948491043</tph_number>
                     </phone>
                 </phones>
                 <addresses>
