@@ -19,7 +19,6 @@ import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManUrls;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.postman.service.FBPushServiceImpl;
-import com.amx.jax.dict.ContactType;
 
 /**
  * The Class FBPushController.
