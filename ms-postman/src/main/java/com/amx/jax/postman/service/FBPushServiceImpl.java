@@ -36,7 +36,6 @@ import com.amx.utils.JsonPath;
 import com.amx.utils.JsonUtil;
 import com.amx.utils.MapBuilder;
 import com.amx.utils.MapBuilder.BuilderMap;
-import com.amx.jax.dict.ContactType;
 
 /**
  * The Class FBPushServiceImpl.
