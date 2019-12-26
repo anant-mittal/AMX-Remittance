@@ -30,6 +30,12 @@ public class ExchangeRateEnquiryRespDto implements Serializable {
 		private BigDecimal sellRate;
 		private BigDecimal buyRate;
 
+		private BigDecimal exchRateMin;
+		private BigDecimal exchRateMax;
+
+		private String modifedDate;
+		private String approvedDate;
+
 		public BigDecimal getCurrencyId() {
 			return currencyId;
 		}
@@ -85,7 +91,7 @@ public class ExchangeRateEnquiryRespDto implements Serializable {
 		public void setBankId(BigDecimal bankId) {
 			this.bankId = bankId;
 		}
-		
+
 		public String getBankCode() {
 			return bankCode;
 		}
@@ -140,6 +146,38 @@ public class ExchangeRateEnquiryRespDto implements Serializable {
 
 		public void setBuyRate(BigDecimal buyRate) {
 			this.buyRate = buyRate;
+		}
+
+		public BigDecimal getExchRateMin() {
+			return exchRateMin;
+		}
+
+		public void setExchRateMin(BigDecimal exchRateMin) {
+			this.exchRateMin = exchRateMin;
+		}
+
+		public BigDecimal getExchRateMax() {
+			return exchRateMax;
+		}
+
+		public void setExchRateMax(BigDecimal exchRateMax) {
+			this.exchRateMax = exchRateMax;
+		}
+
+		public String getModifedDate() {
+			return modifedDate;
+		}
+
+		public void setModifedDate(String modifedDate) {
+			this.modifedDate = modifedDate;
+		}
+
+		public String getApprovedDate() {
+			return approvedDate;
+		}
+
+		public void setApprovedDate(String approvedDate) {
+			this.approvedDate = approvedDate;
 		}
 
 	}

@@ -74,7 +74,7 @@ public enum PricerServiceError implements IExceptionEnum {
 	INVALID_BANK_SERVICE_RULE,
 
 	INVALID_RULE_UPDATE_STATUS,
-	
+
 	MISSING_RULE_IDS,
 
 	CONFLICTING_RULE_UPDATE_STATUS,
@@ -82,7 +82,7 @@ public enum PricerServiceError implements IExceptionEnum {
 	INACTIVE_RULES,
 
 	RULE_STATUS_ALREADY_UPDATED,
-	
+
 	INVALID_DATA_IDS_FOR_RULES,
 
 	MULTIPLE_BANK_SERVICE_RULE,
@@ -136,11 +136,11 @@ public enum PricerServiceError implements IExceptionEnum {
 	INVALID_MARKUP,
 
 	INVALID_GROUP_TYPE,
-	
+
 	DUPLICATE_GROUP,
-	
+
 	INVALID_GROUP,
-	
+
 	INCORRECT_GROUP_DETAILS,
 
 	INVALID_GROUP_VAL_TYPE,
@@ -148,6 +148,10 @@ public enum PricerServiceError implements IExceptionEnum {
 	EMPTY_OR_NULL_VAL_SET,
 
 	INVALID_OR_MISSING_PARAM,
+
+	SELL_RATE_MIN_MAX_RANGE_VIOLATED,
+
+	BUY_RATE_MIN_MAX_RANGE_VIOLATED,
 
 	/** The unknown exception. */
 	// MISC

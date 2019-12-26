@@ -27,6 +27,7 @@ import com.amx.jax.pricer.dao.BankMasterDao;
 import com.amx.jax.pricer.dao.CountryBranchDao;
 import com.amx.jax.pricer.dao.CountryMasterDao;
 import com.amx.jax.pricer.dao.CurrencyMasterDao;
+import com.amx.jax.pricer.dao.CurrencyOtherInfoDao;
 import com.amx.jax.pricer.dao.ExchRateUploadDao;
 import com.amx.jax.pricer.dao.ExchangeRateDao;
 import com.amx.jax.pricer.dao.GroupingMasterDao;
@@ -37,6 +38,7 @@ import com.amx.jax.pricer.dbmodel.CountryBranch;
 import com.amx.jax.pricer.dbmodel.CountryMasterDescriptor;
 import com.amx.jax.pricer.dbmodel.CountryMasterModel;
 import com.amx.jax.pricer.dbmodel.CurrencyMasterModel;
+import com.amx.jax.pricer.dbmodel.CurrencyOtherInfo;
 import com.amx.jax.pricer.dbmodel.ExchRateUpload;
 import com.amx.jax.pricer.dbmodel.ExchangeRateMasterApprovalDet;
 import com.amx.jax.pricer.dbmodel.GroupingMaster;
@@ -95,14 +97,11 @@ public class ExchangeRateManager {
 	@Autowired
 	RoutingProdStatusDao routingProdStatusDao;
 
-	// @Autowired
-	// RateUploadExchAprdetProcedureRepo uploadProcRepo;
+	@Autowired
+	CurrencyOtherInfoDao currencyOtherInfoDao;
 
 	@Autowired
 	MultiTenantConnectionProviderImpl connectionProvider;
-
-	// @Autowired
-	// DataSource dataSource;
 
 	@Autowired
 	ExchRatePopulateProcDao ratePopulateProcDao;
@@ -186,6 +185,12 @@ public class ExchangeRateManager {
 
 		Map<BigDecimal, CountryBranch> cbMap = countryBranchDao.getByCountryBranchIds(branchIds);
 
+		CurrencyOtherInfo curInfo = currencyOtherInfoDao.getByCurrencyId(rateEnquiryReqDto.getCurrencyId());
+
+		if (curInfo == null) {
+			curInfo = new CurrencyOtherInfo();
+		}
+
 		ExchangeRateEnquiryRespDto respDto = new ExchangeRateEnquiryRespDto();
 
 		respDto.setPageNo(rateEnquiryReqDto.getPageNo());
@@ -227,6 +232,13 @@ public class ExchangeRateManager {
 			buySellRate.setSellRate(aprdet.getSellRateMax());
 			buySellRate.setBuyRate(aprdet.getBuyRateMax());
 
+			buySellRate.setModifedDate(aprdet.getModifiedDate() != null ? aprdet.getModifiedDate().toString() : "");
+			buySellRate.setApprovedDate(aprdet.getApprovedDate() != null ? aprdet.getApprovedDate().toString() : "");
+
+			// Set Range
+			buySellRate.setExchRateMin(curInfo.getFundMinRate());
+			buySellRate.setExchRateMax(curInfo.getFundMaxRate());
+
 			rateDetails.add(buySellRate);
 		}
 
@@ -247,6 +259,7 @@ public class ExchangeRateManager {
 
 		// Resolve All Branch Groups
 		List<BigDecimal> groupIds = new ArrayList<BigDecimal>();
+		List<BigDecimal> currencyIds = new ArrayList<BigDecimal>();
 
 		for (RateUploadRuleDto rule : rateUploadRules) {
 
@@ -265,7 +278,15 @@ public class ExchangeRateManager {
 					}
 				}
 			}
+
+			if (!currencyIds.contains(rule.getCurrencyId())) {
+				currencyIds.add(rule.getCurrencyId());
+			}
+
 		}
+
+		Map<BigDecimal, CurrencyOtherInfo> curInfoMap = currencyOtherInfoDao
+				.getByApplicationCountryIdAndCurrencyIdIn(rateUploadRequestDto.getApplicationCountryId(), currencyIds);
 
 		Map<BigDecimal, GroupingMaster> groupMasterMap;
 
@@ -279,6 +300,36 @@ public class ExchangeRateManager {
 		List<ExchRateUpload> rateUploadMakerList = new ArrayList<ExchRateUpload>();
 
 		for (RateUploadRuleDto rule : rateUploadRules) {
+
+			// Check for the Currency Range Limit
+			if (curInfoMap.containsKey(rule.getCurrencyId())) {
+				CurrencyOtherInfo curInfo = curInfoMap.get(rule.getCurrencyId());
+
+				// check for lower and upper Limit
+				BigDecimal fundRateMax = curInfo.getFundMaxRate();
+				BigDecimal fundRateMin = curInfo.getFundMinRate();
+
+				if ((fundRateMax != null && fundRateMax.compareTo(rule.getSellExchangeRate()) < 0)
+						|| (fundRateMin != null && fundRateMin.compareTo(rule.getSellExchangeRate()) > 0)) {
+
+					throw new PricerServiceException(PricerServiceError.SELL_RATE_MIN_MAX_RANGE_VIOLATED,
+							"Sell Rate is out of bound, Min-Max Range is violated for Currency: " + rule.getCurrencyId()
+									+ ", SellRate: " + rule.getSellExchangeRate() + " Expected Range - Min: "
+									+ fundRateMin + ", Max: " + fundRateMax);
+
+				}
+
+				if ((fundRateMax != null && fundRateMax.compareTo(rule.getBuyExchangeRate()) < 0)
+						|| (fundRateMin != null && fundRateMin.compareTo(rule.getBuyExchangeRate()) > 0)) {
+
+					throw new PricerServiceException(PricerServiceError.BUY_RATE_MIN_MAX_RANGE_VIOLATED,
+							"Sell Rate is out of bound, Min-Max Range is violated for Currency: " + rule.getCurrencyId()
+									+ ", SellRate: " + rule.getSellExchangeRate() + " Expected Range - Min: "
+									+ fundRateMin + ", Max: " + fundRateMax);
+
+				}
+
+			}
 
 			// No Modify : Only Create New Rule
 
