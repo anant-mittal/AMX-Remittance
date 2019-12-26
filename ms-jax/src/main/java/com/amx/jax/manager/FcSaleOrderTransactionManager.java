@@ -4,6 +4,9 @@ package com.amx.jax.manager;
  * @author : Rabil
  * @date   : 05/11/2018
  */
+
+import static com.amx.amxlib.constant.NotificationConstants.RESP_DATA_KEY;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
@@ -36,6 +39,9 @@ import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.request.fx.FcSaleOrderFailReportDTO;
 import com.amx.jax.model.response.fx.FcSaleOrderApplicationResponseModel;
 import com.amx.jax.model.response.fx.FxExchangeRateBreakup;
+import com.amx.jax.postman.client.PushNotifyClient;
+import com.amx.jax.postman.model.PushMessage;
+import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.repository.AuthenticationLimitCheckDAO;
 import com.amx.jax.repository.CurrencyWiseDenominationRepository;
 import com.amx.jax.repository.ICurrencyDao;
@@ -87,6 +93,9 @@ public class FcSaleOrderTransactionManager extends AbstractModel{
 	
 	@Autowired
 	JaxNotificationService jaxNotificationService;
+	
+	@Autowired
+	PushNotifyClient pushNotifyClient;
 
 	/**
 	 * 
@@ -303,8 +312,17 @@ public class FcSaleOrderTransactionManager extends AbstractModel{
 		if(emailNotification != null && emailNotification.size() != 0) {
 			jaxNotificationService.sendFCSaleSupportErrorEmail(model, emailNotification);
 		}
-		if(customerDetails != null && customerDetails.getEmail() != null) {
+		if(customerDetails != null && customerDetails.getEmail() != null && receiptPayment.getCustomerId() != null) {
+			// email notification
 			jaxNotificationService.sendFCSaleCustomerErrorEmail(model, customerDetails.getEmail());
+			
+			// message notification for mobile
+			PushMessage pushMessage = new PushMessage();
+			pushMessage.setITemplate(TemplatesMX.FC_OUTOF_STOCK_CUSTOMER);
+			pushMessage.addToUser(receiptPayment.getCustomerId());
+			logger.info("customer_id:"+receiptPayment.getCustomerId());
+			pushMessage.getModel().put(RESP_DATA_KEY, model);
+			pushNotifyClient.send(pushMessage);
 		}
 	}
 }
