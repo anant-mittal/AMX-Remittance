@@ -16,12 +16,12 @@ public class SnapComplainceClient {
 	private static final Logger LOGGER = Logger.getLogger(SnapComplainceClient.class);
 
 	@Autowired
-	RestService restService;  
+	RestService restService;
 	@Autowired
 	AppConfig appConfig;
 
 	public AmxApiResponse<ExCbkStrReportLogDto, Object> getComplainceInqDetails(String fromDate, String toDate) {
-		
+
 		return restService.ajax(appConfig.getRadarURL()).path(ComplainceApiEndpoints.COMPLAINCE_DETAILS_INQUIRY).get()
 				.queryParam("fromDate", fromDate).queryParam("toDate", toDate)
 				.as(new ParameterizedTypeReference<AmxApiResponse<ExCbkStrReportLogDto, Object>>() {
@@ -31,11 +31,10 @@ public class SnapComplainceClient {
 
 	public AmxApiResponse<ReasonParamDto, Object> complainceReasonDetails() {
 
-		
 		return restService.ajax(appConfig.getRadarURL()).path(ComplainceApiEndpoints.COMPLAINCE_DETAILS_REASON).get()
 				.as(new ParameterizedTypeReference<AmxApiResponse<ReasonParamDto, Object>>() {
 				});
-		
+
 	}
 
 	public AmxApiResponse<ActionParamDto, Object> complainceActionDetails() {
@@ -47,18 +46,17 @@ public class SnapComplainceClient {
 	}
 
 	public AmxApiResponse<ExCbkStrReportLogDto, Object> uploadComplainceReportFile(@RequestParam BigDecimal docFyr,
-			@RequestParam BigDecimal documentNo, @RequestParam String reasonCode, @RequestParam String actionCode, @RequestParam BigDecimal employeeId) throws Exception {
+			@RequestParam BigDecimal documentNo, @RequestParam String reasonCode, @RequestParam String actionCode,
+			@RequestParam BigDecimal employeeId) throws Exception {
 
-		
-			return restService.ajax(appConfig.getRadarURL()).path(ComplainceApiEndpoints.COMPLAINCE_REPORT_UPLOAD)
-					.queryParam("docFyr", docFyr).queryParam("documentNo", documentNo)
-					.queryParam("reasonCode", reasonCode).queryParam("actionCode", actionCode)
-					.queryParam("employeeId", employeeId)
-					.as(new ParameterizedTypeReference<AmxApiResponse<ExCbkStrReportLogDto, Object>>() {
-					});
+		return restService.ajax(appConfig.getRadarURL()).path(ComplainceApiEndpoints.COMPLAINCE_REPORT_UPLOAD)
+				.queryParam("docFyr", docFyr).queryParam("documnetNo", documentNo).queryParam("reason", reasonCode)
+				.queryParam("action", actionCode).queryParam("employeeId", employeeId).post()
+				.as(new ParameterizedTypeReference<AmxApiResponse<ExCbkStrReportLogDto, Object>>() {
+				});
 	}
 
-	public AmxApiResponse<UserFinancialYearDTO, Object> complainceDocYearDetails() {
+public AmxApiResponse<UserFinancialYearDTO, Object> complainceDocYearDetails() {
 
 		return restService.ajax(appConfig.getRadarURL()).path(ComplainceApiEndpoints.COMPLAINCE_DETAILS_DOCFYR).get()
 				.as(new ParameterizedTypeReference<AmxApiResponse<UserFinancialYearDTO, Object>>() {
