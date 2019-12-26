@@ -179,13 +179,13 @@ public class ReportJaxB {
 			logtable.setRemittanceTranxId(cbk.getTranxNo());
 			logtable.setCreatedDate(date);
 			logtable.setCustomerId(cust.getCustomerId());
+			logtable.setCreatedBy(emp.get(0).getEmployeeName());
 			logtable.setCustomerrRef(cust.getCustomerReference());
 			logtable.setIpAddress(AppContextUtil.getUserClient().getIp().toString());
 			logtable.setReasonCode(reasonDetailsDto.getReasonDesc());
 			logtable.setActionCode(actionDetailsDto.getActionDesc());
 			logtable.setReportType(cbk.getReportCode());
-			logtable.setCustIsActive(cbk.getIsActive());
-	
+		
 			exCbkReportLogRepo.save(logtable);
 			
 		} catch (Exception e) {

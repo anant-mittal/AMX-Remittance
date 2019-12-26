@@ -90,7 +90,7 @@ public class ComplianceService {
 	UserFinancialYearRepo financeYearRespository;
 
 	public String tokenGenaration(String userNAme, String password, String tokenLifeTime) throws Exception {
-		{
+		
 			String response;
 
 			JsonObject loginDeatilss = new JsonObject();
@@ -139,7 +139,7 @@ public class ComplianceService {
 			}
 
 			return response;
-		}
+		
 
 	}
 
@@ -168,7 +168,7 @@ public class ComplianceService {
 			token = token.replaceAll("^\"|\"$", "");
 		} catch (Exception e) {
 
-			e.printStackTrace();
+			LOGGER.error("error in token generation" + e.getMessage());
 		}
 
 		Clob fileformat = ex.get(0).getReqXml();
@@ -218,7 +218,12 @@ public class ComplianceService {
 			dto.setCustomerrRef(i.getCustomerrRef());
 			dto.setReasonCode(i.getReasonCode());
 			dto.setRemittanceTranxId(i.getRemittanceTranxId());
-			dto.setCustIsActive(i.getCustIsActive());
+			if(i.getCustIsActive() != null && i.getCustIsActive().equals("Y")) {
+				dto.setCustomerStatusDesc("ACTIVE");
+			}else {
+				dto.setCustomerStatusDesc("DEACTIVE");
+			}
+
 			dto.setReportType(i.getReportType());
 			return dto;
 		}).collect(Collectors.toList());

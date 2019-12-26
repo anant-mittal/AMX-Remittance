@@ -25,7 +25,7 @@ public class ExCbkStrReportLogDto extends ResourceDTO {
 	private Clob reqXml;
 	private String ipAddress;
 	private String reportType;
-	private String custIsActive;
+	private String customerStatusDesc;
 	private ResourceDTO resourceDto;
 	
 	public BigDecimal getCbkStrRepLogId() {
@@ -116,11 +116,12 @@ public class ExCbkStrReportLogDto extends ResourceDTO {
 	public void setReportType(String reportType) {
 		this.reportType = reportType;
 	}
-	public String getCustIsActive() {
-		return custIsActive;
+	
+	public String getCustomerStatusDesc() {
+		return customerStatusDesc;
 	}
-	public void setCustIsActive(String custIsActive) {
-		this.custIsActive = custIsActive;
+	public void setCustomerStatusDesc(String customerStatusDesc) {
+		this.customerStatusDesc = customerStatusDesc;
 	}
 	@Override
 	public BigDecimal resourceId() {
