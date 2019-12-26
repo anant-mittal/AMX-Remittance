@@ -262,6 +262,9 @@ public class BranchRemittanceSaveManager {
 
 	@Autowired
 	RemittanceApplAmlManager applAmlManager;
+	
+	@Autowired
+	BranchRemittanceManager branchRemitManager;
     
 	
 	
@@ -284,6 +287,7 @@ public class BranchRemittanceSaveManager {
 	
 
 	public RemittanceResponseDto saveRemittanceTrnx(BranchRemittanceRequestModel remittanceRequestModel) {
+		branchRemitManager.checkingStaffIdNumberWithCustomer();
 		logger.debug("saveRemittanceTrnx request model : {}", JsonUtil.toJson(remittanceRequestModel));
 		List<BranchApplicationDto> shoppingCartList = new ArrayList<>();
 		shoppingCartList = remittanceRequestModel.getRemittanceApplicationId();

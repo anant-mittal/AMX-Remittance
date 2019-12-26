@@ -147,6 +147,9 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 	
 	@Autowired
 	RemittanceApplicationDao remittanceApplicationDao;
+	
+	@Autowired
+	BranchRemittanceManager branchRemitManager;
 
 	/* 
 	 * @param   :fetch customer shopping cart application
@@ -430,6 +433,7 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 	 * @return PaymentModeOfPaymentDto
 	 */
 	public PaymentModeDto fetchModeOfPayment(BigDecimal languageId){
+		branchRemitManager.checkingStaffIdNumberWithCustomer();
 		PaymentModeDto dto = new PaymentModeDto();
 		List<PaymentModeOfPaymentDto> lstModeofPayment = new ArrayList<>();
 		List<Object[]> lstPayment = branchRemittancePaymentDao.fetchModeOfPayment(languageId);
