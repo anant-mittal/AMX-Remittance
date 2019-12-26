@@ -21,12 +21,14 @@ import com.amx.amxlib.service.ICustomerService.Path;
 import com.amx.amxlib.service.IUserService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.constant.JaxEvent;
 import com.amx.jax.customer.service.JaxCustomerContactVerificationService;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.userservice.service.FingerprintService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.userservice.service.UserValidationService;
+import com.amx.jax.util.JaxContextUtil;
 import com.amx.utils.Constants;
 
 @RestController
@@ -56,6 +58,8 @@ public class UserController implements IUserService {
 
 	@RequestMapping(value = "/login/", method = RequestMethod.POST)
 	public ApiResponse loginUser(@RequestBody CustomerModel customerModel) {
+		JaxContextUtil.setJaxEvent(JaxEvent.LOGIN);
+		JaxContextUtil.setRequestModel(customerModel);
 		logger.info("loginUser Request: usreid: " + customerModel.getLoginId());
 		//jaxCustomerContactVerificationService.validateEmailVerification(customerModel.getLoginId());
 		jaxCustomerContactVerificationService.validateEmailVerification(customerModel.getLoginId());

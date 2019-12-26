@@ -12,12 +12,17 @@ import com.amx.jax.notification.alert.RemittanceCreationFailureAlert;
 public enum JaxEvent {
 
 	CREATE_APPLICATION(ApplicationCreationFailureAlert.class), CREATE_REMITTANCE(RemittanceCreationFailureAlert.class),
-	BANK_BRANCH_SEARCH(BankBranchSearchFailureAlert.class), FINGERPRINT_LOGIN_INCORRECT_ATTEMPT(FingerPrintLoginIncorrectAttempt.class);
+	BANK_BRANCH_SEARCH(BankBranchSearchFailureAlert.class), FINGERPRINT_LOGIN_INCORRECT_ATTEMPT(FingerPrintLoginIncorrectAttempt.class),
+	LOGIN;
 
 	Class<? extends IAlert> alertBean;
 
 	private JaxEvent(Class<? extends IAlert> alertBean) {
 		this.alertBean = alertBean;
+	}
+	
+	private JaxEvent() {
+
 	}
 
 	public Class<? extends IAlert> getAlertBean() {

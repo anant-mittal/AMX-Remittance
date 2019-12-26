@@ -20,9 +20,9 @@ import com.amx.jax.event.JaxAuthLogEvent;
 public class AuthFailureLog {
 
 	@Id
-	@GeneratedValue(generator = "JAX_AUTH_FAILURE_LOG", strategy = GenerationType.SEQUENCE)
+	@GeneratedValue(generator = "JAX_AUTH_FAILURE_LOG_SEQ", strategy = GenerationType.SEQUENCE)
 	@Column(name = "AUTH_FAILURE_LOG_ID")
-	@SequenceGenerator(sequenceName = "JAX_AUTH_FAILURE_LOG", name = "JAX_AUTH_FAILURE_LOG", allocationSize = 1)
+	@SequenceGenerator(sequenceName = "JAX_AUTH_FAILURE_LOG_SEQ", name = "JAX_AUTH_FAILURE_LOG_SEQ", allocationSize = 1)
 	BigDecimal authFailureLogId;
 
 	@Column(name = "EVENT_DATE")
@@ -35,8 +35,8 @@ public class AuthFailureLog {
 	@Column(name = "IP_ADDRESS")
 	String ipAddress;
 
-	@Column(name = "CUSTOMER_ID")
-	BigDecimal customerId;
+	@Column(name = "IDENTITY_INT")
+	String identityInt;
 
 	public BigDecimal getAuthFailureLogId() {
 		return authFailureLogId;
@@ -70,12 +70,12 @@ public class AuthFailureLog {
 		this.ipAddress = ipAddress;
 	}
 
-	public BigDecimal getCustomerId() {
-		return customerId;
+	public String getIdentityInt() {
+		return identityInt;
 	}
 
-	public void setCustomerId(BigDecimal customerId) {
-		this.customerId = customerId;
+	public void setIdentityInt(String identityInt) {
+		this.identityInt = identityInt;
 	}
 
 }
