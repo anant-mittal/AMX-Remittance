@@ -17,8 +17,12 @@ import com.amx.amxlib.exception.RemittanceTransactionValidationException;
 import com.amx.amxlib.exception.ResourceNotFoundException;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.AbstractTest;
+import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.client.RemitClient;
+import com.amx.jax.client.remittance.RemittanceClient;
 import com.amx.jax.dict.Tenant;
+import com.amx.jax.model.response.remittance.CardTypeDto;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.scope.TenantContextHolder;
 
@@ -28,8 +32,11 @@ public class RemittanceClientTest extends AbstractTest {
 
 	@Autowired
 	RemitClient client;
+	
+	@Autowired
+	RemittanceClient brRemitClient;
 
-	@Test
+	//@Test
 	public void testsaveRemittance()
 			throws IOException, ResourceNotFoundException, InvalidInputException, RemittanceTransactionValidationException, LimitExeededException {
 		setDefaults();
@@ -54,4 +61,24 @@ public class RemittanceClientTest extends AbstractTest {
 		assertNotNull(response.getResult().getModelType());
 	}
 
+	//@Test
+	public void testCustomerCardType() {
+		setDefaults();
+		AmxApiResponse<CardTypeDto, Object> response = null;
+		response = brRemitClient.getCustomerCardTypeList();
+		assertNotNull("Response is null", response);
+		assertNotNull(response.getResults());
+	}
+	
+	@Test
+	public void testUpdateCustomerCardType() {
+		setDefaults();
+		AmxApiResponse<BoolRespModel, Object> response = null;
+		BigDecimal chequeBankId = new BigDecimal(62);
+		BigDecimal cardTypeId = new BigDecimal(2);
+		String nameOnCard = "test";
+		response = brRemitClient.updateCustomerCardType(chequeBankId, cardTypeId, nameOnCard);
+		assertNotNull("Response is null", response);
+		assertNotNull(response.getResults());
+	}
 }

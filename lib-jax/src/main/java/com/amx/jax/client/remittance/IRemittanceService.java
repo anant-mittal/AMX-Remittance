@@ -20,6 +20,7 @@ import com.amx.jax.model.request.remittance.RoutingPricingRequest;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
+import com.amx.jax.model.response.remittance.CardTypeDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.FlexFieldReponseDto;
 import com.amx.jax.model.response.remittance.GetServiceApplicabilityResponse;
@@ -68,6 +69,8 @@ public interface IRemittanceService extends  IJaxService {
 		
 		public static final String BR_REMITTANCE_GET_GIFT_PACKAGE = PREFIX + "/get-gift-package/";
 		
+		public static final String GET_CUSTOMER_CARD_TYPE =  PREFIX + "/get-customer-card-type/";
+		public static final String UPDATE_CUSTOMER_CARD_TYPE =  PREFIX + "/update-customer-card-type/";
 		
 	}
 
@@ -87,7 +90,9 @@ public interface IRemittanceService extends  IJaxService {
 		public static final String ROUTING_COUNTRY_ID="routingcountryId"; 
 		public static final String LINK_ID="linkId";
 		public static final String VERIFICATION_CODE="verificationCode";
-		
+		public static final String CHEQUE_BANK_ID="chequeBankId"; 
+		public static final String CARD_TYPE_ID="cardTypeId";
+		public static final String NAME_ON_CARD="nameOnCard";
 	}
 	
 	
@@ -170,6 +175,12 @@ public interface IRemittanceService extends  IJaxService {
 
 	@ApiJaxStatus({JaxError.NO_RECORD_FOUND})
 	AmxApiResponse<ParameterDetailsResponseDto, Object> getGiftService(BigDecimal beneRelaId);
+	
+	@ApiJaxStatus({JaxError.NO_RECORD_FOUND})
+	public AmxApiResponse<CardTypeDto, Object> getCustomerCardTypeList();
+	
+	@ApiJaxStatus({JaxError.NO_RECORD_FOUND})
+	AmxApiResponse<BoolRespModel, Object> updateCustomerCardType(BigDecimal chequeBankId, BigDecimal cardTypeId, String nameOnCard);
 	
 }
 
