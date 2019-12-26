@@ -5,8 +5,6 @@ import static com.amx.amxlib.constant.NotificationConstants.REG_SUC;
 import static com.amx.amxlib.constant.NotificationConstants.RESP_DATA_KEY;
 import static com.amx.amxlib.constant.NotificationConstants.SERVICE_PROVIDER_RESPONSE;
 import static com.amx.amxlib.constant.NotificationConstants.TRANSACTION_FAIL;
-import static com.amx.amxlib.constant.NotificationConstants.FC_OUTOF_STOCK_CUSTOMER;
-import static com.amx.amxlib.constant.NotificationConstants.FC_OUTOF_STOCK_SUPPORT;
 
 import java.util.List;
 import java.util.Map;
