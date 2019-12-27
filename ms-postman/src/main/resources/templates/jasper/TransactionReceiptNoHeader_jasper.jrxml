@@ -133,7 +133,7 @@
                         <frame>
                             <reportElement x="5" y="119" width="585" height="30"/>
                             <staticText>
-                                <reportElement mode = "Opaque" x = "0" y = "1" width = "585" height = "43" backcolor = "#FFFFFF" />
+                                <reportElement mode = "Opaque" x = "0" y = "1" width = "585" height = "55" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
                                 <textElement />
                                 <text><![CDATA[]]></text>
@@ -183,7 +183,7 @@
 
                         <!--##################Insurance START####################-->
                         <frame>
-                            <reportElement x="5" y="166" width="585" height="45"/>
+                            <reportElement x="5" y="176" width="585" height="45"/>
                             <staticText>
                                 <reportElement mode = "Opaque" x = "0" y = "1" width = "585" height = "80" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
@@ -233,7 +233,7 @@
 
                         <!--##################Location / Phone No START####################-->
                         <frame>
-                            <reportElement x="5" y="249" width="585" height="17"/>
+                            <reportElement x="5" y="259" width="585" height="17"/>
                             <staticText>
                                 <reportElement mode = "Opaque" x = "0" y = "1" width = "585" height = "17" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
@@ -280,7 +280,7 @@
 
                         <!--##################Beneficiary Details START####################-->
                         <frame>
-                            <reportElement x="5" y="267" width="585" height="17"/>
+                            <reportElement x="5" y="277" width="585" height="17"/>
                             <staticText>
                                 <reportElement mode = "Opaque" x = "0" y = "1" width = "585" height = "17" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#000000" /></box>
@@ -315,7 +315,7 @@
 
                         <!--##################Beneficiary Details START####################-->
                         <frame>
-                            <reportElement x="5" y="287" width="585" height="17"/>
+                            <reportElement x="5" y="297" width="585" height="17"/>
                             <staticText>
                                 <reportElement mode = "Opaque" x = "0" y = "1" width = "585" height = "15" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
@@ -364,9 +364,9 @@
 
                         <!--##################Beneficiary Details START####################-->
                         <frame>
-                            <reportElement x="5" y="304" width="585" height="17"/>
+                            <reportElement x="5" y="314" width="585" height="16"/>
                             <staticText>
-                                <reportElement mode = "Opaque" x = "0" y = "1" width = "585" height = "17" backcolor = "#FFFFFF" />
+                                <reportElement mode = "Opaque" x = "0" y = "1" width = "585" height = "16" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
                                 <textElement />
                                 <text><![CDATA[]]></text>
@@ -412,7 +412,7 @@
 
                         <!--##################Name START####################-->
                         <frame>
-                            <reportElement x="5" y="321" width="585" height="17"/>
+                            <reportElement x="5" y="331" width="585" height="17"/>
                             <staticText>
                                 <reportElement mode = "Opaque" x = "0" y = "1" width = "585" height = "17" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
@@ -460,7 +460,7 @@
 
                         <!--##################Bank Name START####################-->
                         <frame>
-                            <reportElement x="5" y="337" width="585" height="17"/>
+                            <reportElement x="5" y="347" width="585" height="17"/>
                             <staticText>
                                 <reportElement mode = "Opaque" x = "0" y = "1" width = "585" height = "17" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
@@ -507,7 +507,7 @@
 
                         <!--##################Account No START####################-->
                         <frame>
-                            <reportElement x="5" y="356" width="585" height="17"/>
+                            <reportElement x="5" y="366" width="585" height="17"/>
                             <staticText>
                                 <reportElement mode = "Opaque" x = "0" y = "1" width = "585" height = "17" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
@@ -554,7 +554,7 @@
 
                         <!--##################Currency &amp; Amount START####################-->
                         <frame>
-                            <reportElement x="5" y="375" width="585" height="30"/>
+                            <reportElement x="5" y="385" width="585" height="30"/>
                             <staticText>
                                 <reportElement mode = "Opaque" x = "0" y = "1" width = "585" height = "30" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
@@ -638,7 +638,7 @@
 
                           <!--##################Special Exchange Rate START####################-->
                         <frame>
-                            <reportElement  x="5" y="407" width="585" height="17">
+                            <reportElement  x="5" y="417" width="585" height="17">
                                         <printWhenExpression><![CDATA[$F{tranx}.get("amountSaved") != ""]]></printWhenExpression>
                                 </reportElement>
                             <staticText>
@@ -686,7 +686,7 @@
                         <!--##################Special Exchange Rate END####################-->
                            <!--##################KWD Amount at Special Rate START####################-->
                         <frame>
-                            <reportElement x="5" y="426" width="585" height="30">
+                            <reportElement x="5" y="436" width="585" height="30">
                                 <printWhenExpression><![CDATA[$F{tranx}.get("amountSaved") != ""]]></printWhenExpression>
                             </reportElement>
                             <staticText>
@@ -770,7 +770,7 @@
 
                         <!--##################Commission START####################-->
                         <frame>
-                            <reportElement x="5" y="459" width="585" height="17"/>
+                            <reportElement x="5" y="469" width="585" height="17"/>
                             <staticText>
                                 <reportElement mode = "Opaque" x = "0" y = "1" width = "585" height = "17" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
@@ -795,7 +795,7 @@
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$F{tranx}.get("commision")+"             "+$F{tranx}.get("discountOnCommissionStr")]]>
+                                    <![CDATA[$F{tranx}.get("commision")+"                        "+$F{tranx}.get("discountOnCommissionStr")]]>
                                 </textFieldExpression>
                             </textField>
 
@@ -818,7 +818,7 @@
 
                         <!--##################Other Charges START####################-->
                         <frame>
-                            <reportElement x="5" y="479" width="585" height="17"/>
+                            <reportElement x="5" y="489" width="585" height="17"/>
                             <staticText>
                                 <reportElement mode = "Opaque" x = "0" y = "1" width = "585" height = "17" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
@@ -865,7 +865,7 @@
                         
                         <!--##################Other Charges START####################-->
                         <frame>
-                            <reportElement x="5" y="499" width="585" height="17"/>
+                            <reportElement x="5" y="509" width="585" height="17"/>
                             <staticText>
                                 <reportElement mode = "Opaque" x = "0" y = "1" width = "585" height = "17" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
@@ -912,7 +912,7 @@
 
                         <!--##################Payment Details START####################-->
                         <frame>
-                            <reportElement x="5" y="518" width="585" height="17"/>
+                            <reportElement x="5" y="528" width="585" height="17"/>
                            <staticText>
                                 <reportElement mode = "Opaque" x = "0" y = "1" width = "585" height = "17" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#000000" /></box>
@@ -956,24 +956,24 @@
                         </frame>
                         <!--##################Amount Saved Details END####################-->
                         <frame>
-                            <reportElement x="5" y="455" width="585" height="60"/>
+                            <reportElement x="5" y="488" width="585" height="60"/>
                             <staticText>
                                 <reportElement mode = "Transparent" x = "0" y = "1" width = "585" height = "30"  />
                                 <textElement />
                                 <text><![CDATA[]]></text>
                             </staticText>
                             
-                            <ellipse>
-                                <reportElement  x="367" y="0" width="170" height="75" forecolor="#333333" backcolor="#333333">
+                            <rectangle radius="15">
+                                <reportElement  x="337" y="0" width="170" height="57" forecolor="#333333" backcolor="#333333">
                                         <printWhenExpression><![CDATA[$F{tranx}.get("amountSaved") != "" || $F{tranx}.get("totalAmountSavedStr") != ""]]></printWhenExpression>
                                 </reportElement>
                                 <graphicElement>
                                 <pen lineWidth="2"/>
                                 </graphicElement>
-                            </ellipse>
+                            </rectangle>
                           
                                <textField isStretchWithOverflow="true">
-                                <reportElement x="353" y="5" width="200" height="45"
+                                <reportElement x="323" y="2" width="200" height="45"
                                                 forecolor="#ffffff"
                                                 isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Center" markup="styled">
@@ -992,7 +992,7 @@
               
                         <!--##################Payment Mode START####################-->
                         <componentElement>
-                            <reportElement x="0" y="542" width="595" height="48"/>
+                            <reportElement x="0" y="552" width="595" height="48"/>
                             <d:list xmlns:d="http://jasperreports.sourceforge.net/jasperreports/components"
                                     xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd"
                                     printOrder="Vertical">
@@ -1048,7 +1048,7 @@
                         </componentElement>
 
                         <frame>
-                            <reportElement x="0" y="540" width="585" height="30"/>
+                            <reportElement x="0" y="550" width="585" height="30"/>
                             <staticText>
                                 <reportElement mode = "Transparent" x = "0" y = "1" width = "585" height = "30"  />
                                 <textElement />
@@ -1084,7 +1084,7 @@
                      
                      <!--##################Payment Mode START####################-->
                     <frame>
-                        <reportElement x="5" y="610" width="585" height="90"/>
+                        <reportElement x="5" y="620" width="585" height="90"/>
                         <staticText>
                             <reportElement mode = "Opaque" x = "0" y = "1" width = "585" height = "17" backcolor = "#FFFFFF" />
                             <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
@@ -1149,7 +1149,7 @@
                     	
                      <!--##################promotionMessage START####################-->
                         <frame>
-                            <reportElement x="5" y="726" width="585" height="17"/>
+                            <reportElement x="5" y="736" width="585" height="17"/>
                             <staticText>
                                 <reportElement mode = "Opaque" x = "0" y = "1" width = "585" height = "17" backcolor = "#FFFFFF" />
                                 <textElement />
