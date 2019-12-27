@@ -38,9 +38,11 @@ import com.amx.amxlib.model.OnlineConfigurationDto;
 import com.amx.amxlib.model.request.GetBankBranchRequest;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.bene.InstitutionCategoryDto;
+import com.amx.jax.client.bene.ReasoncodeCategory;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.client.meta.IMetaControllerExtn;
 import com.amx.jax.model.auth.QuestModelDTO;
+import com.amx.jax.model.meta.ReasonsDTO;
 import com.amx.jax.model.response.BankMasterDTO;
 import com.amx.jax.model.response.BranchSystemDetailDto;
 import com.amx.jax.model.response.CurrencyMasterDTO;
@@ -530,6 +532,14 @@ public class MetaClient extends AbstractJaxServiceClient implements IMetaControl
 				.path(MetaApi.PREFIX + IMetaControllerExtn.Path.LIST_INSTITUTION_CATEGORY_MASTER)
 				.meta(new JaxMetaInfo()).get()
 				.as(new ParameterizedTypeReference<AmxApiResponse<InstitutionCategoryDto, Object>>() {
+				});
+	}
+
+	@Override
+	public AmxApiResponse<ReasonsDTO, Object> getReason(ReasoncodeCategory reasonCategory) {
+		return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + IMetaControllerExtn.Path.API_REASON_CODE)
+				.meta(new JaxMetaInfo()).queryParam(Params.REASON_CATEGORY, reasonCategory)
+				.as(new ParameterizedTypeReference<AmxApiResponse<ReasonsDTO, Object>>() {
 				});
 	}
 	

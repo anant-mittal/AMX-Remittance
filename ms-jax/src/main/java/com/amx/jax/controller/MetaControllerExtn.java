@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.amxlib.constant.ApiEndpoint.MetaApi;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.bene.InstitutionCategoryDto;
+import com.amx.jax.client.bene.ReasoncodeCategory;
 import com.amx.jax.client.meta.IMetaControllerExtn;
 import com.amx.jax.model.meta.ReasonsDTO;
 import com.amx.jax.service.MetaExtnService;
@@ -35,9 +36,11 @@ public class MetaControllerExtn implements IMetaControllerExtn {
 		List<InstitutionCategoryDto> output = metaExtnService.listInstitutionCategoryMaster();
 		return AmxApiResponse.buildList(output);
 	}
-	
-	@RequestMapping(value = MetaApi.API_REASON_CODE, method = RequestMethod.POST)
-	public AmxApiResponse<ReasonsDTO, Object> getReason(@RequestParam String reasonCategory) {
+
+	@RequestMapping(value = Path.API_REASON_CODE, method = RequestMethod.POST)
+	@ApiOperation("List reason codes")
+	@Override
+	public AmxApiResponse<ReasonsDTO, Object> getReason(@RequestParam(name = Params.REASON_CATEGORY) ReasoncodeCategory reasonCategory) {
 		return metaExtnService.getReasonList(reasonCategory);
 	}
 }

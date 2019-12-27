@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.bene.InstitutionCategoryDto;
+import com.amx.jax.client.bene.ReasoncodeCategory;
 import com.amx.jax.dbmodel.bene.InstitutionCategoryMaster;
 import com.amx.jax.manager.ReasonCodeManager;
 import com.amx.jax.model.meta.ReasonsDTO;
@@ -50,12 +51,10 @@ public class MetaExtnService {
 		return dto;
 	}
 	
-	public AmxApiResponse<ReasonsDTO, Object> getReasonList(String reasonCodeCategory) {		
+	public AmxApiResponse<ReasonsDTO, Object> getReasonList(ReasoncodeCategory reasonCodeCategory) {
 		List<ReasonsDTO> viewStatusList = new ArrayList<>();
-		viewStatusList=	reasonCodeMaster.getReasonList(reasonCodeCategory);
-		log.info("StatusList : " +viewStatusList);
+		viewStatusList = reasonCodeMaster.getReasonList(reasonCodeCategory.toString());
 		return AmxApiResponse.buildList(viewStatusList);
 	}
-	
 
 }

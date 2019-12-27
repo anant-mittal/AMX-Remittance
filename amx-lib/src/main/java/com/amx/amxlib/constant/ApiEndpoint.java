@@ -80,7 +80,6 @@ public class ApiEndpoint {
 		public static final String API_COUNTRY_BRANCH_LIST = "/countrybranchlist/";
 		public static final String API_DESIGNATION = "/designationslist/";
 		public static final String API_DECLARATION = "/declaration/";
-		public static final String API_REASON_CODE = "/reason_code/";
 
 	}
 
