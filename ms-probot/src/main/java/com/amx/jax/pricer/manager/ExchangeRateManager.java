@@ -679,6 +679,8 @@ public class ExchangeRateManager {
 
 		Map<String, RateUploadRuleDto> rateUploadMap = new HashMap<String, RateUploadRuleDto>();
 
+		List<String> ruleSequenceList = new ArrayList<String>();
+
 		if (exchRateUploads != null && !exchRateUploads.isEmpty()) {
 
 			List<BigDecimal> curIds = new ArrayList<BigDecimal>();
@@ -794,6 +796,9 @@ public class ExchangeRateManager {
 
 					rateUploadMap.put(rateDto.getRuleId(), rateDto);
 
+					// Add to the Rule Processing Sequence
+					ruleSequenceList.add(rateDto.getRuleId());
+
 				} else {
 					rateDto = rateUploadMap.get(exchRateUpload.getRuleId());
 				}
@@ -830,7 +835,13 @@ public class ExchangeRateManager {
 
 		}
 
-		return new ArrayList<RateUploadRuleDto>(rateUploadMap.values());
+		ArrayList<RateUploadRuleDto> ruleDtoOrderedList = new ArrayList<RateUploadRuleDto>();
+		
+		for (String ruleId : ruleSequenceList) {
+			ruleDtoOrderedList.add(rateUploadMap.get(ruleId));
+		}
+
+		return ruleDtoOrderedList;
 	}
 
 }
