@@ -364,9 +364,9 @@
 
                         <!--##################Beneficiary Details START####################-->
                         <frame>
-                            <reportElement x="5" y="314" width="585" height="17"/>
+                            <reportElement x="5" y="314" width="585" height="16"/>
                             <staticText>
-                                <reportElement mode = "Opaque" x = "0" y = "1" width = "585" height = "17" backcolor = "#FFFFFF" />
+                                <reportElement mode = "Opaque" x = "0" y = "1" width = "585" height = "16" backcolor = "#FFFFFF" />
                                 <box><bottomPen lineWidth = "0.1" lineColor = "#CCCCCC" /></box>
                                 <textElement />
                                 <text><![CDATA[]]></text>
@@ -795,7 +795,7 @@
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$F{tranx}.get("commision")+"      "+$F{tranx}.get("discountOnCommissionStr")]]>
+                                    <![CDATA[$F{tranx}.get("commision")+"                        "+$F{tranx}.get("discountOnCommissionStr")]]>
                                 </textFieldExpression>
                             </textField>
 
