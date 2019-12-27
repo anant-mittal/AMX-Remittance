@@ -134,6 +134,8 @@ public class BeneBranchController implements IBranchBeneService {
 	@ApiOperation("update bene status")
 	public AmxApiResponse<BoolRespModel, Object> updateBeneStatus(@RequestBody @Valid UpdateBeneStatusRequest request) {
 		logger.debug("updateBeneStatus request: {}", JsonUtil.toJson(request));
+		JaxAuthContext.contactType(ContactType.NOTP_APP);
+		employeeAuthManager.validateAndSendOtp(metaData.getEmployeeId());
 		beneBranchService.updateBeneStatus(request);
 		return AmxApiResponse.build(new BoolRespModel(true));
 	}
