@@ -964,7 +964,7 @@
                             </staticText>
                             
                             <ellipse>
-                                <reportElement  x="332" y="0" width="170" height="75" forecolor="#333333" backcolor="#333333">
+                                <reportElement  x="367" y="0" width="170" height="75" forecolor="#333333" backcolor="#333333">
                                         <printWhenExpression><![CDATA[$F{tranx}.get("amountSaved") != "" || $F{tranx}.get("totalAmountSavedStr") != ""]]></printWhenExpression>
                                 </reportElement>
                                 <graphicElement>
@@ -973,7 +973,7 @@
                             </ellipse>
                           
                                <textField isStretchWithOverflow="true">
-                                <reportElement x="320" y="5" width="200" height="45"
+                                <reportElement x="353" y="5" width="200" height="45"
                                                 forecolor="#ffffff"
                                                 isPrintWhenDetailOverflows="true"/>
                                 <textElement textAlignment="Center" markup="styled">
