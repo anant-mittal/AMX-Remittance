@@ -457,10 +457,18 @@ public class PlaceOrderManager implements Serializable{
 				&& !JaxUtil.isNullZeroBigDecimalCheck(ratePlaceOrder.getApplDocumentNumber()) && !JaxUtil.isNullZeroBigDecimalCheck(ratePlaceOrder.getApplDocumentFinanceYear())) {	
 			
 			if(flag.equalsIgnoreCase(ConstantDocument.Status.N.toString())){  /** Negotiate Place Order **/
+			BigDecimal negCount = ratePlaceOrder.getNegotiateCount();
+			if(JaxUtil.isNullZeroBigDecimalCheck(negCount)) {
+				negCount = negCount.add(BigDecimal.ONE);
+			}else {
+				negCount = BigDecimal.ONE;
+			}
 			ratePlaceOrder.setNegotiateSts(ConstantDocument.Status.N.toString());
 			ratePlaceOrder.setApprovedBy(null);
-			ratePlaceOrder.setApprovedDate(null);
+			ratePlaceOrder.setApprovedDate(null); 
 			ratePlaceOrder.setIsActive(ConstantDocument.Status.U.toString());
+			ratePlaceOrder.setNegotiateCount(negCount);
+			
 			}else if(flag.equalsIgnoreCase(ConstantDocument.Status.R.toString())){ /** Reject Place Order **/
 				ratePlaceOrder.setIsActive(ConstantDocument.Status.D.toString());
 			}else if(flag.equalsIgnoreCase(ConstantDocument.Status.A.toString())){ /** Accept place Order **/

@@ -108,6 +108,7 @@ public class RatePlaceOrder implements Serializable {
 		private String loyaltyPointInd;
 		private BigDecimal avgCost;
 		private BigDecimal savedLocalAmount;
+		private BigDecimal negotiateCount;
 		
 		 
 		
@@ -895,6 +896,15 @@ public class RatePlaceOrder implements Serializable {
 
 		public void setSavedLocalAmount(BigDecimal savedLocalAmount) {
 			this.savedLocalAmount = savedLocalAmount;
+		}
+
+		@Column(name="NEGOTIATE_COUNT")
+		public BigDecimal getNegotiateCount() {
+			return negotiateCount;
+		}
+
+		public void setNegotiateCount(BigDecimal negotiateCount) {
+			this.negotiateCount = negotiateCount;
 		}
 	}
 
