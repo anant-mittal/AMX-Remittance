@@ -116,6 +116,7 @@ public interface IRemittanceService extends  IJaxService {
 		public static final String CHEQUE_BANK_ID="chequeBankId"; 
 		public static final String CARD_TYPE_ID="cardTypeId";
 		public static final String NAME_ON_CARD="nameOnCard";
+		public static final String COUNTRY_BRANCH_ID="countryBranchId"; 
 	}
 	
 	

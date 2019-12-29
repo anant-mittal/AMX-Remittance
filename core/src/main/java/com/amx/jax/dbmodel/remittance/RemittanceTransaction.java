@@ -173,7 +173,7 @@ public class RemittanceTransaction implements Serializable {
 	
 	private BigDecimal savedAmountInFc;
 
-	private String applSplit;
+
 	private BigDecimal approvalYear;
 
 	
