@@ -8,6 +8,16 @@ import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
+
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
@@ -51,16 +61,6 @@ import com.amx.jax.terminal.TerminalService;
 import com.amx.jax.utils.PostManUtil;
 import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
 import com.amx.utils.ArgUtil;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import io.swagger.annotations.Api;
 
@@ -271,7 +271,8 @@ public class CustomerBranchController {
 	@ApiRequest(type = RequestType.POLL)
 	@RequestMapping(value = "/api/customer/kyc/scan", method = { RequestMethod.GET })
 	public ResponseEntity<byte[]> scanKyc(HttpServletRequest request, HttpServletResponse response) {
-		String ip = request.getRemoteAddr();
+		// good discussion on how to get local ip here: https://stackoverflow.com/questions/22877350/how-to-extract-ip-address-in-spring-mvc-controller-get-call
+		String ip = ssoUser.getUserClient().getLocalIpAddress();
 		String scanUrl = "http://" + ip + ":8085/Scan/Scan";
 		UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(scanUrl);
 		byte[] imgData = restService.ajax(builder.build().encode().toUri()).get().asByteArray();

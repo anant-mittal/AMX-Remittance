@@ -7,6 +7,7 @@ import static com.amx.amxlib.constant.NotificationConstants.SERVICE_PROVIDER_RES
 import static com.amx.amxlib.constant.NotificationConstants.TRANSACTION_FAIL;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -31,6 +32,7 @@ import com.amx.jax.dbmodel.ExEmailNotification;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.model.CivilIdOtpModel;
+import com.amx.jax.model.request.fx.FcSaleOrderFailReportDTO;
 import com.amx.jax.model.request.partner.TransactionFailReportDTO;
 import com.amx.jax.model.response.customer.CustomerDto;
 import com.amx.jax.model.response.customer.PersonInfo;
@@ -70,7 +72,8 @@ public class JaxNotificationService {
 
 	private final String SUBJECT_ACCOUNT_UPDATE = "Account Update";
 
-	public void sendTransactionNotification(RemittanceReceiptSubreport remittanceReceiptSubreport, PersonInfo pinfo) {
+	public void sendTransactionNotification(RemittanceReceiptSubreport remittanceReceiptSubreport, PersonInfo pinfo,
+			Map<String, Object> emailData) {
 
 		logger.debug("Sending txn notification to customer");
 		Email email = new Email();
@@ -83,24 +86,26 @@ public class JaxNotificationService {
 			email.setSubject("Your transaction on Modern Exchange - Oman is successful");
 		}
 
+		email.addTo(pinfo.getEmail());
+		email.setITemplate(TemplatesMX.TXN_CRT_SUCC);
+		email.setHtml(true);
+		email.getModel().put(RESP_DATA_KEY, pinfo);
+		if (emailData != null) {
+			email.getModel().putAll(emailData);
+		}
 
-			email.addTo(pinfo.getEmail());
-			email.setITemplate(TemplatesMX.TXN_CRT_SUCC);
-			email.setHtml(true);
-			email.getModel().put(RESP_DATA_KEY, pinfo);
+		File file = new File();
+		file.setITemplate(TemplatesMX.REMIT_RECEIPT_JASPER);
+		file.setName("TransactionReceipt");
+		file.setType(File.Type.PDF);
+		file.getModel().put(RESP_DATA_KEY, remittanceReceiptSubreport);
+		file.setPassword(pinfo.getIdentityInt());
+		file.setLang(AppContextUtil.getTenant().defaultLang());
 
-			File file = new File();
-			file.setITemplate(TemplatesMX.REMIT_RECEIPT_JASPER);
-			file.setName("TransactionReceipt");
-			file.setType(File.Type.PDF);
-			file.getModel().put(RESP_DATA_KEY, remittanceReceiptSubreport);
-			file.setPassword(pinfo.getIdentityInt());
-			file.setLang(AppContextUtil.getTenant().defaultLang());
+		email.addFile(file);
+		logger.debug("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getFirstName());
+		sendEmail(email);
 
-			email.addFile(file);
-			logger.debug("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getFirstName());
-			sendEmail(email);
-		
 	}
 
 	public void sendTransactionNotification(FxOrderReportResponseDto remittanceReceiptSubreport,
@@ -118,6 +123,7 @@ public class JaxNotificationService {
 		file.setITemplate(TemplatesMX.FXO_RECEIPT);
 		file.setType(File.Type.PDF);
 		file.getModel().put(Message.RESULTS_KEY, CollectionUtil.getList(remittanceReceiptSubreport));
+		file.setLang(AppContextUtil.getTenant().defaultLang());
 
 		email.addFile(file);
 		logger.debug("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getCustomerName());
@@ -416,7 +422,7 @@ public class JaxNotificationService {
 
 	}
 
-public void sendSPErrorEmail(TransactionFailReportDTO model,
+	public void sendSPErrorEmail(TransactionFailReportDTO model,
 			List<ExEmailNotification> emailNotification) {
 		try {
 			for (ExEmailNotification emailNot : emailNotification) {
@@ -446,5 +452,38 @@ public void sendSPErrorEmail(TransactionFailReportDTO model,
 
 		logger.debug("Email to DL - " + pinfo.getEmail());
 		sendEmail(email);
+	}
+	
+	public void sendFCSaleSupportErrorEmail(FcSaleOrderFailReportDTO model,
+			List<ExEmailNotification> emailNotification) {
+		try {
+			for (ExEmailNotification emailNot : emailNotification) {
+				String emailid = emailNot.getEmailId();
+				Email email = new Email();
+				//email.setSubject(FC_OUTOF_STOCK_SUPPORT);
+				email.addTo(emailid);
+				email.setITemplate(TemplatesMX.FC_OUTOF_STOCK_SUPPORT);
+				email.setHtml(true);
+				email.getModel().put(RESP_DATA_KEY, model);
+				sendEmail(email);
+			}
+		} catch (Exception e) {
+			logger.error("error in sendErrormail", e);
+		}
+	}
+	
+	public void sendFCSaleCustomerErrorEmail(FcSaleOrderFailReportDTO model,
+			String emailid) {
+		try {
+			Email email = new Email();
+			//email.setSubject(FC_OUTOF_STOCK_CUSTOMER);
+			email.addTo(emailid);
+			email.setITemplate(TemplatesMX.FC_OUTOF_STOCK_CUSTOMER);
+			email.setHtml(true);
+			email.getModel().put(RESP_DATA_KEY, model);
+			sendEmail(email);
+		} catch (Exception e) {
+			logger.error("error in sendErrormail", e);
+		}
 	}
 }

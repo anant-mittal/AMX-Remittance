@@ -3,19 +3,11 @@ package com.bootloaderjs;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.amx.jax.AppContext;
-import com.amx.jax.AppContextUtil;
-import com.amx.jax.dict.UserClient.AppType;
-import com.amx.jax.dict.UserClient.DeviceType;
-import com.amx.jax.dict.UserClient.UserDeviceClient;
-import com.amx.jax.tunnel.TunnelMessage;
 import com.amx.utils.JsonUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
 

@@ -21,9 +21,9 @@ import com.amx.amxlib.model.BeneRelationsDescriptionDto;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
-import com.amx.jax.api.ListRequestModel;
-import com.amx.jax.branch.BranchMetaOutFilter;
+import com.amx.jax.branch.BranchOutFilter;
 import com.amx.jax.client.BeneClient;
+import com.amx.jax.client.PayAtBranchClient;
 import com.amx.jax.client.RemitClient;
 import com.amx.jax.client.remittance.RemittanceClient;
 import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
@@ -40,10 +40,11 @@ import com.amx.jax.model.response.fx.FcSaleOrderManagementDTO;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
+import com.amx.jax.model.response.remittance.CardTypeDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
-import com.amx.jax.model.response.remittance.PaymentLinkRespDTO;
 import com.amx.jax.model.response.remittance.ParameterDetailsResponseDto;
+import com.amx.jax.model.response.remittance.PaymentLinkRespDTO;
 import com.amx.jax.model.response.remittance.PaymentModeDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
@@ -54,21 +55,13 @@ import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.rbaac.IRbaacService;
+import com.amx.jax.response.payatbranch.PayAtBranchTrnxListDTO;
 import com.amx.jax.sso.SSOUser;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
 import com.amx.jax.terminal.TerminalService;
 import com.amx.jax.utils.PostManUtil;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -83,6 +76,9 @@ public class RemitBranchController {
 
 	@Autowired
 	private RemittanceClient branchRemittanceClient;
+
+	@Autowired
+	private PayAtBranchClient payAtBranchClient;
 
 	@Autowired
 	private BeneClient beneClient;
@@ -221,7 +217,7 @@ public class RemitBranchController {
 	}
 
 	@Autowired
-	BranchMetaOutFilter branchMetaOutFilter;
+	BranchOutFilter branchMetaOutFilter;
 
 	@ApiOperation(value = "Returns transaction reciept:")
 	@RequestMapping(value = "/api/remitt/tranx/report", method = { RequestMethod.GET }, produces = {
@@ -336,6 +332,11 @@ public class RemitBranchController {
 		return branchRemittanceClient.getDynamicRoutingPricing(routingPricingRequest);
 	}
 
+	@RequestMapping(value = "/api/remitt/pb_trnx/list", method = { RequestMethod.POST })
+	public AmxApiResponse<PayAtBranchTrnxListDTO, Object> getPayAtBranchApplList() {
+		return payAtBranchClient.getPbTrnxListBranch();
+	}
+
 	@RequestMapping(value = "/api/remitt/package/list", method = { RequestMethod.POST })
 	public AmxApiResponse<ParameterDetailsResponseDto, Object> getPackages(@RequestParam BigDecimal beneId) {
 			return branchRemittanceClient.getGiftService(beneId);
@@ -344,5 +345,16 @@ public class RemitBranchController {
 	@RequestMapping(value = "/api/remitt/payment/link", method = { RequestMethod.POST })
 	public AmxApiResponse<PaymentLinkRespDTO, Object> sendPaymentLink() {
 		return branchRemittanceClient.createAndSendPaymentLink();
+	}
+	
+	@RequestMapping(value = "/api/remitt/customer_bank/card_type", method = { RequestMethod.GET })
+	public AmxApiResponse<CardTypeDto, Object> getCustomerCardTypeList()  {
+		return branchRemittanceClient.getCustomerCardTypeList();
+	}
+	
+	@RequestMapping(value = "/api/remitt/card_type/update", method = { RequestMethod.POST })
+	public AmxApiResponse<BoolRespModel, Object> updateCustomerCardType(@RequestParam BigDecimal chequeBankId,
+			@RequestParam BigDecimal cardTypeId, @RequestParam String nameOnCard) {
+		return branchRemittanceClient.updateCustomerCardType(chequeBankId, cardTypeId, nameOnCard);
 	}
 }

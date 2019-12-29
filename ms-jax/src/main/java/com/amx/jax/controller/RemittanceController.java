@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.jax.AmxMeta;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.fx.IFxBranchOrderService.Params;
@@ -29,14 +30,18 @@ import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerRating;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
+import com.amx.jax.dict.AmxEnums;
 import com.amx.jax.dict.Language;
 import com.amx.jax.manager.RemittancePaymentManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.customer.CustomerRatingDTO;
+import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
 import com.amx.jax.model.request.remittance.IRemitTransReqPurpose;
 import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.response.SourceOfIncomeDto;
+import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
+import com.amx.jax.model.response.remittance.RemittanceApplicationResponseModel;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.repository.RemittanceTransactionRepository;
@@ -50,6 +55,8 @@ import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.ConverterUtil;
 import com.amx.jax.util.JaxContextUtil;
 import com.amx.utils.JsonUtil;
+
+import springfox.documentation.spring.web.json.Json;
 
 @RestController
 @RequestMapping(REMIT_API_ENDPOINT)
@@ -143,9 +150,8 @@ public class RemittanceController {
 				+ transactionHistroyDTO.getCustomerReference());
 		logger.info("Country Id :" + transactionHistroyDTO.getApplicationCountryId() + "\t Currency Id :"
 				+ transactionHistroyDTO.getCurrencyId());
-		
+
 		transactionHistroyDTO.setCompanyId(metaData.getCompanyId());
-		
 		ApiResponse response = reportManagerService
 				.generatePersonalRemittanceReceiptReportDetails(transactionHistroyDTO, Boolean.TRUE);
 		return response;
@@ -204,6 +210,7 @@ public class RemittanceController {
 		JaxContextUtil.setRequestModel(paymentResponse);
 		logger.debug("Save remnittance request "+JsonUtil.toJson(paymentResponse));
 		logger.info("save-Remittance Controller :" + paymentResponse.getCustomerId() + "\t country ID :");
+		logger.debug("Payment respone is " + paymentResponse.toString());
 		logger.debug("save-Remittance Controller :" + paymentResponse.getCustomerId() + "\t country ID :"
 				+ paymentResponse.getApplicationCountryId() + "\t Compa Id:" + paymentResponse.getCompanyId());
 
@@ -245,8 +252,14 @@ public class RemittanceController {
 //				pushNotifyClient.send(pushMessage);	
 //			}
 ////		}	
-
-		ApiResponse response = remittancePaymentManager.paymentCapture(paymentResponse);
+		
+		logger.info("paymentResponse :"+JsonUtil.toJson(paymentResponse));
+		ApiResponse response = null;
+		if(paymentResponse!=null && paymentResponse.getProduct().equals(AmxEnums.Products.REMIT_SINGLE)) { /** for compatability **/
+			response = remittancePaymentManager.paymentCapture(paymentResponse);
+		}else {
+			response = remittancePaymentManager.paymentCaptureV2(paymentResponse);
+		}
 		return response;
 	}
 
@@ -320,4 +333,29 @@ public class RemittanceController {
 
 	}
 
+	/** added by Rabil **/
+	@RequestMapping(value = "/pay-shopping-cart/", method = RequestMethod.POST)
+	public AmxApiResponse<RemittanceApplicationResponseModel,Object> payShoppingCart(@RequestBody @Valid BranchRemittanceRequestModel remittanceRequestModel) {
+		RemittanceApplicationResponseModel response = remittancePaymentManager.payShoppingCart(remittanceRequestModel);
+		return AmxApiResponse.build(response);
+	}
+	
+	
+	/** added by Rabil **/
+	@RequestMapping(value = "/add-to-cart/", method = RequestMethod.POST)
+	public AmxApiResponse<BranchRemittanceApplResponseDto, Object> addtoCart(@RequestBody @Valid RemittanceTransactionDrRequestModel model) {
+		JaxContextUtil.setJaxEvent(JaxEvent.CREATE_APPLICATION);
+		JaxContextUtil.setRequestModel(model);
+		logger.info("In Save-Application with parameters" + model.toString());
+		BranchRemittanceApplResponseDto response = remittanceTransactionService.addtoCart(model);
+		return AmxApiResponse.build(response);
+	}
+	
+	/** added by Rabil **/ 
+	@RequestMapping(value = "/status/v2/", method = RequestMethod.POST)
+	public AmxApiResponse<RemittanceTransactionStatusResponseModel, Object> getTransactionStatusV2(@RequestBody RemittanceTransactionStatusRequestModel request,@RequestParam("promotion") Boolean promotion) {
+		logger.info("In getTransactionStatus with param, :  " + request.toString());
+		request.setPromotion(promotion);
+		return remittanceTransactionService.getTransactionStatusV2(request);
+	}
 }

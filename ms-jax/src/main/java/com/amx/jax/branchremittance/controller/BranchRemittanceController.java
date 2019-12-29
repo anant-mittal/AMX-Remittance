@@ -42,6 +42,7 @@ import com.amx.jax.model.request.remittance.RoutingPricingRequest;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
+import com.amx.jax.model.response.remittance.CardTypeDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;
 import com.amx.jax.model.response.remittance.FlexFieldReponseDto;
@@ -303,6 +304,20 @@ public class BranchRemittanceController implements IRemittanceService {
 	public AmxApiResponse<GetServiceApplicabilityResponse, Object> getServiceApplicability(@RequestBody @Valid GetServiceApplicabilityRequest request) {
 		List<GetServiceApplicabilityResponse> rules = serviceApplicabilityManager.getServiceApplicability(request);
 		return AmxApiResponse.buildList(rules);
+	}
+
+	@RequestMapping(value = Path.GET_CUSTOMER_CARD_TYPE, method = RequestMethod.GET)
+	@Override
+	public AmxApiResponse<CardTypeDto, Object> getCustomerCardTypeList() {
+		return branchRemitService.getCustomerCardTypeListResp();
+	}
+
+	@RequestMapping(value = Path.UPDATE_CUSTOMER_CARD_TYPE, method = RequestMethod.POST)
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> updateCustomerCardType(@RequestParam("chequeBankId") BigDecimal chequeBankId, 
+			@RequestParam("cardTypeId") BigDecimal cardTypeId, @RequestParam("nameOnCard") String nameOnCard) {
+		AmxApiResponse<BoolRespModel, Object> response = branchRemitService.updateCustomerCardType(chequeBankId, cardTypeId, nameOnCard);
+		return response;
 	}
 
 

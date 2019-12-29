@@ -15,7 +15,6 @@ import com.amx.jax.model.request.serviceprovider.ServiceProviderCallRequestDto;
 import com.amx.jax.model.request.serviceprovider.TransactionData;
 import com.amx.jax.model.response.serviceprovider.Quotation_Call_Response;
 import com.amx.jax.model.response.serviceprovider.Remittance_Call_Response;
-import com.amx.jax.model.response.serviceprovider.ServiceProviderResponse;
 import com.amx.service_provider.dbmodel.webservice.ExOwsLoginCredentials;
 import com.amx.service_provider.homesend.HomeSendDTO;
 import com.amx.service_provider.homesend.HomesendGate;

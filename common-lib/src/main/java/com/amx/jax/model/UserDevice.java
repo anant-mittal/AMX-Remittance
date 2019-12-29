@@ -3,6 +3,7 @@ package com.amx.jax.model;
 import java.io.Serializable;
 
 import com.amx.jax.dict.UserClient.AppType;
+import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.dict.UserClient.DevicePlatform;
 import com.amx.jax.dict.UserClient.DeviceType;
 import com.amx.jax.dict.UserClient.UserDeviceClient;
@@ -28,6 +29,7 @@ public class UserDevice implements Serializable {
 	protected String id = null;
 	protected String appVersion = null;
 	protected AppType appType = null;
+	protected ClientType clientType = null;
 
 	protected DeviceType type = null;
 	protected DevicePlatform platform = null;
@@ -147,6 +149,7 @@ public class UserDevice implements Serializable {
 		userClient.setAppType(this.getAppType());
 		userClient.setIp(this.getIp());
 		userClient.setFingerprint(this.getFingerprint());
+		userClient.setClientType(this.getClientType());
 		return userClient;
 
 	}
@@ -165,6 +168,14 @@ public class UserDevice implements Serializable {
 			return true;
 		}
 		return false;
+	}
+
+	public ClientType getClientType() {
+		return clientType;
+	}
+
+	public void setClientType(ClientType clientType) {
+		this.clientType = clientType;
 	}
 
 }

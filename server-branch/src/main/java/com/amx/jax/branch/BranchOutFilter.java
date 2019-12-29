@@ -6,11 +6,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.branch.beans.BranchSession;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.constants.JaxChannel;
+import com.amx.jax.dict.UserClient.AppType;
+import com.amx.jax.dict.UserClient.ClientType;
+import com.amx.jax.dict.UserClient.UserDeviceClient;
+import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.logger.AuditActor;
 import com.amx.jax.logger.AuditDetailProvider;
+import com.amx.jax.model.UserDevice;
+import com.amx.jax.rest.AppRequestContextInFilter;
 import com.amx.jax.rest.IMetaRequestOutFilter;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.sso.SSOUser;
@@ -19,7 +26,8 @@ import com.amx.utils.ContextUtil;
 
 @Primary
 @Component
-public class BranchMetaOutFilter implements IMetaRequestOutFilter<JaxMetaInfo>, AuditDetailProvider {
+public class BranchOutFilter implements IMetaRequestOutFilter<JaxMetaInfo>, AuditDetailProvider,
+		AppRequestContextInFilter {
 
 	@Autowired
 	private SSOUser ssoUser;
@@ -62,6 +70,16 @@ public class BranchMetaOutFilter implements IMetaRequestOutFilter<JaxMetaInfo>, 
 	@Override
 	public AuditActor getActor() {
 		return new AuditActor(AuditActor.ActorType.EMP, getCustomerId());
+	}
+
+	@Override
+	public void appRequestContextInFilter(CommonHttpRequest localCommonHttpRequest) {
+		UserDeviceClient userClient = AppContextUtil.getUserClient();
+		if (AppType.WEB.equals(userClient.getAppType())) {
+			userClient.setClientType(ClientType.BRANCH_WEB);
+		} else {
+			userClient.setClientType(ClientType.BRANCH_WEB);
+		}
 	}
 
 }

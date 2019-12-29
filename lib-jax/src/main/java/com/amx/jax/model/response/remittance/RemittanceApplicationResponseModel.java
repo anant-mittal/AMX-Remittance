@@ -1,10 +1,13 @@
 package com.amx.jax.model.response.remittance;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.CivilIdOtpModel;
+
+
 
 public class RemittanceApplicationResponseModel extends AbstractModel {
 
@@ -18,7 +21,7 @@ public class RemittanceApplicationResponseModel extends AbstractModel {
 	private BigDecimal netPayableAmount;
 	private BigDecimal merchantTrackId;
 	private CivilIdOtpModel civilIdOtpModel;
-
+	
 	private PayGServiceCode pgCode = PayGServiceCode.DEFAULT;
 
 	public PayGServiceCode getPgCode() {
@@ -84,11 +87,12 @@ public class RemittanceApplicationResponseModel extends AbstractModel {
 
 	public String toString() {
 		String str = null;
-		if (civilIdOtpModel != null)
+		if (civilIdOtpModel != null) {
 			str = "RemittanceApplicationResponseModel [remittanceAppId=" + remittanceAppId + ", documentIdForPayment="
 					+ documentIdForPayment + ", documentFinancialYear=" + documentFinancialYear + ", netPayableAmount="
 					+ netPayableAmount + ", merchantTrackId=" + merchantTrackId + ", pgCode=" + pgCode
 					+ ", civilIdOtpModel=" + civilIdOtpModel.toString() + "]";
+		}
 		else {
 			str = "RemittanceApplicationResponseModel [remittanceAppId=" + remittanceAppId + ", documentIdForPayment="
 					+ documentIdForPayment + ", documentFinancialYear=" + documentFinancialYear + ", netPayableAmount="

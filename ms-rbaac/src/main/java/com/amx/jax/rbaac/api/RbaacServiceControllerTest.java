@@ -29,7 +29,6 @@ import com.amx.jax.rbaac.dto.response.RoleResponseDTO;
 import com.amx.jax.rbaac.dto.response.UserAuthInitResponseDTO;
 import com.amx.jax.rbaac.dto.response.UserRoleMappingDTO;
 import com.amx.jax.rbaac.dto.response.UserRoleMappingsResponseDTO;
-import com.amx.jax.rbaac.service.DeviceService;
 
 import io.swagger.annotations.ApiOperation;
 

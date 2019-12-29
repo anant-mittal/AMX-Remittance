@@ -135,7 +135,13 @@ public class ParameterService extends AbstractService {
 		return trnxLimits;
 	}
 	
-	public AuthenticationLimitCheckView getPlaceOrderLimitCheck(String authType) {
+	
+	public AuthenticationLimitCheckView getAmlRiskLevelForCash() {
+		AuthenticationLimitCheckView riskLevel1 = authentication.getAmlRiskCheckLevel1();
+		return riskLevel1;
+	}
+
+public AuthenticationLimitCheckView getPlaceOrderLimitCheck(String authType) {
 		return authentication.getPlaceOrderLimitCheck(authType);
 	}
 

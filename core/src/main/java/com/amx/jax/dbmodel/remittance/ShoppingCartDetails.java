@@ -9,7 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="VW_APPLICATION_DETAILS")
+@Table(name="JAX_VW_APPLICATION_DETAILS")
 public class ShoppingCartDetails implements Serializable {
 
 
@@ -66,6 +66,18 @@ public class ShoppingCartDetails implements Serializable {
 	private BigDecimal amtbCouponEncashed;
 	private BigDecimal routingBankId;
 	private BigDecimal beneRelationseqId;
+
+	private String applicationPaymentType; 
+	
+	@Column(name="APPL_PAYMENT_TYPE")
+	public String getApplicationPaymentType() {
+		return applicationPaymentType;
+	}
+
+	public void setApplicationPaymentType(String applicationPaymentType) {
+		this.applicationPaymentType = applicationPaymentType;
+	}
+
 	private BigDecimal paymentLinkId;
 	
 	public BigDecimal getPaymentLinkId() {
@@ -74,6 +86,7 @@ public class ShoppingCartDetails implements Serializable {
 
 	public void setPaymentLinkId(BigDecimal paymentLinkId) {
 		this.paymentLinkId = paymentLinkId;
+
 	}
 
 	public ShoppingCartDetails() {

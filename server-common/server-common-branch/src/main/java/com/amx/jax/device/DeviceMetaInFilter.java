@@ -1,4 +1,4 @@
-package com.amx.jax.offsite;
+package com.amx.jax.device;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -8,7 +8,7 @@ import com.amx.jax.device.DeviceMetaInfo;
 import com.amx.jax.rest.IMetaRequestInFilter;
 
 @Component
-public class OffsiteMetaInFilter implements IMetaRequestInFilter<DeviceMetaInfo> {
+public class DeviceMetaInFilter implements IMetaRequestInFilter<DeviceMetaInfo> {
 
 	@Override
 	public Class<DeviceMetaInfo> getMetaClass() {

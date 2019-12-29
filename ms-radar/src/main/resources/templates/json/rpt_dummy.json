@@ -1,0 +1,254 @@
+{ 
+  "aggs":{ 
+    "Area":{ 
+      "terms":{ 
+        "field":"branch.areaName.keyword",
+        "order":{ 
+          "_count":"desc"
+        },
+        "size":15
+      },
+      "aggs":{ 
+        "Branch":{ 
+          "terms":{ 
+            "field":"branch.name.keyword",
+            "order":{ 
+              "_count":"desc"
+            },
+            "size":150
+          },
+          "aggs":{ 
+            "Channel":{ 
+              "terms":{ 
+                "field":"client.cn.keyword",
+                "order":{ 
+                  "_count":"desc"
+                },
+                "size":5
+              },
+              "aggs":{ 
+                "TimeRange":{ 
+                  "date_range":{ 
+                    "field":"trnx.trnxDate",
+                    "ranges":[ 
+                      { 
+                        "key":"[[${PrevMonth}]]",
+                        "from":"now-12M/M",
+                        "to":"now-6M/M-1s"
+                      },
+                      { 
+                        "key":"[[${ThisMonth}]]",
+                        "from":"now-6M/M",
+                        "to":"now/M-1s"
+                      }
+                    ],
+                    "time_zone":"Asia/Calcutta"
+                  },
+                  "aggs":{ 
+                    "LocalCommissionReceivedorTPC":{ 
+                      "sum":{ 
+                        "script":{ 
+                          "source":"if (doc.containsKey('trnx.trnxDate') && !doc['trnx.trnxDate'].empty && doc['_type'].value == \"trnx\") {\r\n\tif ((doc['trnx.tpcCommShare'].empty || !doc.containsKey('trnx.tpcCommShare')) && (doc.containsKey('trnx.localCommRecv') && !doc['trnx.localCommRecv'].empty)) {\r\n\t\treturn doc['trnx.localCommRecv'].value;\r\n\t} else if (doc.containsKey('trnx.tpcCommShare') && !doc['trnx.tpcCommShare'].empty) {\r\n\t\treturn doc['trnx.tpcCommShare'].value;\r\n\t}\r\n}\r\n",
+                          "lang":"painless"
+                        }
+                      }
+                    },
+                    "CommissionReceived":{ 
+                      "sum":{ 
+                        "field":"trnx.commRecv"
+                      }
+                    },
+                    "ExchangeGain":{ 
+                      "sum":{ 
+                        "field":"trnx.exchangeGain"
+                      }
+                    },
+                    "CoBankCharges":{ 
+                      "sum":{ 
+                        "field":"trnx.coBankCharges"
+                      }
+                    },
+                    "LastDateOfTrnx":{ 
+                      "max":{ 
+                        "script":{ 
+                          "source":"if (doc.containsKey('trnx.trnxDate') && !doc['trnx.trnxDate'].empty && !doc['trnx.trnxDate'].empty && doc['_type'].value == \"trnx\") {\n   if (doc['trnx.trnxStatus.keyword'].value == \"PAID\" || doc['trnx.trnxStatus.keyword'].value == \"DONE\" ) {\n       def d = doc['trnx.trnxDate'].value.dayOfMonth;\n       return d;\n   }\n   else {\n       return null;\n   }\n}\n",
+                          "lang":"painless"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "size":0,
+  "_source":{ 
+    "excludes":[ 
+
+    ]
+  },
+  "stored_fields":[ 
+    "*"
+  ],
+  "script_fields":{ 
+    "MonthDay":{ 
+      "script":{ 
+        "source":"if (doc.containsKey('trnx.trnxDate') && !doc['trnx.trnxDate'].empty && !doc['trnx.trnxDate'].empty && doc['_type'].value == \"trnx\") {\n   if (doc['trnx.trnxStatus.keyword'].value == \"PAID\" || doc['trnx.trnxStatus.keyword'].value == \"DONE\" ) {\n       def d = doc['trnx.trnxDate'].value.dayOfMonth;\n       return d;\n   }\n   else {\n       return null;\n   }\n}\n",
+        "lang":"painless"
+      }
+    },
+    "RPT_commission":{ 
+      "script":{ 
+        "source":"if (doc.containsKey('trnx.trnxDate') && !doc['trnx.trnxDate'].empty && doc['_type'].value == \"trnx\") {\r\n\tif ((doc['trnx.tpcCommShare'].empty || !doc.containsKey('trnx.tpcCommShare')) && (doc.containsKey('trnx.localCommRecv') && !doc['trnx.localCommRecv'].empty)) {\r\n\t\treturn doc['trnx.localCommRecv'].value;\r\n\t} else if (doc.containsKey('trnx.tpcCommShare') && !doc['trnx.tpcCommShare'].empty) {\r\n\t\treturn doc['trnx.tpcCommShare'].value;\r\n\t}\r\n}\r\n",
+        "lang":"painless"
+      }
+    }
+  },
+  "docvalue_fields":[ 
+    { 
+      "field":"@timestamp",
+      "format":"date_time"
+    },
+    { 
+      "field":"customer.creationDate",
+      "format":"date_time"
+    },
+    { 
+      "field":"customer.creationDateOnline",
+      "format":"date_time"
+    },
+    { 
+      "field":"customer.dateOfBirth",
+      "format":"date_time"
+    },
+    { 
+      "field":"customer.lastTransactionDate",
+      "format":"date_time"
+    },
+    { 
+      "field":"customer.lastUpdateDate",
+      "format":"date_time"
+    },
+    { 
+      "field":"customer.updateDate",
+      "format":"date_time"
+    },
+    { 
+      "field":"trnx.creationDate",
+      "format":"date_time"
+    },
+    { 
+      "field":"trnx.lastUpdateDate",
+      "format":"date_time"
+    },
+    { 
+      "field":"trnx.trnxDate",
+      "format":"date_time"
+    },
+    { 
+      "field":"trnx.trnxPaidDate",
+      "format":"date_time"
+    },
+    { 
+      "field":"trnx.trnxSendDatetime",
+      "format":"date_time"
+    },
+    { 
+      "field":"xrate.timestamp",
+      "format":"date_time"
+    }
+  ],
+  "query":{ 
+    "bool":{ 
+      "must":[ 
+        { 
+          "match_all":{ 
+
+          }
+        }
+      ],
+      "filter":[ 
+        { 
+          "bool":{ 
+            "minimum_should_match":1,
+            "should":[ 
+              { 
+                "match_phrase":{ 
+                  "trnx.trnxStatus.keyword":"PAID"
+                }
+              },
+              { 
+                "match_phrase":{ 
+                  "trnx.trnxStatus.keyword":"DONE"
+                }
+              }
+            ]
+          }
+        },
+        [# th:each="filter : ${filters}"]  
+        {
+          "match_phrase": {
+            "[[${filter.key}]]": {
+              "query": "[[${filter.value}]]"
+            }
+          }
+        },
+	  	[/]
+        { 
+          "range":{ 
+            "trnx.trnxDate":{ 
+              "format":"strict_date_optional_time",
+              "gte":"now-365d",
+              "lte":"now"
+            }
+          }
+        }
+      ],
+      "should":[ 
+
+      ],
+      "must_not":[ 
+
+      ]
+    }
+  },
+  "pivot":[ 
+    { 
+      "rows":[ 
+        "Area",
+        "Branch",
+        "Channel"
+      ],
+      "cols":[ 
+        "TimeRange"
+      ],
+      "vals":[ 
+        "sum LocalCommissionReceivedorTPC",
+        "sum CommissionReceived",
+        "sum ExchangeGain",
+        "sum CoBankCharges",
+        "sum _docs AS Trnx",
+        "sum LastDateOfTrnx"
+      ],
+      "computed":[ 
+        "[[${PrevMonth}]]_Revenue=[[${PrevMonth}]]_LocalCommissionReceivedorTPC + [[${PrevMonth}]]_CommissionReceived + [[${PrevMonth}]]_ExchangeGain - [[${PrevMonth}]]_CoBankCharges",
+        "[[${PrevMonth}]]_RPT=[[${PrevMonth}]]_Revenue/[[${PrevMonth}]]_Trnx",
+        "[[${PrevMonth}]]_RPD=[[${PrevMonth}]]_Revenue/[[${PrevMonth}]]_LastDateOfTrnx",
+        "[[${ThisMonth}]]_Revenue=[[${ThisMonth}]]_LocalCommissionReceivedorTPC + [[${ThisMonth}]]_CommissionReceived + [[${ThisMonth}]]_ExchangeGain - [[${ThisMonth}]]_CoBankCharges",
+        "[[${ThisMonth}]]_RPT=[[${ThisMonth}]]_Revenue/[[${ThisMonth}]]_Trnx",
+        "[[${ThisMonth}]]_RPD=[[${ThisMonth}]]_Revenue/[[${ThisMonth}]]_LastDateOfTrnx",
+        "RPDdiff=[[${ThisMonth}]]_RPD - [[${PrevMonth}]]_RPD",
+        "RevDiff=[[${ThisMonth}]]_Revenue - [[${PrevMonth}]]_Revenue"
+      ],
+      "colgroups":[ 
+        "[[${PrevMonth}]](Area,Branch,Channel,[[${PrevMonth}]]_Trnx,[[${PrevMonth}]]_Revenue,[[${PrevMonth}]]_RPT,[[${PrevMonth}]]_RPD)",
+        "[[${ThisMonth}]](Area,Branch,Channel,[[${ThisMonth}]]_Trnx,[[${ThisMonth}]]_Revenue,[[${ThisMonth}]]_RPT,[[${ThisMonth}]]_RPD)",
+        "Summary(Area,Branch,Channel,[[${PrevMonth}]]_Trnx,[[${PrevMonth}]]_RPT,[[${PrevMonth}]]_RPD,[[${ThisMonth}]]_Trnx,[[${ThisMonth}]]_RPT,[[${ThisMonth}]]_RPD,RPDdiff,RevDiff)"
+      ]
+    }
+  ]
+}

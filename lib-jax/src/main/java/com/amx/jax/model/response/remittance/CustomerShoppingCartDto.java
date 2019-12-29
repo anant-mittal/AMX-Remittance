@@ -68,7 +68,14 @@ public class CustomerShoppingCartDto implements Serializable{
 	/* adding service provider trnx duration */	
 	private Long trnxExpirationDate;
 	private Long trnxStartDate;
+	private String applPaymentType;
 	
+	public String getApplPaymentType() {
+		return applPaymentType;
+	}
+	public void setApplPaymentType(String applPaymentType) {
+		this.applPaymentType = applPaymentType;
+	}
 	public BigDecimal getDocumentNo() {
 		return documentNo;
 	}

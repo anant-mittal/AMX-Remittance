@@ -9,12 +9,13 @@ import com.amx.jax.model.response.remittance.RemittanceCollectionDto;
 
 public class BranchRemittanceRequestModel {
 
-	List<BranchApplicationDto> remittanceApplicationId = new ArrayList<>();
+	List<BranchApplicationDto> remittanceApplicationId =new ArrayList<>();
 	List<RemittanceCollectionDto> collctionModeDto = new ArrayList<>();
 	List<UserStockDto> currencyRefundDenomination = new ArrayList<>();
 	BigDecimal paidAmount = BigDecimal.ZERO;
 	BigDecimal totalTrnxAmount = BigDecimal.ZERO;
 	BigDecimal totalLoyaltyAmount = BigDecimal.ZERO;
+	
 
 	public List<UserStockDto> getCurrencyRefundDenomination() {
 		return currencyRefundDenomination;
@@ -64,4 +65,7 @@ public class BranchRemittanceRequestModel {
 		this.paidAmount = paidAmount;
 	}
 
+	
+		
+		
 }

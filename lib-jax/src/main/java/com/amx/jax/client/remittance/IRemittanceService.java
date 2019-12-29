@@ -26,6 +26,7 @@ import com.amx.jax.model.request.remittance.RoutingPricingRequest;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
+import com.amx.jax.model.response.remittance.CardTypeDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
 import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;
 import com.amx.jax.model.response.remittance.FlexFieldReponseDto;
@@ -90,6 +91,8 @@ public interface IRemittanceService extends  IJaxService {
 		
 		
 		
+		public static final String GET_CUSTOMER_CARD_TYPE =  PREFIX + "/get-customer-card-type/";
+		public static final String UPDATE_CUSTOMER_CARD_TYPE =  PREFIX + "/update-customer-card-type/";
 		
 	}
 
@@ -107,11 +110,12 @@ public interface IRemittanceService extends  IJaxService {
 		public static final String LOCAL_AMOUNT = "localAmount";
 		public static final String FOREIGN_AMOUNT = "foreignAmount";
 		public static final String ROUTING_COUNTRY_ID="routingcountryId";
-		public static final String COUNTRY_BRANCH_ID="countryBranchId"; 
 		public static final String LINK_ID="linkId";
 		public static final String VERIFICATION_CODE="verificationCode";
 		public static final String RATE_PLACE_ORDER_ID="ratePlaceOrderId";
-		
+		public static final String CHEQUE_BANK_ID="chequeBankId"; 
+		public static final String CARD_TYPE_ID="cardTypeId";
+		public static final String NAME_ON_CARD="nameOnCard";
 	}
 	
 	
@@ -195,7 +199,7 @@ public interface IRemittanceService extends  IJaxService {
 	@ApiJaxStatus({JaxError.NO_RECORD_FOUND})
 	AmxApiResponse<ParameterDetailsResponseDto, Object> getGiftService(BigDecimal beneRelaId);
 	
-	
+
 	AmxApiResponse<RatePlaceOrderResponseModel, Object> savePlaceOrderApplication(PlaceOrderRequestModel placeOrderRequestModel);
 	
 	AmxApiResponse<RatePlaceOrderInquiryDto, Object> fetchPlaceOrderInquiry(BigDecimal countryBranchId);
@@ -207,6 +211,13 @@ public interface IRemittanceService extends  IJaxService {
 	AmxApiResponse<GsmPlaceOrderListDto,Object>  getCountryWisePlaceOrderCount(GsmSearchRequestParameter requestParameter);
 	
 	AmxApiResponse<PlaceOrderResponseModel,Object> acceptPlaceOrderByCustomer(BigDecimal ratePlaceOrderId);
+
+	@ApiJaxStatus({JaxError.NO_RECORD_FOUND})
+	public AmxApiResponse<CardTypeDto, Object> getCustomerCardTypeList();
+	
+	@ApiJaxStatus({JaxError.NO_RECORD_FOUND})
+	AmxApiResponse<BoolRespModel, Object> updateCustomerCardType(BigDecimal chequeBankId, BigDecimal cardTypeId, String nameOnCard);
+
 	
 }
 

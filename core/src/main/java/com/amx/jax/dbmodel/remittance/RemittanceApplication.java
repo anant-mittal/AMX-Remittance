@@ -141,6 +141,13 @@ public class RemittanceApplication implements Serializable {
 	private BigDecimal vatAmount;
 	/** added by rabil **/
 	private String beneDeductFlag;
+
+
+	private String paymentType;
+	private String wtStatus;
+	
+	private BigDecimal paygTrnxDetailId;
+
 	/** added for direct link **/
 	private BigDecimal paymentLinkId;
 	
@@ -1002,6 +1009,34 @@ public class RemittanceApplication implements Serializable {
 		this.wuPurposeOfTransaction = wuPurposeOfTransaction;
 	}
 
+
+	@Column(name="PAYG_TRNX_DTLS_ID")
+	public BigDecimal getPaygTrnxDetailId() {
+		return paygTrnxDetailId;
+	}
+
+	public void setPaygTrnxDetailId(BigDecimal paygTrnxDetailId) {
+		this.paygTrnxDetailId = paygTrnxDetailId;
+	}
+	
+	@Column(name="PAYMENT_TYPE")
+	public String getPaymentType() {
+		return paymentType;
+	}
+
+	public void setPaymentType(String paymentType) {
+		this.paymentType = paymentType;
+	}
+	@Column(name="WT_STATUS")
+	public String getWtStatus() {
+		return wtStatus;
+	}
+
+	public void setWtStatus(String wtStatus) {
+		this.wtStatus = wtStatus;
+	}
+	
+
 	@Column(name="SAVED_AMOUNT")
 	public BigDecimal getSavedAmount() {
 		return savedAmount;
@@ -1065,4 +1100,5 @@ public class RemittanceApplication implements Serializable {
 	public void setRatePlaceOrderId(BigDecimal ratePlaceOrderId) {
 		this.ratePlaceOrderId = ratePlaceOrderId;
 	}
+
 }

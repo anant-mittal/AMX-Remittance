@@ -29,6 +29,7 @@ import com.amx.jax.AppContextUtil;
 import com.amx.jax.dict.Language;
 import com.amx.jax.dict.UserClient;
 import com.amx.jax.dict.UserClient.AppType;
+import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.dict.UserClient.DevicePlatform;
 import com.amx.jax.dict.UserClient.DeviceType;
 import com.amx.jax.filter.AppParamController;
@@ -162,6 +163,37 @@ public class CommonHttpRequest {
 			}
 		}
 		return null;
+	}
+
+	public ClientType setClientType(ClientType clientType) {
+		if (request != null) {
+			return null;
+		}
+		String clientTypeStr = ArgUtil.parseAsString(clientType);
+		HttpSession session = request.getSession(false);
+		if (session != null) {
+			session.setAttribute(AppConstants.UDC_CLIENT_TYPE_XKEY, clientTypeStr);
+		}
+		this.setCookie(AppConstants.UDC_CLIENT_TYPE_XKEY, clientTypeStr);
+		return clientType;
+	}
+
+	public ClientType getClientType() {
+		if (request != null) {
+			return null;
+		}
+		String clientTypeStr = this.getRequestParam(AppConstants.UDC_CLIENT_TYPE_XKEY);
+		HttpSession session = request.getSession(false);
+
+		if (ArgUtil.is(clientTypeStr)) {
+			if (session != null) {
+				session.setAttribute(AppConstants.UDC_CLIENT_TYPE_XKEY, clientTypeStr);
+			}
+			this.setCookie(AppConstants.UDC_CLIENT_TYPE_XKEY, clientTypeStr);
+		} else if (session != null) {
+			clientTypeStr = ArgUtil.parseAsString(session.getAttribute(AppConstants.UDC_CLIENT_TYPE_XKEY));
+		}
+		return ArgUtil.parseAsEnumT(clientTypeStr, appConfig.getDefaultClientType(), ClientType.class);
 	}
 
 	/**
@@ -373,6 +405,7 @@ public class CommonHttpRequest {
 			}
 		}
 		userDevice.setAppType(appType);
+		userDevice.setClientType(this.getClientType());
 		AppContextUtil.set(AppConstants.USER_DEVICE_XKEY, userDevice);
 		return userDevice;
 	}

@@ -12,6 +12,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.constant.ApiEndpoint;
+import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.exception.RemittanceTransactionValidationException;
@@ -27,15 +28,19 @@ import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.client.util.ConverterUtility;
 import com.amx.jax.dict.AmxEnums.Products;
 import com.amx.jax.model.customer.CustomerRatingDTO;
+import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
 import com.amx.jax.model.request.remittance.IRemitTransReqPurpose;
 import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.response.SourceOfIncomeDto;
+import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.RemittanceApplicationResponseModel;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.rest.RestService;
 import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
+
+import io.swagger.annotations.ApiOperation;
 
 @Component
 public class RemitClient extends AbstractJaxServiceClient implements IRemittanceServiceOnline {
@@ -338,4 +343,67 @@ public class RemitClient extends AbstractJaxServiceClient implements IRemittance
 
 
 
+	
+	
+	
+	@ApiOperation("API for Online shopping cart")
+	public AmxApiResponse<RemittanceApplicationResponseModel,Object> payShoppingCart(BranchRemittanceRequestModel remittanceRequestModel) throws RemittanceTransactionValidationException, LimitExeededException {
+		try {
+			String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/pay-shopping-cart/";
+			LOGGER.info(" Calling customer rating :" + remittanceRequestModel.toString());
+			return restService.ajax(url).meta(new JaxMetaInfo()).post(remittanceRequestModel).as(
+					new ParameterizedTypeReference<AmxApiResponse<RemittanceApplicationResponseModel,Object>>() {
+				});
+		
+		} catch (AbstractJaxException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in payShoppingCart : ", e);
+			throw new JaxSystemError();
+		} // end of tr
+	}
+	
+	
+	
+	@ApiOperation("API for Online shopping cart")
+	public AmxApiResponse<BranchRemittanceApplResponseDto,Object> addToCart(RemittanceTransactionDrRequestModel transactionRequestModel)
+			throws RemittanceTransactionValidationException, LimitExeededException {
+		try {
+			String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/add-to-cart/";
+			return restService.ajax(url).meta(new JaxMetaInfo()).post(transactionRequestModel).as(
+					new ParameterizedTypeReference<AmxApiResponse<BranchRemittanceApplResponseDto,Object>>() {
+					});
+		} catch (AbstractJaxException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in add to transaction : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
+	}
+	
+
+
+	/**
+	 * Fetches the transaction details of given document number and document fin
+	 * year
+	 */
+	public AmxApiResponse<RemittanceTransactionStatusResponseModel,Object> fetchTransactionDetailsV2(
+			RemittanceTransactionStatusRequestModel request, Boolean promotion)
+			throws RemittanceTransactionValidationException, LimitExeededException {
+		try {
+			String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/status/v2/";
+			return restService.ajax(url).queryParam("promotion", promotion)
+					.meta(new JaxMetaInfo()).post(request)
+					.as(new ParameterizedTypeReference<AmxApiResponse<RemittanceTransactionStatusResponseModel,Object>>() {
+					});
+		} catch (AbstractJaxException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in fetchTransactionDetails : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
+
+	}
+	
+	
 }

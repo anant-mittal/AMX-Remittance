@@ -179,9 +179,11 @@ public class FxOrderController {
 		payment.setServiceCode(wrapper.getData().getPgCode());
 		payment.setProduct(AmxEnums.Products.FXORDER);
 
+		String callbackUrl = HttpUtils.getServerName(request)
+				+ "/app/landing/fxorder";
+
 		wrapper.redirectUrl(payGService.getPaymentUrl(payment,
-				HttpUtils.getServerName(request)
-						+ "/app/landing/fxorder"));
+				callbackUrl, callbackUrl));
 		return wrapper;
 	}
 

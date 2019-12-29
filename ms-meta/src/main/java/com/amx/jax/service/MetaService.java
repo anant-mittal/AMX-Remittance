@@ -20,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.exception.jax.InvalidCivilIdException;
 import com.amx.amxlib.meta.model.DeclarationDTO;
 import com.amx.amxlib.meta.model.ServiceGroupMasterDescDto;
 import com.amx.amxlib.meta.model.ViewAreaDto;

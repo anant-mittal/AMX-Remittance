@@ -65,7 +65,10 @@ public class Constants {
 	/** The Constant CUST_ACTIVE_INDICATOR. */
 	public static final String CUST_ACTIVE_INDICATOR = "Y";
 	
-	/** The Constant CUST_COMPLIANCE_CHECK_INDICATOR. */
+	/**
+	 * @deprecated use AmxDBConstants.Compliance
+	 *  The Constant CUST_COMPLIANCE_CHECK_INDICATOR. */
+	@Deprecated
 	public static final String CUST_COMPLIANCE_CHECK_INDICATOR = "C";
 
 	/** The Constant IDENTITY_TYPE_ID. */

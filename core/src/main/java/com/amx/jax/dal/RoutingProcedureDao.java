@@ -611,5 +611,69 @@ public class RoutingProcedureDao {
 		 
 		 }
     
+	/** 
+	 * 
+	 * @param customerI
+	 * @return to check the number of times customer modifed 
+	 * @author rabil
+	 */
+	 public BigDecimal getCustomerHistroyCount(BigDecimal customerId) {
+			BigDecimal totalCount= BigDecimal.ZERO;
+			 
+			 String sql=" SELECT  COUNT(*) totalcount"
+					 + "  FROM   FS_CUSTOMER_CH_LOG "
+					 + "  WHERE   CUSTOMER_ID  ="+customerId
+					 + "  AND   FROM_TABLE_NAME   =   'FS_CUSTOMER' " 
+					 + "  AND  FROM_COLUMN_NAME  IN ('EMAIL','MOBILE') "
+					 + "  AND  TRUNC(CREATED_DATE) <= TRUNC(SYSDATE) "
+					 + "  AND  TRUNC(CREATED_DATE) >= TRUNC(SYSDATE)-90 ";
+			 
+			 
+			 LOGGER.debug("in getCustomerHistroyCount ql :  "+sql );
+			 List<Object> inputList = new ArrayList<>();
+			 
+			 List<Map<String, Object>> outputList = jdbcTemplate.queryForList(sql, inputList.toArray());
+				LOGGER.info("in getCustomerHistroyCount,output values: {}", outputList);
+				Iterator<Map<String, Object>> itr = outputList.iterator();
+			
+				while (itr.hasNext()) {
+					totalCount = (BigDecimal) itr.next().get("totalcount");
+				}
+			 
+				
+			 return totalCount;
+		 }
+	 
+	 public BigDecimal getCustomerTrnxCount(BigDecimal bankCountryId,BigDecimal countryBranchId,BigDecimal customerId) {
+			BigDecimal totalCount= BigDecimal.ZERO;
+			 
+			 String sql="SELECT COUNT(*) totalcount "
+					 + " FROM EX_REMIT_TRNX A,EX_REMIT_BENE B "
+					 + " WHERE A.CUSTOMER_ID ="+customerId
+					 + " AND TRUNC(A.DOCUMENT_DATE) = TRUNC(SYSDATE) "
+					 + " AND A.COUNTRY_BRANCH_ID = "+countryBranchId+" "
+					 + " AND B.REMITTANCE_TRANSACTION_ID = A.REMITTANCE_TRANSACTION_ID "
+					 + " AND B.BENEFICIARY_BANK_COUNTRY_ID ="+bankCountryId;
+			 
+			 
+			 LOGGER.debug("in getCustomerTrnxCount for Pakistan country ql :  "+sql );
+			 List<Object> inputList = new ArrayList<>();
+			 
+			 List<Map<String, Object>> outputList = jdbcTemplate.queryForList(sql, inputList.toArray());
+				LOGGER.info("in getCustomerHistroyCount,output values: {}", outputList);
+				Iterator<Map<String, Object>> itr = outputList.iterator();
+				while (itr.hasNext()) {
+					totalCount = (BigDecimal) itr.next().get("totalcount");
+				}
+			 
+				
+			 return totalCount;
+		 }
+	 
+	 
+	 
+	 
+	 
+	
 	
 }

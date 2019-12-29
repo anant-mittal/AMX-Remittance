@@ -769,21 +769,9 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 			tenantContext.get().validateCivilId(customerDetails.getIdentityInt());
 		}
 
-		if (customer.getEmail() != null) {
-			if (!customer.getEmail().equals(customerDetails.getEmail())) {
-				tenantContext.get().validateEmailId(customerDetails.getEmail());
-			}
-		} else {
-			tenantContext.get().validateEmailId(customerDetails.getEmail());
-		}
-
-		if (customer.getMobile() != null) {
-			if (!customer.getMobile().equals(customerDetails.getMobile())) {
-				tenantContext.get().validateDuplicateMobile(customerDetails.getMobile());
-			}
-		} else {
-			tenantContext.get().validateDuplicateMobile(customerDetails.getMobile());
-		}
+		// validateDuplicateEmail(customer.getEmail(), customerDetails.getEmail());
+		// validatDuplicateMobile(customer.getMobile(), customerDetails.getMobile());
+		
 		countryMetaValidation.validateMobileNumber(customerDetails.getCountryId(), customerDetails.getMobile());
 		countryMetaValidation.validateMobileNumberLength(customerDetails.getCountryId(), customerDetails.getMobile());
 		jaxUtil.convertNotNull(customerDetails, customer);
@@ -843,15 +831,40 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		customer.setCustomerRegistrationType(CustomerRegistrationType.OFF_CUSTOMER);
 		customer.setSignatureSpecimenClob(customerDetails.getCustomerSignature());
 		if (customerEmploymentDetails != null) {
-			customer.setFsArticleDetails(
-					articleDao.getArticleDetailsByArticleDetailId(ConstantDocument.ARTICLE_DETAIL_ID_OTHERS));
-			customer.setFsIncomeRangeMaster(
-					articleDao.getIncomeRangeMasterByIncomeRangeId(customerEmploymentDetails.getIncomeRangeId()));
+			if (customerEmploymentDetails.getArticleDetailsId() != null) {
+				customer.setFsArticleDetails(articleDao.getArticleDetailsByArticleDetailId(customerEmploymentDetails.getArticleDetailsId()));
+			} else {
+				customer.setFsArticleDetails(articleDao.getArticleDetailsByArticleDetailId(ConstantDocument.ARTICLE_DETAIL_ID_OTHERS));
+			}
+			customer.setFsIncomeRangeMaster(articleDao.getIncomeRangeMasterByIncomeRangeId(customerEmploymentDetails.getIncomeRangeId()));
 		}
 		userValidationService.validateBlackListedCustomerForLogin(customer);
-		LOGGER.info("Createing new customer record, civil id- {}", customerDetails.getIdentityInt());
+		if (customer.getCustomerId() != null) {
+			offsiteCustomerRegManager.setNotificationVerificationFlags(customer, customerDetails);
+		}
 		customer = customerRepository.save(customer);
 		return customer;
+	}
+
+	private void validatDuplicateMobile(String existingMobile, String newMobile) {
+		if (existingMobile != null) {
+			if (!existingMobile.equals(newMobile)) {
+				tenantContext.get().validateDuplicateMobile(newMobile);
+			}
+		} else {
+			tenantContext.get().validateDuplicateMobile(newMobile);
+		}		
+	}
+
+	@SuppressWarnings("deprecation")
+	private void validateDuplicateEmail(String existingEmail, String newEmail) {
+		if (existingEmail != null) {
+			if (!existingEmail.equals(newEmail)) {
+				tenantContext.get().validateEmailId(newEmail);
+			}
+		} else {
+			tenantContext.get().validateEmailId(newEmail);
+		}		
 	}
 
 	private String getTitleLocal(String titleLocal) {

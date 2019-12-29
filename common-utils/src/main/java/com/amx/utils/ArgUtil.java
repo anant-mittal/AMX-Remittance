@@ -98,7 +98,7 @@ public final class ArgUtil {
 	/**
 	 * Parse as T.
 	 *
-	 * @param              <T> the generic type
+	 * @param <T>          the generic type
 	 * @param value        the value
 	 * @param defaultValue the default value
 	 * @param required     the required
@@ -177,7 +177,7 @@ public final class ArgUtil {
 	/**
 	 * Parse as List &lt;T&gt;.
 	 *
-	 * @param                  <T> the generic type
+	 * @param <T>              the generic type
 	 * @param value            the value
 	 * @param defaultValue     the default value
 	 * @param defaultListValue the default list value
@@ -210,7 +210,7 @@ public final class ArgUtil {
 	/**
 	 * Parse as List&lt;List&lt;T&gt;&gt;.
 	 *
-	 * @param                        <T> the generic type
+	 * @param <T>                    the generic type
 	 * @param value                  the value
 	 * @param defaultValue           the default value
 	 * @param defaultListValue       the default list value
@@ -239,7 +239,7 @@ public final class ArgUtil {
 	/**
 	 * Parse as List&lt;List&lt;List&lt;T&gt;&gt;&gt;.
 	 *
-	 * @param                            <T> the generic type
+	 * @param <T>                        the generic type
 	 * @param value                      the value
 	 * @param defaultValue               the default value
 	 * @param defaultListValue           the default list value
@@ -453,7 +453,7 @@ public final class ArgUtil {
 		}
 		return null;
 	}
-	
+
 	public static Double parseAsDouble(Object value, Double defaultValue) {
 		if (value instanceof Double) {
 			return (Double) value;
@@ -468,7 +468,6 @@ public final class ArgUtil {
 		}
 		return defaultValue;
 	}
-
 
 	/**
 	 * <pre>
@@ -538,24 +537,24 @@ public final class ArgUtil {
 	 * @param defaultValue the default value
 	 * @return the enum
 	 */
-	public static <T extends Enum> Enum parseAsEnum(Object value, Enum defaultValue , Class<T> enumType) {
+	public static <T extends Enum> Enum parseAsEnum(Object value, Enum defaultValue, Class<T> enumType) {
 		String enumString = parseAsString(value);
 		if (enumString == null) {
 			return defaultValue;
 		}
 		String enumStringCaps = enumString.toUpperCase();
-		if (defaultValue instanceof EnumType) {
+		if (defaultValue instanceof EnumType || EnumType.class.isAssignableFrom(enumType)) {
 			for (Object enumValue : enumType.getEnumConstants()) {
-				if (enumString.equals(((EnumType) enumValue).name())
-						|| enumStringCaps.equals(((EnumType) enumValue).name())) {
+				EnumType thisEnum = (EnumType) enumValue;
+				if (enumString.equalsIgnoreCase(thisEnum.name())
+						|| enumString.equalsIgnoreCase(thisEnum.stringValue())) {
 					return (Enum) enumValue;
 				}
 			}
 			return defaultValue;
 		} else if (defaultValue instanceof EnumById) {
 			for (Object enumValue : enumType.getEnumConstants()) {
-				if (enumString.equals(((EnumById) enumValue).getId())
-						|| enumStringCaps.equals(((EnumById) enumValue).getId())) {
+				if (enumString.equalsIgnoreCase(((EnumById) enumValue).getId())) {
 					return (Enum) enumValue;
 				}
 			}
@@ -571,13 +570,16 @@ public final class ArgUtil {
 			}
 		}
 	}
-	
+	public static <T extends Enum> T parseAsEnumT(Object value, T defaultValue, Class<T> enumType) {
+		return (T) parseAsEnum(value, defaultValue, enumType);
+	}
+
 	public static <T extends Enum> Enum parseAsEnum(Object value, Class<T> enumType) {
 		return parseAsEnum(value, null, enumType);
 	}
 
 	/**
-	 * @deprecated 
+	 * @deprecated
 	 * @see {{@link #parseAsEnum(Object, Enum, Class)}
 	 * @param value
 	 * @param defaultValue
@@ -585,10 +587,10 @@ public final class ArgUtil {
 	 */
 	@Deprecated
 	public static Enum parseAsEnum(Object value, Enum defaultValue) {
-		if(ArgUtil.isEmpty(defaultValue)) {
+		if (ArgUtil.isEmpty(defaultValue)) {
 			return null;
 		}
-		return parseAsEnum(value,defaultValue,defaultValue.getClass());
+		return parseAsEnum(value, defaultValue, defaultValue.getClass());
 	}
 
 	public static Enum parseAsEnum(Object value, Enum nullValue, Enum defaultValue) {

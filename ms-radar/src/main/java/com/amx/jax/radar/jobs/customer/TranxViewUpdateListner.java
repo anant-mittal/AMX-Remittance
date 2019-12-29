@@ -92,6 +92,11 @@ public class TranxViewUpdateListner implements ITunnelSubscriber<DBEvent> {
 				.view(GridView.VW_KIBANA_TRNX, gridQuery);
 		AmxApiResponse<TranxViewRecord, GridMeta> x = y.get();
 
+		if (x.getResults().size() == 0) {
+			LOGGER.info("Nothing to Do as Transaction/Application with Id {} {} does nt exists", tranxId, appId);
+			return;
+		}
+
 		BulkRequestSnapBuilder builder = new BulkRequestSnapBuilder();
 		for (TranxViewRecord record : x.getResults()) {
 			try {

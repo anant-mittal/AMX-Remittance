@@ -95,6 +95,8 @@ public class BeneficiaryListDTO extends ResourceDTO {
 	private Boolean canTransact;
 	private BeneStatusDto beneStatusDto;
 	private UpdateBeneStatus updateBeneStatus;
+	private String mobileNumber;
+	private String countryTelCode;
 	
 
 	private String bankLocalName;
@@ -585,6 +587,19 @@ public class BeneficiaryListDTO extends ResourceDTO {
 	@Override
 	public String getResourceLocalName() {
 		return this.bankLocalName;
+	}
+	
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
+	}
+	public String getCountryTelCode() {
+		return countryTelCode;
+	}
+	public void setCountryTelCode(String countryTelCode) {
+		this.countryTelCode = countryTelCode;
 	}
 
 }

@@ -14,7 +14,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
@@ -158,7 +157,14 @@ public class RemittanceTransaction implements Serializable {
 	private String remarks;
 	private BigDecimal usdAmt;
 	private String wuPurposeOfTransaction;
+	private String paymentType;
 	
+	private BigDecimal paygTrnxDetailId;
+
+	private String applSplit;
+
+	private Date timeToDeliver;
+
 	private BigDecimal savedAmount;
 	private BigDecimal rackExchangeRate;
 	
@@ -168,11 +174,19 @@ public class RemittanceTransaction implements Serializable {
 	private BigDecimal savedAmountInFc;
 
 	private String applSplit;
-	
-	private Date timeToDeliver;
 	private BigDecimal approvalYear;
+
 	
 	
+	@Column(name="PAYMENT_TYPE")
+	public String getPaymentType() {
+		return paymentType;
+	}
+
+	public void setPaymentType(String paymentType) {
+		this.paymentType = paymentType;
+	}
+
 	public RemittanceTransaction() {
 	}
 		
@@ -794,7 +808,7 @@ public class RemittanceTransaction implements Serializable {
 		this.highValueAuthDate = highValueAuthDate;
 	}
 
-	@Lob
+	//@Lob
 	@Column(name = "SIGNATURE_SPECIMEN")
 	public String getCustomerSignature() {
 		return customerSignature;
@@ -1206,6 +1220,15 @@ public class RemittanceTransaction implements Serializable {
 	public void setWuPurposeOfTransaction(String wuPurposeOfTransaction) {
 		this.wuPurposeOfTransaction = wuPurposeOfTransaction;
 	}
+
+	@Column(name="TIME_TO_DELIVER")
+	public Date getTimeToDeliver() {
+		return timeToDeliver;
+	}
+
+	public void setTimeToDeliver(Date timeToDeliver) {
+		this.timeToDeliver = timeToDeliver;
+	}
 	
 	@Column(name="SAVED_AMOUNT")
 	public BigDecimal getSavedAmount() {
@@ -1242,16 +1265,17 @@ public class RemittanceTransaction implements Serializable {
 		this.savedAmountInFc = savedAmountInFc;
 	}
 
-
-	@Column(name="TIME_TO_DELIVER")
-	public Date getTimeToDeliver() {
-		return timeToDeliver;
-	}
-
-	public void setTimeToDeliver(Date timeToDeliver) {
-		this.timeToDeliver = timeToDeliver;
-	}
 	
+
+	@Column(name="PAYG_TRNX_DTLS_ID")
+	public BigDecimal getPaygTrnxDetailId() {
+		return paygTrnxDetailId;
+	}
+
+	public void setPaygTrnxDetailId(BigDecimal paygTrnxDetailId) {
+		this.paygTrnxDetailId = paygTrnxDetailId;
+	}
+
 	@Column(name="IS_SPLITTED")
 	public String getApplSplit() {
 		return applSplit;
@@ -1271,6 +1295,6 @@ public class RemittanceTransaction implements Serializable {
 		this.approvalYear = approvalYear;
 	}
 	
-	
+
 }
  
