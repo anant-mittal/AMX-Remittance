@@ -8,8 +8,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.libjax.model.jaxfield.JaxFieldDto;
-import com.amx.libjax.model.jaxfield.ValidationRegexDto;
+import com.amx.jax.model.response.jaxfield.JaxFieldDto;
+import com.amx.jax.model.response.jaxfield.ValidationRegexDto;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)

@@ -35,6 +35,7 @@ public class RemitTrnxSrvProv implements Serializable{
 	private BigDecimal transactionMargin;
 	private Date offerExpirationDate;
 	private Date offerStartingDate;
+	private BigDecimal partnerExchangeRate;
 	
 	public RemitTrnxSrvProv(){
 		super();
@@ -161,6 +162,14 @@ public class RemitTrnxSrvProv implements Serializable{
 	}
 	public void setOfferStartingDate(Date offerStartingDate) {
 		this.offerStartingDate = offerStartingDate;
+	}
+	
+	@Column(name = "PARTNER_EXCHANGE_RATE")
+	public BigDecimal getPartnerExchangeRate() {
+		return partnerExchangeRate;
+	}
+	public void setPartnerExchangeRate(BigDecimal partnerExchangeRate) {
+		this.partnerExchangeRate = partnerExchangeRate;
 	}
 			
 }

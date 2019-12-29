@@ -11,6 +11,7 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.model.ResourceDTO;
+import com.amx.jax.model.request.remittance.BenePackageRequest;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.BranchRemittanceGetExchangeRateRequest;
 import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
@@ -23,6 +24,7 @@ import com.amx.jax.model.request.remittance.PlaceOrderUpdateStatusDto;
 import com.amx.jax.model.request.remittance.GetServiceApplicabilityRequest;
 
 import com.amx.jax.model.request.remittance.RoutingPricingRequest;
+import com.amx.jax.model.response.customer.BenePackageResponse;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
@@ -82,18 +84,17 @@ public interface IRemittanceService extends  IJaxService {
 
 		
 		public static final String BR_REMITTANCE_GET_GIFT_PACKAGE = PREFIX + "/get-gift-package/";
+		public static final String BR_REMITTANCE_GET_BENE_PACKAGE = PREFIX + "/get-bene-package/";
+		
+		public static final String GET_CUSTOMER_CARD_TYPE =  PREFIX + "/get-customer-card-type/";
+		public static final String UPDATE_CUSTOMER_CARD_TYPE =  PREFIX + "/update-customer-card-type/";
+		
 		public static final String BR_REMITTANCE_SAVE_PLACE_ORDER = PREFIX + "/save-place-order-appl/";
 		public static final String BR_REMITTANCE_FETCH_PLACE_ORDER = PREFIX + "/rate-place-order-inq/";
 		public static final String BR_REMITTANCE_UPDATE_PLACE_ORDER = PREFIX + "/update_rate-place-order/";
 		public static final String BR_REMITTANCE_PLACE_ORDER_COUNT = PREFIX + "/rate-place-order-count/";
 		public static final String BR_REMITTANCE_ACCEPT_PLACE_ORDER = PREFIX + "/accept-place-order/";
-		
-		
-		
-		
-		public static final String GET_CUSTOMER_CARD_TYPE =  PREFIX + "/get-customer-card-type/";
-		public static final String UPDATE_CUSTOMER_CARD_TYPE =  PREFIX + "/update-customer-card-type/";
-		
+	
 	}
 
 	public static class Params {
@@ -199,6 +200,8 @@ public interface IRemittanceService extends  IJaxService {
 
 	@ApiJaxStatus({JaxError.NO_RECORD_FOUND})
 	AmxApiResponse<ParameterDetailsResponseDto, Object> getGiftService(BigDecimal beneRelaId);
+
+	AmxApiResponse<BenePackageResponse, Object> getBenePackages(BenePackageRequest benePackageRequest);
 	
 
 	AmxApiResponse<RatePlaceOrderResponseModel, Object> savePlaceOrderApplication(PlaceOrderRequestModel placeOrderRequestModel);

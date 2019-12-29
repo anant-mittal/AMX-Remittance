@@ -27,6 +27,7 @@ import com.amx.jax.client.remittance.IRemittanceService;
 import com.amx.jax.manager.remittance.ServiceApplicabilityManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.ResourceDTO;
+import com.amx.jax.model.request.remittance.BenePackageRequest;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.BranchRemittanceGetExchangeRateRequest;
 import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
@@ -39,6 +40,7 @@ import com.amx.jax.model.request.remittance.PlaceOrderUpdateStatusDto;
 import com.amx.jax.model.request.remittance.GetServiceApplicabilityRequest;
 
 import com.amx.jax.model.request.remittance.RoutingPricingRequest;
+import com.amx.jax.model.response.customer.BenePackageResponse;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
@@ -63,6 +65,7 @@ import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
 import com.amx.jax.model.response.remittance.branch.DynamicRoutingPricingResponse;
+import com.amx.utils.JsonUtil;
 
 @RestController
 public class BranchRemittanceController implements IRemittanceService {
@@ -321,6 +324,12 @@ public class BranchRemittanceController implements IRemittanceService {
 	}
 
 
+	@RequestMapping(value = Path.BR_REMITTANCE_GET_BENE_PACKAGE, method = RequestMethod.POST)
+	@Override
+	public AmxApiResponse<BenePackageResponse, Object> getBenePackages(@RequestBody @Valid BenePackageRequest benePackageRequest) {
+		logger.debug("requst json: {}", JsonUtil.toJson(benePackageRequest));
+		return branchRemitService.getBenePackages(benePackageRequest);
+	}
 
 	@RequestMapping(value=Path.BR_REMITTANCE_SAVE_PLACE_ORDER,method=RequestMethod.POST)
 	@Override

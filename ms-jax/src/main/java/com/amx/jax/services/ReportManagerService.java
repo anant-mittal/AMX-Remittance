@@ -38,11 +38,12 @@ import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.PurposeOfRemittanceViewModel;
 import com.amx.jax.dbmodel.RemittanceTransactionView;
 import com.amx.jax.dbmodel.ViewCompanyDetails;
+import com.amx.jax.dbmodel.partner.TransactionDetailsView;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
-import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.manager.PromotionManager;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.partner.dao.PartnerTransactionDao;
 import com.amx.jax.repository.CountryMasterRepository;
 import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.repository.ICollectionDetailViewDao;
@@ -57,81 +58,76 @@ import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.RoundUtil;
 import com.amx.utils.ArgUtil;
-import com.amx.utils.JsonUtil;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class ReportManagerService extends AbstractService{
-	
+public class ReportManagerService extends AbstractService {
+
 	private Logger logger = Logger.getLogger(ReportManagerService.class);
-	
+
 	@Autowired
 	HttpServletRequest request;
-	
+
 	@Autowired
 	LoyaltyInsuranceProDao loyaltyInsuranceProDao;
-	
+
 	@Autowired
 	ICollectionDetailViewDao collectionDetailViewDao;
-	
+
 	@Autowired
 	ICollectionPaymentDetailsViewDao collectionPaymentDetailsViewDao;
-	
+
 	@Autowired
 	ICompanyDAO iCompanyDao;
-	
+
 	@Autowired
 	IPurposeOfRemittance purposeOfRemittance;
-	
+
 	@Autowired
 	IRemittanceTransactionDao remittanceTransactionDao;
-	
+
 	@Autowired
 	ICurrencyDao currencyDao;
-	
+
 	@Autowired
 	CustomerRepository customerRepository;
-	
+
 	@Autowired
 	RemittanceApplicationDao remittanceApplicationDao;
-	
-	
+
 	private List<RemittanceReceiptSubreport> remittanceReceiptSubreportList;
 	@Autowired
 	PromotionManager promotionManager;
 	@Autowired
 	UserService userService;
-	
+
 	@Autowired
 	CountryMasterRepository countryMasterRepository;
-	
+
 	@Autowired
 	CountryService countryService;
-	
+
 	@Autowired
 	MetaData meta;
-	
+
 	@Autowired
 	RemittanceTransactionRepository remittanceTransactionRepository;
-	
-	
+	@Autowired
+	PartnerTransactionDao partnerTransactionDao;
 
-	
-	
-	BigDecimal  companyId = null;
-	BigDecimal currencyId  = null;
+	BigDecimal companyId = null;
+	BigDecimal currencyId = null;
 	String userName = null;
 	BigDecimal applicationCountryId = null;
-	BigDecimal  customerId = null; 
+	BigDecimal customerId = null;
 	BigDecimal employeeId = null;
 	BigDecimal branchCode = null;
 	BigDecimal branchId = null;
-	BigDecimal customerRefernce =null;
-	BigDecimal languageId=null;
-	
-	
+	BigDecimal customerRefernce = null;
+	BigDecimal languageId = null;
+
 	/**
-	 *  For HTML Template 
+	 * For HTML Template
 	 */
 	/**
 	 * @param transactionHistroyDTO
@@ -274,7 +270,23 @@ public class ReportManagerService extends AbstractService{
 					obj.setNoOfTransaction(new BigDecimal(noOfTransactions));
 					obj.setPhoneNumber(view.getPhoneNumber());
 					obj.setUserName(view.getCreatedBy());
-					obj.setPinNo(view.getPinNo());
+					if (view.getPinNo() != null) {
+						obj.setPinNo(view.getPinNo());
+					} else {
+						// fetch the vintaja reference
+						List<TransactionDetailsView> lstTrnxDetails = partnerTransactionDao
+								.fetchTrnxWiseDetailsForCustomer(view.getCustomerId(), view.getDocumentFinancialYear(),
+										view.getDocumentNo(), view.getCollectionDocFinanceYear(),
+										view.getCollectionDocumentNo(), view.getCollectionDocCode());
+						if (lstTrnxDetails != null && lstTrnxDetails.size() != 0) {
+							TransactionDetailsView trnxDetails = lstTrnxDetails.get(0);
+							if (trnxDetails != null && trnxDetails.getPartnerSessionId() != null
+									&& trnxDetails.getBankReference() != null) {
+								obj.setPinNo(
+										trnxDetails.getPartnerSessionId() + " / " + trnxDetails.getBankReference());
+							}
+						}
+					}
 
 					logger.debug("metaDetails:" + meta.getCustomerId());
 
@@ -615,8 +627,7 @@ public class ReportManagerService extends AbstractService{
 						}
 
 						/** end **/
-						
-						
+
 						PromotionDto promotionDtoJP = promotionManager.getJolibeePromotion(view.getDocumentNo(),
 								view.getDocumentFinancialYear());
 
@@ -633,11 +644,6 @@ public class ReportManagerService extends AbstractService{
 								obj.setPromotionMessage(prmoDto.getPrizeMessage());
 							}
 						}
-						
-						
-						
-
-						
 
 						if (JaxUtil.isNullZeroBigDecimalCheck(view.getVatAmount())) {
 							BigDecimal vatAmount = RoundUtil.roundBigDecimal((view.getVatAmount()), decimalPerCurrency);
@@ -698,27 +704,29 @@ public class ReportManagerService extends AbstractService{
 			}
 			if (Boolean.TRUE.equals(promotion)) {
 
-				/*PromotionDto promotionDtoJP = promotionManager.getJolibeePromotion(
-						transactionHistroyDTO.getDocumentNumber(), transactionHistroyDTO.getDocumentFinanceYear());
-				//logger.debug("Promotion dto2 for JB value is  " + JsonUtil.toJson(promotionDtoJP));
-				if (!ArgUtil.isEmpty(promotionDtoJP) && !ArgUtil.isEmpty(promotionDtoJP.getPrizeMessage())) {
-					remittanceReceiptSubreportList.get(0).getRemittanceApplList().get(0)
-							.setPromotionDto(promotionDtoJP);
-				} else {
-					PromotionDto promotionDto = promotionManager.getPromotionDto(
-							transactionHistroyDTO.getDocumentNumber(), transactionHistroyDTO.getDocumentFinanceYear());
-					//logger.debug("Promotion dto2 value is  " + JsonUtil.toJson(promotionDto));
-					if (promotionDto != null && !promotionDto.isChichenVoucher()) {
-						remittanceReceiptSubreportList.get(0).getRemittanceApplList().get(0)
-								.setPromotionDto(promotionDto);
-					}
-				}*/
+				/*
+				 * PromotionDto promotionDtoJP = promotionManager.getJolibeePromotion(
+				 * transactionHistroyDTO.getDocumentNumber(),
+				 * transactionHistroyDTO.getDocumentFinanceYear());
+				 * //logger.debug("Promotion dto2 for JB value is  " +
+				 * JsonUtil.toJson(promotionDtoJP)); if (!ArgUtil.isEmpty(promotionDtoJP) &&
+				 * !ArgUtil.isEmpty(promotionDtoJP.getPrizeMessage())) {
+				 * remittanceReceiptSubreportList.get(0).getRemittanceApplList().get(0)
+				 * .setPromotionDto(promotionDtoJP); } else { PromotionDto promotionDto =
+				 * promotionManager.getPromotionDto( transactionHistroyDTO.getDocumentNumber(),
+				 * transactionHistroyDTO.getDocumentFinanceYear());
+				 * //logger.debug("Promotion dto2 value is  " + JsonUtil.toJson(promotionDto));
+				 * if (promotionDto != null && !promotionDto.isChichenVoucher()) {
+				 * remittanceReceiptSubreportList.get(0).getRemittanceApplList().get(0)
+				 * .setPromotionDto(promotionDto); } }
+				 */
 
 			}
 			response.getData().getValues().addAll(remittanceReceiptSubreportList);
 			response.setResponseStatus(ResponseStatus.OK);
 			response.getData().setType("remitReport");
-			//logger.debug("Receipt details are  " + JsonUtil.toJson(response.getData().getValues().get(0)));
+			// logger.debug("Receipt details are " +
+			// JsonUtil.toJson(response.getData().getValues().get(0)));
 		} catch (Exception e) {
 			e.printStackTrace();
 			response.getData().getValues().addAll(remittanceReceiptSubreportList);
@@ -730,48 +738,62 @@ public class ReportManagerService extends AbstractService{
 		return response;
 
 	}
-	
 
 	// ----------------- Params Getting from PAYG -------------------
 	private void getParamsFromPayg(RemittanceTransactionView view, RemittanceReportBean obj) {
-		RemittanceApplication remittanceApplication = remittanceApplicationDao.getApplication(view.getApplicationDocumentNo(), view.getAppFinancialYear());  
-		if(remittanceApplication != null) {
+		RemittanceApplication remittanceApplication = remittanceApplicationDao
+				.getApplication(view.getApplicationDocumentNo(), view.getAppFinancialYear());
+		if (remittanceApplication != null) {
 			obj.setPgPaymentId(remittanceApplication.getPaymentId());
 			obj.setPgReferenceId(remittanceApplication.getPgReferenceId());
 			obj.setPgTransId(remittanceApplication.getPgTransactionId());
 			obj.setPgAuth(remittanceApplication.getPgAuthCode());
 		}
 	}
-	
+
 	// ----------------- SPECIAL RATE RECEIPT DATA -------------------
 	private void getSpecialRateData(RemittanceTransactionView view, RemittanceReportBean obj, String currencyQuoteName,
 			int decimalPerCurrency) {
 		// Special Exchange Rate
 		if (view.getCurrencyQuoteName() != null && currencyQuoteName != null && view.getExchangeRateApplied() != null) {
-			obj.setSpecialExchangeRate(view.getCurrencyQuoteName() + " / " + currencyQuoteName + "     "+ view.getExchangeRateApplied().toString());
+			obj.setSpecialExchangeRate(view.getCurrencyQuoteName() + " / " + currencyQuoteName + "     "
+					+ view.getExchangeRateApplied().toString());
 		}
 
 		// Equivalent kwd Amount
 		if (view.getLocalTransactionAmount() != null && view.getLocalTransactionCurrencyId() != null) {
-			BigDecimal transationAmount = RoundUtil.roundBigDecimal((view.getLocalTransactionAmount()),decimalPerCurrency);
+			BigDecimal transationAmount = RoundUtil.roundBigDecimal((view.getLocalTransactionAmount()),
+					decimalPerCurrency);
 			obj.setSpecialKwdAmount(currencyQuoteName + "     " + transationAmount.toString());
 		}
 
 		// Branch Exchange Rate and kwd Amount
-		if(!StringUtils.isBlank(view.getIsDiscAvail()) && view.getIsDiscAvail().equalsIgnoreCase(ConstantDocument.Yes) && JaxUtil.isNullZeroBigDecimalCheck(view.getAmountSaved()) && view.getAmountSaved().compareTo(BigDecimal.ZERO)>0) {
-			if (view.getCurrencyQuoteName() != null && currencyQuoteName != null && view.getOriginalExchangeRate() != null) {
-				//if (view.getOriginalExchangeRate().compareTo(view.getExchangeRateApplied()) != 1) {
-				if (JaxUtil.isNullZeroBigDecimalCheck(view.getRackExchangeRate()) && view.getRackExchangeRate().compareTo(view.getExchangeRateApplied()) != 1) {
-					obj.setBranchExchangeRate(view.getCurrencyQuoteName() + " / " + currencyQuoteName + "     "+ view.getExchangeRateApplied().toString());
+		if (!StringUtils.isBlank(view.getIsDiscAvail()) && view.getIsDiscAvail().equalsIgnoreCase(ConstantDocument.Yes)
+				&& JaxUtil.isNullZeroBigDecimalCheck(view.getAmountSaved())
+				&& view.getAmountSaved().compareTo(BigDecimal.ZERO) > 0) {
+			if (view.getCurrencyQuoteName() != null && currencyQuoteName != null
+					&& view.getOriginalExchangeRate() != null) {
+				// if (view.getOriginalExchangeRate().compareTo(view.getExchangeRateApplied())
+				// != 1) {
+				if (JaxUtil.isNullZeroBigDecimalCheck(view.getRackExchangeRate())
+						&& view.getRackExchangeRate().compareTo(view.getExchangeRateApplied()) != 1) {
+					obj.setBranchExchangeRate(view.getCurrencyQuoteName() + " / " + currencyQuoteName + "     "
+							+ view.getExchangeRateApplied().toString());
 					if (view.getLocalTransactionAmount() != null && view.getLocalTransactionCurrencyId() != null) {
-						BigDecimal transationAmount = RoundUtil.roundBigDecimal((view.getLocalTransactionAmount()),decimalPerCurrency);
+						BigDecimal transationAmount = RoundUtil.roundBigDecimal((view.getLocalTransactionAmount()),
+								decimalPerCurrency);
 						obj.setKwdAmount(currencyQuoteName + "     " + transationAmount.toString());
 					}
 				} else {
-					//obj.setBranchExchangeRate(view.getCurrencyQuoteName() + " / " + currencyQuoteName + "     "+ view.getOriginalExchangeRate().toString());
-					obj.setBranchExchangeRate(view.getCurrencyQuoteName() + " / " + currencyQuoteName + "     "+ (view.getRackExchangeRate()==null?view.getOriginalExchangeRate().toString():view.getRackExchangeRate().toString()));
-					if (view.getRackExchangeRate() != null && view.getForeignTransactionAmount() != null && view.getLocalTransactionCurrencyId() != null) {
-						//BigDecimal calKwtAmt = view.getOriginalExchangeRate().multiply(view.getForeignTransactionAmount());
+					// obj.setBranchExchangeRate(view.getCurrencyQuoteName() + " / " +
+					// currencyQuoteName + " "+ view.getOriginalExchangeRate().toString());
+					obj.setBranchExchangeRate(view.getCurrencyQuoteName() + " / " + currencyQuoteName + "     "
+							+ (view.getRackExchangeRate() == null ? view.getOriginalExchangeRate().toString()
+									: view.getRackExchangeRate().toString()));
+					if (view.getRackExchangeRate() != null && view.getForeignTransactionAmount() != null
+							&& view.getLocalTransactionCurrencyId() != null) {
+						// BigDecimal calKwtAmt =
+						// view.getOriginalExchangeRate().multiply(view.getForeignTransactionAmount());
 						BigDecimal calKwtAmt = view.getRackExchangeRate().multiply(view.getForeignTransactionAmount());
 						BigDecimal transationAmount = RoundUtil.roundBigDecimal((calKwtAmt), decimalPerCurrency);
 						obj.setKwdAmount(currencyQuoteName + "     " + transationAmount.toString());
@@ -779,82 +801,87 @@ public class ReportManagerService extends AbstractService{
 				}
 
 			}
-			
+
 		} else {
-			if (view.getCurrencyQuoteName() != null && currencyQuoteName != null && view.getExchangeRateApplied() != null) {
-				obj.setBranchExchangeRate(view.getCurrencyQuoteName() + " / " + currencyQuoteName + "     "+ view.getExchangeRateApplied().toString());
+			if (view.getCurrencyQuoteName() != null && currencyQuoteName != null
+					&& view.getExchangeRateApplied() != null) {
+				obj.setBranchExchangeRate(view.getCurrencyQuoteName() + " / " + currencyQuoteName + "     "
+						+ view.getExchangeRateApplied().toString());
 			}
 			if (view.getLocalTransactionAmount() != null && view.getLocalTransactionCurrencyId() != null) {
-				BigDecimal transationAmount = RoundUtil.roundBigDecimal((view.getLocalTransactionAmount()),decimalPerCurrency);
+				BigDecimal transationAmount = RoundUtil.roundBigDecimal((view.getLocalTransactionAmount()),
+						decimalPerCurrency);
 				obj.setKwdAmount(currencyQuoteName + "     " + transationAmount.toString());
 			}
 		}
 	}
 
-public List<RemittanceReportBean> calculateCollectionMode(RemittanceTransactionView viewCollectionObj){	
-			List<RemittanceReportBean> collectionDetailList = new ArrayList<RemittanceReportBean>();
-			List<CollectionPaymentDetailsViewModel> collectionPaymentDetailList= collectionPaymentDetailsViewDao.getCollectedPaymentDetails(viewCollectionObj.getCompanyId(),viewCollectionObj.getCollectionDocumentNo(),viewCollectionObj.getCollectionDocFinanceYear(),viewCollectionObj.getCollectionDocCode());
-		
-			int size = collectionPaymentDetailList.size();
-			for(CollectionPaymentDetailsViewModel viewObj: collectionPaymentDetailList){
-				RemittanceReportBean obj = new RemittanceReportBean();
-				if(viewObj.getCollectionMode()!=null && viewObj.getCollectionMode().equalsIgnoreCase("K")){
-					obj.setCollectionMode(viewObj.getCollectionModeDesc());
-					obj.setApprovalNo(viewObj.getApprovalNo());
-					obj.setTransactionId(viewObj.getTransactionId());
-					obj.setKnetreceiptDateTime(viewObj.getKnetReceiptDatenTime());
-					obj.setKnetBooleanCheck(true);
-					if(viewObj.getCollectAmount()!=null && viewCollectionObj.getLocalTransactionCurrencyId()!=null){
-						BigDecimal collectAmount=RoundUtil.roundBigDecimal((viewObj.getCollectAmount()),currencyDao.getCurrencyList(viewCollectionObj.getLocalTransactionCurrencyId()).get(0).getDecinalNumber().intValue());
-						if(JaxUtil.isNullZeroBigDecimalCheck(collectAmount)) {
+	public List<RemittanceReportBean> calculateCollectionMode(RemittanceTransactionView viewCollectionObj) {
+		List<RemittanceReportBean> collectionDetailList = new ArrayList<RemittanceReportBean>();
+		List<CollectionPaymentDetailsViewModel> collectionPaymentDetailList = collectionPaymentDetailsViewDao
+				.getCollectedPaymentDetails(viewCollectionObj.getCompanyId(),
+						viewCollectionObj.getCollectionDocumentNo(), viewCollectionObj.getCollectionDocFinanceYear(),
+						viewCollectionObj.getCollectionDocCode());
+
+		int size = collectionPaymentDetailList.size();
+		for (CollectionPaymentDetailsViewModel viewObj : collectionPaymentDetailList) {
+			RemittanceReportBean obj = new RemittanceReportBean();
+			if (viewObj.getCollectionMode() != null && viewObj.getCollectionMode().equalsIgnoreCase("K")) {
+				obj.setCollectionMode(viewObj.getCollectionModeDesc());
+				obj.setApprovalNo(viewObj.getApprovalNo());
+				obj.setTransactionId(viewObj.getTransactionId());
+				obj.setKnetreceiptDateTime(viewObj.getKnetReceiptDatenTime());
+				obj.setKnetBooleanCheck(true);
+				if (viewObj.getCollectAmount() != null && viewCollectionObj.getLocalTransactionCurrencyId() != null) {
+					BigDecimal collectAmount = RoundUtil.roundBigDecimal((viewObj.getCollectAmount()),
+							currencyDao.getCurrencyList(viewCollectionObj.getLocalTransactionCurrencyId()).get(0)
+									.getDecinalNumber().intValue());
+					if (JaxUtil.isNullZeroBigDecimalCheck(collectAmount)) {
 						obj.setCollectAmount(collectAmount.toString());
-						}
-					}
-				}else{
-					obj.setCollectionMode(viewObj.getCollectionModeDesc());
-					obj.setKnetBooleanCheck(false);
-					if(viewObj.getCollectAmount()!=null && viewCollectionObj.getLocalTransactionCurrencyId()!=null){
-						BigDecimal collectAmount=RoundUtil.roundBigDecimal((viewObj.getCollectAmount()),currencyDao.getCurrencyList(viewCollectionObj.getLocalTransactionCurrencyId()).get(0).getDecinalNumber().intValue());
-						if(JaxUtil.isNullZeroBigDecimalCheck(collectAmount)) {
-						obj.setCollectAmount(collectAmount.toString());
-						}
 					}
 				}
-				if(size>1){
-					obj.setDrawLine(true);
-				}else{
-					obj.setDrawLine(false);
+			} else {
+				obj.setCollectionMode(viewObj.getCollectionModeDesc());
+				obj.setKnetBooleanCheck(false);
+				if (viewObj.getCollectAmount() != null && viewCollectionObj.getLocalTransactionCurrencyId() != null) {
+					BigDecimal collectAmount = RoundUtil.roundBigDecimal((viewObj.getCollectAmount()),
+							currencyDao.getCurrencyList(viewCollectionObj.getLocalTransactionCurrencyId()).get(0)
+									.getDecinalNumber().intValue());
+					if (JaxUtil.isNullZeroBigDecimalCheck(collectAmount)) {
+						obj.setCollectAmount(collectAmount.toString());
+					}
 				}
-				collectionDetailList.add(obj);
-				size = size-1;
 			}
-			return collectionDetailList;
+			if (size > 1) {
+				obj.setDrawLine(true);
+			} else {
+				obj.setDrawLine(false);
+			}
+			collectionDetailList.add(obj);
+			size = size - 1;
 		}
+		return collectionDetailList;
+	}
 
+	@Override
+	public String getModelType() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
+	@Override
+	public Class<?> getModelClass() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-		@Override
-		public String getModelType() {
-			// TODO Auto-generated method stub
-			return null;
-		}
+	public List<RemittanceReceiptSubreport> getRemittanceReceiptSubreportList() {
+		return remittanceReceiptSubreportList;
+	}
 
-		@Override
-		public Class<?> getModelClass() {
-			// TODO Auto-generated method stub
-			return null;
-		}
+	public void setRemittanceReceiptSubreportList(List<RemittanceReceiptSubreport> remittanceReceiptSubreportList) {
+		this.remittanceReceiptSubreportList = remittanceReceiptSubreportList;
+	}
 
-		public List<RemittanceReceiptSubreport> getRemittanceReceiptSubreportList() {
-			return remittanceReceiptSubreportList;
-		}
-
-		public void setRemittanceReceiptSubreportList(List<RemittanceReceiptSubreport> remittanceReceiptSubreportList) {
-			this.remittanceReceiptSubreportList = remittanceReceiptSubreportList;
-		}
-
-		
-
-
-	
 }
+

@@ -17,12 +17,12 @@ import com.amx.jax.dbmodel.JaxConditionalFieldRule;
 import com.amx.jax.dbmodel.JaxField;
 import com.amx.jax.dbmodel.ValidationRegex;
 import com.amx.jax.manager.JaxFieldManager;
+import com.amx.jax.model.response.jaxfield.JaxConditionalFieldDto;
+import com.amx.jax.model.response.jaxfield.JaxFieldDto;
+import com.amx.jax.model.response.jaxfield.ValidationRegexDto;
 import com.amx.jax.repository.JaxConditionalFieldRuleRepository;
 import com.amx.jax.repository.JaxFieldRepository;
 import com.amx.jax.util.JaxUtil;
-import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
-import com.amx.libjax.model.jaxfield.JaxFieldDto;
-import com.amx.libjax.model.jaxfield.ValidationRegexDto;
 
 /**
  * @author Prashant

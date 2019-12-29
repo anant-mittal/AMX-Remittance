@@ -22,6 +22,7 @@ import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.response.ExchangeRateBreakup;
 import com.amx.jax.model.response.SourceOfIncomeDto;
+import com.amx.jax.model.response.jaxfield.JaxConditionalFieldDto;
 import com.amx.jax.model.response.remittance.RemittanceApplicationResponseModel;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.payg.PaymentResponseDto;
@@ -34,7 +35,6 @@ import com.amx.jax.proto.tpc.models.RemittenceModels.RemitTranxStatusResponse;
 import com.amx.jax.proto.tpc.models.RemittenceModels.RemittenceDTO;
 import com.amx.jax.proto.tpc.models.RemittenceModels.TranxStatus;
 import com.amx.jax.proto.tpc.models.SourceOfFundDTO;
-import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.StringUtils;
 

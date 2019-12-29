@@ -16,6 +16,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.branchremittance.manager.BranchRemittancePaymentManager;
 import com.amx.jax.branchremittance.manager.DirectPaymentLinkManager;
 import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dict.AmxEnums.CommunicationEvents;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.response.customer.CustomerDto;
 import com.amx.jax.model.response.customer.PersonInfo;
@@ -24,12 +25,19 @@ import com.amx.jax.model.response.remittance.PaymentLinkRespDTO;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
+import com.amx.jax.postman.client.PushNotifyClient;
+import com.amx.jax.postman.client.WhatsAppClient;
 import com.amx.jax.postman.model.Email;
+import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.TemplatesMX;
+import com.amx.jax.postman.model.WAMessage;
 import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.services.AbstractService;
+import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.service.UserService;
+import com.amx.jax.util.CommunicationPrefsUtil;
+import com.amx.jax.util.CommunicationPrefsUtil.CommunicationPrefsResult;
 import com.amx.jax.validation.FxOrderValidation;
 import com.amx.utils.EntityDtoUtil;
 import com.amx.utils.JsonUtil;
@@ -59,6 +67,18 @@ public class DirectPaymentLinkService extends AbstractService {
 	
 	@Autowired
 	MetaData metaData;
+	
+	@Autowired
+	CommunicationPrefsUtil communicationPrefsUtil;
+	
+	@Autowired
+	CustomerDao custDao;
+	
+	@Autowired
+	WhatsAppClient whatsAppClient;
+	
+	@Autowired
+	PushNotifyClient pushNotifyClient;
 
 	public AmxApiResponse<PaymentLinkRespDTO, Object> fetchPaymentLinkDetails() {
 		
@@ -73,8 +93,20 @@ public class DirectPaymentLinkService extends AbstractService {
 		}
 		
 		PersonInfo personInfo = userService.getPersonInfo(customerId);
-		sendDirectLinkEmail(paymentDtoNEW, personInfo, customerId);
-		sendDirectLinkSMS(paymentDtoNEW, personInfo, customerId);
+		Customer customer = custDao.getActiveCustomerDetailsByCustomerId(customerId);
+		CommunicationPrefsResult communicationPrefsResult = communicationPrefsUtil.forCustomer(CommunicationEvents.PAYMENT_LINK, customer);
+		if(communicationPrefsResult.isEmail()) {
+			sendDirectLinkEmail(paymentDtoNEW, personInfo, customerId);
+		}
+		if(communicationPrefsResult.isSms()) {
+			sendDirectLinkSMS(paymentDtoNEW, personInfo, customerId);
+		}
+		if(communicationPrefsResult.isWhatsApp()) {
+			sendDirectLinkWhatsApp(paymentDtoNEW, personInfo, customerId);
+		}
+		if(communicationPrefsResult.isPushNotify()) {
+			sendDirectLinkPushNotification(paymentDtoNEW, personInfo, customerId);
+		}
 
 		return AmxApiResponse.build(paymentDtoNEW);
 	}
@@ -127,6 +159,48 @@ public class DirectPaymentLinkService extends AbstractService {
 
 			try {
 				postManService.sendSMSAsync(sms);
+			} catch (PostManException e) {
+				logger.error("Error while sending SMS for Direct Link : ", e.getMessage());
+			}
+		}
+	}
+	
+	private void sendDirectLinkWhatsApp(PaymentLinkRespDTO paymentdto, PersonInfo personInfo, BigDecimal customerId) {
+		Customer customer = customerRepository.getActiveCustomerDetailsByCustomerId(customerId);
+		if(paymentdto != null) {
+			logger.info(String.format("Sending mOTP SMS to customer :%s on mobile_no :%s  ", personInfo.getFirstName(),
+					personInfo.getMobile()));
+
+			WAMessage waMessage = new WAMessage();
+			waMessage.addTo(personInfo.getMobile());
+			waMessage.getModel().put("link", paymentdto);
+			waMessage.getModel().put("customer", EntityDtoUtil.entityToDto(customer, new CustomerDto()));
+			waMessage.getModel().put(NotificationConstants.RESP_DATA_KEY, paymentdto);
+			waMessage.setITemplate(TemplatesMX.PAYMENT_LINK);
+
+			try {
+				whatsAppClient.send(waMessage);
+			} catch (PostManException e) {
+				logger.error("Error while sending SMS for Direct Link : ", e.getMessage());
+			}
+		}
+	}
+	
+	private void sendDirectLinkPushNotification(PaymentLinkRespDTO paymentdto, PersonInfo personInfo, BigDecimal customerId) {
+		Customer customer = customerRepository.getActiveCustomerDetailsByCustomerId(customerId);
+		if(paymentdto != null) {
+			logger.info(String.format("Sending mOTP SMS to customer :%s on mobile_no :%s  ", personInfo.getFirstName(),
+					personInfo.getMobile()));
+
+			PushMessage pushMessage = new PushMessage();
+			pushMessage.addToUser(customerId);
+			pushMessage.getModel().put("link", paymentdto);
+			pushMessage.getModel().put("customer", EntityDtoUtil.entityToDto(customer, new CustomerDto()));
+			pushMessage.getModel().put(NotificationConstants.RESP_DATA_KEY, paymentdto);
+			pushMessage.setITemplate(TemplatesMX.PAYMENT_LINK);
+
+			try {
+				pushNotifyClient.send(pushMessage);
 			} catch (PostManException e) {
 				logger.error("Error while sending SMS for Direct Link : ", e.getMessage());
 			}

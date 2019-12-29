@@ -174,10 +174,6 @@ public class ExchangeRateDetails implements Serializable, Cloneable, Comparable<
 
 			ExchangeRateDetails cloned = (ExchangeRateDetails) super.clone();
 
-			// cloned.customerDiscountDetails =
-			// this.customerDiscountDetails.entrySet().stream()
-			// .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-
 			if (this.customerDiscountDetails != null) {
 				cloned.customerDiscountDetails = new HashMap<DISCOUNT_TYPE, ExchangeDiscountInfo>();
 

@@ -68,6 +68,7 @@ import com.amx.jax.dbmodel.CurrencyMasterMdlv1;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ExchangeRateApprovalDetModel;
 import com.amx.jax.dbmodel.PaygDetailsModel;
+import com.amx.jax.dbmodel.ReferralDetails;
 import com.amx.jax.dbmodel.TransactionLimitCheckView;
 import com.amx.jax.dbmodel.partner.RemitApplSrvProv;
 import com.amx.jax.dbmodel.remittance.AdditionalInstructionData;
@@ -81,6 +82,7 @@ import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.dbmodel.remittance.ServiceProviderCredentialsModel;
 import com.amx.jax.dbmodel.remittance.ViewTransfer;
 import com.amx.jax.dbmodel.remittance.ViewVatDetails;
+import com.amx.jax.dict.AmxEnums.CommunicationEvents;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.dict.PayGRespCodeJSONConverter;
 import com.amx.jax.dict.PayGServiceCode;
@@ -116,9 +118,12 @@ import com.amx.jax.model.response.remittance.LoyalityPointState;
 import com.amx.jax.model.response.remittance.RemittanceApplicationResponseModel;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.model.response.remittance.VatDetailsDto;
+import com.amx.jax.partner.manager.PartnerTransactionManager;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
 import com.amx.jax.partner.manager.PartnerTransactionManager;
 import com.amx.jax.postman.client.PushNotifyClient;
+import com.amx.jax.postman.model.PushMessage;
+import com.amx.jax.partner.manager.PartnerTransactionManager;
 import com.amx.jax.pricer.dto.TrnxRoutingDetails;
 import com.amx.jax.pricer.var.PricerServiceConstants;
 import com.amx.jax.remittance.manager.RemittanceParameterMapManager;
@@ -147,6 +152,7 @@ import com.amx.jax.services.RoutingService;
 import com.amx.jax.services.TransactionHistroyService;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.dao.ReferralDetailsDao;
+import com.amx.jax.userservice.manager.CommunicationPreferencesManager;
 import com.amx.jax.userservice.manager.CustomerDBAuthManager;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.AmxDBConstants;
@@ -317,8 +323,8 @@ public class RemittanceTransactionManager {
 	PaygDetailsRepository paygDetailsRepository;
 	@Autowired
 	BranchRemittanceExchangeRateManager branchRemittanceExchangeRateManager;
-
-
+	@Autowired
+	CommunicationPreferencesManager communicationPreferencesManager;
 	@Autowired
 	RemittanceApplicationBeneRepository remittanceApplicationBeneRepository;
 	
@@ -333,8 +339,6 @@ public class RemittanceTransactionManager {
 	
 	@Autowired
 	RemittanceApplicationRepository applRepository;
-		
-
 	private static final String IOS = "IOS";
 	private static final String ANDROID = "ANDROID";
 	private static final String WEB = "WEB";
@@ -1095,6 +1099,7 @@ public class RemittanceTransactionManager {
 		beneBankDetails.put("P_APPLICATION_COUNTRY_ID", meta.getCountryId());
 		beneBankDetails.put("P_USER_TYPE", "ONLINE");
 		beneBankDetails.put("P_BENEFICIARY_COUNTRY_ID", beneficiary.getBenificaryCountry());
+		beneBankDetails.put("P_BENEFICIARY_BANK_COUNTRY_ID", beneficiary.getBenificaryCountry());
 		beneBankDetails.put("P_BENEFICIARY_BANK_ID", beneficiary.getBankId());
 		beneBankDetails.put("P_BENEFICIARY_BRANCH_ID", beneficiary.getBranchId());
 		beneBankDetails.put("P_BENEFICIARY_BANK_ACCOUNT", beneficiary.getBankAccountNumber());
@@ -1275,6 +1280,7 @@ public class RemittanceTransactionManager {
 		/** code end here **/
 		
 		remittanceAdditionalFieldManager.processAdditionalFields(model);
+		remittanceTransactionRequestValidator.saveFlexFields(model, remitApplParametersMap);
 		RemittanceApplication remittanceApplication = remitAppManager.createRemittanceApplicationV2(model,validatedObjects, validationResults, remitApplParametersMap);
 		
 		
@@ -1564,7 +1570,6 @@ public class RemittanceTransactionManager {
 					model.setPromotionDto(obj);
 				}
 			}
-		
 			model.setErrorCategory(application.getErrorCategory());
 			model.setErrorMessage(application.getErrorMessage());
 			if(application.getErrorCategory() != null) {
@@ -1580,7 +1585,6 @@ public class RemittanceTransactionManager {
 			return model;
 		}
 		
-
 
 	private String getTransactionReference(RemittanceApplication application) {
 		try {

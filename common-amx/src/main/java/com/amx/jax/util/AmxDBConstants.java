@@ -88,6 +88,7 @@ public class AmxDBConstants {
 
 	public static final BigDecimal DELIVERY_MODE_BANKING_CHANNEL = new BigDecimal(105);
 	public static final String MM_DD_YYYY_DATE_FORMAT = "MM/dd/yyyy";
+	public static final String MM_YYYY = "MM/yyyy";
 	
 	public static final String DD_MM_YYYY_DATE_FORMAT = "dd/MM/yyyy";
 	
@@ -162,6 +163,7 @@ public class AmxDBConstants {
 	public static final String ARTICLE_20_CODE = "20";
 	public static final BigDecimal BIZ_COMPONENT_ID_NEW_CIVIL_ID = new BigDecimal(2000);
 	public static final String CASH = "C";
+	public static final String CASH_STRING = "CASH";
 	public static final String BANK_TRANSFER = "T";
 	public static final String CHEQUE = "B";
 	public static final String OTHER = "O";
@@ -239,6 +241,7 @@ public class AmxDBConstants {
 	public static final String WU_CANC_REM = "CANC_REMINDER";
 	public static final String WU_CANCELLED = "WU_CANC";
 	
+	public static final String SELF_STR = "3";
 	public static final String JOB_IN_PROGRESS="P";
 	public static final String JOB_COMPLETED = "C";
 
@@ -264,6 +267,7 @@ public class AmxDBConstants {
 	public static String CHECK_DOCUMENT;
 	public static String CHECK_FILE;
 	public static String BANKTRANSFER;
+
 	//For Palce Order 
 	public static final BigDecimal DOCUMENT_CODE_FOR_PLACEORDER = new BigDecimal(59);
 	// Constants for direct payment link
@@ -272,9 +276,12 @@ public class AmxDBConstants {
     public static final String IMPS = "IMPS";
     public static enum Statusd {
 		APPROVED,NEGOTIATED,UNAPPROVED,VIEW,REJECT,NEW 
-		
 	}
     public static String PO_LIMIT_CHK ="24"; 
-	// Constants for jolibee coupon
+	// Constants for Communication Preference
+	public static final String RESET_PASSWORD_FLOW = "/api/user/password";
+	public static final String FORGOT_SECQUE_FLOW = "/pub/auth/otp";
+   /** end Here **/
+
 	
 }

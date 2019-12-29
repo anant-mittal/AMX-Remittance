@@ -23,12 +23,12 @@ import com.amx.jax.dbmodel.customer.CustomerDocumentUploadReferenceTemp;
 import com.amx.jax.model.customer.document.CustomerDocCatTypeDto;
 import com.amx.jax.model.customer.document.CustomerDocumentCategoryDto;
 import com.amx.jax.model.customer.document.CustomerDocumentTypeDto;
+import com.amx.jax.model.response.jaxfield.JaxFieldDto;
+import com.amx.jax.model.response.jaxfield.ValidationRegexDto;
 import com.amx.jax.repository.customer.CustomerDocumentTypeDescRepo;
 import com.amx.jax.repository.customer.CustomerDocumentTypeMasterRepo;
 import com.amx.jax.userservice.manager.CustomerIdProofManager;
 import com.amx.jax.util.JaxUtil;
-import com.amx.libjax.model.jaxfield.JaxFieldDto;
-import com.amx.libjax.model.jaxfield.ValidationRegexDto;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)

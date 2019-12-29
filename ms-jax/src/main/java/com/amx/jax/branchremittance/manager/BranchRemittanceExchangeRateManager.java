@@ -64,6 +64,7 @@ import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.IRemittanceApplicationParams;
 import com.amx.jax.model.request.remittance.RoutingPricingRequest;
 import com.amx.jax.model.response.BankMasterDTO;
+import com.amx.jax.model.response.jaxfield.JaxConditionalFieldDto;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchExchangeRateBreakup;
 import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;
@@ -89,7 +90,6 @@ import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.RoundUtil;
 import com.amx.jax.validation.RemittanceTransactionRequestValidator;
-import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
 
 import net.bytebuddy.utility.privilege.GetSystemPropertyAction;
 
@@ -388,7 +388,8 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 			result.setTxnFee(commission);
 			result.setDiscountOnComission(corpDiscount);
 			
-			if(trnxRoutingDetails != null && trnxRoutingDetails.getBankIndicator() != null && !trnxRoutingDetails.getBankIndicator().equalsIgnoreCase(ConstantDocument.BANK_INDICATOR_SERVICE_PROVIDER_BANK)) {
+			//if(trnxRoutingDetails != null && trnxRoutingDetails.getBankIndicator() != null && !trnxRoutingDetails.getBankIndicator().equalsIgnoreCase(ConstantDocument.BANK_INDICATOR_SERVICE_PROVIDER_BANK)) {
+			if(trnxRoutingDetails != null && trnxRoutingDetails.getIsFcRoundingAllowed() !=null && trnxRoutingDetails.getIsFcRoundingAllowed().equalsIgnoreCase(ConstantDocument.Yes)) { 
 				if (routingPricingRequest.getForeignAmount() != null) {
 					result.setExRateBreakup(exchangeRateService.createBreakUpFromForeignCurrency(sellRateDetail.getSellRateNet().getInverseRate(), routingPricingRequest.getForeignAmount()));
 				} else {
@@ -642,6 +643,7 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 		BigDecimal savedAmount = BigDecimal.ZERO;
 		if(JaxUtil.isNullZeroBigDecimalCheck(result.getRackExchangeRate()) && result!=null && result.getDiscountAvailed() && result.getRackExchangeRate().compareTo(BigDecimal.ZERO)>0 && result.getExRateBreakup().getConvertedFCAmount().compareTo(BigDecimal.ZERO)>0) {
 			savedAmount =result.getRackExchangeRate().multiply(result.getExRateBreakup().getConvertedFCAmount()).subtract(result.getExRateBreakup().getConvertedLCAmount());
+		
 		
 		if(savedAmount.compareTo(BigDecimal.ZERO)>0) {
 			savedAmount = RoundUtil.roundBigDecimal(savedAmount,result.getExRateBreakup().getLcDecimalNumber().intValue());
