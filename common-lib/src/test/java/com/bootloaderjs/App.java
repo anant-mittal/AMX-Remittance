@@ -43,8 +43,10 @@ public class App { // Noncompliant
 	 */
 
 	public static void main(String[] args) throws ExpressionException {
-		String traceId = "KTE-63dd5-7R4cP9TxM9c-000000-lgn-7R4cPbd0EtK";
+		AppContextUtil.getSessionId(true);
+		String traceId = AppContextUtil.getTraceId();
 		
+		System.out.println("traceId  "+traceId);
 		Matcher matcher = UniqueID.SYSTEM_STRING_PATTERN.matcher(traceId);
 		if (matcher.find()) {
 			System.out.println("="+matcher.group(1) + "-" + matcher.group(2) + "-" + matcher.group(3));
