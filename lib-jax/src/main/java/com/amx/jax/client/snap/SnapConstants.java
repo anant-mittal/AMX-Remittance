@@ -44,6 +44,7 @@ public class SnapConstants {
 		RPTMONTHLY("rptmonthly", SnapIndexName.TRANX),
 		RPTCOMPARISON("rptcomparison", SnapIndexName.TRANX),
 		RPTMONTHCOMPARISON("rptmonthcomparison", SnapIndexName.TRANX),
+		RPT_DUMMY("rpt_dummy", SnapIndexName.TRANX),
 		
 		
 		ACTIVE_DEVICE_REPORT("active-device", SnapIndexName.ALL),
