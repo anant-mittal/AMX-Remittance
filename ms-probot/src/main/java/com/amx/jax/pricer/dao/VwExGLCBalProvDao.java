@@ -36,4 +36,22 @@ public class VwExGLCBalProvDao {
 		return bankProvisionalBal;
 	}
 
+	@CacheForSession
+	public Map<BigDecimal, ViewExGLCBalProvisional> getByCurrencyIdAndBankIdIn(BigDecimal currencyId,
+			List<BigDecimal> bankIds) {
+
+		List<ViewExGLCBalProvisional> provisionalBalList = provRepository.findByCurrencyIdAndBankIdIn(currencyId,
+				bankIds);
+
+		Map<BigDecimal, ViewExGLCBalProvisional> bankProvisionalBal = new HashMap<BigDecimal, ViewExGLCBalProvisional>();
+
+		if (provisionalBalList != null && !provisionalBalList.isEmpty()) {
+			for (ViewExGLCBalProvisional provisional : provisionalBalList) {
+				bankProvisionalBal.put(provisional.getBankId(), provisional);
+			}
+		}
+
+		return bankProvisionalBal;
+	}
+
 }

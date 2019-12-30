@@ -9,19 +9,19 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 /**
- * The Class ViewExGLCBalProvisional.
+ * The Class VwExGlcbalProvByProduct.
  */
 @Entity
-@Table(name = "VW_EX_GLCBAL_PROV")
-public class ViewExGLCBalProvisional implements Serializable {
+@Table(name = "VW_EX_GLCBAL_PROV_PRODUCT_WISE")
+public class VwExGlcbalProvByProduct implements Serializable {
 
 	/** The Constant serialVersionUID. */
-	private static final long serialVersionUID = 9011910401678486001L;
+	private static final long serialVersionUID = -5345451304798179857L;
 
 	/** The row id. */
 	@Id
 	@Column(name = "ROW_ID")
-	private BigDecimal rowId;
+	private String rowId;
 
 	/** The bank id. */
 	@Column(name = "BANK_ID")
@@ -35,7 +35,6 @@ public class ViewExGLCBalProvisional implements Serializable {
 	@Column(name = "BANK_FULL_NAME")
 	private String bankFullName;
 
-	/** The currency id. */
 	@Column(name = "CURRENCY_ID")
 	private BigDecimal currencyId;
 
@@ -59,12 +58,39 @@ public class ViewExGLCBalProvisional implements Serializable {
 	@Column(name = "RATE_CURBAL")
 	private BigDecimal rateCurBal;
 
+	@Column(name = "SERVICE_MASTER_ID")
+	private BigDecimal serviceMasterId;
+
+	/** The remittance mode id. */
+	@Column(name = "REMITTANCE_MODE_ID")
+	private BigDecimal remittanceModeId;
+
+	/** The remittance code. */
+	@Column(name = "REMITTANCE_CODE")
+	private String remittanceCode;
+
+	/** The remittance description. */
+	@Column(name = "REMITTANCE_DESCRIPTION")
+	private String remittanceDescription;
+
+	/** The delivery mode id. */
+	@Column(name = "DELIVERY_MODE_ID")
+	private BigDecimal deliveryModeId;
+
+	/** The delivery code. */
+	@Column(name = "DELIVERY_CODE")
+	private String deliveryCode;
+
+	/** The delivery description. */
+	@Column(name = "DELIVERY_DESCRIPTION")
+	private String deliveryDescription;
+
 	/**
 	 * Gets the row id.
 	 *
 	 * @return the row id
 	 */
-	public BigDecimal getRowId() {
+	public String getRowId() {
 		return rowId;
 	}
 
@@ -74,7 +100,7 @@ public class ViewExGLCBalProvisional implements Serializable {
 	 * @param rowId
 	 *            the new row id
 	 */
-	public void setRowId(BigDecimal rowId) {
+	public void setRowId(String rowId) {
 		this.rowId = rowId;
 	}
 
@@ -133,24 +159,6 @@ public class ViewExGLCBalProvisional implements Serializable {
 	 */
 	public void setBankFullName(String bankFullName) {
 		this.bankFullName = bankFullName;
-	}
-
-	/**
-	 * Gets the currency id.
-	 *
-	 * @return the currency id
-	 */
-	public BigDecimal getCurrencyId() {
-		return currencyId;
-	}
-
-	/**
-	 * Sets the currency id.
-	 *
-	 * @param currencyId the new currency id
-	 */
-	public void setCurrencyId(BigDecimal currencyId) {
-		this.currencyId = currencyId;
 	}
 
 	/**
@@ -246,6 +254,120 @@ public class ViewExGLCBalProvisional implements Serializable {
 	 */
 	public void setRateCurBal(BigDecimal rateCurBal) {
 		this.rateCurBal = rateCurBal;
+	}
+
+	/**
+	 * Gets the remittance mode id.
+	 *
+	 * @return the remittance mode id
+	 */
+	public BigDecimal getRemittanceModeId() {
+		return remittanceModeId;
+	}
+
+	/**
+	 * Sets the remittance mode id.
+	 *
+	 * @param remittanceModeId
+	 *            the new remittance mode id
+	 */
+	public void setRemittanceModeId(BigDecimal remittanceModeId) {
+		this.remittanceModeId = remittanceModeId;
+	}
+
+	/**
+	 * Gets the remittance code.
+	 *
+	 * @return the remittance code
+	 */
+	public String getRemittanceCode() {
+		return remittanceCode;
+	}
+
+	/**
+	 * Sets the remittance code.
+	 *
+	 * @param remittanceCode
+	 *            the new remittance code
+	 */
+	public void setRemittanceCode(String remittanceCode) {
+		this.remittanceCode = remittanceCode;
+	}
+
+	/**
+	 * Gets the remittance description.
+	 *
+	 * @return the remittance description
+	 */
+	public String getRemittanceDescription() {
+		return remittanceDescription;
+	}
+
+	/**
+	 * Sets the remittance description.
+	 *
+	 * @param remittanceDescription
+	 *            the new remittance description
+	 */
+	public void setRemittanceDescription(String remittanceDescription) {
+		this.remittanceDescription = remittanceDescription;
+	}
+
+	/**
+	 * Gets the delivery mode id.
+	 *
+	 * @return the delivery mode id
+	 */
+	public BigDecimal getDeliveryModeId() {
+		return deliveryModeId;
+	}
+
+	/**
+	 * Sets the delivery mode id.
+	 *
+	 * @param deliveryModeId
+	 *            the new delivery mode id
+	 */
+	public void setDeliveryModeId(BigDecimal deliveryModeId) {
+		this.deliveryModeId = deliveryModeId;
+	}
+
+	/**
+	 * Gets the delivery code.
+	 *
+	 * @return the delivery code
+	 */
+	public String getDeliveryCode() {
+		return deliveryCode;
+	}
+
+	/**
+	 * Sets the delivery code.
+	 *
+	 * @param deliveryCode
+	 *            the new delivery code
+	 */
+	public void setDeliveryCode(String deliveryCode) {
+		this.deliveryCode = deliveryCode;
+	}
+
+	/**
+	 * Gets the delivery description.
+	 *
+	 * @return the delivery description
+	 */
+	public String getDeliveryDescription() {
+		return deliveryDescription;
+	}
+
+	/**
+	 * Sets the delivery description.
+	 *
+	 * @param deliveryDescription
+	 *            the new delivery description
+	 */
+	public void setDeliveryDescription(String deliveryDescription) {
+		this.deliveryDescription = deliveryDescription;
 	}
 
 }

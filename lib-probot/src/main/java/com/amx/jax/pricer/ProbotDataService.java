@@ -13,25 +13,35 @@ import com.amx.jax.pricer.dto.HolidayResponseDTO;
 import com.amx.jax.pricer.dto.OnlineMarginMarkupInfo;
 import com.amx.jax.pricer.dto.OnlineMarginMarkupReq;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
+import com.amx.jax.pricer.dto.RoutingProductStatusDetails;
+import com.amx.jax.pricer.dto.RoutingStatusUpdateRequestDto;
 
-public interface ProbotDataService  extends AbstractProbotInterface{
-	public AmxApiResponse<DiscountDetailsReqRespDTO, Object> getDiscountManagemet(DiscountMgmtReqDTO discountMgmtReqDTO);
+public interface ProbotDataService extends AbstractProbotInterface {
+	public AmxApiResponse<DiscountDetailsReqRespDTO, Object> getDiscountManagemet(
+			DiscountMgmtReqDTO discountMgmtReqDTO);
 
 	public AmxApiResponse<HolidayResponseDTO, Object> fetchHolidayList(BigDecimal Id, Date fromDate, Date toDate);
 
 	public AmxApiResponse<RoutBanksAndServiceRespDTO, Object> getRbanksAndServices(BigDecimal countryId,
 			BigDecimal currencyId);
-	
-	public AmxApiResponse<DiscountDetailsReqRespDTO, Object> saveDiscountDetails(DiscountDetailsReqRespDTO discountMgmtReqDTO);
-	
-	public AmxApiResponse<GroupDetails, Object> getCurrencyGroupingData();
-	
-	public AmxApiResponse<CurrencyMasterDTO, Object> updateCurrencyGroupId(BigDecimal groupId, BigDecimal currencyId);
-	
-	public AmxApiResponse<CurrencyMasterDTO, Object> getCurrencyByGroupId(BigDecimal groupId);
-	
-	public AmxApiResponse<OnlineMarginMarkupInfo, Object> getOnlineMarginMarkupData( OnlineMarginMarkupReq OnlineMarginMarkupReq);
 
-	AmxApiResponse<BoolRespModel, Object> saveOnlineMarginMarkupData(OnlineMarginMarkupInfo OnlineMarginMarkupReq); 
-	
+	public AmxApiResponse<DiscountDetailsReqRespDTO, Object> saveDiscountDetails(
+			DiscountDetailsReqRespDTO discountMgmtReqDTO);
+
+	public AmxApiResponse<GroupDetails, Object> getCurrencyGroupingData();
+
+	public AmxApiResponse<CurrencyMasterDTO, Object> updateCurrencyGroupId(BigDecimal groupId, BigDecimal currencyId);
+
+	public AmxApiResponse<CurrencyMasterDTO, Object> getCurrencyByGroupId(BigDecimal groupId);
+
+	public AmxApiResponse<OnlineMarginMarkupInfo, Object> getOnlineMarginMarkupData(
+			OnlineMarginMarkupReq OnlineMarginMarkupReq);
+
+	AmxApiResponse<BoolRespModel, Object> saveOnlineMarginMarkupData(OnlineMarginMarkupInfo OnlineMarginMarkupReq);
+
+	AmxApiResponse<RoutingProductStatusDetails, Object> getRoutingProductStatus(BigDecimal countryId,
+			BigDecimal currencyId);
+
+	AmxApiResponse<Integer, Object> updateRoutingProductStatus(RoutingStatusUpdateRequestDto request);
+
 }
