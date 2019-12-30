@@ -30,10 +30,6 @@ import com.amx.jax.AppContextUtil;
 import com.amx.jax.JaxAuthContext;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
-
-import com.amx.jax.client.CustomerProfileClient;
-import com.amx.jax.client.JaxPushNotificationClient;
-
 import com.amx.jax.client.CustomerNotifyHubClient;
 import com.amx.jax.client.CustomerProfileClient;
 import com.amx.jax.dict.Language;
