@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.amx.jax.cache.test.RedisSampleCacheBox.RedisSampleData;
+import com.amx.jax.cache.test.RedisSampleTxCacheBox.RedisSampleData;
 import com.amx.jax.tunnel.TunnelService;
-import com.amx.jax.tunnel.sample.SampleTunnelEventsDict;
+import com.amx.jax.tunnel.sys.SysTunnelEventsDict;
 
 @RestController
 public class RedisController {
@@ -18,7 +18,7 @@ public class RedisController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RedisController.class);
 
 	@Autowired
-	RedisSampleCacheBox redisSampleCacheBox;
+	RedisSampleTxCacheBox redisSampleCacheBox;
 
 	@Autowired
 	TunnelService tunnelService;
@@ -36,6 +36,6 @@ public class RedisController {
 
 	@RequestMapping(value = "/pub/redis/test", method = RequestMethod.POST)
 	public long cacheTestPost(@RequestBody RedisSampleData status) {
-		return tunnelService.shout(SampleTunnelEventsDict.Names.TEST_TOPIC, status);
+		return tunnelService.shout(SysTunnelEventsDict.Names.TEST_TOPIC, status);
 	}
 }

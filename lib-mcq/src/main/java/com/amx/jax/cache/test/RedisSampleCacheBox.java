@@ -1,9 +1,11 @@
-package com.amx.jax.cache;
+package com.amx.jax.cache.test;
 
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.cache.CacheBox;
+
 @Component
-public class SampleTestCacheBox extends CacheBox<String> {
+public class RedisSampleCacheBox extends CacheBox<String> {
 
 	@Override
 	public String getDefault() {

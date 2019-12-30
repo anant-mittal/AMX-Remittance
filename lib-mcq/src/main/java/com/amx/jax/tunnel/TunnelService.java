@@ -15,7 +15,6 @@ import com.amx.jax.AppContext;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.logger.events.RequestTrackEvent;
-import com.amx.jax.tunnel.sample.SampleTunnelEventsDict;
 import com.amx.utils.JsonUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
 

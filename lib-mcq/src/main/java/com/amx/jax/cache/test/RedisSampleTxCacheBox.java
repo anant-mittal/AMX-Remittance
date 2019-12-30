@@ -6,11 +6,11 @@ import java.math.BigDecimal;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.cache.TxCacheBox;
-import com.amx.jax.cache.test.RedisSampleCacheBox.RedisSampleData;
+import com.amx.jax.cache.test.RedisSampleTxCacheBox.RedisSampleData;
 import com.amx.jax.dict.UserClient.ClientType;
 
 @Component
-public class RedisSampleCacheBox extends TxCacheBox<RedisSampleData> {
+public class RedisSampleTxCacheBox extends TxCacheBox<RedisSampleData> {
 
 	public static class RedisSampleData implements Serializable {
 		private static final long serialVersionUID = -2178734153442648084L;
