@@ -538,7 +538,7 @@ public class MetaClient extends AbstractJaxServiceClient implements IMetaControl
 	@Override
 	public AmxApiResponse<ReasonsDTO, Object> getReason(ReasoncodeCategory reasonCategory) {
 		return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + IMetaControllerExtn.Path.API_REASON_CODE)
-				.meta(new JaxMetaInfo()).queryParam(Params.REASON_CATEGORY, reasonCategory)
+				.meta(new JaxMetaInfo()).queryParam(Params.REASON_CATEGORY, reasonCategory).post()
 				.as(new ParameterizedTypeReference<AmxApiResponse<ReasonsDTO, Object>>() {
 				});
 	}
