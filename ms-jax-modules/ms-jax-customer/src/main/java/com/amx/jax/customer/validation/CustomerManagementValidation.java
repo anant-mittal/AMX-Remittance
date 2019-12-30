@@ -167,21 +167,23 @@ public class CustomerManagementValidation {
 	}
 
 	private void validateEmploymentInfo(CustomerEmploymentDetails customerEmploymentDetails) {
-
 		if (customerEmploymentDetails.getEmploymentTypeId() == null) {
 			throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Employment type can not be empty");
 		}
-		if (customerEmploymentDetails.getEmployer() == null) {
-			throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Employer name can not be empty");
-		}
-		if (customerEmploymentDetails.getProfessionId() == null) {
-			throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Profession can not be empty");
-		}
-		if (customerEmploymentDetails.getArticleDetailsId() == null) {
-			throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Article detail can not be empty");
-		}
-		if (customerEmploymentDetails.getIncomeRangeId() == null) {
-			throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Income range can not be empty");
+		// optional fields employer detail for 222 = unemployed type
+		if (!(customerEmploymentDetails.getEmploymentTypeId().compareTo(new BigDecimal(222)) == 0)) {
+			if (customerEmploymentDetails.getEmployer() == null) {
+				throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Employer name can not be empty");
+			}
+			if (customerEmploymentDetails.getProfessionId() == null) {
+				throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Profession can not be empty");
+			}
+			if (customerEmploymentDetails.getArticleDetailsId() == null) {
+				throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Article detail can not be empty");
+			}
+			if (customerEmploymentDetails.getIncomeRangeId() == null) {
+				throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Income range can not be empty");
+			}
 		}
 	}
 
