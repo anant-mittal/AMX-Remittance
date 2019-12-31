@@ -444,6 +444,8 @@ public final class ArgUtil {
 			return (Double) value;
 		} else if (value instanceof Number) {
 			return Double.valueOf(((Number) value).doubleValue());
+		} else if (value instanceof BigDecimal) {
+			return Double.valueOf(((BigDecimal) value).doubleValue());
 		} else if (value instanceof String) {
 			try {
 				return Double.valueOf(Double.parseDouble((String) value));
