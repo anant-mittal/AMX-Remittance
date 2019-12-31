@@ -1921,12 +1921,12 @@ public class RemittanceTransactionManager {
 				
 				TransactionHistroyDTO transactionHistoryDto = transactionHistroyService.getTransactionHistoryDto(cutomerReference, remittancedocfyr, remittancedocNumber);
 				model.setTransactionHistroyDTO(transactionHistoryDto);
-				if (Boolean.TRUE.equals(request.getPromotion())) {
+				/*if (Boolean.TRUE.equals(request.getPromotion())) {
 					PromotionDto promoDto = promotionManager.getPromotionDto(remittancedocNumber, remittancedocfyr);
 					if (promoDto != null && !promoDto.isChichenVoucher()) {
 						model.setPromotionDto(promotionManager.getPromotionDto(remittancedocNumber, remittancedocfyr));
 					}
-				}
+				}*/
 			}
 			model.setTransactionReference(getTransactionReference(applList.get(0)));
 			if ("Y".equals(applList.get(0).getLoyaltyPointInd())) {
@@ -1937,12 +1937,12 @@ public class RemittanceTransactionManager {
 			JaxTransactionStatus status = getJaxTransactionStatus(applList.get(0));
 			model.setStatus(status);
 
-			if (remitTrnxList!=null && !remitTrnxList.isEmpty()) {
+			/*if (remitTrnxList!=null && !remitTrnxList.isEmpty()) {
 				PromotionDto obj = dailyPromotionManager.getWanitBuyitMsg(remitTrnxList.get(0));
 				if(obj != null) {
 					model.setPromotionDto(obj);
 				}
-			}
+			}*/
 			model.setErrorCategory(paygDetail.getErrorCategory());
 			model.setErrorMessage(paygDetail.getErrorMessage());
 			if(applList.get(0).getErrorCategory() != null) {

@@ -288,7 +288,13 @@ public class BranchRemittanceSaveManager {
 	
 
 	public RemittanceResponseDto saveRemittanceTrnx(BranchRemittanceRequestModel remittanceRequestModel) {
-		branchRemitManager.checkingStaffIdNumberWithCustomer();
+		
+		CountryBranchMdlv1 countryBranch = new CountryBranchMdlv1();
+		countryBranch = bankMetaService.getCountryBranchById(metaData.getCountryBranchId()); //user branch not customer branch
+		
+		if(countryBranch!=null && countryBranch.getBranchId().compareTo(ConstantDocument.ONLINE_BRANCH_LOC_CODE)!=0) {
+			branchRemitManager.checkingStaffIdNumberWithCustomer();
+		}
 		logger.debug("saveRemittanceTrnx request model : {}", JsonUtil.toJson(remittanceRequestModel));
 		List<BranchApplicationDto> shoppingCartList = new ArrayList<>();
 		shoppingCartList = remittanceRequestModel.getRemittanceApplicationId();
@@ -329,9 +335,6 @@ public class BranchRemittanceSaveManager {
 			
 			dailyPromotionManager.applyJolibeePadalaCoupons(responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo(),null);
 			
-			
-			CountryBranchMdlv1 countryBranch = new CountryBranchMdlv1();
-			countryBranch = bankMetaService.getCountryBranchById(metaData.getCountryBranchId()); //user branch not customer branch
 			if(countryBranch!=null && countryBranch.getBranchId().compareTo(ConstantDocument.ONLINE_BRANCH_LOC_CODE)!=0) {
 				String promotionMsg = promotionManager.getPromotionPrizeForBranch(responseDto);
 				responseDto.setPromotionMessage(promotionMsg);
