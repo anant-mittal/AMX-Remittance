@@ -206,6 +206,10 @@ public class CustomerManagementValidation {
 			if (personalDetailInfo.getDateOfBirth() != null) {
 				dob = personalDetailInfo.getDateOfBirth();
 			}
+			if (dob == null) {
+				throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE,
+						"In order to update insurance flag, please update date of birth of customer");
+			}
 			Boolean insuranceIndic = personalDetailInfo.getInsurance();
 			if (insuranceIndic != null && insuranceIndic) {
 				int age = DateUtil.calculateAge(dob);
