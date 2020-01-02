@@ -206,7 +206,7 @@ public class CustomerManagementValidation {
 			if (personalDetailInfo.getDateOfBirth() != null) {
 				dob = personalDetailInfo.getDateOfBirth();
 			}
-			Boolean insuranceIndic = personalDetailInfo.getInsurance();
+			Boolean insuranceIndic = personalDetailInfo.getInsuranceInd();
 			if (insuranceIndic != null && insuranceIndic) {
 				if (dob == null) {
 					throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE,
