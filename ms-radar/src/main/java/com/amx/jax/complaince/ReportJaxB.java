@@ -6,7 +6,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -15,7 +14,6 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -31,6 +29,8 @@ import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.repository.EmployeeRespository;
 import com.amx.jax.repository.ParameterDetailsRespository;
 import com.amx.utils.IoUtils;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator;
 
 @Component
 public class ReportJaxB {
@@ -61,6 +61,8 @@ public class ReportJaxB {
 	
 	@Autowired
 	ReasonRepo reasonRepo;
+	
+	private XmlMapper xmlMapper = new XmlMapper();
 
 
 	public void Marshilling(jaxCbkReport cbk,BigDecimal employeeId, String reasonCode, String actionCode) {
@@ -148,7 +150,7 @@ public class ReportJaxB {
 									new FromForeignCurrency(cbk.getForeignCurrencyCode(),
 											cbk.getForeignAmount().toString(), cbk.getForeignExRate().toString()),
 									new FromPerson(cbk.getCustGender(), cbk.getCustTitle(), cbk.getCustFirstName(),
-											cbk.getCustLastName(), cbk.getCustSsn(), cbk.getCustNationality(),
+											(cbk.getCustLastName()== null ? "NA" : cbk.getCustLastName()), cbk.getCustSsn(), cbk.getCustNationality(),
 											phonesList1, addressList,
 											new Identification(cbk.getCustIdentificationType().toString(),
 													cbk.getCustIdentityNumber(), cbk.getCustIdIssueCountry())),
@@ -156,25 +158,22 @@ public class ReportJaxB {
 							new Tto(cbk.getFundsCode(),
 									new ToForeignCurrency(cbk.getForeignCurrencyCode(),
 											cbk.getForeignAmount().toString(), cbk.getForeignExRate().toString()),
-									new ToPerson("NA", cbk.getBeneFirstName(), cbk.getBeneLastName(), "NA", "NA",
+									new ToPerson("NA", cbk.getBeneFirstName(), (cbk.getBeneLastName()== null ? "NA" : cbk.getBeneLastName()), "NA", "NA",
 											phonesList2, addressList1),
 									cbk.getBeneCountrycode())),
-					repoIndList);
-			JAXBContext jb = JAXBContext.newInstance(Report.class);
-			Marshaller ms = jb.createMarshaller();
-			ms.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-			ms.marshal(repo, System.out);
-			ms.marshal(repo, new File("src\\main\\java\\data\\report.xml"));
-
-			// writing xml in to the database table
-			StringWriter sw = new StringWriter();
-			ms.marshal(repo, sw);
-			String xmlContent = sw.toString(); 
+					reportIndicators);
+			
+			xmlMapper.setDefaultUseWrapper(true);
+			xmlMapper.configure(ToXmlGenerator.Feature.WRITE_XML_DECLARATION, true );
+			System.out.println("TEST"+xmlMapper.writeValueAsString(repo));
+			String xml = xmlMapper.writeValueAsString(repo);
+			 xmlMapper.writeValue(new File("src\\main\\java\\data\\report.xml"),
+					 repo);
 	      
 			//Inserting data into ExCbkStrReportLOG      
 			Date date = new Date();
 			ExCbkStrReportLOG logtable = new ExCbkStrReportLOG();
-			logtable.setReqXml(IoUtils.stringToClob(xmlContent));
+			logtable.setReqXml(IoUtils.stringToClob(xml));
 			logtable.setCustomerName(cbk.getCustFirstName() + cbk.getCustLastName());
 			logtable.setRemittanceTranxId(cbk.getTranxNo());
 			logtable.setCreatedDate(date);
@@ -185,6 +184,7 @@ public class ReportJaxB {
 			logtable.setReasonCode(reasonDetailsDto.getReasonDesc());
 			logtable.setActionCode(actionDetailsDto.getActionDesc());
 			logtable.setReportType(cbk.getReportCode());
+			logtable.setCustIsActive(cbk.getIsActive());
 		
 			exCbkReportLogRepo.save(logtable);
 			

@@ -155,13 +155,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-
-		<dependency>
 			<groupId>com.googlecode.libphonenumber</groupId>
 			<artifactId>libphonenumber</artifactId>
 			<version>8.10.5</version>
@@ -197,59 +190,7 @@
 			<artifactId>com.google</artifactId>
 			<version>0.0.4.3</version>
 		</dependency>
-		
-		<dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-test</artifactId>
-    <scope>test</scope><!-- CHANGE THIS TO "runtime" -->
-</dependency>
-		
-		<dependency>
-    		<groupId>com.sun.xml.bind</groupId>
-    		<artifactId>jaxb-core</artifactId>
-    		<version>2.2.8-b01</version>
-		</dependency>
-		
-		<dependency>
-    		<groupId>com.sun.xml.bind</groupId>
-    		<artifactId>jaxb-impl</artifactId>
-    		<version>2.2-promoted-b65</version>
-		</dependency>
-		
-			<dependency>
-	    <groupId>com.google.code.gson</groupId>
-	    <artifactId>gson</artifactId>
-	    <version>2.8.0</version>
-	</dependency>
-	
-<dependency>
-  <groupId>joda-time</groupId>
-  <artifactId>joda-time</artifactId>
-  <version>2.10.5</version>
-</dependency>
-		
-		
-		<dependency>
-		    <groupId>org.apache.httpcomponents</groupId>
-		    <artifactId>httpmime</artifactId>
-		    <version>4.3.1</version>
-		</dependency>
-		
-		
-		<dependency>
-		    <groupId>org.andromda.thirdparty.jaxb2_commons</groupId>
-		    <artifactId>xml-element-wrapper</artifactId>
-		    <version>1.0</version>
-		</dependency>
-		
-<dependency>
-    <groupId>javax.xml.bind</groupId>
-    <artifactId>jaxb-api</artifactId>
-    <version>2.1</version>
-</dependency>
-		
-		
-	
+
 	</dependencies>
 
 

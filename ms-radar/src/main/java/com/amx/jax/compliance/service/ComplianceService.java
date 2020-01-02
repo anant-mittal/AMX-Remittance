@@ -1,29 +1,27 @@
 
 package com.amx.jax.compliance.service;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.math.BigDecimal;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.sql.Clob;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import javax.servlet.http.Cookie;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -32,6 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.UserFinancialYearDTO;
 import com.amx.jax.AppContextUtil;
+import com.amx.jax.client.AbstractJaxServiceClient;
 import com.amx.jax.complaince.ActionParamDto;
 import com.amx.jax.complaince.ActionRepo;
 import com.amx.jax.complaince.ComplainceRepository;
@@ -51,11 +50,10 @@ import com.amx.jax.error.JaxError;
 import com.amx.jax.radaar.ExCbkStrReportLogDto;
 import com.amx.jax.repository.webservice.ExOwsLoginCredentialsRepository;
 import com.amx.jax.rest.RestService;
-import com.google.gson.JsonObject;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class ComplianceService {
+public class ComplianceService extends AbstractJaxServiceClient{
 
 	private final Logger LOGGER = Logger.getLogger(ComplianceService.class);
 
@@ -92,106 +90,84 @@ public class ComplianceService {
 	public String tokenGenaration(String userNAme, String password, String tokenLifeTime) throws Exception {
 		
 			String response;
+			
+			Map<String, Object> jsonMap = new HashMap<String, Object>();
 
-			JsonObject loginDeatilss = new JsonObject();
-			loginDeatilss.addProperty("username", userNAme);
-			loginDeatilss.addProperty("password", password);
-			loginDeatilss.addProperty("tokenlifetime", tokenLifeTime);
+			jsonMap.put("username", userNAme);
+			jsonMap.put("password", password);
+			jsonMap.put("tokenlifetime", tokenLifeTime);
+		
+			JSONObject obj =new JSONObject(jsonMap);
+			String content = obj.toString();
+			
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			
+			response = restService.ajax("https://goaml.kwfiu.gov.kw/goAMLWeb/api/Authenticate/GetToken")
+					.field("charset", "UTF-8").field("ContentType", "application/octet-stream").post(requestEntity).postJson(content).as(new ParameterizedTypeReference<String>() {
+					});
 
-			String content = loginDeatilss.toString();
-
-			DataOutputStream out = null;
-			try {
-
-				URL url = new URL("https://goaml.kwfiu.gov.kw/goAMLWeb/api/Authenticate/GetToken");
-				HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-				connection.setDoOutput(true);
-				connection.setDoInput(true);
-				connection.setRequestMethod("POST");
-				connection.setRequestProperty("Content-Type", "application/json");
-				connection.setRequestProperty("charset", "UTF-8");
-
-				// sending request
-				OutputStream wr = connection.getOutputStream();
-				wr.write(content.getBytes());
-				wr.flush();
-
-				// reading response
-				BufferedReader rd = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-				String line;
-				StringBuffer response_buffer = new StringBuffer();
-				while ((line = rd.readLine()) != null) {
-					response_buffer.append(line);
-				}
-
-				rd.close();
-				response = response_buffer.toString();
-
-			} finally {
-				if (out != null) {
-					try {
-						out.close();
-					} catch (IOException e) {
-						LOGGER.info("" + e.getMessage());
-					}
-				}
-			}
 
 			return response;
 		
 
 	}
 
+
 	public List<ExCbkStrReportLogDto> uploadComplainceReportFile(@RequestParam BigDecimal docFyr,
 			@RequestParam BigDecimal documnetNo, @RequestParam String reason, @RequestParam String action, @RequestParam BigDecimal employeeId)
-			throws IOException, SQLException {
-		
+					throws IOException, SQLException {
+
 		List<ExCbkStrReportLogDto> response = null;
 		String token = null;
-		
+
+
 		jaxCbkReport cbk = complainceRepository.getCBKReportByDocNoAndDocFyr(documnetNo, docFyr);
-		
+
+		if(cbk!=null) {
+			
 			List<ExCbkStrReportLOG> reportDetails = exCbkReportLogRepo.getComplainceData(cbk.getTranxNo());
-			
+
 			if(reportDetails.isEmpty()) {		
-		
-		generateXMLFile(docFyr, documnetNo, employeeId,reason,action);
 
-	    List<ExCbkStrReportLOG> ex = exCbkReportLogRepo.getComplainceData(cbk.getTranxNo());
+				generateXMLFile(docFyr, documnetNo, employeeId,reason,action);
 
-		ExOwsLoginCredentials bankCode = exOwsLoginCredentialsRepository.findByBankCode(Paramss.COMPLAINCE_BANK_CODE);
-		
-		try {
-			token = tokenGenaration(bankCode.getWsUserName(), bankCode.getWsPassword(), bankCode.getWsPin());
-			
-			token = token.replaceAll("^\"|\"$", "");
-		} catch (Exception e) {
+				List<ExCbkStrReportLOG> ex = exCbkReportLogRepo.getComplainceData(cbk.getTranxNo());
 
-			LOGGER.error("error in token generation" + e.getMessage());
-		}
+				ExOwsLoginCredentials bankCode = exOwsLoginCredentialsRepository.findByBankCode(Paramss.COMPLAINCE_BANK_CODE);
 
-		Clob fileformat = ex.get(0).getReqXml();
-		
-		Reader reader = fileformat.getCharacterStream();
-		StringWriter writer = new StringWriter();
-		IOUtils.copy(reader, writer);
-		String clobContent = writer.toString();
-		
-		File file = reportJaxB.MakeZipfile(clobContent);
-		
-		FileInputStream input = new FileInputStream(file);
-		MultipartFile multipartFile = new MockMultipartFile("file", file.getName(), "zipfile",
-				IOUtils.toByteArray(input));
+				try {
+					token = tokenGenaration(bankCode.getWsUserName(), bankCode.getWsPassword(), bankCode.getWsPin());
 
-		response = uploadComplaince(multipartFile, token, cbk,reason,action );
-					
+					token = token.replaceAll("^\"|\"$", "");
+				} catch (Exception e) {
+
+					LOGGER.error("error in token generation" + e.getMessage());
+				}
+
+				Clob fileformat = ex.get(0).getReqXml();
+
+				Reader reader = fileformat.getCharacterStream();
+				StringWriter writer = new StringWriter();
+				IOUtils.copy(reader, writer);
+				String clobContent = writer.toString();
+
+				File file = reportJaxB.MakeZipfile(clobContent);
+
+				FileInputStream input = new FileInputStream(file);
+				MultipartFile multipartFile = new MockMultipartFile("file", file.getName(), "zipfile",
+						IOUtils.toByteArray(input));
+
+				response = uploadComplaince(multipartFile, token, cbk,reason,action );
+
 			}else {
 				throw new GlobalException(JaxError.DUPLICATE_TRNX_DETAILS, "Duplicate Transction Id");
 			}
-				
+		}else {
+			throw new GlobalException(JaxError.INVALID_TRNX_DETAILS, "Invalid Document Number or Document Financial Year");
+		}
+
 		return response;
-	
+
 	}
 
 	public String generateXMLFile(BigDecimal docFyr, BigDecimal docNo, BigDecimal employeeId, String reasonCode, String actionCode ) {
@@ -218,12 +194,13 @@ public class ComplianceService {
 			dto.setCustomerrRef(i.getCustomerrRef());
 			dto.setReasonCode(i.getReasonCode());
 			dto.setRemittanceTranxId(i.getRemittanceTranxId());
+			dto.setIscustActive(i.getCustIsActive());
 			if(i.getCustIsActive() != null && i.getCustIsActive().equals("Y")) {
 				dto.setCustomerStatusDesc("ACTIVE");
 			}else {
 				dto.setCustomerStatusDesc("DEACTIVE");
 			}
-
+			
 			dto.setReportType(i.getReportType());
 			return dto;
 		}).collect(Collectors.toList());

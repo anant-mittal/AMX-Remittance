@@ -1,14 +1,14 @@
 package com.amx.jax.complaince;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
-@XmlRootElement(name="report_indicators")
+@JacksonXmlRootElement(localName= "report_indicators")
 public class ReportIndicators {
 	
 	private  String indicator;
 
-	 @XmlElement(name="indicator")
+	 @JacksonXmlProperty
 	public String getIndicator() {
 		return indicator;
 	}

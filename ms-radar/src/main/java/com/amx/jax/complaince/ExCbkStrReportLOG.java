@@ -1,5 +1,8 @@
 package com.amx.jax.complaince;
-
+/**
+ * @author Radhika
+ * @date  25/12/2019 
+ */
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Clob;
@@ -11,8 +14,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-
-import com.amx.jax.model.ResourceDTO;
 
 @Entity
 @Table(name = "EX_CBK_STR_REPORT_LOG")

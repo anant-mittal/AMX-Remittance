@@ -1,10 +1,10 @@
 package com.amx.jax.complaince;
 
-import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
-import com.sun.xml.txw2.annotation.XmlElement;
-@XmlRootElement(name="t_from_my_client")
+@JacksonXmlRootElement(localName="t_from_my_client")
 @XmlType(propOrder={"from_funds_code","from_foreign_currency","from_person","from_country"})	
 public class TFromMyClient {
 	
@@ -12,7 +12,8 @@ public class TFromMyClient {
 	private FromForeignCurrency from_foreign_currency; 
 	private FromPerson from_person; 
 	private String from_country;
-	@XmlElement
+	
+	@JacksonXmlProperty
 	public String getFrom_funds_code() {
 		return from_funds_code;
 	}
@@ -20,22 +21,23 @@ public class TFromMyClient {
 		this.from_funds_code = from_funds_code;
 	}
 	
-	
-	@XmlElement
+	@JacksonXmlProperty
 	public String getFrom_country() {
 		return from_country;
 	}
 	public FromForeignCurrency getFrom_foreign_currency() {
 		return from_foreign_currency;
 	}
-	@XmlElement
+	
+	@JacksonXmlProperty
 	public void setFrom_foreign_currency(FromForeignCurrency from_foreign_currency) {
 		this.from_foreign_currency = from_foreign_currency;
 	}
 	public FromPerson getFrom_person() {
 		return from_person;
 	}
-	@XmlElement
+	
+	@JacksonXmlProperty
 	public void setFrom_person(FromPerson from_person) {
 		this.from_person = from_person;
 	}

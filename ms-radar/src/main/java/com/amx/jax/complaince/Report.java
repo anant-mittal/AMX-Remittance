@@ -1,12 +1,10 @@
 package com.amx.jax.complaince;
-import java.util.List;
-
-import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import com.sun.xml.txw2.annotation.XmlElement;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 	
-@XmlRootElement(name = "report")
-@XmlType(propOrder={"rentity_id", "submission_code", "report_code","submission_date", "currency_code_local", "reporting_person","location", "reason", "action", "transaction", "report_indicators"})	
+@JacksonXmlRootElement(localName = "report")
+@XmlType(propOrder={"rentity_id", "submission_code", "report_code","submission_date", "currency_code_local", "reporting_person","location", "reason", "action", "transaction","report_indicators"})	
 		public class Report 
 		{
 			
@@ -20,88 +18,88 @@ import com.sun.xml.txw2.annotation.XmlElement;
 			  private String reason;
 			  private String action;
 			  private Transaction transaction;
-			  private List<ReportIndicators> report_indicators;
+			  private ReportIndicators report_indicators;
 			  
-			@XmlElement  
+			  @JacksonXmlProperty  
 			public String getRentity_id() {
 				return rentity_id;
 			}
 			public void setRentity_id(String rentity_id) {
 				this.rentity_id = rentity_id;
 			}
-			@XmlElement 
+			@JacksonXmlProperty
 			public String getSubmission_code() {
 				return submission_code;
 			}
 			public void setSubmission_code(String submission_code) {
 				this.submission_code = submission_code;
 			}
-			@XmlElement 
+			@JacksonXmlProperty
 			public String getReport_code() {
 				return report_code;
 			}
 			public void setReport_code(String report_code) {
 				this.report_code = report_code;
 			}
-			@XmlElement 
+			@JacksonXmlProperty
 			public String getCurrency_code_local() {
 				return currency_code_local;
 			}
 			public void setCurrency_code_local(String currency_code_local) {
 				this.currency_code_local = currency_code_local;
 			}
-			@XmlElement 
+			@JacksonXmlProperty
 			public String getSubmission_date() {
 				return submission_date;
 			}
 			public void setSubmission_date(String submission_date) {
 				this.submission_date = submission_date;
 			}
-			@XmlElement
+			@JacksonXmlProperty
 			public ReportingPerson getReporting_person() {
 				return reporting_person;
 			}
 			public void setReporting_person(ReportingPerson reporting_person) {
 				this.reporting_person = reporting_person;
 			}
-			@XmlElement 
+			@JacksonXmlProperty
 			public Location getLocation() {
 				return location;
 			}
 			public void setLocation(Location location) {
 				this.location = location;
 			}
-			@XmlElement 
+			@JacksonXmlProperty
 			public String getReason() {
 				return reason;
 			}
 			public void setReason(String reason) {
 				this.reason = reason;
 			}
-			@XmlElement 
+			@JacksonXmlProperty
 			public String getAction() {
 				return action;
 			}
 			public void setAction(String action) {
 				this.action = action;
 			}
-			@XmlElement 
+			@JacksonXmlProperty
 			public Transaction getTransaction() {
 				return transaction;
 			}
 			public void setTransaction(Transaction transaction) {
 				this.transaction = transaction;
 			}		
-			@XmlElement 
-			public List<ReportIndicators> getReport_indicators() {
+			@JacksonXmlProperty
+			public ReportIndicators getReport_indicators() {
 				return report_indicators;
 			}
-			public void setReport_indicators(List<ReportIndicators> report_indicators) {
+			public void setReport_indicators(ReportIndicators report_indicators) {
 				this.report_indicators = report_indicators;
 			}
 			public Report(String rentity_id, String submission_code, String report_code, String submission_date,
 					String currency_code_local, ReportingPerson reporting_person, Location location, String reason,
-					String action, Transaction transaction, List<ReportIndicators> repoIndList) {
+					String action, Transaction transaction, ReportIndicators report_indicators) {
 				super();
 				this.rentity_id = rentity_id;
 				this.submission_code = submission_code;
@@ -113,13 +111,12 @@ import com.sun.xml.txw2.annotation.XmlElement;
 				this.reason = reason;
 				this.action = action;
 				this.transaction = transaction;
-				this.report_indicators = repoIndList;
+				this.report_indicators = report_indicators;
 			}
 			public Report() {
 				super();
 				
 			}
-			
 			
 			
 			 

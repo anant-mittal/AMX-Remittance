@@ -365,7 +365,8 @@ public enum JaxError implements IExceptionEnum {
 	SOURCE_OF_INCOME_NOT_FOUND,
 	
 	//KWFIU
-	DUPLICATE_TRNX_DETAILS;
+	DUPLICATE_TRNX_DETAILS,
+	INVALID_TRNX_DETAILS;
 	
 	@Deprecated
 	public String getCode() {

@@ -1,11 +1,11 @@
 package com.amx.jax.complaince;
 
-import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import com.sun.xml.txw2.annotation.XmlElement;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
-@XmlRootElement(name="transaction")
+@JacksonXmlRootElement(localName="transaction")
 @XmlType(propOrder={"transactionnumber","transaction_location","date_transaction","teller","authorized","transmode_code","amount_local","t_from_my_client","t_to"})	
 public class Transaction {
 	
@@ -18,49 +18,56 @@ public class Transaction {
 	private String amount_local;
 	private TFromMyClient t_from_my_client;
 	private Tto t_to;
-	@XmlElement
+	
+	@JacksonXmlProperty
 	public String getTransactionnumber() {
 		return transactionnumber;
 	}
 	public void setTransactionnumber(String transactionnumber) {
 		this.transactionnumber = transactionnumber;
 	}
-	@XmlElement
+	
+	@JacksonXmlProperty
 	public String getTransaction_location() {
 		return transaction_location;
 	}
 	public void setTransaction_location(String transaction_location) {
 		this.transaction_location = transaction_location;
 	}
-	@XmlElement
+	
+	@JacksonXmlProperty
 	public String getDate_transaction() {
 		return date_transaction;
 	}
 	public void setDate_transaction(String date_transaction) {
 		this.date_transaction = date_transaction;
 	}
-	@XmlElement
+	
+	@JacksonXmlProperty
 	public String getTeller() {
 		return teller;
 	}
 	public void setTeller(String teller) {
 		this.teller = teller;
 	}
-	@XmlElement
+	
+	@JacksonXmlProperty
 	public String getAuthorized() {
 		return authorized;
 	}
 	public void setAuthorized(String authorized) {
 		this.authorized = authorized;
 	}
-	@XmlElement
+	
+	@JacksonXmlProperty
 	public String getTransmode_code() {
 		return transmode_code;
 	}
 	public void setTransmode_code(String transmode_code) {
 		this.transmode_code = transmode_code;
 	}
-	@XmlElement
+	
+	@JacksonXmlProperty
 	public String getAmount_local() {
 		return amount_local;
 	}
@@ -68,16 +75,15 @@ public class Transaction {
 		this.amount_local = amount_local;
 	}
 	
-	
-	
-	@XmlElement
+	@JacksonXmlProperty
 	public TFromMyClient getT_from_my_client() {
 		return t_from_my_client;
 	}
 	public void setT_from_my_client(TFromMyClient t_from_my_client) {
 		this.t_from_my_client = t_from_my_client;
 	}
-	@XmlElement
+	
+	@JacksonXmlProperty
 	public Tto getT_to() {
 		return t_to;
 	}

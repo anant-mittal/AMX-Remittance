@@ -2,12 +2,10 @@ package com.amx.jax.complaince;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-
-import com.sun.xml.txw2.annotation.XmlElement;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 @XmlRootElement(name="to_person")
 @XmlType(propOrder={"title","first_name","last_name","ssn","nationality1","phone","address"})	
@@ -21,35 +19,39 @@ public class ToPerson {
 	private List<Phones> phone = new  ArrayList<Phones>();
 	private List<Address> address = new ArrayList<Address>();
 	
-	@XmlElement
+	@JacksonXmlProperty
 	public String getTitle() {
 		return title;
 	}
 	public void setTitle(String title) {
 		this.title = title;
 	}
-	@XmlElement
+	
+	@JacksonXmlProperty
 	public String getFirst_name() {
 		return first_name;
 	}
 	public void setFirst_name(String first_name) {
 		this.first_name = first_name;
 	}
-	@XmlElement
+	
+	@JacksonXmlProperty
 	public String getLast_name() {
 		return last_name;
 	}
 	public void setLast_name(String last_name) {
 		this.last_name = last_name;
 	}
-	@XmlElement
+	
+	@JacksonXmlProperty
 	public String getSsn() {
 		return ssn;
 	}
 	public void setSsn(String ssn) {
 		this.ssn = ssn;
 	}
-	@XmlElement
+	
+	@JacksonXmlProperty
 	public String getNationality1() {
 		return nationality1;
 	}
@@ -57,16 +59,16 @@ public class ToPerson {
 		this.nationality1 = nationality1;
 	}
 	
-	@XmlElementWrapper(name="phones")
-    @XmlElement
+	@JacksonXmlElementWrapper(localName = "phones")
+	@JacksonXmlProperty
 	public List<Phones> getPhone() {
 		return phone;
 	}
 	public void setPhone(List<Phones> phone) {
 		this.phone = phone;
 	}
-	@XmlElementWrapper(name="addresses")
-    @XmlElement
+	@JacksonXmlElementWrapper(localName = "addresses")
+	@JacksonXmlProperty
 	public List<Address> getAddress() {
 		return address;
 	}

@@ -1,11 +1,10 @@
 package com.amx.jax.complaince;
 
-import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
-import com.sun.xml.txw2.annotation.XmlElement;
-
-@XmlRootElement(name="identification")
+@JacksonXmlRootElement(localName="identification")
 @XmlType(propOrder={"type","number","issue_country"})	
 public class Identification {
 	
@@ -13,7 +12,7 @@ public class Identification {
 	private String number;
 	private String issue_country;
 	
-	@XmlElement
+	@JacksonXmlProperty
 	public String getType() {
 		return type;
 	}
@@ -21,14 +20,14 @@ public class Identification {
 		this.type = type;
 	
 	}
-	@XmlElement
+	@JacksonXmlProperty
 	public String getNumber() {
 		return number;
 	}
 	public void setNumber(String number) {
 		this.number = number;
 	}
-	@XmlElement
+	@JacksonXmlProperty
 	public String getIssue_country() {
 		return issue_country;
 	}
