@@ -21,6 +21,7 @@ import com.amx.amxlib.service.ICustomerService.Path;
 import com.amx.amxlib.service.IUserService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.auth.AuthFailureLogManager;
 import com.amx.jax.constant.JaxEvent;
 import com.amx.jax.customer.service.JaxCustomerContactVerificationService;
 import com.amx.jax.logger.LoggerService;
@@ -51,6 +52,8 @@ public class UserController implements IUserService {
 	
 	@Autowired
 	JaxCustomerContactVerificationService jaxCustomerContactVerificationService;
+	@Autowired
+	AuthFailureLogManager authFailureLogManager;
 	
 	
 
@@ -58,8 +61,9 @@ public class UserController implements IUserService {
 
 	@RequestMapping(value = "/login/", method = RequestMethod.POST)
 	public ApiResponse loginUser(@RequestBody CustomerModel customerModel) {
-		JaxContextUtil.setJaxEvent(JaxEvent.LOGIN);
+		JaxContextUtil.setJaxEvent(JaxEvent.ONLINE_LOGIN);
 		JaxContextUtil.setRequestModel(customerModel);
+		authFailureLogManager.validateAuthFailure();
 		logger.info("loginUser Request: usreid: " + customerModel.getLoginId());
 		//jaxCustomerContactVerificationService.validateEmailVerification(customerModel.getLoginId());
 		jaxCustomerContactVerificationService.validateEmailVerification(customerModel.getLoginId());
@@ -92,6 +96,8 @@ public class UserController implements IUserService {
 			@RequestParam(value = UserApi.PASSWORD) String password) {
 		logger.debug(MessageFormat.format("IdentityInt value is {0} :", identityInt));
 		logger.debug(MessageFormat.format("IdentityType value is {0} :", identityType));
+		JaxContextUtil.setJaxEvent(JaxEvent.ONLINE_LOGIN);
+		authFailureLogManager.validateAuthFailure();
 		// Validate TODO:- @Anant
 		jaxCustomerContactVerificationService.validateEmailVerification(identityInt);
 		CustomerModel customerModel = fingerprintService.loginCustomerByFingerprint(identityInt, identityType, password,

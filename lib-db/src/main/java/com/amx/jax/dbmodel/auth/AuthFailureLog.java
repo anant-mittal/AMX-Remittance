@@ -1,7 +1,7 @@
 package com.amx.jax.dbmodel.auth;
 
 import java.math.BigDecimal;
-import java.sql.Date;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

@@ -31,7 +31,7 @@ public class JaxControllerAdvice extends AmxAdvice {
 	public ResponseEntity<AmxApiError> handle(AbstractJaxException ex, HttpServletRequest request, HttpServletResponse response) {
 		raiseAlert(ex);
 		JaxEvent jaxevent = JaxContextUtil.getJaxEvent();
-		if (JaxEvent.LOGIN.equals(jaxevent)) {
+		if (JaxEvent.ONLINE_LOGIN.equals(jaxevent) || JaxEvent.ONLINE_SIGNUP.equals(jaxevent)) {
 			authFailureLogManager.logAuthFailureEvent(ex);
 		}
 		return super.handle(ex, request, response);
@@ -48,7 +48,7 @@ public class JaxControllerAdvice extends AmxAdvice {
 
 	private void raiseAlert(AbstractJaxException ex) {
 		JaxEvent event = JaxContextUtil.getJaxEvent();
-		if (event != null) {
+		if (event != null && event.getAlertBean() != null) {
 			IAlert alert = appContext.getBean(event.getAlertBean());
 			if (alert.isEnabled()) {
 				alert.sendAlert(ex);

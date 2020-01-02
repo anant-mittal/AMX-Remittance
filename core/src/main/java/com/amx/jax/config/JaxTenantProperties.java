@@ -81,6 +81,12 @@ public class JaxTenantProperties {
 	
 	@TenantValue("${jax.max.loyalty.count}")
 	private BigDecimal loyaltyCount;
+	
+	@TenantValue("${jax.authfailog.interval}")
+	private Integer authFailLogInterval;
+	
+	@TenantValue("${jax.authfaillog.attempts}")
+	private Integer authFailLogAttemps;
 
 	public Boolean getCashDisable() {
 		return cashDisable;
@@ -226,6 +232,22 @@ public class JaxTenantProperties {
 
 	public void setLoyaltyCount(BigDecimal loyaltyCount) {
 		this.loyaltyCount = loyaltyCount;
+	}
+
+	public Integer getAuthFailLogInterval() {
+		return authFailLogInterval;
+	}
+
+	public void setAuthFailLogInterval(Integer authFailLogInterval) {
+		this.authFailLogInterval = authFailLogInterval;
+	}
+
+	public Integer getAuthFailLogAttemps() {
+		return authFailLogAttemps;
+	}
+
+	public void setAuthFailLogAttemps(Integer authFailLogAttemps) {
+		this.authFailLogAttemps = authFailLogAttemps;
 	}
 
 	

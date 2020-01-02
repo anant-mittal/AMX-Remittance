@@ -8,5 +8,5 @@ package com.amx.jax.event;
  */
 public enum JaxAuthLogEvent {
 
-	LOGIN;
+	ONLINE_LOGIN, ONLINE_SINGUP;
 }

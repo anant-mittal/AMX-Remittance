@@ -28,6 +28,8 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.service.ICustomerService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.auth.AuthFailureLogManager;
+import com.amx.jax.constant.JaxEvent;
 import com.amx.jax.customer.service.CustomerService;
 import com.amx.jax.customer.service.JaxCustomerContactVerificationService;
 import com.amx.jax.dbmodel.Customer;
@@ -47,6 +49,7 @@ import com.amx.jax.userservice.service.CustomerModelService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.userservice.service.UserValidationService;
 import com.amx.jax.util.ConverterUtil;
+import com.amx.jax.util.JaxContextUtil;
 
 @RestController
 @RequestMapping(CUSTOMER_ENDPOINT)
@@ -89,6 +92,8 @@ public class CustomerController implements ICustomerService {
 	
 	@Autowired
 	OnlineCustomerRepository onlineCustomerRepository;
+	@Autowired
+	AuthFailureLogManager authFailureLogManager;
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -259,6 +264,8 @@ public class CustomerController implements ICustomerService {
 			@PathVariable("init-registration") Boolean init,
 			@RequestParam(required = false) ContactType contactType) {
 		logger.info("initRegistrationSendOtp Request:civilId" + civilId);
+		JaxContextUtil.setJaxEvent(JaxEvent.ONLINE_SIGNUP);
+		authFailureLogManager.validateAuthFailure();
 		List<ContactType> contactTypes = new ArrayList<ContactType>();
 		if (contactType != null) {
 			contactTypes.add(contactType);
