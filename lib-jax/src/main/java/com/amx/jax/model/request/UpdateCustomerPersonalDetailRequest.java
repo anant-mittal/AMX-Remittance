@@ -16,9 +16,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class UpdateCustomerPersonalDetailRequest implements ICustomerContactData {
 
 	Date dateOfBirth;
-	String insuranceInd;
+	String insurance;
 	@JsonIgnore
-	Boolean insurance;
+	Boolean insuranceInd;
 	String customerSignature;
 	Boolean pepsIndicator;
 	@Pattern(regexp = "^[1-9]\\d*$", message = "Invalid Mobile No")
@@ -36,6 +36,10 @@ public class UpdateCustomerPersonalDetailRequest implements ICustomerContactData
 	String firstName;
 	@Size(max = 200)
 	String lastName;
+	@Size(max = 200)
+	String firstNameLocal;
+	@Size(max = 200)
+	String lastNameLocal;
 
 	public Date getDateOfBirth() {
 		return dateOfBirth;
@@ -51,14 +55,6 @@ public class UpdateCustomerPersonalDetailRequest implements ICustomerContactData
 
 	public void setCustomerSignature(String customerSignature) {
 		this.customerSignature = customerSignature;
-	}
-
-	public Boolean getInsurance() {
-		return insurance;
-	}
-
-	public void setInsurance(Boolean insurance) {
-		this.insurance = insurance;
 	}
 
 	public Boolean getPepsIndicator() {
@@ -114,17 +110,6 @@ public class UpdateCustomerPersonalDetailRequest implements ICustomerContactData
 		this.watsAppMobileNo = watsAppMobileNo;
 	}
 
-	public String getInsuranceInd() {
-		return insuranceInd;
-	}
-
-	public void setInsuranceInd(String insuranceInd) {
-		this.insuranceInd = insuranceInd;
-		if (insuranceInd != null) {
-			this.insurance = "Y".equalsIgnoreCase(insuranceInd);
-		}
-	}
-
 	public CustomerPassportData getCustomerPassportData() {
 		return customerPassportData;
 	}
@@ -147,6 +132,41 @@ public class UpdateCustomerPersonalDetailRequest implements ICustomerContactData
 
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
+	}
+
+	public String getFirstNameLocal() {
+		return firstNameLocal;
+	}
+
+	public void setFirstNameLocal(String firstNameLocal) {
+		this.firstNameLocal = firstNameLocal;
+	}
+
+	public String getLastNameLocal() {
+		return lastNameLocal;
+	}
+
+	public void setLastNameLocal(String lastNameLocal) {
+		this.lastNameLocal = lastNameLocal;
+	}
+
+	public String getInsurance() {
+		return insurance;
+	}
+
+	public void setInsurance(String insurance) {
+		this.insurance = insurance;
+		if (insurance != null) {
+			this.insuranceInd = "Y".equalsIgnoreCase(insurance);
+		}
+	}
+
+	public Boolean getInsuranceInd() {
+		return insuranceInd;
+	}
+
+	public void setInsuranceInd(Boolean insuranceInd) {
+		this.insuranceInd = insuranceInd;
 	}
 
 }
