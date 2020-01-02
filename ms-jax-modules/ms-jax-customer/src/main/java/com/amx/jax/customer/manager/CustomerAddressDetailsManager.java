@@ -64,7 +64,7 @@ public class CustomerAddressDetailsManager {
 				contactDetail.setFsBizComponentDataByContactTypeId(fsBizComponentDataByContactTypeId);
 				contactDetail.setActiveStatus(ConstantDocument.Yes);
 				contactDetail.setCreatedBy(jaxDbservice.getCreatedOrUpdatedBy());
-				contactDetail.setCreationDate(customer.getCreationDate());
+				contactDetail.setCreationDate(new Date());
 				contactDetail.setFsCustomer(customer);
 				contactDetail.setLanguageId(customer.getLanguageId());
 				contactDetail.setMobile(customer.getMobile());
@@ -97,7 +97,7 @@ public class CustomerAddressDetailsManager {
 			if (req.getStreet() != null) {
 				contactDetail.setStreet(req.getStreet());
 			}
-			if (ConstantDocument.CONTACT_TYPE_FOR_LOCAL.equals(req.getContactType()) && contactDetail.getFsCityMaster() == null) {
+			if (ConstantDocument.CONTACT_TYPE_FOR_LOCAL.equals(req.getContactType()) && contactDetail.getFsCountryMaster() == null) {
 				log.debug("updating country id for local contact");
 				ViewCompanyDetails companyDetail = companyService.getCompanyDetail();
 				BigDecimal appCountry = companyDetail.getApplicationCountryId();

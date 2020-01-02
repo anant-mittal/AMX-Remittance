@@ -70,9 +70,13 @@ public class CustomerEmployementManager {
 			if (employmentData.getFsCountryMaster() != null) {
 				employmentDetails.setCountryId(employmentData.getFsCountryMaster().getCountryId());
 			}
-			employmentDetails.setArticleDetailsId(customer.getFsArticleDetails().getArticleDetailId());
-			employmentDetails.setArticleId(customer.getFsArticleDetails().getFsArticleMaster().getArticleId());
-			employmentDetails.setIncomeRangeId(customer.getFsIncomeRangeMaster().getIncomeRangeId());
+			if (customer.getFsArticleDetails() != null) {
+				employmentDetails.setArticleDetailsId(customer.getFsArticleDetails().getArticleDetailId());
+				employmentDetails.setArticleId(customer.getFsArticleDetails().getFsArticleMaster().getArticleId());
+			}
+			if (customer.getFsIncomeRangeMaster() != null) {
+				employmentDetails.setIncomeRangeId(customer.getFsIncomeRangeMaster().getIncomeRangeId());
+			}
 			if (customercoreView != null) {
 				employmentDetails.setDesignation(customercoreView.getDesignation());
 			}

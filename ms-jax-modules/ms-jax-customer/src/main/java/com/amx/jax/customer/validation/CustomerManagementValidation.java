@@ -167,21 +167,23 @@ public class CustomerManagementValidation {
 	}
 
 	private void validateEmploymentInfo(CustomerEmploymentDetails customerEmploymentDetails) {
-
 		if (customerEmploymentDetails.getEmploymentTypeId() == null) {
 			throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Employment type can not be empty");
 		}
-		if (customerEmploymentDetails.getEmployer() == null) {
-			throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Employer name can not be empty");
-		}
-		if (customerEmploymentDetails.getProfessionId() == null) {
-			throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Profession can not be empty");
-		}
-		if (customerEmploymentDetails.getArticleDetailsId() == null) {
-			throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Article detail can not be empty");
-		}
-		if (customerEmploymentDetails.getIncomeRangeId() == null) {
-			throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Income range can not be empty");
+		// optional fields employer detail for 222 = unemployed type
+		if (!(customerEmploymentDetails.getEmploymentTypeId().compareTo(new BigDecimal(222)) == 0)) {
+			if (customerEmploymentDetails.getEmployer() == null) {
+				throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Employer name can not be empty");
+			}
+			if (customerEmploymentDetails.getProfessionId() == null) {
+				throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Profession can not be empty");
+			}
+			if (customerEmploymentDetails.getArticleDetailsId() == null) {
+				throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Article detail can not be empty");
+			}
+			if (customerEmploymentDetails.getIncomeRangeId() == null) {
+				throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Income range can not be empty");
+			}
 		}
 	}
 
@@ -204,8 +206,12 @@ public class CustomerManagementValidation {
 			if (personalDetailInfo.getDateOfBirth() != null) {
 				dob = personalDetailInfo.getDateOfBirth();
 			}
-			Boolean insuranceIndic = personalDetailInfo.getInsurance();
+			Boolean insuranceIndic = personalDetailInfo.getInsuranceInd();
 			if (insuranceIndic != null && insuranceIndic) {
+				if (dob == null) {
+					throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE,
+							"In order to update insurance flag, please update date of birth of customer");
+				}
 				int age = DateUtil.calculateAge(dob);
 				if (age > INSURANCE_ELIGILIBITY_AGE) {
 					throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE,

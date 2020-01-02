@@ -64,7 +64,7 @@ public class CustomerPersonalDetailManager {
 			customer.setDateOfBirth(req.getDateOfBirth());
 		}
 		if (req.getInsurance() != null) {
-			customer.setMedicalInsuranceInd(req.getInsurance() ? ConstantDocument.Yes : ConstantDocument.No);
+			customer.setMedicalInsuranceInd(req.getInsuranceInd() ? ConstantDocument.Yes : ConstantDocument.No);
 		}
 		if (req.getCustomerSignature() != null) {
 			customer.setSignatureSpecimenClob(req.getCustomerSignature());
@@ -103,6 +103,14 @@ public class CustomerPersonalDetailManager {
 		}
 		if (req.getLastName() != null) {
 			customer.setLastName(req.getLastName());
+			markCustomerPendingCompliance = true;
+		}
+		if (req.getFirstNameLocal() != null) {
+			customer.setFirstNameLocal(req.getFirstNameLocal());
+			markCustomerPendingCompliance = true;
+		}
+		if (req.getLastNameLocal() != null) {
+			customer.setLastNameLocal(req.getLastNameLocal());
 			markCustomerPendingCompliance = true;
 		}
 		if(markCustomerPendingCompliance) {
