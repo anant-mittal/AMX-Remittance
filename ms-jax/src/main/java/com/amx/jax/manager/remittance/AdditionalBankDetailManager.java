@@ -167,8 +167,8 @@ public class AdditionalBankDetailManager {
 					for (ViewParameterDetails viewParameterDetails : vwParamDetailsList) {
 						ParameterDetailsDto pdto = new ParameterDetailsDto();
 
-						AdditionalBankRuleMap addlMap = additionalBankRuleMapRepos.findByFlexFieldAndIsActive(viewParameterDetails.getCharField3(),
-								ConstantDocument.Yes);
+						AdditionalBankRuleMap addlMap = additionalBankRuleMapRepos.findByFlexFieldAndIsActiveAndCountryId(
+								viewParameterDetails.getCharField3(), ConstantDocument.Yes, beneficaryDetails.getBenificaryCountry());
 						// Set default properties
 						pdto.importFrom(viewParameterDetails);
 						pdto.setResourceValue(new FlexFieldDto(addlMap.getAdditionalBankRuleId(), null, viewParameterDetails.getCharField1(),
