@@ -20,12 +20,10 @@ public abstract class AbstractBeneDetailDto {
 	@ApiMockModelProperty(example = "1")
 	BigDecimal benificaryStatusId;
 
-	@NotNull(message = "First Name may not be null")
 	@Size(min = 1, max = 50, message = "firstName should be between 1 and 50 characters")
 	@ApiMockModelProperty(example = "testbene")
 	private String firstName;
 
-	@NotNull
 	@Size(min = 0, max = 50, message = "secondName should be between 0 and 50 characters")
 	@ApiMockModelProperty(example = "testbene")
 	private String secondName;
@@ -54,11 +52,9 @@ public abstract class AbstractBeneDetailDto {
 	@Size(min = 0, max = 50, message = "localFifthName should be between 0 and 50 characters")
 	private String fifthNameLocal;
 
-	@NotNull(message = "nationality may not be null")
 	@ApiMockModelProperty(example = "94")
 	private BigDecimal nationality;
 
-	@NotNull
 	@ApiMockModelProperty(example = "5")
 	private BigDecimal relationShipId;
 	// TODO: add dob fields
