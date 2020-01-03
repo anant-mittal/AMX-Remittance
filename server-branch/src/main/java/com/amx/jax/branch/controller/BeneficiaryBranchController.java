@@ -138,8 +138,8 @@ public class BeneficiaryBranchController {
 
 	@RequestMapping(value = "/api/bene/form/fields", method = RequestMethod.GET)
 	public AmxApiResponse<JaxConditionalFieldDto, Object> getDynamicFieldsForBeneficiary(
-			@RequestParam BigDecimal beneCountryId) {
-		return jaxFieldClient.getDynamicFieldsForBeneficiary(beneCountryId).toAmxApiResponse();
+			@RequestParam BigDecimal beneCountryId,@RequestParam BigDecimal beneficaryTypeId) {
+		return jaxFieldClient.getDynamicFieldsForBeneficiary(beneCountryId,beneficaryTypeId).toAmxApiResponse();
 	}
 
 	// Bene Mgmt Api's
@@ -154,7 +154,12 @@ public class BeneficiaryBranchController {
 	}
 
 	@RequestMapping(value = "/api/bene/update_status", method = RequestMethod.POST)
-	public AmxApiResponse<BoolRespModel, Object> updateBeneStatus(@RequestBody UpdateBeneStatusRequest request) {
+	public AmxApiResponse<BoolRespModel, Object> updateBeneStatus(
+			@RequestHeader(value = "nOtp", required = false) String nOtpHeader,
+			@RequestParam(required = false) String nOtp, @RequestBody UpdateBeneStatusRequest request) {
+		JaxAuthContext.contactType(ContactType.NOTP_APP);
+		nOtp = JaxAuthContext.nOtp(ArgUtil.ifNotEmpty(nOtp, nOtpHeader));
+		JaxAuthContext.nOtp(nOtp);
 		return beneBranchClient.updateBeneStatus(request);
 	}
 
