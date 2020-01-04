@@ -181,8 +181,8 @@ public class BeneBranchService {
 		postManService.sendEmailAsync(email);
 		
 		// email to online team
-		if(null != jaxProperties.getSupportOnlineEmail()) {
-			email.getTo().add(0, jaxProperties.getSupportOnlineEmail());
+		if(null != jaxTenantProperties.getSupportOnlineEmail()) {
+			email.getTo().add(0, jaxTenantProperties.getSupportOnlineEmail());
 			postManService.sendEmailAsync(email);
 		}
 	}
