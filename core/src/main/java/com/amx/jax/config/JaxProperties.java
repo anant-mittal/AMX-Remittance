@@ -16,6 +16,7 @@ public class JaxProperties {
 	String defUploadDir;
 	
 	
+	
 	public String getDefUploadDir() {
 		return defUploadDir;
 	}
@@ -39,5 +40,6 @@ public class JaxProperties {
 	public void setTpcSecret(String tpcSecret) {
 		this.tpcSecret = tpcSecret;
 	}
+
 
 }

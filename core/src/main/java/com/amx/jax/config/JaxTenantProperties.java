@@ -81,6 +81,9 @@ public class JaxTenantProperties {
 	
 	@TenantValue("${jax.max.loyalty.count}")
 	private BigDecimal loyaltyCount;
+	
+	@TenantValue("${support.online.email}")
+	String supportOnlineEmail;
 
 	public Boolean getCashDisable() {
 		return cashDisable;
@@ -226,6 +229,14 @@ public class JaxTenantProperties {
 
 	public void setLoyaltyCount(BigDecimal loyaltyCount) {
 		this.loyaltyCount = loyaltyCount;
+	}
+
+	public String getSupportOnlineEmail() {
+		return supportOnlineEmail;
+	}
+
+	public void setSupportOnlineEmail(String supportOnlineEmail) {
+		this.supportOnlineEmail = supportOnlineEmail;
 	}
 
 	
