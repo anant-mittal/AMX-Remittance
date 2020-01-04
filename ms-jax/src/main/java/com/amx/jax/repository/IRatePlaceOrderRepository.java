@@ -15,23 +15,23 @@ import com.amx.jax.dbmodel.remittance.RatePlaceOrder;
 public interface IRatePlaceOrderRepository  extends CrudRepository<RatePlaceOrder, Serializable>{
 
 	
-	@Query("select rv from RatePlaceOrder rv where rv.customerId=?1 and trunc(createdDate)=trunc(sysdate) and rv.isActive='Y'")
+	@Query("select rv from RatePlaceOrder rv where rv.customerId=?1 and trunc(createdDate)=trunc(sysdate) and rv.isActive='Y' order by createdDate desc")
 	public List<RatePlaceOrder> fetchPlaceOrderForCustomer(BigDecimal customerId);
 	
 	@Query("select rv from RatePlaceOrder rv where rv.beneficiaryCountryId =?1 and trunc(valueDate)=trunc(sysdate) and NVL(rv.isActive,' ') <>'D' "
 			+ "and applDocumentNumber is null and applDocumentFinanceYear is null and approvedBy is null and approvedDate is null "
-			+ "and branchSupportIndicator is null")
+			+ "and branchSupportIndicator is null order by createdDate desc")
 	public List<RatePlaceOrder> fetchByBeneficiaryCountryId(BigDecimal beneficiaryCountryId);
 	
 	
 	@Query("select rv from RatePlaceOrder rv where rv.customerId=?1 and trunc(createdDate)=trunc(sysdate)  and rv.isActive='U' "
-			+ "and rv.beneficiaryRelationId=?2 and rv.transactionAmount=?3 and remitType=?4")
+			+ "and rv.beneficiaryRelationId=?2 and rv.transactionAmount=?3 and remitType=?4 order by createdDate desc")
 	public List<RatePlaceOrder> sameBeneTrnxAmtCheck(BigDecimal customerId,BigDecimal beneRelationId,BigDecimal trnxAmount,BigDecimal remitType);
 	
 	
 	
 	@Query("select rv from RatePlaceOrder rv where rv.customerId=?1 and trunc(createdDate)=trunc(sysdate)  and rv.isActive='U' "
-			+ "and rv.beneficiaryRelationId=?2 and remitType=?3")
+			+ "and rv.beneficiaryRelationId=?2 and remitType=?3 order by createdDate desc")
 	public List<RatePlaceOrder> sameBeneTrnxButDiffAmtCheck(BigDecimal customerId,BigDecimal beneRelationId,BigDecimal remitType);
 	
 	
@@ -52,7 +52,7 @@ public interface IRatePlaceOrderRepository  extends CrudRepository<RatePlaceOrde
 	
 	
 	@Query("select rv from RatePlaceOrder rv where rv.customerId=?1 and ratePlaceOrderId = ?2 and trunc(createdDate)=trunc(sysdate)  "
-			+ " and rv.isActive='Y' and applDocumentNumber is null and applDocumentFinanceYear is null and NVL(approvedBy,' ') <> ' '  ")
+			+ " and rv.isActive='Y' and applDocumentNumber is null and applDocumentFinanceYear is null and NVL(approvedBy,' ') <> ' '  order by createdDate desc")
 	public RatePlaceOrder fetchApprovedPlaceOrder(BigDecimal customerId,BigDecimal placeOrderId);
 	
 }
