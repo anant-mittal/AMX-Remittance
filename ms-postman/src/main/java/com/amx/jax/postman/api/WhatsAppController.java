@@ -147,7 +147,7 @@ public class WhatsAppController {
 
 	private boolean isValid(WAMessage msg) {
 		if (ArgUtil.isEmpty(msg.getTo()) || (msg.getTo().size() == 0) || ArgUtil.isEmpty(msg.getTo().get(0))
-				|| ArgUtil.isEmpty(msg.getMessage())) {
+				|| (ArgUtil.isEmpty(msg.getMessage()) && ArgUtil.isEmpty(msg.getTemplate()))) {
 			PMGaugeEvent pMGaugeEvent = new PMGaugeEvent(PMGaugeEvent.Type.SEND_WHATSAPP);
 			pMGaugeEvent.setTo(msg.getTo());
 			pMGaugeEvent.setMessage(msg.getMessage());
