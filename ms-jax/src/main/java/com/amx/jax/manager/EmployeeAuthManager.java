@@ -10,6 +10,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.JaxAuthContext;
+import com.amx.jax.adapter.DeviceConnectorClient;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.dict.ContactType;
@@ -29,6 +30,8 @@ public class EmployeeAuthManager {
 
 	@Autowired
 	RbaacServiceClient rbaacServiceClient;
+	@Autowired
+	DeviceConnectorClient deviceConnectorClient;
 
 	public void validateAndSendOtp(BigDecimal employeeId) {
 		ContactType contactType = JaxAuthContext.getContactType();
@@ -57,9 +60,9 @@ public class EmployeeAuthManager {
 	private void sendNotp(BigDecimal employeeId) {
 		AmxApiResponse<OfflineOtpData, Object> response = rbaacServiceClient.generateOfflineOtpPrefix(employeeId);
 		OfflineOtpData responseData = response.getResult();
+		deviceConnectorClient.sendSACtoEmployee(employeeId.toString(), responseData.getOtpPrefix());
 		GlobalException ex = new GlobalException(JaxError.NOTP_REQUIRED, "OTP required");
 		ex.setMeta(responseData);
 		throw ex;
-
 	}
 }

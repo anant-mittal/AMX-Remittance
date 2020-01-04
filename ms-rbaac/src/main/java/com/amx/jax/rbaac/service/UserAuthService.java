@@ -655,7 +655,7 @@ public class UserAuthService {
 		String sac = Random.randomAlphaNumeric(6);
 		OfflineOtpData otpData = new OfflineOtpData(sac);
 		LOGGER.debug("generateOfflineOtpPrefix: Emp Id {} Sac generated {}", employeeId, sac);
-		offlineOtpCache.fastPut(employeeId.toString(), otpData);
+		offlineOtpCache.fastPut(getOfflineOtpCacheBoxKey(employeeId), otpData);
 		// send otp to slack
 		if (!appConfig.isProdMode()) {
 			if (!ArgUtil.isEmpty(otpDevice)) {
@@ -684,7 +684,7 @@ public class UserAuthService {
 		if (employee == null) {
 			throw new AuthServiceException(RbaacServiceError.EMPLOYEE_NOT_FOUND, "No employee found with given id");
 		}
-		OfflineOtpData otpData = offlineOtpCache.get(employeeId.toString());
+		OfflineOtpData otpData = offlineOtpCache.get(getOfflineOtpCacheBoxKey(employeeId));
 		if (otpData == null) {
 			throw new AuthServiceException(RbaacServiceError.INVALID_OTP, "Invalid OTP: OTP is not generated for the user or timedOut");
 		}
@@ -693,5 +693,8 @@ public class UserAuthService {
 		return validationResult;
 	}
 
+	public String getOfflineOtpCacheBoxKey(BigDecimal employeId) {
+		return "OFFLINE_OTP_" + employeId.toString();
+	}
 }
 
