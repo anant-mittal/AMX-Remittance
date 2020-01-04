@@ -143,12 +143,12 @@ public class SnapQueryService {
 
 		@Override
 		public BulkRequestSnapBuilder update(String index, String type, AESDocument vote) {
-			return this.updateById(EsConfig.indexName(index), type, vote.getId(), vote);
+			return super.updateById(EsConfig.indexName(index), type, vote.getId(), vote);
 		}
 
 		@Override
 		public BulkRequestSnapBuilder update(String index, AESDocument vote) {
-			return this.updateById(EsConfig.indexName(index), vote.getType(), vote.getId(), vote);
+			return super.updateById(EsConfig.indexName(index), vote.getType(), vote.getId(), vote);
 		}
 	}
 

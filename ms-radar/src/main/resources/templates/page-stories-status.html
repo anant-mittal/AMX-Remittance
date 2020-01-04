@@ -52,6 +52,7 @@
 	href="//cdnjs.cloudflare.com/ajax/libs/pivottable/2.13.0/pivot.min.css">
 
 <script src='/radar/js/jSQL.js' type='text/javascript'></script>
+<script src="https://cdn.flexmonster.com/flexmonster.js"></script>
 
 <style>
 /* Dropdown Button */
@@ -127,13 +128,8 @@
 
 #querytext {
 	margin: 0px;
-	height: calc(80% - 60px);
+	height: calc(100% - 60px);
 	width: 100%;
-}
-#paramtext {
-	margin: 0px;
-	width: 100%;
-	height: calc(20%);
 }
 
 .show {
@@ -154,6 +150,10 @@
   z-index: 9999;
   background: url('/radar/img/loader.gif') 
               50% 50% no-repeat rgb(249,249,249);
+}
+
+.red {
+	background-color: #dddddd;
 }
 </style>
 <script>
@@ -373,22 +373,12 @@ function dropdown(classname) {
 <hr />
 <div id="tabledivWrapper">
 
-	<table id="tablediv" class="display nowrap" style="width:100%">
-		<thead>
-			<tr>
-			</tr>
-		</thead>
-		<tbody>
-		</tbody>
-		<tfoot>
-            <tr>
-            </tr>
-        </tfoot>
-	</table>
+	<div id="pivot-container"></div>
+	
 	<div id="loader" class="loader hide"></div>
 </div>
 
-<div id="pivotTable"></div>
+<div id="pivot-container"></div>
 
 <script>
   var SQL_DATA;
@@ -409,7 +399,7 @@ function dropdown(classname) {
 	    return 0;
 	};
 
-
+  var flexPivot;
   function executeQuery(url,map){
 	  $("#loader").removeClass("hide");
 	   $.ajax({
@@ -479,51 +469,173 @@ function dropdown(classname) {
 				});
 				
 				console.log(columns,bulk);
-				$('#tablediv').DataTable({
-					dom: 'Bfrtip',
-					columns : columns, data: bulk,
-			        buttons: [
-			        	'copy', 'csv', 'excel', 'pdf', 'print'
-			        ].concat(Object.keys(colGrup || []).filter(function(item){
-		    			return Array.isArray(colGrup[item]);
-		    		}).map(function(index,b){
-		    			return {
-		    				extend: 'colvisGroup',
-		    				text: index,
-		    				show : colGrup[index].map(function(item,index){
-		    					return colMap[item];
-			    			}),
-			    			hide : columns.filter(function(item){
-			    				return colGrup[index].indexOf(item.data) < 0;
-			    			}).map(function(item,index){
-			    				return colMap[item.data];
-			    			})
-		    			};
-		    		}))
-				});
+				
+				
+				flexPivot = new Flexmonster({
+					  container: "#pivot-container",
+					  componentFolder: "https://cdn.flexmonster.com/",
+					  width: "100%",
+					  height: 430,
+					  toolbar: true,
+					  reportcomplete: setWidth,
+					  report: {
+					    dataSource: {
+					    	data: bulk
+					    },
+					    slice: {
+					      columns: [{
+						    uniqueName: "[Measures]"
+						  },{
+						      uniqueName: "[team]"
+						  },{
+					        uniqueName: "[dev]"
+					      }],
+					      rows: [{
+					        uniqueName: "[story]",
+					        //levelName: "[story].[week].[sprint]",
+					        //caption : "hurray",
+/* 					        filter: {
+					          members: [
+					            "category.[condiments].[bbq sauce]",
+					            "category.[breakfast cereals].[corn flakes]",
+					            "category.[confectionery]",
+					            "category.[bakery].[chocolate biscuits]",
+					            "category.[fruit preserves].[apple jam]",
+					            "category.[bakery].[apple cake]",
+					            "category.[soups].[tomato soup]"
+					          ]
+					        } */
+					      },{
+					        uniqueName: "[week]"
+					      },{
+					        //uniqueName: "[sprint]"
+					      },{
+					       // uniqueName: "[milestone]"
+					      }],
+						"reportFilters": [
+						    {
+						        "uniqueName": "story"
+						    },
+						    {
+						        "uniqueName": "sprint"
+						    },
+						    {
+						        "uniqueName": "week"
+						    },
+						    {
+						        "uniqueName": "milestone"
+						    },
+						    {
+						        "uniqueName": "team"
+						    },
+						    {
+						        "uniqueName": "dev"
+						    }
+						],
+					      measures: [{
+					        "uniqueName": "[Measures].[remTime]",
+					        "aggregation": "sum",
+					        "active": true,
+					        //"format": "2sfou03a"
+					      }],
+					      "flatOrder": [
+					            "story",
+					            "week",
+					            "Customer",
+					            "Payment Method",
+					            "Revenue"
+					       ]
+					    },
+					    "options": {
+					        "grid": {
+					           // "type": "classic"
+					        }
+					    },
+					    conditions: [{
+						      formula: "#value = 0",
+						      measure: "remTime",
+						      format: {
+						        backgroundColor: "#298f4b", //RED #b8f3b1 GREEN //YELLOE #f3f1b1
+						        color: "#FFF"
+						      },
+						      isTotal: true
+						},{
+							formula: "#value = 0",
+						      measure: "remTime",
+						      format: {
+						        backgroundColor: "#b8f3b1", //RED #b8f3b1 GREEN //YELLOE #f3f1b1
+						        color: "#000"
+						      },
+						      isTotal: false
+						},{
+					      formula: "#value > 0",
+					      measure: "remTime",
+					      format: {
+					        backgroundColor: "#ea4444", //RED #b8f3b1 GREEN //YELLOE #f3f1b1
+					        color: "#FFFFFF"
+					      },
+					      isTotal: true
+					    },{
+					      formula: "#value > 0",
+					      measure: "remTime",
+					      format: {
+					        backgroundColor: "#fabbaa",
+					        color: "#000"
+					      },
+					      isTotal: false
+					    }],
+					    formats: [{
+					      name: "2sfou03a",
+					      thousandsSeparator: ",",
+					      decimalSeparator: ".",
+					      decimalPlaces: 2,
+					      currencySymbol: "$",
+					      currencySymbolAlign: "left",
+					      nullValue: "",
+					      textAlign: "right",
+					      isPercent: false
+					    }],
+					    tableSizes: {
+					        columns: [{
+				                "tuple": [],
+				                "measure": {
+				                	uniqueName  : "[Measures].[remTime]"
+				                },
+				                "width": 200
+					           }
+					        ]
+					    }
+					  }
+					});
 			}
-			
-			//return;
-			$("#pivotTable").pivotUI(
-					table, {
-				    rows: ["sex", "smoker"],
-				    cols: ["day", "time"],
-				    vals: ["tip", "total_bill"],
-				    aggregatorName: "Sum over Sum",
-				    rendererName: "Heatmap"
-			});
-			
 		}).always(function(){
 			$("#loader").addClass("hide");
 		}); 
   }
-  var  paramString = localStorage.getItem("params");
+  
+  function setWidth () {
+		  if(!flexPivot){
+			  return null;
+		  }
+		flexmonster.off("reportcomplete");
+		var report = flexPivot.getReport();
+  		report["tableSizes"] = {
+  				"columns":[{
+		  			"tuple": ["remTime"],
+		  			"width":500, 
+		  			"measure": {
+	                	uniqueName  : "[Measures].[remTime]"
+	                },
+		  		}],
+		  		
+  		};
+  		console.log("=====")
+		//flexPivot.setReport(report);
+   }
+  
   var DATE_REG = /([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))( +)(0[0-9]|1[0-9]|2[0-4]):([0-5][0-9]):([0-5][0-9])/;
   $(document).ready(function(){
 	  var _html = $("#tabledivWrapper").html();
-	  var queryParam = JSON.parse(paramString||'{}');
-	  console.log("queryParam",queryParam)
-	  $("#paramtext").val(JSON.stringify(queryParam, null, 2));
 	  
 	  var lte = "[[${lte}]]";
 	  var gte = "[[${gte}]]";
@@ -550,34 +662,25 @@ function dropdown(classname) {
 		  "level" : "[[${level}]]",
 		  "minCount" : "[[${minCount}]]",
 		  "bulk" : true
-	  }, queryParam));
+	  }));
 	  
 	  $("#querybutton").click(function(){
 		  $("#tabledivWrapper").html(_html);
 		  var query = $("#querytext").val();
 		  executeQuery("/radar/snap/execute/query/[[${snapView}]]",JSON.parse(query));
 	  });
-	  
-	  $("#paramtext").change(function(){
-		  paramString =  $("#paramtext").val()
-		  localStorage.setItem("params",paramString) 
-	  })
   });
   </script>
 
-<div id="querybox" class="slider">
-	<textarea id="paramtext">
-    </textarea>
-	<textarea id="querytext">
 
-    </textarea>
-	<center>
-			<button id="querybutton" class="dropbtn">Submit Query</button>
-			<button onclick="dropdown('querybox')" class="dropbtn">Close</button>
-		</center>
-
-</div>
 
 </body>
+
+<style>
+.fmw-cell.fm-total{
+	min-width: 50px!important;
+ }
+ .fmw-grid-column { min-width: 50px!important; }
+</style>
 
 </html>

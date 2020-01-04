@@ -140,6 +140,7 @@ public class AESRepository {
 					updateRequest.upsert(voteJson, XContentType.JSON);
 					updateRequest.doc(voteJson, XContentType.JSON);
 					this.request.add(updateRequest);
+					LOGGER.debug("Updated index:{}, type:{}, id:{}", index, type, id);
 				} catch (JsonProcessingException e) {
 					LOGGER.error("JsonProcessingException", e);
 				}

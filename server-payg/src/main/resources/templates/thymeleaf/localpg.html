@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+<!-- Static content -->
+
+<title>Payment Service</title>
+
+<style type="text/css">
+table, th, td {
+	border: 1px solid black;
+}
+
+table {
+	margin-left: auto;
+	margin-right: auto;
+}
+</style>
+
+</head>
+<body>
+	<h1 align="center">Welcome to AlMulla Payment Service !!!</h1>
+	<hr />
+	<br />
+	<br />
+	<br />
+
+	<div class="form">
+		<!-- <form action="app/pay" method="get"> -->
+		<form th:action="${pipe.responseUrl}" method="post">
+
+			<table>
+				<tr>
+					<td>Tenant</td>
+					<td><input name="tnt" th:value="${params.tenant}" readonly="readonly"  value="121212"  />
+					</td>
+				</tr>
+				<tr>
+					<td>Payment Gateway</td>
+					<td><input name="pg"  th:value="${params.serviceCode}" readonly="readonly"  value="121212"  />
+					</td>
+				</tr>
+				<tr>
+					<td>Amount</td>
+					<td><input type="number" id="amount" name="amount" th:value="${params.amount}"
+						required="required" step="any" value="10" readonly="readonly" /></td>
+				</tr>
+				<tr>
+					<td>TicketId</td>
+					<td><input id="trckid" name="trckid" value="121212" th:value="${params.trackId}" readonly="readonly"  /></td>
+
+				</tr>
+				<tr>
+					<td>Doc No</td>
+					<td><input id="docNo" name="docNo" placeholder="1212" th:value="${params.docNo}" readonly="readonly" 
+						value="121212" /></td>
+				</tr>
+				<tr>
+					<td>Doc No</td>
+					<td><input id="docFy" name="docFy" placeholder="2018" th:value="${params.docFy}" readonly="readonly" 
+						value="2018" /></td>
+				</tr>
+
+				<tr>
+					<td>Channel</td>
+					<td><input id="channel" name="channel" placeholder="KIOSK"  th:value="${params.channel}" readonly="readonly"  /></td>
+				</tr>
+
+
+				<tr>
+					<td>Product</td>
+					<td><input id="prod" name="prod" placeholder="REMIT"  th:value="${params.product}" readonly="readonly"  /></td>
+				</tr>
+
+
+				<tr>
+					<td colspan="2">-/-/-/-RESPONSE-/-/-/-</td>
+				</tr>
+
+				<tr>
+					<td>Result</td>
+					<td>
+					<select name="result">
+							<option value="CAPTURED" selected="selected">CAPTURED</option>
+							<option value="NOT+CAPTURED">NOT+CAPTURED</option>
+							<option value="VOIDED">VOIDED</option>
+							<option value="GENERIC ERROR">GENERIC ERROR</option>
+							<option value="CANCELED">CANCELED</option>
+							<option value="CANCELED">CANCELED</option>
+							<option value="CANCELLED">CANCELLED</option>
+							<option value="UNKNOWN">UNKNOWN</option>
+					</select>
+					
+					</td>
+				</tr>
+				<tr>
+
+					<td>paymentid</td>
+					<td><input id="paymentid" name="paymentid"
+						placeholder="paymentid" th:value="${pipe.paymentId}" readonly="readonly" /></td>
+				</tr>
+
+				<tr>
+					<td>auth</td>
+					<td><input id="auth" name="auth" placeholder="auth" /></td>
+				</tr>
+
+				<tr>
+					<td>ref</td>
+					<td><input id="ref" name="ref" placeholder="ref" /></td>
+				</tr>
+
+				<tr>
+					<td>postdate</td>
+					<td><input id="postdate" name="postdate"
+						placeholder="postdate" /></td>
+				</tr>
+				<tr>
+					<td>trackid</td>
+					<td><input 
+						id="trackid" name="trackid" placeholder="trackid" 
+						th:value="${pipe.trackId}"
+					 	readonly="readonly" /></td>
+				</tr>
+				<tr>
+					<td>tranid</td>
+					<td><input id="tranid" name="tranid" placeholder="tranid" /></td>
+				</tr>
+				<tr>
+					<td>responsecode</td>
+					<td><input id="responsecode" name="responsecode"
+						placeholder="responsecode" /></td>
+				</tr>
+				<tr>
+					<td>udf1</td>
+					<td><input id="udf1" name="udf1" placeholder="udf1" th:value="${pipe.udf1}" /></td>
+				</tr>
+				<tr>
+					<td>udf2</td>
+					<td><input id="udf2" name="udf2" placeholder="udf2" th:value="${pipe.udf2}" /></td>
+				</tr>
+				<tr>
+					<td>udf3</td>
+					<td><input id="udf3" name="udf3" placeholder="udf3" th:value="${pipe.udf3}" readonly="readonly" /></td>
+				</tr>
+				<tr>
+					<td>udf4</td>
+					<td><input id="udf4" name="udf4" placeholder="udf4" th:value="${pipe.udf4}" /></td>
+				</tr>
+				<tr>
+					<td>udf5</td>
+					<td><input id="udf5" name="udf5" placeholder="udf5" th:value="${pipe.udf5}" /></td>
+				</tr>
+				<tr>
+					<td>udf6</td>
+					<td><input id="udf6" name="udf6" placeholder="udf6" th:value="${pipe.udf6}" /></td>
+				</tr>
+
+
+				<tr height="50">
+					<td colspan="2" style="text-align: center;"><input
+						type="submit" value="Submit" /></td>
+				</tr>
+			</table>
+
+		</form>
+	</div>
+
+</body>
+</html>
