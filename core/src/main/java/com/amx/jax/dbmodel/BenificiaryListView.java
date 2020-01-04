@@ -95,6 +95,7 @@ public class BenificiaryListView implements Serializable {
 	private String ibanNumber;
 	private String beneficiaryZipCode;
 	private String bankLocalName;
+	private BigDecimal institutionCategoryId;
 
 	@Id
 	@Column(name = "IDNO")
@@ -698,6 +699,12 @@ public class BenificiaryListView implements Serializable {
 	}
 	public void setBankLocalName(String bankLocalName) {
 		this.bankLocalName = bankLocalName;
+	}
+	public BigDecimal getInstitutionCategoryId() {
+		return institutionCategoryId;
+	}
+	public void setInstitutionCategoryId(BigDecimal institutionCategoryId) {
+		this.institutionCategoryId = institutionCategoryId;
 	}
 	
 	

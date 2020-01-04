@@ -91,7 +91,7 @@ public class BeneBranchValidation {
 		if (StringUtils.isNotBlank(beneAccountModelRequest.getBankAccountNumber())) {
 			beneficiaryValidationService.validateBeneAccountUpdate(beneAccountModel);
 		}
-		benePersonalDetailValidator.validateUpdateBene(beneTrnxModel);
+		benePersonalDetailValidator.validateUpdateBene(beneTrnxModel, request, benificiaryListView);
 	}
 
 	public void validateUpdateBeneCash(UpdateBeneCashRequest request) {
@@ -103,7 +103,7 @@ public class BeneBranchValidation {
 		if (StringUtils.isNotBlank(beneAccountModelRequest.getBankAccountNumber())) {
 			beneficiaryValidationService.validateDuplicateCashBeneficiary(beneTrnxModel);
 		}
-		benePersonalDetailValidator.validateUpdateBene(beneTrnxModel);
+		benePersonalDetailValidator.validateUpdateBene(beneTrnxModel, request, benificiaryListView);
 	}
 
 	public BeneAccountModel createBeneAccountModel(BenificiaryListView bv, BeneAccountModel beneAccountModelRequest) {

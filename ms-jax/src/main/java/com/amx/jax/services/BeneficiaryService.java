@@ -570,6 +570,10 @@ public class BeneficiaryService extends AbstractService {
 			}
 			dto.setBankShortNames(dto.getBankShortNames() + " CASH PAYOUT");
 		}
+		if (isNonIndividualBene(beneModel.getBenificaryStatusId())) {
+			dto.setInstitutionName(beneModel.getBenificaryName());
+			dto.setInstitutionNameLocal(beneModel.getArbenificaryName());
+		}
 		return dto;
 	}
 
