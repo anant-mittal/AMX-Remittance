@@ -14,6 +14,8 @@ public class JaxProperties {
 	String tpcSecret;
 	@Value("${app.upload.dir}")
 	String defUploadDir;
+	@Value("${support.online.email}")
+	String supportOnlineEmail;
 	
 	
 	public String getDefUploadDir() {
@@ -38,6 +40,14 @@ public class JaxProperties {
 
 	public void setTpcSecret(String tpcSecret) {
 		this.tpcSecret = tpcSecret;
+	}
+
+	public String getSupportOnlineEmail() {
+		return supportOnlineEmail;
+	}
+
+	public void setSupportOnlineEmail(String supportOnlineEmail) {
+		this.supportOnlineEmail = supportOnlineEmail;
 	}
 
 }
