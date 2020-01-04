@@ -151,7 +151,7 @@ public class WhatsAppController {
 			PMGaugeEvent pMGaugeEvent = new PMGaugeEvent(PMGaugeEvent.Type.SEND_WHATSAPP);
 			pMGaugeEvent.setTo(msg.getTo());
 			pMGaugeEvent.setMessage(msg.getMessage());
-			pMGaugeEvent.setResult(Result.FAIL);
+			pMGaugeEvent.setResult(Result.REJECTED);
 			auditService.log(pMGaugeEvent);
 			return false;
 		}
