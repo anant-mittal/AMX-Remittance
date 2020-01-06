@@ -977,11 +977,13 @@ public class UserService extends AbstractUserService {
 										new BigDecimal(1));
 								if (!districtMas.isEmpty()) {
 									customerInfo.setLocalContactDistrict(districtMas.get(0).getDistrictDesc());
-									List<ViewCity> cityDetails = cityDao.getCityDescription(
-											districtMas.get(0).getDistrictId(),
-											contactList.get(0).getFsCityMaster().getCityId(), new BigDecimal(1));
-									if (!cityDetails.isEmpty()) {
-										customerInfo.setLocalContactCity(cityDetails.get(0).getCityName());
+									if (contactList.get(0).getFsCityMaster() != null) {
+										List<ViewCity> cityDetails = cityDao.getCityDescription(
+												districtMas.get(0).getDistrictId(),
+												contactList.get(0).getFsCityMaster().getCityId(), new BigDecimal(1));
+										if (!cityDetails.isEmpty()) {
+											customerInfo.setLocalContactCity(cityDetails.get(0).getCityName());
+										}
 									}
 								}
 							}

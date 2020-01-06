@@ -279,9 +279,6 @@ public class CustomerPersonalDetail extends AbstractModel implements ICustomerCo
 	}
 
 	public void setInsurance(String insurance) {
-		if (insurance == null) {
-			insurance = AmxDBConstants.No;
-		}
 		this.insurance = insurance;
 	}
 

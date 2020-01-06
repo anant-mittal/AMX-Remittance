@@ -12,6 +12,18 @@ public class JaxProperties {
 	List<String> supportSoaEmail;
 	@Value("${jax.tpc.secret}")
 	String tpcSecret;
+	@Value("${app.upload.dir}")
+	String defUploadDir;
+	
+	
+	
+	public String getDefUploadDir() {
+		return defUploadDir;
+	}
+
+	public void setDefUploadDir(String defUploadDir) {
+		this.defUploadDir = defUploadDir;
+	}
 
 	public List<String> getSupportSoaEmail() {
 		return supportSoaEmail;
@@ -28,5 +40,6 @@ public class JaxProperties {
 	public void setTpcSecret(String tpcSecret) {
 		this.tpcSecret = tpcSecret;
 	}
+
 
 }
