@@ -33,6 +33,7 @@ import com.amx.jax.dbmodel.bene.BeneficaryMaster;
 import com.amx.jax.dbmodel.bene.BeneficaryRelationship;
 import com.amx.jax.dbmodel.bene.BeneficaryStatus;
 import com.amx.jax.dbmodel.meta.ServiceGroupMaster;
+import com.amx.jax.manager.EmployeeAuthManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.model.request.AbstractBeneDetailDto;
@@ -101,6 +102,8 @@ public class BeneBranchService {
 	BeneficaryStatusRepository beneficaryStatusRepository;
 	@Autowired
 	JaxTenantProperties jaxTenantProperties;
+	@Autowired
+	EmployeeAuthManager employeeAuthManager;
 
 	// bank
 	public List<BankMasterDTO> getBankByCountryAndCurrency(ListBeneBankOrCashRequest request) {
@@ -127,6 +130,7 @@ public class BeneBranchService {
 	public AddBeneResponse addBeneBankorCash(AbstractBeneDetailDto request) {
 		BeneficiaryTrnxModel beneficiaryTrnxModel = request.createBeneficiaryTrnxModelObject();
 		beneficiaryValidationService.validateBeneficiaryTrnxModel(beneficiaryTrnxModel);
+		employeeAuthManager.validateAndSendOtp(metaData.getEmployeeId());
 		beneficiaryTrnxManager.commit(beneficiaryTrnxModel);
 		setAdditionalBranchFields(beneficiaryTrnxModel.getBeneficaryRelationSeqId(), request);
 		return new AddBeneResponse(beneficiaryTrnxModel.getBeneficaryRelationSeqId());
@@ -227,12 +231,13 @@ public class BeneBranchService {
 	}
 
 	public void updateBeneStatus(UpdateBeneStatusRequest request) {
+		employeeAuthManager.validateAndSendOtp(metaData.getEmployeeId());
 		beneBranchManager.updateBeneStatus(request);
 	}
 
 	@Transactional
 	public void updateBeneBankorCash(AbtractUpdateBeneDetailDto request) {
-		logger.info("updateBeneBankorCash request: {} ", JsonUtil.toJson(request));
+		employeeAuthManager.validateAndSendOtp(metaData.getEmployeeId());
 		BeneficiaryTrnxModel beneficiaryTrnxModel = request.createBeneficiaryTrnxModelObject();
 		BeneAccountModel beneAccountDetail = beneficiaryTrnxModel.getBeneAccountModel();
 		BenePersonalDetailModel benePersonalDetail = beneficiaryTrnxModel.getBenePersonalDetailModel();
