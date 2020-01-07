@@ -82,7 +82,7 @@ public class ExchRateMgmtController {
 		return exchRateMgmtClient.getRoutingCountryBanksForCurrency(currencyId);
 	}
 
-	@PreAuthorize("hasPermission('RATE_MGMT.CHECKER', 'VIEW')")
+	@PreAuthorize("hasPermission('RATE_MGMT.CHECKER', 'VIEW') or hasPermission('RATE_MGMT.MAKER', 'VIEW')")
 	@RequestMapping(value = "/api/exch/checker/rules", method = { RequestMethod.POST })
 	public AmxApiResponse<List<RateUploadRuleDto>, Object> getRateUploadRulesByStatus(
 			@RequestParam RATE_UPLOAD_STATUS status, @RequestParam Boolean onlyActive) {
