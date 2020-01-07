@@ -780,6 +780,8 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 			CountryBranchMdlv1 countryBranchMdlv1 = countryBranchRepository
 					.findByCountryBranchId(metaData.getCountryBranchId());
 			if (countryBranchMdlv1.getBranchId().equals(ConstantDocument.ONLINE_BRANCH_LOC_CODE)
+					&& remittanceApplication!=null 
+					&& remittanceApplication.getPaymentType()!=null
 					&& ConstantDocument.PB_PAYMENT.equals(remittanceApplication.getPaymentType())
 					&& ConstantDocument.PB_STATUS_NEW.equals(remittanceApplication.getWtStatus())) {
 				iter.remove();
