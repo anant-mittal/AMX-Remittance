@@ -176,8 +176,15 @@ public class BeneBranchService {
 		email.setHtml(true);
 		email.getModel().put(RESP_DATA_KEY, model);
 
+		//emailt to soa
 		logger.info("Add bank branch Email to - " + emailid + " first name : " + model.getCustomerName());
 		postManService.sendEmailAsync(email);
+		
+		// email to online team
+		if(null != jaxTenantProperties.getSupportOnlineEmail()) {
+			email.getTo().add(0, jaxTenantProperties.getSupportOnlineEmail());
+			postManService.sendEmailAsync(email);
+		}
 	}
 
 	public List<BeneStatusDto> getBeneListStatuses() {

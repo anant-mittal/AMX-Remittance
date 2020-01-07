@@ -262,6 +262,9 @@ public class BranchRemittanceSaveManager {
 
 	@Autowired
 	RemittanceApplAmlManager applAmlManager;
+	
+	@Autowired
+	BranchRemittanceManager branchRemitManager;
     
 	
 	
@@ -284,6 +287,13 @@ public class BranchRemittanceSaveManager {
 	
 
 	public RemittanceResponseDto saveRemittanceTrnx(BranchRemittanceRequestModel remittanceRequestModel) {
+		
+		CountryBranchMdlv1 countryBranch = new CountryBranchMdlv1();
+		countryBranch = bankMetaService.getCountryBranchById(metaData.getCountryBranchId()); //user branch not customer branch
+		
+		if(countryBranch!=null && countryBranch.getBranchId().compareTo(ConstantDocument.ONLINE_BRANCH_LOC_CODE)!=0) {
+			branchRemitManager.checkingStaffIdNumberWithCustomer();
+		}
 		logger.debug("saveRemittanceTrnx request model : {}", JsonUtil.toJson(remittanceRequestModel));
 		List<BranchApplicationDto> shoppingCartList = new ArrayList<>();
 		shoppingCartList = remittanceRequestModel.getRemittanceApplicationId();
@@ -359,9 +369,6 @@ public class BranchRemittanceSaveManager {
 			
 			dailyPromotionManager.applyJolibeePadalaCoupons(responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo(),null);
 			
-			
-			CountryBranchMdlv1 countryBranch = new CountryBranchMdlv1();
-			countryBranch = bankMetaService.getCountryBranchById(metaData.getCountryBranchId()); //user branch not customer branch
 			if(countryBranch!=null && countryBranch.getBranchId().compareTo(ConstantDocument.ONLINE_BRANCH_LOC_CODE)!=0) {
 				String promotionMsg = promotionManager.getPromotionPrizeForBranch(responseDto);
 				responseDto.setPromotionMessage(promotionMsg);
@@ -1302,7 +1309,8 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
 
  public TransferDto getTrasnferModeByBankServiceRule(RemittanceTransaction remitTrnx){
 	 Map<String,Object> mapBankServiceRule= routingProDao.checkBankServiceRule(remitTrnx);
-	 logger.debug("getTrasnferModeByBankServiceRule request json : {}", JsonUtil.toJson(remitTrnx));
+	 // commented below line as it was causing stackoverflow issue in logs
+	 // logger.debug("getTrasnferModeByBankServiceRule request json : {}", JsonUtil.toJson(remitTrnx));
 	 TransferDto dto = new TransferDto();
 	 String transferMode=null;
 	 String fileCreation=ConstantDocument.No;

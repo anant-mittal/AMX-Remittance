@@ -1249,7 +1249,8 @@ public ParameterDetailsResponseDto getGiftService(BigDecimal beneId) {
 					}
 						
 					
-					AdditionalBankRuleMap addlMap = additionalBankRuleMapRepos.findByFlexFieldAndIsActive(viewParameterDetails.getCharField3(), ConstantDocument.Yes);
+					AdditionalBankRuleMap addlMap = additionalBankRuleMapRepos.findByFlexFieldAndIsActiveAndCountryId(
+								viewParameterDetails.getCharField3(), ConstantDocument.Yes, beneficaryDetails.getBenificaryCountry());
 					BankMasterMdlv1 bankMasterModel = bankService.getByBankCode(viewParameterDetails.getCharField2());
 					List<CurrencyMasterMdlv1> currLsit = currencyDao.getCurrencyListByCountryId(bankMasterModel.getBankCountryId());
 					ViewRemittanceMode remitMode = viewRemittanceMode.findByRemittancCode(viewParameterDetails.getCharField4());

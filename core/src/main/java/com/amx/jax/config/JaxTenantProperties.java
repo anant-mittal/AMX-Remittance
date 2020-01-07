@@ -82,6 +82,9 @@ public class JaxTenantProperties {
 	@TenantValue("${jax.max.loyalty.count}")
 	private BigDecimal loyaltyCount;
 	
+	@TenantValue("${support.online.email}")
+	String supportOnlineEmail;
+
 	@TenantValue("${jax.authfailog.interval}")
 	private Integer authFailLogInterval;
 	
@@ -240,10 +243,14 @@ public class JaxTenantProperties {
 		this.loyaltyCount = loyaltyCount;
 	}
 
+	public String getSupportOnlineEmail() {
+		return supportOnlineEmail;
 	public Integer getAuthFailLogInterval() {
 		return authFailLogInterval;
 	}
 
+	public void setSupportOnlineEmail(String supportOnlineEmail) {
+		this.supportOnlineEmail = supportOnlineEmail;
 	public void setAuthFailLogInterval(Integer authFailLogInterval) {
 		this.authFailLogInterval = authFailLogInterval;
 	}
