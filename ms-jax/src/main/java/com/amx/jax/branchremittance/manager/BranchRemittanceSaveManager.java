@@ -243,7 +243,6 @@ public class BranchRemittanceSaveManager {
 
     @Autowired
     IRemittanceApplSplitRepository applSplitRepo;
-    
     @Autowired
     DailyPromotionManager dailyPromotionManager;
     
@@ -251,6 +250,17 @@ public class BranchRemittanceSaveManager {
     RemittanceTransactionRepository remittanceTransactionRepository;
     @Autowired
     JaxNotificationDataManager jaxNotificationDataManager;
+    
+    @Autowired
+	AuditService auditService;
+
+
+	@Autowired
+	JaxTenantProperties jaxTenantProperties;
+
+	@Autowired
+	BankMetaService bankMetaService;
+
      @Autowired
     VentajaManager ventajaManager;
 	@Autowired
@@ -924,7 +934,6 @@ public class BranchRemittanceSaveManager {
 					
 
 					remitTrnx.setApplSplit(appl.getApplSplit());
-
 					remitTrnx.setSavedAmount(appl.getSavedAmount());
 					remitTrnx.setRackExchangeRate(appl.getRackExchangeRate());
 					remitTrnx.setCustomerChoice(appl.getCustomerChoice());
