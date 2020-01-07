@@ -56,6 +56,8 @@ import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.repository.custom.ExchRatePopulateProcDao;
 import com.amx.jax.pricer.repository.custom.ExchRatePopulateProcedure;
+import com.amx.jax.pricer.var.PricerServiceConstants.GROUP_TYPE;
+import com.amx.jax.pricer.var.PricerServiceConstants.GROUP_VAL_TYPE;
 import com.amx.jax.pricer.var.PricerServiceConstants.IS_ACTIVE;
 import com.amx.jax.pricer.var.PricerServiceConstants.RATE_UPLOAD_STATUS;
 import com.amx.utils.ArgUtil;
@@ -292,6 +294,32 @@ public class ExchangeRateManager {
 
 		if (!groupIds.isEmpty()) {
 			groupMasterMap = groupingMasterDao.getGroupById(groupIds);
+
+			// Check For the Sanity of the Branch Groups
+			// 1. All should be of type BRN
+			// 2. ValTypeShouldBe : Assembled
+
+			for (GroupingMaster grp : groupMasterMap.values()) {
+				if (grp.getGroupType() == null || !grp.getGroupType().equals(GROUP_TYPE.BRN.toString())) {
+					throw new PricerServiceException(PricerServiceError.INVALID_GROUP_TYPE,
+							"Invalid Group Type for one of the selected Groups, Id: " + grp.getId() + ", Name: "
+									+ grp.getGroupName() + ", Type: " + grp.getGroupType());
+				}
+
+				if (grp.getValType() == null || !grp.getValType().equals(GROUP_VAL_TYPE.ASSEMBLED.toString())) {
+					throw new PricerServiceException(PricerServiceError.INVALID_GROUP_VAL_TYPE,
+							"Invalid Group Val Set Type for one of the selected Groups, Id: " + grp.getId() + ", Name: "
+									+ grp.getGroupName() + ",Val Type: " + grp.getValType());
+				}
+
+				if (grp.getValSet() == null || grp.getValSet().isEmpty()) {
+					throw new PricerServiceException(PricerServiceError.EMPTY_OR_NULL_VAL_SET,
+							"Empty or Null Group Val Set Type for one of the selected Groups, Id: " + grp.getId()
+									+ ", Name: " + grp.getGroupName());
+				}
+
+			}
+
 		} else {
 			groupMasterMap = new HashMap<BigDecimal, GroupingMaster>();
 		}
@@ -323,8 +351,8 @@ public class ExchangeRateManager {
 						|| (fundRateMin != null && fundRateMin.compareTo(rule.getBuyExchangeRate()) > 0)) {
 
 					throw new PricerServiceException(PricerServiceError.BUY_RATE_MIN_MAX_RANGE_VIOLATED,
-							"Sell Rate is out of bound, Min-Max Range is violated for Currency: " + rule.getCurrencyId()
-									+ ", SellRate: " + rule.getSellExchangeRate() + " Expected Range - Min: "
+							"Buy Rate is out of bound, Min-Max Range is violated for Currency: " + rule.getCurrencyId()
+									+ ", BuyRate: " + rule.getBuyExchangeRate() + " Expected Range - Min: "
 									+ fundRateMin + ", Max: " + fundRateMax);
 
 				}
@@ -406,7 +434,9 @@ public class ExchangeRateManager {
 			Map<BigDecimal, String> branchIdNameMap = rule.getcBranchIdNameMap();
 
 			if (groupMasterMap != null && !groupMasterMap.isEmpty()) {
-				groupMasterMap.values().stream().forEach(val -> branchIdNameMap.put(val.getId(), null));
+
+				groupMasterMap.values().stream().forEach(
+						val -> val.getValSet().stream().forEach(v -> branchIdNameMap.put(new BigDecimal(v), null)));
 			}
 
 			// Process for All Branch Ids
@@ -836,7 +866,7 @@ public class ExchangeRateManager {
 		}
 
 		ArrayList<RateUploadRuleDto> ruleDtoOrderedList = new ArrayList<RateUploadRuleDto>();
-		
+
 		for (String ruleId : ruleSequenceList) {
 			ruleDtoOrderedList.add(rateUploadMap.get(ruleId));
 		}

@@ -399,7 +399,7 @@ public class DiscountManager {
 		groupDetails.setGroupName(grpMaster.getGroupName());
 		groupDetails.setGroupType(GROUP_TYPE.valueOf(grpMaster.getGroupType()));
 		groupDetails.setIsActive(grpMaster.getIsActive());
-		groupDetails.setValType(GROUP_VAL_TYPE.valueOf(grpMaster.getValType()));
+		groupDetails.setValType(GROUP_VAL_TYPE.LINKED);
 
 		groupDetails.setCreatedBy(grpMaster.getCreatedBy());
 		groupDetails.setCreatedDate(grpMaster.getCreatedDate());
