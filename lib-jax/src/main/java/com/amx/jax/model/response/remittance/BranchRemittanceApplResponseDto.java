@@ -6,6 +6,7 @@ import java.util.List;
 import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.CivilIdOtpModel;
+import com.amx.jax.response.payatbranch.PaymentModesDTO;
 
 
 
@@ -29,8 +30,14 @@ public class BranchRemittanceApplResponseDto extends AbstractModel{
 	private CivilIdOtpModel civilIdOtpModel;
 	private PayGServiceCode pgCode = PayGServiceCode.DEFAULT;
 	private Boolean addToCart=true;
+	private List<PaymentModesDTO> paymentModeList;
 	
-	
+	public List<PaymentModesDTO> getPaymentModeList() {
+		return paymentModeList;
+	}
+	public void setPaymentModeList(List<PaymentModesDTO> paymentModeList) {
+		this.paymentModeList = paymentModeList;
+	}
 	public ConfigDto getConfigDto() {
 		return configDto;
 	}
@@ -40,6 +47,10 @@ public class BranchRemittanceApplResponseDto extends AbstractModel{
 	/* application records */
 	List<CustomerShoppingCartDto> shoppingCartDetails;
 	
+
+	List<PlaceOrderApplDto> placeOrderApplList;
+	
+
 	List<PaymentLinkAppDto> paymentLinkAppDto;  
 	public List<PaymentLinkAppDto> getPaymentLinkAppDto() {
 		return paymentLinkAppDto;
@@ -106,5 +117,11 @@ public class BranchRemittanceApplResponseDto extends AbstractModel{
 	}
 	public void setAddToCart(Boolean addToCart) {
 		this.addToCart = addToCart;
+	}
+  public List<PlaceOrderApplDto> getPlaceOrderApplList() {
+		return placeOrderApplList;
+	}
+	public void setPlaceOrderApplList(List<PlaceOrderApplDto> placeOrderApplList) {
+		this.placeOrderApplList = placeOrderApplList;
 	}
 }

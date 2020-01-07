@@ -120,7 +120,11 @@ public class TunnelSubscriberFactory {
 		}
 
 		@Override
-		public void onMessage(String channel, TunnelMessage<M> msg) {
+		public void onMessage(CharSequence channel, TunnelMessage<M> msg) {
+			this.onMessageWrapper(ArgUtil.parseAsString(channel), msg);
+		}
+
+		public void onMessageWrapper(String channel, TunnelMessage<M> msg) {
 			this.subscriber.onMessage(channel, msg.getData());
 		}
 
@@ -136,13 +140,14 @@ public class TunnelSubscriberFactory {
 
 	public <M> void addShoutListener(String topic, RedissonClient redisson, ITunnelSubscriber<M> listener,
 			boolean integrity, String listentName) {
-		RTopic<TunnelMessage<M>> topicQueue = redisson.getTopic(TunnelEventXchange.SHOUT_LISTNER.getTopic(topic));
+		RTopic topicQueue = redisson.getTopic(TunnelEventXchange.SHOUT_LISTNER.getTopic(topic));
 		LOGGER.info("Subscription on Topic : {}",
 				MCQIndicator.messageSubscribed(TunnelEventXchange.SHOUT_LISTNER.getTopic(topic)));
-		topicQueue.addListener(new WrapperML<M>(listener, integrity) {
+		topicQueue.addListener(TunnelMessage.class, new WrapperML<M>(listener, integrity) {
 			@Override
-			public void onMessage(String channel, TunnelMessage<M> msg) {
+			public void onMessageWrapper(String channel, TunnelMessage<M> msg) {
 				MCQIndicator.messageRcvd(channel);
+				AppContextUtil.clear();
 				AppContext context = msg.getContext();
 				AppContextUtil.setContext(context);
 				AppContextUtil.init();
@@ -179,12 +184,12 @@ public class TunnelSubscriberFactory {
 
 	public <M> void addQueuedListener(String topicName, RedissonClient redisson, ITunnelSubscriber<M> listener,
 			boolean integrity, String listenrName) {
-		RTopic<TunnelMessage<M>> eventTopic = redisson.getTopic(TunnelEventXchange.SEND_LISTNER.getTopic(topicName));
+		RTopic eventTopic = redisson.getTopic(TunnelEventXchange.SEND_LISTNER.getTopic(topicName));
 		LOGGER.info("Subscription on Topic : {}",
 				MCQIndicator.messageSubscribed(TunnelEventXchange.SEND_LISTNER.getTopic(topicName)));
-		eventTopic.addListener(new WrapperML<M>(listener, integrity) {
+		eventTopic.addListener(TunnelMessage.class, new WrapperML<M>(listener, integrity) {
 			@Override
-			public void onMessage(String channel, TunnelMessage<M> msg) {
+			public void onMessageWrapper(String channel, TunnelMessage<M> msg) {
 				MCQIndicator.messageRcvd(channel);
 				tryMessage(channel, msg);
 				RQueue<TunnelMessage<M>> eventAltQueue = redisson
@@ -215,6 +220,7 @@ public class TunnelSubscriberFactory {
 			}
 
 			public void doMessage(String channel, TunnelMessage<M> msg) {
+				AppContextUtil.clear();
 				AppContextUtil.setContext(msg.getContext());
 				AppContextUtil.init();
 				AuditServiceClient.trackStatic(
@@ -232,12 +238,12 @@ public class TunnelSubscriberFactory {
 
 	public <M> void addTaskListner(String topic, RedissonClient redisson, ITunnelSubscriber<M> listener,
 			TunnelEventXchange exchange, boolean integrity, String listentName) {
-		RTopic<TunnelMessage<M>> taskListnerTopic = redisson.getTopic(TunnelEventXchange.TASK_LISTNER.getTopic(topic));
+		RTopic taskListnerTopic = redisson.getTopic(TunnelEventXchange.TASK_LISTNER.getTopic(topic));
 		LOGGER.info("Subscription on Topic : {}",
 				MCQIndicator.messageSubscribed(TunnelEventXchange.TASK_LISTNER.getTopic(topic)));
-		taskListnerTopic.addListener(new WrapperML<M>(listener, exchange, integrity) {
+		taskListnerTopic.addListener(TunnelMessage.class, new WrapperML<M>(listener, exchange, integrity) {
 			@Override
-			public void onMessage(String channel, TunnelMessage<M> msg) {
+			public void onMessageWrapper(String channel, TunnelMessage<M> msg) {
 				MCQIndicator.messageRcvd(channel);
 				if (ArgUtil.isEmpty(msg) || ArgUtil.isEmpty(msg.getId())) {
 					LOGGER.warn("NULL msgId Rcvd for EVENT " + channel + " : ");
@@ -281,6 +287,7 @@ public class TunnelSubscriberFactory {
 					return;
 				}
 				if (!TimeUtils.isDead(msg.getTimestamp(), TIME_TO_EXPIRE_MILLIS)) {
+					AppContextUtil.clear();
 					AppContext context = msg.getContext();
 					AppContextUtil.setContext(context);
 					AppContextUtil.init();
@@ -305,12 +312,17 @@ public class TunnelSubscriberFactory {
 
 	public <M> void addTaskWorker(String topic, RedissonClient redisson, ITunnelSubscriber<M> listener,
 			boolean integrity, String listentName) {
-		RTopic<String> topicQueue = redisson.getTopic(TunnelEventXchange.TASK_WORKER.getTopic(topic));
+		RTopic topicQueue = redisson.getTopic(TunnelEventXchange.TASK_WORKER.getTopic(topic));
 		LOGGER.info("Subscription on Topic : {}",
 				MCQIndicator.messageSubscribed(TunnelEventXchange.TASK_WORKER.getTopic(topic)));
-		topicQueue.addListener(new MessageListener<String>() {
+		topicQueue.addListener(String.class, new MessageListener<String>() {
+
 			@Override
-			public void onMessage(String channel, String msgId) {
+			public void onMessage(CharSequence channel, String msg) {
+				this.onMessageWrapper(ArgUtil.parseAsString(channel), msg);
+			}
+
+			public void onMessageWrapper(String channel, String msgId) {
 				MCQIndicator.messageRcvd(channel);
 				if (ArgUtil.isEmpty(msgId)) {
 					LOGGER.warn("NULL msgId Rcvd for EVENT " + channel + " : ");
@@ -326,6 +338,7 @@ public class TunnelSubscriberFactory {
 					return;
 				}
 				if (!TimeUtils.isDead(msg.getTimestamp(), TIME_TO_EXPIRE_MILLIS)) {
+					AppContextUtil.clear();
 					AppContext context = msg.getContext();
 					AppContextUtil.setContext(context);
 					AppContextUtil.init();
@@ -351,12 +364,17 @@ public class TunnelSubscriberFactory {
 
 	public <M> void addAuditListener(String topic, RedissonClient redisson, ITunnelSubscriber<M> listener,
 			boolean integrity, String listentName) {
-		RTopic<String> topicQueue = redisson.getTopic(TunnelEventXchange.AUDIT.getTopic(topic));
+		RTopic topicQueue = redisson.getTopic(TunnelEventXchange.AUDIT.getTopic(topic));
 		LOGGER.info("Subscription on Topic : {}",
 				MCQIndicator.messageSubscribed(TunnelEventXchange.AUDIT.getTopic(topic)));
-		topicQueue.addListener(new MessageListener<String>() {
+		topicQueue.addListener(String.class, new MessageListener<String>() {
+
 			@Override
-			public void onMessage(String channel, String msgId) {
+			public void onMessage(CharSequence channel, String msg) {
+				this.onMessageWrapper(ArgUtil.parseAsString(channel), msg);
+			}
+
+			public void onMessageWrapper(String channel, String msgId) {
 				MCQIndicator.messageRcvd(channel);
 				if (ArgUtil.isEmpty(msgId)) {
 					LOGGER.warn("NULL msgId Rcvd for EVENT " + channel + " : ");
@@ -370,6 +388,7 @@ public class TunnelSubscriberFactory {
 				TunnelMessage<M> msg = pollSafely(channel, topicMessageQueue, msgId);
 
 				if (msg != null) {
+					AppContextUtil.clear();
 					AppContext context = msg.getContext();
 					AppContextUtil.setContext(context);
 					AppContextUtil.init();

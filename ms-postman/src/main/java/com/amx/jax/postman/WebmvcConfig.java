@@ -31,6 +31,7 @@ public class WebmvcConfig extends WebMvcConfigurerAdapter {
 	public static final String XML_TEMPLATES_RESOLVE_PATTERN = "xml/*";
 	/** Pattern relative to templates base used to match JSON templates. */
 	public static final String JSON_TEMPLATES_RESOLVE_PATTERN = "json/*";
+	public static final String HTML_TEMPLATES_RESOLVE_PATTERN = "html/*";
 	/** Pattern relative to templates base used to match text templates. */
 	public static final String TEXT_TEMPLATES_RESOLVE_PATTERN = "text/*";
 	public static final String OWA_TEMPLATES_RESOLVE_PATTERN = "owa-content/*";
@@ -112,13 +113,26 @@ public class WebmvcConfig extends WebMvcConfigurerAdapter {
 		return theResourceTemplateResolver;
 	}
 
-	@Value("${jax.static.path}")
-	String jaxStaticPath;
+	@Value("${jax.static.url}")
+	String jaxStaticUrl;
+	
+	@Value("${jax.static.context}")
+	String jaxStaticContext;
 
 	private FileTemplateResolver fileTemplateResolver() {
 		FileTemplateResolver resolver = new FileTemplateResolver();
-		resolver.setPrefix(jaxStaticPath+"/templates/");
+		resolver.setPrefix(jaxStaticUrl+"/");
+		resolver.setResolvablePatterns(Collections.singleton(jaxStaticContext+"/templates/html/*"));
 		resolver.setSuffix(".html");
+		resolver.setCacheable(false);
+		return resolver;
+	}
+	
+	private FileTemplateResolver fileJsonTemplateResolver() {
+		FileTemplateResolver resolver = new FileTemplateResolver();
+		resolver.setPrefix(jaxStaticUrl+"/");
+		resolver.setResolvablePatterns(Collections.singleton(jaxStaticContext+"/templates/json/*"));
+		resolver.setSuffix(".json");
 		resolver.setCacheable(false);
 		return resolver;
 	}
@@ -147,6 +161,7 @@ public class WebmvcConfig extends WebMvcConfigurerAdapter {
 			theTemplateEngine.addTemplateResolver(theTemplateResolver);
 		}
 		theTemplateEngine.addTemplateResolver(fileTemplateResolver());
+		theTemplateEngine.addTemplateResolver(fileJsonTemplateResolver());
 		return theTemplateEngine;
 	}
 

@@ -14,22 +14,41 @@ import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.client.fx.FcSaleOrderClient;
 import com.amx.jax.exception.JaxSystemError;
 import com.amx.jax.model.ResourceDTO;
+import com.amx.jax.model.request.remittance.BenePackageRequest;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.BranchRemittanceGetExchangeRateRequest;
 import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
 import com.amx.jax.model.request.remittance.CustomerBankRequest;
+
+import com.amx.jax.model.request.remittance.PlaceOrderRequestModel;
+import com.amx.jax.model.request.remittance.PlaceOrderResponseModel;
+import com.amx.jax.model.request.remittance.PlaceOrderUpdateStatusDto;
+
 import com.amx.jax.model.request.remittance.GetServiceApplicabilityRequest;
+
 import com.amx.jax.model.request.remittance.RoutingPricingRequest;
+import com.amx.jax.model.response.customer.BenePackageResponse;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
+import com.amx.jax.model.response.remittance.CardTypeDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
+import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;
 import com.amx.jax.model.response.remittance.FlexFieldReponseDto;
+
+import com.amx.jax.model.response.remittance.GsmPlaceOrderListDto;
+import com.amx.jax.model.response.remittance.GsmSearchRequestParameter;
+
 import com.amx.jax.model.response.remittance.GetServiceApplicabilityResponse;
+
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
 import com.amx.jax.model.response.remittance.ParameterDetailsResponseDto;
 import com.amx.jax.model.response.remittance.PaymentLinkRespDTO;
 import com.amx.jax.model.response.remittance.PaymentModeDto;
+import com.amx.jax.model.response.remittance.RatePlaceOrderInquiryDto;
+import com.amx.jax.model.response.remittance.RatePlaceOrderResponseModel;
+import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
+
 import com.amx.jax.model.response.remittance.RemittanceDeclarationReportDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
@@ -400,6 +419,47 @@ public class RemittanceClient implements IRemittanceService {
 	}
 
 	@Override
+	public AmxApiResponse<RatePlaceOrderResponseModel, Object> savePlaceOrderApplication(PlaceOrderRequestModel placeOrderRequestModel) {
+		return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_SAVE_PLACE_ORDER).meta(new JaxMetaInfo())
+				.post(placeOrderRequestModel)
+				.as(new ParameterizedTypeReference<AmxApiResponse<RatePlaceOrderResponseModel, Object>>() {
+				});
+	}
+
+	@Override
+	public AmxApiResponse<RatePlaceOrderInquiryDto, Object> fetchPlaceOrderInquiry(BigDecimal countryBranchId) {
+		return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_FETCH_PLACE_ORDER).meta(new JaxMetaInfo())
+				.queryParam(Params.COUNTRY_BRANCH_ID, countryBranchId)
+				.post()
+				.as(new ParameterizedTypeReference<AmxApiResponse<RatePlaceOrderInquiryDto, Object>>() {
+				});
+	}
+
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> updateRatePlaceOrder(PlaceOrderUpdateStatusDto placeOrderRequestUpdatDto) {
+		return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_UPDATE_PLACE_ORDER).meta(new JaxMetaInfo())
+				.post(placeOrderRequestUpdatDto)
+				.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
+				});
+	}
+
+	@Override
+	public AmxApiResponse<GsmPlaceOrderListDto, Object> getCountryWisePlaceOrderCount(GsmSearchRequestParameter requestParameter) {
+		return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_PLACE_ORDER_COUNT).meta(new JaxMetaInfo())
+				.post(requestParameter)
+				.as(new ParameterizedTypeReference<AmxApiResponse<GsmPlaceOrderListDto, Object>>() {
+				});
+	}
+
+	@Override
+	public AmxApiResponse<PlaceOrderResponseModel, Object> acceptPlaceOrderByCustomer(BigDecimal ratePlaceOrderId) {
+		return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_ACCEPT_PLACE_ORDER).meta(new JaxMetaInfo())
+				.queryParam(Params.RATE_PLACE_ORDER_ID, ratePlaceOrderId).meta(new JaxMetaInfo())
+				.post()
+				.as(new ParameterizedTypeReference<AmxApiResponse<PlaceOrderResponseModel, Object>>() {
+				});
+	
+	}
 	public AmxApiResponse<GetServiceApplicabilityResponse, Object> getServiceApplicability(GetServiceApplicabilityRequest request) {
 		try {
 			LOGGER.debug("in getServiceApplicability :" + request);
@@ -410,7 +470,52 @@ public class RemittanceClient implements IRemittanceService {
 			LOGGER.error("exception in getServiceApplicability : ", e);
 			return JaxSystemError.evaluate(e);
 		}
+
 	}
 
+	// ------ Customer Card Type Client call ------
+	@Override
+	public AmxApiResponse<CardTypeDto, Object> getCustomerCardTypeList() {
+		try {
+			LOGGER.debug("In Customer Card Type Client :");
+			return restService.ajax(appConfig.getJaxURL() + Path.GET_CUSTOMER_CARD_TYPE).meta(new JaxMetaInfo())
+					.get()
+					.as(new ParameterizedTypeReference<AmxApiResponse<CardTypeDto, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in Customer Card Type Client : ", e);
+			return JaxSystemError.evaluate(e);
+		}
+	}
+
+	@Override
+	public AmxApiResponse<BoolRespModel, Object> updateCustomerCardType(BigDecimal chequeBankId, BigDecimal cardTypeId, String nameOnCard) {
+		try {
+			LOGGER.debug("In Update Customer Card Type : " );
+			return restService.ajax(appConfig.getJaxURL() + Path.UPDATE_CUSTOMER_CARD_TYPE).meta(new JaxMetaInfo())
+					.queryParam(Params.CHEQUE_BANK_ID, chequeBankId)
+					.queryParam(Params.CARD_TYPE_ID, cardTypeId)
+					.queryParam(Params.NAME_ON_CARD, nameOnCard)
+					.post()
+					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in update customer card type :", e);
+			return JaxSystemError.evaluate(e);
+		}
+	}
+
+	@Override
+	public AmxApiResponse<BenePackageResponse, Object> getBenePackages(BenePackageRequest benePackageRequest) {
+		
+		//beneRelationshipId
+			return restService.ajax(appConfig.getJaxURL() + Path.BR_REMITTANCE_GET_BENE_PACKAGE).meta(new JaxMetaInfo())
+					.meta(new JaxMetaInfo())
+					.post(benePackageRequest)
+					.as(new ParameterizedTypeReference<AmxApiResponse<BenePackageResponse, Object>>() {
+					});
+		
+		
+	}
 
 }

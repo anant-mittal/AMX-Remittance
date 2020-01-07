@@ -104,7 +104,7 @@ public class PayAtBranchService {
 			pbTrnxListDTO.setBeneName(remittanceAppBeneficiary.getBeneficiaryName());
 			pbTrnxListDTO.setAccountNo(remittanceAppBeneficiary.getBeneficiaryAccountNo());
 			pbTrnxListDTO.setForeignExchangeRate(payAtBranchTrnxModel.getExchangeRate());
-			pbTrnxListDTO.setLocalExchangeRate(new BigDecimal(1).divide(payAtBranchTrnxModel.getExchangeRate(), 10, RoundingMode.HALF_UP));
+			pbTrnxListDTO.setLocalExchangeRate(new BigDecimal(1).divide(payAtBranchTrnxModel.getExchangeRate(), 2, BigDecimal.ROUND_HALF_UP));
 			output.add(pbTrnxListDTO);
 
 		}

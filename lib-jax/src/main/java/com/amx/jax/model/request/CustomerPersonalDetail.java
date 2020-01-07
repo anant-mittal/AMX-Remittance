@@ -142,6 +142,7 @@ public class CustomerPersonalDetail extends AbstractModel implements ICustomerCo
 	private BigDecimal annualTxnLimitTo;
 	private String premiumInsurance;
 	@Valid
+	//@NotNull
 	private CustomerPassportData customerPassportData;
 
 
@@ -278,9 +279,6 @@ public class CustomerPersonalDetail extends AbstractModel implements ICustomerCo
 	}
 
 	public void setInsurance(String insurance) {
-		if (insurance == null) {
-			insurance = AmxDBConstants.No;
-		}
 		this.insurance = insurance;
 	}
 

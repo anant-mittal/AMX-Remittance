@@ -4,8 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.amx.jax.model.request.serviceprovider.ServiceProviderCallRequestDto;
-import com.amx.jax.model.response.serviceprovider.Quotation_Call_Response;
-import com.amx.jax.model.response.serviceprovider.Remittance_Call_Response;
+import com.amx.jax.model.response.serviceprovider.ServiceProviderResponse;
 import com.amx.service_provider.manger.ServiceProviderManger;
 
 @Service
@@ -14,20 +13,35 @@ public class ServiceProviderService
 	@Autowired
 	ServiceProviderManger serviceProviderGateWayManger;
 
-	public Quotation_Call_Response getQutation(ServiceProviderCallRequestDto quatationRequestDto)
+	public ServiceProviderResponse getQutation(ServiceProviderCallRequestDto quatationRequestDto)
 	{
 		// TODO: see if you need to get data from Repo to get the customer and bene
 		// objects using incoming Ids only
 		return serviceProviderGateWayManger.getQutation(quatationRequestDto);
 	}
-
-	public Remittance_Call_Response sendRemittance(ServiceProviderCallRequestDto sendRemittanceRequestDto)
+	
+	public ServiceProviderResponse validateRemittanceInputs(ServiceProviderCallRequestDto validateRemittanceInputsRequestDto)
 	{
-		// TODO: see if you need to get data from Repo to get the customer and bene
-		// objects using incoming Ids only
-		return serviceProviderGateWayManger.sendRemittance(sendRemittanceRequestDto);
+		return serviceProviderGateWayManger.validateRemittanceInputs(validateRemittanceInputsRequestDto);
 	}
 
+	public ServiceProviderResponse sendRemittance(ServiceProviderCallRequestDto sendRemittanceRequestDto)
+	{
+		return serviceProviderGateWayManger.sendRemittance(sendRemittanceRequestDto);
+	}
 	
+	public ServiceProviderResponse getRemittanceDetails(ServiceProviderCallRequestDto getRemittanceDetailsRequestDto)
+	{
+		return serviceProviderGateWayManger.getRemittanceDetails(getRemittanceDetailsRequestDto);
+	}
 
+	public ServiceProviderResponse getRemittanceStatus(ServiceProviderCallRequestDto getRemittanceStatusRequestDto)
+	{
+		return serviceProviderGateWayManger.getRemittanceStatus(getRemittanceStatusRequestDto);
+	}
+	
+	public ServiceProviderResponse cancelRemittance(ServiceProviderCallRequestDto cancelRemittanceRequestDto)
+	{
+		return serviceProviderGateWayManger.cancelRemittance(cancelRemittanceRequestDto);
+	}
 }

@@ -1,6 +1,7 @@
 package com.amx.jax.pricer.repository;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import javax.transaction.Transactional;
 
@@ -12,8 +13,10 @@ import com.amx.jax.pricer.dbmodel.CountryBranch;
 public interface CountryBranchRepository extends CrudRepository<CountryBranch, BigDecimal> {
 
 	public CountryBranch findBybranchName(String branchName);
-	
+
 	public CountryBranch findByBranchId(BigDecimal branchId);
-	
+
 	public CountryBranch findByCountryBranchId(BigDecimal countryBranchId);
+
+	List<CountryBranch> findByCountryBranchIdIn(List<BigDecimal> countryBranchIds);
 }

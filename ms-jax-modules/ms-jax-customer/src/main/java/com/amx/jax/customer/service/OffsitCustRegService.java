@@ -831,14 +831,17 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		customer.setCustomerRegistrationType(CustomerRegistrationType.OFF_CUSTOMER);
 		customer.setSignatureSpecimenClob(customerDetails.getCustomerSignature());
 		if (customerEmploymentDetails != null) {
-			customer.setFsArticleDetails(
-					articleDao.getArticleDetailsByArticleDetailId(ConstantDocument.ARTICLE_DETAIL_ID_OTHERS));
-			customer.setFsIncomeRangeMaster(
-					articleDao.getIncomeRangeMasterByIncomeRangeId(customerEmploymentDetails.getIncomeRangeId()));
+			if (customerEmploymentDetails.getArticleDetailsId() != null) {
+				customer.setFsArticleDetails(articleDao.getArticleDetailsByArticleDetailId(customerEmploymentDetails.getArticleDetailsId()));
+			} else {
+				customer.setFsArticleDetails(articleDao.getArticleDetailsByArticleDetailId(ConstantDocument.ARTICLE_DETAIL_ID_OTHERS));
+			}
+			customer.setFsIncomeRangeMaster(articleDao.getIncomeRangeMasterByIncomeRangeId(customerEmploymentDetails.getIncomeRangeId()));
 		}
 		userValidationService.validateBlackListedCustomerForLogin(customer);
-		offsiteCustomerRegManager.setNotificationVerificationFlags(customer, customerDetails);
-		LOGGER.info("Createing new customer record, civil id- {}", customerDetails.getIdentityInt());
+		if (customer.getCustomerId() != null) {
+			offsiteCustomerRegManager.setNotificationVerificationFlags(customer, customerDetails);
+		}
 		customer = customerRepository.save(customer);
 		return customer;
 	}

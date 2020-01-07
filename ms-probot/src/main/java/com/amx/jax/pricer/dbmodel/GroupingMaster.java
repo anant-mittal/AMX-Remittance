@@ -3,11 +3,18 @@ package com.amx.jax.pricer.dbmodel;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+
+import com.amx.jax.converter.JsonStrListConverter;
 
 @Entity
 @Table(name = "EX_GROUPING_MASTER")
@@ -19,15 +26,13 @@ public class GroupingMaster implements Serializable {
 	private static final long serialVersionUID = -5519877984392715225L;
 
 	@Id
-	// @GeneratedValue(generator = "cc_discount_seq", strategy =
-	// GenerationType.SEQUENCE)
-	// @SequenceGenerator(name = "cc_discount_seq", sequenceName =
-	// "JAX_PR_CUSTOMER_DISCOUNT_SEQ", allocationSize = 1)
+	@GeneratedValue(generator = "grouping_master_seq", strategy = GenerationType.SEQUENCE)
+	@SequenceGenerator(name = "grouping_master_seq", sequenceName = "EX_GROUPING_MASTER_SEQ", allocationSize = 1)
 	@Column(name = "ID", unique = true, nullable = false, precision = 22, scale = 0)
 	private BigDecimal id;
 
 	@Column(name = "APPLICATION_COUNTRY_ID")
-	private BigDecimal aplicationCountryId;
+	private BigDecimal applicationCountryId;
 
 	@Column(name = "GROUP_TYPE")
 	private String groupType;
@@ -50,6 +55,13 @@ public class GroupingMaster implements Serializable {
 	@Column(name = "MODIFIED_DATE")
 	private Date modifiedDate;
 
+	@Column(name = "VAL_TYPE")
+	private String valType;
+
+	@Column(name = "VAL_SET_JSON")
+	@Convert(converter = JsonStrListConverter.class)
+	private List<String> valSet;
+
 	public BigDecimal getId() {
 		return id;
 	}
@@ -58,12 +70,12 @@ public class GroupingMaster implements Serializable {
 		this.id = id;
 	}
 
-	public BigDecimal getAplicationCountryId() {
-		return aplicationCountryId;
+	public BigDecimal getApplicationCountryId() {
+		return applicationCountryId;
 	}
 
-	public void setAplicationCountryId(BigDecimal aplicationCountryId) {
-		this.aplicationCountryId = aplicationCountryId;
+	public void setApplicationCountryId(BigDecimal aplicationCountryId) {
+		this.applicationCountryId = aplicationCountryId;
 	}
 
 	public String getGroupType() {
@@ -120,6 +132,22 @@ public class GroupingMaster implements Serializable {
 
 	public void setModifiedDate(Date modifiedDate) {
 		this.modifiedDate = modifiedDate;
+	}
+
+	public String getValType() {
+		return valType;
+	}
+
+	public void setValType(String valType) {
+		this.valType = valType;
+	}
+
+	public List<String> getValSet() {
+		return valSet;
+	}
+
+	public void setValSet(List<String> valSet) {
+		this.valSet = valSet;
 	}
 
 }

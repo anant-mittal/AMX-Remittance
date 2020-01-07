@@ -18,6 +18,9 @@ public class CurrencyMasterDTO extends AbstractModel {
 
 	private BigDecimal countryId;
 
+	private BigDecimal fundMinRate;
+	private BigDecimal fundMaxRate;
+
 	@Override
 	public String getModelType() {
 		return "currencyMaster";
@@ -69,6 +72,22 @@ public class CurrencyMasterDTO extends AbstractModel {
 
 	public void setCountryId(BigDecimal countryId) {
 		this.countryId = countryId;
+	}
+
+	public BigDecimal getFundMinRate() {
+		return fundMinRate;
+	}
+
+	public void setFundMinRate(BigDecimal fundMinRate) {
+		this.fundMinRate = fundMinRate;
+	}
+
+	public BigDecimal getFundMaxRate() {
+		return fundMaxRate;
+	}
+
+	public void setFundMaxRate(BigDecimal fundMaxRate) {
+		this.fundMaxRate = fundMaxRate;
 	}
 
 	@Override

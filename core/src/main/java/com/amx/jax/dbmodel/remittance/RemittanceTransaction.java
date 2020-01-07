@@ -159,13 +159,12 @@ public class RemittanceTransaction implements Serializable {
 	private String wuPurposeOfTransaction;
 	private String paymentType;
 	
-
 	private BigDecimal paygTrnxDetailId;
-
 
 	private String applSplit;
 
 	private Date timeToDeliver;
+
 	private BigDecimal savedAmount;
 	private BigDecimal rackExchangeRate;
 	
@@ -173,7 +172,9 @@ public class RemittanceTransaction implements Serializable {
 	
 	
 	private BigDecimal savedAmountInFc;
-	
+
+
+	private BigDecimal approvalYear;
 
 	
 	
@@ -1275,13 +1276,23 @@ public class RemittanceTransaction implements Serializable {
 		this.paygTrnxDetailId = paygTrnxDetailId;
 	}
 
-	public void setApplSplit(String applSplit) {
-		this.applSplit = applSplit;
-	}
-
 	@Column(name="IS_SPLITTED")
 	public String getApplSplit() {
 		return applSplit;
+	}
+
+	public void setApplSplit(String applSplit) {
+		this.applSplit = applSplit;
+
+	}
+
+	@Column(name="APPROVAL_YEAR")
+	public BigDecimal getApprovalYear() {
+		return approvalYear;
+	}
+
+	public void setApprovalYear(BigDecimal approvalYear) {
+		this.approvalYear = approvalYear;
 	}
 	
 

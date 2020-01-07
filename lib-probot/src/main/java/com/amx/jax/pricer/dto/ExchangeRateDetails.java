@@ -25,6 +25,8 @@ public class ExchangeRateDetails implements Serializable, Cloneable, Comparable<
 
 	private BigDecimal rackExchangeRate;
 
+	private BigDecimal costExchangeRate;
+
 	private Map<DISCOUNT_TYPE, ExchangeDiscountInfo> customerDiscountDetails;
 
 	private boolean isDiscountAvailed = false;
@@ -34,7 +36,7 @@ public class ExchangeRateDetails implements Serializable, Cloneable, Comparable<
 	private boolean isLowGLBalance = false;
 
 	private boolean isFundedIntermediary = false;
-	
+
 	private boolean isBetterRateAvailable = false;
 
 	private BigDecimal betterRateAmountSlab;
@@ -145,6 +147,14 @@ public class ExchangeRateDetails implements Serializable, Cloneable, Comparable<
 		this.rackExchangeRate = rackExchangeRate;
 	}
 
+	public BigDecimal getCostExchangeRate() {
+		return costExchangeRate;
+	}
+
+	public void setCostExchangeRate(BigDecimal costExchangeRate) {
+		this.costExchangeRate = costExchangeRate;
+	}
+
 	@Override
 	public int compareTo(ExchangeRateDetails o) {
 
@@ -163,10 +173,6 @@ public class ExchangeRateDetails implements Serializable, Cloneable, Comparable<
 		try {
 
 			ExchangeRateDetails cloned = (ExchangeRateDetails) super.clone();
-
-			// cloned.customerDiscountDetails =
-			// this.customerDiscountDetails.entrySet().stream()
-			// .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
 			if (this.customerDiscountDetails != null) {
 				cloned.customerDiscountDetails = new HashMap<DISCOUNT_TYPE, ExchangeDiscountInfo>();

@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppConfig;
+import com.amx.jax.AppParam;
+import com.amx.jax.cache.test.RedisSampleCacheBox;
 import com.amx.jax.def.IndicatorListner;
 import com.amx.jax.tunnel.TunnelSubscriberFactory;
 import com.amx.utils.ArgUtil;
@@ -23,7 +25,7 @@ public class MCQIndicator implements IndicatorListner {
 	public static final Map<String, Object> statusMap = Collections.synchronizedMap(new HashMap<String, Object>());
 
 	@Autowired
-	SampleTestCacheBox sampleTestCacheBox;
+	RedisSampleCacheBox sampleTestCacheBox;
 
 	@Autowired
 	AppConfig appConfig;
@@ -35,8 +37,17 @@ public class MCQIndicator implements IndicatorListner {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("tunnel.listner", MCQIndicator.getStatus());
 
+		Map<String, Object> propMap = new HashMap<String, Object>();
+		for (AppParam eachAppParam : AppParam.values()) {
+			if(ArgUtil.is(eachAppParam.getProperty())){
+				propMap.put(eachAppParam.getProperty(), eachAppParam.getValue());				
+			}
+		}
+		map.put("properties", propMap);
+		
 		Map<String, Object> cacheMap = new HashMap<String, Object>();
 		cacheMap.put("status", "UP");
+		
 
 		if (ArgUtil.isEmpty(TIMER)) {
 			TIMER = appConfig.getSpringAppName() + System.currentTimeMillis();

@@ -23,6 +23,7 @@ public class RemittancePageDto extends AbstractModel {
 	private PlaceOrderDTO placeOrderDTO = null;
 	
 	private LoyalityPointState loyalityPointState;
+	String serviceProviderBankCode;
 
 	public CurrencyMasterDTO getForCur() {
 		return forCur;
@@ -87,6 +88,14 @@ public class RemittancePageDto extends AbstractModel {
 
 	public void setLoyalityPointState(LoyalityPointState loyalityPointState) {
 		this.loyalityPointState = loyalityPointState;
+	}
+
+	public String getServiceProviderBankCode() {
+		return serviceProviderBankCode;
+	}
+
+	public void setServiceProviderBankCode(String serviceProviderBankCode) {
+		this.serviceProviderBankCode = serviceProviderBankCode;
 	}
 
 }

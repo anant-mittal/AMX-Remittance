@@ -101,7 +101,18 @@ public class RemittanceApplAmlManager {
 			  amlModel.setExRemittanceAppfromAml(remittanceApplication);		   
 		  if(amlDto.getHighValueTrnxFlag()!=null && amlDto.getHighValueTrnxFlag().equalsIgnoreCase(ConstantDocument.Yes)) {
 			  if(amlDto.getStopTrnxFlag()!=null && amlDto.getStopTrnxFlag().equalsIgnoreCase(ConstantDocument.Yes)) {
-			  amlModel.setBlackListReason(amlDto.getBlackRemark1()+" "+amlDto.getBlackRemark2()+" "+amlDto.getBlackRemark3()+" "+amlDto.getRiskLevel1()+" "+amlDto.getRiskLevel2()+" "+amlDto.getRiskLevel3());
+				  
+			StringBuffer sb = new StringBuffer();
+			sb.append(amlDto.getBlackRemark1()==null?"":amlDto.getBlackRemark1())
+			.append(amlDto.getBlackRemark2()==null?"":amlDto.getBlackRemark2())
+			.append(amlDto.getBlackRemark3()==null?"":amlDto.getBlackRemark3())
+			.append(amlDto.getRiskLevel1()==null?"":amlDto.getRiskLevel1())
+			.append(amlDto.getRiskLevel2()==null?"":amlDto.getRiskLevel2())
+			.append(amlDto.getRiskLevel3()==null?"":amlDto.getRiskLevel3());
+			if(sb!=null) {
+				amlModel.setBlackListReason(sb.toString());
+			}
+			
 			  }
 		  }
 		  	amlModel.setIsactive(ConstantDocument.Yes);
@@ -140,17 +151,18 @@ public class RemittanceApplAmlManager {
 		if(countryMaster!=null) {
 			riskCount = countryMaster.getBeneCountryRisk();
 			if(countryMaster.getBeneCountryRisk()!=null && riskCount==1) {
-				amlDto.setBlackRemark1("Bene country  Risk  Level   1.");
+				amlDto.setBlackRemark1("Bene country risk level 1.");
+				amlDto.setTag(ConstantDocument.Yes);
 			}
 		}
 		if(beneficiaryDT.getNationality()!=null && new BigDecimal(beneficiaryDT.getNationality()).compareTo(beneficiaryBankCountryId)!=0) {
-			amlDto.setBlackRemark2("Remitter  Nationality  Mistmatch  with  Bene  Country.");
+			amlDto.setBlackRemark2("Remitter nationality mistmatch.");
 			amlDto.setTag(ConstantDocument.Yes);
 		}
 		
 		BigDecimal changeHistcount = routingProcedureDao.getCustomerHistroyCount(metaData.getCustomerId());
 		if(JaxUtil.isNullZeroBigDecimalCheck(changeHistcount) && changeHistcount.compareTo(BigDecimal.ZERO)>0) {
-			amlDto.setBlackRemark3("Email / Mobile  changed  within  90  days.");
+			amlDto.setBlackRemark3("Email/Mobile changed within 90 days.");
 		}
 
 		
@@ -161,26 +173,39 @@ public class RemittanceApplAmlManager {
 		
 		if(riskCount==1 && !StringUtils.isBlank(amlDto.getTag()) 
 		   && amlDto.getTag().equalsIgnoreCase(ConstantDocument.Yes) 
-		   && changeHistcount.compareTo(BigDecimal.ZERO)>0) {
+		   && changeHistcount.compareTo(BigDecimal.ZERO)>0) { 
+			/** (a) Bene country  Risk  Level   1   (b) -New Bene   '(c)  Email/Mobile changed within 90 days **/ 
 			amlDto.setHighValueTrnxFlag(ConstantDocument.Yes);
 			amlDto.setStopTrnxFlag(ConstantDocument.Yes);
 		}else if(riskCount==1 && changeHistcount.compareTo(BigDecimal.ZERO)>0 
 				&& beneficiaryDT.getServiceGroupCode().equalsIgnoreCase(ConstantDocument.CASH)
-				&& JaxUtil.isNullZeroBigDecimalCheck(amlCashRiskLevel) && remittanceApplication.getLocalTranxAmount().compareTo(amlCashRiskLevel)>1) {
+				&& JaxUtil.isNullZeroBigDecimalCheck(amlCashRiskLevel) && remittanceApplication.getLocalTranxAmount().compareTo(amlCashRiskLevel)>0) { 
+			/** Bene country  Risk  Level    1 and  Cash Trn above 200 KD **/
 			amlDto.setHighValueTrnxFlag(ConstantDocument.Yes);
 			amlDto.setStopTrnxFlag(ConstantDocument.Yes);
 			amlDto.setRiskLevel1(amlCashRisk.getAuthMessage());
-		}else if(riskCount==1 &&  JaxUtil.isNullZeroBigDecimalCheck(trnxCntForRiskCntry) && trnxCntForRiskCntry.compareTo(BigDecimal.ONE)>1) {
+		}else if(riskCount==1 &&  JaxUtil.isNullZeroBigDecimalCheck(trnxCntForRiskCntry) && trnxCntForRiskCntry.compareTo(BigDecimal.ONE)>0) {
+			/** More than one Online transaction to the bene risk  country by a Customer on the same day **/  
 			amlDto.setHighValueTrnxFlag(ConstantDocument.Yes);
 			amlDto.setStopTrnxFlag(ConstantDocument.Yes);
-			amlDto.setRiskLevel2("No of Online Trn = "+trnxCntForRiskCntry +" by the customer to Pakistan");
-		}else if(riskCount==1 && customer!=null && customer.getNationality().contains("PAKISTAN") && JaxUtil.isNullZeroBigDecimalCheck(trnxCount) && trnxCount.compareTo(BigDecimal.ONE)>1 ) {
+			amlDto.setRiskLevel2("No of Online Trn = "+trnxCntForRiskCntry +" by the customer to "+countryMaster.getCountryAlpha3Code()+".");
+		}else if(riskCount==1 && customer!=null && customer.getNationality().contains("PAKISTAN") && JaxUtil.isNullZeroBigDecimalCheck(trnxCount) && trnxCount.compareTo(BigDecimal.ONE)>0 ) {
+			/** ( a ) Bene country  Risk  Level   1 (b)   Remitter  Nationality  Mismatch  with  Bene  Country  and  Email / Mobil changed in last 90 days **/
 			amlDto.setHighValueTrnxFlag(ConstantDocument.Yes);
 			amlDto.setStopTrnxFlag(ConstantDocument.Yes);
-			amlDto.setRiskLevel2("No of Online Trn = "+trnxCount +" by Pakistan Nationality  ");
+			amlDto.setRiskLevel2("No of Online Trn = "+trnxCount +" by Pakistan nationality.");
+		/** Pakistan Nationality sends more than one online transaction to any Country on the same day **/  	
+		}else if(customer!=null && customer.getNationality().contains("PAKISTAN") && JaxUtil.isNullZeroBigDecimalCheck(trnxCount) && trnxCount.compareTo(BigDecimal.ONE)>0 ) {
+			amlDto.setHighValueTrnxFlag(ConstantDocument.Yes);
+			amlDto.setStopTrnxFlag(ConstantDocument.Yes);
+			amlDto.setRiskLevel3("No of Online Trn = "+trnxCount +" by Pakistan Nationality on the same day.");
+		}else if(riskCount==1 && beneficiaryDT.getServiceGroupCode().equalsIgnoreCase(ConstantDocument.CASH)
+					&& JaxUtil.isNullZeroBigDecimalCheck(amlCashRiskLevel) && remittanceApplication.getLocalTranxAmount().compareTo(amlCashRiskLevel)>0) { 
+				/** Bene country  Risk  Level    1 and  Cash Trn above 200 KD **/
+				amlDto.setHighValueTrnxFlag(ConstantDocument.Yes);
+				amlDto.setStopTrnxFlag(ConstantDocument.Yes);
+				amlDto.setRiskLevel1(amlCashRisk.getAuthMessage());
 		}
-		
-		
 		
 		
 		return amlDto;

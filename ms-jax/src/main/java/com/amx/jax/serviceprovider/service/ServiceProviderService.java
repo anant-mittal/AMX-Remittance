@@ -25,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.config.JaxProperties;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.FileUploadTempModel;
 import com.amx.jax.dbmodel.JobProgressModel;
@@ -58,7 +59,9 @@ public class ServiceProviderService extends AbstractService {
 	ServiceProviderTempUploadRepository serviceProviderTempUploadRepository;
 	@Autowired
 	JobProgressRepository jobProgressRepository;
-	
+	@Autowired
+	JaxProperties jaxProperties;
+
 	
 	public List<ServiceProviderPartnerDTO> getServiceProviderPartner() {
 		List<ServiceProviderPartner> serviceProviderPartner = serviceProviderDao.getServiceProviderPartner();
@@ -99,12 +102,18 @@ public class ServiceProviderService extends AbstractService {
 
 		}
 		serviceProviderDao.deleteTemporaryData();
-		InputStream in = file.getInputStream();
+		/*InputStream in = file.getInputStream();
 		File currDir = new File(".");
 		String path = currDir.getAbsolutePath();
 		logger.info("FUll path is " + path);
 		String fileLocation = path.substring(0, path.length() - 1) + file.getOriginalFilename();
-		logger.info("File path is " + fileLocation);
+		logger.info("File path is " + fileLocation);*/
+		
+		String fileUploadLocation =jaxProperties.getDefUploadDir()+"/"+ file.getOriginalFilename();
+		logger.info("File path is "+fileUploadLocation);
+		File newFile = new File(fileUploadLocation);
+		file.transferTo(newFile);
+
 
 		int i, j;
 		Workbook workbook = WorkbookFactory.create(file.getInputStream());
@@ -193,7 +202,7 @@ public class ServiceProviderService extends AbstractService {
 		List<ServiceProviderSummaryModel> serviceProviderSummaryModelList = serviceProviderDao.getSummary();
 
 		workbook.close();
-
+		newFile.delete();
 		return (convertServiceProviderSummary(serviceProviderSummaryModelList));
 		
 	}

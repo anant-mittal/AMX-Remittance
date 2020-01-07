@@ -397,6 +397,7 @@ public class RemittanceApplicationManager {
 		setVatDetails(remittanceApplication, validationResults);
 		setSavedAmount(remittanceApplication, validationResults);
 		setDeliveryTimeDuration(remittanceApplication,dynamicRoutingPricingResponse.getTrnxRoutingPaths());
+		remittanceApplication.setBeneDeductFlag(dynamicRoutingPricingResponse.getBeneDeductFlag());
 		return remittanceApplication;
 	}
 	
@@ -664,18 +665,6 @@ public class RemittanceApplicationManager {
 			remittanceApplication.setInstruction("URGENT");
 		}
 	}
-	
-		/** @author rabil
-		 * Purpose : to store the delivery date and time 
-		 * 
-		 */
-		public  void setDeliveryTimeDuration(RemittanceApplication remittanceApplication,TrnxRoutingDetails trnxRoutingDetails) {
-			if(trnxRoutingDetails!=null && trnxRoutingDetails.getEstimatedDeliveryDetails()!=null) {
-				if(trnxRoutingDetails.getEstimatedDeliveryDetails().getProcessTimeTotalInSeconds()>0) {
-					remittanceApplication.setTimeToDeliverInSec(new BigDecimal(trnxRoutingDetails.getEstimatedDeliveryDetails().getProcessTimeTotalInSeconds()));
-				}
-			}
-		}
 
 	/** added by Rabil **/
 	public void setSavedAmount(RemittanceApplication remittanceApplication,RemittanceTransactionResponsetModel validationResults) {
@@ -690,5 +679,21 @@ public class RemittanceApplicationManager {
 		
 	}
 	
+	
+	
+
+	/** @author rabil
+	 * Purpose : to store the delivery date and time 
+	 * 
+	 */
+	public  void setDeliveryTimeDuration(RemittanceApplication remittanceApplication,TrnxRoutingDetails trnxRoutingDetails) {
+		if(trnxRoutingDetails!=null && trnxRoutingDetails.getEstimatedDeliveryDetails()!=null) {
+			if(trnxRoutingDetails.getEstimatedDeliveryDetails().getProcessTimeTotalInSeconds()>0) {
+				remittanceApplication.setTimeToDeliverInSec(new BigDecimal(trnxRoutingDetails.getEstimatedDeliveryDetails().getProcessTimeTotalInSeconds()));
+			}
+		}
+	}
+
+
 	
 }

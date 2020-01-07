@@ -60,11 +60,11 @@ import com.amx.jax.model.request.customer.UpdateCustomerInfoRequest;
 import com.amx.jax.model.response.CustomerInfo;
 import com.amx.jax.model.response.customer.CustomerShortInfo;
 import com.amx.jax.model.response.customer.PersonInfo;
+import com.amx.jax.model.response.jaxfield.JaxConditionalFieldDto;
+import com.amx.jax.model.response.jaxfield.JaxFieldDto;
 import com.amx.jax.services.NotificationTaskService;
 import com.amx.jax.userservice.manager.OnlineCustomerManager;
 import com.amx.jax.userservice.service.UserService;
-import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
-import com.amx.libjax.model.jaxfield.JaxFieldDto;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
 

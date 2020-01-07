@@ -35,7 +35,7 @@ public enum TemplatesMX implements ITemplate {
 	// Rate Alert, PlaceOrder
 	RATE_ALERT("place-order"), RATE_ALERT_COMPLETION("place-order-executed"),
 
-	BRANCH_SEARCH_EMPTY("BranchSearchEmpty"), TEST("test"), BRANCH_FEEDBACK("trnx-feedback", Channel.FEED), TT("tt", Channel.FEED), EFT("eft", Channel.FEED),
+	BRANCH_SEARCH_EMPTY("BranchSearchEmpty"), TEST("test"), BRANCH_FEEDBACK("trnx-feedback", Channel.FEED), TT("tt", Channel.FEED), EFT("eft", Channel.NOTIPY),
 	CASH("cash", Channel.FEED),
 
 	CIVILID_EXPIRY("civilexpiry"), CIVILID_EXPIRED("civilexpired"),
@@ -56,6 +56,10 @@ public enum TemplatesMX implements ITemplate {
 	FXO_RECEIPT("FXO_RECEIPT", PDFConverter.JASPER, "fxo-receipt.json"),
 	FXO_RECEIPT_BRANCH("FXO_RECEIPT_BRANCH", PDFConverter.JASPER, "fxo-receipt.json"),
 	FXO_STATMENT("FxoTransactionList"),
+	FC_OUTOF_STOCK_SUPPORT("FcOutOfStockSupport"),
+	FC_OUTOF_STOCK_CUSTOMER("FcOutOfStockCustomer"),
+
+
 	SUSPICIOUS_USER("suspicious-user"), PROFILE_CHANGE_SMS("profile-change-sms", Channel.ALERTY),
 	EMAIL_CHANGE_OLD_EMAIL("EmailChangeOldEmail"),
 	FINGERPRINT_LINKED_SUCCESS("FingerprintLinkedSuccess"),
