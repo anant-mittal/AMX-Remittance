@@ -111,6 +111,7 @@ import com.amx.jax.model.response.ExchangeRateBreakup;
 import com.amx.jax.model.response.remittance.BeneAdditionalDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.BsbApiResponse;
+import com.amx.jax.model.response.remittance.CorporateDiscountDto;
 import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;
 import com.amx.jax.model.response.remittance.LoyalityPointState;
 import com.amx.jax.model.response.remittance.RemittanceApplicationResponseModel;
@@ -1051,7 +1052,8 @@ public class RemittanceTransactionManager {
 			responseModel.setLoyalityPointState(LoyalityPointState.CAN_NOT_AVAIL);
 			//responseModel.setDiscountOnComission(BigDecimal.ZERO);
 		}else {
-			responseModel.setDiscountOnComission(corporateDiscountManager.corporateDiscount());
+			CorporateDiscountDto corpDiscount = corporateDiscountManager.corporateDiscount();
+			responseModel.setDiscountOnComission(corpDiscount.getCorpDiscount());
 		}
 		if (remitAppManager.loyalityPointsAvailed(model, responseModel)) {
 			/** old logic **/

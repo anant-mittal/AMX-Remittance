@@ -13,6 +13,7 @@ import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.remittance.VwLoyalityEncash;
 import com.amx.jax.manager.remittance.CorporateDiscountManager;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.response.remittance.CorporateDiscountDto;
 import com.amx.jax.model.response.remittance.LoyalityPointState;
 import com.amx.jax.repository.VwLoyalityEncashRepository;
 import com.amx.jax.userservice.dao.CustomerDao;
@@ -55,7 +56,11 @@ public class LoyalityPointService {
 	public BigDecimal getloyaltyAmountEncashed(BigDecimal commission) {
 		BigDecimal loyalityPoints = getVwLoyalityEncash().getLoyalityPoint();
 		BigDecimal loyalityPointsEncashed = getVwLoyalityEncash().getEquivalentAmount();
-		BigDecimal corporateDiscount = corporateDiscountManager.corporateDiscount();
+		CorporateDiscountDto corpDiscountDto = corporateDiscountManager.corporateDiscount();
+		BigDecimal  corporateDiscount= BigDecimal.ZERO;
+		if(corpDiscountDto!=null) {
+			corporateDiscount = corpDiscountDto.getCorpDiscount();
+		}
 		if (JaxUtil.isNullZeroBigDecimalCheck(commission) && JaxUtil.isNullZeroBigDecimalCheck(loyalityPoints)
 				&& loyalityPointsEncashed.compareTo(corporateDiscount) > 0) {
 			if (commission.compareTo(loyalityPointsEncashed) >= 0) {

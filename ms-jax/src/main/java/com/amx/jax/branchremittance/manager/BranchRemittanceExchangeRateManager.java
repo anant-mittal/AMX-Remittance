@@ -59,6 +59,7 @@ import com.amx.jax.model.request.remittance.RoutingPricingRequest;
 import com.amx.jax.model.response.BankMasterDTO;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchExchangeRateBreakup;
+import com.amx.jax.model.response.remittance.CorporateDiscountDto;
 import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;
 import com.amx.jax.model.response.remittance.ServiceProviderDto;
 import com.amx.jax.model.response.remittance.VatDetailsDto;
@@ -231,7 +232,8 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 			throw new GlobalException(JaxError.EXCHANGE_RATE_NOT_FOUND, "COMMISSION NOT DEFINED FOR Country "+rountingCountryId+" currencyId :"+currencyId+" remittanceMode :"+remittanceMode);
 		}
 		
-		BigDecimal corpDiscount = corporateDiscountManager.corporateDiscount();
+		CorporateDiscountDto corDto = corporateDiscountManager.corporateDiscount();
+		BigDecimal corpDiscount = corDto.getCorpDiscount();
 		if(JaxUtil.isNullZeroBigDecimalCheck(commission) && commission.compareTo(corpDiscount)>=0) {
 			commission =commission.subtract(corpDiscount);
 		}
@@ -349,10 +351,11 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 				commission =trnxRoutingDetails.getBeneDeductChargeAmount();
 				 result.setBeneDeductFlag(ConstantDocument.Yes);
 			}
-			BigDecimal corpDiscount = corporateDiscountManager.corporateDiscount();
+			//BigDecimal corpDiscount = corporateDiscountManager.corporateDiscount();
+			CorporateDiscountDto corpDiscountDto = corporateDiscountManager.corporateDiscount();
 			
-			if(JaxUtil.isNullZeroBigDecimalCheck(commission) &&  JaxUtil.isNullZeroBigDecimalCheck(corpDiscount) && commission.compareTo(corpDiscount)>=0) {
-				commission =commission.subtract(corpDiscount);
+			if(corpDiscountDto!=null && JaxUtil.isNullZeroBigDecimalCheck(commission) &&  JaxUtil.isNullZeroBigDecimalCheck(corpDiscountDto.getCorpDiscount()) && commission.compareTo(corpDiscountDto.getCorpDiscount())>=0) {
+				commission =commission.subtract(corpDiscountDto.getCorpDiscount());
 				result.setDiscountOnComissionFlag(ConstantDocument.Yes);
 			}
 			
@@ -366,7 +369,7 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 				}
 			}
 			result.setTxnFee(commission);
-			result.setDiscountOnComission(corpDiscount);
+			result.setDiscountOnComission(corpDiscountDto.getCorpDiscount());
 			
 			if(trnxRoutingDetails != null && trnxRoutingDetails.getBankIndicator() != null && !trnxRoutingDetails.getBankIndicator().equalsIgnoreCase(ConstantDocument.BANK_INDICATOR_SERVICE_PROVIDER_BANK)) {
 				if (routingPricingRequest.getForeignAmount() != null) {

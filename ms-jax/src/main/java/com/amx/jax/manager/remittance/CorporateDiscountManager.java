@@ -13,6 +13,7 @@ import com.amx.jax.dbmodel.CountryBranchMdlv1;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerCoreDetailsView;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.response.remittance.CorporateDiscountDto;
 import com.amx.jax.repository.CountryBranchRepository;
 import com.amx.jax.repository.CustomerCoreDetailsRepository;
 import com.amx.jax.util.JaxUtil;
@@ -30,7 +31,10 @@ public class CorporateDiscountManager {
 
 
 	/** Added by Rabil for corporate employee discount **/
-	public BigDecimal corporateDiscount() {
+	public CorporateDiscountDto corporateDiscount() {
+		
+		CorporateDiscountDto corpDiscntDto = new CorporateDiscountDto();
+		
 		BigDecimal corpDiscount = BigDecimal.ZERO;
 		Customer customer = new Customer();
 		customer.setCustomerId(metaData.getCustomerId());
@@ -39,7 +43,6 @@ public class CorporateDiscountManager {
 		if(JaxUtil.isNullZeroBigDecimalCheck(countryBranchId)) {
 			countryBranch = countryBranchRepository.findByCountryBranchId(countryBranchId);
 		}
-		
 		CustomerCoreDetailsView customercoreView = customerCoreDetailsRepositroy.findByCustomerID(metaData.getCustomerId());
 		
 		if(customercoreView != null && countryBranch!=null && countryBranch.getBranchId().compareTo(ConstantDocument.ONLINE_BRANCH_LOC_CODE)==0) {
@@ -47,6 +50,10 @@ public class CorporateDiscountManager {
 		}else {
 				corpDiscount = customercoreView.getCorporateDiscountAmount() == null ? BigDecimal.ZERO: customercoreView.getCorporateDiscountAmount();
 		}
-		return corpDiscount;
+		
+		
+		
+		
+		return corpDiscntDto;
 	}
 }
