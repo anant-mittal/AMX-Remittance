@@ -88,6 +88,9 @@ public class JaxTenantProperties {
 	@TenantValue("${jax.authfaillog.attempts}")
 	private Integer authFailLogAttemps;
 
+	@TenantValue("${jax.authfaillog.blocktime}")
+	private Integer authFailBlocktime;
+
 	public Boolean getCashDisable() {
 		return cashDisable;
 	}
@@ -248,6 +251,14 @@ public class JaxTenantProperties {
 
 	public void setAuthFailLogAttemps(Integer authFailLogAttemps) {
 		this.authFailLogAttemps = authFailLogAttemps;
+	}
+
+	public Integer getAuthFailBlocktime() {
+		return authFailBlocktime;
+	}
+
+	public void setAuthFailBlocktime(Integer authFailBlocktime) {
+		this.authFailBlocktime = authFailBlocktime;
 	}
 
 	

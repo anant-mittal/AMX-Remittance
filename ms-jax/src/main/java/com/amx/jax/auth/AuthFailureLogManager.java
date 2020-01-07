@@ -2,6 +2,9 @@ package com.amx.jax.auth;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+
+import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,8 +21,12 @@ import com.amx.jax.AppContextUtil;
 import com.amx.jax.config.JaxTenantProperties;
 import com.amx.jax.constant.JaxEvent;
 import com.amx.jax.dbmodel.auth.AuthFailureLog;
+import com.amx.jax.dbmodel.auth.BlockedIPAdress;
+import com.amx.jax.dbmodel.auth.IPBlockedReasoncode;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.repository.auth.AuthFailureLogRepository;
+import com.amx.jax.repository.auth.BlockedIPAdressRepository;
+import com.amx.jax.util.AmxDBConstants;
 import com.amx.jax.util.JaxContextUtil;
 
 @Component
@@ -30,9 +37,12 @@ public class AuthFailureLogManager {
 	AuthFailureLogRepository authFailureLogRepository;
 	@Autowired
 	JaxTenantProperties jaxTenantProperties;
+	@Autowired
+	BlockedIPAdressRepository blockedIPAdressRepository;
 
 	private static final Logger log = LoggerFactory.getLogger(AuthFailureLogManager.class);
 
+	@Transactional
 	public void logAuthFailureEvent(AbstractJaxException ex) {
 		String identityInt = null;
 		String clientIp = AppContextUtil.getUserClient().getIp();
@@ -49,9 +59,40 @@ public class AuthFailureLogManager {
 		authFailureLog.setIdentityInt(identityInt);
 		authFailureLog.setIpAddress(clientIp);
 		authFailureLogRepository.save(authFailureLog);
+		blockIpAddress(clientIp, IPBlockedReasoncode.AUTH_FAILURE_EXCEEDED);
 	}
 
+	private void blockIpAddress(String clientIp, IPBlockedReasoncode reasonCode) {
+		if (jaxTenantProperties.getAuthFailBlocktime() != null && jaxTenantProperties.getAuthFailLogAttemps() != null) {
+			Calendar cal = Calendar.getInstance();
+			cal.add(Calendar.MINUTE, jaxTenantProperties.getAuthFailBlocktime() * -1);
+			Long authFailRecordcnt = authFailureLogRepository.getFailedRecordCountForIp(clientIp, cal.getTime());
+			if (authFailRecordcnt > jaxTenantProperties.getAuthFailLogAttemps()) {
+				log.info("IP {} is being blocked by jax", clientIp);
+				BlockedIPAdress blockedIp = new BlockedIPAdress(clientIp, reasonCode);
+				blockedIPAdressRepository.save(blockedIp);
+			}
+		}
+
+	}
+
+	/**
+	 * validates ip address based on blockedIPaddress table
+	 */
 	public void validateAuthFailure() {
+		String clientIp = AppContextUtil.getUserClient().getIp();
+		List<BlockedIPAdress> blockedRecords = blockedIPAdressRepository.findByIpAddressAndIsActive(clientIp, AmxDBConstants.Yes);
+		if (blockedRecords.size() > 0) {
+			log.info("clientIP {} is blocked {} times", clientIp, blockedRecords.size());
+			throw new GlobalException(JaxError.CLIENT_IP_BLOCKED,
+					"IP address " + clientIp + " is blocked due to frequent failed attempts, please try after sometime");
+		}
+	}
+
+	/**
+	 * validates ip address based on defined interval in property
+	 */
+	private void validateAuthFailureByInterval() {
 		Calendar cal = Calendar.getInstance();
 		String clientIp = AppContextUtil.getUserClient().getIp();
 		if (jaxTenantProperties.getAuthFailLogInterval() != null && jaxTenantProperties.getAuthFailLogAttemps() != null) {
