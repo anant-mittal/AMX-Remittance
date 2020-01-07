@@ -398,6 +398,7 @@ public class PlaceOrderManager implements Serializable{
 				lstPlaceOrder.setNegotiate(ratePlaceOrder.getNegotiate());
 				lstPlaceOrder.setIsActive(ratePlaceOrder.getIsActive());
 				lstPlaceOrder.setRemarks(ratePlaceOrder.getRemarks());
+				lstPlaceOrder.setCustomerId(ratePlaceOrder.getCustomerId());
 				
 				
 				

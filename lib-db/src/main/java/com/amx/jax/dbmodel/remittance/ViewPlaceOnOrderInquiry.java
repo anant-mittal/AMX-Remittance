@@ -31,6 +31,7 @@ public class ViewPlaceOnOrderInquiry implements Serializable{
 	private String isActive;
 	private String remarks;
 	private BigDecimal destinationCurrency;
+	private BigDecimal customerId;
 	
 	public ViewPlaceOnOrderInquiry() {
 		super();
@@ -182,6 +183,18 @@ public class ViewPlaceOnOrderInquiry implements Serializable{
 
 	public void setDestinationCurrency(BigDecimal destinationCurrency) {
 		this.destinationCurrency = destinationCurrency;
+	}
+
+
+
+	@Column(name="CUSTOMER_ID")
+	public BigDecimal getCustomerId() {
+		return customerId;
+	}
+
+
+	public void setCustomerId(BigDecimal customerId) {
+		this.customerId = customerId;
 	}
 	
 	
