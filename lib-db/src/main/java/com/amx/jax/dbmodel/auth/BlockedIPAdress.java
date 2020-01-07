@@ -5,6 +5,8 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -33,10 +35,17 @@ public class BlockedIPAdress {
 	String ipAddress;
 
 	@Column(name = "BLOCK_REASON_CODE")
+	@Enumerated(EnumType.STRING)
 	IPBlockedReasoncode reasonCode;
 
 	@Column(name = "ISACTIVE")
 	String isActive;
+	
+	
+
+	public BlockedIPAdress() {
+		super();
+	}
 
 	public BlockedIPAdress(String ipAddress, IPBlockedReasoncode reasonCode) {
 		super();

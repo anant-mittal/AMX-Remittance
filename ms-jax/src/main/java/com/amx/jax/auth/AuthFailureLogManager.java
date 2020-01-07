@@ -24,6 +24,8 @@ import com.amx.jax.dbmodel.auth.AuthFailureLog;
 import com.amx.jax.dbmodel.auth.BlockedIPAdress;
 import com.amx.jax.dbmodel.auth.IPBlockedReasoncode;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.postman.client.PostManClient;
+import com.amx.jax.postman.model.Email;
 import com.amx.jax.repository.auth.AuthFailureLogRepository;
 import com.amx.jax.repository.auth.BlockedIPAdressRepository;
 import com.amx.jax.util.AmxDBConstants;
@@ -39,11 +41,16 @@ public class AuthFailureLogManager {
 	JaxTenantProperties jaxTenantProperties;
 	@Autowired
 	BlockedIPAdressRepository blockedIPAdressRepository;
+	@Autowired
+	PostManClient postManClient;
 
 	private static final Logger log = LoggerFactory.getLogger(AuthFailureLogManager.class);
 
 	@Transactional
 	public void logAuthFailureEvent(AbstractJaxException ex) {
+		if (!isApplicable(ex)) {
+			return;
+		}
 		String identityInt = null;
 		String clientIp = AppContextUtil.getUserClient().getIp();
 		Object requestModel = JaxContextUtil.getRequestModel();
@@ -62,6 +69,13 @@ public class AuthFailureLogManager {
 		blockIpAddress(clientIp, IPBlockedReasoncode.AUTH_FAILURE_EXCEEDED);
 	}
 
+	private boolean isApplicable(AbstractJaxException ex) {
+		if (JaxError.CLIENT_IP_BLOCKED.equals(ex.getError())) {
+			return false;
+		}
+		return true;
+	}
+
 	private void blockIpAddress(String clientIp, IPBlockedReasoncode reasonCode) {
 		if (jaxTenantProperties.getAuthFailBlocktime() != null && jaxTenantProperties.getAuthFailLogAttemps() != null) {
 			Calendar cal = Calendar.getInstance();
@@ -71,9 +85,23 @@ public class AuthFailureLogManager {
 				log.info("IP {} is being blocked by jax", clientIp);
 				BlockedIPAdress blockedIp = new BlockedIPAdress(clientIp, reasonCode);
 				blockedIPAdressRepository.save(blockedIp);
+				sendEmailAlert(blockedIp);
 			}
 		}
 
+	}
+
+	private void sendEmailAlert(BlockedIPAdress blockedIp) {
+		String itOpsEmail = jaxTenantProperties.getItOpsEmail();
+		if (itOpsEmail != null) {
+			StringBuilder sBuf = new StringBuilder();
+			Email email = new Email();
+			email.addTo(itOpsEmail);
+			sBuf.append("IP address: ").append(blockedIp.getIpAddress());
+			sBuf.append(" is blocked from JAX application, due to multiple failed attempts");
+			email.setMessage(sBuf.toString());
+			postManClient.sendEmail(email);
+		}
 	}
 
 	/**

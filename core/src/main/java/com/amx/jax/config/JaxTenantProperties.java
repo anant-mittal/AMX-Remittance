@@ -90,6 +90,9 @@ public class JaxTenantProperties {
 
 	@TenantValue("${jax.authfaillog.blocktime}")
 	private Integer authFailBlocktime;
+	
+	@TenantValue("${support.itops.email}")
+	private String itOpsEmail;
 
 	public Boolean getCashDisable() {
 		return cashDisable;
@@ -259,6 +262,14 @@ public class JaxTenantProperties {
 
 	public void setAuthFailBlocktime(Integer authFailBlocktime) {
 		this.authFailBlocktime = authFailBlocktime;
+	}
+
+	public String getItOpsEmail() {
+		return itOpsEmail;
+	}
+
+	public void setItOpsEmail(String itOpsEmail) {
+		this.itOpsEmail = itOpsEmail;
 	}
 
 	
