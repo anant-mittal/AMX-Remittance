@@ -245,12 +245,16 @@ public class JaxTenantProperties {
 
 	public String getSupportOnlineEmail() {
 		return supportOnlineEmail;
+	}
+	
 	public Integer getAuthFailLogInterval() {
 		return authFailLogInterval;
 	}
 
 	public void setSupportOnlineEmail(String supportOnlineEmail) {
 		this.supportOnlineEmail = supportOnlineEmail;
+	}
+	
 	public void setAuthFailLogInterval(Integer authFailLogInterval) {
 		this.authFailLogInterval = authFailLogInterval;
 	}
