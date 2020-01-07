@@ -65,7 +65,6 @@ import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.services.BeneficiaryValidationService;
 import com.amx.jax.trnx.BeneficiaryTrnxManager;
 import com.amx.jax.userservice.service.UserService;
-import com.amx.utils.JsonUtil;
 
 @Service
 public class BeneBranchService {
@@ -258,7 +257,8 @@ public class BeneBranchService {
 			BeneStatusDto dto = new BeneStatusDto(beneStatus.getDescription(), beneStatus.name());
 			i.setBeneStatusDto(dto);
 			if (beneContact != null) {
-				i.setMobileNumber(beneContact.getMobileNumber() != null ? beneContact.getMobileNumber().toString() : null);
+				i.setMobileNumber(
+						beneContact.getMobileNumber() != null ? beneContact.getMobileNumber().toString() : beneContact.getTelephoneNumber());
 				i.setCountryTelCode(beneContact.getCountryTelCode());
 			}
 		});

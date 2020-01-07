@@ -270,7 +270,7 @@ public class BeneficiaryService extends AbstractService {
 		Collections.sort(beneList, (o1, o2) -> {
 			Date date1 = (o1.getModifiedDate() != null ? o1.getModifiedDate() : o1.getCreatedDate());
 			Date date2 = (o2.getModifiedDate() != null ? o2.getModifiedDate() : o2.getCreatedDate());
-			return date1.compareTo(date2);
+			return date2.compareTo(date1);
 		});
 		ApiResponse response = getBlackApiResponse();
 		if (beneList.isEmpty()) {

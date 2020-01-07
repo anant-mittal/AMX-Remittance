@@ -179,7 +179,7 @@ public class BeneBranchManager {
 			isModified = true;
 		}
 		if (beneDetails.getMobileNumber() != null) {
-			beneficaryContact.setMobileNumber(new BigDecimal(beneDetails.getMobileNumber()));
+			beneficaryContact.setTelephoneNumber(beneDetails.getMobileNumber());
 			isModified = true;
 		}
 		log.info("in updateBeneContact isModified: {}", isModified);
