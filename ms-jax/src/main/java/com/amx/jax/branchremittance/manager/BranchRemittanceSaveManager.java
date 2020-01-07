@@ -278,18 +278,6 @@ public class BranchRemittanceSaveManager {
 	Map<BigDecimal,RemitTrnxSrvProv> mapRemitTrnxSrvProv = new HashMap<>();
 	Map<BigDecimal,List<RemittanceTransactionSplitting>> remitSplitMap = new HashMap<>();
 	
-	
-	
-	@Autowired
-    	AuditService auditService;
-	
-	
-	@Autowired
-	JaxTenantProperties jaxTenantProperties;
-	
-	@Autowired
-	BankMetaService bankMetaService;
-	
 	/**
 	 * 
 	 * @param remittanceRequestModel
