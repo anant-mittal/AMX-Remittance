@@ -21,7 +21,6 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.branchremittance.manager.BranchRemittanceManager;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxDynamicField;
-import com.amx.jax.constants.JaxFieldEntity;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.CountryBranchMdlv1;
 import com.amx.jax.dbmodel.CountryMaster;
@@ -35,6 +34,10 @@ import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.remittance.RemittanceAdditionalBeneFieldModel;
 import com.amx.jax.model.response.BankMasterDTO;
+import com.amx.jax.model.response.jaxfield.JaxConditionalFieldDto;
+import com.amx.jax.model.response.jaxfield.JaxFieldDto;
+import com.amx.jax.model.response.jaxfield.JaxFieldEntity;
+import com.amx.jax.model.response.jaxfield.JaxFieldValueDto;
 import com.amx.jax.model.response.remittance.AmlCheckResponseDto;
 import com.amx.jax.model.response.remittance.FlexFieldDto;
 import com.amx.jax.partner.manager.PartnerTransactionManager;
@@ -47,9 +50,6 @@ import com.amx.jax.service.BankMetaService;
 import com.amx.jax.services.BankService;
 import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.services.JaxFieldService;
-import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
-import com.amx.libjax.model.jaxfield.JaxFieldDto;
-import com.amx.libjax.model.jaxfield.JaxFieldValueDto;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -99,8 +99,7 @@ public class RemittanceAdditionalFieldManager {
 		
 		ApiResponse<JaxConditionalFieldDto> beneTeleApiReponse = jaxFieldService.getJaxFieldsForEntity(new GetJaxFieldRequest(JaxFieldEntity.BNFTELLAB));
 		
-		
-		
+		// service provider city , street and beneficiary zip code need to populate, but bene zip code check for navigable in service applicability
 		List<JaxConditionalFieldDto> allJaxConditionalFields = apiResponse.getResults();
 		if(spApiResponse != null && spApiResponse.getResults() != null) {
 			//allJaxConditionalFields.addAll(spApiResponse.getResults());
@@ -240,7 +239,7 @@ public class RemittanceAdditionalFieldManager {
 		BigDecimal foreignCurrencyId = (BigDecimal) remitApplParametersMap.get("P_FOREIGN_CURRENCY_ID");
 
 		List<AdditionalDataDisplayView> additionalDataRequired = additionalDataDisplayDao.getAdditionalDataFromServiceApplicability(applicationCountryId, routingCountryId,
-				foreignCurrencyId, remittanceModeId, deliveryModeId, JaxDynamicField.getAllAdditionalFlexFields());
+				foreignCurrencyId, remittanceModeId, deliveryModeId, JaxDynamicField.getAllAdditionalFlexFields(), ConstantDocument.No);
 		return additionalDataRequired.stream().collect(Collectors.toMap(i -> i.getFlexField(), i -> i, (x1, x2) -> x1));
 	}
 

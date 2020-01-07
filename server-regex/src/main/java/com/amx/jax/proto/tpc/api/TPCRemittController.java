@@ -16,6 +16,7 @@ import com.amx.jax.api.AmxResponseSchemes.ApiDataResponse;
 import com.amx.jax.api.AmxResponseSchemes.ApiMetaResponse;
 import com.amx.jax.api.AmxResponseSchemes.ApiResultsResponse;
 import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
+import com.amx.jax.model.response.jaxfield.JaxConditionalFieldDto;
 import com.amx.jax.proto.tpc.api.TPCApiConstants.TPCApiClientHeaders;
 import com.amx.jax.proto.tpc.api.TPCApiConstants.TPCApiCustomerHeaders;
 import com.amx.jax.proto.tpc.api.TPCStatus.ApiTPCStatus;
@@ -35,7 +36,6 @@ import com.amx.jax.proto.tpc.models.RemittenceModels.RemitVerifyRequest;
 import com.amx.jax.proto.tpc.models.RemittenceModels.RemitVerifyResponse;
 import com.amx.jax.proto.tpc.models.RemittenceModels.RemittenceDTO;
 import com.amx.jax.proto.tpc.models.SourceOfFundDTO;
-import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

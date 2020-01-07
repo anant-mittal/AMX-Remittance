@@ -33,8 +33,12 @@ public interface AuthenticationLimitCheckDAO extends JpaRepository<Authenticatio
 	@Query("select cts from AuthenticationLimitCheckView cts where authorizationType in ('45')")
 	public AuthenticationLimitCheckView getHomeSendTimerLimit();
 	
-	
+
+	@Query("select cts from AuthenticationLimitCheckView cts where authorizationType=?1")
+	public AuthenticationLimitCheckView getPlaceOrderLimitCheck(String authType);
+
 	@Query("select cts from AuthenticationLimitCheckView cts where authorizationType in ('102')")
 	public AuthenticationLimitCheckView getAmlRiskCheckLevel1();
+
 	
 }

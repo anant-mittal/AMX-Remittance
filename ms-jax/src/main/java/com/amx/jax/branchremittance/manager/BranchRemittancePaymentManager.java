@@ -63,6 +63,7 @@ import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
 import com.amx.jax.model.response.remittance.PaymentLinkAppDto;
 import com.amx.jax.model.response.remittance.PaymentModeDto;
 import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
+import com.amx.jax.model.response.remittance.PlaceOrderApplDto;
 import com.amx.jax.partner.manager.PartnerTransactionManager;
 import com.amx.jax.pricer.var.PricerServiceConstants;
 import com.amx.jax.pricer.var.PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE;
@@ -150,6 +151,9 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 	
 	@Autowired
 	BranchRemittanceManager branchRemitManager;
+
+	@Autowired
+	PlaceOrderManager placeOrderManager;
 
 	/* 
 	 * @param   :fetch customer shopping cart application
@@ -285,6 +289,12 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 			throw new GlobalException(JaxError.INVALID_CURRENCY_ID, "Invalid local currency id passed");
 		}
 
+		List<PlaceOrderApplDto> placeOrderList = placeOrderManager.getPlaceOrderList();
+		
+		if(placeOrderList!=null && !placeOrderList.isEmpty()) {
+			cartList.setPlaceOrderApplList(placeOrderList);
+		}
+		
 		return cartList;
 	}
 
@@ -751,6 +761,7 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		}
 		return purTrnx;
 	}
+
 	// Direct Payment link application now getting converted to remittance so commenting the following code
 	@Deprecated
 	private PaymentLinkAppDto createPaymentLinkAppDto(BigDecimal remittanceApplicationId,PaygDetailsModel paymentLinkModel) {
@@ -789,5 +800,4 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		
 	}
 
-		
 }

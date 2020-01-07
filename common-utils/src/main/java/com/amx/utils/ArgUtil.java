@@ -98,7 +98,7 @@ public final class ArgUtil {
 	/**
 	 * Parse as T.
 	 *
-	 * @param <T>          the generic type
+	 * @param              <T> the generic type
 	 * @param value        the value
 	 * @param defaultValue the default value
 	 * @param required     the required
@@ -177,7 +177,7 @@ public final class ArgUtil {
 	/**
 	 * Parse as List &lt;T&gt;.
 	 *
-	 * @param <T>              the generic type
+	 * @param                  <T> the generic type
 	 * @param value            the value
 	 * @param defaultValue     the default value
 	 * @param defaultListValue the default list value
@@ -210,7 +210,7 @@ public final class ArgUtil {
 	/**
 	 * Parse as List&lt;List&lt;T&gt;&gt;.
 	 *
-	 * @param <T>                    the generic type
+	 * @param                        <T> the generic type
 	 * @param value                  the value
 	 * @param defaultValue           the default value
 	 * @param defaultListValue       the default list value
@@ -239,7 +239,7 @@ public final class ArgUtil {
 	/**
 	 * Parse as List&lt;List&lt;List&lt;T&gt;&gt;&gt;.
 	 *
-	 * @param <T>                        the generic type
+	 * @param                            <T> the generic type
 	 * @param value                      the value
 	 * @param defaultValue               the default value
 	 * @param defaultListValue           the default list value
@@ -444,6 +444,8 @@ public final class ArgUtil {
 			return (Double) value;
 		} else if (value instanceof Number) {
 			return Double.valueOf(((Number) value).doubleValue());
+		} else if (value instanceof BigDecimal) {
+			return Double.valueOf(((BigDecimal) value).doubleValue());
 		} else if (value instanceof String) {
 			try {
 				return Double.valueOf(Double.parseDouble((String) value));
@@ -453,7 +455,7 @@ public final class ArgUtil {
 		}
 		return null;
 	}
-
+	
 	public static Double parseAsDouble(Object value, Double defaultValue) {
 		if (value instanceof Double) {
 			return (Double) value;
@@ -468,6 +470,7 @@ public final class ArgUtil {
 		}
 		return defaultValue;
 	}
+
 
 	/**
 	 * <pre>
@@ -579,7 +582,7 @@ public final class ArgUtil {
 	}
 
 	/**
-	 * @deprecated
+	 * @deprecated 
 	 * @see {{@link #parseAsEnum(Object, Enum, Class)}
 	 * @param value
 	 * @param defaultValue
@@ -732,6 +735,19 @@ public final class ArgUtil {
 
 	public static <T> T assignDefaultIfNull(T assignee, T defaultVal) {
 		return (null == assignee) ? defaultVal : assignee;
+	}
+
+	public static <T> boolean presentIn(T checkFor, T... within) {
+		if (checkFor == null || within == null || within.length == 0) {
+			return false;
+		}
+
+		for (T val : within) {
+			if (checkFor.equals(val))
+				return true;
+		}
+
+		return false;
 	}
 
 }

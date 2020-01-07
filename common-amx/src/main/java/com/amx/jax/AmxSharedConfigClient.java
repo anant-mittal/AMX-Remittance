@@ -1,5 +1,7 @@
 package com.amx.jax;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -29,7 +31,7 @@ public class AmxSharedConfigClient implements AmxSharedConfig {
 	}
 
 	@Override
-	public void clear() {
+	public void clear(Map<String, String> map) {
 		this.communicationPrefs = null;
 	}
 

@@ -348,6 +348,10 @@ public class CustomerDao {
 		return repo.getCustomerForDuplicateCheck(nationality, mobile, email, firstName);
 	}
 	
+	public Customer getActiveCustomerDetailsByCustomerId(BigDecimal customerId) {
+		Customer customer = customerRepo.getActiveCustomerDetailsByCustomerId(customerId);
+		return customer;
+	}
 	/**
 	 *  It will hit db everytime this method is called
 	 * @param customerId

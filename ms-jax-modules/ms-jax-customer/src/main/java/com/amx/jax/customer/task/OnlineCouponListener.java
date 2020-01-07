@@ -13,6 +13,7 @@ import org.springframework.scheduling.annotation.Async;
 import com.amx.jax.async.ExecutorConfig;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dict.Language;
+import com.amx.jax.dict.AmxEnums.CommunicationEvents;
 import com.amx.jax.event.AmxTunnelEvents;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
@@ -24,6 +25,8 @@ import com.amx.jax.tunnel.ITunnelSubscriber;
 import com.amx.jax.tunnel.TunnelEventMapping;
 import com.amx.jax.tunnel.TunnelEventXchange;
 import com.amx.jax.userservice.manager.CustomerFlagManager;
+import com.amx.jax.util.CommunicationPrefsUtil;
+import com.amx.jax.util.CommunicationPrefsUtil.CommunicationPrefsResult;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
 
@@ -37,6 +40,10 @@ public class OnlineCouponListener implements ITunnelSubscriber<DBEvent> {
 
 	@Autowired
 	CustomerFlagManager customerFlagManager;
+	
+	@Autowired
+	CommunicationPrefsUtil communicationPrefsUtil;
+	
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
 	private static final String CUST_ID = "CUST_ID";
@@ -56,11 +63,7 @@ public class OnlineCouponListener implements ITunnelSubscriber<DBEvent> {
 		BigDecimal trnxDiscount = ArgUtil.parseAsBigDecimal(event.getData().get(TRNX_DISC));
 		String langId = ArgUtil.parseAsString(event.getData().get(LANG_ID));
 		
-		LOGGER.debug("customer id is " + custId);
-		LOGGER.debug("language id is " + langId);
-
 		Customer c = customerRepository.getNationalityValue(custId);
-		LOGGER.debug("Customer object is " + c.toString());
 		String emailId = c.getEmail();
 
 		String custName;
@@ -77,14 +80,10 @@ public class OnlineCouponListener implements ITunnelSubscriber<DBEvent> {
 		modeldata.put("customer", custName);
 		modeldata.put("cummDiscount", cummDiscount);
 		modeldata.put("trnxDiscount", trnxDiscount);
-
-		for (Map.Entry<String, Object> entry : modeldata.entrySet()) {
-			LOGGER.debug("KeyModel = " + entry.getKey() + ", ValueModel = " + entry.getValue());
-		}
-
 		wrapper.put("data", modeldata);
-		LOGGER.debug("email is is " + emailId);
-		if (!ArgUtil.isEmpty(emailId)) {
+		CommunicationPrefsResult communicationPrefsResult = communicationPrefsUtil.forCustomer(CommunicationEvents.IPSOS_DISCOUNT, c);
+		
+		if (communicationPrefsResult.isEmail()) {
 
 			Email email = new Email();
 			if ("2".equals(langId)) {
@@ -94,11 +93,9 @@ public class OnlineCouponListener implements ITunnelSubscriber<DBEvent> {
 				email.setLang(Language.EN);
 				modeldata.put("languageid", Language.EN);
 			}
-			for (Map.Entry<String, Object> entry : wrapper.entrySet()) {
-				LOGGER.debug("KeyModelWrap = " + entry.getKey() + ", ValueModelWrap = " + entry.getValue());
-			}
+			
 			LOGGER.debug("Json value of wrapper is " + JsonUtil.toJson(wrapper));
-			LOGGER.debug("Wrapper data is {}", wrapper.get("data"));
+			
 			email.setModel(wrapper);
 			email.addTo(emailId);
 			email.setHtml(true);
@@ -113,7 +110,6 @@ public class OnlineCouponListener implements ITunnelSubscriber<DBEvent> {
 	@Async(ExecutorConfig.DEFAULT)
 	public void sendEmail(Email email) {
 		try {
-			LOGGER.debug("email sent");
 			postManService.sendEmailAsync(email);
 		} catch (PostManException e) {
 

@@ -49,6 +49,13 @@ public class TransactionDetailsView implements Serializable {
 	private BigDecimal beneficiaryRelationShipId;
 	private String bankSourceOfFund;
 	private String bankPurposeOfTransaction;
+	private BigDecimal bankCountryId;
+	private BigDecimal applicationCountryId;
+	private BigDecimal beneficiaryCountryId;
+	private BigDecimal foreignCurrencyId;
+	private BigDecimal localCurrencyId;
+	private String bankReference;
+	private String amiecCode;
 	
 	public TransactionDetailsView() {
 		super();
@@ -309,6 +316,63 @@ public class TransactionDetailsView implements Serializable {
 	}
 	public void setBankPurposeOfTransaction(String bankPurposeOfTransaction) {
 		this.bankPurposeOfTransaction = bankPurposeOfTransaction;
+	}
+
+	@Column(name = "BANK_COUNTRY_ID")
+	public BigDecimal getBankCountryId() {
+		return bankCountryId;
+	}
+	public void setBankCountryId(BigDecimal bankCountryId) {
+		this.bankCountryId = bankCountryId;
+	}
+
+	@Column(name = "APPLICATION_COUNTRY_ID")
+	public BigDecimal getApplicationCountryId() {
+		return applicationCountryId;
+	}
+	public void setApplicationCountryId(BigDecimal applicationCountryId) {
+		this.applicationCountryId = applicationCountryId;
+	}
+
+	@Column(name = "BENEFICIARY_BANK_COUNTRY_ID")
+	public BigDecimal getBeneficiaryCountryId() {
+		return beneficiaryCountryId;
+	}
+	public void setBeneficiaryCountryId(BigDecimal beneficiaryCountryId) {
+		this.beneficiaryCountryId = beneficiaryCountryId;
+	}
+
+	@Column(name = "FOREIGN_CURRENCY_ID")
+	public BigDecimal getForeignCurrencyId() {
+		return foreignCurrencyId;
+	}
+	public void setForeignCurrencyId(BigDecimal foreignCurrencyId) {
+		this.foreignCurrencyId = foreignCurrencyId;
+	}
+
+	@Column(name = "LOCAL_CURRENCY_ID")
+	public BigDecimal getLocalCurrencyId() {
+		return localCurrencyId;
+	}
+	public void setLocalCurrencyId(BigDecimal localCurrencyId) {
+		this.localCurrencyId = localCurrencyId;
+	}
+
+	@Column(name = "BANK_REFERENCE")
+	public String getBankReference() {
+		return bankReference;
+	}
+	public void setBankReference(String bankReference) {
+		this.bankReference = bankReference;
+	}
+
+	@Column(name="AMIEC_CODE")
+	public String getAmiecCode() {
+		return amiecCode;
+	}
+
+	public void setAmiecCode(String amiecCode) {
+		this.amiecCode = amiecCode;
 	}
 	
 }

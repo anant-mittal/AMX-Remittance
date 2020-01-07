@@ -1,6 +1,5 @@
 package com.amx.jax.model.request.serviceprovider;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -37,7 +36,8 @@ public class Customer
 	String profession;
 	String employer_name;
 	
-	BigDecimal customerId;
+	String partner_customer_id;
+	String partner_customer_type;
 
 	public String getCustomer_reference()
 	{
@@ -259,22 +259,33 @@ public class Customer
 		this.employer_name = employer_name;
 	}
 
-	public BigDecimal getCustomerId() {
-		return customerId;
-	}
-
-	public void setCustomerId(BigDecimal customerId) {
-		this.customerId = customerId;
-	}
-
 	public String getFull_name()
 	{
 		return StringUtils.normalizeSpace(first_name + " " + (middle_name == null ? "" : middle_name) + " "
 				+ (last_name == null ? "" : last_name));
 	}
 	
+    public String getPartner_customer_id()
+	{
+		return partner_customer_id;
+	}
 
-    public String validate_customer_input()
+	public void setPartner_customer_id(String partner_customer_id)
+	{
+		this.partner_customer_id = partner_customer_id;
+	}
+
+	public String getPartner_customer_type()
+	{
+		return partner_customer_type;
+	}
+
+	public void setPartner_customer_type(String partner_customer_type)
+	{
+		this.partner_customer_type = partner_customer_type;
+	}
+
+	public String validate_customer_input()
 	 {
 	    // Validation is done on the filed that we think it is mandatory for any product and any country. Any conditional
 	    // Fields that its existing in the API call depend on specific country or specific product is not cover here because
@@ -315,6 +326,7 @@ public class Customer
 
 	    return validation_errors;
 	 }
+    
 
 	@Override
 	public String toString()
