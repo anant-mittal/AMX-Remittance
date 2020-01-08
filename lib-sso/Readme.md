@@ -6,8 +6,9 @@
 
 ## RBAAC data structure
 
-- Example representing set of permissions assigned to some ROLE.
-- `Permission` : `Action` : `Scope`
+- Each permission comprises of: `Permission` : `Action` : `Scope`
+- Example representing set of permissions assigned to some ROLE:
+
 
 ```json
   "CUSTOMER_MGMT.REMITTANCE": { "VIEW": "COUNTRY" },
@@ -184,6 +185,8 @@ public AmxApiResponse<FcSaleOrderManagementDTO, Object>  getOrderList() {
     return someClient.getSomeDTO();
 }
 ```
+
+- [More PreAuthorize and PostAuthorize usage example](https://www.programcreek.com/java-api-examples/index.php?api=org.springframework.security.access.prepost.PostAuthorize)
 
 
 ## Branch Application
