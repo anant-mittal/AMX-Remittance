@@ -1,5 +1,9 @@
 # RBAAC integration with microservices and UI
 
+<br/>
+<br/>
+<br/>
+
 ## Components consuming RBAAC data
 
 - SERVER\-BRANCH​
@@ -8,15 +12,51 @@
 
 ------------------------------------------------------
 
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+
+
 ## Flowchart representing the Login Flow and consumption of RBAAC roles and permissions
 
 ![alt text](https://drive.google.com/uc?export=view&id=1XscwWOsST9sN7GDseezlGq3KWe-mEX_t)
 
 ------------------------------------------------------
 
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+
+## Spring Security Concepts
+
+- Authentication: Who is the user
+- Authorization: What the user can do
+- Principal: Authenticated User
+- Role: Representation of set of permissions
+- Permissions: Fine Grained authorities defined for particular modules or actions
+
+------------------------------------------------------
+
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+
+[Video reference](https://www.youtube.com/watch?v=I0poT4UxFxE)
+
 ## SERVER-BRANCH
 
-- Spring Security allows seemless incorporation of Roles and Permissions
+- The Role and Permissions stored in session after successful login, can now be used for authorising requests.
+
+- Spring Security allows incorporation of Roles and Permissions
 
 - After successfully logging in fully populated `Authentication` instance is created.
 
@@ -25,7 +65,17 @@
     - Authorities / Permissions (this is where we store RBAAC permissions)
     - additional details
 
+> See [SSOAppController.java](https://gitlab.com/almullagroup/amx/amx-jax/blob/staging/lib-sso/src/main/java/com/amx/jax/sso/client/SSOAppController.java) in `lib-sso` where the `Authentication` instance is populated 
+    
+
 ------------------------------------------------------
+
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
 
 ## The @PreAuthorize annotation
 
@@ -45,6 +95,8 @@ public class FxOrderBranchController {
 }
 ```
 
+
+
 #### Method level:
 ```java
 @PreAuthorize("hasPermission('ORDER_MGMT.FCINQUIRY', 'VIEW', 'COUNTRY') or hasPermission('ORDER_MGMT.FXORDER', 'VIEW')")
@@ -63,7 +115,27 @@ public List<Tenant> listOfTenants() throws PostManException, InterruptedExceptio
 
 ```
 
+
+
+#### Example utilizing Request Params:
+
+```java
+@PreAuthorize("#placeOrderRequestModel.getBoolGsm() == true ? hasPermission('CUSTOMER_MGMT.PLACE_ORDER.RATE_PROVIDER', 'VIEW') : true")
+@RequestMapping(value = "/api/placeorder/create", method = { RequestMethod.POST })
+public AmxApiResponse<RatePlaceOrderResponseModel, Object> createPlaceOrder(
+		@RequestBody PlaceOrderRequestModel placeOrderRequestModel) {
+	return branchRemittanceClient.savePlaceOrderApplication(placeOrderRequestModel);
+}
+```
+
 ------------------------------------------------------
+
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
 
 ## The @PostAuthorize annotation
 
@@ -92,6 +164,13 @@ In the Branch Application
 
 ------------------------------------------------------
 
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+
 
 ## Navigation Sidebar
 
@@ -105,31 +184,38 @@ In the Branch Application
     to: "/branch/app/customer",
     label: "Customer Management",
     faIcon: "address-card",
-    role: "CUSTOMER_MGMT"
+    permission: "CUSTOMER_MGMT"
   },
   remittance: {
     to: "/branch/app/customer/remit",
     label: "Repeat Remittance",
     faIcon: "credit-card",
-    role: "CUSTOMER_MGMT.REMITTANCE"
+    permission: "CUSTOMER_MGMT.REMITTANCE"
   },
   providerPlaceOrderList: { //GSM user
     to: "/branch/app/customer/placeorder_p",
     label: "Place Order",
     faIcon: "circle",
-    role: "CUSTOMER_MGMT.PLACE_ORDER.RATE_PROVIDER"
+    permission: "CUSTOMER_MGMT.PLACE_ORDER.RATE_PROVIDER"
   },
   exchRateMgmt: {
     to: "/branch/app/rate/exch",
     label: "Exchange Rate Update",
     faIcon: "percent",
-    role: /(RATE_MGMT.MAKER|RATE_MGMT.CHECKER|RATE_MGMT.INQUIRY)/
+    permission: /(RATE_MGMT.MAKER|RATE_MGMT.CHECKER|RATE_MGMT.INQUIRY)/
   }
 }
 ```
 
 
 ------------------------------------------------------
+
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
 
 
 ## Access to modules via URL
@@ -139,6 +225,13 @@ In the Branch Application
 
 
 ------------------------------------------------------
+
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
 
 
 ## Useful Links
