@@ -6,10 +6,10 @@ import java.util.List;
 
 import org.springframework.data.repository.CrudRepository;
 
-import com.amx.jax.pricer.dbmodel.DeliveryModeDesc;
+import com.amx.jax.pricer.dbmodel.DeliveryModeDsc;
 
-public interface DeliveryModeDescRepo extends CrudRepository<DeliveryModeDesc, Serializable> {
+public interface DeliveryModeDescRepo extends CrudRepository<DeliveryModeDsc, Serializable> {
 
-	List<DeliveryModeDesc> findByLanguageId(BigDecimal languageId);
+	List<DeliveryModeDsc> findByLanguageId(BigDecimal languageId);
 
 }

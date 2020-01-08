@@ -10,8 +10,8 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "EX_DELIVERY_MODE_DESC")
-public class DeliveryModeDesc implements Serializable {
-	private static final long serialVersionUID = 2315791709068216697L;
+public class DeliveryModeDsc implements Serializable {
+	private static final long serialVersionUID = 2315791709068216698L;
 
 	private BigDecimal deliveryModeDescId;
 	private BigDecimal deliveryModeId;

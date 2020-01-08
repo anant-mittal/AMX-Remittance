@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.def.CacheForTenant;
-import com.amx.jax.pricer.dbmodel.DeliveryModeDesc;
+import com.amx.jax.pricer.dbmodel.DeliveryModeDsc;
 import com.amx.jax.pricer.repository.DeliveryModeDescRepo;
 
 @Component
@@ -20,12 +20,12 @@ public class DeliveryModeDescDao {
 	DeliveryModeDescRepo repo;
 
 	@CacheForTenant
-	public Map<BigDecimal, DeliveryModeDesc> getByLanguageId(BigDecimal lId) {
+	public Map<BigDecimal, DeliveryModeDsc> getByLanguageId(BigDecimal lId) {
 
-		List<DeliveryModeDesc> descriptors = repo.findByLanguageId(lId);
+		List<DeliveryModeDsc> descriptors = repo.findByLanguageId(lId);
 
 		if (descriptors == null || descriptors.isEmpty()) {
-			return new HashMap<BigDecimal, DeliveryModeDesc>();
+			return new HashMap<BigDecimal, DeliveryModeDsc>();
 		}
 
 		return descriptors.stream().collect(Collectors.toMap(d -> d.getDeliveryModeId(), d -> d));

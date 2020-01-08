@@ -26,7 +26,7 @@ import com.amx.jax.pricer.dao.VwExGLCBalProvDao;
 import com.amx.jax.pricer.dao.VwGlcbalProvProductDao;
 import com.amx.jax.pricer.dbmodel.BankMasterModel;
 import com.amx.jax.pricer.dbmodel.CurrencyMasterModel;
-import com.amx.jax.pricer.dbmodel.DeliveryModeDesc;
+import com.amx.jax.pricer.dbmodel.DeliveryModeDsc;
 import com.amx.jax.pricer.dbmodel.TreasuryFundTimeImpact;
 import com.amx.jax.pricer.dbmodel.ViewExGLCBAL;
 import com.amx.jax.pricer.dbmodel.ViewExGLCBalProvisional;
@@ -215,7 +215,7 @@ public class RoutingProductManager {
 
 		}
 
-		Map<BigDecimal, DeliveryModeDesc> delModeDescMap = deliveryModeDescDao
+		Map<BigDecimal, DeliveryModeDsc> delModeDescMap = deliveryModeDescDao
 				.getByLanguageId(PricerServiceConstants.DEF_LANGUAGE_ID);
 
 		RoutingProductStatusDetails resp = new RoutingProductStatusDetails();
