@@ -572,7 +572,9 @@ public class BranchRemittanceApplManager {
 			
 			if(!StringUtils.isBlank(dynamicRoutingPricingResponse.getDiscountOnComissionFlag()) 
 					&& dynamicRoutingPricingResponse.getDiscountOnComissionFlag().equalsIgnoreCase(ConstantDocument.Yes)) {
-						remittanceApplication.setDiscountOnCommission(corporateDiscountManager.corporateDiscount());
+				//CorporateDiscountDto dto =corporateDiscountManager.corporateDiscount(dynamicRoutingPricingResponse.getTxnFee()); 
+				remittanceApplication.setDiscountOnCommission(dynamicRoutingPricingResponse.getDiscountOnComission());
+				remittanceApplication.setCorporateMasterId(dynamicRoutingPricingResponse.getCorporateMasterId());
 			}
 			
 			if(dynamicRoutingPricingResponse.getCostRateLimitReached()!=null) {
@@ -908,7 +910,7 @@ public class BranchRemittanceApplManager {
 
 
 	public BigDecimal getloyaltyAmountEncashed(BigDecimal commission) {
-		CorporateDiscountDto corDto = corporateDiscountManager.corporateDiscount();
+		CorporateDiscountDto corDto = corporateDiscountManager.corporateDiscount(commission);
 		BigDecimal discount = BigDecimal.ZERO;
 		if(corDto!=null) {
 			discount = corDto.getCorpDiscount();

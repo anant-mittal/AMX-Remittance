@@ -175,7 +175,8 @@ public class RemittanceTransaction implements Serializable {
 	private BigDecimal savedAmountInFc;
 	
 
-	
+	public BigDecimal corporateMasterId;
+		
 	
 	@Column(name="PAYMENT_TYPE")
 	public String getPaymentType() {
@@ -1284,6 +1285,15 @@ public class RemittanceTransaction implements Serializable {
 		return applSplit;
 	}
 	
+	@Column(name="CORP_DISCOUNT_ID")
+	public BigDecimal getCorporateMasterId() {
+		return corporateMasterId;
+	}
+
+	public void setCorporateMasterId(BigDecimal corporateMasterId) {
+		this.corporateMasterId = corporateMasterId;
+	}
+
 
 }
  

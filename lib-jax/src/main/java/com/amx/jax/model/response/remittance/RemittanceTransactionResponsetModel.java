@@ -42,6 +42,7 @@ public class RemittanceTransactionResponsetModel extends AbstractModel {
 	private BigDecimal youSavedAmount;
 	private String customerChoice;
 	private BigDecimal youSavedAmountInFC;
+	private BigDecimal corporateMasterId;
 	
 	
 	/*
@@ -228,6 +229,14 @@ public class RemittanceTransactionResponsetModel extends AbstractModel {
 
 	public void setYouSavedAmountInFC(BigDecimal youSavedAmountInFC) {
 		this.youSavedAmountInFC = youSavedAmountInFC;
+	}
+
+	public BigDecimal getCorporateMasterId() {
+		return corporateMasterId;
+	}
+
+	public void setCorporateMasterId(BigDecimal corporateMasterId) {
+		this.corporateMasterId = corporateMasterId;
 	}
 
 	

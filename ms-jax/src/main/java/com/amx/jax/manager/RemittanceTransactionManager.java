@@ -551,7 +551,10 @@ public class RemittanceTransactionManager {
 			commission = newCommission;
 		}
 		if (commission.longValue() > 0) {
-			commission = commission.subtract(corporateDiscountManager.corporateDiscount());
+			CorporateDiscountDto dto = corporateDiscountManager.corporateDiscount(commission);
+			if(dto!=null) {
+			commission = commission.subtract(dto.getCorpDiscount());
+			}
 			responseModel.setDiscountOnComissionFlag(ConstantDocument.Yes);
 			logger.info("commissioncorporate: " +commission);
 			
@@ -1052,7 +1055,7 @@ public class RemittanceTransactionManager {
 			responseModel.setLoyalityPointState(LoyalityPointState.CAN_NOT_AVAIL);
 			//responseModel.setDiscountOnComission(BigDecimal.ZERO);
 		}else {
-			CorporateDiscountDto corpDiscount = corporateDiscountManager.corporateDiscount();
+			CorporateDiscountDto corpDiscount = corporateDiscountManager.corporateDiscount(comission);
 			responseModel.setDiscountOnComission(corpDiscount.getCorpDiscount());
 		}
 		if (remitAppManager.loyalityPointsAvailed(model, responseModel)) {
@@ -1867,6 +1870,7 @@ public class RemittanceTransactionManager {
 		validationResults.setDiscountOnComission(model.getDiscountOnComission());
 		validationResults.setCustomerDiscountDetails(model.getCustomerDiscountDetails());
 		validationResults.setCostRateLimitReached(model.getCostRateLimitReached());
+		validationResults.setCorporateMasterId(model.getCorporateMasterId());
 		
 	}
 	

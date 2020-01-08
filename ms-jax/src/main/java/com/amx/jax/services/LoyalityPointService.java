@@ -56,7 +56,7 @@ public class LoyalityPointService {
 	public BigDecimal getloyaltyAmountEncashed(BigDecimal commission) {
 		BigDecimal loyalityPoints = getVwLoyalityEncash().getLoyalityPoint();
 		BigDecimal loyalityPointsEncashed = getVwLoyalityEncash().getEquivalentAmount();
-		CorporateDiscountDto corpDiscountDto = corporateDiscountManager.corporateDiscount();
+		CorporateDiscountDto corpDiscountDto = corporateDiscountManager.corporateDiscount(commission);
 		BigDecimal  corporateDiscount= BigDecimal.ZERO;
 		if(corpDiscountDto!=null) {
 			corporateDiscount = corpDiscountDto.getCorpDiscount();

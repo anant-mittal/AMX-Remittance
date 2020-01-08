@@ -232,7 +232,7 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 			throw new GlobalException(JaxError.EXCHANGE_RATE_NOT_FOUND, "COMMISSION NOT DEFINED FOR Country "+rountingCountryId+" currencyId :"+currencyId+" remittanceMode :"+remittanceMode);
 		}
 		
-		CorporateDiscountDto corDto = corporateDiscountManager.corporateDiscount();
+		CorporateDiscountDto corDto = corporateDiscountManager.corporateDiscount(commission);
 		BigDecimal corpDiscount = corDto.getCorpDiscount();
 		if(JaxUtil.isNullZeroBigDecimalCheck(commission) && commission.compareTo(corpDiscount)>=0) {
 			commission =commission.subtract(corpDiscount);
@@ -352,11 +352,12 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 				 result.setBeneDeductFlag(ConstantDocument.Yes);
 			}
 			//BigDecimal corpDiscount = corporateDiscountManager.corporateDiscount();
-			CorporateDiscountDto corpDiscountDto = corporateDiscountManager.corporateDiscount();
+			CorporateDiscountDto corpDiscountDto = corporateDiscountManager.corporateDiscount(commission);
 			
 			if(corpDiscountDto!=null && JaxUtil.isNullZeroBigDecimalCheck(commission) &&  JaxUtil.isNullZeroBigDecimalCheck(corpDiscountDto.getCorpDiscount()) && commission.compareTo(corpDiscountDto.getCorpDiscount())>=0) {
 				commission =commission.subtract(corpDiscountDto.getCorpDiscount());
 				result.setDiscountOnComissionFlag(ConstantDocument.Yes);
+				result.setCorporateMasterId(corpDiscountDto.getCorpDiscountId());
 			}
 			
 			VatDetailsDto vatDetails = remittanceTransactionManager.getVatAmount(commission);
@@ -369,7 +370,7 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 				}
 			}
 			result.setTxnFee(commission);
-			result.setDiscountOnComission(corpDiscountDto.getCorpDiscount());
+			//result.setDiscountOnComission(corpDiscountDto.getCorpDiscount());
 			
 			if(trnxRoutingDetails != null && trnxRoutingDetails.getBankIndicator() != null && !trnxRoutingDetails.getBankIndicator().equalsIgnoreCase(ConstantDocument.BANK_INDICATOR_SERVICE_PROVIDER_BANK)) {
 				if (routingPricingRequest.getForeignAmount() != null) {
@@ -400,6 +401,7 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 				remittanceTransactionManager.applyCurrencyRoudingLogicSP(result.getExRateBreakup());
 			}
 			
+			result.setDiscountOnComission(corpDiscountDto.getCorpDiscount());
 			/** Imps split message for multiple trnx  **/
 			String msg = impsSplittingMessage(result);
 			result.setErrorMessage(msg);

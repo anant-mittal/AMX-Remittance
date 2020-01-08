@@ -384,7 +384,6 @@ public class BranchRemittanceSaveManager {
 		
 		int i;
 		for(i=0;i<shoppingCartList.size();i++) {
-			
 			RemittanceApplication remittanceApplication = remittanceApplicationDao.getApplication(shoppingCartList.get(i).getApplicationId());
 			if(remittanceApplication!=null && ConstantDocument.PB_PAYMENT.equalsIgnoreCase(remittanceApplication.getPaymentType())&& ConstantDocument.PB_STATUS_NEW.equalsIgnoreCase(remittanceApplication.getWtStatus())) {
 				remittanceApplication.setWtStatus(ConstantDocument.WT_STATUS_PAID);
@@ -965,6 +964,8 @@ public class BranchRemittanceSaveManager {
 					if(date!=null) {
 						remitTrnx.setTimeToDeliver(date);
 					}
+					
+					remitTrnx.setCorporateMasterId(appl.getCorporateMasterId());
 					
 					BigDecimal documentNo =generateDocumentNumber(appl.getFsCountryMasterByApplicationCountryId().getCountryId(),appl.getFsCompanyMaster().getCompanyId(),remitTrnx.getDocumentId().getDocumentCode(),remitTrnx.getDocumentFinanceYear(),remitTrnx.getLoccod(),ConstantDocument.A);
 					

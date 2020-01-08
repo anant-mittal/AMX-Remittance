@@ -398,6 +398,7 @@ public class RemittanceApplicationManager {
 		setSavedAmount(remittanceApplication, validationResults);
 		setDeliveryTimeDuration(remittanceApplication,dynamicRoutingPricingResponse.getTrnxRoutingPaths());
 		remittanceApplication.setBeneDeductFlag(dynamicRoutingPricingResponse.getBeneDeductFlag());
+		remittanceApplication.setCorporateMasterId(dynamicRoutingPricingResponse.getCorporateMasterId());
 		return remittanceApplication;
 	}
 	

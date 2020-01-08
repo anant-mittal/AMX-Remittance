@@ -151,6 +151,10 @@ public class RemittanceApplication implements Serializable {
 	/** added for direct link **/
 	private BigDecimal paymentLinkId;
 	
+	private BigDecimal corporateMasterId;
+	
+	
+	
 
 
 
@@ -1089,6 +1093,15 @@ public class RemittanceApplication implements Serializable {
 
 	public void setApplSplit(String applSplit) {
 		this.applSplit = applSplit;
+	}
+
+	@Column(name="CORP_DISCOUNT_ID")
+	public BigDecimal getCorporateMasterId() {
+		return corporateMasterId;
+	}
+
+	public void setCorporateMasterId(BigDecimal corporateMasterId) {
+		this.corporateMasterId = corporateMasterId;
 	}
 
 }
