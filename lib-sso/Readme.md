@@ -4,6 +4,28 @@
 <br/>
 <br/>
 
+## RBAAC data structure
+
+- Example representing set of permissions assigned to some ROLE.
+- `Permission` : `Action` : `Scope`
+
+```json
+  "CUSTOMER_MGMT.REMITTANCE": { "VIEW": "COUNTRY" },
+  "CUSTOMER_MGMT.FXORDER": { "VIEW": "COUNTRY" },
+  "MRKT_MGMT.PUSH_NOTIFICATION": {
+    "VIEW": "COUNTRY",
+    "SEND": "COUNTRY"
+  },
+  "PROD_SUPPORT.ADMIN_DEVICE": {
+    "VIEW": "COUNTRY",
+    "UPDATE": "COUNTRY"
+  },
+  "PROD_SUPPORT.ADMIN_EMPLOYEE": {
+    "VIEW": "COUNTRY",
+    "UPDATE": "COUNTRY"
+  }
+```
+
 ## Components consuming RBAAC data
 
 - SERVER\-BRANCH​
@@ -33,13 +55,17 @@
 <br/>
 <br/>
 
-## Spring Security Concepts
+## Spring Security Terminology
 
-- Authentication: Who is the user
-- Authorization: What the user can do
-- Principal: Authenticated User
-- Role: Representation of set of permissions
-- Permissions: Fine Grained authorities defined for particular modules or actions
+- Authentication: _Who is the user_
+- Authorization: _What the user can do_
+- Principal: _Authenticated User_
+- Role: _Representation of set of permissions_
+- Permissions: _Fine Grained authorities_
+
+
+[Video reference](https://www.youtube.com/watch?v=I0poT4UxFxE) 
+
 
 ------------------------------------------------------
 
@@ -50,7 +76,6 @@
 <br/>
 <br/>
 
-[Video reference](https://www.youtube.com/watch?v=I0poT4UxFxE)
 
 ## SERVER-BRANCH
 
@@ -81,7 +106,7 @@
 
 #### Controller level:
 
-- The PreAuthorize annoation utilizes the `Authorization` object and can determine access to a controller or specific methods
+- The PreAuthorize annoation utilizes the `Authentication` object and can determine access to a controller or specific methods
 - This annotation will prevent the execution of method if unauthorized.
 - Inside PreAuthorize we can pass various conditions and combination of multiple conditions
 - hasAuthority only verifies permissions, while hasPermission is customised to accept permission, action and scope as well.
