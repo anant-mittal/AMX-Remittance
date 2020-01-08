@@ -16,6 +16,7 @@ import com.amx.jax.rbaac.IRbaacService;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -32,6 +33,7 @@ public class POBranchController {
 	@Autowired
 	private RemittanceClient branchRemittanceClient;
 
+	@PreAuthorize("#placeOrderRequestModel.getBooGsm() == true ? hasPermission('CUSTOMER_MGMT.PLACE_ORDER.RATE_PROVIDER', 'VIEW') : true")
 	@RequestMapping(value = "/api/placeorder/create", method = { RequestMethod.POST })
 	public AmxApiResponse<RatePlaceOrderResponseModel, Object> createPlaceOrder(
 			@RequestBody PlaceOrderRequestModel placeOrderRequestModel) {
