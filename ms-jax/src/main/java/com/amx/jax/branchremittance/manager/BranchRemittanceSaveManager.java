@@ -340,8 +340,9 @@ public class BranchRemittanceSaveManager {
 			logger.error("Service provider api fail to execute : ColDocNo : ", responseDto.getCollectionDocumentNo() + " : ColDocCod : " +responseDto.getCollectionDocumentCode()+"  : ColDocYear : "+responseDto.getCollectionDocumentFYear());
 		}
 		logger.info("MRU --BEFORE appliation move to EMOS -->"+responseDto.getCollectionDocumentNo());
-		
+		logger.info("Response dto value is "+responseDto);
 		if(responseDto!=null && JaxUtil.isNullZeroBigDecimalCheck(responseDto.getCollectionDocumentNo())) {
+			logger.info("Update application after remittance");
 			brRemittanceDao.updateApplicationToMoveEmos(responseDto);
 			PaymentResponseDto paymentResponse = new PaymentResponseDto();
 			paymentResponse.setCollectionDocumentCode(responseDto.getCollectionDocumentCode());

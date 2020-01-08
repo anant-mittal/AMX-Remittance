@@ -402,11 +402,14 @@ public class BranchRemittanceDao {
 	public void updateApplicationToMoveEmos(RemittanceResponseDto responseDto) {
 		List<RemittanceTransaction> remitTrnxList = remitTrnxRepository.findByCollectionDocIdAndCollectionDocFinanceYearAndCollectionDocumentNo(
 				responseDto.getCollectionDocumentCode(), responseDto.getCollectionDocumentFYear(), responseDto.getCollectionDocumentNo());
+		logger.info("Remit trnx list is "+remitTrnxList.get(0).toString());
 		if (remitTrnxList != null && !remitTrnxList.isEmpty()) {
 			for (RemittanceTransaction remitTrnx : remitTrnxList) {
 				RemittanceApplication appl = appRepo.getApplicationDetailsForUpdate(remitTrnx.getCustomerId(), remitTrnx.getApplicationDocumentNo(),
 						remitTrnx.getApplicationFinanceYear());
+				logger.info("remittance application is "+appl);
 				if (JaxUtil.isNullZeroBigDecimalCheck(appl.getRemittanceApplicationId())) {
+					
 					String sql = "UPDATE EX_APPL_TRNX set APPLICATION_STATUS='T' ,TRANSACTION_FINANCE_YEAR =" + remitTrnx.getDocumentFinanceYear()
 							+ ", TRANSACTION_FINANCE_YEAR_ID =" + remitTrnx.getDocumentFinanceYr() + " ,TRANSACTION_DOCUMENT_NO=" + remitTrnx.getDocumentNo()
 							+ " ,BLACK_LIST_INDICATOR ='" + remitTrnx.getBlackListIndicator() + "' where REMITTANCE_APPLICATION_ID =" + appl.getRemittanceApplicationId();
