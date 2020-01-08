@@ -1,4 +1,4 @@
-package com.amx.jax.offsite.controller;
+package com.amx.jax.api;
 
 import java.math.BigDecimal;
 
