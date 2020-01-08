@@ -22,7 +22,7 @@
 
 ## Flowchart representing the Login Flow and consumption of RBAAC roles and permissions
 
-![alt text](https://drive.google.com/uc?export=view&id=1XscwWOsST9sN7GDseezlGq3KWe-mEX_t)
+![alt text](https://drive.google.com/uc?export=view&id=1x5coFCePlzJtccCjQu5TyShICGkRbyt8)
 
 ------------------------------------------------------
 
