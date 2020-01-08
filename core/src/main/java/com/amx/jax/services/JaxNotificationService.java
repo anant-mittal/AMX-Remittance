@@ -32,6 +32,7 @@ import com.amx.jax.dbmodel.ExEmailNotification;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.model.CivilIdOtpModel;
+import com.amx.jax.model.request.fx.FcSaleOrderFailReportDTO;
 import com.amx.jax.model.request.partner.TransactionFailReportDTO;
 import com.amx.jax.model.response.customer.CustomerDto;
 import com.amx.jax.model.response.customer.PersonInfo;
@@ -49,7 +50,9 @@ import com.amx.jax.postman.model.Message;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.postman.model.WAMessage;
+import com.amx.jax.repository.CustomerRepository;
 import com.amx.jax.scope.TenantContextHolder;
+import com.amx.jax.util.CommunicationPrefsUtil;
 import com.amx.utils.CollectionUtil;
 
 @Service
@@ -66,6 +69,12 @@ public class JaxNotificationService {
 	JaxNotificationService jaxNotificationService;
 	@Autowired
 	JaxEmailNotificationService jaxEmailNotificationService;
+	
+	@Autowired
+	CommunicationPrefsUtil communicationPrefsUtil;
+	
+	@Autowired
+	CustomerRepository customerRepository;
 
 	Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -132,73 +141,78 @@ public class JaxNotificationService {
 	// to send profile (password, security question, image, mobile) change
 	// notification
 	public void sendProfileChangeNotificationEmail(CustomerModel customerModel, PersonInfo pinfo) {
-
+		Customer customer = customerRepository.getCustomerByCustomerIdAndIsActive(customerModel.getCustomerId(),"Y");
+		//CommunicationPrefsResult communicationPrefsResult = communicationPrefsUtil.forCustomer(CommunicationEvents.MY_PROFILE, customer);
+		
 		logger.info("Sending Profile change notification to customer : " + pinfo.getFirstName());
+		if(customer.canSendEmail()) {
+			Email email = new Email();
+			Email emailToOld = null;
 
-		Email email = new Email();
-		Email emailToOld = null;
+			if (customerModel.getPassword() != null) {
+				email.setSubject("Change Password Success");
+				email.getModel().put("change_type", ChangeType.PASSWORD_CHANGE);
 
-		if (customerModel.getPassword() != null) {
-			email.setSubject("Change Password Success");
-			email.getModel().put("change_type", ChangeType.PASSWORD_CHANGE);
+			} else if (customerModel.getSecurityquestions() != null) {
+				email.setSubject(SUBJECT_ACCOUNT_UPDATE);
+				email.getModel().put("change_type", ChangeType.SECURITY_QUESTION_CHANGE);
 
-		} else if (customerModel.getSecurityquestions() != null) {
-			email.setSubject(SUBJECT_ACCOUNT_UPDATE);
-			email.getModel().put("change_type", ChangeType.SECURITY_QUESTION_CHANGE);
+			} else if (customerModel.getImageUrl() != null) {
+				email.setSubject(SUBJECT_ACCOUNT_UPDATE);
+				email.getModel().put("change_type", ChangeType.IMAGE_CHANGE);
 
-		} else if (customerModel.getImageUrl() != null) {
-			email.setSubject(SUBJECT_ACCOUNT_UPDATE);
-			email.getModel().put("change_type", ChangeType.IMAGE_CHANGE);
+			} else if (customerModel.getMobile() != null) {
 
-		} else if (customerModel.getMobile() != null) {
+				email.getModel().put("change_type", ChangeType.MOBILE_CHANGE);
 
-			email.getModel().put("change_type", ChangeType.MOBILE_CHANGE);
+			} else if (customerModel.getEmail() != null) {
+				// Customer model has old email and Person info has new email
+				if(!customerModel.getEmail().equals(pinfo.getEmail())) {
 
-		} else if (customerModel.getEmail() != null) {
-			// Customer model has old email and Person info has new email
-			if(!customerModel.getEmail().equals(pinfo.getEmail())) {
+				email.getModel().put("change_type", ChangeType.EMAIL_CHANGE);
 
-			email.getModel().put("change_type", ChangeType.EMAIL_CHANGE);
+				emailToOld = new Email();
 
-			emailToOld = new Email();
+				emailToOld.getModel().put("change_type", ChangeType.EMAIL_CHANGE);
+				emailToOld.addTo(customerModel.getEmail());
+				emailToOld.setITemplate(TemplatesMX.EMAIL_CHANGE_OLD_EMAIL);
+				emailToOld.setHtml(true);
 
-			emailToOld.getModel().put("change_type", ChangeType.EMAIL_CHANGE);
-			emailToOld.addTo(customerModel.getEmail());
-			emailToOld.setITemplate(TemplatesMX.EMAIL_CHANGE_OLD_EMAIL);
-			emailToOld.setHtml(true);
-
-			PersonInfo oldPinfo = null;
-			try {
-				oldPinfo = (PersonInfo) pinfo.clone();
-			} catch (CloneNotSupportedException e) {
-				e.printStackTrace();
+				PersonInfo oldPinfo = null;
+				try {
+					oldPinfo = (PersonInfo) pinfo.clone();
+				} catch (CloneNotSupportedException e) {
+					e.printStackTrace();
+				}
+				oldPinfo.setEmail(customerModel.getEmail());
+				emailToOld.getModel().put(RESP_DATA_KEY, oldPinfo);
+				logger.info("Email change notification to - " + oldPinfo.getFirstName() + " on email id : "
+						+ oldPinfo.getEmail());
+				sendEmail(emailToOld);
 			}
-			oldPinfo.setEmail(customerModel.getEmail());
-			emailToOld.getModel().put(RESP_DATA_KEY, oldPinfo);
-			logger.info("Email change notification to - " + oldPinfo.getFirstName() + " on email id : "
-					+ oldPinfo.getEmail());
-			sendEmail(emailToOld);
-		}
-			email.getModel().put("change_type", ChangeType.EMAIL_CHANGE);
+				email.getModel().put("change_type", ChangeType.EMAIL_CHANGE);
+			}
+			
+			email.addTo(pinfo.getEmail());
+			email.setITemplate(TemplatesMX.PROFILE_CHANGE);
+			email.setHtml(true);
+			email.getModel().put(RESP_DATA_KEY, pinfo);
+			logger.info("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getFirstName());
+			sendEmail(email);
 		}
 		
-		email.addTo(pinfo.getEmail());
-		email.setITemplate(TemplatesMX.PROFILE_CHANGE);
-		email.setHtml(true);
-		email.getModel().put(RESP_DATA_KEY, pinfo);
-		logger.info("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getFirstName());
-		sendEmail(email);
 	} // end of sendProfileChangeNotificationEmail
 
 	public void sendProfileChangeNotificationMobile(CustomerModel customerModel, PersonInfo personinfo,
 			String oldMobile) {
-		if (customerModel.getMobile() != null) {
+		Customer customer = customerRepository.getCustomerByCustomerIdAndIsActive(customerModel.getCustomerId(),"Y");
+		if (customer.canSendMobile()) {
 			SMS smsOld = new SMS();
 			// to new and old
 			smsOld.addTo(oldMobile);
 			smsOld.getModel().put(RESP_DATA_KEY, personinfo);
 			smsOld.setITemplate(TemplatesMX.PROFILE_CHANGE_SMS);
-
+			
 			try {
 				postManService.sendSMSAsync(smsOld);
 			} catch (PostManException e) {
@@ -421,7 +435,7 @@ public class JaxNotificationService {
 
 	}
 
-public void sendSPErrorEmail(TransactionFailReportDTO model,
+	public void sendSPErrorEmail(TransactionFailReportDTO model,
 			List<ExEmailNotification> emailNotification) {
 		try {
 			for (ExEmailNotification emailNot : emailNotification) {
@@ -451,5 +465,38 @@ public void sendSPErrorEmail(TransactionFailReportDTO model,
 
 		logger.debug("Email to DL - " + pinfo.getEmail());
 		sendEmail(email);
+	}
+	
+	public void sendFCSaleSupportErrorEmail(FcSaleOrderFailReportDTO model,
+			List<ExEmailNotification> emailNotification) {
+		try {
+			for (ExEmailNotification emailNot : emailNotification) {
+				String emailid = emailNot.getEmailId();
+				Email email = new Email();
+				//email.setSubject(FC_OUTOF_STOCK_SUPPORT);
+				email.addTo(emailid);
+				email.setITemplate(TemplatesMX.FC_OUTOF_STOCK_SUPPORT);
+				email.setHtml(true);
+				email.getModel().put(RESP_DATA_KEY, model);
+				sendEmail(email);
+			}
+		} catch (Exception e) {
+			logger.error("error in sendErrormail", e);
+		}
+	}
+	
+	public void sendFCSaleCustomerErrorEmail(FcSaleOrderFailReportDTO model,
+			String emailid) {
+		try {
+			Email email = new Email();
+			//email.setSubject(FC_OUTOF_STOCK_CUSTOMER);
+			email.addTo(emailid);
+			email.setITemplate(TemplatesMX.FC_OUTOF_STOCK_CUSTOMER);
+			email.setHtml(true);
+			email.getModel().put(RESP_DATA_KEY, model);
+			sendEmail(email);
+		} catch (Exception e) {
+			logger.error("error in sendErrormail", e);
+		}
 	}
 }

@@ -19,8 +19,13 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
+import com.amx.jax.dict.Language;
 import com.amx.jax.dict.Project;
 import com.amx.jax.dict.Tenant;
+import com.amx.jax.dict.UserClient.AppType;
+import com.amx.jax.dict.UserClient.Channel;
+import com.amx.jax.dict.UserClient.ClientType;
+import com.amx.jax.dict.UserClient.DeviceType;
 import com.amx.jax.filter.AppClientErrorHanlder;
 import com.amx.jax.filter.AppClientInterceptor;
 import com.amx.jax.scope.TenantProperties;
@@ -150,6 +155,21 @@ public class AppConfig {
 	@AppParamKey(AppParam.DEFAULT_TENANT)
 	private Tenant defaultTenant;
 
+	@Value("${default.lang}")
+	private Language defaultLang;
+
+	@Value("${default.channel}")
+	private Channel defaultChannel;
+
+	@Value("${default.client.type}")
+	private ClientType defaultClientType;
+
+	@Value("${default.device.type}")
+	private DeviceType defaultDeviceType;
+
+	@Value("${default.app.type}")
+	private AppType defaultAppType;
+
 	@Value(JAX_CDN_URL)
 	@AppParamKey(AppParam.JAX_CDN_URL)
 	private String cdnURL;
@@ -208,7 +228,7 @@ public class AppConfig {
 
 	@Value("${app.response.ok}")
 	private boolean appResponseOK;
-	
+
 	@Value("${app.session}")
 	private boolean appSessionEnabled;
 
@@ -469,6 +489,26 @@ public class AppConfig {
 
 	public void setServiceProviderURL(String serviceProviderURL) {
 		this.serviceProviderURL = serviceProviderURL;
+	}
+
+	public Language getDefaultLang() {
+		return defaultLang;
+	}
+
+	public Channel getDefaultChannel() {
+		return defaultChannel;
+	}
+
+	public ClientType getDefaultClientType() {
+		return defaultClientType;
+	}
+
+	public DeviceType getDefaultDeviceType() {
+		return defaultDeviceType;
+	}
+
+	public AppType getDefaultAppType() {
+		return defaultAppType;
 	}
 
 }

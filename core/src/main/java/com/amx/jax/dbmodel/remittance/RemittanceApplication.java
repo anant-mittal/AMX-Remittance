@@ -162,8 +162,8 @@ public class RemittanceApplication implements Serializable {
 	private String customerChoice;
 	private BigDecimal savedAmountInFc;
 	private BigDecimal timeToDeliverInSec;
-
 	private String applSplit;
+    private BigDecimal ratePlaceOrderId;
 	
 
 	private List<RemittanceAppBenificiary> exRemittanceAppBenificiary = new ArrayList<RemittanceAppBenificiary>(0);
@@ -1073,6 +1073,17 @@ public class RemittanceApplication implements Serializable {
 		this.savedAmountInFc = savedAmountInFc;
 	}
 
+ @Column(name="IS_SPLITTED")
+	public String getApplSplit() {
+		return applSplit;
+	}
+
+	public void setApplSplit(String applSplit) {
+		this.applSplit = applSplit;
+	}
+	
+	
+
 	@Column(name="TIME_TO_DELIVER_IN_SEC")
 	public BigDecimal getTimeToDeliverInSec() {
 		return timeToDeliverInSec;
@@ -1081,14 +1092,13 @@ public class RemittanceApplication implements Serializable {
 	public void setTimeToDeliverInSec(BigDecimal timeToDeliverInSec) {
 		this.timeToDeliverInSec = timeToDeliverInSec;
 	}
-
-	@Column(name="IS_SPLITTED")
-	public String getApplSplit() {
-		return applSplit;
+	@Column(name="RATE_PLACE_ORDER_ID")
+	public BigDecimal getRatePlaceOrderId() {
+		return ratePlaceOrderId;
 	}
 
-	public void setApplSplit(String applSplit) {
-		this.applSplit = applSplit;
+	public void setRatePlaceOrderId(BigDecimal ratePlaceOrderId) {
+		this.ratePlaceOrderId = ratePlaceOrderId;
 	}
 
 }

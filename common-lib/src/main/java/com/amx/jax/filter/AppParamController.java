@@ -122,7 +122,7 @@ public class AppParamController {
 	public AmxApiResponse<BoolRespModel, Object> clearSharedConfig() {
 		if (ArgUtil.is(listAppSharedConfig)) {
 			for (AppSharedConfig appSharedConfig : listAppSharedConfig) {
-				appSharedConfig.clear();
+				appSharedConfig.clear(null);
 			}
 		}
 		return AmxApiResponse.build(new BoolRespModel(true));
@@ -131,7 +131,7 @@ public class AppParamController {
 	@Autowired(required = false)
 	VendorAuthConfig appVendorConfigForAuth;
 
-	@RequestMapping(value = "/pub/amx/device", method = { RequestMethod.GET, RequestMethod.POST})
+	@RequestMapping(value = "/pub/amx/device", method = { RequestMethod.GET, RequestMethod.POST })
 	public AmxApiResponse<UserDevice, Map<String, Object>> userDevice(@RequestParam(required = false) String key,
 			@RequestParam(required = false) String vendor) {
 		Map<String, Object> map = new HashMap<String, Object>();

@@ -192,23 +192,26 @@ public class FingerprintService {
 		custDao.saveOnlineCustomer(customerOnlineRegistration);
 		
 		Customer customer = custDao.getCustById(customerOnlineRegistration.getCustomerId());
-		PersonInfo personinfo = new PersonInfo();
-		personinfo.setFirstName(customer.getFirstName());
-		personinfo.setMiddleName(customer.getMiddleName());
-		personinfo.setLastName(customer.getLastName());
-		logger.info("Email to - " + customerOnlineRegistration.getEmail());
-		Email email = new Email();
-		logger.info("setting to");
-		email.addTo(customerOnlineRegistration.getEmail());
-		logger.info("setting template");
-		email.setITemplate(TemplatesMX.FINGERPRINT_LINKED_SUCCESS);
-		logger.info("setting html");
-		email.setHtml(true);
-		logger.info("setting data");
-		email.getModel().put(RESP_DATA_KEY, personinfo);
+		if(customer.canSendEmail()) {
+			PersonInfo personinfo = new PersonInfo();
+			personinfo.setFirstName(customer.getFirstName());
+			personinfo.setMiddleName(customer.getMiddleName());
+			personinfo.setLastName(customer.getLastName());
+			logger.info("Email to - " + customerOnlineRegistration.getEmail());
+			Email email = new Email();
+			logger.info("setting to");
+			email.addTo(customerOnlineRegistration.getEmail());
+			logger.info("setting template");
+			email.setITemplate(TemplatesMX.FINGERPRINT_LINKED_SUCCESS);
+			logger.info("setting html");
+			email.setHtml(true);
+			logger.info("setting data");
+			email.getModel().put(RESP_DATA_KEY, personinfo);
 
-		logger.info("Email to - " + customerOnlineRegistration.getEmail());
-		sendEmail(email);
+			logger.info("Email to - " + customerOnlineRegistration.getEmail());
+			sendEmail(email);
+		}
+		
 		return userFingerprintResponsemodel;
 	}
 	@Async(ExecutorConfig.DEFAULT)
@@ -284,18 +287,21 @@ public class FingerprintService {
 		BoolRespModel boolRespModel = new BoolRespModel();
 		boolRespModel.setSuccess(Boolean.TRUE);
 		Customer customer = custDao.getCustById(customerOnlineRegistration.getCustomerId());
-		PersonInfo personinfo = new PersonInfo();
-		personinfo.setFirstName(customer.getFirstName());
-		personinfo.setMiddleName(customer.getMiddleName());
-		personinfo.setLastName(customer.getLastName());
-		logger.info("Checking wether delink has been called or not");
-		Email email = new Email();
-		email.addTo(customerOnlineRegistration.getEmail());
-		email.setITemplate(TemplatesMX.FINGERPRINT_DELINKED_SUCCESS);
-		email.setHtml(true);
-		email.getModel().put(RESP_DATA_KEY, personinfo);
-		logger.info("Email to delink fingerprint- " + customerOnlineRegistration.getEmail());
-		sendEmail(email);
+		if(customer.canSendEmail()) {
+			PersonInfo personinfo = new PersonInfo();
+			personinfo.setFirstName(customer.getFirstName());
+			personinfo.setMiddleName(customer.getMiddleName());
+			personinfo.setLastName(customer.getLastName());
+			logger.info("Checking wether delink has been called or not");
+			Email email = new Email();
+			email.addTo(customerOnlineRegistration.getEmail());
+			email.setITemplate(TemplatesMX.FINGERPRINT_DELINKED_SUCCESS);
+			email.setHtml(true);
+			email.getModel().put(RESP_DATA_KEY, personinfo);
+			logger.info("Email to delink fingerprint- " + customerOnlineRegistration.getEmail());
+			sendEmail(email);
+		}
+		
 		return boolRespModel;
 	}
 	public BoolRespModel resetFingerprint(String identity, String identityTypeStr) {
@@ -309,18 +315,21 @@ public class FingerprintService {
 		BoolRespModel boolRespModel = new BoolRespModel();
 		boolRespModel.setSuccess(Boolean.TRUE);
 		Customer customer = custDao.getActiveCustomerByIndentityIntAndType(identity,identityType);
-		PersonInfo personinfo = new PersonInfo();
-		personinfo.setFirstName(customer.getFirstName());
-		personinfo.setMiddleName(customer.getMiddleName());
-		personinfo.setLastName(customer.getLastName());
-		logger.info("checking wether reset has been called or not");
-		Email email = new Email();
-		email.addTo(customerOnlineRegistration.getEmail());
-		email.setITemplate(TemplatesMX.FINGERPRINT_DELINKED_ATTEMP_SUCCESS);
-		email.setHtml(true);
-		email.getModel().put(RESP_DATA_KEY, personinfo);
-		logger.info("Email to reset fingerprint- " + customerOnlineRegistration.getEmail());
-		sendEmail(email);
+		if(customer.canSendEmail()) {
+			PersonInfo personinfo = new PersonInfo();
+			personinfo.setFirstName(customer.getFirstName());
+			personinfo.setMiddleName(customer.getMiddleName());
+			personinfo.setLastName(customer.getLastName());
+			logger.info("checking wether reset has been called or not");
+			Email email = new Email();
+			email.addTo(customerOnlineRegistration.getEmail());
+			email.setITemplate(TemplatesMX.FINGERPRINT_DELINKED_ATTEMP_SUCCESS);
+			email.setHtml(true);
+			email.getModel().put(RESP_DATA_KEY, personinfo);
+			logger.info("Email to reset fingerprint- " + customerOnlineRegistration.getEmail());
+			sendEmail(email);
+		}
+		
 		return boolRespModel;
 	
 	}

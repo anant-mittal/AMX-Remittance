@@ -50,7 +50,7 @@ public class CacheRedisConfiguration
 	private String port;
 
 	public static enum CODEC {
-		FST, JACKSON
+		FST, JACKSON, DEFAULT
 	}
 
 	public static final CODEC CODEC_SELECTED = CODEC.FST;
@@ -87,14 +87,14 @@ public class CacheRedisConfiguration
 			singleServerConfig.setReconnectionTimeout(3000);
 
 		}
-		if (CODEC_SELECTED.equals(CODEC.JACKSON)) {
+		if (CODEC.JACKSON.equals(CODEC_SELECTED)) {
 			org.redisson.codec.JsonJacksonCodec codec = new org.redisson.codec.JsonJacksonCodec(
 					JsonUtil.createRawMapper("forRedis"));
 			config.setCodec(codec);
-		} else {
-			//FSTConfiguration x = FSTConfiguration.createDefaultConfiguration();
-			//x.setSerializerRegistryDelegate(new MyFSTSerializerRegistryDelegate());
-			//org.redisson.codec.FstCodec codec = new org.redisson.codec.FstCodec(x);
+		} else if (CODEC.FST.equals(CODEC_SELECTED)) {
+			// FSTConfiguration x = FSTConfiguration.createDefaultConfiguration();
+			// x.setSerializerRegistryDelegate(new MyFSTSerializerRegistryDelegate());
+			// org.redisson.codec.FstCodec codec = new org.redisson.codec.FstCodec(x);
 			org.redisson.codec.FstCodec codec = new org.redisson.codec.FstCodec();
 			config.setCodec(codec);
 		}

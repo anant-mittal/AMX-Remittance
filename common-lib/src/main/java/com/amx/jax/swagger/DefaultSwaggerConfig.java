@@ -10,10 +10,12 @@ import org.springframework.context.annotation.Configuration;
 
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppConstants;
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.swagger.MockParamBuilder.MockParam;
 import com.amx.utils.CollectionUtil;
+import com.amx.utils.ContextUtil;
 import com.amx.utils.UniqueID;
 
 import springfox.documentation.builders.ParameterBuilder;
@@ -74,12 +76,15 @@ public class DefaultSwaggerConfig {
 
 			operationParameters.add(parameter);
 		}
+		AppContextUtil.getSessionId(true);
+		AppContextUtil.getTraceId(true,true);
 
 		operationParameters.add(new ParameterBuilder().name(AppConstants.TRANX_ID_XKEY).description("Transaction Id")
-				.defaultValue("TST-1d59nub55kbgg-1d59nub5827sx")
+				.defaultValue(
+						AppContextUtil.getTraceId())
 				.modelRef(new ModelRef(PARAM_STRING)).parameterType(PARAM_HEADER).required(false).build());
 		operationParameters.add(new ParameterBuilder().name(AppConstants.TRACE_ID_XKEY).description("Trace Id")
-				.defaultValue("TST-1d59nub55kbgg-1d59nub5827sx")
+				.defaultValue(AppContextUtil.getTraceId())
 				.modelRef(new ModelRef(PARAM_STRING)).parameterType(PARAM_HEADER).required(false).build());
 		docket.globalOperationParameters(operationParameters);
 		docket.apiInfo(metaData());

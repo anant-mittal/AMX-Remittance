@@ -1,6 +1,7 @@
 package com.amx.jax.repository;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,9 +15,11 @@ public interface IBizComponentDataDescDaoRepository extends JpaRepository<BizCom
 	@Query("select a from BizComponentDataDesc a where a.dataDesc= ?1 and a.fsLanguageType = ?2")
 	public List<BizComponentDataDesc> getComponentId(String inputString, LanguageType langId);
 
-	public List<BizComponentDataDesc> findByFsBizComponentDataAndFsLanguageType(BizComponentData bizComponentData,
-			LanguageType langId);
+	public List<BizComponentDataDesc> findByFsBizComponentDataAndFsLanguageType(BizComponentData bizComponentData,LanguageType langId);
 	
 	@Query(value = "select a from BizComponentDataDesc a where a.fsBizComponentData in (198,201,204,197) and a.fsLanguageType = ?1")
 	public List<BizComponentDataDesc> findByFsBizComponentDataDesc(LanguageType langId);
+	
+	
+
 }

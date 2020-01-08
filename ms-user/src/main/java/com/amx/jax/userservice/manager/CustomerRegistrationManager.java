@@ -338,7 +338,9 @@ public class CustomerRegistrationManager extends TransactionModel<CustomerRegist
 		// custProof.setFsBizComponentDataByIdentityTypeId(idType);
 
 		custProof.setIdentityInt(customer.getIdentityInt());
-		custProof.setIdentityStatus(Constants.CUST_ACTIVE_INDICATOR);
+		// since there is no document uploaded during partial reg. we don't need to
+		// create customer id proof record, so marking it as D
+		custProof.setIdentityStatus(Constants.DELETED_SOFT);
 		custProof.setCreatedBy(customer.getIdentityInt());
 		custProof.setCreationDate(new Date());
 		custProof.setIdentityTypeId(new BigDecimal(Constants.IDENTITY_TYPE_CIVIL_ID_STR));

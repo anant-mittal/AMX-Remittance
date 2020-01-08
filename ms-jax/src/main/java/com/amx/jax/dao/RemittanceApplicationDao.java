@@ -27,6 +27,7 @@ import com.amx.jax.dbmodel.remittance.RemittanceAppBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceApplicationSplitting;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
+import com.amx.jax.dbmodel.remittance.ViewServiceDetails;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.manager.RemittanceApplicationManager;
 import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
@@ -40,6 +41,7 @@ import com.amx.jax.repository.IRemittanceApplSplitRepository;
 import com.amx.jax.repository.RemittanceApplicationBeneRepository;
 import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.repository.RemittanceTransactionRepository;
+import com.amx.jax.repository.remittance.IServiceViewRepository;
 import com.amx.jax.service.FinancialService;
 import com.amx.jax.userservice.dao.ReferralDetailsDao;
 import com.amx.jax.util.JaxUtil;
@@ -86,7 +88,10 @@ public class RemittanceApplicationDao {
     
     @Autowired
     BranchRemittanceDao brRemitDao;
-    
+
+    @Autowired
+    IServiceViewRepository serviceViewRepository;
+
     
     
     /**
@@ -104,7 +109,7 @@ public class RemittanceApplicationDao {
 	@Transactional
 	public void saveAllApplicationData(RemittanceApplication app, RemittanceAppBenificiary appBene,
 			List<AdditionalInstructionData> additionalInstrumentData,RemitApplSrvProv remitApplSrvProv,List<RemittanceApplicationSplitting>  applSplitList ,RemitApplAmlModel remitApplAml) {
-
+try {
 		
 		if(app!=null) {
 				BigDecimal documentNo =brRemitDao.generateDocumentNumber(app.getFsCountryMasterByApplicationCountryId().getCountryId(), app.getFsCompanyMaster().getCompanyId(),
@@ -140,7 +145,10 @@ public class RemittanceApplicationDao {
 		}
 
 		logger.info("Application saved in the database, docNo: " + app.getDocumentNo());
-	}
+} catch (GlobalException e){
+	throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
+}
+}
 
 	public RemittanceTransactionView getRemittanceTransactionView(BigDecimal documentNumber, BigDecimal finYear) {
 		RemittanceTransactionView remittanceTransactionView = appRepo.fetchRemitApplTrnxView(documentNumber, finYear);
@@ -214,6 +222,10 @@ public class RemittanceApplicationDao {
 			logger.info("Place Order updated for place_order_id: " + model.getPlaceOrderId());
 		}
 
+	}
+	public List<ViewServiceDetails> getServiceMaster(){
+		List<ViewServiceDetails> serviceMasterView = serviceViewRepository.getServiceMaster();
+		return serviceMasterView;
 	}
 	
 	

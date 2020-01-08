@@ -33,14 +33,34 @@ public class MultiTenantJpaConfiguration {
 			org.apache.tomcat.jdbc.pool.DataSource tomcatDataSource = (org.apache.tomcat.jdbc.pool.DataSource) factory
 					.build();
 
-			 tomcatDataSource.setTestOnBorrow(true);
-			 tomcatDataSource.setValidationQuery("select 1 from dual");
-			 tomcatDataSource.setTestWhileIdle(true);
-			 result.put(dsProperties.getTenantId(), tomcatDataSource);
+			/**
+			 * Set Connection Pool Properties
+			 */
 
-//			com.zaxxer.hikari.HikariDataSource hikariDataSource = (com.zaxxer.hikari.HikariDataSource) factory.build();
-//			hikariDataSource.setConnectionTestQuery("select 1 from dual");
-//			result.put(dsProperties.getTenantId(), hikariDataSource);
+			// Initial Pool Size : default 10
+			if (dsProperties.getInitialSize() != null) {
+				tomcatDataSource.setInitialSize(dsProperties.getInitialSize());
+			}
+
+			// Maximum Active Connections Ever : default 100
+			if (dsProperties.getMaxActive() != null) {
+				tomcatDataSource.setMaxActive(dsProperties.getMaxActive());
+			}
+
+			// Maximum Idle Connections Ever : default 100
+			if (dsProperties.getMaxIdle() != null) {
+				tomcatDataSource.setMaxIdle(dsProperties.getMaxIdle());
+			}
+
+			// Minimum Idle Connections Ever : default 10
+			if (dsProperties.getMinIdle() != null) {
+				tomcatDataSource.setMinIdle(dsProperties.getMinIdle());
+			}
+
+			tomcatDataSource.setTestOnBorrow(true);
+			tomcatDataSource.setValidationQuery("select 1 from dual");
+			tomcatDataSource.setTestWhileIdle(true);
+			result.put(dsProperties.getTenantId(), tomcatDataSource);
 
 		}
 		return result;

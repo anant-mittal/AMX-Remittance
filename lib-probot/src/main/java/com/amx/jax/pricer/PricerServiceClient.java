@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +21,10 @@ import com.amx.jax.partner.dto.SrvPrvFeeInqResDTO;
 import com.amx.jax.pricer.dto.CurrencyMasterDTO;
 import com.amx.jax.pricer.dto.DiscountDetailsReqRespDTO;
 import com.amx.jax.pricer.dto.DiscountMgmtReqDTO;
+import com.amx.jax.pricer.dto.ExchRateEnquiryReqDto;
 import com.amx.jax.pricer.dto.ExchangeRateAndRoutingRequest;
 import com.amx.jax.pricer.dto.ExchangeRateAndRoutingResponse;
+import com.amx.jax.pricer.dto.ExchangeRateEnquiryRespDto;
 import com.amx.jax.pricer.dto.GroupDetails;
 import com.amx.jax.pricer.dto.HolidayResponseDTO;
 import com.amx.jax.pricer.dto.OnlineMarginMarkupInfo;
@@ -29,9 +32,14 @@ import com.amx.jax.pricer.dto.OnlineMarginMarkupReq;
 import com.amx.jax.pricer.dto.PricingAndCostResponseDTO;
 import com.amx.jax.pricer.dto.PricingRequestDTO;
 import com.amx.jax.pricer.dto.PricingResponseDTO;
+import com.amx.jax.pricer.dto.RateUploadRequestDto;
+import com.amx.jax.pricer.dto.RateUploadRuleDto;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
 import com.amx.jax.pricer.dto.RoutingProductStatusDetails;
 import com.amx.jax.pricer.dto.RoutingStatusUpdateRequestDto;
+import com.amx.jax.pricer.dto.RoutingCountryBankInfo;
+import com.amx.jax.pricer.var.PricerServiceConstants.GROUP_TYPE;
+import com.amx.jax.pricer.var.PricerServiceConstants.RATE_UPLOAD_STATUS;
 import com.amx.jax.rest.RestService;
 
 @Component
@@ -238,6 +246,91 @@ public class PricerServiceClient implements ProbotExchangeRateService, ProbotDat
 
 		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.UPDATE_ROUTING_STATUS).post(request)
 				.as(new ParameterizedTypeReference<AmxApiResponse<Integer, Object>>() {
+				});
+	}
+	
+	@Override
+	public AmxApiResponse<GroupDetails, Object> getGroupsOfType(GROUP_TYPE groupType) {
+		LOGGER.info("Get Group Data for Type: {}, transaction Id: {}, with TraceId: {}", groupType,
+				AppContextUtil.getTranxId(), AppContextUtil.getTraceId());
+
+		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.GET_GROUPS_OF_TYPE)
+				.queryParam("groupType", groupType).post()
+				.as(new ParameterizedTypeReference<AmxApiResponse<GroupDetails, Object>>() {
+				});
+	}
+
+	@Override
+	public AmxApiResponse<GroupDetails, Object> saveGroup(GroupDetails group) {
+		LOGGER.info("Save Group Data transaction Id: {}, with TraceId: {}", AppContextUtil.getTranxId(),
+				AppContextUtil.getTraceId());
+
+		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.SAVE_GROUP).post(group)
+				.as(new ParameterizedTypeReference<AmxApiResponse<GroupDetails, Object>>() {
+				});
+	}
+
+	@Override
+	public AmxApiResponse<Long, Object> deleteGroup(BigDecimal applicationCountryId, BigDecimal groupId,
+			GROUP_TYPE groupType, String groupName) {
+
+		LOGGER.info("Delete Group Data transaction Id: {}, with TraceId: {}", AppContextUtil.getTranxId(),
+				AppContextUtil.getTraceId());
+
+		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.DELETE_GROUP)
+				.queryParam("applicationCountryId", applicationCountryId).queryParam("groupId", groupId)
+				.queryParam("groupType", groupType).queryParam("groupName", groupName).post()
+				.as(new ParameterizedTypeReference<AmxApiResponse<Long, Object>>() {
+				});
+	}
+
+	@Override
+	public AmxApiResponse<ExchangeRateEnquiryRespDto, Object> enquireExchangeRates(
+			ExchRateEnquiryReqDto rateEnquiryReqDto) {
+		LOGGER.info("Received Client Request for Enquire Exchange Rates, transaction Id: {}, with TraceId: {}",
+				AppContextUtil.getTranxId(), AppContextUtil.getTraceId());
+
+		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.ENQUIRE_EXCH_RATE).post(rateEnquiryReqDto)
+				.as(new ParameterizedTypeReference<AmxApiResponse<ExchangeRateEnquiryRespDto, Object>>() {
+				});
+	}
+
+	@Override
+	public AmxApiResponse<Long, Object> rateUpoadRuleMaker(RateUploadRequestDto rateUploadRequestDto) {
+		LOGGER.info("Received Probot API Service Request for Rate Upload Rule Maker Client");
+
+		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.RATE_UPLOAD_RULE_MAKER)
+				.post(rateUploadRequestDto).as(new ParameterizedTypeReference<AmxApiResponse<Long, Object>>() {
+				});
+	}
+
+	@Override
+	public AmxApiResponse<Long, Object> rateUpoadRuleChecker(RateUploadRequestDto rateUploadRequestDto) {
+		LOGGER.info("Received Probot API Service Request for Rate Upload Rule Checker Client");
+
+		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.RATE_UPLOAD_RULE_CHECKER)
+				.post(rateUploadRequestDto).as(new ParameterizedTypeReference<AmxApiResponse<Long, Object>>() {
+				});
+	}
+
+	@Override
+	public AmxApiResponse<List<RateUploadRuleDto>, Object> getRateUploadRulesByStatus(RATE_UPLOAD_STATUS status,
+			Boolean onlyActive) {
+		LOGGER.info("Received Probot API Service Request for Get Rate Upload Rule By Status Client");
+		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.GET_RATE_UPLOAD_RULES)
+				.queryParam("status", status).queryParam("onlyActive", onlyActive).post()
+				.as(new ParameterizedTypeReference<AmxApiResponse<List<RateUploadRuleDto>, Object>>() {
+				});
+	}
+
+	@Override
+	public AmxApiResponse<RoutingCountryBankInfo, Object> getRoutingCountryBanksForCurrency(BigDecimal currencyId) {
+
+		LOGGER.info("Received Probot API Service Request for Get Routing Country Banks for Currency Client");
+
+		return restService.ajax(appConfig.getPricerURL()).path(ApiEndPoints.GET_ROUTE_COUNTRY_BANKS)
+				.queryParam("currencyId", currencyId).post()
+				.as(new ParameterizedTypeReference<AmxApiResponse<RoutingCountryBankInfo, Object>>() {
 				});
 	}
 

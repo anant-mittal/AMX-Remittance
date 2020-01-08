@@ -7,8 +7,15 @@ import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_BANK_I
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_COUNTRY_ID;
 
 import java.math.BigDecimal;
+
+
+import java.math.RoundingMode;
+
+import java.text.DecimalFormat;
+
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -57,6 +64,7 @@ import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.IRemittanceApplicationParams;
 import com.amx.jax.model.request.remittance.RoutingPricingRequest;
 import com.amx.jax.model.response.BankMasterDTO;
+import com.amx.jax.model.response.jaxfield.JaxConditionalFieldDto;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchExchangeRateBreakup;
 import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;
@@ -82,7 +90,18 @@ import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.RoundUtil;
 import com.amx.jax.validation.RemittanceTransactionRequestValidator;
-import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
+
+import net.bytebuddy.utility.privilege.GetSystemPropertyAction;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.stereotype.Component;
+import org.springframework.web.context.WebApplicationContext;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
@@ -340,6 +359,7 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 			result.setBetterRateAmountSlab(sellRateDetail.getBetterRateAmountSlab());
 			
 			result.setRackExchangeRate(sellRateDetail.getRackExchangeRate());
+			result.setCostExchangeRate(sellRateDetail.getCostExchangeRate());
 			
 			BigDecimal commission =null;
 			if(prType.equals(PRICE_TYPE.NO_BENE_DEDUCT)) {
@@ -368,7 +388,8 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 			result.setTxnFee(commission);
 			result.setDiscountOnComission(corpDiscount);
 			
-			if(trnxRoutingDetails != null && trnxRoutingDetails.getBankIndicator() != null && !trnxRoutingDetails.getBankIndicator().equalsIgnoreCase(ConstantDocument.BANK_INDICATOR_SERVICE_PROVIDER_BANK)) {
+			//if(trnxRoutingDetails != null && trnxRoutingDetails.getBankIndicator() != null && !trnxRoutingDetails.getBankIndicator().equalsIgnoreCase(ConstantDocument.BANK_INDICATOR_SERVICE_PROVIDER_BANK)) {
+			if(trnxRoutingDetails != null && trnxRoutingDetails.getIsFcRoundingAllowed() !=null && trnxRoutingDetails.getIsFcRoundingAllowed().equalsIgnoreCase(ConstantDocument.Yes)) { 
 				if (routingPricingRequest.getForeignAmount() != null) {
 					result.setExRateBreakup(exchangeRateService.createBreakUpFromForeignCurrency(sellRateDetail.getSellRateNet().getInverseRate(), routingPricingRequest.getForeignAmount()));
 				} else {
@@ -396,13 +417,13 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 			}else {
 				remittanceTransactionManager.applyCurrencyRoudingLogicSP(result.getExRateBreakup());
 			}
-			
+
+			result.setYouSavedAmount(getYouSavedAmount(result));
+			result.setYouSavedAmountInFC(getYouSavedAmountInFc(result));
+
 			/** Imps split message for multiple trnx  **/
 			String msg = impsSplittingMessage(result);
 			result.setErrorMessage(msg);
-		
-			result.setYouSavedAmount(getYouSavedAmount(result));
-			result.setYouSavedAmountInFC(getYouSavedAmountInFc(result));
 		}
 		return result;
 	}
@@ -525,6 +546,8 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 		
 		return serviceProviderDto ; 
 	}
+
+
 	
 	
 	
@@ -616,10 +639,11 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 	 * @param result
 	 * @return :saved Amount
 	 */
-	private BigDecimal getYouSavedAmount(DynamicRoutingPricingDto result ) {
+	public BigDecimal getYouSavedAmount(DynamicRoutingPricingDto result ) {
 		BigDecimal savedAmount = BigDecimal.ZERO;
 		if(JaxUtil.isNullZeroBigDecimalCheck(result.getRackExchangeRate()) && result!=null && result.getDiscountAvailed() && result.getRackExchangeRate().compareTo(BigDecimal.ZERO)>0 && result.getExRateBreakup().getConvertedFCAmount().compareTo(BigDecimal.ZERO)>0) {
 			savedAmount =result.getRackExchangeRate().multiply(result.getExRateBreakup().getConvertedFCAmount()).subtract(result.getExRateBreakup().getConvertedLCAmount());
+		
 		
 		if(savedAmount.compareTo(BigDecimal.ZERO)>0) {
 			savedAmount = RoundUtil.roundBigDecimal(savedAmount,result.getExRateBreakup().getLcDecimalNumber().intValue());
@@ -630,7 +654,7 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 	
 
 
-	private BigDecimal getYouSavedAmountInFc(DynamicRoutingPricingDto result) {
+	public BigDecimal getYouSavedAmountInFc(DynamicRoutingPricingDto result) {
 		BigDecimal savedAmountFC = BigDecimal.ZERO;
 		
 		if(JaxUtil.isNullZeroBigDecimalCheck(result.getRackExchangeRate()) && result.getRackExchangeRate().compareTo(BigDecimal.ZERO)>0 && result.getExRateBreakup().getConvertedLCAmount().compareTo(BigDecimal.ZERO)>0) {
@@ -647,5 +671,6 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 		
 		return savedAmountFC;
 	}
+
 }
 

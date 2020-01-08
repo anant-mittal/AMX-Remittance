@@ -34,6 +34,10 @@ public class AdditionalDataDisplayView implements Serializable{
 	private String fieldBehaviour;
 	private String validationsReq;
 	private String isActive;
+	private BigDecimal routingBankId;
+	private String isBeneTag;
+	private String preFlexIndicator;
+	private String fieldFormat;
 	
 	@Id
 	@Column(name = "SERVICE_ID")
@@ -170,6 +174,38 @@ public class AdditionalDataDisplayView implements Serializable{
 	}
 	public void setIsActive(String isActive) {
 		this.isActive = isActive;
+	}
+	
+	@Column(name = "ROUTING_BANK_ID")
+	public BigDecimal getRoutingBankId() {
+		return routingBankId;
+	}
+	public void setRoutingBankId(BigDecimal routingBankId) {
+		this.routingBankId = routingBankId;
+	}
+	
+	@Column(name = "IS_BENE_TAG")
+	public String getIsBeneTag() {
+		return isBeneTag;
+	}
+	public void setIsBeneTag(String isBeneTag) {
+		this.isBeneTag = isBeneTag;
+	}
+	
+	@Column(name="PREFLEX_IND")
+	public String getPreFlexIndicator() {
+		return preFlexIndicator;
+	}
+	public void setPreFlexIndicator(String preFlexIndicator) {
+		this.preFlexIndicator = preFlexIndicator;
+	}
+	
+	@Column(name="FIELD_FORMAT")
+	public String getFieldFormat() {
+		return fieldFormat;
+	}
+	public void setFieldFormat(String fieldFormat) {
+		this.fieldFormat = fieldFormat;
 	}
 	
 }

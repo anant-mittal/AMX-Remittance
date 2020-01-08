@@ -2,6 +2,7 @@ package com.amx.jax.logger.events;
 
 import java.math.BigDecimal;
 
+import com.amx.jax.dict.ContactType;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -71,6 +72,11 @@ public class CActivityEvent extends AmxAuditEvent<CActivityEvent> {
 		super(type);
 	}
 
+	private Step step;
+	private RemitInfo trxn = null;
+	private CustInfo cust = null;
+	private ContactType contactType;
+
 	@Override
 	public String getDescription() {
 		return this.type + (ArgUtil.isEmpty(this.step) ? Constants.BLANK : ("_" + step)) + ":" + this.result;
@@ -82,6 +88,38 @@ public class CActivityEvent extends AmxAuditEvent<CActivityEvent> {
 					: String.format("%s;%s", oldStr, newStr);
 		}
 		return oldStr;
+	}
+
+	public RemitInfo getTrxn() {
+		return trxn;
+	}
+
+	public void setTrxn(RemitInfo trxn) {
+		this.trxn = trxn;
+	}
+
+	public CustInfo getCust() {
+		return cust;
+	}
+
+	public void setCust(CustInfo cust) {
+		this.cust = cust;
+	}
+
+	public Step getStep() {
+		return step;
+	}
+
+	public void setStep(Step step) {
+		this.step = step;
+	}
+
+	public ContactType getContactType() {
+		return contactType;
+	}
+
+	public void setContactType(ContactType contactType) {
+		this.contactType = contactType;
 	}
 
 }

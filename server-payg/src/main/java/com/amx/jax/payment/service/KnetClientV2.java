@@ -32,7 +32,7 @@ import kwt.com.fss.plugin.iPayPipe;
 @PayGSpecific(PayGServiceCode.KNET2)
 public class KnetClientV2 implements PayGClient, InitializingBean {
 
-	private static Logger LOGGER = Logger.getLogger(KnetClient.class);
+	private static Logger LOGGER = Logger.getLogger(KnetClientV2.class);
 
 	@Value("${knetv2.certificate.path}")
 	String knetCertpath;
@@ -183,6 +183,8 @@ public class KnetClientV2 implements PayGClient, InitializingBean {
 		pipe.setAlias(knetAliasName);
 
 		String errorText = request.getParameter("ErrorText");
+		LOGGER.info("errorText-->" +errorText);
+		
 		int result = pipe.parseEncryptedRequest(request.getParameter("trandata"));
 
 		if (result != 0) {
