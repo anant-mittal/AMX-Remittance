@@ -96,8 +96,8 @@ public class HomesendGate
 			if (owsLoginCredentialsObject.getTruststore_path() != null)
 			{
 
-				System.setProperty("javax.net.ssl.trustStore", owsLoginCredentialsObject.getTruststore_path());
-				System.setProperty("javax.net.ssl.trustStorePassword", owsLoginCredentialsObject.getTrusttore_pwd()); // changeit
+				//System.setProperty("javax.net.ssl.trustStore", owsLoginCredentialsObject.getTruststore_path());
+				//System.setProperty("javax.net.ssl.trustStorePassword", owsLoginCredentialsObject.getTrusttore_pwd()); // changeit
 			}
 
 			if (owsLoginCredentialsObject.getKeystore_path() != null)
