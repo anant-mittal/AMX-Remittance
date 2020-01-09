@@ -365,7 +365,8 @@ public class RemittancePaymentManager extends AbstractService{
 			if(!StringUtils.isBlank(paymentResponse.getPaymentId()) && !StringUtils.isBlank(paymentResponse.getResultCode()) 
 					&& (paymentResponse.getResultCode().equalsIgnoreCase(ConstantDocument.CAPTURED)|| paymentResponse.getResultCode().equalsIgnoreCase(ConstantDocument.APPROVED))) 
 			{
-
+				
+				logger.info("MRU --->paymentResponse:"+paymentResponse.getUdf3());
 				lstPayIdDetails = applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(paymentResponse.getUdf3(),new Customer(paymentResponse.getCustomerId()));
 				if(lstPayIdDetails==null && lstPayIdDetails.isEmpty()) {
 					throw new GlobalException(JaxError.PG_ERROR,"No record found ");
