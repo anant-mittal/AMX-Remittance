@@ -689,7 +689,7 @@ public class BranchRemittanceSaveManager {
 					collectDetails.setVoucherYear(collect.getDocumentFinanceYear());
 					
 					BigDecimal documentNo = generateDocumentNumber(collect.getApplicationCountryId(),
-							collect.getFsCompanyMaster().getCompanyId(),ConstantDocument.VOUCHER_DOCUMENT_CODE,collect.getDocumentFinanceYear(),collect.getLocCode(),ConstantDocument.Update);
+							collect.getFsCompanyMaster().getCompanyId(),ConstantDocument.VOUCHER_DOCUMENT_CODE,collect.getDocumentFinanceYear(),new BigDecimal("1"),ConstantDocument.Update);
 					
 					if(documentNo!=null && documentNo.compareTo(BigDecimal.ZERO)!=0){
 						collectDetails.setVoucherNo(documentNo);
