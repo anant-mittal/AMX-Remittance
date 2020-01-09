@@ -659,6 +659,8 @@ public class RemittancePaymentManager extends AbstractService{
 		BigDecimal paidAmount = new BigDecimal(paymentResponse.getAmount());
 		paidAmount = RoundUtil.roundBigDecimal(paidAmount, localCurrencyDecimalNumber.intValue());
 		
+		logger.info("validateAmountMismatchV2 knet paidAmount :"+paidAmount+"\t totalPayableAmount :"+totalPayableAmount);
+		
 		if (!paidAmount.equals(totalPayableAmount)) {
 			String errorMessage = String.format("paidAmount: %s and payableAmount: %s mismatch for remittanceApplicationId: %s", paidAmount,totalPayableAmount, applicationIds);
 			logger.info(errorMessage);
