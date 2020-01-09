@@ -5,15 +5,6 @@ import java.math.BigDecimal;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
@@ -65,9 +56,18 @@ import com.amx.jax.utils.PostManUtil;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.http.MediaType;
 
 @RestController
 @Api(value = "Remit  APIs")
@@ -154,6 +154,10 @@ public class RemitBranchController {
 		return branchRemittanceClient.saveBranchRemittanceApplication(requestModel);
 	}
 
+	// reference1: https://stackoverflow.com/questions/32132214/why-doesnt-this-stream-lambda-expression-work-with-spel-declaration
+	// reference2: https://docs.spring.io/spring/docs/4.3.12.RELEASE/spring-framework-reference/html/expressions.html#expressions-collection-selection
+	// if RATE_PROVIDER is doing remittance, he cannot use cash collection mode.
+	@PreAuthorize("hasPermission('CUSTOMER_MGMT.PLACE_ORDER.RATE_PROVIDER', 'VIEW') ? #requestModel.getCollctionModeDto().?[#this.getCurrencyDenominationList().size() != 0].size() == 0 : true")
 	@RequestMapping(value = "/api/remitt/cart/submit", method = { RequestMethod.POST })
 	public AmxApiResponse<RemittanceResponseDto, Object> saveRemittanceTransaction(
 			@RequestBody BranchRemittanceRequestModel requestModel) {
