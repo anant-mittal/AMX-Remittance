@@ -38,7 +38,6 @@ public class BDashboardAnalyticsController {
 		Map<String, Map<String, String>> permissionMap = ssoUser.getUserDetails().getUserRole().getPermissionMap();
 		SnapQueryParams snapQueryParams = new SnapQueryParams();
 
-
 		for (String outerMapKey : permissionMap.keySet()) {
 			if (outerMapKey == "REPORTS.RPT_REPORT") {
 				Map<String, String> innerMap = permissionMap.get(outerMapKey);
@@ -69,8 +68,9 @@ public class BDashboardAnalyticsController {
 		snapQueryParams.addValue("level", "100");
 		snapQueryParams.addValue("minCount", "0");
 
-		return snapServiceClient.snapView(SnapQueryTemplate.RPTPG2, new SnapQueryParams(params));
-
+		// TODO needs to changed
+		//return snapServiceClient.snapView(SnapQueryTemplate.RPTPG2, snapQueryParams);
+		return snapServiceClient.snapView(SnapQueryTemplate.RPT_DUMMY, snapQueryParams);
 	}
 
 }
