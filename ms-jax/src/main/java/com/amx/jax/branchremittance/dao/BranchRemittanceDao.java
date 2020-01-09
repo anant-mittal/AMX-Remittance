@@ -429,7 +429,7 @@ public class BranchRemittanceDao {
 			
 			RemittanceApplication remittanceApplication = remittanceApplicationDao.getApplication(shoppingCartList.get(i).getApplicationId());
 			if(!ArgUtil.isEmpty(remittanceApplication) && ConstantDocument.PB_PAYMENT.equalsIgnoreCase(remittanceApplication.getPaymentType())&& ConstantDocument.PB_STATUS_NEW.equalsIgnoreCase(remittanceApplication.getWtStatus())) {
-				String sql = "UPDATE EX_APPL_TRNX set PAYMENT_TYPE='PAID' where REMITTANCE_APPLICATION_ID =" + remittanceApplication.getRemittanceApplicationId();
+				String sql = "UPDATE EX_APPL_TRNX set WT_STATUS='PAID' where REMITTANCE_APPLICATION_ID =" + remittanceApplication.getRemittanceApplicationId();
 				System.out.println("sql :" + sql);
 				jdbcTemplate.update(sql);
 				
