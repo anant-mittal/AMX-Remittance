@@ -302,11 +302,11 @@ public AmxApiResponse<RatePlaceOrderResponseModel, Object> createPlaceOrder(Plac
 
 
 	
-	public AmxApiResponse<ParameterDetailsResponseDto, Object> getGiftService(BigDecimal beneRelaId) {
-		/*ParameterDetailsResponseDto parameterDetailsResponseDto = branchRemitManager.getGiftService(beneRelaId);
-		parameterDetailsResponseDto.getParameterDetailsDto().addAll(additionalBankDetailManager.fetchServiceProviderFcAmount(beneRelaId));*/
-		return AmxApiResponse.build(new ParameterDetailsResponseDto());
+	public  AmxApiResponse<ParameterDetailsResponseDto, Object> getGiftService(BigDecimal beneRelaId) {
+		ParameterDetailsResponseDto parameterDetailsResponseDto =branchRemitManager.getGiftService(beneRelaId);
+		return AmxApiResponse.build(parameterDetailsResponseDto);
 	}
+
 
 	public AmxApiResponse<BenePackageResponse, Object> getBenePackages(BenePackageRequest benePackageRequest) {
 		Map<String, Object> validationResults = preFlexFieldManager.validateBenePackageRequest(benePackageRequest);
