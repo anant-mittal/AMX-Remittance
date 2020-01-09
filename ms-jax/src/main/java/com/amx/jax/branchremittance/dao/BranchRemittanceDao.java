@@ -399,6 +399,7 @@ public class BranchRemittanceDao {
 		}
 	}
 
+	@Transactional
 	public void updateApplicationToMoveEmos(RemittanceResponseDto responseDto) {
 		List<RemittanceTransaction> remitTrnxList = remitTrnxRepository.findByCollectionDocIdAndCollectionDocFinanceYearAndCollectionDocumentNo(
 				responseDto.getCollectionDocumentCode(), responseDto.getCollectionDocumentFYear(), responseDto.getCollectionDocumentNo());
