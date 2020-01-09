@@ -366,7 +366,7 @@ public class RemittancePaymentManager extends AbstractService{
 					&& (paymentResponse.getResultCode().equalsIgnoreCase(ConstantDocument.CAPTURED)|| paymentResponse.getResultCode().equalsIgnoreCase(ConstantDocument.APPROVED))) 
 			{
 				
-				logger.info("MRU --->paymentResponse:"+paymentResponse.getUdf3());
+				logger.info("MRU --->paymentResponse:"+paymentResponse.getUdf3()+"\t paymentResponse.getCustomerId():"+paymentResponse.getCustomerId());
 				lstPayIdDetails = applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(paymentResponse.getUdf3(),new Customer(paymentResponse.getCustomerId()));
 				if(lstPayIdDetails==null && lstPayIdDetails.isEmpty()) {
 					throw new GlobalException(JaxError.PG_ERROR,"No record found ");
@@ -795,9 +795,9 @@ public class RemittancePaymentManager extends AbstractService{
 		request.setRemittanceApplicationId(remittanceApplicationIds);
 		request.setCollctionModeDto(collctionModeDto);
 		request.setCurrencyRefundDenomination(null);
-		request.setTotalTrnxAmount(totalAmount);
+		request.setTotalTrnxAmount(totalAmount); // new BigDecimal(payResDto.getAmount())
 		request.setTotalLoyaltyAmount(loyaltyAmount);
-		request.setPaidAmount(totalAmount);
+		request.setPaidAmount(new BigDecimal(payResDto.getAmount()));//totalAmount);
 		
 		
 		return request;
