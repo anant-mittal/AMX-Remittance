@@ -1437,7 +1437,7 @@ public class UserService extends AbstractUserService {
 				// ---- check for blacklisted customer ----
 				userValidationService.validateBlackListedCustomerForLogin(customer);
 			}else {
-				throw new GlobalException(JaxError.CUSTOMER_NOT_REGISTERED_BRANCH, "Customer not registered in branch ");
+				throw new GlobalException(JaxError.CUSTOMER_NOT_ACTIVE_BRANCH, "Customer not active in branch, go to branch ");
 			}
 			
 		}
