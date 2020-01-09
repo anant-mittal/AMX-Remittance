@@ -33,12 +33,12 @@
                     "ranges":[ 
                       { 
                         "key":"[[${PrevMonth}]]",
-                        "from":"now-12M/M",
-                        "to":"now-6M/M-1s"
+                        "from":"now-2M/M",
+                        "to":"now-1M/M-1s"
                       },
                       { 
                         "key":"[[${ThisMonth}]]",
-                        "from":"now-6M/M",
+                        "from":"now-1M/M",
                         "to":"now/M-1s"
                       }
                     ],
