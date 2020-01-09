@@ -72,6 +72,7 @@ import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.repository.remittance.ILoyaltyPointRepository;
 import com.amx.jax.services.RemittanceTransactionService;
 import com.amx.jax.util.JaxUtil;
+import com.amx.utils.ArgUtil;
 
 @Component
  @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode =
@@ -152,7 +153,7 @@ public class BranchRemittanceDao {
 	
 	@Autowired
 	RemittanceTransactionService remittanceTransactionService;
-
+	
 	@Transactional
 	@SuppressWarnings("unchecked")
 	public void saveAllApplications(HashMap<String, Object> mapAllDetailApplSave) {
@@ -421,6 +422,20 @@ public class BranchRemittanceDao {
 		}
 	}
 	
+	@Transactional
+	public void updatePaymentModeApplication(List<BranchApplicationDto> shoppingCartList) {
+		int i;
+		for(i=0;i<shoppingCartList.size();i++) {
+			
+			RemittanceApplication remittanceApplication = remittanceApplicationDao.getApplication(shoppingCartList.get(i).getApplicationId());
+			if(!ArgUtil.isEmpty(remittanceApplication) && ConstantDocument.PB_PAYMENT.equalsIgnoreCase(remittanceApplication.getPaymentType())&& ConstantDocument.PB_STATUS_NEW.equalsIgnoreCase(remittanceApplication.getWtStatus())) {
+				String sql = "UPDATE EX_APPL_TRNX set PAYMENT_TYPE='PAID' where REMITTANCE_APPLICATION_ID =" + remittanceApplication.getRemittanceApplicationId();
+				System.out.println("sql :" + sql);
+				jdbcTemplate.update(sql);
+				
+			}
+		}
+	}
 
 
 	

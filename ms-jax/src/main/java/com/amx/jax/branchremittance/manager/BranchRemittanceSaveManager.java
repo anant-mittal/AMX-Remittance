@@ -383,16 +383,8 @@ public class BranchRemittanceSaveManager {
 			logger.info("MRU saveRemittanceTrnx catch block -->"+e.getMessage());
 		}
 		
-		int i;
-		for(i=0;i<shoppingCartList.size();i++) {
-			
-			RemittanceApplication remittanceApplication = remittanceApplicationDao.getApplication(shoppingCartList.get(i).getApplicationId());
-			if(remittanceApplication!=null && ConstantDocument.PB_PAYMENT.equalsIgnoreCase(remittanceApplication.getPaymentType())&& ConstantDocument.PB_STATUS_NEW.equalsIgnoreCase(remittanceApplication.getWtStatus())) {
-				remittanceApplication.setWtStatus(ConstantDocument.WT_STATUS_PAID);
-				remittanceApplicationRepository.save(remittanceApplication);
-				
-			}
-		}
+		brRemittanceDao.updatePaymentModeApplication(shoppingCartList);
+		
 		return responseDto;
 	}
 	
