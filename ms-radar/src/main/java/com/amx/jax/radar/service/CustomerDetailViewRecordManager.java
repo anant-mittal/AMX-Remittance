@@ -1,5 +1,6 @@
 package com.amx.jax.radar.service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
@@ -16,6 +17,7 @@ import com.amx.jax.grid.GridService;
 import com.amx.jax.grid.GridService.GridViewBuilder;
 import com.amx.jax.grid.GridView;
 import com.amx.jax.grid.SortOrder;
+import com.amx.jax.grid.repository.CustomerDetailViewRecordRepository;
 import com.amx.jax.grid.views.CustomerDetailViewRecord;
 
 /**
@@ -28,6 +30,37 @@ public class CustomerDetailViewRecordManager {
 
 	@Autowired
 	public GridService gridService;
+
+	@Autowired
+	CustomerDetailViewRecordRepository customerDetailViewRecordRepository;
+
+	public CustomerDetailViewRecord getByCustomerId(BigDecimal id) {
+		return customerDetailViewRecordRepository.findOne(id);
+	}
+
+	public CustomerDetailViewRecord queryByCustomerId(String custId) {
+		GridQuery gridQuery = new GridQuery();
+		gridQuery.setPaginated(false);
+		gridQuery.setColumns(new ArrayList<GridColumn>());
+
+		// Conditions/Filters
+		GridColumn column = new GridColumn();
+		column.setKey("id");
+		column.setOperator(FilterOperater.EQ);
+		column.setDataType(FilterDataType.NUMBER);
+		column.setValue(custId);
+		column.setSortDir(SortOrder.ASC);
+		gridQuery.getColumns().add(column);
+
+		// Sorting
+		gridQuery.setSortBy(0);
+		gridQuery.setSortOrder(SortOrder.ASC);
+
+		GridViewBuilder<CustomerDetailViewRecord> y = gridService
+				.view(GridView.VW_CUSTOMER_KIBANA, gridQuery);
+		AmxApiResponse<CustomerDetailViewRecord, GridMeta> x = y.get();
+		return x.getResult();
+	}
 
 	public CustomerDetailViewRecord getByIndentity(String indentity) {
 		GridQuery gridQuery = new GridQuery();

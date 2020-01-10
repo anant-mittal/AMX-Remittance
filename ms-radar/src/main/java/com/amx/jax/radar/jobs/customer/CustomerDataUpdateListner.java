@@ -1,5 +1,6 @@
 package com.amx.jax.radar.jobs.customer;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -22,6 +23,7 @@ import com.amx.jax.grid.SortOrder;
 import com.amx.jax.grid.views.CustomerDetailViewRecord;
 import com.amx.jax.radar.ESRepository;
 import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncIndex;
+import com.amx.jax.radar.service.CustomerDetailViewRecordManager;
 import com.amx.jax.radar.snap.SnapQueryService.BulkRequestSnapBuilder;
 import com.amx.jax.tunnel.DBEvent;
 import com.amx.jax.tunnel.ITunnelSubscriber;
@@ -49,42 +51,21 @@ public class CustomerDataUpdateListner implements ITunnelSubscriber<DBEvent> {
 	@Autowired
 	public OracleVarsCache oracleVarsCache;
 
+	@Autowired
+	CustomerDetailViewRecordManager customerDetailViewRecordManager;
+
 	@Override
 	public void onMessage(String channel, DBEvent event) {
-		LOGGER.info("======onMessage1==={} ====  {}", channel, JsonUtil.toJson(event));
-		String custId = ArgUtil.parseAsString(event.getData().get(CUST_ID));
-
-		// Query
-		GridQuery gridQuery = new GridQuery();
-		gridQuery.setPaginated(false);
-		gridQuery.setColumns(new ArrayList<GridColumn>());
-
-		// Conditions/Filters
-		GridColumn column = new GridColumn();
-		column.setKey("id");
-		column.setOperator(FilterOperater.EQ);
-		column.setDataType(FilterDataType.NUMBER);
-		column.setValue(custId);
-		column.setSortDir(SortOrder.ASC);
-		gridQuery.getColumns().add(column);
-
-		// Sorting
-		gridQuery.setSortBy(0);
-		gridQuery.setSortOrder(SortOrder.ASC);
-
-		GridViewBuilder<CustomerDetailViewRecord> y = gridService
-				.view(GridView.VW_CUSTOMER_KIBANA, gridQuery);
-		AmxApiResponse<CustomerDetailViewRecord, GridMeta> x = y.get();
-
+		LOGGER.debug("======onMessage1==={} ====  {}", channel, JsonUtil.toJson(event));
+		BigDecimal custId = ArgUtil.parseAsBigDecimal(event.getData().get(CUST_ID));
 		BulkRequestSnapBuilder builder = new BulkRequestSnapBuilder();
-		for (CustomerDetailViewRecord record : x.getResults()) {
-			try {
-				OracleViewDocument document = new OracleViewDocument(record);
-				document.setTimestamp(new Date(System.currentTimeMillis()));
-				builder.update(DBSyncIndex.CUSTOMER_JOB.getIndexName(), document);
-			} catch (Exception e) {
-				LOGGER.error("CustomerViewTask Excep", e);
-			}
+		try {
+			CustomerDetailViewRecord record = customerDetailViewRecordManager.getByCustomerId(custId);
+			OracleViewDocument document = new OracleViewDocument(record);
+			document.setTimestamp(new Date(System.currentTimeMillis()));
+			builder.update(DBSyncIndex.CUSTOMER_JOB.getIndexName(), document);
+		} catch (Exception e) {
+			LOGGER.error("CustomerViewTask Excep", e);
 		}
 		esRepository.bulk(builder.build());
 
