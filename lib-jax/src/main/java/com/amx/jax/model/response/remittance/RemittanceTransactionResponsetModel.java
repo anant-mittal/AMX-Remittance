@@ -44,6 +44,7 @@ public class RemittanceTransactionResponsetModel extends AbstractModel {
 	private BigDecimal youSavedAmountInFC;
 	private BigDecimal placeOrderId;
 	private BigDecimal costExchangeRate;
+	private BigDecimal corporateMasterId;
 	
 	
 	/*
@@ -248,6 +249,12 @@ public class RemittanceTransactionResponsetModel extends AbstractModel {
 		this.costExchangeRate = costExchangeRate;
 	}
 
-	
+	public BigDecimal getCorporateMasterId() {
+		return corporateMasterId;
+	}
+
+	public void setCorporateMasterId(BigDecimal corporateMasterId) {
+		this.corporateMasterId = corporateMasterId;
+	}
 
 }

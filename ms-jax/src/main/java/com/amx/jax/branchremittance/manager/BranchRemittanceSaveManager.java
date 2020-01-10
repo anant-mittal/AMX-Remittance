@@ -278,6 +278,10 @@ public class BranchRemittanceSaveManager {
 	Map<BigDecimal,RemitTrnxSrvProv> mapRemitTrnxSrvProv = new HashMap<>();
 	Map<BigDecimal,List<RemittanceTransactionSplitting>> remitSplitMap = new HashMap<>();
 	
+	
+	
+	
+
 	/**
 	 * 
 	 * @param remittanceRequestModel
@@ -385,7 +389,6 @@ public class BranchRemittanceSaveManager {
 			mapAllDetailRemitSave.put("EX_REMIT_SPLIT", remitSplitMap);
 			validateSaveTrnxDetails(mapAllDetailRemitSave);
 			responseDto = brRemittanceDao.saveRemittanceTransaction(mapAllDetailRemitSave);
-			
 			auditService.log(new CActivityEvent(Type.TRANSACTION_CREATED,String.format("%s/%s", responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo())).field("STATUS").to(JaxTransactionStatus.PAYMENT_SUCCESS_APPLICATION_SUCCESS).result(Result.DONE));
 	}catch (GlobalException e) {
 			logger.error("routing  procedure", e.getErrorMessage() + "" + e.getErrorKey());
@@ -934,6 +937,7 @@ public class BranchRemittanceSaveManager {
 						remitTrnx.setTimeToDeliver(date);
 					}
 					
+					remitTrnx.setCorporateMasterId(appl.getCorporateMasterId());
 					remitTrnx.setApprovalNo(appl.getApprovalNumber());
 					remitTrnx.setApprovalYear(appl.getApprovalYear());
 					
@@ -1282,7 +1286,7 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
  public TransferDto getTrasnferModeByBankServiceRule(RemittanceTransaction remitTrnx){
 	 Map<String,Object> mapBankServiceRule= routingProDao.checkBankServiceRule(remitTrnx);
 	 // commented below line as it was causing stackoverflow issue in logs
-	// logger.debug("getTrasnferModeByBankServiceRule request json : {}", JsonUtil.toJson(remitTrnx));
+	 // logger.debug("getTrasnferModeByBankServiceRule request json : {}", JsonUtil.toJson(remitTrnx));
 	 TransferDto dto = new TransferDto();
 	 String transferMode=null;
 	 String fileCreation=ConstantDocument.No;
@@ -1381,8 +1385,6 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
 		try {
 			TransactionHistroyDTO trxnDto = new TransactionHistroyDTO();
 			Customer customer = customerDao.getCustById(metaData.getCustomerId());
-			
-			
 			paymentResponse.setCollectionDocumentCode(collectionDocCode);
 			paymentResponse.setCollectionDocumentNumber(collectionDocNo);
 			paymentResponse.setCollectionFinanceYear(collectionDocYear);
@@ -1395,7 +1397,6 @@ public BigDecimal generateDocumentNumber(BigDecimal appCountryId,BigDecimal comp
 			trxnDto.setLanguageId(metaData.getLanguageId());
 			trxnDto.setApplicationCountryId(metaData.getCountryId());
 			trxnDto.setCustomerReference(customer.getCustomerReference());
-			
 			reportManagerService.generatePersonalRemittanceReceiptReportDetails(trxnDto, Boolean.TRUE);
 			List<RemittanceReceiptSubreport> rrsrl = reportManagerService.getRemittanceReceiptSubreportList();
 			PersonInfo personinfo = new PersonInfo();

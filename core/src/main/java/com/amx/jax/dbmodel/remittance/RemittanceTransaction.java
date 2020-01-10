@@ -176,7 +176,8 @@ public class RemittanceTransaction implements Serializable {
 
 	private BigDecimal approvalYear;
 
-	
+	public BigDecimal corporateMasterId;
+		
 	
 	@Column(name="PAYMENT_TYPE")
 	public String getPaymentType() {
@@ -1295,6 +1296,15 @@ public class RemittanceTransaction implements Serializable {
 		this.approvalYear = approvalYear;
 	}
 	
+	@Column(name="CORP_DISCOUNT_ID")
+	public BigDecimal getCorporateMasterId() {
+		return corporateMasterId;
+	}
+
+	public void setCorporateMasterId(BigDecimal corporateMasterId) {
+		this.corporateMasterId = corporateMasterId;
+	}
+
 
 }
  

@@ -113,6 +113,7 @@ import com.amx.jax.model.response.ExchangeRateBreakup;
 import com.amx.jax.model.response.remittance.BeneAdditionalDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.BsbApiResponse;
+import com.amx.jax.model.response.remittance.CorporateDiscountDto;
 import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;
 import com.amx.jax.model.response.remittance.LoyalityPointState;
 import com.amx.jax.model.response.remittance.RemittanceApplicationResponseModel;
@@ -554,7 +555,10 @@ public class RemittanceTransactionManager {
 			commission = newCommission;
 		}
 		if (commission.longValue() > 0) {
-			commission = commission.subtract(corporateDiscountManager.corporateDiscount());
+			CorporateDiscountDto dto = corporateDiscountManager.corporateDiscount(commission);
+			if(dto!=null) {
+			commission = commission.subtract(dto.getCorpDiscount());
+			}
 			responseModel.setDiscountOnComissionFlag(ConstantDocument.Yes);
 			logger.info("commissioncorporate: " +commission);
 			
@@ -1054,7 +1058,8 @@ public class RemittanceTransactionManager {
 			responseModel.setCanRedeemLoyalityPoints(false);
 			responseModel.setLoyalityPointState(LoyalityPointState.CAN_NOT_AVAIL);
 		}else {
-			responseModel.setDiscountOnComission(corporateDiscountManager.corporateDiscount());
+			CorporateDiscountDto corpDiscount = corporateDiscountManager.corporateDiscount(comission);
+			responseModel.setDiscountOnComission(corpDiscount.getCorpDiscount());
 		}
 		if (remitAppManager.loyalityPointsAvailed(model, responseModel)) {
 			/** old logic **/
@@ -1868,6 +1873,7 @@ public class RemittanceTransactionManager {
 		validationResults.setDiscountOnComission(model.getDiscountOnComission());
 		validationResults.setCustomerDiscountDetails(model.getCustomerDiscountDetails());
 		validationResults.setCostRateLimitReached(model.getCostRateLimitReached());
+		validationResults.setCorporateMasterId(model.getCorporateMasterId());
 		
 	}
 	
