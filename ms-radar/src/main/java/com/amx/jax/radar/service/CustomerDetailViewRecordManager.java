@@ -22,7 +22,7 @@ import com.amx.jax.grid.views.CustomerDetailViewRecord;
  * The Class Customer Service.
  */
 @Component
-public class CustomerDetailViewRecordRepository {
+public class CustomerDetailViewRecordManager {
 
 	private Logger log = Logger.getLogger(getClass());
 
