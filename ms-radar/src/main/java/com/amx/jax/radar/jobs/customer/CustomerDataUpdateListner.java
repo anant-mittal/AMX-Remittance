@@ -47,10 +47,10 @@ public class CustomerDataUpdateListner implements ITunnelSubscriber<DBEvent> {
 	@Override
 	public void onMessage(String channel, DBEvent event) {
 		LOGGER.debug("======onMessage1==={} ====  {}", channel, JsonUtil.toJson(event));
-		BigDecimal custId = ArgUtil.parseAsBigDecimal(event.getData().get(CUST_ID));
+		String custId = ArgUtil.parseAsString(event.getData().get(CUST_ID));
 		BulkRequestSnapBuilder builder = new BulkRequestSnapBuilder();
 		try {
-			CustomerDetailViewRecord record = customerDetailViewRecordManager.getByCustomerId(custId);
+			CustomerDetailViewRecord record = customerDetailViewRecordManager.queryByCustomerId(custId);
 			OracleViewDocument document = new OracleViewDocument(record);
 			document.setTimestamp(new Date(System.currentTimeMillis()));
 			builder.update(DBSyncIndex.CUSTOMER_JOB.getIndexName(), document);
