@@ -1,6 +1,5 @@
 package com.amx.jax.radar.jobs.customer;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -23,7 +22,6 @@ import com.amx.jax.grid.SortOrder;
 import com.amx.jax.grid.views.CustomerDetailViewRecord;
 import com.amx.jax.radar.ESRepository;
 import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncIndex;
-import com.amx.jax.radar.service.CustomerDetailViewRecordManager;
 import com.amx.jax.radar.snap.SnapQueryService.BulkRequestSnapBuilder;
 import com.amx.jax.tunnel.DBEvent;
 import com.amx.jax.tunnel.ITunnelSubscriber;
