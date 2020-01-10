@@ -108,7 +108,9 @@ public class PostManController {
 	 * @param file the file
 	 * @return the file
 	 */
-	@RequestMapping(value = PostManUrls.PROCESS_TEMPLATE_FILE, method = RequestMethod.POST)
+	@RequestMapping(value = { PostManUrls.PROCESS_TEMPLATE_FILE,
+			PostManUrls.PROCESS_TEMPLATE_FILE_LOCAL
+	}, method = RequestMethod.POST)
 	public File processTemplateFile(@RequestBody File file) {
 		getLang(file);
 		return postManService.processTemplate(file).getResult();
