@@ -1,7 +1,6 @@
 package com.amx.jax.radar.jobs.customer;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Date;
 
 import org.slf4j.Logger;
@@ -9,17 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.amx.jax.AppConfig;
-import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.event.AmxTunnelEvents;
-import com.amx.jax.grid.GridColumn;
-import com.amx.jax.grid.GridConstants.FilterDataType;
-import com.amx.jax.grid.GridConstants.FilterOperater;
-import com.amx.jax.grid.GridMeta;
-import com.amx.jax.grid.GridQuery;
 import com.amx.jax.grid.GridService;
-import com.amx.jax.grid.GridService.GridViewBuilder;
-import com.amx.jax.grid.GridView;
-import com.amx.jax.grid.SortOrder;
 import com.amx.jax.grid.views.CustomerDetailViewRecord;
 import com.amx.jax.radar.ESRepository;
 import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncIndex;
