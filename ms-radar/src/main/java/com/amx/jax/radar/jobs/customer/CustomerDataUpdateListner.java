@@ -1,6 +1,6 @@
 package com.amx.jax.radar.jobs.customer;
 
-import java.util.ArrayList;
+import java.math.BigDecimal;
 import java.util.Date;
 
 import org.slf4j.Logger;
@@ -8,20 +8,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.amx.jax.AppConfig;
-import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.event.AmxTunnelEvents;
-import com.amx.jax.grid.GridColumn;
-import com.amx.jax.grid.GridConstants.FilterDataType;
-import com.amx.jax.grid.GridConstants.FilterOperater;
-import com.amx.jax.grid.GridMeta;
-import com.amx.jax.grid.GridQuery;
 import com.amx.jax.grid.GridService;
-import com.amx.jax.grid.GridService.GridViewBuilder;
-import com.amx.jax.grid.GridView;
-import com.amx.jax.grid.SortOrder;
 import com.amx.jax.grid.views.CustomerDetailViewRecord;
 import com.amx.jax.radar.ESRepository;
 import com.amx.jax.radar.jobs.customer.OracleVarsCache.DBSyncIndex;
+import com.amx.jax.radar.service.CustomerDetailViewRecordManager;
 import com.amx.jax.radar.snap.SnapQueryService.BulkRequestSnapBuilder;
 import com.amx.jax.tunnel.DBEvent;
 import com.amx.jax.tunnel.ITunnelSubscriber;
@@ -55,10 +47,10 @@ public class CustomerDataUpdateListner implements ITunnelSubscriber<DBEvent> {
 	@Override
 	public void onMessage(String channel, DBEvent event) {
 		LOGGER.debug("======onMessage1==={} ====  {}", channel, JsonUtil.toJson(event));
-		BigDecimal custId = ArgUtil.parseAsBigDecimal(event.getData().get(CUST_ID));
+		String custId = ArgUtil.parseAsString(event.getData().get(CUST_ID));
 		BulkRequestSnapBuilder builder = new BulkRequestSnapBuilder();
 		try {
-			CustomerDetailViewRecord record = customerDetailViewRecordManager.getByCustomerId(custId);
+			CustomerDetailViewRecord record = customerDetailViewRecordManager.queryByCustomerId(custId);
 			OracleViewDocument document = new OracleViewDocument(record);
 			document.setTimestamp(new Date(System.currentTimeMillis()));
 			builder.update(DBSyncIndex.CUSTOMER_JOB.getIndexName(), document);
