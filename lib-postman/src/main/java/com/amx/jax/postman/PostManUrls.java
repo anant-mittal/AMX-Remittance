@@ -5,6 +5,7 @@ public final class PostManUrls {
 	private PostManUrls() {
 	}
 
+	public static final String SEND_MESSAGE_BOX = "/postman/messagebox/send";
 	public static final String SEND_SMS = "/postman/sms/send";
 	public static final String SEND_EMAIL = "/postman/email/send";
 	public static final String SEND_EMAIL_BULK = "/postman/email/sendBulk";
