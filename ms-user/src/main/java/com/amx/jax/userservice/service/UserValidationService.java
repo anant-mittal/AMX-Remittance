@@ -816,6 +816,9 @@ public class UserValidationService {
 		if (customer == null) {
 			throw new GlobalException(JaxError.CUSTOMER_NOT_REGISTERED_BRANCH, "Customer not registered in branch ");
 		}
+		if(ConstantDocument.Deleted.equals(customer.getIsActive())) {
+			throw new GlobalException(JaxError.CUSTOMER_DELETED, "Customer civil id not active");
+		}
 		if (!ConstantDocument.Yes.equals(customer.getIsActive())) {
 			throw new GlobalException(JaxError.CUSTOMER_NOT_ACTIVE_BRANCH,
 					"Customer not active in branch, go to branch ");
