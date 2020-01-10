@@ -501,7 +501,7 @@ public class BranchRemittanceSaveManager {
 				collection.setFsCompanyMaster(appl.getFsCompanyMaster());
 				collection.setTotalAmountDeclarationIndicator(null); //ned to check
 				
-				 BigDecimal documentNo =generateDocumentNumber(appl.getFsCountryMasterByApplicationCountryId().getCountryId(),appl.getFsCompanyMaster().getCompanyId(),collection.getDocumentId(),collection.getDocumentFinanceYear(),collection.getLocCode(),ConstantDocument.A);
+				 BigDecimal documentNo =generateDocumentNumber(appl.getFsCountryMasterByApplicationCountryId().getCountryId(),appl.getFsCompanyMaster().getCompanyId(),collection.getDocumentId(),collection.getDocumentFinanceYear(),new BigDecimal("1"),ConstantDocument.A);
 					
 					if(documentNo!=null && documentNo.compareTo(BigDecimal.ZERO)!=0){
 				    	collection.setDocumentNo(documentNo);

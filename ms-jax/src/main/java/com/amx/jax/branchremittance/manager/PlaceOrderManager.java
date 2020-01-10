@@ -273,7 +273,7 @@ public class PlaceOrderManager implements Serializable{
 		
 		if(!StringUtils.isBlank(dynPricingDto.getDiscountOnComissionFlag()) 
 				&& dynPricingDto.getDiscountOnComissionFlag().equalsIgnoreCase(ConstantDocument.Yes)) {
-			placeOrderAppl.setDiscountOnCommission(corporateDiscountManager.corporateDiscount());
+			placeOrderAppl.setDiscountOnCommission(corporateDiscountManager.corporateDiscount(null).getCorpDiscount());
 		}
 		
 		placeOrderAppl.setTerminalId(metaData.getDeviceIp());
