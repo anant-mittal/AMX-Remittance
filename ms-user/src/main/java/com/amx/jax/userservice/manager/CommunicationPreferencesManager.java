@@ -51,7 +51,7 @@ public class CommunicationPreferencesManager {
 		if(ArgUtil.isEmpty(channelList)) {
 			boolean isSmsVerified = communicationPrefsResult.isSms();
 			if (!isSmsVerified) {
-				throw new GlobalException(JaxError.SMS_NOT_VERIFIED,"Mobile number is not verified");
+				throw new GlobalException(JaxError.SMS_NOT_VERIFIED,"Your registered mobile number is not verified. Please complete verification steps for successful verification.");
 			}
 		}
 		else{
@@ -63,16 +63,16 @@ public class CommunicationPreferencesManager {
 				if (ContactType.EMAIL.equals(channel)) {
 					boolean isEmailVerified = communicationPrefsResult.isEmail();
 					if (!isEmailVerified)
-						throw new GlobalException(JaxError.EMAIL_NOT_VERIFIED,"Email id is not verified");
+						throw new GlobalException(JaxError.EMAIL_NOT_VERIFIED,"Your registered email ID is not verified. Please complete verification steps for successful verification.");
 				} else if (ContactType.SMS.equals(channel)) {
 					boolean isSmsVerified = communicationPrefsResult.isSms();
 					if (!isSmsVerified) {
-						throw new GlobalException(JaxError.SMS_NOT_VERIFIED,"Mobile number is not verified");
+						throw new GlobalException(JaxError.SMS_NOT_VERIFIED,"Your registered mobile number is not verified. Please complete verification steps for successful verification.");
 					}
 				} else if (ContactType.WHATSAPP.equals(channel)) {
 					boolean isWhatsAppVerified = communicationPrefsResult.isWhatsApp();
 					if (!isWhatsAppVerified) {
-						throw new GlobalException(JaxError.WHATSAPP_NOT_VERIFIED,"Whatsapp number is not verified");
+						throw new GlobalException(JaxError.WHATSAPP_NOT_VERIFIED,"Your registered whatsapp number is not verified. Please complete verification steps for successful verification.");
 					}
 				}
 			}
