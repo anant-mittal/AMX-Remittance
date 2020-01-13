@@ -47,8 +47,8 @@ public class BDashboardAnalyticsController {
 						snapQueryParams.addFilter("branch.areaId", areacode.toString());
 					}
 					if (key.contains("VIEW") && value.contains("BRANCH")) {
-						BigDecimal branchId = ssoUser.getUserDetails().getBranchId();
-						snapQueryParams.addFilter("branch.id", branchId.toString());
+						BigDecimal countryBranchId = ssoUser.getUserDetails().getCountryBranchId();
+						snapQueryParams.addFilter("branch.id", countryBranchId.toString());
 
 					}
 					if (key.contains("VIEW") && value.contains("COUNTRY")) {
