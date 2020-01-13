@@ -425,12 +425,6 @@ public class RemittancePaymentManager extends AbstractService{
 					responseDto.setCollectionDocumentCode(collectionDocumentCode);
 					callingServiceProviderApi(responseDto,paymentResponse.getCustomerId());
 
-					//Update remittance_transaction_id for place order method call
-					/*
-					 * if (lstPayIdDetails.get(0) != null) {
-					 * updatePlaceOrderTransactionId(lstPayIdDetails.get(0),paymentResponse); }
-					 */	
-					
 					 for(RemittanceApplication remitAppl :lstPayIdDetails) {
 						 updatePlaceOrderTransactionId(remitAppl,paymentResponse); 
 					 }
@@ -442,11 +436,7 @@ public class RemittancePaymentManager extends AbstractService{
 						paymentResponse.setCollectionDocumentCode(collectionDocumentCode);
 						paymentResponse.setCollectionDocumentNumber(collectionDocumentNumber);
 						paymentResponse.setCollectionFinanceYear(collectionFinanceYear);
-						//remitanceMap = remittanceApplicationService.saveRemittancetoOldEmos(paymentResponse);
-						//errorMsg = (String) remitanceMap.get("P_ERROR_MESSAGE");
 						paymentResponse.setErrorText(errorMsg);
-						//logger.info("EX_INSERT_EMOS_TRANSFER_LIVE :" + errorMsg);
-
 						// For Receipt Print 
 						response.setResponseStatus(ResponseStatus.OK);
 						
@@ -724,6 +714,7 @@ public class RemittancePaymentManager extends AbstractService{
 			responseModel = branchRemittanceDao.saveAndUpdateAll(mapAllDetailApplSave);
 			responseModel.setMerchantTrackId(meta.getCustomerId());
 			responseModel.setNetPayableAmount(remittanceRequestModel.getTotalTrnxAmount());
+			logger.info("payShoppingCart Amount:"+responseModel.getNetPayableAmount()+"\t UDF3 Value :"+responseModel.getDocumentIdForPayment());
 			return responseModel;
 	}
 	
