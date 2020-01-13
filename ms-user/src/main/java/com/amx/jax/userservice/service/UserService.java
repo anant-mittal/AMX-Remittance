@@ -1431,9 +1431,10 @@ public class UserService extends AbstractUserService {
 	public AmxApiResponse<CustomerModel, Object> validateCustomerLoginOtp(String identityInt) {
 		if (identityInt != null) {
 			Customer customer = custDao.getCustomerByCivilId(identityInt);
+			userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(identityInt, JaxApiFlow.LOGIN);
 			if(customer != null) {
 				userValidationService.validateCustIdProofs(customer.getCustomerId());
-				userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(identityInt, JaxApiFlow.LOGIN);
+				
 				// ---- check for blacklisted customer ----
 				userValidationService.validateBlackListedCustomerForLogin(customer);
 			}else {
