@@ -320,9 +320,11 @@ public class BranchRemittanceDao {
 
 					if (amlTrnxList != null && !amlTrnxList.isEmpty()) {
 						List<RemittanceAml> remitamlList = amlTrnxList.get(applicationId);
+						if(remitamlList!=null && !remitamlList.isEmpty()) {
 						for (RemittanceAml remitaml : remitamlList) {
 							remitaml.setExRemittancefromAml(remitTrnx1);
 							remitAmlRepository.save(remitaml);
+						}
 						}
 					}
 					
@@ -426,13 +428,11 @@ public class BranchRemittanceDao {
 	public void updatePaymentModeApplication(List<BranchApplicationDto> shoppingCartList) {
 		int i;
 		for(i=0;i<shoppingCartList.size();i++) {
-			
 			RemittanceApplication remittanceApplication = remittanceApplicationDao.getApplication(shoppingCartList.get(i).getApplicationId());
 			if(!ArgUtil.isEmpty(remittanceApplication) && ConstantDocument.PB_PAYMENT.equalsIgnoreCase(remittanceApplication.getPaymentType())&& ConstantDocument.PB_STATUS_NEW.equalsIgnoreCase(remittanceApplication.getWtStatus())) {
 				String sql = "UPDATE EX_APPL_TRNX set WT_STATUS='PAID' where REMITTANCE_APPLICATION_ID =" + remittanceApplication.getRemittanceApplicationId();
 				System.out.println("sql :" + sql);
 				jdbcTemplate.update(sql);
-				
 			}
 		}
 	}

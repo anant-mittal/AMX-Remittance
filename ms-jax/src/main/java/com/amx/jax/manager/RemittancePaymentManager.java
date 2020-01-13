@@ -31,10 +31,12 @@ import com.amx.jax.branchremittance.dao.BranchRemittanceDao;
 import com.amx.jax.branchremittance.manager.BranchRemittanceSaveManager;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constants.JaxTransactionStatus;
+import com.amx.jax.dao.CurrencyMasterDao;
 import com.amx.jax.dao.FcSaleApplicationDao;
 import com.amx.jax.dao.JaxEmployeeDao;
 import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dao.RemittanceProcedureDao;
+import com.amx.jax.dbmodel.CurrencyMasterMdlv1;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.PaygDetailsModel;
 import com.amx.jax.dbmodel.PaymentModeModel;
@@ -178,6 +180,12 @@ public class RemittancePaymentManager extends AbstractService{
 	
 	@Autowired
 	RemittanceTransactionService remittanceTransactionService;
+	
+	
+
+	@Autowired
+	CurrencyMasterDao currencyMasterDao;
+	
 	
 	
 	
@@ -763,6 +771,7 @@ public class RemittancePaymentManager extends AbstractService{
 		BranchApplicationDto remitApplicationId = new BranchApplicationDto();
 		BigDecimal totalAmount = BigDecimal.ZERO;
 		BigDecimal loyaltyAmount = BigDecimal.ZERO;
+		CurrencyMasterMdlv1 currMaster = currencyMasterDao.getCurrencyMasterById(meta.getDefaultCurrencyId());
 		
 		/** To set the applciation details **/
 		for(RemittanceApplication appl:lstPayIdDetails) {
@@ -772,12 +781,18 @@ public class RemittancePaymentManager extends AbstractService{
 			loyaltyAmount = loyaltyAmount.add(appl.getLoyaltyPointsEncashed());
 			remittanceApplicationIds.add(applDto);
 		}
-		
+		logger.info("createRequestModelForOnline totalAmount :"+totalAmount+"\t Knet Amount :"+payResDto.getAmount()+"\t loyaltyAmount :"+loyaltyAmount);
 		/** to set the collection amount **/
+		BigDecimal KnetAmt = new BigDecimal(payResDto.getAmount());
+		
+		if(currMaster!=null && JaxUtil.isNullZeroBigDecimalCheck(KnetAmt)) {
+			KnetAmt = RoundUtil.roundBigDecimal(KnetAmt, currMaster.getDecinalNumber().intValue());
+		}
+		
 		PaymentModeModel payModeModel = paymentModeRepository.getPaymentModeDetails(ConstantDocument.KNET_CODE);
 		RemittanceCollectionDto remittanceCollection = new RemittanceCollectionDto();
 		remittanceCollection.setPaymentModeId(payModeModel.getPaymentModeId());
-		remittanceCollection.setPaymentAmount(new BigDecimal(payResDto.getAmount()));
+		remittanceCollection.setPaymentAmount(KnetAmt);//new BigDecimal(payResDto.getAmount()));
 		remittanceCollection.setApprovalNo(payResDto.getAuth_appNo());
 		collctionModeDto.add(remittanceCollection);
 		
@@ -788,7 +803,7 @@ public class RemittancePaymentManager extends AbstractService{
 		request.setCurrencyRefundDenomination(null);
 		request.setTotalTrnxAmount(totalAmount); // new BigDecimal(payResDto.getAmount())
 		request.setTotalLoyaltyAmount(loyaltyAmount);
-		request.setPaidAmount(new BigDecimal(payResDto.getAmount()));//totalAmount);
+		request.setPaidAmount(KnetAmt);//totalAmount);
 		
 		
 		return request;
