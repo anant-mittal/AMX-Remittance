@@ -29,6 +29,7 @@ import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constants.JaxTransactionStatus;
 import com.amx.jax.dal.RoutingProcedureDao;
 import com.amx.jax.dao.ApplicationProcedureDao;
+import com.amx.jax.dao.CurrencyMasterDao;
 import com.amx.jax.dao.JaxEmployeeDao;
 import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
@@ -266,7 +267,9 @@ public class BranchRemittanceSaveManager {
 	@Autowired
 	BranchRemittanceManager branchRemitManager;
     
-	
+
+	@Autowired
+	CurrencyMasterDao currencyMasterDao;
 	
 	List<LoyaltyPointsModel> loyaltyPoints 	 = new ArrayList<>();
 	Map<BigDecimal,RemittanceBenificiary> remitBeneList = new HashMap<>();
@@ -274,7 +277,6 @@ public class BranchRemittanceSaveManager {
 	Map<BigDecimal,List<RemittanceAml>>			amlList	 = new HashMap<>();
 	Map<BigDecimal,RemitTrnxSrvProv> mapRemitTrnxSrvProv = new HashMap<>();
 	Map<BigDecimal,List<RemittanceTransactionSplitting>> remitSplitMap = new HashMap<>();
-	
 	
 	
 	
@@ -340,8 +342,9 @@ public class BranchRemittanceSaveManager {
 			logger.error("Service provider api fail to execute : ColDocNo : ", responseDto.getCollectionDocumentNo() + " : ColDocCod : " +responseDto.getCollectionDocumentCode()+"  : ColDocYear : "+responseDto.getCollectionDocumentFYear());
 		}
 		logger.info("MRU --BEFORE appliation move to EMOS -->"+responseDto.getCollectionDocumentNo());
-		
+		logger.info("Response dto value is "+responseDto);
 		if(responseDto!=null && JaxUtil.isNullZeroBigDecimalCheck(responseDto.getCollectionDocumentNo())) {
+			logger.info("Update application after remittance");
 			brRemittanceDao.updateApplicationToMoveEmos(responseDto);
 			PaymentResponseDto paymentResponse = new PaymentResponseDto();
 			paymentResponse.setCollectionDocumentCode(responseDto.getCollectionDocumentCode());
@@ -382,15 +385,8 @@ public class BranchRemittanceSaveManager {
 			logger.info("MRU saveRemittanceTrnx catch block -->"+e.getMessage());
 		}
 		
-		int i;
-		for(i=0;i<shoppingCartList.size();i++) {
-			RemittanceApplication remittanceApplication = remittanceApplicationDao.getApplication(shoppingCartList.get(i).getApplicationId());
-			if(remittanceApplication!=null && ConstantDocument.PB_PAYMENT.equalsIgnoreCase(remittanceApplication.getPaymentType())&& ConstantDocument.PB_STATUS_NEW.equalsIgnoreCase(remittanceApplication.getWtStatus())) {
-				remittanceApplication.setWtStatus(ConstantDocument.WT_STATUS_PAID);
-				remittanceApplicationRepository.save(remittanceApplication);
-				
-			}
-		}
+		brRemittanceDao.updatePaymentModeApplication(shoppingCartList);
+		
 		return responseDto;
 	}
 	
@@ -422,6 +418,7 @@ public class BranchRemittanceSaveManager {
 			responseDto = brRemittanceDao.saveRemittanceTransaction(mapAllDetailRemitSave);
 			auditService.log(new CActivityEvent(Type.TRANSACTION_CREATED,String.format("%s/%s", responseDto.getCollectionDocumentFYear(),responseDto.getCollectionDocumentNo())).field("STATUS").to(JaxTransactionStatus.PAYMENT_SUCCESS_APPLICATION_SUCCESS).result(Result.DONE));
 	}catch (GlobalException e) {
+			e.printStackTrace();
 			logger.error("routing  procedure", e.getErrorMessage() + "" + e.getErrorKey());
 			throw new GlobalException(e.getErrorKey(), e.getErrorMessage());
 		}finally {
@@ -495,11 +492,12 @@ public class BranchRemittanceSaveManager {
 					collection.setCashDeclarationIndicator(ConstantDocument.Yes);
 				}
 				collection.setIsActive(ConstantDocument.Yes);
-			
 				
 				CountryBranchMdlv1 countryBranch = new CountryBranchMdlv1();
 				countryBranch = bankMetaService.getCountryBranchById(metaData.getCountryBranchId()); //user branch not customer branch
-				logger.info("Meta Country Branch id : " +metaData.getCountryBranchId());
+			
+				logger.info("Created by Refereal :"+metaData.getReferrer()+"\t Device ID :"+metaData.getDeviceId()+"\t Device Type :"+metaData.getDeviceType()+"\t App type :"+metaData.getAppType()+"\t Country Branch Id :"+metaData.getCountryBranchId());
+				
 				if(countryBranch!=null && countryBranch.getBranchId().compareTo(ConstantDocument.ONLINE_BRANCH_LOC_CODE)==0) {
 					collection.setLocCode(countryBranch.getBranchId());
 					if(!StringUtils.isBlank(metaData.getReferrer())){
@@ -520,14 +518,6 @@ public class BranchRemittanceSaveManager {
 					countryBranch.setCountryBranchId(employee.getCountryBranchId());
 				}
 				
-				
-				
-				/*CountryBranch countryBranch = new CountryBranch();
-				if(employee!=null && JaxUtil.isNullZeroBigDecimalCheck(employee.getCountryBranchId())) {
-					countryBranch.setCountryBranchId(employee.getCountryBranchId());
-				}else {
-					countryBranch.setCountryBranchId(metaData.getCountryBranchId());
-				}*/
 				collection.setExBankBranch(countryBranch);
 				collection.setFsCompanyMaster(appl.getFsCompanyMaster());
 				collection.setTotalAmountDeclarationIndicator(null); //ned to check
@@ -688,6 +678,7 @@ public class BranchRemittanceSaveManager {
 					
 					collectDetails.setVoucherYear(collect.getDocumentFinanceYear());
 					
+					//For Loyalty point the location is head office
 					BigDecimal documentNo = generateDocumentNumber(collect.getApplicationCountryId(),
 							collect.getFsCompanyMaster().getCompanyId(),ConstantDocument.VOUCHER_DOCUMENT_CODE,collect.getDocumentFinanceYear(),new BigDecimal("1"),ConstantDocument.Update);
 					
@@ -1185,6 +1176,7 @@ public void collectedAmountValidation(CollectionMdlv1 collectionModel,List<Colle
 	BigDecimal totalCashAmount =BigDecimal.ZERO;
 	BigDecimal totalCurrencyAdjust=BigDecimal.ZERO;
 	
+	CurrencyMasterMdlv1 currMaster = currencyMasterDao.getCurrencyMasterById(metaData.getDefaultCurrencyId()); 
 	
 	if(collectionModel!=null) {
 		totalPaidAmount = collectionModel.getPaidAmount();
@@ -1204,10 +1196,15 @@ public void collectedAmountValidation(CollectionMdlv1 collectionModel,List<Colle
 	if(collectionDetails!=null && !collectionDetails.isEmpty()) {
 		totalCollectedAmount = collectionDetails.stream().map(CollectDetailMdlv1::getCollAmt).reduce(BigDecimal.ZERO, BigDecimal::add);
 		totalCashAmount      =collectionDetails.stream().filter(c->c.getCollectionMode().equalsIgnoreCase(ConstantDocument.CASH)).map(CollectDetailMdlv1::getCollAmt).reduce(BigDecimal.ZERO, BigDecimal::add);
+		
+		if(currMaster !=null && JaxUtil.isNullZeroBigDecimalCheck(totalCollectedAmount) ) {
+			totalCollectedAmount = RoundUtil.roundBigDecimal(totalCollectedAmount, currMaster.getDecinalNumber().intValue());
+		}
 	}else {
 		throw new GlobalException(JaxError.AMOUNT_MISMATCH,"The amount you have entered is 0. Please enter the correct amount ");
 	}
 	
+	logger.info("Before comprarison :Total Paid Amt : " +totalPaidAmount+ " Total Collect Amt : " +totalCollectedAmount);
 	if(totalPaidAmount.compareTo(totalCollectedAmount)!=0) {
 		logger.info("Total Paid Amt : " +totalPaidAmount+ " Total Collect Amt : " +totalCollectedAmount);
 		throw new GlobalException(JaxError.AMOUNT_MISMATCH,"The collection amount does not match with the collection details as per payment mode selected.");
@@ -1221,8 +1218,6 @@ public void collectedAmountValidation(CollectionMdlv1 collectionModel,List<Colle
 			totalCurrencyAdjustCollect = currencyAdjustList.stream().filter(a->a.getTransactionType().equalsIgnoreCase(ConstantDocument.CASH)).map(ForeignCurrencyAdjustMdlv1::getAdjustmentAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
 			totalCurrencyAdjustRefund  =currencyAdjustList.stream().filter(a->a.getTransactionType().equalsIgnoreCase(ConstantDocument.F)).map(ForeignCurrencyAdjustMdlv1::getAdjustmentAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
 			totalCurrencyAdjust =totalCurrencyAdjustCollect.subtract(totalCurrencyAdjustRefund);
-			
-			
 			if(totalCashAmount.subtract(refundAmount).compareTo(totalCurrencyAdjust)!=0) {
 				throw new GlobalException(JaxError.AMOUNT_MISMATCH,"Mismatch found in cash collected and Denomination entered.");
 			}

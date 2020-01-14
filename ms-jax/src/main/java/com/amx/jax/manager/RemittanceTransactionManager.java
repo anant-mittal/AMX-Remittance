@@ -672,11 +672,18 @@ public class RemittanceTransactionManager {
 	}
 
 	public void setLoyalityPointFlags(Customer customer, RemittanceTransactionResponsetModel responseModel) {
+		BranchRemittanceApplResponseDto shoppingCart = branchRemittancePaymentManager.fetchCustomerShoppingCart(customer.getCustomerId(), metaData.getDefaultCurrencyId());
+		BigDecimal availableLoyalityPoints =  BigDecimal.ZERO;
 		if (customer.getLoyaltyPoints() != null && customer.getLoyaltyPoints().compareTo(BigDecimal.ZERO) > 0) {
-			responseModel.setTotalLoyalityPoints(customer.getLoyaltyPoints());
+			availableLoyalityPoints = customer.getLoyaltyPoints();
 		} else {
-			responseModel.setTotalLoyalityPoints(BigDecimal.ZERO);
+			availableLoyalityPoints = BigDecimal.ZERO;
 		}
+		if(shoppingCart.getTotalLoyaltyPointAvaliable() != null) {
+			availableLoyalityPoints = shoppingCart.getTotalLoyaltyPointAvaliable();
+		}
+		
+		responseModel.setTotalLoyalityPoints(availableLoyalityPoints);
 		responseModel.setMaxLoyalityPointsAvailableForTxn(loyalityPointService.getVwLoyalityEncash().getLoyalityPoint());
 	}
 
