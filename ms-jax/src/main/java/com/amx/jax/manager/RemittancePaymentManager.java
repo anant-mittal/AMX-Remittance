@@ -519,6 +519,8 @@ public class RemittancePaymentManager extends AbstractService{
 			}
 
 		}catch(Exception e) {
+			e.printStackTrace();
+			logger.info("paymentCaptureV2 :"+e.getMessage());
 			lstPayIdDetails =applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(paymentResponse.getUdf3(),new Customer(paymentResponse.getCustomerId()));
 			if(!lstPayIdDetails.isEmpty()) {
 				if (lstPayIdDetails.get(0).getResultCode() != null) {
