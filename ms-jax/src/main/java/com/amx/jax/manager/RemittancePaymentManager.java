@@ -653,7 +653,7 @@ public class RemittancePaymentManager extends AbstractService{
 			BigDecimal payableAmount =localNetTraxAmount.subtract(loyalityPointEncashed);
 			payableAmount = RoundUtil.roundBigDecimal(payableAmount, localCurrencyDecimalNumber.intValue());
 			totalPayableAmount =totalPayableAmount.add(payableAmount); 
-			applicationIds = remittanceApplication.getRemittanceApplicationId()!=null?"":remittanceApplication.getRemittanceApplicationId().toString()+",";
+			applicationIds = remittanceApplication.getRemittanceApplicationId()==null?"":remittanceApplication.getRemittanceApplicationId().toString()+",";
 		}
 		
 	

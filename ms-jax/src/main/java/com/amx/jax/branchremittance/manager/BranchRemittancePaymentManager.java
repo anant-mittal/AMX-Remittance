@@ -190,6 +190,8 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 			
 			if(countryBranch!=null && !countryBranch.getBranchId().equals(ConstantDocument.ONLINE_BRANCH_LOC_CODE)) {
 				deActivateOnlineApplication();
+			}else if (countryBranch!=null && countryBranch.getBranchId().equals(ConstantDocument.ONLINE_BRANCH_LOC_CODE)){ //De-activate Branch application in online
+				deActivateBranchApplicationInOnline();
 			}
 			
 			List<ShoppingCartDetails> lstCustomerShopping = branchRemittancePaymentDao.fetchCustomerShoppingCart(customerId);
@@ -695,10 +697,21 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 
 	public Boolean deActivateOnlineApplication() {
 		try {
-
-			appRepository.deActivateNotUsedOnlineApplication(new Customer(metaData.getCustomerId()),
-					ConstantDocument.ONLINE_BRANCH_LOC_CODE);
-
+			appRepository.deActivateNotUsedOnlineApplication(new Customer(metaData.getCustomerId()),ConstantDocument.ONLINE_BRANCH_LOC_CODE);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new GlobalException("De-Activate Application failed for customer:" + metaData.getCustomerId());
+		}
+		return true;
+	}
+	
+	
+	
+	
+	
+	public Boolean deActivateBranchApplicationInOnline() {
+		try {
+			appRepository.deActivateBranchApplicationInOnline(new Customer(metaData.getCustomerId()),ConstantDocument.ONLINE_BRANCH_LOC_CODE);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new GlobalException("De-Activate Application failed for customer:" + metaData.getCustomerId());
