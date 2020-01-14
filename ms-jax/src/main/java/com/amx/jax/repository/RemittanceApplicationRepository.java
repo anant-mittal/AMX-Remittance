@@ -26,8 +26,12 @@ public interface RemittanceApplicationRepository extends CrudRepository<Remittan
 	public List<RemittanceApplication> deActivateNotUsedApplication(@Param("customerId") Customer customerId);
 
 	@Query("select ra from RemittanceApplication ra where ra.fsCustomer=:customerId and ra.paymentId=:paymentId and ra.isactive='Y'")
-	public List<RemittanceApplication> fetchRemitApplTrnxRecordsByCustomerPayId(@Param("paymentId") String paymentId,
-			@Param("customerId") Customer customerId);
+	public List<RemittanceApplication> fetchRemitApplTrnxRecordsByCustomerPayId(@Param("paymentId") String paymentId,@Param("customerId") Customer customerId);
+	
+	
+	@Query("select ra from RemittanceApplication ra where ra.fsCustomer=:customerId and ra.paygTrnxDetailId=:paymentId and ra.isactive='Y'")
+	public List<RemittanceApplication> fetchRemitApplTrnxRecordsByCustomerPaygDetailId(@Param("paymentId") BigDecimal paymentId,@Param("customerId") Customer customerId);
+	
 
 	@Query("select rv from RemittanceTransactionView rv where rv.applicationDocumentNo=?1 and rv.applicationFinancialYear = ?2")
 	public RemittanceTransactionView fetchRemitApplTrnxView(BigDecimal applicationDocumentNo, BigDecimal docFinYear);

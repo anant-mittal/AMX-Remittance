@@ -374,8 +374,9 @@ public class RemittancePaymentManager extends AbstractService{
 					&& (paymentResponse.getResultCode().equalsIgnoreCase(ConstantDocument.CAPTURED)|| paymentResponse.getResultCode().equalsIgnoreCase(ConstantDocument.APPROVED))) 
 			{
 				
-				logger.info("MRU --->paymentResponse:"+paymentResponse.getUdf3()+"\t paymentResponse.getCustomerId():"+paymentResponse.getCustomerId());
-				lstPayIdDetails = applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(paymentResponse.getUdf3(),new Customer(paymentResponse.getCustomerId()));
+				logger.info("MRU --->paymentResponse:"+paymentResponse.getUdf3()+"\t paymentResponse.getCustomerId():"+paymentResponse.getCustomerId() +"\t Amount :"+paymentResponse.getAmount());
+				//lstPayIdDetails = applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(paymentResponse.getUdf3(),new Customer(paymentResponse.getCustomerId()));
+				lstPayIdDetails = applicationDao.fetchRemitApplTrnxRecordsByCustomerPaygDetailId(new BigDecimal(paymentResponse.getUdf3()),new Customer(paymentResponse.getCustomerId()));
 				if(lstPayIdDetails==null && lstPayIdDetails.isEmpty()) {
 					throw new GlobalException(JaxError.PG_ERROR,"No record found ");
 				}
@@ -519,7 +520,6 @@ public class RemittancePaymentManager extends AbstractService{
 
 		}catch(Exception e) {
 			lstPayIdDetails =applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(paymentResponse.getUdf3(),new Customer(paymentResponse.getCustomerId()));
-			
 			if(!lstPayIdDetails.isEmpty()) {
 				if (lstPayIdDetails.get(0).getResultCode() != null) {
 					logger.info("Existing payment id found: {}", lstPayIdDetails.get(0).getPaymentId());
@@ -657,7 +657,7 @@ public class RemittancePaymentManager extends AbstractService{
 		}
 		BigDecimal paidAmount = new BigDecimal(paymentResponse.getAmount());
 		paidAmount = RoundUtil.roundBigDecimal(paidAmount, localCurrencyDecimalNumber.intValue());
-		
+		logger.info("validateAmountMismatchV2 Our appl totalPayableAmount amount :"+totalPayableAmount+"\t Knet Amount :"+paidAmount);
 		if (!paidAmount.equals(totalPayableAmount)) {
 			String errorMessage = String.format("paidAmount: %s and payableAmount: %s mismatch for remittanceApplicationId: %s", paidAmount,totalPayableAmount, applicationIds);
 			logger.info(errorMessage);
