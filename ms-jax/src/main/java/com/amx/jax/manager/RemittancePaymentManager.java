@@ -520,7 +520,6 @@ public class RemittancePaymentManager extends AbstractService{
 
 		}catch(Exception e) {
 			e.printStackTrace();
-			logger.info("paymentCaptureV2 :"+e.getMessage());
 			lstPayIdDetails =applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(paymentResponse.getUdf3(),new Customer(paymentResponse.getCustomerId()));
 			if(!lstPayIdDetails.isEmpty()) {
 				if (lstPayIdDetails.get(0).getResultCode() != null) {
@@ -531,7 +530,7 @@ public class RemittancePaymentManager extends AbstractService{
 				fcSaleApplicationDao.updatePaygDetails(null, paymentResponse);
 				
 			}
-
+			logger.info("catch error Remittance error :"+e.getMessage());
 			throw new GlobalException(JaxError.PG_ERROR,"Remittance error :"+errorMsg);
 		}
 		response.getData().getValues().add(paymentResponse);
@@ -712,7 +711,9 @@ public class RemittancePaymentManager extends AbstractService{
 	
 	public RemittanceApplicationResponseModel payShoppingCart(BranchRemittanceRequestModel remittanceRequestModel){
 			RemittanceApplicationResponseModel responseModel = null;
-		
+			
+			CurrencyMasterMdlv1 currMaster = currencyMasterDao.getCurrencyMasterById(meta.getDefaultCurrencyId());
+			BigDecimal knetAmount = BigDecimal.ZERO;
 		
 			HashMap<String, Object> mapAllDetailApplSave =new HashMap<String, Object>();
 			PaygDetailsModel pgDetails = null;
@@ -723,8 +724,14 @@ public class RemittancePaymentManager extends AbstractService{
 			mapAllDetailApplSave.put("APPL", remittanceRequestModel.getRemittanceApplicationId());
 			responseModel = branchRemittanceDao.saveAndUpdateAll(mapAllDetailApplSave);
 			responseModel.setMerchantTrackId(meta.getCustomerId());
-			responseModel.setNetPayableAmount(remittanceRequestModel.getTotalTrnxAmount());
-			logger.info("payShoppingCart Amount:"+responseModel.getNetPayableAmount()+"\t UDF3 Value :"+responseModel.getDocumentIdForPayment());
+			knetAmount = RoundUtil.roundBigDecimal(remittanceRequestModel.getTotalTrnxAmount(), currMaster.getDecinalNumber().intValue());
+			if(currMaster!=null && JaxUtil.isNullZeroBigDecimalCheck(knetAmount)) {
+				responseModel.setNetPayableAmount(knetAmount);
+			}else {
+				throw new GlobalException("Transaction amount should not be zero.");
+			}
+			
+			logger.info("payShoppingCart Amount getNetPayableAmount :"+responseModel.getNetPayableAmount()+"\t UDF3 Value :"+responseModel.getDocumentIdForPayment()+"\t knetAmount :"+knetAmount+"\t Customer ID :"+meta.getCustomerId());
 			return responseModel;
 	}
 	

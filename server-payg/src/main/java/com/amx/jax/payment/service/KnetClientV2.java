@@ -213,6 +213,10 @@ public class KnetClientV2 implements PayGClient, InitializingBean {
 			}
 		}
 		
+		if(pipe.getAmt() != null) {
+			LOGGER.info("AMOUNT GETTING FROM KNET ---> " +  pipe.getAmt());
+		}
+		
 		if ("NOT+CAPTURED".equalsIgnoreCase(gatewayResponse.getResult())) {
 			gatewayResponse.setResult("NOT CAPTURED");
 		}
