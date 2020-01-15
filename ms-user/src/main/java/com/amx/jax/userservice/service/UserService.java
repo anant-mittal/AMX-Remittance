@@ -836,7 +836,7 @@ public class UserService extends AbstractUserService {
 
 	public AmxApiResponse<BoolRespModel, Object> updatePassword(CustomerModel model) {
 		BigDecimal custId = (model.getCustomerId() == null) ? metaData.getCustomerId() : null;
-
+		model.setCustomerId(custId);
 		CActivityEvent auditEvent = new CActivityEvent(CActivityEvent.Type.PROFILE_UPDATE).field(FIELD_PSSWRD);
 		if (custId == null) {
 			auditService.log(auditEvent.result(Result.REJECTED).message(JaxError.NULL_CUSTOMER_ID));
