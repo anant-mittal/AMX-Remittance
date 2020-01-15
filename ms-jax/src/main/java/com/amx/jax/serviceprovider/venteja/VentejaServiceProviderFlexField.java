@@ -137,6 +137,15 @@ public enum VentejaServiceProviderFlexField {
 			dto.getTransactionDto().setDestination_amount(new BigDecimal(value.getAmieceDescription()));
 
 		}
+	},
+	BENE_DOB {
+		// BENE DOB
+		@Override
+		public void setValue(ServiceProviderCallRequestDto dto, Map<String, FlexFieldDto> requestFlexFields) {
+			FlexFieldDto value = requestFlexFields.get(this.name());
+			dto.getBeneficiaryDto().setDate_of_birth(DateUtil.parseDate(value.getAmieceDescription(), ConstantDocument.MM_DD_YYYY_DATE_FORMAT));
+
+		}
 	};
 
 	public abstract void setValue(ServiceProviderCallRequestDto dto, Map<String, FlexFieldDto> requestFlexFields);

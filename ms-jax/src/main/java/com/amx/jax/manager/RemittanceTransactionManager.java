@@ -36,7 +36,6 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.PromotionDto;
 import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
-import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.jax.JaxAuthContext;
@@ -68,7 +67,6 @@ import com.amx.jax.dbmodel.CurrencyMasterMdlv1;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ExchangeRateApprovalDetModel;
 import com.amx.jax.dbmodel.PaygDetailsModel;
-import com.amx.jax.dbmodel.ReferralDetails;
 import com.amx.jax.dbmodel.TransactionLimitCheckView;
 import com.amx.jax.dbmodel.partner.RemitApplSrvProv;
 import com.amx.jax.dbmodel.remittance.AdditionalInstructionData;
@@ -82,7 +80,6 @@ import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.dbmodel.remittance.ServiceProviderCredentialsModel;
 import com.amx.jax.dbmodel.remittance.ViewTransfer;
 import com.amx.jax.dbmodel.remittance.ViewVatDetails;
-import com.amx.jax.dict.AmxEnums.CommunicationEvents;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.dict.PayGRespCodeJSONConverter;
 import com.amx.jax.dict.PayGServiceCode;
@@ -97,13 +94,13 @@ import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.events.CActivityEvent;
 import com.amx.jax.logger.events.CActivityEvent.Type;
 import com.amx.jax.logger.events.RemitInfo;
+import com.amx.jax.manager.remittance.AdditionalBankDetailManager;
 import com.amx.jax.manager.remittance.CorporateDiscountManager;
 import com.amx.jax.manager.remittance.RemittanceAdditionalFieldManager;
 import com.amx.jax.manager.remittance.RemittanceOtpManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.model.CivilIdOtpModel;
-import com.amx.jax.model.request.benebranch.BeneficiaryTrnxModel;
 import com.amx.jax.model.request.remittance.AbstractRemittanceApplicationRequestModel;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.ExchangeRateValidateRequestDto;
@@ -119,12 +116,9 @@ import com.amx.jax.model.response.remittance.LoyalityPointState;
 import com.amx.jax.model.response.remittance.RemittanceApplicationResponseModel;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
 import com.amx.jax.model.response.remittance.VatDetailsDto;
-import com.amx.jax.partner.manager.PartnerTransactionManager;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
 import com.amx.jax.partner.manager.PartnerTransactionManager;
 import com.amx.jax.postman.client.PushNotifyClient;
-import com.amx.jax.postman.model.PushMessage;
-import com.amx.jax.partner.manager.PartnerTransactionManager;
 import com.amx.jax.pricer.dto.TrnxRoutingDetails;
 import com.amx.jax.pricer.var.PricerServiceConstants;
 import com.amx.jax.remittance.manager.RemittanceParameterMapManager;
@@ -337,6 +331,8 @@ public class RemittanceTransactionManager {
 	
 	@Autowired
 	CustomerDBAuthManager customerDBAuthManager;
+	@Autowired
+	AdditionalBankDetailManager additionalBankDetailManager;
 	
 	@Autowired
 	RemittanceApplicationRepository applRepository;
@@ -1369,13 +1365,16 @@ public class RemittanceTransactionManager {
 		applReqModel.setDynamicRroutingPricingBreakup(model.getDynamicRroutingPricingBreakup());
 		
 		RemittanceTransactionResponsetModel validationResults = this.validateTransactionDataV2(model);
-		if (validationResults !=null && jaxTenantProperties.getFlexFieldEnabled()) {
-			remittanceTransactionRequestValidator.validateExchangeRate(model, validationResults);
-			remittanceTransactionRequestValidator.validateFlexFields(model, remitApplParametersMap);
-		}else {
+		if (validationResults == null) {
 			throw new GlobalException(JaxError.VALIDATION_NOT_NULL, "Validation is missing");
 		}
+		remittanceTransactionRequestValidator.validateExchangeRate(model, validationResults);
+		remittanceTransactionRequestValidator.validatePurposeOfTransaction(model, remitApplParametersMap);
 		remittanceAdditionalFieldManager.validateAdditionalFields(model, remitApplParametersMap);
+		remittanceTransactionRequestValidator.validateFlexFields(model, remitApplParametersMap);
+		// bank api validations
+		additionalBankDetailManager.validateAdditionalBankFields(model, remitApplParametersMap);
+		
 		// validate routing bank requirements
 		ExchangeRateBreakup breakup = validationResults.getExRateBreakup();
 		

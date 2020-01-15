@@ -56,6 +56,7 @@ import com.amx.jax.exrateservice.service.JaxDynamicPriceService;
 import com.amx.jax.exrateservice.service.JaxDynamicRoutingPricingService;
 import com.amx.jax.exrateservice.service.NewExchangeRateService;
 import com.amx.jax.manager.RemittanceTransactionManager;
+import com.amx.jax.manager.remittance.AdditionalBankDetailManager;
 import com.amx.jax.manager.remittance.CorporateDiscountManager;
 import com.amx.jax.manager.remittance.RemittanceAdditionalFieldManager;
 import com.amx.jax.manager.remittance.RemittanceApplicationParamManager;
@@ -162,6 +163,8 @@ public class BranchRemittanceExchangeRateManager {
 	
 	@Autowired
 	CurrencyMasterDao currencyMasterDao;
+	@Autowired
+	AdditionalBankDetailManager additionalBankDetailManager;
 	
 
 public void validateGetExchangRateRequest(IRemittanceApplicationParams request) {
@@ -467,6 +470,8 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 				flexFields.addAll((Collection<? extends JaxConditionalFieldDto>) ex.getMeta());
 			}
 		}
+		// bank api validations
+		additionalBankDetailManager.validateAdditionalBankFields(branchRemittanceApplRequestModel, remitApplParametersMap);
 
 		List<JaxConditionalFieldDto> amlFlexFields = remittanceAdditionalFieldManager.validateAmlCheck(branchRemittanceApplRequestModel);
 		if (CollectionUtils.isNotEmpty(amlFlexFields)) {

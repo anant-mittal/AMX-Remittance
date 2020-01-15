@@ -90,10 +90,26 @@ public class RemittanceTransactionRequestValidator {
 			throw new GlobalException(JaxError.EXCHANGE_RATE_CHANGED, "Exchange rate has been changed");
 		}
 	}
+	
+	public void validatePurposeOfTransaction(RemittanceAdditionalBeneFieldModel request, Map<String, Object> remitApplParametersMap) {
+		List<String> flexiFields = new ArrayList<>();
+		flexiFields.add(ConstantDocument.INDIC1);
+		validateFlexFields(request, remitApplParametersMap, flexiFields);
+	}
 
 	public void validateFlexFields(RemittanceAdditionalBeneFieldModel request, Map<String, Object> remitApplParametersMap) {
-		request.populateFlexFieldDtoMap();
 		List<FlexFiledView> allFlexFields = remittanceApplicationDao.getFlexFields();
+		List<String> flexiFieldIn = allFlexFields.stream().map(i -> i.getFieldName()).collect(Collectors.toList());
+		// remove indic1 validation from branch and other channels
+		if (!JaxChannel.ONLINE.equals(metaData.getChannel())) {
+			flexiFieldIn.remove(ConstantDocument.INDIC1);
+		}
+		validateFlexFields(request, remitApplParametersMap, flexiFieldIn);
+	}
+
+	public void validateFlexFields(RemittanceAdditionalBeneFieldModel request, Map<String, Object> remitApplParametersMap, List<String> flexiFields) {
+		request.populateFlexFieldDtoMap();
+		request.populateAdditionalFieldsDtoMap();
 		Map<String, FlexFieldDto> requestFlexFields = request.getFlexFieldDtoMap();
 		BigDecimal routingBankId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_BANK_ID");
 		String routingBankCode = bankService.getBankById(routingBankId).getBankCode();
@@ -116,17 +132,12 @@ public class RemittanceTransactionRequestValidator {
 		BigDecimal deliveryModeId = (BigDecimal) remitApplParametersMap.get("P_DELIVERY_MODE_ID");
 		BigDecimal foreignCurrencyId = (BigDecimal) remitApplParametersMap.get("P_FOREIGN_CURRENCY_ID");
 
-		List<String> flexiFieldIn = allFlexFields.stream().map(i -> i.getFieldName()).collect(Collectors.toList());
-		// remove indic1 validation from branch and other channels
-		if (!JaxChannel.ONLINE.equals(metaData.getChannel())) {
-			flexiFieldIn.remove(ConstantDocument.INDIC1);
-		}
 		List<AdditionalDataDisplayView> additionalDataRequired = additionalDataDisplayDao.getAdditionalDataFromServiceApplicabilityForBank(
 				applicationCountryId, routingCountryId, foreignCurrencyId, remittanceModeId, deliveryModeId,
-				flexiFieldIn.toArray(new String[flexiFieldIn.size()]), routingBankId, ConstantDocument.No);
+				flexiFields.toArray(new String[flexiFields.size()]), routingBankId, ConstantDocument.No);
 		if (CollectionUtils.isEmpty(additionalDataRequired)) {
 			additionalDataRequired = additionalDataDisplayDao.getAdditionalDataFromServiceApplicability(applicationCountryId, routingCountryId,
-					foreignCurrencyId, remittanceModeId, deliveryModeId, flexiFieldIn.toArray(new String[flexiFieldIn.size()]),ConstantDocument.No);
+					foreignCurrencyId, remittanceModeId, deliveryModeId, flexiFields.toArray(new String[flexiFields.size()]),ConstantDocument.No);
 		}
 		FlexFieldDto servicePackage = request.getServicePackage();
 		List<JaxConditionalFieldDto> requiredFlexFields = new ArrayList<>();
@@ -169,9 +180,7 @@ public class RemittanceTransactionRequestValidator {
 			exp.setMeta(requiredFlexFields);
 			throw exp;
 		}
-
-		// ventaja api validation
-		additionalBankDetailManager.validateAdditionalBankFields(request, remitApplParametersMap);
+		
 	}
 
 	public JaxConditionalFieldDto getConditionalFieldDto(AdditionalDataDisplayView flexField, Map<String, FlexFieldDto> requestFlexFields,
@@ -179,10 +188,11 @@ public class RemittanceTransactionRequestValidator {
 			BigDecimal routingBankId, FlexFieldDto servicePackage, boolean forceIncludeFlexField) {
 
 		FlexFieldDto flexFieldValueInRequest = requestFlexFields.get(flexField.getFlexField());
-
+		String routingBankCode = bankService.getBankById(routingBankId).getBankCode();
 		String fieldBehaviour = flexField.getFieldBehaviour();
 		LOGGER.info("Flex field value is " + flexField.getFlexField());
 		LOGGER.info("Routing country value is " + routingCountryId);
+		
 		List<AdditionalBankRuleMap> addtionalBankRules = additionalBankRuleMapDao.getDynamicLevelMatch(routingCountryId, flexField.getFlexField());
 		// bank rule for this flex field
 		AdditionalBankRuleMap bankRule = addtionalBankRules.get(0);
@@ -220,7 +230,11 @@ public class RemittanceTransactionRequestValidator {
 			field.setPossibleValues(amiecValues);
 			break;
 		case DATE:
-			field.getAdditionalValidations().put("format", ConstantDocument.MM_DD_YYYY_DATE_FORMAT.toUpperCase());
+			String dateFormat = ConstantDocument.MM_DD_YYYY_DATE_FORMAT.toUpperCase();
+			if (BankConstants.BPI_BANK_CODE.equals(routingBankCode)) {
+				dateFormat = ConstantDocument.DD_MM_YYYY_DATE_FORMAT;
+			}
+			field.getAdditionalValidations().put("format", dateFormat);
 			break;
 		default:
 			break;
@@ -307,17 +321,16 @@ public class RemittanceTransactionRequestValidator {
 	private void updateAdditionalValidations(List<JaxFieldDto> jaxFieldDtos) {
 		jaxFieldDtos.forEach(i -> {
 			if ("PAYMENT PERIOD FROM DATE".equals(i.getName())) {
-				String format = "MM/DD/YYYY";
 				Map<String, Object> additionalValidations = i.getAdditionalValidations();
 				additionalValidations.put("lteq", dateUtil.format(LocalDate.now(), "MM/d/YYYY"));
-				additionalValidations.put("format", format);
+				additionalValidations.put("format", ConstantDocument.MM_DD_YYYY_DATE_FORMAT);
 				i.setAdditionalValidations(additionalValidations);
 			}
 
 			if ("PAYMENT PERIOD EXPIRY DATE".equalsIgnoreCase(i.getName()) || "TO DATE MM/DD/YYYY".equalsIgnoreCase(i.getName())) {
 				Map<String, Object> additionalValidations = i.getAdditionalValidations();
 				additionalValidations.put("gt", dateUtil.format(LocalDate.now(), "MM/d/YYYY"));
-				additionalValidations.put("format", "MM/DD/YYYY");
+				additionalValidations.put("format", ConstantDocument.MM_DD_YYYY_DATE_FORMAT);
 				i.setAdditionalValidations(additionalValidations);
 			}
 		});

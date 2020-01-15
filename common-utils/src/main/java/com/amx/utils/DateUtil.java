@@ -105,6 +105,32 @@ public final class DateUtil {
 		}
 		return newDate;
 	}
+	
+	/**
+	 * Parses the date based on dateFormat
+	 *
+	 * @param dateStr
+	 *            the date str
+	 * @return the date
+	 */
+	public static Date parseDate(String dateStr, String dateFormat) {
+		dateStr = dateStr.trim();
+		SimpleDateFormat format = new SimpleDateFormat(dateFormat);
+		format.setTimeZone(TimeZone.getTimeZone(GMT));
+		Date newDate;
+		try {
+			newDate = setDefaultGMTTime(format.parse(dateStr));
+		} catch (ParseException e) {
+			// try parsing as long
+			try {
+				newDate = setDefaultGMTTime(new Date(Long.parseLong(dateStr)));
+			} catch (NumberFormatException ex) {
+				/* return null if date string cannot be parsed */
+				newDate = null;
+			}
+		}
+		return newDate;
+	}
 
 	public static Date parseDateDBEvent(String dateStr) {
 
@@ -176,6 +202,18 @@ public final class DateUtil {
 	 */
 	public static String formatDate(Date date) {
 		SimpleDateFormat format = new SimpleDateFormat(DEFAULT_DATE_FORMAT);
+		return format.format(date);
+	}
+	
+	/**
+	 * Format date.
+	 *
+	 * @param date
+	 *            the date
+	 * @return the string
+	 */
+	public static String formatDate(Date date, String formatter) {
+		SimpleDateFormat format = new SimpleDateFormat(formatter);
 		return format.format(date);
 	}
 
