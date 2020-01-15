@@ -867,7 +867,7 @@ public class BranchRemittanceSaveManager {
 					remitTrnx.setCustomerRef(appl.getCustomerRef());
 					
 					
-					remitTrnx.setCustomerSignatureClob(appl.getCustomerSignatureClob());
+					//remitTrnx.setCustomerSignatureClob(appl.getCustomerSignatureClob());
 					remitTrnx.setDebitAccountNo(appl.getDebitAccountNo()); //need to check
 					remitTrnx.setDeliveryModeId(appl.getExDeliveryMode());
 					remitTrnx.setDocumentDate(new Date());
@@ -943,6 +943,8 @@ public class BranchRemittanceSaveManager {
 					if(amlResDto!=null && !StringUtils.isBlank(amlResDto.getHighValueTrnxFlag()) && amlResDto.getHighValueTrnxFlag().equalsIgnoreCase(ConstantDocument.Yes)) {
 						remitTrnx.setHighValueTranx(amlResDto.getHighValueTrnxFlag());
 					}
+				   }else {
+					   remitTrnx.setCustomerSignatureClob(appl.getCustomerSignatureClob());
 				   }
 					
 

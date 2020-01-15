@@ -348,6 +348,8 @@ public class BranchRemittanceDao {
 
 			return responseDto;
 		} catch (GlobalException e){
+			e.printStackTrace();
+			logger.info("saveRemittanceTransaction :"+e.getMessage());
 			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}
 
