@@ -764,12 +764,13 @@ public void validatePlaceOrderRequest(BranchRemittanceApplRequestModel applReque
 			}
 			
 			
-			if(applRequestModel.getForeignAmount()!=null && applRequestModel.getForeignAmount().compareTo(currInfo.getPlaceOrderLimit())>0) {
-				//Allow the trnx  
-			}
-			else {
-				throw new GlobalException(JaxError.RATE_PLACE_ERROR,"The minimum limit for place order is :"+currInfo.getPlaceOrderLimit());
-			}
+				/*
+				 * if(applRequestModel.getForeignAmount()!=null &&
+				 * applRequestModel.getForeignAmount().compareTo(currInfo.getPlaceOrderLimit())>
+				 * 0) { //Allow the trnx } else { throw new GlobalException(JaxError.
+				 * RATE_PLACE_ERROR,"The minimum limit for place order is :"+currInfo.
+				 * getPlaceOrderLimit()); }
+				 */
 			
 		}else {
 			throw new GlobalException(JaxError.RATE_PLACE_ERROR,"Place Order limit is not defined for the selected currency");

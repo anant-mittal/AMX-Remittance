@@ -36,7 +36,11 @@ public class PackageDescriptionManager {
 		BenificiaryListView beneficaryDetails = beneficiaryRepository.findByCustomerIdAndBeneficiaryRelationShipSeqIdAndIsActive(
 				metaData.getCustomerId(), benePackageRequest.getBeneId(), ConstantDocument.Yes);
 		BigDecimal routingBankId = beneficaryDetails.getServiceProvider();
-		List<JaxConditionalFieldDto> requiredFlexFields = resp.getRequiredFlexFields();
+		List<JaxConditionalFieldDto> requiredFlexFields = null;
+		if(resp!=null) {
+		 requiredFlexFields = resp.getRequiredFlexFields();
+		}
+		if(!ArgUtil.isEmpty(requiredFlexFields)) {
 		for (JaxConditionalFieldDto jaxConditionalFieldDto : requiredFlexFields) {
 			List<JaxFieldValueDto> possibleValues = jaxConditionalFieldDto.getField().getPossibleValues();
 			if (!ArgUtil.isEmpty(possibleValues)) {
@@ -52,7 +56,7 @@ public class PackageDescriptionManager {
 			}
 
 		}
-
+		}
 		if (resp.getFcAmount() != null) {
 			GiftPackageDescModel giftpackageDescModel = iGiftPackageDescRepository.findByRoutingBankIdAndBeneficiaryBankIdAndBankBranchIdAndAmiecCode(
 					routingBankId, beneficaryDetails.getBankId(), beneficaryDetails.getBranchId(), amiecCode);
