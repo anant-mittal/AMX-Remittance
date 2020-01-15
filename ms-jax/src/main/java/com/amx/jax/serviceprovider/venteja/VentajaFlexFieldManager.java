@@ -166,6 +166,7 @@ public class VentajaFlexFieldManager extends AbstractFlexFieldManager {
 		BigDecimal volunteerContribution = null;
 		String packageSelectedAmiecCode = null;
 		boolean dateRangePresent = false;
+		BigDecimal fcAmountSelected = null;
 		List<JaxConditionalFieldDto> requiredFlexFields = (List<JaxConditionalFieldDto>) validationResults.get("requiredFlexFields");
 		if (requestFlexFields != null) {
 			for (Entry<String, FlexFieldDto> element : requestFlexFields.entrySet()) {
@@ -183,12 +184,19 @@ public class VentajaFlexFieldManager extends AbstractFlexFieldManager {
 				if ("INDIC12".equals(k) && v != null) {
 					dateRangePresent = true;
 				}
+				if(FC_AMOUNT_FLEX_FIELD_NAME.equals(k)) {
+					fcAmountSelected = new BigDecimal(v.getAmieceDescription());
+				}
 				// bpi
 				if (GIFT_PACKAGE_INDICATORS.contains(k)) {
 					packageSelectedAmiecCode = v.getAmieceCode();
 					packageFcAmount = new BigDecimal(v.getAmieceCode().replaceAll(">", ""));
 				}
 			}
+		}
+		// in case of pagbig saving
+		if (noOfMonth != null && fcAmountSelected != null) {
+			monthlyContribution = fcAmountSelected;
 		}
 		Object volunteerContributionIndicVal = preFlexValidationVariables.get("volunteerContributionIndic");
 		Boolean volunteerContributionIndic = volunteerContributionIndicVal != null ? (boolean) volunteerContributionIndicVal : null;
