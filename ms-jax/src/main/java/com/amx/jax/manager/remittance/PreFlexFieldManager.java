@@ -135,6 +135,9 @@ public class PreFlexFieldManager {
 		 * these are default values.These may get overridden by calling respective
 		 * flexfield manager's validatePreFlexField method below
 		 */
+		if (packageFcAmount != null && requestFlexFields.get(FC_AMOUNT_FLEX_FIELD_NAME) == null) {
+			requestFlexFields.put(FC_AMOUNT_FLEX_FIELD_NAME, new FlexFieldDto(packageFcAmount.toString()));
+		}
 		validationResults.put("requiredFlexFields", requiredFlexFields);
 		validationResults.put(PREFLEXCALL_COMPLETE.getName(), getPreFlexCallComplete(requestFlexFields, requiredFlexFields));
 		validationResults.put(PACKAGE_FC_AMOUNT.getName(), packageFcAmount);
@@ -154,7 +157,7 @@ public class PreFlexFieldManager {
 		for (JaxConditionalFieldDto dto : requiredFlexFields) {
 			String fieldName = dto.getField().getName();
 			FlexFieldDto valueInRequest = requestFlexFields.get(fieldName);
-			if (valueInRequest == null && !FC_AMOUNT_FLEX_FIELD_NAME.equals(fieldName)) {
+			if (valueInRequest == null) {
 				preFlexCallComplete = false;
 			}
 		}
