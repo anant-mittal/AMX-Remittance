@@ -34,6 +34,7 @@ public class VentejaApiManager extends ServiceProviderApiManager {
 		inputs.putAll(remitApplParametersMap);
 		inputs.put("P_BENEFICIARY_RELASHIONSHIP_ID", remittanceAdditionalBeneFieldModel.getBeneId());
 		inputs.put("flexFieldDtoMap", remittanceAdditionalBeneFieldModel.getFlexFieldDtoMap());
+		inputs.put("additionalDtoMap", remittanceAdditionalBeneFieldModel.getAdditionalDtoMap());
 		ServiceProviderCallRequestDto serviceProviderCallRequestDto = createValidateInputRequest(inputs);
 		AmxApiResponse<Validate_Remittance_Inputs_Call_Response, Object> response = serviceProviderClientWrapper
 				.validateRemittanceInputs(serviceProviderCallRequestDto);
@@ -63,8 +64,12 @@ public class VentejaApiManager extends ServiceProviderApiManager {
 	public ServiceProviderCallRequestDto createValidateInputRequest(Map<String, Object> remitApplParametersMap) {
 		ServiceProviderCallRequestDto serviceProviderCallRequestDto = super.createValidateInputRequest(remitApplParametersMap);
 		VentejaServiceProviderFlexField[] allFlexFields = VentejaServiceProviderFlexField.values();
+		Map<String, FlexFieldDto> requestFlexFields = (Map<String, FlexFieldDto>) remitApplParametersMap.get("flexFieldDtoMap");
+		if (remitApplParametersMap.get("additionalDtoMap") != null) {
+			Map<String, FlexFieldDto> additionalFields = (Map<String, FlexFieldDto>) remitApplParametersMap.get("additionalDtoMap");
+			requestFlexFields.putAll(additionalFields);
+		}
 		for (VentejaServiceProviderFlexField flexField : allFlexFields) {
-			Map<String, FlexFieldDto> requestFlexFields = (Map<String, FlexFieldDto>) remitApplParametersMap.get("flexFieldDtoMap");
 			FlexFieldDto value = requestFlexFields.get(flexField.name());
 			if (value != null) {
 				flexField.setValue(serviceProviderCallRequestDto, requestFlexFields);
