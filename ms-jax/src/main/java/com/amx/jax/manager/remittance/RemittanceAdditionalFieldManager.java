@@ -246,7 +246,10 @@ public class RemittanceAdditionalFieldManager {
 							jaxConditionalField.getField().getAdditionalValidations().put("format", addlDataDisplay.getFieldFormat());
 						}
 					}
-					jaxConditionalField.getField().getAdditionalValidations().putAll(jaxFieldManager.getAdditionalValidations(jaxDynamicField));
+					Map<String, Object> addlValidations = jaxFieldManager.getAdditionalValidations(jaxDynamicField);
+					if (addlValidations != null) {
+						jaxConditionalField.getField().getAdditionalValidations().putAll(addlValidations);
+					}
 				}
 			}
 		}
