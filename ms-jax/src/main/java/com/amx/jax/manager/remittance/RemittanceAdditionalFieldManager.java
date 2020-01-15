@@ -205,12 +205,7 @@ public class RemittanceAdditionalFieldManager {
 				case BENEFICIARY_SWIFT_BANK2:
 					jaxConditionalFieldDto.getField().setPossibleValues(swiftBeneListDto);
 					break;	
-				case BENE_DOB:
-					if (beneficaryMaster.getDateOfBrith() != null) {
-						String dateFormat = (String) jaxConditionalFieldDto.getField().getAdditionalValidations().get("format");
-						jaxConditionalFieldDto.getField().setDefaultValue(DateUtil.formatDate(beneficaryMaster.getDateOfBrith(), dateFormat));
-					}
-					break;
+				
 				default:
 					break;
 				}
