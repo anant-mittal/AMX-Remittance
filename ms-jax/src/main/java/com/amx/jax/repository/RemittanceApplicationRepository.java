@@ -29,7 +29,7 @@ public interface RemittanceApplicationRepository extends CrudRepository<Remittan
 	public List<RemittanceApplication> fetchRemitApplTrnxRecordsByCustomerPayId(@Param("paymentId") String paymentId,@Param("customerId") Customer customerId);
 	
 	
-	@Query("select ra from RemittanceApplication ra where ra.fsCustomer=:customerId and ra.paygTrnxDetailId=:paymentId and ra.isactive='Y'")
+	@Query("select ra from RemittanceApplication ra where ra.fsCustomer=:customerId and ra.paygTrnxDetailId=:paymentId and ra.isactive='Y' and trunc(sysdate)=trunc(createdDate)")
 	public List<RemittanceApplication> fetchRemitApplTrnxRecordsByCustomerPaygDetailId(@Param("paymentId") BigDecimal paymentId,@Param("customerId") Customer customerId);
 	
 

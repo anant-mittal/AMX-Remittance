@@ -58,9 +58,9 @@ public class CorporateDiscountManager {
 			corpDiscountId = customercoreView.getCorporateIdForOnline();
 			
 			BigDecimal percentageAmt = BigDecimal.ZERO;
-			String corDisPercentage = customercoreView.getDiscountOnComPercentage();
+			BigDecimal corDisPercentage = customercoreView.getDiscountOnComPercentage();
 			BigDecimal corPerId     = customercoreView.getDiscountOnComPercentageId();
-			if(!StringUtils.isBlank(corDisPercentage) && !corDisPercentage.equals("0") && JaxUtil.isNullZeroBigDecimalCheck(corPerId)){
+			if(JaxUtil.isNullZeroBigDecimalCheck(corDisPercentage) && JaxUtil.isNullZeroBigDecimalCheck(corPerId)){
 				percentageAmt = getPercentageAmount(corDisPercentage,commission);
 			}
 			if(JaxUtil.isNullZeroBigDecimalCheck(percentageAmt) && percentageAmt.compareTo(corpDiscount)==1) {
@@ -82,10 +82,10 @@ public class CorporateDiscountManager {
 		return corpDiscntDto;
 	}
 
-	private BigDecimal getPercentageAmount(String percentage,BigDecimal commssion) {
+	private BigDecimal getPercentageAmount(BigDecimal percentage,BigDecimal commssion) {
 		BigDecimal percentageAmt = BigDecimal.ZERO;
 		try {
-		BigDecimal percentageValue = new BigDecimal(percentage).divide(new BigDecimal(100));
+		BigDecimal percentageValue = percentage.divide(new BigDecimal(100));
 		BigDecimal percentageAmount = percentageValue.multiply(commssion);
 		CurrencyMasterMdlv1 currencyMaster =currencyDao.findOne(metaData.getDefaultCurrencyId());
 		BigDecimal decimalValue = currencyMaster.getDecinalNumber()==null?BigDecimal.ZERO:currencyMaster.getDecinalNumber();

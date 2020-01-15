@@ -188,11 +188,14 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 			CountryBranchMdlv1 countryBranch = new CountryBranchMdlv1();
 			countryBranch = bankMetaService.getCountryBranchById(metaData.getCountryBranchId()); //user branch not customer branch
 			
-			if(countryBranch!=null && !countryBranch.getBranchId().equals(ConstantDocument.ONLINE_BRANCH_LOC_CODE)) {
-				deActivateOnlineApplication();
-			}else if (countryBranch!=null && countryBranch.getBranchId().equals(ConstantDocument.ONLINE_BRANCH_LOC_CODE)){ //De-activate Branch application in online
-				deActivateBranchApplicationInOnline();
-			}
+			/*
+			 * if(countryBranch!=null &&
+			 * !countryBranch.getBranchId().equals(ConstantDocument.ONLINE_BRANCH_LOC_CODE))
+			 * { deActivateOnlineApplication(); }else if (countryBranch!=null &&
+			 * countryBranch.getBranchId().equals(ConstantDocument.ONLINE_BRANCH_LOC_CODE)){
+			 * //De-activate Branch application in online
+			 * deActivateBranchApplicationInOnline(); }
+			 */
 			
 			List<ShoppingCartDetails> lstCustomerShopping = branchRemittancePaymentDao.fetchCustomerShoppingCart(customerId);
 			
