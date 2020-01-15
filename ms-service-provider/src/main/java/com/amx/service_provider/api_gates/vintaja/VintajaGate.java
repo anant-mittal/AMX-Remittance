@@ -47,8 +47,8 @@ public class VintajaGate
 
 		if (owsLoginCredentialsObject.getTruststore_path() != null)
 		{
-			//System.setProperty("javax.net.ssl.trustStore", owsLoginCredentialsObject.getTruststore_path());
-			//System.setProperty("javax.net.ssl.trustStorePassword", owsLoginCredentialsObject.getTrusttore_pwd()); // changeit
+			System.setProperty("javax.net.ssl.trustStore", owsLoginCredentialsObject.getTruststore_path());
+			System.setProperty("javax.net.ssl.trustStorePassword", owsLoginCredentialsObject.getTrusttore_pwd()); // changeit
 		}
 
 		// No need for key store setup at this level
