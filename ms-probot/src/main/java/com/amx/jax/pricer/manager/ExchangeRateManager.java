@@ -43,7 +43,7 @@ import com.amx.jax.pricer.dbmodel.ExchRateUpload;
 import com.amx.jax.pricer.dbmodel.ExchangeRateMasterApprovalDet;
 import com.amx.jax.pricer.dbmodel.GroupingMaster;
 import com.amx.jax.pricer.dbmodel.ServiceMasterDesc;
-import com.amx.jax.pricer.dbmodel.VwExRoutingProductStatus;
+import com.amx.jax.pricer.dbmodel.VwExRoutingProduct;
 import com.amx.jax.pricer.dto.BankDetailsDTO;
 import com.amx.jax.pricer.dto.CountryMasterDTO;
 import com.amx.jax.pricer.dto.ExchRateEnquiryReqDto;
@@ -579,7 +579,7 @@ public class ExchangeRateManager {
 			throw new PricerServiceException(PricerServiceError.INVALID_CURRENCY, "Invalid Currency");
 		}
 
-		List<VwExRoutingProductStatus> routingProdStatusList = routingProdStatusDao.getByCurrencyId(currencyId);
+		List<VwExRoutingProduct> routingProdStatusList = routingProdStatusDao.getByCurrencyId(currencyId);
 
 		RoutingCountryBankInfo routingCountryBankInfo = new RoutingCountryBankInfo();
 
@@ -593,7 +593,7 @@ public class ExchangeRateManager {
 
 		Map<BigDecimal, BankDetailsDTO> routingBanks = new HashMap<BigDecimal, BankDetailsDTO>();
 
-		for (VwExRoutingProductStatus status : routingProdStatusList) {
+		for (VwExRoutingProduct status : routingProdStatusList) {
 
 			if (!countries.containsKey(status.getCountryId())) {
 				countries.put(status.getCountryId(), null);

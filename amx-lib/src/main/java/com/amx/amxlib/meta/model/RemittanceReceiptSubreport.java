@@ -22,6 +22,7 @@ public class RemittanceReceiptSubreport {
 	
 	private Boolean remittanceReceiptCheck;
 	
+	private boolean showPinNotAvailMessage;
 	
 	public Boolean getWaterMarkCheck() {
 		return waterMarkCheck;
@@ -100,7 +101,13 @@ public class RemittanceReceiptSubreport {
 		this.collectionAppList = collectionAppList;
 	}
 
-	
-	
+	public boolean isShowPinNotAvailMessage() {
+		return showPinNotAvailMessage;
+	}
+
+	public void setShowPinNotAvailMessage(boolean showPinNotAvailMessage) {
+		this.showPinNotAvailMessage = showPinNotAvailMessage;
+	}
+
 	
 }

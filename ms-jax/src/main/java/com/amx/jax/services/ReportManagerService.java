@@ -114,6 +114,8 @@ public class ReportManagerService extends AbstractService {
 	RemittanceTransactionRepository remittanceTransactionRepository;
 	@Autowired
 	PartnerTransactionDao partnerTransactionDao;
+	@Autowired
+	ReportManagerServiceExtn reportManagerServiceExtn;
 
 	BigDecimal companyId = null;
 	BigDecimal currencyId = null;
@@ -727,6 +729,8 @@ public class ReportManagerService extends AbstractService {
 			response.getData().setType("remitReport");
 			// logger.debug("Receipt details are " +
 			// JsonUtil.toJson(response.getData().getValues().get(0)));
+			response = reportManagerServiceExtn.generatePersonalRemittanceReceiptReportDetails(transactionHistroyDTO, promotion, response,
+					remittanceApplicationList);
 		} catch (Exception e) {
 			e.printStackTrace();
 			response.getData().getValues().addAll(remittanceReceiptSubreportList);
@@ -734,7 +738,7 @@ public class ReportManagerService extends AbstractService {
 			response.getData().setType("remitReport");
 
 		}
-
+		
 		return response;
 
 	}

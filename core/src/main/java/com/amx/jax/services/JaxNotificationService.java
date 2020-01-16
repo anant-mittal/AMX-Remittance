@@ -5,6 +5,7 @@ import static com.amx.amxlib.constant.NotificationConstants.REG_SUC;
 import static com.amx.amxlib.constant.NotificationConstants.RESP_DATA_KEY;
 import static com.amx.amxlib.constant.NotificationConstants.SERVICE_PROVIDER_RESPONSE;
 import static com.amx.amxlib.constant.NotificationConstants.TRANSACTION_FAIL;
+import static com.amx.amxlib.constant.NotificationConstants.RESP_TRANSACTION_DATA_KEY;
 
 import java.util.List;
 import java.util.Map;
@@ -98,6 +99,7 @@ public class JaxNotificationService {
 		email.setITemplate(TemplatesMX.TXN_CRT_SUCC);
 		email.setHtml(true);
 		email.getModel().put(RESP_DATA_KEY, pinfo);
+		email.getModel().put(RESP_TRANSACTION_DATA_KEY, remittanceReceiptSubreport);
 		if (emailData != null) {
 			email.getModel().putAll(emailData);
 		}

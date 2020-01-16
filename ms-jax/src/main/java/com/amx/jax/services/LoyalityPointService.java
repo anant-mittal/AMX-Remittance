@@ -89,4 +89,14 @@ public class LoyalityPointService {
 		
 		return loyalityState;
 	}
+	
+	/**
+	 * @param loyalityAmount
+	 * @return returns equivalent loyality points
+	 */
+	public BigDecimal getEquivalentLoyalityPoints(BigDecimal loyalityAmount) {
+		BigDecimal loyalityPoints = getVwLoyalityEncash().getLoyalityPoint();
+		BigDecimal eqAmount = getVwLoyalityEncash().getEquivalentAmount();
+		return loyalityPoints.divide(eqAmount).multiply(loyalityAmount);
+	}
 }

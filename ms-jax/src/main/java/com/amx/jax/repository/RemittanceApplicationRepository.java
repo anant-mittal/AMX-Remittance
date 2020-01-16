@@ -26,8 +26,12 @@ public interface RemittanceApplicationRepository extends CrudRepository<Remittan
 	public List<RemittanceApplication> deActivateNotUsedApplication(@Param("customerId") Customer customerId);
 
 	@Query("select ra from RemittanceApplication ra where ra.fsCustomer=:customerId and ra.paymentId=:paymentId and ra.isactive='Y'")
-	public List<RemittanceApplication> fetchRemitApplTrnxRecordsByCustomerPayId(@Param("paymentId") String paymentId,
-			@Param("customerId") Customer customerId);
+	public List<RemittanceApplication> fetchRemitApplTrnxRecordsByCustomerPayId(@Param("paymentId") String paymentId,@Param("customerId") Customer customerId);
+	
+	
+	@Query("select ra from RemittanceApplication ra where ra.fsCustomer=:customerId and ra.paygTrnxDetailId=:paymentId and ra.isactive='Y' and trunc(sysdate)=trunc(createdDate)")
+	public List<RemittanceApplication> fetchRemitApplTrnxRecordsByCustomerPaygDetailId(@Param("paymentId") BigDecimal paymentId,@Param("customerId") Customer customerId);
+	
 
 	@Query("select rv from RemittanceTransactionView rv where rv.applicationDocumentNo=?1 and rv.applicationFinancialYear = ?2")
 	public RemittanceTransactionView fetchRemitApplTrnxView(BigDecimal applicationDocumentNo, BigDecimal docFinYear);
@@ -104,4 +108,12 @@ public interface RemittanceApplicationRepository extends CrudRepository<Remittan
 	@Query(value =" SELECT * FROM EX_APPL_TRNX A WHERE a.CUSTOMER_ID=?1 AND a.ACCOUNT_MMYYYY=trunc(SYSDATE,'MONTH') AND a.ISACTIVE='Y' "+ 
 			" and a.COUNTRY_BRANCH_ID=?2 and TRUNC(SYSDATE)=TRUNC(A.CREATED_DATE) and NVL(APPLICATION_STATUS,' ' ) <>'T' ",nativeQuery = true)
 	public List<RemittanceApplication> getApplicationCountList(BigDecimal customerId,BigDecimal countryBranchId);
+	
+	
+	@Transactional
+	@Modifying
+	@Query("update RemittanceApplication appl set isactive = 'D',applicaitonStatus = null where appl.fsCustomer=:customerId and trunc(sysdate)=trunc(createdDate) " 
+			+"and isactive <> 'D' and appl.loccod <>:locCod and NVL(applicaitonStatus,' ')<>'T' and transactionDocumentNo is null")
+	public void deActivateBranchApplicationInOnline(@Param("customerId") Customer customerId,@Param("locCod") BigDecimal locCod);
+	
 }

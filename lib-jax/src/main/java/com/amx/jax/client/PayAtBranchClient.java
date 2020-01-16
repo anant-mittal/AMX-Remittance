@@ -31,17 +31,14 @@ public class PayAtBranchClient implements IWireTransferService{
 					.meta(new JaxMetaInfo()).post()
 					.as(new ParameterizedTypeReference<AmxApiResponse<ResourceDTO, Object>>() {
 					});
-			}
-	
+	}
 	@Override
 	public AmxApiResponse<PayAtBranchTrnxListDTO, Object> getPbTrnxList() {
-		
 			return restService.ajax(appConfig.getJaxURL())
 					.path(Path.PREFIX + Path.PB_TRNX_LIST)
 					.meta(new JaxMetaInfo()).post()
 					.as(new ParameterizedTypeReference<AmxApiResponse<PayAtBranchTrnxListDTO, Object>>() {
 					});
-		
 	}
 
 	@Override
@@ -52,6 +49,5 @@ public class PayAtBranchClient implements IWireTransferService{
 					.meta(new JaxMetaInfo()).post()
 					.as(new ParameterizedTypeReference<AmxApiResponse<PayAtBranchTrnxListDTO, Object>>() {
 					});
-		
 	}
 }
