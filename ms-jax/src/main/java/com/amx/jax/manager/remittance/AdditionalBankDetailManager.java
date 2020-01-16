@@ -16,7 +16,9 @@ import org.springframework.stereotype.Component;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.BenificiaryListView;
+import com.amx.jax.dbmodel.PurposeTrnxAmicDesc;
 import com.amx.jax.dbmodel.remittance.AdditionalBankDetailData;
+import com.amx.jax.dbmodel.remittance.AdditionalBankDetailsViewx;
 import com.amx.jax.dbmodel.remittance.AdditionalBankRuleMap;
 import com.amx.jax.dbmodel.remittance.AdditionalDataDisplayView;
 import com.amx.jax.dbmodel.remittance.FlexFiledView;
@@ -25,12 +27,15 @@ import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.remittance.RemittanceAdditionalBeneFieldModel;
 import com.amx.jax.model.response.jaxfield.JaxConditionalFieldDto;
 import com.amx.jax.model.response.jaxfield.JaxFieldDto;
+import com.amx.jax.model.response.jaxfield.JaxFieldValueDto;
 import com.amx.jax.model.response.remittance.FlexFieldDto;
 import com.amx.jax.model.response.remittance.ParameterDetailsDto;
+import com.amx.jax.repository.IAdditionalBankDetailsDao;
 import com.amx.jax.repository.IAdditionalBankRuleMapRepos;
 import com.amx.jax.repository.IAdditionalDataDisplayDao;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.ICurrencyDao;
+import com.amx.jax.repository.IPurposeTrnxAmicDescRepository;
 import com.amx.jax.repository.remittance.AdditionalBankDetailDataRepository;
 import com.amx.jax.repository.remittance.IViewDeliveryMode;
 import com.amx.jax.repository.remittance.IViewParameterDetailsRespository;
@@ -70,6 +75,10 @@ public class AdditionalBankDetailManager {
 	IViewDeliveryMode viewDeliveryMode;
 	@Autowired
 	ICurrencyDao currencyDao;
+	@Autowired
+	IAdditionalBankDetailsDao additionalBankDetailsDao;
+	@Autowired
+	IPurposeTrnxAmicDescRepository purposeTrnxAmicDescRepository;
 
 	public void setDefaultValues(List<JaxConditionalFieldDto> requiredFlexFields, RemittanceAdditionalBeneFieldModel request,
 			Map<String, Object> remitApplParametersMap) {
@@ -210,5 +219,68 @@ public class AdditionalBankDetailManager {
 			return ">" + pdto.getAmount().toString();
 		}
 		return pdto.getAmount().toString();
+	}
+	
+	/**
+	 * @param flexiField
+	 * @param countryId
+	 * @param deleveryModeId
+	 * @param remittanceModeId
+	 * @param bankId
+	 * @param currencyId
+	 * @param additionalBankRuleFiledId
+	 * @return Returns the possible values for given flex field from additional bank rule setup
+	 */
+	public List<JaxFieldValueDto> getAmiecValues(String flexiField, BigDecimal countryId, BigDecimal deleveryModeId, BigDecimal remittanceModeId,
+			BigDecimal bankId, BigDecimal currencyId, BigDecimal additionalBankRuleFiledId) {
+		List<AdditionalBankDetailsViewx> addtionalBankDetails = additionalBankDetailsDao.getAdditionalBankDetails(currencyId, bankId,
+				remittanceModeId, deleveryModeId, countryId, flexiField);
+		return addtionalBankDetails.stream().map(x -> {
+			if (ConstantDocument.INDIC1.equalsIgnoreCase(flexiField)) {
+				return getPurposeOfTrnxFlexFieldDto(x, additionalBankRuleFiledId);
+			} else {
+				return getFlexFieldDto(x, additionalBankRuleFiledId);
+			}
+
+		}).collect(Collectors.toList());
+	}
+
+	/**
+	 * @param x
+	 * @param additionalBankRuleFiledId
+	 * @return Returns JaxFieldValueDto from AdditionalBankDetailsViewx
+	 */
+	private JaxFieldValueDto getFlexFieldDto(AdditionalBankDetailsViewx x, BigDecimal additionalBankRuleFiledId) {
+		FlexFieldDto ffDto = new FlexFieldDto(additionalBankRuleFiledId, x.getSrlId(), x.getAmieceDescription(), x.getAmiecCode());
+		JaxFieldValueDto dto = new JaxFieldValueDto();
+
+		dto.setId(ffDto.getSrlId());
+		dto.setOptLable(ffDto.getAmieceDescription());
+		dto.setLocalName(null);
+		dto.setResourceName(ffDto.getAmieceDescription());
+		dto.setValue(ffDto);
+		return dto;
+	}
+
+	private JaxFieldValueDto getPurposeOfTrnxFlexFieldDto(AdditionalBankDetailsViewx x, BigDecimal additionalBankRuleFiledId) {
+		FlexFieldDto ffDto = new FlexFieldDto(additionalBankRuleFiledId, x.getSrlId(), x.getAmieceDescription(), x.getAmiecCode());
+		PurposeTrnxAmicDesc purposeTrnxAmicDescs = purposeTrnxAmicDescRepository.fetchAllAmicDataByLanguageId(x.getAmiecCode().toString(),
+				metaData.getLanguageId());
+
+		JaxFieldValueDto dto = new JaxFieldValueDto();
+		if (metaData.getLanguageId().equals(new BigDecimal("2"))) {
+			if (purposeTrnxAmicDescs != null) {
+				dto.setId(ffDto.getSrlId());
+				dto.setOptLable(purposeTrnxAmicDescs.getLocalFulldesc());
+				dto.setLocalName(purposeTrnxAmicDescs.getLocalFulldesc());
+			}
+		} else {
+			dto.setId(ffDto.getSrlId());
+			dto.setOptLable(ffDto.getAmieceDescription());
+			dto.setLocalName(null);
+		}
+		dto.setResourceName(ffDto.getAmieceDescription());
+		dto.setValue(ffDto);
+		return dto;
 	}
 }

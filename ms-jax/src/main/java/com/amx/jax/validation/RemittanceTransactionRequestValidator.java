@@ -64,18 +64,13 @@ public class RemittanceTransactionRequestValidator {
 	@Autowired
 	IAdditionalBankRuleMapDao additionalBankRuleMapDao;
 	@Autowired
-	IAdditionalBankDetailsDao additionalBankDetailsDao;
-	@Autowired
 	JaxFieldService jaxFieldService;
 	@Autowired
 	DateUtil dateUtil;
 	@Autowired
 	MetaData metaData;
-
 	@Autowired
 	BranchRemittanceManager branchRemitManager;
-	@Autowired
-	IPurposeTrnxAmicDescRepository purposeTrnxAmicDescRepository;
 	@Autowired
 	AdditionalBankDetailManager additionalBankDetailManager;
 	@Autowired
@@ -219,7 +214,7 @@ public class RemittanceTransactionRequestValidator {
 		}
 		switch (flexFieldBehaviourEnum) {
 		case PRE_DEFINED:
-			List<JaxFieldValueDto> amiecValues = getAmiecValues(bankRule.getFlexField(), routingCountryId, deliveryModeId, remittanceModeId,
+			List<JaxFieldValueDto> amiecValues = additionalBankDetailManager.getAmiecValues(bankRule.getFlexField(), routingCountryId, deliveryModeId, remittanceModeId,
 					routingBankId, foreignCurrencyId, bankRule.getAdditionalBankRuleId());
 			// To set default value for bpi gift service provider
 			if (servicePackage != null && servicePackage.getIndic() != null && servicePackage.getIndic().equalsIgnoreCase(field.getName())) {
@@ -348,33 +343,6 @@ public class RemittanceTransactionRequestValidator {
 		return changedValue;
 	}
 
-	private List<JaxFieldValueDto> getAmiecValues(String flexiField, BigDecimal countryId, BigDecimal deleveryModeId, BigDecimal remittanceModeId,
-			BigDecimal bankId, BigDecimal currencyId, BigDecimal additionalBankRuleFiledId) {
-		List<AdditionalBankDetailsViewx> addtionalBankDetails = additionalBankDetailsDao.getAdditionalBankDetails(currencyId, bankId,
-				remittanceModeId, deleveryModeId, countryId, flexiField);
-		return addtionalBankDetails.stream().map(x -> {
-			FlexFieldDto ffDto = new FlexFieldDto(additionalBankRuleFiledId, x.getSrlId(), x.getAmieceDescription(), x.getAmiecCode());
-
-			PurposeTrnxAmicDesc purposeTrnxAmicDescs = purposeTrnxAmicDescRepository.fetchAllAmicDataByLanguageId(x.getAmiecCode().toString(),
-					metaData.getLanguageId());
-
-			JaxFieldValueDto dto = new JaxFieldValueDto();
-			if (metaData.getLanguageId().equals(new BigDecimal("2"))) {
-				if (purposeTrnxAmicDescs != null) {
-					dto.setId(ffDto.getSrlId());
-					dto.setOptLable(purposeTrnxAmicDescs.getLocalFulldesc());
-					dto.setLocalName(purposeTrnxAmicDescs.getLocalFulldesc());
-				}
-			} else {
-				dto.setId(ffDto.getSrlId());
-				dto.setOptLable(ffDto.getAmieceDescription());
-				dto.setLocalName(null);
-			}
-			dto.setResourceName(ffDto.getAmieceDescription());
-			dto.setValue(ffDto);
-			return dto;
-		}).collect(Collectors.toList());
-	}
 
 	private List<JaxFieldValueDto> getPurposeOfTrnx(BigDecimal beneRelaId, BigDecimal routingCountryId) {
 		List<AdditionalExchAmiecDto> purposeOfTrnxList = branchRemitManager.getPurposeOfTrnx(beneRelaId, routingCountryId);
