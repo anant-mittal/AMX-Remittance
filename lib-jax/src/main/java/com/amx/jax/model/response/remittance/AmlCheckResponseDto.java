@@ -19,6 +19,8 @@ public class AmlCheckResponseDto {
 	String riskLevel1;
 	String riskLevel2;
 	String riskLevel3;
+	String riskLevel4;
+	String riskLevel5;
 	
 	public String getMessageCode() {
 		return messageCode;
@@ -104,6 +106,18 @@ public class AmlCheckResponseDto {
 	}
 	public void setRiskLevel3(String riskLevel3) {
 		this.riskLevel3 = riskLevel3;
+	}
+	public String getRiskLevel4() {
+		return riskLevel4;
+	}
+	public void setRiskLevel4(String riskLevel4) {
+		this.riskLevel4 = riskLevel4;
+	}
+	public String getRiskLevel5() {
+		return riskLevel5;
+	}
+	public void setRiskLevel5(String riskLevel5) {
+		this.riskLevel5 = riskLevel5;
 	}
 
 }
