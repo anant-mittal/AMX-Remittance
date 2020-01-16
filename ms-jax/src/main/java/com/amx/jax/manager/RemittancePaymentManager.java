@@ -31,10 +31,12 @@ import com.amx.jax.branchremittance.dao.BranchRemittanceDao;
 import com.amx.jax.branchremittance.manager.BranchRemittanceSaveManager;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constants.JaxTransactionStatus;
+import com.amx.jax.dao.CurrencyMasterDao;
 import com.amx.jax.dao.FcSaleApplicationDao;
 import com.amx.jax.dao.JaxEmployeeDao;
 import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dao.RemittanceProcedureDao;
+import com.amx.jax.dbmodel.CurrencyMasterMdlv1;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.PaygDetailsModel;
 import com.amx.jax.dbmodel.PaymentModeModel;
@@ -184,8 +186,14 @@ public class RemittancePaymentManager extends AbstractService{
 	RemittanceTransactionService remittanceTransactionService;
 	@Autowired
 	private MetaData meta;
-		
 
+	@Autowired
+	CurrencyMasterDao currencyMasterDao;
+	
+	
+	
+	
+	
 	public ApiResponse<PaymentResponseDto> paymentCapture(PaymentResponseDto paymentResponse) {
 		ApiResponse response = null;
 		logger.info("paymment capture old :"+paymentResponse.toString());
@@ -369,10 +377,16 @@ public class RemittancePaymentManager extends AbstractService{
 			if(!StringUtils.isBlank(paymentResponse.getPaymentId()) && !StringUtils.isBlank(paymentResponse.getResultCode()) 
 					&& (paymentResponse.getResultCode().equalsIgnoreCase(ConstantDocument.CAPTURED)|| paymentResponse.getResultCode().equalsIgnoreCase(ConstantDocument.APPROVED))) 
 			{
-				logger.info("MRU --->paymentResponse:"+paymentResponse.getUdf3()+"\t paymentResponse.getCustomerId():"+paymentResponse.getCustomerId());
-				lstPayIdDetails = applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(paymentResponse.getUdf3(),new Customer(paymentResponse.getCustomerId()));
+				
+				logger.info("MRU --->paymentResponse:"+paymentResponse.getUdf3()+"\t paymentResponse.getCustomerId():"+paymentResponse.getCustomerId() +"\t Amount :"+paymentResponse.getAmount());
+				//lstPayIdDetails = applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(paymentResponse.getUdf3(),new Customer(paymentResponse.getCustomerId()));
+				if(!StringUtils.isBlank(paymentResponse.getUdf3())) {
+				lstPayIdDetails = applicationDao.fetchRemitApplTrnxRecordsByCustomerPaygDetailId(new BigDecimal(paymentResponse.getUdf3().trim()),new Customer(paymentResponse.getCustomerId()));
 				if(lstPayIdDetails==null && lstPayIdDetails.isEmpty()) {
 					throw new GlobalException(JaxError.PG_ERROR,"No record found ");
+				}
+				}else {
+					throw new GlobalException(JaxError.PG_ERROR,"Payment is blank.");
 				}
 				
 				validateAmountMismatchV2(lstPayIdDetails, paymentResponse);
@@ -428,12 +442,6 @@ public class RemittancePaymentManager extends AbstractService{
 					responseDto.setCollectionDocumentCode(collectionDocumentCode);
 					callingServiceProviderApi(responseDto,paymentResponse.getCustomerId());
 
-					//Update remittance_transaction_id for place order method call
-					/*
-					 * if (lstPayIdDetails.get(0) != null) {
-					 * updatePlaceOrderTransactionId(lstPayIdDetails.get(0),paymentResponse); }
-					 */	
-					
 					 for(RemittanceApplication remitAppl :lstPayIdDetails) {
 						 updatePlaceOrderTransactionId(remitAppl,paymentResponse); 
 					 }
@@ -445,11 +453,7 @@ public class RemittancePaymentManager extends AbstractService{
 						paymentResponse.setCollectionDocumentCode(collectionDocumentCode);
 						paymentResponse.setCollectionDocumentNumber(collectionDocumentNumber);
 						paymentResponse.setCollectionFinanceYear(collectionFinanceYear);
-						//remitanceMap = remittanceApplicationService.saveRemittancetoOldEmos(paymentResponse);
-						//errorMsg = (String) remitanceMap.get("P_ERROR_MESSAGE");
 						paymentResponse.setErrorText(errorMsg);
-						//logger.info("EX_INSERT_EMOS_TRANSFER_LIVE :" + errorMsg);
-
 						// For Receipt Print 
 						response.setResponseStatus(ResponseStatus.OK);
 						
@@ -522,8 +526,9 @@ public class RemittancePaymentManager extends AbstractService{
 			}
 
 		}catch(Exception e) {
+			e.printStackTrace();
 			lstPayIdDetails =applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(paymentResponse.getUdf3(),new Customer(paymentResponse.getCustomerId()));
-			logger.error("error occured in paymentCapture", e);
+		     logger.error("error occured in paymentCapture", e);
 			if(!lstPayIdDetails.isEmpty()) {
 				if (lstPayIdDetails.get(0).getResultCode() != null) {
 					logger.info("Existing payment id found: {}", lstPayIdDetails.get(0).getPaymentId());
@@ -533,7 +538,7 @@ public class RemittancePaymentManager extends AbstractService{
 				fcSaleApplicationDao.updatePaygDetails(null, paymentResponse);
 				
 			}
-
+			logger.info("catch error Remittance error :"+e.getMessage());
 			throw new GlobalException(JaxError.PG_ERROR,"Remittance error :"+errorMsg);
 		}
 		response.getData().getValues().add(paymentResponse);
@@ -652,7 +657,7 @@ public class RemittancePaymentManager extends AbstractService{
 			BigDecimal payableAmount =localNetTraxAmount.subtract(loyalityPointEncashed);
 			payableAmount = RoundUtil.roundBigDecimal(payableAmount, localCurrencyDecimalNumber.intValue());
 			totalPayableAmount =totalPayableAmount.add(payableAmount); 
-			applicationIds = remittanceApplication.getRemittanceApplicationId()!=null?"":remittanceApplication.getRemittanceApplicationId().toString()+",";
+			applicationIds = remittanceApplication.getRemittanceApplicationId()==null?"":remittanceApplication.getRemittanceApplicationId().toString()+",";
 		}
 		
 	
@@ -661,9 +666,7 @@ public class RemittancePaymentManager extends AbstractService{
 		}
 		BigDecimal paidAmount = new BigDecimal(paymentResponse.getAmount());
 		paidAmount = RoundUtil.roundBigDecimal(paidAmount, localCurrencyDecimalNumber.intValue());
-		
-		logger.info("validateAmountMismatchV2 knet paidAmount :"+paidAmount+"\t totalPayableAmount :"+totalPayableAmount);
-		
+		logger.info("validateAmountMismatchV2 Our appl totalPayableAmount amount :"+totalPayableAmount+"\t Knet Amount :"+paidAmount);
 		if (!paidAmount.equals(totalPayableAmount)) {
 			String errorMessage = String.format("paidAmount: %s and payableAmount: %s mismatch for remittanceApplicationId: %s", paidAmount,totalPayableAmount, applicationIds);
 			logger.info(errorMessage);
@@ -753,7 +756,9 @@ public class RemittancePaymentManager extends AbstractService{
 
 	public RemittanceApplicationResponseModel payShoppingCart(BranchRemittanceRequestModel remittanceRequestModel){
 			RemittanceApplicationResponseModel responseModel = null;
-		
+			
+			CurrencyMasterMdlv1 currMaster = currencyMasterDao.getCurrencyMasterById(meta.getDefaultCurrencyId());
+			BigDecimal knetAmount = BigDecimal.ZERO;
 		
 			HashMap<String, Object> mapAllDetailApplSave =new HashMap<String, Object>();
 			PaygDetailsModel pgDetails = null;
@@ -764,7 +769,14 @@ public class RemittancePaymentManager extends AbstractService{
 			mapAllDetailApplSave.put("APPL", remittanceRequestModel.getRemittanceApplicationId());
 			responseModel = branchRemittanceDao.saveAndUpdateAll(mapAllDetailApplSave);
 			responseModel.setMerchantTrackId(meta.getCustomerId());
-			responseModel.setNetPayableAmount(remittanceRequestModel.getTotalTrnxAmount());
+			knetAmount = RoundUtil.roundBigDecimal(remittanceRequestModel.getTotalTrnxAmount(), currMaster.getDecinalNumber().intValue());
+			if(currMaster!=null && JaxUtil.isNullZeroBigDecimalCheck(knetAmount)) {
+				responseModel.setNetPayableAmount(knetAmount);
+			}else {
+				throw new GlobalException("Transaction amount should not be zero.");
+			}
+			
+			logger.info("payShoppingCart Amount getNetPayableAmount :"+responseModel.getNetPayableAmount()+"\t UDF3 Value :"+responseModel.getDocumentIdForPayment()+"\t knetAmount :"+knetAmount+"\t Customer ID :"+meta.getCustomerId());
 			return responseModel;
 	}
 	
@@ -813,6 +825,7 @@ public class RemittancePaymentManager extends AbstractService{
 		BranchApplicationDto remitApplicationId = new BranchApplicationDto();
 		BigDecimal totalAmount = BigDecimal.ZERO;
 		BigDecimal loyaltyAmount = BigDecimal.ZERO;
+		CurrencyMasterMdlv1 currMaster = currencyMasterDao.getCurrencyMasterById(meta.getDefaultCurrencyId());
 		
 		/** To set the applciation details **/
 		for(RemittanceApplication appl:lstPayIdDetails) {
@@ -822,12 +835,18 @@ public class RemittancePaymentManager extends AbstractService{
 			loyaltyAmount = loyaltyAmount.add(appl.getLoyaltyPointsEncashed());
 			remittanceApplicationIds.add(applDto);
 		}
-		
+		logger.info("createRequestModelForOnline totalAmount :"+totalAmount+"\t Knet Amount :"+payResDto.getAmount()+"\t loyaltyAmount :"+loyaltyAmount);
 		/** to set the collection amount **/
+		BigDecimal KnetAmt = new BigDecimal(payResDto.getAmount());
+		
+		if(currMaster!=null && JaxUtil.isNullZeroBigDecimalCheck(KnetAmt)) {
+			KnetAmt = RoundUtil.roundBigDecimal(KnetAmt, currMaster.getDecinalNumber().intValue());
+		}
+		
 		PaymentModeModel payModeModel = paymentModeRepository.getPaymentModeDetails(ConstantDocument.KNET_CODE);
 		RemittanceCollectionDto remittanceCollection = new RemittanceCollectionDto();
 		remittanceCollection.setPaymentModeId(payModeModel.getPaymentModeId());
-		remittanceCollection.setPaymentAmount(new BigDecimal(payResDto.getAmount()));
+		remittanceCollection.setPaymentAmount(KnetAmt);//new BigDecimal(payResDto.getAmount()));
 		remittanceCollection.setApprovalNo(payResDto.getAuth_appNo());
 		collctionModeDto.add(remittanceCollection);
 		
@@ -836,9 +855,9 @@ public class RemittancePaymentManager extends AbstractService{
 		request.setRemittanceApplicationId(remittanceApplicationIds);
 		request.setCollctionModeDto(collctionModeDto);
 		request.setCurrencyRefundDenomination(null);
-		request.setTotalTrnxAmount(totalAmount);
+		request.setTotalTrnxAmount(totalAmount); // new BigDecimal(payResDto.getAmount())
 		request.setTotalLoyaltyAmount(loyaltyAmount);
-		request.setPaidAmount(new BigDecimal(payResDto.getAmount()));//totalAmount);
+		request.setPaidAmount(KnetAmt);//totalAmount);
 		
 		
 		return request;
