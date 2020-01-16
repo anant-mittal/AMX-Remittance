@@ -32,6 +32,8 @@ import com.amx.jax.device.CardData;
 import com.amx.jax.device.DeviceBox;
 import com.amx.jax.device.DeviceConstants;
 import com.amx.jax.device.DeviceData;
+import com.amx.jax.dict.UserClient;
+import com.amx.jax.dict.UserClient.AuthSystem;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.dict.UserClient.DeviceType;
 import com.amx.jax.dict.UserClient.UserDeviceClient;
@@ -248,7 +250,9 @@ public class SSOServerController {
 				x.setDescription(String.format("T:%s D:%s", sSOTranx.get().getBranchAdapterId(), deviceRegId));
 				AppContextUtil.addWarning(x);
 
-				if (!ArgUtil.isEmpty(sSOTranx.get().getBranchAdapterId())) { // Terminal Login
+				if (!ArgUtil.isEmpty(sSOTranx.get().getBranchAdapterId())
+						&& UserClient.isAuthSystem(userClientDto.getClientType(), AuthSystem.TERMINAL)
+						) { // Terminal Login
 
 					DeviceData branchDeviceData = deviceBox.get(sSOTranx.get().getBranchAdapterId());
 					userClientDto.setLocalIpAddress(branchDeviceData.getLocalIp());
@@ -263,7 +267,9 @@ public class SSOServerController {
 							// .clientType(ClientType.BRANCH_ADAPTER)
 							.deviceRegId(sSOTranx.get().getBranchAdapterId());
 
-				} else if (ArgUtil.is(deviceRegId) && sSOConfig.isLoginWithDevice()) { // Device LOGIN
+				} else if (ArgUtil.is(deviceRegId) && sSOConfig.isLoginWithDevice()
+						&& UserClient.isAuthSystem(userClientDto.getClientType(), AuthSystem.DEVICE)
+						) { // Device LOGIN
 
 					userClientDto.setLocalIpAddress(userDeviceClient.getIp());
 					userClientDto.setDeviceId(userDeviceClient.getFingerprint());
