@@ -1391,7 +1391,7 @@ public class RemittanceTransactionManager {
 		/** code end here **/
 		
 		remittanceAdditionalFieldManager.processAdditionalFields(model);
-		
+		remittanceTransactionRequestValidator.saveFlexFields(model, remitApplParametersMap);
 		/** validation for  Service Provider **/
 		applReqModel.setAdditionalFields(remitApplParametersMap);
 		branchRemittanceApplManager.checkServiceProviderValidation(applReqModel);

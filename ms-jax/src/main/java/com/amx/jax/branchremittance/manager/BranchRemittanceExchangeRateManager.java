@@ -7,15 +7,8 @@ import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_BANK_I
 import static com.amx.amxlib.constant.ApplicationProcedureParam.P_ROUTING_COUNTRY_ID;
 
 import java.math.BigDecimal;
-
-
-import java.math.RoundingMode;
-
-import java.text.DecimalFormat;
-
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -56,7 +49,6 @@ import com.amx.jax.exrateservice.service.JaxDynamicPriceService;
 import com.amx.jax.exrateservice.service.JaxDynamicRoutingPricingService;
 import com.amx.jax.exrateservice.service.NewExchangeRateService;
 import com.amx.jax.manager.RemittanceTransactionManager;
-import com.amx.jax.manager.remittance.AdditionalBankDetailManager;
 import com.amx.jax.manager.remittance.CorporateDiscountManager;
 import com.amx.jax.manager.remittance.RemittanceAdditionalFieldManager;
 import com.amx.jax.manager.remittance.RemittanceApplicationParamManager;
@@ -92,18 +84,6 @@ import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.RoundUtil;
 import com.amx.jax.validation.RemittanceTransactionRequestValidator;
-
-import net.bytebuddy.utility.privilege.GetSystemPropertyAction;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
-import org.springframework.stereotype.Component;
-import org.springframework.web.context.WebApplicationContext;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
@@ -163,8 +143,6 @@ public class BranchRemittanceExchangeRateManager {
 	
 	@Autowired
 	CurrencyMasterDao currencyMasterDao;
-	@Autowired
-	AdditionalBankDetailManager additionalBankDetailManager;
 	
 
 public void validateGetExchangRateRequest(IRemittanceApplicationParams request) {
@@ -470,8 +448,6 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 				flexFields.addAll((Collection<? extends JaxConditionalFieldDto>) ex.getMeta());
 			}
 		}
-		// bank api validations
-		additionalBankDetailManager.validateAdditionalBankFields(branchRemittanceApplRequestModel, remitApplParametersMap);
 
 		List<JaxConditionalFieldDto> amlFlexFields = remittanceAdditionalFieldManager.validateAmlCheck(branchRemittanceApplRequestModel);
 		if (CollectionUtils.isNotEmpty(amlFlexFields)) {
