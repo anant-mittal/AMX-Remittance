@@ -22,10 +22,10 @@ public interface ExchRateUploadRepository extends JpaRepository<ExchRateUpload, 
 	List<ExchRateUpload> findByRuleIdIn(Iterable<String> ruleIds);
 
 	
-	@Query("select u from ExchRateUpload u where u.isActive=?1 and u.status=?2 order by createdDate asc, id asc")
+	@Query("select u from ExchRateUpload u where u.isActive=?1 and u.status=?2 order by createdDate desc, id asc")
 	List<ExchRateUpload> findByIsActiveAndStatus(IS_ACTIVE isActive, RATE_UPLOAD_STATUS status);
 
-	@Query("select u from ExchRateUpload u where u.status=?1 order by createdDate asc, id asc")
+	@Query("select u from ExchRateUpload u where u.status=?1 order by createdDate desc, id asc")
 	List<ExchRateUpload> findByStatus(RATE_UPLOAD_STATUS status);
 
 	@Transactional
