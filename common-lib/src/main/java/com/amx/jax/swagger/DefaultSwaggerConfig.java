@@ -15,7 +15,6 @@ import com.amx.jax.dict.Tenant;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.swagger.MockParamBuilder.MockParam;
 import com.amx.utils.CollectionUtil;
-import com.amx.utils.ContextUtil;
 import com.amx.utils.UniqueID;
 
 import springfox.documentation.builders.ParameterBuilder;
