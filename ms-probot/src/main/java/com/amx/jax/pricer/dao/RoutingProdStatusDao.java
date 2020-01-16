@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.amx.jax.pricer.dbmodel.VwExRoutingProductStatus;
+import com.amx.jax.pricer.dbmodel.VwExRoutingProduct;
 import com.amx.jax.pricer.repository.RoutingProdStatusRepo;
 
 @Component
@@ -15,15 +15,15 @@ public class RoutingProdStatusDao {
 	@Autowired
 	RoutingProdStatusRepo repo;
 
-	public List<VwExRoutingProductStatus> getByCurrencyId(BigDecimal currencyId) {
+	public List<VwExRoutingProduct> getByCurrencyId(BigDecimal currencyId) {
 		return repo.findByCurrencyId(currencyId);
 	}
 
-	public List<VwExRoutingProductStatus> getByCurrencyIdAndCountryId(BigDecimal currencyId, BigDecimal countryId) {
+	public List<VwExRoutingProduct> getByCurrencyIdAndCountryId(BigDecimal currencyId, BigDecimal countryId) {
 		return repo.findByCurrencyIdAndCountryId(currencyId, countryId);
 	}
 
-	public List<VwExRoutingProductStatus> getByCurrencyIdAndCountryIdAndBankIdIn(BigDecimal currencyId,
+	public List<VwExRoutingProduct> getByCurrencyIdAndCountryIdAndBankIdIn(BigDecimal currencyId,
 			BigDecimal countryId, Iterable<BigDecimal> bankIds) {
 		return repo.findByCurrencyIdAndCountryIdAndBankIdIn(currencyId, countryId, bankIds);
 	}
