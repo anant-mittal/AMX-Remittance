@@ -299,9 +299,9 @@ public class RemittanceTransactionRequestValidator {
 
 				if ("INDIC14".equals(entry.getKey())) {
 					// to date
-					LocalDate indic14toDate = dateUtil.validateDate(entry.getValue().getAmieceDescription(), ConstantDocument.MM_DD_YYYY_DATE_FORMAT);
+					LocalDate indic14toDate = dateUtil.validateDate(entry.getValue().getAmieceDescription(), ConstantDocument.DD_MM_YYYY_DATE_FORMAT);
 					if (indic14toDate == null) {
-						throw new GlobalException("Invalid date format .It must be "+ ConstantDocument.MM_DD_YYYY_DATE_FORMAT);
+						throw new GlobalException("Invalid date format .It must be "+ ConstantDocument.DD_MM_YYYY_DATE_FORMAT);
 					}
 					if (indic14toDate != null && indic14toDate.compareTo(today) <= 0) {
 						throw new GlobalException("The delivery date must be greater than today date.");
