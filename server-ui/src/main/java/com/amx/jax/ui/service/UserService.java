@@ -103,8 +103,7 @@ public class UserService {
 	 */
 	public List<String> getNotifyTopics(String prefix, Language lang) {
 		CustomerModel customerModel = sessionService.getUserSession().getCustomerModel();
-		AssertUtil.asNotNull(customerModel, "Customer Model is missing from UseerSession");
-		AssertUtil.asNotNull(customerModel.getPersoninfo(), "Personal info is missing for Customer");
+		AssertUtil.asNotNull(customerModel, "Customer Model is empty from UseerSession");
 		
 		PushMessage msg = new PushMessage();
 		msg.addToTenant(AppContextUtil.getTenant());
