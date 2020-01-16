@@ -31,7 +31,7 @@ import com.amx.jax.pricer.dbmodel.TreasuryFundTimeImpact;
 import com.amx.jax.pricer.dbmodel.ViewExGLCBAL;
 import com.amx.jax.pricer.dbmodel.ViewExGLCBalProvisional;
 import com.amx.jax.pricer.dbmodel.VwExGlcbalProvByProduct;
-import com.amx.jax.pricer.dbmodel.VwExRoutingProductStatus;
+import com.amx.jax.pricer.dbmodel.VwExRoutingProduct;
 import com.amx.jax.pricer.dto.DeliveryModeStatusInfo;
 import com.amx.jax.pricer.dto.RemitModeStatusInfo;
 import com.amx.jax.pricer.dto.RoutingProductStatusDetails;
@@ -81,7 +81,7 @@ public class RoutingProductManager {
 	public RoutingProductStatusDetails getRoutingProductStatus(BigDecimal beneCountryId, BigDecimal currencyId) {
 
 		// Get valid Routing Product Status
-		List<VwExRoutingProductStatus> viewRoutingProdsStatus = routingProdStatusDao
+		List<VwExRoutingProduct> viewRoutingProdsStatus = routingProdStatusDao
 				.getByCurrencyIdAndDestinationCountryId(currencyId, beneCountryId);
 
 		if (viewRoutingProdsStatus == null || viewRoutingProdsStatus.isEmpty()) {
@@ -99,24 +99,24 @@ public class RoutingProductManager {
 		// Get Bank Details
 		Map<BigDecimal, BankMasterModel> bankMasters = bankMasterDao.getBankByIdIn(correspondentIds);
 
-		Map<BigDecimal, Map<BigDecimal, Map<BigDecimal, VwExRoutingProductStatus>>> bankRemitDeliveryModeProdStatus = new HashMap<BigDecimal, Map<BigDecimal, Map<BigDecimal, VwExRoutingProductStatus>>>();
+		Map<BigDecimal, Map<BigDecimal, Map<BigDecimal, VwExRoutingProduct>>> bankRemitDeliveryModeProdStatus = new HashMap<BigDecimal, Map<BigDecimal, Map<BigDecimal, VwExRoutingProduct>>>();
 
-		for (VwExRoutingProductStatus productStatus : viewRoutingProdsStatus) {
+		for (VwExRoutingProduct productStatus : viewRoutingProdsStatus) {
 			if (!bankRemitDeliveryModeProdStatus.containsKey(productStatus.getBankId())) {
-				Map<BigDecimal, VwExRoutingProductStatus> delModeProdStatusMap = new HashMap<BigDecimal, VwExRoutingProductStatus>();
+				Map<BigDecimal, VwExRoutingProduct> delModeProdStatusMap = new HashMap<BigDecimal, VwExRoutingProduct>();
 				delModeProdStatusMap.put(productStatus.getDeliveryModeId(), productStatus);
 
-				Map<BigDecimal, Map<BigDecimal, VwExRoutingProductStatus>> remitModeProdStatusMap = new HashMap<BigDecimal, Map<BigDecimal, VwExRoutingProductStatus>>();
+				Map<BigDecimal, Map<BigDecimal, VwExRoutingProduct>> remitModeProdStatusMap = new HashMap<BigDecimal, Map<BigDecimal, VwExRoutingProduct>>();
 
 				remitModeProdStatusMap.put(productStatus.getRemitModeId(), delModeProdStatusMap);
 				bankRemitDeliveryModeProdStatus.put(productStatus.getBankId(), remitModeProdStatusMap);
 			} else {
-				Map<BigDecimal, Map<BigDecimal, VwExRoutingProductStatus>> remitModeProdStatusMap = bankRemitDeliveryModeProdStatus
+				Map<BigDecimal, Map<BigDecimal, VwExRoutingProduct>> remitModeProdStatusMap = bankRemitDeliveryModeProdStatus
 						.get(productStatus.getBankId());
 
 				if (remitModeProdStatusMap.containsKey(productStatus.getRemitModeId())) {
 
-					Map<BigDecimal, VwExRoutingProductStatus> delModeProdStatusMap = remitModeProdStatusMap
+					Map<BigDecimal, VwExRoutingProduct> delModeProdStatusMap = remitModeProdStatusMap
 							.get(productStatus.getRemitModeId());
 
 					if (delModeProdStatusMap.containsKey(productStatus.getDeliveryModeId())) {
@@ -137,7 +137,7 @@ public class RoutingProductManager {
 					delModeProdStatusMap.put(productStatus.getDeliveryModeId(), productStatus);
 
 				} else {
-					Map<BigDecimal, VwExRoutingProductStatus> delModeProdStatusMap = new HashMap<BigDecimal, VwExRoutingProductStatus>();
+					Map<BigDecimal, VwExRoutingProduct> delModeProdStatusMap = new HashMap<BigDecimal, VwExRoutingProduct>();
 					delModeProdStatusMap.put(productStatus.getDeliveryModeId(), productStatus);
 
 					remitModeProdStatusMap.put(productStatus.getRemitModeId(), delModeProdStatusMap);
@@ -282,7 +282,7 @@ public class RoutingProductManager {
 			List<RemitModeStatusInfo> remitModesStatus = new ArrayList<RemitModeStatusInfo>();
 
 			if (bankRemitDeliveryModeProdStatus.containsKey(correspondentId)) {
-				Map<BigDecimal, Map<BigDecimal, VwExRoutingProductStatus>> remitModeProdStatusMap = bankRemitDeliveryModeProdStatus
+				Map<BigDecimal, Map<BigDecimal, VwExRoutingProduct>> remitModeProdStatusMap = bankRemitDeliveryModeProdStatus
 						.get(correspondentId);
 
 				Map<BigDecimal, VwExGlcbalProvByProduct> productBalMap;
@@ -292,12 +292,12 @@ public class RoutingProductManager {
 					productBalMap = new HashMap<BigDecimal, VwExGlcbalProvByProduct>();
 				}
 
-				for (Map<BigDecimal, VwExRoutingProductStatus> delModeStatusMap : remitModeProdStatusMap.values()) {
+				for (Map<BigDecimal, VwExRoutingProduct> delModeStatusMap : remitModeProdStatusMap.values()) {
 
 					// Single Delivery Mode
 					if (delModeStatusMap.size() == 1) {
 
-						VwExRoutingProductStatus prodStatus = delModeStatusMap.values().iterator().next();
+						VwExRoutingProduct prodStatus = delModeStatusMap.values().iterator().next();
 
 						RemitModeStatusInfo remitModeInfo = new RemitModeStatusInfo();
 
@@ -325,7 +325,7 @@ public class RoutingProductManager {
 						RemitModeStatusInfo remitModeInfo = new RemitModeStatusInfo();
 						remitModeInfo.setDeliveryModesStatus(new ArrayList<DeliveryModeStatusInfo>());
 
-						for (VwExRoutingProductStatus prodStatus : delModeStatusMap.values()) {// 1 for
+						for (VwExRoutingProduct prodStatus : delModeStatusMap.values()) {// 1 for
 							if (!remitStatusFilled) { // 1.1
 
 								remitModeInfo.setServiceModeId(prodStatus.getServiceId());
@@ -379,7 +379,7 @@ public class RoutingProductManager {
 
 	public int updateRoutingProductStatus(RoutingStatusUpdateRequestDto request) {
 
-		List<VwExRoutingProductStatus> oldStatusList;
+		List<VwExRoutingProduct> oldStatusList;
 
 		if (request.getDeliveryModeId() == null) {
 			oldStatusList = routingProdStatusDao.getByCountryIdAndCurrencyIdAndBankIdAndServiceIdAndRemitModeId(
@@ -404,7 +404,7 @@ public class RoutingProductManager {
 					"Possible Multiple Routing options available for given request params");
 		}
 
-		VwExRoutingProductStatus oldStatus = oldStatusList.get(0);
+		VwExRoutingProduct oldStatus = oldStatusList.get(0);
 
 		if (oldStatus.getRouting() == null || ROUTING_STATUS.INACTIVE.equals(oldStatus.getRouting())) {
 			LOGGER.error("Routing Status is DISABLED for given route with request params:" + JsonUtil.toJson(request));

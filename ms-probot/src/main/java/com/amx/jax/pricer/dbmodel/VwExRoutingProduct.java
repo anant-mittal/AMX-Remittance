@@ -13,11 +13,11 @@ import javax.persistence.Table;
 import com.amx.jax.pricer.var.PricerServiceConstants.ROUTING_STATUS;
 
 /**
- * The Class VwExRoutingProductStatus.
+ * The Class VwExRoutingProduct.
  */
 @Entity
-@Table(name = "VW_EX_ROUTING_PRODUCT_STATUS")
-public class VwExRoutingProductStatus implements Serializable {
+@Table(name = "VW_EX_ROUTING_PRODUCT")
+public class VwExRoutingProduct implements Serializable {
 
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = -3330856131308727527L;
@@ -81,10 +81,6 @@ public class VwExRoutingProductStatus implements Serializable {
 	@Enumerated(value = EnumType.STRING)
 	private ROUTING_STATUS productStatus;
 
-	/** The fc glbal. */
-	@Column(name = "FC_GLCBAL")
-	private BigDecimal fcGlbal;
-
 	/** The product desc. */
 	@Column(name = "PRODUCT_LONG_DESC")
 	private String productDesc;
@@ -108,6 +104,10 @@ public class VwExRoutingProductStatus implements Serializable {
 	/** The destination country. */
 	@Column(name = "DESTINATION_COUNTRY")
 	private String destinationCountry;
+
+	/** The delivery description. */
+	@Column(name = "DELIVERY_DESCRIPTION")
+	private String deliveryDescription;
 
 	/**
 	 * Gets the uuid.
@@ -376,25 +376,6 @@ public class VwExRoutingProductStatus implements Serializable {
 	}
 
 	/**
-	 * Gets the fc glbal.
-	 *
-	 * @return the fc glbal
-	 */
-	public BigDecimal getFcGlbal() {
-		return fcGlbal;
-	}
-
-	/**
-	 * Sets the fc glbal.
-	 *
-	 * @param fcGlbal
-	 *            the new fc glbal
-	 */
-	public void setFcGlbal(BigDecimal fcGlbal) {
-		this.fcGlbal = fcGlbal;
-	}
-
-	/**
 	 * Gets the product desc.
 	 *
 	 * @return the product desc
@@ -463,7 +444,8 @@ public class VwExRoutingProductStatus implements Serializable {
 	/**
 	 * Sets the delivery mode id.
 	 *
-	 * @param deliveryModeId the new delivery mode id
+	 * @param deliveryModeId
+	 *            the new delivery mode id
 	 */
 	public void setDeliveryModeId(BigDecimal deliveryModeId) {
 		this.deliveryModeId = deliveryModeId;
@@ -481,7 +463,8 @@ public class VwExRoutingProductStatus implements Serializable {
 	/**
 	 * Sets the destination country id.
 	 *
-	 * @param destinationCountryId the new destination country id
+	 * @param destinationCountryId
+	 *            the new destination country id
 	 */
 	public void setDestinationCountryId(BigDecimal destinationCountryId) {
 		this.destinationCountryId = destinationCountryId;
@@ -499,10 +482,29 @@ public class VwExRoutingProductStatus implements Serializable {
 	/**
 	 * Sets the destination country.
 	 *
-	 * @param destinationCountry the new destination country
+	 * @param destinationCountry
+	 *            the new destination country
 	 */
 	public void setDestinationCountry(String destinationCountry) {
 		this.destinationCountry = destinationCountry;
+	}
+
+	/**
+	 * Gets the delivery description.
+	 *
+	 * @return the delivery description
+	 */
+	public String getDeliveryDescription() {
+		return deliveryDescription;
+	}
+
+	/**
+	 * Sets the delivery description.
+	 *
+	 * @param deliveryDescription the new delivery description
+	 */
+	public void setDeliveryDescription(String deliveryDescription) {
+		this.deliveryDescription = deliveryDescription;
 	}
 
 }
