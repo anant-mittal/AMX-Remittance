@@ -158,7 +158,7 @@ public final class PricerServiceConstants {
 		HOME, WU, MONEY, VINTJA;
 	}
 
-	public static enum ROUTING_REMIT_STATUS {
+	public static enum ROUTING_STATUS {
 		ACTIVE, INACTIVE;
 	}
 

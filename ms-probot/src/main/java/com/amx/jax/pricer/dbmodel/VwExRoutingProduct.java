@@ -10,14 +10,14 @@ import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import com.amx.jax.pricer.var.PricerServiceConstants.ROUTING_REMIT_STATUS;
+import com.amx.jax.pricer.var.PricerServiceConstants.ROUTING_STATUS;
 
 /**
- * The Class VwExRoutingProductStatus.
+ * The Class VwExRoutingProduct.
  */
 @Entity
-@Table(name = "VW_EX_ROUTING_PRODUCT_STATUS")
-public class VwExRoutingProductStatus implements Serializable {
+@Table(name = "VW_EX_ROUTING_PRODUCT")
+public class VwExRoutingProduct implements Serializable {
 
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = -3330856131308727527L;
@@ -66,7 +66,7 @@ public class VwExRoutingProductStatus implements Serializable {
 	/** The routing. */
 	@Column(name = "ROUTING")
 	@Enumerated(value = EnumType.STRING)
-	private ROUTING_REMIT_STATUS routing;
+	private ROUTING_STATUS routing;
 
 	/** The remit mode id. */
 	@Column(name = "REMITTANCE_MODE_ID")
@@ -79,11 +79,7 @@ public class VwExRoutingProductStatus implements Serializable {
 	/** The product status. */
 	@Column(name = "PRODUCT_STATUS")
 	@Enumerated(value = EnumType.STRING)
-	private ROUTING_REMIT_STATUS productStatus;
-
-	/** The fc glbal. */
-	@Column(name = "FC_GLCBAL")
-	private BigDecimal fcGlbal;
+	private ROUTING_STATUS productStatus;
 
 	/** The product desc. */
 	@Column(name = "PRODUCT_LONG_DESC")
@@ -96,6 +92,22 @@ public class VwExRoutingProductStatus implements Serializable {
 	/** The product short name. */
 	@Column(name = "PRODUCT_SHORT_NAME")
 	private String productShortName;
+
+	/** The delivery mode id. */
+	@Column(name = "DELIVERY_MODE_ID")
+	private BigDecimal deliveryModeId;
+
+	/** The destination country id. */
+	@Column(name = "DESTINATION_COUNTRY_ID")
+	private BigDecimal destinationCountryId;
+
+	/** The destination country. */
+	@Column(name = "DESTINATION_COUNTRY")
+	private String destinationCountry;
+
+	/** The delivery description. */
+	@Column(name = "DELIVERY_DESCRIPTION")
+	private String deliveryDescription;
 
 	/**
 	 * Gets the uuid.
@@ -292,7 +304,7 @@ public class VwExRoutingProductStatus implements Serializable {
 	 *
 	 * @return the routing
 	 */
-	public ROUTING_REMIT_STATUS getRouting() {
+	public ROUTING_STATUS getRouting() {
 		return routing;
 	}
 
@@ -302,7 +314,7 @@ public class VwExRoutingProductStatus implements Serializable {
 	 * @param routing
 	 *            the new routing
 	 */
-	public void setRouting(ROUTING_REMIT_STATUS routing) {
+	public void setRouting(ROUTING_STATUS routing) {
 		this.routing = routing;
 	}
 
@@ -349,7 +361,7 @@ public class VwExRoutingProductStatus implements Serializable {
 	 *
 	 * @return the product status
 	 */
-	public ROUTING_REMIT_STATUS getProductStatus() {
+	public ROUTING_STATUS getProductStatus() {
 		return productStatus;
 	}
 
@@ -359,27 +371,8 @@ public class VwExRoutingProductStatus implements Serializable {
 	 * @param productStatus
 	 *            the new product status
 	 */
-	public void setProductStatus(ROUTING_REMIT_STATUS productStatus) {
+	public void setProductStatus(ROUTING_STATUS productStatus) {
 		this.productStatus = productStatus;
-	}
-
-	/**
-	 * Gets the fc glbal.
-	 *
-	 * @return the fc glbal
-	 */
-	public BigDecimal getFcGlbal() {
-		return fcGlbal;
-	}
-
-	/**
-	 * Sets the fc glbal.
-	 *
-	 * @param fcGlbal
-	 *            the new fc glbal
-	 */
-	public void setFcGlbal(BigDecimal fcGlbal) {
-		this.fcGlbal = fcGlbal;
 	}
 
 	/**
@@ -437,6 +430,81 @@ public class VwExRoutingProductStatus implements Serializable {
 	 */
 	public void setProductShortName(String productShortName) {
 		this.productShortName = productShortName;
+	}
+
+	/**
+	 * Gets the delivery mode id.
+	 *
+	 * @return the delivery mode id
+	 */
+	public BigDecimal getDeliveryModeId() {
+		return deliveryModeId;
+	}
+
+	/**
+	 * Sets the delivery mode id.
+	 *
+	 * @param deliveryModeId
+	 *            the new delivery mode id
+	 */
+	public void setDeliveryModeId(BigDecimal deliveryModeId) {
+		this.deliveryModeId = deliveryModeId;
+	}
+
+	/**
+	 * Gets the destination country id.
+	 *
+	 * @return the destination country id
+	 */
+	public BigDecimal getDestinationCountryId() {
+		return destinationCountryId;
+	}
+
+	/**
+	 * Sets the destination country id.
+	 *
+	 * @param destinationCountryId
+	 *            the new destination country id
+	 */
+	public void setDestinationCountryId(BigDecimal destinationCountryId) {
+		this.destinationCountryId = destinationCountryId;
+	}
+
+	/**
+	 * Gets the destination country.
+	 *
+	 * @return the destination country
+	 */
+	public String getDestinationCountry() {
+		return destinationCountry;
+	}
+
+	/**
+	 * Sets the destination country.
+	 *
+	 * @param destinationCountry
+	 *            the new destination country
+	 */
+	public void setDestinationCountry(String destinationCountry) {
+		this.destinationCountry = destinationCountry;
+	}
+
+	/**
+	 * Gets the delivery description.
+	 *
+	 * @return the delivery description
+	 */
+	public String getDeliveryDescription() {
+		return deliveryDescription;
+	}
+
+	/**
+	 * Sets the delivery description.
+	 *
+	 * @param deliveryDescription the new delivery description
+	 */
+	public void setDeliveryDescription(String deliveryDescription) {
+		this.deliveryDescription = deliveryDescription;
 	}
 
 }
