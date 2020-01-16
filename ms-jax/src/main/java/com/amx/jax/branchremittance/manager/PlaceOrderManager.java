@@ -462,8 +462,6 @@ public class PlaceOrderManager implements Serializable{
 			if(JaxUtil.isNullZeroBigDecimalCheck(negCount) && negCount.compareTo(new BigDecimal("2"))==0) {
 				throw new GlobalException(JaxError.RATE_PLACE_ERROR,"Negotitation limit crossed :"+negCount);
 			}
-			
-			
 			if(JaxUtil.isNullZeroBigDecimalCheck(negCount)) {
 				negCount = negCount.add(BigDecimal.ONE);
 			}else {
