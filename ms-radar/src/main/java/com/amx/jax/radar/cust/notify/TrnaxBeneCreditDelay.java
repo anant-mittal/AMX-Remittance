@@ -1,4 +1,4 @@
-package com.amx.jax.worker.tasks;
+package com.amx.jax.radar.cust.notify;
 
 import java.math.BigDecimal;
 
