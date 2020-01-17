@@ -341,8 +341,9 @@ public class FcSaleDeliveryService {
 		List<ContactType> contactTypes = new ArrayList<ContactType>();
 		
 		contactTypes.add(ContactType.SMS_EMAIL);
-		
+		logger.debug("Comm preferences flow for fx order dispatch ");
 		communicationPreferencesManager.validateCommunicationPreferences(contactTypes,CommunicationEvents.FX_ORDER_OTP,pinfo.getIdentityInt());
+		logger.debug("Comm preferences not checked ");
 		jaxNotificationService.sendOtpSms(pinfo.getMobile(), notificationModel);
 		// send email otp
 		Email email = new Email();

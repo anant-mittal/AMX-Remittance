@@ -44,6 +44,8 @@ public class JaxFieldDto {
 
 	@ApiMockModelProperty(value = "Maximum input value", example = "100")
 	BigDecimal maxValue;
+	
+	String valueUnit;
 
 	public String getName() {
 		return name;
@@ -154,6 +156,14 @@ public class JaxFieldDto {
 
 	public void setMaxValue(BigDecimal maxValue) {
 		this.maxValue = maxValue;
+	}
+
+	public String getValueUnit() {
+		return valueUnit;
+	}
+
+	public void setValueUnit(String valueUnit) {
+		this.valueUnit = valueUnit;
 	}
 
 }
