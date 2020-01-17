@@ -112,7 +112,7 @@ public class PreFlexFieldManager {
 		if (parameterSetUp.size() == 1) {
 			ParameterDetailsDto parameterDto = parameterSetUp.get(0);
 			FlexFieldDto flexFieldValueInRequest = requestFlexFields.get(FC_AMOUNT_FLEX_FIELD_NAME);
-			JaxConditionalFieldDto jaxConditionalFieldDto = fetchFlexFieldsForParameterSetup(parameterDto);
+			JaxConditionalFieldDto jaxConditionalFieldDto = fetchFlexFieldsForParameterSetup(parameterDto, beneficaryDetails);
 			requiredFlexFields.add(jaxConditionalFieldDto);
 			try {
 				packageFcAmount = flexFieldValueInRequest == null ? null : new BigDecimal(flexFieldValueInRequest.getAmieceDescription());
@@ -165,7 +165,7 @@ public class PreFlexFieldManager {
 		return preFlexCallComplete;
 	}
 
-	private JaxConditionalFieldDto fetchFlexFieldsForParameterSetup(ParameterDetailsDto parameterDetailsDto) {
+	private JaxConditionalFieldDto fetchFlexFieldsForParameterSetup(ParameterDetailsDto parameterDetailsDto, BenificiaryListView beneficaryDetails) {
 		JaxConditionalFieldDto dto = new JaxConditionalFieldDto();
 		dto.setEntityName(JaxFieldEntity.FLEX_FIELD);
 		JaxFieldDto field = new JaxFieldDto();
@@ -175,6 +175,7 @@ public class PreFlexFieldManager {
 		field.setMaxValue(parameterDetailsDto.getMaxAmount());
 		field.setMinValue(parameterDetailsDto.getMinAmount());
 		field.setRequired(true);
+		field.setValueUnit(beneficaryDetails.getCurrencyQuoteName());
 		if (parameterDetailsDto.getAmount() != null && parameterDetailsDto.getAmount().doubleValue() > 0) {
 			field.setDefaultValue(parameterDetailsDto.getAmount().toString());
 		}
