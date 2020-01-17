@@ -42,8 +42,8 @@ public class StompTunnelService {
 
 	/**
 	 * This method will work only if
-	 * {@link StompTunnelSessionManager#mapHTTPSession(stompUID, String)} has
-	 * been called already for the session
+	 * {@link StompTunnelSessionManager#mapHTTPSession(stompUID, String)} has been
+	 * called already for the session
 	 * 
 	 * @param stompUID - UNIQUE ID to Identify End User
 	 * @param topic
@@ -61,9 +61,11 @@ public class StompTunnelService {
 				messageData.put("data", message);
 				event.setData(JsonUtil.toJsonMap(messageData));
 				tunnelService.shout(StompTunnelToXSender.getSendTopic(stompSession.getPrefix()), event);
+			} else {
+				LOGGER.error("stompSession for stompUID {}  not found to send on topic {}", stompUID, topic);
 			}
 		} catch (Exception e) {
-			LOGGER.error("Error While Sending StompMessage", e);
+			LOGGER.error("Error While Sending StompMessage to stompUID " + stompUID, e);
 		}
 	}
 }
