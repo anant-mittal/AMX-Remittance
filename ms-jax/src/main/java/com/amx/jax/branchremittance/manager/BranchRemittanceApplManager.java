@@ -71,6 +71,7 @@ import com.amx.jax.logger.events.RemitInfo;
 import com.amx.jax.manager.RemittanceApplicationAdditionalDataManager;
 import com.amx.jax.manager.RemittanceApplicationManager;
 import com.amx.jax.manager.RemittanceTransactionManager;
+import com.amx.jax.manager.remittance.AdditionalBankDetailManager;
 import com.amx.jax.manager.remittance.CorporateDiscountManager;
 import com.amx.jax.manager.remittance.RemittanceAdditionalFieldManager;
 import com.amx.jax.manager.remittance.RemittanceApplicationParamManager;
@@ -244,6 +245,8 @@ public class BranchRemittanceApplManager {
 
 	@Autowired
 	PlaceOrderManager placeOrderManager;
+	@Autowired
+	AdditionalBankDetailManager additionalBankDetailManager;
 	
 	
 	public BranchRemittanceApplResponseDto saveBranchRemittanceApplication(BranchRemittanceApplRequestModel requestApplModel) {
@@ -310,6 +313,8 @@ public class BranchRemittanceApplManager {
 
 		remittanceTransactionRequestValidator.validateFlexFields(requestApplModel, remitApplParametersMap);
 		remittanceAdditionalFieldManager.validateAdditionalFields(requestApplModel, remitApplParametersMap);
+		// bank api validations
+		additionalBankDetailManager.validateAdditionalBankFields(requestApplModel, remitApplParametersMap);
 		remittanceAdditionalFieldManager.processAdditionalFields(requestApplModel); 
 		remittanceTransactionRequestValidator.saveFlexFields(requestApplModel, remitApplParametersMap);
 

@@ -531,9 +531,12 @@ public class UserService extends AbstractUserService {
 		userValidationService.validateTokenSentCount(onlineCust);
 		userValidationService.validateCustomerContactForSendOtp(channels, customer ,customerModel);
 		//if(AppContextUtil.getFlow())
+		logger.debug("APpcontext util flow is "+AppContextUtil.getFlow());
 		if(AppContextUtil.getFlow().equals(AmxDBConstants.RESET_PASSWORD_FLOW)) {
 			communicationPreferencesManager.validateCommunicationPreferences(channels, CommunicationEvents.RESET_PASSWORD, null);
 		}else if(AppContextUtil.getFlow().equals(AmxDBConstants.FORGOT_SECQUE_FLOW)) {
+			communicationPreferencesManager.validateCommunicationPreferences(channels, CommunicationEvents.FORGOT_SECQUE, null);
+		}else if(AppContextUtil.getFlow().equals(AmxDBConstants.FORGOT_SECQUE_FLOW_APP)) {
 			communicationPreferencesManager.validateCommunicationPreferences(channels, CommunicationEvents.FORGOT_SECQUE, null);
 		}
 		

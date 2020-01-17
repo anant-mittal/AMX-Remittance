@@ -134,7 +134,7 @@ public class AdditionalBankDetailManager {
 				if (additionalDataDisplayView != null && ConstantDocument.Yes.equalsIgnoreCase(additionalDataDisplayView.getIsBeneTag())) {
 					AdditionalBankDetailData data = valueMap.get(k);
 					if (data == null) {
-						data = new AdditionalBankDetailData(requestApplModel.getBeneId(), k, v.getAmieceDescription());
+						data = new AdditionalBankDetailData(beneficiaryViewModel.getBeneficiaryAccountSeqId(), k, v.getAmieceDescription());
 					} else {
 						data.setValue(v.getAmieceDescription());
 					}
