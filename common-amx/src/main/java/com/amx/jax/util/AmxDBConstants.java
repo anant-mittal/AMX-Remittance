@@ -283,6 +283,7 @@ public class AmxDBConstants {
 	// Constants for Communication Preference
 	public static final String RESET_PASSWORD_FLOW = "/api/user/password";
 	public static final String FORGOT_SECQUE_FLOW = "/pub/auth/otp";
+	public static final String FORGOT_SECQUE_FLOW_APP = "/pub/auth/secques";
    /** end Here **/
 
 	
