@@ -536,6 +536,8 @@ public class UserService extends AbstractUserService {
 			communicationPreferencesManager.validateCommunicationPreferences(channels, CommunicationEvents.RESET_PASSWORD, null);
 		}else if(AppContextUtil.getFlow().equals(AmxDBConstants.FORGOT_SECQUE_FLOW)) {
 			communicationPreferencesManager.validateCommunicationPreferences(channels, CommunicationEvents.FORGOT_SECQUE, null);
+		}else if(AppContextUtil.getFlow().equals(AmxDBConstants.FORGOT_SECQUE_FLOW_APP)) {
+			communicationPreferencesManager.validateCommunicationPreferences(channels, CommunicationEvents.FORGOT_SECQUE, null);
 		}
 		
 		generateToken(civilId, model, channels);
