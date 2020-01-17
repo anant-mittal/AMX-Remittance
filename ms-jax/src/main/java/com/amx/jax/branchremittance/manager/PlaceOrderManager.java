@@ -460,7 +460,7 @@ public class PlaceOrderManager implements Serializable{
 			if(flag.equalsIgnoreCase(ConstantDocument.Status.N.toString())){  /** Negotiate Place Order **/
 			BigDecimal negCount = ratePlaceOrder.getNegotiateCount();
 			if(JaxUtil.isNullZeroBigDecimalCheck(negCount) && negCount.compareTo(new BigDecimal("2"))==0) {
-				throw new GlobalException(JaxError.RATE_PLACE_ERROR,"Negotitation limit crossed :"+negCount);
+				throw new GlobalException(JaxError.RATE_PLACE_ERROR,"You cannot further negotiate as negotiate attempts limit is reached.");
 			}
 			if(JaxUtil.isNullZeroBigDecimalCheck(negCount)) {
 				negCount = negCount.add(BigDecimal.ONE);
@@ -763,7 +763,7 @@ public void validatePlaceOrderRequest(BranchRemittanceApplRequestModel applReque
 			if(applRequestModel.getLocalAmount()!=null && applRequestModel.getLocalAmount().compareTo(currInfo.getPlaceOrderLimit())>0) {
 				//Allow the trnx  
 			}else {
-				throw new GlobalException(JaxError.RATE_PLACE_ERROR,"The minimum limit for place order is :"+currInfo.getPlaceOrderLimit());
+				throw new GlobalException(JaxError.RATE_PLACE_ERROR,"The minimum limit for place order is :"+currMast.getCurrencyCode() +" "+currInfo.getPlaceOrderLimit());
 			}
 			
 			
