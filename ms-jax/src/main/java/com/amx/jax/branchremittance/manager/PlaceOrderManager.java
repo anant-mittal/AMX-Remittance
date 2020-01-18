@@ -748,8 +748,21 @@ private ExchangeRateBreakup getExchangeRateBreakUPForPlaceOrder(RatePlaceOrder p
 public void validatePlaceOrderRequest(BranchRemittanceApplRequestModel applRequestModel,BenificiaryListView beneficaryDetails) {
 	CurrencyOtherInformation currInfo = null;
 	if(applRequestModel!=null ) {
+		
+		
+		
+		
 		CurrencyMasterMdlv1 currMast = new CurrencyMasterMdlv1();
 		DynamicRoutingPricingDto dpDto =applRequestModel.getDynamicRroutingPricingBreakup(); 
+		TrnxRoutingDetails trnxRDetails = dpDto.getTrnxRoutingPaths();
+		
+		if(trnxRDetails!=null && trnxRDetails.getDeliveryDescription().contains(ConstantDocument.BPI_GIFT)) {
+			throw new GlobalException(JaxError.RATE_PLACE_ERROR,"Place order is not applicable for "+trnxRDetails.getBankCode()+" "+trnxRDetails.getDeliveryDescription());
+		}
+		
+		if(dpDto!=null && dpDto.getServiceProviderDto()!=null) {
+			throw new GlobalException(JaxError.RATE_PLACE_ERROR,"Place order is not applicable for "+trnxRDetails.getBankCode());
+		}
 		
 		if(JaxUtil.isNullZeroBigDecimalCheck(applRequestModel.getLocalAmount())) {
 			currMast.setCurrencyId(metaData.getDefaultCurrencyId());
@@ -770,7 +783,7 @@ public void validatePlaceOrderRequest(BranchRemittanceApplRequestModel applReque
 			}else if(JaxUtil.isNullZeroBigDecimalCheck(applRequestModel.getForeignAmount()) && applRequestModel.getForeignAmount().compareTo(currInfo.getPlaceOrderLimit())>=0) {
 				
 			}else {
-				throw new GlobalException(JaxError.RATE_PLACE_ERROR,"The minimum limit for place order is :"+currMas.getQuoteName() +" "+currInfo.getPlaceOrderLimit());
+				throw new GlobalException(JaxError.RATE_PLACE_ERROR,"The minimum limit for place order is :"+(currMas.getQuoteName()==null?"":currMas.getQuoteName()) +" "+currInfo.getPlaceOrderLimit());
 			}
 			
 			
