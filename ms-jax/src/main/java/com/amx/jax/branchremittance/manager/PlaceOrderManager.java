@@ -399,7 +399,10 @@ public class PlaceOrderManager implements Serializable{
 				lstPlaceOrder.setIsActive(ratePlaceOrder.getIsActive());
 				lstPlaceOrder.setRemarks(ratePlaceOrder.getRemarks());
 				lstPlaceOrder.setCustomerId(ratePlaceOrder.getCustomerId());
-				
+				lstPlaceOrder.setAvgCost(ratePlaceOrder.getAvgCost());
+				lstPlaceOrder.setDiscount(ratePlaceOrder.getDiscount());
+				lstPlaceOrder.setBranchExchangeRate(ratePlaceOrder.getRackExchRate());
+				lstPlaceOrder.setExchangeRateApplied(ratePlaceOrder.getExchangeRateApplied());
 				
 				
 				CurrencyMasterMdlv1 fcCurrency = currDao.getOne(ratePlaceOrder.getDestinationCurrency());
@@ -759,11 +762,15 @@ public void validatePlaceOrderRequest(BranchRemittanceApplRequestModel applReque
 		}
 		
 		
+		CurrencyMasterMdlv1 currMas = currDao.getOne(currMast.getCurrencyId());
+		
 		if(currInfo!=null && JaxUtil.isNullZeroBigDecimalCheck(currInfo.getPlaceOrderLimit())) {
-			if(applRequestModel.getLocalAmount()!=null && applRequestModel.getLocalAmount().compareTo(currInfo.getPlaceOrderLimit())>0) {
+			if(JaxUtil.isNullZeroBigDecimalCheck(applRequestModel.getLocalAmount()) && applRequestModel.getLocalAmount().compareTo(currInfo.getPlaceOrderLimit())>=0) {
 				//Allow the trnx  
+			}else if(JaxUtil.isNullZeroBigDecimalCheck(applRequestModel.getForeignAmount()) && applRequestModel.getForeignAmount().compareTo(currInfo.getPlaceOrderLimit())>=0) {
+				
 			}else {
-				throw new GlobalException(JaxError.RATE_PLACE_ERROR,"The minimum limit for place order is :"+currMast.getCurrencyCode() +" "+currInfo.getPlaceOrderLimit());
+				throw new GlobalException(JaxError.RATE_PLACE_ERROR,"The minimum limit for place order is :"+currMas.getQuoteName() +" "+currInfo.getPlaceOrderLimit());
 			}
 			
 			

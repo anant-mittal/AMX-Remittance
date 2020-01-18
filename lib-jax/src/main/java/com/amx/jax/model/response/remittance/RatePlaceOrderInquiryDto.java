@@ -28,6 +28,12 @@ public class RatePlaceOrderInquiryDto {
 	private String remarks;
 	private String fcCurrencyQuote;
 	private BigDecimal customerId;
+	private BigDecimal branchExchangeRate;
+	private BigDecimal avgCost;
+	private BigDecimal discount;
+	private BigDecimal exchangeRateApplied;
+	
+	
 	
 	public BigDecimal getIdNo() {
 		return idNo;
@@ -172,5 +178,29 @@ public class RatePlaceOrderInquiryDto {
 	}
 	public void setCustomerId(BigDecimal customerId) {
 		this.customerId = customerId;
+	}
+	public BigDecimal getBranchExchangeRate() {
+		return branchExchangeRate;
+	}
+	public void setBranchExchangeRate(BigDecimal branchExchangeRate) {
+		this.branchExchangeRate = branchExchangeRate;
+	}
+	public BigDecimal getAvgCost() {
+		return avgCost;
+	}
+	public void setAvgCost(BigDecimal avgCost) {
+		this.avgCost = avgCost;
+	}
+	public BigDecimal getDiscount() {
+		return discount;
+	}
+	public void setDiscount(BigDecimal discount) {
+		this.discount = discount;
+	}
+	public BigDecimal getExchangeRateApplied() {
+		return exchangeRateApplied;
+	}
+	public void setExchangeRateApplied(BigDecimal exchangeRateApplied) {
+		this.exchangeRateApplied = exchangeRateApplied;
 	}
 }
