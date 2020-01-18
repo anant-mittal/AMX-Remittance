@@ -690,7 +690,7 @@ public List<PlaceOrderApplDto>  convertGsmDto(List<RatePlaceOrder> placeOrderLsi
 		
 		
 		if(placeOrder.getIsActive()!=null && placeOrder.getIsActive().equalsIgnoreCase(ConstantDocument.Status.U.toString())) {
-			applDto.setStatus(ConstantDocument.Statusd.NEW.toString());
+			applDto.setStatus(ConstantDocument.Statusd.UNAPPROVED.toString());
 		}else if(placeOrder.getIsActive()!=null && placeOrder.getIsActive().equalsIgnoreCase(ConstantDocument.Status.Y.toString())) {
 				applDto.setStatus(ConstantDocument.Statusd.APPROVED.toString());
 			}
