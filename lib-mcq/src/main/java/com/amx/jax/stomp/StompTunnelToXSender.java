@@ -38,7 +38,11 @@ public class StompTunnelToXSender implements ITunnelSubscriber<StompTunnelEvent>
 			String sessionUId = stompTunnelSessionManager.getSessionUId(msg.getHttpSessionId());
 			if (!ArgUtil.isEmpty(sessionUId)) {
 				messagingTemplate.convertAndSend("/queue/" + sessionUId + msg.getTopic(), msg.getData());
+			} else {
+				LOGGER.error("SessionUId is Missing for HttpSessionId:{}, Topic:{}", msg.getTopic());
 			}
+		} else {
+			LOGGER.error("HttpSessionId is Missing for Topic:{}", msg.getTopic());
 		}
 	}
 

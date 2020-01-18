@@ -19,6 +19,7 @@ public class CustomerNotifyHubDTO {
 	private BigDecimal countryId;
 	private Tenant tnt;
 	private String template;
+	private Long timestamp;
 
 	public Tenant getTnt() {
 		return tnt;
@@ -98,6 +99,14 @@ public class CustomerNotifyHubDTO {
 
 	public void setCountryId(BigDecimal countryId) {
 		this.countryId = countryId;
+	}
+
+	public Long getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(Long timestamp) {
+		this.timestamp = timestamp;
 	}
 
 }
