@@ -60,6 +60,7 @@ public class BranchUserController implements IBranchService {
 			@RequestParam(required = false) BigDecimal customerId,
 			@RequestParam(required = true) BigDecimal leadId) {
 		Employee e = employeeRespository.findEmployeeById(agentId);
+
 		if (ArgUtil.is(e)) {
 			String employeeId = ArgUtil.parseAsString(e.getEmployeeId());
 			CustomerTeleMarketingDetails custTMDetails = null;
@@ -87,9 +88,11 @@ public class BranchUserController implements IBranchService {
 				return AmxApiResponse.build(customerCall);
 			} else {
 				customerOnCall.remove(employeeId);
+				return AmxApiResponse.build(new CustomerCall()).statusEnum(ApiStatusCodes.FAIL)
+						.message("Invalid Lead Id or Customer Id");
 			}
 		}
-		return AmxApiResponse.build(new CustomerCall()).statusEnum(ApiStatusCodes.FAIL);
+		return AmxApiResponse.build(new CustomerCall()).statusEnum(ApiStatusCodes.FAIL).message("Invalid Agent Id");
 	}
 
 	@Override
@@ -120,8 +123,10 @@ public class BranchUserController implements IBranchService {
 				call.setLeadId(custTMDetails.getLeadId());
 				return AmxApiResponse.build(call).statusEnum(ApiStatusCodes.SUCCESS);
 			}
+			return AmxApiResponse.build(new CustomerCall()).statusEnum(ApiStatusCodes.FAIL)
+					.message("Invalid Lead Id or Customer Id");
 		}
-		return AmxApiResponse.build(call).statusEnum(ApiStatusCodes.FAIL);
+		return AmxApiResponse.build(call).statusEnum(ApiStatusCodes.FAIL).message("Invalid Agent Id");
 	}
 
 	@Autowired
