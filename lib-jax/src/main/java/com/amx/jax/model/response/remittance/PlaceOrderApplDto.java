@@ -43,6 +43,8 @@ public class PlaceOrderApplDto {
 	private String approvedByName;
 	private String createdByName;
 	private String customerIdType;
+	private String countryBranchName;
+	
 	
 	
 	public BigDecimal getPlaceOrderId() {
@@ -276,9 +278,18 @@ public class PlaceOrderApplDto {
 	public String getCustomerIdType() {
 		return customerIdType;
 	}
+	
 	public void setCustomerIdType(String customerIdType) {
-		this.customerIdType = customerIdType;
-	}     
+		this.customerIdType=customerIdType;
+	}
+	
+	public String getCountryBranchName() {
+		return countryBranchName;
+	}
+	public void setCountryBranchName(String countryBranchName) {
+		this.countryBranchName = countryBranchName;
+	}
+	
 	
 	
 }

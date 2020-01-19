@@ -598,6 +598,13 @@ public List<PlaceOrderApplDto>  convertGsmDto(List<RatePlaceOrder> placeOrderLsi
 		TrnxRoutingDetails routPath = requestModelObject.getDynamicRroutingPricingBreakup().getTrnxRoutingPaths();
 		Map<DISCOUNT_TYPE, ExchangeDiscountInfo> discountInfo  =  requestModelObject.getDynamicRroutingPricingBreakup().getCustomerDiscountDetails();
 		
+		// branch id
+		CountryBranchMdlv1 countryBranch = bankMetaService.getCountryBranchById((metaData.getCountryBranchId()));
+		if(countryBranch!=null) {
+			applDto.setCountryBranchName(countryBranch.getBranchName());
+		}
+		
+		
 		EmployeeDetailsView createdDetails =null;
 		if(!StringUtils.isBlank(placeOrder.getCreatedBy())) {		
 			createdDetails = employeeDetailsRepository.findByUserName(placeOrder.getCreatedBy());
