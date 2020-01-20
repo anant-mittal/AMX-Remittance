@@ -154,6 +154,7 @@ public class ApiEndpoint {
 		public static final String GET_ANNUAL_INCOME_DETAILS = "/getAnnualIncomeDetails/";
 		public static final String SAVE_SECURITY_QUESTIONS = "/save-security-questions/";
 		public static final String UPDATE_PASSWORD_CUSTOMER = "/update-password-customer/";
+		public static final String UPDATE_PASSWORD_CUSTOMER_V2 = "/update-password-customer-v2";
 		//params
 		public static final String PARAM_INCOMEDTO = "incomeDto";
 		
