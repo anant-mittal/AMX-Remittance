@@ -20,6 +20,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.CustomerModel;
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.JaxAuthContext;
 import com.amx.jax.JaxAuthMetaResp;
 import com.amx.jax.amxlib.config.OtpSettings;
@@ -85,7 +86,7 @@ public class CustomerDBAuthManager {
 		CustomerOnlineRegistration onlineCust = custDao.getOnlineCustByCustomerId(customerId);
 		Customer customer = custDao.getCustById(customerId);
 		String identityInt = customer.getIdentityInt();
-		
+		logger.info("Flow is "+AppContextUtil.getFlow());
 		if(onlineCust != null) {
 			if (onlineCust.getLockCnt() != null) {
 				int lockCnt = onlineCust.getLockCnt().intValue();
