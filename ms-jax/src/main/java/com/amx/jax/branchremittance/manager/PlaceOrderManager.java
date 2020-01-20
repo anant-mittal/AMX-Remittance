@@ -768,7 +768,7 @@ public void validatePlaceOrderRequest(BranchRemittanceApplRequestModel applReque
 		}
 		
 		if(dpDto!=null && dpDto.getServiceProviderDto()!=null) {
-			throw new GlobalException(JaxError.RATE_PLACE_ERROR,"Place order is not applicable for "+trnxRDetails.getBankCode());
+			throw new GlobalException(JaxError.RATE_PLACE_ERROR,"Place order is not applicable for "+trnxRDetails.getRoutingBankCode());
 		}
 		
 		if(JaxUtil.isNullZeroBigDecimalCheck(applRequestModel.getLocalAmount())) {
