@@ -6,17 +6,17 @@
         "ranges": [
           {
           	"key":"[[${Today}]]",
-            "from": "now-45d",
+            "from": "now/d",
             "to": "now"
           },
           {
             "key":"[[${Yesterday}]]",
-            "from": "now-2M/d",
-            "to": "now-45d"
+            "from": "now-1d/d",
+            "to": "now/d-1s"
           },
           {
             "key":"[[${BeforeYesterday}]]",
-            "to": "now-2M/d"
+            "to": "now-1d/d-1s"
           }
         ],
         "time_zone": "Asia/Calcutta"
@@ -118,7 +118,7 @@
             "@timestamp": {
               "format": "strict_date_optional_time",
               "gte": "2019-09-17T05:33:14.547Z",
-              "lte": "2019-12-16T05:33:14.547Z"
+              "lte": "2020-01-20T05:33:14.547Z"
             }
           }
         }
