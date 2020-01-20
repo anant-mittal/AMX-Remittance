@@ -37,6 +37,7 @@ import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.ApplicationSetup;
 import com.amx.jax.dbmodel.BankMasterMdlv1;
 import com.amx.jax.dbmodel.BenificiaryListView;
+import com.amx.jax.dbmodel.BizComponentData;
 import com.amx.jax.dbmodel.CompanyMaster;
 import com.amx.jax.dbmodel.CountryBranchMdlv1;
 import com.amx.jax.dbmodel.CountryMaster;
@@ -95,6 +96,7 @@ import com.amx.jax.repository.DeviceStateRepository;
 import com.amx.jax.repository.IAmiecAndBankMappingRepository;
 import com.amx.jax.repository.IApplicationCountryRepository;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
+import com.amx.jax.repository.IBizComponentDataRepository;
 import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.IDeviceRepository;
 import com.amx.jax.repository.IDocumentDao;
@@ -247,6 +249,9 @@ public class BranchRemittanceApplManager {
 	PlaceOrderManager placeOrderManager;
 	@Autowired
 	AdditionalBankDetailManager additionalBankDetailManager;
+	
+	@Autowired
+	IBizComponentDataRepository  bizComponentDataRepository;
 	
 	
 	public BranchRemittanceApplResponseDto saveBranchRemittanceApplication(BranchRemittanceApplRequestModel requestApplModel) {
@@ -406,13 +411,25 @@ public class BranchRemittanceApplManager {
 			String signature =null;
 			BranchRemittanceApplRequestModel applRequestModel = (BranchRemittanceApplRequestModel)hashMap.get("APPL_REQ_MODEL");
 			BenificiaryListView beneDetails  =(BenificiaryListView) hashMap.get("BENEFICIARY_DETAILS");
-			if(!StringUtils.isBlank(applRequestModel.getSignature())) {
-				signature =applRequestModel.getSignature();
-			}else {
-				//signature =getCustomerSignature();
-				throw new GlobalException(JaxError.CUSTOMER__SIGNATURE_UNAVAILABLE,"Customer signature required");
+			Customer customer = (Customer) hashMap.get("CUSTOMER");
+			BizComponentData bizComponentData = null;
+			
+			if(customer!=null && JaxUtil.isNullZeroBigDecimalCheck(customer.getCustomerTypeId())){
+				bizComponentData  = bizComponentDataRepository.findOne(customer.getCustomerTypeId());
 			}
+			
+			//For Corporate signature is not required .
+			if(bizComponentData!=null && !StringUtils.isBlank(bizComponentData.getComponentCode()) &&  !bizComponentData.getComponentCode().equalsIgnoreCase(ConstantDocument.Non_Individual)) {
+				if(!StringUtils.isBlank(applRequestModel.getSignature())) {
+					signature =applRequestModel.getSignature();
+				}else {
+					//signature =getCustomerSignature();
+					throw new GlobalException(JaxError.CUSTOMER__SIGNATURE_UNAVAILABLE,"Customer signature required");
+				}
 
+			}
+			
+			
 			if(!StringUtils.isBlank(signature)) {
 				try {
 					remittanceApplication.setCustomerSignatureClob(stringToClob(signature));
@@ -429,7 +446,6 @@ public class BranchRemittanceApplManager {
 			//remitTrnxManager.reCalculateComission();
 
 			BigDecimal routingCountryId = applRequestModel.getRoutingCountryId();
-			Customer customer = (Customer) hashMap.get("CUSTOMER");
 			BigDecimal routingBankId = applRequestModel.getRoutingBankId();
 			BigDecimal routingBankBranchId =applRequestModel.getRoutingBankBranchId();
 			BigDecimal foreignCurrencyId = beneDetails.getCurrencyId();

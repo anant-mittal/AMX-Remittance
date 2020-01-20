@@ -73,6 +73,7 @@ public class AmxDBConstants {
 	public static final BigDecimal CONTACT_TYPE_FOR_HOME = new BigDecimal(50);
 	public static final BigDecimal REMITTANCE_DOCUMENT_CODE = new BigDecimal(3);
 	public static final BigDecimal VOUCHER_DOCUMENT_CODE = new BigDecimal(69);
+	public static final BigDecimal CORPORATE_TYPE_ID= new BigDecimal(94);
 
 	public static final String JOAMX_USER = "JOAMX_USER";
 
