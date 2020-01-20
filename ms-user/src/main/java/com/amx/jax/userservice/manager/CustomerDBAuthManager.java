@@ -37,6 +37,7 @@ import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.service.CommunicationChannelContactService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.userservice.service.UserValidationService;
+import com.amx.jax.util.AmxDBConstants;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Random;
@@ -111,8 +112,12 @@ public class CustomerDBAuthManager {
 		ContactType contactType = JaxAuthContext.getContactType();
 		List<ContactType> contactList = new ArrayList<ContactType>();
 		contactList.add(contactType);
-		communicationPreferencesManager.validateCommunicationPreferences(contactList,CommunicationEvents.FORGOT_PASSWORD,identityInt);
-
+		
+		if(AppContextUtil.getFlow().equalsIgnoreCase(AmxDBConstants.FORGOT_PASSWORD_FLOW)) {
+			communicationPreferencesManager.validateCommunicationPreferences(contactList,CommunicationEvents.FORGOT_PASSWORD,identityInt);
+		}else if(AppContextUtil.getFlow().equalsIgnoreCase(AmxDBConstants.BENEFICIARY_ADDITION_FLOW)) {
+			communicationPreferencesManager.validateCommunicationPreferences(contactList,CommunicationEvents.ADD_BENEFICIARY,identityInt);
+		}
 		if (contactType == null) {
 
 			// send list of contact types available for customer

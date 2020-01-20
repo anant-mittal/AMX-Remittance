@@ -285,8 +285,9 @@ public class AmxDBConstants {
 	public static final String RESET_PASSWORD_FLOW = "/api/user/password";
 	public static final String FORGOT_SECQUE_FLOW = "/pub/auth/otp";
 	public static final String FORGOT_SECQUE_FLOW_APP = "/pub/auth/secques";
-	public static final String BENEFICIARY_DISABLE = "/api/user/bnfcry/disable";
-	public static final String BENEFICIARY_ADDITION = "/api/user/bnfcry/commit";
+	public static final String BENEFICIARY_DISABLE_FLOW = "/api/user/bnfcry/disable";
+	public static final String BENEFICIARY_ADDITION_FLOW = "/api/user/bnfcry/commit";
+	public static final String FORGOT_PASSWORD_FLOW= "RESET_PASS";
 	//public static final String BENEFICIARY_ADDITION = ""
    /** end Here **/
 
