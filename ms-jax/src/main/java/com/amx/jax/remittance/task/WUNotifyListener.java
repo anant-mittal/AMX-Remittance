@@ -127,7 +127,7 @@ public class WUNotifyListener implements ITunnelSubscriber<DBEvent> {
 
 		wrapper.put("data", modeldata);
 		CommunicationPrefsResult x = communicationPrefsUtil.forCustomer(CommunicationEvents.CASH_PICKUP_WU, c);
-
+		LOGGER.debug("Comm pref Util result is "+x.isEmail());
 		TemplatesMX thisTemplate = null;
 		if (notifyType.equalsIgnoreCase(ConstantDocument.WU_PAID)) {
 			thisTemplate = TemplatesMX.WU_TRNX_SUCCESS;
