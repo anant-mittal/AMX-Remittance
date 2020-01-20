@@ -32,6 +32,11 @@ public class ViewPlaceOnOrderInquiry implements Serializable{
 	private String remarks;
 	private BigDecimal destinationCurrency;
 	private BigDecimal customerId;
+	private BigDecimal avgCost;
+	private BigDecimal rackExchRate;
+	private BigDecimal  discount;
+	private BigDecimal  exchangeRateApplied;
+	
 	
 	public ViewPlaceOnOrderInquiry() {
 		super();
@@ -195,6 +200,61 @@ public class ViewPlaceOnOrderInquiry implements Serializable{
 
 	public void setCustomerId(BigDecimal customerId) {
 		this.customerId = customerId;
+	}
+
+
+
+	@Column(name="RACK_EXCHANGE_RATE")
+	public BigDecimal getAvgCost() {
+		return avgCost;
+	}
+
+
+
+
+	public void setAvgCost(BigDecimal avgCost) {
+		this.avgCost = avgCost;
+	}
+
+
+
+	@Column(name="AVG_COST")
+	public BigDecimal getRackExchRate() {
+		return rackExchRate;
+	}
+
+
+
+
+	public void setRackExchRate(BigDecimal rackExchRate) {
+		this.rackExchRate = rackExchRate;
+	}
+
+
+
+	
+	@Column(name="DISCOUNT")
+	public BigDecimal getDiscount() {
+		return discount;
+	}
+
+
+
+
+	public void setDiscount(BigDecimal discount) {
+		this.discount = discount;
+	}
+
+	@Column(name="EXCHANGE_RATE_APPLIED")
+	public BigDecimal getExchangeRateApplied() {
+		return exchangeRateApplied;
+	}
+
+
+
+
+	public void setExchangeRateApplied(BigDecimal exchangeRateApplied) {
+		this.exchangeRateApplied = exchangeRateApplied;
 	}
 	
 	

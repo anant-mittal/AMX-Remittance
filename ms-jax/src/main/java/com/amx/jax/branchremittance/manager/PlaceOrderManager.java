@@ -399,7 +399,10 @@ public class PlaceOrderManager implements Serializable{
 				lstPlaceOrder.setIsActive(ratePlaceOrder.getIsActive());
 				lstPlaceOrder.setRemarks(ratePlaceOrder.getRemarks());
 				lstPlaceOrder.setCustomerId(ratePlaceOrder.getCustomerId());
-				
+				lstPlaceOrder.setAvgCost(ratePlaceOrder.getAvgCost());
+				lstPlaceOrder.setDiscount(ratePlaceOrder.getDiscount());
+				lstPlaceOrder.setBranchExchangeRate(ratePlaceOrder.getRackExchRate());
+				lstPlaceOrder.setExchangeRateApplied(ratePlaceOrder.getExchangeRateApplied());
 				
 				
 				CurrencyMasterMdlv1 fcCurrency = currDao.getOne(ratePlaceOrder.getDestinationCurrency());
@@ -595,6 +598,13 @@ public List<PlaceOrderApplDto>  convertGsmDto(List<RatePlaceOrder> placeOrderLsi
 		TrnxRoutingDetails routPath = requestModelObject.getDynamicRroutingPricingBreakup().getTrnxRoutingPaths();
 		Map<DISCOUNT_TYPE, ExchangeDiscountInfo> discountInfo  =  requestModelObject.getDynamicRroutingPricingBreakup().getCustomerDiscountDetails();
 		
+		// branch id
+		CountryBranchMdlv1 countryBranch = bankMetaService.getCountryBranchById((metaData.getCountryBranchId()));
+		if(countryBranch!=null) {
+			applDto.setCountryBranchName(countryBranch.getBranchName());
+		}
+		
+		
 		EmployeeDetailsView createdDetails =null;
 		if(!StringUtils.isBlank(placeOrder.getCreatedBy())) {		
 			createdDetails = employeeDetailsRepository.findByUserName(placeOrder.getCreatedBy());
@@ -687,7 +697,7 @@ public List<PlaceOrderApplDto>  convertGsmDto(List<RatePlaceOrder> placeOrderLsi
 		
 		
 		if(placeOrder.getIsActive()!=null && placeOrder.getIsActive().equalsIgnoreCase(ConstantDocument.Status.U.toString())) {
-			applDto.setStatus(ConstantDocument.Statusd.NEW.toString());
+			applDto.setStatus(ConstantDocument.Statusd.UNAPPROVED.toString());
 		}else if(placeOrder.getIsActive()!=null && placeOrder.getIsActive().equalsIgnoreCase(ConstantDocument.Status.Y.toString())) {
 				applDto.setStatus(ConstantDocument.Statusd.APPROVED.toString());
 			}
@@ -745,8 +755,21 @@ private ExchangeRateBreakup getExchangeRateBreakUPForPlaceOrder(RatePlaceOrder p
 public void validatePlaceOrderRequest(BranchRemittanceApplRequestModel applRequestModel,BenificiaryListView beneficaryDetails) {
 	CurrencyOtherInformation currInfo = null;
 	if(applRequestModel!=null ) {
+		
+		
+		
+		
 		CurrencyMasterMdlv1 currMast = new CurrencyMasterMdlv1();
 		DynamicRoutingPricingDto dpDto =applRequestModel.getDynamicRroutingPricingBreakup(); 
+		TrnxRoutingDetails trnxRDetails = dpDto.getTrnxRoutingPaths();
+		
+		if(trnxRDetails!=null && trnxRDetails.getDeliveryDescription().contains(ConstantDocument.BPI_GIFT)) {
+			throw new GlobalException(JaxError.RATE_PLACE_ERROR,"Place order is not applicable for "+trnxRDetails.getBankCode()+" "+trnxRDetails.getDeliveryDescription());
+		}
+		
+		if(dpDto!=null && dpDto.getServiceProviderDto()!=null) {
+			throw new GlobalException(JaxError.RATE_PLACE_ERROR,"Place order is not applicable for "+trnxRDetails.getBankCode());
+		}
 		
 		if(JaxUtil.isNullZeroBigDecimalCheck(applRequestModel.getLocalAmount())) {
 			currMast.setCurrencyId(metaData.getDefaultCurrencyId());
@@ -759,11 +782,15 @@ public void validatePlaceOrderRequest(BranchRemittanceApplRequestModel applReque
 		}
 		
 		
+		CurrencyMasterMdlv1 currMas = currDao.getOne(currMast.getCurrencyId());
+		
 		if(currInfo!=null && JaxUtil.isNullZeroBigDecimalCheck(currInfo.getPlaceOrderLimit())) {
-			if(applRequestModel.getLocalAmount()!=null && applRequestModel.getLocalAmount().compareTo(currInfo.getPlaceOrderLimit())>0) {
+			if(JaxUtil.isNullZeroBigDecimalCheck(applRequestModel.getLocalAmount()) && applRequestModel.getLocalAmount().compareTo(currInfo.getPlaceOrderLimit())>=0) {
 				//Allow the trnx  
+			}else if(JaxUtil.isNullZeroBigDecimalCheck(applRequestModel.getForeignAmount()) && applRequestModel.getForeignAmount().compareTo(currInfo.getPlaceOrderLimit())>=0) {
+				
 			}else {
-				throw new GlobalException(JaxError.RATE_PLACE_ERROR,"The minimum limit for place order is :"+currMast.getCurrencyCode() +" "+currInfo.getPlaceOrderLimit());
+				throw new GlobalException(JaxError.RATE_PLACE_ERROR,"The minimum limit for place order is :"+(currMas.getQuoteName()==null?"":currMas.getQuoteName()) +" "+currInfo.getPlaceOrderLimit());
 			}
 			
 			
