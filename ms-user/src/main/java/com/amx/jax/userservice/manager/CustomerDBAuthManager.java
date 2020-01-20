@@ -86,7 +86,7 @@ public class CustomerDBAuthManager {
 		CustomerOnlineRegistration onlineCust = custDao.getOnlineCustByCustomerId(customerId);
 		Customer customer = custDao.getCustById(customerId);
 		String identityInt = customer.getIdentityInt();
-		logger.info("Flow is "+AppContextUtil.getFlow());
+		log.info("Flow is "+AppContextUtil.getFlow());
 		if(onlineCust != null) {
 			if (onlineCust.getLockCnt() != null) {
 				int lockCnt = onlineCust.getLockCnt().intValue();
