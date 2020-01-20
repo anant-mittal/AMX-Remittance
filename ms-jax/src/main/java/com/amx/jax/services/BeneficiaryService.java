@@ -40,6 +40,7 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.amxlib.model.response.LanguageCodeType;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam;
 import com.amx.jax.client.bene.BeneficaryStatusDto;
 import com.amx.jax.client.bene.BeneficiaryConstant;
@@ -703,6 +704,8 @@ public class BeneficiaryService extends AbstractService {
 	 * 
 	 */
 	public ApiResponse sendOtp(List<ContactType> channels) {
+		logger.info("Flow is "+AppContextUtil.getFlow());
+		//if()
 		communicationPreferencesManager.validateCommunicationPreferences(channels,CommunicationEvents.ADD_BENEFICIARY,null);
 		Customer customer = null;
 		String civilId = null;
