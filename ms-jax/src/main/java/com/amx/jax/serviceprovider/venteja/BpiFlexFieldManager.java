@@ -72,7 +72,6 @@ public class BpiFlexFieldManager extends AbstractFlexFieldManager {
 		if (packageFcAmount != null) {
 			validationResults.put(ValidationResultKey.PREFLEXCALL_COMPLETE.getName(), Boolean.TRUE);
 		}
-		removeDefaultValueFromPackageFlexFiels(requiredFlexFields);
 	}
 
 }
