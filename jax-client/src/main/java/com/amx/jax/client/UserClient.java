@@ -293,7 +293,7 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 			custModel.setPassword(password);
 			custModel.setMotp(mOtp);
 			custModel.setEotp(eOtp);
-			String updatePasswordUrl = this.getBaseUrl() + endpoint + "?password=" + password;
+			String updatePasswordUrl = this.getBaseUrl() + endpoint;
 			HttpEntity<CustomerModel> requestEntity = new HttpEntity<CustomerModel>(custModel, getHeader());
 			LOGGER.info("calling updatePassword api: " + updatePasswordUrl);
 			AmxApiResponse<BoolRespModel, Object> resp = restService.ajax(updatePasswordUrl).put(requestEntity)
@@ -654,12 +654,12 @@ public class UserClient extends AbstractJaxServiceClient implements ICustomerSer
 
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> updatePasswordCustomer(String identityInt, String resetPassword) {
-		
+			CustomerModel customerModel = new CustomerModel();
+			customerModel.setIdentityId(identityInt);
+			customerModel.setPassword(resetPassword);
 			return restService.ajax(appConfig.getJaxURL()).meta(new JaxMetaInfo())
-					.path(CustomerApi.PREFIX + CustomerApi.UPDATE_PASSWORD_CUSTOMER)
-					.queryParam("identityInt", identityInt)
-					.queryParam("resetPassword", resetPassword)
-					.post()
+					.path(CustomerApi.PREFIX + CustomerApi.UPDATE_PASSWORD_CUSTOMER_V2)
+					.post(customerModel)
 					.as(new ParameterizedTypeReference<AmxApiResponse<BoolRespModel, Object>>() {
 					});
 		
