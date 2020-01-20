@@ -696,10 +696,13 @@ public List<PlaceOrderApplDto>  convertGsmDto(List<RatePlaceOrder> placeOrderLsi
 		
 		
 		
-		if(placeOrder.getIsActive()!=null && placeOrder.getIsActive().equalsIgnoreCase(ConstantDocument.Status.U.toString())) {
-			applDto.setStatus(ConstantDocument.Statusd.UNAPPROVED.toString());
-		}else if(placeOrder.getIsActive()!=null && placeOrder.getIsActive().equalsIgnoreCase(ConstantDocument.Status.Y.toString())) {
-				applDto.setStatus(ConstantDocument.Statusd.APPROVED.toString());
+			if(placeOrder.getIsActive()!=null && placeOrder.getIsActive().equalsIgnoreCase(ConstantDocument.Status.U.toString()) 
+					&& !StringUtils.isBlank(placeOrder.getNegotiateSts()) && placeOrder.getNegotiateSts().equalsIgnoreCase(ConstantDocument.Status.N.toString())) {
+				applDto.setStatus(ConstantDocument.Statusd.NEGOTIATED.toString());
+			}else if(placeOrder.getIsActive()!=null && placeOrder.getIsActive().equalsIgnoreCase(ConstantDocument.Status.U.toString())) {
+				applDto.setStatus(ConstantDocument.Statusd.UNAPPROVED.toString());
+			}else if(placeOrder.getIsActive()!=null && placeOrder.getIsActive().equalsIgnoreCase(ConstantDocument.Status.Y.toString())) {
+					applDto.setStatus(ConstantDocument.Statusd.APPROVED.toString());
 			}
 		
 		list.add(applDto);
