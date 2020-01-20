@@ -206,7 +206,7 @@ public class CustomerController implements ICustomerService {
 
 	@RequestMapping(value = UPDATE_CUSTOMER_PASSWORD_ENDPOINT, method = RequestMethod.PUT)
 	public AmxApiResponse<BoolRespModel, Object> updatePassword(@RequestBody CustomerModel model) {
-		logger.info("updatePassword Request: " + model.toString());
+		//logger.info("updatePassword Request: " + model.toString());
 		return userService.updatePassword(model);
 	}
 
@@ -353,6 +353,12 @@ public class CustomerController implements ICustomerService {
 	public AmxApiResponse<BoolRespModel, Object> updatePasswordCustomer(@RequestParam("identityInt") String identityInt, 
 			@RequestParam(name = "resetPassword",  required = false) String resetPassword) {
 		AmxApiResponse<BoolRespModel, Object> response = customerService.updatePasswordCustomer(identityInt, resetPassword);
+		return response;
+	}
+	
+	@RequestMapping(value = CustomerApi.UPDATE_PASSWORD_CUSTOMER_V2, method = RequestMethod.POST)
+	public AmxApiResponse<BoolRespModel, Object> updatePasswordCustomer(@RequestBody CustomerModel customerModel) {
+		AmxApiResponse<BoolRespModel, Object> response = customerService.updatePasswordCustomer(customerModel.getIdentityId(), customerModel.getPassword());
 		return response;
 	}
 }
