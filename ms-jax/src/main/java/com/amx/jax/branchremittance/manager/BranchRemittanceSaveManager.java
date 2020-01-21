@@ -923,6 +923,10 @@ public class BranchRemittanceSaveManager {
 					remitTrnx.setSavedAmountInFc(appl.getSavedAmountInFc());
 
 					remitTrnx.setApplSplit(appl.getApplSplit());
+					
+					remitTrnx.setProductAvaliable(appl.getProductAvaliable());
+					remitTrnx.setFundAvaliable(appl.getFundAvaliable());
+					
 
 					Date date = DateUtil.addCurrentDateTimeToGetNewTime(appl.getTimeToDeliverInSec());
 					if(date!=null) {

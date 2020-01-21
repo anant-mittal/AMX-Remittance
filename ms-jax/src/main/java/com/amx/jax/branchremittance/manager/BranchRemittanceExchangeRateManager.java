@@ -67,6 +67,7 @@ import com.amx.jax.model.response.remittance.VatDetailsDto;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
 import com.amx.jax.model.response.remittance.branch.DynamicRoutingPricingResponse;
 import com.amx.jax.partner.dto.HomeSendSrvcProviderInfo;
+import com.amx.jax.pricer.dto.EstimatedDeliveryDetails;
 import com.amx.jax.pricer.dto.ExchangeDiscountInfo;
 import com.amx.jax.pricer.dto.ExchangeRateAndRoutingResponse;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
@@ -324,12 +325,20 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 		TrnxRoutingDetails trnxRoutingDetails = trnxRoutingPathList.get(key);
 		if(trnxRoutingDetails!=null) {
 			result.setTrnxRoutingPaths(trnxRoutingDetails);
-			
+			EstimatedDeliveryDetails estimateDelDtls = trnxRoutingDetails.getEstimatedDeliveryDetails();
 			// service provider condition check
 			if(homeSendSrvcProviderInfo != null && trnxRoutingDetails.getBankIndicator() != null && trnxRoutingDetails.getBankIndicator().equalsIgnoreCase(ConstantDocument.BANK_INDICATOR_SERVICE_PROVIDER_BANK)) {
 				ServiceProviderDto serviceProviderDto = fetchRemitServiceProviderDt(homeSendSrvcProviderInfo);
 				result.setServiceProviderDto(serviceProviderDto);
 			}
+			
+			if(estimateDelDtls!=null && estimateDelDtls.getProcessTimeTotalInSeconds()==estimateDelDtls.getProcessTimeAbsoluteInSeconds()) {
+				result.setProductAvaliable(ConstantDocument.Yes);
+			}else {
+				result.setProductAvaliable(ConstantDocument.No);
+			}
+			
+			
 		}
 		
 		ExchangeRateDetails sellRateDetail= bankServiceModeSellRates.get(trnxRoutingDetails.getRoutingBankId()).get(trnxRoutingDetails.getServiceMasterId());
@@ -343,6 +352,8 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 			
 			result.setRackExchangeRate(sellRateDetail.getRackExchangeRate());
 			result.setCostExchangeRate(sellRateDetail.getCostExchangeRate());
+			result.setFundAvaliable(sellRateDetail.isLowGLBalance()==true?ConstantDocument.No:ConstantDocument.Yes);
+			
 			
 			BigDecimal commission =null;
 			if(prType.equals(PRICE_TYPE.NO_BENE_DEDUCT)) {

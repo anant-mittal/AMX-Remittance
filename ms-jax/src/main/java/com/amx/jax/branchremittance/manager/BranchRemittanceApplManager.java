@@ -629,6 +629,8 @@ public class BranchRemittanceApplManager {
 			remittanceApplication.setBeneDeductFlag(dynamicRoutingPricingResponse.getBeneDeductFlag());
 			
 			remittanceApplication.setCustomerChoice(dynamicRoutingPricingResponse.getCustomerChoice());
+			remittanceApplication.setFundAvaliable(dynamicRoutingPricingResponse.getFundAvaliable());
+			remittanceApplication.setProductAvaliable(dynamicRoutingPricingResponse.getProductAvaliable());
 			
 			remitApplManager.setCustomerDiscountColumns(remittanceApplication, dynamicRoutingPricingResponse);
 			remitApplManager.setVatDetails(remittanceApplication, dynamicRoutingPricingResponse);
