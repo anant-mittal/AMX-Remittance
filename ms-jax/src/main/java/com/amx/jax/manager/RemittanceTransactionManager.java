@@ -1278,7 +1278,7 @@ public class RemittanceTransactionManager {
 		BigDecimal netAmountPayable = breakup.getNetAmount();
 		RemittanceApplicationResponseModel remiteAppModel = new RemittanceApplicationResponseModel();
 		deactivatePreviousApplications();
-		validateAdditionalCheck();
+		//validateAdditionalCheck();
 		validateAdditionalBeneDetailsV2(model);
 		
 		/** To fetch additional bene details from JAX **/
@@ -1529,9 +1529,11 @@ public class RemittanceTransactionManager {
 	}
 	
 	
-	private void validateAdditionalCheck() {
-		applicationProcedureDao.getAdditionalCheckProcedure(remitApplParametersMap);
-	}
+	
+	  private void validateAdditionalCheck() {
+		  applicationProcedureDao.getAdditionalCheckProcedure(remitApplParametersMap);
+	  }
+	 
 
 	public RemittanceTransactionStatusResponseModel getTransactionStatus(RemittanceTransactionStatusRequestModel request) {
 		RemittanceTransactionStatusResponseModel model = new RemittanceTransactionStatusResponseModel();
