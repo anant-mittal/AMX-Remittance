@@ -169,6 +169,11 @@ public class RemittanceApplication implements Serializable {
 	private String applSplit;
     private BigDecimal ratePlaceOrderId;
 	
+	/** added by Rabil  on 22Oct 2019**/
+	private String productAvaliable;
+	private String fundAvaliable;
+    
+    
 
 	private List<RemittanceAppBenificiary> exRemittanceAppBenificiary = new ArrayList<RemittanceAppBenificiary>(0);
 	
@@ -1114,4 +1119,23 @@ public class RemittanceApplication implements Serializable {
 		this.corporateMasterId = corporateMasterId;
 	}
 
+	 @Column(name = "IS_PRODUCT_AVAILABLE")
+		public String getProductAvaliable() {
+			return productAvaliable;
+		}
+
+		public void setProductAvaliable(String productAvaliable) {
+			this.productAvaliable = productAvaliable;
+		}
+
+		@Column(name = "IS_FUND_AVAILABLE")
+		public String getFundAvaliable() {
+			return fundAvaliable;
+		}
+
+		public void setFundAvaliable(String fundAvaliable) {
+			this.fundAvaliable = fundAvaliable;
+		}
+		
+	
 }

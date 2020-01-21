@@ -177,6 +177,11 @@ public class RemittanceTransaction implements Serializable {
 	private BigDecimal approvalYear;
 
 	public BigDecimal corporateMasterId;
+	
+	/** added by Rabil  on 22Oct 2019**/
+	private String productAvaliable;
+	private String fundAvaliable;
+	
 		
 	
 	@Column(name="PAYMENT_TYPE")
@@ -1305,6 +1310,24 @@ public class RemittanceTransaction implements Serializable {
 		this.corporateMasterId = corporateMasterId;
 	}
 
+	@Column(name = "IS_PRODUCT_AVAILABLE")
+	public String getProductAvaliable() {
+		return productAvaliable;
+	}
+
+	public void setProductAvaliable(String productAvaliable) {
+		this.productAvaliable = productAvaliable;
+	}
+
+	@Column(name = "IS_FUND_AVAILABLE")
+	public String getFundAvaliable() {
+		return fundAvaliable;
+	}
+
+	public void setFundAvaliable(String fundAvaliable) {
+		this.fundAvaliable = fundAvaliable;
+	}
+	
 
 }
  

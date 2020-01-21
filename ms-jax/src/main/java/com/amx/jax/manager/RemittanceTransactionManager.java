@@ -1880,6 +1880,8 @@ public class RemittanceTransactionManager {
 		validationResults.setCustomerDiscountDetails(model.getCustomerDiscountDetails());
 		validationResults.setCostRateLimitReached(model.getCostRateLimitReached());
 		validationResults.setCorporateMasterId(model.getCorporateMasterId());
+		validationResults.setProductAvaliable(model.getProductAvaliable());
+		validationResults.setFundAvaliable(model.getFundAvaliable());
 		
 	}
 	

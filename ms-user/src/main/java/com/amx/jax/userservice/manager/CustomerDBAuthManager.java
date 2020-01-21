@@ -20,6 +20,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.CustomerModel;
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.JaxAuthContext;
 import com.amx.jax.JaxAuthMetaResp;
 import com.amx.jax.amxlib.config.OtpSettings;
@@ -36,6 +37,7 @@ import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.service.CommunicationChannelContactService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.userservice.service.UserValidationService;
+import com.amx.jax.util.AmxDBConstants;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Random;
@@ -85,7 +87,7 @@ public class CustomerDBAuthManager {
 		CustomerOnlineRegistration onlineCust = custDao.getOnlineCustByCustomerId(customerId);
 		Customer customer = custDao.getCustById(customerId);
 		String identityInt = customer.getIdentityInt();
-		
+		log.info("Flow is "+AppContextUtil.getFlow());
 		if(onlineCust != null) {
 			if (onlineCust.getLockCnt() != null) {
 				int lockCnt = onlineCust.getLockCnt().intValue();
@@ -110,8 +112,12 @@ public class CustomerDBAuthManager {
 		ContactType contactType = JaxAuthContext.getContactType();
 		List<ContactType> contactList = new ArrayList<ContactType>();
 		contactList.add(contactType);
-		communicationPreferencesManager.validateCommunicationPreferences(contactList,CommunicationEvents.FORGOT_PASSWORD,identityInt);
-
+		
+		if(AppContextUtil.getFlow().equalsIgnoreCase(AmxDBConstants.FORGOT_PASSWORD_FLOW)) {
+			communicationPreferencesManager.validateCommunicationPreferences(contactList,CommunicationEvents.FORGOT_PASSWORD,identityInt);
+		}else if(AppContextUtil.getFlow().equalsIgnoreCase(AmxDBConstants.BENEFICIARY_ADDITION_FLOW)) {
+			communicationPreferencesManager.validateCommunicationPreferences(contactList,CommunicationEvents.ADD_BENEFICIARY,identityInt);
+		}
 		if (contactType == null) {
 
 			// send list of contact types available for customer

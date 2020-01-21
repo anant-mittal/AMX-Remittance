@@ -73,6 +73,7 @@ public class AmxDBConstants {
 	public static final BigDecimal CONTACT_TYPE_FOR_HOME = new BigDecimal(50);
 	public static final BigDecimal REMITTANCE_DOCUMENT_CODE = new BigDecimal(3);
 	public static final BigDecimal VOUCHER_DOCUMENT_CODE = new BigDecimal(69);
+	public static final BigDecimal CORPORATE_TYPE_ID= new BigDecimal(94);
 
 	public static final String JOAMX_USER = "JOAMX_USER";
 
@@ -284,6 +285,10 @@ public class AmxDBConstants {
 	public static final String RESET_PASSWORD_FLOW = "/api/user/password";
 	public static final String FORGOT_SECQUE_FLOW = "/pub/auth/otp";
 	public static final String FORGOT_SECQUE_FLOW_APP = "/pub/auth/secques";
+	public static final String BENEFICIARY_DISABLE_FLOW = "/api/user/bnfcry/disable";
+	public static final String BENEFICIARY_ADDITION_FLOW = "/api/user/bnfcry/commit";
+	public static final String FORGOT_PASSWORD_FLOW= "RESET_PASS";
+	//public static final String BENEFICIARY_ADDITION = ""
    /** end Here **/
 
 	

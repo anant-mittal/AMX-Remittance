@@ -212,6 +212,7 @@ public class CustomerService extends AbstractService {
 		PersonInfo personInfo = userService.getPersonInfo(metaData.getCustomerId());
 		CustomerModel model = new CustomerModel();
 		model.setSecurityquestions(securityQuestions);
+		model.setCustomerId(metaData.getCustomerId());
 		jaxNotificationService.sendProfileChangeNotificationEmail(model, personInfo);
 		BoolRespModel boolRespModel = new BoolRespModel();
 		boolRespModel.setSuccess(Boolean.TRUE);
