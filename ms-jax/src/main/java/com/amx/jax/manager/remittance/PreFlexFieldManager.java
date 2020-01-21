@@ -23,6 +23,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.amxlib.meta.model.RemittancePageDto;
+import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.BankMasterMdlv1;
@@ -47,6 +49,7 @@ import com.amx.jax.repository.remittance.IViewParameterDetailsRespository;
 import com.amx.jax.repository.remittance.RemittanceModeMasterRepository;
 import com.amx.jax.serviceprovider.service.AbstractFlexFieldManager;
 import com.amx.jax.services.BankService;
+import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.validation.RemittanceTransactionRequestValidator;
 
 @Component
@@ -77,6 +80,8 @@ public class PreFlexFieldManager {
 	AdditionalBankDetailManager additionalBankDetailManager;
 	@Autowired
 	ApplicationContext appContext;
+	@Autowired
+	BeneficiaryService beneficiaryService;
 
 	Map<String, Object> localVariableMap = new HashMap<>();
 
@@ -176,6 +181,10 @@ public class PreFlexFieldManager {
 		field.setMinValue(parameterDetailsDto.getMinAmount());
 		field.setRequired(true);
 		field.setValueUnit(beneficaryDetails.getCurrencyQuoteName());
+		BigDecimal defaultBeneFcAmount = getDefaultBeneValue(beneficaryDetails);
+		if (defaultBeneFcAmount != null) {
+			field.setDefaultValue(defaultBeneFcAmount.toString());
+		}
 		if (parameterDetailsDto.getAmount() != null && parameterDetailsDto.getAmount().doubleValue() > 0) {
 			field.setDefaultValue(parameterDetailsDto.getAmount().toString());
 		}
@@ -183,6 +192,21 @@ public class PreFlexFieldManager {
 		dto.setId(parameterDetailsDto.getParameterDetailsId());
 		dto.setField(field);
 		return dto;
+	}
+
+	private BigDecimal getDefaultBeneValue(BenificiaryListView beneficaryDetails) {
+		BigDecimal fcAmount = null;
+		try {
+			ApiResponse apiResponse = beneficiaryService.getDefaultBeneficiary(beneficaryDetails.getCustomerId(),
+					beneficaryDetails.getApplicationCountryId(), beneficaryDetails.getBeneficiaryRelationShipSeqId(), null);
+			RemittancePageDto remittancePageDto = (RemittancePageDto) apiResponse.getResult();
+			if (remittancePageDto != null && remittancePageDto.getTrnxHistDto() != null) {
+				fcAmount = remittancePageDto.getTrnxHistDto().getForeignTransactionAmount();
+			}
+		} catch (GlobalException ex) {
+			log.debug("Global exception in default bene error msg {}", ex.getErrorMessage());
+		}
+		return fcAmount;
 	}
 
 	private Collection<? extends JaxConditionalFieldDto> fetchFlexFieldsForCashSetup(ViewParameterDetails cashSetUp,
