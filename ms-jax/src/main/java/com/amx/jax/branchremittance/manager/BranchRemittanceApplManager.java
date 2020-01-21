@@ -430,14 +430,17 @@ public class BranchRemittanceApplManager {
 			}
 			
 			
-			if(!StringUtils.isBlank(signature)) {
-				try {
-					remittanceApplication.setCustomerSignatureClob(stringToClob(signature));
-				}catch(Exception e) {
-					e.printStackTrace();
+			if(bizComponentData!=null && !StringUtils.isBlank(bizComponentData.getComponentCode()) &&  !bizComponentData.getComponentCode().equalsIgnoreCase(ConstantDocument.Non_Individual)) {
+			
+				if(!StringUtils.isBlank(signature)) {
+					try {
+						remittanceApplication.setCustomerSignatureClob(stringToClob(signature));
+					}catch(Exception e) {
+						e.printStackTrace();
+					}
+				}else {
+					throw new GlobalException(JaxError.CUSTOMER_SIGNATURE_UNAVAILABLE,"Customer signature required");
 				}
-			}else {
-				throw new GlobalException(JaxError.CUSTOMER_SIGNATURE_UNAVAILABLE,"Customer signature required");
 			}
 
 			DynamicRoutingPricingDto dynamicRoutingPricingResponse =applRequestModel.getDynamicRroutingPricingBreakup();
