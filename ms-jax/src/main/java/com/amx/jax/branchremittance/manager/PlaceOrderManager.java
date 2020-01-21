@@ -941,7 +941,7 @@ public void validateMinAndMaxRate(RatePlaceOrder placeOrder,PlaceOrderUpdateStat
 		if(offeredExchangeRate.compareTo(minExchangeRate)<0 && offeredExchangeRate.compareTo(maxExchangeRate)>0) {
 			
 		}else {
-			throw new GlobalException(JaxError.RATE_PLACE_ERROR,"The offered rate should be within the range :"+minExchangeRate+"-"+maxExchangeRate);
+			throw new GlobalException(JaxError.RATE_PLACE_ERROR,"The offered rate should be within the range :"+minExchangeRate+" - "+maxExchangeRate);
 		}
 		
 	}else {
