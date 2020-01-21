@@ -31,6 +31,7 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.branchremittance.dao.PlaceOrderDao;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
+import com.amx.jax.dbmodel.BankMasterMdlv1;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.BizComponentData;
 import com.amx.jax.dbmodel.BizComponentDataDesc;
@@ -771,7 +772,8 @@ public void validatePlaceOrderRequest(BranchRemittanceApplRequestModel applReque
 		}
 		
 		if(dpDto!=null && dpDto.getServiceProviderDto()!=null) {
-			throw new GlobalException(JaxError.RATE_PLACE_ERROR,"Place order is not applicable for "+trnxRDetails.getRoutingBankCode());
+			BankMasterMdlv1 bnkMasterModel = bankMetaService.getBankMasterbyId(trnxRDetails.getRoutingBankId());
+			throw new GlobalException(JaxError.RATE_PLACE_ERROR,"Place order is not applicable for "+(bnkMasterModel==null ?"":bnkMasterModel.getBankShortName()));
 		}
 		
 		if(JaxUtil.isNullZeroBigDecimalCheck(applRequestModel.getLocalAmount())) {
