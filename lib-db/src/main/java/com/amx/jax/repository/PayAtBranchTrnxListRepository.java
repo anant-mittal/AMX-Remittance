@@ -13,6 +13,6 @@ public interface PayAtBranchTrnxListRepository extends JpaRepository<PayAtBranch
 	@Query("select w from PayAtBranchTrnxModel w where w.customerId=?1 and (w.applIsActive='Y'and wireTransferStatus='NEW') and wireTransferStatus is not 'PAID' and trunc(w.documentDate)=trunc(sysDate)")
 	public List<PayAtBranchTrnxModel> getPbTrnxList(BigDecimal customerId);
 	
-	@Query("select w from PayAtBranchTrnxModel w where (w.applIsActive='Y'and wireTransferStatus='NEW') and trunc(w.documentDate)=trunc(sysDate) order by documentDate desc")
+	@Query("select w from PayAtBranchTrnxModel w where (w.applIsActive='Y'and wireTransferStatus='NEW') and trunc(w.documentDate)=trunc(sysDate) and w.accDate = trunc(sysDate,'MM') and w.applCountryId=91 order by documentDate desc")
 	public List<PayAtBranchTrnxModel> getPbTrnxListBranch();
 }

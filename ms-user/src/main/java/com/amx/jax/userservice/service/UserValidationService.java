@@ -67,6 +67,7 @@ import com.amx.jax.util.AmxDBConstants.Status;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.validation.CustomerValidationService;
+import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 
 @Service
@@ -729,12 +730,15 @@ public class UserValidationService {
 					CustomerVerificationType.EMAIL);
 			Customer customer = custDao.getActiveCustomerDetailsByCustomerId(customerId);
 			
-			if((//Old is not verified
-					!isOldVerificationDone(cv) 
-					//And new is also not verfied
-					&& !Status.Y.equals(customer.getEmailVerified())) || !customer.canSendEmail()) {
-				throw new GlobalException(JaxError.EMAIL_NOT_VERIFIED, "Your email verificaiton is pending");
+			if(!ArgUtil.isEmpty(customer.getEmail())) {
+				if((//Old is not verified
+						!isOldVerificationDone(cv) 
+						//And new is also not verfied
+						&& !Status.Y.equals(customer.getEmailVerified())) || !customer.canSendEmail()) {
+					throw new GlobalException(JaxError.EMAIL_NOT_VERIFIED, "Your email verificaiton is pending");
+				}
 			}
+			
 		}
 	}
 

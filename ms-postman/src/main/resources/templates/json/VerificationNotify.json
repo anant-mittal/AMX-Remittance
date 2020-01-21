@@ -1,0 +1,5 @@
+{
+	"_subject": "Verify your registered [[${data =='SMS' ? 'mobile number' : ''}]]  [[${data =='EMAIL' ? 'email id' : ''}]]  [[${data =='WHATSAPP' ? 'WHATSAPP' : ''}]]",
+  "_message": "To receive OTP on your registered  [[${data =='SMS' ? 'mobile number' : ''}]]  [[${data =='EMAIL' ? 'email id' : ''}]]  [[${data =='WHATSAPP' ? 'WHATSAPP' : ''}]], please contact branch to complete verification."
+}
+
