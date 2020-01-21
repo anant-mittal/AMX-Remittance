@@ -45,6 +45,8 @@ public class RemittanceTransactionResponsetModel extends AbstractModel {
 	private BigDecimal placeOrderId;
 	private BigDecimal costExchangeRate;
 	private BigDecimal corporateMasterId;
+	private String productAvaliable;
+	private String fundAvaliable;
 	
 	
 	/*
@@ -255,6 +257,22 @@ public class RemittanceTransactionResponsetModel extends AbstractModel {
 
 	public void setCorporateMasterId(BigDecimal corporateMasterId) {
 		this.corporateMasterId = corporateMasterId;
+	}
+
+	public String getProductAvaliable() {
+		return productAvaliable;
+	}
+
+	public void setProductAvaliable(String productAvaliable) {
+		this.productAvaliable = productAvaliable;
+	}
+
+	public String getFundAvaliable() {
+		return fundAvaliable;
+	}
+
+	public void setFundAvaliable(String fundAvaliable) {
+		this.fundAvaliable = fundAvaliable;
 	}
 
 }
