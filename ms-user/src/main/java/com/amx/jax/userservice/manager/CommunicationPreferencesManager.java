@@ -27,6 +27,7 @@ import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.util.CommunicationPrefsUtil;
 import com.amx.jax.util.CommunicationPrefsUtil.CommunicationPrefsResult;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.JsonUtil;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -117,10 +118,12 @@ public class CommunicationPreferencesManager {
 
 
 	private void sendPushNotification(ContactType channel) {
+		logger.debug("PushNotify for fx order");
 		PushMessage pushMessage = new PushMessage();
 		pushMessage.setITemplate(TemplatesMX.VERIFICATION_NOTIFY);
 		pushMessage.addToUser(metaData.getCustomerId());
 		pushMessage.getModel().put(RESP_DATA_KEY, channel);
+		logger.debug("Data for push notif "+JsonUtil.toJson(pushMessage));
 		pushNotifyClient.send(pushMessage);
 	}
 }
