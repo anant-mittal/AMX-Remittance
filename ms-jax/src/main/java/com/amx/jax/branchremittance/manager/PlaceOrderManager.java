@@ -600,7 +600,7 @@ public List<PlaceOrderApplDto>  convertGsmDto(List<RatePlaceOrder> placeOrderLsi
 		Map<DISCOUNT_TYPE, ExchangeDiscountInfo> discountInfo  =  requestModelObject.getDynamicRroutingPricingBreakup().getCustomerDiscountDetails();
 		
 		// branch id
-		CountryBranchMdlv1 countryBranch = bankMetaService.getCountryBranchById((metaData.getCountryBranchId()));
+		CountryBranchMdlv1 countryBranch = bankMetaService.getCountryBranchById(placeOrder.getCountryBranchId());
 		if(countryBranch!=null) {
 			applDto.setCountryBranchName(countryBranch.getBranchName());
 		}
