@@ -183,7 +183,7 @@ public class PreFlexFieldManager {
 		field.setValueUnit(beneficaryDetails.getCurrencyQuoteName());
 		BigDecimal defaultBeneFcAmount = getDefaultBeneValue(beneficaryDetails);
 		if (defaultBeneFcAmount != null) {
-			field.setDefaultValue(defaultBeneFcAmount.toString());
+			//field.setDefaultValue(defaultBeneFcAmount.toString());
 		}
 		if (parameterDetailsDto.getAmount() != null && parameterDetailsDto.getAmount().doubleValue() > 0) {
 			field.setDefaultValue(parameterDetailsDto.getAmount().toString());
