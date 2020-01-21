@@ -57,6 +57,7 @@ public class BirthdayWishesListener implements ITunnelSubscriber<DBEvent> {
 		BigDecimal langId = ArgUtil.parseAsBigDecimal(event.getData().get(LANG_ID));
 		Customer customer = customerRepository.getCustomerByCustomerIdAndIsActive(custId, "Y");
 		CommunicationPrefsResult x = communicationPrefsUtil.forCustomer(CommunicationEvents.BIRTHDAY_WISHES, customer);
+		LOGGER.debug("Comm pref Util result is "+x.isWhatsApp());
 		if (x.isEmail()) {
 			Email email = new Email();
 			if ("2".equals(langId)) {

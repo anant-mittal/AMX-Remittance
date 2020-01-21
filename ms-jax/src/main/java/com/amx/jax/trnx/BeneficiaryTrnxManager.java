@@ -17,6 +17,7 @@ import com.amx.amxlib.constant.AuthType;
 import com.amx.amxlib.constant.NotificationConstants;
 import com.amx.amxlib.model.BeneCreateDetailsDTO;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.JaxAuthContext;
 import com.amx.jax.branchbene.BeneAccountManager;
 import com.amx.jax.constant.ConstantDocument;
@@ -473,6 +474,7 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		if(mOtp != null) {
 			JaxAuthContext.mOtp(mOtp);
 		}
+		logger.info("Flow is "+AppContextUtil.getFlow());
 		if(custId != null) {
 			customerDBAuthManager.validateAndSendOtp(custId);
 		}
