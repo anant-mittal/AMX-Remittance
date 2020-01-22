@@ -175,7 +175,6 @@ public class RemittanceTransactionRequestValidator {
 			exp.setMeta(requiredFlexFields);
 			throw exp;
 		}
-		
 	}
 
 	public JaxConditionalFieldDto getConditionalFieldDto(AdditionalDataDisplayView flexField, Map<String, FlexFieldDto> requestFlexFields,
