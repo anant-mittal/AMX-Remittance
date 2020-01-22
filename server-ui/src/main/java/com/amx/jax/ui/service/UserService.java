@@ -30,6 +30,7 @@ import com.amx.jax.ui.model.AuthDataInterface.UserUpdateResponse;
 import com.amx.jax.ui.model.UserBean;
 import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseWrapper;
+import com.amx.utils.AssertUtil;
 import com.amx.utils.ListManager;
 
 /**
@@ -102,6 +103,8 @@ public class UserService {
 	 */
 	public List<String> getNotifyTopics(String prefix, Language lang) {
 		CustomerModel customerModel = sessionService.getUserSession().getCustomerModel();
+		AssertUtil.asNotNull(customerModel, "Customer Model is empty from UseerSession");
+		
 		PushMessage msg = new PushMessage();
 		msg.addToTenant(AppContextUtil.getTenant());
 		msg.addToCountry(customerModel.getPersoninfo().getNationalityId());

@@ -151,6 +151,10 @@ public class RemittanceApplication implements Serializable {
 	/** added for direct link **/
 	private BigDecimal paymentLinkId;
 	
+	private BigDecimal corporateMasterId;
+	
+	
+	
 
 
 
@@ -162,9 +166,14 @@ public class RemittanceApplication implements Serializable {
 	private String customerChoice;
 	private BigDecimal savedAmountInFc;
 	private BigDecimal timeToDeliverInSec;
-
 	private String applSplit;
+    private BigDecimal ratePlaceOrderId;
 	
+	/** added by Rabil  on 22Oct 2019**/
+	private String productAvaliable;
+	private String fundAvaliable;
+    
+    
 
 	private List<RemittanceAppBenificiary> exRemittanceAppBenificiary = new ArrayList<RemittanceAppBenificiary>(0);
 	
@@ -1073,6 +1082,17 @@ public class RemittanceApplication implements Serializable {
 		this.savedAmountInFc = savedAmountInFc;
 	}
 
+ @Column(name="IS_SPLITTED")
+	public String getApplSplit() {
+		return applSplit;
+	}
+
+	public void setApplSplit(String applSplit) {
+		this.applSplit = applSplit;
+	}
+	
+	
+
 	@Column(name="TIME_TO_DELIVER_IN_SEC")
 	public BigDecimal getTimeToDeliverInSec() {
 		return timeToDeliverInSec;
@@ -1081,14 +1101,41 @@ public class RemittanceApplication implements Serializable {
 	public void setTimeToDeliverInSec(BigDecimal timeToDeliverInSec) {
 		this.timeToDeliverInSec = timeToDeliverInSec;
 	}
-
-	@Column(name="IS_SPLITTED")
-	public String getApplSplit() {
-		return applSplit;
+	@Column(name="RATE_PLACE_ORDER_ID")
+	public BigDecimal getRatePlaceOrderId() {
+		return ratePlaceOrderId;
 	}
 
-	public void setApplSplit(String applSplit) {
-		this.applSplit = applSplit;
+	public void setRatePlaceOrderId(BigDecimal ratePlaceOrderId) {
+		this.ratePlaceOrderId = ratePlaceOrderId;
 	}
 
+	@Column(name="CORP_DISCOUNT_ID")
+	public BigDecimal getCorporateMasterId() {
+		return corporateMasterId;
+	}
+
+	public void setCorporateMasterId(BigDecimal corporateMasterId) {
+		this.corporateMasterId = corporateMasterId;
+	}
+
+	 @Column(name = "IS_PRODUCT_AVAILABLE")
+		public String getProductAvaliable() {
+			return productAvaliable;
+		}
+
+		public void setProductAvaliable(String productAvaliable) {
+			this.productAvaliable = productAvaliable;
+		}
+
+		@Column(name = "IS_FUND_AVAILABLE")
+		public String getFundAvaliable() {
+			return fundAvaliable;
+		}
+
+		public void setFundAvaliable(String fundAvaliable) {
+			this.fundAvaliable = fundAvaliable;
+		}
+		
+	
 }

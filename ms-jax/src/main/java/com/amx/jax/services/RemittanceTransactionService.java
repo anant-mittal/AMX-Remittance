@@ -18,6 +18,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.amxlib.model.response.LanguageCodeType;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.AmxMeta;
@@ -28,10 +29,12 @@ import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dao.RemittanceProcedureDao;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.LanguageType;
 import com.amx.jax.dbmodel.RemittanceTransactionView;
 import com.amx.jax.dbmodel.SourceOfIncomeView;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
+import com.amx.jax.dbmodel.remittance.ViewServiceDetails;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.exrateservice.service.NewExchangeRateService;
 import com.amx.jax.manager.RemittanceTransactionManager;
@@ -44,8 +47,10 @@ import com.amx.jax.model.response.SourceOfIncomeDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.RemittanceApplicationResponseModel;
 import com.amx.jax.model.response.remittance.RemittanceTransactionResponsetModel;
+import com.amx.jax.model.response.remittance.ServiceMasterDTO;
 import com.amx.jax.payg.PayGModel;
 import com.amx.jax.repository.CustomerRepository;
+import com.amx.jax.repository.ILanguageTypeRepository;
 import com.amx.jax.repository.IRemittanceTransactionDao;
 import com.amx.jax.repository.ISourceOfIncomeDao;
 import com.amx.jax.repository.PaygDetailsRepository;
@@ -97,9 +102,10 @@ public class RemittanceTransactionService extends AbstractService {
 	@Autowired
 	RemittanceTransactionRepository remittanceTransactionRepository;
 	@Autowired
-	protected AmxMeta amxMeta;
-	
-	
+	ILanguageTypeRepository languageTypeRepository;
+	@Autowired
+	protected AmxMeta amxMeta;	
+
 	public ApiResponse getRemittanceTransactionDetails(BigDecimal collectionDocumentNo, BigDecimal fYear,
 			BigDecimal collectionDocumentCode) {
 
@@ -165,8 +171,8 @@ public class RemittanceTransactionService extends AbstractService {
 
 	public List<SourceOfIncomeDto> convertSourceOfIncome(List<SourceOfIncomeView> sourceOfIncomeList) {
 		return new SourceOfIncomeDto().importFrom(sourceOfIncomeList);
-		}
-
+	}
+	
 	@Deprecated
 	public List<SourceOfIncomeDto> convertSourceOfIncomeForEnglish(List<SourceOfIncomeView> sourceOfIncomeList) {
 		List<SourceOfIncomeDto> list = new ArrayList<>();
@@ -327,5 +333,20 @@ public class RemittanceTransactionService extends AbstractService {
 			break;
 		}
 	}
-
+	
+	public List<ServiceMasterDTO> getServiceMaster(){
+		List<ViewServiceDetails> serviceMasterViewList = remittanceApplicationDao.getServiceMaster();
+		List<ServiceMasterDTO> serviceMasterDTOList = new ArrayList<ServiceMasterDTO>();
+		for(ViewServiceDetails serviceMasterView:serviceMasterViewList) {
+			ServiceMasterDTO serviceMasterDTO = new ServiceMasterDTO();
+			serviceMasterDTO.setResourceId(serviceMasterView.getServiceMasterId());
+			serviceMasterDTO.setResourceCode(serviceMasterView.getServiceGroupCode());
+			serviceMasterDTO.setResourceName(serviceMasterView.getServiceDescription());
+			serviceMasterDTO.setServiceCode(serviceMasterView.getServiceCode());
+			serviceMasterDTOList.add(serviceMasterDTO);
+		}
+		
+		return serviceMasterDTOList;
+		
+	}
 }

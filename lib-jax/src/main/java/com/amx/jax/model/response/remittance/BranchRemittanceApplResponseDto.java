@@ -47,6 +47,10 @@ public class BranchRemittanceApplResponseDto extends AbstractModel{
 	/* application records */
 	List<CustomerShoppingCartDto> shoppingCartDetails;
 	
+
+	List<PlaceOrderApplDto> placeOrderApplList;
+	
+
 	List<PaymentLinkAppDto> paymentLinkAppDto;  
 	public List<PaymentLinkAppDto> getPaymentLinkAppDto() {
 		return paymentLinkAppDto;
@@ -113,5 +117,11 @@ public class BranchRemittanceApplResponseDto extends AbstractModel{
 	}
 	public void setAddToCart(Boolean addToCart) {
 		this.addToCart = addToCart;
+	}
+  public List<PlaceOrderApplDto> getPlaceOrderApplList() {
+		return placeOrderApplList;
+	}
+	public void setPlaceOrderApplList(List<PlaceOrderApplDto> placeOrderApplList) {
+		this.placeOrderApplList = placeOrderApplList;
 	}
 }

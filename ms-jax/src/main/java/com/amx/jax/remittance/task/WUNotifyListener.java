@@ -89,7 +89,7 @@ public class WUNotifyListener implements ITunnelSubscriber<DBEvent> {
 		String notifyType = ArgUtil.parseAsString(event.getData().get(NOTIF_TYPE));
 
 		BigDecimal tranxId = ArgUtil.parseAsBigDecimal(event.getData().get(TRANX_ID), new BigDecimal(0));
-		LOGGER.info("Customer id is " + custId);
+		
 		Customer c = customerRepository.getNationalityValue(custId);
 
 		LOGGER.info("Customer object is " + c.toString());
@@ -125,12 +125,9 @@ public class WUNotifyListener implements ITunnelSubscriber<DBEvent> {
 		modeldata.put("foreigncurcode", currencyMasterModelForeign.getQuoteName());
 		modeldata.put("foreignamount", remittanceTransaction.getForeignTranxAmount());
 
-		for (Map.Entry<String, Object> entry : modeldata.entrySet()) {
-			LOGGER.info("KeyModel = " + entry.getKey() + ", ValueModel = " + entry.getValue());
-		}
 		wrapper.put("data", modeldata);
 		CommunicationPrefsResult x = communicationPrefsUtil.forCustomer(CommunicationEvents.CASH_PICKUP_WU, c);
-
+		LOGGER.debug("Comm pref Util result is "+x.isEmail());
 		TemplatesMX thisTemplate = null;
 		if (notifyType.equalsIgnoreCase(ConstantDocument.WU_PAID)) {
 			thisTemplate = TemplatesMX.WU_TRNX_SUCCESS;
@@ -143,11 +140,11 @@ public class WUNotifyListener implements ITunnelSubscriber<DBEvent> {
 		}
 
 		LOGGER.debug("Json value of wrapper is " + JsonUtil.toJson(wrapper));
-		LOGGER.debug("Wrapper data is {}", wrapper.get("data"));
+		
 
 		if (x.isEmail()) {
 
-			LOGGER.debug("email is  " + emailId);
+			
 
 			Email email = new Email();
 			if ("2".equals(langId)) {

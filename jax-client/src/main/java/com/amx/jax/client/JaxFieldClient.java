@@ -13,9 +13,9 @@ import org.springframework.stereotype.Component;
 import com.amx.amxlib.model.GetJaxFieldRequest;
 import com.amx.amxlib.model.JaxCondition;
 import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.jax.constants.JaxFieldEntity;
+import com.amx.jax.model.response.jaxfield.JaxConditionalFieldDto;
+import com.amx.jax.model.response.jaxfield.JaxFieldEntity;
 import com.amx.jax.rest.RestService;
-import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
 
 @Component
 public class JaxFieldClient extends AbstractJaxServiceClient {

@@ -274,7 +274,8 @@ public class PostManControllerTest {
 	@RequestMapping(value = PostManUrls.PROCESS_TEMPLATE + "/file/{template}.{contactType}",
 			method = RequestMethod.GET)
 	public String processTemplate(@PathVariable("contactType") ContactType contactType,
-			@PathVariable("template") String template) throws IOException {
+			@PathVariable("template") String template,
+			@RequestParam(defaultValue = "HTML") File.Type type) throws IOException {
 		ITemplate temp = ITemplates.getTemplate(template);
 		Map<String, Object> map = readJsonWithObjectMapper("templates/dummy/" + temp.getSampleJSON());
 
@@ -284,6 +285,13 @@ public class PostManControllerTest {
 		file.setModel(map);
 		file.setITemplate(temp);
 		// file.setConverter(lib);
+		if (File.Type.PDF.equals(type)) {
+			file.setType(File.Type.PDF);
+			file = postManClient.processTemplate(file).getResult();
+			// file = postManClient.processTemplate(template, map, File.Type.PDF);
+			file.create(response, false);
+			return file.getContent();
+		}
 		return templateService.process(file, contactType).getContent();
 	}
 

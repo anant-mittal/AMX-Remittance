@@ -11,22 +11,39 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.model.ResourceDTO;
+import com.amx.jax.model.request.remittance.BenePackageRequest;
 import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.BranchRemittanceGetExchangeRateRequest;
 import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
 import com.amx.jax.model.request.remittance.CustomerBankRequest;
+
+import com.amx.jax.model.request.remittance.PlaceOrderRequestModel;
+import com.amx.jax.model.request.remittance.PlaceOrderResponseModel;
+import com.amx.jax.model.request.remittance.PlaceOrderUpdateStatusDto;
+
 import com.amx.jax.model.request.remittance.GetServiceApplicabilityRequest;
+
 import com.amx.jax.model.request.remittance.RoutingPricingRequest;
+import com.amx.jax.model.response.customer.BenePackageResponse;
 import com.amx.jax.model.response.fx.UserStockDto;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
+import com.amx.jax.model.response.remittance.CardTypeDto;
 import com.amx.jax.model.response.remittance.CustomerBankDetailsDto;
+import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;
 import com.amx.jax.model.response.remittance.FlexFieldReponseDto;
+
+import com.amx.jax.model.response.remittance.GsmPlaceOrderListDto;
+import com.amx.jax.model.response.remittance.GsmSearchRequestParameter;
+
 import com.amx.jax.model.response.remittance.GetServiceApplicabilityResponse;
+
 import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
 import com.amx.jax.model.response.remittance.ParameterDetailsResponseDto;
 import com.amx.jax.model.response.remittance.PaymentLinkRespDTO;
 import com.amx.jax.model.response.remittance.PaymentModeDto;
+import com.amx.jax.model.response.remittance.RatePlaceOrderInquiryDto;
+import com.amx.jax.model.response.remittance.RatePlaceOrderResponseModel;
 import com.amx.jax.model.response.remittance.RemittanceDeclarationReportDto;
 import com.amx.jax.model.response.remittance.RemittanceResponseDto;
 import com.amx.jax.model.response.remittance.RoutingResponseDto;
@@ -67,8 +84,17 @@ public interface IRemittanceService extends  IJaxService {
 
 		
 		public static final String BR_REMITTANCE_GET_GIFT_PACKAGE = PREFIX + "/get-gift-package/";
+		public static final String BR_REMITTANCE_GET_BENE_PACKAGE = PREFIX + "/get-bene-package/";
 		
+		public static final String GET_CUSTOMER_CARD_TYPE =  PREFIX + "/get-customer-card-type/";
+		public static final String UPDATE_CUSTOMER_CARD_TYPE =  PREFIX + "/update-customer-card-type/";
 		
+		public static final String BR_REMITTANCE_SAVE_PLACE_ORDER = PREFIX + "/save-place-order-appl/";
+		public static final String BR_REMITTANCE_FETCH_PLACE_ORDER = PREFIX + "/rate-place-order-inq/";
+		public static final String BR_REMITTANCE_UPDATE_PLACE_ORDER = PREFIX + "/update_rate-place-order/";
+		public static final String BR_REMITTANCE_PLACE_ORDER_COUNT = PREFIX + "/rate-place-order-count/";
+		public static final String BR_REMITTANCE_ACCEPT_PLACE_ORDER = PREFIX + "/accept-place-order/";
+	
 	}
 
 	public static class Params {
@@ -84,10 +110,14 @@ public interface IRemittanceService extends  IJaxService {
 		public static final String COLLECTION_DOC_CODE = "collectionDocCode";
 		public static final String LOCAL_AMOUNT = "localAmount";
 		public static final String FOREIGN_AMOUNT = "foreignAmount";
-		public static final String ROUTING_COUNTRY_ID="routingcountryId"; 
+		public static final String ROUTING_COUNTRY_ID="routingcountryId";
 		public static final String LINK_ID="linkId";
 		public static final String VERIFICATION_CODE="verificationCode";
-		
+		public static final String RATE_PLACE_ORDER_ID="ratePlaceOrderId";
+		public static final String CHEQUE_BANK_ID="chequeBankId"; 
+		public static final String CARD_TYPE_ID="cardTypeId";
+		public static final String NAME_ON_CARD="nameOnCard";
+		public static final String COUNTRY_BRANCH_ID="countryBranchId"; 
 	}
 	
 	
@@ -170,6 +200,28 @@ public interface IRemittanceService extends  IJaxService {
 
 	@ApiJaxStatus({JaxError.NO_RECORD_FOUND})
 	AmxApiResponse<ParameterDetailsResponseDto, Object> getGiftService(BigDecimal beneRelaId);
+
+	AmxApiResponse<BenePackageResponse, Object> getBenePackages(BenePackageRequest benePackageRequest);
+	
+
+	AmxApiResponse<RatePlaceOrderResponseModel, Object> savePlaceOrderApplication(PlaceOrderRequestModel placeOrderRequestModel);
+	
+	AmxApiResponse<RatePlaceOrderInquiryDto, Object> fetchPlaceOrderInquiry(BigDecimal countryBranchId);
+	
+	
+	AmxApiResponse<BoolRespModel, Object>  updateRatePlaceOrder(PlaceOrderUpdateStatusDto dto);
+	
+	
+	AmxApiResponse<GsmPlaceOrderListDto,Object>  getCountryWisePlaceOrderCount(GsmSearchRequestParameter requestParameter);
+	
+	AmxApiResponse<PlaceOrderResponseModel,Object> acceptPlaceOrderByCustomer(BigDecimal ratePlaceOrderId);
+
+	@ApiJaxStatus({JaxError.NO_RECORD_FOUND})
+	public AmxApiResponse<CardTypeDto, Object> getCustomerCardTypeList();
+	
+	@ApiJaxStatus({JaxError.NO_RECORD_FOUND})
+	AmxApiResponse<BoolRespModel, Object> updateCustomerCardType(BigDecimal chequeBankId, BigDecimal cardTypeId, String nameOnCard);
+
 	
 }
 

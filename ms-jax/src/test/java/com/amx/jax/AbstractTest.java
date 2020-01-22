@@ -33,7 +33,7 @@ public abstract class AbstractTest {
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
 		jaxMetaInfo.setLanguageId(new BigDecimal(1));
 		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
-		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
+		jaxMetaInfo.setCustomerId(new BigDecimal(309945));
 		jaxMetaInfo.setEmployeeId(new BigDecimal(421));
 		jaxMetaInfo.setTenant(Tenant.KWT);
 		jaxMetaInfo.setChannel(JaxChannel.ONLINE);

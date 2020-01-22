@@ -47,6 +47,7 @@ import com.amx.jax.model.response.BankMasterDTO;
 import com.amx.jax.model.response.BranchSystemDetailDto;
 import com.amx.jax.model.response.CurrencyMasterDTO;
 import com.amx.jax.model.response.benebranch.BankBranchDto;
+import com.amx.jax.model.response.remittance.ServiceMasterDTO;
 import com.amx.jax.rest.RestService;
 
 /**
@@ -542,6 +543,15 @@ public class MetaClient extends AbstractJaxServiceClient implements IMetaControl
 				.as(new ParameterizedTypeReference<AmxApiResponse<ReasonsDTO, Object>>() {
 				});
 	}
+
+	public AmxApiResponse<ServiceMasterDTO, Object> getServiceMaster() {
+		
+
+		return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.SERVICE_MASTER)
+				.meta(new JaxMetaInfo()).post()
+				.as(new ParameterizedTypeReference<AmxApiResponse<ServiceMasterDTO, Object>>() {
+				});
 	
+	}
 	
 }

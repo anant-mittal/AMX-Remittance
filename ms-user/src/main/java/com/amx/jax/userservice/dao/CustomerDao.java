@@ -26,6 +26,7 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.placeorder.PlaceOrderCustomer;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.constants.JaxChannel;
 import com.amx.jax.dal.ApplicationCoreProcedureDao;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
@@ -176,8 +177,11 @@ public class CustomerDao {
 			}else {
 				cust.setMobile(model.getMobile());
 			}
-			if(cust.getUpdatedBy() == null)
-				cust.setUpdatedBy(cust.getCreatedBy());		
+			
+			JaxChannel channel = meta.getChannel();
+			if (JaxChannel.ONLINE.equals(channel) || JaxChannel.MOBILE.equals(channel)) {
+				cust.setUpdatedBy(ConstantDocument.JOAMX_USER);	
+			}
 
 			customerRepo.save(cust);
 		}
@@ -348,6 +352,10 @@ public class CustomerDao {
 		return repo.getCustomerForDuplicateCheck(nationality, mobile, email, firstName);
 	}
 	
+	public Customer getActiveCustomerDetailsByCustomerId(BigDecimal customerId) {
+		Customer customer = customerRepo.getActiveCustomerDetailsByCustomerId(customerId);
+		return customer;
+	}
 	/**
 	 *  It will hit db everytime this method is called
 	 * @param customerId

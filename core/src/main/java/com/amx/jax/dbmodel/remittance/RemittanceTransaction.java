@@ -159,13 +159,12 @@ public class RemittanceTransaction implements Serializable {
 	private String wuPurposeOfTransaction;
 	private String paymentType;
 	
-
 	private BigDecimal paygTrnxDetailId;
-
 
 	private String applSplit;
 
 	private Date timeToDeliver;
+
 	private BigDecimal savedAmount;
 	private BigDecimal rackExchangeRate;
 	
@@ -173,9 +172,17 @@ public class RemittanceTransaction implements Serializable {
 	
 	
 	private BigDecimal savedAmountInFc;
-	
 
+
+	private BigDecimal approvalYear;
+
+	public BigDecimal corporateMasterId;
 	
+	/** added by Rabil  on 22Oct 2019**/
+	private String productAvaliable;
+	private String fundAvaliable;
+	
+		
 	
 	@Column(name="PAYMENT_TYPE")
 	public String getPaymentType() {
@@ -1275,13 +1282,50 @@ public class RemittanceTransaction implements Serializable {
 		this.paygTrnxDetailId = paygTrnxDetailId;
 	}
 
-	public void setApplSplit(String applSplit) {
-		this.applSplit = applSplit;
-	}
-
 	@Column(name="IS_SPLITTED")
 	public String getApplSplit() {
 		return applSplit;
+	}
+
+	public void setApplSplit(String applSplit) {
+		this.applSplit = applSplit;
+
+	}
+
+	@Column(name="APPROVAL_YEAR")
+	public BigDecimal getApprovalYear() {
+		return approvalYear;
+	}
+
+	public void setApprovalYear(BigDecimal approvalYear) {
+		this.approvalYear = approvalYear;
+	}
+	
+	@Column(name="CORP_DISCOUNT_ID")
+	public BigDecimal getCorporateMasterId() {
+		return corporateMasterId;
+	}
+
+	public void setCorporateMasterId(BigDecimal corporateMasterId) {
+		this.corporateMasterId = corporateMasterId;
+	}
+
+	@Column(name = "IS_PRODUCT_AVAILABLE")
+	public String getProductAvaliable() {
+		return productAvaliable;
+	}
+
+	public void setProductAvaliable(String productAvaliable) {
+		this.productAvaliable = productAvaliable;
+	}
+
+	@Column(name = "IS_FUND_AVAILABLE")
+	public String getFundAvaliable() {
+		return fundAvaliable;
+	}
+
+	public void setFundAvaliable(String fundAvaliable) {
+		this.fundAvaliable = fundAvaliable;
 	}
 	
 

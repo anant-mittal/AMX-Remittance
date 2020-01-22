@@ -1,6 +1,7 @@
 package com.amx.jax.controller;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +54,7 @@ import com.amx.jax.model.response.BankMasterDTO;
 import com.amx.jax.model.response.BranchSystemDetailDto;
 import com.amx.jax.model.response.CurrencyMasterDTO;
 import com.amx.jax.model.response.benebranch.BankBranchDto;
+import com.amx.jax.model.response.remittance.ServiceMasterDTO;
 import com.amx.jax.service.ApplicationCountryService;
 import com.amx.jax.service.BankMetaService;
 import com.amx.jax.service.BranchDetailService;
@@ -74,6 +76,7 @@ import com.amx.jax.service.TermsAndConditionService;
 import com.amx.jax.service.ViewDistrictService;
 import com.amx.jax.service.ViewStateService;
 import com.amx.jax.service.WhyDoAskService;
+import com.amx.jax.services.RemittanceTransactionService;
 import com.amx.jax.util.JaxContextUtil;
 import com.amx.jax.validation.BankBranchSearchRequestlValidator;
 
@@ -163,6 +166,9 @@ public class MetaController {
 	
 	@Autowired
 	CountryBranchService countryBranchService;
+	
+	@Autowired
+	RemittanceTransactionService remittanceTransactionService;
 	
 
 	@RequestMapping(value = MetaApi.API_COUNTRY, method = RequestMethod.GET)
@@ -463,5 +469,11 @@ public class MetaController {
 	@RequestMapping(value = MetaApi.API_DECLARATION, method = RequestMethod.POST)
 	public AmxApiResponse<DeclarationDTO, Object> getDeclaration() {
 		return metaService.getDeclaration(metaData.getLanguageId());
+	}
+	
+	@RequestMapping(value = MetaApi.SERVICE_MASTER, method = RequestMethod.POST)
+	public AmxApiResponse<ServiceMasterDTO, Object> getServiceMaster() {
+		List<ServiceMasterDTO> serviceMasterDTO = remittanceTransactionService.getServiceMaster();
+		return AmxApiResponse.buildList(serviceMasterDTO);
 	}
 }

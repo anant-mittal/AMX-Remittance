@@ -72,8 +72,29 @@ private static final long serialVersionUID = 7309549091432024935L;
 	@Column(name="DOCUMENT_FINANCE_YEAR")
 	private String documentFinanceYear;
 	
+	@Column(name="ACCOUNT_MMYYYY")
+	private Date accDate;
+	
+	@Column(name="APPLICATION_COUNTRY_ID")
+	private BigDecimal applCountryId;
 	
 	
+	public Date getAccDate() {
+		return accDate;
+	}
+
+	public void setAccDate(Date accDate) {
+		this.accDate = accDate;
+	}
+
+	public BigDecimal getApplCountryId() {
+		return applCountryId;
+	}
+
+	public void setApplCountryId(BigDecimal applCountryId) {
+		this.applCountryId = applCountryId;
+	}
+
 	public String getDocumentFinanceYear() {
 		return documentFinanceYear;
 	}

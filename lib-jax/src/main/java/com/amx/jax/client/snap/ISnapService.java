@@ -12,9 +12,14 @@ public interface ISnapService {
 		public static final String SNAP_API_TRANX_DONE = "/snap/api/tranx/done";
 
 		public static final String SNAP_API_CUSTOMER_JOINED = "/snap/api/customer/joined";
+		
+		public static final String SNAP_API_VIEW = "/snap/view/{snapView}";
 
 	}
-
+	
+	public static class Params {
+		public static final String SNAP_VIEW = "snapView";
+	}
 	public static enum RateType {
 		BUY_CASH("BC"), SELL_CASH("SC"), SELL_TRNSFR("ST");
 		String code;
@@ -45,4 +50,6 @@ public interface ISnapService {
 	public SnapModelWrapper getXRateStats(StatsSpan graph, Currency forCur, Currency domCur);
 
 	public SnapModelWrapper getTranxStats();
+	
 }
+

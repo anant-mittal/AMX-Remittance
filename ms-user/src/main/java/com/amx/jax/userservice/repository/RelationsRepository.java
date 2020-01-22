@@ -15,4 +15,6 @@ public interface RelationsRepository extends JpaRepository<RelationsDescription,
 
 	@Query(value = "SELECT * FROM JAX_VW_RELATIONSHIP jvr WHERE RELATIONS_CODE='30'", nativeQuery=true)
 	List<RelationsDescription> getOthersRelations();
+
+List<RelationsDescription> findByRelationsCodeAndLangId(String relationCode,BigDecimal langId);
 }

@@ -1230,7 +1230,8 @@ public ParameterDetailsResponseDto getGiftService(BigDecimal beneId) {
 	try {
 		BenificiaryListView beneficaryDetails =beneficiaryRepository.findByCustomerIdAndBeneficiaryRelationShipSeqIdAndIsActive(metaData.getCustomerId(),beneId,ConstantDocument.Yes);
 		if(beneficaryDetails!=null && !StringUtils.isBlank(beneficaryDetails.getBankCode()) && beneficaryDetails.getBranchCode()!=null){
-			List<ViewParameterDetails> vwParamDetailsList = viewParameterDetailsRespository.findByRecordIdAndCharField2AndNumericField1(ConstantDocument.BPI_GIFT, beneficaryDetails.getBankCode(), beneficaryDetails.getBranchCode());
+				List<ViewParameterDetails> vwParamDetailsList = viewParameterDetailsRespository.findByRecordIdAndCharField2AndNumericField1(
+						ConstantDocument.BPI_GIFT, beneficaryDetails.getBankCode(), beneficaryDetails.getBranchCode());
 		
 			if(vwParamDetailsList!=null && !vwParamDetailsList.isEmpty()) {
 				List<ParameterDetailsDto> dtoList = new ArrayList<ParameterDetailsDto>();
@@ -1249,7 +1250,8 @@ public ParameterDetailsResponseDto getGiftService(BigDecimal beneId) {
 					}
 						
 					
-					AdditionalBankRuleMap addlMap = additionalBankRuleMapRepos.findByFlexFieldAndIsActive(viewParameterDetails.getCharField3(), ConstantDocument.Yes);
+					AdditionalBankRuleMap addlMap = additionalBankRuleMapRepos.findByFlexFieldAndIsActiveAndCountryId(
+								viewParameterDetails.getCharField3(), ConstantDocument.Yes, beneficaryDetails.getBenificaryCountry());
 					BankMasterMdlv1 bankMasterModel = bankService.getByBankCode(viewParameterDetails.getCharField2());
 					List<CurrencyMasterMdlv1> currLsit = currencyDao.getCurrencyListByCountryId(bankMasterModel.getBankCountryId());
 					ViewRemittanceMode remitMode = viewRemittanceMode.findByRemittancCode(viewParameterDetails.getCharField4());

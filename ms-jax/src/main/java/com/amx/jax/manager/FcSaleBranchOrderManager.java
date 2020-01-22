@@ -78,8 +78,7 @@ import com.amx.jax.service.CompanyService;
 import com.amx.jax.services.FcSaleDeliveryService;
 import com.amx.jax.util.ConverterUtil;
 import com.amx.jax.util.DateUtil;
-
-import jodd.typeconverter.Convert;
+import com.amx.utils.ArgUtil;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
@@ -2001,7 +2000,8 @@ public class FcSaleBranchOrderManager {
 		if (fxDeliveryTimeSlotDto != null) {
 			if (fxDeliveryTimeSlotDto.getStartTime() != null) {
 
-				double doubleNumber = Convert.toDouble(fxDeliveryTimeSlotDto.getStartTime());
+				//double doubleNumber = Convert.toDouble(fxDeliveryTimeSlotDto.getStartTime());
+				double doubleNumber = ArgUtil.parseAsDouble(fxDeliveryTimeSlotDto.getStartTime());
 				String doubleAsString = String.valueOf(doubleNumber);
 				int indexOfDecimal = doubleAsString.indexOf(".");
 				Double minutes = Double.parseDouble(doubleAsString.substring(indexOfDecimal));
@@ -2016,7 +2016,7 @@ public class FcSaleBranchOrderManager {
 				}
 			}
 			if (fxDeliveryTimeSlotDto.getEndTime() != null) {
-				double doubleNumber = Convert.toDouble(fxDeliveryTimeSlotDto.getEndTime());
+				double doubleNumber = ArgUtil.parseAsDouble(fxDeliveryTimeSlotDto.getEndTime());
 				String doubleAsString = String.valueOf(doubleNumber);
 				int indexOfDecimal = doubleAsString.indexOf(".");
 				Double minutes = Double.parseDouble(doubleAsString.substring(indexOfDecimal));
@@ -2032,7 +2032,7 @@ public class FcSaleBranchOrderManager {
 			}
 		}
 		if (fxDeliveryTimeSlotDto.getOfficeStartTime() != null) {
-			double doubleNumber = Convert.toDouble(fxDeliveryTimeSlotDto.getOfficeStartTime());
+			double doubleNumber = ArgUtil.parseAsDouble(fxDeliveryTimeSlotDto.getOfficeStartTime());
 			String doubleAsString = String.valueOf(doubleNumber);
 			int indexOfDecimal = doubleAsString.indexOf(".");
 			Double minutes = Double.parseDouble(doubleAsString.substring(indexOfDecimal));
@@ -2048,7 +2048,8 @@ public class FcSaleBranchOrderManager {
 		}
 
 		if (fxDeliveryTimeSlotDto.getOfficeEndTime() != null) {
-			double doubleNumber = Convert.toDouble(fxDeliveryTimeSlotDto.getOfficeEndTime());
+			//double doubleNumber = Convert.toDouble(fxDeliveryTimeSlotDto.getOfficeEndTime());
+			double doubleNumber = ArgUtil.parseAsDouble(fxDeliveryTimeSlotDto.getOfficeEndTime());
 			String doubleAsString = String.valueOf(doubleNumber);
 			int indexOfDecimal = doubleAsString.indexOf(".");
 			Double minutes = Double.parseDouble(doubleAsString.substring(indexOfDecimal));

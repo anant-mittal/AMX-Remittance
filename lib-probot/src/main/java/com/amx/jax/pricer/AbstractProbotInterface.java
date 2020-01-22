@@ -52,7 +52,22 @@ public interface AbstractProbotInterface {
 		//Service Controllers for markup 
 		public static final String GET_MARKUP_DETAILS = SERVICE_PREFIX + API_VERSION_V1 + "/get-markup-details";
 		public static final String SAVE_MARKUP_DETAILS = SERVICE_PREFIX + API_VERSION_V1 + "/save-markup-details";
-
+		
+		// Grouping APIs
+		public static final String GET_GROUPS_OF_TYPE = SERVICE_PREFIX + API_VERSION_V1 + "/get-groups-of-type";
+		public static final String SAVE_GROUP = SERVICE_PREFIX + API_VERSION_V1 + "/save-group";
+		public static final String DELETE_GROUP = SERVICE_PREFIX + API_VERSION_V1 + "/delete-group";
+		
+		// Exchnage Rate Enquiry
+		public static final String ENQUIRE_EXCH_RATE = SERVICE_PREFIX + API_VERSION_V1 + "/enquire-exch-rate";
+		
+		public static final String RATE_UPLOAD_RULE_MAKER = SERVICE_PREFIX + API_VERSION_V1 + "/rate-upload-rule-maker";
+		
+		public static final String RATE_UPLOAD_RULE_CHECKER = SERVICE_PREFIX + API_VERSION_V1 + "/rate-upload-rule-checker";
+		
+		public static final String GET_RATE_UPLOAD_RULES = SERVICE_PREFIX + API_VERSION_V1 + "/get-rate-upload-rules";
+		
+		public static final String GET_ROUTE_COUNTRY_BANKS = SERVICE_PREFIX + API_VERSION_V1 + "/get-route-country-banks";
 
 	}
 }
