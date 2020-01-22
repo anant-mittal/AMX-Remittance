@@ -137,9 +137,10 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 	RelationsRepository relationsRepository;
 	@Autowired
 	CustomerDBAuthManager customerDBAuthManager;
+	@Autowired	
+	CustomerDao custDao;
 	@Autowired
 	CommunicationPrefsUtil communicationPrefsUtil;
-	
 	@Autowired
 	WhatsAppClient whatsAppClient;
 
@@ -644,21 +645,16 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 				// Send Push Message
 				PushMessage pushMessage = new PushMessage();
 
-			beneCreationEmail.getModel().put(NotificationConstants.RESP_DATA_KEY, wrapper);
-			postManService.sendEmailAsync(beneCreationEmail);
-
-			// Send Push Message
-			PushMessage pushMessage = new PushMessage();
-
-			pushMessage.setITemplate(TemplatesMX.BENE_SUCC);
-			pushMessage.getModel().put(NotificationConstants.RESP_DATA_KEY, wrapper);
-			pushMessage.addToUser(custId);
-			pushNotifyClient.send(pushMessage);
+				pushMessage.setITemplate(TemplatesMX.BENE_SUCC);
+				pushMessage.getModel().put(NotificationConstants.RESP_DATA_KEY, wrapper);
+				pushMessage.addToUser(custId);
+				pushNotifyClient.send(pushMessage);
+			}
+			
 
 		} catch (Exception e) {
 			logger.error("Error while sending mail beneCreationEmail : " , e);
 		}
 	}
-
 
 }

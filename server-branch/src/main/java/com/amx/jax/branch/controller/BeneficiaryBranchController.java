@@ -46,7 +46,6 @@ import com.amx.jax.model.response.benebranch.BankBranchDto;
 import com.amx.jax.model.response.benebranch.BeneStatusDto;
 import com.amx.jax.model.response.jaxfield.JaxConditionalFieldDto;
 import com.amx.jax.model.response.remittance.GetServiceApplicabilityResponse;
-import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
 import com.amx.utils.ArgUtil;
 
 import io.swagger.annotations.Api;
