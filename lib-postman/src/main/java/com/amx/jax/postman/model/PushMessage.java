@@ -3,6 +3,8 @@ package com.amx.jax.postman.model;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -23,6 +25,7 @@ public class PushMessage extends Message {
 	private static final String FORMAT_TO_NATIONALITY = "%s-%s-nationality-%s-%s";
 	private static final String FORMAT_TO_USER = "%s-%s-user-%s-%s";
 	private static final String FORMAT_TO_DATE = "%s-%s-%s-date-%s";
+	private static final String FORMAT_TO_KEY = "%s-%s-key-%s-%s-%s";
 	public static final String CONDITION_SEPRATOR = " || ";
 
 	public static final Pattern FORMAT_TO_ALL_PATTERN = Pattern.compile("/topics/(.+)-all$");
@@ -38,6 +41,8 @@ public class PushMessage extends Message {
 	public static final Pattern FORMAT_TO_NATIONALITY_PATTERN_V3 = Pattern
 			.compile("/topics/(.+)-(.+)-nationality-(.+)-(.+)$");
 	public static final Pattern FORMAT_TO_USER_PATTERN_V3 = Pattern.compile("/topics/(.+)-(.+)-user-(.+)-(.+)$");
+
+	public static final Pattern FORMAT_TO_KEY_PATTERN_V3 = Pattern.compile("/topics/(.+)-(.+)-key-(.+)-(.+)-(.+)$");
 
 	private static final long serialVersionUID = -1354844357577261297L;
 	private static final String ANY_VALUE = "~";
@@ -75,9 +80,10 @@ public class PushMessage extends Message {
 	}
 
 	public void addToDate(String prefix, Date date) {
-		if(ArgUtil.is(date)) {
+		if (ArgUtil.is(date)) {
 			this.addTo(TOPICS_PREFIX
-					+ String.format(FORMAT_TO_DATE, AppParam.APP_ENV.getValue(), TenantContextHolder.currentSite(), prefix,
+					+ String.format(FORMAT_TO_DATE, AppParam.APP_ENV.getValue(), TenantContextHolder.currentSite(),
+							prefix,
 							simpleDateFormat.format(date))
 							.toLowerCase().replaceAll("\\s+", ""));
 		}
@@ -125,6 +131,17 @@ public class PushMessage extends Message {
 		addToCountry(TenantContextHolder.currentSite(), nationalityId, lang);
 	}
 
+	public void addToKey(String key, String value, Language lang) {
+		this.addTo(TOPICS_PREFIX
+				+ String.format(PushMessage.FORMAT_TO_KEY, AppParam.APP_ENV.getValue(),
+						TenantContextHolder.currentSite().toString(),
+						key, value, Language.toString(lang, ANY_VALUE)).toLowerCase());
+	}
+
+	public void addToKey(String key, String value) {
+		addToKey(key, value, null);
+	}
+
 	public boolean isCondition() {
 		return condition;
 	}
@@ -150,25 +167,37 @@ public class PushMessage extends Message {
 			Tenant tenant = Tenant.fromString(m.group(2), Tenant.DEFAULT);
 			c.setTenant(tenant);
 			c.setLang(Language.fromString(m.group(4), null));
-		} else {
-			m = PushMessage.FORMAT_TO_NATIONALITY_PATTERN_V3.matcher(topic);
-			if (m.find()) {
-				c.setCountry(m.group(3));
-				Tenant tenant = Tenant.fromString(m.group(2), Tenant.DEFAULT);
-				c.setTenant(tenant);
-				c.setLang(Language.fromString(m.group(4), null));
-			} else {
-				m = PushMessage.FORMAT_TO_ALL_PATTERN_V3.matcher(topic);
-				if (m.find()) {
-					Tenant tenant = Tenant.fromString(m.group(2), Tenant.DEFAULT);
-					c.setTenant(tenant);
-					c.setLang(Language.fromString(m.group(3), null));
-				} else {
-					return toContactV2(topic);
-				}
-			}
+			return c;
 		}
-		return c;
+		m = PushMessage.FORMAT_TO_NATIONALITY_PATTERN_V3.matcher(topic);
+		if (m.find()) {
+			c.setCountry(m.group(3));
+			Tenant tenant = Tenant.fromString(m.group(2), Tenant.DEFAULT);
+			c.setTenant(tenant);
+			c.setLang(Language.fromString(m.group(4), null));
+			return c;
+		}
+		m = PushMessage.FORMAT_TO_ALL_PATTERN_V3.matcher(topic);
+		if (m.find()) {
+			Tenant tenant = Tenant.fromString(m.group(2), Tenant.DEFAULT);
+			c.setTenant(tenant);
+			c.setLang(Language.fromString(m.group(3), null));
+			return c;
+		}
+
+		m = PushMessage.FORMAT_TO_KEY_PATTERN_V3.matcher(topic);
+		if (m.find()) {
+			Tenant tenant = Tenant.fromString(m.group(2), Tenant.DEFAULT);
+			c.setTenant(tenant);
+			Map<String, String> keys = new HashMap<String, String>();
+			keys.put("k", m.group(3));
+			keys.put("v", m.group(4));
+			c.getKeymap().add(keys);
+			c.setLang(Language.fromString(m.group(4), null));
+			return c;
+		}
+
+		return toContactV2(topic);
 	}
 
 	public static Contact toContactV2(String topic) {

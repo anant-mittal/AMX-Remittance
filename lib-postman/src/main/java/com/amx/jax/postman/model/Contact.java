@@ -1,9 +1,14 @@
 package com.amx.jax.postman.model;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import com.amx.jax.dict.Language;
 import com.amx.jax.dict.Tenant;
 
 public class Contact {
+
 	Tenant tenant;
 	String country;
 	String userid;
@@ -11,6 +16,12 @@ public class Contact {
 	String mobile;
 	String email;
 	Language lang;
+	List<Map<String, String>> keymap;
+
+	public Contact() {
+		super();
+		this.keymap = new ArrayList<Map<String, String>>();
+	}
 
 	public Language getLang() {
 		return lang;
@@ -82,4 +93,13 @@ public class Contact {
 		this.email = email;
 		return this;
 	}
+
+	public List<Map<String, String>> getKeymap() {
+		return keymap;
+	}
+
+	public void setKeymap(List<Map<String, String>> keymap) {
+		this.keymap = keymap;
+	}
+
 }
