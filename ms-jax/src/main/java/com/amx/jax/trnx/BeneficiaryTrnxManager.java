@@ -63,6 +63,7 @@ import com.amx.jax.util.CommunicationPrefsUtil;
 import com.amx.jax.util.CommunicationPrefsUtil.CommunicationPrefsResult;
 import com.amx.jax.validation.BenePersonalDetailValidator;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.JsonUtil;
 
 /**
  * @author Prashant
@@ -569,6 +570,7 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 				WAMessage waMessage = new WAMessage();
 				waMessage.addTo(personInfo.getWhatsappPrefixCode()+personInfo.getWhatsAppNumber());
 				waMessage.setITemplate(TemplatesMX.BENE_SUCC);
+				logger.info("Wa for bene succ "+JsonUtil.toJson(waMessage));
 				whatsAppClient.send(waMessage);
 			}
 			
