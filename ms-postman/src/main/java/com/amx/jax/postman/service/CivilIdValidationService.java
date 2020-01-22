@@ -1,9 +1,8 @@
-package com.amx.jax.radar.service;
+package com.amx.jax.postman.service;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -24,10 +23,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.amx.jax.dict.Language;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.postman.model.DocResult;
 import com.amx.jax.postman.model.File.Type;
 import com.amx.jax.rest.RestService;
-import com.amx.mrz.MrzParser;
-import com.amx.mrz.MrzRecord;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonPath;
 import com.amx.utils.StringUtils.StringMatcher;
@@ -53,14 +51,7 @@ public class CivilIdValidationService {
 
 	public static final Logger LOGGER = LoggerService.getLogger(CivilIdValidationService.class);
 
-	public static class CivilIdValidationResponse implements Serializable {
-		private static final long serialVersionUID = -2503512814079715347L;
-		public String identity;
-		public String response;
-		public String status;
-	}
-
-	public CivilIdValidationResponse validate(String identity) throws IOException {
+	public DocResult validateId(String identity) throws IOException {
 
 		Document doc0 = Jsoup.connect(UAE_XCHANGE_URL).get();
 
@@ -82,7 +73,7 @@ public class CivilIdValidationService {
 
 		Document doc1 = con1.post();
 
-		CivilIdValidationResponse resp = new CivilIdValidationResponse();
+		DocResult resp = new DocResult();
 		resp.identity = identity;
 		resp.status = "INVALID";
 
@@ -113,6 +104,7 @@ public class CivilIdValidationService {
 
 	private static final String PACI_URL = "https://www.paci.gov.kw/Default.aspx";
 
+	@Deprecated
 	public void validateCaptcha(String identity) throws IOException {
 
 		Connection con0 = Jsoup.connect(PACI_URL)
@@ -141,8 +133,10 @@ public class CivilIdValidationService {
 		FileOutputStream out = (new FileOutputStream(temp));
 		out.write(resultImageResponse.bodyAsBytes());
 		out.close();
-		LOGGER.info("Captch form {} is {}", temp.getAbsolutePath(),
-				CaptchaSolver.INSTANCE.solve(temp.getAbsolutePath()));
+		/**
+		 * LOGGER.info("Captch form {} is {}", temp.getAbsolutePath(),
+		 * CaptchaSolver.INSTANCE.solve(temp.getAbsolutePath()));
+		 */
 		// Image Reading End
 
 		Connection con1 = con0
@@ -180,14 +174,14 @@ public class CivilIdValidationService {
 	private static final JsonPath PARSED_TEXT = new JsonPath("ParsedResults/[0]/ParsedText");
 	private static final JsonPath PARSED_ERROR = new JsonPath("ParsedResults/[0]/ParsedText");
 	private static final Pattern FIND_CIVIL_ID = Pattern.compile("Civil ID No[\\n ](\\d{12})\n");
-	private static final Pattern FIND_MRZ_CODE= Pattern.compile("IDKWT(.+)[\\n](.+)[\\n](.+)");
+	private static final Pattern FIND_MRZ_CODE = Pattern.compile("IDKWT(.+)[\\n](.+)[\\n](.+)");
 	private static final Pattern FIND_NAME = Pattern.compile("Name ([a-zA-Z ]+)\n");
 	private static final Pattern FIND_NATIONALITY = Pattern.compile("Nationality ([a-zA-Z]{1,3})\n");
 	private static final Pattern FIND_DATE = Pattern.compile("\n(\\d{2}/\\d{2}/\\d{4})");
 	public static final String FIND_DATE_FORMAT_STRING = "dd/MM/yyyy";
 	public static final SimpleDateFormat FIND_DATE_FORMAT = new SimpleDateFormat(FIND_DATE_FORMAT_STRING);
 
-	public Map<String, Object> scan(MultipartFile file, Language lang) throws IOException {
+	public Map<String, Object> scanId(MultipartFile file, Language lang) throws IOException {
 		Type type = com.amx.jax.postman.model.File.Type.from(file.getContentType());
 		String fileType = "." + type.toString().toLowerCase();
 		System.out.println("fileType==" + fileType + "  -  " + file.getName());
@@ -263,9 +257,9 @@ public class CivilIdValidationService {
 
 			output.put("timeTaken", TimeUtils.timeSince(startTime));
 		}
-		
-		if(matcher.isMatch(FIND_MRZ_CODE)) {
-			MrzRecord record = MrzParser.parse(matcher.group(0));
+
+		if (matcher.isMatch(FIND_MRZ_CODE)) {
+			// MrzRecord record = MrzParser.parse(matcher.group(0));
 		}
 
 		return output;

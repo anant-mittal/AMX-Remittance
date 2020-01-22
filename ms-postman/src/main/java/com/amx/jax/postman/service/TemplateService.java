@@ -131,10 +131,7 @@ public class TemplateService {
 	 * @return the local
 	 */
 	private Locale getLocal(File file) {
-		if (file == null || file.getLang() == null) {
-			return new Locale(postManConfig.getTenantLang().getCode());
-		}
-		return new Locale(file.getLang().getCode());
+		return postManConfig.getLocal(file);
 	}
 
 	/**
