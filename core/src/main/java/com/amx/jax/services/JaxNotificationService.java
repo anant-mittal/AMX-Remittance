@@ -105,14 +105,7 @@ public class JaxNotificationService {
 		email.setHtml(true);
 		email.getModel().put(RESP_DATA_KEY, pinfo);
 		email.getModel().put(RESP_TRANSACTION_DATA_KEY, remittanceReceiptSubreport);
-		if ("2".equals(metaData.getLanguageId())) {
-			email.setLang(Language.AR);
-		} else {
-			email.setLang(Language.EN);
-		}
-		if (emailData != null) {
-			email.getModel().putAll(emailData);
-		}
+
 
 		File file = new File();
 		file.setITemplate(TemplatesMX.REMIT_RECEIPT_JASPER);
@@ -472,11 +465,7 @@ public class JaxNotificationService {
 		email.setSubject("Your transaction on AMX is successful");
 		email.addTo(pinfo.getEmail());
 		email.setITemplate(TemplatesMX.TXN_CRT_SUCC);
-		if ("2".equals(metaData.getLanguageId())) {
-			email.setLang(Language.AR);
-		} else {
-			email.setLang(Language.EN);
-		}
+		
 		email.setHtml(true);
 		email.getModel().put(RESP_DATA_KEY, pinfo);
 
