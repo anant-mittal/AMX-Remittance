@@ -69,8 +69,8 @@ public class BDashboardAnalyticsController {
 		snapQueryParams.addValue("minCount", "0");
 
 		// TODO needs to changed
-		//return snapServiceClient.snapView(SnapQueryTemplate.RPTPG2, snapQueryParams);
-		return snapServiceClient.snapView(SnapQueryTemplate.RPT_DUMMY, snapQueryParams);
+		return snapServiceClient.snapView(SnapQueryTemplate.RPTPG2, snapQueryParams);
+		// return snapServiceClient.snapView(SnapQueryTemplate.RPT_DUMMY, snapQueryParams);
 	}
 
 }
