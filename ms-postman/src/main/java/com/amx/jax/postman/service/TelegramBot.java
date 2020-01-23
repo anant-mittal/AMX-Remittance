@@ -91,25 +91,28 @@ public class TelegramBot extends TelegramLongPollingBot {
 				e.printStackTrace();
 			}
 		} else {
-			LOGGER.info("TG NOTEXT : {} {}", update.getMessage().getChatId(), update.getMessage().getContact());
+			LOGGER.info("TG NOTEXT : {}", update.getMessage().getChatId());
 		}
-
 		if (ArgUtil.is(update.getMessage().getContact())) {
-			LOGGER.info("CONTACT : {} {}", update.getMessage().getChatId(), update.getMessage().getContact());
-			contactsCache.put(channel.name() + "#" + update.getMessage().getContact().getPhoneNumber(),
-					update.getMessage().getChatId());
+			LOGGER.info("TG CONTACT : {} {}", update.getMessage().getChatId(), update.getMessage().getContact());
+			String phoneKey = channel.name() + "#" + update.getMessage().getContact().getPhoneNumber();
+			contactsCache.put(phoneKey, update.getMessage().getChatId());
+			send(phoneKey, "You have successfully subscribed to updates");
+
 		}
 	}
 
 	public void send(String phone, String text) {
 		Long chatId = contactsCache.get(channel.name() + "#" + phone);
-		SendMessage message = new SendMessage() // Create a SendMessage object with mandatory fields
-				.setChatId(chatId)
-				.setText(text);
-		try {
-			execute(message); // Call method to send the message
-		} catch (TelegramApiException e) {
-			e.printStackTrace();
+		if (ArgUtil.is(chatId)) {
+			SendMessage message = new SendMessage() // Create a SendMessage object with mandatory fields
+					.setChatId(chatId)
+					.setText(text);
+			try {
+				execute(message); // Call method to send the message
+			} catch (TelegramApiException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
