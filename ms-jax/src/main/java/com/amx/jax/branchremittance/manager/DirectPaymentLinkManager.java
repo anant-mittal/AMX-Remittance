@@ -394,7 +394,7 @@ public class DirectPaymentLinkManager extends AbstractModel {
 				if(paymentResponse.getCustomerId() != null) {
 					PersonInfo personInfo = userService.getPersonInfo(paymentResponse.getCustomerId());
 					if(personInfo!=null && !StringUtils.isBlank(personInfo.getEmail()) && personInfo.getEmail() != null) {
-						notificationService.sendTransactionNotificationDL(personInfo);
+						notificationService.sendTransactionNotification(null, personInfo, null, false);
 					}
 				}
 								
