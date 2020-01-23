@@ -76,6 +76,8 @@ public class TelegramBot extends TelegramLongPollingBot {
 				keyboard.add(keyboardFirstRow);
 				// add list to our keyboard
 				replyKeyboardMarkup.setKeyboard(keyboard);
+			} else if (update.getMessage().getText().equals("/mycontact")) {
+				message.setText(update.getMessage().getContact().getPhoneNumber());
 			}
 
 			try {
@@ -86,7 +88,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 
 			if (ArgUtil.is(update.getMessage().getContact())) {
 				LOGGER.info("TG : {} {}", update.getMessage().getChatId(), update.getMessage().getContact());
-				contactsCache.put(channel.name() + "#" + update.getMessage().getContact(),
+				contactsCache.put(channel.name() + "#" + update.getMessage().getContact().getPhoneNumber(),
 						update.getMessage().getChatId());
 			}
 		}
