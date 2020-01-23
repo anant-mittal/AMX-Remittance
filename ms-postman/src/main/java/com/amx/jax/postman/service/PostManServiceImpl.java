@@ -25,6 +25,7 @@ import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.SupportEmail;
+import com.amx.jax.postman.model.TGMessage;
 import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.postman.model.WAMessage;
 
@@ -54,6 +55,9 @@ public class PostManServiceImpl implements PostManService {
 
 	@Autowired
 	private WhatsAppService whatsAppService;
+
+	@Autowired
+	private TelegramService telegramService;
 
 	/** The slack service. */
 	@Autowired
@@ -254,6 +258,10 @@ public class PostManServiceImpl implements PostManService {
 
 		for (WAMessage waMessage : messageBox.getWaBucket()) {
 			whatsAppService.send(waMessage);
+		}
+
+		for (TGMessage taMessage : messageBox.getTgBucket()) {
+			telegramService.send(taMessage);
 		}
 
 		for (PushMessage pushMessage : messageBox.getPushBucket()) {

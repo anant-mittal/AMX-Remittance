@@ -25,13 +25,6 @@ public class PostManApplication {
 	 */
 	public static void main(String[] args) {
 		SpringApplication.run(PostManApplication.class, args);
-		ApiContextInitializer.init();
-		TelegramBotsApi botsApi = new TelegramBotsApi();
-		try {
-			botsApi.registerBot(new TelegramBot("almullabot", "1060793944:AAEqLlJK0tuHVw55bCtq4Ph-ZU59rLrUcEY"));
-		} catch (TelegramApiException e) {
-			e.printStackTrace();
-		}
 	}
 
 }

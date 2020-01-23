@@ -8,12 +8,14 @@ public class MessageBox {
 	private List<Email> emailBucket;
 	private List<SMS> smsBucket;
 	private List<WAMessage> waBucket;
+	private List<TGMessage> tgBucket;
 	private List<PushMessage> pushBucket;
 
 	public MessageBox() {
 		this.emailBucket = new ArrayList<Email>();
 		this.smsBucket = new ArrayList<SMS>();
 		this.waBucket = new ArrayList<WAMessage>();
+		this.tgBucket = new ArrayList<TGMessage>();
 		this.pushBucket = new ArrayList<PushMessage>();
 	}
 
@@ -64,8 +66,21 @@ public class MessageBox {
 		return this;
 	}
 
+	public MessageBox push(TGMessage m) {
+		this.tgBucket.add(m);
+		return this;
+	}
+
 	public MessageBox push(PushMessage m) {
 		this.pushBucket.add(m);
 		return this;
+	}
+
+	public List<TGMessage> getTgBucket() {
+		return tgBucket;
+	}
+
+	public void setTgBucket(List<TGMessage> tgBucket) {
+		this.tgBucket = tgBucket;
 	}
 }
