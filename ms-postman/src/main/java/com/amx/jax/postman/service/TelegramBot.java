@@ -56,7 +56,8 @@ public class TelegramBot extends TelegramLongPollingBot {
 					.setChatId(update.getMessage().getChatId())
 					.setText("Reply:" + update.getMessage().getText());
 
-			if (update.getMessage().getText().equals("/start")) {
+			if (update.getMessage().getText().equals("/start")
+					|| update.getMessage().getText().equals("/link")) {
 				// create keyboard
 				ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
 				message.setReplyMarkup(replyKeyboardMarkup);
@@ -92,6 +93,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 						update.getMessage().getChatId());
 			}
 		}
+
 	}
 
 	public void send(String phone, String text) {
