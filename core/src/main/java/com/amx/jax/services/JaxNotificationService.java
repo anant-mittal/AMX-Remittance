@@ -105,7 +105,7 @@ public class JaxNotificationService {
 		email.setHtml(true);
 		email.getModel().put(RESP_DATA_KEY, pinfo);
 		email.getModel().put(RESP_TRANSACTION_DATA_KEY, remittanceReceiptSubreport);
-
+		email.setLang(AppContextUtil.getTenant().defaultLang());
 
 		File file = new File();
 		file.setITemplate(TemplatesMX.REMIT_RECEIPT_JASPER);
