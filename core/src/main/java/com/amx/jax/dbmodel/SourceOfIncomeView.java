@@ -29,6 +29,8 @@ public class SourceOfIncomeView implements IResourceEntity,Serializable{
 	private String shortDesc;
 	@Column(name="LOCAL_FULL_DESC")
 	private String localName;
+	@Column(name = "DEFAULT_INDIC")
+	private String defaultIndic;
 	
 	public BigDecimal getSourceofIncomeId() {
 		return sourceofIncomeId;
@@ -76,5 +78,13 @@ public class SourceOfIncomeView implements IResourceEntity,Serializable{
 	public String resourceLocalName() {
 		return this.localName;
 	}
+	public String getDefaultIndic() {
+		return defaultIndic;
+	}
+	public void setDefaultIndic(String defaultIndic) {
+		this.defaultIndic = defaultIndic;
+	}
+	
+	
 	
 }

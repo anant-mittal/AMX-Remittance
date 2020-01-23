@@ -32,6 +32,15 @@ public class RelationsDescription implements IResourceEntity {
 
 	@Column(name = "RELATIONS_CODE")
 	String relationsCode;
+	
+	@Column(name = "ISACTIVE")
+    String isActive;
+	
+	@Column(name = "RELEATIONS_DESC_ID")
+    BigDecimal realtionsDescId;
+	
+	@Column(name = "DEFAULT_INDIC")
+	String defaultIndic;
 
 	public BigDecimal getRelationsId() {
 		return relationsId;
@@ -89,4 +98,32 @@ public class RelationsDescription implements IResourceEntity {
 	public void setRelationsCode(String relationsCode) {
 		this.relationsCode = relationsCode;
 	}
+
+	public String getIsActive() {
+		return isActive;
+	}
+
+	public void setIsActive(String isActive) {
+		this.isActive = isActive;
+	}
+
+	public BigDecimal getRealtionsDescId() {
+		return realtionsDescId;
+	}
+
+	public void setRealtionsDescId(BigDecimal realtionsDescId) {
+		this.realtionsDescId = realtionsDescId;
+	}
+
+	public String getDefaultIndic() {
+		return defaultIndic;
+	}
+
+	public void setDefaultIndic(String defaultIndic) {
+		this.defaultIndic = defaultIndic;
+	}
+	
+	
+	
+	
 }
