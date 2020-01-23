@@ -221,6 +221,15 @@ public class ParameterDetailsDto extends ResourceDTO {
 	public void setAmount(BigDecimal amount) {
 		this.numericUdf2 = amount;
 	}
+	
+	@Override
+	public String getResourceLocalName() {
+		return this.charUdf1;
+	}
+	@Override
+	public String getResourceCode() {
+		return this.paramCodeDef;
+	}
 
 	public BigDecimal getMinAmount() {
 		double minAmount = (numericUdf3 == null) ? 0 : numericUdf3.doubleValue();

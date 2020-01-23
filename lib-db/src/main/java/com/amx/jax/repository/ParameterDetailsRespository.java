@@ -20,4 +20,9 @@ public interface ParameterDetailsRespository extends CrudRepository<ParameterDet
 	
 	public ParameterDetails findByRecordIdAndParamCodeDefAndIsActive(String recordId,String paramCodeDef,String isActive);
 
+	//
+	@Query(value = "SELECT * FROM EX_PARAMETER_DETAILS WHERE RECORD_ID =?1", nativeQuery = true)
+	public List<ParameterDetails> fetchCodeDetails(String recordId);
+	
+	
 }

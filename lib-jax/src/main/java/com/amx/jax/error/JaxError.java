@@ -369,6 +369,9 @@ public enum JaxError implements IExceptionEnum {
 	WHATSAPP_NOT_VERIFIED;
 	
 	
+	//KWFIU
+	DUPLICATE_TRNX_DETAILS,
+	INVALID_TRNX_DETAILS;
 	
 	@Deprecated
 	public String getCode() {

@@ -47,6 +47,7 @@ public class Employee implements java.io.Serializable {
 	private String civilId;
 	private BigDecimal lockCnt;
 	private Date lockDt;
+	private BigDecimal empCountryId;
 	//private Date tokenDate;
 	//private BigDecimal tokenSentCount;
 	//private String emailToken;
@@ -306,5 +307,15 @@ public class Employee implements java.io.Serializable {
 	 * 
 	 * public void setSmsToken(String smsToken) { this.smsToken = smsToken; }
 	 */
+	@Column(name = "EMPLOYEE_COUNTRY_ID")
+	public BigDecimal getEmpCountryId() {
+		return empCountryId;
+	}
+
+	public void setEmpCountryId(BigDecimal empCountryId) {
+		this.empCountryId = empCountryId;
+	}
+	
+	
 
 }
