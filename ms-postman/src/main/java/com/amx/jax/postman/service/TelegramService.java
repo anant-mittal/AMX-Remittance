@@ -26,7 +26,8 @@ public class TelegramService {
 		try {
 			defaultTelegramBot = new TelegramBot().botUsername("almullabot")
 					.botToken("1060793944:AAEqLlJK0tuHVw55bCtq4Ph-ZU59rLrUcEY")
-					.contactsCache(contactsCache);
+					.contactsCache(contactsCache)
+					.channel(TGMessage.Channel.DEFAULT);
 			botsApi.registerBot(defaultTelegramBot);
 		} catch (TelegramApiException e) {
 			e.printStackTrace();
