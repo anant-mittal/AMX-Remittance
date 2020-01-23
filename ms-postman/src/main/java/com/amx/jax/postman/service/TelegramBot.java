@@ -50,7 +50,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 	public void onUpdateReceived(Update update) {
 		// We check if the update has a message and the message has text
 		if (update.hasMessage() && update.getMessage().hasText()) {
-			LOGGER.info("TG : {} {}", update.getMessage().getChatId(), update.getMessage().getText());
+			LOGGER.info("TG TEXT: {} {}", update.getMessage().getChatId(), update.getMessage().getText());
 
 			SendMessage message = new SendMessage() // Create a SendMessage object with mandatory fields
 					.setChatId(update.getMessage().getChatId())
@@ -90,10 +90,12 @@ public class TelegramBot extends TelegramLongPollingBot {
 			} catch (TelegramApiException e) {
 				e.printStackTrace();
 			}
+		} else {
+			LOGGER.info("TG NOTEXT : {} {}", update.getMessage().getChatId(), update.getMessage().getContact());
 		}
 
 		if (ArgUtil.is(update.getMessage().getContact())) {
-			LOGGER.info("TG : {} {}", update.getMessage().getChatId(), update.getMessage().getContact());
+			LOGGER.info("CONTACT : {} {}", update.getMessage().getChatId(), update.getMessage().getContact());
 			contactsCache.put(channel.name() + "#" + update.getMessage().getContact().getPhoneNumber(),
 					update.getMessage().getChatId());
 		}
