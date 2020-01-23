@@ -570,6 +570,7 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 				WAMessage waMessage = new WAMessage();
 				waMessage.addTo(personInfo.getWhatsappPrefixCode()+personInfo.getWhatsAppNumber());
 				waMessage.setITemplate(TemplatesMX.BENE_SUCC);
+				waMessage.getModel().put(NotificationConstants.RESP_DATA_KEY, wrapper);
 				logger.info("Wa for bene succ "+JsonUtil.toJson(waMessage));
 				whatsAppClient.send(waMessage);
 			}
