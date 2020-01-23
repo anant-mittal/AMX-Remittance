@@ -366,7 +366,7 @@ public enum JaxError implements IExceptionEnum {
 	//Communication Preferences
 	
 	SMS_NOT_VERIFIED,
-	WHATSAPP_NOT_VERIFIED;
+	WHATSAPP_NOT_VERIFIED,
 	
 	
 	//KWFIU
