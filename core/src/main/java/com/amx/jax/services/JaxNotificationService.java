@@ -88,6 +88,11 @@ public class JaxNotificationService {
 
 	public void sendTransactionNotification(RemittanceReceiptSubreport remittanceReceiptSubreport, PersonInfo pinfo,
 			Map<String, Object> emailData) {
+		sendTransactionNotification(remittanceReceiptSubreport, pinfo, emailData, true);
+	}
+	
+	public void sendTransactionNotification(RemittanceReceiptSubreport remittanceReceiptSubreport, PersonInfo pinfo,
+			Map<String, Object> emailData, boolean sendReceiptFile) {
 
 		logger.debug("Sending txn notification to customer");
 		Email email = new Email();
@@ -104,18 +109,24 @@ public class JaxNotificationService {
 		email.setITemplate(TemplatesMX.TXN_CRT_SUCC);
 		email.setHtml(true);
 		email.getModel().put(RESP_DATA_KEY, pinfo);
-		email.getModel().put(RESP_TRANSACTION_DATA_KEY, remittanceReceiptSubreport);
+		email.setLang(AppContextUtil.getTenant().defaultLang());
 
+		if (remittanceReceiptSubreport != null) {
+			email.getModel().put(RESP_TRANSACTION_DATA_KEY, remittanceReceiptSubreport);
+		} else {
+			email.getModel().put(RESP_TRANSACTION_DATA_KEY, new RemittanceReceiptSubreport());
+		}
 
-		File file = new File();
-		file.setITemplate(TemplatesMX.REMIT_RECEIPT_JASPER);
-		file.setName("TransactionReceipt");
-		file.setType(File.Type.PDF);
-		file.getModel().put(RESP_DATA_KEY, remittanceReceiptSubreport);
-		file.setPassword(pinfo.getIdentityInt());
-		file.setLang(AppContextUtil.getTenant().defaultLang());
-
-		email.addFile(file);
+		if (sendReceiptFile) {
+			File file = new File();
+			file.setITemplate(TemplatesMX.REMIT_RECEIPT_JASPER);
+			file.setName("TransactionReceipt");
+			file.setType(File.Type.PDF);
+			file.getModel().put(RESP_DATA_KEY, remittanceReceiptSubreport);
+			file.setPassword(pinfo.getIdentityInt());
+			file.setLang(AppContextUtil.getTenant().defaultLang());
+			email.addFile(file);
+		}
 		logger.debug("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getFirstName());
 		sendEmail(email);
 
