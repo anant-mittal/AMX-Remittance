@@ -31,7 +31,9 @@ import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerContactVerification;
 import com.amx.jax.dbmodel.ExEmailNotification;
 import com.amx.jax.dict.ContactType;
+import com.amx.jax.dict.Language;
 import com.amx.jax.dict.Tenant;
+import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.CivilIdOtpModel;
 import com.amx.jax.model.request.fx.FcSaleOrderFailReportDTO;
 import com.amx.jax.model.request.partner.TransactionFailReportDTO;
@@ -76,6 +78,9 @@ public class JaxNotificationService {
 	
 	@Autowired
 	CustomerRepository customerRepository;
+	
+	@Autowired
+	MetaData metaData;
 
 	Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -100,6 +105,11 @@ public class JaxNotificationService {
 		email.setHtml(true);
 		email.getModel().put(RESP_DATA_KEY, pinfo);
 		email.getModel().put(RESP_TRANSACTION_DATA_KEY, remittanceReceiptSubreport);
+		if ("2".equals(metaData.getLanguageId())) {
+			email.setLang(Language.AR);
+		} else {
+			email.setLang(Language.EN);
+		}
 		if (emailData != null) {
 			email.getModel().putAll(emailData);
 		}
@@ -462,6 +472,11 @@ public class JaxNotificationService {
 		email.setSubject("Your transaction on AMX is successful");
 		email.addTo(pinfo.getEmail());
 		email.setITemplate(TemplatesMX.TXN_CRT_SUCC);
+		if ("2".equals(metaData.getLanguageId())) {
+			email.setLang(Language.AR);
+		} else {
+			email.setLang(Language.EN);
+		}
 		email.setHtml(true);
 		email.getModel().put(RESP_DATA_KEY, pinfo);
 
