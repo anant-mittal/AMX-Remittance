@@ -358,6 +358,7 @@ public class RemittanceTransactionManager {
 		remitApplParametersMap.put("P_BENEFICIARY_MASTER_ID", beneficiary.getBeneficaryMasterSeqId());
 		addBeneficiaryParameters(beneficiary);
 		validateBlackListedBene(beneficiary);
+		validateCustomerRecord(customer);
 		//validateRiskyBene(beneficiary, customer);  //it is not required at the time of trnx ,the procedure will take care for existing bene with different nationality
 		validatedObjects.put("BENEFICIARY", beneficiary);
 		HashMap<String, Object> beneBankDetails = getBeneBankDetails(beneficiary);
@@ -470,6 +471,12 @@ public class RemittanceTransactionManager {
 
 	}
 	
+	private void validateCustomerRecord(Customer customer) {
+		if (!ConstantDocument.Yes.equals(customer.getIsActive())) {
+			throw new GlobalException(JaxError.CUSTOMER_INACTIVE, "Customer is not active, visit branch for activation");
+		}
+	}
+
 	private ExchangeRateValidateRequestDto cretaeModel(RemittanceTransactionDrRequestModel model) {
 		ExchangeRateValidateRequestDto dto = new ExchangeRateValidateRequestDto();
 		
