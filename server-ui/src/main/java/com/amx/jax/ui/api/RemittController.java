@@ -44,12 +44,14 @@ import com.amx.jax.dict.Language;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.customer.CustomerRatingDTO;
+import com.amx.jax.model.request.remittance.BenePackageRequest;
 import com.amx.jax.model.request.remittance.BranchRemittanceGetExchangeRateRequest;
 import com.amx.jax.model.request.remittance.BranchRemittanceRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionDrRequestModel;
 import com.amx.jax.model.request.remittance.RemittanceTransactionRequestModel;
 import com.amx.jax.model.request.remittance.RoutingPricingRequest;
 import com.amx.jax.model.response.CurrencyMasterDTO;
+import com.amx.jax.model.response.customer.BenePackageResponse;
 import com.amx.jax.model.response.remittance.BranchRemittanceApplResponseDto;
 import com.amx.jax.model.response.remittance.FlexFieldReponseDto;
 import com.amx.jax.model.response.remittance.ParameterDetailsDto;
@@ -184,9 +186,7 @@ public class RemittController {
 	@RequestMapping(value = "/api/user/tranx/print_history", method = { RequestMethod.POST })
 	public ResponseWrapper<List<Map<String, Object>>> printHistory(
 			@RequestBody ResponseWrapper<List<Map<String, Object>>> wrapper) throws IOException, PostManException {
-		File file = postManService
-				.processTemplate(new File(TemplatesMX.REMIT_STATMENT, wrapper, File.Type.PDF)
-						.lang(AppContextUtil.getTenant().defaultLang()))
+		File file = postManService.processTemplate(new File(TemplatesMX.REMIT_STATMENT, wrapper, File.Type.PDF).lang(AppContextUtil.getTenant().defaultLang()))
 				.getResult();
 		file.create(response, true);
 		return wrapper;
@@ -383,6 +383,12 @@ public class RemittController {
 
 		wrapper.setData(remittancePageDto);
 		return wrapper;
+	}
+	
+	@RequestMapping(value = "/api/remitt/packages", method = { RequestMethod.POST })
+	public ResponseWrapper<BenePackageResponse> getBenePackages(
+			@RequestBody BenePackageRequest benePackageRequest) {
+		return ResponseWrapper.build(remittanceClient.getBenePackages(benePackageRequest));
 	}
 
 	/**

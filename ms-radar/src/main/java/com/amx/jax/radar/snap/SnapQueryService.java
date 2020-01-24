@@ -15,7 +15,9 @@ import org.thymeleaf.spring4.SpringTemplateEngine;
 
 import com.amx.jax.AppConfig;
 import com.amx.jax.client.snap.SnapConstants.SnapQueryTemplate;
+import com.amx.jax.client.snap.SnapModels.SnapModelResponse;
 import com.amx.jax.client.snap.SnapModels.SnapModelWrapper;
+import com.amx.jax.client.snap.SnapModels.SnapQueryParams;
 import com.amx.jax.client.snap.SnapQueryException;
 import com.amx.jax.def.AbstractQueryFactory.QueryProcessor;
 import com.amx.jax.radar.AESDocument;
@@ -23,7 +25,6 @@ import com.amx.jax.radar.AESRepository.BulkRequestBuilder;
 import com.amx.jax.radar.ESRepository;
 import com.amx.jax.radar.EsConfig;
 import com.amx.jax.radar.service.SnapQueryFactory;
-import com.amx.jax.radar.service.SnapQueryFactory.SnapQueryParams;
 import com.amx.jax.rest.RestService;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
@@ -83,7 +84,7 @@ public class SnapQueryService {
 	}
 
 	@SuppressWarnings("unchecked")
-	public SnapModelWrapper executeQuery(Map<String, Object> query, String index) {
+	public SnapModelResponse executeQuery(Map<String, Object> query, String index) {
 		Map<String, Object> x = null;
 		String fullIndex = resolveIndex(EsConfig.indexName(index));
 		Object pivot = query.remove("pivot");
@@ -110,14 +111,14 @@ public class SnapQueryService {
 		x.put("__index", fullIndex);
 
 		// System.out.println(JsonUtil.toJson(query));
-		return new SnapModelWrapper(x);
+		return new SnapModelResponse(x);
 	}
 
 	public SnapModelWrapper executeQuery(Map<String, Object> query) throws IOException {
 		return executeQuery(query, "oracle-v3-*-v4");
 	}
 
-	public SnapModelWrapper execute(SnapQueryTemplate template, String index, Map<String, Object> params) {
+	public SnapModelResponse execute(SnapQueryTemplate template, String index, Map<String, Object> params) {
 		Map<String, Object> query = null;
 		try {
 			query = getQuery(template, params);
@@ -127,7 +128,7 @@ public class SnapQueryService {
 		return executeQuery(query, index);
 	}
 
-	public SnapModelWrapper execute(SnapQueryTemplate template, Map<String, Object> params) {
+	public SnapModelResponse execute(SnapQueryTemplate template, Map<String, Object> params) {
 		return this.execute(template, template.getIndex(), params);
 	}
 
@@ -166,10 +167,10 @@ public class SnapQueryService {
 
 		QueryProcessor<?, SnapQueryParams> qp = snapQueryFactory.get(snapView);
 
-		SnapModelWrapper x;
+		SnapModelResponse x;
 
 		if (ArgUtil.is(qp)) {
-			x = new SnapModelWrapper("{}");
+			x = new SnapModelResponse("{}");
 			x.toMap().put("bulk", qp.process(params));
 			return x;
 		}

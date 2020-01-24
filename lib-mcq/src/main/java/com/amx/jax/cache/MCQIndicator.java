@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppParam;
+import com.amx.jax.cache.test.RedisSampleCacheBox;
 import com.amx.jax.def.IndicatorListner;
 import com.amx.jax.tunnel.TunnelSubscriberFactory;
 import com.amx.utils.ArgUtil;
@@ -24,7 +25,7 @@ public class MCQIndicator implements IndicatorListner {
 	public static final Map<String, Object> statusMap = Collections.synchronizedMap(new HashMap<String, Object>());
 
 	@Autowired
-	SampleTestCacheBox sampleTestCacheBox;
+	RedisSampleCacheBox sampleTestCacheBox;
 
 	@Autowired
 	AppConfig appConfig;

@@ -21,14 +21,30 @@ public interface IAdditionalDataDisplayDao  extends JpaRepository<AdditionalData
 			+ " and av.routingCountryId=:countryId "
 			+ " and av.routingCurrencyId=:currencyId and av.remittanceModeId=:remittanceModeId "
 			+ " and av.deliveryModeId =:deliveryModeId and av.isActive='Y' and av.isRendered='Y' "
-			+ " and av.flexField  in :flexiFieldIn")
+			+ " and av.flexField  in :flexiFieldIn and  preFlexIndicator=:preFlexIndicator")
 	public List<AdditionalDataDisplayView> getAdditionalDataFromServiceApplicability(
 			@Param("applicationCountryId") BigDecimal applicationCountryId, 
 			@Param("countryId") BigDecimal countryId, 
 			@Param("currencyId") BigDecimal currencyId, 
 			@Param("remittanceModeId") BigDecimal remittanceModeId,
 			@Param("deliveryModeId") BigDecimal deliveryModeId,
-			@Param("flexiFieldIn") String[] flexiFieldIn );
+			@Param("flexiFieldIn") String[] flexiFieldIn,
+			@Param("preFlexIndicator") String preFlexIndicator);
+	
+	@Query("select av from AdditionalDataDisplayView av where av.applicationCountryId=:applicationCountryId "
+			+ " and av.routingCountryId=:countryId "
+			+ " and av.routingCurrencyId=:currencyId and av.remittanceModeId=:remittanceModeId "
+			+ " and av.deliveryModeId =:deliveryModeId and av.isActive='Y' and av.isRendered='Y' "
+			+ " and av.flexField  in :flexiFieldIn and av.routingBankId = :bankId and preFlexIndicator=:preFlexIndicator")
+	public List<AdditionalDataDisplayView> getAdditionalDataFromServiceApplicabilityForBank(
+			@Param("applicationCountryId") BigDecimal applicationCountryId, 
+			@Param("countryId") BigDecimal countryId, 
+			@Param("currencyId") BigDecimal currencyId, 
+			@Param("remittanceModeId") BigDecimal remittanceModeId,
+			@Param("deliveryModeId") BigDecimal deliveryModeId,
+			@Param("flexiFieldIn") String[] flexiFieldIn ,
+			@Param("bankId") BigDecimal bankId,
+			@Param("preFlexIndicator") String preFlexIndicator);
 	
 	@Query("select av from AdditionalDataDisplayView av where av.applicationCountryId=:applicationCountryId "
 			+ " and av.routingCountryId=:countryId "

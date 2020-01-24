@@ -72,6 +72,7 @@ public class UserNotificationMongoListener implements ITunnelSubscriber<UserMess
 				customerNotification.setMessage(task.getMessage());
 				customerNotification.setTemplate(task.getTemplate());
 				customerNotification.setTnt(tnt);
+				customerNotification.setTimestamp(task.getTimestamp());
 				customerNotificationList.add(customerNotification);
 			}
 		}

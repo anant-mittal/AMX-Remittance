@@ -26,6 +26,7 @@ import com.amx.jax.repository.CountryMasterRepository;
 import com.amx.jax.repository.IAccountTypeFromViewDao;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.ICustomerViewRepository;
+import com.amx.jax.repository.IRemitTrnxSrvProvRepository;
 import com.amx.jax.repository.IRemittanceTransactionRepository;
 import com.amx.jax.repository.ParameterDetailsRespository;
 import com.amx.jax.repository.remittance.IUsdExchangeRateRepository;
@@ -66,6 +67,9 @@ public class PartnerTransactionDao {
 	@Autowired
 	IRemittanceTransactionRepository remittanceTransactionRepository;
 	
+	@Autowired
+	IRemitTrnxSrvProvRepository remitTrnxSrvProvRepository;
+	
 	public BenificiaryListView getBeneficiaryDetails(BigDecimal customerId,BigDecimal beneficiaryRelationShipSeqId) {
 		return beneficiaryViewRepository.findByCustomerIdAndBeneficiaryRelationShipSeqIdAndIsActive(customerId, beneficiaryRelationShipSeqId,ConstantDocument.Yes);
 	}
@@ -90,8 +94,8 @@ public class PartnerTransactionDao {
 		return parameterDetailsRespository.fetchBeneCountryBeneAddressNotReq(recordId, beneCountryCode);
 	}
 	
-	public List<TransactionDetailsView> fetchTrnxSPDetails(BigDecimal customerId,BigDecimal collectionDocYear,BigDecimal collectionDocNumber){
-		return transactionSPDetailsRepository.fetchTrnxSPDetails(customerId,collectionDocYear,collectionDocNumber);
+	public List<TransactionDetailsView> fetchTrnxSPDetails(BigDecimal customerId,BigDecimal collectionDocYear,BigDecimal collectionDocNumber,BigDecimal collectionDocCode){
+		return transactionSPDetailsRepository.fetchTrnxSPDetails(customerId,collectionDocYear,collectionDocNumber,collectionDocCode);
 	}
 	
 	public List<TransactionDetailsView> fetchTrnxWiseDetails(BigDecimal customerId,BigDecimal docYear,BigDecimal docNumber){
@@ -115,8 +119,17 @@ public class PartnerTransactionDao {
 	}
 	
 	@Transactional
-	public void saveRemittanceRemarksDeliveryInd(String deliveryInd, String remarks, BigDecimal remittanceTransactionId) {
-		remittanceTransactionRepository.updateDeliveryIndRemarksBySP(deliveryInd, remarks, remittanceTransactionId);
+	public void saveRemittanceRemarksDeliveryInd(String deliveryInd, String remarks, BigDecimal remittanceTransactionId,String bankReference) {
+		remittanceTransactionRepository.updateDeliveryIndRemarksBySP(deliveryInd, remarks, remittanceTransactionId,bankReference);
+	}
+	
+	public List<TransactionDetailsView> fetchTrnxWiseDetailsForCustomer(BigDecimal customerId,BigDecimal documentFinanceYear,BigDecimal documentNo,BigDecimal colDocumentFinanceYear,BigDecimal colDocumentNo,BigDecimal colDocumentCode){
+		return transactionSPDetailsRepository.fetchTrnxWiseDetailsForCustomer(customerId, documentFinanceYear, documentNo, colDocumentFinanceYear, colDocumentNo, colDocumentCode);
+	}
+	
+	@Transactional
+	public void updateServiceProviderDetails(String partnerSessionId,String partnerReferenceNo,BigDecimal remittanceTransactionId) {
+		remitTrnxSrvProvRepository.updateServiceProviderDetails(partnerSessionId, partnerReferenceNo, remittanceTransactionId);
 	}
 	
 }

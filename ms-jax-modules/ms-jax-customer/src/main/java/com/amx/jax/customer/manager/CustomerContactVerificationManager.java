@@ -286,7 +286,7 @@ public class CustomerContactVerificationManager {
 				CustomerVerificationType.EMAIL);
 
 		CustomerOnlineRegistration customerOnlineRegistration = onlineCustomerRepository
-				.getLoginCustomersDeatilsById(c.getIdentityInt());
+				.findByCustomerId(c.getCustomerId());
 
 		if (ContactType.EMAIL.equals(type)) {
 			if (!contact.equals(c.getEmail())) {

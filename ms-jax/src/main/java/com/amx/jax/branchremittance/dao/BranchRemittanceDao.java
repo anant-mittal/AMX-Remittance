@@ -36,6 +36,7 @@ import com.amx.jax.dbmodel.partner.RemitTrnxSrvProv;
 import com.amx.jax.dbmodel.remittance.AdditionalInstructionData;
 import com.amx.jax.dbmodel.remittance.LoyaltyClaimRequest;
 import com.amx.jax.dbmodel.remittance.LoyaltyPointsModel;
+import com.amx.jax.dbmodel.remittance.RatePlaceOrder;
 import com.amx.jax.dbmodel.remittance.RemitApplAmlModel;
 import com.amx.jax.dbmodel.remittance.RemittanceAdditionalInstructionData;
 import com.amx.jax.dbmodel.remittance.RemittanceAml;
@@ -56,6 +57,7 @@ import com.amx.jax.repository.ForeignCurrencyAdjustRepository;
 import com.amx.jax.repository.ICollectionDetailRepository;
 import com.amx.jax.repository.ICollectionRepository;
 import com.amx.jax.repository.ILoyaltyClaimRequestRepository;
+import com.amx.jax.repository.IRatePlaceOrderRepository;
 import com.amx.jax.repository.IRemitApplAmlRepository;
 import com.amx.jax.repository.IRemitApplSrvProvRepository;
 import com.amx.jax.repository.IRemitTrnxSrvProvRepository;
@@ -72,6 +74,7 @@ import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.repository.remittance.ILoyaltyPointRepository;
 import com.amx.jax.services.RemittanceTransactionService;
 import com.amx.jax.util.JaxUtil;
+import com.amx.utils.ArgUtil;
 
 @Component
  @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode =
@@ -143,6 +146,9 @@ public class BranchRemittanceDao {
     
     @Autowired
     IRemittanceTrnxSplitRepository remittanceTrnxSplitRepository;
+    
+    @Autowired
+    IRatePlaceOrderRepository placeOrderRepository; 
 
 	@Autowired
 	PaygDetailsRepository pgRepository;
@@ -152,7 +158,7 @@ public class BranchRemittanceDao {
 	
 	@Autowired
 	RemittanceTransactionService remittanceTransactionService;
-
+	
 	@Transactional
 	@SuppressWarnings("unchecked")
 	public void saveAllApplications(HashMap<String, Object> mapAllDetailApplSave) {
@@ -179,6 +185,15 @@ public class BranchRemittanceDao {
 					remittanceApplSplitRepository.save(applSplit);
 				}
 			}
+			if(JaxUtil.isNullZeroBigDecimalCheck(saveApplTrnx.getRatePlaceOrderId())) {
+				RatePlaceOrder ratePlaceOrder = placeOrderRepository.findOne(saveApplTrnx.getRatePlaceOrderId());
+				if(ratePlaceOrder!=null) {
+					ratePlaceOrder.setApplDocumentFinanceYear(saveApplTrnx.getDocumentFinancialyear());
+					ratePlaceOrder.setApplDocumentNumber(documentNo);
+					placeOrderRepository.save(ratePlaceOrder);
+				}
+			} //end of place order
+
 		}else {
 			throw new GlobalException(JaxError.INVALID_APPLICATION_DOCUMENT_NO, "Application document number shouldnot be null or blank");
 		}
@@ -199,6 +214,10 @@ public class BranchRemittanceDao {
 			saveApplSrvProv.setRemittanceApplicationId(saveApplTrnx.getRemittanceApplicationId());
 			remitApplSrvProvRepository.save(saveApplSrvProv);
 		}
+		
+		
+		
+		
 
 	}
 
@@ -319,9 +338,11 @@ public class BranchRemittanceDao {
 
 					if (amlTrnxList != null && !amlTrnxList.isEmpty()) {
 						List<RemittanceAml> remitamlList = amlTrnxList.get(applicationId);
+						if(remitamlList!=null && !remitamlList.isEmpty()) {
 						for (RemittanceAml remitaml : remitamlList) {
 							remitaml.setExRemittancefromAml(remitTrnx1);
 							remitAmlRepository.save(remitaml);
+						}
 						}
 					}
 					
@@ -345,6 +366,8 @@ public class BranchRemittanceDao {
 
 			return responseDto;
 		} catch (GlobalException e){
+			e.printStackTrace();
+			logger.info("saveRemittanceTransaction :"+e.getMessage());
 			throw new GlobalException(e.getErrorKey(),e.getErrorMessage());
 		}
 
@@ -399,14 +422,18 @@ public class BranchRemittanceDao {
 		}
 	}
 
+	@Transactional
 	public void updateApplicationToMoveEmos(RemittanceResponseDto responseDto) {
 		List<RemittanceTransaction> remitTrnxList = remitTrnxRepository.findByCollectionDocIdAndCollectionDocFinanceYearAndCollectionDocumentNo(
 				responseDto.getCollectionDocumentCode(), responseDto.getCollectionDocumentFYear(), responseDto.getCollectionDocumentNo());
+		logger.info("Remit trnx list is "+remitTrnxList.get(0).toString());
 		if (remitTrnxList != null && !remitTrnxList.isEmpty()) {
 			for (RemittanceTransaction remitTrnx : remitTrnxList) {
 				RemittanceApplication appl = appRepo.getApplicationDetailsForUpdate(remitTrnx.getCustomerId(), remitTrnx.getApplicationDocumentNo(),
 						remitTrnx.getApplicationFinanceYear());
+				logger.info("remittance application is "+appl);
 				if (JaxUtil.isNullZeroBigDecimalCheck(appl.getRemittanceApplicationId())) {
+					
 					String sql = "UPDATE EX_APPL_TRNX set APPLICATION_STATUS='T' ,TRANSACTION_FINANCE_YEAR =" + remitTrnx.getDocumentFinanceYear()
 							+ ", TRANSACTION_FINANCE_YEAR_ID =" + remitTrnx.getDocumentFinanceYr() + " ,TRANSACTION_DOCUMENT_NO=" + remitTrnx.getDocumentNo()
 							+ " ,BLACK_LIST_INDICATOR ='" + remitTrnx.getBlackListIndicator() + "' where REMITTANCE_APPLICATION_ID =" + appl.getRemittanceApplicationId();
@@ -417,6 +444,18 @@ public class BranchRemittanceDao {
 		}
 	}
 	
+	@Transactional
+	public void updatePaymentModeApplication(List<BranchApplicationDto> shoppingCartList) {
+		int i;
+		for(i=0;i<shoppingCartList.size();i++) {
+			RemittanceApplication remittanceApplication = remittanceApplicationDao.getApplication(shoppingCartList.get(i).getApplicationId());
+			if(!ArgUtil.isEmpty(remittanceApplication) && ConstantDocument.PB_PAYMENT.equalsIgnoreCase(remittanceApplication.getPaymentType())&& ConstantDocument.PB_STATUS_NEW.equalsIgnoreCase(remittanceApplication.getWtStatus())) {
+				String sql = "UPDATE EX_APPL_TRNX set WT_STATUS='PAID' where REMITTANCE_APPLICATION_ID =" + remittanceApplication.getRemittanceApplicationId();
+				System.out.println("sql :" + sql);
+				jdbcTemplate.update(sql);
+			}
+		}
+	}
 
 
 	

@@ -7,13 +7,10 @@ import org.springframework.data.repository.CrudRepository;
 
 import com.amx.jax.dbmodel.remittance.AdditionalBankRuleMap;
 
-
-
 public interface IAdditionalBankRuleMapRepos extends CrudRepository<AdditionalBankRuleMap, Serializable> {
 
-	AdditionalBankRuleMap findByFlexFieldAndIsActive(String flexField,String isActive);
-	
+	AdditionalBankRuleMap findByFlexFieldAndIsActive(String flexField, String isActive);
+
 	AdditionalBankRuleMap findByFlexFieldAndIsActiveAndCountryId(String flexField, String isActive,
 			BigDecimal countryId);
-
 }

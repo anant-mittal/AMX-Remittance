@@ -10,10 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.client.snap.SnapConstants.SnapQueryTemplate;
+import com.amx.jax.client.snap.SnapModels.SnapQueryParams;
 import com.amx.jax.def.AbstractQueryFactory.QueryProcessor;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.radar.service.SnapQueryFactory.SnapQuery;
-import com.amx.jax.radar.service.SnapQueryFactory.SnapQueryParams;
 import com.amx.jax.signpad.TerminalData;
 import com.amx.jax.terminal.TerminalBox;
 

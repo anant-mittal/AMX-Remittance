@@ -41,6 +41,7 @@ import com.amx.amxlib.model.UserVerificationCheckListDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.JaxAuthContext;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
@@ -64,10 +65,12 @@ import com.amx.jax.dbmodel.ViewCity;
 import com.amx.jax.dbmodel.ViewDistrict;
 import com.amx.jax.dbmodel.ViewState;
 import com.amx.jax.dict.ContactType;
+import com.amx.jax.dict.AmxEnums.CommunicationEvents;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.events.CActivityEvent;
+
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.BeneficiaryListDTO;
@@ -95,15 +98,19 @@ import com.amx.jax.userservice.dao.AbstractUserDao;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.dao.CustomerIdProofDao;
 import com.amx.jax.userservice.dao.ReferralDetailsDao;
+import com.amx.jax.userservice.manager.CommunicationPreferencesManager;
 import com.amx.jax.userservice.manager.CustomerFlagManager;
 import com.amx.jax.userservice.manager.OnlineCustomerManager;
 import com.amx.jax.userservice.manager.SecurityQuestionsManager;
 import com.amx.jax.userservice.manager.UserContactVerificationManager;
 import com.amx.jax.userservice.repository.LoginLogoutHistoryRepository;
 import com.amx.jax.userservice.service.CustomerValidationContext.CustomerValidation;
+import com.amx.jax.util.AmxDBConstants;
+import com.amx.jax.util.CommunicationPrefsUtil;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.StringUtil;
+import com.amx.jax.util.CommunicationPrefsUtil.CommunicationPrefsResult;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Random;
 
@@ -225,6 +232,12 @@ public class UserService extends AbstractUserService {
 	@Autowired
 	JaxTenantProperties jaxTenantProperties;
 	
+	@Autowired
+	CommunicationPreferencesManager communicationPreferencesManager;
+	
+	@Autowired
+	CommunicationPrefsUtil communicationPrefsUtil;
+	
 	@Override
 	public ApiResponse registerUser(AbstractUserModel userModel) {
 		UserModel kwUserModel = (UserModel) userModel;
@@ -293,7 +306,7 @@ public class UserService extends AbstractUserService {
 
 		if (annualIncomeUpdateDate == null) {
 			customerModel.getFlags().setAnnualIncomeExpired(Boolean.TRUE);
-			logger.info("Flag value is " + customerModel.getFlags().getAnnualIncomeExpired());
+			
 			return customerModel;
 		}
 		Date currentDate = new Date();
@@ -302,10 +315,10 @@ public class UserService extends AbstractUserService {
 
 		if (millisec >= milliSecInYear) {
 			customerModel.getFlags().setAnnualIncomeExpired(Boolean.TRUE);
-			logger.info("Flag value isss " + customerModel.getFlags().getAnnualIncomeExpired());
+			
 		} else {
 			customerModel.getFlags().setAnnualIncomeExpired(Boolean.FALSE);
-			logger.info("Flag value isssss " + customerModel.getFlags().getAnnualIncomeExpired());
+			
 		}
 
 		return customerModel;
@@ -460,6 +473,7 @@ public class UserService extends AbstractUserService {
 
 	public ApiResponse sendOtpForCivilId(String civilId, List<ContactType> channels,
 			CustomerModel customerModel, Boolean initRegistration) {
+		//communicationPreferencesManager.validateCommunicationPreferences(channels,CommunicationEvents.ADD_BENEFICIARY);
 		if (StringUtils.isNotBlank(civilId)) {
 			if (tenantContext.getKey().equals("OMN")) {
 				tenantContext.get().validateCivilId(civilId);
@@ -516,6 +530,16 @@ public class UserService extends AbstractUserService {
 		// userValidationService.validateCustomerLockCount(onlineCust);
 		userValidationService.validateTokenSentCount(onlineCust);
 		userValidationService.validateCustomerContactForSendOtp(channels, customer ,customerModel);
+		//if(AppContextUtil.getFlow())
+		logger.debug("APpcontext util flow is "+AppContextUtil.getFlow());
+		if(AppContextUtil.getFlow().equals(AmxDBConstants.RESET_PASSWORD_FLOW)) {
+			communicationPreferencesManager.validateCommunicationPreferences(channels, CommunicationEvents.RESET_PASSWORD, null);
+		}else if(AppContextUtil.getFlow().equals(AmxDBConstants.FORGOT_SECQUE_FLOW)) {
+			communicationPreferencesManager.validateCommunicationPreferences(channels, CommunicationEvents.FORGOT_SECQUE, null);
+		}else if(AppContextUtil.getFlow().equals(AmxDBConstants.FORGOT_SECQUE_FLOW_APP)) {
+			communicationPreferencesManager.validateCommunicationPreferences(channels, CommunicationEvents.FORGOT_SECQUE, null);
+		}
+		
 		generateToken(civilId, model, channels);
 		onlineCust.setEmailToken(model.getHashedeOtp());
 		onlineCust.setSmsToken(model.getHashedmOtp());
@@ -815,7 +839,7 @@ public class UserService extends AbstractUserService {
 
 	public AmxApiResponse<BoolRespModel, Object> updatePassword(CustomerModel model) {
 		BigDecimal custId = (model.getCustomerId() == null) ? metaData.getCustomerId() : null;
-
+		model.setCustomerId(custId);
 		CActivityEvent auditEvent = new CActivityEvent(CActivityEvent.Type.PROFILE_UPDATE).field(FIELD_PSSWRD);
 		if (custId == null) {
 			auditService.log(auditEvent.result(Result.REJECTED).message(JaxError.NULL_CUSTOMER_ID));
@@ -1410,13 +1434,14 @@ public class UserService extends AbstractUserService {
 	public AmxApiResponse<CustomerModel, Object> validateCustomerLoginOtp(String identityInt) {
 		if (identityInt != null) {
 			Customer customer = custDao.getCustomerByCivilId(identityInt);
+			userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(identityInt, JaxApiFlow.LOGIN);
 			if(customer != null) {
 				userValidationService.validateCustIdProofs(customer.getCustomerId());
-				userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(identityInt, JaxApiFlow.LOGIN);
+				
 				// ---- check for blacklisted customer ----
 				userValidationService.validateBlackListedCustomerForLogin(customer);
 			}else {
-				throw new GlobalException(JaxError.CUSTOMER_NOT_REGISTERED_BRANCH, "Customer not registered in branch ");
+				throw new GlobalException(JaxError.CUSTOMER_NOT_ACTIVE_BRANCH, "Customer not active in branch, go to branch ");
 			}
 			
 		}

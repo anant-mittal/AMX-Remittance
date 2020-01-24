@@ -57,14 +57,17 @@ import com.amx.jax.model.request.remittance.BranchRemittanceApplRequestModel;
 import com.amx.jax.model.request.remittance.IRemittanceApplicationParams;
 import com.amx.jax.model.request.remittance.RoutingPricingRequest;
 import com.amx.jax.model.response.BankMasterDTO;
+import com.amx.jax.model.response.jaxfield.JaxConditionalFieldDto;
 import com.amx.jax.model.response.remittance.AdditionalExchAmiecDto;
 import com.amx.jax.model.response.remittance.BranchExchangeRateBreakup;
+import com.amx.jax.model.response.remittance.CorporateDiscountDto;
 import com.amx.jax.model.response.remittance.DynamicRoutingPricingDto;
 import com.amx.jax.model.response.remittance.ServiceProviderDto;
 import com.amx.jax.model.response.remittance.VatDetailsDto;
 import com.amx.jax.model.response.remittance.branch.BranchRemittanceGetExchangeRateResponse;
 import com.amx.jax.model.response.remittance.branch.DynamicRoutingPricingResponse;
 import com.amx.jax.partner.dto.HomeSendSrvcProviderInfo;
+import com.amx.jax.pricer.dto.EstimatedDeliveryDetails;
 import com.amx.jax.pricer.dto.ExchangeDiscountInfo;
 import com.amx.jax.pricer.dto.ExchangeRateAndRoutingResponse;
 import com.amx.jax.pricer.dto.ExchangeRateDetails;
@@ -82,7 +85,6 @@ import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.RoundUtil;
 import com.amx.jax.validation.RemittanceTransactionRequestValidator;
-import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
@@ -231,7 +233,8 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 			throw new GlobalException(JaxError.EXCHANGE_RATE_NOT_FOUND, "COMMISSION NOT DEFINED FOR Country "+rountingCountryId+" currencyId :"+currencyId+" remittanceMode :"+remittanceMode);
 		}
 		
-		BigDecimal corpDiscount = corporateDiscountManager.corporateDiscount();
+		CorporateDiscountDto corDto = corporateDiscountManager.corporateDiscount(commission);
+		BigDecimal corpDiscount = corDto.getCorpDiscount();
 		if(JaxUtil.isNullZeroBigDecimalCheck(commission) && commission.compareTo(corpDiscount)>=0) {
 			commission =commission.subtract(corpDiscount);
 		}
@@ -322,12 +325,20 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 		TrnxRoutingDetails trnxRoutingDetails = trnxRoutingPathList.get(key);
 		if(trnxRoutingDetails!=null) {
 			result.setTrnxRoutingPaths(trnxRoutingDetails);
-			
+			EstimatedDeliveryDetails estimateDelDtls = trnxRoutingDetails.getEstimatedDeliveryDetails();
 			// service provider condition check
 			if(homeSendSrvcProviderInfo != null && trnxRoutingDetails.getBankIndicator() != null && trnxRoutingDetails.getBankIndicator().equalsIgnoreCase(ConstantDocument.BANK_INDICATOR_SERVICE_PROVIDER_BANK)) {
 				ServiceProviderDto serviceProviderDto = fetchRemitServiceProviderDt(homeSendSrvcProviderInfo);
 				result.setServiceProviderDto(serviceProviderDto);
 			}
+			
+			if(estimateDelDtls!=null && estimateDelDtls.getProcessTimeTotalInSeconds()==estimateDelDtls.getProcessTimeAbsoluteInSeconds()) {
+				result.setProductAvaliable(ConstantDocument.Yes);
+			}else {
+				result.setProductAvaliable(ConstantDocument.No);
+			}
+			
+			
 		}
 		
 		ExchangeRateDetails sellRateDetail= bankServiceModeSellRates.get(trnxRoutingDetails.getRoutingBankId()).get(trnxRoutingDetails.getServiceMasterId());
@@ -340,6 +351,9 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 			result.setBetterRateAmountSlab(sellRateDetail.getBetterRateAmountSlab());
 			
 			result.setRackExchangeRate(sellRateDetail.getRackExchangeRate());
+			result.setCostExchangeRate(sellRateDetail.getCostExchangeRate());
+			result.setFundAvaliable(sellRateDetail.isLowGLBalance()==true?ConstantDocument.No:ConstantDocument.Yes);
+			
 			
 			BigDecimal commission =null;
 			if(prType.equals(PRICE_TYPE.NO_BENE_DEDUCT)) {
@@ -349,11 +363,13 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 				commission =trnxRoutingDetails.getBeneDeductChargeAmount();
 				 result.setBeneDeductFlag(ConstantDocument.Yes);
 			}
-			BigDecimal corpDiscount = corporateDiscountManager.corporateDiscount();
+			//BigDecimal corpDiscount = corporateDiscountManager.corporateDiscount();
+			CorporateDiscountDto corpDiscountDto = corporateDiscountManager.corporateDiscount(commission);
 			
-			if(JaxUtil.isNullZeroBigDecimalCheck(commission) &&  JaxUtil.isNullZeroBigDecimalCheck(corpDiscount) && commission.compareTo(corpDiscount)>=0) {
-				commission =commission.subtract(corpDiscount);
+			if(corpDiscountDto!=null && JaxUtil.isNullZeroBigDecimalCheck(commission) &&  JaxUtil.isNullZeroBigDecimalCheck(corpDiscountDto.getCorpDiscount()) && commission.compareTo(corpDiscountDto.getCorpDiscount())>=0) {
+				commission =commission.subtract(corpDiscountDto.getCorpDiscount());
 				result.setDiscountOnComissionFlag(ConstantDocument.Yes);
+				result.setCorporateMasterId(corpDiscountDto.getCorpDiscountId());
 			}
 			
 			VatDetailsDto vatDetails = remittanceTransactionManager.getVatAmount(commission);
@@ -366,9 +382,10 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 				}
 			}
 			result.setTxnFee(commission);
-			result.setDiscountOnComission(corpDiscount);
+			//result.setDiscountOnComission(corpDiscountDto.getCorpDiscount());
 			
-			if(trnxRoutingDetails != null && trnxRoutingDetails.getBankIndicator() != null && !trnxRoutingDetails.getBankIndicator().equalsIgnoreCase(ConstantDocument.BANK_INDICATOR_SERVICE_PROVIDER_BANK)) {
+			//if(trnxRoutingDetails != null && trnxRoutingDetails.getBankIndicator() != null && !trnxRoutingDetails.getBankIndicator().equalsIgnoreCase(ConstantDocument.BANK_INDICATOR_SERVICE_PROVIDER_BANK)) {
+			if(trnxRoutingDetails != null && trnxRoutingDetails.getIsFcRoundingAllowed() !=null && trnxRoutingDetails.getIsFcRoundingAllowed().equalsIgnoreCase(ConstantDocument.Yes)) { 
 				if (routingPricingRequest.getForeignAmount() != null) {
 					result.setExRateBreakup(exchangeRateService.createBreakUpFromForeignCurrency(sellRateDetail.getSellRateNet().getInverseRate(), routingPricingRequest.getForeignAmount()));
 				} else {
@@ -397,6 +414,16 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 				remittanceTransactionManager.applyCurrencyRoudingLogicSP(result.getExRateBreakup());
 			}
 			
+			if(JaxUtil.isNullZeroBigDecimalCheck(trnxRoutingDetails.getChargeAmount())) {
+				result.setDiscountOnComission(corpDiscountDto.getCorpDiscount());
+			}else {
+				result.setDiscountOnComission(BigDecimal.ZERO);
+			}
+		
+
+			result.setYouSavedAmount(getYouSavedAmount(result));
+			result.setYouSavedAmountInFC(getYouSavedAmountInFc(result));
+
 			/** Imps split message for multiple trnx  **/
 			String msg = impsSplittingMessage(result);
 			result.setErrorMessage(msg);
@@ -616,7 +643,7 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 	 * @param result
 	 * @return :saved Amount
 	 */
-	private BigDecimal getYouSavedAmount(DynamicRoutingPricingDto result ) {
+	public BigDecimal getYouSavedAmount(DynamicRoutingPricingDto result ) {
 		BigDecimal savedAmount = BigDecimal.ZERO;
 		if(JaxUtil.isNullZeroBigDecimalCheck(result.getRackExchangeRate()) && result!=null && result.getDiscountAvailed() && result.getRackExchangeRate().compareTo(BigDecimal.ZERO)>0 && result.getExRateBreakup().getConvertedFCAmount().compareTo(BigDecimal.ZERO)>0) {
 			savedAmount =result.getRackExchangeRate().multiply(result.getExRateBreakup().getConvertedFCAmount()).subtract(result.getExRateBreakup().getConvertedLCAmount());
@@ -630,7 +657,7 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 	
 
 
-	private BigDecimal getYouSavedAmountInFc(DynamicRoutingPricingDto result) {
+	public BigDecimal getYouSavedAmountInFc(DynamicRoutingPricingDto result) {
 		BigDecimal savedAmountFC = BigDecimal.ZERO;
 		
 		if(JaxUtil.isNullZeroBigDecimalCheck(result.getRackExchangeRate()) && result.getRackExchangeRate().compareTo(BigDecimal.ZERO)>0 && result.getExRateBreakup().getConvertedLCAmount().compareTo(BigDecimal.ZERO)>0) {

@@ -84,10 +84,13 @@ public class PostManConfig {
 	 * @return the local
 	 */
 	public Locale getLocal(File file) {
-		if (file == null || file.getLang() == null) {
-			return new Locale(tenantLang.getCode());
+		if (file != null && file.getLang() != null) {
+			return new Locale(file.getLang().getCode());
 		}
-		return new Locale(file.getLang().getCode());
+		if (tenantLang != null) {
+			new Locale(tenantLang.getCode());
+		}
+		return new Locale(Language.EN.getCode());
 	}
 
 	public Locale getLocal(Message msg) {

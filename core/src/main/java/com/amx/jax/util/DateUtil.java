@@ -19,8 +19,7 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.model.response.fx.TimeSlotDto;
-
-import jodd.typeconverter.Convert;
+import com.amx.utils.ArgUtil;
 
 
 
@@ -417,7 +416,8 @@ public class DateUtil {
 				startTimeHourCal = startTimeHourCal.add(startTimeMinutesCal.multiply(new BigDecimal(60)));
 				startTimeHourCal = (startTimeHourCal.divide(new BigDecimal(60), 2, RoundingMode.FLOOR)).divide(new BigDecimal(60), 2, RoundingMode.FLOOR);
 				convertValue = startTimeHourCal;
-				double doubleNumber = Convert.toDouble(convertValue);
+				//double doubleNumber = Convert.toDouble(convertValue);
+				double doubleNumber = ArgUtil.parseAsDouble(convertValue);
 				int hoursval = (int) doubleNumber;
 				String doubleAsString = String.valueOf(doubleNumber);
 				int indexOfDecimal = doubleAsString.indexOf(".");

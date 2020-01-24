@@ -38,14 +38,13 @@ public class SnapConstants {
 		
 		BUGZ_STORIES("bugz-stories", SnapIndexName.ALL),
 		BUGZ_STORIES_STATUS("bugz-stories-status", SnapIndexName.ALL,"bugzilla-bugs"),
-		
 		RPTPG2("rptpg2", SnapIndexName.TRANX),
-		RPT_DUMMY("rpt_dummy", SnapIndexName.TRANX),
 		RPT("rpt", SnapIndexName.TRANX),
 		RPT2("rpt2", SnapIndexName.TRANX),
 		RPTMONTHLY("rptmonthly", SnapIndexName.TRANX),
 		RPTCOMPARISON("rptcomparison", SnapIndexName.TRANX),
 		RPTMONTHCOMPARISON("rptmonthcomparison", SnapIndexName.TRANX),
+		RPT_DUMMY("rpt_dummy", SnapIndexName.TRANX),
 		
 		
 		ACTIVE_DEVICE_REPORT("active-device", SnapIndexName.ALL),

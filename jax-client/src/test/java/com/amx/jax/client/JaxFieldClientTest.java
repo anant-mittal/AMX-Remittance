@@ -14,7 +14,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.amx.amxlib.exception.InvalidInputException;
 import com.amx.amxlib.exception.ResourceNotFoundException;
 import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.libjax.model.jaxfield.JaxConditionalFieldDto;
+import com.amx.jax.model.response.jaxfield.JaxConditionalFieldDto;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest

@@ -52,6 +52,10 @@ public class CustomerDiscountManager {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CustomerDiscountManager.class);
 
+	// private static final BigDecimal BtrRateIndicatorMarginPercent = new
+	// BigDecimal(0.15).setScale(2,
+	// RoundingMode.HALF_EVEN);
+
 	/**
 	 * Changed to 50% Tolerance : 17th Dec 2019.
 	 */
@@ -210,11 +214,15 @@ public class CustomerDiscountManager {
 
 					bankAmountSlabDiscounts.get(pipsMaster.getBankMaster().getBankId().longValue())
 							.put(pipsMaster.getFromAmount(), pipsMaster);
+					// Old Logic
+					// .put(pipsMaster.getToAmount(), pipsMaster);
 
 				} else {
 
 					TreeMap<BigDecimal, PipsMaster> slabPipsMap = new TreeMap<BigDecimal, PipsMaster>(
 							Collections.reverseOrder());
+					// Old Logic - check below To Range
+					// slabPipsMap.put(pipsMaster.getToAmount(), pipsMaster);
 					// New - Check Above From Range : 11/10/2019
 					slabPipsMap.put(pipsMaster.getFromAmount(), pipsMaster);
 					bankAmountSlabDiscounts.put(pipsMaster.getBankMaster().getBankId().longValue(), slabPipsMap);
@@ -223,7 +231,22 @@ public class CustomerDiscountManager {
 			}
 		}
 
+		// List<BankRateDetailsDTO> discountedRatesNPrices = new
+		// ArrayList<BankRateDetailsDTO>();
+
+		// Old
+		// BigDecimal margin =
+		// exchRateAndRoutingTransientDataCache.getMarginForBank(bankId)) != null
+		// ? exchRateAndRoutingTransientDataCache.getMargin().getMarginMarkup()
+		// : BIGD_ZERO;
+
 		for (ExchangeRateDetails bankExRateDetail : exchRateAndRoutingTransientDataCache.getSellRateDetails()) {
+
+			// // Check if discount is already applied
+			// // Avoid Double Discount Application
+			// if (bankExRateDetail.isDiscountAvailed() == true) {
+			// continue;
+			// }
 
 			BigDecimal amountSlabPips = BIGD_ZERO;
 			ExchangeDiscountInfo amountSlabPipsInfo = new ExchangeDiscountInfo();
@@ -261,11 +284,21 @@ public class CustomerDiscountManager {
 
 					}
 
+					// Old Logic
+					// if (discountedFcAmount.compareTo(entry.getKey()) <= 0) {
 					// New Logic
 					if (discountedFcAmount.compareTo(entry.getKey()) >= 0) {
 						amountSlabPips = entry.getValue().getPipsNo();
 
 						convertPipsMaster(amountSlabPipsInfo, entry.getValue());
+
+						/*
+						 * amountSlabPipsInfo.setId(entry.getValue().getPipsMasterId());
+						 * amountSlabPipsInfo.setDiscountType(DISCOUNT_TYPE.AMOUNT_SLAB);
+						 * amountSlabPipsInfo.setDiscountTypeValue(entry.getValue().getFromAmount().
+						 * longValue() + "-" + entry.getValue().getToAmount().longValue());
+						 * amountSlabPipsInfo.setDiscountPipsValue(amountSlabPips);
+						 */
 
 						// IMP: Since the Tree Map is REVERSE SORTED
 						Entry<BigDecimal, PipsMaster> nextEntry = pipsMap.lowerEntry(entry.getKey());
@@ -276,7 +309,13 @@ public class CustomerDiscountManager {
 
 							// Check if Next Slab falls within the tolerance limit of the Current Base Fc
 							// Amount
-					
+
+							/*
+							 * BigDecimal bumpedFcVal =
+							 * bankExRateDetail.getSellRateBase().getConvertedFCAmount()
+							 * .add(bankExRateDetail.getSellRateBase().getConvertedFCAmount()
+							 * .multiply(BtrRateIndicatorMarginPercent));
+							 */
 							/**
 							 * Calculate the Required Bumped value as per the Discounted FC amount.
 							 */
@@ -424,9 +463,32 @@ public class CustomerDiscountManager {
 						.setScale(0, RoundingMode.UP);
 				// Corrected Logic - 11/10/2019
 				bankExRateDetail.setDiffInBetterRateFcAmount(diffAmt);
-				
+
+				/*
+				 * Not Required Anymore
+				 * 
+				 * if (diffAmt != null && diffAmt.compareTo(BIGD_ZERO) > 0) {
+				 * bankExRateDetail.setDiffInBetterRateFcAmount(diffAmt); } else {
+				 * bankExRateDetail.setBetterRateAvailable(false);
+				 * bankExRateDetail.setBetterRateAmountSlab(null); }
+				 */
 			}
-			
+
+			// Set the better Rate diff - Round to Next Int Val
+			/*
+			 * if (bankExRateDetail.isBetterRateAvailable()) {
+			 * 
+			 * BigDecimal diffAmt = bankExRateDetail.getBetterRateAmountSlab()
+			 * .subtract(bankExRateDetail.getSellRateNet().getConvertedFCAmount())
+			 * .setScale(0, RoundingMode.UP);
+			 * 
+			 * bankExRateDetail.setDiffInBetterRateFcAmount(diffAmt); }
+			 */
+
+			// discountedRatesNPrices.add(discountedRateDetail);
+
+			// System.out.println(" Discounted Rates ==> " + discountedRateDetail);
+
 		} // for (Bank...
 
 		// return discountedRatesNPrices;

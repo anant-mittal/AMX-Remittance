@@ -10,8 +10,10 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.jax.async.ExecutorConfig;
 import com.amx.jax.client.JaxClientUtil;
 import com.amx.jax.customer.manager.CustomerContactVerificationManager;
 import com.amx.jax.customer.repository.RemittanceRepository;
@@ -23,6 +25,7 @@ import com.amx.jax.dict.AmxEnums.CommunicationEvents;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.dict.Language;
 import com.amx.jax.event.AmxTunnelEvents;
+import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.client.WhatsAppClient;
@@ -75,6 +78,11 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 	WhatsAppClient whatsAppClient;
 
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
+
+	// EMAIL:MOBILE:CUST_NAME:TRNXAMT:LOYALTY:TRNREF:TRNDATE:LANG_ID:TNT
+	// private static final String EMAIL = "EMAIL";
+	// private static final String MOBILE = "MOBILE";
+	// private static final String CUST_NAME = "CUST_NAME";
 	private static final String CUST_ID = "CUST_ID";
 	private static final String TRANX_ID = "TRANX_ID";
 	private static final String TRNXAMT = "TRNXAMT";
@@ -87,8 +95,7 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 
 	@Override
 	public void onMessage(String channel, DBEvent event) {
-		LOGGER.info("======onMessage1==={} ====  {}", channel, JsonUtil.toJson(event));
-
+		LOGGER.debug("======onMessage1==={} ====  {}", channel, JsonUtil.toJson(event));
 		BigDecimal custId = ArgUtil.parseAsBigDecimal(event.getData().get(CUST_ID));
 		BigDecimal trnxAmount = ArgUtil.parseAsBigDecimal(event.getData().get(TRNXAMT));
 		BigDecimal loyality = ArgUtil.parseAsBigDecimal(event.getData().get(LOYALTY));
@@ -100,7 +107,6 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 		BigDecimal tranxId = ArgUtil.parseAsBigDecimal(event.getData().get(TRANX_ID), new BigDecimal(0));
 		Customer c = customerRepository.getCustomerByCustomerIdAndIsActive(custId, "Y");
 		String emailId = c.getEmail();
-		String smsNo = c.getMobile();
 
 		String custName;
 		if (StringUtils.isEmpty(c.getMiddleName())) {
@@ -109,7 +115,6 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 		} else {
 			custName = c.getFirstName() + ' ' + c.getMiddleName() + ' ' + c.getLastName();
 		}
-
 		NumberFormat myFormat = NumberFormat.getInstance();
 		myFormat.setGroupingUsed(true);
 		String trnxAmountval = myFormat.format(trnxAmount);
@@ -126,22 +131,23 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 		modeldata.put("verCode", JaxClientUtil.getTransactionVeryCode(tranxId).output());
 
 		wrapper.put("data", modeldata);
-		CommunicationPrefsResult communicationPrefsResult = communicationPrefsUtil.forCustomer(CommunicationEvents.TRNX_BENE_CREDIT, c);
-		TemplatesMX templatesMX=null;
+		CommunicationPrefsResult communicationPrefsResult = communicationPrefsUtil
+				.forCustomer(CommunicationEvents.TRNX_BENE_CREDIT, c);
+		LOGGER.debug("Comm pref result is " + JsonUtil.toJson(communicationPrefsResult));
+		TemplatesMX templatesMX = null;
 		switch (type) {
 		case "CASH":
-			templatesMX=TemplatesMX.CASH;
+			templatesMX = TemplatesMX.CASH;
 			break;
 		case "TT":
-			templatesMX=TemplatesMX.TT;
+			templatesMX = TemplatesMX.TT;
 			break;
 		case "EFT":
-			templatesMX=TemplatesMX.EFT;
+			templatesMX = TemplatesMX.EFT;
 			break;
 		default:
 			break;
 		}
-		
 		if (communicationPrefsResult.isEmail()) {
 
 			if (c.getEmailVerified() != AmxDBConstants.Status.Y) {
@@ -168,7 +174,9 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 				email.setLang(Language.EN);
 				modeldata.put("languageid", Language.EN);
 			}
+
 			LOGGER.info("Json value of wrapper is " + JsonUtil.toJson(wrapper));
+
 			email.setModel(wrapper);
 			email.addTo(emailId);
 			email.setHtml(true);
@@ -200,6 +208,14 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 			sms.setITemplate(templatesMX);
 			postManService.sendSMSAsync(sms);
 
+		}
+
+		if (communicationPrefsResult.isWhatsApp()) {
+			WAMessage waMessage = new WAMessage();
+			waMessage.addTo(c.getWhatsappPrefix() + c.getWhatsapp());
+			waMessage.setITemplate(templatesMX);
+			waMessage.setModel(wrapper);
+			whatsAppClient.send(waMessage);
 		}
 
 		List<RemittanceTransaction> remittanceList = remittanceTransactionRepository
@@ -235,23 +251,17 @@ public class TrnaxBeneCreditListner implements ITunnelSubscriber<DBEvent> {
 			}
 
 		}
-		
-		if(communicationPrefsResult.isWhatsApp()) {
-			WAMessage waMessage = new WAMessage();
-			waMessage.addTo(c.getWhatsappPrefix() + c.getWhatsapp());
-			waMessage.setModel(wrapper);
-			waMessage.setITemplate(templatesMX);
-			whatsAppClient.send(waMessage);
-		}
 
-		if (!ArgUtil.isEmpty(custId)&&communicationPrefsResult.isPushNotify()) {
+		if (!ArgUtil.isEmpty(custId) && communicationPrefsResult.isPushNotify()) {
 			PushMessage pushMessage = new PushMessage();
 			pushMessage.setITemplate(templatesMX);
 			pushMessage.setId(AmxTunnelEvents.Names.TRNX_BENE_CREDIT + tranxId);
+			pushMessage.setModel(wrapper);
 			pushMessage.addToUser(custId);
 			pushMessage.setModel(wrapper);
 			pushNotifyClient.send(pushMessage);
 		}
 
 	}
+
 }

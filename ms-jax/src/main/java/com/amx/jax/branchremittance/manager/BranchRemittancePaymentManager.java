@@ -63,6 +63,7 @@ import com.amx.jax.model.response.remittance.LocalBankDetailsDto;
 import com.amx.jax.model.response.remittance.PaymentLinkAppDto;
 import com.amx.jax.model.response.remittance.PaymentModeDto;
 import com.amx.jax.model.response.remittance.PaymentModeOfPaymentDto;
+import com.amx.jax.model.response.remittance.PlaceOrderApplDto;
 import com.amx.jax.partner.manager.PartnerTransactionManager;
 import com.amx.jax.pricer.var.PricerServiceConstants;
 import com.amx.jax.pricer.var.PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE;
@@ -78,6 +79,7 @@ import com.amx.jax.response.payatbranch.PaymentModesDTO;
 import com.amx.jax.service.BankMetaService;
 import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.services.BankService;
+import com.amx.jax.services.LoyalityPointService;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
@@ -150,6 +152,12 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 	
 	@Autowired
 	BranchRemittanceManager branchRemitManager;
+	
+	@Autowired
+	LoyalityPointService loyalityPointService;
+
+	@Autowired
+	PlaceOrderManager placeOrderManager;
 
 	/* 
 	 * @param   :fetch customer shopping cart application
@@ -184,9 +192,14 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 			CountryBranchMdlv1 countryBranch = new CountryBranchMdlv1();
 			countryBranch = bankMetaService.getCountryBranchById(metaData.getCountryBranchId()); //user branch not customer branch
 			
-			if(countryBranch!=null && !countryBranch.getBranchId().equals(ConstantDocument.ONLINE_BRANCH_LOC_CODE)) {
-				deActivateOnlineApplication();
-			}
+			/*
+			 * if(countryBranch!=null &&
+			 * !countryBranch.getBranchId().equals(ConstantDocument.ONLINE_BRANCH_LOC_CODE))
+			 * { deActivateOnlineApplication(); }else if (countryBranch!=null &&
+			 * countryBranch.getBranchId().equals(ConstantDocument.ONLINE_BRANCH_LOC_CODE)){
+			 * //De-activate Branch application in online
+			 * deActivateBranchApplicationInOnline(); }
+			 */
 			
 			List<ShoppingCartDetails> lstCustomerShopping = branchRemittancePaymentDao.fetchCustomerShoppingCart(customerId);
 			
@@ -205,9 +218,10 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 					totalNetAmount   =totalNetAmount.add(customerApplDto.getLocalNextTranxAmount()==null?BigDecimal.ZERO:customerApplDto.getLocalNextTranxAmount());
 					totalTrnxFees    =totalTrnxFees.add(customerApplDto.getLocalCommisionAmount()==null?BigDecimal.ZERO:customerApplDto.getLocalCommisionAmount());
 					totalLyltyPointAmt =totalLyltyPointAmt.add(customerApplDto.getLoyaltsPointencahsed()==null?BigDecimal.ZERO:customerApplDto.getLoyaltsPointencahsed());
-					
+					BigDecimal loyalityPointAmountEncashed = ((customerApplDto.getLoyaltsPointencahsed()==null)?BigDecimal.ZERO:customerApplDto.getLoyaltsPointencahsed());
+					BigDecimal loyalityPointsEncashed  = loyalityPointService.getEquivalentLoyalityPoints(loyalityPointAmountEncashed);
 					if(customerApplDto.getLoyaltsPointIndicator()!=null && customerApplDto.getLoyaltsPointIndicator().equalsIgnoreCase(ConstantDocument.Yes) && totalCustomerLoyaltyPoits.compareTo(new BigDecimal(1000))>=0) {
-						totalCustomerLoyaltyPoits = totalCustomerLoyaltyPoits.subtract(customerApplDto.getLoyaltsPointencahsed()==null?BigDecimal.ZERO:customerApplDto.getLoyaltsPointencahsed());
+						totalCustomerLoyaltyPoits = totalCustomerLoyaltyPoits.subtract(loyalityPointsEncashed);
 					}
 					
 					cartList.setTotalLocalAmount(totalLocalAmount);
@@ -285,6 +299,12 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 			throw new GlobalException(JaxError.INVALID_CURRENCY_ID, "Invalid local currency id passed");
 		}
 
+		List<PlaceOrderApplDto> placeOrderList = placeOrderManager.getPlaceOrderList();
+		
+		if(placeOrderList!=null && !placeOrderList.isEmpty()) {
+			cartList.setPlaceOrderApplList(placeOrderList);
+		}
+		
 		return cartList;
 	}
 
@@ -690,10 +710,21 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 
 	public Boolean deActivateOnlineApplication() {
 		try {
-
-			appRepository.deActivateNotUsedOnlineApplication(new Customer(metaData.getCustomerId()),
-					ConstantDocument.ONLINE_BRANCH_LOC_CODE);
-
+			appRepository.deActivateNotUsedOnlineApplication(new Customer(metaData.getCustomerId()),ConstantDocument.ONLINE_BRANCH_LOC_CODE);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new GlobalException("De-Activate Application failed for customer:" + metaData.getCustomerId());
+		}
+		return true;
+	}
+	
+	
+	
+	
+	
+	public Boolean deActivateBranchApplicationInOnline() {
+		try {
+			appRepository.deActivateBranchApplicationInOnline(new Customer(metaData.getCustomerId()),ConstantDocument.ONLINE_BRANCH_LOC_CODE);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new GlobalException("De-Activate Application failed for customer:" + metaData.getCustomerId());
@@ -751,6 +782,7 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		}
 		return purTrnx;
 	}
+
 	// Direct Payment link application now getting converted to remittance so commenting the following code
 	@Deprecated
 	private PaymentLinkAppDto createPaymentLinkAppDto(BigDecimal remittanceApplicationId,PaygDetailsModel paymentLinkModel) {
@@ -780,6 +812,8 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 			CountryBranchMdlv1 countryBranchMdlv1 = countryBranchRepository
 					.findByCountryBranchId(metaData.getCountryBranchId());
 			if (countryBranchMdlv1.getBranchId().equals(ConstantDocument.ONLINE_BRANCH_LOC_CODE)
+					&& remittanceApplication!=null 
+					&& remittanceApplication.getPaymentType()!=null
 					&& ConstantDocument.PB_PAYMENT.equals(remittanceApplication.getPaymentType())
 					&& ConstantDocument.PB_STATUS_NEW.equals(remittanceApplication.getWtStatus())) {
 				iter.remove();
@@ -789,5 +823,4 @@ public class BranchRemittancePaymentManager extends AbstractModel {
 		
 	}
 
-		
 }

@@ -141,4 +141,8 @@ public class ParameterService extends AbstractService {
 		return riskLevel1;
 	}
 
+public AuthenticationLimitCheckView getPlaceOrderLimitCheck(String authType) {
+		return authentication.getPlaceOrderLimitCheck(authType);
+	}
+
 }
