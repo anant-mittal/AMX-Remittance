@@ -82,6 +82,9 @@ public class ExchRateUpload implements Serializable, Cloneable {
 	@Column(name = "APPROVED_DATE")
 	private Date approvedDate;
 
+	@Column(name = "COMMENT")
+	private String comment;
+
 	public BigDecimal getId() {
 		return id;
 	}
@@ -218,6 +221,14 @@ public class ExchRateUpload implements Serializable, Cloneable {
 		this.approvedDate = approvedDate;
 	}
 
+	public String getComment() {
+		return comment;
+	}
+
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
+
 	@Override
 	public ExchRateUpload clone() {
 		try {
@@ -248,18 +259,19 @@ public class ExchRateUpload implements Serializable, Cloneable {
 		}
 	}
 
-	/*public List<ExchRateUpload> multiCloneForField(Field field, List<Object> fieldValues)
-			throws NoSuchFieldException, SecurityException {
-
-		List<ExchRateUpload> multiCloned = new ArrayList<ExchRateUpload>();
-
-		if (field == null || fieldValues == null || fieldValues.isEmpty()) {
-			multiCloned.add(this.clone());
-			return multiCloned;
-		} else if (field.equals(this.getClass().getDeclaredField("corBankId"))) {
-			
-		}
-
-	}*/
+	/*
+	 * public List<ExchRateUpload> multiCloneForField(Field field, List<Object>
+	 * fieldValues) throws NoSuchFieldException, SecurityException {
+	 * 
+	 * List<ExchRateUpload> multiCloned = new ArrayList<ExchRateUpload>();
+	 * 
+	 * if (field == null || fieldValues == null || fieldValues.isEmpty()) {
+	 * multiCloned.add(this.clone()); return multiCloned; } else if
+	 * (field.equals(this.getClass().getDeclaredField("corBankId"))) {
+	 * 
+	 * }
+	 * 
+	 * }
+	 */
 
 }

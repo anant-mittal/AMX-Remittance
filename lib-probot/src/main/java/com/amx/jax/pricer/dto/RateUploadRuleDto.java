@@ -49,6 +49,8 @@ public class RateUploadRuleDto implements Serializable {
 	private String approvedBy;
 	private Date approvedDate;
 
+	private String comment;
+
 	public String getRuleId() {
 		return ruleId;
 	}
@@ -199,6 +201,14 @@ public class RateUploadRuleDto implements Serializable {
 
 	public void setApprovedDate(Date approvedDate) {
 		this.approvedDate = approvedDate;
+	}
+
+	public String getComment() {
+		return comment;
+	}
+
+	public void setComment(String comment) {
+		this.comment = comment;
 	}
 
 }
