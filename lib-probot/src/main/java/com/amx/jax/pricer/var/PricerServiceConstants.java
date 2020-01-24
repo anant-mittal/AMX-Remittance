@@ -15,6 +15,8 @@ import java.util.Map;
  */
 public final class PricerServiceConstants {
 
+	public static final BigDecimal DEF_LANGUAGE_ID = BigDecimal.ONE;
+
 	public static final String TTE = "TTE";
 
 	public static final String CHARGES_TYPE = "C";
@@ -159,9 +161,27 @@ public final class PricerServiceConstants {
 	}
 
 	public static enum ROUTING_STATUS {
-		ACTIVE, INACTIVE;
+		ACTIVE("Y"), INACTIVE("U");
+
+		private String isActive;
+
+		private ROUTING_STATUS(String isActive) {
+			this.isActive = isActive;
+		}
+
+		public String getIsActive() {
+			return isActive;
+		}
+
 	}
 
+	public static enum FIELD_STATUS {
+		ENABLED, DISABLED;
+	}
+
+	public static enum GL_JOB_STATUS {
+		Successful, Failed;
+	}
 	public static enum GROUP_TYPE {
 		CUR, BRN;
 	}

@@ -34,6 +34,7 @@ import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.logger.events.RequestTrackEvent;
 import com.amx.jax.model.MapModel;
 import com.amx.jax.rest.AppRequestContextInFilter;
+import com.amx.jax.rest.AppRequestInterfaces.ClientAuthFilter;
 import com.amx.jax.rest.AppRequestInterfaces.VendorAuthFilter;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.scope.VendorProperties;
@@ -78,6 +79,9 @@ public class AppRequestFilter implements Filter {
 	@Autowired(required = false)
 	VendorAuthFilter vaendorAuthFilter;
 
+	@Autowired(required = false)
+	ClientAuthFilter clientAuthFilter;
+
 	private boolean doesTokenMatch(CommonHttpRequest localCommonHttpRequest, HttpServletRequest req,
 			HttpServletResponse resp, String traceId, boolean checkHMAC) {
 		String authToken = localCommonHttpRequest.get(AppConstants.AUTH_TOKEN_XKEY);
@@ -110,6 +114,15 @@ public class AppRequestFilter implements Filter {
 				} else {
 					return appVendorConfig.isRequestValid(apiRequest, localCommonHttpRequest, traceId, authToken);
 				}
+			}
+			return false;
+		}
+
+		if (ArgUtil.is(apiRequest.getClientAuth())) {
+			String authClientToken = localCommonHttpRequest.get(AppConstants.AUTH_CLIENT_TOKEN_XKEY);
+			if (clientAuthFilter != null) {
+				return clientAuthFilter.isAuthClientRequest(apiRequest, localCommonHttpRequest, traceId,
+						authClientToken);
 			}
 			return false;
 		}
@@ -278,6 +291,9 @@ public class AppRequestFilter implements Filter {
 			}
 			try {
 				if (isRequestValid(localCommonHttpRequest, apiRequest, req, resp, traceId)) {
+					if(ArgUtil.is(apiRequest.getDeprecated())) {
+						AppContextUtil.addWarning(apiRequest.getDeprecated());
+					}
 					chain.doFilter(request, new AppResponseWrapper(resp));
 				} else {
 					resp.setStatus(HttpServletResponse.SC_FORBIDDEN);

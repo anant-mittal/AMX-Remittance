@@ -38,14 +38,18 @@ public class SnapConstants {
 		
 		BUGZ_STORIES("bugz-stories", SnapIndexName.ALL),
 		BUGZ_STORIES_STATUS("bugz-stories-status", SnapIndexName.ALL,"bugzilla-bugs"),
+		
 		RPTPG2("rptpg2", SnapIndexName.TRANX),
+		RPT_DUMMY("rpt_dummy", SnapIndexName.TRANX),
 		RPT("rpt", SnapIndexName.TRANX),
 		RPT2("rpt2", SnapIndexName.TRANX),
 		RPTMONTHLY("rptmonthly", SnapIndexName.TRANX),
 		RPTCOMPARISON("rptcomparison", SnapIndexName.TRANX),
 		RPTMONTHCOMPARISON("rptmonthcomparison", SnapIndexName.TRANX),
-		RPT_DUMMY("rpt_dummy", SnapIndexName.TRANX),
 		
+		TRNX_LIFECYCLE("trnx-lifecycle", SnapIndexName.TRANX),
+		TRNX_LIFECYCLE_DUMMY("trnx-lifecycle-dummy", SnapIndexName.TRANX),
+
 		
 		ACTIVE_DEVICE_REPORT("active-device", SnapIndexName.ALL),
 		ACTIVE_SIGNPAD_REPORT("active-signpad", SnapIndexName.ALL),
@@ -103,6 +107,8 @@ public class SnapConstants {
 			RPTMONTHLY.setQueryParams("PrevMonth:PrevMonth;Month:Month");
 			RPTCOMPARISON.setQueryParams("MonthOneFrom:2019-08-06;MonthOneTo:2019-09-06;MonthTwoFrom:2019-09-07;MonthTwoTo:2019-10-07");
 			RPTMONTHCOMPARISON.setQueryParams("MonthOneName:Sept;MonthOne:2019-09;MonthTwoName:Oct;MonthTwo:2019-10");
+			TRNX_LIFECYCLE.setQueryParams("Today:Today;Yesterday:Yesterday;BeforeYesterday:BeforeYesterday");
+			TRNX_LIFECYCLE_DUMMY.setQueryParams("Today:Today;Yesterday:Yesterday;BeforeYesterday:BeforeYesterday");
 			CUSTOMER_LOGIN.setQueryParams("traceid:D1F06B23-0001-4B62-BB2C-3D17F2F74964;logmap.client.fp:D1F06B23-0001-4B62-BB2C-3D17F2F74964;"
 					+ "logmap.client.ip:188.236.139.6;customerId:513;logmap.agent.browser:CFNETWORK;logmap.agent.operatingSystem:MAC_OS_X;"
 					+ "logmap.client.ct:ONLINE_WEB");

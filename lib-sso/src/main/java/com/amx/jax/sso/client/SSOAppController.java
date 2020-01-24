@@ -31,6 +31,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.dict.UserClient.ClientType;
 import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.sso.SSOConfig;
 import com.amx.jax.sso.SSOConstants;
 import com.amx.jax.sso.SSOConstants.SSOAuthStep;
 import com.amx.jax.sso.SSOStatus.ApiSSOStatus;
@@ -64,6 +65,9 @@ public class SSOAppController {
 
 	@Autowired
 	private AppConfig appConfig;
+
+	@Autowired
+	private SSOConfig sSOConfig;
 
 	@ApiSSOStatus({ SSOServerCodes.AUTH_REQUIRED, SSOServerCodes.AUTH_DONE })
 	@ResponseBody
@@ -121,14 +125,15 @@ public class SSOAppController {
 //		result.setTargetUrl(builder.getURL(), Target._BLANK);
 
 		URLBuilder builder = new URLBuilder(appConfig.getAppPrefix() + '/' + SSOConstants.APP_LOGIN_URL_SESSION
-				+ "/" +CryptoUtil.getEncoder().message(targetUrl).encrypt().encodeBase64().toString() + "/");
+				+ "/" + CryptoUtil.getEncoder().message(targetUrl).encrypt().encodeBase64().toString() + "/");
 		result.setTargetUrl(builder.getURL(), Target._BLANK);
 		return JsonUtil.toJson(result);
 	}
 
 	@ApiSSOStatus({ SSOServerCodes.AUTH_REQUIRED, SSOServerCodes.AUTH_DONE })
 	@RequestMapping(value = SSOConstants.APP_LOGIN_URL_SESSION + "/{targeturlD}/*", method = { RequestMethod.GET })
-	public String loginJSONPreAuthPage(@PathVariable(value = "targeturlD") String targeturlD, HttpServletRequest request,
+	public String loginJSONPreAuthPage(@PathVariable(value = "targeturlD") String targeturlD,
+			HttpServletRequest request,
 			HttpServletResponse response,
 			Model model) throws MalformedURLException, URISyntaxException {
 		String tranxId = ssoUser.ssoTranxId();
@@ -221,7 +226,7 @@ public class SSOAppController {
 			SSOModel sSOModel = sSOTranx.get();
 			sSOModel.setAppUrl(request.getRequestURL().toString());
 			sSOModel.setAppToken(Random.randomAlphaNumeric(6));
-			sSOModel.setClientType(ClientType.BRANCH_WEB);
+			sSOModel.setClientType(sSOConfig.getLoginWithClientType());
 			sSOTranx.put(sSOModel);
 
 			URLBuilder builder = new URLBuilder(appConfig.getSsoURL());

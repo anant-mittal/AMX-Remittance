@@ -5,15 +5,22 @@ import java.util.List;
 
 import org.springframework.data.repository.CrudRepository;
 
-import com.amx.jax.pricer.dbmodel.VwExRoutingProduct;
+import com.amx.jax.pricer.dbmodel.VwExRoutingProductStatus;
 
-public interface RoutingProdStatusRepo extends CrudRepository<VwExRoutingProduct, String> {
+public interface RoutingProdStatusRepo extends CrudRepository<VwExRoutingProductStatus, String> {
 
-	List<VwExRoutingProduct> findByCurrencyId(BigDecimal currencyId);
+	List<VwExRoutingProductStatus> findByCurrencyId(BigDecimal currencyId);
 
-	List<VwExRoutingProduct> findByCurrencyIdAndCountryId(BigDecimal currencyId, BigDecimal countryId);
+	List<VwExRoutingProductStatus> findByCurrencyIdAndCountryId(BigDecimal currencyId, BigDecimal countryId);
 
-	List<VwExRoutingProduct> findByCurrencyIdAndCountryIdAndBankIdIn(BigDecimal currencyId, BigDecimal countryId,
-			Iterable<BigDecimal> bankIds);
+	List<VwExRoutingProduct> findByCurrencyIdAndDestinationCountryId(BigDecimal currencyId,
+			BigDecimal dCountryId);
+
+	List<VwExRoutingProduct> findByCountryIdAndCurrencyIdAndBankIdAndServiceIdAndRemitModeId(BigDecimal countryId,
+			BigDecimal currencyId, BigDecimal bankId, BigDecimal ServiceModeId, BigDecimal remitModeId);
+
+	List<VwExRoutingProduct> findByCountryIdAndCurrencyIdAndBankIdAndServiceIdAndRemitModeIdAndDeliveryModeId(
+			BigDecimal countryId, BigDecimal currencyId, BigDecimal bankId, BigDecimal ServiceModeId,
+			BigDecimal remitModeId, BigDecimal deliveryModeId);
 
 }

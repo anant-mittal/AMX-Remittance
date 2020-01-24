@@ -18,6 +18,8 @@ import com.amx.jax.pricer.dto.OnlineMarginMarkupReq;
 import com.amx.jax.pricer.dto.RateUploadRequestDto;
 import com.amx.jax.pricer.dto.RateUploadRuleDto;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
+import com.amx.jax.pricer.dto.RoutingProductStatusDetails;
+import com.amx.jax.pricer.dto.RoutingStatusUpdateRequestDto;
 import com.amx.jax.pricer.dto.RoutingCountryBankInfo;
 import com.amx.jax.pricer.var.PricerServiceConstants.GROUP_TYPE;
 import com.amx.jax.pricer.var.PricerServiceConstants.RATE_UPLOAD_STATUS;
@@ -47,7 +49,10 @@ public interface ProbotDataService extends AbstractProbotInterface {
 			OnlineMarginMarkupInfo OnlineMarginMarkupReq);
 
 	public AmxApiResponse<GroupDetails, Object> getGroupsOfType(GROUP_TYPE groupType);
+	AmxApiResponse<RoutingProductStatusDetails, Object> getRoutingProductStatus(BigDecimal countryId,
+			BigDecimal currencyId);
 
+	AmxApiResponse<Integer, Object> updateRoutingProductStatus(RoutingStatusUpdateRequestDto request);
 	public AmxApiResponse<GroupDetails, Object> saveGroup(GroupDetails group);
 
 	public AmxApiResponse<Long, Object> deleteGroup(BigDecimal applicationCountryId, BigDecimal groupId,

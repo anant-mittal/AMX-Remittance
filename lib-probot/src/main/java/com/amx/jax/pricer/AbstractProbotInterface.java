@@ -53,11 +53,13 @@ public interface AbstractProbotInterface {
 		public static final String GET_MARKUP_DETAILS = SERVICE_PREFIX + API_VERSION_V1 + "/get-markup-details";
 		public static final String SAVE_MARKUP_DETAILS = SERVICE_PREFIX + API_VERSION_V1 + "/save-markup-details";
 		
+		public static final String GET_ROUTING_PRODUCT_STATUS = SERVICE_PREFIX + API_VERSION_V1 + "/get-routing-product-status";
 		// Grouping APIs
 		public static final String GET_GROUPS_OF_TYPE = SERVICE_PREFIX + API_VERSION_V1 + "/get-groups-of-type";
 		public static final String SAVE_GROUP = SERVICE_PREFIX + API_VERSION_V1 + "/save-group";
 		public static final String DELETE_GROUP = SERVICE_PREFIX + API_VERSION_V1 + "/delete-group";
 		
+		public static final String UPDATE_ROUTING_STATUS = SERVICE_PREFIX + API_VERSION_V1 + "/update-routing-status";
 		// Exchnage Rate Enquiry
 		public static final String ENQUIRE_EXCH_RATE = SERVICE_PREFIX + API_VERSION_V1 + "/enquire-exch-rate";
 		

@@ -138,10 +138,12 @@
 		<module>ms-radar</module>
 		<module>ms-probot</module>
 
+		<module>server-common/server-common-branch</module>
+		<module>server-common/server-common-uis</module>
 
 		<module>server-ui</module>
+		<module>server-kiosk</module>
 
-		<module>server-common/server-common-branch</module>
 		<module>server-branch</module>
 		<module>server-offsite</module>
 		<!-- <module>server-stomp</module> -->
