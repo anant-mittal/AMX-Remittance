@@ -5,13 +5,13 @@ import java.util.List;
 
 import org.springframework.data.repository.CrudRepository;
 
-import com.amx.jax.pricer.dbmodel.VwExRoutingProductStatus;
+import com.amx.jax.pricer.dbmodel.VwExRoutingProduct;
 
-public interface RoutingProdStatusRepo extends CrudRepository<VwExRoutingProductStatus, String> {
+public interface RoutingProdStatusRepo extends CrudRepository<VwExRoutingProduct, String> {
 
-	List<VwExRoutingProductStatus> findByCurrencyId(BigDecimal currencyId);
+	List<VwExRoutingProduct> findByCurrencyId(BigDecimal currencyId);
 
-	List<VwExRoutingProductStatus> findByCurrencyIdAndCountryId(BigDecimal currencyId, BigDecimal countryId);
+	List<VwExRoutingProduct> findByCurrencyIdAndCountryId(BigDecimal currencyId, BigDecimal countryId);
 
 	List<VwExRoutingProduct> findByCurrencyIdAndDestinationCountryId(BigDecimal currencyId,
 			BigDecimal dCountryId);
