@@ -30,6 +30,8 @@ import com.amx.utils.Constants;
 @HandlerMapping("LOGIN:COMPLETED:DONE")
 public class LoginAuditHandler implements AuditHandler {
 
+	private static final String UNKNOWN = "-";
+
 	@Autowired
 	private SnapQueryService snapQueryService;
 
@@ -114,13 +116,13 @@ public class LoginAuditHandler implements AuditHandler {
 
 			if (mapCountry.containsKey(country)
 					&& mapRegion.containsKey(region)
-					&& mapCity.containsKey(city) && !"UNKNOWN".equals(city)) {
+					&& mapCity.containsKey(city) && !UNKNOWN.equals(city)) {
 				newLocation = false;
 			}
 		} else {
-			params.toMap().put("country", "UNKNOWN");
-			params.toMap().put("region", "UNKNOWN");
-			params.toMap().put("city", "UNKNOWN");
+			params.toMap().put("country", UNKNOWN);
+			params.toMap().put("region", UNKNOWN);
+			params.toMap().put("city", UNKNOWN);
 			newLocation = false;
 		}
 
