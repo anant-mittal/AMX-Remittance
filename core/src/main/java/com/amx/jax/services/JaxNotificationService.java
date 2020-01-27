@@ -31,7 +31,9 @@ import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerContactVerification;
 import com.amx.jax.dbmodel.ExEmailNotification;
 import com.amx.jax.dict.ContactType;
+import com.amx.jax.dict.Language;
 import com.amx.jax.dict.Tenant;
+import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.CivilIdOtpModel;
 import com.amx.jax.model.request.fx.FcSaleOrderFailReportDTO;
 import com.amx.jax.model.request.partner.TransactionFailReportDTO;
@@ -76,6 +78,9 @@ public class JaxNotificationService {
 	
 	@Autowired
 	CustomerRepository customerRepository;
+	
+	@Autowired
+	MetaData metaData;
 
 	Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -83,6 +88,11 @@ public class JaxNotificationService {
 
 	public void sendTransactionNotification(RemittanceReceiptSubreport remittanceReceiptSubreport, PersonInfo pinfo,
 			Map<String, Object> emailData) {
+		sendTransactionNotification(remittanceReceiptSubreport, pinfo, emailData, true);
+	}
+	
+	public void sendTransactionNotification(RemittanceReceiptSubreport remittanceReceiptSubreport, PersonInfo pinfo,
+			Map<String, Object> emailData, boolean sendReceiptFile) {
 
 		logger.debug("Sending txn notification to customer");
 		Email email = new Email();
@@ -99,20 +109,24 @@ public class JaxNotificationService {
 		email.setITemplate(TemplatesMX.TXN_CRT_SUCC);
 		email.setHtml(true);
 		email.getModel().put(RESP_DATA_KEY, pinfo);
-		email.getModel().put(RESP_TRANSACTION_DATA_KEY, remittanceReceiptSubreport);
-		if (emailData != null) {
-			email.getModel().putAll(emailData);
+		email.setLang(AppContextUtil.getTenant().defaultLang());
+
+		if (remittanceReceiptSubreport != null) {
+			email.getModel().put(RESP_TRANSACTION_DATA_KEY, remittanceReceiptSubreport);
+		} else {
+			email.getModel().put(RESP_TRANSACTION_DATA_KEY, new RemittanceReceiptSubreport());
 		}
 
-		File file = new File();
-		file.setITemplate(TemplatesMX.REMIT_RECEIPT_JASPER);
-		file.setName("TransactionReceipt");
-		file.setType(File.Type.PDF);
-		file.getModel().put(RESP_DATA_KEY, remittanceReceiptSubreport);
-		file.setPassword(pinfo.getIdentityInt());
-		file.setLang(AppContextUtil.getTenant().defaultLang());
-
-		email.addFile(file);
+		if (sendReceiptFile) {
+			File file = new File();
+			file.setITemplate(TemplatesMX.REMIT_RECEIPT_JASPER);
+			file.setName("TransactionReceipt");
+			file.setType(File.Type.PDF);
+			file.getModel().put(RESP_DATA_KEY, remittanceReceiptSubreport);
+			file.setPassword(pinfo.getIdentityInt());
+			file.setLang(AppContextUtil.getTenant().defaultLang());
+			email.addFile(file);
+		}
 		logger.debug("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getFirstName());
 		sendEmail(email);
 
@@ -462,6 +476,7 @@ public class JaxNotificationService {
 		email.setSubject("Your transaction on AMX is successful");
 		email.addTo(pinfo.getEmail());
 		email.setITemplate(TemplatesMX.TXN_CRT_SUCC);
+		
 		email.setHtml(true);
 		email.getModel().put(RESP_DATA_KEY, pinfo);
 

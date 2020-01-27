@@ -195,7 +195,12 @@ public class RemittanceTransaction implements Serializable {
 
 	public RemittanceTransaction() {
 	}
-		
+
+	public RemittanceTransaction(String remittanceTransactionId) {
+		super();
+		this.remittanceTransactionId = new BigDecimal(remittanceTransactionId);
+	}
+
 	public RemittanceTransaction(BigDecimal remittanceTransactionId,
 			CountryMaster applicationCountryId, CompanyMaster companyId,
 			BigDecimal documentFinanceYear, Document documentId,

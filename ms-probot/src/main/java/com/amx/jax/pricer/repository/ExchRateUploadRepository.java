@@ -30,9 +30,10 @@ public interface ExchRateUploadRepository extends JpaRepository<ExchRateUpload, 
 
 	@Transactional
 	@Modifying
-	@Query("update ExchRateUpload u set u.status=?2 , u.approvedBy=?3, u.approvedDate=?4, u.isActive=?5 where u.ruleId in ( ?1 )")
+	@Query("update ExchRateUpload u set u.status=?2 , u.approvedBy=?3, u.approvedDate=?4, u.isActive=?5, u.comment=?6"
+			+ " where u.ruleId in ( ?1 )")
 	public int updateStatusForRuleIdIn(Iterable<String> ruleIds, RATE_UPLOAD_STATUS status, String approvedBy,
-			Date approvedDate, IS_ACTIVE isActive);
+			Date approvedDate, IS_ACTIVE isActive, String comment);
 
 	@Transactional
 	@Modifying

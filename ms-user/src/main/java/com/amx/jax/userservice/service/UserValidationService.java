@@ -472,9 +472,6 @@ public class UserValidationService {
 	}
 
 	public void validateCustomerLockCount(CustomerOnlineRegistration onlineCustomer, boolean validateCaptcha) {
-		if (validateCaptcha) {
-			validateCaptcha(onlineCustomer);
-		}
 		final Integer MAX_OTP_ATTEMPTS = otpSettings.getMaxValidateOtpAttempts();
 		if (onlineCustomer.getLockCnt() != null) {
 			int lockCnt = onlineCustomer.getLockCnt().intValue();
@@ -495,6 +492,10 @@ public class UserValidationService {
 		}
 		if (onlineCustomer.getLockDt() != null) {
 			throw new GlobalException(JaxError.ONLINE_ACCOUNT_LOCKED, "Customer is locked. Contact branch");
+		}
+		
+		if (validateCaptcha) {
+			validateCaptcha(onlineCustomer);
 		}
 	}
 

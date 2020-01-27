@@ -228,7 +228,7 @@ public class CustomerManagementManager {
 		return null;
 	}
 
-	private ResourceDTO getCustomerCategory(BigDecimal customerId) {
+	public ResourceDTO getCustomerCategory(BigDecimal customerId) {
 		ResourceDTO dto = new ResourceDTO();
 		CustomerExtendedModel customerExtendedModel = customerExtendedRepo.findByCustomerId(customerId);
 		if (customerExtendedModel != null) {
