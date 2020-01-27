@@ -317,14 +317,12 @@ public class CountryMasterView implements java.io.Serializable, IResourceEntity 
 		this.localName = localName;
 	}
 
-	@Column(name = "QUOTE_NAME")
-	public String getQuoteName() {
-		return quoteName;
-	}
-
-	public void setQuoteName(String quoteName) {
-		this.quoteName = quoteName;
-	}
+	/*
+	 * @Column(name = "QUOTE_NAME") public String getQuoteName() { return quoteName;
+	 * }
+	 * 
+	 * public void setQuoteName(String quoteName) { this.quoteName = quoteName; }
+	 */
 
 	@Column(name = "CURRENCY_ID")
 	public BigDecimal getCurrencyId() {
