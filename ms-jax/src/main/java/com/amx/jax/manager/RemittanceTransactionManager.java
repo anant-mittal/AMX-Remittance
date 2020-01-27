@@ -38,6 +38,7 @@ import com.amx.amxlib.model.PromotionDto;
 import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.JaxAuthContext;
 import com.amx.jax.api.ResponseCodeDetailDTO;
 import com.amx.jax.branchremittance.manager.BranchRemittanceApplManager;
@@ -1444,7 +1445,7 @@ public class RemittanceTransactionManager {
 			remittanceApplication.setApplSplit(ConstantDocument.Yes);
 		}
 		
-		
+		logger.info("Flow valuye is "+AppContextUtil.getFlow());
 		/** send OTP for limit exceed**/
 		Boolean limitExceed = addOtpOnRemittanceV3(model);
 		if(metaData.getCustomerId() !=null && (model.getmOtp()==null && limitExceed)) {
