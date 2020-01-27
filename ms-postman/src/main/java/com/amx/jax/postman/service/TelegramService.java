@@ -8,8 +8,10 @@ import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import com.amx.jax.logger.AuditService;
 import com.amx.jax.postman.cache.ContactsCache;
 import com.amx.jax.postman.model.TGMessage;
+import com.amx.jax.tunnel.TunnelService;
 
 @Component
 public class TelegramService {
@@ -19,6 +21,12 @@ public class TelegramService {
 
 	private TelegramBot defaultTelegramBot;
 
+	@Autowired
+	private TunnelService tunnelService;
+
+	@Autowired
+	private AuditService auditService;
+
 	@PostConstruct
 	public void init() {
 		ApiContextInitializer.init();
@@ -27,7 +35,8 @@ public class TelegramService {
 			defaultTelegramBot = new TelegramBot().botUsername("almullabot")
 					.botToken("1060793944:AAEqLlJK0tuHVw55bCtq4Ph-ZU59rLrUcEY")
 					.contactsCache(contactsCache)
-					.channel(TGMessage.Channel.DEFAULT);
+					.channel(TGMessage.Channel.DEFAULT)
+					.set(tunnelService, auditService);
 			botsApi.registerBot(defaultTelegramBot);
 		} catch (TelegramApiException e) {
 			e.printStackTrace();

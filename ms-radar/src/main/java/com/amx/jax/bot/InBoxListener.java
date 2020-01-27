@@ -113,7 +113,8 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 	}
 
 	public WAMessage onMessageResponse(UserInboxEvent event) throws NumberParseException {
-		if (!ArgUtil.isEmpty(event.getWaChannel())) {
+		if (ArgUtil.is(event.getWaChannel())
+				|| ArgUtil.is(event.getTgChannel())) {
 
 			PhoneNumber swissNumberProto = phoneUtil.parse("+" + event.getFrom(), "IN");
 			LOGGER.info("Recieved +{} {} {} ", swissNumberProto.getCountryCode(), swissNumberProto.getNationalNumber(),

@@ -2,6 +2,7 @@ package com.amx.jax.postman.events;
 
 import java.math.BigDecimal;
 
+import com.amx.jax.postman.model.TGMessage;
 import com.amx.jax.postman.model.WAMessage;
 import com.amx.jax.tunnel.ITunnelEvent;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -15,6 +16,7 @@ public class UserInboxEvent implements ITunnelEvent {
 	private String from;
 	private String message;
 	private WAMessage.Channel waChannel;
+	private TGMessage.Channel tgChannel;
 	private BigDecimal queue;
 
 	public String getTo() {
@@ -85,5 +87,13 @@ public class UserInboxEvent implements ITunnelEvent {
 	public UserInboxEvent waChannel(WAMessage.Channel waChannel) {
 		this.setWaChannel(waChannel);
 		return this;
+	}
+
+	public TGMessage.Channel getTgChannel() {
+		return tgChannel;
+	}
+
+	public void setTgChannel(TGMessage.Channel tgChannel) {
+		this.tgChannel = tgChannel;
 	}
 }

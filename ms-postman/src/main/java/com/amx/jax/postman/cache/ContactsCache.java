@@ -8,7 +8,7 @@ import com.amx.jax.cache.CacheBox;
  * The Class LoggedInUsers.
  */
 @Component
-public class ContactsCache extends CacheBox<Long> {
+public class ContactsCache extends CacheBox<String> {
 
 	/**
 	 * Instantiates a new logged in users.
