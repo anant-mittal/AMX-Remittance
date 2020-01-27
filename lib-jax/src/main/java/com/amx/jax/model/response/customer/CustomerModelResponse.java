@@ -3,6 +3,7 @@ package com.amx.jax.model.response.customer;
 import java.math.BigDecimal;
 import java.util.List;
 
+import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.customer.SecurityQuestionModel;
 
 
@@ -12,6 +13,8 @@ public class CustomerModelResponse {
 	PersonInfo personInfo;
 	CustomerFlags customerFlags;
 	List<SecurityQuestionModel> securityquestions;
+	ResourceDTO customerCategory;
+	
 
 	public CustomerModelResponse() {
 		super();
@@ -54,4 +57,15 @@ public class CustomerModelResponse {
 	public void setSecurityquestions(List<SecurityQuestionModel> securityquestions) {
 		this.securityquestions = securityquestions;
 	}
+
+	public ResourceDTO getCustomerCategory() {
+		return customerCategory;
+	}
+
+	public void setCustomerCategory(ResourceDTO customerCategory) {
+		this.customerCategory = customerCategory;
+	}
+
+	
+	
 }
