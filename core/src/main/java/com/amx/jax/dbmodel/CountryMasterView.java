@@ -308,14 +308,12 @@ public class CountryMasterView implements java.io.Serializable, IResourceEntity 
 		this.defaultIndic = defaultIndic;
 	}
 
-	@Column(name = "LOCAL_NAME")
-	public String getLocalName() {
-		return localName;
-	}
-
-	public void setLocalName(String localName) {
-		this.localName = localName;
-	}
+	/*
+	 * @Column(name = "LOCAL_NAME") public String getLocalName() { return localName;
+	 * }
+	 * 
+	 * public void setLocalName(String localName) { this.localName = localName; }
+	 */
 
 	/*
 	 * @Column(name = "QUOTE_NAME") public String getQuoteName() { return quoteName;
@@ -323,15 +321,13 @@ public class CountryMasterView implements java.io.Serializable, IResourceEntity 
 	 * 
 	 * public void setQuoteName(String quoteName) { this.quoteName = quoteName; }
 	 */
-
-	@Column(name = "CURRENCY_ID")
-	public BigDecimal getCurrencyId() {
-		return currencyId;
-	}
-
-	public void setCurrencyId(BigDecimal currencyId) {
-		this.currencyId = currencyId;
-	}
+	/*
+	 * @Column(name = "CURRENCY_ID") public BigDecimal getCurrencyId() { return
+	 * currencyId; }
+	 * 
+	 * public void setCurrencyId(BigDecimal currencyId) { this.currencyId =
+	 * currencyId; }
+	 */
 	
 	
 
