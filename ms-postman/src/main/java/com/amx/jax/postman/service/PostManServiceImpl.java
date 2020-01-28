@@ -248,6 +248,13 @@ public class PostManServiceImpl implements PostManService {
 	@Override
 	public AmxApiResponse<MessageBox, Object> send(MessageBox messageBox) {
 
+		LOGGER.debug("messageBox with Ex{} Sx{} Wx{} Tx{} Px{}",
+				messageBox.getEmailBucket().size(),
+				messageBox.getSmsBucket().size(),
+				messageBox.getWaBucket().size(),
+				messageBox.getTgBucket().size(),
+				messageBox.getPushBucket().size());
+
 		for (Email email : messageBox.getEmailBucket()) {
 			this.sendEmail(email);
 		}
