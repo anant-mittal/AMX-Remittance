@@ -2,9 +2,11 @@ package com.amx.jax.postman.events;
 
 import java.math.BigDecimal;
 
+import com.amx.jax.postman.model.Message;
 import com.amx.jax.postman.model.TGMessage;
 import com.amx.jax.postman.model.WAMessage;
 import com.amx.jax.tunnel.ITunnelEvent;
+import com.amx.utils.ArgUtil;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -66,6 +68,25 @@ public class UserInboxEvent implements ITunnelEvent {
 		reply.addTo(this.getFrom());
 		reply.setMessage(message);
 		return reply;
+	}
+
+	public Message replyMessage(String message) {
+		if (ArgUtil.is(this.getWaChannel())) {
+			WAMessage reply = new WAMessage();
+			reply.setQueue(this.getQueue());
+			reply.setChannel(this.getWaChannel());
+			reply.addTo(this.getFrom());
+			reply.setMessage(message);
+			return reply;
+		} else if (ArgUtil.is(this.getTgChannel())) {
+			TGMessage reply = new TGMessage();
+			reply.setQueue(this.getQueue());
+			reply.setChannel(this.getTgChannel());
+			reply.addTo(this.getFrom());
+			reply.setMessage(message);
+			return reply;
+		}
+		return null;
 	}
 
 	// Builder Functions

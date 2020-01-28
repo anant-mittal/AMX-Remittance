@@ -83,4 +83,19 @@ public class MessageBox {
 	public void setTgBucket(List<TGMessage> tgBucket) {
 		this.tgBucket = tgBucket;
 	}
+
+	public MessageBox push(Message m) {
+		if (m instanceof WAMessage) {
+			this.waBucket.add((WAMessage) m);
+		} else if (m instanceof TGMessage) {
+			this.tgBucket.add((TGMessage) m);
+		} else if (m instanceof SMS) {
+			this.smsBucket.add((SMS) m);
+		} else if (m instanceof Email) {
+			this.emailBucket.add((Email) m);
+		} else if (m instanceof PushMessage) {
+			this.pushBucket.add((PushMessage) m);
+		}
+		return this;
+	}
 }
