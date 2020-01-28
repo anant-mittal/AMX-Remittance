@@ -176,6 +176,12 @@ public class TelegramBot extends TelegramLongPollingBot {
 					.setChatId(chatId)
 					.setText(text);
 			executeWithCatch(message);
+		} else {
+			PMGaugeEvent pMGaugeEvent = new PMGaugeEvent(PMGaugeEvent.Type.SEND_TG);
+			pMGaugeEvent.setTo(CollectionUtil.getList(phone));
+			pMGaugeEvent.setMessage(text);
+			pMGaugeEvent.setResult(Result.FAIL);
+			auditService.log(pMGaugeEvent);
 		}
 	}
 
