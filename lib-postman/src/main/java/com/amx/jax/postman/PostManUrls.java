@@ -37,5 +37,7 @@ public final class PostManUrls {
 	public static final String LIST_BRANCHES = "/postman/list/branches";
 	
 	public static final String DOC_UPLOAD_URL = "/doc/upload/url";
+	public static final String DOC_VALIDATE_ID = "/doc/validate/id";
+	public static final String DOC_SCAN_ID = "/doc/scan/id";
 
 }

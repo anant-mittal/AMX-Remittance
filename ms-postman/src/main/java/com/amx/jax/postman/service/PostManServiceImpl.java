@@ -25,6 +25,7 @@ import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.SupportEmail;
+import com.amx.jax.postman.model.TGMessage;
 import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.postman.model.WAMessage;
 
@@ -54,6 +55,9 @@ public class PostManServiceImpl implements PostManService {
 
 	@Autowired
 	private WhatsAppService whatsAppService;
+
+	@Autowired
+	private TelegramService telegramService;
 
 	/** The slack service. */
 	@Autowired
@@ -244,6 +248,13 @@ public class PostManServiceImpl implements PostManService {
 	@Override
 	public AmxApiResponse<MessageBox, Object> send(MessageBox messageBox) {
 
+		LOGGER.debug("messageBox with Ex{} Sx{} Wx{} Tx{} Px{}",
+				messageBox.getEmailBucket().size(),
+				messageBox.getSmsBucket().size(),
+				messageBox.getWaBucket().size(),
+				messageBox.getTgBucket().size(),
+				messageBox.getPushBucket().size());
+
 		for (Email email : messageBox.getEmailBucket()) {
 			this.sendEmail(email);
 		}
@@ -254,6 +265,10 @@ public class PostManServiceImpl implements PostManService {
 
 		for (WAMessage waMessage : messageBox.getWaBucket()) {
 			whatsAppService.send(waMessage);
+		}
+
+		for (TGMessage taMessage : messageBox.getTgBucket()) {
+			telegramService.send(taMessage);
 		}
 
 		for (PushMessage pushMessage : messageBox.getPushBucket()) {

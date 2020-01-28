@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.amx.jax.bot.InBoxListener;
 import com.amx.jax.postman.events.UserInboxEvent;
+import com.amx.jax.postman.model.Message;
 import com.amx.jax.postman.model.WAMessage;
 import com.amx.jax.radar.service.SnapDocumentRepository;
 import com.google.i18n.phonenumbers.NumberParseException;
@@ -24,13 +25,13 @@ public class SnapCustomerController {
 
 	@ResponseBody
 	@RequestMapping(value = "snap/api/chat/response/get", method = RequestMethod.POST)
-	public WAMessage charResponse(@RequestBody UserInboxEvent event) throws NumberParseException {
+	public Message charResponse(@RequestBody UserInboxEvent event) throws NumberParseException {
 		return inBoxListener.onMessageResponse(event);
 	}
 
 	@ResponseBody
 	@RequestMapping(value = "snap/api/chat/response/send", method = RequestMethod.POST)
-	public WAMessage charReply(@RequestBody UserInboxEvent event) {
+	public Message charReply(@RequestBody UserInboxEvent event) {
 		return inBoxListener.onMessageReply(event);
 	}
 

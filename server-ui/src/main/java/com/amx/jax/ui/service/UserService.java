@@ -30,6 +30,7 @@ import com.amx.jax.ui.model.AuthDataInterface.UserUpdateResponse;
 import com.amx.jax.ui.model.UserBean;
 import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseWrapper;
+import com.amx.utils.ArgUtil;
 import com.amx.utils.AssertUtil;
 import com.amx.utils.ListManager;
 
@@ -116,7 +117,9 @@ public class UserService {
 		msg.addToUser(customerModel.getCustomerId(), lang);
 
 		Date dob = customerModel.getPersoninfo().getDateOfBirth();
-		msg.addToDate("dob", dob);
+		if(ArgUtil.is(dob)) {
+			msg.addToDate("dob", dob);			
+		}
 		return msg.getTo();
 	}
 
