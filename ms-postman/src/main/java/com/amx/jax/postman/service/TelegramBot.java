@@ -75,37 +75,12 @@ public class TelegramBot extends TelegramLongPollingBot {
 		// We check if the update has a message and the message has text
 		if (update.hasMessage() && update.getMessage().hasText()) {
 			LOGGER.info("TG TEXT: {} {}", update.getMessage().getChatId(), update.getMessage().getText());
-
-			SendMessage message = new SendMessage() // Create a SendMessage object with mandatory fields
-					.setChatId(update.getMessage().getChatId())
-					.setText("Reply:" + update.getMessage().getText());
-
 			if (update.getMessage().getText().equals("/start")
 					|| update.getMessage().getText().equals("/link")) {
-
-				message.setText("Share your number >");
-
-				// create keyboard
-				ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
-				message.setReplyMarkup(replyKeyboardMarkup);
-				replyKeyboardMarkup.setSelective(true);
-				replyKeyboardMarkup.setResizeKeyboard(true);
-				replyKeyboardMarkup.setOneTimeKeyboard(true);
-
-				// new list
-				List<KeyboardRow> keyboard = new ArrayList<>();
-
-				// first keyboard line
-				KeyboardRow keyboardFirstRow = new KeyboardRow();
-				KeyboardButton keyboardButton = new KeyboardButton();
-				keyboardButton.setText("Share your number >").setRequestContact(true);
-				keyboardFirstRow.add(keyboardButton);
-				// add array to list
-				keyboard.add(keyboardFirstRow);
-				// add list to our keyboard
-				replyKeyboardMarkup.setKeyboard(keyboard);
-				executeWithCatch(message);
+				shareNumber(update);
 			} else if (update.getMessage().getText().equals("/mycontact")) {
+				SendMessage message = new SendMessage() // Create a SendMessage object with mandatory fields
+						.setChatId(update.getMessage().getChatId());
 				message.setText(update.getMessage().getContact().getPhoneNumber());
 				executeWithCatch(message);
 			} else {
@@ -113,7 +88,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 				if (ArgUtil.is(from)) {
 					onMessageLocal(from, update);
 				} else {
-
+					shareNumber(update);
 				}
 			}
 
@@ -132,9 +107,36 @@ public class TelegramBot extends TelegramLongPollingBot {
 				// Cache PhoneNumber against userid
 				contactsCache.put("_" + update.getMessage().getFrom().getId(),
 						update.getMessage().getContact().getPhoneNumber());
-				send(phone, "You have successfully subscribed to updates");
+				// send(phone, "You have successfully subscribed to updates");
 			}
 		}
+	}
+
+	private void shareNumber(Update update) {
+		SendMessage message = new SendMessage() // Create a SendMessage object with mandatory fields
+				.setChatId(update.getMessage().getChatId());
+		message.setText("Share your number >");
+
+		// create keyboard
+		ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+		message.setReplyMarkup(replyKeyboardMarkup);
+		replyKeyboardMarkup.setSelective(true);
+		replyKeyboardMarkup.setResizeKeyboard(true);
+		replyKeyboardMarkup.setOneTimeKeyboard(true);
+
+		// new list
+		List<KeyboardRow> keyboard = new ArrayList<>();
+
+		// first keyboard line
+		KeyboardRow keyboardFirstRow = new KeyboardRow();
+		KeyboardButton keyboardButton = new KeyboardButton();
+		keyboardButton.setText("Share your number >").setRequestContact(true);
+		keyboardFirstRow.add(keyboardButton);
+		// add array to list
+		keyboard.add(keyboardFirstRow);
+		// add list to our keyboard
+		replyKeyboardMarkup.setKeyboard(keyboard);
+		executeWithCatch(message);
 	}
 
 	private void onMessageLocal(String from, Update update) {
