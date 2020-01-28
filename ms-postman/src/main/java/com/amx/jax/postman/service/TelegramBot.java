@@ -83,7 +83,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 			if (update.getMessage().getText().equals("/start")
 					|| update.getMessage().getText().equals("/link")) {
 
-				message.setText("You send /start");
+				message.setText("Share your number >");
 
 				// create keyboard
 				ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
@@ -109,7 +109,12 @@ public class TelegramBot extends TelegramLongPollingBot {
 				message.setText(update.getMessage().getContact().getPhoneNumber());
 				executeWithCatch(message);
 			} else {
-				onMessageLocal(update);
+				String from = contactsCache.get("_" + update.getMessage().getFrom().getId());
+				if (ArgUtil.is(from)) {
+					onMessageLocal(from, update);
+				} else {
+
+				}
 			}
 
 		} else {
@@ -119,19 +124,20 @@ public class TelegramBot extends TelegramLongPollingBot {
 			if (ArgUtil.is(update.getMessage().getFrom().getId())) {
 				update.getMessage().getFrom().getId().equals(update.getMessage().getContact().getUserID());
 				LOGGER.info("TG CONTACT : {}", update.getMessage().getChatId());
-				String phoneKey = channel.name() + "#" + update.getMessage().getContact().getPhoneNumber();
+				String phone = update.getMessage().getContact().getPhoneNumber();
+				String phoneKey = channel.name() + "#" + phone;
 				// Cache ChatId against PhoneNumber
 				contactsCache.put(phoneKey,
 						ArgUtil.parseAsString(update.getMessage().getChatId()));
 				// Cache PhoneNumber against userid
 				contactsCache.put("_" + update.getMessage().getFrom().getId(),
 						update.getMessage().getContact().getPhoneNumber());
-				send(phoneKey, "You have successfully subscribed to updates");
+				send(phone, "You have successfully subscribed to updates");
 			}
 		}
 	}
 
-	private void onMessageLocal(Update update) {
+	private void onMessageLocal(String from, Update update) {
 		String sessionId = AppContextUtil.getSessionId(false, UniqueID.generateSessionId());
 		AppContextUtil.setSessionId(sessionId);
 		AppContextUtil.getTraceId(true, true);
@@ -139,8 +145,6 @@ public class TelegramBot extends TelegramLongPollingBot {
 		AppContextUtil.init();
 		PMGaugeEvent pMGaugeEvent = new PMGaugeEvent(PMGaugeEvent.Type.ON_TG);
 		try {
-
-			String from = contactsCache.get("_" + update.getMessage().getFrom().getId());
 
 			UserInboxEvent userInboxEvent = new UserInboxEvent();
 			userInboxEvent.setWaChannel(WAMessage.Channel.DEFAULT);
