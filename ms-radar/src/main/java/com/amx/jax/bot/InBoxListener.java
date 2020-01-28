@@ -107,7 +107,7 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 				whatsAppClient.send(reply);
 			}
 		} catch (NumberParseException e) {
-			LOGGER.error("BOT EXCEPTION "+ event.getFrom() , e);
+			LOGGER.error("BOT EXCEPTION from:"+ event.getFrom() , e);
 		}
 		return reply;
 	}
