@@ -461,8 +461,7 @@ public class RemittanceApplicationManager {
 			throw new GlobalException(JaxError.NO_OF_TRANSACTION_LIMIT_EXCEEDED,
 					"Dear Customer, you have already done 1 application to this beneficiary within the last 24"
 							+ " hours. In the interest of safety, we do not allow a customer to repeat the same"
-							+ " transaction to the same beneficiary more than once in 24 hours."
-							+ " Kindly logout and login to make a new application for the same details");
+							+ " transaction to the same beneficiary more than once in 24 hours.");
 		}
 	}
 

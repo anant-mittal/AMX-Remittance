@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.meta.model.TransactionHistoryDto;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.response.ApiResponse;
@@ -28,10 +29,13 @@ import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.CustomerRemittanceTransactionHistoryView;
 import com.amx.jax.dbmodel.CustomerRemittanceTransactionView;
+import com.amx.jax.dbmodel.remittance.RemittanceAdditionalInstructionData;
+import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.BeneficiaryListDTO;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
+import com.amx.jax.repository.IRemittanceAdditionalInstructionRepository;
 import com.amx.jax.repository.ITransactionHistroyDAO;
 import com.amx.jax.repository.TransactionHistoryDAO;
 
@@ -54,9 +58,12 @@ public class TransactionHistroyService extends AbstractService {
 	@Autowired
 	TransactionHistoryDAO transactionHistroyDAO;
 
-
 	@Autowired
 	MetaData metaData;
+	@Autowired
+	IRemittanceAdditionalInstructionRepository iRemittanceAdditionalInstructionRepository;
+	@Autowired
+	BeneficiaryService beneficiaryService;
 	
 	Logger logger = LoggerFactory.getLogger(TransactionHistroyDTO.class);
 
@@ -474,5 +481,28 @@ public class TransactionHistroyService extends AbstractService {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	
+	/**
+	 * @param beneficaryDetails
+	 * @param flexFieldName
+	 * @return additional flex data for default bene transaction
+	 */
+	public RemittanceAdditionalInstructionData getAdditionalRemittanceDataForDefaultBeneTrnx(BenificiaryListView beneficaryDetails,
+			String flexFieldName) {
+		RemittanceAdditionalInstructionData flexFieldData = null;
+		try {
+			ApiResponse apiResponse = beneficiaryService.getDefaultBeneficiary(beneficaryDetails.getCustomerId(),
+					beneficaryDetails.getApplicationCountryId(), beneficaryDetails.getBeneficiaryRelationShipSeqId(), null);
+			RemittancePageDto remittancePageDto = (RemittancePageDto) apiResponse.getResult();
+			if (remittancePageDto != null && remittancePageDto.getTrnxHistDto() != null) {
+				String idNo = remittancePageDto.getTrnxHistDto().getIdno().toString();
+				String remittanceTransactionIdStr = idNo.substring(1); // to skip prepended char 3
+				flexFieldData = iRemittanceAdditionalInstructionRepository
+						.findByexRemittanceTransactionAndFlexField(new RemittanceTransaction(remittanceTransactionIdStr), flexFieldName);
+			}
+		} catch (GlobalException ex) {
+			logger.debug("Global exception in default bene error msg {}", ex.getErrorMessage());
+		}
+		return flexFieldData;
+	}
 }

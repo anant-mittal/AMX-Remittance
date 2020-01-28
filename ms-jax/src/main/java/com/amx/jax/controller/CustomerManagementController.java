@@ -126,7 +126,6 @@ public class CustomerManagementController implements ICustomerManagementControll
 	@Override
 	public AmxApiResponse<UploadCustomerKycResponse, Object> uploadCustomerKyc(
 			@RequestBody @Valid UploadCustomerKycRequest uploadCustomerKycRequest) {
-		log.debug("request uploadCustomerKycRequest {}", JsonUtil.toJson(uploadCustomerKycRequest));
 		UploadCustomerKycResponse uploadReference = customerDocumentManager.uploadKycDocument(uploadCustomerKycRequest);
 		return AmxApiResponse.build(uploadReference);
 	}

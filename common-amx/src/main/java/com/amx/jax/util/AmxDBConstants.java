@@ -288,6 +288,7 @@ public class AmxDBConstants {
 	public static final String BENEFICIARY_DISABLE_FLOW = "/api/user/bnfcry/disable";
 	public static final String BENEFICIARY_ADDITION_FLOW = "/api/user/bnfcry/commit";
 	public static final String FORGOT_PASSWORD_FLOW= "RESET_PASS";
+	public static final String REMIT_CART_ADD = "/api/remitt/cart/add";
 	//public static final String BENEFICIARY_ADDITION = ""
    /** end Here **/
 

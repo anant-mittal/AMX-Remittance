@@ -414,7 +414,12 @@ public void validateGetExchangRateRequest(IRemittanceApplicationParams request) 
 				remittanceTransactionManager.applyCurrencyRoudingLogicSP(result.getExRateBreakup());
 			}
 			
-			result.setDiscountOnComission(corpDiscountDto.getCorpDiscount());
+			if(JaxUtil.isNullZeroBigDecimalCheck(trnxRoutingDetails.getChargeAmount())) {
+				result.setDiscountOnComission(corpDiscountDto.getCorpDiscount());
+			}else {
+				result.setDiscountOnComission(BigDecimal.ZERO);
+			}
+		
 
 			result.setYouSavedAmount(getYouSavedAmount(result));
 			result.setYouSavedAmountInFC(getYouSavedAmountInFc(result));

@@ -29,12 +29,14 @@ import com.amx.amxlib.service.ICustomerService;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.customer.manager.CustomerManagementManager;
 import com.amx.jax.customer.service.CustomerService;
 import com.amx.jax.customer.service.JaxCustomerContactVerificationService;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dict.AmxEnums.CommunicationEvents;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.auth.QuestModelDTO;
 import com.amx.jax.model.customer.SecurityQuestionModel;
 import com.amx.jax.model.response.customer.CustomerModelResponse;
@@ -96,7 +98,9 @@ public class CustomerController implements ICustomerService {
 	@Autowired
 	CommunicationPreferencesManager communicationPreferencesManager;
 	
-
+	@Autowired
+	CustomerManagementManager customerManagementManager;
+	
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	@RequestMapping(value = "/logged/in/", method = RequestMethod.POST)
@@ -215,7 +219,7 @@ public class CustomerController implements ICustomerService {
 
 	@RequestMapping(value = UPDATE_CUSTOMER_PASSWORD_ENDPOINT, method = RequestMethod.PUT)
 	public AmxApiResponse<BoolRespModel, Object> updatePassword(@RequestBody CustomerModel model) {
-		logger.info("updatePassword Request: " + model.toString());
+		//logger.info("updatePassword Request: " + model.toString());
 		return userService.updatePassword(model);
 	}
 
@@ -297,6 +301,8 @@ public class CustomerController implements ICustomerService {
 	public AmxApiResponse<CustomerModelResponse, Object> getCustomerModelResponse(
 			@RequestParam(name = Params.IDENTITY_INT) String identityInt) {
 		CustomerModelResponse response = customerModelService.getCustomerModelResponse(identityInt);
+		ResourceDTO custCategory =customerManagementManager.getCustomerCategory(response.getCustomerId());
+		response.setCustomerCategory(custCategory);
 		jaxCustomerModelService.updateCustomerModelResponse(response);
 		return AmxApiResponse.build(response);
 	}
@@ -305,6 +311,8 @@ public class CustomerController implements ICustomerService {
 	@Override
 	public AmxApiResponse<CustomerModelResponse, Object> getCustomerModelResponse() {
 		CustomerModelResponse response = customerModelService.getCustomerModelResponse();
+		ResourceDTO custCategory =customerManagementManager.getCustomerCategory(response.getCustomerId());
+		response.setCustomerCategory(custCategory);
 		jaxCustomerModelService.updateCustomerModelResponse(response);
 		return AmxApiResponse.build(response);
 	}
@@ -363,6 +371,12 @@ public class CustomerController implements ICustomerService {
 	public AmxApiResponse<BoolRespModel, Object> updatePasswordCustomer(@RequestParam("identityInt") String identityInt, 
 			@RequestParam(name = "resetPassword",  required = false) String resetPassword) {
 		AmxApiResponse<BoolRespModel, Object> response = customerService.updatePasswordCustomer(identityInt, resetPassword);
+		return response;
+	}
+	
+	@RequestMapping(value = CustomerApi.UPDATE_PASSWORD_CUSTOMER_V2, method = RequestMethod.POST)
+	public AmxApiResponse<BoolRespModel, Object> updatePasswordCustomer(@RequestBody CustomerModel customerModel) {
+		AmxApiResponse<BoolRespModel, Object> response = customerService.updatePasswordCustomer(customerModel.getIdentityId(), customerModel.getPassword());
 		return response;
 	}
 }

@@ -18,6 +18,7 @@ import com.amx.jax.dbmodel.LoginLogoutHistory;
 import com.amx.jax.dict.ContactType;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.ResourceDTO;
 import com.amx.jax.model.response.customer.CustomerCommunicationChannel;
 import com.amx.jax.model.response.customer.CustomerFlags;
 import com.amx.jax.model.response.customer.CustomerModelResponse;
@@ -74,6 +75,7 @@ public class CustomerModelService {
 				personInfo.setLastLoginTime(history.getLoginTime());
 			}
 		}
+		
 		return response;
 	}
 
