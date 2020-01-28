@@ -181,13 +181,18 @@ public class PreFlexFieldManager {
 		field.setRequired(true);
 		field.setValueUnit(beneficaryDetails.getCurrencyQuoteName());
 		String defaultBeneFcAmount = getDefaultBeneValue(beneficaryDetails);
+		boolean isAmountPresent = false;
 		if (defaultBeneFcAmount != null) {
 			field.setDefaultValue(defaultBeneFcAmount);
 		}
 		if (parameterDetailsDto.getAmount() != null && parameterDetailsDto.getAmount().doubleValue() > 0) {
+			isAmountPresent = true;
 			field.setDefaultValue(parameterDetailsDto.getAmount().toString());
 		}
 		field.setType(JaxFieldType.NUMBER.toString());
+		if (field.getMinValue().doubleValue() == 0 && field.getMaxValue().doubleValue() == 0 && isAmountPresent) {
+			field.setEditable(false);
+		}
 		dto.setId(parameterDetailsDto.getParameterDetailsId());
 		dto.setField(field);
 		return dto;
