@@ -8,7 +8,6 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.autoconfigure.ShellProperties.Telnet;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import com.amx.jax.AppContextUtil;
@@ -125,9 +124,9 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 
 		if (ArgUtil.is(event.getWaChannel())
 				|| ArgUtil.is(event.getTgChannel())) {
-
+			LOGGER.debug("Recieved from +{} on {} {} ", event.getFrom(), event.getWaChannel(),event.getTgChannel());
 			PhoneNumber swissNumberProto = phoneUtil.parse("+" + event.getFrom(), "IN");
-			LOGGER.info("Recieved +{} {} {} ", swissNumberProto.getCountryCode(), swissNumberProto.getNationalNumber(),
+			LOGGER.debug("Parsed +{} {} {} ", swissNumberProto.getCountryCode(), swissNumberProto.getNationalNumber(),
 					event.getMessage());
 			String replyMessage = "";
 			String swissNumberProtoString = ArgUtil.parseAsString(swissNumberProto.getNationalNumber());
