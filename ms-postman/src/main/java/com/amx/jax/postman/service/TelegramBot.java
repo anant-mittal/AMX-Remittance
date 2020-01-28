@@ -149,7 +149,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 		try {
 
 			UserInboxEvent userInboxEvent = new UserInboxEvent();
-			userInboxEvent.setWaChannel(WAMessage.Channel.DEFAULT);
+			userInboxEvent.setTgChannel(TGMessage.Channel.DEFAULT);
 			userInboxEvent.setQueue(BigDecimal.ZERO);
 			userInboxEvent.setFrom(from);
 			userInboxEvent.setMessage(update.getMessage().getText());
