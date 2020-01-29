@@ -20,8 +20,11 @@ import com.amx.jax.logger.AuditActor;
 import com.amx.jax.logger.AuditActor.ActorType;
 import com.amx.jax.mcq.shedlock.SchedulerLock;
 import com.amx.jax.mcq.shedlock.SchedulerLock.LockContext;
+import com.amx.jax.postman.client.PostManClient;
 import com.amx.jax.postman.client.WhatsAppClient;
 import com.amx.jax.postman.events.UserInboxEvent;
+import com.amx.jax.postman.model.Message;
+import com.amx.jax.postman.model.MessageBox;
 import com.amx.jax.postman.model.WAMessage;
 import com.amx.jax.radar.EsConfig;
 import com.amx.jax.radar.RadarConfig;
@@ -53,6 +56,9 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 
 	@Autowired
 	private WhatsAppClient whatsAppClient;
+
+	@Autowired
+	private PostManClient postManClient;
 
 	@Autowired
 	private CustomerRepository customerRepository;
@@ -99,24 +105,28 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 		this.onMessageReply(event);
 	}
 
-	public WAMessage onMessageReply(UserInboxEvent event) {
-		WAMessage reply = null;
+	public Message onMessageReply(UserInboxEvent event) {
+		Message reply = null;
 		try {
 			reply = this.onMessageResponse(event);
 			if (!ArgUtil.isEmpty(reply.getMessage())) {
-				whatsAppClient.send(reply);
+				MessageBox mb = new MessageBox();
+				mb.push(reply);
+				postManClient.send(mb);
 			}
 		} catch (NumberParseException e) {
-			LOGGER.error("BOT EXCEPTION", e);
+			LOGGER.error("BOT EXCEPTION from:" + event.getFrom(), e);
 		}
 		return reply;
 	}
 
-	public WAMessage onMessageResponse(UserInboxEvent event) throws NumberParseException {
-		if (!ArgUtil.isEmpty(event.getWaChannel())) {
+	public Message onMessageResponse(UserInboxEvent event) throws NumberParseException {
 
+		if (ArgUtil.is(event.getWaChannel())
+				|| ArgUtil.is(event.getTgChannel())) {
+			LOGGER.debug("Recieved from +{} on {} {} ", event.getFrom(), event.getWaChannel(),event.getTgChannel());
 			PhoneNumber swissNumberProto = phoneUtil.parse("+" + event.getFrom(), "IN");
-			LOGGER.info("Recieved +{} {} {} ", swissNumberProto.getCountryCode(), swissNumberProto.getNationalNumber(),
+			LOGGER.debug("Parsed +{} {} {} ", swissNumberProto.getCountryCode(), swissNumberProto.getNationalNumber(),
 					event.getMessage());
 			String replyMessage = "";
 			String swissNumberProtoString = ArgUtil.parseAsString(swissNumberProto.getNationalNumber());
@@ -170,11 +180,11 @@ public class InBoxListener implements ITunnelSubscriber<UserInboxEvent> {
 			 * replyMessage = ANY_TEXT; } } else { replyMessage = ANY_TEXT; }
 			 */
 
-			return event.replyWAMessage(replyMessage.replace("{companyName}", radarConfig.getCompanyName())
+			return event.replyMessage(replyMessage.replace("{companyName}", radarConfig.getCompanyName())
 					.replace("{companyWebSiteUrl}", radarConfig.getCompanyWebSiteUrl())
 					.replace("{companyIDType}", radarConfig.getCompanyIDType()).replace("{errorCode}", errorCode));
 		} else {
-			return event.replyWAMessage(null);
+			return event.replyMessage(null);
 		}
 	}
 

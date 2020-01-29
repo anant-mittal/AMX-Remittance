@@ -135,15 +135,16 @@ public class WhatsAppService {
 
 			try {
 				String to = ArgUtil.parseAsString(map.get("to"), Constants.BLANK);
+				String from = ArgUtil.parseAsString(map.get("from"), Constants.BLANK);
 
 				UserInboxEvent userInboxEvent = new UserInboxEvent();
 				userInboxEvent.setWaChannel(WAMessage.Channel.DEFAULT);
 				userInboxEvent.setQueue(queueId);
-				userInboxEvent.setFrom(ArgUtil.parseAsString(map.get("from"), Constants.BLANK));
+				userInboxEvent.setFrom(from);
 				userInboxEvent.setTo(to);
 				userInboxEvent.setMessage(ArgUtil.parseAsString(map.get("text"), Constants.BLANK));
 
-				AppContextUtil.setActorId(new AuditActor(AuditActor.ActorType.W, to));
+				AppContextUtil.setActorId(new AuditActor(AuditActor.ActorType.W, from));
 
 				pMGaugeEvent.setTo(CollectionUtil.getList(userInboxEvent.getFrom()));
 				pMGaugeEvent.setMessage(userInboxEvent.getMessage());

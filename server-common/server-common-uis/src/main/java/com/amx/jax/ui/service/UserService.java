@@ -126,7 +126,9 @@ public class UserService {
 		msg.addToUser(customerModel.getCustomerId(), lang);
 
 		Date dob = customerModel.getPersoninfo().getDateOfBirth();
-		msg.addToDate("dob", dob);
+		if(ArgUtil.is(dob)) {
+			msg.addToDate("dob", dob);			
+		}
 		return msg.getTo();
 	}
 
