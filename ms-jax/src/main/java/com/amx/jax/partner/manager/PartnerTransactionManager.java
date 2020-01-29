@@ -1306,12 +1306,21 @@ public class PartnerTransactionManager extends AbstractModel {
 		model.setCustomerReference(remittanceTransactionView.getCustomerReference());
 		model.setCustomerContact(remittanceTransactionView.getContactNumber());
 		model.setExceptionMessage(remitTrnxSPDTO.getActionInd() + " : " + remitTrnxSPDTO.getResponseDescription() + " : " + remittanceTransactionView.getCountryBranchName() + " : " +remittanceTransactionView.getCreatedBy());
-		model.setRoutingBankCode(PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name());
+		//model.setRoutingBankCode(PricerServiceConstants.SERVICE_PROVIDER_BANK_CODE.HOME.name());
 		model.setTransactionAmount(remittanceTransactionView.getLocalNetTransactionAmount());
 		model.setTransactionForeignAmount(remittanceTransactionView.getForeignTransactionAmount());
 		model.setTransactionDocNumber(remittanceTransactionView.getDocumentNo());
 		model.setTransactionDocYear(remittanceTransactionView.getDocumentFinancialYear());
 		model.setTransactionId(transactionId);
+		
+		BankMasterMdlv1 bankMaster = bankMasterRepo.findByBankIdAndRecordStatus(remittanceTransactionView.getBankId(), PricerServiceConstants.Yes);
+		if(bankMaster != null){
+			model.setRoutingBankCode(bankMaster.getBankCode());
+			model.setServiceProvider(bankMaster.getBankFullName());
+		}
+		model.setPartnerReference(transactionId);
+		model.setBeneBankReference("");
+		model.setAmxReference("");
 		
 		logger.info("Email Service Provider Fail Transaction : " + JsonUtil.toJson(model));
 		

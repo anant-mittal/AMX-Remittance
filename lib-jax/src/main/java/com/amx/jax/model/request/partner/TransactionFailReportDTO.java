@@ -15,6 +15,10 @@ public class TransactionFailReportDTO {
 	private String customerName;
 	private String customerContact;
 	private String exceptionMessage;
+	private String serviceProvider;
+	private String partnerReference;
+	private String beneBankReference;
+	private String amxReference;
 	private BigDecimal customerReference;
 	private BigDecimal transactionAmount;
 	private BigDecimal transactionForeignAmount;
@@ -132,5 +136,33 @@ public class TransactionFailReportDTO {
 	public void setTransactionForeignAmount(BigDecimal transactionForeignAmount) {
 		this.transactionForeignAmount = transactionForeignAmount;
 	}
-		
+	
+	public String getServiceProvider() {
+		return serviceProvider;
+	}
+	public void setServiceProvider(String serviceProvider) {
+		this.serviceProvider = serviceProvider;
+	}
+	
+	public String getPartnerReference() {
+		return partnerReference;
+	}
+	public void setPartnerReference(String partnerReference) {
+		this.partnerReference = partnerReference;
+	}
+	
+	public String getBeneBankReference() {
+		return beneBankReference;
+	}
+	public void setBeneBankReference(String beneBankReference) {
+		this.beneBankReference = beneBankReference;
+	}
+	
+	public String getAmxReference() {
+		return amxReference;
+	}
+	public void setAmxReference(String amxReference) {
+		this.amxReference = amxReference;
+	}
+	
 }
