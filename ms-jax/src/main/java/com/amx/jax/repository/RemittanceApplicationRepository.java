@@ -121,5 +121,4 @@ public interface RemittanceApplicationRepository extends CrudRepository<Remittan
 	@Query("select ra from RemittanceApplication ra where ra.fsCustomer=:customerid and ra.remittanceApplicationId=:remittanceApplicationId and trunc(sysdate)=trunc(createdDate)")
 	public RemittanceApplication getApplicationForRemittanceValidation(@Param("customerid") Customer customerid,@Param("remittanceApplicationId") BigDecimal remittanceApplicationId);
 	
-	
 }
