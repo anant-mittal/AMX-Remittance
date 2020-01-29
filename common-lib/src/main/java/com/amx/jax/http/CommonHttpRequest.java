@@ -297,6 +297,7 @@ public class CommonHttpRequest {
 		if (request != null) {
 			String browserDetails = request.getHeader("User-Agent");
 			return UserAgent.parseUserAgentString(browserDetails);
+			//return UserAgent.parseUserAgentString("QuickRemit/403 CFNetwork/978.0.7 Darwin/18.7.0");
 		}
 		return agent;
 	}
@@ -379,7 +380,8 @@ public class CommonHttpRequest {
 
 		if (appType == null) {
 			appType = null;
-			if (userDevice.getUserAgent().getBrowser() != Browser.UNKNOWN) {
+			if (userDevice.getUserAgent().getBrowser() != Browser.UNKNOWN
+					&& userDevice.getUserAgent().getBrowser() != Browser.CFNETWORK) {
 				appType = AppType.WEB;
 			} else if (userDevice.getPlatform() == DevicePlatform.ANDROID
 					&& userDevice.getUserAgent().getBrowser() == Browser.UNKNOWN) {
@@ -391,14 +393,23 @@ public class CommonHttpRequest {
 					&& userDevice.getUserAgent().getBrowser() == Browser.UNKNOWN
 					&& userDevice.getUserAgent().getOperatingSystem() == OperatingSystem.UNKNOWN) {
 				appType = AppType.IOS;
+//			} else if (userDevice.getPlatform() == DevicePlatform.MAC
+//					&& userDevice.getUserAgent().getBrowser() == Browser.CFNETWORK
+//					&& userDevice.getUserAgent().getOperatingSystem() == OperatingSystem.MAC_OS_X) {
+//				appType = AppType.IOS;
 			} else if (userDevice.getFingerprint() != null
 					&& !Constants.BLANK.equalsIgnoreCase(userDevice.getFingerprint())) {
 				if (userDevice.getFingerprint().length() == 16) {
 					appType = AppType.ANDROID;
 				} else if (userDevice.getFingerprint().length() == 40) {
 					appType = AppType.IOS;
+				} else if (userDevice.getFingerprint().length() == 36
+						&& userDevice.getUserAgent().getBrowser() == Browser.CFNETWORK) {
+					appType = AppType.IOS;
 				} else if (userDevice.getFingerprint().length() == 32) {
 					appType = AppType.WEB;
+				} else {
+
 				}
 			} else if (userDevice.getType() == DeviceType.COMPUTER) {
 				appType = AppType.WEB;
