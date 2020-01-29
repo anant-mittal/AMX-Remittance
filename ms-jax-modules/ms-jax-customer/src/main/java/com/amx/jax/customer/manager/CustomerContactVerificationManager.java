@@ -189,8 +189,8 @@ public class CustomerContactVerificationManager {
 			if (ArgUtil.is(oldlinks)) {
 				if (oldlinks.size() > jaxTenantProperties.getVerificationAttemptLimit()) {
 					throw new GlobalException(JaxError.SEND_OTP_LIMIT_EXCEEDED,
-							"Please verify " + contactType.getLabel()
-									+ " to continue. Resend link after " +
+							"Please verify your " + contactType.getLabel()
+									+ " to continue. Resend again after " +
 									jaxTenantProperties.getVerificationValidHours()
 									+ " hours");
 				}
@@ -198,13 +198,13 @@ public class CustomerContactVerificationManager {
 
 					Calendar cal = Calendar.getInstance();
 					cal.add(Calendar.MINUTE, -1 * jaxTenantProperties.getVerificationResendAfterMinutes());
-					java.util.Date lastAttempt = new java.util.Date(cal.getTimeInMillis());
-					if (lastAttempt.before(oldLink.getCreatedDate())
-							&& oldLink.hasExpired(Constants.TimeInterval.MIN,
+					java.util.Date lastAttemptLimit = new java.util.Date(cal.getTimeInMillis());
+					if (lastAttemptLimit.before(oldLink.getCreatedDate())
+							&& !oldLink.hasExpired(Constants.TimeInterval.MIN,
 									jaxTenantProperties.getVerificationResendAfterMinutes())) {
 						throw new GlobalException(JaxError.SEND_OTP_LIMIT_EXCEEDED,
-								"Please verify " + contactType.getLabel()
-										+ " to continue. Sending Verification Limit has exceeded try again after " +
+								"Please verify your " + contactType.getLabel()
+										+ " to continue. Resend again after " +
 										jaxTenantProperties.getVerificationResendAfterMinutes()
 										+ " minutes");
 					}
