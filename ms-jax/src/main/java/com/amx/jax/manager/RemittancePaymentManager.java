@@ -786,6 +786,7 @@ public class RemittancePaymentManager extends AbstractService{
 		PaygDetailsModel pgmodel = new PaygDetailsModel();
 		if(remittanceRequestModel!=null) {
 			List<BranchApplicationDto> shoppingCartDetails =  remittanceRequestModel.getRemittanceApplicationId();
+			payCartValidation(remittanceRequestModel);
 			BigDecimal netPayableAmount =  remittanceRequestModel.getTotalTrnxAmount();
 			String applicationIds = null;
 			if(!shoppingCartDetails.isEmpty()) {
@@ -862,4 +863,29 @@ public class RemittancePaymentManager extends AbstractService{
 		
 		return request;
 	}
+	
+	
+	
+	public void  payCartValidation(BranchRemittanceRequestModel remittanceRequestModel) {
+	String warMsg =null;
+	if(remittanceRequestModel!=null) {
+		List<BranchApplicationDto> shoppingCartDetails =  remittanceRequestModel.getRemittanceApplicationId();
+		if(shoppingCartDetails!=null && !shoppingCartDetails.isEmpty()) {
+			for(BranchApplicationDto applDto :shoppingCartDetails) {
+				RemittanceApplication applicationDetails =applicationDao.getApplicationForRemittanceValidation(new Customer(meta.getCustomerId()),applDto.getApplicationId());
+				if(applicationDetails!=null && !StringUtils.isBlank(applicationDetails.getResultCode()) && applicationDetails.getResultCode().equalsIgnoreCase(ConstantDocument.CAPTURED)) {
+					throw new GlobalException("The payment is already initiated for this application. Click OK to refresh the cart");
+				}else if(applicationDetails!=null && applicationDetails.getIsactive().equalsIgnoreCase(ConstantDocument.Deleted)){
+					throw new GlobalException("The application is already deleted for which you are trying to make payment. Click OK to refresh the cart.");
+				}
+			}
+		}else {
+			throw new GlobalException("The application details not found . Click OK to refresh the cart.");
+		}
+	}else {
+		throw new GlobalException("The application details not found . Click OK to refresh the cart.");
+	}
+}
+
+	
 }

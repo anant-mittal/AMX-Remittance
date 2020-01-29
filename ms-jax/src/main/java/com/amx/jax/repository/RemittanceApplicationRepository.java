@@ -117,4 +117,8 @@ public interface RemittanceApplicationRepository extends CrudRepository<Remittan
 			+"and isactive <> 'D' and appl.loccod <>:locCod and NVL(applicaitonStatus,' ')<>'T' and transactionDocumentNo is null")
 	public void deActivateBranchApplicationInOnline(@Param("customerId") Customer customerId,@Param("locCod") BigDecimal locCod);
 	
+	
+	@Query("select ra from RemittanceApplication ra where ra.fsCustomer=:customerid and ra.remittanceApplicationId=:remittanceApplicationId and trunc(sysdate)=trunc(createdDate)")
+	public RemittanceApplication getApplicationForRemittanceValidation(@Param("customerid") Customer customerid,@Param("remittanceApplicationId") BigDecimal remittanceApplicationId);
+	
 }
