@@ -13,7 +13,7 @@ public class JaxTenantProperties {
 
 	@TenantValue("${support.compliance.email}")
 	private String complianceEmail;
-	
+
 	@TenantValue("${dynamic.pricing.enabled}")
 	private Boolean isDynamicPricingEnabled;
 
@@ -45,50 +45,56 @@ public class JaxTenantProperties {
 
 	@TenantValue("${jax.properties.device.autoactivate}")
 	Boolean deviceAutoActivate;
-	
+
 	@TenantValue("${wantit.buyit.startdate}")
 	private String startDate;
-	
+
 	@TenantValue("${wantit.buyit.enddate}")
 	private String endDate;
-	
+
 	@TenantValue("${jax.max.captcha.count}")
 	private Integer maxCaptchaCount;
-	
+
 	@TenantValue("${support.app.email}")
 	private String appSupportEmail;
 
 	@TenantValue("${jax.max.captcha.enabled}")
 	Boolean captchaEnable;
-	
+
 	@TenantValue("${jax.properties.hash.signature}")
 	private Boolean hashSigEnable;
-	
-	
+
 	@TenantValue("${key.store.location}")
 	private String keyStoreLocatin;
-	
-	
+
 	@TenantValue("${key.alias.in.keystore}")
 	private String keyStoreAlias;
-	
-	
+
 	@TenantValue("${key.store.password}")
 	private String keyStorePwd;
-	
+
 	@TenantValue("${signature.algorithem}")
 	private String sigAlgorithem;
-	
+
 	@TenantValue("${jax.max.loyalty.count}")
 	private BigDecimal loyaltyCount;
-	
+
 	@TenantValue("${support.online.email}")
 	String supportOnlineEmail;
+
+	@TenantValue("${jax.verify.link.limit.attempt}")
+	private Integer verificationAttemptLimit;
+
+	@TenantValue("${jax.verify.link.valid.hours}")
+	private Integer verificationValidHours;
+	
+	@TenantValue("${jax.verify.link.resend.minute}")
+	private Integer verificationResendAfterMinutes;
 
 	public Boolean getCashDisable() {
 		return cashDisable;
 	}
-	
+
 	public void setCashDisable(Boolean cashDisable) {
 		this.cashDisable = cashDisable;
 	}
@@ -165,7 +171,6 @@ public class JaxTenantProperties {
 		this.maxCaptchaCount = maxCaptchaCount;
 	}
 
-
 	public String getAppSupportEmail() {
 		return appSupportEmail;
 	}
@@ -173,7 +178,6 @@ public class JaxTenantProperties {
 	public void setAppSupportEmail(String appSupportEmail) {
 		this.appSupportEmail = appSupportEmail;
 	}
-
 
 	public Boolean getHashSigEnable() {
 		return hashSigEnable;
@@ -214,6 +218,7 @@ public class JaxTenantProperties {
 	public void setSigAlgorithem(String sigAlgorithem) {
 		this.sigAlgorithem = sigAlgorithem;
 	}
+
 	public Boolean getCaptchaEnable() {
 		return captchaEnable;
 	}
@@ -239,6 +244,16 @@ public class JaxTenantProperties {
 		this.supportOnlineEmail = supportOnlineEmail;
 	}
 
-	
+	public Integer getVerificationAttemptLimit() {
+		return verificationAttemptLimit;
+	}
+
+	public Integer getVerificationResendAfterMinutes() {
+		return verificationResendAfterMinutes;
+	}
+
+	public Integer getVerificationValidHours() {
+		return verificationValidHours;
+	}
 
 }
