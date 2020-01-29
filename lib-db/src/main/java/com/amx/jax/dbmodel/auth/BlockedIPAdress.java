@@ -16,7 +16,7 @@ import javax.persistence.Table;
 import com.amx.jax.util.AmxDBConstants;
 
 @Entity
-@Table(name = "JAX_BLOCKED_IP")
+@Table(name = "JAX_AUTH_BLOCKED_IP")
 public class BlockedIPAdress {
 
 	@Id
