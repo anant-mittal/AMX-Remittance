@@ -45,15 +45,17 @@ import com.amx.jax.pricer.dto.OnlineMarginMarkupReq;
 import com.amx.jax.pricer.dto.RateUploadRequestDto;
 import com.amx.jax.pricer.dto.RateUploadRuleDto;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
+import com.amx.jax.pricer.dto.RoutingProductStatusDetails;
+import com.amx.jax.pricer.dto.RoutingStatusUpdateRequestDto;
 import com.amx.jax.pricer.dto.RoutingCountryBankInfo;
 import com.amx.jax.pricer.exception.PricerServiceError;
 import com.amx.jax.pricer.exception.PricerServiceException;
 import com.amx.jax.pricer.manager.DiscountManager;
 import com.amx.jax.pricer.manager.ExchangeRateManager;
+import com.amx.jax.pricer.manager.RoutingProductManager;
 import com.amx.jax.pricer.var.PricerServiceConstants.DISCOUNT_TYPE;
 import com.amx.jax.pricer.var.PricerServiceConstants.GROUP_TYPE;
 import com.amx.jax.pricer.var.PricerServiceConstants.RATE_UPLOAD_STATUS;
-
 @Service
 public class ExchangeDataService {
 
@@ -96,6 +98,9 @@ public class ExchangeDataService {
 	@Autowired
 	ExchangeRateManager exchangeRateManager;
 
+	@Autowired
+	RoutingProductManager routingProductManager;
+	
 	// @Autowired
 	// private ProbotMetaInfo metaInfo;
 
@@ -262,6 +267,14 @@ public class ExchangeDataService {
 
 	}
 
+	public RoutingProductStatusDetails getRoutingProductStatus(BigDecimal countryId, BigDecimal currencyId) {
+		return routingProductManager.getRoutingProductStatus(countryId, currencyId);
+	}
+
+	public int updateRoutingProductStatus(RoutingStatusUpdateRequestDto request) {
+		return routingProductManager.updateRoutingProductStatus(request);
+	}
+	
 	public List<GroupDetails> getGroupsOfType(GROUP_TYPE groupType) {
 
 		if (groupType == null) {

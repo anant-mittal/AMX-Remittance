@@ -193,4 +193,14 @@ public class CountryService extends AbstractService {
 		return isArabic;
 		
 	}
+
+
+	public boolean isEgyptCountry(BigDecimal countryId) {
+		String countryAlfa3Code = countryRepository.findByLanguageIdAndCountryId(meta.getLanguageId(), countryId).get(0)
+				.getCountryAlpha3Code();
+		if (ConstantDocument.EGYPT_ALPHA3_CODE.equals(countryAlfa3Code)) {
+			return true;
+		}
+		return false;
+	}
 }

@@ -31,7 +31,11 @@ public class ViewDistrict implements Serializable, IResourceEntity {
 	public String districtDesc;
 	@Column(name = "LANGUAGE_ID")
 	public BigDecimal languageId;
+	
+	@Column(name = "DEFAULT_INDIC")
+	public String defaultIndic;
 
+	
 	public BigDecimal getStateId() {
 		return stateId;
 	}
@@ -62,6 +66,14 @@ public class ViewDistrict implements Serializable, IResourceEntity {
 
 	public void setLanguageId(BigDecimal languageId) {
 		this.languageId = languageId;
+	}
+	
+	public String getDefaultIndic() {
+		return defaultIndic;
+	}
+
+	public void setDefaultIndic(String defaultIndic) {
+		this.defaultIndic = defaultIndic;
 	}
 
 	@Override

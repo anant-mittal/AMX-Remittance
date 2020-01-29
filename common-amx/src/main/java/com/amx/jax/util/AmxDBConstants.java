@@ -78,6 +78,7 @@ public class AmxDBConstants {
 	public static final String JOAMX_USER = "JOAMX_USER";
 
 	public static final String BANGLADESH_ALPHA3_CODE = "BGD";
+	public static final String EGYPT_ALPHA3_CODE = "EGY";
 	public static final String SERVICE_GROUP_CODE_CASH = "C";
 	public static final String SERVICE_GROUP_CODE_BANK = "B";
 

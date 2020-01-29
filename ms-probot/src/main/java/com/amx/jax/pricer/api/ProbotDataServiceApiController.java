@@ -33,6 +33,8 @@ import com.amx.jax.pricer.dto.RateUploadRequestDto;
 import com.amx.jax.pricer.dto.RateUploadRuleDto;
 import com.amx.jax.pricer.dto.RoutBanksAndServiceRespDTO;
 import com.amx.jax.pricer.dto.RoutingCountryBankInfo;
+import com.amx.jax.pricer.dto.RoutingProductStatusDetails;
+import com.amx.jax.pricer.dto.RoutingStatusUpdateRequestDto;
 import com.amx.jax.pricer.service.ExchangeDataService;
 import com.amx.jax.pricer.service.HolidayListService;
 import com.amx.jax.pricer.var.PricerServiceConstants.GROUP_TYPE;
@@ -145,6 +147,27 @@ public class ProbotDataServiceApiController implements ProbotDataService {
 		return AmxApiResponse.build(marginMarkupResp);
 	}
 
+	@Override
+	@RequestMapping(value = ApiEndPoints.GET_ROUTING_PRODUCT_STATUS, method = RequestMethod.POST)
+	public AmxApiResponse<RoutingProductStatusDetails, Object> getRoutingProductStatus(
+			@RequestParam(required = true) BigDecimal countryId, @RequestParam(required = true) BigDecimal currencyId) {
+		LOGGER.info("Received Request Get routing product status");
+
+		RoutingProductStatusDetails status = dataService.getRoutingProductStatus(countryId, currencyId);
+		return AmxApiResponse.build(status);
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.UPDATE_ROUTING_STATUS, method = RequestMethod.POST)
+	public AmxApiResponse<Integer, Object> updateRoutingProductStatus(
+			@RequestBody @Valid RoutingStatusUpdateRequestDto request) {
+		LOGGER.info("Received Request for Updating routing product status.");
+
+		int updateCnt = dataService.updateRoutingProductStatus(request);
+
+		return AmxApiResponse.build(updateCnt);
+	}
+	
 	@Override
 	@RequestMapping(value = ApiEndPoints.GET_GROUPS_OF_TYPE, method = RequestMethod.POST)
 	public AmxApiResponse<GroupDetails, Object> getGroupsOfType(@RequestParam(required = true) GROUP_TYPE groupType) {

@@ -176,7 +176,7 @@ public class RemitRoutingManager {
 
 		if (null == routingMatrix || routingMatrix.isEmpty()) {
 
-			LOGGER.error("Routing Matrix is Data is Empty or Null for the Pricing/Routing Request");
+			LOGGER.error("Routing Matrix Data is Empty or Null for the Pricing/Routing Request");
 
 			throw new PricerServiceException(PricerServiceError.INVALID_OR_MISSING_ROUTE,
 					"Invalid or Missing Routing Banks to the Beneficiary, Check Routing Setup for:" + " BeneBankId: "

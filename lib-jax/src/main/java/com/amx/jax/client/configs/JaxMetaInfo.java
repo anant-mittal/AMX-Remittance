@@ -26,6 +26,9 @@ public class JaxMetaInfo extends RequestMetaInfo {
 	@Deprecated
 	public static final String DEFAULT_COUNTRY_BRANCH_ID = "78"; // online
 
+	@Deprecated
+	public static final String DEFAULT_EMPLOYEE_ID = "536"; // online
+	
 	private BigDecimal countryBranchId;
 	private JaxChannel channel = JaxChannel.ONLINE; // default is online channel
 	private String referrer = null;

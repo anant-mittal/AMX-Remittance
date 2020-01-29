@@ -100,6 +100,11 @@ public class BeneficiaryListDTO extends ResourceDTO {
 	
 
 	private String bankLocalName;
+	private String ibanNumber;
+	private BigDecimal institutionCategoryId;
+	private String institutionName;
+	private String institutionNameLocal;
+	
 
 	public BigDecimal getIdNo() {
 		return idNo;
@@ -600,6 +605,30 @@ public class BeneficiaryListDTO extends ResourceDTO {
 	}
 	public void setCountryTelCode(String countryTelCode) {
 		this.countryTelCode = countryTelCode;
+	}
+	public String getIbanNumber() {
+		return ibanNumber;
+	}
+	public void setIbanNumber(String ibanNumber) {
+		this.ibanNumber = ibanNumber;
+	}
+	public BigDecimal getInstitutionCategoryId() {
+		return institutionCategoryId;
+	}
+	public void setInstitutionCategoryId(BigDecimal institutionCategoryId) {
+		this.institutionCategoryId = institutionCategoryId;
+	}
+	public String getInstitutionName() {
+		return institutionName;
+	}
+	public void setInstitutionName(String institutionName) {
+		this.institutionName = institutionName;
+	}
+	public String getInstitutionNameLocal() {
+		return institutionNameLocal;
+	}
+	public void setInstitutionNameLocal(String institutionNameLocal) {
+		this.institutionNameLocal = institutionNameLocal;
 	}
 
 }

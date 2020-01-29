@@ -14,6 +14,7 @@ import com.amx.jax.model.request.benebranch.UpdateBeneBankRequest;
 import com.amx.jax.model.request.benebranch.UpdateBeneCashRequest;
 import com.amx.jax.model.request.benebranch.UpdateBeneStatusRequest;
 import com.amx.jax.model.response.BankMasterDTO;
+import com.amx.jax.model.response.benebranch.AddBeneResponse;
 import com.amx.jax.model.response.benebranch.BankBranchDto;
 import com.amx.jax.model.response.benebranch.BeneStatusDto;
 
@@ -46,9 +47,9 @@ public interface IBranchBeneService {
 
 	AmxApiResponse<BankBranchDto, Object> listBankBranch(BankBranchListRequest request);
 
-	AmxApiResponse<BoolRespModel, Object> addBeneBank(AddBeneBankRequest request);
+	AmxApiResponse<AddBeneResponse, Object> addBeneBank(AddBeneBankRequest request);
 
-	AmxApiResponse<BoolRespModel, Object> addBenecash(AddBeneCashRequest request);
+	AmxApiResponse<AddBeneResponse, Object> addBenecash(AddBeneCashRequest request);
 
 	AmxApiResponse<BoolRespModel, Object> addNewBankBranchRequest(AddNewBankBranchRequest request);
 

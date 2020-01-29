@@ -1,5 +1,6 @@
 package com.amx.jax.validation;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -10,15 +11,23 @@ import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.BlackListDao;
+import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.BlackListModel;
 import com.amx.jax.dbmodel.ServiceApplicabilityRule;
+import com.amx.jax.dbmodel.bene.BeneficaryStatus;
+import com.amx.jax.dbmodel.bene.InstitutionCategoryMaster;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.exception.ExceptionMessageKey;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.request.AbtractUpdateBeneDetailDto;
 import com.amx.jax.model.request.benebranch.BenePersonalDetailModel;
 import com.amx.jax.model.request.benebranch.BeneficiaryTrnxModel;
+import com.amx.jax.repository.BeneficaryStatusRepository;
 import com.amx.jax.repository.IServiceApplicabilityRuleDao;
+import com.amx.jax.service.MetaExtnService;
+import com.amx.jax.services.BeneficiaryService;
 
 @Component
 public class BenePersonalDetailValidator implements Validator {
@@ -31,6 +40,12 @@ public class BenePersonalDetailValidator implements Validator {
 
 	@Autowired
 	BlackListDao blackListDao;
+	@Autowired
+	BeneficaryStatusRepository beneficaryStatusRepository;
+	@Autowired
+	MetaExtnService metaExtnService;
+	@Autowired
+	BeneficiaryService beneficiaryService;
 
 	@Override
 	public boolean supports(Class clazz) {
@@ -45,15 +60,28 @@ public class BenePersonalDetailValidator implements Validator {
 		validateMobile(benePersonalDetailModel, beneficiaryTrnxModel);
 		validateBeneBlacklist(benePersonalDetailModel);
 		validateBeneArabicBlacklist(benePersonalDetailModel);
+		validateBeneNames(benePersonalDetailModel);
+		validateInstitutionData(benePersonalDetailModel);
+		validateBeneRelationId(benePersonalDetailModel);
 	}
 
-	public void validateUpdateBene(BeneficiaryTrnxModel beneficiaryTrnxModel) {
+	private void validateBeneRelationId(BenePersonalDetailModel benePersonalDetailModel) {
+		BeneficaryStatus beneStatus = beneficaryStatusRepository.findOne(benePersonalDetailModel.getBeneficaryTypeId());
+		if (ConstantDocument.INDIVIDUAL_STRING.equalsIgnoreCase(beneStatus.getBeneficaryStatusName())
+				&& benePersonalDetailModel.getRelationsId() == null) {
+			throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Relation Id can not be null");
+		}
+	}
+
+	public void validateUpdateBene(BeneficiaryTrnxModel beneficiaryTrnxModel, AbtractUpdateBeneDetailDto request,
+			BenificiaryListView benificiaryListView) {
 		BenePersonalDetailModel benePersonalDetailModel = beneficiaryTrnxModel.getBenePersonalDetailModel();
 		if (StringUtils.isNotBlank(benePersonalDetailModel.getMobileNumber())) {
 			validateMobile(benePersonalDetailModel, beneficiaryTrnxModel);
 		}
 		validateBeneBlacklist(benePersonalDetailModel);
 		validateBeneArabicBlacklist(benePersonalDetailModel);
+		validateInstitutionalBeneForUpdate(request, benificiaryListView);
 	}
 
 	private void validateBeneBlacklist(BenePersonalDetailModel benePersonalDetailModel) {
@@ -133,6 +161,75 @@ public class BenePersonalDetailValidator implements Validator {
 			throw new GlobalException(JaxError.VALIDATION_LENGTH_MOBILE,
 					ExceptionMessageKey.build(JaxError.VALIDATION_LENGTH_MOBILE, minLength, maxLength));
 		}
+	}
+
+	public void validateBeneNames(BenePersonalDetailModel benePersonalDetailModel) {
+		BeneficaryStatus beneStatus = beneficaryStatusRepository.findOne(benePersonalDetailModel.getBeneficaryTypeId());
+		if (ConstantDocument.NON_INDIVIDUAL_STRING.equalsIgnoreCase(beneStatus.getBeneficaryStatusName())) {
+			if (benePersonalDetailModel.getInstitutionName() == null) {
+				throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Institution name can not be null");
+			}
+			if (benePersonalDetailModel.getInstitutionCategoryId() == null) {
+				throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Institution category can not be null");
+			}
+			if (!benePersonalDetailModel.getInstitutionName().trim().contains(" ")) {
+				throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Institution name must have at least one space between two words");
+			}
+			if (benePersonalDetailModel.getInstitutionNameLocal() != null
+					&& !benePersonalDetailModel.getInstitutionNameLocal().trim().contains(" ")) {
+				throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Institution name local must have at least one space between two words");
+			}
+		} else {
+			if (benePersonalDetailModel.getFirstName() == null) {
+				throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "first name can not be null");
+			}
+			if (benePersonalDetailModel.getSecondName() == null) {
+				throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "second name can not be null");
+			}
+			if (benePersonalDetailModel.getRelationsId() == null) {
+				throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Bene relationship id can not be null");
+			}
+		}
+	}
+
+	public void validateInstitutionData(BenePersonalDetailModel benePersonalDetailModel) {
+		BeneficaryStatus beneStatus = beneficaryStatusRepository.findOne(benePersonalDetailModel.getBeneficaryTypeId());
+		if (ConstantDocument.Non_Individual.equalsIgnoreCase(beneStatus.getBeneficaryStatusName())) {
+			if (benePersonalDetailModel.getInstitutionCategoryId() == null) {
+				throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Institution category can not be empty");
+			}
+			if (benePersonalDetailModel.getInstitutionCategoryId() != null) {
+				InstitutionCategoryMaster institution = metaExtnService
+						.getInstitutionCategoryMasterById(benePersonalDetailModel.getInstitutionCategoryId());
+				if (institution == null) {
+					throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Invalid institution category");
+				}
+			}
+		}
+	}
+
+	public void validateInstitutionalBeneForUpdate(AbtractUpdateBeneDetailDto request, BenificiaryListView benificiaryListView) {
+		// validate bene name
+		BigDecimal beneStatusId = request.getBeneficaryTypeId();
+		if (beneStatusId == null) {
+			beneStatusId = benificiaryListView.getBenificaryStatusId();
+		}
+		if (beneficiaryService.isNonIndividualBene(beneStatusId)) {
+			if (request.getInstitutionName() != null && !request.getInstitutionName().trim().contains(" ")) {
+				throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Institution name must have at least one space between two words");
+			}
+			if (request.getInstitutionNameLocal() != null && !request.getInstitutionNameLocal().trim().contains(" ")) {
+				throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE,
+						"Institution name local must have at least one space between two words");
+			}
+			if (request.getInstitutionCategoryId() != null) {
+				InstitutionCategoryMaster institution = metaExtnService.getInstitutionCategoryMasterById(request.getInstitutionCategoryId());
+				if (institution == null) {
+					throw new GlobalException(JaxError.JAX_FIELD_VALIDATION_FAILURE, "Invalid institution category");
+				}
+			}
+		}
+
 	}
 
 }

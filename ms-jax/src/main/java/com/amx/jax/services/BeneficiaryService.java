@@ -276,7 +276,11 @@ public class BeneficiaryService extends AbstractService {
 		} else {
 			beneList = beneficiaryOnlineDao.getBeneListFromView(customerId, applicationCountryId);
 		}
-
+		Collections.sort(beneList, (o1, o2) -> {
+			Date date1 = (o1.getModifiedDate() != null ? o1.getModifiedDate() : o1.getCreatedDate());
+			Date date2 = (o2.getModifiedDate() != null ? o2.getModifiedDate() : o2.getCreatedDate());
+			return date2.compareTo(date1);
+		});
 		ApiResponse response = getBlackApiResponse();
 		if (beneList.isEmpty()) {
 			throw new GlobalException(JaxError.BENEFICIARY_LIST_NOT_FOUND, "Beneficiary list is not found");
@@ -576,6 +580,10 @@ public class BeneficiaryService extends AbstractService {
 				dto.setBankName(dto.getBankLocalName() + " CASH PAYOUT");
 			}
 			dto.setBankShortNames(dto.getBankShortNames() + " CASH PAYOUT");
+		}
+		if (isNonIndividualBene(beneModel.getBenificaryStatusId())) {
+			dto.setInstitutionName(beneModel.getBenificaryName());
+			dto.setInstitutionNameLocal(beneModel.getArbenificaryName());
 		}
 		return dto;
 	}
@@ -1249,6 +1257,16 @@ public class BeneficiaryService extends AbstractService {
 					dto.setSelfApplicable(ConstantDocument.Yes.equalsIgnoreCase(i.getSelfApplicable()));
 					return dto;
 				}).collect(Collectors.toList());
+	}
+
+	public boolean isNonIndividualBene(BigDecimal beneficaryTypeId) {
+		if (beneficaryTypeId != null) {
+			BeneficaryStatus beneStatus = beneficaryStatusRepository.findOne(beneficaryTypeId);
+			if (beneStatus != null && ConstantDocument.NON_INDIVIDUAL_STRING.equalsIgnoreCase(beneStatus.getBeneficaryStatusName())) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 }

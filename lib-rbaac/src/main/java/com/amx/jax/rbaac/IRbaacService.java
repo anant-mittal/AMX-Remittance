@@ -15,6 +15,7 @@ import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
 import com.amx.jax.rbaac.dto.request.UserRoleMappingsRequestDTO;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
+import com.amx.jax.rbaac.dto.response.OfflineOtpData;
 import com.amx.jax.rbaac.dto.response.PermissionResposeDTO;
 import com.amx.jax.rbaac.dto.response.RoleMappingForEmployee;
 import com.amx.jax.rbaac.dto.response.RoleResponseDTO;
@@ -93,6 +94,11 @@ public interface IRbaacService {
 
 		public static final String EMPLOYEE_SYSTEM_MAPPING_CREATE = SERVICE_PREFIX + API_VERSION_V1
 				+ "/employee-system/create";
+		
+		public static final String GENERATE_OFFLINE_OTP_PREFIX = SERVICE_PREFIX + API_VERSION_V1
+				+ "/generate-offline-otp-prefix";
+		public static final String VALIDATE_OFFLINE_OTP = SERVICE_PREFIX + API_VERSION_V1
+				+ "/validate-offline-otp";
 
 	}
 
@@ -293,7 +299,7 @@ public interface IRbaacService {
 
 	AmxApiResponse<BoolRespModel, Object> createEmployeeSystemMapping(BigDecimal employeeId,
 			BigDecimal countryBranchSystemInventoryId);
-
+	
 	public AmxApiResponse<NotpDTO, Object> verifyOTP(NotpDTO notpDTO);
 
 	public AmxApiResponse<DeviceDto, Object> getDeviceByDeviceRegId(BigDecimal deviceRegId);
@@ -303,5 +309,9 @@ public interface IRbaacService {
 	public AmxApiResponse<DeviceDto, Object> getDevicesByRegId(BigDecimal deviceRegId, String deviceId);
 
 	public AmxApiResponse<BoolRespModel, Object> deleteDevice(Integer deviceRegId);
+
+	public AmxApiResponse<OfflineOtpData, Object> generateOfflineOtpPrefix(BigDecimal employeeId);
+
+	public AmxApiResponse<BoolRespModel, Object> validateOfflineOtp(BigDecimal employeeId, String otp);
 
 }
