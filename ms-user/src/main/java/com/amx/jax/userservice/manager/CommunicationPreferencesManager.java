@@ -68,7 +68,7 @@ public class CommunicationPreferencesManager {
 		logger.debug("Communication result for sms is "+communicationPrefsResult.isSms());
 		
 		if(ArgUtil.isEmpty(channelList)) {
-			boolean isSmsVerified = communicationPrefsResult.isSms();
+			boolean isSmsVerified = cust.canSendMobile();
 			if (!isSmsVerified && metaData.getChannel().equals(JaxChannel.ONLINE)) {
 				throw new GlobalException(JaxError.SMS_NOT_VERIFIED,"Your registered mobile number is not verified. Please visit the branch to complete verification.");
 			}else if(!isSmsVerified && metaData.getChannel().equals(JaxChannel.BRANCH)) {
@@ -82,7 +82,7 @@ public class CommunicationPreferencesManager {
 			}
 			for (ContactType channel : channelList) {
 				if (ContactType.EMAIL.equals(channel)) {
-					boolean isEmailVerified = communicationPrefsResult.isEmail();
+					boolean isEmailVerified = cust.canSendEmail();
 					if (!isEmailVerified && metaData.getChannel().equals(JaxChannel.ONLINE)) {
 						throw new GlobalException(JaxError.EMAIL_NOT_VERIFIED,"Your registered email  is not verified. Please complete verification steps for successful verification.");
 					}else if(!isEmailVerified && metaData.getChannel().equals(JaxChannel.BRANCH)){
@@ -93,7 +93,7 @@ public class CommunicationPreferencesManager {
 				} 
 				
 				else if (ContactType.SMS.equals(channel)) {
-					boolean isSmsVerified = communicationPrefsResult.isSms();
+					boolean isSmsVerified = cust.canSendMobile();
 					if (!isSmsVerified && metaData.getChannel().equals(JaxChannel.ONLINE)) {
 						throw new GlobalException(JaxError.SMS_NOT_VERIFIED,"Your registered mobile number is not verified. Please visit the branch to complete verification.");
 					}else if(!isSmsVerified && metaData.getChannel().equals(JaxChannel.BRANCH)) {
@@ -102,7 +102,7 @@ public class CommunicationPreferencesManager {
 					}
 					
 				} else if (ContactType.WHATSAPP.equals(channel)) {
-					boolean isWhatsAppVerified = communicationPrefsResult.isWhatsApp();
+					boolean isWhatsAppVerified = cust.canSendWhatsApp();
 					if (!isWhatsAppVerified && metaData.getChannel().equals(JaxChannel.ONLINE)) {
 						throw new GlobalException(JaxError.WHATSAPP_NOT_VERIFIED,"Your registered whatsapp number is not verified. Please visit the branch to complete verification.");
 					}else if(!isWhatsAppVerified && metaData.getChannel().equals(JaxChannel.BRANCH)) {
